@@ -2,31 +2,30 @@
 read_when:
     - Vuoi vedere quali Skills sono disponibili e pronte per essere eseguite
     - Vuoi cercare in ClawHub o installare Skills da ClawHub, Git o directory locali
-    - Vuoi verificare una skill ClawHub con ClawHub
-    - Vuoi eseguire il debug di binari/env/config mancanti per Skills
-summary: Riferimento CLI per `openclaw skills` (search/install/update/verify/list/info/check/workshop)
+    - Vuoi verificare una skill di ClawHub con ClawHub
+    - Vuoi eseguire il debug di binari, variabili d'ambiente o configurazioni mancanti per le Skills
+summary: Riferimento CLI per `openclaw skills` (ricerca/installazione/aggiornamento/verifica/elenco/informazioni/controllo/workshop)
 title: Skills
 x-i18n:
-    generated_at: "2026-06-27T17:22:24Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:58:28Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8f76c49e04559362cac9c0d12ce86cd422b46653242212c7611cc1033941ac43
+    source_hash: 3eafd40704b666e6be185aa8148b60613c861a2899fb9b0cc3353212e8e4d678
     source_path: cli/skills.md
     workflow: 16
 ---
 
 # `openclaw skills`
 
-Ispeziona le Skills locali, cerca in ClawHub, installa Skills da ClawHub/Git/directory
-locali, verifica le Skills ClawHub e aggiorna le installazioni tracciate da ClawHub.
+Esamina le Skills locali, cerca in ClawHub, installa Skills da ClawHub/Git/directory locali, verifica le Skills di ClawHub e aggiorna le installazioni monitorate da ClawHub.
 
-Correlato:
+Argomenti correlati:
 
-- Sistema Skills: [Skills](/it/tools/skills)
-- Workshop Skill: [Workshop Skill](/it/tools/skill-workshop)
-- Configurazione Skills: [Configurazione Skills](/it/tools/skills-config)
-- Installazioni ClawHub: [ClawHub](/it/clawhub/cli)
+- Sistema delle Skills: [Skills](/it/tools/skills)
+- Laboratorio delle Skills: [Laboratorio delle Skills](/it/tools/skill-workshop)
+- Configurazione delle Skills: [Configurazione delle Skills](/it/tools/skills-config)
+- Installazioni da ClawHub: [ClawHub](/it/clawhub/cli)
 
 ## Comandi
 
@@ -39,10 +38,12 @@ openclaw skills install git:owner/repo
 openclaw skills install git:owner/repo@main
 openclaw skills install ./path/to/skill --as custom-name
 openclaw skills install @owner/<slug> --force
+openclaw skills install @owner/<slug> --force-install
 openclaw skills install @owner/<slug> --acknowledge-clawhub-risk
 openclaw skills install @owner/<slug> --agent <id>
 openclaw skills install @owner/<slug> --global
 openclaw skills update @owner/<slug>
+openclaw skills update @owner/<slug> --force-install
 openclaw skills update @owner/<slug> --acknowledge-clawhub-risk
 openclaw skills update @owner/<slug> --global
 openclaw skills update --all
@@ -74,86 +75,42 @@ openclaw skills workshop reject <proposal-id> --reason "Not reusable"
 openclaw skills workshop quarantine <proposal-id> --reason "Needs security review"
 ```
 
-`search`, `update` e `verify` usano direttamente ClawHub. `install @owner/<slug>`
-installa una Skill ClawHub, `install git:owner/repo[@ref]` clona una Skill Git e
-`install ./path` copia una directory Skill locale. Per impostazione predefinita, `install`, `update`
-e `verify` hanno come destinazione la directory `skills/` dell'area di lavoro attiva; con `--global`,
-hanno come destinazione la directory Skills gestite condivisa. `list`/`info`/`check` continuano a
-ispezionare le Skills locali visibili all'area di lavoro e alla configurazione correnti.
-I comandi basati su area di lavoro risolvono l'area di lavoro di destinazione da `--agent <id>`, poi
-dalla directory di lavoro corrente quando si trova all'interno di un'area di lavoro agente configurata,
-quindi dall'agente predefinito.
+`search`, `update` e `verify` usano direttamente ClawHub. `install @owner/<slug>` installa una Skill di ClawHub, `install git:owner/repo[@ref]` clona una Skill Git e `install ./path` copia una directory locale di una Skill. Per impostazione predefinita, `install`, `update` e `verify` operano sulla directory `skills/` dello spazio di lavoro attivo; con `--global`, operano sulla directory condivisa delle Skills gestite. `list`/`info`/`check` continuano a esaminare le Skills locali visibili allo spazio di lavoro e alla configurazione correnti. I comandi basati sullo spazio di lavoro determinano lo spazio di lavoro di destinazione da `--agent <id>`, quindi dalla directory di lavoro corrente se si trova all'interno dello spazio di lavoro di un agente configurato e infine dall'agente predefinito.
 
-Le installazioni da Git e da directory locale richiedono `SKILL.md` nella radice sorgente. Lo
-slug di installazione deriva dal `name` nel frontmatter di `SKILL.md` quando è valido, poi dal
-nome della directory sorgente o del repository; usa `--as <slug>` per sovrascriverlo. `--version`
-è disponibile solo per ClawHub. Le installazioni Skill non supportano specifiche di pacchetti npm o
-percorsi zip/archivio, e `openclaw skills update` aggiorna solo le installazioni tracciate da ClawHub.
+Le installazioni da Git e da directory locali richiedono `SKILL.md` nella radice dell'origine. Lo slug di installazione deriva dal campo `name` del frontmatter di `SKILL.md`, se valido, quindi dal nome della directory di origine o del repository; usa `--as <slug>` per sostituirlo. `--version` è disponibile solo per ClawHub. Le installazioni delle Skills non supportano specifiche di pacchetti npm né percorsi di file zip o archivi; inoltre, `openclaw skills update` aggiorna esclusivamente le installazioni monitorate da ClawHub.
 
-Le installazioni di dipendenze Skill basate su Gateway attivate dall'onboarding o dalle impostazioni
-Skills usano invece il percorso di richiesta separato `skills.install`.
+Le installazioni delle dipendenze delle Skills basate sul Gateway, avviate durante l'onboarding o dalle impostazioni delle Skills, usano invece il percorso di richiesta separato `skills.install`.
 
 Note:
 
-- `search [query...]` accetta una query facoltativa; omettila per sfogliare il feed di ricerca
-  predefinito di ClawHub.
-- `search --limit <n>` limita i risultati restituiti.
-- `install git:owner/repo[@ref]` installa una Skill Git. I riferimenti ai branch possono contenere
-  barre, come `git:owner/repo@feature/foo`.
-- `install ./path/to/skill` installa una directory locale la cui radice contiene
-  `SKILL.md`.
-- `install --as <slug>` sovrascrive lo slug dedotto per installazioni da Git e da directory locale.
-- `install --version <version>` si applica solo ai riferimenti Skill ClawHub.
-- `install --force` sovrascrive una cartella Skill dell'area di lavoro esistente per lo stesso
-  slug.
-- Le installazioni e gli aggiornamenti delle Skill della community ClawHub controllano l'attendibilità prima del download.
-  Le release di archivio della community con versione usano metadati di attendibilità della release esatta.
-  Le Skills GitHub basate su resolver si affidano al resolver di installazione di ClawHub per applicare
-  la policy di scansione e installazione forzata prima che restituisca un commit fissato. Le release della community dannose o
-  bloccate vengono rifiutate. Le release della community rischiose richiedono
-  revisione e `--acknowledge-clawhub-risk` quando un comando non interattivo deve
-  continuare dopo tale revisione. I publisher ufficiali di Skill ClawHub e le sorgenti Skill
-  OpenClaw incluse ignorano questo prompt di attendibilità della release.
-- `--global` ha come destinazione la directory Skills gestite condivisa e non può essere combinato
-  con `--agent <id>`.
-- `--agent <id>` ha come destinazione un'area di lavoro agente configurata e sovrascrive l'inferenza dalla
-  directory di lavoro corrente.
-- `update @owner/<slug>` aggiorna una singola Skill tracciata. Aggiungi `--global` per
-  destinare la directory Skills gestite condivisa invece dell'area di lavoro.
-- `update --all` aggiorna le installazioni ClawHub tracciate nell'area di lavoro selezionata, oppure
-  nella directory Skills gestite condivisa quando combinato con `--global`.
-- `verify @owner/<slug>` stampa per impostazione predefinita l'envelope JSON `clawhub.skill.verify.v1`
-  di ClawHub. Non esiste un flag `--json` perché JSON è già il
-  valore predefinito. Gli slug nudi restano accettati per compatibilità quando la Skill è
-  già installata o non ambigua, ma i riferimenti qualificati con owner evitano
-  ambiguità sul publisher.
-- Quando ClawHub restituisce la provenienza sorgente risolta dal server, il JSON di verifica include anche
-  un `openclaw.verifiedSourceUrl` fissato a commit. Gli URL sorgente non disponibili o
-  autodichiarati restano solo nell'envelope di provenienza grezzo e non vengono
-  promossi.
-- `verify` usa `.clawhub/origin.json` per le Skills ClawHub installate, quindi
-  verifica la versione installata rispetto al registro da cui proviene. `--version`
-  e `--tag` sovrascrivono il selettore di versione ma mantengono quel registro installato
-  quando esistono metadati di origine.
-- `verify --card` stampa il Markdown della Scheda Skill generata invece di JSON. Il
-  comando termina con codice diverso da zero quando ClawHub restituisce `ok: false` o `decision: "fail"`;
-  le firme non firmate sono informative salvo modifiche della policy ClawHub.
-- I bundle ClawHub installati possono includere un `skill-card.md` generato. OpenClaw
-  tratta la verifica come una decisione del server ClawHub e non rifiuta una
-  Skill installata solo perché quella scheda generata cambia il fingerprint del bundle.
-- `check --agent <id>` controlla l'area di lavoro dell'agente selezionato e segnala quali
-  Skills pronte sono effettivamente visibili al prompt o alla superficie di comando di quell'agente.
-- `list` è l'azione predefinita quando non viene fornito alcun sottocomando.
-- `list`, `info` e `check` scrivono il loro output renderizzato su stdout. Con
-  `--json`, questo significa che il payload leggibile da macchina resta su stdout per pipe
-  e script.
+| Flag/comportamento               | Descrizione                                                                                                                                                                                                                                                                                                                                 |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `search [query...]`              | Query facoltativa; omettila per consultare il feed di ricerca predefinito di ClawHub.                                                                                                                                                                                                                                                        |
+| `search --limit <n>`             | Limita il numero di risultati restituiti.                                                                                                                                                                                                                                                                                                    |
+| `install git:owner/repo[@ref]`   | Installa una Skill Git. I riferimenti ai rami possono contenere barre, ad esempio `git:owner/repo@feature/foo`.                                                                                                                                                                                                                               |
+| `install ./path/to/skill`        | Installa una directory locale la cui radice contiene `SKILL.md`.                                                                                                                                                                                                                                                                             |
+| `install --as <slug>`            | Sostituisce lo slug dedotto per le installazioni da Git e da directory locali.                                                                                                                                                                                                                                                               |
+| `install --version <version>`    | Si applica solo ai riferimenti delle Skills di ClawHub.                                                                                                                                                                                                                                                                                      |
+| `install --force`                | Sovrascrive una cartella di una Skill esistente nello spazio di lavoro con lo stesso slug.                                                                                                                                                                                                                                                   |
+| `install/update --force-install` | Installa una Skill di ClawHub basata su GitHub ancora in sospeso prima che la scansione di ClawHub sia completata.                                                                                                                                                                                                                            |
+| `--global`                       | Opera sulla directory condivisa delle Skills gestite; non può essere combinato con `--agent <id>`.                                                                                                                                                                                                                                           |
+| `--agent <id>`                   | Opera sullo spazio di lavoro di uno specifico agente configurato; ha la precedenza sulla deduzione dalla directory di lavoro corrente.                                                                                                                                                                                                       |
+| `update @owner/<slug>`           | Aggiorna una singola Skill monitorata. Aggiungi `--global` per operare sulla directory condivisa delle Skills gestite anziché sullo spazio di lavoro.                                                                                                                                                                                         |
+| `update --all`                   | Aggiorna le installazioni monitorate da ClawHub nello spazio di lavoro selezionato oppure, con `--global`, nella directory condivisa delle Skills gestite.                                                                                                                                                                                     |
+| `verify @owner/<slug>`           | Per impostazione predefinita, stampa l'involucro JSON `clawhub.skill.verify.v1` di ClawHub. Non esiste un flag `--json`, poiché JSON è già il formato predefinito. Per compatibilità sono accettati gli slug senza proprietario quando la Skill è già installata o non presenta ambiguità; i riferimenti con proprietario evitano ambiguità sull'editore. |
+| Provenienza di `verify`          | Quando ClawHub restituisce la provenienza dell'origine risolta dal server, il JSON di verifica include anche un `openclaw.verifiedSourceUrl` vincolato a uno specifico commit. Gli URL di origine non disponibili o autodichiarati restano esclusivamente nell'involucro grezzo della provenienza e non vengono promossi.                          |
+| Selettore di versione di `verify` | `verify` usa `.clawhub/origin.json` per le Skills di ClawHub installate, quindi verifica la versione installata rispetto al registro da cui proviene. `--version` e `--tag` sostituiscono il selettore di versione, ma mantengono il registro dell'installazione quando sono presenti i metadati di origine.                                    |
+| `verify --card`                  | Stampa il Markdown della scheda della Skill generata anziché il JSON. Termina con un codice diverso da zero quando ClawHub restituisce `ok: false` o `decision: "fail"`; le firme non sottoscritte hanno valore informativo, salvo modifiche ai criteri di ClawHub.                                                                                 |
+| Impronta della scheda della Skill | I pacchetti ClawHub installati possono includere un file `skill-card.md` generato. OpenClaw considera la verifica una decisione del server ClawHub e non rifiuta una Skill installata solo perché tale scheda generata modifica l'impronta del pacchetto.                                                                                         |
+| `check --agent <id>`             | Controlla lo spazio di lavoro dell'agente selezionato e indica quali Skills pronte sono effettivamente visibili nel prompt o nell'interfaccia dei comandi di tale agente.                                                                                                                                                                      |
+| `list`                           | Azione predefinita quando non viene specificato alcun sottocomando.                                                                                                                                                                                                                                                                          |
+| Output di `list`/`info`/`check`  | L'output visualizzato viene inviato a stdout. Con `--json`, il contenuto leggibile dalle macchine resta su stdout per pipe e script.                                                                                                                                                                                                           |
 
-## Workshop Skill
+Le installazioni e gli aggiornamenti delle Skills della community di ClawHub verificano l'affidabilità prima del download. Le versioni archiviate della community dotate di versione usano i metadati di affidabilità della versione esatta. Le Skills GitHub basate sul risolutore si affidano al risolutore di installazione di ClawHub per applicare i criteri di scansione e installazione forzata prima di restituire un commit fissato; usa `--force-install` per installare una Skill basata su GitHub ancora in sospeso prima del completamento della scansione. Le versioni della community dannose o bloccate vengono rifiutate. Le versioni della community rischiose richiedono una revisione e `--acknowledge-clawhub-risk` quando un comando non interattivo deve proseguire dopo tale revisione. Gli editori ufficiali delle Skills di ClawHub e le origini delle Skills incluse in OpenClaw ignorano questa richiesta di conferma dell'affidabilità della versione.
 
-`openclaw skills workshop` gestisce le proposte Skill in sospeso nell'area di lavoro
-selezionata. Le proposte non sono Skills attive finché non vengono applicate. Per l'archiviazione delle proposte,
-le salvaguardie sui file di supporto, i metodi Gateway e la policy di approvazione, vedi
-[Workshop Skill](/it/tools/skill-workshop).
+## Laboratorio delle Skills
+
+`openclaw skills workshop` gestisce le proposte di Skills in sospeso nello spazio di lavoro selezionato. Le proposte non diventano Skills attive finché non vengono applicate. Per l'archiviazione delle proposte, le misure di protezione dei file di supporto, i metodi del Gateway e i criteri di approvazione, consulta [Laboratorio delle Skills](/it/tools/skill-workshop).
 
 ```bash
 openclaw skills workshop propose-create \
@@ -173,7 +130,11 @@ openclaw skills workshop reject <proposal-id> --reason "Duplicate"
 openclaw skills workshop quarantine <proposal-id> --reason "Needs security review"
 ```
 
-## Correlato
+`propose-create`, `propose-update` e `revise` accettano anche `--goal <text>`
+e `--evidence <text>` per registrare la motivazione della proposta e le note
+di supporto insieme al contenuto di `--proposal`/`--proposal-dir`.
 
-- [Riferimento CLI](/it/cli)
+## Argomenti correlati
+
+- [Riferimento della CLI](/it/cli)
 - [Skills](/it/tools/skills)

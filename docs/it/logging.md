@@ -1,42 +1,45 @@
 ---
 read_when:
-    - Hai bisogno di una panoramica introduttiva del logging di OpenClaw
-    - Vuoi configurare livelli, formati o redazione dei log
+    - Hai bisogno di una panoramica dei log di OpenClaw adatta ai principianti
+    - Vuoi configurare i livelli, i formati o l'oscuramento dei log
     - Stai risolvendo un problema e devi trovare rapidamente i log
-summary: Registri file, output della console, monitoraggio della CLI e scheda Log dell'interfaccia di controllo
-title: Registrazione
+summary: Log su file, output della console, visualizzazione in tempo reale tramite CLI e scheda Log dell'interfaccia di controllo
+title: Registrazione eventi
 x-i18n:
-    generated_at: "2026-06-27T17:41:59Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:12:41Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: caf2780dfeeaf29f4ee94429894a03422b211a4414e63062642d1134f38b6b3f
+    source_hash: add41e125c22ca1b2343a3a1fb1e88e94ef9c81a07c48b9eb67f4d4b2510dd08
     source_path: logging.md
     workflow: 16
 ---
 
-OpenClaw ha due superfici di log principali:
+OpenClaw dispone di due superfici principali per i log:
 
 - **Log su file** (righe JSON) scritti dal Gateway.
-- **Output della console** mostrato nei terminali e nella UI di debug del Gateway.
+- **Output della console** nel terminale in cui è in esecuzione il Gateway.
 
-La scheda **Log** della UI di controllo segue in tempo reale il log su file del gateway. Questa pagina spiega dove
-si trovano i log, come leggerli e come configurare livelli e formati di log.
+La scheda **Log** dell'interfaccia di controllo segue in tempo reale il file di log del Gateway. Questa pagina spiega dove
+si trovano i log, come leggerli e come configurarne i livelli e i formati.
 
 ## Dove si trovano i log
 
-Per impostazione predefinita, il Gateway scrive un file di log a rotazione in:
+Per impostazione predefinita, il Gateway scrive un file di log giornaliero con rotazione:
 
 `/tmp/openclaw/openclaw-YYYY-MM-DD.log`
 
-La data usa il fuso orario locale dell'host del gateway.
+La data usa il fuso orario locale dell'host del Gateway. Quando `/tmp/openclaw` non è sicura
+o non è disponibile (e sempre in Windows), OpenClaw usa invece una directory
+`openclaw-<uid>` specifica dell'utente nella directory temporanea del sistema operativo. I file di log
+con data vengono eliminati dopo 24 ore.
 
-Ogni file ruota quando raggiunge `logging.maxFileBytes` (predefinito: 100 MB).
-OpenClaw conserva fino a cinque archivi numerati accanto al file attivo, come
-`openclaw-YYYY-MM-DD.1.log`, e continua a scrivere in un nuovo log attivo invece di
-sopprimere la diagnostica.
+Ogni file viene ruotato quando la scrittura successiva supererebbe `logging.maxFileBytes`
+(valore predefinito: 100 MB). OpenClaw conserva fino a cinque archivi numerati accanto al
+file attivo, ad esempio `openclaw-YYYY-MM-DD.1.log`, e continua a scrivere in un nuovo
+log attivo anziché sopprimere le informazioni diagnostiche.
 
-Puoi sovrascrivere questa impostazione in `~/.openclaw/openclaw.json`:
+Puoi sovrascrivere il percorso in `~/.openclaw/openclaw.json`:
 
 ```json
 {
@@ -48,58 +51,67 @@ Puoi sovrascrivere questa impostazione in `~/.openclaw/openclaw.json`:
 
 ## Come leggere i log
 
-### CLI: tail live (consigliato)
+### CLI: visualizzazione in tempo reale (consigliata)
 
-Usa la CLI per seguire in tempo reale il file di log del gateway tramite RPC:
+Segui in tempo reale il file di log del Gateway tramite RPC:
 
 ```bash
 openclaw logs --follow
 ```
 
-Opzioni correnti utili:
+Opzioni:
 
-- `--local-time`: visualizza i timestamp nel tuo fuso orario locale
-- `--url <url>` / `--token <token>` / `--timeout <ms>`: flag RPC standard del Gateway
-- `--expect-final`: flag di attesa della risposta finale RPC supportata da agente (accettato qui tramite il livello client condiviso)
+| Flag                | Valore predefinito | Comportamento                                                                                                           |
+| ------------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| `--follow`          | disattivato        | Continua a seguire il log; in caso di disconnessione si riconnette con attese progressive                              |
+| `--limit <n>`       | `200`              | Numero massimo di righe per recupero                                                                                    |
+| `--max-bytes <n>`   | `250000`           | Numero massimo di byte da leggere per recupero                                                                          |
+| `--interval <ms>`   | `1000`             | Intervallo di polling durante la visualizzazione in tempo reale                                                         |
+| `--json`            | disattivato        | JSON delimitato da righe (un evento per riga)                                                                           |
+| `--plain`           | disattivato        | Forza il testo normale nelle sessioni TTY                                                                                |
+| `--no-color`        | —                  | Disabilita i colori ANSI                                                                                                 |
+| `--utc`             | disattivato        | Mostra le marche temporali in UTC (per impostazione predefinita viene usata l'ora locale)                               |
+| `--local-time`      | disattivato        | Variante accettata per compatibilità dell'impostazione predefinita dell'ora locale; non produce altri effetti           |
+| `--url` / `--token` | —                  | Flag RPC standard del Gateway                                                                                           |
+| `--timeout <ms>`    | `30000`            | Timeout RPC del Gateway                                                                                                  |
+| `--expect-final`    | disattivato        | Flag di attesa della risposta finale RPC supportata da un agente (accettato qui tramite il livello client condiviso)    |
 
 Modalità di output:
 
-- **Sessioni TTY**: righe di log strutturate, leggibili e colorate.
-- **Sessioni non TTY**: testo semplice.
-- `--json`: JSON delimitato da righe (un evento di log per riga).
-- `--plain`: forza il testo semplice nelle sessioni TTY.
-- `--no-color`: disabilita i colori ANSI.
+- **Sessioni TTY**: righe di log strutturate, curate e colorate.
+- **Sessioni non TTY**: testo normale.
 
-Quando passi un `--url` esplicito, la CLI non applica automaticamente le
-credenziali di configurazione o di ambiente; includi tu `--token` se il Gateway di destinazione
-richiede autenticazione.
+Quando passi un `--url` esplicito, la CLI non applica automaticamente le credenziali
+della configurazione o dell'ambiente; specifica direttamente `--token`, altrimenti la chiamata non riesce con
+`gateway url override requires explicit credentials`.
 
-In modalità JSON, la CLI emette oggetti contrassegnati da `type`:
+In modalità JSON, la CLI emette oggetti contrassegnati tramite `type`:
 
-- `meta`: metadati del flusso (file, cursore, dimensione)
+- `meta`: metadati del flusso (file, origine, tipo di origine, servizio, cursore, dimensione)
 - `log`: voce di log analizzata
-- `notice`: suggerimenti di troncamento / rotazione
+- `notice`: indicazioni su troncamento o rotazione
 - `raw`: riga di log non analizzata
+- `error`: errori di connessione al Gateway (scritti su stderr)
 
-Se il Gateway local loopback implicito richiede l'abbinamento, chiude durante la connessione
-o va in timeout prima che `logs.tail` risponda, `openclaw logs` ripiega automaticamente sul
-log su file del Gateway configurato. Le destinazioni `--url` esplicite non usano
-questo fallback. `openclaw logs --follow` è più rigoroso: su Linux usa il journal Gateway
-user-systemd attivo per PID quando disponibile, altrimenti continua a ritentare
-il Gateway live invece di seguire un file affiancato potenzialmente obsoleto.
+Se il Gateway local loopback implicito richiede l'associazione, chiude la connessione durante il collegamento
+o scade prima che `logs.tail` risponda, `openclaw logs` ripiega automaticamente sul
+file di log del Gateway configurato. Le destinazioni `--url` esplicite non usano
+questo ripiego. `openclaw logs --follow` è più rigoroso: su Linux usa il journal del Gateway
+systemd dell'utente attivo in base al PID, quando disponibile, altrimenti riprova a connettersi al
+Gateway attivo con attese progressive, anziché seguire un file affiancato potenzialmente obsoleto.
 
-Se il Gateway non è raggiungibile, la CLI stampa un breve suggerimento per eseguire:
+Se il Gateway non è raggiungibile, la CLI mostra un breve suggerimento per eseguire:
 
 ```bash
 openclaw doctor
 ```
 
-### UI di controllo (web)
+### Interfaccia di controllo (web)
 
-La scheda **Log** della UI di controllo segue in tempo reale lo stesso file usando `logs.tail`.
-Vedi [UI di controllo](/it/web/control-ui) per sapere come aprirla.
+La scheda **Log** dell'interfaccia di controllo segue in tempo reale lo stesso file tramite `logs.tail`.
+Consulta [Interfaccia di controllo](/it/web/control-ui) per sapere come aprirla.
 
-### Log solo canale
+### Log relativi a un solo canale
 
 Per filtrare l'attività dei canali (WhatsApp/Telegram/ecc.), usa:
 
@@ -107,47 +119,49 @@ Per filtrare l'attività dei canali (WhatsApp/Telegram/ecc.), usa:
 openclaw channels logs --channel whatsapp
 ```
 
+Il valore predefinito di `--channel` è `all`; sono disponibili anche `--lines <n>` (valore predefinito: 200) e `--json`.
+
 ## Formati dei log
 
 ### Log su file (JSONL)
 
-Ogni riga nel file di log è un oggetto JSON. La CLI e la UI di controllo analizzano queste
-voci per visualizzare un output strutturato (ora, livello, sottosistema, messaggio).
+Ogni riga del file di log è un oggetto JSON. La CLI e l'interfaccia di controllo analizzano queste
+voci per mostrare un output strutturato (ora, livello, sottosistema, messaggio).
 
-I record JSONL dei log su file includono anche campi di primo livello filtrabili dalla macchina quando
-disponibili:
+Quando disponibili, i record JSONL dei log su file includono anche campi di primo livello
+filtrabili automaticamente:
 
-- `hostname`: nome host del gateway.
-- `message`: testo del messaggio di log appiattito per la ricerca full-text.
-- `agent_id`: id dell'agente attivo quando la chiamata di log trasporta il contesto dell'agente.
-- `session_id`: id/chiave della sessione attiva quando la chiamata di log trasporta il contesto della sessione.
-- `channel`: canale attivo quando la chiamata di log trasporta il contesto del canale.
+- `hostname`: nome dell'host del Gateway.
+- `message`: testo appiattito del messaggio di log per la ricerca full-text.
+- `agent_id`: ID dell'agente attivo quando la chiamata di log include il contesto dell'agente.
+- `session_id`: ID/chiave della sessione attiva quando la chiamata di log include il contesto della sessione.
+- `channel`: canale attivo quando la chiamata di log include il contesto del canale.
 
-OpenClaw preserva gli argomenti originali del log strutturato accanto a questi campi
-così i parser esistenti che leggono le chiavi numerate degli argomenti tslog continuano a funzionare.
+OpenClaw conserva gli argomenti strutturati originali del log insieme a questi campi,
+in modo che i parser esistenti che leggono le chiavi numerate degli argomenti tslog continuino a funzionare.
 
-Le attività di conversazione, voce in tempo reale e stanze gestite emettono record di log
-di ciclo di vita limitati attraverso questa stessa pipeline di log su file. Questi record includono tipo di evento,
-modalità, trasporto, provider e misure di dimensione/temporizzazione quando disponibili, ma omettono
-testo della trascrizione, payload audio, id dei turni, id delle chiamate e id degli elementi del provider.
+Le attività di conversazione, voce in tempo reale e stanze gestite generano record di log
+del ciclo di vita con dimensioni limitate attraverso la stessa pipeline dei log su file. Questi record includono il tipo di evento,
+la modalità, il trasporto, il provider e, quando disponibili, le misurazioni di dimensioni e tempi, ma omettono
+il testo della trascrizione, i payload audio, gli ID dei turni, gli ID delle chiamate e gli ID degli elementi del provider.
 
 ### Output della console
 
-I log della console sono **consapevoli del TTY** e formattati per la leggibilità:
+I log della console sono **compatibili con il contesto TTY** e formattati per facilitarne la lettura:
 
 - Prefissi dei sottosistemi (ad es. `gateway/channels/whatsapp`)
-- Colorazione del livello (info/warn/error)
-- Modalità compatta o JSON opzionale
+- Colorazione dei livelli (informazioni/avvisi/errori)
+- Modalità compatta o JSON facoltativa
 
 La formattazione della console è controllata da `logging.consoleStyle`.
 
 ### Log WebSocket del Gateway
 
-`openclaw gateway` dispone anche di logging del protocollo WebSocket per il traffico RPC:
+`openclaw gateway` dispone inoltre della registrazione del protocollo WebSocket per il traffico RPC:
 
-- modalità normale: solo risultati interessanti (errori, errori di analisi, chiamate lente)
-- `--verbose`: tutto il traffico richiesta/risposta
-- `--ws-log auto|compact|full`: sceglie lo stile di rendering dettagliato
+- modalità normale: solo risultati rilevanti (errori, errori di analisi, chiamate lente)
+- `--verbose`: tutto il traffico di richieste e risposte
+- `--ws-log auto|compact|full`: seleziona lo stile di visualizzazione dettagliata
 - `--compact`: alias di `--ws-log compact`
 
 Esempi:
@@ -158,9 +172,9 @@ openclaw gateway --verbose --ws-log compact
 openclaw gateway --verbose --ws-log full
 ```
 
-## Configurare il logging
+## Configurazione dei log
 
-Tutta la configurazione del logging si trova sotto `logging` in `~/.openclaw/openclaw.json`.
+Tutta la configurazione dei log si trova sotto `logging` in `~/.openclaw/openclaw.json`.
 
 ```json
 {
@@ -177,18 +191,20 @@ Tutta la configurazione del logging si trova sotto `logging` in `~/.openclaw/ope
 
 ### Livelli di log
 
-- `logging.level`: livello dei **log su file** (JSONL).
-- `logging.consoleLevel`: livello di verbosità della **console**.
+Livelli: `silent`, `fatal`, `error`, `warn`, `info`, `debug`, `trace`.
 
-Puoi sovrascriverli entrambi tramite la variabile di ambiente **`OPENCLAW_LOG_LEVEL`** (ad es. `OPENCLAW_LOG_LEVEL=debug`). La variabile di ambiente ha precedenza sul file di configurazione, quindi puoi aumentare la verbosità per una singola esecuzione senza modificare `openclaw.json`. Puoi anche passare l'opzione globale della CLI **`--log-level <level>`** (per esempio, `openclaw --log-level debug gateway run`), che sovrascrive la variabile di ambiente per quel comando.
+- `logging.level`: livello dei **log su file** (JSONL) (valore predefinito: `info`).
+- `logging.consoleLevel`: livello di dettaglio della **console**.
 
-`--verbose` influisce solo sull'output della console e sulla verbosità dei log WS; non modifica
+Puoi sovrascriverli entrambi tramite la variabile di ambiente **`OPENCLAW_LOG_LEVEL`** (ad es. `OPENCLAW_LOG_LEVEL=debug`). La variabile di ambiente ha la precedenza sul file di configurazione, quindi puoi aumentare il livello di dettaglio per una singola esecuzione senza modificare `openclaw.json`. Puoi anche passare l'opzione CLI globale **`--log-level <level>`** (ad esempio, `openclaw --log-level debug gateway run`), che per quel comando sovrascrive la variabile di ambiente.
+
+`--verbose` influisce solo sull'output della console e sul livello di dettaglio dei log WS; non modifica
 i livelli dei log su file.
 
 ### Diagnostica mirata del trasporto del modello
 
-Quando esegui il debug delle chiamate ai provider, usa flag di ambiente mirati invece di impostare
-tutti i log su `debug`:
+Durante il debug delle chiamate al provider, usa flag di ambiente mirati anziché aumentare
+tutti i log al livello `debug`:
 
 ```bash
 OPENCLAW_DEBUG_MODEL_TRANSPORT=1 openclaw gateway
@@ -197,142 +213,144 @@ OPENCLAW_DEBUG_MODEL_PAYLOAD=tools OPENCLAW_DEBUG_SSE=events openclaw gateway
 
 Flag disponibili:
 
-- `OPENCLAW_DEBUG_MODEL_TRANSPORT=1`: emette avvio richiesta, risposta fetch, intestazioni SDK,
-  primo evento di streaming, completamento dello stream ed errori di trasporto al livello
-  `info`.
-- `OPENCLAW_DEBUG_MODEL_PAYLOAD=summary`: include un riepilogo limitato del payload della richiesta
-  nei log delle richieste al modello.
-- `OPENCLAW_DEBUG_MODEL_PAYLOAD=tools`: include tutti i nomi degli strumenti visibili al modello nel
-  riepilogo del payload.
-- `OPENCLAW_DEBUG_MODEL_PAYLOAD=full-redacted`: include uno snapshot JSON redatto e limitato del
-  payload. Usalo solo durante il debug; i segreti vengono redatti ma prompt
-  e testo dei messaggi potrebbero essere ancora presenti.
-- `OPENCLAW_DEBUG_SSE=events`: emette le tempistiche del primo evento e del completamento dello stream.
-- `OPENCLAW_DEBUG_SSE=peek`: emette anche i primi cinque payload degli eventi SSE redatti,
-  limitati per evento.
-- `OPENCLAW_DEBUG_CODE_MODE=1`: emette diagnostica della superficie del modello in modalità codice,
-  incluso quando gli strumenti nativi del provider sono nascosti perché la modalità codice possiede la
+- `OPENCLAW_DEBUG_MODEL_TRANSPORT=1`: registra l'avvio della richiesta, la risposta del recupero, le intestazioni
+  dell'SDK, il primo evento di streaming, il completamento del flusso e gli errori di trasporto al
+  livello `info`.
+- `OPENCLAW_DEBUG_MODEL_PAYLOAD=summary`: include nei log delle richieste al modello un riepilogo
+  di dimensioni limitate del payload della richiesta.
+- `OPENCLAW_DEBUG_MODEL_PAYLOAD=tools`: include nel riepilogo del payload tutti i nomi degli strumenti
+  esposti al modello.
+- `OPENCLAW_DEBUG_MODEL_PAYLOAD=full-redacted`: include un'istantanea JSON oscurata e di dimensioni
+  limitate del payload. Usala solo durante il debug; i segreti vengono oscurati, ma i prompt
+  e il testo dei messaggi potrebbero essere ancora presenti.
+- `OPENCLAW_DEBUG_SSE=events`: registra i tempi del primo evento e del completamento del flusso.
+- `OPENCLAW_DEBUG_SSE=peek`: registra anche i primi cinque payload oscurati degli eventi SSE,
+  con dimensioni limitate per evento.
+- `OPENCLAW_DEBUG_CODE_MODE=1`: registra le informazioni diagnostiche della superficie del modello in modalità codice,
+  anche quando gli strumenti nativi del provider vengono nascosti perché la modalità codice gestisce la
   superficie degli strumenti.
 
-Questi flag scrivono tramite il normale logging di OpenClaw, quindi `openclaw logs --follow`
-e la scheda Log della UI di controllo li mostrano. Senza i flag, la stessa diagnostica
-rimane disponibile al livello `debug`.
+Questi flag registrano gli eventi tramite il normale sistema di log di OpenClaw, quindi `openclaw logs --follow`
+e la scheda Log dell'interfaccia di controllo li mostrano. Senza i flag, le stesse informazioni diagnostiche
+rimangono disponibili al livello `debug`.
 
-I metadati di avvio e risposta `[model-fetch]` (provider, API, modello, stato,
-latenza e campi della richiesta come metodo, URL, timeout, proxy e policy)
-sono sempre emessi al livello `info` indipendentemente da
-`OPENCLAW_DEBUG_MODEL_TRANSPORT`, quindi l'igiene di base del trasporto del modello è visibile
+I metadati di avvio e risposta di `[model-fetch]` (provider, API, modello, stato,
+latenza e campi della richiesta come metodo, URL, timeout, proxy e criterio)
+vengono sempre registrati al livello `info`, indipendentemente da
+`OPENCLAW_DEBUG_MODEL_TRANSPORT`, affinché le informazioni essenziali sul trasporto del modello siano visibili
 senza flag di debug.
 
 ### Correlazione delle tracce
 
-I log su file sono JSONL. Quando una chiamata di log trasporta un contesto di traccia diagnostica valido,
+I log su file sono in formato JSONL. Quando una chiamata di log include un contesto valido di traccia diagnostica,
 OpenClaw scrive i campi di traccia come chiavi JSON di primo livello (`traceId`, `spanId`,
-`parentSpanId`, `traceFlags`) così i processori di log esterni possono correlare la riga
-con span OTEL e propagazione `traceparent` del provider.
+`parentSpanId`, `traceFlags`), affinché i processori esterni dei log possano correlare la riga
+con gli span OTEL e la propagazione di `traceparent` del provider.
 
-Le richieste HTTP del Gateway e i frame WebSocket del Gateway stabiliscono un ambito di traccia
-richiesta interno. I log e gli eventi diagnostici emessi dentro quell'ambito async ereditano
-la traccia della richiesta quando non passano un contesto di traccia esplicito. Le tracce di esecuzione agente e
-di chiamata modello diventano figlie della traccia richiesta attiva, così log locali,
-snapshot diagnostici, span OTEL e intestazioni `traceparent` del provider attendibili possono
-essere uniti tramite `traceId` senza registrare contenuto grezzo della richiesta o del modello.
+Le richieste HTTP e i frame WebSocket del Gateway stabiliscono un ambito interno di traccia della richiesta.
+I log e gli eventi diagnostici generati in tale ambito asincrono ereditano
+la traccia della richiesta quando non passano un contesto di traccia esplicito. Le tracce delle esecuzioni degli agenti e
+delle chiamate al modello diventano figlie della traccia della richiesta attiva, quindi i log locali,
+le istantanee diagnostiche, gli span OTEL e le intestazioni `traceparent` attendibili del provider possono
+essere collegati tramite `traceId` senza registrare il contenuto non elaborato delle richieste o del modello.
 
-Anche i record di log del ciclo di vita delle conversazioni fluiscono all'esportazione log diagnostics-otel quando
-l'esportazione log OpenTelemetry è abilitata, usando gli stessi attributi limitati dei log su file.
-Configura `diagnostics.otel.logsExporter` per scegliere OTLP, stdout JSONL o
-entrambi i sink.
+Anche i record di log del ciclo di vita delle conversazioni vengono inviati all'esportazione dei log diagnostics-otel quando
+l'esportazione dei log OpenTelemetry è abilitata, usando gli stessi attributi limitati dei log su
+file. Configura `diagnostics.otel.logsExporter` per scegliere OTLP, JSONL su stdout o
+entrambe le destinazioni.
 
-### Dimensione e temporizzazione delle chiamate al modello
+### Dimensioni e tempi delle chiamate al modello
 
-La diagnostica delle chiamate al modello registra misure limitate di richiesta/risposta senza
-catturare contenuto grezzo del prompt o della risposta:
+La diagnostica delle chiamate al modello registra misurazioni limitate di richieste e risposte senza
+acquisire il contenuto non elaborato del prompt o della risposta:
 
 - `requestPayloadBytes`: dimensione in byte UTF-8 del payload finale della richiesta al modello
-- `responseStreamBytes`: dimensione in byte UTF-8 dei payload dei chunk di risposta del modello in streaming.
-  Gli eventi ad alta frequenza di testo, ragionamento e delta delle chiamate agli strumenti contano
-  solo i byte incrementali `delta` invece degli snapshot `partial` completi.
+- `responseStreamBytes`: dimensione in byte UTF-8 dei payload dei frammenti della risposta del modello
+  trasmessa in streaming. Gli eventi ad alta frequenza relativi a testo, ragionamento e variazioni delle chiamate agli strumenti conteggiano
+  solo i byte incrementali di `delta` anziché le istantanee `partial` complete.
 - `timeToFirstByteMs`: tempo trascorso prima del primo evento di risposta in streaming
 - `durationMs`: durata totale della chiamata al modello
 
-Questi campi sono disponibili per snapshot diagnostici, hook Plugin delle chiamate al modello e
-span/metriche OTEL delle chiamate al modello quando l'esportazione diagnostica è abilitata.
+Questi campi sono disponibili per le istantanee diagnostiche, gli hook dei Plugin per le chiamate al modello e
+gli span/le metriche OTEL delle chiamate al modello quando l'esportazione della diagnostica è abilitata.
 
 ### Stili della console
 
 `logging.consoleStyle`:
 
-- `pretty`: leggibile per gli esseri umani, colorato, con timestamp.
+- `pretty`: facile da leggere, colorato e con marche temporali.
 - `compact`: output più conciso (ideale per sessioni lunghe).
-- `json`: JSON per riga (per processori di log).
+- `json`: un oggetto JSON per riga (per i processori di log).
 
-### Redazione
+### Oscuramento
 
-OpenClaw può redigere token sensibili prima che raggiungano l'output della console, i log su file,
-i record di log OTLP, il testo persistito delle trascrizioni di sessione o i payload degli eventi
-strumento della UI di controllo (argomenti di avvio strumento, payload di risultato parziale/finale, output
-exec derivato e riepiloghi delle patch):
+OpenClaw può oscurare i token sensibili prima che raggiungano l'output della console, i log su file,
+i record di log OTLP, il testo persistente delle trascrizioni delle sessioni o i payload degli eventi degli strumenti
+dell'interfaccia di controllo (argomenti di avvio degli strumenti, payload dei risultati parziali/finali, output
+derivato dell'esecuzione e riepiloghi delle patch):
 
-- `logging.redactSensitive`: `off` | `tools` (predefinito: `tools`)
-- `logging.redactPatterns`: elenco di stringhe regex per sovrascrivere l'insieme predefinito. I pattern personalizzati si applicano sopra i valori predefiniti integrati per i payload degli strumenti della UI di controllo, quindi aggiungere un pattern non indebolisce mai la redazione dei valori già intercettati dai predefiniti.
+- `logging.redactSensitive`: `off` | `tools` (valore predefinito: `tools`)
+- `logging.redactPatterns`: elenco di stringhe di espressioni regolari che sostituisce l'insieme predefinito per l'output dei log/delle trascrizioni. Per i payload degli strumenti dell'interfaccia di controllo, i modelli personalizzati si applicano in aggiunta a quelli predefiniti integrati, quindi l'aggiunta di un modello non riduce mai l'oscuramento dei valori già rilevati dai modelli predefiniti.
 
-I log su file e le trascrizioni di sessione restano JSONL, ma i valori segreti corrispondenti vengono
-mascherati prima che la riga o il messaggio venga scritto su disco. La redazione è best-effort:
-si applica ai contenuti dei messaggi che portano testo e alle stringhe di log, non a ogni
+I log su file e le trascrizioni delle sessioni rimangono in formato JSONL, ma i valori segreti corrispondenti vengono
+mascherati prima che la riga o il messaggio vengano scritti su disco. L'oscuramento avviene secondo il principio del massimo impegno:
+si applica al contenuto testuale dei messaggi e alle stringhe di log, non a ogni
 identificatore o campo di payload binario.
 
-I valori predefiniti integrati coprono credenziali API comuni e nomi di campi di credenziali di pagamento
-come numero di carta, CVC/CVV, token di pagamento condiviso e credenziale di pagamento
-quando appaiono come campi JSON, parametri URL, flag CLI o assegnazioni.
+Le impostazioni predefinite integrate coprono le comuni credenziali API e i nomi
+dei campi delle credenziali di pagamento, come numero della carta, CVC/CVV, token
+di pagamento condiviso e credenziale di pagamento, quando compaiono come campi
+JSON, parametri URL, flag della CLI o assegnazioni.
 
-`logging.redactSensitive: "off"` disabilita solo questa policy generale di log/trascrizione.
-OpenClaw redige comunque i payload del perimetro di sicurezza che possono essere mostrati a client UI,
-bundle di supporto, osservatori diagnostici, prompt di approvazione o strumenti agente.
-Esempi includono eventi di chiamata strumento della UI di controllo, output `sessions_history`,
-esportazioni di supporto diagnostico, osservazioni di errori dei provider, visualizzazione dei comandi di approvazione exec
-e log del protocollo WebSocket del Gateway. `logging.redactPatterns` personalizzati
-possono comunque aggiungere pattern specifici del progetto su quelle superfici.
+`logging.redactSensitive: "off"` disabilita solo questa policy generale per
+log/trascrizioni. OpenClaw continua a oscurare i payload dei confini di sicurezza
+che possono essere mostrati ai client dell'interfaccia utente, nei pacchetti di
+supporto, agli osservatori diagnostici, nelle richieste di approvazione o agli
+strumenti degli agenti. Alcuni esempi sono gli eventi di chiamata agli strumenti
+della Control UI, l'output di `sessions_history`, le esportazioni diagnostiche per
+il supporto, le osservazioni degli errori dei provider, la visualizzazione dei
+comandi per l'approvazione dell'esecuzione e i log del protocollo WebSocket del
+Gateway. I valori personalizzati di `logging.redactPatterns` possono comunque
+aggiungere schemi specifici del progetto a queste superfici.
 
 ## Diagnostica e OpenTelemetry
 
-La diagnostica è composta da eventi strutturati e leggibili dalla macchina per esecuzioni di modelli e
-telemetria del flusso dei messaggi (webhook, accodamento, stato della sessione). **Non**
-sostituisce i log: alimenta metriche, tracce ed esportatori. Gli eventi sono emessi
-in-process indipendentemente dal fatto che tu li esporti o meno.
+La diagnostica è costituita da eventi strutturati e leggibili dalle macchine per
+le esecuzioni dei modelli e la telemetria del flusso dei messaggi (webhook,
+accodamento, stato della sessione). **Non** sostituisce i log: alimenta metriche,
+tracce ed esportatori. Per impostazione predefinita, gli eventi vengono emessi
+all'interno del processo (impostare `diagnostics.enabled: false` per
+disattivarli); la loro esportazione è separata.
 
 Due superfici adiacenti:
 
-- **Esportazione OpenTelemetry** — invia metriche, tracce e log tramite OTLP/HTTP a
-  qualsiasi collector o backend compatibile con OpenTelemetry (Grafana, Datadog,
-  Honeycomb, New Relic, Tempo, ecc.). La configurazione completa, il catalogo dei segnali,
-  i nomi di metriche/span, le variabili di ambiente e il modello di privacy sono su una pagina dedicata:
+- **Esportazione OpenTelemetry** — invia metriche, tracce e log tramite OTLP/HTTP
+  a qualsiasi raccoglitore o backend compatibile con OpenTelemetry (Datadog,
+  Grafana, Honeycomb, New Relic, Tempo e così via). La configurazione completa,
+  il catalogo dei segnali, i nomi di metriche/intervalli, le variabili di
+  ambiente e il modello di privacy sono disponibili in una pagina dedicata:
   [Esportazione OpenTelemetry](/it/gateway/opentelemetry).
-- **Flag di diagnostica** — flag di log di debug mirati che instradano log extra a
-  `logging.file` senza aumentare `logging.level`. I flag non distinguono tra maiuscole e minuscole
-  e supportano caratteri jolly (`telegram.*`, `*`). Configura in `diagnostics.flags`
-  o tramite l'override env `OPENCLAW_DIAGNOSTICS=...`. Guida completa:
-  [Flag di diagnostica](/it/diagnostics/flags).
+- **Flag di diagnostica** — flag mirati per i log di debug che indirizzano log
+  aggiuntivi a `logging.file` senza aumentare `logging.level`. I flag non
+  distinguono tra maiuscole e minuscole e supportano i caratteri jolly
+  (`telegram.*`, `*`). Configurali in `diagnostics.flags` oppure tramite la
+  sostituzione della variabile di ambiente `OPENCLAW_DIAGNOSTICS=...`. Guida
+  completa: [Flag di diagnostica](/it/diagnostics/flags).
 
-Per abilitare gli eventi diagnostici per Plugin o sink personalizzati senza esportazione OTLP:
-
-```json5
-{
-  diagnostics: { enabled: true },
-}
-```
-
-Per l’esportazione OTLP verso un collector, vedi [esportazione OpenTelemetry](/it/gateway/opentelemetry).
+Per l'esportazione OTLP verso un raccoglitore, consulta
+[Esportazione OpenTelemetry](/it/gateway/opentelemetry).
 
 ## Suggerimenti per la risoluzione dei problemi
 
 - **Gateway non raggiungibile?** Esegui prima `openclaw doctor`.
-- **Log vuoti?** Controlla che il Gateway sia in esecuzione e stia scrivendo nel percorso file
-  in `logging.file`.
-- **Serve più dettaglio?** Imposta `logging.level` su `debug` o `trace` e riprova.
+- **Log vuoti?** Verifica che il Gateway sia in esecuzione e scriva nel percorso
+  del file specificato in `logging.file`.
+- **Servono maggiori dettagli?** Imposta `logging.level` su `debug` o `trace` e
+  riprova.
 
-## Correlati
+## Contenuti correlati
 
-- [Esportazione OpenTelemetry](/it/gateway/opentelemetry) — esportazione OTLP/HTTP, catalogo di metriche/span, modello di privacy
-- [Flag di diagnostica](/it/diagnostics/flags) — flag mirati per log di debug
-- [Interni di logging del Gateway](/it/gateway/logging) — stili di log WS, prefissi dei sottosistemi e acquisizione della console
+- [Esportazione OpenTelemetry](/it/gateway/opentelemetry) — esportazione OTLP/HTTP, catalogo di metriche/intervalli, modello di privacy
+- [Flag di diagnostica](/it/diagnostics/flags) — flag mirati per i log di debug
+- [Meccanismi interni di registrazione del Gateway](/it/gateway/logging) — stili dei log WS, prefissi dei sottosistemi e acquisizione della console
 - [Riferimento della configurazione](/it/gateway/configuration-reference#diagnostics) — riferimento completo dei campi `diagnostics.*`

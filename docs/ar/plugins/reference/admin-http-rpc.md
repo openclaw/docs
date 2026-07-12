@@ -1,11 +1,11 @@
 ---
 read_when:
-    - أنت تثبّت أو تضبط أو تدقق Plugin admin-http-rpc
-summary: نقطة نهاية HTTP RPC الخاصة بإدارة OpenClaw.
-title: Plugin إدارة Http Rpc
+    - أنت تثبّت Plugin ‏admin-http-rpc أو تهيّئه أو تدقّق فيه
+summary: نقطة نهاية RPC الإدارية لـ OpenClaw عبر HTTP.
+title: Plugin استدعاء الإجراءات عن بُعد عبر HTTP للإدارة
 x-i18n:
-    generated_at: "2026-06-27T18:09:55Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:19:27Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 58909f4c97bfacc22d3a597939ff8724ec111995841822962c66305140aef4ba
@@ -13,16 +13,16 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin RPC HTTP الخاص بالإدارة
+# Plugin ‏RPC إداري عبر HTTP
 
-نقطة نهاية RPC عبر HTTP لإدارة OpenClaw.
+نقطة نهاية RPC إدارية عبر HTTP في OpenClaw.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/admin-http-rpc`
-- مسار التثبيت: مضمن في OpenClaw
+- مسار التثبيت: مضمنة في OpenClaw
 
-## السطح
+## الواجهة
 
 العقود: gatewayMethodDispatch
 

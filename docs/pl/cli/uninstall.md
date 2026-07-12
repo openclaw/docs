@@ -1,35 +1,41 @@
 ---
 read_when:
     - Chcesz usunąć usługę Gateway i/lub stan lokalny
-    - Chcesz najpierw próbę na sucho
-summary: Dokumentacja referencyjna CLI dla `openclaw uninstall` (usuń usługę Gateway + dane lokalne)
+    - Najpierw chcesz wykonać przebieg próbny
+summary: Dokumentacja CLI dla `openclaw uninstall` (usunięcie usługi Gateway i danych lokalnych)
 title: Odinstalowanie
 x-i18n:
-    generated_at: "2026-06-27T17:24:11Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:03:28Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f90fa8cf513e2e8cd422c3b8a880e7fd20fb71131a3ec88260e765daa2ace543
+    source_hash: 1e2e3996cf6d5c0fd11e5054c8fe60f7f8d25047193bb13944ca170bf77b581a
     source_path: cli/uninstall.md
     workflow: 16
 ---
 
 # `openclaw uninstall`
 
-Odinstaluj usługę Gateway + dane lokalne (CLI pozostaje).
+Odinstalowuje usługę Gateway i/lub usuwa dane lokalne. Sam interfejs CLI nie
+jest usuwany; należy odinstalować go osobno za pomocą npm/pnpm.
 
-Opcje:
+## Opcje
 
-- `--service`: usuń usługę Gateway
-- `--state`: usuń stan i konfigurację
-- `--workspace`: usuń katalogi przestrzeni roboczych
-- `--app`: usuń aplikację macOS
-- `--all`: usuń usługę, stan, przestrzeń roboczą i aplikację
-- `--yes`: pomiń prośby o potwierdzenie
-- `--non-interactive`: wyłącz monity; wymaga `--yes`
-- `--dry-run`: wypisz działania bez usuwania plików
+| Flaga               | Domyślnie | Opis                                                   |
+| ------------------- | --------- | ------------------------------------------------------ |
+| `--service`         | `false`   | Usuwa usługę Gateway.                                  |
+| `--state`           | `false`   | Usuwa stan i konfigurację.                             |
+| `--workspace`       | `false`   | Usuwa katalogi obszarów roboczych.                     |
+| `--app`             | `false`   | Usuwa aplikację dla systemu macOS.                     |
+| `--all`             | `false`   | Skrót dla `--service --state --workspace --app`.       |
+| `--yes`             | `false`   | Pomija monity o potwierdzenie.                         |
+| `--non-interactive` | `false`   | Wyłącza monity; wymaga opcji `--yes`.                  |
+| `--dry-run`         | `false`   | Wyświetla planowane działania bez usuwania plików.     |
 
-Przykłady:
+Jeśli nie podano flag określających zakres, interaktywna lista wielokrotnego wyboru
+umożliwia wskazanie komponentów do usunięcia (domyślnie wstępnie wybrane są usługa, stan i obszar roboczy).
+
+## Przykłady
 
 ```bash
 openclaw backup create
@@ -40,14 +46,14 @@ openclaw uninstall --all --yes
 openclaw uninstall --dry-run
 ```
 
-Uwagi:
+## Uwagi
 
-- Najpierw uruchom `openclaw backup create`, jeśli chcesz mieć możliwą do przywrócenia migawkę przed usunięciem stanu lub przestrzeni roboczych.
-- `--state` zachowuje skonfigurowane katalogi przestrzeni roboczych, chyba że wybrano też `--workspace`.
-- `--all` to skrót do jednoczesnego usunięcia usługi, stanu, przestrzeni roboczej i aplikacji.
-- `--non-interactive` wymaga `--yes`.
+- Przed usunięciem stanu lub obszarów roboczych należy najpierw uruchomić
+  `openclaw backup create`, aby utworzyć migawkę umożliwiającą przywrócenie danych.
+- Opcja `--state` zachowuje skonfigurowane katalogi obszarów roboczych, chyba że
+  wybrano również opcję `--workspace`.
 
 ## Powiązane
 
 - [Dokumentacja CLI](/pl/cli)
-- [Odinstalowanie](/pl/install/uninstall)
+- [Odinstalowywanie](/pl/install/uninstall)

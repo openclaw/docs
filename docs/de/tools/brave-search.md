@@ -1,14 +1,13 @@
 ---
 read_when:
-    - Sie möchten Brave Search für web_search verwenden
-    - Sie benötigen einen BRAVE_API_KEY oder Tarifdetails
+    - Sie möchten Brave Search für `web_search` verwenden
+    - Sie benötigen einen BRAVE_API_KEY oder Tarifdetails.
 summary: Einrichtung der Brave Search API für web_search
 title: Brave-Suche
 x-i18n:
-    generated_at: "2026-07-12T15:55:35Z"
+    generated_at: "2026-07-12T02:11:51Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 35e4bc2d24769f25cac79c36607e1dfe2c6ca2078715edfaed92add070817e46
     source_path: tools/brave-search.md
@@ -52,17 +51,17 @@ OpenClaw unterstützt die Brave Search API als `web_search`-Provider.
 }
 ```
 
-Provider-spezifische Einstellungen für die Brave-Suche befinden sich unter `plugins.entries.brave.config.webSearch.*`; dies ist der kanonische Konfigurationspfad. Ein gemeinsames `tools.web.search.apiKey` auf oberster Ebene und ein bereichsspezifisches `tools.web.search.brave.*` werden weiterhin über eine Kompatibilitätszusammenführung geladen, neue Konfigurationen sollten jedoch den oben angegebenen Plugin-spezifischen Pfad verwenden.
+Provider-spezifische Einstellungen für die Brave-Suche befinden sich unter `plugins.entries.brave.config.webSearch.*`; dies ist der kanonische Konfigurationspfad. Ein gemeinsam genutztes `tools.web.search.apiKey` auf oberster Ebene und ein bereichsspezifisches `tools.web.search.brave.*` werden weiterhin über eine Kompatibilitätszusammenführung geladen, neue Konfigurationen sollten jedoch den oben genannten Plugin-spezifischen Pfad verwenden.
 
-`webSearch.mode` steuert die Brave-Übertragung:
+`webSearch.mode` steuert den Brave-Transport:
 
-- `web` (Standard): normale Brave-Websuche mit Titeln, URLs und Textausschnitten
+- `web` (Standard): normale Brave-Websuche mit Titeln, URLs und Auszügen
 - `llm-context`: Brave LLM Context API mit vorab extrahierten Textabschnitten und Quellen zur Fundierung
 
 `webSearch.baseUrl` kann Brave-Anfragen an einen vertrauenswürdigen, Brave-kompatiblen Proxy
-oder ein Gateway leiten. OpenClaw hängt `/res/v1/web/search` oder `/res/v1/llm/context` an
-die konfigurierte Basis-URL an und nimmt die Basis-URL in den Cache-Schlüssel auf. Öffentliche
-Endpunkte müssen `https://` verwenden; `http://` wird nur für vertrauenswürdige Loopback-
+oder ein Gateway weiterleiten. OpenClaw hängt `/res/v1/web/search` oder `/res/v1/llm/context` an
+die konfigurierte Basis-URL an und berücksichtigt die Basis-URL im Cache-Schlüssel. Öffentliche
+Endpunkte müssen `https://` verwenden; `http://` wird nur für vertrauenswürdige local loopback-
 oder Proxy-Hosts in privaten Netzwerken akzeptiert.
 
 ## Tool-Parameter
@@ -88,11 +87,11 @@ Brave-Sprachcode für die Suche (z. B. `en`, `en-gb`, `zh-hans`).
 </ParamField>
 
 <ParamField path="ui_lang" type="string">
-ISO-Sprachcode für UI-Elemente.
+ISO-Sprachcode für Elemente der Benutzeroberfläche.
 </ParamField>
 
 <ParamField path="freshness" type="'day' | 'week' | 'month' | 'year'">
-Zeitfilter — `day` entspricht 24 Stunden.
+Zeitfilter – `day` entspricht 24 Stunden.
 </ParamField>
 
 <ParamField path="date_after" type="string">
@@ -108,20 +107,20 @@ Nur Ergebnisse, die vor diesem Datum (`YYYY-MM-DD`) veröffentlicht wurden.
 ```javascript
 // Länder- und sprachspezifische Suche
 await web_search({
-  query: "erneuerbare Energie",
+  query: "renewable energy",
   country: "DE",
   language: "de",
 });
 
 // Aktuelle Ergebnisse (vergangene Woche)
 await web_search({
-  query: "KI-Nachrichten",
+  query: "AI news",
   freshness: "week",
 });
 
-// Suche nach Datumsbereich
+// Suche in einem Datumsbereich
 await web_search({
-  query: "KI-Entwicklungen",
+  query: "AI developments",
   date_after: "2024-01-01",
   date_before: "2024-06-30",
 });
@@ -129,19 +128,19 @@ await web_search({
 
 ## Hinweise
 
-- OpenClaw verwendet den Brave-Tarif **Search**. Wenn Sie ein älteres Abonnement haben (z. B. den ursprünglichen Tarif Free mit 2.000 Anfragen/Monat), bleibt es gültig, umfasst jedoch keine neueren Funktionen wie LLM Context oder höhere Ratenlimits.
-- Jeder Brave-Tarif umfasst **\$5/Monat kostenloses Guthaben** (monatlich erneuert). Der Tarif Search kostet \$5 pro 1.000 Anfragen, sodass das Guthaben 1.000 Anfragen/Monat abdeckt. Legen Sie im Brave-Dashboard Ihr Nutzungslimit fest, um unerwartete Kosten zu vermeiden. Aktuelle Tarife finden Sie im [Brave-API-Portal](https://brave.com/search/api/).
-- Der Tarif Search umfasst den LLM-Context-Endpunkt und Rechte zur KI-Inferenz. Zum Speichern von Ergebnissen für das Trainieren oder Abstimmen von Modellen ist ein Tarif mit ausdrücklichen Speicherrechten erforderlich. Weitere Informationen finden Sie in den [Nutzungsbedingungen](https://api-dashboard.search.brave.com/terms-of-service) von Brave.
-- Der Modus `llm-context` gibt fundierte Quelleinträge anstelle der normalen Textausschnittstruktur der Websuche zurück.
-- Der Modus `llm-context` unterstützt `freshness` und begrenzte Bereiche mit `date_after` + `date_before`. Er unterstützt `ui_lang` nicht; `date_before` ohne `date_after` wird abgelehnt, da Brave für benutzerdefinierte Aktualitätsbereiche sowohl ein Start- als auch ein Enddatum verlangt.
+- OpenClaw verwendet den Brave-Tarif **Search**. Wenn Sie ein älteres Abonnement haben (z. B. den ursprünglichen kostenlosen Tarif mit 2.000 Anfragen pro Monat), bleibt es gültig, enthält jedoch keine neueren Funktionen wie LLM Context oder höhere Ratenlimits.
+- Jeder Brave-Tarif umfasst **\$5 kostenloses Guthaben pro Monat** (wird monatlich erneuert). Der Search-Tarif kostet \$5 pro 1.000 Anfragen, sodass das Guthaben 1.000 Anfragen pro Monat abdeckt. Legen Sie Ihr Nutzungslimit im Brave-Dashboard fest, um unerwartete Kosten zu vermeiden. Aktuelle Tarife finden Sie im [Brave-API-Portal](https://brave.com/search/api/).
+- Der Search-Tarif umfasst den LLM-Context-Endpunkt und Rechte zur KI-Inferenz. Für das Speichern von Ergebnissen zum Trainieren oder Abstimmen von Modellen ist ein Tarif mit ausdrücklichen Speicherrechten erforderlich. Siehe die [Nutzungsbedingungen](https://api-dashboard.search.brave.com/terms-of-service) von Brave.
+- Der Modus `llm-context` gibt fundierte Quelleinträge anstelle der normalen Auszüge der Websuche zurück.
+- Der Modus `llm-context` unterstützt `freshness` und begrenzte Bereiche mit `date_after` und `date_before`. Er unterstützt `ui_lang` nicht; `date_before` ohne `date_after` wird abgelehnt, da Brave bei benutzerdefinierten Aktualitätsbereichen sowohl ein Start- als auch ein Enddatum voraussetzt.
 - `ui_lang` muss ein Regions-Subtag wie `en-US` enthalten.
 - Ergebnisse werden standardmäßig 15 Minuten lang zwischengespeichert (über `cacheTtlMinutes` konfigurierbar).
-- Benutzerdefinierte Werte für `webSearch.baseUrl` werden in die Brave-Cache-Identität aufgenommen, sodass
-  Proxy-spezifische Antworten nicht kollidieren.
-- Aktivieren Sie zur Fehlerbehebung das Diagnose-Flag `brave.http`, um Brave-Anfrage-URLs/-Abfrageparameter, Antwortstatus/-Zeitmessung sowie Treffer-, Fehlschlag- und Schreibereignisse des Such-Caches zu protokollieren. Das Flag protokolliert niemals den API-Schlüssel oder Antwortinhalte, Suchanfragen können jedoch vertraulich sein.
+- Benutzerdefinierte Werte für `webSearch.baseUrl` werden in die Brave-Cache-Identität einbezogen, sodass
+  Proxy-spezifische Antworten nicht miteinander kollidieren.
+- Aktivieren Sie zur Fehlerbehebung das Diagnose-Flag `brave.http`, um Brave-Anfrage-URLs und Abfrageparameter, Antwortstatus und -dauer sowie Treffer-, Fehltreffer- und Schreibereignisse des Such-Caches zu protokollieren. Das Flag protokolliert weder den API-Schlüssel noch Antwortinhalte, Suchanfragen können jedoch vertraulich sein.
 
 ## Verwandte Themen
 
 - [Übersicht zur Websuche](/de/tools/web) -- alle Provider und automatische Erkennung
-- [Perplexity-Suche](/de/tools/perplexity-search) -- strukturierte Ergebnisse mit Domainfilterung
+- [Perplexity-Suche](/de/tools/perplexity-search) -- strukturierte Ergebnisse mit Domain-Filterung
 - [Exa-Suche](/de/tools/exa-search) -- neuronale Suche mit Inhaltsextraktion

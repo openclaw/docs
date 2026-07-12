@@ -5,10 +5,9 @@ read_when:
 summary: CLI-Referenz für `openclaw approvals` und `openclaw exec-policy`
 title: Genehmigungen
 x-i18n:
-    generated_at: "2026-07-12T15:04:24Z"
+    generated_at: "2026-07-12T01:27:14Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: f5b045a4dee3726a7df2368b704a00464dc9e575bf77747103e34ebdfe0aa2df
     source_path: cli/approvals.md
@@ -25,7 +24,7 @@ Verwandte Themen: [Ausführungsgenehmigungen](/de/tools/exec-approvals), [Nodes]
 
 ## `openclaw exec-policy`
 
-`openclaw exec-policy` ist der **ausschließlich lokale** Komfortbefehl, der die angeforderte `tools.exec.*`-Konfiguration und die Genehmigungsdatei des lokalen Hosts in einem Schritt synchron hält:
+`openclaw exec-policy` ist der praktische, **ausschließlich lokale** Befehl, der die angeforderte `tools.exec.*`-Konfiguration und die lokale Genehmigungsdatei des Hosts in einem Schritt synchron hält:
 
 ```bash
 openclaw exec-policy show
@@ -42,7 +41,7 @@ Voreinstellungen (`yolo`, `cautious`, `deny-all`) wenden `host`, `security`, `as
 Geltungsbereich:
 
 - Aktualisiert die lokale Konfigurationsdatei und die lokale Genehmigungsdatei gemeinsam; überträgt die Richtlinie nicht an das Gateway oder einen Node-Host.
-- `--host node` wird abgelehnt: Ausführungsgenehmigungen für Nodes werden zur Laufzeit vom Node abgerufen, daher kann die lokale `exec-policy` sie nicht synchronisieren. Verwenden Sie stattdessen `openclaw approvals set --node <id|name|ip>`.
+- `--host node` wird abgelehnt: Ausführungsgenehmigungen für Nodes werden zur Laufzeit vom Node abgerufen, daher kann das lokale `exec-policy` sie nicht synchronisieren. Verwenden Sie stattdessen `openclaw approvals set --node <id|name|ip>`.
 - `exec-policy show` kennzeichnet Geltungsbereiche mit `host=node` zur Laufzeit als vom Node verwaltet, anstatt eine effektive Richtlinie aus der lokalen Genehmigungsdatei abzuleiten.
 
 Verwenden Sie für Genehmigungen auf Remote-Hosts direkt `openclaw approvals set --gateway` oder `openclaw approvals set --node <id|name|ip>`.
@@ -55,7 +54,7 @@ openclaw approvals get --node <id|name|ip>
 openclaw approvals get --gateway
 ```
 
-`get` zeigt die effektive Ausführungsrichtlinie für das Ziel: die angeforderte `tools.exec`-Richtlinie, die Richtlinie der Genehmigungsdatei des Hosts und das zusammengeführte effektive Ergebnis. Nodes mit einer Host-nativen Richtlinie, beispielsweise die Windows-Begleitanwendung, zeigen diese Richtlinie direkt an, anstatt die Richtlinienlogik der OpenClaw-Genehmigungsdatei anzuwenden.
+`get` zeigt die effektive Ausführungsrichtlinie für das Ziel: die angeforderte `tools.exec`-Richtlinie, die Richtlinie der Genehmigungsdatei des Hosts und das zusammengeführte effektive Ergebnis. Nodes mit einer hostnativen Richtlinie, wie etwa die Windows-Begleitanwendung, zeigen diese Richtlinie direkt an, anstatt die OpenClaw-Auswertungslogik für Genehmigungsdateien anzuwenden.
 
 Bei dateibasierten Nodes erfordert die zusammengeführte Ansicht einen vom Host aufgelösten Richtlinien-Snapshot. Bei älteren Nodes wird die effektive Richtlinie als nicht verfügbar angezeigt, anstatt anzunehmen, dass die angeforderte Richtlinie des Gateways auch auf dem Host gilt.
 
@@ -65,7 +64,7 @@ Sitzungsspezifische `/exec`-Überschreibungen sind nicht enthalten. Führen Sie 
 
 Rangfolge:
 
-- Die Genehmigungsdatei des Hosts ist die maßgebliche, durchsetzbare Wahrheitsquelle.
+- Die Genehmigungsdatei des Hosts ist die maßgebliche, durchsetzbare Quelle.
 - Die angeforderte `tools.exec`-Richtlinie kann die beabsichtigten Berechtigungen einschränken oder erweitern, das effektive Ergebnis wird jedoch aus den Hostregeln abgeleitet.
 - `--node` kombiniert die Genehmigungsdatei des Node-Hosts mit der `tools.exec`-Richtlinie des Gateways (beide gelten zur Laufzeit).
 - Wenn die Gateway-Konfiguration nicht verfügbar ist, greift die CLI auf den Genehmigungs-Snapshot des Nodes zurück und weist darauf hin, dass die endgültige Laufzeitrichtlinie nicht berechnet werden konnte.
@@ -81,9 +80,9 @@ openclaw approvals set --node <id|name|ip> --file ./exec-approvals.json
 openclaw approvals set --gateway --file ./exec-approvals.json
 ```
 
-`set` akzeptiert JSON5, nicht nur strikt gültiges JSON. Verwenden Sie entweder `--file` oder `--stdin`, nicht beides.
+`set` akzeptiert JSON5 und nicht nur striktes JSON. Verwenden Sie entweder `--file` oder `--stdin`, nicht beides.
 
-Host-native Windows-Nodes verwenden ihre eigene Richtlinienstruktur:
+Hostnative Windows-Nodes verwenden eine eigene Richtlinienstruktur:
 
 ```bash
 openclaw approvals set --node <id|name|ip> --stdin <<'EOF'
@@ -94,11 +93,11 @@ openclaw approvals set --node <id|name|ip> --stdin <<'EOF'
 EOF
 ```
 
-Die CLI liest zuerst den aktuellen Hash des Nodes und sendet ihn mit der Aktualisierung, sodass gleichzeitige lokale Änderungen abgelehnt statt überschrieben werden. `rules` ist erforderlich, da dieser Vorgang die vollständige Regelliste des Nodes ersetzt; `defaultAction` ist optional. Ein Node, der seine native Richtlinie als deaktiviert meldet, kann nicht aus der Ferne konfiguriert werden; aktivieren oder konfigurieren Sie zunächst die Richtlinie auf diesem Host. Host-native Richtlinien unterstützen die Hilfsbefehle `allowlist add|remove` nicht.
+Die CLI liest zunächst den aktuellen Hash des Nodes und sendet ihn mit der Aktualisierung, sodass gleichzeitige lokale Änderungen abgelehnt statt überschrieben werden. `rules` ist erforderlich, da dieser Vorgang die vollständige Regelliste des Nodes ersetzt; `defaultAction` ist optional. Ein Node, der seine native Richtlinie als deaktiviert meldet, kann nicht remote konfiguriert werden; aktivieren oder konfigurieren Sie die Richtlinie zunächst auf diesem Host. Hostnative Richtlinien unterstützen die Hilfsbefehle `allowlist add|remove` nicht.
 
 ## Beispiel für „Nie nachfragen“ / YOLO
 
-Legen Sie die Standardwerte der Host-Genehmigungen für einen Host, der wegen Ausführungsgenehmigungen niemals anhalten soll, auf `full` + `off` fest:
+Setzen Sie die Standardwerte der Hostgenehmigungen für einen Host, der bei Ausführungsgenehmigungen nie anhalten soll, auf `full` + `off`:
 
 ```bash
 openclaw approvals set --stdin <<'EOF'
@@ -113,9 +112,9 @@ openclaw approvals set --stdin <<'EOF'
 EOF
 ```
 
-Verwenden Sie für Nodes, die eine OpenClaw-Genehmigungsdatei bereitstellen, denselben Inhalt mit `openclaw approvals set --node <id|name|ip> --stdin`. Host-native Nodes benötigen die oben dargestellte, für ihren jeweiligen Besitzer spezifische Struktur.
+Verwenden Sie für Nodes, die eine OpenClaw-Genehmigungsdatei bereitstellen, denselben Inhalt mit `openclaw approvals set --node <id|name|ip> --stdin`. Hostnative Nodes benötigen die oben gezeigte, für ihren jeweiligen Eigentümer spezifische Struktur.
 
-Dadurch wird nur die **Genehmigungsdatei des Hosts** geändert. Um auch die angeforderte OpenClaw-Richtlinie entsprechend auszurichten, legen Sie außerdem Folgendes fest:
+Dadurch wird nur die **Genehmigungsdatei des Hosts** geändert. Um auch die angeforderte OpenClaw-Richtlinie entsprechend auszurichten, legen Sie zusätzlich Folgendes fest:
 
 ```bash
 openclaw config set tools.exec.host gateway
@@ -123,17 +122,17 @@ openclaw config set tools.exec.security full
 openclaw config set tools.exec.ask off
 ```
 
-`tools.exec.host=gateway` wird hier ausdrücklich angegeben, weil `host=auto` weiterhin „Sandbox, wenn verfügbar, andernfalls Gateway“ bedeutet: Bei YOLO geht es um Genehmigungen, nicht um das Routing. Verwenden Sie `gateway` (oder `/exec host=gateway`), wenn Sie die Ausführung auf dem Host auch bei konfigurierter Sandbox wünschen.
+`tools.exec.host=gateway` wird hier ausdrücklich angegeben, weil `host=auto` weiterhin „Sandbox, sofern verfügbar, andernfalls Gateway“ bedeutet: Bei YOLO geht es um Genehmigungen, nicht um das Routing. Verwenden Sie `gateway` (oder `/exec host=gateway`), wenn Sie die Ausführung auf dem Host auch bei konfigurierter Sandbox wünschen.
 
-Ein ausgelassenes `askFallback` verwendet standardmäßig `deny`. Legen Sie `askFallback: "full"` ausdrücklich fest, wenn Sie einen Host ohne Benutzeroberfläche aktualisieren, der das Verhalten ohne Nachfragen beibehalten soll.
+Ein ausgelassenes `askFallback` verwendet standardmäßig `deny`. Legen Sie beim Upgrade eines Hosts ohne Benutzeroberfläche, der das Verhalten ohne Rückfragen beibehalten soll, ausdrücklich `askFallback: "full"` fest.
 
-Lokale Abkürzung für dieselbe Absicht, ausschließlich auf dem lokalen Rechner:
+Lokaler Kurzbefehl für dieselbe Absicht, ausschließlich auf dem lokalen Rechner:
 
 ```bash
 openclaw exec-policy preset yolo
 ```
 
-## Hilfsbefehle für die Positivliste
+## Hilfsbefehle für die Zulassungsliste
 
 ```bash
 openclaw approvals allowlist add "~/Projects/**/bin/rg"
@@ -147,18 +146,18 @@ openclaw approvals allowlist remove "~/Projects/**/bin/rg"
 
 `get`, `set` und `allowlist add|remove` unterstützen alle:
 
-- `--node <id|name|ip>` (löst ID, Namen, IP oder ID-Präfix auf; verwendet denselben Resolver wie `openclaw nodes`)
+- `--node <id|name|ip>` (löst ID, Namen, IP-Adresse oder ID-Präfix auf; derselbe Auflösungsmechanismus wie bei `openclaw nodes`)
 - `--gateway`
 - gemeinsame Node-RPC-Optionen: `--url`, `--token`, `--timeout`, `--json`
 
 Ohne Zielflag wird die lokale Genehmigungsdatei auf dem Datenträger verwendet.
 
-`allowlist add|remove` unterstützt außerdem `--agent <id>` (Standardwert ist `"*"`, wodurch es für alle Agenten gilt).
+`allowlist add|remove` unterstützt außerdem `--agent <id>` (standardmäßig `"*"`, sodass die Einstellung für alle Agenten gilt).
 
 ## Hinweise
 
-- Der Node-Host muss `system.execApprovals.get/set` anbieten (macOS-App, monitorloser Node-Host oder Windows-Begleitanwendung).
-- Genehmigungsdateien werden pro Host im OpenClaw-Zustandsverzeichnis gespeichert: `$OPENCLAW_STATE_DIR/exec-approvals.json` oder `~/.openclaw/exec-approvals.json`, wenn die Variable nicht gesetzt ist.
+- Der Node-Host muss `system.execApprovals.get/set` bereitstellen (macOS-App, monitorloser Node-Host oder Windows-Begleitanwendung).
+- Genehmigungsdateien werden pro Host im OpenClaw-Statusverzeichnis gespeichert: `$OPENCLAW_STATE_DIR/exec-approvals.json` oder `~/.openclaw/exec-approvals.json`, wenn die Variable nicht gesetzt ist.
 
 ## Verwandte Themen
 

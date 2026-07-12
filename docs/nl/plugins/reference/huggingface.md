@@ -1,21 +1,21 @@
 ---
 read_when:
-    - Je installeert, configureert of controleert de huggingface Plugin
+    - Je installeert, configureert of controleert de Hugging Face-Plugin
 summary: Voegt ondersteuning voor de Hugging Face-modelprovider toe aan OpenClaw.
-title: Hugging Face Plugin
+title: Hugging Face-Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:51:33Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:13:37Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: d3f400aed24e630718ce5977e417ff47a8a985a0a385942e1ee6224d830b53e6
     source_path: plugins/reference/huggingface.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# Hugging Face Plugin
+# Hugging Face-plugin
 
-Voegt ondersteuning voor Hugging Face-modelproviders toe aan OpenClaw.
+Voegt ondersteuning voor de Hugging Face-modelprovider toe aan OpenClaw.
 
 ## Distributie
 
@@ -26,6 +26,6 @@ Voegt ondersteuning voor Hugging Face-modelproviders toe aan OpenClaw.
 
 providers: huggingface
 
-## Gerelateerde docs
+## Gerelateerde documentatie
 
 - [huggingface](/nl/providers/huggingface)

@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder prüfen das Plugin memory-lancedb
-summary: OpenClaw-Plugin für Langzeitgedächtnis mit LanceDB-Unterstützung, automatischem Abruf, automatischer Erfassung und Vektorsuche.
-title: Speicher-Lancedb-Plugin
+    - Sie installieren, konfigurieren oder überprüfen das Plugin memory-lancedb
+summary: OpenClaw-Plugin für Langzeitgedächtnis auf Basis von LanceDB mit automatischem Abruf, automatischer Erfassung und Vektorsuche.
+title: Memory-LanceDB-Plugin
 x-i18n:
-    generated_at: "2026-06-27T17:55:10Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T01:57:23Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: db3843c421abdf738723f87f5bf12ed7acc2e6638e5869c2ad10b4b5722d402d
@@ -13,19 +13,19 @@ x-i18n:
     workflow: 16
 ---
 
-# Memory-Lancedb-Plugin
+# Memory-LanceDB-Plugin
 
-OpenClaw-Plugin für Langzeitgedächtnis mit LanceDB-Unterstützung, automatischem Abruf, automatischer Erfassung und Vektorsuche.
+OpenClaw-Plugin für ein LanceDB-gestütztes Langzeitgedächtnis mit automatischem Abruf, automatischer Erfassung und Vektorsuche.
 
 ## Distribution
 
 - Paket: `@openclaw/memory-lancedb`
 - Installationsweg: npm; ClawHub
 
-## Oberfläche
+## Schnittstelle
 
-contracts: tools
+Verträge: Tools
 
-## Verwandte Dokumentation
+## Zugehörige Dokumentation
 
 - [memory-lancedb](/de/plugins/memory-lancedb)

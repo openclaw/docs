@@ -4,8 +4,8 @@ read_when:
 summary: 用於 NIP-04 加密私訊的 OpenClaw Nostr 頻道外掛。
 title: Nostr 外掛
 x-i18n:
-    generated_at: "2026-06-27T19:45:07Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T21:36:52Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: e56fd9eee17c55bcbba3d7b85d783930c10d2368f36173ac478b254c2bd5ec22
@@ -15,7 +15,7 @@ x-i18n:
 
 # Nostr 外掛
 
-OpenClaw Nostr 頻道外掛，用於 NIP-04 加密的直接訊息。
+用於 NIP-04 加密直接訊息的 OpenClaw Nostr 頻道外掛。
 
 ## 發行
 
@@ -24,8 +24,8 @@ OpenClaw Nostr 頻道外掛，用於 NIP-04 加密的直接訊息。
 
 ## 介面
 
-channels: nostr
+頻道：nostr
 
 ## 相關文件
 
-- [nostr](/zh-TW/channels/nostr)
+- [Nostr](/zh-TW/channels/nostr)

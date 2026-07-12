@@ -1,12 +1,12 @@
 ---
 read_when:
-    - zsh/bash/fish/PowerShell のシェル補完が必要な場合
-    - OpenClaw 状態配下に補完スクリプトをキャッシュする必要があります
-summary: 'CLI リファレンス: `openclaw completion`（シェル補完スクリプトの生成/インストール）'
-title: 完了
+    - zsh/bash/fish/PowerShell 用のシェル補完が必要な場合
+    - OpenClaw の状態領域に補完スクリプトをキャッシュする必要があります
+summary: '`openclaw completion` の CLI リファレンス（シェル補完スクリプトの生成/インストール）'
+title: 補完
 x-i18n:
-    generated_at: "2026-07-05T11:11:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:05:10Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 67cb52a47036745150887c752d18e2dfa84fab2722c27c696142d23080bb2efd
@@ -16,44 +16,44 @@ x-i18n:
 
 # `openclaw completion`
 
-シェル補完スクリプトを生成し、OpenClaw の状態にキャッシュし、必要に応じてシェルプロファイルにインストールします。
+シェル補完スクリプトを生成し、OpenClaw の状態ディレクトリにキャッシュします。また、必要に応じてシェルプロファイルへインストールします。
 
 ## 使用方法
 
 ```bash
-openclaw completion                          # print zsh script to stdout
-openclaw completion --shell fish             # print fish script
-openclaw completion --write-state            # cache scripts for all shells
-openclaw completion --write-state --install  # cache, then install in one step
+openclaw completion                          # zsh スクリプトを標準出力に出力
+openclaw completion --shell fish             # fish スクリプトを出力
+openclaw completion --write-state            # すべてのシェル用スクリプトをキャッシュ
+openclaw completion --write-state --install  # 1回の操作でキャッシュしてからインストール
 openclaw completion --shell bash --write-state
 ```
 
 ## オプション
 
-- `-s, --shell <shell>`: シェルターゲット（`zsh`、`bash`、`powershell`、`fish`。デフォルト: `zsh`）
-- `-i, --install`: キャッシュされたスクリプトの source 行をシェルプロファイルに追加して補完をインストールします
-- `--write-state`: stdout に出力せずに、補完スクリプトを `$OPENCLAW_STATE_DIR/completions`（デフォルト `~/.openclaw/completions`）に書き込みます。`--shell` 付きではそのシェルのみを書き込み、それ以外では 4 つすべてを書き込みます
-- `-y, --yes`: インストール確認プロンプトをスキップします（非対話）
+- `-s, --shell <shell>`: 対象シェル（`zsh`、`bash`、`powershell`、`fish`。デフォルト: `zsh`）
+- `-i, --install`: キャッシュされたスクリプトを読み込む行をシェルプロファイルに追加して、補完をインストール
+- `--write-state`: 標準出力には出力せず、補完スクリプトを `$OPENCLAW_STATE_DIR/completions`（デフォルトは `~/.openclaw/completions`）に書き込みます。`--shell` を指定した場合はそのシェルのみ、指定しない場合は4つすべてを書き込みます
+- `-y, --yes`: インストール確認プロンプトを省略（非対話モード）
 
-## インストールフロー
+## インストール手順
 
-`--install` はプロファイルをキャッシュ済みスクリプトに向けるため、先にキャッシュが存在している必要があります。存在しない場合、コマンドは失敗し、`openclaw completion --write-state` を実行するよう案内します。`--write-state --install` を組み合わせると、両方を 1 ステップで実行できます。`--shell` がない場合、`--install` は `$SHELL` からシェルを検出します（zsh にフォールバック）。
+`--install` はプロファイルからキャッシュ済みスクリプトを参照するため、先にキャッシュが存在している必要があります。存在しない場合、コマンドは失敗し、`openclaw completion --write-state` を実行するよう案内します。`--write-state --install` を組み合わせると、両方を1回の操作で実行できます。`--shell` を指定しない場合、`--install` は `$SHELL` からシェルを検出します（検出できない場合は zsh を使用します）。
 
-インストールは小さな `# OpenClaw Completion` ブロックをシェルプロファイルに書き込み、古い低速な `source <(openclaw completion ...)` 行をキャッシュ済み source 行に置き換えます。
+インストールでは、シェルプロファイルに小さな `# OpenClaw Completion` ブロックを書き込み、古くて低速な `source <(openclaw completion ...)` 行がある場合は、キャッシュを読み込む行に置き換えます。
 
-| シェル      | プロファイル                                                                                                                                                                              |
+| シェル     | プロファイル                                                                                                                                                                               |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| bash       | `~/.bashrc`（`~/.bashrc` がない場合は `~/.bash_profile` にフォールバック）                                                                                                                |
-| fish       | `~/.config/fish/config.fish`                                                                                                                                                              |
+| bash       | `~/.bashrc`（`~/.bashrc` が存在しない場合は `~/.bash_profile` を使用）                                                                                                                     |
+| fish       | `~/.config/fish/config.fish`                                                                                                                                                               |
 | powershell | `~/.config/powershell/Microsoft.PowerShell_profile.ps1`（Windows の場合: `Documents/PowerShell/Microsoft.PowerShell_profile.ps1`、または Windows PowerShell では `Documents/WindowsPowerShell/...`） |
-| zsh        | `~/.zshrc`                                                                                                                                                                                |
+| zsh        | `~/.zshrc`                                                                                                                                                                                 |
 
-## 注記
+## 注意事項
 
-- `--install` または `--write-state` がない場合、コマンドはスクリプトを stdout に出力します。
-- 補完生成は Plugin CLI コマンドを含む完全なコマンドツリーを積極的に読み込むため、ネストされたサブコマンドも含まれます。
-- `openclaw update` は更新が成功した後に補完キャッシュを自動的に更新します。`openclaw doctor` は欠落または古くなった補完設定を修復できます。
+- `--install` または `--write-state` を指定しない場合、コマンドはスクリプトを標準出力に出力します。
+- 補完の生成では、Plugin の CLI コマンドを含むコマンドツリー全体が事前に読み込まれるため、ネストされたサブコマンドも含まれます。
+- `openclaw update` は、更新が正常に完了すると補完キャッシュを自動的に更新します。`openclaw doctor` は、補完設定の欠落や古い設定を修復できます。
 
-## 関連
+## 関連項目
 
 - [CLI リファレンス](/ja-JP/cli)

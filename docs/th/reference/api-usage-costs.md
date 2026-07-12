@@ -1,216 +1,152 @@
 ---
 read_when:
     - คุณต้องการทำความเข้าใจว่าฟีเจอร์ใดบ้างอาจเรียกใช้ API แบบเสียค่าใช้จ่าย
-    - คุณต้องตรวจสอบคีย์ ค่าใช้จ่าย และการมองเห็นข้อมูลการใช้งาน
+    - คุณต้องตรวจสอบคีย์ ค่าใช้จ่าย และความสามารถในการดูข้อมูลการใช้งาน
     - คุณกำลังอธิบายการรายงานค่าใช้จ่ายของ /status หรือ /usage
-summary: ตรวจสอบสิ่งที่สามารถใช้เงินได้ คีย์ใดที่ถูกใช้ และวิธีดูการใช้งาน
+summary: ตรวจสอบว่าส่วนใดอาจมีค่าใช้จ่าย ใช้คีย์ใดบ้าง และวิธีดูการใช้งาน
 title: การใช้งาน API และค่าใช้จ่าย
 x-i18n:
-    generated_at: "2026-06-27T18:19:03Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:40:58Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 473028747c3e8eab60667106d22616aa185f867d01238b856f4235faad957a9e
+    source_hash: b35ad64f83572eb8c01b59ee57368fd7ba20cb83ccac835281859796f782c1dd
     source_path: reference/api-usage-costs.md
     workflow: 16
 ---
 
-เอกสารนี้ระบุ **ฟีเจอร์ที่สามารถเรียกใช้ API keys** และตำแหน่งที่ต้นทุนของฟีเจอร์เหล่านั้นแสดงขึ้น โดยมุ่งเน้น
-ฟีเจอร์ของ OpenClaw ที่สามารถสร้างการใช้งาน provider หรือการเรียก API แบบมีค่าใช้จ่ายได้
+แผนผังฟีเจอร์ของ OpenClaw ที่สามารถเรียก API ของผู้ให้บริการแบบชำระเงิน ตำแหน่งที่แต่ละฟีเจอร์อ่านข้อมูลประจำตัว และตำแหน่งที่ค่าใช้จ่ายที่เกิดขึ้นปรากฏ
 
-## ต้นทุนแสดงที่ใด (แชต + CLI)
+## ค่าใช้จ่ายปรากฏที่ใด
 
-**ภาพรวมต้นทุนต่อเซสชัน**
+**`/status`** (ภาพรวมต่อเซสชัน)
 
-- `/status` แสดงโมเดลของเซสชันปัจจุบัน การใช้บริบท และโทเค็นของคำตอบล่าสุด
-- หาก OpenClaw มีเมทาดาทาการใช้งานและราคาภายในเครื่องสำหรับโมเดลที่ใช้งานอยู่
-  `/status` จะแสดง **ต้นทุนโดยประมาณ** สำหรับคำตอบล่าสุดด้วย ซึ่งอาจรวมถึง
-  provider ที่ไม่ใช้ API key แต่มีราคากำหนดไว้อย่างชัดเจน เช่น โมเดล Bedrock `aws-sdk`
-- หากเมทาดาทาเซสชันสดมีข้อมูลน้อย `/status` สามารถกู้คืนตัวนับโทเค็น/แคช
-  และป้ายชื่อโมเดล runtime ที่ใช้งานอยู่จากรายการการใช้งานใน transcript ล่าสุดได้
-  ค่าสดเดิมที่ไม่ใช่ศูนย์ยังคงมีลำดับความสำคัญก่อน และยอดรวม transcript ขนาดเท่าพรอมป์
-  อาจชนะเมื่อยอดรวมที่จัดเก็บหายไปหรือมีค่าน้อยกว่า
+- แสดงโมเดลของเซสชันปัจจุบัน การใช้บริบท และจำนวนโทเค็นของคำตอบล่าสุด
+- เพิ่ม **ค่าใช้จ่ายโดยประมาณ** สำหรับคำตอบล่าสุดเมื่อ OpenClaw มีเมทาดาทาการใช้งานและราคาที่กำหนดภายในสำหรับโมเดลที่ใช้งานอยู่ รวมถึงผู้ให้บริการที่ไม่ได้ใช้คีย์ API แต่มีการกำหนดราคาไว้อย่างชัดเจน เช่น โมเดล Bedrock `aws-sdk`
+- หากภาพรวมเซสชันสดมีข้อมูลไม่ครบถ้วน `/status` จะกู้คืนตัวนับโทเค็น/แคชและป้ายชื่อโมเดลที่ใช้งานอยู่จากรายการการใช้งานล่าสุดในทรานสคริปต์ ค่าสดที่มีอยู่และไม่เป็นศูนย์จะมีลำดับความสำคัญเหนือข้อมูลทรานสคริปต์ แต่ผลรวมจากทรานสคริปต์ที่มีขนาดเท่าพรอมป์ยังคงมีลำดับความสำคัญได้เมื่อผลรวมที่จัดเก็บไว้ไม่มีอยู่หรือมีค่าน้อยกว่า
 
-**ส่วนท้ายต้นทุนต่อข้อความ**
+**`/usage`** (ส่วนท้ายต่อข้อความ)
 
-- `/usage full` เพิ่มส่วนท้ายการใช้งานลงในทุกคำตอบ รวมถึง **ต้นทุนโดยประมาณ**
-  เมื่อมีการกำหนดราคาภายในเครื่องสำหรับโมเดลที่ใช้งานอยู่และมีเมทาดาทาการใช้งาน
-- `/usage tokens` แสดงเฉพาะโทเค็นเท่านั้น โฟลว์ OAuth/token และ CLI แบบ subscription
-  ยังคงแสดงเฉพาะโทเค็น เว้นแต่ runtime นั้นจะให้เมทาดาทาการใช้งานที่เข้ากันได้
-  และมีการกำหนดราคาภายในเครื่องไว้อย่างชัดเจน
-- หมายเหตุ Gemini CLI: เอาต์พุตเริ่มต้น `stream-json` และการ override JSON รุ่นเก่า
-  ต่างอ่านการใช้งานจาก `stats`, normalize `stats.cached` เป็น `cacheRead`, และ
-  คำนวณโทเค็นอินพุตจาก `stats.input_tokens - stats.cached` เมื่อจำเป็น
+- `/usage full` เพิ่มส่วนท้ายการใช้งานต่อท้ายทุกคำตอบ รวมถึง **ค่าใช้จ่ายโดยประมาณ** เมื่อกำหนดราคาภายในไว้และมีเมทาดาทาการใช้งาน
+- `/usage tokens` แสดงเฉพาะโทเค็น รันไทม์ OAuth/โทเค็นแบบสมัครสมาชิกและรันไทม์ CLI จะแสดงเฉพาะโทเค็น เว้นแต่จะให้เมทาดาทาการใช้งานที่เข้ากันได้พร้อมราคาภายในที่ระบุไว้อย่างชัดเจน
+- `/usage cost` แสดงสรุปค่าใช้จ่ายภายใน ส่วน `/usage off` ปิดใช้งานส่วนท้าย
+- หมายเหตุสำหรับ Gemini CLI: ทั้งเอาต์พุต `stream-json` และ `json` แบบเดิมมีข้อมูลการใช้งานอยู่ภายใต้ `stats` OpenClaw ปรับ `stats.cached` ให้อยู่ในรูป `cacheRead` และคำนวณโทเค็นอินพุตจาก `stats.input_tokens - stats.cached` เมื่อจำเป็น
 
-หมายเหตุ Anthropic: พนักงาน Anthropic แจ้งเราว่าการใช้งาน Claude CLI แบบ OpenClaw
-ได้รับอนุญาตอีกครั้ง ดังนั้น OpenClaw จึงถือว่าการใช้ Claude CLI ซ้ำและการใช้งาน `claude -p`
-ได้รับอนุมัติสำหรับ integration นี้ เว้นแต่ Anthropic จะเผยแพร่นโยบายใหม่
-Anthropic ยังไม่เปิดเผยค่าประมาณเป็นดอลลาร์ต่อข้อความที่ OpenClaw สามารถ
-แสดงใน `/usage full` ได้
+**Control UI → การใช้งาน** (การวิเคราะห์ข้ามเซสชัน)
 
-**หน้าต่างการใช้งาน CLI (โควตา provider)**
+- แสดงผลรวมโทเค็นและค่าใช้จ่ายโดยประมาณที่ได้จากทรานสคริปต์สำหรับช่วงวันที่ที่เลือก พร้อมรายละเอียดแยกตามผู้ให้บริการ โมเดล เอเจนต์ ช่องทาง และประเภทโทเค็น
+- เปรียบเทียบช่วงปฏิทินที่สั้นกว่าซึ่งสิ้นสุดในวันที่สิ้นสุดของช่วงที่เลือก วันที่ที่ไม่มีข้อมูลจะนับเป็นวันปฏิทินที่มีการใช้งานเป็นศูนย์ โดยจะไม่ข้ามวันเหล่านั้นเพื่อสร้างช่วงที่มีข้อมูลหนาแน่นขึ้น
+- ระบุมาตราส่วนของแผนภูมิรายวันโดยตรง ป้าย `√` หมายความว่ากำลังใช้การบีบอัดแบบรากที่สองเพื่อให้วันที่มีการใช้งานต่ำยังคงมองเห็นได้
+- ผลรวมเหล่านี้อธิบายประวัติเซสชันภายในที่มีอยู่ ไม่ใช่ใบแจ้งหนี้จากผู้ให้บริการหรือบัญชีแยกประเภทการเรียกเก็บเงินตลอดอายุการใช้งาน UI จะแจ้งเตือนเมื่อบางรายการไม่มีข้อมูลราคา
 
-- `openclaw status --usage` และ `openclaw channels list` แสดง **หน้าต่างการใช้งาน**
-  ของ provider (ภาพรวมโควตา ไม่ใช่ต้นทุนต่อข้อความ)
-- เอาต์พุตสำหรับมนุษย์ถูก normalize เป็น `เหลือ X%` เหมือนกันทุก provider
-- provider ของหน้าต่างการใช้งานปัจจุบัน: Anthropic, GitHub Copilot, Gemini CLI,
-  OpenAI Codex, MiniMax, Xiaomi และ z.ai
-- หมายเหตุ MiniMax: ฟิลด์ดิบ `usage_percent` / `usagePercent` หมายถึงโควตาที่เหลือ
-  ดังนั้น OpenClaw จะกลับค่าเหล่านั้นก่อนแสดงผล ฟิลด์แบบนับจำนวนยังคงชนะ
-  เมื่อมีอยู่ หาก provider ส่งคืน `model_remains` OpenClaw จะเลือกเอนทรีโมเดลแชต
-  คำนวณป้ายชื่อหน้าต่างจาก timestamp เมื่อจำเป็น และรวมชื่อโมเดลไว้ในป้ายชื่อแผน
-- การยืนยันตัวตนการใช้งานสำหรับหน้าต่างโควตาเหล่านั้นมาจาก hook เฉพาะ provider เมื่อมี
-  ไม่เช่นนั้น OpenClaw จะ fallback ไปจับคู่ข้อมูลรับรอง OAuth/API-key
-  จาก auth profiles, env หรือ config
+**ช่วงการใช้งานของ CLI** (โควตาของผู้ให้บริการ ไม่ใช่ค่าใช้จ่ายต่อข้อความ)
 
-ดูรายละเอียดและตัวอย่างที่ [การใช้โทเค็นและต้นทุน](/th/reference/token-use)
+- `openclaw status --usage` และ `openclaw channels list` แสดง **ช่วงการใช้งาน** ของผู้ให้บริการในรูป `เหลือ X%`
+- ผู้ให้บริการช่วงการใช้งานปัจจุบัน ได้แก่ Anthropic, ClawRouter, DeepSeek, GitHub Copilot, Gemini CLI, MiniMax, OpenAI (ครอบคลุมการรับรองความถูกต้องด้วย OAuth/โทเค็นของ ChatGPT/Codex), Xiaomi และ z.ai ดูรายการผู้ให้บริการ/แฟล็กทั้งหมดได้ที่ [CLI สำหรับโมเดล](/th/cli/models) และ [CLI สำหรับช่องทาง](/th/cli/channels)
+- ฟิลด์ดิบ `usage_percent` / `usagePercent` ของ MiniMax รายงานโควตาที่เหลือ ดังนั้น OpenClaw จึงกลับค่า โดยฟิลด์แบบนับจำนวนจะมีลำดับความสำคัญเมื่อมีอยู่ หากการตอบกลับมีอาร์เรย์ `model_remains` OpenClaw จะเลือกรายการโมเดลแชต คำนวณป้ายชื่อช่วงจากการประทับเวลาเมื่อจำเป็น และรวมชื่อโมเดลไว้ในป้ายชื่อแพ็กเกจ
+- การรับรองความถูกต้องสำหรับการใช้งานมาจากฮุกเฉพาะผู้ให้บริการเมื่อมี มิฉะนั้น OpenClaw จะย้อนกลับไปใช้ข้อมูลประจำตัว OAuth/คีย์ API ที่ตรงกันจากโปรไฟล์การรับรองความถูกต้อง ตัวแปรสภาพแวดล้อม หรือการกำหนดค่า
 
-## วิธีค้นพบ key
+ดูตัวอย่างโดยละเอียดที่ [การใช้โทเค็นและค่าใช้จ่าย](/th/reference/token-use)
 
-OpenClaw สามารถรับข้อมูลรับรองจาก:
+<Note>
+Anthropic ยืนยันว่าการนำ Claude CLI มาใช้ซ้ำ (รวมถึง `claude -p`) เป็นรูปแบบการผสานรวมที่ได้รับอนุญาต เว้นแต่จะเผยแพร่นโยบายใหม่ Anthropic ไม่เปิดเผยค่าประมาณเป็นจำนวนเงินต่อข้อความ ดังนั้น `/usage full` จึงไม่สามารถแสดงค่าใช้จ่ายสำหรับการใช้งาน Claude CLI ได้
+</Note>
 
-- **Auth profiles** (ต่อ agent, จัดเก็บใน `auth-profiles.json`)
-- **ตัวแปรสภาพแวดล้อม** (เช่น `OPENAI_API_KEY`, `BRAVE_API_KEY`, `FIRECRAWL_API_KEY`)
-- **Config** (`models.providers.*.apiKey`, `plugins.entries.*.config.webSearch.apiKey`,
-  `plugins.entries.firecrawl.config.webFetch.apiKey`, `memorySearch.*`,
-  `talk.providers.*.apiKey`)
-- **Skills** (`skills.entries.<name>.apiKey`) ซึ่งอาจ export key ไปยัง env ของโปรเซส skill
+## วิธีค้นหาคีย์
 
-## ฟีเจอร์ที่สามารถใช้ key จนเกิดค่าใช้จ่าย
+- **โปรไฟล์การรับรองความถูกต้อง**: แยกตามเอเจนต์ จัดเก็บไว้ใน `auth-profiles.json`
+- **ตัวแปรสภาพแวดล้อม**: ตัวอย่างเช่น `OPENAI_API_KEY`, `BRAVE_API_KEY`, `FIRECRAWL_API_KEY`
+- **การกำหนดค่า**: `models.providers.*.apiKey`, `plugins.entries.*.config.webSearch.apiKey`, `plugins.entries.firecrawl.config.webFetch.apiKey`, `agents.defaults.memorySearch.*`, `talk.providers.*.apiKey`
+- **Skills**: `skills.entries.<name>.apiKey` ซึ่งอาจส่งออกคีย์ไปยังสภาพแวดล้อมของโปรเซส Skills
 
-### 1) คำตอบจากโมเดลหลัก (แชต + เครื่องมือ)
+## ฟีเจอร์ที่สามารถใช้คีย์และก่อให้เกิดค่าใช้จ่าย
 
-ทุกคำตอบหรือการเรียกเครื่องมือใช้ **provider โมเดลปัจจุบัน** (OpenAI, Anthropic ฯลฯ) นี่คือ
-แหล่งหลักของการใช้งานและต้นทุน
+### การตอบกลับของโมเดลหลัก (แชต + เครื่องมือ)
 
-ซึ่งยังรวมถึง provider แบบ hosted subscription ที่ยังคงเรียกเก็บเงินนอก
-UI ภายในเครื่องของ OpenClaw เช่น **OpenAI Codex**, **Alibaba Cloud Model Studio
-Coding Plan**, **MiniMax Coding Plan**, **Z.AI / GLM Coding Plan** และ
-เส้นทางเข้าสู่ระบบ OpenClaw Claude ของ Anthropic เมื่อเปิดใช้ **Extra Usage**
+ทุกคำตอบหรือการเรียกเครื่องมือทำงานบนผู้ให้บริการโมเดลปัจจุบัน นี่คือแหล่งหลักของการใช้งานและค่าใช้จ่าย รวมถึงแพ็กเกจโฮสต์แบบสมัครสมาชิกที่เรียกเก็บเงินภายนอก UI ภายในของ OpenClaw ได้แก่ OpenAI Codex, Alibaba Cloud Model Studio Coding Plan, MiniMax Coding Plan, Z.AI/GLM Coding Plan และเส้นทางการเข้าสู่ระบบ Claude ของ Anthropic ที่เปิดใช้ Extra Usage
 
-ดูการกำหนดราคาที่ [โมเดล](/th/providers/models) และการแสดงผลที่ [การใช้โทเค็นและต้นทุน](/th/reference/token-use)
+ดูการกำหนดราคาได้ที่ [โมเดล](/th/providers/models) และดูการแสดงผลได้ที่ [การใช้โทเค็นและค่าใช้จ่าย](/th/reference/token-use)
 
-### 2) การทำความเข้าใจสื่อ (เสียง/รูปภาพ/วิดีโอ)
+### การทำความเข้าใจสื่อ (เสียง/รูปภาพ/วิดีโอ)
 
-สื่อขาเข้าสามารถถูกสรุป/ถอดเสียงก่อนที่คำตอบจะทำงาน ซึ่งใช้ API ของโมเดล/provider
+สื่อขาเข้าสามารถได้รับการสรุปหรือถอดเสียงผ่าน API ของผู้ให้บริการก่อนที่ไปป์ไลน์การตอบกลับจะทำงาน การรองรับผู้ให้บริการลงทะเบียนแยกตาม Plugin และเปลี่ยนแปลงเมื่อมีการเพิ่ม Plugin ดูรายการปัจจุบันและการกำหนดค่าได้ที่ [การทำความเข้าใจสื่อ](/th/nodes/media-understanding)
 
-- เสียง: OpenAI / Groq / Deepgram / DeepInfra / Google / Mistral
-- รูปภาพ: OpenAI / OpenRouter / Anthropic / DeepInfra / Google / MiniMax / Moonshot / Qwen / Z.AI
-- วิดีโอ: Google / Qwen / Moonshot
+### การสร้างรูปภาพและวิดีโอ
 
-ดู [การทำความเข้าใจสื่อ](/th/nodes/media-understanding)
+`image_generate` และ `video_generate` จะกำหนดเส้นทางไปยังผู้ให้บริการที่กำหนดค่าไว้และพร้อมใช้งาน การสร้างรูปภาพสามารถอนุมานผู้ให้บริการเริ่มต้นที่มีการรับรองความถูกต้องรองรับได้เมื่อไม่ได้ตั้งค่า `agents.defaults.imageGenerationModel` ส่วนการสร้างวิดีโอต้องระบุ `agents.defaults.videoGenerationModel` อย่างชัดเจน (ตัวอย่างเช่น `qwen/wan2.6-t2v`)
 
-### 3) การสร้างรูปภาพและวิดีโอ
+ดูรายการผู้ให้บริการปัจจุบันได้ที่ [การสร้างรูปภาพ](/th/tools/image-generation) และ [การสร้างวิดีโอ](/th/tools/video-generation)
 
-ความสามารถในการสร้างแบบ shared สามารถใช้ key ของ provider จนเกิดค่าใช้จ่ายได้เช่นกัน:
+### เอ็มเบดดิงหน่วยความจำและการค้นหาเชิงความหมาย
 
-- การสร้างรูปภาพ: OpenAI / Google / DeepInfra / fal / MiniMax
-- การสร้างวิดีโอ: DeepInfra / Qwen
+การค้นหาหน่วยความจำเชิงความหมายใช้ API เอ็มเบดดิงเมื่อ `agents.defaults.memorySearch.provider` ระบุอะแดปเตอร์ระยะไกล (ตัวอย่างเช่น `openai`, `gemini`, `voyage`, `mistral`, `deepinfra`, `github-copilot`, `amazon-bedrock`) `memorySearch.provider = "lmstudio"` หรือ `"ollama"` จะทำงานกับเซิร์ฟเวอร์ภายใน/ที่โฮสต์เองและโดยทั่วไปไม่มีการเรียกเก็บเงินจากบริการโฮสต์ `memorySearch.provider = "local"` จะประมวลผลทุกอย่างบนอุปกรณ์โดยไม่มีการใช้ API ผู้ให้บริการ `memorySearch.fallback` ที่เลือกกำหนดได้สามารถรองรับกรณีที่เอ็มเบดดิงภายในล้มเหลว
 
-การสร้างรูปภาพสามารถอนุมานค่าเริ่มต้นของ provider ที่มี auth หนุนหลังได้เมื่อ
-ไม่ได้ตั้งค่า `agents.defaults.imageGenerationModel` การสร้างวิดีโอในปัจจุบัน
-ต้องระบุ `agents.defaults.videoGenerationModel` อย่างชัดเจน เช่น
-`qwen/wan2.6-t2v`
+ดู [หน่วยความจำ](/th/concepts/memory)
 
-ดู [การสร้างรูปภาพ](/th/tools/image-generation), [Qwen Cloud](/th/providers/qwen),
-และ [โมเดล](/th/concepts/models)
+### เครื่องมือค้นหาเว็บ
 
-### 4) Memory embeddings + การค้นหาเชิงความหมาย
+`web_search` อาจก่อให้เกิดค่าบริการตามการใช้งาน ขึ้นอยู่กับผู้ให้บริการที่เลือก ผู้ให้บริการแต่ละรายจะอ่านคีย์จากตัวแปรสภาพแวดล้อมก่อน จากนั้นจึงอ่านจาก `plugins.entries.<id>.config.webSearch.apiKey`:
 
-การค้นหา memory เชิงความหมายใช้ **embedding APIs** เมื่อกำหนดค่าสำหรับ provider ระยะไกล:
+| ผู้ให้บริการ               | ตัวแปรสภาพแวดล้อม                                                                                                                                                             |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Brave Search           | `BRAVE_API_KEY`                                                                                                                                                        |
+| DuckDuckGo             | ไม่ต้องใช้คีย์; ไม่เป็นทางการ ใช้ HTML และไม่มีการเรียกเก็บเงิน                                                                                                                           |
+| Exa                    | `EXA_API_KEY`                                                                                                                                                          |
+| Firecrawl              | `FIRECRAWL_API_KEY`                                                                                                                                                    |
+| Gemini (Google Search) | `GEMINI_API_KEY`                                                                                                                                                       |
+| Grok (xAI)             | โปรไฟล์ OAuth ของ xAI หรือ `XAI_API_KEY`                                                                                                                                     |
+| Kimi (Moonshot)        | `KIMI_API_KEY` หรือ `MOONSHOT_API_KEY`                                                                                                                                   |
+| MiniMax Search         | `MINIMAX_CODE_PLAN_KEY`, `MINIMAX_CODING_API_KEY`, `MINIMAX_OAUTH_TOKEN` หรือ `MINIMAX_API_KEY`                                                                         |
+| Ollama Web Search      | ไม่ต้องใช้คีย์สำหรับโฮสต์ภายในที่เข้าถึงได้และเข้าสู่ระบบแล้ว; การค้นหาโดยตรงผ่าน `https://ollama.com` ใช้ `OLLAMA_API_KEY`; โฮสต์ที่ป้องกันด้วยการรับรองความถูกต้องจะใช้การรับรองความถูกต้องแบบ bearer ของผู้ให้บริการ Ollama ตามปกติซ้ำ |
+| Parallel               | `PARALLEL_API_KEY`                                                                                                                                                     |
+| Perplexity Search API  | `PERPLEXITY_API_KEY` หรือ `OPENROUTER_API_KEY`                                                                                                                           |
+| SearXNG                | `SEARXNG_BASE_URL`; ไม่ต้องใช้คีย์/โฮสต์เอง และไม่มีการเรียกเก็บเงินจากบริการโฮสต์                                                                                                            |
+| Tavily                 | `TAVILY_API_KEY`                                                                                                                                                       |
 
-- `memorySearch.provider = "openai"` → embeddings ของ OpenAI
-- `memorySearch.provider = "gemini"` → embeddings ของ Gemini
-- `memorySearch.provider = "voyage"` → embeddings ของ Voyage
-- `memorySearch.provider = "mistral"` → embeddings ของ Mistral
-- `memorySearch.provider = "deepinfra"` → embeddings ของ DeepInfra
-- `memorySearch.provider = "lmstudio"` → embeddings ของ LM Studio (ภายในเครื่อง/self-hosted)
-- `memorySearch.provider = "ollama"` → embeddings ของ Ollama (ภายในเครื่อง/self-hosted; โดยทั่วไปไม่มีการเรียกเก็บ API แบบ hosted)
-- fallback เสริมไปยัง provider ระยะไกลหาก embeddings ภายในเครื่องล้มเหลว
+เส้นทางการกำหนดค่าแบบเดิม `tools.web.search.*` ยังคงโหลดผ่านชิมความเข้ากันได้ แต่ไม่ใช่พื้นผิวที่แนะนำอีกต่อไป
 
-คุณสามารถให้ทำงานภายในเครื่องได้ด้วย `memorySearch.provider = "local"` (ไม่มีการใช้ API)
-
-ดู [Memory](/th/concepts/memory)
-
-### 5) เครื่องมือค้นหาเว็บ
-
-`web_search` อาจมีค่าใช้จ่ายการใช้งาน ขึ้นอยู่กับ provider ของคุณ:
-
-- **Brave Search API**: `BRAVE_API_KEY` หรือ `plugins.entries.brave.config.webSearch.apiKey`
-- **Exa**: `EXA_API_KEY` หรือ `plugins.entries.exa.config.webSearch.apiKey`
-- **Firecrawl**: `FIRECRAWL_API_KEY` หรือ `plugins.entries.firecrawl.config.webSearch.apiKey`
-- **Gemini (Google Search)**: `GEMINI_API_KEY` หรือ `plugins.entries.google.config.webSearch.apiKey`
-- **Grok (xAI)**: โปรไฟล์ OAuth ของ xAI, `XAI_API_KEY` หรือ `plugins.entries.xai.config.webSearch.apiKey`
-- **Kimi (Moonshot)**: `KIMI_API_KEY`, `MOONSHOT_API_KEY` หรือ `plugins.entries.moonshot.config.webSearch.apiKey`
-- **MiniMax Search**: `MINIMAX_CODE_PLAN_KEY`, `MINIMAX_CODING_API_KEY`, `MINIMAX_API_KEY` หรือ `plugins.entries.minimax.config.webSearch.apiKey`
-- **Ollama Web Search**: ไม่ต้องใช้ key สำหรับโฮสต์ Ollama ภายในเครื่องที่ลงชื่อเข้าใช้และเข้าถึงได้ การค้นหา `https://ollama.com` โดยตรงใช้ `OLLAMA_API_KEY` และโฮสต์ที่ป้องกันด้วย auth สามารถนำ bearer auth ของ provider Ollama ปกติมาใช้ซ้ำได้
-- **Perplexity Search API**: `PERPLEXITY_API_KEY`, `OPENROUTER_API_KEY` หรือ `plugins.entries.perplexity.config.webSearch.apiKey`
-- **Tavily**: `TAVILY_API_KEY` หรือ `plugins.entries.tavily.config.webSearch.apiKey`
-- **DuckDuckGo**: provider ที่ไม่ต้องใช้ key เมื่อเลือกอย่างชัดเจน (ไม่มีการเรียกเก็บ API แต่ไม่เป็นทางการและอิง HTML)
-- **SearXNG**: `SEARXNG_BASE_URL` หรือ `plugins.entries.searxng.config.webSearch.baseUrl` (ไม่ต้องใช้ key/self-hosted; ไม่มีการเรียกเก็บ API แบบ hosted)
-
-เส้นทาง provider รุ่นเก่า `tools.web.search.*` ยังคงโหลดผ่าน compatibility shim ชั่วคราว
-แต่ไม่ใช่พื้นผิว config ที่แนะนำอีกต่อไป
-
-**เครดิตฟรีของ Brave Search:** แต่ละแผน Brave มีเครดิตฟรีแบบต่ออายุ \$5/เดือน
-แผน Search มีค่าใช้จ่าย \$5 ต่อ 1,000 requests ดังนั้นเครดิตฟรีจะครอบคลุม
-1,000 requests/เดือนโดยไม่มีค่าใช้จ่าย ตั้งค่าขีดจำกัดการใช้งานในแดชบอร์ด Brave
-เพื่อหลีกเลี่ยงค่าใช้จ่ายที่ไม่คาดคิด
+**เครดิตฟรีของ Brave Search**: แต่ละแพ็กเกจมีเครดิตฟรีที่ต่ออายุทุกเดือนมูลค่า $5 แพ็กเกจ Search มีราคา $5 ต่อ 1,000 คำขอ ดังนั้นเครดิตฟรีจึงครอบคลุมคำขอ 1,000 รายการต่อเดือนโดยไม่มีค่าใช้จ่าย ตั้งค่าขีดจำกัดการใช้งานในแดชบอร์ด Brave เพื่อหลีกเลี่ยงค่าใช้จ่ายที่ไม่คาดคิด
 
 ดู [เครื่องมือเว็บ](/th/tools/web)
 
-### 5) เครื่องมือดึงข้อมูลเว็บ (Firecrawl)
+### เครื่องมือดึงข้อมูลเว็บ (Firecrawl)
 
-`web_fetch` สามารถเรียก **Firecrawl** ด้วยสิทธิ์เริ่มต้นแบบไม่ใช้ key ได้ เพิ่ม API key
-เพื่อให้ได้ขีดจำกัดที่สูงขึ้น:
-
-- `FIRECRAWL_API_KEY` หรือ `plugins.entries.firecrawl.config.webFetch.apiKey`
-
-หากไม่ได้กำหนดค่า Firecrawl เครื่องมือจะ fallback ไปยังการดึงข้อมูลโดยตรงพร้อม Plugin `web-readability` ที่ bundled มา (ไม่มี API แบบเสียเงิน) ปิดใช้งาน `plugins.entries.web-readability.enabled` เพื่อข้ามการแยก Readability ภายในเครื่อง
+`web_fetch` สามารถเรียก Firecrawl โดยใช้สิทธิ์เริ่มต้นที่ไม่ต้องใช้คีย์ เพิ่ม `FIRECRAWL_API_KEY` (หรือ `plugins.entries.firecrawl.config.webFetch.apiKey`) เพื่อเพิ่มขีดจำกัด หากไม่ได้กำหนดค่า Firecrawl เครื่องมือจะย้อนกลับไปดึงข้อมูลโดยตรงร่วมกับ Plugin `web-readability` ที่รวมมาให้ (ไม่มี API แบบชำระเงิน) ปิดใช้ `plugins.entries.web-readability.enabled` เพื่อข้ามการแยกเนื้อหาด้วย Readability ภายใน
 
 ดู [เครื่องมือเว็บ](/th/tools/web)
 
-### 6) ภาพรวมการใช้งาน provider (สถานะ/สุขภาพ)
+### ภาพรวมการใช้งานของผู้ให้บริการ (สถานะ/ความพร้อมใช้งาน)
 
-คำสั่งสถานะบางคำสั่งเรียก **endpoint การใช้งานของ provider** เพื่อแสดงหน้าต่างโควตาหรือสุขภาพของ auth
-โดยทั่วไปเป็นการเรียกปริมาณต่ำ แต่ยังคงกระทบ API ของ provider:
+`openclaw status --usage` และ `openclaw models status --json` เรียกเอนด์พอยต์การใช้งานของผู้ให้บริการเพื่อแสดงช่วงโควตาหรือสถานะความพร้อมของการรับรองความถูกต้อง การเรียกเหล่านี้มีปริมาณน้อยแต่ยังคงเรียก API ของผู้ให้บริการ
 
-- `openclaw status --usage`
-- `openclaw models status --json`
+ดู [CLI สำหรับโมเดล](/th/cli/models)
 
-ดู [Models CLI](/th/cli/models)
+### การสรุปเพื่อป้องกัน Compaction
 
-### 7) การสรุปเพื่อป้องกัน Compaction
+กลไกป้องกัน Compaction สามารถสรุปประวัติเซสชันโดยใช้โมเดลปัจจุบัน ซึ่งจะเรียก API ของผู้ให้บริการเมื่อทำงาน
 
-การป้องกัน Compaction สามารถสรุปประวัติเซสชันโดยใช้ **โมเดลปัจจุบัน** ซึ่ง
-เรียก API ของ provider เมื่อทำงาน
+ดู [การจัดการเซสชันและ Compaction](/th/reference/session-management-compaction)
 
-ดู [การจัดการเซสชัน + Compaction](/th/reference/session-management-compaction)
+### การสแกน/ตรวจสอบโมเดล
 
-### 8) การสแกน / probe โมเดล
+`openclaw models scan` สามารถตรวจสอบโมเดล OpenRouter และใช้ `OPENROUTER_API_KEY` เมื่อเปิดใช้งานการตรวจสอบ
 
-`openclaw models scan` สามารถ probe โมเดล OpenRouter และใช้ `OPENROUTER_API_KEY` เมื่อ
-เปิดใช้งานการ probe
+ดู [CLI สำหรับโมเดล](/th/cli/models)
 
-ดู [Models CLI](/th/cli/models)
+### การสนทนา (เสียงพูด)
 
-### 9) Talk (เสียงพูด)
+โหมดการสนทนาสามารถเรียก ElevenLabs เมื่อกำหนดค่าไว้: `ELEVENLABS_API_KEY` หรือ `talk.providers.elevenlabs.apiKey`
 
-โหมด Talk สามารถเรียก **ElevenLabs** เมื่อกำหนดค่าไว้:
+ดู [โหมดการสนทนา](/th/nodes/talk)
 
-- `ELEVENLABS_API_KEY` หรือ `talk.providers.elevenlabs.apiKey`
+### Skills (API ของบุคคลที่สาม)
 
-ดู [โหมด Talk](/th/nodes/talk)
-
-### 10) Skills (API ของบุคคลที่สาม)
-
-Skills สามารถจัดเก็บ `apiKey` ใน `skills.entries.<name>.apiKey` หาก skill ใช้ key นั้นกับ
-API ภายนอก อาจเกิดค่าใช้จ่ายตาม provider ของ skill นั้น
+Skills สามารถจัดเก็บ `apiKey` ไว้ใน `skills.entries.<name>.apiKey` หาก Skills ใช้คีย์ดังกล่าวกับ API ภายนอก ค่าใช้จ่ายจะเป็นไปตามผู้ให้บริการของ Skills นั้น
 
 ดู [Skills](/th/tools/skills)
 
-## ที่เกี่ยวข้อง
+## เนื้อหาที่เกี่ยวข้อง
 
-- [การใช้โทเค็นและต้นทุน](/th/reference/token-use)
+- [การใช้โทเค็นและค่าใช้จ่าย](/th/reference/token-use)
 - [การแคชพรอมป์](/th/reference/prompt-caching)
 - [การติดตามการใช้งาน](/th/concepts/usage-tracking)

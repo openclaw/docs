@@ -1,39 +1,40 @@
 ---
 read_when:
-    - Вам потрібне перетворення тексту на мовлення ElevenLabs в OpenClaw
-    - Вам потрібен ElevenLabs Scribe для перетворення мовлення на текст для аудіовкладень
-    - Вам потрібна транскрипція в реальному часі від ElevenLabs для голосового дзвінка або Google Meet
-summary: Використовуйте мовлення ElevenLabs, Scribe STT і транскрипцію в реальному часі з OpenClaw
+    - Ви хочете використовувати синтез мовлення ElevenLabs в OpenClaw
+    - Ви хочете використовувати перетворення мовлення на текст ElevenLabs Scribe для аудіовкладень
+    - Вам потрібне транскрибування в реальному часі від ElevenLabs для голосового виклику або Google Meet
+summary: Використовуйте синтез мовлення ElevenLabs, Scribe STT і транскрибування в реальному часі з OpenClaw
 title: ElevenLabs
 x-i18n:
-    generated_at: "2026-06-27T18:10:35Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:41:37Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 126161d7e378382700f203efa9bce1bdd5fe7267b230e2d3d0e45112407d6a7b
+    source_hash: c11b727bb0b1d645c424821dd1bc54c7109d50bd31e3853d04dfa25916bc66c7
     source_path: providers/elevenlabs.md
     workflow: 16
 ---
 
-OpenClaw використовує ElevenLabs для перетворення тексту на мовлення, пакетного перетворення мовлення на текст за допомогою Scribe
-v2 і потокового STT за допомогою Scribe v2 Realtime.
+OpenClaw використовує ElevenLabs для синтезу мовлення з тексту, пакетного розпізнавання мовлення за допомогою Scribe
+v2 і потокового розпізнавання мовлення за допомогою Scribe v2 Realtime. Plugin постачається в комплекті та
+ввімкнений за замовчуванням; крок `plugins install` не потрібен.
 
-| Можливість               | Поверхня OpenClaw                                                     | Типово                  |
-| ------------------------ | -------------------------------------------------------------------- | ------------------------ |
-| Перетворення тексту на мовлення           | `messages.tts` / `talk`                                              | `eleven_multilingual_v2` |
-| Пакетне перетворення мовлення на текст     | `tools.media.audio`                                                  | `scribe_v2`              |
-| Потокове перетворення мовлення на текст | Потокова передача Voice Call або Google Meet `realtime.transcriptionProvider` | `scribe_v2_realtime`     |
+| Можливість                         | Поверхня OpenClaw                                                   | Значення за замовчуванням |
+| ---------------------------------- | ------------------------------------------------------------------- | ------------------------- |
+| Синтез мовлення з тексту           | `messages.tts` / `talk`                                             | `eleven_multilingual_v2`  |
+| Пакетне розпізнавання мовлення     | `tools.media.audio`                                                 | `scribe_v2`               |
+| Потокове розпізнавання мовлення    | Потокова передача Voice Call або `realtime.transcriptionProvider` у Google Meet | `scribe_v2_realtime`      |
 
 ## Автентифікація
 
-Установіть `ELEVENLABS_API_KEY` у середовищі. `XI_API_KEY` також приймається для
+Установіть `ELEVENLABS_API_KEY` у середовищі. `XI_API_KEY` також підтримується для
 сумісності з наявними інструментами ElevenLabs.
 
 ```bash
 export ELEVENLABS_API_KEY="..."
 ```
 
-## Перетворення тексту на мовлення
+## Синтез мовлення з тексту
 
 ```json5
 {
@@ -42,7 +43,7 @@ export ELEVENLABS_API_KEY="..."
       providers: {
         elevenlabs: {
           apiKey: "${ELEVENLABS_API_KEY}",
-          speakerVoiceId: "pMsXgVXv3BLzUgSXRplE",
+          voiceId: "pMsXgVXv3BLzUgSXRplE",
           modelId: "eleven_multilingual_v2",
         },
       },
@@ -51,19 +52,19 @@ export ELEVENLABS_API_KEY="..."
 }
 ```
 
-Установіть `modelId` на `eleven_v3`, щоб використовувати ElevenLabs v3 TTS. OpenClaw залишає
-`eleven_multilingual_v2` типовим значенням для наявних інсталяцій.
+Установіть для `modelId` значення `eleven_v3`, щоб використовувати синтез мовлення ElevenLabs v3. OpenClaw зберігає
+`eleven_multilingual_v2` як значення за замовчуванням для наявних інсталяцій.
 
-Голосові канали Discord використовують потокову кінцеву точку TTS ElevenLabs, коли ElevenLabs є
-вибраним постачальником `voice.tts`/`messages.tts`. Відтворення починається з
-поверненого аудіопотоку, замість того щоб чекати, доки OpenClaw спершу завантажить і запише
-весь аудіофайл. `latencyTier` зіставляється з параметром запиту ElevenLabs
-`optimize_streaming_latency` для моделей, які його приймають; OpenClaw
-пропускає цей параметр для `eleven_v3`, яка його відхиляє.
+Голосові канали Discord використовують потокову кінцеву точку синтезу мовлення ElevenLabs, коли ElevenLabs
+вибрано як постачальника `voice.tts`/`messages.tts`: відтворення починається з
+отриманого аудіопотоку, не очікуючи, поки OpenClaw спочатку завантажить увесь
+аудіофайл. `latencyTier` зіставляється з параметром запиту ElevenLabs `optimize_streaming_latency`
+для моделей, які його підтримують; OpenClaw не передає цей параметр для
+`eleven_v3`, оскільки ця модель його відхиляє.
 
-## Перетворення мовлення на текст
+## Розпізнавання мовлення
 
-Використовуйте Scribe v2 для вхідних аудіовкладень і коротких записаних голосових сегментів:
+Використовуйте Scribe v2 для вхідних аудіовкладень і коротких записаних голосових фрагментів:
 
 ```json5
 {
@@ -78,22 +79,22 @@ export ELEVENLABS_API_KEY="..."
 }
 ```
 
-OpenClaw надсилає multipart-аудіо до ElevenLabs `/v1/speech-to-text` з
-`model_id: "scribe_v2"`. Підказки мови зіставляються з `language_code`, якщо вони наявні.
+OpenClaw надсилає багатокомпонентні аудіодані до кінцевої точки ElevenLabs `/v1/speech-to-text` із
+`model_id: "scribe_v2"`. Підказки щодо мови, якщо вони наявні, зіставляються з `language_code`.
 
-## Потокове STT
+## Потокове розпізнавання мовлення
 
-Вбудований Plugin `elevenlabs` реєструє Scribe v2 Realtime для Voice Call і
-потокової транскрипції в режимі агента Google Meet.
+Вбудований Plugin `elevenlabs` реєструє Scribe v2 Realtime для потокового розпізнавання мовлення
+у Voice Call і режимі агента Google Meet.
 
-| Налаштування         | Шлях конфігурації                                                               | Типово                                           |
-| --------------- | ------------------------------------------------------------------------- | ------------------------------------------------- |
-| Ключ API         | `plugins.entries.voice-call.config.streaming.providers.elevenlabs.apiKey` | Повертається до `ELEVENLABS_API_KEY` / `XI_API_KEY` |
-| Модель           | `...elevenlabs.modelId`                                                   | `scribe_v2_realtime`                              |
-| Формат аудіо    | `...elevenlabs.audioFormat`                                               | `ulaw_8000`                                       |
-| Частота дискретизації     | `...elevenlabs.sampleRate`                                                | `8000`                                            |
-| Стратегія фіксації | `...elevenlabs.commitStrategy`                                            | `vad`                                             |
-| Мова        | `...elevenlabs.languageCode`                                              | (не встановлено)                                           |
+| Параметр             | Шлях конфігурації                                                        | Значення за замовчуванням                                  |
+| -------------------- | ------------------------------------------------------------------------ | ----------------------------------------------------------- |
+| Ключ API             | `plugins.entries.voice-call.config.streaming.providers.elevenlabs.apiKey` | Використовує резервно `ELEVENLABS_API_KEY` / `XI_API_KEY`   |
+| Модель               | `...elevenlabs.modelId`                                                  | `scribe_v2_realtime`                                        |
+| Формат аудіо         | `...elevenlabs.audioFormat`                                              | `ulaw_8000`                                                  |
+| Частота дискретизації | `...elevenlabs.sampleRate`                                              | `8000`                                                       |
+| Стратегія фіксації   | `...elevenlabs.commitStrategy`                                           | `vad`                                                        |
+| Мова                 | `...elevenlabs.languageCode`                                             | (не задано)                                                  |
 
 ```json5
 {
@@ -121,18 +122,18 @@ OpenClaw надсилає multipart-аудіо до ElevenLabs `/v1/speech-to-te
 ```
 
 <Note>
-Voice Call отримує медіа Twilio як 8 кГц G.711 u-law. Постачальник ElevenLabs realtime
-типово використовує `ulaw_8000`, тож телефонні кадри можна пересилати без
+Voice Call отримує медіадані Twilio у форматі 8 кГц G.711 u-law. Постачальник ElevenLabs для обробки в реальному часі
+за замовчуванням використовує `ulaw_8000`, тому кадри телефонного аудіо можна передавати без
 транскодування.
 </Note>
 
 Для режиму агента Google Meet установіть
-`plugins.entries.google-meet.config.realtime.transcriptionProvider` на
-`"elevenlabs"` і налаштуйте той самий блок постачальника в
+`plugins.entries.google-meet.config.realtime.transcriptionProvider` у значення
+`"elevenlabs"` і налаштуйте такий самий блок постачальника в
 `plugins.entries.google-meet.config.realtime.providers.elevenlabs`.
 
-## Пов’язане
+## Пов’язані матеріали
 
-- [Перетворення тексту на мовлення](/uk/tools/tts)
+- [Синтез мовлення з тексту](/uk/tools/tts)
 - [Google Meet](/uk/plugins/google-meet)
 - [Вибір моделі](/uk/concepts/model-providers)

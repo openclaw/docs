@@ -1,19 +1,19 @@
 ---
 redirect: /tools/tts
 summary: Переспрямування на /tools/tts
-title: Синтез мовлення
+title: Перетворення тексту на мовлення
 x-i18n:
-    generated_at: "2026-04-24T04:19:49Z"
-    model: gpt-5.4
+    generated_at: "2026-07-12T13:54:34Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: 7a2383813c9a16e4c10e0e26b4de2e519f64425196c7cf4bb4d1bd144002662a
     source_path: tts.md
-    workflow: 15
-    postprocess_version: locale-links-v1
+    workflow: 16
 ---
 
-Цю сторінку перенесено до [Text-to-Speech](/uk/tools/tts).
+Цю сторінку переміщено до розділу [Перетворення тексту на мовлення](/uk/tools/tts).
 
-## Пов’язане
+## Пов’язані матеріали
 
-- [Синтез мовлення](/uk/tools/tts)
+- [Перетворення тексту на мовлення](/uk/tools/tts)

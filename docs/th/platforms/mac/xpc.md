@@ -1,78 +1,74 @@
 ---
 read_when:
     - การแก้ไขสัญญา IPC หรือ IPC ของแอปแถบเมนู
-summary: สถาปัตยกรรม IPC บน macOS สำหรับแอป OpenClaw, การส่งผ่านโหนด Gateway และ PeekabooBridge
+summary: สถาปัตยกรรม IPC บน macOS สำหรับแอป OpenClaw, การรับส่งข้อมูลของโหนด Gateway และ PeekabooBridge
 title: IPC ของ macOS
 x-i18n:
-    generated_at: "2026-06-28T00:13:36Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:24:56Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 436ea0a01dc544d246b4f2f506a2950fd05b36a8cf79f6f03cffe2843eef8c0d
+    source_hash: 39e11af2bb9348d1c1f6e4fe6be95e825d23d5c1aa66e32dae713a89afb12b4f
     source_path: platforms/mac/xpc.md
     workflow: 16
 ---
 
-# สถาปัตยกรรม IPC ของ OpenClaw macOS
+# สถาปัตยกรรม IPC ของ OpenClaw บน macOS
 
-**โมเดลปัจจุบัน:** ซ็อกเก็ต Unix ภายในเครื่องเชื่อมต่อ **บริการโฮสต์ Node** กับ **แอป macOS** สำหรับการอนุมัติ exec + `system.run` มี CLI ดีบัก `openclaw-mac` สำหรับการตรวจสอบการค้นพบ/การเชื่อมต่อ; การกระทำของเอเจนต์ยังคงไหลผ่าน Gateway WebSocket และ `node.invoke` การทำ UI automation ใช้ PeekabooBridge
+ซ็อกเก็ต Unix ภายในเครื่องเชื่อมต่อบริการโฮสต์ Node กับแอป macOS สำหรับการอนุมัติการดำเนินการและ `system.run` มี CLI สำหรับดีบัก `openclaw-mac` (`apps/macos/Sources/OpenClawMacCLI`) เพื่อใช้ตรวจสอบการค้นหาและการเชื่อมต่อ ส่วนการดำเนินการของเอเจนต์ยังคงส่งผ่าน Gateway WebSocket และ `node.invoke` เส้นทาง `computer.act` ที่ทำงานผ่าน Node จะเรียกใช้ระบบอัตโนมัติ Peekaboo แบบฝังภายในโปรเซส ส่วนไคลเอ็นต์ Peekaboo แบบสแตนด์อโลนจะใช้ PeekabooBridge
 
 ## เป้าหมาย
 
-- อินสแตนซ์แอป GUI เดียวที่เป็นเจ้าของงานทั้งหมดที่เกี่ยวข้องกับ TCC (การแจ้งเตือน, การบันทึกหน้าจอ, ไมโครโฟน, คำพูด, AppleScript)
-- พื้นผิวขนาดเล็กสำหรับ automation: Gateway + คำสั่ง Node รวมถึง PeekabooBridge สำหรับ UI automation
-- สิทธิ์ที่คาดเดาได้: ใช้ signed bundle ID เดิมเสมอ เปิดโดย launchd เพื่อให้การอนุญาตของ TCC ยังคงอยู่
+- แอป GUI เพียงอินสแตนซ์เดียวที่รับผิดชอบงานทั้งหมดซึ่งเกี่ยวข้องกับ TCC (การแจ้งเตือน การบันทึกหน้าจอ ไมโครโฟน เสียงพูด และ AppleScript)
+- พื้นผิวขนาดเล็กสำหรับระบบอัตโนมัติ: คำสั่ง Gateway + Node, `computer.act` ภายในโปรเซส และ PeekabooBridge สำหรับไคลเอ็นต์ระบบอัตโนมัติของ UI แบบสแตนด์อโลน
+- สิทธิ์ที่คาดการณ์ได้: ใช้ ID ของบันเดิลที่ลงนามชุดเดิมเสมอและเปิดใช้งานโดย launchd เพื่อให้สิทธิ์ที่ TCC อนุมัติยังคงอยู่
 
 ## วิธีการทำงาน
 
-### Gateway + การขนส่ง Node
+### การรับส่งข้อมูลผ่าน Gateway + Node
 
-- แอปรัน Gateway (โหมดภายในเครื่อง) และเชื่อมต่อกับ Gateway ในฐานะ Node
-- การกระทำของเอเจนต์ดำเนินการผ่าน `node.invoke` (เช่น `system.run`, `system.notify`, `canvas.*`)
-- คำสั่งทั่วไปของ Mac Node ได้แก่ `canvas.*`, `camera.snap`, `camera.clip`,
-  `screen.snapshot`, `screen.record`, `system.run`, และ `system.notify`
-- Node รายงานแมป `permissions` เพื่อให้เอเจนต์เห็นได้ว่ามีสิทธิ์เข้าถึงหน้าจอ,
-  กล้อง, ไมโครโฟน, คำพูด, automation, หรือ accessibility หรือไม่
+- แอปเรียกใช้ Gateway (โหมดภายในเครื่อง) และเชื่อมต่อกับ Gateway ในฐานะ Node
+- การดำเนินการของเอเจนต์ทำผ่าน `node.invoke` (เช่น `system.run`, `system.notify`, `canvas.*`)
+- คำสั่ง Node ประกอบด้วย `canvas.*`, `camera.snap`, `camera.clip`, `screen.snapshot`, `screen.record`, `computer.act`, `system.run` และ `system.notify`
+- Node รายงานแมป `permissions` เพื่อให้เอเจนต์ตรวจสอบได้ว่ามีสิทธิ์เข้าถึงหน้าจอ กล้อง ไมโครโฟน เสียงพูด ระบบอัตโนมัติ หรือการช่วยการเข้าถึงหรือไม่
 
 ### บริการ Node + IPC ของแอป
 
-- บริการโฮสต์ Node แบบ headless เชื่อมต่อกับ Gateway WebSocket
-- คำขอ `system.run` จะถูกส่งต่อไปยังแอป macOS ผ่านซ็อกเก็ต Unix ภายในเครื่อง
-- แอปดำเนินการ exec ในบริบท UI, แสดงพรอมป์หากจำเป็น, และส่งคืนเอาต์พุต
+- บริการโฮสต์ Node แบบไม่มีส่วนติดต่อผู้ใช้เชื่อมต่อกับ Gateway WebSocket
+- คำขอ `system.run` จะถูกส่งต่อไปยังแอป macOS ผ่านซ็อกเก็ต Unix ภายในเครื่อง (`ExecApprovalsSocket.swift`)
+- แอปดำเนินการคำสั่งในบริบทของ UI แจ้งขอการยืนยันหากจำเป็น และส่งผลลัพธ์กลับ
 
 แผนภาพ (SCI):
 
-```
+```text
 Agent -> Gateway -> Node Service (WS)
                       |  IPC (UDS + token + HMAC + TTL)
                       v
                   Mac App (UI + TCC + system.run)
 ```
 
-### PeekabooBridge (UI automation)
+### PeekabooBridge (ระบบอัตโนมัติของ UI)
 
-- UI automation ใช้ซ็อกเก็ต UNIX แยกต่างหากชื่อ `bridge.sock` และโปรโตคอล JSON ของ PeekabooBridge
-- ลำดับความสำคัญของโฮสต์ (ฝั่งไคลเอนต์): Peekaboo.app → Claude.app → OpenClaw.app → การรันภายในเครื่อง
-- ความปลอดภัย: โฮสต์ bridge ต้องใช้ TeamID ที่อนุญาต; ทางออกฉุกเฉินสำหรับ same-UID เฉพาะ DEBUG ถูกควบคุมด้วย `PEEKABOO_ALLOW_UNSIGNED_SOCKET_CLIENTS=1` (ข้อตกลงของ Peekaboo)
-- ดู: [การใช้งาน PeekabooBridge](/th/platforms/mac/peekaboo) สำหรับรายละเอียด
+- เครื่องมือ `computer` ในตัวสำหรับเอเจนต์ **ไม่** ใช้ซ็อกเก็ตนี้ Node ของ macOS ที่จับคู่ไว้จะดำเนินการ `computer.act` ภายในโปรเซสของแอปโดยใช้บริการ Peekaboo แบบฝัง
+- ระบบอัตโนมัติของ UI ใช้ซ็อกเก็ต UNIX แยกต่างหาก (`~/Library/Application Support/OpenClaw/<socket>`) และโปรโตคอล JSON ของ PeekabooBridge
+- ลำดับความสำคัญของโฮสต์ (ฝั่งไคลเอ็นต์): Peekaboo.app -> Claude.app -> OpenClaw.app -> การดำเนินการภายในเครื่อง
+- ความปลอดภัย: โฮสต์บริดจ์กำหนดให้ TeamID ต้องอยู่ในรายการที่อนุญาต (`PeekabooBridgeHostCoordinator` ที่รวมมาให้อนุญาตทีมที่กำหนดไว้ตายตัว รวมถึงทีมที่ลงนามแอปเอง) ส่วนช่องทางยกเว้นสำหรับ UID เดียวกันซึ่งใช้ได้เฉพาะ DEBUG จะถูกควบคุมด้วย `PEEKABOO_ALLOW_UNSIGNED_SOCKET_CLIENTS=1` (แนวทางของ Peekaboo)
+- ดูรายละเอียดได้ที่: [การใช้งาน PeekabooBridge](/th/platforms/mac/peekaboo)
 
-## โฟลว์การปฏิบัติงาน
+## ลำดับการดำเนินงาน
 
-- รีสตาร์ต/สร้างใหม่: `SIGN_IDENTITY="Apple Development: <Developer Name> (<TEAMID>)" scripts/restart-mac.sh`
-  - ปิดอินสแตนซ์ที่มีอยู่
-  - Swift build + package
-  - เขียน/บูตสแตรป/kickstart LaunchAgent
-- อินสแตนซ์เดียว: แอปจะออกตั้งแต่ต้นหากมีอินสแตนซ์อื่นที่ใช้ bundle ID เดียวกันกำลังทำงานอยู่
+- เริ่มใหม่/สร้างใหม่: `scripts/restart-mac.sh` จะหยุดอินสแตนซ์ที่มีอยู่ สร้างใหม่ผ่าน Swift จัดแพ็กเกจใหม่ และเปิดใช้งานอีกครั้ง โดยจะตรวจหาข้อมูลประจำตัวสำหรับลงนามที่พร้อมใช้งานโดยอัตโนมัติ และเปลี่ยนไปใช้ `--no-sign` หากไม่พบ ส่ง `--sign` เพื่อบังคับให้ลงนาม (จะล้มเหลวหากไม่มีคีย์พร้อมใช้งาน) หรือ `--no-sign` เพื่อบังคับใช้เส้นทางที่ไม่ลงนาม ตัวแปร `SIGN_IDENTITY` ที่กำหนดไว้ในสภาพแวดล้อมจะถูกยกเลิกการตั้งค่าบนเส้นทางที่ลงนาม เพื่อให้การตรวจหาข้อมูลประจำตัวอัตโนมัติของ `scripts/codesign-mac-app.sh` เลือกใบรับรอง
+- อินสแตนซ์เดียว: แอปตรวจสอบ `NSWorkspace.runningApplications` เพื่อค้นหา ID ของบันเดิลที่ซ้ำกัน และจะออกหากพบมากกว่าหนึ่งอินสแตนซ์ (`isDuplicateInstance()` ใน `MenuBar.swift`)
 
-## หมายเหตุการเสริมความแข็งแกร่ง
+## หมายเหตุด้านการเสริมความปลอดภัย
 
-- ควรกำหนดให้ TeamID ตรงกันสำหรับพื้นผิวที่มีสิทธิ์พิเศษทั้งหมด
-- PeekabooBridge: `PEEKABOO_ALLOW_UNSIGNED_SOCKET_CLIENTS=1` (เฉพาะ DEBUG) อาจอนุญาตให้ผู้เรียก same-UID สำหรับการพัฒนาภายในเครื่อง
-- การสื่อสารทั้งหมดยังคงเป็นแบบภายในเครื่องเท่านั้น; ไม่มีการเปิดเผยซ็อกเก็ตเครือข่าย
-- พรอมป์ TCC มีต้นทางจากชุดแอป GUI เท่านั้น; รักษา signed bundle ID ให้คงที่ตลอดการสร้างใหม่
-- การเสริมความแข็งแกร่ง IPC: โหมดซ็อกเก็ต `0600`, token, การตรวจสอบ peer-UID, HMAC challenge/response, TTL สั้น
+- ควรกำหนดให้ TeamID ตรงกันสำหรับพื้นผิวที่มีสิทธิ์ระดับสูงทั้งหมด
+- PeekabooBridge: `PEEKABOO_ALLOW_UNSIGNED_SOCKET_CLIENTS=1` (เฉพาะ DEBUG) อาจอนุญาตให้ผู้เรียกที่ใช้ UID เดียวกันเข้าถึงได้เพื่อการพัฒนาภายในเครื่อง
+- การสื่อสารทั้งหมดจำกัดอยู่ภายในเครื่องเท่านั้น โดยไม่มีการเปิดเผยซ็อกเก็ตเครือข่าย
+- พรอมต์ TCC มาจากบันเดิลแอป GUI เท่านั้น ควรรักษา ID ของบันเดิลที่ลงนามให้คงเดิมระหว่างการสร้างใหม่
+- การเสริมความปลอดภัยของซ็อกเก็ตการอนุมัติการดำเนินการ: โหมดไฟล์ `0600`, โทเค็นที่ใช้ร่วมกัน, การตรวจสอบ UID ของเพียร์ (`getpeereid`), การท้าทาย/ตอบกลับด้วย HMAC-SHA256 และ TTL ระยะสั้นสำหรับคำขอ
 
-## ที่เกี่ยวข้อง
+## เนื้อหาที่เกี่ยวข้อง
 
 - [แอป macOS](/th/platforms/macos)
-- [โฟลว์ IPC ของ macOS (การอนุมัติ Exec)](/th/tools/exec-approvals-advanced#macos-ipc-flow)
+- [ลำดับ IPC ของ macOS (การอนุมัติการดำเนินการ)](/th/tools/exec-approvals-advanced#macos-ipc-flow)

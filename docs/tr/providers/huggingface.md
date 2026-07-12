@@ -1,39 +1,42 @@
 ---
 read_when:
-    - OpenClaw ile Hugging Face Inference kullanmak istiyorsunuz
-    - HF token ortam değişkenine veya CLI kimlik doğrulama seçimine ihtiyacınız var
+    - OpenClaw ile Hugging Face Inference'ı kullanmak istiyorsunuz
+    - HF token ortam değişkenine veya CLI kimlik doğrulama seçeneğine ihtiyacınız var
 summary: Hugging Face Inference kurulumu (kimlik doğrulama + model seçimi)
-title: Hugging Face (inference)
+title: Hugging Face (çıkarım)
 x-i18n:
-    generated_at: "2026-04-24T09:26:09Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 93b3049e8d42787acba12ec3ddf70603159251dae1d870047f8ffc9242f202a5
-    source_path: providers/huggingface.md
-    workflow: 15
+    generated_at: "2026-07-12T12:42:45Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: c4e0d98c844c053484559254a0bdf4258c3d39954ac5804cdb0d081a651b89df
+    source_path: providers/huggingface.md
+    workflow: 16
 ---
 
-[Hugging Face Inference Providers](https://huggingface.co/docs/inference-providers), tek bir yönlendirici API üzerinden OpenAI uyumlu chat completions sunar. Tek bir token ile birçok modele (DeepSeek, Llama ve daha fazlası) erişirsiniz. OpenClaw, **OpenAI uyumlu uç noktayı** kullanır (yalnızca chat completions); text-to-image, embeddings veya konuşma için [HF inference clients](https://huggingface.co/docs/api-inference/quicktour) doğrudan kullanılmalıdır.
+[Hugging Face Inference Providers](https://huggingface.co/docs/inference-providers), tek bir belirteç altında barındırılan birçok modelin (DeepSeek, Llama ve daha fazlası) önünde OpenAI uyumlu bir sohbet tamamlama yönlendiricisi sunar. OpenClaw yalnızca **sohbet tamamlama uç noktasıyla** iletişim kurar; metinden görsele dönüştürme, gömmeler veya konuşma için doğrudan [HF çıkarım istemcilerini](https://huggingface.co/docs/api-inference/quicktour) kullanın.
 
-- Sağlayıcı: `huggingface`
-- Kimlik doğrulama: `HUGGINGFACE_HUB_TOKEN` veya `HF_TOKEN` (**Make calls to Inference Providers** iznine sahip ince ayarlı token)
-- API: OpenAI uyumlu (`https://router.huggingface.co/v1`)
-- Faturalama: Tek HF token; [fiyatlandırma](https://huggingface.co/docs/inference-providers/pricing) sağlayıcı ücretlerini izler ve ücretsiz katman içerir.
+| Özellik                 | Değer                                                                                                                       |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Sağlayıcı kimliği       | `huggingface`                                                                                                               |
+| Plugin                  | paketle birlikte gelir (varsayılan olarak etkindir, kurulum adımı yoktur)                                                    |
+| Kimlik doğrulama ortam değişkeni | `HUGGINGFACE_HUB_TOKEN` veya `HF_TOKEN` (ayrıntılı izinlere sahip belirteç)                                        |
+| API                     | OpenAI uyumlu (`https://router.huggingface.co/v1`)                                                                          |
+| Faturalandırma          | Tek HF belirteci; [fiyatlandırma](https://huggingface.co/docs/inference-providers/pricing), ücretsiz katmanla birlikte sağlayıcı ücretlerini izler |
 
 ## Başlarken
 
 <Steps>
-  <Step title="İnce ayarlı bir token oluşturun">
-    [Hugging Face Settings Tokens](https://huggingface.co/settings/tokens/new?ownUserPermissions=inference.serverless.write&tokenType=fineGrained) sayfasına gidin ve yeni bir ince ayarlı token oluşturun.
+  <Step title="Ayrıntılı izinlere sahip bir belirteç oluşturun">
+    [Hugging Face Settings Tokens](https://huggingface.co/settings/tokens/new?ownUserPermissions=inference.serverless.write&tokenType=fineGrained) sayfasına gidin ve ayrıntılı izinlere sahip yeni bir belirteç oluşturun.
 
     <Warning>
-    Token üzerinde **Make calls to Inference Providers** izni etkin olmalıdır; aksi hâlde API istekleri reddedilir.
+    Belirteçte **Make calls to Inference Providers** izni etkin olmalıdır; aksi takdirde API istekleri reddedilir.
     </Warning>
 
   </Step>
-  <Step title="Onboarding çalıştırın">
-    Sağlayıcı açılır menüsünde **Hugging Face** seçin, ardından istendiğinde API anahtarınızı girin:
+  <Step title="İlk kurulumu çalıştırın">
+    Sağlayıcı açılır menüsünde **Hugging Face** seçeneğini belirleyin, ardından istendiğinde API anahtarınızı girin:
 
     ```bash
     openclaw onboard --auth-choice huggingface-api-key
@@ -41,9 +44,7 @@ x-i18n:
 
   </Step>
   <Step title="Varsayılan bir model seçin">
-    **Default Hugging Face model** açılır menüsünden istediğiniz modeli seçin. Geçerli bir token varsa liste Inference API'den yüklenir; aksi hâlde yerleşik liste gösterilir. Seçiminiz varsayılan model olarak kaydedilir.
-
-    Varsayılan modeli daha sonra yapılandırmada da ayarlayabilir veya değiştirebilirsiniz:
+    **Varsayılan Hugging Face modeli** açılır menüsünden bir model seçin. Belirteciniz geçerliyse liste Inference API üzerinden yüklenir; aksi takdirde OpenClaw aşağıdaki yerleşik kataloğu gösterir. Seçiminiz `agents.defaults.model.primary` olarak kaydedilir:
 
     ```json5
     {
@@ -72,132 +73,88 @@ openclaw onboard --non-interactive \
   --huggingface-api-key "$HF_TOKEN"
 ```
 
-Bu, `huggingface/deepseek-ai/DeepSeek-R1` modelini varsayılan model olarak ayarlar.
+`huggingface/deepseek-ai/DeepSeek-R1` modelini varsayılan model olarak ayarlar.
 
 ## Model kimlikleri
 
-Model başvuruları `huggingface/<org>/<model>` biçimini kullanır (Hub tarzı kimlikler). Aşağıdaki liste **GET** `https://router.huggingface.co/v1/models` çıktısındandır; kataloğunuz daha fazlasını içerebilir.
+Model başvuruları `huggingface/<org>/<model>` biçimini kullanır (Hub tarzı kimlikler). OpenClaw'ın yerleşik kataloğu:
 
-| Model                  | Başvuru (`huggingface/` ile önekleyin) |
-| ---------------------- | -------------------------------------- |
-| DeepSeek R1            | `deepseek-ai/DeepSeek-R1`              |
-| DeepSeek V3.2          | `deepseek-ai/DeepSeek-V3.2`            |
-| Qwen3 8B               | `Qwen/Qwen3-8B`                        |
-| Qwen2.5 7B Instruct    | `Qwen/Qwen2.5-7B-Instruct`             |
-| Qwen3 32B              | `Qwen/Qwen3-32B`                       |
-| Llama 3.3 70B Instruct | `meta-llama/Llama-3.3-70B-Instruct`    |
-| Llama 3.1 8B Instruct  | `meta-llama/Llama-3.1-8B-Instruct`     |
-| GPT-OSS 120B           | `openai/gpt-oss-120b`                  |
-| GLM 4.7                | `zai-org/GLM-4.7`                      |
-| Kimi K2.5              | `moonshotai/Kimi-K2.5`                 |
+| Model                        | Başvuru (`huggingface/` önekiyle)          |
+| ---------------------------- | ------------------------------------------ |
+| DeepSeek R1                  | `deepseek-ai/DeepSeek-R1`                  |
+| DeepSeek V3.1                | `deepseek-ai/DeepSeek-V3.1`                |
+| GPT-OSS 120B                 | `openai/gpt-oss-120b`                      |
+| Llama 3.3 70B Instruct Turbo | `meta-llama/Llama-3.3-70B-Instruct-Turbo`  |
 
 <Tip>
-Her model kimliğinin sonuna `:fastest` veya `:cheapest` ekleyebilirsiniz. Varsayılan sıranızı [Inference Provider settings](https://hf.co/settings/inference-providers) içinde ayarlayın; tam liste için [Inference Providers](https://huggingface.co/docs/inference-providers) ve **GET** `https://router.huggingface.co/v1/models` bölümüne bakın.
+Belirteciniz geçerliyse OpenClaw, ilk kurulum sırasında ve Gateway başlatılırken **GET** `https://router.huggingface.co/v1/models` üzerinden diğer tüm modelleri de keşfeder; böylece kataloğunuz yukarıdaki dört modelden çok daha fazlasını içerebilir. Herhangi bir model kimliğinin sonuna `:fastest` veya `:cheapest` ekleyebilirsiniz; HF yönlendiricisi isteği eşleşen çıkarım sağlayıcısına yönlendirir. Varsayılan sağlayıcı sıralamanızı [Inference Provider ayarlarında](https://hf.co/settings/inference-providers) belirleyin.
 </Tip>
 
 ## Gelişmiş yapılandırma
 
 <AccordionGroup>
-  <Accordion title="Model keşfi ve onboarding açılır menüsü">
-    OpenClaw, modelleri **Inference endpoint'e doğrudan** çağrı yaparak keşfeder:
+  <Accordion title="Model keşfi ve ilk kurulum açılır menüsü">
+    OpenClaw modelleri şu istekle keşfeder:
 
     ```bash
     GET https://router.huggingface.co/v1/models
+    Authorization: Bearer $HUGGINGFACE_HUB_TOKEN   # veya $HF_TOKEN
     ```
 
-    (İsteğe bağlı: tam liste için `Authorization: Bearer $HUGGINGFACE_HUB_TOKEN` veya `$HF_TOKEN` gönderin; bazı uç noktalar kimlik doğrulama olmadan yalnızca alt küme döndürür.) Yanıt OpenAI tarzı `{ "object": "list", "data": [ { "id": "Qwen/Qwen3-8B", "owned_by": "Qwen", ... }, ... ] }` biçimindedir.
+    Yanıt OpenAI tarzındadır: `{ "object": "list", "data": [ { "id": "Qwen/Qwen3-8B", "owned_by": "Qwen", ... }, ... ] }`.
 
-    Bir Hugging Face API anahtarı yapılandırdığınızda (onboarding, `HUGGINGFACE_HUB_TOKEN` veya `HF_TOKEN` üzerinden), OpenClaw kullanılabilir chat-completion modellerini keşfetmek için bu GET çağrısını kullanır. **Etkileşimli kurulum** sırasında, token'ınızı girdikten sonra bu listeden doldurulan (veya istek başarısız olursa yerleşik katalogdan gelen) bir **Default Hugging Face model** açılır menüsü görürsünüz. Çalışma zamanında (örneğin Gateway başlangıcında), anahtar mevcut olduğunda OpenClaw katalogu yenilemek için yine **GET** `https://router.huggingface.co/v1/models` çağrısını yapar. Liste, yerleşik bir katalogla (bağlam penceresi ve maliyet gibi meta veriler için) birleştirilir. İstek başarısız olursa veya anahtar ayarlı değilse yalnızca yerleşik katalog kullanılır.
+    Yapılandırılmış bir anahtar bulunduğunda (ilk kurulum, `HUGGINGFACE_HUB_TOKEN` veya `HF_TOKEN`), etkileşimli kurulum sırasındaki **Varsayılan Hugging Face modeli** açılır menüsü bu uç noktadan doldurulur. Gateway başlatılırken kataloğu yenilemek için aynı çağrı tekrarlanır. Keşfedilen modeller yukarıdaki yerleşik katalogla birleştirilir (bir kimlik eşleştiğinde bağlam penceresi ve maliyet gibi meta veriler için kullanılır). İstek başarısız olursa, veri döndürmezse veya herhangi bir anahtar ayarlanmamışsa OpenClaw yalnızca yerleşik kataloğu kullanır.
+
+    Sağlayıcıyı kaldırmadan keşfi devre dışı bırakın:
+
+    ```bash
+    openclaw config set plugins.entries.huggingface.config.discovery.enabled false
+    ```
 
   </Accordion>
 
-  <Accordion title="Model adları, takma adlar ve ilke sonekleri">
-    - **API'den gelen ad:** Model görünen adı, API `name`, `title` veya `display_name` döndürdüğünde **GET /v1/models** üzerinden doldurulur; aksi hâlde model kimliğinden türetilir (örneğin `deepseek-ai/DeepSeek-R1`, "DeepSeek R1" olur).
-    - **Görünen adı geçersiz kıl:** CLI ve UI içinde istediğiniz şekilde görünmesi için yapılandırmada model başına özel bir etiket ayarlayabilirsiniz:
+  <Accordion title="Model adları, diğer adlar ve ilke sonekleri">
+    - **API'den gelen ad:** keşfedilen modeller, varsa API'nin `name`, `title` veya `display_name` değerini kullanır; aksi takdirde OpenClaw model kimliğinden bir ad türetir (örneğin `deepseek-ai/DeepSeek-R1`, "DeepSeek R1" olur).
+    - **Görünen adı geçersiz kılma:** yapılandırmada her model için özel bir etiket ayarlayın:
 
     ```json5
     {
       agents: {
         defaults: {
           models: {
-            "huggingface/deepseek-ai/DeepSeek-R1": { alias: "DeepSeek R1 (hızlı)" },
-            "huggingface/deepseek-ai/DeepSeek-R1:cheapest": { alias: "DeepSeek R1 (ucuz)" },
+            "huggingface/deepseek-ai/DeepSeek-R1": { alias: "DeepSeek R1 (fast)" },
+            "huggingface/deepseek-ai/DeepSeek-R1:cheapest": { alias: "DeepSeek R1 (cheap)" },
           },
         },
       },
     }
     ```
 
-    - **İlke sonekleri:** OpenClaw'ın paketle gelen Hugging Face belgeleri ve yardımcıları şu iki soneki yerleşik ilke varyantları olarak değerlendirir:
-      - **`:fastest`** — en yüksek işlem hacmi.
-      - **`:cheapest`** — çıktı belirteci başına en düşük maliyet.
-
-      Bunları `models.providers.huggingface.models` içinde ayrı girdiler olarak ekleyebilir veya `model.primary` değerini sonekli ayarlayabilirsiniz. Varsayılan sağlayıcı sıranızı [Inference Provider settings](https://hf.co/settings/inference-providers) içinde de ayarlayabilirsiniz (sonek yoksa = o sırayı kullan).
-
-    - **Yapılandırma birleştirme:** `models.providers.huggingface.models` içindeki mevcut girdiler (örneğin `models.json` içinde olanlar) yapılandırma birleştirilirken korunur. Böylece orada ayarladığınız özel `name`, `alias` veya model seçenekleri korunur.
+    - **İlke sonekleri:** `:fastest` ve `:cheapest`, OpenClaw'ın yeniden yazdığı ifadeler değil, HF yönlendirici kurallarıdır: sonek model kimliğinin bir parçası olarak aynen gönderilir ve HF yönlendiricisi eşleşen çıkarım sağlayıcısını seçer. Her sonek için ayrı bir diğer ad istiyorsanız her çeşidi `models.providers.huggingface.models` altında (veya `model.primary` içinde) kendi girdisi olarak ekleyin.
+    - **Yapılandırma birleştirme:** `models.providers.huggingface.models` içindeki mevcut girdiler (örneğin `models.json` içindekiler) yapılandırma birleştirilirken korunur; dolayısıyla burada ayarladığınız özel `name`, `alias` veya model seçenekleri yeniden başlatmalar boyunca kalıcı olur.
 
   </Accordion>
 
-  <Accordion title="Ortam ve daemon kurulumu">
-    Gateway bir daemon (launchd/systemd) olarak çalışıyorsa `HUGGINGFACE_HUB_TOKEN` veya `HF_TOKEN` değerinin o sürece de mevcut olduğundan emin olun (örneğin `~/.openclaw/.env` içinde veya `env.shellEnv` üzerinden).
+  <Accordion title="Ortam ve arka plan hizmeti kurulumu">
+    Gateway bir arka plan hizmeti (launchd/systemd) olarak çalışıyorsa `HUGGINGFACE_HUB_TOKEN` veya `HF_TOKEN` değişkeninin bu süreç tarafından kullanılabildiğinden emin olun (örneğin `~/.openclaw/.env` içinde veya `env.shellEnv` aracılığıyla).
 
     <Note>
-    OpenClaw, ortam değişkeni takma adları olarak hem `HUGGINGFACE_HUB_TOKEN` hem de `HF_TOKEN` kabul eder. İkisinden biri çalışır; ikisi de ayarlıysa `HUGGINGFACE_HUB_TOKEN` önceliklidir.
+    OpenClaw hem `HUGGINGFACE_HUB_TOKEN` hem de `HF_TOKEN` değişkenini kabul eder. Her ikisi de ayarlanmışsa `HUGGINGFACE_HUB_TOKEN` önceliklidir.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Yapılandırma: Qwen yedeğiyle DeepSeek R1">
+  <Accordion title="Yapılandırma: Yedekli DeepSeek R1">
     ```json5
     {
       agents: {
         defaults: {
           model: {
             primary: "huggingface/deepseek-ai/DeepSeek-R1",
-            fallbacks: ["huggingface/Qwen/Qwen3-8B"],
+            fallbacks: ["huggingface/openai/gpt-oss-120b"],
           },
           models: {
             "huggingface/deepseek-ai/DeepSeek-R1": { alias: "DeepSeek R1" },
-            "huggingface/Qwen/Qwen3-8B": { alias: "Qwen3 8B" },
-          },
-        },
-      },
-    }
-    ```
-  </Accordion>
-
-  <Accordion title="Yapılandırma: cheapest ve fastest varyantlarıyla Qwen">
-    ```json5
-    {
-      agents: {
-        defaults: {
-          model: { primary: "huggingface/Qwen/Qwen3-8B" },
-          models: {
-            "huggingface/Qwen/Qwen3-8B": { alias: "Qwen3 8B" },
-            "huggingface/Qwen/Qwen3-8B:cheapest": { alias: "Qwen3 8B (en ucuz)" },
-            "huggingface/Qwen/Qwen3-8B:fastest": { alias: "Qwen3 8B (en hızlı)" },
-          },
-        },
-      },
-    }
-    ```
-  </Accordion>
-
-  <Accordion title="Yapılandırma: takma adlarla DeepSeek + Llama + GPT-OSS">
-    ```json5
-    {
-      agents: {
-        defaults: {
-          model: {
-            primary: "huggingface/deepseek-ai/DeepSeek-V3.2",
-            fallbacks: [
-              "huggingface/meta-llama/Llama-3.3-70B-Instruct",
-              "huggingface/openai/gpt-oss-120b",
-            ],
-          },
-          models: {
-            "huggingface/deepseek-ai/DeepSeek-V3.2": { alias: "DeepSeek V3.2" },
-            "huggingface/meta-llama/Llama-3.3-70B-Instruct": { alias: "Llama 3.3 70B" },
             "huggingface/openai/gpt-oss-120b": { alias: "GPT-OSS 120B" },
           },
         },
@@ -206,17 +163,39 @@ Her model kimliğinin sonuna `:fastest` veya `:cheapest` ekleyebilirsiniz. Varsa
     ```
   </Accordion>
 
-  <Accordion title="Yapılandırma: ilke sonekleriyle birden çok Qwen ve DeepSeek">
+  <Accordion title="Yapılandırma: En ucuz ve en hızlı çeşitleriyle DeepSeek">
     ```json5
     {
       agents: {
         defaults: {
-          model: { primary: "huggingface/Qwen/Qwen2.5-7B-Instruct:cheapest" },
+          model: { primary: "huggingface/deepseek-ai/DeepSeek-R1" },
           models: {
-            "huggingface/Qwen/Qwen2.5-7B-Instruct": { alias: "Qwen2.5 7B" },
-            "huggingface/Qwen/Qwen2.5-7B-Instruct:cheapest": { alias: "Qwen2.5 7B (ucuz)" },
-            "huggingface/deepseek-ai/DeepSeek-R1:fastest": { alias: "DeepSeek R1 (hızlı)" },
-            "huggingface/meta-llama/Llama-3.1-8B-Instruct": { alias: "Llama 3.1 8B" },
+            "huggingface/deepseek-ai/DeepSeek-R1": { alias: "DeepSeek R1" },
+            "huggingface/deepseek-ai/DeepSeek-R1:cheapest": { alias: "DeepSeek R1 (cheapest)" },
+            "huggingface/deepseek-ai/DeepSeek-R1:fastest": { alias: "DeepSeek R1 (fastest)" },
+          },
+        },
+      },
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="Yapılandırma: Diğer adlarla DeepSeek + Llama + GPT-OSS">
+    ```json5
+    {
+      agents: {
+        defaults: {
+          model: {
+            primary: "huggingface/deepseek-ai/DeepSeek-V3.1",
+            fallbacks: [
+              "huggingface/meta-llama/Llama-3.3-70B-Instruct-Turbo",
+              "huggingface/openai/gpt-oss-120b",
+            ],
+          },
+          models: {
+            "huggingface/deepseek-ai/DeepSeek-V3.1": { alias: "DeepSeek V3.1" },
+            "huggingface/meta-llama/Llama-3.3-70B-Instruct-Turbo": { alias: "Llama 3.3 70B Turbo" },
+            "huggingface/openai/gpt-oss-120b": { alias: "GPT-OSS 120B" },
           },
         },
       },
@@ -225,11 +204,11 @@ Her model kimliğinin sonuna `:fastest` veya `:cheapest` ekleyebilirsiniz. Varsa
   </Accordion>
 </AccordionGroup>
 
-## İlgili
+## İlgili içerikler
 
 <CardGroup cols={2}>
   <Card title="Model seçimi" href="/tr/concepts/model-providers" icon="layers">
-    Tüm sağlayıcılar, model başvuruları ve devretme davranışı için genel bakış.
+    Tüm sağlayıcılara, model başvurularına ve yük devretme davranışına genel bakış.
   </Card>
   <Card title="Model seçimi" href="/tr/concepts/models" icon="brain">
     Modellerin nasıl seçileceği ve yapılandırılacağı.
@@ -238,6 +217,6 @@ Her model kimliğinin sonuna `:fastest` veya `:cheapest` ekleyebilirsiniz. Varsa
     Resmî Hugging Face Inference Providers belgeleri.
   </Card>
   <Card title="Yapılandırma" href="/tr/gateway/configuration" icon="gear">
-    Tam yapılandırma başvurusu.
+    Eksiksiz yapılandırma başvurusu.
   </Card>
 </CardGroup>

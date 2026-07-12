@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz Plugin zalo
-summary: OpenClaw Zalo Plugin kanału do czatów botów i webhooków.
+    - Instalujesz, konfigurujesz lub audytujesz plugin zalo
+summary: Plugin kanału Zalo dla OpenClaw do czatów z botem i przez webhook.
 title: Plugin Zalo
 x-i18n:
-    generated_at: "2026-06-27T18:04:57Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:31:20Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: ff9da1e1591eaad36db74a27f817dd9dac8791af2d5030fcd3419ee50d2ed4aa
@@ -15,16 +15,16 @@ x-i18n:
 
 # Plugin Zalo
 
-Plugin kanału Zalo dla OpenClaw do czatów botów i Webhook.
+Plugin kanału Zalo dla OpenClaw, obsługujący czaty z botem i przez webhook.
 
 ## Dystrybucja
 
 - Pakiet: `@openclaw/zalo`
-- Ścieżka instalacji: npm; ClawHub
+- Sposób instalacji: npm; ClawHub
 
-## Powierzchnia
+## Obszar
 
-channels: zalo
+kanały: zalo
 
 ## Powiązana dokumentacja
 

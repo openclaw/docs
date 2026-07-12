@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Diffs Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz.
-summary: Aracılar için OpenClaw salt okunur diff görüntüleyici Plugin’i ve dosya işleyicisi.
-title: Diffs Plugin
+    - Diffs Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
+summary: Ajanlar için OpenClaw salt okunur fark görüntüleyici Plugin’i ve dosya işleyicisi.
+title: Diff'ler plugin'i
 x-i18n:
-    generated_at: "2026-06-28T00:59:22Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:01:42Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 836ed7a32a0868ee24eacf8f72e8c7888ebbd5d07ca62b2b6170d6a1919f7382
@@ -15,7 +15,7 @@ x-i18n:
 
 # Diffs Plugin
 
-OpenClaw ajanları için salt okunur diff görüntüleyici Plugin ve dosya işleyici.
+Ajanlar için OpenClaw salt okunur fark görüntüleyici Plugin'i ve dosya işleyicisi.
 
 ## Dağıtım
 

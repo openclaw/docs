@@ -1,11 +1,11 @@
 ---
 read_when:
-    - workboard plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
-summary: Ajanın sahip olduğu sorunlar ve oturumlar için pano çalışma tahtası.
-title: Çalışma panosu Plugin
+    - Workboard Pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
+summary: Agent tarafından yönetilen sorunlar ve oturumlar için gösterge paneli çalışma panosu.
+title: Workboard Plugin'i
 x-i18n:
-    generated_at: "2026-06-28T01:03:39Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:35:39Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 1e5a48a52d45dbe87b73020103c2bc3f0bd46305b4c0d26b3010864af65fa99c
@@ -15,7 +15,7 @@ x-i18n:
 
 # Workboard Plugin'i
 
-Ajan sahipliğindeki sorunlar ve oturumlar için pano iş panosu.
+Aracının sahip olduğu sorunlar ve oturumlar için pano çalışma tahtası.
 
 ## Dağıtım
 
@@ -28,4 +28,4 @@ sözleşmeler: araçlar
 
 ## İlgili belgeler
 
-- [iş panosu](/tr/plugins/workboard)
+- [workboard](/tr/plugins/workboard)

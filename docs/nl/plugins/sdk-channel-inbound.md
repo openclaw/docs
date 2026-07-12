@@ -1,32 +1,32 @@
 ---
 read_when:
-    - Je bouwt of refactort een ontvangstpad voor een Plugin voor berichtenkanalen
-    - Je hebt gedeelde opbouw van inkomende context, sessieopname of verzending van voorbereide antwoorden nodig
-    - Je migreert oude helpers voor kanaalbeurten naar inbound/message-API's
-summary: 'Inkomende-eventhelpers voor kanaalplugins: contextopbouw, gedeelde runnerorchestratie, sessierecord en voorbereide antwoordverzending'
-title: Kanaal-inbound-API
+    - Je bouwt of herstructureert het ontvangstpad van een Plugin voor een berichtenkanaal
+    - U hebt gedeelde opbouw van binnenkomende context, sessieregistratie of voorbereide antwoordverzending nodig
+    - Je migreert oude helpers voor kanaalbeurten naar API's voor inkomende berichten/berichten
+summary: 'Helpers voor inkomende gebeurtenissen voor kanaalplugins: contextopbouw, gedeelde runner-orkestratie, sessierecord en voorbereide antwoordverzending'
+title: API voor inkomende kanaalberichten
 x-i18n:
-    generated_at: "2026-06-27T18:05:45Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:09:41Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d3ffb04438412a3e92b976c34ce31c36cc790967503df35fc435f67637f45bf4
+    source_hash: a85ffaf9501af00e1493b5fbb0454a070626ed6ca41977323b55e84b92075ed1
     source_path: plugins/sdk-channel-inbound.md
     workflow: 16
 ---
 
-Kanaalplugins moeten ontvangstpaden modelleren met de zelfstandige naamwoorden `inbound` en `message`:
+Ontvangstpaden van kanalen volgen één stroom:
 
 ```text
-platform event -> inbound facts/context -> agent reply -> message delivery
+platformgebeurtenis -> inkomende feiten/context -> agentantwoord -> berichtbezorging
 ```
 
-Gebruik `openclaw/plugin-sdk/channel-inbound` voor normalisatie,
-opmaak, roots en orkestratie van inkomende events. Gebruik
-`openclaw/plugin-sdk/channel-outbound` voor native
-verzenden, ontvangstbevestiging, duurzame bezorging en livevoorbeeldgedrag.
+Gebruik `openclaw/plugin-sdk/channel-inbound` voor de normalisatie,
+opmaak, basispaden en orkestratie van inkomende gebeurtenissen. Gebruik
+`openclaw/plugin-sdk/channel-outbound` voor systeemeigen verzending, ontvangstbewijzen, duurzame
+bezorging en gedrag voor livevoorbeelden.
 
-## Kernhelpers
+## Kernhulpfuncties
 
 ```ts
 import {
@@ -36,19 +36,19 @@ import {
 } from "openclaw/plugin-sdk/channel-inbound";
 ```
 
-- `buildChannelInboundEventContext(...)`: projecteer genormaliseerde kanaalgegevens naar
-  de prompt-/sessiecontext. Gebruik `channelContext` om door het kanaal beheerde
-  metadata van afzender/chat door te geven aan pluginhook `ctx.channelContext`; breid
-  `PluginHookChannelSenderContext` of `PluginHookChannelChatContext` vanuit dit
-  subpad uit voor kanaalspecifieke velden.
-- `runChannelInboundEvent(...)`: voer ingest, classificatie, preflight, resolutie,
-  registratie, dispatch en afronding uit voor één inkomend platformevent.
-- `dispatchChannelInboundReply(...)`: registreer en dispatch een al samengesteld
-  inkomend antwoord met een bezorgadapter.
+- `buildChannelInboundEventContext(...)`: projecteert genormaliseerde kanaalfeiten
+  naar de prompt-/sessiecontext. Geef door het kanaal beheerde metadata over
+  afzender/chat door via `channelContext`, die Plugin-hooks zien als
+  `ctx.channelContext`. Breid `PluginHookChannelSenderContext` of
+  `PluginHookChannelChatContext` vanuit dit subpad uit met kanaalspecifieke velden.
+- `runChannelInboundEvent(...)`: voert opname, classificatie, voorafgaande controle,
+  oplossing, registratie, verzending en afronding uit voor één inkomende platformgebeurtenis.
+- `dispatchChannelInboundReply(...)`: registreert en verzendt een reeds
+  samengesteld inkomend antwoord met een bezorgingsadapter.
 
-De geïnjecteerde Plugin-runtime stelt dezelfde high-level helpers beschikbaar onder
-`runtime.channel.inbound.*` voor gebundelde/native kanalen die het
-runtimeobject al ontvangen.
+Gebundelde/systeemeigen kanalen die het geïnjecteerde Plugin-runtimeobject al ontvangen,
+kunnen dezelfde hulpfuncties aanroepen onder `runtime.channel.inbound.*` in plaats van
+dit subpad rechtstreeks te importeren:
 
 ```ts
 await runtime.channel.inbound.run({
@@ -62,20 +62,22 @@ await runtime.channel.inbound.run({
 });
 ```
 
-Compatibiliteitsdispatchers moeten invoer voor `dispatchChannelInboundReply(...)`
-samenstellen en platformbezorging in de bezorgadapter houden. Nieuwe verzendpaden moeten
-de voorkeur geven aan berichtadapters en duurzame berichthelpers.
+Stel invoer voor `dispatchChannelInboundReply(...)` samen voor compatibiliteitsdispatchers
+die platformbezorging in de bezorgingsadapter houden. Nieuwe verzendpaden
+moeten in plaats daarvan berichtadapters en hulpfuncties voor duurzame berichten uit
+`channel-outbound` gebruiken.
 
 ## Migratie
 
-De oude runtimealiassen `runtime.channel.turn.*` zijn verwijderd. Gebruik:
+Runtimealiassen van `runtime.channel.turn.*` zijn verwijderd. Gebruik:
 
-- `runtime.channel.inbound.run(...)` voor ruwe inkomende events.
+- `runtime.channel.inbound.run(...)` voor onbewerkte inkomende gebeurtenissen.
 - `runtime.channel.inbound.dispatchReply(...)` voor samengestelde antwoordcontexten.
-- `runtime.channel.inbound.buildContext(...)` voor payloads van inkomende context.
-- `runtime.channel.inbound.runPreparedReply(...)` alleen voor door het kanaal beheerde voorbereide
-  dispatchpaden die hun eigen dispatchclosure al samenstellen.
+- `runtime.channel.inbound.buildContext(...)` voor inkomende contextpayloads.
+- `runtime.channel.inbound.runPreparedReply(...)`, afgeschaft, alleen voor
+  door het kanaal beheerde voorbereide verzendpaden die hun eigen
+  verzendclosure al samenstellen.
 
-Nieuwe plugincode mag geen kanaal-API's met de naam `turn` introduceren. Houd model- of
-agentturn-vocabulaire binnen agent-/providercode; kanaalplugins gebruiken termen voor inkomend,
-bericht, bezorging en antwoord.
+Nieuwe Plugincode mag geen kanaal-API's met `turn` in de naam introduceren. Houd terminologie
+voor model- of agentbeurten binnen agent-/providercode; kanaalplugins gebruiken termen
+voor inkomend verkeer, berichten, bezorging en antwoorden.

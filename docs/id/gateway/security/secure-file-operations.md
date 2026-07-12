@@ -1,84 +1,82 @@
 ---
 read_when:
-    - Mengubah akses berkas, ekstraksi arsip, penyimpanan ruang kerja, atau helper sistem berkas Plugin
-summary: Cara OpenClaw menangani akses file lokal dengan aman, dan mengapa pembantu Python fs-safe opsional dinonaktifkan secara default
+    - Mengubah akses file, ekstraksi arsip, penyimpanan ruang kerja, atau pembantu sistem file Plugin
+summary: Cara OpenClaw menangani akses berkas lokal dengan aman, dan alasan pembantu Python fs-safe opsional dinonaktifkan secara bawaan
 title: Operasi file yang aman
 x-i18n:
-    generated_at: "2026-05-06T09:14:13Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:15:02Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 19d5b31ec2f2c7ab1033bdb55a701c60468dfac58142f726ecbc9ac933f68e30
+    source_hash: 5c8edf36ddbb8c8bc1edc52ecdf481affe5395d1779c679a40439167dfe70299
     source_path: gateway/security/secure-file-operations.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw menggunakan [`@openclaw/fs-safe`](https://github.com/openclaw/fs-safe) untuk operasi file lokal yang sensitif terhadap keamanan: baca/tulis yang dibatasi root, penggantian atomik, ekstraksi arsip, workspace sementara, status JSON, dan penanganan file rahasia.
+OpenClaw menggunakan [`@openclaw/fs-safe`](https://github.com/openclaw/fs-safe) untuk operasi berkas lokal yang sensitif terhadap keamanan: pembacaan/penulisan yang dibatasi pada direktori akar, penggantian atomik, ekstraksi arsip, ruang kerja sementara, status JSON, dan penanganan berkas rahasia.
 
-Tujuannya adalah **pagar pembatas pustaka** yang konsisten untuk kode OpenClaw tepercaya yang menerima nama jalur tidak tepercaya. Ini bukan sandbox. Izin filesystem host, pengguna OS, kontainer, dan kebijakan agen/alat tetap menentukan radius dampak yang sebenarnya.
+Ini adalah **pagar pengaman pustaka** untuk kode OpenClaw tepercaya yang menerima nama jalur tidak tepercaya, bukan sandbox. Izin sistem berkas host, pengguna OS, kontainer, serta kebijakan agen/alat tetap menentukan cakupan dampak yang sebenarnya.
 
-## Default: tanpa helper Python
+## Bawaan: tanpa pembantu Python
 
-OpenClaw menonaktifkan helper Python POSIX fs-safe secara **default**.
+OpenClaw menetapkan pembantu Python POSIX fs-safe ke **nonaktif** secara bawaan:
 
-Alasannya:
+- Gateway tidak boleh memulai proses pendamping Python persisten kecuali operator mengaktifkannya;
+- sebagian besar instalasi tidak memerlukan pengerasan tambahan terhadap perubahan direktori induk;
+- menonaktifkan Python menjaga perilaku runtime tetap dapat diprediksi di lingkungan desktop, Docker, CI, dan aplikasi terbundel.
 
-- Gateway tidak boleh menjalankan sidecar Python persisten kecuali operator memilih untuk mengaktifkannya;
-- banyak instalasi tidak membutuhkan pengerasan tambahan untuk mutasi direktori induk;
-- menonaktifkan Python membuat perilaku paket/runtime lebih mudah diprediksi di lingkungan desktop, Docker, CI, dan aplikasi terbundel.
-
-OpenClaw hanya mengubah default. Jika Anda menetapkan mode secara eksplisit, fs-safe akan menghormatinya:
+OpenClaw hanya mengubah nilai _bawaan_. Pengaturan eksplisit selalu diutamakan:
 
 ```bash
-# Default OpenClaw behavior: Node-only fs-safe fallbacks.
+# Perilaku bawaan OpenClaw: mekanisme alternatif fs-safe khusus Node.
 OPENCLAW_FS_SAFE_PYTHON_MODE=off
 
-# Opt into the helper when available, falling back if unavailable.
+# Aktifkan pembantu jika tersedia, dengan mekanisme alternatif jika tidak tersedia.
 OPENCLAW_FS_SAFE_PYTHON_MODE=auto
 
-# Fail closed if the helper cannot start.
+# Gagalkan secara tertutup jika pembantu tidak dapat dimulai.
 OPENCLAW_FS_SAFE_PYTHON_MODE=require
 
-# Optional explicit interpreter.
+# Jalur eksplisit opsional untuk interpreter.
 OPENCLAW_FS_SAFE_PYTHON=/usr/bin/python3
 ```
 
-Nama fs-safe generik juga berfungsi: `FS_SAFE_PYTHON_MODE` dan `FS_SAFE_PYTHON`.
+Nama variabel lingkungan generik fs-safe juga dapat digunakan: `FS_SAFE_PYTHON_MODE` dan `FS_SAFE_PYTHON`.
 
-## Yang tetap terlindungi tanpa Python
+Gunakan `require` (bukan `auto`) ketika pembantu merupakan bagian dari postur keamanan Anda; `auto` secara diam-diam beralih ke perilaku khusus Node jika pembantu tidak dapat dimulai.
 
-Dengan helper dinonaktifkan, OpenClaw tetap menggunakan jalur Node dari fs-safe untuk:
+## Perlindungan yang tetap tersedia tanpa Python
 
-- menolak escape jalur relatif seperti `..`, jalur absolut, dan pemisah jalur di tempat yang hanya mengizinkan nama;
-- menyelesaikan operasi melalui handle root tepercaya, bukan pemeriksaan ad hoc `path.resolve(...).startsWith(...)`;
-- menolak pola symlink dan hardlink pada API yang mewajibkan kebijakan tersebut;
-- membuka file dengan pemeriksaan identitas ketika API mengembalikan atau memakai isi file;
-- penulisan atomik ke temp saudara untuk file status/konfigurasi;
-- batas byte untuk pembacaan dan ekstraksi arsip;
-- mode privat untuk file rahasia dan status saat API mewajibkannya.
+Dengan pembantu dinonaktifkan, OpenClaw tetap memperoleh pagar pengaman khusus Node dari fs-safe:
 
-Perlindungan ini mencakup model ancaman OpenClaw normal: kode Gateway tepercaya yang menangani input jalur model/Plugin/saluran tidak tepercaya di dalam satu batas operator tepercaya.
+- menolak pelolosan jalur relatif (`..`), jalur absolut, dan pemisah jalur ketika hanya nama sederhana yang diizinkan;
+- menyelesaikan operasi melalui handel direktori akar tepercaya, bukan pemeriksaan ad hoc `path.resolve(...).startsWith(...)`;
+- menolak pola tautan simbolis dan tautan keras pada API yang mensyaratkan kebijakan tersebut;
+- membuka berkas dengan pemeriksaan identitas ketika API mengembalikan atau menggunakan isi berkas;
+- menulis berkas status/konfigurasi melalui berkas sementara saudara + penggantian nama secara atomik;
+- memberlakukan batas byte untuk pembacaan dan ekstraksi arsip;
+- menerapkan mode berkas privat untuk rahasia dan berkas status ketika diwajibkan oleh API.
 
-## Yang ditambahkan Python
+Hal ini mencakup model ancaman normal OpenClaw: kode Gateway tepercaya yang menangani masukan jalur tidak tepercaya dari model/Plugin/kanal dalam satu batas operator tepercaya.
 
-Pada POSIX, helper opsional fs-safe mempertahankan satu proses Python persisten dan menggunakan operasi filesystem relatif-fd untuk mutasi direktori induk seperti rename, remove, mkdir, stat/list, dan beberapa jalur tulis.
+## Perlindungan tambahan dari Python
 
-Ini mempersempit jendela race dengan UID yang sama, ketika proses lain dapat menukar direktori induk di antara validasi dan mutasi. Ini adalah defense in depth untuk host tempat proses lokal tidak tepercaya dapat memodifikasi direktori yang sama dengan yang sedang dioperasikan OpenClaw.
+Pada POSIX, pembantu opsional mempertahankan satu proses Python persisten dan menggunakan operasi sistem berkas relatif terhadap deskriptor berkas untuk perubahan direktori induk: penggantian nama, penghapusan, pembuatan direktori, pemeriksaan status/daftar, dan beberapa jalur penulisan.
 
-Jika deployment Anda memiliki risiko tersebut dan Python dijamin tersedia, gunakan:
+Hal ini mempersempit celah kondisi balapan dengan UID yang sama ketika proses lain menukar direktori induk di antara validasi dan perubahan—pertahanan berlapis pada host tempat proses lokal tidak tepercaya dapat mengubah direktori yang sama dengan yang digunakan OpenClaw.
+
+Jika penerapan Anda memiliki risiko tersebut dan Python dijamin tersedia, tetapkan:
 
 ```bash
 OPENCLAW_FS_SAFE_PYTHON_MODE=require
 ```
 
-Gunakan `require`, bukan `auto`, ketika helper merupakan bagian dari postur keamanan Anda; `auto` sengaja kembali ke perilaku khusus Node jika helper tidak tersedia.
+## Panduan untuk Plugin dan inti
 
-## Panduan Plugin dan inti
+- Akses berkas yang menghadap Plugin harus melalui pembantu `openclaw/plugin-sdk/*`, bukan `fs` mentah, ketika jalur berasal dari pesan, keluaran model, konfigurasi, atau masukan Plugin.
+- Kode inti harus menggunakan pembungkus fs-safe di bawah `src/infra/*` agar kebijakan proses OpenClaw diterapkan secara konsisten.
+- Ekstraksi arsip harus menggunakan pembantu arsip fs-safe dengan batas eksplisit untuk ukuran, jumlah entri, tautan, dan tujuan.
+- Rahasia harus menggunakan pembantu rahasia OpenClaw atau pembantu rahasia/status privat fs-safe; jangan membuat sendiri pemeriksaan mode di sekitar `fs.writeFile`.
+- Untuk isolasi dari pengguna lokal berbahaya, jangan hanya mengandalkan fs-safe. Jalankan Gateway terpisah dengan pengguna OS/host terpisah, atau gunakan sandboxing.
 
-- Akses file yang berhadapan dengan Plugin harus melalui helper `openclaw/plugin-sdk/*`, bukan `fs` mentah, ketika jalur berasal dari pesan, output model, konfigurasi, atau input Plugin.
-- Kode inti harus menggunakan wrapper fs-safe lokal di bawah `src/infra/*` agar kebijakan proses OpenClaw diterapkan secara konsisten.
-- Ekstraksi arsip harus menggunakan helper arsip fs-safe dengan batas ukuran, jumlah entri, tautan, dan tujuan yang eksplisit.
-- Rahasia harus menggunakan helper rahasia OpenClaw atau helper rahasia/status-privat fs-safe; jangan membuat sendiri pemeriksaan mode di sekitar `fs.writeFile`.
-- Jika Anda membutuhkan isolasi pengguna lokal yang bermusuhan, jangan mengandalkan fs-safe saja. Jalankan Gateway terpisah di bawah pengguna/host OS yang terpisah atau gunakan sandboxing.
-
-Terkait: [Keamanan](/id/gateway/security), [Sandboxing](/id/gateway/sandboxing), [Persetujuan exec](/id/tools/exec-approvals), [Rahasia](/id/gateway/secrets).
+Terkait: [Keamanan](/id/gateway/security), [Sandboxing](/id/gateway/sandboxing), [Persetujuan eksekusi](/id/tools/exec-approvals), [Rahasia](/id/gateway/secrets).

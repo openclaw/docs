@@ -1,14 +1,13 @@
 ---
 read_when:
-    - Você quer escolher um provedor de modelo
-    - Você precisa de uma visão geral rápida dos back-ends de LLM compatíveis
+    - Você quer escolher um provedor de modelos
+    - Você precisa de uma visão geral rápida dos backends de LLM compatíveis
 summary: Provedores de modelos (LLMs) compatíveis com o OpenClaw
 title: Diretório de provedores
 x-i18n:
-    generated_at: "2026-07-12T15:40:05Z"
+    generated_at: "2026-07-12T00:17:43Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: b59843b53265500866e87ee8d888892dacd6045bdb9401a1e7ec08ad4f364090
     source_path: providers/index.md
@@ -56,11 +55,11 @@ Procurando a documentação dos canais de chat (WhatsApp/Telegram/Discord/Slack/
 - [GMI Cloud](/pt-BR/providers/gmi)
 - [Google (Gemini)](/pt-BR/providers/google)
 - [Gradium](/pt-BR/providers/gradium)
-- [Groq (inferência por LPU)](/pt-BR/providers/groq)
+- [Groq (inferência com LPU)](/pt-BR/providers/groq)
 - [Hugging Face (inferência)](/pt-BR/providers/huggingface)
 - [inferrs (modelos locais)](/pt-BR/providers/inferrs)
 - [Kilocode](/pt-BR/providers/kilocode)
-- [LiteLLM (gateway unificado)](/pt-BR/providers/litellm)
+- [LiteLLM (Gateway unificado)](/pt-BR/providers/litellm)
 - [LM Studio (modelos locais)](/pt-BR/providers/lmstudio)
 - [LongCat](/pt-BR/providers/longcat)
 - [MiniMax](/pt-BR/providers/minimax)
@@ -112,7 +111,7 @@ Procurando a documentação dos canais de chat (WhatsApp/Telegram/Discord/Slack/
 
 ## Ferramentas da comunidade
 
-- [Claude Max API Proxy](/pt-BR/providers/claude-max-api-proxy) - Proxy da comunidade para credenciais de assinatura do Claude (verifique a política e os termos da Anthropic antes do uso)
+- [Claude Max API Proxy](/pt-BR/providers/claude-max-api-proxy) - Proxy da comunidade para credenciais de assinatura do Claude (verifique as políticas e os termos da Anthropic antes de usar)
 
 Para consultar o catálogo completo de provedores (xAI, Groq, Mistral etc.) e as configurações avançadas,
 consulte [Provedores de modelos](/pt-BR/concepts/model-providers).

@@ -1,11 +1,11 @@
 ---
 read_when:
-    - أنت تثبّت أو تهيّئ أو تراجع Plugin stepfun
+    - أنت تثبّت Plugin ‏stepfun أو تهيئه أو تدقّق فيه
 summary: يضيف دعم مزوّد نماذج StepFun وStepFun Plan إلى OpenClaw.
-title: Plugin الخاص بـ StepFun
+title: Plugin ‏StepFun
 x-i18n:
-    generated_at: "2026-06-27T18:15:30Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:22:45Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 02e2b7fbfb03a348a8a5d368e6fd039cf834ab7d2a9bf82f79729f360660b5de
@@ -13,9 +13,9 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin StepFun
+# Plugin ‏StepFun
 
-يضيف دعم مزود نموذج StepFun وStepFun Plan إلى OpenClaw.
+يضيف دعم موفّر نماذج StepFun وStepFun Plan إلى OpenClaw.
 
 ## التوزيع
 
@@ -24,7 +24,7 @@ x-i18n:
 
 ## الواجهة
 
-المزودون: stepfun، stepfun-plan
+الموفّرون: stepfun، stepfun-plan
 
 ## الوثائق ذات الصلة
 

@@ -1,29 +1,29 @@
 ---
 read_when:
-    - Aynı izin listesini birden fazla mesaj kanalı genelinde yapılandırma
-    - Özel mesaj ve grup göndereni erişim kurallarını paylaşma
-    - Mesaj kanalı erişim denetimini gözden geçirme
+    - Aynı izin verilenler listesini birden fazla mesaj kanalında yapılandırma
+    - DM ve grup gönderen erişim kurallarını paylaşma
+    - Mesaj kanalı erişim denetimini inceleme
 summary: Mesaj kanalları için yeniden kullanılabilir gönderen izin listeleri
 title: Erişim grupları
 x-i18n:
-    generated_at: "2026-05-10T19:21:10Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:02:28Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1dba4fc84deb6e0c8c7b17ebc10182aa6e4bc2c821070e33df44f384e285266f
+    source_hash: 099abc95e90d9a7b7006d19062c46b4ffdb2aecb1e8e714454a3182131a786d0
     source_path: channels/access-groups.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Erişim grupları, bir kez tanımlayıp kanal izin listelerinden `accessGroup:<name>` ile başvurduğunuz adlandırılmış gönderen listeleridir.
+Erişim grupları, `accessGroups` altında bir kez tanımladığınız ve kanal izin listelerinden `accessGroup:<name>` ile başvurduğunuz adlandırılmış gönderici listeleridir.
 
-Aynı kişilere birkaç ileti kanalında izin verilmesi gerektiğinde veya tek bir güvenilir kümenin hem DM'lere hem de grup gönderen yetkilendirmesine uygulanması gerektiğinde bunları kullanın.
+Aynı kişilere birden fazla mesaj kanalında izin verilmesi gerektiğinde veya güvenilir tek bir kümenin hem DM'lere hem de grup göndericisi yetkilendirmesine uygulanması gerektiğinde bunları kullanın.
 
-Erişim grupları tek başlarına erişim vermez. Bir grup yalnızca bir izin listesi alanı ona başvurduğunda önem kazanır.
+Bir grup tek başına hiçbir izin vermez. Yalnızca bir izin listesi alanı ona başvurduğunda önem kazanır.
 
-## Statik ileti gönderen grupları
+## Statik mesaj göndericisi grupları
 
-Statik gönderen grupları `type: "message.senders"` kullanır.
+Statik gönderici grupları `type: "message.senders"` kullanır. `members`, mesaj kanalı kimliğine göre anahtarlanır; ayrıca her kanal tarafından paylaşılan girdiler için `"*"` kullanılır:
 
 ```json5
 {
@@ -41,20 +41,16 @@ Statik gönderen grupları `type: "message.senders"` kullanır.
 }
 ```
 
-Üye listeleri ileti kanalı kimliğine göre anahtarlanır:
+| Anahtar                    | Anlam                                                                                      |
+| -------------------------- | ------------------------------------------------------------------------------------------ |
+| `"*"`                      | Gruba başvuran her mesaj kanalı için denetlenen ortak girdiler.                            |
+| `discord`, `telegram`, ... | Yalnızca ilgili kanalın izin listesi eşleştirmesi için denetlenen girdiler.                 |
 
-| Anahtar   | Anlam                                                                 |
-| ---------- | ----------------------------------------------------------------------- |
-| `"*"`      | Gruba başvuran her ileti kanalı için denetlenen paylaşılan girdiler. |
-| `discord`  | Yalnızca Discord izin listesi eşleştirmesi için denetlenen girdiler.                    |
-| `telegram` | Yalnızca Telegram izin listesi eşleştirmesi için denetlenen girdiler.                   |
-| `whatsapp` | Yalnızca WhatsApp izin listesi eşleştirmesi için denetlenen girdiler.                   |
-
-Girdiler, hedef kanalın normal `allowFrom` kurallarıyla eşleştirilir. OpenClaw gönderen kimliklerini kanallar arasında çevirmez. Alice'in bir Telegram kimliği ve bir Discord kimliği varsa, her iki kimliği de uygun anahtarların altında listeleyin.
+Girdiler, hedef kanalın normal `allowFrom` kurallarıyla eşleştirilir. OpenClaw, gönderici kimliklerini kanallar arasında dönüştürmez: Alice'in bir Telegram kimliği ve bir Discord kimliği varsa her iki kimliği de eşleşen kanal anahtarlarının altında listeleyin.
 
 ## İzin listelerinden gruplara başvurma
 
-İleti kanalı yolunun gönderen izin listelerini desteklediği her yerde `accessGroup:<name>` ile bir gruba başvurun.
+Mesaj kanalı yolunun gönderici izin listelerini desteklediği her yerde `accessGroup:<name>` ile bir gruba başvurun.
 
 DM izin listesi örneği:
 
@@ -82,7 +78,7 @@ DM izin listesi örneği:
 }
 ```
 
-Grup gönderen izin listesi örneği:
+Grup göndericisi izin listesi örneği:
 
 ```json5
 {
@@ -101,7 +97,7 @@ Grup gönderen izin listesi örneği:
       groupAllowFrom: ["accessGroup:oncall"],
     },
     googlechat: {
-      spaces: {
+      groups: {
         "spaces/AAA": {
           users: ["accessGroup:oncall"],
         },
@@ -124,35 +120,16 @@ Grupları ve doğrudan girdileri birlikte kullanabilirsiniz:
 }
 ```
 
-## Desteklenen ileti kanalı yolları
+## Desteklenen mesaj kanalı yolları
 
-Erişim grupları, aşağıdakiler dahil olmak üzere paylaşılan ileti kanalı yetkilendirme yollarında kullanılabilir:
+Erişim grupları, paylaşılan mesaj kanalı yetkilendirme yollarında çalışır:
 
-- `channels.<channel>.allowFrom` gibi DM gönderen izin listeleri
-- `channels.<channel>.groupAllowFrom` gibi grup gönderen izin listeleri
-- aynı gönderen eşleştirme kurallarını kullanan kanala özgü oda başına gönderen izin listeleri
-- ileti kanalı gönderen izin listelerini yeniden kullanan komut yetkilendirme yolları
+- `channels.<channel>.allowFrom` gibi DM göndericisi izin listeleri
+- `channels.<channel>.groupAllowFrom` gibi grup göndericisi izin listeleri
+- Aynı gönderici eşleştirme kurallarını kullanan kanala özgü oda başına gönderici izin listeleri (örneğin Google Chat `groups.<space>.users`)
+- mesaj kanalı göndericisi izin listelerini yeniden kullanan komut yetkilendirme yolları
 
-Kanal desteği, ilgili kanalın paylaşılan OpenClaw gönderen yetkilendirme yardımcıları üzerinden bağlanıp bağlanmadığına bağlıdır. Mevcut paketli destek Discord, Feishu, Google Chat, iMessage, LINE, Mattermost, Microsoft Teams, Nextcloud Talk, Nostr, QQBot, Signal, WhatsApp, Zalo ve Zalo Personal'ı içerir. Statik `message.senders` grupları kanaldan bağımsız olacak şekilde tasarlanmıştır; bu nedenle yeni ileti kanalları, özel izin listesi genişletmesi yerine paylaşılan Plugin SDK yardımcılarını kullanarak bunları desteklemelidir.
-
-## Plugin tanılamaları
-
-Plugin yazarları, yapılandırılmış erişim grubu durumunu düz bir izin listesine geri genişletmeden inceleyebilir:
-
-```typescript
-import { resolveAccessGroupAllowFromState } from "openclaw/plugin-sdk/security-runtime";
-
-const state = await resolveAccessGroupAllowFromState({
-  accessGroups: cfg.accessGroups,
-  allowFrom: channelConfig.allowFrom,
-  channel: "my-channel",
-  accountId: "default",
-  senderId,
-  isSenderAllowed,
-});
-```
-
-Sonuç, başvurulan, eşleşen, eksik, desteklenmeyen ve başarısız olan grupları bildirir. Tanılama veya uyumluluk testleri gerektiğinde bunu kullanın. `expandAllowFromWithAccessGroups(...)` öğesini yalnızca hâlâ düz bir `allowFrom` dizisi bekleyen uyumluluk yolları için kullanın.
+Kanal desteği, ilgili kanalın paylaşılan OpenClaw gönderici yetkilendirme yardımcılarına bağlanmış olup olmamasına bağlıdır. Mevcut paketlenmiş destek ClickClack, Discord, Feishu, Google Chat, iMessage, IRC, LINE, Mattermost, Microsoft Teams, Nextcloud Talk, Nostr, QQ Bot, Signal, Slack, SMS, Telegram, WhatsApp, Zalo ve Zalo Personal'ı içerir. Statik `message.senders` grupları kanaldan bağımsızdır; bu nedenle yeni mesaj kanalları, özel izin listesi genişletmesi yerine paylaşılan Plugin SDK giriş yardımcılarını kullanarak bunları edinir.
 
 ## Discord kanal kitleleri
 
@@ -177,33 +154,52 @@ Discord ayrıca dinamik bir erişim grubu türünü destekler:
 }
 ```
 
-`discord.channelAudience`, "şu anda bu lonca kanalını görüntüleyebilen Discord DM gönderenlerine izin ver" anlamına gelir. OpenClaw, göndereni yetkilendirme sırasında Discord üzerinden çözer ve Discord `ViewChannel` izin kurallarını uygular.
+`discord.channelAudience`, "bu lonca kanalını şu anda görüntüleyebilen Discord DM göndericilerine izin ver" anlamına gelir. OpenClaw, yetkilendirme sırasında göndericiyi Discord üzerinden çözümler ve Discord `ViewChannel` izin kurallarını uygular. `membership` isteğe bağlıdır ve varsayılan olarak `canViewChannel` değerini kullanır.
 
-Bunu, bir Discord kanalı `#maintainers` veya `#on-call` gibi bir ekip için zaten doğruluk kaynağı olduğunda kullanın.
+Bir Discord kanalı zaten `#maintainers` veya `#on-call` gibi bir ekip için doğruluk kaynağı olduğunda bunu kullanın.
 
-Gereksinimler ve başarısızlık davranışı:
+Gereksinimler ve hata davranışı:
 
 - Botun loncaya ve kanala erişmesi gerekir.
 - Botun Discord Developer Portal **Server Members Intent** iznine ihtiyacı vardır.
-- Discord `Missing Access` döndürdüğünde, gönderen bir lonca üyesi olarak çözülemediğinde veya kanal başka bir loncaya ait olduğunda erişim grubu kapalı biçimde başarısız olur.
+- Discord `Missing Access` döndürdüğünde, gönderici bir lonca üyesi olarak çözümlenemediğinde veya kanal başka bir loncaya ait olduğunda erişim grubu erişimi reddederek başarısız olur.
 
-Discord'a özgü daha fazla örnek: [Discord erişim denetimi](/tr/channels/discord#access-control-and-routing)
+Discord'a özgü diğer örnekler: [Discord erişim denetimi](/tr/channels/discord#access-control-and-routing)
+
+## Plugin tanılamaları
+
+Plugin yazarları, yapılandırılmış erişim grubu durumunu yeniden düz bir izin listesine genişletmeden inceleyebilir:
+
+```typescript
+import { resolveAccessGroupAllowFromState } from "openclaw/plugin-sdk/access-groups";
+
+const state = await resolveAccessGroupAllowFromState({
+  accessGroups: cfg.accessGroups,
+  allowFrom: channelConfig.allowFrom,
+  channel: "my-channel",
+  accountId: "default",
+  senderId,
+  isSenderAllowed,
+});
+```
+
+Sonuç; başvurulan, eşleşen, eksik, desteklenmeyen ve başarısız olan grupları bildirir. Bunu tanılama veya uygunluk testleri için kullanın. `expandAllowFromWithAccessGroups(...)` işlevini yalnızca hâlâ düz bir `allowFrom` dizisi bekleyen uyumluluk yolları için kullanın.
 
 ## Güvenlik notları
 
-- Erişim grupları rol değil, izin listesi takma adlarıdır. Tek başlarına sahip oluşturmaz, eşleştirme isteklerini onaylamaz veya araç izinleri vermezler.
-- `dmPolicy: "open"` hâlâ etkin DM izin listesinde `"*"` gerektirir. Bir erişim grubuna başvurmak, genel erişimle aynı şey değildir.
-- Eksik grup adları kapalı biçimde başarısız olur. `allowFrom` içinde `accessGroup:operators` varsa ve `accessGroups.operators` yoksa, bu girdi hiç kimseyi yetkilendirmez.
+- Erişim grupları rol değil, izin listesi diğer adlarıdır. Tek başlarına sahip oluşturmaz, eşleştirme isteklerini onaylamaz veya araç izinleri vermezler.
+- `dmPolicy: "open"`, etkin DM izin listesinde yine de `"*"` bulunmasını gerektirir. Bir erişim grubuna başvurmak, genel erişimle aynı değildir.
+- Eksik grup adları erişimi reddederek başarısız olur. `allowFrom`, `accessGroup:operators` içeriyor ancak `accessGroups.operators` mevcut değilse bu girdi hiç kimseyi yetkilendirmez.
 - Kanal kimliklerini kararlı tutun. Kanal her ikisini de desteklediğinde görünen adlar yerine sayısal/kullanıcı kimliklerini tercih edin.
 
 ## Sorun giderme
 
-Bir gönderenin eşleşmesi gerekirken engelleniyorsa:
+Bir göndericinin eşleşmesi gerektiği hâlde engellenmesi durumunda:
 
 1. İzin listesi alanının tam `accessGroup:<name>` başvurusunu içerdiğini doğrulayın.
 2. `accessGroups.<name>.type` değerinin doğru olduğunu doğrulayın.
-3. Gönderen kimliğinin eşleşen kanal anahtarının altında veya `"*"` altında listelendiğini doğrulayın.
+3. Gönderici kimliğinin eşleşen kanal anahtarı veya `"*"` altında listelendiğini doğrulayın.
 4. Girdinin ilgili kanalın normal izin listesi söz dizimini kullandığını doğrulayın.
-5. Discord kanal kitleleri için botun lonca kanalını görebildiğini ve Server Members Intent'in etkin olduğunu doğrulayın.
+5. Discord kanal kitleleri için botun lonca kanalını görebildiğini ve Server Members Intent seçeneğinin etkin olduğunu doğrulayın.
 
-Erişim denetimi yapılandırmasını düzenledikten sonra `openclaw doctor` çalıştırın. Çalışma zamanından önce birçok geçersiz izin listesi ve ilke birleşimini yakalar.
+Erişim denetimi yapılandırmasını düzenledikten sonra `openclaw doctor` komutunu çalıştırın. Bu komut, çalışma zamanından önce birçok geçersiz izin listesi ve ilke birleşimini yakalar.

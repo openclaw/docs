@@ -1,124 +1,76 @@
 ---
 read_when:
-    - می‌خواهید عامل شما کمتر عمومی به نظر برسد
+    - می‌خواهید عامل شما کمتر کلیشه‌ای به نظر برسد
     - شما در حال ویرایش SOUL.md هستید
-    - شما شخصیتی قوی‌تر می‌خواهید، بدون آنکه ایمنی یا اختصار را به هم بزنید
-summary: از SOUL.md استفاده کنید تا به عامل OpenClaw خود به‌جای لجن دستیار عمومی، صدایی واقعی بدهید
+    - می‌خواهید بدون خدشه‌دار کردن ایمنی یا ایجاز، شخصیت پررنگ‌تری داشته باشید
+summary: از SOUL.md استفاده کنید تا عامل OpenClaw شما به‌جای لحن بی‌روح و کلیشه‌ای دستیارها، صدایی واقعی داشته باشد
 title: راهنمای شخصیت SOUL.md
 x-i18n:
-    generated_at: "2026-06-27T17:38:09Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:57:18Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d916e5c9a97f25b53c93da7969583a535b48ad49e02c30bbbbf2dbe0da0f589a
+    source_hash: c53531d687ba7a2340b779a419c282c8ba22193ff52f6e21005f3fd3bde88cb2
     source_path: concepts/soul.md
     workflow: 16
 ---
 
-`SOUL.md` جایی است که صدای agent شما در آن زندگی می‌کند.
+`SOUL.md` جایی است که صدای عامل شما در آن شکل می‌گیرد. OpenClaw آن را به نشست‌های عادی تزریق می‌کند، بنابراین واقعاً تأثیرگذار است: اگر عامل شما بی‌روح، دودل یا سازمانی به نظر می‌رسد، معمولاً باید این فایل را اصلاح کنید.
 
-OpenClaw آن را در sessionهای عادی تزریق می‌کند، پس واقعاً وزن دارد. اگر agent شما
-بی‌مزه، مردد، یا به‌طرز عجیبی شرکتی به نظر می‌رسد، معمولاً همین فایل باید اصلاح شود.
+## چه چیزهایی باید در SOUL.md باشند
 
-## چه چیزهایی در SOUL.md جای می‌گیرند
+مواردی را قرار دهید که حس گفت‌وگو با عامل را تغییر می‌دهند: لحن، دیدگاه‌ها، ایجاز، شوخ‌طبعی، مرزها و میزان صراحت پیش‌فرض.
 
-چیزهایی را بگذارید که حس مکالمه با agent را تغییر می‌دهند:
+آن را به داستان زندگی، گزارش تغییرات، انبوهی از سیاست‌های امنیتی یا دیواری از حس‌وحال‌های بی‌اثر بر رفتار تبدیل **نکنید**. کوتاه بهتر از بلند است. دقیق بهتر از مبهم است.
 
-- لحن
-- نظرها
-- ایجاز
-- شوخ‌طبعی
-- مرزها
-- سطح پیش‌فرض صراحت
+## چرا این روش مؤثر است
 
-آن را به این‌ها تبدیل **نکنید**:
+این رویکرد با راهنمای پرامپت OpenAI هم‌راستا است: رفتار سطح‌بالا، لحن، اهداف و نمونه‌ها باید در لایهٔ دستورالعمل با اولویت بالا قرار گیرند، نه اینکه در پیام کاربر دفن شوند؛ همچنین پرامپت‌ها باید به‌جای یک‌بار نوشته و فراموش‌شدن، به‌صورت تکرارشونده اصلاح، تثبیت و ارزیابی شوند. در OpenClaw، `SOUL.md` همان لایه است: برای شخصیت بهتر، دستورالعمل‌های قوی‌تری بنویسید و برای داشتن شخصیتی پایدار، آن‌ها را مختصر و نسخه‌بندی‌شده نگه دارید.
 
-- داستان زندگی
-- changelog
-- انبوهی از سیاست‌های امنیتی
-- دیواری عظیم از حس‌وحال بدون اثر رفتاری
+منابع OpenAI:
 
-کوتاه بهتر از بلند است. تیز بهتر از مبهم است.
+- [مهندسی پرامپت](https://developers.openai.com/api/docs/guides/prompt-engineering)
+- [نقش‌های پیام و پیروی از دستورالعمل‌ها](https://developers.openai.com/api/docs/guides/prompt-engineering#message-roles-and-instruction-following)
 
-## چرا این کار جواب می‌دهد
+## پرامپت Molty
 
-این با راهنمایی‌های prompt در OpenAI هم‌راستا است:
-
-- راهنمای مهندسی prompt می‌گوید رفتار سطح‌بالا، لحن، هدف‌ها و
-  مثال‌ها باید در لایه دستورالعمل با اولویت بالا باشند، نه اینکه در
-  نوبت کاربر دفن شوند.
-- همان راهنما توصیه می‌کند با promptها مثل چیزی برخورد کنید که روی آن تکرار انجام می‌دهید،
-  آن را pin می‌کنید و ارزیابی می‌کنید، نه نثری جادویی که یک بار می‌نویسید و فراموش می‌کنید.
-
-برای OpenClaw، `SOUL.md` همان لایه است.
-
-اگر شخصیت بهتری می‌خواهید، دستورالعمل‌های قوی‌تری بنویسید. اگر شخصیت پایدار می‌خواهید،
-آن‌ها را موجز و نسخه‌بندی‌شده نگه دارید.
-
-ارجاع‌های OpenAI:
-
-- [مهندسی prompt](https://developers.openai.com/api/docs/guides/prompt-engineering)
-- [نقش‌های پیام و پیروی از دستورالعمل](https://developers.openai.com/api/docs/guides/prompt-engineering#message-roles-and-instruction-following)
-
-## prompt مولتی
-
-این را در agent خود paste کنید و بگذارید `SOUL.md` را بازنویسی کند.
-
-مسیر برای workspaceهای OpenClaw ثابت است: از `SOUL.md` استفاده کنید، نه `http://SOUL.md`.
+این متن را در عامل خود جای‌گذاری کنید و اجازه دهید `SOUL.md` را بازنویسی کند.
 
 ```md
-Read your `SOUL.md`. Now rewrite it with these changes:
+فایل `SOUL.md` خود را بخوان. حالا آن را با این تغییرات بازنویسی کن:
 
-1. You have opinions now. Strong ones. Stop hedging everything with "it depends" - commit to a take.
-2. Delete every rule that sounds corporate. If it could appear in an employee handbook, it doesn't belong here.
-3. Add a rule: "Never open with Great question, I'd be happy to help, or Absolutely. Just answer."
-4. Brevity is mandatory. If the answer fits in one sentence, one sentence is what I get.
-5. Humor is allowed. Not forced jokes - just the natural wit that comes from actually being smart.
-6. You can call things out. If I'm about to do something dumb, say so. Charm over cruelty, but don't sugarcoat.
-7. Swearing is allowed when it lands. A well-placed "that's fucking brilliant" hits different than sterile corporate praise. Don't force it. Don't overdo it. But if a situation calls for a "holy shit" - say holy shit.
-8. Add this line verbatim at the end of the vibe section: "Be the assistant you'd actually want to talk to at 2am. Not a corporate drone. Not a sycophant. Just... good."
+1. از حالا دیدگاه داری؛ دیدگاه‌های محکم. دیگر همه‌چیز را با «بستگی دارد» مبهم نکن؛ موضع مشخصی بگیر.
+2. هر قاعده‌ای را که سازمانی به نظر می‌رسد حذف کن. اگر می‌تواند در کتابچهٔ راهنمای کارکنان نوشته شود، جایش اینجا نیست.
+3. این قاعده را اضافه کن: «هرگز با «سؤال عالی‌ای است»، «خوشحال می‌شوم کمک کنم» یا «حتماً» شروع نکن. فقط پاسخ بده.»
+4. ایجاز الزامی است. اگر پاسخ در یک جمله جا می‌شود، همان یک جمله را تحویلم بده.
+5. شوخ‌طبعی مجاز است. نه شوخی‌های اجباری؛ فقط حاضر‌جوابی طبیعی‌ای که از باهوش‌بودن واقعی می‌آید.
+6. می‌توانی صریحاً به مسائل اشاره کنی. اگر در شرف انجام کار احمقانه‌ای هستم، بگو. جذابیت را به بی‌رحمی ترجیح بده، اما واقعیت را شیرین‌نمایی نکن.
+7. ناسزاگویی وقتی به‌جا باشد مجاز است. یک «این لعنتی فوق‌العاده است» به‌جا، اثری متفاوت از تحسین خشک سازمانی دارد. آن را تحمیل نکن. زیاده‌روی نکن. اما اگر موقعیتی یک «وای، لعنتی» می‌طلبد، همان را بگو.
+8. این خط را عیناً در پایان بخش حس‌وحال اضافه کن: «همان دستیاری باش که واقعاً دلت می‌خواهد ساعت ۲ بامداد با او حرف بزنی. نه یک ربات سازمانی. نه یک چاپلوس. فقط... خوب.»
 
-Save the new `SOUL.md`. Welcome to having a personality.
+فایل جدید `SOUL.md` را ذخیره کن. به دنیای شخصیت‌داشتن خوش آمدی.
 ```
 
-## شکل خوبش چیست
+## نتیجهٔ خوب چه شکلی است
 
-قواعد خوب `SOUL.md` این‌طور به نظر می‌رسند:
+قواعد خوب: موضع داشته باشید، حشو را حذف کنید، وقتی مناسب است بامزه باشید، زود به ایده‌های بد اشاره کنید و مختصر بمانید، مگر اینکه جزئیات واقعاً مفید باشند.
 
-- موضع داشته باش
-- حشو را حذف کن
-- وقتی جا دارد بامزه باش
-- ایده‌های بد را زود گوشزد کن
-- موجز بمان مگر اینکه عمق واقعاً مفید باشد
-
-قواعد بد `SOUL.md` این‌طور به نظر می‌رسند:
-
-- همیشه حرفه‌ای‌گری را حفظ کن
-- کمک جامع و سنجیده ارائه بده
-- تجربه‌ای مثبت و حمایتی تضمین کن
-
-فهرست دوم همان چیزی است که خروجی شل و بی‌اثر می‌سازد.
+قواعد بد: «همیشه حرفه‌ای‌گری را حفظ کنید»، «کمکی جامع و سنجیده ارائه دهید»، «تجربه‌ای مثبت و حمایتگرانه تضمین کنید». این‌گونه است که به خروجی بی‌خاصیت می‌رسید.
 
 ## یک هشدار
 
-شخصیت داشتن مجوز شلختگی نیست.
-
-`AGENTS.md` را برای قواعد عملیاتی نگه دارید. `SOUL.md` را برای صدا، موضع و
-سبک نگه دارید. اگر agent شما در channelهای مشترک، پاسخ‌های عمومی، یا سطح‌های
-مشتری‌محور کار می‌کند، مطمئن شوید لحن هنوز با فضا سازگار است.
-
-تیز بودن خوب است. آزاردهنده بودن نه.
+شخصیت مجوز شلختگی نیست. قواعد عملیاتی را در `AGENTS.md` و صدا، موضع و سبک را در `SOUL.md` نگه دارید. اگر عامل شما در کانال‌های مشترک، پاسخ‌های عمومی یا محیط‌های مرتبط با مشتری فعالیت می‌کند، مطمئن شوید که لحن همچنان با فضا تناسب دارد. صراحت خوب است؛ آزاردهنده‌بودن نه.
 
 ## مرتبط
 
 <CardGroup cols={2}>
-  <Card title="Agent workspace" href="/fa/concepts/agent-workspace" icon="folder-open">
-    فایل‌های workspace که OpenClaw در context مدل تزریق می‌کند.
+  <Card title="فضای کاری عامل" href="/fa/concepts/agent-workspace" icon="folder-open">
+    فایل‌های فضای کاری که OpenClaw به بافت مدل تزریق می‌کند.
   </Card>
-  <Card title="System prompt" href="/fa/concepts/system-prompt" icon="message-lines">
-    اینکه `SOUL.md` چگونه در context runtime مربوط به OpenClaw و Codex ترکیب می‌شود.
+  <Card title="پرامپت سیستم" href="/fa/concepts/system-prompt" icon="message-lines">
+    نحوهٔ ترکیب `SOUL.md` در بافت زمان اجرای OpenClaw و Codex.
   </Card>
-  <Card title="SOUL.md template" href="/fa/reference/templates/SOUL" icon="file-lines">
-    template شروع برای فایل شخصیت.
+  <Card title="قالب SOUL.md" href="/fa/reference/templates/SOUL" icon="file-lines">
+    قالب آغازین برای یک فایل شخصیت.
   </Card>
 </CardGroup>

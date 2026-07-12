@@ -1,174 +1,154 @@
 ---
 read_when:
-    - Aggiunta o modifica dell'acquisizione dalla fotocamera sui nodi iOS/Android o macOS
-    - Estensione dei flussi di lavoro con file temporanei MEDIA accessibili agli agenti
+    - Aggiunta o modifica dell'acquisizione dalla fotocamera sui nodi iOS/Android o su macOS
+    - Estensione dei flussi di lavoro per i file temporanei MEDIA accessibili agli agenti
 summary: 'Acquisizione dalla fotocamera (nodi iOS/Android + app macOS) per l''uso da parte dell''agente: foto (jpg) e brevi clip video (mp4)'
 title: Acquisizione dalla fotocamera
 x-i18n:
-    generated_at: "2026-06-27T17:42:23Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:09:23Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8cb02b1e0e5d68e537dc699bcabacfb48b7beaf07459bf47800810a721191795
+    source_hash: 38555c98886f6cd74ddacabc049da353cdb023e7f99aba81a272021cd8a0e33d
     source_path: nodes/camera.md
     workflow: 16
 ---
 
-OpenClaw supporta la **cattura da fotocamera** per i flussi di lavoro degli agenti:
+OpenClaw supporta l'acquisizione dalla fotocamera per i flussi di lavoro degli agenti sui nodi **iOS**, **Android** e **macOS** associati: è possibile acquisire una foto (`jpg`) o un breve clip video (`mp4`, con audio facoltativo) tramite `node.invoke` del Gateway.
 
-- **Node iOS** (associato tramite Gateway): cattura una **foto** (`jpg`) o una **breve clip video** (`mp4`, con audio opzionale) tramite `node.invoke`.
-- **Node Android** (associato tramite Gateway): cattura una **foto** (`jpg`) o una **breve clip video** (`mp4`, con audio opzionale) tramite `node.invoke`.
-- **App macOS** (Node tramite Gateway): cattura una **foto** (`jpg`) o una **breve clip video** (`mp4`, con audio opzionale) tramite `node.invoke`.
+L'accesso alla fotocamera è sempre subordinato a un'impostazione controllata dall'utente su ciascuna piattaforma.
 
-Tutto l’accesso alla fotocamera è protetto da **impostazioni controllate dall’utente**.
+## Nodo iOS
 
-## Node iOS
+### Impostazione utente iOS
 
-### Impostazione utente (attiva per impostazione predefinita)
+- Scheda Settings di iOS → **Camera** → **Allow Camera** (`camera.enabled`).
+  - Valore predefinito: **attivo** (una chiave mancante viene considerata abilitata).
+  - Quando è disattivata: i comandi `camera.*` restituiscono `CAMERA_DISABLED`.
 
-- Scheda Impostazioni iOS → **Fotocamera** → **Consenti fotocamera** (`camera.enabled`)
-  - Predefinito: **attivo** (una chiave mancante viene trattata come abilitata).
-  - Quando è disattivo: i comandi `camera.*` restituiscono `CAMERA_DISABLED`.
-
-### Comandi (tramite Gateway `node.invoke`)
+### Comandi iOS (tramite `node.invoke` del Gateway)
 
 - `camera.list`
-  - Payload della risposta:
-    - `devices`: array di `{ id, name, position, deviceType }`
+  - Payload della risposta: `devices` — array di `{ id, name, position, deviceType }`.
 
 - `camera.snap`
   - Parametri:
-    - `facing`: `front|back` (predefinito: `front`)
-    - `maxWidth`: numero (opzionale; predefinito `1600` sul Node iOS)
-    - `quality`: `0..1` (opzionale; predefinito `0.9`)
+    - `facing`: `front|back` (valore predefinito: `front`)
+    - `maxWidth`: numero (facoltativo; valore predefinito `1600`)
+    - `quality`: `0..1` (facoltativo; valore predefinito `0.9`, limitato a `[0.05, 1.0]`)
     - `format`: attualmente `jpg`
-    - `delayMs`: numero (opzionale; predefinito `0`)
-    - `deviceId`: stringa (opzionale; da `camera.list`)
-  - Payload della risposta:
-    - `format: "jpg"`
-    - `base64: "<...>"`
-    - `width`, `height`
-  - Protezione del payload: le foto vengono ricompresse per mantenere il payload base64 sotto 5 MB.
+    - `delayMs`: numero (facoltativo; valore predefinito `0`, limitato internamente a `10000`)
+    - `deviceId`: stringa (facoltativa; da `camera.list`)
+  - Payload della risposta: `format: "jpg"`, `base64`, `width`, `height`.
+  - Protezione del payload: le foto vengono ricompresse per mantenere il payload codificato in base64 al di sotto di 5 MB.
 
 - `camera.clip`
   - Parametri:
-    - `facing`: `front|back` (predefinito: `front`)
-    - `durationMs`: numero (predefinito `3000`, limitato a un massimo di `60000`)
-    - `includeAudio`: booleano (predefinito `true`)
+    - `facing`: `front|back` (valore predefinito: `front`)
+    - `durationMs`: numero (valore predefinito `3000`, limitato a `[250, 60000]`)
+    - `includeAudio`: valore booleano (valore predefinito `true`)
     - `format`: attualmente `mp4`
-    - `deviceId`: stringa (opzionale; da `camera.list`)
-  - Payload della risposta:
-    - `format: "mp4"`
-    - `base64: "<...>"`
-    - `durationMs`
-    - `hasAudio`
+    - `deviceId`: stringa (facoltativa; da `camera.list`)
+  - Payload della risposta: `format: "mp4"`, `base64`, `durationMs`, `hasAudio`.
 
-### Requisito di primo piano
+### Requisito di primo piano su iOS
 
-Come `canvas.*`, il Node iOS consente i comandi `camera.*` solo in **primo piano**. Le invocazioni in background restituiscono `NODE_BACKGROUND_UNAVAILABLE`.
+Come per `canvas.*`, il nodo iOS consente i comandi `camera.*` solo in **primo piano**. Le invocazioni in background restituiscono `NODE_BACKGROUND_UNAVAILABLE`.
 
-### Helper CLI
+### Strumento ausiliario della CLI
 
-Il modo più semplice per ottenere file multimediali è tramite l’helper CLI, che scrive i media decodificati in un file temporaneo e stampa il percorso salvato.
-
-Esempi:
+Il modo più semplice per ottenere i file multimediali è utilizzare lo strumento ausiliario della CLI, che scrive i contenuti multimediali decodificati in un file temporaneo e mostra il percorso di salvataggio.
 
 ```bash
-openclaw nodes camera snap --node <id>               # default: both front + back (2 MEDIA lines)
+openclaw nodes camera snap --node <id>                 # valore predefinito: anteriore + posteriore (2 righe MEDIA)
 openclaw nodes camera snap --node <id> --facing front
 openclaw nodes camera clip --node <id> --duration 3000
 openclaw nodes camera clip --node <id> --no-audio
 ```
 
-Note:
+Il valore predefinito di `nodes camera snap` è `--facing both`, che acquisisce sia dalla fotocamera anteriore sia da quella posteriore per fornire all'agente entrambe le visuali; usare `--device-id` con un singolo orientamento esplicito (`both` viene rifiutato quando è impostato `--device-id`). I file di output sono temporanei (nella directory temporanea del sistema operativo), a meno che non si crei un wrapper personalizzato.
 
-- `nodes camera snap` usa come predefiniti **entrambi** gli orientamenti per fornire all’agente entrambe le viste.
-- I file di output sono temporanei (nella directory temporanea del sistema operativo), a meno che tu non crei un wrapper personalizzato.
+## Nodo Android
 
-## Node Android
+### Impostazione utente Android
 
-### Impostazione utente Android (attiva per impostazione predefinita)
-
-- Foglio Impostazioni Android → **Fotocamera** → **Consenti fotocamera** (`camera.enabled`)
-  - Predefinito: **attivo** (una chiave mancante viene trattata come abilitata).
-  - Quando è disattivo: i comandi `camera.*` restituiscono `CAMERA_DISABLED`.
+- Pannello Settings di Android → **Camera** → **Allow Camera** (`camera.enabled`).
+  - **Nelle nuove installazioni è disattivata per impostazione predefinita.** Le installazioni esistenti precedenti all'introduzione di questa impostazione vengono migrate su **attivo**, affinché gli aggiornamenti non rimuovano silenziosamente un accesso alla fotocamera che prima funzionava.
+  - Quando è disattivata: i comandi `camera.*` restituiscono `CAMERA_DISABLED: enable Camera in Settings`.
 
 ### Autorizzazioni
 
-- Android richiede autorizzazioni di runtime:
-  - `CAMERA` sia per `camera.snap` sia per `camera.clip`.
-  - `RECORD_AUDIO` per `camera.clip` quando `includeAudio=true`.
+- `CAMERA` è obbligatoria sia per `camera.snap` sia per `camera.clip`; se l'autorizzazione manca o viene negata, viene restituito `CAMERA_PERMISSION_REQUIRED`.
+- `RECORD_AUDIO` è obbligatoria per `camera.clip` quando `includeAudio` è `true`; se l'autorizzazione manca o viene negata, viene restituito `MIC_PERMISSION_REQUIRED`.
 
-Se le autorizzazioni mancano, l’app le richiederà quando possibile; se vengono negate, le richieste `camera.*` non riescono con un errore
-`*_PERMISSION_REQUIRED`.
+Quando possibile, l'app richiede le autorizzazioni in fase di esecuzione.
 
 ### Requisito di primo piano su Android
 
-Come `canvas.*`, il nodo Android consente i comandi `camera.*` solo in **primo piano**. Le invocazioni in background restituiscono `NODE_BACKGROUND_UNAVAILABLE`.
+Come per `canvas.*`, il nodo Android consente i comandi `camera.*` solo in **primo piano**. Le invocazioni in background restituiscono `NODE_BACKGROUND_UNAVAILABLE: command requires foreground`.
 
-### Comandi Android (tramite Gateway `node.invoke`)
+### Comandi Android (tramite `node.invoke` del Gateway)
 
 - `camera.list`
-  - Payload di risposta:
-    - `devices`: array di `{ id, name, position, deviceType }`
+  - Payload della risposta: `devices` — array di `{ id, name, position, deviceType }`.
 
-### Protezione del payload
+- `camera.snap`
+  - Parametri: `facing` (`front|back`, valore predefinito `front`), `quality` (valore predefinito `0.95`, limitato a `[0.1, 1.0]`), `maxWidth` (valore predefinito `1600`), `deviceId` (facoltativo; un ID sconosciuto causa un errore `INVALID_REQUEST`).
+  - Payload della risposta: `format: "jpg"`, `base64`, `width`, `height`.
+  - Protezione del payload: viene ricompresso per mantenere i dati base64 al di sotto di 5 MB (lo stesso limite di iOS).
 
-Le foto vengono ricompresse per mantenere il payload base64 sotto i 5 MB.
+- `camera.clip`
+  - Parametri: `facing` (valore predefinito `front`), `durationMs` (valore predefinito `3000`, limitato a `[200, 60000]`), `includeAudio` (valore predefinito `true`), `deviceId` (facoltativo).
+  - Payload della risposta: `format: "mp4"`, `base64`, `durationMs`, `hasAudio`.
+  - Protezione del payload: il file MP4 non elaborato è limitato a 18 MB prima della codifica base64; i clip che superano tale dimensione generano l'errore `PAYLOAD_TOO_LARGE` (ridurre `durationMs` e riprovare).
 
 ## App macOS
 
-### Impostazione utente (disattivata per impostazione predefinita)
+### Impostazione utente macOS
 
-L'app companion macOS espone una casella di controllo:
+L'app complementare per macOS mette a disposizione una casella di controllo:
 
-- **Settings → General → Allow Camera** (`openclaw.cameraEnabled`)
-  - Valore predefinito: **disattivato**
-  - Quando è disattivata: le richieste della fotocamera restituiscono "Fotocamera disattivata dall'utente".
+- **Settings → General → Allow Camera** (`openclaw.cameraEnabled`).
+  - Valore predefinito: **disattivato**.
+  - Quando è disattivata: le richieste della fotocamera restituiscono `CAMERA_DISABLED: enable Camera in Settings`.
 
-### Helper CLI (`node invoke`)
+### Strumento ausiliario della CLI (invocazione del nodo)
 
-Usa la CLI principale `openclaw` per invocare i comandi della fotocamera sul nodo macOS.
-
-Esempi:
+Utilizzare la CLI principale `openclaw` per invocare i comandi della fotocamera sul nodo macOS.
 
 ```bash
-openclaw nodes camera list --node <id>            # list camera ids
-openclaw nodes camera snap --node <id>            # prints saved path
+openclaw nodes camera list --node <id>                     # elenca gli ID delle fotocamere
+openclaw nodes camera snap --node <id>                     # mostra il percorso di salvataggio
 openclaw nodes camera snap --node <id> --max-width 1280
 openclaw nodes camera snap --node <id> --delay-ms 2000
 openclaw nodes camera snap --node <id> --device-id <id>
-openclaw nodes camera clip --node <id> --duration 10s          # prints saved path
-openclaw nodes camera clip --node <id> --duration-ms 3000      # prints saved path (legacy flag)
+openclaw nodes camera clip --node <id> --duration 10s       # mostra il percorso di salvataggio
+openclaw nodes camera clip --node <id> --duration-ms 3000   # mostra il percorso di salvataggio (flag precedente)
 openclaw nodes camera clip --node <id> --device-id <id>
 openclaw nodes camera clip --node <id> --no-audio
 ```
 
-Note:
+- Il valore predefinito di `openclaw nodes camera snap` è `maxWidth=1600`, se non viene sovrascritto.
+- Dopo il riscaldamento e la stabilizzazione dell'esposizione, `camera.snap` attende per `delayMs` (valore predefinito 2000 ms, limitato a `[0, 10000]`) prima dell'acquisizione.
+- I payload delle foto vengono ricompressi per mantenere i dati base64 al di sotto di 5 MB.
 
-- `openclaw nodes camera snap` usa per impostazione predefinita `maxWidth=1600`, salvo override.
-- Su macOS, `camera.snap` attende `delayMs` (valore predefinito 2000 ms) dopo il riscaldamento e l'assestamento dell'esposizione prima di acquisire.
-- I payload delle foto vengono ricompressi per mantenere base64 sotto i 5 MB.
+## Sicurezza e limiti pratici
 
-## Sicurezza + limiti pratici
+- L'accesso alla fotocamera e al microfono attiva le consuete richieste di autorizzazione del sistema operativo e richiede le stringhe di utilizzo in `Info.plist`.
+- I clip video sono limitati a 60 secondi per evitare payload del nodo eccessivamente grandi (sovraccarico della codifica base64 sommato ai limiti dei messaggi).
 
-- L'accesso a fotocamera e microfono attiva le consuete richieste di autorizzazione del sistema operativo (e richiede stringhe di utilizzo in Info.plist).
-- I clip video sono limitati (attualmente `<= 60s`) per evitare payload del nodo troppo grandi (overhead base64 + limiti dei messaggi).
+## Video dello schermo su macOS (a livello di sistema operativo)
 
-## Video dello schermo macOS (a livello di sistema operativo)
-
-Per i video dello _schermo_ (non della fotocamera), usa l'app companion macOS:
+Per registrare un video dello _schermo_ (non della fotocamera), utilizzare l'app complementare per macOS:
 
 ```bash
-openclaw nodes screen record --node <id> --duration 10s --fps 15   # prints saved path
+openclaw nodes screen record --node <id> --duration 10s --fps 15   # mostra il percorso di salvataggio
 ```
 
-Note:
+Richiede l'autorizzazione **Screen Recording** di macOS (TCC).
 
-- Richiede l'autorizzazione **Screen Recording** di macOS (TCC).
+## Contenuti correlati
 
-## Correlati
-
-- [Supporto per immagini e media](/it/nodes/images)
-- [Comprensione dei media](/it/nodes/media-understanding)
-- [Comando di localizzazione](/it/nodes/location-command)
+- [Supporto per immagini e contenuti multimediali](/it/nodes/images)
+- [Comprensione dei contenuti multimediali](/it/nodes/media-understanding)
+- [Comando per la posizione](/it/nodes/location-command)

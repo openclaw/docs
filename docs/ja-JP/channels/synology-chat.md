@@ -1,12 +1,12 @@
 ---
 read_when:
-    - OpenClaw で Synology Chat を設定する
-    - Synology Chat の Webhook ルーティングのデバッグ
-summary: Synology Chat Webhook のセットアップと OpenClaw 設定
+    - OpenClaw で Synology Chat をセットアップする
+    - Synology Chat Webhook ルーティングのデバッグ
+summary: Synology Chat Webhook のセットアップと OpenClaw の設定
 title: Synology Chat
 x-i18n:
-    generated_at: "2026-07-05T11:04:15Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T21:58:27Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 7829bb1464c4f5546adf086a96b7f3478e6f03e35ed2443bd92c160fa3d2bb8b
@@ -14,9 +14,9 @@ x-i18n:
     workflow: 16
 ---
 
-Synology Chat は Webhook ペアを通じて OpenClaw に接続します。Synology Chat の送信 Webhook が受信したダイレクトメッセージを Gateway に投稿し、返信は Synology Chat の受信 Webhook 経由で戻ります。
+Synology Chat は Webhook のペアを通じて OpenClaw に接続します。Synology Chat の送信 Webhook が受信したダイレクトメッセージを Gateway に送信し、返信は Synology Chat の受信 Webhook を通じて送り返されます。
 
-ステータス: 公式Plugin、別途インストール。ダイレクトメッセージのみ。テキストと URL ベースのファイル送信に対応しています。
+ステータス: 公式 Plugin。別途インストールが必要です。ダイレクトメッセージのみ対応し、テキストおよび URL ベースのファイル送信をサポートします。
 
 ## インストール
 
@@ -34,29 +34,29 @@ openclaw plugins install ./path/to/local/synology-chat-plugin
 
 ## クイックセットアップ
 
-1. Plugin をインストールします（上記）。
-2. Synology Chat の連携で:
+1. Plugin をインストールします（上記参照）。
+2. Synology Chat の連携設定で:
    - 受信 Webhook を作成し、その URL をコピーします。
-   - シークレットトークン付きの送信 Webhook を作成します。
-3. 送信 Webhook URL を OpenClaw Gateway に向けます:
-   - 既定では `https://gateway-host/webhook/synology`。
-   - またはカスタムの `channels.synology-chat.webhookPath`。
-4. OpenClaw でセットアップを完了します。Synology Chat は、両方のフローで同じチャンネルセットアップ一覧に表示されます:
+   - シークレットトークンを使用して送信 Webhook を作成します。
+3. 送信 Webhook の URL を OpenClaw Gateway に設定します:
+   - デフォルトでは `https://gateway-host/webhook/synology`。
+   - または、カスタムの `channels.synology-chat.webhookPath`。
+4. OpenClaw でセットアップを完了します。どちらのフローでも、Synology Chat は同じチャンネルセットアップ一覧に表示されます:
    - ガイド付き: `openclaw onboard` または `openclaw channels add`
-   - 直接: `openclaw channels add --channel synology-chat --token <token> --url <incoming-webhook-url>`
-5. Gateway を再起動し、Synology Chat ボットに DM を送信します。
+   - 直接指定: `openclaw channels add --channel synology-chat --token <token> --url <incoming-webhook-url>`
+5. Gateway を再起動し、Synology Chat ボットにダイレクトメッセージを送信します。
 
 Webhook 認証の詳細:
 
-- OpenClaw は送信 Webhook トークンを `body.token`、次に
-  `?token=...`、次にヘッダーから受け付けます。
-- 受け付けるヘッダー形式:
+- OpenClaw は送信 Webhook のトークンを、まず `body.token`、次に
+  `?token=...`、最後にヘッダーから受け取ります。
+- 使用可能なヘッダー形式:
   - `x-synology-token`
   - `x-webhook-token`
   - `x-openclaw-token`
   - `Authorization: Bearer <token>`
-- 空または欠落したトークンは fail closed します。
-- ペイロードは `application/x-www-form-urlencoded` または `application/json` にできます。`token`、`user_id`、`text` が必須です。
+- トークンが空または欠落している場合は、拒否する側に倒します。
+- ペイロードには `application/x-www-form-urlencoded` または `application/json` を使用できます。`token`、`user_id`、`text` は必須です。
 
 最小構成:
 
@@ -79,7 +79,7 @@ Webhook 認証の詳細:
 
 ## 環境変数
 
-既定のアカウントでは、環境変数を使用できます:
+デフォルトアカウントには環境変数を使用できます:
 
 - `SYNOLOGY_CHAT_TOKEN`
 - `SYNOLOGY_CHAT_INCOMING_URL`
@@ -88,22 +88,22 @@ Webhook 認証の詳細:
 - `SYNOLOGY_RATE_LIMIT`
 - `OPENCLAW_BOT_NAME`
 
-構成値は環境変数を上書きします。
+設定値は環境変数を上書きします。
 
-`SYNOLOGY_CHAT_INCOMING_URL` と `SYNOLOGY_NAS_HOST` はワークスペースの `.env` から設定できません。[ワークスペース `.env` ファイル](/ja-JP/gateway/security#workspace-env-files)を参照してください。
+`SYNOLOGY_CHAT_INCOMING_URL` と `SYNOLOGY_NAS_HOST` はワークスペースの `.env` から設定できません。[ワークスペースの `.env` ファイル](/ja-JP/gateway/security#workspace-env-files)を参照してください。
 
-## DM ポリシーとアクセス制御
+## ダイレクトメッセージポリシーとアクセス制御
 
-- 対応する `dmPolicy` 値: `allowlist`（既定）、`open`、`disabled`。Synology Chat にはペアリングフローがありません。送信者を承認するには、数値の Synology ユーザー ID を `allowedUserIds` に追加します。
-- `allowedUserIds` は Synology ユーザー ID のリスト（またはカンマ区切り文字列）を受け付けます。
-- `allowlist` モードでは、空の `allowedUserIds` リストは構成ミスとして扱われ、Webhook ルートは開始されません。
-- `dmPolicy: "open"` は、`allowedUserIds` に `"*"` が含まれている場合にのみ公開 DM を許可します。制限付きのエントリがある場合は、一致するユーザーだけがチャットできます。空の `allowedUserIds` リストでの `open` も、ルートの開始を拒否します。
-- `dmPolicy: "disabled"` は DM をブロックします。
-- 返信先のバインドは、既定で安定した数値の `user_id` に留まります。`channels.synology-chat.dangerouslyAllowNameMatching: true` は break-glass 互換モードで、返信配信のために変更可能なユーザー名/ニックネーム検索を再度有効にします。
+- サポートされる `dmPolicy` の値は `allowlist`（デフォルト）、`open`、`disabled` です。Synology Chat にはペアリングフローがないため、送信者を承認するには、その数値形式の Synology ユーザー ID を `allowedUserIds` に追加します。
+- `allowedUserIds` には Synology ユーザー ID のリスト（またはカンマ区切りの文字列）を指定できます。
+- `allowlist` モードでは、空の `allowedUserIds` リストは設定ミスとして扱われ、Webhook ルートは起動しません。
+- `dmPolicy: "open"` で公開ダイレクトメッセージを許可するには、`allowedUserIds` に `"*"` が含まれている必要があります。制限付きのエントリがある場合、該当するユーザーのみがチャットできます。`allowedUserIds` リストが空の状態で `open` を指定した場合も、ルートの起動を拒否します。
+- `dmPolicy: "disabled"` はダイレクトメッセージをブロックします。
+- 返信先の紐付けには、デフォルトで安定した数値形式の `user_id` が引き続き使用されます。`channels.synology-chat.dangerouslyAllowNameMatching: true` は、返信配信のために変更可能なユーザー名やニックネームによる検索を再び有効にする、緊急時専用の互換モードです。
 
 ## 送信配信
 
-数値の Synology Chat ユーザー ID をターゲットとして使用します。`synology-chat:`、`synology_chat:`、`synology:` のプレフィックスが受け付けられます。
+送信先には数値形式の Synology Chat ユーザー ID を使用します。`synology-chat:`、`synology_chat:`、`synology:` の各プレフィックスを使用できます。
 
 例:
 
@@ -113,18 +113,18 @@ openclaw message send --channel synology-chat --target synology-chat:123456 --me
 openclaw message send --channel synology-chat --target synology:123456 --message "Short prefix"
 ```
 
-送信テキストは 2000 文字で分割されます。メディア送信は URL ベースのファイル配信で対応しています。NAS がファイルをダウンロードして添付します（最大 32 MB）。送信ファイル URL は `http` または `https` を使用する必要があります。プライベートまたはその他のブロックされたネットワークターゲットは、OpenClaw が URL を NAS Webhook に転送する前に拒否されます。
+送信テキストは 2000 文字ごとに分割されます。メディア送信では URL ベースのファイル配信をサポートします。NAS がファイルをダウンロードして添付します（最大 32 MB）。送信ファイルの URL には `http` または `https` を使用する必要があります。プライベートネットワークの送信先や、その他の理由でブロックされているネットワークの送信先は、OpenClaw が URL を NAS の Webhook に転送する前に拒否されます。
 
-## マルチアカウント
+## 複数アカウント
 
-複数の Synology Chat アカウントは `channels.synology-chat.accounts` 配下で対応しています。
-各アカウントは、トークン、受信 URL、Webhook パス、DM ポリシー、制限を上書きできます。
-ダイレクトメッセージセッションはアカウントとユーザーごとに分離されるため、2 つの異なる Synology アカウント上の同じ数値 `user_id`
-がトランスクリプト状態を共有することはありません。
-有効な各アカウントには個別の `webhookPath` を指定してください。OpenClaw は完全に重複するパスを拒否し、
-マルチアカウントセットアップで共有 Webhook パスだけを継承する名前付きアカウントの開始を拒否します。
-名前付きアカウントで意図的にレガシー継承が必要な場合は、そのアカウントまたは `channels.synology-chat` に
-`dangerouslyAllowInheritedWebhookPath: true` を設定します。ただし、完全に重複するパスは引き続き fail closed で拒否されます。アカウントごとの明示的なパスを優先してください。
+`channels.synology-chat.accounts` で複数の Synology Chat アカウントをサポートします。
+各アカウントでトークン、受信 URL、Webhook パス、ダイレクトメッセージポリシー、制限を上書きできます。
+ダイレクトメッセージのセッションはアカウントとユーザーごとに分離されるため、2 つの異なる Synology アカウントで同じ数値形式の `user_id`
+を使用しても、会話履歴の状態は共有されません。
+有効化する各アカウントには、それぞれ異なる `webhookPath` を指定してください。OpenClaw は完全に重複するパスを拒否し、
+複数アカウント構成で共有 Webhook パスを継承するだけの名前付きアカウントについては、起動を拒否します。
+名前付きアカウントで従来の継承が意図的に必要な場合は、そのアカウントまたは `channels.synology-chat` に
+`dangerouslyAllowInheritedWebhookPath: true` を設定します。ただし、完全に重複するパスは引き続き拒否する側に倒します。アカウントごとにパスを明示することを推奨します。
 
 ```json5
 {
@@ -149,37 +149,37 @@ openclaw message send --channel synology-chat --target synology:123456 --message
 }
 ```
 
-## セキュリティメモ
+## セキュリティ上の注意
 
-- `token` は秘密に保ち、漏えいした場合はローテーションしてください。
-- 自己署名されたローカル NAS 証明書を明示的に信頼する場合を除き、`allowInsecureSsl: false` のままにしてください。
-- 受信 Webhook リクエストはトークン検証され、送信者ごとにレート制限されます（`rateLimitPerMinute`、既定 30）。
-- 無効なトークンチェックは定数時間のシークレット比較を使用し、fail closed します。無効なトークン試行が繰り返されると、送信元 IP が一時的にロックアウトされます。
-- 受信メッセージテキストは、既知のプロンプトインジェクションパターンに対してサニタイズされ、4000 文字で切り捨てられます。
-- 本番環境では `dmPolicy: "allowlist"` を優先してください。
-- レガシーのユーザー名ベース返信配信が明示的に必要な場合を除き、`dangerouslyAllowNameMatching` はオフのままにしてください。
-- マルチアカウントセットアップで共有パスルーティングのリスクを明示的に受け入れる場合を除き、`dangerouslyAllowInheritedWebhookPath` はオフのままにしてください。
+- `token` は秘密に保ち、漏洩した場合はローテーションしてください。
+- 自己署名されたローカル NAS 証明書を明示的に信頼する場合を除き、`allowInsecureSsl: false` を維持してください。
+- 受信 Webhook リクエストはトークン検証され、送信者ごとにレート制限されます（`rateLimitPerMinute`、デフォルトは 30）。
+- 無効なトークンの検証では定時間のシークレット比較を使用し、拒否する側に倒します。無効なトークンによる試行が繰り返されると、送信元 IP が一時的にロックアウトされます。
+- 受信メッセージのテキストは、既知のプロンプトインジェクションパターンに対してサニタイズされ、4000 文字で切り詰められます。
+- 本番環境では `dmPolicy: "allowlist"` を推奨します。
+- 従来のユーザー名ベースの返信配信が明示的に必要な場合を除き、`dangerouslyAllowNameMatching` は無効のままにしてください。
+- 複数アカウント構成で共有パスによるルーティングのリスクを明示的に許容する場合を除き、`dangerouslyAllowInheritedWebhookPath` は無効のままにしてください。
 
 ## トラブルシューティング
 
 - `Missing required fields (token, user_id, text)`:
-  - 送信 Webhook ペイロードに必須フィールドのいずれかが欠けています
-  - Synology がヘッダーでトークンを送信する場合は、Gateway/プロキシがそれらのヘッダーを保持していることを確認してください
+  - 送信 Webhook のペイロードに必須フィールドのいずれかがありません
+  - Synology がトークンをヘッダーで送信する場合は、Gateway またはプロキシがそれらのヘッダーを保持していることを確認してください
 - `Invalid token`:
-  - 送信 Webhook シークレットが `channels.synology-chat.token` と一致しません
-  - リクエストが誤ったアカウント/Webhook パスに到達しています
+  - 送信 Webhook のシークレットが `channels.synology-chat.token` と一致していません
+  - リクエストが誤ったアカウントまたは Webhook パスに到達しています
   - リクエストが OpenClaw に到達する前に、リバースプロキシがトークンヘッダーを削除しました
 - `Rate limit exceeded`:
-  - 同じ送信元からの無効なトークン試行が多すぎると、その送信元が一時的にロックアウトされることがあります
-  - 認証済み送信者にも、ユーザーごとの別のメッセージレート制限があります
+  - 同じ送信元から無効なトークンによる試行が多すぎると、その送信元が一時的にロックアウトされる場合があります
+  - 認証済みの送信者には、ユーザーごとのメッセージレート制限も別途適用されます
 - `Allowlist is empty. Configure allowedUserIds or use dmPolicy=open with allowedUserIds=["*"].`:
-  - `dmPolicy="allowlist"` が有効ですが、ユーザーが構成されていません
+  - `dmPolicy="allowlist"` が有効ですが、ユーザーが設定されていません
 - `User not authorized`:
-  - 送信者の数値 `user_id` が `allowedUserIds` に含まれていません
+  - 送信者の数値形式の `user_id` が `allowedUserIds` に含まれていません
 
-## 関連
+## 関連項目
 
-- [チャンネル概要](/ja-JP/channels) — 対応しているすべてのチャンネル
-- [グループ](/ja-JP/channels/groups) — グループチャットの動作とメンションゲート
+- [チャンネルの概要](/ja-JP/channels) — サポートされているすべてのチャンネル
+- [グループ](/ja-JP/channels/groups) — グループチャットの動作とメンションによる制御
 - [チャンネルルーティング](/ja-JP/channels/channel-routing) — メッセージのセッションルーティング
-- [セキュリティ](/ja-JP/gateway/security) — アクセスモデルと強化
+- [セキュリティ](/ja-JP/gateway/security) — アクセスモデルと堅牢化

@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Stai installando, configurando o verificando il Plugin diffs
-summary: Plugin visualizzatore diff in sola lettura e renderer di file di OpenClaw per agenti.
-title: Plugin delle differenze
+    - Stai installando, configurando o verificando il plugin diffs
+summary: Plugin di visualizzazione delle differenze in sola lettura e renderer di file OpenClaw per gli agenti.
+title: Plugin per i diff
 x-i18n:
-    generated_at: "2026-06-27T17:55:42Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:18:41Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 836ed7a32a0868ee24eacf8f72e8c7888ebbd5d07ca62b2b6170d6a1919f7382
@@ -13,14 +13,14 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin Diffs
+# Plugin per i diff
 
-Plugin OpenClaw di visualizzazione diff in sola lettura e renderer di file per agenti.
+Plugin di OpenClaw per la visualizzazione in sola lettura delle differenze e il rendering dei file per gli agenti.
 
 ## Distribuzione
 
 - Pacchetto: `@openclaw/diffs`
-- Percorso di installazione: npm; ClawHub
+- Modalità di installazione: npm; ClawHub
 
 ## Superficie
 

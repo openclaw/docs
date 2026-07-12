@@ -1,72 +1,72 @@
 ---
 doc-schema-version: 1
 read_when:
-    - Üçüncü taraf OpenClaw Plugin'lerini bulmak istiyorsunuz
-    - Kendi Plugin’inizi ClawHub’da yayımlamak veya listelemek istiyorsunuz
-summary: Topluluk tarafından bakımı yapılan OpenClaw Plugin'lerini bulun ve yayımlayın
-title: Topluluk Plugin’leri
+    - Üçüncü taraf OpenClaw pluginlerini bulmak istiyorsunuz
+    - ClawHub'da kendi Plugin'inizi yayımlamak veya listelemek istiyorsunuz
+summary: Topluluk tarafından sürdürülen OpenClaw pluginlerini bulma ve yayımlama
+title: Topluluk eklentileri
 x-i18n:
-    generated_at: "2026-06-28T00:52:24Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:58:46Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 0ecf059fa0c32f09d09381b2153a6a63ca522d49719aaa8476209389a6b5b36a
+    source_hash: 6a9eb477f20da8171a35c22ea6b112d77ff4afe0878f60314c052746aef4e0ac
     source_path: plugins/community.md
     workflow: 16
 ---
 
-Topluluk Plugin'leri, OpenClaw'ı kanallar, araçlar, sağlayıcılar, hook'lar veya diğer yeteneklerle genişleten üçüncü taraf paketlerdir. Herkese açık topluluk Plugin'leri için birincil keşif yüzeyi olarak [ClawHub](/tr/clawhub) kullanın.
+Topluluk pluginleri; OpenClaw'ı kanallar, araçlar, sağlayıcılar, kancalar veya diğer yeteneklerle genişleten üçüncü taraf paketlerdir. Herkese açık topluluk pluginlerini keşfetmek için birincil kaynak olarak [ClawHub](/clawhub) kullanın.
 
-## Plugin bulma
+## Pluginleri bulma
 
-CLI'dan ClawHub'da arama yapın:
+CLI üzerinden ClawHub'da arama yapın:
 
 ```bash
 openclaw plugins search "calendar"
 ```
 
-Açık bir kaynak önekiyle ClawHub Plugin'i kurun:
+Açık bir kaynak önekiyle ClawHub plugini yükleyin:
 
 ```bash
 openclaw plugins install clawhub:<package-name>
 ```
 
-npm, geçiş lansmanı sırasında desteklenen bir doğrudan kurulum yolu olmaya devam eder:
+Lansman geçişi sırasında npm, desteklenen doğrudan yükleme yöntemi olmaya devam eder:
 
 ```bash
 openclaw plugins install npm:<package-name>
 ```
 
-Yaygın kurulum, güncelleme, inceleme ve kaldırma örnekleri için [Plugin'leri yönet](/tr/plugins/manage-plugins) sayfasını kullanın. Tam komut başvurusu ve kaynak seçimi kuralları için [`openclaw plugins`](/tr/cli/plugins) sayfasını kullanın.
+Yaygın yükleme, güncelleme, inceleme ve kaldırma örnekleri için [Pluginleri yönetme](/tr/plugins/manage-plugins) sayfasını kullanın. Tam komut başvurusu ve kaynak seçme kuralları için [`openclaw plugins`](/tr/cli/plugins) sayfasını kullanın.
 
-## Plugin yayımlama
+## Pluginleri yayımlama
 
-OpenClaw kullanıcılarının keşfedip kurmasını istediğiniz herkese açık topluluk Plugin'lerini ClawHub'da yayımlayın. Canlı paket listesinin, sürüm geçmişinin, tarama durumunun ve kurulum ipuçlarının sahibi ClawHub'dır; belgeler statik bir üçüncü taraf Plugin kataloğu tutmaz.
+Herkese açık topluluk pluginlerini ClawHub'da yayımlayarak OpenClaw kullanıcılarının bunları keşfedip yükleyebilmesini sağlayın. Canlı paket listesi, sürüm geçmişi, tarama durumu ve yükleme ipuçları ClawHub tarafından yönetilir; belgelerde statik bir üçüncü taraf plugin kataloğu tutulmaz.
 
 ```bash
 clawhub package publish your-org/your-plugin --dry-run
 clawhub package publish your-org/your-plugin
 ```
 
-Yayımlamadan önce Plugin'in paket meta verilerine, Plugin manifest'ine, kurulum belgelerine ve açık bir bakım sahibine sahip olduğundan emin olun. ClawHub, bir sürüm oluşturmadan önce sahip kapsamını, paket adını, sürümü, dosya sınırlarını ve kaynak meta verilerini doğrular; ardından inceleme ve doğrulama bitene kadar yeni sürümleri normal kurulum ve indirme yüzeylerinden gizli tutar.
+Yayımlamadan önce pluginin paket meta verilerine, plugin manifestine, kurulum belgelerine ve açıkça belirtilmiş bir bakım sorumlusuna sahip olduğundan emin olun. ClawHub, bir sürüm oluşturmadan önce sahip kapsamını, paket adını, sürümü, dosya sınırlarını ve kaynak meta verilerini doğrular; ardından inceleme ve doğrulama tamamlanana kadar yeni sürümleri normal yükleme ve indirme alanlarında gizli tutar.
 
-Yayımlamadan önce bu kontrol listesini kullanın:
+Yayımlamadan önce kontrol listesi:
 
-| Gereksinim             | Neden                                                       |
-| ---------------------- | ----------------------------------------------------------- |
-| ClawHub'da yayımlanmış | Kullanıcıların `openclaw plugins install` ipuçlarının çalışmasına ihtiyacı vardır |
-| Herkese açık GitHub deposu | Kaynak incelemesi, sorun takibi, şeffaflık             |
-| Kurulum ve kullanım belgeleri | Kullanıcıların nasıl yapılandıracaklarını bilmesi gerekir |
-| Aktif bakım            | Yakın tarihli güncellemeler veya duyarlı sorun yönetimi     |
+| Gereksinim              | Nedeni                                                       |
+| ----------------------- | ------------------------------------------------------------ |
+| ClawHub'da yayımlanmış  | `openclaw plugins install` ipuçlarının çalışması gerekir     |
+| Herkese açık GitHub deposu | Kaynak incelemesi, sorun takibi ve şeffaflık               |
+| Kurulum ve kullanım belgeleri | Kullanıcıların yapılandırmayı nasıl yapacağını bilmesi gerekir |
+| Etkin bakım             | Yakın tarihli güncellemeler veya sorunlara hızlı yanıt verilmesi |
 
-Tam yayımlama sözleşmesi için bu sayfaları kullanın:
+Tam yayımlama sözleşmesi:
 
-- [ClawHub yayımlama](/tr/clawhub/publishing), sahipleri, kapsamları, sürümleri, incelemeyi, paket doğrulamayı ve paket aktarımını açıklar.
-- [Plugin oluşturma](/tr/plugins/building-plugins), Plugin paket şeklini ve ilk yayımlama iş akışını gösterir.
-- [Plugin manifest'i](/tr/plugins/manifest), yerel Plugin manifest alanlarını tanımlar.
+- [ClawHub'da yayımlama](/tr/clawhub/publishing) - sahipler, kapsamlar, sürümler, inceleme, paket doğrulaması ve paket aktarımı
+- [Plugin oluşturma](/tr/plugins/building-plugins) - plugin paketinin yapısı ve ilk yayımlama iş akışı
+- [Plugin manifesti](/tr/plugins/manifest) - yerel plugin manifesti alanları
 
 ## İlgili
 
-- [Plugin'ler](/tr/tools/plugin) - kurma, yapılandırma, yeniden başlatma ve sorun giderme
-- [Plugin'leri yönet](/tr/plugins/manage-plugins) - komut örnekleri
-- [ClawHub yayımlama](/tr/clawhub/publishing) - yayımlama ve sürüm kuralları
+- [Pluginler](/tr/tools/plugin) - yükleme, yapılandırma, yeniden başlatma ve sorun giderme
+- [Pluginleri yönetme](/tr/plugins/manage-plugins) - komut örnekleri
+- [ClawHub'da yayımlama](/tr/clawhub/publishing) - yayımlama ve sürüm kuralları

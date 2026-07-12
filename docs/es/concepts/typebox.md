@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Actualización de esquemas de protocolo o codegen
-summary: Esquemas de TypeBox como fuente única de verdad para el protocolo del Gateway
+    - Actualización de esquemas de protocolo o generación de código
+summary: Esquemas de TypeBox como única fuente de verdad para el protocolo del Gateway
 title: TypeBox
 x-i18n:
-    generated_at: "2026-07-05T11:15:28Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T23:01:41Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 24490edf0d73e918f834e9dd53d09ba0e5183b2bc126ee981a94f8099e76283b
@@ -13,19 +13,19 @@ x-i18n:
     workflow: 16
 ---
 
-TypeBox es una biblioteca de esquemas orientada a TypeScript. OpenClaw la usa para definir el **protocolo WebSocket del Gateway** (handshake, solicitud/respuesta, eventos del servidor). Esos esquemas impulsan la **validación en tiempo de ejecución** (AJV), la **exportación de JSON Schema** y la **generación de código Swift** para la app de macOS. Una única fuente de verdad; todo lo demás se genera.
+TypeBox es una biblioteca de esquemas orientada a TypeScript. OpenClaw la utiliza para definir el **protocolo WebSocket del Gateway** (negociación inicial, solicitud/respuesta y eventos del servidor). Esos esquemas impulsan la **validación en tiempo de ejecución** (AJV), la **exportación de JSON Schema** y la **generación de código Swift** para la aplicación de macOS. Una única fuente de verdad; todo lo demás se genera.
 
-Para el contexto de protocolo de más alto nivel, empieza con [arquitectura del Gateway](/es/concepts/architecture).
+Para conocer el contexto general del protocolo, comienza por [Arquitectura del Gateway](/es/concepts/architecture).
 
 ## Modelo mental (30 segundos)
 
-Cada mensaje WS del Gateway es uno de tres marcos:
+Cada mensaje WS del Gateway es uno de estos tres tipos de trama:
 
 - **Solicitud**: `{ type: "req", id, method, params }`
 - **Respuesta**: `{ type: "res", id, ok, payload | error }`
 - **Evento**: `{ type: "event", event, payload, seq?, stateVersion? }`
 
-El primer marco **debe** ser una solicitud `connect`. Después de eso, los clientes llaman a métodos (por ejemplo, `health`, `send`, `chat.send`) y se suscriben a eventos (por ejemplo, `presence`, `tick`, `agent`).
+La primera trama **debe** ser una solicitud `connect`. Después, los clientes llaman a métodos (por ejemplo, `health`, `send`, `chat.send`) y se suscriben a eventos (por ejemplo, `presence`, `tick`, `agent`).
 
 Flujo de conexión (mínimo):
 
@@ -38,46 +38,46 @@ Client                    Gateway
   |<---- res:health ----------|
 ```
 
-Métodos y eventos comunes:
+Métodos y eventos habituales:
 
 | Categoría   | Ejemplos                                                   | Notas                                                   |
 | ----------- | ---------------------------------------------------------- | ------------------------------------------------------- |
-| Núcleo      | `connect`, `health`, `status`                              | `connect` debe ir primero                              |
+| Núcleo      | `connect`, `health`, `status`                              | `connect` debe ser el primero                           |
 | Mensajería  | `send`, `agent`, `agent.wait`, `system-event`, `logs.tail` | los métodos con efectos secundarios necesitan `idempotencyKey` |
-| Chat        | `chat.history`, `chat.send`, `chat.abort`                  | WebChat usa estos                                      |
-| Sesiones    | `sessions.list`, `sessions.patch`, `sessions.delete`       | administración de sesiones                             |
-| Automatización | `wake`, `cron.list`, `cron.run`, `cron.runs`            | control de wake y cron                                 |
-| Nodos       | `node.list`, `node.invoke`, `node.pair.*`                  | WS del Gateway más acciones de nodo                    |
-| Eventos     | `tick`, `presence`, `agent`, `chat`, `health`, `shutdown`  | push del servidor                                      |
+| Chat        | `chat.history`, `chat.send`, `chat.abort`                  | WebChat utiliza estos                                   |
+| Sesiones    | `sessions.list`, `sessions.patch`, `sessions.delete`       | administración de sesiones                              |
+| Automatización | `wake`, `cron.list`, `cron.run`, `cron.runs`            | control de activación y Cron                            |
+| Nodos       | `node.list`, `node.invoke`, `node.pair.*`                  | WS del Gateway más acciones del nodo                    |
+| Eventos     | `tick`, `presence`, `agent`, `chat`, `health`, `shutdown`  | envío iniciado por el servidor                          |
 
-El inventario **discovery** anunciado y autorizado vive en `src/gateway/server-methods-list.ts` (`listGatewayMethods`, `GATEWAY_EVENTS`).
+El inventario autoritativo de **descubrimiento** anunciado se encuentra en `src/gateway/server-methods-list.ts` (`listGatewayMethods`, `GATEWAY_EVENTS`).
 
-## Dónde viven los esquemas
+## Dónde se encuentran los esquemas
 
-- Barrel de origen: `packages/gateway-protocol/src/schema.ts` reexporta módulos de dominio bajo `packages/gateway-protocol/src/schema/*.ts` (`frames.ts` para los envoltorios de nivel superior y el handshake, `agent.ts`, `sessions.ts`, `cron.ts`, etc. por área de funcionalidad). `protocol-schemas.ts` es el registro central `ProtocolSchemas` que asigna nombres de esquema a sus definiciones TypeBox.
+- Módulo de exportación de origen: `packages/gateway-protocol/src/schema.ts` reexporta los módulos de dominio incluidos en `packages/gateway-protocol/src/schema/*.ts` (`frames.ts` para los envoltorios de nivel superior y la negociación inicial, `agent.ts`, `sessions.ts`, `cron.ts`, etc., según el área funcional). `protocol-schemas.ts` es el registro central `ProtocolSchemas` que asigna los nombres de los esquemas a sus definiciones de TypeBox.
 - Validadores en tiempo de ejecución (AJV): `packages/gateway-protocol/src/index.ts`
-- Registro de funcionalidades/discovery anunciado: `src/gateway/server-methods-list.ts`
-- Handshake del servidor y despacho de métodos: `src/gateway/server.impl.ts`
-- Cliente de Node: `src/gateway/client.ts`
-- JSON Schema generado: `dist/protocol.schema.json` (salida de build, no comprometida)
+- Registro anunciado de funcionalidades y descubrimiento: `src/gateway/server-methods-list.ts`
+- Negociación inicial del servidor y despacho de métodos: `src/gateway/server.impl.ts`
+- Cliente del nodo: `src/gateway/client.ts`
+- JSON Schema generado: `dist/protocol.schema.json` (salida de compilación, no se incluye en el repositorio)
 - Modelos Swift generados: `apps/shared/OpenClawKit/Sources/OpenClawProtocol/GatewayModels.swift`
 
-## Pipeline actual
+## Canalización actual
 
-- `pnpm protocol:gen` escribe JSON Schema (draft-07) en `dist/protocol.schema.json`.
+- `pnpm protocol:gen` escribe el JSON Schema (borrador 07) en `dist/protocol.schema.json`.
 - `pnpm protocol:gen:swift` genera los modelos Swift del Gateway.
-- `pnpm protocol:check` ejecuta ambos generadores y verifica que la salida Swift esté comprometida (la salida JSON Schema es un artefacto de build ignorado por git).
+- `pnpm protocol:check` ejecuta ambos generadores y verifica que la salida Swift esté incluida en el repositorio (la salida de JSON Schema es un artefacto de compilación ignorado por Git).
 
-## Cómo se usan los esquemas en tiempo de ejecución
+## Cómo se utilizan los esquemas en tiempo de ejecución
 
-- **Lado del servidor**: cada marco entrante se valida con AJV. El handshake solo acepta una solicitud `connect` cuyos parámetros coincidan con `ConnectParams`.
-- **Lado del cliente**: el cliente JS valida los marcos de evento y respuesta antes de usarlos.
-- **Discovery de funcionalidades**: el Gateway envía una lista conservadora `features.methods` y `features.events` en `hello-ok`, desde `listGatewayMethods()` y `GATEWAY_EVENTS`.
-- Esa lista de discovery no es un volcado generado de cada helper invocable en `coreGatewayHandlers`; algunos RPC helper se implementan en `src/gateway/server-methods/*.ts` sin enumerarse en la lista de funcionalidades anunciada.
+- **Servidor**: cada trama entrante se valida con AJV. La negociación inicial solo acepta una solicitud `connect` cuyos parámetros coincidan con `ConnectParams`.
+- **Cliente**: el cliente de JS valida las tramas de eventos y respuestas antes de utilizarlas.
+- **Descubrimiento de funcionalidades**: el Gateway envía una lista conservadora de `features.methods` y `features.events` en `hello-ok`, obtenida de `listGatewayMethods()` y `GATEWAY_EVENTS`.
+- Esa lista de descubrimiento no es un volcado generado de todos los auxiliares invocables de `coreGatewayHandlers`; algunos RPC auxiliares están implementados en `src/gateway/server-methods/*.ts` sin estar enumerados en la lista de funcionalidades anunciada.
 
-## Marcos de ejemplo
+## Ejemplos de tramas
 
-Connect (primer mensaje):
+Conexión (primer mensaje):
 
 ```json
 {
@@ -99,7 +99,7 @@ Connect (primer mensaje):
 }
 ```
 
-Respuesta hello-ok:
+Respuesta `hello-ok`:
 
 ```json
 {
@@ -141,7 +141,7 @@ Evento:
 
 ## Cliente mínimo (Node.js)
 
-Flujo útil más pequeño: connect + health.
+Flujo útil más pequeño: conexión + estado de salud.
 
 ```ts
 import { WebSocket } from "ws";
@@ -181,13 +181,13 @@ ws.on("message", (data) => {
 });
 ```
 
-## Ejemplo desarrollado: añadir un método de extremo a extremo
+## Ejemplo práctico: añadir un método de extremo a extremo
 
-Ejemplo: añadir una nueva solicitud `system.echo` que devuelve `{ ok: true, text }`.
+Ejemplo: añadir una nueva solicitud `system.echo` que devuelva `{ ok: true, text }`.
 
 1. **Esquema (fuente de verdad)**
 
-Añade a `packages/gateway-protocol/src/schema/system.ts` (o al módulo de funcionalidad más cercano):
+Añádelo a `packages/gateway-protocol/src/schema/system.ts` (o al módulo funcional correspondiente más cercano):
 
 ```ts
 export const SystemEchoParamsSchema = Type.Object(
@@ -223,7 +223,7 @@ export const validateSystemEchoParams = ajv.compile<SystemEchoParams>(SystemEcho
 
 3. **Comportamiento del servidor**
 
-Añade un handler en `src/gateway/server-methods/system.ts`:
+Añade un controlador en `src/gateway/server-methods/system.ts`:
 
 ```ts
 export const systemHandlers: GatewayRequestHandlers = {
@@ -234,9 +234,9 @@ export const systemHandlers: GatewayRequestHandlers = {
 };
 ```
 
-Regístralo en `src/gateway/server-methods.ts` (ya fusiona `systemHandlers`), luego añade `"system.echo"` a la entrada de `listGatewayMethods` en `src/gateway/server-methods-list.ts`.
+Regístralo en `src/gateway/server-methods.ts` (que ya combina `systemHandlers`) y después añade `"system.echo"` a la entrada de `listGatewayMethods` en `src/gateway/server-methods-list.ts`.
 
-Si el método es invocable por clientes operador o nodo, clasifícalo también en `src/gateway/method-scopes.ts` para mantener alineados el cumplimiento de alcances y el anuncio de funcionalidades de `hello-ok`.
+Si los clientes de operador o de nodo pueden invocar el método, clasifícalo también en `src/gateway/method-scopes.ts` para que la aplicación de ámbitos y el anuncio de funcionalidades de `hello-ok` permanezcan alineados.
 
 4. **Regenerar**
 
@@ -246,47 +246,47 @@ pnpm protocol:check
 
 5. **Pruebas y documentación**
 
-Añade una prueba de servidor en `src/gateway/server.*.test.ts` y anota el método en la documentación.
+Añade una prueba del servidor en `src/gateway/server.*.test.ts` y menciona el método en la documentación.
 
-## Comportamiento de generación de código Swift
+## Comportamiento de la generación de código Swift
 
-El generador Swift emite:
+El generador de Swift emite:
 
-- un enum `GatewayFrame` con casos `req`, `res`, `event` y `unknown`
-- structs/enums de payload con tipos fuertes
-- valores `ErrorCode`, `GATEWAY_PROTOCOL_VERSION` y `GATEWAY_MIN_PROTOCOL_VERSION`
+- una enumeración `GatewayFrame` con los casos `req`, `res`, `event` y `unknown`
+- estructuras y enumeraciones de cargas útiles con tipos estrictos
+- valores de `ErrorCode`, `GATEWAY_PROTOCOL_VERSION` y `GATEWAY_MIN_PROTOCOL_VERSION`
 
-Los tipos de marco desconocidos se conservan como payloads sin procesar para compatibilidad hacia delante.
+Los tipos de trama desconocidos se conservan como cargas útiles sin procesar para mantener la compatibilidad futura.
 
-## Versionado y compatibilidad
+## Control de versiones y compatibilidad
 
-- `PROTOCOL_VERSION` vive en `packages/gateway-protocol/src/version.ts` (valor actual: `4`).
-- Los clientes envían `minProtocol` y `maxProtocol`; el servidor rechaza rangos que no incluyan su protocolo actual.
-- Los modelos Swift conservan los tipos de marco desconocidos para evitar romper clientes antiguos.
+- `PROTOCOL_VERSION` se encuentra en `packages/gateway-protocol/src/version.ts` (valor actual: `4`).
+- Los clientes envían `minProtocol` y `maxProtocol`; el servidor rechaza los intervalos que no incluyan su protocolo actual.
+- Los modelos Swift conservan los tipos de trama desconocidos para evitar que los clientes antiguos dejen de funcionar.
 
-## Patrones y convenciones de esquema
+## Patrones y convenciones de los esquemas
 
-- La mayoría de los objetos usan `additionalProperties: false` para payloads estrictos.
-- `NonEmptyString` (`Type.String({ minLength: 1 })`) es el valor predeterminado para ID y nombres de método/evento.
-- El `GatewayFrame` de nivel superior usa un **discriminador** en `type`.
-- Los métodos con efectos secundarios suelen requerir un `idempotencyKey` en params (ejemplo: `send`, `poll`, `agent`, `chat.send`).
-- `agent` acepta `internalEvents` opcionales para contexto de orquestación generado en tiempo de ejecución (por ejemplo, entrega de finalización de tarea de subagente/cron); trata esto como superficie de API interna.
+- La mayoría de los objetos utilizan `additionalProperties: false` para imponer cargas útiles estrictas.
+- `NonEmptyString` (`Type.String({ minLength: 1 })`) es el valor predeterminado para los identificadores y los nombres de métodos y eventos.
+- El `GatewayFrame` de nivel superior utiliza un **discriminador** en `type`.
+- Los métodos con efectos secundarios suelen requerir un `idempotencyKey` en los parámetros (por ejemplo: `send`, `poll`, `agent`, `chat.send`).
+- `agent` acepta el parámetro opcional `internalEvents` para el contexto de orquestación generado en tiempo de ejecución (por ejemplo, la transferencia al completarse una tarea de subagente o Cron); considera esto una superficie de API interna.
 
-## JSON de esquema en vivo
+## JSON del esquema publicado
 
-El JSON Schema generado es un artefacto de build, no se compromete al repo. El archivo raw publicado normalmente está disponible en:
+El JSON Schema generado es un artefacto de compilación y no se incluye en el repositorio. El archivo sin procesar publicado suele estar disponible en:
 
 - [https://raw.githubusercontent.com/openclaw/openclaw/main/dist/protocol.schema.json](https://raw.githubusercontent.com/openclaw/openclaw/main/dist/protocol.schema.json)
 
-## Cuando cambies esquemas
+## Cuando cambies los esquemas
 
-1. Actualiza los esquemas TypeBox en el módulo propietario `packages/gateway-protocol/src/schema/*.ts` y regístralos en `protocol-schemas.ts`.
-2. Registra el método/evento en `src/gateway/server-methods-list.ts`.
-3. Actualiza `src/gateway/method-scopes.ts` cuando el nuevo RPC necesite clasificación de alcance de operador o nodo.
+1. Actualiza los esquemas de TypeBox en el módulo propietario `packages/gateway-protocol/src/schema/*.ts` y regístralos en `protocol-schemas.ts`.
+2. Registra el método o evento en `src/gateway/server-methods-list.ts`.
+3. Actualiza `src/gateway/method-scopes.ts` cuando el nuevo RPC necesite una clasificación de ámbito de operador o nodo.
 4. Ejecuta `pnpm protocol:check`.
-5. Compromete los modelos Swift regenerados.
+5. Incluye en el repositorio los modelos Swift regenerados.
 
-## Relacionado
+## Contenido relacionado
 
 - [Protocolo de salida enriquecida](/es/reference/rich-output-protocol)
 - [Adaptadores RPC](/es/reference/rpc)

@@ -1,85 +1,86 @@
 ---
 read_when:
-    - Je draait OpenClaw vaak met Docker en wilt kortere commando's voor dagelijks gebruik
-    - Je wilt een hulplaag voor dashboard-, logboek-, tokenconfiguratie- en koppelingsstromen
-summary: ClawDock-shellhelpers voor op Docker gebaseerde OpenClaw-installaties
+    - Je gebruikt OpenClaw vaak met Docker en wilt kortere commando's voor dagelijks gebruik
+    - Je wilt een hulplaag voor het dashboard, logboeken, het instellen van tokens en koppelingsprocessen
+summary: ClawDock-shellhulpprogramma's voor Docker-gebaseerde OpenClaw-installaties
 title: ClawDock
 x-i18n:
-    generated_at: "2026-05-06T09:18:54Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:54:53Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 82d31ba74694cda9e195534ce33f7b61343546f174ceacd2607aeb1d5487229e
+    source_hash: 5bb829a3301178503f910931e86a39f7befeaf186044f4088a25dc80ea99130d
     source_path: install/clawdock.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-ClawDock is een kleine shell-helperlaag voor Docker-gebaseerde OpenClaw-installaties.
+ClawDock is een kleine laag met shellhulpfuncties voor Docker-gebaseerde OpenClaw-installaties.
 
-Het geeft je korte opdrachten zoals `clawdock-start`, `clawdock-dashboard` en `clawdock-fix-token` in plaats van langere `docker compose ...`-aanroepen.
+Hiermee gebruikt u korte opdrachten zoals `clawdock-start`, `clawdock-dashboard` en `clawdock-fix-token` in plaats van langere `docker compose ...`-aanroepen.
 
-Als je Docker nog niet hebt ingesteld, begin dan met [Docker](/nl/install/docker).
+Als u Docker nog niet hebt ingesteld, begint u met [Docker](/nl/install/docker).
 
-## Installeren
-
-Gebruik het canonieke helperpad:
+## Installatie
 
 ```bash
 mkdir -p ~/.clawdock && curl -sL https://raw.githubusercontent.com/openclaw/openclaw/main/scripts/clawdock/clawdock-helpers.sh -o ~/.clawdock/clawdock-helpers.sh
 echo 'source ~/.clawdock/clawdock-helpers.sh' >> ~/.zshrc && source ~/.zshrc
 ```
 
-Als je ClawDock eerder hebt geïnstalleerd vanuit `scripts/shell-helpers/clawdock-helpers.sh`, installeer het dan opnieuw vanuit het nieuwe pad `scripts/clawdock/clawdock-helpers.sh`. Het oude onbewerkte GitHub-pad is verwijderd.
+Als u ClawDock eerder hebt geïnstalleerd vanuit `scripts/shell-helpers/clawdock-helpers.sh`, installeert u het opnieuw vanaf het huidige pad `scripts/clawdock/clawdock-helpers.sh`; het oude onbewerkte GitHub-pad is verwijderd.
 
-## Wat je krijgt
+De hulpfuncties detecteren bij het eerste gebruik automatisch uw OpenClaw-check-out (door gangbare paden zoals `~/openclaw` en `~/projects/openclaw` te controleren) en slaan het resultaat op in de cache in `~/.clawdock/config`. Stel `CLAWDOCK_DIR` zelf in als uw check-out zich elders bevindt.
+
+## Wat u krijgt
 
 ### Basisbewerkingen
 
-| Command            | Beschrijving              |
-| ------------------ | ------------------------- |
-| `clawdock-start`   | Start de gateway          |
-| `clawdock-stop`    | Stop de gateway           |
-| `clawdock-restart` | Herstart de gateway       |
-| `clawdock-status`  | Controleer containerstatus |
-| `clawdock-logs`    | Volg gatewaylogboeken     |
+| Opdracht            | Beschrijving                 |
+| ------------------- | ---------------------------- |
+| `clawdock-start`    | De Gateway starten           |
+| `clawdock-stop`     | De Gateway stoppen           |
+| `clawdock-restart`  | De Gateway opnieuw starten   |
+| `clawdock-status`   | De containerstatus bekijken  |
+| `clawdock-logs`     | De Gateway-logboeken volgen  |
 
-### Containertoegang
+### Toegang tot de container
 
-| Command                   | Beschrijving                                      |
-| ------------------------- | ------------------------------------------------- |
-| `clawdock-shell`          | Open een shell in de gatewaycontainer             |
-| `clawdock-cli <command>`  | Voer OpenClaw CLI-opdrachten uit in Docker        |
-| `clawdock-exec <command>` | Voer een willekeurige opdracht uit in de container |
+| Opdracht                   | Beschrijving                                         |
+| -------------------------- | ---------------------------------------------------- |
+| `clawdock-shell`           | Een shell in de Gateway-container openen             |
+| `clawdock-cli <command>`   | OpenClaw CLI-opdrachten uitvoeren in Docker           |
+| `clawdock-exec <command>`  | Een willekeurige opdracht uitvoeren in de container  |
 
-### Web-UI en koppelen
+### Webinterface en koppeling
 
-| Command                 | Beschrijving                       |
-| ----------------------- | ---------------------------------- |
-| `clawdock-dashboard`    | Open de Control UI-URL             |
-| `clawdock-devices`      | Toon openstaande apparaatkoppelingen |
-| `clawdock-approve <id>` | Keur een koppelingsverzoek goed    |
+| Opdracht                 | Beschrijving                         |
+| ------------------------ | ------------------------------------ |
+| `clawdock-dashboard`     | De URL van de bedieningsinterface openen |
+| `clawdock-devices`       | Wachtende apparaatkoppelingen weergeven |
+| `clawdock-approve <id>`  | Een koppelingsverzoek goedkeuren     |
 
-### Instellen en onderhoud
+### Installatie en onderhoud
 
-| Command              | Beschrijving                                      |
-| -------------------- | ------------------------------------------------- |
-| `clawdock-fix-token` | Configureer het gatewaytoken in de container      |
-| `clawdock-update`    | Haal op, bouw opnieuw en herstart                 |
-| `clawdock-rebuild`   | Bouw alleen de Docker-image opnieuw               |
-| `clawdock-clean`     | Verwijder containers en volumes                   |
+| Opdracht              | Beschrijving                                             |
+| --------------------- | -------------------------------------------------------- |
+| `clawdock-fix-token`  | Het Gateway-token naar de containerconfiguratie schrijven |
+| `clawdock-update`     | Ophalen, opnieuw bouwen en opnieuw starten                |
+| `clawdock-rebuild`    | Alleen de Docker-image opnieuw bouwen                     |
+| `clawdock-clean`      | Containers en volumes verwijderen                        |
 
 ### Hulpprogramma's
 
-| Command                | Beschrijving                                |
-| ---------------------- | ------------------------------------------ |
-| `clawdock-health`      | Voer een gatewaygezondheidscontrole uit    |
-| `clawdock-token`       | Druk het gatewaytoken af                   |
-| `clawdock-cd`          | Ga naar de OpenClaw-projectdirectory       |
-| `clawdock-config`      | Open `~/.openclaw`                         |
-| `clawdock-show-config` | Druk configuratiebestanden af met geredigeerde waarden |
-| `clawdock-workspace`   | Open de werkruimtedirectory                |
+| Opdracht                | Beschrijving                                         |
+| ----------------------- | ---------------------------------------------------- |
+| `clawdock-health`       | Een statuscontrole van de Gateway uitvoeren          |
+| `clawdock-token`        | Het Gateway-token afdrukken                          |
+| `clawdock-cd`           | Naar de OpenClaw-projectmap gaan                     |
+| `clawdock-config`       | `~/.openclaw` openen                                 |
+| `clawdock-show-config`  | Configuratiebestanden met afgeschermde waarden afdrukken |
+| `clawdock-workspace`    | De werkruimtemap openen                              |
+| `clawdock-help`         | Alle ClawDock-opdrachten weergeven                   |
 
-## Eerste gebruik
+## Stappen voor het eerste gebruik
 
 ```bash
 clawdock-start
@@ -87,7 +88,7 @@ clawdock-fix-token
 clawdock-dashboard
 ```
 
-Als de browser zegt dat koppelen vereist is:
+Als de browser meldt dat koppeling vereist is:
 
 ```bash
 clawdock-devices
@@ -96,22 +97,22 @@ clawdock-approve <request-id>
 
 ## Configuratie en geheimen
 
-ClawDock werkt met dezelfde Docker-configuratiesplitsing die wordt beschreven in [Docker](/nl/install/docker):
+ClawDock leest twee afzonderlijke `.env`-bestanden, overeenkomstig de scheiding die wordt beschreven in [Docker](/nl/install/docker):
 
-- `<project>/.env` voor Docker-specifieke waarden zoals imagenaam, poorten en het gatewaytoken
-- `~/.openclaw/.env` voor env-ondersteunde providerkeys en bottokens
-- `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` voor opgeslagen provider-OAuth/API-key-auth
-- `~/.openclaw/openclaw.json` voor gedragsconfiguratie
+- Het `.env`-bestand van het project naast `docker-compose.yml`: Docker-specifieke waarden, zoals de naam van de image, poorten en `OPENCLAW_GATEWAY_TOKEN`. `clawdock-token` leest het token hieruit.
+- `~/.openclaw/.env` (gekoppeld aan de container): door omgevingsvariabelen ondersteunde geheimen die OpenClaw zelf beheert, naast `openclaw.json` en `agents/<agentId>/agent/auth-profiles.json`.
 
-Gebruik `clawdock-show-config` wanneer je de `.env`-bestanden en `openclaw.json` snel wilt inspecteren. Het redigeert `.env`-waarden in de afgedrukte uitvoer.
+`clawdock-fix-token` kopieert het token uit het `.env`-bestand van het project naar de configuratiewaarden `gateway.remote.token` en `gateway.auth.token` van de container en start de Gateway opnieuw.
+
+Gebruik `clawdock-show-config` om snel `openclaw.json` en beide `.env`-bestanden te bekijken; in de afgedrukte uitvoer worden de waarden uit `.env` afgeschermd.
 
 ## Gerelateerd
 
 <CardGroup cols={2}>
   <Card title="Docker" href="/nl/install/docker" icon="docker">
-    Canonieke Docker-installatie voor OpenClaw.
+    De canonieke Docker-installatie voor OpenClaw.
   </Card>
-  <Card title="Docker VM-runtime" href="/nl/install/docker-vm-runtime" icon="cube">
+  <Card title="Docker-VM-runtime" href="/nl/install/docker-vm-runtime" icon="cube">
     Door Docker beheerde VM-runtime voor versterkte isolatie.
   </Card>
   <Card title="Bijwerken" href="/nl/install/updating" icon="arrow-up-right-from-square">

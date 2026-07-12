@@ -1,65 +1,65 @@
 ---
 read_when:
-    - Mengekspos Gateway melalui LAN, tailnet, Tailscale Serve, Funnel, atau proxy balik
-    - Meninjau penerapan sebelum mengizinkan pengguna perpesanan sungguhan
-    - Mengembalikan konfigurasi akses jarak jauh atau DM yang berisiko
+    - Mengekspos Gateway melalui LAN, tailnet, Tailscale Serve, Funnel, atau proksi terbalik
+    - Meninjau deployment sebelum mengizinkan pengguna perpesanan nyata
+    - Mengembalikan konfigurasi akses jarak jauh atau DM yang berisiko ke kondisi sebelumnya
 sidebarTitle: Exposure runbook
-summary: Daftar periksa pra-penerapan dan rollback sebelum membuka akses OpenClaw Gateway di luar loopback
-title: Runbook eksposur Gateway
+summary: Daftar periksa prapenerbangan dan pemulihan sebelum mengekspos Gateway OpenClaw di luar loopback
+title: Panduan operasional pemaparan Gateway
 x-i18n:
-    generated_at: "2026-06-27T17:33:56Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:14:06Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c5e94cc03b9d79a03eb16aa04bad0fd311b72f27f14182c036832382dbce3d0f
+    source_hash: fb8e66af57e804325afc91281122b822183337177c734efe065c5fc18b175e72
     source_path: gateway/security/exposure-runbook.md
     workflow: 16
 ---
 
 <Warning>
-Ekspos Gateway hanya setelah Anda dapat menjelaskan siapa yang dapat menjangkaunya, bagaimana mereka
-diautentikasi, agent mana yang dapat mereka picu, dan tool mana yang dapat
-digunakan agent tersebut. Jika ragu, kembalikan ke akses khusus loopback dan jalankan ulang audit.
+Ekspos Gateway hanya setelah Anda dapat menjelaskan siapa yang dapat mengaksesnya, bagaimana mereka
+diautentikasi, agen mana yang dapat mereka picu, dan alat apa yang dapat
+digunakan oleh agen tersebut. Jika ragu, kembalilah ke akses khusus local loopback dan jalankan ulang audit.
 </Warning>
 
-Runbook ini mengubah panduan [Keamanan](/id/gateway/security) yang lebih luas menjadi
-checklist operator untuk akses jarak jauh dan eksposur messaging.
+Panduan operasional ini mengubah panduan [Keamanan](/id/gateway/security) yang lebih luas menjadi
+daftar periksa operator untuk akses jarak jauh dan eksposur perpesanan.
 
 ## Pilih pola eksposur
 
-Pilih pola tersempit yang memenuhi workflow.
+Utamakan pola paling terbatas yang memenuhi alur kerja.
 
-| Pola                       | Direkomendasikan ketika                         | Kontrol wajib                                                                                       |
-| -------------------------- | ----------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| Loopback + tunnel SSH      | Penggunaan pribadi, akses admin, debugging      | Pertahankan `gateway.bind: "loopback"` dan tunnel `127.0.0.1:18789`                                 |
-| Loopback + Tailscale Serve | Akses tailnet pribadi ke Control UI/WebSocket   | Pertahankan Gateway hanya loopback; andalkan header identitas Tailscale hanya untuk surface yang didukung |
-| Bind tailnet/LAN           | Jaringan privat khusus dengan perangkat dikenal | Autentikasi Gateway, allowlist firewall, tanpa port-forward publik                                  |
-| Reverse proxy tepercaya    | SSO/OIDC organisasi di depan Gateway            | Autentikasi `trusted-proxy`, `trustedProxies` ketat, aturan timpa/hapus header, pengguna yang diizinkan secara eksplisit |
-| Internet publik            | Deployment langka dan berisiko tinggi           | Proxy sadar identitas, TLS, rate limit, allowlist ketat, sesi non-main yang disandbox               |
+| Pola                       | Direkomendasikan ketika                                | Kontrol wajib                                                                                                                                  |
+| -------------------------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Loopback + terowongan SSH  | Penggunaan pribadi, akses admin, penelusuran kesalahan | Pertahankan `gateway.bind: "loopback"` dan buat terowongan ke `127.0.0.1:18789`                                                                |
+| Loopback + Tailscale Serve | Akses tailnet pribadi ke Control UI/WebSocket          | Pertahankan Gateway khusus local loopback; header identitas Tailscale hanya mengautentikasi permukaan WebSocket Control UI, bukan jalur autentikasi lainnya |
+| Pengikatan tailnet/LAN     | Jaringan privat khusus dengan perangkat yang diketahui | Autentikasi Gateway, daftar izin firewall, tanpa penerusan port publik                                                                          |
+| Proksi balik tepercaya     | SSO/OIDC organisasi di depan Gateway                   | Autentikasi `trusted-proxy`, `trustedProxies` yang ketat, aturan penimpaan/penghapusan header, pengguna yang diizinkan secara eksplisit          |
+| Internet publik            | Penerapan langka dan berisiko tinggi                   | Proksi berbasis identitas, TLS, batas laju, daftar izin ketat, sesi non-utama dalam sandbox                                                      |
 
-Hindari port-forward publik langsung ke Gateway. Jika Anda memerlukan akses publik,
-pasang proxy sadar identitas di depannya dan jadikan proxy sebagai satu-satunya jalur jaringan
-ke Gateway.
+Hindari penerusan port publik langsung ke Gateway. Jika akses publik
+diperlukan, tempatkan proksi berbasis identitas di depannya dan jadikan proksi tersebut
+sebagai satu-satunya jalur jaringan menuju Gateway.
 
-## Inventaris pra-penerbangan
+## Inventaris pra-pelaksanaan
 
-Catat ini sebelum mengubah kebijakan bind, proxy, Tailscale, atau channel:
+Catat hal-hal berikut sebelum mengubah kebijakan pengikatan, proksi, Tailscale, atau kanal:
 
-- Host Gateway, pengguna OS, dan direktori state.
-- URL Gateway dan mode bind.
-- Mode autentikasi, sumber token/kata sandi, atau sumber identitas proxy tepercaya.
-- Semua channel yang diaktifkan dan apakah channel tersebut menerima DM, grup, atau webhook.
-- Agent yang dapat dijangkau dari pengirim non-lokal.
-- Profil tool, mode sandbox, dan kebijakan tool elevated untuk setiap agent yang dapat dijangkau.
-- Kredensial eksternal yang tersedia untuk agent tersebut.
-- Lokasi backup untuk `~/.openclaw/openclaw.json` dan kredensial.
+- Host Gateway, pengguna OS, dan direktori status (default `~/.openclaw`).
+- URL Gateway dan mode pengikatan (`gateway.bind`; port default `18789`).
+- Mode autentikasi, sumber token/kata sandi, atau sumber identitas proksi tepercaya.
+- Setiap kanal yang diaktifkan dan apakah kanal tersebut menerima DM, grup, atau webhook.
+- Agen yang dapat dijangkau oleh pengirim nonlokal.
+- Profil alat, mode sandbox, dan kebijakan alat dengan hak istimewa untuk setiap agen yang dapat dijangkau.
+- Kredensial eksternal yang tersedia bagi agen tersebut.
+- Lokasi cadangan untuk `~/.openclaw/openclaw.json` dan kredensial.
 
-Jika lebih dari satu orang dapat mengirim pesan ke bot, perlakukan ini sebagai otoritas tool terdelegasi bersama,
-bukan sebagai isolasi host per pengguna.
+Jika lebih dari satu orang dapat mengirim pesan kepada bot, perlakukan ini sebagai otoritas
+alat terdelegasi bersama, bukan isolasi host per pengguna.
 
-## Pemeriksaan baseline
+## Pemeriksaan dasar
 
-Jalankan ini sebelum membuka akses:
+Jalankan sebelum membuka akses:
 
 ```bash
 openclaw doctor
@@ -68,8 +68,9 @@ openclaw security audit --deep
 openclaw health
 ```
 
-Selesaikan temuan kritis terlebih dahulu. Peringatan hanya dapat diterima ketika memang
-disengaja dan didokumentasikan untuk deployment tersebut.
+Selesaikan temuan kritis terlebih dahulu. Terima peringatan hanya jika disengaja dan
+didokumentasikan untuk penerapan tersebut. Lihat [Pemeriksaan audit keamanan](/id/gateway/security/audit-checks)
+untuk mengetahui arti setiap `checkId` dan kunci perbaikannya.
 
 Untuk validasi CLI jarak jauh, berikan kredensial secara eksplisit:
 
@@ -77,11 +78,11 @@ Untuk validasi CLI jarak jauh, berikan kredensial secara eksplisit:
 openclaw gateway probe --url ws://127.0.0.1:18789 --token "$OPENCLAW_GATEWAY_TOKEN"
 ```
 
-Jangan mengasumsikan kredensial konfigurasi lokal berlaku untuk URL jarak jauh eksplisit.
+Jangan berasumsi bahwa kredensial konfigurasi lokal berlaku untuk URL jarak jauh yang dinyatakan secara eksplisit.
 
-## Baseline aman minimum
+## Dasar aman minimum
 
-Gunakan bentuk ini sebagai titik awal untuk deployment yang terekspos:
+Gunakan struktur ini sebagai titik awal untuk penerapan yang diekspos:
 
 ```json5
 {
@@ -108,74 +109,85 @@ Gunakan bentuk ini sebagai titik awal untuk deployment yang terekspos:
 }
 ```
 
-Lalu perluas satu kontrol pada satu waktu. Misalnya, tambahkan allowlist channel tertentu
-sebelum mengaktifkan tool yang dapat menulis, atau aktifkan reverse proxy sebelum menerima
-traffic Control UI jarak jauh.
+Perluas satu kontrol pada satu waktu: tambahkan daftar izin kanal tertentu sebelum mengaktifkan
+alat yang dapat menulis, atau aktifkan proksi balik sebelum menerima lalu lintas Control UI
+jarak jauh.
 
-Baseline `exec.security: "deny"` yang ketat memblokir semua panggilan exec, termasuk
-diagnostik yang aman. Jika diagnostik atau perintah berisiko rendah diperlukan, longgarkan ini
-hanya setelah memilih pengirim, agent, perintah, dan mode persetujuan spesifik
-yang sesuai dengan model ancaman Anda.
+`tools.exec.security: "deny"` memblokir semua panggilan eksekusi, termasuk
+diagnostik yang aman. Jika diagnostik atau perintah berisiko rendah diperlukan, longgarkan ini hanya
+setelah memilih pengirim, agen, perintah, dan mode persetujuan tertentu yang
+sesuai dengan model ancaman Anda.
 
 ## Eksposur DM dan grup
 
-Channel messaging adalah surface input yang tidak tepercaya. Sebelum mengizinkan DM atau grup:
+Kanal perpesanan adalah permukaan masukan yang tidak tepercaya. Sebelum mengizinkan DM atau
+grup:
 
-- Pilih `dmPolicy: "pairing"` atau daftar `allowFrom` yang ketat.
-- Hindari `dmPolicy: "open"` kecuali setiap pengirim tepercaya.
-- Jangan gabungkan allowlist `"*"` dengan akses tool yang luas.
-- Wajibkan mention di grup kecuali room dikontrol ketat.
-- Gunakan `session.dmScope: "per-channel-peer"` ketika beberapa orang dapat mengirim DM ke bot.
-- Arahkan channel bersama ke agent dengan tool minimal dan tanpa kredensial pribadi.
+- Utamakan `dmPolicy: "pairing"` atau daftar `allowFrom` yang ketat daripada `dmPolicy: "open"`.
+- Jangan gabungkan daftar izin `"*"` dengan akses alat yang luas.
+- Wajibkan penyebutan dalam grup kecuali ruang tersebut dikontrol dengan ketat.
+- Tetapkan `session.dmScope: "per-channel-peer"` (atau `"per-account-channel-peer"` untuk
+  kanal multiakun) ketika beberapa orang dapat mengirim DM kepada bot, agar sesi DM
+  tidak berbagi konteks.
+- Arahkan kanal bersama ke agen dengan alat minimum dan tanpa
+  kredensial pribadi.
 
-Pairing menyetujui pengirim untuk memicu bot. Ini tidak menjadikan pengirim tersebut sebagai
+Pemasangan menyetujui pengirim untuk memicu bot. Hal ini tidak menjadikan pengirim tersebut sebagai
 batas keamanan host yang terpisah.
 
-## Pemeriksaan reverse proxy
+## Pemeriksaan proksi balik
 
-Untuk proxy sadar identitas:
+Untuk proksi berbasis identitas:
 
-- Proxy harus mengautentikasi pengguna sebelum meneruskan ke Gateway.
-- Akses langsung ke port Gateway harus diblokir oleh firewall atau kebijakan jaringan.
-- `gateway.trustedProxies` hanya boleh berisi IP sumber proxy.
-- Proxy harus menghapus atau menimpa header identitas dan forwarding yang diberikan klien.
-- `gateway.auth.trustedProxy.allowUsers` sebaiknya mencantumkan pengguna yang diharapkan ketika proxy melayani lebih dari satu audiens.
-- Mode proxy loopback pada host yang sama sebaiknya menggunakan `allowLoopback` hanya ketika proses lokal tepercaya dan proxy memiliki header identitas.
+- Proksi harus mengautentikasi pengguna sebelum meneruskan ke Gateway.
+- Firewall atau kebijakan jaringan harus memblokir akses langsung ke port Gateway.
+- `gateway.trustedProxies` hanya boleh mencantumkan IP sumber proksi.
+- Proksi harus menghapus atau menimpa header identitas dan penerusan
+  yang diberikan oleh klien.
+- Tetapkan `gateway.auth.trustedProxy.allowUsers` ketika proksi melayani lebih dari
+  satu kelompok pengguna.
+- Gunakan `gateway.auth.trustedProxy.allowLoopback` hanya untuk proksi pada host yang sama,
+  tempat proses lokal dipercaya dan proksi mengelola header identitas.
 
-Jalankan `openclaw security audit --deep` setelah perubahan proxy. Temuan trusted-proxy
-sengaja dibuat bernilai sinyal tinggi karena proxy menjadi batas autentikasi.
+Jalankan `openclaw security audit --deep` setelah perubahan proksi. Temuan
+proksi tepercaya sangat signifikan karena proksi menjadi batas
+autentikasi.
 
-## Tinjauan tool dan sandbox
+## Peninjauan alat dan sandbox
 
-Sebelum mengekspos agent ke pengirim jarak jauh:
+Sebelum mengekspos agen kepada pengirim jarak jauh:
 
-- Konfirmasi sesi mana yang berjalan di host versus sandbox.
-- Tolak atau wajibkan persetujuan untuk exec host.
-- Biarkan tool elevated dinonaktifkan kecuali pengirim spesifik dan tepercaya membutuhkannya.
-- Hindari tool browser, canvas, node, cron, gateway, dan session-spawn untuk surface messaging terbuka atau semi-terbuka.
-- Jaga bind mount tetap sempit dan hindari kredensial, home, socket Docker, dan path sistem.
-- Gunakan gateway, pengguna OS, atau host terpisah untuk batas kepercayaan yang benar-benar berbeda.
+- Pastikan sesi mana yang berjalan pada host dan mana yang berjalan dalam sandbox.
+- Tolak atau wajibkan persetujuan untuk eksekusi pada host.
+- Pertahankan alat dengan hak istimewa dalam keadaan nonaktif kecuali pengirim tepercaya tertentu membutuhkannya.
+- Hindari alat peramban, kanvas, Node, Cron, Gateway, dan pemunculan sesi untuk permukaan
+  perpesanan terbuka atau semi-terbuka.
+- Pertahankan cakupan titik kait tetap sempit; hindari jalur kredensial, direktori utama, soket Docker, dan
+  sistem.
+- Gunakan Gateway, pengguna OS, atau host terpisah untuk batas kepercayaan
+  yang berbeda secara material.
 
-Jika pengguna jarak jauh tidak sepenuhnya tepercaya, isolasi harus berasal dari deployment
-terpisah, bukan hanya dari prompt atau label sesi.
+Jika pengguna jarak jauh tidak sepenuhnya dipercaya, isolasi harus berasal dari
+penerapan terpisah, bukan hanya dari prompt atau label sesi.
 
 ## Validasi pascaperubahan
 
 Setelah setiap perubahan eksposur:
 
 1. Jalankan ulang `openclaw security audit --deep`.
-2. Uji koneksi terotorisasi yang berhasil.
-3. Uji bahwa pengirim atau sesi browser yang tidak terotorisasi ditolak.
-4. Konfirmasi log menyensor rahasia.
-5. Konfirmasi routing DM/grup hanya mencapai agent yang dimaksud.
-6. Konfirmasi tool berdampak tinggi meminta persetujuan atau ditolak.
+2. Pastikan koneksi resmi berhasil tersambung.
+3. Pastikan pengirim atau sesi peramban yang tidak resmi ditolak.
+4. Pastikan log menyamarkan rahasia.
+5. Pastikan perutean DM/grup hanya mencapai agen yang dituju.
+6. Pastikan alat berdampak tinggi meminta persetujuan atau ditolak.
 7. Dokumentasikan peringatan residual yang diterima.
 
-Jangan lanjut ke perubahan eksposur berikutnya sampai perubahan saat ini dipahami.
+Jangan lanjutkan ke perubahan eksposur berikutnya sampai perubahan saat ini
+dipahami.
 
-## Rencana rollback
+## Rencana pemulihan
 
-Jika Gateway mungkin terlalu terekspos:
+Jika Gateway mungkin terekspos secara berlebihan:
 
 ```json5
 {
@@ -195,25 +207,25 @@ Jika Gateway mungkin terlalu terekspos:
 }
 ```
 
-Lalu:
+Kemudian:
 
-1. Hentikan forwarding publik, Tailscale Funnel, atau route reverse proxy.
-2. Rotasi token/kata sandi Gateway dan kredensial integrasi yang terdampak.
-3. Hapus `"*"` dan pengirim tidak terduga dari allowlist.
-4. Tinjau log audit terbaru, riwayat run, panggilan tool, dan perubahan konfigurasi.
+1. Hentikan penerusan publik, Tailscale Funnel, atau rute proksi balik.
+2. Rotasikan token/kata sandi Gateway dan kredensial integrasi yang terdampak.
+3. Hapus `"*"` dan pengirim yang tidak diharapkan dari daftar izin.
+4. Tinjau log audit terbaru, riwayat eksekusi, panggilan alat, dan perubahan konfigurasi.
 5. Jalankan ulang `openclaw security audit --deep`.
-6. Aktifkan ulang akses dengan pola tersempit yang memenuhi workflow.
+6. Aktifkan kembali akses dengan pola paling terbatas yang memenuhi alur kerja.
 
-## Checklist tinjauan
+## Daftar periksa peninjauan
 
-- Gateway tetap hanya loopback kecuali ada alasan terdokumentasi.
-- Akses non-loopback memiliki autentikasi, firewall, dan tanpa route langsung publik.
-- Deployment trusted-proxy memiliki IP proxy dan kontrol header yang ketat.
-- DM menggunakan pairing atau allowlist, bukan akses terbuka secara default.
-- Grup mewajibkan mention atau allowlist eksplisit.
-- Channel bersama tidak menjangkau kredensial pribadi.
-- Sesi non-main berjalan dalam mode sandbox.
-- Exec host dan tool elevated ditolak atau dibatasi persetujuan.
-- Log menyensor rahasia.
-- Temuan audit kritis diselesaikan.
-- Langkah rollback diuji dan didokumentasikan.
+- Gateway tetap khusus local loopback kecuali terdapat alasan yang didokumentasikan.
+- Akses non-loopback memiliki autentikasi, perlindungan firewall, dan tidak memiliki rute publik langsung.
+- Penerapan proksi tepercaya memiliki IP proksi dan kontrol header yang ketat.
+- DM menggunakan pemasangan atau daftar izin, bukan akses terbuka secara default.
+- Grup mewajibkan penyebutan atau daftar izin eksplisit.
+- Kanal bersama tidak dapat mengakses kredensial pribadi.
+- Sesi non-utama berjalan dalam mode sandbox.
+- Eksekusi pada host dan alat dengan hak istimewa ditolak atau dibatasi oleh persetujuan.
+- Log menyamarkan rahasia.
+- Temuan audit kritis telah diselesaikan.
+- Langkah pemulihan telah diuji dan didokumentasikan.

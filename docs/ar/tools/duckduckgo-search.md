@@ -1,43 +1,42 @@
 ---
 read_when:
-    - تريد مزود بحث ويب لا يتطلب مفتاح API
-    - تريد استخدام DuckDuckGo من أجل web_search
-    - تريد مزوّد بحث محددًا صراحةً لا يتطلب مفتاحًا
-summary: بحث ويب DuckDuckGo -- موفّر بلا مفتاح (تجريبي، قائم على HTML)
+    - تريد مزود بحث على الويب لا يتطلب مفتاح API
+    - تريد استخدام DuckDuckGo مع web_search
+    - تريد مزوّد بحث دون مفتاح محددًا صراحةً
+summary: بحث الويب عبر DuckDuckGo — مزوّد بلا مفتاح (تجريبي، قائم على HTML)
 title: بحث DuckDuckGo
 x-i18n:
-    generated_at: "2026-06-27T18:40:09Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:40:46Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c042a3cd4fa6f37cb42b88930b5fe0122a561a810e275f26d9c1eb56502495a7
+    source_hash: 84e90532de276dcb3f73c67015dffe5f5a62be673e44a19053b2b1dfcb0986ac
     source_path: tools/duckduckgo-search.md
     workflow: 16
 ---
 
-يدعم OpenClaw DuckDuckGo كمزوّد `web_search` **بدون مفتاح**. لا يلزم مفتاح API
-أو حساب.
+يدعم OpenClaw استخدام DuckDuckGo كمزوّد `web_search` **لا يتطلب مفتاحًا**. لا يلزم مفتاح API ولا حساب.
 
 <Warning>
-  DuckDuckGo هو تكامل **تجريبي وغير رسمي** يجلب النتائج
-  من صفحات بحث DuckDuckGo غير المعتمدة على JavaScript - وليس API رسمية. توقّع
-  حدوث أعطال عرضية بسبب صفحات تحدّي الروبوتات أو تغييرات HTML.
+  يُعد تكامل DuckDuckGo **تجريبيًا وغير رسمي**، إذ يستخرج البيانات من صفحات بحث HTML غير المعتمدة على JavaScript في DuckDuckGo، وليس من API رسمي. توقّع حدوث أعطال عرضية بسبب صفحات التحقق من الروبوتات أو تغييرات HTML.
 </Warning>
 
 ## الإعداد
 
-لا حاجة إلى مفتاح API - ما عليك سوى تعيين DuckDuckGo كمزوّدك:
+لا يُحدَّد DuckDuckGo تلقائيًا مطلقًا، لأن الاكتشاف التلقائي لا يأخذ في الحسبان سوى المزوّدين الذين لديهم بيانات اعتماد صالحة للاستخدام. حدّده صراحةً:
 
 <Steps>
-  <Step title="Configure">
+  <Step title="التهيئة">
     ```bash
     openclaw configure --section web
-    # Select "duckduckgo" as the provider
+    # حدّد "duckduckgo" بوصفه المزوّد
     ```
   </Step>
 </Steps>
 
-## الإعدادات
+## التهيئة
+
+عيّن المزوّد مباشرةً في ملف التهيئة:
 
 ```json5
 {
@@ -60,8 +59,8 @@ x-i18n:
       duckduckgo: {
         config: {
           webSearch: {
-            region: "us-en", // DuckDuckGo region code
-            safeSearch: "moderate", // "strict", "moderate", or "off"
+            region: "us-en", // رمز منطقة DuckDuckGo
+            safeSearch: "moderate", // "strict" أو "moderate" أو "off"
           },
         },
       },
@@ -77,7 +76,7 @@ x-i18n:
 </ParamField>
 
 <ParamField path="count" type="number" default="5">
-النتائج المراد إرجاعها (1-10).
+عدد النتائج المراد إرجاعها (1-10).
 </ParamField>
 
 <ParamField path="region" type="string">
@@ -88,30 +87,22 @@ x-i18n:
 مستوى SafeSearch.
 </ParamField>
 
-يمكن أيضًا تعيين المنطقة وSafeSearch في إعدادات Plugin (انظر أعلاه) - تتجاوز
-معاملات الأداة قيم الإعدادات لكل استعلام.
+تتجاوز معاملات الأداة `region` و`safeSearch` قيم تهيئة Plugin أعلاه لكل استعلام على حدة.
 
 ## ملاحظات
 
-- **لا يوجد مفتاح API** - يعمل بعد اختيار DuckDuckGo كمزوّد `web_search`
-  لديك
-- **تجريبي** - يجمع النتائج من صفحات بحث HTML غير المعتمدة على JavaScript
-  في DuckDuckGo، وليس من API أو SDK رسمية
-- **خطر تحدّي الروبوتات** - قد يعرض DuckDuckGo اختبارات CAPTCHA أو يحظر الطلبات
-  عند الاستخدام الكثيف أو المؤتمت
-- **تحليل HTML** - تعتمد النتائج على بنية الصفحة، والتي يمكن أن تتغير دون
-  إشعار
-- **اختيار صريح** - لا يختار OpenClaw DuckDuckGo تلقائيًا
-  عند عدم إعداد مزوّد مدعوم بـ API
-- **يكون SafeSearch على مستوى moderate افتراضيًا** عند عدم إعداده
+- **لا يلزم مفتاح API** -- يعمل بمجرد تحديد DuckDuckGo بوصفه مزوّد `web_search`.
+- **تجريبي** -- يستخرج البيانات من صفحات بحث HTML غير المعتمدة على JavaScript في DuckDuckGo، وليس من API أو SDK رسمي. تعتمد النتائج على بنية الصفحة، التي قد تتغير دون إشعار.
+- **خطر التحقق من الروبوتات** -- قد يعرض DuckDuckGo اختبارات CAPTCHA أو يحظر الطلبات عند الاستخدام المكثف أو المؤتمت.
+- **التحديد الصريح فقط** -- لا يأخذ الاكتشاف التلقائي في OpenClaw في الحسبان سوى المزوّدين الذين لديهم بيانات اعتماد صالحة للاستخدام، ولذلك لا يُختار تلقائيًا مطلقًا مزوّد لا يتطلب مفتاحًا مثل DuckDuckGo؛ بل يجب عليك تعيين `provider: "duckduckgo"`.
+- **القيمة الافتراضية لـ SafeSearch هي `moderate`** عند عدم تهيئته.
 
 <Tip>
-  للاستخدام في الإنتاج، فكّر في [Brave Search](/ar/tools/brave-search) (تتوفر طبقة
-  مجانية) أو مزوّد آخر مدعوم بـ API.
+  للاستخدام في بيئات الإنتاج، يمكنك استخدام [Brave Search](/ar/tools/brave-search) (تتوفر فئة مجانية) أو مزوّد آخر مدعوم بـ API.
 </Tip>
 
-## ذات صلة
+## ذو صلة
 
 - [نظرة عامة على بحث الويب](/ar/tools/web) -- جميع المزوّدين والاكتشاف التلقائي
-- [Brave Search](/ar/tools/brave-search) -- نتائج منظّمة مع طبقة مجانية
+- [Brave Search](/ar/tools/brave-search) -- نتائج منظّمة مع فئة مجانية
 - [Exa Search](/ar/tools/exa-search) -- بحث عصبي مع استخراج المحتوى

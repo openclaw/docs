@@ -1,31 +1,30 @@
 ---
 read_when:
     - Вы хотите использовать Kimi для web_search
-    - Требуется KIMI_API_KEY или MOONSHOT_API_KEY
+    - Вам нужен `KIMI_API_KEY` или `MOONSHOT_API_KEY`
 summary: Веб-поиск Kimi через веб-поиск Moonshot
 title: Поиск Kimi
 x-i18n:
-    generated_at: "2026-06-28T23:53:05Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:57:12Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e00dd963257cd40235ebf8375ddbc1ba0344b9b3a82886fbf0fcf975390c27f2
+    source_hash: 42ee67c14c979298c296b20cc3f10e8c1d0f93defadc1ce2aa25ac9411aba036
     source_path: tools/kimi-search.md
     workflow: 16
 ---
 
-OpenClaw поддерживает Kimi как провайдера `web_search`, используя веб-поиск Moonshot
-для создания AI-синтезированных ответов с цитированием.
+Kimi — это поставщик `web_search`, использующий встроенный веб-поиск Moonshot. Вместо возврата ранжированного списка результатов Moonshot формирует единый ответ со встроенными ссылками на источники, аналогично поставщикам Gemini и Grok, создающим ответы на основе найденных данных.
 
-## Получение API-ключа
+## Настройка
 
 <Steps>
-  <Step title="Создайте ключ">
-    Получите API-ключ в [Moonshot AI](https://platform.moonshot.cn/).
+  <Step title="Создание ключа">
+    Получите ключ API в [Moonshot AI](https://platform.moonshot.cn/).
   </Step>
-  <Step title="Сохраните ключ">
-    Задайте `KIMI_API_KEY` или `MOONSHOT_API_KEY` в окружении Gateway либо
-    настройте через:
+  <Step title="Сохранение ключа">
+    Задайте `KIMI_API_KEY` или `MOONSHOT_API_KEY` в окружении Gateway (при
+    установке Gateway добавьте его в `~/.openclaw/.env`) или настройте с помощью:
 
     ```bash
     openclaw configure --section web
@@ -34,13 +33,11 @@ OpenClaw поддерживает Kimi как провайдера `web_search`,
   </Step>
 </Steps>
 
-Когда вы выбираете **Kimi** во время `openclaw onboard` или
-`openclaw configure --section web`, OpenClaw также может запросить:
+При выборе **Kimi** во время выполнения `openclaw onboard` или `openclaw configure --section web`
+также запрашиваются:
 
-- регион Moonshot API:
-  - `https://api.moonshot.ai/v1`
-  - `https://api.moonshot.cn/v1`
-- модель веб-поиска Kimi по умолчанию (по умолчанию `kimi-k2.6`)
+- регион API Moonshot: `https://api.moonshot.ai/v1` или `https://api.moonshot.cn/v1`
+- модель веб-поиска (по умолчанию `kimi-k2.6`)
 
 ## Конфигурация
 
@@ -51,7 +48,7 @@ OpenClaw поддерживает Kimi как провайдера `web_search`,
       moonshot: {
         config: {
           webSearch: {
-            apiKey: "sk-...", // optional if KIMI_API_KEY or MOONSHOT_API_KEY is set
+            apiKey: "sk-...", // необязательно, если задана KIMI_API_KEY или MOONSHOT_API_KEY
             baseUrl: "https://api.moonshot.ai/v1",
             model: "kimi-k2.6",
           },
@@ -69,45 +66,42 @@ OpenClaw поддерживает Kimi как провайдера `web_search`,
 }
 ```
 
-Если вы используете китайский хост API для чата (`models.providers.moonshot.baseUrl`:
-`https://api.moonshot.cn/v1`), OpenClaw повторно использует тот же хост для Kimi
-`web_search`, когда `tools.web.search.kimi.baseUrl` не указан, поэтому ключи с
-[platform.moonshot.cn](https://platform.moonshot.cn/) по ошибке не отправляются на
-международный endpoint (который часто возвращает HTTP 401). Переопределите
-через `tools.web.search.kimi.baseUrl`, если вам нужен другой базовый URL поиска.
+Если `tools.web.search.provider` не указан, он определяется автоматически по доступным ключам API;
+явно задайте значение `kimi`, если настроены учётные данные для нескольких поисковых служб.
 
-**Альтернатива через окружение:** задайте `KIMI_API_KEY` или `MOONSHOT_API_KEY` в
-окружении Gateway. Для установки gateway поместите его в `~/.openclaw/.env`.
+Также поддерживается эквивалентная форма с областью действия `tools.web.search.kimi` (`apiKey`, `baseUrl`, `model`);
+обе структуры объединяются в одну итоговую конфигурацию.
 
-Если `baseUrl` не указан, OpenClaw по умолчанию использует `https://api.moonshot.ai/v1`.
-Если `model` не указан, OpenClaw по умолчанию использует `kimi-k2.6`.
+Значения по умолчанию: если `baseUrl` не указан, используется `https://api.moonshot.ai/v1`, а для `model`
+используется `kimi-k2.6`.
 
-## Как это работает
+Если трафик чата использует китайский хост (`models.providers.moonshot.baseUrl`:
+`https://api.moonshot.cn/v1`), то Kimi `web_search` автоматически использует тот же хост,
+когда его собственный `baseUrl` не задан. Благодаря этому ключи `.cn` не будут случайно отправлены
+на международную конечную точку, которая возвращает для них HTTP 401. Чтобы переопределить это
+наследование, явно задайте `baseUrl` для Kimi.
 
-Kimi использует веб-поиск Moonshot для синтеза ответов со встроенными цитатами,
-похожий на подход Gemini и Grok к ответам, основанным на подтверждающих источниках.
+## Требование к обоснованию
 
-OpenClaw считает Kimi `web_search` успешным только после того, как Moonshot вернет
-нативные подтверждающие данные веб-поиска, например воспроизводимую полезную нагрузку
-инструмента `$web_search`, `search_results` или URL цитирования. Если Kimi сразу
-останавливается с обычным ответом чата вроде «Я не могу просматривать интернет» и без подтверждающих данных,
-OpenClaw возвращает структурированную ошибку `kimi_web_search_ungrounded` вместо
-упаковки этого текста как результата поиска. Повторите запрос, переключитесь на структурированного
-провайдера, например Brave, или используйте `web_fetch` / инструмент браузера, если у вас уже
-есть целевой URL.
+OpenClaw возвращает результат Kimi `web_search` только после того, как ответ Moonshot
+будет содержать встроенные свидетельства использования веб-поиска, например повтор вызова инструмента
+`$web_search`, `search_results` или URL-адреса источников. Если Kimi отвечает напрямую без
+обоснования (например, «Я не могу просматривать интернет»), OpenClaw возвращает ошибку
+`kimi_web_search_ungrounded`, а не рассматривает этот текст как результат поиска.
+Повторите запрос, переключитесь на поставщика структурированных результатов, например Brave, или используйте
+`web_fetch` / инструмент браузера, если у вас уже есть целевой URL-адрес.
 
-## Поддерживаемые параметры
+## Параметры инструмента
 
-Поиск Kimi поддерживает `query`.
+| Параметр                                                        | Поддержка                                                                                                                        |
+| --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `query`                                                         | Да                                                                                                                               |
+| `count`                                                         | Принимается для совместимости между поставщиками, но игнорируется: Kimi всегда возвращает один сформированный ответ, а не список из N результатов |
+| `country`, `language`, `freshness`, `date_after`, `date_before` | Нет                                                                                                                              |
 
-`count` принимается для совместимости с общим `web_search`, но Kimi все равно
-возвращает один синтезированный ответ с цитатами, а не список из N результатов.
+## Связанные материалы
 
-Фильтры, специфичные для провайдера, сейчас не поддерживаются.
-
-## См. также
-
-- [Обзор веб-поиска](/ru/tools/web) -- все провайдеры и автообнаружение
-- [Moonshot AI](/ru/providers/moonshot) -- документация по модели Moonshot и провайдеру Kimi Coding
-- [Поиск Gemini](/ru/tools/gemini-search) -- AI-синтезированные ответы через подтверждение Google
-- [Поиск Grok](/ru/tools/grok-search) -- AI-синтезированные ответы через подтверждение xAI
+- [Обзор веб-поиска](/ru/tools/web) — все поставщики и автоматическое определение
+- [Moonshot AI](/ru/providers/moonshot) — документация по модели Moonshot и поставщику Kimi Coding
+- [Поиск Gemini](/ru/tools/gemini-search) — сформированные ИИ ответы на основе данных Google
+- [Поиск Grok](/ru/tools/grok-search) — сформированные ИИ ответы на основе данных xAI

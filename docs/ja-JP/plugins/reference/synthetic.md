@@ -1,16 +1,16 @@
 ---
 read_when:
-    - 合成 Plugin をインストール、設定、または監査しています
+    - synthetic Plugin をインストール、設定、または監査しています
 summary: OpenClaw に Synthetic モデルプロバイダーのサポートを追加します。
-title: 合成 Plugin
+title: 合成Plugin
 x-i18n:
-    generated_at: "2026-05-02T21:02:04Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:30:39Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: 4d899363b3dac4128f3e2a1e30ad11cd5ae0c11cc5229d3f03e15429e2741f8d
     source_path: plugins/reference/synthetic.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Synthetic Plugin
@@ -20,11 +20,11 @@ OpenClaw に Synthetic モデルプロバイダーのサポートを追加しま
 ## 配布
 
 - パッケージ: `@openclaw/synthetic-provider`
-- インストール経路: OpenClaw に含まれます
+- インストール方法: OpenClaw に同梱
 
-## サーフェス
+## 提供機能
 
-providers: synthetic
+プロバイダー: synthetic
 
 ## 関連ドキュメント
 

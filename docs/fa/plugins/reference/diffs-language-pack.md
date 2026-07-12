@@ -1,11 +1,11 @@
 ---
 read_when:
     - شما در حال نصب، پیکربندی یا ممیزی Plugin بستهٔ زبانی diffs هستید
-summary: پُررنگ‌سازی نحوی را برای زبان‌هایی بیرون از مجموعهٔ پیش‌فرض نمایشگر diff اضافه می‌کند.
-title: Plugin بستهٔ زبان تفاوت‌ها
+summary: برای زبان‌هایی خارج از مجموعهٔ پیش‌فرض نمایشگر تفاوت‌ها، برجسته‌سازی نحو را اضافه می‌کند.
+title: Plugin بستهٔ زبانی Diffs
 x-i18n:
-    generated_at: "2026-06-27T18:25:05Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:29:04Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: e63f896b937be27bd00a7a728b128ec0d1d5eee91d6f1023862274e32afe5db1
@@ -15,7 +15,7 @@ x-i18n:
 
 # Plugin بستهٔ زبان Diffs
 
-برای زبان‌های خارج از مجموعهٔ پیش‌فرض نمایشگر diff، برجسته‌سازی نحوی اضافه می‌کند.
+برای زبان‌هایی خارج از مجموعهٔ پیش‌فرض نمایشگر Diffs، برجسته‌سازی نحو را اضافه می‌کند.
 
 ## توزیع
 
@@ -28,12 +28,12 @@ Plugin
 
 <!-- openclaw-plugin-reference:manual-start -->
 
-## زبان‌های اضافه‌شده
+## زبان‌های افزوده‌شده
 
-Plugin پایهٔ `diffs` از قبل زبان‌های رایج مستندشده در [Diffs](/fa/tools/diffs) را برجسته‌سازی می‌کند. وقتی برای مجموعهٔ گسترده‌تری از زبان‌های پشتیبانی‌شده توسط Shiki برجسته‌سازی نحوی می‌خواهید، این بستهٔ زبان را نصب کنید. اگر این بسته نصب نشده باشد، آن فایل‌ها همچنان به‌صورت متن سادهٔ خوانا نمایش داده می‌شوند.
+Plugin پایهٔ `diffs` از قبل زبان‌های رایج مستندشده در [Diffs](/fa/tools/diffs) را برجسته می‌کند. هرگاه برای مجموعهٔ گسترده‌تری از زبان‌های پشتیبانی‌شده توسط Shiki به برجسته‌سازی نحو نیاز دارید، این بستهٔ زبان را نصب کنید. اگر این بسته نصب نشده باشد، آن فایل‌ها همچنان به‌صورت متن ساده و خوانا نمایش داده می‌شوند.
 
-نمونه‌ها شامل Astro، Vue، Svelte، MDX، GraphQL، Terraform/HCL، Nix، Clojure، Elixir، Haskell، OCaml، Scala، Zig، Solidity، Verilog/VHDL، Fortran، MATLAB، LaTeX، Mermaid، Sass/Less/SCSS، Nginx، Apache، CSV، dotenv، INI و فایل‌های diff هستند.
+از جمله نمونه‌ها می‌توان به Astro، Vue، Svelte، MDX، GraphQL، Terraform/HCL، Nix، Clojure، Elixir، Haskell، OCaml، Scala، Zig، Solidity، Verilog/VHDL، Fortran، MATLAB، LaTeX، Mermaid، Sass/Less/SCSS، Nginx، Apache، CSV، dotenv، INI و فایل‌های diff اشاره کرد.
 
-برای کاتالوگ بالادستی زبان‌ها و نام‌های مستعار Shiki، [زبان‌های Shiki](https://shiki.style/languages) را ببینید.
+برای مشاهدهٔ فهرست زبان‌ها و نام‌های مستعار بالادستی Shiki، به [زبان‌های Shiki](https://shiki.style/languages) مراجعه کنید.
 
 <!-- openclaw-plugin-reference:manual-end -->

@@ -3,23 +3,23 @@ read_when:
     - Mempelajari cara mengonfigurasi OpenClaw
     - Mencari contoh konfigurasi
     - Menyiapkan OpenClaw untuk pertama kalinya
-summary: Contoh konfigurasi yang akurat terhadap skema untuk penyiapan OpenClaw umum
+summary: Contoh konfigurasi yang sesuai skema untuk penyiapan umum OpenClaw
 title: Contoh konfigurasi
 x-i18n:
-    generated_at: "2026-06-27T17:28:46Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:08:56Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 945f4cd8571814597ec0188853e91c6483a0d8b09bd0ca7dcfb79eb877607ce2
+    source_hash: c3ad82ccce62e0c8dbb72f81b0de62d60d8a6282f0a327ed1cbda7ffa3e47969
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-Contoh di bawah diselaraskan dengan skema konfigurasi saat ini. Untuk referensi lengkap dan catatan per bidang, lihat [Konfigurasi](/id/gateway/configuration).
+Contoh di bawah ini diselaraskan dengan skema konfigurasi saat ini. Untuk referensi lengkap dan catatan per bidang, lihat [Konfigurasi](/id/gateway/configuration).
 
 ## Mulai cepat
 
-### Minimum absolut
+### Minimum mutlak
 
 ```json5
 {
@@ -28,9 +28,9 @@ Contoh di bawah diselaraskan dengan skema konfigurasi saat ini. Untuk referensi 
 }
 ```
 
-Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nomor tersebut.
+Simpan ke `~/.openclaw/openclaw.json`, lalu Anda dapat mengirim DM kepada bot dari nomor tersebut.
 
-### Pemula yang direkomendasikan
+### Konfigurasi awal yang disarankan
 
 ```json5
 {
@@ -59,7 +59,7 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
   messages: {
     visibleReplies: "automatic",
     groupChat: {
-      visibleReplies: "message_tool", // ikut serta; output terlihat memerlukan message(action=send)
+      visibleReplies: "message_tool", // ikut serta; keluaran yang terlihat memerlukan message(action=send)
       unmentionedInbound: "room_event",
     },
   },
@@ -68,11 +68,11 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
 
 ## Contoh yang diperluas (opsi utama)
 
-> JSON5 memungkinkan Anda menggunakan komentar dan koma di akhir. JSON biasa juga bisa.
+> JSON5 memungkinkan Anda menggunakan komentar dan koma di akhir. JSON biasa juga dapat digunakan.
 
 ```json5
 {
-  // Environment + shell
+  // Lingkungan + shell
   env: {
     OPENROUTER_API_KEY: "sk-or-...",
     vars: {
@@ -84,7 +84,7 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
     },
   },
 
-  // Auth profile metadata (secrets live in auth-profiles.json)
+  // Metadata profil autentikasi (rahasia disimpan di auth-profiles.json)
   auth: {
     profiles: {
       "anthropic:default": { provider: "anthropic", mode: "api_key" },
@@ -98,9 +98,9 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
     },
   },
 
-  // Identity is per agent — set it on agents.list[].identity below.
+  // Identitas ditetapkan per agen — atur pada agents.list[].identity di bawah.
 
-  // Logging
+  // Pencatatan log
   logging: {
     level: "info",
     file: "/tmp/openclaw/openclaw.log",
@@ -109,7 +109,7 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
     redactSensitive: "tools",
   },
 
-  // Message formatting
+  // Pemformatan pesan
   messages: {
     messagePrefix: "[openclaw]",
     visibleReplies: "automatic",
@@ -118,7 +118,7 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
     ackReactionScope: "group-mentions",
     groupChat: {
       historyLimit: 50,
-      visibleReplies: "message_tool", // opt in for shared rooms with tool-reliable models
+      visibleReplies: "message_tool", // aktifkan untuk ruang bersama dengan model yang andal menggunakan alat
       unmentionedInbound: "room_event",
     },
     queue: {
@@ -138,15 +138,15 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
     },
   },
 
-  // Tooling
+  // Peralatan
   tools: {
     media: {
       audio: {
         enabled: true,
         maxBytes: 20971520,
         models: [
-          { provider: "openai", model: "gpt-4o-mini-transcribe" },
-          // Optional CLI fallback (Whisper binary):
+          { provider: "openai", model: "gpt-4o-transcribe" },
+          // Penggantian opsional melalui CLI (biner Whisper):
           // { type: "cli", command: "whisper", args: ["--model", "base", "{{MediaPath}}"] }
         ],
         timeoutSeconds: 120,
@@ -159,10 +159,10 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
     },
   },
 
-  // Session behavior
+  // Perilaku sesi
   session: {
     scope: "per-sender",
-    dmScope: "per-channel-peer", // recommended for multi-user inboxes
+    dmScope: "per-channel-peer", // disarankan untuk kotak masuk multi-pengguna
     reset: {
       mode: "daily",
       atHour: 4,
@@ -172,14 +172,14 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
       discord: { mode: "idle", idleMinutes: 10080 },
     },
     resetTriggers: ["/new", "/reset"],
-    store: "~/.openclaw/agents/default/sessions/sessions.json",
+    store: "~/.openclaw/agents/main/sessions/sessions.json",
     maintenance: {
       mode: "warn",
       pruneAfter: "30d",
       maxEntries: 500,
-      resetArchiveRetention: "30d", // duration or false
-      maxDiskBytes: "500mb", // optional
-      highWaterBytes: "400mb", // optional (defaults to 80% of maxDiskBytes)
+      resetArchiveRetention: "30d", // durasi atau false
+      maxDiskBytes: "500mb", // opsional
+      highWaterBytes: "400mb", // opsional (nilai bawaan 80% dari maxDiskBytes)
     },
     typingIntervalSeconds: 5,
     sendPolicy: {
@@ -188,7 +188,7 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
     },
   },
 
-  // Channels
+  // Kanal
   channels: {
     whatsapp: {
       dmPolicy: "pairing",
@@ -216,8 +216,8 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
           slug: "friends-of-openclaw",
           requireMention: false,
           channels: {
-            general: { allow: true },
-            help: { allow: true, requireMention: true },
+            general: { enabled: true },
+            help: { enabled: true, requireMention: true },
           },
         },
       },
@@ -228,7 +228,7 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
       botToken: "xoxb-REPLACE_ME",
       appToken: "xapp-REPLACE_ME",
       channels: {
-        "#general": { allow: true, requireMention: true },
+        "#general": { enabled: true, requireMention: true },
       },
       dm: { enabled: true, allowFrom: ["U123"] },
       slashCommand: {
@@ -240,7 +240,7 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
     },
   },
 
-  // Agent runtime
+  // Runtime agen
   agents: {
     defaults: {
       workspace: "~/.openclaw/workspace",
@@ -257,7 +257,7 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
         "anthropic/claude-sonnet-4-6": { alias: "sonnet" },
         "openai/gpt-5.4": { alias: "gpt" },
       },
-      skills: ["github", "weather"], // inherited by agents that omit list[].skills
+      skills: ["github", "weather"], // diwarisi oleh agen yang tidak menetapkan list[].skills
       thinkingDefault: "low",
       verboseDefault: "off",
       toolProgressDetail: "explain",
@@ -284,7 +284,7 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
         every: "30m",
         model: "anthropic/claude-sonnet-4-6",
         target: "last",
-        directPolicy: "allow", // allow (default) | block
+        directPolicy: "allow", // allow (bawaan) | block
         to: "+15555550123",
         prompt: "HEARTBEAT",
         ackMaxChars: 300,
@@ -299,7 +299,7 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
       },
       sandbox: {
         mode: "non-main",
-        scope: "session", // preferred over legacy perSession: true
+        scope: "session", // lebih disarankan daripada perSession: true yang lama
         workspaceRoot: "~/.openclaw/sandboxes",
         docker: {
           image: "openclaw-sandbox:bookworm-slim",
@@ -323,18 +323,18 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
           theme: "helpful sloth",
           emoji: "🦥",
         },
-        // inherits defaults.skills -> github, weather
+        // mewarisi defaults.skills -> github, weather
         groupChat: {
           mentionPatterns: ["@openclaw", "openclaw"],
         },
-        thinkingDefault: "high", // per-agent thinking override
-        reasoningDefault: "on", // per-agent reasoning visibility
-        fastModeDefault: false, // per-agent fast mode
+        thinkingDefault: "high", // penggantian pengaturan berpikir per agen
+        reasoningDefault: "on", // visibilitas penalaran per agen
+        fastModeDefault: false, // mode cepat per agen
       },
       {
         id: "quick",
-        skills: [], // no skills for this agent
-        fastModeDefault: true, // this agent always runs fast
+        skills: [], // tidak ada Skills untuk agen ini
+        fastModeDefault: true, // agen ini selalu berjalan cepat
         thinkingDefault: "off",
       },
     ],
@@ -362,7 +362,7 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
     },
   },
 
-  // Custom model providers
+  // Penyedia model khusus
   models: {
     mode: "merge",
     providers: {
@@ -388,11 +388,11 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
     },
   },
 
-  // Cron jobs
+  // Tugas Cron
   cron: {
     enabled: true,
-    store: "~/.openclaw/cron/cron.json",
-    maxConcurrentRuns: 8, // default; cron dispatch + isolated cron agent-turn execution
+    store: "~/.openclaw/cron/jobs.json",
+    maxConcurrentRuns: 8, // bawaan; pengiriman Cron + eksekusi giliran agen Cron terisolasi
     sessionRetention: "24h",
     runLog: {
       maxBytes: "2mb",
@@ -400,7 +400,7 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
     },
   },
 
-  // Webhooks
+  // Webhook
   hooks: {
     enabled: true,
     path: "/hooks",
@@ -443,7 +443,7 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
     },
   },
 
-  // Gateway + networking
+  // Gateway + jaringan
   gateway: {
     mode: "local",
     port: 18789,
@@ -455,7 +455,7 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
       allowTailscale: true,
     },
     tailscale: { mode: "serve", resetOnExit: false },
-    remote: { url: "ws://gateway.tailnet:18789", token: "remote-token" },
+    remote: { url: "ws://gateway-host.ts.net:18789", token: "remote-token" },
     reload: { mode: "hybrid", debounceMs: 300 },
   },
 
@@ -482,10 +482,10 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
 }
 ```
 
-### Repositori skill saudara yang disymlink
+### Repositori Skills saudara yang ditautkan secara simbolis
 
-Gunakan ini saat root skill bawaan berisi symlink ke repositori saudara, sebagai
-contoh `~/.agents/skills/manager -> ~/Projects/manager/skills`.
+Gunakan ini ketika root Skills bawaan berisi symlink ke repositori saudara, misalnya
+`~/.agents/skills/manager -> ~/Projects/manager/skills`.
 
 ```json5
 {
@@ -498,15 +498,15 @@ contoh `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 }
 ```
 
-- `extraDirs` memindai repositori saudara sebagai root skill eksplisit.
-- `allowSymlinkTargets` memungkinkan folder skill yang disymlink diselesaikan ke
-  root target nyata tepercaya tersebut tanpa mengizinkan symlink keluar sembarang.
-- Agar Skill Workshop dapat menerapkan penulisan melalui target symlink tepercaya
-  yang sama, atur `skills.workshop.allowSymlinkTargetWrites: true`.
+- `extraDirs` memindai repositori saudara sebagai root Skills eksplisit.
+- `allowSymlinkTargets` memungkinkan folder Skills yang ditautkan secara simbolis mengarah ke root
+  target nyata tepercaya tersebut tanpa mengizinkan symlink keluar secara sembarang.
+- Agar Skill Workshop dapat melakukan penulisan melalui target symlink tepercaya yang sama,
+  atur `skills.workshop.allowSymlinkTargetWrites: true`.
 
 ## Pola umum
 
-### Baseline skill bersama dengan satu override
+### Dasar Skills bersama dengan satu penggantian
 
 ```json5
 {
@@ -525,9 +525,9 @@ contoh `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 
 - `agents.defaults.skills` adalah baseline bersama.
 - `agents.list[].skills` menggantikan baseline tersebut untuk satu agen.
-- Gunakan `skills: []` saat agen tidak boleh melihat Skills apa pun.
+- Gunakan `skills: []` jika agen tidak boleh melihat Skills apa pun.
 
-### Penyiapan multi-platform
+### Penyiapan multiplaform
 
 ```json5
 {
@@ -548,10 +548,10 @@ contoh `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 }
 ```
 
-### Persetujuan otomatis jaringan node tepercaya
+### Persetujuan otomatis jaringan Node tepercaya
 
-Pertahankan pemasangan perangkat secara manual kecuali Anda mengontrol jalur jaringan. Untuk lab khusus
-atau subnet tailnet, Anda dapat memilih ikut serta dalam persetujuan otomatis perangkat node pertama kali
+Pertahankan penyandingan perangkat secara manual kecuali Anda mengendalikan jalur jaringan. Untuk subnet
+laboratorium khusus atau tailnet, Anda dapat mengaktifkan persetujuan otomatis perangkat Node saat pertama kali
 dengan CIDR atau IP yang tepat:
 
 ```json5
@@ -566,13 +566,13 @@ dengan CIDR atau IP yang tepat:
 }
 ```
 
-Ini tetap nonaktif jika tidak diatur. Ini hanya berlaku untuk pemasangan `role: node` baru
-tanpa scope yang diminta. Klien operator/browser serta peningkatan peran, scope, metadata, atau
+Fitur ini tetap nonaktif jika tidak ditetapkan. Fitur ini hanya berlaku untuk penyandingan `role: node` baru tanpa
+cakupan yang diminta. Klien operator/peramban serta peningkatan peran, cakupan, metadata, atau
 kunci publik tetap memerlukan persetujuan manual.
 
-### Mode DM aman (kotak masuk bersama / DM multi-pengguna)
+### Mode DM aman (kotak masuk bersama / DM multipengguna)
 
-Jika lebih dari satu orang dapat mengirim DM ke bot Anda (beberapa entri di `allowFrom`, persetujuan pemasangan untuk beberapa orang, atau `dmPolicy: "open"`), aktifkan **mode DM aman** agar DM dari pengirim berbeda tidak berbagi satu konteks secara default:
+Jika lebih dari satu orang dapat mengirim DM ke bot Anda (beberapa entri dalam `allowFrom`, persetujuan penyandingan untuk beberapa orang, atau `dmPolicy: "open"`), aktifkan **mode DM aman** agar DM dari pengirim yang berbeda tidak berbagi satu konteks secara default:
 
 ```json5
 {
@@ -596,10 +596,10 @@ Jika lebih dari satu orang dapat mengirim DM ke bot Anda (beberapa entri di `all
 }
 ```
 
-Untuk Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, otorisasi pengirim mengutamakan ID secara default.
-Aktifkan pencocokan langsung nama/email/nick yang dapat berubah dengan `dangerouslyAllowNameMatching: true` milik setiap channel hanya jika Anda secara eksplisit menerima risiko tersebut.
+Untuk Discord/Google Chat/IRC/Mattermost/Microsoft Teams/Slack, otorisasi pengirim secara default mengutamakan ID.
+Aktifkan pencocokan langsung berdasarkan nama/email/nama panggilan yang dapat berubah dengan `dangerouslyAllowNameMatching: true` pada setiap kanal hanya jika Anda secara eksplisit menerima risiko tersebut.
 
-### Kunci API Anthropic + cadangan MiniMax
+### Kunci API Anthropic + fallback MiniMax
 
 ```json5
 {
@@ -659,8 +659,8 @@ Aktifkan pencocokan langsung nama/email/nick yang dapat berubah dengan `dangerou
       enabled: true,
       botToken: "xoxb-...",
       channels: {
-        "#engineering": { allow: true, requireMention: true },
-        "#general": { allow: true, requireMention: true },
+        "#engineering": { enabled: true, requireMention: true },
+        "#general": { enabled: true, requireMention: true },
       },
     },
   },
@@ -701,11 +701,11 @@ Aktifkan pencocokan langsung nama/email/nick yang dapat berubah dengan `dangerou
 }
 ```
 
-## Tips
+## Kiat
 
-- Jika Anda mengatur `dmPolicy: "open"`, daftar `allowFrom` yang cocok harus menyertakan `"*"`.
-- ID penyedia berbeda-beda (nomor telepon, ID pengguna, ID channel). Gunakan dokumentasi penyedia untuk mengonfirmasi formatnya.
-- Bagian opsional untuk ditambahkan nanti: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
+- Jika Anda menetapkan `dmPolicy: "open"`, daftar `allowFrom` yang sesuai harus menyertakan `"*"`.
+- ID penyedia berbeda-beda (nomor telepon, ID pengguna, ID kanal). Gunakan dokumentasi penyedia untuk mengonfirmasi formatnya.
+- Bagian opsional yang dapat ditambahkan nanti: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
 - Lihat [Penyedia](/id/providers) dan [Pemecahan masalah](/id/gateway/troubleshooting) untuk catatan penyiapan yang lebih mendalam.
 
 ## Terkait

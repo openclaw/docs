@@ -1,43 +1,40 @@
 ---
 read_when:
-    - Je wilt zoeken op het web zonder API-sleutel
-    - Je wilt de betaalde Search API van Parallel
-    - Je wilt compacte fragmenten, gerangschikt voor efficiënte LLM-context
-summary: Parallel zoeken -- LLM-geoptimaliseerde informatiedichte fragmenten uit webbronnen
+    - Je wilt op internet zoeken zonder API-sleutel
+    - Je wilt de betaalde Search API van Parallel gebruiken
+    - Je wilt compacte fragmenten die zijn gerangschikt op efficiëntie voor LLM-context
+summary: Parallel zoeken -- voor LLM geoptimaliseerde compacte fragmenten uit webbronnen
 title: Parallel zoeken
 x-i18n:
-    generated_at: "2026-06-27T18:28:13Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:30:24Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ef64c2c125d2885385308dd8a57421b696fa1a9a5455b8c3b83854016f6514cb
+    source_hash: eff693f286015b287bbdacf44f11ff6f07f2f7d2605ef6f09259e7402b40515e
     source_path: tools/parallel-search.md
     workflow: 16
 ---
 
-De Parallel-Plugin biedt twee [Parallel](https://parallel.ai/) `web_search`-providers:
+De Parallel-plugin biedt twee `web_search`-providers van [Parallel](https://parallel.ai/), die beide gerangschikte, voor LLM's geoptimaliseerde fragmenten retourneren uit een webindex die voor AI-agents is gebouwd:
 
-- **Parallel Search (Free)** (`parallel-free`) -- Parallels gratis
-  [Search MCP](https://docs.parallel.ai/integrations/mcp/search-mcp). Vereist geen
-  account of API-sleutel. Selecteer deze expliciet wanneer je Parallels gehoste
-  zoekpad zonder sleutel wilt gebruiken.
-- **Parallel Search** (`parallel`) -- Parallels betaalde Search API. Vereist een
-  `PARALLEL_API_KEY` en biedt hogere snelheidslimieten en afstemming op doelen.
+| Provider                 | id              | Authenticatie                                                                                         |
+| ------------------------ | --------------- | ----------------------------------------------------------------------------------------------------- |
+| Parallel Search (gratis) | `parallel-free` | Geen -- de gratis [Search MCP](https://docs.parallel.ai/integrations/mcp/search-mcp) van Parallel     |
+| Parallel Search          | `parallel`      | `PARALLEL_API_KEY` -- betaalde Search API, hogere limieten en afstemming op doelstellingen             |
 
-Beide retourneren gerangschikte, voor LLM's geoptimaliseerde fragmenten uit een webindex die is gebouwd voor AI-agents.
 Stel `tools.web.search.provider` in op `parallel-free` of `parallel` om er
-expliciet een te kiezen.
+expliciet één te selecteren; geen van beide wordt automatisch gedetecteerd.
 
 <Note>
-  OpenAI Responses-modellen gebruiken OpenAI's native webzoekfunctie wanneer
-  `tools.web.search.provider` niet is ingesteld, dus ze omzeilen de Parallel-providers.
-  Stel `tools.web.search.provider` in op `parallel-free` of `parallel` om ze
-  via Parallel te routeren.
+  Directe OpenAI Responses-modellen (`api: "openai-responses"`, provider
+  `openai`, officiële API-basis-URL) gebruiken automatisch de gehoste native
+  webzoekfunctie van OpenAI wanneer `tools.web.search.provider` niet is ingesteld,
+  leeg is, `"auto"` is of `"openai"` is -- standaard omzeilen ze Parallel dus.
+  Stel `tools.web.search.provider` in op `parallel-free` of `parallel` om ze in
+  plaats daarvan via Parallel te routeren. Zie [Overzicht van zoeken op het web](/nl/tools/web).
 </Note>
 
 ## Plugin installeren
-
-Installeer de officiële Plugin en herstart daarna Gateway:
 
 ```bash
 openclaw plugins install @openclaw/parallel-plugin
@@ -46,16 +43,16 @@ openclaw gateway restart
 
 ## API-sleutel (betaalde provider)
 
-`parallel-free` vereist geen API-sleutel, maar moet nog steeds worden geselecteerd als de
-beheerde provider. De betaalde `parallel`-provider heeft een API-sleutel nodig:
+`parallel-free` heeft geen sleutel nodig, maar moet nog steeds expliciet worden
+geselecteerd. De betaalde provider `parallel` heeft een API-sleutel nodig:
 
 <Steps>
-  <Step title="Maak een account aan">
-    Registreer je op [platform.parallel.ai](https://platform.parallel.ai) en
-    genereer een API-sleutel vanuit je dashboard.
+  <Step title="Een account aanmaken">
+    Registreer je bij [platform.parallel.ai](https://platform.parallel.ai) en
+    genereer een API-sleutel via je dashboard.
   </Step>
-  <Step title="Sla de sleutel op">
-    Stel `PARALLEL_API_KEY` in de Gateway-omgeving in, of configureer via:
+  <Step title="De sleutel opslaan">
+    Stel `PARALLEL_API_KEY` in de Gateway-omgeving in, of configureer deze via:
 
     ```bash
     openclaw configure --section web
@@ -73,8 +70,8 @@ beheerde provider. De betaalde `parallel`-provider heeft een API-sleutel nodig:
       parallel: {
         config: {
           webSearch: {
-            apiKey: "par-...", // optional if PARALLEL_API_KEY is set
-            baseUrl: "https://api.parallel.ai", // optional; OpenClaw appends /v1/search
+            apiKey: "par-...", // optioneel als PARALLEL_API_KEY is ingesteld
+            baseUrl: "https://api.parallel.ai", // optioneel; OpenClaw voegt /v1/search toe
           },
         },
       },
@@ -83,8 +80,8 @@ beheerde provider. De betaalde `parallel`-provider heeft een API-sleutel nodig:
   tools: {
     web: {
       search: {
-        // Use "parallel-free" for the free Search MCP, or "parallel" for
-        // the paid API-backed provider shown here.
+        // "parallel-free" voor de gratis Search MCP, of "parallel" voor de
+        // hier getoonde betaalde provider op basis van de API.
         provider: "parallel",
       },
     },
@@ -92,36 +89,38 @@ beheerde provider. De betaalde `parallel`-provider heeft een API-sleutel nodig:
 }
 ```
 
-**Omgevingsalternatief:** stel `PARALLEL_API_KEY` in de Gateway-omgeving in.
-Voor een gateway-installatie plaats je deze in `~/.openclaw/.env`.
+**Alternatief via de omgeving:** stel `PARALLEL_API_KEY` in de Gateway-omgeving
+in. Plaats deze voor een Gateway-installatie in `~/.openclaw/.env`.
 
-## Overschrijving van basis-URL
+## Basis-URL overschrijven
 
-De overschrijving van de basis-URL geldt alleen voor de betaalde `parallel`-provider. De gratis
-`parallel-free`-provider gebruikt altijd `https://search.parallel.ai/mcp`.
+Dit geldt alleen voor de betaalde provider `parallel`; `parallel-free` gebruikt
+altijd `https://search.parallel.ai/mcp` en negeert deze instelling.
 
-Stel `plugins.entries.parallel.config.webSearch.baseUrl` in wanneer Parallel-aanvragen
-via een compatibele proxy of een alternatief Parallel-eindpunt moeten lopen (bijvoorbeeld
-de Cloudflare AI Gateway). OpenClaw normaliseert kale hosts door
-`https://` ervoor te plaatsen en voegt `/v1/search` toe, tenzij het pad daar al
-op eindigt. Het opgeloste eindpunt wordt opgenomen in de zoekcache-sleutel, zodat resultaten
-van verschillende Parallel-eindpunten niet worden gedeeld.
+Stel `plugins.entries.parallel.config.webSearch.baseUrl` in om betaalde
+aanvragen via een compatibele proxy of een alternatief eindpunt te routeren
+(bijvoorbeeld de Cloudflare AI Gateway). OpenClaw normaliseert losse hostnamen
+door `https://` ervoor te plaatsen en voegt `/v1/search` toe, tenzij het pad
+daar al mee eindigt. Het opgeloste eindpunt maakt deel uit van de
+zoekcachecode, zodat resultaten van verschillende eindpunten nooit worden
+gedeeld.
 
 ## Toolparameters
 
-OpenClaw stelt Parallels native zoekvorm beschikbaar, zodat het model zowel
-het doel in natuurlijke taal als enkele korte trefwoordquery's kan invullen — de combinatie
-die Parallel [aanbeveelt](https://docs.parallel.ai/search/best-practices) voor
-de beste resultaten.
+Beide providers bieden de native zoekstructuur van Parallel, zodat het model
+een doel in natuurlijke taal plus enkele korte trefwoordzoekopdrachten invult
+-- de combinatie die Parallel [aanbeveelt](https://docs.parallel.ai/search/best-practices)
+voor de beste resultaten.
 
 <ParamField path="objective" type="string" required>
-Beschrijving in natuurlijke taal van de onderliggende vraag of het doel (max. 5000
-tekens). Moet op zichzelf staan.
+Beschrijving in natuurlijke taal van de onderliggende vraag of het doel
+(maximaal 5000 tekens). Moet op zichzelf staan.
 </ParamField>
 
 <ParamField path="search_queries" type="string[]" required>
-Beknopte zoekquery's met trefwoorden, elk 3-6 woorden (1-5 items, max. 200 tekens
-elk). Geef 2-3 diverse query's op voor de beste resultaten.
+Beknopte zoekopdrachten met trefwoorden, elk 3-6 woorden (1-5 items, maximaal
+200 tekens per item). Geef 2-3 uiteenlopende zoekopdrachten op voor de beste
+resultaten.
 </ParamField>
 
 <ParamField path="count" type="number">
@@ -129,43 +128,52 @@ Aantal te retourneren resultaten (1-40).
 </ParamField>
 
 <ParamField path="session_id" type="string">
-Optionele Parallel-sessie-id (max. 1000 tekens op `parallel`; de gratis
-`parallel-free` Search MCP beperkt dit tot 100). Geef de `sessionId` uit een vorig
-Parallel-resultaat door bij vervolgzoekopdrachten die deel uitmaken van dezelfde taak, zodat Parallel
-gerelateerde aanroepen kan groeperen en latere resultaten kan verbeteren. Een id boven de limiet wordt
-genegeerd en er wordt een nieuwe gegenereerd.
+Optionele Parallel-sessie-id uit de `sessionId` van een eerder resultaat. Geef
+deze door bij vervolgzoekopdrachten binnen dezelfde taak, zodat Parallel
+gerelateerde aanroepen groepeert en latere resultaten verbetert. Maximaal 1000
+tekens bij `parallel`; de gratis Search MCP `parallel-free` beperkt deze tot
+100. Een id die de limiet overschrijdt, wordt verwijderd (betaald) of vervangen
+door een nieuw gegenereerde id (gratis).
 </ParamField>
 
 <ParamField path="client_model" type="string">
-Optionele identifier van het model dat de aanroep doet (bijv. `claude-opus-4-7`,
-`gpt-5.5`). Hiermee kan Parallel standaardinstellingen afstemmen op de
-mogelijkheden van je model. Geef de exacte actieve model-slug door; verkort deze niet tot een familiealias.
+Optionele identificatie van het model dat de aanroep uitvoert (bijvoorbeeld
+`claude-opus-4-7`, `gpt-5.6-sol`), maximaal 100 tekens. Hiermee kan Parallel de
+standaardinstellingen afstemmen op de mogelijkheden van je model. Geef de
+exacte slug van het actieve model door; kort deze niet in tot een alias voor
+de modelfamilie.
 </ParamField>
 
 ## Opmerkingen
 
-- Parallel rangschikt en comprimeert resultaten op basis van bruikbaarheid voor LLM-redeneren, niet
-  op doorklikgedrag van mensen; verwacht compacte fragmenten in elk resultaat in plaats van
-  volledige pagina-inhoud
-- Resultaatfragmenten komen terug als de array `excerpts` en worden ook samengevoegd in
-  het veld `description` voor compatibiliteit met het generieke `web_search`-contract
-- Parallel retourneert bij elke respons een `session_id`; OpenClaw geeft deze door als
-  `sessionId` in de toolpayload, zodat aanroepers vervolgzoekopdrachten kunnen groeperen
-- `searchId`, `warnings` en `usage` van Parallel worden doorgegeven wanneer
-  aanwezig
-- OpenClaw stuurt altijd een opgelost resultaataantal naar Parallel door als
-  `advanced_settings.max_results`. Het argument `count` van de aanroeper wint, daarna de
-  bovenliggende instelling `tools.web.search.maxResults`, en anders de
-  standaardwaarde van OpenClaws generieke `web_search` (5). Dit houdt het resultaatvolume consistent
-  bij het wisselen tussen providers; Parallel gebruikt zelfstandig standaard 10
-- Resultaten worden standaard 15 minuten gecachet (configureerbaar via
-  `cacheTtlMinutes`)
-- De gratis `parallel-free`-provider accepteert dezelfde parameters. Deze past
-  `count` client-side toe en genereert per aanroep een `session_id` wanneer er geen is
-  opgegeven.
+- Parallel rangschikt en comprimeert resultaten op bruikbaarheid voor
+  LLM-redeneringen, niet voor doorklikken door mensen; verwacht per resultaat
+  compacte, informatierijke fragmenten in plaats van volledige pagina-inhoud.
+- Resultaatfragmenten worden geretourneerd als de array `excerpts` en worden
+  ook samengevoegd tot `description` voor compatibiliteit met het algemene
+  `web_search`-contract.
+- Beide providers retourneren een `session_id`; OpenClaw stelt deze als
+  `sessionId` beschikbaar in de toolpayload, zodat aanroepers vervolgzoekopdrachten
+  kunnen groeperen. Een door Parallel gegenereerde sessie-id (die niet door de
+  aanroeper is opgegeven) wordt uitgesloten van het cache-item, omdat niet-gerelateerde
+  taken met identieke zoekopdrachten deze niet mogen overnemen.
+- `searchId`, `warnings` en `usage` van Parallel worden doorgegeven wanneer ze
+  aanwezig zijn.
+- OpenClaw stuurt altijd een vastgesteld aantal resultaten door naar Parallel
+  als `advanced_settings.max_results` (`parallel`) of past `count` aan
+  clientzijde toe na het antwoord met vaste grootte van Parallel
+  (`parallel-free`). Het argument `count` van de aanroeper heeft voorrang,
+  gevolgd door `tools.web.search.maxResults`; anders wordt de algemene
+  standaardwaarde (5) van OpenClaws `web_search` gebruikt -- de eigen
+  standaardwaarde van de Parallel-API is 10.
+- Resultaten worden standaard 15 minuten in de cache opgeslagen
+  (`cacheTtlMinutes`).
+- `parallel-free` genereert per aanroep via de MCP-handshake een nieuwe
+  `session_id` wanneer de aanroeper er geen opgeeft; `parallel` laat deze in
+  dat geval leeg.
 
 ## Gerelateerd
 
-- [Overzicht van Web Search](/nl/tools/web) -- alle providers en automatische detectie
-- [Exa-zoekfunctie](/nl/tools/exa-search) -- neurale zoekfunctie met contentextractie
-- [Perplexity Search](/nl/tools/perplexity-search) -- gestructureerde resultaten met domeinfiltering
+- [Overzicht van zoeken op het web](/nl/tools/web) -- alle providers en automatische detectie
+- [Zoeken met Exa](/nl/tools/exa-search) -- neuraal zoeken met inhoudsextractie
+- [Zoeken met Perplexity](/nl/tools/perplexity-search) -- gestructureerde resultaten met domeinfiltering

@@ -1,32 +1,32 @@
 ---
 read_when:
     - Sentetik QA aktarımını yerel veya CI test çalıştırmasına bağlıyorsunuz
-    - Paketle birlikte gelen qa-channel yapılandırma yüzeyine ihtiyacınız var
-    - Uçtan uca kalite güvence otomasyonu üzerinde yineleme yapıyorsunuz.
-summary: Deterministik OpenClaw QA senaryoları için sentetik Slack sınıfı kanal Plugin'i
+    - Paketle birlikte gelen qa-channel yapılandırma yüzeyine ihtiyacınız var.
+    - Uçtan uca QA otomasyonunu yinelemeli olarak geliştiriyorsunuz
+summary: Belirlenimci OpenClaw kalite güvence senaryoları için sentetik Slack sınıfı kanal Plugin'i
 title: QA kanalı
 x-i18n:
-    generated_at: "2026-05-10T19:23:42Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:29:59Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8f28962032bc5f6b228de731ae6bd9a22831604b506b7073aeffba19ac22e0e8
+    source_hash: f33af6ef31515e0cab0ee2540f48f3ffea8aba3d13915dc8cf66111599354187
     source_path: channels/qa-channel.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-`qa-channel`, otomatik OpenClaw QA için paketle gelen sentetik bir mesaj aktarımıdır. Bu bir üretim kanalı değildir - durumu deterministik ve tamamen incelenebilir tutarken gerçek aktarımlar tarafından kullanılan aynı kanal Plugin sınırını çalıştırmak için vardır.
+`qa-channel`, otomatik OpenClaw kalite güvencesi için depo içinde kullanılan sentetik bir mesaj aktarımıdır (`extensions/qa-channel`, özel paket, paketlenmiş kurulumlara dahil edilmez). Bir üretim kanalı değildir; durumu belirlenimci ve tamamen incelenebilir tutarken gerçek aktarımların kullandığı kanal Plugin sınırını sınamak için vardır.
 
-## Ne yapar
+## Ne yapar?
 
-- Slack sınıfı hedef söz dizimi:
+- Slack sınıfı hedef dil bilgisi:
   - `dm:<user>`
   - `channel:<room>`
   - `group:<room>`
   - `thread:<room>/<thread>`
-- Paylaşılan `channel:` ve `group:` konuşmaları ajanlara grup/kanal oda dönüşleri olarak sunulur; böylece Discord, Slack, Telegram ve benzer aktarımlar tarafından kullanılan aynı görünür yanıt ve mesaj aracı yönlendirme ilkesini çalıştırırlar.
-- Gelen mesaj enjeksiyonu, giden transkript yakalama, iş parçacığı oluşturma, tepkiler, düzenlemeler, silmeler ve arama/okuma eylemleri için HTTP destekli sentetik veri yolu.
-- `.artifacts/qa-e2e/` konumuna bir Markdown raporu yazan ana makine tarafı öz denetim çalıştırıcısı.
+- Paylaşılan `channel:` ve `group:` konuşmaları, ajanlara grup/kanal odası etkileşimleri olarak sunulur; böylece Discord, Slack, Telegram ve benzer aktarımlarda kullanılan görünür yanıt ve mesaj aracı yönlendirme ilkeleri aynı şekilde sınanır.
+- Gelen mesaj ekleme, giden konuşma dökümü yakalama, ileti dizisi oluşturma, tepki verme, düzenleme, silme ve arama/okuma eylemleri için HTTP destekli sentetik veri yolu.
+- `.artifacts/qa-e2e/` konumuna Markdown raporu yazan ana makine tarafı öz denetim çalıştırıcısı.
 
 ## Yapılandırma
 
@@ -47,25 +47,27 @@ x-i18n:
 Hesap anahtarları:
 
 - `enabled` - bu hesap için ana açma/kapatma ayarı.
-- `name` - isteğe bağlı görüntüleme etiketi.
-- `baseUrl` - sentetik veri yolu URL'si.
-- `botUserId` - hedef söz diziminde kullanılan Matrix tarzı bot kullanıcı kimliği.
-- `botDisplayName` - giden mesajlar için görüntüleme adı.
-- `pollTimeoutMs` - uzun yoklama bekleme penceresi. 100 ile 30000 arasında bir tam sayı.
-- `allowFrom` - gönderen izin listesi (kullanıcı kimlikleri veya `"*"`). Doğrudan mesajlar ve
-  izin listeli grup ilkesi, bu sentetik gönderen kimliklerini kullanır.
+- `name` - isteğe bağlı görünen etiket.
+- `baseUrl` - sentetik veri yolu URL'si. Bu değer ayarlandığında hesap yapılandırılmış sayılır.
+- `botUserId` - hedef dil bilgisinde kullanılan sentetik bot kullanıcı kimliği (varsayılan: `openclaw`).
+- `botDisplayName` - giden mesajların görünen adı (varsayılan: `OpenClaw QA`).
+- `pollTimeoutMs` - uzun yoklama bekleme aralığı. 100 ile 30000 arasında bir tam sayı (varsayılan: 1000).
+- `allowFrom` - gönderen izin listesi (kullanıcı kimlikleri veya `"*"`; varsayılan: `["*"]`). Özel mesajlar
+  her zaman `open` ilkesini kullanır; izin listeli grup ilkesi de bu sentetik
+  gönderen kimliklerini kullanır.
 - `groupPolicy` - paylaşılan oda ilkesi: `"open"` (varsayılan), `"allowlist"` veya
   `"disabled"`.
-- `groupAllowFrom` - isteğe bağlı paylaşılan oda gönderen izin listesi. `"allowlist"` altında
-  atlandığında QA Channel `allowFrom` değerine geri döner.
-- `groups.<room>.requireMention` - belirli bir grup/kanal odasında yanıtlamadan önce bot bahsi
-  gerektirir. `groups."*"` varsayılanı ayarlar.
-- `defaultTo` - hiçbiri sağlanmadığında geri dönüş hedefi.
-- `actions.messages` / `actions.reactions` / `actions.search` / `actions.threads` - eylem başına araç geçitlemesi.
+- `groupAllowFrom` - isteğe bağlı paylaşılan oda gönderen izin listesi. `"allowlist"`
+  altında belirtilmediğinde QA Channel, `allowFrom` değerini kullanır.
+- `groups.<room>.requireMention` - belirli bir grup/kanal odasında yanıt vermeden
+  önce bottan bahsedilmesini zorunlu kılar (varsayılan: false). `groups."*"` varsayılanı ayarlar;
+  oda bazındaki `tools` / `toolsBySender`, araç ilkesi geçersiz kılmalarını ayarlar.
+- `defaultTo` - hedef sağlanmadığında kullanılacak yedek hedef.
+- `actions.messages` / `actions.reactions` / `actions.search` / `actions.threads` - eylem bazında araç erişim denetimi.
 
-Üst düzeyde çoklu hesap anahtarları:
+Üst düzey çoklu hesap anahtarları:
 
-- `accounts` - hesap kimliğine göre anahtarlanmış adlandırılmış hesap başına geçersiz kılma kaydı.
+- `accounts` - hesap kimliğine göre anahtarlanmış, adlandırılmış hesap bazındaki geçersiz kılmaların kaydı.
 - `defaultAccount` - birden fazla hesap yapılandırıldığında tercih edilen hesap kimliği.
 
 ## Çalıştırıcılar
@@ -76,28 +78,28 @@ Ana makine tarafı öz denetim (`.artifacts/qa-e2e/` altında bir Markdown rapor
 pnpm qa:e2e
 ```
 
-Bu, `qa-lab` üzerinden yönlendirilir, repo içi QA veri yolunu başlatır, paketle gelen `qa-channel` çalışma zamanı dilimini önyükler ve deterministik bir öz denetim çalıştırır.
+Bu komut `qa-lab` üzerinden yönlendirilir, depo içindeki kalite güvencesi veri yolunu başlatır, `qa-channel` çalışma zamanı dilimini başlatır ve belirlenimci bir öz denetim çalıştırır.
 
-Tam repo destekli senaryo paketi:
+Depo destekli tam senaryo paketi:
 
 ```bash
 pnpm openclaw qa suite
 ```
 
-QA Gateway hattına karşı senaryoları paralel olarak çalıştırır. Senaryolar, profiller ve sağlayıcı modları için [QA genel bakışı](/tr/concepts/qa-e2e-automation) bölümüne bakın.
+Senaryoları kalite güvencesi Gateway hattına karşı paralel olarak çalıştırır. Senaryolar, profiller ve sağlayıcı modları için [Kalite güvencesine genel bakış](/tr/concepts/qa-e2e-automation) bölümüne bakın.
 
-Docker destekli QA sitesi (Gateway + QA Lab hata ayıklayıcı arayüzü tek bir yığında):
+Docker destekli kalite güvencesi sitesi (Gateway + QA Lab hata ayıklayıcı kullanıcı arayüzü tek bir yığında):
 
 ```bash
 pnpm qa:lab:up
 ```
 
-QA sitesini derler, Docker destekli Gateway + QA Lab yığınını başlatır ve QA Lab URL'sini yazdırır. Buradan senaryoları seçebilir, model hattını seçebilir, tek tek çalıştırmaları başlatabilir ve sonuçları canlı izleyebilirsiniz. QA Lab hata ayıklayıcısı, gönderilen Control UI paketinden ayrıdır.
+Kalite güvencesi sitesini derler, Docker destekli Gateway + QA Lab yığınını başlatır ve QA Lab URL'sini yazdırır. Buradan senaryoları seçebilir, model hattını belirleyebilir, ayrı çalıştırmaları başlatabilir ve sonuçları canlı olarak izleyebilirsiniz. QA Lab hata ayıklayıcısı, dağıtılan Denetim kullanıcı arayüzü paketinden ayrıdır.
 
 ## İlgili
 
-- [QA genel bakışı](/tr/concepts/qa-e2e-automation) - genel yığın, aktarım bağdaştırıcıları, senaryo yazımı
-- [Matrix QA](/tr/concepts/qa-matrix) - gerçek bir kanalı süren örnek canlı aktarım çalıştırıcısı
+- [Kalite güvencesine genel bakış](/tr/concepts/qa-e2e-automation) - genel yığın, aktarım bağdaştırıcıları, senaryo yazımı
+- [Matris kalite güvencesi](/tr/concepts/qa-matrix) - gerçek bir kanalı kullanan örnek canlı aktarım çalıştırıcısı
 - [Eşleştirme](/tr/channels/pairing)
 - [Gruplar](/tr/channels/groups)
 - [Kanallara genel bakış](/tr/channels)

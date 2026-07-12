@@ -6,65 +6,73 @@ read_when:
 summary: 'Menyiapkan agen ACP: konfigurasi harness acpx, penyiapan plugin, izin'
 title: Agen ACP — penyiapan
 x-i18n:
-    generated_at: "2026-06-27T18:15:07Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:42:03Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c56a4d3bfae71a5c91dffe7121cae6a5ae96d276d0c598251d48a60b5ffee5e5
+    source_hash: 6a654c7513df0bd54dc69eecc45a408df76c852bcf1d9e932b960f4944fa4239
     source_path: tools/acp-agents-setup.md
     workflow: 16
 ---
 
-Untuk ikhtisar, runbook operator, dan konsep, lihat [agen ACP](/id/tools/acp-agents).
+Untuk ikhtisar, panduan operasional operator, dan konsep, lihat [agen ACP](/id/tools/acp-agents).
 
-Bagian di bawah ini mencakup konfigurasi harness acpx, penyiapan Plugin untuk jembatan MCP, dan konfigurasi izin.
+Halaman ini membahas konfigurasi harness acpx, penyiapan plugin untuk jembatan MCP, dan konfigurasi izin.
 
-Gunakan halaman ini hanya saat Anda menyiapkan rute ACP/acpx. Untuk konfigurasi runtime app-server Codex native, gunakan [harness Codex](/id/plugins/codex-harness). Untuk kunci API OpenAI atau konfigurasi penyedia model OAuth Codex, gunakan
-[OpenAI](/id/providers/openai).
+Gunakan halaman ini hanya saat Anda menyiapkan rute ACP/acpx. Untuk konfigurasi runtime app-server Codex native, gunakan [harness Codex](/id/plugins/codex-harness). Untuk kunci API OpenAI atau konfigurasi penyedia model OAuth Codex, gunakan [OpenAI](/id/providers/openai).
 
 Codex memiliki dua rute OpenClaw:
 
-| Rute                       | Konfig/perintah                                        | Halaman penyiapan                      |
-| -------------------------- | ------------------------------------------------------ | -------------------------------------- |
-| App-server Codex native    | `/codex ...`, `openai/gpt-*` agent refs                | [harness Codex](/id/plugins/codex-harness) |
-| Adapter ACP Codex eksplisit | `/acp spawn codex`, `runtime: "acp", agentId: "codex"` | Halaman ini                            |
+| Rute                       | Konfigurasi/perintah                                    | Halaman penyiapan                       |
+| -------------------------- | ------------------------------------------------------ | --------------------------------------- |
+| App-server Codex native    | `/codex ...`, referensi agen `openai/gpt-*`            | [Harness Codex](/id/plugins/codex-harness) |
+| Adaptor ACP Codex eksplisit | `/acp spawn codex`, `runtime: "acp", agentId: "codex"` | Halaman ini                             |
 
-Pilih rute native kecuali Anda secara eksplisit membutuhkan perilaku ACP/acpx.
+Utamakan rute native kecuali Anda secara eksplisit memerlukan perilaku ACP/acpx.
 
 ## Dukungan harness acpx (saat ini)
 
-Alias harness bawaan acpx saat ini:
+Alias harness acpx bawaan (dari dependensi `acpx` yang versinya disematkan):
 
-- `claude`
-- `codex`
-- `copilot`
-- `cursor` (CLI Cursor: `cursor-agent acp`)
-- `droid`
-- `gemini`
-- `iflow`
-- `kilocode`
-- `kimi`
-- `kiro`
-- `openclaw`
-- `opencode`
-- `qwen`
+| Alias        | Membungkus                                                                                                      |
+| ------------ | --------------------------------------------------------------------------------------------------------------- |
+| `claude`     | [Claude Code](https://claude.ai/code)                                                                           |
+| `codex`      | [Codex CLI](https://codex.openai.com)                                                                           |
+| `copilot`    | [GitHub Copilot CLI](https://docs.github.com/copilot/how-tos/copilot-chat/use-copilot-chat-in-the-command-line) |
+| `cursor`     | [Cursor CLI](https://cursor.com/docs/cli/acp) (`cursor-agent acp`)                                              |
+| `droid`      | [Factory Droid](https://www.factory.ai)                                                                         |
+| `fast-agent` | [fast-agent](https://fast-agent.ai)                                                                             |
+| `gemini`     | [Gemini CLI](https://github.com/google/gemini-cli)                                                              |
+| `iflow`      | [iFlow CLI](https://github.com/iflow-ai/iflow-cli)                                                              |
+| `kilocode`   | [Kilocode](https://kilocode.ai)                                                                                 |
+| `kimi`       | [Kimi CLI](https://github.com/MoonshotAI/kimi-cli)                                                              |
+| `kiro`       | [Kiro CLI](https://kiro.dev)                                                                                    |
+| `mux`        | [Mux](https://mux.coder.com)                                                                                    |
+| `opencode`   | [OpenCode](https://opencode.ai)                                                                                 |
+| `openclaw`   | Jembatan ACP OpenClaw (`openclaw acp` native)                                                                   |
+| `pi`         | [Agen Pemrograman Pi](https://github.com/mariozechner/pi)                                                       |
+| `qoder`      | [Qoder CLI](https://docs.qoder.com/cli/acp)                                                                     |
+| `qwen`       | [Qwen Code](https://github.com/QwenLM/qwen-code)                                                                |
+| `trae`       | [Trae CLI](https://docs.trae.cn/cli)                                                                            |
 
-Saat OpenClaw menggunakan backend acpx, pilih nilai-nilai ini untuk `agentId` kecuali konfigurasi acpx Anda mendefinisikan alias agen khusus.
-Jika instalasi Cursor lokal Anda masih mengekspos ACP sebagai `agent acp`, timpa perintah agen `cursor` di konfigurasi acpx Anda, bukan mengubah default bawaan.
+`factory-droid` dan `factorydroid` juga diresolusikan ke adaptor `droid` bawaan.
 
-Penggunaan CLI acpx langsung juga dapat menargetkan adapter sembarang melalui `--agent <command>`, tetapi escape hatch mentah tersebut adalah fitur CLI acpx (bukan jalur `agentId` OpenClaw normal).
+Saat OpenClaw menggunakan backend acpx, utamakan nilai-nilai ini untuk `agentId`, kecuali konfigurasi acpx Anda mendefinisikan alias agen khusus.
+Jika instalasi Cursor lokal Anda masih menyediakan ACP sebagai `agent acp`, timpa perintah agen `cursor` dalam konfigurasi acpx Anda alih-alih mengubah nilai default bawaan.
 
-Kontrol model bergantung pada kapabilitas adapter. Ref model ACP Codex dinormalisasi oleh OpenClaw sebelum startup. Harness lain membutuhkan ACP `models` plus dukungan `session/set_model`; jika sebuah harness tidak mengekspos kapabilitas ACP itu maupun flag model startup miliknya sendiri, OpenClaw/acpx tidak dapat memaksa pilihan model.
+Penggunaan CLI acpx secara langsung juga dapat menargetkan adaptor arbitrer melalui `--agent <command>`, tetapi mekanisme akses langsung tersebut merupakan fitur CLI acpx (bukan jalur `agentId` OpenClaw yang normal).
+
+Kontrol model bergantung pada kemampuan adaptor. Referensi model ACP Codex dinormalisasi oleh OpenClaw sebelum dimulai. Harness lain memerlukan dukungan `models` ACP beserta `session/set_model`; jika suatu harness tidak menyediakan kemampuan ACP tersebut maupun flag model saat dimulai miliknya sendiri, OpenClaw/acpx tidak dapat memaksakan pemilihan model.
 
 ## Konfigurasi wajib
 
-Baseline ACP inti:
+Dasar ACP inti:
 
 ```json5
 {
   acp: {
     enabled: true,
-    // Optional. Default is true; set false to pause ACP dispatch while keeping /acp controls.
+    // Opsional. Nilai default adalah true; atur ke false untuk menjeda pengiriman ACP sambil mempertahankan kontrol /acp.
     dispatch: { enabled: true },
     backend: "acpx",
     defaultAgent: "codex",
@@ -81,13 +89,13 @@ Baseline ACP inti:
       "kiro",
       "openclaw",
       "opencode",
-      "openclaw",
       "qwen",
     ],
     maxConcurrentSessions: 8,
     stream: {
-      coalesceIdleMs: 300,
-      maxChunkChars: 1200,
+      // Nilai default adalah coalesceIdleMs: 350, maxChunkChars: 1800; ditampilkan secara eksplisit di sini.
+      coalesceIdleMs: 350,
+      maxChunkChars: 1800,
     },
     runtime: {
       ttlMinutes: 120,
@@ -96,7 +104,7 @@ Baseline ACP inti:
 }
 ```
 
-Konfigurasi pengikatan thread spesifik untuk adapter kanal. Contoh untuk Discord:
+Konfigurasi pengikatan utas bersifat khusus untuk adaptor kanal. Contoh untuk Discord:
 
 ```json5
 {
@@ -111,6 +119,7 @@ Konfigurasi pengikatan thread spesifik untuk adapter kanal. Contoh untuk Discord
     discord: {
       threadBindings: {
         enabled: true,
+        // Nilai default sudah true; ditampilkan secara eksplisit di sini.
         spawnSessions: true,
       },
     },
@@ -118,17 +127,17 @@ Konfigurasi pengikatan thread spesifik untuk adapter kanal. Contoh untuk Discord
 }
 ```
 
-Jika spawn ACP yang terikat thread tidak berfungsi, verifikasi flag fitur adapter terlebih dahulu:
+Jika pembuatan ACP yang terikat utas tidak berfungsi, verifikasi flag fitur adaptor terlebih dahulu:
 
 - Discord: `channels.discord.threadBindings.spawnSessions=true`
 
-Pengikatan percakapan saat ini tidak memerlukan pembuatan thread anak. Pengikatan tersebut memerlukan konteks percakapan aktif dan adapter kanal yang mengekspos pengikatan percakapan ACP.
+Pengikatan percakapan saat ini tidak memerlukan pembuatan utas turunan. Pengikatan ini memerlukan konteks percakapan aktif dan adaptor kanal yang menyediakan pengikatan percakapan ACP.
 
 Lihat [Referensi Konfigurasi](/id/gateway/configuration-reference).
 
 ## Penyiapan Plugin untuk backend acpx
 
-Instalasi terpaket menggunakan Plugin runtime resmi `@openclaw/acpx` untuk ACP.
+Instalasi dalam paket menggunakan Plugin runtime resmi `@openclaw/acpx` untuk ACP.
 Instal dan aktifkan sebelum menggunakan sesi harness ACP:
 
 ```bash
@@ -136,7 +145,7 @@ openclaw plugins install @openclaw/acpx
 openclaw config set plugins.entries.acpx.enabled true
 ```
 
-Checkout sumber juga dapat menggunakan Plugin workspace lokal setelah `pnpm install`.
+Checkout sumber juga dapat menggunakan Plugin ruang kerja lokal setelah `pnpm install`.
 
 Mulai dengan:
 
@@ -144,54 +153,30 @@ Mulai dengan:
 /acp doctor
 ```
 
-Jika Anda menonaktifkan `acpx`, menolaknya melalui `plugins.allow` / `plugins.deny`, atau ingin beralih kembali ke Plugin terpaket, gunakan jalur paket eksplisit:
+Jika Anda menonaktifkan `acpx`, menolaknya melalui `plugins.allow` / `plugins.deny`, atau ingin beralih kembali ke Plugin dalam paket, gunakan jalur paket eksplisit:
 
 ```bash
 openclaw plugins install @openclaw/acpx
 openclaw config set plugins.entries.acpx.enabled true
 ```
 
-Instal workspace lokal selama pengembangan:
+Instalasi ruang kerja lokal selama pengembangan:
 
 ```bash
 openclaw plugins install ./path/to/local/acpx-plugin
 ```
 
-Lalu verifikasi kesehatan backend:
+Kemudian verifikasi kesehatan backend:
 
 ```text
 /acp doctor
 ```
 
-### Konfigurasi perintah dan versi acpx
+### Probe permulaan runtime acpx
 
-Secara default, Plugin `acpx` mendaftarkan backend ACP tertanam selama startup Gateway dan menunggu probe startup runtime tertanam sebelum sinyal `ready` gateway.
-Setel `OPENCLAW_ACPX_RUNTIME_STARTUP_PROBE=0` atau
-`OPENCLAW_SKIP_ACPX_RUNTIME_PROBE=1` hanya untuk skrip atau lingkungan yang sengaja menonaktifkan probe startup. Jalankan `/acp doctor` untuk probe eksplisit sesuai permintaan.
+Plugin `acpx` menyematkan runtime ACP secara langsung (tanpa biner atau versi `acpx` terpisah yang perlu dikonfigurasi). Secara default, Plugin tersebut mendaftarkan backend tertanam selama permulaan Gateway dan menunggu probe permulaan sebelum sinyal `ready` gateway. Atur `OPENCLAW_ACPX_RUNTIME_STARTUP_PROBE=0` atau `OPENCLAW_SKIP_ACPX_RUNTIME_PROBE=1` hanya untuk skrip atau lingkungan yang sengaja menonaktifkan probe permulaan. Jalankan `/acp doctor` untuk probe eksplisit sesuai permintaan.
 
-Timpa perintah atau versi di konfigurasi Plugin:
-
-```json
-{
-  "plugins": {
-    "entries": {
-      "acpx": {
-        "enabled": true,
-        "config": {
-          "command": "../acpx/dist/cli.js",
-          "expectedVersion": "any"
-        }
-      }
-    }
-  }
-}
-```
-
-- `command` menerima jalur absolut, jalur relatif (di-resolve dari workspace OpenClaw), atau nama perintah.
-- `expectedVersion: "any"` menonaktifkan pencocokan versi ketat.
-- Jalur `command` khusus menonaktifkan instal otomatis lokal Plugin.
-
-Timpa perintah agen ACP individual dengan argumen terstruktur saat jalur atau nilai flag harus tetap menjadi satu token argv:
+Timpa perintah agen ACP individual dengan argumen terstruktur saat suatu jalur atau nilai flag harus tetap menjadi satu token argv:
 
 ```json
 {
@@ -213,122 +198,121 @@ Timpa perintah agen ACP individual dengan argumen terstruktur saat jalur atau ni
 }
 ```
 
-- `agents.<id>.command` adalah executable atau string perintah yang ada untuk agen ACP tersebut.
-- `agents.<id>.args` bersifat opsional. Setiap item array diberi kutipan shell sebelum OpenClaw meneruskannya melalui registry string perintah acpx saat ini.
+- `agents.<id>.command` adalah berkas yang dapat dieksekusi atau string perintah yang sudah ada untuk agen ACP tersebut.
+- `agents.<id>.args` bersifat opsional. Setiap item larik diberi tanda kutip shell sebelum OpenClaw meneruskannya melalui registri string perintah acpx saat ini.
 
 Lihat [Plugin](/id/tools/plugin).
 
-### Instal dependensi otomatis
+### Pengunduhan adaptor otomatis
 
-Saat Anda menginstal OpenClaw secara global dengan `npm install -g openclaw`, dependensi runtime acpx (biner spesifik platform) diinstal otomatis melalui hook postinstall. Jika instal otomatis gagal, gateway tetap berjalan normal dan melaporkan dependensi yang hilang melalui `openclaw acp doctor`.
+`acpx` secara otomatis mengunduh adaptor ACP (misalnya jembatan ACP Claude dan Codex) melalui `npx` saat pertama kali digunakan. Anda tidak perlu menginstal paket adaptor secara manual, dan tidak ada langkah pascainstalasi terpisah untuk OpenClaw itu sendiri. Jika pengunduhan atau pembuatan proses adaptor gagal, `/acp doctor` melaporkan kegagalan tersebut.
 
 ### Jembatan MCP alat Plugin
 
-Secara default, sesi ACPX **tidak** mengekspos alat yang didaftarkan Plugin OpenClaw ke harness ACP.
+Secara default, sesi ACPX **tidak** menyediakan alat yang didaftarkan Plugin OpenClaw kepada harness ACP.
 
-Jika Anda ingin agen ACP seperti Codex atau Claude Code memanggil alat Plugin OpenClaw yang terinstal seperti recall/store memori, aktifkan jembatan khusus:
+Jika Anda ingin agen ACP seperti Codex atau Claude Code memanggil alat Plugin OpenClaw yang terinstal, seperti pengambilan/penyimpanan memori, aktifkan jembatan khusus:
 
 ```bash
 openclaw config set plugins.entries.acpx.config.pluginToolsMcpBridge true
 ```
 
-Yang dilakukan ini:
+Fungsi konfigurasi ini:
 
-- Menyuntikkan server MCP bawaan bernama `openclaw-plugin-tools` ke bootstrap sesi ACPX.
-- Mengekspos alat Plugin yang sudah didaftarkan oleh Plugin OpenClaw yang terinstal dan aktif.
-- Menjaga fitur ini eksplisit dan nonaktif secara default.
+- Menyuntikkan server MCP bawaan bernama `openclaw-plugin-tools` ke proses bootstrap sesi ACPX.
+- Menyediakan alat Plugin yang sudah didaftarkan oleh Plugin OpenClaw yang terinstal dan aktif.
+- Menjaga fitur tetap eksplisit dan nonaktif secara default.
 
 Catatan keamanan dan kepercayaan:
 
-- Ini memperluas permukaan alat harness ACP.
-- Agen ACP hanya mendapatkan akses ke alat Plugin yang sudah aktif di gateway.
-- Perlakukan ini sebagai batas kepercayaan yang sama seperti membiarkan Plugin tersebut berjalan di OpenClaw sendiri.
+- Ini memperluas cakupan alat harness ACP.
+- Agen ACP hanya memperoleh akses ke alat Plugin yang sudah aktif di gateway.
+- Perlakukan ini sebagai batas kepercayaan yang sama dengan mengizinkan Plugin tersebut berjalan di OpenClaw itu sendiri.
 - Tinjau Plugin yang terinstal sebelum mengaktifkannya.
 
-`mcpServers` khusus tetap bekerja seperti sebelumnya. Jembatan alat Plugin bawaan adalah kenyamanan opt-in tambahan, bukan pengganti konfigurasi server MCP generik.
+`mcpServers` khusus tetap berfungsi seperti sebelumnya. Jembatan alat Plugin bawaan merupakan kemudahan tambahan yang perlu diaktifkan secara eksplisit, bukan pengganti konfigurasi server MCP generik.
 
 ### Jembatan MCP alat OpenClaw
 
-Secara default, sesi ACPX juga **tidak** mengekspos alat bawaan OpenClaw melalui MCP. Aktifkan jembatan alat inti terpisah saat agen ACP membutuhkan alat bawaan tertentu seperti `cron`:
+Secara default, sesi ACPX juga **tidak** menyediakan alat bawaan OpenClaw melalui MCP. Aktifkan jembatan alat inti yang terpisah saat agen ACP memerlukan alat bawaan tertentu seperti `cron`:
 
 ```bash
 openclaw config set plugins.entries.acpx.config.openClawToolsMcpBridge true
 ```
 
-Yang dilakukan ini:
+Fungsi konfigurasi ini:
 
-- Menyuntikkan server MCP bawaan bernama `openclaw-tools` ke bootstrap sesi ACPX.
-- Mengekspos alat bawaan OpenClaw tertentu. Server awal mengekspos `cron`.
-- Menjaga eksposur alat inti eksplisit dan nonaktif secara default.
+- Menyuntikkan server MCP bawaan bernama `openclaw-tools` ke proses bootstrap sesi ACPX.
+- Menyediakan alat bawaan OpenClaw tertentu. Server awal menyediakan `cron`.
+- Menjaga penyediaan alat inti tetap eksplisit dan nonaktif secara default.
 
-### Konfigurasi timeout operasi runtime
+### Konfigurasi batas waktu operasi runtime
 
-Plugin `acpx` memberi startup runtime tertanam dan operasi kontrol 120 detik secara default. Ini memberi harness yang lebih lambat seperti Gemini CLI cukup waktu untuk menyelesaikan startup dan inisialisasi ACP. Timpa jika host Anda membutuhkan batas operasi berbeda:
+Plugin `acpx` memberikan waktu 120 detik secara default untuk operasi permulaan dan kontrol runtime tertanam. Ini memberikan cukup waktu bagi harness yang lebih lambat seperti Gemini CLI untuk menyelesaikan permulaan dan inisialisasi ACP. Timpa nilai tersebut jika host Anda memerlukan batas operasi yang berbeda:
 
 ```bash
 openclaw config set plugins.entries.acpx.config.timeoutSeconds 180
 ```
 
-Turn runtime menggunakan timeout agen/run OpenClaw, termasuk `/acp timeout`.
-`sessions_spawn` tidak menerima penimpaan timeout per panggilan. Restart gateway setelah mengubah nilai ini.
+Giliran runtime menggunakan batas waktu agen/proses OpenClaw, termasuk `/acp timeout`.
+`sessions_spawn` tidak menerima penimpaan batas waktu per panggilan; jalur operatornya adalah `agents.defaults.subagents.runTimeoutSeconds`. Mulai ulang gateway setelah mengubah `timeoutSeconds`.
 
 ### Konfigurasi agen probe kesehatan
 
-Saat `/acp doctor` atau probe startup memeriksa backend, Plugin `acpx` bawaan mem-probe satu agen harness. Jika `acp.allowedAgents` disetel, default-nya adalah agen pertama yang diizinkan; jika tidak, default-nya adalah `codex`. Jika deployment Anda membutuhkan agen ACP berbeda untuk pemeriksaan kesehatan, setel agen probe secara eksplisit:
+Saat `/acp doctor` atau probe permulaan memeriksa backend, Plugin `acpx` yang disertakan memeriksa satu agen harness. Jika `acp.allowedAgents` diatur, nilai defaultnya adalah agen pertama yang diizinkan; jika tidak, nilai defaultnya adalah `codex`. Jika penerapan Anda memerlukan agen ACP yang berbeda untuk pemeriksaan kesehatan, atur agen probe secara eksplisit:
 
 ```bash
 openclaw config set plugins.entries.acpx.config.probeAgent claude
 ```
 
-Restart gateway setelah mengubah nilai ini.
+Mulai ulang gateway setelah mengubah nilai ini.
 
 ## Konfigurasi izin
 
-Sesi ACP berjalan non-interaktif — tidak ada TUI untuk menyetujui atau menolak prompt izin penulisan file dan eksekusi shell. Plugin acpx menyediakan dua kunci konfigurasi yang mengontrol bagaimana izin ditangani:
+Sesi ACP berjalan secara noninteraktif—tidak ada TTY untuk menyetujui atau menolak permintaan izin penulisan berkas dan eksekusi shell. Plugin acpx menyediakan dua kunci konfigurasi yang mengontrol cara penanganan izin:
 
-Izin harness ACPX ini terpisah dari persetujuan exec OpenClaw dan terpisah dari flag bypass vendor backend CLI seperti Claude CLI `--permission-mode bypassPermissions`. ACPX `approve-all` adalah switch break-glass tingkat harness untuk sesi ACP.
+Izin harness ACPX ini terpisah dari persetujuan eksekusi OpenClaw dan terpisah dari flag penerobosan vendor backend CLI seperti `--permission-mode bypassPermissions` milik Claude CLI. `approve-all` ACPX adalah sakelar darurat tingkat harness untuk sesi ACP.
 
-Untuk perbandingan yang lebih luas antara OpenClaw `tools.exec.mode`, persetujuan Codex Guardian, dan izin harness ACPX, lihat
-[Mode izin](/id/tools/permission-modes).
+Untuk perbandingan lebih luas antara `tools.exec.mode` OpenClaw, persetujuan Codex Guardian, dan izin harness ACPX, lihat [Mode izin](/id/tools/permission-modes).
 
 ### `permissionMode`
 
-Mengontrol operasi mana yang dapat dilakukan agen harness tanpa prompt.
+Mengontrol operasi yang dapat dilakukan agen harness tanpa meminta konfirmasi.
 
-| Nilai           | Perilaku                                                  |
-| --------------- | --------------------------------------------------------- |
-| `approve-all`   | Setujui otomatis semua penulisan file dan perintah shell. |
-| `approve-reads` | Setujui otomatis hanya pembacaan; penulisan dan exec memerlukan prompt. |
-| `deny-all`      | Tolak semua prompt izin.                                  |
+| Nilai           | Perilaku                                                                  |
+| --------------- | ------------------------------------------------------------------------- |
+| `approve-all`   | Menyetujui otomatis semua penulisan file dan perintah shell.              |
+| `approve-reads` | Menyetujui otomatis hanya pembacaan; penulisan dan eksekusi memerlukan konfirmasi. |
+| `deny-all`      | Menolak semua permintaan izin.                                            |
 
 ### `nonInteractivePermissions`
 
-Mengontrol apa yang terjadi saat prompt izin akan ditampilkan tetapi tidak ada TUI interaktif yang tersedia (yang selalu terjadi untuk sesi ACP).
+Mengontrol apa yang terjadi ketika permintaan izin seharusnya ditampilkan tetapi TTY interaktif tidak tersedia (yang selalu terjadi pada sesi ACP).
 
-| Nilai  | Perilaku                                                          |
-| ------ | ----------------------------------------------------------------- |
-| `fail` | Batalkan sesi dengan `AcpRuntimeError`. **(default)**             |
-| `deny` | Tolak izin secara diam-diam dan lanjutkan (degradasi mulus).      |
+| Nilai  | Perilaku                                                                       |
+| ------ | ------------------------------------------------------------------------------ |
+| `fail` | Membatalkan sesi dengan `PermissionPromptUnavailableError`. **(bawaan)**       |
+| `deny` | Menolak izin secara diam-diam dan melanjutkan (degradasi secara anggun).       |
 
 ### Konfigurasi
 
-Setel melalui konfigurasi Plugin:
+Atur melalui konfigurasi Plugin:
 
 ```bash
 openclaw config set plugins.entries.acpx.config.permissionMode approve-all
 openclaw config set plugins.entries.acpx.config.nonInteractivePermissions fail
 ```
 
-Restart gateway setelah mengubah nilai-nilai ini.
+Mulai ulang Gateway setelah mengubah nilai-nilai ini.
 
 <Warning>
-Default OpenClaw adalah `permissionMode=approve-reads` dan `nonInteractivePermissions=fail`. Dalam sesi ACP non-interaktif, penulisan atau exec apa pun yang memicu prompt izin dapat gagal dengan `AcpRuntimeError: Permission prompt unavailable in non-interactive mode`.
+OpenClaw secara bawaan menggunakan `permissionMode=approve-reads` dan `nonInteractivePermissions=fail`. Dalam sesi ACP noninteraktif, setiap penulisan atau eksekusi yang memicu permintaan izin dapat gagal dengan `PermissionPromptUnavailableError: Permission prompt unavailable in non-interactive mode`.
 
-Jika Anda perlu membatasi izin, setel `nonInteractivePermissions` ke `deny` agar sesi terdegradasi dengan mulus alih-alih crash.
+Jika Anda perlu membatasi izin, atur `nonInteractivePermissions` ke `deny` agar sesi mengalami degradasi secara anggun alih-alih berhenti akibat galat.
 </Warning>
 
 ## Terkait
 
-- [agen ACP](/id/tools/acp-agents) — ikhtisar, runbook operator, konsep
-- [Sub-agen](/id/tools/subagents)
-- [Perutean multi-agen](/id/concepts/multi-agent)
+- [Agen ACP](/id/tools/acp-agents) — ikhtisar, panduan operasional, konsep
+- [Subagen](/id/tools/subagents)
+- [Perutean multiagen](/id/concepts/multi-agent)

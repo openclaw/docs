@@ -1,20 +1,20 @@
 ---
-summary: Chuyển hướng đến Luồng tác vụ
+summary: Chuyển hướng đến TaskFlow
 title: ClawFlow
 x-i18n:
-    generated_at: "2026-04-29T22:23:15Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:38:29Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: dec1ddc0e784b4ad49d0f5e5a8e332032e40281b81fe27de99363178ff8d3272
+    source_hash: 34f259b25c73d08ab71935307e2736f3f9d57dd579ba0f1842a2bd334f656e47
     source_path: automation/clawflow.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-ClawFlow đã được đổi tên thành [Luồng tác vụ](/vi/automation/taskflow).
+ClawFlow đã được đổi tên thành [TaskFlow](/vi/automation/taskflow). Hãy sử dụng trang đó để điều phối các luồng nhiều bước có tính bền vững.
 
 ## Liên quan
 
-- [Luồng tác vụ](/vi/automation/taskflow)
-- [Lệnh thường trực](/vi/automation/standing-orders)
-- [Móc](/vi/automation/hooks)
+- [TaskFlow](/vi/automation/taskflow)
+- [Chỉ thị thường trực](/vi/automation/standing-orders)
+- [Hook](/vi/automation/hooks)

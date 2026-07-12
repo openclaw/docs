@@ -1,37 +1,39 @@
 ---
 read_when:
     - คุณต้องการใช้โมเดล OSS ที่โฮสต์บน Bedrock Mantle กับ OpenClaw
-    - คุณต้องใช้เอนด์พอยต์ที่เข้ากันได้กับ OpenAI ของ Mantle สำหรับ GPT-OSS, Qwen, Kimi หรือ GLM
-summary: ใช้โมเดล Amazon Bedrock Mantle (เข้ากันได้กับ OpenAI) กับ OpenClaw
+    - คุณต้องใช้เอ็นด์พอยต์ของ Mantle ที่เข้ากันได้กับ OpenAI สำหรับ GPT-OSS, Qwen, Kimi หรือ GLM
+    - คุณต้องการใช้ Claude Sonnet 5 หรือ Mythos 5 ผ่าน Amazon Bedrock Mantle
+summary: ใช้โมเดล Amazon Bedrock Mantle ที่เข้ากันได้กับ OpenAI และโมเดล Claude Messages ร่วมกับ OpenClaw
 title: Amazon Bedrock Mantle
 x-i18n:
-    generated_at: "2026-06-27T18:10:59Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:33:47Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5e14026e4fb25b13994061f2aaa5294df44ce8fe1ba99e031b8c92a41a4a9b49
+    source_hash: 107ffdc76e3971a085f7d64d8d766f6cd8706ce882d8bab80d27c72ab545eec1
     source_path: providers/bedrock-mantle.md
     workflow: 16
 ---
 
-OpenClaw มี provider **Amazon Bedrock Mantle** ที่รวมมาให้ ซึ่งเชื่อมต่อกับ
-endpoint ที่เข้ากันได้กับ OpenAI ของ Mantle Mantle โฮสต์โมเดลโอเพนซอร์สและ
-โมเดลของบุคคลที่สาม (GPT-OSS, Qwen, Kimi, GLM และโมเดลลักษณะคล้ายกัน) ผ่านพื้นผิว
-`/v1/chat/completions` มาตรฐานที่รองรับด้วยโครงสร้างพื้นฐานของ Bedrock
+OpenClaw มีผู้ให้บริการ **Amazon Bedrock Mantle** ที่รวมมาให้ ซึ่งเชื่อมต่อกับ
+ตำแหน่งข้อมูล Mantle ที่เข้ากันได้กับ OpenAI โดย Mantle ให้บริการโมเดลโอเพนซอร์สและ
+โมเดลจากบุคคลที่สาม (GPT-OSS, Qwen, Kimi, GLM และโมเดลที่คล้ายกัน) ผ่านอินเทอร์เฟซมาตรฐาน
+`/v1/chat/completions` ที่ทำงานบนโครงสร้างพื้นฐานของ Bedrock นอกจากนี้ Mantle ยัง
+ให้บริการโมเดล Anthropic Claude ผ่านเส้นทาง Anthropic Messages
 
-| คุณสมบัติ       | ค่า                                                                                       |
-| -------------- | ------------------------------------------------------------------------------------------- |
-| Provider ID    | `amazon-bedrock-mantle`                                                                     |
-| API            | `openai-completions` (เข้ากันได้กับ OpenAI) หรือ `anthropic-messages` (เส้นทาง Anthropic Messages) |
-| การรับรองตัวตน           | `AWS_BEARER_TOKEN_BEDROCK` แบบระบุชัดเจน หรือการสร้าง bearer-token จากเชนข้อมูลประจำตัว IAM         |
-| region เริ่มต้น | `us-east-1` (แทนที่ได้ด้วย `AWS_REGION` หรือ `AWS_DEFAULT_REGION`)                            |
+| คุณสมบัติ       | ค่า                                                                                  |
+| -------------- | -------------------------------------------------------------------------------------- |
+| รหัสผู้ให้บริการ    | `amazon-bedrock-mantle`                                                                |
+| API            | `openai-completions` สำหรับโมเดล OSS ที่ค้นพบ และ `anthropic-messages` สำหรับโมเดล Claude |
+| การยืนยันตัวตน           | `AWS_BEARER_TOKEN_BEDROCK` ที่ระบุอย่างชัดเจน หรือการสร้าง bearer token จากสายโซ่ข้อมูลประจำตัว IAM    |
+| รีเจียนเริ่มต้น | `us-east-1` (เขียนทับได้ด้วย `AWS_REGION` หรือ `AWS_DEFAULT_REGION`)                       |
 
 ## เริ่มต้นใช้งาน
 
-เลือกวิธีการรับรองตัวตนที่คุณต้องการ แล้วทำตามขั้นตอนการตั้งค่า
+เลือกวิธีการยืนยันตัวตนที่ต้องการและทำตามขั้นตอนการตั้งค่า
 
 <Tabs>
-  <Tab title="Bearer token แบบระบุชัดเจน">
+  <Tab title="Bearer token ที่ระบุโดยตรง">
     **เหมาะที่สุดสำหรับ:** สภาพแวดล้อมที่คุณมี Mantle bearer token อยู่แล้ว
 
     <Steps>
@@ -40,43 +42,30 @@ endpoint ที่เข้ากันได้กับ OpenAI ของ Mantl
         export AWS_BEARER_TOKEN_BEDROCK="..."
         ```
 
-        เลือกตั้งค่า region ได้ (ค่าเริ่มต้นคือ `us-east-1`):
+        คุณสามารถตั้งค่ารีเจียนเพิ่มเติมได้ (ค่าเริ่มต้นคือ `us-east-1`):
 
         ```bash
         export AWS_REGION="us-west-2"
         ```
-      </Step>
-      <Step title="เลือกเข้าร่วมการแชร์ข้อมูล provider สำหรับ Claude Fable 5">
-        Claude Fable 5 และโมเดล Bedrock ระดับ Claude Mythos ต้องใช้โหมด Mantle Data Retention API `provider_data_share` ก่อนเรียกใช้งาน การเลือกเข้าร่วมนี้อนุญาตให้ Bedrock แชร์พรอมป์และผลลัพธ์การเติมเต็มกับ Anthropic และเก็บรักษาไว้ได้นานสูงสุด 30 วันเพื่อการตรวจสอบความน่าเชื่อถือและความปลอดภัย
-
-        ```bash
-        AWS_REGION="${AWS_REGION:-us-east-1}"
-        curl -X PUT "https://bedrock-mantle.${AWS_REGION}.api.aws/v1/data_retention" \
-          -H "Authorization: Bearer $AWS_BEARER_TOKEN_BEDROCK" \
-          -H "Content-Type: application/json" \
-          -d '{ "mode": "provider_data_share" }'
-        ```
-
-        ใช้โมเดล Bedrock อื่นใน config หากคุณไม่สามารถยอมรับโหมดการเก็บรักษานั้นได้
       </Step>
       <Step title="ตรวจสอบว่าค้นพบโมเดลแล้ว">
         ```bash
         openclaw models list
         ```
 
-        โมเดลที่ค้นพบจะแสดงภายใต้ provider `amazon-bedrock-mantle` ไม่จำเป็นต้องมี
-        config เพิ่มเติม เว้นแต่คุณต้องการแทนที่ค่าเริ่มต้น
+        โมเดลที่ค้นพบจะปรากฏภายใต้ผู้ให้บริการ `amazon-bedrock-mantle` โดยไม่จำเป็นต้อง
+        กำหนดค่าเพิ่มเติม เว้นแต่คุณต้องการเขียนทับค่าเริ่มต้น
       </Step>
     </Steps>
 
   </Tab>
 
   <Tab title="ข้อมูลประจำตัว IAM">
-    **เหมาะที่สุดสำหรับ:** การใช้ข้อมูลประจำตัวที่เข้ากันได้กับ AWS SDK (config ที่แชร์, SSO, web identity, instance หรือ task roles)
+    **เหมาะที่สุดสำหรับ:** การใช้ข้อมูลประจำตัวที่เข้ากันได้กับ AWS SDK (การกำหนดค่าที่ใช้ร่วมกัน, SSO, web identity, instance role หรือ task role)
 
     <Steps>
       <Step title="กำหนดค่าข้อมูลประจำตัว AWS บนโฮสต์ Gateway">
-        แหล่งการรับรองตัวตนใด ๆ ที่เข้ากันได้กับ AWS SDK สามารถใช้ได้:
+        สามารถใช้แหล่งการยืนยันตัวตนใดก็ได้ที่เข้ากันได้กับ AWS SDK:
 
         ```bash
         export AWS_PROFILE="default"
@@ -88,49 +77,49 @@ endpoint ที่เข้ากันได้กับ OpenAI ของ Mantl
         openclaw models list
         ```
 
-        OpenClaw สร้าง Mantle bearer token จากเชนข้อมูลประจำตัวโดยอัตโนมัติ
+        OpenClaw จะสร้าง Mantle bearer token จากสายโซ่ข้อมูลประจำตัวโดยอัตโนมัติ
       </Step>
     </Steps>
 
     <Tip>
-    เมื่อไม่ได้ตั้งค่า `AWS_BEARER_TOKEN_BEDROCK` OpenClaw จะออก bearer token ให้คุณจากเชนข้อมูลประจำตัวเริ่มต้นของ AWS รวมถึง shared credentials/config profiles, SSO, web identity และ instance หรือ task roles
+    เมื่อไม่ได้ตั้งค่า `AWS_BEARER_TOKEN_BEDROCK` OpenClaw จะออก bearer token ให้คุณจากสายโซ่ข้อมูลประจำตัวเริ่มต้นของ AWS ซึ่งรวมถึงข้อมูลประจำตัว/โปรไฟล์การกำหนดค่าที่ใช้ร่วมกัน, SSO, web identity และ instance role หรือ task role
     </Tip>
 
   </Tab>
 </Tabs>
 
-## การค้นพบโมเดลอัตโนมัติ
+## การค้นพบโมเดลโดยอัตโนมัติ
 
-เมื่อมีการตั้งค่า `AWS_BEARER_TOKEN_BEDROCK` OpenClaw จะใช้ค่านั้นโดยตรง มิฉะนั้น
-OpenClaw จะพยายามสร้าง Mantle bearer token จากเชนข้อมูลประจำตัวเริ่มต้นของ AWS
-จากนั้นจะค้นพบโมเดล Mantle ที่พร้อมใช้งานโดย query endpoint `/v1/models`
-ของ region
+เมื่อตั้งค่า `AWS_BEARER_TOKEN_BEDROCK` แล้ว OpenClaw จะใช้ค่านั้นโดยตรง มิฉะนั้น
+OpenClaw จะพยายามสร้าง Mantle bearer token จากสายโซ่ข้อมูลประจำตัวเริ่มต้นของ
+AWS จากนั้นจะค้นพบโมเดล Mantle ที่พร้อมใช้งานด้วยการเรียกตำแหน่งข้อมูล
+`/v1/models` ของรีเจียนนั้น
 
-| พฤติกรรม          | รายละเอียด                    |
-| ----------------- | ------------------------- |
-| แคชการค้นพบ   | แคชผลลัพธ์ไว้ 1 ชั่วโมง |
-| การรีเฟรช token IAM | ทุกชั่วโมง                    |
+| ลักษณะการทำงาน          | รายละเอียด                                                                               |
+| ----------------- | ------------------------------------------------------------------------------------ |
+| แคชการค้นพบ   | แคชผลลัพธ์เป็นเวลา 1 ชั่วโมงต่อรีเจียน หากการดึงข้อมูลล้มเหลว ระบบจะคืนผลลัพธ์ล่าสุดในแคช |
+| การรีเฟรชโทเค็น IAM | ทุก 2 ชั่วโมง โดยแยกแคชตามรีเจียน                                                     |
 
-หากต้องการเปิดใช้งาน Mantle plugin ไว้ แต่ปิดการค้นพบอัตโนมัติและการสร้าง
-IAM bearer-token ให้ปิด toggle การค้นพบที่ plugin เป็นเจ้าของ:
+หากต้องการเปิดใช้งาน Plugin Mantle ต่อไป แต่ระงับการค้นพบอัตโนมัติและการสร้าง
+IAM bearer token ให้ปิดสวิตช์การค้นพบที่ Plugin เป็นเจ้าของ:
 
 ```bash
 openclaw config set plugins.entries.amazon-bedrock-mantle.config.discovery.enabled false
 ```
 
 <Note>
-Bearer token เป็น `AWS_BEARER_TOKEN_BEDROCK` ตัวเดียวกับที่ provider [Amazon Bedrock](/th/providers/bedrock) มาตรฐานใช้
+Bearer token นี้คือ `AWS_BEARER_TOKEN_BEDROCK` เดียวกับที่ผู้ให้บริการมาตรฐาน [Amazon Bedrock](/th/providers/bedrock) ใช้
 </Note>
 
-### Region ที่รองรับ
+### รีเจียนที่รองรับ
 
 `us-east-1`, `us-east-2`, `us-west-2`, `ap-northeast-1`,
 `ap-south-1`, `ap-southeast-3`, `eu-central-1`, `eu-west-1`, `eu-west-2`,
-`eu-south-1`, `eu-north-1`, `sa-east-1`.
+`eu-south-1`, `eu-north-1`, `sa-east-1`
 
 ## การกำหนดค่าด้วยตนเอง
 
-หากคุณต้องการ config แบบระบุชัดเจนแทนการค้นพบอัตโนมัติ:
+หากคุณต้องการระบุการกำหนดค่าอย่างชัดเจนแทนการค้นพบอัตโนมัติ:
 
 ```json5
 {
@@ -158,75 +147,88 @@ Bearer token เป็น `AWS_BEARER_TOKEN_BEDROCK` ตัวเดียวก
 }
 ```
 
+รายการ `models` ที่ระบุอย่างชัดเจนและไม่ว่างจะถือเป็นข้อมูลหลัก และแทนที่
+ทุกรายการที่ค้นพบ รวมถึงรายการ Claude ด้านล่าง ละเว้น `models` เพื่อคง
+แค็ตตาล็อก Mantle อัตโนมัติไว้ หรือระบุรายการโมเดล Claude ทั้งหมดที่คุณ
+ต้องการใช้
+
 ## การกำหนดค่าขั้นสูง
 
 <AccordionGroup>
-  <Accordion title="การรองรับ reasoning">
-    การรองรับ reasoning จะอนุมานจาก ID โมเดลที่มีรูปแบบอย่างเช่น
-    `thinking`, `reasoner` หรือ `gpt-oss-120b` OpenClaw ตั้งค่า `reasoning: true`
-    โดยอัตโนมัติสำหรับโมเดลที่ตรงกันระหว่างการค้นพบ
+  <Accordion title="การรองรับการให้เหตุผล">
+    ระบบจะอนุมานการรองรับการให้เหตุผลจากรหัสโมเดลที่มีรูปแบบ เช่น
+    `thinking`, `reasoner`, `reasoning`, `deepseek.r`, `gpt-oss-120b` หรือ
+    `gpt-oss-safeguard-120b` โดย OpenClaw จะตั้งค่า `reasoning: true` โดยอัตโนมัติ
+    สำหรับโมเดลที่ตรงกันระหว่างการค้นพบ
   </Accordion>
 
-  <Accordion title="Endpoint ไม่พร้อมใช้งาน">
-    หาก endpoint ของ Mantle ไม่พร้อมใช้งานหรือไม่ส่งคืนโมเดล provider จะถูก
-    ข้ามไปแบบเงียบ ๆ OpenClaw จะไม่แสดงข้อผิดพลาด; provider อื่นที่กำหนดค่าไว้
-    จะยังทำงานได้ตามปกติ
+  <Accordion title="ตำแหน่งข้อมูลไม่พร้อมใช้งาน">
+    หากตำแหน่งข้อมูล Mantle ไม่พร้อมใช้งาน ไม่ส่งคืนโมเดล หรือการแก้ไข
+    bearer token ล้มเหลว การค้นพบจะคืนผลลัพธ์ว่างและข้ามผู้ให้บริการ
+    โดยนัย OpenClaw จะไม่แสดงข้อผิดพลาด และผู้ให้บริการอื่นที่กำหนดค่าไว้
+    จะยังคงทำงานตามปกติ
   </Accordion>
 
-  <Accordion title="Claude Opus 4.7 ผ่านเส้นทาง Anthropic Messages">
-    Mantle ยังเปิดเผยเส้นทาง Anthropic Messages ที่ส่งผ่านโมเดล Claude ผ่านเส้นทาง streaming ที่รับรองตัวตนด้วย bearer เดียวกัน Claude Opus 4.7 (`amazon-bedrock-mantle/claude-opus-4.7`) สามารถเรียกผ่านเส้นทางนี้ด้วย streaming ที่ provider เป็นเจ้าของ ดังนั้น AWS bearer token จะไม่ถูกปฏิบัติเหมือน Anthropic API keys
+  <Accordion title="Claude ผ่านเส้นทาง Anthropic Messages">
+    เมื่อการค้นพบอัตโนมัติเป็นเจ้าของรายการโมเดล OpenClaw จะเพิ่มโมเดล Claude
+    สี่รายการหลังจากค้นหาสำเร็จ ไม่ว่า `/v1/models` จะส่งคืนอะไร:
+    `amazon-bedrock-mantle/anthropic.claude-sonnet-5` (Claude Sonnet 5),
+    `amazon-bedrock-mantle/anthropic.claude-opus-4-7` (Claude Opus 4.7) และ
+    `amazon-bedrock-mantle/anthropic.claude-mythos-5` (Claude Mythos 5) รวมถึง
+    `amazon-bedrock-mantle/anthropic.claude-mythos-preview` (Claude Mythos
+    Preview) โมเดลเหล่านี้ใช้อินเทอร์เฟซ API `anthropic-messages` และสตรีมผ่าน
+    ตำแหน่งข้อมูลที่เข้ากันได้กับ Anthropic ซึ่งยืนยันตัวตนด้วย bearer token เดียวกัน
+    (`<mantle-base>/anthropic`) ดังนั้น bearer token ของ AWS จึงไม่ถูกใช้เสมือนเป็น
+    คีย์ API ของ Anthropic
 
-    เมื่อคุณ pin โมเดล Anthropic Messages บน Mantle provider OpenClaw จะใช้พื้นผิว API `anthropic-messages` แทน `openai-completions` สำหรับโมเดลนั้น การรับรองตัวตนยังคงมาจาก `AWS_BEARER_TOKEN_BEDROCK` (หรือ IAM bearer token ที่ออกให้)
+    Claude Sonnet 5 ใช้การคิดแบบปรับตัวเสมอ และมีค่าเริ่มต้นของระดับความพยายามเป็น `high`
+    `/think off` และ `/think minimal` จะถูกแมปเป็น `low` เนื่องจากเส้นทาง Mantle
+    ไม่สามารถปิดการคิดได้ นอกจากนี้ OpenClaw ยังละเว้นค่า temperature แบบกำหนดเองสำหรับ
+    คำขอของ Sonnet 5
 
-    ```json5
-    {
-      models: {
-        providers: {
-          "amazon-bedrock-mantle": {
-            models: [
-              {
-                id: "claude-opus-4.7",
-                name: "Claude Opus 4.7",
-                api: "anthropic-messages",
-                reasoning: true,
-                input: ["text", "image"],
-                contextWindow: 1000000,
-                maxTokens: 32000,
-              },
-            ],
-          },
-        },
-      },
-    }
-    ```
+    Claude Mythos 5 จำกัดการเข้าถึง โดยเผยแพร่หน้าต่างบริบทขนาด 1,000,000 โทเค็น
+    และขีดจำกัดเอาต์พุต 128,000 โทเค็น ใช้การคิดแบบปรับตัวเสมอ แมป
+    `/think off` และ `/think minimal` เป็น `low` และละเว้น
+    พารามิเตอร์การสุ่มตัวอย่างที่ผู้เรียกเลือก
+
+    Claude Mythos Preview ขอใช้การให้เหตุผลเสมอ โดยมีค่าเริ่มต้นของระดับความพยายามเป็น `high`
+    เมื่อไม่ได้ตั้งค่าระดับ `/think` (แมป `xhigh`/`max` ลงเป็น
+    `high` และ `minimal` ขึ้นเป็น `low`) Opus 4.7 บน Mantle สตรีมโดยไม่มี
+    การให้เหตุผลที่โมเดลส่งมา และ OpenClaw จะละเว้นพารามิเตอร์ `temperature`
+    เนื่องจาก Opus 4.7 ไม่ยอมรับการเขียนทับการสุ่มตัวอย่างบนเส้นทางนี้ ส่วน Mythos
+    Preview ยอมรับการเขียนทับ `temperature` ตามปกติ
+
+    รายการ `models.providers["amazon-bedrock-mantle"].models` ที่ระบุอย่างชัดเจน
+    และไม่ว่างจะแทนที่แค็ตตาล็อกที่ค้นพบทั้งหมด ละเว้นรายการดังกล่าวเมื่อคุณ
+    ต้องการใช้รายการ Claude ในตัวเหล่านี้
 
   </Accordion>
 
-  <Accordion title="ความสัมพันธ์กับ Amazon Bedrock provider">
-    Bedrock Mantle เป็น provider แยกต่างหากจาก provider
-    [Amazon Bedrock](/th/providers/bedrock) มาตรฐาน Mantle ใช้พื้นผิว `/v1`
-    ที่เข้ากันได้กับ OpenAI ขณะที่ provider Bedrock มาตรฐานใช้
-    API ของ Bedrock แบบ native
+  <Accordion title="ความสัมพันธ์กับผู้ให้บริการ Amazon Bedrock">
+    Bedrock Mantle เป็นผู้ให้บริการที่แยกจากผู้ให้บริการมาตรฐาน
+    [Amazon Bedrock](/th/providers/bedrock) โดย Mantle ใช้อินเทอร์เฟซ `/v1`
+    ที่เข้ากันได้กับ OpenAI สำหรับแค็ตตาล็อก OSS ขณะที่ผู้ให้บริการ Bedrock
+    มาตรฐานใช้ Bedrock Converse API แบบเนทีฟ
 
-    provider ทั้งสองใช้ข้อมูลประจำตัว `AWS_BEARER_TOKEN_BEDROCK` ร่วมกันเมื่อ
-    มีอยู่
+    ผู้ให้บริการทั้งสองใช้ข้อมูลประจำตัว `AWS_BEARER_TOKEN_BEDROCK` เดียวกัน
+    เมื่อมีการตั้งค่าไว้
 
   </Accordion>
 </AccordionGroup>
 
-## ที่เกี่ยวข้อง
+## เนื้อหาที่เกี่ยวข้อง
 
 <CardGroup cols={2}>
   <Card title="Amazon Bedrock" href="/th/providers/bedrock" icon="cloud">
-    provider Bedrock แบบ native สำหรับ Anthropic Claude, Titan และโมเดลอื่น ๆ
+    ผู้ให้บริการ Bedrock แบบเนทีฟสำหรับ Anthropic Claude, Titan และโมเดลอื่น
   </Card>
   <Card title="การเลือกโมเดล" href="/th/concepts/model-providers" icon="layers">
-    การเลือก provider, model refs และพฤติกรรม failover
+    การเลือกผู้ให้บริการ การอ้างอิงโมเดล และลักษณะการทำงานเมื่อสลับไปใช้ระบบสำรอง
   </Card>
-  <Card title="OAuth และการรับรองตัวตน" href="/th/gateway/authentication" icon="key">
-    รายละเอียดการรับรองตัวตนและกฎการใช้ข้อมูลประจำตัวซ้ำ
+  <Card title="OAuth และการยืนยันตัวตน" href="/th/gateway/authentication" icon="key">
+    รายละเอียดการยืนยันตัวตนและกฎการนำข้อมูลประจำตัวกลับมาใช้ซ้ำ
   </Card>
   <Card title="การแก้ไขปัญหา" href="/th/help/troubleshooting" icon="wrench">
-    ปัญหาทั่วไปและวิธีแก้ไข
+    ปัญหาที่พบบ่อยและวิธีแก้ไข
   </Card>
 </CardGroup>

@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Anda sedang menginstal, mengonfigurasi, atau mengaudit Plugin zalo
+    - Anda sedang menginstal, mengonfigurasi, atau mengaudit plugin zalo
 summary: Plugin saluran Zalo OpenClaw untuk obrolan bot dan webhook.
 title: Plugin Zalo
 x-i18n:
-    generated_at: "2026-06-27T17:58:08Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:33:25Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: ff9da1e1591eaad36db74a27f817dd9dac8791af2d5030fcd3419ee50d2ed4aa
@@ -15,16 +15,16 @@ x-i18n:
 
 # Plugin Zalo
 
-Plugin kanal Zalo OpenClaw untuk percakapan bot dan webhook.
+Plugin saluran Zalo OpenClaw untuk percakapan bot dan webhook.
 
 ## Distribusi
 
 - Paket: `@openclaw/zalo`
-- Rute pemasangan: npm; ClawHub
+- Jalur instalasi: npm; ClawHub
 
 ## Permukaan
 
-channels: zalo
+saluran: zalo
 
 ## Dokumentasi terkait
 

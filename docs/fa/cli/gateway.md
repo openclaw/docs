@@ -1,59 +1,50 @@
 ---
 read_when:
-    - اجرای Gateway از CLI (توسعه یا سرورها)
-    - اشکال‌زدایی احراز هویت Gateway، حالت‌های اتصال، و اتصال‌پذیری
-    - کشف Gatewayها از طریق Bonjour (DNS-SD محلی + گسترده)
+    - اجرای Gateway از طریق CLI (محیط توسعه یا سرورها)
+    - اشکال‌زدایی احراز هویت Gateway، حالت‌های اتصال و ارتباط‌پذیری
+    - کشف Gatewayها از طریق Bonjour (محلی + DNS-SD گسترده)
 sidebarTitle: Gateway
-summary: OpenClaw Gateway CLI (`openclaw gateway`) — Gatewayها را اجرا، پرس‌وجو و کشف کنید
+summary: CLI Gateway در OpenClaw (`openclaw gateway`) — اجرا، پرس‌وجو و کشف Gatewayها
 title: Gateway
 x-i18n:
-    generated_at: "2026-07-01T08:20:17Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:50:26Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 80f329ebd154f6fd0e87869c498c58fc6d5276a21934f8a36837653bd68a2d22
+    source_hash: 75f8f4bebe585b213f486f08bf20015aeb89ca4d179f6d96c1008ec9d1cd00ea
     source_path: cli/gateway.md
     workflow: 16
 ---
 
-Gateway سرور WebSocket در OpenClaw است (کانال‌ها، گره‌ها، نشست‌ها، hookها). زیر‌دستورهای این صفحه زیر `openclaw gateway …` قرار دارند.
+Gateway سرور WebSocket در OpenClaw است (کانال‌ها، Nodeها، نشست‌ها، هوک‌ها). همهٔ زیرفرمان‌های زیر در `openclaw gateway ...` قرار دارند.
 
 <CardGroup cols={3}>
-  <Card title="Bonjour discovery" href="/fa/gateway/bonjour">
+  <Card title="کشف Bonjour" href="/fa/gateway/bonjour">
     راه‌اندازی mDNS محلی + DNS-SD گسترده.
   </Card>
-  <Card title="Discovery overview" href="/fa/gateway/discovery">
-    OpenClaw چگونه Gatewayها را اعلام و پیدا می‌کند.
+  <Card title="نمای کلی کشف" href="/fa/gateway/discovery">
+    نحوهٔ معرفی و یافتن Gatewayها توسط OpenClaw.
   </Card>
-  <Card title="Configuration" href="/fa/gateway/configuration">
-    کلیدهای پیکربندی Gateway در سطح بالا.
+  <Card title="پیکربندی" href="/fa/gateway/configuration">
+    کلیدهای سطح‌بالای پیکربندی Gateway.
   </Card>
 </CardGroup>
 
 ## اجرای Gateway
 
-یک فرایند Gateway محلی را اجرا کنید:
-
 ```bash
 openclaw gateway
-```
-
-نام مستعار پیش‌زمینه:
-
-```bash
-openclaw gateway run
+openclaw gateway run   # شکل صریح و معادل
 ```
 
 <AccordionGroup>
-  <Accordion title="Startup behavior">
-    - به‌طور پیش‌فرض، Gateway شروع به کار نمی‌کند مگر اینکه `gateway.mode=local` در `~/.openclaw/openclaw.json` تنظیم شده باشد. برای اجراهای موقت/توسعه‌ای از `--allow-unconfigured` استفاده کنید.
-    - انتظار می‌رود `openclaw onboard --mode local` و `openclaw setup` مقدار `gateway.mode=local` را بنویسند. اگر فایل وجود دارد اما `gateway.mode` در آن نیست، آن را به‌عنوان پیکربندی خراب یا بازنویسی‌شده در نظر بگیرید و به‌جای فرض ضمنی حالت محلی، آن را تعمیر کنید.
-    - اگر فایل وجود دارد و `gateway.mode` در آن نیست، Gateway این را آسیب مشکوک به پیکربندی تلقی می‌کند و برای شما «حالت محلی را حدس» نمی‌زند.
-    - اتصال فراتر از loopback بدون احراز هویت مسدود می‌شود (حفاظ ایمنی).
-    - `lan`، `tailnet` و `custom` در حال حاضر از مسیرهای BYOH فقط IPv4 حل می‌شوند.
-    - BYOH فقط IPv6 امروز به‌صورت بومی در این مسیر پشتیبانی نمی‌شود. اگر خود میزبان فقط IPv6 است، از یک sidecar یا proxy مبتنی بر IPv4 استفاده کنید.
-    - `SIGUSR1` در صورت مجاز بودن، بازراه‌اندازی درون‌فرایندی را فعال می‌کند (`commands.restart` به‌طور پیش‌فرض فعال است؛ برای مسدود کردن بازراه‌اندازی دستی، `commands.restart: false` را تنظیم کنید، در حالی که اعمال/به‌روزرسانی ابزار/پیکربندی Gateway همچنان مجاز می‌ماند).
-    - handlerهای `SIGINT`/`SIGTERM` فرایند Gateway را متوقف می‌کنند، اما هیچ وضعیت سفارشی ترمینال را بازیابی نمی‌کنند. اگر CLI را با TUI یا ورودی raw-mode پوشش می‌دهید، پیش از خروج ترمینال را بازیابی کنید.
+  <Accordion title="رفتار هنگام راه‌اندازی">
+    - تا زمانی که `gateway.mode=local` در `~/.openclaw/openclaw.json` تنظیم نشده باشد، از شروع خودداری می‌کند. برای اجراهای موقت/توسعه از `--allow-unconfigured` استفاده کنید؛ این گزینه بدون نوشتن یا ترمیم پیکربندی، بررسی محافظ را دور می‌زند.
+    - `openclaw onboard --mode local` و `openclaw setup` مقدار `gateway.mode=local` را می‌نویسند. اگر فایل پیکربندی وجود داشته باشد اما `gateway.mode` در آن نباشد، پیکربندی آسیب‌دیده/بازنویسی‌شده تلقی می‌شود و Gateway از حدس‌زدن مقدار `local` برای شما خودداری می‌کند — فرایند راه‌اندازی اولیه را دوباره اجرا کنید، کلید را دستی تنظیم کنید، یا `--allow-unconfigured` را بدهید.
+    - اتصال به محدوده‌ای فراتر از loopback بدون احراز هویت مسدود می‌شود.
+    - مقادیر `lan`،‏ `tailnet` و `custom` برای `--bind` در حال حاضر فقط از مسیرهای IPv4 تفکیک می‌شوند؛ راه‌اندازی‌های میزبان سفارشیِ صرفاً IPv6 به یک سرویس جانبی IPv4 یا پراکسی در جلوی Gateway نیاز دارند.
+    - در صورت مجاز بودن، `SIGUSR1` راه‌اندازی مجدد درون‌فرایندی را فعال می‌کند. `commands.restart` (پیش‌فرض: فعال) دریافت `SIGUSR1` از بیرون را کنترل می‌کند؛ برای مسدودکردن راه‌اندازی مجدد دستی از طریق سیگنال سیستم‌عامل، در حالی که راه‌اندازی مجدد از طریق فرمان `gateway restart`، ابزار Gateway و اعمال/به‌روزرسانی پیکربندی همچنان مجاز است، آن را روی `false` تنظیم کنید.
+    - `SIGINT`/`SIGTERM` فرایند را متوقف می‌کنند، اما وضعیت سفارشی ترمینال را بازیابی نمی‌کنند — اگر CLI را در یک TUI یا ورودی حالت خام بسته‌بندی می‌کنید، پیش از خروج خودتان ترمینال را بازیابی کنید.
 
   </Accordion>
 </AccordionGroup>
@@ -61,112 +52,118 @@ openclaw gateway run
 ### گزینه‌ها
 
 <ParamField path="--port <port>" type="number">
-  پورت WebSocket (پیش‌فرض از پیکربندی/env می‌آید؛ معمولاً `18789`).
+  درگاه WebSocket (مقدار پیش‌فرض از پیکربندی/متغیر محیطی؛ معمولاً `18789`).
 </ParamField>
-<ParamField path="--bind <loopback|lan|tailnet|auto|custom>" type="string">
-  حالت bind شنونده. `lan`، `tailnet` و `custom` در حال حاضر از مسیرهای فقط IPv4 حل می‌شوند.
-</ParamField>
-<ParamField path="--auth <token|password>" type="string">
-  بازنویسی حالت احراز هویت.
+<ParamField path="--bind <mode>" type="string">
+  حالت اتصال: `loopback` (پیش‌فرض)، `lan`،‏ `tailnet`،‏ `auto`،‏ `custom`.
 </ParamField>
 <ParamField path="--token <token>" type="string">
-  بازنویسی توکن (همچنین `OPENCLAW_GATEWAY_TOKEN` را برای فرایند تنظیم می‌کند).
+  توکن مشترک برای `connect.params.auth.token`. در صورت تنظیم، مقدار پیش‌فرض از `OPENCLAW_GATEWAY_TOKEN` گرفته می‌شود.
+</ParamField>
+<ParamField path="--auth <mode>" type="string">
+  حالت احراز هویت: `none`،‏ `token`،‏ `password`،‏ `trusted-proxy`.
 </ParamField>
 <ParamField path="--password <password>" type="string">
-  بازنویسی گذرواژه.
+  گذرواژه برای `--auth password`.
 </ParamField>
 <ParamField path="--password-file <path>" type="string">
-  گذرواژه Gateway را از یک فایل بخوانید.
+  خواندن گذرواژهٔ Gateway از یک فایل.
 </ParamField>
-<ParamField path="--tailscale <off|serve|funnel>" type="string">
-  Gateway را از طریق Tailscale در دسترس قرار دهید.
+<ParamField path="--tailscale <mode>" type="string">
+  نحوهٔ در معرض قرار دادن Tailscale: `off`،‏ `serve`،‏ `funnel`.
 </ParamField>
 <ParamField path="--tailscale-reset-on-exit" type="boolean">
-  پیکربندی serve/funnel مربوط به Tailscale را هنگام خاموشی بازنشانی کنید.
-</ParamField>
-<ParamField path="--bind custom + gateway.customBindHost" type="string">
-  امروز انتظار یک نشانی IPv4 دارد. برای BYOH فقط IPv6، یک sidecar یا proxy مبتنی بر IPv4 جلوی Gateway قرار دهید و OpenClaw را به آن endpoint مبتنی بر IPv4 اشاره دهید.
+  بازنشانی پیکربندی serve/funnel در Tailscale هنگام خاموش‌شدن.
 </ParamField>
 <ParamField path="--allow-unconfigured" type="boolean">
-  اجازه می‌دهد Gateway بدون `gateway.mode=local` در پیکربندی شروع شود. فقط برای راه‌اندازی موقت/توسعه‌ای از حفاظ شروع به کار عبور می‌کند؛ فایل پیکربندی را نمی‌نویسد یا تعمیر نمی‌کند.
+  شروع بدون الزام `gateway.mode=local`. فقط برای راه‌اندازی موقت/توسعه؛ پیکربندی را ذخیره یا ترمیم نمی‌کند.
 </ParamField>
 <ParamField path="--dev" type="boolean">
-  اگر موجود نباشد، پیکربندی توسعه + workspace بسازید (`BOOTSTRAP.md` را رد می‌کند).
+  در صورت نبود، پیکربندی توسعه + فضای کاری ایجاد می‌کند (`BOOTSTRAP.md` را نادیده می‌گیرد).
 </ParamField>
 <ParamField path="--reset" type="boolean">
-  پیکربندی توسعه + اعتبارنامه‌ها + نشست‌ها + workspace را بازنشانی کنید (به `--dev` نیاز دارد).
+  بازنشانی پیکربندی توسعه، اطلاعات اعتبارسنجی، نشست‌ها و فضای کاری. به `--dev` نیاز دارد.
 </ParamField>
 <ParamField path="--force" type="boolean">
-  پیش از شروع، هر شنونده موجود روی پورت انتخاب‌شده را خاتمه دهید.
+  پیش از شروع، هر شنوندهٔ موجود روی درگاه مقصد را متوقف می‌کند.
 </ParamField>
 <ParamField path="--verbose" type="boolean">
-  لاگ‌های مفصل.
+  ثبت گزارش تفصیلی در stdout/stderr.
 </ParamField>
 <ParamField path="--cli-backend-logs" type="boolean">
-  فقط لاگ‌های backend مربوط به CLI را در کنسول نشان دهید (و stdout/stderr را فعال کنید).
+  فقط گزارش‌های بخش پشتی CLI را در کنسول نمایش می‌دهد (stdout/stderr را نیز فعال می‌کند).
 </ParamField>
-<ParamField path="--ws-log <auto|full|compact>" type="string" default="auto">
-  سبک لاگ WebSocket.
+<ParamField path="--ws-log <style>" type="string" default="auto">
+  سبک گزارش WebSocket: `auto`،‏ `full`،‏ `compact`.
 </ParamField>
 <ParamField path="--compact" type="boolean">
-  نام مستعار برای `--ws-log compact`.
+  نام مستعار `--ws-log compact`.
 </ParamField>
 <ParamField path="--raw-stream" type="boolean">
-  رویدادهای خام جریان مدل را در jsonl لاگ کنید.
+  ثبت رویدادهای خام جریان مدل در JSONL.
 </ParamField>
 <ParamField path="--raw-stream-path <path>" type="string">
-  مسیر jsonl جریان خام.
+  مسیر JSONL جریان خام.
 </ParamField>
 
-## بازراه‌اندازی Gateway
+`--claude-cli-logs` نام مستعار منسوخ‌شدهٔ `--cli-backend-logs` است.
+
+برای `--bind custom`، مقدار `gateway.customBindHost` را روی یک نشانی IPv4 تنظیم کنید. هر نشانی به‌جز `127.0.0.1` یا `0.0.0.0` برای کلاینت‌های همان میزبان، به `127.0.0.1` روی همان درگاه نیز نیاز دارد؛ اگر هرکدام از شنونده‌ها نتواند متصل شود، راه‌اندازی ناموفق خواهد بود. نویسهٔ عام `0.0.0.0` نام مستعار الزامی جداگانه‌ای اضافه نمی‌کند. راه‌اندازی‌های میزبان سفارشیِ صرفاً IPv6 به یک سرویس جانبی IPv4 یا پراکسی در جلوی Gateway نیاز دارند.
+
+## راه‌اندازی مجدد Gateway
 
 ```bash
 openclaw gateway restart
 openclaw gateway restart --safe
 openclaw gateway restart --safe --skip-deferral
 openclaw gateway restart --force
+openclaw gateway restart --wait 30s
 ```
 
-`openclaw gateway restart --safe` از Gateway در حال اجرا می‌خواهد کار فعال را پیش‌بررسی کند و پس از تخلیه کار فعال، یک بازراه‌اندازی ادغام‌شده زمان‌بندی کند. بازراه‌اندازی امن پیش‌فرض تا سقف `gateway.reload.deferralTimeoutMs` پیکربندی‌شده برای کار فعال منتظر می‌ماند (پیش‌فرض ۵ دقیقه)؛ وقتی این بودجه تمام شود، بازراه‌اندازی اجباری می‌شود. برای انتظار امن نامحدود که هرگز اجبار نمی‌کند، `gateway.reload.deferralTimeoutMs` را روی `0` تنظیم کنید. `restart` ساده رفتار موجود service-manager را نگه می‌دارد؛ `--force` همچنان مسیر بازنویسی فوری است.
+`--safe` از Gateway در حال اجرا می‌خواهد کارهای فعال را پیش‌بررسی کند و پس از تخلیهٔ آن کارها، یک راه‌اندازی مجدد تجمیع‌شده را زمان‌بندی کند. انتظار با `gateway.reload.deferralTimeoutMs` محدود می‌شود (پیش‌فرض: ۵ دقیقه / `300000`)؛ پس از پایان مهلت، راه‌اندازی مجدد به‌اجبار انجام می‌شود. برای انتظار نامحدود (همراه با هشدارهای دوره‌ای دربارهٔ ادامهٔ انتظار) به‌جای اجبار، مقدار `deferralTimeoutMs: 0` را تنظیم کنید. `--safe` را نمی‌توان با `--force` یا `--wait` ترکیب کرد.
 
-`openclaw gateway restart --safe --skip-deferral` همان بازراه‌اندازی هماهنگ و آگاه از OpenClaw را مانند `--safe` اجرا می‌کند، اما از gate تعویق کار فعال عبور می‌کند تا Gateway حتی وقتی مسدودکننده‌ها گزارش شده‌اند، بازراه‌اندازی را فوراً منتشر کند. وقتی یک تعویق توسط اجرای کار گیرکرده ثابت مانده و `--safe` به‌تنهایی ممکن است با `gateway.reload.deferralTimeoutMs` محدود شود، از آن به‌عنوان مسیر خروج اضطراری operator استفاده کنید. `--skip-deferral` به `--safe` نیاز دارد.
+`--skip-deferral` در یک راه‌اندازی مجدد امن، دروازهٔ تعویق کارهای فعال را دور می‌زند؛ بنابراین Gateway حتی در صورت گزارش موانع، فوراً راه‌اندازی مجدد می‌شود. این گزینه به `--safe` نیاز دارد — زمانی از آن استفاده کنید که تعویق روی یک وظیفهٔ مهارنشده گیر کرده باشد.
+
+`--wait <duration>` مهلت تخلیه را برای یک راه‌اندازی مجدد عادی (غیرامن) بازنویسی می‌کند. میلی‌ثانیهٔ بدون پسوند یا پسوندهای واحد `ms`،‏ `s`،‏ `m`،‏ `h`،‏ `d` را می‌پذیرد (برای نمونه `30s`،‏ `5m`،‏ `1h30m`)؛ `--wait 0` به‌طور نامحدود منتظر می‌ماند. با `--force` یا `--safe` سازگار نیست.
+
+`--force` تخلیهٔ کارهای فعال را نادیده می‌گیرد و فوراً راه‌اندازی مجدد می‌کند. `restart` عادی (بدون پرچم) رفتار موجود راه‌اندازی مجددِ مدیر سرویس را حفظ می‌کند.
 
 <Warning>
-`--password` درون‌خطی می‌تواند در فهرست‌های فرایند محلی آشکار شود. `--password-file`، env یا `gateway.auth.password` پشتیبانی‌شده با SecretRef را ترجیح دهید.
+گذرواژهٔ درون‌خطی `--password` ممکن است در فهرست فرایندهای محلی آشکار شود. استفاده از `--password-file`، متغیر محیطی، یا `gateway.auth.password` مبتنی بر SecretRef را ترجیح دهید.
 </Warning>
 
 ### پروفایل‌گیری Gateway
 
-- `OPENCLAW_GATEWAY_STARTUP_TRACE=1` را تنظیم کنید تا زمان‌بندی فازها هنگام شروع Gateway لاگ شود، از جمله تأخیر `eventLoopMax` برای هر فاز و زمان‌بندی‌های جدول lookup مربوط به Plugin برای installed-index، رجیستری manifest، برنامه‌ریزی شروع، و کار owner-map.
-- `OPENCLAW_GATEWAY_RESTART_TRACE=1` را تنظیم کنید تا خط‌های `restart trace:` محدود به بازراه‌اندازی برای مدیریت سیگنال بازراه‌اندازی، تخلیه کار فعال، فازهای خاموشی، شروع بعدی، زمان آماده‌بودن، و معیارهای حافظه لاگ شوند.
-- `OPENCLAW_DIAGNOSTICS=timeline` را همراه با `OPENCLAW_DIAGNOSTICS_TIMELINE_PATH=<path>` تنظیم کنید تا یک timeline تشخیصی JSONL به‌صورت best-effort برای شروع، مخصوص harnessهای QA خارجی نوشته شود. همچنین می‌توانید flag را با `diagnostics.flags: ["timeline"]` در پیکربندی فعال کنید؛ مسیر همچنان از env فراهم می‌شود. برای گنجاندن نمونه‌های event-loop، `OPENCLAW_DIAGNOSTICS_EVENT_LOOP=1` را اضافه کنید.
-- ابتدا `pnpm build` را اجرا کنید، سپس `pnpm test:startup:gateway -- --runs 5 --warmup 1` را اجرا کنید تا شروع Gateway را در برابر entry ساخته‌شده CLI benchmark کنید. benchmark نخستین خروجی فرایند، `/healthz`، `/readyz`، زمان‌بندی‌های startup trace، تأخیر event-loop و جزئیات زمان‌بندی جدول lookup مربوط به Plugin را ثبت می‌کند.
-- ابتدا `pnpm build` را اجرا کنید، سپس `pnpm test:restart:gateway -- --case skipChannels --runs 1 --restarts 5` را اجرا کنید تا بازراه‌اندازی درون‌فرایندی Gateway را در برابر entry ساخته‌شده CLI روی macOS یا Linux benchmark کنید. benchmark بازراه‌اندازی از SIGUSR1 استفاده می‌کند، هر دو trace شروع و بازراه‌اندازی را در فرایند فرزند فعال می‌کند، و `/healthz` بعدی، `/readyz` بعدی، downtime، زمان آماده‌بودن، CPU، RSS و معیارهای restart trace را ثبت می‌کند.
-- `/healthz` را به‌عنوان liveness و `/readyz` را به‌عنوان آمادگی قابل استفاده در نظر بگیرید. خط‌های trace و خروجی benchmark برای انتساب مالکیت هستند؛ یک span از trace یا یک نمونه را نتیجه کامل عملکردی تلقی نکنید.
+- `OPENCLAW_GATEWAY_STARTUP_TRACE=1` زمان‌بندی مرحله‌ها را هنگام راه‌اندازی ثبت می‌کند، از جمله تأخیر `eventLoopMax` هر مرحله و زمان‌بندی جدول جست‌وجوی Pluginها (نمایهٔ نصب‌شده، رجیستری مانیفست، برنامه‌ریزی راه‌اندازی، کارهای نگاشت مالک).
+- `OPENCLAW_GATEWAY_RESTART_TRACE=1` خطوط `restart trace:` محدود به راه‌اندازی مجدد را ثبت می‌کند: مدیریت سیگنال، تخلیهٔ کارهای فعال، مرحله‌های خاموش‌سازی، شروع بعدی، زمان آماده‌شدن و معیارهای حافظه.
+- `OPENCLAW_DIAGNOSTICS=timeline` همراه با `OPENCLAW_DIAGNOSTICS_TIMELINE_PATH=<path>` یک خط زمانی تشخیصی راه‌اندازی با قالب JSONL و بر مبنای بیشترین تلاش ممکن برای چارچوب‌های QA خارجی می‌نویسد (معادل پیکربندی `diagnostics.flags: ["timeline"]`؛ مسیر همچنان فقط از طریق متغیر محیطی تعیین می‌شود). برای افزودن نمونه‌های حلقهٔ رویداد، `OPENCLAW_DIAGNOSTICS_EVENT_LOOP=1` را اضافه کنید.
+- اجرای `pnpm build` و سپس `pnpm test:startup:gateway -- --runs 5 --warmup 1` راه‌اندازی Gateway را با نقطهٔ ورود CLI ساخته‌شده محک می‌زند: نخستین خروجی فرایند، `/healthz`،‏ `/readyz`، زمان‌بندی ردگیری راه‌اندازی، تأخیر حلقهٔ رویداد و زمان‌بندی جدول جست‌وجوی Plugin.
+- اجرای `pnpm build` و سپس `pnpm test:restart:gateway -- --case skipChannels --runs 1 --restarts 5` راه‌اندازی مجدد درون‌فرایندی را روی macOS یا Linux محک می‌زند (در Windows پشتیبانی نمی‌شود؛ راه‌اندازی مجدد به `SIGUSR1` نیاز دارد). از `SIGUSR1` استفاده می‌کند، هر دو ردگیری را در فرایند فرزند فعال می‌کند و `/healthz` بعدی، `/readyz` بعدی، مدت ازکارافتادگی، زمان آماده‌شدن، CPU،‏ RSS و معیارهای ردگیری راه‌اندازی مجدد را ثبت می‌کند.
+- `/healthz` نشان‌دهندهٔ زنده‌بودن است؛ `/readyz` نشان‌دهندهٔ آمادگی قابل‌استفاده است. خطوط ردگیری و خروجی محک را نشانه‌ای برای انتساب به مالک در نظر بگیرید، نه نتیجه‌گیری کامل دربارهٔ کارایی بر اساس یک بازه یا نمونه.
 
-## پرس‌وجو از Gateway در حال اجرا
+## پرس‌وجو از یک Gateway در حال اجرا
 
-همه دستورهای پرس‌وجو از WebSocket RPC استفاده می‌کنند.
+همهٔ فرمان‌های پرس‌وجو از RPC مبتنی بر WebSocket استفاده می‌کنند.
 
 <Tabs>
-  <Tab title="Output modes">
+  <Tab title="حالت‌های خروجی">
     - پیش‌فرض: خوانا برای انسان (رنگی در TTY).
-    - `--json`: JSON قابل خواندن توسط ماشین (بدون styling/spinner).
-    - `--no-color` (یا `NO_COLOR=1`): ANSI را غیرفعال می‌کند و چیدمان انسانی را حفظ می‌کند.
+    - `--json`:‏ JSON قابل‌خواندن برای ماشین (بدون سبک‌دهی/نشانگر چرخان).
+    - `--no-color` (یا `NO_COLOR=1`): غیرفعال‌کردن ANSI با حفظ چیدمان خوانا برای انسان.
 
   </Tab>
-  <Tab title="Shared options">
-    - `--url <url>`: URL مربوط به WebSocket در Gateway.
+  <Tab title="گزینه‌های مشترک">
+    - `--url <url>`: نشانی WebSocket مربوط به Gateway.
     - `--token <token>`: توکن Gateway.
-    - `--password <password>`: گذرواژه Gateway.
-    - `--timeout <ms>`: timeout/بودجه (بسته به دستور متفاوت است).
-    - `--expect-final`: منتظر پاسخ «final» بمانید (فراخوانی‌های agent).
+    - `--password <password>`: گذرواژهٔ Gateway.
+    - `--timeout <ms>`: مهلت/بودجهٔ زمانی (پیش‌فرض برای هر فرمان متفاوت است؛ توضیحات هر فرمان را در ادامه ببینید).
+    - `--expect-final`: انتظار برای پاسخ «نهایی» (فراخوانی‌های عامل).
 
   </Tab>
 </Tabs>
 
 <Note>
-وقتی `--url` را تنظیم می‌کنید، CLI به اعتبارنامه‌های پیکربندی یا محیط fallback نمی‌کند. `--token` یا `--password` را صریحاً پاس دهید. نبود اعتبارنامه‌های صریح خطاست.
+وقتی `--url` را تنظیم می‌کنید، CLI برای اطلاعات اعتبارسنجی به پیکربندی یا متغیرهای محیطی بازنمی‌گردد. `--token` یا `--password` را صریحاً وارد کنید. نبود اطلاعات اعتبارسنجی صریح خطا است.
 </Note>
 
 ### `gateway health`
@@ -176,15 +173,15 @@ openclaw gateway health --url ws://127.0.0.1:18789
 openclaw gateway health --port 18789
 ```
 
-endpoint HTTP به نام `/healthz` یک probe برای liveness است: وقتی سرور بتواند به HTTP پاسخ دهد، برمی‌گردد. endpoint HTTP به نام `/readyz` سخت‌گیرانه‌تر است و تا زمانی که sidecarهای Plugin شروع، کانال‌ها، یا hookهای پیکربندی‌شده هنوز در حال تثبیت هستند، قرمز می‌ماند. پاسخ‌های readiness محلی یا احراز هویت‌شده و جزئی شامل یک بلوک تشخیصی `eventLoop` با تأخیر event-loop، بهره‌برداری event-loop، نسبت هسته CPU، و flag به نام `degraded` هستند.
+`/healthz` یک کاوشگر زنده‌بودن است: به‌محض اینکه سرور بتواند به HTTP پاسخ دهد، برمی‌گردد. `/readyz` سخت‌گیرانه‌تر است و تا زمانی که سرویس‌های جانبی Plugin، کانال‌ها یا هوک‌های پیکربندی‌شدهٔ راه‌اندازی هنوز در حال پایدارشدن باشند، قرمز باقی می‌ماند. پاسخ‌های تفصیلی محلی یا احرازهویت‌شدهٔ `/readyz` شامل یک بلوک تشخیصی `eventLoop` هستند (تأخیر، میزان استفاده، نسبت هستهٔ CPU، پرچم `degraded`).
 
 <ParamField path="--port <port>" type="number">
-  یک Gateway مبتنی بر local loopback را روی این پورت هدف بگیرید. این مقدار `OPENCLAW_GATEWAY_URL` و `OPENCLAW_GATEWAY_PORT` را برای فراخوانی health بازنویسی می‌کند.
+  یک Gateway روی local loopback را در این درگاه هدف قرار می‌دهد. برای این فراخوانی، `OPENCLAW_GATEWAY_URL` و `OPENCLAW_GATEWAY_PORT` را بازنویسی می‌کند.
 </ParamField>
 
 ### `gateway usage-cost`
 
-خلاصه‌های هزینه مصرف را از لاگ‌های نشست دریافت کنید.
+خلاصه‌های هزینهٔ مصرف را از گزارش‌های نشست دریافت می‌کند.
 
 ```bash
 openclaw gateway usage-cost
@@ -195,18 +192,18 @@ openclaw gateway usage-cost --json
 ```
 
 <ParamField path="--days <days>" type="number" default="30">
-  تعداد روزهایی که باید شامل شود.
+  تعداد روزهایی که باید لحاظ شوند.
 </ParamField>
 <ParamField path="--agent <id>" type="string">
-  خلاصه هزینه را به یک id عامل پیکربندی‌شده محدود کنید.
+  محدودهٔ خلاصه را به شناسهٔ یک عامل پیکربندی‌شده محدود می‌کند.
 </ParamField>
 <ParamField path="--all-agents" type="boolean">
-  خلاصه هزینه را در همه عامل‌های پیکربندی‌شده تجمیع کنید. نمی‌تواند با `--agent` ترکیب شود.
+  تجمیع در میان همهٔ عامل‌های پیکربندی‌شده. با `--agent` قابل‌ترکیب نیست.
 </ParamField>
 
 ### `gateway stability`
 
-ضبط‌کننده پایداری تشخیصی اخیر را از یک Gateway در حال اجرا دریافت کنید.
+ثبت‌کنندهٔ اخیر پایداری تشخیصی را از یک Gateway در حال اجرا دریافت می‌کند.
 
 ```bash
 openclaw gateway stability
@@ -217,35 +214,35 @@ openclaw gateway stability --json
 ```
 
 <ParamField path="--limit <limit>" type="number" default="25">
-  حداکثر تعداد رویدادهای اخیر برای گنجاندن (حداکثر `1000`).
+  حداکثر رویدادهای اخیر برای لحاظ‌کردن (حداکثر `1000`).
 </ParamField>
 <ParamField path="--type <type>" type="string">
-  بر اساس نوع رویداد تشخیصی فیلتر کنید، مانند `payload.large` یا `diagnostic.memory.pressure`.
+  پالایش بر اساس نوع رویداد تشخیصی، برای نمونه `payload.large` یا `diagnostic.memory.pressure`.
 </ParamField>
 <ParamField path="--since-seq <seq>" type="number">
-  فقط رویدادهای پس از یک شماره توالی تشخیصی را شامل کنید.
+  فقط رویدادهای پس از یک شمارهٔ توالی تشخیصی را لحاظ می‌کند.
 </ParamField>
 <ParamField path="--bundle [path]" type="string">
-  به‌جای فراخوانی Gateway در حال اجرا، یک bundle پایداری پایدارشده را بخوانید. از `--bundle latest` (یا فقط `--bundle`) برای جدیدترین bundle زیر دایرکتوری state استفاده کنید، یا مستقیماً مسیر JSON مربوط به bundle را پاس دهید.
+  به‌جای فراخوانی Gateway در حال اجرا، یک بستهٔ پایداری ذخیره‌شده را می‌خواند. `--bundle latest` (یا `--bundle` بدون مقدار) جدیدترین بسته را در پوشهٔ وضعیت انتخاب می‌کند؛ همچنین می‌توانید مسیر JSON یک بسته را مستقیماً وارد کنید.
 </ParamField>
 <ParamField path="--export" type="boolean">
-  به‌جای چاپ جزئیات پایداری، یک فایل zip تشخیصی پشتیبانی قابل اشتراک‌گذاری بنویسید.
+  به‌جای چاپ جزئیات پایداری، یک فایل zip تشخیصی قابل‌اشتراک برای پشتیبانی می‌نویسد.
 </ParamField>
 <ParamField path="--output <path>" type="string">
   مسیر خروجی برای `--export`.
 </ParamField>
 
 <AccordionGroup>
-  <Accordion title="Privacy and bundle behavior">
-    - رکوردها metadata عملیاتی را نگه می‌دارند: نام رویدادها، شمارش‌ها، اندازه‌های byte، خوانش‌های حافظه، وضعیت queue/session، idهای تأیید، نام‌های channel/Plugin، و خلاصه‌های نشست redacted. آن‌ها متن chat، بدنه‌های webhook، خروجی‌های ابزار، بدنه‌های خام request یا response، توکن‌ها، cookieها، مقادیر secret، hostnameها، یا idهای خام نشست را نگه نمی‌دارند. برای غیرفعال کردن کامل ضبط‌کننده، `diagnostics.enabled: false` را تنظیم کنید.
-    - هنگام خروج‌های fatal از Gateway، timeoutهای خاموشی، و شکست‌های شروع پس از بازراه‌اندازی، OpenClaw وقتی ضبط‌کننده رویداد دارد همان snapshot تشخیصی را در `~/.openclaw/logs/stability/openclaw-stability-*.json` می‌نویسد. جدیدترین bundle را با `openclaw gateway stability --bundle latest` بررسی کنید؛ `--limit`، `--type` و `--since-seq` نیز روی خروجی bundle اعمال می‌شوند.
+  <Accordion title="حریم خصوصی و رفتار بسته">
+    - رکوردها فرادادهٔ عملیاتی را نگه می‌دارند: نام رویدادها، تعدادها، اندازه‌های بایتی، خوانش‌های حافظه، وضعیت صف/نشست، شناسه‌های تأیید، نام کانال/Plugin و خلاصه‌های ویرایش‌شدهٔ نشست. متن گفت‌وگو، بدنه‌های Webhook، خروجی ابزارها، بدنهٔ خام درخواست/پاسخ، توکن‌ها، کوکی‌ها، مقادیر محرمانه، نام میزبان‌ها و شناسه‌های خام نشست در آن‌ها قرار نمی‌گیرد. برای غیرفعال‌کردن کامل ثبت‌کننده، `diagnostics.enabled: false` را تنظیم کنید.
+    - خروج‌های مرگبار Gateway، پایان مهلت خاموش‌سازی و شکست‌های راه‌اندازی پس از راه‌اندازی مجدد، هنگامی که ثبت‌کننده رویدادی داشته باشد، همان تصویر لحظه‌ای تشخیصی را در `~/.openclaw/logs/stability/openclaw-stability-*.json` می‌نویسند. جدیدترین بسته را با `openclaw gateway stability --bundle latest` بررسی کنید؛ `--limit`،‏ `--type` و `--since-seq` بر خروجی بسته نیز اعمال می‌شوند.
 
   </Accordion>
 </AccordionGroup>
 
 ### `gateway diagnostics export`
 
-یک فایل zip تشخیصی محلی بنویسید که برای پیوست کردن به گزارش‌های bug طراحی شده است. برای مدل حریم خصوصی و محتوای bundle، [Diagnostics Export](/fa/gateway/diagnostics) را ببینید.
+یک فایل zip تشخیصی محلی می‌نویسد که برای گزارش خطا طراحی شده است. برای مدل حریم خصوصی و محتوای بسته، [برون‌بری اطلاعات تشخیصی](/fa/gateway/diagnostics) را ببینید.
 
 ```bash
 openclaw gateway diagnostics export
@@ -254,40 +251,40 @@ openclaw gateway diagnostics export --json
 ```
 
 <ParamField path="--output <path>" type="string">
-  مسیر فایل zip خروجی. پیش‌فرض، یک خروجی پشتیبانی در زیر پوشهٔ وضعیت است.
+  مسیر فایل zip خروجی. به‌طور پیش‌فرض، یک خروجی پشتیبانی در پوشهٔ وضعیت ایجاد می‌شود.
 </ParamField>
 <ParamField path="--log-lines <count>" type="number" default="5000">
-  بیشترین تعداد خط گزارش پاک‌سازی‌شده برای گنجاندن.
+  حداکثر تعداد خطوط پالایش‌شدهٔ گزارش که گنجانده می‌شوند.
 </ParamField>
 <ParamField path="--log-bytes <bytes>" type="number" default="1000000">
-  بیشترین تعداد بایت گزارش برای بررسی.
+  حداکثر تعداد بایت‌های گزارش برای بررسی.
 </ParamField>
 <ParamField path="--url <url>" type="string">
-  نشانی WebSocket مربوط به Gateway برای snapshot سلامت.
+  نشانی WebSocket مربوط به Gateway برای تصویر لحظه‌ای سلامت.
 </ParamField>
 <ParamField path="--token <token>" type="string">
-  توکن Gateway برای snapshot سلامت.
+  توکن Gateway برای تصویر لحظه‌ای سلامت.
 </ParamField>
 <ParamField path="--password <password>" type="string">
-  گذرواژهٔ Gateway برای snapshot سلامت.
+  گذرواژهٔ Gateway برای تصویر لحظه‌ای سلامت.
 </ParamField>
 <ParamField path="--timeout <ms>" type="number" default="3000">
-  timeout مربوط به snapshot وضعیت/سلامت.
+  مهلت زمانی تصویر لحظه‌ای وضعیت/سلامت.
 </ParamField>
 <ParamField path="--no-stability-bundle" type="boolean">
-  جست‌وجوی بستهٔ پایداری ذخیره‌شده را رد کنید.
+  از جست‌وجوی بستهٔ پایداری ذخیره‌شده صرف‌نظر می‌کند.
 </ParamField>
 <ParamField path="--json" type="boolean">
-  مسیر نوشته‌شده، اندازه و manifest را به صورت JSON چاپ کنید.
+  مسیر نوشته‌شده، اندازه و مانیفست را به‌صورت JSON چاپ می‌کند.
 </ParamField>
 
-خروجی شامل یک manifest، خلاصهٔ Markdown، شکل پیکربندی، جزئیات پیکربندی پاک‌سازی‌شده، خلاصه‌های گزارش پاک‌سازی‌شده، snapshotهای وضعیت/سلامت پاک‌سازی‌شدهٔ Gateway، و تازه‌ترین بستهٔ پایداری در صورت وجود است.
+خروجی شامل این موارد است: `manifest.json` (فهرست فایل‌ها)، `summary.md` (خلاصهٔ Markdown)، `diagnostics.json` (خلاصهٔ سطح‌بالای پیکربندی/گزارش‌ها/کشف/پایداری/وضعیت/سلامت)، `config/sanitized.json`، `status/gateway-status.json`، `health/gateway-health.json`، `logs/openclaw-sanitized.jsonl` و در صورت وجود بسته، `stability/latest.json`.
 
-این خروجی برای اشتراک‌گذاری در نظر گرفته شده است. جزئیات عملیاتی کمک‌کننده به اشکال‌زدایی را نگه می‌دارد، مانند فیلدهای امن گزارش OpenClaw، نام زیرسامانه‌ها، کدهای وضعیت، مدت‌زمان‌ها، حالت‌های پیکربندی‌شده، پورت‌ها، شناسه‌های plugin، شناسه‌های provider، تنظیمات غیرمحرمانهٔ ویژگی‌ها، و پیام‌های گزارش عملیاتی ویرایش‌شده. متن چت، بدنه‌های Webhook، خروجی‌های ابزار، اعتبارنامه‌ها، کوکی‌ها، شناسه‌های حساب/پیام، متن prompt/دستورالعمل، نام میزبان‌ها و مقادیر محرمانه را حذف یا ویرایش می‌کند. وقتی یک پیام به سبک LogTape شبیه متن payload کاربر/چت/ابزار باشد، خروجی فقط این را نگه می‌دارد که پیامی حذف شده است، به‌همراه تعداد بایت آن.
+این خروجی برای اشتراک‌گذاری طراحی شده است. جزئیات عملیاتی مفید برای اشکال‌زدایی را نگه می‌دارد — فیلدهای امن گزارش، نام زیرسامانه‌ها، کدهای وضعیت، مدت‌زمان‌ها، حالت‌های پیکربندی‌شده، درگاه‌ها، شناسه‌های Plugin/ارائه‌دهنده، تنظیمات غیرمحرمانهٔ قابلیت‌ها و پیام‌های عملیاتی گزارش با بخش‌های پوشانده‌شده — و متن گفت‌وگو، بدنه‌های Webhook، خروجی ابزارها، اطلاعات احراز هویت، کوکی‌ها، شناسه‌های حساب/پیام، متن اعلان/دستورالعمل، نام‌های میزبان و مقادیر محرمانه را حذف یا پوشانده می‌کند. وقتی یک پیام گزارش شبیه متن بارِ کاربر/گفت‌وگو/ابزار باشد (برای مثال «کاربر گفت»، «متن گفت‌وگو»، «خروجی ابزار»، «بدنهٔ Webhook»)، خروجی فقط این واقعیت را نگه می‌دارد که پیامی حذف شده است، به‌همراه تعداد بایت‌های آن.
 
 ### `gateway status`
 
-`gateway status` سرویس Gateway (launchd/systemd/schtasks) را به‌همراه یک probe اختیاری برای قابلیت اتصال/احراز هویت نشان می‌دهد.
+سرویس Gateway ‏(launchd/systemd/schtasks) را به‌همراه یک وارسی اختیاری اتصال/احراز هویت نمایش می‌دهد.
 
 ```bash
 openclaw gateway status
@@ -296,66 +293,59 @@ openclaw gateway status --require-rpc
 ```
 
 <ParamField path="--url <url>" type="string">
-  یک هدف probe صریح اضافه کنید. remote پیکربندی‌شده + localhost همچنان probe می‌شوند.
+  یک مقصد صریح برای وارسی اضافه می‌کند. مقصد راه‌دور پیکربندی‌شده و localhost همچنان وارسی می‌شوند.
 </ParamField>
 <ParamField path="--token <token>" type="string">
-  احراز هویت توکنی برای probe.
+  احراز هویت توکنی برای وارسی.
 </ParamField>
 <ParamField path="--password <password>" type="string">
-  احراز هویت گذرواژه‌ای برای probe.
+  احراز هویت با گذرواژه برای وارسی.
 </ParamField>
 <ParamField path="--timeout <ms>" type="number" default="10000">
-  timeout مربوط به probe.
+  مهلت زمانی وارسی.
 </ParamField>
 <ParamField path="--no-probe" type="boolean">
-  probe اتصال را رد کنید (نمای فقط سرویس).
+  از وارسی اتصال صرف‌نظر می‌کند (نمای فقط سرویس).
 </ParamField>
 <ParamField path="--deep" type="boolean">
-  سرویس‌های سطح سیستم را هم اسکن کنید.
+  سرویس‌های سطح سیستم را نیز اسکن می‌کند.
 </ParamField>
 <ParamField path="--require-rpc" type="boolean">
-  probe اتصال پیش‌فرض را به یک probe خواندن ارتقا دهید و وقتی آن probe خواندن شکست می‌خورد با مقدار غیرصفر خارج شوید. نمی‌تواند با `--no-probe` ترکیب شود.
+  وارسی اتصال را به وارسی خواندن ارتقا می‌دهد و در صورت شکست با کد غیرصفر خارج می‌شود. نمی‌توان آن را با `--no-probe` ترکیب کرد.
 </ParamField>
 
 <AccordionGroup>
   <Accordion title="معنای وضعیت">
-    - `gateway status` حتی وقتی پیکربندی CLI محلی موجود نیست یا نامعتبر است، برای diagnostics در دسترس می‌ماند.
-    - `gateway status` پیش‌فرض وضعیت سرویس، اتصال WebSocket، و قابلیت احراز هویت قابل مشاهده در زمان handshake را اثبات می‌کند. عملیات خواندن/نوشتن/admin را اثبات نمی‌کند.
-    - probeهای diagnostic برای احراز هویت دستگاه در اولین استفاده، غیرتغییردهنده هستند: وقتی توکن دستگاه cacheشدهٔ موجودی وجود داشته باشد، از آن دوباره استفاده می‌کنند، اما فقط برای بررسی وضعیت، هویت دستگاه CLI جدید یا رکورد pairing دستگاه فقط‌خواندنی ایجاد نمی‌کنند.
-    - `gateway status` در صورت امکان SecretRefs احراز هویت پیکربندی‌شده را برای احراز هویت probe resolve می‌کند.
-    - اگر یک SecretRef احراز هویت الزامی در این مسیر فرمان resolve نشده باشد، وقتی اتصال/احراز هویت probe شکست بخورد، `gateway status --json` مقدار `rpc.authWarning` را گزارش می‌کند؛ `--token`/`--password` را صریحاً بدهید یا ابتدا منبع secret را resolve کنید.
-    - اگر probe موفق شود، هشدارهای auth-ref resolveنشده برای جلوگیری از مثبت کاذب سرکوب می‌شوند.
-    - وقتی probing فعال باشد، خروجی JSON شامل `gateway.version` است، اگر Gateway در حال اجرا آن را گزارش کند؛ اگر probe handshake بعدی نتواند metadata نسخه را فراهم کند، `--require-rpc` می‌تواند به payload RPC مربوط به `status.runtimeVersion` بازگردد.
-    - وقتی یک سرویس در حال گوش‌دادن کافی نیست و لازم است فراخوانی‌های RPC با دامنهٔ خواندن هم سالم باشند، از `--require-rpc` در scriptها و automation استفاده کنید.
-    - `--deep` یک اسکن best-effort برای نصب‌های اضافی launchd/systemd/schtasks اضافه می‌کند. وقتی چند سرویس شبیه gateway شناسایی شوند، خروجی انسانی راهنمای پاک‌سازی چاپ می‌کند و هشدار می‌دهد که بیشتر setupها باید یک gateway برای هر ماشین اجرا کنند.
-    - `--deep` همچنین handoff اخیر restart سرپرست Gateway را گزارش می‌کند، وقتی process سرویس برای restart سرپرست خارجی به‌صورت clean خارج شده باشد.
-    - `--deep` اعتبارسنجی پیکربندی را در حالت آگاه از plugin اجرا می‌کند (`pluginValidation: "full"`) و هشدارهای manifest مربوط به pluginهای پیکربندی‌شده را نمایش می‌دهد (برای مثال metadata پیکربندی channel که موجود نیست) تا smoke checkهای نصب و به‌روزرسانی آن‌ها را بگیرند. `gateway status` پیش‌فرض مسیر سریع فقط‌خواندنی را نگه می‌دارد که اعتبارسنجی plugin را رد می‌کند.
-    - خروجی انسانی مسیر فایل گزارش resolveشده و snapshot مسیرها/اعتبار پیکربندی CLI-در-برابر-سرویس را شامل می‌شود تا به تشخیص drift در profile یا state-dir کمک کند.
+    - حتی در صورت نبودن یا نامعتبر بودن پیکربندی محلی CLI، برای عیب‌یابی در دسترس می‌ماند.
+    - خروجی پیش‌فرض وضعیت سرویس، اتصال WebSocket و قابلیت احراز هویت قابل مشاهده هنگام دست‌دهی را اثبات می‌کند — نه عملیات خواندن/نوشتن/مدیریتی را.
+    - وارسی‌ها برای احراز هویت نخستین‌بار دستگاه تغییری ایجاد نمی‌کنند: در صورت وجود توکن ذخیره‌شدهٔ دستگاه، دوباره از آن استفاده می‌کنند، اما صرفاً برای بررسی وضعیت هرگز هویت جدید دستگاه CLI یا سابقهٔ جفت‌سازی فقط‌خواندنی ایجاد نمی‌کنند.
+    - در صورت امکان، SecretRefهای احراز هویت پیکربندی‌شده را برای احراز هویت وارسی برطرف می‌کند. اگر SecretRef الزامی حل‌نشده باشد، هنگام شکست اتصال/احراز هویت وارسی، `--json` مقدار `rpc.authWarning` را گزارش می‌کند؛ `--token`/`--password` را صریحاً ارائه کنید یا منبع راز را اصلاح کنید. پس از موفقیت وارسی، هشدارهای احراز هویت حل‌نشده سرکوب می‌شوند.
+    - وقتی Gateway در حال اجرا نسخهٔ خود را گزارش کند، خروجی JSON شامل `gateway.version` است؛ اگر وارسی دست‌دهی نتواند فرادادهٔ نسخه را ارائه کند، `--require-rpc` می‌تواند از بار RPC مربوط به `status.runtimeVersion` استفاده کند.
+    - در اسکریپت‌ها/خودکارسازی، زمانی از `--require-rpc` استفاده کنید که صرفاً گوش‌دادن سرویس کافی نیست و لازم است RPC با دامنهٔ خواندن نیز سالم باشد.
+    - `--deep` نصب‌های اضافی launchd/systemd/schtasks را اسکن می‌کند؛ وقتی چند سرویس شبیه Gateway پیدا شود، خروجی خوانا برای انسان راهنمای پاک‌سازی را چاپ می‌کند (معمولاً در هر دستگاه یک Gateway اجرا کنید) و در صورت مرتبط بودن، تحویل اخیرِ راه‌اندازی مجدد ناظر را گزارش می‌دهد.
+    - `--deep` همچنین اعتبارسنجی پیکربندی را در حالت آگاه از Plugin ‏(`pluginValidation: "full"`) اجرا می‌کند و هشدارهای مانیفست Plugin را آشکار می‌سازد (برای مثال نبود فرادادهٔ پیکربندی کانال). حالت پیش‌فرض `gateway status` مسیر سریع فقط‌خواندنی را حفظ می‌کند که از اعتبارسنجی Plugin صرف‌نظر می‌کند.
+    - خروجی خوانا برای انسان شامل مسیر حل‌شدهٔ فایل گزارش و نیز مسیرها/اعتبار پیکربندی CLI در مقایسه با سرویس است تا به تشخیص اختلاف پروفایل یا پوشهٔ وضعیت کمک کند.
 
   </Accordion>
-  <Accordion title="بررسی‌های auth-drift در Linux systemd">
-    - در نصب‌های Linux systemd، بررسی‌های drift احراز هویت هر دو مقدار `Environment=` و `EnvironmentFile=` را از unit می‌خوانند (شامل `%h`، مسیرهای quoted، چند فایل، و فایل‌های اختیاری `-`).
-    - بررسی‌های drift مقدار SecretRefهای `gateway.auth.token` را با استفاده از env زمان اجرای mergeشده resolve می‌کنند (ابتدا env فرمان سرویس، سپس process env به‌عنوان fallback).
-    - اگر احراز هویت توکنی عملاً فعال نباشد (`gateway.auth.mode` صریح برابر با `password`/`none`/`trusted-proxy`، یا mode تنظیم نشده باشد جایی که password می‌تواند برنده شود و هیچ token candidate نتواند برنده شود)، بررسی‌های token-drift از resolve کردن توکن پیکربندی رد می‌شوند.
+  <Accordion title="بررسی‌های اختلاف احراز هویت systemd در Linux">
+    - بررسی اختلاف احراز هویت سرویس، هم `Environment=` و هم `EnvironmentFile=` را از واحد می‌خواند (از جمله `%h`، مسیرهای نقل‌قول‌شده، چند فایل و فایل‌های اختیاری دارای `-`).
+    - SecretRef مربوط به `gateway.auth.token` را با استفاده از محیط زمان اجرا ادغام‌شده برطرف می‌کند (ابتدا محیط فرمان سرویس، سپس محیط فرایند به‌عنوان گزینهٔ جایگزین).
+    - وقتی احراز هویت توکنی عملاً فعال نیست، بررسی‌های اختلاف توکن از حل توکن پیکربندی صرف‌نظر می‌کنند (`gateway.auth.mode` صریحاً برابر `password`/`none`/`trusted-proxy` است، یا حالت تنظیم نشده و گذرواژه می‌تواند اولویت یابد و هیچ توکن نامزدی نمی‌تواند برنده شود).
 
   </Accordion>
 </AccordionGroup>
 
 ### `gateway probe`
 
-`gateway probe` فرمان «اشکال‌زدایی همه‌چیز» است. همیشه این موارد را probe می‌کند:
+فرمان «اشکال‌زدایی همه‌چیز». این فرمان همیشه موارد زیر را وارسی می‌کند:
 
-- gateway remote پیکربندی‌شدهٔ شما (اگر تنظیم شده باشد)، و
-- localhost (loopback) **حتی اگر remote پیکربندی شده باشد**.
+- Gateway راه‌دور پیکربندی‌شدهٔ شما (در صورت تنظیم)، و
+- localhost ‏(local loopback)، **حتی اگر مقصد راه‌دور پیکربندی شده باشد**.
 
-اگر `--url` را بدهید، آن هدف صریح جلوتر از هر دو اضافه می‌شود. خروجی انسانی برچسب هدف‌ها را این‌گونه نشان می‌دهد:
-
-- `URL (explicit)`
-- `Remote (configured)` یا `Remote (configured, inactive)`
-- `Local loopback`
+ارائهٔ `--url` آن مقصد صریح را پیش از هر دو اضافه می‌کند. خروجی خوانا برای انسان، مقصدها را با `URL (explicit)`،‏ `Remote (configured)` / `Remote (configured, inactive)` و `Local loopback` برچسب‌گذاری می‌کند.
 
 <Note>
-اگر چند هدف probe قابل دسترس باشند، همهٔ آن‌ها را چاپ می‌کند. یک تونل SSH، نشانی TLS/proxy، و نشانی remote پیکربندی‌شده همگی می‌توانند به همان gateway اشاره کنند حتی وقتی پورت‌های transport آن‌ها متفاوت باشد؛ `multiple_gateways` برای gatewayهای قابل دسترسِ متمایز یا دارای هویت مبهم رزرو شده است. وقتی از profileهای ایزوله استفاده می‌کنید (مثلاً یک ربات rescue)، چند gateway پشتیبانی می‌شود، اما بیشتر نصب‌ها همچنان یک gateway واحد اجرا می‌کنند.
+اگر چند مقصد وارسی قابل دسترسی باشند، همه چاپ می‌شوند. یک تونل SSH، نشانی TLS/پروکسی و نشانی راه‌دور پیکربندی‌شده می‌توانند حتی با درگاه‌های انتقال متفاوت به یک Gateway اشاره کنند؛ `multiple_gateways` برای Gatewayهای قابل دسترسیِ متمایز یا دارای هویت مبهم در نظر گرفته شده است. اجرای چند Gateway برای پروفایل‌های ایزوله پشتیبانی می‌شود (برای مثال یک ربات نجات)، اما بیشتر نصب‌ها یک Gateway اجرا می‌کنند.
 </Note>
 
 ```bash
@@ -365,56 +355,49 @@ openclaw gateway probe --port 18789
 ```
 
 <ParamField path="--port <port>" type="number">
-  از این پورت برای هدف probe مربوط به local loopback و پورت remote تونل SSH استفاده کنید. بدون `--url`، این گزینه هدف local loopback را به‌جای نشانی gateway environment پیکربندی‌شده، پورت environment، یا هدف‌های remote انتخاب می‌کند.
+  از این درگاه برای مقصد وارسی local loopback و درگاه راه‌دور تونل SSH استفاده می‌کند. بدون `--url`، به‌جای نشانی محیطی Gateway پیکربندی‌شده، درگاه محیطی یا مقصدهای راه‌دور، فقط مقصد local loopback را انتخاب می‌کند.
 </ParamField>
 
 <AccordionGroup>
   <Accordion title="تفسیر">
-    - `Reachable: yes` یعنی دست‌کم یک هدف اتصال WebSocket را پذیرفته است.
-    - `Capability: read-only|write-capable|admin-capable|pairing-pending|connect-only` گزارش می‌کند probe دربارهٔ احراز هویت چه چیزی را توانسته اثبات کند. این از قابل دسترس بودن جداست.
-    - `Read probe: ok` یعنی فراخوانی‌های RPC جزئیات با دامنهٔ خواندن (`health`/`status`/`system-presence`/`config.get`) نیز موفق شده‌اند.
-    - `Read probe: limited - missing scope: operator.read` یعنی اتصال موفق بوده اما RPC با دامنهٔ خواندن محدود است. این به‌صورت قابل دسترسی **degraded** گزارش می‌شود، نه شکست کامل.
-    - `Read probe: failed` بعد از `Connect: ok` یعنی Gateway اتصال WebSocket را پذیرفته، اما diagnostics خواندن بعدی timeout شده یا شکست خورده است. این هم قابل دسترسی **degraded** است، نه Gateway غیرقابل دسترس.
-    - مانند `gateway status`، probe از احراز هویت دستگاه cacheشدهٔ موجود دوباره استفاده می‌کند اما هویت دستگاه یا وضعیت pairing اولین استفاده را ایجاد نمی‌کند.
-    - exit code فقط وقتی غیرصفر است که هیچ هدف probeشده‌ای قابل دسترس نباشد.
+    - `Reachable: yes` یعنی دست‌کم یک مقصد، اتصال WebSocket را پذیرفته است.
+    - `Capability: read-only|write-capable|admin-capable|pairing-pending|connect-only` آنچه وارسی توانسته دربارهٔ احراز هویت اثبات کند گزارش می‌دهد، مستقل از دسترس‌پذیری.
+    - `Read probe: ok` یعنی فراخوانی‌های RPC جزئیات با دامنهٔ خواندن (`health`/`status`/`system-presence`/`config.get`) نیز موفق بوده‌اند.
+    - `Read probe: limited - missing scope: operator.read` یعنی اتصال موفق بوده، اما RPC با دامنهٔ خواندن محدود است. این وضعیت به‌صورت دسترس‌پذیری **تنزل‌یافته** گزارش می‌شود، نه شکست کامل.
+    - `Read probe: failed` پس از `Connect: ok` یعنی WebSocket متصل شده، اما عیب‌یابی خواندنِ پس از آن منقضی شده یا شکست خورده است — این نیز **تنزل‌یافته** است، نه غیرقابل دسترسی.
+    - مانند `gateway status`، وارسی از احراز هویت ذخیره‌شدهٔ موجود دستگاه دوباره استفاده می‌کند، اما هویت نخستین‌بار دستگاه یا وضعیت جفت‌سازی ایجاد نمی‌کند.
+    - کد خروج فقط زمانی غیرصفر است که هیچ‌یک از مقصدهای وارسی‌شده قابل دسترسی نباشند.
 
   </Accordion>
   <Accordion title="خروجی JSON">
     سطح بالا:
 
-    - `ok`: دست‌کم یک هدف قابل دسترس است.
-    - `degraded`: دست‌کم یک هدف اتصال را پذیرفته اما diagnostics کامل جزئیات RPC را کامل نکرده است.
-    - `capability`: بهترین قابلیت دیده‌شده در میان هدف‌های قابل دسترس (`read_only`، `write_capable`، `admin_capable`، `pairing_pending`، `connected_no_operator_scope`، یا `unknown`).
-    - `primaryTargetId`: بهترین هدف برای در نظر گرفتن به‌عنوان برندهٔ فعال با این ترتیب: URL صریح، تونل SSH، remote پیکربندی‌شده، سپس local loopback.
-    - `warnings[]`: رکوردهای هشدار best-effort با `code`، `message`، و `targetIds` اختیاری.
-    - `network`: راهنمایی‌های URL مربوط به local loopback/tailnet که از پیکربندی فعلی و شبکهٔ میزبان به دست آمده‌اند.
-    - `discovery.timeoutMs` و `discovery.count`: بودجه/تعداد نتیجهٔ واقعی discovery که برای این عبور probe استفاده شده است.
+    - `ok`: دست‌کم یک مقصد قابل دسترسی است.
+    - `degraded`: دست‌کم یک مقصد اتصال را پذیرفته، اما عیب‌یابی کامل RPC جزئیات را به پایان نرسانده است.
+    - `capability`: بهترین قابلیت مشاهده‌شده میان مقصدهای قابل دسترسی (`read_only`،‏ `write_capable`،‏ `admin_capable`،‏ `pairing_pending`،‏ `connected_no_operator_scope` یا `unknown`).
+    - `primaryTargetId`: بهترین مقصدی که باید به‌عنوان برندهٔ فعال در نظر گرفته شود، به این ترتیب: نشانی صریح، تونل SSH، مقصد راه‌دور پیکربندی‌شده، local loopback.
+    - `warnings[]`: رکوردهای هشدار بر پایهٔ بهترین تلاش، شامل `code`،‏ `message` و `targetIds` اختیاری.
+    - `network`: راهنمای نشانی local loopback/tailnet که از پیکربندی فعلی و شبکهٔ میزبان استخراج شده است.
+    - `discovery.timeoutMs` / `discovery.count`: بودجهٔ واقعی کشف/تعداد نتایج استفاده‌شده برای این نوبت وارسی.
 
-    برای هر هدف (`targets[].connect`):
+    برای هر مقصد (`targets[].connect`):‏ `ok` (دسترس‌پذیری + دسته‌بندی تنزل‌یافته)،‏ `rpcOk` (موفقیت کامل RPC جزئیات)،‏ `scopeLimited` (شکست RPC جزئیات به‌دلیل نبود دامنهٔ عملگر).
 
-    - `ok`: قابل دسترس بودن پس از connect + طبقه‌بندی degraded.
-    - `rpcOk`: موفقیت کامل RPC جزئیات.
-    - `scopeLimited`: شکست RPC جزئیات به دلیل نبود operator scope.
-
-    برای هر هدف (`targets[].auth`):
-
-    - `role`: نقش احراز هویت گزارش‌شده در `hello-ok`، وقتی موجود باشد.
-    - `scopes`: دامنه‌های اعطاشدهٔ گزارش‌شده در `hello-ok`، وقتی موجود باشد.
-    - `capability`: طبقه‌بندی قابلیت احراز هویت نمایش‌داده‌شده برای آن هدف.
+    برای هر مقصد (`targets[].auth`):‏ `role` و `scopes` گزارش‌شده در `hello-ok` در صورت موجود بودن، به‌همراه دسته‌بندی آشکارشدهٔ `capability`.
 
   </Accordion>
-  <Accordion title="کدهای هشدار رایج">
-    - `ssh_tunnel_failed`: راه‌اندازی تونل SSH شکست خورد؛ فرمان به probeهای مستقیم fallback کرد.
-    - `multiple_gateways`: هویت‌های متمایز gateway قابل دسترس بودند، یا OpenClaw نتوانست اثبات کند هدف‌های قابل دسترس همان gateway هستند. یک تونل SSH، URL proxy، یا URL remote پیکربندی‌شده به همان gateway این هشدار را فعال نمی‌کند.
-    - `auth_secretref_unresolved`: یک SecretRef احراز هویت پیکربندی‌شده برای هدف شکست‌خورده resolve نشد.
-    - `probe_scope_limited`: اتصال WebSocket موفق شد، اما probe خواندن به دلیل نبود `operator.read` محدود شد.
+  <Accordion title="کدهای هشدار متداول">
+    - `ssh_tunnel_failed`: راه‌اندازی تونل SSH شکست خورد؛ فرمان به وارسی‌های مستقیم بازگشت.
+    - `multiple_gateways`: هویت‌های متمایز Gateway قابل دسترسی بودند، یا OpenClaw نتوانست اثبات کند مقصدهای قابل دسترسی همان Gateway هستند. تونل SSH، نشانی پروکسی یا نشانی راه‌دور پیکربندی‌شده به همان Gateway این هشدار را فعال نمی‌کند.
+    - `auth_secretref_unresolved`: یک SecretRef احراز هویت پیکربندی‌شده برای مقصدی ناموفق قابل حل نبود.
+    - `probe_scope_limited`: اتصال WebSocket موفق بود، اما وارسی خواندن به‌دلیل نبود `operator.read` محدود شد.
+    - `local_tls_runtime_unavailable`:‏ TLS محلی Gateway فعال است، اما OpenClaw نتوانست اثر انگشت گواهی محلی را بارگذاری کند.
 
   </Accordion>
 </AccordionGroup>
 
-#### Remote از طریق SSH (هم‌ارزی برنامهٔ Mac)
+#### راه‌دور از طریق SSH (هم‌ترازی با برنامهٔ Mac)
 
-حالت «Remote over SSH» در برنامهٔ macOS از یک port-forward محلی استفاده می‌کند تا gateway remote (که ممکن است فقط به loopback bind شده باشد) در `ws://127.0.0.1:<port>` قابل دسترس شود.
+حالت "Remote over SSH" در برنامهٔ macOS از یک انتقال درگاه محلی استفاده می‌کند تا Gateway راه‌دوری که فقط روی loopback در دسترس است، در `ws://127.0.0.1:<port>` قابل دسترسی شود.
 
 معادل CLI:
 
@@ -423,31 +406,28 @@ openclaw gateway probe --ssh user@gateway-host
 ```
 
 <ParamField path="--ssh <target>" type="string">
-  `user@host` یا `user@host:port` (پورت پیش‌فرض `22` است).
+  `user@host` یا `user@host:port` (درگاه پیش‌فرض `22` است).
 </ParamField>
 <ParamField path="--ssh-identity <path>" type="string">
-  فایل identity.
+  فایل هویت.
 </ParamField>
 <ParamField path="--ssh-auto" type="boolean">
-  نخستین میزبان gateway کشف‌شده را از endpoint کشف resolveشده (`local.` به‌علاوهٔ domain گستردهٔ پیکربندی‌شده، در صورت وجود) به‌عنوان هدف SSH انتخاب کنید. راهنمایی‌های فقط TXT نادیده گرفته می‌شوند.
+  نخستین میزبان Gateway کشف‌شده را از نقطهٔ پایانی کشف حل‌شده (`local.` به‌علاوهٔ دامنهٔ گستردهٔ پیکربندی‌شده، در صورت وجود) به‌عنوان مقصد SSH انتخاب می‌کند. راهنماهای فقط TXT نادیده گرفته می‌شوند.
 </ParamField>
 
-پیکربندی (اختیاری، استفاده‌شده به‌عنوان پیش‌فرض):
-
-- `gateway.remote.sshTarget`
-- `gateway.remote.sshIdentity`
+پیش‌فرض‌های پیکربندی (اختیاری):‏ `gateway.remote.sshTarget`،‏ `gateway.remote.sshIdentity`.
 
 ### `gateway call <method>`
 
-کمک‌کنندهٔ RPC سطح پایین.
+ابزار کمکی سطح‌پایین RPC.
 
 ```bash
 openclaw gateway call status
-openclaw gateway call logs.tail --params '{"sinceMs": 60000}'
+openclaw gateway call logs.tail --params '{"limit": 200}'
 ```
 
 <ParamField path="--params <json>" type="string" default="{}">
-  رشتهٔ JSON object برای params.
+  رشتهٔ شیء JSON برای پارامترها.
 </ParamField>
 <ParamField path="--url <url>" type="string">
   نشانی WebSocket مربوط به Gateway.
@@ -458,18 +438,18 @@ openclaw gateway call logs.tail --params '{"sinceMs": 60000}'
 <ParamField path="--password <password>" type="string">
   گذرواژهٔ Gateway.
 </ParamField>
-<ParamField path="--timeout <ms>" type="number">
-  بودجهٔ timeout.
+<ParamField path="--timeout <ms>" type="number" default="10000">
+  بودجهٔ مهلت زمانی.
 </ParamField>
 <ParamField path="--expect-final" type="boolean">
-  عمدتاً برای RPCهای سبک agent که رویدادهای میانی را پیش از payload نهایی stream می‌کنند.
+  عمدتاً برای RPCهای سبک عامل که پیش از بار نهایی، رویدادهای میانی را به‌صورت جریانی ارسال می‌کنند.
 </ParamField>
 <ParamField path="--json" type="boolean">
   خروجی JSON قابل خواندن توسط ماشین.
 </ParamField>
 
 <Note>
-`--params` باید JSON معتبر باشد.
+`--params` باید JSON معتبر باشد و هر متد، شکل پارامترهای خود را اعتبارسنجی می‌کند (فیلدهای اضافی یا با نام نادرست رد می‌شوند).
 </Note>
 
 ## مدیریت سرویس Gateway
@@ -482,11 +462,9 @@ openclaw gateway restart
 openclaw gateway uninstall
 ```
 
-### نصب با یک wrapper
+### نصب با یک پوشاننده
 
-زمانی از `--wrapper` استفاده کنید که سرویس مدیریت‌شده باید از طریق یک فایل اجرایی دیگر شروع شود، برای نمونه یک
-shim مدیر اسرار یا یک ابزار run-as. wrapper آرگومان‌های عادی Gateway را دریافت می‌کند و
-مسئول است در نهایت `openclaw` یا Node را با همان آرگومان‌ها exec کند.
+وقتی سرویس مدیریت‌شده باید از طریق یک فایل اجرایی دیگر آغاز شود، از `--wrapper` استفاده کنید؛ برای مثال یک واسط مدیر رازها یا ابزار کمکی اجرای برنامه با هویت کاربر دیگر. پوشاننده آرگومان‌های معمول Gateway را دریافت می‌کند و مسئول است در نهایت `openclaw` یا Node را با آن آرگومان‌ها اجرا کند.
 
 ```bash
 cat > ~/.local/bin/openclaw-doppler <<'EOF'
@@ -500,17 +478,14 @@ openclaw gateway install --wrapper ~/.local/bin/openclaw-doppler --force
 openclaw gateway restart
 ```
 
-همچنین می‌توانید wrapper را از طریق محیط تنظیم کنید. `gateway install` اعتبارسنجی می‌کند که مسیر
-یک فایل اجرایی است، wrapper را در `ProgramArguments` سرویس می‌نویسد، و
-`OPENCLAW_WRAPPER` را در محیط سرویس برای نصب‌های اجباری دوباره، به‌روزرسانی‌ها، و تعمیرهای doctor
-بعدی پایدار می‌کند.
+همچنین می‌توانید پوشاننده را از طریق محیط تنظیم کنید. `gateway install` اعتبارسنجی می‌کند که مسیر یک فایل اجرایی است، پوشاننده را در `ProgramArguments` سرویس می‌نویسد و `OPENCLAW_WRAPPER` را در محیط سرویس برای نصب‌های مجدد اجباری، به‌روزرسانی‌ها و ترمیم‌های بعدی doctor ماندگار می‌کند.
 
 ```bash
 OPENCLAW_WRAPPER="$HOME/.local/bin/openclaw-doppler" openclaw gateway install --force
 openclaw doctor
 ```
 
-برای حذف یک wrapper پایدارشده، هنگام نصب دوباره `OPENCLAW_WRAPPER` را پاک کنید:
+برای حذف پوشاننده ماندگارشده، هنگام نصب مجدد `OPENCLAW_WRAPPER` را پاک کنید:
 
 ```bash
 OPENCLAW_WRAPPER= openclaw gateway install --force
@@ -519,51 +494,39 @@ openclaw gateway restart
 
 <AccordionGroup>
   <Accordion title="گزینه‌های فرمان">
-    - `gateway status`: `--url`, `--token`, `--password`, `--timeout`, `--no-probe`, `--require-rpc`, `--deep`, `--json`
-    - `gateway install`: `--port`, `--runtime <node|bun>`, `--token`, `--wrapper <path>`, `--force`, `--json`
-    - `gateway restart`: `--safe`, `--skip-deferral`, `--force`, `--wait <duration>`, `--json`
+    - `gateway status`: `--url`، `--token`، `--password`، `--timeout`، `--no-probe`، `--require-rpc`، `--deep`، `--json`
+    - `gateway install`: `--port`، `--runtime <node|bun>` (پیش‌فرض: `node`)، `--token`، `--wrapper <path>`، `--force`، `--json`
+    - `gateway restart`: `--safe`، `--skip-deferral`، `--force`، `--wait <duration>`، `--json`
     - `gateway uninstall|start`: `--json`
-    - `gateway stop`: `--disable`, `--json`
+    - `gateway stop`: `--disable`، `--json`
 
   </Accordion>
-  <Accordion title="رفتار چرخه عمر">
-    - برای راه‌اندازی دوباره یک سرویس مدیریت‌شده از `gateway restart` استفاده کنید. `gateway stop` و `gateway start` را به‌عنوان جایگزین restart زنجیره نکنید.
-    - در macOS، `gateway stop` به‌طور پیش‌فرض از `launchctl bootout` استفاده می‌کند، که LaunchAgent را بدون پایدار کردن غیرفعال‌سازی از نشست بوت فعلی حذف می‌کند — بازیابی خودکار KeepAlive برای خرابی‌های آینده فعال می‌ماند و `gateway start` بدون نیاز به `launchctl enable` دستی دوباره به‌صورت تمیز فعال می‌شود. برای سرکوب پایدار KeepAlive و RunAtLoad، `--disable` را پاس دهید تا gateway تا `gateway start` صریح بعدی دوباره اجرا نشود؛ از این گزینه زمانی استفاده کنید که توقف دستی باید پس از reboot یا راه‌اندازی دوباره سیستم هم باقی بماند.
-    - `gateway restart --safe` از Gateway در حال اجرا می‌خواهد کار فعال را پیش‌پرواز کند و پس از تخلیه کار فعال، یک restart ادغام‌شده زمان‌بندی کند. restart ایمن پیش‌فرض تا سقف `gateway.reload.deferralTimeoutMs` پیکربندی‌شده (پیش‌فرض ۵ دقیقه) منتظر کار فعال می‌ماند؛ وقتی این بودجه تمام شود restart اجباری می‌شود. برای انتظار ایمن نامحدود که هرگز اجباری نمی‌شود، `gateway.reload.deferralTimeoutMs` را روی `0` تنظیم کنید. `--safe` نمی‌تواند با `--force` یا `--wait` ترکیب شود.
-    - `gateway restart --wait 30s` بودجه تخلیه restart پیکربندی‌شده را برای همان restart بازنویسی می‌کند. عددهای بدون واحد میلی‌ثانیه هستند؛ واحدهایی مانند `s`، `m`، و `h` پذیرفته می‌شوند. `--wait 0` به‌طور نامحدود منتظر می‌ماند.
-    - `gateway restart --safe --skip-deferral` restart ایمن آگاه از OpenClaw را اجرا می‌کند اما دروازه defer را دور می‌زند تا Gateway حتی وقتی blocker گزارش شده‌اند restart را بی‌درنگ منتشر کند. راه گریز اپراتور برای deferهای اجرای task گیرکرده؛ به `--safe` نیاز دارد.
-    - `gateway restart --force` تخلیه کار فعال را نادیده می‌گیرد و بی‌درنگ restart می‌کند. زمانی از آن استفاده کنید که اپراتور blockerهای task فهرست‌شده را از قبل بررسی کرده و می‌خواهد gateway همین حالا برگردد.
-    - فرمان‌های چرخه عمر برای اسکریپت‌نویسی `--json` را می‌پذیرند.
+  <Accordion title="رفتار چرخهٔ حیات">
+    - برای راه‌اندازی مجدد یک سرویس مدیریت‌شده از `gateway restart` استفاده کنید. `gateway stop` و `gateway start` را به‌عنوان جایگزین راه‌اندازی مجدد به‌صورت زنجیره‌ای اجرا نکنید.
+    - در macOS، `gateway stop` به‌طور پیش‌فرض از `launchctl bootout` استفاده می‌کند که LaunchAgent را بدون ماندگارکردن حالت غیرفعال از نشست راه‌اندازی فعلی حذف می‌کند؛ بازیابی خودکار KeepAlive برای خرابی‌های آینده فعال می‌ماند و `gateway start` بدون نیاز به اجرای دستی `launchctl enable` آن را به‌درستی دوباره فعال می‌کند. برای سرکوب ماندگار KeepAlive و RunAtLoad، گزینهٔ `--disable` را ارسال کنید تا Gateway تا اجرای صریح بعدی `gateway start` دوباره ایجاد نشود؛ زمانی از این گزینه استفاده کنید که توقف دستی باید پس از راه‌اندازی مجدد سیستم نیز حفظ شود.
+    - فرمان‌های چرخهٔ حیات برای اسکریپت‌نویسی گزینهٔ `--json` را می‌پذیرند.
 
   </Accordion>
-  <Accordion title="Auth و SecretRefs در زمان نصب">
-    - وقتی احراز هویت token به token نیاز دارد و `gateway.auth.token` با SecretRef مدیریت می‌شود، `gateway install` اعتبارسنجی می‌کند که SecretRef قابل resolve است، اما token resolve‌شده را در فراداده محیط سرویس پایدار نمی‌کند.
-    - اگر احراز هویت token به token نیاز داشته باشد و SecretRef پیکربندی‌شده token resolve نشده باشد، نصب به‌جای پایدار کردن متن ساده fallback به‌صورت fail-closed شکست می‌خورد.
-    - برای احراز هویت password در `gateway run`، `OPENCLAW_GATEWAY_PASSWORD`، `--password-file`، یا `gateway.auth.password` پشتیبانی‌شده با SecretRef را به `--password` درون‌خطی ترجیح دهید.
-    - در حالت احراز هویت استنباط‌شده، `OPENCLAW_GATEWAY_PASSWORD` فقط در shell الزامات token نصب را آسان‌تر نمی‌کند؛ هنگام نصب یک سرویس مدیریت‌شده از پیکربندی بادوام (`gateway.auth.password` یا `env` پیکربندی) استفاده کنید.
-    - اگر هم `gateway.auth.token` و هم `gateway.auth.password` پیکربندی شده باشند و `gateway.auth.mode` تنظیم نشده باشد، نصب تا زمانی که mode صریح تنظیم شود مسدود می‌شود.
+  <Accordion title="احراز هویت و SecretRefها هنگام نصب">
+    - وقتی احراز هویت توکنی به توکن نیاز دارد و `gateway.auth.token` با SecretRef مدیریت می‌شود، `gateway install` اعتبارسنجی می‌کند که SecretRef قابل حل است، اما توکن حل‌شده را در فرادادهٔ محیط سرویس ماندگار نمی‌کند.
+    - اگر احراز هویت توکنی به توکن نیاز داشته باشد و SecretRef توکن پیکربندی‌شده حل‌نشده باشد، نصب به‌جای ماندگارکردن متن سادهٔ جایگزین، به‌صورت بسته شکست می‌خورد.
+    - برای احراز هویت با گذرواژه در `gateway run`، به‌جای `--password` درون‌خطی، `OPENCLAW_GATEWAY_PASSWORD`، `--password-file` یا `gateway.auth.password` مبتنی بر SecretRef را ترجیح دهید.
+    - در حالت احراز هویت استنباط‌شده، `OPENCLAW_GATEWAY_PASSWORD` که فقط در پوسته تنظیم شده است، الزامات توکن نصب را آسان‌تر نمی‌کند؛ هنگام نصب یک سرویس مدیریت‌شده از پیکربندی ماندگار (`gateway.auth.password` یا `env` در پیکربندی) استفاده کنید.
+    - اگر هر دو `gateway.auth.token` و `gateway.auth.password` پیکربندی شده باشند و `gateway.auth.mode` تنظیم نشده باشد، نصب تا زمانی که حالت به‌صراحت تنظیم شود مسدود می‌ماند.
 
   </Accordion>
 </AccordionGroup>
 
-## کشف gatewayها (Bonjour)
+## کشف Gatewayها (Bonjour)
 
-`gateway discover` برای beaconهای Gateway (`_openclaw-gw._tcp`) اسکن می‌کند.
+`gateway discover` اعلان‌های Gateway (`_openclaw-gw._tcp`) را جست‌وجو می‌کند.
 
-- Multicast DNS-SD: `local.`
-- Unicast DNS-SD (Wide-Area Bonjour): یک دامنه انتخاب کنید (مثال: `openclaw.internal.`) و split DNS + یک سرور DNS راه‌اندازی کنید؛ [Bonjour](/fa/gateway/bonjour) را ببینید.
+- DNS-SD چندپخشی: `local.`
+- DNS-SD تک‌پخشی (Bonjour گسترده): یک دامنه انتخاب کنید (برای نمونه: `openclaw.internal.`) و DNS تفکیک‌شده به‌همراه یک سرور DNS راه‌اندازی کنید؛ به [Bonjour](/fa/gateway/bonjour) مراجعه کنید.
 
-فقط gatewayهایی که کشف Bonjour در آن‌ها فعال است (پیش‌فرض)، beacon را advertise می‌کنند.
+فقط Gatewayهایی که کشف Bonjour در آن‌ها فعال است (پیش‌فرض)، اعلان را منتشر می‌کنند.
 
-رکوردهای کشف wide-area می‌توانند این راهنمایی‌های TXT را شامل شوند:
-
-- `role` (راهنمای نقش gateway)
-- `transport` (راهنمای transport، مثل `gateway`)
-- `gatewayPort` (پورت WebSocket، معمولا `18789`)
-- `sshPort` (فقط حالت کشف کامل؛ وقتی غایب باشد، کلاینت‌ها مقصدهای SSH را به‌طور پیش‌فرض روی `22` می‌گذارند)
-- `tailnetDns` (نام میزبان MagicDNS، وقتی موجود باشد)
-- `gatewayTls` / `gatewayTlsSha256` (TLS فعال + اثرانگشت گواهی)
-- `cliPath` (فقط حالت کشف کامل)
+راهنمایی‌های TXT در هر اعلان: `role` (راهنمای نقش Gateway)، `transport` (راهنمای انتقال، برای نمونه `gateway`)، `gatewayPort` (درگاه WebSocket، معمولاً `18789`)، `tailnetDns` (نام میزبان MagicDNS، در صورت موجود بودن)، `gatewayTls` / `gatewayTlsSha256` (فعال‌بودن TLS و اثر انگشت گواهی). `sshPort` و `cliPath` فقط در حالت کشف کامل منتشر می‌شوند (`discovery.mdns.mode: "full"`؛ پیش‌فرض `"minimal"` است که آن‌ها را حذف می‌کند؛ در نتیجه کلاینت‌ها به‌طور پیش‌فرض از درگاه `22` برای مقصدهای SSH استفاده می‌کنند).
 
 ### `gateway discover`
 
@@ -572,13 +535,13 @@ openclaw gateway discover
 ```
 
 <ParamField path="--timeout <ms>" type="number" default="2000">
-  timeout هر فرمان (browse/resolve).
+  مهلت زمانی هر فرمان (مرور/حل).
 </ParamField>
 <ParamField path="--json" type="boolean">
-  خروجی قابل‌خواندن برای ماشین (همچنین styling/spinner را غیرفعال می‌کند).
+  خروجی قابل‌خواندن برای ماشین (همچنین سبک‌دهی/نشانگر چرخان را غیرفعال می‌کند).
 </ParamField>
 
-مثال‌ها:
+نمونه‌ها:
 
 ```bash
 openclaw gateway discover --timeout 4000
@@ -586,13 +549,13 @@ openclaw gateway discover --json | jq '.beacons[].wsUrl'
 ```
 
 <Note>
-- CLI علاوه بر دامنه wide-area پیکربندی‌شده، وقتی یکی فعال باشد، `local.` را اسکن می‌کند.
-- `wsUrl` در خروجی JSON از endpoint سرویس resolve‌شده مشتق می‌شود، نه از راهنمایی‌های فقط TXT مانند `lanHost` یا `tailnetDns`.
-- در mDNS با `local.` و DNS-SD wide-area، `sshPort` و `cliPath` فقط زمانی منتشر می‌شوند که `discovery.mdns.mode` برابر `full` باشد.
+- `local.` و در صورت فعال‌بودن، دامنهٔ گستردهٔ پیکربندی‌شده را جست‌وجو می‌کند.
+- `wsUrl` در خروجی JSON از نقطهٔ پایانی سرویس حل‌شده به دست می‌آید، نه از راهنمایی‌های صرفاً TXT مانند `lanHost` یا `tailnetDns`.
+- `discovery.mdns.mode` انتشار `sshPort`/`cliPath` را هم در mDNS مربوط به `local.` و هم در DNS-SD گسترده کنترل می‌کند (به بخش بالا مراجعه کنید).
 
 </Note>
 
 ## مرتبط
 
 - [مرجع CLI](/fa/cli)
-- [runbook Gateway](/fa/gateway)
+- [راهنمای عملیاتی Gateway](/fa/gateway)

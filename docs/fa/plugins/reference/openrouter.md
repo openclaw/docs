@@ -1,30 +1,30 @@
 ---
 read_when:
-    - شما در حال نصب، پیکربندی، یا ممیزی افزونهٔ openrouter هستید
+    - شما در حال نصب، پیکربندی یا ممیزی Plugin مربوط به openrouter هستید
 summary: پشتیبانی از ارائه‌دهندهٔ مدل OpenRouter را به OpenClaw اضافه می‌کند.
-title: Plugin OpenRouter
+title: Plugin ‏OpenRouter
 x-i18n:
-    generated_at: "2026-06-27T18:28:00Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:31:55Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3d23878973853230ff2621d9ea75b6fd3536366fa8520139d5424a4d261bc44a
+    source_hash: 67d69a5b9ea397b276596bd69023ae6ccc0b35051d6de0d843a68b98b641b843
     source_path: plugins/reference/openrouter.md
     workflow: 16
 ---
 
-# Plugin OpenRouter
+# Plugin ‏OpenRouter
 
 پشتیبانی از ارائه‌دهنده مدل OpenRouter را به OpenClaw اضافه می‌کند.
 
 ## توزیع
 
 - بسته: `@openclaw/openrouter-provider`
-- مسیر نصب: در OpenClaw گنجانده شده است
+- روش نصب: در OpenClaw گنجانده شده است
 
-## سطح
+## سطح ارائه‌شده
 
-ارائه‌دهندگان: openrouter؛ قراردادها: imageGenerationProviders، mediaUnderstandingProviders، musicGenerationProviders، speechProviders، videoGenerationProviders
+ارائه‌دهندگان: openrouter؛ قراردادها: imageGenerationProviders، mediaUnderstandingProviders، musicGenerationProviders، speechProviders، usageProviders، videoGenerationProviders
 
 ## مستندات مرتبط
 

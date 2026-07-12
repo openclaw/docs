@@ -1,81 +1,78 @@
 ---
 read_when:
-    - Налаштування інтеграції чату Twitch для OpenClaw
+    - Налаштування інтеграції чату Twitch з OpenClaw
 sidebarTitle: Twitch
-summary: Конфігурація та налаштування чат-бота Twitch
+summary: 'Чат-бот Twitch: встановлення, облікові дані, контроль доступу, оновлення токена'
 title: Twitch
 x-i18n:
-    generated_at: "2026-05-02T21:58:30Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:02:45Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c0d5f16d1369e2783bec6e0c7b2d7bee8aae86f2a424b77b9adf14850de0f20b
+    source_hash: 70890c0c6a648a06ad47c35016571a57c3e518296ef95311e75e32c81e60e2db
     source_path: channels/twitch.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Підтримка чату Twitch через IRC-з’єднання. OpenClaw підключається як користувач Twitch (обліковий запис бота), щоб отримувати й надсилати повідомлення в каналах.
+Підтримка чату Twitch через інтерфейс чату Twitch (IRC) за допомогою клієнта Twurple. OpenClaw входить у систему як обліковий запис бота Twitch, приєднується до одного каналу для кожного налаштованого облікового запису та відповідає в цьому каналі.
 
-## Вбудований Plugin
+## Встановлення
 
-<Note>
-Twitch постачається як вбудований Plugin у поточних випусках OpenClaw, тому звичайні пакетовані збірки не потребують окремого встановлення.
-</Note>
-
-Якщо ви використовуєте старішу збірку або кастомне встановлення, яке не включає Twitch, встановіть npm-пакет напряму:
+Twitch постачається як офіційний Plugin і не входить до базового встановлення.
 
 <Tabs>
-  <Tab title="npm registry">
+  <Tab title="реєстр npm">
     ```bash
     openclaw plugins install @openclaw/twitch
     ```
   </Tab>
-  <Tab title="Local checkout">
+  <Tab title="Локальна робоча копія">
     ```bash
     openclaw plugins install ./path/to/local/twitch-plugin
     ```
   </Tab>
 </Tabs>
 
-Використовуйте пакет без версії, щоб стежити за поточним офіційним тегом випуску. Закріплюйте точну
-версію лише тоді, коли вам потрібне відтворюване встановлення.
+`plugins install` реєструє та вмикає Plugin. Вибір Twitch під час `openclaw onboard` або `openclaw channels add` встановлює його за потреби. Використовуйте назву пакета без версії, щоб отримувати поточний випуск; фіксуйте точну версію лише для відтворюваних установлень. Потрібна версія OpenClaw 2026.4.10 або новіша.
 
-Докладніше: [Plugins](/uk/tools/plugin)
+Докладніше: [Плагіни](/uk/tools/plugin)
 
-## Швидке налаштування (для початківців)
+## Швидке налаштування
 
 <Steps>
-  <Step title="Переконайтеся, що Plugin доступний">
-    Поточні пакетовані випуски OpenClaw вже включають його. У старіших або кастомних встановленнях його можна додати вручну командами вище.
+  <Step title="Установіть Plugin">
+    Див. розділ [Встановлення](#install) вище.
   </Step>
   <Step title="Створіть обліковий запис бота Twitch">
     Створіть окремий обліковий запис Twitch для бота (або використайте наявний обліковий запис).
   </Step>
-  <Step title="Згенеруйте облікові дані">
-    Використайте [Twitch Token Generator](https://twitchtokengenerator.com/):
+  <Step title="Створіть облікові дані">
+    Скористайтеся [Twitch Token Generator](https://twitchtokengenerator.com/):
 
     - Виберіть **Bot Token**
-    - Перевірте, що вибрано області доступу `chat:read` і `chat:write`
-    - Скопіюйте **Client ID** і **Access Token**
+    - Переконайтеся, що області доступу `chat:read` і `chat:write` вибрано
+    - Скопіюйте **Client ID** та **Access Token**
 
   </Step>
   <Step title="Знайдіть свій ідентифікатор користувача Twitch">
-    Використайте [https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/](https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/), щоб перетворити ім’я користувача на ідентифікатор користувача Twitch.
+    Скористайтеся [https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/](https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/), щоб перетворити ім’я користувача на ідентифікатор користувача Twitch.
   </Step>
   <Step title="Налаштуйте токен">
-    - Змінна середовища: `OPENCLAW_TWITCH_ACCESS_TOKEN=...` (лише обліковий запис за замовчуванням)
+    - Змінна середовища: `OPENCLAW_TWITCH_ACCESS_TOKEN=...` (лише для типового облікового запису)
     - Або конфігурація: `channels.twitch.accessToken`
 
-    Якщо задано обидва варіанти, конфігурація має пріоритет (резервна змінна середовища діє лише для облікового запису за замовчуванням).
+    Якщо задано обидва значення, конфігурація має пріоритет (змінна середовища використовується лише як резервний варіант для типового облікового запису).
 
   </Step>
   <Step title="Запустіть Gateway">
-    Запустіть Gateway із налаштованим каналом.
+    ```bash
+    openclaw gateway run
+    ```
   </Step>
 </Steps>
 
 <Warning>
-Додайте контроль доступу (`allowFrom` або `allowedRoles`), щоб запобігти запуску бота неавторизованими користувачами. Значення `requireMention` за замовчуванням — `true`.
+Додайте контроль доступу (`allowFrom` або `allowedRoles`), щоб неавторизовані користувачі не могли активувати бота. Типове значення `requireMention` — `true`.
 </Warning>
 
 Мінімальна конфігурація:
@@ -85,11 +82,11 @@ Twitch постачається як вбудований Plugin у поточн
   channels: {
     twitch: {
       enabled: true,
-      username: "openclaw", // Bot's Twitch account
-      accessToken: "oauth:abc123...", // OAuth Access Token (or use OPENCLAW_TWITCH_ACCESS_TOKEN env var)
-      clientId: "xyz789...", // Client ID from Token Generator
-      channel: "vevisk", // Which Twitch channel's chat to join (required)
-      allowFrom: ["123456789"], // (recommended) Your Twitch user ID only - get it from https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/
+      username: "openclaw", // Обліковий запис бота в Twitch (виконує автентифікацію)
+      accessToken: "oauth:abc123...", // Токен доступу OAuth (або використовуйте змінну середовища OPENCLAW_TWITCH_ACCESS_TOKEN)
+      clientId: "xyz789...", // Ідентифікатор клієнта з Token Generator
+      channel: "yourchannel", // До чату якого каналу Twitch приєднатися (обов’язково)
+      allowFrom: ["123456789"], // (рекомендовано) Лише ваш ідентифікатор користувача Twitch
     },
   },
 }
@@ -97,79 +94,17 @@ Twitch постачається як вбудований Plugin у поточн
 
 ## Що це таке
 
-- Канал Twitch, яким володіє Gateway.
-- Детермінована маршрутизація: відповіді завжди повертаються до Twitch.
-- Кожен обліковий запис відповідає ізольованому ключу сеансу `agent:<agentId>:twitch:<accountName>`.
-- `username` — це обліковий запис бота (який проходить автентифікацію), `channel` — це чат-кімната, до якої потрібно приєднатися.
-
-## Налаштування (докладно)
-
-### Згенеруйте облікові дані
-
-Використайте [Twitch Token Generator](https://twitchtokengenerator.com/):
-
-- Виберіть **Bot Token**
-- Перевірте, що вибрано області доступу `chat:read` і `chat:write`
-- Скопіюйте **Client ID** і **Access Token**
-
-<Note>
-Ручна реєстрація застосунку не потрібна. Токени спливають через кілька годин.
-</Note>
-
-### Налаштуйте бота
-
-<Tabs>
-  <Tab title="Змінна середовища (лише обліковий запис за замовчуванням)">
-    ```bash
-    OPENCLAW_TWITCH_ACCESS_TOKEN=oauth:abc123...
-    ```
-  </Tab>
-  <Tab title="Конфігурація">
-    ```json5
-    {
-      channels: {
-        twitch: {
-          enabled: true,
-          username: "openclaw",
-          accessToken: "oauth:abc123...",
-          clientId: "xyz789...",
-          channel: "vevisk",
-        },
-      },
-    }
-    ```
-  </Tab>
-</Tabs>
-
-Якщо задано і змінну середовища, і конфігурацію, конфігурація має пріоритет.
-
-### Контроль доступу (рекомендовано)
-
-```json5
-{
-  channels: {
-    twitch: {
-      allowFrom: ["123456789"], // (recommended) Your Twitch user ID only
-    },
-  },
-}
-```
-
-Надавайте перевагу `allowFrom` для жорсткого списку дозволених. Використовуйте `allowedRoles` натомість, якщо вам потрібен доступ на основі ролей.
-
-**Доступні ролі:** `"moderator"`, `"owner"`, `"vip"`, `"subscriber"`, `"all"`.
-
-<Note>
-**Чому ідентифікатори користувачів?** Імена користувачів можуть змінюватися, що дає змогу видавати себе за іншу особу. Ідентифікатори користувачів постійні.
-
-Знайдіть свій ідентифікатор користувача Twitch: [https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/](https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/) (перетворіть своє ім’я користувача Twitch на ID)
-</Note>
+- Канал Twitch, яким керує Gateway.
+- Детермінізована маршрутизація: відповіді завжди надсилаються назад у канал Twitch, з якого надійшло повідомлення.
+- Кожен приєднаний канал зіставляється з ізольованим ключем групового сеансу `agent:<agentId>:twitch:group:<channel>`.
+- `username` — обліковий запис бота (який автентифікується), а `channel` — чат-кімната, до якої потрібно приєднатися. Один запис облікового запису приєднується рівно до одного каналу.
+- Токени працюють із префіксом `oauth:` або без нього; OpenClaw нормалізує обидва варіанти (майстер налаштування очікує формат із `oauth:`).
 
 ## Оновлення токена (необов’язково)
 
-Токени з [Twitch Token Generator](https://twitchtokengenerator.com/) не можна автоматично оновлювати — згенеруйте новий після завершення строку дії.
+Токени з [Twitch Token Generator](https://twitchtokengenerator.com/) не можуть оновлюватися OpenClaw — створіть їх повторно після завершення строку дії (вони діють кілька годин; реєстрація застосунку не потрібна).
 
-Для автоматичного оновлення токена створіть власний застосунок Twitch у [Twitch Developer Console](https://dev.twitch.tv/console) і додайте до конфігурації:
+Для автоматичного оновлення створіть власний застосунок у [Twitch Developer Console](https://dev.twitch.tv/console) і додайте:
 
 ```json5
 {
@@ -182,11 +117,11 @@ Twitch постачається як вбудований Plugin у поточн
 }
 ```
 
-Бот автоматично оновлює токени до завершення строку дії та записує події оновлення в журнали.
+Якщо задано обидва параметри, Plugin використовує постачальник автентифікації з оновленням, який поновлює токени до завершення строку їхньої дії та записує кожне оновлення в журнал. Без `refreshToken` він записує `token refresh disabled (no refresh token)`; без `clientSecret` він повертається до статичного токена (без оновлення).
 
 ## Підтримка кількох облікових записів
 
-Використовуйте `channels.twitch.accounts` із токенами для кожного облікового запису. Спільний шаблон див. у [Конфігурації](/uk/gateway/configuration).
+Використовуйте `channels.twitch.accounts` з окремими обліковими даними для кожного облікового запису. Спільний шаблон описано в розділі [Конфігурація](/uk/gateway/configuration).
 
 Приклад (один обліковий запис бота у двох каналах):
 
@@ -199,7 +134,7 @@ Twitch постачається як вбудований Plugin у поточн
           username: "openclaw",
           accessToken: "oauth:abc123...",
           clientId: "xyz789...",
-          channel: "vevisk",
+          channel: "yourchannel",
         },
         channel2: {
           username: "openclaw",
@@ -214,13 +149,17 @@ Twitch постачається як вбудований Plugin у поточн
 ```
 
 <Note>
-Кожному обліковому запису потрібен власний токен (один токен на канал).
+Для кожного запису облікового запису потрібен власний `accessToken` (змінна середовища стосується лише типового облікового запису). Обліковий запис приєднується рівно до одного каналу, тому для приєднання до двох каналів потрібні два облікові записи. `channels.twitch.defaultAccount` визначає, який обліковий запис є типовим.
 </Note>
 
 ## Контроль доступу
 
+`allowFrom` — це суворий список дозволених ідентифікаторів користувачів Twitch. Якщо його задано, `allowedRoles` ігнорується; не задавайте `allowFrom`, щоб натомість використовувати доступ на основі ролей.
+
+**Доступні ролі:** `"moderator"`, `"owner"`, `"vip"`, `"subscriber"`, `"all"`.
+
 <Tabs>
-  <Tab title="Список дозволених ID користувачів (найбезпечніше)">
+  <Tab title="Список дозволених ідентифікаторів користувачів (найбезпечніше)">
     ```json5
     {
       channels: {
@@ -249,12 +188,9 @@ Twitch постачається як вбудований Plugin у поточн
       },
     }
     ```
-
-    `allowFrom` — це жорсткий список дозволених. Якщо його задано, дозволені лише ці ідентифікатори користувачів. Якщо вам потрібен доступ на основі ролей, не задавайте `allowFrom` і налаштуйте натомість `allowedRoles`.
-
   </Tab>
-  <Tab title="Вимкнути вимогу @mention">
-    За замовчуванням `requireMention` має значення `true`. Щоб вимкнути це й відповідати на всі повідомлення:
+  <Tab title="Вимкнення вимоги @згадки">
+    Типове значення `requireMention` — `true`. Щоб відповідати на всі дозволені повідомлення:
 
     ```json5
     {
@@ -273,9 +209,15 @@ Twitch постачається як вбудований Plugin у поточн
   </Tab>
 </Tabs>
 
+<Note>
+**Чому ідентифікатори користувачів?** Імена користувачів можна змінювати, що дає змогу видавати себе за іншу особу. Ідентифікатори користувачів постійні.
+
+Знайдіть свій за допомогою [перетворювача імені користувача на ідентифікатор](https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/).
+</Note>
+
 ## Усунення несправностей
 
-Спочатку запустіть діагностичні команди:
+Спочатку виконайте діагностичні команди:
 
 ```bash
 openclaw doctor
@@ -284,27 +226,28 @@ openclaw channels status --probe
 
 <AccordionGroup>
   <Accordion title="Бот не відповідає на повідомлення">
-    - **Перевірте контроль доступу:** Переконайтеся, що ваш ID користувача є в `allowFrom`, або тимчасово видаліть `allowFrom` і задайте `allowedRoles: ["all"]` для тестування.
-    - **Перевірте, що бот у каналі:** Бот має приєднатися до каналу, указаного в `channel`.
+    - **Перевірте контроль доступу:** переконайтеся, що ваш ідентифікатор користувача є в `allowFrom`, або для перевірки тимчасово видаліть `allowFrom` і задайте `allowedRoles: ["all"]`.
+    - **Перевірте обмеження за згадкою:** коли `requireMention: true` (типове значення), повідомлення мають містити @згадку імені користувача бота.
+    - **Перевірте, чи бот перебуває в каналі:** бот приєднується лише до каналу, зазначеного в `channel`.
 
   </Accordion>
   <Accordion title="Проблеми з токеном">
-    "Failed to connect" або помилки автентифікації:
+    Помилка «Не вдалося підключитися» або помилки автентифікації:
 
-    - Перевірте, що `accessToken` — це значення токена доступу OAuth (зазвичай починається з префікса `oauth:`)
-    - Перевірте, що токен має області доступу `chat:read` і `chat:write`
-    - Якщо використовується оновлення токена, перевірте, що `clientSecret` і `refreshToken` задані
+    - Переконайтеся, що `accessToken` містить значення токена доступу OAuth (префікс `oauth:` необов’язковий)
+    - Перевірте, чи токен має області доступу `chat:read` і `chat:write`
+    - Якщо використовується оновлення токена, переконайтеся, що задано `clientSecret` і `refreshToken`
 
   </Accordion>
   <Accordion title="Оновлення токена не працює">
-    Перевірте журнали на наявність подій оновлення:
+    Перевірте журнал на наявність подій оновлення:
 
-    ```
-    Using env token source for mybot
-    Access token refreshed for user 123456 (expires in 14400s)
+    ```text
+    Використовується джерело токена зі змінної середовища для mybot
+    Токен доступу для користувача 123456 оновлено (завершення строку дії через 14400 с)
     ```
 
-    Якщо ви бачите "token refresh disabled (no refresh token)":
+    Якщо ви бачите `token refresh disabled (no refresh token)`:
 
     - Переконайтеся, що `clientSecret` надано
     - Переконайтеся, що `refreshToken` надано
@@ -316,14 +259,14 @@ openclaw channels status --probe
 
 ### Конфігурація облікового запису
 
-<ParamField path="username" type="string">
-  Ім’я користувача бота.
+<ParamField path="username" type="string" required>
+  Ім’я користувача бота (обліковий запис, який автентифікується).
 </ParamField>
-<ParamField path="accessToken" type="string">
-  Токен доступу OAuth із `chat:read` і `chat:write`.
+<ParamField path="accessToken" type="string" required>
+  Токен доступу OAuth з областями доступу `chat:read` і `chat:write` (конфігурація або змінна середовища для типового облікового запису).
 </ParamField>
-<ParamField path="clientId" type="string">
-  Twitch Client ID (з Token Generator або вашого застосунку).
+<ParamField path="clientId" type="string" required>
+  Ідентифікатор клієнта Twitch (із Token Generator або вашого застосунку). Необов’язковий у схемі, але потрібний для підключення.
 </ParamField>
 <ParamField path="channel" type="string" required>
   Канал, до якого потрібно приєднатися.
@@ -338,29 +281,31 @@ openclaw channels status --probe
   Необов’язково: для автоматичного оновлення токена.
 </ParamField>
 <ParamField path="expiresIn" type="number">
-  Строк дії токена в секундах.
+  Строк дії токена в секундах (відстеження оновлення).
 </ParamField>
 <ParamField path="obtainmentTimestamp" type="number">
-  Час отримання токена.
+  Позначка часу отримання токена (відстеження оновлення).
 </ParamField>
 <ParamField path="allowFrom" type="string[]">
-  Список дозволених ID користувачів.
+  Список дозволених ідентифікаторів користувачів. Якщо його задано, ролі ігноруються.
 </ParamField>
 <ParamField path="allowedRoles" type='Array<"moderator" | "owner" | "vip" | "subscriber" | "all">'>
   Контроль доступу на основі ролей.
 </ParamField>
 <ParamField path="requireMention" type="boolean" default="true">
-  Вимагати @mention.
+  Вимагати @згадку для активації бота.
+</ParamField>
+<ParamField path="responsePrefix" type="string">
+  Перевизначення префікса вихідної відповіді для цього облікового запису.
 </ParamField>
 
-### Параметри провайдера
+### Параметри постачальника
 
-- `channels.twitch.enabled` - Увімкнути/вимкнути запуск каналу
-- `channels.twitch.username` - Ім’я користувача бота (спрощена конфігурація одного облікового запису)
-- `channels.twitch.accessToken` - Токен доступу OAuth (спрощена конфігурація одного облікового запису)
-- `channels.twitch.clientId` - Twitch Client ID (спрощена конфігурація одного облікового запису)
-- `channels.twitch.channel` - Канал, до якого потрібно приєднатися (спрощена конфігурація одного облікового запису)
-- `channels.twitch.accounts.<accountName>` - Конфігурація кількох облікових записів (усі поля облікового запису вище)
+- `channels.twitch.enabled` — увімкнути або вимкнути запуск каналу
+- `channels.twitch.username` / `accessToken` / `clientId` / `channel` — спрощена конфігурація одного облікового запису (неявний обліковий запис `default`; має пріоритет над `accounts.default`)
+- `channels.twitch.accounts.<accountName>` — конфігурація кількох облікових записів (усі наведені вище поля облікового запису)
+- `channels.twitch.defaultAccount` — назва облікового запису, який є типовим
+- `channels.twitch.markdown.tables` — режим відтворення таблиць Markdown (`off` | `bullets` | `code` | `block`)
 
 Повний приклад:
 
@@ -372,23 +317,19 @@ openclaw channels status --probe
       username: "openclaw",
       accessToken: "oauth:abc123...",
       clientId: "xyz789...",
-      channel: "vevisk",
+      channel: "yourchannel",
       clientSecret: "secret123...",
       refreshToken: "refresh456...",
       allowFrom: ["123456789"],
-      allowedRoles: ["moderator", "vip"],
       accounts: {
-        default: {
+        second: {
           username: "mybot",
-          accessToken: "oauth:abc123...",
-          clientId: "xyz789...",
+          accessToken: "oauth:def456...",
+          clientId: "uvw012...",
           channel: "your_channel",
           enabled: true,
-          clientSecret: "secret123...",
-          refreshToken: "refresh456...",
           expiresIn: 14400,
           obtainmentTimestamp: 1706092800000,
-          allowFrom: ["123456789", "987654321"],
           allowedRoles: ["moderator"],
         },
       },
@@ -397,43 +338,40 @@ openclaw channels status --probe
 }
 ```
 
-## Дії інструментів
+## Дії інструмента
 
-Агент може викликати `twitch` з дією:
-
-- `send` - Надіслати повідомлення в канал
-
-Приклад:
+Агент може надсилати повідомлення Twitch через дію `send` інструмента повідомлень:
 
 ```json5
 {
-  action: "twitch",
-  params: {
-    message: "Hello Twitch!",
-    to: "#mychannel",
-  },
+  channel: "twitch",
+  action: "send",
+  to: "#mychannel",
+  message: "Hello Twitch!",
 }
 ```
 
+`to` є необов’язковим і за замовчуванням використовує налаштований для облікового запису `channel`.
+
 ## Безпека та експлуатація
 
-- **Ставтеся до токенів як до паролів** — ніколи не комітьте токени в git.
-- **Використовуйте автоматичне оновлення токенів** для довготривалих ботів.
-- **Використовуйте списки дозволених ID користувачів** замість імен користувачів для контролю доступу.
-- **Стежте за журналами** для подій оновлення токенів і стану з’єднання.
+- **Поводьтеся з токенами як із паролями** — ніколи не додавайте токени до git.
+- **Використовуйте автоматичне оновлення токенів** для ботів, що працюють тривалий час.
+- **Використовуйте списки дозволених ідентифікаторів користувачів** замість імен користувачів для контролю доступу.
+- **Відстежуйте журнали** щодо подій оновлення токенів і стану підключення.
 - **Мінімізуйте області доступу токенів** — запитуйте лише `chat:read` і `chat:write`.
-- **Якщо застрягли**: перезапустіть Gateway після підтвердження, що жоден інший процес не володіє сеансом.
+- **Якщо виникли труднощі**: перезапустіть Gateway, попередньо переконавшись, що жоден інший процес не володіє сеансом.
 
 ## Обмеження
 
-- **500 символів** на повідомлення (автоматично розбивається на частини на межах слів).
-- Markdown видаляється перед розбиттям на частини.
-- Без обмеження частоти (використовуються вбудовані обмеження частоти Twitch).
+- **500 символів** на повідомлення; довші відповіді розбиваються на частини за межами слів.
+- Markdown видаляється перед надсиланням (чат Twitch використовує звичайний текст; переноси рядків перетворюються на пробіли).
+- OpenClaw не додає власного обмеження частоти запитів; клієнт чату Twurple обробляє обмеження частоти Twitch.
 
-## Пов’язане
+## Пов’язані розділи
 
 - [Маршрутизація каналів](/uk/channels/channel-routing) — маршрутизація сеансів для повідомлень
 - [Огляд каналів](/uk/channels) — усі підтримувані канали
-- [Групи](/uk/channels/groups) — поведінка групового чату та обмеження за згадкою
-- [Сполучення](/uk/channels/pairing) — автентифікація DM і потік сполучення
+- [Групи](/uk/channels/groups) — поведінка групового чату й обмеження за згадкою
+- [Сполучення](/uk/channels/pairing) — автентифікація в особистих повідомленнях і процес сполучення
 - [Безпека](/uk/gateway/security) — модель доступу та посилення захисту

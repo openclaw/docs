@@ -1,109 +1,93 @@
 ---
 read_when:
-    - Je wilt beveiligingsbevindingen of dreigingsscenario's aandragen
+    - U wilt beveiligingsbevindingen of dreigingsscenario's bijdragen
     - Het dreigingsmodel beoordelen of bijwerken
-summary: Bijdragen aan het dreigingsmodel van OpenClaw
+summary: Bijdragen aan het OpenClaw-dreigingsmodel
 title: Bijdragen aan het dreigingsmodel
 x-i18n:
-    generated_at: "2026-05-06T18:00:19Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:25:47Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a23ca088d7893180a83c02d6971bbf1c32affa724e43019fd40276eaadc52278
+    source_hash: 4e2e5cd95e8a2bf5ee4bd167afedfadf9aa876e4260e2d0bfb5f414cd4255410
     source_path: security/CONTRIBUTING-THREAT-MODEL.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Bedankt dat je helpt OpenClaw veiliger te maken. Dit dreigingsmodel is een levend document en we verwelkomen bijdragen van iedereen - je hoeft geen beveiligingsexpert te zijn.
+Het [dreigingsmodel](/nl/security/THREAT-MODEL-ATLAS) is een levend document. Bijdragen van iedereen zijn welkom; u hebt geen achtergrond in beveiliging of MITRE ATLAS nodig.
+
+<Note>
+Dit is bedoeld voor toevoegingen aan het dreigingsmodel, niet voor het melden van actuele kwetsbaarheden. Als u een misbruikbare kwetsbaarheid hebt gevonden, volgt u in plaats daarvan de instructies voor verantwoorde openbaarmaking op de [vertrouwenspagina](https://trust.openclaw.ai).
+</Note>
 
 ## Manieren om bij te dragen
 
-### Een dreiging toevoegen
+**Voeg een dreiging toe.** Open een issue op [openclaw/trust](https://github.com/openclaw/trust/issues) waarin u het aanvalsscenario in uw eigen woorden beschrijft. Nuttig, maar niet verplicht:
 
-Een aanvalsvector of risico gezien dat we nog niet hebben behandeld? Open een issue op [openclaw/trust](https://github.com/openclaw/trust/issues) en beschrijf het in je eigen woorden. Je hoeft geen frameworks te kennen of elk veld in te vullen - beschrijf gewoon het scenario.
+- Het aanvalsscenario en hoe dit kan worden misbruikt.
+- Welke componenten worden getroffen (CLI, Gateway, kanalen, ClawHub, MCP-servers enzovoort).
+- Uw inschatting van de ernst (laag / gemiddeld / hoog / kritiek).
+- Koppelingen naar gerelateerd onderzoek, CVE's of praktijkvoorbeelden.
 
-**Nuttig om op te nemen (maar niet verplicht):**
+Onderhouders wijzen tijdens de beoordeling de ATLAS-toewijzing, de dreigings-ID en het risiconiveau toe.
 
-- Het aanvalsscenario en hoe het kan worden misbruikt
-- Welke onderdelen van OpenClaw worden geraakt (CLI, Gateway, kanalen, ClawHub, MCP-servers, enz.)
-- Hoe ernstig je denkt dat het is (laag / gemiddeld / hoog / kritiek)
-- Links naar gerelateerd onderzoek, CVE's of praktijkvoorbeelden
+**Stel een risicobeperkende maatregel voor.** Open een issue of PR met een verwijzing naar de dreiging. Wees specifiek en actiegericht: "snelheidsbeperking per afzender van 10 berichten/minuut bij de Gateway" is nuttiger dan "implementeer snelheidsbeperking".
 
-Wij behandelen de ATLAS-mapping, dreigings-ID's en risicobeoordeling tijdens de review. Als je die details wilt toevoegen, graag - maar het wordt niet verwacht.
+**Stel een aanvalsketen voor.** Aanvalsketens laten zien hoe meerdere dreigingen samen een realistisch scenario vormen. Beschrijf de stappen en hoe een aanvaller deze zou aaneenschakelen; een kort verhaal werkt beter dan een formele sjabloon.
 
-> **Dit is bedoeld voor toevoegingen aan het dreigingsmodel, niet voor het melden van actuele kwetsbaarheden.** Als je een misbruikbare kwetsbaarheid hebt gevonden, zie onze [Trust-pagina](https://trust.openclaw.ai) voor instructies voor verantwoorde openbaarmaking.
+**Corrigeer of verbeter bestaande inhoud.** Typefouten, verduidelijkingen, verouderde informatie, betere voorbeelden: PR's zijn welkom, een issue is niet nodig.
 
-### Een mitigatie voorstellen
+## Referentie voor het raamwerk
 
-Heb je een idee om een bestaande dreiging aan te pakken? Open een issue of PR waarin je naar de dreiging verwijst. Nuttige mitigaties zijn specifiek en uitvoerbaar - bijvoorbeeld: "snelheidslimiet per afzender van 10 berichten/minuut bij de Gateway" is beter dan "implementeer snelheidslimieten."
+Dreigingen worden gekoppeld aan [MITRE ATLAS](https://atlas.mitre.org/) (Adversarial Threat Landscape for AI Systems), een raamwerk voor AI/ML-specifieke dreigingen zoals promptinjectie, misbruik van hulpmiddelen en uitbuiting van agents. U hoeft ATLAS niet te kennen om bij te dragen; onderhouders koppelen inzendingen tijdens de beoordeling.
 
-### Een aanvalsketen voorstellen
+**Dreigings-ID's.** Elke dreiging krijgt een ID zoals `T-EXEC-003`, die tijdens de beoordeling door onderhouders wordt toegewezen.
 
-Aanvalsketens laten zien hoe meerdere dreigingen samenkomen in een realistisch aanvalsscenario. Als je een gevaarlijke combinatie ziet, beschrijf dan de stappen en hoe een aanvaller ze aan elkaar zou koppelen. Een kort verhaal over hoe de aanval zich in de praktijk ontvouwt, is waardevoller dan een formele template.
+| Code    | Categorie                                           |
+| ------- | --------------------------------------------------- |
+| RECON   | Verkenning - informatie verzamelen                  |
+| ACCESS  | Initiële toegang - toegang verkrijgen               |
+| EXEC    | Uitvoering - schadelijke acties uitvoeren           |
+| PERSIST | Persistentie - toegang behouden                     |
+| EVADE   | Omzeiling van beveiliging - detectie voorkomen      |
+| DISC    | Ontdekking - meer over de omgeving te weten komen   |
+| EXFIL   | Exfiltratie - gegevens stelen                       |
+| IMPACT  | Impact - schade of verstoring                       |
 
-### Bestaande inhoud corrigeren of verbeteren
+**Risiconiveaus.** Als u niet zeker bent van het niveau, beschrijft u gewoon de impact; de onderhouders beoordelen het niveau.
 
-Typfouten, verduidelijkingen, verouderde informatie, betere voorbeelden - PR's zijn welkom, geen issue nodig.
-
-## Wat we gebruiken
-
-### MITRE ATLAS-framework
-
-Dit dreigingsmodel is gebouwd op [MITRE ATLAS](https://atlas.mitre.org/) (Adversarial Threat Landscape for AI Systems), een framework dat specifiek is ontworpen voor AI/ML-dreigingen zoals promptinjectie, misbruik van tools en misbruik van agents. Je hoeft ATLAS niet te kennen om bij te dragen - we koppelen inzendingen tijdens de review aan het framework.
-
-### Dreigings-ID's
-
-Elke dreiging krijgt een ID zoals `T-EXEC-003`. De categorieën zijn:
-
-| Code    | Categorie                                      |
-| ------- | ---------------------------------------------- |
-| RECON   | Verkenning - informatie verzamelen             |
-| ACCESS  | Initiële toegang - toegang verkrijgen          |
-| EXEC    | Uitvoering - schadelijke acties uitvoeren      |
-| PERSIST | Persistentie - toegang behouden                |
-| EVADE   | Verdedigingsontwijking - detectie vermijden    |
-| DISC    | Ontdekking - de omgeving leren kennen          |
-| EXFIL   | Exfiltratie - gegevens stelen                  |
-| IMPACT  | Impact - schade of verstoring                  |
-
-ID's worden tijdens de review door maintainers toegewezen. Je hoeft er zelf geen te kiezen.
-
-### Risiconiveaus
-
-| Niveau       | Betekenis                                                        |
-| ------------ | ---------------------------------------------------------------- |
-| **Kritiek**  | Volledige systeemcompromittering, of hoge kans + kritieke impact |
+| Niveau       | Betekenis                                                          |
+| ------------ | ------------------------------------------------------------------ |
+| **Kritiek**  | Volledige systeemcompromittering, of hoge kans + kritieke impact   |
 | **Hoog**     | Aanzienlijke schade waarschijnlijk, of gemiddelde kans + kritieke impact |
-| **Gemiddeld** | Matig risico, of lage kans + hoge impact                        |
-| **Laag**     | Onwaarschijnlijk en beperkte impact                              |
+| **Gemiddeld** | Gematigd risico, of lage kans + hoge impact                       |
+| **Laag**     | Onwaarschijnlijk en beperkte impact                                |
 
-Als je niet zeker bent over het risiconiveau, beschrijf dan gewoon de impact en wij beoordelen die.
+## Beoordelingsproces
 
-## Reviewproces
-
-1. **Triage** - We beoordelen nieuwe inzendingen binnen 48 uur
-2. **Beoordeling** - We verifiëren de haalbaarheid, wijzen ATLAS-mapping en dreigings-ID toe, en valideren het risiconiveau
-3. **Documentatie** - We zorgen dat alles correct is opgemaakt en volledig is
-4. **Merge** - Toegevoegd aan het dreigingsmodel en de visualisatie
+1. **Triage** - nieuwe inzendingen worden binnen 48 uur beoordeeld.
+2. **Beoordeling** - onderhouders verifiëren de haalbaarheid, wijzen de ATLAS-toewijzing en dreigings-ID toe en valideren het risiconiveau.
+3. **Documentatie** - controle op opmaak en volledigheid.
+4. **Samenvoegen** - toegevoegd aan het dreigingsmodel en de visualisatie.
 
 ## Bronnen
 
 - [ATLAS-website](https://atlas.mitre.org/)
 - [ATLAS-technieken](https://atlas.mitre.org/techniques/)
 - [ATLAS-casestudy's](https://atlas.mitre.org/studies/)
-- [OpenClaw-dreigingsmodel](/nl/security/THREAT-MODEL-ATLAS)
 
 ## Contact
 
-- **Beveiligingskwetsbaarheden:** Zie onze [Trust-pagina](https://trust.openclaw.ai) voor meldinstructies
-- **Vragen over het dreigingsmodel:** Open een issue op [openclaw/trust](https://github.com/openclaw/trust/issues)
-- **Algemene chat:** Discord-kanaal #security
+- **Beveiligingskwetsbaarheden:** [Vertrouwenspagina](https://trust.openclaw.ai) voor meldingsinstructies, of `security@openclaw.ai`.
+- **Vragen over het dreigingsmodel:** open een issue op [openclaw/trust](https://github.com/openclaw/trust/issues).
+- **Algemene chat:** Discord-kanaal `#security`.
 
 ## Erkenning
 
-Bijdragers aan het dreigingsmodel worden erkend in de dankbetuigingen van het dreigingsmodel, releaseopmerkingen en de OpenClaw security hall of fame voor belangrijke bijdragen.
+Bijdragers aan het dreigingsmodel worden vermeld in de dankbetuigingen van het dreigingsmodel, de releaseopmerkingen en, bij belangrijke bijdragen, de OpenClaw-eregalerij voor beveiliging.
 
 ## Gerelateerd
 
 - [Dreigingsmodel](/nl/security/THREAT-MODEL-ATLAS)
+- [Incidentrespons](/nl/security/incident-response)
 - [Formele verificatie](/nl/security/formal-verification)

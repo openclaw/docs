@@ -1,57 +1,43 @@
 ---
 read_when:
-    - Vuoi usare Grok per web_search
-    - Vuoi usare xAI OAuth o una XAI_API_KEY per la ricerca web
-summary: Ricerca web Grok tramite risposte xAI basate sul web
+    - Vuoi utilizzare Grok per web_search
+    - Vuoi usare OAuth di xAI o una XAI_API_KEY per la ricerca sul web
+summary: Ricerca web di Grok tramite risposte di xAI basate sul web
 title: Ricerca Grok
 x-i18n:
-    generated_at: "2026-06-27T18:20:57Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:37:30Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4d18866f12648c5c194112633f6e888711cab83628dcc06ac58cb7801841a73b
+    source_hash: 6e39edd660d0ffe8be066ae81317810da691a7dbd8c59a74222a59145cff5c77
     source_path: tools/grok-search.md
     workflow: 16
 ---
 
-OpenClaw supporta Grok come provider `web_search`, usando risposte xAI basate sul web
-per produrre risposte sintetizzate dall'AI supportate da risultati di ricerca live
-con citazioni.
+OpenClaw supporta Grok come provider di `web_search`, utilizzando risposte xAI basate sul web per produrre risposte sintetizzate dall'IA, supportate da risultati di ricerca in tempo reale con citazioni.
 
-La ricerca web di Grok preferisce il tuo accesso OAuth xAI esistente quando è disponibile.
-Se non esiste alcun profilo OAuth, la stessa chiave API xAI può anche alimentare lo strumento
-`x_search` integrato per la ricerca di post su X (precedentemente Twitter) e lo strumento `code_execution`.
-Se archivi la chiave in `plugins.entries.xai.config.webSearch.apiKey`,
-OpenClaw la riutilizza anche come fallback per il provider di modelli xAI incluso.
+La ricerca web di Grok preferisce un accesso OAuth xAI esistente, quando disponibile. Se non esiste alcun profilo OAuth, la stessa chiave API xAI alimenta anche lo strumento integrato `x_search` per la ricerca di post su X (in precedenza Twitter) e lo strumento `code_execution`. Archiviare la chiave in `plugins.entries.xai.config.webSearch.apiKey` consente inoltre a OpenClaw di riutilizzarla come opzione di riserva per il provider di modelli xAI incluso.
 
-Per metriche a livello di post X come repost, risposte, segnalibri o visualizzazioni, preferisci
-`x_search` con l'URL esatto del post o l'ID di stato invece di una query di ricerca
-generica.
+Per le metriche X a livello di singolo post (ripubblicazioni, risposte, segnalibri, visualizzazioni), usa [`x_search`](/it/tools/web#x_search) con l'URL esatto del post o l'ID dello stato, anziché una query di ricerca generica.
 
 ## Onboarding e configurazione
 
-Se scegli **Grok** durante:
+Scegliendo **Grok** durante `openclaw onboard` o `openclaw configure --section
+web`, OpenClaw può riutilizzare un profilo OAuth xAI esistente senza richiedere una chiave separata per la ricerca web. In assenza di OAuth, passa alla configurazione tramite chiave API xAI.
 
-- `openclaw onboard`
-- `openclaw configure --section web`
+OpenClaw propone quindi un passaggio successivo per abilitare `x_search` con la stessa credenziale xAI. Questo passaggio:
 
-OpenClaw può usare un profilo OAuth xAI esistente senza richiedere una chiave
-di ricerca web separata. Se OAuth non è disponibile, passa alla configurazione con chiave API xAI.
-OpenClaw può anche mostrare un passaggio successivo separato per abilitare `x_search` con la
-stessa credenziale xAI. Questo passaggio successivo:
+- viene visualizzato solo dopo aver scelto Grok per `web_search`
+- non costituisce una scelta separata di provider di ricerca web di primo livello
+- può facoltativamente impostare il modello `x_search` nello stesso flusso
 
-- appare solo dopo che hai scelto Grok per `web_search`
-- non è una scelta separata di provider di ricerca web di primo livello
-- può facoltativamente impostare il modello `x_search` durante lo stesso flusso
+Saltalo per abilitare o modificare `x_search` successivamente nella configurazione.
 
-Se lo salti, puoi abilitare o modificare `x_search` più tardi nella configurazione.
-
-## Accedi o ottieni una chiave API
+## Accedere o ottenere una chiave API
 
 <Steps>
-  <Step title="Usa OAuth xAI">
-    Se hai già effettuato l'accesso con xAI durante l'onboarding o l'autenticazione del modello, scegli
-    Grok come provider `web_search`. Non è richiesta alcuna chiave API separata:
+  <Step title="Usare OAuth xAI">
+    Se hai già effettuato l'accesso con xAI durante l'onboarding o l'autenticazione del modello, scegli Grok come provider di `web_search`. Non è richiesta alcuna chiave API separata:
 
     ```bash
     openclaw onboard --auth-choice xai-oauth
@@ -59,12 +45,11 @@ Se lo salti, puoi abilitare o modificare `x_search` più tardi nella configurazi
     ```
 
   </Step>
-  <Step title="Usa un fallback con chiave API">
-    Ottieni una chiave API da [xAI](https://console.x.ai/) quando OAuth non è disponibile
-    o vuoi intenzionalmente una configurazione di ricerca web basata su chiave.
+  <Step title="Usare una chiave API come opzione di riserva">
+    Ottieni una chiave API da [xAI](https://console.x.ai/) quando OAuth non è disponibile o desideri intenzionalmente una configurazione della ricerca web basata su chiave.
   </Step>
-  <Step title="Archivia la chiave">
-    Imposta `XAI_API_KEY` nell'ambiente Gateway, oppure configura tramite:
+  <Step title="Archiviare la chiave">
+    Imposta `XAI_API_KEY` nell'ambiente del Gateway oppure esegui la configurazione tramite:
 
     ```bash
     openclaw configure --section web
@@ -82,8 +67,8 @@ Se lo salti, puoi abilitare o modificare `x_search` più tardi nella configurazi
       xai: {
         config: {
           webSearch: {
-            apiKey: "xai-...", // optional if xAI OAuth or XAI_API_KEY is available
-            baseUrl: "https://api.x.ai/v1", // optional Responses API proxy/base URL override
+            apiKey: "xai-...", // facoltativa se sono disponibili OAuth xAI o XAI_API_KEY
+            baseUrl: "https://api.x.ai/v1", // sostituzione facoltativa del proxy o dell'URL di base dell'API Responses
           },
         },
       },
@@ -99,39 +84,26 @@ Se lo salti, puoi abilitare o modificare `x_search` più tardi nella configurazi
 }
 ```
 
-**Alternative per le credenziali:** accedi con `openclaw models auth login
---provider xai --method oauth`, imposta `XAI_API_KEY` nell'ambiente Gateway,
-oppure archivia `plugins.entries.xai.config.webSearch.apiKey`. Per un'installazione Gateway,
-inserisci le variabili d'ambiente in `~/.openclaw/.env`.
+**Credenziali alternative:** `openclaw models auth login --provider xai
+--method oauth`, `XAI_API_KEY` nell'ambiente del Gateway oppure
+`plugins.entries.xai.config.webSearch.apiKey`. Per un'installazione del Gateway, inserisci le variabili d'ambiente in `~/.openclaw/.env`.
 
 ## Come funziona
 
-Grok usa risposte xAI basate sul web per sintetizzare risposte con citazioni
-inline, in modo simile all'approccio di grounding di Ricerca Google di Gemini.
+Grok utilizza risposte xAI basate sul web per sintetizzare risposte con citazioni in linea, in modo simile all'approccio di Gemini basato su Google Search.
 
 ## Parametri supportati
 
-La ricerca Grok supporta `query`.
+La ricerca Grok supporta `query`. `count` è accettato per la compatibilità con `web_search` condivisa, ma Grok restituisce sempre una singola risposta sintetizzata con citazioni anziché un elenco di N risultati. I filtri specifici del provider non sono supportati.
 
-`count` è accettato per la compatibilità condivisa di `web_search`, ma Grok restituisce comunque
-una singola risposta sintetizzata con citazioni anziché un elenco di N risultati.
+Grok utilizza per impostazione predefinita un timeout di 60 secondi, perché le ricerche xAI basate sul web tramite Responses possono richiedere più tempo rispetto al valore predefinito condiviso di `web_search`. Puoi sostituirlo con `tools.web.search.timeoutSeconds`.
 
-I filtri specifici del provider non sono attualmente supportati.
+## Sostituzioni dell'URL di base
 
-Grok usa un timeout predefinito specifico del provider di 60 secondi perché le ricerche
-xAI Responses basate sul web possono durare più a lungo del valore predefinito condiviso di `web_search`. Imposta
-`tools.web.search.timeoutSeconds` per sovrascriverlo.
+Imposta `plugins.entries.xai.config.webSearch.baseUrl` per instradare la ricerca web di Grok attraverso un proxy dell'operatore o un endpoint Responses compatibile con xAI. OpenClaw invia richieste POST a `<baseUrl>/responses` dopo aver rimosso le barre finali. `x_search` utilizza come opzione di riserva lo stesso `webSearch.baseUrl`, a meno che non sia impostato `plugins.entries.xai.config.xSearch.baseUrl`.
 
-## Override dell'URL base
+## Contenuti correlati
 
-Imposta `plugins.entries.xai.config.webSearch.baseUrl` quando la ricerca web Grok deve
-passare attraverso un proxy dell'operatore o un endpoint Responses compatibile con xAI. OpenClaw
-invia richieste POST a `<baseUrl>/responses` dopo aver rimosso le barre finali. `x_search`
-usa lo stesso fallback `webSearch.baseUrl` a meno che
-`plugins.entries.xai.config.xSearch.baseUrl` non sia impostato.
-
-## Correlati
-
-- [Panoramica di Web Search](/it/tools/web) -- tutti i provider e il rilevamento automatico
-- [x_search in Web Search](/it/tools/web#x_search) -- ricerca X di prima classe tramite xAI
-- [Ricerca Gemini](/it/tools/gemini-search) -- risposte sintetizzate dall'AI tramite grounding di Google
+- [Panoramica della ricerca web](/it/tools/web) -- tutti i provider e il rilevamento automatico
+- [x_search nella ricerca web](/it/tools/web#x_search) -- ricerca X nativa tramite xAI
+- [Ricerca Gemini](/it/tools/gemini-search) -- risposte sintetizzate dall'IA tramite Google grounding

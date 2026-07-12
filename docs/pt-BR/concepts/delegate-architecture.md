@@ -4,10 +4,9 @@ status: active
 summary: 'Arquitetura de delegação: executando o OpenClaw como um agente nomeado em nome de uma organização'
 title: Arquitetura de delegação
 x-i18n:
-    generated_at: "2026-07-12T15:04:51Z"
+    generated_at: "2026-07-11T23:51:43Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 9c7129ca839c3c894bd061a91811cd36ebca00a1c1fe909d1a501331acdb6416
     source_path: concepts/delegate-architecture.md
@@ -16,22 +15,22 @@ x-i18n:
 
 Execute o OpenClaw como um **delegado nomeado**: um agente com identidade própria que atua "em nome de" pessoas em uma organização. O agente nunca se passa por um humano — ele envia, lê e agenda usando sua própria conta, com permissões explícitas de delegação.
 
-Isso amplia o [Roteamento Multiagente](/pt-BR/concepts/multi-agent), passando do uso pessoal para implantações organizacionais.
+Isso amplia o [Roteamento Multiagente](/pt-BR/concepts/multi-agent) do uso pessoal para implantações organizacionais.
 
 ## O que é um delegado
 
 Um delegado é um agente OpenClaw que:
 
 - Tem **identidade própria** (endereço de e-mail, nome de exibição, calendário).
-- Atua **em nome de** um ou mais humanos, sem jamais fingir ser um deles.
+- Atua **em nome de** uma ou mais pessoas, sem jamais fingir ser uma delas.
 - Opera com **permissões explícitas** concedidas pelo provedor de identidade da organização.
-- Segue **[ordens permanentes](/pt-BR/automation/standing-orders)**: regras no `AGENTS.md` do agente que definem o que ele pode fazer de forma autônoma e o que exige aprovação humana. [Tarefas Cron](/pt-BR/automation/cron-jobs) conduzem a execução agendada.
+- Segue **[ordens permanentes](/pt-BR/automation/standing-orders)**: regras no `AGENTS.md` do agente que definem o que ele pode fazer de forma autônoma e o que exige aprovação humana. Os [trabalhos Cron](/pt-BR/automation/cron-jobs) acionam a execução agendada.
 
-Isso corresponde à forma como assistentes executivos trabalham: credenciais próprias, e-mails enviados "em nome de" seu responsável e um escopo de autoridade definido.
+Isso corresponde à forma como assistentes executivos trabalham: com credenciais próprias, e-mails enviados "em nome de" seu responsável e um escopo de autoridade definido.
 
 ## Por que usar delegados
 
-O modo padrão do OpenClaw é um **assistente pessoal** — um humano, um agente. Os delegados ampliam esse modelo para organizações:
+O modo padrão do OpenClaw é um **assistente pessoal** — uma pessoa, um agente. Os delegados ampliam esse modelo para organizações:
 
 | Modo pessoal                    | Modo delegado                                      |
 | ------------------------------- | -------------------------------------------------- |
@@ -42,22 +41,22 @@ O modo padrão do OpenClaw é um **assistente pessoal** — um humano, um agente
 
 Os delegados resolvem dois problemas:
 
-1. **Responsabilização**: as mensagens enviadas pelo agente são claramente provenientes do agente, não de um humano.
-2. **Controle de escopo**: o provedor de identidade determina o que o delegado pode acessar, independentemente da política de ferramentas do próprio OpenClaw.
+1. **Responsabilização**: as mensagens enviadas pelo agente são claramente provenientes do agente, não de uma pessoa.
+2. **Controle de escopo**: o provedor de identidade impõe o que o delegado pode acessar, independentemente da política de ferramentas do próprio OpenClaw.
 
 ## Níveis de capacidade
 
-Comece pelo nível mais baixo que atenda às suas necessidades; avance apenas quando o caso de uso exigir.
+Comece pelo nível mais baixo que atenda às suas necessidades; avance somente quando o caso de uso exigir.
 
 ### Nível 1: somente leitura + rascunho
 
 Lê dados organizacionais e prepara rascunhos de mensagens para revisão humana. Nada é enviado sem aprovação.
 
 - E-mail: ler a caixa de entrada, resumir conversas, sinalizar itens que exigem ação humana.
-- Calendário: ler eventos, identificar conflitos, resumir o dia.
-- Arquivos: ler documentos compartilhados, resumir o conteúdo.
+- Calendário: ler eventos, apontar conflitos, resumir o dia.
+- Arquivos: ler documentos compartilhados, resumir conteúdo.
 
-Exige apenas permissões de leitura do provedor de identidade. O agente nunca grava em uma caixa de correio nem em um calendário — rascunhos e propostas são enviados ao chat para que um humano tome as providências.
+Exige apenas permissões de leitura do provedor de identidade. O agente nunca grava em uma caixa de correio ou calendário — rascunhos e propostas são enviados ao chat para que uma pessoa tome as medidas necessárias.
 
 ### Nível 2: enviar em nome de
 
@@ -67,20 +66,20 @@ Envia mensagens e cria eventos de calendário usando sua própria identidade. Os
 - Calendário: criar eventos, enviar convites.
 - Chat: publicar em canais usando a identidade do delegado.
 
-Exige permissões de envio em nome de outra pessoa (ou de delegado).
+Exige permissões para enviar em nome de alguém ou permissões de delegado.
 
 ### Nível 3: proativo
 
-Opera de forma autônoma seguindo uma programação, executando ordens permanentes sem aprovação humana para cada ação. Os humanos revisam o resultado de forma assíncrona.
+Opera de forma autônoma e agendada, executando ordens permanentes sem aprovação humana para cada ação. As pessoas revisam os resultados de forma assíncrona.
 
 - Resumos matinais enviados a um canal.
-- Publicação automatizada em redes sociais por meio de filas de conteúdo aprovadas.
+- Publicação automatizada em redes sociais por meio de filas de conteúdo aprovado.
 - Triagem da caixa de entrada com categorização e sinalização automáticas.
 
-Combina as permissões do Nível 2 com [Tarefas Cron](/pt-BR/automation/cron-jobs) e [Ordens Permanentes](/pt-BR/automation/standing-orders).
+Combina as permissões do Nível 2 com [trabalhos Cron](/pt-BR/automation/cron-jobs) e [ordens permanentes](/pt-BR/automation/standing-orders).
 
 <Warning>
-O Nível 3 exige que bloqueios rígidos sejam configurados primeiro: ações que o agente nunca deve realizar, independentemente das instruções. Conclua os pré-requisitos abaixo antes de conceder qualquer permissão do provedor de identidade.
+O Nível 3 exige que bloqueios rígidos sejam configurados primeiro: ações que o agente jamais deve executar, independentemente das instruções recebidas. Conclua os pré-requisitos abaixo antes de conceder qualquer permissão do provedor de identidade.
 </Warning>
 
 ## Pré-requisitos: isolamento e proteção
@@ -91,7 +90,7 @@ O Nível 3 exige que bloqueios rígidos sejam configurados primeiro: ações que
 
 ### Bloqueios rígidos (inegociáveis)
 
-Defina estes itens no `SOUL.md` e no `AGENTS.md` do delegado antes de conectar qualquer conta externa:
+Defina estas regras no `SOUL.md` e no `AGENTS.md` do delegado antes de conectar qualquer conta externa:
 
 - Nunca enviar e-mails externos sem aprovação humana explícita.
 - Nunca exportar listas de contatos, dados de doadores ou registros financeiros.
@@ -102,7 +101,7 @@ Essas regras são carregadas em todas as sessões — a última linha de defesa,
 
 ### Restrições de ferramentas
 
-Use uma política de ferramentas por agente para impor limites no nível do Gateway, independentemente dos arquivos de personalidade do agente — mesmo que ele receba instruções para ignorar suas regras, o Gateway bloqueia a chamada da ferramenta:
+Use uma política de ferramentas por agente para impor limites no nível do Gateway, independentemente dos arquivos de personalidade do agente — mesmo que ele receba instruções para ignorar suas regras, o Gateway bloqueará a chamada da ferramenta:
 
 ```json5
 {
@@ -117,7 +116,7 @@ Use uma política de ferramentas por agente para impor limites no nível do Gate
 
 ### Isolamento em sandbox
 
-Para implantações de alta segurança, coloque o agente delegado em uma sandbox para impedir que ele acesse o sistema de arquivos do host ou a rede além das ferramentas permitidas:
+Para implantações de alta segurança, execute o agente delegado em uma sandbox para impedir que ele acesse o sistema de arquivos do host ou a rede além do permitido por suas ferramentas:
 
 ```json5
 {
@@ -130,11 +129,11 @@ Para implantações de alta segurança, coloque o agente delegado em uma sandbox
 }
 ```
 
-Consulte [Uso de sandbox](/pt-BR/gateway/sandboxing) e [Sandbox e ferramentas multiagente](/pt-BR/tools/multi-agent-sandbox-tools).
+Consulte [Execução em sandbox](/pt-BR/gateway/sandboxing) e [Sandbox e ferramentas multiagente](/pt-BR/tools/multi-agent-sandbox-tools).
 
 ### Trilha de auditoria
 
-Configure o registro antes que o delegado processe qualquer dado real:
+Configure o registro de logs antes que o delegado processe quaisquer dados reais:
 
 - Histórico de execuções Cron: banco de dados de estado SQLite compartilhado do OpenClaw.
 - Transcrições de sessões: `~/.openclaw/agents/delegate/sessions`.
@@ -144,7 +143,7 @@ Todas as ações do delegado passam pelo armazenamento de sessões do OpenClaw. 
 
 ## Configuração de um delegado
 
-Com as proteções implementadas, conceda ao delegado sua identidade e permissões.
+Com as medidas de proteção implementadas, conceda ao delegado sua identidade e permissões.
 
 ### 1. Crie o agente delegado
 
@@ -158,15 +157,15 @@ Isso cria:
 - Estado do agente: `~/.openclaw/agents/delegate/agent`
 - Sessões: `~/.openclaw/agents/delegate/sessions`
 
-Configure a personalidade do delegado nos arquivos do espaço de trabalho:
+Configure a personalidade do delegado nos arquivos de seu espaço de trabalho:
 
 - `AGENTS.md`: função, responsabilidades e ordens permanentes.
 - `SOUL.md`: personalidade, tom e as regras rígidas de segurança definidas acima.
-- `USER.md`: informações sobre o(s) responsável(is) atendido(s) pelo delegado.
+- `USER.md`: informações sobre as pessoas responsáveis atendidas pelo delegado.
 
 ### 2. Configure a delegação no provedor de identidade
 
-Crie uma conta própria para o delegado em seu provedor de identidade, com permissões explícitas de delegação. **Aplique o princípio do menor privilégio** — comece pelo Nível 1 (somente leitura) e avance apenas quando o caso de uso exigir.
+Crie uma conta própria para o delegado em seu provedor de identidade, com permissões explícitas de delegação. **Aplique o princípio do menor privilégio** — comece pelo Nível 1 (somente leitura) e avance somente quando o caso de uso exigir.
 
 #### Microsoft 365
 
@@ -180,9 +179,9 @@ Set-Mailbox -Identity "principal@[organization].org" `
   -GrantSendOnBehalfTo "delegate@[organization].org"
 ```
 
-**Acesso de leitura** (API Graph com permissões de aplicativo):
+**Acesso de leitura** (Graph API com permissões de aplicativo):
 
-Registre um aplicativo do Azure AD com as permissões de aplicativo `Mail.Read` e `Calendars.Read`. **Antes de usar o aplicativo**, restrinja o acesso com uma [política de acesso de aplicativo](https://learn.microsoft.com/graph/auth-limit-mailbox-access), limitando-o apenas às caixas de correio do delegado e do responsável:
+Registre um aplicativo do Azure AD com as permissões de aplicativo `Mail.Read` e `Calendars.Read`. **Antes de usar o aplicativo**, limite o acesso com uma [política de acesso de aplicativo](https://learn.microsoft.com/graph/auth-limit-mailbox-access) para restringi-lo somente às caixas de correio do delegado e do responsável:
 
 ```powershell
 New-ApplicationAccessPolicy `
@@ -192,12 +191,12 @@ New-ApplicationAccessPolicy `
 ```
 
 <Warning>
-Sem uma política de acesso de aplicativo, a permissão de aplicativo `Mail.Read` concede acesso a **todas as caixas de correio do locatário**. Crie a política de acesso antes que o aplicativo leia qualquer e-mail. Teste confirmando que o aplicativo retorna `403` para caixas de correio que não pertencem ao grupo de segurança.
+Sem uma política de acesso de aplicativo, a permissão de aplicativo `Mail.Read` concede acesso a **todas as caixas de correio do locatário**. Crie a política de acesso antes que o aplicativo leia qualquer e-mail. Teste confirmando que o aplicativo retorna `403` para caixas de correio fora do grupo de segurança.
 </Warning>
 
 #### Google Workspace
 
-Crie uma conta de serviço e ative a delegação em todo o domínio no Admin Console. Delegue apenas os escopos necessários:
+Crie uma conta de serviço e habilite a delegação em todo o domínio no Admin Console. Delegue apenas os escopos necessários:
 
 ```text
 https://www.googleapis.com/auth/gmail.readonly    # Nível 1
@@ -205,15 +204,15 @@ https://www.googleapis.com/auth/gmail.send         # Nível 2
 https://www.googleapis.com/auth/calendar           # Nível 2
 ```
 
-A conta de serviço representa o usuário delegado (não o responsável), preservando o modelo "em nome de".
+A conta de serviço representa o usuário delegado, não o responsável, preservando o modelo "em nome de".
 
 <Warning>
-A delegação em todo o domínio permite que a conta de serviço represente **qualquer usuário do domínio**. Restrinja os escopos ao mínimo necessário e limite o ID do cliente da conta de serviço apenas aos escopos acima no Admin Console (Security > API controls > Domain-wide delegation). Uma chave de conta de serviço vazada com escopos amplos concede acesso total a todas as caixas de correio e calendários da organização. Alterne as chaves periodicamente e monitore o log de auditoria do Admin Console em busca de eventos de representação inesperados.
+A delegação em todo o domínio permite que a conta de serviço represente **qualquer usuário do domínio**. Restrinja os escopos ao mínimo necessário e limite o ID do cliente da conta de serviço somente aos escopos acima no Admin Console (Security > API controls > Domain-wide delegation). Uma chave de conta de serviço vazada com escopos amplos concede acesso total a todas as caixas de correio e calendários da organização. Alterne as chaves periodicamente e monitore o log de auditoria do Admin Console em busca de eventos inesperados de representação.
 </Warning>
 
 ### 3. Vincule o delegado aos canais
 
-Direcione mensagens recebidas para o agente delegado usando vinculações do [Roteamento Multiagente](/pt-BR/concepts/multi-agent):
+Encaminhe mensagens recebidas ao agente delegado usando vinculações de [Roteamento Multiagente](/pt-BR/concepts/multi-agent):
 
 ```json5
 {
@@ -230,12 +229,12 @@ Direcione mensagens recebidas para o agente delegado usando vinculações do [Ro
     ],
   },
   bindings: [
-    // Direciona uma conta de canal específica para o delegado
+    // Encaminha uma conta de canal específica ao delegado
     {
       agentId: "delegate",
       match: { channel: "whatsapp", accountId: "org" },
     },
-    // Direciona um servidor do Discord para o delegado
+    // Encaminha um servidor do Discord ao delegado
     {
       agentId: "delegate",
       match: { channel: "discord", guildId: "123456789012345678" },
@@ -248,10 +247,10 @@ Direcione mensagens recebidas para o agente delegado usando vinculações do [Ro
 
 ### 4. Adicione credenciais ao agente delegado
 
-Copie ou crie perfis de autenticação para o `agentDir` do próprio delegado:
+Copie ou crie perfis de autenticação no `agentDir` próprio do delegado:
 
 ```bash
-# O delegado lê seu próprio armazenamento de autenticação
+# O delegado lê de seu próprio armazenamento de autenticação
 ~/.openclaw/agents/delegate/agent/auth-profiles.json
 ```
 
@@ -259,7 +258,7 @@ Nunca compartilhe o `agentDir` do agente principal com o delegado. Consulte [Rot
 
 ## Exemplo: assistente organizacional
 
-Uma configuração completa de delegado que gerencia e-mail, calendário e redes sociais:
+Uma configuração completa de delegado que processa e-mails, calendário e redes sociais:
 
 ```json5
 {
@@ -291,23 +290,23 @@ Uma configuração completa de delegado que gerencia e-mail, calendário e redes
 }
 ```
 
-O `AGENTS.md` do delegado define sua autoridade autônoma — o que ele pode fazer sem perguntar, o que exige aprovação e o que é proibido. [Tarefas Cron](/pt-BR/automation/cron-jobs) conduzem sua programação diária.
+O `AGENTS.md` do delegado define sua autoridade autônoma — o que ele pode fazer sem perguntar, o que exige aprovação e o que é proibido. Os [trabalhos Cron](/pt-BR/automation/cron-jobs) controlam sua programação diária.
 
-Se você conceder `sessions_history`, ela fornecerá uma visualização limitada e filtrada para segurança do histórico, não um despejo de transcrição bruta. O OpenClaw oculta textos semelhantes a credenciais/tokens, trunca conteúdos longos e remove estruturas internas (assinaturas de blocos de raciocínio, tags estruturais `<relevant-memories>`, tags XML de chamadas de ferramentas como `<tool_call>`/`<function_calls>` e tokens semelhantes de controle do provedor que tenham vazado) do histórico do assistente. Linhas grandes demais podem ser substituídas por `[sessions_history omitted: message too large]` em vez de retornar o conteúdo bruto. Use `nextOffset`, quando presente, para navegar para trás pelas janelas mais antigas da transcrição.
+Se você conceder `sessions_history`, ele fornecerá uma visualização de recuperação limitada e filtrada por segurança, não um despejo bruto da transcrição. O OpenClaw remove textos semelhantes a credenciais ou tokens, trunca conteúdos longos e elimina estruturas internas (assinaturas de blocos de raciocínio, tags estruturais `<relevant-memories>`, tags XML de chamadas de ferramentas como `<tool_call>`/`<function_calls>` e tokens semelhantes de controle do provedor que tenham vazado) da recuperação do assistente. Linhas grandes demais podem ser substituídas por `[sessions_history omitted: message too large]` em vez de retornar o conteúdo bruto. Use `nextOffset` quando presente para navegar para trás pelas janelas mais antigas da transcrição.
 
-## Padrão de escalabilidade
+## Padrão de expansão
 
-1. **Crie um agente delegado** por organização.
-2. **Implemente as proteções primeiro** — restrições de ferramentas, sandbox, bloqueios rígidos, trilha de auditoria.
-3. **Conceda permissões restritas** por meio do provedor de identidade (menor privilégio).
+1. **Crie um agente delegado** para cada organização.
+2. **Implemente as proteções primeiro** — restrições de ferramentas, sandbox, bloqueios rígidos e trilha de auditoria.
+3. **Conceda permissões com escopo limitado** por meio do provedor de identidade, seguindo o princípio do menor privilégio.
 4. **Defina [ordens permanentes](/pt-BR/automation/standing-orders)** para operações autônomas.
-5. **Agende tarefas Cron** para tarefas recorrentes.
+5. **Agende trabalhos Cron** para tarefas recorrentes.
 6. **Revise e ajuste** o nível de capacidade à medida que a confiança aumentar.
 
-Várias organizações podem compartilhar um servidor Gateway usando roteamento multiagente — cada organização recebe seu próprio agente, espaço de trabalho e credenciais isolados.
+Várias organizações podem compartilhar um servidor Gateway usando o roteamento multiagente — cada organização recebe seu próprio agente isolado, espaço de trabalho e credenciais.
 
-## Relacionado
+## Conteúdo relacionado
 
-- [Runtime do agente](/pt-BR/concepts/agent)
+- [Ambiente de execução do agente](/pt-BR/concepts/agent)
 - [Subagentes](/pt-BR/tools/subagents)
 - [Roteamento multiagente](/pt-BR/concepts/multi-agent)

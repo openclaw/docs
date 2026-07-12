@@ -1,37 +1,37 @@
 ---
 read_when:
-    - Anda menggunakan saluran BlueBubbles lama dan perlu berpindah ke iMessage
-    - Anda sedang memilih penyiapan OpenClaw iMessage yang didukung
+    - Anda menggunakan kanal BlueBubbles lama dan perlu beralih ke iMessage
+    - Anda sedang memilih penyiapan iMessage OpenClaw yang didukung
     - Anda memerlukan penjelasan singkat tentang penghapusan BlueBubbles
-summary: Dukungan BlueBubbles telah dihapus dari OpenClaw. Gunakan Plugin iMessage bawaan dengan imsg untuk penyiapan iMessage baru dan hasil migrasi.
+summary: Dukungan BlueBubbles telah dihapus dari OpenClaw. Gunakan plugin iMessage bawaan dengan imsg untuk penyiapan iMessage baru dan yang dimigrasikan.
 title: Penghapusan BlueBubbles dan jalur iMessage imsg
 x-i18n:
-    generated_at: "2026-05-11T20:20:40Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:55:06Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 970e33772534fd3e3d8d3012222bdd9c645ed713b8d38cff21b25b276ae1f544
+    source_hash: 7dec7d3f27e0df6431494d864b0c7ae7457574797e199f9a2cb6931d28feacd0
     source_path: announcements/bluebubbles-imessage.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# Penghapusan BlueBubbles dan jalur iMessage imsg
+# Penghapusan BlueBubbles dan jalur iMessage melalui imsg
 
-OpenClaw tidak lagi menyertakan saluran BlueBubbles. Dukungan iMessage kini berjalan melalui Plugin `imessage` bawaan, yang menjalankan [`imsg`](https://github.com/steipete/imsg) secara lokal atau melalui pembungkus SSH dan berkomunikasi menggunakan JSON-RPC melalui stdin/stdout.
+OpenClaw tidak lagi menyertakan kanal BlueBubbles. Dukungan iMessage berjalan melalui plugin `imessage` bawaan: Gateway menjalankan [`imsg`](https://github.com/steipete/imsg) sebagai proses anak, secara lokal atau melalui pembungkus SSH, dan berkomunikasi menggunakan JSON-RPC melalui stdin/stdout. Tanpa server, tanpa webhook, tanpa port.
 
-Jika konfigurasi Anda masih berisi `channels.bluebubbles`, migrasikan ke `channels.imessage`. URL dokumentasi lama `/channels/bluebubbles` mengalihkan ke [Beralih dari BlueBubbles](/id/channels/imessage-from-bluebubbles), yang memiliki tabel lengkap penerjemahan konfigurasi dan daftar periksa cutover.
+Jika konfigurasi Anda masih berisi `channels.bluebubbles`, migrasikan ke `channels.imessage`. URL dokumentasi lama `/channels/bluebubbles` dialihkan ke [Beralih dari BlueBubbles](/id/channels/imessage-from-bluebubbles), yang memuat tabel lengkap konversi konfigurasi dan daftar periksa peralihan.
 
-## Yang berubah
+## Perubahan yang terjadi
 
-- Tidak ada server HTTP BlueBubbles, rute Webhook, kata sandi REST, atau runtime Plugin BlueBubbles dalam jalur iMessage OpenClaw yang didukung.
-- OpenClaw membaca dan memantau Messages melalui `imsg` pada Mac tempat Messages.app sudah masuk.
-- Pengiriman, penerimaan, riwayat, dan media dasar menggunakan surface `imsg` normal dan izin macOS.
-- Tindakan lanjutan seperti balasan berutas, tapback, edit, batal kirim, efek, tanda terima baca, indikator mengetik, dan manajemen grup memerlukan `imsg launch` dengan bridge API privat yang tersedia.
-- Gateway Linux dan Windows masih dapat menggunakan iMessage dengan mengatur `channels.imessage.cliPath` ke pembungkus SSH yang menjalankan `imsg` pada Mac yang sudah masuk.
+- Jalur iMessage yang didukung tidak memiliki server HTTP BlueBubbles, rute webhook, kata sandi REST, atau runtime plugin BlueBubbles.
+- OpenClaw membaca dan memantau Pesan melalui `imsg` di Mac tempat Messages.app telah masuk.
+- Pengiriman, penerimaan, riwayat, dan media dasar menggunakan antarmuka `imsg` biasa serta izin macOS.
+- Tindakan lanjutan (balasan berutas, tapback, pengeditan, pembatalan pengiriman, efek, tanda dibaca, indikator pengetikan, pengelolaan grup) memerlukan jembatan API privat: jalankan `imsg launch`, yang mengharuskan SIP dinonaktifkan.
+- Gateway Linux dan Windows tetap dapat menggunakan iMessage dengan mengarahkan `channels.imessage.cliPath` ke pembungkus SSH yang menjalankan `imsg` di Mac yang telah masuk.
 
-## Yang perlu dilakukan
+## Yang harus dilakukan
 
-1. Instal dan verifikasi `imsg` pada Mac Messages:
+1. Instal dan verifikasi `imsg` di Mac yang menjalankan Pesan:
 
    ```bash
    brew install steipete/tap/imsg
@@ -40,9 +40,9 @@ Jika konfigurasi Anda masih berisi `channels.bluebubbles`, migrasikan ke `channe
    imsg rpc --help
    ```
 
-2. Berikan izin Full Disk Access dan Automation ke konteks proses yang menjalankan `imsg` dan OpenClaw.
+2. Berikan izin Akses Disk Penuh dan Otomatisasi kepada konteks proses yang menjalankan `imsg` dan OpenClaw.
 
-3. Terjemahkan konfigurasi lama:
+3. Konversikan konfigurasi lama:
 
    ```json5
    {
@@ -69,16 +69,16 @@ Jika konfigurasi Anda masih berisi `channels.bluebubbles`, migrasikan ke `channe
    openclaw channels status --probe
    ```
 
-5. Uji DM, grup, lampiran, dan tindakan API privat apa pun yang Anda andalkan sebelum menghapus server BlueBubbles lama Anda.
+5. Uji pesan langsung, grup, lampiran, dan semua tindakan API privat yang Anda andalkan sebelum menghapus server BlueBubbles lama.
 
 ## Catatan migrasi
 
-- `channels.bluebubbles.serverUrl` dan `channels.bluebubbles.password` tidak memiliki padanan iMessage.
-- `channels.bluebubbles.allowFrom`, `groupAllowFrom`, `groups`, `includeAttachments`, root lampiran, batas ukuran media, chunking, dan toggle tindakan memiliki padanan iMessage.
-- `channels.imessage.includeAttachments` tetap nonaktif secara default. Atur secara eksplisit jika Anda mengharapkan foto, memo suara, video, atau file masuk mencapai agen.
-- Dengan `groupPolicy: "allowlist"`, salin blok `groups` lama, termasuk entri wildcard `"*"` apa pun. Daftar yang diizinkan pengirim grup dan registri grup adalah gate terpisah.
-- Binding ACP yang cocok dengan `channel: "bluebubbles"` harus diubah menjadi `channel: "imessage"`.
-- Kunci sesi BlueBubbles lama tidak menjadi kunci sesi iMessage. Persetujuan pairing terbawa berdasarkan handle, tetapi riwayat percakapan di bawah kunci sesi BlueBubbles tidak.
+- `channels.bluebubbles.serverUrl` dan `channels.bluebubbles.password` tidak memiliki padanan di iMessage; tidak ada server yang perlu diakses atau diautentikasi.
+- `allowFrom`, `groupAllowFrom`, `groups`, `includeAttachments`, `attachmentRoots`, `mediaMaxMb`, `textChunkLimit`, dan `actions.*` tetap memiliki arti yang sama di bawah `channels.imessage`.
+- `channels.imessage.includeAttachments` tetap dinonaktifkan secara bawaan. Atur secara eksplisit jika Anda mengharapkan foto, memo suara, video, atau berkas yang masuk diteruskan ke agen.
+- Dengan `groupPolicy: "allowlist"`, salin blok `groups` lama, termasuk entri karakter pengganti `"*"` jika ada. Daftar yang diizinkan untuk pengirim grup dan registri grup merupakan gerbang yang terpisah; blok `groups` yang memiliki entri tetapi tidak memiliki `chat_id` yang cocok (atau tidak memiliki `"*"`) akan membuang pesan saat runtime, sedangkan blok `groups` kosong mencatat peringatan saat dimulai meskipun pemfilteran pengirim tetap meneruskan pesan.
+- Pengikatan ACP dengan `match.channel: "bluebubbles"` harus diubah menjadi `"imessage"`.
+- Kunci sesi BlueBubbles lama tidak berubah menjadi kunci sesi iMessage. Persetujuan pemasangan mengacu pada identitas pengirim, sehingga entri `allowFrom` yang disalin tetap berfungsi, tetapi riwayat percakapan di bawah kunci sesi BlueBubbles tidak ikut dimigrasikan.
 
 ## Lihat juga
 

@@ -1,13 +1,13 @@
 ---
 read_when:
-    - プロバイダーリクエストの拒否がトランスクリプトの形状に関連している問題をデバッグしている
-    - あなたはトランスクリプトのサニタイズまたはツール呼び出し修復ロジックを変更しています
-    - OpenClaw Docs i18n の入力におけるプロバイダー間のツール呼び出し ID の不一致を調査している
-summary: '参照: プロバイダー固有のトランスクリプトのサニタイズと修復ルール'
+    - プロバイダーへのリクエストがトランスクリプトの形式に関連して拒否される問題をデバッグしている場合
+    - トランスクリプトのサニタイズ処理またはツール呼び出しの修復ロジックを変更している場合
+    - プロバイダー間のツール呼び出し ID の不一致を調査している場合
+summary: リファレンス：プロバイダー固有のトランスクリプトのサニタイズおよび修復ルール
 title: トランスクリプトの衛生管理
 x-i18n:
-    generated_at: "2026-07-05T11:49:55Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:41:47Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 4c78d718106498e92c34e3ad6af452a340f230fa88fbf3da36a568e9814ec759
@@ -15,178 +15,180 @@ x-i18n:
     workflow: 16
 ---
 
-OpenClaw は、実行前（モデルコンテキストの構築時）にトランスクリプトへ **プロバイダー固有の修正** を適用します。その多くは、厳格なプロバイダー要件を満たすために使われる **インメモリ** 調整です。別のセッションファイル修復パスが、セッションの読み込み前に保存済み JSONL を書き換える場合もありますが、それは不正な形式の行、または永続レコードとして無効な永続化済みターンに限られます。配信済みのアシスタント返信はディスク上に保持されます。プロバイダー固有のアシスタントプリフィル削除は、送信ペイロードの構築中にのみ行われます。
+OpenClaw は実行前（モデルコンテキストの構築時）に、トランスクリプトへ**プロバイダー固有の修正**を適用します。その大半は、厳格なプロバイダー要件を満たすための**メモリ内**調整です。これとは別に、セッションの読み込み前にセッションファイル修復処理が保存済み JSONL を書き換える場合もありますが、対象は不正な行、または永続的な記録として無効な保存済みターンに限られます。配信済みのアシスタント応答はディスク上に保持されます。プロバイダー固有のアシスタント事前入力の除去は、送信ペイロードの構築時にのみ行われます。
 
-修復が発生すると、atomic replace の前に元のファイルが一時的な `*.bak-<pid>-<ts>` sibling に書き込まれ、replace が成功すると削除されます。バックアップは cleanup 自体が失敗した場合にのみ保持され、その場合はパスが報告されます。
+修復が行われる場合、アトミック置換の前に元のファイルが一時的な同階層ファイル `*.bak-<pid>-<ts>` へ書き込まれ、置換が成功すると削除されます。バックアップが保持されるのはクリーンアップ自体が失敗した場合のみで、その際はパスが報告されます。
 
 対象範囲は次のとおりです。
 
-- ユーザーに見えるトランスクリプトターンから Runtime 専用プロンプトコンテキストを除外
+- 実行時専用のプロンプトコンテキストを、ユーザーに表示されるトランスクリプトターンへ含めない
 - ツール呼び出し ID のサニタイズ
 - ツール呼び出し入力の検証
-- ツール結果ペアリング修復
-- ターン検証 / 順序付け
-- 思考シグネチャの cleanup
-- Thinking シグネチャの cleanup
+- ツール結果のペアリング修復
+- ターンの検証／並べ替え
+- 思考署名のクリーンアップ
+- Thinking 署名のクリーンアップ
 - 画像ペイロードのサニタイズ
-- プロバイダーリプレイ前の空のテキストブロック cleanup
-- プロバイダーリプレイ前の、不完全な reasoning のみの length ターン cleanup
-- ユーザー入力 provenance タグ付け（セッション間でルーティングされたプロンプト用）
-- Bedrock Converse リプレイ用の空のアシスタント error ターン修復
+- プロバイダーへの再送前に空のテキストブロックをクリーンアップ
+- プロバイダーへの再送前に、未完了の推論のみで構成された出力上限到達ターンをクリーンアップ
+- ユーザー入力の出所タグ付け（セッション間でルーティングされたプロンプト向け）
+- Bedrock Converse 再送用の空のアシスタントエラーターン修復
 
-トランスクリプトストレージの詳細が必要な場合は、[セッション管理の詳細](/ja-JP/reference/session-management-compaction)を参照してください。
-
----
-
-## グローバルルール: Runtime コンテキストはユーザートランスクリプトではない
-
-Runtime/system コンテキストはターンのモデルプロンプトに追加できますが、エンドユーザーが作成したコンテンツではありません。OpenClaw は、Gateway 返信、queued followups、ACP、CLI、埋め込み OpenClaw 実行のために、トランスクリプト向けプロンプト本文を別に保持します。保存される可視ユーザーターンは、Runtime で拡張されたプロンプトではなく、そのトランスクリプト本文を使用します。
-
-すでに Runtime ラッパーを永続化しているレガシーセッションでは、Gateway 履歴サーフェスが WebChat、TUI、REST、または SSE クライアントへメッセージを返す前に表示 projection を適用します。
+トランスクリプトの保存に関する詳細は、[セッション管理の詳細](/ja-JP/reference/session-management-compaction)を参照してください。
 
 ---
 
-## 実行場所
+## グローバルルール：実行時コンテキストはユーザートランスクリプトではない
 
-すべてのトランスクリプト衛生処理は埋め込み runner に集約されています。
+実行時／システムコンテキストは、ターンのモデルプロンプトへ追加できますが、エンドユーザーが作成したコンテンツではありません。OpenClaw は、Gateway 応答、キューに入れられたフォローアップ、ACP、CLI、および埋め込み OpenClaw 実行のために、トランスクリプト向けのプロンプト本文を別途保持します。保存される表示可能なユーザーターンには、実行時情報で拡張されたプロンプトではなく、このトランスクリプト本文が使用されます。
 
-- ポリシー選択: `src/agents/transcript-policy.ts`
-  （`resolveTranscriptPolicy`、`provider`、`modelApi`、`modelId` をキーにする）
-- サニタイズ / 修復の適用: `src/agents/embedded-agent-runner/replay-history.ts` の `sanitizeSessionHistory`
+実行時ラッパーがすでに保存されている旧形式のセッションでは、Gateway の履歴サーフェスが WebChat、TUI、REST、または SSE クライアントへメッセージを返す前に、表示用のプロジェクションを適用します。
 
-トランスクリプト衛生処理とは別に、セッションファイルは読み込み前に（必要な場合）修復されます。
+---
+
+## 実行箇所
+
+トランスクリプトの健全性維持処理は、すべて埋め込みランナーに集約されています。
+
+- ポリシーの選択：`src/agents/transcript-policy.ts`
+  （`provider`、`modelApi`、`modelId` をキーとする `resolveTranscriptPolicy`）
+- サニタイズ／修復の適用：
+  `src/agents/embedded-agent-runner/replay-history.ts` の `sanitizeSessionHistory`
+
+トランスクリプトの健全性維持処理とは別に、必要に応じてセッションファイルが読み込み前に修復されます。
 
 - `src/agents/session-file-repair.ts` の `repairSessionFileIfNeeded`
-- `src/agents/embedded-agent-runner/run/attempt.ts` と
-  `src/agents/embedded-agent-runner/compact.ts` から呼び出されます
+- `src/agents/embedded-agent-runner/run/attempt.ts` および
+  `src/agents/embedded-agent-runner/compact.ts` から呼び出される
 
 ---
 
-## グローバルルール: 画像サニタイズ
+## グローバルルール：画像のサニタイズ
 
-画像ペイロードは、サイズ制限によるプロバイダー側の拒否を防ぐために常にサニタイズされます（過大な base64 画像を downscale/recompress）。これは vision 対応モデルで画像によるトークン負荷を制御する助けにもなります。最大寸法を低くするとトークン使用量が減り、高くすると詳細が保持されます。
+サイズ制限によるプロバイダー側の拒否を防ぐため、画像ペイロードは常にサニタイズされます（サイズ超過の base64 画像を縮小／再圧縮します）。これは、画像対応モデルで画像によるトークン負荷を制御するうえでも役立ちます。最大寸法を小さくするとトークン使用量が減り、大きくすると詳細が保持されます。
 
-実装:
+実装：
 
-- `src/agents/embedded-agent-helpers/images.ts` の `sanitizeSessionMessagesImages`
+- `src/agents/embedded-agent-helpers/images.ts` の
+  `sanitizeSessionMessagesImages`
 - `src/agents/tool-images.ts` の `sanitizeContentBlocksImages`
-- 画像の最大辺は `agents.defaults.imageMaxDimensionPx` で設定できます
-  （デフォルト: `1200`）
-- このパスがリプレイコンテンツを走査する間に、空のテキストブロックは削除されます。
-  空になったアシスタントターンはリプレイコピーから削除されます。空になったユーザーターンとツール結果ターンには、空ではない omitted-content プレースホルダーが付与されます。
+- 画像の最大辺は `agents.defaults.imageMaxDimensionPx` で設定可能
+  （デフォルト：`1200`）
+- この処理で再送コンテンツを走査する際、空のテキストブロックも削除されます。
+  その結果、空になったアシスタントターンは再送用コピーから除外されます。空になったユーザーターンとツール結果ターンには、空ではないコンテンツ省略プレースホルダーが設定されます。
 
 ---
 
-## グローバルルール: 不正な形式のツール呼び出し
+## グローバルルール：不正なツール呼び出し
 
-`input` と `arguments` の両方を欠くアシスタントのツール呼び出しブロックは、モデルコンテキストが構築される前に削除されます。これにより、部分的に永続化されたツール呼び出し（たとえば rate limit 失敗後）によるプロバイダー拒否を防ぎます。
+`input` と `arguments` の両方が欠けているアシスタントのツール呼び出しブロックは、モデルコンテキストの構築前に除外されます。これにより、一部だけ保存されたツール呼び出し（たとえば、レート制限エラー後）によるプロバイダーの拒否を防ぎます。
 
-実装:
+実装：
 
 - `src/agents/session-transcript-repair.ts` の `sanitizeToolCallInputs`
-- `sanitizeSessionHistory` で適用
-  （`src/agents/embedded-agent-runner/replay-history.ts`）
+- `sanitizeSessionHistory`
+  （`src/agents/embedded-agent-runner/replay-history.ts`）で適用
 
 ---
 
-## グローバルルール: 不完全な reasoning のみのターン
+## グローバルルール：未完了の推論のみのターン
 
-thinking または redacted-thinking コンテンツのみでプロバイダー出力制限に達したアシスタントターンは、インメモリのリプレイコピーから省略されます。このようなターンには不完全なプロバイダー状態が含まれ、部分的な thinking シグネチャを持つ場合があります。
+Thinking または秘匿化された Thinking コンテンツだけを含む状態でプロバイダーの出力上限に達したアシスタントターンは、メモリ内の再送用コピーから除外されます。このようなターンには未完了のプロバイダー状態が含まれ、部分的な Thinking 署名を保持している可能性があります。
 
-空の length ターンは変更されません。可視テキスト、ツール呼び出し、または不明なコンテンツブロックを含む length ターンも同様です。保存済みトランスクリプトは書き換えられません。
+空の出力上限到達ターンは変更されません。表示可能なテキスト、ツール呼び出し、または不明なコンテンツブロックを含む出力上限到達ターンも同様です。保存済みトランスクリプトは書き換えられません。
 
-実装: `src/agents/embedded-agent-runner/replay-history.ts` の `normalizeAssistantReplayContent`
-
----
-
-## グローバルルール: セッション間入力 provenance
-
-エージェントが `sessions_send` を介して（agent-to-agent reply/announce ステップを含め）別のセッションへプロンプトを送ると、OpenClaw は作成されたユーザーターンを `message.provenance.kind = "inter_session"` 付きで永続化します。
-
-OpenClaw はまた、ルーティングされたプロンプトテキストの前に、同一ターンの `[Inter-session message] ... isUser=false` マーカーを付加し、アクティブなモデル呼び出しが外部セッションの出力を外部エンドユーザー指示と区別できるようにします。このマーカーには、利用可能な場合、送信元セッション、チャネル、ツールが含まれます。プロバイダー互換性のためトランスクリプトは引き続き `role: "user"` を使用しますが、可視テキストと provenance メタデータの両方が、そのターンをセッション間データとして示します。
-
-コンテキスト再構築時、OpenClaw は provenance メタデータのみを持つ古い永続化済みセッション間ユーザーターンにも同じマーカーを適用します。
+実装：`src/agents/embedded-agent-runner/replay-history.ts` の
+`normalizeAssistantReplayContent`
 
 ---
 
-## プロバイダーマトリクス（現在の挙動）
+## グローバルルール：セッション間入力の出所
+
+エージェントが `sessions_send` を介して別のセッションへプロンプトを送信する場合（エージェント間の応答／通知ステップを含む）、OpenClaw は作成されたユーザーターンを `message.provenance.kind = "inter_session"` として保存します。
+
+OpenClaw は、ルーティングされたプロンプトテキストの前に、同じターン内の `[Inter-session message] ... isUser=false` マーカーも付加します。これにより、実行中のモデル呼び出しは、別セッションからの出力と外部エンドユーザーからの指示を区別できます。このマーカーには、利用可能な場合、送信元セッション、チャンネル、ツールが含まれます。プロバイダーとの互換性のため、トランスクリプトでは引き続き `role: "user"` を使用しますが、表示テキストと出所メタデータの両方で、そのターンがセッション間データであることを示します。
+
+コンテキストの再構築時には、出所メタデータしか持たない古い保存済みのセッション間ユーザーターンにも、OpenClaw が同じマーカーを適用します。
+
+---
+
+## プロバイダー対応表（現在の動作）
 
 **OpenAI / OpenAI Codex**
 
-- 画像サニタイズのみ。
-- OpenAI Responses/Codex トランスクリプトでは孤立した reasoning シグネチャ（後続のコンテンツブロックを持たない standalone reasoning item）を削除し、モデル route 切り替え後のリプレイ可能な OpenAI reasoning を削除します。
-- 暗号化された empty-summary items を含む、リプレイ可能な OpenAI Responses reasoning item ペイロードを保持し、manual/WebSocket リプレイで必須の `rs_*` state がアシスタント出力 item とペアになるようにします。
-- ネイティブ ChatGPT Codex Responses は、セッション `prompt_cache_key` を保持しつつ、prior item IDs なしで過去の Responses reasoning/message/function ペイロードをリプレイすることで Codex wire parity に従います。
-- OpenAI Responses-family リプレイは canonical `call_*|fc_*` same-model reasoning ペアを保持しますが、pi-ai ペイロード変換前に、不正な形式または過長の `call_id`/function-call item ids を決定論的に正規化します。
-- ツール結果ペアリング修復は、実際に一致した出力を移動し、欠落したツール呼び出しに対して Codex 風の `aborted` 出力を合成する場合があります。
-- ターン検証や並べ替えは行いません。thought シグネチャの削除も行いません。
+- 画像のサニタイズのみ。
+- OpenAI Responses／Codex のトランスクリプトでは、孤立した推論署名（後続のコンテンツブロックがない独立した推論項目）を除外し、モデルのルート切り替え後には再送可能な OpenAI の推論も除外します。
+- 暗号化された空の要約項目を含め、再送可能な OpenAI Responses の推論項目ペイロードを保持します。これにより、手動／WebSocket 再送時に必要な `rs_*` 状態とアシスタント出力項目のペアリングが維持されます。
+- ネイティブの ChatGPT Codex Responses は、セッションの `prompt_cache_key` を保持しつつ、以前の項目 ID を含めずに過去の Responses の推論／メッセージ／関数ペイロードを再送することで、Codex の通信形式との同等性を保ちます。
+- OpenAI Responses 系の再送では、同一モデルの正規の `call_*|fc_*` 推論ペアを保持しますが、不正または長すぎる `call_id`／関数呼び出し項目 ID は、pi-ai ペイロードへの変換前に決定論的に正規化します。
+- ツール結果のペアリング修復では、実際に一致した出力を移動し、不足しているツール呼び出しに対して Codex 形式の `aborted` 出力を合成する場合があります。
+- ターンの検証や並べ替えは行いません。思考署名も除去しません。
 
 **OpenAI 互換 Chat Completions**
 
-- 過去のアシスタント thinking/reasoning ブロックはリプレイ前に削除され、local および proxy-style の OpenAI 互換サーバーが `reasoning` や `reasoning_content` などの prior-turn reasoning フィールドを受け取らないようにします。
-- 現在の same-turn ツール呼び出し continuation は、ツール結果がリプレイされるまで、アシスタント reasoning ブロックをツール呼び出しに付けたままにします。
-- `reasoning: true` を持つ custom/self-hosted モデルエントリは、リプレイされた reasoning メタデータを保持します。
-- Provider-owned 例外は、wire protocol がリプレイ済み reasoning メタデータを必要とする場合に opt out できます。
+- ローカルおよびプロキシ形式の OpenAI 互換サーバーへ `reasoning` や `reasoning_content` などの過去ターンの推論フィールドを送信しないよう、履歴内のアシスタントの Thinking／推論ブロックは再送前に除去されます。
+- 現在の同一ターン内のツール呼び出し継続では、ツール結果が再送されるまで、アシスタントの推論ブロックをツール呼び出しに付加したままにします。
+- `reasoning: true` が設定されたカスタム／セルフホストのモデルエントリでは、再送された推論メタデータを保持します。
+- 通信プロトコルで推論メタデータの再送が必要な場合、プロバイダー所有の例外によってこの処理を無効化できます。
 
 **Google（Generative AI / Gemini CLI / Antigravity）**
 
-- ツール呼び出し ID サニタイズ: strict alphanumeric。
-- ツール結果ペアリング修復と合成ツール結果。
-- ターン検証（Gemini-style のターン交替）。
-- Google ターン順序 fixup（履歴が assistant から始まる場合、小さな user bootstrap を先頭に追加）。
-- Antigravity Claude: thinking シグネチャを正規化し、署名なし thinking ブロックを削除します。
+- ツール呼び出し ID のサニタイズ：厳密な英数字。
+- ツール結果のペアリング修復と合成ツール結果。
+- ターンの検証（Gemini 形式のターン交互化）。
+- Google のターン順序修正（履歴がアシスタントから始まる場合、小さなユーザー初期化ターンを先頭に追加）。
+- Antigravity Claude：Thinking 署名を正規化し、署名のない Thinking ブロックを除外。
 
 **Anthropic / Minimax（Anthropic 互換）**
 
-- ツール結果ペアリング修復と合成ツール結果。
-- ターン検証（厳格な交替を満たすため、連続する user ターンを merge）。
-- thinking が有効な場合、Cloudflare AI Gateway routes を含め、末尾の assistant prefill ターンは送信 Anthropic Messages ペイロードから削除されます。
-- セッションが compacted されている場合、pre-compaction assistant thinking シグネチャはプロバイダーリプレイ前に削除されます。Thinking シグネチャは生成時の会話プレフィックスに暗号学的にバインドされています。compaction 後はプレフィックスが変わる（要約コンテンツが元の内容を置き換える）ため、元のシグネチャをリプレイすると Anthropic が "Invalid signature in thinking block" でリクエストを拒否します。thinking テキストは署名なしブロックとして保持され、その後、下記のルールで処理されます。
-- replay シグネチャが欠落、空、または blank の thinking ブロックは、プロバイダー変換前に削除されます。それによりアシスタントターンが空になる場合、OpenClaw は空ではない omitted-reasoning テキストでターン形状を保持します。
-- 削除する必要がある古い thinking-only アシスタントターンは、プロバイダーアダプターがリプレイターンを削除しないように、空ではない omitted-reasoning テキストで置き換えられます。
+- ツール結果のペアリング修復と合成ツール結果。
+- ターンの検証（厳密な交互化を満たすため、連続するユーザーターンを統合）。
+- Thinking が有効な場合、末尾のアシスタント事前入力ターンは送信する Anthropic Messages ペイロードから除去されます。Cloudflare AI Gateway 経由のルートも対象です。
+- セッションが Compaction 済みの場合、Compaction 前のアシスタント Thinking 署名はプロバイダーへの再送前に除去されます。Thinking 署名は生成時の会話プレフィックスへ暗号学的に結び付けられています。Compaction 後はプレフィックスが変化し（元の内容が要約された内容に置き換わるため）、元の署名を再送すると Anthropic は「Invalid signature in thinking block」というエラーでリクエストを拒否します。Thinking テキストは署名なしブロックとして保持され、その後、次のルールで処理されます。
+- 再送用署名が欠落、空、または空白のみの Thinking ブロックは、プロバイダー形式への変換前に除去されます。その結果アシスタントターンが空になる場合、OpenClaw は空ではない推論省略テキストを設定してターンの形式を維持します。
+- 除去が必要な古い Thinking のみのアシスタントターンは、プロバイダーアダプターが再送ターンを除外しないよう、空ではない推論省略テキストへ置き換えられます。
 
 **Amazon Bedrock（Converse API）**
 
-- 空の assistant stream-error ターンは、リプレイ前に空ではない fallback テキストブロックへ修復されます。Bedrock Converse は `content: []` を持つ assistant メッセージを拒否するため、`stopReason:
-"error"` と空コンテンツを持つ永続化済み assistant ターンも、読み込み前にディスク上で修復されます。
-- 空白テキストブロックのみを持つ assistant stream-error ターンは、無効な空白ブロックをリプレイする代わりに、インメモリのリプレイコピーから削除されます。
-- セッションが compacted されている場合、Anthropic 上記と同じ理由で、pre-compaction assistant thinking シグネチャは Converse リプレイ前に削除されます。
-- replay シグネチャが欠落、空、または blank の Claude thinking ブロックは、Converse リプレイ前に削除されます。それによりアシスタントターンが空になる場合、OpenClaw は空ではない omitted-reasoning テキストでターン形状を保持します。
-- 削除する必要がある古い thinking-only アシスタントターンは、Converse リプレイが厳格なターン形状を維持するように、空ではない omitted-reasoning テキストで置き換えられます。
-- リプレイは OpenClaw delivery-mirror と gateway-injected assistant ターンをフィルタリングします。
-- 画像サニタイズはグローバルルールを通じて適用されます。
+- 空のアシスタントストリームエラーターンは、再送前に空ではないフォールバックテキストブロックへ修復されます。Bedrock Converse は `content: []` のアシスタントメッセージを拒否するため、`stopReason: "error"` かつコンテンツが空の保存済みアシスタントターンも、読み込み前にディスク上で修復されます。
+- 空白のみのテキストブロックしか含まないアシスタントストリームエラーターンは、無効な空白ブロックを再送する代わりに、メモリ内の再送用コピーから除外されます。
+- セッションが Compaction 済みの場合、Anthropic と同じ理由により、Compaction 前のアシスタント Thinking 署名は Converse への再送前に除去されます。
+- 再送用署名が欠落、空、または空白のみの Claude Thinking ブロックは、Converse への再送前に除去されます。その結果アシスタントターンが空になる場合、OpenClaw は空ではない推論省略テキストを設定してターンの形式を維持します。
+- 除去が必要な古い Thinking のみのアシスタントターンは、Converse の再送で厳密なターン形式を維持できるよう、空ではない推論省略テキストへ置き換えられます。
+- 再送時には、OpenClaw の配信ミラーターンと Gateway が挿入したアシスタントターンを除外します。
+- グローバルルールに従って画像のサニタイズを適用します。
 
-**Mistral（model-id ベースの検出を含む）**
+**Mistral（モデル ID に基づく検出を含む）**
 
-- ツール呼び出し ID サニタイズ: strict9（alphanumeric、長さ 9）。
+- ツール呼び出し ID のサニタイズ：strict9（英数字、長さ 9）。
 
 **OpenRouter Gemini**
 
-- Thought シグネチャ cleanup: base64 ではない `thought_signature` 値を削除します（base64 は保持）。
+- 思考署名のクリーンアップ：base64 ではない `thought_signature` 値を除去します（base64 は保持）。
 
 **OpenRouter Anthropic**
 
-- reasoning が有効な場合、検証済み OpenRouter OpenAI 互換 Anthropic モデルペイロードから、末尾の assistant prefill ターンが削除されます。これは direct Anthropic および Cloudflare Anthropic リプレイ挙動と一致します。
+- 推論が有効な場合、検証済みの OpenRouter OpenAI 互換 Anthropic モデルペイロードから、末尾のアシスタント事前入力ターンを除去します。これは、Anthropic への直接接続および Cloudflare Anthropic の再送動作と一致します。
 
 **その他すべて**
 
-- 画像サニタイズのみ。
+- 画像のサニタイズのみ。
 
 ---
 
-## 履歴上の挙動（2026.1.22 より前）
+## 過去の動作（2026.1.22 より前）
 
-2026.1.22 リリース以前、OpenClaw は複数レイヤーのトランスクリプト衛生処理を適用していました。
+2026.1.22 リリースより前の OpenClaw は、複数層のトランスクリプト健全性維持処理を適用していました。
 
-- **transcript-sanitize extension** がすべてのコンテキスト構築で実行され、次を行うことができました。
-  - ツール use/result ペアリングを修復。
-  - ツール呼び出し ID をサニタイズ（`_`/`-` を保持する non-strict mode を含む）。
-- runner もプロバイダー固有のサニタイズを実行しており、作業が重複していました。
-- プロバイダーポリシーの外側でも追加の mutation が発生していました。これには、永続化前に assistant テキストから `<final>` tags を削除すること、空の assistant error ターンを削除すること、ツール呼び出し後に assistant コンテンツを trim することが含まれていました。
+- **トランスクリプトサニタイズ拡張機能**がコンテキスト構築のたびに実行され、次の処理を行うことができました。
+  - ツール使用／結果のペアリングを修復。
+  - ツール呼び出し ID をサニタイズ（`_`／`-` を保持する非厳密モードを含む）。
+- ランナーもプロバイダー固有のサニタイズを実行していたため、処理が重複していました。
+- プロバイダーポリシーの外部でも追加の変更が行われていました。これには、永続化前のアシスタントテキストからの `<final>` タグ除去、空のアシスタントエラーターンの除外、ツール呼び出し後のアシスタントコンテンツの切り詰めが含まれていました。
 
-この複雑さは、クロスプロバイダーのリグレッション（特に `openai-responses` の `call_id|fc_id` ペアリング）を引き起こしました。2026.1.22 の cleanup で extension を削除し、ロジックを runner に集約し、OpenAI は画像サニタイズを除いて **no-touch** になりました。
+この複雑さにより、プロバイダーをまたぐリグレッション（特に `openai-responses` の `call_id|fc_id` ペアリング）が発生しました。2026.1.22 のクリーンアップでは、この拡張機能を削除してロジックをランナーへ集約し、OpenAI に対しては画像のサニタイズを除き**無変更**としました。
 
-## 関連
+## 関連項目
 
 - [セッション管理](/ja-JP/concepts/session)
-- [セッション pruning](/ja-JP/concepts/session-pruning)
+- [セッションのプルーニング](/ja-JP/concepts/session-pruning)

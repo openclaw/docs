@@ -1,80 +1,80 @@
 ---
 read_when:
-    - Potrzebujesz omówienia architektury sieci i bezpieczeństwa
-    - Diagnozujesz dostęp lokalny, dostęp przez tailnet lub parowanie
-    - Chcesz kanoniczną listę dokumentacji dotyczącej sieci
-summary: 'Centrum sieciowe: powierzchnie Gateway, parowanie, wykrywanie i zabezpieczenia'
+    - Potrzebujesz omówienia architektury sieci i zabezpieczeń
+    - Debugujesz dostęp lokalny i przez tailnet lub parowanie
+    - Potrzebujesz kanonicznej listy dokumentacji sieciowej
+summary: 'Centrum sieciowe: interfejsy Gateway, parowanie, wykrywanie i bezpieczeństwo'
 title: Sieć
 x-i18n:
-    generated_at: "2026-05-06T09:19:47Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:16:06Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7b0ff6c4ee46005aeac1612ea40f1ce3d5824aa507d0842788dbf4bffbaccfcc
+    source_hash: 9751bb0fe71009455b243b109ef7ef4eda08d58f940f7dcef305800a5ed89586
     source_path: network.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Ten hub łączy podstawowe dokumenty dotyczące tego, jak OpenClaw łączy, paruje i zabezpiecza
-urządzenia w localhost, LAN i tailnet.
+To centrum zawiera odnośniki do najważniejszej dokumentacji dotyczącej sposobu, w jaki OpenClaw łączy i paruje urządzenia oraz zabezpiecza je
+w środowiskach localhost, LAN i tailnet.
 
 ## Model podstawowy
 
-Większość operacji przechodzi przez Gateway (`openclaw gateway`), pojedynczy długotrwały proces, który zarządza połączeniami kanałów i płaszczyzną sterowania WebSocket.
+Większość operacji odbywa się za pośrednictwem Gateway (`openclaw gateway`) — pojedynczego, długotrwale działającego procesu, który zarządza połączeniami kanałów i warstwą sterowania WebSocket.
 
-- **Najpierw loopback**: Gateway WS domyślnie używa `ws://127.0.0.1:18789`.
-  Bindowanie poza loopback wymaga prawidłowej ścieżki uwierzytelniania Gateway: uwierzytelniania
-  współdzielonym sekretem token/hasło albo poprawnie skonfigurowanego wdrożenia
+- **Najpierw local loopback**: domyślny adres WS Gateway to `ws://127.0.0.1:18789`.
+  Powiązania inne niż loopback nie zostaną uruchomione bez prawidłowej ścieżki uwierzytelniania Gateway:
+  uwierzytelniania za pomocą współdzielonego tajnego tokenu lub hasła albo poprawnie skonfigurowanego wdrożenia
   `trusted-proxy` poza loopback.
-- **Zalecany jest jeden Gateway na host**. W celu izolacji uruchom wiele gatewayów z odizolowanymi profilami i portami ([Wiele Gatewayów](/pl/gateway/multiple-gateways)).
-- **Host Canvas** jest serwowany na tym samym porcie co Gateway (`/__openclaw__/canvas/`, `/__openclaw__/a2ui/`), chroniony przez uwierzytelnianie Gateway, gdy jest zbindowany poza loopback.
-- **Dostęp zdalny** to zwykle tunel SSH lub VPN Tailscale ([Dostęp zdalny](/pl/gateway/remote)).
+- Zaleca się używanie **jednego Gateway na hosta**. W celu izolacji można uruchomić wiele instancji Gateway z odrębnymi profilami i portami ([Wiele instancji Gateway](/pl/gateway/multiple-gateways)).
+- **Host Canvas** jest udostępniany na tym samym porcie co Gateway (`/__openclaw__/canvas/`, `/__openclaw__/a2ui/`) i jest chroniony przez uwierzytelnianie Gateway, gdy nasłuch wykracza poza loopback.
+- **Dostęp zdalny** jest zwykle realizowany przez tunel SSH lub VPN Tailscale ([Dostęp zdalny](/pl/gateway/remote)).
 
-Kluczowe odnośniki:
+Najważniejsze materiały:
 
 - [Architektura Gateway](/pl/concepts/architecture)
 - [Protokół Gateway](/pl/gateway/protocol)
-- [Runbook Gateway](/pl/gateway)
-- [Powierzchnie webowe + tryby bindowania](/pl/web)
+- [Podręcznik operacyjny Gateway](/pl/gateway)
+- [Interfejsy internetowe i tryby powiązania](/pl/web)
 
-## Parowanie + tożsamość
+## Parowanie i tożsamość
 
-- [Przegląd parowania (DM + węzły)](/pl/channels/pairing)
+- [Omówienie parowania (wiadomości prywatne i węzły)](/pl/channels/pairing)
 - [Parowanie węzłów zarządzane przez Gateway](/pl/gateway/pairing)
-- [CLI urządzeń (parowanie + rotacja tokenów)](/pl/cli/devices)
-- [CLI parowania (zatwierdzenia DM)](/pl/cli/pairing)
+- [CLI urządzeń (parowanie i rotacja tokenów)](/pl/cli/devices)
+- [CLI parowania (zatwierdzanie wiadomości prywatnych)](/pl/cli/pairing)
 
 Zaufanie lokalne:
 
-- Bezpośrednie połączenia local loopback mogą być automatycznie zatwierdzane do parowania, aby zachować
-  płynne UX na tym samym hoście.
-- OpenClaw ma także wąską ścieżkę samopołączenia backendu/kontenera lokalnego dla
-  zaufanych przepływów pomocniczych ze współdzielonym sekretem.
-- Klienci tailnet i LAN, w tym bindowania tailnet na tym samym hoście, nadal wymagają
+- Bezpośrednie lokalne połączenia local loopback (bez przekazywanych nagłówków lub nagłówków serwera proxy) mogą być
+  automatycznie zatwierdzane do parowania, aby zapewnić płynną obsługę na tym samym hoście.
+- OpenClaw ma również ściśle ograniczoną ścieżkę samodzielnego połączenia lokalnego dla backendu lub kontenera,
+  przeznaczoną dla zaufanych przepływów pomocniczych korzystających ze współdzielonego sekretu.
+- Klienci tailnet i LAN, w tym powiązania tailnet na tym samym hoście, nadal wymagają
   jawnego zatwierdzenia parowania.
 
-## Wykrywanie + transporty
+## Wykrywanie i transporty
 
 - [Wykrywanie i transporty](/pl/gateway/discovery)
 - [Bonjour / mDNS](/pl/gateway/bonjour)
 - [Dostęp zdalny (SSH)](/pl/gateway/remote)
 - [Tailscale](/pl/gateway/tailscale)
 
-## Węzły + transporty
+## Węzły i transporty
 
-- [Przegląd węzłów](/pl/nodes)
-- [Protokół mostu (starsze węzły, historyczny)](/pl/gateway/bridge-protocol)
-- [Runbook węzła: iOS](/pl/platforms/ios)
-- [Runbook węzła: Android](/pl/platforms/android)
+- [Omówienie węzłów](/pl/nodes)
+- [Protokół mostu (starsze węzły, informacje historyczne)](/pl/gateway/bridge-protocol)
+- [Podręcznik operacyjny węzła: iOS](/pl/platforms/ios)
+- [Podręcznik operacyjny węzła: Android](/pl/platforms/android)
 
 ## Bezpieczeństwo
 
-- [Przegląd bezpieczeństwa](/pl/gateway/security)
+- [Omówienie bezpieczeństwa](/pl/gateway/security)
 - [Dokumentacja konfiguracji Gateway](/pl/gateway/configuration)
 - [Rozwiązywanie problemów](/pl/gateway/troubleshooting)
-- [Doctor](/pl/gateway/doctor)
+- [Narzędzie diagnostyczne](/pl/gateway/doctor)
 
-## Powiązane
+## Powiązane materiały
 
-- [Runbook Gateway](/pl/gateway)
+- [Podręcznik operacyjny Gateway](/pl/gateway)
 - [Dostęp zdalny](/pl/gateway/remote)

@@ -1,26 +1,26 @@
 ---
 read_when:
     - Her zaman açık grup veya kanal odalarını yapılandırma
-    - Ajanın nihai metni otomatik olarak göndermeden oda sohbetini izlemesini istiyorsunuz
-    - Görünür oda mesajı olmadan yazma ve token kullanımında hata ayıklama
+    - Agentin, nihai metni otomatik olarak göndermeden odadaki sohbeti izlemesini istiyorsunuz.
+    - Görünür bir oda mesajı olmadan yazma durumunda ve token kullanımında hata ayıklama
 sidebarTitle: Ambient room events
-summary: Desteklenen grup odalarının, ajan mesaj aracıyla göndermedikçe sessiz bağlam sağlamasına izin ver
-title: Ortam odası olayları
+summary: Desteklenen grup odaları, ajan mesaj aracıyla gönderim yapmadığı sürece sessiz bağlam sağlasın
+title: Ortam oda etkinlikleri
 x-i18n:
-    generated_at: "2026-07-02T17:44:04Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:03:15Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8e3dcf5abab58d9bfd75b7cef6c8a55b98f6688a895774b8ba4a1ffc5723e0a6
+    source_hash: 3f144b44c8ae0a78e756d741c7b4685632862c0eb15531185ddeb0c2ba801e1a
     source_path: channels/ambient-room-events.md
     workflow: 16
 ---
 
-Ortam oda olayları, OpenClaw’ın bahsedilmemiş grup veya kanal sohbetlerini sessiz bağlam olarak işlemesini sağlar. Aracı belleği ve oturum durumunu güncelleyebilir, ancak aracı açıkça `message` aracını çağırmadıkça oda sessiz kalır.
+Ortam oda etkinlikleri, OpenClaw'un bahsedilmediği grup veya kanal sohbetlerini sessiz bağlam olarak işlemesini sağlar. Ajan belleği ve oturum durumunu güncelleyebilir, ancak ajan açıkça `message` aracını çağırmadıkça oda sessiz kalır.
 
-Her zaman açık grup sohbetleri için önerilen mod budur: `messages.groupChat.unmentionedInbound: "room_event"` ile `messages.groupChat.visibleReplies: "message_tool"` değerlerini birlikte kullanın. Aracının dinlemesi, yanıtın ne zaman yararlı olacağına karar vermesi ve eski `NO_REPLY` yanıtlama istemi kalıbından kaçınması gerektiğinde bunu kullanın.
+Sürekli etkin grup sohbetleri için `messages.groupChat.unmentionedInbound: "room_event"` ile `messages.groupChat.visibleReplies: "message_tool"` ayarlarını birlikte kullanın. Ajan dinler, yanıtın ne zaman yararlı olacağına karar verir ve artık eski `NO_REPLY` yanıt istemi kalıbına ihtiyaç duymaz.
 
-Bugün desteklenenler: Discord sunucu kanalları, Slack kanalları ve özel kanallar, Slack çok kişili DM’leri ve Telegram grupları veya süper grupları. Diğer grup kanalları, kanal sayfalarında ortam oda olaylarını destekledikleri belirtilmedikçe mevcut grup davranışlarını korur.
+Şu anda desteklenenler: Discord sunucu kanalları, Slack kanalları ve özel kanalları, Slack çok kişili doğrudan mesajları ve Telegram grupları veya süper grupları. Diğer grup kanalları, kanal sayfalarında ortam oda etkinliklerini destekledikleri belirtilmediği sürece mevcut grup davranışlarını korur.
 
 ## Önerilen kurulum
 
@@ -38,21 +38,23 @@ Genel grup sohbeti davranışını ayarlayın:
 }
 ```
 
-Ardından o oda için bahsetme kapısını devre dışı bırakarak odanın kendisini her zaman açık olacak şekilde yapılandırın. Kanalın yine de normal `groupPolicy`, oda izin listesi ve gönderen izin listesi tarafından izin verilmiş olması gerekir.
+Ardından o oda için bahsetme zorunluluğunu devre dışı bırakarak odayı sürekli etkin hâle getirin. Odanın yine de normal `groupPolicy`, oda izin listesi ve gönderen izin listesi denetimlerinden geçmesi gerekir.
 
-Yapılandırmayı kaydettikten sonra Gateway, `messages` ayarlarını sıcak yeniden yükler. Yalnızca dosya izleme veya yapılandırma yeniden yükleme devre dışıysa yeniden başlatın.
+Yapılandırmayı kaydettikten sonra Gateway, `messages` ayarlarını çalışırken uygular. Yalnızca dosya izleme veya yapılandırmayı yeniden yükleme devre dışıysa (`gateway.reload.mode: "off"`) yeniden başlatın.
 
-## Neler değişir
+## Neler değişir?
 
 `messages.groupChat.unmentionedInbound: "room_event"` ile:
 
-- bahsedilmemiş, izin verilen grup veya kanal mesajları sessiz oda olaylarına dönüşür
-- bahsedilen mesajlar kullanıcı isteği olarak kalır
-- metin komutları ve yerel komutlar kullanıcı isteği olarak kalır
-- iptal veya durdurma istekleri kullanıcı isteği olarak kalır
-- doğrudan mesajlar kullanıcı isteği olarak kalır
+- izin verilen, bahsetme içermeyen grup veya kanal mesajları sessiz oda etkinliklerine dönüşür
+- bahsetme içeren mesajlar kullanıcı istekleri olarak kalır
+- metin denetim komutları ve yerel komutlar kullanıcı istekleri olarak kalır
+- iptal veya durdurma istekleri kullanıcı istekleri olarak kalır
+- doğrudan mesajlar kullanıcı istekleri olarak kalır
 
-Oda olayları katı görünür teslim kullanır. Son asistan metni özeldir. Aracının odaya gönderi yapmak için `message(action=send)` çağırması gerekir.
+Oda etkinlikleri katı görünür teslim kullanır. Son asistan metni özeldir. Ajanın odada gönderi paylaşmak için `message(action=send)` çağrısı yapması gerekir.
+
+Yazıyor göstergeleri ve yaşam döngüsü durum tepkileri oda etkinliklerinde gösterilmez. Tek açık alındı istisnası, yapılandırılan alındı tepkisini gönderen `messages.ackReactionScope: "all"` ayarıdır; odanın tamamen sessiz kalması gerektiğinde daha dar bir kapsam veya `"off"` kullanın.
 
 ## Discord örneği
 
@@ -79,17 +81,17 @@ Oda olayları katı görünür teslim kullanır. Son asistan metni özeldir. Ara
 }
 ```
 
-Yalnızca bir kanal ortam modunda olmalıysa kanal başına Discord yapılandırmasını kullanın:
+Yalnızca bir kanalın ortam bağlamı olarak kullanılması gerekiyorsa kanal başına Discord yapılandırmasını kullanın. `groupPolicy: "allowlist"` altında kanalı listelemek ona izin verilmesini sağlar (`enabled: false` bir girdiyi devre dışı bırakır):
 
 ```json5
 {
   channels: {
     discord: {
+      groupPolicy: "allowlist",
       guilds: {
         "<DISCORD_SERVER_ID>": {
           channels: {
             "<DISCORD_CHANNEL_ID_OR_NAME>": {
-              allow: true,
               requireMention: false,
             },
           },
@@ -102,7 +104,7 @@ Yalnızca bir kanal ortam modunda olmalıysa kanal başına Discord yapılandır
 
 ## Slack örneği
 
-Slack kanal izin listeleri önce ID kullanır. `#channel-name` yerine `C12345678` gibi kanal ID’leri kullanın.
+Slack kanal izin listelerinde öncelik kimliklerdedir. `#kanal-adı` değil, `C12345678` gibi kanal kimliklerini kullanın. Kanalı `channels.slack.channels` altında listelemek ona izin verilmesini sağlar (`enabled: false` bir girdiyi devre dışı bırakır):
 
 ```json5
 {
@@ -118,7 +120,6 @@ Slack kanal izin listeleri önce ID kullanır. `#channel-name` yerine `C12345678
       groupPolicy: "allowlist",
       channels: {
         "<SLACK_CHANNEL_ID>": {
-          allow: true,
           requireMention: false,
         },
       },
@@ -129,7 +130,7 @@ Slack kanal izin listeleri önce ID kullanır. `#channel-name` yerine `C12345678
 
 ## Telegram örneği
 
-Telegram grupları için botun normal grup mesajlarını görebilmesi gerekir. `requireMention: false` ise BotFather gizlilik modunu devre dışı bırakın veya tam grup trafiğini bota ileten başka bir Telegram kurulumu kullanın.
+Telegram gruplarında botun normal grup mesajlarını görebilmesi gerekir. `requireMention: false` ise BotFather gizlilik modunu devre dışı bırakın veya tüm grup trafiğini bota ileten başka bir Telegram kurulumu kullanın.
 
 ```json5
 {
@@ -153,11 +154,11 @@ Telegram grupları için botun normal grup mesajlarını görebilmesi gerekir. `
 }
 ```
 
-Telegram grup ID’leri genellikle `-1001234567890` gibi negatif sayılardır. `chat.id` değerini `openclaw logs --follow` çıktısından okuyun, bir grup mesajını ID yardımcı botuna yönlendirin veya Bot API `getUpdates` değerini inceleyin.
+Telegram grup kimlikleri genellikle `-1001234567890` gibi negatif sayılardır. `openclaw logs --follow` çıktısından `chat.id` değerini okuyun, bir grup mesajını kimlik yardımcı botuna iletin veya Bot API `getUpdates` çıktısını inceleyin.
 
-## Aracıya özel ilke
+## Ajana özgü politika
 
-Birden fazla aracı aynı odayı paylaşıyor ancak yalnızca birinin bahsedilmemiş sohbeti ortam bağlamı olarak ele alması gerekiyorsa aracı geçersiz kılması kullanın:
+Birden fazla ajan aynı odayı paylaşıyor ancak yalnızca birinin bahsetme içermeyen sohbetleri ortam bağlamı olarak ele alması gerekiyorsa ajan geçersiz kılmasını kullanın:
 
 ```json5
 {
@@ -180,37 +181,35 @@ Birden fazla aracı aynı odayı paylaşıyor ancak yalnızca birinin bahsedilme
 }
 ```
 
-Aracıya özel `agents.list[].groupChat.unmentionedInbound` değeri, o aracı için `messages.groupChat.unmentionedInbound` değerini geçersiz kılar.
+Ajana özgü `agents.list[].groupChat.unmentionedInbound` değeri, söz konusu ajan için `messages.groupChat.unmentionedInbound` değerini geçersiz kılar.
 
 ## Görünür yanıt modları
 
-`messages.groupChat.visibleReplies`, normal grup/kanal kullanıcı istekleri için varsayılan olarak `"automatic"` değerindedir. Son asistan metninin açık bir mesaj aracı çağrısı gerektirmeden görünür şekilde gönderilmesini istediğinizde bu varsayılanı koruyun.
+`messages.groupChat.visibleReplies`, normal grup/kanal kullanıcı istekleri için varsayılan olarak `"automatic"` değerini kullanır. Son asistan metninin açık bir mesaj aracı çağrısı olmadan görünür biçimde gönderilmesi gerekiyorsa bu varsayılanı koruyun.
 
-Ortamda her zaman açık odalar için, özellikle GPT 5.5 gibi en yeni nesil, araç açısından güvenilir modellerle `messages.groupChat.visibleReplies: "message_tool"` hâlâ önerilir. Bu, aracının mesaj aracını çağırarak ne zaman konuşacağına karar vermesini sağlar. Model aracı çağırmadan son metin döndürürse OpenClaw bu son metni özel tutar ve bastırılmış teslim meta verilerini günlüğe kaydeder.
+Sürekli etkin ortam odaları için, özellikle GPT-5.6 Sol gibi en yeni nesil, araç kullanımında güvenilir modellerle `messages.groupChat.visibleReplies: "message_tool"` hâlâ önerilir. Bu ayar, ajanın mesaj aracını çağırarak ne zaman konuşacağına karar vermesini sağlar. Model aracı çağırmadan son metni döndürürse OpenClaw bu son metni özel tutar ve engellenen teslim meta verilerini günlüğe kaydeder.
 
-Diğer grup istekleri otomatik yanıtlar kullansa bile oda olayları katı kalır. Bahsedilmemiş ortam oda olayları, görünür çıktı için yine de `message(action=send)` gerektirir.
+Diğer grup istekleri otomatik yanıtları kullansa bile oda etkinlikleri katı davranışını korur. Bahsetme içermeyen ortam oda etkinliklerinde görünür çıktı için her zaman `message(action=send)` gerekir.
 
 ## Geçmiş
 
-`messages.groupChat.historyLimit`, genel grup geçmişi varsayılanını denetler. Kanallar bunu `channels.<channel>.historyLimit` ile geçersiz kılabilir ve bazı kanallar hesap başına geçmiş sınırlarını da destekler.
+`messages.groupChat.historyLimit`, genel grup geçmişi varsayılanını belirler (ayarlanmadığında 50; pozitif bir tam sayı olmalıdır). Kanallar bunu `channels.<channel>.historyLimit` ile geçersiz kılabilir ve bazı kanallar hesap başına geçmiş sınırlarını da destekler. Söz konusu kanal için grup geçmişi bağlamını devre dışı bırakmak üzere kanal düzeyindeki `historyLimit` değerini `0` olarak ayarlayın.
 
-Grup geçmişi bağlamını devre dışı bırakmak için `historyLimit: 0` ayarlayın.
-
-Desteklenen oda olayı kanalları, yakın tarihli ortam oda mesajlarını bağlam olarak tutar. Telegram, `historyLimit` ile sınırlanmış, her zaman açık dönen bir grup başına pencere tutar; kullanıcı isteği turları botun son kaydedilmiş yanıtından sonraki girdileri seçerken, oda olayı turları modelin kendi yakın tarihli gönderilerini görebilmesi için tam yakın geçmiş penceresini alır. Kullanımdan kaldırılmış Telegram `includeGroupHistoryContext` mod anahtarı `openclaw doctor --fix` tarafından kaldırılır.
+Oda etkinliğini destekleyen kanallar, yakın tarihli ortam oda mesajlarını bağlam olarak tutar. Telegram, `historyLimit` ile sınırlandırılan ve grup başına sürekli etkin olan kayan bir pencere tutar; kullanıcı isteği dönüşleri botun kaydedilen son yanıtından sonraki girdileri seçerken oda etkinliği dönüşleri, modelin kendi yakın tarihli gönderilerini görebilmesi için yakın tarihli pencerenin tamamını alır. Kullanımdan kaldırılan Telegram `includeGroupHistoryContext` mod anahtarı, `openclaw doctor --fix` tarafından kaldırılır.
 
 ## Sorun giderme
 
-Oda yazıyor göstergesi veya token kullanımı gösteriyor ancak görünür mesaj göstermiyorsa:
+Odada yazıyor göstergesi veya token kullanımı görünüyor ancak görünür bir mesaj görünmüyorsa:
 
-1. Odanın kanal izin listesi ve gönderen izin listesi tarafından izinli olduğunu doğrulayın.
-2. `requireMention: false` değerinin beklediğiniz oda düzeyinde ayarlandığını doğrulayın.
-3. `messages.groupChat.unmentionedInbound` veya aracı geçersiz kılmasının `"room_event"` olup olmadığını kontrol edin.
-4. Bastırılmış son yük meta verileri veya `didSendViaMessagingTool: false` için günlükleri inceleyin.
-5. Normal grup istekleri için son yanıtların otomatik gönderilmesini istiyorsanız `messages.groupChat.visibleReplies: "automatic"` değerini koruyun veya geri yükleyin. `message_tool` kullanan ortam odaları için araçları güvenilir şekilde çağıran bir model/çalışma zamanı kullanın.
+1. Odaya kanal izin listesi ve gönderen izin listesi tarafından izin verildiğini doğrulayın.
+2. Beklediğiniz oda düzeyinde `requireMention: false` ayarlandığını doğrulayın.
+3. `messages.groupChat.unmentionedInbound` veya ajan geçersiz kılmasının `"room_event"` olup olmadığını kontrol edin.
+4. Engellenen son yük meta verileri veya `didSendViaMessagingTool: false` için günlükleri inceleyin.
+5. Normal grup isteklerinde son yanıtların otomatik olarak gönderilmesini istiyorsanız `messages.groupChat.visibleReplies: "automatic"` ayarını koruyun veya geri yükleyin. `message_tool` kullanan ortam odalarında araçları güvenilir biçimde çağıran bir model/çalışma zamanı kullanın.
 
-Telegram ortam odaları hiç tetiklenmiyorsa BotFather gizlilik modunu kontrol edin ve Gateway’in normal grup mesajlarını aldığını doğrulayın.
+Telegram ortam odaları hiç tetiklenmiyorsa BotFather gizlilik modunu kontrol edin ve Gateway'in normal grup mesajlarını aldığını doğrulayın.
 
-Slack ortam odaları tetiklenmiyorsa kanal anahtarının Slack kanal ID’si olduğunu ve uygulamanın o oda türü için gerekli `channels:history` veya `groups:history` kapsamına sahip olduğunu doğrulayın.
+Slack ortam odaları tetiklenmiyorsa kanal anahtarının Slack kanal kimliği olduğunu ve uygulamanın söz konusu oda türü için geçmiş kapsamına sahip olduğunu doğrulayın: `channels:history` (herkese açık), `groups:history` (özel) veya `mpim:history` (çok kişili doğrudan mesajlar).
 
 ## İlgili
 
@@ -218,5 +217,5 @@ Slack ortam odaları tetiklenmiyorsa kanal anahtarının Slack kanal ID’si old
 - [Discord](/tr/channels/discord)
 - [Slack](/tr/channels/slack)
 - [Telegram](/tr/channels/telegram)
-- [Kanal sorun giderme](/tr/channels/troubleshooting)
-- [Kanal yapılandırma başvurusu](/tr/gateway/config-channels)
+- [Kanal sorunlarını giderme](/tr/channels/troubleshooting)
+- [Kanal yapılandırması başvurusu](/tr/gateway/config-channels)

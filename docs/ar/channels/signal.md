@@ -2,103 +2,65 @@
 read_when:
     - إعداد دعم Signal
     - تصحيح أخطاء إرسال/استقبال Signal
-summary: دعم Signal عبر signal-cli (الخادم الأصلي أو حاوية bbernhard)، ومسارات الإعداد، ونموذج الرقم
+summary: دعم Signal عبر signal-cli (خدمة أصلية أو حاوية bbernhard)، ومسارات الإعداد، ونموذج الأرقام
 title: Signal
 x-i18n:
-    generated_at: "2026-07-03T15:29:31Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T05:35:30Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 862afe3764e89aa026d245f57134b8e8e157539f24975ca341d67296fb8852d0
+    source_hash: db2497d0d6dcdc61cf9f7388929f9ee107602c9ed97bd248e20e67519e878b8b
     source_path: channels/signal.md
     workflow: 16
 ---
 
-الحالة: تكامل CLI خارجي. يتواصل Gateway مع `signal-cli` عبر HTTP — إما عفريت أصلي (JSON-RPC + SSE) أو حاوية bbernhard/signal-cli-rest-api (REST + WebSocket).
+Signal هو Plugin قناة قابل للتنزيل (`@openclaw/signal`). يتواصل Gateway مع `signal-cli` عبر HTTP: إما الخدمة الخفية الأصلية (JSON-RPC + SSE) أو حاوية [bbernhard/signal-cli-rest-api](https://github.com/bbernhard/signal-cli-rest-api) (REST + WebSocket). لا يضمّن OpenClaw مكتبة libsignal.
 
-## المتطلبات الأساسية
+## نموذج الأرقام (اقرأ هذا أولًا)
 
-- تثبيت OpenClaw على خادمك (تم اختبار مسار Linux أدناه على Ubuntu 24).
-- واحد مما يلي:
-  - توفر `signal-cli` على المضيف (الوضع الأصلي)، **أو**
-  - حاوية Docker باسم `bbernhard/signal-cli-rest-api` (وضع الحاوية).
-- رقم هاتف يمكنه تلقي رسالة SMS واحدة للتحقق (لمسار التسجيل عبر SMS).
-- وصول عبر المتصفح لكابتشا Signal (`signalcaptchas.org`) أثناء التسجيل.
+- يتصل Gateway **بجهاز Signal**: حساب `signal-cli`.
+- يؤدي تشغيل الروبوت على **حساب Signal الشخصي الخاص بك** إلى تجاهله رسائلك (حماية من الحلقات).
+- للحصول على سلوك «أرسل رسالة إلى الروبوت فيرد»، استخدم **رقمًا منفصلًا للروبوت**.
 
-## الإعداد السريع (للمبتدئين)
-
-1. استخدم **رقم Signal منفصلا** للبوت (موصى به).
-2. ثبّت Plugin الخاص بـ OpenClaw:
+## التثبيت
 
 ```bash
 openclaw plugins install @openclaw/signal
 ```
 
-3. ثبّت `signal-cli` (يتطلب Java إذا استخدمت بناء JVM).
-4. اختر مسار إعداد واحدا:
-   - **المسار أ (ربط QR):** `signal-cli link -n "OpenClaw"` ثم امسح الرمز باستخدام Signal.
-   - **المسار ب (تسجيل SMS):** سجّل رقما مخصصا باستخدام كابتشا + تحقق SMS.
-5. اضبط OpenClaw وأعد تشغيل Gateway.
-6. أرسل رسالة خاصة أولى ووافق على الاقتران (`openclaw pairing approve signal <CODE>`).
+تحاول مواصفات Plugin المجرّدة استخدام ClawHub أولًا، ثم ترجع إلى npm. افرض مصدرًا باستخدام `openclaw plugins install clawhub:@openclaw/signal` أو `npm:@openclaw/signal`. يسجّل `plugins install` الـ Plugin ويفعّله؛ ولا حاجة إلى خطوة `enable` منفصلة. راجع [الإضافات](/ar/tools/plugin) للاطلاع على قواعد التثبيت العامة.
 
-الحد الأدنى من الإعدادات:
+## الإعداد السريع
 
-```json5
-{
-  channels: {
-    signal: {
-      enabled: true,
-      account: "+15551234567",
-      cliPath: "signal-cli",
-      dmPolicy: "pairing",
-      allowFrom: ["+15557654321"],
-    },
-  },
-}
-```
+<Steps>
+  <Step title="اختر رقمًا">
+    استخدم **رقم Signal منفصلًا** للروبوت (موصى به).
+  </Step>
+  <Step title="ثبّت الـ Plugin">
+    ```bash
+    openclaw plugins install @openclaw/signal
+    ```
+  </Step>
+  <Step title="شغّل الإعداد الإرشادي">
+    ```bash
+    openclaw channels add
+    ```
+    يكتشف المعالج ما إذا كان `signal-cli` موجودًا في `PATH`، ويعرض تثبيته عند عدم وجوده: إذ ينزّل بنية GraalVM الأصلية الرسمية على Linux x86-64، أو يثبّته عبر Homebrew على macOS والمعماريات الأخرى. ثم يطلب رقم الروبوت ومسار `signal-cli`.
+  </Step>
+  <Step title="اربط الحساب أو سجّله">
+    - **الربط عبر رمز QR (الأسرع):** `signal-cli link -n "OpenClaw"`، ثم امسح الرمز باستخدام Signal. راجع [المسار أ](#setup-path-a-link-existing-signal-account-qr).
+    - **التسجيل عبر SMS:** رقم مخصص مع اختبار captcha والتحقق عبر SMS. راجع [المسار ب](#setup-path-b-register-dedicated-bot-number-sms-linux).
 
-مرجع الحقول:
+  </Step>
+  <Step title="تحقّق وأجرِ الاقتران">
+    ```bash
+    openclaw gateway call channels.status --params '{"probe":true}'
+    ```
+    أرسل أول رسالة خاصة ووافق على الاقتران: `openclaw pairing approve signal <CODE>`.
+  </Step>
+</Steps>
 
-| الحقل        | الوصف                                                    |
-| ------------ | -------------------------------------------------------- |
-| `account`    | رقم هاتف البوت بتنسيق E.164 (`+15551234567`)             |
-| `cliPath`    | المسار إلى `signal-cli` (`signal-cli` إذا كان على `PATH`) |
-| `configPath` | دليل إعدادات signal-cli الممرر كـ `--config`             |
-| `dmPolicy`   | سياسة الوصول للرسائل الخاصة (يوصى بـ `pairing`)          |
-| `allowFrom`  | أرقام الهاتف أو قيم `uuid:<id>` المسموح لها بإرسال رسائل خاصة |
-
-## ما هو
-
-- قناة Signal عبر `signal-cli` (وليس libsignal مضمن).
-- توجيه حتمي: تعود الردود دائما إلى Signal.
-- تشارك الرسائل الخاصة جلسة الوكيل الرئيسية؛ المجموعات معزولة (`agent:<agentId>:signal:group:<groupId>`).
-
-## عمليات كتابة الإعدادات
-
-افتراضيا، يسمح لـ Signal بكتابة تحديثات الإعدادات التي تشغّلها `/config set|unset` (تتطلب `commands.config: true`).
-
-عطّل ذلك باستخدام:
-
-```json5
-{
-  channels: { signal: { configWrites: false } },
-}
-```
-
-## نموذج الرقم (مهم)
-
-- يتصل Gateway بـ **جهاز Signal** (حساب `signal-cli`).
-- إذا شغّلت البوت على **حساب Signal الشخصي الخاص بك**، فسيتجاهل رسائلك أنت (حماية من الحلقة).
-- من أجل "أراسل البوت فيرد"، استخدم **رقم بوت منفصلا**.
-
-## مسار الإعداد أ: ربط حساب Signal موجود (QR)
-
-1. ثبّت `signal-cli` (بناء JVM أو البناء الأصلي).
-2. اربط حساب بوت:
-   - `signal-cli link -n "OpenClaw"` ثم امسح رمز QR في Signal.
-3. اضبط Signal وابدأ Gateway.
-
-مثال:
+الحد الأدنى من الإعداد:
 
 ```json5
 {
@@ -114,14 +76,33 @@ openclaw plugins install @openclaw/signal
 }
 ```
 
-دعم الحسابات المتعددة: استخدم `channels.signal.accounts` مع إعداد لكل حساب و`name` اختياري. راجع [`gateway/configuration`](/ar/gateway/config-channels#multi-account-all-channels) للنمط المشترك.
+| الحقل         | الوصف                                                        |
+| ------------- | ------------------------------------------------------------ |
+| `account`     | رقم هاتف الروبوت بتنسيق E.164 (`+15551234567`)               |
+| `cliPath`     | مسار `signal-cli` (`signal-cli` إذا كان موجودًا في `PATH`)    |
+| `configPath`  | دليل إعداد `signal-cli` الممرّر عبر `--config`                |
+| `dmPolicy`    | سياسة الوصول إلى الرسائل الخاصة (يُوصى بـ `pairing`)         |
+| `allowFrom`   | أرقام الهواتف أو قيم `uuid:<id>` المسموح لها بإرسال رسائل خاصة |
 
-## مسار الإعداد ب: تسجيل رقم بوت مخصص (SMS، Linux)
+دعم الحسابات المتعددة: استخدم `channels.signal.accounts` مع إعداد لكل حساب و`name` اختياري. راجع [القنوات متعددة الحسابات](/ar/gateway/config-channels#multi-account-all-channels) للاطلاع على النمط المشترك.
 
-استخدم هذا عندما تريد رقم بوت مخصصا بدلا من ربط حساب تطبيق Signal موجود.
+## ماهيته
 
-1. احصل على رقم يمكنه تلقي SMS (أو تحقق صوتي للخطوط الأرضية).
-   - استخدم رقم بوت مخصصا لتجنب تعارضات الحساب/الجلسة.
+- توجيه حتمي: تعود الردود دائمًا إلى Signal.
+- تشترك الرسائل الخاصة في الجلسة الرئيسية للوكيل؛ وتكون المجموعات معزولة (`agent:<agentId>:signal:group:<groupId>`).
+- افتراضيًا، قد يكتب Signal تحديثات الإعداد التي يشغّلها `/config set|unset` (يتطلب `commands.config: true`). عطّل ذلك باستخدام `channels.signal.configWrites: false`.
+
+## مسار الإعداد أ: ربط حساب Signal حالي (QR)
+
+1. ثبّت `signal-cli` (بنية JVM أو البنية الأصلية)، أو دع `openclaw channels add` يثبّته لك.
+2. اربط حساب روبوت: `signal-cli link -n "OpenClaw"`، ثم امسح رمز QR في Signal.
+3. اضبط Signal وشغّل Gateway.
+
+## مسار الإعداد ب: تسجيل رقم روبوت مخصص (SMS، ‏Linux)
+
+استخدم هذا لرقم روبوت مخصص بدلًا من ربط حساب تطبيق Signal حالي. اختُبر التدفق التالي على Ubuntu 24.
+
+1. احصل على رقم يمكنه تلقي رسائل SMS (أو التحقق الصوتي للهواتف الأرضية). يتجنب رقم الروبوت المخصص تعارضات الحساب والجلسة.
 2. ثبّت `signal-cli` على مضيف Gateway:
 
 ```bash
@@ -132,8 +113,7 @@ sudo ln -sf /opt/signal-cli /usr/local/bin/
 signal-cli --version
 ```
 
-إذا استخدمت بناء JVM (`signal-cli-${VERSION}.tar.gz`)، فثبّت JRE 25+ أولا.
-حافظ على تحديث `signal-cli`؛ تشير ملاحظات المنبع إلى أن الإصدارات القديمة قد تتعطل مع تغير واجهات API الخاصة بخادم Signal.
+إذا كنت تستخدم بنية JVM ‏(`signal-cli-${VERSION}.tar.gz`)، فثبّت JRE أولًا. حافظ على تحديث `signal-cli`؛ إذ تشير ملاحظات المنبع إلى أن الإصدارات القديمة قد تتعطل مع تغيّر واجهات API لخادم Signal.
 
 3. سجّل الرقم وتحقق منه:
 
@@ -141,12 +121,12 @@ signal-cli --version
 signal-cli -a +<BOT_PHONE_NUMBER> register
 ```
 
-إذا كانت الكابتشا مطلوبة:
+إذا كان اختبار captcha مطلوبًا (يلزم الوصول إلى متصفح لإكمال هذه الخطوة):
 
 1. افتح `https://signalcaptchas.org/registration/generate.html`.
-2. أكمل الكابتشا، وانسخ هدف الرابط `signalcaptcha://...` من "Open Signal".
-3. شغّل الأمر من عنوان IP الخارجي نفسه لجلسة المتصفح عندما يكون ذلك ممكنا.
-4. شغّل التسجيل مرة أخرى فورا (تنتهي صلاحية رموز الكابتشا بسرعة):
+2. أكمل اختبار captcha، وانسخ هدف الرابط `signalcaptcha://...` من "Open Signal".
+3. شغّل الأمر من عنوان IP الخارجي نفسه لجلسة المتصفح متى أمكن (تنتهي صلاحية رموز captcha سريعًا).
+4. سجّل وتحقق فورًا:
 
 ```bash
 signal-cli -a +<BOT_PHONE_NUMBER> register --captcha '<SIGNALCAPTCHA_URL>'
@@ -156,32 +136,32 @@ signal-cli -a +<BOT_PHONE_NUMBER> verify <VERIFICATION_CODE>
 4. اضبط OpenClaw، وأعد تشغيل Gateway، وتحقق من القناة:
 
 ```bash
-# If you run the gateway as a user systemd service:
+# إذا كنت تشغّل Gateway كخدمة systemd للمستخدم:
 systemctl --user restart openclaw-gateway.service
 
-# Then verify:
+# ثم تحقّق:
 openclaw doctor
 openclaw channels status --probe
 ```
 
-5. اقرن مرسل الرسائل الخاصة لديك:
-   - أرسل أي رسالة إلى رقم البوت.
-   - وافق على الرمز على الخادم: `openclaw pairing approve signal <PAIRING_CODE>`.
-   - احفظ رقم البوت كجهة اتصال على هاتفك لتجنب "Unknown contact".
+5. أقرن مرسل الرسائل الخاصة:
+   - أرسل أي رسالة إلى رقم الروبوت.
+   - وافق على الخادم: `openclaw pairing approve signal <PAIRING_CODE>`.
+   - احفظ رقم الروبوت كجهة اتصال على هاتفك لتجنب "Unknown contact".
 
 <Warning>
-قد يؤدي تسجيل حساب رقم هاتف باستخدام `signal-cli` إلى إلغاء مصادقة جلسة تطبيق Signal الرئيسية لذلك الرقم. فضّل استخدام رقم بوت مخصص، أو استخدم وضع ربط QR إذا كنت بحاجة إلى الاحتفاظ بإعداد تطبيق الهاتف الحالي.
+قد يؤدي تسجيل حساب رقم هاتف باستخدام `signal-cli` إلى إلغاء مصادقة جلسة تطبيق Signal الرئيسية لذلك الرقم. يُفضّل استخدام رقم روبوت مخصص، أو وضع الربط عبر QR للاحتفاظ بإعداد تطبيق الهاتف الحالي.
 </Warning>
 
 مراجع المنبع:
 
-- README الخاص بـ `signal-cli`: `https://github.com/AsamK/signal-cli`
-- تدفق الكابتشا: `https://github.com/AsamK/signal-cli/wiki/Registration-with-captcha`
+- ملف README الخاص بـ `signal-cli`: `https://github.com/AsamK/signal-cli`
+- تدفق captcha: `https://github.com/AsamK/signal-cli/wiki/Registration-with-captcha`
 - تدفق الربط: `https://github.com/AsamK/signal-cli/wiki/Linking-other-devices-(Provisioning)`
 
-## وضع العفريت الخارجي (httpUrl)
+## وضع الخدمة الخفية الخارجية (httpUrl)
 
-إذا أردت إدارة `signal-cli` بنفسك (بدايات JVM الباردة البطيئة، أو تهيئة الحاوية، أو وحدات CPU المشتركة)، فشغّل العفريت بشكل منفصل ووجّه OpenClaw إليه:
+لإدارة `signal-cli` بنفسك (بطء بدء JVM البارد، وتهيئة الحاوية، ووحدات المعالجة المركزية المشتركة)، شغّل الخدمة الخفية بصورة منفصلة ووجّه OpenClaw إليها:
 
 ```json5
 {
@@ -194,16 +174,16 @@ openclaw channels status --probe
 }
 ```
 
-يتجاوز هذا التشغيل التلقائي والانتظار عند بدء التشغيل داخل OpenClaw. للبدايات البطيئة عند التشغيل التلقائي، اضبط `channels.signal.startupTimeoutMs`.
+يتجاوز هذا التشغيل التلقائي وانتظار بدء OpenClaw. لعمليات البدء البطيئة ذات التشغيل التلقائي، اضبط `channels.signal.startupTimeoutMs`.
 
 ## وضع الحاوية (bbernhard/signal-cli-rest-api)
 
-بدلا من تشغيل `signal-cli` محليا، يمكنك استخدام حاوية Docker المسماة [bbernhard/signal-cli-rest-api](https://github.com/bbernhard/signal-cli-rest-api). يغلّف هذا `signal-cli` خلف واجهة REST API وواجهة WebSocket.
+بدلًا من تشغيل `signal-cli` بصورة أصلية، استخدم حاوية Docker المسماة [bbernhard/signal-cli-rest-api](https://github.com/bbernhard/signal-cli-rest-api)، التي تغلّف `signal-cli` خلف واجهة REST + WebSocket.
 
 المتطلبات:
 
 - **يجب** تشغيل الحاوية باستخدام `MODE=json-rpc` لتلقي الرسائل في الوقت الفعلي.
-- سجّل حساب Signal الخاص بك أو اربطه داخل الحاوية قبل توصيل OpenClaw.
+- سجّل حساب Signal أو اربطه داخل الحاوية قبل توصيل OpenClaw.
 
 مثال لخدمة `docker-compose.yml`:
 
@@ -218,7 +198,7 @@ signal-cli:
     - signal-cli-data:/home/.local/share/signal-cli
 ```
 
-إعدادات OpenClaw:
+إعداد OpenClaw:
 
 ```json5
 {
@@ -228,142 +208,125 @@ signal-cli:
       account: "+15551234567",
       httpUrl: "http://signal-cli:8080",
       autoStart: false,
-      apiMode: "container", // or "auto" to detect automatically
+      apiMode: "container", // أو "auto" للاكتشاف تلقائيًا
     },
   },
 }
 ```
 
-يتحكم حقل `apiMode` في البروتوكول الذي يستخدمه OpenClaw:
+يتحكم `apiMode` في البروتوكول الذي يستخدمه OpenClaw:
 
-| القيمة        | السلوك                                                                                |
-| ------------- | ------------------------------------------------------------------------------------- |
-| `"auto"`      | (افتراضي) يفحص كلا النقلين؛ يتحقق البث من تلقي WebSocket للحاوية                      |
-| `"native"`    | يفرض signal-cli الأصلي (JSON-RPC عند `/api/v1/rpc`، وSSE عند `/api/v1/events`)        |
-| `"container"` | يفرض حاوية bbernhard (REST عند `/v2/send`، وWebSocket عند `/v1/receive/{account}`)    |
+| القيمة          | السلوك                                                                                       |
+| --------------- | -------------------------------------------------------------------------------------------- |
+| `"auto"`        | (الافتراضي) يفحص وسيلتي النقل؛ ويتحقق البث من استقبال WebSocket للحاوية                     |
+| `"native"`      | يفرض `signal-cli` الأصلي (JSON-RPC عند `/api/v1/rpc`، وSSE عند `/api/v1/events`)              |
+| `"container"`   | يفرض حاوية bbernhard ‏(REST عند `/v2/send`، وWebSocket عند `/v1/receive/{account}`)            |
 
-عندما يكون `apiMode` هو `"auto"`، يخزّن OpenClaw الوضع المكتشف مؤقتا لمدة 30 ثانية لتجنب الفحوصات المتكررة. لا يتم اختيار تلقي الحاوية للبث إلا بعد ترقية `/v1/receive/{account}` إلى WebSocket، وهذا يتطلب `MODE=json-rpc`.
+عندما تكون قيمة `apiMode` هي `"auto"`، يخزّن OpenClaw الوضع المكتشف مؤقتًا لمدة 30 ثانية لكل عنوان URL للخدمة الخفية لتجنب تكرار الفحوصات (يفوز الوضع الأصلي عندما تكون وسيلتا النقل سليمتين). لا يُختار استقبال الحاوية للبث إلا بعد ترقية `/v1/receive/{account}` إلى WebSocket، الأمر الذي يتطلب `MODE=json-rpc`.
 
-يدعم وضع الحاوية عمليات قناة Signal نفسها مثل الوضع الأصلي حيث تعرض الحاوية واجهات API مطابقة: الإرسال، والتلقي، والمرفقات، ومؤشرات الكتابة، وإيصالات القراءة/العرض، والتفاعلات، والمجموعات، والنص المنسق. يترجم OpenClaw استدعاءات RPC الأصلية الخاصة بـ Signal إلى حمولات REST الخاصة بالحاوية، بما في ذلك معرفات المجموعات `group.{base64(internal_id)}` و`text_mode: "styled"` للنص المنسق.
+يدعم وضع الحاوية عمليات Signal نفسها التي يدعمها الوضع الأصلي عندما تعرض الحاوية واجهات API المطابقة: الإرسال، والاستقبال، والمرفقات، ومؤشرات الكتابة، وإيصالات القراءة/المشاهدة، والتفاعلات، والمجموعات، والنص المنسّق. يحوّل OpenClaw استدعاءات RPC الأصلية لـ Signal إلى حمولات REST الخاصة بالحاوية، بما في ذلك معرّفات المجموعات `group.{base64(internal_id)}` و`text_mode: "styled"` للنص المنسّق.
 
 ملاحظات تشغيلية:
 
-- استخدم `autoStart: false` مع وضع الحاوية. يجب ألا يشغّل OpenClaw عفريتا أصليا عند اختيار `apiMode: "container"`.
-- استخدم `MODE=json-rpc` للتلقي. قد يجعل `MODE=normal` المسار `/v1/about` يبدو سليما، لكن `/v1/receive/{account}` لا يترقى إلى WebSocket، لذلك لن يختار OpenClaw بث تلقي الحاوية في وضع `auto`.
-- اضبط `apiMode: "container"` عندما تعلم أن `httpUrl` يشير إلى REST API الخاص بـ bbernhard. اضبط `apiMode: "native"` عندما تعلم أنه يشير إلى JSON-RPC/SSE الأصلي لـ `signal-cli`. استخدم `"auto"` عندما قد يختلف النشر.
-- تلتزم تنزيلات مرفقات الحاوية بحدود بايتات الوسائط نفسها في الوضع الأصلي. يتم رفض الاستجابات الأكبر من الحد قبل تخزينها مؤقتا بالكامل عندما يرسل الخادم `Content-Length`، وإلا أثناء البث.
+- استخدم `autoStart: false` مع وضع الحاوية؛ يجب ألا يشغّل OpenClaw خدمة خفية أصلية عند تحديد `apiMode: "container"`.
+- استخدم `MODE=json-rpc` للاستقبال. قد يجعل `MODE=normal` المسار `/v1/about` يبدو سليمًا، لكن `/v1/receive/{account}` لن يترقّى إلى WebSocket، ولذلك لن يختار OpenClaw بث استقبال الحاوية في وضع `auto`.
+- اضبط `apiMode: "container"` عندما يشير `httpUrl` إلى واجهة REST API الخاصة بـ bbernhard، و`"native"` عندما يشير إلى JSON-RPC/SSE الأصلي لـ `signal-cli`، و`"auto"` عندما قد يختلف النشر.
+- تلتزم تنزيلات مرفقات الحاوية بحدود بايتات الوسائط نفسها في الوضع الأصلي. تُرفض الاستجابات كبيرة الحجم قبل تخزينها مؤقتًا بالكامل عندما يرسل الخادم `Content-Length`، وتُرفض أثناء البث في الحالات الأخرى.
 
 ## التحكم في الوصول (الرسائل الخاصة + المجموعات)
 
 الرسائل الخاصة:
 
-- الافتراضي: `channels.signal.dmPolicy = "pairing"`.
-- يتلقى المرسلون غير المعروفين رمز اقتران؛ يتم تجاهل الرسائل حتى تتم الموافقة عليها (تنتهي صلاحية الرموز بعد ساعة واحدة).
-- الموافقة عبر:
-  - `openclaw pairing list signal`
-  - `openclaw pairing approve signal <CODE>`
-- الاقتران هو تبادل الرمز الافتراضي لرسائل Signal الخاصة. التفاصيل: [الاقتران](/ar/channels/pairing)
-- يتم تخزين المرسلين ذوي UUID فقط (من `sourceUuid`) كـ `uuid:<id>` في `channels.signal.allowFrom`.
+- الإعداد الافتراضي: `channels.signal.dmPolicy = "pairing"`.
+- يحصل المرسلون المجهولون على رمز اقتران؛ وتُتجاهل الرسائل حتى الموافقة (تنتهي صلاحية الرموز بعد ساعة واحدة).
+- وافق باستخدام `openclaw pairing list signal` و`openclaw pairing approve signal <CODE>`.
+- الاقتران هو التبادل الافتراضي للرموز في رسائل Signal الخاصة. التفاصيل: [الاقتران](/ar/channels/pairing)
+- يُخزّن المرسلون ذوو UUID فقط (من `sourceUuid`) بصيغة `uuid:<id>` في `channels.signal.allowFrom`.
 
 المجموعات:
 
 - `channels.signal.groupPolicy = open | allowlist | disabled`.
-- يتحكم `channels.signal.groupAllowFrom` في المجموعات أو المرسلين الذين يمكنهم تشغيل ردود المجموعات عند تعيين `allowlist`؛ يمكن أن تكون الإدخالات معرفات مجموعات Signal (خام، أو `group:<id>`، أو `signal:group:<id>`)، أو أرقام هواتف المرسلين، أو قيم `uuid:<id>`، أو `*`.
+- يتحكم `channels.signal.groupAllowFrom` في المجموعات أو المرسلين الذين يمكنهم تشغيل ردود المجموعات عند ضبط `allowlist`؛ ويمكن أن تكون الإدخالات معرّفات مجموعات Signal (خامًا، أو `group:<id>`، أو `signal:group:<id>`)، أو أرقام هواتف المرسلين، أو قيم `uuid:<id>`، أو `*`.
 - يمكن لـ `channels.signal.groups["<group-id>" | "*"]` تجاوز سلوك المجموعة باستخدام `requireMention` و`tools` و`toolsBySender`.
-- استخدم `channels.signal.accounts.<id>.groups` لتجاوزات كل حساب في إعدادات الحسابات المتعددة.
-- لا يؤدي السماح لمجموعة Signal عبر `groupAllowFrom` إلى تعطيل بوابة الإشارة إليها بحد ذاته. يعالج إدخال `channels.signal.groups["<group-id>"]` المكوّن تحديدا كل رسالة مجموعة ما لم يتم تعيين `requireMention=true`.
-- ملاحظة وقت التشغيل: إذا كان `channels.signal` مفقودا بالكامل، يعود وقت التشغيل إلى `groupPolicy="allowlist"` لفحوصات المجموعة (حتى إذا تم تعيين `channels.defaults.groupPolicy`).
+- استخدم `channels.signal.accounts.<id>.groups` للتجاوزات الخاصة بكل حساب في إعدادات الحسابات المتعددة.
+- لا يؤدي إدراج مجموعة في قائمة السماح عبر `groupAllowFrom` إلى تعطيل اشتراط الإشارة بحد ذاته. يعالج إدخال `channels.signal.groups["<group-id>"]` المضبوط تحديدًا كل رسالة في المجموعة ما لم يُضبط `requireMention: true` صراحةً.
+- ملاحظة وقت التشغيل: إذا كان `channels.signal` مفقودًا بالكامل، يعود وقت التشغيل إلى `groupPolicy="allowlist"` لفحوصات المجموعات (حتى إذا كان `channels.defaults.groupPolicy` مضبوطًا).
 
-## كيف يعمل (السلوك)
+## كيفية عمله (السلوك)
 
-- الوضع الأصلي: يعمل `signal-cli` كعفريت؛ يقرأ Gateway الأحداث عبر SSE.
-- وضع الحاوية: يرسل Gateway عبر REST API ويتلقى عبر WebSocket.
-- يتم تطبيع الرسائل الواردة إلى غلاف القناة المشترك.
-- تعود الردود دائما إلى الرقم أو المجموعة نفسها.
+- الوضع الأصلي: يعمل `signal-cli` كخدمة خفية؛ ويقرأ Gateway الأحداث عبر SSE.
+- وضع الحاوية: يرسل Gateway عبر REST API ويستقبل عبر WebSocket.
+- تُطبّع الرسائل الواردة في غلاف القناة المشترك.
+- تعود الردود دائمًا إلى الرقم أو المجموعة نفسها.
+- تتضمن الردود على الرسائل الواردة بيانات اقتباس Signal الأصلية عندما تقبل الواجهة الخلفية الطابع الزمني للرسالة الواردة ومؤلفها؛ وإذا كانت بيانات الاقتباس مفقودة أو مرفوضة، يرسل OpenClaw الرد كرسالة عادية.
+- اضبط استخدام الاقتباسات الأصلية باستخدام `channels.signal.replyToMode = off | first | all | batched`، أو `channels.signal.replyToModeByChatType.direct/group` للتجاوزات الخاصة بكل نوع محادثة. تكون للقيم على مستوى الحساب ضمن `channels.signal.accounts.<id>` الأولوية.
 
 ## الوسائط + الحدود
 
-- يتم تقسيم النص الصادر إلى `channels.signal.textChunkLimit` (الافتراضي 4000).
-- تقسيم اختياري حسب الأسطر الجديدة: اضبط `channels.signal.chunkMode="newline"` للتقسيم عند الأسطر الفارغة (حدود الفقرات) قبل التقسيم حسب الطول.
-- المرفقات مدعومة (يتم جلب base64 من `signal-cli`).
-- تستخدم مرفقات الملاحظات الصوتية اسم ملف `signal-cli` كبديل MIME عند فقدان `contentType`، بحيث يظل بإمكان نسخ الصوت تصنيف مذكرات AAC الصوتية.
-- حد الوسائط الافتراضي: `channels.signal.mediaMaxMb` (الافتراضي 8).
+- يُقسَّم النص الصادر إلى أجزاء وفق `channels.signal.textChunkLimit` (القيمة الافتراضية 4000).
+- التقسيم الاختياري عند الأسطر الجديدة: اضبط `channels.signal.chunkMode="newline"` للتقسيم عند الأسطر الفارغة (حدود الفقرات) قبل التقسيم حسب الطول.
+- المرفقات مدعومة (تُجلب بترميز base64 من `signal-cli`).
+- تستخدم مرفقات الملاحظات الصوتية اسم الملف من `signal-cli` كقيمة MIME احتياطية عند غياب `contentType`، بحيث يظل بإمكان نسخ الصوت تصنيف المذكرات الصوتية بتنسيق AAC.
+- الحد الافتراضي للوسائط: `channels.signal.mediaMaxMb` (القيمة الافتراضية 8).
 - استخدم `channels.signal.ignoreAttachments` لتخطي تنزيل الوسائط.
-- يستخدم سياق سجل المجموعة `channels.signal.historyLimit` (أو `channels.signal.accounts.*.historyLimit`)، مع الرجوع إلى `messages.groupChat.historyLimit`. عيّن `0` للتعطيل (الافتراضي 50).
+- يستخدم سياق سجل المجموعات `channels.signal.historyLimit` (أو `channels.signal.accounts.*.historyLimit`)، مع الرجوع إلى `messages.groupChat.historyLimit` عند عدم توفره. اضبطه على `0` للتعطيل (القيمة الافتراضية 50).
 
-## الكتابة + إيصالات القراءة
+## مؤشرات الكتابة وإيصالات القراءة
 
-- **مؤشرات الكتابة**: يرسل OpenClaw إشارات الكتابة عبر `signal-cli sendTyping` ويحدّثها أثناء تشغيل الرد.
-- **إيصالات القراءة**: عندما تكون `channels.signal.sendReadReceipts` مفعّلة، يمرّر OpenClaw إيصالات القراءة للرسائل المباشرة المسموح بها.
-- لا يوفّر Signal-cli إيصالات قراءة للمجموعات.
+- **مؤشرات الكتابة**: يرسل OpenClaw إشارات الكتابة عبر `signal-cli sendTyping` ويحدّثها أثناء إنشاء الرد.
+- **إيصالات القراءة**: عندما تكون قيمة `channels.signal.sendReadReceipts` هي true، يعيد OpenClaw توجيه إيصالات القراءة للرسائل المباشرة المسموح بها.
+- لا يوفّر `signal-cli` إيصالات القراءة للمجموعات.
 
 ## تفاعلات حالة دورة الحياة
 
-اضبط `messages.statusReactions.enabled: true` للسماح لـ Signal بإظهار دورة حياة التفاعل المشتركة
-للوضع في قائمة الانتظار/التفكير/الأداة/Compaction/الإنهاء/الخطأ على الأدوار الواردة.
-يستخدم Signal الطابع الزمني للرسالة الواردة كهدف للتفاعل؛ وترسل تفاعلات
-المجموعات باستخدام معرّف مجموعة Signal بالإضافة إلى المرسل الأصلي باعتباره
-المؤلف الهدف.
+اضبط `messages.statusReactions.enabled: true` للسماح لـ Signal بعرض دورة حياة التفاعلات المشتركة لحالات الانتظار/التفكير/الأداة/Compaction/الاكتمال/الخطأ عند الرسائل الواردة. يستخدم Signal الطابع الزمني للرسالة الواردة هدفًا للتفاعل؛ وتُرسل تفاعلات المجموعة باستخدام معرّف مجموعة Signal مع المرسل الأصلي بوصفه المؤلف المستهدف.
 
-تتطلب تفاعلات الحالة أيضا تفاعل إقرار ونطاقا مطابقا
-`messages.ackReactionScope` (`direct` أو `group-all` أو `group-mentions` أو `all`).
-اضبط `channels.signal.reactionLevel: "off"` لتعطيل تفاعلات حالة Signal.
-يبقى إجراء أداة الرسائل `react` أكثر صرامة: إذ يتطلب
-`reactionLevel: "minimal"` أو `"extensive"`.
+تتطلب تفاعلات الحالة أيضًا تفاعل إقرار وقيمة مطابقة في `messages.ackReactionScope` (`direct` أو `group-all` أو `group-mentions` أو `all`). اضبط `channels.signal.reactionLevel: "off"` لتعطيل تفاعلات حالة Signal.
 
-يمسح `messages.removeAckAfterReply: true` تفاعل الحالة النهائي بعد
-مدة الاحتفاظ المضبوطة. وإلا يستعيد Signal تفاعل الإقرار الأولي بعد
-حالة الإنهاء/الخطأ النهائية.
+يمسح `messages.removeAckAfterReply: true` تفاعل الحالة النهائي بعد مدة الاحتفاظ المضبوطة. بخلاف ذلك، يستعيد Signal تفاعل الإقرار الأولي بعد حالة الاكتمال/الخطأ النهائية.
 
 ## التفاعلات (أداة الرسائل)
 
-- استخدم `message action=react` مع `channel=signal`.
-- الأهداف: المرسل بصيغة E.164 أو UUID (استخدم `uuid:<id>` من مخرجات الاقتران؛ يعمل UUID العاري أيضا).
-- `messageId` هو الطابع الزمني في Signal للرسالة التي تتفاعل معها.
-- تتطلب تفاعلات المجموعات `targetAuthor` أو `targetAuthorUuid`.
+استخدم `message action=react` مع `channel=signal`.
 
-أمثلة:
+- الأهداف: رقم المرسل بتنسيق E.164 أو UUID (استخدم `uuid:<id>` من مخرجات الاقتران؛ ويعمل UUID المجرّد أيضًا).
+- يمثّل `messageId` الطابع الزمني في Signal للرسالة التي تتفاعل معها.
+- تتطلب تفاعلات المجموعة `targetAuthor` أو `targetAuthorUuid`.
 
-```
+```text
 message action=react channel=signal target=uuid:123e4567-e89b-12d3-a456-426614174000 messageId=1737630212345 emoji=🔥
 message action=react channel=signal target=+15551234567 messageId=1737630212345 emoji=🔥 remove=true
 message action=react channel=signal target=signal:group:<groupId> targetAuthor=uuid:<sender-uuid> messageId=1737630212345 emoji=✅
 ```
 
-الإعدادات:
+الإعداد:
 
-- `channels.signal.actions.reactions`: تفعيل/تعطيل إجراءات التفاعل (القيمة الافتراضية true).
-- `channels.signal.reactionLevel`: `off | ack | minimal | extensive`.
-  - يعطل `off`/`ack` تفاعلات الوكيل (ستفشل أداة الرسائل `react` بخطأ).
-  - يفعّل `minimal`/`extensive` تفاعلات الوكيل ويضبط مستوى الإرشاد.
-- تجاوزات لكل حساب: `channels.signal.accounts.<id>.actions.reactions`، `channels.signal.accounts.<id>.reactionLevel`.
+- `channels.signal.actions.reactions`: تمكين/تعطيل إجراءات التفاعل (القيمة الافتراضية true).
+- `channels.signal.reactionLevel`: ‏`off | ack | minimal | extensive` (القيمة الافتراضية `minimal`).
+  - يعطّل `off`/`ack` تفاعلات الوكيل (تعيد أداة الرسائل `react` أخطاء).
+  - يمكّن `minimal`/`extensive` تفاعلات الوكيل ويضبط مستوى الإرشاد.
+- تجاوزات كل حساب: `channels.signal.accounts.<id>.actions.reactions` و`channels.signal.accounts.<id>.reactionLevel`.
 
 ## تفاعلات الموافقة
 
-تستخدم مطالبات موافقة التنفيذ وPlugin في Signal كتل التوجيه العليا `approvals.exec` و
-`approvals.plugin`. لا يحتوي Signal على كتلة
-`channels.signal.execApprovals`.
+تستخدم مطالبات الموافقة على التنفيذ وPlugin في Signal كتلتي التوجيه العامتين `approvals.exec` و`approvals.plugin`. لا يحتوي Signal على كتلة `channels.signal.execApprovals`.
 
-- `👍` يوافق مرة واحدة.
-- `👎` يرفض.
-- استخدم `/approve <id> allow-always` عندما يقدّم الطلب موافقة دائمة.
+- يوافق `👍` مرة واحدة.
+- يرفض `👎`.
+- استخدم `/approve <id> allow-always` عندما يتيح الطلب موافقة دائمة.
 
-يتطلب حل تفاعل الموافقة موافقين صريحين من Signal من
-`channels.signal.allowFrom` أو `channels.signal.defaultTo` أو الحقول المطابقة على مستوى الحساب.
-لا تزال مطالبات موافقة التنفيذ المباشرة في المحادثة نفسها قادرة على منع بديل `/approve` المحلي المكرر
-دون موافقين صريحين؛ بينما تبقي موافقات المجموعات بلا موافقين البديل المحلي مرئيا.
+يتطلب حسم تفاعل الموافقة تحديد الموافقين في Signal صراحةً ضمن `channels.signal.allowFrom` أو `channels.signal.defaultTo` أو الحقول المطابقة على مستوى الحساب. يمكن لمطالبات الموافقة المباشرة على التنفيذ ضمن المحادثة نفسها الاستمرار في إخفاء الخيار المحلي الاحتياطي المكرر `/approve` دون موافقين محددين صراحةً؛ أما موافقات المجموعات التي لا تتضمن موافقين فتبقي الخيار المحلي الاحتياطي ظاهرًا.
 
 ## أهداف التسليم (CLI/Cron)
 
-- الرسائل المباشرة: `signal:+15551234567` (أو E.164 عادي).
-- رسائل UUID المباشرة: `uuid:<id>` (أو UUID عار).
+- الرسائل المباشرة: `signal:+15551234567` (أو رقم E.164 مجرد).
+- الرسائل المباشرة عبر UUID: ‏`uuid:<id>` (أو UUID مجرد).
 - المجموعات: `signal:group:<groupId>`.
-- أسماء المستخدمين: `username:<name>` (إذا كان حساب Signal لديك يدعم ذلك).
+- أسماء المستخدمين: `username:<name>` (إذا كان حساب Signal لديك يدعمها).
 
 ## الأسماء المستعارة
 
-اضبط الأسماء المستعارة عندما تريد أسماء ثابتة لأهداف Signal المتكررة.
-الأسماء المستعارة هي إعدادات من جهة OpenClaw فقط؛ ولا تنشئ جهات اتصال Signal ولا تعدّلها.
+اضبط أسماء مستعارة ثابتة لأهداف Signal المتكررة. الأسماء المستعارة هي إعدادات داخل OpenClaw فقط؛ ولا تنشئ جهات اتصال في Signal ولا تعدّلها.
 
 ```json5
 {
@@ -380,13 +343,13 @@ message action=react channel=signal target=signal:group:<groupId> targetAuthor=u
 }
 ```
 
-استخدم الأسماء المستعارة في أي مكان تقبل فيه أهداف تسليم Signal:
+استخدم الأسماء المستعارة في أي موضع يقبل أهداف تسليم Signal:
 
 ```bash
 openclaw message send --channel signal --target signal:ops --message "Deployment is complete"
 ```
 
-ترث الأسماء المستعارة لكل حساب الأسماء المستعارة العليا ويمكنها إضافة الأسماء أو تجاوزها:
+ترث الأسماء المستعارة لكل حساب الأسماء المستعارة العامة، ويمكنها إضافة الأسماء أو تجاوزها:
 
 ```json5
 {
@@ -407,14 +370,11 @@ openclaw message send --channel signal --target signal:ops --message "Deployment
 }
 ```
 
-يعرض `openclaw directory peers list --channel signal` و
-`openclaw directory groups list --channel signal` الأسماء المستعارة المضبوطة. دليل
-Signal مستند إلى الإعدادات؛ ولا يستعلم مباشرة عن جهات اتصال Signal أو
-يعدّل حساب Signal.
+يعرض `openclaw directory peers list --channel signal` و`openclaw directory groups list --channel signal` الأسماء المستعارة المضبوطة. يعتمد دليل Signal على الإعدادات؛ ولا يستعلم مباشرةً عن جهات اتصال Signal ولا يعدّل حساب Signal.
 
 ## استكشاف الأخطاء وإصلاحها
 
-شغّل هذا التسلسل أولا:
+نفّذ تسلسل الفحص التالي أولًا:
 
 ```bash
 openclaw status
@@ -424,19 +384,19 @@ openclaw doctor
 openclaw channels status --probe
 ```
 
-ثم أكّد حالة اقتران الرسائل المباشرة عند الحاجة:
+ثم تحقّق من حالة اقتران الرسائل المباشرة عند الحاجة:
 
 ```bash
 openclaw pairing list signal
 ```
 
-الإخفاقات الشائعة:
+الأعطال الشائعة:
 
-- يمكن الوصول إلى الخدمة الخفية لكن لا توجد ردود: تحقق من إعدادات الحساب/الخدمة الخفية (`httpUrl`، `account`) ووضع الاستلام.
-- تم تجاهل الرسائل المباشرة: المرسل ينتظر موافقة الاقتران.
-- تم تجاهل رسائل المجموعة: تمنع بوابات مرسل المجموعة/الإشارة التسليم.
-- أخطاء التحقق من الإعدادات بعد التعديلات: شغّل `openclaw doctor --fix`.
-- Signal غير موجود في التشخيصات: تأكد من `channels.signal.enabled: true`.
+- يمكن الوصول إلى العملية الخدمية لكن لا توجد ردود: تحقّق من إعدادات الحساب/العملية الخدمية (`httpUrl` و`account`) ووضع الاستقبال.
+- تُتجاهل الرسائل المباشرة: المرسل بانتظار الموافقة على الاقتران.
+- تُتجاهل رسائل المجموعة: ضوابط السماح لمرسل المجموعة/الإشارة تمنع التسليم.
+- أخطاء التحقق من الإعدادات بعد التعديلات: نفّذ `openclaw doctor --fix`.
+- Signal غير موجود في التشخيصات: تأكّد من ضبط `channels.signal.enabled: true`.
 
 فحوصات إضافية:
 
@@ -446,58 +406,65 @@ pgrep -af signal-cli
 grep -i "signal" "/tmp/openclaw/openclaw-$(date +%Y-%m-%d).log" | tail -20
 ```
 
-لتدفق الفرز: [/channels/troubleshooting](/ar/channels/troubleshooting).
+للتعرّف على مسار الفرز التشخيصي: [استكشاف أخطاء القنوات وإصلاحها](/ar/channels/troubleshooting).
 
 ## ملاحظات الأمان
 
-- يخزن `signal-cli` مفاتيح الحساب محليا (عادة في `~/.local/share/signal-cli/data/`).
-- انسخ حالة حساب Signal احتياطيا قبل ترحيل الخادم أو إعادة بنائه.
-- أبق `channels.signal.dmPolicy: "pairing"` ما لم تكن تريد صراحة وصولا أوسع للرسائل المباشرة.
-- لا يلزم التحقق عبر SMS إلا لتدفقات التسجيل أو الاسترداد، لكن فقدان التحكم في الرقم/الحساب قد يعقّد إعادة التسجيل.
+- يخزّن `signal-cli` مفاتيح الحساب محليًا (عادةً في `~/.local/share/signal-cli/data/`).
+- أنشئ نسخة احتياطية من حالة حساب Signal قبل ترحيل الخادم أو إعادة بنائه.
+- أبقِ `channels.signal.dmPolicy: "pairing"` ما لم تكن تريد صراحةً إتاحة وصول أوسع إلى الرسائل المباشرة.
+- لا يلزم التحقق عبر SMS إلا في مسارات التسجيل أو الاسترداد، لكن فقدان التحكم في الرقم/الحساب قد يعقّد إعادة التسجيل.
 
-## مرجع الإعدادات (Signal)
+## مرجع الإعداد (Signal)
 
-الإعدادات الكاملة: [الإعدادات](/ar/gateway/configuration)
+الإعداد الكامل: [الإعداد](/ar/gateway/configuration)
 
 خيارات المزوّد:
 
-- `channels.signal.enabled`: تفعيل/تعطيل بدء تشغيل القناة.
-- `channels.signal.apiMode`: `auto | native | container` (الافتراضي: auto). راجع [وضع الحاوية](#container-mode-bbernhardsignal-cli-rest-api).
-- `channels.signal.account`: E.164 لحساب الروبوت.
-- `channels.signal.cliPath`: المسار إلى `signal-cli`.
+- `channels.signal.enabled`: تمكين/تعطيل بدء تشغيل القناة.
+- `channels.signal.apiMode`: ‏`auto | native | container` (القيمة الافتراضية: auto). راجع [وضع الحاوية](#container-mode-bbernhardsignal-cli-rest-api).
+- `channels.signal.account`: رقم E.164 لحساب الروبوت.
+- `channels.signal.cliPath`: مسار `signal-cli`.
 - `channels.signal.configPath`: دليل `signal-cli --config` اختياري.
-- `channels.signal.httpUrl`: عنوان URL كامل للخدمة الخفية (يتجاوز المضيف/المنفذ).
-- `channels.signal.httpHost`، `channels.signal.httpPort`: ربط الخدمة الخفية (الافتراضي 127.0.0.1:8080).
-- `channels.signal.autoStart`: تشغيل الخدمة الخفية تلقائيا (الافتراضي true إذا لم يتم ضبط `httpUrl`).
-- `channels.signal.startupTimeoutMs`: مهلة انتظار بدء التشغيل بالمللي ثانية (الحد الأقصى 120000).
-- `channels.signal.receiveMode`: `on-start | manual`.
-- `channels.signal.ignoreAttachments`: تخطي تنزيلات المرفقات.
-- `channels.signal.ignoreStories`: تجاهل القصص من الخدمة الخفية.
-- `channels.signal.sendReadReceipts`: تمرير إيصالات القراءة.
-- `channels.signal.dmPolicy`: `pairing | allowlist | open | disabled` (الافتراضي: pairing).
-- `channels.signal.allowFrom`: قائمة سماح للرسائل المباشرة (E.164 أو `uuid:<id>`). يتطلب `open` القيمة `"*"`. لا يملك Signal أسماء مستخدمين؛ استخدم معرّفات الهاتف/UUID.
-- `channels.signal.aliases`: أسماء مستعارة من جهة OpenClaw لأهداف تسليم الرسائل المباشرة أو المجموعات.
-- `channels.signal.groupPolicy`: `open | allowlist | disabled` (الافتراضي: allowlist).
-- `channels.signal.groupAllowFrom`: قائمة سماح للمجموعات؛ تقبل معرّفات مجموعات Signal (خام، أو `group:<id>`، أو `signal:group:<id>`)، أو أرقام المرسل بصيغة E.164، أو قيم `uuid:<id>`.
-- `channels.signal.groups`: تجاوزات لكل مجموعة مفهرسة بمعرّف مجموعة Signal (أو `"*"`). الحقول المدعومة: `requireMention`، `tools`، `toolsBySender`.
-- `channels.signal.accounts.<id>.groups`: نسخة لكل حساب من `channels.signal.groups` لإعدادات متعددة الحسابات.
-- `channels.signal.accounts.<id>.aliases`: أسماء مستعارة لكل حساب، مدمجة مع الأسماء المستعارة العليا.
-- `channels.signal.historyLimit`: الحد الأقصى لرسائل المجموعة التي ستضمّن كسياق (0 يعطّلها).
-- `channels.signal.dmHistoryLimit`: حد محفوظات الرسائل المباشرة بأدوار المستخدم. تجاوزات لكل مستخدم: `channels.signal.dms["<phone_or_uuid>"].historyLimit`.
-- `channels.signal.textChunkLimit`: حجم الجزء الصادر (بالحروف).
-- `channels.signal.chunkMode`: `length` (الافتراضي) أو `newline` للتقسيم عند الأسطر الفارغة (حدود الفقرات) قبل التقسيم حسب الطول.
-- `channels.signal.mediaMaxMb`: حد الوسائط الواردة/الصادرة (MB).
+- `channels.signal.httpUrl`: عنوان URL الكامل للعملية الخدمية (يتجاوز المضيف/المنفذ).
+- `channels.signal.httpHost` و`channels.signal.httpPort`: عنوان ربط العملية الخدمية (القيمة الافتراضية `127.0.0.1:8080`).
+- `channels.signal.autoStart`: تشغيل العملية الخدمية تلقائيًا (القيمة الافتراضية true إذا لم يُضبط `httpUrl`).
+- `channels.signal.startupTimeoutMs`: مهلة انتظار بدء التشغيل بالمللي ثانية (الحد الأدنى 1000، والحد الأقصى 120000؛ والقيمة الافتراضية 30000).
+- `channels.signal.receiveMode`: ‏`on-start | manual`.
+- `channels.signal.ignoreAttachments`: تخطي تنزيل المرفقات.
+- `channels.signal.ignoreStories`: تجاهل القصص الواردة من العملية الخدمية.
+- `channels.signal.sendReadReceipts`: إعادة توجيه إيصالات القراءة.
+- `channels.signal.dmPolicy`: ‏`pairing | allowlist | open | disabled` (القيمة الافتراضية: pairing).
+- `channels.signal.allowFrom`: قائمة السماح للرسائل المباشرة (E.164 أو `uuid:<id>`). يتطلب `open` القيمة `"*"`. لا يدعم Signal أسماء المستخدمين؛ استخدم معرّفات الهاتف/UUID.
+- `channels.signal.aliases`: أسماء مستعارة داخل OpenClaw لأهداف تسليم الرسائل المباشرة أو المجموعات.
+- `channels.signal.groupPolicy`: ‏`open | allowlist | disabled` (القيمة الافتراضية: allowlist).
+- `channels.signal.groupAllowFrom`: قائمة السماح للمجموعات؛ تقبل معرّفات مجموعات Signal (مجرّدة أو `group:<id>` أو `signal:group:<id>`)، أو أرقام المرسلين بتنسيق E.164، أو قيم `uuid:<id>`.
+- `channels.signal.groups`: تجاوزات لكل مجموعة، مفهرسة بمعرّف مجموعة Signal (أو `"*"`). الحقول المدعومة: `requireMention` و`tools` و`toolsBySender`.
+- `channels.signal.accounts.<id>.groups`: إصدار `channels.signal.groups` الخاص بكل حساب لإعدادات الحسابات المتعددة.
+- `channels.signal.accounts.<id>.aliases`: أسماء مستعارة لكل حساب، تُدمج مع الأسماء المستعارة العامة.
+- `channels.signal.replyToMode`: وضع اقتباس الرد الأصلي، ‏`off | first | all | batched` (القيمة الافتراضية: `all`).
+- `channels.signal.replyToModeByChatType.direct` و`channels.signal.replyToModeByChatType.group`: تجاوزات اقتباس الرد الأصلي لكل نوع محادثة.
+- `channels.signal.accounts.<id>.replyToMode` و`channels.signal.accounts.<id>.replyToModeByChatType.direct` و`channels.signal.accounts.<id>.replyToModeByChatType.group`: تجاوزات اقتباس الرد لكل حساب.
+- `channels.signal.historyLimit`: الحد الأقصى لرسائل المجموعة التي تُضمّن في السياق (تعطّله القيمة 0).
+- `channels.signal.dmHistoryLimit`: حد سجل الرسائل المباشرة محسوبًا بتفاعلات المستخدم. تجاوزات كل مستخدم: `channels.signal.dms["<phone_or_uuid>"].historyLimit`.
+- `channels.signal.textChunkLimit`: حجم جزء النص الصادر بالأحرف (القيمة الافتراضية 4000).
+- `channels.signal.chunkMode`: ‏`length` (القيمة الافتراضية) أو `newline` للتقسيم عند الأسطر الفارغة (حدود الفقرات) قبل التقسيم حسب الطول.
+- `channels.signal.mediaMaxMb`: الحد الأقصى للوسائط الواردة/الصادرة بالميغابايت (القيمة الافتراضية 8).
+- `channels.signal.reactionLevel`: ‏`off | ack | minimal | extensive` (القيمة الافتراضية `minimal`). راجع [التفاعلات](#reactions-message-tool).
+- `channels.signal.reactionNotifications`: ‏`off | own | all | allowlist` (القيمة الافتراضية `own`) - يحدد متى يُخطَر الوكيل بالتفاعلات الواردة من الآخرين.
+- `channels.signal.reactionAllowlist`: المرسلون الذين تُخطر تفاعلاتهم الوكيل عندما تكون قيمة `reactionNotifications` هي `"allowlist"`.
+- `channels.signal.blockStreaming` و`channels.signal.blockStreamingCoalesce`: عناصر التحكم في التدفق بوضع الكتل المشتركة بين القنوات. راجع [التدفق](/ar/concepts/streaming).
 
-خيارات عامة ذات صلة:
+الخيارات العامة ذات الصلة:
 
 - `agents.list[].groupChat.mentionPatterns` (لا يدعم Signal الإشارات الأصلية).
-- `messages.groupChat.mentionPatterns` (بديل عام).
+- `messages.groupChat.mentionPatterns` (الخيار الاحتياطي العام).
 - `messages.responsePrefix`.
 
-## ذات صلة
+## ذو صلة
 
-- [نظرة عامة على القنوات](/ar/channels) — كل القنوات المدعومة
-- [الاقتران](/ar/channels/pairing) — مصادقة الرسائل المباشرة وتدفق الاقتران
-- [المجموعات](/ar/channels/groups) — سلوك محادثة المجموعة وبوابات الإشارة
-- [توجيه القنوات](/ar/channels/channel-routing) — توجيه الجلسات للرسائل
-- [الأمان](/ar/gateway/security) — نموذج الوصول والتقوية
+- [نظرة عامة على القنوات](/ar/channels) - جميع القنوات المدعومة
+- [الاقتران](/ar/channels/pairing) - مصادقة الرسائل المباشرة ومسار الاقتران
+- [المجموعات](/ar/channels/groups) - سلوك محادثات المجموعة وضوابط الإشارات
+- [توجيه القنوات](/ar/channels/channel-routing) - توجيه جلسات الرسائل
+- [الأمان](/ar/gateway/security) - نموذج الوصول والتقوية

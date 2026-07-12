@@ -1,56 +1,58 @@
 ---
 read_when:
     - Je wilt OpenClaw verbinden met WeChat of Weixin
-    - Je installeert de openclaw-weixin kanaal-Plugin of lost problemen ermee op
-    - Je moet begrijpen hoe externe kanaalplugins naast de Gateway draaien.
-summary: WeChat-kanaal instellen via de externe openclaw-weixin Plugin
+    - U installeert de kanaalplugin openclaw-weixin of lost problemen ermee op
+    - Je moet begrijpen hoe externe kanaalplugins naast de Gateway worden uitgevoerd
+summary: WeChat-kanaal instellen via de externe openclaw-weixin-plugin
 title: WeChat
 x-i18n:
-    generated_at: "2026-05-06T09:04:31Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:38:14Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 803557a4fc92056c63053a3388100a451b2d85d4e892877707b3c2e3a677c0b0
+    source_hash: 98faf95f9fb76deedb7df9adf3092083722a77bdd793de98c41a6f715cc0d14a
     source_path: channels/wechat.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw maakt verbinding met WeChat via Tencents externe
-`@tencent-weixin/openclaw-weixin`-kanaalplugin.
+OpenClaw maakt verbinding met WeChat via Tencents externe kanaalplugin
+`@tencent-weixin/openclaw-weixin`.
 
-Status: externe plugin. Directe chats en media worden ondersteund. Groepschats worden niet
-geadverteerd door de huidige metadata voor pluginmogelijkheden.
+Status: externe plugin, onderhouden door het Tencent Weixin-team. Directe chats en
+media worden ondersteund. Groepschats worden niet vermeld in de
+capaciteitsmetadata van de plugin (deze verklaart alleen directe chats).
 
 ## Naamgeving
 
 - **WeChat** is de gebruikersgerichte naam in deze documentatie.
 - **Weixin** is de naam die wordt gebruikt door Tencents pakket en door de plugin-id.
-- `openclaw-weixin` is de OpenClaw-kanaal-id.
+- `openclaw-weixin` is de OpenClaw-kanaal-id (`weixin` en `wechat` werken als aliassen).
 - `@tencent-weixin/openclaw-weixin` is het npm-pakket.
 
 Gebruik `openclaw-weixin` in CLI-opdrachten en configuratiepaden.
 
-## Hoe het werkt
+## Werking
 
-De WeChat-code staat niet in de OpenClaw-core-repo. OpenClaw biedt het
-generieke contract voor kanaalplugins, en de externe plugin biedt de
+De WeChat-code bevindt zich niet in de kernrepository van OpenClaw. OpenClaw biedt
+het algemene contract voor kanaalplugins en de externe plugin biedt de
 WeChat-specifieke runtime:
 
 1. `openclaw plugins install` installeert `@tencent-weixin/openclaw-weixin`.
-2. De Gateway ontdekt het pluginmanifest en laadt het plugin-entrypoint.
+2. De Gateway ontdekt het pluginmanifest en laadt het ingangspunt van de plugin.
 3. De plugin registreert kanaal-id `openclaw-weixin`.
-4. `openclaw channels login --channel openclaw-weixin` start QR-login.
-5. De plugin slaat accountreferenties op onder de OpenClaw-statusdirectory.
-6. Wanneer de Gateway start, start de plugin zijn Weixin-monitor voor elk
-   geconfigureerd account.
-7. Binnenkomende WeChat-berichten worden genormaliseerd via het kanaalcontract, naar
-   de geselecteerde OpenClaw-agent gerouteerd en teruggestuurd via het uitgaande pad van de plugin.
+4. `openclaw channels login --channel openclaw-weixin` start het aanmelden via QR-code.
+5. De plugin slaat accountreferenties op in de OpenClaw-statusmap
+   (standaard `~/.openclaw`).
+6. Wanneer de Gateway start, start de plugin voor elk geconfigureerd account de bijbehorende Weixin-monitor.
+7. Inkomende WeChat-berichten worden via het kanaalcontract genormaliseerd, naar
+   de geselecteerde OpenClaw-agent gerouteerd en via het uitgaande pad van de plugin teruggestuurd.
 
-Die scheiding is belangrijk: OpenClaw-core moet kanaalonafhankelijk blijven. WeChat-login,
-Tencent iLink API-aanroepen, media-upload/download, contexttokens en accountbewaking
-zijn eigendom van de externe plugin.
+Die scheiding is belangrijk: de OpenClaw-kern blijft kanaalonafhankelijk.
+Aanmelden bij WeChat, aanroepen van de Tencent iLink-API, het uploaden en downloaden
+van media, contexttokens en accountbewaking vallen onder de verantwoordelijkheid
+van de externe plugin.
 
-## Installeren
+## Installatie
 
 Snelle installatie:
 
@@ -65,73 +67,77 @@ openclaw plugins install "@tencent-weixin/openclaw-weixin"
 openclaw config set plugins.entries.openclaw-weixin.enabled true
 ```
 
-Herstart de Gateway na installatie:
+Start de Gateway opnieuw na de installatie:
 
 ```bash
 openclaw gateway restart
 ```
 
-## Inloggen
+## Aanmelden
 
-Voer QR-login uit op dezelfde machine waarop de Gateway draait:
+Voer het aanmelden via QR-code uit op dezelfde machine waarop de Gateway draait:
 
 ```bash
 openclaw channels login --channel openclaw-weixin
 ```
 
-Scan de QR-code met WeChat op je telefoon en bevestig de login. De plugin slaat
-het accounttoken lokaal op na een geslaagde scan.
+Scan de QR-code met WeChat op uw telefoon en bevestig de aanmelding. Na een
+geslaagde scan slaat de plugin het accounttoken lokaal op.
 
-Voer dezelfde loginopdracht opnieuw uit om nog een WeChat-account toe te voegen. Isoleer bij meerdere
-accounts direct-message-sessies per account, kanaal en afzender:
+Voer dezelfde aanmeldopdracht opnieuw uit om nog een WeChat-account toe te voegen.
+Isoleer bij meerdere accounts sessies met directe berichten per account, kanaal
+en afzender:
 
 ```bash
 openclaw config set session.dmScope per-account-channel-peer
 ```
 
-## Toegangscontrole
+## Toegangsbeheer
 
-Directe berichten gebruiken het normale OpenClaw-koppelings- en allowlistmodel voor kanaalplugins.
+Directe berichten gebruiken het normale koppelings- en toelatingslijstmodel van
+OpenClaw voor kanaalplugins.
 
-Nieuwe afzenders goedkeuren:
+Keur nieuwe afzenders goed:
 
 ```bash
 openclaw pairing list openclaw-weixin
 openclaw pairing approve openclaw-weixin <CODE>
 ```
 
-Zie [Koppeling](/nl/channels/pairing) voor het volledige toegangscontrolemodel.
+Zie [Koppeling](/nl/channels/pairing) voor het volledige toegangsbeheermodel.
 
 ## Compatibiliteit
 
-De plugin controleert de hostversie van OpenClaw bij het opstarten.
+De plugin controleert bij het opstarten de versie van de OpenClaw-host.
 
-| Pluginlijn | OpenClaw-versie         | npm-tag  |
-| ----------- | ----------------------- | -------- |
-| `2.x`       | `>=2026.3.22`           | `latest` |
-| `1.x`       | `>=2026.1.0 <2026.3.22` | `legacy` |
+| Pluginreeks | OpenClaw-versie                                                | npm-tag  |
+| ----------- | --------------------------------------------------------------- | -------- |
+| `2.x`       | `>=2026.5.12` (huidige 2.4.6; vroege 2.x accepteerde `>=2026.3.22`) | `latest` |
+| `1.x`       | `>=2026.1.0 <2026.3.22`                                         | `legacy` |
 
-Als de plugin meldt dat je OpenClaw-versie te oud is, werk dan
-OpenClaw bij of installeer de legacy-pluginlijn:
+Als de plugin meldt dat uw OpenClaw-versie te oud is, werkt u OpenClaw bij of
+installeert u de verouderde pluginreeks:
 
 ```bash
 openclaw plugins install @tencent-weixin/openclaw-weixin@legacy
 ```
 
-## Sidecar-proces
+## Sidecarproces
 
-De WeChat-plugin kan hulpwerk naast de Gateway uitvoeren terwijl deze de
-Tencent iLink API bewaakt. In issue #68451 bracht dat hulppad een bug aan het licht in OpenClaws
-generieke opschoning van verouderde Gateways: een childproces kon proberen het bovenliggende
-Gateway-proces op te schonen, wat herstartlussen veroorzaakte onder procesbeheerders zoals systemd.
+De WeChat-plugin kan naast de Gateway ondersteunende taken uitvoeren terwijl deze
+de Tencent iLink-API bewaakt. In issue #68451 bracht dat ondersteunende pad een
+fout aan het licht in OpenClaws algemene opschoning van verouderde Gateway-processen:
+een onderliggend proces kon proberen het bovenliggende Gateway-proces op te schonen,
+waardoor herstartlussen ontstonden onder procesbeheerders zoals systemd.
 
-De huidige opstartopschoning van OpenClaw sluit het huidige proces en zijn voorouders uit,
-dus een kanaalhelper mag de Gateway die hem heeft gestart niet beëindigen. Deze fix is
-generiek; het is geen WeChat-specifiek pad in core.
+De huidige opschoning bij het starten van OpenClaw sluit het huidige proces en
+diens bovenliggende processen uit, zodat een kanaalhulpproces de Gateway die het
+heeft gestart niet kan beëindigen. Deze oplossing is algemeen; het is geen
+WeChat-specifiek pad in de kern.
 
-## Problemen oplossen
+## Probleemoplossing
 
-Installatie en status controleren:
+Controleer de installatie en status:
 
 ```bash
 openclaw plugins list
@@ -139,16 +145,16 @@ openclaw channels status --probe
 openclaw --version
 ```
 
-Als het kanaal als geïnstalleerd wordt weergegeven maar geen verbinding maakt, bevestig dan dat de plugin is
-ingeschakeld en herstart:
+Als het kanaal als geïnstalleerd wordt weergegeven maar geen verbinding maakt,
+controleert u of de plugin is ingeschakeld en start u opnieuw:
 
 ```bash
 openclaw config set plugins.entries.openclaw-weixin.enabled true
 openclaw gateway restart
 ```
 
-Als de Gateway herhaaldelijk herstart na het inschakelen van WeChat, werk dan zowel OpenClaw als
-de plugin bij:
+Als de Gateway na het inschakelen van WeChat herhaaldelijk opnieuw start, werkt u
+zowel OpenClaw als de plugin bij:
 
 ```bash
 npm view @tencent-weixin/openclaw-weixin version
@@ -156,10 +162,11 @@ openclaw plugins install "@tencent-weixin/openclaw-weixin" --force
 openclaw gateway restart
 ```
 
-Als het opstarten meldt dat het geïnstalleerde pluginpakket `requires compiled runtime
-output for TypeScript entry`, is het npm-pakket gepubliceerd zonder de gecompileerde
-JavaScript-runtimebestanden die OpenClaw nodig heeft. Werk bij/herinstalleer nadat de plugin-
-uitgever een gerepareerd pakket heeft uitgebracht, of schakel de plugin tijdelijk uit/verwijder deze.
+Als bij het opstarten wordt gemeld dat het geïnstalleerde pluginpakket `requires compiled runtime
+output for TypeScript entry`, is het npm-pakket gepubliceerd zonder de
+gecompileerde JavaScript-runtimebestanden die OpenClaw nodig heeft. Werk de plugin
+bij of installeer deze opnieuw nadat de uitgever een gecorrigeerd pakket heeft
+uitgebracht, of schakel de plugin tijdelijk uit of verwijder deze.
 
 Tijdelijk uitschakelen:
 

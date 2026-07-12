@@ -1,45 +1,45 @@
 ---
 read_when:
-    - Anda menginginkan hasil alat `exec` atau `bash` yang lebih singkat di OpenClaw
-    - Anda ingin menginstal atau mengaktifkan Plugin Tokenjuice
-    - Anda perlu memahami apa yang diubah tokenjuice dan apa yang dibiarkannya mentah
-summary: Ringkas hasil tool exec dan bash yang berisik dengan Plugin Tokenjuice opsional
+    - Anda menginginkan hasil alat `exec` atau `bash` yang lebih ringkas di OpenClaw
+    - Anda ingin menginstal atau mengaktifkan plugin Tokenjuice
+    - Anda perlu memahami apa yang diubah oleh tokenjuice dan apa yang dibiarkannya mentah
+summary: Ringkas hasil alat exec dan bash yang berisik dengan Plugin Tokenjuice opsional
 title: Tokenjuice
 x-i18n:
-    generated_at: "2026-06-27T18:22:08Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:46:33Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 183ab08d2a1150b446245514423b893cff9a85581980c15600cc16aec10eeae7
+    source_hash: 96b110563a2600429dd9f0d38997cf7cc5ae4952b7f146a6ab64c96f2f202440
     source_path: tools/tokenjuice.md
     workflow: 16
 ---
 
-`tokenjuice` adalah Plugin eksternal opsional yang memadatkan hasil tool `exec` dan `bash`
+`tokenjuice` adalah plugin eksternal opsional yang memadatkan hasil alat `exec` dan `bash`
 yang berisik setelah perintah selesai dijalankan.
 
-Plugin ini mengubah `tool_result` yang dikembalikan, bukan perintah itu sendiri. Tokenjuice tidak
-menulis ulang input shell, menjalankan ulang perintah, atau mengubah kode keluar.
+Plugin ini mengubah `tool_result` yang dikembalikan, bukan perintah itu sendiri. Tokenjuice
+tidak menulis ulang masukan shell, menjalankan ulang perintah, atau mengubah kode keluar.
 
-Saat ini hal ini berlaku untuk run tertanam OpenClaw dan tool dinamis OpenClaw dalam harness
-app-server Codex. Tokenjuice mengait ke middleware hasil tool OpenClaw dan
-memangkas output sebelum dikembalikan ke sesi harness aktif.
+Saat ini, fungsi tersebut berlaku untuk proses tertanam OpenClaw dan alat dinamis OpenClaw dalam harness
+app-server Codex. Tokenjuice terhubung ke middleware hasil alat OpenClaw dan
+meringkas keluaran sebelum dikembalikan ke sesi harness aktif.
 
-## Aktifkan Plugin
+## Aktifkan plugin
 
-Instal sekali:
+Instal satu kali:
 
 ```bash
 openclaw plugins install clawhub:@openclaw/tokenjuice
 ```
 
-Lalu aktifkan:
+Kemudian aktifkan:
 
 ```bash
 openclaw config set plugins.entries.tokenjuice.enabled true
 ```
 
-Setara:
+Setara dengan:
 
 ```bash
 openclaw plugins enable tokenjuice
@@ -59,21 +59,21 @@ Jika Anda lebih suka mengedit konfigurasi secara langsung:
 }
 ```
 
-## Yang diubah tokenjuice
+## Perubahan yang dilakukan tokenjuice
 
 - Memadatkan hasil `exec` dan `bash` yang berisik sebelum dimasukkan kembali ke sesi.
-- Membiarkan eksekusi perintah asli tidak tersentuh.
-- Mempertahankan pembacaan konten file yang persis dan perintah lain yang harus dibiarkan mentah oleh tokenjuice.
-- Tetap opt-in: nonaktifkan Plugin jika Anda menginginkan output verbatim di semua tempat.
+- Menjaga eksekusi perintah asli tetap tidak berubah.
+- Menerapkan kebijakan inventaris aman: pembacaan konten file secara persis tetap mentah, perintah inventaris repositori mandiri dapat dipadatkan, dan rangkaian perintah campuran yang tidak aman tetap mentah.
+- Tetap bersifat opsional: nonaktifkan plugin jika Anda menginginkan keluaran verbatim di semua tempat.
 
-## Verifikasi bahwa ini berfungsi
+## Verifikasi bahwa plugin berfungsi
 
-1. Aktifkan Plugin.
+1. Aktifkan plugin.
 2. Mulai sesi yang dapat memanggil `exec`.
-3. Jalankan perintah yang berisik seperti `git status`.
-4. Periksa bahwa hasil tool yang dikembalikan lebih pendek dan lebih terstruktur daripada output shell mentah.
+3. Jalankan perintah yang menghasilkan banyak keluaran, seperti `git status`.
+4. Pastikan hasil alat yang dikembalikan lebih ringkas dan lebih terstruktur daripada keluaran shell mentah.
 
-## Nonaktifkan Plugin
+## Nonaktifkan plugin
 
 ```bash
 openclaw config set plugins.entries.tokenjuice.enabled false
@@ -87,6 +87,6 @@ openclaw plugins disable tokenjuice
 
 ## Terkait
 
-- [Tool exec](/id/tools/exec)
-- [Tingkat berpikir](/id/tools/thinking)
+- [Alat Exec](/id/tools/exec)
+- [Tingkat penalaran](/id/tools/thinking)
 - [Mesin konteks](/id/concepts/context-engine)

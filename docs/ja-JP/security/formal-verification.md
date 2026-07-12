@@ -1,13 +1,13 @@
 ---
 permalink: /security/formal-verification/
 read_when:
-    - 形式的なセキュリティモデルの保証または制限のレビュー
+    - 正式なセキュリティモデルの保証または制限のレビュー
     - TLA+/TLC セキュリティモデルチェックの再現または更新
-summary: OpenClawの最高リスクのパス向けに機械検証されたセキュリティモデル。
+summary: OpenClaw の最もリスクの高い経路を対象とした、機械検証済みのセキュリティモデル。
 title: 形式検証（セキュリティモデル）
 x-i18n:
-    generated_at: "2026-07-05T11:50:33Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:41:54Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 86342f6e2f54c08d5e0f8a08d0d488459650a6ace35e985ff886f847540202c9
@@ -15,130 +15,131 @@ x-i18n:
     workflow: 16
 ---
 
-OpenClaw の形式的セキュリティモデル（現時点では TLA+/TLC）は、特定の最高リスク経路（認可、セッション分離、ツールゲーティング、誤設定の安全性）が、明示された前提条件のもとで意図したポリシーを強制することについて、機械検査済みの論拠を提供します。
+OpenClawの形式的セキュリティモデル（現在はTLA+/TLC）は、明示的に記載された前提条件の下で、特にリスクの高い経路（認可、セッション分離、ツールのゲーティング、設定ミスに対する安全性）が意図されたポリシーを適用することを、機械的検証に基づいて論証します。
 
-> 注: 一部の古いリンクは以前のプロジェクト名を参照している場合があります。
+> 注: 一部の古いリンクでは、以前のプロジェクト名が使われている場合があります。
 
 ## これは何か
 
-実行可能な、攻撃者駆動のセキュリティ回帰スイートです。
+実行可能で、攻撃者の視点に基づくセキュリティ回帰テストスイートです。
 
 - 各主張には、有限状態空間で実行可能なモデル検査があります。
-- 多くの主張には、現実的なバグの種類について反例トレースを生成する、対応する否定モデルがあります。
+- 多くの主張には、現実的なバグの種類に対する反例トレースを生成する、対となるネガティブモデルがあります。
 
-これは、OpenClaw があらゆる面で安全であることの**証明ではなく**、TypeScript 実装全体を検証するものでもありません。
+これは、OpenClawがあらゆる点で安全であることの証明では**ありません**。また、TypeScript実装全体を検証するものでもありません。
 
-## モデルの場所
+## モデルの所在
 
-モデルは別リポジトリで保守されています: [vignesh07/openclaw-formal-models](https://github.com/vignesh07/openclaw-formal-models)。
+モデルは別のリポジトリで管理されています: [vignesh07/openclaw-formal-models](https://github.com/vignesh07/openclaw-formal-models)。
 
 <Note>
-そのリポジトリは現在到達できません（本稿執筆時点で GitHub は「Repository not found」を返します）。まだ壊れている場合は、モデルが削除されたと想定する前に、OpenClaw メンテナーチャンネルで現在の場所を確認してください。
+現在、そのリポジトリにはアクセスできません（本稿執筆時点では、GitHubが「Repository not found」を返します）。引き続きアクセスできない場合は、モデルが削除されたと判断する前に、OpenClawのメンテナーチャンネルで現在の所在を確認してください。
 </Note>
 
 ## 注意事項
 
-- これらはモデルであり、TypeScript 実装全体ではありません。モデルとコードの間にずれが生じる可能性があります。
-- 結果は TLC が探索する状態空間に制限されます。Green は、モデル化された前提と境界を超えたセキュリティを意味しません。
-- 一部の主張は、明示的な環境前提（たとえば、正しいデプロイと正しい設定入力）に依存します。
+- これらはモデルであり、TypeScript実装全体ではありません。モデルとコードの間に差異が生じる可能性があります。
+- 結果は、TLCが探索する状態空間の範囲に限定されます。結果が正常でも、モデル化された前提条件と境界を超えた安全性を意味するわけではありません。
+- 一部の主張は、明示的な環境上の前提条件（たとえば、正しいデプロイと正しい設定入力）に依存します。
 
 ## 結果の再現
 
-モデルリポジトリをクローンして TLC を実行します。
+モデルのリポジトリをクローンし、TLCを実行します。
 
 ```bash
 git clone https://github.com/vignesh07/openclaw-formal-models
 cd openclaw-formal-models
 
-# Java 11+ required (TLC runs on the JVM).
-# The repo vendors a pinned tla2tools.jar and provides bin/tlc plus Make targets.
+# Java 11+ が必要です（TLCはJVM上で動作します）。
+# リポジトリには固定バージョンのtla2tools.jarが同梱され、
+# bin/tlcとMakeターゲットが用意されています。
 
 make <target>
 ```
 
-このリポジトリへの CI 統合はまだありません。将来の反復では、公開アーティファクト（反例トレース、実行ログ）付きの CI 実行モデルや、小さな有界検査向けのホスト型「このモデルを実行」ワークフローを追加できる可能性があります。
+このリポジトリへのCI統合はまだありません。今後の改善として、公開アーティファクト（反例トレース、実行ログ）を伴うCI実行モデルや、小規模な有界検査向けのホスト型「このモデルを実行」ワークフローを追加できます。
 
 ## 主張とターゲット
 
-### Gateway 公開とオープン Gateway の誤設定
+### Gatewayの公開とオープンGatewayの設定ミス
 
-**主張:** 認証なしで loopback を超えてバインドすると、リモート侵害が可能になり露出が増える可能性があります。モデルの前提では、トークン/パスワードは未認証の攻撃者をブロックします。
+**主張:** 認証なしでループバック外にバインドすると、リモートから侵害される可能性が生じ、公開範囲が拡大します。モデルの前提条件では、トークンまたはパスワードによって未認証の攻撃者を阻止できます。
 
 | 結果           | ターゲット                                                       |
 | -------------- | ---------------------------------------------------------------- |
-| Green          | `make gateway-exposure-v2`, `make gateway-exposure-v2-protected` |
-| Red（想定） | `make gateway-exposure-v2-negative`                              |
+| 正常           | `make gateway-exposure-v2`, `make gateway-exposure-v2-protected` |
+| 異常（想定どおり） | `make gateway-exposure-v2-negative`                              |
 
-モデルリポジトリ内の `docs/gateway-exposure-matrix.md` も参照してください。
+モデルのリポジトリにある`docs/gateway-exposure-matrix.md`も参照してください。
 
-### Node exec パイプライン（最高リスク機能）
+### Nodeのexecパイプライン（最もリスクの高い機能）
 
-**主張:** モデルでは、`exec host=node` には (a) node コマンド許可リストと宣言済みコマンド、および (b) 設定されている場合はライブ承認が必要です。承認はリプレイを防ぐためにトークン化されます。
+**主張:** モデルでは、`exec host=node`には、（a）Nodeコマンドの許可リストと宣言済みコマンド、および（b）設定されている場合は実行時の承認が必要です。承認は、再利用攻撃を防ぐためトークン化されます。
 
 | 結果           | ターゲット                                                      |
 | -------------- | --------------------------------------------------------------- |
-| Green          | `make nodes-pipeline`, `make approvals-token`                   |
-| Red（想定） | `make nodes-pipeline-negative`, `make approvals-token-negative` |
+| 正常           | `make nodes-pipeline`, `make approvals-token`                   |
+| 異常（想定どおり） | `make nodes-pipeline-negative`, `make approvals-token-negative` |
 
-### ペアリングストア（DM ゲーティング）
+### ペアリングストア（DMゲーティング）
 
-**主張:** ペアリング要求は TTL と保留中要求の上限を尊重します。
+**主張:** ペアリング要求では、TTLと保留中の要求数の上限が守られます。
 
 | 結果           | ターゲット                                           |
 | -------------- | ---------------------------------------------------- |
-| Green          | `make pairing`, `make pairing-cap`                   |
-| Red（想定） | `make pairing-negative`, `make pairing-cap-negative` |
+| 正常           | `make pairing`, `make pairing-cap`                   |
+| 異常（想定どおり） | `make pairing-negative`, `make pairing-cap-negative` |
 
-### Ingress ゲーティング（メンションと制御コマンドのバイパス）
+### 受信ゲーティング（メンションと制御コマンドによる迂回）
 
-**主張:** メンションを必要とするグループコンテキストでは、未認可の制御コマンドはメンションゲーティングをバイパスできません。
+**主張:** メンションを必要とするグループコンテキストでは、認可されていない制御コマンドでメンションゲーティングを迂回することはできません。
 
 | 結果           | ターゲット                     |
 | -------------- | ------------------------------ |
-| Green          | `make ingress-gating`          |
-| Red（想定） | `make ingress-gating-negative` |
+| 正常           | `make ingress-gating`          |
+| 異常（想定どおり） | `make ingress-gating-negative` |
 
-### ルーティングとセッションキー分離
+### ルーティングとセッションキーの分離
 
-**主張:** 明示的にリンクまたは設定されていない限り、異なるピアからの DM は同じセッションに統合されません。
+**主張:** 明示的にリンクまたは設定されていない限り、異なる相手からのDMが同じセッションに統合されることはありません。
 
 | 結果           | ターゲット                        |
 | -------------- | --------------------------------- |
-| Green          | `make routing-isolation`          |
-| Red（想定） | `make routing-isolation-negative` |
+| 正常           | `make routing-isolation`          |
+| 異常（想定どおり） | `make routing-isolation-negative` |
 
-## v1++ モデル: 並行性、リトライ、トレースの正確性
+## v1++モデル: 並行処理、再試行、トレースの正確性
 
-現実世界の障害モード（非アトミック更新、リトライ、メッセージのファンアウト）に関する忠実度を高める後続モデルです。
+非アトミックな更新、再試行、メッセージのファンアウトなど、現実の障害モードに対する忠実度を高める後続モデルです。
 
-### ペアリングストアの並行性と冪等性
+### ペアリングストアの並行処理と冪等性
 
-**主張:** ペアリングストアは、インターリーブ下でも `MaxPending` と冪等性を強制します。check-then-write はアトミック/ロック済みでなければならず、refresh は重複を作成してはなりません。具体的には、並行リクエストはチャネルの `MaxPending` を超えることができず、同じ `(channel, sender)` に対する繰り返しリクエスト/refresh は重複するライブ保留行を作成しません。
+**主張:** ペアリングストアは、処理が交錯する場合でも`MaxPending`と冪等性を適用します。確認後の書き込みはアトミックまたはロック済みでなければならず、更新によって重複が作成されてはなりません。具体的には、並行要求によってチャンネルの`MaxPending`を超えることはなく、同じ`(channel, sender)`に対する要求や更新を繰り返しても、有効な保留中の行が重複して作成されることはありません。
 
 | 結果           | ターゲット                                                                                                                                                                  |
 | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Green          | `make pairing-race`（アトミック/ロック済みの上限チェック）, `make pairing-idempotency`, `make pairing-refresh`, `make pairing-refresh-race`                                |
-| Red（想定） | `make pairing-race-negative`（非アトミックな begin/commit の上限競合）, `make pairing-idempotency-negative`, `make pairing-refresh-negative`, `make pairing-refresh-race-negative` |
+| 正常           | `make pairing-race`（アトミックまたはロック済みの上限確認）、`make pairing-idempotency`、`make pairing-refresh`、`make pairing-refresh-race`                                 |
+| 異常（想定どおり） | `make pairing-race-negative`（非アトミックな開始・コミット間の上限競合）、`make pairing-idempotency-negative`、`make pairing-refresh-negative`、`make pairing-refresh-race-negative` |
 
-### Ingress トレース相関と冪等性
+### 受信トレースの関連付けと冪等性
 
-**主張:** 取り込みはファンアウト全体でトレース相関を保持し、プロバイダーのリトライ下で冪等です。1 つの外部イベントが複数の内部メッセージになる場合、すべての部分が同じトレース/イベント ID を保持します。リトライは二重処理されません。プロバイダーイベント ID が欠落している場合、重複排除は（たとえばトレース ID のような）安全なキーにフォールバックし、別個のイベントを誤って削除しないようにします。
+**主張:** 受信処理は、ファンアウト全体でトレースの関連付けを維持し、プロバイダーによる再試行に対して冪等です。1つの外部イベントが複数の内部メッセージになる場合でも、すべての部分が同じトレース／イベント識別情報を保持します。再試行による二重処理は発生しません。プロバイダーのイベントIDがない場合、異なるイベントを誤って破棄しないよう、重複排除では安全なキー（たとえばトレースID）が代替として使用されます。
 
 | 結果           | ターゲット                                                                                                                                  |
 | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| Green          | `make ingress-trace`, `make ingress-trace2`, `make ingress-idempotency`, `make ingress-dedupe-fallback`                                     |
-| Red（想定） | `make ingress-trace-negative`, `make ingress-trace2-negative`, `make ingress-idempotency-negative`, `make ingress-dedupe-fallback-negative` |
+| 正常           | `make ingress-trace`, `make ingress-trace2`, `make ingress-idempotency`, `make ingress-dedupe-fallback`                                     |
+| 異常（想定どおり） | `make ingress-trace-negative`, `make ingress-trace2-negative`, `make ingress-idempotency-negative`, `make ingress-dedupe-fallback-negative` |
 
-### ルーティング dmScope 優先順位と identityLinks
+### ルーティングの`dmScope`優先順位と`identityLinks`
 
-**主張:** ルーティングはデフォルトで DM セッションを分離し、明示的に設定された場合にのみ、チャネル優先順位と ID リンクを通じてセッションを統合します。チャネル固有の `dmScope` オーバーライドはグローバルデフォルトより優先されます。`identityLinks` は明示的にリンクされたグループ内でのみセッションを統合し、無関係なピア間では統合しません。
+**主張:** ルーティングはデフォルトでDMセッションを分離し、チャンネルの優先順位とIDリンクを通じて明示的に設定されている場合にのみ、セッションを統合します。チャンネル固有の`dmScope`によるオーバーライドは、グローバルのデフォルトより優先されます。`identityLinks`は明示的にリンクされたグループ内でのみセッションを統合し、無関係な相手間では統合しません。
 
 | 結果           | ターゲット                                                                |
 | -------------- | ------------------------------------------------------------------------- |
-| Green          | `make routing-precedence`, `make routing-identitylinks`                   |
-| Red（想定） | `make routing-precedence-negative`, `make routing-identitylinks-negative` |
+| 正常           | `make routing-precedence`, `make routing-identitylinks`                   |
+| 異常（想定どおり） | `make routing-precedence-negative`, `make routing-identitylinks-negative` |
 
-## 関連
+## 関連項目
 
 - [脅威モデル](/ja-JP/security/THREAT-MODEL-ATLAS)
 - [脅威モデルへの貢献](/ja-JP/security/CONTRIBUTING-THREAT-MODEL)

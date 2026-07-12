@@ -1,30 +1,32 @@
 ---
 read_when:
-    - Stille Matrix-streaming instellen voor zelfgehoste Synapse of Tuwunel
-    - Gebruikers willen alleen meldingen bij voltooide blokken, niet bij elke bewerking van de voorvertoning.
-summary: Matrix-pushregels per ontvanger voor stille definitieve previewbewerkingen
-title: Matrix-pushregels voor stille voorvertoningen
+    - Stille streaming in Matrix instellen voor zelfgehoste Synapse of Tuwunel
+    - Gebruikers willen alleen meldingen voor voltooide blokken, niet voor elke bewerking van het voorbeeld
+summary: Matrix-pushregels per ontvanger voor stille bewerkingen van voltooide voorbeelden
+title: Matrix-pushregels voor stille voorbeelden
 x-i18n:
-    generated_at: "2026-04-29T22:26:38Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:36:32Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e2f037a50a85b350163c74cf6b9cce335ecaaa5cccc762124122ad6d0321a1fa
+    source_hash: 3f2260b4cc68f82cbe1aef86b8963b6b40e93f089b31991964fc9282b2c121fb
     source_path: channels/matrix-push-rules.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Wanneer `channels.matrix.streaming` `"quiet"` is, bewerkt OpenClaw een enkel voorbeeld-event op zijn plaats en markeert de definitieve bewerking met een aangepaste contentvlag. Matrix-clients melden de definitieve bewerking alleen als een pushregel per gebruiker overeenkomt met die vlag. Deze pagina is bedoeld voor operators die Matrix zelf hosten en die regel voor elk ontvangend account willen installeren.
+Wanneer `channels.matrix.streaming` is ingesteld op `"quiet"`, streamt OpenClaw het antwoord door één voorbeeldgebeurtenis ter plekke te bewerken. Voorbeelden worden verzonden als niet-meldende `m.notice`-gebeurtenissen en de definitieve bewerking wordt gemarkeerd met `content["com.openclaw.finalized_preview"] = true`. Matrix-clients geven bij die definitieve bewerking alleen een melding als een pushregel per gebruiker overeenkomt met de markering. Deze pagina is bedoeld voor beheerders die Matrix zelf hosten en die regel voor elk account van een ontvanger willen installeren.
 
-Als je alleen standaard Matrix-meldingsgedrag wilt, gebruik dan `streaming: "partial"` of laat streaming uit. Zie [Matrix-kanaalconfiguratie](/nl/channels/matrix#streaming-previews).
+`streaming: "progress"` rondt concepten via hetzelfde pad af, zodat dezelfde regel ook wordt geactiveerd voor definitieve bewerkingen in de voortgangsmodus.
+
+Als u alleen het standaardmeldingsgedrag van Matrix wilt, gebruikt u `streaming: "partial"` of schakelt u streaming uit. Zie [Matrix-kanaal instellen](/nl/channels/matrix#streaming-previews).
 
 ## Vereisten
 
 - ontvangende gebruiker = de persoon die de melding moet ontvangen
 - botgebruiker = het OpenClaw Matrix-account dat het antwoord verzendt
-- gebruik de toegangstoken van de ontvangende gebruiker voor de API-aanroepen hieronder
+- gebruik het toegangstoken van de ontvangende gebruiker voor de onderstaande API-aanroepen
 - laat `sender` in de pushregel overeenkomen met de volledige MXID van de botgebruiker
-- het ontvangende account moet al werkende pushers hebben — regels voor stille voorbeelden werken alleen wanneer normale Matrix-pushbezorging gezond is
+- het account van de ontvanger moet al werkende pushers hebben; regels voor stille voorbeelden werken alleen wanneer de normale pushbezorging van Matrix correct functioneert
 
 ## Stappen
 
@@ -43,8 +45,8 @@ Als je alleen standaard Matrix-meldingsgedrag wilt, gebruik dan `streaming: "par
 
   </Step>
 
-  <Step title="De toegangstoken van de ontvanger ophalen">
-    Hergebruik waar mogelijk een bestaande clientsessietoken. Om een nieuwe aan te maken:
+  <Step title="Het toegangstoken van de ontvanger ophalen">
+    Gebruik waar mogelijk opnieuw een bestaand clientsessietoken. Zo maakt u een nieuw token aan:
 
 ```bash
 curl -sS -X POST \
@@ -59,7 +61,7 @@ curl -sS -X POST \
 
   </Step>
 
-  <Step title="Controleren of pushers bestaan">
+  <Step title="Controleren of er pushers bestaan">
 
 ```bash
 curl -sS \
@@ -67,12 +69,12 @@ curl -sS \
   "https://matrix.example.org/_matrix/client/v3/pushers"
 ```
 
-Als er geen pushers terugkomen, herstel dan eerst de normale Matrix-pushbezorging voor dit account voordat je verdergaat.
+Als er geen pushers worden geretourneerd, herstelt u eerst de normale pushbezorging van Matrix voor dit account voordat u doorgaat.
 
   </Step>
 
   <Step title="De overschrijvende pushregel installeren">
-    OpenClaw markeert definitieve tekst-only voorbeeldbewerkingen met `content["com.openclaw.finalized_preview"] = true`. Installeer een regel die overeenkomt met die markering plus de bot-MXID als afzender:
+    Installeer een regel die overeenkomt met de markering voor het definitieve voorbeeld en met de MXID van de bot als afzender:
 
 ```bash
 curl -sS -X PUT \
@@ -104,14 +106,14 @@ curl -sS -X PUT \
 
     Vervang vóór het uitvoeren:
 
-    - `https://matrix.example.org`: de basis-URL van je homeserver
-    - `$USER_ACCESS_TOKEN`: de toegangstoken van de ontvangende gebruiker
-    - `openclaw-finalized-preview-botname`: een regel-ID die uniek is per bot per ontvanger (patroon: `openclaw-finalized-preview-<botname>`)
-    - `@bot:example.org`: je OpenClaw bot-MXID, niet die van de ontvanger
+    - `https://matrix.example.org`: de basis-URL van uw homeserver
+    - `$USER_ACCESS_TOKEN`: het toegangstoken van de ontvangende gebruiker
+    - `openclaw-finalized-preview-botname`: een regel-ID die uniek is per bot en per ontvanger (patroon: `openclaw-finalized-preview-<botname>`)
+    - `@bot:example.org`: de MXID van uw OpenClaw-bot, niet die van de ontvanger
 
   </Step>
 
-  <Step title="Controleren">
+  <Step title="Verifiëren">
 
 ```bash
 curl -sS \
@@ -119,40 +121,40 @@ curl -sS \
   "https://matrix.example.org/_matrix/client/v3/pushrules/global/override/openclaw-finalized-preview-botname"
 ```
 
-Test daarna een gestreamd antwoord. In stille modus toont de ruimte een stil conceptvoorbeeld en wordt er één melding verzonden zodra het blok of de beurt is voltooid.
+Test vervolgens een gestreamd antwoord. In de stille modus toont de ruimte een stil conceptvoorbeeld en wordt één melding gegeven zodra het blok of de beurt is voltooid.
 
   </Step>
 </Steps>
 
-Om de regel later te verwijderen, gebruik je `DELETE` op dezelfde regel-URL met de token van de ontvanger.
+Als u de regel later wilt verwijderen, voert u een `DELETE` uit op dezelfde regel-URL met het token van de ontvanger.
 
 ## Opmerkingen voor meerdere bots
 
-Pushregels worden gesleuteld op `ruleId`: het opnieuw uitvoeren van `PUT` op dezelfde ID werkt één regel bij. Voor meerdere OpenClaw-bots die dezelfde ontvanger melden, maak je één regel per bot met een afzonderlijke afzendermatch.
+Pushregels worden geïdentificeerd door `ruleId`: als u `PUT` opnieuw uitvoert met dezelfde ID, wordt één regel bijgewerkt. Als meerdere OpenClaw-bots dezelfde ontvanger meldingen sturen, maakt u voor elke bot één regel met een afzonderlijke afzenderovereenkomst.
 
-Nieuwe door de gebruiker gedefinieerde `override`-regels worden vóór standaard onderdrukkingsregels ingevoegd, dus er is geen extra volgordeparameter nodig. De regel heeft alleen invloed op tekst-only voorbeeldbewerkingen die op hun plaats kunnen worden afgerond; mediafallbacks en fallbacks voor verouderde voorbeelden gebruiken normale Matrix-bezorging.
+Nieuwe, door gebruikers gedefinieerde `override`-regels worden vóór de standaardonderdrukkingsregels van de server ingevoegd, zodat geen aanvullende ordeningsparameter nodig is. De regel is alleen van invloed op uitsluitend tekst bevattende voorbeeldbewerkingen die ter plekke kunnen worden afgerond; media-antwoorden, terugvalopties voor verouderde voorbeelden en definitieve teksten die Matrix-vermeldingen zouden activeren, worden in plaats daarvan als normale meldingsberichten bezorgd.
 
-## Homeserver-opmerkingen
+## Opmerkingen voor homeservers
 
 <AccordionGroup>
   <Accordion title="Synapse">
-    Er is geen speciale wijziging in `homeserver.yaml` vereist. Als normale Matrix-meldingen deze gebruiker al bereiken, is de ontvangertoken plus de `pushrules`-aanroep hierboven de belangrijkste configuratiestap.
+    Er is geen speciale wijziging in `homeserver.yaml` vereist. Als normale Matrix-meldingen deze gebruiker al bereiken, vormen het token van de ontvanger en de bovenstaande `pushrules`-aanroep de belangrijkste configuratiestap.
 
-    Als je Synapse achter een reverse proxy of workers draait, zorg er dan voor dat `/_matrix/client/.../pushrules/` Synapse correct bereikt. Pushbezorging wordt afgehandeld door het hoofdproces of `synapse.app.pusher` / geconfigureerde pusher-workers — zorg dat die gezond zijn.
+    Als u Synapse achter een reverse proxy of met workers uitvoert, controleert u of `/_matrix/client/.../pushrules/` Synapse correct bereikt. Pushbezorging wordt afgehandeld door het hoofdproces of door `synapse.app.pusher`/geconfigureerde pusher-workers; zorg dat deze correct functioneren.
 
-    De regel gebruikt de pushregelvoorwaarde `event_property_is` (MSC3758, pushregel v1.10), die in 2023 aan Synapse is toegevoegd. Oudere Synapse-releases accepteren de aanroep `PUT pushrules/...`, maar laten de voorwaarde stilzwijgend nooit overeenkomen — upgrade Synapse als er geen melding aankomt bij een definitieve voorbeeldbewerking.
+    De regel gebruikt de pushregelvoorwaarde `event_property_is` (MSC3758, pushregel v1.10), die in 2023 aan Synapse is toegevoegd. Oudere Synapse-versies accepteren de aanroep `PUT pushrules/...`, maar laten de voorwaarde ongemerkt nooit overeenkomen. Werk Synapse bij als er geen melding binnenkomt bij een definitieve voorbeeldbewerking.
 
   </Accordion>
 
   <Accordion title="Tuwunel">
-    Dezelfde flow als Synapse; er is geen Tuwunel-specifieke configuratie nodig voor de definitieve voorbeeldmarkering.
+    Dezelfde werkwijze als voor Synapse; er is geen Tuwunel-specifieke configuratie nodig voor de markering van het definitieve voorbeeld.
 
-    Als meldingen verdwijnen terwijl de gebruiker actief is op een ander apparaat, controleer dan of `suppress_push_when_active` is ingeschakeld. Tuwunel heeft deze optie toegevoegd in 1.4.2 (september 2025) en deze kan pushes naar andere apparaten bewust onderdrukken terwijl één apparaat actief is.
+    Als meldingen verdwijnen terwijl de gebruiker op een ander apparaat actief is, controleert u of `suppress_push_when_active` is ingeschakeld. Tuwunel heeft deze optie toegevoegd in versie 1.4.2 (september 2025) en kan daarmee pushmeldingen naar andere apparaten bewust onderdrukken terwijl één apparaat actief is.
 
   </Accordion>
 </AccordionGroup>
 
 ## Gerelateerd
 
-- [Matrix-kanaalconfiguratie](/nl/channels/matrix)
-- [Streaming-concepten](/nl/concepts/streaming)
+- [Matrix-kanaal instellen](/nl/channels/matrix)
+- [Streamingconcepten](/nl/concepts/streaming)

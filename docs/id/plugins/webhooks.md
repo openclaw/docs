@@ -1,32 +1,32 @@
 ---
 read_when:
-    - Anda ingin memicu atau mengendalikan TaskFlows dari sistem eksternal
-    - Anda sedang mengonfigurasi Plugin webhooks bawaan
-summary: 'Plugin Webhooks: jalur masuk TaskFlow terautentikasi untuk otomasi eksternal tepercaya'
+    - Anda ingin memicu atau menjalankan TaskFlow dari sistem eksternal
+    - Anda sedang mengonfigurasi plugin webhook bawaan
+summary: 'Plugin Webhook: jalur masuk TaskFlow terautentikasi untuk otomatisasi eksternal tepercaya'
 title: Plugin Webhook
 x-i18n:
-    generated_at: "2026-05-06T17:58:45Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:35:14Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 9d21d96f680fa24d4a53c1ed5759f800d3cfdc3336789c42c15266edd8ce9e80
+    source_hash: 081ccbb4ca60234b20f4db7379395bdc51e7203caad4c0a88f292989ca18b28e
     source_path: plugins/webhooks.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Plugin Webhooks menambahkan rute HTTP terautentikasi yang menghubungkan otomatisasi eksternal ke OpenClaw TaskFlows.
+Plugin Webhooks menambahkan rute HTTP terautentikasi agar sistem eksternal
+tepercaya (Zapier, n8n, tugas CI, layanan internal) dapat membuat dan
+mengendalikan TaskFlow OpenClaw terkelola melalui HTTP, tanpa menulis plugin
+khusus.
 
-Gunakan ini saat Anda ingin sistem tepercaya seperti Zapier, n8n, job CI, atau layanan internal membuat dan mengendalikan TaskFlows terkelola tanpa perlu menulis plugin kustom terlebih dahulu.
-
-## Tempat dijalankan
-
-Plugin Webhooks berjalan di dalam proses Gateway.
-
-Jika Gateway Anda berjalan di mesin lain, instal dan konfigurasikan plugin di host Gateway tersebut, lalu mulai ulang Gateway.
+Plugin berjalan di dalam proses Gateway. Untuk Gateway jarak jauh, instal dan
+konfigurasikan plugin di host tersebut, lalu mulai ulang Gateway. Plugin
+didistribusikan tanpa rute yang dikonfigurasi, sehingga tidak melakukan apa pun
+hingga Anda menambahkan setidaknya satu rute.
 
 ## Mengonfigurasi rute
 
-Atur konfigurasi di bawah `plugins.entries.webhooks.config`:
+Tetapkan konfigurasi di bawah `plugins.entries.webhooks.config`:
 
 ```json5
 {
@@ -45,7 +45,7 @@ Atur konfigurasi di bawah `plugins.entries.webhooks.config`:
                 id: "OPENCLAW_WEBHOOK_SECRET",
               },
               controllerId: "webhooks/zapier",
-              description: "Jembatan TaskFlow Zapier",
+              description: "Zapier TaskFlow bridge",
             },
           },
         },
@@ -55,49 +55,54 @@ Atur konfigurasi di bawah `plugins.entries.webhooks.config`:
 }
 ```
 
-Kolom rute:
+Bidang rute:
 
-- `enabled`: opsional, default ke `true`
-- `path`: opsional, default ke `/plugins/webhooks/<routeId>`
-- `sessionKey`: sesi wajib yang memiliki TaskFlows terikat
-- `secret`: shared secret atau SecretRef wajib
-- `controllerId`: id pengontrol opsional untuk alur terkelola yang dibuat
-- `description`: catatan operator opsional
+| Bidang         | Wajib | Bawaan                        | Catatan                                                   |
+| -------------- | ----- | ----------------------------- | --------------------------------------------------------- |
+| `enabled`      | tidak | `true`                        |                                                           |
+| `path`         | tidak | `/plugins/webhooks/<routeId>` | Harus unik di seluruh rute.                               |
+| `sessionKey`   | ya    | -                             | Sesi yang memiliki TaskFlow terikat.                      |
+| `secret`       | ya    | -                             | String biasa atau SecretRef (di bawah).                   |
+| `controllerId` | tidak | `webhooks/<routeId>`          | Digunakan sebagai pengontrol `create_flow` bawaan.        |
+| `description`  | tidak | -                             | Hanya catatan untuk operator.                             |
 
-Input `secret` yang didukung:
+`secret` menerima string biasa atau SecretRef: `{ source: "env" | "file" | "exec", provider: "default", id: "..." }`.
 
-- String polos
-- SecretRef dengan `source: "env" | "file" | "exec"`
-
-Jika rute berbasis secret tidak dapat menyelesaikan secret-nya saat startup, plugin akan melewati rute tersebut dan mencatat peringatan alih-alih mengekspos endpoint yang rusak.
+Setiap rute yang dikonfigurasi didaftarkan saat proses dimulai, terlepas dari
+apakah rahasianya saat itu dapat diresolusikan. Rahasia yang tidak dapat
+diresolusikan tidak menonaktifkan atau melewati rute tersebut—permintaan ke
+rute itu gagal dalam autentikasi (`401`) hingga rahasia dapat diresolusikan.
+Nilai SecretRef diresolusikan ulang pada setiap permintaan, sehingga rotasi
+rahasia yang mendasarinya (variabel lingkungan, berkas, atau keluaran exec)
+berlaku tanpa memulai ulang Gateway.
 
 ## Model keamanan
 
-Setiap rute dipercaya untuk bertindak dengan otoritas TaskFlow dari `sessionKey` yang dikonfigurasi.
+Setiap rute bertindak dengan wewenang TaskFlow dari `sessionKey` yang
+dikonfigurasi: rute tersebut dapat memeriksa dan mengubah TaskFlow apa pun yang
+dimiliki sesi itu. Akses TaskFlow selalu melalui
+`api.runtime.tasks.managedFlows.bindSession(...)`, sehingga rute tidak pernah
+dapat bertindak di luar sesi terikatnya. Untuk membatasi dampak:
 
-Ini berarti rute dapat memeriksa dan mengubah TaskFlows yang dimiliki oleh sesi tersebut, jadi Anda sebaiknya:
+- Gunakan rahasia yang kuat dan unik untuk setiap rute.
+- Utamakan SecretRef daripada rahasia teks biasa sebaris.
+- Ikat rute ke sesi dengan cakupan paling sempit yang sesuai dengan alur kerja.
+- Ekspos hanya jalur Webhook spesifik yang Anda perlukan.
 
-- Gunakan secret unik yang kuat untuk setiap rute
-- Utamakan referensi secret daripada secret plaintext inline
-- Ikat rute ke sesi paling sempit yang sesuai dengan alur kerja
-- Ekspos hanya path webhook spesifik yang Anda perlukan
-
-Plugin menerapkan:
-
-- Autentikasi shared-secret
-- Penjaga ukuran body permintaan dan timeout
-- Pembatasan laju fixed-window
-- Pembatasan permintaan in-flight
-- Akses TaskFlow yang terikat pemilik melalui `api.runtime.tasks.managedFlows.bindSession(...)`
+Urutan penanganan permintaan untuk setiap jalur: pemeriksaan metode HTTP (hanya
+`POST`) dan `Content-Type: application/json`, lalu pembatasan laju berjendela
+tetap (120 permintaan per jendela 60 detik untuk setiap kunci
+jalur+IP-klien, hingga 4.096 kunci yang dilacak), lalu pembatasan permintaan
+yang sedang berlangsung (8 permintaan bersamaan per kunci, hingga 4.096 kunci
+yang dilacak), lalu autentikasi rahasia bersama, kemudian pembacaan isi JSON
+dengan batas 256 KB/15 detik. Permintaan yang gagal pada pemeriksaan awal tidak
+pernah mencapai pemeriksaan berikutnya.
 
 ## Format permintaan
 
-Kirim permintaan `POST` dengan:
-
-- `Content-Type: application/json`
-- `Authorization: Bearer <secret>` atau `x-openclaw-webhook-secret: <secret>`
-
-Contoh:
+Kirim permintaan `POST` dengan `Content-Type: application/json` dan
+`Authorization: Bearer <secret>` atau
+`x-openclaw-webhook-secret: <secret>`:
 
 ```bash
 curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
@@ -108,27 +113,28 @@ curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
 
 ## Tindakan yang didukung
 
-Plugin saat ini menerima nilai JSON `action` berikut:
+| Tindakan           | Tujuan                                                                             |
+| ------------------ | ---------------------------------------------------------------------------------- |
+| `create_flow`      | Membuat TaskFlow terkelola untuk sesi rute.                                        |
+| `get_flow`         | Mengambil satu TaskFlow berdasarkan id.                                            |
+| `list_flows`       | Mencantumkan TaskFlow untuk sesi rute.                                              |
+| `find_latest_flow` | Mengambil TaskFlow yang paling baru diperbarui.                                    |
+| `resolve_flow`     | Meresolusikan TaskFlow berdasarkan token opak.                                     |
+| `get_task_summary` | Mengambil ringkasan tugas untuk TaskFlow.                                          |
+| `set_waiting`      | Menandai TaskFlow sebagai menunggu, dengan data status/tunggu opsional.             |
+| `resume_flow`      | Melanjutkan TaskFlow yang menunggu/diblokir.                                       |
+| `finish_flow`      | Menandai TaskFlow sebagai selesai.                                                 |
+| `fail_flow`        | Menandai TaskFlow sebagai gagal.                                                   |
+| `request_cancel`   | Meminta pembatalan kooperatif.                                                     |
+| `cancel_flow`      | Membatalkan TaskFlow (dapat mengembalikan `202` jika turunannya masih aktif).      |
+| `run_task`         | Membuat tugas turunan terkelola di dalam TaskFlow yang sudah ada.                  |
 
-- `create_flow`
-- `get_flow`
-- `list_flows`
-- `find_latest_flow`
-- `resolve_flow`
-- `get_task_summary`
-- `set_waiting`
-- `resume_flow`
-- `finish_flow`
-- `fail_flow`
-- `request_cancel`
-- `cancel_flow`
-- `run_task`
+Tindakan yang mengubah data (`set_waiting`, `resume_flow`, `finish_flow`,
+`fail_flow`, `request_cancel`) memerlukan `flowId` dan `expectedRevision` untuk
+konkurensi optimistis; revisi kedaluwarsa mengembalikan
+`409 revision_conflict`.
 
 ### `create_flow`
-
-Membuat TaskFlow terkelola untuk sesi terikat milik rute.
-
-Contoh:
 
 ```json
 {
@@ -141,14 +147,9 @@ Contoh:
 
 ### `run_task`
 
-Membuat tugas turunan terkelola di dalam TaskFlow terkelola yang sudah ada.
-
-Runtime yang diizinkan adalah:
-
-- `subagent`
-- `acp`
-
-Contoh:
+Nilai `runtime` yang diizinkan: `subagent`, `acp`. `startedAt`, `lastEventAt`,
+dan `progressSummary` hanya valid ketika `status` bernilai `"running"`;
+mengirimkannya dengan status lain akan mengembalikan `400 invalid_request`.
 
 ```json
 {
@@ -162,8 +163,6 @@ Contoh:
 
 ## Bentuk respons
 
-Respons yang berhasil mengembalikan:
-
 ```json
 {
   "ok": true,
@@ -171,8 +170,6 @@ Respons yang berhasil mengembalikan:
   "result": {}
 }
 ```
-
-Permintaan yang ditolak mengembalikan:
 
 ```json
 {
@@ -184,10 +181,18 @@ Permintaan yang ditolak mengembalikan:
 }
 ```
 
-Plugin secara sengaja membersihkan metadata pemilik/sesi dari respons webhook.
+Tampilan alur dan tugas tidak pernah menyertakan metadata pemilik/sesi, sehingga
+respons tidak dapat membocorkan `sessionKey` yang terikat pada rute. Nilai
+`code` mencakup `not_found`, `not_managed`, `revision_conflict`,
+`persist_failed`, `cancel_requested`, `cancel_pending`, `terminal`,
+`invalid_request`, `request_rejected`, serta kode pengganti khusus tindakan
+(`mutation_rejected`, `create_rejected`, `task_not_created`,
+`cancel_rejected`) ketika perubahan ditolak karena alasan yang tidak tercakup
+oleh kode bernama di atas.
 
-## Dokumen terkait
+## Terkait
 
-- [Plugin runtime SDK](/id/plugins/sdk-runtime)
-- [Ikhtisar hooks dan webhooks](/id/automation/hooks)
+- [Hook](/id/automation/hooks) - hook internal berbasis peristiwa dibandingkan dengan jembatan TaskFlow berbasis HTTP ini
+- [Webhook Gateway (konfigurasi `hooks.*`)](/id/automation/cron-jobs#webhooks) - fitur titik akhir HTTP Gateway generik yang terpisah; tidak sama dengan rute milik plugin ini
+- [SDK runtime plugin](/id/plugins/sdk-runtime)
 - [Webhook CLI](/id/cli/webhooks)

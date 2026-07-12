@@ -1,95 +1,82 @@
 ---
 read_when:
-    - Menambahkan kapabilitas inti baru dan permukaan pendaftaran plugin
-    - Menentukan apakah kode termasuk dalam core, plugin vendor, atau plugin fitur
-    - Menghubungkan helper runtime baru untuk channel atau alat
+    - Menambahkan kapabilitas inti baru dan antarmuka pendaftaran Plugin
+    - Menentukan apakah kode seharusnya berada di inti, plugin vendor, atau plugin fitur
+    - Menghubungkan helper runtime baru untuk kanal atau alat
 sidebarTitle: Adding capabilities
-summary: Panduan kontributor untuk menambahkan kapabilitas bersama baru ke sistem Plugin OpenClaw
-title: Menambahkan kapabilitas (panduan kontributor)
+summary: Panduan kontributor untuk menambahkan kapabilitas bersama baru ke sistem plugin OpenClaw
+title: Menambahkan kemampuan (panduan kontributor)
 x-i18n:
-    generated_at: "2026-06-27T17:43:57Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:22:28Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b8a25122a7b76ff5bbb7616748d5fad2397502f9accb5428134a75d65e872034
+    source_hash: 3534b7521ab8183d91399cded8a3b397be46bf9bd18f2fdb88a8947bad67ffaa
     source_path: plugins/adding-capabilities.md
     workflow: 16
 ---
 
 <Info>
-  Ini adalah **panduan kontributor** untuk pengembang inti OpenClaw. Jika Anda
-  membangun plugin eksternal, lihat [Membangun plugin](/id/plugins/building-plugins)
+  Ini adalah **panduan kontributor** bagi pengembang inti OpenClaw. Jika Anda
+  sedang membuat plugin eksternal, lihat [Membuat plugin](/id/plugins/building-plugins)
   sebagai gantinya. Untuk referensi arsitektur mendalam (model kapabilitas, kepemilikan,
-  pipeline pemuatan, helper runtime), lihat [Internal plugin](/id/plugins/architecture).
+  alur pemuatan, pembantu runtime), lihat [Internal Plugin](/id/plugins/architecture).
 </Info>
 
-Gunakan ini ketika OpenClaw membutuhkan domain bersama baru seperti embedding, pembuatan gambar, pembuatan video, atau area fitur masa depan yang didukung vendor.
+Gunakan panduan ini saat OpenClaw memerlukan domain bersama baru seperti embedding, pembuatan
+gambar, pembuatan video, atau area fitur masa depan yang didukung vendor.
 
 Aturannya:
 
 - **plugin** = batas kepemilikan
 - **kapabilitas** = kontrak inti bersama
 
-Jangan mulai dengan menghubungkan vendor langsung ke channel atau tool. Mulailah dengan mendefinisikan kapabilitas.
+Jangan hubungkan vendor secara langsung ke kanal atau alat. Definisikan kapabilitasnya terlebih dahulu.
 
-## Kapan membuat kapabilitas
+## Kapan harus membuat kapabilitas
 
-Buat kapabilitas baru ketika **semua** hal berikut benar:
+Buat kapabilitas baru hanya jika **semua** hal berikut terpenuhi:
 
 1. Lebih dari satu vendor secara masuk akal dapat mengimplementasikannya.
-2. Channel, tool, atau plugin fitur harus dapat menggunakannya tanpa peduli tentang vendornya.
+2. Kanal, alat, atau plugin fitur harus dapat menggunakannya tanpa perlu mengetahui vendornya.
 3. Inti perlu memiliki perilaku fallback, kebijakan, konfigurasi, atau pengiriman.
 
-Jika pekerjaannya hanya untuk vendor dan belum ada kontrak bersama, berhenti dan definisikan kontraknya terlebih dahulu.
+Jika pekerjaan hanya khusus untuk vendor dan belum ada kontrak bersama, definisikan kontraknya terlebih dahulu.
 
 ## Urutan standar
 
 1. Definisikan kontrak inti bertipe.
-2. Tambahkan registrasi plugin untuk kontrak tersebut.
-3. Tambahkan helper runtime bersama.
+2. Tambahkan pendaftaran plugin untuk kontrak tersebut.
+3. Tambahkan pembantu runtime bersama.
 4. Hubungkan satu plugin vendor nyata sebagai bukti.
-5. Pindahkan konsumen fitur/channel ke helper runtime.
+5. Pindahkan konsumen fitur/kanal ke pembantu runtime.
 6. Tambahkan pengujian kontrak.
-7. Dokumentasikan konfigurasi yang terlihat oleh operator dan model kepemilikannya.
+7. Dokumentasikan konfigurasi yang ditujukan bagi operator dan model kepemilikannya.
 
-## Apa ditempatkan di mana
+## Penempatan komponen
 
-**Inti:**
+| Lapisan                    | Memiliki                                                                                                                                                                                                                              |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Inti**                   | Tipe permintaan/respons; registri dan resolusi penyedia; perilaku fallback; skema konfigurasi dengan metadata dokumentasi `title`/`description` yang diteruskan pada simpul objek bertingkat, wildcard, item larik, dan komposisi; permukaan pembantu runtime. |
+| **Plugin vendor**          | Panggilan API vendor, penanganan autentikasi vendor, normalisasi permintaan khusus vendor, dan pendaftaran implementasi kapabilitas.                                                                                                   |
+| **Plugin fitur/kanal**     | Memanggil `api.runtime.*` atau pembantu `plugin-sdk/*-runtime` yang sesuai. Tidak pernah memanggil implementasi vendor secara langsung.                                                                                                |
 
-- Tipe permintaan/respons.
-- Registry provider + resolusi.
-- Perilaku fallback.
-- Skema konfigurasi dengan metadata dokumentasi `title` / `description` yang dipropagasikan pada node objek bertingkat, wildcard, item array, dan komposisi.
-- Permukaan helper runtime.
+## Titik integrasi penyedia dan harness
 
-**Plugin vendor:**
+Gunakan **hook penyedia** ketika perilaku merupakan bagian dari kontrak penyedia model, bukan loop agen generik. Contohnya mencakup parameter permintaan khusus penyedia setelah pemilihan transportasi, preferensi profil autentikasi, overlay prompt, dan perutean fallback lanjutan setelah failover model/profil.
 
-- Panggilan API vendor.
-- Penanganan autentikasi vendor.
-- Normalisasi permintaan khusus vendor.
-- Registrasi implementasi kapabilitas.
+Gunakan **hook harness agen** ketika perilaku merupakan bagian dari runtime yang menjalankan suatu giliran. Harness dapat mengklasifikasikan hasil protokol eksplisit seperti keluaran kosong, penalaran tanpa keluaran yang terlihat, atau rencana terstruktur tanpa jawaban akhir agar kebijakan fallback model luar dapat menentukan keputusan percobaan ulang.
 
-**Plugin fitur/channel:**
+Jaga agar kedua titik integrasi tetap sempit:
 
-- Memanggil `api.runtime.*` atau helper `plugin-sdk/*-runtime` yang sesuai.
-- Tidak pernah memanggil implementasi vendor secara langsung.
-
-## Seam provider dan harness
-
-Gunakan **hook provider** ketika perilaku tersebut termasuk dalam kontrak provider model, bukan loop agen generik. Contohnya mencakup parameter permintaan khusus provider setelah pemilihan transport, preferensi profil autentikasi, overlay prompt, dan routing fallback lanjutan setelah failover model/profil.
-
-Gunakan **hook harness agen** ketika perilaku tersebut termasuk dalam runtime yang mengeksekusi sebuah giliran. Harness dapat mengklasifikasikan hasil protokol eksplisit seperti output kosong, reasoning tanpa output terlihat, atau rencana terstruktur tanpa jawaban akhir agar kebijakan fallback model luar dapat membuat keputusan retry.
-
-Jaga kedua seam tetap sempit:
-
-- Inti memiliki kebijakan retry/fallback.
-- Plugin provider memiliki petunjuk permintaan/autentikasi/routing khusus provider.
+- Inti memiliki kebijakan percobaan ulang/fallback.
+- Plugin penyedia memiliki petunjuk permintaan/autentikasi/perutean khusus penyedia.
 - Plugin harness memiliki klasifikasi percobaan khusus runtime.
-- Plugin pihak ketiga mengembalikan petunjuk, bukan mutasi langsung pada state inti.
+- Plugin pihak ketiga mengembalikan petunjuk, bukan mutasi langsung terhadap status inti.
 
-## Checklist file
+## Daftar periksa berkas
 
-Untuk kapabilitas baru, perkirakan menyentuh area berikut:
+Untuk kapabilitas baru, bersiaplah menyentuh area berikut:
 
 - `src/<capability>/types.ts`
 - `src/<capability>/...registry/runtime.ts`
@@ -101,47 +88,53 @@ Untuk kapabilitas baru, perkirakan menyentuh area berikut:
 - `src/plugins/runtime/index.ts`
 - `src/plugin-sdk/<capability>.ts`
 - `src/plugin-sdk/<capability>-runtime.ts`
-- Satu atau beberapa paket plugin bundel.
+- Satu atau beberapa paket plugin bawaan.
 - Konfigurasi, dokumentasi, pengujian.
 
-## Contoh kerja: pembuatan gambar
+## Contoh lengkap: pembuatan gambar
 
-Pembuatan gambar mengikuti bentuk standar:
+Pembuatan gambar mengikuti struktur standar:
 
 1. Inti mendefinisikan `ImageGenerationProvider`.
 2. Inti mengekspos `registerImageGenerationProvider(...)`.
-3. Inti mengekspos `runtime.imageGeneration.generate(...)`.
-4. Plugin `openai`, `google`, `fal`, dan `minimax` mendaftarkan implementasi yang didukung vendor.
-5. Vendor masa depan mendaftarkan kontrak yang sama tanpa mengubah channel/tool.
+3. Inti mengekspos `api.runtime.imageGeneration.generate(...)` dan `.listProviders(...)`.
+4. Plugin vendor (`comfy`, `deepinfra`, `fal`, `google`, `litellm`, `microsoft-foundry`, `minimax`, `openai`, `openrouter`, `vydra`, `xai`) mendaftarkan implementasi yang didukung vendor.
+5. Vendor mendatang mendaftarkan kontrak yang sama tanpa mengubah kanal/alat.
 
-Kunci konfigurasi sengaja dipisahkan dari routing analisis visi:
+Kunci konfigurasi sengaja dipisahkan dari perutean analisis penglihatan:
 
 - `agents.defaults.imageModel` menganalisis gambar.
 - `agents.defaults.imageGenerationModel` menghasilkan gambar.
 
-Jaga keduanya tetap terpisah agar fallback dan kebijakan tetap eksplisit.
+Pertahankan keduanya secara terpisah agar fallback dan kebijakan tetap eksplisit.
 
-## Provider embedding
+## Penyedia embedding
 
-Gunakan `embeddingProviders` untuk provider embedding vektor yang dapat digunakan ulang. Kontrak ini sengaja lebih luas daripada memori: tool, pencarian, retrieval, importer, atau plugin fitur masa depan dapat menggunakan embedding tanpa bergantung pada mesin memori.
+Gunakan `registerEmbeddingProvider(...)` / kontrak `embeddingProviders` untuk
+penyedia embedding vektor yang dapat digunakan kembali. Kontrak ini sengaja lebih luas
+daripada memori: alat, pencarian, pengambilan, pengimpor, atau plugin fitur masa depan
+dapat menggunakan embedding tanpa bergantung pada mesin memori. Pencarian memori
+juga menggunakan `embeddingProviders` generik.
 
-Pencarian memori dapat menggunakan `embeddingProviders` generik. Kontrak lama `memoryEmbeddingProviders` adalah kompatibilitas yang sudah deprecated sementara provider khusus memori yang ada bermigrasi; provider embedding baru yang dapat digunakan ulang harus menggunakan `embeddingProviders`.
+API pendaftaran lama yang khusus untuk memori dan kontrak `memoryEmbeddingProviders`
+sudah tidak digunakan lagi. Gunakan `registerEmbeddingProvider` dan
+`embeddingProviders` untuk semua penyedia embedding baru.
 
-## Checklist review
+## Daftar periksa peninjauan
 
-Sebelum mengirim kapabilitas baru, verifikasi:
+Sebelum merilis kapabilitas baru, verifikasi:
 
-- Tidak ada channel/tool yang mengimpor kode vendor secara langsung.
-- Helper runtime adalah jalur bersama.
-- Setidaknya satu pengujian kontrak menegaskan kepemilikan bundel.
+- Tidak ada kanal/alat yang mengimpor kode vendor secara langsung.
+- Pembantu runtime menjadi jalur bersama.
+- Setidaknya satu pengujian kontrak memverifikasi kepemilikan bawaan.
 - Dokumentasi konfigurasi menyebutkan model/kunci konfigurasi baru.
 - Dokumentasi plugin menjelaskan batas kepemilikan.
 
-Jika sebuah PR melewati lapisan kapabilitas dan meng-hardcode perilaku vendor ke dalam channel/tool, kembalikan dan definisikan kontraknya terlebih dahulu.
+Jika sebuah PR melewati lapisan kapabilitas dan menanamkan perilaku vendor langsung ke kanal/alat, kembalikan PR tersebut dan definisikan kontraknya terlebih dahulu.
 
 ## Terkait
 
-- [Internal plugin](/id/plugins/architecture) — model kapabilitas, kepemilikan, pipeline pemuatan, helper runtime.
-- [Membangun plugin](/id/plugins/building-plugins) — tutorial plugin pertama.
-- [Ikhtisar SDK](/id/plugins/sdk-overview) — peta impor dan referensi API registrasi.
-- [Membuat skills](/id/tools/creating-skills) — permukaan kontributor pendamping.
+- [Internal Plugin](/id/plugins/architecture) — model kapabilitas, kepemilikan, alur pemuatan, pembantu runtime.
+- [Membuat plugin](/id/plugins/building-plugins) — tutorial plugin pertama.
+- [Ikhtisar SDK](/id/plugins/sdk-overview) — peta impor dan referensi API pendaftaran.
+- [Membuat Skills](/id/tools/creating-skills) — permukaan kontributor pendamping.

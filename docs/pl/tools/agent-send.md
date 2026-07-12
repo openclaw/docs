@@ -1,22 +1,23 @@
 ---
 read_when:
-    - Chcesz uruchamiać przebiegi agenta ze skryptów lub z wiersza poleceń
+    - Chcesz uruchamiać agenta ze skryptów lub z wiersza poleceń
     - Musisz programowo dostarczać odpowiedzi agenta do kanału czatu
-summary: Uruchamiaj tury agenta z CLI i opcjonalnie dostarczaj odpowiedzi do kanałów
+summary: Uruchamiaj tury agenta z poziomu CLI i opcjonalnie dostarczaj odpowiedzi do kanałów
 title: Wysyłanie przez agenta
 x-i18n:
-    generated_at: "2026-06-27T18:24:14Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:43:29Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 25026258a5a47c87fbf99689de5ea16d827b11af07bc5ce4f6c3e2bda6466b46
+    source_hash: 23ad57735bd43a2bba5add571e9572da0fbe7b516a70515c674e1ababaab081a
     source_path: tools/agent-send.md
     workflow: 16
 ---
 
-`openclaw agent` uruchamia pojedynczą turę agenta z wiersza poleceń bez potrzeby
-przychodzącej wiadomości czatu. Używaj go do skryptowanych przepływów pracy, testowania i
-dostarczania programowego.
+`openclaw agent` uruchamia pojedynczą turę agenta z wiersza poleceń bez
+przychodzącej wiadomości czatu. Używaj go w skryptowanych przepływach pracy, testach i
+dostarczaniu programistycznym. Pełna dokumentacja flag i zachowania:
+[Dokumentacja CLI agenta](/pl/cli/agent).
 
 ## Szybki start
 
@@ -26,20 +27,20 @@ dostarczania programowego.
     openclaw agent --agent main --message "What is the weather today?"
     ```
 
-    To wysyła wiadomość przez Gateway i wypisuje odpowiedź.
+    Wysyła wiadomość przez Gateway i wyświetla odpowiedź.
 
   </Step>
 
-  <Step title="Wyślij wielowierszowy prompt z pliku">
+  <Step title="Wyślij wielowierszowy monit z pliku">
     ```bash
     openclaw agent --agent ops --message-file ./task.md
     ```
 
-    To odczytuje poprawny plik UTF-8 jako treść wiadomości agenta.
+    Odczytuje prawidłowy plik UTF-8 jako treść wiadomości agenta.
 
   </Step>
 
-  <Step title="Wskaż konkretnego agenta lub sesję">
+  <Step title="Wybierz określonego agenta lub sesję">
     ```bash
     # Target a specific agent
     openclaw agent --agent ops --message "Summarize logs"
@@ -71,53 +72,64 @@ dostarczania programowego.
 
 ## Flagi
 
-| Flaga                         | Opis                                                        |
-| ----------------------------- | ----------------------------------------------------------- |
-| `--message \<text\>`          | Wiadomość inline do wysłania                                |
-| `--message-file \<path\>`     | Odczytaj wiadomość z poprawnego pliku UTF-8                 |
-| `--to \<dest\>`               | Wyprowadź klucz sesji z celu (telefonu, identyfikatora czatu) |
-| `--session-key \<key\>`       | Użyj jawnego klucza sesji                                   |
-| `--agent \<id\>`              | Wskaż skonfigurowanego agenta (używa jego sesji `main`)     |
-| `--session-id \<id\>`         | Użyj ponownie istniejącej sesji według identyfikatora       |
-| `--local`                     | Wymuś lokalne osadzone środowisko uruchomieniowe (pomiń Gateway) |
-| `--deliver`                   | Wyślij odpowiedź do kanału czatu                            |
-| `--channel \<name\>`          | Kanał dostarczania (whatsapp, telegram, discord, slack itd.) |
-| `--reply-to \<target\>`       | Nadpisanie celu dostarczania                                |
-| `--reply-channel \<name\>`    | Nadpisanie kanału dostarczania                              |
-| `--reply-account \<id\>`      | Nadpisanie identyfikatora konta dostarczania                |
-| `--thinking \<level\>`        | Ustaw poziom myślenia dla wybranego profilu modelu          |
-| `--verbose \<on\|full\|off\>` | Ustaw poziom szczegółowości                                 |
-| `--timeout \<seconds\>`       | Nadpisz limit czasu agenta                                  |
-| `--json`                      | Wypisz ustrukturyzowany JSON                                |
+| Flaga                       | Opis                                                                  |
+| --------------------------- | --------------------------------------------------------------------- |
+| `--message <text>`          | Wiadomość wbudowana do wysłania                                       |
+| `--message-file <path>`     | Odczytanie wiadomości z prawidłowego pliku UTF-8                       |
+| `--to <dest>`               | Wyprowadzenie klucza sesji z odbiorcy (telefonu, identyfikatora czatu) |
+| `--session-key <key>`       | Użycie jawnego klucza sesji                                           |
+| `--agent <id>`              | Wybór skonfigurowanego agenta (używa jego sesji `main`)                |
+| `--session-id <id>`         | Ponowne użycie istniejącej sesji według identyfikatora                 |
+| `--model <id>`              | Zastąpienie modelu dla tego uruchomienia (`provider/model` lub identyfikator modelu) |
+| `--local`                   | Wymuszenie lokalnego, osadzonego środowiska wykonawczego (z pominięciem Gateway) |
+| `--deliver`                 | Wysłanie odpowiedzi do kanału czatu                                   |
+| `--channel <name>`          | Kanał dostarczania; z `--agent` + `--to` dotyczy również zakresu wiadomości bezpośrednich |
+| `--reply-to <target>`       | Zastąpienie odbiorcy dostarczania                                     |
+| `--reply-channel <name>`    | Zastąpienie kanału dostarczania                                       |
+| `--reply-account <id>`      | Zastąpienie identyfikatora konta używanego do dostarczania             |
+| `--thinking <level>`        | Ustawienie poziomu rozumowania dla wybranego profilu modelu            |
+| `--verbose <on\|full\|off>` | Utrwalenie poziomu szczegółowości dla sesji (`full` rejestruje także dane wyjściowe narzędzi) |
+| `--timeout <seconds>`       | Zastąpienie limitu czasu agenta (domyślnie 600 lub wartość konfiguracji) |
+| `--json`                    | Wyświetlenie ustrukturyzowanego formatu JSON                           |
 
 ## Zachowanie
 
-- Domyślnie CLI przechodzi **przez Gateway**. Dodaj `--local`, aby wymusić
-  osadzone środowisko uruchomieniowe na bieżącej maszynie.
-- Przekaż dokładnie jedną z opcji `--message` albo `--message-file`. Wiadomości z pliku zachowują
-  treść wielowierszową po usunięciu opcjonalnego znacznika BOM UTF-8.
-- Jeśli Gateway jest nieosiągalny, CLI **wraca** do lokalnego uruchomienia osadzonego.
-- Wybór sesji: `--to` wyprowadza klucz sesji (cele grup/kanałów
-  zachowują izolację; czaty bezpośrednie są sprowadzane do `main`).
-- `--session-key` wybiera jawny klucz. Klucze z prefiksem agenta muszą używać formatu
-  `agent:<agent-id>:<session-key>`, a `--agent` musi pasować do tego identyfikatora agenta, gdy
-  podano oba. Gołe klucze niebędące sentinelem są ograniczane zakresem do `--agent`, gdy
-  go podano; na przykład `--agent ops --session-key incident-42` kieruje do
-  `agent:ops:incident-42`. Bez `--agent` gołe klucze niebędące sentinelem są ograniczane
-  do skonfigurowanego domyślnego agenta. Literały `global` i `unknown` pozostają
-  bez zakresu tylko wtedy, gdy nie podano `--agent`; w takim przypadku osadzony fallback
-  i własność magazynu używają skonfigurowanego domyślnego agenta.
-- Flagi myślenia i szczegółowości są utrwalane w magazynie sesji.
-- Dane wyjściowe: domyślnie zwykły tekst albo `--json` dla ustrukturyzowanego ładunku i metadanych.
-- Z `--json --deliver` JSON zawiera status dostarczania dla wysyłek
-  wysłanych, pominiętych, częściowych i nieudanych. Zobacz
-  [status dostarczania JSON](/pl/cli/agent#json-delivery-status).
+- Domyślnie CLI działa **przez Gateway**. Dodaj `--local`, aby wymusić
+  osadzone środowisko wykonawcze na bieżącym komputerze.
+- Przekaż dokładnie jedną z opcji `--message` lub `--message-file`. Wiadomości z pliku zachowują
+  wielowierszową treść po usunięciu opcjonalnego znacznika BOM UTF-8.
+- Jeśli żądanie Gateway zakończy się niepowodzeniem, CLI **przełącza się**
+  na lokalne uruchomienie osadzone; przekroczenie limitu czasu Gateway powoduje przełączenie
+  z nową sesją zamiast rywalizacji z pierwotnym transkryptem.
+- Wybór sesji: `--to` wyprowadza klucz sesji (odbiorcy grupowi i kanałowi
+  zachowują izolację; czaty bezpośrednie są sprowadzane do `main`). Gdy `--agent`,
+  `--channel` i `--to` są używane razem, trasowanie wykorzystuje kanonicznego
+  odbiorcę kanału oraz `session.dmScope`. Stabilne tożsamości używane wyłącznie
+  do wysyłania korzystają z sesji należącej do dostawcy, odizolowanej od głównej sesji agenta.
+- `--session-key` wybiera jawny klucz. Klucze z prefiksem agenta muszą mieć postać
+  `agent:<agent-id>:<session-key>`, a gdy podano również `--agent`, jego identyfikator musi
+  być zgodny z tym identyfikatorem agenta. Zwykłe klucze niebędące wartościami specjalnymi są
+  przypisywane do `--agent`, jeśli go podano; na przykład
+  `--agent ops --session-key incident-42` prowadzi do
+  `agent:ops:incident-42`. Bez `--agent` zwykłe klucze niebędące wartościami specjalnymi
+  są przypisywane do skonfigurowanego agenta domyślnego. Literały `global` i `unknown`
+  pozostają bez zakresu tylko wtedy, gdy nie podano `--agent`; osadzona ścieżka
+  rezerwowa przypisuje te specjalne sesje do skonfigurowanego agenta domyślnego.
+- `--reply-channel` i `--reply-account` wpływają tylko na dostarczanie.
+- Flagi poziomu rozumowania i szczegółowości są utrwalane w magazynie sesji.
+- Dane wyjściowe: domyślnie zwykły tekst lub `--json` dla ustrukturyzowanego ładunku i metadanych.
+- W przypadku `--json --deliver` dane JSON zawierają stan dostarczania dla wysyłek
+  wysłanych, pominiętych, częściowych i zakończonych niepowodzeniem. Zobacz
+  [Stan dostarczania JSON](/pl/cli/agent#json-delivery-status).
 
 ## Przykłady
 
 ```bash
 # Simple turn with JSON output
 openclaw agent --to +15555550123 --message "Trace logs" --verbose on --json
+
+# Turn with a model override
+openclaw agent --agent ops --model openai/gpt-5.4 --message "Summarize logs"
 
 # Turn with thinking level
 openclaw agent --session-id 1234 --message "Summarize inbox" --thinking medium
@@ -139,15 +151,15 @@ openclaw agent --agent ops --message "Alert" --deliver --reply-channel telegram 
 
 <CardGroup cols={2}>
   <Card title="Dokumentacja CLI agenta" href="/pl/cli/agent" icon="terminal">
-    Pełna dokumentacja flag i opcji `openclaw agent`.
+    Pełna dokumentacja flag i opcji polecenia `openclaw agent`.
   </Card>
   <Card title="Podagenci" href="/pl/tools/subagents" icon="users">
     Uruchamianie podagentów w tle.
   </Card>
   <Card title="Sesje" href="/pl/concepts/session" icon="comments">
-    Jak działają klucze sesji oraz jak `--to`, `--agent` i `--session-id` je rozpoznają.
+    Sposób działania kluczy sesji oraz rozwiązywania ich przez `--to`, `--agent` i `--session-id`.
   </Card>
-  <Card title="Polecenia ukośnikowe" href="/pl/tools/slash-commands" icon="slash">
-    Natywny katalog poleceń używany wewnątrz sesji agenta.
+  <Card title="Polecenia z ukośnikiem" href="/pl/tools/slash-commands" icon="slash">
+    Katalog natywnych poleceń używanych w sesjach agentów.
   </Card>
 </CardGroup>

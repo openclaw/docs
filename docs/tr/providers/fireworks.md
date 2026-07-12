@@ -1,38 +1,38 @@
 ---
 read_when:
-    - OpenClaw ile Fireworks kullanmak istiyorsunuz
+    - Fireworks'ü OpenClaw ile kullanmak istiyorsunuz
     - Fireworks API anahtarı ortam değişkenine veya varsayılan model kimliğine ihtiyacınız var
-    - Kimi'nin Fireworks üzerindeki düşünme kapalı davranışında hata ayıklıyorsunuz
+    - Fireworks üzerinde Kimi'nin düşünme kapalı davranışında hata ayıklıyorsunuz
 summary: Fireworks kurulumu (kimlik doğrulama + model seçimi)
-title: Havai fişekler
+title: Havai Fişekler
 x-i18n:
-    generated_at: "2026-06-28T01:10:12Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:42:33Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7413ec9ea192921ce9b9ec51da5b0b9ff1030feeef192afbefc938ed200e192e
+    source_hash: 15feed0730ec65d943f103824468490be6616478ece80bedfeb9ad8137506180
     source_path: providers/fireworks.md
     workflow: 16
 ---
 
-[Fireworks](https://fireworks.ai), OpenAI uyumlu bir API üzerinden açık ağırlıklı ve yönlendirilmiş modeller sunar. Önceden kataloglanmış iki Kimi modelini ve çalışma zamanında herhangi bir Fireworks modeli veya yönlendirici kimliğini kullanmak için resmi Fireworks sağlayıcı Plugin'ini kurun.
+[Fireworks](https://fireworks.ai), açık ağırlıklı ve yönlendirilmiş modelleri OpenAI uyumlu bir API üzerinden sunar. Önceden kataloğa eklenmiş iki Kimi modelini ve herhangi bir Fireworks modelini veya yönlendirici kimliğini çalışma zamanında kullanmak için resmî Fireworks sağlayıcı Plugin'ini yükleyin.
 
-| Özellik        | Değer                                                  |
-| --------------- | ------------------------------------------------------ |
-| Sağlayıcı kimliği     | `fireworks` (takma ad: `fireworks-ai`)                    |
-| Paket         | `@openclaw/fireworks-provider`                         |
-| Kimlik doğrulama ortam değişkeni    | `FIREWORKS_API_KEY`                                    |
-| İlk kurulum bayrağı | `--auth-choice fireworks-api-key`                      |
-| Doğrudan CLI bayrağı | `--fireworks-api-key <key>`                            |
-| API             | OpenAI uyumlu (`openai-completions`)               |
-| Temel URL        | `https://api.fireworks.ai/inference/v1`                |
-| Varsayılan model   | `fireworks/accounts/fireworks/routers/kimi-k2p5-turbo` |
-| Varsayılan takma ad   | `Kimi K2.5 Turbo`                                      |
+| Özellik                  | Değer                                                  |
+| ------------------------ | ------------------------------------------------------ |
+| Sağlayıcı kimliği        | `fireworks` (diğer ad: `fireworks-ai`)                 |
+| Paket                    | `@openclaw/fireworks-provider`                         |
+| Kimlik doğrulama env var | `FIREWORKS_API_KEY`                                    |
+| İlk kurulum bayrağı      | `--auth-choice fireworks-api-key`                      |
+| Doğrudan CLI bayrağı     | `--fireworks-api-key <key>`                            |
+| API                      | OpenAI uyumlu (`openai-completions`)                   |
+| Temel URL                | `https://api.fireworks.ai/inference/v1`                |
+| Varsayılan model         | `fireworks/accounts/fireworks/routers/kimi-k2p5-turbo` |
+| Varsayılan diğer ad      | `Kimi K2.5 Turbo`                                      |
 
 ## Başlarken
 
 <Steps>
-  <Step title="Plugin'i kurun">
+  <Step title="Plugin'i yükleyin">
     ```bash
     openclaw plugins install @openclaw/fireworks-provider
     ```
@@ -50,13 +50,13 @@ openclaw onboard --non-interactive \
   --fireworks-api-key "$FIREWORKS_API_KEY"
 ```
 
-```bash Yalnızca ortam
+```bash Yalnızca env
 export FIREWORKS_API_KEY=fw-...
 ```
 
     </CodeGroup>
 
-    İlk kurulum, anahtarı kimlik doğrulama profillerinizde `fireworks` sağlayıcısına kaydeder ve **Fire Pass** Kimi K2.5 Turbo yönlendiricisini varsayılan model olarak ayarlar.
+    İlk kurulum, anahtarı kimlik doğrulama profillerinizdeki `fireworks` sağlayıcısıyla ilişkilendirerek saklar ve **Fire Pass** Kimi K2.5 Turbo yönlendiricisini varsayılan model olarak ayarlar.
 
   </Step>
   <Step title="Modelin kullanılabilir olduğunu doğrulayın">
@@ -64,14 +64,14 @@ export FIREWORKS_API_KEY=fw-...
     openclaw models list --provider fireworks
     ```
 
-    Listede `Kimi K2.6` ve `Kimi K2.5 Turbo (Fire Pass)` bulunmalıdır. `FIREWORKS_API_KEY` çözümlenemezse, `openclaw models status --json` eksik kimlik bilgisini `auth.unusableProfiles` altında bildirir.
+    Listede `Kimi K2.6` ve `Kimi K2.5 Turbo (Fire Pass)` bulunmalıdır. `FIREWORKS_API_KEY` çözümlenemiyorsa `openclaw models status --json`, eksik kimlik bilgisini `auth.unusableProfiles` altında bildirir.
 
   </Step>
 </Steps>
 
 ## Etkileşimsiz kurulum
 
-Betikli veya CI kurulumları için her şeyi komut satırında iletin:
+Betik tabanlı veya CI kurulumlarında tüm bilgileri komut satırında iletin:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -84,18 +84,18 @@ openclaw onboard --non-interactive \
 
 ## Yerleşik katalog
 
-| Model referansı                                              | Ad                        | Girdi        | Bağlam | Maksimum çıktı | Düşünme             |
-| ------------------------------------------------------ | --------------------------- | ------------ | ------- | ---------- | -------------------- |
-| `fireworks/accounts/fireworks/models/kimi-k2p6`        | Kimi K2.6                   | metin + görüntü | 262,144 | 262,144    | Zorunlu kapalı           |
-| `fireworks/accounts/fireworks/routers/kimi-k2p5-turbo` | Kimi K2.5 Turbo (Fire Pass) | metin + görüntü | 256,000 | 256,000    | Zorunlu kapalı (varsayılan) |
+| Model referansı                                         | Ad                          | Girdi         | Bağlam  | En fazla çıktı | Düşünme                     |
+| ------------------------------------------------------- | --------------------------- | ------------- | ------- | -------------- | --------------------------- |
+| `fireworks/accounts/fireworks/models/kimi-k2p6`         | Kimi K2.6                   | metin + görsel | 262,144 | 262,144        | Zorunlu olarak kapalı       |
+| `fireworks/accounts/fireworks/routers/kimi-k2p5-turbo`  | Kimi K2.5 Turbo (Fire Pass) | metin + görsel | 256,000 | 256,000        | Zorunlu olarak kapalı (varsayılan) |
 
 <Note>
-  OpenClaw, tüm Fireworks Kimi modellerini `thinking: off` olarak sabitler çünkü Fireworks, üretimde Kimi düşünme parametrelerini reddeder. Aynı modeli doğrudan [Moonshot](/tr/providers/moonshot) üzerinden yönlendirmek Kimi akıl yürütme çıktısını korur. Sağlayıcılar arasında geçiş yapmak için [düşünme modları](/tr/tools/thinking) bölümüne bakın.
+  Fireworks üzerindeki Kimi, istek düşünmeyi açıkça devre dışı bırakmadığında düşünce zincirini görünür yanıta sızdırabildiği için OpenClaw tüm Fireworks Kimi modellerini `thinking: off` değerine sabitler. Aynı modeli doğrudan [Moonshot](/tr/providers/moonshot) üzerinden yönlendirmek Kimi'nin akıl yürütme çıktısını korur. Sağlayıcılar arasında geçiş yapmak için [düşünme modlarına](/tr/tools/thinking) bakın.
 </Note>
 
 ## Özel Fireworks model kimlikleri
 
-OpenClaw, çalışma zamanında herhangi bir Fireworks modeli veya yönlendirici kimliğini kabul eder. Fireworks tarafından gösterilen tam kimliği kullanın ve başına `fireworks/` ekleyin. Dinamik çözümleme, Fire Pass şablonunu (metin + görüntü girdisi, OpenAI uyumlu API, varsayılan maliyet sıfır) klonlar ve kimlik Kimi deseniyle eşleştiğinde düşünmeyi otomatik olarak devre dışı bırakır. GLM dinamik kimlikleri, görüntü girdili özel bir model girdisi yapılandırmadığınız sürece yalnızca metin olarak işaretlenir.
+OpenClaw, çalışma zamanında herhangi bir Fireworks modeli veya yönlendirici kimliğini kabul eder. Fireworks tarafından gösterilen kimliği tam olarak kullanın ve başına `fireworks/` ekleyin. Dinamik çözümleme, Fire Pass şablonunu (metin + görsel girdisi, OpenAI uyumlu API, varsayılan maliyet sıfır) kopyalar ve kimlik Kimi kalıbıyla eşleştiğinde düşünmeyi otomatik olarak devre dışı bırakır. Özel bir model girdisini görsel girdisiyle yapılandırmadığınız sürece dinamik GLM kimlikleri yalnızca metin olarak işaretlenir.
 
 ```json5
 {
@@ -110,7 +110,7 @@ OpenClaw, çalışma zamanında herhangi bir Fireworks modeli veya yönlendirici
 ```
 
 <AccordionGroup>
-  <Accordion title="Model kimliği önekleme nasıl çalışır">
+  <Accordion title="Model kimliği önekinin çalışma biçimi">
     OpenClaw'daki her Fireworks model referansı, `fireworks/` ile başlar ve ardından Fireworks platformundaki tam kimlik veya yönlendirici yolu gelir. Örneğin:
 
     - Yönlendirici modeli: `fireworks/accounts/fireworks/routers/kimi-k2p5-turbo`
@@ -120,38 +120,38 @@ OpenClaw, çalışma zamanında herhangi bir Fireworks modeli veya yönlendirici
 
   </Accordion>
 
-  <Accordion title="Kimi için düşünme neden zorunlu olarak kapalıdır">
-    Kimi, Moonshot'ın kendi API'si üzerinden düşünmeyi desteklese de istek `reasoning_*` parametreleri taşıyorsa Fireworks K2.6 400 döndürür. Sağlayıcı politikası (`extensions/fireworks/thinking-policy.ts`), Kimi model kimlikleri için yalnızca `off` düşünme seviyesini duyurur; böylece manuel `/think` geçişleri ve sağlayıcı politikası yüzeyleri çalışma zamanı sözleşmesiyle uyumlu kalır.
+  <Accordion title="Kimi için düşünmenin neden zorunlu olarak kapatıldığı">
+    Fireworks, Kimi'yi ayrı bir akıl yürütme kanalı olmadan sunduğu için düşünce zinciri görünür `content` akışında ortaya çıkabilir. OpenClaw, her Fireworks Kimi isteğinde `thinking: { type: "disabled" }` gönderir ve yükten `reasoning`, `reasoning_effort` ile `reasoningEffort` alanlarını kaldırır (`extensions/fireworks/stream.ts`). Sağlayıcı politikası (`extensions/fireworks/thinking-policy.ts`), Kimi model kimlikleri için yalnızca `off` düşünme düzeyini duyurur; böylece manuel `/think` geçişleri ve sağlayıcı politikası yüzeyleri çalışma zamanı sözleşmesiyle uyumlu kalır.
 
     Kimi akıl yürütmesini uçtan uca kullanmak için [Moonshot sağlayıcısını](/tr/providers/moonshot) yapılandırın ve aynı modeli onun üzerinden yönlendirin.
 
   </Accordion>
 
   <Accordion title="Daemon için ortam kullanılabilirliği">
-    Gateway yönetilen bir hizmet olarak çalışıyorsa (launchd, systemd, Docker), Fireworks anahtarı bu süreç tarafından görülebilir olmalıdır; yalnızca etkileşimli kabuğunuz tarafından görülmesi yeterli değildir.
+    Gateway yönetilen bir hizmet (launchd, systemd, Docker) olarak çalışıyorsa Fireworks anahtarı yalnızca etkileşimli kabuğunuz tarafından değil, bu işlem tarafından da görülebilmelidir.
 
     <Warning>
-      Yalnızca etkileşimli bir kabukta dışa aktarılan bir anahtar, ilgili ortam oraya da içe aktarılmadıkça launchd veya systemd daemon'una yardımcı olmaz. Anahtarı gateway sürecinden okunabilir kılmak için `~/.openclaw/.env` içinde veya `env.shellEnv` üzerinden ayarlayın.
+      Yalnızca etkileşimli bir kabukta dışa aktarılan anahtar, ortam oraya da aktarılmadığı sürece launchd veya systemd daemon'ına yardımcı olmaz. Anahtarı Gateway işlemi tarafından okunabilir kılmak için `~/.openclaw/.env` içinde veya `env.shellEnv` aracılığıyla ayarlayın.
     </Warning>
 
-    macOS'te `openclaw gateway install`, `~/.openclaw/.env` dosyasını zaten LaunchAgent ortam dosyasına bağlar. Anahtarı döndürdükten sonra kurulumu yeniden çalıştırın (veya `openclaw doctor --fix` kullanın).
+    OpenClaw, yapılandırmayı yüklerken `~/.openclaw/.env` dosyasını da yükler; böylece burada saklanan anahtarlar her platformdaki yönetilen Gateway hizmetlerine ulaşır. Anahtarı yeniledikten sonra Gateway'i yeniden başlatın (veya `openclaw doctor --fix` komutunu yeniden çalıştırın).
 
   </Accordion>
 </AccordionGroup>
 
-## İlgili
+## İlgili içerikler
 
 <CardGroup cols={2}>
   <Card title="Model sağlayıcıları" href="/tr/concepts/model-providers" icon="layers">
     Sağlayıcıları, model referanslarını ve yük devretme davranışını seçme.
   </Card>
   <Card title="Düşünme modları" href="/tr/tools/thinking" icon="brain">
-    `/think` seviyeleri, sağlayıcı politikaları ve akıl yürütme yetenekli modelleri yönlendirme.
+    `/think` düzeyleri, sağlayıcı politikaları ve akıl yürütme özellikli modellerin yönlendirilmesi.
   </Card>
   <Card title="Moonshot" href="/tr/providers/moonshot" icon="moon">
     Kimi'yi Moonshot'ın kendi API'si üzerinden yerel düşünme çıktısıyla çalıştırın.
   </Card>
   <Card title="Sorun giderme" href="/tr/help/troubleshooting" icon="wrench">
-    Genel sorun giderme ve SSS.
+    Genel sorun giderme ve sık sorulan sorular.
   </Card>
 </CardGroup>

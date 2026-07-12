@@ -2,183 +2,221 @@
 read_when:
     - Menjelaskan penggunaan token, biaya, atau jendela konteks
     - Men-debug pertumbuhan konteks atau perilaku Compaction
-summary: Cara OpenClaw membangun konteks prompt dan melaporkan penggunaan token + biaya
+summary: Cara OpenClaw menyusun konteks prompt dan melaporkan penggunaan token serta biaya
 title: Penggunaan token dan biaya
 x-i18n:
-    generated_at: "2026-07-01T20:37:22Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:41:35Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 99e3de70aeb447bb58ae414c2c5908945e8173b9b8f2bf7e4c2eb9781657c44c
+    source_hash: 07c79e137d6809ccf8c435ef62641c0cc7579b3ec43acd513e430a7ab91cd47c
     source_path: reference/token-use.md
     workflow: 16
 ---
 
-OpenClaw melacak **token**, bukan karakter. Token bersifat spesifik untuk model, tetapi sebagian besar
-model bergaya OpenAI rata-rata sekitar ~4 karakter per token untuk teks bahasa Inggris.
+OpenClaw melacak **token**, bukan karakter. Token bersifat spesifik untuk setiap model, tetapi sebagian besar
+model bergaya OpenAI memiliki rata-rata ~4 karakter per token untuk teks bahasa Inggris.
 
 ## Cara prompt sistem dibuat
 
-OpenClaw merakit prompt sistemnya sendiri pada setiap run. Prompt ini mencakup:
+OpenClaw menyusun prompt sistemnya sendiri pada setiap proses. Prompt ini mencakup:
 
-- Daftar tool + deskripsi singkat
-- Daftar Skills (hanya metadata; instruksi dimuat sesuai kebutuhan dengan `read`).
-  Giliran Codex native menerima blok skills ringkas sebagai instruksi developer
-  kolaborasi yang dicakup per giliran; harness lain menerimanya di permukaan prompt
-  normal. Ini dibatasi oleh `skills.limits.maxSkillsPromptChars`, dengan
-  override opsional per agen di `agents.list[].skillsLimits.maxSkillsPromptChars`.
-- Instruksi pembaruan mandiri
-- Workspace + file bootstrap (`AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md` saat baru, plus `MEMORY.md` jika ada). Giliran Codex native tidak menempelkan `MEMORY.md` mentah dari workspace agen yang dikonfigurasi saat tool memori tersedia untuk workspace tersebut; giliran itu menyertakan pointer memori kecil dalam instruksi developer kolaborasi yang dicakup per giliran dan menggunakan tool memori sesuai kebutuhan. Jika tool dinonaktifkan, pencarian memori tidak tersedia, atau workspace aktif berbeda dari workspace memori agen, `MEMORY.md` menggunakan jalur konteks giliran berbatas normal. Root `memory.md` huruf kecil tidak disuntikkan; itu adalah input perbaikan lama untuk `openclaw doctor --fix` saat dipasangkan dengan `MEMORY.md`. File besar yang disuntikkan dipotong oleh `agents.defaults.bootstrapMaxChars` (default: 20000), dan total injeksi bootstrap dibatasi oleh `agents.defaults.bootstrapTotalMaxChars` (default: 60000). File harian `memory/*.md` bukan bagian dari prompt bootstrap normal; file tersebut tetap tersedia sesuai kebutuhan melalui tool memori pada giliran biasa, tetapi run model reset/startup dapat menambahkan blok konteks startup sekali pakai dengan memori harian terbaru untuk giliran pertama itu. Perintah chat polos `/new` dan `/reset` diakui tanpa memanggil model. Prelude startup dikendalikan oleh `agents.defaults.startupContext`. Kutipan AGENTS.md pasca-Compaction terpisah dan memerlukan opt-in eksplisit `agents.defaults.compaction.postCompactionSections`.
+- Daftar alat + deskripsi singkat
+- Daftar Skills (hanya metadata; petunjuk dimuat sesuai kebutuhan dengan `read`). Giliran
+  Codex native menerima blok Skills ringkas sebagai petunjuk pengembang kolaborasi
+  dengan cakupan giliran; harness lain menerimanya di permukaan prompt normal.
+  Dibatasi oleh `skills.limits.maxSkillsPromptChars`, dengan penggantian opsional per agen
+  di `agents.list[].skillsLimits.maxSkillsPromptChars`.
+- Petunjuk pembaruan mandiri
+- Ruang kerja + berkas bootstrap (`AGENTS.md`, `SOUL.md`, `TOOLS.md`,
+  `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md` saat baru, serta
+  `MEMORY.md` jika ada). Berkas besar yang disisipkan dipotong berdasarkan
+  `agents.defaults.bootstrapMaxChars` (bawaan: `20000`); total penyisipan
+  bootstrap dibatasi oleh `agents.defaults.bootstrapTotalMaxChars` (bawaan:
+  `60000`).
+  - Giliran Codex native tidak menempelkan `MEMORY.md` mentah saat alat memori
+    tersedia untuk ruang kerja tersebut; sebagai gantinya, giliran tersebut menerima penunjuk memori kecil dalam
+    petunjuk pengembang kolaborasi dengan cakupan giliran dan menggunakan alat memori
+    sesuai kebutuhan. Jika alat dinonaktifkan, pencarian memori tidak tersedia, atau
+    ruang kerja aktif berbeda dari ruang kerja memori agen, `MEMORY.md`
+    kembali menggunakan jalur konteks giliran normal yang dibatasi.
+  - `memory.md` akar dengan huruf kecil tidak pernah disisipkan. Berkas tersebut merupakan masukan perbaikan lama
+    untuk `openclaw doctor --fix`, yang memigrasikannya ke `MEMORY.md`.
+  - Berkas harian `memory/*.md` bukan bagian dari prompt bootstrap normal;
+    berkas tersebut tetap tersedia sesuai kebutuhan melalui alat memori pada giliran biasa. Proses model
+    saat pengaturan ulang/mulai dapat menambahkan blok konteks awal sekali pakai yang berisi
+    memori harian terbaru untuk giliran pertama tersebut, yang dikendalikan oleh
+    `agents.defaults.startupContext`. Percakapan biasa `/new` dan `/reset`
+    dikonfirmasi tanpa memanggil model.
+  - Cuplikan `AGENTS.md` setelah Compaction bersifat terpisah dan memerlukan
+    pengaktifan eksplisit `agents.defaults.compaction.postCompactionSections`.
 - Waktu (UTC + zona waktu pengguna)
-- Tag balasan + perilaku Heartbeat
-- Metadata runtime (host/OS/model/thinking)
+- Tag balasan + perilaku heartbeat
+- Metadata runtime (host/OS/model/penalaran)
 
-Lihat uraian lengkap di [Prompt Sistem](/id/concepts/system-prompt).
+Lihat uraian lengkapnya di [Prompt Sistem](/id/concepts/system-prompt).
 
 Saat mendokumentasikan kredensial atau cuplikan autentikasi, gunakan
 [Konvensi Placeholder Rahasia](/id/reference/secret-placeholder-conventions) untuk
-menghindari false positive secret-scanner pada perubahan khusus dokumentasi.
+menghindari positif palsu pemindai rahasia dalam perubahan yang hanya menyentuh dokumentasi.
 
-## Apa saja yang dihitung dalam jendela konteks
+## Yang dihitung dalam jendela konteks
 
 Semua yang diterima model dihitung terhadap batas konteks:
 
-- Prompt sistem (semua bagian yang tercantum di atas)
+- Prompt sistem (semua bagian di atas)
 - Riwayat percakapan (pesan pengguna + asisten)
-- Panggilan tool dan hasil tool
-- Lampiran/transkrip (gambar, audio, file)
-- Ringkasan Compaction dan artefak pruning
-- Wrapper penyedia atau header keamanan (tidak terlihat, tetapi tetap dihitung)
+- Pemanggilan alat dan hasil alat
+- Lampiran/transkrip (gambar, audio, berkas)
+- Ringkasan Compaction dan artefak pemangkasan
+- Pembungkus penyedia atau header keamanan (tidak terlihat, tetapi tetap dihitung)
 
-Beberapa permukaan yang berat runtime memiliki batas eksplisitnya sendiri:
+Permukaan dengan beban runtime tinggi memiliki batas eksplisit tersendiri di bawah
+`agents.defaults.contextLimits` (penggantian per agen di bawah
+`agents.list[].contextLimits`):
 
-- `agents.defaults.contextLimits.memoryGetMaxChars`
-- `agents.defaults.contextLimits.memoryGetDefaultLines`
-- `agents.defaults.contextLimits.toolResultMaxChars`
-- `agents.defaults.contextLimits.postCompactionMaxChars`
+| Kunci                    | Tujuan                                                                    |
+| ------------------------ | ------------------------------------------------------------------------- |
+| `memoryGetMaxChars`      | Jumlah karakter maksimum yang dikembalikan `memory_get` sebelum dipotong. |
+| `memoryGetDefaultLines`  | Jendela baris bawaan `memory_get` saat permintaan tidak menyertakan `lines`. |
+| `toolResultMaxChars`     | Batas atas lanjutan untuk satu hasil alat langsung (hingga `1000000` karakter). |
+| `postCompactionMaxChars` | Jumlah karakter maksimum dari `AGENTS.md` yang dipertahankan selama penyegaran setelah Compaction. |
 
-Override per agen berada di bawah `agents.list[].contextLimits`. Knob ini adalah
-untuk kutipan runtime berbatas dan blok yang disuntikkan milik runtime. Knob ini
-terpisah dari batas bootstrap, batas konteks startup, dan batas prompt skills.
+Ini adalah cuplikan runtime yang dibatasi dan blok yang disisipkan serta dimiliki runtime,
+terpisah dari batas bootstrap, batas konteks awal, dan batas prompt
+Skills.
 
-`toolResultMaxChars` adalah plafon lanjutan (hingga `1000000` karakter). Saat tidak disetel, OpenClaw memilih
-batas hasil tool live dari jendela konteks model efektif: `16000` karakter
-di bawah 100K token, `32000` karakter pada 100K+ token, dan `64000` karakter pada 200K+
-token, tetap dibatasi oleh guard porsi konteks runtime.
+`toolResultMaxChars` tidak ditetapkan secara bawaan, sehingga OpenClaw memperoleh batas
+hasil alat langsung dari jendela konteks model yang efektif: `16000` karakter di bawah
+100 ribu token, `32000` karakter pada 100 ribu+ token, `64000` karakter pada 200 ribu+ token.
+Pengaman porsi konteks runtime tetap membatasi satu hasil alat hingga 30% dari
+jendela konteks bahkan saat batas atas eksplisit yang lebih besar dikonfigurasi.
 
-Untuk gambar, OpenClaw menurunkan skala payload gambar transkrip/tool sebelum panggilan penyedia.
-Gunakan `agents.defaults.imageMaxDimensionPx` (default: `1200`) untuk menyesuaikannya:
+Untuk gambar, OpenClaw menurunkan skala muatan gambar transkrip/alat sebelum
+pemanggilan penyedia. Sesuaikan dengan `agents.defaults.imageMaxDimensionPx` (bawaan:
+`1200`):
 
-- Nilai lebih rendah biasanya mengurangi penggunaan token visi dan ukuran payload.
-- Nilai lebih tinggi mempertahankan lebih banyak detail visual untuk screenshot yang berat OCR/UI.
+- Nilai yang lebih rendah mengurangi penggunaan token visi dan ukuran muatan.
+- Nilai yang lebih tinggi mempertahankan lebih banyak detail visual untuk tangkapan layar yang banyak memuat OCR/UI.
 
-Untuk uraian praktis (per file yang disuntikkan, tool, skills, dan ukuran prompt sistem), gunakan `/context list` atau `/context detail`. Lihat [Konteks](/id/concepts/context).
+Untuk uraian praktis (per berkas yang disisipkan, alat, Skills, dan ukuran
+prompt sistem), gunakan `/context list` atau `/context detail`. Lihat
+[Konteks](/id/concepts/context).
 
 ## Cara melihat penggunaan token saat ini
 
-Gunakan ini di chat:
+Dalam percakapan:
 
-- `/status` → **kartu status kaya emoji** dengan model sesi, penggunaan konteks,
-  token input/output respons terakhir, dan **estimasi biaya** saat harga lokal
+- `/status` -> kartu status kaya emoji dengan model sesi, penggunaan konteks,
+  token masukan/keluaran respons terakhir, dan perkiraan biaya saat harga lokal
   dikonfigurasi untuk model aktif.
-- `/usage off|tokens|full` → menambahkan **footer penggunaan per respons** ke setiap balasan.
-  - Bertahan per sesi (disimpan sebagai `responseUsage`).
-  - `/usage reset` (alias: `inherit`, `clear`, `default`) — menghapus override sesi
-    sehingga sesi kembali mewarisi default yang dikonfigurasi.
+- `/usage off|tokens|full` -> menambahkan footer penggunaan per respons ke setiap
+  balasan. Dipertahankan per sesi (disimpan sebagai `responseUsage`).
+  - `/usage reset` (alias: `inherit`, `clear`, `default`) menghapus
+    penggantian sesi sehingga kembali mewarisi nilai bawaan yang dikonfigurasi.
   - `/usage tokens` menampilkan detail token/cache giliran.
-  - `/usage full` menampilkan detail model/konteks/biaya yang ringkas; estimasi biaya muncul
-    hanya saat OpenClaw memiliki metadata penggunaan dan harga lokal untuk model aktif.
-    Layout `messages.usageTemplate` kustom dapat menyertakan field token/cache.
-- `/usage cost` → menampilkan ringkasan biaya lokal dari log sesi OpenClaw.
+  - `/usage full` menampilkan detail ringkas model/konteks/biaya; perkiraan biaya
+    hanya muncul saat OpenClaw memiliki metadata penggunaan dan harga lokal untuk
+    model aktif. Tata letak khusus `messages.usageTemplate` dapat menyertakan
+    kolom token/cache.
+- `/usage cost` -> ringkasan biaya lokal dari log sesi OpenClaw.
 
 Permukaan lain:
 
-- **TUI/Web TUI:** `/status` + `/usage` didukung.
+- **TUI/Web TUI:** `/status` dan `/usage` didukung.
 - **CLI:** `openclaw status --usage` dan `openclaw channels list` menampilkan
   jendela kuota penyedia yang dinormalisasi (`X% left`, bukan biaya per respons).
-  Penyedia jendela penggunaan saat ini: Anthropic, GitHub Copilot, Gemini CLI,
-  OpenAI Codex, MiniMax, Xiaomi, dan z.ai.
+  Penyedia jendela penggunaan saat ini: Claude (Anthropic), ClawRouter, Copilot
+  (GitHub), DeepSeek, Gemini (Google Gemini CLI), MiniMax, OpenAI, Xiaomi,
+  Xiaomi Token Plan, dan z.ai.
 
-Permukaan penggunaan menormalisasi alias field native penyedia yang umum sebelum ditampilkan.
-Untuk traffic Responses keluarga OpenAI, ini mencakup `input_tokens` /
-`output_tokens` dan `prompt_tokens` / `completion_tokens`, sehingga nama field
-khusus transport tidak mengubah `/status`, `/usage`, atau ringkasan sesi.
-Penggunaan Gemini CLI juga dinormalisasi: parser default `stream-json` membaca
-event `message` asisten, dan `stats.cached` dipetakan ke `cacheRead` dengan
-`stats.input_tokens - stats.cached` digunakan saat CLI menghilangkan field
-`stats.input` eksplisit. Override JSON lama tetap membaca teks balasan dari
-`response`.
-Untuk traffic Responses native keluarga OpenAI, alias penggunaan WebSocket/SSE
-dinormalisasi dengan cara yang sama, dan total fallback ke input + output yang dinormalisasi saat
-`total_tokens` hilang atau `0`.
-Saat snapshot sesi saat ini jarang, `/status` dan `session_status` juga dapat
-memulihkan penghitung token/cache dan label model runtime aktif dari log penggunaan
-transkrip terbaru. Nilai live bukan nol yang ada tetap
-diprioritaskan atas nilai fallback transkrip, dan total transkrip yang lebih besar
-berorientasi prompt dapat menang saat total tersimpan hilang atau lebih kecil.
-Autentikasi penggunaan untuk jendela kuota penyedia berasal dari hook khusus penyedia saat
-tersedia; jika tidak, OpenClaw fallback ke kredensial OAuth/API-key yang cocok
-dari profil auth, env, atau config.
-Entri transkrip asisten mempertahankan bentuk penggunaan ternormalisasi yang sama, termasuk
-`usage.cost` saat model aktif memiliki harga yang dikonfigurasi dan penyedia
-mengembalikan metadata penggunaan. Ini memberi `/usage cost` dan status sesi
-berbasis transkrip sumber yang stabil bahkan setelah status runtime live hilang.
+Permukaan penggunaan menormalisasi alias kolom native umum milik penyedia sebelum
+ditampilkan. Untuk lalu lintas Responses keluarga OpenAI, ini mencakup
+`input_tokens`/`output_tokens` dan `prompt_tokens`/`completion_tokens`, sehingga
+nama kolom khusus transportasi tidak mengubah `/status`, `/usage`, atau ringkasan
+sesi. Penggunaan Gemini CLI juga dinormalisasi: parser `stream-json`
+bawaan membaca peristiwa `message` asisten, dan `stats.cached` dipetakan ke
+`cacheRead`, dengan `stats.input_tokens - stats.cached` digunakan saat CLI tidak
+menyertakan kolom `stats.input` eksplisit. Penggantian JSON lama tetap membaca teks balasan
+dari `response`.
 
-OpenClaw menjaga akuntansi penggunaan penyedia terpisah dari snapshot konteks
-saat ini. `usage.total` penyedia dapat mencakup input yang di-cache, output, dan beberapa
-panggilan model tool-loop, sehingga berguna untuk biaya dan telemetri tetapi dapat melebih-lebihkan
-jendela konteks live. Tampilan konteks dan diagnostik menggunakan snapshot prompt terbaru
-(`promptTokens`, atau panggilan model terakhir saat tidak ada snapshot prompt
-tersedia) untuk `context.used`.
+Untuk lalu lintas Responses native keluarga OpenAI, alias penggunaan
+WebSocket/SSE dinormalisasi dengan cara yang sama, dan total kembali menggunakan masukan + keluaran
+yang dinormalisasi saat `total_tokens` tidak ada atau bernilai `0`.
 
-## Estimasi biaya (saat ditampilkan)
+Saat snapshot sesi saat ini tidak lengkap, `/status` dan `session_status`
+dapat memulihkan penghitung token/cache dan label model runtime aktif dari
+log penggunaan transkrip terbaru. Nilai langsung bukan nol yang ada tetap
+diprioritaskan daripada nilai cadangan transkrip, dan total transkrip berorientasi prompt
+yang lebih besar dapat dipilih saat total yang tersimpan tidak ada atau lebih kecil.
 
-Biaya diestimasi dari config harga model Anda:
+Autentikasi penggunaan untuk jendela kuota penyedia berasal dari hook khusus penyedia
+terlebih dahulu; jika penyedia tidak memiliki hook (atau hook tidak menghasilkan token),
+OpenClaw kembali menggunakan kredensial OAuth/kunci API yang cocok dari profil
+autentikasi, env, atau konfigurasi.
 
-```
+Entri transkrip asisten mempertahankan bentuk penggunaan ternormalisasi yang sama,
+termasuk `usage.cost` saat harga untuk model aktif telah dikonfigurasi dan
+penyedia mengembalikan metadata penggunaan. Ini memberi `/usage cost` dan
+status sesi berbasis transkrip sumber yang stabil bahkan setelah status
+runtime langsung tidak lagi tersedia.
+
+OpenClaw memisahkan penghitungan penggunaan penyedia dari snapshot konteks
+saat ini. `usage.total` penyedia dapat mencakup masukan yang di-cache, keluaran, dan
+beberapa pemanggilan model dalam perulangan alat, sehingga berguna untuk biaya dan telemetri tetapi
+dapat melebihkan jendela konteks langsung. Tampilan dan diagnostik konteks menggunakan
+snapshot prompt terbaru (`promptTokens`, atau pemanggilan model terakhir saat tidak ada
+snapshot prompt) untuk `context.used`.
+
+## Perkiraan biaya (saat ditampilkan)
+
+Biaya diperkirakan dari konfigurasi harga model Anda:
+
+```text
 models.providers.<provider>.models[].cost
 ```
 
-Ini adalah **USD per 1M token** untuk `input`, `output`, `cacheRead`, dan
-`cacheWrite`. Jika harga hilang, `/usage full` menghilangkan biaya; gunakan `/usage tokens`
-atau `messages.usageTemplate` kustom saat Anda membutuhkan detail token/cache di setiap
-balasan. Tampilan biaya tidak terbatas pada auth API-key: penyedia non-API-key seperti
-`aws-sdk` dapat menampilkan estimasi biaya saat entri model yang dikonfigurasi mencakup
-harga lokal dan penyedia mengembalikan metadata penggunaan.
+Nilai ini adalah **USD per 1 juta token** untuk `input`, `output`, `cacheRead`, dan
+`cacheWrite`. Jika harga tidak tersedia, `/usage full` tidak menampilkan biaya; gunakan
+`/usage tokens` atau `messages.usageTemplate` khusus saat Anda memerlukan
+detail token/cache dalam setiap balasan. Tampilan biaya tidak terbatas pada
+autentikasi kunci API: penyedia tanpa kunci API seperti `aws-sdk` dapat menampilkan
+perkiraan biaya saat entri model yang dikonfigurasi menyertakan harga lokal dan penyedia
+mengembalikan metadata penggunaan.
 
-Setelah sidecar dan channel mencapai jalur siap Gateway, OpenClaw memulai
-bootstrap harga latar belakang opsional untuk ref model yang dikonfigurasi yang belum
-memiliki harga lokal. Bootstrap itu mengambil katalog harga OpenRouter dan LiteLLM
-jarak jauh. Setel `models.pricing.enabled: false` untuk melewati pengambilan katalog itu
-pada jaringan offline atau terbatas; entri eksplisit
-`models.providers.*.models[].cost` tetap menggerakkan estimasi biaya lokal.
+Setelah sidecar dan saluran mencapai jalur siap Gateway, OpenClaw memulai
+bootstrap harga latar belakang opsional untuk referensi model terkonfigurasi yang belum
+memiliki harga lokal. Bootstrap tersebut mengambil katalog harga OpenRouter dan
+LiteLLM jarak jauh. Tetapkan `models.pricing.enabled: false` untuk melewati pengambilan
+katalog tersebut pada jaringan luring atau terbatas; entri eksplisit
+`models.providers.*.models[].cost` tetap menentukan perkiraan biaya lokal.
 
-## Cache TTL dan dampak pruning
+## Dampak TTL cache dan pemangkasan
 
-Caching prompt penyedia hanya berlaku dalam jendela cache TTL. OpenClaw dapat
-secara opsional menjalankan **pruning cache-ttl**: ia memangkas sesi setelah cache TTL
-kedaluwarsa, lalu mereset jendela cache sehingga permintaan berikutnya dapat menggunakan ulang
-konteks yang baru di-cache alih-alih melakukan cache ulang untuk seluruh riwayat. Ini menjaga biaya
-penulisan cache lebih rendah saat sesi idle melewati TTL.
+Cache prompt penyedia hanya berlaku dalam jendela TTL cache. OpenClaw
+secara opsional dapat menjalankan **pemangkasan TTL cache**: sesi dipangkas setelah
+TTL cache berakhir, lalu jendela cache diatur ulang sehingga permintaan berikutnya
+menggunakan kembali konteks yang baru di-cache alih-alih melakukan cache ulang terhadap seluruh riwayat.
+Hal ini menjaga biaya penulisan cache tetap lebih rendah saat sesi tidak aktif melewati TTL.
 
-Konfigurasikan di [konfigurasi Gateway](/id/gateway/configuration) dan lihat
-detail perilakunya di [Pruning sesi](/id/concepts/session-pruning).
+Konfigurasikan di [konfigurasi Gateway](/id/gateway/configuration) dan lihat detail
+perilakunya di [Pemangkasan sesi](/id/concepts/session-pruning).
 
-Heartbeat dapat menjaga cache tetap **hangat** melewati jeda idle. Jika cache TTL model Anda
-adalah `1h`, menyetel interval heartbeat sedikit di bawah itu (misalnya, `55m`) dapat menghindari
-cache ulang prompt penuh, sehingga mengurangi biaya penulisan cache.
+Heartbeat dapat menjaga cache tetap **hangat** selama jeda tidak aktif. Jika TTL cache
+model Anda adalah `1h`, mengatur interval heartbeat sedikit di bawahnya (misalnya, `55m`) dapat
+menghindari cache ulang seluruh prompt, sehingga mengurangi biaya penulisan cache.
 
-Dalam setup multi-agen, Anda dapat mempertahankan satu config model bersama dan menyesuaikan perilaku cache
-per agen dengan `agents.list[].params.cacheRetention`.
+Dalam penyiapan multiagen, Anda dapat mempertahankan satu konfigurasi model bersama dan menyesuaikan perilaku
+cache per agen dengan `agents.list[].params.cacheRetention`.
 
-Untuk panduan lengkap knob per knob, lihat [Caching Prompt](/id/reference/prompt-caching).
+Untuk panduan lengkap setiap pengaturan, lihat [Cache Prompt](/id/reference/prompt-caching).
 
-Untuk harga API Anthropic, pembacaan cache jauh lebih murah daripada token input,
-sementara penulisan cache ditagih dengan pengali lebih tinggi. Lihat harga
-caching prompt Anthropic untuk tarif terbaru dan pengali TTL:
+Untuk harga API Anthropic, pembacaan cache jauh lebih murah daripada token
+masukan, sedangkan penulisan cache ditagih dengan pengali yang lebih tinggi. Lihat harga
+cache prompt Anthropic untuk tarif dan pengali TTL terbaru:
 [https://docs.anthropic.com/docs/build-with-claude/prompt-caching](https://docs.anthropic.com/docs/build-with-claude/prompt-caching)
 
-### Contoh: menjaga cache 1j tetap hangat dengan heartbeat
+### Contoh: menjaga cache 1 jam tetap hangat dengan heartbeat
 
 ```yaml
 agents:
@@ -193,7 +231,7 @@ agents:
       every: "55m"
 ```
 
-### Contoh: traffic campuran dengan strategi cache per agen
+### Contoh: lalu lintas campuran dengan strategi cache per agen
 
 ```yaml
 agents:
@@ -203,25 +241,26 @@ agents:
     models:
       "anthropic/claude-opus-4-6":
         params:
-          cacheRetention: "long" # default baseline for most agents
+          cacheRetention: "long" # dasar bawaan untuk sebagian besar agen
   list:
     - id: "research"
       default: true
       heartbeat:
-        every: "55m" # keep long cache warm for deep sessions
+        every: "55m" # menjaga cache panjang tetap hangat untuk sesi mendalam
     - id: "alerts"
       params:
-        cacheRetention: "none" # avoid cache writes for bursty notifications
+        cacheRetention: "none" # menghindari penulisan cache untuk notifikasi beruntun
 ```
 
-`agents.list[].params` digabungkan di atas `params` model yang dipilih, sehingga Anda dapat
-hanya meng-override `cacheRetention` dan mewarisi default model lain tanpa perubahan.
+`agents.list[].params` digabungkan di atas `params` model yang dipilih, sehingga Anda
+dapat mengganti hanya `cacheRetention` dan mewarisi nilai bawaan model lainnya
+tanpa perubahan.
 
-### Konteks 1M Anthropic
+### Konteks 1 juta Anthropic
 
-OpenClaw mengukur model Claude 4.x yang mampu GA seperti Opus 4.8, Opus 4.7, Opus 4.6, dan
-Sonnet 4.6 dengan jendela konteks 1M Anthropic. Anda tidak memerlukan
-`params.context1m: true` untuk model tersebut.
+OpenClaw menetapkan ukuran model Claude 4.x berkemampuan GA seperti Opus 4.8, Opus 4.7, Opus
+4.6, dan Sonnet 4.6 dengan jendela konteks 1 juta milik Anthropic. Anda tidak memerlukan
+`params.context1m: true` untuk model-model tersebut.
 
 ```yaml
 agents:
@@ -231,29 +270,30 @@ agents:
         alias: opus
 ```
 
-Config lama dapat mempertahankan `context1m: true`, tetapi OpenClaw tidak lagi mengirim
-header beta Anthropic `context-1m-2025-08-07` yang telah pensiun untuk setelan ini dan
-tidak memperluas model Claude lama yang tidak didukung menjadi 1M.
+Konfigurasi lama dapat mempertahankan `context1m: true`, tetapi OpenClaw tidak lagi mengirim
+header beta `context-1m-2025-08-07` milik Anthropic yang telah dihentikan untuk pengaturan ini dan
+tidak memperluas model Claude lama yang tidak didukung hingga 1 juta.
 
 Persyaratan: kredensial harus memenuhi syarat untuk penggunaan konteks panjang. Jika tidak,
-Anthropic merespons dengan error batas laju dari sisi penyedia untuk permintaan tersebut.
+Anthropic merespons dengan galat batas laju di sisi penyedia untuk permintaan tersebut.
 
-Jika Anda mengautentikasi Anthropic dengan token OAuth/langganan (`sk-ant-oat-*`),
-OpenClaw mempertahankan header beta Anthropic yang diwajibkan OAuth sekaligus menghapus
-beta `context-1m-*` yang telah pensiun jika masih ada di config lama.
+Jika Anda mengautentikasi Anthropic dengan token OAuth/langganan
+(`sk-ant-oat-*`), OpenClaw mempertahankan header beta Anthropic yang diwajibkan OAuth
+sembari menghapus beta `context-1m-*` yang telah dihentikan jika masih ada dalam
+konfigurasi lama.
 
-## Tips untuk mengurangi tekanan token
+## Kiat untuk mengurangi tekanan token
 
 - Gunakan `/compact` untuk meringkas sesi panjang.
-- Pangkas keluaran tool yang besar dalam alur kerja Anda.
-- Turunkan `agents.defaults.imageMaxDimensionPx` untuk sesi yang banyak menggunakan screenshot.
-- Jaga deskripsi skill tetap singkat (daftar skill disisipkan ke dalam prompt).
-- Utamakan model yang lebih kecil untuk pekerjaan eksploratif yang panjang.
+- Pangkas keluaran alat yang besar dalam alur kerja Anda.
+- Turunkan `agents.defaults.imageMaxDimensionPx` untuk sesi yang banyak menggunakan tangkapan layar.
+- Buat deskripsi Skills tetap singkat (daftar Skills disisipkan ke dalam prompt).
+- Utamakan model yang lebih kecil untuk pekerjaan eksploratif yang menghasilkan keluaran panjang.
 
-Lihat [Skills](/id/tools/skills) untuk rumus overhead daftar skill yang tepat.
+Lihat [Skills](/id/tools/skills) untuk rumus pasti overhead daftar Skills.
 
 ## Terkait
 
 - [Penggunaan dan biaya API](/id/reference/api-usage-costs)
-- [Caching prompt](/id/reference/prompt-caching)
+- [Penyimpanan cache prompt](/id/reference/prompt-caching)
 - [Pelacakan penggunaan](/id/concepts/usage-tracking)

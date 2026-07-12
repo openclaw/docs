@@ -2,10 +2,10 @@
 read_when:
     - Sesli arama Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
 summary: Twilio, Telnyx ve Plivo telefon aramaları için OpenClaw sesli arama Plugin'i.
-title: Sesli Arama Plugin'i
+title: Sesli Arama plugini
 x-i18n:
-    generated_at: "2026-06-28T01:03:37Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:39:11Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: b0e298a2d8701d6fd531b761f8c14477b8c37a376af43127aa67c2fa6ff1b02d
@@ -13,19 +13,19 @@ x-i18n:
     workflow: 16
 ---
 
-# Voice Call Plugin
+# Sesli Arama Plugin'i
 
-Twilio, Telnyx ve Plivo telefon aramaları için OpenClaw voice-call Plugin.
+Twilio, Telnyx ve Plivo telefon aramaları için OpenClaw sesli arama Plugin'i.
 
 ## Dağıtım
 
 - Paket: `@openclaw/voice-call`
 - Kurulum yolu: npm; ClawHub
 
-## Yüzey
+## Arayüz
 
 sözleşmeler: araçlar; Skills
 
 ## İlgili belgeler
 
-- [voice-call](/tr/plugins/voice-call)
+- [sesli arama](/tr/plugins/voice-call)

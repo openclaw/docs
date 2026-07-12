@@ -2,19 +2,19 @@
 summary: Reindirizza a /cli/message
 title: Sondaggi
 x-i18n:
-    generated_at: "2026-04-24T08:28:48Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: a277212ed680b7aeb9153d003bc084d2d0c918dc53f2f469c72f7fe5a881cfae
-    source_path: automation/poll.md
-    workflow: 15
+    generated_at: "2026-07-12T06:47:01Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 071617c5fe910ad8a5d4a03416876ba3092d4fc67d5c206570a0456469ef73a9
+    source_path: automation/poll.md
+    workflow: 16
 ---
 
-Questa pagina è stata spostata in [Message tool](/it/cli/message). Consulta [Message tool](/it/cli/message) per la documentazione sui sondaggi.
+Questa pagina è stata spostata. La documentazione sui sondaggi, inclusi i flag di `openclaw message poll` e i limiti per canale, si trova in [Strumento per i messaggi](/it/cli/message).
 
-## Correlati
+## Contenuti correlati
 
-- [Webhook](/it/automation/cron-jobs)
+- [Webhook](/it/automation/cron-jobs#webhooks)
 - [Attività pianificate](/it/automation/cron-jobs)
 - [Attività in background](/it/automation/tasks)

@@ -1,36 +1,35 @@
 ---
 read_when:
     - Você quer uma memória persistente que funcione entre sessões e canais
-    - Você quer recuperação de informações e modelagem de usuários com tecnologia de IA
+    - Você quer recuperação de informações e modelagem de usuário com tecnologia de IA
 summary: Memória nativa de IA entre sessões por meio do plugin Honcho
 title: Memória do Honcho
 x-i18n:
-    generated_at: "2026-07-12T15:05:30Z"
+    generated_at: "2026-07-11T23:52:09Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: fadcf6d8e2505ab4fe6a81340695b7c8fee49c3cb4889665af13389941619117
     source_path: concepts/memory-honcho.md
     workflow: 16
 ---
 
-[Honcho](https://honcho.dev) adiciona memória nativa de IA ao OpenClaw por meio de um
-plugin externo. Ele persiste as conversas em um serviço dedicado e cria
-modelos do usuário e do agente ao longo do tempo, oferecendo ao seu agente um contexto entre sessões que
+[Honcho](https://honcho.dev) adiciona memória nativa para IA ao OpenClaw por meio de um
+Plugin externo. Ele persiste conversas em um serviço dedicado e cria
+modelos do usuário e do agente ao longo do tempo, fornecendo ao seu agente um contexto entre sessões que
 vai além dos arquivos Markdown do espaço de trabalho.
 
 ## O que ele oferece
 
-- **Memória entre sessões** - as conversas persistem após cada turno, permitindo que
-  o contexto seja mantido entre redefinições de sessão, Compaction e trocas de canal.
+- **Memória entre sessões** - as conversas persistem após cada turno, portanto
+  o contexto é mantido entre redefinições de sessão, Compaction e trocas de canal.
 - **Modelagem de usuário** - o Honcho mantém um perfil para cada usuário (preferências,
   fatos, estilo de comunicação) e para o agente (personalidade, comportamentos
   aprendidos).
 - **Pesquisa semântica** - pesquisa observações de conversas anteriores, não
   apenas da sessão atual.
-- **Percepção de múltiplos agentes** - agentes pai acompanham automaticamente os
-  subagentes iniciados, com os pais adicionados como observadores nas sessões filhas.
+- **Reconhecimento de múltiplos agentes** - agentes superiores acompanham automaticamente os
+  subagentes iniciados, com os agentes superiores adicionados como observadores nas sessões dos agentes subordinados.
 
 ## Ferramentas disponíveis
 
@@ -38,22 +37,22 @@ O Honcho registra ferramentas que o agente pode usar durante a conversa:
 
 **Recuperação de dados (rápida, sem chamada ao LLM):**
 
-| Ferramenta                  | O que faz                                                     |
-| --------------------------- | ------------------------------------------------------------- |
-| `honcho_context`            | Representação completa do usuário entre sessões               |
-| `honcho_search_conclusions` | Pesquisa semântica nas conclusões armazenadas                 |
-| `honcho_search_messages`    | Encontra mensagens entre sessões (filtra por remetente, data) |
-| `honcho_session`            | Histórico e resumo da sessão atual                            |
+| Ferramenta                  | O que ela faz                                           |
+| --------------------------- | ------------------------------------------------------- |
+| `honcho_context`            | Representação completa do usuário entre sessões         |
+| `honcho_search_conclusions` | Pesquisa semântica em conclusões armazenadas            |
+| `honcho_search_messages`    | Localiza mensagens entre sessões (filtra por remetente e data) |
+| `honcho_session`            | Histórico e resumo da sessão atual                      |
 
 **Perguntas e respostas (com tecnologia de LLM):**
 
-| Ferramenta   | O que faz                                                                         |
-| ------------ | --------------------------------------------------------------------------------- |
+| Ferramenta   | O que ela faz                                                                   |
+| ------------ | ------------------------------------------------------------------------------ |
 | `honcho_ask` | Faz perguntas sobre o usuário. `depth='quick'` para fatos, `'thorough'` para síntese |
 
 ## Primeiros passos
 
-Instale o plugin e execute a configuração:
+Instale o Plugin e execute a configuração:
 
 ```bash
 openclaw plugins install @honcho-ai/openclaw-honcho
@@ -61,13 +60,13 @@ openclaw honcho setup
 openclaw gateway --force
 ```
 
-O comando de configuração solicita suas credenciais de API, grava a configuração e
-migra opcionalmente os arquivos de memória existentes no espaço de trabalho.
+O comando de configuração solicita suas credenciais de API, grava a configuração e,
+opcionalmente, migra os arquivos de memória existentes do espaço de trabalho.
 
 <Info>
-O Honcho pode ser executado inteiramente no ambiente local (auto-hospedado) ou por meio da API gerenciada em
-`api.honcho.dev`. A opção auto-hospedada não exige dependências
-externas.
+O Honcho pode ser executado inteiramente de forma local (auto-hospedado) ou por meio da API gerenciada em
+`api.honcho.dev`. Nenhuma dependência externa é necessária para a opção
+auto-hospedada.
 </Info>
 
 ## Configuração
@@ -81,7 +80,7 @@ As configurações ficam em `plugins.entries["openclaw-honcho"].config`:
       "openclaw-honcho": {
         config: {
           apiKey: "your-api-key", // omita para auto-hospedagem
-          workspaceId: "openclaw", // isolamento de memória
+          workspaceId: "openclaw", // isolamento da memória
           baseUrl: "https://api.honcho.dev",
         },
       },
@@ -90,44 +89,44 @@ As configurações ficam em `plugins.entries["openclaw-honcho"].config`:
 }
 ```
 
-Para instâncias auto-hospedadas, defina `baseUrl` para apontar ao seu servidor local (por exemplo,
+Para instâncias auto-hospedadas, aponte `baseUrl` para seu servidor local (por exemplo,
 `http://localhost:8000`) e omita a chave de API.
 
 ## Migração da memória existente
 
 Se você tiver arquivos de memória existentes no espaço de trabalho (`USER.md`, `MEMORY.md`,
-`IDENTITY.md`, `memory/`, `canvas/`), `openclaw honcho setup` os detectará e
+`IDENTITY.md`, `memory/`, `canvas/`), o `openclaw honcho setup` os detectará e
 oferecerá a opção de migrá-los.
 
 <Info>
-A migração não é destrutiva — os arquivos são enviados ao Honcho. Os originais
+A migração não é destrutiva: os arquivos são enviados ao Honcho. Os originais
 nunca são excluídos nem movidos.
 </Info>
 
 ## Como funciona
 
-Após cada turno da IA, a conversa é persistida no Honcho. Tanto as mensagens do
-usuário quanto as do agente são observadas, permitindo que o Honcho crie e refine seus modelos ao
-longo do tempo.
+Após cada turno da IA, a conversa é persistida no Honcho. As mensagens do usuário e do
+agente são observadas, permitindo que o Honcho crie e refine seus modelos ao longo
+do tempo.
 
-Durante a conversa, as ferramentas do Honcho consultam o serviço por meio do hook de plugin
-`before_prompt_build` do OpenClaw, injetando o contexto relevante antes que o modelo
+Durante a conversa, as ferramentas do Honcho consultam o serviço por meio do
+gancho de Plugin `before_prompt_build` do OpenClaw, injetando o contexto relevante antes que o modelo
 receba o prompt.
 
 ## Honcho em comparação com a memória integrada
 
-|                    | Integrada / QMD                       | Honcho                                  |
-| ------------------ | ------------------------------------- | --------------------------------------- |
-| **Armazenamento**  | Arquivos Markdown do espaço de trabalho | Serviço dedicado (local ou hospedado)   |
-| **Entre sessões**  | Por meio de arquivos de memória       | Automático e integrado                  |
-| **Modelagem de usuário** | Manual (gravação em MEMORY.md)  | Perfis automáticos                      |
-| **Pesquisa**       | Vetorial + palavra-chave (híbrida)    | Semântica sobre observações             |
-| **Múltiplos agentes** | Não rastreados                     | Percepção da relação pai/filho          |
-| **Dependências**   | Nenhuma (integrada) ou binário QMD    | Instalação do plugin                    |
+|                   | Integrada / QMD                        | Honcho                                      |
+| ----------------- | -------------------------------------- | ------------------------------------------- |
+| **Armazenamento** | Arquivos Markdown do espaço de trabalho | Serviço dedicado (local ou hospedado)       |
+| **Entre sessões** | Por meio de arquivos de memória        | Automático e integrado                      |
+| **Modelagem de usuário** | Manual (gravação em MEMORY.md)   | Perfis automáticos                          |
+| **Pesquisa**      | Vetorial + palavra-chave (híbrida)     | Semântica em observações                    |
+| **Múltiplos agentes** | Não rastreados                     | Reconhecimento de relação superior/subordinado |
+| **Dependências**  | Nenhuma (integrada) ou binário QMD     | Instalação do Plugin                        |
 
-O Honcho e o sistema de memória integrado podem funcionar em conjunto. Quando o QMD está
+O Honcho e o sistema de memória integrado podem funcionar juntos. Quando o QMD está
 configurado, ferramentas adicionais ficam disponíveis para pesquisar arquivos Markdown locais
-junto à memória entre sessões do Honcho.
+em conjunto com a memória entre sessões do Honcho.
 
 ## Comandos da CLI
 
@@ -140,11 +139,11 @@ openclaw honcho search <query> [-k N] [-d D] # Pesquisa semântica na memória
 
 ## Leitura adicional
 
-- [Código-fonte do plugin](https://github.com/plastic-labs/openclaw-honcho)
+- [Código-fonte do Plugin](https://github.com/plastic-labs/openclaw-honcho)
 - [Documentação do Honcho](https://docs.honcho.dev)
 - [Guia de integração do Honcho com o OpenClaw](https://docs.honcho.dev/v3/guides/integrations/openclaw)
 
-## Relacionado
+## Relacionados
 
 - [Visão geral da memória](/pt-BR/concepts/memory)
 - [Mecanismo de memória integrado](/pt-BR/concepts/memory-builtin)

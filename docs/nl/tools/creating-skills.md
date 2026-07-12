@@ -1,70 +1,68 @@
 ---
 read_when:
-    - Je maakt een nieuwe aangepaste skill
-    - Je hebt een snelle starterworkflow nodig voor op SKILL.md gebaseerde Skills
-    - Je wilt Skill Workshop gebruiken om een skill voor agentbeoordeling voor te stellen
+    - U maakt een nieuwe aangepaste skill
+    - Je hebt een snelle startworkflow nodig voor op SKILL.md gebaseerde Skills
+    - Je wilt Skill Workshop gebruiken om een skill voor beoordeling door een agent voor te stellen
 sidebarTitle: Creating skills
 summary: Bouw, test en publiceer aangepaste SKILL.md-werkruimte-Skills voor je OpenClaw-agenten.
 title: Skills maken
 x-i18n:
-    generated_at: "2026-06-27T18:24:28Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:21:29Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7a744e9010c66b8465449d24430520473717edde86711bbb59774519189b9e72
+    source_hash: cba2aa863ebd083d4592e8a764dbdc2c30a0dd8aff49d273927e82df0069bc81
     source_path: tools/creating-skills.md
     workflow: 16
 ---
 
-Skills leren de agent hoe en wanneer tools te gebruiken. Elke skill is een directory
-met een `SKILL.md`-bestand met YAML-frontmatter en markdown-instructies.
-OpenClaw laadt Skills uit meerdere roots in een gedefinieerde [volgorde van prioriteit](/nl/tools/skills#loading-order).
+Skills leren de agent hoe en wanneer tools moeten worden gebruikt. Elke skill is een map
+met een `SKILL.md`-bestand met YAML-frontmatter en Markdown-instructies.
+OpenClaw laadt skills vanuit verschillende hoofdmappen in een vastgelegde [prioriteitsvolgorde](/nl/tools/skills#loading-order).
 
 ## Maak je eerste skill
 
 <Steps>
-  <Step title="Maak de skilldirectory">
-    Skills staan in de map `skills/` van je workspace. Maak een directory voor je
-    nieuwe skill:
+  <Step title="Maak de skillmap">
+    Skills bevinden zich in de map `skills/` van je werkruimte:
 
     ```bash
     mkdir -p ~/.openclaw/workspace/skills/hello-world
     ```
 
-    Je kunt Skills groeperen in submappen voor organisatie — de skill wordt nog
-    steeds benoemd door de `SKILL.md`-frontmatter, niet door het mappad:
+    Je kunt skills ter ordening in submappen groeperen — de naam van de skill
+    wordt nog steeds bepaald door de frontmatter van `SKILL.md`, niet door het mappad:
 
     ```bash
     mkdir -p ~/.openclaw/workspace/skills/personal/hello-world
-    # skill name is still "hello-world", invoked as /hello-world
+    # de naam van de skill is nog steeds "hello-world", aangeroepen als /hello-world
     ```
 
   </Step>
 
   <Step title="Schrijf SKILL.md">
-    Maak `SKILL.md` aan in de directory. De frontmatter definieert metadata;
-    de body geeft de agent instructies.
+    De frontmatter definieert de metagegevens; de inhoud bevat instructies voor de agent.
 
     ```markdown
     ---
     name: hello-world
-    description: A simple skill that prints a greeting.
+    description: Een eenvoudige skill die een begroeting weergeeft.
     ---
 
-    # Hello World
+    # Hallo wereld
 
-    When the user asks for a greeting, use the `exec` tool to run:
+    Wanneer de gebruiker om een begroeting vraagt, gebruik je de tool `exec` om het volgende uit te voeren:
 
     ```bash
-    echo "Hello from your custom skill!"
+    echo "Hallo vanuit je aangepaste skill!"
     ```
     ```
 
     Naamgevingsregels:
     - Gebruik kleine letters, cijfers en koppeltekens voor `name`.
-    - Houd de directorynaam en frontmatter-`name` op elkaar afgestemd.
-    - `description` wordt getoond aan de agent en in slash-command-detectie —
-      houd deze op één regel en onder 160 tekens.
+    - Zorg dat de mapnaam en `name` in de frontmatter overeenkomen.
+    - `description` wordt aan de agent en in de ontdekking van slash-opdrachten getoond —
+      houd deze op één regel en korter dan 160 tekens.
 
   </Step>
 
@@ -73,93 +71,90 @@ OpenClaw laadt Skills uit meerdere roots in een gedefinieerde [volgorde van prio
     openclaw skills list
     ```
 
-    OpenClaw bewaakt standaard `SKILL.md`-bestanden onder skillroots. Als de
-    watcher is uitgeschakeld of je een bestaande sessie voortzet, start dan een
-    nieuwe zodat de agent de vernieuwde lijst ontvangt:
+    OpenClaw bewaakt standaard `SKILL.md`-bestanden onder de hoofdmappen voor skills. Als de
+    bewaking is uitgeschakeld of je doorgaat met een bestaande sessie, start je een nieuwe
+    zodat de agent de vernieuwde lijst ontvangt:
 
     ```bash
-    # From chat — archive current session and start fresh
+    # Vanuit de chat — archiveer de huidige sessie en begin opnieuw
     /new
 
-    # Or restart the gateway
+    # Of start de Gateway opnieuw
     openclaw gateway restart
     ```
 
   </Step>
 
-  <Step title="Test het">
-    Stuur een bericht dat de skill zou moeten activeren:
-
+  <Step title="Test de skill">
     ```bash
-    openclaw agent --message "give me a greeting"
+    openclaw agent --message "geef me een begroeting"
     ```
 
-    Of open een chat en vraag het rechtstreeks aan de agent. Gebruik `/skill hello-world` om
-    deze expliciet op naam aan te roepen.
+    Je kunt ook een chat openen en het rechtstreeks aan de agent vragen. Gebruik `/skill hello-world` om
+    de skill expliciet op naam aan te roepen.
 
   </Step>
 </Steps>
 
-## SKILL.md-referentie
+## Naslag voor SKILL.md
 
-### Vereiste velden
+### Verplichte velden
 
-| Veld          | Beschrijving                                                  |
-| ------------- | ------------------------------------------------------------- |
-| `name`        | Unieke slug met kleine letters, cijfers en koppeltekens       |
-| `description` | Beschrijving van één regel die aan de agent en in detectie-uitvoer wordt getoond |
+| Veld          | Beschrijving                                                               |
+| ------------- | -------------------------------------------------------------------------- |
+| `name`        | Unieke slug met kleine letters, cijfers en koppeltekens                    |
+| `description` | Beschrijving van één regel die aan de agent en in de zoekresultaten wordt getoond |
 
 ### Optionele frontmatter-sleutels
 
-| Veld                       | Standaard | Beschrijving                                                                      |
-| -------------------------- | --------- | --------------------------------------------------------------------------------- |
-| `user-invocable`           | `true`    | Stel de skill beschikbaar als slash-command voor gebruikers                       |
-| `disable-model-invocation` | `false`   | Houd de skill buiten de systeemprompt van de agent (draait nog steeds via `/skill`) |
-| `command-dispatch`         | —         | Stel in op `tool` om het slash-command direct naar een tool te routeren, buiten het model om |
-| `command-tool`             | —         | Toolnaam om aan te roepen wanneer `command-dispatch: tool` is ingesteld           |
-| `command-arg-mode`         | `raw`     | Stuurt bij tooldispatch de raw args string door naar de tool                      |
-| `homepage`                 | —         | URL die als "Website" wordt getoond in de macOS Skills UI                         |
+| Veld                       | Standaardwaarde | Beschrijving                                                                      |
+| -------------------------- | --------------- | --------------------------------------------------------------------------------- |
+| `user-invocable`           | `true`          | Stel de skill beschikbaar als slash-opdracht voor gebruikers                      |
+| `disable-model-invocation` | `false`         | Laat de skill weg uit de systeemprompt van de agent (werkt nog steeds via `/skill`) |
+| `command-dispatch`         | —               | Stel in op `tool` om de slash-opdracht rechtstreeks naar een tool te leiden, zonder het model |
+| `command-tool`             | —               | Naam van de tool die wordt aangeroepen wanneer `command-dispatch: tool` is ingesteld |
+| `command-arg-mode`         | `raw`           | Stuurt bij toolroutering de onbewerkte tekenreeks met argumenten door naar de tool |
+| `homepage`                 | —               | URL die als "Website" wordt getoond in de Skills-interface van macOS              |
 
-Zie voor gatevelden (`requires.bins`, `requires.env`, enz.)
-[Skills — gating](/nl/tools/skills#gating).
+Zie [Skills — Voorwaarden](/nl/tools/skills#gating) voor voorwaardevelden (`requires.bins`, `requires.env`, enzovoort).
 
 ### `{baseDir}` gebruiken
 
-Gebruik `{baseDir}` in de skillbody om te verwijzen naar bestanden binnen de
-skilldirectory zonder paden hard te coderen:
+Verwijs naar bestanden in de skillmap zonder paden hard te coderen — de
+agent herleidt `{baseDir}` tot de eigen map van de skill:
 
 ```markdown
-Run the helper script at `{baseDir}/scripts/run.sh`.
+Voer het helperscript op `{baseDir}/scripts/run.sh` uit.
 ```
 
-## Voorwaardelijke activatie toevoegen
+## Voorwaardelijke activering toevoegen
 
-Gate je skill zodat deze alleen laadt wanneer de afhankelijkheden beschikbaar zijn:
+Stel voorwaarden voor je skill in, zodat deze alleen wordt geladen wanneer de afhankelijkheden beschikbaar zijn:
 
 ```markdown
 ---
 name: gemini-search
-description: Search using Gemini CLI.
+description: Zoeken met Gemini CLI.
 metadata: { "openclaw": { "requires": { "bins": ["gemini"] }, "primaryEnv": "GEMINI_API_KEY" } }
 ---
 ```
 
 <AccordionGroup>
-  <Accordion title="Gateopties">
+  <Accordion title="Voorwaardeopties">
     | Sleutel | Beschrijving |
     | --- | --- |
-    | `requires.bins` | Alle binaries moeten bestaan op `PATH` |
-    | `requires.anyBins` | Minstens één binary moet bestaan op `PATH` |
-    | `requires.env` | Elke env var moet bestaan in het proces of de configuratie |
-    | `requires.config` | Elk `openclaw.json`-pad moet truthy zijn |
+    | `requires.bins` | Alle uitvoerbare bestanden moeten op `PATH` bestaan |
+    | `requires.anyBins` | Ten minste één uitvoerbaar bestand moet op `PATH` bestaan |
+    | `requires.env` | Elke omgevingsvariabele moet in het proces of de configuratie bestaan |
+    | `requires.config` | Elk pad in `openclaw.json` moet een waarheidswaarde hebben |
     | `os` | Platformfilter: `["darwin"]`, `["linux"]`, `["win32"]` |
-    | `always` | Stel in op `true` om alle gates over te slaan en de skill altijd op te nemen |
+    | `always` | Stel in op `true` om alle voorwaarden over te slaan en de skill altijd op te nemen |
 
-    Volledige referentie: [Skills — gating](/nl/tools/skills#gating).
+    Volledige naslag: [Skills — Voorwaarden](/nl/tools/skills#gating).
 
   </Accordion>
   <Accordion title="Omgeving en API-sleutels">
-    Koppel een API-sleutel aan een skillitem in `openclaw.json`:
+    Koppel een API-sleutel aan een skillvermelding in `openclaw.json`:
 
     ```json5
     {
@@ -175,29 +170,29 @@ metadata: { "openclaw": { "requires": { "bins": ["gemini"] }, "primaryEnv": "GEM
     ```
 
     De sleutel wordt alleen voor die agentbeurt in het hostproces geïnjecteerd.
-    Deze bereikt de sandbox niet — zie
-    [sandboxed env vars](/nl/tools/skills-config#sandboxed-skills-and-env-vars).
+    De sleutel bereikt de sandbox niet — zie
+    [omgevingsvariabelen in de sandbox](/nl/tools/skills-config#sandboxed-skills-and-env-vars).
 
   </Accordion>
 </AccordionGroup>
 
 ## Voorstellen via Skill Workshop
 
-Gebruik voor door agents opgestelde Skills, of wanneer je operatorbeoordeling wilt voordat een skill
-live gaat, voorstellen van [Skill Workshop](/nl/tools/skill-workshop) in plaats van
+Gebruik voor door agents opgestelde skills, of wanneer je beoordeling door een beheerder wilt voordat een skill
+actief wordt, voorstellen van [Skill Workshop](/nl/tools/skill-workshop) in plaats van
 `SKILL.md` rechtstreeks te schrijven.
 
 ```bash
-# Propose a brand-new skill
+# Stel een volledig nieuwe skill voor
 openclaw skills workshop propose-create \
   --name "hello-world" \
-  --description "A simple skill that prints a greeting." \
+  --description "Een eenvoudige skill die een begroeting weergeeft." \
   --proposal ./PROPOSAL.md
 
-# Propose an update to an existing skill
+# Stel een update van een bestaande skill voor
 openclaw skills workshop propose-update hello-world \
   --proposal ./PROPOSAL.md \
-  --description "Updated greeting skill"
+  --description "Bijgewerkte begroetingsskill"
 ```
 
 Gebruik `--proposal-dir` wanneer het voorstel ondersteunende bestanden bevat:
@@ -205,12 +200,12 @@ Gebruik `--proposal-dir` wanneer het voorstel ondersteunende bestanden bevat:
 ```bash
 openclaw skills workshop propose-create \
   --name "hello-world" \
-  --description "A simple skill that prints a greeting." \
+  --description "Een eenvoudige skill die een begroeting weergeeft." \
   --proposal-dir ./hello-world-proposal/
 ```
 
-De directory moet `PROPOSAL.md` bevatten. Ondersteunende bestanden kunnen in `assets/`,
-`examples/`, `references/`, `scripts/` of `templates/`.
+De hoofdmap moet `PROPOSAL.md` bevatten. Ondersteunende bestanden komen onder
+`assets/`, `examples/`, `references/`, `scripts/` of `templates/`.
 
 Na beoordeling:
 
@@ -224,56 +219,57 @@ Zie [Skill Workshop](/nl/tools/skill-workshop) voor de volledige levenscyclus va
 ## Publiceren naar ClawHub
 
 <Steps>
-  <Step title="Zorg dat je SKILL.md compleet is">
-    Zorg dat `name`, `description` en eventuele `metadata.openclaw`-gatevelden
+  <Step title="Zorg dat je SKILL.md volledig is">
+    Zorg dat `name`, `description` en eventuele voorwaardevelden onder `metadata.openclaw`
     zijn ingesteld. Voeg een `homepage`-URL toe als je een projectpagina hebt.
   </Step>
-  <Step title="Installeer de ClawHub-skill">
-    De ClawHub-skill documenteert de huidige vorm van het publish-command en vereiste
-    metadata:
-
+  <Step title="Installeer de zelfstandige ClawHub CLI en meld je aan">
     ```bash
-    openclaw skills install @openclaw/clawhub-publish
+    npm i -g clawhub
+    clawhub login
     ```
-
   </Step>
   <Step title="Publiceer">
     ```bash
-    clawhub publish
+    clawhub skill publish ./path/to/hello-world
     ```
 
-    Zie [ClawHub — publiceren](/nl/clawhub/publishing) voor de volledige flow.
+    Voeg `--version <version>` of `--owner <owner>` toe om de afgeleide
+    versie te overschrijven of onder een specifieke eigenaar te publiceren. Zie
+    [ClawHub — Publiceren](/nl/clawhub/publishing) en
+    [ClawHub CLI](/nl/clawhub/cli) voor de volledige procedure, afbakening per eigenaar en andere
+    onderhoudsopdrachten (`clawhub sync`, `clawhub skill rename`, ...).
 
   </Step>
 </Steps>
 
-## Best practices
+## Aanbevolen werkwijzen
 
 <Tip>
   - **Wees beknopt** — instrueer het model over *wat* het moet doen, niet hoe het een AI moet zijn.
-  - **Veiligheid eerst** — als je skill `exec` gebruikt, zorg er dan voor dat prompts geen
-    willekeurige commando-injectie vanuit niet-vertrouwde invoer toestaan.
-  - **Test lokaal** — gebruik `openclaw agent --message "..."` voordat je deelt.
-  - **Gebruik ClawHub** — blader door community-Skills op [clawhub.ai](https://clawhub.ai)
-    voordat je vanaf nul bouwt.
+  - **Veiligheid voorop** — als je skill `exec` gebruikt, zorg er dan voor dat prompts geen
+    willekeurige opdrachtinjectie vanuit niet-vertrouwde invoer toestaan.
+  - **Test lokaal** — gebruik `openclaw agent --message "..."` voordat je de skill deelt.
+  - **Gebruik ClawHub** — bekijk communityskills op [clawhub.ai](https://clawhub.ai)
+    voordat je iets vanaf nul bouwt.
 </Tip>
 
 ## Gerelateerd
 
 <CardGroup cols={2}>
-  <Card title="Skills-referentie" href="/nl/tools/skills" icon="puzzle-piece">
-    Laadvolgorde, gating, allowlists en SKILL.md-formaat.
+  <Card title="Naslag voor Skills" href="/nl/tools/skills" icon="puzzle-piece">
+    Laadvolgorde, voorwaarden, toestemmingslijsten en de indeling van SKILL.md.
   </Card>
   <Card title="Skill Workshop" href="/nl/tools/skill-workshop" icon="flask">
-    Voorstelwachtrij voor door agents opgestelde Skills.
+    Voorstellenwachtrij voor door agents opgestelde skills.
   </Card>
   <Card title="Skills-configuratie" href="/nl/tools/skills-config" icon="gear">
-    Volledig `skills.*`-configuratieschema.
+    Volledig configuratieschema voor `skills.*`.
   </Card>
-  <Card title="ClawHub" href="/nl/clawhub" icon="cloud">
-    Blader door Skills en publiceer ze in het openbare register.
+  <Card title="ClawHub" href="/clawhub" icon="cloud">
+    Bekijk en publiceer skills in het openbare register.
   </Card>
   <Card title="Plugins bouwen" href="/nl/plugins/building-plugins" icon="plug">
-    Plugins kunnen Skills meeleveren naast de tools die ze documenteren.
+    Plugins kunnen skills meeleveren naast de tools die ze documenteren.
   </Card>
 </CardGroup>

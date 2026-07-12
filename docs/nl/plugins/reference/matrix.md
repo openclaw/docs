@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Je installeert, configureert of auditeert de matrix-Plugin
-summary: OpenClaw Matrix-kanaal-Plugin voor ruimtes en directe berichten.
-title: Matrix Plugin
+    - U installeert, configureert of controleert de Matrix-Plugin
+summary: OpenClaw Matrix-kanaalplugin voor chatruimten en privéberichten.
+title: Matrix-plugin
 x-i18n:
-    generated_at: "2026-06-27T18:01:53Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:12:59Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 10497c79a626ea4c49dac80f2b87a3f8756880ed3ec8b8c4566a4bfe2a011a0c
@@ -13,9 +13,9 @@ x-i18n:
     workflow: 16
 ---
 
-# Matrix Plugin
+# Matrix-Plugin
 
-OpenClaw Matrix-kanaal-Plugin voor kamers en directe berichten.
+OpenClaw Matrix-kanaalplugin voor ruimtes en directe berichten.
 
 ## Distributie
 
@@ -24,7 +24,7 @@ OpenClaw Matrix-kanaal-Plugin voor kamers en directe berichten.
 
 ## Oppervlak
 
-channels: matrix
+kanalen: matrix
 
 ## Gerelateerde documentatie
 

@@ -1,77 +1,77 @@
 ---
 read_when:
     - คุณต้องการใช้ Fireworks กับ OpenClaw
-    - คุณต้องใช้ตัวแปรสภาพแวดล้อมคีย์ Fireworks API หรือรหัสโมเดลเริ่มต้น
-    - คุณกำลังดีบักพฤติกรรม thinking-off ของ Kimi บน Fireworks
-summary: การตั้งค่า Fireworks (การยืนยันตัวตน + การเลือกรุ่น)
+    - คุณต้องมีตัวแปรสภาพแวดล้อมสำหรับคีย์ API ของ Fireworks หรือรหัสโมเดลเริ่มต้น
+    - คุณกำลังแก้ไขข้อบกพร่องของลักษณะการทำงานเมื่อปิดการคิดของ Kimi บน Fireworks
+summary: การตั้งค่า Fireworks (การยืนยันตัวตน + การเลือกโมเดล)
 title: ดอกไม้ไฟ
 x-i18n:
-    generated_at: "2026-06-27T18:13:12Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:38:52Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7413ec9ea192921ce9b9ec51da5b0b9ff1030feeef192afbefc938ed200e192e
+    source_hash: 15feed0730ec65d943f103824468490be6616478ece80bedfeb9ad8137506180
     source_path: providers/fireworks.md
     workflow: 16
 ---
 
-[Fireworks](https://fireworks.ai) เปิดให้ใช้โมเดลแบบ open-weight และโมเดลที่กำหนดเส้นทางผ่าน API ที่เข้ากันได้กับ OpenAI ติดตั้ง Plugin ผู้ให้บริการ Fireworks อย่างเป็นทางการเพื่อใช้โมเดล Kimi สองรายการที่จัดไว้ในแคตตาล็อกล่วงหน้า และโมเดลหรือ router id ใดๆ ของ Fireworks ขณะรันไทม์
+[Fireworks](https://fireworks.ai) ให้บริการโมเดลน้ำหนักแบบเปิดและโมเดลที่กำหนดเส้นทางผ่าน API ที่เข้ากันได้กับ OpenAI ติดตั้ง Plugin ผู้ให้บริการ Fireworks อย่างเป็นทางการเพื่อใช้โมเดล Kimi ที่จัดทำแค็ตตาล็อกไว้ล่วงหน้าสองรุ่น รวมถึงโมเดลหรือรหัสเราเตอร์ใดๆ ของ Fireworks ขณะรันไทม์
 
-| คุณสมบัติ        | ค่า                                                   |
-| --------------- | ------------------------------------------------------ |
-| Provider id     | `fireworks` (นามแฝง: `fireworks-ai`)                    |
-| แพ็กเกจ         | `@openclaw/fireworks-provider`                         |
-| ตัวแปรสภาพแวดล้อมสำหรับยืนยันตัวตน | `FIREWORKS_API_KEY`                                    |
-| แฟล็กการเริ่มต้นใช้งาน | `--auth-choice fireworks-api-key`                      |
-| แฟล็ก CLI โดยตรง | `--fireworks-api-key <key>`                            |
-| API             | เข้ากันได้กับ OpenAI (`openai-completions`)               |
-| URL ฐาน        | `https://api.fireworks.ai/inference/v1`                |
-| โมเดลเริ่มต้น   | `fireworks/accounts/fireworks/routers/kimi-k2p5-turbo` |
-| นามแฝงเริ่มต้น   | `Kimi K2.5 Turbo`                                      |
+| คุณสมบัติ               | ค่า                                                     |
+| ----------------------- | ------------------------------------------------------ |
+| รหัสผู้ให้บริการ        | `fireworks` (นามแฝง: `fireworks-ai`)                   |
+| แพ็กเกจ                 | `@openclaw/fireworks-provider`                         |
+| ตัวแปรสภาพแวดล้อมยืนยันตัวตน | `FIREWORKS_API_KEY`                              |
+| แฟล็กการเริ่มต้นใช้งาน  | `--auth-choice fireworks-api-key`                      |
+| แฟล็ก CLI โดยตรง        | `--fireworks-api-key <key>`                            |
+| API                     | เข้ากันได้กับ OpenAI (`openai-completions`)            |
+| URL ฐาน                 | `https://api.fireworks.ai/inference/v1`                |
+| โมเดลเริ่มต้น           | `fireworks/accounts/fireworks/routers/kimi-k2p5-turbo` |
+| นามแฝงเริ่มต้น          | `Kimi K2.5 Turbo`                                      |
 
 ## เริ่มต้นใช้งาน
 
 <Steps>
-  <Step title="Install the plugin">
+  <Step title="ติดตั้ง Plugin">
     ```bash
     openclaw plugins install @openclaw/fireworks-provider
     ```
   </Step>
-  <Step title="Set the Fireworks API key">
+  <Step title="ตั้งค่าคีย์ API ของ Fireworks">
     <CodeGroup>
 
-```bash Onboarding
+```bash การเริ่มต้นใช้งาน
 openclaw onboard --auth-choice fireworks-api-key
 ```
 
-```bash Direct flag
+```bash แฟล็กโดยตรง
 openclaw onboard --non-interactive \
   --auth-choice fireworks-api-key \
   --fireworks-api-key "$FIREWORKS_API_KEY"
 ```
 
-```bash Env only
+```bash เฉพาะตัวแปรสภาพแวดล้อม
 export FIREWORKS_API_KEY=fw-...
 ```
 
     </CodeGroup>
 
-    การเริ่มต้นใช้งานจะจัดเก็บคีย์ไว้กับผู้ให้บริการ `fireworks` ในโปรไฟล์การยืนยันตัวตนของคุณ และตั้งค่า router **Fire Pass** Kimi K2.5 Turbo เป็นโมเดลเริ่มต้น
+    การเริ่มต้นใช้งานจะจัดเก็บคีย์สำหรับผู้ให้บริการ `fireworks` ในโปรไฟล์การยืนยันตัวตนของคุณ และตั้งค่าเราเตอร์ Kimi K2.5 Turbo แบบ **Fire Pass** เป็นโมเดลเริ่มต้น
 
   </Step>
-  <Step title="Verify the model is available">
+  <Step title="ตรวจสอบว่าโมเดลพร้อมใช้งาน">
     ```bash
     openclaw models list --provider fireworks
     ```
 
-    รายการควรมี `Kimi K2.6` และ `Kimi K2.5 Turbo (Fire Pass)` หาก `FIREWORKS_API_KEY` ยังไม่ถูกแก้ค่า `openclaw models status --json` จะรายงานข้อมูลรับรองที่หายไปไว้ใต้ `auth.unusableProfiles`
+    รายการควรมี `Kimi K2.6` และ `Kimi K2.5 Turbo (Fire Pass)` หากไม่สามารถระบุค่า `FIREWORKS_API_KEY` ได้ `openclaw models status --json` จะรายงานข้อมูลประจำตัวที่ขาดหายไปภายใต้ `auth.unusableProfiles`
 
   </Step>
 </Steps>
 
 ## การตั้งค่าแบบไม่โต้ตอบ
 
-สำหรับการติดตั้งด้วยสคริปต์หรือ CI ให้ส่งทุกอย่างผ่านบรรทัดคำสั่ง:
+สำหรับการติดตั้งผ่านสคริปต์หรือ CI ให้ส่งค่าทั้งหมดผ่านบรรทัดคำสั่ง:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -82,20 +82,20 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-## แคตตาล็อกในตัว
+## แค็ตตาล็อกในตัว
 
-| Model ref                                              | ชื่อ                        | อินพุต        | บริบท | เอาต์พุตสูงสุด | การคิด             |
-| ------------------------------------------------------ | --------------------------- | ------------ | ------- | ---------- | -------------------- |
-| `fireworks/accounts/fireworks/models/kimi-k2p6`        | Kimi K2.6                   | ข้อความ + รูปภาพ | 262,144 | 262,144    | บังคับปิด           |
-| `fireworks/accounts/fireworks/routers/kimi-k2p5-turbo` | Kimi K2.5 Turbo (Fire Pass) | ข้อความ + รูปภาพ | 256,000 | 256,000    | บังคับปิด (ค่าเริ่มต้น) |
+| การอ้างอิงโมเดล                                       | ชื่อ                        | อินพุต         | บริบท   | เอาต์พุตสูงสุด | การคิด                    |
+| ------------------------------------------------------ | --------------------------- | -------------- | ------- | --------------- | ------------------------- |
+| `fireworks/accounts/fireworks/models/kimi-k2p6`        | Kimi K2.6                   | ข้อความ + รูปภาพ | 262,144 | 262,144         | บังคับให้ปิด              |
+| `fireworks/accounts/fireworks/routers/kimi-k2p5-turbo` | Kimi K2.5 Turbo (Fire Pass) | ข้อความ + รูปภาพ | 256,000 | 256,000         | บังคับให้ปิด (ค่าเริ่มต้น) |
 
 <Note>
-  OpenClaw ตรึงโมเดล Kimi ทั้งหมดของ Fireworks เป็น `thinking: off` เพราะ Fireworks ปฏิเสธพารามิเตอร์การคิดของ Kimi ในโปรดักชัน การกำหนดเส้นทางโมเดลเดียวกันผ่าน [Moonshot](/th/providers/moonshot) โดยตรงจะคงเอาต์พุตการใช้เหตุผลของ Kimi ไว้ ดู [โหมดการคิด](/th/tools/thinking) สำหรับการสลับระหว่างผู้ให้บริการ
+  OpenClaw กำหนดโมเดล Kimi ของ Fireworks ทั้งหมดเป็น `thinking: off` เนื่องจาก Kimi บน Fireworks อาจเปิดเผยกระบวนการให้เหตุผลแบบเป็นลำดับในคำตอบที่ผู้ใช้มองเห็น เว้นแต่คำขอจะปิดการคิดอย่างชัดเจน การกำหนดเส้นทางโมเดลเดียวกันโดยตรงผ่าน [Moonshot](/th/providers/moonshot) จะคงเอาต์พุตการให้เหตุผลของ Kimi ไว้ ดู[โหมดการคิด](/th/tools/thinking)สำหรับการสลับระหว่างผู้ให้บริการ
 </Note>
 
-## id โมเดล Fireworks แบบกำหนดเอง
+## รหัสโมเดล Fireworks แบบกำหนดเอง
 
-OpenClaw รับโมเดลหรือ router id ใดๆ ของ Fireworks ขณะรันไทม์ ใช้ id ตรงตามที่ Fireworks แสดง และเติมคำนำหน้า `fireworks/` การแก้ค่าแบบไดนามิกจะโคลนเทมเพลต Fire Pass (อินพุตข้อความ + รูปภาพ, API ที่เข้ากันได้กับ OpenAI, ต้นทุนเริ่มต้นเป็นศูนย์) และปิดการคิดโดยอัตโนมัติเมื่อ id ตรงกับรูปแบบ Kimi id แบบไดนามิกของ GLM จะถูกทำเครื่องหมายเป็นข้อความเท่านั้น เว้นแต่คุณจะกำหนดค่ารายการโมเดลแบบกำหนดเองพร้อมอินพุตรูปภาพ
+OpenClaw ยอมรับรหัสโมเดลหรือเราเตอร์ใดๆ ของ Fireworks ขณะรันไทม์ ใช้รหัสที่ Fireworks แสดงอย่างถูกต้องทุกอักขระและเติม `fireworks/` นำหน้า การระบุแบบไดนามิกจะโคลนแม่แบบ Fire Pass (อินพุตข้อความ + รูปภาพ, API ที่เข้ากันได้กับ OpenAI, ค่าใช้จ่ายเริ่มต้นเป็นศูนย์) และปิดการคิดโดยอัตโนมัติเมื่อรหัสตรงกับรูปแบบ Kimi รหัส GLM แบบไดนามิกจะถูกระบุว่าใช้ได้เฉพาะข้อความ เว้นแต่คุณจะกำหนดค่ารายการโมเดลแบบกำหนดเองที่รองรับอินพุตรูปภาพ
 
 ```json5
 {
@@ -110,48 +110,48 @@ OpenClaw รับโมเดลหรือ router id ใดๆ ของ Fire
 ```
 
 <AccordionGroup>
-  <Accordion title="How model id prefixing works">
-    ทุก model ref ของ Fireworks ใน OpenClaw เริ่มต้นด้วย `fireworks/` ตามด้วย id หรือเส้นทาง router ที่ตรงตามแพลตฟอร์ม Fireworks ตัวอย่างเช่น:
+  <Accordion title="การเติมคำนำหน้ารหัสโมเดลทำงานอย่างไร">
+    การอ้างอิงโมเดล Fireworks ทุกรายการใน OpenClaw เริ่มต้นด้วย `fireworks/` ตามด้วยรหัสหรือเส้นทางเราเตอร์ที่ตรงกับแพลตฟอร์ม Fireworks ทุกอักขระ ตัวอย่างเช่น:
 
-    - โมเดล Router: `fireworks/accounts/fireworks/routers/kimi-k2p5-turbo`
+    - โมเดลเราเตอร์: `fireworks/accounts/fireworks/routers/kimi-k2p5-turbo`
     - โมเดลโดยตรง: `fireworks/accounts/fireworks/models/<model-name>`
 
-    OpenClaw จะตัดคำนำหน้า `fireworks/` ออกเมื่อสร้างคำขอ API และส่งเส้นทางที่เหลือไปยัง endpoint ของ Fireworks เป็นฟิลด์ `model` ที่เข้ากันได้กับ OpenAI
+    OpenClaw จะตัดคำนำหน้า `fireworks/` ออกเมื่อสร้างคำขอ API และส่งเส้นทางที่เหลือไปยังปลายทาง Fireworks ในฐานะฟิลด์ `model` ที่เข้ากันได้กับ OpenAI
 
   </Accordion>
 
-  <Accordion title="Why thinking is forced off for Kimi">
-    Fireworks K2.6 ส่งคืน 400 หากคำขอมีพารามิเตอร์ `reasoning_*` แม้ว่า Kimi จะรองรับการคิดผ่าน API ของ Moonshot เองก็ตาม นโยบายผู้ให้บริการ (`extensions/fireworks/thinking-policy.ts`) ประกาศเฉพาะระดับการคิด `off` สำหรับ id โมเดล Kimi ดังนั้นการสลับ `/think` ด้วยตนเองและพื้นผิวนโยบายผู้ให้บริการจึงสอดคล้องกับสัญญารันไทม์
+  <Accordion title="เหตุผลที่บังคับปิดการคิดสำหรับ Kimi">
+    Fireworks ให้บริการ Kimi โดยไม่มีช่องทางการให้เหตุผลแยกต่างหาก ดังนั้นกระบวนการให้เหตุผลแบบเป็นลำดับจึงอาจปรากฏในสตรีม `content` ที่ผู้ใช้มองเห็น ในทุกคำขอ Kimi ของ Fireworks OpenClaw จะส่ง `thinking: { type: "disabled" }` และตัด `reasoning`, `reasoning_effort` และ `reasoningEffort` ออกจากเพย์โหลด (`extensions/fireworks/stream.ts`) นโยบายผู้ให้บริการ (`extensions/fireworks/thinking-policy.ts`) ประกาศเฉพาะระดับการคิด `off` สำหรับรหัสโมเดล Kimi เพื่อให้การสลับ `/think` ด้วยตนเองและพื้นผิวนโยบายผู้ให้บริการสอดคล้องกับสัญญารันไทม์
 
-    หากต้องการใช้การใช้เหตุผลของ Kimi แบบครบวงจร ให้กำหนดค่า [ผู้ให้บริการ Moonshot](/th/providers/moonshot) และกำหนดเส้นทางโมเดลเดียวกันผ่านผู้ให้บริการนั้น
+    หากต้องการใช้การให้เหตุผลของ Kimi ตั้งแต่ต้นทางถึงปลายทาง ให้กำหนดค่า[ผู้ให้บริการ Moonshot](/th/providers/moonshot)และกำหนดเส้นทางโมเดลเดียวกันผ่านผู้ให้บริการดังกล่าว
 
   </Accordion>
 
-  <Accordion title="Environment availability for the daemon">
-    หาก Gateway รันเป็นบริการที่จัดการอยู่ (launchd, systemd, Docker) คีย์ Fireworks ต้องมองเห็นได้สำหรับโปรเซสนั้น ไม่ใช่แค่เชลล์แบบโต้ตอบของคุณ
+  <Accordion title="ความพร้อมใช้งานของสภาพแวดล้อมสำหรับดีมอน">
+    หาก Gateway ทำงานเป็นบริการที่มีการจัดการ (launchd, systemd, Docker) กระบวนการนั้นต้องมองเห็นคีย์ Fireworks ไม่ใช่เฉพาะเชลล์แบบโต้ตอบของคุณ
 
     <Warning>
-      คีย์ที่ export เฉพาะในเชลล์แบบโต้ตอบจะไม่ช่วย daemon ของ launchd หรือ systemd เว้นแต่ environment นั้นจะถูกนำเข้าไปที่นั่นด้วย ตั้งค่าคีย์ใน `~/.openclaw/.env` หรือผ่าน `env.shellEnv` เพื่อให้โปรเซส gateway อ่านได้
+      คีย์ที่ส่งออกเฉพาะในเชลล์แบบโต้ตอบจะไม่ช่วยดีมอน launchd หรือ systemd เว้นแต่จะนำเข้าสภาพแวดล้อมดังกล่าวไปยังดีมอนด้วย ตั้งค่าคีย์ใน `~/.openclaw/.env` หรือผ่าน `env.shellEnv` เพื่อให้กระบวนการ Gateway สามารถอ่านได้
     </Warning>
 
-    บน macOS คำสั่ง `openclaw gateway install` จะเชื่อม `~/.openclaw/.env` เข้ากับไฟล์ environment ของ LaunchAgent อยู่แล้ว ให้รันการติดตั้งอีกครั้ง (หรือ `openclaw doctor --fix`) หลังจากหมุนเวียนคีย์
+    OpenClaw โหลด `~/.openclaw/.env` เมื่อโหลดการกำหนดค่า ดังนั้นคีย์ที่จัดเก็บไว้ที่นั่นจะส่งถึงบริการ Gateway ที่มีการจัดการบนทุกแพลตฟอร์ม รีสตาร์ต Gateway (หรือเรียกใช้ `openclaw doctor --fix` อีกครั้ง) หลังจากหมุนเวียนคีย์
 
   </Accordion>
 </AccordionGroup>
 
-## ที่เกี่ยวข้อง
+## เนื้อหาที่เกี่ยวข้อง
 
 <CardGroup cols={2}>
-  <Card title="Model providers" href="/th/concepts/model-providers" icon="layers">
-    การเลือกผู้ให้บริการ, model refs และพฤติกรรม failover
+  <Card title="ผู้ให้บริการโมเดล" href="/th/concepts/model-providers" icon="layers">
+    การเลือกผู้ให้บริการ การอ้างอิงโมเดล และลักษณะการทำงานเมื่อสลับไปใช้ระบบสำรอง
   </Card>
-  <Card title="Thinking modes" href="/th/tools/thinking" icon="brain">
-    ระดับ `/think`, นโยบายผู้ให้บริการ และการกำหนดเส้นทางโมเดลที่รองรับการใช้เหตุผล
+  <Card title="โหมดการคิด" href="/th/tools/thinking" icon="brain">
+    ระดับ `/think` นโยบายผู้ให้บริการ และการกำหนดเส้นทางโมเดลที่รองรับการให้เหตุผล
   </Card>
   <Card title="Moonshot" href="/th/providers/moonshot" icon="moon">
-    รัน Kimi พร้อมเอาต์พุตการคิดแบบเนทีฟผ่าน API ของ Moonshot เอง
+    เรียกใช้ Kimi พร้อมเอาต์พุตการคิดแบบเนทีฟผ่าน API ของ Moonshot เอง
   </Card>
-  <Card title="Troubleshooting" href="/th/help/troubleshooting" icon="wrench">
+  <Card title="การแก้ไขปัญหา" href="/th/help/troubleshooting" icon="wrench">
     การแก้ไขปัญหาทั่วไปและคำถามที่พบบ่อย
   </Card>
 </CardGroup>

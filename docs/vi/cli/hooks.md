@@ -1,353 +1,132 @@
 ---
 read_when:
-    - Bạn muốn quản lý các hook của tác nhân
-    - Bạn muốn kiểm tra khả năng sẵn có của hook hoặc bật hook workspace
-summary: Tài liệu tham khảo CLI cho `openclaw hooks` (các móc nối tác tử)
-title: Móc nối
+    - Bạn muốn quản lý các hook của tác tử
+    - Bạn muốn kiểm tra các hook khả dụng hoặc bật hook cho không gian làm việc
+summary: Tài liệu tham khảo CLI cho `openclaw hooks` (hook tác tử)
+title: Hook
 x-i18n:
-    generated_at: "2026-05-06T17:53:24Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:45:25Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 56dd1ef82458dde3280e2cdfb4f3835211726517416e90625d3272d128eb9e0e
+    source_hash: f33d1e343771971bdc17dcafdabc6c4fc893b3080897862475a148e5f3957796
     source_path: cli/hooks.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw hooks`
 
-Quản lý các móc nối tác tử (tự động hóa theo sự kiện cho các lệnh như `/new`, `/reset` và khởi động Gateway).
+Quản lý các hook của tác nhân (các tác vụ tự động hóa theo sự kiện dành cho những lệnh như `/new`, `/reset` và khi Gateway khởi động). Chỉ dùng `openclaw hooks` tương đương với `openclaw hooks list`.
 
-Chạy `openclaw hooks` mà không có lệnh con tương đương với `openclaw hooks list`.
+Liên quan: [Hook](/vi/automation/hooks) - [Hook của Plugin](/vi/plugins/hooks)
 
-Liên quan:
-
-- Móc nối: [Móc nối](/vi/automation/hooks)
-- Móc nối Plugin: [Móc nối Plugin](/vi/plugins/hooks)
-
-## Liệt kê tất cả móc nối
+## Liệt kê hook
 
 ```bash
-openclaw hooks list
+openclaw hooks list [--eligible] [--json] [-v|--verbose]
 ```
 
-Liệt kê tất cả móc nối đã phát hiện từ các thư mục workspace, được quản lý, bổ sung và đi kèm.
-Quá trình khởi động Gateway không tải trình xử lý móc nối nội bộ cho đến khi ít nhất một móc nối nội bộ được cấu hình.
+Liệt kê các hook được phát hiện từ không gian làm việc, các thư mục được quản lý, thư mục bổ sung và thư mục đi kèm.
 
-**Tùy chọn:**
-
-- `--eligible`: Chỉ hiển thị các móc nối đủ điều kiện (đáp ứng yêu cầu)
-- `--json`: Xuất dưới dạng JSON
-- `-v, --verbose`: Hiển thị thông tin chi tiết, bao gồm các yêu cầu còn thiếu
-
-**Ví dụ đầu ra:**
+- `--eligible`: chỉ các hook đáp ứng yêu cầu.
+- `--json`: đầu ra có cấu trúc.
+- `-v, --verbose`: thêm cột Thiếu, hiển thị các yêu cầu chưa được đáp ứng.
 
 ```
-Hooks (4/4 ready)
+Hook (4/5 sẵn sàng)
 
-Ready:
-  🚀 boot-md ✓ - Run BOOT.md on gateway startup
-  📎 bootstrap-extra-files ✓ - Inject extra workspace bootstrap files during agent bootstrap
-  📝 command-logger ✓ - Log all command events to a centralized audit file
-  💾 session-memory ✓ - Save session context to memory when /new or /reset command is issued
+Sẵn sàng:
+  🚀 boot-md ✓ - Chạy BOOT.md khi Gateway khởi động
+  📎 bootstrap-extra-files ✓ - Chèn thêm các tệp khởi tạo không gian làm việc trong quá trình khởi tạo tác nhân
+  📝 command-logger ✓ - Ghi nhật ký mọi sự kiện lệnh vào một tệp kiểm toán tập trung
+  💾 session-memory ✓ - Lưu ngữ cảnh phiên vào bộ nhớ khi lệnh /new hoặc /reset được thực thi
 ```
 
-**Ví dụ (chi tiết):**
+## Xem thông tin hook
 
 ```bash
-openclaw hooks list --verbose
+openclaw hooks info <name> [--json]
 ```
 
-Hiển thị các yêu cầu còn thiếu cho những móc nối không đủ điều kiện.
+`<name>` là tên hoặc khóa của hook (ví dụ: `session-memory`). Hiển thị nguồn, đường dẫn tệp/trình xử lý, trang chủ, sự kiện và trạng thái của từng yêu cầu (tệp nhị phân, biến môi trường, cấu hình, hệ điều hành).
 
-**Ví dụ (JSON):**
+## Kiểm tra tính đủ điều kiện
 
 ```bash
-openclaw hooks list --json
+openclaw hooks check [--json]
 ```
 
-Trả về JSON có cấu trúc để dùng theo chương trình.
+In bản tóm tắt số lượng sẵn sàng/chưa sẵn sàng; nếu có hook chưa sẵn sàng, lệnh sẽ liệt kê từng hook cùng nguyên nhân cản trở.
 
-## Lấy thông tin móc nối
-
-```bash
-openclaw hooks info <name>
-```
-
-Hiển thị thông tin chi tiết về một móc nối cụ thể.
-
-**Đối số:**
-
-- `<name>`: Tên móc nối hoặc khóa móc nối (ví dụ: `session-memory`)
-
-**Tùy chọn:**
-
-- `--json`: Xuất dưới dạng JSON
-
-**Ví dụ:**
-
-```bash
-openclaw hooks info session-memory
-```
-
-**Đầu ra:**
-
-```
-💾 session-memory ✓ Ready
-
-Save session context to memory when /new or /reset command is issued
-
-Details:
-  Source: openclaw-bundled
-  Path: /path/to/openclaw/hooks/bundled/session-memory/HOOK.md
-  Handler: /path/to/openclaw/hooks/bundled/session-memory/handler.ts
-  Homepage: https://docs.openclaw.ai/automation/hooks#session-memory
-  Events: command:new, command:reset
-
-Requirements:
-  Config: ✓ workspace.dir
-```
-
-## Kiểm tra điều kiện của móc nối
-
-```bash
-openclaw hooks check
-```
-
-Hiển thị tóm tắt trạng thái đủ điều kiện của móc nối (bao nhiêu móc nối sẵn sàng so với chưa sẵn sàng).
-
-**Tùy chọn:**
-
-- `--json`: Xuất dưới dạng JSON
-
-**Ví dụ đầu ra:**
-
-```
-Hooks Status
-
-Total hooks: 4
-Ready: 4
-Not ready: 0
-```
-
-## Bật một móc nối
+## Bật một hook
 
 ```bash
 openclaw hooks enable <name>
 ```
 
-Bật một móc nối cụ thể bằng cách thêm nó vào cấu hình của bạn (mặc định là `~/.openclaw/openclaw.json`).
+Thêm/cập nhật `hooks.internal.entries.<name>.enabled = true` trong cấu hình, đồng thời bật công tắc chính `hooks.internal.enabled` (Gateway không tải bất kỳ trình xử lý hook nội bộ nào cho đến khi có ít nhất một hook được cấu hình). Lệnh sẽ thất bại nếu hook không tồn tại, do Plugin quản lý hoặc không đủ điều kiện (thiếu yêu cầu).
 
-**Lưu ý:** Móc nối workspace bị tắt theo mặc định cho đến khi được bật tại đây hoặc trong cấu hình. Các móc nối do Plugin quản lý hiển thị `plugin:<id>` trong `openclaw hooks list` và không thể bật/tắt tại đây. Thay vào đó, hãy bật/tắt Plugin.
+Các hook do Plugin quản lý hiển thị `plugin:<id>` trong `hooks list` và không thể bật/tắt tại đây; thay vào đó, hãy bật hoặc tắt Plugin sở hữu hook.
 
-**Đối số:**
+Khởi động lại Gateway sau khi bật (khởi động lại ứng dụng trên thanh menu macOS hoặc khởi động lại tiến trình Gateway trong môi trường phát triển) để Gateway tải lại các hook.
 
-- `<name>`: Tên móc nối (ví dụ: `session-memory`)
-
-**Ví dụ:**
-
-```bash
-openclaw hooks enable session-memory
-```
-
-**Đầu ra:**
-
-```
-✓ Enabled hook: 💾 session-memory
-```
-
-**Việc này làm gì:**
-
-- Kiểm tra xem móc nối có tồn tại và đủ điều kiện không
-- Cập nhật `hooks.internal.entries.<name>.enabled = true` trong cấu hình của bạn
-- Lưu cấu hình vào đĩa
-
-Nếu móc nối đến từ `<workspace>/hooks/`, bước chọn tham gia này là bắt buộc trước khi
-Gateway tải nó.
-
-**Sau khi bật:**
-
-- Khởi động lại gateway để móc nối được tải lại (khởi động lại ứng dụng thanh menu trên macOS, hoặc khởi động lại tiến trình gateway của bạn trong dev).
-
-## Tắt một móc nối
+## Tắt một hook
 
 ```bash
 openclaw hooks disable <name>
 ```
 
-Tắt một móc nối cụ thể bằng cách cập nhật cấu hình của bạn.
+Đặt `hooks.internal.entries.<name>.enabled = false`. Sau đó, hãy khởi động lại Gateway.
 
-**Đối số:**
-
-- `<name>`: Tên móc nối (ví dụ: `command-logger`)
-
-**Ví dụ:**
+## Cài đặt và cập nhật gói hook
 
 ```bash
-openclaw hooks disable command-logger
+openclaw plugins install <package>        # npm theo mặc định
+openclaw plugins install npm:<package>    # chỉ npm
+openclaw plugins install <package> --pin  # ghim phiên bản đã phân giải
+openclaw plugins install <path>           # thư mục hoặc tệp lưu trữ cục bộ
+openclaw plugins install -l <path>        # liên kết thư mục cục bộ thay vì sao chép
+
+openclaw plugins update <id>
+openclaw plugins update --all
+openclaw plugins update --dry-run
 ```
 
-**Đầu ra:**
+Các gói hook được cài đặt thông qua trình cài đặt/cập nhật Plugin hợp nhất; `openclaw hooks install` / `openclaw hooks update` vẫn hoạt động dưới dạng bí danh đã lỗi thời, chúng sẽ in cảnh báo và chuyển tiếp sang các lệnh `plugins`.
 
+- Đặc tả npm chỉ được lấy từ kho đăng ký: tên gói cùng phiên bản chính xác hoặc thẻ phân phối tùy chọn. Đặc tả Git/URL/tệp và dải phiên bản semver sẽ bị từ chối. Các phần phụ thuộc được cài đặt cục bộ trong dự án với `--ignore-scripts`.
+- Đặc tả không kèm phiên bản và `@latest` vẫn sử dụng kênh ổn định; nếu npm phân giải thành một bản phát hành thử nghiệm, OpenClaw sẽ dừng lại và yêu cầu bạn chủ động chọn tham gia (`@beta`, `@rc` hoặc một phiên bản phát hành thử nghiệm chính xác).
+- Các định dạng tệp lưu trữ được hỗ trợ: `.zip`, `.tgz`, `.tar.gz`, `.tar`.
+- `-l, --link` liên kết một thư mục cục bộ thay vì sao chép thư mục đó (thêm thư mục vào `hooks.internal.load.extraDirs`); các gói hook được liên kết là hook được quản lý từ một thư mục do người vận hành cấu hình, không phải hook của không gian làm việc.
+- `--pin` ghi lại các lượt cài đặt npm dưới dạng `name@version` chính xác đã được phân giải trong `hooks.internal.installs`.
+- Thao tác cài đặt sao chép gói vào `~/.openclaw/hooks/<id>`, bật các hook của gói trong `hooks.internal.entries.*` và ghi lại lượt cài đặt trong `hooks.internal.installs`.
+- Nếu mã băm toàn vẹn đã lưu không còn khớp với thành phần được tải về, OpenClaw sẽ cảnh báo và yêu cầu xác nhận trước khi tiếp tục; truyền tùy chọn toàn cục `--yes` để bỏ qua lời nhắc (ví dụ trong CI).
+
+## Các hook đi kèm
+
+| Hook                  | Sự kiện                                           | Chức năng                                                                                                  |
+| --------------------- | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| boot-md               | `gateway:startup`                                 | Chạy `BOOT.md` khi Gateway khởi động cho từng phạm vi tác nhân đã cấu hình                                 |
+| bootstrap-extra-files | `agent:bootstrap`                                 | Chèn các tệp khởi tạo bổ sung (ví dụ: `AGENTS.md`/`TOOLS.md` của monorepo) trong quá trình khởi tạo tác nhân |
+| command-logger        | `command`                                         | Ghi nhật ký các sự kiện lệnh vào `~/.openclaw/logs/commands.log`                                           |
+| compaction-notifier   | `session:compact:before`, `session:compact:after` | Gửi thông báo trò chuyện hiển thị khi quá trình Compaction phiên bắt đầu và kết thúc                       |
+| session-memory        | `command:new`, `command:reset`                    | Lưu ngữ cảnh phiên vào bộ nhớ khi dùng `/new` hoặc `/reset`                                                |
+
+Bật bất kỳ hook đi kèm nào bằng `openclaw hooks enable <hook-name>`. Chi tiết đầy đủ, khóa cấu hình và giá trị mặc định: [Các hook đi kèm](/vi/automation/hooks#bundled-hooks).
+
+### Tệp nhật ký của command-logger
+
+```bash
+tail -n 20 ~/.openclaw/logs/commands.log        # các lệnh gần đây
+cat ~/.openclaw/logs/commands.log | jq .          # in theo định dạng dễ đọc
+grep '"action":"new"' ~/.openclaw/logs/commands.log | jq .   # lọc theo hành động
 ```
-⏸ Disabled hook: 📝 command-logger
-```
-
-**Sau khi tắt:**
-
-- Khởi động lại gateway để móc nối được tải lại
 
 ## Ghi chú
 
-- `openclaw hooks list --json`, `info --json` và `check --json` ghi JSON có cấu trúc trực tiếp ra stdout.
-- Không thể bật hoặc tắt các móc nối do Plugin quản lý tại đây; thay vào đó, hãy bật hoặc tắt Plugin sở hữu.
-
-## Cài đặt gói móc nối
-
-```bash
-openclaw plugins install <package>        # npm by default
-openclaw plugins install npm:<package>    # npm only
-openclaw plugins install <package> --pin  # pin version
-openclaw plugins install <path>           # local path
-```
-
-Cài đặt các gói móc nối thông qua trình cài đặt Plugin hợp nhất.
-
-`openclaw hooks install` vẫn hoạt động như một bí danh tương thích, nhưng nó in ra
-cảnh báo ngừng dùng và chuyển tiếp đến `openclaw plugins install`.
-
-Đặc tả npm **chỉ dùng registry** (tên gói + **phiên bản chính xác** tùy chọn hoặc
-**dist-tag**). Đặc tả Git/URL/tệp và các khoảng semver bị từ chối. Cài đặt phụ thuộc
-chạy cục bộ theo dự án với `--ignore-scripts` để an toàn, ngay cả khi shell của bạn
-có thiết lập cài đặt npm toàn cục.
-
-Đặc tả trần và `@latest` vẫn nằm trên kênh ổn định. Nếu npm phân giải một trong hai
-thành bản phát hành trước, OpenClaw sẽ dừng và yêu cầu bạn chọn tham gia rõ ràng bằng
-một thẻ phát hành trước như `@beta`/`@rc` hoặc một phiên bản phát hành trước chính xác.
-
-**Việc này làm gì:**
-
-- Sao chép gói móc nối vào `~/.openclaw/hooks/<id>`
-- Bật các móc nối đã cài đặt trong `hooks.internal.entries.*`
-- Ghi nhận cài đặt trong `hooks.internal.installs`
-
-**Tùy chọn:**
-
-- `-l, --link`: Liên kết một thư mục cục bộ thay vì sao chép (thêm thư mục đó vào `hooks.internal.load.extraDirs`)
-- `--pin`: Ghi nhận cài đặt npm dưới dạng `name@version` đã phân giải chính xác trong `hooks.internal.installs`
-
-**Kho lưu trữ được hỗ trợ:** `.zip`, `.tgz`, `.tar.gz`, `.tar`
-
-**Ví dụ:**
-
-```bash
-# Local directory
-openclaw plugins install ./my-hook-pack
-
-# Local archive
-openclaw plugins install ./my-hook-pack.zip
-
-# NPM package
-openclaw plugins install @openclaw/my-hook-pack
-
-# Link a local directory without copying
-openclaw plugins install -l ./my-hook-pack
-```
-
-Các gói móc nối được liên kết được xem là móc nối được quản lý từ một thư mục
-do người vận hành cấu hình, không phải móc nối workspace.
-
-## Cập nhật gói móc nối
-
-```bash
-openclaw plugins update <id>
-openclaw plugins update --all
-```
-
-Cập nhật các gói móc nối dựa trên npm đang được theo dõi thông qua trình cập nhật Plugin hợp nhất.
-
-`openclaw hooks update` vẫn hoạt động như một bí danh tương thích, nhưng nó in ra
-cảnh báo ngừng dùng và chuyển tiếp đến `openclaw plugins update`.
-
-**Tùy chọn:**
-
-- `--all`: Cập nhật tất cả gói móc nối đang được theo dõi
-- `--dry-run`: Hiển thị những gì sẽ thay đổi mà không ghi
-
-Khi có hàm băm toàn vẹn đã lưu và hàm băm tạo tác đã tải về thay đổi,
-OpenClaw in cảnh báo và yêu cầu xác nhận trước khi tiếp tục. Dùng
-`--yes` toàn cục để bỏ qua lời nhắc trong CI/lần chạy không tương tác.
-
-## Móc nối đi kèm
-
-### session-memory
-
-Lưu ngữ cảnh phiên vào bộ nhớ khi bạn phát hành `/new` hoặc `/reset`.
-
-**Bật:**
-
-```bash
-openclaw hooks enable session-memory
-```
-
-**Đầu ra:** mặc định là `~/.openclaw/workspace/memory/YYYY-MM-DD-HHMM.md`. Đặt `hooks.internal.entries.session-memory.llmSlug: true` để dùng slug tên tệp do mô hình tạo.
-
-**Xem:** [tài liệu session-memory](/vi/automation/hooks#session-memory)
-
-### bootstrap-extra-files
-
-Chèn các tệp bootstrap bổ sung (ví dụ `AGENTS.md` / `TOOLS.md` cục bộ của monorepo) trong `agent:bootstrap`.
-
-**Bật:**
-
-```bash
-openclaw hooks enable bootstrap-extra-files
-```
-
-**Xem:** [tài liệu bootstrap-extra-files](/vi/automation/hooks#bootstrap-extra-files)
-
-### command-logger
-
-Ghi nhật ký tất cả sự kiện lệnh vào một tệp kiểm toán tập trung.
-
-**Bật:**
-
-```bash
-openclaw hooks enable command-logger
-```
-
-**Đầu ra:** `~/.openclaw/logs/commands.log`
-
-**Xem nhật ký:**
-
-```bash
-# Recent commands
-tail -n 20 ~/.openclaw/logs/commands.log
-
-# Pretty-print
-cat ~/.openclaw/logs/commands.log | jq .
-
-# Filter by action
-grep '"action":"new"' ~/.openclaw/logs/commands.log | jq .
-```
-
-**Xem:** [tài liệu command-logger](/vi/automation/hooks#command-logger)
-
-### boot-md
-
-Chạy `BOOT.md` khi gateway khởi động (sau khi các kênh khởi động).
-
-**Sự kiện**: `gateway:startup`
-
-**Bật**:
-
-```bash
-openclaw hooks enable boot-md
-```
-
-**Xem:** [tài liệu boot-md](/vi/automation/hooks#boot-md)
+- `hooks list --json`, `info --json` và `check --json` ghi trực tiếp JSON có cấu trúc vào đầu ra chuẩn.
 
 ## Liên quan
 
-- [tham chiếu CLI](/vi/cli)
-- [móc nối tự động hóa](/vi/automation/hooks)
+- [Tài liệu tham chiếu CLI](/vi/cli)
+- [Hook tự động hóa](/vi/automation/hooks)

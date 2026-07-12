@@ -1,21 +1,21 @@
 ---
 read_when:
-    - ลิงก์เดิมไปยัง building-extensions
-summary: เปลี่ยนเส้นทางไปยังคู่มือการสร้าง Plugin ปัจจุบัน
+    - ลิงก์เดิมไปยังการสร้างส่วนขยาย
+summary: เปลี่ยนเส้นทางไปยังคู่มือการสร้าง Plugin ฉบับปัจจุบัน
 title: การสร้าง Plugin (เปลี่ยนเส้นทาง)
 x-i18n:
-    generated_at: "2026-04-24T09:22:49Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: d687ccddfe7dcadf8bdd0fc903bf8a5da112902a8d23086b04da25df752facaf
-    source_path: plugins/building-extensions.md
-    workflow: 15
+    generated_at: "2026-07-12T16:22:47Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 912a6de72e2ea3a3fc7cc93a15f952d504c00873f7662ead0f50662bcc7771c5
+    source_path: plugins/building-extensions.md
+    workflow: 16
 ---
 
-หน้านี้ได้ย้ายไปที่ [Building Plugins](/th/plugins/building-plugins)
+หน้านี้ถูกย้ายแล้ว โปรดดู [การสร้าง Plugin](/th/plugins/building-plugins)
 
-## ที่เกี่ยวข้อง
+## เนื้อหาที่เกี่ยวข้อง
 
-- [Building plugins](/th/plugins/building-plugins)
+- [การสร้าง Plugin](/th/plugins/building-plugins)
 - [สถาปัตยกรรม Plugin](/th/plugins/architecture)

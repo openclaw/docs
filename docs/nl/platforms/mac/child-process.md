@@ -1,36 +1,29 @@
 ---
 read_when:
-    - De Mac-app integreren met de Gateway-levenscyclus
+    - De Mac-app integreren met de levenscyclus van de Gateway
 summary: Gateway-levenscyclus op macOS (launchd)
 title: Gateway-levenscyclus op macOS
 x-i18n:
-    generated_at: "2026-05-06T09:22:45Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:59:40Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 543327024f8c635d74ac656923e8e745dc47ca9df0aba5ec51215bd186db2b35
+    source_hash: 89a27334afcecb322feb2732cf6282b4c286ef27828a1b57157f9d4fc161aed6
     source_path: platforms/mac/child-process.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-De macOS-app **beheert de Gateway via launchd** standaard en start de Gateway
-niet als onderliggend proces. De app probeert eerst verbinding te maken met een
-al draaiende Gateway op de geconfigureerde poort; als er geen bereikbaar is,
-schakelt de app de launchd-service in via de externe `openclaw` CLI (geen
-ingebedde runtime). Dit geeft je betrouwbare automatische start bij inloggen en
-herstart bij crashes.
+De macOS-app beheert de Gateway standaard via **launchd** en start de Gateway niet als onderliggend proces. De app probeert eerst verbinding te maken met een Gateway die al op de geconfigureerde poort draait. Als er geen bereikbaar is, schakelt de app de launchd-service in via de externe `openclaw`-CLI (zonder ingebouwde runtime). Dit zorgt voor betrouwbaar automatisch starten bij het aanmelden en herstarten na crashes.
 
-Onderliggend-procesmodus (Gateway rechtstreeks door de app gestart) is vandaag
-**niet in gebruik**. Als je nauwere koppeling met de UI nodig hebt, voer de
-Gateway handmatig uit in een terminal.
+De modus voor onderliggende processen (waarbij de Gateway rechtstreeks door de app wordt gestart) wordt momenteel **niet gebruikt**. Als je een nauwere koppeling met de gebruikersinterface nodig hebt, voer je de Gateway handmatig uit in een terminal.
 
 ## Standaardgedrag (launchd)
 
-- De app installeert een LaunchAgent per gebruiker met het label
-  `ai.openclaw.gateway` (of `ai.openclaw.<profile>` wanneer je `--profile`/`OPENCLAW_PROFILE` gebruikt; verouderde `com.openclaw.*` wordt ondersteund).
-- Wanneer de lokale modus is ingeschakeld, zorgt de app dat de LaunchAgent is
-  geladen en start deze de Gateway indien nodig.
-- Logs worden geschreven naar het launchd-gatewaylogpad (zichtbaar in foutopsporingsinstellingen).
+- De app installeert een LaunchAgent per gebruiker met het label `ai.openclaw.gateway` (of
+  `ai.openclaw.<profile>` bij gebruik van `--profile`/`OPENCLAW_PROFILE`).
+- Wanneer de lokale modus is ingeschakeld, zorgt de app ervoor dat de LaunchAgent is geladen en
+  start deze zo nodig de Gateway.
+- Logboeken worden naar het pad voor het launchd-Gateway-logboek geschreven (zichtbaar in de foutopsporingsinstellingen).
 
 Veelgebruikte opdrachten:
 
@@ -39,44 +32,38 @@ launchctl kickstart -k gui/$UID/ai.openclaw.gateway
 launchctl bootout gui/$UID/ai.openclaw.gateway
 ```
 
-Vervang het label door `ai.openclaw.<profile>` wanneer je een benoemd profiel gebruikt.
+Vervang bij gebruik van een benoemd profiel het label door `ai.openclaw.<profile>`.
 
-## Niet-ondertekende dev-builds
+## Niet-ondertekende ontwikkelbuilds
 
-`scripts/restart-mac.sh --no-sign` is bedoeld voor snelle lokale builds wanneer
-je geen ondertekeningssleutels hebt. Om te voorkomen dat launchd naar een niet-ondertekende relay-binary wijst, doet dit het volgende:
+`scripts/restart-mac.sh --no-sign` is bedoeld voor snelle lokale builds zonder ondertekeningssleutels. Om te voorkomen dat launchd naar een niet-ondertekend relay-binair bestand verwijst, schrijft het script
+`~/.openclaw/disable-launchagent`.
 
-- Schrijft `~/.openclaw/disable-launchagent`.
-
-Ondertekende uitvoeringen van `scripts/restart-mac.sh` wissen deze override als
-de marker aanwezig is. Handmatig resetten:
+Ondertekende uitvoeringen van `scripts/restart-mac.sh` wissen deze overschrijving als de markering aanwezig is. Handmatig herstellen:
 
 ```bash
 rm ~/.openclaw/disable-launchagent
 ```
 
-## Alleen-koppelen-modus
+## Modus voor alleen verbinding maken
 
-Om af te dwingen dat de macOS-app **launchd nooit installeert of beheert**, start
-je deze met `--attach-only` (of `--no-launchd`). Dit stelt `~/.openclaw/disable-launchagent` in,
-zodat de app alleen verbinding maakt met een Gateway die al draait. Je kunt
-hetzelfde gedrag omschakelen in foutopsporingsinstellingen.
+Om af te dwingen dat de macOS-app launchd nooit installeert of beheert, start je de app met
+`--attach-only` (of `--no-launchd`). Hiermee wordt
+`~/.openclaw/disable-launchagent` ingesteld, zodat de app alleen verbinding maakt met een Gateway die al actief is. Schakel hetzelfde gedrag in of uit via de foutopsporingsinstellingen.
 
 ## Externe modus
 
-Externe modus start nooit een lokale Gateway. De app gebruikt een SSH-tunnel naar
-de externe host en maakt verbinding via die tunnel.
+De externe modus start nooit een lokale Gateway. De app gebruikt een SSH-tunnel naar de externe host en maakt via die tunnel verbinding.
 
-## Waarom we launchd verkiezen
+## Waarom we de voorkeur geven aan launchd
 
-- Automatische start bij inloggen.
-- Ingebouwde semantiek voor herstarten/KeepAlive.
-- Voorspelbare logs en supervisie.
+- Automatisch starten bij het aanmelden.
+- Ingebouwde semantiek voor herstarten en KeepAlive.
+- Voorspelbare logboeken en procesbewaking.
 
-Als een echte onderliggend-procesmodus ooit opnieuw nodig is, moet die worden
-gedocumenteerd als een aparte, expliciete modus alleen voor ontwikkeling.
+Als er ooit weer een echte modus voor onderliggende processen nodig is, moet die worden gedocumenteerd als een afzonderlijke, expliciete modus die uitsluitend voor ontwikkeling is bedoeld.
 
 ## Gerelateerd
 
 - [macOS-app](/nl/platforms/macos)
-- [Gateway-runbook](/nl/gateway)
+- [Gateway-draaiboek](/nl/gateway)

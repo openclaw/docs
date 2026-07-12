@@ -1,24 +1,23 @@
 ---
 read_when:
-    - Sie möchten Antworten für eine aktive Sitzung von Telegram zu Discord, Slack, Mattermost oder einem anderen verknüpften Kanal verschieben.
-    - Sie konfigurieren `session.identityLinks` für kanalübergreifende Direktnachrichten.
-    - Ein /dock-Befehl meldet, dass der Absender nicht verknüpft ist oder keine aktive Sitzung vorhanden ist
-summary: Antwort-Route einer OpenClaw-Sitzung zwischen verknüpften Chat-Kanälen verschieben
+    - Sie möchten Antworten für eine aktive Sitzung von Telegram zu Discord, Slack, Mattermost oder einem anderen verknüpften Kanal verschieben
+    - Sie konfigurieren `session.identityLinks` für kanalübergreifende Direktnachrichten
+    - Ein `/dock`-Befehl meldet, dass der Absender nicht verknüpft ist oder keine aktive Sitzung vorhanden ist.
+summary: Antwortpfad einer OpenClaw-Sitzung zwischen verknüpften Chat-Kanälen verschieben
 title: Channel-Andockung
 x-i18n:
-    generated_at: "2026-07-12T15:13:03Z"
+    generated_at: "2026-07-12T01:35:01Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 6d7af3a59b95b2c73cb74a9529584e51caed055719db2df8aad2ba8e8c9b0593
     source_path: concepts/channel-docking.md
     workflow: 16
 ---
 
-Channel-Docking ist eine Rufweiterleitung für eine OpenClaw-Sitzung. Dabei bleibt derselbe
-Konversationskontext erhalten, aber der Zustellort künftiger Antworten für diese Sitzung
-ändert sich. Docking funktioniert nur aus einem Direktchat heraus; in einem Gruppenchat
+Channel-Docking ist eine Anrufweiterleitung für eine einzelne OpenClaw-Sitzung. Dabei bleibt derselbe
+Konversationskontext erhalten, aber zukünftige Antworten für diese Sitzung werden
+an einen anderen Ort zugestellt. Docking funktioniert nur aus einem Direktchat; in einem Gruppenchat
 wird es nicht ausgeführt.
 
 ## Beispiel
@@ -43,28 +42,28 @@ Wenn Alice Folgendes aus einem Telegram-Direktchat sendet:
 
 behält OpenClaw den aktuellen Sitzungskontext bei und ändert die Antwortroute:
 
-| Vor dem Docking                    | Nach `/dock_discord`              |
-| ---------------------------------- | --------------------------------- |
-| Antworten gehen an Telegram `123`  | Antworten gehen an Discord `456`  |
+| Vor dem Docking                 | Nach `/dock_discord`          |
+| ------------------------------ | ----------------------------- |
+| Antworten gehen an Telegram `123` | Antworten gehen an Discord `456` |
 
-Die Sitzung wird nicht neu erstellt. Der Transkriptverlauf bleibt derselben
-Sitzung zugeordnet.
+Die Sitzung wird nicht neu erstellt. Der Transkriptverlauf bleibt mit derselben
+Sitzung verknüpft.
 
 ## Warum Sie es verwenden sollten
 
-Verwenden Sie Docking, wenn eine Aufgabe in einer Chat-App beginnt, die nächsten Antworten
-aber an einem anderen Ort eingehen sollen.
+Verwenden Sie Docking, wenn eine Aufgabe in einer Chat-App beginnt, die nächsten Antworten aber
+an einem anderen Ort eingehen sollen.
 
 Typischer Ablauf:
 
 1. Starten Sie eine Agentenaufgabe über Telegram.
 2. Wechseln Sie zu Discord, wo Sie die Arbeit koordinieren.
 3. Senden Sie `/dock_discord` aus dem Telegram-Direktchat.
-4. Behalten Sie dieselbe OpenClaw-Sitzung bei, empfangen Sie künftige Antworten jedoch in Discord.
+4. Behalten Sie dieselbe OpenClaw-Sitzung bei, empfangen Sie zukünftige Antworten aber in Discord.
 
 ## Erforderliche Konfiguration
 
-Docking erfordert `session.identityLinks`. Der Absender der Quelle und der Ziel-Peer
+Docking erfordert `session.identityLinks`. Der Absender auf dem Quellkanal und der Zielkontakt
 müssen derselben Identitätsgruppe angehören:
 
 ```json5
@@ -77,22 +76,22 @@ müssen derselben Identitätsgruppe angehören:
 }
 ```
 
-Die Werte sind Peer-IDs mit vorangestelltem Kanalpräfix:
+Die Werte sind Kontakt-IDs mit vorangestelltem Kanalpräfix:
 
-| Wert           | Bedeutung                       |
-| -------------- | ------------------------------- |
-| `telegram:123` | Telegram-Absender-ID `123`      |
-| `discord:456`  | Discord-Direkt-Peer-ID `456`    |
-| `slack:U123`   | Slack-Benutzer-ID `U123`        |
+| Wert           | Bedeutung                    |
+| -------------- | ---------------------------- |
+| `telegram:123` | Telegram-Absender-ID `123`   |
+| `discord:456`  | Discord-Direktkontakt-ID `456` |
+| `slack:U123`   | Slack-Benutzer-ID `U123`     |
 
-Der kanonische Schlüssel (`alice` oben) ist lediglich der gemeinsame Name der Identitätsgruppe. Docking-
-Befehle verwenden die Werte mit Kanalpräfix, um nachzuweisen, dass der Absender der Quelle und
-der Ziel-Peer dieselbe Person sind.
+Der kanonische Schlüssel (oben `alice`) ist lediglich der gemeinsame Name der Identitätsgruppe. Docking-
+Befehle verwenden die Werte mit Kanalpräfix, um nachzuweisen, dass der Absender auf dem Quellkanal und
+der Zielkontakt dieselbe Person sind.
 
 ## Befehle
 
-OpenClaw generiert für jedes geladene Kanal-Plugin, das native Befehle unterstützt,
-einen `/dock-<channel>`-Befehl. Daher wächst die Liste, wenn Plugins hinzugefügt werden. Gebündelte
+OpenClaw erzeugt für jedes geladene Kanal-Plugin, das native Befehle
+unterstützt, einen `/dock-<channel>`-Befehl. Die Liste wächst daher, wenn Plugins hinzugefügt werden. Gebündelte
 Plugins, die dies derzeit unterstützen:
 
 | Zielkanal  | Befehl             | Alias              |
@@ -102,21 +101,21 @@ Plugins, die dies derzeit unterstützen:
 | Slack      | `/dock-slack`      | `/dock_slack`      |
 | Telegram   | `/dock-telegram`   | `/dock_telegram`   |
 
-Die Form mit Unterstrich ist außerdem der native Befehlsname auf Oberflächen wie Telegram,
+Die Schreibweise mit Unterstrich ist zugleich der native Befehlsname auf Oberflächen wie Telegram,
 die Slash-Befehle direkt bereitstellen.
 
 ## Was sich ändert
 
-Docking aktualisiert die Zustellfelder der aktiven Sitzung:
+Docking aktualisiert die Zustellungsfelder der aktiven Sitzung:
 
-| Sitzungsfeld    | Beispiel nach `/dock_discord`              |
-| --------------- | ------------------------------------------ |
-| `lastChannel`   | `discord`                                  |
-| `lastTo`        | `456`                                      |
-| `lastAccountId` | das Zielkanalkonto oder `default`          |
+| Sitzungsfeld    | Beispiel nach `/dock_discord`            |
+| --------------- | ---------------------------------------- |
+| `lastChannel`   | `discord`                                |
+| `lastTo`        | `456`                                    |
+| `lastAccountId` | das Zielkanalkonto oder `default`        |
 
-Diese Felder werden im Sitzungsspeicher dauerhaft gespeichert und für die spätere Zustellung
-von Antworten dieser Sitzung verwendet.
+Diese Felder werden im Sitzungsspeicher dauerhaft gespeichert und für die spätere Zustellung von
+Antworten dieser Sitzung verwendet.
 
 ## Was sich nicht ändert
 
@@ -127,34 +126,34 @@ Docking führt Folgendes nicht aus:
 - einem Benutzer Zugriff gewähren
 - Kanal-Zulassungslisten oder Direktnachrichtenrichtlinien umgehen
 - den Transkriptverlauf in eine andere Sitzung verschieben
-- nicht zusammengehörigen Benutzern die gemeinsame Nutzung einer Sitzung ermöglichen
+- dafür sorgen, dass nicht miteinander verbundene Benutzer eine Sitzung gemeinsam nutzen
 
-Es ändert lediglich die Zustellroute für die aktuelle Sitzung.
+Es ändert lediglich die Zustellungsroute der aktuellen Sitzung.
 
 ## Fehlerbehebung
 
 **Der Befehl meldet, dass der Absender nicht verknüpft ist.**
 
-Fügen Sie sowohl den aktuellen Absender als auch den Ziel-Peer derselben
-`session.identityLinks`-Gruppe hinzu. Wenn beispielsweise der Telegram-Absender `123` an
-den Discord-Peer `456` gedockt werden soll, schließen Sie sowohl `telegram:123` als auch `discord:456` ein.
+Fügen Sie sowohl den aktuellen Absender als auch den Zielkontakt derselben
+`session.identityLinks`-Gruppe hinzu. Wenn beispielsweise der Telegram-Absender `123` an den
+Discord-Kontakt `456` andocken soll, schließen Sie sowohl `telegram:123` als auch `discord:456` ein.
 
 **Der Befehl meldet, dass Docking nur aus Direktchats verfügbar ist.**
 
-Senden Sie den Docking-Befehl aus einem Direktchat mit OpenClaw, nicht aus einem Gruppenchat.
+Senden Sie den Docking-Befehl aus einem Direktchat mit OpenClaw und nicht aus einem Gruppenchat.
 
 **Der Befehl meldet, dass keine aktive Sitzung vorhanden ist.**
 
-Führen Sie das Docking aus einer bestehenden Direktchat-Sitzung aus. Der Befehl benötigt einen aktiven Sitzungseintrag,
-damit er die neue Route dauerhaft speichern kann.
+Docken Sie aus einer bestehenden Direktchat-Sitzung an. Der Befehl benötigt einen aktiven
+Sitzungseintrag, damit er die neue Route dauerhaft speichern kann.
 
 **Antworten gehen weiterhin an den alten Kanal.**
 
-Prüfen Sie, ob der Befehl mit einer Erfolgsmeldung geantwortet hat, und bestätigen Sie, dass die Ziel-
-Peer-ID mit der von diesem Kanal verwendeten ID übereinstimmt. Docking ändert nur die Route der aktiven
+Prüfen Sie, ob der Befehl mit einer Erfolgsmeldung geantwortet hat, und bestätigen Sie, dass die ID des
+Zielkontakts mit der von diesem Kanal verwendeten ID übereinstimmt. Docking ändert nur die Route der aktiven
 Sitzung; eine andere Sitzung kann weiterhin an einen anderen Ort weiterleiten.
 
 **Ich muss zurückwechseln.**
 
-Senden Sie von einem verknüpften Absender den entsprechenden Befehl für den ursprünglichen Kanal, etwa `/dock_telegram` oder
-`/dock-telegram`.
+Senden Sie den passenden Befehl für den ursprünglichen Kanal, beispielsweise `/dock_telegram` oder
+`/dock-telegram`, von einem verknüpften Absender.

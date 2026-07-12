@@ -1,39 +1,35 @@
 ---
 read_when:
-    - การอัปเดตสคีมาโปรโตคอลหรือการสร้างโค้ด
-summary: สคีมา TypeBox เป็นแหล่งความจริงแหล่งเดียวสำหรับโปรโตคอล Gateway
+    - การอัปเดตสคีมาโปรโตคอลหรือการสร้างโค้ดอัตโนมัติ
+summary: สคีมา TypeBox เป็นแหล่งข้อมูลจริงเพียงแหล่งเดียวสำหรับโปรโตคอล Gateway
 title: TypeBox
 x-i18n:
-    generated_at: "2026-06-27T17:30:28Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:00:56Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f2f3da11e9dcf3250fd77e0c43f4ed918551a536d93fa71bce95eaf3d7539f6d
+    source_hash: 24490edf0d73e918f834e9dd53d09ba0e5183b2bc126ee981a94f8099e76283b
     source_path: concepts/typebox.md
     workflow: 16
 ---
 
-TypeBox เป็นไลบรารีสคีมาที่ให้ความสำคัญกับ TypeScript เป็นอันดับแรก เราใช้เพื่อกำหนด **โปรโตคอล Gateway
-WebSocket** (handshake, request/response, server events) สคีมาเหล่านี้ขับเคลื่อน **การตรวจสอบขณะรันไทม์**, **การส่งออก JSON Schema** และ **Swift codegen** สำหรับแอป macOS แหล่งความจริงเดียว; ส่วนอื่นทั้งหมดสร้างขึ้นจากมัน
+TypeBox เป็นไลบรารีสคีมาที่เน้น TypeScript เป็นหลัก OpenClaw ใช้ไลบรารีนี้เพื่อกำหนด **โปรโตคอล Gateway WebSocket** (การจับมือเริ่มต้น คำขอ/การตอบกลับ และเหตุการณ์จากเซิร์ฟเวอร์) สคีมาเหล่านั้นใช้ขับเคลื่อน **การตรวจสอบความถูกต้องขณะรันไทม์** (AJV), **การส่งออก JSON Schema** และ **การสร้างโค้ด Swift** สำหรับแอป macOS โดยมีแหล่งข้อมูลจริงเพียงแห่งเดียว ส่วนอื่นทั้งหมดจะถูกสร้างขึ้น
 
-หากต้องการบริบทโปรโตคอลในระดับสูงกว่า ให้เริ่มที่
-[สถาปัตยกรรม Gateway](/th/concepts/architecture)
+สำหรับบริบทของโปรโตคอลในระดับที่สูงขึ้น ให้เริ่มจาก [สถาปัตยกรรม Gateway](/th/concepts/architecture)
 
-## โมเดลทางความคิด (30 วินาที)
+## แบบจำลองทางความคิด (30 วินาที)
 
-ทุกข้อความ Gateway WS เป็นหนึ่งในสามเฟรม:
+ทุกข้อความ Gateway WS เป็นเฟรมหนึ่งในสามประเภท:
 
 - **คำขอ**: `{ type: "req", id, method, params }`
 - **การตอบกลับ**: `{ type: "res", id, ok, payload | error }`
 - **เหตุการณ์**: `{ type: "event", event, payload, seq?, stateVersion? }`
 
-เฟรมแรก **ต้อง** เป็นคำขอ `connect` หลังจากนั้น ไคลเอนต์สามารถเรียกเมธอด
-(เช่น `health`, `send`, `chat.send`) และสมัครรับเหตุการณ์ (เช่น
-`presence`, `tick`, `agent`)
+เฟรมแรก **ต้อง** เป็นคำขอ `connect` หลังจากนั้นไคลเอนต์จะเรียกเมธอด (เช่น `health`, `send`, `chat.send`) และสมัครรับเหตุการณ์ (เช่น `presence`, `tick`, `agent`)
 
-โฟลว์การเชื่อมต่อ (ขั้นต่ำ):
+ลำดับการเชื่อมต่อ (ขั้นต่ำ):
 
-```
+```text
 Client                    Gateway
   |---- req:connect -------->|
   |<---- res:hello-ok --------|
@@ -42,57 +38,46 @@ Client                    Gateway
   |<---- res:health ----------|
 ```
 
-เมธอดและเหตุการณ์ทั่วไป:
+เมธอดและเหตุการณ์ที่ใช้ทั่วไป:
 
-| หมวดหมู่   | ตัวอย่าง                                                   | หมายเหตุ                              |
-| ---------- | ---------------------------------------------------------- | ---------------------------------- |
-| แกนหลัก       | `connect`, `health`, `status`                              | `connect` ต้องมาก่อน            |
-| การส่งข้อความ  | `send`, `agent`, `agent.wait`, `system-event`, `logs.tail` | side effect ต้องใช้ `idempotencyKey` |
-| แชต       | `chat.history`, `chat.send`, `chat.abort`                  | WebChat ใช้สิ่งเหล่านี้                 |
-| เซสชัน   | `sessions.list`, `sessions.patch`, `sessions.delete`       | การดูแลเซสชัน                      |
-| อัตโนมัติ | `wake`, `cron.list`, `cron.run`, `cron.runs`               | การควบคุม wake + cron                |
-| โหนด      | `node.list`, `node.invoke`, `node.pair.*`                  | Gateway WS + การกระทำของโหนด          |
-| เหตุการณ์     | `tick`, `presence`, `agent`, `chat`, `health`, `shutdown`  | การ push จากเซิร์ฟเวอร์                        |
+| หมวดหมู่   | ตัวอย่าง                                                   | หมายเหตุ                                        |
+| ---------- | ---------------------------------------------------------- | -------------------------------------------- |
+| แกนหลัก       | `connect`, `health`, `status`                              | `connect` ต้องมาก่อน                      |
+| การรับส่งข้อความ  | `send`, `agent`, `agent.wait`, `system-event`, `logs.tail` | เมธอดที่ก่อให้เกิดผลข้างเคียงต้องมี `idempotencyKey` |
+| แชต       | `chat.history`, `chat.send`, `chat.abort`                  | WebChat ใช้เมธอดเหล่านี้                           |
+| เซสชัน   | `sessions.list`, `sessions.patch`, `sessions.delete`       | การดูแลเซสชัน                                |
+| ระบบอัตโนมัติ | `wake`, `cron.list`, `cron.run`, `cron.runs`               | การควบคุมการปลุกและ cron                        |
+| Node      | `node.list`, `node.invoke`, `node.pair.*`                  | Gateway WS ร่วมกับการดำเนินการของ Node                 |
+| เหตุการณ์     | `tick`, `presence`, `agent`, `chat`, `health`, `shutdown`  | การพุชจากเซิร์ฟเวอร์                                  |
 
-คลังรายการ **discovery** ที่ประกาศอย่างเป็นทางการอยู่ใน
-`src/gateway/server-methods-list.ts` (`listGatewayMethods`, `GATEWAY_EVENTS`)
+รายการ **การค้นพบความสามารถ** ที่ประกาศอย่างเป็นทางการอยู่ใน `src/gateway/server-methods-list.ts` (`listGatewayMethods`, `GATEWAY_EVENTS`)
 
 ## ตำแหน่งของสคีมา
 
-- ซอร์ส: `packages/gateway-protocol/src/schema.ts`
-- ตัวตรวจสอบรันไทม์ (AJV): `packages/gateway-protocol/src/index.ts`
-- รีจิสทรี feature/discovery ที่ประกาศ: `src/gateway/server-methods-list.ts`
-- Server handshake + การ dispatch เมธอด: `src/gateway/server.impl.ts`
+- ไฟล์รวมสำหรับซอร์ส: `packages/gateway-protocol/src/schema.ts` ส่งออกโมดูลตามโดเมนอีกครั้งจาก `packages/gateway-protocol/src/schema/*.ts` (`frames.ts` สำหรับซองข้อมูลระดับบนสุดและการจับมือเริ่มต้น รวมถึง `agent.ts`, `sessions.ts`, `cron.ts` เป็นต้นตามขอบเขตของแต่ละฟีเจอร์) `protocol-schemas.ts` คือรีจิสทรีส่วนกลาง `ProtocolSchemas` ที่จับคู่ชื่อสคีมากับนิยาม TypeBox
+- ตัวตรวจสอบขณะรันไทม์ (AJV): `packages/gateway-protocol/src/index.ts`
+- รีจิสทรีฟีเจอร์/การค้นพบความสามารถที่ประกาศ: `src/gateway/server-methods-list.ts`
+- การจับมือเริ่มต้นของเซิร์ฟเวอร์และการส่งต่อเมธอด: `src/gateway/server.impl.ts`
 - ไคลเอนต์ Node: `src/gateway/client.ts`
-- JSON Schema ที่สร้างขึ้น: `dist/protocol.schema.json`
-- โมเดล Swift ที่สร้างขึ้น: `apps/macos/Sources/OpenClawProtocol/GatewayModels.swift`
+- JSON Schema ที่สร้างขึ้น: `dist/protocol.schema.json` (ผลลัพธ์จากการบิลด์ ไม่ได้คอมมิต)
+- โมเดล Swift ที่สร้างขึ้น: `apps/shared/OpenClawKit/Sources/OpenClawProtocol/GatewayModels.swift`
 
 ## ไปป์ไลน์ปัจจุบัน
 
-- `pnpm protocol:gen`
-  - เขียน JSON Schema (draft-07) ไปที่ `dist/protocol.schema.json`
-- `pnpm protocol:gen:swift`
-  - สร้างโมเดล Swift gateway
-- `pnpm protocol:check`
-  - รันตัวสร้างทั้งสองและตรวจสอบว่า output ถูก commit แล้ว
+- `pnpm protocol:gen` เขียน JSON Schema (draft-07) ไปยัง `dist/protocol.schema.json`
+- `pnpm protocol:gen:swift` สร้างโมเดล Gateway สำหรับ Swift
+- `pnpm protocol:check` เรียกตัวสร้างทั้งสองรายการและตรวจสอบว่าได้คอมมิตผลลัพธ์ Swift แล้ว (ผลลัพธ์ JSON Schema เป็นอาร์ติแฟกต์จากการบิลด์ที่ถูกละเว้นโดย Git)
 
 ## วิธีใช้สคีมาขณะรันไทม์
 
-- **ฝั่งเซิร์ฟเวอร์**: เฟรมขาเข้าทุกเฟรมถูกตรวจสอบด้วย AJV handshake ยอมรับเฉพาะ
-  คำขอ `connect` ที่ params ตรงกับ `ConnectParams`
-- **ฝั่งไคลเอนต์**: ไคลเอนต์ JS ตรวจสอบเฟรมเหตุการณ์และการตอบกลับก่อน
-  ใช้งาน
-- **Feature discovery**: Gateway ส่งรายการ `features.methods`
-  และ `features.events` แบบระมัดระวังใน `hello-ok` จาก `listGatewayMethods()` และ
-  `GATEWAY_EVENTS`
-- รายการ discovery นั้นไม่ใช่ dump ที่สร้างขึ้นของ helper ทุกตัวที่เรียกได้ใน
-  `coreGatewayHandlers`; helper RPC บางตัวถูก implement ใน
-  `src/gateway/server-methods/*.ts` โดยไม่ได้ถูกแจกแจงในรายการ feature
-  ที่ประกาศ
+- **ฝั่งเซิร์ฟเวอร์**: ทุกเฟรมขาเข้าจะถูกตรวจสอบด้วย AJV การจับมือเริ่มต้นยอมรับเฉพาะคำขอ `connect` ที่พารามิเตอร์ตรงกับ `ConnectParams`
+- **ฝั่งไคลเอนต์**: ไคลเอนต์ JS ตรวจสอบเฟรมเหตุการณ์และการตอบกลับก่อนนำไปใช้
+- **การค้นพบฟีเจอร์**: Gateway ส่งรายการ `features.methods` และ `features.events` แบบจำกัดไว้เพื่อความปลอดภัยใน `hello-ok` โดยมาจาก `listGatewayMethods()` และ `GATEWAY_EVENTS`
+- รายการการค้นพบนี้ไม่ใช่การถ่ายโอนรายการตัวช่วยทั้งหมดใน `coreGatewayHandlers` ที่สามารถเรียกได้โดยอัตโนมัติ RPC ตัวช่วยบางรายการถูกติดตั้งใช้งานใน `src/gateway/server-methods/*.ts` โดยไม่ได้ระบุไว้ในรายการฟีเจอร์ที่ประกาศ
 
 ## ตัวอย่างเฟรม
 
-Connect (ข้อความแรก):
+เชื่อมต่อ (ข้อความแรก):
 
 ```json
 {
@@ -132,12 +117,13 @@ Connect (ข้อความแรก):
       "stateVersion": { "presence": 0, "health": 0 },
       "uptimeMs": 0
     },
+    "auth": { "role": "operator", "scopes": ["operator.read"] },
     "policy": { "maxPayload": 1048576, "maxBufferedBytes": 1048576, "tickIntervalMs": 30000 }
   }
 }
 ```
 
-คำขอ + การตอบกลับ:
+คำขอและการตอบกลับ:
 
 ```json
 { "type": "req", "id": "r1", "method": "health" }
@@ -155,7 +141,7 @@ Connect (ข้อความแรก):
 
 ## ไคลเอนต์ขั้นต่ำ (Node.js)
 
-โฟลว์ที่เล็กที่สุดแต่ใช้งานได้: connect + health
+ลำดับการทำงานที่เล็กที่สุดแต่ใช้งานได้: เชื่อมต่อ + ตรวจสอบสถานะ
 
 ```ts
 import { WebSocket } from "ws";
@@ -195,13 +181,13 @@ ws.on("message", (data) => {
 });
 ```
 
-## ตัวอย่างแบบทำจริง: เพิ่มเมธอดตั้งแต่ต้นจนจบ
+## ตัวอย่างแบบครบขั้นตอน: เพิ่มเมธอดตั้งแต่ต้นจนจบ
 
-ตัวอย่าง: เพิ่มคำขอ `system.echo` ใหม่ที่คืนค่า `{ ok: true, text }`
+ตัวอย่าง: เพิ่มคำขอใหม่ `system.echo` ที่ส่งคืน `{ ok: true, text }`
 
-1. **สคีมา (แหล่งความจริง)**
+1. **สคีมา (แหล่งข้อมูลจริง)**
 
-เพิ่มใน `packages/gateway-protocol/src/schema.ts`:
+เพิ่มใน `packages/gateway-protocol/src/schema/system.ts` (หรือโมดูลฟีเจอร์ที่ตรงที่สุด):
 
 ```ts
 export const SystemEchoParamsSchema = Type.Object(
@@ -215,7 +201,7 @@ export const SystemEchoResultSchema = Type.Object(
 );
 ```
 
-เพิ่มทั้งคู่ใน `ProtocolSchemas` และ export types:
+นำเข้าทั้งสองรายการใน `packages/gateway-protocol/src/schema/protocol-schemas.ts` เพิ่มลงในรีจิสทรี `ProtocolSchemas` และส่งออกชนิดข้อมูลที่ได้:
 
 ```ts
   SystemEchoParams: SystemEchoParamsSchema,
@@ -227,17 +213,17 @@ export type SystemEchoParams = Static<typeof SystemEchoParamsSchema>;
 export type SystemEchoResult = Static<typeof SystemEchoResultSchema>;
 ```
 
-2. **การตรวจสอบ**
+2. **การตรวจสอบความถูกต้อง**
 
-ใน `packages/gateway-protocol/src/index.ts` ให้ export ตัวตรวจสอบ AJV:
+ใน `packages/gateway-protocol/src/index.ts` ให้ส่งออกตัวตรวจสอบ AJV:
 
 ```ts
 export const validateSystemEchoParams = ajv.compile<SystemEchoParams>(SystemEchoParamsSchema);
 ```
 
-3. **พฤติกรรมเซิร์ฟเวอร์**
+3. **พฤติกรรมของเซิร์ฟเวอร์**
 
-เพิ่ม handler ใน `src/gateway/server-methods/system.ts`:
+เพิ่มตัวจัดการใน `src/gateway/server-methods/system.ts`:
 
 ```ts
 export const systemHandlers: GatewayRequestHandlers = {
@@ -248,13 +234,9 @@ export const systemHandlers: GatewayRequestHandlers = {
 };
 ```
 
-ลงทะเบียนใน `src/gateway/server-methods.ts` (รวม `systemHandlers` อยู่แล้ว)
-จากนั้นเพิ่ม `"system.echo"` ใน input ของ `listGatewayMethods` ใน
-`src/gateway/server-methods-list.ts`
+ลงทะเบียนใน `src/gateway/server-methods.ts` (ซึ่งผสาน `systemHandlers` อยู่แล้ว) จากนั้นเพิ่ม `"system.echo"` ลงในอินพุตของ `listGatewayMethods` ใน `src/gateway/server-methods-list.ts`
 
-หากเมธอดเรียกได้โดยไคลเอนต์ operator หรือ node ให้จัดประเภทใน
-`src/gateway/method-scopes.ts` ด้วย เพื่อให้การบังคับใช้ scope และการประกาศ feature
-ใน `hello-ok` สอดคล้องกัน
+หากไคลเอนต์ผู้ควบคุมหรือไคลเอนต์ Node สามารถเรียกเมธอดนี้ได้ ให้จัดประเภทเมธอดใน `src/gateway/method-scopes.ts` ด้วย เพื่อให้การบังคับใช้ขอบเขตสิทธิ์และการประกาศฟีเจอร์ใน `hello-ok` สอดคล้องกัน
 
 4. **สร้างใหม่**
 
@@ -262,54 +244,49 @@ export const systemHandlers: GatewayRequestHandlers = {
 pnpm protocol:check
 ```
 
-5. **การทดสอบ + เอกสาร**
+5. **การทดสอบและเอกสาร**
 
-เพิ่มการทดสอบเซิร์ฟเวอร์ใน `src/gateway/server.*.test.ts` และบันทึกเมธอดนี้ไว้ในเอกสาร
+เพิ่มการทดสอบเซิร์ฟเวอร์ใน `src/gateway/server.*.test.ts` และระบุเมธอดนี้ไว้ในเอกสาร
 
-## พฤติกรรม Swift codegen
+## พฤติกรรมการสร้างโค้ด Swift
 
-ตัวสร้าง Swift emit:
+ตัวสร้าง Swift จะสร้าง:
 
-- enum `GatewayFrame` พร้อมเคส `req`, `res`, `event` และ `unknown`
-- structs/enums ของ payload ที่มี type ชัดเจน
+- enum `GatewayFrame` ที่มีกรณี `req`, `res`, `event` และ `unknown`
+- struct/enum ของเพย์โหลดที่กำหนดชนิดข้อมูลอย่างเข้มงวด
 - ค่า `ErrorCode`, `GATEWAY_PROTOCOL_VERSION` และ `GATEWAY_MIN_PROTOCOL_VERSION`
 
-ประเภทเฟรมที่ไม่รู้จักจะถูกเก็บเป็น raw payload เพื่อความเข้ากันได้ไปข้างหน้า
+ชนิดเฟรมที่ไม่รู้จักจะถูกเก็บไว้เป็นเพย์โหลดดิบเพื่อรองรับความเข้ากันได้ในอนาคต
 
-## การกำหนดเวอร์ชัน + ความเข้ากันได้
+## การกำหนดเวอร์ชันและความเข้ากันได้
 
-- `PROTOCOL_VERSION` อยู่ใน `packages/gateway-protocol/src/version.ts`
-- ไคลเอนต์ส่ง `minProtocol` + `maxProtocol`; เซิร์ฟเวอร์ปฏิเสธช่วงที่
-  ไม่รวมโปรโตคอลปัจจุบันของมัน
-- โมเดล Swift เก็บประเภทเฟรมที่ไม่รู้จักไว้เพื่อหลีกเลี่ยงการทำให้ไคลเอนต์เก่าเสียหาย
+- `PROTOCOL_VERSION` อยู่ใน `packages/gateway-protocol/src/version.ts` (ค่าปัจจุบัน: `4`)
+- ไคลเอนต์ส่ง `minProtocol` และ `maxProtocol` เซิร์ฟเวอร์จะปฏิเสธช่วงที่ไม่ครอบคลุมโปรโตคอลปัจจุบัน
+- โมเดล Swift เก็บชนิดเฟรมที่ไม่รู้จักไว้เพื่อหลีกเลี่ยงการทำให้ไคลเอนต์รุ่นเก่าใช้งานไม่ได้
 
 ## รูปแบบและข้อตกลงของสคีมา
 
-- ออบเจ็กต์ส่วนใหญ่ใช้ `additionalProperties: false` สำหรับ payload ที่เข้มงวด
-- `NonEmptyString` เป็นค่าเริ่มต้นสำหรับ IDs และชื่อ method/event
-- `GatewayFrame` ระดับบนสุดใช้ **discriminator** บน `type`
-- เมธอดที่มี side effect มักต้องใช้ `idempotencyKey` ใน params
-  (ตัวอย่าง: `send`, `poll`, `agent`, `chat.send`)
-- `agent` รับ `internalEvents` แบบ optional สำหรับบริบท orchestration ที่รันไทม์สร้างขึ้น
-  (เช่นการส่งต่อเมื่อ subagent/cron task เสร็จสิ้น); ให้ถือสิ่งนี้เป็นพื้นผิว API ภายใน
+- อ็อบเจ็กต์ส่วนใหญ่ใช้ `additionalProperties: false` เพื่อให้เพย์โหลดมีโครงสร้างเข้มงวด
+- `NonEmptyString` (`Type.String({ minLength: 1 })`) เป็นค่าเริ่มต้นสำหรับ ID และชื่อเมธอด/เหตุการณ์
+- `GatewayFrame` ระดับบนสุดใช้ **ตัวจำแนก** บน `type`
+- เมธอดที่มีผลข้างเคียงมักกำหนดให้ต้องมี `idempotencyKey` ในพารามิเตอร์ (ตัวอย่าง: `send`, `poll`, `agent`, `chat.send`)
+- `agent` ยอมรับ `internalEvents` แบบไม่บังคับสำหรับบริบทการประสานงานที่สร้างขึ้นขณะรันไทม์ (เช่น การส่งมอบเมื่องานของตัวแทนย่อย/cron เสร็จสิ้น) ให้ถือว่านี่เป็นพื้นผิว API ภายใน
 
-## JSON สคีมาแบบสด
+## JSON ของสคีมาแบบสด
 
-JSON Schema ที่สร้างขึ้นอยู่ใน repo ที่ `dist/protocol.schema.json` โดยทั่วไปไฟล์ raw
-ที่เผยแพร่จะพร้อมใช้งานที่:
+JSON Schema ที่สร้างขึ้นเป็นอาร์ติแฟกต์จากการบิลด์และไม่ได้คอมมิตไว้ในรีโพ โดยปกติไฟล์ดิบที่เผยแพร่แล้วจะอยู่ที่:
 
 - [https://raw.githubusercontent.com/openclaw/openclaw/main/dist/protocol.schema.json](https://raw.githubusercontent.com/openclaw/openclaw/main/dist/protocol.schema.json)
 
 ## เมื่อคุณเปลี่ยนสคีมา
 
-1. อัปเดตสคีมา TypeBox
-2. ลงทะเบียน method/event ใน `src/gateway/server-methods-list.ts`
-3. อัปเดต `src/gateway/method-scopes.ts` เมื่อ RPC ใหม่ต้องมีการจัดประเภท scope ของ operator หรือ
-   node
-4. รัน `pnpm protocol:check`
-5. Commit สคีมาและโมเดล Swift ที่สร้างใหม่
+1. อัปเดตสคีมา TypeBox ในโมดูลเจ้าของ `packages/gateway-protocol/src/schema/*.ts` และลงทะเบียนใน `protocol-schemas.ts`
+2. ลงทะเบียนเมธอด/เหตุการณ์ใน `src/gateway/server-methods-list.ts`
+3. อัปเดต `src/gateway/method-scopes.ts` เมื่อ RPC ใหม่ต้องมีการจัดประเภทขอบเขตสิทธิ์ของผู้ควบคุมหรือ Node
+4. เรียกใช้ `pnpm protocol:check`
+5. คอมมิตโมเดล Swift ที่สร้างใหม่
 
 ## ที่เกี่ยวข้อง
 
-- [โปรโตคอล rich output](/th/reference/rich-output-protocol)
+- [โปรโตคอลเอาต์พุตแบบสมบูรณ์](/th/reference/rich-output-protocol)
 - [อะแดปเตอร์ RPC](/th/reference/rpc)

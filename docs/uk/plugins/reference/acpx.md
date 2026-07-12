@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або перевіряєте plugin acpx
-summary: Бекенд середовища виконання OpenClaw ACP із керуванням сеансами й транспортом на боці Plugin.
-title: ACPx Plugin
+    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin acpx.
+summary: Серверна частина середовища виконання ACP для OpenClaw із керуванням сеансами й транспортом на рівні плагіна.
+title: Plugin ACPx
 x-i18n:
-    generated_at: "2026-06-27T17:56:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:28:29Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 71e6762b6049c5eca3fa560f2d8d13a2538c2e913f9dbd9f0e2bb6b5aef160e4
@@ -13,19 +13,19 @@ x-i18n:
     workflow: 16
 ---
 
-# ACPx Plugin
+# Plugin ACPx
 
-Бекенд середовища виконання ACP OpenClaw із керуванням сеансом і транспортом на боці Plugin.
+Серверна частина середовища виконання ACP для OpenClaw із керуванням сеансами й транспортом на рівні Plugin.
 
 ## Розповсюдження
 
 - Пакет: `@openclaw/acpx`
-- Спосіб встановлення: npm; ClawHub
+- Спосіб установлення: npm; ClawHub
 
-## Поверхня
+## Інтерфейс
 
 Skills
 
-## Пов’язані документи
+## Пов’язана документація
 
 - [acpx](/uk/tools/acp-agents-setup)

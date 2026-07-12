@@ -1,88 +1,119 @@
 ---
 read_when:
-    - Utrzymujesz Plugin OpenClaw
+    - Utrzymujesz plugin OpenClaw
     - Widzisz ostrzeżenie o zgodności pluginu
-    - Planujesz migrację SDK Pluginu lub manifestu
-summary: Umowy zgodności Plugin, metadane wycofywania i oczekiwania dotyczące migracji
-title: Zgodność Plugin
+    - Planujesz migrację zestawu SDK lub manifestu pluginu
+summary: Kontrakty zgodności Pluginów, metadane wycofywania i wymagania dotyczące migracji
+title: Zgodność Pluginu
 x-i18n:
-    generated_at: "2026-06-27T17:52:49Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:24:28Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2e17881c393e3649cb6accb13996d83a855f434735da2e84738f823ac4eba0f5
+    source_hash: 26f737e40175652cb24327c91d2af9dbf72b1b254011115f5b512a309707711c
     source_path: plugins/compatibility.md
     workflow: 16
 ---
 
-OpenClaw utrzymuje starsze kontrakty Plugin podłączone przez nazwane adaptery
-zgodności przed ich usunięciem. Chroni to istniejące bundled i external
-plugins, gdy ewoluują kontrakty SDK, manifestu, konfiguracji, ustawień i
-środowiska uruchomieniowego agenta.
+OpenClaw utrzymuje starsze kontrakty pluginów podłączone za pośrednictwem nazwanych adapterów zgodności, zanim je usunie. Chroni to istniejące wbudowane i zewnętrzne pluginy w czasie rozwoju kontraktów SDK, manifestu, konfiguracji początkowej, konfiguracji oraz środowiska uruchomieniowego agenta.
 
 ## Rejestr zgodności
 
-Kontrakty zgodności Plugin są śledzone w głównym rejestrze pod adresem
-`src/plugins/compat/registry.ts`.
-
-Każdy rekord ma:
+Kontrakty zgodności pluginów są śledzone w głównym rejestrze w pliku `src/plugins/compat/registry.ts`. Każdy rekord zawiera:
 
 - stabilny kod zgodności
 - status: `active`, `deprecated`, `removal-pending` lub `removed`
-- właściciela: SDK, konfigurację, ustawienia, kanał, dostawcę, wykonywanie
-  Plugin, środowisko uruchomieniowe agenta albo core
-- daty wprowadzenia i wycofania, gdy mają zastosowanie
+- właściciela: `sdk`, `config`, `setup`, `channel`, `provider`, `plugin-execution`, `agent-runtime` lub `core`
+- daty wprowadzenia i wycofania, jeśli mają zastosowanie
 - wskazówki dotyczące zamiennika
-- dokumentację, diagnostykę i testy obejmujące stare i nowe zachowanie
+- dokumentację, diagnostykę i testy obejmujące stare oraz nowe zachowanie
 
-Rejestr jest źródłem do planowania przez opiekunów i przyszłych kontroli
-inspektora Plugin. Jeśli zmienia się zachowanie widoczne dla Plugin, dodaj lub
-zaktualizuj rekord zgodności w tej samej zmianie, która dodaje adapter.
+Rejestr jest źródłem informacji do planowania prac przez opiekunów oraz przyszłych kontroli inspektora pluginów. Jeśli zachowanie dostępne dla pluginów ulega zmianie, dodaj lub zaktualizuj rekord zgodności w tej samej zmianie, która dodaje adapter.
 
-Zgodność napraw i migracji Doctor jest śledzona osobno pod adresem
-`src/commands/doctor/shared/deprecation-compat.ts`. Te rekordy obejmują stare
-kształty konfiguracji, układy ledger instalacji i shimy naprawcze, które mogą
-musić pozostać dostępne po usunięciu ścieżki zgodności środowiska
-uruchomieniowego.
+Zgodność napraw i migracji wykonywanych przez doctor jest śledzona osobno w pliku `src/commands/doctor/shared/deprecation-compat.ts`. Rekordy te obejmują stare struktury konfiguracji, układy rejestru instalacji oraz podkładki naprawcze, które mogą wymagać zachowania dostępności po usunięciu ścieżki zgodności środowiska uruchomieniowego.
 
-Przeglądy wydań powinny sprawdzać oba rejestry. Nie usuwaj migracji Doctor
-tylko dlatego, że pasujący rekord zgodności środowiska uruchomieniowego lub
-konfiguracji wygasł; najpierw sprawdź, czy nie istnieje obsługiwana ścieżka
-aktualizacji, która nadal potrzebuje tej naprawy. Ponownie zweryfikuj też każdą
-adnotację zamiennika podczas planowania wydania, ponieważ właścicielstwo Plugin
-i zakres konfiguracji mogą się zmieniać, gdy dostawcy i kanały wychodzą z core.
+Przeglądy przed wydaniem powinny sprawdzać oba rejestry. Nie usuwaj migracji doctor tylko dlatego, że odpowiadający jej rekord zgodności środowiska uruchomieniowego lub konfiguracji wygasł; najpierw sprawdź, czy nie istnieje nadal obsługiwana ścieżka aktualizacji wymagająca tej naprawy. Podczas planowania wydania ponownie zweryfikuj także każdą adnotację zamiennika, ponieważ własność pluginów i zakres konfiguracji mogą się zmieniać w miarę przenoszenia dostawców i kanałów poza rdzeń.
 
-## Pakiet inspektora Plugin
+## Zasady wycofywania
 
-Inspektor Plugin powinien znajdować się poza głównym repozytorium OpenClaw jako
-osobny pakiet/repozytorium oparte na wersjonowanych kontraktach zgodności i
-manifestu.
+OpenClaw nie powinien usuwać udokumentowanego kontraktu pluginu w tym samym wydaniu, które wprowadza jego zamiennik. Kolejność migracji:
 
-CLI pierwszego dnia powinno wyglądać tak:
+1. Dodaj nowy kontrakt.
+2. Zachowaj stare zachowanie podłączone za pośrednictwem nazwanego adaptera zgodności.
+3. Emituj komunikaty diagnostyczne lub ostrzeżenia, gdy autorzy pluginów mogą podjąć działanie.
+4. Udokumentuj zamiennik i harmonogram.
+5. Przetestuj zarówno starą, jak i nową ścieżkę.
+6. Odczekaj ogłoszony okres migracji.
+7. Usuń dopiero po wyraźnym zatwierdzeniu wydania wprowadzającego niezgodne zmiany.
+
+Wycofane rekordy muszą zawierać datę rozpoczęcia ostrzeżeń, zamiennik, odnośnik do dokumentacji oraz ostateczną datę usunięcia przypadającą nie później niż trzy miesiące od rozpoczęcia ostrzeżeń. Nie dodawaj wycofanej ścieżki zgodności z bezterminowym okresem usunięcia, chyba że opiekunowie wyraźnie zdecydują, że jest to trwała zgodność, i zamiast tego oznaczą ją jako `active`.
+
+## Bieżące obszary zgodności
+
+Rejestr śledzi obecnie około 70 kodów zgodności w poniższych obszarach. Nowy kod pluginu powinien korzystać z zamiennika w każdym obszarze i w odpowiednim przewodniku migracji; istniejące pluginy mogą nadal korzystać ze ścieżki zgodności, dopóki dokumentacja, diagnostyka i informacje o wydaniu nie ogłoszą okresu jej usunięcia.
+
+- starsze szerokie importy SDK, takie jak `openclaw/plugin-sdk/compat`
+- starsze struktury pluginów oparte wyłącznie na hookach oraz `before_agent_start`
+- starsze nazwy hooków czyszczenia `api.on("deactivate", ...)` w czasie migracji pluginów do `gateway_stop`
+- starsze punkty wejścia pluginów `activate(api)` w czasie migracji pluginów do `register(api)`
+- starsze aliasy SDK, takie jak `openclaw/extension-api`, konstruktory statusu `openclaw/plugin-sdk/channel-runtime`, `openclaw/plugin-sdk/command-auth`, `openclaw/plugin-sdk/test-utils` (zastąpione wyspecjalizowanymi podścieżkami testowymi `openclaw/plugin-sdk/*`) oraz aliasy typów `ClawdbotConfig` / `OpenClawSchemaType`
+- lista dozwolonych wbudowanych pluginów i zachowanie związane z ich włączaniem
+- starsze metadane manifestu zmiennych środowiskowych dostawców/kanałów
+- starsze hooki pluginów dostawców i aliasy typów w czasie przechodzenia dostawców na jawne hooki katalogu, uwierzytelniania, rozumowania, odtwarzania i transportu
+- starsze aliasy środowiska uruchomieniowego, takie jak `api.runtime.taskFlow`, `api.runtime.subagent.getSession`, `api.runtime.stt` oraz wycofane `api.runtime.config.loadConfig()` / `api.runtime.config.writeConfigFile(...)`
+- płaskie pola wywołania zwrotnego `WebInboundMessage` w WhatsApp (patrz niżej)
+- pola dopuszczenia najwyższego poziomu `WebInboundMessage` w WhatsApp (patrz niżej)
+- starsza rozdzielona rejestracja pluginów pamięci w czasie przechodzenia pluginów pamięci na `registerMemoryCapability`
+- starsza rejestracja dostawcy osadzania specyficzna dla pamięci w czasie przechodzenia dostawców osadzania na `api.registerEmbeddingProvider(...)` oraz `contracts.embeddingProviders`
+- starsze funkcje pomocnicze SDK kanałów dotyczące natywnych schematów wiadomości, ograniczania na podstawie wzmianek, formatowania kopert przychodzących oraz zagnieżdżania możliwości zatwierdzania
+- starsze aliasy klucza trasy kanału i funkcji pomocniczej porównywalnego celu w czasie przechodzenia pluginów na `openclaw/plugin-sdk/channel-route`
+- zastępowanie wskazówek aktywacji własnością wkładów manifestu
+- rezerwowa ścieżka środowiska uruchomieniowego `setup-api` w czasie przenoszenia deskryptorów konfiguracji początkowej do metadanych zimnej ścieżki `setup.requiresRuntime: false`
+- hooki `discovery` dostawcy w czasie przechodzenia hooków katalogu dostawcy na `catalog.run(...)`
+- metadane kanału `showConfigured` / `showInSetup` w czasie przechodzenia pakietów kanałów na `openclaw.channel.exposure`
+- starsze klucze konfiguracji zasad środowiska uruchomieniowego w czasie migrowania operatorów przez doctor do `agentRuntime`
+- rezerwowa ścieżka wygenerowanych metadanych konfiguracji wbudowanych kanałów w czasie wdrażania metadanych `channelConfigs`, w których rejestr jest źródłem nadrzędnym
+- utrwalone flagi środowiskowe wyłączania rejestru pluginów i migracji instalacji w czasie migrowania operatorów przez przepływy naprawcze do `openclaw plugins registry --refresh` oraz `openclaw doctor --fix`
+- starsze ścieżki konfiguracji wyszukiwania internetowego, pobierania zasobów internetowych i x_search należące do pluginów w czasie migrowania ich przez doctor do `plugins.entries.<plugin>.config`
+- starsza konfiguracja `plugins.installs` tworzona przez użytkowników oraz aliasy ścieżek ładowania wbudowanych pluginów w czasie przenoszenia metadanych instalacji do zarządzanego przez stan rejestru pluginów
+
+### Płaskie aliasy przychodzących wywołań zwrotnych WhatsApp
+
+Wywołania zwrotne środowiska uruchomieniowego WhatsApp dostarczają `WebInboundMessage`: kanoniczne zagnieżdżone konteksty `event`, `payload`, `quote`, `group` i `platform` oraz wycofane płaskie aliasy opublikowanych pól wywołań zwrotnych. Nowy kod wywołań zwrotnych powinien odczytywać zagnieżdżone konteksty. Kod konstruujący czyste, zagnieżdżone wiadomości wywołań zwrotnych może używać `WebInboundCallbackMessage`; nasłuchiwacze zgodności, które nadal wstrzykują stare płaskie wiadomości testowe lub pluginów, powinny używać `LegacyFlatWebInboundMessage` albo `WebInboundMessageInput`.
+
+Płaskie aliasy pozostają dostępne do **2026-08-30**; ten okres dotyczy wyłącznie dostępu przez płaskie aliasy, a nie zagnieżdżonej struktury, która stanowi kanoniczny kontrakt środowiska uruchomieniowego. Adnotacja TypeScript `@deprecated` każdego płaskiego aliasu wskazuje jego dokładny zagnieżdżony zamiennik. Typowe przykłady:
+
+- `id`, `timestamp` i `isBatched` przechodzą do `event`.
+- `body`, `mediaPath`, `mediaType`, `mediaFileName`, `mediaUrl`, `location` i `untrustedStructuredContext` przechodzą do `payload`.
+- `to`, `chatId`, pola nadawcy/własnej tożsamości, `sendComposing`, `reply(...)` i `sendMedia(...)` przechodzą do `platform`.
+- Pola `replyTo*` przechodzą do `quote`; pola tematu grupy, uczestnika i wzmianki przechodzą do `group`.
+
+`payload.untrustedStructuredContext` jest wyodrębniany z przychodzących ładunków dostawcy. Pluginy powinny sprawdzać `label`, `source` i `type`, zanim uznają jego `payload` za miarodajny.
+
+### Pola dopuszczenia wiadomości przychodzących WhatsApp
+
+Zaakceptowane wiadomości wywołań zwrotnych WhatsApp zawierają `admission`, bezpieczną do publicznego udostępnienia kopertę decyzji kontroli dostępu, która dopuściła wiadomość. Nowy kod wywołań zwrotnych powinien odczytywać informacje o dopuszczeniu z `msg.admission` zamiast ze starszych pól dopuszczenia najwyższego poziomu.
+
+Pola najwyższego poziomu pozostają dostępne do **2026-08-30**. Adnotacja TypeScript `@deprecated` każdego pola wskazuje jego zamiennik:
+
+- `from` i `conversationId` przechodzą do `admission.conversation.id`.
+- `accountId` przechodzi do `admission.accountId`.
+- `accessControlPassed` jest pochodnym widokiem zgodności wyrażenia `admission.ingress.decision === "allow"`; w wiadomościach, które już zawierają `admission`, zapis starszej wartości logicznej nie przepisuje grafu ruchu przychodzącego.
+- `chatType` przechodzi do `admission.conversation.kind`.
+
+## Pakiet inspektora pluginów
+
+Inspektor pluginów powinien znajdować się poza głównym repozytorium OpenClaw jako osobny pakiet/repozytorium oparte na wersjonowanych kontraktach zgodności i manifestu. Początkowa postać CLI powinna wyglądać następująco:
 
 ```sh
 openclaw-plugin-inspector ./my-plugin
 ```
 
-Powinno emitować:
+Powinien generować wyniki walidacji manifestu/schematu, sprawdzaną wersję zgodności kontraktu, kontrole metadanych instalacji/źródła, kontrole importów zimnej ścieżki oraz ostrzeżenia dotyczące wycofania/zgodności. Użyj `--json`, aby uzyskać stabilne dane wyjściowe do odczytu maszynowego w adnotacjach CI. Rdzeń OpenClaw powinien udostępniać kontrakty i dane testowe, z których może korzystać inspektor, ale nie powinien publikować pliku wykonywalnego inspektora z głównego pakietu `openclaw`.
 
-- walidację manifestu/schematu
-- sprawdzaną wersję zgodności kontraktu
-- kontrole metadanych instalacji/źródła
-- kontrole importu ścieżki zimnej
-- ostrzeżenia o wycofaniu i zgodności
+### Ścieżka akceptacyjna dla opiekunów
 
-Użyj `--json`, aby uzyskać stabilne, czytelne maszynowo wyjście w adnotacjach
-CI. Core OpenClaw powinien udostępniać kontrakty i fixtures, które inspektor
-może konsumować, ale nie powinien publikować binarium inspektora z głównego
-pakietu `openclaw`.
-
-### Ścieżka akceptacyjna opiekunów
-
-Użyj Blacksmith Testbox wspieranego przez Crabbox dla ścieżki akceptacyjnej
-pakietu instalowalnego podczas walidowania zewnętrznego inspektora względem
-pakietów Plugin OpenClaw. Uruchom ją z czystego checkoutu OpenClaw po zbudowaniu
-pakietu:
+Podczas walidowania zewnętrznego inspektora względem pakietów pluginów OpenClaw używaj Blacksmith Testbox opartego na Crabbox jako ścieżki akceptacyjnej instalowalnego pakietu. Uruchom ją z czystego drzewa roboczego OpenClaw po zbudowaniu pakietu:
 
 ```sh
 pnpm crabbox:run -- --provider blacksmith-testbox --timing-json --shell -- "pnpm install && pnpm build && npm exec --yes @openclaw/plugin-inspector@0.1.0 -- ./extensions/telegram --json"
@@ -90,148 +121,8 @@ pnpm crabbox:run -- --provider blacksmith-testbox --timing-json --shell -- "npm 
 pnpm crabbox:run -- --provider blacksmith-testbox --timing-json --shell -- "npm exec --yes @openclaw/plugin-inspector@0.1.0 -- <clawhub-plugin-dir> --json"
 ```
 
-Utrzymuj tę ścieżkę jako opcjonalną dla opiekunów, ponieważ instaluje zewnętrzny
-pakiet npm i może inspektować pakiety Plugin sklonowane poza repozytorium.
-Lokalne zabezpieczenia repozytorium obejmują mapę eksportów SDK, metadane
-rejestru zgodności, redukcję przestarzałych importów SDK i granice importów
-bundled extension; dowód inspektora w Testbox obejmuje pakiet tak, jak konsumują
-go zewnętrzni autorzy Plugin.
+Ta ścieżka powinna być opcjonalna i przeznaczona dla opiekunów, ponieważ instaluje zewnętrzny pakiet npm i może sprawdzać pakiety pluginów sklonowane poza repozytorium. Lokalne zabezpieczenia repozytorium obejmują mapę eksportów SDK, metadane rejestru zgodności, stopniowe eliminowanie wycofanych importów SDK oraz granice importów wbudowanych rozszerzeń; weryfikacja inspektora w Testbox obejmuje pakiet w sposób, w jaki korzystają z niego autorzy zewnętrznych pluginów.
 
-## Polityka wycofywania
+## Informacje o wydaniu
 
-OpenClaw nie powinien usuwać udokumentowanego kontraktu Plugin w tym samym
-wydaniu, które wprowadza jego zamiennik.
-
-Sekwencja migracji jest następująca:
-
-1. Dodaj nowy kontrakt.
-2. Utrzymaj stare zachowanie podłączone przez nazwany adapter zgodności.
-3. Emituj diagnostykę lub ostrzeżenia, gdy autorzy Plugin mogą podjąć działanie.
-4. Udokumentuj zamiennik i harmonogram.
-5. Przetestuj zarówno stare, jak i nowe ścieżki.
-6. Odczekaj przez ogłoszone okno migracji.
-7. Usuń tylko za wyraźną zgodą na wydanie łamiące zgodność.
-
-Wycofane rekordy muszą zawierać datę rozpoczęcia ostrzegania, zamiennik, link
-do dokumentacji i ostateczną datę usunięcia nie późniejszą niż trzy miesiące po
-rozpoczęciu ostrzegania. Nie dodawaj wycofanej ścieżki zgodności z otwartym
-oknem usunięcia, chyba że opiekunowie wyraźnie zdecydują, że jest to trwała
-zgodność, i zamiast tego oznaczą ją jako `active`.
-
-## Obecne obszary zgodności
-
-Obecne rekordy zgodności obejmują:
-
-- starsze szerokie importy SDK, takie jak `openclaw/plugin-sdk/compat`
-- starsze kształty Plugin oparte wyłącznie na hookach i `before_agent_start`
-- starsze nazwy hooków czyszczenia `api.on("deactivate", ...)`, gdy Pluginy
-  migrują do `gateway_stop`
-- starsze punkty wejścia Plugin `activate(api)`, gdy Pluginy migrują do
-  `register(api)`
-- starsze aliasy SDK, takie jak `openclaw/extension-api`,
-  `openclaw/plugin-sdk/channel-runtime`, konstruktory statusu
-  `openclaw/plugin-sdk/command-auth`, `openclaw/plugin-sdk/test-utils`
-  (zastąpione przez ukierunkowane podścieżki testowe
-  `openclaw/plugin-sdk/*`) oraz aliasy typów `ClawdbotConfig` /
-  `OpenClawSchemaType`
-- listę dozwolonych bundled Plugin i zachowanie włączania
-- starsze metadane manifestu zmiennych środowiskowych dostawcy/kanału
-- starsze hooki Plugin dostawcy i aliasy typów, gdy dostawcy przechodzą na
-  jawne hooki katalogu, uwierzytelniania, myślenia, replay i transportu
-- starsze aliasy środowiska uruchomieniowego, takie jak `api.runtime.taskFlow`,
-  `api.runtime.subagent.getSession`, `api.runtime.stt` oraz wycofane
-  `api.runtime.config.loadConfig()` / `api.runtime.config.writeConfigFile(...)`
-- płaskie pola callbacku WhatsApp `WebInboundMessage`, takie jak `body`,
-  `chatId`, `reply(...)` i `mediaPath`, gdy konsumenci callbacków migrują do
-  zagnieżdżonych kontekstów `event`, `payload`, `quote`, `group` i `platform`
-  w `WebInboundCallbackMessage`
-- pola admission najwyższego poziomu WhatsApp `WebInboundMessage`, takie jak
-  `from`, `conversationId`, `accountId`, `accessControlPassed` i `chatType`,
-  gdy konsumenci callbacków migrują do koperty `admission`
-- starszą dzieloną rejestrację memory-plugin, gdy Pluginy pamięci przechodzą do
-  `registerMemoryCapability`
-- starszą rejestrację dostawcy embedding specyficzną dla pamięci, gdy dostawcy
-  embedding przechodzą do `api.registerEmbeddingProvider(...)` i
-  `contracts.embeddingProviders`
-- starsze helpery SDK kanału dla natywnych schematów wiadomości, bramkowania
-  wzmianek, formatowania kopert przychodzących i zagnieżdżania capability
-  zatwierdzania
-- starszy klucz trasy kanału i aliasy helperów porównywalnego celu, gdy Pluginy
-  przechodzą do `openclaw/plugin-sdk/channel-route`
-- wskazówki aktywacji, które są zastępowane przez właścicielstwo kontrybucji
-  manifestu
-- fallback środowiska uruchomieniowego `setup-api`, gdy deskryptory ustawień
-  przechodzą do zimnych metadanych `setup.requiresRuntime: false`
-- hooki `discovery` dostawcy, gdy hooki katalogu dostawcy przechodzą do
-  `catalog.run(...)`
-- metadane kanału `showConfigured` / `showInSetup`, gdy pakiety kanałów
-  przechodzą do `openclaw.channel.exposure`
-- starsze klucze konfiguracji runtime-policy, gdy Doctor migruje operatorów do
-  `agentRuntime`
-- wygenerowany fallback metadanych konfiguracji bundled channel, gdy trafiają
-  metadane `channelConfigs` oparte najpierw na rejestrze
-- utrwalone flagi środowiskowe wyłączenia rejestru Plugin i migracji instalacji,
-  gdy przepływy naprawcze migrują operatorów do `openclaw plugins registry --refresh`
-  i `openclaw doctor --fix`
-- starsze ścieżki konfiguracji web search, web fetch i x_search należące do
-  Plugin, gdy Doctor migruje je do `plugins.entries.<plugin>.config`
-- starszą autorską konfigurację `plugins.installs` i aliasy ścieżki ładowania
-  bundled plugin, gdy metadane instalacji przechodzą do ledger Plugin
-  zarządzanego przez stan
-
-Nowy kod Plugin powinien preferować zamiennik wymieniony w rejestrze i w
-konkretnym przewodniku migracji. Istniejące Pluginy mogą nadal używać ścieżki
-zgodności do czasu, aż dokumentacja, diagnostyka i notatki wydania ogłoszą okno
-usunięcia.
-
-### Płaskie aliasy callbacków przychodzących WhatsApp
-
-Callbacki środowiska uruchomieniowego WhatsApp dostarczają `WebInboundMessage`:
-kanoniczne zagnieżdżone konteksty `event`, `payload`, `quote`, `group` i
-`platform` oraz wycofane płaskie aliasy dla dostarczonych pól callbacku. Nowy
-kod callbacków powinien odczytywać zagnieżdżone konteksty. Kod, który konstruuje
-czyste zagnieżdżone wiadomości callbacku, może używać
-`WebInboundCallbackMessage`; listenery zgodności, które nadal wstrzykują stare
-płaskie wiadomości testowe lub Plugin, powinny używać
-`LegacyFlatWebInboundMessage` albo `WebInboundMessageInput`.
-
-Płaskie aliasy pozostają dostępne do **2026-08-30**. To okno usunięcia dotyczy
-tylko dostępu przez płaskie aliasy; zagnieżdżony kształt callbacku jest
-kanonicznym kontraktem środowiska uruchomieniowego. Adnotacje TypeScript
-`@deprecated` przy każdym płaskim aliasie wskazują jego dokładny zagnieżdżony
-zamiennik. Typowe przykłady:
-
-- `id`, `timestamp` i `isBatched` przechodzą pod `event`.
-- `body`, `mediaPath`, `mediaType`, `mediaFileName`, `mediaUrl`, `location` i
-  `untrustedStructuredContext` przechodzą pod `payload`.
-- `to`, `chatId`, pola nadawcy/własne, `sendComposing`, `reply(...)` i
-  `sendMedia(...)` przechodzą pod `platform`.
-- pola `replyTo*` przechodzą pod `quote`, a pola tematu grupy, uczestnika i
-  wzmianki przechodzą pod `group`.
-
-`payload.untrustedStructuredContext` jest wyodrębniany z przychodzących payloadów
-dostawcy. Pluginy powinny sprawdzić `label`, `source` i `type`, zanim potraktują
-jego `payload` jako autorytatywny.
-
-### Pola admission przychodzących WhatsApp
-
-Zaakceptowane wiadomości callbacków WhatsApp zawierają teraz `admission`,
-publicznie bezpieczną kopertę decyzji kontroli dostępu, która dopuściła
-wiadomość. Nowy kod callbacków powinien odczytywać fakty admission z
-`msg.admission` zamiast ze starszych pól admission najwyższego poziomu.
-
-Pola najwyższego poziomu pozostają dostępne do **2026-08-30**. Adnotacje
-TypeScript `@deprecated` wskazują każdy zamiennik:
-
-- `from` i `conversationId` przechodzą do `admission.conversation.id`.
-- `accountId` przechodzi do `admission.accountId`.
-- `accessControlPassed` jest pochodnym widokiem zgodności dla
-  `admission.ingress.decision === "allow"`; w wiadomościach, które już zawierają
-  `admission`, zapis starszej wartości boolean nie przepisuje grafu ingress.
-- `chatType` przechodzi do `admission.conversation.kind`.
-
-## Notatki wydania
-
-Notatki wydania powinny obejmować nadchodzące wycofania Plugin z docelowymi
-datami i linkami do dokumentacji migracji. To ostrzeżenie musi nastąpić, zanim
-ścieżka zgodności przejdzie do `removal-pending` albo `removed`.
+Informacje o wydaniu powinny zawierać nadchodzące wycofania pluginów wraz z docelowymi datami i odnośnikami do dokumentacji migracji, zanim ścieżka zgodności przejdzie do stanu `removal-pending` lub `removed`.

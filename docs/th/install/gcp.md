@@ -1,130 +1,80 @@
 ---
 read_when:
-    - คุณต้องการให้ OpenClaw ทำงานตลอด 24/7 บน GCP
-    - คุณต้องการ Gateway ระดับใช้งานจริงที่ทำงานตลอดเวลาบนเครื่องเสมือนของคุณเอง
-    - คุณต้องการควบคุมการคงอยู่ของข้อมูล ไบนารี และพฤติกรรมการรีสตาร์ทได้อย่างเต็มที่
-summary: รัน OpenClaw Gateway ตลอด 24 ชั่วโมงทุกวันบน GCP Compute Engine VM (Docker) พร้อมสถานะที่คงอยู่ถาวร
+    - คุณต้องการให้ OpenClaw ทำงานตลอด 24 ชั่วโมงทุกวันบน GCP
+    - คุณต้องการ Gateway ระดับพร้อมใช้งานจริงที่ทำงานตลอดเวลาบน VM ของคุณเอง
+    - คุณต้องการควบคุมการจัดเก็บข้อมูลถาวร ไบนารี และลักษณะการทำงานเมื่อรีสตาร์ตได้อย่างเต็มที่
+summary: เรียกใช้ OpenClaw Gateway ตลอด 24 ชั่วโมงทุกวันบน VM ของ GCP Compute Engine (Docker) พร้อมสถานะที่จัดเก็บอย่างถาวร
 title: GCP
 x-i18n:
-    generated_at: "2026-05-06T17:57:49Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:17:39Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 678253bd90f0694668400ffddba957e442f8aaed3f5308af3c2481940e104733
+    source_hash: 6ca46b2ee78731162261cae6ea5a26b718be6035b998fa92e4ee5c9ea2e7ae07
     source_path: install/gcp.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-เรียกใช้ OpenClaw Gateway แบบคงอยู่บน GCP Compute Engine VM โดยใช้ Docker พร้อมสถานะที่คงทน ไบนารีที่อบไว้ในอิมเมจ และพฤติกรรมการรีสตาร์ตที่ปลอดภัย
+เรียกใช้ OpenClaw Gateway แบบถาวรบน VM ของ GCP Compute Engine โดยใช้ Docker พร้อมสถานะที่คงอยู่ ไบนารีที่ฝังไว้ในอิมเมจ และพฤติกรรมการรีสตาร์ตที่ปลอดภัย
 
-ถ้าคุณต้องการ "OpenClaw 24/7 ในราคาประมาณ ~$5-12/เดือน" นี่คือการตั้งค่าที่เชื่อถือได้บน Google Cloud
-ราคาจะแตกต่างกันไปตามประเภทเครื่องและภูมิภาค ให้เลือก VM ที่เล็กที่สุดที่เหมาะกับเวิร์กโหลดของคุณ และปรับขนาดขึ้นหากเจอ OOM
+ราคาจะแตกต่างกันตามประเภทเครื่องและภูมิภาค เลือก VM ที่เล็กที่สุดซึ่งรองรับภาระงานของคุณ และเพิ่มขนาดหากพบข้อผิดพลาดหน่วยความจำไม่เพียงพอ
 
-## เรากำลังทำอะไร (แบบเข้าใจง่าย)?
+คุณสามารถเข้าถึง Gateway ผ่านการส่งต่อพอร์ต SSH จากแล็ปท็อป หรือเปิดพอร์ตโดยตรงหากคุณจัดการไฟร์วอลล์และโทเค็นด้วยตนเอง
 
-- สร้างโปรเจกต์ GCP และเปิดใช้การเรียกเก็บเงิน
-- สร้าง Compute Engine VM
-- ติดตั้ง Docker (รันไทม์แอปแบบแยกขาด)
-- เริ่ม OpenClaw Gateway ใน Docker
-- คงสถานะ `~/.openclaw` + `~/.openclaw/workspace` ไว้บนโฮสต์ (อยู่รอดหลังรีสตาร์ต/สร้างใหม่)
-- เข้าถึง Control UI จากแล็ปท็อปของคุณผ่าน SSH tunnel
-
-สถานะ `~/.openclaw` ที่เมานต์ไว้นั้นรวมถึง `openclaw.json`, `agents/<agentId>/agent/auth-profiles.json` ราย agent และ `.env`
-
-Gateway สามารถเข้าถึงได้ผ่าน:
-
-- การ forward พอร์ต SSH จากแล็ปท็อปของคุณ
-- การเปิดพอร์ตโดยตรง หากคุณจัดการไฟร์วอลล์และโทเค็นเอง
-
-คู่มือนี้ใช้ Debian บน GCP Compute Engine
-Ubuntu ก็ใช้ได้เช่นกัน ให้แมปแพ็กเกจให้สอดคล้องกัน
-สำหรับโฟลว์ Docker ทั่วไป ดู [Docker](/th/install/docker)
-
----
-
-## เส้นทางด่วน (สำหรับผู้ปฏิบัติงานที่มีประสบการณ์)
-
-1. สร้างโปรเจกต์ GCP + เปิดใช้ Compute Engine API
-2. สร้าง Compute Engine VM (e2-small, Debian 12, 20GB)
-3. SSH เข้า VM
-4. ติดตั้ง Docker
-5. โคลนรีโพซิทอรี OpenClaw
-6. สร้างไดเรกทอรีโฮสต์แบบคงอยู่
-7. กำหนดค่า `.env` และ `docker-compose.yml`
-8. อบไบนารีที่จำเป็น สร้างอิมเมจ และเปิดใช้งาน
-
----
+คู่มือนี้ใช้ Debian บน GCP Compute Engine โดย Ubuntu ก็ใช้งานได้เช่นกัน แต่ต้องปรับแพ็กเกจให้สอดคล้องกัน สำหรับขั้นตอนทั่วไปของ Docker โปรดดู [Docker](/th/install/docker)
 
 ## สิ่งที่คุณต้องมี
 
-- บัญชี GCP (มีสิทธิ์ใช้ free tier สำหรับ e2-micro)
-- ติดตั้ง gcloud CLI แล้ว (หรือใช้ Cloud Console)
-- การเข้าถึง SSH จากแล็ปท็อปของคุณ
-- ความคุ้นเคยพื้นฐานกับ SSH + คัดลอก/วาง
-- ประมาณ 20-30 นาที
+- บัญชี GCP (`e2-micro` มีสิทธิ์ใช้แพ็กเกจฟรี)
+- CLI `gcloud` หรือ [Cloud Console](https://console.cloud.google.com)
+- สิทธิ์เข้าถึงผ่าน SSH จากแล็ปท็อป
 - Docker และ Docker Compose
-- ข้อมูลรับรองการยืนยันตัวตนของโมเดล
-- ข้อมูลรับรองผู้ให้บริการเสริม
-  - WhatsApp QR
-  - Telegram bot token
-  - Gmail OAuth
+- ข้อมูลรับรองสำหรับการยืนยันตัวตนกับโมเดล
+- ข้อมูลรับรองของผู้ให้บริการเพิ่มเติมตามต้องการ (คิวอาร์โค้ด WhatsApp, โทเค็นบอต Telegram, Gmail OAuth)
+- เวลาประมาณ 20-30 นาที
 
----
+## ขั้นตอนด่วน
+
+1. สร้างโปรเจกต์ GCP เปิดใช้การเรียกเก็บเงินและ Compute Engine API
+2. สร้าง VM ของ Compute Engine (`e2-small`, Debian 12, 20GB)
+3. เชื่อมต่อ VM ผ่าน SSH และติดตั้ง Docker
+4. โคลนที่เก็บ OpenClaw
+5. สร้างไดเรกทอรีถาวรบนโฮสต์
+6. กำหนดค่า `.env` และ `docker-compose.yml`
+7. ฝังไบนารีที่จำเป็น สร้างอิมเมจ และเริ่มทำงาน
 
 <Steps>
-  <Step title="ติดตั้ง gcloud CLI (หรือใช้ Console)">
-    **ตัวเลือก A: gcloud CLI** (แนะนำสำหรับระบบอัตโนมัติ)
-
-    ติดตั้งจาก [https://cloud.google.com/sdk/docs/install](https://cloud.google.com/sdk/docs/install)
-
-    เริ่มต้นและยืนยันตัวตน:
+  <Step title="Install gcloud CLI (or use Console)">
+    ติดตั้งจาก [cloud.google.com/sdk/docs/install](https://cloud.google.com/sdk/docs/install) จากนั้นเรียกใช้:
 
     ```bash
     gcloud init
     gcloud auth login
     ```
 
-    **ตัวเลือก B: Cloud Console**
-
-    ทุกขั้นตอนสามารถทำผ่าน UI บนเว็บได้ที่ [https://console.cloud.google.com](https://console.cloud.google.com)
+    หรือดำเนินการทุกขั้นตอนด้านล่างผ่านเว็บ UI ของ [Cloud Console](https://console.cloud.google.com) แทน
 
   </Step>
 
-  <Step title="สร้างโปรเจกต์ GCP">
-    **CLI:**
-
+  <Step title="Create a GCP project">
     ```bash
     gcloud projects create my-openclaw-project --name="OpenClaw Gateway"
     gcloud config set project my-openclaw-project
-    ```
-
-    เปิดใช้การเรียกเก็บเงินที่ [https://console.cloud.google.com/billing](https://console.cloud.google.com/billing) (จำเป็นสำหรับ Compute Engine)
-
-    เปิดใช้ Compute Engine API:
-
-    ```bash
     gcloud services enable compute.googleapis.com
     ```
 
-    **Console:**
+    เปิดใช้การเรียกเก็บเงินที่ [console.cloud.google.com/billing](https://console.cloud.google.com/billing) (จำเป็นสำหรับ Compute Engine)
 
-    1. ไปที่ IAM & Admin > Create Project
-    2. ตั้งชื่อและสร้าง
-    3. เปิดใช้การเรียกเก็บเงินสำหรับโปรเจกต์
-    4. ไปที่ APIs & Services > Enable APIs > ค้นหา "Compute Engine API" > Enable
+    ขั้นตอนที่เทียบเท่าใน Console: ไปที่ IAM & Admin > Create Project เปิดใช้การเรียกเก็บเงิน จากนั้นไปที่ APIs & Services > Enable APIs > "Compute Engine API" > Enable
 
   </Step>
 
-  <Step title="สร้าง VM">
-    **ประเภทเครื่อง:**
-
-    | ประเภท    | สเปก                     | ค่าใช้จ่าย          | หมายเหตุ                                      |
-    | --------- | ------------------------ | ------------------ | -------------------------------------------- |
-    | e2-medium | 2 vCPU, RAM 4GB          | ประมาณ $25/เดือน   | เชื่อถือได้ที่สุดสำหรับการ build Docker ในเครื่อง |
-    | e2-small  | 2 vCPU, RAM 2GB          | ประมาณ $12/เดือน   | ขั้นต่ำที่แนะนำสำหรับการ build Docker        |
-    | e2-micro  | 2 vCPU (shared), RAM 1GB | มีสิทธิ์ใช้ free tier | มักล้มเหลวด้วย OOM ระหว่าง Docker build (exit 137) |
-
-    **CLI:**
+  <Step title="Create the VM">
+    | ประเภท    | ข้อมูลจำเพาะ              | ค่าใช้จ่าย                  | หมายเหตุ                                              |
+    | --------- | ------------------------ | -------------------------- | ----------------------------------------------------- |
+    | e2-medium | 2 vCPU, RAM 4GB          | ประมาณ $25/เดือน            | เชื่อถือได้มากที่สุดสำหรับการสร้าง Docker ภายในเครื่อง |
+    | e2-small  | 2 vCPU, RAM 2GB          | ประมาณ $12/เดือน            | ขนาดขั้นต่ำที่แนะนำสำหรับการสร้าง Docker              |
+    | e2-micro  | 2 vCPU (ใช้ร่วมกัน), RAM 1GB | มีสิทธิ์ใช้แพ็กเกจฟรี   | การสร้าง Docker มักล้มเหลวเพราะหน่วยความจำไม่พอ (รหัสออก 137) |
 
     ```bash
     gcloud compute instances create openclaw-gateway \
@@ -135,33 +85,20 @@ Ubuntu ก็ใช้ได้เช่นกัน ให้แมปแพ็
       --image-project=debian-cloud
     ```
 
-    **Console:**
-
-    1. ไปที่ Compute Engine > VM instances > Create instance
-    2. ชื่อ: `openclaw-gateway`
-    3. ภูมิภาค: `us-central1`, โซน: `us-central1-a`
-    4. ประเภทเครื่อง: `e2-small`
-    5. ดิสก์บูต: Debian 12, 20GB
-    6. สร้าง
-
   </Step>
 
-  <Step title="SSH เข้า VM">
-    **CLI:**
-
+  <Step title="SSH into the VM">
     ```bash
     gcloud compute ssh openclaw-gateway --zone=us-central1-a
     ```
 
-    **Console:**
+    ใน Console: คลิก "SSH" ถัดจาก VM ในแดชบอร์ด Compute Engine
 
-    คลิกปุ่ม "SSH" ข้าง VM ของคุณในแดชบอร์ด Compute Engine
-
-    หมายเหตุ: การเผยแพร่คีย์ SSH อาจใช้เวลา 1-2 นาทีหลังสร้าง VM หากการเชื่อมต่อถูกปฏิเสธ ให้รอแล้วลองใหม่
+    การเผยแพร่คีย์ SSH อาจใช้เวลา 1-2 นาทีหลังสร้าง VM หากการเชื่อมต่อถูกปฏิเสธ ให้รอแล้วลองใหม่
 
   </Step>
 
-  <Step title="ติดตั้ง Docker (บน VM)">
+  <Step title="Install Docker (on the VM)">
     ```bash
     sudo apt-get update
     sudo apt-get install -y git curl ca-certificates
@@ -169,13 +106,11 @@ Ubuntu ก็ใช้ได้เช่นกัน ให้แมปแพ็
     sudo usermod -aG docker $USER
     ```
 
-    ออกจากระบบแล้วเข้าสู่ระบบใหม่เพื่อให้การเปลี่ยนกลุ่มมีผล:
+    ออกจากระบบแล้วเข้าสู่ระบบอีกครั้งเพื่อให้การเปลี่ยนแปลงกลุ่มมีผล จากนั้นเชื่อมต่อผ่าน SSH อีกครั้ง:
 
     ```bash
     exit
     ```
-
-    จากนั้น SSH กลับเข้าไป:
 
     ```bash
     gcloud compute ssh openclaw-gateway --zone=us-central1-a
@@ -190,19 +125,18 @@ Ubuntu ก็ใช้ได้เช่นกัน ให้แมปแพ็
 
   </Step>
 
-  <Step title="โคลนรีโพซิทอรี OpenClaw">
+  <Step title="Clone the OpenClaw repository">
     ```bash
     git clone https://github.com/openclaw/openclaw.git
     cd openclaw
     ```
 
-    คู่มือนี้สมมติว่าคุณจะ build อิมเมจแบบกำหนดเองเพื่อรับประกันการคงอยู่ของไบนารี
+    คู่มือนี้สร้างอิมเมจแบบกำหนดเอง เพื่อให้ไบนารีที่คุณฝังไว้ยังคงอยู่หลังการรีสตาร์ต
 
   </Step>
 
-  <Step title="สร้างไดเรกทอรีโฮสต์แบบคงอยู่">
-    Docker containers เป็นแบบชั่วคราว
-    สถานะที่ต้องอยู่ยาวทั้งหมดต้องอยู่บนโฮสต์
+  <Step title="Create persistent host directories">
+    คอนเทนเนอร์ Docker มีลักษณะชั่วคราว ดังนั้นสถานะระยะยาวทั้งหมดต้องจัดเก็บไว้บนโฮสต์
 
     ```bash
     mkdir -p ~/.openclaw
@@ -211,8 +145,8 @@ Ubuntu ก็ใช้ได้เช่นกัน ให้แมปแพ็
 
   </Step>
 
-  <Step title="กำหนดค่าตัวแปรสภาพแวดล้อม">
-    สร้าง `.env` ในรากของรีโพซิทอรี
+  <Step title="Configure environment variables">
+    สร้าง `.env` ที่รากของที่เก็บ:
 
     ```bash
     OPENCLAW_IMAGE=openclaw:latest
@@ -227,22 +161,23 @@ Ubuntu ก็ใช้ได้เช่นกัน ให้แมปแพ็
     XDG_CONFIG_HOME=/home/node/.openclaw
     ```
 
-    ตั้งค่า `OPENCLAW_GATEWAY_TOKEN` เมื่อคุณต้องการจัดการโทเค็น Gateway ที่เสถียรผ่าน `.env`; มิฉะนั้นให้กำหนดค่า `gateway.auth.token` ก่อนพึ่งพาไคลเอนต์ข้ามการรีสตาร์ต หากไม่มีแหล่งใดอยู่เลย OpenClaw จะใช้โทเค็นเฉพาะรันไทม์สำหรับการเริ่มต้นครั้งนั้น สร้างรหัสผ่าน keyring แล้ววางลงใน `GOG_KEYRING_PASSWORD`:
+    กำหนด `OPENCLAW_GATEWAY_TOKEN` เพื่อจัดการโทเค็น Gateway แบบคงที่ผ่าน
+    `.env` มิฉะนั้น ให้กำหนดค่า `gateway.auth.token` ก่อนพึ่งพาไคลเอนต์
+    ข้ามการรีสตาร์ต หากไม่ได้ตั้งค่าทั้งสองอย่าง OpenClaw จะใช้โทเค็น
+    เฉพาะรันไทม์สำหรับการเริ่มทำงานครั้งนั้น สร้างรหัสผ่านพวงกุญแจสำหรับ `GOG_KEYRING_PASSWORD`:
 
     ```bash
     openssl rand -hex 32
     ```
 
-    **อย่า commit ไฟล์นี้**
-
-    ไฟล์ `.env` นี้มีไว้สำหรับ env ของ container/runtime เช่น `OPENCLAW_GATEWAY_TOKEN`
-    การยืนยันตัวตน OAuth/API-key ของผู้ให้บริการที่จัดเก็บไว้จะอยู่ใน
-    `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` ที่เมานต์ไว้
+    **ห้ามคอมมิตไฟล์นี้** ไฟล์นี้เก็บตัวแปรสภาพแวดล้อมของคอนเทนเนอร์/รันไทม์ เช่น
+    `OPENCLAW_GATEWAY_TOKEN` ส่วนการยืนยันตัวตน OAuth/คีย์ API ของผู้ให้บริการที่จัดเก็บไว้
+    จะอยู่ใน `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` ที่เมานต์ไว้
 
   </Step>
 
-  <Step title="การกำหนดค่า Docker Compose">
-    สร้างหรืออัปเดต `docker-compose.yml`
+  <Step title="Docker Compose configuration">
+    สร้างหรืออัปเดต `docker-compose.yml`:
 
     ```yaml
     services:
@@ -282,66 +217,64 @@ Ubuntu ก็ใช้ได้เช่นกัน ให้แมปแพ็
           ]
     ```
 
-    `--allow-unconfigured` มีไว้เพื่อความสะดวกในการ bootstrap เท่านั้น ไม่ใช่สิ่งทดแทนการกำหนดค่า gateway ที่เหมาะสม ให้ตั้งค่าการยืนยันตัวตน (`gateway.auth.token` หรือรหัสผ่าน) และใช้การตั้งค่า bind ที่ปลอดภัยสำหรับการ deploy ของคุณอยู่ดี
+    `--allow-unconfigured` มีไว้เพื่อความสะดวกในขั้นตอนเริ่มต้นเท่านั้น ไม่สามารถใช้แทนการกำหนดค่า Gateway จริงได้ คุณยังคงต้องตั้งค่าการยืนยันตัวตน (`gateway.auth.token` หรือรหัสผ่าน) และโหมดการผูกที่ปลอดภัยสำหรับการปรับใช้งานของคุณ
 
   </Step>
 
-  <Step title="ขั้นตอนรันไทม์ Docker VM ที่ใช้ร่วมกัน">
-    ใช้คู่มือรันไทม์ที่ใช้ร่วมกันสำหรับโฟลว์โฮสต์ Docker ทั่วไป:
+  <Step title="Shared Docker VM runtime steps">
+    ปฏิบัติตามคู่มือรันไทม์ที่ใช้ร่วมกันสำหรับขั้นตอนทั่วไปของโฮสต์ Docker:
 
-    - [อบไบนารีที่จำเป็นลงในอิมเมจ](/th/install/docker-vm-runtime#bake-required-binaries-into-the-image)
-    - [Build และเปิดใช้งาน](/th/install/docker-vm-runtime#build-and-launch)
-    - [อะไรคงอยู่ที่ไหน](/th/install/docker-vm-runtime#what-persists-where)
+    - [ฝังไบนารีที่จำเป็นลงในอิมเมจ](/th/install/docker-vm-runtime#bake-required-binaries-into-the-image)
+    - [สร้างและเริ่มทำงาน](/th/install/docker-vm-runtime#build-and-launch)
+    - [สิ่งใดคงอยู่ที่ตำแหน่งใด](/th/install/docker-vm-runtime#what-persists-where)
     - [การอัปเดต](/th/install/docker-vm-runtime#updates)
 
   </Step>
 
-  <Step title="หมายเหตุการเปิดใช้งานเฉพาะ GCP">
-    บน GCP หาก build ล้มเหลวด้วย `Killed` หรือ `exit code 137` ระหว่าง `pnpm install --frozen-lockfile` แปลว่า VM หน่วยความจำไม่พอ ใช้ `e2-small` เป็นอย่างน้อย หรือ `e2-medium` เพื่อให้การ build ครั้งแรกเชื่อถือได้มากขึ้น
+  <Step title="GCP-specific launch notes">
+    หากการสร้างล้มเหลวโดยแสดง `Killed` หรือ `exit code 137` ระหว่าง `pnpm install --frozen-lockfile` แสดงว่า VM มีหน่วยความจำไม่เพียงพอ ให้ใช้ `e2-small` เป็นอย่างน้อย หรือใช้ `e2-medium` เพื่อให้การสร้างครั้งแรกเชื่อถือได้มากขึ้น
 
-    เมื่อ bind เข้ากับ LAN (`OPENCLAW_GATEWAY_BIND=lan`) ให้กำหนดค่า browser origin ที่เชื่อถือได้ก่อนดำเนินการต่อ:
+    เมื่อผูกกับ LAN (`OPENCLAW_GATEWAY_BIND=lan`) ให้กำหนดต้นทางของเบราว์เซอร์ที่เชื่อถือได้ก่อนดำเนินการต่อ:
 
     ```bash
     docker compose run --rm openclaw-cli config set gateway.controlUi.allowedOrigins '["http://127.0.0.1:18789"]' --strict-json
     ```
 
-    หากคุณเปลี่ยนพอร์ต Gateway ให้แทนที่ `18789` ด้วยพอร์ตที่คุณกำหนดค่าไว้
+    หากคุณเปลี่ยนพอร์ต ให้แทนที่ `18789` ด้วยพอร์ตที่กำหนดไว้
 
   </Step>
 
-  <Step title="เข้าถึงจากแล็ปท็อปของคุณ">
-    สร้าง SSH tunnel เพื่อ forward พอร์ต Gateway:
+  <Step title="Access from your laptop">
+    สร้างอุโมงค์ SSH เพื่อส่งต่อพอร์ตของ Gateway:
 
     ```bash
     gcloud compute ssh openclaw-gateway --zone=us-central1-a -- -L 18789:127.0.0.1:18789
     ```
 
-    เปิดในเบราว์เซอร์ของคุณ:
+    เปิด `http://127.0.0.1:18789/` ในเบราว์เซอร์
 
-    `http://127.0.0.1:18789/`
-
-    พิมพ์ลิงก์แดชบอร์ดแบบสะอาดอีกครั้ง:
+    แสดงลิงก์แดชบอร์ดที่ไม่มีข้อมูลส่วนเกินอีกครั้ง:
 
     ```bash
     docker compose run --rm openclaw-cli dashboard --no-open
     ```
 
-    หาก UI แจ้งให้ป้อนการยืนยันตัวตนแบบ shared-secret ให้วางโทเค็นหรือรหัสผ่านที่กำหนดค่าไว้ใน Control UI settings โฟลว์ Docker นี้จะเขียนโทเค็นตามค่าเริ่มต้น หากคุณเปลี่ยนการกำหนดค่า container เป็นการยืนยันตัวตนด้วยรหัสผ่าน ให้ใช้รหัสผ่านนั้นแทน
+    หาก UI ขอการยืนยันตัวตนด้วยข้อมูลลับที่ใช้ร่วมกัน ให้วางโทเค็นหรือ
+    รหัสผ่านที่กำหนดค่าไว้ในการตั้งค่า UI ควบคุม (ขั้นตอน Docker นี้จะเขียนโทเค็น
+    โดยค่าเริ่มต้น หากคุณเปลี่ยนเป็นการยืนยันตัวตนด้วยรหัสผ่าน ให้ใช้รหัสผ่าน
+    ที่กำหนดไว้แทน)
 
-    หาก Control UI แสดง `unauthorized` หรือ `disconnected (1008): pairing required` ให้อนุมัติอุปกรณ์เบราว์เซอร์:
+    หาก UI ควบคุมแสดง `unauthorized` หรือ `disconnected (1008): pairing required` ให้อนุมัติอุปกรณ์เบราว์เซอร์:
 
     ```bash
     docker compose run --rm openclaw-cli devices list
     docker compose run --rm openclaw-cli devices approve <requestId>
     ```
 
-    ต้องการอ้างอิงเรื่อง persistence และการอัปเดตที่ใช้ร่วมกันอีกครั้งหรือไม่?
-    ดู [Docker VM Runtime](/th/install/docker-vm-runtime#what-persists-where) และ [การอัปเดต Docker VM Runtime](/th/install/docker-vm-runtime#updates)
+    โปรดดูแผนผังการจัดเก็บถาวรที่ใช้ร่วมกันใน [รันไทม์ VM ของ Docker](/th/install/docker-vm-runtime#what-persists-where) และดู [ขั้นตอนการอัปเดต](/th/install/docker-vm-runtime#updates)
 
   </Step>
 </Steps>
-
----
 
 ## การแก้ไขปัญหา
 
@@ -357,11 +290,11 @@ Ubuntu ก็ใช้ได้เช่นกัน ให้แมปแพ็
 gcloud compute os-login describe-profile
 ```
 
-ตรวจสอบให้แน่ใจว่าบัญชีของคุณมีสิทธิ์ IAM ที่จำเป็น (Compute OS Login หรือ Compute OS Admin Login)
+ตรวจสอบว่าบัญชีของคุณมีสิทธิ์ IAM ที่จำเป็น (Compute OS Login หรือ Compute OS Admin Login)
 
-**หน่วยความจำไม่พอ (OOM)**
+**หน่วยความจำไม่เพียงพอ (OOM)**
 
-หาก Docker build ล้มเหลวด้วย `Killed` และ `exit code 137` แปลว่า VM ถูก OOM-killed ให้อัปเกรดเป็น e2-small (ขั้นต่ำ) หรือ e2-medium (แนะนำสำหรับการ build ในเครื่องที่เชื่อถือได้):
+หากการสร้าง Docker ล้มเหลวโดยแสดง `Killed` และ `exit code 137` แสดงว่า VM ถูกระบบยุติเนื่องจากหน่วยความจำไม่เพียงพอ:
 
 ```bash
 # Stop the VM first
@@ -376,43 +309,29 @@ gcloud compute instances set-machine-type openclaw-gateway \
 gcloud compute instances start openclaw-gateway --zone=us-central1-a
 ```
 
----
+## บัญชีบริการ (แนวทางปฏิบัติที่ดีที่สุดด้านความปลอดภัย)
 
-## Service accounts (แนวทางปฏิบัติที่ดีที่สุดด้านความปลอดภัย)
+สำหรับการใช้งานส่วนบุคคล บัญชีผู้ใช้เริ่มต้นของคุณก็เพียงพอ สำหรับระบบอัตโนมัติหรือ CI/CD ให้สร้างบัญชีบริการโดยเฉพาะซึ่งมีสิทธิ์ขั้นต่ำ:
 
-สำหรับการใช้งานส่วนตัว บัญชีผู้ใช้เริ่มต้นของคุณใช้ได้ดี
+```bash
+gcloud iam service-accounts create openclaw-deploy \
+  --display-name="OpenClaw Deployment"
 
-สำหรับระบบอัตโนมัติหรือ pipeline CI/CD ให้สร้าง service account เฉพาะพร้อมสิทธิ์ขั้นต่ำ:
+gcloud projects add-iam-policy-binding my-openclaw-project \
+  --member="serviceAccount:openclaw-deploy@my-openclaw-project.iam.gserviceaccount.com" \
+  --role="roles/compute.instanceAdmin.v1"
+```
 
-1. สร้าง service account:
-
-   ```bash
-   gcloud iam service-accounts create openclaw-deploy \
-     --display-name="OpenClaw Deployment"
-   ```
-
-2. ให้บทบาท Compute Instance Admin (หรือบทบาทกำหนดเองที่แคบกว่า):
-
-   ```bash
-   gcloud projects add-iam-policy-binding my-openclaw-project \
-     --member="serviceAccount:openclaw-deploy@my-openclaw-project.iam.gserviceaccount.com" \
-     --role="roles/compute.instanceAdmin.v1"
-   ```
-
-หลีกเลี่ยงการใช้บทบาท Owner สำหรับระบบอัตโนมัติ ใช้หลักการให้สิทธิ์น้อยที่สุด
-
-ดูรายละเอียดบทบาท IAM ได้ที่ [https://cloud.google.com/iam/docs/understanding-roles](https://cloud.google.com/iam/docs/understanding-roles)
-
----
+หลีกเลี่ยงบทบาท Owner สำหรับระบบอัตโนมัติ ให้ใช้บทบาทที่มีขอบเขตแคบที่สุดซึ่งยังใช้งานได้ โปรดดู [ทำความเข้าใจบทบาท](https://cloud.google.com/iam/docs/understanding-roles)
 
 ## ขั้นตอนถัดไป
 
-- ตั้งค่าช่องทางการส่งข้อความ: [ช่องทาง](/th/channels)
-- จับคู่อุปกรณ์ภายในเครื่องเป็นโหนด: [โหนด](/th/nodes)
+- ตั้งค่าช่องทางรับส่งข้อความ: [ช่องทาง](/th/channels)
+- จับคู่อุปกรณ์ภายในเครื่องเป็น Node: [Node](/th/nodes)
 - กำหนดค่า Gateway: [การกำหนดค่า Gateway](/th/gateway/configuration)
 
-## ที่เกี่ยวข้อง
+## เนื้อหาที่เกี่ยวข้อง
 
 - [ภาพรวมการติดตั้ง](/th/install)
 - [Azure](/th/install/azure)
-- [การโฮสต์ VPS](/th/vps)
+- [การโฮสต์บน VPS](/th/vps)

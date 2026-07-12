@@ -1,86 +1,62 @@
 ---
 read_when:
-    - Je wilt privacygerichte inferentie in OpenClaw
-    - Je wilt hulp bij het instellen van Venice AI
+    - U wilt privacygerichte inferentie in OpenClaw
+    - U wilt instructies voor het instellen van Venice AI
 summary: Gebruik de privacygerichte modellen van Venice AI in OpenClaw
 title: Venice AI
 x-i18n:
-    generated_at: "2026-06-27T18:15:33Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:20:40Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7f02885dd7d8dc06fb6a923f504ad515c4b9345507d784bff290d3fcc483ed45
+    source_hash: f274922274def2f87fb0e074554f6457b97852dcb509578262a2e2e58425265e
     source_path: providers/venice.md
     workflow: 16
 ---
 
-Venice AI biedt **privacygerichte AI-inferentie** met ondersteuning voor ongecensureerde modellen en toegang tot grote propriëtaire modellen via hun geanonimiseerde proxy. Alle inferentie is standaard privé — geen training op je gegevens, geen logging.
-
-## Waarom Venice in OpenClaw
-
-- **Privé-inferentie** voor opensourcemodellen (geen logging).
-- **Ongecensureerde modellen** wanneer je die nodig hebt.
-- **Geanonimiseerde toegang** tot propriëtaire modellen (Opus/GPT/Gemini) wanneer kwaliteit belangrijk is.
-- OpenAI-compatibele `/v1`-eindpunten.
+[Venice AI](https://venice.ai) biedt privacygerichte inferentie: open modellen worden
+zonder logregistratie uitgevoerd, plus geanonimiseerde proxytoegang tot Claude, GPT, Gemini en Grok.
+Alle eindpunten zijn OpenAI-compatibel (`/v1`).
 
 ## Privacymodi
 
-Venice biedt twee privacyniveaus — dit begrijpen is essentieel om je model te kiezen:
-
-| Modus             | Beschrijving                                                                                                                          | Modellen                                                      |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| **Privé**         | Volledig privé. Prompts/antwoorden worden **nooit opgeslagen of gelogd**. Vluchtig.                                                   | Llama, Qwen, DeepSeek, Kimi, MiniMax, Venice Uncensored, enz. |
-| **Geanonimiseerd** | Geproxyd via Venice met verwijderde metadata. De onderliggende provider (OpenAI, Anthropic, Google, xAI) ziet geanonimiseerde verzoeken. | Claude, GPT, Gemini, Grok                                     |
+| Modus              | Gedrag                                                               | Modellen                                                       |
+| ------------------ | -------------------------------------------------------------------- | -------------------------------------------------------------- |
+| **Privé**          | Prompts/antwoorden worden nooit opgeslagen of gelogd. Tijdelijk.     | Llama, Qwen, DeepSeek, Kimi, MiniMax, Venice Uncensored, enz.  |
+| **Geanonimiseerd** | Via Venice doorgestuurd, waarbij metagegevens vooraf worden verwijderd. | Claude, GPT, Gemini, Grok                                   |
 
 <Warning>
-Geanonimiseerde modellen zijn **niet** volledig privé. Venice verwijdert metadata voordat verzoeken worden doorgestuurd, maar de onderliggende provider (OpenAI, Anthropic, Google, xAI) verwerkt het verzoek nog steeds. Kies **Privé**-modellen wanneer volledige privacy vereist is.
+Geanonimiseerde modellen zijn niet volledig privé. Venice verwijdert metagegevens voordat het verzoek wordt doorgestuurd, maar de onderliggende aanbieder (OpenAI, Anthropic, Google, xAI) verwerkt het verzoek nog steeds. Gebruik privémodellen wanneer volledige privacy vereist is.
 </Warning>
-
-## Functies
-
-- **Privacygericht**: Kies tussen de modi "private" (volledig privé) en "anonymized" (geproxyd)
-- **Ongecensureerde modellen**: Toegang tot modellen zonder inhoudsbeperkingen
-- **Toegang tot grote modellen**: Gebruik Claude, GPT, Gemini en Grok via de geanonimiseerde proxy van Venice
-- **OpenAI-compatibele API**: Standaard `/v1`-eindpunten voor eenvoudige integratie
-- **Streaming**: Ondersteund op alle modellen
-- **Functie-aanroepen**: Ondersteund op geselecteerde modellen (controleer modelmogelijkheden)
-- **Visie**: Ondersteund op modellen met visiemogelijkheid
-- **Geen harde snelheidslimieten**: Fair-use-throttling kan gelden bij extreem gebruik
 
 ## Aan de slag
 
 <Steps>
-  <Step title="Install the plugin">
+  <Step title="Installeer de Plugin">
     ```bash
     openclaw plugins install @openclaw/venice-provider
     ```
   </Step>
-  <Step title="Get your API key">
-    1. Registreer je op [venice.ai](https://venice.ai)
+  <Step title="Verkrijg je API-sleutel">
+    1. Meld je aan bij [venice.ai](https://venice.ai)
     2. Ga naar **Settings > API Keys > Create new key**
     3. Kopieer je API-sleutel (indeling: `vapi_xxxxxxxxxxxx`)
   </Step>
-  <Step title="Configure OpenClaw">
-    Kies je gewenste installatiemethode:
-
+  <Step title="Configureer OpenClaw">
     <Tabs>
-      <Tab title="Interactive (recommended)">
+      <Tab title="Interactief (aanbevolen)">
         ```bash
         openclaw onboard --auth-choice venice-api-key
         ```
 
-        Dit doet het volgende:
-        1. Vraagt om je API-sleutel (of gebruikt bestaande `VENICE_API_KEY`)
-        2. Toont alle beschikbare Venice-modellen
-        3. Laat je je standaardmodel kiezen
-        4. Configureert de provider automatisch
+        Vraagt om de API-sleutel (of hergebruikt een bestaande `VENICE_API_KEY`), toont beschikbare Venice-modellen en stelt je standaardmodel in.
       </Tab>
-      <Tab title="Environment variable">
+      <Tab title="Omgevingsvariabele">
         ```bash
         export VENICE_API_KEY="vapi_xxxxxxxxxxxx"
         ```
       </Tab>
-      <Tab title="Non-interactive">
+      <Tab title="Niet-interactief">
         ```bash
         openclaw onboard --non-interactive \
           --auth-choice venice-api-key \
@@ -90,193 +66,173 @@ Geanonimiseerde modellen zijn **niet** volledig privé. Venice verwijdert metada
     </Tabs>
 
   </Step>
-  <Step title="Verify setup">
+  <Step title="Controleer de configuratie">
     ```bash
-    openclaw agent --model venice/kimi-k2-5 --message "Hello, are you working?"
+    openclaw agent --model venice/kimi-k2-5 --message "Hallo, werk je?"
     ```
   </Step>
 </Steps>
 
 ## Modelselectie
 
-Na de installatie toont OpenClaw alle beschikbare Venice-modellen. Kies op basis van je behoeften:
-
-- **Standaardmodel**: `venice/kimi-k2-5` voor sterk privé redeneren plus visie.
-- **Optie met hoge capaciteit**: `venice/claude-opus-4-6` voor het sterkste geanonimiseerde Venice-pad.
-- **Privacy**: Kies "private"-modellen voor volledig privé-inferentie.
-- **Mogelijkheid**: Kies "anonymized"-modellen om toegang te krijgen tot Claude, GPT en Gemini via de proxy van Venice.
-
-Wijzig je standaardmodel op elk moment:
+- **Standaard**: `venice/kimi-k2-5` (privé, redeneren, beeld).
+- **Sterkste geanonimiseerde optie**: `venice/claude-opus-4-6`.
 
 ```bash
 openclaw models set venice/kimi-k2-5
-openclaw models set venice/claude-opus-4-6
-```
-
-Toon alle beschikbare modellen:
-
-```bash
 openclaw models list --all --provider venice
 ```
 
-Je kunt ook `openclaw configure` uitvoeren, **Model/auth** selecteren en **Venice AI** kiezen.
+Je kunt ook `openclaw configure` uitvoeren en **Model/auth provider > Venice AI** kiezen.
 
 <Tip>
-Gebruik de onderstaande tabel om het juiste model voor je use-case te kiezen.
-
-| Use-case                   | Aanbevolen model                 | Waarom                                        |
-| -------------------------- | -------------------------------- | --------------------------------------------- |
-| **Algemene chat (standaard)** | `kimi-k2-5`                    | Sterk privé redeneren plus visie              |
-| **Beste algehele kwaliteit** | `claude-opus-4-6`              | Sterkste geanonimiseerde Venice-optie         |
-| **Privacy + coderen**      | `qwen3-coder-480b-a35b-instruct` | Privé codeermodel met grote context           |
-| **Privévisie**             | `kimi-k2-5`                      | Visieondersteuning zonder de privémodus te verlaten |
-| **Snel + goedkoop**        | `qwen3-4b`                       | Lichtgewicht redeneermodel                    |
-| **Complexe privétaken**    | `deepseek-v3.2`                  | Sterk redeneren, maar geen Venice-toolondersteuning |
-| **Ongecensureerd**         | `venice-uncensored`              | Geen inhoudsbeperkingen                       |
-
+| Gebruikssituatie             | Model                            | Waarom                                         |
+| ---------------------------- | -------------------------------- | ---------------------------------------------- |
+| Algemene chat (standaard)    | `kimi-k2-5`                      | Sterk privé redeneervermogen plus beeld        |
+| Beste algemene kwaliteit     | `claude-opus-4-6`                | Sterkste geanonimiseerde Venice-optie          |
+| Privacy + programmeren       | `qwen3-coder-480b-a35b-instruct` | Privéprogrammeermodel met grote context        |
+| Snel + goedkoop              | `qwen3-4b`                       | Lichtgewicht redeneermodel                     |
+| Complexe privétaken          | `deepseek-v3.2`                  | Sterk redeneervermogen; toolaanroepen uitgeschakeld |
+| Ongecensureerd               | `venice-uncensored`              | Geen inhoudsbeperkingen                        |
 </Tip>
 
-## Replaygedrag van DeepSeek V4
-
-Als Venice DeepSeek V4-modellen beschikbaar maakt, zoals `venice/deepseek-v4-pro` of
-`venice/deepseek-v4-flash`, vult OpenClaw de vereiste DeepSeek V4
-`reasoning_content`-replayplaceholder in op assistentberichten wanneer de proxy
-deze weglaat. Venice weigert DeepSeek's native top-level `thinking`-besturing, dus
-OpenClaw houdt die providerspecifieke replayfix gescheiden van de thinking-besturingen
-van de native DeepSeek-provider.
-
-## Ingebouwde catalogus (41 totaal)
+## Ingebouwde catalogus (38 modellen)
 
 <AccordionGroup>
-  <Accordion title="Private models (26) — fully private, no logging">
-    | Model-ID                               | Naam                                | Context | Functies                   |
-    | -------------------------------------- | ----------------------------------- | ------- | -------------------------- |
-    | `kimi-k2-5`                            | Kimi K2.5                           | 256k    | Standaard, redeneren, visie |
-    | `kimi-k2-thinking`                     | Kimi K2 Thinking                    | 256k    | Redeneren                  |
-    | `llama-3.3-70b`                        | Llama 3.3 70B                       | 128k    | Algemeen                   |
-    | `llama-3.2-3b`                         | Llama 3.2 3B                        | 128k    | Algemeen                   |
-    | `hermes-3-llama-3.1-405b`              | Hermes 3 Llama 3.1 405B            | 128k    | Algemeen, tools uitgeschakeld |
-    | `qwen3-235b-a22b-thinking-2507`        | Qwen3 235B Thinking                | 128k    | Redeneren                  |
-    | `qwen3-235b-a22b-instruct-2507`        | Qwen3 235B Instruct                | 128k    | Algemeen                   |
-    | `qwen3-coder-480b-a35b-instruct`       | Qwen3 Coder 480B                   | 256k    | Coderen                    |
-    | `qwen3-coder-480b-a35b-instruct-turbo` | Qwen3 Coder 480B Turbo             | 256k    | Coderen                    |
-    | `qwen3-5-35b-a3b`                      | Qwen3.5 35B A3B                    | 256k    | Redeneren, visie           |
-    | `qwen3-next-80b`                       | Qwen3 Next 80B                     | 256k    | Algemeen                   |
-    | `qwen3-vl-235b-a22b`                   | Qwen3 VL 235B (Vision)             | 256k    | Visie                      |
-    | `qwen3-4b`                             | Venice Small (Qwen3 4B)            | 32k     | Snel, redeneren            |
-    | `deepseek-v3.2`                        | DeepSeek V3.2                      | 160k    | Redeneren, tools uitgeschakeld |
-    | `venice-uncensored`                    | Venice Uncensored (Dolphin-Mistral) | 32k     | Ongecensureerd, tools uitgeschakeld |
-    | `mistral-31-24b`                       | Venice Medium (Mistral)            | 128k    | Visie                      |
-    | `google-gemma-3-27b-it`                | Google Gemma 3 27B Instruct        | 198k    | Visie                      |
-    | `openai-gpt-oss-120b`                  | OpenAI GPT OSS 120B               | 128k    | Algemeen                   |
-    | `nvidia-nemotron-3-nano-30b-a3b`       | NVIDIA Nemotron 3 Nano 30B         | 128k    | Algemeen                   |
-    | `olafangensan-glm-4.7-flash-heretic`   | GLM 4.7 Flash Heretic              | 128k    | Redeneren                  |
-    | `zai-org-glm-4.6`                      | GLM 4.6                            | 198k    | Algemeen                   |
-    | `zai-org-glm-4.7`                      | GLM 4.7                            | 198k    | Redeneren                  |
-    | `zai-org-glm-4.7-flash`                | GLM 4.7 Flash                      | 128k    | Redeneren                  |
-    | `zai-org-glm-5`                        | GLM 5                              | 198k    | Redeneren                  |
-    | `minimax-m21`                          | MiniMax M2.1                       | 198k    | Redeneren                  |
-    | `minimax-m25`                          | MiniMax M2.5                       | 198k    | Redeneren                  |
+  <Accordion title="Privémodellen (26) — volledig privé, geen logregistratie">
+    | Model-ID                               | Naam                                  | Context | Opmerkingen                          |
+    | -------------------------------------- | ------------------------------------- | ------- | ------------------------------------ |
+    | `kimi-k2-5`                            | Kimi K2.5                             | 256k    | Standaard, redeneren, beeld          |
+    | `kimi-k2-thinking`                     | Kimi K2 Thinking                      | 256k    | Redeneren                            |
+    | `llama-3.3-70b`                        | Llama 3.3 70B                         | 128k    | Algemeen                             |
+    | `llama-3.2-3b`                         | Llama 3.2 3B                          | 128k    | Algemeen                             |
+    | `hermes-3-llama-3.1-405b`              | Hermes 3 Llama 3.1 405B               | 128k    | Algemeen, tools uitgeschakeld        |
+    | `qwen3-235b-a22b-thinking-2507`        | Qwen3 235B Thinking                   | 128k    | Redeneren                            |
+    | `qwen3-235b-a22b-instruct-2507`        | Qwen3 235B Instruct                   | 128k    | Algemeen                             |
+    | `qwen3-coder-480b-a35b-instruct`       | Qwen3 Coder 480B                      | 256k    | Programmeren                         |
+    | `qwen3-coder-480b-a35b-instruct-turbo` | Qwen3 Coder 480B Turbo                | 256k    | Programmeren                         |
+    | `qwen3-5-35b-a3b`                      | Qwen3.5 35B A3B                       | 256k    | Redeneren, beeld                     |
+    | `qwen3-next-80b`                       | Qwen3 Next 80B                        | 256k    | Algemeen                             |
+    | `qwen3-vl-235b-a22b`                   | Qwen3 VL 235B (beeld)                 | 256k    | Beeld                                |
+    | `qwen3-4b`                             | Venice Small (Qwen3 4B)               | 32k     | Snel, redeneren                      |
+    | `deepseek-v3.2`                        | DeepSeek V3.2                         | 160k    | Redeneren, tools uitgeschakeld       |
+    | `venice-uncensored`                    | Venice Uncensored (Dolphin-Mistral)   | 32k     | Ongecensureerd, tools uitgeschakeld  |
+    | `mistral-31-24b`                       | Venice Medium (Mistral)               | 128k    | Beeld                                |
+    | `google-gemma-3-27b-it`                | Google Gemma 3 27B Instruct           | 198k    | Beeld                                |
+    | `openai-gpt-oss-120b`                  | OpenAI GPT OSS 120B                   | 128k    | Algemeen                             |
+    | `nvidia-nemotron-3-nano-30b-a3b`       | NVIDIA Nemotron 3 Nano 30B            | 128k    | Algemeen                             |
+    | `olafangensan-glm-4.7-flash-heretic`   | GLM 4.7 Flash Heretic                 | 128k    | Redeneren                            |
+    | `zai-org-glm-4.6`                      | GLM 4.6                               | 198k    | Algemeen                             |
+    | `zai-org-glm-4.7`                      | GLM 4.7                               | 198k    | Redeneren                            |
+    | `zai-org-glm-4.7-flash`                | GLM 4.7 Flash                         | 128k    | Redeneren                            |
+    | `zai-org-glm-5`                        | GLM 5                                 | 198k    | Redeneren                            |
+    | `minimax-m21`                          | MiniMax M2.1                          | 198k    | Redeneren                            |
+    | `minimax-m25`                          | MiniMax M2.5                          | 198k    | Redeneren                            |
   </Accordion>
 
-  <Accordion title="Anonymized models (12) — via Venice proxy">
-    | Model-ID                        | Naam                           | Context | Functies                  |
-    | ------------------------------- | ------------------------------ | ------- | ------------------------- |
-    | `claude-opus-4-6`               | Claude Opus 4.6 (via Venice)   | 1M      | Redeneren, visie          |
-    | `claude-sonnet-4-6`             | Claude Sonnet 4.6 (via Venice) | 1M      | Redeneren, visie          |
-    | `openai-gpt-54`                 | GPT-5.4 (via Venice)           | 1M      | Redeneren, visie          |
-    | `openai-gpt-53-codex`           | GPT-5.3 Codex (via Venice)     | 400k    | Redeneren, visie, coderen |
-    | `openai-gpt-52`                 | GPT-5.2 (via Venice)           | 256k    | Redeneren                 |
-    | `openai-gpt-52-codex`           | GPT-5.2 Codex (via Venice)     | 256k    | Redeneren, visie, coderen |
-    | `openai-gpt-4o-2024-11-20`      | GPT-4o (via Venice)            | 128k    | Visie                     |
-    | `openai-gpt-4o-mini-2024-07-18` | GPT-4o Mini (via Venice)       | 128k    | Visie                     |
-    | `gemini-3-1-pro-preview`        | Gemini 3.1 Pro (via Venice)    | 1M      | Redeneren, visie          |
-    | `gemini-3-pro-preview`          | Gemini 3 Pro (via Venice)      | 198k    | Redeneren, visie          |
-    | `gemini-3-flash-preview`        | Gemini 3 Flash (via Venice)    | 256k    | Redeneren, visie          |
-    | `grok-41-fast`                  | Grok 4.1 Fast (via Venice)     | 1M      | Redeneren, visie          |
+  <Accordion title="Geanonimiseerde modellen (12) — via Venice-proxy">
+    | Model-ID                         | Naam                             | Context | Opmerkingen                     |
+    | -------------------------------- | -------------------------------- | ------- | ------------------------------- |
+    | `claude-opus-4-6`               | Claude Opus 4.6 (via Venice)     | 1M      | Redeneren, beeld                |
+    | `claude-sonnet-4-6`             | Claude Sonnet 4.6 (via Venice)   | 1M      | Redeneren, beeld                |
+    | `openai-gpt-54`                 | GPT-5.4 (via Venice)             | 1M      | Redeneren, beeld                |
+    | `openai-gpt-53-codex`           | GPT-5.3 Codex (via Venice)       | 400k    | Redeneren, beeld, programmeren  |
+    | `openai-gpt-52`                 | GPT-5.2 (via Venice)             | 256k    | Redeneren                       |
+    | `openai-gpt-52-codex`           | GPT-5.2 Codex (via Venice)       | 256k    | Redeneren, beeld, programmeren  |
+    | `openai-gpt-4o-2024-11-20`      | GPT-4o (via Venice)              | 128k    | Beeld                           |
+    | `openai-gpt-4o-mini-2024-07-18` | GPT-4o Mini (via Venice)         | 128k    | Beeld                           |
+    | `gemini-3-1-pro-preview`        | Gemini 3.1 Pro (via Venice)      | 1M      | Redeneren, beeld                |
+    | `gemini-3-pro-preview`          | Gemini 3 Pro (via Venice)        | 198k    | Redeneren, beeld                |
+    | `gemini-3-flash-preview`        | Gemini 3 Flash (via Venice)      | 256k    | Redeneren, beeld                |
+    | `grok-41-fast`                  | Grok 4.1 Fast (via Venice)       | 1M      | Redeneren, beeld                |
   </Accordion>
 </AccordionGroup>
 
-## Modelontdekking
+Door Grok ondersteunde Venice-modellen (`grok-41-fast` en vergelijkbare modellen) krijgen dezelfde
+compatibiliteitspatch voor het toolschema als de native xAI-provider, omdat ze dezelfde upstreamindeling
+voor toolaanroepen gebruiken.
 
-OpenClaw levert een door een manifest ondersteunde Venice-seedcatalogus voor alleen-lezen modellisting. Runtimeverversing kan nog steeds modellen ontdekken via de Venice-API en valt terug op de manifestcatalogus als de API onbereikbaar is.
+## Modeldetectie
 
-Het `/models`-eindpunt is openbaar (geen auth nodig voor listing), maar inferentie vereist een geldige API-sleutel.
+De bovenstaande gebundelde catalogus is een door een manifest ondersteunde basislijst. Tijdens uitvoering
+ververst OpenClaw deze via de Venice-API `/models` en valt terug op de basislijst als
+de API niet bereikbaar is. Het eindpunt `/models` is openbaar (geen authenticatie nodig om
+de lijst op te vragen), maar inferentie vereist een geldige API-sleutel.
 
-## Streaming en toolondersteuning
+## Herhalingsgedrag van DeepSeek V4
 
-| Functie              | Ondersteuning                                             |
-| -------------------- | --------------------------------------------------------- |
-| **Streaming**        | Alle modellen                                             |
-| **Functieaanroepen** | De meeste modellen (controleer `supportsFunctionCalling` in API) |
-| **Visie/Afbeeldingen** | Modellen gemarkeerd met de functie "Vision"             |
-| **JSON-modus**       | Ondersteund via `response_format`                         |
+Als Venice DeepSeek V4-modellen beschikbaar stelt, zoals `deepseek-v4-pro` of
+`deepseek-v4-flash`, vult OpenClaw het vereiste herhalingsveld `reasoning_content`
+in assistentberichten in wanneer Venice dit weglaat, en verwijdert het `thinking`/
+`reasoning`/`reasoning_effort` uit de verzoekpayload (Venice weigert
+de native `thinking`-besturing van DeepSeek voor deze modellen). Deze herhalingscorrectie staat
+los van de eigen besturingselementen voor redeneren van de native DeepSeek-provider.
+
+## Ondersteuning voor streaming en tools
+
+| Functie          | Ondersteuning                                        |
+| ---------------- | ---------------------------------------------------- |
+| Streaming        | Alle modellen                                        |
+| Functieaanroepen | De meeste modellen; per model uitgeschakeld waar hierboven vermeld |
+| Beeld/afbeeldingen | Modellen die hierboven met "Beeld" zijn gemarkeerd |
+| JSON-modus       | Via `response_format`                                |
 
 ## Prijzen
 
-Venice gebruikt een systeem op basis van credits. Bekijk [venice.ai/pricing](https://venice.ai/pricing) voor actuele tarieven:
-
-- **Privémodellen**: Over het algemeen lagere kosten
-- **Geanonimiseerde modellen**: Vergelijkbaar met directe API-prijzen + kleine Venice-vergoeding
-
-### Venice (geanonimiseerd) versus directe API
-
-| Aspect       | Venice (geanonimiseerd)          | Directe API                 |
-| ------------ | -------------------------------- | --------------------------- |
-| **Privacy**  | Metadata verwijderd, geanonimiseerd | Je account is gekoppeld  |
-| **Latentie** | +10-50 ms (proxy)                | Direct                      |
-| **Functies** | De meeste functies worden ondersteund | Volledige functies      |
-| **Facturering** | Venice-credits                | Facturering door provider   |
+Venice gebruikt een op tegoeden gebaseerd systeem. Geanonimiseerde modellen kosten ongeveer evenveel als
+rechtstreekse API-tarieven plus een kleine vergoeding van Venice. Zie
+[venice.ai/pricing](https://venice.ai/pricing) voor de huidige tarieven.
 
 ## Gebruiksvoorbeelden
 
 ```bash
-# Use the default private model
-openclaw agent --model venice/kimi-k2-5 --message "Quick health check"
+# Standaard privémodel
+openclaw agent --model venice/kimi-k2-5 --message "Snelle statuscontrole"
 
-# Use Claude Opus via Venice (anonymized)
-openclaw agent --model venice/claude-opus-4-6 --message "Summarize this task"
+# Claude Opus via Venice (geanonimiseerd)
+openclaw agent --model venice/claude-opus-4-6 --message "Vat deze taak samen"
 
-# Use uncensored model
-openclaw agent --model venice/venice-uncensored --message "Draft options"
+# Ongecensureerd model
+openclaw agent --model venice/venice-uncensored --message "Stel opties op"
 
-# Use vision model with image
-openclaw agent --model venice/qwen3-vl-235b-a22b --message "Review attached image"
+# Beeldmodel met afbeelding
+openclaw agent --model venice/qwen3-vl-235b-a22b --message "Beoordeel de bijgevoegde afbeelding"
 
-# Use coding model
-openclaw agent --model venice/qwen3-coder-480b-a35b-instruct --message "Refactor this function"
+# Programmeermodel
+openclaw agent --model venice/qwen3-coder-480b-a35b-instruct --message "Herstructureer deze functie"
 ```
 
 ## Probleemoplossing
 
 <AccordionGroup>
-  <Accordion title="API-sleutel niet herkend">
+  <Accordion title="API-sleutel wordt niet herkend">
     ```bash
     echo $VENICE_API_KEY
     openclaw models list | grep venice
     ```
 
-    Zorg ervoor dat de sleutel begint met `vapi_`.
+    Controleer of de sleutel begint met `vapi_`.
 
   </Accordion>
 
   <Accordion title="Model niet beschikbaar">
-    De Venice-modelcatalogus wordt dynamisch bijgewerkt. Voer `openclaw models list` uit om de momenteel beschikbare modellen te bekijken. Sommige modellen kunnen tijdelijk offline zijn.
+    Voer `openclaw models list --all --provider venice` uit om de momenteel
+    beschikbare modellen te bekijken; de catalogus verandert wanneer Venice modellen toevoegt of uitfaseert.
   </Accordion>
 
   <Accordion title="Verbindingsproblemen">
-    De Venice API bevindt zich op `https://api.venice.ai/api/v1`. Zorg ervoor dat je netwerk HTTPS-verbindingen toestaat.
+    De Venice-API bevindt zich op `https://api.venice.ai/api/v1`. Controleer of je netwerk HTTPS-verkeer naar die host toestaat.
   </Accordion>
 </AccordionGroup>
 
 <Note>
-Meer hulp: [Probleemoplossing](/nl/help/troubleshooting) en [FAQ](/nl/help/faq).
+Meer hulp: [Probleemoplossing](/nl/help/troubleshooting) en [Veelgestelde vragen](/nl/help/faq).
 </Note>
 
 ## Geavanceerde configuratie
 
 <AccordionGroup>
-  <Accordion title="Voorbeeld van configuratiebestand">
+  <Accordion title="Voorbeeld van een configuratiebestand">
     ```json5
     {
       env: { VENICE_API_KEY: "vapi_..." },
@@ -311,15 +267,15 @@ Meer hulp: [Probleemoplossing](/nl/help/troubleshooting) en [FAQ](/nl/help/faq).
 
 <CardGroup cols={2}>
   <Card title="Modelselectie" href="/nl/concepts/model-providers" icon="layers">
-    Providers, modelverwijzingen en failover-gedrag kiezen.
+    Providers, modelverwijzingen en failovergedrag kiezen.
   </Card>
   <Card title="Venice AI" href="https://venice.ai" icon="globe">
-    Homepage van Venice AI en accountregistratie.
+    Startpagina van Venice AI en accountregistratie.
   </Card>
   <Card title="API-documentatie" href="https://docs.venice.ai" icon="book">
-    Venice API-referentie en ontwikkelaarsdocumentatie.
+    Venice API-referentie en documentatie voor ontwikkelaars.
   </Card>
   <Card title="Prijzen" href="https://venice.ai/pricing" icon="credit-card">
-    Actuele Venice-creditstarieven en abonnementen.
+    Actuele Venice-krediettarieven en abonnementen.
   </Card>
 </CardGroup>

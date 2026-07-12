@@ -1,95 +1,79 @@
 ---
 read_when:
-    - Linux companion-appstatus zoeken
-    - Platformdekking of bijdragen plannen
-    - Linux OOM-kills of afsluitcode 137 debuggen op een VPS of container
+    - Op zoek naar de status van de Linux-begeleidende app
+    - Platformondersteuning of bijdragen plannen
+    - Linux OOM-beëindigingen of afsluitcode 137 op een VPS of container opsporen
 summary: Linux-ondersteuning + status van de companion-app
 title: Linux-app
 x-i18n:
-    generated_at: "2026-06-27T17:47:54Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:59:43Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 437eb12d373ff9161ec7fa1e6fc04bf5662f903374d17f55b45ae1ea355c9085
+    source_hash: 3a1b57fc7e37257a05eb06f265a49f165eef429f1c8d93c988853f39eba89627
     source_path: platforms/linux.md
     workflow: 16
 ---
 
-De Gateway wordt volledig ondersteund op Linux. **Node is de aanbevolen runtime**.
-Bun wordt niet aanbevolen voor de Gateway (WhatsApp/Telegram-bugs).
+De Gateway wordt volledig ondersteund op Linux. Node is de aanbevolen runtime; Bun
+wordt niet aanbevolen (bekende problemen met WhatsApp/Telegram).
 
-Native Linux-begeleidende apps zijn gepland. Bijdragen zijn welkom als je wilt helpen er een te bouwen.
+Er is nog geen native Linux-begeleidende app. Bijdragen zijn welkom.
 
-## Snel pad voor beginners (VPS)
+## Snelle route (VPS)
 
-1. Installeer Node 24 (aanbevolen; Node 22 LTS, momenteel `22.19+`, werkt nog steeds voor compatibiliteit)
+1. Installeer Node 24 (aanbevolen) of Node 22.19+ (LTS, nog steeds ondersteund).
 2. `npm i -g openclaw@latest`
 3. `openclaw onboard --install-daemon`
-4. Vanaf je laptop: `ssh -N -L 18789:127.0.0.1:18789 <user>@<host>`
-5. Open `http://127.0.0.1:18789/` en authenticeer met het geconfigureerde gedeelde geheim (standaard token; wachtwoord als je `gateway.auth.mode: "password"` hebt ingesteld)
+4. Vanaf uw laptop: `ssh -N -L 18789:127.0.0.1:18789 <user>@<host>`
+5. Open `http://127.0.0.1:18789/` en verifieer uw identiteit met het geconfigureerde gedeelde
+   geheim (standaard een token; een wachtwoord als `gateway.auth.mode` op `"password"` staat).
 
-Volledige Linux-serverhandleiding: [Linux-server](/nl/vps). Stapsgewijs VPS-voorbeeld: [exe.dev](/nl/install/exe-dev)
+Volledige serverhandleiding: [Linux-server](/nl/vps). Stapsgewijs VPS-voorbeeld:
+[exe.dev](/nl/install/exe-dev).
 
-## Installeren
+## Installatie
 
 - [Aan de slag](/nl/start/getting-started)
 - [Installatie en updates](/nl/install/updating)
-- Optionele flows: [Bun (experimenteel)](/nl/install/bun), [Nix](/nl/install/nix), [Docker](/nl/install/docker)
+- Optioneel: [Bun (experimenteel)](/nl/install/bun), [Nix](/nl/install/nix), [Docker](/nl/install/docker)
 
-## Gateway
+## Gateway-service (systemd)
 
-- [Gateway-runbook](/nl/gateway)
-- [Configuratie](/nl/gateway/configuration)
+Installeer met een van de volgende opdrachten:
 
-## Gateway-service installeren (CLI)
-
-Gebruik een van deze:
-
-```
+```bash
 openclaw onboard --install-daemon
-```
-
-Of:
-
-```
 openclaw gateway install
+openclaw configure   # selecteer "Gateway-service" wanneer daarom wordt gevraagd
 ```
 
-Of:
+Herstel of migreer een bestaande installatie:
 
-```
-openclaw configure
-```
-
-Selecteer **Gateway-service** wanneer daarom wordt gevraagd.
-
-Repareren/migreren:
-
-```
+```bash
 openclaw doctor
 ```
 
-## Systeembeheer (systemd-gebruikerseenheid)
+`openclaw gateway install` genereert standaard een systemd-**gebruikersunit**. Volledige
+service-instructies, waaronder de variant op **systeemniveau** voor gedeelde hosts of
+hosts die permanent actief zijn, staan in het [Gateway-draaiboek](/nl/gateway#supervision-and-service-lifecycle).
 
-OpenClaw installeert standaard een systemd-service voor de **gebruiker**. Gebruik een **systeem**service voor gedeelde of altijd actieve servers. `openclaw gateway install` en
-`openclaw onboard --install-daemon` genereren al de huidige canonieke eenheid
-voor je; schrijf er alleen handmatig een wanneer je een aangepaste system-/servicemanager-
-configuratie nodig hebt. De volledige servicerichtlijnen staan in het [Gateway-runbook](/nl/gateway).
+Schrijf alleen handmatig een unit voor een aangepaste configuratie. Minimaal voorbeeld
+van een gebruikersunit (`~/.config/systemd/user/openclaw-gateway[-<profile>].service`):
 
-Minimale configuratie:
-
-Maak `~/.config/systemd/user/openclaw-gateway[-<profile>].service` aan:
-
-```
+```ini
 [Unit]
 Description=OpenClaw Gateway (profile: <profile>, v<version>)
 After=network-online.target
 Wants=network-online.target
+StartLimitBurst=5
+StartLimitIntervalSec=60
 
 [Service]
 ExecStart=/usr/local/bin/openclaw gateway --port 18789
 Restart=always
 RestartSec=5
+RestartPreventExitStatus=78
 TimeoutStopSec=30
 TimeoutStartSec=30
 SuccessExitStatus=0 143
@@ -102,53 +86,55 @@ WantedBy=default.target
 
 Schakel deze in:
 
-```
+```bash
 systemctl --user enable --now openclaw-gateway[-<profile>].service
 ```
 
-## Geheugendruk en OOM-kills
+## Geheugendruk en beëindiging door OOM
 
-Op Linux kiest de kernel een OOM-slachtoffer wanneer een host-, VM- of container-cgroup
-zonder geheugen komt te zitten. De Gateway kan een ongunstig slachtoffer zijn omdat deze langlevende
-sessies en kanaalverbindingen bezit. OpenClaw zorgt er daarom, waar mogelijk, voor dat tijdelijke child-
-processen eerder worden beëindigd dan de Gateway.
+Op Linux kiest de kernel een OOM-slachtoffer wanneer het geheugen van een host, VM of
+container-cgroup opraakt. De Gateway is een ongeschikt slachtoffer, omdat deze langdurige
+sessies en kanaalverbindingen beheert. Daarom zorgt OpenClaw er waar mogelijk voor dat
+tijdelijke onderliggende processen als eerste worden beëindigd.
 
-Voor geschikte Linux-childprocessen start OpenClaw het childproces via een korte
-`/bin/sh`-wrapper die de eigen `oom_score_adj` van het childproces verhoogt naar `1000`, en daarna
-de echte opdracht met `exec` uitvoert. Dit is een niet-geprivilegieerde bewerking, omdat het childproces
-alleen zijn eigen kans op een OOM-kill verhoogt.
+Voor geschikte onderliggende Linux-processen verpakt OpenClaw de opdracht in een korte
+`/bin/sh`-shim die de eigen `oom_score_adj` van het onderliggende proces verhoogt naar
+`1000` en vervolgens met `exec` de daadwerkelijke opdracht uitvoert. Hiervoor zijn geen
+verhoogde bevoegdheden nodig: een proces mag altijd zijn eigen OOM-score verhogen.
 
-Gedekte childprocess-oppervlakken omvatten:
+Dit geldt voor de volgende onderliggende processen:
 
-- door supervisor beheerde command-childprocessen,
-- PTY-shell-childprocessen,
-- MCP stdio-server-childprocessen,
-- door OpenClaw gestarte browser-/Chrome-processen.
+- Door de supervisor beheerde opdrachtprocessen
+- Onderliggende PTY-shellprocessen
+- Onderliggende MCP-stdio-serverprocessen
+- Door OpenClaw gestarte browser-/Chrome-processen (via de procesruntime van de Plugin-SDK)
 
-De wrapper is alleen voor Linux en wordt overgeslagen wanneer `/bin/sh` niet beschikbaar is. Deze wordt
-ook overgeslagen als de child-env `OPENCLAW_CHILD_OOM_SCORE_ADJ=0`, `false`,
-`no` of `off` instelt.
+De wrapper wordt alleen op Linux gebruikt en wordt overgeslagen wanneer `/bin/sh` niet
+beschikbaar is, of wanneer de omgeving van het onderliggende proces
+`OPENCLAW_CHILD_OOM_SCORE_ADJ` instelt op `0`, `false`, `no` of `off`.
 
-Een childproces verifiëren:
+Controleer een onderliggend proces:
 
 ```bash
 cat /proc/<child-pid>/oom_score_adj
 ```
 
-De verwachte waarde voor gedekte childprocessen is `1000`. Het Gateway-proces moet
-zijn normale score behouden, meestal `0`.
+De verwachte waarde voor processen waarop dit van toepassing is, is `1000`; het
+Gateway-proces zelf behoudt zijn normale score (doorgaans `0`).
 
-De aanbevolen systemd-eenheid stelt ook `OOMPolicy=continue` in. Hierdoor blijft de
-Gateway-eenheid actief wanneer een tijdelijk childproces door de OOM-killer wordt geselecteerd;
-de childopdracht/-sessie kan mislukken en de fout rapporteren zonder dat systemd de
-hele gatewayservice als mislukt markeert en alle kanalen opnieuw start.
+Dankzij `OOMPolicy=continue` in de systemd-unit blijft de Gateway-service actief wanneer
+de OOM-killer een tijdelijk onderliggend proces selecteert. Zo wordt niet de hele unit als
+mislukt gemarkeerd en worden niet alle kanalen opnieuw gestart; het mislukte onderliggende
+proces of de mislukte sessie rapporteert een eigen fout.
 
-Dit vervangt normale geheugentuning niet. Als een VPS of container herhaaldelijk
-childprocessen beëindigt, verhoog dan de geheugenlimiet, verminder concurrency of voeg sterkere
-resource-controls toe, zoals systemd `MemoryMax=` of geheugenlimieten op containerniveau.
+Dit vervangt normale geheugenafstemming niet. Als een VPS of container herhaaldelijk
+onderliggende processen beëindigt, verhoog dan de geheugenlimiet, verlaag de gelijktijdigheid
+of voeg strengere resourcebeperkingen toe (systemd `MemoryMax=`, containergeheugenlimieten).
 
 ## Gerelateerd
 
 - [Installatieoverzicht](/nl/install)
 - [Linux-server](/nl/vps)
 - [Raspberry Pi](/nl/install/raspberry-pi)
+- [Gateway-draaiboek](/nl/gateway)
+- [Gateway-configuratie](/nl/gateway/configuration)

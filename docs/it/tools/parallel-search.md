@@ -1,44 +1,40 @@
 ---
 read_when:
-    - Vuoi la ricerca web senza una chiave API
-    - Ti serve l'API Search a pagamento di Parallel
-    - Vuoi estratti densi classificati per efficienza del contesto LLM
-summary: Ricerca parallela -- estratti densi ottimizzati per LLM da fonti web
+    - Vuoi effettuare ricerche sul web senza una chiave API
+    - Vuoi l'API Search a pagamento di Parallel
+    - Vuoi estratti densi classificati in base all'efficienza del contesto per gli LLM
+summary: Ricerca parallela -- estratti densi da fonti web ottimizzati per gli LLM
 title: Ricerca parallela
 x-i18n:
-    generated_at: "2026-06-27T18:22:18Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:38:09Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ef64c2c125d2885385308dd8a57421b696fa1a9a5455b8c3b83854016f6514cb
+    source_hash: eff693f286015b287bbdacf44f11ff6f07f2f7d2605ef6f09259e7402b40515e
     source_path: tools/parallel-search.md
     workflow: 16
 ---
 
-Il Plugin Parallel fornisce due provider `web_search` di [Parallel](https://parallel.ai/):
+Il Plugin Parallel fornisce due provider `web_search` di [Parallel](https://parallel.ai/), entrambi restituiscono estratti classificati e ottimizzati per gli LLM da un indice web creato per gli agenti IA:
 
-- **Parallel Search (Free)** (`parallel-free`) -- il [Search MCP](https://docs.parallel.ai/integrations/mcp/search-mcp) gratuito
-  di Parallel. Non richiede alcun account né chiave API. Selezionalo
-  esplicitamente quando vuoi usare il percorso di ricerca ospitato da Parallel
-  senza chiave.
-- **Parallel Search** (`parallel`) -- l'API Search a pagamento di Parallel.
-  Richiede una `PARALLEL_API_KEY` e offre limiti di frequenza più elevati e
-  ottimizzazione dell'obiettivo.
+| Provider                        | id              | Autenticazione                                                                                         |
+| ------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------ |
+| Ricerca Parallel (gratuita)     | `parallel-free` | Nessuna — [Search MCP](https://docs.parallel.ai/integrations/mcp/search-mcp) gratuito di Parallel      |
+| Ricerca Parallel                | `parallel`      | `PARALLEL_API_KEY` — API Search a pagamento, limiti di frequenza superiori e ottimizzazione obiettivi |
 
-Entrambi restituiscono estratti classificati e ottimizzati per LLM da un indice
-web creato per agenti IA. Imposta `tools.web.search.provider` su
-`parallel-free` o `parallel` per sceglierne uno esplicitamente.
+Imposta `tools.web.search.provider` su `parallel-free` o `parallel` per selezionarne esplicitamente uno; nessuno dei due viene rilevato automaticamente.
 
 <Note>
-  I modelli OpenAI Responses usano la ricerca web nativa di OpenAI quando
-  `tools.web.search.provider` non è impostato, quindi bypassano i provider
-  Parallel. Imposta `tools.web.search.provider` su `parallel-free` o `parallel`
-  per instradarli tramite Parallel.
+  I modelli OpenAI Responses diretti (`api: "openai-responses"`, provider
+  `openai`, URL di base dell'API ufficiale) utilizzano automaticamente la
+  ricerca web nativa ospitata da OpenAI quando `tools.web.search.provider`
+  non è impostato, è vuoto, è `"auto"` o è `"openai"`; pertanto, per
+  impostazione predefinita, ignorano Parallel. Imposta
+  `tools.web.search.provider` su `parallel-free` o `parallel` per instradarli
+  invece tramite Parallel. Consulta la [panoramica della ricerca web](/it/tools/web).
 </Note>
 
-## Installa il Plugin
-
-Installa il Plugin ufficiale, quindi riavvia Gateway:
+## Installare il Plugin
 
 ```bash
 openclaw plugins install @openclaw/parallel-plugin
@@ -47,17 +43,15 @@ openclaw gateway restart
 
 ## Chiave API (provider a pagamento)
 
-`parallel-free` non richiede alcuna chiave API, ma deve comunque essere
-selezionato come provider gestito. Il provider a pagamento `parallel` richiede
-una chiave API:
+`parallel-free` non richiede una chiave, ma deve comunque essere selezionato esplicitamente. Il provider `parallel` a pagamento richiede una chiave API:
 
 <Steps>
-  <Step title="Create an account">
+  <Step title="Creare un account">
     Registrati su [platform.parallel.ai](https://platform.parallel.ai) e
     genera una chiave API dalla tua dashboard.
   </Step>
-  <Step title="Store the key">
-    Imposta `PARALLEL_API_KEY` nell'ambiente Gateway oppure configura tramite:
+  <Step title="Archiviare la chiave">
+    Imposta `PARALLEL_API_KEY` nell'ambiente del Gateway oppure esegui la configurazione tramite:
 
     ```bash
     openclaw configure --section web
@@ -75,8 +69,8 @@ una chiave API:
       parallel: {
         config: {
           webSearch: {
-            apiKey: "par-...", // optional if PARALLEL_API_KEY is set
-            baseUrl: "https://api.parallel.ai", // optional; OpenClaw appends /v1/search
+            apiKey: "par-...", // facoltativo se PARALLEL_API_KEY è impostata
+            baseUrl: "https://api.parallel.ai", // facoltativo; OpenClaw aggiunge /v1/search
           },
         },
       },
@@ -85,8 +79,8 @@ una chiave API:
   tools: {
     web: {
       search: {
-        // Use "parallel-free" for the free Search MCP, or "parallel" for
-        // the paid API-backed provider shown here.
+        // "parallel-free" per il Search MCP gratuito oppure "parallel" per il
+        // provider a pagamento basato su API mostrato qui.
         provider: "parallel",
       },
     },
@@ -94,88 +88,50 @@ una chiave API:
 }
 ```
 
-**Alternativa con variabile d'ambiente:** imposta `PARALLEL_API_KEY`
-nell'ambiente Gateway. Per un'installazione gateway, inseriscila in
-`~/.openclaw/.env`.
+**Alternativa tramite variabile d'ambiente:** imposta `PARALLEL_API_KEY` nell'ambiente del Gateway. Per un'installazione del Gateway, inseriscila in `~/.openclaw/.env`.
 
-## Override dell'URL di base
+## Sostituzione dell'URL di base
 
-L'override dell'URL di base si applica solo al provider a pagamento `parallel`.
-Il provider gratuito `parallel-free` usa sempre `https://search.parallel.ai/mcp`.
+Si applica solo al provider `parallel` a pagamento; `parallel-free` utilizza sempre `https://search.parallel.ai/mcp` e ignora questa impostazione.
 
-Imposta `plugins.entries.parallel.config.webSearch.baseUrl` quando le richieste
-Parallel devono passare attraverso un proxy compatibile o un endpoint Parallel
-alternativo (ad esempio, Cloudflare AI Gateway). OpenClaw normalizza gli host
-senza schema anteponendo `https://` e aggiunge `/v1/search` a meno che il
-percorso non termini già così. L'endpoint risolto è incluso nella chiave della
-cache di ricerca, quindi i risultati provenienti da endpoint Parallel diversi
-non vengono condivisi.
+Imposta `plugins.entries.parallel.config.webSearch.baseUrl` per instradare le richieste a pagamento tramite un proxy compatibile o un endpoint alternativo, ad esempio Cloudflare AI Gateway. OpenClaw normalizza gli host senza schema anteponendo `https://` e aggiunge `/v1/search`, a meno che il percorso non termini già così. L'endpoint risolto fa parte della chiave della cache di ricerca, quindi i risultati provenienti da endpoint diversi non vengono mai condivisi.
 
 ## Parametri dello strumento
 
-OpenClaw espone la forma di ricerca nativa di Parallel in modo che il modello
-possa compilare sia l'obiettivo in linguaggio naturale sia alcune brevi query
-con parole chiave — l'abbinamento che Parallel
-[consiglia](https://docs.parallel.ai/search/best-practices) per ottenere i
-risultati migliori.
+Entrambi i provider espongono il formato di ricerca nativo di Parallel, affinché il modello specifichi un obiettivo in linguaggio naturale insieme ad alcune brevi query con parole chiave: la combinazione che Parallel [consiglia](https://docs.parallel.ai/search/best-practices) per ottenere risultati ottimali.
 
 <ParamField path="objective" type="string" required>
-Descrizione in linguaggio naturale della domanda o dell'obiettivo sottostante
-(max 5000 caratteri). Deve essere autonoma.
+Descrizione in linguaggio naturale della domanda o dell'obiettivo sottostante (massimo 5000 caratteri). Deve essere autosufficiente.
 </ParamField>
 
 <ParamField path="search_queries" type="string[]" required>
-Query di ricerca concise con parole chiave, 3-6 parole ciascuna (1-5 voci,
-max 200 caratteri ciascuna). Fornisci 2-3 query diverse per risultati migliori.
+Query di ricerca concise basate su parole chiave, ciascuna di 3-6 parole (1-5 voci, massimo 200 caratteri ciascuna). Fornisci 2-3 query diverse per ottenere risultati ottimali.
 </ParamField>
 
 <ParamField path="count" type="number">
-Risultati da restituire (1-40).
+Numero di risultati da restituire (1-40).
 </ParamField>
 
 <ParamField path="session_id" type="string">
-ID sessione Parallel facoltativo (max 1000 caratteri su `parallel`; il Search
-MCP gratuito `parallel-free` lo limita a 100). Passa il `sessionId` da un
-risultato Parallel precedente nelle ricerche successive che fanno parte dello
-stesso task, così Parallel può raggruppare le chiamate correlate e migliorare i
-risultati successivi. Un ID oltre il limite viene scartato e ne viene generato
-uno nuovo.
+ID di sessione Parallel facoltativo ricavato dal `sessionId` di un risultato precedente. Passalo alle ricerche successive della stessa attività, affinché Parallel raggruppi le chiamate correlate e migliori i risultati successivi. Massimo 1000 caratteri per `parallel`; il Search MCP gratuito `parallel-free` impone un limite di 100. Un ID oltre il limite viene scartato nella versione a pagamento oppure ne viene generato uno nuovo nella versione gratuita.
 </ParamField>
 
 <ParamField path="client_model" type="string">
-Identificatore facoltativo del modello che effettua la chiamata (ad es.
-`claude-opus-4-7`, `gpt-5.5`). Consente a Parallel di adattare le impostazioni
-predefinite alle capacità del tuo modello. Passa lo slug esatto del modello
-attivo; non abbreviarlo in un alias di famiglia.
+Identificatore facoltativo del modello che effettua la chiamata, ad esempio `claude-opus-4-7` o `gpt-5.6-sol`, con un massimo di 100 caratteri. Consente a Parallel di adattare le impostazioni predefinite alle capacità del modello. Passa lo slug esatto del modello attivo; non abbreviarlo con un alias della famiglia.
 </ParamField>
 
 ## Note
 
-- Parallel classifica e comprime i risultati in base all'utilità per il
-  ragionamento LLM, non al click-through umano; aspettati estratti densi in
-  ogni risultato invece del contenuto completo della pagina
-- Gli estratti dei risultati tornano come array `excerpts` e vengono anche
-  uniti nel campo `description` per compatibilità con il contratto generico
-  `web_search`
-- Parallel restituisce un `session_id` in ogni risposta; OpenClaw lo espone come
-  `sessionId` nel payload dello strumento, così i chiamanti possono raggruppare
-  le ricerche successive
-- `searchId`, `warnings` e `usage` da Parallel vengono inoltrati quando presenti
-- OpenClaw inoltra sempre a Parallel un conteggio dei risultati risolto come
-  `advanced_settings.max_results`. L'argomento `count` del chiamante ha la
-  precedenza, poi l'impostazione di primo livello
-  `tools.web.search.maxResults`, altrimenti il valore predefinito generico
-  `web_search` di OpenClaw (5). Questo mantiene coerente il volume dei
-  risultati quando si passa da un provider all'altro; Parallel da solo usa come
-  impostazione predefinita 10
-- I risultati vengono memorizzati nella cache per 15 minuti per impostazione
-  predefinita (configurabile tramite `cacheTtlMinutes`)
-- Il provider gratuito `parallel-free` accetta gli stessi parametri. Applica
-  `count` lato client e genera un `session_id` per chiamata quando non ne viene
-  fornito uno.
+- Parallel classifica e comprime i risultati in funzione della loro utilità per il ragionamento degli LLM, non per il clic degli utenti; aspettati quindi estratti densi per ciascun risultato anziché il contenuto completo delle pagine.
+- Gli estratti dei risultati vengono restituiti nell'array `excerpts` e sono inoltre concatenati in `description` per garantire la compatibilità con il contratto generico `web_search`.
+- Entrambi i provider restituiscono un `session_id`; OpenClaw lo espone come `sessionId` nel payload dello strumento, affinché i chiamanti possano raggruppare le ricerche successive. Un ID di sessione generato da Parallel, ovvero non fornito dal chiamante, viene escluso dalla voce della cache, poiché attività non correlate con query identiche non devono ereditarlo.
+- `searchId`, `warnings` e `usage` di Parallel vengono mantenuti quando presenti.
+- OpenClaw inoltra sempre a Parallel un numero di risultati risolto come `advanced_settings.max_results` (`parallel`) oppure applica `count` lato client dopo la risposta di dimensione fissa di Parallel (`parallel-free`). Ha precedenza l'argomento `count` del chiamante, seguito da `tools.web.search.maxResults`; altrimenti viene usato il valore predefinito generico di `web_search` di OpenClaw (5), mentre il valore predefinito dell'API di Parallel è 10.
+- Per impostazione predefinita, i risultati vengono memorizzati nella cache per 15 minuti (`cacheTtlMinutes`).
+- `parallel-free` genera un nuovo `session_id` per ogni chiamata tramite il proprio handshake MCP quando il chiamante non ne fornisce uno; in tal caso, `parallel` lo lascia non impostato.
 
-## Correlati
+## Contenuti correlati
 
-- [Panoramica di Web Search](/it/tools/web) -- tutti i provider e il rilevamento automatico
-- [Ricerca Exa](/it/tools/exa-search) -- ricerca neurale con estrazione dei contenuti
-- [Perplexity Search](/it/tools/perplexity-search) -- risultati strutturati con filtro per dominio
+- [Panoramica della ricerca web](/it/tools/web) — tutti i provider e il rilevamento automatico
+- [Ricerca Exa](/it/tools/exa-search) — ricerca neurale con estrazione dei contenuti
+- [Ricerca Perplexity](/it/tools/perplexity-search) — risultati strutturati con filtro per dominio

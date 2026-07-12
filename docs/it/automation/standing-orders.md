@@ -1,95 +1,83 @@
 ---
 read_when:
-    - Configurazione di flussi di lavoro di agenti autonomi che vengono eseguiti senza prompt per ogni attività
-    - Definizione di ciò che l'agente può fare in autonomia rispetto a ciò che richiede l'approvazione umana
-    - Strutturare agenti multi-programma con confini chiari e regole di escalation
+    - Configurazione di flussi di lavoro autonomi degli agenti che vengono eseguiti senza richieste per ogni attività
+    - Definire cosa può fare l'agente in autonomia e cosa richiede l'approvazione umana
+    - Strutturare agenti multiprogramma con confini chiari e regole di escalation
 summary: Definisci l'autorità operativa permanente per i programmi di agenti autonomi
-title: Istruzioni permanenti
+title: Ordini permanenti
 x-i18n:
-    generated_at: "2026-05-12T00:56:17Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:48:02Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3a51baa7aca31cb34b682983374d4d551ed6ab57ae54a5c63e7d044bffeef756
+    source_hash: 9e7ad622efe734facc9dc3716f5ee7f57ed3923499db78730bda234a5c62ad80
     source_path: automation/standing-orders.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Gli ordini permanenti concedono al tuo agente **autorità operativa permanente** per programmi definiti. Invece di fornire ogni volta istruzioni per singole attività, definisci programmi con ambito, trigger e regole di escalation chiari, e l'agente esegue autonomamente entro quei confini.
+Gli ordini permanenti conferiscono al tuo agente **autorità operativa permanente** per programmi definiti. Invece di impartire istruzioni all'agente per ogni attività, definisci programmi con ambito, trigger e regole di escalation chiari, e l'agente opera autonomamente entro tali limiti: "Sei responsabile del rapporto settimanale. Compilalo ogni venerdì, invialo e avvia un'escalation solo se qualcosa non sembra corretto."
 
-È la differenza tra dire al tuo assistente "invia il report settimanale" ogni venerdì e concedere un'autorità permanente: "Sei responsabile del report settimanale. Compilalo ogni venerdì, invialo ed effettua escalation solo se qualcosa sembra errato."
+## Perché usare gli ordini permanenti
 
-## Perché gli ordini permanenti
+**Senza ordini permanenti:** devi impartire istruzioni all'agente per ogni attività, il lavoro di routine viene dimenticato o ritardato e tu diventi il collo di bottiglia.
 
-**Senza ordini permanenti:**
-
-- Devi sollecitare l'agente per ogni attività
-- L'agente resta inattivo tra una richiesta e l'altra
-- Il lavoro di routine viene dimenticato o ritardato
-- Diventi tu il collo di bottiglia
-
-**Con gli ordini permanenti:**
-
-- L'agente esegue autonomamente entro confini definiti
-- Il lavoro di routine avviene nei tempi previsti senza solleciti
-- Vieni coinvolto solo per eccezioni e approvazioni
-- L'agente usa in modo produttivo il tempo inattivo
+**Con gli ordini permanenti:** l'agente opera autonomamente entro limiti definiti, il lavoro di routine viene svolto nei tempi previsti e tu intervieni solo per eccezioni e approvazioni.
 
 ## Come funzionano
 
-Gli ordini permanenti sono definiti nei file del tuo [spazio di lavoro dell'agente](/it/concepts/agent-workspace). L'approccio consigliato è includerli direttamente in `AGENTS.md` (che viene iniettato automaticamente in ogni sessione), così l'agente li ha sempre nel contesto. Per configurazioni più grandi, puoi anche inserirli in un file dedicato come `standing-orders.md` e farvi riferimento da `AGENTS.md`.
+Gli ordini permanenti sono definiti nei file del tuo [workspace dell'agente](/it/concepts/agent-workspace). L'approccio consigliato consiste nell'includerli direttamente in `AGENTS.md` (che viene inserito automaticamente in ogni sessione), affinché l'agente li abbia sempre nel contesto. Per configurazioni più grandi, puoi anche inserirli in un file dedicato come `standing-orders.md` e farvi riferimento da `AGENTS.md`.
 
 Ogni programma specifica:
 
-1. **Ambito** - cosa l'agente è autorizzato a fare
-2. **Trigger** - quando eseguire (pianificazione, evento o condizione)
-3. **Gate di approvazione** - cosa richiede l'approvazione umana prima di agire
+1. **Ambito** - ciò che l'agente è autorizzato a fare
+2. **Trigger** - quando eseguire il programma (pianificazione, evento o condizione)
+3. **Punti di approvazione** - ciò che richiede l'autorizzazione umana prima di procedere
 4. **Regole di escalation** - quando fermarsi e chiedere aiuto
 
-L'agente carica queste istruzioni a ogni sessione tramite i file di bootstrap dello spazio di lavoro (vedi [Spazio di lavoro dell'agente](/it/concepts/agent-workspace) per l'elenco completo dei file iniettati automaticamente) e le esegue, insieme ai [processi Cron](/it/automation/cron-jobs) per l'applicazione basata sul tempo.
+L'agente carica queste istruzioni a ogni sessione tramite i file di bootstrap del workspace (consulta [Workspace dell'agente](/it/concepts/agent-workspace) per l'elenco completo dei file inseriti automaticamente) e le esegue, in combinazione con i [processi Cron](/it/automation/cron-jobs) per garantirne l'applicazione in base al tempo.
 
 <Tip>
-Inserisci gli ordini permanenti in `AGENTS.md` per garantire che vengano caricati a ogni sessione. Il bootstrap dello spazio di lavoro inietta automaticamente `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md` e `MEMORY.md`, ma non file arbitrari nelle sottodirectory.
+Inserisci gli ordini permanenti in `AGENTS.md` per garantirne il caricamento a ogni sessione. Il bootstrap del workspace inserisce automaticamente `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md` e `MEMORY.md`, ma non file arbitrari presenti nelle sottodirectory.
 </Tip>
 
 ## Anatomia di un ordine permanente
 
 ```markdown
-## Program: Weekly Status Report
+## Programma: Rapporto settimanale sullo stato
 
-**Authority:** Compile data, generate report, deliver to stakeholders
-**Trigger:** Every Friday at 4 PM (enforced via cron job)
-**Approval gate:** None for standard reports. Flag anomalies for human review.
-**Escalation:** If data source is unavailable or metrics look unusual (>2σ from norm)
+**Autorità:** Compilare i dati, generare il rapporto, consegnarlo alle parti interessate
+**Trigger:** Ogni venerdì alle 16:00 (applicato tramite un processo Cron)
+**Punto di approvazione:** Nessuno per i rapporti standard. Segnalare le anomalie per la revisione umana.
+**Escalation:** Se la fonte dei dati non è disponibile o le metriche sembrano insolite (>2σ rispetto alla norma)
 
-### Execution steps
+### Passaggi di esecuzione
 
-1. Pull metrics from configured sources
-2. Compare to prior week and targets
-3. Generate report in Reports/weekly/YYYY-MM-DD.md
-4. Deliver summary via configured channel
-5. Log completion to Agent/Logs/
+1. Recuperare le metriche dalle fonti configurate
+2. Confrontarle con la settimana precedente e con gli obiettivi
+3. Generare il rapporto in Reports/weekly/YYYY-MM-DD.md
+4. Inviare il riepilogo tramite il canale configurato
+5. Registrare il completamento in Agent/Logs/
 
-### What NOT to do
+### Cosa NON fare
 
-- Do not send reports to external parties
-- Do not modify source data
-- Do not skip delivery if metrics look bad - report accurately
+- Non inviare rapporti a soggetti esterni
+- Non modificare i dati di origine
+- Non saltare l'invio se le metriche sono negative: riportarle con precisione
 ```
 
-## Ordini permanenti più processi Cron
+## Ordini permanenti e processi Cron
 
-Gli ordini permanenti definiscono **cosa** l'agente è autorizzato a fare. I [processi Cron](/it/automation/cron-jobs) definiscono **quando** accade. Funzionano insieme:
+Gli ordini permanenti definiscono **cosa** l'agente è autorizzato a fare. I [processi Cron](/it/automation/cron-jobs) definiscono **quando** avviene. Operano insieme:
 
-```
-Standing Order: "You own the daily inbox triage"
+```text
+Ordine permanente: "Sei responsabile della classificazione quotidiana della posta in arrivo"
     ↓
-Cron Job (8 AM daily): "Execute inbox triage per standing orders"
+Processo Cron (ogni giorno alle 8:00): "Esegui la classificazione della posta in arrivo secondo gli ordini permanenti"
     ↓
-Agent: Reads standing orders → executes steps → reports results
+Agente: legge gli ordini permanenti → esegue i passaggi → comunica i risultati
 ```
 
-Il prompt del processo Cron dovrebbe fare riferimento all'ordine permanente invece di duplicarlo:
+Il prompt del processo Cron deve fare riferimento all'ordine permanente anziché duplicarlo:
 
 ```bash
 openclaw cron add \
@@ -100,7 +88,7 @@ openclaw cron add \
   --announce \
   --channel imessage \
   --to "+1XXXXXXXXXX" \
-  --message "Execute daily inbox triage per standing orders. Check mail for new alerts. Parse, categorize, and persist each item. Report summary to owner. Escalate unknowns."
+  --message "Esegui la classificazione quotidiana della posta in arrivo secondo gli ordini permanenti. Controlla la posta per individuare nuovi avvisi. Analizza, categorizza e salva ogni elemento. Invia un riepilogo al proprietario. Avvia un'escalation per gli elementi sconosciuti."
 ```
 
 ## Esempi
@@ -108,151 +96,151 @@ openclaw cron add \
 ### Esempio 1: contenuti e social media (ciclo settimanale)
 
 ```markdown
-## Program: Content & Social Media
+## Programma: Contenuti e social media
 
-**Authority:** Draft content, schedule posts, compile engagement reports
-**Approval gate:** All posts require owner review for first 30 days, then standing approval
-**Trigger:** Weekly cycle (Monday review → mid-week drafts → Friday brief)
+**Autorità:** Redigere contenuti, programmare pubblicazioni, compilare rapporti sul coinvolgimento
+**Punto di approvazione:** Tutte le pubblicazioni richiedono la revisione del proprietario per i primi 30 giorni, quindi si applica l'approvazione permanente
+**Trigger:** Ciclo settimanale (revisione del lunedì → bozze infrasettimanali → resoconto del venerdì)
 
-### Weekly cycle
+### Ciclo settimanale
 
-- **Monday:** Review platform metrics and audience engagement
-- **Tuesday-Thursday:** Draft social posts, create blog content
-- **Friday:** Compile weekly marketing brief → deliver to owner
+- **Lunedì:** Esaminare le metriche delle piattaforme e il coinvolgimento del pubblico
+- **Martedì-giovedì:** Redigere pubblicazioni per i social, creare contenuti per il blog
+- **Venerdì:** Compilare il resoconto settimanale di marketing → consegnarlo al proprietario
 
-### Content rules
+### Regole per i contenuti
 
-- Voice must match the brand (see SOUL.md or brand voice guide)
-- Never identify as AI in public-facing content
-- Include metrics when available
-- Focus on value to audience, not self-promotion
+- Il tono deve corrispondere al marchio (consulta SOUL.md o la guida al tono del marchio)
+- Non presentarsi mai come IA nei contenuti destinati al pubblico
+- Includere le metriche quando disponibili
+- Concentrarsi sul valore per il pubblico, non sull'autopromozione
 ```
 
-### Esempio 2: operazioni finanziarie (attivate da evento)
+### Esempio 2: operazioni finanziarie (attivate da eventi)
 
 ```markdown
-## Program: Financial Processing
+## Programma: Elaborazione finanziaria
 
-**Authority:** Process transaction data, generate reports, send summaries
-**Approval gate:** None for analysis. Recommendations require owner approval.
-**Trigger:** New data file detected OR scheduled monthly cycle
+**Autorità:** Elaborare i dati delle transazioni, generare rapporti, inviare riepiloghi
+**Punto di approvazione:** Nessuno per l'analisi. Le raccomandazioni richiedono l'approvazione del proprietario.
+**Trigger:** Rilevamento di un nuovo file di dati OPPURE ciclo mensile pianificato
 
-### When new data arrives
+### Quando arrivano nuovi dati
 
-1. Detect new file in designated input directory
-2. Parse and categorize all transactions
-3. Compare against budget targets
-4. Flag: unusual items, threshold breaches, new recurring charges
-5. Generate report in designated output directory
-6. Deliver summary to owner via configured channel
+1. Rilevare il nuovo file nella directory di input designata
+2. Analizzare e categorizzare tutte le transazioni
+3. Confrontarle con gli obiettivi di budget
+4. Segnalare: elementi insoliti, superamenti delle soglie, nuovi addebiti ricorrenti
+5. Generare il rapporto nella directory di output designata
+6. Inviare il riepilogo al proprietario tramite il canale configurato
 
-### Escalation rules
+### Regole di escalation
 
-- Single item > $500: immediate alert
-- Category > budget by 20%: flag in report
-- Unrecognizable transaction: ask owner for categorization
-- Failed processing after 2 retries: report failure, do not guess
+- Singolo elemento > $500: avviso immediato
+- Categoria oltre il budget del 20%: segnalarla nel rapporto
+- Transazione non riconoscibile: chiedere al proprietario di categorizzarla
+- Elaborazione non riuscita dopo 2 tentativi: segnalare l'errore, non fare supposizioni
 ```
 
 ### Esempio 3: monitoraggio e avvisi (continuo)
 
 ```markdown
-## Program: System Monitoring
+## Programma: Monitoraggio del sistema
 
-**Authority:** Check system health, restart services, send alerts
-**Approval gate:** Restart services automatically. Escalate if restart fails twice.
-**Trigger:** Every heartbeat cycle
+**Autorità:** Controllare lo stato del sistema, riavviare i servizi, inviare avvisi
+**Punto di approvazione:** Riavviare automaticamente i servizi. Avviare un'escalation se il riavvio non riesce due volte.
+**Trigger:** A ogni ciclo di Heartbeat
 
-### Checks
+### Controlli
 
-- Service health endpoints responding
-- Disk space above threshold
-- Pending tasks not stale (>24 hours)
-- Delivery channels operational
+- Gli endpoint di stato dei servizi rispondono
+- Lo spazio su disco supera la soglia
+- Le attività in sospeso non sono obsolete (>24 ore)
+- I canali di consegna sono operativi
 
-### Response matrix
+### Matrice delle risposte
 
-| Condition        | Action                   | Escalate?                |
-| ---------------- | ------------------------ | ------------------------ |
-| Service down     | Restart automatically    | Only if restart fails 2x |
-| Disk space < 10% | Alert owner              | Yes                      |
-| Stale task > 24h | Remind owner             | No                       |
-| Channel offline  | Log and retry next cycle | If offline > 2 hours     |
+| Condizione                  | Azione                               | Avviare un'escalation?                |
+| --------------------------- | ------------------------------------ | ------------------------------------- |
+| Servizio non disponibile    | Riavviare automaticamente            | Solo se il riavvio non riesce 2 volte |
+| Spazio su disco < 10%       | Avvisare il proprietario             | Sì                                    |
+| Attività obsoleta da > 24 h | Inviare un promemoria al proprietario | No                                    |
+| Canale non disponibile      | Registrare e riprovare al ciclo successivo | Se non disponibile per > 2 ore  |
 ```
 
-## Pattern esegui-verifica-segnala
+## Schema esecuzione-verifica-resoconto
 
-Gli ordini permanenti funzionano meglio quando sono combinati con una disciplina di esecuzione rigorosa. Ogni attività in un ordine permanente dovrebbe seguire questo ciclo:
+Gli ordini permanenti funzionano meglio se associati a una rigorosa disciplina di esecuzione. Ogni attività di un ordine permanente deve seguire questo ciclo:
 
-1. **Esegui** - Svolgi il lavoro effettivo (non limitarti a confermare l'istruzione)
-2. **Verifica** - Conferma che il risultato sia corretto (il file esiste, il messaggio è stato consegnato, i dati sono stati analizzati)
-3. **Segnala** - Comunica al proprietario cosa è stato fatto e cosa è stato verificato
+1. **Esecuzione** - Svolgere effettivamente il lavoro (non limitarsi a confermare l'istruzione)
+2. **Verifica** - Confermare che il risultato sia corretto (il file esiste, il messaggio è stato consegnato, i dati sono stati analizzati)
+3. **Resoconto** - Comunicare al proprietario cosa è stato fatto e cosa è stato verificato
 
 ```markdown
-### Execution rules
+### Regole di esecuzione
 
-- Every task follows Execute-Verify-Report. No exceptions.
-- "I'll do that" is not execution. Do it, then report.
-- "Done" without verification is not acceptable. Prove it.
-- If execution fails: retry once with adjusted approach.
-- If still fails: report failure with diagnosis. Never silently fail.
-- Never retry indefinitely - 3 attempts max, then escalate.
+- Ogni attività segue lo schema Esecuzione-Verifica-Resoconto. Nessuna eccezione.
+- "Lo farò" non equivale all'esecuzione. Fallo, quindi comunica il risultato.
+- "Fatto" senza verifica non è accettabile. Fornisci una prova.
+- Se l'esecuzione non riesce: riprova una volta con un approccio modificato.
+- Se non riesce ancora: segnala l'errore con una diagnosi. Non fallire mai senza comunicarlo.
+- Non riprovare mai all'infinito: massimo 3 tentativi, quindi avvia un'escalation.
 ```
 
-Questo pattern previene la modalità di errore più comune dell'agente: confermare un'attività senza completarla.
+Questo schema previene la modalità di errore più comune degli agenti: confermare un'attività senza completarla.
 
-## Architettura multi-programma
+## Architettura multiprogramma
 
-Per agenti che gestiscono più ambiti, organizza gli ordini permanenti come programmi separati con confini chiari:
+Per gli agenti che gestiscono più ambiti, organizza gli ordini permanenti come programmi separati con limiti chiari:
 
 ```markdown
-## Program 1: [Domain A] (Weekly)
+## Programma 1: [Ambito A] (Settimanale)
 
 ...
 
-## Program 2: [Domain B] (Monthly + On-Demand)
+## Programma 2: [Ambito B] (Mensile + Su richiesta)
 
 ...
 
-## Program 3: [Domain C] (As-Needed)
+## Programma 3: [Ambito C] (Secondo necessità)
 
 ...
 
-## Escalation Rules (All Programs)
+## Regole di escalation (Tutti i programmi)
 
-- [Common escalation criteria]
-- [Approval gates that apply across programs]
+- [Criteri di escalation comuni]
+- [Punti di approvazione applicabili a tutti i programmi]
 ```
 
-Ogni programma dovrebbe avere:
+Ogni programma deve avere:
 
-- La propria **cadenza di trigger** (settimanale, mensile, guidata da eventi, continua)
-- I propri **gate di approvazione** (alcuni programmi richiedono più supervisione di altri)
-- **Confini** chiari (l'agente dovrebbe sapere dove finisce un programma e dove ne inizia un altro)
+- Una propria **cadenza di attivazione** (settimanale, mensile, basata su eventi, continua)
+- Propri **punti di approvazione** (alcuni programmi richiedono una supervisione maggiore rispetto ad altri)
+- **Limiti** chiari (l'agente deve sapere dove termina un programma e ne inizia un altro)
 
-## Best practice
+## Procedure consigliate
 
-### Cosa fare
+### Da fare
 
-- Inizia con autorità limitata ed espandila man mano che cresce la fiducia
-- Definisci gate di approvazione espliciti per le azioni ad alto rischio
-- Includi sezioni "Cosa NON fare": i confini contano quanto le autorizzazioni
-- Combina con processi Cron per un'esecuzione affidabile basata sul tempo
-- Rivedi settimanalmente i log dell'agente per verificare che gli ordini permanenti vengano seguiti
-- Aggiorna gli ordini permanenti man mano che le tue esigenze evolvono: sono documenti vivi
+- Iniziare con un'autorità limitata ed estenderla man mano che aumenta la fiducia
+- Definire punti di approvazione espliciti per le azioni ad alto rischio
+- Includere sezioni "Cosa NON fare": i limiti sono importanti quanto le autorizzazioni
+- Combinare gli ordini con processi Cron per un'esecuzione affidabile basata sul tempo
+- Esaminare settimanalmente i registri dell'agente per verificare che gli ordini permanenti vengano rispettati
+- Aggiornare gli ordini permanenti in base all'evoluzione delle esigenze: sono documenti dinamici
 
 ### Da evitare
 
-- Concedere ampia autorità il primo giorno ("fai ciò che ritieni meglio")
-- Saltare le regole di escalation: ogni programma ha bisogno di una clausola "quando fermarsi e chiedere"
-- Presumere che l'agente ricorderà istruzioni verbali: metti tutto nel file
-- Mescolare ambiti in un singolo programma: programmi separati per domini separati
-- Dimenticare di applicarli con processi Cron: gli ordini permanenti senza trigger diventano suggerimenti
+- Concedere un'autorità ampia fin dal primo giorno ("fai ciò che ritieni migliore")
+- Omettere le regole di escalation: ogni programma necessita di una clausola che definisca "quando fermarsi e chiedere"
+- Presumere che l'agente ricordi le istruzioni verbali: inserire tutto nel file
+- Mescolare ambiti in un singolo programma: utilizzare programmi separati per ambiti separati
+- Dimenticare di applicarli tramite processi Cron: gli ordini permanenti senza trigger diventano suggerimenti
 
-## Correlati
+## Argomenti correlati
 
-- [Automazione](/it/automation): tutti i meccanismi di automazione in sintesi.
+- [Automazione](/it/automation): panoramica di tutti i meccanismi di automazione.
 - [Processi Cron](/it/automation/cron-jobs): applicazione della pianificazione per gli ordini permanenti.
-- [Hook](/it/automation/hooks): script guidati da eventi per gli eventi del ciclo di vita dell'agente.
-- [Webhook](/it/automation/cron-jobs#webhooks): trigger di eventi HTTP in ingresso.
-- [Spazio di lavoro dell'agente](/it/concepts/agent-workspace): dove risiedono gli ordini permanenti, incluso l'elenco completo dei file di bootstrap iniettati automaticamente (`AGENTS.md`, `SOUL.md`, ecc.).
+- [Hook](/it/automation/hooks): script basati su eventi per gli eventi del ciclo di vita dell'agente.
+- [Webhook](/it/automation/cron-jobs#webhooks): trigger di eventi HTTP in entrata.
+- [Workspace dell'agente](/it/concepts/agent-workspace): dove risiedono gli ordini permanenti, incluso l'elenco completo dei file di bootstrap inseriti automaticamente (`AGENTS.md`, `SOUL.md`, ecc.).

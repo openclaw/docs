@@ -1,25 +1,25 @@
 ---
 read_when:
     - می‌خواهید از Brave Search برای web_search استفاده کنید
-    - به BRAVE_API_KEY یا جزئیات طرح نیاز دارید
-summary: راه‌اندازی Brave Search API برای web_search
-title: جستجوی Brave
+    - به یک BRAVE_API_KEY یا جزئیات طرح نیاز دارید
+summary: راه‌اندازی API جست‌وجوی Brave برای `web_search`
+title: جست‌وجوی Brave
 x-i18n:
-    generated_at: "2026-05-06T09:44:25Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:54:11Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d2bff7589ddb54d002853898c6fc37e613fd32b0fa69cb0d712d5955973efb39
+    source_hash: 35e4bc2d24769f25cac79c36607e1dfe2c6ca2078715edfaed92add070817e46
     source_path: tools/brave-search.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 OpenClaw از Brave Search API به‌عنوان ارائه‌دهندهٔ `web_search` پشتیبانی می‌کند.
 
 ## دریافت کلید API
 
-1. یک حساب Brave Search API در [https://brave.com/search/api/](https://brave.com/search/api/) بسازید
-2. در داشبورد، طرح **Search** را انتخاب کنید و یک کلید API بسازید.
+1. در [https://brave.com/search/api/](https://brave.com/search/api/) یک حساب Brave Search API ایجاد کنید.
+2. در داشبورد، طرح **Search** را انتخاب و یک کلید API ایجاد کنید.
 3. کلید را در پیکربندی ذخیره کنید یا `BRAVE_API_KEY` را در محیط Gateway تنظیم کنید.
 
 ## نمونهٔ پیکربندی
@@ -32,8 +32,8 @@ OpenClaw از Brave Search API به‌عنوان ارائه‌دهندهٔ `web_
         config: {
           webSearch: {
             apiKey: "BRAVE_API_KEY_HERE",
-            mode: "web", // or "llm-context"
-            baseUrl: "https://api.search.brave.com", // optional proxy/base URL override
+            mode: "web", // یا "llm-context"
+            baseUrl: "https://api.search.brave.com", // بازنویسی اختیاری نشانی پایه/پروکسی
           },
         },
       },
@@ -51,15 +51,18 @@ OpenClaw از Brave Search API به‌عنوان ارائه‌دهندهٔ `web_
 }
 ```
 
-تنظیمات جست‌وجوی ویژهٔ ارائه‌دهندهٔ Brave اکنون زیر `plugins.entries.brave.config.webSearch.*` قرار دارند.
-`tools.web.search.apiKey` قدیمی همچنان از طریق شیم سازگاری بارگذاری می‌شود، اما دیگر مسیر پیکربندی معیار نیست.
+تنظیمات جست‌وجوی ویژهٔ ارائه‌دهندهٔ Brave در `plugins.entries.brave.config.webSearch.*` قرار می‌گیرند؛ این مسیر متعارف پیکربندی است. `tools.web.search.apiKey` مشترک در سطح بالا و `tools.web.search.brave.*` محدودشده همچنان از طریق ادغام سازگاری بارگذاری می‌شوند، اما پیکربندی جدید باید از مسیر محدود به Plugin در بالا استفاده کند.
 
 `webSearch.mode` انتقال Brave را کنترل می‌کند:
 
-- `web` (پیش‌فرض): جست‌وجوی عادی وب Brave با عنوان‌ها، URLها و قطعه‌متن‌ها
-- `llm-context`: Brave LLM Context API با قطعه‌های متنی و منابع ازپیش‌استخراج‌شده برای اتکاپذیری
+- `web` (پیش‌فرض): جست‌وجوی عادی وب Brave با عنوان‌ها، نشانی‌های URL و قطعه‌های متنی
+- `llm-context`: ‏Brave LLM Context API با بخش‌های متنی و منابع ازپیش‌استخراج‌شده برای استنادپذیری
 
-`webSearch.baseUrl` می‌تواند درخواست‌های Brave را به یک پراکسی یا Gateway سازگار با Brave و مورداعتماد هدایت کند. OpenClaw مسیر `/res/v1/web/search` یا `/res/v1/llm/context` را به URL پایهٔ پیکربندی‌شده اضافه می‌کند و URL پایه را در کلید کش نگه می‌دارد. نقاط پایانی عمومی باید از `https://` استفاده کنند؛ `http://` فقط برای میزبان‌های پراکسی loopback مورداعتماد یا شبکهٔ خصوصی پذیرفته می‌شود.
+`webSearch.baseUrl` می‌تواند درخواست‌های Brave را به یک پروکسی
+یا Gateway سازگار با Brave و مورد اعتماد هدایت کند. OpenClaw مسیر `/res/v1/web/search` یا `/res/v1/llm/context` را به
+نشانی پایهٔ پیکربندی‌شده می‌افزاید و نشانی پایه را در کلید کش نگه می‌دارد. نقاط پایانی
+عمومی باید از `https://` استفاده کنند؛ `http://` فقط برای local loopback مورد اعتماد
+یا میزبان‌های پروکسی شبکهٔ خصوصی پذیرفته می‌شود.
 
 ## پارامترهای ابزار
 
@@ -68,23 +71,23 @@ OpenClaw از Brave Search API به‌عنوان ارائه‌دهندهٔ `web_
 </ParamField>
 
 <ParamField path="count" type="number" default="5">
-تعداد نتایجی که برگردانده می‌شود (۱ تا ۱۰).
+تعداد نتایجی که باید بازگردانده شوند (۱ تا ۱۰).
 </ParamField>
 
 <ParamField path="country" type="string">
-کد کشور ISO دوحرفی (برای مثال `US`، `DE`).
+کد دوحرفی ISO کشور (برای نمونه `US`، `DE`).
 </ParamField>
 
 <ParamField path="language" type="string">
-کد زبان ISO 639-1 برای نتایج جست‌وجو (برای مثال `en`، `de`، `fr`).
+کد زبان ISO 639-1 برای نتایج جست‌وجو (برای نمونه `en`، `de`، `fr`).
 </ParamField>
 
 <ParamField path="search_lang" type="string">
-کد زبان جست‌وجوی Brave (برای مثال `en`، `en-gb`، `zh-hans`).
+کد زبان جست‌وجوی Brave (برای نمونه `en`، `en-gb`، `zh-hans`).
 </ParamField>
 
 <ParamField path="ui_lang" type="string">
-کد زبان ISO برای عناصر UI.
+کد زبان ISO برای عناصر رابط کاربری.
 </ParamField>
 
 <ParamField path="freshness" type="'day' | 'week' | 'month' | 'year'">
@@ -102,20 +105,20 @@ OpenClaw از Brave Search API به‌عنوان ارائه‌دهندهٔ `web_
 **نمونه‌ها:**
 
 ```javascript
-// Country and language-specific search
+// جست‌وجوی مختص کشور و زبان
 await web_search({
   query: "renewable energy",
   country: "DE",
   language: "de",
 });
 
-// Recent results (past week)
+// نتایج اخیر (هفتهٔ گذشته)
 await web_search({
   query: "AI news",
   freshness: "week",
 });
 
-// Date range search
+// جست‌وجو در بازهٔ تاریخی
 await web_search({
   query: "AI developments",
   date_after: "2024-01-01",
@@ -123,20 +126,21 @@ await web_search({
 });
 ```
 
-## یادداشت‌ها
+## نکات
 
-- OpenClaw از طرح **Search** در Brave استفاده می‌کند. اگر اشتراک قدیمی دارید (برای مثال طرح Free اصلی با ۲٬۰۰۰ پرس‌وجو در ماه)، همچنان معتبر است، اما قابلیت‌های جدیدتر مانند LLM Context یا محدودیت‌های نرخ بالاتر را شامل نمی‌شود.
-- هر طرح Brave شامل **۵ دلار اعتبار رایگان ماهانه** (با تمدید دوره‌ای) است. طرح Search به‌ازای هر ۱٬۰۰۰ درخواست، ۵ دلار هزینه دارد، بنابراین این اعتبار ۱٬۰۰۰ پرس‌وجو در ماه را پوشش می‌دهد. برای جلوگیری از هزینه‌های غیرمنتظره، محدودیت مصرف خود را در داشبورد Brave تنظیم کنید. برای طرح‌های فعلی، [پورتال Brave API](https://brave.com/search/api/) را ببینید.
-- طرح Search شامل نقطهٔ پایانی LLM Context و حقوق استنتاج AI است. ذخیرهٔ نتایج برای آموزش یا تنظیم مدل‌ها به طرحی با حقوق صریح ذخیره‌سازی نیاز دارد. [شرایط خدمات](https://api-dashboard.search.brave.com/terms-of-service) Brave را ببینید.
-- حالت `llm-context` به‌جای قالب قطعه‌متن عادی جست‌وجوی وب، ورودی‌های منبع اتکاپذیر برمی‌گرداند.
-- حالت `llm-context` از `freshness` و بازه‌های محدود `date_after` + `date_before` پشتیبانی می‌کند. از `ui_lang` پشتیبانی نمی‌کند؛ `date_before` بدون `date_after` رد می‌شود، زیرا Brave الزام می‌کند بازه‌های freshness سفارشی هم تاریخ شروع و هم تاریخ پایان را داشته باشند.
-- `ui_lang` باید شامل یک زیرتگ منطقه مانند `en-US` باشد.
+- OpenClaw از طرح **Search** در Brave استفاده می‌کند. اگر اشتراک قدیمی دارید (برای نمونه طرح اصلی Free با ۲٬۰۰۰ پرس‌وجو در ماه)، همچنان معتبر است، اما قابلیت‌های جدیدتر مانند LLM Context یا محدودیت نرخ بالاتر را شامل نمی‌شود.
+- هر طرح Brave شامل **اعتبار رایگان ماهانهٔ ۵ دلار** است که تمدید می‌شود. هزینهٔ طرح Search برای هر ۱٬۰۰۰ درخواست ۵ دلار است؛ بنابراین این اعتبار هزینهٔ ۱٬۰۰۰ پرس‌وجو در ماه را پوشش می‌دهد. برای جلوگیری از هزینه‌های غیرمنتظره، محدودیت مصرف خود را در داشبورد Brave تنظیم کنید. برای مشاهدهٔ طرح‌های فعلی، به [درگاه Brave API](https://brave.com/search/api/) مراجعه کنید.
+- طرح Search شامل نقطهٔ پایانی LLM Context و حقوق استنتاج هوش مصنوعی است. ذخیرهٔ نتایج برای آموزش یا تنظیم مدل‌ها به طرحی با حقوق صریح ذخیره‌سازی نیاز دارد. [شرایط خدمات](https://api-dashboard.search.brave.com/terms-of-service) Brave را ببینید.
+- حالت `llm-context` به‌جای قالب معمول قطعهٔ متنی جست‌وجوی وب، ورودی‌های منبع مستندشده را بازمی‌گرداند.
+- حالت `llm-context` از `freshness` و بازه‌های محدود `date_after` + `date_before` پشتیبانی می‌کند. از `ui_lang` پشتیبانی نمی‌کند؛ `date_before` بدون `date_after` رد می‌شود، زیرا Brave ملزم می‌کند بازه‌های تازگی سفارشی هم تاریخ آغاز و هم تاریخ پایان را شامل شوند.
+- `ui_lang` باید یک زیرتگ منطقه مانند `en-US` داشته باشد.
 - نتایج به‌طور پیش‌فرض به‌مدت ۱۵ دقیقه کش می‌شوند (از طریق `cacheTtlMinutes` قابل پیکربندی است).
-- مقدارهای سفارشی `webSearch.baseUrl` در هویت کش Brave گنجانده می‌شوند، بنابراین پاسخ‌های ویژهٔ پراکسی با هم تداخل پیدا نمی‌کنند.
-- برای ثبت URLها/پارامترهای پرس‌وجوی درخواست Brave، وضعیت/زمان‌بندی پاسخ، و رویدادهای برخورد/عدم‌برخورد/نوشتن کش جست‌وجو هنگام عیب‌یابی، پرچم عیب‌یابی `brave.http` را فعال کنید. این پرچم هرگز کلید API یا بدنهٔ پاسخ‌ها را ثبت نمی‌کند، اما پرس‌وجوهای جست‌وجو می‌توانند حساس باشند.
+- مقادیر سفارشی `webSearch.baseUrl` در شناسهٔ کش Brave لحاظ می‌شوند تا
+  پاسخ‌های مختص پروکسی با یکدیگر تداخل نداشته باشند.
+- برای ثبت نشانی‌های URL/پارامترهای پرس‌وجوی درخواست Brave، وضعیت/زمان‌بندی پاسخ و رویدادهای اصابت/عدم اصابت/نوشتن در کش جست‌وجو هنگام عیب‌یابی، پرچم تشخیصی `brave.http` را فعال کنید. این پرچم هرگز کلید API یا بدنهٔ پاسخ را ثبت نمی‌کند، اما پرس‌وجوهای جست‌وجو می‌توانند حساس باشند.
 
 ## مرتبط
 
-- [مرور کلی جست‌وجوی وب](/fa/tools/web) -- همهٔ ارائه‌دهندگان و تشخیص خودکار
-- [جست‌وجوی Perplexity](/fa/tools/perplexity-search) -- نتایج ساختاریافته با فیلترکردن دامنه
+- [نمای کلی جست‌وجوی وب](/fa/tools/web) -- همهٔ ارائه‌دهندگان و تشخیص خودکار
+- [جست‌وجوی Perplexity](/fa/tools/perplexity-search) -- نتایج ساختاریافته با پالایش دامنه
 - [جست‌وجوی Exa](/fa/tools/exa-search) -- جست‌وجوی عصبی با استخراج محتوا

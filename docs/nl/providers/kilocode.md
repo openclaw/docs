@@ -1,96 +1,72 @@
 ---
 read_when:
     - Je wilt één API-sleutel voor veel LLM's
-    - Je wilt modellen uitvoeren via Kilo Gateway in OpenClaw
+    - Je wilt modellen via Kilo Gateway uitvoeren in OpenClaw
 summary: Gebruik de uniforme API van Kilo Gateway om toegang te krijgen tot veel modellen in OpenClaw
 title: Kilo Gateway
 x-i18n:
-    generated_at: "2026-06-27T18:12:44Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:14:06Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: be06295295b63ce9b9d00d6f3d73e132c805237fde056eac4619616bf992e803
+    source_hash: 2108e1bb5b2430f42bf9e798da1d5e40448f05d396ab1710a0d6708961960756
     source_path: providers/kilocode.md
     workflow: 16
 ---
 
-Kilo Gateway biedt een **uniforme API** die aanvragen naar veel modellen routeert achter één
-eindpunt en één API-sleutel. Het is OpenAI-compatibel, dus de meeste OpenAI-SDK's werken door de basis-URL te wijzigen.
+Kilo Gateway routeert verzoeken naar veel modellen achter één OpenAI-compatibel eindpunt en één API-sleutel.
 
 | Eigenschap | Waarde                             |
 | ---------- | ---------------------------------- |
 | Provider   | `kilocode`                         |
-| Auth       | `KILOCODE_API_KEY`                 |
+| Authenticatie | `KILOCODE_API_KEY`              |
 | API        | OpenAI-compatibel                  |
 | Basis-URL  | `https://api.kilo.ai/api/gateway/` |
 
 ## Plugin installeren
-
-Installeer de officiële Plugin en herstart daarna Gateway:
 
 ```bash
 openclaw plugins install @openclaw/kilocode-provider
 openclaw gateway restart
 ```
 
-## Aan de slag
+## Instellen
 
 <Steps>
-  <Step title="Maak een account aan">
-    Ga naar [app.kilo.ai](https://app.kilo.ai), meld je aan of maak een account aan, ga daarna naar API Keys en genereer een nieuwe sleutel.
+  <Step title="Een account aanmaken">
+    Ga naar [app.kilo.ai](https://app.kilo.ai), meld u aan of maak een account en genereer vervolgens een API-sleutel.
   </Step>
-  <Step title="Voer onboarding uit">
+  <Step title="Onboarding uitvoeren">
     ```bash
     openclaw onboard --auth-choice kilocode-api-key
     ```
 
-    Of stel de omgevingsvariabele rechtstreeks in:
+    U kunt ook de omgevingsvariabele rechtstreeks instellen:
 
     ```bash
     export KILOCODE_API_KEY="<your-kilocode-api-key>" # pragma: allowlist secret
     ```
 
   </Step>
-  <Step title="Controleer of het model beschikbaar is">
+  <Step title="Controleren of het model beschikbaar is">
     ```bash
     openclaw models list --provider kilocode
     ```
   </Step>
 </Steps>
 
-## Standaardmodel
+## Standaardmodel en catalogus
 
-Het standaardmodel is `kilocode/kilo/auto`, een door de provider beheerd smart-routing
-model dat door Kilo Gateway wordt beheerd.
+Het standaardmodel is `kilocode/kilo/auto`, een slim routeringsmodel dat door de provider wordt beheerd. OpenClaw publiceert hiervoor
+geen toewijzing van taken aan bovenliggende modellen; de routering achter `kilo/auto` wordt beheerd door Kilo Gateway.
 
-<Note>
-OpenClaw behandelt `kilocode/kilo/auto` als de stabiele standaardreferentie, maar publiceert geen
-door bronnen onderbouwde taak-naar-upstream-model-koppeling voor die route. De exacte
-upstream-routering achter `kilocode/kilo/auto` is eigendom van Kilo Gateway en is niet
-hardcoded in OpenClaw.
-</Note>
+Bij het opstarten bevraagt OpenClaw `GET https://api.kilo.ai/api/gateway/models` en voegt het ontdekte modellen
+vóór een statische terugvalcatalogus samen. De statische terugval bevat alleen `kilocode/kilo/auto` (`Kilo Auto`,
+`input: ["text", "image"]`, `reasoning: true`, `contextWindow: 1000000`, `maxTokens: 128000`).
 
-## Ingebouwde catalogus
-
-OpenClaw ontdekt bij het opstarten dynamisch beschikbare modellen vanuit de Kilo Gateway. Gebruik
-`/models kilocode` om de volledige lijst met modellen te zien die beschikbaar zijn voor je account.
-
-Elk model dat beschikbaar is op de gateway kan worden gebruikt met het voorvoegsel `kilocode/`:
-
-| Modelreferentie                         | Opmerkingen                        |
-| --------------------------------------- | ---------------------------------- |
-| `kilocode/kilo/auto`                    | Standaard — smart routing          |
-| `kilocode/anthropic/claude-sonnet-4`    | Anthropic via Kilo                 |
-| `kilocode/openai/gpt-5.5`               | OpenAI via Kilo                    |
-| `kilocode/google/gemini-3.1-pro-preview` | Google via Kilo                   |
-| ...en nog veel meer                     | Gebruik `/models kilocode` om alles weer te geven |
-
-<Tip>
-Bij het opstarten vraagt OpenClaw `GET https://api.kilo.ai/api/gateway/models` op en voegt
-ontdekte modellen vóór de statische fallback-catalogus samen. De statische fallback bevat altijd
-`kilocode/kilo/auto` (`Kilo Auto`) met `input: ["text", "image"]`,
-`reasoning: true`, `contextWindow: 1000000` en `maxTokens: 128000`.
-</Tip>
+Elk model op de Gateway is adresseerbaar als `kilocode/<upstream-id>` (bijvoorbeeld
+`kilocode/anthropic/claude-sonnet-4`, `kilocode/openai/gpt-5.5`). Voer `/models kilocode` of
+`openclaw models list --provider kilocode` uit om de volledige lijst met ontdekte modellen te bekijken.
 
 ## Configuratievoorbeeld
 
@@ -105,34 +81,35 @@ ontdekte modellen vóór de statische fallback-catalogus samen. De statische fal
 }
 ```
 
+## Opmerkingen over het gedrag
+
 <AccordionGroup>
   <Accordion title="Transport en compatibiliteit">
-    Kilo Gateway is in de bron gedocumenteerd als OpenRouter-compatibel, dus het blijft op
-    het proxy-achtige OpenAI-compatibele pad in plaats van native OpenAI-aanvraagvorming.
+    Kilo Gateway is compatibel met OpenRouter en gebruikt daarom het proxy-achtige, OpenAI-compatibele verzoekpad
+    in plaats van de systeemeigen OpenAI-verzoekstructuur (geen `store`, geen OpenAI-payload voor redeneerinspanning).
 
-    - Door Gemini ondersteunde Kilo-referenties blijven op het proxy-Gemini-pad, dus OpenClaw behoudt
-      daar Gemini thought-signature-sanitatie zonder native Gemini
-      replay-validatie of bootstrap-herschrijvingen in te schakelen.
-    - Kilo Gateway gebruikt onder de motorkap een Bearer-token met je API-sleutel.
+    - Door Gemini ondersteunde Kilo-verwijzingen blijven op het proxy-Gemini-pad: OpenClaw schoont daar Gemini-denkhandtekeningen
+      op, maar schakelt geen systeemeigen Gemini-validatie voor herhaling of herschrijvingen voor initialisatie in.
+    - Verzoeken gebruiken een Bearer-token dat is opgebouwd uit uw API-sleutel.
 
   </Accordion>
 
-  <Accordion title="Stream-wrapper en redeneren">
-    Kilo's gedeelde stream-wrapper voegt de provider-appheader toe en normaliseert
-    proxy-reasoning-payloads voor ondersteunde concrete modelreferenties.
+  <Accordion title="Streamwrapper en redenering">
+    De Kilo-streamwrapper voegt een `X-KILOCODE-FEATURE`-verzoekheader toe (standaard `openclaw`,
+    te overschrijven met de omgevingsvariabele `KILOCODE_FEATURE`) en normaliseert payloads voor redeneerinspanning voor
+    modellen die dit ondersteunen.
 
     <Warning>
-    `kilocode/kilo/auto` en andere hints zonder ondersteuning voor proxy-reasoning slaan reasoning-
-    injectie over. Als je reasoning-ondersteuning nodig hebt, gebruik dan een concrete modelreferentie zoals
-    `kilocode/anthropic/claude-sonnet-4`.
+    Verwijzingen naar `kilocode/kilo/auto` en `x-ai/*` slaan de injectie van redeneerinspanning over. Gebruik een concrete modelverwijzing,
+    zoals `kilocode/anthropic/claude-sonnet-4`, als u ondersteuning voor redenering nodig hebt.
     </Warning>
 
   </Accordion>
 
-  <Accordion title="Problemen oplossen">
+  <Accordion title="Probleemoplossing">
     - Als modeldetectie bij het opstarten mislukt, valt OpenClaw terug op de statische catalogus met `kilocode/kilo/auto`.
-    - Controleer of je API-sleutel geldig is en of je Kilo-account de gewenste modellen heeft ingeschakeld.
-    - Wanneer de Gateway als daemon draait, zorg er dan voor dat `KILOCODE_API_KEY` beschikbaar is voor dat proces (bijvoorbeeld in `~/.openclaw/.env` of via `env.shellEnv`).
+    - Controleer of uw API-sleutel geldig is en of de gewenste modellen voor uw Kilo-account zijn ingeschakeld.
+    - Wanneer Gateway als daemon wordt uitgevoerd, moet `KILOCODE_API_KEY` beschikbaar zijn voor dat proces (bijvoorbeeld in `~/.openclaw/.env` of via `env.shellEnv`).
 
   </Accordion>
 </AccordionGroup>
@@ -141,10 +118,10 @@ ontdekte modellen vóór de statische fallback-catalogus samen. De statische fal
 
 <CardGroup cols={2}>
   <Card title="Modelselectie" href="/nl/concepts/model-providers" icon="layers">
-    Providers, modelreferenties en failovergedrag kiezen.
+    Providers, modelverwijzingen en failovergedrag kiezen.
   </Card>
   <Card title="Configuratiereferentie" href="/nl/gateway/configuration-reference" icon="gear">
-    Volledige OpenClaw-configuratiereferentie.
+    Volledige configuratiereferentie voor OpenClaw.
   </Card>
   <Card title="Kilo Gateway" href="https://app.kilo.ai" icon="arrow-up-right-from-square">
     Kilo Gateway-dashboard, API-sleutels en accountbeheer.

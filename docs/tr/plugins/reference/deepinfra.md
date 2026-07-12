@@ -1,11 +1,11 @@
 ---
 read_when:
-    - deepinfra Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
-summary: OpenClaw'a DeepInfra model sağlayıcı desteği ekler.
-title: DeepInfra Plugin
+    - deepinfra pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
+summary: OpenClaw'a DeepInfra model sağlayıcısı desteği ekler.
+title: DeepInfra Plugin'i
 x-i18n:
-    generated_at: "2026-06-28T00:58:58Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:36:45Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 67ee0e714d812bbb72a05233ac52a17da796631766a9222bb9caa4d441c8433f
@@ -13,19 +13,19 @@ x-i18n:
     workflow: 16
 ---
 
-# DeepInfra Plugin
+# DeepInfra Plugin'i
 
 OpenClaw'a DeepInfra model sağlayıcısı desteği ekler.
 
 ## Dağıtım
 
 - Paket: `@openclaw/deepinfra-provider`
-- Kurulum rotası: npm; ClawHub: `clawhub:@openclaw/deepinfra-provider`
+- Kurulum yolu: npm; ClawHub: `clawhub:@openclaw/deepinfra-provider`
 
-## Yüzey
+## Kapsam
 
 sağlayıcılar: deepinfra; sözleşmeler: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, speechProviders, videoGenerationProviders
 
-## İlgili dokümanlar
+## İlgili belgeler
 
 - [deepinfra](/tr/providers/deepinfra)

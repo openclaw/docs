@@ -1,48 +1,40 @@
 ---
 read_when:
-    - Mengonfigurasi pesan saluran yang ditulis bot
-    - Menyetel perlindungan loop bot-ke-bot
+    - Mengonfigurasi pesan saluran yang dibuat oleh bot
+    - Menyesuaikan perlindungan perulangan antarbot
 sidebarTitle: Bot loop protection
-summary: Perlindungan loop bot-ke-bot default dan penggantian channel
-title: Perlindungan loop bot
+summary: Default perlindungan perulangan antarbot dan penggantian khusus kanal
+title: Perlindungan perulangan bot
 x-i18n:
-    generated_at: "2026-06-27T17:09:07Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:55:27Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7a36794332e89dc7a9cf558e1687beabf4a6d10fb8e73c39794b0f0fd01c65b7
+    source_hash: 08637267cd3422d3154315e709c85c85fa57641f1adb0e8ef10c32e8a7b73312
     source_path: channels/bot-loop-protection.md
     workflow: 16
 ---
 
-# Perlindungan loop bot
+OpenClaw dapat menerima pesan yang ditulis oleh bot lain di kanal yang mendukung `allowBots`. Saat jalur tersebut diaktifkan, perlindungan perulangan pasangan mencegah dua identitas bot saling membalas tanpa henti.
 
-OpenClaw dapat menerima pesan yang ditulis oleh bot lain di channel yang mendukung `allowBots`.
-Saat jalur itu diaktifkan, perlindungan loop pasangan mencegah dua identitas bot
-saling membalas tanpa batas.
+Pengaman ini diberlakukan oleh pemroses balasan masuk inti. Setiap kanal yang mendukung memetakan peristiwa masuknya menjadi fakta generik: akun atau cakupan, id percakapan, id bot pengirim, dan id bot penerima. Inti melacak pasangan peserta dalam kedua arah (A ke B dan B ke A dihitung sebagai pasangan yang sama), menerapkan batas dalam jendela bergulir, dan menangguhkan pasangan tersebut selama masa jeda setelah batas terlampaui.
 
-Penjaga ini diterapkan oleh runner balasan masuk inti. Setiap channel yang mendukungnya
-memetakan peristiwa masuknya sendiri menjadi fakta generik: akun atau cakupan, id percakapan,
-id bot pengirim, dan id bot penerima. Inti kemudian melacak pasangan peserta di kedua
-arah, menerapkan anggaran jendela geser, dan menekan pasangan tersebut selama
-masa jeda setelah anggaran terlampaui.
+## Nilai bawaan
 
-## Default
+Perlindungan perulangan pasangan aktif setiap kali kanal mengizinkan pesan yang dibuat bot mencapai pengiriman. Nilai bawaan internal:
 
-Perlindungan loop pasangan aktif saat sebuah channel mengizinkan pesan yang dibuat bot mencapai
-dispatch. Default bawaan adalah:
+| Kunci                | Nilai bawaan | Arti                                                   |
+| -------------------- | ------------ | ------------------------------------------------------ |
+| `enabled`            | `true`       | Pengaman aktif untuk kanal yang mendukungnya.           |
+| `maxEventsPerWindow` | `20`         | Peristiwa yang dapat dipertukarkan pasangan bot dalam jendela. |
+| `windowSeconds`      | `60`         | Durasi jendela bergulir.                               |
+| `cooldownSeconds`    | `60`         | Waktu penangguhan setelah pasangan melampaui batas.     |
 
-- `maxEventsPerWindow: 20` - pasangan bot dapat bertukar 20 peristiwa dalam jendela
-- `windowSeconds: 60` - panjang jendela geser
-- `cooldownSeconds: 60` - waktu penekanan setelah pasangan melampaui anggaran
+Pengaman ini tidak memengaruhi pesan yang dibuat manusia, penerapan dengan satu bot, pemfilteran pesan sendiri, atau balasan bot yang tetap berada di bawah batas.
 
-Penjaga ini tidak memengaruhi pesan normal yang ditulis manusia, deployment bot tunggal,
-pemfilteran pesan sendiri, atau balasan bot sekali jalan yang tetap berada di bawah anggaran.
+## Mengonfigurasi nilai bawaan bersama
 
-## Konfigurasikan default bersama
-
-Atur `channels.defaults.botLoopProtection` sekali untuk memberi setiap channel yang mendukung
-baseline yang sama. Penggantian channel dan akun masih dapat menyetel permukaan individual.
+Tetapkan `channels.defaults.botLoopProtection` sekali untuk memberikan dasar yang sama kepada setiap kanal yang mendukung. Penggantian pada tingkat kanal, akun, dan ruang tetap dapat menyesuaikan masing-masing permukaan.
 
 ```json5
 {
@@ -58,18 +50,17 @@ baseline yang sama. Penggantian channel dan akun masih dapat menyetel permukaan 
 }
 ```
 
-Atur `enabled: false` hanya saat kebijakan channel Anda secara sengaja mengizinkan
-percakapan bot-ke-bot tanpa penekanan otomatis.
+Tetapkan `enabled: false` hanya jika kebijakan kanal Anda secara sengaja mengizinkan percakapan antarbobot tanpa penangguhan otomatis.
 
-## Ganti per channel atau akun
+## Mengganti per kanal, akun, atau ruang
 
-Channel yang mendukung melapiskan konfigurasinya sendiri di atas default bersama. Prioritasnya adalah:
+Kanal yang mendukung menumpuk konfigurasinya sendiri di atas nilai bawaan bersama, kunci demi kunci. Urutan prioritas, dari yang paling spesifik:
 
-- `channels.<channel>.<room-or-space>.botLoopProtection`, saat channel mendukung penggantian per percakapan
-- `channels.<channel>.accounts.<account>.botLoopProtection`, saat channel mendukung akun
-- `channels.<channel>.botLoopProtection`, saat channel mendukung default tingkat atas
-- `channels.defaults.botLoopProtection`
-- default bawaan
+1. `channels.<channel>.<room-or-space>.botLoopProtection`, jika kanal mendukung penggantian per percakapan
+2. `channels.<channel>.accounts.<account>.botLoopProtection`, jika kanal mendukung akun
+3. `channels.<channel>.botLoopProtection`, jika kanal mendukung nilai bawaan tingkat atas
+4. `channels.defaults.botLoopProtection`
+5. nilai bawaan internal
 
 ```json5
 {
@@ -84,27 +75,11 @@ Channel yang mendukung melapiskan konfigurasinya sendiri di atas default bersama
         maxEventsPerWindow: 8,
       },
       accounts: {
-        molty: {
+        secondary: {
           allowBots: "mentions",
           botLoopProtection: {
             maxEventsPerWindow: 5,
             cooldownSeconds: 90,
-          },
-        },
-      },
-    },
-    slack: {
-      allowBots: "mentions",
-      botLoopProtection: {
-        maxEventsPerWindow: 8,
-      },
-    },
-    matrix: {
-      allowBots: "mentions",
-      groups: {
-        "!roomid:example.org": {
-          botLoopProtection: {
-            maxEventsPerWindow: 5,
           },
         },
       },
@@ -119,20 +94,33 @@ Channel yang mendukung melapiskan konfigurasinya sendiri di atas default bersama
         },
       },
     },
+    matrix: {
+      allowBots: "mentions",
+      groups: {
+        "!roomid:example.org": {
+          botLoopProtection: {
+            maxEventsPerWindow: 5,
+          },
+        },
+      },
+    },
+    slack: {
+      allowBots: "mentions",
+      botLoopProtection: {
+        maxEventsPerWindow: 8,
+      },
+    },
   },
 }
 ```
 
-## Dukungan channel
+## Dukungan kanal
 
-- Discord: fakta `author.bot` native, diberi kunci berdasarkan akun Discord, channel, dan pasangan bot.
-- Slack: fakta `bot_id` native untuk pesan yang ditulis bot yang diterima, diberi kunci berdasarkan akun Slack, channel, dan pasangan bot.
-- Matrix: akun bot Matrix yang dikonfigurasi, diberi kunci berdasarkan akun Matrix, room, dan pasangan bot yang dikonfigurasi.
-- Google Chat: fakta `sender.type=BOT` native untuk pesan yang ditulis bot yang diterima, diberi kunci berdasarkan akun, space, dan pasangan bot.
+- Discord: fakta asli `author.bot`, dikunci berdasarkan akun Discord, kanal, dan pasangan bot.
+- Google Chat: fakta asli `sender.type=BOT` untuk pesan yang dibuat bot dan diterima, dikunci berdasarkan akun, ruang, dan pasangan bot.
+- Matrix: akun bot Matrix yang dikonfigurasi, dikunci berdasarkan akun Matrix, ruang, dan pasangan bot yang dikonfigurasi.
+- Slack: fakta asli `bot_id` untuk pesan yang dibuat bot dan diterima, dikunci berdasarkan akun Slack, kanal, dan pasangan bot.
 
-Channel yang tidak mengekspos identitas bot masuk yang andal tetap menggunakan
-pemfilteran pesan sendiri dan kebijakan akses normalnya. Channel tersebut sebaiknya tidak ikut memakai
-penjaga ini sampai dapat mengidentifikasi kedua peserta dalam pasangan bot.
+Kanal yang tidak menyediakan identitas bot masuk yang dapat diandalkan tetap menggunakan filter pesan sendiri dan kebijakan akses seperti biasa. Kanal tersebut tidak boleh mengaktifkan pengaman ini hingga dapat mengidentifikasi kedua peserta dalam pasangan bot.
 
-Lihat [runtime SDK](/id/plugins/sdk-runtime#reusable-runtime-utilities) untuk detail implementasi
-Plugin.
+Lihat [runtime SDK](/id/plugins/sdk-runtime#reusable-runtime-utilities) untuk detail implementasi plugin.

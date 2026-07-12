@@ -1,11 +1,10 @@
 ---
-summary: OpenClaw 성숙도 스코어카드의 제품 영역과 평가 기준에 대한 상세 참고 자료입니다.
+summary: OpenClaw 성숙도 스코어카드의 제품 영역과 그 기반이 되는 점검 항목에 대한 상세 참조 자료.
 title: 성숙도 분류 체계
 x-i18n:
-    generated_at: "2026-07-12T15:24:28Z"
+    generated_at: "2026-07-12T00:52:03Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 0739da06341d9bd86cc3a98772c8cbfbcb9a5acf80ca5ac1005c86dafaf273b7
     source_path: maturity/taxonomy.md
@@ -15,25 +14,25 @@ x-i18n:
 # 성숙도 분류 체계
 
 <div className="maturity-hero maturity-hero-compact">
-  <p className="maturity-kicker">스코어카드의 기반 모델</p>
+  <p className="maturity-kicker">스코어카드의 기반이 되는 모델</p>
   <p className="maturity-hero-title">표면 영역 &gt; 범주 &gt; 기능 &gt; 증거.</p>
-  <p>50개의 표면 영역을 4개 계열로 분류했으며, 모든 범주는 표준 문서 및 QA 적용 범위 ID와 연결됩니다.</p>
+  <p>50개의 표면 영역을 4개 제품군으로 분류했으며, 모든 범주는 표준 문서 및 QA 적용 범위 ID와 연결됩니다.</p>
   <p className="maturity-jump-links"><a href="#product-areas">제품 영역 둘러보기</a> / <a href="#taxonomy-details">상세 분류 체계 열기</a> / <a href="/ko/maturity/scorecard">점수 보기</a></p>
 </div>
 
 ## 이 페이지를 읽는 방법
 
-표면 영역은 Gateway 런타임, Discord 또는 macOS 앱과 같은 제품 영역입니다. 각 표면 영역은 여러 범주로 구성되며, 각 범주에는 QA 시나리오가 다루는 기능 수준 검사가 포함됩니다. 릴리스 수준을 판단하려면 스코어카드를 사용하고, 그 기반 모델을 살펴보려면 이 페이지를 사용하십시오.
+표면 영역은 Gateway 런타임, Discord 또는 macOS 앱과 같은 제품 영역입니다. 각 표면 영역에는 범주가 있고, 각 범주에는 QA 시나리오에서 다루는 기능 수준 검사가 포함됩니다. 릴리스 수준을 판단하려면 스코어카드를 사용하고, 그 기반 모델을 살펴보려면 이 페이지를 사용하세요.
 
 ## 성숙도 수준
 
 <div className="maturity-level-list">
-  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M0</span><span>계획됨</span></span></span><span>방향은 정해졌지만 지원되는 사용자 경로는 없습니다.</span><span className="maturity-level-promotion">승급 조건: 설계 이슈, 담당자 및 대상 표면 영역이 존재합니다.</span></div>
-  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M1</span><span>실험적</span></span></span><span>주의 사항, 플래그, 소스 빌드 또는 유지관리자 전용 흐름을 통해 구현됩니다.</span><span className="maturity-level-promotion">승급 조건: 유지관리자가 현재 main에서 시나리오를 실행할 수 있습니다.</span></div>
-  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>알파</span></span></span><span>실제 사용자가 사용해 볼 수 있지만 호환성을 깨는 변경과 미완성 UX가 예상됩니다.</span><span className="maturity-level-promotion">승급 조건: 문서화된 설정, 기본 테스트, 알려진 주의 사항 및 실제 환경에서의 증거가 하나 이상 있습니다.</span></div>
-  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>베타</span></span></span><span>공개 경로가 존재하며 주요 워크플로는 제한된 주의 사항 내에서 사용할 수 있습니다.</span><span className="maturity-level-promotion">승급 조건: 설치/업데이트 문서, 회귀 테스트, 지원 런북 및 예상 환경 전반에서 성공한 시나리오 증거가 있습니다.</span></div>
-  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>안정적</span></span></span><span>일반 사용자에게 권장되는 경로입니다. 실패는 회귀로 간주됩니다.</span><span className="maturity-level-promotion">승급 조건: 릴리스 게이트, doctor/문제 해결 경로, 폭넓은 문서 및 반복적인 실제 환경 증거가 있습니다.</span></div>
-  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-clawesome"><span className="maturity-level-code">M5</span><span>Clawesome</span></span></span><span>완성도가 높고 만족스러우며, 계측이 잘 되어 있고 최상의 유사 워크플로와 경쟁할 수 있습니다.</span><span className="maturity-level-promotion">승급 조건: 안정적 수준을 충족하고 대표 사용자 전반의 사용자 스코어카드를 통과합니다.</span></div>
+  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M0</span><span>계획됨</span></span></span><span>방향은 정해졌지만 지원되는 사용자 경로가 없습니다.</span><span className="maturity-level-promotion">승급 조건: 설계 이슈, 담당자 및 대상 표면 영역이 존재합니다.</span></div>
+  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M1</span><span>실험적</span></span></span><span>주의 사항, 플래그, 소스 빌드 또는 유지관리자 전용 흐름을 전제로 구현되었습니다.</span><span className="maturity-level-promotion">승급 조건: 유지관리자가 현재 main에서 시나리오를 실행할 수 있습니다.</span></div>
+  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>알파</span></span></span><span>실제 사용자가 사용해 볼 수 있지만 호환성을 깨는 변경과 불완전한 UX가 예상됩니다.</span><span className="maturity-level-promotion">승급 조건: 문서화된 설정, 기본 테스트, 알려진 주의 사항 및 하나 이상의 실제 환경 검증이 있습니다.</span></div>
+  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>베타</span></span></span><span>공개 경로가 존재하며 주요 워크플로를 제한된 주의 사항과 함께 사용할 수 있습니다.</span><span className="maturity-level-promotion">승급 조건: 설치/업데이트 문서, 회귀 테스트, 지원 런북 및 예상 환경 전반에서 성공한 시나리오 검증이 있습니다.</span></div>
+  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>안정적</span></span></span><span>일반 사용자에게 권장되는 경로입니다. 실패는 회귀로 간주됩니다.</span><span className="maturity-level-promotion">승급 조건: 릴리스 게이트, doctor/문제 해결 경로, 폭넓은 문서 및 반복된 실제 환경 검증이 있습니다.</span></div>
+  <div className="maturity-level-row"><span className="maturity-level-title"><span className="maturity-level-pill maturity-level-clawesome"><span className="maturity-level-code">M5</span><span>Clawesome</span></span></span><span>완성도가 높고 만족스러우며 계측이 잘되어 있고, 비교 가능한 최상의 워크플로와 경쟁할 수 있습니다.</span><span className="maturity-level-promotion">승급 조건: 안정적 수준에 더해 대표 사용자 집단에서 사용자 스코어카드를 통과합니다.</span></div>
 </div>
 
 ## 제품 영역
@@ -123,20 +122,20 @@ x-i18n:
 
     <a className="maturity-surface-link" href="#linux-gateway-host">
       <span className="maturity-surface-title">Linux Gateway 호스트</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>안정화</span></span><span>5개 영역 - 89% 완료</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>안정판</span></span><span>5개 영역 - 89% 완료</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#macos-gateway-host">
       <span className="maturity-surface-title">macOS Gateway 호스트</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>안정화</span></span><span>7개 영역 - 88% 완료</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>안정판</span></span><span>7개 영역 - 88% 완료</span></span>
     </a>
     <a className="maturity-surface-link" href="#android-app">
       <span className="maturity-surface-title">Android 앱</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>안정화</span></span><span>7개 영역 - 80% 완료</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>안정판</span></span><span>7개 영역 - 80% 완료</span></span>
     </a>
     <a className="maturity-surface-link" href="#ios-app">
       <span className="maturity-surface-title">iOS 앱</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>안정화</span></span><span>8개 영역 - 80% 완료</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>안정판</span></span><span>8개 영역 - 80% 완료</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#docker-and-podman-hosting">
@@ -150,7 +149,7 @@ x-i18n:
     </a>
 
     <a className="maturity-surface-link" href="#raspberry-pi-and-small-linux-devices">
-      <span className="maturity-surface-title">Raspberry Pi 및 소형 Linux 기기</span>
+      <span className="maturity-surface-title">Raspberry Pi 및 소형 Linux 장치</span>
       <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-beta"><span className="maturity-level-code">M3</span><span>베타</span></span><span>4개 영역 - 79% 완료</span></span>
     </a>
 
@@ -177,7 +176,7 @@ x-i18n:
     </a>
 
     <a className="maturity-surface-link" href="#watchos-companion-surfaces">
-      <span className="maturity-surface-title">watchOS 컴패니언 표면</span>
+      <span className="maturity-surface-title">watchOS 컴패니언 인터페이스</span>
       <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-experimental"><span className="maturity-level-code">M1</span><span>실험적</span></span><span>5개 영역 - 44% 완료</span></span>
     </a>
 
@@ -196,7 +195,7 @@ x-i18n:
 
     <a className="maturity-surface-link" href="#discord">
       <span className="maturity-surface-title">Discord</span>
-      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>안정</span></span><span>6개 영역 - 87% 완료</span></span>
+      <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-stable"><span className="maturity-level-code">M4</span><span>안정적</span></span><span>6개 영역 - 87% 완료</span></span>
     </a>
 
     <a className="maturity-surface-link" href="#telegram">
@@ -298,7 +297,7 @@ x-i18n:
     </a>
 
     <a className="maturity-surface-link" href="#long-tail-hosted-providers">
-      <span className="maturity-surface-title">롱테일 호스팅 제공자</span>
+      <span className="maturity-surface-title">다양한 소규모 호스팅 제공자</span>
       <span className="maturity-surface-meta"><span className="maturity-level-pill maturity-level-alpha"><span className="maturity-level-code">M2</span><span>알파</span></span><span>3개 영역 - 68% 완료</span></span>
     </a>
 
@@ -312,12 +311,12 @@ x-i18n:
 ### 코어
 
 <AccordionGroup>
-  <Accordion title="CLI - M4 안정 - 7개 영역">
+  <Accordion title="CLI - M4 안정적 - 7개 영역">
     <a id="cli" />
 
     일반적인 설정 및 복구 경로는 설치, CLI 및 Gateway 문서 전반에 설명되어 있습니다. 플랫폼별 Windows 경로는 WSL2를 통한 Windows 및 네이티브 Windows 행에서 추적됩니다.
 
-    <div className="maturity-surface-rollup"><span>적용 범위 실험적 - 4%</span><span>품질 안정 - 83%</span><span>완성도 안정 - 90%</span><span><span className="maturity-lts maturity-lts-partial">부분 지원 - 6</span></span></div>
+    <div className="maturity-surface-rollup"><span>적용 범위 실험적 - 4%</span><span>품질 안정적 - 83%</span><span>완성도 안정적 - 90%</span><span><span className="maturity-lts maturity-lts-partial">부분적 - 6</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>커버리지</span><span>품질</span><span>완성도</span><span>문서</span></div>
@@ -363,7 +362,7 @@ x-i18n:
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">CLI 관측 가능성</span>
+          <span className="maturity-category-title">CLI 관측성</span>
           <span>5개 기능 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -373,13 +372,13 @@ x-i18n:
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Doctor</span>
+          <span className="maturity-category-title">진단 도구</span>
           <span>10개 기능 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">안정적</span><span>89%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "89%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">안정적</span><span>90%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "90%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Doctor](/ko/cli/doctor), [Doctor](/ko/gateway/doctor), [비밀 정보](/ko/gateway/secrets), [문제 해결](/ko/gateway/troubleshooting)</div>
+        <div className="maturity-category-docs">[진단 도구](/ko/cli/doctor), [진단 도구](/ko/gateway/doctor), [비밀 정보](/ko/gateway/secrets), [문제 해결](/ko/gateway/troubleshooting)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -398,12 +397,12 @@ x-i18n:
   <Accordion title="Gateway 런타임 - M4 안정적 - 13개 영역">
     <a id="gateway-runtime" />
 
-    핵심 아키텍처, 인증, 페어링, 프로토콜 문서, 데몬 문서 및 CLI 런북은 광범위하며 최신 상태입니다.
+    핵심 아키텍처, 인증, 페어링, 프로토콜 문서, 데몬 문서 및 CLI 실행 안내서는 폭넓고 최신 상태입니다.
 
     <div className="maturity-surface-rollup"><span>커버리지 실험적 - 6%</span><span>품질 안정적 - 81%</span><span>완성도 안정적 - 89%</span><span><span className="maturity-lts maturity-lts-partial">부분 지원 - 12</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>커버리지</span><span>품질</span><span>완성도</span><span>문서</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>지원 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">승인 및 원격 실행</span>
@@ -476,7 +475,7 @@ x-i18n:
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">상태, 진단 및 복구</span>
+          <span className="maturity-category-title">상태 점검, 진단 및 복구</span>
           <span>7개 기능 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -487,7 +486,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">프로토콜 호환성</span>
-          <span>7개 기능 / LTS 지원</span>
+          <span>기능 7개 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
@@ -497,7 +496,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">역할 및 권한</span>
-          <span>5개 기능 / LTS 지원</span>
+          <span>기능 5개 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
@@ -507,7 +506,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Gateway 수명 주기</span>
-          <span>7개 기능 / LTS 지원</span>
+          <span>기능 7개 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>33%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "33%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">안정적</span><span>90%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "90%" }} /></span></span></div>
@@ -517,7 +516,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">보안 제어</span>
-          <span>6개 기능 / LTS 지원</span>
+          <span>기능 6개 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>75%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "75%" }} /></span></span></div>
@@ -527,7 +526,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">WebSocket 연결</span>
-          <span>8개 기능 / LTS 지원</span>
+          <span>기능 8개 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>13%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "13%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">안정적</span><span>90%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "90%" }} /></span></span></div>
@@ -541,12 +540,12 @@ x-i18n:
   <Accordion title="에이전트 런타임 - M3 베타 - 9개 영역">
     <a id="agent-runtime" />
 
-    메인 루프, 모델, 제공자 라우팅 및 도구 스트리밍은 핵심 기능으로 취급되지만, 제공자 동작은 매주 변경되므로 릴리스마다 시나리오 검증이 필요합니다.
+    메인 루프, 모델, 제공자 라우팅 및 도구 스트리밍은 핵심 기능으로 취급되지만, 제공자 동작은 매주 달라지므로 릴리스마다 시나리오 검증이 필요합니다.
 
-    <div className="maturity-surface-rollup"><span>커버리지 실험적 - 33%</span><span>품질 베타 - 78%</span><span>완성도 베타 - 79%</span><span><span className="maturity-lts maturity-lts-partial">부분 지원 - 6</span></span></div>
+    <div className="maturity-surface-rollup"><span>적용 범위 실험적 - 33%</span><span>품질 베타 - 78%</span><span>완성도 베타 - 79%</span><span><span className="maturity-lts maturity-lts-partial">부분 지원 - 6</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>지원 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>적용 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">에이전트 턴 실행</span>
@@ -575,7 +574,7 @@ x-i18n:
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>20%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "20%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Openai](/ko/providers/openai), [Anthropic](/ko/providers/anthropic), [Google](/ko/providers/google), [모델](/ko/concepts/models)</div>
+        <div className="maturity-category-docs">[OpenAI](/ko/providers/openai), [Anthropic](/ko/providers/anthropic), [Google](/ko/providers/google), [모델](/ko/concepts/models)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -595,7 +594,7 @@ x-i18n:
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>25%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "25%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[모델](/ko/concepts/models), [모델](/ko/cli/models), [Openai](/ko/providers/openai), [에이전트 런타임](/ko/concepts/agent-runtimes)</div>
+        <div className="maturity-category-docs">[모델](/ko/concepts/models), [모델](/ko/cli/models), [OpenAI](/ko/providers/openai), [에이전트 런타임](/ko/concepts/agent-runtimes)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -605,7 +604,7 @@ x-i18n:
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>24%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "24%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[모델](/ko/concepts/models), [에이전트](/ko/cli/agent), [모델](/ko/cli/models), [Openai](/ko/providers/openai), [Anthropic](/ko/providers/anthropic), [Google](/ko/providers/google), [하위 에이전트](/ko/tools/subagents)</div>
+        <div className="maturity-category-docs">[모델](/ko/concepts/models), [에이전트](/ko/cli/agent), [모델](/ko/cli/models), [OpenAI](/ko/providers/openai), [Anthropic](/ko/providers/anthropic), [Google](/ko/providers/google), [하위 에이전트](/ko/tools/subagents)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -644,16 +643,16 @@ x-i18n:
   <Accordion title="세션, 메모리 및 컨텍스트 엔진 - M3 베타 - 9개 영역">
     <a id="session-memory-and-context-engine" />
 
-    문서가 충실하고 구현도 활발히 진행 중입니다. 성숙도는 대화 기록의 내구성, Compaction 품질 및 클라이언트 간 동등성에 달려 있습니다.
+    문서가 충실하고 구현이 활발히 진행 중입니다. 성숙도는 대화 기록의 내구성, Compaction 품질, 클라이언트 간 기능 동등성에 따라 달라집니다.
 
-    <div className="maturity-surface-rollup"><span>적용 범위 실험 단계 - 30%</span><span>품질 베타 - 77%</span><span>완성도 베타 - 79%</span><span><span className="maturity-lts maturity-lts-partial">부분 지원 - 6</span></span></div>
+    <div className="maturity-surface-rollup"><span>적용 범위 실험적 - 30%</span><span>품질 베타 - 77%</span><span>완성도 베타 - 79%</span><span><span className="maturity-lts maturity-lts-partial">부분적 - 6</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>적용 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>지원 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">CLI 세션 및 트랜스크립트 관리</span>
-          <span>2개 기능 / LTS 지원</span>
+          <span>기능 2개 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
@@ -663,7 +662,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">토큰 관리</span>
-          <span>3개 기능 / LTS 지원</span>
+          <span>기능 3개 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>20%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "20%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
@@ -673,7 +672,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">컨텍스트 엔진</span>
-          <span>2개 기능 / LTS 지원</span>
+          <span>기능 2개 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>57%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "57%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
@@ -683,7 +682,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">클라이언트 간 기록 및 세션 동등성</span>
-          <span>2개 기능</span>
+          <span>기능 2개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>40%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "40%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
@@ -693,7 +692,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">진단, 유지 관리 및 복구</span>
-          <span>3개 기능</span>
+          <span>기능 3개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>40%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "40%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
@@ -703,7 +702,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">핵심 프롬프트 및 컨텍스트</span>
-          <span>2개 기능 / LTS 지원</span>
+          <span>기능 2개 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>38%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "38%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
@@ -713,7 +712,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">메모리</span>
-          <span>5개 기능</span>
+          <span>기능 5개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>46%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "46%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
@@ -723,7 +722,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">세션 라우팅</span>
-          <span>2개 기능 / LTS 지원</span>
+          <span>기능 2개 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>25%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "25%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
@@ -747,12 +746,12 @@ x-i18n:
   <Accordion title="채널 프레임워크 - M3 베타 - 8개 영역">
     <a id="channel-framework" />
 
-    많은 채널이 Gateway 전송 및 라우팅 계약을 공유하지만, 채널 동작은 업스트림 API 및 계정 정책 제약 조건에 따라 달라집니다.
+    많은 채널이 Gateway 전송 및 라우팅 계약을 공유하지만, 채널 동작은 업스트림 API와 계정 정책 제약에 따라 달라집니다.
 
     <div className="maturity-surface-rollup"><span>적용 범위 실험 단계 - 13%</span><span>품질 베타 - 76%</span><span>완성도 베타 - 79%</span><span><span className="maturity-lts maturity-lts-partial">부분 지원 - 5</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>적용 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">채널 작업 명령 및 승인</span>
@@ -785,7 +784,7 @@ x-i18n:
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">수신 접근 및 ID 게이트</span>
+          <span className="maturity-category-title">인바운드 접근 및 신원 게이트</span>
           <span>기능 5개 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -805,7 +804,7 @@ x-i18n:
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">발신 전송 및 응답 파이프라인</span>
+          <span className="maturity-category-title">아웃바운드 전송 및 응답 파이프라인</span>
           <span>기능 4개 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>38%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "38%" }} /></span></span></div>
@@ -825,7 +824,7 @@ x-i18n:
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">상태, 건전성 및 운영자 제어</span>
+          <span className="maturity-category-title">상태 건전성 및 운영자 제어</span>
           <span>기능 4개 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -840,12 +839,12 @@ x-i18n:
   <Accordion title="관측 가능성 - M3 베타 - 5개 영역">
     <a id="observability" />
 
-    OTel, Prometheus, 로깅 및 진단 문서가 있습니다. 운영자가 가장 먼저 확인해야 할 사항을 안내하는 공개용 성숙도 개선 작업이 필요합니다.
+    OTel, Prometheus, 로깅 및 진단 문서는 마련되어 있습니다. 운영자가 가장 먼저 살펴봐야 할 사항을 안내하는 공개 문서의 완성도를 높여야 합니다.
 
-    <div className="maturity-surface-rollup"><span>적용 범위 실험적 - 18%</span><span>품질 베타 - 75%</span><span>완성도 베타 - 79%</span><span><span className="maturity-lts maturity-lts-partial">부분적 - 3</span></span></div>
+    <div className="maturity-surface-rollup"><span>범위 실험적 - 18%</span><span>품질 베타 - 75%</span><span>완성도 베타 - 79%</span><span><span className="maturity-lts maturity-lts-partial">부분 지원 - 3</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>적용 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">상태 및 복구</span>
@@ -868,7 +867,7 @@ x-i18n:
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">진단 정보 수집</span>
+          <span className="maturity-category-title">진단 수집</span>
           <span>8개 기능</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>30%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "30%" }} /></span></span></div>
@@ -884,7 +883,7 @@ x-i18n:
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>33%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "33%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[훅](/ko/plugins/hooks), [OpenTelemetry](/ko/gateway/opentelemetry), [로깅](/ko/logging), [SDK 하위 경로](/ko/plugins/sdk-subpaths), [Otel 진단](/ko/plugins/reference/diagnostics-otel), [Prometheus](/ko/gateway/prometheus), [Prometheus 진단](/ko/plugins/reference/diagnostics-prometheus)</div>
+        <div className="maturity-category-docs">[훅](/ko/plugins/hooks), [OpenTelemetry](/ko/gateway/opentelemetry), [로깅](/ko/logging), [SDK 하위 경로](/ko/plugins/sdk-subpaths), [진단 OpenTelemetry](/ko/plugins/reference/diagnostics-otel), [Prometheus](/ko/gateway/prometheus), [진단 Prometheus](/ko/plugins/reference/diagnostics-prometheus)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -903,16 +902,16 @@ x-i18n:
   <Accordion title="Gateway 웹 앱 - M3 베타 - 6개 영역">
     <a id="gateway-web-app" />
 
-    웹 UI에는 페어링, 채팅, PWA, 대화, 푸시 및 원격 Gateway 흐름이 문서화되어 있습니다. 브라우저 간 및 모바일 PWA 스코어카드를 완료한 후 승격합니다.
+    웹 UI에는 페어링, 채팅, PWA, 대화, 푸시 및 원격 Gateway 흐름이 문서화되어 있습니다. 브라우저 간 및 모바일 PWA 평가표를 마련한 후 승격합니다.
 
-    <div className="maturity-surface-rollup"><span>적용 범위 실험적 - 4%</span><span>품질 베타 - 74%</span><span>완성도 베타 - 79%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
+    <div className="maturity-surface-rollup"><span>범위 실험적 - 4%</span><span>품질 베타 - 74%</span><span>완성도 베타 - 79%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>적용 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">브라우저 실시간 대화</span>
-          <span>5개 기능</span>
+          <span>기능 5개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
@@ -922,17 +921,17 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">브라우저 접근 및 신뢰</span>
-          <span>5개 기능</span>
+          <span>기능 5개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[제어 UI](/ko/web/control-ui), [대시보드](/ko/web/dashboard), [Tailscale](/ko/gateway/tailscale), [원격 연결](/ko/gateway/remote)</div>
+        <div className="maturity-category-docs">[제어 UI](/ko/web/control-ui), [대시보드](/ko/web/dashboard), [Tailscale](/ko/gateway/tailscale), [원격 접근](/ko/gateway/remote)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">구성</span>
-          <span>5개 기능</span>
+          <span>기능 5개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
@@ -942,7 +941,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">브라우저 UI</span>
-          <span>10개 기능</span>
+          <span>기능 10개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>8%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "8%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
@@ -952,7 +951,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">WebChat 대화</span>
-          <span>15개 기능</span>
+          <span>기능 15개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>10%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "10%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
@@ -962,21 +961,21 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">운영자 콘솔</span>
-          <span>10개 기능</span>
+          <span>기능 10개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>8%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "8%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[제어 UI](/ko/web/control-ui), [상태 확인](/ko/gateway/health), [프로토콜](/ko/gateway/protocol), [대시보드](/ko/web/dashboard)</div>
+        <div className="maturity-category-docs">[제어 UI](/ko/web/control-ui), [상태 점검](/ko/gateway/health), [프로토콜](/ko/gateway/protocol), [대시보드](/ko/web/dashboard)</div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="Plugin - M3 베타 - 9개 영역">
+  <Accordion title="Plugins - M3 베타 - 9개 영역">
     <a id="plugins" />
 
-    매니페스트, 검색, 로딩, 공급자/도구 아키텍처 및 승인 경계 전반에 걸쳐 폭넓은 문서와 강력한 내부 런타임 근거가 있습니다. 공개 SDK API/하위 경로와 외부 배포 근거가 더 강화될 때까지 이 항목을 베타로 유지하십시오.
+    매니페스트, 검색, 로딩, 공급자/도구 아키텍처 및 승인 경계 전반에 걸쳐 폭넓은 문서와 강력한 내부 런타임 근거가 있습니다. 공개 SDK API/하위 경로와 외부 배포 근거가 더 강화될 때까지 이 항목을 베타로 유지합니다.
 
     <div className="maturity-surface-rollup"><span>적용 범위 실험적 - 12%</span><span>품질 베타 - 72%</span><span>완성도 베타 - 79%</span><span><span className="maturity-lts maturity-lts-partial">부분적 - 7</span></span></div>
 
@@ -984,27 +983,27 @@ x-i18n:
       <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>적용 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Plugin 작성 및 패키징</span>
+          <span className="maturity-category-title">플러그인 작성 및 패키징</span>
           <span>8개 기능 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Plugin 빌드](/ko/plugins/building-plugins), [SDK 개요](/ko/plugins/sdk-overview), [SDK 진입점](/ko/plugins/sdk-entrypoints), [SDK 하위 경로](/ko/plugins/sdk-subpaths), [매니페스트](/ko/plugins/manifest), [참조](/ko/plugins/reference)</div>
+        <div className="maturity-category-docs">[플러그인 빌드](/ko/plugins/building-plugins), [SDK 개요](/ko/plugins/sdk-overview), [SDK 진입점](/ko/plugins/sdk-entrypoints), [SDK 하위 경로](/ko/plugins/sdk-subpaths), [매니페스트](/ko/plugins/manifest), [참조](/ko/plugins/reference)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">번들 Plugin</span>
+          <span className="maturity-category-title">번들 플러그인</span>
           <span>5개 기능 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Plugin 목록](/ko/plugins/plugin-inventory), [Plugin](/ko/cli/plugins), [아키텍처 내부 구조](/ko/plugins/architecture-internals)</div>
+        <div className="maturity-category-docs">[플러그인 목록](/ko/plugins/plugin-inventory), [플러그인](/ko/cli/plugins), [아키텍처 내부 구조](/ko/plugins/architecture-internals)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Canvas Plugin</span>
+          <span className="maturity-category-title">Canvas 플러그인</span>
           <span>6개 기능</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -1014,47 +1013,47 @@ x-i18n:
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Plugin 설치 및 실행</span>
+          <span className="maturity-category-title">플러그인 설치 및 실행</span>
           <span>6개 기능 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>35%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "35%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[아키텍처](/ko/plugins/architecture), [아키텍처 내부 구조](/ko/plugins/architecture-internals), [Plugin](/ko/cli/plugins)</div>
+        <div className="maturity-category-docs">[아키텍처](/ko/plugins/architecture), [아키텍처 내부 구조](/ko/plugins/architecture-internals), [플러그인](/ko/cli/plugins)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">채널 Plugin</span>
+          <span className="maturity-category-title">채널 플러그인</span>
           <span>5개 기능 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[SDK 채널 Plugin](/ko/plugins/sdk-channel-plugins), [SDK 채널 인바운드](/ko/plugins/sdk-channel-inbound), [SDK 채널 아웃바운드](/ko/plugins/sdk-channel-outbound)</div>
+        <div className="maturity-category-docs">[SDK 채널 플러그인](/ko/plugins/sdk-channel-plugins), [SDK 채널 인바운드](/ko/plugins/sdk-channel-inbound), [SDK 채널 아웃바운드](/ko/plugins/sdk-channel-outbound)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">제공자 및 도구 Plugin</span>
+          <span className="maturity-category-title">제공자 및 도구 플러그인</span>
           <span>6개 기능 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>43%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "43%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[SDK 제공자 Plugin](/ko/plugins/sdk-provider-plugins), [도구 Plugin](/ko/plugins/tool-plugins), [기능 추가](/ko/plugins/adding-capabilities)</div>
+        <div className="maturity-category-docs">[SDK 제공자 플러그인](/ko/plugins/sdk-provider-plugins), [도구 플러그인](/ko/plugins/tool-plugins), [기능 추가](/ko/plugins/adding-capabilities)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Plugin 승인</span>
+          <span className="maturity-category-title">플러그인 승인</span>
           <span>6개 기능 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Plugin 권한 요청](/ko/plugins/plugin-permission-requests), [실행 승인](/ko/tools/exec-approvals), [SDK 채널 Plugin](/ko/plugins/sdk-channel-plugins)</div>
+        <div className="maturity-category-docs">[플러그인 권한 요청](/ko/plugins/plugin-permission-requests), [실행 승인](/ko/tools/exec-approvals), [SDK 채널 플러그인](/ko/plugins/sdk-channel-plugins)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">Plugin 게시</span>
+          <span className="maturity-category-title">플러그인 게시</span>
           <span>6개 기능 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -1076,19 +1075,19 @@ x-i18n:
 
   </Accordion>
 
-  <Accordion title="보안, 인증, 페어링 및 비밀 정보 - M3 베타 - 6개 영역">
+  <Accordion title="보안, 인증, 페어링 및 시크릿 - M3 베타 - 6개 영역">
     <a id="security-auth-pairing-and-secrets" />
 
-    문서와 강화 기능은 잘 갖춰져 있습니다. 정기적인 업그레이드 및 보안 시나리오 실행에서 설정 회귀가 없음을 입증한 후 승격하십시오.
+    문서와 보안 강화 기능은 잘 갖춰져 있습니다. 정기적인 업그레이드 및 보안 시나리오 실행을 통해 설정 회귀가 없음을 입증한 후 승격해야 합니다.
 
-    <div className="maturity-surface-rollup"><span>적용 범위 실험적 - 16%</span><span>품질 베타 - 72%</span><span>완성도 베타 - 79%</span><span><span className="maturity-lts maturity-lts-partial">부분 지원 - 5</span></span></div>
+    <div className="maturity-surface-rollup"><span>적용 범위 실험적 - 16%</span><span>품질 베타 - 72%</span><span>완성도 베타 - 79%</span><span><span className="maturity-lts maturity-lts-partial">일부 - 5</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>적용 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">승인 정책 및 도구 보호 조치</span>
-          <span>2개 기능 / LTS 지원</span>
+          <span className="maturity-category-title">승인 정책 및 도구 보호 장치</span>
+          <span>기능 2개 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>50%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "50%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
@@ -1098,17 +1097,17 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Gateway 인증 및 원격 액세스</span>
-          <span>9개 기능 / LTS 지원</span>
+          <span>기능 9개 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[색인](/ko/gateway/security/index), [노출 런북](/ko/gateway/security/exposure-runbook), [신뢰할 수 있는 프록시 인증](/ko/gateway/trusted-proxy-auth), [Tailscale](/ko/gateway/tailscale), [원격](/ko/gateway/remote), [구성 참조](/ko/gateway/configuration-reference), [Gateway](/ko/cli/gateway), [진단](/ko/cli/doctor), [제어 UI](/ko/web/control-ui), [브라우저 제어](/ko/tools/browser-control), [감사 검사](/ko/gateway/security/audit-checks)</div>
+        <div className="maturity-category-docs">[색인](/ko/gateway/security/index), [노출 실행 지침서](/ko/gateway/security/exposure-runbook), [신뢰할 수 있는 프록시 인증](/ko/gateway/trusted-proxy-auth), [Tailscale](/ko/gateway/tailscale), [원격 연결](/ko/gateway/remote), [구성 참조](/ko/gateway/configuration-reference), [Gateway](/ko/cli/gateway), [진단](/ko/cli/doctor), [제어 UI](/ko/web/control-ui), [브라우저 제어](/ko/tools/browser-control), [감사 검사](/ko/gateway/security/audit-checks)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">채널 액세스 제어</span>
-          <span>3개 기능 / LTS 지원</span>
+          <span>기능 3개 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
@@ -1118,7 +1117,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">기기 및 Node 페어링</span>
-          <span>11개 기능 / LTS 지원</span>
+          <span>기능 11개 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
@@ -1128,7 +1127,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Plugin 신뢰</span>
-          <span>2개 기능</span>
+          <span>기능 2개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
@@ -1137,13 +1136,13 @@ x-i18n:
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">자격 증명 및 비밀 정보 위생</span>
-          <span>5개 기능 / LTS 지원</span>
+          <span className="maturity-category-title">자격 증명 및 시크릿 위생</span>
+          <span>기능 5개 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>46%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "46%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[인증](/ko/gateway/authentication), [모델](/ko/cli/models), [OpenAI](/ko/providers/openai), [OAuth](/ko/concepts/oauth), [비밀 정보](/ko/gateway/secrets), [비밀 정보](/ko/cli/secrets), [SecretRef 자격 증명 표면](/ko/reference/secretref-credential-surface), [감사 검사](/ko/gateway/security/audit-checks)</div>
+        <div className="maturity-category-docs">[인증](/ko/gateway/authentication), [모델](/ko/cli/models), [OpenAI](/ko/providers/openai), [OAuth](/ko/concepts/oauth), [시크릿](/ko/gateway/secrets), [시크릿](/ko/cli/secrets), [SecretRef 자격 증명 표면](/ko/reference/secretref-credential-surface), [감사 검사](/ko/gateway/security/audit-checks)</div>
       </div>
     </div>
 
@@ -1157,7 +1156,7 @@ x-i18n:
     <div className="maturity-surface-rollup"><span>적용 범위 실험적 - 2%</span><span>품질 베타 - 72%</span><span>완성도 베타 - 79%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>적용 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>커버리지</span><span>품질</span><span>완성도</span><span>문서</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Cron 작업</span>
@@ -1206,7 +1205,7 @@ x-i18n:
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>14%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "14%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[색인](/ko/automation/index), [Heartbeat](/ko/gateway/heartbeat), [약속](/ko/concepts/commitments)</div>
+        <div className="maturity-category-docs">[색인](/ko/automation/index), [Heartbeat](/ko/gateway/heartbeat), [커밋먼트](/ko/concepts/commitments)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1225,16 +1224,16 @@ x-i18n:
   <Accordion title="미디어 이해 및 미디어 생성 - M2 알파 - 6개 영역">
     <a id="media-understanding-and-media-generation" />
 
-    광범위한 기능 영역이 마련되어 있지만, 제공업체별 차이, 파일 제한, Node/앱 간 동등성 문제로 인해 아직 안정적이지 않습니다.
+    광범위한 기능 영역이 마련되어 있지만, 제공자별 차이, 파일 제한, Node와 앱 간 동등성 문제로 인해 아직 안정적이지 않습니다.
 
-    <div className="maturity-surface-rollup"><span>적용 범위 실험적 - 2%</span><span>품질 알파 - 64%</span><span>완성도 알파 - 68%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
+    <div className="maturity-surface-rollup"><span>커버리지 실험적 - 2%</span><span>품질 알파 - 64%</span><span>완성도 알파 - 68%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>지원 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>적용 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">미디어 수신 및 접근</span>
-          <span>8개 기능</span>
+          <span>기능 8개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
@@ -1244,7 +1243,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">채널 미디어 처리</span>
-          <span>5개 기능</span>
+          <span>기능 5개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
@@ -1254,7 +1253,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">미디어 구성</span>
-          <span>1개 기능</span>
+          <span>기능 1개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
@@ -1264,17 +1263,17 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">텍스트 음성 변환 전달</span>
-          <span>2개 기능</span>
+          <span>기능 2개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[TTS](/ko/tools/tts), [미디어 개요](/ko/tools/media-overview), [Discord](/ko/channels/discord)</div>
+        <div className="maturity-category-docs">[텍스트 음성 변환](/ko/tools/tts), [미디어 개요](/ko/tools/media-overview), [Discord](/ko/channels/discord)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">미디어 이해</span>
-          <span>12개 기능</span>
+          <span>기능 12개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>7%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "7%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>69%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "69%" }} /></span></span></div>
@@ -1284,7 +1283,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">미디어 생성</span>
-          <span>17개 기능</span>
+          <span>기능 17개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>5%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "5%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>69%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "69%" }} /></span></span></div>
@@ -1295,19 +1294,19 @@ x-i18n:
 
   </Accordion>
 
-  <Accordion title="음성 및 실시간 대화 - M2 알파 - 6개 영역">
+  <Accordion title="음성 및 실시간 대화 - M2 알파 - 영역 6개">
     <a id="voice-and-realtime-talk" />
 
-    Control UI, 앱 및 제공자 전반에 여러 구현이 존재합니다. 베타 단계로 전환하기 전에 지연 시간, 실패 모드 및 설정 평가표가 필요합니다.
+    Control UI, 앱 및 공급자 전반에 여러 구현이 존재합니다. 베타 이전에 지연 시간, 장애 모드 및 설정 평가표가 필요합니다.
 
-    <div className="maturity-surface-rollup"><span>지원 범위 실험적 - 0%</span><span>품질 알파 - 61%</span><span>완성도 알파 - 68%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
+    <div className="maturity-surface-rollup"><span>적용 범위 실험적 - 0%</span><span>품질 알파 - 61%</span><span>완성도 알파 - 68%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>커버리지</span><span>품질</span><span>완성도</span><span>문서</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">대화 제공자</span>
-          <span>7개 기능</span>
+          <span>기능 7개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
@@ -1317,7 +1316,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">실시간 대화 세션</span>
-          <span>11개 기능</span>
+          <span>기능 11개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
@@ -1327,7 +1326,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">음성 및 전사</span>
-          <span>5개 기능</span>
+          <span>기능 5개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
@@ -1337,7 +1336,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">네이티브 앱 대화</span>
-          <span>4개 기능</span>
+          <span>기능 4개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
@@ -1347,7 +1346,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">음성 깨우기 및 라우팅</span>
-          <span>4개 기능</span>
+          <span>기능 4개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
@@ -1357,7 +1356,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">대화 관측 가능성</span>
-          <span>5개 기능</span>
+          <span>기능 5개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
@@ -1371,12 +1370,12 @@ x-i18n:
   <Accordion title="TUI - M2 알파 - 5개 영역">
     <a id="tui" />
 
-    문서와 소스에 존재하지만, 주요 사용자 워크플로로서는 가시성이 낮습니다. 명시적인 시나리오 정의가 필요합니다.
+    문서와 소스에는 존재하지만 주요 사용자 워크플로로는 가시성이 낮습니다. 명시적인 시나리오 정의가 필요합니다.
 
-    <div className="maturity-surface-rollup"><span>범위 실험적 - 0%</span><span>품질 알파 - 59%</span><span>완성도 알파 - 66%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
+    <div className="maturity-surface-rollup"><span>커버리지 실험적 - 0%</span><span>품질 알파 - 59%</span><span>완성도 알파 - 66%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>지원 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>적용 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">런타임 모드</span>
@@ -1425,7 +1424,7 @@ x-i18n:
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[TUI](/ko/web/tui), [QR](/ko/cli/qr), [로그](/ko/cli/logs), [자동 완성](/ko/cli/completion)</div>
+        <div className="maturity-category-docs">[TUI](/ko/web/tui), [QR](/ko/cli/qr), [로그](/ko/cli/logs), [완성](/ko/cli/completion)</div>
       </div>
     </div>
 
@@ -1434,9 +1433,9 @@ x-i18n:
   <Accordion title="ClawHub - M2 알파 - 4개 영역">
     <a id="clawhub" />
 
-    공개 문서와 생태계 개념이 존재합니다. 설치, 신뢰, 업데이트, 롤백 및 호환성 평가표가 필요합니다.
+    공개 문서와 생태계 개념이 마련되어 있습니다. 설치, 신뢰, 업데이트, 롤백 및 호환성 평가표가 필요합니다.
 
-    <div className="maturity-surface-rollup"><span>지원 범위 실험적 - 0%</span><span>품질 알파 - 58%</span><span>완성도 알파 - 62%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
+    <div className="maturity-surface-rollup"><span>적용 범위 실험적 - 0%</span><span>품질 알파 - 58%</span><span>완성도 알파 - 62%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>지원 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
@@ -1462,7 +1461,7 @@ x-i18n:
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">호환성 및 신뢰</span>
+          <span className="maturity-category-title">호환성과 신뢰</span>
           <span>12개 기능</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -1478,7 +1477,7 @@ x-i18n:
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Plugin](/ko/tools/plugin), [Plugin](/ko/cli/plugins), [Skills](/ko/cli/skills), [Skills](/ko/tools/skills), [프로토콜](/ko/gateway/protocol), [번들](/ko/plugins/bundles), [종속성 해결](/ko/plugins/dependency-resolution)</div>
+        <div className="maturity-category-docs">[Plugin](/ko/tools/plugin), [Plugin](/ko/cli/plugins), [Skills](/ko/cli/skills), [Skills](/ko/tools/skills), [프로토콜](/ko/gateway/protocol), [번들](/ko/plugins/bundles), [종속성 확인](/ko/plugins/dependency-resolution)</div>
       </div>
     </div>
 
@@ -1487,12 +1486,12 @@ x-i18n:
   <Accordion title="OpenClaw App SDK - M2 알파 - 6개 영역">
     <a id="openclaw-app-sdk" />
 
-    OpenClaw App SDK는 Gateway 런타임 및 Plugin SDK와 분리된 별도의 외부 앱 계약입니다. 현재 점수는 실제 `@openclaw/sdk` 경로가 존재하지만 공개 패키징, 자동 검색, 승인, 도우미 및 호환성 측면에 공백이 있음을 보여 줍니다.
+    OpenClaw App SDK는 Gateway 런타임 및 Plugin SDK와 분리된 독립적인 외부 앱 계약입니다. 현재 점수는 실제 `@openclaw/sdk` 경로가 존재하지만 공개 패키징, 자동 검색, 승인, 도우미 및 호환성 측면에 공백이 있음을 보여 줍니다.
 
     <div className="maturity-surface-rollup"><span>지원 범위 실험적 - 3%</span><span>품질 알파 - 54%</span><span>완성도 알파 - 53%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>지원 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>적용 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">클라이언트 API</span>
@@ -1551,7 +1550,7 @@ x-i18n:
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>54%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "54%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>55%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "55%" }} /></span></span></div>
-        <div className="maturity-category-docs">[OpenClaw SDK API 설계](/ko/gateway/external-apps), [Typebox](/ko/concepts/typebox), [프로토콜](/ko/gateway/protocol)</div>
+        <div className="maturity-category-docs">[OpenClaw SDK API 설계](/ko/gateway/external-apps), [TypeBox](/ko/concepts/typebox), [프로토콜](/ko/gateway/protocol)</div>
       </div>
     </div>
 
@@ -1565,12 +1564,12 @@ x-i18n:
   <Accordion title="Linux Gateway 호스트 - M4 안정화 - 5개 영역">
     <a id="linux-gateway-host" />
 
-    Node 런타임을 권장하며, systemd 사용자 서비스가 문서화되어 있고 VPS/컨테이너 지침이 폭넓게 제공됩니다.
+    Node 런타임을 권장하며, systemd 사용자 서비스가 문서화되어 있고 VPS/컨테이너 지침도 폭넓게 제공됩니다.
 
-    <div className="maturity-surface-rollup"><span>지원 범위 실험적 - 0%</span><span>품질 베타 - 75%</span><span>완성도 안정화 - 89%</span><span><span className="maturity-lts maturity-lts-partial">부분 지원 - 4</span></span></div>
+    <div className="maturity-surface-rollup"><span>적용 범위 실험적 - 0%</span><span>품질 베타 - 75%</span><span>완성도 안정화 - 89%</span><span><span className="maturity-lts maturity-lts-partial">부분적 - 4</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>적용 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">호스트 설정 및 업데이트</span>
@@ -1630,14 +1629,14 @@ x-i18n:
 
     LaunchAgent 서비스 경로, 로컬/원격 Gateway 모드, CLI 설치 및 앱 통합이 문서화되어 있습니다.
 
-    <div className="maturity-surface-rollup"><span>적용 범위 실험적 - 0%</span><span>품질 베타 - 74%</span><span>완성도 안정 - 88%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
+    <div className="maturity-surface-rollup"><span>범위 실험적 - 0%</span><span>품질 베타 - 74%</span><span>완성도 안정 - 88%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>적용 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">CLI 설정</span>
-          <span>4개 기능</span>
+          <span>기능 4개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>74%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "74%" }} /></span></span></div>
@@ -1647,17 +1646,17 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">로컬 Gateway 통합</span>
-          <span>9개 기능</span>
+          <span>기능 9개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>74%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "74%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">안정적</span><span>88%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "88%" }} /></span></span></div>
-        <div className="maturity-category-docs">[macOS](/ko/platforms/macos), [번들 Gateway](/ko/platforms/mac/bundled-gateway), [원격](/ko/platforms/mac/remote), [색인](/ko/gateway/index), [Gateway](/ko/cli/gateway), [Bonjour](/ko/gateway/bonjour)</div>
+        <div className="maturity-category-docs">[macOS](/ko/platforms/macos), [번들 Gateway](/ko/platforms/mac/bundled-gateway), [원격](/ko/platforms/mac/remote), [개요](/ko/gateway/index), [Gateway](/ko/cli/gateway), [Bonjour](/ko/gateway/bonjour)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">원격 Gateway 모드</span>
-          <span>5개 기능</span>
+          <span>기능 5개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>74%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "74%" }} /></span></span></div>
@@ -1667,27 +1666,27 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Gateway 서비스 수명 주기</span>
-          <span>10개 기능</span>
+          <span>기능 10개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>74%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "74%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">안정적</span><span>88%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "88%" }} /></span></span></div>
-        <div className="maturity-category-docs">[macOS](/ko/platforms/macos), [번들 Gateway](/ko/platforms/mac/bundled-gateway), [Gateway](/ko/cli/gateway), [색인](/ko/gateway/index), [업데이트](/ko/cli/update), [업데이트하기](/ko/install/updating), [제거](/ko/install/uninstall), [문제 해결](/ko/gateway/troubleshooting)</div>
+        <div className="maturity-category-docs">[macOS](/ko/platforms/macos), [번들 Gateway](/ko/platforms/mac/bundled-gateway), [Gateway](/ko/cli/gateway), [개요](/ko/gateway/index), [업데이트](/ko/cli/update), [업데이트하기](/ko/install/updating), [제거](/ko/install/uninstall), [문제 해결](/ko/gateway/troubleshooting)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">진단 및 관측 가능성</span>
-          <span>4개 기능</span>
+          <span>기능 4개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>74%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "74%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">안정적</span><span>88%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "88%" }} /></span></span></div>
-        <div className="maturity-category-docs">[번들 Gateway](/ko/platforms/mac/bundled-gateway), [macOS](/ko/platforms/macos), [Gateway](/ko/cli/gateway), [Doctor](/ko/gateway/doctor), [문제 해결](/ko/gateway/troubleshooting)</div>
+        <div className="maturity-category-docs">[번들 Gateway](/ko/platforms/mac/bundled-gateway), [macOS](/ko/platforms/macos), [Gateway](/ko/cli/gateway), [진단 도구](/ko/gateway/doctor), [문제 해결](/ko/gateway/troubleshooting)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">권한 및 네이티브 기능</span>
-          <span>4개 기능</span>
+          <span>기능 4개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>74%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "74%" }} /></span></span></div>
@@ -1697,12 +1696,12 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">프로필 및 격리</span>
-          <span>5개 기능</span>
+          <span>기능 5개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>74%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "74%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">안정적</span><span>88%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "88%" }} /></span></span></div>
-        <div className="maturity-category-docs">[다중 Gateway](/ko/gateway/multiple-gateways), [색인](/ko/gateway/index), [Gateway](/ko/cli/gateway)</div>
+        <div className="maturity-category-docs">[다중 Gateway](/ko/gateway/multiple-gateways), [개요](/ko/gateway/index), [Gateway](/ko/cli/gateway)</div>
       </div>
     </div>
 
@@ -1710,7 +1709,7 @@ x-i18n:
   <Accordion title="Android 앱 - M4 안정적 - 7개 영역">
     <a id="android-app" />
 
-    공식 Google Play 배포가 제공되고, 소스 빌드/실행 문서가 유지 관리되며, Android 앱은 사용자를 위한 일반적인 컴패니언 노드로 문서화되어 있습니다.
+    공식 Google Play 배포가 제공되고, 소스 빌드 및 실행 문서가 유지 관리되며, Android 앱은 사용자를 위한 일반적인 동반 Node로 문서화되어 있습니다.
 
     <div className="maturity-surface-rollup"><span>적용 범위 실험적 - 0%</span><span>품질 안정적 - 80%</span><span>완성도 안정적 - 80%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
 
@@ -1792,7 +1791,7 @@ x-i18n:
   <Accordion title="iOS 앱 - M4 안정적 - 8개 영역">
     <a id="ios-app" />
 
-    공식 App Store 배포가 제공되고, 릴레이 기반 푸시가 문서화되어 있으며, iOS 앱은 사용자를 위한 일반적인 컴패니언 Node로 문서화되어 있습니다.
+    공식 App Store 배포가 제공되고, 릴레이 기반 푸시가 문서화되어 있으며, iOS 앱은 사용자를 위한 일반적인 보조 Node로 문서화되어 있습니다.
 
     <div className="maturity-surface-rollup"><span>지원 범위 실험적 - 0%</span><span>품질 안정적 - 80%</span><span>완성도 안정적 - 80%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
 
@@ -1806,7 +1805,7 @@ x-i18n:
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">안정적</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">안정적</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iOS](/ko/platforms/ios), [카메라](/ko/nodes/camera)</div>
+        <div className="maturity-category-docs">[Ios](/ko/platforms/ios), [카메라](/ko/nodes/camera)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1816,7 +1815,7 @@ x-i18n:
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">안정적</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">안정적</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iOS](/ko/platforms/ios), [캔버스](/ko/plugins/reference/canvas)</div>
+        <div className="maturity-category-docs">[Ios](/ko/platforms/ios), [캔버스](/ko/plugins/reference/canvas)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1826,7 +1825,7 @@ x-i18n:
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">안정적</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">안정적</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iOS](/ko/platforms/ios), [웹 채팅](/ko/web/webchat), [프로토콜](/ko/gateway/protocol)</div>
+        <div className="maturity-category-docs">[Ios](/ko/platforms/ios), [웹 채팅](/ko/web/webchat), [프로토콜](/ko/gateway/protocol)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1836,7 +1835,7 @@ x-i18n:
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">안정적</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">안정적</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iOS](/ko/platforms/ios), [페어링](/ko/channels/pairing)</div>
+        <div className="maturity-category-docs">[Ios](/ko/platforms/ios), [페어링](/ko/channels/pairing)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1846,7 +1845,7 @@ x-i18n:
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">안정적</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">안정적</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iOS](/ko/platforms/ios)</div>
+        <div className="maturity-category-docs">[Ios](/ko/platforms/ios)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1856,7 +1855,7 @@ x-i18n:
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">안정적</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">안정적</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iOS](/ko/platforms/ios), [프로토콜](/ko/gateway/protocol)</div>
+        <div className="maturity-category-docs">[Ios](/ko/platforms/ios), [프로토콜](/ko/gateway/protocol)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1866,7 +1865,7 @@ x-i18n:
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">안정적</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">안정적</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iOS](/ko/platforms/ios), [구성](/ko/gateway/configuration)</div>
+        <div className="maturity-category-docs">[Ios](/ko/platforms/ios), [구성](/ko/gateway/configuration)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -1876,7 +1875,7 @@ x-i18n:
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">안정적</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-stable"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-stable">안정적</span><span>80%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "80%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iOS](/ko/platforms/ios), [대화](/ko/nodes/talk)</div>
+        <div className="maturity-category-docs">[Ios](/ko/platforms/ios), [대화](/ko/nodes/talk)</div>
       </div>
     </div>
 
@@ -1885,16 +1884,16 @@ x-i18n:
   <Accordion title="Docker 및 Podman 호스팅 - M3 베타 - 4개 영역">
     <a id="docker-and-podman-hosting" />
 
-    설치 문서가 마련되어 있으며 일반적인 배포 경로로 사용됩니다. 반복적인 릴리스 스모크 테스트에서 업그레이드 및 볼륨 동작을 확인한 후 승격합니다.
+    설치 문서가 있으며 일반적인 배포 경로로 사용됩니다. 반복적인 릴리스 스모크 테스트에서 업그레이드 및 볼륨 동작을 확인한 후 승격합니다.
 
     <div className="maturity-surface-rollup"><span>지원 범위 실험적 - 7%</span><span>품질 베타 - 71%</span><span>완성도 베타 - 79%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>커버리지</span><span>품질</span><span>완성도</span><span>문서</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>적용 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">컨테이너 설정</span>
-          <span>6개 기능</span>
+          <span>기능 6개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
@@ -1904,7 +1903,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">컨테이너 운영</span>
-          <span>11개 기능</span>
+          <span>기능 11개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
@@ -1914,7 +1913,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">이미지 릴리스 및 검증</span>
-          <span>5개 기능</span>
+          <span>기능 5개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>29%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "29%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
@@ -1924,7 +1923,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">에이전트 샌드박스 및 도구</span>
-          <span>3개 기능</span>
+          <span>기능 3개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
@@ -1938,16 +1937,16 @@ x-i18n:
   <Accordion title="WSL2를 통한 Windows - M3 베타 - 6개 영역">
     <a id="windows-via-wsl2" />
 
-    systemd/사용자 서비스 지침과 부팅 체인 문서를 제공하는 권장 Windows 경로입니다. 설치/업데이트 성과표가 반복해서 확보된 후 승격합니다.
+    systemd/사용자 서비스 지침과 부팅 체인 문서를 제공하는 권장 Windows 경로입니다. 설치/업데이트 점수표에서 반복적으로 검증된 후 승격합니다.
 
-    <div className="maturity-surface-rollup"><span>커버리지 실험적 - 6%</span><span>품질 알파 - 69%</span><span>완성도 베타 - 79%</span><span><span className="maturity-lts maturity-lts-partial">부분적 - 5</span></span></div>
+    <div className="maturity-surface-rollup"><span>적용 범위 실험적 - 6%</span><span>품질 알파 - 69%</span><span>완성도 베타 - 79%</span><span><span className="maturity-lts maturity-lts-partial">부분적 - 5</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>적용 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">WSL 설정</span>
-          <span>6개 기능 / LTS 지원</span>
+          <span>기능 6개 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
@@ -1957,7 +1956,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">CLI</span>
-          <span>8개 기능 / LTS 지원</span>
+          <span>기능 8개 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
@@ -1967,7 +1966,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Gateway 서비스 수명 주기</span>
-          <span>10개 기능 / LTS 지원</span>
+          <span>기능 10개 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
@@ -1977,17 +1976,17 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Gateway 액세스 및 노출</span>
-          <span>11개 기능 / LTS 지원</span>
+          <span>기능 11개 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[인증](/ko/gateway/authentication), [비밀 정보](/ko/gateway/secrets), [원격](/ko/gateway/remote), [노출 대응 절차서](/ko/gateway/security/exposure-runbook), [Windows](/ko/platforms/windows)</div>
+        <div className="maturity-category-docs">[인증](/ko/gateway/authentication), [비밀 정보](/ko/gateway/secrets), [원격 연결](/ko/gateway/remote), [노출 대응 절차서](/ko/gateway/security/exposure-runbook), [Windows](/ko/platforms/windows)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">진단 및 복구</span>
-          <span>6개 기능 / LTS 지원</span>
+          <span>기능 6개 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>38%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "38%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
@@ -1997,7 +1996,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">브라우저 및 제어 UI</span>
-          <span>6개 기능</span>
+          <span>기능 6개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
@@ -2011,12 +2010,12 @@ x-i18n:
   <Accordion title="Raspberry Pi 및 소형 Linux 기기 - M3 베타 - 4개 영역">
     <a id="raspberry-pi-and-small-linux-devices" />
 
-    플랫폼 문서가 있으며 Gateway 경로는 Linux 기반입니다. 더 높은 단계로 올리려면 하드웨어별 릴리스 스모크 테스트 증명이 필요합니다.
+    플랫폼 문서가 있으며 Gateway 경로는 Linux 기반입니다. 더 높은 단계로 이동하려면 하드웨어별 릴리스 스모크 테스트 증명이 필요합니다.
 
     <div className="maturity-surface-rollup"><span>적용 범위 실험적 - 0%</span><span>품질 알파 - 67%</span><span>완성도 베타 - 79%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>적용 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>지원 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">설정 및 호환성</span>
@@ -2029,13 +2028,13 @@ x-i18n:
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">원격 액세스 및 인증</span>
+          <span className="maturity-category-title">원격 접근 및 인증</span>
           <span>9개 기능</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>67%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "67%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Raspberry Pi](/ko/install/raspberry-pi), [인증](/ko/gateway/authentication), [비밀 정보](/ko/gateway/secrets), [페어링](/ko/gateway/pairing), [기기](/ko/cli/devices), [원격](/ko/gateway/remote), [Tailscale](/ko/gateway/tailscale)</div>
+        <div className="maturity-category-docs">[Raspberry Pi](/ko/install/raspberry-pi), [인증](/ko/gateway/authentication), [보안 비밀](/ko/gateway/secrets), [페어링](/ko/gateway/pairing), [기기](/ko/cli/devices), [원격](/ko/gateway/remote), [Tailscale](/ko/gateway/tailscale)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2064,9 +2063,9 @@ x-i18n:
   <Accordion title="macOS 컴패니언 앱 - M3 베타 - 8개 영역">
     <a id="macos-companion-app" />
 
-    다양한 기능을 갖춘 메뉴 막대 앱, 권한, Node 모드, Canvas, 음성 호출, WebChat 및 원격 모드가 제공됩니다. 아직 변화가 빨라 안정 버전으로 분류하지 않습니다.
+    다양한 기능을 갖춘 메뉴 막대 앱, 권한, Node 모드, Canvas, 음성 호출, WebChat 및 원격 모드가 구현되어 있습니다. 아직 변화가 빠르므로 안정 등급으로 분류하지 않습니다.
 
-    <div className="maturity-surface-rollup"><span>적용 범위 실험적 - 0%</span><span>품질 알파 - 66%</span><span>완성도 베타 - 78%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
+    <div className="maturity-surface-rollup"><span>지원 범위 실험적 - 0%</span><span>품질 알파 - 66%</span><span>완성도 베타 - 78%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>적용 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
@@ -2075,7 +2074,7 @@ x-i18n:
           <span className="maturity-category-title">캔버스</span>
           <span>기능 4개</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험 단계</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
         <div className="maturity-category-docs">[캔버스](/ko/platforms/mac/canvas), [macOS](/ko/platforms/macos), [웹 채팅](/ko/web/webchat)</div>
@@ -2085,7 +2084,7 @@ x-i18n:
           <span className="maturity-category-title">로컬 설정</span>
           <span>기능 7개</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험 단계</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
         <div className="maturity-category-docs">[번들 Gateway](/ko/platforms/mac/bundled-gateway), [macOS](/ko/platforms/macos), [자식 프로세스](/ko/platforms/mac/child-process), [개발 환경 설정](/ko/platforms/mac/dev-setup)</div>
@@ -2095,7 +2094,7 @@ x-i18n:
           <span className="maturity-category-title">상태 및 설정</span>
           <span>기능 5개</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험 단계</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
         <div className="maturity-category-docs">[메뉴 막대](/ko/platforms/mac/menu-bar), [아이콘](/ko/platforms/mac/icon), [macOS](/ko/platforms/macos), [상태 확인](/ko/platforms/mac/health), [로깅](/ko/platforms/mac/logging), [원격](/ko/platforms/mac/remote)</div>
@@ -2105,7 +2104,7 @@ x-i18n:
           <span className="maturity-category-title">네이티브 기능</span>
           <span>기능 5개</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험 단계</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
         <div className="maturity-category-docs">[macOS](/ko/platforms/macos), [XPC](/ko/platforms/mac/xpc), [권한](/ko/platforms/mac/permissions), [서명](/ko/platforms/mac/signing), [Peekaboo](/ko/platforms/mac/peekaboo)</div>
@@ -2115,7 +2114,7 @@ x-i18n:
           <span className="maturity-category-title">원격 연결</span>
           <span>기능 3개</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험 단계</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
         <div className="maturity-category-docs">[원격](/ko/platforms/mac/remote), [macOS](/ko/platforms/macos), [원격](/ko/gateway/remote)</div>
@@ -2125,7 +2124,7 @@ x-i18n:
           <span className="maturity-category-title">음성 및 대화</span>
           <span>기능 3개</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험 단계</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
         <div className="maturity-category-docs">[음성 호출](/ko/platforms/mac/voicewake), [음성 오버레이](/ko/platforms/mac/voice-overlay), [대화](/ko/nodes/talk), [macOS](/ko/platforms/macos)</div>
@@ -2135,7 +2134,7 @@ x-i18n:
           <span className="maturity-category-title">웹 채팅</span>
           <span>기능 3개</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험 단계</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
         <div className="maturity-category-docs">[웹 채팅](/ko/platforms/mac/webchat), [macOS](/ko/platforms/macos), [웹 채팅](/ko/web/webchat)</div>
@@ -2145,7 +2144,7 @@ x-i18n:
           <span className="maturity-category-title">원격 웹 채팅</span>
           <span>기능 5개</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험 단계</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
         <div className="maturity-category-docs">[웹 채팅](/ko/platforms/mac/webchat), [원격](/ko/gateway/remote), [원격](/ko/platforms/mac/remote)</div>
@@ -2154,15 +2153,15 @@ x-i18n:
 
   </Accordion>
 
-  <Accordion title="네이티브 Windows - M2 알파 - 4개 영역">
+  <Accordion title="Native Windows - M2 Alpha - 4 areas">
     <a id="native-windows" />
 
-    핵심 CLI/Gateway 흐름은 작동하지만, 문서에서는 여전히 완전한 사용 경험을 위해 WSL2를 권장하며 네이티브 환경의 주의 사항을 안내합니다.
+    핵심 CLI/Gateway 흐름은 작동하지만, 문서에서는 여전히 완전한 사용 환경을 위해 WSL2를 권장하며 네이티브 환경의 주의 사항을 안내합니다.
 
-    <div className="maturity-surface-rollup"><span>적용 범위 실험적 - 0%</span><span>품질 알파 - 58%</span><span>완성도 알파 - 66%</span><span><span className="maturity-lts maturity-lts-partial">부분 지원 - 1</span></span></div>
+    <div className="maturity-surface-rollup"><span>적용 범위 실험 단계 - 0%</span><span>품질 알파 - 58%</span><span>완성도 알파 - 66%</span><span><span className="maturity-lts maturity-lts-partial">부분 지원 - 1</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>적용 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>지원 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">CLI</span>
@@ -2210,7 +2209,7 @@ x-i18n:
   <Accordion title="Kubernetes 호스팅 - M2 알파 - 4개 영역">
     <a id="kubernetes-hosting" />
 
-    Kubernetes 호스팅은 Kustomize 기반의 별도 클러스터 배포 경로입니다. 현재 점수는 실제로 작동하는 최소 배포 경로가 있음을 보여 주지만, Kubernetes 전용 CI, 인그레스/TLS/NetworkPolicy 패키징, 백업/복원 및 프로덕션 노출 강화에는 미비점이 있습니다.
+    Kubernetes 호스팅은 Kustomize 기반의 별도 클러스터 배포 경로입니다. 현재 평가 결과, 실제로 사용할 수 있는 최소 배포 경로는 마련되어 있지만 Kubernetes 전용 CI, 인그레스/TLS/NetworkPolicy 패키징, 백업/복원, 프로덕션 노출 강화에는 미비점이 있습니다.
 
     <div className="maturity-surface-rollup"><span>커버리지 실험 단계 - 0%</span><span>품질 알파 - 55%</span><span>완성도 알파 - 61%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
 
@@ -2228,13 +2227,13 @@ x-i18n:
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">구성 및 비밀 정보</span>
+          <span className="maturity-category-title">구성 및 시크릿</span>
           <span>기능 5개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험 단계</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>55%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "55%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Kubernetes](/ko/install/kubernetes), [비밀 정보](/ko/gateway/secrets), [환경](/ko/help/environment)</div>
+        <div className="maturity-category-docs">[Kubernetes](/ko/install/kubernetes), [시크릿](/ko/gateway/secrets), [환경](/ko/help/environment)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2244,7 +2243,7 @@ x-i18n:
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험 단계</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>55%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "55%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Kubernetes](/ko/install/kubernetes), [인증](/ko/gateway/authentication), [원격 연결](/ko/gateway/remote), [노출 런북](/ko/gateway/security/exposure-runbook)</div>
+        <div className="maturity-category-docs">[Kubernetes](/ko/install/kubernetes), [인증](/ko/gateway/authentication), [원격 연결](/ko/gateway/remote), [노출 대응 절차서](/ko/gateway/security/exposure-runbook)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2272,7 +2271,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">설치 인계</span>
-          <span>4개 기능</span>
+          <span>기능 4개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
@@ -2282,7 +2281,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Plugin 수명 주기</span>
-          <span>4개 기능</span>
+          <span>기능 4개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
@@ -2292,7 +2291,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">활성화 및 앱 사용자 경험</span>
-          <span>7개 기능</span>
+          <span>기능 7개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
@@ -2302,7 +2301,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">구성 및 상태</span>
-          <span>7개 기능</span>
+          <span>기능 7개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
@@ -2312,7 +2311,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">서비스 런타임 및 보호 장치</span>
-          <span>8개 기능</span>
+          <span>기능 8개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
@@ -2323,10 +2322,10 @@ x-i18n:
 
   </Accordion>
 
-  <Accordion title="watchOS 컴패니언 표면 - M1 실험적 - 5개 영역">
+  <Accordion title="watchOS 컴패니언 화면 - M1 실험적 - 5개 영역">
     <a id="watchos-companion-surfaces" />
 
-    소스에는 Watch 앱/확장 프로그램 표면이 있지만, 공개 문서에서는 아직 이를 사용자 기능으로 소개하지 않습니다.
+    소스에는 Watch 앱/확장 프로그램 화면이 있지만, 공개 문서에서는 아직 이를 사용자 기능으로 소개하지 않습니다.
 
     <div className="maturity-surface-rollup"><span>적용 범위 실험적 - 0%</span><span>품질 실험적 - 41%</span><span>완성도 실험적 - 44%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
 
@@ -2335,7 +2334,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">전달 및 복구</span>
-          <span>7개 기능</span>
+          <span>기능 7개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
@@ -2345,7 +2344,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">실행 승인</span>
-          <span>3개 기능</span>
+          <span>기능 3개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
@@ -2355,7 +2354,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">배포 및 지원</span>
-          <span>6개 기능</span>
+          <span>기능 6개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
@@ -2365,7 +2364,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">알림 및 답장</span>
-          <span>7개 기능</span>
+          <span>기능 7개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
@@ -2375,7 +2374,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">Watch 앱 UI</span>
-          <span>3개 기능</span>
+          <span>기능 3개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>41%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "41%" }} /></span></span></div>
@@ -2389,7 +2388,7 @@ x-i18n:
   <Accordion title="Linux 컴패니언 앱 - M0 계획됨 - 5개 영역">
     <a id="linux-companion-app" />
 
-    문서에 따르면 네이티브 Linux 컴패니언 앱은 계획 중이며, 현재 Linux에서 지원되는 경로는 Gateway입니다.
+    문서에 따르면 네이티브 Linux 컴패니언 앱은 계획되어 있으며, 현재 Linux에서 지원되는 경로는 Gateway입니다.
 
     <div className="maturity-surface-rollup"><span>지원 범위 실험적 - 0%</span><span>품질 실험적 - 19%</span><span>완성도 실험적 - 21%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
 
@@ -2413,7 +2412,7 @@ x-i18n:
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>19%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "19%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>21%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "21%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Linux](/ko/platforms/linux), [색인](/ko/gateway/index), [페어링](/ko/gateway/pairing), [원격 연결](/ko/gateway/remote)</div>
+        <div className="maturity-category-docs">[Linux](/ko/platforms/linux), [색인](/ko/gateway/index), [페어링](/ko/gateway/pairing), [원격](/ko/gateway/remote)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2433,7 +2432,7 @@ x-i18n:
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>19%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "19%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>21%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "21%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Linux](/ko/platforms/linux), [실행 승인](/ko/tools/exec-approvals), [보안 비밀](/ko/gateway/secrets), [색인](/ko/nodes/index), [실행](/ko/tools/exec), [말하기](/ko/nodes/talk), [카메라](/ko/nodes/camera)</div>
+        <div className="maturity-category-docs">[Linux](/ko/platforms/linux), [실행 승인](/ko/tools/exec-approvals), [비밀 정보](/ko/gateway/secrets), [색인](/ko/nodes/index), [실행](/ko/tools/exec), [대화](/ko/nodes/talk), [카메라](/ko/nodes/camera)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2449,7 +2448,7 @@ x-i18n:
 
   </Accordion>
 
-  <Accordion title="Windows 네이티브 컴패니언 앱 - M0 계획됨 - 5개 영역">
+  <Accordion title="네이티브 Windows 도우미 앱 - M0 계획됨 - 5개 영역">
     <a id="native-windows-companion-app" />
 
     계획만 수립된 상태입니다.
@@ -2457,7 +2456,7 @@ x-i18n:
     <div className="maturity-surface-rollup"><span>적용 범위 실험적 - 0%</span><span>품질 실험적 - 19%</span><span>완성도 실험적 - 21%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>지원 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">설치 및 업데이트</span>
@@ -2520,12 +2519,12 @@ x-i18n:
   <Accordion title="Discord - M4 안정 - 6개 영역">
     <a id="discord" />
 
-    심층적인 문서와 폭넓은 기능을 제공합니다. 음성/위임 경로는 베타/알파로 별도 평가해야 합니다.
+    심층적인 문서와 폭넓은 기능 범위를 제공합니다. 음성 및 위임 경로는 베타/알파로 별도 평가해야 합니다.
 
-    <div className="maturity-surface-rollup"><span>지원 범위 실험적 - 0%</span><span>품질 베타 - 73%</span><span>완성도 안정 - 87%</span><span><span className="maturity-lts maturity-lts-partial">부분적 - 4</span></span></div>
+    <div className="maturity-surface-rollup"><span>범위 실험적 - 0%</span><span>품질 베타 - 73%</span><span>완성도 안정 - 87%</span><span><span className="maturity-lts maturity-lts-partial">부분적 - 4</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>적용 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>지원 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">채널 설정 및 운영</span>
@@ -2593,16 +2592,16 @@ x-i18n:
   <Accordion title="Telegram - M3 베타 - 5개 영역">
     <a id="telegram" />
 
-    핵심 채널은 정기적으로 사용하기에 충분히 성숙했지만, 변동성이 큰 UX와 미디어 극단 사례에는 반복적인 시나리오 검증이 필요합니다.
+    핵심 채널은 정기적으로 사용하기에 충분히 성숙했지만, 편차가 큰 사용자 경험과 미디어의 경계 사례에는 반복적인 시나리오 검증이 필요합니다.
 
-    <div className="maturity-surface-rollup"><span>적용 범위 실험적 - 0%</span><span>품질 알파 - 68%</span><span>완성도 베타 - 78%</span><span><span className="maturity-lts maturity-lts-full">전체 - 5</span></span></div>
+    <div className="maturity-surface-rollup"><span>지원 범위 실험적 - 0%</span><span>품질 알파 - 68%</span><span>완성도 베타 - 78%</span><span><span className="maturity-lts maturity-lts-full">전체 - 5</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>적용 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>커버리지</span><span>품질</span><span>완성도</span><span>문서</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">채널 설정 및 운영</span>
-          <span>10개 기능 / LTS 지원</span>
+          <span>기능 10개 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
@@ -2611,18 +2610,18 @@ x-i18n:
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">액세스 및 ID</span>
-          <span>10개 기능 / LTS 지원</span>
+          <span className="maturity-category-title">접근 및 신원</span>
+          <span>기능 10개 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Telegram](/ko/channels/telegram), [페어링](/ko/channels/pairing), [액세스 그룹](/ko/channels/access-groups), [그룹](/ko/channels/groups), [다중 에이전트](/ko/concepts/multi-agent)</div>
+        <div className="maturity-category-docs">[Telegram](/ko/channels/telegram), [페어링](/ko/channels/pairing), [접근 그룹](/ko/channels/access-groups), [그룹](/ko/channels/groups), [다중 에이전트](/ko/concepts/multi-agent)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">대화 라우팅 및 전달</span>
-          <span>1개 기능 / LTS 지원</span>
+          <span>기능 1개 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
@@ -2632,7 +2631,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">미디어 및 리치 콘텐츠</span>
-          <span>1개 기능 / LTS 지원</span>
+          <span>기능 1개 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
@@ -2642,7 +2641,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">네이티브 제어 및 승인</span>
-          <span>9개 기능 / LTS 지원</span>
+          <span>기능 9개 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>77%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "77%" }} /></span></span></div>
@@ -2656,9 +2655,9 @@ x-i18n:
   <Accordion title="Slack - M3 베타 - 5개 영역">
     <a id="slack" />
 
-    일급 채널 문서 및 라우팅 표면입니다. 워크스페이스 설치/관리자 시나리오 스코어카드가 필요합니다.
+    일급 채널 문서 및 라우팅 기능 영역입니다. 워크스페이스 설치 및 관리자 시나리오의 스코어카드가 필요합니다.
 
-    <div className="maturity-surface-rollup"><span>적용 범위 실험적 - 0%</span><span>품질 알파 - 66%</span><span>완성도 베타 - 78%</span><span><span className="maturity-lts maturity-lts-full">전체 - 5</span></span></div>
+    <div className="maturity-surface-rollup"><span>커버리지 실험적 - 0%</span><span>품질 알파 - 66%</span><span>완성도 베타 - 78%</span><span><span className="maturity-lts maturity-lts-full">전체 - 5</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>적용 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
@@ -2674,7 +2673,7 @@ x-i18n:
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">접근 및 ID</span>
+          <span className="maturity-category-title">액세스 및 신원</span>
           <span>1개 기능 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -2719,7 +2718,7 @@ x-i18n:
   <Accordion title="iMessage 및 BlueBubbles - M3 베타 - 5개 영역">
     <a id="imessage-and-bluebubbles" />
 
-    지원되는 iMessage는 로그인된 macOS 메시지 호스트에서 imsg를 통해 실행되며, 레거시 BlueBubbles 구성은 마이그레이션이 필요합니다. macOS 권한, SSH 래퍼, SIP/비공개 API 및 마이그레이션 관련 주의 사항이 계속 표시되도록 하십시오.
+    지원되는 iMessage는 로그인된 macOS 메시지 호스트에서 imsg를 통해 실행되며, 레거시 BlueBubbles 구성은 마이그레이션해야 합니다. macOS 권한, SSH 래퍼, SIP/비공개 API 및 마이그레이션 관련 주의 사항을 명확히 표시하세요.
 
     <div className="maturity-surface-rollup"><span>적용 범위 실험적 - 0%</span><span>품질 알파 - 66%</span><span>완성도 베타 - 78%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
 
@@ -2733,7 +2732,7 @@ x-i18n:
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[BlueBubbles iMessage](/ko/announcements/bluebubbles-imessage), [BlueBubbles의 iMessage](/ko/channels/imessage-from-bluebubbles), [채널 구성](/ko/gateway/config-channels), [iMessage](/ko/channels/imessage)</div>
+        <div className="maturity-category-docs">[BlueBubbles iMessage](/ko/announcements/bluebubbles-imessage), [BlueBubbles를 통한 iMessage](/ko/channels/imessage-from-bluebubbles), [채널 구성](/ko/gateway/config-channels), [iMessage](/ko/channels/imessage)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2743,7 +2742,7 @@ x-i18n:
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iMessage](/ko/channels/imessage), [BlueBubbles의 iMessage](/ko/channels/imessage-from-bluebubbles), [채널 구성](/ko/gateway/config-channels)</div>
+        <div className="maturity-category-docs">[iMessage](/ko/channels/imessage), [BlueBubbles를 통한 iMessage](/ko/channels/imessage-from-bluebubbles), [채널 구성](/ko/gateway/config-channels)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2763,7 +2762,7 @@ x-i18n:
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[iMessage](/ko/channels/imessage), [BlueBubbles의 iMessage](/ko/channels/imessage-from-bluebubbles), [채널 구성](/ko/gateway/config-channels)</div>
+        <div className="maturity-category-docs">[iMessage](/ko/channels/imessage), [BlueBubbles를 통한 iMessage](/ko/channels/imessage-from-bluebubbles), [채널 구성](/ko/gateway/config-channels)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2782,26 +2781,26 @@ x-i18n:
   <Accordion title="WhatsApp - M3 베타 - 5개 영역">
     <a id="whatsapp" />
 
-    핵심 경로는 중요하며 문서화되어 있지만, 업스트림 Baileys/세션의 변동성으로 인해 안정 단계에는 미치지 못합니다.
+    핵심 경로는 중요하며 문서화되어 있지만, 업스트림 Baileys/세션의 변동성 때문에 안정 단계에는 미치지 못합니다.
 
     <div className="maturity-surface-rollup"><span>적용 범위 실험적 - 0%</span><span>품질 알파 - 66%</span><span>완성도 베타 - 78%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>적용 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>지원 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">채널 설정 및 운영</span>
-          <span>5개 기능</span>
+          <span>기능 5개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[WhatsApp](/ko/channels/whatsapp), [채널 구성](/ko/gateway/config-channels), [WhatsApp](/ko/plugins/reference/whatsapp), [QA E2E 자동화](/ko/concepts/qa-e2e-automation), [Doctor](/ko/gateway/doctor)</div>
+        <div className="maturity-category-docs">[WhatsApp](/ko/channels/whatsapp), [채널 구성](/ko/gateway/config-channels), [WhatsApp](/ko/plugins/reference/whatsapp), [QA E2E 자동화](/ko/concepts/qa-e2e-automation), [진단](/ko/gateway/doctor)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">액세스 및 ID</span>
-          <span>7개 기능</span>
+          <span className="maturity-category-title">접근 및 ID</span>
+          <span>기능 7개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
@@ -2811,7 +2810,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">대화 라우팅 및 전달</span>
-          <span>4개 기능</span>
+          <span>기능 4개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
@@ -2821,7 +2820,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">미디어 및 리치 콘텐츠</span>
-          <span>2개 기능</span>
+          <span>기능 2개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
@@ -2831,7 +2830,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">네이티브 제어 및 승인</span>
-          <span>2개 기능</span>
+          <span>기능 2개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
@@ -2842,15 +2841,15 @@ x-i18n:
 
   </Accordion>
 
-  <Accordion title="Matrix - M2 알파 - 6개 영역">
+  <Accordion title="매트릭스 - M2 알파 - 6개 영역">
     <a id="matrix" />
 
     번들 Plugin을 통해 지원됩니다. 브리지, 인증 및 방 수명 주기 스코어카드가 필요합니다.
 
-    <div className="maturity-surface-rollup"><span>적용 범위 실험적 - 0%</span><span>품질 알파 - 60%</span><span>완성도 알파 - 67%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
+    <div className="maturity-surface-rollup"><span>지원 범위 실험적 - 0%</span><span>품질 알파 - 60%</span><span>완성도 알파 - 67%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>적용 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>지원 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">채널 설정 및 운영</span>
@@ -2863,7 +2862,7 @@ x-i18n:
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">액세스 및 신원</span>
+          <span className="maturity-category-title">접근 및 ID</span>
           <span>기능 7개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -2918,9 +2917,9 @@ x-i18n:
   <Accordion title="Google Chat - M2 알파 - 5개 영역">
     <a id="google-chat" />
 
-    문서화된 채널이지만 엔터프라이즈/관리자 설정으로 인해 성숙도 위험이 높아집니다.
+    문서화된 채널이지만, 엔터프라이즈/관리자 설정으로 인해 성숙도 위험이 높아집니다.
 
-    <div className="maturity-surface-rollup"><span>적용 범위 실험적 - 0%</span><span>품질 알파 - 59%</span><span>완성도 알파 - 66%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
+    <div className="maturity-surface-rollup"><span>지원 범위 실험적 - 0%</span><span>품질 알파 - 59%</span><span>완성도 알파 - 66%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>지원 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
@@ -2932,7 +2931,7 @@ x-i18n:
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Google Chat](/ko/channels/googlechat), [Google Chat](/ko/plugins/reference/googlechat), [채널 구성](/ko/gateway/config-channels), [마법사 CLI 참조](/ko/start/wizard-cli-reference), [비밀 정보](/ko/gateway/secrets), [SecretRef 자격 증명 표면](/ko/reference/secretref-credential-surface), [상태](/ko/gateway/health), [Plugin 인벤토리](/ko/plugins/plugin-inventory), [색인](/ko/channels/index)</div>
+        <div className="maturity-category-docs">[Google Chat](/ko/channels/googlechat), [Google Chat](/ko/plugins/reference/googlechat), [채널 구성](/ko/gateway/config-channels), [마법사 CLI 참조](/ko/start/wizard-cli-reference), [비밀 정보](/ko/gateway/secrets), [SecretRef 자격 증명 표면](/ko/reference/secretref-credential-surface), [상태](/ko/gateway/health), [Plugin 목록](/ko/plugins/plugin-inventory), [색인](/ko/channels/index)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -2981,7 +2980,7 @@ x-i18n:
   <Accordion title="Microsoft Teams - M2 알파 - 5개 영역">
     <a id="microsoft-teams" />
 
-    엔터프라이즈 인증/관리자 흐름에는 명시적인 시나리오 증명이 필요합니다.
+    엔터프라이즈 인증/관리자 흐름에는 명시적인 시나리오 검증이 필요합니다.
 
     <div className="maturity-surface-rollup"><span>지원 범위 실험적 - 0%</span><span>품질 알파 - 59%</span><span>완성도 알파 - 66%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
 
@@ -2990,52 +2989,52 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">채널 설정 및 운영</span>
-          <span>9개 기능</span>
+          <span>기능 9개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Microsoft Teams](/ko/channels/msteams), [Microsoft Teams](/ko/plugins/reference/msteams), [채널 구성](/ko/gateway/config-channels), [상태](/ko/gateway/health)</div>
+        <div className="maturity-category-docs">[Msteams](/ko/channels/msteams), [Msteams](/ko/plugins/reference/msteams), [채널 구성](/ko/gateway/config-channels), [상태](/ko/gateway/health)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">액세스 및 ID</span>
-          <span>9개 기능</span>
+          <span className="maturity-category-title">접근 및 ID</span>
+          <span>기능 9개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Microsoft Teams](/ko/channels/msteams), [페어링](/ko/channels/pairing), [액세스 그룹](/ko/channels/access-groups)</div>
+        <div className="maturity-category-docs">[Msteams](/ko/channels/msteams), [페어링](/ko/channels/pairing), [접근 그룹](/ko/channels/access-groups)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">대화 라우팅 및 전달</span>
-          <span>5개 기능</span>
+          <span>기능 5개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Microsoft Teams](/ko/channels/msteams), [그룹](/ko/channels/groups), [채널 라우팅](/ko/channels/channel-routing)</div>
+        <div className="maturity-category-docs">[Msteams](/ko/channels/msteams), [그룹](/ko/channels/groups), [채널 라우팅](/ko/channels/channel-routing)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">미디어 및 리치 콘텐츠</span>
-          <span>5개 기능</span>
+          <span>기능 5개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Microsoft Teams](/ko/channels/msteams)</div>
+        <div className="maturity-category-docs">[Msteams](/ko/channels/msteams)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">네이티브 제어 및 승인</span>
-          <span>5개 기능</span>
+          <span>기능 5개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Microsoft Teams](/ko/channels/msteams), [고급 실행 승인](/ko/tools/exec-approvals-advanced)</div>
+        <div className="maturity-category-docs">[Msteams](/ko/channels/msteams), [고급 실행 승인](/ko/tools/exec-approvals-advanced)</div>
       </div>
     </div>
 
@@ -3044,16 +3043,16 @@ x-i18n:
   <Accordion title="Signal - M2 알파 - 5개 영역">
     <a id="signal" />
 
-    지원되는 채널 문서가 있으며, 설치 및 재연결에 대한 더 확실한 검증이 필요합니다.
+    지원되는 채널 문서가 있지만 설치 및 재연결에 대한 더 확실한 검증이 필요합니다.
 
     <div className="maturity-surface-rollup"><span>지원 범위 실험적 - 0%</span><span>품질 알파 - 59%</span><span>완성도 알파 - 66%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>지원 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">채널 설정 및 운영</span>
-          <span>7개 기능</span>
+          <span>기능 7개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
@@ -3063,7 +3062,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">접근 및 ID</span>
-          <span>6개 기능</span>
+          <span>기능 6개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
@@ -3073,7 +3072,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">대화 라우팅 및 전달</span>
-          <span>1개 기능</span>
+          <span>기능 1개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
@@ -3083,7 +3082,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">미디어 및 리치 콘텐츠</span>
-          <span>7개 기능</span>
+          <span>기능 7개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
@@ -3093,7 +3092,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">네이티브 제어 및 승인</span>
-          <span>3개 기능</span>
+          <span>기능 3개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>59%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "59%" }} /></span></span></div>
@@ -3107,16 +3106,16 @@ x-i18n:
   <Accordion title="Feishu, QQ Bot, WeChat, Yuanbao, Zalo, Zalo Personal, 지역 채널 - M2 알파 - 4개 영역">
     <a id="feishu-qq-bot-wechat-yuanbao-zalo-zalo-personal-regional-channels" />
 
-    중요한 지역 지원 범위이지만, 공개 지원 수준은 계정 유형, 업스트림 승인 및 유지관리자 증명에 따라 조정해야 합니다.
+    중요한 지역별 지원 범위이지만, 공개 지원 수준은 계정 유형, 상위 서비스의 승인 및 유지관리자의 입증 자료에 따라 조정해야 합니다.
 
-    <div className="maturity-surface-rollup"><span>지원 범위 실험적 - 0%</span><span>품질 알파 - 55%</span><span>완성도 알파 - 58%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
+    <div className="maturity-surface-rollup"><span>범위 실험적 - 0%</span><span>품질 알파 - 55%</span><span>완성도 알파 - 58%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>지원 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">채널 설정 및 운영</span>
-          <span>6개 기능</span>
+          <span>기능 6개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
@@ -3125,8 +3124,8 @@ x-i18n:
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">접근 및 ID</span>
-          <span>1개 기능</span>
+          <span className="maturity-category-title">접근 및 신원</span>
+          <span>기능 1개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
@@ -3136,7 +3135,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">대화 라우팅 및 전달</span>
-          <span>1개 기능</span>
+          <span>기능 1개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
@@ -3146,7 +3145,7 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">미디어 및 리치 콘텐츠</span>
-          <span>1개 기능</span>
+          <span>기능 1개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>53%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "53%" }} /></span></span></div>
@@ -3160,12 +3159,12 @@ x-i18n:
   <Accordion title="Mattermost, LINE, IRC, Nextcloud Talk, Nostr, Twitch, Tlon, Synology Chat - M2 알파 - 4개 영역">
     <a id="mattermost-line-irc-nextcloud-talk-nostr-twitch-tlon-synology-chat" />
 
-    지원되는 기능 영역이 존재하지만, 성숙도는 업스트림과 유지관리자 지원 범위에 따라 달라질 가능성이 높습니다. 추후 개별적으로 평가하십시오.
+    지원되는 표면이 존재하지만, 성숙도는 업스트림과 유지관리자 지원 범위에 따라 달라질 가능성이 높습니다. 나중에 개별적으로 평가합니다.
 
     <div className="maturity-surface-rollup"><span>지원 범위 실험적 - 0%</span><span>품질 알파 - 53%</span><span>완성도 알파 - 54%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>커버리지</span><span>품질</span><span>완성도</span><span>문서</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>적용 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">채널 설정 및 운영</span>
@@ -3178,7 +3177,7 @@ x-i18n:
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">액세스 및 ID</span>
+          <span className="maturity-category-title">접근 및 ID</span>
           <span>기능 1개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -3215,7 +3214,7 @@ x-i18n:
 
     복잡한 실시간 동작을 포함하는 선택적/Plugin 경로입니다. 공개 베타 전에 시나리오 평가표가 필요합니다.
 
-    <div className="maturity-surface-rollup"><span>커버리지 실험적 - 0%</span><span>품질 실험적 - 41%</span><span>완성도 실험적 - 44%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
+    <div className="maturity-surface-rollup"><span>적용 범위 실험적 - 0%</span><span>품질 실험적 - 41%</span><span>완성도 실험적 - 44%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>적용 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
@@ -3231,7 +3230,7 @@ x-i18n:
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">액세스 및 ID</span>
+          <span className="maturity-category-title">접근 및 ID</span>
           <span>기능 1개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -3278,19 +3277,19 @@ x-i18n:
 ### 제공자 및 도구
 
 <AccordionGroup>
-  <Accordion title="브라우저 자동화, 실행 및 샌드박스 도구 - M3 베타 - 3개 영역">
+  <Accordion title="브라우저 자동화, 실행 및 샌드박스 도구 - M3 베타 - 영역 3개">
     <a id="browser-automation-exec-and-sandbox-tools" />
 
-    핵심 도구는 문서화되어 있지만, 호스트 보안과 권한 사용자 경험은 성숙도 평가표에서 지속적으로 검토해야 합니다.
+    핵심 도구는 문서화되어 있지만, 호스트 보안과 권한 사용자 경험은 성과표에서 계속 적극적으로 검토해야 합니다.
 
     <div className="maturity-surface-rollup"><span>적용 범위 실험적 - 21%</span><span>품질 베타 - 75%</span><span>완성도 베타 - 79%</span><span><span className="maturity-lts maturity-lts-partial">부분적 - 2</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>적용 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">브라우저 자동화</span>
-          <span>8개 기능</span>
+          <span>기능 8개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>13%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "13%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
@@ -3300,22 +3299,22 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">도구 호출 및 실행</span>
-          <span>6개 기능 / LTS 지원</span>
+          <span>기능 6개 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>50%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "50%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[실행](/ko/tools/exec), [백그라운드 프로세스](/ko/gateway/background-process), [도구 호출 HTTP API](/ko/gateway/tools-invoke-http-api), [운영자 범위](/ko/gateway/operator-scopes), [프로토콜](/ko/gateway/protocol), [실행 승인](/ko/tools/exec-approvals), [고급 실행 승인](/ko/tools/exec-approvals-advanced), [권한 상승](/ko/tools/elevated)</div>
+        <div className="maturity-category-docs">[명령 실행](/ko/tools/exec), [백그라운드 프로세스](/ko/gateway/background-process), [도구 호출 HTTP API](/ko/gateway/tools-invoke-http-api), [운영자 범위](/ko/gateway/operator-scopes), [프로토콜](/ko/gateway/protocol), [명령 실행 승인](/ko/tools/exec-approvals), [고급 명령 실행 승인](/ko/tools/exec-approvals-advanced), [권한 상승](/ko/tools/elevated)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">샌드박스 및 도구 정책</span>
-          <span>6개 기능 / LTS 지원</span>
+          <span>기능 6개 / LTS 지원</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[샌드박싱](/ko/gateway/sandboxing), [샌드박스와 도구 정책 및 권한 상승 비교](/ko/gateway/sandbox-vs-tool-policy-vs-elevated), [멀티 에이전트 샌드박스 도구](/ko/tools/multi-agent-sandbox-tools), [Codex 하네스 참조](/ko/plugins/codex-harness-reference), [구성 도구](/ko/gateway/config-tools)</div>
+        <div className="maturity-category-docs">[샌드박싱](/ko/gateway/sandboxing), [샌드박스와 도구 정책 및 권한 상승 비교](/ko/gateway/sandbox-vs-tool-policy-vs-elevated), [다중 에이전트 샌드박스 도구](/ko/tools/multi-agent-sandbox-tools), [Codex 하네스 참조](/ko/plugins/codex-harness-reference), [구성 도구](/ko/gateway/config-tools)</div>
       </div>
     </div>
 
@@ -3324,12 +3323,12 @@ x-i18n:
   <Accordion title="OpenAI 및 Codex 제공자 경로 - M3 베타 - 5개 영역">
     <a id="openai-and-codex-provider-path" />
 
-    심층 문서, OAuth/구독 경로, 실시간 음성, 이미지 및 호환성 동작을 다룹니다. 제공자의 잦은 변경으로 인해 릴리스 스코어카드 증명 없이는 안정 단계에 도달하지 못합니다.
+    심층 문서, OAuth/구독 경로, 실시간 음성, 이미지 및 호환성 동작을 다룹니다. 제공자의 잦은 변경으로 인해 릴리스 스코어카드로 입증하기 전에는 안정 단계로 전환할 수 없습니다.
 
-    <div className="maturity-surface-rollup"><span>범위 실험적 - 26%</span><span>품질 베타 - 74%</span><span>완성도 베타 - 79%</span><span><span className="maturity-lts maturity-lts-partial">부분 지원 - 3</span></span></div>
+    <div className="maturity-surface-rollup"><span>적용 범위 실험적 - 26%</span><span>품질 베타 - 74%</span><span>완성도 베타 - 79%</span><span><span className="maturity-lts maturity-lts-partial">부분 지원 - 3</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>지원 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>적용 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">모델 및 인증</span>
@@ -3387,12 +3386,12 @@ x-i18n:
   <Accordion title="웹 검색 도구 - M3 베타 - 4개 영역">
     <a id="web-search-tools" />
 
-    여러 공급자와 문서가 있습니다. 공급자 계열별로 할당량/오류/SSRF 검증이 필요합니다.
+    여러 제공자와 문서가 있습니다. 제공자 계열별로 할당량, 오류 및 SSRF 검증이 필요합니다.
 
-    <div className="maturity-surface-rollup"><span>지원 범위 실험적 - 9%</span><span>품질 베타 - 74%</span><span>완성도 베타 - 79%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
+    <div className="maturity-surface-rollup"><span>적용 범위 실험적 - 9%</span><span>품질 베타 - 74%</span><span>완성도 베타 - 79%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>커버리지</span><span>품질</span><span>완성도</span><span>문서</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">검색 제공자</span>
@@ -3431,7 +3430,7 @@ x-i18n:
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>25%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "25%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[도구 구성](/ko/gateway/config-tools), [웹 가져오기](/ko/tools/web-fetch), [웹](/ko/tools/web), [자주 묻는 질문](/ko/help/faq)</div>
+        <div className="maturity-category-docs">[구성 도구](/ko/gateway/config-tools), [웹 가져오기](/ko/tools/web-fetch), [웹](/ko/tools/web), [자주 묻는 질문](/ko/help/faq)</div>
       </div>
     </div>
 
@@ -3440,15 +3439,15 @@ x-i18n:
   <Accordion title="Anthropic 제공자 경로 - M3 베타 - 5개 영역">
     <a id="anthropic-provider-path" />
 
-    최상위 모델 제공자입니다. 인증/카탈로그/도구 호출 시나리오를 반복적으로 검증해야 합니다.
+    일급 모델 제공자입니다. 인증, 카탈로그, 도구 호출 시나리오에 대한 반복적인 검증이 필요합니다.
 
-    <div className="maturity-surface-rollup"><span>범위 실험적 - 0%</span><span>품질 베타 - 71%</span><span>완성도 베타 - 78%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
+    <div className="maturity-surface-rollup"><span>커버리지 실험적 - 0%</span><span>품질 베타 - 71%</span><span>완성도 베타 - 78%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>지원 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">제공자 인증 및 복구</span>
+          <span className="maturity-category-title">공급자 인증 및 복구</span>
           <span>9개 기능</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -3474,7 +3473,7 @@ x-i18n:
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>77%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "77%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>79%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "79%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Anthropic](/ko/providers/anthropic), [프롬프트 캐싱](/ko/reference/prompt-caching), [문제 해결](/ko/gateway/troubleshooting), [CLI 백엔드](/ko/gateway/cli-backends), [모델 제공자](/ko/concepts/model-providers)</div>
+        <div className="maturity-category-docs">[Anthropic](/ko/providers/anthropic), [프롬프트 캐싱](/ko/reference/prompt-caching), [문제 해결](/ko/gateway/troubleshooting), [CLI 백엔드](/ko/gateway/cli-backends), [모델 공급자](/ko/concepts/model-providers)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
@@ -3500,49 +3499,49 @@ x-i18n:
 
   </Accordion>
 
-  <Accordion title="Google 제공자 경로 - M3 베타 - 5개 영역">
+  <Accordion title="Google 공급자 경로 - M3 베타 - 5개 영역">
     <a id="google-provider-path" />
 
-    모델 및 실시간 기능을 갖춘 일급 제공자입니다. Live/Talk를 별도로 평가해야 합니다.
+    모델 및 실시간 기능을 갖춘 일급 공급자입니다. Live/Talk를 별도로 평가해야 합니다.
 
     <div className="maturity-surface-rollup"><span>지원 범위 실험적 - 0%</span><span>품질 알파 - 66%</span><span>완성도 베타 - 78%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>지원 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>커버리지</span><span>품질</span><span>완성도</span><span>문서</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">공급자 설정 및 자격 증명</span>
-          <span>10개 기능</span>
+          <span className="maturity-category-title">제공자 설정 및 자격 증명</span>
+          <span>기능 10개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Google](/ko/providers/google), [모델 공급자](/ko/concepts/model-providers)</div>
+        <div className="maturity-category-docs">[Google](/ko/providers/google), [모델 제공자](/ko/concepts/model-providers)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">모델 라우팅 및 엔드포인트</span>
-          <span>10개 기능</span>
+          <span>기능 10개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Google](/ko/providers/google), [모델 공급자](/ko/concepts/model-providers), [Google](/ko/plugins/reference/google), [Gemini 검색](/ko/tools/gemini-search)</div>
+        <div className="maturity-category-docs">[Google](/ko/providers/google), [모델 제공자](/ko/concepts/model-providers), [Google](/ko/plugins/reference/google), [Gemini 검색](/ko/tools/gemini-search)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">직접 Gemini 런타임</span>
-          <span>9개 기능</span>
+          <span>기능 9개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[Google](/ko/providers/google), [모델 공급자](/ko/concepts/model-providers), [모델 FAQ](/ko/help/faq-models), [라이브 테스트](/ko/help/testing-live)</div>
+        <div className="maturity-category-docs">[Google](/ko/providers/google), [모델 제공자](/ko/concepts/model-providers), [모델 FAQ](/ko/help/faq-models), [라이브 테스트](/ko/help/testing-live)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">미디어, 검색 및 실시간 기능</span>
-          <span>10개 기능</span>
+          <span>기능 10개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
@@ -3552,23 +3551,23 @@ x-i18n:
       <div className="maturity-category-row">
         <div className="maturity-category-area">
           <span className="maturity-category-title">프롬프트 캐싱</span>
-          <span>5개 기능</span>
+          <span>기능 5개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
-        <div className="maturity-category-docs">[프롬프트 캐싱](/ko/reference/prompt-caching), [Google](/ko/providers/google), [모델 공급자](/ko/concepts/model-providers), [토큰 사용량](/ko/reference/token-use)</div>
+        <div className="maturity-category-docs">[프롬프트 캐싱](/ko/reference/prompt-caching), [Google](/ko/providers/google), [모델 제공자](/ko/concepts/model-providers), [토큰 사용량](/ko/reference/token-use)</div>
       </div>
     </div>
 
   </Accordion>
 
-  <Accordion title="OpenRouter 공급자 경로 - M3 베타 - 4개 영역">
+  <Accordion title="OpenRouter 제공자 경로 - M3 베타 - 4개 영역">
     <a id="openrouter-provider-path" />
 
-    통합 공급자 경로는 문서화되어 있고 유용하지만, 모델별 동작은 서로 다릅니다.
+    통합 제공자 경로는 문서화되어 있고 유용하지만, 모델별 동작은 서로 다릅니다.
 
-    <div className="maturity-surface-rollup"><span>지원 범위 실험적 - 0%</span><span>품질 알파 - 66%</span><span>완성도 베타 - 78%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
+    <div className="maturity-surface-rollup"><span>커버리지 실험적 - 0%</span><span>품질 알파 - 66%</span><span>완성도 베타 - 78%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>지원 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
@@ -3577,7 +3576,7 @@ x-i18n:
           <span className="maturity-category-title">제공자 설정 및 인증</span>
           <span>14개 기능</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험 단계</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
         <div className="maturity-category-docs">[Openrouter](/ko/providers/openrouter), [모델 제공자](/ko/concepts/model-providers), [구성](/ko/cli/configure), [인증](/ko/gateway/authentication), [환경](/ko/help/environment), [모델](/ko/cli/models), [모델](/ko/concepts/models)</div>
@@ -3587,7 +3586,7 @@ x-i18n:
           <span className="maturity-category-title">채팅 런타임 및 정규화</span>
           <span>15개 기능</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험 단계</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
         <div className="maturity-category-docs">[Openrouter](/ko/providers/openrouter), [모델 제공자](/ko/concepts/model-providers), [프롬프트 캐싱](/ko/reference/prompt-caching)</div>
@@ -3597,7 +3596,7 @@ x-i18n:
           <span className="maturity-category-title">제공자 복구 및 진단</span>
           <span>5개 기능</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험 단계</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
         <div className="maturity-category-docs">[모델 장애 조치](/ko/concepts/model-failover), [Openrouter](/ko/providers/openrouter), [모델](/ko/cli/models)</div>
@@ -3607,7 +3606,7 @@ x-i18n:
           <span className="maturity-category-title">미디어 생성 및 음성</span>
           <span>7개 기능</span>
         </div>
-        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
+        <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험 단계</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>66%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "66%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-beta"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-beta">베타</span><span>78%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "78%" }} /></span></span></div>
         <div className="maturity-category-docs">[Openrouter](/ko/providers/openrouter), [이미지 생성](/ko/tools/image-generation), [음악 생성](/ko/tools/music-generation), [미디어 개요](/ko/tools/media-overview), [동영상 생성](/ko/tools/video-generation), [TTS](/ko/tools/tts)</div>
@@ -3619,15 +3618,15 @@ x-i18n:
   <Accordion title="이미지, 동영상 및 음악 생성 도구 - M2 알파 - 5개 영역">
     <a id="image-video-and-music-generation-tools" />
 
-    여러 제공자에서 기능을 사용할 수 있지만, 제공자별 검증 없이는 베타로 분류하기에 품질, 지연 시간 및 매개변수 호환성의 편차가 너무 큽니다.
+    여러 제공자에서 기능을 사용할 수 있지만, 제공자별 검증 없이 베타 단계로 분류하기에는 품질, 지연 시간 및 매개변수 호환성의 차이가 너무 큽니다.
 
-    <div className="maturity-surface-rollup"><span>지원 범위 실험적 - 0%</span><span>품질 알파 - 61%</span><span>완성도 알파 - 68%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
+    <div className="maturity-surface-rollup"><span>지원 범위 실험 단계 - 0%</span><span>품질 알파 - 61%</span><span>완성도 알파 - 68%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
 
     <div className="maturity-category-list">
       <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>적용 범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">미디어 라우팅 및 검색</span>
+          <span className="maturity-category-title">미디어 라우팅 및 탐색</span>
           <span>기능 4개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험적</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
@@ -3682,7 +3681,7 @@ x-i18n:
   <Accordion title="로컬 모델 제공자: Ollama, vLLM, SGLang, LM Studio - M2 알파 - 5개 영역">
     <a id="local-model-providers-ollama-vllm-sglang-lm-studio" />
 
-    유용하고 문서화되어 있지만 환경에 따른 편차가 큽니다.
+    유용하며 문서화되어 있지만 환경에 따른 편차가 큽니다.
 
     <div className="maturity-surface-rollup"><span>적용 범위 실험적 - 0%</span><span>품질 알파 - 61%</span><span>완성도 알파 - 68%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
 
@@ -3742,29 +3741,29 @@ x-i18n:
 
   </Accordion>
 
-  <Accordion title="비주류 호스팅 제공자 - M2 알파 - 3개 영역">
+  <Accordion title="롱테일 호스팅 제공자 - M2 알파 - 3개 영역">
     <a id="long-tail-hosted-providers" />
 
-    많은 문서/참조 페이지가 존재하며, 점수는 제공자 메타데이터와 실제 스모크 테스트 적용 범위를 바탕으로 생성해야 합니다.
+    많은 문서 및 참조 페이지가 존재합니다. 점수는 제공자 메타데이터와 실제 스모크 테스트 적용 범위를 기반으로 생성해야 합니다.
 
-    <div className="maturity-surface-rollup"><span>커버리지 실험 단계 - 0%</span><span>품질 알파 - 61%</span><span>완성도 알파 - 68%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
+    <div className="maturity-surface-rollup"><span>범위 실험 단계 - 0%</span><span>품질 알파 - 61%</span><span>완성도 알파 - 68%</span><span><span className="maturity-lts maturity-lts-none">없음</span></span></div>
 
     <div className="maturity-category-list">
-      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>커버리지</span><span>품질</span><span>완성도</span><span>문서</span></div>
+      <div className="maturity-category-row maturity-category-row-header"><span>영역</span><span>범위</span><span>품질</span><span>완성도</span><span>문서</span></div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">호스팅 LLM 제공업체</span>
-          <span>12개 기능</span>
+          <span className="maturity-category-title">호스팅 LLM 제공자</span>
+          <span>기능 12개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험 단계</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[색인](/ko/providers/index), [모델 제공업체](/ko/concepts/model-providers), [라이브 테스트](/ko/help/testing-live), [온보딩](/ko/cli/onboard)</div>
+        <div className="maturity-category-docs">[색인](/ko/providers/index), [모델 제공자](/ko/concepts/model-providers), [라이브 테스트](/ko/help/testing-live), [온보딩](/ko/cli/onboard)</div>
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">호스팅 미디어 제공업체</span>
-          <span>8개 기능</span>
+          <span className="maturity-category-title">호스팅 미디어 제공자</span>
+          <span>기능 8개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험 단계</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
@@ -3773,13 +3772,13 @@ x-i18n:
       </div>
       <div className="maturity-category-row">
         <div className="maturity-category-area">
-          <span className="maturity-category-title">제공업체 운영</span>
-          <span>12개 기능</span>
+          <span className="maturity-category-title">제공자 운영</span>
+          <span>기능 12개</span>
         </div>
         <div><span className="maturity-score maturity-score-experimental"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-experimental">실험 단계</span><span>0%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "0%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>61%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "61%" }} /></span></span></div>
         <div><span className="maturity-score maturity-score-alpha"><span className="maturity-score-label"><span className="maturity-level-pill maturity-level-alpha">알파</span><span>68%</span></span><span className="maturity-meter" aria-hidden="true"><span style={{ width: "68%" }} /></span></span></div>
-        <div className="maturity-category-docs">[색인](/ko/providers/index), [모델 제공업체](/ko/concepts/model-providers), [매니페스트](/ko/plugins/manifest), [라이브 테스트](/ko/help/testing-live), [모델](/ko/cli/models)</div>
+        <div className="maturity-category-docs">[색인](/ko/providers/index), [모델 제공자](/ko/concepts/model-providers), [매니페스트](/ko/plugins/manifest), [라이브 테스트](/ko/help/testing-live), [모델](/ko/cli/models)</div>
       </div>
     </div>
 

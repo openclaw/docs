@@ -1,62 +1,36 @@
 ---
 read_when:
     - Chcesz katalog OpenCode Go
-    - Potrzebujesz odwołań do modeli środowiska wykonawczego dla modeli hostowanych w Go
-summary: Użyj katalogu Go OpenCode ze współdzieloną konfiguracją OpenCode
+    - Potrzebujesz odwołań do modeli środowiska uruchomieniowego dla modeli hostowanych przez Go
+summary: Użyj katalogu OpenCode Go ze współdzieloną konfiguracją OpenCode
 title: OpenCode Go
 x-i18n:
-    generated_at: "2026-06-27T18:14:18Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:35:42Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: eb4e6bd452eeebca5456b0cd70e7622e07ed050a07ff9d6d00926f32efe90569
+    source_hash: df647721e8966fd4fad3178550b071a2eb827148fe765bda53b3d7c97ceaadc2
     source_path: providers/opencode-go.md
     workflow: 16
 ---
 
-OpenCode Go to katalog Go w ramach [OpenCode](/pl/providers/opencode).
-Używa tego samego `OPENCODE_API_KEY` co katalog Zen, ale zachowuje identyfikator
-dostawcy runtime `opencode-go`, aby nadrzędne routowanie per model pozostało poprawne.
+OpenCode Go to katalog Go w [OpenCode](/pl/providers/opencode). Współdzieli
+dane uwierzytelniające `OPENCODE_API_KEY` z katalogiem Zen, ale zachowuje własny
+identyfikator dostawcy środowiska uruchomieniowego (`opencode-go`), dzięki czemu nadrzędne trasowanie
+dla poszczególnych modeli pozostaje prawidłowe.
 
-| Właściwość        | Wartość                         |
-| ----------------- | ------------------------------- |
-| Dostawca runtime  | `opencode-go`                   |
-| Uwierzytelnianie  | `OPENCODE_API_KEY`              |
-| Konfiguracja nadrzędna | [OpenCode](/pl/providers/opencode) |
-
-## Wbudowany katalog
-
-OpenClaw pobiera większość wierszy katalogu Go z dołączonego rejestru modeli OpenClaw i
-uzupełnia bieżące wiersze nadrzędne, podczas gdy rejestr nadrabia zaległości. Uruchom
-`openclaw models list --provider opencode-go`, aby zobaczyć bieżącą listę modeli.
-
-Dostawca obejmuje:
-
-| Ref modelu                     | Nazwa                 |
-| ------------------------------ | --------------------- |
-| `opencode-go/glm-5`            | GLM-5                 |
-| `opencode-go/glm-5.1`          | GLM-5.1               |
-| `opencode-go/glm-5.2`          | GLM-5.2               |
-| `opencode-go/kimi-k2.5`        | Kimi K2.5             |
-| `opencode-go/kimi-k2.6`        | Kimi K2.6 (limity 3x) |
-| `opencode-go/kimi-k2.7-code`   | Kimi K2.7 Code        |
-| `opencode-go/deepseek-v4-pro`  | DeepSeek V4 Pro       |
-| `opencode-go/deepseek-v4-flash` | DeepSeek V4 Flash    |
-| `opencode-go/mimo-v2-omni`     | MiMo V2 Omni          |
-| `opencode-go/mimo-v2-pro`      | MiMo V2 Pro           |
-| `opencode-go/minimax-m2.5`     | MiniMax M2.5          |
-| `opencode-go/minimax-m2.7`     | MiniMax M2.7          |
-| `opencode-go/qwen3.5-plus`     | Qwen3.5 Plus          |
-| `opencode-go/qwen3.6-plus`     | Qwen3.6 Plus          |
-
-GLM-5.2 używa okna kontekstu o wielkości 1 mln tokenów i obsługuje do 131 tys. tokenów wyjściowych.
+| Właściwość                     | Wartość                                            |
+| ------------------------------ | -------------------------------------------------- |
+| Dostawca środowiska uruchomieniowego | `opencode-go`                                 |
+| Uwierzytelnianie               | `OPENCODE_API_KEY` (alias: `OPENCODE_ZEN_API_KEY`) |
+| Konfiguracja nadrzędna         | [OpenCode](/pl/providers/opencode)                    |
 
 ## Pierwsze kroki
 
 <Tabs>
   <Tab title="Interaktywnie">
     <Steps>
-      <Step title="Uruchom wdrożenie">
+      <Step title="Uruchom wprowadzenie">
         ```bash
         openclaw onboard --auth-choice opencode-go
         ```
@@ -66,7 +40,7 @@ GLM-5.2 używa okna kontekstu o wielkości 1 mln tokenów i obsługuje do 131 ty
         openclaw config set agents.defaults.model.primary "opencode-go/kimi-k2.6"
         ```
       </Step>
-      <Step title="Sprawdź, czy modele są dostępne">
+      <Step title="Sprawdź dostępność modeli">
         ```bash
         openclaw models list --provider opencode-go
         ```
@@ -81,7 +55,7 @@ GLM-5.2 używa okna kontekstu o wielkości 1 mln tokenów i obsługuje do 131 ty
         openclaw onboard --opencode-go-api-key "$OPENCODE_API_KEY"
         ```
       </Step>
-      <Step title="Sprawdź, czy modele są dostępne">
+      <Step title="Sprawdź dostępność modeli">
         ```bash
         openclaw models list --provider opencode-go
         ```
@@ -99,37 +73,63 @@ GLM-5.2 używa okna kontekstu o wielkości 1 mln tokenów i obsługuje do 131 ty
 }
 ```
 
+## Wbudowany katalog
+
+Uruchom `openclaw models list --provider opencode-go`, aby wyświetlić aktualną listę modeli.
+Dołączone pozycje:
+
+| Odwołanie do modelu             | Nazwa             | Kontekst  | Maks. dane wyjściowe | Obrazy na wejściu |
+| ------------------------------- | ----------------- | --------- | -------------------- | ----------------- |
+| `opencode-go/deepseek-v4-pro`   | DeepSeek V4 Pro   | 1M        | 384K                 | Nie               |
+| `opencode-go/deepseek-v4-flash` | DeepSeek V4 Flash | 1M        | 384K                 | Nie               |
+| `opencode-go/glm-5`             | GLM-5             | 202,752   | 32,768               | Nie               |
+| `opencode-go/glm-5.1`           | GLM-5.1           | 202,752   | 32,768               | Nie               |
+| `opencode-go/glm-5.2`           | GLM-5.2           | 1M        | 131,072              | Nie               |
+| `opencode-go/hy3-preview`       | HY3 Preview       | 262,144   | 32,768               | Nie               |
+| `opencode-go/kimi-k2.5`         | Kimi K2.5         | 262,144   | 65,536               | Tak               |
+| `opencode-go/kimi-k2.6`         | Kimi K2.6         | 262,144   | 65,536               | Tak               |
+| `opencode-go/kimi-k2.7-code`    | Kimi K2.7 Code    | 262,144   | 262,144              | Tak               |
+| `opencode-go/mimo-v2.5`         | MiMo V2.5         | 1M        | 128,000              | Tak               |
+| `opencode-go/mimo-v2.5-pro`     | MiMo V2.5 Pro     | 1,048,576 | 128,000              | Nie               |
+| `opencode-go/minimax-m2.5`      | MiniMax M2.5      | 204,800   | 65,536               | Nie               |
+| `opencode-go/minimax-m2.7`      | MiniMax M2.7      | 204,800   | 131,072              | Nie               |
+| `opencode-go/minimax-m3`        | MiniMax M3        | 204,800   | 131,072              | Nie               |
+| `opencode-go/qwen3.5-plus`      | Qwen3.5 Plus      | 262,144   | 65,536               | Tak               |
+| `opencode-go/qwen3.6-plus`      | Qwen3.6 Plus      | 262,144   | 65,536               | Tak               |
+| `opencode-go/qwen3.7-max`       | Qwen3.7 Max       | 1M        | 65,536               | Nie               |
+| `opencode-go/qwen3.7-plus`      | Qwen3.7 Plus      | 1M        | 65,536               | Tak               |
+
 ## Konfiguracja zaawansowana
 
 <AccordionGroup>
-  <Accordion title="Zachowanie routowania">
-    OpenClaw automatycznie obsługuje routowanie per model, gdy ref modelu używa
-    `opencode-go/...`. Nie jest wymagana dodatkowa konfiguracja dostawcy.
+  <Accordion title="Sposób trasowania">
+    OpenClaw automatycznie trasuje każde odwołanie do modelu `opencode-go/...`. Nie jest wymagana
+    dodatkowa konfiguracja dostawcy.
   </Accordion>
 
-  <Accordion title="Konwencja ref runtime">
-    Refy runtime pozostają jawne: `opencode/...` dla Zen, `opencode-go/...` dla Go.
-    Dzięki temu nadrzędne routowanie per model pozostaje poprawne w obu katalogach.
+  <Accordion title="Konwencja odwołań środowiska uruchomieniowego">
+    Odwołania środowiska uruchomieniowego pozostają jednoznaczne: `opencode/...` dla Zen, `opencode-go/...` dla
+    Go. Zapewnia to prawidłowe nadrzędne trasowanie dla poszczególnych modeli w obu katalogach.
   </Accordion>
 
-  <Accordion title="Wspólne dane uwierzytelniające">
-    Ten sam `OPENCODE_API_KEY` jest używany przez katalogi Zen i Go. Wprowadzenie
-    klucza podczas konfiguracji zapisuje dane uwierzytelniające dla obu dostawców runtime.
+  <Accordion title="Współdzielone dane uwierzytelniające">
+    Jeden klucz `OPENCODE_API_KEY` obsługuje zarówno katalog Zen, jak i Go. Wprowadzenie
+    klucza podczas konfiguracji zapisuje dane uwierzytelniające dla obu dostawców środowiska uruchomieniowego.
   </Accordion>
 </AccordionGroup>
 
 <Tip>
-Zobacz [OpenCode](/pl/providers/opencode), aby uzyskać wspólny przegląd wdrożenia oraz pełne
-odniesienie do katalogów Zen + Go.
+Zobacz [OpenCode](/pl/providers/opencode), aby zapoznać się ze wspólnym omówieniem procesu wprowadzenia i pełną
+dokumentacją katalogów Zen oraz Go.
 </Tip>
 
 ## Powiązane
 
 <CardGroup cols={2}>
   <Card title="OpenCode (nadrzędny)" href="/pl/providers/opencode" icon="server">
-    Wspólne wdrożenie, przegląd katalogu i uwagi zaawansowane.
+    Wspólny proces wprowadzenia, omówienie katalogu i uwagi zaawansowane.
   </Card>
   <Card title="Wybór modelu" href="/pl/concepts/model-providers" icon="layers">
-    Wybieranie dostawców, refów modeli i zachowania przełączania awaryjnego.
+    Wybieranie dostawców, odwołań do modeli i sposobu przełączania awaryjnego.
   </Card>
 </CardGroup>

@@ -1,111 +1,112 @@
 ---
 read_when:
-    - Debugujesz instalacje pakietów Plugin
-    - Zmieniasz zachowanie uruchamiania Plugin, doctor lub instalacji za pomocą menedżera pakietów
-    - Utrzymujesz pakietowe instalacje OpenClaw lub manifesty dołączonych Pluginów
+    - Debugujesz instalacje pakietów Pluginów
+    - Zmieniasz sposób uruchamiania Pluginu, działania narzędzia doctor lub instalowania za pomocą menedżera pakietów
+    - Utrzymujesz dystrybuowane instalacje OpenClaw lub manifesty dołączonych pluginów
 sidebarTitle: Dependencies
-summary: Jak OpenClaw instaluje pakiety Plugin i rozwiązuje zależności Plugin
-title: Rozwiązywanie zależności Plugin
+summary: Jak OpenClaw instaluje pakiety pluginów i rozwiązuje ich zależności
+title: Rozwiązywanie zależności Pluginów
 x-i18n:
-    generated_at: "2026-07-04T15:39:47Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:19:55Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: adc6cc80bfe4e4c06ca0e99877c0d4148861ff88366ae233c254aac56c7cdf6d
+    source_hash: ae24a82568e275399cb7b68729d2805956792852612f84d6918850305f0eb243
     source_path: plugins/dependency-resolution.md
     workflow: 16
 ---
 
-OpenClaw wykonuje prace nad zależnościami wtyczek podczas instalacji/aktualizacji. Ładowanie w czasie działania
-nie uruchamia menedżerów pakietów, nie naprawia drzew zależności ani nie modyfikuje katalogu pakietu
-OpenClaw.
+OpenClaw obsługuje zależności pluginów wyłącznie podczas instalacji lub aktualizacji. Ładowanie
+w czasie działania nigdy nie uruchamia menedżera pakietów, nie naprawia drzewa zależności ani nie modyfikuje
+katalogu pakietu OpenClaw.
 
 ## Podział odpowiedzialności
 
-Pakiety wtyczek odpowiadają za własny graf zależności:
+Pakiety pluginów są właścicielami swoich grafów zależności:
 
-- zależności czasu działania znajdują się w `dependencies` lub
-  `optionalDependencies` pakietu wtyczki
-- importy SDK/rdzenia są równorzędne albo dostarczane jako importy OpenClaw
-- lokalne wtyczki deweloperskie dostarczają własne, już zainstalowane zależności
-- wtyczki npm i git są instalowane w katalogach pakietów zarządzanych przez OpenClaw
+- Zależności środowiska uruchomieniowego znajdują się w `dependencies` lub
+  `optionalDependencies` pakietu pluginu.
+- Importy SDK/rdzenia są zależnościami równorzędnymi lub importami dostarczanymi przez OpenClaw.
+- Lokalne pluginy deweloperskie zapewniają własne, już zainstalowane zależności.
+- Pluginy npm i git są instalowane w katalogach głównych pakietów zarządzanych przez OpenClaw.
 
-OpenClaw odpowiada tylko za cykl życia wtyczki:
+OpenClaw odpowiada wyłącznie za cykl życia pluginu:
 
-- wykrycie źródła wtyczki
-- zainstalowanie lub zaktualizowanie pakietu na wyraźne żądanie
-- zapisanie metadanych instalacji
-- załadowanie punktu wejścia wtyczki
-- zakończenie błędem z możliwą do wykonania instrukcją, gdy brakuje zależności
+- Wykrycie źródła pluginu.
+- Zainstalowanie lub zaktualizowanie pakietu na wyraźne żądanie.
+- Zapisanie metadanych instalacji.
+- Załadowanie punktu wejścia pluginu.
+- Zgłoszenie błędu ze wskazaniem sposobu rozwiązania, gdy brakuje zależności.
 
-## Katalogi instalacji
+## Katalogi główne instalacji
 
-OpenClaw używa stabilnych katalogów dla każdego źródła:
+OpenClaw używa stabilnych katalogów głównych dla poszczególnych źródeł:
 
-- pakiety npm instalują się w projektach przypisanych do wtyczki pod
-  `~/.openclaw/npm/projects/<encoded-package>`
-- pakiety git są klonowane pod `~/.openclaw/git`
-- instalacje lokalne/ścieżkowe/archiwalne są kopiowane albo wskazywane bez naprawy zależności
+- Pakiety npm są instalowane w projektach poszczególnych pluginów w
+  `~/.openclaw/npm/projects/<encoded-package>`.
+- Pakiety git są klonowane w `~/.openclaw/git`.
+- Instalacje lokalne, ze ścieżki lub archiwum są kopiowane bądź wskazywane bez naprawiania
+  zależności.
 
-Instalacje npm działają w tym katalogu projektu przypisanego do wtyczki z:
+Instalacje npm są uruchamiane w katalogu głównym projektu danego pluginu za pomocą:
 
 ```bash
 cd ~/.openclaw/npm/projects/<encoded-package>
 npm install --omit=dev --omit=peer --legacy-peer-deps --ignore-scripts --no-audit --no-fund
 ```
 
-`openclaw plugins install npm-pack:<path.tgz>` używa tego samego katalogu projektu npm przypisanego do wtyczki
-dla lokalnego tarballa npm-pack. OpenClaw odczytuje metadane npm tarballa,
-dodaje go do zarządzanego projektu jako skopiowaną zależność `file:`, uruchamia
-normalną instalację npm, a następnie weryfikuje metadane zainstalowanego lockfile'a przed
-zaufaniem wtyczce.
-Jest to przeznaczone do akceptacji pakietu i dowodu dla kandydata do wydania, gdy
-lokalny artefakt pack powinien zachowywać się jak symulowany artefakt z rejestru.
+Polecenie `openclaw plugins install npm-pack:<path.tgz>` używa tego samego katalogu głównego projektu npm
+pluginu dla lokalnego archiwum npm-pack: OpenClaw odczytuje metadane npm
+archiwum, dodaje je do zarządzanego projektu jako skopiowaną zależność `file:`, uruchamia
+powyższą standardową instalację npm, a następnie weryfikuje metadane zainstalowanego pliku blokady
+przed uznaniem pluginu za zaufany. Ta ścieżka służy do weryfikacji akceptacji pakietu i
+wersji kandydującej do wydania, gdy lokalny artefakt pakietu powinien zachowywać się tak jak
+symulowany przez niego artefakt z rejestru.
 
-Używaj `npm-pack:` podczas testowania oficjalnych lub zewnętrznych pakietów wtyczek przed
-publikacją. Surowe archiwum albo instalacja ze ścieżki są przydatne do lokalnego debugowania, ale
-nie dowodzą tej samej ścieżki zależności co zainstalowany pakiet npm albo ClawHub.
-`npm-pack:` dowodzi kształtu instalacji zarządzanego pakietu; samo w sobie nie jest
-dowodem, że wtyczka jest oficjalną zawartością powiązaną z katalogiem.
+Używaj `npm-pack:` podczas testowania oficjalnych lub zewnętrznych pakietów pluginów przed
+publikacją. Instalacja bezpośrednio z archiwum lub ścieżki jest przydatna do lokalnego debugowania, ale
+nie weryfikuje tej samej ścieżki zależności co zainstalowany pakiet npm lub ClawHub.
+`npm-pack:` weryfikuje strukturę instalacji zarządzanego pakietu; samo w sobie nie
+dowodzi, że plugin jest oficjalną zawartością powiązaną z katalogiem.
 
-Gdy zachowanie zależy od statusu wtyczki dołączonej albo zaufanej oficjalnej wtyczki, połącz
-dowód lokalnego pakietu z oficjalną instalacją opartą na katalogu albo opublikowaną
-ścieżką pakietu, która zapisuje oficjalne zaufanie. Uprzywilejowany dostęp pomocniczy oraz
-obsługa zakresu zaufanych oficjalnych wtyczek powinny być walidowane na tej zaufanej ścieżce
-instalacji, a nie wnioskowane z instalacji lokalnego tarballa.
+Gdy zachowanie zależy od statusu pluginu dołączonego lub zaufanego oficjalnego pluginu,
+połącz lokalną weryfikację pakietu z oficjalną instalacją opartą na katalogu albo
+ścieżką opublikowanego pakietu, która rejestruje oficjalne zaufanie. Dostęp do uprzywilejowanych funkcji pomocniczych
+i obsługę zakresu zaufanych oficjalnych pluginów należy weryfikować przy użyciu tej zaufanej
+ścieżki instalacji, a nie wnioskować o nich na podstawie instalacji lokalnego archiwum.
 
-Jeśli wtyczka zawiedzie w czasie działania z powodu brakującego importu, napraw manifest pakietu
-zamiast ręcznie naprawiać zarządzany projekt. Importy czasu działania należą do
-`dependencies` lub `optionalDependencies` pakietu wtyczki; `devDependencies` nie są
-instalowane dla zarządzanych projektów czasu działania. Lokalne `npm install` wewnątrz
-`~/.openclaw/npm/projects/<encoded-package>` może odblokować tymczasową diagnostykę,
-ale nie jest dowodem akceptacji pakietu, ponieważ następna instalacja albo aktualizacja
-odtworzy projekt z metadanych pakietu.
+Jeśli plugin przestaje działać z powodu brakującego importu, popraw manifest pakietu,
+zamiast ręcznie naprawiać zarządzany projekt. Importy środowiska uruchomieniowego należą do
+`dependencies` lub `optionalDependencies` pakietu pluginu; `devDependencies`
+nie są instalowane w zarządzanych projektach środowiska uruchomieniowego. Lokalne polecenie `npm install` wewnątrz
+`~/.openclaw/npm/projects/<encoded-package>` może tymczasowo odblokować
+diagnostykę, ale nie stanowi weryfikacji akceptacji pakietu, ponieważ następna instalacja lub
+aktualizacja odtworzy projekt na podstawie metadanych pakietu.
 
-npm może wynosić zależności przechodnie do `node_modules` projektu przypisanego do wtyczki
-obok pakietu wtyczki. OpenClaw skanuje katalog główny zarządzanego projektu
-przed zaufaniem instalacji i usuwa ten projekt podczas odinstalowania, więc
-wyniesione zależności czasu działania pozostają w granicy sprzątania tej wtyczki.
+npm może przenosić zależności przechodnie do katalogu `node_modules` projektu danego pluginu
+obok pakietu pluginu. OpenClaw skanuje katalog główny zarządzanego projektu
+przed uznaniem instalacji za zaufaną i usuwa ten projekt podczas odinstalowywania, dzięki czemu
+przeniesione zależności środowiska uruchomieniowego pozostają w granicach usuwania tego pluginu.
 
-Opublikowane pakiety wtyczek npm mogą dostarczać `npm-shrinkwrap.json`. npm używa tego
-publikowalnego lockfile'a podczas instalacji, a katalog główny zarządzanego projektu npm OpenClaw
-obsługuje go przez normalną ścieżkę instalacji npm. Publikowalne
-pakiety wtyczek zarządzane przez OpenClaw muszą zawierać lokalny dla pakietu shrinkwrap wygenerowany z
-opublikowanego grafu zależności tego pakietu wtyczki:
+Opublikowane pakiety pluginów npm mogą zawierać plik `npm-shrinkwrap.json`; npm używa tego
+publikowalnego pliku blokady podczas instalacji, a katalog główny zarządzanego projektu npm OpenClaw
+obsługuje go za pośrednictwem standardowej ścieżki instalacji. Publikowalne pakiety pluginów
+zarządzane przez OpenClaw muszą zawierać lokalny dla pakietu plik shrinkwrap wygenerowany na podstawie
+opublikowanego grafu zależności tego pakietu:
 
 ```bash
 pnpm deps:shrinkwrap:generate
 pnpm deps:shrinkwrap:check
 ```
 
-Generator usuwa `devDependencies` wtyczki, stosuje politykę override'ów obszaru roboczego
-i zapisuje `extensions/<id>/npm-shrinkwrap.json` dla każdej wtyczki
-`publishToNpm`. Pakiety wtyczek firm trzecich także mogą dostarczać shrinkwrap;
-OpenClaw nie wymaga go dla pakietów społecznościowych, ale npm uszanuje go,
-gdy jest obecny.
+Generator usuwa `devDependencies` pluginu, stosuje zasady nadpisywania obszaru roboczego
+i zapisuje `extensions/<id>/npm-shrinkwrap.json` dla każdego pluginu z
+`openclaw.release.publishToNpm: true`. Pakiety pluginów innych firm również mogą
+zawierać plik shrinkwrap; OpenClaw nie wymaga go dla pakietów społecznościowych, ale
+npm respektuje go, gdy jest obecny.
 
-Przed potraktowaniem lokalnego pakietu jako dowodu dla kandydata do wydania sprawdź tarball,
-który zostanie zainstalowany:
+Przed uznaniem lokalnego pakietu za weryfikację wersji kandydującej do wydania sprawdź
+archiwum, które zostanie zainstalowane:
 
 ```bash
 npm pack --pack-destination /tmp
@@ -113,8 +114,8 @@ tar -xOf /tmp/<plugin-package>.tgz package/package.json
 tar -tf /tmp/<plugin-package>.tgz | grep '^package/dist/'
 ```
 
-Przy zmianach zależności zweryfikuj także, że instalacja produkcyjna może rozwiązać
-pakiety czasu działania bez zależności deweloperskich:
+W przypadku zmian zależności sprawdź również, czy instalacja produkcyjna potrafi rozwiązać
+pakiety środowiska uruchomieniowego bez zależności deweloperskich:
 
 ```bash
 tmpdir=$(mktemp -d)
@@ -126,52 +127,53 @@ tmpdir=$(mktemp -d)
 rm -rf "$tmpdir"
 ```
 
-Pakiety wtyczek npm zarządzane przez OpenClaw mogą także publikować się z jawnymi
-`bundledDependencies`. Ścieżka publikacji npm nakłada listę nazw zależności czasu działania,
-usuwa wyłącznie deweloperskie metadane obszaru roboczego z manifestu publikowanego pakietu,
-uruchamia instalację npm bez skryptów dla lokalnych dla pakietu zależności czasu działania,
-a następnie pakuje albo publikuje tarball wtyczki z dołączonymi plikami tych zależności.
-Pakiety mocno zależne od natywnych składników, w tym środowiska uruchomieniowe Codex i ACP, rezygnują z tego
-przez `openclaw.release.bundleRuntimeDependencies: false`; te pakiety nadal
-dostarczają swój shrinkwrap, ale npm rozwiązuje zależności czasu działania podczas instalacji
-zamiast osadzać każdy binarny plik platformy w tarballu wtyczki. Główny
-pakiet `openclaw` nie dołącza pełnego drzewa zależności.
+Pakiety pluginów npm zarządzane przez OpenClaw mogą być również publikowane z jawnymi
+`bundledDependencies`. Ścieżka publikowania npm nakłada listę nazw zależności
+środowiska uruchomieniowego, usuwa z publikowanego manifestu metadane obszaru roboczego używane wyłącznie podczas programowania,
+uruchamia instalację npm bez skryptów dla lokalnych zależności środowiska uruchomieniowego pakietu,
+a następnie tworzy lub publikuje archiwum pluginu z dołączonymi plikami tych zależności.
+Pakiety intensywnie korzystające z kodu natywnego (Codex, ACPX, Copilot, llama.cpp,
+memory-lancedb, Tlon) wyłączają tę funkcję za pomocą
+`openclaw.release.bundleRuntimeDependencies: false`; nadal zawierają
+plik shrinkwrap, ale npm rozwiązuje zależności środowiska uruchomieniowego podczas instalacji, zamiast
+umieszczać pliki binarne każdej platformy w archiwum pluginu. Główny pakiet `openclaw`
+nie dołącza całego swojego drzewa zależności.
 
-Wtyczki importujące `openclaw/plugin-sdk/*` deklarują `openclaw` jako zależność równorzędną.
-OpenClaw nie pozwala npm zainstalować osobnej kopii pakietu hosta z rejestru
-w zarządzanym projekcie, ponieważ przestarzałe pakiety hosta mogą wpływać na
-rozwiązywanie zależności równorzędnych npm wewnątrz tej wtyczki. Zarządzane instalacje npm pomijają
-rozwiązywanie/materializację zależności równorzędnych npm, a OpenClaw ponownie wymusza lokalne dla wtyczki
-linki `node_modules/openclaw` dla zainstalowanych pakietów, które deklarują zależność równorzędną hosta,
-po instalacji albo aktualizacji.
+Pluginy importujące `openclaw/plugin-sdk/*` deklarują `openclaw` jako zależność
+równorzędną. OpenClaw nie pozwala npm zainstalować w zarządzanym projekcie osobnej kopii
+pakietu hosta z rejestru, ponieważ nieaktualny pakiet hosta może wpływać
+na rozwiązywanie zależności równorzędnych przez npm wewnątrz tego pluginu. Zarządzane instalacje npm pomijają
+rozwiązywanie i materializację zależności równorzędnych przez npm, a OpenClaw ponownie ustanawia lokalne dla pluginu
+dowiązania `node_modules/openclaw` dla zainstalowanych pakietów deklarujących zależność równorzędną
+od hosta po instalacji lub aktualizacji.
 
-Instalacje git klonują albo odświeżają repozytorium, a następnie uruchamiają:
+Instalacje git klonują lub odświeżają repozytorium, a następnie uruchamiają:
 
 ```bash
 npm install --omit=dev --ignore-scripts --no-audit --no-fund
 ```
 
-Zainstalowana wtyczka ładuje się potem z tego katalogu pakietu, więc rozwiązywanie lokalnych dla pakietu
-i nadrzędnych `node_modules` działa tak samo jak dla zwykłego pakietu
-Node.
+Zainstalowany plugin jest następnie ładowany z katalogu tego pakietu, więc
+rozwiązywanie lokalnego dla pakietu i nadrzędnego katalogu `node_modules` działa tak samo jak
+w przypadku zwykłego pakietu Node.
 
-## Lokalne wtyczki
+## Lokalne pluginy
 
-Lokalne wtyczki są traktowane jako katalogi kontrolowane przez dewelopera. OpenClaw nie
-uruchamia dla nich `npm install`, `pnpm install` ani naprawy zależności. Jeśli lokalna
-wtyczka ma zależności, zainstaluj je w tej wtyczce przed jej załadowaniem.
+Lokalne pluginy są katalogami kontrolowanymi przez programistę. OpenClaw nigdy nie uruchamia
+dla nich `npm install`, `pnpm install` ani naprawy zależności; jeśli lokalny
+plugin ma zależności, zainstaluj je w tym pluginie przed jego załadowaniem.
 
-Lokalne wtyczki TypeScript firm trzecich mogą używać awaryjnej ścieżki Jiti. Spakowane
-wtyczki JavaScript i dołączone wtyczki wewnętrzne ładują się przez natywne
-import/require zamiast Jiti.
+Lokalne pluginy TypeScript innych firm są awaryjnie ładowane przez Jiti.
+Spakowane pluginy JavaScript i dołączone pluginy wewnętrzne są natomiast ładowane za pomocą natywnych
+mechanizmów import/require.
 
 ## Uruchamianie i ponowne ładowanie
 
-Uruchamianie Gateway i ponowne ładowanie konfiguracji nigdy nie instalują zależności wtyczek. Odczytują
-rekordy instalacji wtyczek, obliczają punkt wejścia i go ładują.
+Uruchomienie Gateway i ponowne załadowanie konfiguracji nigdy nie instalują zależności pluginów. Odczytują
+rekordy instalacji pluginów, wyznaczają punkt wejścia i go ładują.
 
-Jeśli w czasie działania brakuje zależności, wtyczka nie ładuje się, a błąd
-powinien wskazać operatorowi wyraźną naprawę:
+Brak zależności w czasie działania powoduje niepowodzenie ładowania pluginu z błędem wskazującym
+operatorowi jawny sposób naprawy:
 
 ```bash
 openclaw plugins update <id>
@@ -179,48 +181,50 @@ openclaw plugins install <source>
 openclaw doctor --fix
 ```
 
-`doctor --fix` może wyczyścić starszy stan zależności wygenerowany przez OpenClaw i odzyskać
-pobieralne wtyczki, których brakuje w lokalnych rekordach instalacji, gdy konfiguracja
-się do nich odwołuje. Doctor nie naprawia zależności dla już zainstalowanej
-lokalnej wtyczki.
+`doctor --fix` usuwa starszy stan zależności wygenerowany przez OpenClaw i może
+odzyskać dostępne do pobrania pluginy, których brakuje w lokalnych rekordach instalacji, jeśli
+konfiguracja nadal się do nich odwołuje. Doctor nie naprawia zależności
+już zainstalowanego lokalnego pluginu.
 
-## Dołączone wtyczki
+## Dołączone pluginy
 
-Lekkie i krytyczne dla rdzenia dołączone wtyczki są dostarczane jako część OpenClaw.
-Powinny albo nie mieć ciężkiego drzewa zależności czasu działania, albo zostać przeniesione do
-pobieralnego pakietu w ClawHub/npm.
+Lekkie i krytyczne dla rdzenia pluginy dołączone są dostarczane jako część OpenClaw. Nie powinny
+mieć rozbudowanego drzewa zależności środowiska uruchomieniowego albo powinny zostać przeniesione do
+pakietu dostępnego do pobrania z ClawHub/npm.
 
-Aktualną wygenerowaną listę wtyczek, które są dostarczane w pakiecie rdzenia, instalują się
-zewnętrznie albo pozostają tylko w źródłach, znajdziesz w [Inwentarzu Plugin](/pl/plugins/plugin-inventory).
+Bieżącą wygenerowaną listę pluginów dostarczanych w pakiecie rdzenia,
+instalowanych zewnętrznie lub pozostających wyłącznie w kodzie źródłowym zawiera
+[wykaz pluginów](/pl/plugins/plugin-inventory).
 
-Manifesty dołączonych wtyczek nie mogą żądać przygotowywania zależności. Duża albo opcjonalna
-funkcjonalność wtyczki powinna zostać spakowana jako normalna wtyczka i zainstalowana przez
-tę samą ścieżkę npm/git/ClawHub co wtyczki firm trzecich.
+Manifesty dołączonych pluginów nie mogą żądać przygotowywania zależności. Rozbudowana lub
+opcjonalna funkcjonalność pluginu powinna być spakowana jako zwykły plugin i
+instalowana tą samą ścieżką npm/git/ClawHub co pluginy innych firm.
 
-W checkoutach źródłowych OpenClaw traktuje repozytorium jako monorepo pnpm. Po
-`pnpm install` dołączone wtyczki ładują się z `extensions/<id>`, więc lokalne dla pakietu
-zależności obszaru roboczego są dostępne, a edycje są pobierane bezpośrednio. Rozwój w
-checkoucie źródłowym obsługuje tylko pnpm; zwykłe `npm install` w katalogu głównym repozytorium nie jest
-obsługiwanym sposobem przygotowania zależności dołączonych wtyczek.
+W kopiach roboczych kodu źródłowego OpenClaw traktuje repozytorium jako monorepo pnpm.
+Po wykonaniu `pnpm install` dołączone pluginy są ładowane z `extensions/<id>`, dzięki czemu
+lokalne zależności obszaru roboczego pakietu są dostępne, a zmiany są uwzględniane
+bezpośrednio. Programowanie w kopii roboczej kodu źródłowego obsługuje wyłącznie pnpm; zwykłe `npm install` w
+katalogu głównym repozytorium nie przygotowuje zależności dołączonych pluginów.
 
-| Kształt instalacji               | Lokalizacja dołączonej wtyczki        | Właściciel zależności                                                |
+| Sposób instalacji                 | Lokalizacja dołączonego pluginu          | Właściciel zależności                                                   |
 | -------------------------------- | ------------------------------------- | -------------------------------------------------------------------- |
-| `npm install -g openclaw`        | Zbudowane drzewo czasu działania wewnątrz pakietu | Pakiet OpenClaw i jawne przepływy instalacji/aktualizacji/doctor wtyczek |
-| Checkout git plus `pnpm install` | Pakiety obszaru roboczego `extensions/<id>` | Obszar roboczy pnpm, w tym własne zależności każdego pakietu wtyczki |
-| `openclaw plugins install ...`   | Zarządzany projekt npm/katalog główny git/ClawHub | Przepływ instalacji/aktualizacji wtyczki                             |
+| `npm install -g openclaw`        | Zbudowane drzewo środowiska uruchomieniowego wewnątrz pakietu | Pakiet OpenClaw oraz jawne przepływy instalacji, aktualizacji i obsługi przez Doctor dla pluginu |
+| Kopia robocza git i `pnpm install` | Pakiety obszaru roboczego `extensions/<id>` | Obszar roboczy pnpm, w tym własne zależności każdego pakietu pluginu |
+| `openclaw plugins install ...`   | Zarządzany katalog główny projektu npm/git/ClawHub | Przepływ instalacji i aktualizacji pluginu                           |
 
-## Czyszczenie starszych wersji
+## Usuwanie starszego stanu
 
-Starsze wersje OpenClaw generowały katalogi zależności dołączonych wtyczek podczas uruchamiania albo
-naprawy przez doctor. Obecne czyszczenie doctor usuwa te przestarzałe katalogi i
-dowiązania symboliczne, gdy użyto `--fix`, w tym stare katalogi `plugin-runtime-deps`, globalne
-dowiązania symboliczne pakietów prefiksu Node wskazujące na przycięte cele `plugin-runtime-deps`,
-manifesty `.openclaw-runtime-deps*`, wygenerowane `node_modules` wtyczek, katalogi
-etapów instalacji oraz lokalne dla pakietu magazyny pnpm. Spakowany postinstall także
-usuwa te globalne dowiązania symboliczne przed przycięciem starszych katalogów docelowych, aby aktualizacje
-nie zostawiały wiszących importów pakietów ESM.
+Starsze wersje OpenClaw generowały katalogi główne zależności dołączonych pluginów podczas uruchamiania
+lub naprawy przez Doctor. Bieżące czyszczenie przez Doctor usuwa te nieaktualne
+katalogi i dowiązania symboliczne za pomocą `--fix`, w tym stare katalogi główne `plugin-runtime-deps`,
+globalne dowiązania symboliczne pakietów z prefiksu Node wskazujące na usunięte
+cele `plugin-runtime-deps`, manifesty `.openclaw-runtime-deps*`, wygenerowane
+katalogi `node_modules` pluginów, katalogi etapów instalacji oraz lokalne dla pakietu magazyny
+pnpm. Skrypt wykonywany po instalacji spakowanej wersji również usuwa te globalne dowiązania symboliczne przed
+usunięciem starszych katalogów docelowych, dzięki czemu aktualizacje nie pozostawiają nieprawidłowych importów
+pakietów ESM.
 
-Starsze instalacje npm używały także współdzielonego katalogu głównego `~/.openclaw/npm/node_modules`.
-Obecne przepływy instalacji, aktualizacji, odinstalowania i doctor nadal rozpoznają ten starszy
-płaski katalog główny tylko na potrzeby odzyskiwania i czyszczenia. Nowe instalacje npm powinny tworzyć
-katalogi projektów przypisane do wtyczek.
+Starsze instalacje npm używały również współdzielonego katalogu głównego `~/.openclaw/npm/node_modules`.
+Bieżące przepływy instalacji, aktualizacji, odinstalowywania i obsługi przez Doctor nadal rozpoznają ten
+starszy płaski katalog główny wyłącznie na potrzeby odzyskiwania i czyszczenia. Nowe instalacje npm tworzą
+zamiast niego katalogi główne projektów dla poszczególnych pluginów.

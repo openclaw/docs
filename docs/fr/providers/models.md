@@ -5,10 +5,9 @@ read_when:
 summary: Fournisseurs de modèles (LLM) pris en charge par OpenClaw
 title: Démarrage rapide avec un fournisseur de modèles
 x-i18n:
-    generated_at: "2026-07-12T15:43:10Z"
+    generated_at: "2026-07-12T03:00:45Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: c4f9add879b41fdb0b54edbbff2ea982957cd4f3bc5d438c43f8a8403a048338
     source_path: providers/models.md
@@ -19,7 +18,7 @@ Choisissez un fournisseur, authentifiez-vous, puis définissez le modèle par d�
 
 ## Démarrage rapide (deux étapes)
 
-1. Authentifiez-vous auprès du fournisseur (généralement via `openclaw onboard`).
+1. Authentifiez-vous auprès du fournisseur (généralement avec `openclaw onboard`).
 2. Définissez le modèle par défaut :
 
 ```json5
@@ -35,7 +34,7 @@ Choisissez un fournisseur, authentifiez-vous, puis définissez le modèle par d�
 - [Anthropic (API + CLI Claude)](/fr/providers/anthropic)
 - [BytePlus (international)](/fr/concepts/model-providers#byteplus-international)
 - [Chutes](/fr/providers/chutes)
-- [Gateway d’IA Cloudflare](/fr/providers/cloudflare-ai-gateway)
+- [Cloudflare AI Gateway](/fr/providers/cloudflare-ai-gateway)
 - [Cohere](/fr/providers/cohere)
 - [ComfyUI](/fr/providers/comfy)
 - [DeepInfra](/fr/providers/deepinfra)
@@ -54,16 +53,16 @@ Choisissez un fournisseur, authentifiez-vous, puis définissez le modèle par d�
 - [StepFun](/fr/providers/stepfun)
 - [Synthetic](/fr/providers/synthetic)
 - [Venice (Venice AI)](/fr/providers/venice)
-- [Gateway d’IA Vercel](/fr/providers/vercel-ai-gateway)
+- [Vercel AI Gateway](/fr/providers/vercel-ai-gateway)
 - [xAI](/fr/providers/xai)
 - [Z.AI (GLM)](/fr/providers/zai)
 
-Pour consulter le catalogue complet des fournisseurs et les options de configuration avancées, voir
-le [répertoire des fournisseurs](/fr/providers/index) et les [fournisseurs de modèles](/fr/concepts/model-providers).
+Pour consulter le catalogue complet des fournisseurs et la configuration avancée, voir
+[Répertoire des fournisseurs](/fr/providers/index) et [Fournisseurs de modèles](/fr/concepts/model-providers).
 
 ## Variantes de fournisseurs supplémentaires
 
-- `anthropic-vertex` - installez `@openclaw/anthropic-vertex-provider` pour prendre en charge implicitement Anthropic sur Google Vertex lorsque les identifiants Vertex sont disponibles ; aucun choix d’authentification distinct lors de la configuration initiale
+- `anthropic-vertex` - installez `@openclaw/anthropic-vertex-provider` pour prendre implicitement en charge Anthropic sur Google Vertex lorsque les identifiants Vertex sont disponibles ; aucun choix d’authentification distinct lors de l’intégration
 - `copilot-proxy` - passerelle locale vers VS Code Copilot Proxy ; utilisez `openclaw onboard --auth-choice copilot-proxy`
 - `google-gemini-cli` - flux OAuth non officiel de la CLI Gemini ; nécessite une installation locale de `gemini` (`brew install gemini-cli` ou `npm install -g @google/gemini-cli`) ; modèle par défaut `google-gemini-cli/gemini-3-flash-preview` ; utilisez `openclaw onboard --auth-choice google-gemini-cli` ou `openclaw models auth login --provider google-gemini-cli --set-default`
 

@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz Plugin clickclack
-summary: Dodaje powierzchnię kanału Clickclack do wysyłania i odbierania wiadomości OpenClaw.
+    - Instalujesz, konfigurujesz lub przeprowadzasz audyt pluginu clickclack
+summary: Dodaje obsługę kanału Clickclack do wysyłania i odbierania wiadomości OpenClaw.
 title: Plugin Clickclack
 x-i18n:
-    generated_at: "2026-06-27T17:59:16Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:28:24Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: d939f5291de0510eaac361732f93fb79cac94656ac56a653f3c9e97394c6a9ae
@@ -15,16 +15,16 @@ x-i18n:
 
 # Plugin Clickclack
 
-Dodaje powierzchnię kanału Clickclack do wysyłania i odbierania wiadomości OpenClaw.
+Dodaje kanał Clickclack do wysyłania i odbierania wiadomości OpenClaw.
 
 ## Dystrybucja
 
 - Pakiet: `@openclaw/clickclack`
-- Ścieżka instalacji: npm; ClawHub: `clawhub:@openclaw/clickclack`
+- Sposób instalacji: npm; ClawHub: `clawhub:@openclaw/clickclack`
 
-## Powierzchnia
+## Interfejs
 
-channels: clickclack
+kanały: clickclack
 
 ## Powiązana dokumentacja
 

@@ -1,131 +1,131 @@
 ---
 read_when:
-    - Bạn muốn một máy chủ Linux giá rẻ luôn bật cho Gateway
-    - Bạn muốn truy cập Giao diện điều khiển từ xa mà không cần chạy VPS của riêng mình
-summary: Chạy OpenClaw Gateway trên exe.dev (VM + máy chủ proxy HTTPS) để truy cập từ xa
+    - Bạn muốn một máy chủ Linux giá rẻ, luôn hoạt động cho Gateway
+    - Bạn muốn truy cập từ xa vào giao diện điều khiển mà không cần tự vận hành VPS riêng
+summary: Chạy OpenClaw Gateway trên exe.dev (máy ảo + proxy HTTPS) để truy cập từ xa
 title: exe.dev
 x-i18n:
-    generated_at: "2026-04-29T22:51:18Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:03:09Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b571f9b29bb2cca0f311db4188c922b2f70ee91cb48b233cf9922e57a7f05340
+    source_hash: a768511d2d7e4e4ec10bcdae83684417bde05286468b0534200f8dd5ec015f7b
     source_path: install/exe-dev.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Mục tiêu: OpenClaw Gateway chạy trên một VM exe.dev, có thể truy cập từ laptop của bạn qua: `https://<vm-name>.exe.xyz`
+**Mục tiêu:** Gateway OpenClaw chạy trên một máy ảo [exe.dev](https://exe.dev), có thể truy cập tại `https://<vm-name>.exe.xyz`.
 
-Trang này giả định bạn dùng image **exeuntu** mặc định của exe.dev. Nếu bạn chọn distro khác, hãy ánh xạ các gói tương ứng.
-
-## Lộ trình nhanh cho người mới bắt đầu
-
-1. [https://exe.new/openclaw](https://exe.new/openclaw)
-2. Điền auth key/token của bạn khi cần
-3. Nhấp vào "Tác nhân" bên cạnh VM của bạn và chờ Shelley hoàn tất provisioning
-4. Mở `https://<vm-name>.exe.xyz/` và xác thực bằng shared secret đã cấu hình (hướng dẫn này mặc định dùng xác thực bằng token, nhưng xác thực bằng mật khẩu cũng hoạt động nếu bạn chuyển `gateway.auth.mode`)
-5. Phê duyệt mọi yêu cầu ghép đôi thiết bị đang chờ bằng `openclaw devices approve <requestId>`
+Hướng dẫn này giả định sử dụng ảnh **exeuntu** mặc định của exe.dev. Trên các bản phân phối khác, hãy điều chỉnh các gói cho phù hợp.
 
 ## Những gì bạn cần
 
 - Tài khoản exe.dev
-- Quyền truy cập `ssh exe.dev` vào máy ảo [exe.dev](https://exe.dev) (tùy chọn)
+- Quyền truy cập máy ảo exe.dev bằng `ssh exe.dev` (không bắt buộc, dùng để thiết lập thủ công)
+
+## Cách nhanh cho người mới bắt đầu
+
+1. Mở [https://exe.new/openclaw](https://exe.new/openclaw)
+2. Điền khóa xác thực/token của bạn nếu cần
+3. Nhấp vào "Agent" bên cạnh máy ảo của bạn và chờ Shelley hoàn tất việc cấp phát
+4. Mở `https://<vm-name>.exe.xyz/` và xác thực bằng bí mật dùng chung đã cấu hình (mặc định là xác thực bằng token; xác thực bằng mật khẩu cũng hoạt động nếu bạn chuyển đổi `gateway.auth.mode`)
+5. Phê duyệt các yêu cầu ghép cặp thiết bị đang chờ bằng `openclaw devices approve <requestId>`
 
 ## Cài đặt tự động bằng Shelley
 
-Shelley, tác nhân của [exe.dev](https://exe.dev), có thể cài đặt OpenClaw tức thì bằng
-prompt của chúng tôi. Prompt được dùng như bên dưới:
+Shelley, tác nhân của exe.dev, có thể cài đặt OpenClaw từ một lời nhắc:
 
-```
-Set up OpenClaw (https://docs.openclaw.ai/install) on this VM. Use the non-interactive and accept-risk flags for openclaw onboarding. Add the supplied auth or token as needed. Configure nginx to forward from the default port 18789 to the root location on the default enabled site config, making sure to enable Websocket support. Pairing is done by "openclaw devices list" and "openclaw devices approve <request id>". Make sure the dashboard shows that OpenClaw's health is OK. exe.dev handles forwarding from port 8000 to port 80/443 and HTTPS for us, so the final "reachable" should be <vm-name>.exe.xyz, without port specification.
+```text
+Thiết lập OpenClaw (https://docs.openclaw.ai/install) trên máy ảo này. Sử dụng các cờ không tương tác và chấp nhận rủi ro cho quá trình thiết lập ban đầu của openclaw. Thêm thông tin xác thực hoặc token được cung cấp nếu cần. Cấu hình nginx để chuyển tiếp từ cổng mặc định 18789 đến vị trí gốc trong cấu hình trang web mặc định đang bật, đồng thời bảo đảm bật hỗ trợ WebSocket. Việc ghép cặp được thực hiện bằng "openclaw devices list" và "openclaw devices approve <request id>". Bảo đảm bảng điều khiển hiển thị trạng thái sức khỏe của OpenClaw là OK. exe.dev xử lý việc chuyển tiếp từ cổng 8000 đến cổng 80/443 và HTTPS cho chúng ta, vì vậy địa chỉ "có thể truy cập" cuối cùng phải là <vm-name>.exe.xyz, không chỉ định cổng.
 ```
 
 ## Cài đặt thủ công
 
-## 1) Tạo VM
+<Steps>
+  <Step title="Tạo máy ảo">
+    Từ thiết bị của bạn:
 
-Từ thiết bị của bạn:
+    ```bash
+    ssh exe.dev new
+    ```
 
-```bash
-ssh exe.dev new
-```
+    Sau đó kết nối:
 
-Sau đó kết nối:
+    ```bash
+    ssh <vm-name>.exe.xyz
+    ```
 
-```bash
-ssh <vm-name>.exe.xyz
-```
+    <Tip>
+    Hãy duy trì máy ảo này ở trạng thái **có lưu trạng thái**. OpenClaw lưu `openclaw.json`, `auth-profiles.json` của từng tác nhân, các phiên và trạng thái kênh/nhà cung cấp trong `~/.openclaw/`, cùng với không gian làm việc trong `~/.openclaw/workspace/`.
+    </Tip>
 
-<Tip>
-Giữ VM này **có trạng thái**. OpenClaw lưu `openclaw.json`, `auth-profiles.json` theo từng tác nhân, phiên, và trạng thái channel/provider trong `~/.openclaw/`, cộng với workspace trong `~/.openclaw/workspace/`.
-</Tip>
+  </Step>
 
-## 2) Cài đặt điều kiện tiên quyết (trên VM)
+  <Step title="Cài đặt các thành phần tiên quyết (trên máy ảo)">
+    ```bash
+    sudo apt-get update
+    sudo apt-get install -y git curl jq ca-certificates openssl
+    ```
+  </Step>
 
-```bash
-sudo apt-get update
-sudo apt-get install -y git curl jq ca-certificates openssl
-```
+  <Step title="Cài đặt OpenClaw">
+    ```bash
+    curl -fsSL https://openclaw.ai/install.sh | bash
+    ```
+  </Step>
 
-## 3) Cài đặt OpenClaw
+  <Step title="Cấu hình nginx làm proxy đến cổng 8000">
+    Chỉnh sửa `/etc/nginx/sites-enabled/default`:
 
-Chạy script cài đặt OpenClaw:
+    ```nginx
+    server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+        listen 8000;
+        listen [::]:8000;
 
-```bash
-curl -fsSL https://openclaw.ai/install.sh | bash
-```
+        server_name _;
 
-## 4) Thiết lập nginx để proxy OpenClaw tới cổng 8000
+        location / {
+            proxy_pass http://127.0.0.1:18789;
+            proxy_http_version 1.1;
 
-Chỉnh sửa `/etc/nginx/sites-enabled/default` với
+            # Hỗ trợ WebSocket
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
 
-```
-server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-    listen 8000;
-    listen [::]:8000;
+            # Các header proxy tiêu chuẩn
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $remote_addr;
+            proxy_set_header X-Forwarded-Proto $scheme;
 
-    server_name _;
-
-    location / {
-        proxy_pass http://127.0.0.1:18789;
-        proxy_http_version 1.1;
-
-        # WebSocket support
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-
-        # Standard proxy headers
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $remote_addr;
-        proxy_set_header X-Forwarded-Proto $scheme;
-
-        # Timeout settings for long-lived connections
-        proxy_read_timeout 86400s;
-        proxy_send_timeout 86400s;
+            # Thiết lập thời gian chờ cho các kết nối tồn tại lâu
+            proxy_read_timeout 86400s;
+            proxy_send_timeout 86400s;
+        }
     }
-}
-```
+    ```
 
-Ghi đè forwarding header thay vì giữ lại các chuỗi do client cung cấp.
-OpenClaw chỉ tin cậy metadata IP được forward từ các proxy được cấu hình rõ ràng,
-và các chuỗi `X-Forwarded-For` kiểu append được xem là rủi ro gia cố bảo mật.
+    Ghi đè các header chuyển tiếp thay vì giữ lại chuỗi do máy khách cung cấp. OpenClaw chỉ tin cậy siêu dữ liệu IP được chuyển tiếp từ các proxy được cấu hình rõ ràng, và chuỗi `X-Forwarded-For` theo kiểu nối thêm được xem là một rủi ro về tăng cường bảo mật.
 
-## 5) Truy cập OpenClaw và cấp đặc quyền
+  </Step>
 
-Truy cập `https://<vm-name>.exe.xyz/` (xem output Control UI từ onboarding). Nếu nó yêu cầu xác thực, hãy dán
-shared secret đã cấu hình từ VM. Hướng dẫn này dùng xác thực bằng token, nên hãy lấy `gateway.auth.token`
-bằng `openclaw config get gateway.auth.token` (hoặc tạo một token bằng `openclaw doctor --generate-gateway-token`).
-Nếu bạn đã chuyển gateway sang xác thực bằng mật khẩu, hãy dùng `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD` thay thế.
-Phê duyệt thiết bị bằng `openclaw devices list` và `openclaw devices approve <requestId>`. Khi không chắc, hãy dùng Shelley từ trình duyệt của bạn!
+  <Step title="Truy cập OpenClaw và phê duyệt thiết bị">
+    Mở `https://<vm-name>.exe.xyz/` (xem đầu ra của giao diện điều khiển từ quá trình thiết lập ban đầu). Nếu hệ thống yêu cầu xác thực, hãy dán bí mật dùng chung đã cấu hình từ máy ảo.
 
-## Thiết lập channel từ xa
+    Hướng dẫn này mặc định sử dụng xác thực bằng token, vì vậy hãy lấy `gateway.auth.token` bằng `openclaw config get gateway.auth.token`, hoặc tạo token mới bằng `openclaw doctor --n`. Nếu bạn đã chuyển Gateway sang xác thực bằng mật khẩu, hãy sử dụng `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD` thay thế.
 
-Đối với host từ xa, hãy ưu tiên một lệnh gọi `config patch` thay vì nhiều lệnh gọi SSH tới `config set`. Giữ token thật trong môi trường VM hoặc `~/.openclaw/.env`, và chỉ đặt SecretRefs trong `openclaw.json`.
+    Phê duyệt thiết bị bằng `openclaw devices list` và `openclaw devices approve <requestId>`. Khi không chắc chắn, hãy sử dụng Shelley từ trình duyệt của bạn.
 
-Trên VM, hãy làm cho môi trường service chứa các secret cần thiết:
+  </Step>
+</Steps>
+
+## Thiết lập kênh từ xa
+
+Đối với máy chủ từ xa, nên dùng một lệnh gọi `config patch` thay vì nhiều lệnh gọi SSH đến `config set`. Giữ các token thực trong môi trường của máy ảo hoặc `~/.openclaw/.env`, và chỉ đặt SecretRef trong `openclaw.json`. Xem [Quản lý bí mật](/vi/gateway/secrets) để biết đầy đủ hợp đồng SecretRef.
+
+Trên máy ảo, hãy bảo đảm môi trường dịch vụ chứa các bí mật cần thiết:
 
 ```bash
 cat >> ~/.openclaw/.env <<'EOF'
@@ -136,7 +136,7 @@ OPENAI_API_KEY=sk-...
 EOF
 ```
 
-Từ máy cục bộ của bạn, tạo một file patch và pipe nó tới VM:
+Từ máy cục bộ của bạn, hãy tạo một tệp bản vá và truyền nó qua pipe đến máy ảo:
 
 ```json5
 // openclaw.remote.patch.json5
@@ -165,9 +165,9 @@ Từ máy cục bộ của bạn, tạo một file patch và pipe nó tới VM:
   },
   agents: {
     defaults: {
-      model: { primary: "openai/gpt-5.5" },
+      model: { primary: "openai/gpt-5.6-sol" },
       models: {
-        "openai/gpt-5.5": { params: { fastMode: true } },
+        "openai/gpt-5.6-sol": { params: { fastMode: true } },
       },
     },
   },
@@ -180,30 +180,27 @@ ssh <vm-name>.exe.xyz 'openclaw config patch --stdin' < ./openclaw.remote.patch.
 ssh <vm-name>.exe.xyz 'openclaw gateway restart && openclaw health'
 ```
 
-Dùng `--replace-path` khi một allowlist lồng nhau cần trở thành đúng bằng giá trị patch, ví dụ khi thay thế allowlist channel Discord:
+Sử dụng `--replace-path` khi một danh sách cho phép lồng nhau cần trở thành chính xác giá trị của bản vá, ví dụ khi thay thế danh sách cho phép của một kênh Discord:
 
 ```bash
 ssh <vm-name>.exe.xyz 'openclaw config patch --stdin --replace-path "channels.discord.guilds[\"123\"].channels"' < ./discord.patch.json5
 ```
 
+Xem [Discord](/vi/channels/discord) và [Slack](/vi/channels/slack) để biết tài liệu tham chiếu đầy đủ về cấu hình kênh.
+
 ## Truy cập từ xa
 
-Truy cập từ xa được xử lý bởi xác thực của [exe.dev](https://exe.dev). Theo
-mặc định, lưu lượng HTTP từ cổng 8000 được forward tới `https://<vm-name>.exe.xyz`
-với xác thực email.
+exe.dev xử lý xác thực cho truy cập từ xa. Theo mặc định, lưu lượng HTTP từ cổng 8000 được chuyển tiếp đến `https://<vm-name>.exe.xyz` với xác thực bằng email.
 
 ## Cập nhật
 
 ```bash
-npm i -g openclaw@latest
-openclaw doctor
-openclaw gateway restart
-openclaw health
+openclaw update
 ```
 
-Hướng dẫn: [Cập nhật](/vi/install/updating)
+Xem [Cập nhật](/vi/install/updating) để biết cách chuyển đổi kênh và khôi phục thủ công.
 
 ## Liên quan
 
 - [Gateway từ xa](/vi/gateway/remote)
-- [Tổng quan cài đặt](/vi/install)
+- [Tổng quan về cài đặt](/vi/install)

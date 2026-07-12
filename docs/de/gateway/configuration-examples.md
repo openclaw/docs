@@ -3,20 +3,19 @@ read_when:
     - Erfahren Sie, wie Sie OpenClaw konfigurieren
     - Auf der Suche nach Konfigurationsbeispielen
     - OpenClaw zum ersten Mal einrichten
-summary: Schemagenau konfigurierte Beispiele für gängige OpenClaw-Setups
+summary: Schemakonforme Konfigurationsbeispiele für gängige OpenClaw-Setups
 title: Konfigurationsbeispiele
 x-i18n:
-    generated_at: "2026-07-12T15:22:33Z"
+    generated_at: "2026-07-12T01:36:48Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: c3ad82ccce62e0c8dbb72f81b0de62d60d8a6282f0a327ed1cbda7ffa3e47969
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-Die folgenden Beispiele entsprechen dem aktuellen Konfigurationsschema. Eine vollständige Referenz und Hinweise zu den einzelnen Feldern finden Sie unter [Konfiguration](/de/gateway/configuration).
+Die folgenden Beispiele entsprechen dem aktuellen Konfigurationsschema. Die vollständige Referenz und Hinweise zu den einzelnen Feldern finden Sie unter [Konfiguration](/de/gateway/configuration).
 
 ## Schnellstart
 
@@ -29,7 +28,7 @@ Die folgenden Beispiele entsprechen dem aktuellen Konfigurationsschema. Eine vol
 }
 ```
 
-Speichern Sie dies unter `~/.openclaw/openclaw.json`. Anschließend können Sie dem Bot von dieser Nummer aus eine Direktnachricht senden.
+Speichern Sie die Datei unter `~/.openclaw/openclaw.json`. Anschließend können Sie dem Bot von dieser Nummer aus eine Direktnachricht senden.
 
 ### Empfohlene Ausgangskonfiguration
 
@@ -67,13 +66,13 @@ Speichern Sie dies unter `~/.openclaw/openclaw.json`. Anschließend können Sie 
 }
 ```
 
-## Erweitertes Beispiel (wichtige Optionen)
+## Erweitertes Beispiel (wichtigste Optionen)
 
-> Mit JSON5 können Sie Kommentare und nachgestellte Kommas verwenden. Reguläres JSON funktioniert ebenfalls.
+> JSON5 ermöglicht Kommentare und nachgestellte Kommas. Reguläres JSON funktioniert ebenfalls.
 
 ```json5
 {
-  // Umgebung + Shell
+  // Environment + shell
   env: {
     OPENROUTER_API_KEY: "sk-or-...",
     vars: {
@@ -85,7 +84,7 @@ Speichern Sie dies unter `~/.openclaw/openclaw.json`. Anschließend können Sie 
     },
   },
 
-  // Metadaten der Authentifizierungsprofile (Geheimnisse befinden sich in auth-profiles.json)
+  // Auth profile metadata (secrets live in auth-profiles.json)
   auth: {
     profiles: {
       "anthropic:default": { provider: "anthropic", mode: "api_key" },
@@ -99,9 +98,9 @@ Speichern Sie dies unter `~/.openclaw/openclaw.json`. Anschließend können Sie 
     },
   },
 
-  // Die Identität wird pro Agent festgelegt — legen Sie sie unten unter agents.list[].identity fest.
+  // Identity is per agent — set it on agents.list[].identity below.
 
-  // Protokollierung
+  // Logging
   logging: {
     level: "info",
     file: "/tmp/openclaw/openclaw.log",
@@ -110,7 +109,7 @@ Speichern Sie dies unter `~/.openclaw/openclaw.json`. Anschließend können Sie 
     redactSensitive: "tools",
   },
 
-  // Nachrichtenformatierung
+  // Message formatting
   messages: {
     messagePrefix: "[openclaw]",
     visibleReplies: "automatic",
@@ -119,7 +118,7 @@ Speichern Sie dies unter `~/.openclaw/openclaw.json`. Anschließend können Sie 
     ackReactionScope: "group-mentions",
     groupChat: {
       historyLimit: 50,
-      visibleReplies: "message_tool", // für gemeinsam genutzte Räume mit Modellen aktivieren, die Tools zuverlässig verwenden
+      visibleReplies: "message_tool", // opt in for shared rooms with tool-reliable models
       unmentionedInbound: "room_event",
     },
     queue: {
@@ -139,7 +138,7 @@ Speichern Sie dies unter `~/.openclaw/openclaw.json`. Anschließend können Sie 
     },
   },
 
-  // Tools
+  // Tooling
   tools: {
     media: {
       audio: {
@@ -147,7 +146,7 @@ Speichern Sie dies unter `~/.openclaw/openclaw.json`. Anschließend können Sie 
         maxBytes: 20971520,
         models: [
           { provider: "openai", model: "gpt-4o-transcribe" },
-          // Optionaler CLI-Fallback (Whisper-Binärdatei):
+          // Optional CLI fallback (Whisper binary):
           // { type: "cli", command: "whisper", args: ["--model", "base", "{{MediaPath}}"] }
         ],
         timeoutSeconds: 120,
@@ -160,10 +159,10 @@ Speichern Sie dies unter `~/.openclaw/openclaw.json`. Anschließend können Sie 
     },
   },
 
-  // Sitzungsverhalten
+  // Session behavior
   session: {
     scope: "per-sender",
-    dmScope: "per-channel-peer", // für Posteingänge mit mehreren Benutzern empfohlen
+    dmScope: "per-channel-peer", // recommended for multi-user inboxes
     reset: {
       mode: "daily",
       atHour: 4,
@@ -178,9 +177,9 @@ Speichern Sie dies unter `~/.openclaw/openclaw.json`. Anschließend können Sie 
       mode: "warn",
       pruneAfter: "30d",
       maxEntries: 500,
-      resetArchiveRetention: "30d", // Dauer oder false
+      resetArchiveRetention: "30d", // duration or false
       maxDiskBytes: "500mb", // optional
-      highWaterBytes: "400mb", // optional (standardmäßig 80 % von maxDiskBytes)
+      highWaterBytes: "400mb", // optional (defaults to 80% of maxDiskBytes)
     },
     typingIntervalSeconds: 5,
     sendPolicy: {
@@ -189,7 +188,7 @@ Speichern Sie dies unter `~/.openclaw/openclaw.json`. Anschließend können Sie 
     },
   },
 
-  // Kanäle
+  // Channels
   channels: {
     whatsapp: {
       dmPolicy: "pairing",
@@ -241,7 +240,7 @@ Speichern Sie dies unter `~/.openclaw/openclaw.json`. Anschließend können Sie 
     },
   },
 
-  // Agent-Laufzeit
+  // Agent runtime
   agents: {
     defaults: {
       workspace: "~/.openclaw/workspace",
@@ -258,7 +257,7 @@ Speichern Sie dies unter `~/.openclaw/openclaw.json`. Anschließend können Sie 
         "anthropic/claude-sonnet-4-6": { alias: "sonnet" },
         "openai/gpt-5.4": { alias: "gpt" },
       },
-      skills: ["github", "weather"], // wird von Agents übernommen, bei denen list[].skills fehlt
+      skills: ["github", "weather"], // inherited by agents that omit list[].skills
       thinkingDefault: "low",
       verboseDefault: "off",
       toolProgressDetail: "explain",
@@ -285,7 +284,7 @@ Speichern Sie dies unter `~/.openclaw/openclaw.json`. Anschließend können Sie 
         every: "30m",
         model: "anthropic/claude-sonnet-4-6",
         target: "last",
-        directPolicy: "allow", // allow (Standardwert) | block
+        directPolicy: "allow", // allow (default) | block
         to: "+15555550123",
         prompt: "HEARTBEAT",
         ackMaxChars: 300,
@@ -300,7 +299,7 @@ Speichern Sie dies unter `~/.openclaw/openclaw.json`. Anschließend können Sie 
       },
       sandbox: {
         mode: "non-main",
-        scope: "session", // gegenüber dem veralteten perSession: true bevorzugt
+        scope: "session", // preferred over legacy perSession: true
         workspaceRoot: "~/.openclaw/sandboxes",
         docker: {
           image: "openclaw-sandbox:bookworm-slim",
@@ -321,21 +320,21 @@ Speichern Sie dies unter `~/.openclaw/openclaw.json`. Anschließend können Sie 
         default: true,
         identity: {
           name: "Samantha",
-          theme: "hilfsbereites Faultier",
+          theme: "helpful sloth",
           emoji: "🦥",
         },
-        // übernimmt defaults.skills -> github, weather
+        // inherits defaults.skills -> github, weather
         groupChat: {
           mentionPatterns: ["@openclaw", "openclaw"],
         },
-        thinkingDefault: "high", // Agent-spezifische Überschreibung des Denkmodus
-        reasoningDefault: "on", // Agent-spezifische Sichtbarkeit der Schlussfolgerungen
-        fastModeDefault: false, // Agent-spezifischer Schnellmodus
+        thinkingDefault: "high", // per-agent thinking override
+        reasoningDefault: "on", // per-agent reasoning visibility
+        fastModeDefault: false, // per-agent fast mode
       },
       {
         id: "quick",
-        skills: [], // keine Skills für diesen Agent
-        fastModeDefault: true, // dieser Agent läuft immer im Schnellmodus
+        skills: [], // no skills for this agent
+        fastModeDefault: true, // this agent always runs fast
         thinkingDefault: "off",
       },
     ],
@@ -363,7 +362,7 @@ Speichern Sie dies unter `~/.openclaw/openclaw.json`. Anschließend können Sie 
     },
   },
 
-  // Benutzerdefinierte Modell-Provider
+  // Custom model providers
   models: {
     mode: "merge",
     providers: {
@@ -389,11 +388,11 @@ Speichern Sie dies unter `~/.openclaw/openclaw.json`. Anschließend können Sie 
     },
   },
 
-  // Cron-Aufträge
+  // Cron jobs
   cron: {
     enabled: true,
     store: "~/.openclaw/cron/jobs.json",
-    maxConcurrentRuns: 8, // Standardwert; Cron-Verteilung + isolierte Ausführung von Cron-Agent-Durchläufen
+    maxConcurrentRuns: 8, // default; cron dispatch + isolated cron agent-turn execution
     sessionRetention: "24h",
     runLog: {
       maxBytes: "2mb",
@@ -416,7 +415,7 @@ Speichern Sie dies unter `~/.openclaw/openclaw.json`. Anschließend können Sie 
         wakeMode: "now",
         name: "Gmail",
         sessionKey: "hook:gmail:{{messages[0].id}}",
-        messageTemplate: "Von: {{messages[0].from}}\nBetreff: {{messages[0].subject}}",
+        messageTemplate: "From: {{messages[0].from}}\nSubject: {{messages[0].subject}}",
         textTemplate: "{{messages[0].snippet}}",
         deliver: true,
         channel: "last",
@@ -444,7 +443,7 @@ Speichern Sie dies unter `~/.openclaw/openclaw.json`. Anschließend können Sie 
     },
   },
 
-  // Gateway + Netzwerk
+  // Gateway + networking
   gateway: {
     mode: "local",
     port: 18789,
@@ -483,9 +482,9 @@ Speichern Sie dies unter `~/.openclaw/openclaw.json`. Anschließend können Sie 
 }
 ```
 
-### Über Symlinks eingebundenes benachbartes Skill-Repository
+### Über symbolische Verknüpfung eingebundenes benachbartes Skill-Repository
 
-Verwenden Sie dies, wenn ein integriertes Skill-Stammverzeichnis einen Symlink in ein benachbartes Repository enthält, zum
+Verwenden Sie dies, wenn das Stammverzeichnis eines integrierten Skills eine symbolische Verknüpfung zu einem benachbarten Repository enthält, zum
 Beispiel `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 
 ```json5
@@ -500,12 +499,12 @@ Beispiel `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 ```
 
 - `extraDirs` durchsucht das benachbarte Repository als explizites Skill-Stammverzeichnis.
-- `allowSymlinkTargets` ermöglicht, dass über Symlinks eingebundene Skill-Ordner in dieses vertrauenswürdige
-  tatsächliche Zielstammverzeichnis aufgelöst werden, ohne beliebige Ausbrüche über Symlinks zuzulassen.
-- Damit Skill Workshop über dasselbe vertrauenswürdige Symlink-Ziel schreiben kann,
+- `allowSymlinkTargets` ermöglicht es über symbolische Verknüpfungen eingebundenen Skill-Ordnern, in dieses vertrauenswürdige
+  reale Zielstammverzeichnis aufgelöst zu werden, ohne beliebige Ausbrüche über symbolische Verknüpfungen zuzulassen.
+- Damit Skill Workshop über dasselbe vertrauenswürdige Ziel der symbolischen Verknüpfung Schreibvorgänge ausführen kann,
   setzen Sie `skills.workshop.allowSymlinkTargetWrites: true`.
 
-## Häufige Muster
+## Gängige Muster
 
 ### Gemeinsame Skill-Basis mit einer Überschreibung
 
@@ -524,11 +523,11 @@ Beispiel `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 }
 ```
 
-- `agents.defaults.skills` ist die gemeinsame Basis.
-- `agents.list[].skills` ersetzt diese Basis für einen Agenten.
+- `agents.defaults.skills` ist die gemeinsame Ausgangsbasis.
+- `agents.list[].skills` ersetzt diese Ausgangsbasis für einen Agenten.
 - Verwenden Sie `skills: []`, wenn ein Agent keine Skills sehen soll.
 
-### Einrichtung für mehrere Plattformen
+### Plattformübergreifende Einrichtung
 
 ```json5
 {
@@ -551,9 +550,9 @@ Beispiel `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 
 ### Automatische Genehmigung in einem vertrauenswürdigen Node-Netzwerk
 
-Lassen Sie die Gerätekopplung manuell, sofern Sie nicht den Netzwerkpfad kontrollieren. Für ein dediziertes
-Labor- oder Tailnet-Subnetz können Sie die automatische Genehmigung neuer Node-Geräte
-mit exakten CIDRs oder IPs aktivieren:
+Belassen Sie die Gerätekopplung im manuellen Modus, sofern Sie den Netzwerkpfad nicht kontrollieren. Für ein dediziertes
+Labor- oder Tailnet-Subnetz können Sie die automatische Genehmigung bei der erstmaligen Kopplung eines Node-Geräts
+mit exakten CIDRs oder IP-Adressen aktivieren:
 
 ```json5
 {
@@ -567,13 +566,13 @@ mit exakten CIDRs oder IPs aktivieren:
 }
 ```
 
-Ohne Konfiguration bleibt diese Funktion deaktiviert. Sie gilt nur für eine neue Kopplung mit `role: node`
+Wenn die Option nicht gesetzt ist, bleibt sie deaktiviert. Sie gilt nur für neue Kopplungen mit `role: node`
 ohne angeforderte Geltungsbereiche. Operator-/Browser-Clients sowie Aktualisierungen von Rolle, Geltungsbereich, Metadaten oder
-öffentlichem Schlüssel müssen weiterhin manuell genehmigt werden.
+öffentlichen Schlüsseln erfordern weiterhin eine manuelle Genehmigung.
 
-### Sicherer DM-Modus (gemeinsamer Posteingang/DMs mit mehreren Benutzern)
+### Sicherer DM-Modus (gemeinsamer Posteingang / DMs mit mehreren Benutzern)
 
-Wenn mehr als eine Person Ihrem Bot eine DM senden kann (mehrere Einträge in `allowFrom`, Kopplungsgenehmigungen für mehrere Personen oder `dmPolicy: "open"`), aktivieren Sie den **sicheren DM-Modus**, damit DMs verschiedener Absender standardmäßig nicht denselben Kontext verwenden:
+Wenn mehr als eine Person Ihrem Bot eine DM senden kann (mehrere Einträge in `allowFrom`, Kopplungsgenehmigungen für mehrere Personen oder `dmPolicy: "open"`), aktivieren Sie den **sicheren DM-Modus**, damit DMs verschiedener Absender standardmäßig keinen gemeinsamen Kontext verwenden:
 
 ```json5
 {
@@ -597,10 +596,10 @@ Wenn mehr als eine Person Ihrem Bot eine DM senden kann (mehrere Einträge in `a
 }
 ```
 
-Bei Discord/Google Chat/IRC/Mattermost/Microsoft Teams/Slack basiert die Absenderautorisierung standardmäßig primär auf IDs.
-Aktivieren Sie den direkten Abgleich veränderlicher Namen, E-Mail-Adressen oder Spitznamen über `dangerouslyAllowNameMatching: true` des jeweiligen Kanals nur, wenn Sie dieses Risiko ausdrücklich akzeptieren.
+Bei Discord/Google Chat/IRC/Mattermost/Microsoft Teams/Slack erfolgt die Absenderautorisierung standardmäßig primär anhand der ID.
+Aktivieren Sie den direkten Abgleich veränderlicher Namen, E-Mail-Adressen oder Nicknamen mit `dangerouslyAllowNameMatching: true` des jeweiligen Kanals nur, wenn Sie dieses Risiko ausdrücklich akzeptieren.
 
-### Anthropic-API-Schlüssel mit MiniMax als Fallback
+### Anthropic-API-Schlüssel und MiniMax-Fallback
 
 ```json5
 {
@@ -704,7 +703,7 @@ Aktivieren Sie den direkten Abgleich veränderlicher Namen, E-Mail-Adressen oder
 
 ## Tipps
 
-- Wenn Sie `dmPolicy: "open"` festlegen, muss die zugehörige `allowFrom`-Liste `"*"` enthalten.
+- Wenn Sie `dmPolicy: "open"` festlegen, muss die entsprechende `allowFrom`-Liste `"*"` enthalten.
 - Provider-IDs unterscheiden sich (Telefonnummern, Benutzer-IDs, Kanal-IDs). Prüfen Sie das Format in der Dokumentation des Providers.
 - Optionale Abschnitte, die Sie später hinzufügen können: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
 - Weitere Hinweise zur Einrichtung finden Sie unter [Provider](/de/providers) und [Fehlerbehebung](/de/gateway/troubleshooting).

@@ -1,11 +1,11 @@
 ---
 read_when:
-    - در حال نصب، پیکربندی یا ممیزی Plugin copilot هستید
+    - شما در حال نصب، پیکربندی یا ممیزی Plugin کوپایلوت هستید
 summary: محیط اجرای عامل GitHub Copilot را ثبت می‌کند.
-title: Plugin Copilot
+title: Plugin کوپایلت
 x-i18n:
-    generated_at: "2026-06-27T18:24:52Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:35:27Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 38deb5a5898d9b9a9ea5584baec4b749339a6178838542f1905a8a12bfa78090
@@ -20,7 +20,7 @@ x-i18n:
 ## توزیع
 
 - بسته: `@openclaw/copilot`
-- مسیر نصب: npm؛ ClawHub: `clawhub:@openclaw/copilot`
+- روش نصب: npm؛ ClawHub: `clawhub:@openclaw/copilot`
 
 ## سطح
 
@@ -28,4 +28,4 @@ Plugin
 
 ## مستندات مرتبط
 
-- [copilot](/fa/plugins/copilot)
+- [کوپایلوت](/fa/plugins/copilot)

@@ -1,30 +1,30 @@
 ---
 read_when:
-    - Je wilt snel de gezondheidsstatus van de draaiende Gateway controleren
-summary: CLI-referentie voor `openclaw health` (momentopname van Gateway-status via RPC)
-title: Gezondheid
+    - Je wilt snel de status van de actieve Gateway controleren
+summary: CLI-referentie voor `openclaw health` (momentopname van de Gateway-status via RPC)
+title: Status
 x-i18n:
-    generated_at: "2026-05-10T19:28:58Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:42:01Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 26be7bbbf75c2eca1213fe145fdeeab6fee96798dff457278ac69a20145bf75d
+    source_hash: a26ce5ade9ab56c9751c3dde814c38a1e01e74d91c2fd57e56d3c44ca529d0d8
     source_path: cli/health.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw health`
 
-Haal de status op van de actieve Gateway.
+Haal via WebSocket-RPC een momentopname van de status op uit de actieve Gateway (geen rechtstreekse kanaalsockets vanuit de CLI).
 
 ## Opties
 
-| Vlag             | Standaard | Beschrijving                                                               |
-| ---------------- | --------- | -------------------------------------------------------------------------- |
-| `--json`         | `false`   | Druk machineleesbare JSON af in plaats van tekst.                          |
-| `--timeout <ms>` | `10000`   | Verbindingstime-out in milliseconden.                                      |
-| `--verbose`      | `false`   | Uitgebreide logging. Forceert een live probe en breidt uitvoer per agent uit. |
-| `--debug`        | `false`   | Alias voor `--verbose`.                                                    |
+| Vlag             | Standaard | Beschrijving                                                                                                             |
+| ---------------- | --------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `--json`         | `false`   | Druk machineleesbare JSON af in plaats van tekst.                                                                        |
+| `--timeout <ms>` | `10000`   | Time-out voor de verbinding in milliseconden.                                                                            |
+| `--verbose`      | `false`   | Dwingt een livecontrole af en breidt de uitvoer uit met alle geconfigureerde accounts en agents.                         |
+| `--debug`        | `false`   | Alias voor `--verbose`.                                                                                                  |
 
 Voorbeelden:
 
@@ -36,16 +36,14 @@ openclaw health --verbose
 openclaw health --debug
 ```
 
-Opmerkingen:
+## Gedrag
 
-- Standaard vraagt `openclaw health` de actieve gateway om de health-snapshot. Wanneer de
-  gateway al een recente gecachte snapshot heeft, kan deze die gecachte payload retourneren en
-  op de achtergrond vernieuwen.
-- `--verbose` forceert een live probe, drukt verbindingsdetails van de gateway af en breidt de
-  menselijk leesbare uitvoer uit over alle geconfigureerde accounts en agents.
-- Uitvoer bevat sessiestores per agent wanneer meerdere agents zijn geconfigureerd.
+- Zonder `--verbose` kan de Gateway een momentopname uit de cache retourneren (maximaal 60 seconden actueel en ongewijzigd ten opzichte van de live runtime-status van het kanaal) en deze op de achtergrond vernieuwen voor de volgende aanroeper.
+- `--verbose` dwingt een livecontrole af (accountcontroles per kanaal), toont verbindingsgegevens van de Gateway en breidt de voor mensen leesbare uitvoer uit met alle geconfigureerde accounts en agents in plaats van alleen de standaardagent.
+- `--json` retourneert altijd de volledige momentopname: kanalen, controles per account, laadstatus van plugins, quarantainestatus van de context-engine, status van de cache voor modelprijzen, status van de eventloop en sessieopslag per agent.
 
 ## Gerelateerd
 
 - [CLI-referentie](/nl/cli)
+- [`openclaw status`](/nl/cli/status) — lokale diagnose en kanaalcontroles zonder een volledige statusmomentopname
 - [Gateway-status](/nl/gateway/health)

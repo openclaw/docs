@@ -1,35 +1,48 @@
 ---
 read_when:
-    - OpenClaw ile Cohere kullanmak istiyorsunuz
+    - Cohere'i OpenClaw ile kullanmak istiyorsunuz
     - Cohere API anahtarı ortam değişkenine veya CLI kimlik doğrulama seçeneğine ihtiyacınız var
 summary: Cohere kurulumu (kimlik doğrulama + model seçimi)
 title: Cohere
 x-i18n:
-    generated_at: "2026-06-28T01:09:25Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:41:56Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 76365a5d358bd5576d83a24d62ef30e203ee204bca90a2e50c56cc4c549b52af
+    source_hash: fee46bf80609bd5e8211d6be507713f4de178653941effb81ebae48d8bb6528a
     source_path: providers/cohere.md
     workflow: 16
 ---
 
-[Cohere](https://cohere.com), Compatibility API aracılığıyla OpenAI uyumlu çıkarım sağlar. OpenClaw, dışsallaştırma geçişi sırasında Cohere sağlayıcısını paketli olarak sunar ve ayrıca Command A model kataloğuyla resmi bir harici Plugin olarak yayımlar.
+[Cohere](https://cohere.com), Compatibility API'si aracılığıyla OpenAI uyumlu çıkarım sağlar. OpenClaw, Cohere sağlayıcısını harici hâle getirme geçişi sırasında paketine dâhil eder ve ayrıca resmî bir harici plugin olarak yayımlar.
 
-| Özellik              | Değer                                             |
-| -------------------- | ------------------------------------------------- |
-| Sağlayıcı kimliği    | `cohere`                                          |
-| Plugin               | geçiş sırasında paketli; resmi harici paket       |
-| Kimlik doğrulama env var | `COHERE_API_KEY`                              |
-| Onboarding bayrağı   | `--auth-choice cohere-api-key`                    |
-| Doğrudan CLI bayrağı | `--cohere-api-key <key>`                          |
-| API                  | OpenAI uyumlu (`openai-completions`)              |
-| Temel URL            | `https://api.cohere.ai/compatibility/v1`          |
-| Varsayılan model     | `cohere/command-a-03-2025`                        |
+| Özellik                  | Değer                                                       |
+| ------------------------ | ----------------------------------------------------------- |
+| Sağlayıcı kimliği        | `cohere`                                                    |
+| Plugin                   | geçiş sırasında paketle birlikte; resmî harici paket        |
+| Kimlik doğrulama env var | `COHERE_API_KEY`                                            |
+| İlk kurulum bayrağı      | `--auth-choice cohere-api-key`                              |
+| Doğrudan CLI bayrağı     | `--cohere-api-key <key>`                                    |
+| API                      | OpenAI uyumlu (`openai-completions`)                        |
+| Temel URL                | `https://api.cohere.ai/compatibility/v1`                    |
+| Varsayılan model         | `cohere/command-a-plus-05-2026`                             |
+| Bağlam penceresi         | 128.000 token                                               |
 
-## Başlayın
+## Yerleşik katalog
 
-1. Cohere, mevcut OpenClaw paketlerine dahildir. Kullanılamıyorsa harici paketi kurun ve Gateway'i yeniden başlatın:
+| Model referansı                      | Girdi        | Bağlam  | Maksimum çıktı | Notlar                                                   |
+| ------------------------------------ | ------------ | ------- | --------------- | -------------------------------------------------------- |
+| `cohere/command-a-plus-05-2026`      | metin, görsel | 128.000 | 64.000          | Varsayılan; amiral gemisi agentsal ve akıl yürütme modeli |
+| `cohere/command-a-03-2025`           | metin         | 256.000 | 8.000           | Önceki Command A modeli                                  |
+| `cohere/command-a-reasoning-08-2025` | metin         | 256.000 | 32.000          | Agentsal akıl yürütme ve araç kullanımı                   |
+| `cohere/command-a-vision-07-2025`    | metin, görsel | 128.000 | 8.000           | Görsel ve belge analizi; araç kullanımı yok               |
+| `cohere/north-mini-code-1-0`         | metin, görsel | 256.000 | 64.000          | Agentsal kodlama; akıl yürütme; ücretsiz sınırlar         |
+
+Akıl yürütme yeteneğine sahip Cohere modelleri iki Compatibility API akıl yürütme modunu destekler. OpenClaw, **kapalı** seçeneğini `none` ile, etkinleştirilmiş tüm düşünme düzeylerini ise `high` ile eşler. Command A Vision araç kullanımını desteklemediğinden OpenClaw bu model için ajan araçlarını devre dışı tutar.
+
+## Başlarken
+
+1. Cohere, güncel OpenClaw paketleriyle birlikte gelir. Eksikse harici paketi yükleyin ve Gateway'i yeniden başlatın:
 
 ```bash
 openclaw plugins install @openclaw/cohere-provider
@@ -37,7 +50,7 @@ openclaw gateway restart
 ```
 
 2. Bir Cohere API anahtarı oluşturun.
-3. Onboarding'i çalıştırın:
+3. İlk kurulumu çalıştırın:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -51,28 +64,28 @@ openclaw onboard --non-interactive \
 openclaw models list --provider cohere
 ```
 
-Varsayılan model yalnızca birincil model zaten yapılandırılmamışsa ayarlanır.
+İlk kurulum, yalnızca birincil model henüz yapılandırılmamışsa Cohere'ı birincil model olarak ayarlar.
 
-## Yalnızca ortamla kurulum
+## Yalnızca ortam değişkenleriyle kurulum
 
-`COHERE_API_KEY` değerini Gateway işlemi için kullanılabilir hale getirin, ardından Cohere modelini seçin:
+`COHERE_API_KEY` değişkenini Gateway işleminin kullanımına sunun, ardından Cohere modelini seçin:
 
 ```json5
 {
   agents: {
     defaults: {
-      model: { primary: "cohere/command-a-03-2025" },
+      model: { primary: "cohere/command-a-plus-05-2026" },
     },
   },
 }
 ```
 
 <Note>
-Gateway bir daemon olarak veya Docker içinde çalışıyorsa, `COHERE_API_KEY` değerini bu hizmet için yapılandırın. Bunu yalnızca etkileşimli bir shell içinde dışa aktarmak, zaten çalışan bir Gateway için kullanılabilir hale getirmez.
+Gateway bir daemon olarak veya Docker'da çalışıyorsa söz konusu hizmet için `COHERE_API_KEY` değişkenini ayarlayın. Değişkeni yalnızca etkileşimli bir kabukta dışa aktarmak, hâlihazırda çalışan bir Gateway'in kullanımına sunmaz.
 </Note>
 
 ## İlgili
 
 - [Model sağlayıcıları](/tr/concepts/model-providers)
-- [Models CLI](/tr/cli/models)
-- [Sağlayıcı dizini](/tr/providers)
+- [Modeller CLI'si](/tr/cli/models)
+- [Sağlayıcı dizini](/tr/providers/index)

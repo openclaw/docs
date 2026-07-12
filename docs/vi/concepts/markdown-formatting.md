@@ -1,147 +1,124 @@
 ---
 read_when:
     - Bạn đang thay đổi định dạng Markdown hoặc cách chia đoạn cho các kênh gửi đi
-    - Bạn đang thêm một bộ định dạng kênh mới hoặc ánh xạ kiểu
-    - Bạn đang gỡ lỗi các hồi quy định dạng trên nhiều kênh
+    - Bạn đang thêm một trình định dạng kênh hoặc ánh xạ kiểu mới
+    - Bạn đang gỡ lỗi các lỗi hồi quy về định dạng trên nhiều kênh
 summary: Quy trình định dạng Markdown cho các kênh gửi đi
 title: Định dạng Markdown
 x-i18n:
-    generated_at: "2026-05-12T12:50:50Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:54:04Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8db92aaf1063ebcbd8630dfcb8ca0a4e9eeb1c64f5b8868bf11c836777180515
+    source_hash: f9a35fd9a6386068e1e3bec73ec6e692f49239b468f42dd737f919b1c6a88e41
     source_path: concepts/markdown-formatting.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw định dạng Markdown đầu ra bằng cách chuyển đổi nó thành một biểu diễn trung gian
-dùng chung (IR) trước khi kết xuất đầu ra dành riêng cho từng kênh. IR giữ nguyên
-văn bản nguồn trong khi mang theo các đoạn kiểu dáng/liên kết để việc chia đoạn và kết xuất có thể
-luôn nhất quán trên các kênh.
-
-## Mục tiêu
-
-- **Tính nhất quán:** một bước phân tích cú pháp, nhiều bộ kết xuất.
-- **Chia đoạn an toàn:** chia văn bản trước khi kết xuất để định dạng nội tuyến không bao giờ
-  bị đứt qua các đoạn.
-- **Phù hợp với kênh:** ánh xạ cùng một IR sang Slack mrkdwn, Telegram HTML và các
-  phạm vi kiểu của Signal mà không phân tích lại Markdown.
+OpenClaw chuyển đổi Markdown gửi đi thành một biểu diễn trung gian dùng chung
+(IR) trước khi kết xuất đầu ra dành riêng cho từng kênh. IR lưu văn bản thuần cùng
+các khoảng định dạng/liên kết, nhờ đó một bước phân tích có thể phục vụ mọi kênh và việc chia đoạn không bao giờ
+tách định dạng giữa chừng trong một khoảng.
 
 ## Quy trình
 
-1. **Phân tích Markdown -> IR**
-   - IR là văn bản thuần cộng với các đoạn kiểu (bold/italic/strike/code/spoiler) và các đoạn liên kết.
-   - Offset là đơn vị mã UTF-16 để các phạm vi kiểu của Signal khớp với API của nó.
-   - Bảng chỉ được phân tích khi một kênh chọn chuyển đổi bảng.
-2. **Chia đoạn IR (ưu tiên định dạng)**
-   - Việc chia đoạn diễn ra trên văn bản IR trước khi kết xuất.
-   - Định dạng nội tuyến không bị chia qua các đoạn; các span được cắt theo từng đoạn.
-3. **Kết xuất theo từng kênh**
-   - **Slack:** token mrkdwn (bold/italic/strike/code), liên kết dạng `<url|label>`.
-   - **Telegram:** thẻ HTML (`<b>`, `<i>`, `<s>`, `<code>`, `<pre><code>`, `<a href>`).
-   - **Signal:** văn bản thuần + phạm vi `text-style`; liên kết trở thành `label (url)` khi nhãn khác.
+1. **Phân tích Markdown thành IR** (`markdownToIR`) - văn bản thuần cùng các khoảng định dạng
+   (đậm, nghiêng, gạch ngang, mã, khối mã, nội dung ẩn, trích dẫn khối,
+   tiêu đề cấp 1-6) và các khoảng liên kết. Vị trí bù là các đơn vị mã UTF-16 để các phạm vi định dạng của Signal
+   khớp trực tiếp với API của Signal. Bảng chỉ được phân tích khi kênh
+   chọn sử dụng một chế độ bảng.
+2. **Chia đoạn IR** (`chunkMarkdownIR` / `renderMarkdownIRChunksWithinLimit`)
+   - việc chia tách diễn ra trên văn bản IR trước khi kết xuất, do đó các định dạng nội dòng và
+     liên kết được cắt theo từng đoạn thay vì bị đứt qua ranh giới.
+3. **Kết xuất theo từng kênh** (`renderMarkdownWithMarkers`) - ánh xạ dấu định dạng
+   chuyển các khoảng thành cú pháp đánh dấu gốc của kênh.
 
-## Ví dụ IR
+| Kênh                                                              | Bộ kết xuất                                                                           | Ghi chú                                                                                                     |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Slack                                                              | các token mrkdwn (`*bold*`, `_italic_`, `` `code` ``, hàng rào mã)                   | Liên kết trở thành `<url\|label>`; tự động liên kết bị tắt khi phân tích để tránh tạo liên kết hai lần       |
+| Telegram                                                           | các thẻ HTML (`<b>`, `<i>`, `<s>`, `<code>`, `<pre><code>`, `<a href>`, `<tg-spoiler>`) | Cũng hỗ trợ bảng và tiêu đề trong tin nhắn đa dạng thức (`<h1>`-`<h6>`) khi bật `richMessages`               |
+| Signal                                                             | văn bản thuần + các phạm vi `text-style`                                              | Liên kết được kết xuất thành `label (url)` khi nhãn khác với URL                                             |
+| Discord, WhatsApp, iMessage, Microsoft Teams và các kênh khác      | văn bản thuần                                                                         | Không có định dạng dựa trên IR; việc chuyển đổi bảng Markdown vẫn chạy qua `convertMarkdownTables`           |
+
+## Ví dụ về IR
 
 Markdown đầu vào:
-
-```markdown
-Hello **world** - see [docs](https://docs.openclaw.ai).
-```
-
-IR (sơ đồ):
-
-```json
-{
-  "text": "Hello world - see docs.",
-  "styles": [{ "start": 6, "end": 11, "style": "bold" }],
-  "links": [{ "start": 19, "end": 23, "href": "https://docs.openclaw.ai" }]
-}
-```
-
-## Nơi được sử dụng
-
-- Các adapter đầu ra của Slack, Telegram và Signal kết xuất từ IR.
-- Các kênh khác (WhatsApp, iMessage, Microsoft Teams, Discord) vẫn dùng văn bản thuần hoặc
-  quy tắc định dạng riêng, với chuyển đổi bảng Markdown được áp dụng trước khi
-  chia đoạn khi được bật.
-
+__OC_I18N_900000__
+IR (dạng minh họa):
+__OC_I18N_900001__
 ## Xử lý bảng
 
-Bảng Markdown không được hỗ trợ nhất quán trên các ứng dụng chat. Dùng
-`markdown.tables` để kiểm soát chuyển đổi theo từng kênh (và từng tài khoản).
+`markdown.tables` kiểm soát cách một kênh chuyển đổi bảng Markdown, theo từng
+kênh và tùy chọn theo từng tài khoản:
 
-- `code`: kết xuất bảng dưới dạng khối mã (mặc định cho hầu hết kênh).
-- `bullets`: chuyển mỗi hàng thành các gạch đầu dòng (mặc định cho Matrix, Signal và WhatsApp).
-- `off`: tắt phân tích và chuyển đổi bảng; văn bản bảng thô được chuyển qua.
+| Chế độ   | Hành vi                                                                                                   |
+| -------- | --------------------------------------------------------------------------------------------------------- |
+| `code`   | Kết xuất dưới dạng bảng ASCII được căn chỉnh bên trong khối mã (mặc định dự phòng)                        |
+| `bullets` | Chuyển từng hàng thành các dấu đầu dòng `label: value`                                                    |
+| `block`  | Giữ bảng gốc khi lớp vận chuyển hỗ trợ; nếu không thì dự phòng về `code`                                  |
+| `off`    | Tắt phân tích bảng; văn bản bảng thô được truyền qua mà không thay đổi                                    |
 
-Khóa cấu hình:
-
-```yaml
-channels:
-  discord:
-    markdown:
-      tables: code
-    accounts:
-      work:
-        markdown:
-          tables: off
-```
-
+Các giá trị mặc định của Plugin theo từng kênh: Signal, WhatsApp và Matrix mặc định là
+`bullets`; Mattermost mặc định là `off`; Telegram mặc định là `block` (chế độ này
+được phân giải thành `code` trừ khi tài khoản đã bật `richMessages`). Mọi
+kênh không có giá trị mặc định Plugin rõ ràng sẽ dự phòng về `code`.
+__OC_I18N_900002__
 ## Quy tắc chia đoạn
 
-- Giới hạn đoạn đến từ adapter/cấu hình kênh và được áp dụng cho văn bản IR.
-- Hàng rào mã được giữ nguyên như một khối duy nhất kèm dấu xuống dòng cuối để các kênh
-  kết xuất chính xác.
-- Tiền tố danh sách và tiền tố trích dẫn khối là một phần của văn bản IR, nên việc chia đoạn
-  không cắt giữa tiền tố.
-- Kiểu nội tuyến (bold/italic/strike/inline-code/spoiler) không bao giờ bị chia qua
-  các đoạn; bộ kết xuất mở lại kiểu bên trong từng đoạn.
+- Giới hạn đoạn đến từ bộ điều hợp/cấu hình của kênh và áp dụng cho văn bản IR, không phải
+  đầu ra đã kết xuất.
+- Các khối mã có hàng rào được giữ nguyên thành một khối với ký tự xuống dòng ở cuối để
+  các kênh kết xuất đúng hàng rào đóng.
+- Tiền tố danh sách và trích dẫn khối là một phần của văn bản IR, vì vậy việc chia đoạn không bao giờ
+  tách giữa chừng trong tiền tố.
+- Định dạng nội dòng không bao giờ bị tách qua các đoạn; bộ kết xuất mở lại định dạng đang mở
+  ở đầu đoạn tiếp theo.
 
-Nếu bạn cần thêm thông tin về hành vi chia đoạn trên các kênh, xem
-[Streaming + chia đoạn](/vi/concepts/streaming).
+Xem [Phát trực tiếp và chia đoạn](/concepts/streaming) để biết hành vi tại ranh giới đoạn và
+hành vi phân phối trên các kênh.
 
 ## Chính sách liên kết
 
-- **Slack:** `[label](url)` -> `<url|label>`; URL trần vẫn giữ nguyên. Autolink
-  bị tắt trong quá trình phân tích để tránh liên kết kép.
+- **Slack:** `[label](url)` -> `<url|label>`; URL thuần vẫn được giữ nguyên.
 - **Telegram:** `[label](url)` -> `<a href="url">label</a>` (chế độ phân tích HTML).
-- **Signal:** `[label](url)` -> `label (url)` trừ khi nhãn khớp với URL.
+- **Signal:** `[label](url)` -> `label (url)` trừ khi nhãn đã
+  khớp với URL.
 
 ## Nội dung ẩn
 
-Dấu nội dung ẩn (`||spoiler||`) chỉ được phân tích cho Signal, nơi chúng ánh xạ tới
-các phạm vi kiểu SPOILER. Các kênh khác coi chúng là văn bản thuần.
+Các dấu nội dung ẩn (`||spoiler||`) được phân tích cho Signal (ánh xạ thành các phạm vi định dạng `SPOILER`)
+và Telegram (ánh xạ thành `<tg-spoiler>`). Các kênh khác coi
+`||...||` là văn bản thuần.
 
-## Cách thêm hoặc cập nhật bộ định dạng kênh
+## Thêm hoặc cập nhật bộ định dạng kênh
 
-1. **Phân tích một lần:** dùng helper dùng chung `markdownToIR(...)` với các tùy chọn
-   phù hợp với kênh (autolink, kiểu tiêu đề, tiền tố trích dẫn khối).
-2. **Kết xuất:** triển khai bộ kết xuất với `renderMarkdownWithMarkers(...)` và một
-   bản đồ marker kiểu (hoặc phạm vi kiểu Signal).
-3. **Chia đoạn:** gọi `chunkMarkdownIR(...)` trước khi kết xuất; kết xuất từng đoạn.
-4. **Nối adapter:** cập nhật adapter đầu ra của kênh để dùng bộ chia đoạn
-   và bộ kết xuất mới.
-5. **Kiểm thử:** thêm hoặc cập nhật kiểm thử định dạng và kiểm thử gửi đầu ra nếu
-   kênh dùng chia đoạn.
+1. **Phân tích một lần** bằng `markdownToIR(...)`, truyền vào các tùy chọn phù hợp với kênh
+   (`autolink`, `headingStyle`, `blockquotePrefix`, `tableMode`).
+2. **Kết xuất** bằng `renderMarkdownWithMarkers(...)` và một ánh xạ dấu định dạng (hoặc
+   logic phạm vi định dạng tùy chỉnh cho các lớp vận chuyển như Signal).
+3. **Chia đoạn** bằng `chunkMarkdownIR(...)` hoặc
+   `renderMarkdownIRChunksWithinLimit(...)` trước khi kết xuất từng đoạn.
+4. **Kết nối bộ điều hợp** để gọi trình chia đoạn và bộ kết xuất mới từ
+   đường dẫn gửi đi.
+5. **Kiểm thử** bằng các kiểm thử định dạng cùng với một kiểm thử phân phối gửi đi nếu kênh
+   có chia đoạn.
 
-## Lỗi thường gặp
+## Những vấn đề thường gặp
 
-- Token ngoặc nhọn của Slack (`<@U123>`, `<#C123>`, `<https://...>`) phải được
-  giữ nguyên; escape HTML thô một cách an toàn.
-- Telegram HTML yêu cầu escape văn bản bên ngoài thẻ để tránh markup bị hỏng.
-- Phạm vi kiểu của Signal phụ thuộc vào offset UTF-16; không dùng offset điểm mã.
-- Giữ dấu xuống dòng cuối cho khối mã có hàng rào để marker đóng nằm trên
-  dòng riêng của chúng.
+- Các token dấu ngoặc nhọn của Slack (`<@U123>`, `<#C123>`, `<https://...>`) phải
+  không bị ảnh hưởng khi thoát ký tự; HTML thô vẫn cần được thoát ký tự an toàn.
+- HTML của Telegram yêu cầu thoát ký tự văn bản bên ngoài thẻ để tránh cú pháp đánh dấu bị hỏng.
+- Các phạm vi định dạng của Signal sử dụng vị trí bù UTF-16, không phải vị trí bù theo điểm mã.
+- Giữ lại ký tự xuống dòng ở cuối các khối mã có hàng rào để dấu đóng
+  nằm trên một dòng riêng.
 
 ## Liên quan
 
 <CardGroup cols={2}>
-  <Card title="Streaming và chia đoạn" href="/vi/concepts/streaming" icon="bars-staggered">
-    Hành vi streaming đầu ra, ranh giới đoạn và phân phối dành riêng cho từng kênh.
+  <Card title="Phát trực tiếp và chia đoạn" href="/vi/concepts/streaming" icon="bars-staggered">
+    Hành vi phát trực tiếp gửi đi, ranh giới đoạn và hoạt động phân phối dành riêng cho từng kênh.
   </Card>
   <Card title="Lời nhắc hệ thống" href="/vi/concepts/system-prompt" icon="message-lines">
-    Những gì mô hình thấy trước cuộc hội thoại, bao gồm cả các tệp workspace được chèn.
+    Nội dung mô hình nhìn thấy trước cuộc trò chuyện, bao gồm các tệp không gian làm việc được chèn vào.
   </Card>
 </CardGroup>

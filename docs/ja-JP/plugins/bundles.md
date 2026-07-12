@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Codex、Claude、または Cursor 互換バンドルをインストールしたい場合
-    - OpenClaw がバンドル内容をネイティブ機能にどのようにマッピングするかを理解する必要があります
-    - バンドル検出または不足している機能をデバッグしている
-summary: Codex、Claude、Cursor バンドルを OpenClaw Plugin としてインストールして使用する
+    - Codex、Claude、またはCursor互換のバンドルをインストールする場合
+    - OpenClaw がバンドルの内容をネイティブ機能にどのようにマッピングするかを理解する必要があります
+    - バンドル検出または不足している機能をデバッグしている場合
+summary: Codex、Claude、CursorのバンドルをOpenClawのPluginとしてインストールして使用する
 title: Plugin バンドル
 x-i18n:
-    generated_at: "2026-07-05T11:36:53Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:26:29Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: d44006866238f53ee2e3e8126cc4f7ed6f7413534257775f7904c9b877778c59
@@ -15,100 +15,95 @@ x-i18n:
     workflow: 16
 ---
 
-OpenClaw は、**Codex**、**Claude**、
-**Cursor** の3つの外部エコシステムからプラグインをインストールできます。これらは **バンドル** と呼ばれます。OpenClaw が Skills、フック、MCP ツールなどのネイティブ機能へマッピングする、コンテンツとメタデータのパックです。
+OpenClaw は、**Codex**、**Claude**、**Cursor** という 3 つの外部エコシステムから Plugin をインストールできます。これらは **バンドル** と呼ばれ、OpenClaw が Skills、フック、MCP ツールなどのネイティブ機能にマッピングするコンテンツとメタデータのパックです。
 
 <Info>
-  バンドルはネイティブ OpenClaw プラグインと**同じではありません**。ネイティブプラグインは
-  インプロセスで実行され、任意の機能を登録できます。バンドルは、選択的な機能マッピングと
-  より狭い信頼境界を持つコンテンツパックです。
+  バンドルは、ネイティブ OpenClaw Plugin と**同じではありません**。ネイティブ Plugin はプロセス内で実行され、任意の機能を登録できます。バンドルは、機能が選択的にマッピングされ、信頼境界がより狭いコンテンツパックです。
 </Info>
 
 ## バンドルが存在する理由
 
-有用なプラグインの多くは Codex、Claude、Cursor 形式で公開されています。作者にネイティブ OpenClaw プラグインとして書き直すことを求める代わりに、OpenClaw はこれらの形式を検出し、対応しているコンテンツをネイティブ機能セットへマッピングします。Claude コマンドパックや Codex スキルバンドルをインストールして、すぐに使えます。
+多くの有用な Plugin が Codex、Claude、Cursor 形式で公開されています。作成者にネイティブ OpenClaw Plugin として書き直すことを求める代わりに、OpenClaw はこれらの形式を検出し、サポート対象のコンテンツをネイティブ機能セットにマッピングします。Claude コマンドパックや Codex Skills バンドルをインストールして、すぐに使用できます。
 
 ## バンドルをインストールする
 
 <Steps>
-  <Step title="Install from a directory, archive, or marketplace">
+  <Step title="ディレクトリ、アーカイブ、またはマーケットプレイスからインストールする">
     ```bash
-    # Local directory
+    # ローカルディレクトリ
     openclaw plugins install ./my-bundle
 
-    # Archive
+    # アーカイブ
     openclaw plugins install ./my-bundle.tgz
 
-    # Claude marketplace
+    # Claude マーケットプレイス
     openclaw plugins marketplace list <source>
     openclaw plugins install <plugin> --marketplace <source>
     ```
 
-    `<source>` はローカルマーケットプレイスのパス/リポジトリ、または git/GitHub ソースです。
+    `<source>` はローカルのマーケットプレイスパス/リポジトリ、または git/GitHub ソースです。
 
   </Step>
 
-  <Step title="Verify detection">
+  <Step title="検出を確認する">
     ```bash
     openclaw plugins list
     openclaw plugins inspect <id>
     ```
 
-    バンドルには `Format: bundle` に加えて、`Bundle format:` の値として `codex`、
-    `claude`、または `cursor` が表示されます。
+    バンドルには `Format: bundle` と、`codex`、`claude`、`cursor` のいずれかを値とする `Bundle format:` が表示されます。
 
   </Step>
 
-  <Step title="Restart and use">
+  <Step title="再起動して使用する">
     ```bash
     openclaw gateway restart
     ```
 
-    マッピングされた機能（Skills、フック、MCP ツール、LSP デフォルト）は次のセッションで利用できます。
+    マッピングされた機能（Skills、フック、MCP ツール、LSP のデフォルト設定）は、次のセッションで使用できます。
 
   </Step>
 </Steps>
 
 ## OpenClaw がバンドルからマッピングするもの
 
-現在、すべてのバンドル機能が OpenClaw で実行されるわけではありません。以下に、動作するものと、検出されるもののまだ接続されていないものを示します。
+現在、すべてのバンドル機能が OpenClaw で実行されるわけではありません。以下に、動作するものと、検出はされるもののまだ接続されていないものを示します。
 
-### 現在サポートされているもの
+### 現在サポートされている機能
 
-| 機能       | マッピング方法                                                                                       | 適用対象     |
-| ------------- | ------------------------------------------------------------------------------------------------- | -------------- |
-| スキルコンテンツ | バンドルのスキルルートを通常の OpenClaw Skills として読み込む                                                 | すべての形式    |
-| コマンド      | `commands/` と `.cursor/commands/` をスキルルートとして扱う                                        | Claude、Cursor |
-| フックパック    | OpenClaw スタイルの `HOOK.md` + `handler.ts` レイアウト                                                   | Codex          |
-| MCP ツール     | バンドル MCP 設定を埋め込み OpenClaw 設定にマージし、対応する stdio および HTTP サーバーを読み込む | すべての形式    |
-| LSP サーバー   | Claude の `.lsp.json` とマニフェストで宣言された `lspServers` を埋め込み OpenClaw LSP デフォルトにマージする  | Claude         |
-| 設定      | Claude の `settings.json` を埋め込み OpenClaw デフォルトとしてインポートする                                     | Claude         |
+| 機能          | マッピング方法                                                                                         | 対象形式       |
+| ------------- | ------------------------------------------------------------------------------------------------------ | -------------- |
+| Skills コンテンツ | バンドルの Skills ルートを通常の OpenClaw Skills として読み込む                                       | すべての形式   |
+| コマンド      | `commands/` と `.cursor/commands/` を Skills ルートとして扱う                                         | Claude、Cursor |
+| フックパック  | OpenClaw 形式の `HOOK.md` + `handler.ts` レイアウト                                                    | Codex          |
+| MCP ツール    | バンドルの MCP 設定を組み込み OpenClaw 設定にマージし、対応する stdio および HTTP サーバーを読み込む   | すべての形式   |
+| LSP サーバー  | Claude の `.lsp.json` とマニフェストで宣言された `lspServers` を組み込み OpenClaw の LSP デフォルト設定にマージする | Claude         |
+| 設定          | Claude の `settings.json` を組み込み OpenClaw のデフォルト設定としてインポートする                      | Claude         |
 
-#### スキルコンテンツ
+#### Skills コンテンツ
 
-- バンドルのスキルルートは通常の OpenClaw スキルルートとして読み込まれます。
-- Claude の `commands/` ルートは追加のスキルルートとして扱われます。
-- Cursor の `.cursor/commands/` ルートは追加のスキルルートとして扱われます。
+- バンドルの Skills ルートは、通常の OpenClaw Skills ルートとして読み込まれます。
+- Claude の `commands/` ルートは、追加の Skills ルートとして扱われます。
+- Cursor の `.cursor/commands/` ルートは、追加の Skills ルートとして扱われます。
 
-Claude の Markdown コマンドファイルと Cursor のコマンド Markdown は、どちらも通常の OpenClaw スキルローダーを通じて動作します。
+Claude の Markdown コマンドファイルと Cursor のコマンド Markdown は、どちらも通常の OpenClaw Skills ローダーを通じて動作します。
 
 #### フックパック
 
-バンドルのフックルートは、通常の OpenClaw フックパックレイアウト（`HOOK.md` に加えて `handler.ts` または `handler.js`）を使う場合に**のみ**動作します。現在、これは主に Codex 互換のケースです。
+バンドルのフックルートが動作するのは、通常の OpenClaw フックパックレイアウト（`HOOK.md` と `handler.ts` または `handler.js`）を使用している場合**のみ**です。現在、これは主に Codex 互換の場合に該当します。
 
-#### 埋め込み OpenClaw 向け MCP
+#### 組み込み OpenClaw 向け MCP
 
-- 有効なバンドルは MCP サーバー設定を提供できます。
-- OpenClaw はバンドル MCP 設定を、有効な埋め込み OpenClaw
-  設定の `mcpServers` としてマージします。
-- OpenClaw は、stdio サーバーを起動するか HTTP サーバーへ接続することで、埋め込み OpenClaw エージェントのターン中に、対応するバンドル MCP ツールを公開します。
-- `coding` と `messaging` のツールプロファイルには、デフォルトでバンドル MCP ツールが含まれます。エージェントまたは Gateway でオプトアウトするには、`tools.deny: ["bundle-mcp"]` を使用します。
-- プロジェクトローカルの埋め込みエージェント設定はバンドルデフォルトの後にも適用されるため、必要に応じてワークスペース設定でバンドル MCP エントリを上書きできます。
-- バンドル MCP ツールカタログは登録前に決定論的にソートされるため、上流の `listTools()` の順序変更によってプロンプトキャッシュのツールブロックが頻繁に変動することはありません。
+- 有効化されたバンドルは、MCP サーバー設定を提供できます。
+- OpenClaw はバンドルの MCP 設定を、有効な組み込み OpenClaw 設定に `mcpServers` としてマージします。
+- OpenClaw は、stdio サーバーを起動するか HTTP サーバーに接続することで、組み込み OpenClaw エージェントのターン中に対応するバンドル MCP ツールを公開します。
+- `coding` および `messaging` ツールプロファイルには、デフォルトでバンドル MCP ツールが含まれます。エージェントまたは Gateway で無効にするには、`tools.deny: ["bundle-mcp"]` を使用します。
+- プロジェクトローカルの組み込みエージェント設定は、バンドルのデフォルト設定の後に引き続き適用されるため、必要に応じてワークスペース設定でバンドルの MCP エントリを上書きできます。
+- バンドル MCP ツールカタログは登録前に決定的にソートされるため、上流の `listTools()` の順序が変わっても、プロンプトキャッシュのツールブロックが不必要に変動しません。
 
 ##### トランスポート
 
-MCP サーバーは stdio または HTTP トランスポートを使用できます。
+MCP サーバーでは、stdio または HTTP トランスポートを使用できます。
 
 **Stdio** は子プロセスを起動します。
 
@@ -126,7 +121,7 @@ MCP サーバーは stdio または HTTP トランスポートを使用できま
 }
 ```
 
-**HTTP** は実行中の MCP サーバーへ接続し、`streamable-http` が要求されない限りデフォルトで `sse` を使用します。
+**HTTP** は実行中の MCP サーバーに接続します。`streamable-http` が要求されていない場合、デフォルトは `sse` です。
 
 ```json
 {
@@ -145,137 +140,137 @@ MCP サーバーは stdio または HTTP トランスポートを使用できま
 }
 ```
 
-- `transport` は `"streamable-http"` または `"sse"` を受け付けます。省略した場合のデフォルトは `sse` です。
-- `type: "http"` は CLI ネイティブの下流形式です。OpenClaw 設定では `transport: "streamable-http"` を使用してください。`openclaw mcp set` と `openclaw doctor --fix` は一般的なエイリアスを正規化します。
-- 許可される URL スキームは `http:` と `https:` のみです。
-- `headers` の値は `${ENV_VAR}` 補間をサポートします。
+- `transport` には `"streamable-http"` または `"sse"` を指定できます。省略時のデフォルトは `sse` です。
+- `type: "http"` は CLI ネイティブの下流形式です。OpenClaw の設定では `transport: "streamable-http"` を使用してください。`openclaw mcp set` と `openclaw doctor --fix` は、一般的な別名を正規化します。
+- 使用できる URL スキームは `http:` と `https:` のみです。
+- `headers` の値では `${ENV_VAR}` 補間がサポートされます。
 - `command` と `url` の両方を持つサーバーエントリは拒否されます。
-- URL 認証情報（ユーザー情報とクエリパラメータ）は、ツール説明とログから墨消しされます。
-- `connectionTimeoutMs` は、stdio と HTTP の両方のトランスポートでデフォルトの30秒接続タイムアウトを上書きします。リクエストタイムアウトのデフォルトは60秒で、`requestTimeoutMs` で上書きできます。
+- URL の認証情報（ユーザー情報およびクエリパラメーター）は、ツールの説明とログから秘匿化されます。
+- `connectionTimeoutMs` は、stdio と HTTP の両方のトランスポートに対するデフォルトの 30 秒の接続タイムアウトを上書きします。リクエストタイムアウトのデフォルトは 60 秒で、`requestTimeoutMs` で上書きできます。
 
-##### ツール命名
+##### ツール名
 
-OpenClaw は、バンドル MCP ツールを `serverName__toolName` 形式のプロバイダー安全な名前で登録します。たとえば、`memory_search` ツールを公開する `"vigil-harbor"` というキーのサーバーは、`vigil-harbor__memory_search` として登録されます。
+OpenClaw は、バンドル MCP ツールを `serverName__toolName` 形式のプロバイダーで安全に使用できる名前で登録します。たとえば、`memory_search` ツールを公開する、キーが `"vigil-harbor"` のサーバーは、`vigil-harbor__memory_search` として登録されます。
 
 - `A-Za-z0-9_-` 以外の文字は `-` に置き換えられます。
-- 文字以外で始まるフラグメントには文字プレフィックスが付くため、`12306` のような数値サーバーキーもプロバイダー安全なツールプレフィックスになります。
-- サーバープレフィックスは30文字に制限されます。
-- 完全なツール名は64文字に制限されます。
-- 空のサーバー名は `mcp` にフォールバックします。
-- サニタイズ後の名前が衝突する場合は、数値サフィックスで曖昧さを解消します。
-- 最終的に公開されるツール順序は安全な名前によって決定論的になり、埋め込みエージェントの反復ターンでキャッシュが安定します。
-- プロファイルフィルタリングでは、1つのバンドル MCP サーバーからのすべてのツールを `bundle-mcp` によるプラグイン所有として扱うため、プロファイルの許可/拒否リストは個別の公開ツール名または `bundle-mcp` プラグインキーのどちらも参照できます。
+- 先頭が英字以外になる断片には英字の接頭辞が付けられるため、`12306` のような数字のサーバーキーもプロバイダーで安全に使用できるツール接頭辞になります。
+- サーバー接頭辞は最大 30 文字です。
+- ツール名全体は最大 64 文字です。
+- 空のサーバー名には `mcp` が使用されます。
+- サニタイズ後の名前が衝突する場合は、数字の接尾辞で区別されます。
+- 最終的に公開されるツールの順序は安全な名前によって決定的に定まり、組み込みエージェントの反復ターンでもキャッシュが安定します。
+- プロファイルフィルタリングでは、1 つのバンドル MCP サーバーのすべてのツールが `bundle-mcp` によって所有される Plugin として扱われるため、プロファイルの許可/拒否リストでは、公開された個々のツール名または `bundle-mcp` Plugin キーのいずれかを参照できます。
 
-#### 埋め込み OpenClaw 設定
+#### 組み込み OpenClaw 設定
 
-Claude の `settings.json` は、バンドルが有効な場合にデフォルトの埋め込み OpenClaw 設定としてインポートされます。OpenClaw は適用前にシェル上書きキーをサニタイズします。
+バンドルが有効な場合、Claude の `settings.json` は組み込み OpenClaw のデフォルト設定としてインポートされます。OpenClaw は適用前に、次のシェル上書きキーをサニタイズします。
 
 - `shellPath`
 - `shellCommandPrefix`
 
-#### 埋め込み OpenClaw LSP
+#### 組み込み OpenClaw LSP
 
-- 有効な Claude バンドルは LSP サーバー設定を提供できます。
-- OpenClaw は `.lsp.json` と、マニフェストで宣言された任意の `lspServers` パスを読み込みます。
-- バンドル LSP 設定は、有効な埋め込み OpenClaw LSP デフォルトにマージされます。
-- 現在実行可能なのは、対応済みの stdio ベース LSP サーバーのみです。未対応のトランスポートも `openclaw plugins inspect <id>` には表示されます。
+- 有効化された Claude バンドルは、LSP サーバー設定を提供できます。
+- OpenClaw は `.lsp.json` と、マニフェストで宣言されたすべての `lspServers` パスを読み込みます。
+- バンドルの LSP 設定は、有効な組み込み OpenClaw の LSP デフォルト設定にマージされます。
+- 現在実行できるのは、対応する stdio ベースの LSP サーバーのみです。非対応のトランスポートも `openclaw plugins inspect <id>` には表示されます。
 
-### 検出されるが実行されないもの
+### 検出されるが実行されない機能
 
-これらは認識され診断に表示されますが、OpenClaw は実行しません。
+以下は認識されて診断情報に表示されますが、OpenClaw は実行しません。
 
-- Claude `agents`、`hooks/hooks.json` 自動化、`outputStyles`
-- Cursor `.cursor/agents`、`.cursor/hooks.json`、`.cursor/rules`
-- Codex `.app.json` の機能レポート以外のメタデータ
+- Claude の `agents`、`hooks/hooks.json` オートメーション、`outputStyles`
+- Cursor の `.cursor/agents`、`.cursor/hooks.json`、`.cursor/rules`
+- 機能レポート以外の Codex `.app.json` メタデータ
 
 ## バンドル形式
 
 <AccordionGroup>
-  <Accordion title="Codex bundles">
-    マーカー: `.codex-plugin/plugin.json`
+  <Accordion title="Codex バンドル">
+    マーカー：`.codex-plugin/plugin.json`
 
-    任意のコンテンツ: `skills/`、`hooks/`、`.mcp.json`、`.app.json`
+    オプションのコンテンツ：`skills/`、`hooks/`、`.mcp.json`、`.app.json`
 
-    Codex バンドルは、スキルルートと OpenClaw スタイルのフックパックディレクトリ（`HOOK.md` + `handler.ts`）を使用すると、OpenClaw に最も適合します。
+    Codex バンドルは、Skills ルートと OpenClaw 形式のフックパックディレクトリ（`HOOK.md` + `handler.ts`）を使用すると、OpenClaw に最も適合します。
 
   </Accordion>
 
-  <Accordion title="Claude bundles">
-    2つの検出モード:
+  <Accordion title="Claude バンドル">
+    2 つの検出モードがあります。
 
-    - **マニフェストベース:** `.claude-plugin/plugin.json`
-    - **マニフェストなし:** デフォルトの Claude レイアウト（`skills/`、`commands/`、`agents/`、`hooks/`、`.mcp.json`、`.lsp.json`、`settings.json`）
+    - **マニフェストベース：** `.claude-plugin/plugin.json`
+    - **マニフェストなし：** Claude のデフォルトレイアウト（`skills/`、`commands/`、`agents/`、`hooks/`、`.mcp.json`、`.lsp.json`、`settings.json`）
 
-    Claude 固有の動作:
+    Claude 固有の動作：
 
-    - `commands/` はスキルコンテンツとして扱われます
-    - `settings.json` は埋め込み OpenClaw 設定にインポートされます（シェル上書きキーはサニタイズされます）
-    - `.mcp.json` は対応する stdio ツールを埋め込み OpenClaw に公開します
-    - `.lsp.json` とマニフェストで宣言された `lspServers` パスは、埋め込み OpenClaw LSP デフォルトに読み込まれます
+    - `commands/` は Skills コンテンツとして扱われます
+    - `settings.json` は組み込み OpenClaw 設定にインポートされます（シェル上書きキーはサニタイズされます）
+    - `.mcp.json` は、対応する stdio ツールを組み込み OpenClaw に公開します
+    - `.lsp.json` とマニフェストで宣言された `lspServers` パスは、組み込み OpenClaw の LSP デフォルト設定に読み込まれます
     - `hooks/hooks.json` は検出されますが実行されません
-    - マニフェスト内のカスタムコンポーネントパスは追加的です。デフォルトを置き換えるのではなく拡張します
+    - マニフェスト内のカスタムコンポーネントパスは追加的に扱われます。デフォルトを置き換えるのではなく拡張します
 
   </Accordion>
 
-  <Accordion title="Cursor bundles">
-    マーカー: `.cursor-plugin/plugin.json`
+  <Accordion title="Cursor バンドル">
+    マーカー：`.cursor-plugin/plugin.json`
 
-    任意のコンテンツ: `skills/`、`.cursor/commands/`、`.cursor/agents/`、`.cursor/rules/`、`.cursor/hooks.json`、`.mcp.json`
+    オプションのコンテンツ：`skills/`、`.cursor/commands/`、`.cursor/agents/`、`.cursor/rules/`、`.cursor/hooks.json`、`.mcp.json`
 
-    - `.cursor/commands/` はスキルコンテンツとして扱われます
-    - `.cursor/rules/`、`.cursor/agents/`、`.cursor/hooks.json` は検出のみです
+    - `.cursor/commands/` は Skills コンテンツとして扱われます
+    - `.cursor/rules/`、`.cursor/agents/`、`.cursor/hooks.json` は検出のみ行われます
 
   </Accordion>
 </AccordionGroup>
 
 ## 検出の優先順位
 
-OpenClaw はまずネイティブプラグイン形式を確認します。
+OpenClaw は最初にネイティブ Plugin 形式を確認します。
 
-1. `openclaw.plugin.json` または `openclaw.extensions` を持つ有効な `package.json` - **ネイティブプラグイン**として扱われます
-2. バンドルマーカー（`.codex-plugin/`、`.claude-plugin/`、またはデフォルトの Claude/Cursor レイアウト） - **バンドル**として扱われます
+1. `openclaw.plugin.json`、または `openclaw.extensions` を持つ有効な `package.json` — **ネイティブ Plugin** として扱われます
+2. バンドルマーカー（`.codex-plugin/`、`.claude-plugin/`、または Claude/Cursor のデフォルトレイアウト）— **バンドル**として扱われます
 
-ディレクトリに両方が含まれる場合、OpenClaw はネイティブパスを使用します。これにより、デュアル形式のパッケージがバンドルとして部分的にインストールされるのを防ぎます。
+ディレクトリに両方が含まれている場合、OpenClaw はネイティブのパスを使用します。これにより、デュアル形式のパッケージがバンドルとして部分的にインストールされるのを防ぎます。
 
 ## ランタイム依存関係とクリーンアップ
 
-- サードパーティ互換バンドルには、起動時の `npm install` 修復は行われません。これらは `openclaw plugins install` を通じてインストールされ、必要なものをすべてインストール済みプラグインディレクトリ内に同梱する必要があります。
-- OpenClaw 所有のバンドルプラグインは、core に軽量に同梱されるか、プラグインインストーラーを通じてダウンロード可能です。Gateway 起動時にそれらのためにパッケージマネージャーを実行することはありません。
-- `openclaw doctor --fix` は古いローカルのバンドルプラグインインストール記録を削除し、設定がまだ参照しているのにローカルプラグインインデックスに存在しないダウンロード可能プラグインを復旧できます。
+- サードパーティーの互換バンドルには、起動時の `npm install` 修復は適用されません。これらは `openclaw plugins install` を通じてインストールし、必要なものをすべてインストール済み Plugin ディレクトリに含める必要があります。
+- OpenClaw が所有するバンドル済み Plugin は、コアに軽量な形で同梱されるか、Plugin インストーラーを通じてダウンロードできます。Gateway の起動時に、それらのためにパッケージマネージャーが実行されることはありません。
+- `openclaw doctor --fix` は、古いローカルのバンドル済み Plugin インストール記録を削除します。また、設定から引き続き参照されているものの、ローカル Plugin インデックスに存在しないダウンロード可能な Plugin を復旧できます。
 
 ## セキュリティ
 
-バンドルはネイティブプラグインより狭い信頼境界を持ちます。
+バンドルは、ネイティブ Plugin よりも信頼境界が狭くなっています。
 
-- OpenClaw は任意のバンドルランタイムモジュールをインプロセスで読み込みません。
-- Skills とフックパックのパスは、プラグインルート内に留まる必要があります（境界チェック済み）。
-- 設定ファイルは同じ境界チェックで読み込まれます。
-- 対応する stdio MCP サーバーはサブプロセスとして起動される場合があります。
+- OpenClaw は、任意のバンドルランタイムモジュールをプロセス内に読み込み**ません**。
+- Skills とフックパックのパスは Plugin ルート内に収まる必要があります（境界チェックあり）。
+- 設定ファイルは同じ境界チェックを使用して読み込まれます。
+- 対応する stdio MCP サーバーは、サブプロセスとして起動される場合があります。
 
-これにより、バンドルはデフォルトでより安全になりますが、それでもサードパーティバンドルは、公開する機能に関して信頼済みコンテンツとして扱う必要があります。
+これにより、バンドルはデフォルトでより安全になりますが、サードパーティー製バンドルについては、公開される機能に関して信頼済みコンテンツとして扱う必要があります。
 
 ## トラブルシューティング
 
 <AccordionGroup>
-  <Accordion title="Bundle is detected but capabilities do not run">
-    `openclaw plugins inspect <id>` を実行してください。機能が一覧表示されているものの未接続としてマークされている場合、それは製品上の制限であり、インストールの破損ではありません。
+  <Accordion title="バンドルは検出されるが機能が実行されない">
+    `openclaw plugins inspect <id>` を実行します。機能が一覧に表示されていても未接続と示されている場合、それはインストールの不具合ではなく製品上の制限です。
   </Accordion>
 
-  <Accordion title="Claude command files do not appear">
-    バンドルが有効であり、Markdown ファイルが検出された `commands/` または `skills/` ルート内にあることを確認してください。
+  <Accordion title="Claude コマンドファイルが表示されない">
+    バンドルが有効であり、Markdown ファイルが検出対象の `commands/` または `skills/` ルート内にあることを確認してください。
   </Accordion>
 
-  <Accordion title="Claude settings do not apply">
-    `settings.json` からの埋め込み OpenClaw 設定のみがサポートされます。OpenClaw はバンドル設定を生の設定パッチとして扱いません。
+  <Accordion title="Claude 設定が適用されない">
+    `settings.json` からの組み込み OpenClaw 設定のみがサポートされます。OpenClaw はバンドル設定を未加工の設定パッチとして扱いません。
   </Accordion>
 
-  <Accordion title="Claude hooks do not execute">
-    `hooks/hooks.json` は検出のみです。実行可能なフックが必要な場合は、OpenClaw フックパックレイアウトを使用するか、ネイティブプラグインとして提供してください。
+  <Accordion title="Claude フックが実行されない">
+    `hooks/hooks.json` は検出のみ行われます。実行可能なフックが必要な場合は、OpenClaw フックパックレイアウトを使用するか、ネイティブ Plugin として配布してください。
   </Accordion>
 </AccordionGroup>
 
-## 関連
+## 関連項目
 
-- [プラグインをインストールして設定する](/ja-JP/tools/plugin)
-- [プラグインの構築](/ja-JP/plugins/building-plugins) - ネイティブプラグインを作成する
-- [プラグインマニフェスト](/ja-JP/plugins/manifest) - ネイティブマニフェストスキーマ
+- [Plugin のインストールと設定](/ja-JP/tools/plugin)
+- [Plugin の構築](/ja-JP/plugins/building-plugins) - ネイティブ Plugin を作成する
+- [Plugin マニフェスト](/ja-JP/plugins/manifest) - ネイティブマニフェストのスキーマ

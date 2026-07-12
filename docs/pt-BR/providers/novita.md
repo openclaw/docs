@@ -5,18 +5,17 @@ read_when:
 summary: Use a API compatível com a OpenAI da NovitaAI com o OpenClaw
 title: NovitaAI
 x-i18n:
-    generated_at: "2026-07-12T15:40:32Z"
+    generated_at: "2026-07-12T00:18:12Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 83e0e43e68d85d73e790023858a49f971b683129dbbdf6092fbd8bba4d8da331
     source_path: providers/novita.md
     workflow: 16
 ---
 
-NovitaAI é um provedor de infraestrutura de IA hospedada com uma API compatível com a OpenAI.
-Ele é fornecido como um provedor integrado ao OpenClaw (sem instalação separada de plugin), portanto
+A NovitaAI é uma provedora de infraestrutura de IA hospedada com uma API compatível com a OpenAI.
+Ela é fornecida como uma provedora integrada ao OpenClaw (sem instalação separada de plugin), portanto
 as credenciais passam pelo fluxo normal de autenticação de modelos e as referências de modelos têm o formato
 `novita/deepseek/deepseek-v3-0324`.
 
@@ -34,15 +33,15 @@ Ou defina:
 export NOVITA_API_KEY="<your-novita-api-key>" # pragma: allowlist secret
 ```
 
-## Padrões
+## Valores padrão
 
-| Configuração      | Valor                              |
-| ----------------- | ---------------------------------- |
-| ID do provedor    | `novita`                           |
-| Aliases           | `novita-ai`, `novitaai`            |
-| URL base          | `https://api.novita.ai/openai/v1`  |
-| Variável de ambiente | `NOVITA_API_KEY`                |
-| Modelo padrão     | `novita/deepseek/deepseek-v3-0324` |
+| Configuração          | Valor                              |
+| --------------------- | ---------------------------------- |
+| ID da provedora       | `novita`                           |
+| Aliases               | `novita-ai`, `novitaai`            |
+| URL base              | `https://api.novita.ai/openai/v1`  |
+| Variável de ambiente  | `NOVITA_API_KEY`                   |
+| Modelo padrão         | `novita/deepseek/deepseek-v3-0324` |
 
 ## Catálogo de modelos integrado
 
@@ -53,9 +52,9 @@ export NOVITA_API_KEY="<your-novita-api-key>" # pragma: allowlist secret
 - `novita/deepseek/deepseek-r1-0528`
 - `novita/qwen/qwen3-235b-a22b-fp8`
 
-Este é um ponto de partida, não um catálogo em tempo real. Sua conta, região ou
-a oferta atual da Novita podem adicionar, remover ou restringir rotas. Verifique antes de
-definir um padrão de longo prazo:
+Este é um ponto de partida, não um catálogo atualizado em tempo real. Sua conta, região ou
+a oferta atual da Novita pode adicionar, remover ou restringir rotas. Verifique antes de
+definir um padrão de longa duração:
 
 ```bash
 openclaw models list --provider novita
@@ -65,28 +64,28 @@ openclaw models list --provider novita
 
 - Acesso hospedado a modelos de pesos abertos com uma API compatível com a OpenAI.
 - Rotas das famílias DeepSeek, Kimi, MiniMax, GLM ou Qwen por meio de uma única conta
-  de provedor.
-- Outro caminho de fallback hospedado além do DeepInfra, GMI, OpenRouter ou das APIs
+  de provedora.
+- Outro caminho de fallback hospedado, além de DeepInfra, GMI, OpenRouter ou APIs
   diretas dos fornecedores.
-- Hospedagem de modelos pelo provedor em vez de manter a infraestrutura do LM Studio, Ollama,
+- Hospedagem de modelos pela provedora em vez de manter a infraestrutura do LM Studio, Ollama,
   SGLang ou vLLM.
 
-Escolha um provedor direto do fornecedor quando precisar de parâmetros de solicitação
-nativos do fornecedor ou contratos de suporte. Escolha um provedor local quando o modelo precisar
-ser executado em seu próprio hardware ou dentro do limite da sua rede.
+Escolha uma provedora direta do fornecedor quando precisar de parâmetros de solicitação
+nativos do fornecedor ou contratos de suporte. Escolha uma provedora local quando o modelo precisar
+ser executado em seu próprio hardware ou dentro dos limites da sua rede.
 
 ## Solução de problemas
 
 - `401`/`403`: verifique a chave na página de gerenciamento de chaves da Novita e execute novamente
   `openclaw onboard --auth-choice novita-api-key` se o perfil armazenado estiver
   desatualizado.
-- Erros de modelo desconhecido: use o `novita/<route-id>` exato retornado por
+- Erros de modelo desconhecido: use o valor exato de `novita/<route-id>` retornado por
   `openclaw models list --provider novita`.
-- Rotas lentas ou com falha: tente outra rota de modelo da Novita ou defina a Novita como um
-  provedor de fallback para cargas de trabalho que tolerem variações específicas
-  do provedor.
+- Rotas lentas ou com falhas: experimente outra rota de modelo da Novita ou defina a Novita como uma
+  provedora de fallback para cargas de trabalho que tolerem variações específicas
+  da provedora.
 
-## Relacionado
+## Conteúdo relacionado
 
-- [Provedores de modelos](/pt-BR/concepts/model-providers)
-- [Diretório de provedores](/pt-BR/providers/index)
+- [Provedoras de modelos](/pt-BR/concepts/model-providers)
+- [Diretório de provedoras](/pt-BR/providers/index)

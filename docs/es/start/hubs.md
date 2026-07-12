@@ -1,11 +1,11 @@
 ---
 read_when:
     - Quieres un mapa completo de la documentación
-summary: Hubs que enlazan a cada documento de OpenClaw
+summary: Páginas centrales que enlazan a toda la documentación de OpenClaw
 title: Centros de documentación
 x-i18n:
-    generated_at: "2026-07-05T11:42:18Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T23:32:24Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 9b51fc77155b2e7ed6cb6e36d375585ebd457c3d89f97c4151877d1aae20717f
@@ -14,56 +14,56 @@ x-i18n:
 ---
 
 <Note>
-Si eres nuevo en OpenClaw, empieza con [Primeros pasos](/es/start/getting-started).
+Si es la primera vez que usa OpenClaw, comience con [Primeros pasos](/es/start/getting-started).
 </Note>
 
-Usa estos centros para descubrir todas las páginas, incluidas las guías detalladas y la documentación de referencia que no aparecen en la navegación izquierda.
+Use estos centros para descubrir todas las páginas, incluidos los análisis detallados y la documentación de referencia que no aparecen en la navegación izquierda.
 
-## Empieza aquí
+## Comience aquí
 
 - [Índice](/es)
 - [Primeros pasos](/es/start/getting-started)
 - [Incorporación](/es/start/onboarding)
 - [Incorporación (CLI)](/es/start/wizard)
 - [Configuración inicial](/es/start/setup)
-- [Panel (Gateway local)](http://127.0.0.1:18789/)
+- [Panel de control (Gateway local)](http://127.0.0.1:18789/)
 - [Ayuda](/es/help)
 - [Directorio de documentación](/es/start/docs-directory)
 - [Configuración](/es/gateway/configuration)
 - [Ejemplos de configuración](/es/gateway/configuration-examples)
 - [Asistente de OpenClaw](/es/start/openclaw)
-- [Galería](/es/start/showcase)
-- [Tradición](/es/start/lore)
+- [Demostraciones](/es/start/showcase)
+- [Historia](/es/start/lore)
 
-## Instalación + actualizaciones
+## Instalación y actualizaciones
 
 - [Docker](/es/install/docker)
 - [Nix](/es/install/nix)
-- [Actualización / reversión](/es/install/updating)
+- [Actualización y reversión](/es/install/updating)
 - [Flujo de trabajo con Bun (experimental)](/es/install/bun)
 
-## Conceptos principales
+## Conceptos fundamentales
 
 - [Arquitectura](/es/concepts/architecture)
 - [Funciones](/es/concepts/features)
 - [Centro de red](/es/network)
-- [Runtime del agente](/es/concepts/agent)
+- [Entorno de ejecución del agente](/es/concepts/agent)
 - [Espacio de trabajo del agente](/es/concepts/agent-workspace)
 - [Memoria](/es/concepts/memory)
 - [Bucle del agente](/es/concepts/agent-loop)
-- [Streaming + fragmentación](/es/concepts/streaming)
+- [Transmisión y fragmentación](/es/concepts/streaming)
 - [Enrutamiento multiagente](/es/concepts/multi-agent)
 - [Compaction](/es/concepts/compaction)
 - [Sesiones](/es/concepts/session)
-- [Poda de sesiones](/es/concepts/session-pruning)
+- [Depuración de sesiones](/es/concepts/session-pruning)
 - [Herramientas de sesión](/es/concepts/session-tool)
 - [Cola](/es/concepts/queue)
-- [Comandos slash](/es/tools/slash-commands)
+- [Comandos con barra](/es/tools/slash-commands)
 - [Adaptadores RPC](/es/reference/rpc)
-- [Esquemas TypeBox](/es/concepts/typebox)
+- [Esquemas de TypeBox](/es/concepts/typebox)
 - [Gestión de zonas horarias](/es/concepts/timezone)
 - [Presencia](/es/concepts/presence)
-- [Descubrimiento + transportes](/es/gateway/discovery)
+- [Detección y transportes](/es/gateway/discovery)
 - [Bonjour](/es/gateway/bonjour)
 - [Enrutamiento de canales](/es/channels/channel-routing)
 - [Grupos](/es/channels/groups)
@@ -71,7 +71,7 @@ Usa estos centros para descubrir todas las páginas, incluidas las guías detall
 - [Conmutación por error de modelos](/es/concepts/model-failover)
 - [OAuth](/es/concepts/oauth)
 
-## Proveedores + entrada
+## Proveedores y entrada
 
 - [Centro de canales de chat](/es/channels)
 - [Centro de proveedores de modelos](/es/providers/models)
@@ -86,60 +86,60 @@ Usa estos centros para descubrir todas las páginas, incluidas las guías detall
 - [WhatsApp](/es/channels/whatsapp)
 - [Análisis de ubicación](/es/channels/location)
 - [Webhooks](/es/automation/cron-jobs#webhooks)
-- [Gmail Pub/Sub](/es/automation/cron-jobs#gmail-pubsub-integration)
+- [Pub/Sub de Gmail](/es/automation/cron-jobs#gmail-pubsub-integration)
 
-## Gateway + operaciones
+## Gateway y operaciones
 
-- [Runbook de Gateway](/es/gateway)
+- [Manual operativo del Gateway](/es/gateway)
 - [Modelo de red](/es/network#core-model)
-- [Emparejamiento de Gateway](/es/gateway/pairing)
-- [Bloqueo de Gateway](/es/gateway/gateway-lock)
+- [Emparejamiento del Gateway](/es/gateway/pairing)
+- [Bloqueo del Gateway](/es/gateway/gateway-lock)
 - [Proceso en segundo plano](/es/gateway/background-process)
-- [Salud](/es/gateway/health)
+- [Estado](/es/gateway/health)
 - [Heartbeat](/es/gateway/heartbeat)
 - [Doctor](/es/gateway/doctor)
 - [Registro](/es/gateway/logging)
-- [Aislamiento sandbox](/es/gateway/sandboxing)
-- [Panel](/es/web/dashboard)
+- [Aislamiento](/es/gateway/sandboxing)
+- [Panel de control](/es/web/dashboard)
 - [Interfaz de control](/es/web/control-ui)
 - [Acceso remoto](/es/gateway/remote)
-- [README de Gateway remoto](/es/gateway/remote-gateway-readme)
+- [README del Gateway remoto](/es/gateway/remote-gateway-readme)
 - [Tailscale](/es/gateway/tailscale)
 - [Seguridad](/es/gateway/security)
 - [Solución de problemas](/es/gateway/troubleshooting)
 
-## Herramientas + automatización
+## Herramientas y automatización
 
 - [Superficie de herramientas](/es/tools)
 - [OpenProse](/es/prose)
-- [Referencia de CLI](/es/cli)
+- [Referencia de la CLI](/es/cli)
 - [Herramienta de ejecución](/es/tools/exec)
-- [Herramienta PDF](/es/tools/pdf)
+- [Herramienta de PDF](/es/tools/pdf)
 - [Modo elevado](/es/tools/elevated)
 - [Tareas Cron](/es/automation/cron-jobs)
 - [Automatización](/es/automation)
-- [Pensamiento + detallado](/es/tools/thinking)
+- [Razonamiento y modo detallado](/es/tools/thinking)
 - [Modelos](/es/concepts/models)
 - [Subagentes](/es/tools/subagents)
-- [CLI de envío al agente](/es/tools/agent-send)
+- [CLI de envío del agente](/es/tools/agent-send)
 - [Interfaz de terminal](/es/web/tui)
 - [Control del navegador](/es/tools/browser)
 - [Navegador (solución de problemas en Linux)](/es/tools/browser-linux-troubleshooting)
 - [Encuestas](/es/cli/message)
 
-## Nodos, multimedia, voz
+## Nodes, contenido multimedia y voz
 
-- [Resumen de nodos](/es/nodes)
+- [Descripción general de Nodes](/es/nodes)
 - [Cámara](/es/nodes/camera)
 - [Imágenes](/es/nodes/images)
 - [Audio](/es/nodes/audio)
 - [Comando de ubicación](/es/nodes/location-command)
 - [Activación por voz](/es/nodes/voicewake)
-- [Modo de conversación](/es/nodes/talk)
+- [Modo conversación](/es/nodes/talk)
 
 ## Plataformas
 
-- [Resumen de plataformas](/es/platforms)
+- [Descripción general de las plataformas](/es/platforms)
 - [macOS](/es/platforms/macos)
 - [iOS](/es/platforms/ios)
 - [Android](/es/platforms/android)
@@ -149,38 +149,38 @@ Usa estos centros para descubrir todas las páginas, incluidas las guías detall
 
 ## Aplicación complementaria de macOS (avanzado)
 
-- [Configuración de desarrollo en macOS](/es/platforms/mac/dev-setup)
+- [Configuración de desarrollo para macOS](/es/platforms/mac/dev-setup)
 - [Barra de menús de macOS](/es/platforms/mac/menu-bar)
 - [Activación por voz en macOS](/es/platforms/mac/voicewake)
 - [Superposición de voz en macOS](/es/platforms/mac/voice-overlay)
-- [WebChat en macOS](/es/platforms/mac/webchat)
-- [Canvas en macOS](/es/platforms/mac/canvas)
-- [Proceso hijo de macOS](/es/platforms/mac/child-process)
-- [Salud de macOS](/es/platforms/mac/health)
+- [WebChat para macOS](/es/platforms/mac/webchat)
+- [Canvas para macOS](/es/platforms/mac/canvas)
+- [Proceso secundario de macOS](/es/platforms/mac/child-process)
+- [Estado de macOS](/es/platforms/mac/health)
 - [Icono de macOS](/es/platforms/mac/icon)
 - [Registro de macOS](/es/platforms/mac/logging)
 - [Permisos de macOS](/es/platforms/mac/permissions)
-- [Remoto en macOS](/es/platforms/mac/remote)
-- [Firma de macOS](/es/platforms/mac/signing)
+- [Acceso remoto en macOS](/es/platforms/mac/remote)
+- [Firma para macOS](/es/platforms/mac/signing)
 - [Gateway de macOS (launchd)](/es/platforms/mac/bundled-gateway)
 - [XPC de macOS](/es/platforms/mac/xpc)
 - [Skills de macOS](/es/platforms/mac/skills)
-- [Peekaboo de macOS](/es/platforms/mac/peekaboo)
+- [Peekaboo para macOS](/es/platforms/mac/peekaboo)
 
 ## Plugins
 
-- [Resumen de Plugins](/es/tools/plugin)
+- [Descripción general de los Plugins](/es/tools/plugin)
 - [Creación de plugins](/es/plugins/building-plugins)
 - [Hooks de Plugin](/es/plugins/hooks)
 - [Manifiesto de Plugin](/es/plugins/manifest)
-- [Herramientas de agente](/es/plugins/building-plugins#registering-agent-tools)
-- [Paquetes de Plugin](/es/plugins/bundles)
+- [Herramientas del agente](/es/plugins/building-plugins#registering-agent-tools)
+- [Paquetes de Plugins](/es/plugins/bundles)
 - [ClawHub](/clawhub)
 - [Recetario de capacidades](/es/plugins/adding-capabilities)
-- [Plugin de llamada de voz](/es/plugins/voice-call)
+- [Plugin de llamadas de voz](/es/plugins/voice-call)
 - [Plugin de usuario de Zalo](/es/plugins/zalouser)
 
-## Espacio de trabajo + plantillas
+## Espacio de trabajo y plantillas
 
 - [Skills](/es/tools/skills)
 - [ClawHub](/clawhub)
@@ -198,12 +198,12 @@ Usa estos centros para descubrir todas las páginas, incluidas las guías detall
 
 - [Créditos](/es/reference/credits)
 
-## Pruebas + lanzamiento
+## Pruebas y publicación
 
 - [Pruebas](/es/reference/test)
-- [Política de lanzamiento](/es/reference/RELEASING)
-- [Modelos de dispositivo](/es/reference/device-models)
+- [Política de publicación](/es/reference/RELEASING)
+- [Modelos de dispositivos](/es/reference/device-models)
 
-## Relacionado
+## Contenido relacionado
 
 - [Primeros pasos](/es/start/getting-started)

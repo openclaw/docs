@@ -1,11 +1,11 @@
 ---
 read_when:
-    - stepfun Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
+    - stepfun Pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
 summary: OpenClaw'a StepFun ve StepFun Plan model sağlayıcısı desteği ekler.
-title: StepFun Plugin
+title: StepFun eklentisi
 x-i18n:
-    generated_at: "2026-06-28T01:02:57Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:38:46Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 02e2b7fbfb03a348a8a5d368e6fd039cf834ab7d2a9bf82f79729f360660b5de
@@ -13,16 +13,16 @@ x-i18n:
     workflow: 16
 ---
 
-# StepFun plugin
+# StepFun Plugin'i
 
-OpenClaw'a StepFun, StepFun Plan model sağlayıcı desteği ekler.
+OpenClaw'a StepFun ve StepFun Plan model sağlayıcısı desteği ekler.
 
 ## Dağıtım
 
 - Paket: `@openclaw/stepfun-provider`
 - Kurulum yolu: npm; ClawHub: `clawhub:@openclaw/stepfun-provider`
 
-## Yüzey
+## Kapsam
 
 sağlayıcılar: stepfun, stepfun-plan
 

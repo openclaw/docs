@@ -1,11 +1,11 @@
 ---
 read_when:
-    - أنت تثبّت Plugin arcee أو تهيّئه أو تدقّقه
+    - أنت تثبّت Plugin arcee أو تهيّئه أو تدقّق فيه
 summary: يضيف دعم موفّر نماذج Arcee إلى OpenClaw.
-title: Plugin Arcee
+title: Plugin ‏Arcee
 x-i18n:
-    generated_at: "2026-06-27T18:10:20Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:19:37Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 9d4880c859c2498ce3708834cdc62a8ff6babb0571672b99d62cc5c2c7299f8e
@@ -13,9 +13,9 @@ x-i18n:
     workflow: 16
 ---
 
-# إضافة Arcee
+# Plugin ‏Arcee
 
-تضيف دعم موفر نماذج Arcee إلى OpenClaw.
+يضيف دعم موفّر نماذج Arcee إلى OpenClaw.
 
 ## التوزيع
 
@@ -24,7 +24,7 @@ x-i18n:
 
 ## الواجهة
 
-providers: arcee
+الموفّرون: arcee
 
 ## الوثائق ذات الصلة
 

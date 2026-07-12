@@ -1,226 +1,229 @@
 ---
 read_when:
-    - Bạn muốn hiểu OAuth của OpenClaw từ đầu đến cuối
-    - Bạn gặp sự cố vô hiệu hóa token / đăng xuất
-    - Bạn muốn các luồng xác thực Claude CLI hoặc OAuth
-    - Bạn muốn nhiều tài khoản hoặc định tuyến hồ sơ
-summary: 'OAuth trong OpenClaw: trao đổi token, lưu trữ và các mẫu đa tài khoản'
+    - Bạn muốn hiểu toàn bộ quy trình OAuth của OpenClaw từ đầu đến cuối
+    - Bạn gặp sự cố token bị vô hiệu hóa / bị đăng xuất
+    - Bạn muốn sử dụng Claude CLI hoặc các luồng xác thực OAuth
+    - Bạn muốn sử dụng nhiều tài khoản hoặc định tuyến hồ sơ
+summary: 'OAuth trong OpenClaw: trao đổi token, lưu trữ và các mô hình đa tài khoản'
 title: OAuth
 x-i18n:
-    generated_at: "2026-07-02T22:37:34Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:54:45Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5cffefec8bb3e755bcd4583a7957510c7ba3b605e21a3fd876f27c8fc9aa65aa
+    source_hash: 51aa98a9cb9614107ce979eca235c175a1748df2facdded852cd8899cebba22c
     source_path: concepts/oauth.md
     workflow: 16
 ---
 
-OpenClaw hỗ trợ "xác thực bằng thuê bao" qua OAuth cho các nhà cung cấp có cung cấp cơ chế này
-(đáng chú ý là **OpenAI Codex (ChatGPT OAuth)**). Với Anthropic, cách phân chia thực tế
-hiện là:
+OpenClaw hỗ trợ OAuth ("xác thực bằng gói thuê bao") cho các nhà cung cấp có cung cấp phương thức này,
+đáng chú ý là **OpenAI Codex (ChatGPT OAuth)** và **tái sử dụng Anthropic Claude CLI**.
+Đối với Anthropic, cách phân chia thực tế là:
 
-- **Khóa API Anthropic**: tính phí Anthropic API thông thường
-- **Anthropic Claude CLI / xác thực bằng thuê bao bên trong OpenClaw**: nhân viên Anthropic
-  đã cho chúng tôi biết rằng cách sử dụng này lại được cho phép
-
-OpenAI Codex OAuth được hỗ trợ rõ ràng để dùng trong các công cụ bên ngoài như
-OpenClaw.
+- **Khóa API Anthropic**: thanh toán API Anthropic thông thường.
+- **Anthropic Claude CLI / xác thực bằng gói thuê bao bên trong OpenClaw**: nhân viên Anthropic
+  đã thông báo với chúng tôi rằng cách sử dụng này lại được cho phép, vì vậy OpenClaw xem việc tái sử dụng Claude CLI và
+  sử dụng `claude -p` là được chấp thuận cho tích hợp này, trừ khi Anthropic
+  công bố chính sách mới. Khi dùng Anthropic trong môi trường sản xuất, xác thực bằng khóa API vẫn
+  là phương án an toàn hơn và được khuyến nghị.
 
 OpenClaw lưu cả xác thực bằng khóa API OpenAI và ChatGPT/Codex OAuth dưới
-id nhà cung cấp chuẩn `openai`. Các id hồ sơ `openai-codex:*` cũ hơn và
+ID nhà cung cấp chuẩn `openai`. Các ID hồ sơ `openai-codex:*` cũ và
 mục `auth.order.openai-codex` là trạng thái cũ được
-`openclaw doctor --fix` sửa; hãy dùng id hồ sơ `openai:*` và `auth.order.openai` cho
+`openclaw doctor --fix` sửa chữa; hãy sử dụng ID hồ sơ `openai:*` và `auth.order.openai` cho
 cấu hình mới.
 
-Với Anthropic trong môi trường sản xuất, xác thực bằng khóa API là hướng được khuyến nghị an toàn hơn.
+Trang này trình bày:
 
-Trang này giải thích:
-
-- cách **trao đổi token** OAuth hoạt động (PKCE)
-- token được **lưu trữ** ở đâu (và vì sao)
+- cách **trao đổi mã thông báo** OAuth hoạt động (PKCE)
+- nơi **lưu trữ** mã thông báo (và lý do)
 - cách xử lý **nhiều tài khoản** (hồ sơ + ghi đè theo phiên)
 
-OpenClaw cũng hỗ trợ **Plugin nhà cung cấp** có sẵn luồng OAuth hoặc khóa API
-riêng. Chạy chúng bằng:
+Các Plugin nhà cung cấp có quy trình OAuth hoặc khóa API riêng đều chạy qua
+cùng một điểm vào:
 
 ```bash
 openclaw models auth login --provider <id>
 ```
 
-## Bộ nhận token (vì sao tồn tại)
+## Nơi tiếp nhận mã thông báo (lý do tồn tại)
 
-Các nhà cung cấp OAuth thường tạo một **refresh token mới** trong luồng đăng nhập/làm mới. Một số nhà cung cấp (hoặc ứng dụng OAuth) có thể vô hiệu hóa refresh token cũ hơn khi token mới được cấp cho cùng người dùng/ứng dụng.
+Các nhà cung cấp OAuth thường tạo mã thông báo làm mới mới sau mỗi lần đăng nhập/làm mới.
+Một số nhà cung cấp vô hiệu hóa mã thông báo làm mới trước đó khi một mã mới được
+cấp cho cùng người dùng/ứng dụng. Biểu hiện thực tế: đăng nhập qua cả OpenClaw _và_
+Claude Code / Codex CLI, rồi sau đó một trong hai bị đăng xuất ngẫu nhiên.
 
-Triệu chứng thực tế:
+Để giảm tình trạng này, OpenClaw xem kho hồ sơ xác thực là một **nơi tiếp nhận mã thông báo**:
 
-- bạn đăng nhập qua OpenClaw _và_ qua Claude Code / Codex CLI → một trong hai bên ngẫu nhiên bị "đăng xuất" sau đó
+- môi trường chạy đọc thông tin xác thực từ một nơi cho mỗi tác nhân
+- nhiều hồ sơ có thể cùng tồn tại và được định tuyến theo cách xác định
+- việc tái sử dụng CLI bên ngoài phụ thuộc vào từng nhà cung cấp: sau khi OpenClaw sở hữu một hồ sơ OAuth
+  cục bộ cho một nhà cung cấp, mã thông báo làm mới cục bộ là dữ liệu chuẩn. Nếu mã thông báo làm mới
+  cục bộ đó bị từ chối, OpenClaw báo cáo hồ sơ cần
+  xác thực lại thay vì dự phòng bằng dữ liệu mã thông báo từ CLI bên ngoài.
+  Việc khởi tạo từ Codex CLI còn giới hạn hơn: nó chỉ có thể điền dữ liệu ban đầu vào một hồ sơ trống
+  kiểu `openai:default` trước khi OpenClaw sở hữu OAuth cho nhà cung cấp đó;
+  sau thời điểm này, các lần làm mới do OpenClaw sở hữu vẫn là dữ liệu chuẩn
+- các đường dẫn trạng thái/khởi động giới hạn việc phát hiện CLI bên ngoài trong tập hợp nhà cung cấp
+  đã được cấu hình, vì vậy kho đăng nhập của một CLI không liên quan sẽ không bị thăm dò đối với
+  thiết lập chỉ có một nhà cung cấp
 
-Để giảm việc đó, OpenClaw xem `auth-profiles.json` là một **bộ nhận token**:
+## Lưu trữ (nơi chứa mã thông báo)
 
-- runtime đọc thông tin xác thực từ **một nơi**
-- chúng tôi có thể giữ nhiều hồ sơ và định tuyến chúng một cách xác định
-- việc tái sử dụng CLI bên ngoài là tùy theo nhà cung cấp: Codex CLI có thể khởi tạo hồ sơ
-  `openai:default` trống, nhưng khi OpenClaw đã có hồ sơ OAuth cục bộ,
-  refresh token cục bộ là chuẩn. Nếu refresh token cục bộ đó bị từ chối,
-  OpenClaw báo cáo hồ sơ được quản lý để xác thực lại thay vì dùng
-  vật liệu token Codex CLI như một fallback runtime ngang hàng. Các tích hợp khác có thể
-  vẫn được quản lý bên ngoài và đọc lại kho xác thực CLI của chúng
-- các đường dẫn trạng thái và khởi động đã biết phạm vi bộ nhà cung cấp được cấu hình sẽ
-  giới hạn việc khám phá CLI bên ngoài vào bộ đó, để kho đăng nhập CLI không liên quan
-  không bị thăm dò cho thiết lập chỉ có một nhà cung cấp
+Các bí mật được lưu riêng theo từng tác nhân, với tên logic `auth-profiles.json` (kho
+bên dưới là cơ sở dữ liệu SQLite của tác nhân; tên JSON được giữ lại để
+tương thích và hiển thị trong công cụ):
 
-## Lưu trữ (token nằm ở đâu)
-
-Bí mật được lưu trong kho xác thực agent:
-
-- Hồ sơ xác thực (OAuth + khóa API + tham chiếu tùy chọn ở cấp giá trị): `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
+- Hồ sơ xác thực (OAuth + khóa API + tham chiếu tùy chọn ở cấp giá trị):
+  `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
 - Tệp tương thích cũ: `~/.openclaw/agents/<agentId>/agent/auth.json`
   (các mục `api_key` tĩnh sẽ bị xóa khi được phát hiện)
 
-Tệp cũ chỉ dùng để nhập (vẫn được hỗ trợ, nhưng không phải kho chính):
+Tệp cũ chỉ dùng để nhập (vẫn được hỗ trợ nhưng không phải kho chính):
 
-- `~/.openclaw/credentials/oauth.json` (được nhập vào `auth-profiles.json` trong lần dùng đầu tiên)
+- `~/.openclaw/credentials/oauth.json` (được nhập vào kho hồ sơ xác thực trong lần sử dụng đầu tiên)
 
-Tất cả mục trên cũng tôn trọng `$OPENCLAW_STATE_DIR` (ghi đè thư mục trạng thái). Tham chiếu đầy đủ: [/gateway/configuration](/vi/gateway/configuration-reference#auth-storage)
+Tất cả các đường dẫn trên cũng tuân theo `$OPENCLAW_STATE_DIR` (ghi đè thư mục trạng thái). Tài liệu tham khảo đầy đủ: [/gateway/configuration-reference#auth-storage](/vi/gateway/configuration-reference#auth-storage)
 
-Về tham chiếu bí mật tĩnh và hành vi kích hoạt snapshot runtime, xem [Quản lý bí mật](/vi/gateway/secrets).
+Để biết hành vi kích hoạt ảnh chụp nhanh môi trường chạy và tham chiếu bí mật tĩnh, hãy xem [Quản lý bí mật](/vi/gateway/secrets).
 
-Khi một agent phụ không có hồ sơ xác thực cục bộ, OpenClaw dùng kế thừa đọc xuyên
-từ kho agent mặc định/chính. Nó không sao chép `auth-profiles.json` của agent chính
-khi đọc. Refresh token OAuth đặc biệt nhạy cảm: các luồng sao chép thông thường
-mặc định bỏ qua chúng vì một số nhà cung cấp xoay vòng hoặc vô hiệu hóa
-refresh token sau khi dùng. Hãy cấu hình đăng nhập OAuth riêng cho một
-agent khi agent đó cần một tài khoản độc lập.
+Khi một tác nhân phụ không có hồ sơ xác thực cục bộ, OpenClaw sử dụng cơ chế kế thừa
+đọc xuyên từ kho của tác nhân mặc định/chính; hệ thống không sao chép kho của tác nhân chính
+khi đọc. Mã thông báo làm mới OAuth đặc biệt nhạy cảm: các quy trình sao chép thông thường
+mặc định bỏ qua chúng vì một số nhà cung cấp luân chuyển hoặc vô hiệu hóa
+mã thông báo làm mới sau khi sử dụng. Hãy cấu hình một lần đăng nhập OAuth riêng cho tác nhân khi
+tác nhân đó cần một tài khoản độc lập.
 
-## Tương thích token cũ của Anthropic
+## Tái sử dụng Anthropic Claude CLI
+
+OpenClaw hỗ trợ tái sử dụng Anthropic Claude CLI và `claude -p` như một
+phương thức xác thực được chấp thuận. Nếu máy chủ đã có phiên đăng nhập Claude cục bộ,
+quy trình tiếp nhận/cấu hình có thể trực tiếp tái sử dụng phiên đó. Mã thông báo thiết lập Anthropic vẫn
+khả dụng như một phương thức xác thực bằng mã thông báo được hỗ trợ, nhưng OpenClaw ưu tiên tái sử dụng Claude CLI
+khi phương thức này khả dụng.
 
 <Warning>
-Tài liệu Claude Code công khai của Anthropic nói rằng việc dùng Claude Code trực tiếp vẫn nằm trong
-giới hạn thuê bao Claude, và nhân viên Anthropic đã cho chúng tôi biết rằng cách dùng Claude
-CLI kiểu OpenClaw lại được cho phép. Do đó OpenClaw xem việc tái sử dụng Claude CLI và
-dùng `claude -p` là được chấp thuận cho tích hợp này trừ khi Anthropic
+Tài liệu Claude Code công khai của Anthropic cho biết việc sử dụng trực tiếp Claude Code vẫn nằm trong
+giới hạn gói thuê bao Claude, và nhân viên Anthropic đã thông báo với chúng tôi rằng kiểu sử dụng Claude
+CLI như OpenClaw lại được cho phép. Do đó, OpenClaw xem việc tái sử dụng Claude CLI và
+sử dụng `claude -p` là được chấp thuận cho tích hợp này, trừ khi Anthropic
 công bố chính sách mới.
 
-Về tài liệu gói direct-Claude-Code hiện tại của Anthropic, xem [Dùng Claude Code
-với gói Pro hoặc Max của bạn](https://support.claude.com/en/articles/11145838-using-claude-code-with-your-pro-or-max-plan)
-và [Dùng Claude Code với gói Team hoặc Enterprise
-của bạn](https://support.anthropic.com/en/articles/11845131-using-claude-code-with-your-team-or-enterprise-plan/).
+Để xem tài liệu hiện tại của Anthropic về các gói dùng trực tiếp Claude Code, hãy xem [Sử dụng Claude Code
+với gói Pro hoặc Max của
+bạn](https://support.claude.com/en/articles/11145838-using-claude-code-with-your-pro-or-max-plan)
+và [Sử dụng Claude Code với gói Team hoặc Enterprise của
+bạn](https://support.anthropic.com/en/articles/11845131-using-claude-code-with-your-team-or-enterprise-plan/).
 
-Nếu bạn muốn các tùy chọn kiểu thuê bao khác trong OpenClaw, xem [OpenAI
-Codex](/vi/providers/openai), [Qwen Cloud Coding
-Plan](/vi/providers/qwen), [MiniMax Coding Plan](/vi/providers/minimax),
-và [Z.AI / GLM Coding Plan](/vi/providers/zai).
+Nếu bạn muốn các tùy chọn kiểu gói thuê bao khác trong OpenClaw, hãy xem [OpenAI
+Codex](/vi/providers/openai), [Gói lập trình Qwen Cloud
+](/vi/providers/qwen), [Gói lập trình MiniMax](/vi/providers/minimax),
+và [Gói lập trình Z.AI / GLM](/vi/providers/zai).
 </Warning>
 
-OpenClaw cũng cung cấp setup-token Anthropic như một đường dẫn xác thực bằng token được hỗ trợ, nhưng hiện ưu tiên tái sử dụng Claude CLI và `claude -p` khi có sẵn.
+## Trao đổi OAuth (cách đăng nhập hoạt động)
 
-## Di chuyển Anthropic Claude CLI
+Các quy trình đăng nhập tương tác của OpenClaw được triển khai trong `openclaw/plugin-sdk/llm.ts` và kết nối với các trình hướng dẫn/lệnh.
 
-OpenClaw lại hỗ trợ tái sử dụng Anthropic Claude CLI. Nếu bạn đã có đăng nhập
-Claude cục bộ trên máy chủ, onboarding/configure có thể tái sử dụng trực tiếp.
+### Mã thông báo thiết lập Anthropic
 
-## Trao đổi OAuth (đăng nhập hoạt động thế nào)
+Cấu trúc quy trình:
 
-Các luồng đăng nhập tương tác của OpenClaw được triển khai trong `openclaw/plugin-sdk/llm` và nối vào các wizard/lệnh.
-
-### Anthropic setup-token
-
-Hình dạng luồng:
-
-1. bắt đầu Anthropic setup-token hoặc paste-token từ OpenClaw
+1. bắt đầu quy trình mã thông báo thiết lập hoặc dán mã thông báo Anthropic từ OpenClaw
 2. OpenClaw lưu thông tin xác thực Anthropic thu được vào một hồ sơ xác thực
-3. lựa chọn mô hình vẫn ở `anthropic/...`
-4. các hồ sơ xác thực Anthropic hiện có vẫn khả dụng để rollback/kiểm soát thứ tự
+3. lựa chọn mô hình vẫn là `anthropic/...`
+4. các hồ sơ xác thực Anthropic hiện có vẫn khả dụng để quay lui/kiểm soát thứ tự
 
 ### OpenAI Codex (ChatGPT OAuth)
 
-OpenAI Codex OAuth được hỗ trợ rõ ràng để dùng bên ngoài Codex CLI, bao gồm các quy trình OpenClaw.
+OpenAI Codex OAuth được hỗ trợ rõ ràng để sử dụng bên ngoài Codex CLI, bao gồm các quy trình làm việc của OpenClaw.
 
-Lệnh đăng nhập vẫn dùng id nhà cung cấp OpenAI chuẩn:
+Lệnh đăng nhập sử dụng ID nhà cung cấp OpenAI chuẩn:
 
 ```bash
 openclaw models auth login --provider openai
 ```
 
-Dùng `--profile-id openai:<name>` cho nhiều tài khoản ChatGPT/Codex OAuth trong
-một agent. Không dùng `openai-codex:<name>` cho hồ sơ mới. Doctor di chuyển
-tiền tố cũ đó sang id hồ sơ `openai:*` không xung đột; chạy
-`openclaw models auth list --provider openai` sau khi sửa trước khi sao chép
-id hồ sơ vào `auth.order` hoặc `/model ...@<profileId>`.
+Sử dụng `--profile-id openai:<name>` cho nhiều tài khoản ChatGPT/Codex OAuth trong
+một tác nhân. Không sử dụng `openai-codex:<name>` cho hồ sơ mới. Doctor di chuyển
+tiền tố cũ đó sang một ID hồ sơ `openai:*` không xung đột; hãy chạy
+`openclaw models auth list --provider openai` sau khi sửa chữa, trước khi sao chép
+ID hồ sơ vào `auth.order` hoặc `/model ...@<profileId>`.
 
-Hình dạng luồng (PKCE):
+Cấu trúc quy trình (PKCE):
 
-1. tạo PKCE verifier/challenge + `state` ngẫu nhiên
-2. mở `https://auth.openai.com/oauth/authorize?...`
-3. thử bắt callback trên `http://127.0.0.1:1455/auth/callback`
-4. nếu callback không thể bind (hoặc bạn ở môi trường từ xa/headless), dán URL/code chuyển hướng
-5. trao đổi tại `https://auth.openai.com/oauth/token`
-6. trích xuất `accountId` từ access token và lưu `{ access, refresh, expires, accountId }`
+1. tạo bộ xác minh/thử thách PKCE và một `state` ngẫu nhiên
+2. mở `https://auth.openai.com/oauth/authorize?...` (phạm vi
+   `openid profile email offline_access`)
+3. thử nhận lệnh gọi lại tại `http://localhost:1455/auth/callback` (máy chủ
+   gọi lại mặc định là `localhost` và chỉ chấp nhận các máy chủ local loopback;
+   ghi đè bằng `OPENCLAW_OAUTH_CALLBACK_HOST`)
+4. nếu bạn có thể dán mã trước khi lệnh gọi lại đến (hoặc đang ở môi trường
+   từ xa/không giao diện và không thể liên kết lệnh gọi lại), hãy dán URL chuyển hướng/mã
+   thay thế — thao tác dán thủ công sẽ chạy đua với lệnh gọi lại từ trình duyệt và thao tác nào hoàn tất
+   trước sẽ thắng
+5. trao đổi mã tại `https://auth.openai.com/oauth/token`
+6. trích xuất `accountId` từ mã thông báo truy cập và lưu `{ access, refresh, expires, accountId }`
 
-Đường dẫn wizard là `openclaw onboard` → lựa chọn xác thực `openai`.
+Đường dẫn trình hướng dẫn là `openclaw onboard` → lựa chọn xác thực `openai`.
 
 ## Làm mới + hết hạn
 
-Hồ sơ lưu dấu thời gian `expires`.
+Các hồ sơ lưu dấu thời gian `expires`. Trong môi trường chạy:
 
-Ở runtime:
+- nếu `expires` nằm trong tương lai, sử dụng mã thông báo truy cập đã lưu
+- nếu đã hết hạn, làm mới (dưới khóa tệp) và ghi đè thông tin xác thực đã lưu
+- nếu một tác nhân phụ đọc hồ sơ OAuth được kế thừa từ tác nhân chính, thao tác
+  làm mới sẽ ghi ngược vào kho của tác nhân chính thay vì sao chép mã thông báo làm mới
+  vào kho của tác nhân phụ
+- thông tin xác thực CLI được quản lý bên ngoài (Claude CLI, khởi tạo Codex CLI có giới hạn;
+  xem [Nơi tiếp nhận mã thông báo](#the-token-sink-why-it-exists)) sẽ được đọc lại thay vì
+  sử dụng một mã thông báo làm mới đã sao chép. Nếu quá trình làm mới được quản lý thất bại, OpenClaw
+  báo cáo hồ sơ bị ảnh hưởng cần xác thực lại thay vì trả về
+  dữ liệu mã thông báo từ CLI bên ngoài.
 
-- nếu `expires` ở tương lai → dùng access token đã lưu
-- nếu đã hết hạn → làm mới (dưới khóa tệp) và ghi đè thông tin xác thực đã lưu
-- nếu agent phụ đọc hồ sơ OAuth agent chính được kế thừa, thao tác làm mới
-  ghi ngược về kho agent chính thay vì sao chép refresh token vào
-  kho agent phụ
-- ngoại lệ: một số thông tin xác thực CLI bên ngoài vẫn được quản lý bên ngoài; OpenClaw
-  đọc lại các kho xác thực CLI đó thay vì tiêu tốn refresh token đã sao chép.
-  Việc khởi tạo Codex CLI cố ý hẹp hơn: nó chỉ có thể gieo một
-  `openai:default` trống hoặc hồ sơ OpenAI được yêu cầu rõ ràng trước khi OpenClaw
-  sở hữu OAuth cho nhà cung cấp. Sau đó, các lần làm mới do OpenClaw sở hữu giữ
-  hồ sơ cục bộ là chuẩn và việc khám phá không thêm xác thực Codex CLI vào bất kỳ vị trí
-  ngang hàng nào. Nếu một lần làm mới được quản lý thất bại, OpenClaw báo cáo hồ sơ bị ảnh hưởng để
-  xác thực lại thay vì trả về vật liệu token CLI bên ngoài.
-
-Luồng làm mới là tự động; nhìn chung bạn không cần quản lý token thủ công.
+Quy trình làm mới diễn ra tự động; thông thường bạn không cần quản lý mã thông báo theo cách thủ công.
 
 ## Nhiều tài khoản (hồ sơ) + định tuyến
 
-Hai mẫu:
+Hai mô hình:
 
-### 1) Ưu tiên: agent riêng biệt
+### 1) Khuyến nghị: các tác nhân riêng biệt
 
-Nếu bạn muốn "cá nhân" và "công việc" không bao giờ tương tác, hãy dùng các agent cô lập (phiên + thông tin xác thực + workspace riêng):
+Nếu bạn muốn tài khoản "cá nhân" và "công việc" không bao giờ tương tác, hãy sử dụng các tác nhân tách biệt (phiên + thông tin xác thực + không gian làm việc riêng):
 
 ```bash
 openclaw agents add work
 openclaw agents add personal
 ```
 
-Sau đó cấu hình xác thực theo từng agent (wizard) và định tuyến chat đến đúng agent.
+Sau đó cấu hình xác thực cho từng tác nhân (trình hướng dẫn) và định tuyến cuộc trò chuyện đến đúng tác nhân.
 
-### 2) Nâng cao: nhiều hồ sơ trong một agent
+### 2) Nâng cao: nhiều hồ sơ trong một tác nhân
 
-`auth-profiles.json` hỗ trợ nhiều ID hồ sơ cho cùng một nhà cung cấp.
+Kho hồ sơ xác thực hỗ trợ nhiều ID hồ sơ cho cùng một nhà cung cấp.
+Chọn hồ sơ sẽ được sử dụng:
 
-Chọn hồ sơ sẽ được dùng:
-
-- toàn cục qua thứ tự cấu hình (`auth.order`)
-- theo phiên qua `/model ...@<profileId>`
+- trên toàn cục thông qua thứ tự cấu hình (`auth.order`)
+- theo từng phiên thông qua `/model ...@<profileId>`
 
 Ví dụ (ghi đè phiên):
 
 - `/model Opus@anthropic:work`
 
-Cách xem những ID hồ sơ nào tồn tại:
+Liệt kê các ID hồ sơ hiện có bằng:
 
-- `openclaw channels list --json` (hiển thị `auth[]`)
+```bash
+openclaw models auth list --provider <id>
+```
 
 Tài liệu liên quan:
 
-- [Chuyển dự phòng mô hình](/vi/concepts/model-failover) (quy tắc xoay vòng + cooldown)
-- [Lệnh slash](/vi/tools/slash-commands) (bề mặt lệnh)
+- [Chuyển đổi dự phòng mô hình](/vi/concepts/model-failover) (quy tắc luân chuyển + thời gian chờ)
+- [Lệnh dấu gạch chéo](/vi/tools/slash-commands) (bề mặt lệnh)
 
 ## Liên quan
 
-- [Xác thực](/vi/gateway/authentication) - tổng quan xác thực nhà cung cấp mô hình
+- [Xác thực](/vi/gateway/authentication) - tổng quan về xác thực nhà cung cấp mô hình
 - [Bí mật](/vi/gateway/secrets) - lưu trữ thông tin xác thực và SecretRef
-- [Tham chiếu cấu hình](/vi/gateway/configuration-reference#auth-storage) - khóa cấu hình xác thực
+- [Tài liệu tham khảo cấu hình](/vi/gateway/configuration-reference#auth-storage) - các khóa cấu hình xác thực

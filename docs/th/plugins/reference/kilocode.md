@@ -4,8 +4,8 @@ read_when:
 summary: เพิ่มการรองรับผู้ให้บริการโมเดล Kilocode ให้กับ OpenClaw
 title: Plugin Kilocode
 x-i18n:
-    generated_at: "2026-06-27T18:03:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:30:11Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 83843bd0e8a3e9944a60540a0329630f7660f8e9440c157b790ddca8655052f9
@@ -17,14 +17,14 @@ x-i18n:
 
 เพิ่มการรองรับผู้ให้บริการโมเดล Kilocode ให้กับ OpenClaw
 
-## การจัดจำหน่าย
+## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/kilocode-provider`
-- เส้นทางการติดตั้ง: npm; ClawHub: `clawhub:@openclaw/kilocode-provider`
+- ช่องทางการติดตั้ง: npm; ClawHub: `clawhub:@openclaw/kilocode-provider`
 
-## พื้นผิว
+## ส่วนที่รองรับ
 
-providers: kilocode
+ผู้ให้บริการ: kilocode
 
 ## เอกสารที่เกี่ยวข้อง
 

@@ -1,32 +1,25 @@
 ---
 read_when:
-    - Bạn muốn các agent OpenClaw sử dụng một danh mục công cụ lớn mà không cần thêm mọi schema công cụ vào prompt
-    - Bạn muốn các công cụ OpenClaw, công cụ MCP và công cụ máy khách được hiển thị qua một bề mặt runtime gọn nhẹ duy nhất
-    - Bạn đang triển khai hoặc gỡ lỗi việc khám phá công cụ cho các lượt chạy OpenClaw
-summary: 'Tìm kiếm công cụ: thu gọn các danh mục công cụ lớn của OpenClaw phía sau tìm kiếm, mô tả và gọi'
+    - Bạn muốn các tác nhân OpenClaw sử dụng một danh mục công cụ lớn mà không cần thêm mọi lược đồ công cụ vào lời nhắc
+    - Bạn muốn các công cụ OpenClaw, công cụ MCP và công cụ phía máy khách được cung cấp thông qua một bề mặt runtime duy nhất, gọn nhẹ
+    - Bạn đang triển khai hoặc gỡ lỗi cơ chế khám phá công cụ cho các lượt chạy OpenClaw
+summary: 'Tìm kiếm công cụ: thu gọn các danh mục công cụ OpenClaw lớn bằng chức năng tìm kiếm, mô tả và gọi công cụ'
 title: Tìm kiếm công cụ
 x-i18n:
-    generated_at: "2026-06-30T14:11:44Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:26:23Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 81036277d763be8040526b42c116b2e503589921a58b3f765ff38670554a751c
+    source_hash: 6608a2de3b8ec03d3bb182d5909bb73429f623af8cebb34bc38856cb9d8b8c32
     source_path: tools/tool-search.md
     workflow: 16
 ---
 
-Tìm kiếm công cụ là một tính năng thử nghiệm của runtime tác nhân OpenClaw. Tính năng này cung cấp cho tác nhân một cách
-gọn nhẹ để khám phá và gọi các danh mục công cụ lớn. Tính năng này hữu ích khi lượt chạy
-có nhiều công cụ khả dụng nhưng mô hình có khả năng chỉ cần một vài công cụ trong số đó.
+Tool Search là một tính năng thử nghiệm của môi trường chạy tác nhân OpenClaw. Tính năng này cung cấp cho tác nhân một cách thức nhỏ gọn duy nhất để khám phá và gọi các danh mục công cụ lớn. Tính năng này hữu ích khi một lượt chạy có nhiều công cụ khả dụng nhưng mô hình có khả năng chỉ cần một vài công cụ trong số đó.
 
-Trang này ghi lại Tìm kiếm công cụ của OpenClaw. Đây không phải là bề mặt tìm kiếm
-công cụ gốc của Codex hay công cụ động. Chế độ mã gốc của Codex, tìm kiếm công cụ, công cụ động
-trì hoãn và lệnh gọi công cụ lồng nhau là các bề mặt ổn định của harness Codex và
-không phụ thuộc vào `tools.toolSearch`.
+Trang này trình bày về Tool Search của OpenClaw. Đây không phải là bề mặt tìm kiếm công cụ hoặc công cụ động nguyên bản của Codex. Chế độ mã nguyên bản của Codex, tìm kiếm công cụ, công cụ động trì hoãn và lệnh gọi công cụ lồng nhau là các bề mặt ổn định của bộ khung Codex và không phụ thuộc vào `tools.toolSearch`.
 
-Khi được bật cho các lượt chạy OpenClaw, theo mặc định mô hình nhận một công cụ `tool_search_code`.
-Công cụ đó chạy một phần thân JavaScript ngắn trong một tiến trình con Node
-được cô lập với một cầu nối `openclaw.tools`:
+Khi được bật cho các lượt chạy OpenClaw, theo mặc định mô hình nhận một công cụ `tool_search_code`, cùng với mọi công cụ chỉ-trực-tiếp có kết quả có cấu trúc không thể đi qua cầu nối nhỏ gọn. Công cụ mã chạy một đoạn JavaScript ngắn trong một tiến trình con Node biệt lập có cầu nối `openclaw.tools`:
 
 ```js
 const hits = await openclaw.tools.search("create a GitHub issue");
@@ -37,88 +30,56 @@ return await openclaw.tools.call(tool.id, {
 });
 ```
 
-Danh mục có thể bao gồm công cụ OpenClaw, công cụ Plugin, công cụ MCP và
-công cụ do client cung cấp. Mô hình không thấy trước mọi schema đầy đủ.
-Thay vào đó, nó tìm kiếm các bộ mô tả gọn nhẹ, mô tả một công cụ được chọn khi
-cần schema chính xác, và gọi công cụ đó thông qua OpenClaw.
+Danh mục có thể bao gồm các công cụ OpenClaw đủ điều kiện đưa vào danh mục, công cụ Plugin, công cụ MCP và công cụ do máy khách cung cấp. Mô hình không nhìn thấy trước mọi lược đồ trong danh mục. Thay vào đó, mô hình tìm kiếm các bộ mô tả nhỏ gọn, lấy mô tả của một công cụ đã chọn khi cần lược đồ chính xác, rồi gọi công cụ đó thông qua OpenClaw. Các công cụ chỉ-trực-tiếp vẫn hiển thị với mô hình và không được thêm vào danh mục.
 
-Các lượt chạy harness Codex không nhận các điều khiển Tìm kiếm công cụ thử nghiệm
-này của OpenClaw. OpenClaw chuyển các năng lực sản phẩm cho Codex dưới dạng công cụ động, và
-Codex sở hữu chế độ mã gốc ổn định, tìm kiếm công cụ gốc, công cụ động
-trì hoãn và lệnh gọi công cụ lồng nhau.
+Các lượt chạy của bộ khung Codex không nhận những tùy chọn điều khiển Tool Search thử nghiệm này của OpenClaw. OpenClaw truyền các khả năng sản phẩm cho Codex dưới dạng công cụ động, còn Codex sở hữu chế độ mã nguyên bản ổn định, tìm kiếm công cụ nguyên bản, công cụ động trì hoãn và lệnh gọi công cụ lồng nhau.
 
-## Cách một lượt chạy hoạt động
+## Cách một lượt hoạt động
 
-Ở thời điểm lập kế hoạch, runner nhúng của OpenClaw xây dựng danh mục hiệu lực cho
-lượt chạy:
+Ở thời điểm lập kế hoạch, trình chạy nhúng của OpenClaw xây dựng danh mục có hiệu lực cho lượt chạy:
 
 1. Phân giải chính sách công cụ đang hoạt động cho tác nhân, hồ sơ, sandbox và phiên.
 2. Liệt kê các công cụ OpenClaw và Plugin đủ điều kiện.
-3. Liệt kê các công cụ MCP đủ điều kiện thông qua runtime MCP của phiên.
-4. Thêm các công cụ client đủ điều kiện được cung cấp cho lượt chạy hiện tại.
-5. Lập chỉ mục các bộ mô tả gọn nhẹ để tìm kiếm.
-6. Phơi bày cầu nối mã OpenClaw, các công cụ dự phòng có cấu trúc, hoặc bề mặt
-   thư mục gọn nhẹ cho mô hình.
+3. Liệt kê các công cụ MCP đủ điều kiện thông qua môi trường chạy MCP của phiên.
+4. Thêm các công cụ máy khách đủ điều kiện được cung cấp cho lượt chạy hiện tại.
+5. Giữ các công cụ chỉ-trực-tiếp hiển thị với mô hình và lập chỉ mục các bộ mô tả nhỏ gọn cho những công cụ đủ điều kiện đưa vào danh mục còn lại.
+6. Cung cấp cầu nối mã OpenClaw, các công cụ dự phòng có cấu trúc hoặc bề mặt thư mục nhỏ gọn cùng với những công cụ chỉ-trực-tiếp đó.
 
-Ở thời điểm thực thi, mọi lệnh gọi công cụ thật đều quay về OpenClaw. Runtime Node
-được cô lập không giữ các triển khai Plugin, đối tượng client MCP, hay bí mật.
-`openclaw.tools.call(...)` đi qua cầu nối trở lại Gateway, nơi
-chính sách, phê duyệt, hook, ghi nhật ký và xử lý kết quả bình thường vẫn được áp dụng.
+Ở thời điểm thực thi, mọi lệnh gọi công cụ thực tế đều quay lại OpenClaw. Môi trường chạy Node biệt lập không nắm giữ các triển khai Plugin, đối tượng máy khách MCP hoặc bí mật. `openclaw.tools.call(...)` đi qua cầu nối trở lại Gateway, nơi chính sách, phê duyệt, hook, ghi nhật ký và xử lý kết quả thông thường vẫn được áp dụng.
 
 ## Chế độ
 
 `tools.toolSearch` có ba chế độ hướng tới mô hình:
 
-- `code`: phơi bày `tool_search_code`, cầu nối JavaScript gọn nhẹ mặc định.
-- `tools`: phơi bày `tool_search`, `tool_describe` và `tool_call` dưới dạng các
-  công cụ có cấu trúc thông thường cho những nhà cung cấp không nên nhận mã.
-- `directory`: phơi bày `tool_search`, `tool_describe` và `tool_call` cùng một
-  thư mục prompt có giới hạn gồm tên và mô tả công cụ khả dụng cho
-  những nhà cung cấp nên thấy tên công cụ mà không thấy mọi schema đầy đủ. OpenClaw cũng có thể
-  phơi bày trực tiếp một tập nhỏ có giới hạn gồm các schema công cụ có khả năng cần hoặc bắt buộc
-  cho lượt hiện tại.
+- `code`: cung cấp `tool_search_code`, cầu nối JavaScript nhỏ gọn mặc định, cùng với các công cụ chỉ-trực-tiếp.
+- `tools`: cung cấp `tool_search`, `tool_describe` và `tool_call` dưới dạng các công cụ có cấu trúc thuần túy cho những nhà cung cấp không nên nhận mã, cùng với các công cụ chỉ-trực-tiếp.
+- `directory`: cung cấp `tool_search`, `tool_describe` và `tool_call`, cùng một thư mục có giới hạn trong lời nhắc gồm tên và mô tả các công cụ khả dụng, dành cho những nhà cung cấp cần thấy tên công cụ nhưng không cần mọi lược đồ đầy đủ. OpenClaw cũng có thể cung cấp trực tiếp một tập hợp nhỏ có giới hạn gồm các lược đồ công cụ có khả năng cần thiết hoặc bắt buộc cho lượt hiện tại. Các công cụ chỉ-trực-tiếp cũng vẫn hiển thị trong chế độ này.
 
-Mọi chế độ dùng cùng danh mục đã lọc theo chính sách và đường dẫn thực thi OpenClaw
-bình thường. Nếu runtime hiện tại không thể khởi chạy tiến trình con chế độ mã Node
-được cô lập, chế độ `code` mặc định sẽ chuyển về `tools` trước khi nén
-danh mục. Trong chế độ `directory`, công cụ do client cung cấp vẫn hiển thị trực tiếp
-cho lượt chạy hiện tại, còn công cụ OpenClaw, công cụ Plugin và công cụ MCP có thể được
-nén phía sau danh mục thư mục. Một lệnh gọi trực tiếp tới một tên thư mục chính xác bị ẩn
-sẽ được nạp từ cùng danh mục đã được ủy quyền đó trước khi thực thi.
+Mọi chế độ đều sử dụng cùng một danh mục đã lọc theo chính sách và đường dẫn thực thi OpenClaw thông thường. Các công cụ được đánh dấu `catalogMode: "direct-only"` nằm ngoài danh mục đó và vẫn hiển thị với mô hình. Nếu môi trường chạy hiện tại không thể khởi chạy tiến trình con Node biệt lập cho chế độ mã, chế độ `code` mặc định sẽ chuyển sang `tools` trước khi Compaction danh mục. Trong chế độ `directory`, các công cụ do máy khách cung cấp vẫn hiển thị trực tiếp cho lượt chạy hiện tại, trong khi các công cụ OpenClaw, công cụ Plugin và công cụ MCP có thể được thu gọn phía sau danh mục thư mục. Một lệnh gọi trực tiếp đến tên thư mục chính xác đang bị ẩn sẽ được nạp từ chính danh mục đã được ủy quyền đó trước khi thực thi.
 
-Tất cả chế độ đều là thử nghiệm. Ưu tiên phơi bày công cụ trực tiếp cho các danh mục công cụ
-OpenClaw nhỏ, và ưu tiên các bề mặt ổn định gốc của Codex cho các lượt chạy harness Codex.
+Mọi chế độ đều đang ở trạng thái thử nghiệm. Nên ưu tiên cung cấp công cụ trực tiếp cho các danh mục công cụ OpenClaw nhỏ và ưu tiên các bề mặt ổn định nguyên bản của Codex cho các lượt chạy của bộ khung Codex.
 
-Không có cấu hình chọn nguồn riêng. Khi Tìm kiếm công cụ được bật, danh mục
-bao gồm các công cụ OpenClaw, MCP và client đủ điều kiện sau khi lọc chính sách
-bình thường.
+Không có cấu hình chọn nguồn riêng biệt. Khi Tool Search được bật, danh mục bao gồm các công cụ OpenClaw, MCP và máy khách đủ điều kiện đưa vào danh mục sau khi lọc theo chính sách thông thường; các công cụ chỉ-trực-tiếp được giữ riêng.
 
-## Vì sao tính năng này tồn tại
+## Lý do tồn tại
 
-Danh mục lớn hữu ích nhưng tốn kém. Gửi mọi schema công cụ cho mô hình
-làm yêu cầu lớn hơn, làm chậm việc lập kế hoạch và tăng khả năng chọn nhầm công cụ.
+Danh mục lớn rất hữu ích nhưng tốn kém. Việc gửi mọi lược đồ công cụ đến mô hình làm yêu cầu lớn hơn, làm chậm quá trình lập kế hoạch và tăng khả năng vô tình chọn nhầm công cụ.
 
-Tìm kiếm công cụ thay đổi hình dạng:
+Tool Search thay đổi cấu trúc:
 
-- công cụ trực tiếp: mô hình thấy mọi schema được chọn trước token đầu tiên
-- chế độ mã Tìm kiếm công cụ: mô hình thấy một công cụ mã gọn nhẹ và một hợp đồng API
-  ngắn
-- chế độ công cụ Tìm kiếm công cụ: mô hình thấy ba công cụ dự phòng có cấu trúc
-  gọn nhẹ
-- chế độ thư mục Tìm kiếm công cụ: mô hình thấy một thư mục có giới hạn cùng
-  các điều khiển tìm kiếm/mô tả/gọi và một tập nhỏ có giới hạn gồm các schema có khả năng cần hoặc bắt buộc
-- trong lượt chạy: mô hình có thể tải các schema còn lại khi cần
+- công cụ trực tiếp: mô hình thấy mọi lược đồ đã chọn trước token đầu tiên
+- chế độ mã Tool Search: mô hình thấy một công cụ mã nhỏ gọn, một hợp đồng API ngắn và mọi công cụ chỉ-trực-tiếp
+- chế độ công cụ Tool Search: mô hình thấy ba công cụ dự phòng có cấu trúc nhỏ gọn cùng với mọi công cụ chỉ-trực-tiếp
+- chế độ thư mục Tool Search: mô hình thấy một thư mục có giới hạn cùng với các tùy chọn điều khiển tìm kiếm/mô tả/gọi và một tập hợp nhỏ có giới hạn gồm các lược đồ có khả năng cần thiết hoặc bắt buộc, cùng với mọi công cụ chỉ-trực-tiếp
+- trong lượt: mô hình có thể tải các lược đồ còn lại khi cần
 
-Phơi bày công cụ trực tiếp vẫn là mặc định phù hợp cho các danh mục nhỏ. Tìm kiếm công cụ
-phù hợp nhất khi một lượt chạy có thể thấy nhiều công cụ, đặc biệt từ máy chủ MCP hoặc
-công cụ ứng dụng do client cung cấp.
+Cung cấp công cụ trực tiếp vẫn là lựa chọn mặc định phù hợp cho các danh mục nhỏ. Tool Search phù hợp nhất khi một lượt chạy có thể thấy nhiều công cụ, đặc biệt là từ các máy chủ MCP hoặc công cụ ứng dụng do máy khách cung cấp.
 
 ## API
 
 `openclaw.tools.search(query, options?)`
 
-Tìm kiếm danh mục hiệu lực cho lượt chạy hiện tại. Kết quả gọn nhẹ và an toàn
-để đưa lại vào ngữ cảnh prompt.
+Tìm kiếm danh mục có hiệu lực cho lượt chạy hiện tại. Kết quả nhỏ gọn và an toàn để đưa trở lại ngữ cảnh lời nhắc.
 
 ```js
 const hits = await openclaw.tools.search("calendar event", { limit: 5 });
@@ -126,7 +87,7 @@ const hits = await openclaw.tools.search("calendar event", { limit: 5 });
 
 `openclaw.tools.describe(id)`
 
-Tải siêu dữ liệu đầy đủ cho một kết quả tìm kiếm, bao gồm schema đầu vào chính xác.
+Tải siêu dữ liệu đầy đủ cho một kết quả tìm kiếm, bao gồm lược đồ đầu vào chính xác.
 
 ```js
 const calendarCreate = await openclaw.tools.describe("mcp:calendar:create_event");
@@ -143,53 +104,44 @@ await openclaw.tools.call(calendarCreate.id, {
 });
 ```
 
-Chế độ dự phòng có cấu trúc phơi bày cùng các thao tác dưới dạng công cụ:
+Chế độ dự phòng có cấu trúc cung cấp cùng các thao tác dưới dạng công cụ:
 
 - `tool_search`
 - `tool_describe`
 - `tool_call`
 
-Chế độ thư mục phơi bày:
+Chế độ thư mục cung cấp:
 
 - `tool_search`
 - `tool_describe`
 - `tool_call`
 
-Nó cũng giữ các công cụ do client cung cấp hiển thị trực tiếp và có thể phơi bày trực tiếp
-một tập nhỏ có giới hạn gồm các schema công cụ danh mục có khả năng cần hoặc bắt buộc cho lượt
-hiện tại. Nếu thư mục có giới hạn bỏ sót mục, hãy dùng `tool_search` để tìm chúng. Nếu
-mô hình yêu cầu trực tiếp một tên công cụ thư mục chính xác bị ẩn, OpenClaw
-sẽ nạp nó từ danh mục đã được ủy quyền trước khi thực thi bình thường.
-Tên công cụ client trong chế độ thư mục không được xung đột với tên công cụ OpenClaw, Plugin hoặc MCP
-vì cơ chế điều phối trì hoãn chính xác dùng các tên đó.
+Chế độ này cũng giữ các công cụ do máy khách cung cấp và mọi công cụ chỉ-trực-tiếp hiển thị trực tiếp, đồng thời có thể cung cấp trực tiếp một tập hợp nhỏ có giới hạn gồm các lược đồ công cụ trong danh mục có khả năng cần thiết hoặc bắt buộc cho lượt hiện tại. Nếu thư mục có giới hạn bỏ sót mục nhập, hãy dùng `tool_search` để tìm chúng. Nếu mô hình yêu cầu trực tiếp một tên công cụ thư mục chính xác đang bị ẩn, OpenClaw sẽ nạp công cụ đó từ danh mục đã được ủy quyền trước khi thực thi thông thường.
+Tên công cụ máy khách trong chế độ thư mục không được xung đột với tên công cụ OpenClaw, Plugin hoặc MCP vì hoạt động điều phối trì hoãn chính xác sử dụng các tên đó.
 
-## Ranh giới runtime
+## Ranh giới môi trường chạy
 
-Cầu nối mã chạy trong một tiến trình con Node tồn tại ngắn. Tiến trình con bắt đầu
-với chế độ quyền của Node được bật, môi trường trống, không có quyền hệ thống tệp hay
-mạng, và không có quyền tiến trình con hay worker. OpenClaw thực thi
-timeout theo thời gian thực ở tiến trình cha và hủy tiến trình con khi timeout, bao gồm
-sau các phần tiếp diễn bất đồng bộ.
+Cầu nối mã chạy trong một tiến trình con Node tồn tại ngắn hạn. Tiến trình con khởi động với chế độ quyền Node được bật, môi trường trống, không được cấp quyền truy cập hệ thống tệp hoặc mạng, và không được cấp quyền tạo tiến trình con hoặc worker. OpenClaw áp dụng thời gian chờ theo thời gian thực tế tại tiến trình cha và kết thúc tiến trình con khi hết thời gian chờ, kể cả sau các phần tiếp tục bất đồng bộ.
 
-Runtime chỉ phơi bày:
+Môi trường chạy chỉ cung cấp:
 
 - `console.log`, `console.warn` và `console.error`
 - `openclaw.tools.search`
 - `openclaw.tools.describe`
 - `openclaw.tools.call`
 
-Hành vi OpenClaw bình thường vẫn áp dụng cho các lệnh gọi cuối cùng:
+Hành vi OpenClaw thông thường vẫn áp dụng cho các lệnh gọi cuối cùng:
 
 - chính sách cho phép và từ chối công cụ
-- hạn chế công cụ theo tác nhân và theo sandbox
-- chính sách công cụ của kênh/runtime
+- giới hạn công cụ theo từng tác nhân và từng sandbox
+- chính sách công cụ của kênh/môi trường chạy
 - hook phê duyệt
-- hook Plugin `before_tool_call`
-- danh tính phiên, nhật ký và telemetry
+- hook `before_tool_call` của Plugin
+- danh tính phiên, nhật ký và dữ liệu đo từ xa
 
 ## Cấu hình
 
-Bật Tìm kiếm công cụ cho các lượt chạy OpenClaw với cầu nối mã mặc định:
+Bật Tool Search cho các lượt chạy OpenClaw bằng cầu nối mã mặc định:
 
 ```bash
 openclaw config set tools.toolSearch true
@@ -205,7 +157,7 @@ JSON tương đương:
 }
 ```
 
-Dùng các công cụ dự phòng có cấu trúc thay thế cho các lượt chạy OpenClaw:
+Thay vào đó, dùng các công cụ dự phòng có cấu trúc cho các lượt chạy OpenClaw:
 
 ```json5
 {
@@ -217,7 +169,7 @@ Dùng các công cụ dự phòng có cấu trúc thay thế cho các lượt ch
 }
 ```
 
-Dùng bề mặt thư mục gọn nhẹ thay thế cho các lượt chạy OpenClaw:
+Thay vào đó, dùng bề mặt thư mục nhỏ gọn cho các lượt chạy OpenClaw:
 
 ```json5
 {
@@ -229,7 +181,7 @@ Dùng bề mặt thư mục gọn nhẹ thay thế cho các lượt chạy OpenC
 }
 ```
 
-Tinh chỉnh timeout chế độ mã và giới hạn kết quả tìm kiếm:
+Điều chỉnh thời gian chờ của chế độ mã và giới hạn kết quả tìm kiếm (các giá trị hiển thị là mặc định):
 
 ```json5
 {
@@ -244,6 +196,8 @@ Tinh chỉnh timeout chế độ mã và giới hạn kết quả tìm kiếm:
 }
 ```
 
+Môi trường chạy giới hạn `codeTimeoutMs` trong khoảng 1000-60000, `maxSearchLimit` trong khoảng 1-50 và `searchDefaultLimit` trong khoảng 1..`maxSearchLimit`.
+
 Tắt tính năng:
 
 ```json5
@@ -254,59 +208,55 @@ Tắt tính năng:
 }
 ```
 
-## Prompt và telemetry
+## Lời nhắc và dữ liệu đo từ xa
 
-Tìm kiếm công cụ ghi lại đủ telemetry để so sánh với việc phơi bày công cụ trực tiếp:
+Tool Search ghi lại đủ dữ liệu đo từ xa để so sánh với việc cung cấp công cụ trực tiếp:
 
-- tổng số byte công cụ và prompt đã tuần tự hóa được gửi tới harness
-- kích thước danh mục và phân tách theo nguồn
-- số lượt tìm kiếm, mô tả và gọi
+- tổng số byte công cụ và lời nhắc đã tuần tự hóa được gửi đến bộ khung
+- kích thước danh mục và phân tích theo nguồn
+- số lần tìm kiếm, mô tả và gọi
 - các lệnh gọi công cụ cuối cùng được thực thi thông qua OpenClaw
-- id và nguồn của công cụ đã chọn
+- mã định danh và nguồn của các công cụ đã chọn
 
-Nhật ký phiên nên cho phép trả lời:
+Nhật ký phiên cần cho phép trả lời:
 
-- mô hình đã thấy trước bao nhiêu schema công cụ
+- mô hình đã thấy trước bao nhiêu lược đồ công cụ
 - mô hình đã thực hiện bao nhiêu thao tác tìm kiếm và mô tả
 - công cụ cuối cùng nào đã được gọi
-- kết quả đến từ OpenClaw, MCP hay một công cụ client
+- kết quả đến từ OpenClaw, MCP hay công cụ máy khách
 
 ## Xác thực E2E
 
-Kịch bản Gateway của QA Lab chứng minh cả hai đường dẫn với runtime OpenClaw:
+Kịch bản Gateway của Phòng thí nghiệm QA chứng minh cả hai đường dẫn với môi trường chạy OpenClaw:
 
 ```bash
 pnpm openclaw qa suite --provider-mode mock-openai --scenario tool-search-gateway-e2e
 ```
 
-Nó tạo một Plugin giả tạm thời với danh mục công cụ lớn, khởi động nhà cung cấp
-OpenAI mô phỏng, khởi động Gateway một lần ở chế độ trực tiếp và một lần với Tìm kiếm công cụ
-được bật, rồi so sánh payload yêu cầu của nhà cung cấp và nhật ký phiên.
+Kịch bản này tạo một Plugin giả tạm thời có danh mục công cụ lớn, khởi động nhà cung cấp OpenAI giả lập, khởi động Gateway một lần ở chế độ trực tiếp và một lần khi bật Tool Search, sau đó so sánh tải trọng yêu cầu của nhà cung cấp và nhật ký phiên.
 
 Kiểm thử hồi quy chứng minh:
 
 1. Chế độ trực tiếp có thể gọi công cụ Plugin giả.
-2. Tìm kiếm công cụ có thể gọi cùng công cụ Plugin giả đó.
-3. Chế độ trực tiếp phơi bày trực tiếp các schema công cụ Plugin giả cho nhà cung cấp.
-4. Tìm kiếm công cụ chỉ phơi bày cầu nối gọn nhẹ.
-5. Payload yêu cầu của Tìm kiếm công cụ nhỏ hơn đối với danh mục giả lớn.
-6. Nhật ký phiên hiển thị số lượt gọi công cụ dự kiến và telemetry lệnh gọi qua cầu nối.
+2. Tool Search có thể gọi cùng công cụ Plugin giả đó.
+3. Chế độ trực tiếp cung cấp trực tiếp các lược đồ công cụ Plugin giả cho nhà cung cấp.
+4. Tool Search chỉ cung cấp cầu nối nhỏ gọn cùng với mọi công cụ chỉ-trực-tiếp.
+5. Tải trọng yêu cầu của Tool Search nhỏ hơn đối với danh mục giả lớn.
+6. Nhật ký phiên hiển thị số lượng lệnh gọi công cụ dự kiến và dữ liệu đo từ xa của lệnh gọi qua cầu nối.
 
 ## Hành vi khi lỗi
 
-Tìm kiếm công cụ nên đóng an toàn khi lỗi:
+Tool Search phải đóng an toàn khi lỗi:
 
-- nếu một công cụ không nằm trong chính sách hiệu lực, tìm kiếm không nên trả về công cụ đó
-- nếu một công cụ đã chọn không còn khả dụng, `tool_call` nên thất bại
-- nếu chính sách hoặc phê duyệt chặn thực thi, kết quả lệnh gọi nên báo cáo
-  việc chặn đó thay vì vượt qua nó
-- nếu cầu nối mã không thể tạo runtime được cô lập, hãy dùng `mode: "tools"` hoặc
-  tắt Tìm kiếm công cụ cho triển khai đó
+- nếu một công cụ không nằm trong chính sách có hiệu lực, tìm kiếm không được trả về công cụ đó
+- nếu một công cụ đã chọn không còn khả dụng, `tool_call` phải thất bại
+- nếu chính sách hoặc phê duyệt chặn việc thực thi, kết quả lệnh gọi phải báo cáo việc chặn đó thay vì bỏ qua
+- nếu cầu nối mã không thể tạo môi trường chạy biệt lập, hãy dùng `mode: "tools"` hoặc tắt Tool Search cho hệ thống triển khai đó
 
 ## Liên quan
 
 - [Công cụ và Plugin](/vi/tools)
-- [Sandbox đa tác nhân và công cụ](/vi/tools/multi-agent-sandbox-tools)
-- [Công cụ Exec](/vi/tools/exec)
+- [Sandbox và công cụ đa tác nhân](/vi/tools/multi-agent-sandbox-tools)
+- [Công cụ thực thi](/vi/tools/exec)
 - [Thiết lập tác nhân ACP](/vi/tools/acp-agents-setup)
 - [Xây dựng Plugin](/vi/plugins/building-plugins)

@@ -1,101 +1,67 @@
 ---
 read_when:
     - Menjalankan atau memecahkan masalah penyiapan Gateway jarak jauh
-summary: Akses jarak jauh menggunakan Gateway WS, tunnel SSH, dan tailnet
+summary: Akses jarak jauh menggunakan WS Gateway, terowongan SSH, dan tailnet
 title: Akses jarak jauh
 x-i18n:
-    generated_at: "2026-07-03T23:42:31Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:14:06Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cb6fd38698480f1dff93a6e4819082711e8e4395556a2fd85a8eb772ef6fbe31
+    source_hash: 78daaad7bcb9f80072eaa2d6946bff9f28ba1ec4f95a68edb0d24cf7f9c3fec2
     source_path: gateway/remote.md
     workflow: 16
 ---
 
-Repo ini mendukung akses gateway jarak jauh dengan menjaga satu Gateway (master) tetap berjalan di host khusus (desktop/server) dan menghubungkan klien ke sana.
+OpenClaw menjalankan satu Gateway (utama) pada sebuah host dan menghubungkan setiap klien ke sana. Gateway memiliki sesi, profil autentikasi, kanal, dan status; semua yang lain adalah klien.
 
-- Untuk **operator (Anda / aplikasi macOS)**: WebSocket LAN/Tailnet langsung adalah yang paling sederhana saat gateway dapat dijangkau; tunneling SSH adalah cadangan universal.
-- Untuk **node (iOS/Android dan perangkat mendatang)**: hubungkan ke **WebSocket** Gateway (LAN/tailnet atau tunnel SSH sesuai kebutuhan).
+- **Operator** (Anda, atau aplikasi macOS): WebSocket LAN/Tailnet langsung adalah pilihan paling sederhana ketika Gateway dapat dijangkau; penerowongan SSH adalah alternatif universal.
+- **Node** (iOS/Android dan perangkat lainnya): terhubung ke **WebSocket** Gateway (LAN/tailnet atau terowongan SSH).
 
-## Ide inti
+## Gagasan inti
 
-- WebSocket Gateway biasanya bind ke **loopback** pada port yang Anda konfigurasikan (default ke 18789).
-- Untuk penggunaan jarak jauh, ekspos melalui Tailscale Serve atau bind LAN/Tailnet tepercaya, atau teruskan port loopback melalui SSH.
+WebSocket Gateway terikat ke **loopback** secara default, pada port `18789` (`gateway.port`). Untuk penggunaan jarak jauh, ekspos melalui Tailscale Serve / pengikatan LAN-Tailnet tepercaya, atau teruskan port loopback melalui SSH.
 
-## Penyiapan VPN dan tailnet umum
+## Opsi topologi
 
-Anggap **host Gateway** sebagai tempat agent berjalan. Host ini memiliki sesi, profil auth, channel, dan state. Laptop, desktop, dan node Anda terhubung ke host tersebut.
+| Penyiapan                                | Tempat Gateway berjalan                                                                                  | Paling sesuai untuk                                                                                                                                 |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Gateway yang selalu aktif di tailnet Anda | Host persisten (VPS atau server rumah), dijangkau melalui Tailscale atau SSH                             | Laptop yang sering tertidur tetapi memerlukan agen selalu aktif. Lihat [exe.dev](/id/install/exe-dev) (VM mudah) atau [Hetzner](/id/install/hetzner) (VPS produksi). |
+| Desktop rumah                            | Desktop; laptop terhubung dari jarak jauh melalui mode jarak jauh aplikasi macOS (Settings → Connection → OpenClaw runs) | Menjaga agen tetap berjalan pada perangkat keras yang terus menyala. Panduan operasional: [akses jarak jauh macOS](/id/platforms/mac/remote). |
+| Laptop                                   | Laptop, diekspos dengan aman melalui terowongan SSH atau Tailscale Serve (pertahankan `gateway.bind: "loopback"`) | Penyiapan satu mesin. Lihat [Tailscale](/id/gateway/tailscale) dan [Web](/id/web).                                                                          |
 
-### Gateway selalu aktif di tailnet Anda
-
-Jalankan Gateway pada host persisten (VPS atau server rumah) dan akses melalui **Tailscale** atau SSH.
-
-- **UX terbaik:** pertahankan `gateway.bind: "loopback"` dan gunakan **Tailscale Serve** untuk UI Kontrol.
-- **LAN/Tailnet tepercaya:** bind gateway ke antarmuka privat dan hubungkan langsung dengan `gateway.remote.transport: "direct"`.
-- **Cadangan:** pertahankan loopback ditambah tunnel SSH dari mesin apa pun yang memerlukan akses.
-- **Contoh:** [exe.dev](/id/install/exe-dev) (VM mudah) atau [Hetzner](/id/install/hetzner) (VPS produksi).
-
-Ideal saat laptop Anda sering tidur tetapi Anda ingin agent selalu aktif.
-
-### Desktop rumah menjalankan Gateway
-
-Laptop **tidak** menjalankan agent. Laptop terhubung dari jarak jauh:
-
-- Gunakan mode jarak jauh aplikasi macOS (Settings → General → OpenClaw runs).
-- Aplikasi terhubung langsung saat gateway dapat dijangkau di LAN/Tailnet, atau membuka dan mengelola tunnel SSH saat Anda memilih SSH.
-
-Panduan operasional: [akses jarak jauh macOS](/id/platforms/mac/remote).
-
-### Laptop menjalankan Gateway
-
-Pertahankan Gateway tetap lokal tetapi ekspos dengan aman:
-
-- Tunnel SSH ke laptop dari mesin lain, atau
-- Tailscale Serve UI Kontrol dan pertahankan Gateway hanya loopback.
-
-Panduan: [Tailscale](/id/gateway/tailscale) dan [Ikhtisar web](/id/web).
+Untuk penyiapan yang selalu aktif dan laptop, sebaiknya pertahankan `gateway.bind: "loopback"` dan gunakan **Tailscale Serve** untuk UI Kontrol, atau pengikatan LAN/Tailnet tepercaya dengan `gateway.remote.transport: "direct"`. Terowongan SSH adalah alternatif yang berfungsi dari mesin mana pun.
 
 ## Alur perintah (apa yang berjalan di mana)
 
-Satu layanan gateway memiliki state + channel. Node adalah periferal.
+Satu Gateway memiliki status dan kanal; node adalah periferal. Contoh (pesan Telegram dirutekan ke alat node):
 
-Contoh alur (Telegram → node):
+1. Pesan Telegram tiba di **Gateway**.
+2. Gateway menjalankan **agen**, yang memutuskan apakah akan memanggil alat node.
+3. Gateway memanggil **node** melalui WebSocket Gateway (RPC `node.invoke`).
+4. Node mengembalikan hasil; Gateway membalas ke Telegram.
 
-- Pesan Telegram tiba di **Gateway**.
-- Gateway menjalankan **agent** dan memutuskan apakah akan memanggil tool node.
-- Gateway memanggil **node** melalui WebSocket Gateway (`node.*` RPC).
-- Node mengembalikan hasil; Gateway membalas kembali ke Telegram.
+Node tidak menjalankan layanan Gateway. Hanya satu Gateway yang sebaiknya berjalan per host, kecuali jika Anda sengaja menjalankan profil terisolasi (lihat [Beberapa Gateway](/id/gateway/multiple-gateways)). "Mode node" aplikasi macOS hanyalah klien node melalui WebSocket Gateway.
 
-Catatan:
-
-- **Node tidak menjalankan layanan gateway.** Hanya satu gateway yang boleh berjalan per host kecuali Anda sengaja menjalankan profil terisolasi (lihat [Beberapa gateway](/id/gateway/multiple-gateways)).
-- "mode node" aplikasi macOS hanyalah klien node melalui WebSocket Gateway.
-
-## Tunnel SSH (CLI + tool)
-
-Buat tunnel lokal ke WS Gateway jarak jauh:
+## Terowongan SSH (CLI + alat)
 
 ```bash
-ssh -N -L 18789:127.0.0.1:18789 user@host
+ssh -N -L 18789:127.0.0.1:18789 user@gateway-host
 ```
 
-Dengan tunnel aktif:
-
-- `openclaw health` dan `openclaw status --deep` kini menjangkau gateway jarak jauh melalui `ws://127.0.0.1:18789`.
-- `openclaw gateway status`, `openclaw gateway health`, `openclaw gateway probe`, dan `openclaw gateway call` juga dapat menargetkan URL yang diteruskan melalui `--url` saat diperlukan.
+Saat terowongan aktif, `openclaw health` dan `openclaw status --deep` menjangkau Gateway jarak jauh melalui `ws://127.0.0.1:18789`. `openclaw gateway status`, `openclaw gateway health`, `openclaw gateway probe`, dan `openclaw gateway call` juga dapat menargetkan URL yang diteruskan melalui `--url`.
 
 <Note>
-Ganti `18789` dengan `gateway.port` yang Anda konfigurasikan (atau `--port` atau `OPENCLAW_GATEWAY_PORT`).
+Ganti `18789` dengan `gateway.port` yang Anda konfigurasikan (atau `--port` / `OPENCLAW_GATEWAY_PORT`).
 </Note>
 
 <Warning>
-Saat Anda meneruskan `--url`, CLI tidak kembali ke kredensial konfigurasi atau lingkungan. Sertakan `--token` atau `--password` secara eksplisit. Kredensial eksplisit yang hilang adalah error.
+`--url` tidak pernah menggunakan kembali kredensial dari konfigurasi atau lingkungan. Berikan `--token` atau `--password` secara eksplisit; tanpanya, klien tidak mengirim kredensial dan koneksi gagal jika Gateway target mewajibkan autentikasi.
 </Warning>
 
 ## Default jarak jauh CLI
 
-Anda dapat mempertahankan target jarak jauh agar perintah CLI menggunakannya secara default:
+Simpan target jarak jauh agar perintah CLI menggunakannya secara default:
 
 ```json5
 {
@@ -109,17 +75,11 @@ Anda dapat mempertahankan target jarak jauh agar perintah CLI menggunakannya sec
 }
 ```
 
-Saat gateway hanya loopback, pertahankan URL di `ws://127.0.0.1:18789` dan buka tunnel SSH terlebih dahulu.
-Dalam transport tunnel SSH aplikasi macOS, hostname gateway yang ditemukan berada di
-`gateway.remote.sshTarget`; `gateway.remote.url` tetap menjadi URL tunnel lokal.
-Jika port tersebut berbeda, atur `gateway.remote.remotePort` ke port gateway pada
-host SSH.
-Verifikasi host-key bersifat ketat secara default. Alias terkelola dapat secara eksplisit menggunakan
-kebijakan kepercayaan OpenSSH efektifnya dengan
-`gateway.remote.sshHostKeyPolicy: "openssh"`; tinjau pengaturan SSH pengguna dan sistem yang cocok
-sebelum mengaktifkannya.
+Saat Gateway hanya menggunakan loopback, pertahankan URL sebagai `ws://127.0.0.1:18789` dan buka terowongan SSH terlebih dahulu. Dalam transportasi terowongan SSH aplikasi macOS, nama host Gateway yang ditemukan dimasukkan ke `gateway.remote.sshTarget` (`user@host` atau `user@host:port`); `gateway.remote.url` tetap berupa URL terowongan lokal. Jika port jarak jauh berbeda dari port lokal, atur `gateway.remote.remotePort`.
 
-Untuk gateway yang sudah dapat dijangkau di LAN atau Tailnet tepercaya, gunakan mode langsung:
+Verifikasi kunci host bersifat ketat secara default (`gateway.remote.sshHostKeyPolicy: "strict"`). Atur menjadi `"openssh"` untuk mendelegasikannya ke konfigurasi OpenSSH efektif Anda; tinjau pengaturan SSH pengguna dan sistem Anda sebelum mengaktifkannya.
+
+Untuk Gateway yang sudah dapat dijangkau melalui LAN atau Tailnet tepercaya, gunakan mode langsung:
 
 ```json5
 {
@@ -136,63 +96,56 @@ Untuk gateway yang sudah dapat dijangkau di LAN atau Tailnet tepercaya, gunakan 
 
 ## Prioritas kredensial
 
-Resolusi kredensial Gateway mengikuti satu kontrak bersama di seluruh jalur call/probe/status dan pemantauan persetujuan-eksekusi Discord. Node-host menggunakan kontrak dasar yang sama dengan satu pengecualian mode lokal (secara sengaja mengabaikan `gateway.remote.*`):
+Resolusi kredensial Gateway mengikuti satu kontrak bersama pada jalur pemanggilan/probe/status dan pemantauan persetujuan eksekusi Discord. Host node menggunakan kontrak yang sama dengan satu pengecualian mode lokal (mengabaikan `gateway.remote.*`).
 
-- Kredensial eksplisit (`--token`, `--password`, atau tool `gatewayToken`) selalu menang pada jalur call yang menerima auth eksplisit.
-- Keamanan override URL:
-  - Override URL CLI (`--url`) tidak pernah menggunakan ulang kredensial config/env implisit.
-  - Override URL env (`OPENCLAW_GATEWAY_URL`) hanya boleh menggunakan kredensial env (`OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`).
+- Kredensial eksplisit (`--token`, `--password`, atau `gatewayToken` milik alat) selalu diprioritaskan pada jalur pemanggilan yang menerima autentikasi eksplisit.
+- Keamanan penggantian URL:
+  - `--url` CLI tidak pernah menggunakan kembali kredensial konfigurasi/lingkungan implisit.
+  - `OPENCLAW_GATEWAY_URL` dari lingkungan hanya dapat menggunakan kredensial lingkungan (`OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`).
 - Default mode lokal:
-  - token: `OPENCLAW_GATEWAY_TOKEN` -> `gateway.auth.token` -> `gateway.remote.token` (cadangan jarak jauh hanya berlaku saat input token auth lokal belum diatur)
-  - password: `OPENCLAW_GATEWAY_PASSWORD` -> `gateway.auth.password` -> `gateway.remote.password` (cadangan jarak jauh hanya berlaku saat input password auth lokal belum diatur)
+  - token: `OPENCLAW_GATEWAY_TOKEN` -> `gateway.auth.token` -> `gateway.remote.token` (alternatif jarak jauh hanya ketika token lokal belum diatur)
+  - kata sandi: `OPENCLAW_GATEWAY_PASSWORD` -> `gateway.auth.password` -> `gateway.remote.password` (alternatif jarak jauh hanya ketika kata sandi lokal belum diatur)
 - Default mode jarak jauh:
   - token: `gateway.remote.token` -> `OPENCLAW_GATEWAY_TOKEN` -> `gateway.auth.token`
-  - password: `OPENCLAW_GATEWAY_PASSWORD` -> `gateway.remote.password` -> `gateway.auth.password`
-- Pengecualian mode lokal node-host: `gateway.remote.token` / `gateway.remote.password` diabaikan.
-- Pemeriksaan token probe/status jarak jauh bersifat ketat secara default: pemeriksaan menggunakan `gateway.remote.token` saja (tanpa cadangan token lokal) saat menargetkan mode jarak jauh.
-- Override env Gateway hanya menggunakan `OPENCLAW_GATEWAY_*`.
+  - kata sandi: `OPENCLAW_GATEWAY_PASSWORD` -> `gateway.remote.password` -> `gateway.auth.password`
+- Pengecualian mode lokal host node: `gateway.remote.token` / `gateway.remote.password` diabaikan.
+- Pemeriksaan token probe/status jarak jauh bersifat ketat secara default: pemeriksaan tersebut hanya menggunakan `gateway.remote.token` (tanpa alternatif token lokal) ketika menargetkan mode jarak jauh.
+- Penggantian lingkungan Gateway hanya menggunakan `OPENCLAW_GATEWAY_*`.
 
-## Akses jarak jauh UI Chat
+## Akses jarak jauh UI percakapan
 
-WebChat tidak lagi menggunakan port HTTP terpisah. UI chat SwiftUI terhubung langsung ke WebSocket Gateway.
+WebChat tidak memiliki port HTTP terpisah; UI percakapan SwiftUI terhubung langsung ke WebSocket Gateway.
 
 - Teruskan `18789` melalui SSH (lihat di atas), lalu hubungkan klien ke `ws://127.0.0.1:18789`.
-- Untuk mode langsung LAN/Tailnet, hubungkan klien ke URL privat `ws://` yang dikonfigurasi atau URL aman `wss://`.
-- Di macOS, utamakan mode jarak jauh aplikasi, yang mengelola transport yang dipilih secara otomatis.
+- Untuk mode langsung LAN/Tailnet, hubungkan klien ke URL privat `ws://` atau URL aman `wss://` yang dikonfigurasikan.
+- Di macOS, mode jarak jauh aplikasi mengelola transportasi yang dipilih secara otomatis.
 
 ## Mode jarak jauh aplikasi macOS
 
-Aplikasi bilah menu macOS dapat menjalankan penyiapan yang sama dari awal sampai akhir (pemeriksaan status jarak jauh, WebChat, dan penerusan Voice Wake).
-
-Panduan operasional: [akses jarak jauh macOS](/id/platforms/mac/remote).
+Aplikasi bilah menu macOS menjalankan penyiapan yang sama dari awal hingga akhir: pemeriksaan status jarak jauh, WebChat, dan penerusan Voice Wake. Panduan operasional: [akses jarak jauh macOS](/id/platforms/mac/remote).
 
 ## Aturan keamanan (jarak jauh/VPN)
 
-Versi singkat: **pertahankan Gateway hanya loopback** kecuali Anda yakin memerlukan bind.
+Pertahankan Gateway **hanya pada loopback**, kecuali Anda yakin memerlukan pengikatan.
 
-- **Loopback + SSH/Tailscale Serve** adalah default paling aman (tanpa eksposur publik).
-- Plaintext `ws://` diterima untuk loopback, LAN, link-local, `.local`, `.ts.net`, dan host CGNAT Tailscale. Host jarak jauh publik harus menggunakan `wss://`.
-- **Bind non-loopback** (`lan`/`tailnet`/`custom`, atau `auto` saat loopback tidak tersedia) harus menggunakan auth gateway: token, password, atau reverse proxy sadar identitas dengan `gateway.auth.mode: "trusted-proxy"`.
-- `gateway.remote.token` / `.password` adalah sumber kredensial klien. Keduanya **tidak** mengonfigurasi auth server dengan sendirinya.
-- Jalur call lokal dapat menggunakan `gateway.remote.*` sebagai cadangan hanya saat `gateway.auth.*` belum diatur.
-- Jika `gateway.auth.token` / `gateway.auth.password` dikonfigurasi secara eksplisit melalui SecretRef dan tidak terselesaikan, resolusi gagal tertutup (tanpa cadangan jarak jauh yang menutupi).
-- `gateway.remote.tlsFingerprint` menyematkan sertifikat TLS jarak jauh saat menggunakan `wss://`, termasuk mode langsung macOS. Tanpa pin yang dikonfigurasi atau pernah disimpan, macOS hanya menyematkan sertifikat penggunaan pertama setelah kepercayaan sistem normal lolos; gateway self-signed atau private-CA yang belum dipercaya macOS memerlukan fingerprint eksplisit atau Remote over SSH.
-- **Tailscale Serve** dapat mengautentikasi trafik UI Kontrol/WebSocket melalui header
-  identitas saat `gateway.auth.allowTailscale: true`; endpoint API HTTP tidak
-  menggunakan auth header Tailscale tersebut dan sebagai gantinya mengikuti mode auth HTTP
-  normal gateway. Alur tanpa token ini mengasumsikan host gateway tepercaya. Atur ke
-  `false` jika Anda menginginkan auth shared-secret di semua tempat.
-- Auth **trusted-proxy** mengharapkan penyiapan proxy sadar identitas non-loopback secara default.
-  Reverse proxy loopback pada host yang sama memerlukan `gateway.auth.trustedProxy.allowLoopback = true` secara eksplisit.
-- Perlakukan kontrol browser seperti akses operator: hanya tailnet + pairing node yang disengaja.
+- **Loopback + SSH/Tailscale Serve** adalah default paling aman (tanpa paparan publik).
+- `ws://` tanpa enkripsi diterima untuk host loopback, privat/LAN (RFC 1918), link-local, CGNAT, `.local`, dan `.ts.net`. Host publik jarak jauh wajib menggunakan `wss://`.
+- **Pengikatan non-loopback** (`lan`/`tailnet`/`custom`, atau `auto` ketika loopback tidak tersedia) wajib menggunakan autentikasi Gateway: token, kata sandi, atau proksi balik yang mengenali identitas dengan `gateway.auth.mode: "trusted-proxy"`.
+- `gateway.remote.token` / `.password` adalah sumber kredensial klien; keduanya tidak mengonfigurasi autentikasi server dengan sendirinya.
+- Jalur pemanggilan lokal hanya dapat menggunakan `gateway.remote.*` sebagai alternatif ketika `gateway.auth.*` belum diatur.
+- Jika `gateway.auth.token` / `gateway.auth.password` dikonfigurasikan secara eksplisit melalui SecretRef dan tidak dapat diresolusikan, resolusi gagal secara tertutup (tidak ada alternatif jarak jauh yang menyamarkan kegagalan).
+- `gateway.remote.tlsFingerprint` menyematkan sertifikat TLS jarak jauh untuk `wss://`, termasuk mode langsung macOS. Tanpa sematan yang tersimpan, macOS hanya menyematkan pada penggunaan pertama setelah kepercayaan sistem normal berhasil; Gateway dengan sertifikat yang ditandatangani sendiri atau CA privat memerlukan sidik jari eksplisit atau akses Jarak Jauh melalui SSH.
+- **Tailscale Serve** dapat mengautentikasi lalu lintas UI Kontrol/WebSocket melalui header identitas ketika `gateway.auth.allowTailscale: true`. Titik akhir API HTTP tidak menggunakan autentikasi header tersebut dan mengikuti mode autentikasi HTTP normal Gateway. Alur tanpa token ini mengasumsikan host Gateway tepercaya; atur menjadi `false` untuk autentikasi rahasia bersama di semua tempat.
+- Autentikasi **proksi tepercaya** secara default mengharapkan proksi non-loopback yang mengenali identitas. Proksi balik loopback pada host yang sama memerlukan `gateway.auth.trustedProxy.allowLoopback = true` secara eksplisit.
+- Perlakukan kontrol melalui peramban seperti akses operator: hanya melalui tailnet serta pemasangan node yang disengaja.
 
 Pembahasan mendalam: [Keamanan](/id/gateway/security).
 
-### macOS: tunnel SSH persisten melalui LaunchAgent
+### macOS: terowongan SSH persisten melalui LaunchAgent
 
-Untuk klien macOS yang terhubung ke gateway jarak jauh, penyiapan persisten termudah menggunakan entri config SSH `LocalForward` ditambah LaunchAgent untuk menjaga tunnel tetap hidup saat reboot dan crash.
+Untuk klien macOS, penyiapan persisten termudah menggunakan entri konfigurasi `LocalForward` SSH beserta LaunchAgent yang menjaga terowongan tetap aktif setelah mulai ulang dan kerusakan.
 
-#### Langkah 1: tambahkan config SSH
+#### Langkah 1: tambahkan konfigurasi SSH
 
 Edit `~/.ssh/config`:
 
@@ -206,23 +159,23 @@ Host remote-gateway
 
 Ganti `<REMOTE_IP>` dan `<REMOTE_USER>` dengan nilai Anda.
 
-#### Langkah 2: salin kunci SSH (sekali saja)
+#### Langkah 2: salin kunci SSH (satu kali)
 
 ```bash
 ssh-copy-id -i ~/.ssh/id_rsa <REMOTE_USER>@<REMOTE_IP>
 ```
 
-#### Langkah 3: konfigurasikan token gateway
-
-Simpan token dalam config agar tetap ada setelah restart:
+#### Langkah 3: konfigurasikan token Gateway
 
 ```bash
 openclaw config set gateway.remote.token "<your-token>"
 ```
 
+Gunakan `gateway.remote.password` sebagai gantinya jika Gateway jarak jauh menggunakan autentikasi kata sandi. `OPENCLAW_GATEWAY_TOKEN` tetap valid sebagai penggantian pada tingkat shell, tetapi penyiapan klien jarak jauh yang persisten adalah `gateway.remote.token` / `gateway.remote.password`.
+
 #### Langkah 4: buat LaunchAgent
 
-Simpan ini sebagai `~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist`:
+Simpan sebagai `~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist`:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -251,42 +204,35 @@ Simpan ini sebagai `~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist`:
 launchctl bootstrap gui/$UID ~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist
 ```
 
-Tunnel akan dimulai otomatis saat login, restart saat crash, dan menjaga port yang diteruskan tetap aktif.
+Terowongan dimulai secara otomatis saat masuk, dimulai ulang ketika mengalami kerusakan, dan menjaga port yang diteruskan tetap aktif.
 
 <Note>
-Jika Anda memiliki LaunchAgent `com.openclaw.ssh-tunnel` sisa dari penyiapan lama, unload dan hapus.
+Jika Anda masih memiliki LaunchAgent `com.openclaw.ssh-tunnel` dari penyiapan lama, bongkar dan hapus LaunchAgent tersebut.
 </Note>
 
 #### Pemecahan masalah
 
-Periksa apakah tunnel berjalan:
-
 ```bash
+# Periksa apakah terowongan sedang berjalan
 ps aux | grep "ssh -N remote-gateway" | grep -v grep
 lsof -i :18789
-```
 
-Restart tunnel:
-
-```bash
+# Mulai ulang terowongan
 launchctl kickstart -k gui/$UID/ai.openclaw.ssh-tunnel
-```
 
-Hentikan tunnel:
-
-```bash
+# Hentikan terowongan
 launchctl bootout gui/$UID/ai.openclaw.ssh-tunnel
 ```
 
-| Entri config                         | Fungsinya                                                    |
-| ------------------------------------ | ------------------------------------------------------------ |
-| `LocalForward 18789 127.0.0.1:18789` | Meneruskan port lokal 18789 ke port jarak jauh 18789         |
-| `ssh -N`                             | SSH tanpa menjalankan perintah jarak jauh (hanya penerusan port) |
-| `KeepAlive`                          | Otomatis me-restart tunnel jika crash                        |
-| `RunAtLoad`                          | Memulai tunnel saat LaunchAgent dimuat ketika login          |
+| Entri konfigurasi                     | Fungsinya                                                                  |
+| ------------------------------------- | -------------------------------------------------------------------------- |
+| `LocalForward 18789 127.0.0.1:18789` | Meneruskan port lokal 18789 ke port jarak jauh 18789                       |
+| `ssh -N`                              | SSH tanpa menjalankan perintah jarak jauh (hanya penerusan port)           |
+| `KeepAlive`                           | Memulai ulang terowongan secara otomatis jika mengalami kerusakan          |
+| `RunAtLoad`                           | Memulai terowongan ketika LaunchAgent dimuat saat masuk                     |
 
 ## Terkait
 
 - [Tailscale](/id/gateway/tailscale)
 - [Autentikasi](/id/gateway/authentication)
-- [Penyiapan gateway jarak jauh](/id/gateway/remote-gateway-readme)
+- [Penyiapan Gateway jarak jauh](/id/gateway/remote-gateway-readme)

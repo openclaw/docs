@@ -1,44 +1,42 @@
 ---
 read_when:
-    - Yeni bir model sağlayıcı Plugin’i oluşturuyorsunuz
+    - Yeni bir model sağlayıcı plugini oluşturuyorsunuz
     - OpenClaw'a OpenAI uyumlu bir proxy veya özel LLM eklemek istiyorsunuz
     - Sağlayıcı kimlik doğrulamasını, katalogları ve çalışma zamanı kancalarını anlamanız gerekir
 sidebarTitle: Provider plugins
 summary: OpenClaw için model sağlayıcı Plugin'i oluşturmaya yönelik adım adım kılavuz
 title: Sağlayıcı Plugin'leri oluşturma
 x-i18n:
-    generated_at: "2026-06-28T01:05:05Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:36:34Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 05ac4d08eae00e7e0fcf03edea691dc9ced7309421dd19a31edf69cee1e01f0b
+    source_hash: ebbe59b4487a93c6fec3624251eff7394197e249bb8fc7899f1fc88162510d1c
     source_path: plugins/sdk-provider-plugins.md
     workflow: 16
 ---
 
-Bu kılavuz, OpenClaw'a bir model sağlayıcısı (LLM) ekleyen bir sağlayıcı Plugin'i
-oluşturmayı adım adım anlatır. Sonunda model kataloğu, API anahtarı kimlik
-doğrulaması ve dinamik model çözümlemesi olan bir sağlayıcınız olacak.
+OpenClaw'a bir model sağlayıcısı (LLM) eklemek için bir sağlayıcı Plugin'i oluşturun: model
+kataloğu, API anahtarıyla kimlik doğrulama ve dinamik model çözümleme.
 
 <Info>
-  Daha önce herhangi bir OpenClaw Plugin'i oluşturmadıysanız, temel paket
-  yapısı ve manifest kurulumu için önce
-  [Başlarken](/tr/plugins/building-plugins) bölümünü okuyun.
+  OpenClaw Plugin'lerinde yeni misiniz? Paket yapısı ve manifest kurulumu için
+  önce [Başlarken](/tr/plugins/building-plugins) bölümünü okuyun.
 </Info>
 
 <Tip>
-  Sağlayıcı Plugin'leri, OpenClaw'ın normal çıkarım döngüsüne model ekler.
-  Modelin iş parçacıklarını, Compaction'ı veya araç olaylarını sahiplenen yerel
-  bir ajan arka plan hizmeti üzerinden çalışması gerekiyorsa, arka plan hizmeti
-  protokol ayrıntılarını çekirdeğe koymak yerine sağlayıcıyı bir
-  [ajan harness'ı](/tr/plugins/sdk-agent-harness) ile eşleştirin.
+  Sağlayıcı Plugin'leri, OpenClaw'ın normal çıkarım döngüsüne modeller ekler.
+  Modelin iş parçacıklarını, Compaction'ı veya araç olaylarını yöneten yerel bir
+  aracı daemon üzerinden çalışması gerekiyorsa daemon protokolü ayrıntılarını
+  çekirdeğe koymak yerine sağlayıcıyı bir [aracı
+  çalışma altyapısıyla](/tr/plugins/sdk-agent-harness) eşleştirin.
 </Tip>
 
-## İzlenecek yol
+## Adım adım anlatım
 
 <Steps>
-  <Step title="Package and manifest">
-    ### Adım 1: Paket ve manifest
+  <Step title="Paket ve manifest">
+    ### 1. Adım: Paket ve manifest
 
     <CodeGroup>
     ```json package.json
@@ -102,23 +100,25 @@ doğrulaması ve dinamik model çözümlemesi olan bir sağlayıcınız olacak.
     ```
     </CodeGroup>
 
-    Manifest, OpenClaw'ın Plugin çalışma zamanınızı yüklemeden kimlik bilgilerini
-    algılayabilmesi için `setup.providers[].envVars` bildirir. Bir sağlayıcı
-    varyantının başka bir sağlayıcı kimliğinin kimlik doğrulamasını yeniden
-    kullanması gerektiğinde `providerAuthAliases` ekleyin. `modelSupport`
-    isteğe bağlıdır ve çalışma zamanı hook'ları mevcut olmadan önce OpenClaw'ın
-    sağlayıcı Plugin'inizi `acme-large` gibi kısaltılmış model kimliklerinden
-    otomatik yüklemesini sağlar. Sağlayıcıyı ClawHub'da yayımlarsanız,
-    `package.json` içinde bu `openclaw.compat` ve `openclaw.build` alanları
-    zorunludur.
+    `setup.providers[].envVars`, OpenClaw'ın Plugin çalışma zamanınızı
+    yüklemeden kimlik bilgilerini algılamasını sağlar. Bir sağlayıcı varyantının
+    başka bir sağlayıcı kimliğinin kimlik doğrulamasını yeniden kullanması
+    gerektiğinde `providerAuthAliases` ekleyin. `modelSupport` isteğe bağlıdır
+    ve çalışma zamanı kancaları bulunmadan önce OpenClaw'ın sağlayıcı
+    Plugin'inizi `acme-large` gibi kısa model kimliklerinden otomatik olarak
+    yüklemesini sağlar. `package.json` içindeki `openclaw.compat` ve
+    `openclaw.build`, ClawHub'da yayımlama için gereklidir
+    (`openclaw.compat.pluginApi` ve `openclaw.build.openclawVersion` gerekli iki
+    alandır; `minGatewayVersion` belirtilmediğinde
+    `openclaw.install.minHostVersion` değerine geri döner).
 
   </Step>
 
-  <Step title="Register the provider">
-    En küçük metin sağlayıcısının bir `id`, `label`, `auth` ve `catalog`
-    değerine ihtiyacı vardır. `catalog`, sağlayıcıya ait çalışma
-    zamanı/yapılandırma hook'udur; canlı tedarikçi API'lerini çağırabilir ve
-    `models.providers` girdileri döndürür.
+  <Step title="Sağlayıcıyı kaydetme">
+    Minimal bir metin sağlayıcısı için `id`, `label`, `auth` ve `catalog`
+    gerekir. `catalog`, sağlayıcının sahip olduğu çalışma zamanı/yapılandırma
+    kancasıdır; canlı sağlayıcı API'lerini çağırabilir ve `models.providers`
+    girdileri döndürür.
 
     ```typescript index.ts
     import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
@@ -207,28 +207,29 @@ doğrulaması ve dinamik model çözümlemesi olan bir sağlayıcınız olacak.
     });
     ```
 
-    `registerModelCatalogProvider`, liste/yardım/seçici arayüzü için daha yeni
-    kontrol düzlemi katalog yüzeyidir. Bunu metin, görüntü oluşturma,
-    video oluşturma ve müzik oluşturma satırları için kullanın. Tedarikçi uç
-    nokta çağrılarını ve yanıt eşlemesini Plugin içinde tutun; ortak satır
-    biçiminin, kaynak etiketlerinin ve yardım işleme mantığının sahibi
-    OpenClaw'dır.
+    `registerModelCatalogProvider`, liste/yardım/seçici kullanıcı arayüzü için
+    `text`, `voice`, `image_generation`, `video_generation` ve
+    `music_generation` satırlarını kapsayan daha yeni kontrol düzlemi katalog
+    yüzeyidir. Sağlayıcı uç noktası çağrılarını ve yanıt eşlemesini Plugin'de
+    tutun; paylaşılan satır biçiminin, kaynak etiketlerinin ve yardım
+    oluşturmanın sahibi OpenClaw'dır.
 
     Bu, çalışan bir sağlayıcıdır. Kullanıcılar artık
-    `openclaw onboard --acme-ai-api-key <key>` çalıştırabilir ve model olarak
-    `acme-ai/acme-large` seçebilir.
+    `openclaw onboard --acme-ai-api-key <key>` komutunu çalıştırabilir ve model
+    olarak `acme-ai/acme-large` seçebilir.
 
     ### Canlı model keşfi
 
-    Sağlayıcınız `/models` tarzı bir API sunuyorsa, sağlayıcıya özgü uç noktayı
-    ve satır izdüşümünü Plugin'inizde tutun ve ortak fetch yaşam döngüsü için
-    `openclaw/plugin-sdk/provider-catalog-live-runtime` kullanın. Yardımcı,
-    sağlayıcı ilkesini OpenClaw çekirdeğine koymadan size korumalı HTTP
-    fetch'leri, sağlayıcı kimlik doğrulama başlıkları, yapılandırılmış HTTP
-    hataları, TTL önbellekleme ve statik geri dönüş davranışı sağlar.
+    Sağlayıcınız `/models` tarzı bir API sunuyorsa sağlayıcıya özgü uç noktayı
+    ve satır yansıtmayı Plugin'inizde tutun ve paylaşılan getirme yaşam döngüsü
+    için `openclaw/plugin-sdk/provider-catalog-live-runtime` kullanın. Yardımcı,
+    sağlayıcı politikasını OpenClaw çekirdeğine koymadan korumalı HTTP
+    getirmeleri, sağlayıcı kimlik doğrulama üst bilgileri, yapılandırılmış HTTP
+    hataları, TTL önbelleğe alma ve statik geri dönüş davranışı sağlar.
 
-    Canlı API yalnızca sağlayıcıya ait hangi statik katalog satırlarının o anda
-    kullanılabilir olduğunu söylüyorsa `buildLiveModelProviderConfig` kullanın:
+    Canlı API yalnızca sağlayıcının sahip olduğu statik katalog satırlarından
+    hangilerinin şu anda kullanılabilir olduğunu bildiriyorsa
+    `buildLiveModelProviderConfig` kullanın:
 
     ```typescript index.ts
     import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
@@ -316,7 +317,7 @@ doğrulaması ve dinamik model çözümlemesi olan bir sağlayıcınız olacak.
     });
     ```
 
-    Sağlayıcı API'si daha zengin metadata döndürüyorsa ve Plugin'in satırları
+    Sağlayıcı API'si daha zengin meta veriler döndürüyor ve Plugin'in satırları
     OpenClaw model tanımlarına kendisinin yansıtması gerekiyorsa
     `getCachedLiveProviderModelRows` kullanın:
 
@@ -347,16 +348,17 @@ doğrulaması ve dinamik model çözümlemesi olan bir sağlayıcınız olacak.
     }
     ```
 
-    `run`, kimlik doğrulama kapılı kalmalı ve kullanılabilir kimlik bilgisi
-    olmadığında `null` döndürmelidir. Kurulum, dokümanlar, testler ve seçici
-    yüzeylerinin canlı ağ erişimine bağlı olmaması için çevrimdışı bir
-    `staticRun` veya statik geri dönüş bulundurun. Model listesi güncelliğine
-    uygun bir TTL kullanın, istek zamanında dosya sistemi polling'inden kaçının
-    ve sağlayıcıya özgü `readRows` / `readModelId` değerlerini yalnızca upstream
-    yanıtı OpenAI uyumlu `{ data: [{ id, object }] }` biçiminde değilse geçirin.
+    `run`, kimlik doğrulama denetimli kalmalı ve kullanılabilir kimlik bilgisi
+    bulunmadığında `null` döndürmelidir. Kurulum, belgeler, testler ve seçici
+    yüzeylerin canlı ağ erişimine bağlı olmaması için çevrimdışı bir
+    `staticRun` veya statik geri dönüş bulundurun. Model listesinin güncellik
+    gereksinimine uygun bir TTL kullanın, istek sırasında dosya sistemi
+    yoklamasından kaçının ve yalnızca üst kaynak yanıtı OpenAI uyumlu
+    `{ data: [{ id, object }] }` biçiminde değilse sağlayıcıya özgü bir
+    `readRows` / `readModelId` iletin.
 
-    Upstream sağlayıcı OpenClaw'dan farklı kontrol token'ları kullanıyorsa, akış
-    yolunu değiştirmek yerine küçük bir çift yönlü metin dönüştürmesi ekleyin:
+    Üst kaynak sağlayıcı OpenClaw'dan farklı kontrol belirteçleri kullanıyorsa
+    akış yolunu değiştirmek yerine küçük, çift yönlü bir metin dönüşümü ekleyin:
 
     ```typescript
     api.registerTextTransforms({
@@ -373,14 +375,15 @@ doğrulaması ve dinamik model çözümlemesi olan bir sağlayıcınız olacak.
     });
     ```
 
-    `input`, taşıma öncesinde son sistem prompt'unu ve metin mesajı içeriğini
-    yeniden yazar. `output`, OpenClaw kendi kontrol işaretlerini ayrıştırmadan
-    veya kanala teslim etmeden önce asistan metin deltalarını ve son metni
+    `input`, aktarımdan önce son sistem istemini ve metin mesajı içeriğini
+    yeniden yazar. `output`, OpenClaw kendi kontrol işaretçilerini ayrıştırmadan
+    veya kanal teslimatı yapılmadan önce asistan metin deltalarını ve son metni
     yeniden yazar.
 
-    Yalnızca API anahtarı kimlik doğrulaması ve tek katalog destekli çalışma
-    zamanı ile bir metin sağlayıcısı kaydeden paketli sağlayıcılar için daha dar
-    `defineSingleProviderPluginEntry(...)` yardımcısını tercih edin:
+    Yalnızca API anahtarıyla kimlik doğrulanan tek bir metin sağlayıcısını ve
+    katalog destekli tek bir çalışma zamanını kaydeden paketlenmiş sağlayıcılar
+    için daha dar kapsamlı `defineSingleProviderPluginEntry(...)` yardımcısını
+    tercih edin:
 
     ```typescript
     import { defineSingleProviderPluginEntry } from "openclaw/plugin-sdk/provider-entry";
@@ -388,19 +391,19 @@ doğrulaması ve dinamik model çözümlemesi olan bir sağlayıcınız olacak.
     export default defineSingleProviderPluginEntry({
       id: "acme-ai",
       name: "Acme AI",
-      description: "Acme AI model provider",
+      description: "Acme AI model sağlayıcısı",
       provider: {
         label: "Acme AI",
         docsPath: "/providers/acme-ai",
         auth: [
           {
             methodId: "api-key",
-            label: "Acme AI API key",
-            hint: "API key from your Acme AI dashboard",
+            label: "Acme AI API anahtarı",
+            hint: "Acme AI kontrol panelinizden alınan API anahtarı",
             optionKey: "acmeAiApiKey",
             flagName: "--acme-ai-api-key",
             envVar: "ACME_AI_API_KEY",
-            promptMessage: "Enter your Acme AI API key",
+            promptMessage: "Acme AI API anahtarınızı girin",
             defaultModel: "acme-ai/acme-large",
           },
         ],
@@ -420,18 +423,39 @@ doğrulaması ve dinamik model çözümlemesi olan bir sağlayıcınız olacak.
     });
     ```
 
-    `buildProvider`, OpenClaw gerçek sağlayıcı kimlik doğrulamasını çözebildiğinde kullanılan canlı katalog yoludur. Sağlayıcıya özgü keşif gerçekleştirebilir. `buildStaticProvider` yalnızca kimlik doğrulama yapılandırılmadan önce gösterilmesi güvenli olan çevrimdışı satırlar için kullanılmalıdır; kimlik bilgisi gerektirmemeli veya ağ isteği yapmamalıdır. OpenClaw'ın `models list --all` gösterimi şu anda statik katalogları yalnızca paketlenmiş sağlayıcı Plugin'leri için, boş yapılandırma, boş ortam ve agent/workspace yolları olmadan çalıştırır.
+    `buildProvider`, OpenClaw gerçek sağlayıcı kimlik doğrulamasını çözümleyebildiğinde
+    kullanılan canlı katalog yoludur. Sağlayıcıya özgü keşif işlemleri gerçekleştirebilir.
+    `buildStaticProvider` öğesini yalnızca kimlik doğrulama yapılandırılmadan önce
+    güvenle gösterilebilen çevrimdışı satırlar için kullanın; kimlik bilgileri
+    gerektirmemeli veya ağ istekleri yapmamalıdır. OpenClaw'ın `models list --all`
+    görünümü şu anda statik katalogları yalnızca paketlenmiş sağlayıcı Plugin'leri için;
+    boş bir yapılandırma, boş ortam ve hiçbir aracı/çalışma alanı yolu olmadan yürütür.
 
-    Kimlik doğrulama akışınızın onboarding sırasında `models.providers.*`, alias'lar ve agent varsayılan modelini de yamaması gerekiyorsa `openclaw/plugin-sdk/provider-onboard` içindeki preset yardımcılarını kullanın. En dar kapsamlı yardımcılar `createDefaultModelPresetAppliers(...)`, `createDefaultModelsPresetAppliers(...)` ve `createModelCatalogPresetAppliers(...)` şeklindedir.
+    Kimlik doğrulama akışınızın ilk katılım sırasında `models.providers.*` öğesini,
+    takma adları ve aracının varsayılan modelini de yamaması gerekiyorsa
+    `openclaw/plugin-sdk/provider-onboard` içindeki ön ayar yardımcılarını kullanın.
+    En dar kapsamlı yardımcılar `createDefaultModelPresetAppliers(...)`,
+    `createDefaultModelsPresetAppliers(...)` ve
+    `createModelCatalogPresetAppliers(...)` öğeleridir.
 
-    Bir sağlayıcının yerel uç noktası normal `openai-completions` taşımasında akışlı kullanım bloklarını destekliyorsa sağlayıcı kimliği kontrollerini sabit kodlamak yerine `openclaw/plugin-sdk/provider-catalog-shared` içindeki paylaşılan katalog yardımcılarını tercih edin. `supportsNativeStreamingUsageCompat(...)` ve `applyProviderNativeStreamingUsageCompat(...)` desteği uç nokta yetenek haritasından algılar; böylece yerel Moonshot/DashScope tarzı uç noktalar, bir Plugin özel sağlayıcı kimliği kullanıyor olsa bile yine de opt in yapar.
+    Bir sağlayıcının yerel uç noktası normal `openai-completions` aktarımında
+    akışlı kullanım bloklarını destekliyorsa sağlayıcı kimliği denetimlerini sabit
+    kodlamak yerine `openclaw/plugin-sdk/provider-catalog-shared` içindeki paylaşılan
+    katalog yardımcılarını tercih edin. `supportsNativeStreamingUsageCompat(...)` ve
+    `applyProviderNativeStreamingUsageCompat(...)`, desteği uç nokta yetenek
+    eşlemesinden algılar; böylece yerel Moonshot/DashScope tarzı uç noktalar, bir
+    Plugin özel bir sağlayıcı kimliği kullandığında bile özelliği etkinleştirebilir.
 
-    Yukarıdaki canlı keşif örnekleri `/models` tarzı sağlayıcı API'lerini kapsar. Bu keşfi kullanılabilir kimlik doğrulamayla sınırlandırarak `catalog.run` içinde tutun ve çevrimdışı katalog üretimi için `staticRun` yolunu ağsız bırakın.
+    Yukarıdaki canlı keşif örnekleri `/models` tarzı sağlayıcı API'lerini kapsar.
+    Bu keşfi kullanılabilir kimlik doğrulamasıyla sınırlandırılmış biçimde
+    `catalog.run` içinde tutun ve çevrimdışı katalog oluşturma için `staticRun`
+    öğesinin ağ kullanmamasını sağlayın.
 
   </Step>
 
-  <Step title="Dinamik model çözümlemesi ekle">
-    Sağlayıcınız rastgele model kimliklerini kabul ediyorsa (proxy veya router gibi), `resolveDynamicModel` ekleyin:
+  <Step title="Dinamik model çözümleme ekleyin">
+    Sağlayıcınız isteğe bağlı model kimliklerini kabul ediyorsa (bir proxy veya
+    yönlendirici gibi), `resolveDynamicModel` ekleyin:
 
     ```typescript
     api.registerProvider({
@@ -452,14 +476,19 @@ doğrulaması ve dinamik model çözümlemesi olan bir sağlayıcınız olacak.
     });
     ```
 
-    Çözümleme bir ağ çağrısı gerektiriyorsa eşzamansız ısınma için `prepareDynamicModel` kullanın; tamamlandıktan sonra `resolveDynamicModel` yeniden çalışır.
+    Çözümleme bir ağ çağrısı gerektiriyorsa eşzamansız ön hazırlık için
+    `prepareDynamicModel` kullanın; tamamlandıktan sonra `resolveDynamicModel`
+    yeniden çalışır.
 
   </Step>
 
-  <Step title="Çalışma zamanı hook'ları ekle (gerektiğinde)">
-    Çoğu sağlayıcı yalnızca `catalog` + `resolveDynamicModel` gerektirir. Sağlayıcınız ihtiyaç duydukça hook'ları kademeli olarak ekleyin.
+  <Step title="Çalışma zamanı kancaları ekleyin (gerektiğinde)">
+    Çoğu sağlayıcı yalnızca `catalog` + `resolveDynamicModel` gerektirir.
+    Sağlayıcınız ihtiyaç duydukça kancaları kademeli olarak ekleyin.
 
-    Paylaşılan yardımcı oluşturucular artık en yaygın replay/tool-compat ailelerini kapsıyor; bu nedenle Plugin'lerin genellikle her hook'u tek tek elle bağlaması gerekmez:
+    Paylaşılan yardımcı oluşturucular artık en yaygın yeniden oynatma/araç uyumluluğu
+    ailelerini kapsadığından Plugin'lerin genellikle her kancayı tek tek elle
+    bağlaması gerekmez:
 
     ```typescript
     import { buildProviderReplayFamilyHooks } from "openclaw/plugin-sdk/provider-model-shared";
@@ -479,46 +508,66 @@ doğrulaması ve dinamik model çözümlemesi olan bir sağlayıcınız olacak.
     });
     ```
 
-    Bugün kullanılabilen replay aileleri:
+    Günümüzde kullanılabilen yeniden oynatma aileleri:
 
-    | Aile | Neyi bağlar | Paketlenmiş örnekler |
+    | Aile | Bağladığı işlevler | Paketlenmiş örnekler |
     | --- | --- | --- |
-    | `openai-compatible` | OpenAI uyumlu taşımalar için paylaşılan OpenAI tarzı replay ilkesi; tool-call-id temizleme, assistant-first sıralama düzeltmeleri ve taşımanın ihtiyaç duyduğu yerlerde genel Gemini-turn doğrulaması dahil | `moonshot`, `ollama`, `xai`, `zai` |
-    | `anthropic-by-model` | `modelId` tarafından seçilen Claude duyarlı replay ilkesi; böylece Anthropic-message taşımaları yalnızca çözümlenen model gerçekten bir Claude kimliği olduğunda Claude'a özgü thinking-block temizliği alır | `amazon-bedrock`, `anthropic-vertex` |
-    | `google-gemini` | Yerel Gemini replay ilkesi ve bootstrap replay temizliği. Paylaşılan aile, metin çıktılı Gemini CLI'yi etiketli reasoning üzerinde tutar; doğrudan `google` sağlayıcısı Gemini API thinking'i yerel thought parçaları olarak geldiği için `resolveReasoningOutputMode` değerini `native` olarak override eder. | `google`, `google-gemini-cli` |
-    | `passthrough-gemini` | OpenAI uyumlu proxy taşımaları üzerinden çalışan Gemini modelleri için Gemini thought-signature temizliği; yerel Gemini replay doğrulamasını veya bootstrap yeniden yazımlarını etkinleştirmez | `openrouter`, `kilocode`, `opencode`, `opencode-go` |
-    | `hybrid-anthropic-openai` | Tek bir Plugin içinde Anthropic-message ve OpenAI uyumlu model yüzeylerini karıştıran sağlayıcılar için hibrit ilke; isteğe bağlı yalnızca Claude thinking-block düşürme Anthropic tarafıyla sınırlı kalır | `minimax` |
+    | `openai-compatible` | Araç çağrısı kimliği temizliği, önce yardımcı sıralamasına yönelik düzeltmeler ve aktarımın gerektirdiği yerlerde genel Gemini dönüşü doğrulaması dâhil, OpenAI uyumlu aktarımlar için paylaşılan OpenAI tarzı yeniden oynatma ilkesi | `moonshot`, `ollama`, `xai`, `zai` |
+    | `anthropic-by-model` | `modelId` tarafından seçilen Claude uyumlu yeniden oynatma ilkesi; böylece Anthropic ileti aktarımları, yalnızca çözümlenen model gerçekten bir Claude kimliğiyse Claude'a özgü düşünme bloğu temizliğini alır | `amazon-bedrock` |
+    | `native-anthropic-by-model` | `anthropic-by-model` ile aynı modele göre Claude ilkesi; buna ek olarak, üreticiye özgü kimlikleri koruması gereken aktarımlar için araç çağrısı kimliği temizliği ve yerel Anthropic araç kullanımı kimliği koruması | `anthropic-vertex`, `clawrouter` |
+    | `google-gemini` | Yerel Gemini yeniden oynatma ilkesi ve başlangıç yeniden oynatma temizliği. Paylaşılan aile, metin çıktılı Gemini CLI'da etiketli akıl yürütmeyi korur; doğrudan `google` sağlayıcısı ise Gemini API düşünme içeriği yerel düşünce parçaları olarak geldiği için `resolveReasoningOutputMode` öğesini `native` olarak geçersiz kılar. | `google`, `google-gemini-cli` |
+    | `passthrough-gemini` | OpenAI uyumlu proxy aktarımları üzerinden çalışan Gemini modelleri için Gemini düşünce imzası temizliği; yerel Gemini yeniden oynatma doğrulamasını veya başlangıç yeniden yazımlarını etkinleştirmez | `openrouter`, `kilocode`, `opencode`, `opencode-go` |
+    | `hybrid-anthropic-openai` | Anthropic ileti ve OpenAI uyumlu model yüzeylerini tek bir Plugin'de birleştiren sağlayıcılar için karma ilke; isteğe bağlı, yalnızca Claude'a özgü düşünme bloğu kaldırma işlemi Anthropic tarafıyla sınırlı kalır | `minimax` |
 
-    Bugün kullanılabilen stream aileleri:
+    Günümüzde kullanılabilen akış aileleri:
 
-    | Aile | Neyi bağlar | Paketlenmiş örnekler |
+    | Aile | Bağladığı işlevler | Paketlenmiş örnekler |
     | --- | --- | --- |
-    | `google-thinking` | Paylaşılan stream yolunda Gemini thinking payload normalizasyonu | `google`, `google-gemini-cli` |
-    | `kilocode-thinking` | Paylaşılan proxy stream yolunda Kilo reasoning sarmalayıcısı; `kilo/auto` ve desteklenmeyen proxy reasoning kimlikleri enjekte edilen thinking'i atlar | `kilocode` |
-    | `moonshot-thinking` | Yapılandırma + `/think` seviyesinden Moonshot ikili yerel-thinking payload eşlemesi | `moonshot` |
-    | `minimax-fast-mode` | Paylaşılan stream yolunda MiniMax fast-mode model yeniden yazımı | `minimax`, `minimax-portal` |
-    | `openai-responses-defaults` | Paylaşılan yerel OpenAI/Codex Responses sarmalayıcıları: atıf üstbilgileri, `/fast`/`serviceTier`, metin ayrıntı düzeyi, yerel Codex web araması, reasoning-compat payload biçimlendirme ve Responses bağlam yönetimi | `openai` |
-    | `openrouter-thinking` | Proxy rotaları için OpenRouter reasoning sarmalayıcısı; desteklenmeyen-model/`auto` atlamaları merkezi olarak ele alınır | `openrouter` |
-    | `tool-stream-default-on` | Açıkça devre dışı bırakılmadıkça tool streaming isteyen Z.AI gibi sağlayıcılar için varsayılan olarak açık `tool_stream` sarmalayıcısı | `zai` |
+    | `google-thinking` | Paylaşılan akış yolunda Gemini düşünme yükü normalleştirmesi | `google`, `google-gemini-cli` |
+    | `kilocode-thinking` | Paylaşılan proxy akış yolunda Kilo akıl yürütme sarmalayıcısı; `kilo/auto` ve desteklenmeyen proxy akıl yürütme kimlikleri eklenen düşünme işlemini atlar | `kilocode` |
+    | `moonshot-thinking` | Yapılandırma ve `/think` düzeyinden Moonshot ikili yerel düşünme yükü eşlemesi | `moonshot` |
+    | `minimax-fast-mode` | Paylaşılan akış yolunda MiniMax hızlı mod modelini yeniden yazma | `minimax`, `minimax-portal` |
+    | `openai-responses-defaults` | Paylaşılan yerel OpenAI/Codex Responses sarmalayıcıları: ilişkilendirme üst bilgileri, `/fast`/`serviceTier`, metin ayrıntı düzeyi, yerel Codex web araması, akıl yürütme uyumluluğu yükü şekillendirme ve Responses bağlam yönetimi | `openai` |
+    | `openrouter-thinking` | Proxy rotaları için OpenRouter akıl yürütme sarmalayıcısı; desteklenmeyen model/`auto` atlamaları merkezi olarak işlenir | `openrouter` |
+    | `tool-stream-default-on` | Açıkça devre dışı bırakılmadığı sürece araç akışı isteyen Z.AI gibi sağlayıcılar için varsayılan olarak etkin `tool_stream` sarmalayıcısı | `zai` |
 
-    <Accordion title="Aile oluşturucuları destekleyen SDK sınırları">
-      Her aile oluşturucu, aynı paketten dışa aktarılan daha düşük düzeyli genel yardımcıların bileşiminden oluşur; bir sağlayıcının ortak kalıbın dışına çıkması gerektiğinde bunları kullanabilirsiniz:
+    <Accordion title="Aile oluşturucuları destekleyen SDK bağlantı noktaları">
+      Her aile oluşturucu, aynı paketten dışa aktarılan daha alt düzey genel
+      yardımcılardan oluşturulur. Bir sağlayıcının yaygın kalıbın dışına çıkması
+      gerektiğinde bunları kullanabilirsiniz:
 
-      - `openclaw/plugin-sdk/provider-model-shared` - `ProviderReplayFamily`, `buildProviderReplayFamilyHooks(...)` ve ham replay oluşturucuları (`buildOpenAICompatibleReplayPolicy`, `buildAnthropicReplayPolicyForModel`, `buildGoogleGeminiReplayPolicy`, `buildHybridAnthropicOrOpenAIReplayPolicy`). Ayrıca Gemini replay yardımcılarını (`sanitizeGoogleGeminiReplayHistory`, `resolveTaggedReasoningOutputMode`) ve uç nokta/model yardımcılarını (`resolveProviderEndpoint`, `normalizeProviderId`, `normalizeGooglePreviewModelId`) dışa aktarır.
-      - `openclaw/plugin-sdk/provider-stream` - `ProviderStreamFamily`, `buildProviderStreamFamilyHooks(...)`, `composeProviderStreamWrappers(...)`, ayrıca paylaşılan OpenAI/Codex sarmalayıcıları (`createOpenAIAttributionHeadersWrapper`, `createOpenAIFastModeWrapper`, `createOpenAIServiceTierWrapper`, `createOpenAIResponsesContextManagementWrapper`, `createCodexNativeWebSearchWrapper`), DeepSeek V4 OpenAI uyumlu sarmalayıcısı (`createDeepSeekV4OpenAICompatibleThinkingWrapper`), Anthropic Messages thinking prefill temizliği (`createAnthropicThinkingPrefillPayloadWrapper`), düz metin tool-call compat (`createPlainTextToolCallCompatWrapper`) ve paylaşılan proxy/sağlayıcı sarmalayıcıları (`createOpenRouterWrapper`, `createToolStreamWrapper`, `createMinimaxFastModeWrapper`).
-      - `openclaw/plugin-sdk/provider-stream-shared` - sıcak sağlayıcı yolları için hafif payload ve olay sarmalayıcıları; `createOpenAICompatibleCompletionsThinkingOffWrapper`, `createPayloadPatchStreamWrapper`, `createPlainTextToolCallCompatWrapper`, `normalizeOpenAICompatibleReasoningPayload(...)` ve `setQwenChatTemplateThinking(...)` dahil.
-      - `openclaw/plugin-sdk/provider-tools` - `ProviderToolCompatFamily`, `buildProviderToolCompatFamilyHooks("deepseek" | "gemini" | "openai")` ve temel sağlayıcı şema yardımcıları.
+      - `openclaw/plugin-sdk/provider-model-shared` - `ProviderReplayFamily`, `buildProviderReplayFamilyHooks(...)` ve ham yeniden oynatma oluşturucuları (`buildOpenAICompatibleReplayPolicy`, `buildAnthropicReplayPolicyForModel`, `buildGoogleGeminiReplayPolicy`, `buildHybridAnthropicOrOpenAIReplayPolicy`). Ayrıca Gemini yeniden oynatma yardımcılarını (`sanitizeGoogleGeminiReplayHistory`, `resolveTaggedReasoningOutputMode`) ve uç nokta/model yardımcılarını (`resolveProviderEndpoint`, `normalizeProviderId`, `normalizeGooglePreviewModelId`) dışa aktarır.
+      - `openclaw/plugin-sdk/provider-stream` - `ProviderStreamFamily`, `buildProviderStreamFamilyHooks(...)`, `composeProviderStreamWrappers(...)`; ayrıca paylaşılan OpenAI/Codex sarmalayıcıları (`createOpenAIAttributionHeadersWrapper`, `createOpenAIFastModeWrapper`, `createOpenAIServiceTierWrapper`, `createOpenAIResponsesContextManagementWrapper`, `createCodexNativeWebSearchWrapper`), DeepSeek V4 OpenAI uyumlu sarmalayıcısı (`createDeepSeekV4OpenAICompatibleThinkingWrapper`), Anthropic Messages düşünme ön doldurma temizliği (`createAnthropicThinkingPrefillPayloadWrapper`), düz metin araç çağrısı uyumluluğu (`createPlainTextToolCallCompatWrapper`) ve paylaşılan proxy/sağlayıcı sarmalayıcıları (`createOpenRouterWrapper`, `createToolStreamWrapper`, `createMinimaxFastModeWrapper`).
+      - `openclaw/plugin-sdk/provider-stream-shared` - `createOpenAICompatibleCompletionsThinkingOffWrapper`, `createPayloadPatchStreamWrapper`, `createPlainTextToolCallCompatWrapper`, `normalizeOpenAICompatibleReasoningPayload(...)` ve `setQwenChatTemplateThinking(...)` dâhil, yoğun kullanılan sağlayıcı yolları için hafif yük ve olay sarmalayıcıları.
+      - `openclaw/plugin-sdk/provider-tools` - `ProviderToolCompatFamily`, `buildProviderToolCompatFamilyHooks("deepseek" | "gemini" | "openai")` ve temel sağlayıcı şeması yardımcıları.
 
-      Gemini ailesi sağlayıcıları için reasoning-output modunu taşıma ile uyumlu tutun. Doğrudan Google Gemini API sağlayıcıları `native` reasoning çıktısı kullanmalıdır; böylece OpenClaw yerel thought parçalarını `<think>` / `<final>` prompt yönergeleri eklemeden tüketir. Son JSON/metin yanıtını ayrıştıran yalnızca metin Gemini CLI tarzı backend'ler paylaşılan `google-gemini` etiketli sözleşmesini koruyabilir.
+      Gemini ailesindeki sağlayıcılar için akıl yürütme çıktı modunu aktarımla
+      uyumlu tutun. Doğrudan Google Gemini API sağlayıcıları, OpenClaw'ın
+      `<think>` / `<final>` istem yönergeleri eklemeden yerel düşünce parçalarını
+      kullanabilmesi için `native` akıl yürütme çıktısını kullanmalıdır. Son bir
+      JSON/metin yanıtını ayrıştıran yalnızca metin kullanan Gemini CLI tarzı arka
+      uçlar, paylaşılan `google-gemini` etiketli sözleşmesini koruyabilir.
 
-      Bazı stream yardımcıları bilerek sağlayıcıya yerel kalır. `@openclaw/anthropic-provider`, `wrapAnthropicProviderStream`, `resolveAnthropicBetas`, `resolveAnthropicFastMode`, `resolveAnthropicServiceTier` ve daha düşük düzeyli Anthropic sarmalayıcı oluşturucularını kendi genel `api.ts` / `contract-api.ts` sınırında tutar; çünkü bunlar Claude OAuth beta işleme ve `context1m` kapılamasını kodlar. xAI Plugin'i de yerel xAI Responses biçimlendirmesini kendi `wrapStreamFn` içinde tutar (`/fast` alias'ları, varsayılan `tool_stream`, desteklenmeyen strict-tool temizliği, xAI'ye özgü reasoning-payload kaldırma).
+      Bazı akış yardımcıları bilinçli olarak sağlayıcıya özel kalır.
+      `@openclaw/anthropic-provider`; `wrapAnthropicProviderStream`,
+      `resolveAnthropicBetas`, `resolveAnthropicFastMode`,
+      `resolveAnthropicServiceTier` ve daha alt düzey Anthropic sarmalayıcı
+      oluşturucularını kendi genel `api.ts` / `contract-api.ts` bağlantı noktasında
+      tutar; çünkü bunlar Claude OAuth beta işleme ve `context1m` sınırlamasını
+      kodlar. xAI Plugin'i de benzer şekilde yerel xAI Responses şekillendirmesini
+      kendi `wrapStreamFn` öğesinde tutar (`/fast` takma adları, varsayılan
+      `tool_stream`, desteklenmeyen katı araç temizliği, xAI'ye özgü akıl yürütme
+      yükü kaldırma).
 
-      Aynı paket kökü kalıbı `@openclaw/openai-provider` (sağlayıcı oluşturucular, varsayılan model yardımcıları, realtime sağlayıcı oluşturucuları) ve `@openclaw/openrouter-provider` (sağlayıcı oluşturucu ve onboarding/yapılandırma yardımcıları) için de temel oluşturur.
+      Aynı paket kökü kalıbı ayrıca `@openclaw/openai-provider` (sağlayıcı
+      oluşturucuları, varsayılan model yardımcıları, gerçek zamanlı sağlayıcı
+      oluşturucuları) ve `@openclaw/openrouter-provider` (sağlayıcı oluşturucusu
+      ile ilk katılım/yapılandırma yardımcıları) için de kullanılır.
     </Accordion>
 
     <Tabs>
-      <Tab title="Token değişimi">
-        Her çıkarım çağrısından önce token değişimine ihtiyaç duyan sağlayıcılar için:
+      <Tab title="Belirteç değişimi">
+        Her çıkarım çağrısından önce belirteç değişimi gerektiren sağlayıcılar için:
 
         ```typescript
         prepareRuntimeAuth: async (ctx) => {
@@ -531,8 +580,8 @@ doğrulaması ve dinamik model çözümlemesi olan bir sağlayıcınız olacak.
         },
         ```
       </Tab>
-      <Tab title="Özel üstbilgiler">
-        Özel istek üstbilgilerine veya gövde değişikliklerine ihtiyaç duyan sağlayıcılar için:
+      <Tab title="Özel üst bilgiler">
+        Özel istek üst bilgileri veya gövde değişiklikleri gerektiren sağlayıcılar için:
 
         ```typescript
         // wrapStreamFn returns a StreamFn derived from ctx.streamFn
@@ -549,8 +598,9 @@ doğrulaması ve dinamik model çözümlemesi olan bir sağlayıcınız olacak.
         },
         ```
       </Tab>
-      <Tab title="Yerel taşıma kimliği">
-        Genel HTTP veya WebSocket taşımalarında yerel istek/oturum üstbilgilerine ya da metadata'ya ihtiyaç duyan sağlayıcılar için:
+      <Tab title="Yerel aktarım kimliği">
+        Genel HTTP veya WebSocket aktarımlarında yerel istek/oturum üst bilgileri
+        ya da meta veriler gerektiren sağlayıcılar için:
 
         ```typescript
         resolveTransportTurnState: (ctx) => ({
@@ -571,7 +621,7 @@ doğrulaması ve dinamik model çözümlemesi olan bir sağlayıcınız olacak.
         ```
       </Tab>
       <Tab title="Kullanım ve faturalandırma">
-        Kullanım/faturalandırma verisi sunan sağlayıcılar için:
+        Kullanım/faturalandırma verilerini sunan sağlayıcılar için:
 
         ```typescript
         resolveUsageAuth: async (ctx) => {
@@ -583,66 +633,115 @@ doğrulaması ve dinamik model çözümlemesi olan bir sağlayıcınız olacak.
         },
         ```
 
-        `resolveUsageAuth` üç sonuca sahiptir. Sağlayıcının kullanım/faturalandırma kimlik bilgisi olduğunda `{ token, accountId? }` döndürün. Yalnızca sağlayıcı kullanım kimlik doğrulamasını kesin olarak işlemiş ancak kullanılabilir bir kullanım belirteci yoksa ve OpenClaw genel API anahtarı/OAuth geri dönüşünü atlamalıysa `{ handled: true }` döndürün. Sağlayıcı isteği işlemediyse ve OpenClaw genel geri dönüşle devam etmeliyse `null` veya `undefined` döndürün.
+        `resolveUsageAuth` üç olası sonuç verir. Sağlayıcının bir
+        kullanım/faturalandırma kimlik bilgisi olduğunda
+        `{ token, accountId?, subscriptionType?, rateLimitTier? }` döndürün
+        (isteğe bağlı alanlar, çözümlenen profildeki gizli olmayan plan meta
+        verilerini `fetchUsageSnapshot` içine taşır). Yalnızca sağlayıcı kullanım
+        kimlik doğrulamasını kesin olarak işlediyse ancak kullanılabilir bir
+        kullanım belirteci yoksa ve OpenClaw genel API anahtarı/OAuth geri dönüşünü
+        atlamalıysa `{ handled: true }` döndürün. Sağlayıcı isteği işlemediyse ve
+        OpenClaw genel geri dönüşle devam etmeliyse `null` veya `undefined`
+        döndürün.
+
+        Sağlayıcı kimliğini `contracts.usageProviders` içinde bildirin. Bu manifest
+        sözleşmesi ve **her iki** kanca da mevcut olduğunda OpenClaw, ilgisiz
+        sağlayıcı Plugin'lerini yüklemeden sağlayıcıyı otomatik olarak kullanım
+        verisi toplamaya dahil eder. Çekirdek izin listesinin güncellenmesi
+        gerekmez.
+        `fetchUsageSnapshot`, sağlayıcıdan bağımsız ortak biçimi döndürür:
+
+        - `plan`: sağlayıcının bildirdiği abonelik veya anahtar etiketi
+        - `windows`: kullanılan yüzdeler olarak sıfırlanabilir kota pencereleri
+        - `billing`: türü belirtilmiş `balance`, `spend` veya `budget` girdileri;
+          `unit`, bir ISO para birimi ya da `credits` gibi bir sağlayıcı birimi olabilir
+        - `summary`: bu yapılandırılmış alanlara sığmayan, sağlayıcıya özgü kısa bağlam
+
+        Para birimi anlamlarını tam olarak koruyun. Üst kaynak sözleşmesi öyle
+        olduğunu belirtmediği sürece bir sağlayıcı kredisi USD değildir. Yalnızca
+        `fetchUsageSnapshot` uygulayan bir Plugin, açık/sentetik çağıranlar için
+        kullanılabilir olmaya devam eder ancak OpenClaw kullanım kimlik bilgisini
+        çözümleyemediği için otomatik olarak keşfedilmez.
       </Tab>
     </Tabs>
 
-    <Accordion title="Kullanılabilir tüm sağlayıcı hook'ları">
-      OpenClaw hook'ları bu sırayla çağırır. Çoğu sağlayıcı yalnızca 2-3 tanesini kullanır:
-      OpenClaw'ın artık çağırmadığı, `ProviderPlugin.capabilities` ve `suppressBuiltInModel` gibi yalnızca uyumluluk amaçlı sağlayıcı alanları burada listelenmez.
+    <Accordion title="Yaygın sağlayıcı kancaları">
+      OpenClaw, model/sağlayıcı Plugin'leri için kancaları yaklaşık olarak bu
+      sırayla çağırır. Çoğu sağlayıcı yalnızca 2-3 tanesini kullanır. Bu,
+      `ProviderPlugin` sözleşmesinin tamamı değildir; eksiksiz ve güncel kanca
+      listesi ile geri dönüş notları için [İç Yapı: Sağlayıcı Çalışma Zamanı
+      Kancaları](/tr/plugins/architecture-internals#provider-runtime-hooks) bölümüne
+      bakın. OpenClaw'ın artık çağırmadığı, yalnızca uyumluluk amaçlı
+      `ProviderPlugin.capabilities` ve `suppressBuiltInModel` gibi sağlayıcı
+      alanları burada listelenmemiştir.
 
-      | # | Hook | Ne zaman kullanılır |
-      | --- | --- | --- |
-      | 1 | `catalog` | Model kataloğu veya temel URL varsayılanları |
-      | 2 | `applyConfigDefaults` | Yapılandırma somutlaştırması sırasında sağlayıcıya ait genel varsayılanlar |
-      | 3 | `normalizeModelId` | Aramadan önce eski/önizleme model kimliği takma ad temizliği |
-      | 4 | `normalizeTransport` | Genel model birleştirmesinden önce sağlayıcı ailesi `api` / `baseUrl` temizliği |
-      | 5 | `normalizeConfig` | `models.providers.<id>` yapılandırmasını normalleştirme |
-      | 6 | `applyNativeStreamingUsageCompat` | Yapılandırma sağlayıcıları için yerel akış kullanım uyumluluğu yeniden yazımları |
-      | 7 | `resolveConfigApiKey` | Sağlayıcıya ait env-marker kimlik doğrulaması çözümleme |
-      | 8 | `resolveSyntheticAuth` | Yerel/kendi barındırılan veya yapılandırma destekli sentetik kimlik doğrulama |
-      | 9 | `shouldDeferSyntheticProfileAuth` | Env/yapılandırma kimlik doğrulamasının arkasındaki sentetik saklanan profil yer tutucularını düşürme |
-      | 10 | `resolveDynamicModel` | Rastgele upstream model kimliklerini kabul etme |
-      | 11 | `prepareDynamicModel` | Çözümlemeden önce zaman uyumsuz metadata getirme |
-      | 12 | `normalizeResolvedModel` | Çalıştırıcıdan önce taşıma yeniden yazımları |
-      | 13 | `normalizeToolSchemas` | Kayıttan önce sağlayıcıya ait araç şeması temizliği |
-      | 14 | `inspectToolSchemas` | Sağlayıcıya ait araç şeması tanılamaları |
-      | 15 | `resolveReasoningOutputMode` | Etiketli ve yerel reasoning çıktısı sözleşmesi |
-      | 16 | `prepareExtraParams` | Varsayılan istek parametreleri |
-      | 17 | `createStreamFn` | Tamamen özel StreamFn taşıması |
-      | 19 | `wrapStreamFn` | Normal akış yolunda özel header/body sarmalayıcıları |
-      | 20 | `resolveTransportTurnState` | Her turn için yerel header/metadata |
-      | 21 | `resolveWebSocketSessionPolicy` | Yerel WS oturum header'ları/bekleme süresi |
-      | 22 | `formatApiKey` | Özel çalışma zamanı belirteç biçimi |
-      | 23 | `refreshOAuth` | Özel OAuth yenileme |
-      | 24 | `buildAuthDoctorHint` | Kimlik doğrulama onarım rehberliği |
-      | 25 | `matchesContextOverflowError` | Sağlayıcıya ait overflow algılama |
-      | 26 | `classifyFailoverReason` | Sağlayıcıya ait hız sınırı/aşırı yük sınıflandırması |
-      | 27 | `isCacheTtlEligible` | Prompt önbelleği TTL geçidi |
-      | 28 | `buildMissingAuthMessage` | Özel eksik kimlik doğrulama ipucu |
-      | 29 | `augmentModelCatalog` | Sentetik ileriye dönük uyumluluk satırları |
-      | 30 | `resolveThinkingProfile` | Modele özgü `/think` seçenek kümesi |
-      | 31 | `isBinaryThinking` | İkili düşünme açık/kapalı uyumluluğu |
-      | 32 | `supportsXHighThinking` | `xhigh` reasoning desteği uyumluluğu |
-      | 33 | `resolveDefaultThinkingLevel` | Varsayılan `/think` ilkesi uyumluluğu |
-      | 34 | `isModernModelRef` | Canlı/smoke model eşleştirme |
-      | 35 | `prepareRuntimeAuth` | Çıkarımdan önce belirteç değişimi |
-      | 36 | `resolveUsageAuth` | Özel kullanım kimlik bilgisi ayrıştırma |
-      | 37 | `fetchUsageSnapshot` | Özel kullanım endpoint'i |
-      | 38 | `createEmbeddingProvider` | Bellek/arama için sağlayıcıya ait embedding adaptörü |
-      | 39 | `buildReplayPolicy` | Özel transcript yeniden oynatma/Compaction ilkesi |
-      | 40 | `sanitizeReplayHistory` | Genel temizlikten sonra sağlayıcıya özgü yeniden oynatma yeniden yazımları |
-      | 41 | `validateReplayTurns` | Gömülü çalıştırıcıdan önce katı yeniden oynatma turn doğrulaması |
-      | 42 | `onModelSelected` | Seçim sonrası callback (örn. telemetri) |
+      | Kanca | Ne zaman kullanılmalı |
+      | --- | --- |
+      | `catalog` | Model kataloğu veya temel URL varsayılanları |
+      | `applyConfigDefaults` | Yapılandırma somutlaştırılırken sağlayıcının sahip olduğu genel varsayılanlar |
+      | `normalizeModelId` | Aramadan önce eski/önizleme model kimliği takma adlarını temizleme |
+      | `normalizeTransport` | Genel model birleştirmesinden önce sağlayıcı ailesine ait `api` / `baseUrl` temizliği |
+      | `normalizeConfig` | `models.providers.<id>` yapılandırmasını normalleştirme |
+      | `applyNativeStreamingUsageCompat` | Yapılandırma sağlayıcıları için yerel akış kullanımı uyumluluk yeniden yazımları |
+      | `resolveConfigApiKey` | Sağlayıcının sahip olduğu ortam işaretçisi kimlik doğrulama çözümlemesi |
+      | `resolveSyntheticAuth` | Yerel/kendi sunucusunda barındırılan veya yapılandırma destekli sentetik kimlik doğrulama |
+      | `resolveExternalAuthProfiles` | CLI/uygulama tarafından yönetilen kimlik bilgileri için sağlayıcının sahip olduğu harici kimlik doğrulama profillerini katmanlama |
+      | `shouldDeferSyntheticProfileAuth` | Sentetik kayıtlı profil yer tutucularını ortam/yapılandırma kimlik doğrulamasının arkasına alma |
+      | `resolveDynamicModel` | İsteğe bağlı üst kaynak model kimliklerini kabul etme |
+      | `prepareDynamicModel` | Çözümlemeden önce eşzamansız meta veri getirme |
+      | `normalizeResolvedModel` | Çalıştırıcıdan önce aktarım yeniden yazımları |
+      | `normalizeToolSchemas` | Kayıttan önce sağlayıcının sahip olduğu araç şeması temizliği |
+      | `inspectToolSchemas` | Sağlayıcının sahip olduğu araç şeması tanılamaları |
+      | `resolveReasoningOutputMode` | Etiketli ve yerel akıl yürütme çıktısı sözleşmesi |
+      | `prepareExtraParams` | Varsayılan istek parametreleri |
+      | `createStreamFn` | Tamamen özel StreamFn aktarımı |
+      | `wrapStreamFn` | Normal akış yolundaki özel üstbilgi/gövde sarmalayıcıları |
+      | `resolveTransportTurnState` | Her tur için yerel üstbilgiler/meta veriler |
+      | `resolveWebSocketSessionPolicy` | Yerel WS oturum üstbilgileri/bekleme süresi |
+      | `formatApiKey` | Özel çalışma zamanı belirteci biçimi |
+      | `refreshOAuth` | Özel OAuth yenilemesi |
+      | `buildAuthDoctorHint` | Kimlik doğrulama onarım rehberliği |
+      | `matchesContextOverflowError` | Sağlayıcının sahip olduğu taşma algılama |
+      | `classifyFailoverReason` | Sağlayıcının sahip olduğu hız sınırı/aşırı yük sınıflandırması |
+      | `isCacheTtlEligible` | İstem önbelleği TTL geçiş denetimi |
+      | `buildMissingAuthMessage` | Özel eksik kimlik doğrulama ipucu |
+      | `augmentModelCatalog` | Sentetik ileriye dönük uyumluluk satırları (kullanımdan kaldırıldı; `registerModelCatalogProvider` tercih edin) |
+      | `resolveThinkingProfile` | Modele özgü `/think` seçenek kümesi |
+      | `isBinaryThinking` | İkili düşünme açık/kapalı uyumluluğu (kullanımdan kaldırıldı; `resolveThinkingProfile` tercih edin) |
+      | `supportsXHighThinking` | `xhigh` akıl yürütme desteği uyumluluğu (kullanımdan kaldırıldı; `resolveThinkingProfile` tercih edin) |
+      | `resolveDefaultThinkingLevel` | Varsayılan `/think` politikası uyumluluğu (kullanımdan kaldırıldı; `resolveThinkingProfile` tercih edin) |
+      | `isModernModelRef` | Canlı/duman testi modeli eşleştirme |
+      | `prepareRuntimeAuth` | Çıkarımdan önce belirteç değişimi |
+      | `resolveUsageAuth` | Özel kullanım kimlik bilgisi ayrıştırma |
+      | `fetchUsageSnapshot` | Özel kullanım uç noktası |
+      | `createEmbeddingProvider` | Bellek/arama için sağlayıcının sahip olduğu gömme bağdaştırıcısı |
+      | `buildReplayPolicy` | Özel döküm yeniden oynatma/Compaction politikası |
+      | `sanitizeReplayHistory` | Genel temizlikten sonra sağlayıcıya özgü yeniden oynatma yazımları |
+      | `validateReplayTurns` | Gömülü çalıştırıcıdan önce katı yeniden oynatma turu doğrulaması |
+      | `onModelSelected` | Seçim sonrası geri çağırma (ör. telemetri) |
 
       Çalışma zamanı geri dönüş notları:
 
-      - `normalizeConfig` önce eşleşen sağlayıcıyı, ardından biri yapılandırmayı gerçekten değiştirene kadar hook destekli diğer sağlayıcı Plugin'lerini kontrol eder. Hiçbir sağlayıcı hook'u desteklenen bir Google ailesi yapılandırma girdisini yeniden yazmazsa, paketlenmiş Google yapılandırma normalleştiricisi yine de uygulanır.
-      - `resolveConfigApiKey`, sunulduğunda sağlayıcı hook'unu kullanır. Amazon Bedrock AWS env-marker çözümlemesini kendi sağlayıcı Plugin'inde tutar; çalışma zamanı kimlik doğrulamasının kendisi `auth: "aws-sdk"` ile yapılandırıldığında hâlâ AWS SDK varsayılan zincirini kullanır.
-      - `resolveThinkingProfile(ctx)`, seçilen `provider`, `modelId`, isteğe bağlı birleştirilmiş `reasoning` katalog ipucu ve isteğe bağlı birleştirilmiş model `compat` bilgilerini alır. `compat` değerini yalnızca sağlayıcının düşünme UI/profilini seçmek için kullanın.
-      - `resolveSystemPromptContribution`, bir sağlayıcının bir model ailesi için önbellek duyarlı sistem prompt rehberliği enjekte etmesine olanak tanır. Davranış tek bir sağlayıcı/model ailesine ait olduğunda ve kararlı/dinamik önbellek ayrımını koruması gerektiğinde `before_prompt_build` yerine bunu tercih edin.
+      - `normalizeConfig`, her sağlayıcı kimliği için bir sahip Plugin'i çözümler
+        (önce paketlenmiş sağlayıcılar, ardından eşleşen çalışma zamanı Plugin'i)
+        ve yalnızca bu kancayı çağırır; diğer sağlayıcılar arasında tarama
+        yapılmaz. `google` / `google-vertex` / `google-antigravity` yapılandırma
+        girdilerini normalleştiren, Google'ın kendi `normalizeConfig` kancasıdır;
+        bu ayrı bir çekirdek geri dönüşü değildir.
+      - `resolveConfigApiKey`, sunulduğunda sağlayıcı kancasını kullanır. Amazon
+        Bedrock, AWS ortam işaretçisi çözümlemesini kendi sağlayıcı Plugin'inde
+        tutar; çalışma zamanı kimlik doğrulamasının kendisi, `auth: "aws-sdk"`
+        ile yapılandırıldığında AWS SDK varsayılan zincirini kullanmaya devam eder.
+      - `resolveThinkingProfile(ctx)` seçili `provider`, `modelId`, isteğe bağlı
+        birleştirilmiş `reasoning` katalog ipucunu ve isteğe bağlı birleştirilmiş
+        model `compat` bilgilerini alır. `compat` değerini yalnızca sağlayıcının
+        düşünme kullanıcı arayüzünü/profilini seçmek için kullanın.
+      - `resolveSystemPromptContribution`, bir sağlayıcının bir model ailesi için
+        önbellek duyarlı sistem istemi rehberliği eklemesine olanak tanır. Davranış
+        tek bir sağlayıcı/model ailesine ait olduğunda ve kararlı/dinamik önbellek
+        ayrımını koruması gerektiğinde eski, Plugin genelindeki
+        `before_prompt_build` kancası yerine bunu tercih edin.
 
-      Ayrıntılı açıklamalar ve gerçek dünya örnekleri için bkz. [İç Mekanizmalar: Sağlayıcı Çalışma Zamanı Hook'ları](/tr/plugins/architecture-internals#provider-runtime-hooks).
     </Accordion>
 
   </Step>
@@ -650,9 +749,15 @@ doğrulaması ve dinamik model çözümlemesi olan bir sağlayıcınız olacak.
   <Step title="Ek yetenekler ekleyin (isteğe bağlı)">
     ### Adım 5: Ek yetenekler ekleyin
 
-    Bir sağlayıcı Plugin'i metin çıkarımının yanında embedding'ler, konuşma, gerçek zamanlı transkripsiyon, gerçek zamanlı ses, medya anlama, görüntü oluşturma, video oluşturma, web getirme ve web arama kaydedebilir. OpenClaw bunu bir **hibrit-yetenek** Plugin'i olarak sınıflandırır; şirket Plugin'leri için önerilen kalıp budur (satıcı başına bir Plugin). Bkz. [İç Mekanizmalar: Yetenek Sahipliği](/tr/plugins/architecture#capability-ownership-model).
+    Bir sağlayıcı Plugin'i; metin çıkarımının yanı sıra gömmeler, konuşma, gerçek
+    zamanlı transkripsiyon, gerçek zamanlı ses, medya anlama, görüntü oluşturma,
+    video oluşturma, web'den getirme ve web aramayı kaydedebilir. OpenClaw bunu
+    bir **hibrit yetenek** Plugin'i olarak sınıflandırır; şirket Plugin'leri için
+    önerilen kalıp budur (satıcı başına bir Plugin). Bkz.
+    [İç Yapı: Yetenek Sahipliği](/tr/plugins/architecture#capability-ownership-model).
 
-    Her yeteneği mevcut `api.registerProvider(...)` çağrınızın yanında `register(api)` içinde kaydedin. Yalnızca ihtiyacınız olan sekmeleri seçin:
+    Her yeteneği, mevcut `api.registerProvider(...)` çağrınızın yanında
+    `register(api)` içinde kaydedin. Yalnızca ihtiyaç duyduğunuz sekmeleri seçin:
 
     <Tabs>
       <Tab title="Konuşma (TTS)">
@@ -691,10 +796,16 @@ doğrulaması ve dinamik model çözümlemesi olan bir sağlayıcınız olacak.
         });
         ```
 
-        Provider HTTP hataları için `assertOkOrThrowProviderError(...)` kullanın; böylece Plugin'ler sınırlandırılmış hata gövdesi okumalarını, JSON hata ayrıştırmasını ve istek kimliği son eklerini paylaşır.
+        Sağlayıcı HTTP hataları için `assertOkOrThrowProviderError(...)` kullanın;
+        böylece Plugin'ler sınırlı hata gövdesi okumalarını, JSON hata
+        ayrıştırmasını ve istek kimliği son eklerini paylaşır.
       </Tab>
       <Tab title="Gerçek zamanlı transkripsiyon">
-        `createRealtimeTranscriptionWebSocketSession(...)` tercih edin; paylaşılan yardımcı proxy yakalamayı, yeniden bağlanma backoff'unu, kapatma flush'ını, hazır el sıkışmalarını, ses kuyruğa almayı ve kapatma olayı tanılamalarını yönetir. Plugin'iniz yalnızca upstream olaylarını eşler.
+        `createRealtimeTranscriptionWebSocketSession(...)` kullanmayı tercih edin;
+        paylaşılan yardımcı, proxy yakalamayı, yeniden bağlanma geri çekilmesini,
+        kapanış temizlemesini, hazır el sıkışmalarını, ses kuyruğa almayı ve
+        kapanış olayı tanılamalarını yönetir. Plugin'iniz yalnızca üst kaynak
+        olaylarını eşler.
 
         ```typescript
         api.registerRealtimeTranscriptionProvider({
@@ -732,7 +843,11 @@ doğrulaması ve dinamik model çözümlemesi olan bir sağlayıcınız olacak.
         });
         ```
 
-        Çok parçalı sesi POST eden toplu STT sağlayıcıları `openclaw/plugin-sdk/provider-http` içindeki `buildAudioTranscriptionFormData(...)` kullanmalıdır. Yardımcı, uyumlu transkripsiyon API'leri için M4A tarzı dosya adı gerektiren AAC yüklemeleri dahil olmak üzere yükleme dosya adlarını normalleştirir.
+        Çok parçalı sesi POST ile gönderen toplu STT sağlayıcıları,
+        `openclaw/plugin-sdk/provider-http` içindeki
+        `buildAudioTranscriptionFormData(...)` yardımcısını kullanmalıdır. Yardımcı,
+        uyumlu transkripsiyon API'leri için M4A tarzı bir dosya adına ihtiyaç
+        duyan AAC yüklemeleri dahil olmak üzere yükleme dosya adlarını normalleştirir.
       </Tab>
       <Tab title="Gerçek zamanlı ses">
         ```typescript
@@ -744,13 +859,14 @@ doğrulaması ve dinamik model çözümlemesi olan bir sağlayıcınız olacak.
             inputAudioFormats: [{ encoding: "pcm16", sampleRateHz: 24000, channels: 1 }],
             outputAudioFormats: [{ encoding: "pcm16", sampleRateHz: 24000, channels: 1 }],
             supportsBargeIn: true,
+            handlesInputAudioBargeIn: true,
             supportsToolCalls: true,
           },
           isConfigured: ({ providerConfig }) => Boolean(providerConfig.apiKey),
           createBridge: (req) => ({
-            // Bunu yalnızca sağlayıcı tek bir çağrı için birden fazla araç yanıtını
-            // kabul ediyorsa ayarlayın; örneğin anında verilen bir "working" yanıtının
-            // ardından nihai sonuç.
+            // Set this only if the provider accepts multiple tool responses for
+            // one call, for example an immediate "working" response followed by
+            // the final result.
             supportsToolResultContinuation: false,
             connect: async () => {},
             sendAudio: () => {},
@@ -764,11 +880,27 @@ doğrulaması ve dinamik model çözümlemesi olan bir sağlayıcınız olacak.
         });
         ```
 
-        `talk.catalog` öğesinin tarayıcı ve yerel Talk istemcilerine geçerli modları,
-        aktarımları, ses biçimlerini ve özellik bayraklarını gösterebilmesi için
-        `capabilities` bildirin. Bir aktarım, bir insanın asistan oynatımını
-        böldüğünü algılayabildiğinde ve provider etkin ses yanıtını kısaltmayı
-        ya da temizlemeyi desteklediğinde `handleBargeIn` uygulayın.
+        `talk.catalog` öğesinin tarayıcı ve yerel Talk istemcilerine geçerli
+        modları, aktarımları, ses biçimlerini ve özellik bayraklarını sunabilmesi
+        için `capabilities` bildirin. Bir aktarım, bir kişinin asistanın ses
+        oynatımını kestiğini algılayabiliyorsa ve sağlayıcı etkin ses yanıtını
+        kısaltmayı veya temizlemeyi destekliyorsa `handleBargeIn` uygulayın.
+        `submitToolResult`, eşzamanlı gönderim için `void` veya sağlayıcı
+        köprüsünün sunabileceği eşzamansız bir tamamlanma sınırı için
+        `Promise<void>` döndürebilir. Gateway aktarma oturumları, nihai sonucu
+        onaylamadan veya bağlantılı çalıştırmayı temizlemeden önce bu sözü
+        bekler; gönderim başarısız olduğunda sözü reddedin.
+        Sağlayıcı `options.suppressResponse` seçeneğine uyamıyorsa
+        `supportsToolResultSuppression: false` ayarlayın. OpenClaw böylece
+        dahili zorunlu danışma ve iptal sonuçlarında bastırmadan kaçınır ve
+        sessizce yanıt başlatmak yerine doğrudan bastırılmış sonuç isteklerini
+        reddeder. `createRealtimeVoiceBridgeSession` tüketicileri de benzer
+        şekilde `onToolCall` içinden bir söz döndürebilir; eşzamanlı fırlatmalar
+        ve reddetmeler oturumun `onError` geri çağrısına yönlendirilir.
+        `handlesInputAudioBargeIn` seçeneğini yalnızca sağlayıcı VAD'si,
+        `onClearAudio("barge-in")` çağrısıyla bir kesintiyi doğruladığında
+        ayarlayın. Bayrağı belirtmeyen sağlayıcılar OpenClaw'ın yerel giriş sesi
+        yedek algılamasını kullanır.
       </Tab>
       <Tab title="Medya anlama">
         ```typescript
@@ -781,11 +913,11 @@ doğrulaması ve dinamik model çözümlemesi olan bir sağlayıcınız olacak.
         ```
 
         Kimlik bilgilerini kasıtlı olarak gerektirmeyen yerel veya kendi
-        barındırdığınız medya provider'ları `resolveAuth` açığa çıkarabilir ve
-        `kind: "none"` döndürebilir. OpenClaw, açıkça dahil olmayan provider'lar
-        için normal kimlik doğrulama geçidini yine de korur. Mevcut provider'lar
-        `req.apiKey` okumaya devam edebilir; yeni provider'lar `req.auth` tercih
-        etmelidir.
+        barındırılan medya sağlayıcıları `resolveAuth` sunabilir ve
+        `kind: "none"` döndürebilir. OpenClaw, açıkça katılım sağlamayan
+        sağlayıcılar için normal kimlik doğrulama geçidini korumaya devam eder.
+        Mevcut sağlayıcılar `req.apiKey` okumayı sürdürebilir; yeni sağlayıcılar
+        `req.auth` seçeneğini tercih etmelidir.
 
         ```typescript
         api.registerMediaUnderstandingProvider({
@@ -799,7 +931,7 @@ doğrulaması ve dinamik model çözümlemesi olan bir sağlayıcınız olacak.
         });
         ```
       </Tab>
-      <Tab title="Embeddings">
+      <Tab title="Gömmeler">
         ```typescript
         api.registerEmbeddingProvider({
           id: "acme-ai",
@@ -826,30 +958,37 @@ doğrulaması ve dinamik model çözümlemesi olan bir sağlayıcınız olacak.
         });
         ```
 
-        Aynı id'yi `contracts.embeddingProviders` içinde bildirin. Bu,
-        bellek araması dahil yeniden kullanılabilir vektör üretimi için genel
-        embedding sözleşmesidir. `registerMemoryEmbeddingProvider(...)`, mevcut
-        belleğe özgü adaptörler için kullanımdan kaldırılmış uyumluluktur.
+        Aynı kimliği `contracts.embeddingProviders` içinde bildirin. Bu,
+        bellek araması dahil olmak üzere yeniden kullanılabilir vektör üretimi
+        için genel gömme sözleşmesidir. `registerMemoryEmbeddingProvider(...)`,
+        mevcut belleğe özgü bağdaştırıcılar için kullanım dışı bırakılmış
+        uyumluluktur.
       </Tab>
-      <Tab title="Görüntü ve video oluşturma">
-        Video yetenekleri **moda duyarlı** bir yapı kullanır: `generate`,
-        `imageToVideo` ve `videoToVideo`. `maxInputImages` /
-        `maxInputVideos` / `maxDurationSeconds` gibi düz toplu alanlar,
-        dönüşüm modu desteğini veya devre dışı bırakılmış modları temiz biçimde
-        duyurmak için yeterli değildir. Müzik oluşturma da açık `generate` /
-        `edit` bloklarıyla aynı deseni izler.
+      <Tab title="Görüntü ve video üretimi">
+        Görüntü ve video yetenekleri **mod duyarlı** bir yapı kullanır. Görüntü
+        sağlayıcıları gerekli `generate` ve `edit` yetenek bloklarını; video
+        sağlayıcıları ise `generate`, `imageToVideo` ve `videoToVideo`
+        bloklarını bildirir. `maxInputImages` / `maxInputVideos` /
+        `maxDurationSeconds` gibi düz toplu alanlar, dönüştürme modu desteğini
+        veya devre dışı modları açık biçimde duyurmak için yeterli değildir.
+        Müzik üretimi de aynı `generate` / `edit` kalıbını izler.
 
         ```typescript
         api.registerImageGenerationProvider({
           id: "acme-ai",
           label: "Acme Images",
-          generate: async (req) => ({ /* image result */ }),
+          capabilities: {
+            generate: { maxCount: 4, supportsSize: true },
+            edit: { enabled: false },
+          },
+          generateImage: async (req) => ({ images: [] }),
         });
 
         api.registerVideoGenerationProvider({
           id: "acme-ai",
           label: "Acme Video",
           defaultTimeoutMs: 600_000,
+          models: ["acme-video", "acme-image-video"],
           capabilities: {
             generate: { maxVideos: 1, maxDurationSeconds: 10, supportsResolution: true },
             imageToVideo: {
@@ -861,9 +1000,36 @@ doğrulaması ve dinamik model çözümlemesi olan bir sağlayıcınız olacak.
             },
             videoToVideo: { enabled: false },
           },
+          catalogByModel: {
+            "acme-image-video": {
+              modes: ["imageToVideo"],
+              capabilities: {
+                imageToVideo: {
+                  enabled: true,
+                  maxVideos: 1,
+                  maxInputImages: 1,
+                  resolutions: ["480P", "720P", "1080P"],
+                  supportsResolution: true,
+                },
+                videoToVideo: { enabled: false },
+              },
+            },
+          },
           generateVideo: async (req) => ({ videos: [] }),
         });
         ```
+
+        `capabilities` her iki sağlayıcı türünde de zorunludur; `edit` ve video
+        dönüştürme blokları (`imageToVideo`, `videoToVideo`) her zaman açık bir
+        `enabled` bayrağı gerektirir.
+
+        Listelenen bir modelin statik modları veya yetenekleri sağlayıcı
+        varsayılanlarından farklıysa `catalogByModel` kullanın. Bu meta veriler,
+        sağlayıcı kodunu çağırmadan `video_generate action=list` ve model
+        kataloglarının doğru kalmasını sağlar. İstek zamanındaki yetenek arama
+        ve uygulama işlemleri yine `resolveModelCapabilities` ve
+        `generateVideo` içinde yer alır; mümkün olduğunda her iki yol için de
+        aynı yetenek sabitini yeniden kullanın.
       </Tab>
       <Tab title="Web getirme ve arama">
         ```typescript
@@ -890,9 +1056,28 @@ doğrulaması ve dinamik model çözümlemesi olan bir sağlayıcınız olacak.
         api.registerWebSearchProvider({
           id: "acme-ai-search",
           label: "Acme Search",
-          search: async (req) => ({ content: [] }),
+          hint: "Search the web through Acme's search backend.",
+          envVars: ["ACME_SEARCH_API_KEY"],
+          placeholder: "acme-...",
+          signupUrl: "https://acme.example.com/search",
+          credentialPath: "plugins.entries.acme.config.webSearch.apiKey",
+          getCredentialValue: (searchConfig) => searchConfig?.acme?.apiKey,
+          setCredentialValue: (searchConfigTarget, value) => {
+            const acme = (searchConfigTarget.acme ??= {});
+            acme.apiKey = value;
+          },
+          createTool: () => ({
+            description: "Search the web through Acme Search.",
+            parameters: {},
+            execute: async (args) => ({ content: [] }),
+          }),
         });
         ```
+
+        Her iki sağlayıcı türü de aynı kimlik bilgisi bağlantı yapısını
+        paylaşır: `hint`, `envVars`, `placeholder`, `signupUrl`,
+        `credentialPath`, `getCredentialValue`, `setCredentialValue` ve
+        `createTool` alanlarının tümü zorunludur.
       </Tab>
     </Tabs>
 
@@ -934,17 +1119,18 @@ doğrulaması ve dinamik model çözümlemesi olan bir sağlayıcınız olacak.
   </Step>
 </Steps>
 
-## ClawHub'a yayımlama
+## ClawHub'da yayımlama
 
-Provider plugin'leri, diğer harici kod plugin'leriyle aynı şekilde yayımlanır:
+Sağlayıcı plugin'leri diğer tüm harici kod plugin'leriyle aynı şekilde
+yayımlanır:
 
 ```bash
 clawhub package publish your-org/your-plugin --dry-run
 clawhub package publish your-org/your-plugin
 ```
 
-Burada eski yalnızca skill yayımlama takma adını kullanmayın; plugin paketleri
-`clawhub package publish` kullanmalıdır.
+`clawhub skill publish <path>`, bir plugin paketi değil, bir skill klasörü
+yayımlamak için kullanılan farklı bir komuttur; burada kullanmayın.
 
 ## Dosya yapısı
 
@@ -960,25 +1146,25 @@ Burada eski yalnızca skill yayımlama takma adını kullanmayın; plugin paketl
 
 ## Katalog sırası referansı
 
-`catalog.order`, kataloğunuzun yerleşik provider'lara göre ne zaman
-birleştirileceğini kontrol eder:
+`catalog.order`, kataloğunuzun yerleşik sağlayıcılara göre ne zaman
+birleştirileceğini denetler:
 
-| Sıra      | Ne zaman       | Kullanım durumu                               |
-| --------- | -------------- | --------------------------------------------- |
-| `simple`  | İlk geçiş      | Düz API anahtarlı provider'lar                |
-| `profile` | simple sonrası | Kimlik doğrulama profillerine bağlı provider'lar |
-| `paired`  | profile sonrası | Birden fazla ilgili girdiyi sentezle          |
-| `late`    | Son geçiş      | Mevcut provider'ları geçersiz kıl (çakışmada kazanır) |
+| Sıra      | Zaman          | Kullanım alanı                                        |
+| --------- | -------------- | ----------------------------------------------------- |
+| `simple`  | İlk geçiş      | Yalnızca API anahtarı kullanan sağlayıcılar           |
+| `profile` | simple sonrası | Kimlik doğrulama profillerine bağlı sağlayıcılar      |
+| `paired`  | profile sonrası| Birbiriyle ilişkili birden fazla girdiyi sentezleme   |
+| `late`    | Son geçiş      | Mevcut sağlayıcıları geçersiz kılma (çakışmada kazanır) |
 
 ## Sonraki adımlar
 
-- [Kanal Plugin'leri](/tr/plugins/sdk-channel-plugins) - plugin'iniz bir kanal da sağlıyorsa
-- [SDK Runtime](/tr/plugins/sdk-runtime) - `api.runtime` yardımcıları (TTS, arama, alt ajan)
-- [SDK Genel Bakış](/tr/plugins/sdk-overview) - tam alt yol içe aktarma referansı
-- [Plugin İçleri](/tr/plugins/architecture-internals#provider-runtime-hooks) - hook ayrıntıları ve paketle gelen örnekler
+- [Kanal Pluginleri](/tr/plugins/sdk-channel-plugins) - Plugininiz ayrıca bir kanal sağlıyorsa
+- [SDK Çalışma Zamanı](/tr/plugins/sdk-runtime) - `api.runtime` yardımcıları (TTS, arama, alt ajan)
+- [SDK'ya Genel Bakış](/tr/plugins/sdk-overview) - alt yol içe aktarımlarının tam başvuru kaynağı
+- [Plugin İç Yapısı](/tr/plugins/architecture-internals#provider-runtime-hooks) - kanca ayrıntıları ve paketlenmiş örnekler
 
 ## İlgili
 
 - [Plugin SDK kurulumu](/tr/plugins/sdk-setup)
 - [Plugin oluşturma](/tr/plugins/building-plugins)
-- [Kanal plugin'leri oluşturma](/tr/plugins/sdk-channel-plugins)
+- [Kanal Pluginleri oluşturma](/tr/plugins/sdk-channel-plugins)

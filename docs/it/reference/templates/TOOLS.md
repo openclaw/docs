@@ -1,40 +1,29 @@
 ---
 read_when:
-    - Bootstrap manuale di un workspace
-summary: Template del workspace per TOOLS.md
-title: Template di TOOLS.md
+    - Inizializzazione manuale di un'area di lavoro
+summary: Modello dell'area di lavoro per TOOLS.md
+title: Modello TOOLS.md
 x-i18n:
-    generated_at: "2026-04-24T09:01:35Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 810b088129bfd963ffe603a7e0a07d099fd2551bf13ebcb702905e1b8135d017
-    source_path: reference/templates/TOOLS.md
-    workflow: 15
+    generated_at: "2026-07-12T07:30:02Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 20eab78b3b117566a1d33a70873e70ff2d5099543aa44e2719dc8d0797099afe
+    source_path: reference/templates/TOOLS.md
+    workflow: 16
 ---
 
 # TOOLS.md - Note locali
 
-Le Skills definiscono _come_ funzionano gli strumenti. Questo file serve per le _tue_ specificità — le cose uniche della tua configurazione.
-
-## Cosa va qui
-
-Cose come:
-
-- Nomi e posizioni delle telecamere
-- Host e alias SSH
-- Voci preferite per il TTS
-- Nomi di altoparlanti/stanze
-- Soprannomi dei dispositivi
-- Qualsiasi cosa specifica dell'ambiente
+Le Skills definiscono _come_ funzionano gli strumenti. Questo file è dedicato alle _tue_ specificità, ossia tutto ciò che è esclusivo della tua configurazione: nomi e posizioni delle videocamere, host e alias SSH, voci TTS preferite, nomi di altoparlanti e stanze, nomi informali dei dispositivi e qualsiasi altro elemento specifico dell'ambiente.
 
 ## Esempi
 
 ```markdown
-### Telecamere
+### Videocamere
 
-- living-room → Area principale, grandangolo 180°
-- front-door → Ingresso, attivata dal movimento
+- living-room → Area principale, grandangolo a 180°
+- front-door → Ingresso, attivazione tramite movimento
 
 ### SSH
 
@@ -42,18 +31,18 @@ Cose come:
 
 ### TTS
 
-- Voce preferita: "Nova" (calda, leggermente britannica)
+- Voce preferita: "Nova" (calda, con un leggero accento britannico)
 - Altoparlante predefinito: HomePod della cucina
 ```
 
-## Perché separato?
+## Perché tenerli separati?
 
-Le Skills sono condivise. La tua configurazione è tua. Tenerle separate significa che puoi aggiornare le Skills senza perdere le tue note e condividere le Skills senza esporre la tua infrastruttura.
+Le Skills sono condivise. La tua configurazione appartiene a te. Mantenerle separate ti consente di aggiornare le Skills senza perdere le tue note e di condividerle senza divulgare informazioni sulla tua infrastruttura.
 
 ---
 
-Aggiungi qualsiasi cosa ti aiuti a fare il tuo lavoro. Questo è il tuo promemoria rapido.
+Aggiungi tutto ciò che ti aiuta a svolgere il tuo lavoro. Questo è il tuo promemoria.
 
-## Correlati
+## Contenuti correlati
 
-- [Workspace dell'agente](/it/concepts/agent-workspace)
+- [Spazio di lavoro dell'agente](/it/concepts/agent-workspace)

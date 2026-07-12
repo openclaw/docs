@@ -1,250 +1,287 @@
 ---
 read_when:
-    - Debugujesz odrzucenia żądań dostawcy związane z kształtem transkryptu
-    - Zmieniasz logikę sanityzacji transkrypcji lub naprawy wywołań narzędzi
+    - Debugujesz odrzucenia żądań przez dostawcę związane ze strukturą transkrypcji
+    - Zmieniasz logikę oczyszczania transkrypcji lub naprawy wywołań narzędzi
     - Badasz niezgodności identyfikatorów wywołań narzędzi między dostawcami
-summary: 'Dokumentacja referencyjna: reguły sanityzacji transkryptów i naprawy specyficzne dla dostawcy'
+summary: 'Dokumentacja: reguły oczyszczania i naprawy transkrypcji specyficzne dla dostawcy'
 title: Higiena transkrypcji
 x-i18n:
-    generated_at: "2026-06-27T18:21:23Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:37:21Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ca1c747b33dc0d6730281d6c91d28a0f8a85bcc5e5cb00dbdebdb55157871a7d
+    source_hash: 4c78d718106498e92c34e3ad6af452a340f230fa88fbf3da36a568e9814ec759
     source_path: reference/transcript-hygiene.md
     workflow: 16
 ---
 
-OpenClaw stosuje **poprawki specyficzne dla dostawcy** do transkrypcji przed przebiegiem (budowaniem kontekstu modelu). Większość z nich to korekty **w pamięci**, używane do spełnienia rygorystycznych wymagań dostawcy. Osobny przebieg naprawy pliku sesji może także przepisać zapisany JSONL przed załadowaniem sesji, ale tylko dla nieprawidłowo sformatowanych wierszy lub utrwalonych tur, które są nieprawidłowymi trwałymi rekordami. Dostarczone odpowiedzi asystenta są zachowywane na dysku; usuwanie wstępnego wypełnienia asystenta specyficzne dla dostawcy odbywa się tylko podczas konstruowania wychodzących ładunków. Gdy dochodzi do naprawy, oryginalny plik jest zapisywany do tymczasowego sąsiedniego pliku `*.bak-<pid>-<ts>` przed atomowym zastąpieniem i usuwany po powodzeniu zastąpienia; kopia zapasowa jest zachowywana tylko wtedy, gdy samo czyszczenie się nie powiedzie (w takim przypadku ścieżka jest zwracana).
+OpenClaw stosuje **poprawki specyficzne dla dostawcy** do transkrypcji przed uruchomieniem
+(podczas budowania kontekstu modelu). Większość z nich to korekty wykonywane **w pamięci**,
+służące spełnieniu rygorystycznych wymagań dostawcy. Osobny etap naprawy pliku sesji może
+również przepisać zapisany plik JSONL przed wczytaniem sesji, ale tylko w przypadku
+nieprawidłowych wierszy lub utrwalonych tur, które nie są prawidłowymi trwałymi rekordami.
+Dostarczone odpowiedzi asystenta są zachowywane na dysku; usuwanie wstępnego uzupełnienia
+asystenta specyficzne dla dostawcy odbywa się wyłącznie podczas konstruowania wychodzących
+ładunków.
+
+Gdy następuje naprawa, przed atomową zamianą oryginalny plik jest zapisywany w tym samym
+katalogu jako tymczasowy plik `*.bak-<pid>-<ts>`, a po pomyślnym zakończeniu zamiany jest
+usuwany. Kopia zapasowa jest zachowywana tylko wtedy, gdy samo czyszczenie się nie powiedzie;
+w takim przypadku zwracana jest jej ścieżka.
 
 Zakres obejmuje:
 
-- Kontekst promptu wyłącznie w czasie wykonywania pozostający poza widocznymi dla użytkownika turami transkrypcji
-- Sanityzację identyfikatorów wywołań narzędzi
-- Walidację wejścia wywołań narzędzi
+- Utrzymywanie kontekstu polecenia wyłącznie dla środowiska uruchomieniowego poza turami transkrypcji widocznymi dla użytkownika
+- Oczyszczanie identyfikatorów wywołań narzędzi
+- Walidację danych wejściowych wywołań narzędzi
 - Naprawę parowania wyników narzędzi
-- Walidację / porządkowanie tur
-- Czyszczenie sygnatur myśli
+- Walidację i porządkowanie tur
+- Czyszczenie sygnatur toku rozumowania
 - Czyszczenie sygnatur myślenia
-- Sanityzację ładunków obrazów
-- Czyszczenie pustych bloków tekstu przed odtwarzaniem u dostawcy
-- Czyszczenie niekompletnych tur długości zawierających tylko rozumowanie przed odtwarzaniem u dostawcy
-- Oznaczanie pochodzenia danych wejściowych użytkownika (dla promptów trasowanych między sesjami)
-- Naprawę pustych tur błędu asystenta dla odtwarzania Bedrock Converse
+- Oczyszczanie ładunków obrazów
+- Usuwanie pustych bloków tekstowych przed ponownym odtworzeniem u dostawcy
+- Usuwanie niekompletnych tur ograniczonych długością, zawierających wyłącznie rozumowanie, przed ponownym odtworzeniem u dostawcy
+- Oznaczanie pochodzenia danych wejściowych użytkownika (dla poleceń kierowanych między sesjami)
+- Naprawę pustych tur błędów asystenta podczas ponownego odtwarzania przez Bedrock Converse
 
-Jeśli potrzebujesz szczegółów przechowywania transkrypcji, zobacz:
-
-- [Szczegółowe omówienie zarządzania sesją](/pl/reference/session-management-compaction)
-
----
-
-## Reguła globalna: kontekst czasu wykonywania nie jest transkrypcją użytkownika
-
-Kontekst czasu wykonywania/systemowy może zostać dodany do promptu modelu dla tury, ale nie jest
-treścią utworzoną przez użytkownika końcowego. OpenClaw utrzymuje osobne, skierowane do transkrypcji
-ciało promptu dla odpowiedzi Gateway, kolejkowanych kontynuacji, ACP, CLI i osadzonych przebiegów OpenClaw.
-Zapisane widoczne tury użytkownika używają tego ciała transkrypcji zamiast
-promptu wzbogaconego o dane czasu wykonywania.
-
-Dla starszych sesji, które już utrwaliły opakowania czasu wykonywania, powierzchnie historii Gateway
-stosują projekcję wyświetlania przed zwróceniem wiadomości do klientów WebChat,
-TUI, REST lub SSE.
+Szczegółowe informacje o przechowywaniu transkrypcji zawiera
+[szczegółowy opis zarządzania sesjami](/pl/reference/session-management-compaction).
 
 ---
 
-## Gdzie to działa
+## Reguła globalna: kontekst środowiska uruchomieniowego nie jest transkrypcją użytkownika
 
-Cała higiena transkrypcji jest scentralizowana w osadzonym runnerze:
+Kontekst środowiska uruchomieniowego lub systemowy może zostać dodany do polecenia modelu
+dla danej tury, ale nie stanowi treści utworzonej przez użytkownika końcowego. OpenClaw
+przechowuje osobną treść polecenia przeznaczoną do transkrypcji dla odpowiedzi Gateway,
+kolejkowanych działań uzupełniających, ACP, CLI i osadzonych uruchomień OpenClaw.
+Zapisane, widoczne tury użytkownika używają tej treści transkrypcji zamiast polecenia
+wzbogaconego o kontekst środowiska uruchomieniowego.
 
-- Wybór polityki: `src/agents/transcript-policy.ts`
-- Zastosowanie sanityzacji/naprawy: `sanitizeSessionHistory` w `src/agents/embedded-agent-runner/replay-history.ts`
+W przypadku starszych sesji, w których utrwalono już opakowania środowiska uruchomieniowego,
+powierzchnie historii Gateway stosują projekcję wyświetlania przed zwróceniem wiadomości
+klientom WebChat, TUI, REST lub SSE.
 
-Polityka używa `provider`, `modelApi` i `modelId`, aby zdecydować, co zastosować.
+---
 
-Niezależnie od higieny transkrypcji pliki sesji są naprawiane (w razie potrzeby) przed załadowaniem:
+## Gdzie jest to wykonywane
+
+Cała higiena transkrypcji jest scentralizowana w osadzonym module uruchamiającym:
+
+- Wybór zasad: `src/agents/transcript-policy.ts`
+  (`resolveTranscriptPolicy`, według `provider`, `modelApi` i `modelId`)
+- Stosowanie oczyszczania i napraw: `sanitizeSessionHistory` w
+  `src/agents/embedded-agent-runner/replay-history.ts`
+
+Niezależnie od higieny transkrypcji pliki sesji są w razie potrzeby naprawiane
+przed wczytaniem:
 
 - `repairSessionFileIfNeeded` w `src/agents/session-file-repair.ts`
-- Wywoływane z `run/attempt.ts` i `compact.ts` (osadzony runner)
+- Wywoływane z `src/agents/embedded-agent-runner/run/attempt.ts` oraz
+  `src/agents/embedded-agent-runner/compact.ts`
 
 ---
 
-## Reguła globalna: sanityzacja obrazów
+## Reguła globalna: oczyszczanie obrazów
 
-Ładunki obrazów są zawsze sanityzowane, aby zapobiec odrzuceniu po stronie dostawcy z powodu limitów
-rozmiaru (skalowanie w dół/rekompresja zbyt dużych obrazów base64).
-
-Pomaga to także kontrolować presję tokenów generowaną przez obrazy dla modeli obsługujących wizję.
-Niższe maksymalne wymiary zwykle zmniejszają użycie tokenów; wyższe wymiary zachowują szczegóły.
+Ładunki obrazów są zawsze oczyszczane, aby zapobiec odrzuceniu przez dostawcę z powodu
+limitów rozmiaru (zmniejszanie rozdzielczości i ponowna kompresja zbyt dużych obrazów
+base64). Pomaga to również kontrolować zużycie tokenów przez obrazy w modelach obsługujących
+widzenie: mniejsze maksymalne wymiary ograniczają zużycie tokenów, a większe zachowują
+więcej szczegółów.
 
 Implementacja:
 
-- `sanitizeSessionMessagesImages` w `src/agents/embedded-agent-helpers/images.ts`
+- `sanitizeSessionMessagesImages` w
+  `src/agents/embedded-agent-helpers/images.ts`
 - `sanitizeContentBlocksImages` w `src/agents/tool-images.ts`
-- Maksymalny bok obrazu można skonfigurować przez `agents.defaults.imageMaxDimensionPx` (domyślnie: `1200`).
-- Puste bloki tekstu są usuwane podczas tego przebiegu po zawartości odtwarzania. Tury asystenta,
-  które stają się puste, są usuwane z kopii odtwarzania; tury użytkownika i wyniku narzędzia,
-  które stają się puste, otrzymują niepusty placeholder pominiętej zawartości.
+- Maksymalny bok obrazu można skonfigurować za pomocą `agents.defaults.imageMaxDimensionPx`
+  (domyślnie: `1200`)
+- Podczas przechodzenia przez ponownie odtwarzaną treść ten etap usuwa puste bloki tekstowe.
+  Tury asystenta, które staną się puste, są usuwane z kopii do ponownego odtworzenia;
+  tury użytkownika i wyników narzędzi, które staną się puste, otrzymują niepusty znacznik
+  pominiętej treści.
 
 ---
 
-## Reguła globalna: nieprawidłowo sformatowane wywołania narzędzi
+## Reguła globalna: nieprawidłowe wywołania narzędzi
 
-Bloki wywołań narzędzi asystenta, którym brakuje zarówno `input`, jak i `arguments`, są usuwane
-przed zbudowaniem kontekstu modelu. Zapobiega to odrzuceniom przez dostawcę wynikającym z częściowo
-utrwalonych wywołań narzędzi (na przykład po błędzie limitu szybkości).
+Bloki wywołań narzędzi asystenta, w których brakuje zarówno `input`, jak i `arguments`,
+są usuwane przed zbudowaniem kontekstu modelu. Zapobiega to odrzucaniu przez dostawcę
+częściowo utrwalonych wywołań narzędzi (na przykład po błędzie limitu szybkości).
 
 Implementacja:
 
 - `sanitizeToolCallInputs` w `src/agents/session-transcript-repair.ts`
-- Zastosowane w `sanitizeSessionHistory` w `src/agents/embedded-agent-runner/replay-history.ts`
+- Stosowane w `sanitizeSessionHistory`
+  (`src/agents/embedded-agent-runner/replay-history.ts`)
 
 ---
 
-## Reguła globalna: niekompletne tury zawierające tylko rozumowanie
+## Reguła globalna: niekompletne tury zawierające wyłącznie rozumowanie
 
-Tury asystenta, które osiągnęły limit wyjścia dostawcy i zawierają tylko myślenie lub
-zredagowaną treść myślenia, są pomijane w kopii odtwarzania w pamięci. Takie tury
-zawierają niekompletny stan dostawcy i mogą przenosić częściową sygnaturę myślenia.
+Tury asystenta, które osiągnęły limit danych wyjściowych dostawcy i zawierają wyłącznie
+treść myślenia lub zredagowanego myślenia, są pomijane w przechowywanej w pamięci kopii
+do ponownego odtworzenia. Takie tury zawierają niekompletny stan dostawcy i mogą przenosić
+częściową sygnaturę myślenia.
 
-Puste tury długości pozostają niezmienione, podobnie jak tury długości z widocznym tekstem, wywołaniami
-narzędzi lub nieznanymi blokami zawartości. Zapisane transkrypcje nie są przepisywane.
+Puste tury zakończone z powodu limitu długości pozostają niezmienione, podobnie jak tury
+z widocznym tekstem, wywołaniami narzędzi lub nieznanymi blokami treści. Zapisane
+transkrypcje nie są przepisywane.
 
-Implementacja:
-
-- `normalizeAssistantReplayContent` w `src/agents/embedded-agent-runner/replay-history.ts`
-
----
-
-## Reguła globalna: pochodzenie wejścia między sesjami
-
-Gdy agent wysyła prompt do innej sesji przez `sessions_send` (w tym kroki
-odpowiedzi/ogłoszenia agent-do-agenta), OpenClaw utrwala utworzoną turę użytkownika z:
-
-- `message.provenance.kind = "inter_session"`
-
-OpenClaw dodaje także na początku tej samej tury znacznik `[Inter-session message ... isUser=false]`
-przed tekstem trasowanego promptu, aby aktywne wywołanie modelu mogło odróżnić
-wyjście obcej sesji od zewnętrznych instrukcji użytkownika końcowego. Ten znacznik zawiera
-sesję źródłową, kanał i narzędzie, jeśli są dostępne. Transkrypcja nadal używa
-`role: "user"` dla zgodności z dostawcą, ale widoczny tekst i metadane pochodzenia
-oznaczają turę jako dane między sesjami.
-
-Podczas odbudowy kontekstu OpenClaw stosuje ten sam znacznik do starszych utrwalonych
-tur użytkownika między sesjami, które mają tylko metadane pochodzenia.
+Implementacja: `normalizeAssistantReplayContent` w
+`src/agents/embedded-agent-runner/replay-history.ts`
 
 ---
 
-## Macierz dostawców (obecne zachowanie)
+## Reguła globalna: pochodzenie danych wejściowych między sesjami
+
+Gdy agent wysyła polecenie do innej sesji za pomocą `sessions_send`
+(w tym na etapach odpowiedzi lub ogłoszeń między agentami), OpenClaw utrwala
+utworzoną turę użytkownika z `message.provenance.kind = "inter_session"`.
+
+OpenClaw dodaje również przed tekstem kierowanego polecenia znacznik tej samej tury
+`[Inter-session message] ... isUser=false`, aby aktywne wywołanie modelu mogło odróżnić
+dane wyjściowe obcej sesji od zewnętrznych instrukcji użytkownika końcowego. Znacznik ten
+zawiera sesję źródłową, kanał i narzędzie, jeśli są dostępne. Ze względu na zgodność
+z dostawcami transkrypcja nadal używa `role: "user"`, ale zarówno widoczny tekst, jak
+i metadane pochodzenia oznaczają turę jako dane między sesjami.
+
+Podczas odbudowywania kontekstu OpenClaw stosuje ten sam znacznik do starszych utrwalonych
+tur użytkownika pochodzących z innych sesji, które mają wyłącznie metadane pochodzenia.
+
+---
+
+## Macierz dostawców (bieżące zachowanie)
 
 **OpenAI / OpenAI Codex**
 
-- Tylko sanityzacja obrazów.
-- Usuwanie osieroconych sygnatur rozumowania (samodzielnych elementów rozumowania bez następującego po nich bloku zawartości) dla transkrypcji OpenAI Responses/Codex oraz usuwanie odtwarzalnego rozumowania OpenAI po zmianie trasy modelu.
-- Zachowywanie ładunków odtwarzalnych elementów rozumowania OpenAI Responses, w tym zaszyfrowanych elementów z pustym podsumowaniem, aby ręczne/WebSocket odtwarzanie utrzymywało wymagany stan `rs_*` sparowany z elementami wyjścia asystenta.
-- Natywne ChatGPT Codex Responses podąża za zgodnością przewodową Codex, odtwarzając wcześniejsze ładunki rozumowania/wiadomości/funkcji Responses bez wcześniejszych identyfikatorów elementów, przy zachowaniu sesyjnego `prompt_cache_key`.
-- Odtwarzanie rodziny OpenAI Responses zachowuje kanoniczne pary rozumowania tego samego modelu `call_*|fc_*`, ale deterministycznie normalizuje nieprawidłowo sformatowane lub zbyt długie identyfikatory `call_id` / elementów wywołań funkcji przed konwersją ładunku pi-ai.
-- Naprawa parowania wyników narzędzi może przenosić rzeczywiste dopasowane wyjścia i syntetyzować wyjścia w stylu Codex `aborted` dla brakujących wywołań narzędzi.
-- Brak walidacji lub zmiany kolejności tur.
-- Brakujące wyjścia narzędzi rodziny OpenAI Responses są syntetyzowane jako `aborted`, aby pasować do normalizacji odtwarzania Codex.
-- Brak usuwania sygnatur myśli.
+- Tylko oczyszczanie obrazów.
+- Usuwanie osieroconych sygnatur rozumowania (samodzielnych elementów rozumowania bez
+  następującego po nich bloku treści) z transkrypcji OpenAI Responses/Codex oraz usuwanie
+  rozumowania OpenAI możliwego do ponownego odtworzenia po przełączeniu trasy modelu.
+- Zachowywanie ładunków elementów rozumowania OpenAI Responses możliwych do ponownego
+  odtworzenia, w tym zaszyfrowanych elementów z pustym podsumowaniem, aby ręczne ponowne
+  odtwarzanie lub odtwarzanie przez WebSocket utrzymywało wymagany stan `rs_*` sparowany
+  z elementami wyjściowymi asystenta.
+- Natywny ChatGPT Codex Responses zachowuje zgodność z protokołem Codex, ponownie odtwarzając
+  wcześniejsze ładunki rozumowania, wiadomości i funkcji Responses bez identyfikatorów
+  wcześniejszych elementów, przy jednoczesnym zachowaniu sesyjnego `prompt_cache_key`.
+- Ponowne odtwarzanie z rodziny OpenAI Responses zachowuje kanoniczne pary rozumowania
+  tego samego modelu `call_*|fc_*`, ale przed konwersją ładunku pi-ai deterministycznie
+  normalizuje nieprawidłowe lub zbyt długie identyfikatory `call_id` i elementów wywołań funkcji.
+- Naprawa parowania wyników narzędzi może przenosić rzeczywiste dopasowane dane wyjściowe
+  i generować dane wyjściowe w stylu Codex z wartością `aborted` dla brakujących wywołań narzędzi.
+- Brak walidacji i zmiany kolejności tur; brak usuwania sygnatur toku rozumowania.
 
-**Chat Completions zgodne z OpenAI**
+**Uzupełnianie czatu zgodne z OpenAI**
 
-- Historyczne bloki myślenia/rozumowania asystenta są usuwane przed odtwarzaniem, aby
-  lokalne i proxy-style serwery zgodne z OpenAI nie otrzymywały pól rozumowania z wcześniejszych tur,
-  takich jak `reasoning` lub `reasoning_content`.
+- Historyczne bloki myślenia i rozumowania asystenta są usuwane przed ponownym odtworzeniem,
+  aby lokalne i pośredniczące serwery zgodne z OpenAI nie otrzymywały pól rozumowania
+  z wcześniejszych tur, takich jak `reasoning` lub `reasoning_content`.
 - Bieżące kontynuacje wywołań narzędzi w tej samej turze zachowują blok rozumowania asystenta
-  dołączony do wywołania narzędzia do czasu odtworzenia wyniku narzędzia.
-- Niestandardowe/samodzielnie hostowane wpisy modeli z `reasoning: true` zachowują odtworzone
-  metadane rozumowania.
-- Wyjątki należące do dostawcy mogą zrezygnować, gdy ich protokół przewodowy wymaga
-  odtworzonych metadanych rozumowania.
+  dołączony do wywołania narzędzia, dopóki wynik narzędzia nie zostanie ponownie odtworzony.
+- Niestandardowe lub samodzielnie hostowane wpisy modeli z `reasoning: true` zachowują
+  ponownie odtwarzane metadane rozumowania.
+- Wyjątki należące do dostawcy mogą zrezygnować z tej reguły, gdy ich protokół komunikacyjny
+  wymaga ponownego odtwarzania metadanych rozumowania.
 
 **Google (Generative AI / Gemini CLI / Antigravity)**
 
-- Sanityzacja identyfikatorów wywołań narzędzi: ścisłe znaki alfanumeryczne.
+- Oczyszczanie identyfikatorów wywołań narzędzi: wyłącznie znaki alfanumeryczne.
 - Naprawa parowania wyników narzędzi i syntetyczne wyniki narzędzi.
 - Walidacja tur (naprzemienność tur w stylu Gemini).
-- Naprawa kolejności tur Google (dodanie na początku drobnego bootstrapu użytkownika, jeśli historia zaczyna się od asystenta).
-- Antigravity Claude: normalizowanie sygnatur myślenia; usuwanie niepodpisanych bloków myślenia.
+- Korekta kolejności tur Google (dodanie na początku krótkiej inicjalizującej tury użytkownika,
+  jeśli historia zaczyna się od asystenta).
+- Antigravity Claude: normalizacja sygnatur myślenia; usuwanie niepodpisanych bloków myślenia.
 
 **Anthropic / Minimax (zgodne z Anthropic)**
 
 - Naprawa parowania wyników narzędzi i syntetyczne wyniki narzędzi.
-- Walidacja tur (scalanie kolejnych tur użytkownika, aby spełnić ścisłą naprzemienność).
-- Końcowe tury wstępnego wypełnienia asystenta są usuwane z wychodzących ładunków Anthropic Messages,
-  gdy myślenie jest włączone, w tym tras Cloudflare AI Gateway.
-- Sygnatury myślenia asystenta sprzed Compaction są usuwane przed odtwarzaniem
-  u dostawcy, gdy sesja została skompaktowana. Sygnatury myślenia są
-  kryptograficznie powiązane z prefiksem konwersacji w czasie generowania; po
-  Compaction prefiks się zmienia (podsumowana treść jest zastępowana podsumowaniem
-  Compaction), więc odtworzenie oryginalnych sygnatur powoduje odrzucenie żądania
-  przez Anthropic z komunikatem "Invalid signature in thinking block". Tekst myślenia jest
-  zachowywany jako niepodpisany blok, a następnie obsługiwany przez regułę poniżej.
-- Bloki myślenia z brakującymi, pustymi lub blank replay signatures są usuwane
-  przed konwersją dostawcy. Jeśli to opróżnia turę asystenta, OpenClaw zachowuje
-  kształt tury z niepustym tekstem pominiętego rozumowania.
-- Starsze tury asystenta zawierające tylko myślenie, które muszą zostać usunięte, są zastępowane
-  niepustym tekstem pominiętego rozumowania, aby adaptery dostawcy nie usuwały odtwarzanej
-  tury.
+- Walidacja tur (łączenie kolejnych tur użytkownika w celu spełnienia wymogu ścisłej
+  naprzemienności).
+- Końcowe tury wstępnego uzupełnienia asystenta są usuwane z wychodzących ładunków
+  Anthropic Messages, gdy myślenie jest włączone, w tym na trasach Cloudflare AI Gateway.
+- Sygnatury myślenia asystenta sprzed Compaction są usuwane przed ponownym odtworzeniem
+  u dostawcy, gdy sesja została poddana Compaction. Sygnatury myślenia są kryptograficznie
+  powiązane z prefiksem konwersacji istniejącym w chwili generowania; po Compaction prefiks
+  się zmienia (podsumowana treść zastępuje oryginał), dlatego ponowne odtworzenie oryginalnych
+  sygnatur powoduje odrzucenie żądania przez Anthropic z komunikatem
+  "Invalid signature in thinking block". Tekst myślenia jest zachowywany jako niepodpisany
+  blok, a następnie przetwarzany zgodnie z poniższą regułą.
+- Bloki myślenia z brakującymi, pustymi lub zawierającymi wyłącznie białe znaki sygnaturami
+  ponownego odtwarzania są usuwane przed konwersją dla dostawcy. Jeśli spowoduje to opróżnienie
+  tury asystenta, OpenClaw zachowuje jej strukturę za pomocą niepustego tekstu informującego
+  o pominięciu rozumowania.
+- Starsze tury asystenta zawierające wyłącznie myślenie, które muszą zostać usunięte,
+  są zastępowane niepustym tekstem informującym o pominięciu rozumowania, aby adaptery
+  dostawcy nie usuwały ponownie odtwarzanej tury.
 
 **Amazon Bedrock (Converse API)**
 
-- Puste tury błędu strumienia asystenta są naprawiane do niepustego zastępczego bloku tekstu
-  przed odtwarzaniem. Bedrock Converse odrzuca wiadomości asystenta z `content: []`, więc
-  utrwalone tury asystenta ze `stopReason: "error"` i pustą zawartością są także
-  naprawiane na dysku przed załadowaniem.
-- Tury błędu strumienia asystenta, które zawierają tylko puste bloki tekstu, są usuwane
-  z kopii odtwarzania w pamięci zamiast odtwarzać nieprawidłowy pusty blok.
-- Sygnatury myślenia asystenta sprzed Compaction są usuwane przed odtwarzaniem Converse,
-  gdy sesja została skompaktowana, z tego samego powodu co w Anthropic
-  powyżej.
-- Bloki myślenia Claude z brakującymi, pustymi lub blank replay signatures są
-  usuwane przed odtwarzaniem Converse. Jeśli to opróżnia turę asystenta, OpenClaw
-  zachowuje kształt tury z niepustym tekstem pominiętego rozumowania.
-- Starsze tury asystenta zawierające tylko myślenie, które muszą zostać usunięte, są zastępowane
-  niepustym tekstem pominiętego rozumowania, aby odtwarzanie Converse zachowało ścisły kształt tury.
-- Odtwarzanie filtruje tury asystenta OpenClaw będące lustrzanymi kopiami dostarczenia i wstrzyknięte przez Gateway.
-- Sanityzacja obrazów stosuje się przez regułę globalną.
+- Puste tury błędów strumienia asystenta są przed ponownym odtworzeniem naprawiane przez
+  dodanie niepustego zastępczego bloku tekstowego. Bedrock Converse odrzuca wiadomości
+  asystenta z `content: []`, dlatego utrwalone tury asystenta z `stopReason:
+"error"` i pustą treścią są również naprawiane na dysku przed wczytaniem.
+- Tury błędów strumienia asystenta zawierające wyłącznie puste bloki tekstowe są usuwane
+  z przechowywanej w pamięci kopii do ponownego odtworzenia zamiast odtwarzania
+  nieprawidłowego pustego bloku.
+- Sygnatury myślenia asystenta sprzed Compaction są usuwane przed ponownym odtworzeniem
+  przez Converse, gdy sesja została poddana Compaction, z tego samego powodu co w przypadku
+  Anthropic opisanym powyżej.
+- Bloki myślenia Claude z brakującymi, pustymi lub zawierającymi wyłącznie białe znaki
+  sygnaturami ponownego odtwarzania są usuwane przed ponownym odtworzeniem przez Converse.
+  Jeśli spowoduje to opróżnienie tury asystenta, OpenClaw zachowuje jej strukturę za pomocą
+  niepustego tekstu informującego o pominięciu rozumowania.
+- Starsze tury asystenta zawierające wyłącznie myślenie, które muszą zostać usunięte,
+  są zastępowane niepustym tekstem informującym o pominięciu rozumowania, aby ponowne
+  odtwarzanie przez Converse zachowało ścisłą strukturę tur.
+- Ponowne odtwarzanie odfiltrowuje tury asystenta stanowiące kopie lustrzane dostarczenia
+  OpenClaw oraz tury wstrzyknięte przez Gateway.
+- Oczyszczanie obrazów jest stosowane zgodnie z regułą globalną.
 
 **Mistral (w tym wykrywanie na podstawie identyfikatora modelu)**
 
-- Sanityzacja identyfikatorów wywołań narzędzi: strict9 (długość alfanumeryczna 9).
+- Oczyszczanie identyfikatorów wywołań narzędzi: strict9 (znaki alfanumeryczne, długość 9).
 
 **OpenRouter Gemini**
 
-- Czyszczenie sygnatur myśli: usuwanie wartości `thought_signature` niebędących base64 (zachowywanie base64).
+- Czyszczenie sygnatur toku rozumowania: usuwanie wartości `thought_signature`, które
+  nie są w formacie base64 (wartości base64 są zachowywane).
 
 **OpenRouter Anthropic**
 
-- Końcowe tury wstępnego wypełnienia asystenta są usuwane ze zweryfikowanych ładunków modeli Anthropic
-  zgodnych z OpenAI w OpenRouter, gdy rozumowanie jest włączone, zgodnie z
-  bezpośrednim zachowaniem odtwarzania Anthropic i Cloudflare Anthropic.
+- Końcowe tury wstępnego uzupełnienia asystenta są usuwane ze zweryfikowanych ładunków
+  modeli Anthropic zgodnych z OpenAI w OpenRouter, gdy rozumowanie jest włączone,
+  zgodnie z zachowaniem ponownego odtwarzania bezpośredniego Anthropic i Cloudflare Anthropic.
 
-**Wszystko inne**
+**Wszystkie pozostałe**
 
-- Tylko sanityzacja obrazów.
+- Tylko oczyszczanie obrazów.
 
 ---
 
-## Zachowanie historyczne (przed 2026.1.22)
+## Zachowanie historyczne (sprzed wersji 2026.1.22)
 
-Przed wydaniem 2026.1.22 OpenClaw stosował wiele warstw higieny transkrypcji:
+Przed wydaniem wersji 2026.1.22 OpenClaw stosował wiele warstw higieny transkrypcji:
 
-- Rozszerzenie **transcript-sanitize** działało przy każdym budowaniu kontekstu i mogło:
-  - Naprawiać parowanie użycia narzędzia/wyniku.
-  - Sanityzować identyfikatory wywołań narzędzi (w tym tryb nieścisły, który zachowywał `_`/`-`).
-- Runner wykonywał także sanityzację specyficzną dla dostawcy, co dublowało pracę.
-- Dodatkowe mutacje zachodziły poza polityką dostawcy, w tym:
-  - Usuwanie tagów `<final>` z tekstu asystenta przed utrwaleniem.
-  - Usuwanie pustych tur błędu asystenta.
-  - Przycinanie zawartości asystenta po wywołaniach narzędzi.
+- **Rozszerzenie oczyszczające transkrypcję** było uruchamiane przy każdym budowaniu kontekstu
+  i mogło:
+  - Naprawiać parowanie użycia narzędzi i ich wyników.
+  - Oczyszczać identyfikatory wywołań narzędzi (w tym w trybie nieścisłym,
+    który zachowywał `_`/`-`).
+- Moduł uruchamiający wykonywał również oczyszczanie specyficzne dla dostawcy,
+  co powodowało powielanie pracy.
+- Dodatkowe modyfikacje odbywały się poza zasadami dostawcy, w tym usuwanie znaczników
+  `<final>` z tekstu asystenta przed utrwaleniem, usuwanie pustych tur błędów asystenta
+  oraz przycinanie treści asystenta po wywołaniach narzędzi.
 
-Ta złożoność powodowała regresje między dostawcami (zwłaszcza parowanie `call_id|fc_id`
-`openai-responses`). Czyszczenie w 2026.1.22 usunęło rozszerzenie, scentralizowało
-logikę w runnerze i uczyniło OpenAI **bez dotykania** poza sanityzacją obrazów.
+Ta złożoność powodowała regresje między dostawcami (zwłaszcza w parowaniu
+`call_id|fc_id` dla `openai-responses`). Porządki w wersji 2026.1.22 usunęły
+rozszerzenie, scentralizowały logikę w module uruchamiającym i wprowadziły zasadę
+**bez ingerencji** dla OpenAI poza oczyszczaniem obrazów.
 
 ## Powiązane
 
-- [Zarządzanie sesją](/pl/concepts/session)
-- [Przycinanie sesji](/pl/concepts/session-pruning)
+- [Zarządzanie sesjami](/pl/concepts/session)
+- [Oczyszczanie sesji](/pl/concepts/session-pruning)

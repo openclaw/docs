@@ -1,25 +1,24 @@
 ---
 read_when:
-    - تريد مفتاح API واحدًا لأفضل نماذج LLM مفتوحة المصدر
-    - تريد تشغيل النماذج عبر واجهة برمجة تطبيقات DeepInfra في OpenClaw
-summary: استخدم واجهة API الموحّدة من DeepInfra للوصول إلى أشهر النماذج مفتوحة المصدر والنماذج الرائدة في OpenClaw
+    - تريد مفتاح API واحدًا لأفضل نماذج اللغة الكبيرة مفتوحة المصدر
+    - تريد تشغيل النماذج عبر واجهة API الخاصة بـ DeepInfra في OpenClaw
+summary: استخدم واجهة API الموحّدة من DeepInfra للوصول إلى أشهر النماذج مفتوحة المصدر والنماذج المتقدمة في OpenClaw
 title: DeepInfra
 x-i18n:
-    generated_at: "2026-06-27T18:23:41Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:26:46Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 059a556c24d2de2c8c5290b54c78fbc7451dc534238bfc4c725dcfbbd9a2d17f
+    source_hash: 7f68bac84311d20348007c715803a34451ba8ab0c09beba63366ba5b1b29de05
     source_path: providers/deepinfra.md
     workflow: 16
 ---
 
-توفّر DeepInfra **واجهة API موحّدة** توجّه الطلبات إلى أشهر النماذج مفتوحة المصدر والنماذج الرائدة عبر
-نقطة نهاية واحدة ومفتاح API واحد. وهي متوافقة مع OpenAI، لذلك تعمل معظم حِزم OpenAI SDK بمجرد تبديل عنوان URL الأساسي.
+توجّه DeepInfra الطلبات إلى نماذج مفتوحة المصدر ورائدة شائعة من خلال
+نقطة نهاية واحدة متوافقة مع OpenAI ومفتاح API واحد. تعمل معظم حِزم SDK الخاصة بـ OpenAI
+معها عبر تغيير عنوان URL الأساسي.
 
 ## تثبيت Plugin
-
-ثبّت Plugin الرسمي، ثم أعد تشغيل Gateway:
 
 ```bash
 openclaw plugins install @openclaw/deepinfra-provider
@@ -28,11 +27,10 @@ openclaw gateway restart
 
 ## الحصول على مفتاح API
 
-1. انتقل إلى [https://deepinfra.com/](https://deepinfra.com/)
-2. سجّل الدخول أو أنشئ حسابًا
-3. انتقل إلى لوحة التحكم / المفاتيح وأنشئ مفتاح API جديدًا أو استخدم المفتاح الذي أُنشئ تلقائيًا
+1. سجّل الدخول في [deepinfra.com](https://deepinfra.com/)
+2. انتقل إلى Dashboard / Keys وأنشئ مفتاحًا، أو استخدم المفتاح المُنشأ تلقائيًا
 
-## إعداد CLI
+## الإعداد عبر CLI
 
 ```bash
 openclaw onboard --deepinfra-api-key <key>
@@ -44,7 +42,7 @@ openclaw onboard --deepinfra-api-key <key>
 export DEEPINFRA_API_KEY="<your-deepinfra-api-key>" # pragma: allowlist secret
 ```
 
-## مقتطف الإعدادات
+## مقتطف الإعداد
 
 ```json5
 {
@@ -57,53 +55,54 @@ export DEEPINFRA_API_KEY="<your-deepinfra-api-key>" # pragma: allowlist secret
 }
 ```
 
-## واجهات OpenClaw المدعومة
+## الأسطح المدعومة
 
-يسجّل Plugin جميع واجهات DeepInfra التي تطابق عقود موفّري
-OpenClaw الحالية. تعمل الدردشة وتوليد الصور وتوليد الفيديو على تحديث
-فهارس النماذج مباشرةً من `/v1/openai/models?sort_by=openclaw&filter=with_meta`
-عند إعداد `DEEPINFRA_API_KEY`؛ أما الواجهات الأخرى فتستخدم
-الإعدادات الافتراضية الثابتة المنتقاة أدناه.
+تُحدّث الدردشة وتوليد الصور وتوليد الفيديو كتالوجات نماذجها
+مباشرةً من `https://api.deepinfra.com/v1/openai/models?sort_by=openclaw&filter=with_meta`
+بمجرد إعداد `DEEPINFRA_API_KEY`. تستخدم الأسطح الأخرى القيم الافتراضية الثابتة
+أدناه إلى أن تنتقل إلى الكتالوج المباشر نفسه.
 
-| الواجهة                  | النموذج الافتراضي                                                                                         | إعداد/أداة OpenClaw                                     |
-| ------------------------ | ----------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| الدردشة / موفّر النموذج    | أول إدخال موسوم للدردشة من الفهرس المباشر (البديل في البيان `deepseek-ai/DeepSeek-V4-Flash`)         | `agents.defaults.model`                                  |
-| توليد/تحرير الصور | أول إدخال موسوم بـ `image-gen` من الفهرس المباشر (البديل الثابت `black-forest-labs/FLUX-1-schnell`) | `image_generate`, `agents.defaults.imageGenerationModel` |
-| فهم الوسائط      | `moonshotai/Kimi-K2.5` للصور                                                                     | فهم الصور الواردة                              |
-| تحويل الكلام إلى نص           | `openai/whisper-large-v3-turbo`                                                                       | نسخ الصوت الوارد                              |
-| تحويل النص إلى كلام           | `hexgrad/Kokoro-82M`                                                                                  | `messages.tts.provider: "deepinfra"`                     |
-| توليد الفيديو         | أول إدخال موسوم بـ `video-gen` من الفهرس المباشر (البديل الثابت `Pixverse/Pixverse-T2V`)            | `video_generate`, `agents.defaults.videoGenerationModel` |
-| تضمينات الذاكرة        | `BAAI/bge-m3`                                                                                         | `agents.defaults.memorySearch.provider: "deepinfra"`     |
+| السطح                    | النموذج الافتراضي                                                                                                      | إعداد/أداة OpenClaw                                      |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| الدردشة / موفّر النماذج  | أول إدخال موسوم بعلامة الدردشة من الكتالوج المباشر (البديل الثابت `deepseek-ai/DeepSeek-V4-Flash`)                    | `agents.defaults.model`                                  |
+| توليد/تحرير الصور        | أول إدخال موسوم بعلامة `image-gen` من الكتالوج المباشر (البديل الثابت `black-forest-labs/FLUX-1-schnell`)             | `image_generate`, `agents.defaults.imageGenerationModel` |
+| فهم الوسائط              | `moonshotai/Kimi-K2.5` للصور                                                                                           | فهم الصور الواردة                                        |
+| تحويل الكلام إلى نص      | `openai/whisper-large-v3-turbo`                                                                                        | نسخ الصوت الوارد                                         |
+| تحويل النص إلى كلام      | `hexgrad/Kokoro-82M`                                                                                                   | `messages.tts.provider: "deepinfra"`                     |
+| توليد الفيديو            | البديل الثابت `Pixverse/Pixverse-T2V` (لا توجد حاليًا صفوف مباشرة بعلامة `video-gen` من DeepInfra)                    | `video_generate`, `agents.defaults.videoGenerationModel` |
+| تضمينات الذاكرة          | `BAAI/bge-m3`                                                                                                          | `agents.defaults.memorySearch.provider: "deepinfra"`     |
 
-تكشف DeepInfra أيضًا عن إعادة الترتيب، والتصنيف، واكتشاف الكائنات، وأنواع نماذج
-أصلية أخرى. لا يملك OpenClaw حاليًا عقود موفّرين من الدرجة الأولى
-لهذه الفئات، لذلك لا يسجّلها هذا Plugin بعد.
+توفّر DeepInfra أيضًا إعادة الترتيب والتصنيف واكتشاف الكائنات وأنواعًا أخرى
+أصلية من النماذج. لا يتوفر في OpenClaw حتى الآن عقد موفّر لهذه الفئات،
+ولذلك لا يسجّل هذا Plugin هذه الأنواع.
 
 ## النماذج المتاحة
 
-يكتشف OpenClaw نماذج DeepInfra المتاحة ديناميكيًا عند بدء التشغيل. استخدم
-`/models deepinfra` لرؤية القائمة الكاملة للنماذج المتاحة.
+يكتشف OpenClaw نماذج DeepInfra ديناميكيًا بمجرد إعداد مفتاح. استخدم
+`/models deepinfra` أو `openclaw models list --provider deepinfra` للاطلاع على
+القائمة الحالية.
 
-يمكن استخدام أي نموذج متاح على [DeepInfra.com](https://deepinfra.com/) مع بادئة `deepinfra/`:
+يعمل أي نموذج على [deepinfra.com](https://deepinfra.com/) باستخدام
+البادئة `deepinfra/`:
 
-```
+```text
 deepinfra/deepseek-ai/DeepSeek-V4-Flash
 deepinfra/deepseek-ai/DeepSeek-V3.2
 deepinfra/MiniMaxAI/MiniMax-M2.5
 deepinfra/moonshotai/Kimi-K2.5
 deepinfra/nvidia/NVIDIA-Nemotron-3-Super-120B-A12B
 deepinfra/zai-org/GLM-5.1
-...وغير ذلك الكثير
+...وغيرها الكثير
 ```
 
 ## ملاحظات
 
-- مراجع النماذج هي `deepinfra/<provider>/<model>` (مثلًا، `deepinfra/Qwen/Qwen3-Max`).
-- النموذج الافتراضي: `deepinfra/deepseek-ai/DeepSeek-V4-Flash`
+- مراجع النماذج هي `deepinfra/<provider>/<model>` (على سبيل المثال `deepinfra/Qwen/Qwen3-Max`).
+- نموذج الدردشة الافتراضي: `deepinfra/deepseek-ai/DeepSeek-V4-Flash`
 - عنوان URL الأساسي: `https://api.deepinfra.com/v1/openai`
 - يستخدم توليد الفيديو الأصلي `https://api.deepinfra.com/v1/inference/<model>`.
 
-## ذات صلة
+## ذو صلة
 
 - [موفّرو النماذج](/ar/concepts/model-providers)
 - [جميع الموفّرين](/ar/providers/index)

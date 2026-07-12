@@ -4,10 +4,9 @@ read_when:
 summary: Recursos do OpenClaw em canais, roteamento, mídia e experiência do usuário.
 title: Recursos
 x-i18n:
-    generated_at: "2026-07-12T15:05:08Z"
+    generated_at: "2026-07-11T23:51:52Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 5bc3ebdd87a0f6ea0f3d75d029bf7cae469ecd9db84a165bd47c4896936fe303
     source_path: concepts/features.md
@@ -33,7 +32,7 @@ x-i18n:
     Windows Hub, Control UI no navegador, aplicativo da barra de menus do macOS e Nodes móveis.
   </Card>
   <Card title="Nodes móveis" icon="smartphone" href="/pt-BR/nodes">
-    Nodes iOS e Android com emparelhamento, voz/chat e comandos avançados de dispositivo.
+    Nodes para iOS e Android com pareamento, voz/chat e comandos avançados de dispositivo.
   </Card>
 </Columns>
 
@@ -41,22 +40,22 @@ x-i18n:
 
 **Canais:**
 
-- iMessage, Telegram e WebChat são fornecidos com a instalação principal; todos os outros canais são
+- iMessage, Telegram e WebChat são incluídos na instalação principal; todos os outros canais são
   Plugins oficiais instalados com `openclaw plugins install @openclaw/<id>` (ou sob demanda
   durante `openclaw onboard` / `openclaw channels add`)
 - Canais de Plugins oficiais: Discord, Feishu, Google Chat, IRC, LINE, Matrix, Mattermost,
   Microsoft Teams, Nextcloud Talk, Nostr, QQ Bot, Raft, Signal, Slack, SMS, Synology Chat,
   Tlon, Twitch, Voice Call, WhatsApp, Zalo e Zalo Personal
 - Canais de Plugins externos mantidos fora do repositório do OpenClaw: WeChat, Yuanbao e Zalo ClawBot
-- Suporte a chats em grupo com ativação baseada em menções
-- Segurança de mensagens diretas com listas de permissões e emparelhamento
+- Suporte a conversas em grupo com ativação baseada em menções
+- Segurança de mensagens diretas com listas de permissões e pareamento
 
 **Agente:**
 
-- Ambiente de execução de agente integrado com streaming de ferramentas
+- Ambiente de execução de agente integrado com transmissão contínua de ferramentas
 - Roteamento multiagente com sessões isoladas por espaço de trabalho ou remetente
 - Sessões: conversas diretas são agrupadas na sessão compartilhada `main`; grupos são isolados
-- Streaming e divisão em blocos para respostas longas
+- Transmissão contínua e divisão em partes para respostas longas
 
 **Autenticação e provedores:**
 
@@ -68,7 +67,7 @@ x-i18n:
 **Mídia:**
 
 - Entrada e saída de imagens, áudio, vídeo e documentos
-- Interfaces de recursos compartilhados para geração de imagens e vídeos
+- Interfaces de recursos compartilhadas para geração de imagens e vídeos
 - Transcrição de mensagens de voz
 - Conversão de texto em fala com vários provedores
 
@@ -76,12 +75,12 @@ x-i18n:
 
 - WebChat e Control UI no navegador
 - Aplicativo complementar da barra de menus do macOS
-- Node iOS com emparelhamento, Canvas, câmera, gravação de tela, localização e voz
-- Node Android com emparelhamento, chat, voz, Canvas, câmera e comandos de dispositivo
+- Node para iOS com pareamento, Canvas, câmera, gravação de tela, localização e voz
+- Node para Android com pareamento, chat, voz, Canvas, câmera e comandos de dispositivo
 
 **Ferramentas e automação:**
 
-- Automação do navegador, execução e isolamento em sandbox
+- Automação de navegador, execução e isolamento em sandbox
 - Pesquisa na web (Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Ollama Web Search, Perplexity, SearXNG, Tavily)
 - Tarefas Cron e agendamento de Heartbeat
 - Skills, Plugins e pipelines de fluxo de trabalho (Lobster)
@@ -99,6 +98,6 @@ x-i18n:
     Conecte Telegram, WhatsApp, Discord, Slack e outros por meio de um único Gateway.
   </Card>
   <Card title="Plugins" href="/pt-BR/tools/plugin" icon="plug">
-    Plugins oficiais e externos que estendem o OpenClaw.
+    Plugins oficiais e externos que ampliam o OpenClaw.
   </Card>
 </CardGroup>

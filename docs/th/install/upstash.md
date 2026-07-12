@@ -1,49 +1,49 @@
 ---
 read_when:
-    - การปรับใช้ OpenClaw ไปยัง Upstash Box
+    - การติดตั้งใช้งาน OpenClaw บน Upstash Box
     - คุณต้องการสภาพแวดล้อม Linux ที่มีการจัดการสำหรับ OpenClaw พร้อมการเข้าถึงแดชบอร์ดผ่านอุโมงค์ SSH
-summary: โฮสต์ OpenClaw บน Upstash Box พร้อม keep-alive และการเข้าถึงผ่าน SSH tunnel
+summary: โฮสต์ OpenClaw บน Upstash Box พร้อมการคงการเชื่อมต่อและการเข้าถึงผ่านอุโมงค์ SSH
 title: กล่อง Upstash
 x-i18n:
-    generated_at: "2026-06-27T17:45:41Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:17:43Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 06d2eb41e1beb0ab3145baa861e0bee7e3efef20324dc4e0e82ba08910937d20
+    source_hash: 29232c43e0e4940b7445ab8896c9ccd3e81d0fdbdd522d7f50cb8c8057ac18f0
     source_path: install/upstash.md
     workflow: 16
 ---
 
-เรียกใช้ OpenClaw Gateway แบบถาวรบน Upstash Box ซึ่งเป็นสภาพแวดล้อม Linux แบบจัดการ
-พร้อมรองรับวงจรชีวิตแบบ keep-alive
+เรียกใช้ OpenClaw Gateway แบบถาวรบน Upstash Box ซึ่งเป็นสภาพแวดล้อม Linux ที่มีการจัดการ
+และรองรับวงจรการทำงานแบบคงสถานะการทำงาน
 
-ใช้ SSH tunnel สำหรับการเข้าถึงแดชบอร์ด อย่าเปิดเผยพอร์ต Gateway โดยตรง
-สู่สาธารณะบนอินเทอร์เน็ต
+ใช้ทันเนล SSH เพื่อเข้าถึงแดชบอร์ด ห้ามเปิดเผยพอร์ต Gateway โดยตรง
+ต่ออินเทอร์เน็ตสาธารณะ
 
 ## ข้อกำหนดเบื้องต้น
 
 - บัญชี Upstash
-- Upstash Box แบบ keep-alive
+- Upstash Box แบบคงสถานะการทำงาน
 - ไคลเอนต์ SSH บนเครื่องภายในของคุณ
 
 ## สร้าง Box
 
-สร้าง Box แบบ keep-alive ใน Upstash Console จด Box ID เช่น
-`right-flamingo-14486` และ Box API key ของคุณไว้
+สร้าง Box แบบคงสถานะการทำงานใน Upstash Console จด ID ของ Box (ตัวอย่างเช่น
+`right-flamingo-14486`) และคีย์ API ของ Box
 
-Upstash ดูแลคำแนะนำ OpenClaw Box ปัจจุบันไว้ที่
+Upstash ดูแลคู่มือแนะนำ OpenClaw Box ฉบับปัจจุบันไว้ที่
 [การตั้งค่า OpenClaw](https://upstash.com/docs/box/guides/openclaw-setup)
 
-## เชื่อมต่อด้วย SSH tunnel
+## เชื่อมต่อด้วยทันเนล SSH
 
-ส่งต่อพอร์ตแดชบอร์ด OpenClaw มายังเครื่องภายในของคุณ ใช้ Box API key ของคุณ
-เป็นรหัสผ่าน SSH เมื่อระบบแจ้ง:
+ส่งต่อพอร์ตแดชบอร์ด OpenClaw มายังเครื่องภายในของคุณ ใช้คีย์ API ของ Box
+เป็นรหัสผ่าน SSH เมื่อระบบแจ้งให้ป้อน:
 
 ```bash
 ssh -o ServerAliveInterval=15 -o ServerAliveCountMax=3 -L 18789:127.0.0.1:18789 <box-id>@us-east-1.box.upstash.com
 ```
 
-ตัวเลือก keepalive ช่วยลดการหลุดของ tunnel เมื่อไม่ได้ใช้งานระหว่างการเริ่มต้นใช้งาน
+ตัวเลือกการคงการเชื่อมต่อช่วยลดปัญหาทันเนลหลุดขณะไม่มีการใช้งานในระหว่างการเริ่มต้นใช้งาน
 
 ## ติดตั้ง OpenClaw
 
@@ -59,26 +59,26 @@ sudo npm install -g openclaw
 openclaw onboard --install-daemon
 ```
 
-ทำตามพรอมป์ คัดลอก URL แดชบอร์ดและโทเค็นเมื่อการเริ่มต้นใช้งานเสร็จสิ้น
+ดำเนินการตามข้อความแจ้ง เมื่อการเริ่มต้นใช้งานเสร็จสิ้น ให้คัดลอก URL และโทเค็นของแดชบอร์ด
 
 ## เริ่ม Gateway
 
-กำหนดค่า Gateway สำหรับเครือข่าย Box และเริ่มทำงานในเบื้องหลัง:
+กำหนดค่า Gateway สำหรับเครือข่ายของ Box และเริ่มทำงานในเบื้องหลัง:
 
 ```bash
 openclaw config set gateway.bind lan
 nohup openclaw gateway > gateway.log 2>&1 &
 ```
 
-เมื่อ SSH tunnel ทำงานอยู่ ให้เปิด URL แดชบอร์ดในเครื่อง:
+ขณะที่ทันเนล SSH ทำงานอยู่ ให้เปิด URL ของแดชบอร์ดบนเครื่องภายใน:
 
 ```text
 http://127.0.0.1:18789/#token=<your-token>
 ```
 
-## รีสตาร์ทอัตโนมัติ
+## เริ่มใหม่โดยอัตโนมัติ
 
-ตั้งค่าคำสั่งนี้เป็นสคริปต์เริ่มต้นของ Box เพื่อให้ Gateway รีสตาร์ทเมื่อ Box
+ตั้งค่าคำสั่งนี้เป็นสคริปต์เริ่มต้นของ Box เพื่อให้ Gateway เริ่มใหม่เมื่อ Box
 เริ่มทำงาน:
 
 ```bash
@@ -87,18 +87,18 @@ nohup openclaw gateway > gateway.log 2>&1 &
 
 ## การแก้ไขปัญหา
 
-หาก SSH ค้างระหว่างการเริ่มต้นใช้งาน ให้เชื่อมต่อใหม่ด้วยการกำหนดค่า SSH ที่สะอาดและ
-keepalives:
+หาก SSH ค้างระหว่างการเริ่มต้นใช้งาน ให้เชื่อมต่อใหม่โดยใช้การกำหนดค่า SSH ที่ไม่มีการตั้งค่าเพิ่มเติม
+และตัวเลือกการคงการเชื่อมต่อ:
 
 ```bash
 ssh -F /dev/null -o ControlMaster=no -o ServerAliveInterval=15 -o ServerAliveCountMax=3 -L 18789:127.0.0.1:18789 <box-id>@us-east-1.box.upstash.com
 ```
 
-วิธีนี้จะข้ามการตั้งค่า `~/.ssh/config` ภายในเครื่องที่ล้าสมัย และคงให้ tunnel ทำงานอยู่
-ตลอดช่วงที่เครือข่ายไม่ได้ใช้งาน
+วิธีนี้จะข้ามการตั้งค่าที่ล้าสมัยใน `~/.ssh/config` ภายในเครื่อง และทำให้ทันเนลยังคงทำงาน
+ในช่วงที่เครือข่ายไม่มีการรับส่งข้อมูล
 
-## ที่เกี่ยวข้อง
+## เนื้อหาที่เกี่ยวข้อง
 
-- [การเข้าถึงระยะไกล](/th/gateway/remote)
+- [การเข้าถึงจากระยะไกล](/th/gateway/remote)
 - [ความปลอดภัยของ Gateway](/th/gateway/security)
 - [การอัปเดต OpenClaw](/th/install/updating)

@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або аудіюєте Plugin raft
+    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin raft
 summary: Plugin каналу OpenClaw Raft для захищених мостів пробудження CLI.
 title: Plugin Raft
 x-i18n:
-    generated_at: "2026-06-27T18:01:31Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:31:33Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: fea04ec6a2f3e08d69fd95c8a8e368fdbc8e179b243b8f6b41b5f8ef70039efc
@@ -13,18 +13,18 @@ x-i18n:
     workflow: 16
 ---
 
-# Плагін Raft
+# Plugin Raft
 
-Плагін каналу OpenClaw Raft для захищених мостів пробудження CLI.
+Plugin каналу OpenClaw Raft для захищених мостів активації CLI.
 
-## Дистрибуція
+## Розповсюдження
 
 - Пакет: `@openclaw/raft`
-- Маршрут встановлення: npm; ClawHub
+- Спосіб установлення: npm; ClawHub
 
 ## Інтерфейс
 
-channels: raft
+канали: raft
 
 ## Пов’язана документація
 

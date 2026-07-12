@@ -1,61 +1,32 @@
 ---
 read_when:
     - คุณกำลังเขียนการทดสอบสำหรับ Plugin
-    - คุณต้องใช้ยูทิลิตี้ทดสอบจาก SDK ของ Plugin
-    - คุณต้องการทำความเข้าใจการทดสอบสัญญาสำหรับ Plugin ที่รวมมาในชุด
+    - คุณต้องใช้ยูทิลิตีสำหรับการทดสอบจาก SDK ของ Plugin
+    - คุณต้องการทำความเข้าใจการทดสอบสัญญาสำหรับ Plugin ที่มาพร้อมระบบ
 sidebarTitle: Testing
 summary: ยูทิลิตีและรูปแบบการทดสอบสำหรับ Plugin ของ OpenClaw
 title: การทดสอบ Plugin
 x-i18n:
-    generated_at: "2026-06-28T07:42:52Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:31:52Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8e5f77e9c54a56c9af293061e2cff0ee6112f2b9b4bea3f9604d48b0f05049ef
+    source_hash: 666160b6eb0c2f3187e8f8b3efe417537c4c4404fe564c463da4d222bced3b8f
     source_path: plugins/sdk-testing.md
     workflow: 16
 ---
 
-ข้อมูลอ้างอิงสำหรับยูทิลิตีทดสอบ รูปแบบ และการบังคับใช้ lint สำหรับ Plugin ของ OpenClaw
+เอกสารอ้างอิงสำหรับยูทิลิตี รูปแบบ และการบังคับใช้ lint สำหรับการทดสอบ Plugin ของ OpenClaw
 
 <Tip>
-  **กำลังมองหาตัวอย่างการทดสอบอยู่หรือไม่?** คู่มือวิธีใช้มีตัวอย่างการทดสอบแบบลงมือทำ:
+  **กำลังมองหาตัวอย่างการทดสอบอยู่ใช่ไหม** คู่มือวิธีใช้งานมีตัวอย่างการทดสอบที่แสดงขั้นตอนครบถ้วน:
   [การทดสอบ Plugin ช่องทาง](/th/plugins/sdk-channel-plugins#step-6-test) และ
   [การทดสอบ Plugin ผู้ให้บริการ](/th/plugins/sdk-provider-plugins#step-6-test)
 </Tip>
 
-## ยูทิลิตีทดสอบ
+## ยูทิลิตีสำหรับการทดสอบ
 
-subpath ตัวช่วยทดสอบเหล่านี้เป็น entrypoint ซอร์สภายใน repo สำหรับการทดสอบ Plugin ที่ bundle มากับ OpenClaw เอง ไม่ใช่ package export สำหรับ Plugin ภายนอก และอาจ import Vitest หรือ dependency สำหรับการทดสอบที่ใช้เฉพาะใน repo อื่น ๆ
-
-**การ import mock ของ Plugin API:** `openclaw/plugin-sdk/plugin-test-api`
-
-**การ import สัญญา runtime ของ agent:** `openclaw/plugin-sdk/agent-runtime-test-contracts`
-
-**การ import สัญญาช่องทาง:** `openclaw/plugin-sdk/channel-contract-testing`
-
-**การ import ตัวช่วยทดสอบช่องทาง:** `openclaw/plugin-sdk/channel-test-helpers`
-
-**การ import การทดสอบเป้าหมายช่องทาง:** `openclaw/plugin-sdk/channel-target-testing`
-
-**การ import สัญญา Plugin:** `openclaw/plugin-sdk/plugin-test-contracts`
-
-**การ import การทดสอบ runtime ของ Plugin:** `openclaw/plugin-sdk/plugin-test-runtime`
-
-**การ import สัญญาผู้ให้บริการ:** `openclaw/plugin-sdk/provider-test-contracts`
-
-**การ import mock HTTP ของผู้ให้บริการ:** `openclaw/plugin-sdk/provider-http-test-mocks`
-
-**การ import การทดสอบสภาพแวดล้อม/เครือข่าย:** `openclaw/plugin-sdk/test-env`
-
-**การ import fixture ทั่วไป:** `openclaw/plugin-sdk/test-fixtures`
-
-**การ import mock builtin ของ Node:** `openclaw/plugin-sdk/test-node-mocks`
-
-ภายใน repo ของ OpenClaw ให้เลือกใช้ subpath เฉพาะด้านล่างสำหรับการทดสอบ Plugin ที่ bundle มาใหม่ barrel แบบกว้าง
-`openclaw/plugin-sdk/testing` เป็นเพียงความเข้ากันได้แบบ legacy เท่านั้น
-guardrail ของ repo จะปฏิเสธ real import ใหม่จาก `plugin-sdk/testing` และ
-`plugin-sdk/test-utils`; ชื่อเหล่านั้นยังคงอยู่เฉพาะในฐานะพื้นผิวความเข้ากันได้ที่เลิกใช้งานแล้วสำหรับการทดสอบ compatibility-record
+พาธย่อยเหล่านี้เป็นจุดเริ่มต้นซอร์สภายในรีโพสำหรับการทดสอบ Plugin แบบรวมมากับ OpenClaw เอง พาธเหล่านี้ไม่ได้เป็น export ใน `package.json` ที่เผยแพร่สำหรับ Plugin ของบุคคลที่สาม และอาจนำเข้า Vitest หรือการขึ้นต่อกันสำหรับการทดสอบอื่น ๆ ที่ใช้เฉพาะภายในรีโพ
 
 ```typescript
 import {
@@ -80,89 +51,85 @@ import {
 import { mockNodeBuiltinModule } from "openclaw/plugin-sdk/test-node-mocks";
 ```
 
-### export ที่มีอยู่
+สำหรับการทดสอบ Plugin แบบรวมมากับระบบรายการใหม่ ให้เลือกใช้พาธย่อยที่เจาะจงเหล่านี้ ส่วน barrel แบบกว้าง `openclaw/plugin-sdk/testing` และนามแฝง `openclaw/plugin-sdk/test-utils` มีไว้เพื่อความเข้ากันได้กับระบบเดิมเท่านั้น: `pnpm run lint:plugins:no-extension-test-core-imports` (`scripts/check-no-extension-test-core-imports.ts`) จะปฏิเสธการนำเข้ารายการใหม่จากทั้งสองรายการในไฟล์ทดสอบส่วนขยาย และทั้งสองรายการยังคงมีไว้เฉพาะสำหรับการทดสอบบันทึกความเข้ากันได้เท่านั้น
 
-| รายการส่งออก                                        | วัตถุประสงค์                                                                                                                                           |
-| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `createTestPluginApi`                                | สร้าง mock API ของ Plugin แบบขั้นต่ำสำหรับการทดสอบหน่วยการลงทะเบียนโดยตรง นำเข้าจาก `plugin-sdk/plugin-test-api`                                      |
-| `AUTH_PROFILE_RUNTIME_CONTRACT`                      | ฟิกซ์เจอร์สัญญา auth-profile ที่ใช้ร่วมกันสำหรับอะแดปเตอร์รันไทม์ของเอเจนต์เนทีฟ นำเข้าจาก `plugin-sdk/agent-runtime-test-contracts`                  |
-| `DELIVERY_NO_REPLY_RUNTIME_CONTRACT`                 | ฟิกซ์เจอร์สัญญาการระงับการส่งมอบที่ใช้ร่วมกันสำหรับอะแดปเตอร์รันไทม์ของเอเจนต์เนทีฟ นำเข้าจาก `plugin-sdk/agent-runtime-test-contracts`               |
-| `OUTCOME_FALLBACK_RUNTIME_CONTRACT`                  | ฟิกซ์เจอร์สัญญาการจัดประเภท fallback ที่ใช้ร่วมกันสำหรับอะแดปเตอร์รันไทม์ของเอเจนต์เนทีฟ นำเข้าจาก `plugin-sdk/agent-runtime-test-contracts`          |
-| `createParameterFreeTool`                            | สร้างฟิกซ์เจอร์สคีมาเครื่องมือแบบไดนามิกสำหรับการทดสอบสัญญารันไทม์เนทีฟ นำเข้าจาก `plugin-sdk/agent-runtime-test-contracts`                          |
-| `expectChannelInboundContextContract`                | ตรวจยืนยันรูปทรงบริบทขาเข้าของช่องทาง นำเข้าจาก `plugin-sdk/channel-contract-testing`                                                                 |
-| `installChannelOutboundPayloadContractSuite`         | ติดตั้งกรณีสัญญาเพย์โหลดขาออกของช่องทาง นำเข้าจาก `plugin-sdk/channel-contract-testing`                                                               |
-| `createStartAccountContext`                          | สร้างบริบทวงจรชีวิตบัญชีของช่องทาง นำเข้าจาก `plugin-sdk/channel-test-helpers`                                                                        |
-| `installChannelActionsContractSuite`                 | ติดตั้งกรณีสัญญาการกระทำของข้อความช่องทางแบบทั่วไป นำเข้าจาก `plugin-sdk/channel-test-helpers`                                                       |
-| `installChannelSetupContractSuite`                   | ติดตั้งกรณีสัญญาการตั้งค่าช่องทางแบบทั่วไป นำเข้าจาก `plugin-sdk/channel-test-helpers`                                                               |
-| `installChannelStatusContractSuite`                  | ติดตั้งกรณีสัญญาสถานะช่องทางแบบทั่วไป นำเข้าจาก `plugin-sdk/channel-test-helpers`                                                                    |
-| `expectDirectoryIds`                                 | ตรวจยืนยัน id ไดเรกทอรีของช่องทางจากฟังก์ชันรายการไดเรกทอรี นำเข้าจาก `plugin-sdk/channel-test-helpers`                                             |
-| `assertBundledChannelEntries`                        | ตรวจยืนยันว่า entrypoint ของช่องทางที่บันเดิลไว้เปิดเผยสัญญาสาธารณะที่คาดไว้ นำเข้าจาก `plugin-sdk/channel-test-helpers`                            |
-| `formatEnvelopeTimestamp`                            | จัดรูปแบบเวลาประทับของ envelope แบบกำหนดได้แน่นอน นำเข้าจาก `plugin-sdk/channel-test-helpers`                                                       |
-| `expectPairingReplyText`                             | ตรวจยืนยันข้อความตอบกลับการจับคู่ของช่องทางและดึงรหัสออกมา นำเข้าจาก `plugin-sdk/channel-test-helpers`                                              |
-| `describePluginRegistrationContract`                 | ติดตั้งการตรวจสอบสัญญาการลงทะเบียน Plugin นำเข้าจาก `plugin-sdk/plugin-test-contracts`                                                               |
-| `registerSingleProviderPlugin`                       | ลงทะเบียน Plugin ผู้ให้บริการหนึ่งรายการในการทดสอบ smoke ของตัวโหลด นำเข้าจาก `plugin-sdk/plugin-test-runtime`                                      |
-| `registerProviderPlugin`                             | จับผู้ให้บริการทุกชนิดจาก Plugin หนึ่งรายการ นำเข้าจาก `plugin-sdk/plugin-test-runtime`                                                             |
-| `registerProviderPlugins`                            | จับการลงทะเบียนผู้ให้บริการข้าม Plugin หลายรายการ นำเข้าจาก `plugin-sdk/plugin-test-runtime`                                                        |
-| `requireRegisteredProvider`                          | ตรวจยืนยันว่าคอลเลกชันผู้ให้บริการมี id อยู่ นำเข้าจาก `plugin-sdk/plugin-test-runtime`                                                             |
-| `createRuntimeEnv`                                   | สร้างสภาพแวดล้อมรันไทม์ CLI/Plugin แบบ mock นำเข้าจาก `plugin-sdk/plugin-test-runtime`                                                              |
-| `createPluginRuntimeMock`                            | สร้างพื้นผิวรันไทม์ของ Plugin แบบ mock นำเข้าจาก `plugin-sdk/plugin-test-runtime`                                                                    |
-| `createPluginSetupWizardStatus`                      | สร้างตัวช่วยสถานะการตั้งค่าสำหรับ Plugin ช่องทาง นำเข้าจาก `plugin-sdk/plugin-test-runtime`                                                         |
-| `describeOpenAIProviderRuntimeContract`              | ติดตั้งการตรวจสอบสัญญารันไทม์ของตระกูลผู้ให้บริการ นำเข้าจาก `plugin-sdk/provider-test-contracts`                                                   |
-| `expectPassthroughReplayPolicy`                      | ตรวจยืนยันว่านโยบาย replay ของผู้ให้บริการส่งผ่านเครื่องมือและเมทาดาทาที่ผู้ให้บริการเป็นเจ้าของ นำเข้าจาก `plugin-sdk/provider-test-contracts`    |
-| `runRealtimeSttLiveTest`                             | รันการทดสอบสดผู้ให้บริการ STT แบบเรียลไทม์ด้วยฟิกซ์เจอร์เสียงที่ใช้ร่วมกัน นำเข้าจาก `plugin-sdk/provider-test-contracts`                           |
-| `normalizeTranscriptForMatch`                        | ทำเอาต์พุต transcript สดให้เป็นรูปแบบมาตรฐานก่อนการตรวจยืนยันแบบ fuzzy นำเข้าจาก `plugin-sdk/provider-test-contracts`                               |
-| `expectExplicitVideoGenerationCapabilities`          | ตรวจยืนยันว่าผู้ให้บริการวิดีโอประกาศความสามารถของโหมดการสร้างอย่างชัดเจน นำเข้าจาก `plugin-sdk/provider-test-contracts`                           |
-| `expectExplicitMusicGenerationCapabilities`          | ตรวจยืนยันว่าผู้ให้บริการเพลงประกาศความสามารถในการสร้าง/แก้ไขอย่างชัดเจน นำเข้าจาก `plugin-sdk/provider-test-contracts`                            |
-| `mockSuccessfulDashscopeVideoTask`                   | ติดตั้งการตอบกลับงานวิดีโอที่เข้ากันได้กับ DashScope และสำเร็จ นำเข้าจาก `plugin-sdk/provider-test-contracts`                                       |
-| `getProviderHttpMocks`                               | เข้าถึง mock HTTP/auth ของผู้ให้บริการใน Vitest แบบ opt-in นำเข้าจาก `plugin-sdk/provider-http-test-mocks`                                           |
-| `installProviderHttpMockCleanup`                     | รีเซ็ต mock HTTP/auth ของผู้ให้บริการหลังการทดสอบแต่ละครั้ง นำเข้าจาก `plugin-sdk/provider-http-test-mocks`                                         |
-| `installCommonResolveTargetErrorCases`               | กรณีทดสอบที่ใช้ร่วมกันสำหรับการจัดการข้อผิดพลาดในการ resolve เป้าหมาย นำเข้าจาก `plugin-sdk/channel-target-testing`                                |
-| `shouldAckReaction`                                  | ตรวจสอบว่าช่องทางควรเพิ่ม reaction ack หรือไม่ นำเข้าจาก `plugin-sdk/channel-feedback`                                                              |
-| `removeAckReactionAfterReply`                        | ลบ reaction ack หลังการส่งมอบคำตอบ นำเข้าจาก `plugin-sdk/channel-feedback`                                                                           |
-| `createTestRegistry`                                 | สร้างฟิกซ์เจอร์รีจิสทรี Plugin ช่องทาง นำเข้าจาก `plugin-sdk/plugin-test-runtime` หรือ `plugin-sdk/channel-test-helpers`                            |
-| `createEmptyPluginRegistry`                          | สร้างฟิกซ์เจอร์รีจิสทรี Plugin ว่าง นำเข้าจาก `plugin-sdk/plugin-test-runtime` หรือ `plugin-sdk/channel-test-helpers`                               |
-| `setActivePluginRegistry`                            | ติดตั้งฟิกซ์เจอร์รีจิสทรีสำหรับการทดสอบรันไทม์ของ Plugin นำเข้าจาก `plugin-sdk/plugin-test-runtime` หรือ `plugin-sdk/channel-test-helpers`          |
-| `createRequestCaptureJsonFetch`                      | จับคำขอ fetch แบบ JSON ในการทดสอบตัวช่วยสื่อ นำเข้าจาก `plugin-sdk/test-env`                                                                         |
-| `withServer`                                         | รันการทดสอบกับเซิร์ฟเวอร์ HTTP แบบใช้แล้วทิ้งในเครื่อง นำเข้าจาก `plugin-sdk/test-env`                                                              |
-| `createMockIncomingRequest`                          | สร้างออบเจกต์คำขอ HTTP ขาเข้าแบบขั้นต่ำ นำเข้าจาก `plugin-sdk/test-env`                                                                              |
-| `withFetchPreconnect`                                | รันการทดสอบ fetch โดยติดตั้ง hook preconnect ไว้ นำเข้าจาก `plugin-sdk/test-env`                                                                     |
-| `withEnv` / `withEnvAsync`                           | แก้ไขตัวแปรสภาพแวดล้อมชั่วคราว นำเข้าจาก `plugin-sdk/test-env`                                                                                       |
-| `createTempHomeEnv` / `withTempHome` / `withTempDir` | สร้างฟิกซ์เจอร์ทดสอบระบบไฟล์แบบแยกส่วน นำเข้าจาก `plugin-sdk/test-env`                                                                               |
-| `createMockServerResponse`                           | สร้าง mock การตอบกลับของเซิร์ฟเวอร์ HTTP แบบขั้นต่ำ นำเข้าจาก `plugin-sdk/test-env`                                                                 |
-| `createCliRuntimeCapture`                            | จับเอาต์พุตรันไทม์ CLI ในการทดสอบ นำเข้าจาก `plugin-sdk/test-fixtures`                                                                               |
-| `importFreshModule`                                  | นำเข้าโมดูล ESM ด้วยโทเค็น query ใหม่เพื่อข้ามแคชโมดูล นำเข้าจาก `plugin-sdk/test-fixtures`                                                         |
-| `bundledPluginRoot` / `bundledPluginFile`            | resolve พาธฟิกซ์เจอร์ซอร์สหรือ dist ของ Plugin ที่บันเดิลไว้ นำเข้าจาก `plugin-sdk/test-fixtures`                                                   |
-| `mockNodeBuiltinModule`                              | ติดตั้ง mock บิวต์อิน Node แบบแคบใน Vitest นำเข้าจาก `plugin-sdk/test-node-mocks`                                                                    |
-| `createSandboxTestContext`                           | สร้างบริบทการทดสอบ sandbox นำเข้าจาก `plugin-sdk/test-fixtures`                                                                                      |
-| `writeSkill`                                         | เขียนฟิกซ์เจอร์ skill นำเข้าจาก `plugin-sdk/test-fixtures`                                                                                           |
-| `makeAgentAssistantMessage`                          | สร้างฟิกซ์เจอร์ข้อความ transcript ของเอเจนต์ นำเข้าจาก `plugin-sdk/test-fixtures`                                                                    |
-| `peekSystemEvents` / `resetSystemEventsForTest`      | ตรวจดูและรีเซ็ตฟิกซ์เจอร์เหตุการณ์ระบบ นำเข้าจาก `plugin-sdk/test-fixtures`                                                                         |
-| `sanitizeTerminalText`                               | ทำเอาต์พุตเทอร์มินัลให้ปลอดภัยสำหรับการตรวจยืนยัน นำเข้าจาก `plugin-sdk/test-fixtures`                                                              |
-| `countLines` / `hasBalancedFences`                   | ตรวจยืนยันรูปทรงเอาต์พุตการแบ่ง chunk นำเข้าจาก `plugin-sdk/test-fixtures`                                                                           |
-| `runProviderCatalog`                                 | เรียกใช้ hook แคตตาล็อกผู้ให้บริการด้วย dependency สำหรับการทดสอบ                                                                                    |
-| `resolveProviderWizardOptions`                       | resolve ตัวเลือกของวิซาร์ดตั้งค่าผู้ให้บริการในการทดสอบสัญญา                                                                                        |
-| `resolveProviderModelPickerEntries`                  | resolve รายการตัวเลือกโมเดลของผู้ให้บริการในการทดสอบสัญญา                                                                                           |
-| `buildProviderPluginMethodChoice`                    | สร้าง id ตัวเลือกวิซาร์ดผู้ให้บริการสำหรับการตรวจยืนยัน                                                                                              |
-| `setProviderWizardProvidersResolverForTest`          | ฉีดผู้ให้บริการของวิซาร์ดผู้ให้บริการสำหรับการทดสอบแบบแยกส่วน                                                                                      |
-| `createProviderUsageFetch`                           | สร้าง fixture สำหรับการดึงข้อมูลการใช้งานผู้ให้บริการ                                                                                                      |
-| `useFrozenTime` / `useRealTime`                      | หยุดและกู้คืนตัวจับเวลาสำหรับการทดสอบที่ไวต่อเวลา นำเข้าจาก `plugin-sdk/test-env`                                                    |
-| `createTestWizardPrompter`                           | สร้าง prompter ของวิซาร์ดตั้งค่าแบบจำลอง                                                                                                     |
-| `createRuntimeTaskFlow`                              | สร้างสถานะ TaskFlow ของรันไทม์แบบแยกส่วน                                                                                                  |
-| `typedCases`                                         | รักษาประเภทลิเทอรัลสำหรับการทดสอบแบบขับเคลื่อนด้วยตาราง นำเข้าจาก `plugin-sdk/test-fixtures`                                                    |
+### export ที่พร้อมใช้งาน
 
-ชุดสัญญาของ Plugin ที่บันเดิลมาด้วยยังใช้เส้นทางย่อยสำหรับการทดสอบของ SDK สำหรับตัวช่วย fixture เฉพาะการทดสอบของ registry, manifest, public-artifact และ runtime ชุดทดสอบเฉพาะ core ที่พึ่งพา inventory ของ OpenClaw ที่บันเดิลมาด้วยจะอยู่ภายใต้ `src/plugins/contracts`
-ให้เก็บการทดสอบ extension ใหม่ไว้บนเส้นทางย่อย SDK แบบเจาะจงที่มีเอกสารกำกับ เช่น
-`plugin-sdk/plugin-test-api`, `plugin-sdk/channel-contract-testing`,
-`plugin-sdk/agent-runtime-test-contracts`, `plugin-sdk/channel-test-helpers`,
-`plugin-sdk/plugin-test-contracts`, `plugin-sdk/plugin-test-runtime`,
-`plugin-sdk/provider-test-contracts`, `plugin-sdk/provider-http-test-mocks`,
-`plugin-sdk/test-env` หรือ `plugin-sdk/test-fixtures` แทนการ import compatibility barrel แบบกว้าง
-`plugin-sdk/testing`, ไฟล์ repo `src/**` หรือสะพาน repo
-`test/helpers/*` โดยตรง
+| การส่งออก                                           | วัตถุประสงค์                                                                                                                                                    |
+| ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `createTestPluginApi`                                | สร้าง API จำลองขั้นต่ำสำหรับ Plugin เพื่อใช้ในการทดสอบหน่วยการลงทะเบียนโดยตรง นำเข้าจาก `plugin-sdk/plugin-test-api`                                           |
+| `AUTH_PROFILE_RUNTIME_CONTRACT`                      | ฟิกซ์เจอร์สัญญาโปรไฟล์การยืนยันตัวตนที่ใช้ร่วมกันสำหรับอะแดปเตอร์รันไทม์เอเจนต์แบบเนทีฟ นำเข้าจาก `plugin-sdk/agent-runtime-test-contracts`                     |
+| `DELIVERY_NO_REPLY_RUNTIME_CONTRACT`                 | ฟิกซ์เจอร์สัญญาการระงับการส่งที่ใช้ร่วมกันสำหรับอะแดปเตอร์รันไทม์เอเจนต์แบบเนทีฟ นำเข้าจาก `plugin-sdk/agent-runtime-test-contracts`                            |
+| `OUTCOME_FALLBACK_RUNTIME_CONTRACT`                  | ฟิกซ์เจอร์สัญญาการจำแนกประเภททางเลือกสำรองที่ใช้ร่วมกันสำหรับอะแดปเตอร์รันไทม์เอเจนต์แบบเนทีฟ นำเข้าจาก `plugin-sdk/agent-runtime-test-contracts`              |
+| `createParameterFreeTool`                            | สร้างฟิกซ์เจอร์สคีมาของเครื่องมือแบบไดนามิกสำหรับการทดสอบสัญญารันไทม์แบบเนทีฟ นำเข้าจาก `plugin-sdk/agent-runtime-test-contracts`                              |
+| `expectChannelInboundContextContract`                | ตรวจยืนยันรูปแบบบริบทขาเข้าของช่องทาง นำเข้าจาก `plugin-sdk/channel-contract-testing`                                                                          |
+| `installChannelOutboundPayloadContractSuite`         | ติดตั้งกรณีทดสอบสัญญาเพย์โหลดขาออกของช่องทาง นำเข้าจาก `plugin-sdk/channel-contract-testing`                                                                    |
+| `createStartAccountContext`                          | สร้างบริบทวงจรชีวิตของบัญชีช่องทาง นำเข้าจาก `plugin-sdk/channel-test-helpers`                                                                                  |
+| `installChannelActionsContractSuite`                 | ติดตั้งกรณีทดสอบสัญญาการดำเนินการกับข้อความช่องทางแบบทั่วไป นำเข้าจาก `plugin-sdk/channel-test-helpers`                                                         |
+| `installChannelSetupContractSuite`                   | ติดตั้งกรณีทดสอบสัญญาการตั้งค่าช่องทางแบบทั่วไป นำเข้าจาก `plugin-sdk/channel-test-helpers`                                                                     |
+| `installChannelStatusContractSuite`                  | ติดตั้งกรณีทดสอบสัญญาสถานะช่องทางแบบทั่วไป นำเข้าจาก `plugin-sdk/channel-test-helpers`                                                                          |
+| `expectDirectoryIds`                                 | ตรวจยืนยันรหัสไดเรกทอรีของช่องทางจากฟังก์ชันแสดงรายการไดเรกทอรี นำเข้าจาก `plugin-sdk/channel-test-helpers`                                                    |
+| `assertBundledChannelEntries`                        | ตรวจยืนยันว่าจุดแรกเข้าของช่องทางที่รวมมาให้เปิดเผยสัญญาสาธารณะที่คาดไว้ นำเข้าจาก `plugin-sdk/channel-test-helpers`                                           |
+| `formatEnvelopeTimestamp`                            | จัดรูปแบบตราเวลาของเอนเวโลปให้กำหนดผลลัพธ์ได้แน่นอน นำเข้าจาก `plugin-sdk/channel-test-helpers`                                                                 |
+| `expectPairingReplyText`                             | ตรวจยืนยันข้อความตอบกลับการจับคู่และแยกรหัสออกมา นำเข้าจาก `plugin-sdk/channel-test-helpers`                                                                    |
+| `describePluginRegistrationContract`                 | ติดตั้งการตรวจสอบสัญญาการลงทะเบียน Plugin นำเข้าจาก `plugin-sdk/plugin-test-contracts`                                                                          |
+| `registerSingleProviderPlugin`                       | ลงทะเบียน Plugin ผู้ให้บริการหนึ่งรายการในการทดสอบเบื้องต้นของตัวโหลด นำเข้าจาก `plugin-sdk/plugin-test-runtime`                                              |
+| `registerProviderPlugin`                             | บันทึกผู้ให้บริการทุกประเภทจาก Plugin หนึ่งรายการ นำเข้าจาก `plugin-sdk/plugin-test-runtime`                                                                    |
+| `registerProviderPlugins`                            | บันทึกการลงทะเบียนผู้ให้บริการจาก Plugin หลายรายการ นำเข้าจาก `plugin-sdk/plugin-test-runtime`                                                                  |
+| `requireRegisteredProvider`                          | ตรวจยืนยันว่าคอลเลกชันผู้ให้บริการมีรหัสที่กำหนด นำเข้าจาก `plugin-sdk/plugin-test-runtime`                                                                     |
+| `createRuntimeEnv`                                   | สร้างสภาพแวดล้อมรันไทม์ CLI/Plugin แบบจำลอง นำเข้าจาก `plugin-sdk/plugin-test-runtime`                                                                          |
+| `createPluginRuntimeMock`                            | สร้างพื้นผิวรันไทม์ของ Plugin แบบจำลอง นำเข้าจาก `plugin-sdk/plugin-test-runtime`                                                                                |
+| `createPluginSetupWizardStatus`                      | สร้างตัวช่วยสถานะการตั้งค่าสำหรับ Plugin ช่องทาง นำเข้าจาก `plugin-sdk/plugin-test-runtime`                                                                     |
+| `createTestWizardPrompter`                           | สร้างตัวแจ้งคำถามของตัวช่วยตั้งค่าแบบจำลอง นำเข้าจาก `plugin-sdk/plugin-test-runtime`                                                                           |
+| `createRuntimeTaskFlow`                              | สร้างสถานะโฟลว์งานรันไทม์ที่แยกต่างหาก นำเข้าจาก `plugin-sdk/plugin-test-runtime`                                                                                |
+| `runProviderCatalog`                                 | เรียกใช้ฮุกแค็ตตาล็อกผู้ให้บริการพร้อมการขึ้นต่อกันสำหรับการทดสอบ นำเข้าจาก `plugin-sdk/plugin-test-runtime`                                                    |
+| `resolveProviderWizardOptions`                       | หาค่าตัวเลือกของตัวช่วยตั้งค่าผู้ให้บริการในการทดสอบสัญญา นำเข้าจาก `plugin-sdk/plugin-test-runtime`                                                            |
+| `resolveProviderModelPickerEntries`                  | หาค่ารายการตัวเลือกโมเดลของผู้ให้บริการในการทดสอบสัญญา นำเข้าจาก `plugin-sdk/plugin-test-runtime`                                                               |
+| `buildProviderPluginMethodChoice`                    | สร้างรหัสตัวเลือกของตัวช่วยผู้ให้บริการสำหรับการตรวจยืนยัน นำเข้าจาก `plugin-sdk/plugin-test-runtime`                                                           |
+| `setProviderWizardProvidersResolverForTest`          | แทรกตัวแก้ค่าผู้ให้บริการของตัวช่วยผู้ให้บริการสำหรับการทดสอบแบบแยกส่วน นำเข้าจาก `plugin-sdk/plugin-test-runtime`                                              |
+| `describeOpenAIProviderRuntimeContract`              | ติดตั้งการตรวจสอบสัญญารันไทม์ของตระกูลผู้ให้บริการ นำเข้าจาก `plugin-sdk/provider-test-contracts`                                                               |
+| `expectPassthroughReplayPolicy`                      | ตรวจยืนยันว่านโยบายการเล่นซ้ำของผู้ให้บริการส่งผ่านเครื่องมือและข้อมูลเมตาที่ผู้ให้บริการเป็นเจ้าของ นำเข้าจาก `plugin-sdk/provider-test-contracts`            |
+| `runRealtimeSttLiveTest`                             | เรียกใช้การทดสอบผู้ให้บริการ STT แบบเรียลไทม์บนระบบจริงด้วยฟิกซ์เจอร์เสียงที่ใช้ร่วมกัน นำเข้าจาก `plugin-sdk/provider-test-contracts`                          |
+| `normalizeTranscriptForMatch`                        | ปรับเอาต์พุตข้อความถอดเสียงจากระบบจริงให้เป็นมาตรฐานก่อนการตรวจยืนยันแบบคลุมเครือ นำเข้าจาก `plugin-sdk/provider-test-contracts`                                |
+| `expectExplicitVideoGenerationCapabilities`          | ตรวจยืนยันว่าผู้ให้บริการวิดีโอประกาศความสามารถของโหมดการสร้างอย่างชัดเจน นำเข้าจาก `plugin-sdk/provider-test-contracts`                                        |
+| `expectExplicitMusicGenerationCapabilities`          | ตรวจยืนยันว่าผู้ให้บริการเพลงประกาศความสามารถในการสร้าง/แก้ไขอย่างชัดเจน นำเข้าจาก `plugin-sdk/provider-test-contracts`                                        |
+| `mockSuccessfulDashscopeVideoTask`                   | ติดตั้งการตอบกลับงานวิดีโอที่เข้ากันได้กับ DashScope และสำเร็จ นำเข้าจาก `plugin-sdk/provider-test-contracts`                                                   |
+| `getProviderHttpMocks`                               | เข้าถึงม็อก HTTP/การยืนยันตัวตนของผู้ให้บริการสำหรับ Vitest ที่ต้องเลือกใช้โดยชัดแจ้ง นำเข้าจาก `plugin-sdk/provider-http-test-mocks`                           |
+| `installProviderHttpMockCleanup`                     | รีเซ็ตม็อก HTTP/การยืนยันตัวตนของผู้ให้บริการหลังการทดสอบแต่ละครั้ง นำเข้าจาก `plugin-sdk/provider-http-test-mocks`                                             |
+| `installCommonResolveTargetErrorCases`               | กรณีทดสอบที่ใช้ร่วมกันสำหรับการจัดการข้อผิดพลาดในการแก้ค่าเป้าหมาย นำเข้าจาก `plugin-sdk/channel-target-testing`                                               |
+| `shouldAckReaction`                                  | ตรวจสอบว่าช่องทางควรเพิ่มรีแอ็กชันรับทราบหรือไม่ นำเข้าจาก `plugin-sdk/channel-feedback`                                                                       |
+| `removeAckReactionAfterReply`                        | ลบรีแอ็กชันรับทราบหลังส่งการตอบกลับแล้ว นำเข้าจาก `plugin-sdk/channel-feedback`                                                                                 |
+| `createTestRegistry`                                 | สร้างฟิกซ์เจอร์รีจิสทรี Plugin ช่องทาง นำเข้าจาก `plugin-sdk/plugin-test-runtime` หรือ `plugin-sdk/channel-test-helpers`                                        |
+| `createEmptyPluginRegistry`                          | สร้างฟิกซ์เจอร์รีจิสทรี Plugin ว่างเปล่า นำเข้าจาก `plugin-sdk/plugin-test-runtime` หรือ `plugin-sdk/channel-test-helpers`                                     |
+| `setActivePluginRegistry`                            | ติดตั้งฟิกซ์เจอร์รีจิสทรีสำหรับการทดสอบรันไทม์ของ Plugin นำเข้าจาก `plugin-sdk/plugin-test-runtime` หรือ `plugin-sdk/channel-test-helpers`                      |
+| `createRequestCaptureJsonFetch`                      | บันทึกคำขอ fetch แบบ JSON ในการทดสอบตัวช่วยสื่อ นำเข้าจาก `plugin-sdk/test-env`                                                                                  |
+| `withServer`                                         | เรียกใช้การทดสอบกับเซิร์ฟเวอร์ HTTP ภายในที่ใช้แล้วทิ้งได้ นำเข้าจาก `plugin-sdk/test-env`                                                                       |
+| `createMockIncomingRequest`                          | สร้างออบเจ็กต์คำขอ HTTP ขาเข้าขั้นต่ำ นำเข้าจาก `plugin-sdk/test-env`                                                                                            |
+| `withFetchPreconnect`                                | เรียกใช้การทดสอบ fetch โดยติดตั้งฮุก preconnect แล้ว นำเข้าจาก `plugin-sdk/test-env`                                                                             |
+| `withEnv` / `withEnvAsync`                           | แพตช์ตัวแปรสภาพแวดล้อมชั่วคราว นำเข้าจาก `plugin-sdk/test-env`                                                                                                  |
+| `createTempHomeEnv` / `withTempHome` / `withTempDir` | สร้างฟิกซ์เจอร์การทดสอบระบบไฟล์แบบแยกส่วน นำเข้าจาก `plugin-sdk/test-env`                                                                                         |
+| `createMockServerResponse`                           | สร้างม็อกการตอบกลับของเซิร์ฟเวอร์ HTTP ขั้นต่ำ นำเข้าจาก `plugin-sdk/test-env`                                                                                   |
+| `createProviderUsageFetch`                           | สร้างฟิกซ์เจอร์ fetch การใช้งานผู้ให้บริการ นำเข้าจาก `plugin-sdk/test-env`                                                                                      |
+| `useFrozenTime` / `useRealTime`                      | หยุดและคืนค่าตัวจับเวลาสำหรับการทดสอบที่ไวต่อเวลา นำเข้าจาก `plugin-sdk/test-env`                                                                                 |
+| `createCliRuntimeCapture`                            | บันทึกเอาต์พุตรันไทม์ของ CLI ในการทดสอบ นำเข้าจาก `plugin-sdk/test-fixtures`                                                                                     |
+| `importFreshModule`                                  | นำเข้าโมดูล ESM ด้วยโทเค็นคิวรีใหม่เพื่อข้ามแคชโมดูล นำเข้าจาก `plugin-sdk/test-fixtures`                                                                       |
+| `bundledPluginRoot` / `bundledPluginFile`            | หาค่าพาธฟิกซ์เจอร์ซอร์สหรือ dist ของ Plugin ที่รวมมาให้ นำเข้าจาก `plugin-sdk/test-fixtures`                                                                     |
+| `mockNodeBuiltinModule`                              | ติดตั้งม็อกโมดูลในตัวของ Node แบบขอบเขตแคบสำหรับ Vitest นำเข้าจาก `plugin-sdk/test-node-mocks`                                                                  |
+| `createSandboxTestContext`                           | สร้างบริบทการทดสอบแซนด์บ็อกซ์ นำเข้าจาก `plugin-sdk/test-fixtures`                                                                                              |
+| `writeSkill`                                         | เขียนฟิกซ์เจอร์ของ Skills นำเข้าจาก `plugin-sdk/test-fixtures`                                                                             |
+| `makeAgentAssistantMessage`                          | สร้างฟิกซ์เจอร์ข้อความทรานสคริปต์ของเอเจนต์ นำเข้าจาก `plugin-sdk/test-fixtures`                                                          |
+| `peekSystemEvents` / `resetSystemEventsForTest`      | ตรวจสอบและรีเซ็ตฟิกซ์เจอร์เหตุการณ์ของระบบ นำเข้าจาก `plugin-sdk/test-fixtures`                                                          |
+| `sanitizeTerminalText`                               | ทำความสะอาดเอาต์พุตของเทอร์มินัลสำหรับการตรวจสอบยืนยัน นำเข้าจาก `plugin-sdk/test-fixtures`                                                          |
+| `countLines` / `hasBalancedFences`                   | ตรวจสอบยืนยันรูปแบบเอาต์พุตของการแบ่งส่วน นำเข้าจาก `plugin-sdk/test-fixtures`                                                                     |
+| `typedCases`                                         | รักษาชนิดลิเทอรัลสำหรับการทดสอบแบบขับเคลื่อนด้วยตาราง นำเข้าจาก `plugin-sdk/test-fixtures`                                                    |
 
-### ประเภท
+ชุดการทดสอบสัญญาของ Plugin ที่รวมมาให้ยังใช้พาธย่อยสำหรับการทดสอบของ SDK เหล่านี้ด้วย สำหรับตัวช่วย fixture ของรีจิสทรี แมนิเฟสต์ อาร์ติแฟกต์สาธารณะ และรันไทม์ที่ใช้เฉพาะในการทดสอบ
+ส่วนชุดการทดสอบเฉพาะแกนหลักที่ขึ้นอยู่กับรายการ OpenClaw ที่รวมมาให้ จะยังคงอยู่ภายใต้
+`src/plugins/contracts`
 
-เส้นทางย่อยสำหรับการทดสอบแบบเจาะจงยัง re-export ประเภทที่มีประโยชน์ในไฟล์ทดสอบด้วย:
+### ชนิดข้อมูล
+
+พาธย่อยสำหรับการทดสอบเฉพาะด้านยังส่งออกชนิดข้อมูลที่มีประโยชน์ในไฟล์ทดสอบซ้ำด้วย:
 
 ```typescript
 import type {
@@ -173,10 +140,10 @@ import type { OpenClawConfig } from "openclaw/plugin-sdk/config-contracts";
 import type { MockFn, PluginRuntime, RuntimeEnv } from "openclaw/plugin-sdk/plugin-test-runtime";
 ```
 
-## การระบุเป้าหมายการทดสอบ
+## การแก้ไขเป้าหมายในการทดสอบ
 
 ใช้ `installCommonResolveTargetErrorCases` เพื่อเพิ่มกรณีข้อผิดพลาดมาตรฐานสำหรับ
-การระบุเป้าหมายของ channel:
+การแก้ไขเป้าหมายของช่องทาง:
 
 ```typescript
 import { describe } from "vitest";
@@ -202,25 +169,26 @@ describe("my-channel target resolution", () => {
 
 ### การทดสอบสัญญาการลงทะเบียน
 
-Unit test ที่ส่ง mock `api` ที่เขียนเองไปยัง `register(api)` จะไม่ได้ทดสอบ
-ด่านการยอมรับของ loader ของ OpenClaw ให้เพิ่ม smoke test ที่หนุนด้วย loader อย่างน้อยหนึ่งรายการ
-สำหรับแต่ละพื้นผิวการลงทะเบียนที่ Plugin ของคุณพึ่งพา โดยเฉพาะ hooks และ
-ความสามารถแบบ exclusive เช่น memory
+การทดสอบหน่วยที่ส่งม็อก `api` ซึ่งเขียนขึ้นเองไปยัง `register(api)` จะไม่ได้
+ทดสอบเกตการยอมรับของตัวโหลด OpenClaw เพิ่มการทดสอบควันแบบใช้ตัวโหลดอย่างน้อยหนึ่งรายการ
+สำหรับแต่ละพื้นผิวการลงทะเบียนที่ Plugin ของคุณต้องพึ่งพา โดยเฉพาะ
+ฮุกและความสามารถแบบเอกสิทธิ์ เช่น หน่วยความจำ
 
-loader จริงจะทำให้การลงทะเบียน Plugin ล้มเหลวเมื่อ metadata ที่จำเป็นขาดหาย หรือเมื่อ
-Plugin เรียก capability API ที่ตนไม่ได้เป็นเจ้าของ ตัวอย่างเช่น
-`api.registerHook(...)` ต้องมีชื่อ hook และ
-`api.registerMemoryCapability(...)` ต้องให้ manifest ของ Plugin หรือ entry ที่ export
+ตัวโหลดจริงจะทำให้การลงทะเบียน Plugin ล้มเหลวเมื่อขาดข้อมูลเมตาที่จำเป็น หรือ
+Plugin เรียก API ของความสามารถที่ตนไม่ได้เป็นเจ้าของ ตัวอย่างเช่น
+`api.registerHook(...)` ต้องมีชื่อฮุก และ
+`api.registerMemoryCapability(...)` ต้องให้แมนิเฟสต์ของ Plugin หรือรายการที่ส่งออก
 ประกาศ `kind: "memory"`
 
-### การทดสอบการเข้าถึง runtime config
+### การทดสอบการเข้าถึงการกำหนดค่ารันไทม์
 
-ควรใช้ mock runtime ของ Plugin แบบใช้ร่วมกันจาก `openclaw/plugin-sdk/plugin-test-runtime`
-mock ของ `runtime.config.loadConfig()` และ `runtime.config.writeConfigFile(...)`
-ที่เลิกใช้แล้วจะ throw โดยค่าเริ่มต้น เพื่อให้การทดสอบจับการใช้งานใหม่ของ compatibility API ได้ ให้ override
-mock เหล่านั้นเฉพาะเมื่อการทดสอบครอบคลุมพฤติกรรมความเข้ากันได้แบบ legacy อย่างชัดเจนเท่านั้น
+ควรใช้ม็อกรันไทม์ Plugin ที่ใช้ร่วมกันจาก `openclaw/plugin-sdk/plugin-test-runtime`
+ม็อก `runtime.config.loadConfig()` และ `runtime.config.writeConfigFile(...)`
+จะส่งข้อผิดพลาดตามค่าเริ่มต้น เพื่อให้การทดสอบตรวจพบการใช้งาน API ความเข้ากันได้
+ที่เลิกแนะนำใหม่ ให้แทนที่ม็อกเหล่านั้นเฉพาะเมื่อการทดสอบครอบคลุมพฤติกรรม
+ความเข้ากันได้แบบเดิมอย่างชัดเจนเท่านั้น
 
-### Unit testing a channel plugin
+### การทดสอบหน่วย Plugin ช่องทาง
 
 ```typescript
 import { describe, it, expect, vi } from "vitest";
@@ -256,7 +224,7 @@ describe("my-channel plugin", () => {
 });
 ```
 
-### Unit testing a provider plugin
+### การทดสอบหน่วย Plugin ผู้ให้บริการ
 
 ```typescript
 import { describe, it, expect } from "vitest";
@@ -284,9 +252,9 @@ describe("my-provider plugin", () => {
 });
 ```
 
-### การ mock runtime ของ Plugin
+### การม็อกรันไทม์ของ Plugin
 
-สำหรับโค้ดที่ใช้ `createPluginRuntimeStore` ให้ mock runtime ในการทดสอบ:
+สำหรับโค้ดที่ใช้ `createPluginRuntimeStore` ให้ม็อกรันไทม์ในการทดสอบ:
 
 ```typescript
 import { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
@@ -317,9 +285,9 @@ store.setRuntime(mockRuntime);
 store.clearRuntime();
 ```
 
-### การทดสอบด้วย stub ราย instance
+### การทดสอบด้วยสตับต่ออินสแตนซ์
 
-ควรใช้ stub ราย instance แทนการ mutate prototype:
+ควรใช้สตับต่ออินสแตนซ์แทนการแก้ไขโพรโทไทป์:
 
 ```typescript
 // Preferred: per-instance stub
@@ -330,75 +298,78 @@ client.sendMessage = vi.fn().mockResolvedValue({ id: "msg-1" });
 // MyChannelClient.prototype.sendMessage = vi.fn();
 ```
 
-## Contract tests (Plugin ใน repo)
+## การทดสอบสัญญา (Plugin ภายในรีโพ)
 
-Plugin ที่บันเดิลมาด้วยมี contract tests ที่ตรวจสอบ ownership ของการลงทะเบียน:
+Plugin ที่รวมมาให้มีการทดสอบสัญญาเพื่อตรวจสอบความเป็นเจ้าของการลงทะเบียน:
 
 ```bash
-pnpm test -- src/plugins/contracts/
+pnpm test src/plugins/contracts/
 ```
 
 การทดสอบเหล่านี้ยืนยัน:
 
-- Plugin ใดลงทะเบียน provider ใด
-- Plugin ใดลงทะเบียน speech provider ใด
-- ความถูกต้องของรูปทรงการลงทะเบียน
-- การสอดคล้องตามสัญญาของ runtime
+- Plugin ใดลงทะเบียนผู้ให้บริการใด
+- Plugin ใดลงทะเบียนผู้ให้บริการเสียงพูดใด
+- ความถูกต้องของรูปแบบการลงทะเบียน
+- การปฏิบัติตามสัญญารันไทม์
 
-### การรันการทดสอบตามขอบเขต
+### การเรียกใช้การทดสอบแบบจำกัดขอบเขต
 
 สำหรับ Plugin เฉพาะรายการ:
 
 ```bash
-pnpm test -- <bundled-plugin-root>/my-channel/
+pnpm test <bundled-plugin-root>/my-channel/
 ```
 
-สำหรับ contract tests เท่านั้น:
+สำหรับการทดสอบสัญญาเท่านั้น:
 
 ```bash
-pnpm test -- src/plugins/contracts/shape.contract.test.ts
-pnpm test -- src/plugins/contracts/auth-choice.contract.test.ts
-pnpm test -- src/plugins/contracts/runtime-seams.contract.test.ts
+pnpm test src/plugins/contracts/shape.contract.test.ts
+pnpm test src/plugins/contracts/auth-choice.contract.test.ts
+pnpm test src/plugins/contracts/runtime-seams.contract.test.ts
 ```
 
-## การบังคับใช้ lint (Plugin ใน repo)
+## การบังคับใช้ลินต์ (Plugin ภายในรีโพ)
 
-มีกฎสามข้อที่ `pnpm check` บังคับใช้สำหรับ Plugin ใน repo:
+`scripts/run-additional-boundary-checks.mjs` เรียกใช้ชุดการตรวจสอบขอบเขตการนำเข้า
+`lint:plugins:*` ใน CI โดยแต่ละรายการยังสามารถเรียกใช้แยกต่างหากในเครื่องได้:
 
-1. **ห้าม import จาก root แบบ monolithic** -- root barrel `openclaw/plugin-sdk` จะถูกปฏิเสธ
-2. **ห้าม import `src/` โดยตรง** -- Plugin ไม่สามารถ import `../../src/` โดยตรงได้
-3. **ห้าม self-import** -- Plugin ไม่สามารถ import เส้นทางย่อย `plugin-sdk/<name>` ของตัวเองได้
+| คำสั่ง                                                        | สิ่งที่บังคับใช้                                                                                                                    |
+| -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm run lint:plugins:no-monolithic-plugin-sdk-entry-imports` | Plugin ที่รวมมาให้ไม่สามารถนำเข้าบาร์เรลราก `openclaw/plugin-sdk` แบบรวมศูนย์ได้                                             |
+| `pnpm run lint:plugins:no-extension-src-imports`               | ไฟล์ส่วนขยายสำหรับการใช้งานจริงไม่สามารถนำเข้าทรี `src/**` ของรีโพโดยตรง (`../../src/...`) ได้                                 |
+| `pnpm run lint:plugins:no-extension-test-core-imports`         | ไฟล์ทดสอบส่วนขยายไม่สามารถนำเข้า `openclaw/plugin-sdk/testing`, `plugin-sdk/test-utils` หรือตัวช่วยทดสอบเฉพาะแกนหลักอื่น ๆ ได้ |
 
-Plugin ภายนอกไม่อยู่ภายใต้กฎ lint เหล่านี้ แต่แนะนำให้ทำตาม
+Plugin ภายนอกไม่อยู่ภายใต้กฎลินต์เหล่านี้ แต่แนะนำให้ปฏิบัติตาม
 รูปแบบเดียวกัน
 
 ## การกำหนดค่าการทดสอบ
 
-OpenClaw ใช้ Vitest พร้อม threshold coverage ของ V8 สำหรับการทดสอบ Plugin:
+OpenClaw ใช้ Vitest 4 พร้อมการรายงานความครอบคลุม V8 เพื่อให้ข้อมูล สำหรับการทดสอบ Plugin:
 
 ```bash
 # Run all tests
 pnpm test
 
 # Run specific plugin tests
-pnpm test -- <bundled-plugin-root>/my-channel/src/channel.test.ts
+pnpm test <bundled-plugin-root>/my-channel/src/channel.test.ts
 
 # Run with a specific test name filter
-pnpm test -- <bundled-plugin-root>/my-channel/ -t "resolves account"
+pnpm test <bundled-plugin-root>/my-channel/ -t "resolves account"
 
 # Run with coverage
 pnpm test:coverage
 ```
 
-หากการรันในเครื่องทำให้เกิดแรงกดดันด้านหน่วยความจำ:
+หากการเรียกใช้ในเครื่องทำให้หน่วยความจำตึงตัว:
 
 ```bash
 OPENCLAW_VITEST_MAX_WORKERS=1 pnpm test
 ```
 
-## ที่เกี่ยวข้อง
+## เนื้อหาที่เกี่ยวข้อง
 
-- [ภาพรวม SDK](/th/plugins/sdk-overview) -- ข้อตกลงการ import
-- [Plugin ของ SDK สำหรับ Channel](/th/plugins/sdk-channel-plugins) -- interface ของ channel Plugin
-- [Plugin ของ SDK สำหรับ Provider](/th/plugins/sdk-provider-plugins) -- hooks ของ provider Plugin
+- [ภาพรวม SDK](/th/plugins/sdk-overview) -- ข้อตกลงการนำเข้า
+- [Plugin ช่องทางของ SDK](/th/plugins/sdk-channel-plugins) -- อินเทอร์เฟซ Plugin ช่องทาง
+- [Plugin ผู้ให้บริการของ SDK](/th/plugins/sdk-provider-plugins) -- ฮุกของ Plugin ผู้ให้บริการ
 - [การสร้าง Plugin](/th/plugins/building-plugins) -- คู่มือเริ่มต้นใช้งาน

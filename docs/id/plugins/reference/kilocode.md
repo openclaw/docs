@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Anda sedang memasang, mengonfigurasi, atau mengaudit plugin kilocode
+    - Anda sedang menginstal, mengonfigurasi, atau mengaudit plugin kilocode
 summary: Menambahkan dukungan penyedia model Kilocode ke OpenClaw.
 title: Plugin Kilocode
 x-i18n:
-    generated_at: "2026-06-27T17:54:29Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:28:43Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 83843bd0e8a3e9944a60540a0329630f7660f8e9440c157b790ddca8655052f9
@@ -20,11 +20,11 @@ Menambahkan dukungan penyedia model Kilocode ke OpenClaw.
 ## Distribusi
 
 - Paket: `@openclaw/kilocode-provider`
-- Rute instalasi: npm; ClawHub: `clawhub:@openclaw/kilocode-provider`
+- Jalur instalasi: npm; ClawHub: `clawhub:@openclaw/kilocode-provider`
 
-## Permukaan
+## Cakupan
 
-providers: kilocode
+penyedia: kilocode
 
 ## Dokumentasi terkait
 

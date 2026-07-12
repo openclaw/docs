@@ -1,11 +1,11 @@
 ---
 read_when:
-    - أنت بصدد تثبيت Plugin microsoft-foundry أو تهيئته أو تدقيقه
+    - أنت تثبّت Plugin ‏microsoft-foundry أو تهيّئه أو تدقّق فيه
 summary: يضيف دعم موفّر نماذج Microsoft Foundry إلى OpenClaw.
-title: Plugin Microsoft Foundry
+title: Plugin ‏Microsoft Foundry
 x-i18n:
-    generated_at: "2026-06-27T18:13:56Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:21:15Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: c120a68393626e5ff9f24cd80bce4612a3772faf3722b93f2ff4677f743d0252
@@ -13,60 +13,60 @@ x-i18n:
     workflow: 16
 ---
 
-# Microsoft Foundry Plugin
+# Plugin Microsoft Foundry
 
-يضيف دعم موفر نماذج Microsoft Foundry إلى OpenClaw.
+يضيف دعم موفّر نماذج Microsoft Foundry إلى OpenClaw.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/microsoft-foundry`
 - مسار التثبيت: مضمّن في OpenClaw
 
-## الواجهة
+## الواجهات
 
-providers: microsoft-foundry; contracts: imageGenerationProviders
+الموفّرون: microsoft-foundry؛ العقود: imageGenerationProviders
 
 <!-- openclaw-plugin-reference:manual-start -->
 
-- موفر إنشاء الصور: `microsoft-foundry`
+- موفّر توليد الصور: `microsoft-foundry`
 
 ## المتطلبات
 
-- مورد Microsoft Foundry أو Azure AI Foundry مع عمليات نشر.
-- مصادقة بمفتاح API عبر `AZURE_OPENAI_API_KEY` أو مفتاح API مهيأ للموفر.
+- مورد Microsoft Foundry أو Azure AI Foundry يحتوي على عمليات نشر.
+- مصادقة بمفتاح API عبر `AZURE_OPENAI_API_KEY` أو مفتاح API مُهيّأ للموفّر.
 - لمصادقة Entra ID، ثبّت Azure CLI وشغّل `az login` قبل
-  الإعداد. يحدّث OpenClaw رموز تشغيل Microsoft Foundry عبر
+  الإعداد الأولي. يحدّث OpenClaw رموز تشغيل Microsoft Foundry من خلال
   `az account get-access-token`.
 
 ## نماذج المحادثة
 
-تستخدم عمليات نشر محادثة Microsoft Foundry مرجع نموذج الموفر
-`microsoft-foundry/<deployment-name>`. يكتشف الإعداد موارد Foundry
-وعمليات النشر باستخدام Azure CLI، ثم يكتب اسم النشر المحدد إلى
-تهيئة النموذج.
+تستخدم عمليات نشر المحادثة في Microsoft Foundry مرجع نموذج الموفّر
+`microsoft-foundry/<deployment-name>`. يكتشف الإعداد الأولي موارد Foundry
+وعمليات النشر باستخدام Azure CLI، ثم يكتب اسم عملية النشر المحددة في
+إعدادات النموذج.
 
-يستخدم OpenClaw نقطة نهاية Foundry `/openai/v1` لواجهات API المحادثة
-المتوافقة مع OpenAI والمدعومة:
+يستخدم OpenClaw نقطة نهاية Foundry المسماة `/openai/v1` لواجهات API المتوافقة
+مع OpenAI والمدعومة للمحادثة:
 
-- عائلات نماذج GPT و`o*` و`computer-use-preview` وDeepSeek-V4 تستخدم
-  `openai-responses` افتراضيًا.
-- تستخدم عمليات نشر MAI-DS-R1 وغيرها من عمليات نشر إكمالات المحادثة
+- تستخدم عائلات نماذج GPT و`o*` و`computer-use-preview` وDeepSeek-V4 افتراضيًا
+  `openai-responses`.
+- تستخدم عمليات نشر MAI-DS-R1 وغيرها من عمليات نشر إكمال المحادثة
   `openai-completions` ما لم تُهيّأ واجهة API مدعومة صراحةً.
-- يُسجَّل MAI-DS-R1 على أنه قادر على الاستدلال عبر محتوى الاستدلال، وليس
-  عبر `reasoning_effort`. تبلغ بيانات تعريف رموز السياق والإخراج الخاصة به
+- يُسجَّل MAI-DS-R1 بوصفه قادرًا على الاستدلال من خلال محتوى الاستدلال، وليس
+  من خلال `reasoning_effort`. وتبلغ بياناته الوصفية لرموز السياق والإخراج
   163,840 رمزًا.
 
-تستخدم عمليات نشر Anthropic Claude في Microsoft Foundry شكل واجهة API
-Anthropic Messages، وليس الشكل المتوافق مع OpenAI عبر `/openai/v1`. هيّئها
-كموفر `anthropic-messages` مخصص إلى أن يضيف Microsoft Foundry Plugin
-تشغيلًا أصليًا لـ Anthropic. عندما يختلف اسم نشر Foundry عن معرف نموذج
-Claude، اضبط `params.canonicalModelId` في إدخال النموذج حتى يتمكن OpenClaw
-من تطبيق عقود الاتصال الخاصة بالنموذج، وربط `/think off` بشكل صحيح،
-والحفاظ على التفكير الموقّع بأمان.
+تستخدم عمليات نشر Anthropic Claude في Microsoft Foundry بنية واجهة API
+المسماة Anthropic Messages، وليس البنية المتوافقة مع OpenAI المسماة
+`/openai/v1`. هيّئها كموفّر `anthropic-messages` مخصص إلى أن يضيف Plugin
+Microsoft Foundry بيئة تشغيل أصلية لـ Anthropic. عندما يختلف اسم عملية نشر
+Foundry عن معرّف نموذج Claude، عيّن `params.canonicalModelId` في إدخال النموذج
+حتى يتمكن OpenClaw من تطبيق عقود الاتصال الخاصة بالنموذج، وربط `/think off`
+بشكل صحيح، والحفاظ على التفكير الموقّع بأمان.
 
-## إنشاء صور MAI
+## توليد الصور باستخدام MAI
 
-يسجّل Plugin `microsoft-foundry` لـ `image_generate` مع نماذج صور
+يسجّل Plugin الموفّر `microsoft-foundry` للأداة `image_generate` مع نماذج صور
 Microsoft AI الحالية:
 
 - `MAI-Image-2.5-Flash`
@@ -74,8 +74,9 @@ Microsoft AI الحالية:
 - `MAI-Image-2e`
 - `MAI-Image-2`
 
-استخدم اسم نشر صور MAI منشورًا كمرجع النموذج. لا يعلن الموفر عن نموذج صور
-افتراضي لأن واجهة API الخاصة بـ MAI تتطلب اسم النشر في حقل `model` في الطلب:
+استخدم اسم عملية نشر صور MAI منشورة كمرجع للنموذج. لا يصرّح الموفّر بنموذج
+صور افتراضي لأن واجهة API الخاصة بـ MAI تتطلب اسم عملية النشر في حقل `model`
+ضمن الطلب:
 
 ```json5
 {
@@ -90,32 +91,32 @@ Microsoft AI الحالية:
 }
 ```
 
-تستدعي عمليات الإنشاء المعتمدة على الموجه فقط نقطة نهاية عمليات إنشاء MAI
-في Microsoft Foundry:
-`/mai/v1/images/generations`. وتستدعي تعديلات الصور المرجعية
-`/mai/v1/images/edits` وتقتصر على عمليات نشر `MAI-Image-2.5-Flash` و
-`MAI-Image-2.5`.
+تستدعي عملية التوليد المعتمدة على الموجّه فقط نقطة نهاية توليد MAI في
+Microsoft Foundry: `/mai/v1/images/generations`. وتستدعي عمليات التحرير
+باستخدام صورة مرجعية `/mai/v1/images/edits`، وهي مقتصرة على عمليات نشر
+`MAI-Image-2.5-Flash` و`MAI-Image-2.5`.
 
-يمكن لعمليات الإنشاء المعتمدة على الموجه فقط استخدام اسم نشر مخصص مع تهيئة
-نقطة نهاية Foundry فقط. لتعديلات الصور باسم نشر مخصص، حدد النشر عبر الإعداد
-أو أدرج بيانات تعريف النموذج حتى يتمكن OpenClaw من التحقق من أن النشر مدعوم
-بـ `MAI-Image-2.5-Flash` أو `MAI-Image-2.5`.
+يمكن لعملية التوليد المعتمدة على الموجّه فقط استخدام اسم عملية نشر مخصص مع
+تهيئة نقطة نهاية Foundry وحدها. لتحرير الصور باستخدام اسم عملية نشر مخصص،
+حدّد عملية النشر من خلال الإعداد الأولي أو أدرج البيانات الوصفية للنموذج حتى
+يتمكن OpenClaw من التحقق من أن عملية النشر مدعومة بواسطة
+`MAI-Image-2.5-Flash` أو `MAI-Image-2.5`.
 
 قيود صور MAI:
 
 - الإخراج: صورة PNG واحدة لكل طلب.
-- الحجم: الافتراضي `1024x1024`؛ يجب أن يكون كل من العرض والارتفاع 768 بكسل على الأقل.
-- إجمالي البكسلات: يجب ألا يتجاوز العرض × الارتفاع 1,048,576.
-- التعديلات: صورة إدخال واحدة بتنسيق PNG أو JPEG.
-- لا تُرسل التلميحات المشتركة غير المدعومة مثل `aspectRatio` و`resolution` و`quality`
-  و`background` و`outputFormat` غير PNG إلى Microsoft Foundry.
+- الحجم: القيمة الافتراضية `1024x1024`؛ يجب ألا يقل العرض أو الارتفاع عن 768 بكسل.
+- إجمالي وحدات البكسل: يجب ألا يتجاوز حاصل العرض × الارتفاع 1,048,576.
+- عمليات التحرير: صورة إدخال واحدة بتنسيق PNG أو JPEG.
+- لا تُرسل التلميحات المشتركة غير المدعومة، مثل `aspectRatio` و`resolution`
+  و`quality` و`background`، ولا قيم `outputFormat` غير PNG، إلى Microsoft Foundry.
 
 ## استكشاف الأخطاء وإصلاحها
 
-- `az: command not found`: ثبّت Azure CLI أو استخدم مصادقة مفتاح API.
-- `Microsoft Foundry endpoint missing for MAI image generation`: حدد نشر
-  Foundry عبر الإعداد أو أضف `models.providers.microsoft-foundry.baseUrl`.
-- `supports MAI image deployments only`: يشير نموذج الصور المحدد إلى نشر غير
-  MAI. استخدم نموذج صور MAI منشورًا لـ `image_generate`.
+- `az: command not found`: ثبّت Azure CLI أو استخدم المصادقة بمفتاح API.
+- `Microsoft Foundry endpoint missing for MAI image generation`: حدّد عملية نشر
+  Foundry من خلال الإعداد الأولي أو أضف `models.providers.microsoft-foundry.baseUrl`.
+- `supports MAI image deployments only`: يشير نموذج الصور المحدد إلى عملية نشر
+  لا تستخدم MAI. استخدم نموذج صور MAI منشورًا مع `image_generate`.
 
 <!-- openclaw-plugin-reference:manual-end -->

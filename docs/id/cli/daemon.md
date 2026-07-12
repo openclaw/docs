@@ -1,24 +1,22 @@
 ---
 read_when:
     - Anda masih menggunakan `openclaw daemon ...` dalam skrip
-    - Anda memerlukan perintah siklus hidup layanan (install/start/stop/restart/status)
-summary: Referensi CLI untuk `openclaw daemon` (alias lama untuk manajemen layanan gateway)
+    - Anda memerlukan perintah siklus hidup layanan (instal/mulai/hentikan/mulai ulang/status)
+summary: Referensi CLI untuk `openclaw daemon` (alias lama untuk pengelolaan layanan Gateway)
 title: Daemon
 x-i18n:
-    generated_at: "2026-06-30T14:27:25Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:05:09Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1a3ec72b22907994ecefac84b2b9e5b22bf1d922e5b2822a1c0db80f0362dade
+    source_hash: 4933885078d067ff2e077f25f14483aa5a10e3cd36951d0dc25c625d8b4d78e6
     source_path: cli/daemon.md
     workflow: 16
 ---
 
 # `openclaw daemon`
 
-Alias lama untuk perintah pengelolaan layanan Gateway.
-
-`openclaw daemon ...` dipetakan ke permukaan kontrol layanan yang sama seperti perintah layanan `openclaw gateway ...`.
+Alias lama untuk pengelolaan layanan Gateway. `openclaw daemon ...` dipetakan ke perintah kontrol layanan yang sama dengan `openclaw gateway ...`. Utamakan [`openclaw gateway`](/id/cli/gateway) untuk dokumentasi dan contoh terkini.
 
 ## Penggunaan
 
@@ -31,45 +29,34 @@ openclaw daemon restart
 openclaw daemon uninstall
 ```
 
-## Subperintah
+## Subperintah dan opsi
 
-- `status`: tampilkan status pemasangan layanan dan periksa kesehatan Gateway
-- `install`: pasang layanan (`launchd`/`systemd`/`schtasks`)
-- `uninstall`: hapus layanan
-- `start`: mulai layanan
-- `stop`: hentikan layanan
-- `restart`: mulai ulang layanan
+| Subperintah | Opsi                                                                                                                                    |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `status`    | `--url`, `--token`, `--password`, `--timeout`, `--no-probe`, `--require-rpc`, `--deep`, `--json`                                        |
+| `install`   | `--port`, `--runtime <node\|bun>`, `--token`, `--wrapper <path>`, `--force`, `--json`                                                   |
+| `uninstall` | `--json`                                                                                                                                |
+| `start`     | `--json`                                                                                                                                |
+| `stop`      | `--json`, `--disable` (khusus launchd: menonaktifkan KeepAlive/RunAtLoad secara persisten hingga layanan dimulai kembali)               |
+| `restart`   | `--force`, `--safe`, `--skip-deferral`, `--wait <duration>`, `--json`                                                                   |
 
-## Opsi umum
+- `status`: menampilkan status pemasangan layanan (launchd/systemd/schtasks) dan memeriksa kesehatan Gateway.
+- `install`: memasang layanan; `--force` memasang ulang/menimpa pemasangan yang sudah ada.
+- `restart --safe`: meminta Gateway yang sedang berjalan untuk melakukan pemeriksaan awal terhadap pekerjaan aktif dan menjadwalkan satu pemulaian ulang gabungan setelah pekerjaan selesai, dibatasi oleh `gateway.reload.deferralTimeoutMs` (bawaan 300000 md/5 menit; atur ke `0` untuk menunggu tanpa batas). Ketika batas waktu tersebut habis, pemulaian ulang tetap dipaksakan. `restart` biasa menggunakan pengelola layanan secara langsung; `--force` adalah penggantian segera.
+- `restart --safe --skip-deferral`: melewati gerbang penundaan pekerjaan aktif agar Gateway segera dimulai ulang meskipun ada penghambat yang dilaporkan. Memerlukan `--safe`.
 
-- `status`: `--url`, `--token`, `--password`, `--timeout`, `--no-probe`, `--require-rpc`, `--deep`, `--json`
-- `install`: `--port`, `--runtime <node|bun>`, `--token`, `--force`, `--json`
-- `restart`: `--safe`, `--skip-deferral`, `--force`, `--wait <duration>`, `--json`
-- siklus hidup (`uninstall|start|stop`): `--json`
+## Catatan
 
-Catatan:
-
-- `status` menyelesaikan SecretRefs autentikasi yang dikonfigurasi untuk autentikasi pemeriksaan jika memungkinkan.
-- Jika SecretRef autentikasi yang diperlukan tidak terselesaikan di jalur perintah ini, `daemon status --json` melaporkan `rpc.authWarning` ketika konektivitas/autentikasi pemeriksaan gagal; berikan `--token`/`--password` secara eksplisit atau selesaikan sumber rahasia terlebih dahulu.
-- Jika pemeriksaan berhasil, peringatan auth-ref yang belum terselesaikan disembunyikan untuk menghindari positif palsu.
-- `status --deep` menambahkan pemindaian layanan tingkat sistem dengan upaya terbaik. Ketika menemukan layanan lain yang mirip gateway, keluaran manusia menampilkan petunjuk pembersihan dan memperingatkan bahwa satu gateway per mesin masih merupakan rekomendasi normal.
-- `status --deep` juga menjalankan validasi konfigurasi dalam mode sadar plugin dan menampilkan peringatan manifes plugin yang dikonfigurasi (misalnya metadata konfigurasi saluran yang hilang) agar pemeriksaan smoke pemasangan dan pembaruan dapat menangkapnya. `status` default mempertahankan jalur cepat baca-saja yang melewati validasi plugin.
-- Pada pemasangan systemd Linux, pemeriksaan token-drift `status` mencakup sumber unit `Environment=` dan `EnvironmentFile=`.
-- Pemeriksaan drift menyelesaikan SecretRefs `gateway.auth.token` menggunakan env runtime gabungan (env perintah layanan terlebih dahulu, lalu fallback env proses).
-- Jika autentikasi token tidak aktif secara efektif (`gateway.auth.mode` eksplisit berupa `password`/`none`/`trusted-proxy`, atau mode tidak diatur saat kata sandi dapat menang dan tidak ada kandidat token yang dapat menang), pemeriksaan token-drift melewati resolusi token konfigurasi.
-- Ketika autentikasi token memerlukan token dan `gateway.auth.token` dikelola SecretRef, `install` memvalidasi bahwa SecretRef dapat diselesaikan tetapi tidak menyimpan token yang telah diselesaikan ke dalam metadata lingkungan layanan.
-- Jika autentikasi token memerlukan token dan SecretRef token yang dikonfigurasi belum terselesaikan, pemasangan gagal secara tertutup.
-- Jika `gateway.auth.token` dan `gateway.auth.password` sama-sama dikonfigurasi dan `gateway.auth.mode` tidak diatur, pemasangan diblokir hingga mode diatur secara eksplisit.
-- Pada macOS, `install` menjaga plist LaunchAgent hanya untuk pemilik dan memuat nilai lingkungan layanan terkelola melalui file dan wrapper khusus pemilik, alih-alih menserialkan kunci API atau ref env profil autentikasi ke dalam `EnvironmentVariables`.
-- Jika Anda sengaja menjalankan beberapa gateway pada satu host, isolasi port, konfigurasi/status, dan workspace; lihat [/gateway#multiple-gateways-same-host](/id/gateway#multiple-gateways-same-host).
-- `restart --safe` meminta Gateway yang sedang berjalan untuk melakukan preflight pekerjaan aktif dan menjadwalkan satu restart tergabung setelah pekerjaan aktif selesai. Restart aman default menunggu pekerjaan aktif hingga `gateway.reload.deferralTimeoutMs` yang dikonfigurasi (default 5 menit); ketika anggaran itu habis, restart dipaksa. Atur `gateway.reload.deferralTimeoutMs` ke `0` untuk tunggu aman tanpa batas waktu yang tidak pernah memaksa. `restart` biasa mempertahankan perilaku pengelola layanan yang ada; `--force` tetap menjadi jalur override langsung.
-- `restart --safe --skip-deferral` menjalankan restart aman sadar OpenClaw tetapi melewati gerbang penangguhan pekerjaan aktif sehingga Gateway memancarkan restart segera meskipun blocker dilaporkan. Pintu keluar operator ketika task run yang macet menahan restart aman; memerlukan `--safe`.
-
-## Lebih disarankan
-
-Gunakan [`openclaw gateway`](/id/cli/gateway) untuk dokumentasi dan contoh saat ini.
+- `status` menyelesaikan SecretRef autentikasi yang dikonfigurasi untuk autentikasi pemeriksaan jika memungkinkan. Jika SecretRef yang diwajibkan tidak dapat diselesaikan, `status --json` melaporkan `rpc.authWarning`; teruskan `--token`/`--password` secara eksplisit atau selesaikan sumber rahasia terlebih dahulu. Peringatan autentikasi yang belum terselesaikan disembunyikan setelah pemeriksaan berhasil.
+- `status --deep` menambahkan pemindaian tingkat sistem dengan upaya terbaik untuk mencari layanan lain yang menyerupai Gateway (mencetak petunjuk pembersihan; satu Gateway per mesin tetap direkomendasikan) dan menjalankan validasi konfigurasi dalam mode yang memahami Plugin, sehingga menampilkan peringatan manifes Plugin yang dilewati oleh jalur bawaan cepat.
+- Pada pemasangan systemd Linux, pemeriksaan penyimpangan token memeriksa sumber unit `Environment=` dan `EnvironmentFile=`.
+- Pemeriksaan penyimpangan token menyelesaikan SecretRef `gateway.auth.token` menggunakan lingkungan runtime gabungan (lingkungan perintah layanan terlebih dahulu, lalu lingkungan proses). Jika autentikasi token tidak aktif secara efektif (`gateway.auth.mode` bernilai `password`/`none`/`trusted-proxy`, atau tidak ditetapkan dengan kata sandi yang dapat diprioritaskan), penyelesaian token konfigurasi dilewati.
+- `install` memvalidasi bahwa `gateway.auth.token` yang dikelola SecretRef dapat diselesaikan, tetapi tidak pernah menyimpan nilai yang telah diselesaikan ke dalam metadata lingkungan layanan; jika tidak dapat diselesaikan, pemasangan gagal secara tertutup.
+- Jika `gateway.auth.token` dan `gateway.auth.password` sama-sama dikonfigurasi dan `gateway.auth.mode` tidak ditetapkan, `install` diblokir hingga Anda menetapkan mode secara eksplisit.
+- Di macOS, `install` mempertahankan plist LaunchAgent dan berkas lingkungan/pembungkus yang dihasilkan agar hanya dapat diakses pemilik (mode `0600`/`0700`), alih-alih menyematkan rahasia dalam `EnvironmentVariables`.
+- Menjalankan beberapa Gateway pada satu hos: pisahkan porta, konfigurasi/status, dan ruang kerja. Lihat [Beberapa Gateway](/id/gateway#multiple-gateways-same-host).
 
 ## Terkait
 
 - [Referensi CLI](/id/cli)
-- [Runbook Gateway](/id/gateway)
+- [Panduan operasional Gateway](/id/gateway)

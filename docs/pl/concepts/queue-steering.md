@@ -1,97 +1,70 @@
 ---
 read_when:
-    - Wyjaśnianie, jak zachowuje się sterowanie, gdy agent używa narzędzi
-    - Zmiana zachowania kolejki aktywnych uruchomień lub integracji sterowania runtime
-    - Porównywanie sterowania z trybami kolejki followup, collect i interrupt
+    - Wyjaśnienie działania funkcji sterowania, gdy agent używa narzędzi
+    - Zmiana działania kolejki aktywnych uruchomień lub integracji sterowania środowiskiem wykonawczym
+    - Porównanie sterowania z trybami kolejki followup, collect i interrupt
 summary: Jak sterowanie aktywnym uruchomieniem kolejkuje wiadomości na granicach środowiska wykonawczego
 title: Kolejka sterowania
 x-i18n:
-    generated_at: "2026-06-27T17:29:23Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:05:12Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b38d036d2a44af431653746e2d5918af0a8af471450f440479cf0a1acc86c9cd
+    source_hash: a73311661b40d65d254b3e6af0406965fcde9eb76d2628c1958920453aad1cbc
     source_path: concepts/queue-steering.md
     workflow: 16
 ---
 
-Gdy podczas strumieniowania uruchomienia sesji nadejdzie zwykły prompt, OpenClaw
-domyślnie próbuje wysłać ten prompt do aktywnego środowiska uruchomieniowego, gdy tryb kolejki
-to `steer`. Do tego domyślnego zachowania nie jest wymagana żadna pozycja konfiguracji
-ani dyrektywa kolejki. OpenClaw i natywny harness app-server Codex implementują szczegóły
-dostarczania w różny sposób.
+Gdy zwykły monit przychodzi w trakcie przesyłania strumieniowego wykonania sesji, a tryb kolejki to `steer` (domyślny, niewymagający konfiguracji), OpenClaw próbuje przekazać ten monit do aktywnego środowiska wykonawczego. OpenClaw i natywny mechanizm serwera aplikacji Codex realizują szczegóły dostarczania w różny sposób.
 
-## Granica środowiska uruchomieniowego
+Ta strona opisuje sterowanie w trybie kolejki dla zwykłych wiadomości przychodzących w trybie `steer`. W trybie `followup` lub `collect` zwykłe wiadomości pomijają tę ścieżkę i czekają na zakończenie aktywnego wykonania. Informacje o jawnym poleceniu `/steer <message>` zawiera strona [Sterowanie](/pl/tools/steer).
 
-Sterowanie nie przerywa już działającego wywołania narzędzia. OpenClaw sprawdza
-zakolejkowane komunikaty sterujące na granicach modelu:
+## Granica środowiska wykonawczego
 
-1. Asystent prosi o wywołania narzędzi.
-2. OpenClaw wykonuje bieżącą partię wywołań narzędzi z komunikatu asystenta.
-3. OpenClaw emituje zdarzenie zakończenia tury.
-4. OpenClaw opróżnia zakolejkowane komunikaty sterujące.
-5. OpenClaw dołącza te komunikaty jako komunikaty użytkownika przed następnym wywołaniem LLM.
+Sterowanie nie przerywa już trwającego wywołania narzędzia. OpenClaw sprawdza obecność oczekujących wiadomości sterujących na granicach wywołań modelu:
 
-Dzięki temu wyniki narzędzi pozostają powiązane z komunikatem asystenta, który o nie poprosił,
-a następne wywołanie modelu widzi najnowsze dane wejściowe użytkownika.
+1. Asystent żąda wywołań narzędzi.
+2. OpenClaw wykonuje partię wywołań narzędzi z bieżącej wiadomości asystenta.
+3. OpenClaw emituje zdarzenie końca tury.
+4. OpenClaw pobiera oczekujące wiadomości sterujące z kolejki.
+5. OpenClaw dołącza te wiadomości jako wiadomości użytkownika przed następnym wywołaniem LLM.
 
-Natywny harness app-server Codex udostępnia `turn/steer` zamiast wewnętrznej kolejki
-sterowania środowiska uruchomieniowego OpenClaw. OpenClaw grupuje zakolejkowane prompty dla skonfigurowanego
-okna ciszy, a następnie wysyła pojedyncze żądanie `turn/steer` ze wszystkimi zebranymi danymi wejściowymi
-użytkownika w kolejności nadejścia.
+Dzięki temu wyniki narzędzi pozostają powiązane z wiadomością asystenta, która o nie poprosiła, a następne wywołanie modelu uwzględnia najnowsze dane wejściowe użytkownika.
 
-Tury przeglądu Codex i ręcznej Compaction odrzucają sterowanie w tej samej turze. Gdy
-środowisko uruchomieniowe nie może zaakceptować sterowania w trybie `steer`, OpenClaw czeka na zakończenie
-aktywnego uruchomienia przed rozpoczęciem promptu.
+Natywny mechanizm serwera aplikacji Codex udostępnia `turn/steer` zamiast wewnętrznej kolejki sterowania środowiska wykonawczego OpenClaw. OpenClaw grupuje oczekujące monity w skonfigurowanym okresie bezczynności, a następnie wysyła pojedyncze żądanie `turn/steer` ze wszystkimi zebranymi danymi wejściowymi użytkowników w kolejności ich nadejścia.
 
-Ta strona wyjaśnia sterowanie w trybie kolejki dla zwykłych komunikatów przychodzących, gdy tryb
-to `steer`. Jeśli tryb to `followup` lub `collect`, zwykłe komunikaty nie trafiają
-na tę ścieżkę sterowania; czekają, aż aktywne uruchomienie się zakończy. Informacje o jawnym
-poleceniu `/steer <message>` znajdziesz w sekcji [Sterowanie](/pl/tools/steer).
+Tury przeglądu Codex i ręcznej kompaktacji odrzucają sterowanie w tej samej turze. Gdy środowisko wykonawcze nie może przyjąć sterowania w trybie `steer`, OpenClaw czeka na zakończenie aktywnego wykonania przed uruchomieniem monitu.
 
 ## Tryby
 
-| Tryb        | Zachowanie podczas aktywnego uruchomienia              | Późniejsze zachowanie                                                               |
-| ----------- | ------------------------------------------------------ | ----------------------------------------------------------------------------------- |
-| `steer`     | Steruje promptem do aktywnego środowiska uruchomieniowego, gdy jest to możliwe. | Czeka na zakończenie aktywnego uruchomienia, jeśli sterowanie jest niedostępne.     |
-| `followup`  | Nie steruje.                                           | Uruchamia zakolejkowane komunikaty później, po zakończeniu aktywnego uruchomienia.  |
-| `collect`   | Nie steruje.                                           | Scala zgodne zakolejkowane komunikaty w jedną późniejszą turę po oknie debounce.    |
-| `interrupt` | Przerywa aktywne uruchomienie zamiast nim sterować.    | Uruchamia najnowszy komunikat po przerwaniu.                                        |
+| Tryb        | Zachowanie podczas aktywnego wykonania                              | Późniejsze zachowanie                                                                        |
+| ----------- | ------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `steer`     | Przekazuje monit do aktywnego środowiska wykonawczego, jeśli może.  | Czeka na zakończenie aktywnego wykonania, jeśli sterowanie jest niedostępne.                   |
+| `followup`  | Nie steruje.                                                        | Uruchamia oczekujące wiadomości później, po zakończeniu aktywnego wykonania.                   |
+| `collect`   | Nie steruje.                                                        | Scala zgodne oczekujące wiadomości w jedną późniejszą turę po upływie okna eliminacji drgań.   |
+| `interrupt` | Przerywa aktywne wykonanie zamiast nim sterować.                    | Po przerwaniu rozpoczyna przetwarzanie najnowszej wiadomości.                                 |
 
-## Przykład serii
+## Przykład serii wiadomości
 
-Jeśli czterech użytkowników wyśle komunikaty, gdy agent wykonuje wywołanie narzędzia:
+Jeśli czterech użytkowników wyśle wiadomości podczas wykonywania przez agenta wywołania narzędzia:
 
-- Przy domyślnym zachowaniu aktywne środowisko uruchomieniowe otrzymuje wszystkie cztery komunikaty w
-  kolejności nadejścia przed następną decyzją modelu. OpenClaw opróżnia je na następnej granicy modelu;
-  Codex otrzymuje je jako jedno zgrupowane `turn/steer`.
-- Przy `/queue collect` OpenClaw nie steruje. Czeka, aż aktywne uruchomienie
-  się zakończy, a następnie tworzy turę followup ze zgodnymi zakolejkowanymi komunikatami po
-  oknie debounce.
-- Przy `/queue interrupt` OpenClaw przerywa aktywne uruchomienie i uruchamia najnowszy
-  komunikat zamiast sterować.
+- Przy domyślnym zachowaniu aktywne środowisko wykonawcze otrzymuje wszystkie cztery wiadomości w kolejności ich nadejścia przed podjęciem następnej decyzji przez model. OpenClaw pobiera je z kolejki na następnej granicy modelu; Codex otrzymuje je jako jedno zbiorcze żądanie `turn/steer`.
+- Przy `/queue collect` OpenClaw nie steruje. Czeka na zakończenie aktywnego wykonania, a następnie po upływie okna eliminacji drgań tworzy turę uzupełniającą ze zgodnymi oczekującymi wiadomościami.
+- Przy `/queue interrupt` OpenClaw przerywa aktywne wykonanie i zamiast sterowania rozpoczyna przetwarzanie najnowszej wiadomości.
 
 ## Zakres
 
-Sterowanie zawsze kieruje na bieżące aktywne uruchomienie sesji. Nie tworzy nowej
-sesji, nie zmienia zasad narzędzi aktywnego uruchomienia ani nie dzieli komunikatów według nadawcy. W
-kanałach z wieloma użytkownikami prompty przychodzące zawierają już kontekst nadawcy i trasy, więc
-następne wywołanie modelu widzi, kto wysłał każdy komunikat.
+Sterowanie zawsze dotyczy bieżącego aktywnego wykonania sesji. Nie tworzy nowej sesji, nie zmienia zasad używania narzędzi aktywnego wykonania ani nie rozdziela wiadomości według nadawcy. W kanałach wieloosobowych monity przychodzące zawierają już kontekst nadawcy i routingu, dzięki czemu następne wywołanie modelu może rozpoznać nadawcę każdej wiadomości.
 
-Użyj `followup` lub `collect`, gdy chcesz, aby komunikaty były domyślnie kolejkowane zamiast
-sterować aktywnym uruchomieniem. Użyj `interrupt`, gdy najnowszy prompt powinien
-zastąpić aktywne uruchomienie.
+Użyj `followup` lub `collect`, jeśli wiadomości mają domyślnie trafiać do kolejki zamiast sterować aktywnym wykonaniem. Użyj `interrupt`, jeśli najnowszy monit powinien zastąpić aktywne wykonanie.
 
-## Debounce
+## Eliminacja drgań
 
-`messages.queue.debounceMs` dotyczy zakolejkowanego dostarczania `followup` i `collect`.
-W trybie `steer` z natywnym harnessem Codex ustawia też okno ciszy
-przed wysłaniem zgrupowanego `turn/steer`. W przypadku OpenClaw samo aktywne sterowanie nie używa
-timera debounce, ponieważ OpenClaw naturalnie grupuje komunikaty do następnej granicy modelu.
+`messages.queue.debounceMs` ma zastosowanie do dostarczania oczekujących wiadomości w trybach `followup` i `collect`. W trybie `steer` z natywnym mechanizmem Codex określa również okres bezczynności przed wysłaniem zbiorczego żądania `turn/steer`. W przypadku OpenClaw aktywne sterowanie nie korzysta z licznika eliminacji drgań, ponieważ OpenClaw naturalnie grupuje wiadomości do następnej granicy modelu.
 
-## Powiązane
+## Powiązane materiały
 
 - [Kolejka poleceń](/pl/concepts/queue)
 - [Sterowanie](/pl/tools/steer)
-- [Komunikaty](/pl/concepts/messages)
+- [Wiadomości](/pl/concepts/messages)
 - [Pętla agenta](/pl/concepts/agent-loop)

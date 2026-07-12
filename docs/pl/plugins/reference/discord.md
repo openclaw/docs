@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz plugin Discord
-summary: Plugin kanału Discord OpenClaw do kanałów, wiadomości prywatnych, poleceń i zdarzeń aplikacji.
-title: Plugin Discord
+    - Instalujesz, konfigurujesz lub audytujesz plugin Discord.
+summary: Plugin kanału Discord dla OpenClaw obsługujący kanały, wiadomości prywatne, polecenia i zdarzenia aplikacji.
+title: Plugin Discorda
 x-i18n:
-    generated_at: "2026-06-27T18:00:12Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:28:50Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 9e3305f8ad8eb84fd350bdfa0983b4fd8f848e0697ecf3e779e31cd6cb44dbf5
@@ -15,17 +15,17 @@ x-i18n:
 
 # Plugin Discord
 
-Plugin kanału Discord dla OpenClaw do kanałów, wiadomości prywatnych, poleceń i zdarzeń aplikacji.
+Plugin kanału Discord dla OpenClaw, obsługujący kanały, wiadomości prywatne, polecenia i zdarzenia aplikacji.
 
 ## Dystrybucja
 
 - Pakiet: `@openclaw/discord`
-- Ścieżka instalacji: npm; ClawHub
+- Sposób instalacji: npm; ClawHub
 
-## Powierzchnia
+## Zakres
 
 kanały: discord; kontrakty: transcriptSourceProviders; Skills
 
-## Powiązane dokumenty
+## Powiązana dokumentacja
 
-- [discord](/pl/channels/discord)
+- [Discord](/pl/channels/discord)

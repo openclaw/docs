@@ -1,15 +1,14 @@
 ---
 read_when:
-    - Sie möchten MiniMax für web_search verwenden
-    - Sie benötigen einen MiniMax-Token-Plan-Schlüssel oder ein OAuth-Token
-    - Sie benötigen Hinweise zum MiniMax-Suchhost für China bzw. weltweit.
+    - Sie möchten MiniMax für `web_search` verwenden.
+    - Sie benötigen einen MiniMax-Token-Plan-Schlüssel oder ein OAuth-Token.
+    - Sie benötigen Hinweise zum Suchhost für MiniMax CN/global
 summary: MiniMax-Suche über die Such-API des Token Plan
 title: MiniMax-Suche
 x-i18n:
-    generated_at: "2026-07-12T16:05:34Z"
+    generated_at: "2026-07-12T02:14:42Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: e96d1a5fe20847c5fd4476fa6aab8366910b81833c1e42e125d231c4ab003e15
     source_path: tools/minimax-search.md
@@ -17,14 +16,14 @@ x-i18n:
 ---
 
 OpenClaw unterstützt MiniMax als `web_search`-Provider über die Such-API des MiniMax
-Token Plan. Sie gibt strukturierte Suchergebnisse mit Titeln, URLs,
-Textausschnitten und verwandten Suchanfragen zurück.
+Token Plan. Sie liefert strukturierte Suchergebnisse mit Titeln, URLs,
+Textauszügen und verwandten Suchanfragen.
 
-## Anmeldedaten für einen Token Plan abrufen
+## Zugangsdaten für einen Token Plan abrufen
 
 <Steps>
   <Step title="Schlüssel erstellen">
-    Erstellen oder kopieren Sie einen MiniMax-Token-Plan-Schlüssel von der
+    Erstellen oder kopieren Sie einen MiniMax-Token-Plan-Schlüssel auf der
     [MiniMax-Plattform](https://platform.minimax.io/user-center/basic-information/interface-key).
     OAuth-Konfigurationen können stattdessen `MINIMAX_OAUTH_TOKEN` wiederverwenden.
   </Step>
@@ -39,10 +38,10 @@ Textausschnitten und verwandten Suchanfragen zurück.
 </Steps>
 
 OpenClaw akzeptiert außerdem `MINIMAX_CODING_API_KEY`, `MINIMAX_OAUTH_TOKEN` und
-`MINIMAX_API_KEY` als Umgebungsvariablen-Aliasse, die in dieser Reihenfolge nach
-`MINIMAX_CODE_PLAN_KEY` geprüft werden. `MINIMAX_API_KEY` sollte auf
-Token-Plan-Anmeldedaten mit aktivierter Suche verweisen; gewöhnliche API-Schlüssel für
-MiniMax-Modelle werden vom Such-Endpunkt des Token Plan möglicherweise nicht akzeptiert.
+`MINIMAX_API_KEY` als Umgebungsvariablen-Aliasse, die nach
+`MINIMAX_CODE_PLAN_KEY` in dieser Reihenfolge geprüft werden. `MINIMAX_API_KEY` sollte auf
+Token-Plan-Zugangsdaten mit aktivierter Suche verweisen; gewöhnliche API-Schlüssel für
+MiniMax-Modelle werden vom Suchendpunkt des Token Plan möglicherweise nicht akzeptiert.
 
 ## Konfiguration
 
@@ -53,8 +52,8 @@ MiniMax-Modelle werden vom Such-Endpunkt des Token Plan möglicherweise nicht ak
       minimax: {
         config: {
           webSearch: {
-            apiKey: "sk-cp-...", // optional, wenn eine MiniMax-Token-Plan-Umgebungsvariable festgelegt ist
-            region: "global", // oder "cn"
+            apiKey: "sk-cp-...", // optional if a MiniMax Token Plan env var is set
+            region: "global", // or "cn"
           },
         },
       },
@@ -70,7 +69,7 @@ MiniMax-Modelle werden vom Such-Endpunkt des Token Plan möglicherweise nicht ak
 }
 ```
 
-**Alternative über die Umgebung:** Legen Sie `MINIMAX_CODE_PLAN_KEY`, `MINIMAX_CODING_API_KEY`,
+**Alternative über Umgebungsvariablen:** Legen Sie `MINIMAX_CODE_PLAN_KEY`, `MINIMAX_CODING_API_KEY`,
 `MINIMAX_OAUTH_TOKEN` oder `MINIMAX_API_KEY` in der Gateway-Umgebung fest.
 Bei einer Gateway-Installation tragen Sie die Variable in `~/.openclaw/.env` ein.
 
@@ -79,7 +78,7 @@ Bei einer Gateway-Installation tragen Sie die Variable in `~/.openclaw/.env` ein
 MiniMax Search verwendet diese Endpunkte:
 
 - Global: `https://api.minimax.io/v1/coding_plan/search`
-- CN: `https://api.minimaxi.com/v1/coding_plan/search`
+- China: `https://api.minimaxi.com/v1/coding_plan/search`
 
 Wenn `plugins.entries.minimax.config.webSearch.region` nicht festgelegt ist, ermittelt OpenClaw
 die Region in dieser Reihenfolge:
@@ -89,24 +88,24 @@ die Region in dieser Reihenfolge:
 3. `models.providers.minimax.baseUrl`
 4. `models.providers.minimax-portal.baseUrl`
 
-Das bedeutet, dass ein CN-Onboarding oder `MINIMAX_API_HOST=https://api.minimaxi.com/...`
-MiniMax Search automatisch ebenfalls auf dem CN-Host belässt.
+Das bedeutet, dass ein Onboarding für China oder `MINIMAX_API_HOST=https://api.minimaxi.com/...`
+MiniMax Search automatisch ebenfalls auf dem chinesischen Host belässt.
 
-Auch wenn Sie sich über den OAuth-Pfad `minimax-portal` bei MiniMax authentifiziert haben,
-wird die Websuche weiterhin mit der Provider-ID `minimax` registriert; die Basis-URL des
-OAuth-Providers dient als Regionshinweis für die Auswahl des CN- oder globalen Hosts, und
-`MINIMAX_OAUTH_TOKEN` kann die Bearer-Anmeldedaten für MiniMax Search bereitstellen.
+Selbst wenn Sie sich bei MiniMax über den OAuth-Pfad `minimax-portal` authentifiziert haben,
+wird die Websuche weiterhin mit der Provider-ID `minimax` registriert; die Basis-URL
+des OAuth-Providers dient als Regionshinweis für die Auswahl des chinesischen oder globalen Hosts,
+und `MINIMAX_OAUTH_TOKEN` kann die Bearer-Zugangsdaten für MiniMax Search bereitstellen.
 
 ## Unterstützte Parameter
 
-| Parameter | Typ     | Einschränkungen       | Beschreibung                                                                       |
-| --------- | ------- | --------------------- | ---------------------------------------------------------------------------------- |
-| `query`   | string  | erforderlich          | Zeichenfolge der Suchanfrage.                                                      |
-| `count`   | integer | 1-10, Standardwert 5  | Anzahl der zurückzugebenden Ergebnisse. OpenClaw kürzt die zurückgegebene Liste auf diese Größe. |
+| Parameter | Typ      | Einschränkungen    | Beschreibung                                                                        |
+| --------- | -------- | ------------------ | ----------------------------------------------------------------------------------- |
+| `query`   | Zeichenfolge | erforderlich    | Zeichenfolge der Suchanfrage.                                                       |
+| `count`   | Ganzzahl | 1–10, Standardwert 5 | Anzahl der zurückzugebenden Ergebnisse. OpenClaw kürzt die zurückgegebene Liste auf diese Größe. |
 
 Provider-spezifische Filter werden derzeit nicht unterstützt.
 
 ## Verwandte Themen
 
 - [Übersicht über die Websuche](/de/tools/web) -- alle Provider und automatische Erkennung
-- [MiniMax](/de/providers/minimax) -- Einrichtung von Modellen, Bildern, Sprache und Authentifizierung
+- [MiniMax](/de/providers/minimax) -- Einrichtung von Modellen, Bildern, Sprachausgabe und Authentifizierung

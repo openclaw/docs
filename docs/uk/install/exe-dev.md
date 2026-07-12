@@ -1,131 +1,131 @@
 ---
 read_when:
-    - Вам потрібен недорогий Linux-хост для Gateway, який завжди ввімкнений
+    - Вам потрібен недорогий постійно ввімкнений хост Linux для Gateway
     - Вам потрібен віддалений доступ до інтерфейсу керування без запуску власного VPS
-summary: Запустіть OpenClaw Gateway на exe.dev (VM + HTTPS-проксі) для віддаленого доступу
+summary: Запустіть OpenClaw Gateway на exe.dev (віртуальна машина + HTTPS-проксі) для віддаленого доступу
 title: exe.dev
 x-i18n:
-    generated_at: "2026-04-29T21:05:44Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:22:51Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b571f9b29bb2cca0f311db4188c922b2f70ee91cb48b233cf9922e57a7f05340
+    source_hash: a768511d2d7e4e4ec10bcdae83684417bde05286468b0534200f8dd5ec015f7b
     source_path: install/exe-dev.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Мета: OpenClaw Gateway працює на VM exe.dev і доступний з вашого ноутбука через: `https://<vm-name>.exe.xyz`
+**Мета:** Gateway OpenClaw працює на віртуальній машині [exe.dev](https://exe.dev) і доступний за адресою `https://<vm-name>.exe.xyz`.
 
-Ця сторінка передбачає стандартний образ **exeuntu** від exe.dev. Якщо ви вибрали інший дистрибутив, зіставте пакети відповідно.
+У цьому посібнику передбачається використання стандартного образу **exeuntu** від exe.dev. Для інших дистрибутивів доберіть відповідні пакунки.
 
-## Швидкий шлях для початківців
-
-1. [https://exe.new/openclaw](https://exe.new/openclaw)
-2. За потреби введіть свій ключ/токен автентифікації
-3. Натисніть "Агент" поруч із вашою VM і дочекайтеся, поки Shelley завершить підготовку
-4. Відкрийте `https://<vm-name>.exe.xyz/` і автентифікуйтеся за допомогою налаштованого спільного секрету (цей посібник за замовчуванням використовує автентифікацію токеном, але автентифікація паролем також працює, якщо перемкнути `gateway.auth.mode`)
-5. Підтвердьте всі очікувані запити на сполучення пристроїв за допомогою `openclaw devices approve <requestId>`
-
-## Що потрібно
+## Що вам потрібно
 
 - Обліковий запис exe.dev
-- Доступ `ssh exe.dev` до віртуальних машин [exe.dev](https://exe.dev) (необов'язково)
+- Доступ до віртуальних машин exe.dev через `ssh exe.dev` (необов’язково, для ручного налаштування)
 
-## Автоматизоване встановлення із Shelley
+## Швидкий спосіб для початківців
 
-Shelley, агент [exe.dev](https://exe.dev), може миттєво встановити OpenClaw за допомогою нашого
-промпта. Використаний промпт наведено нижче:
+1. Відкрийте [https://exe.new/openclaw](https://exe.new/openclaw)
+2. За потреби введіть свій ключ автентифікації або токен
+3. Натисніть "Agent" поруч зі своєю віртуальною машиною та зачекайте, доки Shelley завершить підготовку
+4. Відкрийте `https://<vm-name>.exe.xyz/` та пройдіть автентифікацію за допомогою налаштованого спільного секрету (типово використовується автентифікація за токеном; автентифікація за паролем також працює, якщо змінити `gateway.auth.mode`)
+5. Схваліть запити на сполучення пристроїв, що очікують, за допомогою `openclaw devices approve <requestId>`
 
-```
-Set up OpenClaw (https://docs.openclaw.ai/install) on this VM. Use the non-interactive and accept-risk flags for openclaw onboarding. Add the supplied auth or token as needed. Configure nginx to forward from the default port 18789 to the root location on the default enabled site config, making sure to enable Websocket support. Pairing is done by "openclaw devices list" and "openclaw devices approve <request id>". Make sure the dashboard shows that OpenClaw's health is OK. exe.dev handles forwarding from port 8000 to port 80/443 and HTTPS for us, so the final "reachable" should be <vm-name>.exe.xyz, without port specification.
+## Автоматизоване встановлення за допомогою Shelley
+
+Shelley, агент exe.dev, може встановити OpenClaw за текстовим запитом:
+
+```text
+Налаштуй OpenClaw (https://docs.openclaw.ai/install) на цій віртуальній машині. Для початкового налаштування openclaw використовуй прапорці неінтерактивного режиму та прийняття ризику. За потреби додай надані дані автентифікації або токен. Налаштуй nginx для перенаправлення зі стандартного порту 18789 до кореневого розташування у стандартній увімкненій конфігурації сайту та обов’язково ввімкни підтримку WebSocket. Сполучення виконується командами "openclaw devices list" і "openclaw devices approve <request id>". Переконайся, що на панелі керування стан OpenClaw позначено як справний. exe.dev виконує для нас перенаправлення з порту 8000 на порт 80/443 і забезпечує HTTPS, тому кінцева адреса доступу має бути <vm-name>.exe.xyz без зазначення порту.
 ```
 
 ## Ручне встановлення
 
-## 1) Створіть VM
+<Steps>
+  <Step title="Створіть віртуальну машину">
+    На своєму пристрої виконайте:
 
-З вашого пристрою:
+    ```bash
+    ssh exe.dev new
+    ```
 
-```bash
-ssh exe.dev new
-```
+    Потім під’єднайтеся:
 
-Потім підключіться:
+    ```bash
+    ssh <vm-name>.exe.xyz
+    ```
 
-```bash
-ssh <vm-name>.exe.xyz
-```
+    <Tip>
+    Зберігайте стан цієї віртуальної машини. OpenClaw зберігає `openclaw.json`, окремі для кожного агента файли `auth-profiles.json`, сеанси та стан каналів і провайдерів у `~/.openclaw/`, а робочий простір — у `~/.openclaw/workspace/`.
+    </Tip>
 
-<Tip>
-Залишайте цю VM **stateful**. OpenClaw зберігає `openclaw.json`, `auth-profiles.json` для кожного агента, сесії та стан каналів/провайдерів у `~/.openclaw/`, а робочу область у `~/.openclaw/workspace/`.
-</Tip>
+  </Step>
 
-## 2) Встановіть передумови (на VM)
+  <Step title="Установіть необхідні компоненти (на віртуальній машині)">
+    ```bash
+    sudo apt-get update
+    sudo apt-get install -y git curl jq ca-certificates openssl
+    ```
+  </Step>
 
-```bash
-sudo apt-get update
-sudo apt-get install -y git curl jq ca-certificates openssl
-```
+  <Step title="Установіть OpenClaw">
+    ```bash
+    curl -fsSL https://openclaw.ai/install.sh | bash
+    ```
+  </Step>
 
-## 3) Встановіть OpenClaw
+  <Step title="Налаштуйте nginx як проксі до порту 8000">
+    Відредагуйте `/etc/nginx/sites-enabled/default`:
 
-Запустіть інсталяційний скрипт OpenClaw:
+    ```nginx
+    server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+        listen 8000;
+        listen [::]:8000;
 
-```bash
-curl -fsSL https://openclaw.ai/install.sh | bash
-```
+        server_name _;
 
-## 4) Налаштуйте nginx для проксіювання OpenClaw на порт 8000
+        location / {
+            proxy_pass http://127.0.0.1:18789;
+            proxy_http_version 1.1;
 
-Відредагуйте `/etc/nginx/sites-enabled/default` так:
+            # Підтримка WebSocket
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
 
-```
-server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-    listen 8000;
-    listen [::]:8000;
+            # Стандартні заголовки проксі
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $remote_addr;
+            proxy_set_header X-Forwarded-Proto $scheme;
 
-    server_name _;
-
-    location / {
-        proxy_pass http://127.0.0.1:18789;
-        proxy_http_version 1.1;
-
-        # WebSocket support
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-
-        # Standard proxy headers
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $remote_addr;
-        proxy_set_header X-Forwarded-Proto $scheme;
-
-        # Timeout settings for long-lived connections
-        proxy_read_timeout 86400s;
-        proxy_send_timeout 86400s;
+            # Налаштування часу очікування для довготривалих з’єднань
+            proxy_read_timeout 86400s;
+            proxy_send_timeout 86400s;
+        }
     }
-}
-```
+    ```
 
-Перезаписуйте заголовки пересилання замість збереження ланцюжків, наданих клієнтом.
-OpenClaw довіряє метаданим пересланої IP-адреси лише від явно налаштованих проксі,
-а ланцюжки `X-Forwarded-For` у стилі додавання вважаються ризиком посилення захисту.
+    Перезаписуйте заголовки переспрямування замість збереження ланцюжків, наданих клієнтом. OpenClaw довіряє переспрямованим метаданим IP-адрес лише від явно налаштованих проксі, а ланцюжки `X-Forwarded-For` із дописуванням значень вважаються ризиком для захисту системи.
 
-## 5) Отримайте доступ до OpenClaw і надайте привілеї
+  </Step>
 
-Відкрийте `https://<vm-name>.exe.xyz/` (див. вивід Control UI під час онбордингу). Якщо з'явиться запит на автентифікацію, вставте
-налаштований спільний секрет із VM. Цей посібник використовує автентифікацію токеном, тому отримайте `gateway.auth.token`
-за допомогою `openclaw config get gateway.auth.token` (або згенеруйте його за допомогою `openclaw doctor --generate-gateway-token`).
-Якщо ви змінили Gateway на автентифікацію паролем, натомість використовуйте `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD`.
-Підтверджуйте пристрої за допомогою `openclaw devices list` і `openclaw devices approve <requestId>`. Якщо сумніваєтеся, скористайтеся Shelley у браузері!
+  <Step title="Отримайте доступ до OpenClaw і схваліть пристрої">
+    Відкрийте `https://<vm-name>.exe.xyz/` (див. адресу Control UI, виведену під час початкового налаштування). Якщо з’явиться запит на автентифікацію, вставте налаштований спільний секрет із віртуальної машини.
 
-## Налаштування віддалених каналів
+    У цьому посібнику типово використовується автентифікація за токеном, тому отримайте `gateway.auth.token` за допомогою `openclaw config get gateway.auth.token` або створіть новий командою `openclaw doctor --n`. Якщо ви перемкнули Gateway на автентифікацію за паролем, натомість використовуйте `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD`.
 
-Для віддалених хостів віддавайте перевагу одному виклику `config patch` замість багатьох SSH-викликів `config set`. Зберігайте реальні токени в середовищі VM або `~/.openclaw/.env`, а в `openclaw.json` розміщуйте лише SecretRefs.
+    Схваліть пристрої за допомогою `openclaw devices list` і `openclaw devices approve <requestId>`. Якщо маєте сумніви, скористайтеся Shelley у браузері.
 
-На VM зробіть так, щоб середовище сервісу містило потрібні йому секрети:
+  </Step>
+</Steps>
+
+## Віддалене налаштування каналів
+
+Для віддалених хостів віддавайте перевагу одному виклику `config patch` замість багатьох викликів `config set` через SSH. Зберігайте справжні токени в середовищі віртуальної машини або у `~/.openclaw/.env`, а в `openclaw.json` указуйте лише SecretRefs. Повний опис контракту SecretRef див. у розділі [Керування секретами](/uk/gateway/secrets).
+
+На віртуальній машині додайте до середовища служби необхідні секрети:
 
 ```bash
 cat >> ~/.openclaw/.env <<'EOF'
@@ -136,7 +136,7 @@ OPENAI_API_KEY=sk-...
 EOF
 ```
 
-На локальній машині створіть файл патча та передайте його у VM через pipe:
+На локальному комп’ютері створіть файл виправлення та передайте його на віртуальну машину через канал:
 
 ```json5
 // openclaw.remote.patch.json5
@@ -165,9 +165,9 @@ EOF
   },
   agents: {
     defaults: {
-      model: { primary: "openai/gpt-5.5" },
+      model: { primary: "openai/gpt-5.6-sol" },
       models: {
-        "openai/gpt-5.5": { params: { fastMode: true } },
+        "openai/gpt-5.6-sol": { params: { fastMode: true } },
       },
     },
   },
@@ -180,30 +180,27 @@ ssh <vm-name>.exe.xyz 'openclaw config patch --stdin' < ./openclaw.remote.patch.
 ssh <vm-name>.exe.xyz 'openclaw gateway restart && openclaw health'
 ```
 
-Використовуйте `--replace-path`, коли вкладений allowlist має стати точно значенням патча, наприклад під час заміни allowlist каналу Discord:
+Використовуйте `--replace-path`, коли вкладений список дозволів має точно відповідати значенню з виправлення, наприклад під час заміни списку дозволених каналів Discord:
 
 ```bash
 ssh <vm-name>.exe.xyz 'openclaw config patch --stdin --replace-path "channels.discord.guilds[\"123\"].channels"' < ./discord.patch.json5
 ```
 
+Повний довідник із налаштування каналів див. у розділах [Discord](/uk/channels/discord) і [Slack](/uk/channels/slack).
+
 ## Віддалений доступ
 
-Віддалений доступ обробляється автентифікацією [exe.dev](https://exe.dev). За
-замовчуванням HTTP-трафік із порту 8000 пересилається до `https://<vm-name>.exe.xyz`
-з автентифікацією через email.
+exe.dev забезпечує автентифікацію для віддаленого доступу. Типово HTTP-трафік із порту 8000 переспрямовується на `https://<vm-name>.exe.xyz` з автентифікацією електронною поштою.
 
 ## Оновлення
 
 ```bash
-npm i -g openclaw@latest
-openclaw doctor
-openclaw gateway restart
-openclaw health
+openclaw update
 ```
 
-Посібник: [Оновлення](/uk/install/updating)
+Перемикання каналів оновлень і ручне відновлення описано в розділі [Оновлення](/uk/install/updating).
 
-## Пов'язане
+## Пов’язані матеріали
 
-- [Віддалений gateway](/uk/gateway/remote)
-- [Огляд встановлення](/uk/install)
+- [Віддалений Gateway](/uk/gateway/remote)
+- [Огляд установлення](/uk/install)

@@ -1,32 +1,32 @@
 ---
 read_when:
     - Pierwsza konfiguracja od zera
-    - Chcesz najszybszej drogi do działającego czatu
-summary: Zainstaluj OpenClaw i uruchom pierwszy czat w kilka minut.
+    - Chcesz jak najszybciej uruchomić działający czat
+summary: Zainstaluj OpenClaw i rozpocznij pierwszy czat w kilka minut.
 title: Pierwsze kroki
 x-i18n:
-    generated_at: "2026-06-28T20:45:49Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:38:06Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 579ed2b4797dc851b0293b96a4177cc356641b6842fe45c4d48f4e8c224eef75
+    source_hash: 308ca58b8a11832b5a4c0d4634d1c88ef44681ef755a18d675bcff60b5aba929
     source_path: start/getting-started.md
     workflow: 16
 ---
 
-Zainstaluj OpenClaw, uruchom onboarding i porozmawiaj ze swoim asystentem AI — wszystko w
-około 5 minut. Na końcu będziesz mieć działający Gateway, skonfigurowane uwierzytelnianie
-i działającą sesję czatu.
+Zainstaluj OpenClaw, przeprowadź wdrażanie i rozpocznij rozmowę ze swoim asystentem AI w około 5
+minut. Po zakończeniu będziesz mieć uruchomiony Gateway, skonfigurowane uwierzytelnianie oraz
+działającą sesję czatu.
 
 ## Czego potrzebujesz
 
-- **Node.js** — zalecany Node 24 (obsługiwany jest też Node 22.19+)
-- **Klucz API** od dostawcy modelu (Anthropic, OpenAI, Google itd.) — onboarding poprosi Cię o jego podanie
+- **Node.js 22.19+, 23.11+ lub 24+** (wersja 24 jest zalecanym wyborem domyślnym)
+- **Klucz API** od dostawcy modelu (Anthropic, OpenAI, Google itp.) — kreator wdrażania poprosi o jego podanie
 
 <Tip>
-Sprawdź wersję Node poleceniem `node --version`.
-**Użytkownicy Windows:** natywna aplikacja Windows Hub to najprostsza ścieżka desktopowa. Obsługiwane są też
-instalator PowerShell i ścieżki Gateway przez WSL2. Zobacz [Windows](/pl/platforms/windows).
+Sprawdź wersję Node za pomocą polecenia `node --version`.
+**Użytkownicy systemu Windows:** natywna aplikacja Windows Hub jest najłatwiejszym rozwiązaniem na komputery stacjonarne. Obsługiwane są również
+instalator PowerShell i Gateway w środowisku WSL2. Zobacz [Windows](/pl/platforms/windows).
 Musisz zainstalować Node? Zobacz [Konfiguracja Node](/pl/install/node).
 </Tip>
 
@@ -57,18 +57,18 @@ Musisz zainstalować Node? Zobacz [Konfiguracja Node](/pl/install/node).
     </Note>
 
   </Step>
-  <Step title="Uruchom onboarding">
+  <Step title="Przeprowadź wdrażanie">
     ```bash
     openclaw onboard --install-daemon
     ```
 
     Kreator przeprowadzi Cię przez wybór dostawcy modelu, ustawienie klucza API
     i konfigurację Gateway. QuickStart zwykle zajmuje tylko kilka minut, ale
-    logowanie do dostawcy, parowanie kanału, instalacja demona, pobieranie z sieci, Skills
-    lub opcjonalne pluginy mogą wydłużyć pełny onboarding. Możesz pominąć opcjonalne
-    kroki i wrócić później poleceniem `openclaw configure`.
+    logowanie u dostawcy, parowanie kanałów, instalacja demona, pobieranie danych z sieci, Skills
+    lub opcjonalne pluginy mogą wydłużyć pełne wdrażanie. Pomiń opcjonalne
+    kroki i wróć do nich później za pomocą polecenia `openclaw configure`.
 
-    Pełną dokumentację znajdziesz w [Onboarding (CLI)](/pl/start/wizard).
+    Pełną dokumentację znajdziesz w sekcji [Wdrażanie (CLI)](/pl/start/wizard).
 
   </Step>
   <Step title="Sprawdź, czy Gateway działa">
@@ -76,35 +76,34 @@ Musisz zainstalować Node? Zobacz [Konfiguracja Node](/pl/install/node).
     openclaw gateway status
     ```
 
-    Powinien być widoczny Gateway nasłuchujący na porcie 18789.
+    Powinna pojawić się informacja, że Gateway nasłuchuje na porcie 18789.
 
   </Step>
-  <Step title="Otwórz dashboard">
+  <Step title="Otwórz panel sterowania">
     ```bash
     openclaw dashboard
     ```
 
-    To otworzy Control UI w przeglądarce. Jeśli się załaduje, wszystko działa.
+    Spowoduje to otwarcie interfejsu Control UI w przeglądarce. Jeśli się załaduje, wszystko działa prawidłowo.
 
   </Step>
   <Step title="Wyślij pierwszą wiadomość">
-    Wpisz wiadomość w czacie Control UI, a powinna pojawić się odpowiedź AI.
+    Wpisz wiadomość na czacie w interfejsie Control UI. Powinna pojawić się odpowiedź od AI.
 
-    Wolisz rozmawiać z telefonu? Najszybszy kanał do skonfigurowania to
-    [Telegram](/pl/channels/telegram) (wystarczy token bota). Zobacz [Kanały](/pl/channels),
-    aby poznać wszystkie opcje.
+    Wolisz rozmawiać przez telefon? Najszybszym kanałem do skonfigurowania jest
+    [Telegram](/pl/channels/telegram) (wystarczy token bota). Wszystkie opcje znajdziesz w sekcji [Kanały](/pl/channels).
 
   </Step>
 </Steps>
 
-<Accordion title="Zaawansowane: zamontuj niestandardowy build Control UI">
-  Jeśli utrzymujesz zlokalizowany lub dostosowany build dashboardu, ustaw
-  `gateway.controlUi.root` na katalog zawierający zbudowane statyczne
-  zasoby i `index.html`.
+<Accordion title="Zaawansowane: zamontuj niestandardową kompilację Control UI">
+  Jeśli utrzymujesz zlokalizowaną lub dostosowaną kompilację panelu sterowania, ustaw
+  `gateway.controlUi.root` na katalog zawierający skompilowane zasoby statyczne
+  i plik `index.html`.
 
 ```bash
 mkdir -p "$HOME/.openclaw/control-ui-custom"
-# Copy your built static files into that directory.
+# Skopiuj skompilowane pliki statyczne do tego katalogu.
 ```
 
 Następnie ustaw:
@@ -120,7 +119,7 @@ Następnie ustaw:
 }
 ```
 
-Uruchom ponownie Gateway i ponownie otwórz dashboard:
+Uruchom ponownie Gateway i ponownie otwórz panel sterowania:
 
 ```bash
 openclaw gateway restart
@@ -139,24 +138,24 @@ openclaw dashboard
     Kontroluj, kto może wysyłać wiadomości do Twojego agenta.
   </Card>
   <Card title="Skonfiguruj Gateway" href="/pl/gateway/configuration" icon="settings">
-    Modele, narzędzia, sandbox i ustawienia zaawansowane.
+    Modele, narzędzia, piaskownica i ustawienia zaawansowane.
   </Card>
   <Card title="Przeglądaj narzędzia" href="/pl/tools" icon="wrench">
-    Przeglądarka, exec, wyszukiwanie w sieci, Skills i pluginy.
+    Przeglądarka, wykonywanie poleceń, wyszukiwanie w sieci, Skills i pluginy.
   </Card>
 </Columns>
 
 <Accordion title="Zaawansowane: zmienne środowiskowe">
-  Jeśli uruchamiasz OpenClaw jako konto usługi lub chcesz używać niestandardowych ścieżek:
+  Jeśli uruchamiasz OpenClaw za pomocą konta usługi lub chcesz użyć niestandardowych ścieżek:
 
-- `OPENCLAW_HOME` — katalog domowy do wewnętrznego rozwiązywania ścieżek
-- `OPENCLAW_STATE_DIR` — nadpisuje katalog stanu
-- `OPENCLAW_CONFIG_PATH` — nadpisuje ścieżkę pliku konfiguracyjnego
+- `OPENCLAW_HOME` — katalog domowy używany do wewnętrznego rozpoznawania ścieżek
+- `OPENCLAW_STATE_DIR` — zastępuje katalog stanu
+- `OPENCLAW_CONFIG_PATH` — zastępuje ścieżkę pliku konfiguracyjnego
 
 Pełna dokumentacja: [Zmienne środowiskowe](/pl/help/environment).
 </Accordion>
 
-## Powiązane
+## Powiązane materiały
 
 - [Omówienie instalacji](/pl/install)
 - [Omówienie kanałów](/pl/channels)

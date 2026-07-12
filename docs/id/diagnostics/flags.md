@@ -1,30 +1,44 @@
 ---
 read_when:
-    - Anda memerlukan log debug yang terarah tanpa menaikkan tingkat logging global
-    - Anda perlu menangkap log khusus subsistem untuk dukungan
-summary: Flag diagnostik untuk log debug tertarget
+    - Anda memerlukan log debug yang ditargetkan tanpa menaikkan tingkat logging global
+    - Anda perlu mengumpulkan log khusus subsistem untuk dukungan
+summary: Flag diagnostik untuk log debug yang ditargetkan
 title: Flag diagnostik
 x-i18n:
-    generated_at: "2026-06-27T17:27:48Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:10:40Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c78c5c2f90fb1d601d0a3ef94919310759d58c9f9c70a093c91f31594bc777fb
+    source_hash: 9847f464fde89d9e639b089fe54fb933deb9debad2a6d8b120ab01bacff181a8
     source_path: diagnostics/flags.md
     workflow: 16
 ---
 
-Flag diagnostik memungkinkan Anda mengaktifkan log debug yang ditargetkan tanpa menyalakan logging verbose di semua tempat. Flag bersifat opt-in dan tidak berpengaruh kecuali suatu subsistem memeriksanya.
+Flag diagnostik mengaktifkan pencatatan log tambahan untuk satu subsistem tanpa menaikkan
+`logging.level` secara global. Sebuah flag tidak berpengaruh kecuali diperiksa oleh subsistem.
 
 ## Cara kerjanya
 
-- Flag adalah string (tidak peka huruf besar/kecil).
-- Anda dapat mengaktifkan flag di config atau melalui override env.
-- Wildcard didukung:
-  - `telegram.*` cocok dengan `telegram.http`
-  - `*` mengaktifkan semua flag
+- Flag adalah string yang tidak peka huruf besar-kecil, ditentukan dari `diagnostics.flags` dalam
+  konfigurasi ditambah penimpaan env `OPENCLAW_DIAGNOSTICS`, lalu duplikatnya dihapus dan diubah menjadi huruf kecil.
+- `name.*` cocok dengan `name` itu sendiri dan apa pun di bawah `name.` (misalnya
+  `telegram.*` cocok dengan `telegram.http`).
+- `*` atau `all` mengaktifkan setiap flag.
+- Mulai ulang Gateway setelah mengubah `diagnostics.flags` dalam konfigurasi; perubahan ini tidak
+  dimuat ulang secara langsung.
 
-## Aktifkan melalui config
+## Flag yang diketahui
+
+| Flag             | Mengaktifkan                                                        |
+| ---------------- | ------------------------------------------------------------------- |
+| `telegram.http`  | Pencatatan log galat HTTP Telegram Bot API                          |
+| `brave.http`     | Pencatatan log permintaan/respons/cache Brave Search                |
+| `profiler`       | Profiler tahap balasan dan profiler server aplikasi Codex (keduanya) |
+| `reply.profiler` | Hanya profiler tahap balasan                                        |
+| `codex.profiler` | Hanya profiler server aplikasi Codex                                |
+| `timeline`       | Artefak linimasa JSONL terstruktur (lihat di bawah)                 |
+
+## Mengaktifkan melalui konfigurasi
 
 ```json
 {
@@ -44,47 +58,49 @@ Beberapa flag:
 }
 ```
 
-Mulai ulang Gateway setelah mengubah flag.
-
-## Override env (sekali pakai)
+## Penimpaan env (sekali pakai)
 
 ```bash
-OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload
+OPENCLAW_DIAGNOSTICS=telegram.http,brave.http
 ```
 
-Nonaktifkan semua flag:
+Nilai dipisahkan berdasarkan koma atau spasi. Nilai khusus:
 
-```bash
-OPENCLAW_DIAGNOSTICS=0
-```
+| Nilai                       | Efek                                                  |
+| --------------------------- | ----------------------------------------------------- |
+| `0`, `false`, `off`, `none` | Menonaktifkan semua flag, juga menimpa konfigurasi    |
+| `1`, `true`, `all`, `*`     | Mengaktifkan setiap flag                              |
 
-`OPENCLAW_DIAGNOSTICS=0` adalah override penonaktifan tingkat proses: ini menonaktifkan
-flag dari env maupun config untuk proses tersebut.
+`OPENCLAW_DIAGNOSTICS=0` menonaktifkan flag dari env dan konfigurasi untuk
+proses tersebut, yang berguna untuk membisukan sementara flag profiler yang dibiarkan aktif dalam konfigurasi
+tanpa mengedit berkas.
 
-## Flag profiling
+## Flag profiler
 
-Flag profiler mengaktifkan span timing yang ditargetkan tanpa menaikkan level
-logging global. Flag ini dinonaktifkan secara default.
+Flag profiler mengendalikan rentang pengukuran waktu ringan; flag ini tidak menambah beban saat dinonaktifkan.
 
-Aktifkan semua span yang digating profiler untuk satu kali jalan Gateway:
+Aktifkan semua rentang yang dikendalikan profiler untuk satu kali proses Gateway:
 
 ```bash
 OPENCLAW_DIAGNOSTICS=profiler openclaw gateway run
 ```
 
-Aktifkan hanya span profiler reply-dispatch:
+Aktifkan hanya rentang profiler pengiriman balasan:
 
 ```bash
 OPENCLAW_DIAGNOSTICS=reply.profiler openclaw gateway run
 ```
 
-Aktifkan hanya span profiler startup/tool/thread server aplikasi Codex:
+Aktifkan hanya rentang profiler startup/alat/utas server aplikasi Codex:
 
 ```bash
 OPENCLAW_DIAGNOSTICS=codex.profiler openclaw gateway run
 ```
 
-Aktifkan flag profiler dari config:
+`profiler` mengaktifkan profiler balasan dan profiler Codex; gunakan
+nama flag dengan cakupan tertentu untuk mengaktifkan hanya salah satunya.
+
+Atau tetapkan dalam konfigurasi:
 
 ```json
 {
@@ -94,18 +110,14 @@ Aktifkan flag profiler dari config:
 }
 ```
 
-Mulai ulang Gateway setelah mengubah flag config. Untuk menonaktifkan flag profiler,
-hapus dari `diagnostics.flags` dan mulai ulang. Untuk menonaktifkan sementara semua
-flag diagnostik meskipun config mengaktifkan flag profiler, mulai proses dengan:
+Mulai ulang Gateway setelah mengubah flag konfigurasi. Untuk menonaktifkan flag profiler,
+hapus flag tersebut dari `diagnostics.flags` dan mulai ulang, atau jalankan proses dengan
+`OPENCLAW_DIAGNOSTICS=0` untuk menimpa setiap flag diagnostik selama proses tersebut.
 
-```bash
-OPENCLAW_DIAGNOSTICS=0 openclaw gateway run
-```
+## Artefak linimasa
 
-## Artefak timeline
-
-Flag `timeline` menulis event timing startup dan runtime terstruktur untuk
-harness QA eksternal:
+Flag `timeline` (alias: `diagnostics.timeline`) menulis peristiwa pengukuran waktu startup
+dan waktu proses secara terstruktur sebagai JSONL, untuk perangkat pengujian QA eksternal:
 
 ```bash
 OPENCLAW_DIAGNOSTICS=timeline \
@@ -113,7 +125,7 @@ OPENCLAW_DIAGNOSTICS_TIMELINE_PATH=/tmp/openclaw-timeline.jsonl \
 openclaw gateway run
 ```
 
-Anda juga dapat mengaktifkannya di config:
+Atau aktifkan dalam konfigurasi:
 
 ```json
 {
@@ -123,35 +135,42 @@ Anda juga dapat mengaktifkannya di config:
 }
 ```
 
-Path file timeline tetap berasal dari
-`OPENCLAW_DIAGNOSTICS_TIMELINE_PATH`. Saat `timeline` diaktifkan hanya dari
-config, span pemuatan config paling awal tidak dipancarkan karena OpenClaw belum
-membaca config; span startup berikutnya menggunakan flag config.
+Jalur keluaran selalu berasal dari `OPENCLAW_DIAGNOSTICS_TIMELINE_PATH`, bahkan
+ketika flag itu sendiri ditetapkan dalam konfigurasi; tidak ada kunci konfigurasi untuk jalur tersebut.
+Ketika `timeline` hanya diaktifkan dari konfigurasi, rentang pemuatan konfigurasi paling awal
+tidak tersedia karena OpenClaw belum membaca konfigurasi; rentang startup berikutnya
+direkam secara normal.
 
-`OPENCLAW_DIAGNOSTICS=1`, `OPENCLAW_DIAGNOSTICS=all`, dan
-`OPENCLAW_DIAGNOSTICS=*` juga mengaktifkan timeline karena semuanya mengaktifkan setiap
-flag diagnostik. Pilih `timeline` ketika Anda hanya menginginkan artefak timing
-JSONL.
+`OPENCLAW_DIAGNOSTICS=1`, `=all`, dan `=*` juga mengaktifkan linimasa, karena semuanya
+mengaktifkan setiap flag. Pilih flag `timeline` dengan cakupan tertentu jika Anda hanya menginginkan
+artefak JSONL dan bukan semua flag diagnostik lainnya.
 
-Record timeline menggunakan envelope `openclaw.diagnostics.v1`. Event dapat menyertakan
-id proses, nama fase, nama span, durasi, id plugin, jumlah dependensi,
-sampel delay event-loop, nama operasi provider, status keluar child-process,
-dan nama/pesan error startup. Perlakukan file timeline sebagai artefak diagnostik
-lokal; tinjau sebelum membagikannya ke luar mesin Anda.
+Sampel penundaan loop peristiwa dalam linimasa memerlukan satu persetujuan tambahan selain
+`timeline`: tetapkan `OPENCLAW_DIAGNOSTICS_EVENT_LOOP=1` (atau `on`/`true`/`yes`) selain
+mengaktifkan linimasa.
 
-## Ke mana log ditulis
+Catatan linimasa menggunakan envelope `openclaw.diagnostics.v1` dan dapat menyertakan
+ID proses, nama fase, nama rentang, durasi, ID Plugin, jumlah dependensi,
+sampel penundaan loop peristiwa, nama operasi penyedia, status keluar proses turunan,
+serta nama/pesan galat startup. Perlakukan berkas linimasa sebagai artefak
+diagnostik lokal; tinjau sebelum membagikannya ke luar mesin Anda.
 
-Flag memancarkan log ke file log diagnostik standar. Secara default:
+## Lokasi log
+
+Flag menghasilkan log ke dalam berkas log diagnostik standar. Secara default:
 
 ```
 /tmp/openclaw/openclaw-YYYY-MM-DD.log
 ```
 
-Jika Anda menetapkan `logging.file`, gunakan path tersebut sebagai gantinya. Log berbentuk JSONL (satu objek JSON per baris). Redaksi tetap diterapkan berdasarkan `logging.redactSensitive`.
+Jika Anda menetapkan `logging.file`, gunakan jalur tersebut sebagai gantinya. Log berformat JSONL (satu objek JSON
+per baris). Penyuntingan informasi sensitif tetap diterapkan berdasarkan `logging.redactSensitive`.
+Lihat [Pencatatan log](/id/logging) untuk model lengkap penentuan jalur log, rotasi, dan
+penyuntingan informasi sensitif.
 
-## Ekstrak log
+## Mengekstrak log
 
-Pilih file log terbaru:
+Pilih berkas log terbaru:
 
 ```bash
 ls -t /tmp/openclaw/openclaw-*.log | head -n 1
@@ -169,20 +188,26 @@ Filter diagnostik HTTP Brave Search:
 rg "brave http" /tmp/openclaw/openclaw-*.log
 ```
 
-Atau tail saat mereproduksi:
+Atau pantau saat mereproduksi masalah:
 
 ```bash
 tail -f /tmp/openclaw/openclaw-$(date +%F).log | rg "telegram http error"
 ```
 
-Untuk Gateway jarak jauh, Anda juga dapat menggunakan `openclaw logs --follow` (lihat [/cli/logs](/id/cli/logs)).
+Untuk Gateway jarak jauh, gunakan `openclaw logs --follow` sebagai gantinya (lihat
+[/cli/logs](/id/cli/logs)).
 
 ## Catatan
 
-- Jika `logging.level` disetel lebih tinggi daripada `warn`, log ini mungkin ditekan. Default `info` sudah cukup.
-- `brave.http` mencatat URL/parameter query request Brave Search, status/timing respons, dan event cache hit/miss/write. Ini tidak mencatat API key atau body respons, tetapi query pencarian dapat bersifat sensitif.
-- Flag aman dibiarkan aktif; flag hanya memengaruhi volume log untuk subsistem tertentu.
-- Gunakan [/logging](/id/logging) untuk mengubah tujuan log, level, dan redaksi.
+- Jika `logging.level` ditetapkan lebih tinggi daripada `warn`, log yang dikendalikan flag mungkin
+  tidak dicatat. Nilai default `info` sudah sesuai.
+- `brave.http` mencatat URL/parameter kueri permintaan Brave Search, status/waktu
+  respons, serta peristiwa cache ditemukan/tidak ditemukan/ditulis. Flag ini tidak mencatat kunci API
+  (dikirim sebagai header permintaan) atau isi respons, tetapi kueri pencarian dapat bersifat
+  sensitif.
+- Flag aman dibiarkan aktif; flag hanya memengaruhi volume log untuk
+  subsistem tertentu.
+- Gunakan [/logging](/id/logging) untuk mengubah tujuan, tingkat, dan penyuntingan informasi sensitif log.
 
 ## Terkait
 

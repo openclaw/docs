@@ -1,21 +1,21 @@
 ---
 read_when:
-    - شما در حال نصب، پیکربندی یا ممیزی Plugin deepseek هستید
-summary: پشتیبانی از ارائه‌دهندهٔ مدل DeepSeek را به OpenClaw اضافه می‌کند.
-title: Plugin دیپ‌سیک
+    - شما در حال نصب، پیکربندی یا ممیزی Plugin دیپ‌سیک هستید
+summary: پشتیبانی از ارائه‌دهنده مدل DeepSeek را به OpenClaw اضافه می‌کند.
+title: Plugin ‏DeepSeek
 x-i18n:
-    generated_at: "2026-06-27T18:24:46Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:28:58Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c391a9d87d4de66f279f0b851868857b1a57e328feede3f5833e5e323ea5e281
+    source_hash: e2e7de36581db36818f63f754da829d91163c0ae3eaab9a087da087d3c681538
     source_path: plugins/reference/deepseek.md
     workflow: 16
 ---
 
-# Plugin DeepSeek
+# Plugin دیپ‌سیک
 
-پشتیبانی از ارائه‌دهندهٔ مدل DeepSeek را به OpenClaw اضافه می‌کند.
+پشتیبانی از ارائه‌دهنده مدل دیپ‌سیک را به OpenClaw اضافه می‌کند.
 
 ## توزیع
 
@@ -24,8 +24,8 @@ x-i18n:
 
 ## سطح
 
-providers: deepseek
+ارائه‌دهندگان: deepseek؛ قراردادها: usageProviders
 
 ## مستندات مرتبط
 
-- [deepseek](/fa/providers/deepseek)
+- [دیپ‌سیک](/fa/providers/deepseek)

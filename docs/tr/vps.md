@@ -1,92 +1,95 @@
 ---
 read_when:
-    - Gateway'i bir Linux sunucusunda veya bulut VPS'te çalıştırmak istiyorsunuz
-    - Barındırma kılavuzlarının hızlı bir haritasına ihtiyacınız var
-    - OpenClaw için genel Linux sunucu ayarlaması istiyorsunuz
+    - Gateway'i bir Linux sunucusunda veya bulut VPS'inde çalıştırmak istiyorsunuz
+    - Barındırma kılavuzlarına ilişkin hızlı bir genel bakışa ihtiyacınız var
+    - OpenClaw için genel Linux sunucu optimizasyonu istiyorsunuz
 sidebarTitle: Linux Server
-summary: OpenClaw’ı bir Linux sunucusunda veya bulut VPS’te çalıştırma — sağlayıcı seçici, mimari ve ince ayar
+summary: OpenClaw'u bir Linux sunucusunda veya bulut VPS'te çalıştırma — sağlayıcı seçici, mimari ve ince ayar
 title: Linux sunucusu
 x-i18n:
-    generated_at: "2026-06-28T01:27:43Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:55:27Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d32ca9cd62e99b340827f086602922eae3731d9b6cb42b1fd629917d604c549b
+    source_hash: 634a246850ab8b854c2c799688fd368ebed3a02124baa85bf38d5ff6ef8cec64
     source_path: vps.md
     workflow: 16
 ---
 
-OpenClaw Gateway'i herhangi bir Linux sunucusunda veya bulut VPS üzerinde çalıştırın. Bu sayfa bir sağlayıcı
-seçmenize yardımcı olur, bulut dağıtımlarının nasıl çalıştığını açıklar ve her yerde geçerli olan genel Linux
-ayarlamalarını kapsar.
+OpenClaw Gateway'ini herhangi bir Linux sunucusunda veya bulut VPS'sinde çalıştırın. Bu sayfa,
+bir sağlayıcı seçmenize yardımcı olur, bulut dağıtımlarının nasıl çalıştığını açıklar ve her ortamda
+geçerli olan genel Linux ayarlarını ele alır.
 
 ## Bir sağlayıcı seçin
 
 <CardGroup cols={2}>
-  <Card title="Railway" href="/tr/install/railway">Tek tıklamayla tarayıcı kurulumu</Card>
-  <Card title="Northflank" href="/tr/install/northflank">Tek tıklamayla tarayıcı kurulumu</Card>
+  <Card title="Azure" href="/tr/install/azure">Linux sanal makinesi</Card>
   <Card title="DigitalOcean" href="/tr/install/digitalocean">Basit ücretli VPS</Card>
-  <Card title="Oracle Cloud" href="/tr/install/oracle">Her Zaman Ücretsiz ARM katmanı</Card>
+  <Card title="exe.dev" href="/tr/install/exe-dev">HTTPS proxy'li sanal makine</Card>
   <Card title="Fly.io" href="/tr/install/fly">Fly Machines</Card>
+  <Card title="GCP" href="/tr/install/gcp">Compute Engine</Card>
   <Card title="Hetzner" href="/tr/install/hetzner">Hetzner VPS üzerinde Docker</Card>
   <Card title="Hostinger" href="/tr/install/hostinger">Tek tıklamayla kurulum sunan VPS</Card>
-  <Card title="GCP" href="/tr/install/gcp">Compute Engine</Card>
-  <Card title="Azure" href="/tr/install/azure">Linux VM</Card>
-  <Card title="exe.dev" href="/tr/install/exe-dev">HTTPS proxy ile VM</Card>
-  <Card title="Raspberry Pi" href="/tr/install/raspberry-pi">ARM kendi kendine barındırma</Card>
+  <Card title="Northflank" href="/tr/install/northflank">Tek tıklamayla tarayıcı üzerinden kurulum</Card>
+  <Card title="Oracle Cloud" href="/tr/install/oracle">Daima Ücretsiz ARM katmanı</Card>
+  <Card title="Railway" href="/tr/install/railway">Tek tıklamayla tarayıcı üzerinden kurulum</Card>
+  <Card title="Raspberry Pi" href="/tr/install/raspberry-pi">ARM üzerinde kendi kendine barındırma</Card>
 </CardGroup>
 
 **AWS (EC2 / Lightsail / ücretsiz katman)** da iyi çalışır.
-Şurada bir topluluk video adım adım anlatımı mevcuttur:
+Topluluk tarafından hazırlanmış bir videolu anlatıma
 [x.com/techfrenAJ/status/2014934471095812547](https://x.com/techfrenAJ/status/2014934471095812547)
-(topluluk kaynağı -- kullanılamaz hale gelebilir).
+adresinden ulaşabilirsiniz (topluluk kaynağıdır ve kullanılamaz hâle gelebilir).
 
-## Bulut kurulumları nasıl çalışır
+## Bulut kurulumları nasıl çalışır?
 
-- **Gateway VPS üzerinde çalışır** ve durum + çalışma alanının sahibidir.
-- Dizüstü bilgisayarınızdan veya telefonunuzdan **Control UI** ya da **Tailscale/SSH** üzerinden bağlanırsınız.
-- VPS'yi doğruluk kaynağı olarak kabul edin ve durum + çalışma alanını düzenli olarak **yedekleyin**.
-- Güvenli varsayılan: Gateway'i loopback üzerinde tutun ve ona SSH tüneli veya Tailscale Serve üzerinden erişin.
-  `lan` veya `tailnet` ile bağlarsanız `gateway.auth.token` veya `gateway.auth.password` zorunlu olsun.
+- **Gateway VPS üzerinde çalışır** ve durum ile çalışma alanını yönetir.
+- Dizüstü bilgisayarınızdan veya telefonunuzdan **Kontrol Arayüzü** ya da **Tailscale/SSH** aracılığıyla bağlanırsınız.
+- VPS'yi asıl veri kaynağı olarak kabul edin ve durum ile çalışma alanını düzenli olarak **yedekleyin**.
+- Güvenli varsayılan: Gateway'i local loopback üzerinde tutun ve SSH tüneli veya Tailscale Serve üzerinden erişin.
+  `lan` veya `tailnet` adresine bağlarsanız kimlik doğrulama güvenilir bir
+  proxy'ye devredilmediği sürece Gateway, paylaşılan bir gizli bilgi
+  (`gateway.auth.token` veya `gateway.auth.password`) gerektirir.
 
-İlgili sayfalar: [Gateway uzaktan erişimi](/tr/gateway/remote), [Platformlar merkezi](/tr/platforms).
+İlgili sayfalar: [Gateway'e uzaktan erişim](/tr/gateway/remote), [Platformlar merkezi](/tr/platforms).
 
 ## Önce yönetici erişimini güçlendirin
 
-OpenClaw'u herkese açık bir VPS'ye kurmadan önce kutunun kendisini nasıl yöneteceğinize
-karar verin.
+OpenClaw'ı herkese açık bir VPS'ye kurmadan önce, makinenin kendisini nasıl
+yöneteceğinize karar verin.
 
-- Yalnızca Tailnet yönetici erişimi istiyorsanız önce Tailscale'i kurun, VPS'yi
+- Yalnızca Tailnet üzerinden yönetici erişimi için: önce Tailscale'i kurun, VPS'yi
   tailnet'inize katın, Tailscale IP'si veya MagicDNS adı üzerinden ikinci bir SSH oturumunu
-  doğrulayın, ardından herkese açık SSH'yi kısıtlayın.
-- Tailscale kullanmıyorsanız daha fazla hizmeti açığa çıkarmadan önce SSH
-  yolunuz için eşdeğer güçlendirmeyi uygulayın.
-- Bu, Gateway erişiminden ayrıdır. OpenClaw'u yine de loopback'e bağlı tutabilir
-  ve pano için bir SSH tüneli veya Tailscale Serve kullanabilirsiniz.
+  doğrulayın, ardından herkese açık SSH erişimini kısıtlayın.
+- Tailscale olmadan: daha fazla hizmeti dışarı açmadan önce SSH erişim yolunuz için
+  eşdeğer güçlendirmeyi uygulayın.
+- Bu, Gateway erişiminden ayrıdır. OpenClaw'ı local loopback'e bağlı tutmaya devam edebilir
+  ve kontrol paneli için SSH tüneli veya Tailscale Serve kullanabilirsiniz.
 
-Tailscale'e özgü Gateway seçenekleri [Tailscale](/tr/gateway/tailscale) içindedir.
+Tailscale'e özgü Gateway seçenekleri [Tailscale](/tr/gateway/tailscale) sayfasında yer alır.
 
-## VPS üzerinde paylaşılan şirket ajanı
+## VPS üzerinde paylaşılan şirket aracısı
 
-Her kullanıcı aynı güven sınırındaysa ve ajan yalnızca iş amaçlıysa, bir ekip için tek bir ajan çalıştırmak geçerli bir kurulumdur.
+Tüm kullanıcılar aynı güven sınırı içindeyse ve aracı yalnızca iş amacıyla kullanılıyorsa,
+bir ekip için tek bir aracı çalıştırmak geçerli bir kurulumdur.
 
-- Onu ayrılmış bir çalışma zamanında tutun (VPS/VM/container + ayrılmış işletim sistemi kullanıcısı/hesapları).
-- Bu çalışma zamanını kişisel Apple/Google hesaplarına veya kişisel tarayıcı/parola yöneticisi profillerine giriş yaptırmayın.
-- Kullanıcılar birbirine karşı hasım durumdaysa gateway/ana makine/işletim sistemi kullanıcısına göre ayırın.
+- Aracıyı özel bir çalışma ortamında tutun (VPS/sanal makine/konteyner + özel işletim sistemi kullanıcısı/hesapları).
+- Bu çalışma ortamında kişisel Apple/Google hesaplarında veya kişisel tarayıcı/parola yöneticisi profillerinde oturum açmayın.
+- Kullanıcılar birbirine karşı kötü niyetli olabilecekse gateway/ana makine/işletim sistemi kullanıcısına göre ayırın.
 
 Güvenlik modeli ayrıntıları: [Güvenlik](/tr/gateway/security).
 
-## VPS ile düğümleri kullanma
+## VPS ile Node kullanımı
 
 Gateway'i bulutta tutabilir ve yerel cihazlarınızdaki
-(Mac/iOS/Android/headless) **düğümlerle** eşleyebilirsiniz. Düğümler yerel ekran/kamera/canvas ve `system.run`
-yetenekleri sağlarken Gateway bulutta kalır.
+(Mac/iOS/Android/başsız) **Node'ları** eşleştirebilirsiniz. Gateway bulutta kalırken Node'lar,
+yerel ekran/kamera/canvas ve `system.run` yeteneklerini sağlar.
 
-Belgeler: [Düğümler](/tr/nodes), [Düğümler CLI](/tr/cli/nodes).
+Belgeler: [Node'lar](/tr/nodes), [Node CLI](/tr/cli/nodes).
 
-## Küçük VM'ler ve ARM ana makineleri için başlangıç ayarlaması
+## Küçük sanal makineler ve ARM ana makineleri için başlangıç ayarları
 
-CLI komutları düşük güçlü VM'lerde (veya ARM ana makinelerinde) yavaş geliyorsa Node'un modül derleme önbelleğini etkinleştirin:
+Düşük güçlü sanal makinelerde (veya ARM ana makinelerinde) CLI komutları yavaş çalışıyorsa Node'un modül derleme önbelleğini etkinleştirin:
 
 ```bash
 grep -q 'NODE_COMPILE_CACHE=/var/tmp/openclaw-compile-cache' ~/.bashrc || cat >> ~/.bashrc <<'EOF'
@@ -97,25 +100,21 @@ EOF
 source ~/.bashrc
 ```
 
-- `NODE_COMPILE_CACHE`, tekrarlanan komut başlangıç sürelerini iyileştirir.
-- `OPENCLAW_NO_RESPAWN=1`, rutin Gateway yeniden başlatmalarını işlem içinde tutar; bu, ek süreç devirlerini önler ve küçük ana makinelerde PID takibini basit tutar.
-- İlk komut çalıştırması önbelleği ısıtır; sonraki çalıştırmalar daha hızlıdır.
-- Raspberry Pi'ye özgü ayrıntılar için bkz. [Raspberry Pi](/tr/install/raspberry-pi).
+- `NODE_COMPILE_CACHE`, tekrarlanan komutların başlatma sürelerini iyileştirir; ilk çalıştırma önbelleği hazırlar.
+- `OPENCLAW_NO_RESPAWN=1`, rutin Gateway yeniden başlatmalarını aynı işlem içinde tutar; bu, ek işlem devirlerini önler ve küçük ana makinelerde PID takibini basit tutar.
+- Raspberry Pi'ye özgü ayrıntılar için [Raspberry Pi](/tr/install/raspberry-pi) sayfasına bakın.
 
-### systemd ayarlama kontrol listesi (isteğe bağlı)
+### systemd ayarları kontrol listesi (isteğe bağlı)
 
-`systemd` kullanan VM ana makineleri için şunları değerlendirin:
+`systemd` kullanan sanal makine ana makineleri için şunları değerlendirin:
 
-- Kararlı bir başlangıç yolu için hizmet ortamı ekleyin:
-  - `OPENCLAW_NO_RESPAWN=1`
-  - `NODE_COMPILE_CACHE=/var/tmp/openclaw-compile-cache`
-- Yeniden başlatma davranışını açık tutun:
-  - `Restart=always`
-  - `RestartSec=2`
-  - `TimeoutStartSec=90`
-- Durum/önbellek yollarında rastgele G/Ç soğuk başlangıç cezalarını azaltmak için SSD destekli diskleri tercih edin.
+- Kararlı bir başlatma yolu için hizmet ortam değişkenleri: `OPENCLAW_NO_RESPAWN=1` ve
+  `NODE_COMPILE_CACHE=/var/tmp/openclaw-compile-cache`
+- Açık yeniden başlatma davranışı: `Restart=always`, `RestartSec=2`, `TimeoutStartSec=90`
+- Rastgele G/Ç kaynaklı soğuk başlatma gecikmelerini azaltmak için durum/önbellek yollarında SSD destekli diskler.
 
-Standart `openclaw onboard --install-daemon` yolu için kullanıcı birimini düzenleyin:
+Standart `openclaw onboard --install-daemon` yolu bir systemd kullanıcı
+birimi kurar; şu komutla düzenleyin:
 
 ```bash
 systemctl --user edit openclaw-gateway.service
@@ -130,18 +129,18 @@ RestartSec=2
 TimeoutStartSec=90
 ```
 
-Bunun yerine bilerek bir sistem birimi kurduysanız
-`sudo systemctl edit openclaw-gateway.service` üzerinden `openclaw-gateway.service` dosyasını düzenleyin.
+Bunun yerine kasıtlı olarak bir sistem birimi kurduysanız şu komutla düzenleyin:
+`sudo systemctl edit openclaw-gateway.service`.
 
-`Restart=` ilkelerinin otomatik kurtarmaya nasıl yardımcı olduğu:
-[systemd hizmet kurtarmasını otomatikleştirebilir](https://www.redhat.com/en/blog/systemd-automate-recovery).
+`Restart=` ilkeleri otomatik kurtarmaya nasıl yardımcı olur:
+[systemd hizmet kurtarmayı otomatikleştirebilir](https://www.redhat.com/en/blog/systemd-automate-recovery).
 
-Linux OOM davranışı, alt süreç kurban seçimi ve `exit 137`
-tanıları için bkz. [Linux bellek baskısı ve OOM sonlandırmaları](/tr/platforms/linux#memory-pressure-and-oom-kills).
+Linux OOM davranışı, alt işlemlerde kurban seçimi ve `exit 137`
+tanılaması için [Linux bellek baskısı ve OOM sonlandırmaları](/tr/platforms/linux#memory-pressure-and-oom-kills) sayfasına bakın.
 
 ## İlgili
 
-- [Kurulum genel bakışı](/tr/install)
+- [Kuruluma genel bakış](/tr/install)
 - [DigitalOcean](/tr/install/digitalocean)
 - [Fly.io](/tr/install/fly)
 - [Hetzner](/tr/install/hetzner)

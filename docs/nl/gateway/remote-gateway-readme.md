@@ -1,39 +1,39 @@
 ---
 read_when: Connecting the macOS app to a remote gateway over SSH
-summary: SSH-tunnelconfiguratie voor OpenClaw.app die verbinding maakt met een externe Gateway
-title: Externe Gateway instellen
+summary: SSH-tunnel instellen voor OpenClaw.app om verbinding te maken met een externe Gateway
+title: Externe Gateway-configuratie
 x-i18n:
-    generated_at: "2026-04-29T22:47:13Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:55:27Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: fccc75e672bf3295c335fc4d2f610e9cbb3f1882edd12ffb9d009120291bd2d9
+    source_hash: 842578eb74e99d115b04abff5e9673a6454fa6d2cf7905d056999469e1c6b66d
     source_path: gateway/remote-gateway-readme.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-> Deze inhoud is samengevoegd in [Externe toegang](/nl/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent). Zie die pagina voor de huidige handleiding.
+<Note>
+Deze inhoud staat nu in [Externe toegang](/nl/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent). Gebruik die pagina voor de actuele handleiding; deze pagina blijft bestaan als omleidingsdoel.
+</Note>
 
 # OpenClaw.app uitvoeren met een externe Gateway
 
-OpenClaw.app gebruikt SSH-tunneling om verbinding te maken met een externe Gateway. Deze handleiding laat zien hoe je dit instelt.
-
-## Overzicht
+OpenClaw.app bereikt een externe Gateway via een SSH-tunnel: een SSH-`LocalForward` koppelt een lokale poort aan de WebSocket-poort van de Gateway op de externe host.
 
 ```mermaid
 flowchart TB
-    subgraph Client["Client Machine"]
+    subgraph Client["Clientmachine"]
         direction TB
         A["OpenClaw.app"]
-        B["ws://127.0.0.1:18789\n(local port)"]
-        T["SSH Tunnel"]
+        B["ws://127.0.0.1:18789\n(lokale poort)"]
+        T["SSH-tunnel"]
 
         A --> B
         B --> T
     end
-    subgraph Remote["Remote Machine"]
+    subgraph Remote["Externe machine"]
         direction TB
-        C["Gateway WebSocket"]
+        C["Gateway-WebSocket"]
         D["ws://127.0.0.1:18789"]
 
         C --> D
@@ -41,135 +41,26 @@ flowchart TB
     T --> C
 ```
 
-## Snelle configuratie
+## Instellen
 
-### Stap 1: SSH-configuratie toevoegen
+1. Voeg een SSH-configuratie-item toe met `LocalForward 18789 127.0.0.1:18789` (zie [Externe toegang](/nl/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent) voor het volledige configuratieblok).
+2. Kopieer je SSH-sleutel naar de externe host met `ssh-copy-id`.
+3. Stel `gateway.remote.token` (of `gateway.remote.password`) in via `openclaw config set gateway.remote.token "<your-token>"`.
+4. Start de tunnel: `ssh -N remote-gateway &`.
+5. Sluit OpenClaw.app af en open de app opnieuw.
 
-Bewerk `~/.ssh/config` en voeg toe:
+Gebruik voor een tunnel die opnieuw opstarten overleeft en automatisch opnieuw verbinding maakt de LaunchAgent-configuratie op de pagina [Externe toegang](/nl/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent) in plaats van een handmatige `ssh -N`.
 
-```ssh
-Host remote-gateway
-    HostName <REMOTE_IP>          # e.g., 172.27.187.184
-    User <REMOTE_USER>            # e.g., jefferson
-    LocalForward 18789 127.0.0.1:18789
-    IdentityFile ~/.ssh/id_rsa
-```
+## Werking
 
-Vervang `<REMOTE_IP>` en `<REMOTE_USER>` door je eigen waarden.
-
-### Stap 2: SSH-sleutel kopiëren
-
-Kopieer je openbare sleutel naar de externe machine (voer het wachtwoord één keer in):
-
-```bash
-ssh-copy-id -i ~/.ssh/id_rsa <REMOTE_USER>@<REMOTE_IP>
-```
-
-### Stap 3: Authenticatie voor externe Gateway configureren
-
-```bash
-openclaw config set gateway.remote.token "<your-token>"
-```
-
-Gebruik in plaats daarvan `gateway.remote.password` als je externe Gateway wachtwoordauthenticatie gebruikt.
-`OPENCLAW_GATEWAY_TOKEN` is nog steeds geldig als override op shellniveau, maar de duurzame
-configuratie voor externe clients is `gateway.remote.token` / `gateway.remote.password`.
-
-### Stap 4: SSH-tunnel starten
-
-```bash
-ssh -N remote-gateway &
-```
-
-### Stap 5: OpenClaw.app opnieuw starten
-
-```bash
-# Quit OpenClaw.app (⌘Q), then reopen:
-open /path/to/OpenClaw.app
-```
-
-De app maakt nu via de SSH-tunnel verbinding met de externe Gateway.
-
----
-
-## Tunnel automatisch starten bij inloggen
-
-Maak een Launch Agent aan om de SSH-tunnel automatisch te laten starten wanneer je inlogt.
-
-### Het PLIST-bestand maken
-
-Sla dit op als `~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist`:
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>Label</key>
-    <string>ai.openclaw.ssh-tunnel</string>
-    <key>ProgramArguments</key>
-    <array>
-        <string>/usr/bin/ssh</string>
-        <string>-N</string>
-        <string>remote-gateway</string>
-    </array>
-    <key>KeepAlive</key>
-    <true/>
-    <key>RunAtLoad</key>
-    <true/>
-</dict>
-</plist>
-```
-
-### De Launch Agent laden
-
-```bash
-launchctl bootstrap gui/$UID ~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist
-```
-
-De tunnel zal nu:
-
-- Automatisch starten wanneer je inlogt
-- Opnieuw starten als deze crasht
-- Op de achtergrond blijven draaien
-
-Legacy-opmerking: verwijder eventuele overgebleven `com.openclaw.ssh-tunnel` LaunchAgent als die aanwezig is.
-
----
-
-## Problemen oplossen
-
-**Controleren of de tunnel draait:**
-
-```bash
-ps aux | grep "ssh -N remote-gateway" | grep -v grep
-lsof -i :18789
-```
-
-**De tunnel opnieuw starten:**
-
-```bash
-launchctl kickstart -k gui/$UID/ai.openclaw.ssh-tunnel
-```
-
-**De tunnel stoppen:**
-
-```bash
-launchctl bootout gui/$UID/ai.openclaw.ssh-tunnel
-```
-
----
-
-## Hoe het werkt
-
-| Component                            | Wat het doet                                                 |
-| ------------------------------------ | ------------------------------------------------------------ |
-| `LocalForward 18789 127.0.0.1:18789` | Stuurt lokale poort 18789 door naar externe poort 18789      |
+| Component                            | Functie                                                        |
+| ------------------------------------ | -------------------------------------------------------------- |
+| `LocalForward 18789 127.0.0.1:18789` | Stuurt lokale poort 18789 door naar externe poort 18789         |
 | `ssh -N`                             | SSH zonder externe opdrachten uit te voeren (alleen poortdoorschakeling) |
-| `KeepAlive`                          | Start de tunnel automatisch opnieuw als deze crasht          |
-| `RunAtLoad`                          | Start de tunnel wanneer de agent wordt geladen               |
+| `KeepAlive`                          | Start de tunnel automatisch opnieuw als deze vastloopt (LaunchAgent) |
+| `RunAtLoad`                          | Start de tunnel wanneer de LaunchAgent wordt geladen (LaunchAgent) |
 
-OpenClaw.app maakt verbinding met `ws://127.0.0.1:18789` op je clientmachine. De SSH-tunnel stuurt die verbinding door naar poort 18789 op de externe machine waarop de Gateway draait.
+OpenClaw.app maakt op de client verbinding met `ws://127.0.0.1:18789`. De tunnel stuurt die verbinding door naar poort 18789 op de externe host waarop de Gateway wordt uitgevoerd.
 
 ## Gerelateerd
 

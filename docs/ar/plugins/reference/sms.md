@@ -1,11 +1,11 @@
 ---
 read_when:
-    - أنت تثبّت Plugin sms أو تهيئه أو تدققه
-summary: Plugin قناة Twilio SMS لرسائل OpenClaw النصية.
-title: Plugin SMS
+    - أنت تثبّت Plugin الرسائل النصية القصيرة أو تهيّئه أو تدقّق فيه
+summary: Plugin قناة الرسائل النصية القصيرة من Twilio لرسائل OpenClaw النصية.
+title: Plugin الرسائل النصية القصيرة
 x-i18n:
-    generated_at: "2026-06-27T18:15:35Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:22:12Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 2e0da43b962f03693599043ea61a6fedbc3e40d562c1c3374c840e952c8aa12d
@@ -13,9 +13,9 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin الرسائل القصيرة
+# Plugin الرسائل النصية القصيرة
 
-Plugin قناة SMS من Twilio لرسائل OpenClaw النصية.
+Plugin قناة الرسائل النصية القصيرة عبر Twilio لرسائل OpenClaw النصية.
 
 ## التوزيع
 
@@ -26,6 +26,6 @@ Plugin قناة SMS من Twilio لرسائل OpenClaw النصية.
 
 القنوات: sms
 
-## المستندات ذات الصلة
+## الوثائق ذات الصلة
 
-- [sms](/ar/channels/sms)
+- [الرسائل النصية القصيرة](/ar/channels/sms)

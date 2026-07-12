@@ -1,11 +1,11 @@
 ---
 read_when:
-    - أنت تقوم بتثبيت أو تكوين أو تدقيق Plugin Signal
+    - أنت تثبّت Plugin الخاص بـ Signal أو تهيّئه أو تدقّق فيه
 summary: يضيف واجهة قناة Signal لإرسال رسائل OpenClaw واستقبالها.
-title: Plugin Signal
+title: Plugin ‏Signal
 x-i18n:
-    generated_at: "2026-06-27T18:15:20Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:22:41Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 7136222af25d73d50b9a973d287b863176c58d634da4c9d7726d5cc6942135bb
@@ -13,9 +13,9 @@ x-i18n:
     workflow: 16
 ---
 
-# Signal Plugin
+# Plugin Signal
 
-يضيف سطح قناة Signal لإرسال رسائل OpenClaw واستقبالها.
+يضيف واجهة قناة Signal لإرسال رسائل OpenClaw واستقبالها.
 
 ## التوزيع
 
@@ -24,8 +24,8 @@ x-i18n:
 
 ## الواجهة
 
-channels: signal
+القنوات: signal
 
-## المستندات ذات الصلة
+## الوثائق ذات الصلة
 
-- [signal](/ar/channels/signal)
+- [Signal](/ar/channels/signal)

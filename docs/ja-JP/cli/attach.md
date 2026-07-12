@@ -1,12 +1,12 @@
 ---
 read_when:
-    - Claude Code に OpenClaw Gateway MCP ツールを使わせたい
-    - 一時的なセッションに紐づく、外部ハーネス用のMCP権限付与が必要です
-summary: '`openclaw attach` の CLI リファレンス（スコープ付き Gateway MCP 権限で Claude Code を起動）'
-title: CLI をアタッチする
+    - Claude Code で OpenClaw Gateway の MCP ツールを使用する場合
+    - 外部ハーネス用に、セッションに紐づく一時的な MCP 権限付与が必要です
+summary: '`openclaw attach` の CLI リファレンス（スコープを限定した Gateway MCP 権限で Claude Code を起動）'
+title: CLI を接続
 x-i18n:
-    generated_at: "2026-07-05T11:10:45Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:06:30Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 0d8ac60724adef1439af09179806af537b8f2925f06b3715850e4dd3b83b080f
@@ -14,7 +14,7 @@ x-i18n:
     workflow: 16
 ---
 
-`openclaw attach` は、1つの Gateway セッションにバインドされた厳格な一時 MCP 設定で Claude Code を起動します。
+`openclaw attach` は、1つの Gateway セッションにバインドされた厳格な一時 MCP 設定を使用して Claude Code を起動します。
 
 ```sh
 openclaw attach
@@ -24,11 +24,11 @@ openclaw attach --print-config
 
 オプション:
 
-- `--session <key>` は付与を Gateway セッションにバインドします。デフォルトはメインセッションです。
-- `--ttl <ms>` は正の付与 TTL をミリ秒単位で要求します。Gateway は独自の上限を適用します。
+- `--session <key>` は許可を Gateway セッションにバインドします。デフォルトはメインセッションです。
+- `--ttl <ms>` は、ミリ秒単位の正の許可 TTL を要求します。Gateway は独自の上限を適用します。
 - `--bin <path>` は Claude Code バイナリを選択します。デフォルト: `claude`。
-- `--print-config` は一時 `.mcp.json` を書き込み、起動コマンドと環境変数を出力し、TTL の期限切れまで付与を有効なままにします（Claude Code を起動せず、付与も取り消しません）。
+- `--print-config` は一時的な `.mcp.json` を書き込み、起動コマンドと環境変数を出力し、TTL が期限切れになるまで許可を有効なままにします（Claude Code の起動も許可の取り消しも行いません）。
 
-ベアラートークンは argv ではなく環境変数経由で渡されます。OpenClaw は `--strict-mcp-config --mcp-config <path>` 付きで Claude Code を起動するため、周囲の Claude MCP サーバーはアタッチされたセッションに参加しません。通常の起動（`--print-config` なし）では、Claude Code プロセスが終了すると付与が取り消されます。
+ベアラートークンは argv ではなく、環境変数を介して渡されます。OpenClaw は `--strict-mcp-config --mcp-config <path>` を指定して Claude Code を起動するため、環境に存在する Claude MCP サーバーが接続先セッションに加わることはありません。通常の起動（`--print-config` を使用しない場合）では、Claude Code プロセスの終了時に許可が取り消されます。
 
 関連項目: [Gateway CLI](/ja-JP/cli/gateway)、[MCP CLI](/ja-JP/cli/mcp)、[ACP CLI](/ja-JP/cli/acp)。

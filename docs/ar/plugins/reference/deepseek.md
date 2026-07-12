@@ -1,14 +1,14 @@
 ---
 read_when:
-    - أنت تثبّت Plugin deepseek أو تهيّئه أو تدقّقه
-summary: يضيف دعم مزوّد نماذج DeepSeek إلى OpenClaw.
+    - أنت تثبّت أو تهيّئ أو تدقّق Plugin ‏deepseek
+summary: يضيف دعم موفّر نماذج DeepSeek إلى OpenClaw.
 title: Plugin ‏DeepSeek
 x-i18n:
-    generated_at: "2026-06-27T18:11:36Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:14:16Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c391a9d87d4de66f279f0b851868857b1a57e328feede3f5833e5e323ea5e281
+    source_hash: e2e7de36581db36818f63f754da829d91163c0ae3eaab9a087da087d3c681538
     source_path: plugins/reference/deepseek.md
     workflow: 16
 ---
@@ -22,10 +22,10 @@ x-i18n:
 - الحزمة: `@openclaw/deepseek-provider`
 - مسار التثبيت: npm؛ ClawHub: `clawhub:@openclaw/deepseek-provider`
 
-## السطح
+## الواجهات
 
-providers: deepseek
+الموفّرون: deepseek؛ العقود: usageProviders
 
 ## الوثائق ذات الصلة
 
-- [deepseek](/ar/providers/deepseek)
+- [DeepSeek](/ar/providers/deepseek)

@@ -1,67 +1,62 @@
 ---
 read_when:
-    - BlueBubbles'dan paketle birlikte gelen iMessage plugin'ine geçiş planlama
-    - BlueBubbles yapılandırma anahtarlarını iMessage eşdeğerlerine çevirme
-    - iMessage Plugin'ini etkinleştirmeden önce imsg'yi doğrulama
-summary: Eski BlueBubbles yapılandırmalarını eşleştirmeyi, izin listelerini veya grup bağlamalarını kaybetmeden paketlenmiş iMessage plugin'ine taşıyın.
+    - BlueBubbles'dan paketle birlikte gelen iMessage Plugin'ine geçişi planlama
+    - BlueBubbles yapılandırma anahtarlarını iMessage eşdeğerlerine dönüştürme
+    - iMessage Pluginini etkinleştirmeden önce imsg'yi doğrulama
+summary: 'Eski BlueBubbles yapılandırmalarını paketle birlikte gelen iMessage pluginine taşıyın: anahtar eşlemesi, grup izin listesi denetimleri ve geçiş doğrulaması.'
 title: BlueBubbles'dan Geçiş
 x-i18n:
-    generated_at: "2026-06-28T00:12:22Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:28:36Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: dae45911686697a064b19265b11acb87d377992f762256c44a22dd3f1b4c4b08
+    source_hash: b9d1533c356d3901358c25f0b90e6850124f66d3c14f056d90d5723242076d22
     source_path: channels/imessage-from-bluebubbles.md
     workflow: 16
 ---
 
-Paketle gelen `imessage` Plugin'i artık [`steipete/imsg`](https://github.com/steipete/imsg) aracını JSON-RPC üzerinden çalıştırarak BlueBubbles ile aynı özel API yüzeyine (`react`, `edit`, `unsend`, `reply`, `sendWithEffect`, grup yönetimi, ekler) erişir. Zaten `imsg` yüklü bir Mac çalıştırıyorsanız BlueBubbles sunucusunu kaldırabilir ve Plugin'in doğrudan Messages.app ile konuşmasına izin verebilirsiniz.
+BlueBubbles desteği kaldırıldı. OpenClaw, iMessage'ı yalnızca paketle birlikte gelen `imessage` Plugin'i üzerinden destekler; bu Plugin, [`steipete/imsg`](https://github.com/steipete/imsg) aracını JSON-RPC üzerinden çalıştırır ve BlueBubbles'ın eriştiği özel API yüzeyinin aynısına erişir (`react`, `edit`, `unsend`, `reply`, `sendWithEffect`, yerel anketler, grup yönetimi, ekler). Tek bir CLI ikili dosyası; BlueBubbles sunucusunun, istemci uygulamasının ve webhook bağlantı düzeninin yerini alır: REST uç noktası ve webhook kimlik doğrulaması yoktur.
 
-BlueBubbles desteği kaldırıldı. OpenClaw, iMessage'ı yalnızca `imsg` üzerinden destekler. Bu kılavuz, eski `channels.bluebubbles` yapılandırmalarını `channels.imessage` yapılandırmasına taşımak içindir; desteklenen başka bir geçiş yolu yoktur.
+Bu kılavuz, eski `channels.bluebubbles` yapılandırmalarını `channels.imessage` yapılandırmasına taşır. Desteklenen başka bir taşıma yolu yoktur. Güncel OpenClaw sürümünde geride kalan bir `channels.bluebubbles` bloğu etkisizdir; çalışma zamanında hiçbir bileşen bunu okumaz.
 
 <Note>
-Kısa duyuru ve operatör özeti için bkz. [BlueBubbles’ın kaldırılması ve imsg iMessage yolu](/tr/announcements/bluebubbles-imessage).
+Kısa duyuru ve operatör özeti için [BlueBubbles'ın kaldırılması ve imsg iMessage yolu](/tr/announcements/bluebubbles-imessage) sayfasına bakın.
 </Note>
 
-## Geçiş kontrol listesi
+## Taşıma kontrol listesi
 
-Eski BlueBubbles yapılandırmanızı zaten biliyorsanız ve en kısa güvenli yolu istiyorsanız bu kontrol listesini kullanın:
+Eski BlueBubbles yapılandırmanızı zaten biliyorsanız en kısa ve güvenli yol şudur:
 
-1. Messages.app çalıştıran Mac üzerinde `imsg` aracını doğrudan doğrulayın (`imsg chats`, `imsg history`, `imsg send` ve `imsg rpc --help`).
-2. Davranış anahtarlarını `channels.bluebubbles` içinden `channels.imessage` içine kopyalayın: `dmPolicy`, `allowFrom`, `groupPolicy`, `groupAllowFrom`, `groups`, `includeAttachments`, `attachmentRoots`, `mediaMaxMb`, `textChunkLimit`, `coalesceSameSenderDms` ve `actions`.
-3. Artık mevcut olmayan aktarım anahtarlarını kaldırın: `serverUrl`, `password`, Webhook URL’leri ve BlueBubbles sunucu kurulumu.
-4. Gateway, Messages Mac üzerinde çalışmıyorsa `channels.imessage.cliPath` değerini bir SSH sarmalayıcısına ayarlayın ve uzaktan ek getirmeleri için `remoteHost` değerini belirleyin.
-5. Gateway durdurulmuşken `channels.imessage` kanalını etkinleştirin, ardından `openclaw channels status --probe --channel imessage` komutunu çalıştırın.
-6. Bir DM’yi, izin verilen bir grubu, etkinse ekleri ve aracının kullanmasını beklediğiniz her özel API eylemini test edin.
+1. `imsg` aracını doğrudan Messages.app uygulamasının çalıştığı Mac'te doğrulayın (`imsg chats`, `imsg history`, `imsg send`, `imsg rpc --help`).
+2. Davranış anahtarlarını `channels.bluebubbles` üzerinden `channels.imessage` altına kopyalayın: `dmPolicy`, `allowFrom`, `groupPolicy`, `groupAllowFrom`, `groups`, `includeAttachments`, `attachmentRoots`, `mediaMaxMb`, `textChunkLimit`, `coalesceSameSenderDms` ve `actions`.
+3. Artık mevcut olmayan aktarım anahtarlarını kaldırın: `serverUrl`, `password`, webhook URL'leri ve BlueBubbles sunucu kurulumu.
+4. Gateway, Messages'ın bulunduğu Mac'te çalışmıyorsa `channels.imessage.cliPath` değerini bir SSH sarmalayıcısına ayarlayın ve uzaktaki ekleri almak için `remoteHost` değerini belirleyin.
+5. `channels.imessage` kanalını etkinleştirin, Gateway'i yeniden başlatın ve ardından `openclaw channels status --probe --channel imessage` komutunu çalıştırın.
+6. Bir doğrudan mesajı, izin verilen bir grubu, etkinse ekleri ve aracının kullanmasını beklediğiniz her özel API eylemini test edin.
 7. iMessage yolu doğrulandıktan sonra BlueBubbles sunucusunu ve eski `channels.bluebubbles` yapılandırmasını silin.
-
-## Bu geçiş ne zaman anlamlıdır?
-
-- Messages.app oturumu açık olan aynı Mac üzerinde (veya SSH üzerinden erişilebilen bir Mac üzerinde) zaten `imsg` çalıştırıyorsunuz.
-- Daha az hareketli parça istiyorsunuz: ayrı BlueBubbles sunucusu yok, kimlik doğrulaması gerektiren REST uç noktası yok, Webhook tesisatı yok. Sunucu + istemci uygulaması + yardımcı yerine tek bir CLI ikilisi.
-- Özel API yoklamasının `available: true` bildirdiği [desteklenen macOS / `imsg` derlemesi](/tr/channels/imessage#requirements-and-permissions-macos) kullanıyorsunuz.
 
 ## imsg ne yapar?
 
-`imsg`, Messages için yerel bir macOS CLI aracıdır. OpenClaw, `imsg rpc` komutunu alt süreç olarak başlatır ve stdin/stdout üzerinden JSON-RPC ile konuşur. Açığa çıkarılacak HTTP sunucusu, Webhook URL’si, arka plan daemon’u, launch agent’ı veya port yoktur.
+`imsg`, Messages için yerel bir macOS CLI aracıdır. OpenClaw, `imsg rpc` işlemini alt süreç olarak başlatır ve stdin/stdout üzerinden JSON-RPC ile iletişim kurar. Açığa çıkarılması gereken bir HTTP sunucusu, webhook URL'si, arka plan hizmeti, başlatma aracısı veya bağlantı noktası yoktur.
 
-- Okumalar, salt okunur bir SQLite tanıtıcısı kullanılarak `~/Library/Messages/chat.db` içinden gelir.
-- Canlı gelen iletiler, yoklama geri dönüşüyle `chat.db` dosya sistemi olaylarını izleyen `imsg watch` / `watch.subscribe` üzerinden gelir.
-- Gönderimler, normal metin ve dosya gönderimleri için Messages.app otomasyonunu kullanır.
-- Gelişmiş eylemler, `imsg` yardımcısını Messages.app içine enjekte etmek için `imsg launch` kullanır. Okundu bilgileri, yazıyor göstergeleri, zengin gönderimler, düzenleme, geri alma, konu içi yanıt, tapback’ler ve grup yönetimini açan şey budur.
-- Linux derlemeleri kopyalanmış bir `chat.db` dosyasını inceleyebilir, ancak gönderim yapamaz, canlı Mac veritabanını izleyemez veya Messages.app aracını süremez. OpenClaw iMessage için `imsg` aracını oturum açılmış Mac üzerinde ya da o Mac’e giden bir SSH sarmalayıcısı üzerinden çalıştırın.
+- Okuma işlemleri, salt okunur bir SQLite tanıtıcısı kullanılarak `~/Library/Messages/chat.db` üzerinden gerçekleştirilir.
+- Canlı gelen mesajlar, `chat.db` dosya sistemi olaylarını yoklama yedeğiyle izleyen `imsg watch` / `watch.subscribe` üzerinden gelir.
+- Normal metin ve dosya gönderimleri için Messages.app otomasyonu kullanılır.
+- Gelişmiş eylemler, `imsg` yardımcısını Messages.app içine enjekte etmek için `imsg launch` komutunu kullanır. Okundu bilgilerini, yazıyor göstergelerini, zengin gönderimleri, düzenlemeyi, göndermeyi geri almayı, ileti dizili yanıtları, tapback'leri, anketleri ve grup yönetimini etkinleştiren budur.
+- Linux derlemeleri, kopyalanmış bir `chat.db` dosyasını inceleyebilir ancak gönderim yapamaz, canlı Mac veritabanını izleyemez veya Messages.app uygulamasını çalıştıramaz. OpenClaw iMessage için `imsg` aracını oturum açılmış Mac'te veya bu Mac'e bağlanan bir SSH sarmalayıcısı üzerinden çalıştırın.
 
 ## Başlamadan önce
 
-1. Messages.app çalıştıran Mac üzerine `imsg` yükleyin:
+1. `imsg` aracını Messages.app uygulamasının çalıştığı Mac'e yükleyin:
 
    ```bash
    brew install steipete/tap/imsg
+   brew update && brew upgrade imsg
    imsg --version
    imsg chats --limit 3
    ```
 
-   `imsg chats` komutu `unable to open database file`, boş çıktı veya `authorization denied` hatasıyla başarısız olursa `imsg` aracını başlatan terminale, düzenleyiciye, Node sürecine, Gateway hizmetine veya SSH üst sürecine Tam Disk Erişimi verin, ardından bu üst süreci yeniden açın.
+   Olağan yerel kurulumda OpenClaw kurulumu, Messages oturumu açık Mac'te `imsg` için kullanıcı onaylı bir Homebrew yüklemesi veya güncellemesi sunabilir. El ile kurulum ve SSH sarmalayıcısı topolojileri operatör tarafından yönetilmeye devam eder: Homebrew güncellemesini, `imsg` aracını çalıştıracak aynı yerel veya uzak kullanıcı bağlamında yineleyin. `imsg chats` komutu `unable to open database file`, boş çıktı veya `authorization denied` hatasıyla başarısız olursa `imsg` aracını başlatan terminale, düzenleyiciye, Node işlemine, Gateway hizmetine veya SSH üst sürecine Tam Disk Erişimi verin ve ardından bu üst süreci yeniden açın.
 
 2. OpenClaw yapılandırmasını değiştirmeden önce okuma, izleme, gönderme ve RPC yüzeylerini doğrulayın:
 
@@ -73,79 +68,80 @@ Eski BlueBubbles yapılandırmanızı zaten biliyorsanız ve en kısa güvenli y
    imsg rpc --help
    ```
 
-   `42` değerini `imsg chats` çıktısından gerçek bir sohbet kimliğiyle değiştirin. Gönderim, Messages.app için Automation izni gerektirir. OpenClaw SSH üzerinden çalışacaksa bu komutları OpenClaw’ın kullanacağı aynı SSH sarmalayıcısı veya kullanıcı bağlamı üzerinden çalıştırın. Okumalar/yoklamalar çalışıyor ancak gönderimler AppleEvents `-1743` ile başarısız oluyorsa Automation izninin `/usr/libexec/sshd-keygen-wrapper` üzerine düşüp düşmediğini kontrol edin; bkz. [SSH sarmalayıcı gönderimleri AppleEvents -1743 ile başarısız oluyor](/tr/channels/imessage#ssh-wrapper-sends-fail-with-appleevents-1743).
+   `42` değerini `imsg chats` çıktısındaki gerçek bir sohbet kimliğiyle değiştirin. Gönderim için Messages.app uygulamasına Otomasyon izni verilmesi gerekir. OpenClaw SSH üzerinden çalışacaksa bu komutları OpenClaw'ın kullanacağı SSH sarmalayıcısı veya kullanıcı bağlamı üzerinden çalıştırın. Okuma çalışıyor ancak gönderimler AppleEvents `-1743` hatasıyla başarısız oluyorsa Otomasyon izninin `/usr/libexec/sshd-keygen-wrapper` üzerine verilip verilmediğini kontrol edin; [SSH sarmalayıcısı üzerinden gönderimler AppleEvents -1743 hatasıyla başarısız oluyor](/tr/channels/imessage#requirements-and-permissions-macos) bölümüne bakın.
 
-3. Gelişmiş eylemlere ihtiyacınız olduğunda özel API köprüsünü etkinleştirin:
+3. Özel API köprüsünü etkinleştirin. Yanıtlar, tapback'ler, efektler, anketler, eklere verilen yanıtlar ve grup eylemleri buna bağlı olduğundan OpenClaw iMessage için kesinlikle önerilir:
 
    ```bash
    imsg launch
    imsg status --json
    ```
 
-   `imsg launch`, SIP’in devre dışı bırakılmış olmasını gerektirir. Temel gönderim, geçmiş ve izleme `imsg launch` olmadan çalışır; gelişmiş eylemler çalışmaz.
+   `imsg launch`, SIP'nin devre dışı bırakılmasını gerektirir (ve modern macOS sürümlerinde kitaplık doğrulamasının gevşetilmesini de gerektirir; bkz. [imsg özel API'sini etkinleştirme](/tr/channels/imessage#enabling-the-imsg-private-api)). Temel gönderim, geçmiş ve izleme işlevleri `imsg launch` olmadan çalışır; OpenClaw iMessage eylem yüzeyinin tamamı çalışmaz.
 
-4. Etkin bir `channels.imessage` yapılandırması ekledikten sonra köprüyü OpenClaw üzerinden doğrulayın:
+4. `channels.imessage` kanalını etkinleştirip Gateway'i başlattıktan sonra köprüyü OpenClaw üzerinden doğrulayın:
 
    ```bash
    openclaw channels status --probe
    ```
 
-   İstenen değer `imessage.privateApi.available: true` değeridir. `false` bildirirse önce bunu düzeltin; bkz. [Yetenek algılama](/tr/channels/imessage#private-api-actions). `channels status --probe` yalnızca yapılandırılmış ve etkin hesapları yoklar.
+   iMessage hesabı `works` bildirmelidir; `--json` kullanıldığında yoklama yükü `privateApi.available: true` değerini içerir. `false` bildirirse önce bunu düzeltin; [Yetenek algılama](/tr/channels/imessage#private-api-actions) bölümüne bakın. Yoklama için erişilebilir bir Gateway gerekir (aksi takdirde CLI yalnızca yapılandırmaya dayalı çıktıya geri döner) ve yalnızca yapılandırılmış, etkin hesaplar yoklanır.
 
-5. Yapılandırmanızın anlık kopyasını alın:
+5. Yapılandırmanızın anlık görüntüsünü alın:
 
    ```bash
-   cp ~/.openclaw/openclaw.json5 ~/.openclaw/openclaw.json5.bak
+   cp ~/.openclaw/openclaw.json ~/.openclaw/openclaw.json.bak
    ```
 
-## Yapılandırma çevirisi
+## Yapılandırma dönüşümü
 
-iMessage ve BlueBubbles çok sayıda kanal düzeyi yapılandırmayı paylaşır. Değişen anahtarlar çoğunlukla aktarım ile ilgilidir (REST sunucusu ve yerel CLI). Davranış anahtarları (`dmPolicy`, `groupPolicy`, `allowFrom` vb.) aynı anlamı korur.
+iMessage ve BlueBubbles, kanal düzeyindeki davranış anahtarlarının çoğunu paylaşır. Değişen unsurlar aktarım yöntemi (REST sunucusu yerine yerel CLI) ve grup kayıt defteri anahtarının biçimidir.
 
-| BlueBubbles                                                | paketle gelen iMessage                    | Notlar                                                                                                                                                                                                                                                                                                                                                                                |
-| ---------------------------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `channels.bluebubbles.enabled`                             | `channels.imessage.enabled`               | Aynı semantik.                                                                                                                                                                                                                                                                                                                                                                      |
-| `channels.bluebubbles.serverUrl`                           | _(kaldırıldı)_                            | REST sunucusu yok; Plugin, stdio üzerinden `imsg rpc` başlatır.                                                                                                                                                                                                                                                                                                                            |
-| `channels.bluebubbles.password`                            | _(kaldırıldı)_                            | Webhook kimlik doğrulaması gerekmez.                                                                                                                                                                                                                                                                                                                                                    |
-| _(örtük)_                                                  | `channels.imessage.cliPath`               | `imsg` yolu (varsayılan `imsg`); SSH için bir sarmalayıcı betik kullanın.                                                                                                                                                                                                                                                                                                                       |
-| _(örtük)_                                                  | `channels.imessage.dbPath`                | İsteğe bağlı Messages.app `chat.db` geçersiz kılması; atlandığında otomatik algılanır.                                                                                                                                                                                                                                                                                                                |
-| _(örtük)_                                                  | `channels.imessage.remoteHost`            | `host` veya `user@host`; yalnızca `cliPath` bir SSH sarmalayıcısıysa ve SCP ek getirmeleri istiyorsanız gerekir.                                                                                                                                                                                                                                                                            |
-| `channels.bluebubbles.dmPolicy`                            | `channels.imessage.dmPolicy`              | Aynı değerler (`pairing` / `allowlist` / `open` / `disabled`).                                                                                                                                                                                                                                                                                                                         |
-| `channels.bluebubbles.allowFrom`                           | `channels.imessage.allowFrom`             | Eşleştirme onayları token ile değil, handle ile taşınır.                                                                                                                                                                                                                                                                                                                                |
-| `channels.bluebubbles.groupPolicy`                         | `channels.imessage.groupPolicy`           | Aynı değerler (`allowlist` / `open` / `disabled`).                                                                                                                                                                                                                                                                                                                                     |
-| `channels.bluebubbles.groupAllowFrom`                      | `channels.imessage.groupAllowFrom`        | Aynı.                                                                                                                                                                                                                                                                                                                                                                                |
-| `channels.bluebubbles.groups`                              | `channels.imessage.groups`                | **Bunu, varsa `groups: { "*": { ... } }` joker girdisi dahil olmak üzere bire bir kopyalayın.** Grup başına `requireMention`, `tools`, `toolsBySender` taşınır. `groupPolicy: "allowlist"` ile boş veya eksik bir `groups` bloğu her grup iletisini sessizce düşürür; aşağıdaki "Grup kayıt defteri tuzağı" bölümüne bakın.                                                                                       |
-| `channels.bluebubbles.sendReadReceipts`                    | `channels.imessage.sendReadReceipts`      | Varsayılan `true`. Paketle gelen Plugin ile bu yalnızca özel API probu çalışır durumdayken tetiklenir.                                                                                                                                                                                                                                                                                            |
-| `channels.bluebubbles.includeAttachments`                  | `channels.imessage.includeAttachments`    | Aynı şekil, **aynı şekilde varsayılan olarak kapalı**. BlueBubbles üzerinde ekler akıyorduysa bunu iMessage bloğunda açıkça yeniden ayarlamanız gerekir; örtük olarak taşınmaz ve bunu yapana kadar gelen fotoğraflar/medyalar `Inbound message` günlük satırı olmadan sessizce düşürülür.                                                                                                     |
-| `channels.bluebubbles.attachmentRoots`                     | `channels.imessage.attachmentRoots`       | Yerel kökler; aynı joker kuralları.                                                                                                                                                                                                                                                                                                                                                    |
-| _(Yok)_                                                    | `channels.imessage.remoteAttachmentRoots` | Yalnızca SCP getirmeleri için `remoteHost` ayarlandığında kullanılır.                                                                                                                                                                                                                                                                                                                                  |
-| `channels.bluebubbles.mediaMaxMb`                          | `channels.imessage.mediaMaxMb`            | iMessage üzerinde varsayılan 16 MB (BlueBubbles varsayılanı 8 MB idi). Daha düşük sınırı korumak istiyorsanız açıkça ayarlayın.                                                                                                                                                                                                                                                                          |
-| `channels.bluebubbles.textChunkLimit`                      | `channels.imessage.textChunkLimit`        | Her ikisinde de varsayılan 4000.                                                                                                                                                                                                                                                                                                                                                                |
-| `channels.bluebubbles.coalesceSameSenderDms`               | `channels.imessage.coalesceSameSenderDms` | Aynı isteğe bağlı davranış. Yalnızca DM; grup sohbetleri her iki kanalda da ileti başına anında dağıtımı korur. Açık bir `messages.inbound.byChannel.imessage` veya genel `messages.inbound.debounceMs` olmadan etkinleştirildiğinde varsayılan gelen debounce değerini 7000 ms'ye genişletir. [iMessage belgeleri § Bölünmüş gönderimli DM'leri birleştirme](/tr/channels/imessage#coalescing-split-send-dms-command--url-in-one-composition) bölümüne bakın. |
-| `channels.bluebubbles.enrichGroupParticipantsFromContacts` | _(Yok)_                                   | iMessage, gönderen görünen adlarını zaten `chat.db` içinden okur.                                                                                                                                                                                                                                                                                                                          |
-| `channels.bluebubbles.actions.*`                           | `channels.imessage.actions.*`             | Eylem başına açma/kapama ayarları: `reactions`, `edit`, `unsend`, `reply`, `sendWithEffect`, `renameGroup`, `setGroupIcon`, `addParticipant`, `removeParticipant`, `leaveGroup`, `sendAttachment`.                                                                                                                                                                                                  |
+| BlueBubbles                                                | paketlenmiş iMessage                       | Notlar                                                                                                                                                                                                                                                                                                                |
+| ---------------------------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `channels.bluebubbles.enabled`                             | `channels.imessage.enabled`                | Aynı anlam yapısı (blok mevcut olduğunda varsayılan `true`).                                                                                                                                                                                                                                                          |
+| `channels.bluebubbles.serverUrl`                           | _(kaldırıldı)_                             | REST sunucusu yoktur — Plugin, stdio üzerinden `imsg rpc` başlatır.                                                                                                                                                                                                                                                   |
+| `channels.bluebubbles.password`                            | _(kaldırıldı)_                             | Webhook kimlik doğrulaması gerekmez.                                                                                                                                                                                                                                                                                  |
+| _(örtük)_                                                  | `channels.imessage.cliPath`                | `imsg` yolu (varsayılan `imsg`); SSH için bir sarmalayıcı betik kullanın.                                                                                                                                                                                                                                             |
+| _(örtük)_                                                  | `channels.imessage.dbPath`                 | İsteğe bağlı Messages.app `chat.db` geçersiz kılma yolu; belirtilmediğinde otomatik algılanır.                                                                                                                                                                                                                         |
+| _(örtük)_                                                  | `channels.imessage.remoteHost`             | `host` veya `user@host` — yalnızca `cliPath` bir SSH sarmalayıcısıysa ve ekleri SCP ile almak istiyorsanız gereklidir.                                                                                                                                                                                                 |
+| `channels.bluebubbles.dmPolicy`                            | `channels.imessage.dmPolicy`               | Aynı değerler (`pairing` / `allowlist` / `open` / `disabled`); varsayılan `pairing`.                                                                                                                                                                                                                                  |
+| `channels.bluebubbles.allowFrom`                           | `channels.imessage.allowFrom`              | Aynı tanıtıcı biçimleri (`+15555550123`, `user@example.com`). Eşleştirme deposundaki onaylar aktarılmaz — aşağıya bakın.                                                                                                                                                                                               |
+| `channels.bluebubbles.groupPolicy`                         | `channels.imessage.groupPolicy`            | Aynı değerler (`allowlist` / `open` / `disabled`); varsayılan `allowlist`.                                                                                                                                                                                                                                            |
+| `channels.bluebubbles.groupAllowFrom`                      | `channels.imessage.groupAllowFrom`         | Aynıdır. Ayarlanmadığında iMessage, `allowFrom` değerine geri döner; açıkça boş bir `groupAllowFrom: []`, `groupPolicy: "allowlist"` kapsamında tüm grupları engeller.                                                                                                                                                  |
+| `channels.bluebubbles.groups`                              | `channels.imessage.groups`                 | `"*"` joker karakteri girdisini olduğu gibi kopyalayın; grup başına girdilerin anahtarlarını sayısal iMessage `chat_id` değerleriyle yeniden belirleyin — bkz. "Grup kayıt defteri tuzağı". `requireMention`, `tools`, `toolsBySender`, `systemPrompt` aynen aktarılır.                                                     |
+| `channels.bluebubbles.sendReadReceipts`                    | `channels.imessage.sendReadReceipts`       | Varsayılan `true`. Paketlenmiş Plugin ile bu yalnızca özel API yoklaması çalışır durumdayken tetiklenir.                                                                                                                                                                                                                |
+| `channels.bluebubbles.includeAttachments`                  | `channels.imessage.includeAttachments`     | Aynı yapı ve varsayılan olarak kapalıdır. Ekler BlueBubbles üzerinde aktarılıyorsa bunu açıkça ayarlayın — bunu yapana kadar gelen fotoğraflar/medya sessizce atılır (`Inbound message` günlük satırı yazılmaz).                                                                                                        |
+| `channels.bluebubbles.attachmentRoots`                     | `channels.imessage.attachmentRoots`        | Yerel kökler; aynı joker karakteri kuralları.                                                                                                                                                                                                                                                                         |
+| _(Geçerli değil)_                                         | `channels.imessage.remoteAttachmentRoots`  | Yalnızca SCP ile alma işlemleri için `remoteHost` ayarlandığında kullanılır.                                                                                                                                                                                                                                          |
+| `channels.bluebubbles.mediaMaxMb`                          | `channels.imessage.mediaMaxMb`             | iMessage üzerinde varsayılan 16 MB'dir (BlueBubbles varsayılanı 8 MB idi). Daha düşük sınırı korumak için açıkça ayarlayın.                                                                                                                                                                                            |
+| `channels.bluebubbles.textChunkLimit`                      | `channels.imessage.textChunkLimit`         | Her ikisinde de varsayılan 4000'dir.                                                                                                                                                                                                                                                                                  |
+| `channels.bluebubbles.coalesceSameSenderDms`               | `channels.imessage.coalesceSameSenderDms`  | Aynı isteğe bağlı etkinleştirme davranışı. Yalnızca DM'ler içindir — gruplarda ileti başına yönlendirme korunur. `messages.inbound.byChannel.imessage` veya genel bir `messages.inbound.debounceMs` ayarlanmadıkça varsayılan gelen ileti bekletme süresini 7000 ms'ye çıkarır. Bkz. [Bölünerek gönderilen DM'leri birleştirme](/tr/channels/imessage#coalescing-split-send-dms-command--url-in-one-composition). |
+| `channels.bluebubbles.enrichGroupParticipantsFromContacts` | _(Geçerli değil)_                          | `imsg`, gönderenlerin görünen adlarını zaten `chat.db` üzerinden sunar.                                                                                                                                                                                                                                               |
+| `channels.bluebubbles.actions.*`                           | `channels.imessage.actions.*`              | Aynı eylem başına açma/kapama ayarları (`reactions`, `edit`, `unsend`, `reply`, `sendWithEffect`, `renameGroup`, `setGroupIcon`, `addParticipant`, `removeParticipant`, `leaveGroup`, `sendAttachment`) ve yeni `polls`. Tümü varsayılan olarak etkindir; özel API eylemleri yine de köprü gerektirir.                    |
 
-Çok hesaplı yapılandırmalar (`channels.bluebubbles.accounts.*`), bire bir `channels.imessage.accounts.*` olarak çevrilir.
+Çok hesaplı yapılandırmalar (`channels.bluebubbles.accounts.*`), bire bir `channels.imessage.accounts.*` biçimine dönüştürülür.
 
 ## Grup kayıt defteri tuzağı
 
-Paketle gelen iMessage Plugin, **iki** ayrı grup izin listesi kapısını arka arkaya çalıştırır. Bir grup iletisinin ajana ulaşması için ikisinden de geçmesi gerekir:
+Paketlenmiş iMessage Plugin'i iki grup geçidini art arda çalıştırır. Bir grup iletisinin ajana ulaşması için ikisini de geçmesi gerekir:
 
-1. **Gönderen / sohbet hedefi izin listesi** (`channels.imessage.groupAllowFrom`) — `isAllowedIMessageSender` tarafından denetlenir. Gelen iletileri gönderen handle, `chat_guid`, `chat_identifier` veya `chat_id` ile eşleştirir. BlueBubbles ile aynı şekle sahiptir.
-2. **Grup kayıt defteri** (`channels.imessage.groups`) — `inbound-processing.ts:199` içindeki `resolveChannelGroupPolicy` tarafından denetlenir. `groupPolicy: "allowlist"` ile bu kapı şunlardan birini gerektirir:
-   - bir `groups: { "*": { ... } }` joker girdisi (`allowAll = true` ayarlar), veya
-   - `groups` altında açık bir `chat_id` başına girdi.
+1. **Gönderen / sohbet hedefi izin listesi** (`channels.imessage.groupAllowFrom`) — gönderen tanıtıcısıyla veya sohbet hedefiyle (`chat_id:`, `chat_guid:`, `chat_identifier:` girdileri) eşleşir. `groupAllowFrom` ayarlanmadığında bu geçit `allowFrom` değerine geri döner; açık bir `groupAllowFrom: []`, bu geri dönüşü devre dışı bırakır ve `groupPolicy: "allowlist"` kapsamındaki tüm grup iletilerini atar.
+2. **Grup kayıt defteri** (`channels.imessage.groups`) — sayısal iMessage `chat_id` değerleriyle anahtarlanır:
+   - `groups` bloğu yoksa (veya boşsa): 1. geçitte boş olmayan etkin bir gönderen izin listesi bulunduğu sürece gruplar bu geçidi geçer; erişimi gönderen filtrelemesi yönetir ve başlangıçta tümünü atma uyarısı verilmez.
+   - Girdiler içeren ancak `"*"` içermeyen `groups`: yalnızca listelenen `chat_id` anahtarları geçer. Herhangi bir grubu listelemek, `groupPolicy: "open"` altında bile kayıt defterini bir izin listesine dönüştürür.
+   - `groups: { "*": { ... } }`: her grup bu geçidi geçer.
 
-Kapı 1 geçer ama kapı 2 başarısız olursa ileti düşürülür. Plugin, bunun varsayılan günlük düzeyinde artık sessiz olmaması için iki `warn` düzeyi sinyal yayar:
+Geçiş tuzağı şudur: BlueBubbles, `groups` girdilerini sohbet GUID'si / sohbet tanımlayıcısıyla anahtarlarken iMessage kayıt defteri sayısal `chat_id` değerlerini kullanır. Grup başına girdileri olduğu gibi kopyalamak, anahtarları hiçbir zaman eşleşmeyen, boş olmayan bir kayıt defteri oluşturur; dolayısıyla her grup iletisi 2. geçitte atılır. `"*"` joker karakteri girdisini olduğu gibi kopyalayın; belirli grup girdilerinin anahtarlarını `imsg chats` çıktısındaki `chat_id` değerleriyle yeniden belirleyin.
 
-- `groupPolicy: "allowlist"` ayarlanmışken `channels.imessage.groups` boşsa (`"*"` jokeri yok, `chat_id` başına girdi yok) hesap başına bir defalık başlangıç `warn` iletisi; herhangi bir ileti ulaşmadan önce tetiklenir.
-- Belirli bir grup çalışma zamanında ilk kez düşürüldüğünde `chat_id` başına bir defalık `warn` iletisi; chat_id'yi ve buna izin vermek için `groups` içine eklenecek tam anahtarı belirtir.
+Her iki atma yolu da varsayılan günlük düzeyinde `warn` satırlarıyla görülebilir:
 
-DM'ler farklı bir kod yolu kullandıkları için çalışmaya devam eder.
+- Başlangıçta hesap başına bir kez, `groupPolicy: "allowlist"` ayarlanmış ancak etkin grup gönderen izin listesi boş olduğunda: `imessage: groupPolicy="allowlist" for account "<id>" but no group sender allowlist is configured ...`. Gönderenleri kabul etmek için `groupAllowFrom` (veya `allowFrom`) ayarlayın; yalnızca `groups` eklemek gönderen geçidini karşılamaz.
+- Çalışma zamanında `chat_id` başına bir kez, kayıt defteri bir grubu attığında: `imessage: dropping group message from chat_id=<id> ... not in channels.imessage.groups allowlist`; eklenecek tam anahtarı belirtir.
 
-Bu, en yaygın BlueBubbles → paketlenmiş-iMessage geçiş hatası modudur: operatörler `groupAllowFrom` ve `groupPolicy` değerlerini kopyalar ama `groups` bloğunu atlar, çünkü BlueBubbles'ın `groups: { "*": { "requireMention": true } }` ayarı ilgisiz bir bahsetme ayarı gibi görünür. Aslında kayıt kapısı için kritik önemdedir.
+DM'ler her iki durumda da çalışmaya devam eder — farklı bir kod yolunu izledikleri için DM başarısı grup yönlendirmesinin çalıştığını kanıtlamaz.
 
-`groupPolicy: "allowlist"` sonrasında grup mesajlarının akmaya devam etmesi için minimum yapılandırma:
+`groupPolicy: "allowlist"` ile gönderen kapsamlı asgari yapılandırma:
 
 ```json5
 {
@@ -153,115 +149,88 @@ Bu, en yaygın BlueBubbles → paketlenmiş-iMessage geçiş hatası modudur: op
     imessage: {
       groupPolicy: "allowlist",
       groupAllowFrom: ["+15555550123", "chat_guid:any;-;..."],
-      groups: {
-        "*": { requireMention: true },
-      },
     },
   },
 }
 ```
 
-`*` altındaki `requireMention: true`, bahsetme desenleri yapılandırılmamışsa zararsızdır: çalışma zamanı `canDetectMention = false` değerini ayarlar ve `inbound-processing.ts:512` konumundaki bahsetme düşürmesini kısa devre yapar. Bahsetme desenleri yapılandırıldığında (`agents.list[].groupChat.mentionPatterns`), beklendiği gibi çalışır.
-
-Gateway günlükleri `imessage: dropping group message from chat_id=<id>` ya da başlangıç satırı olarak `imessage: groupPolicy="allowlist" but channels.imessage.groups is empty` gösteriyorsa, kapı 2 düşürüyordur — `groups` bloğunu ekleyin.
+Bu, yapılandırılmış gönderenleri herhangi bir grupta kabul eder. İzin verilen sohbetlerin kapsamını sınırlamak veya `requireMention` gibi sohbet başına seçenekleri ayarlamak için `groups` girdileri ekleyin; BlueBubbles `"*"` girdisini olduğu gibi kopyalayın ancak belirli girdilerin anahtarlarını sayısal iMessage `chat_id` değerleriyle yeniden belirleyin.
 
 ## Adım adım
 
-1. Mevcut BlueBubbles bloğunun yanına bir iMessage bloğu ekleyin. Gateway hâlâ BlueBubbles trafiğini yönlendirirken bunu devre dışı bırakılmış tutun:
+1. Yapılandırmayı dönüştürün. Düzenleme yaparken yeni bloğu devre dışı bırakın; eski `channels.bluebubbles` bloğu mevcut OpenClaw tarafından yok sayılır ve referans olarak yanında kalabilir:
 
    ```json5
    {
      channels: {
-       bluebubbles: {
-         enabled: true,
-         // ... existing config ...
-       },
        imessage: {
-         enabled: false,
+         enabled: false, // geçiş yapmaya hazır olduğunuzda true olarak değiştirin
          cliPath: "/opt/homebrew/bin/imsg",
          dmPolicy: "pairing",
-         allowFrom: ["+15555550123"], // copy from bluebubbles.allowFrom
+         allowFrom: ["+15555550123"], // bluebubbles.allowFrom değerinden kopyalayın
          groupPolicy: "allowlist",
-         groupAllowFrom: [], // copy from bluebubbles.groupAllowFrom
-         groups: { "*": { requireMention: true } }, // copy from bluebubbles.groups — silently drops groups if missing, see "Group registry footgun" above
-         actions: {
-           reactions: true,
-           edit: true,
-           unsend: true,
-           reply: true,
-           sendWithEffect: true,
-           sendAttachment: true,
-         },
+         groupAllowFrom: [], // bluebubbles.groupAllowFrom değerinden kopyalayın
+         groups: { "*": { requireMention: true } }, // joker karakteri olduğu gibi kopyalanır; sohbet başına girdileri chat_id ile yeniden anahtarlayın
+         // eylemler varsayılan olarak etkindir; devre dışı bırakmak için ilgili anahtarı false olarak ayarlayın
        },
      },
    }
    ```
 
-2. **Trafik önemli hale gelmeden önce yoklayın** — Gateway'i durdurun, iMessage bloğunu geçici olarak etkinleştirin ve iMessage'ın CLI üzerinden sağlıklı raporlandığını doğrulayın:
+2. **Geçiş yapın ve yoklayın.** `channels.imessage.enabled: true` olarak ayarlayın, Gateway'i yeniden başlatın ve kanalın sağlıklı olarak raporlandığını doğrulayın:
 
    ```bash
-   openclaw gateway stop
-   # edit config: channels.imessage.enabled = true
-   openclaw channels status --probe --channel imessage   # expect imessage.privateApi.available: true
+   openclaw gateway restart
+   openclaw channels status --probe --channel imessage   # "works" beklenir; --json, privateApi.available: true gösterir
    ```
 
-   `channels status --probe` yalnızca yapılandırılmış ve etkin hesapları yoklar. Her iki kanal izleyicisinin de çalışmasını bilinçli olarak istemiyorsanız Gateway'i BlueBubbles ve iMessage aynı anda etkin durumdayken yeniden başlatmayın. Hemen geçiş yapmıyorsanız Gateway'i yeniden başlatmadan önce `channels.imessage.enabled` değerini tekrar `false` olarak ayarlayın. OpenClaw trafiğini etkinleştirmeden önce Mac'i doğrulamak için [Başlamadan önce](#before-you-start) bölümündeki doğrudan `imsg` komutlarını kullanın.
+   Yoklama, erişilebilir bir Gateway gerektirir ve yalnızca yapılandırılmış, etkin hesapları yoklar. Mac'in kendisini doğrulamak için [Başlamadan önce](#before-you-start) bölümündeki doğrudan `imsg` komutlarını kullanın.
 
-3. **Geçiş yapın.** Etkin iMessage hesabı sağlıklı raporlandıktan sonra BlueBubbles yapılandırmasını kaldırın ve iMessage'ı etkin tutun:
+3. **DM'leri doğrulayın.** Aracıya doğrudan mesaj gönderin; yanıtın ulaştığını doğrulayın.
 
-   ```json5
-   {
-     channels: {
-       imessage: { enabled: true /* ... */ },
-     },
-   }
-   ```
+4. **Grupları ayrı olarak doğrulayın.** DM'ler ve gruplar farklı kod yollarını kullanır; DM'nin başarılı olması, grupların yönlendirildiğini kanıtlamaz. İzin verilen bir grup sohbetinde mesaj gönderin ve yanıtın ulaştığını doğrulayın. Grup sessiz kalırsa (aracı yanıtı ve hata yoksa), yukarıdaki "Grup kayıt defteri tuzağı" bölümünde belirtilen iki `warn` satırı için Gateway günlüğünü denetleyin. Başlangıç uyarısı, etkin gönderen izin listesinin boş olduğu anlamına gelir; `chat_id` başına uyarı ise doldurulmuş bir `groups` kayıt defterinin ilgili sohbeti içermediği anlamına gelir.
 
-   Gateway'i yeniden başlatın. Gelen iMessage trafiği artık paketlenmiş Plugin üzerinden akar.
+5. **Eylem yüzeyini doğrulayın.** Eşleştirilmiş bir DM'den aracıdan tepki vermesini, düzenleme yapmasını, göndermeyi geri almasını, yanıt vermesini, fotoğraf göndermesini ve (bir grupta) grubun adını değiştirmesini veya katılımcı ekleyip kaldırmasını isteyin. Her eylem Messages.app içinde yerel olarak gerçekleşmelidir. Herhangi bir eylem `iMessage <action> requires the imsg private API bridge` hatası verirse `imsg launch` komutunu yeniden çalıştırın ve `openclaw channels status --probe` ile durumu yenileyin.
 
-4. **DM'leri doğrulayın.** Aracıya doğrudan mesaj gönderin; yanıtın ulaştığını doğrulayın.
+6. iMessage DM'leri, grupları ve eylemleri doğrulandıktan sonra **BlueBubbles sunucusunu ve `channels.bluebubbles` bloğunu kaldırın**. OpenClaw, `channels.bluebubbles` yapılandırmasını okumaz.
 
-5. **Grupları ayrı doğrulayın.** DM'ler ve gruplar farklı kod yolları kullanır — DM başarısı grupların yönlendirildiğini kanıtlamaz. Aracıya eşleştirilmiş bir grup sohbetinde mesaj gönderin ve yanıtın ulaştığını doğrulayın. Grup sessiz kalırsa (aracı yanıtı yok, hata yok), Gateway günlüğünde `imessage: dropping group message from chat_id=<id>` ya da başlangıçta `imessage: groupPolicy="allowlist" but channels.imessage.groups is empty` satırı olup olmadığını kontrol edin — ikisi de varsayılan günlük düzeyinde tetiklenir. İkisinden biri görünüyorsa `groups` bloğunuz eksik ya da boştur — yukarıdaki "Grup kayıt tuzağı" bölümüne bakın.
+## Eylem eşdeğerliğine genel bakış
 
-6. **Eylem yüzeyini doğrulayın** — eşleştirilmiş bir DM'den aracıdan tepki vermesini, düzenlemesini, göndermeyi geri almasını, yanıtlamasını, fotoğraf göndermesini ve (bir grupta) grubu yeniden adlandırmasını / katılımcı eklemesini ya da kaldırmasını isteyin. Her eylem Messages.app içinde yerel olarak gerçekleşmelidir. Herhangi biri "iMessage `<action>` requires the imsg private API bridge" hatası verirse `imsg launch` komutunu yeniden çalıştırın ve `channels status --probe` durumunu yenileyin.
+| Eylem                                               | eski BlueBubbles    | paketlenmiş iMessage                                                           |
+| --------------------------------------------------- | ------------------- | ------------------------------------------------------------------------------ |
+| Metin gönderme / SMS'e geri dönüş                   | ✅                  | ✅                                                                             |
+| Medya gönderme (fotoğraf, video, dosya, ses)        | ✅                  | ✅                                                                             |
+| Konu dizili yanıt (`reply_to_guid`)                 | ✅                  | ✅ ([#51892](https://github.com/openclaw/openclaw/issues/51892) kapatıldı)      |
+| Tapback (`react`)                                   | ✅                  | ✅                                                                             |
+| Düzenleme / göndermeyi geri alma (macOS 13+ alıcıları) | ✅               | ✅                                                                             |
+| Ekran efektiyle gönderme                            | ✅                  | ✅ ([#9394](https://github.com/openclaw/openclaw/issues/9394) kısmen kapatıldı) |
+| Zengin metinde kalın / italik / altı çizili / üstü çizili | ✅            | ✅ (attributedBody aracılığıyla türlenmiş çalıştırma biçimlendirmesi)           |
+| Yerel Messages anketleri (oluşturma ve oy verme)    | ❌                  | ✅ (`actions.polls`; yerel görüntüleme için alıcılarda iOS/macOS 26+ gerekir)   |
+| Grubu yeniden adlandırma / grup simgesini ayarlama  | ✅                  | ✅                                                                             |
+| Katılımcı ekleme / kaldırma, gruptan ayrılma        | ✅                  | ✅                                                                             |
+| Okundu bilgileri ve yazıyor göstergesi              | ✅                  | ✅ (özel API yoklamasına bağlıdır)                                              |
+| Aynı gönderenin DM'lerini birleştirme               | ✅                  | ✅ (yalnızca DM; `channels.imessage.coalesceSameSenderDms` ile isteğe bağlı)    |
+| Yeniden başlatma sonrasında gelen iletileri kurtarma | ✅                 | ✅ (otomatik: `since_rowid` yeniden oynatma + GUID tekilleştirme; yerelde daha geniş pencere) |
 
-7. iMessage DM'leri, grupları ve eylemleri doğrulandıktan sonra **BlueBubbles sunucusunu ve yapılandırmasını kaldırın**. OpenClaw `channels.bluebubbles` kullanmaz.
+iMessage, Gateway kapalıyken kaçırılan mesajları kurtarır: başlangıçta `imsg watch.subscribe` `since_rowid` aracılığıyla son dağıtılan rowid'den itibaren yeniden oynatır, GUID'ye göre tekilleştirir ve eski birikmiş işler için yaş sınırı, Push temizlemesinin oluşturabileceği "birikmiş iş bombası"nı engeller. Bu işlem `imsg` RPC bağlantısı üzerinden çalıştığından uzak SSH `cliPath` kurulumlarında da çalışır; yerel kurulumlar `chat.db` dosyasını okuyabildiği için daha geniş bir kurtarma penceresine sahiptir. Bkz. [Köprü veya Gateway yeniden başlatıldıktan sonra gelen iletileri kurtarma](/tr/channels/imessage#inbound-recovery-after-a-bridge-or-gateway-restart).
 
-## Bir bakışta eylem eşliği
+## Eşleştirme, oturumlar ve ACP bağlamaları
 
-| Eylem                                               | eski BlueBubbles                    | paketlenmiş iMessage                                                          |
-| --------------------------------------------------- | ----------------------------------- | ----------------------------------------------------------------------------- |
-| Metin gönderme / SMS geri dönüşü                    | ✅                                  | ✅                                                                            |
-| Medya gönderme (fotoğraf, video, dosya, ses)        | ✅                                  | ✅                                                                            |
-| Konulu yanıt (`reply_to_guid`)                      | ✅                                  | ✅ ([#51892](https://github.com/openclaw/openclaw/issues/51892) kapatır)      |
-| Tapback (`react`)                                   | ✅                                  | ✅                                                                            |
-| Düzenleme / göndermeyi geri alma (macOS 13+ alıcılar) | ✅                                | ✅                                                                            |
-| Ekran efektiyle gönderme                            | ✅                                  | ✅ ([#9394](https://github.com/openclaw/openclaw/issues/9394) bölümünü kapatır) |
-| Zengin metin kalın / italik / altı çizili / üstü çizili | ✅                               | ✅ (attributedBody üzerinden typed-run biçimlendirme)                         |
-| Grubu yeniden adlandırma / grup simgesi ayarlama    | ✅                                  | ✅                                                                            |
-| Katılımcı ekleme / kaldırma, gruptan ayrılma        | ✅                                  | ✅                                                                            |
-| Okundu bilgileri ve yazıyor göstergesi              | ✅                                  | ✅ (özel API yoklamasına bağlı)                                               |
-| Aynı gönderenden DM birleştirme                     | ✅                                  | ✅ (yalnızca DM; `channels.imessage.coalesceSameSenderDms` ile isteğe bağlı)  |
-| Yeniden başlatma sonrası gelen ileti kurtarma       | ✅ (Webhook yeniden oynatma + geçmiş alma) | ✅ (otomatik: kaçırılanları since_rowid + tekilleştirme ile yeniden oynatır; yerelde daha geniş pencere) |
+- **İzin listeleri tanıtıcıya göre aktarılır.** `channels.imessage.allowFrom`, BlueBubbles'ın kullandığı aynı `+15555550123` / `user@example.com` dizelerini tanır; bunları olduğu gibi kopyalayın.
+- **Eşleştirme deposu onayları aktarılmaz.** Eşleştirme deposu kanal başınadır ve eski BlueBubbles deposunu hiçbir şey taşımaz. Yalnızca eşleştirme yoluyla onaylanmış gönderenlerin iMessage altında yeniden eşleştirme yapması veya tanıtıcılarının `allowFrom` alanına eklenmesi gerekir.
+- **Oturumlar** aracı + sohbet başına kapsamlandırılmış olarak kalır. Varsayılan `session.dmScope=main` altında DM'ler aracının ana oturumunda birleşir; grup oturumları `chat_id` başına yalıtılmış kalır (`agent:<agentId>:imessage:group:<chat_id>`). BlueBubbles oturum anahtarları altındaki eski konuşma geçmişi, iMessage oturumlarına aktarılmaz.
+- `match.channel: "bluebubbles"` başvurusunda bulunan **ACP bağlamaları** `"imessage"` olarak değiştirilmelidir. `match.peer.id` biçimleri (`chat_id:`, `chat_guid:`, `chat_identifier:`, çıplak tanıtıcı) aynıdır.
 
-iMessage, Gateway kapalıyken kaçırılan iletileri kurtarır: başlangıçta `imsg watch.subscribe` `since_rowid` üzerinden son gönderilen rowid'den itibaren yeniden oynatır ve GUID ile tekilleştirir; bu sırada eski-birikim yaş sınırı Push-flush "birikim bombası"nı bastırır. Bu, `imsg` RPC bağlantısı üzerinden çalışır; dolayısıyla uzak SSH `cliPath` kurulumlarında da çalışır. Yerel kurulumlar `chat.db` okuyabildiği için daha geniş bir kurtarma penceresi elde eder. Bkz. [Köprü veya Gateway yeniden başlatması sonrası gelen ileti kurtarma](/tr/channels/imessage#inbound-recovery-after-a-bridge-or-gateway-restart).
+## Geri dönüş kanalı yoktur
 
-## Eşleştirme, oturumlar ve ACP bağları
+Geri dönülebilecek desteklenen bir BlueBubbles çalışma zamanı yoktur. iMessage doğrulaması başarısız olursa `channels.imessage.enabled: false` olarak ayarlayın, Gateway'i yeniden başlatın, `imsg` engelini giderin ve geçişi yeniden deneyin.
 
-- **Eşleştirme onayları** tanıtıcıya göre taşınır. Bilinen gönderenleri yeniden onaylamanız gerekmez — `channels.imessage.allowFrom`, BlueBubbles'ın kullandığı aynı `+15555550123` / `user@example.com` dizelerini tanır.
-- **Oturumlar** aracı + sohbet başına kapsamlandırılmış kalır. DM'ler varsayılan `session.dmScope=main` altında aracı ana oturumuna daralır; grup oturumları `chat_id` başına izole kalır. Oturum anahtarları farklıdır (`agent:<id>:imessage:group:<chat_id>` ve BlueBubbles eşdeğeri) — BlueBubbles oturum anahtarları altındaki eski konuşma geçmişi iMessage oturumlarına taşınmaz.
-- `match.channel: "bluebubbles"` referansı veren **ACP bağları** `"imessage"` olarak güncellenmelidir. `match.peer.id` biçimleri (`chat_id:`, `chat_guid:`, `chat_identifier:`, çıplak tanıtıcı) aynıdır.
+Yanıt önbelleği SQLite Plugin durumunda bulunur. `openclaw doctor --fix`, mevcutsa eski `imessage/reply-cache.jsonl` yardımcı dosyasını içe aktarır ve arşivler.
 
-## Geri dönüş kanalı yok
+## İlgili kaynaklar
 
-Geri dönülecek desteklenen bir BlueBubbles çalışma zamanı yoktur. iMessage doğrulaması başarısız olursa `channels.imessage.enabled: false` ayarlayın, Gateway'i yeniden başlatın, `imsg` engelleyicisini düzeltin ve geçişi yeniden deneyin.
-
-Yanıt önbelleği SQLite Plugin durumunda yaşar. `openclaw doctor --fix`, varsa eski `imessage/reply-cache.jsonl` yan dosyasını içe aktarır ve arşivler.
-
-## İlgili
-
-- [BlueBubbles kaldırma ve imsg iMessage yolu](/tr/announcements/bluebubbles-imessage) — kısa duyuru ve operatör özeti.
-- [iMessage](/tr/channels/imessage) — `imsg launch` kurulumu ve yetenek algılama dahil tam iMessage kanal başvurusu.
+- [BlueBubbles'ın kaldırılması ve imsg iMessage yolu](/tr/announcements/bluebubbles-imessage) — kısa duyuru ve operatör özeti.
+- [iMessage](/tr/channels/imessage) — `imsg launch` kurulumu ve yetenek algılama dâhil tam iMessage kanal başvurusu.
 - `/channels/bluebubbles` — bu geçiş kılavuzuna yönlendiren eski URL.
 - [Eşleştirme](/tr/channels/pairing) — DM kimlik doğrulaması ve eşleştirme akışı.
 - [Kanal Yönlendirme](/tr/channels/channel-routing) — Gateway'in giden yanıtlar için kanalı nasıl seçtiği.

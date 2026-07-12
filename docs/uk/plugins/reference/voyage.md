@@ -1,27 +1,27 @@
 ---
 read_when:
     - Ви встановлюєте, налаштовуєте або перевіряєте Plugin voyage
-summary: Додає підтримку постачальника вбудовувань пам’яті.
-title: Plugin Voyage
+summary: Додає підтримку провайдера вбудовувань пам’яті.
+title: Плагін Voyage
 x-i18n:
-    generated_at: "2026-05-02T15:22:57Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:36:27Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: ba1dcf8d6f7c45c01f855797333e9d510bc822b2f7442c5a0727ac2a208ffe36
     source_path: plugins/reference/voyage.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# Voyage Plugin
+# Plugin Voyage
 
-Додає підтримку провайдера вбудовувань пам’яті.
+Додає підтримку постачальника векторних представлень пам’яті.
 
-## Дистрибуція
+## Розповсюдження
 
-- Пакет: `@openclaw/voyage-provider`
-- Шлях встановлення: включено до OpenClaw
+- Пакунок: `@openclaw/voyage-provider`
+- Спосіб встановлення: входить до складу OpenClaw
 
-## Поверхня
+## Інтерфейс
 
 контракти: memoryEmbeddingProviders

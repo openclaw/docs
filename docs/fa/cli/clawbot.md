@@ -1,30 +1,26 @@
 ---
 read_when:
-    - شما اسکریپت‌های قدیمی‌تر را با استفاده از `openclaw clawbot ...` نگهداری می‌کنید
-    - به راهنمای مهاجرت به فرمان‌های فعلی نیاز دارید
+    - شما اسکریپت‌های قدیمی‌تری را که از `openclaw clawbot ...` استفاده می‌کنند، نگهداری می‌کنید
+    - برای مهاجرت به فرمان‌های فعلی به راهنما نیاز دارید
 summary: مرجع CLI برای `openclaw clawbot` (فضای نام مستعار قدیمی)
-title: Clawbot
+title: کلاوبات
 x-i18n:
-    generated_at: "2026-04-29T22:33:30Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:43:19Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4ca7f189071d170a94ec3eda276a3ba1202ccdee43c610f214b65bda8375d300
+    source_hash: 6baf9b4e9bbe8bb31cdc4923c38cd45a883b6e5be921a403335e257dacdc2cd5
     source_path: cli/clawbot.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw clawbot`
 
-فضای نام مستعار قدیمی برای سازگاری با نسخه‌های پیشین حفظ شده است.
-
-نام مستعار پشتیبانی‌شدهٔ فعلی:
-
-- `openclaw clawbot qr` (همان رفتار [`openclaw qr`](/fa/cli/qr))
+فضای نام مستعار قدیمی برای سازگاری با نسخه‌های پیشین حفظ شده است. این فضا همان فرمان QR مربوط به CLI سطح‌بالا را ثبت می‌کند؛ بنابراین `openclaw clawbot qr` همهٔ پرچم‌های [`openclaw qr`](/fa/cli/qr) را می‌پذیرد.
 
 ## مهاجرت
 
-دستورهای مدرن سطح بالا را مستقیماً ترجیح دهید:
+فرمان مدرن سطح‌بالا را ترجیح دهید:
 
 - `openclaw clawbot qr` -> `openclaw qr`
 

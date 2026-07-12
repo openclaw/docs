@@ -1,108 +1,111 @@
 ---
 read_when:
-    - Làm việc với việc phân giải hồ sơ xác thực hoặc định tuyến thông tin xác thực
-    - Gỡ lỗi lỗi xác thực mô hình hoặc thứ tự hồ sơ
-summary: Ngữ nghĩa chuẩn tắc về tính đủ điều kiện và cách phân giải thông tin xác thực cho hồ sơ xác thực
-title: Ngữ nghĩa thông tin xác thực
+    - Xử lý việc phân giải hồ sơ xác thực hoặc định tuyến thông tin xác thực
+    - Gỡ lỗi xác thực mô hình thất bại hoặc thứ tự hồ sơ
+summary: Ngữ nghĩa chuẩn về tính đủ điều kiện và phân giải thông tin xác thực cho các hồ sơ xác thực
+title: Ngữ nghĩa của thông tin xác thực xác thực danh tính
 x-i18n:
-    generated_at: "2026-06-27T17:09:02Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:41:21Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 591c0384e1d43512252aaa7b362141b6bc93183b30b5847168758f86127f0663
+    source_hash: 6b0516b1bb23f400d5ac5fd39a628736034440216ac22823eef061b38564dff0
     source_path: auth-credential-semantics.md
     workflow: 16
 ---
 
-Tài liệu này định nghĩa ngữ nghĩa chuẩn về điều kiện hợp lệ và phân giải thông tin xác thực được dùng trên:
+Các ngữ nghĩa này giúp hành vi xác thực tại thời điểm lựa chọn và khi chạy luôn nhất quán. Chúng được dùng chung bởi:
 
-- `resolveAuthProfileOrder`
-- `resolveApiKeyForProfile`
-- `models status --probe`
-- `doctor-auth`
+- `resolveAuthProfileOrder` (thứ tự hồ sơ)
+- `resolveApiKeyForProfile` (phân giải thông tin xác thực khi chạy)
+- `openclaw models status --probe`
+- các bước kiểm tra xác thực của `openclaw doctor` (`doctor-auth`)
 
-Mục tiêu là giữ cho hành vi tại thời điểm chọn và khi chạy luôn nhất quán.
+## Mã lý do thăm dò ổn định
 
-## Mã lý do probe ổn định
+Kết quả thăm dò mang một nhóm `status` (`ok`, `auth`, `rate_limit`, `billing`, `timeout`, `format`, `unknown`, `no_model`) cùng một `reasonCode` ổn định khi quá trình thăm dò chưa bao giờ thực hiện được lệnh gọi mô hình:
 
-- `ok`
-- `excluded_by_auth_order`
-- `missing_credential`
-- `invalid_expires`
-- `expired`
-- `unresolved_ref`
-- `no_model`
+| `reasonCode`             | Ý nghĩa                                                                                  |
+| ------------------------ | ---------------------------------------------------------------------------------------- |
+| `excluded_by_auth_order` | Hồ sơ bị loại khỏi thứ tự xác thực tường minh của nhà cung cấp tương ứng.                 |
+| `missing_credential`     | Chưa cấu hình thông tin xác thực nội tuyến hoặc SecretRef.                                |
+| `expired`                | Giá trị `expires` của token nằm trong quá khứ.                                            |
+| `invalid_expires`        | `expires` không phải dấu thời gian Unix mili giây dương hợp lệ.                           |
+| `unresolved_ref`         | Không thể phân giải SecretRef đã cấu hình.                                                |
+| `ineligible_profile`     | Hồ sơ không tương thích với cấu hình nhà cung cấp (bao gồm đầu vào khóa sai định dạng).   |
+| `no_model`               | Có thông tin xác thực nhưng không phân giải được mô hình ứng viên có thể thăm dò.          |
 
-## Thông tin xác thực token
+Các bước kiểm tra tính đủ điều kiện báo cáo `ok` làm mã lý do cho thông tin xác thực có thể sử dụng.
 
-Thông tin xác thực token (`type: "token"`) hỗ trợ `token` nội tuyến và/hoặc `tokenRef`.
+## Thông tin xác thực bằng token
 
-### Quy tắc hợp lệ
+Thông tin xác thực bằng token (`type: "token"`) hỗ trợ `token` nội tuyến và/hoặc `tokenRef`.
 
-1. Hồ sơ token không hợp lệ khi thiếu cả `token` lẫn `tokenRef`.
-2. `expires` là tùy chọn.
-3. Nếu có `expires`, giá trị này phải là một số hữu hạn lớn hơn `0`.
-4. Nếu `expires` không hợp lệ (`NaN`, `0`, âm, không hữu hạn, hoặc sai kiểu), hồ sơ không hợp lệ với `invalid_expires`.
-5. Nếu `expires` nằm trong quá khứ, hồ sơ không hợp lệ với `expired`.
-6. `tokenRef` không bỏ qua bước xác thực `expires`.
+### Quy tắc về tính đủ điều kiện
+
+1. Hồ sơ token không đủ điều kiện khi thiếu cả `token` lẫn `tokenRef` (`missing_credential`).
+2. `expires` là tùy chọn. Khi có, giá trị này phải là số hữu hạn biểu thị mili giây kể từ Unix epoch, lớn hơn `0` và không vượt quá dấu thời gian `Date` tối đa của JavaScript (8640000000000000).
+3. Nếu `expires` không hợp lệ (sai kiểu, `NaN`, `0`, số âm, không hữu hạn hoặc vượt quá giá trị tối đa đó), hồ sơ không đủ điều kiện với `invalid_expires`.
+4. Nếu `expires` nằm trong quá khứ, hồ sơ không đủ điều kiện với `expired`.
+5. `tokenRef` không bỏ qua bước xác thực `expires`.
 
 ### Quy tắc phân giải
 
-1. Ngữ nghĩa của bộ phân giải khớp với ngữ nghĩa hợp lệ đối với `expires`.
-2. Với các hồ sơ hợp lệ, dữ liệu token có thể được phân giải từ giá trị nội tuyến hoặc `tokenRef`.
-3. Các ref không phân giải được tạo ra `unresolved_ref` trong đầu ra `models status --probe`.
+1. Ngữ nghĩa của trình phân giải đối với `expires` khớp với ngữ nghĩa kiểm tra tính đủ điều kiện.
+2. Với các hồ sơ đủ điều kiện, dữ liệu token có thể được phân giải từ giá trị nội tuyến hoặc `tokenRef`.
+3. Các tham chiếu không thể phân giải tạo ra `unresolved_ref` trong đầu ra của `models status --probe`.
 
-## Khả năng di chuyển bản sao agent
+## Khả năng di chuyển khi sao chép tác tử
 
-Kế thừa xác thực của agent là đọc xuyên qua. Khi một agent không có hồ sơ cục bộ, nó có thể phân giải hồ sơ từ kho agent mặc định/chính khi chạy mà không sao chép dữ liệu bí mật vào `auth-profiles.json` của riêng nó.
+Việc kế thừa xác thực của tác tử sử dụng cơ chế đọc xuyên. Khi một tác tử không có hồ sơ cục bộ, trong thời gian chạy nó phân giải hồ sơ từ kho của tác tử mặc định/chính mà không sao chép dữ liệu bí mật vào kho thông tin xác thực riêng (`agents/<agentId>/agent/openclaw-agent.sqlite`).
 
-Các luồng sao chép tường minh, như `openclaw agents add`, dùng chính sách khả năng di chuyển này:
+Các luồng sao chép tường minh, chẳng hạn như `openclaw agents add`, sử dụng chính sách di chuyển này:
 
-- Hồ sơ `api_key` có thể di chuyển trừ khi `copyToAgents: false`.
-- Hồ sơ `token` có thể di chuyển trừ khi `copyToAgents: false`.
-- Hồ sơ `oauth` mặc định không thể di chuyển vì refresh token có thể dùng một lần hoặc nhạy cảm với việc xoay vòng.
-- Các luồng OAuth do nhà cung cấp sở hữu chỉ có thể chọn tham gia bằng `copyToAgents: true` khi việc sao chép dữ liệu refresh giữa các agent được biết là an toàn.
+- Các hồ sơ `api_key` và `token` có thể di chuyển, trừ khi đặt `copyToAgents: false`.
+- Theo mặc định, hồ sơ `oauth` không thể di chuyển vì refresh token có thể chỉ dùng được một lần hoặc nhạy cảm với việc luân chuyển.
+- Các luồng OAuth do nhà cung cấp sở hữu chỉ có thể chọn tham gia bằng `copyToAgents: true` khi đã biết việc sao chép dữ liệu làm mới giữa các tác tử là an toàn; lựa chọn tham gia này chỉ áp dụng khi hồ sơ chứa dữ liệu truy cập/làm mới nội tuyến.
 
-Các hồ sơ không thể di chuyển vẫn khả dụng thông qua kế thừa đọc xuyên qua trừ khi agent đích đăng nhập riêng và tạo hồ sơ cục bộ của riêng nó.
+Các hồ sơ không thể di chuyển vẫn khả dụng thông qua kế thừa đọc xuyên, trừ khi tác tử đích đăng nhập riêng và tạo hồ sơ cục bộ của chính nó.
 
-## Tuyến xác thực chỉ từ cấu hình
+## Các tuyến xác thực chỉ dùng cấu hình
 
-Các mục `auth.profiles` có `mode: "aws-sdk"` là siêu dữ liệu định tuyến, không phải thông tin xác thực được lưu trữ. Chúng hợp lệ khi nhà cung cấp đích dùng `models.providers.<id>.auth: "aws-sdk"` hoặc tuyến AWS SDK cho thiết lập Amazon Bedrock do plugin sở hữu. Các id hồ sơ này có thể xuất hiện trong `auth.order` và ghi đè phiên ngay cả khi không có mục khớp trong `auth-profiles.json`.
+Các mục `auth.profiles` có `mode: "aws-sdk"` là siêu dữ liệu định tuyến, không phải thông tin xác thực được lưu trữ. Chúng hợp lệ khi nhà cung cấp đích sử dụng `models.providers.<id>.auth: "aws-sdk"`, tức tuyến được quy trình thiết lập Amazon Bedrock do plugin sở hữu ghi vào. Các mã định danh hồ sơ này có thể xuất hiện trong `auth.order` và các giá trị ghi đè phiên ngay cả khi không có mục tương ứng trong kho thông tin xác thực.
 
-Không ghi `type: "aws-sdk"` vào `auth-profiles.json`. Nếu một bản cài đặt cũ có dấu hiệu như vậy, `openclaw doctor --fix` sẽ chuyển nó sang `auth.profiles` và xóa dấu hiệu khỏi kho thông tin xác thực.
+Không ghi `type: "aws-sdk"` vào kho thông tin xác thực; thông tin xác thực được lưu trữ chỉ có thể là `api_key`, `token` hoặc `oauth`. Nếu một tệp `auth-profiles.json` cũ có dấu đánh dấu như vậy, `openclaw doctor --fix` sẽ chuyển nó sang `auth.profiles` và xóa dấu đánh dấu khỏi kho.
 
-## Lọc thứ tự xác thực tường minh
+## Lọc theo thứ tự xác thực tường minh
 
-- Khi `auth.order.<provider>` hoặc ghi đè thứ tự kho xác thực được đặt cho một nhà cung cấp, `models status --probe` chỉ probe các id hồ sơ còn lại trong thứ tự xác thực đã phân giải cho nhà cung cấp đó.
-- Một hồ sơ đã lưu cho nhà cung cấp đó nhưng bị bỏ khỏi thứ tự tường minh sẽ không được âm thầm thử lại sau. Đầu ra probe báo cáo hồ sơ đó với `reasonCode: excluded_by_auth_order` và chi tiết `Excluded by auth.order for this provider.`
+- Khi `auth.order.<provider>` hoặc giá trị ghi đè thứ tự của kho xác thực được đặt cho một nhà cung cấp, `models status --probe` chỉ thăm dò các mã định danh hồ sơ còn lại trong thứ tự xác thực đã phân giải của nhà cung cấp đó. Giá trị ghi đè đã lưu được ưu tiên hơn cấu hình `auth.order`.
+- Hồ sơ đã lưu của nhà cung cấp đó nhưng bị loại khỏi thứ tự tường minh sẽ không được âm thầm thử lại sau đó. Đầu ra thăm dò báo cáo hồ sơ này với `reasonCode: excluded_by_auth_order` và chi tiết `Excluded by auth.order for this provider.`
 
-## Phân giải mục tiêu probe
+## Phân giải mục tiêu thăm dò
 
-- Mục tiêu probe có thể đến từ hồ sơ xác thực, thông tin xác thực môi trường, hoặc `models.json`.
-- Nếu một nhà cung cấp có thông tin xác thực nhưng OpenClaw không thể phân giải ứng viên mô hình có thể probe cho nhà cung cấp đó, `models status --probe` báo cáo `status: no_model` với `reasonCode: no_model`.
+- Mục tiêu thăm dò có thể đến từ hồ sơ xác thực, thông tin xác thực trong môi trường hoặc `models.json` (`source` của kết quả: `profile`, `env`, `models.json`).
+- Nếu một nhà cung cấp có thông tin xác thực nhưng OpenClaw không thể phân giải ứng viên mô hình có thể thăm dò, `models status --probe` báo cáo `status: no_model` với `reasonCode: no_model`.
 
-## Khám phá thông tin xác thực CLI bên ngoài
+## Phát hiện thông tin xác thực của CLI bên ngoài
 
-- Thông tin xác thực chỉ dùng khi chạy do các CLI bên ngoài sở hữu chỉ được khám phá khi nhà cung cấp, runtime, hoặc hồ sơ xác thực nằm trong phạm vi của thao tác hiện tại, hoặc khi một hồ sơ cục bộ đã lưu cho nguồn bên ngoài đó đã tồn tại.
-- Các caller kho xác thực nên chọn chế độ khám phá CLI bên ngoài tường minh: `none` cho xác thực đã lưu/plugin, `existing` để làm mới các hồ sơ CLI bên ngoài đã lưu, hoặc `scoped` cho một tập nhà cung cấp/hồ sơ cụ thể.
-- Các đường dẫn chỉ đọc/trạng thái truyền `allowKeychainPrompt: false`; chúng chỉ dùng thông tin xác thực CLI bên ngoài dựa trên tệp và không đọc hoặc tái sử dụng kết quả macOS Keychain.
+- Thông tin xác thực chỉ dùng khi chạy do các CLI bên ngoài sở hữu (Claude CLI cho `claude-cli`, Codex CLI cho `openai`, MiniMax CLI cho `minimax-portal`) chỉ được phát hiện khi nhà cung cấp, môi trường chạy hoặc hồ sơ xác thực nằm trong phạm vi của thao tác hiện tại, hoặc khi đã tồn tại hồ sơ cục bộ được lưu trữ cho nguồn bên ngoài đó.
+- Các bên gọi kho xác thực chọn một chế độ phát hiện CLI bên ngoài tường minh: `none` để chỉ dùng xác thực được lưu bền vững/xác thực của plugin, `existing` để làm mới các hồ sơ CLI bên ngoài đã lưu, hoặc `scoped` cho một tập hợp nhà cung cấp/hồ sơ cụ thể.
+- Các đường dẫn chỉ đọc/trạng thái truyền `allowKeychainPrompt: false`; chúng chỉ sử dụng thông tin xác thực của CLI bên ngoài được lưu trong tệp và không đọc hoặc tái sử dụng kết quả từ macOS Keychain.
 
-## Chốt chính sách OAuth SecretRef
+## Cơ chế bảo vệ chính sách SecretRef cho OAuth
 
-- Đầu vào SecretRef chỉ dành cho thông tin xác thực tĩnh.
-- Nếu thông tin xác thực của hồ sơ là `type: "oauth"`, các đối tượng SecretRef không được hỗ trợ cho dữ liệu thông tin xác thực của hồ sơ đó.
+Đầu vào SecretRef chỉ dành cho thông tin xác thực tĩnh. Thông tin xác thực OAuth có thể thay đổi khi chạy (các luồng làm mới lưu token đã luân chuyển), vì vậy dữ liệu OAuth dựa trên SecretRef sẽ chia trạng thái có thể thay đổi giữa nhiều kho.
+
+- Nếu thông tin xác thực của hồ sơ có `type: "oauth"`, các đối tượng SecretRef sẽ bị từ chối trong mọi trường dữ liệu thông tin xác thực của hồ sơ đó.
 - Nếu `auth.profiles.<id>.mode` là `"oauth"`, đầu vào `keyRef`/`tokenRef` dựa trên SecretRef cho hồ sơ đó sẽ bị từ chối.
-- Vi phạm là lỗi cứng trong các đường dẫn phân giải xác thực khi khởi động/tải lại.
+- Các vi phạm là lỗi nghiêm trọng (ném lỗi) trong quá trình chuẩn bị bí mật khi khởi động/tải lại và trong các đường dẫn phân giải hồ sơ.
 
-## Nhắn tin tương thích với legacy
+## Thông báo tương thích với phiên bản cũ
 
-Để tương thích với script, lỗi probe giữ nguyên dòng đầu tiên này:
+Để bảo đảm khả năng tương thích với tập lệnh, lỗi thăm dò giữ nguyên dòng đầu tiên sau đây:
 
 `Auth profile credentials are missing or expired.`
 
-Chi tiết thân thiện với người dùng và mã lý do ổn định có thể được thêm vào các dòng tiếp theo.
+Chi tiết thân thiện với người dùng và mã lý do ổn định xuất hiện ở các dòng tiếp theo theo dạng `↳ Auth reason [code]: ...`.
 
 ## Liên quan
 
-- [Quản lý secrets](/vi/gateway/secrets)
+- [Quản lý bí mật](/vi/gateway/secrets)
 - [Lưu trữ xác thực](/vi/concepts/oauth)

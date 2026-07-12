@@ -1,95 +1,83 @@
 ---
 read_when:
     - Autonome agentworkflows instellen die zonder prompts per taak worden uitgevoerd
-    - Definiëren wat de agent zelfstandig kan doen versus waarvoor menselijke goedkeuring nodig is
-    - Multi-programma-agents structureren met duidelijke grenzen en escalatieregels
-summary: Permanente operationele bevoegdheid definiëren voor autonome agentprogramma's
-title: Vaste instructies
+    - Bepalen wat de agent zelfstandig kan doen en waarvoor menselijke goedkeuring nodig is
+    - Agents met meerdere programma's structureren met duidelijke grenzen en escalatieregels
+summary: Definieer permanente operationele bevoegdheid voor autonome agentprogramma's
+title: Doorlopende instructies
 x-i18n:
-    generated_at: "2026-05-12T00:56:13Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:35:21Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3a51baa7aca31cb34b682983374d4d551ed6ab57ae54a5c63e7d044bffeef756
+    source_hash: 9e7ad622efe734facc9dc3716f5ee7f57ed3923499db78730bda234a5c62ad80
     source_path: automation/standing-orders.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Vaste opdrachten geven je agent **permanente operationele bevoegdheid** voor gedefinieerde programma's. In plaats van telkens afzonderlijke taakinstructies te geven, definieer je programma's met een duidelijke scope, triggers en escalatieregels - en de agent voert autonoom uit binnen die grenzen.
+Doorlopende opdrachten geven je agent **permanente operationele bevoegdheid** voor gedefinieerde programma’s. In plaats van de agent voor elke taak een opdracht te geven, definieer je programma’s met een duidelijke reikwijdte, triggers en escalatieregels, waarna de agent binnen die grenzen autonoom handelt: "Jij bent verantwoordelijk voor het wekelijkse rapport. Stel het elke vrijdag samen, verstuur het en escaleer alleen als er iets niet klopt."
 
-Dit is het verschil tussen je assistent elke vrijdag vertellen "verstuur het wekelijkse rapport" en vaste bevoegdheid geven: "Jij beheert het wekelijkse rapport. Stel het elke vrijdag samen, verstuur het, en escaleer alleen als er iets verkeerd lijkt."
+## Waarom doorlopende opdrachten
 
-## Waarom vaste opdrachten
+**Zonder doorlopende opdrachten:** je geeft de agent voor elke taak een opdracht, routinewerk wordt vergeten of vertraagd en jij wordt de bottleneck.
 
-**Zonder vaste opdrachten:**
-
-- Je moet de agent voor elke taak prompten
-- De agent blijft inactief tussen verzoeken
-- Routinematig werk wordt vergeten of vertraagd
-- Jij wordt de bottleneck
-
-**Met vaste opdrachten:**
-
-- De agent voert autonoom uit binnen gedefinieerde grenzen
-- Routinematig werk gebeurt volgens planning zonder prompts
-- Je wordt alleen betrokken bij uitzonderingen en goedkeuringen
-- De agent vult inactieve tijd productief in
+**Met doorlopende opdrachten:** de agent handelt autonoom binnen gedefinieerde grenzen, routinewerk gebeurt volgens planning en je wordt alleen betrokken bij uitzonderingen en goedkeuringen.
 
 ## Hoe ze werken
 
-Vaste opdrachten worden gedefinieerd in de bestanden van je [agentwerkruimte](/nl/concepts/agent-workspace). De aanbevolen aanpak is om ze direct in `AGENTS.md` op te nemen (dit wordt elke sessie automatisch geïnjecteerd), zodat de agent ze altijd in context heeft. Voor grotere configuraties kun je ze ook in een apart bestand plaatsen, zoals `standing-orders.md`, en daarnaar verwijzen vanuit `AGENTS.md`.
+Doorlopende opdrachten worden gedefinieerd in de bestanden van je [agentwerkruimte](/nl/concepts/agent-workspace). De aanbevolen aanpak is om ze rechtstreeks op te nemen in `AGENTS.md` (dat bij elke sessie automatisch wordt geïnjecteerd), zodat de agent ze altijd in de context heeft. Voor grotere configuraties kun je ze ook in een speciaal bestand plaatsen, zoals `standing-orders.md`, en daar vanuit `AGENTS.md` naar verwijzen.
 
 Elk programma specificeert:
 
-1. **Scope** - wat de agent bevoegd is te doen
-2. **Triggers** - wanneer uit te voeren (planning, gebeurtenis of voorwaarde)
-3. **Goedkeuringspoorten** - waarvoor menselijke goedkeuring nodig is vóór actie
-4. **Escalatieregels** - wanneer te stoppen en om hulp te vragen
+1. **Reikwijdte** - waartoe de agent bevoegd is
+2. **Triggers** - wanneer het moet worden uitgevoerd (planning, gebeurtenis of voorwaarde)
+3. **Goedkeuringspoorten** - waarvoor menselijke goedkeuring vereist is voordat er wordt gehandeld
+4. **Escalatieregels** - wanneer de agent moet stoppen en om hulp moet vragen
 
-De agent laadt deze instructies elke sessie via de bootstrapbestanden van de werkruimte (zie [Agentwerkruimte](/nl/concepts/agent-workspace) voor de volledige lijst met automatisch geïnjecteerde bestanden) en voert ze uit, gecombineerd met [Cron-taken](/nl/automation/cron-jobs) voor tijdgebaseerde handhaving.
+De agent laadt deze instructies tijdens elke sessie via de bootstrapbestanden van de werkruimte (zie [Agentwerkruimte](/nl/concepts/agent-workspace) voor de volledige lijst met automatisch geïnjecteerde bestanden) en voert ze uit, in combinatie met [Cron-taken](/nl/automation/cron-jobs) voor tijdgebonden uitvoering.
 
 <Tip>
-Zet vaste opdrachten in `AGENTS.md` om te garanderen dat ze elke sessie worden geladen. De werkruimte-bootstrap injecteert automatisch `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md` en `MEMORY.md` - maar geen willekeurige bestanden in submappen.
+Plaats doorlopende opdrachten in `AGENTS.md` om te garanderen dat ze tijdens elke sessie worden geladen. De bootstrap van de werkruimte injecteert automatisch `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md` en `MEMORY.md`, maar geen willekeurige bestanden in submappen.
 </Tip>
 
-## Anatomie van een vaste opdracht
+## Opbouw van een doorlopende opdracht
 
 ```markdown
-## Program: Weekly Status Report
+## Programma: Wekelijks statusrapport
 
-**Authority:** Compile data, generate report, deliver to stakeholders
-**Trigger:** Every Friday at 4 PM (enforced via cron job)
-**Approval gate:** None for standard reports. Flag anomalies for human review.
-**Escalation:** If data source is unavailable or metrics look unusual (>2σ from norm)
+**Bevoegdheid:** Gegevens verzamelen, rapport genereren, aan belanghebbenden leveren
+**Trigger:** Elke vrijdag om 16.00 uur (afgedwongen via een Cron-taak)
+**Goedkeuringspoort:** Geen voor standaardrapporten. Markeer afwijkingen voor menselijke controle.
+**Escalatie:** Als een gegevensbron niet beschikbaar is of statistieken ongebruikelijk lijken (>2σ van de norm)
 
-### Execution steps
+### Uitvoeringsstappen
 
-1. Pull metrics from configured sources
-2. Compare to prior week and targets
-3. Generate report in Reports/weekly/YYYY-MM-DD.md
-4. Deliver summary via configured channel
-5. Log completion to Agent/Logs/
+1. Statistieken ophalen uit geconfigureerde bronnen
+2. Vergelijken met de vorige week en doelstellingen
+3. Rapport genereren in Reports/weekly/YYYY-MM-DD.md
+4. Samenvatting leveren via het geconfigureerde kanaal
+5. Voltooiing vastleggen in Agent/Logs/
 
-### What NOT to do
+### Wat je NIET moet doen
 
-- Do not send reports to external parties
-- Do not modify source data
-- Do not skip delivery if metrics look bad - report accurately
+- Verstuur geen rapporten naar externe partijen
+- Wijzig de brongegevens niet
+- Sla de levering niet over als de statistieken slecht lijken; rapporteer nauwkeurig
 ```
 
-## Vaste opdrachten plus Cron-taken
+## Doorlopende opdrachten plus Cron-taken
 
-Vaste opdrachten definiëren **wat** de agent bevoegd is te doen. [Cron-taken](/nl/automation/cron-jobs) definiëren **wanneer** het gebeurt. Ze werken samen:
+Doorlopende opdrachten definiëren **wat** de agent mag doen. [Cron-taken](/nl/automation/cron-jobs) definiëren **wanneer** dit gebeurt. Ze werken samen:
 
-```
-Standing Order: "You own the daily inbox triage"
+```text
+Doorlopende opdracht: "Jij bent verantwoordelijk voor de dagelijkse triage van het Postvak IN"
     ↓
-Cron Job (8 AM daily): "Execute inbox triage per standing orders"
+Cron-taak (dagelijks om 8.00 uur): "Voer de triage van het Postvak IN uit volgens de doorlopende opdrachten"
     ↓
-Agent: Reads standing orders → executes steps → reports results
+Agent: Leest doorlopende opdrachten → voert stappen uit → rapporteert resultaten
 ```
 
-De prompt van de Cron-taak moet naar de vaste opdracht verwijzen in plaats van die te dupliceren:
+De prompt van de Cron-taak moet naar de doorlopende opdracht verwijzen in plaats van deze te dupliceren:
 
 ```bash
 openclaw cron add \
@@ -100,159 +88,159 @@ openclaw cron add \
   --announce \
   --channel imessage \
   --to "+1XXXXXXXXXX" \
-  --message "Execute daily inbox triage per standing orders. Check mail for new alerts. Parse, categorize, and persist each item. Report summary to owner. Escalate unknowns."
+  --message "Voer de dagelijkse triage van het Postvak IN uit volgens de doorlopende opdrachten. Controleer e-mail op nieuwe waarschuwingen. Ontleed, categoriseer en bewaar elk item. Rapporteer de samenvatting aan de eigenaar. Escaleer onbekende zaken."
 ```
 
 ## Voorbeelden
 
-### Voorbeeld 1: content en sociale media (wekelijkse cyclus)
+### Voorbeeld 1: inhoud en sociale media (wekelijkse cyclus)
 
 ```markdown
-## Program: Content & Social Media
+## Programma: Inhoud en sociale media
 
-**Authority:** Draft content, schedule posts, compile engagement reports
-**Approval gate:** All posts require owner review for first 30 days, then standing approval
-**Trigger:** Weekly cycle (Monday review → mid-week drafts → Friday brief)
+**Bevoegdheid:** Inhoud opstellen, berichten inplannen, betrokkenheidsrapporten samenstellen
+**Goedkeuringspoort:** Alle berichten vereisen de eerste 30 dagen controle door de eigenaar, daarna permanente goedkeuring
+**Trigger:** Wekelijkse cyclus (controle op maandag → concepten halverwege de week → briefing op vrijdag)
 
-### Weekly cycle
+### Wekelijkse cyclus
 
-- **Monday:** Review platform metrics and audience engagement
-- **Tuesday-Thursday:** Draft social posts, create blog content
-- **Friday:** Compile weekly marketing brief → deliver to owner
+- **Maandag:** Platformstatistieken en publieksbetrokkenheid beoordelen
+- **Dinsdag-donderdag:** Berichten voor sociale media opstellen, bloginhoud maken
+- **Vrijdag:** Wekelijkse marketingbriefing samenstellen → aan eigenaar leveren
 
-### Content rules
+### Inhoudsregels
 
-- Voice must match the brand (see SOUL.md or brand voice guide)
-- Never identify as AI in public-facing content
-- Include metrics when available
-- Focus on value to audience, not self-promotion
+- De schrijfstijl moet bij het merk passen (zie SOUL.md of de stijlgids van het merk)
+- Maak in openbare inhoud nooit bekend dat je AI bent
+- Neem statistieken op wanneer die beschikbaar zijn
+- Richt je op waarde voor het publiek, niet op zelfpromotie
 ```
 
-### Voorbeeld 2: financiële operatie (gebeurtenisgestuurd)
+### Voorbeeld 2: financiële activiteiten (gebeurtenisgestuurd)
 
 ```markdown
-## Program: Financial Processing
+## Programma: Financiële verwerking
 
-**Authority:** Process transaction data, generate reports, send summaries
-**Approval gate:** None for analysis. Recommendations require owner approval.
-**Trigger:** New data file detected OR scheduled monthly cycle
+**Bevoegdheid:** Transactiegegevens verwerken, rapporten genereren, samenvattingen versturen
+**Goedkeuringspoort:** Geen voor analyses. Aanbevelingen vereisen goedkeuring van de eigenaar.
+**Trigger:** Nieuw gegevensbestand gedetecteerd OF geplande maandelijkse cyclus
 
-### When new data arrives
+### Wanneer nieuwe gegevens binnenkomen
 
-1. Detect new file in designated input directory
-2. Parse and categorize all transactions
-3. Compare against budget targets
-4. Flag: unusual items, threshold breaches, new recurring charges
-5. Generate report in designated output directory
-6. Deliver summary to owner via configured channel
+1. Nieuw bestand in de aangewezen invoermap detecteren
+2. Alle transacties ontleden en categoriseren
+3. Vergelijken met budgetdoelstellingen
+4. Markeren: ongebruikelijke items, overschrijdingen van drempelwaarden, nieuwe terugkerende kosten
+5. Rapport genereren in de aangewezen uitvoermap
+6. Samenvatting via het geconfigureerde kanaal aan de eigenaar leveren
 
-### Escalation rules
+### Escalatieregels
 
-- Single item > $500: immediate alert
-- Category > budget by 20%: flag in report
-- Unrecognizable transaction: ask owner for categorization
-- Failed processing after 2 retries: report failure, do not guess
+- Afzonderlijk item > $500: onmiddellijke waarschuwing
+- Categorie 20% boven budget: markeren in rapport
+- Onherkenbare transactie: eigenaar om categorisering vragen
+- Verwerking mislukt na 2 nieuwe pogingen: mislukking rapporteren, niet gokken
 ```
 
-### Voorbeeld 3: monitoring en waarschuwingen (continu)
+### Voorbeeld 3: bewaking en waarschuwingen (continu)
 
 ```markdown
-## Program: System Monitoring
+## Programma: Systeembewaking
 
-**Authority:** Check system health, restart services, send alerts
-**Approval gate:** Restart services automatically. Escalate if restart fails twice.
-**Trigger:** Every heartbeat cycle
+**Bevoegdheid:** Systeemstatus controleren, services opnieuw starten, waarschuwingen versturen
+**Goedkeuringspoort:** Services automatisch opnieuw starten. Escaleren als opnieuw starten twee keer mislukt.
+**Trigger:** Elke Heartbeat-cyclus
 
-### Checks
+### Controles
 
-- Service health endpoints responding
-- Disk space above threshold
-- Pending tasks not stale (>24 hours)
-- Delivery channels operational
+- Eindpunten voor servicestatus reageren
+- Schijfruimte boven drempelwaarde
+- Openstaande taken zijn niet verouderd (>24 uur)
+- Leveringskanalen zijn operationeel
 
-### Response matrix
+### Reactiematrix
 
-| Condition        | Action                   | Escalate?                |
-| ---------------- | ------------------------ | ------------------------ |
-| Service down     | Restart automatically    | Only if restart fails 2x |
-| Disk space < 10% | Alert owner              | Yes                      |
-| Stale task > 24h | Remind owner             | No                       |
-| Channel offline  | Log and retry next cycle | If offline > 2 hours     |
+| Voorwaarde            | Actie                                  | Escaleren?                       |
+| --------------------- | -------------------------------------- | -------------------------------- |
+| Service niet actief   | Automatisch opnieuw starten            | Alleen als herstart 2x mislukt   |
+| Schijfruimte < 10%    | Eigenaar waarschuwen                    | Ja                               |
+| Verouderde taak > 24u | Eigenaar eraan herinneren               | Nee                              |
+| Kanaal offline        | Vastleggen en volgende cyclus opnieuw proberen | Als het > 2 uur offline is |
 ```
 
-## Patroon uitvoeren-verifiëren-rapporteren
+## Patroon uitvoeren-controleren-rapporteren
 
-Vaste opdrachten werken het best wanneer ze worden gecombineerd met strikte uitvoeringsdiscipline. Elke taak in een vaste opdracht moet deze lus volgen:
+Doorlopende opdrachten werken het beste in combinatie met strikte uitvoeringsdiscipline. Elke taak in een doorlopende opdracht moet deze cyclus volgen:
 
-1. **Uitvoeren** - Doe het daadwerkelijke werk (bevestig de instructie niet alleen)
-2. **Verifiëren** - Bevestig dat het resultaat correct is (bestand bestaat, bericht afgeleverd, gegevens geparsed)
-3. **Rapporteren** - Vertel de eigenaar wat is gedaan en wat is geverifieerd
+1. **Uitvoeren** - Voer het daadwerkelijke werk uit (bevestig de instructie niet alleen)
+2. **Controleren** - Bevestig dat het resultaat correct is (bestand bestaat, bericht geleverd, gegevens ontleed)
+3. **Rapporteren** - Vertel de eigenaar wat er is gedaan en wat er is gecontroleerd
 
 ```markdown
-### Execution rules
+### Uitvoeringsregels
 
-- Every task follows Execute-Verify-Report. No exceptions.
-- "I'll do that" is not execution. Do it, then report.
-- "Done" without verification is not acceptable. Prove it.
-- If execution fails: retry once with adjusted approach.
-- If still fails: report failure with diagnosis. Never silently fail.
-- Never retry indefinitely - 3 attempts max, then escalate.
+- Elke taak volgt Uitvoeren-Controleren-Rapporteren. Geen uitzonderingen.
+- "Dat doe ik" is geen uitvoering. Doe het en rapporteer daarna.
+- "Klaar" zonder controle is niet acceptabel. Bewijs het.
+- Als de uitvoering mislukt: probeer het eenmaal opnieuw met een aangepaste aanpak.
+- Als het nog steeds mislukt: rapporteer de mislukking met een diagnose. Laat een mislukking nooit onvermeld.
+- Blijf nooit onbeperkt opnieuw proberen: maximaal 3 pogingen, daarna escaleren.
 ```
 
-Dit patroon voorkomt de meest voorkomende faalmodus van agents: een taak bevestigen zonder deze te voltooien.
+Dit patroon voorkomt de meest voorkomende foutmodus van een agent: een taak bevestigen zonder deze te voltooien.
 
-## Architectuur met meerdere programma's
+## Architectuur met meerdere programma’s
 
-Voor agents die meerdere aandachtsgebieden beheren, organiseer je vaste opdrachten als afzonderlijke programma's met duidelijke grenzen:
+Voor agents die meerdere aandachtsgebieden beheren, organiseer je doorlopende opdrachten als afzonderlijke programma’s met duidelijke grenzen:
 
 ```markdown
-## Program 1: [Domain A] (Weekly)
+## Programma 1: [Domein A] (Wekelijks)
 
 ...
 
-## Program 2: [Domain B] (Monthly + On-Demand)
+## Programma 2: [Domein B] (Maandelijks + op aanvraag)
 
 ...
 
-## Program 3: [Domain C] (As-Needed)
+## Programma 3: [Domein C] (Indien nodig)
 
 ...
 
-## Escalation Rules (All Programs)
+## Escalatieregels (Alle programma’s)
 
-- [Common escalation criteria]
-- [Approval gates that apply across programs]
+- [Gemeenschappelijke escalatiecriteria]
+- [Goedkeuringspoorten die voor alle programma’s gelden]
 ```
 
-Elk programma moet hebben:
+Elk programma moet het volgende hebben:
 
-- Een eigen **triggercadans** (wekelijks, maandelijks, gebeurtenisgestuurd, continu)
-- Eigen **goedkeuringspoorten** (sommige programma's hebben meer toezicht nodig dan andere)
+- Een eigen **triggerfrequentie** (wekelijks, maandelijks, gebeurtenisgestuurd, continu)
+- Eigen **goedkeuringspoorten** (sommige programma’s vereisen meer toezicht dan andere)
 - Duidelijke **grenzen** (de agent moet weten waar het ene programma eindigt en het andere begint)
 
-## Best practices
+## Aanbevolen werkwijzen
 
-### Doen
+### Wel doen
 
-- Begin met beperkte bevoegdheid en breid uit naarmate het vertrouwen groeit
-- Definieer expliciete goedkeuringspoorten voor acties met hoog risico
-- Neem secties "Wat NIET te doen" op - grenzen zijn net zo belangrijk als toestemmingen
-- Combineer met Cron-taken voor betrouwbare tijdgebaseerde uitvoering
-- Controleer agentlogs wekelijks om te verifiëren dat vaste opdrachten worden gevolgd
-- Werk vaste opdrachten bij naarmate je behoeften veranderen - het zijn levende documenten
+- Begin met beperkte bevoegdheid en breid deze uit naarmate het vertrouwen groeit
+- Definieer expliciete goedkeuringspoorten voor handelingen met een hoog risico
+- Neem secties met "Wat je NIET moet doen" op; grenzen zijn net zo belangrijk als machtigingen
+- Combineer met Cron-taken voor betrouwbare tijdgebonden uitvoering
+- Controleer wekelijks de agentlogboeken om te verifiëren dat de doorlopende opdrachten worden gevolgd
+- Werk doorlopende opdrachten bij naarmate je behoeften veranderen; het zijn levende documenten
 
 ### Vermijden
 
-- Op dag één brede bevoegdheid geven ("doe wat jij het beste vindt")
-- Escalatieregels overslaan - elk programma heeft een clausule nodig voor "wanneer stoppen en vragen"
-- Aannemen dat de agent mondelinge instructies onthoudt - zet alles in het bestand
-- Aandachtsgebieden mengen in één programma - gebruik afzonderlijke programma's voor afzonderlijke domeinen
-- Vergeten af te dwingen met Cron-taken - vaste opdrachten zonder triggers worden suggesties
+- Geef op de eerste dag geen brede bevoegdheid ("doe wat jij het beste vindt")
+- Sla escalatieregels niet over; elk programma heeft een clausule nodig die bepaalt wanneer de agent moet stoppen en om hulp moet vragen
+- Ga er niet van uit dat de agent mondelinge instructies onthoudt; zet alles in het bestand
+- Meng geen aandachtsgebieden in één programma; gebruik afzonderlijke programma’s voor afzonderlijke domeinen
+- Vergeet niet de uitvoering met Cron-taken af te dwingen; doorlopende opdrachten zonder triggers worden suggesties
 
 ## Gerelateerd
 
-- [Automatisering](/nl/automation): alle automatiseringsmechanismen in één overzicht.
-- [Cron-taken](/nl/automation/cron-jobs): planningshandhaving voor vaste opdrachten.
-- [Hooks](/nl/automation/hooks): gebeurtenisgestuurde scripts voor lifecyclegebeurtenissen van agents.
-- [Webhooks](/nl/automation/cron-jobs#webhooks): inkomende HTTP-gebeurtenistriggers.
-- [Agentwerkruimte](/nl/concepts/agent-workspace): waar vaste opdrachten staan, inclusief de volledige lijst met automatisch geïnjecteerde bootstrapbestanden (`AGENTS.md`, `SOUL.md`, enz.).
+- [Automatisering](/nl/automation): alle automatiseringsmechanismen in één oogopslag.
+- [Cron-taken](/nl/automation/cron-jobs): geplande uitvoering van doorlopende opdrachten.
+- [Hooks](/nl/automation/hooks): gebeurtenisgestuurde scripts voor gebeurtenissen in de levenscyclus van agents.
+- [Webhooks](/nl/automation/cron-jobs#webhooks): triggers voor inkomende HTTP-gebeurtenissen.
+- [Agentwerkruimte](/nl/concepts/agent-workspace): waar doorlopende opdrachten zich bevinden, inclusief de volledige lijst met automatisch geïnjecteerde bootstrapbestanden (`AGENTS.md`, `SOUL.md`, enz.).

@@ -5,46 +5,46 @@ read_when:
 summary: RPC-adapters voor externe CLI's (signal-cli, imsg) en Gateway-patronen
 title: RPC-adapters
 x-i18n:
-    generated_at: "2026-05-11T20:48:39Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:24:03Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 63556f140bee55821fa0a09ff9808e163728049f8db4c58f7bb4ceca6e1cac1a
+    source_hash: 6ddb3fb741c90fe7b01ba35376b71865584b1e507cf610705392452790fb76f5
     source_path: reference/rpc.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw integreert externe CLI's via JSON-RPC. Vandaag worden twee patronen gebruikt.
+OpenClaw integreert externe CLI's via JSON-RPC. Momenteel worden twee patronen gebruikt.
 
 ## Patroon A: HTTP-daemon (signal-cli)
 
 - `signal-cli` draait als daemon met JSON-RPC via HTTP.
-- De gebeurtenisstroom is SSE (`/api/v1/events`).
-- Gezondheidscontrole: `/api/v1/check`.
+- De gebeurtenisstroom gebruikt SSE (`/api/v1/events`).
+- Statuscontrole: `/api/v1/check`.
 - OpenClaw beheert de levenscyclus wanneer `channels.signal.autoStart=true`.
 
-Zie [Signal](/nl/channels/signal) voor installatie en eindpunten.
+Zie [Signal](/nl/channels/signal) voor de configuratie en eindpunten.
 
-## Patroon B: stdio-kindproces (imsg)
+## Patroon B: stdio-subproces (imsg)
 
-- OpenClaw start `imsg rpc` als kindproces voor [iMessage](/nl/channels/imessage).
+- OpenClaw start `imsg rpc` als subproces voor [iMessage](/nl/channels/imessage).
 - JSON-RPC is regelgescheiden via stdin/stdout (één JSON-object per regel).
-- Geen TCP-poort, geen daemon vereist.
+- Geen TCP-poort en geen daemon vereist.
 
 Gebruikte kernmethoden:
 
 - `watch.subscribe` → meldingen (`method: "message"`)
 - `watch.unsubscribe`
 - `send`
-- `chats.list` (probe/diagnostiek)
+- `chats.list` (controle/diagnostiek)
 
-Zie [iMessage](/nl/channels/imessage) voor legacy-installatie en adressering (`chat_id` heeft de voorkeur).
+Zie [iMessage](/nl/channels/imessage) voor de configuratie en adressering (`chat_id` heeft de voorkeur boven weergaveteksten).
 
-## Adapterrichtlijnen
+## Richtlijnen voor adapters
 
-- Gateway beheert het proces (start/stop gekoppeld aan de levenscyclus van de provider).
-- Houd RPC-clients robuust: time-outs, herstarten bij afsluiten.
-- Geef de voorkeur aan stabiele ID's (bijv. `chat_id`) boven weergaveteksten.
+- Gateway beheert het proces (starten/stoppen is gekoppeld aan de levenscyclus van de provider).
+- Houd RPC-clients robuust: gebruik time-outs en herstart ze na afsluiten.
+- Geef de voorkeur aan stabiele ID's (bijvoorbeeld `chat_id`) boven weergaveteksten.
 
 ## Gerelateerd
 

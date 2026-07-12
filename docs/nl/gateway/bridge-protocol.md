@@ -1,102 +1,85 @@
 ---
 read_when:
-    - Node-clients bouwen of debuggen (iOS/Android/macOS-node-modus)
-    - Onderzoeken van koppelings- of bridge-authenticatiefouten
-    - Controle van het Node-oppervlak dat door de Gateway wordt blootgesteld
-summary: 'Historisch brugprotocol (verouderde nodes): TCP JSONL, koppeling, RPC met beperkte scope'
-title: Brugprotocol
+    - Oude Node-clientcode of gearchiveerde koppelingslogboeken onderzoeken
+    - Controleren wat het verouderde Node-oppervlak voorheen beschikbaar stelde
+summary: 'Historisch bridgeprotocol (verouderde nodes): TCP JSONL, koppeling, bereikgebonden RPC'
+title: Bridgeprotocol
 x-i18n:
-    generated_at: "2026-06-27T17:31:51Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:52:19Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 485d18f94b731018c6e0df493068b0b6aceff9afba6bebf1350db63c04cee98c
+    source_hash: 6e8b69c59f2170439f0e7b139bf5bbdb429d7c9d8dde7b36cd64aab63939c95d
     source_path: gateway/bridge-protocol.md
     workflow: 16
 ---
 
 <Warning>
-De TCP-bridge is **verwijderd**. Huidige OpenClaw-builds leveren de bridge-listener niet mee en `bridge.*`-configuratiesleutels staan niet meer in het schema. Deze pagina wordt alleen bewaard als historische referentie. Gebruik het [Gateway Protocol](/nl/gateway/protocol) voor alle Node-/operatorclients.
+De TCP-bridge is **verwijderd**. Huidige builds van OpenClaw bevatten de bridge-listener niet en de configuratiesleutels `bridge.*` maken niet langer deel uit van het schema. Deze pagina dient uitsluitend als historische referentie. Gebruik het [Gateway-protocol](/nl/gateway/protocol) voor alle Node-/operatorclients.
 </Warning>
 
-## Waarom het bestond
+## Waarom deze bestond
 
-- **Beveiligingsgrens**: de bridge stelt een kleine toestemmingslijst beschikbaar in plaats van het
-  volledige Gateway-API-oppervlak.
-- **Koppeling + Node-identiteit**: Node-toelating is eigendom van de Gateway en gekoppeld
-  aan een token per Node.
-- **Ontdekkings-UX**: Nodes kunnen Gateways ontdekken via Bonjour op LAN, of rechtstreeks
-  verbinding maken via een tailnet.
-- **Loopback-WS**: het volledige WS-besturingsvlak blijft lokaal tenzij het via SSH wordt getunneld.
+- **Beveiligingsgrens**: stelde een kleine toestemmingslijst beschikbaar in plaats van het volledige API-oppervlak van de Gateway.
+- **Koppeling + Node-identiteit**: de toelating van Nodes werd beheerd door de Gateway en was gekoppeld aan een token per Node.
+- **Detectie-UX**: Nodes konden Gateways via Bonjour op het LAN detecteren of rechtstreeks via een tailnet verbinding maken.
+- **Loopback-WS**: het volledige WS-besturingsvlak bleef lokaal, tenzij het via SSH werd getunneld.
 
 ## Transport
 
 - TCP, één JSON-object per regel (JSONL).
-- Optionele TLS (wanneer `bridge.tls.enabled` waar is).
-- De historische standaard luisterpoort was `18790` (huidige builds starten geen
-  TCP-bridge).
+- Optionele TLS (`bridge.tls.enabled: true`).
+- De standaardpoort van de listener was `18790`.
 
-Wanneer TLS is ingeschakeld, bevatten discovery-TXT-records `bridgeTls=1` plus
-`bridgeTlsSha256` als niet-geheime hint. Let op dat Bonjour/mDNS-TXT-records
-niet geauthenticeerd zijn; clients mogen de geadverteerde vingerafdruk niet als
-gezaghebbende pin behandelen zonder expliciete gebruikersintentie of andere out-of-band verificatie.
+Wanneer TLS was ingeschakeld, bevatten TXT-records voor detectie `bridgeTls=1` plus `bridgeTlsSha256` als niet-geheime aanwijzing. Bonjour-/mDNS-TXT-records zijn niet geauthenticeerd; clients konden de geadverteerde vingerafdruk zonder andere verificatie buiten het gebruikte kanaal niet als gezaghebbende pin beschouwen.
 
-## Handshake + koppeling
+## Handshake en koppeling
 
-1. Client stuurt `hello` met Node-metadata + token (als al gekoppeld).
-2. Als er geen koppeling is, antwoordt de Gateway met `error` (`NOT_PAIRED`/`UNAUTHORIZED`).
-3. Client stuurt `pair-request`.
-4. Gateway wacht op goedkeuring en stuurt daarna `pair-ok` en `hello-ok`.
+1. De client verzendt `hello` met Node-metadata en een token (indien al gekoppeld).
+2. Als de client niet gekoppeld is, antwoordt de Gateway met `error` (`NOT_PAIRED` / `UNAUTHORIZED`).
+3. De client verzendt `pair-request`.
+4. De Gateway wacht op goedkeuring en verzendt vervolgens `pair-ok` en `hello-ok`.
 
-Historisch gaf `hello-ok` `serverName` terug; gehoste Plugin-oppervlakken worden nu
-geadverteerd via `pluginSurfaceUrls`. Canvas/A2UI gebruikt
-`pluginSurfaceUrls.canvas`; de verouderde alias `canvasHostUrl` maakt geen deel uit van
-het gerefactorde protocol.
+`hello-ok` retourneerde voorheen `serverName`; gehoste Plugin-oppervlakken worden nu via `pluginSurfaceUrls` in het huidige Gateway-protocol aangekondigd (Canvas/A2UI gebruikt `pluginSurfaceUrls.canvas`).
 
 ## Frames
 
-Client → Gateway:
+Van client naar Gateway:
 
-- `req` / `res`: scoped Gateway-RPC (chat, sessies, configuratie, gezondheid, voicewake, skills.bins)
-- `event`: Node-signalen (spraaktranscript, agentverzoek, chatabonnement, exec-levenscyclus)
+- `req` / `res`: afgebakende Gateway-RPC (chat, sessies, configuratie, status, spraakactivering, skills.bins).
+- `event`: Node-signalen (spraaktranscript, agentverzoek, chatabonnement, exec-levenscyclus).
 
-Gateway → Client:
+Van Gateway naar client:
 
-- `invoke` / `invoke-res`: Node-commando's (`canvas.*`, `camera.*`, `screen.record`,
-  `location.get`, `sms.send`)
-- `event`: chatupdates voor geabonneerde sessies
-- `ping` / `pong`: keepalive
+- `invoke` / `invoke-res`: Node-opdrachten (`canvas.*`, `camera.*`, `screen.record`, `location.get`, `sms.send`).
+- `event`: chatupdates voor sessies waarop is geabonneerd.
+- `ping` / `pong`: verbinding actief houden.
 
-Verouderde handhaving van de toestemmingslijst stond in `src/gateway/server-bridge.ts` (verwijderd).
+De handhaving van de toestemmingslijst bevond zich in `src/gateway/server-bridge.ts` (verwijderd).
 
 ## Exec-levenscyclusgebeurtenissen
 
-Nodes kunnen `exec.finished`-gebeurtenissen uitzenden om voltooide `system.run`-activiteit zichtbaar te maken.
-Deze worden in de Gateway naar systeemgebeurtenissen gemapt. (Verouderde Nodes kunnen nog steeds `exec.started` uitzenden.)
-Nodes kunnen `exec.denied` uitzenden voor geweigerde `system.run`-pogingen; de Gateway accepteert
-de gebeurtenis als een terminale weigering en plaatst geen systeemgebeurtenis in de wachtrij en wekt geen agentwerk.
+Nodes verzonden `exec.finished` om voltooide `system.run`-activiteit zichtbaar te maken; deze werd door de Gateway aan systeemgebeurtenissen gekoppeld (verouderde Nodes konden ook `exec.started` verzenden). `exec.denied` markeerde een geweigerde poging tot `system.run` als een definitieve weigering, zonder een systeemgebeurtenis in de wachtrij te plaatsen of agentwerk te activeren.
 
-Payloadvelden (allemaal optioneel tenzij vermeld):
+Payloadvelden (allemaal optioneel, tenzij anders vermeld):
 
-- `sessionKey` (verplicht): agentsessie voor gebeurteniscorrelatie en, voor
-  `exec.finished`, levering van systeemgebeurtenissen.
-- `runId`: unieke exec-id voor groepering.
-- `command`: ruwe of geformatteerde commandoreeks.
-- `exitCode`, `timedOut`, `success`, `output`: voltooiingsdetails (alleen voltooid).
-- `reason`: reden van weigering (alleen geweigerd).
+| Veld                             | Opmerkingen                                                                                                                  |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `sessionKey`                     | Vereist. Agentsessie voor gebeurteniscorrelatie en, voor `exec.finished`, aflevering van systeemgebeurtenissen.              |
+| `runId`                          | Unieke exec-id voor groepering.                                                                                              |
+| `command`                        | Onbewerkte of opgemaakte opdrachttekst.                                                                                      |
+| `exitCode`, `timedOut`, `output` | Voltooiingsgegevens (alleen bij voltooiing).                                                                                 |
+| `reason`                         | Reden voor weigering (alleen bij weigering).                                                                                 |
 
-## Historisch tailnet-gebruik
+## Historisch gebruik van tailnet
 
-- Bind de bridge aan een tailnet-IP: `bridge.bind: "tailnet"` in
-  `~/.openclaw/openclaw.json` (alleen historisch; `bridge.*` is niet langer geldig).
-- Clients maken verbinding via MagicDNS-naam of tailnet-IP.
-- Bonjour werkt **niet** tussen netwerken; gebruik indien nodig een handmatige host/poort of wide-area DNS-SD.
+- Bind de bridge aan een tailnet-IP: `bridge.bind: "tailnet"` in `~/.openclaw/openclaw.json` (uitsluitend historisch; `bridge.*` is niet langer geldige configuratie).
+- Clients maakten verbinding via een MagicDNS-naam of tailnet-IP.
+- Bonjour werkt niet tussen netwerken; anders was breednetwerk-DNS-SD of een handmatig opgegeven host/poort vereist.
 
 ## Versiebeheer
 
-De bridge was **impliciet v1** (geen min/max-onderhandeling). Deze sectie is
-alleen historische referentie; huidige Node-/operatorclients gebruiken het WebSocket-
-[Gateway Protocol](/nl/gateway/protocol).
+De bridge was impliciet v1, zonder onderhandeling over minimum- en maximumversies. Huidige Node-/operatorclients gebruiken het WebSocket-[Gateway-protocol](/nl/gateway/protocol), dat wel een bereik van protocolversies onderhandelt.
 
 ## Gerelateerd
 

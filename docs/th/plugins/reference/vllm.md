@@ -4,27 +4,27 @@ read_when:
 summary: เพิ่มการรองรับผู้ให้บริการโมเดล vLLM ให้กับ OpenClaw
 title: Plugin vLLM
 x-i18n:
-    generated_at: "2026-05-02T20:57:35Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:29:10Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: e3220650924c7ce1f5c09127202bd96d08264df60d9e7556cf82e6379fca7dda
     source_path: plugins/reference/vllm.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# vLLM Plugin
+# Plugin vLLM
 
 เพิ่มการรองรับผู้ให้บริการโมเดล vLLM ให้กับ OpenClaw
 
-## การแจกจ่าย
+## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/vllm-provider`
-- เส้นทางการติดตั้ง: รวมอยู่ใน OpenClaw
+- วิธีติดตั้ง: รวมอยู่ใน OpenClaw
 
-## ส่วนติดต่อ
+## ส่วนเชื่อมต่อ
 
-providers: vllm
+ผู้ให้บริการ: vllm
 
 ## เอกสารที่เกี่ยวข้อง
 

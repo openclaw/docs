@@ -1,32 +1,37 @@
 ---
 read_when:
-    - Einen Arbeitsbereich manuell initialisieren
-summary: Arbeitsbereichsvorlage für HEARTBEAT.md
+    - Manuelles Einrichten eines Arbeitsbereichs
+summary: Workspace-Vorlage für HEARTBEAT.md
 title: HEARTBEAT.md-Vorlage
 x-i18n:
-    generated_at: "2026-06-27T18:12:27Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T02:09:25Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 44a1ea787d67110ca53d752706b62f5ce5c4df8637897dee97ce6502f6a05eb6
+    source_hash: 1605f546995e0bdcb11f9bf905173b14aca25cfad664fe2c7644d18c2b4142e2
     source_path: reference/templates/HEARTBEAT.md
     workflow: 16
 ---
 
 # HEARTBEAT.md-Vorlage
 
-`HEARTBEAT.md` befindet sich im Agent-Arbeitsbereich. Lassen Sie die Datei leer oder nur mit Markdown-Kommentaren und Überschriften, wenn OpenClaw Heartbeat-Modellaufrufe überspringen soll.
+`HEARTBEAT.md` befindet sich im Agenten-Arbeitsbereich und enthält die Checkliste für den regelmäßigen Heartbeat. Lassen Sie die Datei leer oder verwenden Sie ausschließlich Leerraum, Markdown-Kommentare, ATX-Überschriften, leere Listenansätze (`- `, `* [ ]`) oder Codeblock-Markierungen, damit OpenClaw den Heartbeat-Modellaufruf vollständig überspringt (`reason=empty-heartbeat-file`).
 
-Die Standard-Laufzeitvorlage ist:
+Mitgelieferter Standardinhalt:
 
 ```markdown
-# Keep this file empty (or with only comments) to skip heartbeat API calls.
+<!-- Heartbeat-Vorlage; ein Inhalt, der ausschließlich aus Kommentaren besteht, verhindert geplante Heartbeat-API-Aufrufe. -->
 
-# Add tasks below when you want the agent to check something periodically.
+# Lassen Sie diese Datei leer (oder verwenden Sie nur Kommentare), um Heartbeat-API-Aufrufe zu überspringen.
+
+# Fügen Sie unten Aufgaben hinzu, wenn der Agent regelmäßig etwas überprüfen soll.
 ```
 
-Fügen Sie unterhalb der Kommentare nur kurze Aufgaben hinzu, wenn der Agent regelmäßig etwas prüfen soll. Halten Sie Heartbeat-Anweisungen klein, da sie bei wiederkehrenden Weckvorgängen gelesen werden.
+Fügen Sie unterhalb der Kommentarzeilen nur dann kurze Aufgaben hinzu, wenn Sie regelmäßige Prüfungen wünschen. Halten Sie die Datei kurz: Heartbeat-Ausführungen lesen diese Datei bei jedem Intervall (standardmäßig alle 30 Minuten), sodass aufgeblähte Anweisungen bei jeder Aktivierung Tokens verbrauchen.
+
+Verwenden Sie für ausschließlich fällige Prüfungen anstelle einer einfachen Checkliste einen strukturierten `tasks:`-Block mit den Feldern `interval` und `prompt` für jede Aufgabe. Format und Verhalten finden Sie unter [HEARTBEAT.md](/de/gateway/heartbeat#heartbeatmd-optional).
 
 ## Verwandte Themen
 
+- [Heartbeat](/de/gateway/heartbeat)
 - [Heartbeat-Konfiguration](/de/gateway/config-agents)

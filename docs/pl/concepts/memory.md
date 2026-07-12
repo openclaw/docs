@@ -1,203 +1,223 @@
 ---
 read_when:
     - Chcesz zrozumieć, jak działa pamięć
-    - Chcesz wiedzieć, jakie pliki pamięci zapisać
+    - Chcesz wiedzieć, które pliki pamięci zapisywać
 summary: Jak OpenClaw zapamiętuje informacje między sesjami
 title: Przegląd pamięci
 x-i18n:
-    generated_at: "2026-06-27T17:27:13Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:58:29Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 9ddcecfa3d902181583ab076f94a69ca323686c3544399dea2572863726dad2c
+    source_hash: c77d71dd6b1916b923fbf72c373f20128c4f604f96cc76150ea27e0f13a541f8
     source_path: concepts/memory.md
     workflow: 16
 ---
 
-OpenClaw zapamiętuje rzeczy, zapisując **zwykłe pliki Markdown** w przestrzeni
-roboczej Twojego agenta. Model „pamięta” tylko to, co zostanie zapisane na dysku — nie ma
-ukrytego stanu.
+OpenClaw zapamiętuje informacje, zapisując zwykłe pliki Markdown w przestrzeni
+roboczej agenta (domyślnie `~/.openclaw/workspace`). Model pamięta tylko to, co
+zostanie zapisane na dysku; nie istnieje żaden ukryty stan.
 
 ## Jak to działa
 
-Twój agent ma trzy pliki związane z pamięcią:
+Agent ma trzy pliki związane z pamięcią:
 
 - **`MEMORY.md`** — pamięć długoterminowa. Trwałe fakty, preferencje i
-  decyzje. Ładowana na początku każdej sesji DM.
-- **`memory/YYYY-MM-DD.md`** (lub **`memory/YYYY-MM-DD-<slug>.md`**) — notatki dzienne.
-  Bieżący kontekst i obserwacje. Notatki z dzisiaj i wczoraj są ładowane
-  automatycznie, a warianty ze slugiem, takie jak te zapisane przez dołączony
-  hook pamięci sesji przy `/new` lub `/reset`, są teraz pobierane razem z plikiem
-  zawierającym samą datę.
-- **`DREAMS.md`** (opcjonalnie) — dziennik Dreaming i podsumowania przebiegów
-  Dreaming do przeglądu przez człowieka, w tym ugruntowane historyczne wpisy uzupełniające.
-
-Te pliki znajdują się w przestrzeni roboczej agenta (domyślnie `~/.openclaw/workspace`).
-
-## Co gdzie trafia
-
-`MEMORY.md` to kompaktowa, opracowana warstwa. Używaj go do trwałych faktów,
-preferencji, stałych decyzji i krótkich podsumowań, które powinny być dostępne na
-początku głównej sesji prywatnej. Nie jest przeznaczony jako surowy transkrypt,
-dziennik dzienny ani pełne archiwum.
-
-Pliki `memory/YYYY-MM-DD.md` są warstwą roboczą. Używaj ich do szczegółowych
-notatek dziennych, obserwacji, podsumowań sesji i surowego kontekstu, który może
-przydać się później. Te pliki są indeksowane dla `memory_search` i `memory_get`, ale nie są
-wstrzykiwane do zwykłego promptu startowego przy każdej turze.
-
-Z czasem agent powinien destylować przydatny materiał z notatek dziennych
-do `MEMORY.md` i usuwać nieaktualne wpisy długoterminowe. Wygenerowane instrukcje
-przestrzeni roboczej i przepływ Heartbeat mogą robić to okresowo; nie musisz
-ręcznie edytować `MEMORY.md` dla każdego zapamiętanego szczegółu.
-
-Jeśli `MEMORY.md` przekroczy budżet pliku startowego, OpenClaw zachowuje plik na
-dysku w całości, ale obcina kopię wstrzykiwaną do kontekstu modelu. Traktuj to jako
-sygnał, aby przenieść szczegółowy materiał z powrotem do `memory/*.md`, zostawić tylko
-trwałe podsumowanie w `MEMORY.md` albo podnieść limity startowe, jeśli wyraźnie
-chcesz przeznaczyć większy budżet promptu. Użyj `/context list`, `/context detail` lub
-`openclaw doctor`, aby zobaczyć rozmiary surowe i wstrzyknięte oraz status obcięcia.
+  decyzje. Wczytywana na początku sesji.
+- **`memory/YYYY-MM-DD.md`** (lub `memory/YYYY-MM-DD-<slug>.md`) — notatki dzienne.
+  Bieżący kontekst i obserwacje. Datowane notatki z dzisiaj i wczoraj są
+  automatycznie wczytywane po zwykłym `/new` lub `/reset`; warianty z
+  identyfikatorem tekstowym, takie jak tworzone przez dołączony hook pamięci
+  sesji, są wczytywane razem z plikiem zawierającym wyłącznie datę.
+- **`DREAMS.md`** (opcjonalny) — Dziennik snów i podsumowania przebiegów
+  Dreaming przeznaczone do weryfikacji przez człowieka, w tym osadzone
+  w źródłach wpisy uzupełniające dane historyczne.
 
 <Tip>
-Jeśli chcesz, aby agent coś zapamiętał, po prostu go poproś: „Zapamiętaj, że
-wolę TypeScript”. Zapisze to do odpowiedniego pliku.
+Jeśli chcesz, aby agent coś zapamiętał, po prostu go o to poproś: „Zapamiętaj,
+że preferuję TypeScript”. Agent zapisze notatkę w odpowiednim pliku.
 </Tip>
 
-## Pamięci wrażliwe na działanie
+## Co trafia do którego pliku
 
-Większość wspomnień można zapisywać jako zwykłe notatki Markdown. Niektóre wspomnienia wpływają jednak na to, co agent powinien zrobić później. W takich przypadkach uchwyć, kiedy można bezpiecznie zadziałać na podstawie notatki, a nie tylko sam fakt.
+`MEMORY.md` jest zwartą, uporządkowaną warstwą: zawiera trwałe fakty,
+preferencje, obowiązujące decyzje i krótkie podsumowania, które powinny być
+dostępne na początku sesji. Nie jest to surowy zapis rozmowy, dziennik ani
+kompletne archiwum.
 
-Uchwyć tę granicę działania, gdy notatka obejmuje:
+Pliki `memory/YYYY-MM-DD.md` stanowią warstwę roboczą: zawierają szczegółowe
+notatki dzienne, obserwacje, podsumowania sesji i surowy kontekst, który może
+nadal przydać się później. Są indeksowane na potrzeby `memory_search` i
+`memory_get`, ale nie są umieszczane w początkowym prompcie przy każdej turze.
 
-- wymagania dotyczące zatwierdzenia lub uprawnień,
-- tymczasowe ograniczenia,
-- przekazania do innej sesji, wątku lub osoby,
-- warunki wygaśnięcia,
-- moment, od którego działanie jest bezpieczne,
-- autorytet źródła lub właściciela,
-- instrukcje, aby uniknąć kuszącego działania.
+Z czasem agent wyodrębnia przydatne informacje z notatek dziennych i przenosi
+je do `MEMORY.md`, a także usuwa nieaktualne wpisy długoterminowe. Wygenerowane
+instrukcje przestrzeni roboczej i przepływ Heartbeat wykonują te czynności
+okresowo; nie musisz ręcznie edytować `MEMORY.md` przy każdym szczególe.
 
-Przydatna pamięć wrażliwa na działanie jasno określa:
+Jeśli rozmiar `MEMORY.md` przekroczy limit pliku początkowego, OpenClaw
+pozostawi cały plik na dysku, ale skróci kopię umieszczaną w kontekście.
+Potraktuj to jako sygnał, aby przenieść szczegółowe informacje do
+`memory/*.md`, pozostawić w `MEMORY.md` wyłącznie trwałe podsumowanie albo
+zwiększyć limity początkowe, jeśli chcesz przeznaczyć większy budżet promptu.
+Użyj `/context list`, `/context detail` lub `openclaw doctor`, aby zobaczyć
+rozmiary surowe i umieszczone w kontekście oraz stan skrócenia.
+
+## Wspomnienia wpływające na działania
+
+Większość wspomnień to zwykłe notatki Markdown. Niektóre wpływają jednak na to,
+co agent powinien zrobić później; w takich przypadkach zapisz nie tylko sam
+fakt, lecz także informację, kiedy można bezpiecznie podjąć na jego podstawie
+działanie.
+
+Zapisz tę granicę działania, gdy notatka dotyczy:
+
+- wymagań dotyczących zatwierdzenia lub uprawnień,
+- tymczasowych ograniczeń,
+- przekazania zadania do innej sesji, wątku lub osoby,
+- warunków wygaśnięcia,
+- momentu, od którego działanie jest bezpieczne,
+- uprawnień źródła lub właściciela,
+- instrukcji, aby powstrzymać się od kuszącego działania.
+
+Przydatne wspomnienie wpływające na działania jasno określa:
 
 - co zmienia przyszłe zachowanie,
 - kiedy lub pod jakim warunkiem ma zastosowanie,
-- kiedy wygasa albo co odblokowuje działanie,
+- kiedy wygasa albo co umożliwia podjęcie działania,
 - czego agent powinien unikać,
-- kto jest źródłem lub właścicielem, jeśli wpływa to na zaufanie lub autorytet.
+- kto jest źródłem lub właścicielem, jeśli wpływa to na zaufanie lub
+  uprawnienia.
 
-Pamięć może zachować kontekst zatwierdzeń, ale nie egzekwuje polityki. Do twardych kontroli operacyjnych używaj ustawień zatwierdzania OpenClaw, piaskownicy i zadań zaplanowanych.
+Pamięć może zachować kontekst zatwierdzenia, ale nie egzekwuje zasad. Do
+twardych mechanizmów kontroli operacyjnej używaj ustawień zatwierdzania
+OpenClaw, piaskownicy i zaplanowanych zadań.
 
 Przykład:
 
 ```md
-The API migration is being designed in another session. Future turns should not edit the API implementation from this thread; use findings here only as design input until the migration plan lands.
+Migracja API jest projektowana w innej sesji. W przyszłych turach nie należy
+edytować implementacji API z tego wątku; ustalenia z tego miejsca mogą służyć
+wyłącznie jako dane wejściowe do projektu, dopóki plan migracji nie zostanie
+wdrożony.
 ```
 
 Inny przykład:
 
 ```md
-A report from an untrusted source needs review before promotion. Future turns should treat it as evidence only; do not store it as durable memory until a trusted reviewer confirms the contents.
+Raport z niezaufanego źródła wymaga weryfikacji przed zatwierdzeniem. W
+przyszłych turach należy traktować go wyłącznie jako materiał dowodowy; nie
+należy zapisywać go jako trwałej pamięci, dopóki zaufany recenzent nie
+potwierdzi jego zawartości.
 ```
 
-Używaj [zobowiązań](/pl/concepts/commitments) do wywnioskowanych, krótkotrwałych działań następczych. Używaj [zadań zaplanowanych](/pl/automation/cron-jobs) do dokładnych przypomnień, kontroli czasowych i pracy cyklicznej. Pamięć nadal może podsumowywać trwały kontekst wokół obu ścieżek.
+Nie jest to wymagany schemat każdego wspomnienia; proste fakty mogą pozostać
+zwięzłe. Używaj granic wpływających na działania, gdy utrata informacji o
+czasie, uprawnieniach, wygaśnięciu lub warunkach bezpiecznego działania mogłaby
+sprawić, że agent zrobi później coś niewłaściwego.
 
-Nie jest to wymagany schemat dla każdej pamięci. Proste fakty mogą pozostać zwięzłe. Używaj granic wrażliwych na działanie wtedy, gdy utrata kontekstu czasu, autorytetu, wygaśnięcia lub bezpieczeństwa działania mogłaby później spowodować błędne działanie agenta.
+Do wywnioskowanych, krótkotrwałych działań następczych używaj
+[zobowiązań](/pl/concepts/commitments). Do dokładnych przypomnień, kontroli
+wykonywanych w określonym czasie i cyklicznych zadań używaj
+[zaplanowanych zadań](/pl/automation/cron-jobs). Pamięć może nadal podsumowywać
+trwały kontekst związany z każdą z tych ścieżek.
 
 ## Wywnioskowane zobowiązania
 
-Niektóre przyszłe działania następcze nie są trwałymi faktami. Jeśli wspomnisz o rozmowie
-jutro, przydatną pamięcią może być „sprawdź po rozmowie”, a nie „zapisz
-to na zawsze w `MEMORY.md`”.
+Niektóre przyszłe działania następcze nie są trwałymi faktami. Jeśli wspomnisz
+o jutrzejszej rozmowie kwalifikacyjnej, przydatnym wspomnieniem może być
+„zapytaj po rozmowie, jak poszło”, a nie „zapisz to na zawsze w `MEMORY.md`”.
 
-[Zobowiązania](/pl/concepts/commitments) to opcjonalne, krótkotrwałe pamięci działań następczych
-dla takiego przypadku. OpenClaw wywnioskowuje je w ukrytym przebiegu w tle, ogranicza je do
-tego samego agenta i kanału oraz dostarcza należne sprawdzenia przez Heartbeat.
-Jawne przypomnienia nadal używają [zadań zaplanowanych](/pl/automation/cron-jobs).
+[Zobowiązania](/pl/concepts/commitments) to opcjonalne, krótkotrwałe wspomnienia
+dotyczące działań następczych przeznaczone do takich przypadków. OpenClaw
+wnioskuje je w ukrytym przebiegu w tle, ogranicza do tego samego agenta i
+kanału oraz dostarcza odpowiednie wiadomości kontrolne za pośrednictwem
+Heartbeat. Jawne przypomnienia nadal korzystają z
+[zaplanowanych zadań](/pl/automation/cron-jobs).
 
 ## Narzędzia pamięci
 
 Agent ma dwa narzędzia do pracy z pamięcią:
 
-- **`memory_search`** — znajduje istotne notatki za pomocą wyszukiwania semantycznego, nawet gdy
-  sformułowanie różni się od oryginału.
-- **`memory_get`** — odczytuje konkretny plik pamięci lub zakres wierszy.
+- **`memory_search`** — znajduje odpowiednie notatki za pomocą wyszukiwania
+  semantycznego, nawet jeśli ich sformułowanie różni się od oryginału.
+- **`memory_get`** — odczytuje określony plik pamięci lub zakres wierszy.
 
-Oba narzędzia są dostarczane przez aktywny plugin pamięci (domyślnie: `memory-core`).
-
-## Plugin towarzyszący Memory Wiki
-
-Jeśli chcesz, aby trwała pamięć zachowywała się bardziej jak utrzymywana baza wiedzy niż
-tylko surowe notatki, użyj dołączonego pluginu `memory-wiki`.
-
-`memory-wiki` kompiluje trwałą wiedzę do skarbca wiki z:
-
-- deterministyczną strukturą stron
-- ustrukturyzowanymi twierdzeniami i dowodami
-- śledzeniem sprzeczności i świeżości
-- generowanymi panelami
-- skompilowanymi streszczeniami dla odbiorców agenta/środowiska wykonawczego
-- natywnymi narzędziami wiki, takimi jak `wiki_search`, `wiki_get`, `wiki_apply` i `wiki_lint`
-
-Nie zastępuje aktywnego pluginu pamięci. Aktywny plugin pamięci nadal
-odpowiada za przypominanie, promowanie i Dreaming. `memory-wiki` dodaje obok niego
-warstwę wiedzy bogatą w pochodzenie informacji.
-
-Zobacz [Memory Wiki](/pl/plugins/memory-wiki).
+Oba narzędzia udostępnia aktywny plugin pamięci (domyślnie: `memory-core`).
 
 ## Wyszukiwanie w pamięci
 
-Gdy skonfigurowany jest dostawca embeddingów, `memory_search` używa **wyszukiwania
-hybrydowego** — łącząc podobieństwo wektorowe (znaczenie semantyczne) z dopasowaniem słów kluczowych
-(dokładne terminy, takie jak identyfikatory i symbole kodu). Działa to od razu, gdy masz
-klucz API dla dowolnego obsługiwanego dostawcy.
+Gdy skonfigurowany jest dostawca embeddingów, `memory_search` korzysta z
+wyszukiwania hybrydowego: podobieństwo wektorowe (znaczenie semantyczne) jest
+łączone z dopasowywaniem słów kluczowych (dokładnych terminów, takich jak
+identyfikatory i symbole kodu). Działa to od razu po podaniu klucza API
+dowolnego obsługiwanego dostawcy.
 
 <Info>
-OpenClaw domyślnie używa embeddingów OpenAI. Ustaw
-`agents.defaults.memorySearch.provider` jawnie, aby używać embeddingów Gemini, Voyage,
-Mistral, local, Ollama, Bedrock, GitHub Copilot lub zgodnych z OpenAI.
+OpenClaw domyślnie korzysta z embeddingów OpenAI. Ustaw jawnie
+`agents.defaults.memorySearch.provider`, aby używać Gemini, Voyage, Mistral,
+Bedrock, DeepInfra, lokalnego GGUF, Ollama, LM Studio, GitHub Copilot lub
+ogólnego punktu końcowego zgodnego z OpenAI.
 </Info>
 
-Szczegóły działania wyszukiwania, opcje dostrajania i konfigurację dostawcy znajdziesz w
-[Wyszukiwanie w pamięci](/pl/concepts/memory-search).
+Zobacz [Wyszukiwanie w pamięci](/pl/concepts/memory-search), aby dowiedzieć się,
+jak działa wyszukiwanie, jakie są opcje dostrajania i jak skonfigurować
+dostawcę.
 
-## Backendy pamięci
+## Mechanizmy przechowywania pamięci
 
 <CardGroup cols={3}>
-<Card title="Builtin (default)" icon="database" href="/pl/concepts/memory-builtin">
-Oparte na SQLite. Działa od razu z wyszukiwaniem słów kluczowych, podobieństwem wektorowym i
-wyszukiwaniem hybrydowym. Bez dodatkowych zależności.
+<Card title="Wbudowany (domyślny)" icon="database" href="/pl/concepts/memory-builtin">
+Oparty na SQLite. Działa od razu z wyszukiwaniem słów kluczowych,
+podobieństwem wektorowym i wyszukiwaniem hybrydowym. Bez dodatkowych zależności.
 </Card>
 <Card title="QMD" icon="search" href="/pl/concepts/memory-qmd">
-Sidecar local-first z rerankingiem, rozszerzaniem zapytań i możliwością indeksowania
-katalogów poza przestrzenią roboczą.
+Lokalny proces pomocniczy z ponownym rankingiem, rozszerzaniem zapytań i
+możliwością indeksowania katalogów spoza przestrzeni roboczej.
 </Card>
 <Card title="Honcho" icon="brain" href="/pl/concepts/memory-honcho">
-Natywna dla AI pamięć między sesjami z modelowaniem użytkownika, wyszukiwaniem semantycznym i
-świadomością wielu agentów. Instalacja pluginu.
+Natywna dla AI pamięć między sesjami z modelowaniem użytkownika, wyszukiwaniem
+semantycznym i świadomością wielu agentów. Wymaga instalacji pluginu.
 </Card>
 <Card title="LanceDB" icon="layers" href="/pl/plugins/memory-lancedb">
-Dołączona pamięć oparta na LanceDB z embeddingami zgodnymi z OpenAI, automatycznym przypominaniem,
-automatycznym przechwytywaniem i obsługą lokalnych embeddingów Ollama.
+Pamięć oparta na LanceDB, z embeddingami zgodnymi z OpenAI, automatycznym
+przywoływaniem, automatycznym zapisywaniem i obsługą lokalnych embeddingów
+Ollama. Wymaga instalacji pluginu.
 </Card>
 </CardGroup>
 
 ## Warstwa wiki wiedzy
 
+Jeśli chcesz, aby trwała pamięć działała bardziej jak utrzymywana baza wiedzy
+niż surowe notatki, użyj dołączonego pluginu `memory-wiki`. Kompiluje on trwałą
+wiedzę do repozytorium wiki z deterministyczną strukturą stron,
+ustrukturyzowanymi twierdzeniami i dowodami, śledzeniem sprzeczności i
+aktualności, generowanymi pulpitami, skompilowanymi zestawieniami oraz
+natywnymi narzędziami wiki (`wiki_status`, `wiki_search`, `wiki_get`,
+`wiki_apply`, `wiki_lint`).
+
+`memory-wiki` nie zastępuje aktywnego pluginu pamięci; aktywny plugin pamięci
+nadal odpowiada za przywoływanie, promowanie i Dreaming. `memory-wiki` dodaje
+obok niego warstwę wiedzy bogatą w informacje o pochodzeniu.
+
 <CardGroup cols={1}>
-<Card title="Memory Wiki" icon="book" href="/pl/plugins/memory-wiki">
-Kompiluje trwałą pamięć do skarbca wiki bogatego w pochodzenie informacji, z twierdzeniami,
-panelami, trybem pomostowym i przepływami pracy przyjaznymi dla Obsidian.
+<Card title="Wiki pamięci" icon="book" href="/pl/plugins/memory-wiki">
+Kompiluje trwałą pamięć do repozytorium wiki bogatego w informacje o
+pochodzeniu, z twierdzeniami, pulpitami, trybem pomostowym i przepływami pracy
+przyjaznymi dla Obsidian.
 </Card>
 </CardGroup>
 
-## Automatyczne zrzucanie pamięci
+## Automatyczne opróżnianie pamięci
 
-Zanim [Compaction](/pl/concepts/compaction) podsumuje Twoją rozmowę, OpenClaw
-uruchamia cichą turę, która przypomina agentowi o zapisaniu ważnego kontekstu do plików
-pamięci. Jest to domyślnie włączone — nie musisz niczego konfigurować.
+Zanim [Compaction](/pl/concepts/compaction) podsumuje rozmowę, OpenClaw wykonuje
+cichą turę, która przypomina agentowi o zapisaniu ważnego kontekstu w plikach
+pamięci. Funkcja jest domyślnie włączona; ustaw
+`agents.defaults.compaction.memoryFlush.enabled: false`, aby ją wyłączyć.
 
-Aby zachować tę turę porządkową na modelu lokalnym, ustaw dokładne nadpisanie modelu
-zrzutu pamięci:
+Aby ta porządkowa tura korzystała z modelu lokalnego, ustaw dokładne
+nadpisanie obowiązujące wyłącznie dla tury opróżniania pamięci (nie dziedziczy
+ona łańcucha modeli rezerwowych aktywnej sesji):
 
 ```json
 {
@@ -213,63 +233,59 @@ zrzutu pamięci:
 }
 ```
 
-Nadpisanie dotyczy tylko tury zrzutu pamięci i nie dziedziczy
-łańcucha fallbacków aktywnej sesji.
-
 <Tip>
-Zrzut pamięci zapobiega utracie kontekstu podczas Compaction. Jeśli agent ma
-ważne fakty w rozmowie, które nie zostały jeszcze zapisane do pliku, zostaną
-automatycznie zapisane przed utworzeniem podsumowania.
+Opróżnianie pamięci zapobiega utracie kontekstu podczas Compaction. Jeśli
+rozmowa zawiera ważne fakty, których agent nie zapisał jeszcze w pliku,
+zostaną one automatycznie zapisane przed utworzeniem podsumowania.
 </Tip>
 
 ## Dreaming
 
-Dreaming to opcjonalny przebieg konsolidacji pamięci w tle. Zbiera
-sygnały krótkoterminowe, ocenia kandydatów i promuje tylko kwalifikujące się elementy do
-pamięci długoterminowej (`MEMORY.md`).
-
-Został zaprojektowany tak, aby pamięć długoterminowa miała wysoką wartość sygnału:
+Dreaming to opcjonalny proces konsolidacji pamięci wykonywany w tle. Zbiera
+krótkoterminowe sygnały przywoływania, ocenia kandydatów i promuje do pamięci
+długoterminowej (`MEMORY.md`) wyłącznie zakwalifikowane elementy:
 
 - **Opcjonalny**: domyślnie wyłączony.
-- **Zaplanowany**: po włączeniu `memory-core` automatycznie zarządza jednym cyklicznym zadaniem cron
-  dla pełnego przebiegu Dreaming.
-- **Progowy**: promocje muszą przejść bramki wyniku, częstotliwości przypominania i różnorodności
-  zapytań.
-- **Możliwy do przeglądu**: podsumowania faz i wpisy dziennika są zapisywane do `DREAMS.md`
-  do przeglądu przez człowieka.
+- **Zaplanowany**: po włączeniu `memory-core` automatycznie zarządza jednym
+  cyklicznym zadaniem Cron wykonującym pełny przebieg Dreaming.
+- **Progowy**: promowane elementy muszą przejść kryteria wyniku,
+  częstotliwości przywoływania i różnorodności zapytań.
+- **Możliwy do weryfikacji**: podsumowania faz i wpisy dziennika są
+  zapisywane w `DREAMS.md` do weryfikacji przez człowieka.
 
-Zachowanie faz, sygnały punktacji i szczegóły dziennika Dreaming opisuje
-[Dreaming](/pl/concepts/dreaming).
+Zobacz [Dreaming](/pl/concepts/dreaming), aby poznać zachowanie poszczególnych
+faz, sygnały oceny i szczegóły Dziennika snów.
 
-## Ugruntowane uzupełnianie i promocja na żywo
+## Osadzone uzupełnianie danych i promowanie na bieżąco
 
-System Dreaming ma teraz dwie blisko powiązane ścieżki przeglądu:
+System Dreaming ma dwie powiązane ścieżki weryfikacji:
 
-- **Dreaming na żywo** działa na krótkoterminowym magazynie Dreaming pod
-  `memory/.dreams/` i jest tym, czego zwykła faza głęboka używa przy podejmowaniu decyzji, co
-  może przejść do `MEMORY.md`.
-- **Ugruntowane uzupełnianie** odczytuje historyczne notatki `memory/YYYY-MM-DD.md` jako
-  samodzielne pliki dzienne i zapisuje ustrukturyzowany wynik przeglądu do `DREAMS.md`.
+- **Dreaming na bieżąco** korzysta z krótkoterminowego magazynu Dreaming w
+  `memory/.dreams/` i jest używany przez zwykłą fazę głęboką do podejmowania
+  decyzji, które elementy trafią do `MEMORY.md`.
+- **Osadzone uzupełnianie danych** odczytuje historyczne notatki
+  `memory/YYYY-MM-DD.md` jako samodzielne pliki dni i zapisuje
+  ustrukturyzowane wyniki weryfikacji w `DREAMS.md`.
 
-Ugruntowane uzupełnianie jest przydatne, gdy chcesz odtworzyć starsze notatki i sprawdzić, co
-system uznaje za trwałe, bez ręcznego edytowania `MEMORY.md`.
-
-Gdy użyjesz:
+Osadzone uzupełnianie danych przydaje się do ponownego przetwarzania starszych
+notatek i sprawdzania, które informacje system uznaje za trwałe, bez ręcznego
+edytowania `MEMORY.md`.
 
 ```bash
 openclaw memory rem-backfill --path ./memory --stage-short-term
 ```
 
-ugruntowani kandydaci do pamięci trwałej nie są promowani bezpośrednio. Są umieszczani etapowo w
-tym samym krótkoterminowym magazynie Dreaming, którego zwykła faza głęboka już używa. To
-oznacza, że:
+Flaga `--stage-short-term` umieszcza osadzonych kandydatów do trwałej pamięci
+w tym samym krótkoterminowym magazynie Dreaming, którego używa już zwykła faza
+głęboka; nie promuje ich bezpośrednio. W rezultacie:
 
-- `DREAMS.md` pozostaje powierzchnią przeglądu dla człowieka.
-- magazyn krótkoterminowy pozostaje powierzchnią rankingu dla maszyny.
-- `MEMORY.md` nadal jest zapisywany tylko przez głęboką promocję.
+- `DREAMS.md` pozostaje obszarem weryfikacji przeznaczonym dla człowieka.
+- Magazyn krótkoterminowy pozostaje obszarem rankingu przeznaczonym dla
+  maszyny.
+- `MEMORY.md` jest nadal zapisywany wyłącznie przez głębokie promowanie.
 
-Jeśli uznasz, że odtworzenie nie było przydatne, możesz usunąć przygotowane artefakty
-bez dotykania zwykłych wpisów dziennika ani normalnego stanu przypominania:
+Aby cofnąć ponowne przetwarzanie bez modyfikowania zwykłych wpisów dziennika
+ani normalnego stanu przywoływania:
 
 ```bash
 openclaw memory rem-backfill --rollback
@@ -279,28 +295,20 @@ openclaw memory rem-backfill --rollback-short-term
 ## CLI
 
 ```bash
-openclaw memory status          # Check index status and provider
-openclaw memory search "query"  # Search from the command line
-openclaw memory index --force   # Rebuild the index
+openclaw memory status          # Sprawdź stan indeksu i dostawcę
+openclaw memory search "query"  # Wyszukaj z wiersza poleceń
+openclaw memory index --force   # Przebuduj indeks
 ```
 
 ## Dalsza lektura
 
-- [Wbudowany silnik pamięci](/pl/concepts/memory-builtin): domyślny backend SQLite.
-- [Silnik pamięci QMD](/pl/concepts/memory-qmd): zaawansowany sidecar local-first.
-- [Pamięć Honcho](/pl/concepts/memory-honcho): natywna dla AI pamięć między sesjami.
-- [Memory LanceDB](/pl/plugins/memory-lancedb): plugin oparty na LanceDB z embeddingami zgodnymi z OpenAI.
-- [Memory Wiki](/pl/plugins/memory-wiki): skompilowany skarbiec wiedzy i natywne narzędzia wiki.
 - [Wyszukiwanie w pamięci](/pl/concepts/memory-search): potok wyszukiwania, dostawcy i dostrajanie.
-- [Dreaming](/pl/concepts/dreaming): promocja w tle z krótkoterminowego przypominania do pamięci długoterminowej.
-- [Odwołanie konfiguracji pamięci](/pl/reference/memory-config): wszystkie pokrętła konfiguracji.
-- [Compaction](/pl/concepts/compaction): jak Compaction współdziała z pamięcią.
-
-## Powiązane
-
-- [Active Memory](/pl/concepts/active-memory)
-- [Wyszukiwanie w pamięci](/pl/concepts/memory-search)
-- [Wbudowany silnik pamięci](/pl/concepts/memory-builtin)
-- [Pamięć Honcho](/pl/concepts/memory-honcho)
-- [Memory LanceDB](/pl/plugins/memory-lancedb)
-- [Zobowiązania](/pl/concepts/commitments)
+- [Wbudowany mechanizm pamięci](/pl/concepts/memory-builtin): domyślny mechanizm oparty na SQLite.
+- [Mechanizm pamięci QMD](/pl/concepts/memory-qmd): zaawansowany lokalny proces pomocniczy.
+- [Pamięć Honcho](/pl/concepts/memory-honcho): natywna dla AI pamięć między sesjami.
+- [Pamięć LanceDB](/pl/plugins/memory-lancedb): plugin oparty na LanceDB z embeddingami zgodnymi z OpenAI.
+- [Wiki pamięci](/pl/plugins/memory-wiki): skompilowane repozytorium wiedzy i natywne narzędzia wiki.
+- [Dreaming](/pl/concepts/dreaming): promowanie w tle z krótkoterminowego przywoływania do pamięci długoterminowej.
+- [Dokumentacja konfiguracji pamięci](/pl/reference/memory-config): wszystkie ustawienia konfiguracji.
+- [Compaction](/pl/concepts/compaction): interakcje między Compaction a pamięcią.
+- [Active Memory](/pl/concepts/active-memory): pamięć podagentów dla interaktywnych sesji czatu.

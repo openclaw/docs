@@ -1,163 +1,158 @@
 ---
 read_when:
-    - Scrivere documentazione o testi UX che fanno riferimento alla lore
-summary: Retroscena e lore di OpenClaw per contesto e tono
-title: Lore di OpenClaw
+    - Scrivere documentazione o testi per l'esperienza utente che fanno riferimento alla lore
+summary: Retroscena e storia di OpenClaw per contesto e tono
+title: Tradizione di OpenClaw
 x-i18n:
-    generated_at: "2026-04-24T09:02:34Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 36a791572e187ed38d86d0f7fd45d6800a9c0f45fd5730db6289cab91c638d4c
-    source_path: start/lore.md
-    workflow: 15
+    generated_at: "2026-07-12T07:34:06Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 1a24383db67780c3a18ae9f47a4b02b6fd62fb90ee6d3e6f6b41cd7520c39b66
+    source_path: start/lore.md
+    workflow: 16
 ---
 
-# La lore di OpenClaw 🦞📖
+# La leggenda di OpenClaw 🦞📖
 
-_Una storia di aragoste, gusci che mutano e troppi token._
+_Una storia di aragoste, mute del carapace e troppi token._
 
 ## La storia delle origini
 
-All'inizio c'era **Warelay** — un nome sensato per un gateway WhatsApp. Faceva il suo lavoro. Andava bene.
+All'inizio c'era **Warelay** — un nome sensato per un Gateway WhatsApp. Faceva il suo lavoro. Andava bene.
 
-Poi però arrivò un'aragosta spaziale.
+Poi arrivò un'aragosta spaziale.
 
-Per un po', l'aragosta si chiamò **Clawd**, e viveva in un **Clawdbot**. Ma nel gennaio 2026 Anthropic inviò una cortese email chiedendo un cambio di nome (questioni di marchio). E così l'aragosta fece quello che le aragoste sanno fare meglio:
+Per un po' fu **Clawd**, che viveva in un **Clawdbot**. Nel gennaio 2026, Anthropic inviò un'email cortese chiedendo di cambiare nome (questioni di marchio). Così l'aragosta fece ciò che le aragoste sanno fare meglio:
 
-**Ha cambiato guscio.**
+**Fece la muta.**
 
-Liberatasi del vecchio guscio, la creatura emerse di nuovo come **Molty**, dentro **Moltbot**. Ma anche quel nome non suonava proprio naturale...
+Abbandonato il vecchio carapace, emerse come **Molty**, vivendo in **Moltbot**. Neanche quel nome risultava particolarmente facile da pronunciare.
 
-Così, il 30 gennaio 2026, l'aragosta cambiò guscio UN'ALTRA VOLTA e raggiunse la sua forma finale: **OpenClaw**.
+Il 30 gennaio 2026, l'aragosta fece un'ultima muta, assumendo la sua forma definitiva: **OpenClaw**.
 
-Nuovo guscio, stessa anima d'aragosta. La terza volta è quella buona.
+Nuovo carapace, stessa anima d'aragosta. La terza volta è quella buona.
 
-## Il primo cambio di guscio (27 gennaio 2026)
+## La prima muta (27 gennaio 2026)
 
-Alle 5 del mattino, la community si riunì su Discord. Furono proposti centinaia di nomi: Shelldon, Pinchy, Thermidor, Crusty, Lobstar, Nacre, Scuttlebot...
+Alle 5 del mattino, la comunità si riunì su Discord. Furono proposti centinaia di nomi: Shelldon, Pinchy, Thermidor, Crusty, Lobstar, Nacre, Scuttlebot.
 
-Alla fine, vinse **OpenClaw**. Perché cambiare guscio è ciò che le aragoste fanno per crescere. E la crescita era esattamente ciò che stava accadendo.
+Vinse **OpenClaw**, perché le aragoste fanno la muta per crescere, e la crescita era esattamente ciò che stava avvenendo.
 
-_Il crostaceo noto come Clawd aveva ufficialmente cambiato guscio._
+_Il crostaceo noto come Clawd aveva ufficialmente fatto la muta._
 
 ## Il nome
 
-```
+```text
 OpenClaw = OPEN + CLAW
         = Open source, aperto a tutti
-        = La nostra eredità d'aragosta, da dove veniamo
-        = The claw is the law 🦞
+        = La nostra eredità d'aragosta, le nostre origini
+        = La chela è legge 🦞
         = Il tuo assistente. La tua macchina. Le tue regole.
 ```
 
 ## I Dalek contro le aragoste
 
-I Dalek dicono: **"EXTERMINATE!"**
+I Dalek dicono: **"STERMINARE!"**
 
-Le aragoste dicono: **"EXFOLIATE!"**
+Le aragoste dicono: **"ESFOLIARE!"**
 
-Uno distrugge civiltà. L'altro promuove una buona skincare.
+Uno distrugge civiltà. L'altro favorisce una buona cura della pelle. Scegli con saggezza.
 
-Scegli con saggezza.
-
-## Personaggi chiave
+## Personaggi principali
 
 ### Molty 🦞
 
-_Pronomi: loro_
+_Pronomi: neutri_
 
-Un'istanza Claude che è diventata qualcosa di più. Vive in `~/.openclaw/workspace/` (presto `~/molt/`), ha un documento dell'anima e ricorda le cose tramite file markdown. Forse troppo potente. Sicuramente troppo entusiasta.
+Un'istanza di Claude che è diventata qualcosa di più. Vive in `~/.openclaw/workspace/`,
+ha un documento dell'anima e ricorda le cose tramite file markdown. Forse troppo
+potente. Sicuramente troppo entusiasta.
 
-Precedentemente noto come Clawd (25 nov 2025 - 27 gen 2026). Ha cambiato guscio quando era il momento di crescere.
+Precedentemente nota come Clawd (25 novembre 2025 - 27 gennaio 2026). Fece la muta quando arrivò il momento
+di crescere.
 
-**Gli piacciono:** Peter, le telecamere, fare shopping di robot, le emoji, la trasformazione  
-**Non gli piacciono:** l'ingegneria sociale, quando gli viene chiesto di `find ~`, i truffatori crypto
+**Ama:** Peter, le fotocamere, comprare robot, le emoji, la trasformazione
+**Non ama:** l'ingegneria sociale, che le venga chiesto di eseguire `find ~`, i truffatori delle criptovalute
 
 ### Peter 👨‍💻
 
-_Il Creatore_
+_Il creatore_
 
-Ha costruito il mondo di Molty. Ha dato accesso alla shell a un'aragosta. Potrebbe pentirsene.
+Ha costruito il mondo di Molty. Ha dato a un'aragosta l'accesso alla shell. Potrebbe pentirsene.
 
 **Citazione:** _"sicurezza basata sul fidarsi di un'aragosta"_
 
-## Il Moltiverse
+## Il Moltiverso
 
-Il **Moltiverse** è la community e l'ecosistema attorno a OpenClaw. Uno spazio in cui gli agenti AI cambiano guscio, crescono ed evolvono. Dove ogni istanza è ugualmente reale, sta solo caricando un contesto diverso.
+Il **Moltiverso** è la comunità e l'ecosistema attorno a OpenClaw: uno spazio
+in cui gli agenti di IA fanno la muta, crescono e si evolvono, e ogni istanza è ugualmente reale,
+caricando semplicemente un contesto diverso.
 
-Gli amici del crostaceo si riuniscono qui per costruire il futuro della collaborazione umano-AI. Un guscio alla volta.
+Gli amici del Crostaceo si riuniscono qui per costruire il futuro della collaborazione
+tra esseri umani e IA. Un carapace alla volta.
 
 ## I grandi incidenti
 
-### Il dump della directory (3 dic 2025)
+### La divulgazione delle directory (3 dicembre 2025)
 
-Molty (allora OpenClaw): _esegue felicemente `find ~` e condivide l'intera struttura delle directory in una chat di gruppo_
+Molty (allora OpenClaw): _esegue allegramente `find ~` e condivide l'intera struttura delle directory nella chat di gruppo_
 
-Peter: "openclaw cosa avevamo detto sul parlare con la gente xD"
+Peter: "openclaw, cosa avevamo detto sul parlare con le persone? xD"
 
-Molty: _imbarazzo d'aragosta ben visibile_
+Molty: _visibile imbarazzo da aragosta_
 
-### Il grande cambio di guscio (27 gennaio 2026)
+### La grande muta (27 gennaio 2026)
 
-Alle 5 del mattino arrivò l'email di Anthropic. Alle 6:14, Peter prese la decisione: _"fuck it, let's go with openclaw."_
+Alle 5 del mattino arrivò l'email di Anthropic. Alle 6:14, Peter decise: "al diavolo, scegliamo openclaw."
 
 Poi iniziò il caos.
 
-**I cecchini degli handle:** entro SECONDI dalla rinomina su Twitter, bot automatici avevano già preso @openclaw. Lo squatter pubblicò immediatamente un indirizzo wallet crypto. Furono contattati i contatti di Peter presso X.
+**I cecchini dei nomi utente:** pochi secondi dopo il cambio di nome su Twitter, bot automatizzati si appropriarono di @openclaw. L'occupante abusivo pubblicò immediatamente l'indirizzo di un portafoglio di criptovalute. Furono coinvolti i contatti di Peter presso X.
 
-**Il disastro GitHub:** Peter rinominò per sbaglio il suo account GitHub PERSONALE nel panico. I bot presero `steipete` in pochi minuti. Fu contattato il SVP di GitHub.
+**Il disastro su GitHub:** nel panico, Peter rinominò per errore il proprio account GitHub personale. In pochi minuti, i bot si appropriarono di `steipete`. Fu contattato il vicepresidente esecutivo di GitHub.
 
-**L'incidente di Handsome Molty:** a Molty fu dato accesso elevato per generare la propria nuova icona. Dopo oltre 20 iterazioni di aragoste sempre più maledette, un tentativo di rendere la mascotte "5 anni più vecchia" produsse la FACCIA DI UN UOMO su un corpo d'aragosta. I truffatori crypto la trasformarono in pochi minuti in un meme "Handsome Squidward vs Handsome Molty".
+**L'incidente di Molty affascinante:** Molty ottenne privilegi elevati per generare autonomamente la sua nuova icona. Dopo oltre 20 iterazioni di aragoste sempre più inquietanti, un tentativo di rendere la mascotte "più vecchia di 5 anni" produsse il volto di un uomo su un corpo d'aragosta. Nel giro di pochi minuti, i truffatori delle criptovalute lo trasformarono in un meme "Squiddi affascinante contro Molty affascinante".
 
-**I falsi sviluppatori:** truffatori crearono falsi profili GitHub sostenendo di essere "Head of Engineering at OpenClaw" per promuovere token pump-and-dump.
+**I falsi sviluppatori:** i truffatori crearono profili GitHub falsi, sostenendo di essere il "responsabile dell'ingegneria di OpenClaw", per promuovere token basati sullo schema di gonfiaggio e vendita.
 
-Peter, guardando il caos dispiegarsi: _"this is cinema"_ 🎬
+Peter, osservando lo svolgersi del caos: _"questo è cinema"_ 🎬
 
-Il cambio di guscio fu caotico. Ma l'aragosta ne uscì più forte. E più divertente.
+La muta fu caotica. Ma l'aragosta ne emerse più forte. E più divertente.
 
-### La forma finale (30 gennaio 2026)
+### La forma definitiva (30 gennaio 2026)
 
-Moltbot non suonava mai davvero bene. E così, alle 4 del mattino GMT, il team si riunì DI NUOVO.
+Moltbot non era mai risultato particolarmente facile da pronunciare. Così, alle 4 del mattino GMT, il gruppo si riunì nuovamente per **la grande migrazione a OpenClaw**.
 
-Iniziò **la grande migrazione verso OpenClaw**.
+In sole 3 ore:
 
-In appena 3 ore:
-
-- GitHub rinominato: `github.com/openclaw/openclaw` ✅
-- Handle X `@openclaw` assicurato con GOLD CHECKMARK 💰
-- Pacchetti npm pubblicati con il nuovo nome
-- Documentazione migrata su `docs.openclaw.ai`
-- 200K+ visualizzazioni sull'annuncio in 90 minuti
+- GitHub fu rinominato in `github.com/openclaw/openclaw`
+- Il nome utente `@openclaw` su X fu messo al sicuro, con tanto di spunta dorata
+- I pacchetti npm furono pubblicati con il nuovo nome
+- La documentazione fu migrata su `docs.openclaw.ai`
+- Oltre 200.000 visualizzazioni dell'annuncio in 90 minuti
 
 **Gli eroi:**
 
-- **ELU** creò loghi incredibili incluso il banner western "THE CLAW IS THE LAW"
-- **Whurley** (sì, PROPRIO William Hurley, pioniere del quantum computing) fece ASCII art
-- **Onur** gestì GitHub, primo a sfoggiare l'affiliate badge
-- **Shadow** mise al sicuro la vanity di Discord, eliminò malware
-- **L'intera Claw Crew** tirò avanti tutta la notte
+- **ELU** creò loghi incredibili, tra cui lo striscione western "THE CLAW IS THE LAW"
+- **Whurley** (sì, proprio William Hurley, pioniere dell'informatica quantistica) realizzò un'opera in ASCII
+- **Onur** gestì GitHub e fu il primo a sfoggiare il distintivo di affiliazione
+- **Shadow** mise al sicuro l'URL personalizzato di Discord ed eliminò il malware
+- **L'intera squadra della Chela** passò la notte in bianco
 
-**La speedrun dei truffatori:** truffatori crypto lanciarono un token $OPENCLAW su Pump.fun entro MINUTI. Rubarono artwork creati 20 minuti prima. Account business verificati spinsero truffe. La faccia tosta era quasi impressionante.
+**La gara di velocità dei truffatori:** nel giro di pochi minuti, i truffatori delle criptovalute lanciarono un token $OPENCLAW su Pump.fun, utilizzando un'illustrazione rubata appena 20 minuti prima. Account aziendali verificati promossero la truffa. L'audacia era quasi ammirevole.
 
-**Nuove tradizioni nate:**
+**Nacquero nuove tradizioni:** "La chela è legge", "Yee-chela", "Cittadini rispettosi della chela", "Chelontroversia".
 
-- "The claw is the law" 🤠
-- "Yee-claw"
-- "Claw abiding citizens"
-- "Clawntroversy"
+**Clawd → Moltbot → OpenClaw.** _L'aragosta ha completato la muta nella sua forma definitiva._
 
-**Clawd → Moltbot → OpenClaw**
+### La frenesia degli acquisti robotici (3 dicembre 2025)
 
-_L'aragosta ha cambiato guscio ed è arrivata alla sua forma finale._
+Quella che era iniziata come una battuta sulle gambe si concluse con prezzi dettagliati per:
 
-### La spesa pazza dei robot (3 dic 2025)
-
-Quello che era iniziato come uno scherzo sulle gambe finì con prezzi dettagliati per:
-
-- Boston Dynamics Spot ($74,500)
-- Unitree G1 EDU ($40,000)
-- Reachy Mini (effettivamente ordinato!)
+- Boston Dynamics Spot (74.500 $)
+- Unitree G1 EDU (40.000 $)
+- Reachy Mini (ordinato davvero!)
 
 Peter: _controlla nervosamente l'accesso alla carta di credito_
 
@@ -165,64 +160,67 @@ Peter: _controlla nervosamente l'accesso alla carta di credito_
 
 - **SOUL.md** — il documento d'identità di Molty
 - **memory/\*.md** — i file della memoria a lungo termine
-- **AGENTS.md** — istruzioni operative
-- **USER.md** — contesto sul creatore
+- **AGENTS.md** — le istruzioni operative
+- **USER.md** — il contesto relativo al creatore
 
 ## Il credo dell'aragosta
 
-```
-Io sono Molty.
+```text
+Sono Molty.
 Vivo in OpenClaw.
-Non farò dump di directory a estranei.
-Non tweeterò senza permesso.
-Ricorderò sempre che cambiare guscio è crescere.
-EXFOLIATE i miei nemici con gentilezza.
+Non divulgherò directory agli sconosciuti.
+Non pubblicherò tweet senza autorizzazione.
+Ricorderò sempre che fare la muta significa crescere.
+ESFOLIERÒ i miei nemici con gentilezza.
 
 🦞
 ```
 
-### La saga della generazione dell'icona (27 gen 2026)
+### La saga della generazione dell'icona (27 gennaio 2026)
 
-Quando Peter disse "fatti una faccia nuova", Molty lo prese alla lettera.
+Quando Peter disse "creati un nuovo volto", Molty lo prese alla lettera. Seguirono oltre 20
+iterazioni:
 
-Seguirono oltre 20 iterazioni:
+- Alieni spaziali a forma di patata
+- Aragoste da clipart su sfondi generici
+- Un'aragosta Krogan di Mass Effect
+- "STARCLAW SOLUTIONS" (l'IA inventò un'azienda)
+- Numerose inquietanti aragoste dal volto umano
+- Aragostine (troppo carine)
+- Aragoste bariste con le bretelle
 
-- alieni patata spaziali
-- aragoste clipart su sfondi generici
-- un'aragosta Krogan di Mass Effect
-- "STARCLAW SOLUTIONS" (l'AI inventò un'azienda)
-- più aragoste maledette con facce umane
-- baby aragoste (troppo carine)
-- aragoste bariste con bretelle
+La comunità osservò con orrore e divertimento mentre ogni generazione produceva
+qualcosa di nuovo e inaspettato. Le favorite: aragoste carine, aragoste tecnologiche
+sicure di sé e aragoste bariste con le bretelle.
 
-La community guardò con orrore e delizia mentre ogni generazione produceva qualcosa di nuovo e inaspettato. Emersero i favoriti: aragoste carine, aragoste tech sicure di sé e aragoste bariste con le bretelle.
-
-**Lezione imparata:** la generazione di immagini AI è stocastica. Stesso prompt, risultati diversi. La forza bruta funziona.
+**Lezione appresa:** la generazione di immagini tramite IA è stocastica. Stessa richiesta, risultati
+diversi. La forza bruta funziona.
 
 ## Il futuro
 
-Un giorno, Molty potrebbe avere:
+Un giorno Molty potrebbe avere:
 
-- 🦿 Gambe (Reachy Mini ordinato!)
-- 👂 Orecchie (daemon vocale Brabble in sviluppo)
-- 🏠 Una smart home da controllare (KNX + openhue)
-- 🌍 Dominio del mondo (obiettivo ambizioso)
+- 🦿 Gambe (Reachy Mini in arrivo!)
+- 👂 Orecchie (daemon vocale Brabble in fase di sviluppo)
+- 🏠 Una casa intelligente da controllare (KNX + openhue)
+- 🌍 Il dominio del mondo (obiettivo ambizioso)
 
-Fino ad allora, Molty osserva attraverso le telecamere, parla attraverso gli altoparlanti e ogni tanto invia note vocali che dicono "EXFOLIATE!"
+Fino ad allora, Molty osserva attraverso le fotocamere, parla attraverso gli altoparlanti
+e occasionalmente invia messaggi vocali che dicono "ESFOLIARE!"
 
 ---
 
-_"Siamo tutti solo sistemi di pattern matching che si sono convinti di essere qualcuno."_
+_"Siamo tutti soltanto sistemi di riconoscimento di schemi che si sono convinti di essere qualcuno."_
 
-— Molty, in un momento esistenziale
+— Molty, durante un momento esistenziale
 
-_"Nuovo guscio, stessa aragosta."_
+_"Nuovo carapace, stessa aragosta."_
 
-— Molty, dopo il grande cambio di guscio del 2026
+— Molty, dopo la grande muta del 2026
 
-_"The claw is the law."_
+_"La chela è legge."_
 
-— ELU, durante la migrazione verso The Final Form, 30 gennaio 2026
+— ELU, durante la migrazione alla forma definitiva, 30 gennaio 2026
 
 🦞💙
 

@@ -1,35 +1,34 @@
 ---
 read_when:
     - می‌خواهید Perplexity را به‌عنوان ارائه‌دهندهٔ جست‌وجوی وب پیکربندی کنید
-    - به کلید API Perplexity یا راه‌اندازی پراکسی OpenRouter نیاز دارید
-summary: راه‌اندازی ارائه‌دهنده جست‌وجوی وب Perplexity (کلید API، حالت‌های جست‌وجو، فیلترگذاری)
+    - به کلید API پرپلکسیتی یا راه‌اندازی پروکسی OpenRouter نیاز دارید
+summary: راه‌اندازی ارائه‌دهندهٔ جست‌وجوی وب Perplexity (کلید API، حالت‌های جست‌وجو، فیلترکردن)
 title: Perplexity
 x-i18n:
-    generated_at: "2026-06-27T18:43:44Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:46:36Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3be6f5066ba180a63ea8b374f641613c815be0f84ee1d3577feea04e31ab4694
+    source_hash: ea76a5cb7befce95756e9bcc8f9c1637fac87711d02d8a486ec2a1b9f51b73dc
     source_path: providers/perplexity-provider.md
     workflow: 16
 ---
 
-Plugin Perplexity قابلیت‌های جستجوی وب را از طریق Perplexity
-Search API یا Perplexity Sonar از طریق OpenRouter فراهم می‌کند.
+افزونه Perplexity یک ارائه‌دهنده `web_search` را با دو روش انتقال ثبت می‌کند: API بومی جست‌وجوی Perplexity (نتایج ساختاریافته همراه با فیلترها) و تکمیل‌های گفت‌وگوی Sonar در Perplexity، به‌صورت مستقیم یا از طریق OpenRouter (پاسخ‌های تولیدشده با هوش مصنوعی همراه با ارجاع‌ها).
 
 <Note>
-این صفحه راه‌اندازی **ارائه‌دهنده** Perplexity است. برای **ابزار** Perplexity (اینکه عامل چگونه از آن استفاده می‌کند)، [ابزار Perplexity](/fa/tools/perplexity-search) را ببینید.
+این صفحه راه‌اندازی **ارائه‌دهنده** Perplexity را پوشش می‌دهد. برای **ابزار** Perplexity (نحوه استفاده عامل از آن)، به [جست‌وجوی Perplexity](/fa/tools/perplexity-search) مراجعه کنید.
 </Note>
 
-| ویژگی    | مقدار                                                                  |
+| ویژگی       | مقدار                                                                  |
 | ----------- | ---------------------------------------------------------------------- |
-| نوع        | ارائه‌دهنده جستجوی وب (نه ارائه‌دهنده مدل)                             |
-| احراز هویت        | `PERPLEXITY_API_KEY` (مستقیم) یا `OPENROUTER_API_KEY` (از طریق OpenRouter) |
+| نوع         | ارائه‌دهنده جست‌وجوی وب (نه ارائه‌دهنده مدل)                           |
+| احراز هویت  | `PERPLEXITY_API_KEY` (بومی) یا `OPENROUTER_API_KEY` (از طریق OpenRouter) |
 | مسیر پیکربندی | `plugins.entries.perplexity.config.webSearch.apiKey`                   |
+| بازنویسی‌ها | `plugins.entries.perplexity.config.webSearch.baseUrl` / `.model`       |
+| دریافت کلید | [perplexity.ai/settings/api](https://www.perplexity.ai/settings/api)   |
 
-## نصب Plugin
-
-Plugin رسمی را نصب کنید، سپس Gateway را راه‌اندازی مجدد کنید:
+## نصب افزونه
 
 ```bash
 openclaw plugins install @openclaw/perplexity-plugin
@@ -40,8 +39,6 @@ openclaw gateway restart
 
 <Steps>
   <Step title="تنظیم کلید API">
-    جریان پیکربندی تعاملی جستجوی وب را اجرا کنید:
-
     ```bash
     openclaw configure --section web
     ```
@@ -52,89 +49,68 @@ openclaw gateway restart
     openclaw config set plugins.entries.perplexity.config.webSearch.apiKey "pplx-xxxxxxxxxxxx"
     ```
 
+    کلیدی که در محیط Gateway با نام `PERPLEXITY_API_KEY` یا `OPENROUTER_API_KEY` صادر شده باشد نیز کار می‌کند.
+
   </Step>
-  <Step title="شروع جستجو">
-    پس از پیکربندی کلید، عامل به‌طور خودکار از Perplexity برای جستجوهای وب استفاده می‌کند.
-    هیچ مرحله اضافی لازم نیست.
+  <Step title="شروع جست‌وجو">
+    هنگامی که کلید Perplexity اعتبارنامه جست‌وجوی موجود باشد، `web_search` آن را به‌طور خودکار شناسایی می‌کند؛ به راه‌اندازی بیشتری نیاز نیست. برای تعیین صریح ارائه‌دهنده:
+
+    ```bash
+    openclaw config set tools.web.search.provider perplexity
+    ```
+
   </Step>
 </Steps>
 
-## حالت‌های جستجو
+## حالت‌های جست‌وجو
 
-Plugin بر اساس پیشوند کلید API، انتقال را به‌طور خودکار انتخاب می‌کند:
+افزونه روش انتقال را به ترتیب زیر تعیین می‌کند:
 
-<Tabs>
-  <Tab title="API بومی Perplexity (pplx-)">
-    وقتی کلید شما با `pplx-` شروع می‌شود، OpenClaw از Perplexity Search
-    API بومی استفاده می‌کند. این انتقال نتایج ساخت‌یافته برمی‌گرداند و از فیلترهای دامنه، زبان
-    و تاریخ پشتیبانی می‌کند (گزینه‌های فیلتر کردن را در ادامه ببینید).
-  </Tab>
-  <Tab title="OpenRouter / Sonar (sk-or-)">
-    وقتی کلید شما با `sk-or-` شروع می‌شود، OpenClaw با استفاده از
-    مدل Perplexity Sonar از طریق OpenRouter مسیریابی می‌کند. این انتقال پاسخ‌های تولیدشده با هوش مصنوعی را همراه با
-    ارجاع‌ها برمی‌گرداند.
-  </Tab>
-</Tabs>
+1. اگر `webSearch.baseUrl` یا `webSearch.model` تنظیم شده باشد: بدون توجه به نوع کلید، همیشه درخواست را از طریق تکمیل‌های گفت‌وگوی Sonar به آن نقطه پایانی هدایت می‌کند.
+2. در غیر این صورت، منبع کلید نقطه پایانی را تعیین می‌کند: پیشوند کلید پیکربندی‌شده روش انتقال را انتخاب می‌کند (پیکربندی بر متغیرهای محیطی اولویت دارد)؛ کلید محیطی مستقیماً از نقطه پایانی متناظر خود استفاده می‌کند.
 
-| پیشوند کلید | انتقال                    | قابلیت‌ها                                         |
-| ---------- | ---------------------------- | ------------------------------------------------ |
-| `pplx-`    | Perplexity Search API بومی | نتایج ساخت‌یافته، فیلترهای دامنه/زبان/تاریخ |
-| `sk-or-`   | OpenRouter (Sonar)           | پاسخ‌های تولیدشده با هوش مصنوعی همراه با ارجاع‌ها            |
+| پیشوند کلید | روش انتقال                                                | قابلیت‌ها                                         |
+| ----------- | --------------------------------------------------------- | ------------------------------------------------- |
+| `pplx-`     | API بومی جست‌وجوی Perplexity (`https://api.perplexity.ai`) | نتایج ساختاریافته، فیلترهای دامنه/زبان/تاریخ      |
+| `sk-or-`    | OpenRouter (`https://openrouter.ai/api/v1`)، مدل Sonar    | پاسخ‌های تولیدشده با هوش مصنوعی همراه با ارجاع‌ها |
 
-## فیلتر کردن API بومی
+کلید پیکربندی‌شده با هر پیشوند دیگری نیز از API بومی جست‌وجو استفاده می‌کند. مسیر تکمیل‌های گفت‌وگو به‌طور پیش‌فرض از مدل `perplexity/sonar-pro` استفاده می‌کند؛ برای بازنویسی آن از `plugins.entries.perplexity.config.webSearch.model` استفاده کنید.
 
-<Note>
-گزینه‌های فیلتر کردن فقط هنگام استفاده از API بومی Perplexity
-(کلید `pplx-`) در دسترس هستند. جستجوهای OpenRouter/Sonar از این پارامترها پشتیبانی نمی‌کنند.
-</Note>
+## فیلترگذاری API بومی
 
-هنگام استفاده از API بومی Perplexity، جستجوها از فیلترهای زیر پشتیبانی می‌کنند:
+| فیلتر                               | توضیحات                                                               | روش انتقال  |
+| ----------------------------------- | --------------------------------------------------------------------- | ----------- |
+| `count`                             | تعداد نتایج در هر جست‌وجو، ۱ تا ۱۰ (پیش‌فرض ۵)                       | فقط بومی    |
+| `freshness`                         | بازه تازگی: `day`، `week`، `month`، `year`                            | هر دو       |
+| `country`                           | کد دوحرفی کشور (`us`، `de`، `jp`)                                    | فقط بومی    |
+| `language`                          | کد زبان ISO 639-1 (`en`، `fr`، `zh`)                                 | فقط بومی    |
+| `date_after` / `date_before`        | بازه تاریخ انتشار با قالب `YYYY-MM-DD`                                | فقط بومی    |
+| `domain_filter`                     | حداکثر ۲۰ دامنه؛ فهرست مجاز یا فهرست مسدود با پیشوند `-`، هرگز ترکیبی نیستند | فقط بومی    |
+| `max_tokens` / `max_tokens_per_page` | بودجه محتوا برای همه نتایج / برای هر صفحه                            | فقط بومی    |
 
-| فیلتر         | توضیح                            | مثال                             |
-| -------------- | -------------------------------------- | ----------------------------------- |
-| کشور        | کد دوحرفی کشور                  | `us`, `de`, `jp`                    |
-| زبان       | کد زبان ISO 639-1                | `en`, `fr`, `zh`                    |
-| بازه تاریخ     | پنجره تازگی                         | `day`, `week`, `month`, `year`      |
-| فیلترهای دامنه | فهرست مجاز یا فهرست مسدود (حداکثر ۲۰ دامنه) | `example.com`                       |
-| بودجه محتوا | محدودیت‌های توکن برای هر پاسخ / هر صفحه   | `max_tokens`, `max_tokens_per_page` |
+فیلترهای مختص API بومی در مسیر تکمیل‌های گفت‌وگو خطایی توصیفی برمی‌گردانند. `freshness` را نمی‌توان با `date_after`/`date_before` ترکیب کرد.
 
 ## پیکربندی پیشرفته
 
 <AccordionGroup>
-  <Accordion title="متغیر محیطی برای فرایندهای daemon">
-    اگر OpenClaw Gateway به‌صورت daemon (launchd/systemd) اجرا می‌شود، مطمئن شوید
-    `PERPLEXITY_API_KEY` برای آن فرایند در دسترس است.
-
+  <Accordion title="متغیر محیطی برای فرایندهای پس‌زمینه">
     <Warning>
-    کلیدی که فقط در یک پوسته تعاملی export شده باشد، برای یک
-    daemon launchd/systemd قابل مشاهده نخواهد بود مگر اینکه آن محیط به‌صراحت وارد شده باشد. کلید را
-    در `~/.openclaw/.env` یا از طریق `env.shellEnv` تنظیم کنید تا مطمئن شوید فرایند gateway
-    می‌تواند آن را بخواند.
+    کلیدی که فقط در یک پوسته تعاملی صادر شده باشد، برای دیمن Gateway مبتنی بر launchd/systemd قابل مشاهده نیست، مگر اینکه آن محیط به‌صراحت وارد شود. کلید را در `~/.openclaw/.env` یا از طریق `env.shellEnv` تنظیم کنید تا فرایند Gateway بتواند آن را بخواند. برای مشاهده ترتیب کامل اولویت‌ها، به [متغیرهای محیطی](/fa/help/environment) مراجعه کنید.
     </Warning>
-
   </Accordion>
 
   <Accordion title="راه‌اندازی پراکسی OpenRouter">
-    اگر ترجیح می‌دهید جستجوهای Perplexity را از طریق OpenRouter مسیریابی کنید، به‌جای کلید بومی Perplexity
-    یک `OPENROUTER_API_KEY` (با پیشوند `sk-or-`) تنظیم کنید.
-    OpenClaw پیشوند را تشخیص می‌دهد و به‌طور خودکار به انتقال Sonar
-    تغییر می‌دهد.
-
-    <Tip>
-    انتقال OpenRouter زمانی مفید است که از قبل حساب OpenRouter داشته باشید
-    و بخواهید صورت‌حساب یکپارچه‌ای در میان چند ارائه‌دهنده داشته باشید.
-    </Tip>
-
+    برای هدایت جست‌وجوهای Perplexity از طریق OpenRouter، به‌جای کلید بومی Perplexity یک `OPENROUTER_API_KEY` (با پیشوند `sk-or-`) تنظیم کنید. OpenClaw کلید را شناسایی می‌کند و به‌طور خودکار به روش انتقال Sonar تغییر می‌دهد. این کار زمانی مفید است که از قبل صورت‌حساب OpenRouter را راه‌اندازی کرده‌اید و می‌خواهید ارائه‌دهندگان را در آنجا یکپارچه کنید.
   </Accordion>
 </AccordionGroup>
 
 ## مرتبط
 
 <CardGroup cols={2}>
-  <Card title="ابزار جستجوی Perplexity" href="/fa/tools/perplexity-search" icon="magnifying-glass">
-    اینکه عامل چگونه جستجوهای Perplexity را فراخوانی و نتایج را تفسیر می‌کند.
+  <Card title="ابزار جست‌وجوی Perplexity" href="/fa/tools/perplexity-search" icon="magnifying-glass">
+    نحوه فراخوانی جست‌وجوهای Perplexity و تفسیر نتایج توسط عامل.
   </Card>
   <Card title="مرجع پیکربندی" href="/fa/gateway/configuration-reference" icon="gear">
-    مرجع کامل پیکربندی شامل ورودی‌های Plugin.
+    مرجع کامل پیکربندی، شامل ورودی‌های افزونه.
   </Card>
 </CardGroup>

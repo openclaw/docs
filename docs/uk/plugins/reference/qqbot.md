@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або перевіряєте plugin qqbot
-summary: Plugin каналу QQ Bot для OpenClaw для групових робочих процесів і робочих процесів у прямих повідомленнях.
+    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin qqbot
+summary: Plugin каналу QQ Bot для групових сценаріїв і обміну приватними повідомленнями в OpenClaw.
 title: Plugin бота QQ
 x-i18n:
-    generated_at: "2026-06-27T18:01:27Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:35:52Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 10e67c8c8bd01a2fcd3ca55c32f6941cd52551ad241cb16a2ea38c62d80cfeb9
@@ -15,16 +15,16 @@ x-i18n:
 
 # Plugin QQ Bot
 
-Plugin каналу QQ Bot для робочих процесів групових і приватних повідомлень.
+Plugin каналу QQ Bot для OpenClaw, призначений для робочих процесів у групах і приватних повідомленнях.
 
-## Поширення
+## Розповсюдження
 
-- Пакет: `@openclaw/qqbot`
-- Спосіб встановлення: npm; ClawHub
+- Пакунок: `@openclaw/qqbot`
+- Спосіб установлення: npm; ClawHub
 
 ## Поверхня
 
-канали: qqbot; контракти: tools; skills
+канали: qqbot; контракти: інструменти; Skills
 
 ## Пов’язана документація
 

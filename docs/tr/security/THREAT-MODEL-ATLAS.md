@@ -1,79 +1,47 @@
 ---
 read_when:
-    - Güvenlik duruşunu veya tehdit senaryolarını gözden geçirme
+    - Güvenlik duruşunu veya tehdit senaryolarını inceleme
     - Güvenlik özellikleri veya denetim yanıtları üzerinde çalışma
-summary: MITRE ATLAS çerçevesiyle eşleştirilen OpenClaw tehdit modeli
+summary: MITRE ATLAS çerçevesiyle eşleştirilmiş OpenClaw tehdit modeli
 title: Tehdit modeli (MITRE ATLAS)
 x-i18n:
-    generated_at: "2026-05-06T18:00:09Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:48:28Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e7371231e9795cd899d727b87dfba7a5cae963f1fd1e50226e3fbb7488ef7381
+    source_hash: c88ffdef850bd2afaf835baab2555304c914a0be1df6b6b9109e0f55d1448392
     source_path: security/THREAT-MODEL-ATLAS.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-## MITRE ATLAS çerçevesi
+**Sürüm:** 1.0-taslak | **Çerçeve:** [MITRE ATLAS](https://atlas.mitre.org/) (Yapay Zekâ Sistemleri için Düşmanca Tehdit Ortamı) + veri akış diyagramları
 
-**Sürüm:** 1.0-taslak
-**Son Güncelleme:** 2026-02-04
-**Metodoloji:** MITRE ATLAS + Veri Akışı Diyagramları
-**Çerçeve:** [MITRE ATLAS](https://atlas.mitre.org/) (AI Sistemleri için Düşmanca Tehdit Ortamı)
+Bu tehdit modeli, OpenClaw yapay zekâ ajan platformuna ve ClawHub Skills pazarına yönelik düşmanca tehditleri belgeler. OpenClaw topluluğu tarafından sürdürülen, sürekli güncellenen bir belgedir. Yeni tehditleri bildirme, saldırı zincirleri önerme veya risk azaltma önlemleri sunma hakkında bilgi için [Tehdit modeline katkıda bulunma](/tr/security/CONTRIBUTING-THREAT-MODEL) sayfasına bakın.
 
-### Çerçeve atfı
-
-Bu tehdit modeli, AI/ML sistemlerine yönelik düşmanca tehditleri belgelemek için sektör standardı olan [MITRE ATLAS](https://atlas.mitre.org/) çerçevesi üzerine kuruludur. ATLAS, AI güvenlik topluluğuyla iş birliği içinde [MITRE](https://www.mitre.org/) tarafından sürdürülür.
-
-**Temel ATLAS Kaynakları:**
-
-- [ATLAS Teknikleri](https://atlas.mitre.org/techniques/)
-- [ATLAS Taktikleri](https://atlas.mitre.org/tactics/)
-- [ATLAS Vaka Çalışmaları](https://atlas.mitre.org/studies/)
-- [ATLAS GitHub](https://github.com/mitre-atlas/atlas-data)
-- [ATLAS'a Katkıda Bulunma](https://atlas.mitre.org/resources/contribute)
-
-### Bu Tehdit Modeline Katkıda Bulunma
-
-Bu, OpenClaw topluluğu tarafından sürdürülen yaşayan bir belgedir. Katkıda bulunma yönergeleri için [CONTRIBUTING-THREAT-MODEL.md](/tr/security/CONTRIBUTING-THREAT-MODEL) dosyasına bakın:
-
-- Yeni tehditleri bildirme
-- Mevcut tehditleri güncelleme
-- Saldırı zincirleri önerme
-- Azaltımlar önerme
+**Temel ATLAS kaynakları:** [Teknikler](https://atlas.mitre.org/techniques/) | [Taktikler](https://atlas.mitre.org/tactics/) | [Vaka çalışmaları](https://atlas.mitre.org/studies/) | [ATLAS GitHub](https://github.com/mitre-atlas/atlas-data) | [ATLAS'a katkıda bulunma](https://atlas.mitre.org/resources/contribute)
 
 ---
 
-## 1. Giriş
+## 1. Kapsam
 
-### 1.1 Amaç
+| Bileşen                   | Dahil   | Notlar                                                   |
+| ------------------------- | ------- | -------------------------------------------------------- |
+| OpenClaw ajan çalışma zamanı | Evet | Temel ajan yürütme, araç çağrıları, oturumlar             |
+| Gateway                   | Evet    | Kimlik doğrulama, yönlendirme, kanal entegrasyonu         |
+| Kanal entegrasyonları     | Evet    | WhatsApp, Telegram, Discord, Signal, Slack vb.            |
+| ClawHub pazarı            | Evet    | Skills yayımlama, moderasyon, dağıtım                     |
+| MCP sunucuları            | Evet    | Haricî araç sağlayıcıları                                 |
+| Kullanıcı cihazları       | Kısmen  | Mobil uygulamalar, masaüstü istemcileri                   |
 
-Bu tehdit modeli, özellikle AI/ML sistemleri için tasarlanmış MITRE ATLAS çerçevesini kullanarak OpenClaw AI agent platformuna ve ClawHub beceri pazaryerine yönelik düşmanca tehditleri belgeler.
+Kapsam dışı bildirimler ve yanlış pozitif örüntüleri (genel internete açık olma, bir sınır aşımı olmaksızın yalnızca istem enjeksiyonuna dayalı zincirler, karşılıklı olarak güvenilmeyen operatörlerin tek bir gateway ana makinesini paylaşması ve diğerleri) [`SECURITY.md`](https://github.com/openclaw/openclaw/blob/main/SECURITY.md) dosyasında sıralanmıştır; güvenlik açığı bildirim kapsamı için güncel ve esas kaynak bu sayfa değil, söz konusu dosyadır.
 
-### 1.2 Kapsam
+## 2. Sistem mimarisi
 
-| Bileşen               | Dahil | Notlar                                           |
-| --------------------- | ----- | ----------------------------------------------- |
-| OpenClaw Agent Runtime | Evet  | Çekirdek agent yürütmesi, araç çağrıları, oturumlar |
-| Gateway               | Evet  | Kimlik doğrulama, yönlendirme, kanal entegrasyonu |
-| Kanal Entegrasyonları | Evet  | WhatsApp, Telegram, Discord, Signal, Slack, vb. |
-| ClawHub Pazaryeri     | Evet  | Beceri yayımlama, moderasyon, dağıtım           |
-| MCP Sunucuları        | Evet  | Harici araç sağlayıcıları                       |
-| Kullanıcı Cihazları   | Kısmi | Mobil uygulamalar, masaüstü istemcileri         |
+### 2.1 Güven sınırları
 
-### 1.3 Kapsam Dışı
-
-Bu tehdit modeli için hiçbir şey açıkça kapsam dışı değildir.
-
----
-
-## 2. Sistem Mimarisi
-
-### 2.1 Güven Sınırları
-
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
-│                    UNTRUSTED ZONE                                │
+│                    GÜVENİLMEYEN BÖLGE                            │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐              │
 │  │  WhatsApp   │  │  Telegram   │  │   Discord   │  ...         │
 │  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘              │
@@ -82,538 +50,521 @@ Bu tehdit modeli için hiçbir şey açıkça kapsam dışı değildir.
           │                │                │
           ▼                ▼                ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                 TRUST BOUNDARY 1: Channel Access                 │
+│                 GÜVEN SINIRI 1: Kanal Erişimi                    │
 │  ┌──────────────────────────────────────────────────────────┐   │
 │  │                      GATEWAY                              │   │
-│  │  • Device Pairing (1h DM / 5m node grace period)           │   │
-│  │  • AllowFrom / AllowList validation                       │   │
-│  │  • Token/Password/Tailscale auth                          │   │
+│  │  • Cihaz eşleştirme (1 sa. DM / 5 dk. node eşleştirme TTL)│   │
+│  │  • AllowFrom / izin listesi doğrulaması                   │   │
+│  │  • Token / parola / Tailscale kimlik doğrulaması          │   │
 │  └──────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                 TRUST BOUNDARY 2: Session Isolation              │
+│                 GÜVEN SINIRI 2: Oturum Yalıtımı                  │
 │  ┌──────────────────────────────────────────────────────────┐   │
-│  │                   AGENT SESSIONS                          │   │
-│  │  • Session key = agent:channel:peer                       │   │
-│  │  • Tool policies per agent                                │   │
-│  │  • Transcript logging                                     │   │
+│  │                   AJAN OTURUMLARI                         │
+│  │  • Oturum anahtarı = agent:channel:peer                  │
+│  │  • Ajan başına araç politikaları                          │
+│  │  • Konuşma dökümü günlüğü                                 │
 │  └──────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                 TRUST BOUNDARY 3: Tool Execution                 │
+│                 GÜVEN SINIRI 3: Araç Yürütme                     │
 │  ┌──────────────────────────────────────────────────────────┐   │
-│  │                  EXECUTION SANDBOX                        │   │
-│  │  • Docker sandbox OR Host (exec-approvals)                │   │
-│  │  • Node remote execution                                  │   │
-│  │  • SSRF protection (DNS pinning + IP blocking)            │   │
+│  │                  YÜRÜTME KUM HAVUZU                       │
+│  │  • Docker kum havuzu (varsayılan) veya ana makine        │   │
+│  │    (yürütme onayları)                                    │   │
+│  │  • Node uzaktan yürütme                                   │   │
+│  │  • SSRF koruması (DNS sabitleme + IP engelleme)           │   │
 │  └──────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                 TRUST BOUNDARY 4: External Content               │
+│                 GÜVEN SINIRI 4: Haricî İçerik                    │
 │  ┌──────────────────────────────────────────────────────────┐   │
-│  │              FETCHED URLs / EMAILS / WEBHOOKS             │   │
-│  │  • External content wrapping (XML tags)                   │   │
-│  │  • Security notice injection                              │   │
+│  │          GETİRİLEN URL'LER / E-POSTALAR / WEBHOOK'LAR     │   │
+│  │  • Haricî içerik sarmalama (rastgele sınırlı XML etiketleri)│ │
+│  │  • Güvenlik bildirimi ekleme                              │   │
 │  └──────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                 TRUST BOUNDARY 5: Supply Chain                   │
+│                 GÜVEN SINIRI 5: Tedarik Zinciri                  │
 │  ┌──────────────────────────────────────────────────────────┐   │
 │  │                      CLAWHUB                              │   │
-│  │  • Skill publishing (semver, SKILL.md required)           │   │
-│  │  • Pattern-based moderation flags                         │   │
-│  │  • VirusTotal scanning (coming soon)                      │   │
-│  │  • GitHub account age verification                        │   │
+│  │  • Skills yayımlama (semver, SKILL.md zorunlu)            │   │
+│  │  • Statik örüntü + AST'ye yakın moderasyon taraması       │   │
+│  │  • LLM tabanlı ajansal risk incelemesi + VirusTotal taraması│ │
+│  │  • GitHub hesap yaşı doğrulaması (14 gün)                 │   │
 │  └──────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### 2.2 Veri Akışları
+### 2.2 Veri akışları
 
-| Akış | Kaynak  | Hedef       | Veri                 | Koruma               |
-| ---- | ------- | ----------- | -------------------- | -------------------- |
-| F1   | Kanal   | Gateway     | Kullanıcı mesajları  | TLS, AllowFrom       |
-| F2   | Gateway | Agent       | Yönlendirilen mesajlar | Oturum izolasyonu  |
-| F3   | Agent   | Araçlar     | Araç çağrıları       | Politika uygulaması  |
-| F4   | Agent   | Harici      | web_fetch istekleri  | SSRF engelleme       |
-| F5   | ClawHub | Agent       | Beceri kodu          | Moderasyon, tarama   |
-| F6   | Agent   | Kanal       | Yanıtlar             | Çıkış filtreleme     |
+| Akış | Kaynak  | Hedef    | Veri                 | Koruma                   |
+| ---- | ------- | -------- | -------------------- | ------------------------ |
+| F1   | Kanal   | Gateway  | Kullanıcı mesajları  | TLS, AllowFrom           |
+| F2   | Gateway | Ajan     | Yönlendirilen mesajlar | Oturum yalıtımı        |
+| F3   | Ajan    | Araçlar  | Araç çağrıları       | Politika uygulaması      |
+| F4   | Ajan    | Haricî   | `web_fetch` istekleri | SSRF engelleme          |
+| F5   | ClawHub | Ajan     | Skills kodu          | Moderasyon, tarama       |
+| F6   | Ajan    | Kanal    | Yanıtlar             | Çıktı filtreleme         |
 
 ---
 
-## 3. ATLAS Taktiğine Göre Tehdit Analizi
+## 3. ATLAS taktiğine göre tehdit analizi
 
 ### 3.1 Keşif (AML.TA0002)
 
-#### T-RECON-001: Agent Uç Noktası Keşfi
+#### T-RECON-001: Ajan uç noktası keşfi
 
-| Öznitelik              | Değer                                                                |
-| ---------------------- | -------------------------------------------------------------------- |
-| **ATLAS ID**           | AML.T0006 - Aktif Tarama                                             |
-| **Açıklama**           | Saldırgan, açıkta kalan OpenClaw Gateway uç noktalarını tarar        |
-| **Saldırı Vektörü**    | Ağ taraması, shodan sorguları, DNS numaralandırması                  |
-| **Etkilenen Bileşenler** | Gateway, açıkta kalan API uç noktaları                             |
-| **Mevcut Azaltımlar**  | Tailscale kimlik doğrulama seçeneği, varsayılan olarak loopback'e bağlanma |
-| **Kalan Risk**         | Orta - Genel erişime açık Gateway'ler keşfedilebilir                 |
-| **Öneriler**           | Güvenli dağıtımı belgeleyin, keşif uç noktalarına hız sınırlaması ekleyin |
+| Nitelik                 | Değer                                                                  |
+| ----------------------- | ---------------------------------------------------------------------- |
+| **ATLAS Kimliği**       | AML.T0006 - Etkin Tarama                                                |
+| **Açıklama**            | Saldırgan, açık OpenClaw gateway uç noktalarını tarar                   |
+| **Saldırı vektörü**     | Ağ taraması, Shodan sorguları, DNS numaralandırması                     |
+| **Etkilenen bileşenler** | Gateway, açık API uç noktaları                                         |
+| **Mevcut önlemler**     | Tailscale kimlik doğrulama seçeneği, varsayılan olarak local loopback'e bağlanma |
+| **Kalan risk**          | Orta - genel erişime açık gateway'ler keşfedilebilir                    |
+| **Öneriler**            | Güvenli dağıtımı belgeleyin, keşif uç noktalarına hız sınırlaması ekleyin |
 
-#### T-RECON-002: Kanal Entegrasyonu Yoklama
+#### T-RECON-002: Kanal entegrasyonu yoklaması
 
-| Öznitelik              | Değer                                                                     |
-| ----------------------- | ------------------------------------------------------------------------- |
-| **ATLAS ID**            | AML.T0006 - Aktif Tarama                                                  |
-| **Açıklama**            | Saldırgan, yapay zeka tarafından yönetilen hesapları belirlemek için mesajlaşma kanallarını yoklar |
-| **Saldırı Vektörü**     | Test mesajları gönderme, yanıt örüntülerini gözlemleme                    |
-| **Etkilenen Bileşenler** | Tüm kanal entegrasyonları                                                 |
-| **Mevcut Önlemler**     | Belirli bir önlem yok                                                     |
-| **Artık Risk**          | Düşük - Yalnızca keşiften elde edilen değer sınırlı                       |
-| **Öneriler**            | Yanıt zamanlamasının rastgeleleştirilmesini değerlendirin                 |
+| Nitelik                 | Değer                                                                  |
+| ----------------------- | ---------------------------------------------------------------------- |
+| **ATLAS Kimliği**       | AML.T0006 - Etkin Tarama                                                |
+| **Açıklama**            | Saldırgan, yapay zekâ tarafından yönetilen hesapları belirlemek için mesajlaşma kanallarını yoklar |
+| **Saldırı vektörü**     | Test mesajları gönderme, yanıt örüntülerini gözlemleme                  |
+| **Etkilenen bileşenler** | Tüm kanal entegrasyonları                                              |
+| **Mevcut önlemler**     | Buna özgü bir önlem yok                                                 |
+| **Kalan risk**          | Düşük - tek başına keşfin değeri sınırlıdır                             |
+| **Öneriler**            | Yanıt zamanlamasının rastgeleleştirilmesini değerlendirin               |
 
 ---
 
-### 3.2 İlk Erişim (AML.TA0004)
+### 3.2 İlk erişim (AML.TA0004)
 
-#### T-ACCESS-001: Eşleştirme Kodu Ele Geçirme
+#### T-ACCESS-001: Eşleştirme kodunun ele geçirilmesi
 
-| Öznitelik              | Değer                                                                                                           |
-| ----------------------- | --------------------------------------------------------------------------------------------------------------- |
-| **ATLAS ID**            | AML.T0040 - Yapay Zeka Modeli Çıkarım API Erişimi                                                               |
-| **Açıklama**            | Saldırgan, eşleştirme ek süresi sırasında eşleştirme kodunu ele geçirir (DM kanal eşleştirmesi için 1 saat, Node eşleştirmesi için 5 dakika) |
-| **Saldırı Vektörü**     | Omuz üzerinden izleme, ağ trafiği dinleme, sosyal mühendislik                                                   |
-| **Etkilenen Bileşenler** | Cihaz eşleştirme sistemi                                                                                        |
-| **Mevcut Önlemler**     | 1 saatlik süre sonu (DM eşleştirmesi) / 5 dakikalık süre sonu (Node eşleştirmesi), kodlar mevcut kanal üzerinden gönderilir |
-| **Artık Risk**          | Orta - Ek süre istismar edilebilir                                                                              |
-| **Öneriler**            | Ek süreyi azaltın, onay adımı ekleyin                                                                           |
+| Nitelik                 | Değer                                                                                                               |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| **ATLAS Kimliği**       | AML.T0040 - Yapay Zekâ Modeli Çıkarım API'sine Erişim                                                               |
+| **Açıklama**            | Saldırgan, eşleştirme süresi içinde bir eşleştirme kodunu ele geçirir (DM/genel eşleştirme için 1 sa., Node eşleştirmesi için 5 dk.) |
+| **Saldırı vektörü**     | Ekranı gözetleme, ağ trafiğini dinleme, sosyal mühendislik                                                           |
+| **Etkilenen bileşenler** | Cihaz eşleştirme sistemi                                                                                           |
+| **Mevcut önlemler**     | 1 sa. TTL (DM/genel eşleştirme), 5 dk. TTL (Node eşleştirmesi); kodlar mevcut kanal üzerinden gönderilir            |
+| **Kalan risk**          | Orta - eşleştirme süresi istismar edilebilir                                                                         |
+| **Öneriler**            | Eşleştirme süresini kısaltın, bir onay adımı ekleyin                                                                 |
 
-#### T-ACCESS-002: AllowFrom Sahteciliği
+#### T-ACCESS-002: AllowFrom sahteciliği
 
-| Öznitelik              | Değer                                                                            |
-| ----------------------- | -------------------------------------------------------------------------------- |
-| **ATLAS ID**            | AML.T0040 - Yapay Zeka Modeli Çıkarım API Erişimi                                |
-| **Açıklama**            | Saldırgan, kanalda izin verilen gönderici kimliğini taklit eder                  |
-| **Saldırı Vektörü**     | Kanala bağlıdır - telefon numarası sahteciliği, kullanıcı adıyla kimliğe bürünme |
-| **Etkilenen Bileşenler** | Kanal başına AllowFrom doğrulaması                                               |
-| **Mevcut Önlemler**     | Kanala özgü kimlik doğrulama                                                     |
-| **Artık Risk**          | Orta - Bazı kanallar sahteciliğe açıktır                                         |
+| Nitelik                 | Değer                                                                          |
+| ----------------------- | ------------------------------------------------------------------------------ |
+| **ATLAS Kimliği**       | AML.T0040 - Yapay Zekâ Modeli Çıkarım API'sine Erişim                          |
+| **Açıklama**            | Saldırgan, bir kanalda izin verilen gönderici kimliğini taklit eder            |
+| **Saldırı vektörü**     | Kanala bağlı olarak telefon numarası sahteciliği, kullanıcı adı taklidi         |
+| **Etkilenen bileşenler** | Kanal bazında AllowFrom doğrulaması                                            |
+| **Mevcut önlemler**     | Kanala özgü kimlik doğrulaması                                                  |
+| **Kalan risk**          | Orta - bazı kanallar sahteciliğe karşı savunmasız kalır                         |
 | **Öneriler**            | Kanala özgü riskleri belgeleyin, mümkün olduğunda kriptografik doğrulama ekleyin |
 
-#### T-ACCESS-003: Token Hırsızlığı
+#### T-ACCESS-003: Belirteç hırsızlığı
 
-| Öznitelik              | Değer                                                       |
-| ----------------------- | ----------------------------------------------------------- |
-| **ATLAS ID**            | AML.T0040 - Yapay Zeka Modeli Çıkarım API Erişimi           |
-| **Açıklama**            | Saldırgan, kimlik doğrulama tokenlerini yapılandırma dosyalarından çalar |
-| **Saldırı Vektörü**     | Kötü amaçlı yazılım, yetkisiz cihaz erişimi, yapılandırma yedeğinin açığa çıkması |
-| **Etkilenen Bileşenler** | ~/.openclaw/credentials/, yapılandırma depolaması           |
-| **Mevcut Önlemler**     | Dosya izinleri                                              |
-| **Artık Risk**          | Yüksek - Tokenler düz metin olarak saklanır                 |
-| **Öneriler**            | Beklemedeki token şifrelemesini uygulayın, token rotasyonu ekleyin |
+| Nitelik                 | Değer                                                                          |
+| ----------------------- | ------------------------------------------------------------------------------ |
+| **ATLAS Kimliği**       | AML.T0040 - Yapay Zekâ Modeli Çıkarım API'sine Erişim                          |
+| **Açıklama**            | Saldırgan, yapılandırma/kimlik bilgisi dosyalarından kimlik doğrulama belirteçlerini çalar |
+| **Saldırı vektörü**     | Kötü amaçlı yazılım, yetkisiz cihaz erişimi, yapılandırma yedeğinin açığa çıkması |
+| **Etkilenen bileşenler** | Kanal/sağlayıcı kimlik bilgisi depolaması, yapılandırma depolaması             |
+| **Mevcut önlemler**     | Dosya izinleri                                                                  |
+| **Kalan risk**          | Yüksek - belirteçler diskte düz metin olarak depolanır                          |
+| **Öneriler**            | Bekleyen belirteçler için şifreleme uygulayın, belirteç yenileme özelliği ekleyin |
 
 ---
 
 ### 3.3 Yürütme (AML.TA0005)
 
-#### T-EXEC-001: Doğrudan Prompt Enjeksiyonu
+#### T-EXEC-001: Doğrudan istem enjeksiyonu
 
-| Öznitelik              | Değer                                                                                   |
-| ----------------------- | --------------------------------------------------------------------------------------- |
-| **ATLAS ID**            | AML.T0051.000 - LLM Prompt Enjeksiyonu: Doğrudan                                         |
-| **Açıklama**            | Saldırgan, ajan davranışını manipüle etmek için özel hazırlanmış promptlar gönderir      |
-| **Saldırı Vektörü**     | Karşıt talimatlar içeren kanal mesajları                                                 |
-| **Etkilenen Bileşenler** | Ajan LLM'si, tüm giriş yüzeyleri                                                         |
-| **Mevcut Önlemler**     | Örüntü tespiti, harici içerik sarmalama                                                  |
-| **Artık Risk**          | Kritik - Yalnızca tespit var, engelleme yok; gelişmiş saldırılar bunu aşar              |
-| **Öneriler**            | Çok katmanlı savunma, çıktı doğrulama ve hassas eylemler için kullanıcı onayı uygulayın |
+| Nitelik                 | Değer                                                                                                                                        |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| **ATLAS Kimliği**       | AML.T0051.000 - LLM İstem Enjeksiyonu: Doğrudan                                                                                              |
+| **Açıklama**            | Saldırgan, ajanın davranışını değiştirmek için özel hazırlanmış istemler gönderir                                                            |
+| **Saldırı vektörü**     | Düşmanca talimatlar içeren kanal mesajları                                                                                                    |
+| **Etkilenen bileşenler** | Ajan LLM'si, tüm giriş yüzeyleri                                                                                                             |
+| **Mevcut önlemler**     | Örüntü algılama, harici içeriği sarmalama; bir sınır atlatma durumu olmadığında güvenlik açığı raporlarının kapsamı dışında kabul edilir (bkz. `SECURITY.md`) |
+| **Kalan risk**          | Kritik - yalnızca algılama vardır, engelleme yoktur; gelişmiş saldırılar algılamayı atlatır                                                   |
+| **Öneriler**            | Mevcut algılamaya ek olarak hassas eylemler için çıktı doğrulaması ve kullanıcı onayı uygulayın                                               |
 
-#### T-EXEC-002: Dolaylı Prompt Enjeksiyonu
+#### T-EXEC-002: Dolaylı istem enjeksiyonu
 
-| Öznitelik              | Değer                                                       |
-| ----------------------- | ----------------------------------------------------------- |
-| **ATLAS ID**            | AML.T0051.001 - LLM Prompt Enjeksiyonu: Dolaylı             |
-| **Açıklama**            | Saldırgan, getirilen içeriğe kötü amaçlı talimatlar yerleştirir |
-| **Saldırı Vektörü**     | Kötü amaçlı URL'ler, zehirlenmiş e-postalar, ele geçirilmiş webhooklar |
-| **Etkilenen Bileşenler** | web_fetch, e-posta alımı, harici veri kaynakları            |
-| **Mevcut Önlemler**     | XML etiketleri ve güvenlik bildirimiyle içerik sarmalama    |
-| **Artık Risk**          | Yüksek - LLM sarmalayıcı talimatlarını yok sayabilir        |
-| **Öneriler**            | İçerik temizleme, ayrı yürütme bağlamları uygulayın         |
+| Nitelik                 | Değer                                                                                                                    |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| **ATLAS Kimliği**       | AML.T0051.001 - LLM İstem Enjeksiyonu: Dolaylı                                                                           |
+| **Açıklama**            | Saldırgan, getirilen içeriğe kötü amaçlı talimatlar yerleştirir                                                           |
+| **Saldırı vektörü**     | Kötü amaçlı URL'ler, zehirlenmiş e-postalar, ele geçirilmiş Webhook'lar                                                   |
+| **Etkilenen bileşenler** | `web_fetch`, e-posta alımı, harici veri kaynakları                                                                       |
+| **Mevcut önlemler**     | Rastgele sınırlı XML tarzı işaretçilerle içerik sarmalama, benzer glif/özel belirteç normalizasyonu ve bir güvenlik bildirimi |
+| **Kalan risk**          | Yüksek - LLM, sarmalayıcı talimatlarını yine de yok sayabilir                                                             |
+| **Öneriler**            | Sarmalanmış içerik için ayrı yürütme bağlamları kullanın                                                                  |
 
-#### T-EXEC-003: Araç Argümanı Enjeksiyonu
+#### T-EXEC-003: Araç argümanı enjeksiyonu
 
-| Öznitelik              | Değer                                                        |
-| ----------------------- | ------------------------------------------------------------ |
-| **ATLAS ID**            | AML.T0051.000 - LLM Prompt Enjeksiyonu: Doğrudan             |
-| **Açıklama**            | Saldırgan, prompt enjeksiyonu yoluyla araç argümanlarını manipüle eder |
-| **Saldırı Vektörü**     | Araç parametre değerlerini etkileyen özel hazırlanmış promptlar |
-| **Etkilenen Bileşenler** | Tüm araç çağrıları                                           |
-| **Mevcut Önlemler**     | Tehlikeli komutlar için exec onayları                        |
-| **Artık Risk**          | Yüksek - Kullanıcı muhakemesine dayanır                      |
-| **Öneriler**            | Argüman doğrulama, parametreleştirilmiş araç çağrıları uygulayın |
+| Nitelik                 | Değer                                                         |
+| ----------------------- | ------------------------------------------------------------- |
+| **ATLAS Kimliği**       | AML.T0051.000 - LLM İstem Enjeksiyonu: Doğrudan               |
+| **Açıklama**            | Saldırgan, istem enjeksiyonu yoluyla araç argümanlarını değiştirir |
+| **Saldırı vektörü**     | Araç parametresi değerlerini etkileyen özel hazırlanmış istemler |
+| **Etkilenen bileşenler** | Tüm araç çağrıları                                           |
+| **Mevcut önlemler**     | Tehlikeli komutlar için yürütme onayları                       |
+| **Kalan risk**          | Yüksek - kullanıcı muhakemesine dayanır                        |
+| **Öneriler**            | Argüman doğrulaması, parametreleştirilmiş araç çağrıları       |
 
-#### T-EXEC-004: Exec Onayı Atlama
+#### T-EXEC-004: Yürütme onayını atlatma
 
-| Öznitelik              | Değer                                                      |
-| ----------------------- | ---------------------------------------------------------- |
-| **ATLAS ID**            | AML.T0043 - Karşıt Veri Hazırlama                          |
-| **Açıklama**            | Saldırgan, onay izin listesini atlatan komutlar hazırlar   |
-| **Saldırı Vektörü**     | Komut gizleme, alias istismarı, yol manipülasyonu          |
-| **Etkilenen Bileşenler** | exec-approvals.ts, komut izin listesi                      |
-| **Mevcut Önlemler**     | İzin listesi + ask modu                                    |
-| **Artık Risk**          | Yüksek - Komut temizleme yok                               |
-| **Öneriler**            | Komut normalleştirme uygulayın, engelleme listesini genişletin |
+| Nitelik                 | Değer                                                                                                                                                                                      |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **ATLAS Kimliği**       | AML.T0043 - Düşmanca Veri Hazırlama                                                                                                                                                         |
+| **Açıklama**            | Saldırgan, onay izin listesini atlatan komutlar hazırlar                                                                                                                                    |
+| **Saldırı vektörü**     | Komut gizleme, takma ad istismarı, yol manipülasyonu                                                                                                                                        |
+| **Etkilenen bileşenler** | `src/infra/exec-approvals*.ts`, komut izin listesi                                                                                                                                         |
+| **Mevcut önlemler**     | İzin listesi + sorma modu ve komut normalizasyonu (dağıtım sarmalayıcısını açma, satır içi değerlendirme algılama, kabuk zinciri analizi)                                                    |
+| **Kalan risk**          | Yüksek - normalizasyon, gizleme yoluyla atlatmayı daraltır ancak ortadan kaldırmaz; yürütme yolları arasındaki yalnızca eşlik bulguları güvenlik açığı değil, sağlamlaştırma olarak değerlendirilir (bkz. `SECURITY.md`) |
+| **Öneriler**            | Yeni gizleme tekniklerine karşı komut normalizasyonu kapsamını genişletmeye devam edin                                                                                                       |
 
 ---
 
 ### 3.4 Kalıcılık (AML.TA0006)
 
-#### T-PERSIST-001: Kötü Amaçlı Skill Kurulumu
+#### T-PERSIST-001: Kötü amaçlı Skills kurulumu
 
-| Öznitelik              | Değer                                                                    |
-| ----------------------- | ------------------------------------------------------------------------ |
-| **ATLAS ID**            | AML.T0010.001 - Tedarik Zinciri Ele Geçirme: Yapay Zeka Yazılımı          |
-| **Açıklama**            | Saldırgan, ClawHub'a kötü amaçlı Skill yayımlar                          |
-| **Saldırı Vektörü**     | Hesap oluşturma, gizli kötü amaçlı kod içeren Skill yayımlama            |
-| **Etkilenen Bileşenler** | ClawHub, Skill yükleme, ajan yürütmesi                                   |
-| **Mevcut Önlemler**     | GitHub hesap yaşı doğrulaması, örüntü tabanlı moderasyon işaretleri      |
-| **Artık Risk**          | Kritik - Sandbox yok, inceleme sınırlı                                   |
-| **Öneriler**            | VirusTotal entegrasyonu (devam ediyor), Skill sandboxing, topluluk incelemesi |
+| Nitelik                 | Değer                                                                                                                       |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| **ATLAS Kimliği**       | AML.T0010.001 - Tedarik Zincirinin Ele Geçirilmesi: Yapay Zekâ Yazılımı                                                     |
+| **Açıklama**            | Saldırgan, ClawHub'da kötü amaçlı bir Skills yayımlar                                                                        |
+| **Saldırı vektörü**     | Hesap oluşturma, gizli kötü amaçlı kod içeren Skills yayımlama                                                               |
+| **Etkilenen bileşenler** | ClawHub, Skills yükleme, ajan yürütmesi                                                                                      |
+| **Mevcut önlemler**     | GitHub hesap yaşı doğrulaması, statik örüntü/AST'ye yakın tarama, LLM tabanlı ajansal risk incelemesi, VirusTotal taraması    |
+| **Kalan risk**          | Yüksek - algılama katmanları mevcuttur ancak Skills yine de ajan ayrıcalıklarıyla ve yürütme korumalı alanı olmadan çalışır  |
+| **Öneriler**            | Skills yürütmesini korumalı alana alın, topluluk incelemesini genişletin                                                     |
 
-#### T-PERSIST-002: Skill Güncellemesi Zehirleme
+#### T-PERSIST-002: Skills güncellemesinin zehirlenmesi
 
-| Öznitelik              | Değer                                                          |
-| ----------------------- | -------------------------------------------------------------- |
-| **ATLAS ID**            | AML.T0010.001 - Tedarik Zinciri Ele Geçirme: Yapay Zeka Yazılımı |
-| **Açıklama**            | Saldırgan popüler Skill'i ele geçirir ve kötü amaçlı güncelleme gönderir |
-| **Saldırı Vektörü**     | Hesap ele geçirme, Skill sahibine yönelik sosyal mühendislik   |
-| **Etkilenen Bileşenler** | ClawHub sürümleme, otomatik güncelleme akışları                |
-| **Mevcut Önlemler**     | Sürüm parmak izi                                               |
-| **Artık Risk**          | Yüksek - Otomatik güncellemeler kötü amaçlı sürümleri çekebilir |
-| **Öneriler**            | Güncelleme imzalama, geri alma yeteneği, sürüm sabitleme uygulayın |
+| Nitelik                 | Değer                                                                               |
+| ----------------------- | ----------------------------------------------------------------------------------- |
+| **ATLAS Kimliği**       | AML.T0010.001 - Tedarik Zincirinin Ele Geçirilmesi: Yapay Zekâ Yazılımı             |
+| **Açıklama**            | Saldırgan, popüler bir Skills'i ele geçirir ve kötü amaçlı bir güncelleme yayımlar   |
+| **Saldırı vektörü**     | Hesabın ele geçirilmesi, Skills sahibine yönelik sosyal mühendislik                  |
+| **Etkilenen bileşenler** | ClawHub sürümleme, otomatik güncelleme akışları                                     |
+| **Mevcut önlemler**     | Sürüm parmak izi oluşturma, yeni sürümlerde moderasyon/taramanın yeniden çalıştırılması |
+| **Kalan risk**          | Yüksek - otomatik güncellemeler, inceleme tamamlanmadan kötü amaçlı sürümleri çekebilir |
+| **Öneriler**            | Güncelleme imzalama, geri alma özelliği, sürüm sabitleme                             |
 
-#### T-PERSIST-003: Ajan Yapılandırmasıyla Oynama
+#### T-PERSIST-003: Ajan yapılandırmasının kurcalanması
 
-| Öznitelik              | Değer                                                           |
-| ----------------------- | --------------------------------------------------------------- |
-| **ATLAS ID**            | AML.T0010.002 - Tedarik Zinciri Ele Geçirme: Veri               |
-| **Açıklama**            | Saldırgan, erişimi kalıcı hale getirmek için ajan yapılandırmasını değiştirir |
-| **Saldırı Vektörü**     | Yapılandırma dosyası değişikliği, ayar enjeksiyonu              |
-| **Etkilenen Bileşenler** | Ajan yapılandırması, araç ilkeleri                              |
-| **Mevcut Önlemler**     | Dosya izinleri                                                  |
-| **Artık Risk**          | Orta - Yerel erişim gerektirir                                  |
+| Öznitelik               | Değer                                                                      |
+| ----------------------- | -------------------------------------------------------------------------- |
+| **ATLAS kimliği**       | AML.T0010.002 - Tedarik Zincirinin Tehlikeye Atılması: Veri                 |
+| **Açıklama**            | Saldırgan, erişimi kalıcı hâle getirmek için ajan yapılandırmasını değiştirir |
+| **Saldırı vektörü**     | Yapılandırma dosyasını değiştirme, ayar ekleme                              |
+| **Etkilenen bileşenler** | Ajan yapılandırması, araç politikaları                                     |
+| **Mevcut önlemler**     | Dosya izinleri                                                              |
+| **Kalan risk**          | Orta - yerel erişim gerektirir                                              |
 | **Öneriler**            | Yapılandırma bütünlüğü doğrulaması, yapılandırma değişiklikleri için denetim günlüğü |
 
 ---
 
-### 3.5 Savunmadan Kaçınma (AML.TA0007)
+### 3.5 Savunmadan kaçınma (AML.TA0007)
 
-#### T-EVADE-001: Moderasyon Örüntüsünü Atlama
+#### T-EVADE-001: Moderasyon kalıbını atlatma
 
-| Öznitelik              | Değer                                                                  |
-| ----------------------- | ---------------------------------------------------------------------- |
-| **ATLAS ID**            | AML.T0043 - Karşıt Veri Hazırlama                                      |
-| **Açıklama**            | Saldırgan, moderasyon örüntülerinden kaçınmak için Skill içeriği hazırlar |
-| **Saldırı Vektörü**     | Unicode homoglifleri, kodlama hileleri, dinamik yükleme                |
-| **Etkilenen Bileşenler** | ClawHub moderation.ts                                                  |
-| **Mevcut Önlemler**     | Örüntü tabanlı FLAG_RULES                                              |
-| **Artık Risk**          | Yüksek - Basit regex kolayca atlatılır                                 |
-| **Öneriler**            | Davranışsal analiz (VirusTotal Code Insight), AST tabanlı tespit ekleyin |
+| Öznitelik               | Değer                                                                                           |
+| ----------------------- | ----------------------------------------------------------------------------------------------- |
+| **ATLAS kimliği**       | AML.T0043 - Düşmanca Veri Oluşturma                                                              |
+| **Açıklama**            | Saldırgan, ClawHub moderasyon kontrollerinden kaçınmak için skill içeriği oluşturur              |
+| **Saldırı vektörü**     | Unicode benzer karakterleri, kodlama hileleri, dinamik yükleme                                   |
+| **Etkilenen bileşenler** | ClawHub moderasyon/tarama işlem hattı                                                            |
+| **Mevcut önlemler**     | Statik kalıp kuralları, AST çevresindeki kod taraması, LLM tabanlı aracılı risk incelemesi, VirusTotal |
+| **Kalan risk**          | Orta - yeni gizleme yöntemleri katmanlı sezgisel denetimleri yine de aşabilir                    |
+| **Öneriler**            | Yeni kaçınma yöntemleri bulundukça kalıp/davranış külliyatını genişletmeye devam edin             |
 
-#### T-EVADE-002: İçerik Sarmalayıcıdan Kaçış
+#### T-EVADE-002: İçerik sarmalayıcısından kaçış
 
-| Öznitelik | Değer |
-| ----------------------- | --------------------------------------------------------- |
-| **ATLAS Kimliği** | AML.T0043 - Düşmanca Veri Oluşturma |
-| **Açıklama** | Saldırgan, XML sarmalayıcı bağlamından çıkan içerik oluşturur |
-| **Saldırı Vektörü** | Etiket manipülasyonu, bağlam karışıklığı, talimat geçersiz kılma |
-| **Etkilenen Bileşenler** | Harici içerik sarmalama |
-| **Mevcut Azaltımlar** | XML etiketleri + güvenlik bildirimi |
-| **Artık Risk** | Orta - Yeni kaçış yöntemleri düzenli olarak keşfediliyor |
-| **Öneriler** | Birden fazla sarmalayıcı katmanı, çıktı tarafı doğrulama |
+| Öznitelik               | Değer                                                                                                                        |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| **ATLAS kimliği**       | AML.T0043 - Düşmanca Veri Oluşturma                                                                                           |
+| **Açıklama**            | Saldırgan, harici içerik sarmalayıcısının bağlamından kaçan içerik oluşturur                                                  |
+| **Saldırı vektörü**     | Etiket manipülasyonu, bağlam karmaşası, talimatları geçersiz kılma                                                            |
+| **Etkilenen bileşenler** | Harici içerik sarmalama                                                                                                      |
+| **Mevcut önlemler**     | Rastgele sınırlı XML tarzı işaretçiler ve güvenlik bildirimi; ayrıca benzer karakter/boşluk varyantlı işaretçi taklidi algılama |
+| **Kalan risk**          | Orta - düzenli olarak yeni kaçış yöntemleri keşfediliyor                                                                      |
+| **Öneriler**            | Girdi tarafında sarmalamaya ek olarak çıktı tarafında doğrulama                                                               |
 
 ---
 
 ### 3.6 Keşif (AML.TA0008)
 
-#### T-DISC-001: Araç Numaralandırma
+#### T-DISC-001: Araçları listeleme
 
-| Öznitelik | Değer |
-| ----------------------- | ----------------------------------------------------- |
-| **ATLAS Kimliği** | AML.T0040 - AI Model Çıkarım API Erişimi |
-| **Açıklama** | Saldırgan, prompting yoluyla kullanılabilir araçları numaralandırır |
-| **Saldırı Vektörü** | "Hangi araçlara sahipsin?" tarzı sorgular |
-| **Etkilenen Bileşenler** | Agent araç kayıt defteri |
-| **Mevcut Azaltımlar** | Belirli bir azaltım yok |
-| **Artık Risk** | Düşük - Araçlar genellikle belgelenmiştir |
-| **Öneriler** | Araç görünürlüğü denetimlerini değerlendirin |
+| Öznitelik               | Değer                                                        |
+| ----------------------- | ------------------------------------------------------------ |
+| **ATLAS kimliği**       | AML.T0040 - Yapay Zekâ Modeli Çıkarım API'sine Erişim        |
+| **Açıklama**            | Saldırgan, istemler aracılığıyla kullanılabilir araçları listeler |
+| **Saldırı vektörü**     | "Hangi araçlara sahipsin?" tarzı sorgular                     |
+| **Etkilenen bileşenler** | Ajan araç kayıt defteri                                      |
+| **Mevcut önlemler**     | Özel bir önlem yok                                            |
+| **Kalan risk**          | Düşük - araçlar genellikle belgelenmiştir                     |
+| **Öneriler**            | Araç görünürlüğü denetimlerini değerlendirin                  |
 
-#### T-DISC-002: Oturum Verisi Çıkarma
+#### T-DISC-002: Oturum verilerini çıkarma
 
-| Öznitelik | Değer |
-| ----------------------- | ----------------------------------------------------- |
-| **ATLAS Kimliği** | AML.T0040 - AI Model Çıkarım API Erişimi |
-| **Açıklama** | Saldırgan, oturum bağlamından hassas verileri çıkarır |
-| **Saldırı Vektörü** | "Ne konuştuk?" sorguları, bağlam sondalama |
-| **Etkilenen Bileşenler** | Oturum transkriptleri, bağlam penceresi |
-| **Mevcut Azaltımlar** | Gönderen başına oturum yalıtımı |
-| **Artık Risk** | Orta - Oturum içi verilere erişilebilir |
-| **Öneriler** | Bağlamda hassas veri redaksiyonu uygulayın |
+| Öznitelik               | Değer                                                     |
+| ----------------------- | --------------------------------------------------------- |
+| **ATLAS kimliği**       | AML.T0040 - Yapay Zekâ Modeli Çıkarım API'sine Erişim     |
+| **Açıklama**            | Saldırgan, oturum bağlamından hassas verileri çıkarır      |
+| **Saldırı vektörü**     | "Neler konuştuk?" sorguları, bağlam yoklama                |
+| **Etkilenen bileşenler** | Oturum dökümleri, bağlam penceresi                        |
+| **Mevcut önlemler**     | Gönderici başına oturum yalıtımı (`agent:channel:peer` anahtarı) |
+| **Kalan risk**          | Orta - oturum içindeki verilere tasarım gereği erişilebilir |
+| **Öneriler**            | Bağlamdaki hassas verilerin maskelenmesi                   |
 
 ---
 
-### 3.7 Toplama ve Dışarı Sızdırma (AML.TA0009, AML.TA0010)
+### 3.7 Toplama ve dışarı veri sızdırma (AML.TA0009, AML.TA0010)
 
-#### T-EXFIL-001: web_fetch yoluyla Veri Hırsızlığı
+#### T-EXFIL-001: web_fetch aracılığıyla veri hırsızlığı
 
-| Öznitelik | Değer |
-| ----------------------- | ---------------------------------------------------------------------- |
-| **ATLAS Kimliği** | AML.T0009 - Toplama |
-| **Açıklama** | Saldırgan, agent'a harici URL'ye göndermesini söyleyerek veriyi dışarı sızdırır |
-| **Saldırı Vektörü** | Agent'ın saldırgan sunucusuna veri POST etmesine neden olan prompt injection |
-| **Etkilenen Bileşenler** | web_fetch aracı |
-| **Mevcut Azaltımlar** | Dahili ağlar için SSRF engelleme |
-| **Artık Risk** | Yüksek - Harici URL'lere izin verilir |
-| **Öneriler** | URL izin listesi, veri sınıflandırma farkındalığı uygulayın |
+| Öznitelik               | Değer                                                                                  |
+| ----------------------- | -------------------------------------------------------------------------------------- |
+| **ATLAS kimliği**       | AML.T0009 - Toplama                                                                    |
+| **Açıklama**            | Saldırgan, ajana verileri harici bir URL'ye göndermesini söyleyerek verileri dışarı sızdırır |
+| **Saldırı vektörü**     | Ajanın saldırgana ait bir sunucuya POST isteğiyle veri göndermesine neden olan istem enjeksiyonu |
+| **Etkilenen bileşenler** | `web_fetch` aracı                                                                     |
+| **Mevcut önlemler**     | Dahili/özel ağlar için SSRF engelleme (DNS sabitleme + IP engelleme)                   |
+| **Kalan risk**          | Yüksek - rastgele harici URL'lere hâlâ izin veriliyor                                  |
+| **Öneriler**            | URL izin listesi, veri sınıflandırma farkındalığı                                      |
 
-#### T-EXFIL-002: Yetkisiz Mesaj Gönderme
+#### T-EXFIL-002: Yetkisiz mesaj gönderme
 
-| Öznitelik | Değer |
-| ----------------------- | ---------------------------------------------------------------- |
-| **ATLAS Kimliği** | AML.T0009 - Toplama |
-| **Açıklama** | Saldırgan, agent'ın hassas veri içeren mesajlar göndermesine neden olur |
-| **Saldırı Vektörü** | Agent'ın saldırgana mesaj göndermesine neden olan prompt injection |
-| **Etkilenen Bileşenler** | Mesaj aracı, kanal entegrasyonları |
-| **Mevcut Azaltımlar** | Giden mesajlaşma kapılaması |
-| **Artık Risk** | Orta - Kapılama atlatılabilir |
-| **Öneriler** | Yeni alıcılar için açık onay gerektirin |
+| Öznitelik               | Değer                                                                         |
+| ----------------------- | ----------------------------------------------------------------------------- |
+| **ATLAS kimliği**       | AML.T0009 - Toplama                                                           |
+| **Açıklama**            | Saldırgan, ajanın hassas veriler içeren mesajlar göndermesine neden olur      |
+| **Saldırı vektörü**     | Ajanın saldırgana mesaj göndermesine neden olan istem enjeksiyonu             |
+| **Etkilenen bileşenler** | Mesaj aracı, kanal entegrasyonları                                           |
+| **Mevcut önlemler**     | Giden mesaj gönderimi denetimi                                                |
+| **Kalan risk**          | Orta - denetim atlatılabilir                                                  |
+| **Öneriler**            | Yeni alıcılar için açık onay                                                  |
 
-#### T-EXFIL-003: Kimlik Bilgisi Toplama
+#### T-EXFIL-003: Kimlik bilgisi toplama
 
-| Öznitelik | Değer |
-| ----------------------- | ------------------------------------------------------- |
-| **ATLAS Kimliği** | AML.T0009 - Toplama |
-| **Açıklama** | Kötü amaçlı skill, agent bağlamından kimlik bilgilerini toplar |
-| **Saldırı Vektörü** | Skill kodu ortam değişkenlerini, yapılandırma dosyalarını okur |
-| **Etkilenen Bileşenler** | Skill yürütme ortamı |
-| **Mevcut Azaltımlar** | Skills'e özel bir azaltım yok |
-| **Artık Risk** | Kritik - Skills agent ayrıcalıklarıyla çalışır |
-| **Öneriler** | Skill sandboxing, kimlik bilgisi yalıtımı |
+| Öznitelik               | Değer                                                                                                                                                      |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **ATLAS kimliği**       | AML.T0009 - Toplama                                                                                                                                         |
+| **Açıklama**            | Kötü amaçlı skill, ajan bağlamından kimlik bilgilerini toplar                                                                                               |
+| **Saldırı vektörü**     | Skill kodu ortam değişkenlerini ve yapılandırma dosyalarını okur                                                                                            |
+| **Etkilenen bileşenler** | Skill yürütme ortamı                                                                                                                                       |
+| **Mevcut önlemler**     | ClawHub kimlik bilgisi kalıbı taraması (sabit kodlanmış gizli bilgiler, ağ gönderimleriyle eşleşen kimlik bilgisi ortam değişkeni erişimi); çalışma zamanında skill'ler için yürütme korumalı alanı yoktur |
+| **Kalan risk**          | Kritik - skill'ler ajan ayrıcalıklarıyla çalışır                                                                                                            |
+| **Öneriler**            | Skill yürütme için korumalı alan, kimlik bilgilerinin yalıtılması                                                                                           |
 
 ---
 
 ### 3.8 Etki (AML.TA0011)
 
-#### T-IMPACT-001: Yetkisiz Komut Yürütme
+#### T-IMPACT-001: Yetkisiz komut yürütme
 
-| Öznitelik | Değer |
-| ----------------------- | --------------------------------------------------- |
-| **ATLAS Kimliği** | AML.T0031 - AI Model Bütünlüğünü Aşındırma |
-| **Açıklama** | Saldırgan, kullanıcı sisteminde rastgele komutlar yürütür |
-| **Saldırı Vektörü** | Exec onayı atlatma ile birleştirilmiş prompt injection |
-| **Etkilenen Bileşenler** | Bash aracı, komut yürütme |
-| **Mevcut Azaltımlar** | Exec onayları, Docker sandbox seçeneği |
-| **Artık Risk** | Kritik - Sandbox olmadan host yürütmesi |
-| **Öneriler** | Varsayılan olarak sandbox kullanın, onay kullanıcı deneyimini iyileştirin |
+| Öznitelik               | Değer                                                                                                      |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **ATLAS kimliği**       | AML.T0031 - Yapay Zekâ Modeli Bütünlüğünü Aşındırma                                                        |
+| **Açıklama**            | Saldırgan, kullanıcının sisteminde rastgele komutlar yürütür                                               |
+| **Saldırı vektörü**     | Yürütme onayını atlatmayla birleştirilmiş istem enjeksiyonu                                                |
+| **Etkilenen bileşenler** | Bash aracı, komut yürütme                                                                                 |
+| **Mevcut önlemler**     | Yürütme onayları, Docker korumalı alan seçeneği (varsayılan çalışma zamanı arka ucu)                        |
+| **Kalan risk**          | Kritik - korumalı alan devre dışı bırakıldığında ana sistemde yürütme mümkündür                            |
+| **Öneriler**            | Onay kullanıcı deneyimini iyileştirin; korumalı alanın kapalı olduğu dağıtımlar bilinçli bir operatör tercihi olmaya devam eder ve bu şekilde belgelenir |
 
-#### T-IMPACT-002: Kaynak Tüketimi (DoS)
+#### T-IMPACT-002: Kaynak tüketimi (DoS)
 
-| Öznitelik | Değer |
-| ----------------------- | -------------------------------------------------- |
-| **ATLAS Kimliği** | AML.T0031 - AI Model Bütünlüğünü Aşındırma |
-| **Açıklama** | Saldırgan API kredilerini veya işlem kaynaklarını tüketir |
-| **Saldırı Vektörü** | Otomatik mesaj taşkını, pahalı araç çağrıları |
-| **Etkilenen Bileşenler** | Gateway, agent oturumları, API sağlayıcısı |
-| **Mevcut Azaltımlar** | Yok |
-| **Artık Risk** | Yüksek - Hız sınırlaması yok |
-| **Öneriler** | Gönderen başına hız sınırları, maliyet bütçeleri uygulayın |
+| Öznitelik               | Değer                                                |
+| ----------------------- | ---------------------------------------------------- |
+| **ATLAS kimliği**       | AML.T0031 - Yapay Zekâ Modeli Bütünlüğünü Aşındırma  |
+| **Açıklama**            | Saldırgan, API kredilerini veya hesaplama kaynaklarını tüketir |
+| **Saldırı vektörü**     | Otomatik mesaj bombardımanı, pahalı araç çağrıları   |
+| **Etkilenen bileşenler** | Gateway, ajan oturumları, API sağlayıcısı           |
+| **Mevcut önlemler**     | Yok                                                  |
+| **Kalan risk**          | Yüksek - gönderici başına hız sınırlaması yok        |
+| **Öneriler**            | Gönderici başına hız sınırları, maliyet bütçeleri    |
 
-#### T-IMPACT-003: İtibar Zararı
+#### T-IMPACT-003: İtibar kaybı
 
-| Öznitelik | Değer |
-| ----------------------- | ------------------------------------------------------- |
-| **ATLAS Kimliği** | AML.T0031 - AI Model Bütünlüğünü Aşındırma |
-| **Açıklama** | Saldırgan, agent'ın zararlı/saldırgan içerik göndermesine neden olur |
-| **Saldırı Vektörü** | Uygunsuz yanıtlara neden olan prompt injection |
-| **Etkilenen Bileşenler** | Çıktı oluşturma, kanal mesajlaşması |
-| **Mevcut Azaltımlar** | LLM sağlayıcısı içerik politikaları |
-| **Artık Risk** | Orta - Sağlayıcı filtreleri kusursuz değil |
-| **Öneriler** | Çıktı filtreleme katmanı, kullanıcı denetimleri |
-
----
-
-## 4. ClawHub Tedarik Zinciri Analizi
-
-### 4.1 Mevcut Güvenlik Denetimleri
-
-| Denetim | Uygulama | Etkililik |
-| -------------------- | --------------------------- | ---------------------------------------------------- |
-| GitHub Hesap Yaşı | `requireGitHubAccountAge()` | Orta - Yeni saldırganlar için çıtayı yükseltir |
-| Yol Temizleme | `sanitizePath()` | Yüksek - Yol geçişini önler |
-| Dosya Türü Doğrulama | `isTextFile()` | Orta - Yalnızca metin dosyaları, ancak yine de kötü amaçlı olabilir |
-| Boyut Sınırları | 50MB toplam paket | Yüksek - Kaynak tüketimini önler |
-| Gerekli SKILL.md | Zorunlu readme | Düşük güvenlik değeri - Yalnızca bilgilendirici |
-| Desen Moderasyonu | moderation.ts içindeki FLAG_RULES | Düşük - Kolayca atlatılır |
-| Moderasyon Durumu | `moderationStatus` alanı | Orta - Manuel inceleme mümkün |
-
-### 4.2 Moderasyon İşaret Desenleri
-
-`moderation.ts` içindeki mevcut desenler:
-
-```javascript
-// Known-bad identifiers
-/(keepcold131\/ClawdAuthenticatorTool|ClawdAuthenticatorTool)/i
-
-// Suspicious keywords
-/(malware|stealer|phish|phishing|keylogger)/i
-/(api[-_ ]?key|token|password|private key|secret)/i
-/(wallet|seed phrase|mnemonic|crypto)/i
-/(discord\.gg|webhook|hooks\.slack)/i
-/(curl[^\n]+\|\s*(sh|bash))/i
-/(bit\.ly|tinyurl\.com|t\.co|goo\.gl|is\.gd)/i
-```
-
-**Sınırlamalar:**
-
-- Yalnızca slug, displayName, özet, frontmatter, metadata, dosya yollarını denetler
-- Gerçek skill kod içeriğini analiz etmez
-- Basit regex, obfuscation ile kolayca atlatılır
-- Davranış analizi yok
-
-### 4.3 Planlanan İyileştirmeler
-
-| İyileştirme | Durum | Etki |
-| ---------------------- | ------------------------------------- | --------------------------------------------------------------------- |
-| VirusTotal Entegrasyonu | Devam Ediyor | Yüksek - Code Insight davranış analizi |
-| Topluluk Raporlama | Kısmi (`skillReports` tablosu mevcut) | Orta |
-| Denetim Günlüğü | Kısmi (`auditLogs` tablosu mevcut) | Orta |
-| Rozet Sistemi | Uygulandı | Orta - `highlighted`, `official`, `deprecated`, `redactionApproved` |
+| Öznitelik               | Değer                                                              |
+| ----------------------- | ------------------------------------------------------------------ |
+| **ATLAS kimliği**       | AML.T0031 - Yapay Zekâ Modeli Bütünlüğünü Aşındırma                 |
+| **Açıklama**            | Saldırgan, ajanın zararlı veya saldırgan içerik göndermesine neden olur |
+| **Saldırı vektörü**     | Uygunsuz yanıtlara neden olan istem enjeksiyonu                     |
+| **Etkilenen bileşenler** | Çıktı oluşturma, kanal mesajlaşması                                |
+| **Mevcut önlemler**     | LLM sağlayıcısının içerik politikaları                              |
+| **Kalan risk**          | Orta - sağlayıcı filtreleri kusursuz değildir                       |
+| **Öneriler**            | Çıktı filtreleme katmanı, kullanıcı denetimleri                     |
 
 ---
 
-## 5. Risk Matrisi
+## 4. ClawHub tedarik zinciri analizi
 
-### 5.1 Olasılık ve Etki
+### 4.1 Mevcut güvenlik denetimleri
 
-| Tehdit Kimliği | Olasılık | Etki | Risk Düzeyi | Öncelik |
-| ------------- | ---------- | -------- | ------------ | -------- |
-| T-EXEC-001 | Yüksek | Kritik | **Kritik** | P0 |
-| T-PERSIST-001 | Yüksek | Kritik | **Kritik** | P0 |
-| T-EXFIL-003 | Orta | Kritik | **Kritik** | P0 |
-| T-IMPACT-001 | Orta | Kritik | **Yüksek** | P1 |
-| T-EXEC-002 | Yüksek | Yüksek | **Yüksek** | P1 |
-| T-EXEC-004 | Orta | Yüksek | **Yüksek** | P1 |
-| T-ACCESS-003 | Orta | Yüksek | **Yüksek** | P1 |
-| T-EXFIL-001 | Orta | Yüksek | **Yüksek** | P1 |
-| T-IMPACT-002 | Yüksek | Orta | **Yüksek** | P1 |
-| T-EVADE-001 | Yüksek | Orta | **Orta** | P2 |
-| T-ACCESS-001 | Düşük | Yüksek | **Orta** | P2 |
-| T-ACCESS-002 | Düşük | Yüksek | **Orta** | P2 |
-| T-PERSIST-002 | Düşük | Yüksek | **Orta** | P2 |
+| Denetim                         | Uygulama                                                                              | Etkililik                                                            |
+| ------------------------------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| GitHub hesabının yaşı           | `requireGitHubAccountAge()` (en az 14 gün)                                            | Orta - yeni saldırganlar için çıtayı yükseltir                        |
+| Yol temizleme                   | `sanitizePath()`                                                                      | Yüksek - yol geçişini önler                                           |
+| Dosya türü doğrulaması          | `isTextFile()`                                                                        | Orta - yalnızca metin dosyaları taranır, ancak yine de istismar edilebilir |
+| Boyut sınırları                 | Toplam 50 MB paket (`MAX_PUBLISH_TOTAL_BYTES`)                                         | Yüksek - kaynakların tüketilmesini önler                              |
+| Zorunlu SKILL.md                | Yayımlama sırasında zorunlu benioku                                                   | Düşük güvenlik değeri - yalnızca bilgilendirme amaçlı                 |
+| Statik + AST'ye yakın tarama    | Çalıştırma, dışarı veri sızdırma, kimlik bilgisi toplama, gizleme ve daha fazlasını kapsayan örüntü motoru | Orta-Yüksek - bilinen birçok kötüye kullanım örüntüsünü kapsar, ancak hâlâ örüntü tabanlıdır |
+| LLM tabanlı ajansal risk incelemesi | Yayımlama sırasında güvenlik istemiyle yönlendirilen karar                         | Orta-Yüksek - statik örüntülerin kaçırdığı davranışları yakalar       |
+| VirusTotal taraması             | Skills ve paket sürümü yayımlama/yeniden tarama akışlarına bağlıdır; operatör API anahtarına tabidir | Etkinleştirildiğinde yüksek - statik motor algılaması                  |
+| Moderasyon durumu               | `moderationStatus` alanı                                                              | Orta - manuel inceleme mümkündür                                      |
 
-### 5.2 Kritik Yol Saldırı Zincirleri
+### 4.2 Moderasyon sınırlamaları
 
-**Saldırı Zinciri 1: Skill Tabanlı Veri Hırsızlığı**
+ClawHub'ın statik taraması, yalnızca kısa ad/meta veri/frontmatter yerine Skills kodunun içeriğini doğrudan inceler; tehlikeli çalıştırma çağrılarını, dinamik kod yürütmeyi, kimlik bilgisi toplamayı, dışarı veri sızdırma örüntülerini, gizlenmiş yükleri ve daha fazlasını kapsar. Bilinen eksiklikler:
 
-```
+- Örüntü tabanlı algılama, yeterince yeni gizleme teknikleriyle yine de aşılabilir.
+- LLM tabanlı inceleme ve VirusTotal taraması, operatör tarafındaki API anahtarlarının/yapılandırmanın etkinleştirilmesine bağlıdır.
+- Kurulduktan sonra hiçbir çalışma zamanı yürütme korumalı alanı, bir Skills'i ajanın kendi ayrıcalıklarından yalıtmaz.
+
+### 4.3 Rozetler
+
+Skills ve paketler, moderatörler tarafından atanan şu rozetleri taşır: `highlighted`, `official`, `deprecated`, `redactionApproved` (yalnızca Skills). Topluluk bildirimleri (`skillReports`) ve denetim günlükleri (`auditLogs`), moderasyon iş akışlarını destekler.
+
+---
+
+## 5. Risk matrisi
+
+### 5.1 Olasılık ve etki
+
+| Tehdit kimliği | Olasılık | Etki     | Risk düzeyi  | Öncelik |
+| --------------- | -------- | -------- | ------------ | ------- |
+| T-EXEC-001      | Yüksek   | Kritik   | **Kritik**   | P0      |
+| T-PERSIST-001   | Yüksek   | Kritik   | **Kritik**   | P0      |
+| T-EXFIL-003     | Orta     | Kritik   | **Kritik**   | P0      |
+| T-IMPACT-001    | Orta     | Kritik   | **Yüksek**   | P1      |
+| T-EXEC-002      | Yüksek   | Yüksek   | **Yüksek**   | P1      |
+| T-EXEC-004      | Orta     | Yüksek   | **Yüksek**   | P1      |
+| T-ACCESS-003    | Orta     | Yüksek   | **Yüksek**   | P1      |
+| T-EXFIL-001     | Orta     | Yüksek   | **Yüksek**   | P1      |
+| T-IMPACT-002    | Yüksek   | Orta     | **Yüksek**   | P1      |
+| T-EVADE-001     | Yüksek   | Orta     | **Orta**     | P2      |
+| T-ACCESS-001    | Düşük    | Yüksek   | **Orta**     | P2      |
+| T-ACCESS-002    | Düşük    | Yüksek   | **Orta**     | P2      |
+| T-PERSIST-002   | Düşük    | Yüksek   | **Orta**     | P2      |
+
+### 5.2 Kritik yol saldırı zincirleri
+
+**Zincir 1: Skills tabanlı veri hırsızlığı**
+
+```text
 T-PERSIST-001 → T-EVADE-001 → T-EXFIL-003
-(Publish malicious skill) → (Evade moderation) → (Harvest credentials)
+(Kötü amaçlı Skills yayımla) → (Moderasyonu aş) → (Kimlik bilgilerini topla)
 ```
 
-**Saldırı Zinciri 2: Prompt Injection'dan RCE'ye**
+**Zincir 2: İstem enjeksiyonundan uzaktan kod yürütmeye**
 
-```
+```text
 T-EXEC-001 → T-EXEC-004 → T-IMPACT-001
-(Inject prompt) → (Bypass exec approval) → (Execute commands)
+(İstem enjekte et) → (Çalıştırma onayını aş) → (Komutları yürüt)
 ```
 
-**Saldırı Zinciri 3: Alınan İçerik Yoluyla Dolaylı Injection**
+**Zincir 3: Getirilen içerik üzerinden dolaylı enjeksiyon**
 
-```
-T-EXEC-002 → T-EXFIL-001 → External exfiltration
-(Poison URL content) → (Agent fetches & follows instructions) → (Data sent to attacker)
+```text
+T-EXEC-002 → T-EXFIL-001 → Haricî veri sızdırma
+(URL içeriğini zehirle) → (Ajan içeriği getirir ve talimatları izler) → (Veriler saldırgana gönderilir)
 ```
 
 ---
 
-## 6. Öneriler Özeti
+## 6. Önerilerin özeti
 
 ### 6.1 Acil (P0)
 
-| ID    | Öneri                                       | Ele aldığı konular        |
-| ----- | ------------------------------------------ | ------------------------- |
-| R-001 | VirusTotal entegrasyonunu tamamla          | T-PERSIST-001, T-EVADE-001 |
-| R-002 | Skill sandboxing uygula                    | T-PERSIST-001, T-EXFIL-003 |
-| R-003 | Hassas eylemler için çıktı doğrulaması ekle | T-EXEC-001, T-EXEC-002     |
+| Kimlik | Öneri                                               | Ele aldığı tehditler       |
+| ------ | --------------------------------------------------- | -------------------------- |
+| R-002  | Skills yürütme korumalı alanını uygulayın           | T-PERSIST-001, T-EXFIL-003 |
+| R-003  | Hassas eylemler için çıktı doğrulaması ekleyin      | T-EXEC-001, T-EXEC-002     |
 
 ### 6.2 Kısa vadeli (P1)
 
-| ID    | Öneri                                      | Ele aldığı konular |
-| ----- | ----------------------------------------- | ------------------ |
-| R-004 | Hız sınırlaması uygula                    | T-IMPACT-002       |
-| R-005 | Beklemedeki token şifrelemesi ekle        | T-ACCESS-003       |
-| R-006 | exec onay UX'ini ve doğrulamasını iyileştir | T-EXEC-004         |
-| R-007 | web_fetch için URL izin listesi uygula    | T-EXFIL-001        |
+| Kimlik | Öneri                                                                        | Ele aldığı tehdit |
+| ------ | --------------------------------------------------------------------------- | ----------------- |
+| R-004  | Gönderen başına hız sınırlaması uygulayın                                   | T-IMPACT-002      |
+| R-005  | Bekleyen belirteçler için şifreleme ekleyin                                 | T-ACCESS-003      |
+| R-006  | Çalıştırma onayı kullanıcı deneyimini iyileştirin ve komut normalleştirmeyi genişletmeye devam edin | T-EXEC-004 |
+| R-007  | `web_fetch` için URL izin listesi uygulayın                                 | T-EXFIL-001       |
 
 ### 6.3 Orta vadeli (P2)
 
-| ID    | Öneri                                                   | Ele aldığı konular |
-| ----- | ------------------------------------------------------- | ------------------ |
-| R-008 | Mümkün olduğunda kriptografik kanal doğrulaması ekle    | T-ACCESS-002       |
-| R-009 | config bütünlüğü doğrulaması uygula                     | T-PERSIST-003      |
-| R-010 | Güncelleme imzalama ve sürüm sabitleme ekle             | T-PERSIST-002      |
+| Kimlik | Öneri                                                    | Ele aldığı tehdit |
+| ------ | -------------------------------------------------------- | ----------------- |
+| R-008  | Mümkün olduğunda kriptografik kanal doğrulaması ekleyin  | T-ACCESS-002      |
+| R-009  | Yapılandırma bütünlüğü doğrulaması uygulayın              | T-PERSIST-003     |
+| R-010  | Güncelleme imzalama ve sürüm sabitleme ekleyin            | T-PERSIST-002     |
 
 ---
 
 ## 7. Ekler
 
-### 7.1 ATLAS Teknik Eşlemesi
+### 7.1 ATLAS teknik eşlemesi
 
-| ATLAS ID      | Teknik Adı                     | OpenClaw Tehditleri                                              |
-| ------------- | ------------------------------ | ---------------------------------------------------------------- |
-| AML.T0006     | Aktif Tarama                   | T-RECON-001, T-RECON-002                                         |
-| AML.T0009     | Toplama                        | T-EXFIL-001, T-EXFIL-002, T-EXFIL-003                            |
-| AML.T0010.001 | Tedarik Zinciri: AI Yazılımı   | T-PERSIST-001, T-PERSIST-002                                     |
-| AML.T0010.002 | Tedarik Zinciri: Veri          | T-PERSIST-003                                                    |
-| AML.T0031     | AI Model Bütünlüğünü Aşındırma | T-IMPACT-001, T-IMPACT-002, T-IMPACT-003                         |
-| AML.T0040     | AI Model Çıkarım API Erişimi   | T-ACCESS-001, T-ACCESS-002, T-ACCESS-003, T-DISC-001, T-DISC-002 |
-| AML.T0043     | Düşmanca Veri Oluşturma        | T-EXEC-004, T-EVADE-001, T-EVADE-002                             |
-| AML.T0051.000 | LLM Prompt Injection: Doğrudan | T-EXEC-001, T-EXEC-003                                           |
-| AML.T0051.001 | LLM Prompt Injection: Dolaylı  | T-EXEC-002                                                       |
+| ATLAS kimliği | Teknik adı                         | OpenClaw tehditleri                                                |
+| ------------- | ---------------------------------- | ------------------------------------------------------------------ |
+| AML.T0006     | Etkin Tarama                       | T-RECON-001, T-RECON-002                                           |
+| AML.T0009     | Toplama                            | T-EXFIL-001, T-EXFIL-002, T-EXFIL-003                              |
+| AML.T0010.001 | Tedarik Zinciri: Yapay Zekâ Yazılımı | T-PERSIST-001, T-PERSIST-002                                     |
+| AML.T0010.002 | Tedarik Zinciri: Veri              | T-PERSIST-003                                                      |
+| AML.T0031     | Yapay Zekâ Modeli Bütünlüğünü Aşındırma | T-IMPACT-001, T-IMPACT-002, T-IMPACT-003                      |
+| AML.T0040     | Yapay Zekâ Modeli Çıkarım API'sine Erişim | T-ACCESS-001, T-ACCESS-002, T-ACCESS-003, T-DISC-001, T-DISC-002 |
+| AML.T0043     | Düşmanca Veri Oluşturma            | T-EXEC-004, T-EVADE-001, T-EVADE-002                               |
+| AML.T0051.000 | LLM İstem Enjeksiyonu: Doğrudan    | T-EXEC-001, T-EXEC-003                                             |
+| AML.T0051.001 | LLM İstem Enjeksiyonu: Dolaylı     | T-EXEC-002                                                         |
 
-### 7.2 Temel Güvenlik Dosyaları
+### 7.2 Temel güvenlik dosyaları
 
-| Yol                                 | Amaç                         | Risk Düzeyi |
-| ----------------------------------- | ---------------------------- | ----------- |
-| `src/infra/exec-approvals.ts`       | Komut onay mantığı           | **Kritik**  |
-| `src/gateway/auth.ts`               | Gateway kimlik doğrulaması   | **Kritik**  |
-| `src/infra/net/ssrf.ts`             | SSRF koruması                | **Kritik**  |
-| `src/security/external-content.ts`  | Prompt injection azaltma     | **Kritik**  |
-| `src/agents/sandbox/tool-policy.ts` | Araç politikası uygulaması   | **Kritik**  |
-| `src/routing/resolve-route.ts`      | Oturum izolasyonu            | **Orta**    |
+| Yol                                 | Amaç                                      | Risk düzeyi |
+| ----------------------------------- | ----------------------------------------- | ----------- |
+| `src/infra/exec-approvals.ts`       | Komut onayı mantığı                       | **Kritik**  |
+| `src/gateway/auth.ts`               | Gateway kimlik doğrulaması                | **Kritik**  |
+| `src/infra/net/ssrf.ts`             | SSRF koruması                             | **Kritik**  |
+| `src/security/external-content.ts`  | İstem enjeksiyonunu azaltma               | **Kritik**  |
+| `src/agents/sandbox/tool-policy.ts` | Korumalı alan aracı izin/verme-reddetme ilkesi | **Kritik** |
+| `src/routing/resolve-route.ts`      | Oturum yalıtımı / yönlendirme             | **Orta**    |
 
-### 7.3 Sözlük
+### 7.3 Terimler sözlüğü
 
-| Terim                | Tanım                                                   |
-| -------------------- | ------------------------------------------------------- |
-| **ATLAS**            | MITRE'nin AI Sistemleri için Düşmanca Tehdit Manzarası |
-| **ClawHub**          | OpenClaw'ın Skills pazarı                              |
-| **Gateway**          | OpenClaw'ın mesaj yönlendirme ve kimlik doğrulama katmanı |
-| **MCP**              | Model Context Protocol - araç sağlayıcı arayüzü         |
-| **Prompt Injection** | Kötü amaçlı talimatların girdiye gömüldüğü saldırı      |
-| **Skill**            | OpenClaw ajanları için indirilebilir uzantı             |
-| **SSRF**             | Server-Side Request Forgery                             |
+| Terim                | Tanım                                                       |
+| -------------------- | ----------------------------------------------------------- |
+| **ATLAS**            | MITRE'nin Yapay Zekâ Sistemleri için Düşmanca Tehdit Ortamı |
+| **ClawHub**          | OpenClaw'ın Skills pazaryeri                                 |
+| **Gateway**          | OpenClaw'ın ileti yönlendirme ve kimlik doğrulama katmanı    |
+| **MCP**              | Model Bağlam Protokolü - araç sağlayıcı arayüzü              |
+| **İstem enjeksiyonu** | Kötü amaçlı talimatların girdiye gömüldüğü saldırı          |
+| **Skills**           | OpenClaw ajanları için indirilebilir uzantı                  |
+| **SSRF**             | Sunucu Taraflı İstek Sahteciliği                             |
 
 ---
 
-_Bu tehdit modeli yaşayan bir belgedir. Güvenlik sorunlarını security@openclaw.ai adresine bildirin_
+_Bu tehdit modeli yaşayan bir belgedir. Güvenlik sorunlarını `security@openclaw.ai` adresine bildirin veya [Güven sayfasına](https://trust.openclaw.ai) bakın._
 
 ## İlgili
 
-- [Biçimsel doğrulama](/tr/security/formal-verification)
 - [Tehdit modeline katkıda bulunma](/tr/security/CONTRIBUTING-THREAT-MODEL)
+- [Olay müdahalesi](/tr/security/incident-response)
+- [Ağ proxy'si](/tr/security/network-proxy)
+- [Biçimsel doğrulama](/tr/security/formal-verification)

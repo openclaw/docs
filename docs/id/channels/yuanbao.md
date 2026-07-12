@@ -5,36 +5,32 @@ read_when:
 summary: Ikhtisar, fitur, dan konfigurasi bot Yuanbao
 title: Yuanbao
 x-i18n:
-    generated_at: "2026-05-06T09:04:11Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:02:27Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3830af0206854e500132edfc9340724fe97f90ca60fa23ce05202d96d9cacf04
+    source_hash: 43488834f588530206b290cb0fb185fd1fe2e1f214ab4a4ccccc49b9b549b6ac
     source_path: channels/yuanbao.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Tencent Yuanbao adalah platform asisten AI Tencent. Plugin saluran OpenClaw
-menghubungkan bot Yuanbao ke OpenClaw melalui WebSocket sehingga bot dapat berinteraksi dengan pengguna
-melalui pesan langsung dan obrolan grup.
+Tencent Yuanbao adalah platform asisten AI milik Tencent. Plugin `openclaw-plugin-yuanbao` yang dikelola komunitas menghubungkan bot Yuanbao ke OpenClaw melalui WebSocket untuk pesan langsung dan obrolan grup.
 
-**Status:** siap produksi untuk DM bot + obrolan grup. WebSocket adalah satu-satunya mode koneksi yang didukung.
-
----
+**Status:** siap untuk produksi bagi DM bot dan obrolan grup. WebSocket adalah satu-satunya mode koneksi yang didukung. Plugin ini dikelola oleh tim Tencent Yuanbao sebagai entri katalog eksternal, bukan oleh inti OpenClaw; detail konfigurasi/perilaku di bawah ini (selain instalasi dan antarmuka CLI generik) berasal dari dokumentasi plugin itu sendiri dan belum diverifikasi terhadap kode sumber inti OpenClaw.
 
 ## Mulai cepat
 
-> **Memerlukan OpenClaw 2026.4.10 atau lebih baru.** Jalankan `openclaw --version` untuk memeriksa. Tingkatkan dengan `openclaw update`.
+Memerlukan OpenClaw 2026.4.10 atau yang lebih baru. Periksa dengan `openclaw --version`; tingkatkan dengan `openclaw update`.
 
 <Steps>
-  <Step title="Tambahkan saluran Yuanbao dengan kredensial Anda">
+  <Step title="Tambahkan kanal Yuanbao dengan kredensial Anda">
   ```bash
   openclaw channels add --channel yuanbao --token "appKey:appSecret"
   ```
-  Nilai `--token` menggunakan format `appKey:appSecret` yang dipisahkan titik dua. Anda dapat memperolehnya dari aplikasi Yuanbao dengan membuat robot di pengaturan aplikasi Anda.
+  `--token` menggunakan `appKey:appSecret` yang dipisahkan dengan titik dua. Dapatkan nilai ini dari aplikasi Yuanbao dengan membuat bot di pengaturan aplikasi Anda.
   </Step>
 
-  <Step title="Setelah penyiapan selesai, mulai ulang Gateway untuk menerapkan perubahan">
+  <Step title="Mulai ulang Gateway untuk menerapkan perubahan">
   ```bash
   openclaw gateway restart
   ```
@@ -43,28 +39,26 @@ melalui pesan langsung dan obrolan grup.
 
 ### Penyiapan interaktif (alternatif)
 
-Anda juga dapat menggunakan wizard interaktif:
-
 ```bash
 openclaw channels login --channel yuanbao
 ```
 
-Ikuti prompt untuk memasukkan App ID dan App Secret Anda.
-
----
+Ikuti petunjuk untuk memasukkan App ID dan App Secret Anda.
 
 ## Kontrol akses
 
 ### Pesan langsung
 
-Konfigurasikan `dmPolicy` untuk mengontrol siapa yang dapat mengirim DM ke bot:
+`channels.yuanbao.dm.policy`:
 
-- `"pairing"` - pengguna tidak dikenal menerima kode pairing; setujui melalui CLI
-- `"allowlist"` - hanya pengguna yang tercantum di `allowFrom` yang dapat mengobrol
-- `"open"` - izinkan semua pengguna (default)
-- `"disabled"` - nonaktifkan semua DM
+| Nilai            | Perilaku                                                        |
+| ---------------- | --------------------------------------------------------------- |
+| `open` (bawaan)  | Izinkan semua pengguna                                          |
+| `pairing`        | Pengguna tidak dikenal mendapatkan kode pemasangan; setujui melalui CLI |
+| `allowlist`      | Hanya pengguna dalam `allowFrom` yang dapat mengobrol           |
+| `disabled`       | Nonaktifkan semua DM                                            |
 
-**Setujui permintaan pairing:**
+Setujui permintaan pemasangan:
 
 ```bash
 openclaw pairing list yuanbao
@@ -73,18 +67,11 @@ openclaw pairing approve yuanbao <CODE>
 
 ### Obrolan grup
 
-**Persyaratan penyebutan** (`channels.yuanbao.requireMention`):
-
-- `true` - memerlukan @mention (default)
-- `false` - merespons tanpa @mention
-
-Membalas pesan bot dalam obrolan grup diperlakukan sebagai penyebutan implisit.
-
----
+`channels.yuanbao.requireMention` (bawaan `true`): wajibkan @sebutan sebelum bot merespons dalam grup. Membalas pesan bot itu sendiri dianggap sebagai sebutan implisit.
 
 ## Contoh konfigurasi
 
-### Penyiapan dasar dengan kebijakan DM terbuka
+Penyiapan dasar, kebijakan DM terbuka:
 
 ```json5
 {
@@ -100,7 +87,7 @@ Membalas pesan bot dalam obrolan grup diperlakukan sebagai penyebutan implisit.
 }
 ```
 
-### Batasi DM ke pengguna tertentu
+Batasi DM untuk pengguna tertentu:
 
 ```json5
 {
@@ -117,7 +104,7 @@ Membalas pesan bot dalam obrolan grup diperlakukan sebagai penyebutan implisit.
 }
 ```
 
-### Nonaktifkan persyaratan @mention di grup
+Nonaktifkan persyaratan @sebutan dalam grup:
 
 ```json5
 {
@@ -129,35 +116,22 @@ Membalas pesan bot dalam obrolan grup diperlakukan sebagai penyebutan implisit.
 }
 ```
 
-### Optimalkan pengiriman pesan keluar
-
-```json5
-{
-  channels: {
-    yuanbao: {
-      // Send each chunk immediately without buffering
-      outboundQueueStrategy: "immediate",
-    },
-  },
-}
-```
-
-### Sesuaikan strategi merge-text
+Penyesuaian pengiriman keluar:
 
 ```json5
 {
   channels: {
     yuanbao: {
       outboundQueueStrategy: "merge-text",
-      minChars: 2800, // buffer until this many chars
-      maxChars: 3000, // force split above this limit
-      idleMs: 5000, // auto-flush after idle timeout (ms)
+      minChars: 2800, // tampung hingga jumlah karakter ini
+      maxChars: 3000, // paksa pemisahan jika melebihi batas ini
+      idleMs: 5000, // keluarkan otomatis setelah batas waktu tidak aktif (md)
     },
   },
 }
 ```
 
----
+Atur `outboundQueueStrategy: "immediate"` untuk mengirim setiap potongan tanpa penampungan.
 
 ## Perintah umum
 
@@ -168,40 +142,36 @@ Membalas pesan bot dalam obrolan grup diperlakukan sebagai penyebutan implisit.
 | `/new`     | Mulai sesi baru                 |
 | `/stop`    | Hentikan proses saat ini        |
 | `/restart` | Mulai ulang OpenClaw            |
-| `/compact` | Ringkas konteks sesi            |
+| `/compact` | Padatkan konteks sesi           |
 
-> Yuanbao mendukung menu perintah slash native. Perintah disinkronkan ke platform secara otomatis saat Gateway dimulai.
-
----
+Yuanbao mendukung menu perintah garis miring native; perintah disinkronkan ke platform secara otomatis saat Gateway dimulai.
 
 ## Pemecahan masalah
 
-### Bot tidak merespons dalam obrolan grup
+**Bot tidak merespons dalam obrolan grup:**
 
-1. Pastikan bot ditambahkan ke grup
-2. Pastikan Anda @mention bot (diwajibkan secara default)
+1. Pastikan bot telah ditambahkan ke grup
+2. Pastikan Anda @menyebut bot (diwajibkan secara bawaan)
 3. Periksa log: `openclaw logs --follow`
 
-### Bot tidak menerima pesan
+**Bot tidak menerima pesan:**
 
-1. Pastikan bot dibuat dan disetujui di aplikasi Yuanbao
+1. Pastikan bot telah dibuat dan disetujui dalam aplikasi Yuanbao
 2. Pastikan `appKey` dan `appSecret` dikonfigurasi dengan benar
-3. Pastikan Gateway berjalan: `openclaw gateway status`
+3. Pastikan Gateway sedang berjalan: `openclaw gateway status`
 4. Periksa log: `openclaw logs --follow`
 
-### Bot mengirim balasan kosong atau fallback
+**Bot mengirim balasan kosong atau balasan cadangan:**
 
 1. Periksa apakah model AI mengembalikan konten yang valid
-2. Balasan fallback default adalah: "暂时无法解答，你可以换个问题问问我哦"
-3. Sesuaikan melalui `channels.yuanbao.fallbackReply`
+2. Balasan cadangan bawaan: "暂时无法解答，你可以换个问题问问我哦"
+3. Sesuaikan dengan `channels.yuanbao.fallbackReply`
 
-### App Secret bocor
+**App Secret bocor:**
 
-1. Reset App Secret di YuanBao APP
-2. Perbarui nilainya di konfigurasi Anda
+1. Atur ulang App Secret dalam aplikasi Yuanbao
+2. Perbarui nilainya dalam konfigurasi Anda
 3. Mulai ulang Gateway: `openclaw gateway restart`
-
----
 
 ## Konfigurasi lanjutan
 
@@ -230,81 +200,77 @@ Membalas pesan bot dalam obrolan grup diperlakukan sebagai penyebutan implisit.
 }
 ```
 
-`defaultAccount` mengontrol akun yang digunakan saat API keluar tidak menentukan `accountId`.
+`defaultAccount` mengatur akun yang digunakan ketika API keluar tidak menentukan `accountId`.
 
 ### Batas pesan
 
-- `maxChars` - jumlah karakter maksimum pesan tunggal (default: `3000` karakter)
-- `mediaMaxMb` - batas unggah/unduh media (default: `20` MB)
-- `overflowPolicy` - perilaku saat pesan melebihi batas: `"split"` (default) atau `"stop"`
+- `maxChars`: jumlah karakter maksimum untuk satu pesan (bawaan `3000`)
+- `mediaMaxMb`: batas unggah/unduh media (bawaan `20` MB)
+- `overflowPolicy`: perilaku ketika pesan melebihi batas, `"split"` (bawaan) atau `"stop"`
 
 ### Streaming
 
-Yuanbao mendukung output streaming tingkat blok. Saat diaktifkan, bot mengirim teks dalam potongan saat dihasilkan.
+Yuanbao mendukung keluaran streaming tingkat blok; bot mengirim teks dalam potongan saat teks dihasilkan.
 
 ```json5
 {
   channels: {
     yuanbao: {
-      disableBlockStreaming: false, // block streaming enabled (default)
+      disableBlockStreaming: false, // streaming blok diaktifkan (bawaan)
     },
   },
 }
 ```
 
-Tetapkan `disableBlockStreaming: true` untuk mengirim balasan lengkap dalam satu pesan.
+Atur `disableBlockStreaming: true` untuk mengirim balasan lengkap dalam satu pesan.
 
 ### Konteks riwayat obrolan grup
 
-Kontrol jumlah pesan historis yang disertakan dalam konteks AI untuk obrolan grup:
-
 ```json5
 {
   channels: {
     yuanbao: {
-      historyLimit: 100, // default: 100, set 0 to disable
+      historyLimit: 100, // bawaan: 100, atur 0 untuk menonaktifkan
     },
   },
 }
 ```
 
-### Mode reply-to
+Mengatur jumlah pesan historis yang disertakan dalam konteks AI untuk obrolan grup.
 
-Kontrol cara bot mengutip pesan saat membalas di obrolan grup:
+### Mode balas-ke
 
 ```json5
 {
   channels: {
     yuanbao: {
-      replyToMode: "first", // "off" | "first" | "all" (default: "first")
+      replyToMode: "first", // "off" | "first" | "all" (bawaan: "first")
     },
   },
 }
 ```
 
-| Nilai     | Perilaku                                                  |
-| --------- | --------------------------------------------------------- |
-| `"off"`   | Tidak ada balasan kutipan                                 |
-| `"first"` | Kutip hanya balasan pertama per pesan masuk (default)     |
-| `"all"`   | Kutip setiap balasan                                      |
+| Nilai   | Perilaku                                                        |
+| ------- | --------------------------------------------------------------- |
+| `off`   | Tanpa balasan kutipan                                           |
+| `first` | Kutip hanya balasan pertama untuk setiap pesan masuk (bawaan)   |
+| `all`   | Kutip setiap balasan                                            |
 
-### Injeksi petunjuk Markdown
+### Penyisipan petunjuk Markdown
 
-Secara default, bot menyisipkan instruksi dalam prompt sistem untuk mencegah model AI membungkus seluruh balasan dalam blok kode markdown.
+Secara bawaan, bot menyisipkan instruksi prompt sistem untuk mencegah model membungkus seluruh balasan dalam blok kode markdown.
 
 ```json5
 {
   channels: {
     yuanbao: {
-      markdownHintEnabled: true, // default: true
+      markdownHintEnabled: true, // bawaan: true
     },
   },
 }
 ```
 
 ### Mode debug
-
-Aktifkan output log tanpa sanitasi untuk ID bot tertentu:
 
 ```json5
 {
@@ -316,9 +282,11 @@ Aktifkan output log tanpa sanitasi untuk ID bot tertentu:
 }
 ```
 
-### Routing multi-agen
+Mengaktifkan keluaran log tanpa sanitasi untuk ID bot yang tercantum.
 
-Gunakan `bindings` untuk merutekan DM atau grup Yuanbao ke agen yang berbeda.
+### Perutean multiagen
+
+Gunakan `bindings` untuk merutekan DM atau grup Yuanbao ke agen yang berbeda:
 
 ```json5
 {
@@ -348,77 +316,51 @@ Gunakan `bindings` untuk merutekan DM atau grup Yuanbao ke agen yang berbeda.
 }
 ```
 
-Kolom routing:
-
 - `match.channel`: `"yuanbao"`
 - `match.peer.kind`: `"direct"` (DM) atau `"group"` (obrolan grup)
 - `match.peer.id`: ID pengguna atau kode grup
-
----
 
 ## Referensi konfigurasi
 
 Konfigurasi lengkap: [Konfigurasi Gateway](/id/gateway/configuration)
 
-| Pengaturan                                | Deskripsi                                           | Default                                |
-| ----------------------------------------- | --------------------------------------------------- | -------------------------------------- |
-| `channels.yuanbao.enabled`                | Aktifkan/nonaktifkan saluran                        | `true`                                 |
-| `channels.yuanbao.defaultAccount`         | Akun default untuk routing keluar                   | `default`                              |
-| `channels.yuanbao.accounts.<id>.appKey`   | App Key (digunakan untuk penandatanganan dan pembuatan ticket) | -                                      |
-| `channels.yuanbao.accounts.<id>.appSecret` | App Secret (digunakan untuk penandatanganan)        | -                                      |
-| `channels.yuanbao.accounts.<id>.token`    | Token pra-tanda tangan (melewati penandatanganan ticket otomatis) | -                                      |
-| `channels.yuanbao.accounts.<id>.name`     | Nama tampilan akun                                  | -                                      |
-| `channels.yuanbao.accounts.<id>.enabled`  | Aktifkan/nonaktifkan akun tertentu                  | `true`                                 |
-| `channels.yuanbao.dm.policy`              | Kebijakan DM                                        | `open`                                 |
-| `channels.yuanbao.dm.allowFrom`           | Allowlist DM (daftar ID pengguna)                   | -                                      |
-| `channels.yuanbao.requireMention`         | Wajibkan @mention di grup                           | `true`                                 |
-| `channels.yuanbao.overflowPolicy`         | Penanganan pesan panjang (`split` atau `stop`)      | `split`                                |
-| `channels.yuanbao.replyToMode`            | Strategi reply-to grup (`off`, `first`, `all`)      | `first`                                |
-| `channels.yuanbao.outboundQueueStrategy`  | Strategi keluar (`merge-text` atau `immediate`)     | `merge-text`                           |
-| `channels.yuanbao.minChars`               | Merge-text: karakter min untuk memicu pengiriman    | `2800`                                 |
-| `channels.yuanbao.maxChars`               | Merge-text: karakter maks per pesan                 | `3000`                                 |
-| `channels.yuanbao.idleMs`                 | Merge-text: batas waktu idle sebelum auto-flush (ms) | `5000`                                 |
-| `channels.yuanbao.mediaMaxMb`             | Batas ukuran media (MB)                             | `20`                                   |
-| `channels.yuanbao.historyLimit`           | Entri konteks riwayat obrolan grup                  | `100`                                  |
-| `channels.yuanbao.disableBlockStreaming`  | Nonaktifkan output streaming tingkat blok           | `false`                                |
-| `channels.yuanbao.fallbackReply`          | Balasan fallback saat AI tidak mengembalikan konten | `暂时无法解答，你可以换个问题问问我哦` |
-| `channels.yuanbao.markdownHintEnabled`    | Sisipkan instruksi anti-pembungkusan markdown       | `true`                                 |
-| `channels.yuanbao.debugBotIds`            | ID bot allowlist debug (log tanpa sanitasi)         | `[]`                                   |
-
----
+| Pengaturan                                 | Deskripsi                                                   | Bawaan                                 |
+| ------------------------------------------ | ----------------------------------------------------------- | -------------------------------------- |
+| `channels.yuanbao.enabled`                 | Aktifkan/nonaktifkan kanal                                  | `true`                                 |
+| `channels.yuanbao.defaultAccount`          | Akun bawaan untuk perutean keluar                           | `default`                              |
+| `channels.yuanbao.accounts.<id>.appKey`    | App Key (penandatanganan + pembuatan tiket)                 | -                                      |
+| `channels.yuanbao.accounts.<id>.appSecret` | App Secret (penandatanganan)                                | -                                      |
+| `channels.yuanbao.accounts.<id>.token`     | Token yang telah ditandatangani (melewati penandatanganan tiket otomatis) | -                         |
+| `channels.yuanbao.accounts.<id>.name`      | Nama tampilan akun                                          | -                                      |
+| `channels.yuanbao.accounts.<id>.enabled`   | Aktifkan/nonaktifkan akun tertentu                          | `true`                                 |
+| `channels.yuanbao.dm.policy`               | Kebijakan DM                                                | `open`                                 |
+| `channels.yuanbao.dm.allowFrom`            | Daftar izin DM (daftar ID pengguna)                         | -                                      |
+| `channels.yuanbao.requireMention`          | Wajibkan @sebutan dalam grup                                | `true`                                 |
+| `channels.yuanbao.overflowPolicy`          | Penanganan pesan panjang (`split` atau `stop`)              | `split`                                |
+| `channels.yuanbao.replyToMode`             | Strategi balas-ke grup (`off`, `first`, `all`)              | `first`                                |
+| `channels.yuanbao.outboundQueueStrategy`   | Strategi keluar (`merge-text` atau `immediate`)             | `merge-text`                           |
+| `channels.yuanbao.minChars`                | Gabung-teks: karakter minimum untuk memicu pengiriman       | `2800`                                 |
+| `channels.yuanbao.maxChars`                | Gabung-teks: karakter maksimum per pesan                    | `3000`                                 |
+| `channels.yuanbao.idleMs`                  | Gabung-teks: batas waktu tidak aktif sebelum dikeluarkan otomatis (md) | `5000`                    |
+| `channels.yuanbao.mediaMaxMb`              | Batas ukuran media (MB)                                     | `20`                                   |
+| `channels.yuanbao.historyLimit`            | Entri konteks riwayat obrolan grup                          | `100`                                  |
+| `channels.yuanbao.disableBlockStreaming`   | Nonaktifkan keluaran streaming tingkat blok                 | `false`                                |
+| `channels.yuanbao.fallbackReply`           | Balasan cadangan ketika model tidak mengembalikan konten    | `暂时无法解答，你可以换个问题问问我哦` |
+| `channels.yuanbao.markdownHintEnabled`     | Sisipkan instruksi antipembungkusan markdown                | `true`                                 |
+| `channels.yuanbao.debugBotIds`             | ID bot daftar izin debug (log tanpa sanitasi)               | `[]`                                   |
 
 ## Jenis pesan yang didukung
 
-### Terima
+**Terima:** teks, gambar, berkas, audio/suara, video, stiker/emoji khusus, elemen khusus (kartu tautan).
 
-- ✅ Teks
-- ✅ Gambar
-- ✅ File
-- ✅ Audio / Suara
-- ✅ Video
-- ✅ Stiker / Emoji khusus
-- ✅ Elemen khusus (kartu tautan, dll.)
+**Kirim:** teks (markdown), gambar, berkas, audio, video, stiker.
 
-### Kirim
-
-- ✅ Teks (dengan dukungan markdown)
-- ✅ Gambar
-- ✅ File
-- ✅ Audio
-- ✅ Video
-- ✅ Stiker
-
-### Thread dan balasan
-
-- ✅ Balasan kutipan (dapat dikonfigurasi melalui `replyToMode`)
-- ❌ Balasan thread (tidak didukung oleh platform)
-
----
+**Utas dan balasan:** balasan kutipan (dapat dikonfigurasi melalui `replyToMode`); balasan utas tidak didukung oleh platform.
 
 ## Terkait
 
-- [Ikhtisar Saluran](/id/channels) - semua saluran yang didukung
-- [Pairing](/id/channels/pairing) - autentikasi DM dan alur pairing
-- [Grup](/id/channels/groups) - perilaku obrolan grup dan gating penyebutan
-- [Routing Saluran](/id/channels/channel-routing) - routing sesi untuk pesan
-- [Keamanan](/id/gateway/security) - model akses dan hardening
+- [Ikhtisar Kanal](/id/channels) - semua kanal yang didukung
+- [Pemasangan](/id/channels/pairing) - autentikasi DM dan alur pemasangan
+- [Grup](/id/channels/groups) - perilaku obrolan grup dan pembatasan berdasarkan sebutan
+- [Perutean Kanal](/id/channels/channel-routing) - perutean sesi untuk pesan
+- [Keamanan](/id/gateway/security) - model akses dan penguatan

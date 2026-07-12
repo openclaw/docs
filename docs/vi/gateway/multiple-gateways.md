@@ -1,107 +1,74 @@
 ---
 read_when:
-    - Chạy nhiều hơn một Gateway trên cùng một máy
-    - Bạn cần cấu hình/trạng thái/cổng tách biệt cho mỗi Gateway
-summary: Chạy nhiều OpenClaw Gateway trên một máy chủ (cô lập, cổng và hồ sơ)
+    - Chạy nhiều Gateway trên cùng một máy
+    - Bạn cần cấu hình/trạng thái/cổng riêng biệt cho từng Gateway
+summary: Chạy nhiều Gateway OpenClaw trên một máy chủ (cách ly, cổng và hồ sơ)
 title: Nhiều Gateway
 x-i18n:
-    generated_at: "2026-06-27T17:30:48Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:55:08Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d6f6df481f6ba36749770199ef6eaf94eed33af2bed38d35a31f77b9dbba1913
+    source_hash: 3d5088d9bcfae6800217079365dcaec828a18ca19ac80c7ad7b4245d9059a986
     source_path: gateway/multiple-gateways.md
     workflow: 16
 ---
 
-Hầu hết thiết lập nên dùng một Gateway vì một Gateway duy nhất có thể xử lý nhiều kết nối nhắn tin và agent. Nếu bạn cần mức cô lập hoặc dự phòng mạnh hơn (ví dụ: bot cứu hộ), hãy chạy các Gateway riêng với hồ sơ/cổng được cô lập.
+Hầu hết các thiết lập chỉ cần một Gateway — một Gateway duy nhất xử lý nhiều kết nối nhắn tin và tác nhân. Chỉ chạy các Gateway riêng biệt với hồ sơ/cổng được cô lập khi bạn cần mức độ cô lập hoặc dự phòng cao hơn (ví dụ: bot cứu hộ).
 
-## Thiết lập được khuyến nghị tốt nhất
+## Bắt đầu nhanh với bot cứu hộ
 
-Với hầu hết người dùng, thiết lập bot cứu hộ đơn giản nhất là:
+Thiết lập bot cứu hộ đơn giản nhất:
 
-- giữ bot chính trên hồ sơ mặc định
-- chạy bot cứu hộ trên `--profile rescue`
-- dùng một bot Telegram hoàn toàn riêng cho tài khoản cứu hộ
-- giữ bot cứu hộ trên một cổng cơ sở khác, chẳng hạn `19789`
+- Giữ bot chính trên hồ sơ mặc định.
+- Chạy bot cứu hộ với `--profile rescue`, sử dụng token bot Telegram riêng.
+- Đặt bot cứu hộ trên một cổng cơ sở khác, ví dụ `19789`.
 
-Cách này giữ bot cứu hộ tách biệt với bot chính để nó có thể gỡ lỗi hoặc áp dụng
-thay đổi cấu hình nếu bot chính bị ngừng hoạt động. Chừa ít nhất 20 cổng giữa
-các cổng cơ sở để các cổng trình duyệt/canvas/CDP dẫn xuất không bao giờ xung đột.
-
-## Khởi động nhanh bot cứu hộ
-
-Dùng đây làm lộ trình mặc định trừ khi bạn có lý do mạnh để làm theo cách
-khác:
+Cách này giúp bot cứu hộ vẫn có thể gỡ lỗi hoặc áp dụng các thay đổi cấu hình nếu bot chính ngừng hoạt động. Chừa ít nhất 20 cổng giữa các cổng cơ sở để các cổng trình duyệt/CDP dẫn xuất không bao giờ xung đột.
 
 ```bash
-# Rescue bot (separate Telegram bot, separate profile, port 19789)
+# Bot cứu hộ (bot Telegram riêng, hồ sơ riêng, cổng 19789)
 openclaw --profile rescue onboard
 openclaw --profile rescue gateway install --port 19789
 ```
 
-Nếu bot chính của bạn đã chạy, thông thường đó là tất cả những gì bạn cần.
+Nếu bot chính của bạn đang chạy, thông thường bạn chỉ cần làm vậy. Nếu quá trình làm quen đã cài đặt dịch vụ cứu hộ, hãy bỏ qua lệnh `gateway install` cuối cùng.
 
-Trong khi chạy `openclaw --profile rescue onboard`:
+Trong quá trình chạy `openclaw --profile rescue onboard`:
 
-- dùng token bot Telegram riêng
-- giữ hồ sơ `rescue`
-- dùng cổng cơ sở cao hơn bot chính ít nhất 20 cổng
-- chấp nhận không gian làm việc cứu hộ mặc định trừ khi bạn đã tự quản lý một không gian
+- Sử dụng token bot Telegram riêng, dành riêng cho tài khoản cứu hộ (dễ giới hạn chỉ cho người vận hành, độc lập với việc cài đặt kênh/ứng dụng của bot chính và cung cấp một đường khôi phục đơn giản dựa trên tin nhắn trực tiếp).
+- Giữ tên hồ sơ là `rescue`.
+- Sử dụng cổng cơ sở cao hơn cổng của bot chính ít nhất 20.
+- Chấp nhận không gian làm việc cứu hộ mặc định, trừ khi bạn đã tự quản lý một không gian làm việc.
 
-Nếu quá trình onboarding đã cài đặt dịch vụ cứu hộ cho bạn, lệnh
-`gateway install` cuối cùng là không cần thiết.
+### Những thay đổi do `--profile rescue onboard` thực hiện
 
-## Vì sao cách này hoạt động
+`--profile rescue onboard` chạy quy trình làm quen thông thường nhưng ghi mọi thứ vào một hồ sơ riêng, nhờ đó bot cứu hộ có riêng:
 
-Bot cứu hộ vẫn độc lập vì nó có riêng:
+- Tệp hồ sơ/cấu hình
+- Thư mục trạng thái
+- Không gian làm việc (mặc định: `~/.openclaw/workspace-rescue`)
+- Tên dịch vụ được quản lý
+- Cổng cơ sở (cùng các cổng dẫn xuất)
+- Token bot Telegram
 
-- hồ sơ/cấu hình
-- thư mục trạng thái
-- không gian làm việc
-- cổng cơ sở (cộng với các cổng dẫn xuất)
-- token bot Telegram
-
-Với hầu hết thiết lập, hãy dùng một bot Telegram hoàn toàn riêng cho hồ sơ cứu hộ:
-
-- dễ giữ ở chế độ chỉ dành cho người vận hành
-- token và danh tính bot riêng
-- độc lập với kênh/bản cài đặt ứng dụng của bot chính
-- đường khôi phục qua DM đơn giản khi bot chính bị hỏng
-
-## `--profile rescue onboard` thay đổi gì
-
-`openclaw --profile rescue onboard` dùng luồng onboarding bình thường, nhưng
-ghi mọi thứ vào một hồ sơ riêng.
-
-Trên thực tế, điều đó nghĩa là bot cứu hộ có riêng:
-
-- tệp cấu hình
-- thư mục trạng thái
-- không gian làm việc (mặc định là `~/.openclaw/workspace-rescue`)
-- tên dịch vụ được quản lý
-
-Các lời nhắc còn lại giống onboarding bình thường.
+Ngoài ra, các lời nhắc đều giống với quy trình làm quen thông thường.
 
 ## Thiết lập nhiều Gateway tổng quát
 
-Bố cục bot cứu hộ ở trên là mặc định dễ nhất, nhưng cùng mẫu cô lập đó
-hoạt động cho bất kỳ cặp hoặc nhóm Gateway nào trên một máy chủ.
-
-Với thiết lập tổng quát hơn, hãy cấp cho mỗi Gateway bổ sung một hồ sơ có tên riêng và
-cổng cơ sở riêng:
+Cùng một mô hình cô lập có thể áp dụng cho bất kỳ cặp hoặc nhóm Gateway nào trên một máy chủ — cấp cho mỗi Gateway bổ sung một hồ sơ có tên và cổng cơ sở riêng:
 
 ```bash
-# main (default profile)
+# chính (hồ sơ mặc định)
 openclaw setup
 openclaw gateway --port 18789
 
-# extra gateway
+# Gateway bổ sung
 openclaw --profile ops setup
 openclaw --profile ops gateway --port 19789
 ```
 
-Nếu bạn muốn cả hai Gateway đều dùng hồ sơ có tên, cách đó cũng hoạt động:
+Cũng có thể sử dụng hồ sơ có tên cho cả hai bên:
 
 ```bash
 openclaw --profile main setup
@@ -111,45 +78,45 @@ openclaw --profile ops setup
 openclaw --profile ops gateway --port 19789
 ```
 
-Dịch vụ tuân theo cùng mẫu:
+Các dịch vụ tuân theo cùng một mô hình:
 
 ```bash
 openclaw gateway install
 openclaw --profile ops gateway install --port 19789
 ```
 
-Dùng khởi động nhanh bot cứu hộ khi bạn muốn một làn dự phòng cho người vận hành. Dùng
-mẫu hồ sơ tổng quát khi bạn muốn nhiều Gateway tồn tại lâu dài cho
-các kênh, tenant, không gian làm việc hoặc vai trò vận hành khác nhau.
+Sử dụng hướng dẫn bắt đầu nhanh với bot cứu hộ để có một kênh vận hành dự phòng; sử dụng mô hình hồ sơ tổng quát cho nhiều Gateway hoạt động lâu dài trên các kênh, đối tượng thuê, không gian làm việc hoặc vai trò vận hành khác nhau.
 
-## Danh sách kiểm tra cô lập
+## Danh sách kiểm tra về cô lập
 
-Giữ các mục này là duy nhất cho mỗi phiên bản Gateway:
+Giữ các mục sau là duy nhất cho từng phiên bản Gateway:
 
-- `OPENCLAW_CONFIG_PATH` — tệp cấu hình theo từng phiên bản
-- `OPENCLAW_STATE_DIR` — phiên, thông tin xác thực, bộ nhớ đệm theo từng phiên bản
-- `agents.defaults.workspace` — thư mục gốc không gian làm việc theo từng phiên bản
-- `gateway.port` (hoặc `--port`) — duy nhất cho mỗi phiên bản
-- các cổng trình duyệt/canvas/CDP dẫn xuất
+| Thiết lập                     | Mục đích                                           |
+| ---------------------------- | -------------------------------------------------- |
+| `OPENCLAW_CONFIG_PATH`       | Tệp cấu hình riêng cho từng phiên bản              |
+| `OPENCLAW_STATE_DIR`         | Phiên, thông tin xác thực và bộ nhớ đệm riêng      |
+| `agents.defaults.workspace`  | Thư mục gốc không gian làm việc riêng              |
+| `gateway.port` (hoặc `--port`) | Duy nhất cho từng phiên bản                      |
+| Các cổng trình duyệt/CDP dẫn xuất | Xem bên dưới                                  |
 
-Nếu các mục này được dùng chung, bạn sẽ gặp tranh chấp cấu hình và xung đột cổng.
+Việc dùng chung bất kỳ mục nào trong số này sẽ gây ra tranh chấp cấu hình và xung đột cổng.
 
 ## Ánh xạ cổng (dẫn xuất)
 
 Cổng cơ sở = `gateway.port` (hoặc `OPENCLAW_GATEWAY_PORT` / `--port`).
 
-- cổng dịch vụ điều khiển trình duyệt = cơ sở + 2 (chỉ loopback)
-- máy chủ canvas được phục vụ trên máy chủ HTTP của Gateway (cùng cổng với `gateway.port`)
-- Các cổng CDP của hồ sơ trình duyệt tự động cấp phát từ `browser.controlPort + 9 .. + 108`
+- Cổng dịch vụ điều khiển trình duyệt = cổng cơ sở + 2 (chỉ local loopback).
+- Máy chủ Canvas được phục vụ ngay trên máy chủ HTTP của Gateway (cùng cổng với `gateway.port`).
+- Các cổng CDP của hồ sơ trình duyệt được tự động cấp phát từ `cổng điều khiển trình duyệt + 9` đến `+ 108`.
 
-Nếu bạn ghi đè bất kỳ mục nào trong cấu hình hoặc biến môi trường, bạn phải giữ chúng duy nhất theo từng phiên bản.
+Nếu ghi đè bất kỳ mục nào trong số này trong cấu hình hoặc biến môi trường, bạn phải giữ chúng là duy nhất cho từng phiên bản.
 
-## Ghi chú Browser/CDP (lỗi dễ mắc phổ biến)
+## Lưu ý về trình duyệt/CDP (lỗi thường gặp)
 
-- **Không** ghim `browser.cdpUrl` vào cùng giá trị trên nhiều phiên bản.
-- Mỗi phiên bản cần cổng điều khiển trình duyệt và dải CDP riêng (dẫn xuất từ cổng Gateway của nó).
-- Nếu bạn cần cổng CDP rõ ràng, hãy đặt `browser.profiles.<name>.cdpPort` theo từng phiên bản.
-- Chrome từ xa: dùng `browser.profiles.<name>.cdpUrl` (theo hồ sơ, theo phiên bản).
+- **Không** cố định `browser.cdpUrl` ở cùng một giá trị trên nhiều phiên bản.
+- Mỗi phiên bản cần có cổng điều khiển trình duyệt và dải CDP riêng (dẫn xuất từ cổng Gateway của phiên bản đó).
+- Đối với các cổng CDP được chỉ định rõ ràng, hãy đặt `browser.profiles.<name>.cdpPort` riêng cho từng phiên bản.
+- Đối với Chrome từ xa, hãy sử dụng `browser.profiles.<name>.cdpUrl` (theo từng hồ sơ, từng phiên bản).
 
 ## Ví dụ biến môi trường thủ công
 
@@ -174,10 +141,8 @@ openclaw --profile rescue status
 openclaw --profile rescue browser status
 ```
 
-Diễn giải:
-
-- `gateway status --deep` giúp phát hiện các dịch vụ launchd/systemd/schtasks lỗi thời từ các bản cài đặt cũ.
-- Văn bản cảnh báo của `gateway probe` như `multiple reachable gateway identities detected` chỉ được mong đợi khi bạn cố ý chạy nhiều hơn một gateway được cô lập, hoặc khi OpenClaw không thể chứng minh các mục tiêu probe truy cập được là cùng một gateway. Một đường hầm SSH, URL proxy hoặc URL từ xa được cấu hình trỏ tới cùng gateway là một gateway với nhiều phương thức truyền tải, ngay cả khi các cổng truyền tải khác nhau.
+- `gateway status --deep` phát hiện các dịch vụ launchd/systemd/schtasks cũ còn sót lại từ những lần cài đặt trước.
+- Văn bản cảnh báo của `gateway probe`, chẳng hạn như `multiple reachable gateway identities detected`, chỉ được xem là bình thường khi bạn chủ ý chạy nhiều Gateway được cô lập, hoặc khi OpenClaw không thể xác minh rằng các đích thăm dò có thể truy cập là cùng một Gateway. Đường hầm SSH, URL proxy hoặc URL từ xa đã cấu hình trỏ đến cùng một Gateway vẫn chỉ là một Gateway với nhiều phương thức truyền tải, ngay cả khi các cổng truyền tải khác nhau.
 
 ## Liên quan
 

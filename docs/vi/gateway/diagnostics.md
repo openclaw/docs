@@ -1,27 +1,27 @@
 ---
 read_when:
     - Chuẩn bị báo cáo lỗi hoặc yêu cầu hỗ trợ
-    - Gỡ lỗi sự cố sập Gateway, khởi động lại, áp lực bộ nhớ hoặc tải dữ liệu quá lớn
-    - Đánh giá dữ liệu chẩn đoán nào được ghi lại hoặc biên tập lại
-summary: Tạo gói chẩn đoán Gateway có thể chia sẻ cho báo cáo lỗi
-title: Xuất chẩn đoán
+    - Gỡ lỗi sự cố Gateway bị sập, khởi động lại, chịu áp lực bộ nhớ hoặc có tải trọng quá lớn
+    - Xem lại dữ liệu chẩn đoán nào được ghi lại hoặc che giấu
+summary: Tạo các gói chẩn đoán Gateway có thể chia sẻ để báo cáo lỗi
+title: Xuất dữ liệu chẩn đoán
 x-i18n:
-    generated_at: "2026-06-27T17:28:36Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:53:03Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ce431bafa51a245f2a3829074b0ca92e2d30ddfc1ae9738eed46a4e51ae98208
+    source_hash: ee9014da15368971d8257f62707f013b579e607fa0d8413db51253612f0c0957
     source_path: gateway/diagnostics.md
     workflow: 16
 ---
 
-OpenClaw có thể tạo một tệp zip chẩn đoán cục bộ cho báo cáo lỗi. Tệp này kết hợp
-trạng thái Gateway đã được làm sạch, tình trạng, nhật ký, hình dạng cấu hình và các
-sự kiện ổn định gần đây không chứa payload.
+OpenClaw có thể tạo tệp chẩn đoán `.zip` cục bộ cho báo cáo lỗi: trạng thái Gateway
+đã được làm sạch, tình trạng hoạt động, nhật ký, cấu trúc cấu hình và các sự kiện ổn định
+gần đây không chứa payload.
 
-Hãy xử lý các gói chẩn đoán như bí mật cho đến khi bạn đã xem xét chúng. Chúng được
-thiết kế để bỏ qua hoặc biên tập lại payload và thông tin xác thực, nhưng vẫn tóm tắt
-nhật ký Gateway cục bộ và trạng thái runtime ở cấp máy chủ.
+Hãy coi các gói chẩn đoán như thông tin bí mật cho đến khi được xem xét. Theo thiết kế,
+payload và thông tin xác thực được che đi, nhưng gói này vẫn tóm tắt nhật ký Gateway cục bộ
+và trạng thái thời gian chạy ở cấp máy chủ.
 
 ## Bắt đầu nhanh
 
@@ -29,114 +29,96 @@ nhật ký Gateway cục bộ và trạng thái runtime ở cấp máy chủ.
 openclaw gateway diagnostics export
 ```
 
-Lệnh này in ra đường dẫn tệp zip đã ghi. Để chọn đường dẫn:
+In ra đường dẫn của tệp zip đã ghi. Chọn đường dẫn đầu ra:
 
 ```bash
 openclaw gateway diagnostics export --output openclaw-diagnostics.zip
 ```
 
-Dành cho tự động hóa:
+Để tự động hóa:
 
 ```bash
 openclaw gateway diagnostics export --json
 ```
 
-## Lệnh chat
+## Lệnh trò chuyện
 
-Chủ sở hữu có thể dùng `/diagnostics [note]` trong chat để yêu cầu xuất Gateway cục bộ.
-Dùng lệnh này khi lỗi xảy ra trong một cuộc trò chuyện thực và bạn muốn có một báo cáo
-có thể sao chép-dán cho bộ phận hỗ trợ:
+Chủ sở hữu có thể chạy `/diagnostics [note]` trong bất kỳ cuộc trò chuyện nào để yêu cầu
+Gateway xuất cục bộ một báo cáo hỗ trợ có thể sao chép và dán nguyên khối:
 
-1. Gửi `/diagnostics` trong cuộc trò chuyện nơi bạn phát hiện sự cố. Thêm một ghi chú
-   ngắn nếu hữu ích, ví dụ `/diagnostics bad tool choice`.
-2. OpenClaw gửi phần mở đầu chẩn đoán và yêu cầu một phê duyệt exec rõ ràng.
-   Phê duyệt này chạy `openclaw gateway diagnostics export --json`.
-   Không phê duyệt chẩn đoán thông qua một quy tắc cho phép tất cả.
-3. Sau khi phê duyệt, OpenClaw trả lời bằng một báo cáo có thể dán, chứa đường dẫn
-   gói cục bộ, tóm tắt manifest, ghi chú quyền riêng tư và các id phiên liên quan.
+1. Gửi `/diagnostics`, tùy chọn kèm ghi chú ngắn (`/diagnostics lựa chọn công cụ không phù hợp`).
+2. OpenClaw gửi lời mở đầu và yêu cầu một lần phê duyệt thực thi rõ ràng để chạy
+   `openclaw gateway diagnostics export --json`. Không phê duyệt chẩn đoán bằng
+   quy tắc cho phép tất cả.
+3. Sau khi được phê duyệt, OpenClaw phản hồi bằng đường dẫn gói cục bộ, bản tóm tắt
+   manifest, ghi chú về quyền riêng tư và các ID phiên liên quan.
 
-Trong chat nhóm, chủ sở hữu vẫn có thể chạy `/diagnostics`, nhưng OpenClaw không
-đăng chi tiết chẩn đoán trở lại chat chung. Nó gửi phần mở đầu, lời nhắc phê duyệt,
-kết quả xuất Gateway và phân tích phiên/luồng Codex cho chủ sở hữu thông qua tuyến
-phê duyệt riêng tư. Nhóm chỉ nhận được một thông báo ngắn rằng luồng chẩn đoán đã
-được gửi riêng tư. Nếu OpenClaw không tìm thấy tuyến riêng tư của chủ sở hữu, lệnh
-sẽ thất bại theo hướng đóng an toàn và yêu cầu chủ sở hữu chạy lệnh từ DM.
+Trong cuộc trò chuyện nhóm, chủ sở hữu vẫn có thể chạy `/diagnostics`, nhưng OpenClaw gửi
+riêng cho chủ sở hữu kết quả xuất, lời nhắc phê duyệt và thông tin phân tách phiên/luồng Codex.
+Nhóm chỉ thấy một thông báo ngắn rằng dữ liệu chẩn đoán đã được gửi riêng. Nếu không có
+tuyến riêng đến chủ sở hữu, lệnh sẽ từ chối an toàn và yêu cầu chủ sở hữu chạy lệnh từ tin nhắn trực tiếp.
 
-Khi phiên OpenClaw đang hoạt động sử dụng native OpenAI Codex harness, cùng phê duyệt
-exec đó cũng bao gồm một lần tải phản hồi OpenAI lên cho các luồng runtime Codex mà
-OpenClaw biết. Lần tải lên đó tách biệt với tệp zip Gateway cục bộ và chỉ xuất hiện
-cho các phiên Codex harness. Trước khi phê duyệt, lời nhắc giải thích rằng việc phê
-duyệt chẩn đoán cũng sẽ gửi phản hồi Codex, nhưng không liệt kê id phiên hoặc luồng
-Codex. Sau khi phê duyệt, phản hồi chat liệt kê các kênh, id phiên OpenClaw, id luồng
-Codex và các lệnh tiếp tục cục bộ cho những luồng đã được gửi đến máy chủ OpenAI.
-Nếu bạn từ chối hoặc bỏ qua phê duyệt, OpenClaw không chạy thao tác xuất, không gửi
-phản hồi Codex và không in các id Codex.
+Khi phiên đang hoạt động sử dụng bộ khung OpenAI Codex gốc, cùng một lần phê duyệt thực thi
+cũng bao gồm việc tải phản hồi lên OpenAI cho các luồng Codex mà OpenClaw biết đến. Việc tải lên
+này tách biệt với tệp zip Gateway cục bộ và chỉ diễn ra đối với các phiên dùng bộ khung Codex.
+Lời nhắc phê duyệt nêu rõ rằng việc phê duyệt cũng gửi phản hồi Codex, nhưng không liệt kê
+ID phiên hoặc ID luồng Codex. Sau khi phê duyệt, phản hồi liệt kê các kênh, ID phiên OpenClaw,
+ID luồng Codex và các lệnh tiếp tục cục bộ cho những luồng đã được gửi đến OpenAI. Việc từ chối
+hoặc bỏ qua phê duyệt sẽ bỏ qua thao tác xuất, tải phản hồi Codex lên và danh sách ID Codex.
 
-Điều đó làm cho vòng lặp gỡ lỗi Codex phổ biến trở nên ngắn gọn: phát hiện hành vi
-không đúng trong Telegram, Discord hoặc kênh khác, chạy `/diagnostics`, phê duyệt
-một lần, chia sẻ báo cáo với bộ phận hỗ trợ, rồi chạy lệnh
-`codex resume <thread-id>` đã in ở cục bộ nếu bạn muốn tự kiểm tra luồng Codex gốc.
-Xem [Codex harness](/vi/plugins/codex-harness#inspect-codex-threads-locally) để biết
-quy trình kiểm tra đó.
+Điều này giúp vòng lặp gỡ lỗi Codex ngắn gọn: nhận thấy hành vi không phù hợp trong một kênh,
+chạy `/diagnostics`, phê duyệt một lần, chia sẻ báo cáo, sau đó chạy cục bộ lệnh
+`codex resume <thread-id>` đã được in nếu bạn muốn tự kiểm tra luồng.
+Xem [Bộ khung Codex](/vi/plugins/codex-harness#inspect-codex-threads-locally).
 
-## Nội dung bản xuất
+## Nội dung của bản xuất
 
-Tệp zip bao gồm:
-
-- `summary.md`: tổng quan dễ đọc cho bộ phận hỗ trợ.
-- `diagnostics.json`: tóm tắt máy đọc được về cấu hình, nhật ký, trạng thái, tình trạng
-  và dữ liệu ổn định.
+- `summary.md`: tổng quan dễ đọc dành cho bộ phận hỗ trợ.
+- `diagnostics.json`: bản tóm tắt có thể đọc bằng máy về cấu hình, nhật ký, trạng thái,
+  tình trạng hoạt động và dữ liệu ổn định.
 - `manifest.json`: siêu dữ liệu xuất và danh sách tệp.
-- Hình dạng cấu hình đã được làm sạch và chi tiết cấu hình không bí mật.
-- Tóm tắt nhật ký đã được làm sạch và các dòng nhật ký gần đây đã được biên tập lại.
-- Ảnh chụp nhanh trạng thái và tình trạng Gateway theo nỗ lực tốt nhất.
-- `stability/latest.json`: gói ổn định mới nhất đã được lưu giữ, khi có sẵn.
+- Cấu trúc cấu hình đã được làm sạch và các chi tiết cấu hình không bí mật.
+- Bản tóm tắt nhật ký đã được làm sạch và các dòng nhật ký gần đây đã được che thông tin.
+- Ảnh chụp nhanh trạng thái và tình trạng hoạt động của Gateway theo khả năng tốt nhất.
+- `stability/latest.json`: gói ổn định được lưu mới nhất, khi có.
 
-Bản xuất vẫn hữu ích ngay cả khi Gateway không khỏe mạnh. Nếu Gateway không thể
-trả lời yêu cầu trạng thái hoặc tình trạng, nhật ký cục bộ, hình dạng cấu hình và
-gói ổn định mới nhất vẫn được thu thập khi có sẵn.
+Bản xuất vẫn hữu ích khi Gateway không hoạt động bình thường: nếu yêu cầu trạng thái/tình trạng
+hoạt động thất bại, nhật ký cục bộ, cấu trúc cấu hình và gói ổn định mới nhất vẫn được thu thập
+khi có thể.
 
 ## Mô hình quyền riêng tư
 
-Chẩn đoán được thiết kế để có thể chia sẻ. Bản xuất giữ lại dữ liệu vận hành
-hỗ trợ gỡ lỗi, chẳng hạn như:
+Được giữ lại: tên hệ thống con, ID plugin, ID nhà cung cấp, ID kênh, các chế độ đã cấu hình,
+mã trạng thái, khoảng thời gian, số byte, trạng thái hàng đợi, số liệu bộ nhớ, siêu dữ liệu
+nhật ký đã được làm sạch, thông báo vận hành đã được che thông tin, cấu trúc cấu hình và
+các thiết lập tính năng không bí mật.
 
-- tên hệ thống con, id plugin, id nhà cung cấp, id kênh và các chế độ đã cấu hình
-- mã trạng thái, thời lượng, số byte, trạng thái hàng đợi và số đọc bộ nhớ
-- siêu dữ liệu nhật ký đã được làm sạch và thông báo vận hành đã được biên tập lại
-- hình dạng cấu hình và thiết lập tính năng không bí mật
+Bị lược bỏ hoặc che thông tin: nội dung trò chuyện, lời nhắc, chỉ dẫn, phần thân webhook,
+đầu ra công cụ, thông tin xác thực, khóa API, token, cookie, giá trị bí mật, phần thân
+yêu cầu/phản hồi thô, ID tài khoản, ID tin nhắn, ID phiên thô, tên máy chủ và tên người dùng cục bộ.
 
-Bản xuất bỏ qua hoặc biên tập lại:
-
-- văn bản chat, prompt, hướng dẫn, phần thân webhook và đầu ra công cụ
-- thông tin xác thực, khóa API, token, cookie và giá trị bí mật
-- phần thân yêu cầu hoặc phản hồi thô
-- id tài khoản, id tin nhắn, id phiên thô, hostname và tên người dùng cục bộ
-
-Khi một thông điệp nhật ký trông giống văn bản người dùng, chat, prompt hoặc payload
-công cụ, bản xuất chỉ giữ lại thông tin rằng một thông điệp đã bị bỏ qua và số byte.
+Khi một thông báo nhật ký có vẻ chứa văn bản từ người dùng, cuộc trò chuyện, lời nhắc hoặc
+payload của công cụ, bản xuất chỉ ghi nhận rằng thông báo đã bị lược bỏ cùng với số byte của nó.
 
 ## Bộ ghi ổn định
 
-Gateway mặc định ghi lại một luồng ổn định có giới hạn, không chứa payload khi
-chẩn đoán được bật. Luồng này dành cho các dữ kiện vận hành, không phải nội dung.
+Theo mặc định, Gateway ghi lại một luồng ổn định có giới hạn và không chứa payload khi
+chẩn đoán được bật. Luồng này ghi nhận các dữ kiện vận hành, không ghi nhận nội dung.
 
-Cùng diagnostic heartbeat đó ghi lại các mẫu liveness khi Gateway vẫn chạy nhưng
-vòng lặp sự kiện Node.js hoặc CPU có vẻ bị bão hòa. Các sự kiện
-`diagnostic.liveness.warning` này bao gồm độ trễ vòng lặp sự kiện, mức sử dụng vòng
-lặp sự kiện, tỷ lệ lõi CPU, số lượng phiên đang hoạt động/đang chờ/đã xếp hàng, giai
-đoạn khởi động/runtime hiện tại khi biết được, các khoảng giai đoạn gần đây và nhãn
-công việc đang hoạt động/đã xếp hàng có giới hạn. Các mẫu nhàn rỗi vẫn ở telemetry
-ở cấp `info`. Mẫu liveness chỉ trở thành cảnh báo Gateway khi có công việc đang chờ
-hoặc đã xếp hàng, hoặc khi công việc đang hoạt động trùng với độ trễ vòng lặp sự kiện
-kéo dài. Các đỉnh độ trễ tối đa thoáng qua trong lúc công việc nền vẫn khỏe mạnh sẽ
-ở lại trong nhật ký debug. Chúng không tự khởi động lại Gateway.
+Cùng Heartbeat đó cũng lấy mẫu khả năng hoạt động khi vòng lặp sự kiện hoặc CPU có vẻ
+bị bão hòa, phát ra các sự kiện `diagnostic.liveness.warning` kèm độ trễ vòng lặp sự kiện,
+mức sử dụng vòng lặp sự kiện, tỷ lệ lõi CPU, số phiên đang hoạt động/đang chờ/đã xếp hàng,
+giai đoạn khởi động/thời gian chạy hiện tại (khi biết), các khoảng giai đoạn gần đây và
+nhãn công việc có giới hạn. Những sự kiện này chỉ trở thành các dòng nhật ký Gateway
+ở mức `warn` khi có công việc đang chờ hoặc đã xếp hàng, hoặc khi công việc đang hoạt động
+trùng với độ trễ vòng lặp sự kiện kéo dài; nếu không, chúng được ghi ở mức `debug`.
+Các mẫu khả năng hoạt động khi nhàn rỗi vẫn được ghi dưới dạng sự kiện chẩn đoán nhưng
+không bao giờ tự nâng lên thành cảnh báo.
 
-Các giai đoạn khởi động cũng phát ra sự kiện `diagnostic.phase.completed` với thời
-gian thực và thời gian CPU. Chẩn đoán embedded-run bị đình trệ đánh dấu
-`terminalProgressStale=true` khi tiến trình bridge cuối cùng trông có vẻ đã kết thúc,
-chẳng hạn như một mục phản hồi thô hoặc sự kiện hoàn tất phản hồi, nhưng Gateway vẫn
-xem embedded run là đang hoạt động.
+Các giai đoạn khởi động phát ra sự kiện `diagnostic.phase.completed` kèm thời gian thực tế
+và thời gian CPU. Chẩn đoán lượt chạy nhúng bị đình trệ đánh dấu `terminalProgressStale=true`
+khi tiến trình cầu nối gần nhất có vẻ đã kết thúc (ví dụ: một mục phản hồi thô hoặc sự kiện
+hoàn tất phản hồi), nhưng Gateway vẫn coi lượt chạy nhúng là đang hoạt động.
 
 Kiểm tra bộ ghi trực tiếp:
 
@@ -146,22 +128,22 @@ openclaw gateway stability --type payload.large
 openclaw gateway stability --json
 ```
 
-Kiểm tra gói ổn định đã lưu giữ mới nhất sau khi thoát nghiêm trọng, hết thời gian
-chờ tắt hoặc lỗi khởi động lại:
+Kiểm tra gói được lưu mới nhất sau khi thoát nghiêm trọng, hết thời gian chờ khi tắt hoặc
+khởi động lại thất bại:
 
 ```bash
 openclaw gateway stability --bundle latest
 ```
 
-Tạo tệp zip chẩn đoán từ gói đã lưu giữ mới nhất:
+Tạo tệp zip chẩn đoán từ gói được lưu mới nhất:
 
 ```bash
 openclaw gateway stability --bundle latest --export
 ```
 
-Các gói đã lưu giữ nằm dưới `~/.openclaw/logs/stability/` khi có sự kiện.
+Các gói được lưu nằm trong `~/.openclaw/logs/stability/` khi có sự kiện.
 
-## Tùy chọn hữu ích
+## Các tùy chọn hữu ích
 
 ```bash
 openclaw gateway diagnostics export \
@@ -170,19 +152,21 @@ openclaw gateway diagnostics export \
   --log-bytes 1000000
 ```
 
-- `--output <path>`: ghi vào một đường dẫn zip cụ thể.
-- `--log-lines <count>`: số dòng nhật ký đã làm sạch tối đa cần bao gồm.
-- `--log-bytes <bytes>`: số byte nhật ký tối đa cần kiểm tra.
-- `--url <url>`: URL WebSocket Gateway cho ảnh chụp nhanh trạng thái và tình trạng.
-- `--token <token>`: token Gateway cho ảnh chụp nhanh trạng thái và tình trạng.
-- `--password <password>`: mật khẩu Gateway cho ảnh chụp nhanh trạng thái và tình trạng.
-- `--timeout <ms>`: thời gian chờ ảnh chụp nhanh trạng thái và tình trạng.
-- `--no-stability-bundle`: bỏ qua tra cứu gói ổn định đã lưu giữ.
-- `--json`: in siêu dữ liệu xuất máy đọc được.
+| Cờ                      | Mặc định                                                                      | Mô tả                                                        |
+| ----------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| `--output <path>`       | `$OPENCLAW_STATE_DIR/logs/support/openclaw-diagnostics-<timestamp>-<pid>.zip` | Ghi vào đường dẫn tệp zip (hoặc thư mục) cụ thể.              |
+| `--log-lines <count>`   | `5000`                                                                        | Số dòng nhật ký đã được làm sạch tối đa được đưa vào.         |
+| `--log-bytes <bytes>`   | `1000000`                                                                     | Số byte nhật ký tối đa cần kiểm tra.                          |
+| `--url <url>`           | -                                                                             | URL WebSocket của Gateway cho ảnh chụp trạng thái/tình trạng. |
+| `--token <token>`       | -                                                                             | Token Gateway cho ảnh chụp trạng thái/tình trạng.             |
+| `--password <password>` | -                                                                             | Mật khẩu Gateway cho ảnh chụp trạng thái/tình trạng.          |
+| `--timeout <ms>`        | `3000`                                                                        | Thời gian chờ ảnh chụp trạng thái/tình trạng.                 |
+| `--no-stability-bundle` | tắt                                                                           | Bỏ qua việc tìm kiếm gói ổn định đã được lưu.                 |
+| `--json`                | tắt                                                                           | In siêu dữ liệu xuất có thể đọc bằng máy.                     |
 
 ## Tắt chẩn đoán
 
-Chẩn đoán được bật theo mặc định. Để tắt bộ ghi ổn định và thu thập sự kiện chẩn đoán:
+Chẩn đoán được bật theo mặc định. Để tắt bộ ghi ổn định và việc thu thập sự kiện chẩn đoán:
 
 ```json5
 {
@@ -192,11 +176,11 @@ Chẩn đoán được bật theo mặc định. Để tắt bộ ghi ổn đị
 }
 ```
 
-Tắt chẩn đoán sẽ giảm chi tiết báo cáo lỗi. Điều này không ảnh hưởng đến ghi nhật ký
-Gateway thông thường.
+Việc tắt chẩn đoán làm giảm mức độ chi tiết của báo cáo lỗi; việc này không ảnh hưởng đến
+hoạt động ghi nhật ký Gateway thông thường.
 
-Ảnh chụp nhanh áp lực bộ nhớ nghiêm trọng mặc định bị tắt. Để giữ các sự kiện chẩn
-đoán và cũng ghi lại ảnh chụp nhanh ổn định trước OOM:
+Theo mặc định, ảnh chụp nhanh khi áp lực bộ nhớ ở mức nghiêm trọng bị tắt. Để ghi lại
+ảnh chụp nhanh ổn định trước OOM ngoài các sự kiện chẩn đoán thông thường:
 
 ```json5
 {
@@ -206,15 +190,15 @@ Gateway thông thường.
 }
 ```
 
-Chỉ dùng tùy chọn này trên các máy chủ có thể chịu được lần quét hệ thống tệp và ghi
-ảnh chụp nhanh bổ sung trong lúc áp lực bộ nhớ nghiêm trọng. Các sự kiện áp lực bộ
-nhớ thông thường vẫn ghi lại RSS, heap, ngưỡng và dữ kiện tăng trưởng khi ảnh chụp
-nhanh bị tắt.
+Chỉ sử dụng tùy chọn này trên các máy chủ có thể chịu được việc quét hệ thống tệp bổ sung
+và ghi ảnh chụp nhanh trong lúc áp lực bộ nhớ ở mức nghiêm trọng. Các sự kiện áp lực bộ nhớ
+thông thường vẫn ghi lại RSS, heap, ngưỡng và dữ kiện tăng trưởng (`rss_threshold`,
+`heap_threshold`, `rss_growth`) khi ảnh chụp nhanh bị tắt.
 
 ## Liên quan
 
-- [Kiểm tra tình trạng](/vi/gateway/health)
+- [Kiểm tra tình trạng hoạt động](/vi/gateway/health)
 - [CLI Gateway](/vi/cli/gateway#gateway-diagnostics-export)
-- [Giao thức Gateway](/vi/gateway/protocol#system-and-identity)
+- [Giao thức Gateway](/vi/gateway/protocol#rpc-method-families)
 - [Ghi nhật ký](/vi/logging)
-- [Xuất OpenTelemetry](/vi/gateway/opentelemetry) — luồng riêng để truyền chẩn đoán đến một collector
+- [Xuất OpenTelemetry](/vi/gateway/opentelemetry) - luồng riêng để truyền trực tuyến dữ liệu chẩn đoán đến bộ thu thập

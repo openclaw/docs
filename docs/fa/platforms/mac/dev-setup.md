@@ -1,114 +1,112 @@
 ---
 read_when:
     - راه‌اندازی محیط توسعه macOS
-summary: راهنمای راه‌اندازی برای توسعه‌دهندگانی که روی برنامه macOS OpenClaw کار می‌کنند
-title: راه‌اندازی توسعه macOS
+summary: راهنمای راه‌اندازی برای توسعه‌دهندگانی که روی برنامه macOS اوپن‌کلاو کار می‌کنند
+title: راه‌اندازی محیط توسعه در macOS
 x-i18n:
-    generated_at: "2026-07-04T06:43:32Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:21:45Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5438de16d6d796f4c3df5d896f288ee3dfaba16471a4abb932d277cd8e8b84f8
+    source_hash: bd7d556af92892d3deea3f5d8238a33cd413e10b0b377468396221e174ace8fe
     source_path: platforms/mac/dev-setup.md
     workflow: 16
 ---
 
-# راه‌اندازی توسعه‌دهنده macOS
+# راه‌اندازی توسعه در macOS
 
-برنامه macOS متعلق به OpenClaw را از روی منبع بسازید و اجرا کنید.
+برنامه macOS ‏OpenClaw را از کد منبع بسازید و اجرا کنید.
 
 ## پیش‌نیازها
 
-پیش از ساخت برنامه، مطمئن شوید موارد زیر را نصب کرده‌اید:
+- **Xcode 26.2+** (زنجیره‌ابزار Swift 6.2)، روی جدیدترین نسخه macOS موجود در
+  Software Update.
+- **Node.js 24 و pnpm** برای Gateway، ‏CLI و اسکریپت‌های بسته‌بندی. Node
+  22.19+ نیز کار می‌کند.
 
-1. **Xcode 26.2+**: برای توسعه Swift لازم است.
-2. **Node.js 24 و pnpm**: برای Gateway، CLI و اسکریپت‌های بسته‌بندی توصیه می‌شود. Node 22 LTS، که در حال حاضر `22.19+` است، همچنان برای سازگاری پشتیبانی می‌شود.
-
-## 1. نصب وابستگی‌ها
-
-وابستگی‌های کل پروژه را نصب کنید:
+## ۱. نصب وابستگی‌ها
 
 ```bash
 pnpm install
 ```
 
-## 2. ساخت و بسته‌بندی برنامه
-
-برای ساخت برنامه macOS و بسته‌بندی آن در `dist/OpenClaw.app`، اجرا کنید:
+## ۲. ساخت و بسته‌بندی برنامه
 
 ```bash
 ./scripts/package-mac-app.sh
 ```
 
-اگر گواهی Apple Developer ID ندارید، اسکریپت به‌طور خودکار از **امضای ad-hoc** (`-`) استفاده می‌کند.
+خروجی در `dist/OpenClaw.app` قرار می‌گیرد. اگر گواهی Apple Developer ID موجود نباشد،
+اسکریپت از امضای موقت استفاده می‌کند.
 
-برای حالت‌های اجرای توسعه، پرچم‌های امضا و عیب‌یابی Team ID، README برنامه macOS را ببینید:
-[https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md](https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md)
+برای حالت‌های اجرای توسعه، پرچم‌های امضا و عیب‌یابی Team ID، به
+[apps/macos/README.md](https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md)
+مراجعه کنید. چرخه سریع توسعه از ریشه مخزن: `scripts/restart-mac.sh` (برای
+امضای موقت، `--no-sign` را اضافه کنید؛ مجوزهای TCC با `--no-sign` پایدار نمی‌مانند).
 
-> **نکته**: برنامه‌های امضاشده با ad-hoc ممکن است اعلان‌های امنیتی ایجاد کنند. اگر برنامه بلافاصله با "Abort trap 6" کرش کرد، بخش [عیب‌یابی](#troubleshooting) را ببینید.
+<Note>
+برنامه‌هایی با امضای موقت ممکن است هشدارهای امنیتی ایجاد کنند. اگر برنامه
+بلافاصله با پیام «Abort trap 6» از کار افتاد، به [عیب‌یابی](#troubleshooting) مراجعه کنید.
+</Note>
 
-## 3. نصب CLI و Gateway
+## ۳. نصب CLI و Gateway
 
-برنامه بسته‌بندی‌شده نصب‌کننده مرجع `scripts/install-cli.sh` را در خود دارد. در یک
-پروفایل تازه، هنگام راه‌اندازی اولیه **این Mac** را انتخاب کنید؛ برنامه پیش از
-شروع ویزارد Gateway، CLI و runtime منطبق در فضای کاربر را نصب می‌کند.
+برنامه بسته‌بندی‌شده، نصب‌کننده مرجع `scripts/install-cli.sh` را در خود دارد. در یک
+پروفایل تازه، هنگام راه‌اندازی اولیه **This Mac** را انتخاب کنید؛ برنامه پیش از آغاز
+دستیار Gateway، ‏CLI و محیط اجرای فضای کاربری منطبق را نصب می‌کند.
 
-برای بازیابی دستی در توسعه، CLI منطبق را خودتان نصب کنید:
+برای بازیابی دستی محیط توسعه، ‏CLI منطبق را خودتان نصب کنید:
 
 ```bash
 npm install -g openclaw@<version>
 ```
 
-`pnpm add -g openclaw@<version>` و `bun add -g openclaw@<version>` نیز کار می‌کنند.
-برای runtime مربوط به Gateway، Node همچنان مسیر توصیه‌شده است.
+دستورهای `pnpm add -g openclaw@<version>` و `bun add -g openclaw@<version>` نیز
+کار می‌کنند. Node همچنان محیط اجرای توصیه‌شده برای خود Gateway است.
 
 ## عیب‌یابی
 
-### ساخت ناموفق است: ناسازگاری زنجیره‌ابزار یا SDK
+### شکست ساخت: ناهماهنگی زنجیره‌ابزار یا SDK
 
-ساخت برنامه macOS به آخرین macOS SDK و زنجیره‌ابزار Swift 6.2 نیاز دارد.
-
-**وابستگی‌های سیستم (الزامی):**
-
-- **آخرین نسخه macOS موجود در Software Update** (مورد نیاز SDKهای Xcode 26.2)
-- **Xcode 26.2** (زنجیره‌ابزار Swift 6.2)
-
-**بررسی‌ها:**
+ساخت برنامه macOS به جدیدترین SDK سیستم macOS و زنجیره‌ابزار Swift 6.2
+نیاز دارد (Xcode 26.2+).
 
 ```bash
 xcodebuild -version
 xcrun swift --version
 ```
 
-اگر نسخه‌ها مطابقت ندارند، macOS/Xcode را به‌روزرسانی کنید و ساخت را دوباره اجرا کنید.
+اگر نسخه‌ها مطابقت ندارند، macOS/Xcode را به‌روزرسانی و ساخت را دوباره اجرا کنید.
 
-### برنامه هنگام اعطای مجوز کرش می‌کند
+### از کار افتادن برنامه هنگام اعطای مجوز
 
-اگر برنامه هنگام تلاش برای اجازه دادن به دسترسی **Speech Recognition** یا **Microphone** کرش می‌کند، ممکن است علت آن خرابی کش TCC یا ناسازگاری امضا باشد.
+اگر هنگام تلاش برای اجازه‌دادن دسترسی **Speech Recognition** یا
+**Microphone** برنامه از کار می‌افتد، ممکن است کش TCC خراب یا امضا ناهماهنگ باشد.
 
-**رفع مشکل:**
-
-1. مجوزهای TCC را بازنشانی کنید:
+۱. مجوزهای TCC را برای شناسه بسته اشکال‌زدایی بازنشانی کنید:
 
    ```bash
    tccutil reset All ai.openclaw.mac.debug
    ```
 
-2. اگر این کار ناموفق بود، `BUNDLE_ID` را به‌طور موقت در [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) تغییر دهید تا macOS مجبور شود از یک «شروع پاک» استفاده کند.
+۲. اگر این کار موفق نبود، به‌طور موقت `BUNDLE_ID` را در
+   [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh)
+   تغییر دهید تا macOS از یک وضعیت کاملاً پاک آغاز کند.
 
-### Gateway به‌طور نامحدود روی «در حال شروع...» می‌ماند
+### ماندن Gateway برای همیشه روی «Starting...»
 
-اگر وضعیت Gateway روی «در حال شروع...» باقی ماند، بررسی کنید آیا یک فرایند zombie پورت را نگه داشته است یا نه:
+بررسی کنید آیا یک فرایند معلق درگاه را در اختیار دارد:
 
 ```bash
 openclaw gateway status
 openclaw gateway stop
 
-# If you're not using a LaunchAgent (dev mode / manual runs), find the listener:
+# اگر از LaunchAgent استفاده نمی‌کنید (حالت توسعه / اجراهای دستی)، فرایند شنونده را پیدا کنید:
 lsof -nP -iTCP:18789 -sTCP:LISTEN
 ```
 
-اگر یک اجرای دستی پورت را نگه داشته است، آن فرایند را متوقف کنید (Ctrl+C). به‌عنوان آخرین راه‌حل، PIDای را که در بالا پیدا کردید kill کنید.
+اگر یک اجرای دستی درگاه را در اختیار دارد، آن را متوقف کنید (Ctrl+C)، یا به‌عنوان
+آخرین راه‌حل، PID یافت‌شده در بالا را خاتمه دهید.
 
 ## مرتبط
 

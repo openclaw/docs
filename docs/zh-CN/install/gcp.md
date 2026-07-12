@@ -1,13 +1,13 @@
 ---
 read_when:
-    - 你希望 OpenClaw 在 GCP 上 24/7 运行
-    - 你想在自己的虚拟机上运行一个生产级、始终在线的 Gateway 网关
-    - 你想完全控制持久化、二进制文件和重启行为
-summary: 在 GCP Compute Engine VM（Docker）上全天候运行带持久状态的 OpenClaw Gateway 网关
+    - 你希望 OpenClaw 在 GCP 上全天候运行
+    - 你希望在自己的虚拟机上运行一个生产级、始终在线的 Gateway 网关
+    - 你希望完全掌控持久化、二进制文件和重启行为
+summary: 在 GCP Compute Engine 虚拟机上通过 Docker 全天候运行 OpenClaw Gateway 网关，并持久保存状态
 title: GCP
 x-i18n:
-    generated_at: "2026-07-05T11:27:02Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T20:40:01Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 6ca46b2ee78731162261cae6ea5a26b718be6035b998fa92e4ee5c9ea2e7ae07
@@ -15,66 +15,66 @@ x-i18n:
     workflow: 16
 ---
 
-使用 Docker 在 GCP Compute Engine VM 上运行持久化的 OpenClaw Gateway 网关，具备持久状态、内置二进制文件和安全的重启行为。
+在 GCP Compute Engine 虚拟机上使用 Docker 运行持久化的 OpenClaw Gateway 网关，并提供持久状态、内置二进制文件和安全重启行为。
 
-价格会因机器类型和区域而异；选择能满足你的工作负载的最小 VM，如果遇到 OOM，再向上扩容。
+价格因机器类型和区域而异；请选择能够满足工作负载的最小虚拟机，如果遇到内存不足（OOM），再升级配置。
 
-可以通过从你的笔记本进行 SSH 端口转发来访问 Gateway 网关；如果你自行管理防火墙和令牌，也可以直接暴露端口。
+你可以通过笔记本电脑上的 SSH 端口转发访问 Gateway 网关；如果你自行管理防火墙和令牌，也可以直接开放端口。
 
-本指南在 GCP Compute Engine 上使用 Debian。Ubuntu 也可以使用；请相应映射软件包。通用 Docker 流程请参阅 [Docker](/zh-CN/install/docker)。
+本指南在 GCP Compute Engine 上使用 Debian。Ubuntu 也可以使用，但需要相应调整软件包。通用 Docker 流程请参阅 [Docker](/zh-CN/install/docker)。
 
-## 你需要准备
+## 所需条件
 
-- GCP 账号（`e2-micro` 符合免费层条件）
+- GCP 账号（`e2-micro` 符合免费层资格）
 - `gcloud` CLI，或 [Cloud Console](https://console.cloud.google.com)
-- 从你的笔记本进行 SSH 访问
+- 从笔记本电脑进行 SSH 访问
 - Docker 和 Docker Compose
-- 模型凭证
-- 可选提供商凭证（WhatsApp QR、Telegram bot token、Gmail OAuth）
-- 约 20-30 分钟
+- 模型身份验证凭据
+- 可选的提供商凭据（WhatsApp 二维码、Telegram Bot 令牌、Gmail OAuth）
+- 约 20～30 分钟
 
-## 快速路径
+## 快速流程
 
 1. 创建 GCP 项目，启用结算和 Compute Engine API
-2. 创建 Compute Engine VM（`e2-small`、Debian 12、20GB）
-3. SSH 进入 VM，安装 Docker
+2. 创建 Compute Engine 虚拟机（`e2-small`、Debian 12、20GB）
+3. 通过 SSH 登录虚拟机并安装 Docker
 4. 克隆 OpenClaw 仓库
-5. 创建持久化主机目录
+5. 创建持久化宿主机目录
 6. 配置 `.env` 和 `docker-compose.yml`
-7. 烘焙所需二进制文件，构建并启动
+7. 将所需二进制文件烘焙进镜像，然后构建并启动
 
 <Steps>
-  <Step title="Install gcloud CLI (or use Console)">
-    从 [cloud.google.com/sdk/docs/install](https://cloud.google.com/sdk/docs/install) 安装，然后：
+  <Step title="安装 gcloud CLI（或使用 Console）">
+    从 [cloud.google.com/sdk/docs/install](https://cloud.google.com/sdk/docs/install) 安装，然后运行：
 
     ```bash
     gcloud init
     gcloud auth login
     ```
 
-    或者改用 [Cloud Console](https://console.cloud.google.com) Web UI 完成下面的每一步。
+    或者改为通过 [Cloud Console](https://console.cloud.google.com) Web UI 完成以下所有步骤。
 
   </Step>
 
-  <Step title="Create a GCP project">
+  <Step title="创建 GCP 项目">
     ```bash
     gcloud projects create my-openclaw-project --name="OpenClaw Gateway"
     gcloud config set project my-openclaw-project
     gcloud services enable compute.googleapis.com
     ```
 
-    在 [console.cloud.google.com/billing](https://console.cloud.google.com/billing) 启用结算（Compute Engine 必需）。
+    在 [console.cloud.google.com/billing](https://console.cloud.google.com/billing) 启用结算（Compute Engine 要求启用）。
 
-    Console 等效操作：IAM & Admin > Create Project，启用结算，然后 APIs & Services > Enable APIs > "Compute Engine API" > Enable。
+    Console 中的等效操作：IAM & Admin > Create Project，启用结算，然后依次进入 APIs & Services > Enable APIs > "Compute Engine API" > Enable。
 
   </Step>
 
-  <Step title="Create the VM">
-    | 类型      | 规格                    | 成本               | 说明                                        |
-    | --------- | ------------------------ | ------------------ | --------------------------------------------- |
-    | e2-medium | 2 vCPU，4GB RAM          | 约 $25/月            | 本地 Docker 构建最可靠         |
-    | e2-small  | 2 vCPU，2GB RAM          | 约 $12/月            | Docker 构建的最低推荐配置        |
-    | e2-micro  | 2 vCPU（共享），1GB RAM | 符合免费层条件 | 经常因 Docker 构建 OOM 而失败（退出 137）  |
+  <Step title="创建虚拟机">
+    | 类型      | 规格                     | 费用             | 说明                                      |
+    | --------- | ------------------------ | ---------------- | ----------------------------------------- |
+    | e2-medium | 2 个 vCPU、4GB 内存      | 约 25 美元/月    | 最适合可靠地进行本地 Docker 构建          |
+    | e2-small  | 2 个 vCPU、2GB 内存      | 约 12 美元/月    | Docker 构建的最低推荐配置                 |
+    | e2-micro  | 2 个 vCPU（共享）、1GB 内存 | 符合免费层资格 | Docker 构建经常因 OOM 而失败（退出码 137） |
 
     ```bash
     gcloud compute instances create openclaw-gateway \
@@ -87,18 +87,18 @@ x-i18n:
 
   </Step>
 
-  <Step title="SSH into the VM">
+  <Step title="通过 SSH 登录虚拟机">
     ```bash
     gcloud compute ssh openclaw-gateway --zone=us-central1-a
     ```
 
-    Console：在 Compute Engine 仪表板中点击 VM 旁边的 “SSH”。
+    Console：在 Compute Engine 控制面板中，点击虚拟机旁边的 "SSH"。
 
-    VM 创建后，SSH 密钥传播可能需要 1-2 分钟；如果连接被拒绝，请等待后重试。
+    创建虚拟机后，SSH 密钥传播可能需要 1～2 分钟；如果连接被拒绝，请等待后重试。
 
   </Step>
 
-  <Step title="Install Docker (on the VM)">
+  <Step title="安装 Docker（在虚拟机上）">
     ```bash
     sudo apt-get update
     sudo apt-get install -y git curl ca-certificates
@@ -106,7 +106,7 @@ x-i18n:
     sudo usermod -aG docker $USER
     ```
 
-    注销并重新登录以使组变更生效，然后重新 SSH 登录：
+    注销并重新登录，使用户组变更生效，然后再次通过 SSH 登录：
 
     ```bash
     exit
@@ -125,18 +125,18 @@ x-i18n:
 
   </Step>
 
-  <Step title="Clone the OpenClaw repository">
+  <Step title="克隆 OpenClaw 仓库">
     ```bash
     git clone https://github.com/openclaw/openclaw.git
     cd openclaw
     ```
 
-    本指南会构建自定义镜像，因此你烘焙进去的任何二进制文件都能在重启后保留。
+    本指南会构建自定义镜像，因此烘焙进镜像的所有二进制文件都能在重启后继续保留。
 
   </Step>
 
-  <Step title="Create persistent host directories">
-    Docker 容器是临时的；所有长期状态都必须存放在主机上。
+  <Step title="创建持久化宿主机目录">
+    Docker 容器是临时的；所有长期状态都必须存储在宿主机上。
 
     ```bash
     mkdir -p ~/.openclaw
@@ -145,7 +145,7 @@ x-i18n:
 
   </Step>
 
-  <Step title="Configure environment variables">
+  <Step title="配置环境变量">
     在仓库根目录创建 `.env`：
 
     ```bash
@@ -161,17 +161,17 @@ x-i18n:
     XDG_CONFIG_HOME=/home/node/.openclaw
     ```
 
-    设置 `OPENCLAW_GATEWAY_TOKEN`，通过 `.env` 管理稳定的 Gateway 网关令牌；否则在依赖客户端跨重启之前，请先配置 `gateway.auth.token`。如果两者都未设置，OpenClaw 会为该次启动使用仅运行时有效的令牌。为 `GOG_KEYRING_PASSWORD` 生成一个 keyring 密码：
+    设置 `OPENCLAW_GATEWAY_TOKEN`，通过 `.env` 管理稳定的 Gateway 网关令牌；否则，请先配置 `gateway.auth.token`，再依赖客户端跨重启访问。如果两者均未设置，OpenClaw 会为本次启动使用仅限运行时的令牌。为 `GOG_KEYRING_PASSWORD` 生成密钥环密码：
 
     ```bash
     openssl rand -hex 32
     ```
 
-    **不要提交此文件。** 它包含容器/运行时环境变量，例如 `OPENCLAW_GATEWAY_TOKEN`。已存储的提供商 OAuth/API key 凭证位于挂载的 `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`。
+    **不要提交此文件。**它保存容器和运行时环境变量，例如 `OPENCLAW_GATEWAY_TOKEN`。已存储的提供商 OAuth/API 密钥身份验证信息位于挂载的 `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` 中。
 
   </Step>
 
-  <Step title="Docker Compose configuration">
+  <Step title="Docker Compose 配置">
     创建或更新 `docker-compose.yml`：
 
     ```yaml
@@ -196,8 +196,8 @@ x-i18n:
           - ${OPENCLAW_CONFIG_DIR}:/home/node/.openclaw
           - ${OPENCLAW_WORKSPACE_DIR}:/home/node/.openclaw/workspace
         ports:
-          # Recommended: keep the Gateway loopback-only on the VM; access via SSH tunnel.
-          # To expose it publicly, remove the `127.0.0.1:` prefix and firewall accordingly.
+          # 推荐：让虚拟机上的 Gateway 网关仅监听回环地址；通过 SSH 隧道访问。
+          # 如需公开开放，请移除 `127.0.0.1:` 前缀，并相应配置防火墙。
           - "127.0.0.1:${OPENCLAW_GATEWAY_PORT}:18789"
         command:
           [
@@ -212,34 +212,34 @@ x-i18n:
           ]
     ```
 
-    `--allow-unconfigured` 仅用于方便引导，不是真实 Gateway 网关配置的替代品。仍然需要设置凭证（`gateway.auth.token` 或密码）以及适合你部署的安全绑定模式。
+    `--allow-unconfigured` 仅用于方便引导启动，不能替代真正的 Gateway 网关配置。仍然需要设置身份验证（`gateway.auth.token` 或密码），并为你的部署选择安全的绑定模式。
 
   </Step>
 
-  <Step title="Shared Docker VM runtime steps">
-    按照共享运行时指南完成通用 Docker 主机流程：
+  <Step title="共享 Docker 虚拟机运行时步骤">
+    按照共享运行时指南完成通用 Docker 宿主机流程：
 
-    - [将所需二进制文件烘焙到镜像中](/zh-CN/install/docker-vm-runtime#bake-required-binaries-into-the-image)
+    - [将所需二进制文件烘焙进镜像](/zh-CN/install/docker-vm-runtime#bake-required-binaries-into-the-image)
     - [构建并启动](/zh-CN/install/docker-vm-runtime#build-and-launch)
-    - [哪些内容持久化在哪里](/zh-CN/install/docker-vm-runtime#what-persists-where)
+    - [各类数据的持久化位置](/zh-CN/install/docker-vm-runtime#what-persists-where)
     - [更新](/zh-CN/install/docker-vm-runtime#updates)
 
   </Step>
 
-  <Step title="GCP-specific launch notes">
-    如果构建在 `pnpm install --frozen-lockfile` 期间因 `Killed` 或 `exit code 137` 失败，说明 VM 内存不足。至少使用 `e2-small`，若希望首次构建更可靠，请使用 `e2-medium`。
+  <Step title="GCP 特定启动说明">
+    如果在执行 `pnpm install --frozen-lockfile` 期间，构建因 `Killed` 或 `exit code 137` 而失败，则说明虚拟机内存不足。至少使用 `e2-small`，首次构建要更可靠则使用 `e2-medium`。
 
-    绑定到 LAN（`OPENCLAW_GATEWAY_BIND=lan`）时，继续之前请配置受信任的浏览器来源：
+    绑定到局域网（`OPENCLAW_GATEWAY_BIND=lan`）时，请先配置受信任的浏览器来源，然后再继续：
 
     ```bash
     docker compose run --rm openclaw-cli config set gateway.controlUi.allowedOrigins '["http://127.0.0.1:18789"]' --strict-json
     ```
 
-    如果你更改了端口，请将 `18789` 替换为你配置的端口。
+    如果你更改了端口，请将 `18789` 替换为配置的端口。
 
   </Step>
 
-  <Step title="Access from your laptop">
+  <Step title="从笔记本电脑访问">
     创建 SSH 隧道以转发 Gateway 网关端口：
 
     ```bash
@@ -248,22 +248,22 @@ x-i18n:
 
     在浏览器中打开 `http://127.0.0.1:18789/`。
 
-    重新打印干净的仪表板链接：
+    重新输出不含多余内容的控制面板链接：
 
     ```bash
     docker compose run --rm openclaw-cli dashboard --no-open
     ```
 
-    如果 UI 提示进行 shared-secret 凭证认证，请将配置的令牌或密码粘贴到 Control UI 设置中（此 Docker 流程默认会写入令牌；如果你已切换到密码认证，请改用你配置的密码）。
+    如果界面提示需要共享密钥身份验证，请将配置的令牌或密码粘贴到 Control UI 设置中（此 Docker 流程默认写入令牌；如果你已切换为密码身份验证，请改用配置的密码）。
 
-    如果 Control UI 显示 `unauthorized` 或 `disconnected (1008): pairing required`，请批准该浏览器设备：
+    如果 Control UI 显示 `unauthorized` 或 `disconnected (1008): pairing required`，请批准浏览器设备：
 
     ```bash
     docker compose run --rm openclaw-cli devices list
     docker compose run --rm openclaw-cli devices approve <requestId>
     ```
 
-    请参阅 [Docker VM 运行时](/zh-CN/install/docker-vm-runtime#what-persists-where) 了解共享持久化映射，并参阅 [更新流程](/zh-CN/install/docker-vm-runtime#updates)。
+    有关共享持久化映射，请参阅 [Docker 虚拟机运行时](/zh-CN/install/docker-vm-runtime#what-persists-where)；有关更新，请参阅[更新流程](/zh-CN/install/docker-vm-runtime#updates)。
 
   </Step>
 </Steps>
@@ -272,7 +272,7 @@ x-i18n:
 
 **SSH 连接被拒绝**
 
-VM 创建后，SSH 密钥传播可能需要 1-2 分钟。请等待后重试。
+创建虚拟机后，SSH 密钥传播可能需要 1～2 分钟。请等待后重试。
 
 **OS Login 问题**
 
@@ -286,24 +286,24 @@ gcloud compute os-login describe-profile
 
 **内存不足（OOM）**
 
-如果 Docker 构建因 `Killed` 和 `exit code 137` 失败，说明 VM 被 OOM 终止：
+如果 Docker 构建因 `Killed` 和 `exit code 137` 而失败，则虚拟机进程因 OOM 被终止：
 
 ```bash
-# Stop the VM first
+# 先停止虚拟机
 gcloud compute instances stop openclaw-gateway --zone=us-central1-a
 
-# Change machine type
+# 更改机器类型
 gcloud compute instances set-machine-type openclaw-gateway \
   --zone=us-central1-a \
   --machine-type=e2-small
 
-# Start the VM
+# 启动虚拟机
 gcloud compute instances start openclaw-gateway --zone=us-central1-a
 ```
 
 ## 服务账号（安全最佳实践）
 
-个人使用时，默认用户账号即可。对于自动化或 CI/CD，请创建一个权限最小化的专用服务账号：
+对于个人使用，默认用户账号即可。对于自动化或 CI/CD，请创建权限最小化的专用服务账号：
 
 ```bash
 gcloud iam service-accounts create openclaw-deploy \
@@ -314,15 +314,15 @@ gcloud projects add-iam-policy-binding my-openclaw-project \
   --role="roles/compute.instanceAdmin.v1"
 ```
 
-避免在自动化中使用 Owner 角色；使用能正常工作的最窄角色。请参阅 [了解角色](https://cloud.google.com/iam/docs/understanding-roles)。
+避免为自动化使用 Owner 角色；请使用能够满足要求的最小权限角色。请参阅[了解角色](https://cloud.google.com/iam/docs/understanding-roles)。
 
 ## 后续步骤
 
-- 设置消息渠道：[Channels](/zh-CN/channels)
-- 将本地设备配对为节点：[Nodes](/zh-CN/nodes)
+- 设置消息渠道：[渠道](/zh-CN/channels)
+- 将本地设备配对为节点：[节点](/zh-CN/nodes)
 - 配置 Gateway 网关：[Gateway 配置](/zh-CN/gateway/configuration)
 
-## 相关
+## 相关内容
 
 - [安装概览](/zh-CN/install)
 - [Azure](/zh-CN/install/azure)

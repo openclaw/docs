@@ -1,14 +1,13 @@
 ---
 read_when:
     - Sie möchten den OpenCode-Go-Katalog
-    - Sie benötigen die Laufzeitmodellreferenzen für in Go gehostete Modelle
+    - Sie benötigen die Laufzeit-Modellreferenzen für in Go gehostete Modelle
 summary: Verwenden Sie den OpenCode-Go-Katalog mit der gemeinsamen OpenCode-Einrichtung
 title: OpenCode Go
 x-i18n:
-    generated_at: "2026-07-12T15:49:30Z"
+    generated_at: "2026-07-12T02:06:16Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: df647721e8966fd4fad3178550b071a2eb827148fe765bda53b3d7c97ceaadc2
     source_path: providers/opencode-go.md
@@ -16,13 +15,13 @@ x-i18n:
 ---
 
 OpenCode Go ist der Go-Katalog innerhalb von [OpenCode](/de/providers/opencode). Er verwendet
-dieselben `OPENCODE_API_KEY`-Anmeldedaten wie der Zen-Katalog, behält jedoch eine eigene
-Runtime-Provider-ID (`opencode-go`), damit das vorgelagerte modellspezifische Routing
+dieselben `OPENCODE_API_KEY`-Anmeldedaten wie der Zen-Katalog, behält jedoch seine eigene
+Laufzeit-Provider-ID (`opencode-go`), damit das vorgelagerte modellspezifische Routing
 korrekt bleibt.
 
 | Eigenschaft      | Wert                                               |
 | ---------------- | -------------------------------------------------- |
-| Runtime-Provider | `opencode-go`                                      |
+| Laufzeit-Provider | `opencode-go`                                     |
 | Authentifizierung | `OPENCODE_API_KEY` (Alias: `OPENCODE_ZEN_API_KEY`) |
 | Übergeordnete Einrichtung | [OpenCode](/de/providers/opencode)           |
 
@@ -77,7 +76,7 @@ korrekt bleibt.
 ## Integrierter Katalog
 
 Führen Sie `openclaw models list --provider opencode-go` aus, um die aktuelle Modellliste anzuzeigen.
-Enthaltene Einträge:
+Mitgelieferte Einträge:
 
 | Modellreferenz                  | Name              | Kontext   | Maximale Ausgabe | Bildeingabe |
 | ------------------------------- | ----------------- | --------- | ---------------- | ----------- |
@@ -104,18 +103,18 @@ Enthaltene Einträge:
 
 <AccordionGroup>
   <Accordion title="Routing-Verhalten">
-    OpenClaw leitet jede Modellreferenz des Typs `opencode-go/...` automatisch weiter. Es ist keine zusätzliche
+    OpenClaw leitet jede Modellreferenz vom Typ `opencode-go/...` automatisch weiter. Es ist keine zusätzliche
     Provider-Konfiguration erforderlich.
   </Accordion>
 
-  <Accordion title="Konvention für Runtime-Referenzen">
-    Runtime-Referenzen bleiben explizit: `opencode/...` für Zen, `opencode-go/...` für
-    Go. Dadurch bleibt das vorgelagerte modellspezifische Routing über beide Kataloge hinweg korrekt.
+  <Accordion title="Konvention für Laufzeitreferenzen">
+    Laufzeitreferenzen bleiben explizit: `opencode/...` für Zen, `opencode-go/...` für
+    Go. Dadurch bleibt das vorgelagerte modellspezifische Routing für beide Kataloge korrekt.
   </Accordion>
 
   <Accordion title="Gemeinsam verwendete Anmeldedaten">
     Ein `OPENCODE_API_KEY` gilt sowohl für den Zen- als auch für den Go-Katalog. Wenn Sie den
-    Schlüssel während der Einrichtung eingeben, werden die Anmeldedaten für beide Runtime-Provider gespeichert.
+    Schlüssel während der Einrichtung eingeben, werden die Anmeldedaten für beide Laufzeit-Provider gespeichert.
   </Accordion>
 </AccordionGroup>
 
@@ -131,6 +130,6 @@ Katalogreferenz für Zen und Go.
     Gemeinsames Onboarding, Katalogübersicht und erweiterte Hinweise.
   </Card>
   <Card title="Modellauswahl" href="/de/concepts/model-providers" icon="layers">
-    Auswahl von Providern, Modellreferenzen und Failover-Verhalten.
+    Auswahl von Providern und Modellreferenzen sowie Failover-Verhalten.
   </Card>
 </CardGroup>

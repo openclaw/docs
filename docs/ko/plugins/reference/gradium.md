@@ -1,11 +1,11 @@
 ---
 read_when:
-    - gradium Plugin을 설치, 구성 또는 감사하고 있습니다
-summary: 텍스트 음성 변환 공급자 지원을 추가합니다.
+    - gradium 플러그인을 설치, 구성 또는 감사하고 있습니다
+summary: 텍스트 음성 변환 제공자 지원을 추가합니다.
 title: Gradium Plugin
 x-i18n:
-    generated_at: "2026-06-27T17:51:21Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T01:00:31Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 4ae70f3e901d44c238d6e1abcec13f67c0d19df6f82d92e365c3ddf0355ea23d
@@ -22,7 +22,7 @@ x-i18n:
 - 패키지: `@openclaw/gradium-speech`
 - 설치 경로: npm; ClawHub: `clawhub:@openclaw/gradium-speech`
 
-## 표면
+## 제공 기능
 
 계약: speechProviders
 

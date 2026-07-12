@@ -1,26 +1,22 @@
 ---
 read_when:
     - Anda menginginkan langkah LLM khusus JSON di dalam alur kerja
-    - Anda memerlukan keluaran LLM yang divalidasi skema untuk otomatisasi
-summary: Tugas LLM khusus JSON untuk alur kerja (alat Plugin opsional)
+    - Anda memerlukan keluaran LLM yang divalidasi berdasarkan skema untuk otomatisasi
+summary: Tugas LLM khusus JSON untuk alur kerja (alat plugin opsional)
 title: Tugas LLM
 x-i18n:
-    generated_at: "2026-06-27T18:19:20Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:44:38Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ab83202bd0954a948c933c80de17385eb385573b8e3974dba41ff876f91c3ddb
+    source_hash: 78ea533f43546fbdd66c7f7138b8dea0b12b02d38925689324b390a12d0c4c5a
     source_path: tools/llm-task.md
     workflow: 16
 ---
 
-`llm-task` adalah **alat Plugin opsional** yang menjalankan tugas LLM khusus JSON dan
-mengembalikan keluaran terstruktur (opsional divalidasi terhadap JSON Schema).
+`llm-task` adalah **alat Plugin opsional** bawaan yang menjalankan satu panggilan LLM khusus JSON dan mengembalikan keluaran terstruktur, yang secara opsional divalidasi terhadap JSON Schema. Alat ini menyediakan langkah LLM bagi mesin alur kerja seperti Lobster tanpa memerlukan kode OpenClaw khusus untuk setiap alur kerja.
 
-Ini ideal untuk mesin alur kerja seperti Lobster: Anda dapat menambahkan satu langkah LLM
-tanpa menulis kode OpenClaw kustom untuk setiap alur kerja.
-
-## Aktifkan Plugin
+## Mengaktifkan
 
 1. Aktifkan Plugin:
 
@@ -34,7 +30,7 @@ tanpa menulis kode OpenClaw kustom untuk setiap alur kerja.
 }
 ```
 
-2. Izinkan alat opsional:
+2. Izinkan alat:
 
 ```json
 {
@@ -44,7 +40,7 @@ tanpa menulis kode OpenClaw kustom untuk setiap alur kerja.
 }
 ```
 
-Gunakan `tools.allow` hanya ketika Anda menginginkan mode daftar izin yang restriktif.
+`alsoAllow` menambahkan `llm-task` di atas profil alat aktif tanpa membatasi alat inti lainnya. Gunakan `tools.allow` hanya jika Anda menginginkan mode daftar izin yang restriktif.
 
 ## Konfigurasi (opsional)
 
@@ -56,9 +52,9 @@ Gunakan `tools.allow` hanya ketika Anda menginginkan mode daftar izin yang restr
         "enabled": true,
         "config": {
           "defaultProvider": "openai",
-          "defaultModel": "gpt-5.5",
+          "defaultModel": "gpt-5.6-sol",
           "defaultAuthProfileId": "main",
-          "allowedModels": ["openai/gpt-5.5"],
+          "allowedModels": ["openai/gpt-5.6-sol"],
           "maxTokens": 800,
           "timeoutMs": 30000
         }
@@ -68,42 +64,40 @@ Gunakan `tools.allow` hanya ketika Anda menginginkan mode daftar izin yang restr
 }
 ```
 
-`allowedModels` adalah daftar izin string `provider/model`. Jika diatur, permintaan apa pun
-di luar daftar akan ditolak.
+`allowedModels` adalah daftar izin berisi string `provider/model`; permintaan untuk model lain akan ditolak. Semua kunci lainnya merupakan nilai cadangan per panggilan yang digunakan ketika panggilan alat tidak menyertakan parameter tersebut.
 
 ## Parameter alat
 
-- `prompt` (string, wajib)
-- `input` (apa pun, opsional)
-- `schema` (objek, JSON Schema opsional)
-- `provider` (string, opsional)
-- `model` (string, opsional)
-- `thinking` (string, opsional)
-- `authProfileId` (string, opsional)
-- `temperature` (angka, opsional)
-- `maxTokens` (angka, opsional)
-- `timeoutMs` (angka, opsional)
-
-`thinking` menerima preset penalaran OpenClaw standar, seperti `low` atau `medium`.
+| Parameter       | Jenis  | Catatan                                                                                                                                                        |
+| --------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `prompt`        | string | Wajib. Instruksi tugas untuk LLM.                                                                                                                              |
+| `input`         | any    | Muatan opsional; diserialisasi menjadi JSON dan ditambahkan ke perintah.                                                                                       |
+| `schema`        | object | JSON Schema opsional yang harus dipenuhi oleh keluaran yang telah diuraikan.                                                                                   |
+| `provider`      | string | Menggantikan `defaultProvider` / penyedia default agen.                                                                                                        |
+| `model`         | string | Menggantikan `defaultModel`; menerima ID model biasa, alias, atau referensi `provider/model` (prefiks penyedia yang terduplikasi dihapus secara otomatis).     |
+| `thinking`      | string | Tingkat penalaran (misalnya `low`, `medium`); harus termasuk tingkat yang didukung oleh model yang ditentukan.                                                  |
+| `authProfileId` | string | Menggantikan `defaultAuthProfileId`.                                                                                                                           |
+| `temperature`   | number | Upaya terbaik; tidak semua penyedia mendukungnya.                                                                                                              |
+| `maxTokens`     | number | Batas upaya terbaik untuk token keluaran.                                                                                                                      |
+| `timeoutMs`     | number | Batas waktu eksekusi; default `30000`.                                                                                                                         |
 
 ## Keluaran
 
-Mengembalikan `details.json` yang berisi JSON yang telah diurai (dan memvalidasi terhadap
-`schema` jika disediakan).
+Mengembalikan `details.json` (JSON yang telah diuraikan dan divalidasi terhadap skema), beserta `details.provider` dan `details.model` yang menunjukkan penyedia dan model yang benar-benar dijalankan.
 
 ## Contoh: langkah alur kerja Lobster
 
 ### Batasan penting
 
-Contoh di bawah mengasumsikan **CLI Lobster mandiri** berjalan di lingkungan tempat `openclaw.invoke` sudah memiliki URL Gateway/konteks autentikasi yang benar.
+Contoh di bawah ini mengasumsikan bahwa **CLI Lobster mandiri** berjalan di lingkungan tempat `openclaw.invoke` telah memiliki konteks URL Gateway/autentikasi yang benar.
 
-Untuk runner Lobster **tertanam** yang dibundel di dalam OpenClaw, pola CLI bertingkat ini **saat ini belum andal**:
+Untuk pelaksana Lobster **tertanam** bawaan di dalam OpenClaw, pola CLI bertingkat ini **saat ini belum andal**:
 
 ```lobster
 openclaw.invoke --tool llm-task --action json --args-json '{ ... }'
 ```
 
-Sampai Lobster tertanam memiliki bridge yang didukung untuk alur ini, sebaiknya gunakan salah satu dari:
+Hingga Lobster tertanam memiliki jembatan yang didukung untuk alur ini, sebaiknya gunakan salah satu dari berikut:
 
 - panggilan alat `llm-task` langsung di luar Lobster, atau
 - langkah Lobster yang tidak bergantung pada panggilan `openclaw.invoke` bertingkat.
@@ -132,14 +126,13 @@ openclaw.invoke --tool llm-task --action json --args-json '{
 
 ## Catatan keamanan
 
-- Alat ini **khusus JSON** dan menginstruksikan model untuk hanya menghasilkan JSON (tanpa
-  code fence, tanpa komentar).
-- Tidak ada alat yang diekspos ke model untuk proses ini.
-- Perlakukan keluaran sebagai tidak tepercaya kecuali Anda memvalidasinya dengan `schema`.
-- Tempatkan persetujuan sebelum langkah apa pun yang memiliki efek samping (send, post, exec).
+- **Khusus JSON**: model diinstruksikan untuk hanya mengembalikan nilai JSON, tanpa pagar kode dan tanpa komentar.
+- **Tanpa alat**: eksekusi yang mendasarinya menonaktifkan alat, sehingga model tidak dapat melakukan panggilan keluar di tengah tugas.
+- Perlakukan keluaran sebagai tidak tepercaya kecuali Anda memvalidasinya menggunakan `schema`.
+- Tempatkan persetujuan sebelum setiap langkah yang menimbulkan efek samping (mengirim, memposting, mengeksekusi) dan menggunakan keluaran ini.
 
 ## Terkait
 
-- [Tingkat thinking](/id/tools/thinking)
-- [Sub-agen](/id/tools/subagents)
-- [Perintah slash](/id/tools/slash-commands)
+- [Tingkat penalaran](/id/tools/thinking)
+- [Subagen](/id/tools/subagents)
+- [Perintah garis miring](/id/tools/slash-commands)

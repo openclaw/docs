@@ -1,35 +1,34 @@
 ---
 read_when:
-    - تريد تكوين Perplexity كمزوّد بحث ويب
-    - تحتاج إلى إعداد مفتاح Perplexity API أو وكيل OpenRouter
-summary: إعداد موفر بحث الويب في Perplexity (مفتاح API، أوضاع البحث، التصفية)
+    - تريد تكوين Perplexity كمزوّد للبحث على الويب
+    - تحتاج إلى مفتاح Perplexity API أو إعداد وكيل OpenRouter
+summary: إعداد موفّر بحث الويب Perplexity (مفتاح API، أوضاع البحث، التصفية)
 title: Perplexity
 x-i18n:
-    generated_at: "2026-06-27T18:27:04Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:29:32Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3be6f5066ba180a63ea8b374f641613c815be0f84ee1d3577feea04e31ab4694
+    source_hash: ea76a5cb7befce95756e9bcc8f9c1637fac87711d02d8a486ec2a1b9f51b73dc
     source_path: providers/perplexity-provider.md
     workflow: 16
 ---
 
-يوفّر Plugin Perplexity إمكانات بحث الويب عبر واجهة برمجة تطبيقات Perplexity
-Search API أو Perplexity Sonar عبر OpenRouter.
+يسجّل Plugin ‏Perplexity موفّر `web_search` بوسيلتي نقل: واجهة Perplexity Search API الأصلية (نتائج منظّمة مع عوامل تصفية)، وإكمالات محادثة Perplexity Sonar، مباشرة أو عبر OpenRouter (إجابات مولّدة بالذكاء الاصطناعي مع استشهادات).
 
 <Note>
-هذه الصفحة مخصّصة لإعداد **مزوّد** Perplexity. بالنسبة إلى **أداة** Perplexity (كيف يستخدمها الوكيل)، راجع [أداة Perplexity](/ar/tools/perplexity-search).
+تتناول هذه الصفحة إعداد **موفّر** Perplexity. لمعرفة **أداة** Perplexity (كيفية استخدام الوكيل لها)، راجع [بحث Perplexity](/ar/tools/perplexity-search).
 </Note>
 
-| الخاصية    | القيمة                                                                  |
+| الخاصية     | القيمة                                                                  |
 | ----------- | ---------------------------------------------------------------------- |
-| النوع        | مزوّد بحث ويب (وليس مزوّد نماذج)                             |
-| المصادقة        | `PERPLEXITY_API_KEY` (مباشر) أو `OPENROUTER_API_KEY` (عبر OpenRouter) |
-| مسار التكوين | `plugins.entries.perplexity.config.webSearch.apiKey`                   |
+| النوع       | موفّر بحث ويب (وليس موفّر نماذج)                                       |
+| المصادقة    | `PERPLEXITY_API_KEY` (أصلي) أو `OPENROUTER_API_KEY` (عبر OpenRouter)    |
+| مسار الإعداد | `plugins.entries.perplexity.config.webSearch.apiKey`                   |
+| التجاوزات   | `plugins.entries.perplexity.config.webSearch.baseUrl` / `.model`       |
+| الحصول على مفتاح | [perplexity.ai/settings/api](https://www.perplexity.ai/settings/api) |
 
 ## تثبيت Plugin
-
-ثبّت Plugin الرسمي، ثم أعد تشغيل Gateway:
 
 ```bash
 openclaw plugins install @openclaw/perplexity-plugin
@@ -39,92 +38,70 @@ openclaw gateway restart
 ## بدء الاستخدام
 
 <Steps>
-  <Step title="تعيين مفتاح واجهة برمجة التطبيقات">
-    شغّل مسار تكوين بحث الويب التفاعلي:
-
+  <Step title="تعيين مفتاح API">
     ```bash
     openclaw configure --section web
     ```
 
-    أو عيّن المفتاح مباشرة:
+    أو عيّن المفتاح مباشرةً:
 
     ```bash
     openclaw config set plugins.entries.perplexity.config.webSearch.apiKey "pplx-xxxxxxxxxxxx"
     ```
 
+    يعمل أيضًا المفتاح المصدَّر باسم `PERPLEXITY_API_KEY` أو `OPENROUTER_API_KEY` في بيئة Gateway.
+
   </Step>
   <Step title="بدء البحث">
-    سيستخدم الوكيل Perplexity تلقائيًا لعمليات بحث الويب بعد تكوين المفتاح.
-    لا يلزم اتخاذ أي خطوات إضافية.
+    يكتشف `web_search` ‏Perplexity تلقائيًا بمجرد أن يصبح مفتاحه بيانات اعتماد البحث المتاحة؛ ولا يلزم أي إعداد إضافي. لتثبيت الموفّر صراحةً:
+
+    ```bash
+    openclaw config set tools.web.search.provider perplexity
+    ```
+
   </Step>
 </Steps>
 
 ## أوضاع البحث
 
-يختار Plugin وسيلة النقل تلقائيًا بناءً على بادئة مفتاح واجهة برمجة التطبيقات:
+يحدّد Plugin وسيلة النقل بهذا الترتيب:
 
-<Tabs>
-  <Tab title="واجهة Perplexity API الأصلية (pplx-)">
-    عندما يبدأ مفتاحك بـ `pplx-`، يستخدم OpenClaw واجهة Perplexity Search
-    API الأصلية. تُرجع وسيلة النقل هذه نتائج منظّمة وتدعم مرشحات النطاق واللغة
-    والتاريخ (راجع خيارات التصفية أدناه).
-  </Tab>
-  <Tab title="OpenRouter / Sonar (sk-or-)">
-    عندما يبدأ مفتاحك بـ `sk-or-`، يوجّه OpenClaw الطلب عبر OpenRouter باستخدام
-    نموذج Perplexity Sonar. تُرجع وسيلة النقل هذه إجابات مولّدة بالذكاء الاصطناعي مع
-    استشهادات.
-  </Tab>
-</Tabs>
+1. عند تعيين `webSearch.baseUrl` أو `webSearch.model`: يوجّه الطلبات دائمًا عبر إكمالات محادثة Sonar إلى نقطة النهاية تلك، بصرف النظر عن نوع المفتاح.
+2. خلاف ذلك، يحدّد مصدر المفتاح نقطة النهاية: تختار بادئة المفتاح المضبوط وسيلة النقل (يتقدّم الإعداد على متغيرات البيئة)؛ ويستخدم مفتاح البيئة نقطة النهاية المطابقة له مباشرةً.
 
-| بادئة المفتاح | وسيلة النقل                    | الميزات                                         |
-| ---------- | ---------------------------- | ------------------------------------------------ |
-| `pplx-`    | Perplexity Search API الأصلية | نتائج منظّمة، ومرشحات النطاق/اللغة/التاريخ |
-| `sk-or-`   | OpenRouter (Sonar)           | إجابات مولّدة بالذكاء الاصطناعي مع استشهادات            |
+| بادئة المفتاح | وسيلة النقل                                               | الميزات                                            |
+| ------------- | --------------------------------------------------------- | -------------------------------------------------- |
+| `pplx-`       | واجهة Perplexity Search API الأصلية (`https://api.perplexity.ai`) | نتائج منظّمة وعوامل تصفية للنطاق واللغة والتاريخ |
+| `sk-or-`      | OpenRouter (`https://openrouter.ai/api/v1`)، نموذج Sonar  | إجابات مولّدة بالذكاء الاصطناعي مع استشهادات       |
 
-## تصفية واجهة API الأصلية
+يستخدم المفتاح المضبوط ذو أي بادئة أخرى واجهة Search API الأصلية أيضًا. يستخدم مسار إكمالات المحادثة نموذج `perplexity/sonar-pro` افتراضيًا؛ ويمكن تجاوزه باستخدام `plugins.entries.perplexity.config.webSearch.model`.
 
-<Note>
-لا تتوفر خيارات التصفية إلا عند استخدام واجهة Perplexity API الأصلية
-(مفتاح `pplx-`). لا تدعم عمليات البحث عبر OpenRouter/Sonar هذه المعلمات.
-</Note>
+## التصفية في واجهة API الأصلية
 
-عند استخدام واجهة Perplexity API الأصلية، تدعم عمليات البحث المرشحات التالية:
+| عامل التصفية                         | الوصف                                                          | وسيلة النقل     |
+| ------------------------------------ | -------------------------------------------------------------- | --------------- |
+| `count`                              | عدد النتائج لكل بحث، من 1 إلى 10 (الافتراضي 5)                | الأصلية فقط     |
+| `freshness`                          | نافذة الحداثة: `day`، `week`، `month`، `year`                  | كلتاهما         |
+| `country`                            | رمز بلد من حرفين (`us`، `de`، `jp`)                            | الأصلية فقط     |
+| `language`                           | رمز لغة ISO 639-1 ‏(`en`، `fr`، `zh`)                          | الأصلية فقط     |
+| `date_after` / `date_before`         | نطاق تاريخ النشر بالتنسيق `YYYY-MM-DD`                         | الأصلية فقط     |
+| `domain_filter`                      | 20 نطاقًا كحد أقصى؛ قائمة سماح أو قائمة منع مسبوقة بـ `-`، ولا يجوز الجمع بينهما | الأصلية فقط |
+| `max_tokens` / `max_tokens_per_page` | ميزانية المحتوى عبر جميع النتائج / لكل صفحة                   | الأصلية فقط     |
 
-| المرشح         | الوصف                            | المثال                             |
-| -------------- | -------------------------------------- | ----------------------------------- |
-| البلد        | رمز بلد من حرفين                  | `us`, `de`, `jp`                    |
-| اللغة       | رمز لغة ISO 639-1                | `en`, `fr`, `zh`                    |
-| نطاق التاريخ     | نافذة الحداثة                         | `day`, `week`, `month`, `year`      |
-| مرشحات النطاق | قائمة سماح أو قائمة حظر (20 نطاقًا كحد أقصى) | `example.com`                       |
-| ميزانية المحتوى | حدود الرموز لكل استجابة / لكل صفحة   | `max_tokens`, `max_tokens_per_page` |
+تعيد عوامل التصفية الخاصة بالواجهة الأصلية خطأً وصفيًا عند استخدامها في مسار إكمالات المحادثة.
+لا يمكن الجمع بين `freshness` و`date_after`/`date_before`.
 
-## التكوين المتقدم
+## الإعداد المتقدم
 
 <AccordionGroup>
-  <Accordion title="متغير بيئة لعمليات الخادم الخلفية">
-    إذا كان OpenClaw Gateway يعمل كعملية خادم خلفية (launchd/systemd)، فتأكد من أن
-    `PERPLEXITY_API_KEY` متاح لتلك العملية.
-
+  <Accordion title="متغير البيئة لعمليات الخدمة الخلفية">
     <Warning>
-    لن يكون المفتاح الذي يُصدَّر فقط في صدفة تفاعلية مرئيًا لعملية خادم خلفية
-    launchd/systemd ما لم تُستورد تلك البيئة صراحةً. عيّن
-    المفتاح في `~/.openclaw/.env` أو عبر `env.shellEnv` لضمان قدرة عملية gateway
-    على قراءته.
+    لا يكون المفتاح المصدَّر في صدفة تفاعلية فقط مرئيًا لخدمة Gateway الخلفية التي يديرها launchd/systemd، ما لم تُستورد تلك البيئة صراحةً. عيّن المفتاح في `~/.openclaw/.env` أو عبر `env.shellEnv` لكي تتمكن عملية Gateway من قراءته. راجع [متغيرات البيئة](/ar/help/environment) للاطلاع على ترتيب الأولوية الكامل.
     </Warning>
-
   </Accordion>
 
   <Accordion title="إعداد وكيل OpenRouter">
-    إذا كنت تفضّل توجيه عمليات بحث Perplexity عبر OpenRouter، فعيّن
-    `OPENROUTER_API_KEY` (بالبادئة `sk-or-`) بدلًا من مفتاح Perplexity أصلي.
-    سيكتشف OpenClaw البادئة وينتقل إلى وسيلة نقل Sonar
-    تلقائيًا.
-
-    <Tip>
-    تكون وسيلة نقل OpenRouter مفيدة إذا كان لديك حساب OpenRouter بالفعل
-    وتريد فوترة موحّدة عبر عدة مزوّدين.
-    </Tip>
-
+    لتوجيه عمليات بحث Perplexity عبر OpenRouter، عيّن `OPENROUTER_API_KEY` (بالبادئة `sk-or-`) بدلًا من مفتاح Perplexity أصلي. يكتشف OpenClaw المفتاح وينتقل تلقائيًا إلى وسيلة نقل Sonar. يفيد ذلك إذا كنت قد أعددت الفوترة في OpenRouter وتريد توحيد الموفّرين هناك.
   </Accordion>
 </AccordionGroup>
 
@@ -132,9 +109,9 @@ openclaw gateway restart
 
 <CardGroup cols={2}>
   <Card title="أداة بحث Perplexity" href="/ar/tools/perplexity-search" icon="magnifying-glass">
-    كيف يستدعي الوكيل عمليات بحث Perplexity ويفسّر النتائج.
+    كيفية استدعاء الوكيل لعمليات بحث Perplexity وتفسيره للنتائج.
   </Card>
-  <Card title="مرجع التكوين" href="/ar/gateway/configuration-reference" icon="gear">
-    مرجع التكوين الكامل، بما في ذلك إدخالات Plugin.
+  <Card title="مرجع الإعداد" href="/ar/gateway/configuration-reference" icon="gear">
+    مرجع الإعداد الكامل، بما في ذلك إدخالات Plugin.
   </Card>
 </CardGroup>

@@ -1,34 +1,36 @@
 ---
 read_when:
     - Вы хотите использовать Vercel AI Gateway с OpenClaw
-    - Вам нужна переменная окружения с ключом API или выбор аутентификации в CLI
-summary: Настройка Vercel AI Gateway (аутентификация + выбор модели)
-title: Vercel AI Gateway
+    - Вам потребуется переменная окружения с ключом API или выбор способа аутентификации в CLI
+summary: Настройка Vercel AI Gateway (аутентификация и выбор модели)
+title: AI-шлюз Vercel
 x-i18n:
-    generated_at: "2026-06-28T23:40:55Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:48:54Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 27aeeeff28661839f3be55c60bf1b383b95af78e17abb77441ae4e81f58688ed
+    source_hash: c1e4776604491900a914e75caebfd7e27a81e9f859213f5bd5b25582a923d92a
     source_path: providers/vercel-ai-gateway.md
     workflow: 16
 ---
 
-[Vercel AI Gateway](https://vercel.com/ai-gateway) предоставляет единый API для
-доступа к сотням моделей через одну конечную точку.
+[Vercel AI Gateway](https://vercel.com/ai-gateway) предоставляет унифицированный API для
+доступа к сотням моделей через единую конечную точку.
 
-| Свойство        | Значение                               |
-| --------------- | -------------------------------------- |
-| Поставщик       | `vercel-ai-gateway`                    |
-| Пакет           | `@openclaw/vercel-ai-gateway-provider` |
-| Аутентификация  | `AI_GATEWAY_API_KEY`                   |
-| API             | Совместим с Anthropic Messages         |
+| Свойство       | Значение                                  |
+| -------------- | ----------------------------------------- |
+| Провайдер      | `vercel-ai-gateway`                       |
+| Пакет          | `@openclaw/vercel-ai-gateway-provider`    |
+| Аутентификация | `AI_GATEWAY_API_KEY`                      |
+| API            | Совместим с Anthropic Messages            |
+| Базовый URL    | `https://ai-gateway.vercel.sh`            |
 | Каталог моделей | Автоматически обнаруживается через `/v1/models` |
 
 <Tip>
-OpenClaw автоматически обнаруживает каталог Gateway `/v1/models`, поэтому
-`/models vercel-ai-gateway` включает текущие ссылки на модели, такие как
-`vercel-ai-gateway/openai/gpt-5.5` и
+OpenClaw автоматически обнаруживает каталог Gateway `/v1/models`, поэтому и
+команда чата `/models vercel-ai-gateway`, и
+`openclaw models list --provider vercel-ai-gateway` содержат актуальные ссылки
+на модели, например `vercel-ai-gateway/openai/gpt-5.5` и
 `vercel-ai-gateway/moonshotai/kimi-k2.6`.
 </Tip>
 
@@ -41,16 +43,11 @@ OpenClaw автоматически обнаруживает каталог Gate
     ```
   </Step>
   <Step title="Задайте ключ API">
-    Запустите первичную настройку и выберите вариант аутентификации AI Gateway:
-
     ```bash
     openclaw onboard --auth-choice ai-gateway-api-key
     ```
-
   </Step>
   <Step title="Задайте модель по умолчанию">
-    Добавьте модель в конфигурацию OpenClaw:
-
     ```json5
     {
       agents: {
@@ -60,18 +57,15 @@ OpenClaw автоматически обнаруживает каталог Gate
       },
     }
     ```
-
   </Step>
-  <Step title="Проверьте, что модель доступна">
+  <Step title="Убедитесь, что модель доступна">
     ```bash
     openclaw models list --provider vercel-ai-gateway
     ```
   </Step>
 </Steps>
 
-## Неинтерактивный пример
-
-Для сценариев или настроек CI передайте все значения в командной строке:
+## Пример неинтерактивной настройки
 
 ```bash
 openclaw onboard --non-interactive \
@@ -80,64 +74,64 @@ openclaw onboard --non-interactive \
   --ai-gateway-api-key "$AI_GATEWAY_API_KEY"
 ```
 
-## Сокращенная запись ID модели
+## Сокращённые идентификаторы моделей
 
-OpenClaw принимает сокращенные ссылки на модели Vercel Claude и нормализует их
-во время выполнения:
+OpenClaw нормализует сокращённые ссылки на модели Claude во время выполнения:
 
-| Сокращенный ввод                    | Нормализованная ссылка на модель             |
+| Сокращённый ввод                    | Нормализованная ссылка на модель              |
 | ----------------------------------- | --------------------------------------------- |
 | `vercel-ai-gateway/claude-opus-4.6` | `vercel-ai-gateway/anthropic/claude-opus-4.6` |
 | `vercel-ai-gateway/opus-4.6`        | `vercel-ai-gateway/anthropic/claude-opus-4-6` |
 
 <Tip>
-В конфигурации можно использовать как сокращенную, так и полную ссылку на
-модель. OpenClaw автоматически разрешает каноническую форму.
+В конфигурации можно использовать любую форму: OpenClaw автоматически
+преобразует её в каноническую ссылку `anthropic/...`.
 </Tip>
 
 ## Расширенная конфигурация
 
 <AccordionGroup>
   <Accordion title="Переменная окружения для фоновых процессов">
-    Если OpenClaw Gateway работает как фоновый процесс (launchd/systemd),
-    убедитесь, что `AI_GATEWAY_API_KEY` доступен этому процессу.
+    Если OpenClaw Gateway работает как фоновая служба (launchd/systemd),
+    убедитесь, что переменная `AI_GATEWAY_API_KEY` доступна этому процессу.
 
     <Warning>
     Ключ, экспортированный только в интерактивной оболочке, не будет виден
-    фоновому процессу launchd/systemd, если это окружение не импортировано явно.
-    Задайте ключ в `~/.openclaw/.env` или через `env.shellEnv`, чтобы процесс
-    Gateway мог его прочитать.
+    службе launchd/systemd, если это окружение не импортировано явно. Задайте
+    ключ в `~/.openclaw/.env` или через `env.shellEnv`, чтобы процесс Gateway
+    мог его прочитать.
     </Warning>
 
   </Accordion>
 
-  <Accordion title="Маршрутизация поставщика">
-    Vercel AI Gateway направляет запросы вышестоящему поставщику на основе
-    префикса ссылки на модель. Например,
+  <Accordion title="Маршрутизация провайдеров">
+    Vercel AI Gateway направляет каждый запрос вышестоящему провайдеру,
+    указанному в префиксе ссылки на модель. Например,
     `vercel-ai-gateway/anthropic/claude-opus-4.6` направляется через Anthropic,
-    а `vercel-ai-gateway/openai/gpt-5.5` направляется через OpenAI и
-    `vercel-ai-gateway/moonshotai/kimi-k2.6` направляется через MoonshotAI.
-    Единый `AI_GATEWAY_API_KEY` обрабатывает аутентификацию для всех
-    вышестоящих поставщиков.
+    `vercel-ai-gateway/openai/gpt-5.5` — через OpenAI, а
+    `vercel-ai-gateway/moonshotai/kimi-k2.6` — через MoonshotAI. Один ключ
+    `AI_GATEWAY_API_KEY` обеспечивает аутентификацию у всех вышестоящих
+    провайдеров.
   </Accordion>
-  <Accordion title="Уровни Thinking">
-    Параметры `/think` следуют доверенным префиксам вышестоящих моделей, когда
-    OpenClaw знает контракт вышестоящего поставщика. `vercel-ai-gateway/anthropic/...`
-    использует профиль thinking Claude, включая адаптивные значения по умолчанию
-    для моделей Claude 4.6. `vercel-ai-gateway/openai/gpt-5.4`, `gpt-5.5` и ссылки
-    в стиле Codex предоставляют `/think xhigh` так же, как прямые поставщики
-    OpenAI/OpenAI Codex. Другие ссылки с пространствами имен сохраняют обычные
-    уровни рассуждения, если их метаданные каталога не объявляют больше.
+  <Accordion title="Уровни рассуждений">
+    Параметры `/think` определяются префиксом вышестоящей модели, если OpenClaw
+    распознаёт его. `vercel-ai-gateway/anthropic/...` использует профиль
+    рассуждений Claude, включая адаптивное значение по умолчанию для моделей
+    Claude 4.6. Доверенные ссылки `vercel-ai-gateway/openai/...` (`gpt-5.2` и
+    новее, а также варианты Codex вплоть до `gpt-5.1-codex`) предоставляют
+    `/think xhigh`. Для других ссылок с пространством имён сохраняются
+    стандартные уровни рассуждений, если в метаданных их каталога не указаны
+    дополнительные уровни.
   </Accordion>
 </AccordionGroup>
 
-## См. также
+## Связанные материалы
 
 <CardGroup cols={2}>
   <Card title="Выбор модели" href="/ru/concepts/model-providers" icon="layers">
-    Выбор поставщиков, ссылок на модели и поведения при отказе.
+    Выбор провайдеров, ссылок на модели и поведения при переключении после сбоя.
   </Card>
   <Card title="Устранение неполадок" href="/ru/help/troubleshooting" icon="wrench">
-    Общее устранение неполадок и часто задаваемые вопросы.
+    Общие рекомендации по устранению неполадок и часто задаваемые вопросы.
   </Card>
 </CardGroup>

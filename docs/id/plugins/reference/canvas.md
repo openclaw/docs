@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Anda sedang menginstal, mengonfigurasi, atau mengaudit plugin canvas
-summary: Permukaan kontrol Canvas eksperimental dan rendering A2UI untuk node yang dipasangkan.
+    - Anda sedang memasang, mengonfigurasi, atau mengaudit Plugin kanvas
+summary: Permukaan eksperimental untuk kontrol Canvas dan perenderan A2UI bagi node yang dipasangkan.
 title: Plugin kanvas
 x-i18n:
-    generated_at: "2026-06-27T17:51:57Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:26:06Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 623f241907be5c88e7b20139f8a03e9c54e29df4bc7d3411fa90a029bfcb285f
@@ -15,12 +15,12 @@ x-i18n:
 
 # Plugin Canvas
 
-Permukaan kontrol Canvas dan rendering A2UI eksperimental untuk node berpasangan.
+Permukaan eksperimental untuk kontrol Canvas dan rendering A2UI bagi node yang dipasangkan.
 
 ## Distribusi
 
 - Paket: `@openclaw/canvas-plugin`
-- Rute instalasi: disertakan dalam OpenClaw
+- Jalur instalasi: disertakan dalam OpenClaw
 
 ## Permukaan
 

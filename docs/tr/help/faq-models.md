@@ -1,190 +1,170 @@
 ---
 read_when:
-    - Modelleri seçme veya değiştirme, takma adları yapılandırma
-    - Model yük devretmede hata ayıklama / "Tüm modeller başarısız oldu"
+    - Model seçme veya değiştirme, takma adları yapılandırma
+    - Model yük devretme / "Tüm modeller başarısız oldu" hatalarını ayıklama
     - Kimlik doğrulama profillerini ve bunların nasıl yönetileceğini anlama
 sidebarTitle: Models FAQ
-summary: 'SSS: model varsayılanları, seçimi, takma adlar, geçiş, yük devretme ve kimlik doğrulama profilleri'
+summary: 'SSS: model varsayılanları, seçimi, takma adları, model değiştirme, yük devretme ve kimlik doğrulama profilleri'
 title: 'SSS: modeller ve kimlik doğrulama'
 x-i18n:
-    generated_at: "2026-06-28T20:43:19Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:20:46Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3bfff016fc8b5afff5dde2b939b7fa431aa5a0309aa2833e7dd4675b638ca225
+    source_hash: 071e89c01120849179d3bc372153eb2c76a0fa4e93846df42920f0d961d597df
     source_path: help/faq-models.md
     workflow: 16
 ---
 
-  Model ve kimlik doğrulama profili SSS. Kurulum, oturumlar, gateway, kanallar ve
-  sorun giderme için ana [SSS](/tr/help/faq) bölümüne bakın.
+  Model ve kimlik doğrulama profili soru-cevapları. Kurulum, oturumlar, gateway, kanallar ve
+  sorun giderme için ana [SSS](/tr/help/faq) sayfasına bakın.
 
   ## Modeller: varsayılanlar, seçim, takma adlar, geçiş
 
   <AccordionGroup>
-  <Accordion title='“Varsayılan model” nedir?'>
-    OpenClaw’ın varsayılan modeli, şurada ayarladığınız değerdir:
+  <Accordion title='"Varsayılan model" nedir?'>
+    Şununla ayarlanır:
 
-    ```
+    ```text
     agents.defaults.model.primary
     ```
 
-    Modeller `provider/model` olarak referanslanır (örnek: `openai/gpt-5.5` veya `anthropic/claude-sonnet-4-6`). Sağlayıcıyı atarsanız, OpenClaw önce bir takma ad dener, sonra o tam model kimliği için benzersiz bir yapılandırılmış sağlayıcı eşleşmesi arar ve ancak bundan sonra kullanım dışı uyumluluk yolu olarak yapılandırılmış varsayılan sağlayıcıya geri döner. Bu sağlayıcı artık yapılandırılmış varsayılan modeli sunmuyorsa OpenClaw, eski ve kaldırılmış bir sağlayıcı varsayılanını göstermek yerine ilk yapılandırılmış sağlayıcı/modele geri döner. Yine de `provider/model` değerini **açıkça** ayarlamalısınız.
+    Modeller `provider/model` başvurularıdır (örnek: `openai/gpt-5.5`,
+    `anthropic/claude-sonnet-4-6`). `provider/model` değerini her zaman açıkça ayarlayın.
+    Sağlayıcıyı belirtmezseniz OpenClaw önce bir takma ad eşleşmesi, ardından bu model
+    kimliği için yapılandırılmış sağlayıcılar arasında benzersiz bir eşleşme arar ve
+    son olarak yapılandırılmış varsayılan sağlayıcıya geri döner (kullanımdan kaldırılmış
+    uyumluluk yolu). Bu sağlayıcıda yapılandırılmış varsayılan model artık yoksa OpenClaw,
+    geçerliliğini yitirmiş varsayılan yerine ilk yapılandırılmış sağlayıcı/model çiftine
+    geri döner.
 
   </Accordion>
 
-  <Accordion title="Hangi modeli önerirsiniz?">
-    **Önerilen varsayılan:** sağlayıcı yığınınızda mevcut olan en güçlü en yeni nesil modeli kullanın.
-    **Araç etkinleştirilmiş veya güvenilmeyen girdi alan ajanlar için:** maliyet yerine model gücüne öncelik verin.
-    **Rutin/düşük riskli sohbet için:** daha ucuz yedek modeller kullanın ve ajan rolüne göre yönlendirin.
+  <Accordion title="Hangi modeli öneriyorsunuz?">
+    Özellikle araç etkin veya güvenilmeyen girdi alan agent'lar için sağlayıcı
+    yığınınızın sunduğu en güçlü, en yeni nesil modeli kullanın — daha zayıf veya
+    aşırı nicemlenmiş modeller istem enjeksiyonuna ve güvenli olmayan davranışlara
+    karşı daha savunmasızdır (bkz. [Güvenlik](/tr/gateway/security)). Daha ucuz modelleri
+    agent rolüne göre rutin/düşük riskli sohbetlere yönlendirin.
 
-    MiniMax’in kendi dokümanları vardır: [MiniMax](/tr/providers/minimax) ve
-    [Yerel modeller](/tr/gateway/local-models).
-
-    Genel kural: yüksek riskli işler için **karşılayabileceğiniz en iyi modeli**, rutin sohbet veya özetler için daha ucuz
-    bir modeli kullanın. Modelleri ajan başına yönlendirebilir ve uzun görevleri
-    paralelleştirmek için alt ajanlar kullanabilirsiniz (her alt ajan token tüketir). Bkz. [Modeller](/tr/concepts/models) ve
-    [Alt ajanlar](/tr/tools/subagents).
-
-    Güçlü uyarı: daha zayıf/aşırı nicemlenmiş modeller prompt
-    injection ve güvenli olmayan davranışlara karşı daha savunmasızdır. Bkz. [Güvenlik](/tr/gateway/security).
-
-    Daha fazla bağlam: [Modeller](/tr/concepts/models).
+    Modelleri agent başına yönlendirin ve uzun görevleri paralelleştirmek için alt
+    agent'ları kullanın (her alt agent kendi token'larını tüketir). Bkz.
+    [Modeller](/tr/concepts/models), [Alt agent'lar](/tr/tools/subagents),
+    [MiniMax](/tr/providers/minimax) ve [Yerel modeller](/tr/gateway/local-models).
 
   </Accordion>
 
-  <Accordion title="Yapılandırmamı silmeden modelleri nasıl değiştiririm?">
-    **model komutlarını** kullanın veya yalnızca **model** alanlarını düzenleyin. Tam yapılandırma değişimlerinden kaçının.
+  <Accordion title="Yapılandırmamı silmeden modeller arasında nasıl geçiş yaparım?">
+    Yalnızca model alanlarını değiştirin — yapılandırmanın tamamını değiştirmekten kaçının.
 
-    Güvenli seçenekler:
-
-    - Sohbette `/model` (hızlı, oturum başına)
+    - Sohbette `/model` (oturum başına, bkz. [Eğik çizgi komutları](/tr/tools/slash-commands))
     - `openclaw models set ...` (yalnızca model yapılandırmasını günceller)
     - `openclaw configure --section model` (etkileşimli)
-    - `~/.openclaw/openclaw.json` içinde `agents.defaults.model` değerini düzenleyin
+    - `~/.openclaw/openclaw.json` içindeki `agents.defaults.model` alanını doğrudan düzenleyin
 
-    Tüm yapılandırmayı değiştirmek istemiyorsanız kısmi bir nesneyle `config.apply` kullanmaktan kaçının.
-    RPC düzenlemeleri için önce `config.schema.lookup` ile inceleyin ve `config.patch` tercih edin. Arama yükü size normalleştirilmiş yolu, sığ şema dokümanlarını/kısıtlarını ve anlık alt öğe özetlerini verir.
-    kısmi güncellemeler için.
-    Yapılandırmanın üzerine yazdıysanız, yedekten geri yükleyin veya onarmak için `openclaw doctor` komutunu yeniden çalıştırın.
+    RPC düzenlemelerinde önce `config.schema.lookup` ile inceleyin (normalleştirilmiş
+    yol, yüzeysel şema belgeleri, alt öğe özetleri), ardından kısmi bir nesneyle
+    `config.apply` yerine `config.patch` kullanmayı tercih edin. Yapılandırmanın
+    üzerine yazdıysanız yedekten geri yükleyin veya onarmak için `openclaw doctor`
+    komutunu çalıştırın.
 
-    Dokümanlar: [Modeller](/tr/concepts/models), [Yapılandır](/tr/cli/configure), [Yapılandırma](/tr/cli/config), [Doctor](/tr/gateway/doctor).
+    Belgeler: [Modeller](/tr/concepts/models), [Yapılandırma](/tr/cli/configure),
+    [Yapılandırma](/tr/cli/config), [Doctor](/tr/gateway/doctor).
 
   </Accordion>
 
   <Accordion title="Kendi barındırdığım modelleri (llama.cpp, vLLM, Ollama) kullanabilir miyim?">
-    Evet. Ollama, yerel modeller için en kolay yoldur.
+    Evet — en kolay yol Ollama'dır. Hızlı kurulum:
 
-    En hızlı kurulum:
+    1. Ollama'yı `https://ollama.com/download` adresinden yükleyin
+    2. Yerel bir model indirin; örneğin `ollama pull gemma4`
+    3. Bulut modelleri için de `ollama signin` komutunu çalıştırın
+    4. `openclaw onboard` komutunu çalıştırın, `Ollama` seçeneğini, ardından `Local` veya `Cloud + Local` seçeneğini belirleyin
 
-    1. Ollama’yı `https://ollama.com/download` adresinden yükleyin
-    2. `ollama pull gemma4` gibi yerel bir model çekin
-    3. Bulut modellerini de istiyorsanız `ollama signin` çalıştırın
-    4. `openclaw onboard` çalıştırın ve `Ollama` seçin
-    5. `Local` veya `Cloud + Local` seçin
+    `Cloud + Local`, bulut modellerinin yanı sıra yerel Ollama modellerinizi de
+    kullanmanızı sağlar; `kimi-k2.5:cloud` gibi bulut modellerinin yerel olarak
+    indirilmesi gerekmez. Elle geçiş yapmak için: `openclaw models list`, ardından
+    `openclaw models set ollama/<model>`.
 
-    Notlar:
+    Daha küçük/yoğun biçimde nicemlenmiş modeller istem enjeksiyonuna karşı daha
+    savunmasızdır. Araç erişimi olan tüm botlar için büyük modeller kullanın; yine de
+    küçük modeller kullanıyorsanız korumalı alanı ve katı araç izin listelerini etkinleştirin.
 
-    - `Cloud + Local` size bulut modellerini ve yerel Ollama modellerinizi verir
-    - `kimi-k2.5:cloud` gibi bulut modelleri yerel çekme gerektirmez
-    - elle geçiş için `openclaw models list` ve `openclaw models set ollama/<model>` kullanın
-
-    Güvenlik notu: daha küçük veya yoğun biçimde nicemlenmiş modeller prompt
-    injection saldırılarına daha savunmasızdır. Araç kullanabilen tüm botlar için **büyük modelleri** önemle öneririz.
-    Yine de küçük modeller istiyorsanız, sanal alanı ve sıkı araç izin listelerini etkinleştirin.
-
-    Dokümanlar: [Ollama](/tr/providers/ollama), [Yerel modeller](/tr/gateway/local-models),
+    Belgeler: [Ollama](/tr/providers/ollama), [Yerel modeller](/tr/gateway/local-models),
     [Model sağlayıcıları](/tr/concepts/model-providers), [Güvenlik](/tr/gateway/security),
-    [Sandboxing](/tr/gateway/sandboxing).
+    [Korumalı alan](/tr/gateway/sandboxing).
 
   </Accordion>
 
-  <Accordion title="OpenClaw, Flawd ve Krill modeller için ne kullanır?">
-    - Bu dağıtımlar farklılık gösterebilir ve zamanla değişebilir; sabit bir sağlayıcı önerisi yoktur.
-    - Her gateway’de geçerli çalışma zamanı ayarını `openclaw models status` ile kontrol edin.
-    - Güvenlik açısından hassas/araç etkin ajanlar için mevcut en güçlü en yeni nesil modeli kullanın.
+  <Accordion title="Yeniden başlatmadan modeller arasında anında nasıl geçiş yaparım?">
+    `/model <name>` komutunu tek başına bir ileti olarak gönderin. Numaralı seçici
+    (`/model`, `/model list`, `/model 3`), bir oturum geçersiz kılmasını temizlemek
+    için `/model default` ve uç nokta/API modu ayrıntıları için `/model status`
+    dahil olmak üzere komutların tam listesi için
+    [Eğik çizgi komutları](/tr/tools/slash-commands) sayfasına bakın.
 
-  </Accordion>
+    `@profile` ile oturum başına belirli bir kimlik doğrulama profilini zorunlu kılın:
 
-  <Accordion title="Modelleri anında (yeniden başlatmadan) nasıl değiştiririm?">
-    `/model` komutunu tek başına mesaj olarak kullanın:
-
-    ```
-    /model sonnet
-    /model opus
-    /model gpt
-    /model gpt-mini
-    /model gemini
-    /model gemini-flash
-    /model gemini-flash-lite
-    ```
-
-    Bunlar yerleşik takma adlardır. Özel takma adlar `agents.defaults.models` üzerinden eklenebilir.
-
-    Kullanılabilir modelleri `/model`, `/model list` veya `/model status` ile listeleyebilirsiniz.
-
-    `/model` (ve `/model list`) kompakt, numaralı bir seçici gösterir. Numarayla seçin:
-
-    ```
-    /model 3
-    ```
-
-    Sağlayıcı için belirli bir kimlik doğrulama profilini de zorlayabilirsiniz (oturum başına):
-
-    ```
+    ```text
     /model opus@anthropic:default
     /model opus@anthropic:work
     ```
 
-    İpucu: `/model status` hangi ajanın etkin olduğunu, hangi `auth-profiles.json` dosyasının kullanıldığını ve sırada hangi kimlik doğrulama profilinin deneneceğini gösterir.
-    Ayrıca varsa yapılandırılmış sağlayıcı uç noktasını (`baseUrl`) ve API modunu (`api`) gösterir.
-
-    **@profile ile ayarladığım bir profil sabitlemesini nasıl kaldırırım?**
-
-    `/model` komutunu `@profile` son eki **olmadan** yeniden çalıştırın:
-
-    ```
-    /model anthropic/claude-opus-4-6
-    ```
-
-    Varsayılana dönmek istiyorsanız, onu `/model` içinden seçin (veya `/model <default provider/model>` gönderin).
-    Hangi kimlik doğrulama profilinin etkin olduğunu doğrulamak için `/model status` kullanın.
+    `@profile` ile ayarlanmış bir profil sabitlemesini kaldırmak için `/model`
+    komutunu son ek olmadan yeniden çalıştırın (ör. `/model anthropic/claude-opus-4-6`)
+    veya `/model` içinden varsayılanı seçin. Etkin kimlik doğrulama profilini
+    doğrulamak için `/model status` kullanın.
 
   </Accordion>
 
-  <Accordion title="İki sağlayıcı aynı model kimliğini sunarsa /model hangisini kullanır?">
-    `/model provider/model`, oturum için tam olarak o sağlayıcı yolunu seçer.
+  <Accordion title="İki sağlayıcı aynı model kimliğini sunuyorsa /model hangisini kullanır?">
+    `/model provider/model` tam olarak belirtilen sağlayıcı yolunu seçer. Örneğin,
+    model kimlikleri aynı olsa da `qianfan/deepseek-v4-flash` ile
+    `deepseek/deepseek-v4-flash` farklı başvurulardır — OpenClaw yalnızca yalın bir
+    kimlik eşleşmesine dayanarak sağlayıcıları sessizce değiştirmez.
 
-    Örneğin `qianfan/deepseek-v4-flash` ve `deepseek/deepseek-v4-flash`, ikisi de `deepseek-v4-flash` içerse bile farklı model referanslarıdır. OpenClaw, çıplak model kimliği eşleşiyor diye bir sağlayıcıdan diğerine sessizce geçmemelidir.
+    Kullanıcının seçtiği bir `/model` başvurusu geri dönüş açısından katıdır: söz
+    konusu sağlayıcı/model kullanılamaz hâle gelirse yanıt,
+    `agents.defaults.model.fallbacks` seçeneğine geri dönmek yerine görünür biçimde
+    başarısız olur. Yapılandırılmış geri dönüş zincirleri yapılandırılmış
+    varsayılanlar, Cron işi birincil modelleri ve otomatik seçilmiş geri dönüş
+    durumu için geçerliliğini korur. Oturum geçersiz kılması olmayan bir çalışmanın
+    geri dönüş kullanmasına izin verildiğinde OpenClaw önce istenen
+    sağlayıcı/modeli, ardından yapılandırılmış geri dönüşleri ve son olarak
+    yapılandırılmış birincil modeli dener — böylece yinelenen yalın model kimlikleri
+    hiçbir zaman doğrudan varsayılan sağlayıcıya geri atlamaz.
 
-    Kullanıcı tarafından seçilen bir `/model` referansı, geri dönüş ilkesi için de katıdır. Seçilen sağlayıcı/model kullanılamıyorsa yanıt, `agents.defaults.model.fallbacks` üzerinden cevaplamak yerine görünür biçimde başarısız olur. Yapılandırılmış geri dönüş zincirleri hâlâ yapılandırılmış varsayılanlar, cron işi birincilleri ve otomatik seçilen geri dönüş durumu için geçerlidir.
-
-    Oturum dışı bir geçersiz kılmadan başlayan bir çalıştırmanın geri dönüş kullanmasına izin verilirse OpenClaw önce istenen sağlayıcı/modeli, sonra yapılandırılmış geri dönüşleri ve ancak ardından yapılandırılmış birincili dener. Bu, yinelenen çıplak model kimliklerinin doğrudan varsayılan sağlayıcıya geri atlamasını önler.
-
-    Bkz. [Modeller](/tr/concepts/models) ve [Model failover](/tr/concepts/model-failover).
+    Bkz. [Modeller](/tr/concepts/models) ve [Model yük devretmesi](/tr/concepts/model-failover).
 
   </Accordion>
 
   <Accordion title="Günlük görevler için GPT 5.5, kodlama için Codex 5.5 kullanabilir miyim?">
-    Evet. Model seçimini ve çalışma zamanı seçimini ayrı ele alın:
+    Evet — model seçimi ve çalışma zamanı seçimi birbirinden ayrıdır:
 
-    - **Yerel Codex kodlama ajanı:** `agents.defaults.model.primary` değerini `openai/gpt-5.5` olarak ayarlayın. ChatGPT/Codex abonelik kimlik doğrulaması istediğinizde `openclaw models auth login --provider openai` ile oturum açın.
-    - **Ajan döngüsü dışındaki doğrudan OpenAI API görevleri:** görseller, embeddings, konuşma, realtime ve diğer ajan dışı OpenAI API yüzeyleri için `OPENAI_API_KEY` yapılandırın.
-    - **OpenAI ajan API anahtarı kimlik doğrulaması:** sıralı bir `openai` API anahtarı profiliyle `/model openai/gpt-5.5` kullanın.
-    - **Alt ajanlar:** kodlama görevlerini kendi `openai/gpt-5.5` modeline sahip Codex odaklı bir ajana yönlendirin.
+    - **Yerel Codex kodlama agent'ı:** `agents.defaults.model.primary` değerini
+      `openai/gpt-5.5` olarak ayarlayın. ChatGPT/Codex abonelik kimlik doğrulaması
+      için `openclaw models auth login --provider openai` ile oturum açın.
+    - **Agent döngüsü dışındaki doğrudan OpenAI API görevleri:** görseller,
+      gömmeler, konuşma, gerçek zamanlı işlemler ve agent dışındaki diğer OpenAI API
+      yüzeyleri için `OPENAI_API_KEY` yapılandırın.
+    - **OpenAI agent API anahtarı kimlik doğrulaması:** sıralanmış bir `openai`
+      API anahtarı profiliyle `/model openai/gpt-5.5`.
+    - **Alt agent'lar:** kodlama görevlerini kendi `openai/gpt-5.5` modeline sahip,
+      Codex odaklı bir agent'a yönlendirin.
 
-    Bkz. [Modeller](/tr/concepts/models) ve [Slash komutları](/tr/tools/slash-commands).
+    Bkz. [Modeller](/tr/concepts/models) ve [Eğik çizgi komutları](/tr/tools/slash-commands).
 
   </Accordion>
 
   <Accordion title="GPT 5.5 için hızlı modu nasıl yapılandırırım?">
-    Oturum geçişi veya yapılandırma varsayılanı kullanın:
-
-    - **Oturum başına:** oturum `openai/gpt-5.5` kullanırken `/fast on` gönderin.
-    - **Model başına varsayılan:** `agents.defaults.models["openai/gpt-5.5"].params.fastMode` değerini `true` olarak ayarlayın.
-    - **Otomatik kesme:** yeni model çağrılarını otomatik kesmeye kadar hızlı başlatmak, ardından daha sonraki retry, geri dönüş, araç sonucu veya devam çağrılarını hızlı mod olmadan başlatmak için `/fast auto` veya `params.fastMode: "auto"` kullanın. Kesme varsayılan olarak 60 saniyedir; değiştirmek için etkin modelde `params.fastAutoOnSeconds` ayarlayın.
-
-    Örnek:
+    - **Oturum başına:** `openai/gpt-5.5` kullanırken `/fast on` gönderin.
+    - **Model başına varsayılan:** `agents.defaults.models["openai/gpt-5.5"].params.fastMode`
+      değerini `true` olarak ayarlayın.
+    - **Otomatik kesme:** `/fast auto` veya `params.fastMode: "auto"`, kesme
+      noktasına kadar yeni model çağrılarını hızlı çalıştırır; sonraki yeniden
+      deneme, geri dönüş, araç sonucu veya devam çağrılarını hızlı mod olmadan
+      çalıştırır. Kesme süresi varsayılan olarak 60 saniyedir; modelde
+      `params.fastAutoOnSeconds` ile değiştirin.
 
     ```json5
     {
@@ -203,61 +183,53 @@ x-i18n:
     }
     ```
 
-    OpenAI için hızlı mod, desteklenen yerel Responses isteklerinde `service_tier = "priority"` değerine eşlenir. Oturum `/fast` geçersiz kılmaları yapılandırma varsayılanlarının önüne geçer. Codex uygulama sunucusu turları katmanı yalnızca tur başlangıcında alabilir, bu nedenle `auto`, zaten çalışmakta olan bir uygulama sunucusu turunun içinde değil, OpenClaw tarafından başlatılan sonraki model turunda uygulanır.
+    Hızlı mod, yerel OpenAI Responses isteklerinde `service_tier = "priority"`
+    olarak eşlenir; mevcut `service_tier` değerleri korunur ve hızlı mod
+    `reasoning` veya `text.verbosity` değerlerini yeniden yazmaz. Oturumdaki `/fast`
+    geçersiz kılmaları yapılandırma varsayılanlarına göre önceliklidir.
 
-    Bkz. [Düşünme ve hızlı mod](/tr/tools/thinking) ve [OpenAI hızlı mod](/tr/providers/openai#fast-mode).
+    [Düşünme ve hızlı mod](/tr/tools/thinking) sayfasına ve [OpenAI](/tr/providers/openai)
+    sağlayıcı sayfasındaki Gelişmiş yapılandırma altında yer alan Hızlı mod bölümüne
+    bakın.
 
   </Accordion>
 
-  <Accordion title='Neden "Model ... is not allowed" görüyorum ve ardından yanıt gelmiyor?'>
-    `agents.defaults.models` ayarlanmışsa, `/model` ve tüm
-    oturum geçersiz kılmaları için **izin listesi** olur. Bu listede olmayan bir modeli seçmek şunu döndürür:
+  <Accordion title='"Model ... is not allowed" iletisini gördükten sonra neden yanıt alamıyorum?'>
+    `agents.defaults.models` ayarlanırsa `/model` ve oturum geçersiz kılmaları için
+    **izin listesi** hâline gelir. Bu listenin dışındaki bir modeli seçmek normal
+    yanıt yerine şunu döndürür:
 
-    ```
+    ```text
     Model "provider/model" is not allowed. Use /models to list providers, or /models <provider> to list models.
     Add it with: openclaw config set agents.defaults.models '{"provider/model":{}}' --strict-json --merge
     ```
 
-    Bu hata normal bir yanıt **yerine** döndürülür. Düzeltme: tam modeli
-    `agents.defaults.models` içine ekleyin, dinamik sağlayıcı katalogları için `"provider/*": {}` gibi bir sağlayıcı jokeri ekleyin, izin listesini kaldırın veya `/model list` içinden bir model seçin.
-    Komut ayrıca `--runtime codex` içeriyorsa önce izin listesini güncelleyin ve ardından aynı
+    Düzeltme: tam modeli `agents.defaults.models` alanına ekleyin, dinamik kataloglar
+    için `"provider/*": {}` gibi bir sağlayıcı joker karakteri ekleyin, izin
+    listesini kaldırın veya `/model list` içinden bir model seçin. Komutta ayrıca
+    `--runtime codex` bulunuyorsa önce izin listesini güncelleyin, ardından aynı
     `/model provider/model --runtime codex` komutunu yeniden deneyin.
 
   </Accordion>
 
-  <Accordion title='Neden "Unknown model: minimax/MiniMax-M3" görüyorum?'>
-    Bu, **sağlayıcının yapılandırılmadığı** anlamına gelir (MiniMax sağlayıcı yapılandırması veya kimlik doğrulama
-    profili bulunamadı), dolayısıyla model çözümlenemez.
-
-    Düzeltme kontrol listesi:
-
-    1. Güncel bir OpenClaw sürümüne yükseltin (veya kaynak `main` üzerinden çalıştırın), ardından gateway’i yeniden başlatın.
-    2. MiniMax’in yapılandırıldığından (sihirbaz veya JSON) ya da eşleşen sağlayıcının enjekte edilebilmesi için env/kimlik doğrulama profillerinde MiniMax kimlik doğrulamasının
-       mevcut olduğundan emin olun
-       (`minimax` için `MINIMAX_API_KEY`, `minimax-portal` için `MINIMAX_OAUTH_TOKEN` veya saklanan MiniMax
-       OAuth).
-    3. Kimlik doğrulama yolunuz için tam model kimliğini (büyük/küçük harfe duyarlı) kullanın:
-       API anahtarı kurulumu için `minimax/MiniMax-M3`, `minimax/MiniMax-M2.7` veya
-       `minimax/MiniMax-M2.7-highspeed`; OAuth kurulumu için
-       `minimax-portal/MiniMax-M3`, `minimax-portal/MiniMax-M2.7` veya
-       `minimax-portal/MiniMax-M2.7-highspeed`.
-    4. Şunu çalıştırın:
-
-       ```bash
-       openclaw models list
-       ```
-
-       ve listeden seçin (veya sohbette `/model list`).
-
-    Bkz. [MiniMax](/tr/providers/minimax) ve [Modeller](/tr/concepts/models).
+  <Accordion title='"Unknown model: minimax/MiniMax-M3" iletisini neden görüyorum?'>
+    Daha eski bir OpenClaw sürümü kullanıyorsanız önce yükseltin (veya kaynak
+    kodun `main` dalından çalıştırın) ve gateway'i yeniden başlatın —
+    `MiniMax-M3` henüz yüklü sürümünüzün kataloğunda bulunmayabilir. Aksi takdirde
+    MiniMax sağlayıcısı yapılandırılmamıştır (sağlayıcı girdisi veya kimlik
+    doğrulama profili bulunamamıştır), bu nedenle model çözümlenemez. Tam düzeltme
+    denetim listesi, sağlayıcı/model kimliği tablosu ve yapılandırma bloğu örneği
+    için [MiniMax](/tr/providers/minimax) sağlayıcı sayfasındaki Sorun Giderme
+    bölümüne bakın.
 
   </Accordion>
 
-  <Accordion title="MiniMax’i varsayılanım, OpenAI’ı karmaşık görevler için kullanabilir miyim?">
-    Evet. Gerektiğinde **oturum başına** model değiştirerek **MiniMax’i varsayılan** olarak kullanın.
-    Geri dönüşler “zor görevler” için değil, **hatalar** içindir; bu yüzden `/model` veya ayrı bir ajan kullanın.
+  <Accordion title="MiniMax'i varsayılan, OpenAI'ı ise karmaşık görevler için kullanabilir miyim?">
+    Evet. MiniMax'i varsayılan olarak kullanın ve modelleri oturum başına
+    değiştirin — geri dönüşler "zor görevler" için değil hatalar içindir; bu
+    nedenle `/model` veya ayrı bir agent kullanın.
 
-    **Seçenek A: oturum başına değiştirin**
+    **Seçenek A: oturum başına geçiş**
 
     ```json5
     {
@@ -274,40 +246,38 @@ x-i18n:
     }
     ```
 
-    Sonra:
+    Ardından `/model gpt`.
 
-    ```
-    /model gpt
-    ```
+    **Seçenek B: ayrı agent'lar** — Agent A varsayılan olarak MiniMax'i, Agent B
+    varsayılan olarak OpenAI'ı kullanır; agent'a göre yönlendirin veya geçiş yapmak
+    için `/agent` kullanın.
 
-    **Seçenek B: ayrı ajanlar**
-
-    - Ajan A varsayılanı: MiniMax
-    - Ajan B varsayılanı: OpenAI
-    - Ajana göre yönlendirin veya geçiş yapmak için `/agent` kullanın
-
-    Belgeler: [Modeller](/tr/concepts/models), [Çok Ajanlı Yönlendirme](/tr/concepts/multi-agent), [MiniMax](/tr/providers/minimax), [OpenAI](/tr/providers/openai).
+    Belgeler: [Modeller](/tr/concepts/models), [Çoklu Agent Yönlendirmesi](/tr/concepts/multi-agent),
+    [MiniMax](/tr/providers/minimax), [OpenAI](/tr/providers/openai).
 
   </Accordion>
 
   <Accordion title="opus / sonnet / gpt yerleşik kısayollar mı?">
-    Evet. OpenClaw birkaç varsayılan kısaltmayla gelir (yalnızca model `agents.defaults.models` içinde varsa uygulanır):
+    Evet — yalnızca hedef model `agents.defaults.models` içinde bulunduğunda
+    uygulanan yerleşik kısaltmalardır:
 
-    - `opus` → `anthropic/claude-opus-4-8`
-    - `sonnet` → `anthropic/claude-sonnet-4-6`
-    - `gpt` → `openai/gpt-5.4`
-    - `gpt-mini` → `openai/gpt-5.4-mini`
-    - `gpt-nano` → `openai/gpt-5.4-nano`
-    - `gemini` → `google/gemini-3.1-pro-preview`
-    - `gemini-flash` → `google/gemini-3-flash-preview`
-    - `gemini-flash-lite` → `google/gemini-3.1-flash-lite`
+    | Takma ad | Çözümlendiği değer |
+    | --- | --- |
+    | `opus` | `anthropic/claude-opus-4-8` |
+    | `sonnet` | `anthropic/claude-sonnet-4-6` |
+    | `gpt` | `openai/gpt-5.4` |
+    | `gpt-mini` | `openai/gpt-5.4-mini` |
+    | `gpt-nano` | `openai/gpt-5.4-nano` |
+    | `gemini` | `google/gemini-3.1-pro-preview` |
+    | `gemini-flash` | `google/gemini-3-flash-preview` |
+    | `gemini-flash-lite` | `google/gemini-3.1-flash-lite` |
 
-    Aynı adla kendi takma adınızı ayarlarsanız sizin değeriniz geçerli olur.
+    Aynı ada sahip kendi takma adınız yerleşik olanı geçersiz kılar.
 
   </Accordion>
 
   <Accordion title="Model kısayollarını (takma adları) nasıl tanımlar/geçersiz kılarım?">
-    Takma adlar `agents.defaults.models.<modelId>.alias` değerinden gelir. Örnek:
+    Takma adlar `agents.defaults.models.<modelId>.alias` konumunda bulunur:
 
     ```json5
     {
@@ -323,7 +293,8 @@ x-i18n:
     }
     ```
 
-    Ardından `/model sonnet` (veya desteklendiğinde `/<alias>`) bu model kimliğine çözümlenir.
+    Ardından `/model sonnet` (veya desteklendiğinde `/<alias>`) bu model kimliğine
+    çözümlenir.
 
   </Accordion>
 
@@ -348,174 +319,183 @@ x-i18n:
     {
       agents: {
         defaults: {
-          model: { primary: "zai/glm-5" },
-          models: { "zai/glm-5": {} },
+          model: { primary: "zai/glm-5.1" },
+          models: { "zai/glm-5.1": {} },
         },
       },
       env: { ZAI_API_KEY: "..." },
     }
     ```
 
-    Bir sağlayıcıya/modele başvurur ancak gerekli sağlayıcı anahtarı eksikse çalışma zamanı kimlik doğrulama hatası alırsınız (ör. `No API key found for provider "zai"`).
+    Başvurulan bir sağlayıcı/model için sağlayıcı anahtarının eksik olması çalışma
+    zamanında kimlik doğrulama hatasına yol açar (ör. `No API key found for provider "zai"`).
 
-    **Yeni ajan eklendikten sonra sağlayıcı için API anahtarı bulunamadı**
+    **Yeni bir agent ekledikten sonra sağlayıcı için API anahtarı bulunamadı**
 
-    Bu genellikle **yeni ajanın** boş bir kimlik doğrulama deposu olduğu anlamına gelir. Kimlik doğrulama ajan başınadır ve burada saklanır:
+    Yeni bir agent'ın kimlik doğrulama deposu boştur — kimlik doğrulama agent
+    başınadır ve şu konumda saklanır:
 
-    ```
+    ```text
     ~/.openclaw/agents/<agentId>/agent/auth-profiles.json
     ```
 
-    Düzeltme seçenekleri:
-
-    - `openclaw agents add <id>` çalıştırın ve sihirbaz sırasında kimlik doğrulamayı yapılandırın.
-    - Ya da yalnızca taşınabilir statik `api_key` / `token` profillerini ana ajanın kimlik doğrulama deposundan yeni ajanın kimlik doğrulama deposuna kopyalayın.
-    - OAuth profilleri için, yeni ajanın kendi hesabına ihtiyacı olduğunda yeni ajandan oturum açın; aksi halde OpenClaw yenileme tokenlarını klonlamadan varsayılan/ana ajana okuyarak erişebilir.
-
-    `agentDir` değerini ajanlar arasında **yeniden kullanmayın**; kimlik doğrulama/oturum çakışmalarına neden olur.
+    Düzeltme: `openclaw agents add <id>` komutunu çalıştırın ve sihirbazda kimlik doğrulamayı yapılandırın veya
+    yalnızca taşınabilir statik `api_key`/`token` profillerini ana
+    ajanın deposundan kopyalayın. OAuth için yeni ajan kendi hesabına
+    ihtiyaç duyduğunda bu ajandan oturum açın. Tüm `agentDir` yeniden kullanım
+    ve kimlik bilgisi paylaşım kuralları için [Çok Ajanlı Yönlendirme](/tr/concepts/multi-agent)
+    bölümüne bakın — `agentDir` dizinini asla ajanlar arasında yeniden kullanmayın.
 
   </Accordion>
 </AccordionGroup>
 
-## Model devretmesi ve "Tüm modeller başarısız oldu"
+## Model yük devretmesi ve "Tüm modeller başarısız oldu"
 
 <AccordionGroup>
-  <Accordion title="Devretme nasıl çalışır?">
-    Devretme iki aşamada gerçekleşir:
+  <Accordion title="Yük devretme nasıl çalışır?">
+    İki aşama vardır:
 
     1. Aynı sağlayıcı içinde **kimlik doğrulama profili rotasyonu**.
-    2. `agents.defaults.model.fallbacks` içindeki sonraki modele **model yedeği**.
+    2. `agents.defaults.model.fallbacks` içindeki bir sonraki modele **model geri dönüşü**.
 
-    Başarısız profillere bekleme süreleri uygulanır (üstel geri çekilme), böylece bir sağlayıcı hız sınırına takıldığında veya geçici olarak başarısız olduğunda bile OpenClaw yanıt vermeye devam edebilir.
+    Başarısız profillere bekleme süreleri (üstel geri çekilme) uygulanır; böylece bir
+    sağlayıcı hız sınırına ulaştığında veya geçici olarak başarısız olduğunda OpenClaw
+    yanıt vermeyi sürdürür.
 
-    Hız sınırı kovası düz `429` yanıtlarından fazlasını içerir. OpenClaw
-    `Too many concurrent requests`,
-    `ThrottlingException`, `concurrency limit reached`,
-    `workers_ai ... quota limit exceeded`, `resource exhausted` gibi iletileri ve periyodik
-    kullanım penceresi sınırlarını (`weekly/monthly limit reached`) da devretmeye değer
-    hız sınırları olarak değerlendirir.
+    Hız sınırı grubu yalnızca `429` yanıtlarını kapsamaz: `Too many concurrent
+    requests`, `ThrottlingException`, `concurrency limit reached`, `workers_ai
+    ... quota limit exceeded`, `resource exhausted` ve dönemsel
+    kullanım aralığı sınırlarının (`weekly/monthly limit reached`) tümü
+    yük devretmeyi gerektiren hız sınırları sayılır.
 
-    Faturalandırma gibi görünen bazı yanıtlar `402` değildir ve bazı HTTP `402`
-    yanıtları da bu geçici kovada kalır. Bir sağlayıcı `401` veya `403` üzerinde
-    açık faturalandırma metni döndürürse OpenClaw bunu yine de
-    faturalandırma hattında tutabilir, ancak sağlayıcıya özgü metin eşleştiriciler
-    bunların sahibi olan sağlayıcıyla sınırlı kalır (örneğin OpenRouter `Key limit exceeded`). Bir `402`
-    iletisi bunun yerine yeniden denenebilir bir kullanım penceresi veya
-    kuruluş/çalışma alanı harcama sınırı gibi görünüyorsa (`daily limit reached, resets tomorrow`,
-    `organization spending limit exceeded`), OpenClaw bunu uzun süreli bir faturalandırma devre dışı bırakması
-    değil `rate_limit` olarak değerlendirir.
+    Faturalandırma yanıtları her zaman `402` değildir ve bazı `402` yanıtları
+    faturalandırma yoluna değil, geçici hata/hız sınırı grubuna girer. `401`/`403`
+    yanıtlarındaki açık faturalandırma metinleri yine faturalandırma yoluna yönlendirilebilir;
+    sağlayıcıya özgü metin eşleştiricileri (ör. OpenRouter `Key limit exceeded`) yalnızca
+    kendi sağlayıcıları kapsamında kalır. Yeniden denenebilir bir kullanım aralığı veya
+    kuruluş/çalışma alanı harcama sınırı gibi görünen bir `402` (`daily limit reached, resets tomorrow`,
+    `organization spending limit exceeded`), uzun süreli faturalandırma devre dışı bırakması
+    olarak değil `rate_limit` olarak değerlendirilir.
 
-    Bağlam taşması hataları farklıdır: `request_too_large`,
+    Bağlam taşması hataları geri dönüş yoluna hiçbir şekilde girmez — `request_too_large`,
     `input exceeds the maximum number of tokens`,
-    `input token count exceeds the maximum number of input tokens`,
-    `input is too long for the model` veya `ollama error: context length
-    exceeded` gibi imzalar model yedeğine ilerlemek yerine compaction/yeniden deneme yolunda kalır.
+    `input token count exceeds the maximum number of input tokens`, `input is
+    too long for the model` veya `ollama error: context length exceeded` gibi
+    imzalar, model geri dönüşünü ilerletmek yerine Compaction/yeniden deneme yoluna gider.
 
-    Genel sunucu hatası metni bilinçli olarak "içinde bilinmeyen/hata geçen
-    her şey"den daha dardır. OpenClaw sağlayıcı bağlamı eşleştiğinde Anthropic çıplak
-    `An unknown error occurred`, OpenRouter çıplak
-    `Provider returned error`, `Unhandled stop reason:
-    error` gibi durdurma nedeni hataları, geçici sunucu metni içeren JSON `api_error` yükleri
-    (`internal server error`, `unknown error, 520`, `upstream error`, `backend
-    error`) ve `ModelNotReadyException` gibi sağlayıcı meşgul hataları gibi
-    sağlayıcı kapsamlı geçici şekilleri devretmeye değer zaman aşımı/aşırı yük sinyalleri olarak
-    değerlendirir.
-    `LLM request failed with an unknown
-    error.` gibi genel iç yedek metinler temkinli kalır ve tek başına model yedeğini tetiklemez.
+    Genel sunucu hatası metni, "içinde bilinmeyen/hata geçen her şey" ifadesinden daha
+    dar kapsamlıdır. Yük devretme sinyali sayılan sağlayıcı kapsamlı geçici biçimler:
+    Anthropic'in yalın `An unknown error occurred` yanıtı, OpenRouter'ın yalın
+    `Provider returned error` yanıtı, `Unhandled stop reason:
+    error` gibi durdurma nedeni hataları, geçici sunucu metni (`internal
+    server error`, `unknown error, 520`, `upstream error`, `backend error`)
+    içeren JSON `api_error` yükleri ve sağlayıcı bağlamı eşleştiğinde
+    `ModelNotReadyException` gibi sağlayıcının meşgul olduğunu belirten hatalardır.
+    `LLM request failed with an unknown error.` gibi genel dahili geri dönüş metinleri
+    ihtiyatlı biçimde ele alınır ve tek başına geri dönüşü tetiklemez.
 
   </Accordion>
 
   <Accordion title='"anthropic:default profili için kimlik bilgisi bulunamadı" ne anlama gelir?'>
-    Sistemin `anthropic:default` kimlik doğrulama profili kimliğini kullanmaya çalıştığı, ancak beklenen kimlik doğrulama deposunda bunun için kimlik bilgisi bulamadığı anlamına gelir.
+    `anthropic:default` kimlik doğrulama profili kimliğinin beklenen kimlik doğrulama
+    deposunda kimlik bilgisi yoktur.
 
     **Düzeltme kontrol listesi:**
 
-    - **Kimlik doğrulama profillerinin nerede bulunduğunu doğrulayın** (yeni ve eski yollar)
-      - Geçerli: `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
-      - Eski: `~/.openclaw/agent/*` (`openclaw doctor` tarafından geçirilir)
-    - **Ortam değişkeninizin Gateway tarafından yüklendiğini doğrulayın**
-      - Kabuğunuzda `ANTHROPIC_API_KEY` ayarladıysanız ancak Gateway'i systemd/launchd üzerinden çalıştırıyorsanız bunu devralmayabilir. `~/.openclaw/.env` içine koyun veya `env.shellEnv` değerini etkinleştirin.
-    - **Doğru ajanı düzenlediğinizden emin olun**
-      - Çok ajanlı kurulumlar birden fazla `auth-profiles.json` dosyası olabileceği anlamına gelir.
-    - **Model/kimlik doğrulama durumunu makul şekilde kontrol edin**
-      - Yapılandırılmış modelleri ve sağlayıcıların kimlik doğrulamasının yapılıp yapılmadığını görmek için `openclaw models status` kullanın.
+    - Profillerin nerede bulunduğunu doğrulayın — güncel:
+      `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`; eski:
+      `~/.openclaw/agent/*` (`openclaw doctor` tarafından taşınır).
+    - Gateway'in ortam değişkeninizi yüklediğini doğrulayın. Yalnızca kabuğunuzda ayarlanan
+      `ANTHROPIC_API_KEY`, systemd/launchd üzerinden çalışan bir Gateway'e ulaşmaz —
+      bunu `~/.openclaw/.env` dosyasına ekleyin veya `env.shellEnv` seçeneğini etkinleştirin.
+    - Doğru ajanı düzenlediğinizi doğrulayın — çok ajanlı kurulumlarda birden fazla
+      `auth-profiles.json` dosyası bulunur.
+    - Yapılandırılmış modelleri ve sağlayıcının kimlik doğrulama durumunu görmek için
+      `openclaw models status` komutunu çalıştırın.
 
-    **"anthropic profili için kimlik bilgisi bulunamadı" düzeltme kontrol listesi**
+    **"anthropic profili için kimlik bilgisi bulunamadı" durumunda (e-posta son eki yoksa):**
 
-    Bu, çalıştırmanın bir Anthropic kimlik doğrulama profiline sabitlendiği, ancak Gateway'in
-    bunu kendi kimlik doğrulama deposunda bulamadığı anlamına gelir.
+    Çalıştırma, Gateway'in bulamadığı bir Anthropic profiline sabitlenmiştir.
 
-    - **Claude CLI kullanın**
-      - Gateway ana makinesinde `openclaw models auth login --provider anthropic --method cli --set-default` çalıştırın.
-    - **Bunun yerine bir API anahtarı kullanmak istiyorsanız**
-      - `ANTHROPIC_API_KEY` değerini **gateway ana makinesinde** `~/.openclaw/.env` içine koyun.
-      - Eksik profili zorlayan sabitlenmiş sıraları temizleyin:
+    - Claude CLI kullanın: Gateway ana makinesinde `openclaw models auth login --provider anthropic
+      --method cli --set-default` komutunu çalıştırın.
+    - Bunun yerine tercihen bir API anahtarı kullanın: Gateway ana makinesindeki
+      `~/.openclaw/.env` dosyasına `ANTHROPIC_API_KEY` ekleyin, ardından eksik profili
+      zorunlu kılan sabitlenmiş sıralamayı temizleyin:
 
-        ```bash
-        openclaw models auth order clear --provider anthropic
-        ```
+      ```bash
+      openclaw models auth order clear --provider anthropic
+      ```
 
-    - **Komutları gateway ana makinesinde çalıştırdığınızı doğrulayın**
-      - Uzak modda kimlik doğrulama profilleri dizüstü bilgisayarınızda değil gateway makinesinde bulunur.
+    - Uzak mod: kimlik doğrulama profilleri dizüstü bilgisayarınızda değil, Gateway
+      makinesinde bulunur — komutları orada çalıştırdığınızı doğrulayın.
 
   </Accordion>
 
   <Accordion title="Neden Google Gemini'yi de deneyip başarısız oldu?">
-    Model yapılandırmanız Google Gemini'yi yedek olarak içeriyorsa (veya bir Gemini kısaltmasına geçtiyseniz), OpenClaw model yedeği sırasında bunu dener. Google kimlik bilgilerini yapılandırmadıysanız `No API key found for provider "google"` görürsünüz.
-
-    Düzeltme: Google kimlik doğrulaması sağlayın veya yedeğin oraya yönlenmemesi için `agents.defaults.model.fallbacks` / takma adlar içinden Google modellerini kaldırın/kaçının.
+    Model yapılandırmanız Google Gemini'yi bir geri dönüş modeli olarak içeriyorsa
+    (veya bir Gemini kısa adına geçtiyseniz), OpenClaw geri dönüş sırasında onu dener.
+    Google kimlik bilgileri yapılandırılmamışsa `No API key found for provider
+    "google"` hatası oluşur. Düzeltme: Google kimlik doğrulaması ekleyin veya Google
+    modellerini `agents.defaults.model.fallbacks`/takma adlardan kaldırın.
 
     **LLM isteği reddedildi: düşünme imzası gerekli (Google Antigravity)**
 
-    Neden: oturum geçmişi **imzasız düşünme blokları** içeriyor (çoğu zaman
-    iptal edilmiş/kısmi bir akıştan). Google Antigravity düşünme blokları için imza gerektirir.
-
-    Düzeltme: OpenClaw artık Google Antigravity Claude için imzasız düşünme bloklarını çıkarır. Hâlâ görünüyorsa **yeni bir oturum** başlatın veya o ajan için `/thinking off` ayarlayın.
+    Neden: oturum geçmişinde imzasız düşünme blokları vardır (çoğunlukla
+    yarıda kesilmiş/kısmi bir akıştan kaynaklanır); Google Antigravity düşünme
+    bloklarında imza gerektirir. OpenClaw, Google Antigravity Claude için imzasız
+    düşünme bloklarını kaldırır; sorun yine de ortaya çıkarsa yeni bir oturum başlatın
+    veya bu ajan için `/thinking off` ayarını kullanın.
 
   </Accordion>
 </AccordionGroup>
 
 ## Kimlik doğrulama profilleri: nedir ve nasıl yönetilir?
 
-İlgili: [/concepts/oauth](/tr/concepts/oauth) (OAuth akışları, token saklama, çok hesaplı kalıplar)
+İlgili: [/concepts/oauth](/tr/concepts/oauth) (OAuth akışları, token depolama, çok hesaplı kullanım kalıpları)
 
 <AccordionGroup>
   <Accordion title="Kimlik doğrulama profili nedir?">
-    Kimlik doğrulama profili, bir sağlayıcıya bağlı adlandırılmış bir kimlik bilgisi kaydıdır (OAuth veya API anahtarı). Profiller burada bulunur:
+    Bir sağlayıcıya bağlı, adlandırılmış bir kimlik bilgisi kaydıdır (OAuth veya API anahtarı)
+    ve şu konumda saklanır:
 
-    ```
+    ```text
     ~/.openclaw/agents/<agentId>/agent/auth-profiles.json
     ```
 
-    Kayıtlı profilleri gizli bilgileri dökmeden incelemek için `openclaw models auth list` çalıştırın (isteğe bağlı olarak `--provider <id>` veya `--json`). Ayrıntılar için [Modeller CLI](/tr/cli/models#auth-profiles) bölümüne bakın.
+    Gizli bilgileri göstermeden kaydedilmiş profilleri inceleyin: `openclaw models auth
+    list` (isteğe bağlı olarak `--provider <id>` veya `--json`). Bkz.
+    [Modeller CLI'si](/tr/cli/models#auth-profiles).
 
   </Accordion>
 
-  <Accordion title="Tipik profil kimlikleri nelerdir?">
-    OpenClaw şu tür sağlayıcı önekli kimlikler kullanır:
-
-    - `anthropic:default` (e-posta kimliği olmadığında yaygındır)
-    - OAuth kimlikleri için `anthropic:<email>`
-    - Seçtiğiniz özel kimlikler (ör. `anthropic:work`)
+  <Accordion title="Yaygın profil kimlikleri nelerdir?">
+    Sağlayıcı önekli biçimler: `anthropic:default` (e-posta kimliği olmadığında yaygındır),
+    OAuth kimlikleri için `anthropic:<email>` veya seçtiğiniz özel bir kimlik
+    (ör. `anthropic:work`).
 
   </Accordion>
 
-  <Accordion title="Önce hangi kimlik doğrulama profilinin deneneceğini kontrol edebilir miyim?">
-    Evet. Yapılandırma profiller için isteğe bağlı meta verileri ve sağlayıcı başına bir sıralamayı (`auth.order.<provider>`) destekler. Bu gizli bilgileri **saklamaz**; kimlikleri sağlayıcı/mod ile eşler ve rotasyon sırasını ayarlar.
+  <Accordion title="İlk olarak hangi kimlik doğrulama profilinin deneneceğini denetleyebilir miyim?">
+    Evet. `auth.order.<provider>` yapılandırması, sağlayıcı başına rotasyon sırasını
+    belirler (yalnızca meta veriler — gizli bilgiler saklanmaz).
 
-    OpenClaw, kısa bir **bekleme süresinde** (hız sınırları/zaman aşımları/kimlik doğrulama hataları) veya daha uzun bir **devre dışı** durumda (faturalandırma/yetersiz kredi) olan profili geçici olarak atlayabilir. Bunu incelemek için `openclaw models status --json` çalıştırın ve `auth.unusableProfiles` değerini kontrol edin. Ayarlama: `auth.cooldowns.billingBackoffHours*`.
+    OpenClaw, kısa bir **bekleme süresindeki** (hız sınırları, zaman aşımları,
+    kimlik doğrulama hataları) veya daha uzun süreli **devre dışı** durumdaki
+    (faturalandırma/yetersiz kredi) bir profili atlayabilir. `openclaw models status
+    --json` ile inceleyin ve `auth.unusableProfiles` alanını kontrol edin.
+    `auth.cooldowns.billingBackoffHours*` ile ayarlayın. Hız sınırı bekleme süreleri
+    model kapsamlı olabilir — bir model için bekleme süresinde olan profil, aynı
+    sağlayıcıdaki kardeş bir modele yine hizmet verebilir; faturalandırma/devre dışı
+    bırakma aralıkları ise profilinin tamamını engeller.
 
-    Hız sınırı bekleme süreleri model kapsamlı olabilir. Bir model için bekleme süresinde
-    olan profil aynı sağlayıcıdaki kardeş model için hâlâ kullanılabilir olabilir,
-    faturalandırma/devre dışı pencereleri ise tüm profili engellemeye devam eder.
-
-    CLI üzerinden **ajan başına** bir sıra geçersiz kılması da ayarlayabilirsiniz (o ajanın `auth-state.json` dosyasında saklanır):
+    Ajan başına sıralama geçersiz kılması ayarlayın (bu ajanın `auth-state.json` dosyasında saklanır):
 
     ```bash
     # Defaults to the configured default agent (omit --agent)
     openclaw models auth order get --provider anthropic
 
-    # Lock rotation to a single profile (only try this one)
+    # Lock rotation to a single profile
     openclaw models auth order set --provider anthropic anthropic:default
 
     # Or set an explicit order (fallback within provider)
@@ -523,39 +503,27 @@ x-i18n:
 
     # Clear override (fall back to config auth.order / round-robin)
     openclaw models auth order clear --provider anthropic
-    ```
 
-    Belirli bir ajanı hedeflemek için:
-
-    ```bash
+    # Target a specific agent
     openclaw models auth order set --provider anthropic --agent main anthropic:default
     ```
 
-    Gerçekte neyin deneneceğini doğrulamak için şunu kullanın:
-
-    ```bash
-    openclaw models status --probe
-    ```
-
-    Saklanan bir profil açık sıradan çıkarılmışsa probe, sessizce denemek yerine
-    o profil için `excluded_by_auth_order` bildirir.
+    Gerçekte nelerin deneneceğini doğrulayın: `openclaw models status --probe`.
+    Açık sıralamada yer almayan kayıtlı bir profil, sessizce denenmek yerine
+    `excluded_by_auth_order` olarak bildirilir.
 
   </Accordion>
 
   <Accordion title="OAuth ile API anahtarı arasındaki fark nedir?">
-    OpenClaw ikisini de destekler:
+    - **OAuth / CLI oturumu**, sağlayıcının desteklediği durumlarda çoğunlukla abonelik
+      erişimini kullanır. Anthropic için OpenClaw'ın Claude CLI arka ucu,
+      Anthropic'in şu anda abonelik kullanım sınırlarından düşülen Agent SDK/programatik
+      kullanım olarak değerlendirdiği Claude Code `claude -p` komutunu kullanır —
+      güncel faturalandırma duraklatma durumu ve kaynak bağlantıları için
+      [Anthropic](/tr/providers/anthropic) bölümüne bakın.
+    - **API anahtarları**, token başına ödeme esaslı faturalandırmayı kullanır.
 
-    - **OAuth / CLI oturumu açma**, sağlayıcının desteklediği yerlerde genellikle abonelik erişiminden
-      yararlanır. Anthropic için OpenClaw'ın Claude CLI arka ucu
-      Claude Code `claude -p` kullanır; Anthropic şu anda bunu Agent
-      SDK/programatik kullanım olarak değerlendirir. Anthropic, 15 Haziran 2026 tarihli ayrı Agent
-      SDK kredi değişikliğini duraklattı; bu nedenle şimdilik bu hâlâ abonelik kullanım
-      sınırlarından düşer. Güncel duraklatma bildirimi için Anthropic'in [Agent SDK plan
-      makalesine](https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan)
-      bakın.
-    - **API anahtarları** token başına ödeme faturalandırması kullanır.
-
-    Sihirbaz açıkça Anthropic Claude CLI, OpenAI Codex OAuth ve API anahtarlarını destekler.
+    Sihirbaz Anthropic Claude CLI'yi, OpenAI Codex OAuth'u ve API anahtarlarını destekler.
 
   </Accordion>
 </AccordionGroup>

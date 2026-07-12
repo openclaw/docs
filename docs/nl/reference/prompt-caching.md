@@ -1,78 +1,61 @@
 ---
 read_when:
-    - Je wilt prompttokenkosten verlagen met cachebehoud
-    - Je hebt cachegedrag per agent nodig in multi-agent-opstellingen
-    - Je stemt heartbeat- en cache-ttl-opschoning samen af
-summary: Knoppen voor promptcaching, samenvoegvolgorde, providergedrag en afstemmingspatronen
+    - Je wilt de kosten voor prompttokens verlagen door de cache langer te bewaren
+    - Je hebt cachegedrag per agent nodig in configuraties met meerdere agents
+    - Je stemt Heartbeat en opschoning op basis van cache-TTL op elkaar af
+summary: Instellingen voor promptcaching, samenvoegvolgorde, providergedrag en afstemmingspatronen
 title: Promptcaching
 x-i18n:
-    generated_at: "2026-07-01T18:17:16Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:23:08Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3189cc734bbee14236e6303aca99aca512732989ffd01612ae635608a2471e60
+    source_hash: 68f3e6ba31517a598f22cfdbe04da746a756feadc7c4c376efaa4779cbf05b31
     source_path: reference/prompt-caching.md
     workflow: 16
 ---
 
-Promptcaching betekent dat de modelprovider ongewijzigde promptvoorvoegsels (meestal systeem-/ontwikkelaarsinstructies en andere stabiele context) over beurten heen opnieuw kan gebruiken in plaats van ze elke keer opnieuw te verwerken. OpenClaw normaliseert providergebruik naar `cacheRead` en `cacheWrite` wanneer de upstream-API die tellers rechtstreeks beschikbaar stelt.
+Promptcaching stelt een modelprovider in staat om een ongewijzigd promptprefix (systeem-/ontwikkelaarsinstructies, tooldefinities en andere stabiele context) over meerdere beurten te hergebruiken, in plaats van dit bij elke aanvraag opnieuw te verwerken. Dit verlaagt de tokenkosten en latentie voor langlopende sessies met herhaalde context.
 
-Statusoppervlakken kunnen cachetellers ook herstellen uit het meest recente transcriptgebruiklogboek wanneer ze ontbreken in de live sessiesnapshot, zodat `/status` een cacheregel kan blijven tonen na gedeeltelijk verlies van sessiemetadata. Bestaande niet-nul live cachewaarden blijven voorrang houden op transcriptfallbackwaarden.
-
-Waarom dit ertoe doet: lagere tokenkosten, snellere antwoorden en voorspelbaardere prestaties voor langlopende sessies. Zonder caching betalen herhaalde prompts bij elke beurt de volledige promptkosten, zelfs wanneer de meeste invoer niet is gewijzigd.
-
-De secties hieronder behandelen elke cachegerelateerde knop die invloed heeft op prompt-hergebruik en tokenkosten.
+OpenClaw normaliseert providergebruik naar `cacheRead` en `cacheWrite` wanneer de upstream-API deze tellers beschikbaar stelt. Gebruiksoverzichten (`/status` en vergelijkbare overzichten) vallen terug op de laatste gebruiksvermelding in het transcript wanneer de momentopname van de actieve sessie geen cachetellers bevat; een actieve waarde groter dan nul heeft altijd voorrang op de terugvalwaarde.
 
 Providerreferenties:
 
-- Anthropic promptcaching: [https://platform.claude.com/docs/en/build-with-claude/prompt-caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)
-- OpenAI promptcaching: [https://developers.openai.com/api/docs/guides/prompt-caching](https://developers.openai.com/api/docs/guides/prompt-caching)
-- OpenAI API-headers en aanvraag-ID's: [https://developers.openai.com/api/reference/overview](https://developers.openai.com/api/reference/overview)
-- Anthropic aanvraag-ID's en fouten: [https://platform.claude.com/docs/en/api/errors](https://platform.claude.com/docs/en/api/errors)
+- [Anthropic-promptcaching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)
+- [OpenAI-promptcaching](https://developers.openai.com/api/docs/guides/prompt-caching)
 
-## Primaire knoppen
+## Primaire instellingen
 
-### `cacheRetention` (globale standaard, model en per agent)
+### `cacheRetention`
 
-Stel cachebehoud in als globale standaard voor alle modellen:
+Waarden: `"none" | "short" | "long"`. Configureerbaar als globale standaardwaarde, per model en per agent.
 
 ```yaml
 agents:
   defaults:
     params:
       cacheRetention: "long" # none | short | long
-```
-
-Overschrijf per model:
-
-```yaml
-agents:
-  defaults:
     models:
       "anthropic/claude-opus-4-6":
         params:
-          cacheRetention: "short" # none | short | long
-```
-
-Overschrijving per agent:
-
-```yaml
-agents:
+          cacheRetention: "short" # overschrijft de globale standaardwaarde voor dit model
   list:
     - id: "alerts"
       params:
-        cacheRetention: "none"
+        cacheRetention: "none" # overschrijft beide standaardwaarden voor deze agent
 ```
 
-Volgorde voor configuratiesamenvoeging:
+Samenvoegvolgorde (later heeft voorrang):
 
-1. `agents.defaults.params` (globale standaard — geldt voor alle modellen)
-2. `agents.defaults.models["provider/model"].params` (overschrijving per model)
-3. `agents.list[].params` (overeenkomende agent-id; overschrijft per sleutel)
+1. `agents.defaults.params` - globale standaardwaarde voor alle modellen
+2. `agents.defaults.models["provider/model"].params` - overschrijving per model
+3. `agents.list[].params` - overschrijving per agent, gekoppeld op agent-id
+
+Bron: `src/agents/embedded-agent-runner/extra-params.ts` (`resolveExtraParams`).
 
 ### `contextPruning.mode: "cache-ttl"`
 
-Snoeit oude toolresultaatcontext na cache-TTL-vensters, zodat aanvragen na inactiviteit geen te grote geschiedenis opnieuw cachen.
+Snoeit oude context met toolresultaten nadat het TTL-venster van de cache is verstreken, zodat een aanvraag na een periode van inactiviteit een te grote geschiedenis niet opnieuw in de cache opslaat.
 
 ```yaml
 agents:
@@ -82,11 +65,11 @@ agents:
       ttl: "1h"
 ```
 
-Zie [Sessiesnoeiing](/nl/concepts/session-pruning) voor volledig gedrag.
+Zie [Sessies snoeien](/nl/concepts/session-pruning) voor het volledige gedrag.
 
-### Heartbeat warm houden
+### Cache warm houden met Heartbeat
 
-Heartbeat kan cachevensters warm houden en herhaalde cachewrites na perioden van inactiviteit verminderen.
+Heartbeat kan cachevensters warm houden en herhaalde schrijfbewerkingen naar de cache na perioden van inactiviteit verminderen. Globaal configureerbaar (`agents.defaults.heartbeat`) of per agent (`agents.list[].heartbeat`).
 
 ```yaml
 agents:
@@ -95,135 +78,85 @@ agents:
       every: "55m"
 ```
 
-Heartbeat per agent wordt ondersteund op `agents.list[].heartbeat`.
-
 ## Providergedrag
 
-### Anthropic (directe API)
+### Anthropic (directe API en Vertex AI)
 
-- `cacheRetention` wordt ondersteund.
-- Met Anthropic API-sleutel-authprofielen stelt OpenClaw `cacheRetention: "short"` in voor Anthropic-modelrefs wanneer dit niet is ingesteld.
-- Native Anthropic Messages-antwoorden stellen zowel `cache_read_input_tokens` als `cache_creation_input_tokens` beschikbaar, zodat OpenClaw zowel `cacheRead` als `cacheWrite` kan tonen.
-- Voor native Anthropic-aanvragen wordt `cacheRetention: "short"` toegewezen aan de standaard 5-minuten tijdelijke cache, en `cacheRetention: "long"` upgrade alleen op directe `api.anthropic.com`-hosts naar de TTL van 1 uur.
+- `cacheRetention` wordt ondersteund voor de providers `anthropic` en `anthropic-vertex`, en voor Claude-modellen op `amazon-bedrock` en aangepaste eindpunten die compatibel zijn met `anthropic-messages` wanneer `cacheRetention` expliciet is ingesteld.
+- Wanneer de waarde niet is ingesteld, initialiseert OpenClaw `cacheRetention: "short"` voor directe Anthropic-verbindingen (alleen de providers `anthropic` en `anthropic-vertex`; andere routes uit de Anthropic-familie vereisen een expliciete waarde).
+- Native antwoorden van Anthropic Messages stellen `cache_read_input_tokens` en `cache_creation_input_tokens` beschikbaar, toegewezen aan `cacheRead` en `cacheWrite`.
+- `cacheRetention: "short"` wordt toegewezen aan de standaard tijdelijke cache van 5 minuten. `cacheRetention: "long"` vraagt expliciet om de TTL van 1 uur (`cache_control: { type: "ephemeral", ttl: "1h" }`). Een impliciete of door de omgeving aangestuurde lange bewaartijd (`OPENCLAW_CACHE_RETENTION=long` zonder expliciete `cacheRetention`) wordt alleen opgewaardeerd naar de TTL van 1 uur op hosts van `api.anthropic.com` of Vertex AI (`aiplatform.googleapis.com` / `*-aiplatform.googleapis.com`); andere hosts behouden de cache van 5 minuten.
+
+Bron: `src/agents/anthropic-payload-policy.ts` (`resolveAnthropicEphemeralCacheControl`, `isLongTtlEligibleEndpoint`).
 
 ### OpenAI (directe API)
 
-- Promptcaching is automatisch op ondersteunde recente modellen. OpenClaw hoeft geen cachemarkeringen op blokniveau te injecteren.
-- OpenClaw gebruikt `prompt_cache_key` om cacherouting over beurten heen stabiel te houden. Directe OpenAI-hosts gebruiken `prompt_cache_retention: "24h"` wanneer `cacheRetention: "long"` is geselecteerd.
-- OpenAI-compatibele Completions-providers ontvangen `prompt_cache_key` alleen wanneer hun modelconfiguratie expliciet `compat.supportsPromptCacheKey: true` instelt. Doorsturen van lang behoud is een aparte mogelijkheid: expliciete `cacheRetention: "long"` verzendt `prompt_cache_retention: "24h"` alleen wanneer die compat-entry ook lang cachebehoud ondersteunt. Providers zoals Mistral kunnen zich aanmelden voor cachesleutels terwijl ze `compat.supportsLongCacheRetention: false` instellen om het veld voor lang behoud te onderdrukken. `cacheRetention: "none"` onderdrukt beide velden.
-- OpenAI-antwoorden stellen gecachte prompttokens beschikbaar via `usage.prompt_tokens_details.cached_tokens` (of `input_tokens_details.cached_tokens` op Responses API-events). OpenClaw wijst dat toe aan `cacheRead`.
-- GPT-5.6 Responses-gebruik kan ook `input_tokens_details.cache_write_tokens` beschikbaar stellen. OpenClaw wijst dat toe aan `cacheWrite` en prijst het tegen het cachewrite-tarief van het model; Responses die het veld weglaten houden `cacheWrite` op `0`.
-- OpenAI retourneert nuttige traceer- en rate-limit-headers zoals `x-request-id`, `openai-processing-ms` en `x-ratelimit-*`, maar cache-hitboekhouding moet uit de gebruikspayload komen, niet uit headers.
-- In de praktijk gedraagt OpenAI zich vaak als een initiële-voorvoegselcache in plaats van Anthropic-achtig bewegend volledig-geschiedenis-hergebruik. Stabiele tekstbeurten met lange voorvoegsels kunnen in huidige liveprobes dicht bij een plateau van `4864` gecachte tokens uitkomen, terwijl toolzware of MCP-achtige transcripten vaak rond `4608` gecachte tokens plateauën, zelfs bij exacte herhalingen.
-
-### Anthropic Vertex
-
-- Anthropic-modellen op Vertex AI (`anthropic-vertex/*`) ondersteunen `cacheRetention` op dezelfde manier als direct Anthropic.
-- `cacheRetention: "long"` wordt toegewezen aan de echte promptcache-TTL van 1 uur op Vertex AI-eindpunten.
-- Standaard cachebehoud voor `anthropic-vertex` komt overeen met directe Anthropic-standaarden.
-- Vertex-aanvragen worden gerouteerd via grensbewuste cachevorming, zodat cachehergebruik afgestemd blijft op wat providers daadwerkelijk ontvangen.
+- Promptcaching verloopt automatisch op ondersteunde recente modellen; OpenClaw voegt geen cachemarkeringen op blokniveau toe.
+- OpenClaw verzendt `prompt_cache_key` om de cacheroutering over meerdere beurten stabiel te houden. Directe hosts van `api.openai.com` krijgen dit automatisch. OpenAI-compatibele proxy's (oMLX, llama.cpp en aangepaste eindpunten) moeten zich hiervoor aanmelden met `compat.supportsPromptCacheKey: true` in de modelconfiguratie; dit wordt voor een proxy nooit automatisch gedetecteerd.
+- `prompt_cache_retention: "24h"` wordt alleen toegevoegd wanneer `cacheRetention: "long"` is geselecteerd en het gevonden eindpunt zowel de cachesleutel als lange bewaring ondersteunt (`compat.supportsLongCacheRetention`, standaard `true`; compatibiliteitsprofielen van Together AI en Cloudflare schakelen dit uit). `cacheRetention: "none"` onderdrukt beide velden.
+- Cachetreffers worden beschikbaar gesteld via `usage.prompt_tokens_details.cached_tokens` (Chat Completions) of `input_tokens_details.cached_tokens` (Responses API), toegewezen aan `cacheRead`.
+- Payloads van de Responses API kunnen ook `input_tokens_details.cache_write_tokens` beschikbaar stellen, toegewezen aan `cacheWrite` en geprijsd volgens het tarief voor cacheschrijfbewerkingen van het model; bij Responses-payloads waarin het veld ontbreekt, blijft `cacheWrite` op `0`. De Chat Completions API van OpenAI documenteert of retourneert geen teller `cache_write_tokens`, maar OpenClaw leest daar toch `prompt_tokens_details.cache_write_tokens` voor OpenRouter-compatibele en DeepSeek-achtige proxy's die een afzonderlijk aantal schrijfbewerkingen rapporteren.
+- In de praktijk gedraagt OpenAI zich meer als een cache voor het initiële prefix dan als Anthropic met hergebruik van de verschuivende volledige geschiedenis; zie [Verwachtingen voor livegebruik van OpenAI](#openai-live-expectations) hieronder.
 
 ### Amazon Bedrock
 
-- Anthropic Claude-modelrefs (`amazon-bedrock/*anthropic.claude*`) ondersteunen expliciete `cacheRetention`-doorgifte.
-- Niet-Anthropic Bedrock-modellen worden tijdens runtime geforceerd naar `cacheRetention: "none"`.
+- Anthropic Claude-modelreferenties (`amazon-bedrock/*anthropic.claude*`, plus AWS-prefixen voor systeeminferentieprofielen `us.`/`eu.`/`global.anthropic.claude*`) ondersteunen expliciete doorgifte van `cacheRetention`.
+- Niet-Anthropic-modellen van Bedrock (bijvoorbeeld `amazon.nova-*`) worden tijdens runtime omgezet naar geen cachebewaring, ongeacht een eventueel geconfigureerde waarde voor `cacheRetention`.
+- Ondoorzichtige ARN's van Bedrock-toepassingsinferentieprofielen (profiel-id's die geen `claude` bevatten) worden eveneens omgezet naar geen cachebewaring, tenzij `cacheRetention` expliciet is ingesteld, omdat de modelfamilie niet uitsluitend uit de ARN kan worden afgeleid.
 
-### OpenRouter-modellen
+### OpenRouter
 
-Voor `openrouter/anthropic/*`-modelrefs injecteert OpenClaw Anthropic
-`cache_control` op systeem-/ontwikkelaarspromptblokken om promptcachehergebruik
-te verbeteren, alleen wanneer de aanvraag nog steeds op een geverifieerde
-OpenRouter-route is gericht (`openrouter` op het standaardeindpunt, of elke
-provider/basis-URL die naar `openrouter.ai` resolveert).
+Voor modelreferenties van `openrouter/anthropic/*` voegt OpenClaw Anthropic-markeringen voor `cache_control` toe aan systeem-/ontwikkelaarspromptblokken, maar alleen wanneer de aanvraag nog steeds naar een geverifieerde OpenRouter-route gaat (`openrouter` op het standaardeindpunt, of een provider/basis-URL die naar `openrouter.ai` wordt omgezet). Als het model naar een willekeurige OpenAI-compatibele proxy-URL wordt omgeleid, stopt deze toevoeging.
 
-Voor `openrouter/deepseek/*`, `openrouter/moonshot*/*` en `openrouter/zai/*`
--modelrefs is `contextPruning.mode: "cache-ttl"` toegestaan omdat OpenRouter
-promptcaching aan providerzijde automatisch afhandelt. OpenClaw injecteert geen
-Anthropic `cache_control`-markeringen in die aanvragen.
+`contextPruning.mode: "cache-ttl"` is toegestaan voor modelreferenties van `openrouter/anthropic/*`, `openrouter/deepseek/*`, `openrouter/moonshot/*`, `openrouter/moonshotai/*` en `openrouter/zai/*`, omdat deze routes promptcaching aan de providerzijde afhandelen zonder dat door OpenClaw toegevoegde markeringen nodig zijn.
 
-DeepSeek-cacheopbouw is best-effort en kan een paar seconden duren. Een
-onmiddellijke vervolgaanvraag kan nog steeds `cached_tokens: 0` tonen; verifieer
-met een herhaalde aanvraag met hetzelfde voorvoegsel na een korte vertraging en
-gebruik `usage.prompt_tokens_details.cached_tokens` als cache-hit-signaal.
+Bron: `extensions/openrouter/index.ts` (`OPENROUTER_CACHE_TTL_MODEL_PREFIXES`).
 
-Als je het model naar een willekeurige OpenAI-compatibele proxy-URL laat wijzen,
-stopt OpenClaw met het injecteren van die OpenRouter-specifieke Anthropic-cachemarkeringen.
+Het opbouwen van de DeepSeek-cache op OpenRouter gebeurt op basis van beste inspanning en kan enkele seconden duren; een onmiddellijke vervolgaanvraag kan nog steeds `cached_tokens: 0` tonen. Verifieer dit na een korte vertraging met een herhaalde aanvraag met hetzelfde prefix en gebruik `usage.prompt_tokens_details.cached_tokens` als signaal voor een cachetreffer.
+
+### Google Gemini (directe API)
+
+- Direct Gemini-transport (`api: "google-generative-ai"`) rapporteert cachetreffers via upstream `cachedContentTokenCount`, toegewezen aan `cacheRead`.
+- Geschikte modelfamilies: `gemini-2.5*` en `gemini-3*` (Live-/previewvarianten buiten deze prefixovereenkomst zijn uitgesloten, bijvoorbeeld `gemini-live-2.5-flash-preview`).
+- Wanneer `cacheRetention` is ingesteld op een geschikt model, maakt, hergebruikt en vernieuwt OpenClaw automatisch een `cachedContents`-resource voor de systeemprompt; een handmatige verwijzing naar gecachte inhoud is niet nodig. De TTL is `300s` voor `cacheRetention: "short"` en `3600s` voor `"long"`.
+- U kunt nog steeds een bestaande Gemini-verwijzing naar gecachte inhoud doorgeven als `params.cachedContent` (of de verouderde vorm `params.cached_content`); een expliciete verwijzing slaat het automatische cachebeheer volledig over.
+- Dit staat los van promptprefixcaching van Anthropic/OpenAI: OpenClaw beheert voor Gemini een providereigen `cachedContents`-resource in plaats van inline cachemarkeringen toe te voegen.
+
+Bron: `src/agents/embedded-agent-runner/google-prompt-cache.ts`.
+
+### Providers met een CLI-harnas (Claude Code, Gemini CLI)
+
+CLI-backends die JSONL-gebruiksgebeurtenissen produceren (`jsonlDialect: "claude-stream-json"` of `"gemini-stream-json"`) gebruiken een gedeelde gebruiksparser die meerdere veldnaamvarianten herkent, waaronder een gewone teller `cached` die aan `cacheRead` wordt toegewezen. Wanneer de JSON-payload van de CLI geen rechtstreeks veld voor invoertokens bevat, leidt OpenClaw dit af als `input_tokens - cached`. Dit is alleen normalisatie van gebruik; het maakt geen promptcachemarkeringen in Anthropic-/OpenAI-stijl voor deze via de CLI aangestuurde modellen.
+
+Bron: `src/agents/cli-output.ts` (`toCliUsage`).
 
 ### Andere providers
 
-Als de provider deze cachemodus niet ondersteunt, heeft `cacheRetention` geen effect.
+Als een provider geen van de bovenstaande cachemodi ondersteunt, heeft `cacheRetention` geen effect.
 
-### Google Gemini directe API
+## Cachegrens van de systeemprompt
 
-- Direct Gemini-transport (`api: "google-generative-ai"`) rapporteert cachehits
-  via upstream `cachedContentTokenCount`; OpenClaw wijst dat toe aan `cacheRead`.
-- Wanneer `cacheRetention` is ingesteld op een direct Gemini-model, maakt,
-  hergebruikt en vernieuwt OpenClaw automatisch `cachedContents`-resources voor
-  systeemprompts op Google AI Studio-runs. Dit betekent dat je niet langer
-  handmatig vooraf een cached-content-handle hoeft te maken.
-- Je kunt nog steeds een vooraf bestaande Gemini cached-content-handle doorgeven
-  als `params.cachedContent` (of legacy `params.cached_content`) op het geconfigureerde
-  model.
-- Dit staat los van Anthropic/OpenAI promptvoorvoegselcaching. Voor Gemini
-  beheert OpenClaw een provider-native `cachedContents`-resource in plaats van
-  cachemarkeringen in de aanvraag te injecteren.
-
-### Gemini CLI-gebruik
-
-- Gemini CLI `stream-json`-uitvoer kan cachehits via `stats.cached` tonen;
-  OpenClaw wijst dat toe aan `cacheRead`. Legacy `--output-format json`-overschrijvingen
-  gebruiken dezelfde gebruiksnormalisatie.
-- Als de CLI een directe `stats.input`-waarde weglaat, leidt OpenClaw invoertokens
-  af uit `stats.input_tokens - stats.cached`.
-- Dit is alleen gebruiksnormalisatie. Het betekent niet dat OpenClaw Anthropic/OpenAI-achtige
-  promptcachemarkeringen voor Gemini CLI maakt.
-
-## Cachegrens voor systeemprompts
-
-OpenClaw splitst de systeemprompt in een **stabiel voorvoegsel** en een **vluchtig
-achtervoegsel**, gescheiden door een interne cachevoorvoegselgrens. Inhoud boven de
-grens (tooldefinities, Skills-metadata, workspacebestanden en andere relatief
-statische context) wordt geordend zodat die byte-identiek blijft over beurten heen.
-Inhoud onder de grens (bijvoorbeeld `HEARTBEAT.md`, runtime-tijdstempels en
-andere metadata per beurt) mag veranderen zonder het gecachte voorvoegsel ongeldig
-te maken.
+OpenClaw splitst de systeemprompt bij een interne cacheprefixgrens in een **stabiel prefix** en een **vluchtig suffix**. Inhoud boven de grens (tooldefinities, metagegevens van Skills en werkruimtebestanden) wordt geordend om over meerdere beurten byte-identiek te blijven. Inhoud onder de grens (bijvoorbeeld `HEARTBEAT.md`, runtime-tijdstempels en andere metagegevens per beurt) kan veranderen zonder het gecachte prefix ongeldig te maken.
 
 Belangrijke ontwerpkeuzes:
 
-- Stabiele workspace projectcontextbestanden worden vóór `HEARTBEAT.md` geordend, zodat
-  Heartbeat-wijzigingen het stabiele voorvoegsel niet breken.
-- De grens wordt toegepast op Anthropic-familie-, OpenAI-familie-, Google- en
-  CLI-transportvorming, zodat alle ondersteunde providers profiteren van dezelfde
-  voorvoegselstabiliteit.
-- Codex Responses- en Anthropic Vertex-aanvragen worden gerouteerd via
-  grensbewuste cachevorming, zodat cachehergebruik afgestemd blijft op wat providers
-  daadwerkelijk ontvangen.
-- Systeempromptvingerafdrukken worden genormaliseerd (witruimte, regeleinden,
-  door hooks toegevoegde context, ordening van runtimecapaciteiten), zodat semantisch
-  ongewijzigde prompts KV/cache delen over beurten heen.
+- Stabiele projectcontextbestanden van de werkruimte worden vóór `HEARTBEAT.md` geordend, zodat veranderingen door Heartbeat het stabiele prefix niet verbreken.
+- De grens wordt toegepast bij de transportvormgeving voor de Anthropic-familie, OpenAI-familie, Google en CLI, zodat alle ondersteunde providers profiteren van dezelfde prefixstabiliteit.
+- Codex Responses- en Anthropic Vertex-aanvragen worden verwerkt via grensbewuste cachevormgeving, zodat cachehergebruik afgestemd blijft op wat providers daadwerkelijk ontvangen.
+- Vingerafdrukken van systeemprompts worden genormaliseerd (witruimte, regeleinden, door hooks toegevoegde context en ordening van runtimecapaciteiten), zodat semantisch ongewijzigde prompts over meerdere beurten dezelfde cache delen.
 
-Als je onverwachte `cacheWrite`-pieken ziet na een configuratie- of workspacewijziging,
-controleer dan of de wijziging boven of onder de cachegrens terechtkomt. Vluchtige
-inhoud onder de grens plaatsen (of stabiliseren) lost het probleem vaak op.
+Als u onverwachte pieken in `cacheWrite` ziet na een wijziging in de configuratie of werkruimte, controleert u of de wijziging boven of onder de cachegrens terechtkomt. Het probleem wordt meestal opgelost door vluchtige inhoud onder de grens te plaatsen (of deze te stabiliseren).
 
-## Cache-stabiliteitswaarborgen van OpenClaw
+## Beschermingsmechanismen voor cachestabiliteit van OpenClaw
 
-OpenClaw houdt ook verschillende cachegevoelige payloadvormen deterministisch voordat
-de aanvraag de provider bereikt:
-
-- Bundle MCP-toolcatalogi worden deterministisch gesorteerd vóór toolregistratie,
-  zodat wijzigingen in `listTools()`-volgorde het toolsblok niet laten schommelen en
-  promptcachevoorvoegsels breken.
-- Legacy-sessies met persistente afbeeldingsblokken houden de **3 meest recente
-  voltooide beurten** intact; oudere al verwerkte afbeeldingsblokken kunnen worden
-  vervangen door een markering, zodat afbeeldingszware vervolgaanvragen niet steeds
-  grote verouderde payloads opnieuw blijven verzenden.
+- Meegeleverde MCP-toolcatalogi worden vóór toolregistratie deterministisch gesorteerd (eerst op servernaam, daarna op toolnaam), zodat wijzigingen in de volgorde van `listTools()` het toolblok niet voortdurend wijzigen en promptcacheprefixen niet verbreken.
+- Bij verouderde sessies met opgeslagen afbeeldingsblokken blijven de **3 meest recente voltooide beurten** intact (waarbij alle voltooide beurten worden geteld, niet alleen die met afbeeldingen). Oudere, al verwerkte afbeeldingsblokken worden vervangen door een tekstmarkering, zodat bij vervolgaanvragen met veel afbeeldingen niet voortdurend grote, verouderde payloads opnieuw worden verzonden.
 
 ## Afstemmingspatronen
 
-### Gemengd verkeer (aanbevolen standaard)
+### Gemengd verkeer (aanbevolen standaardwaarde)
 
-Houd een langlevende baseline op je hoofdagent, schakel caching uit op bursty notificatieagents:
+Gebruik een langlevende basisconfiguratie voor uw primaire agent en schakel caching uit voor agents die meldingen in pieken versturen:
 
 ```yaml
 agents:
@@ -244,118 +177,104 @@ agents:
         cacheRetention: "none"
 ```
 
-### Kosten-eerst-baseline
+### Basisconfiguratie met kosten als prioriteit
 
-- Stel baseline `cacheRetention: "short"` in.
+- Stel de basiswaarde `cacheRetention: "short"` in.
 - Schakel `contextPruning.mode: "cache-ttl"` in.
-- Houd Heartbeat alleen onder je TTL voor agents die profiteren van warme caches.
+- Houd Heartbeat alleen onder uw TTL voor agents die voordeel hebben van warme caches.
 
-## Cachediagnostiek
+## Live-regressietests
 
-OpenClaw stelt speciale cachetrace-diagnostiek beschikbaar voor ingebedde agentruns.
-
-Voor normale gebruikersgerichte diagnostiek kunnen `/status` en andere gebruikssamenvattingen
-de nieuwste transcriptgebruikentry gebruiken als fallbackbron voor `cacheRead` /
-`cacheWrite` wanneer de live sessie-entry die tellers niet heeft.
-
-## Live regressietests
-
-OpenClaw houdt één gecombineerde live cacheregressiegate bij voor herhaalde voorvoegsels, toolbeurten, afbeeldingsbeurten, MCP-achtige tooltranscripten en een Anthropic no-cache-controle.
+OpenClaw voert één gecombineerde live-regressiecontrole voor caches uit, die herhaalde prefixen, toolbeurten, afbeeldingsbeurten, MCP-achtige tooltranscripten en een Anthropic-controle zonder cache omvat.
 
 - `src/agents/live-cache-regression.live.test.ts`
+- `src/agents/live-cache-regression-runner.ts`
 - `src/agents/live-cache-regression-baseline.ts`
 
-Voer de smalle live gate uit met:
+Voer deze als volgt uit:
 
 ```sh
 OPENCLAW_LIVE_TEST=1 OPENCLAW_LIVE_CACHE_TEST=1 pnpm test:live:cache
 ```
 
-Het baselinebestand slaat de meest recent waargenomen live cijfers op, plus de providerspecifieke regressieondergrenzen die door de test worden gebruikt.
-De runner gebruikt ook verse sessie-ID's en prompt-naamruimten per run, zodat eerdere cachetoestand de huidige regressiesteekproef niet vervuilt.
+Het basislijnbestand slaat de meest recent waargenomen livewaarden op, samen met de providerspecifieke regressieondergrenzen waaraan de test toetst. Elke uitvoering gebruikt nieuwe sessie-id's en promptnaamruimten per uitvoering, zodat eerdere cachestatus het huidige monster niet verstoort. Anthropic en OpenAI gebruiken verschillende handhaving: het niet halen van een Anthropic-ondergrens is een harde regressie (de test mislukt), terwijl het niet halen van een OpenAI-ondergrens alleen wordt bewaakt (vastgelegd als waarschuwing en de uitvoering mislukt niet). Ze delen niet één drempelwaarde voor alle providers.
 
-Deze tests gebruiken bewust niet dezelfde succescriteria voor alle providers.
+### Verwachtingen voor livegebruik van Anthropic
 
-### Anthropic-liveverwachtingen
+- Verwacht expliciete opwarmwrites via `cacheWrite`.
+- Verwacht bij herhaalde beurten dat vrijwel de volledige geschiedenis wordt hergebruikt, omdat Anthropic's cachebeheer het cachebreekpunt tijdens het gesprek steeds verder verplaatst.
+- Ondergrenzen voor stabiele, tool-, afbeeldings- en MCP-achtige paden zijn strikte regressiepoorten.
 
-- Verwacht expliciete warmup-schrijfbewerkingen via `cacheWrite`.
-- Verwacht bijna volledig hergebruik van de geschiedenis bij herhaalde beurten, omdat Anthropic cache control het cachebreekpunt door het gesprek heen opschuift.
-- Huidige live-assertions gebruiken nog steeds hoge drempels voor trefferpercentages voor stabiele, tool- en afbeeldingspaden.
+### Verwachtingen voor livegebruik van OpenAI
 
-### OpenAI-liveverwachtingen
+- Verwacht alleen `cacheRead`; bij Chat Completions blijft `cacheWrite` `0`.
+- Beschouw cachehergebruik bij herhaalde beurten als een providerspecifiek plateau, niet als met Anthropic vergelijkbaar voortschrijdend hergebruik van de volledige geschiedenis.
+- Ondergrenzen dienen alleen voor bewaking (een gemiste ondergrens wordt als waarschuwing vastgelegd en laat de test niet mislukken) en zijn afgeleid van waargenomen livegedrag op `gpt-5.4-mini`:
 
-- Verwacht alleen `cacheRead`. `cacheWrite` blijft `0`.
-- Behandel cachehergebruik bij herhaalde beurten als een providerspecifiek plateau, niet als hergebruik van de volledige geschiedenis op de bewegende Anthropic-manier.
-- Huidige live-assertions gebruiken conservatieve ondergrenscontroles die zijn afgeleid van waargenomen live gedrag op `gpt-5.4-mini`:
-  - stabiel prefix: `cacheRead >= 4608`, trefferpercentage `>= 0.90`
-  - tooltranscript: `cacheRead >= 4096`, trefferpercentage `>= 0.85`
-  - afbeeldingstranscript: `cacheRead >= 3840`, trefferpercentage `>= 0.82`
-  - MCP-achtig transcript: `cacheRead >= 4096`, trefferpercentage `>= 0.85`
+| Scenario                | Ondergrens voor `cacheRead` | Ondergrens voor trefpercentage |
+| ----------------------- | --------------------------: | -----------------------------: |
+| Stabiel voorvoegsel     |                       4,608 |                           0.90 |
+| Tooltranscript          |                       4,096 |                           0.85 |
+| Afbeeldingstranscript   |                       3,840 |                           0.82 |
+| MCP-achtig transcript   |                       4,096 |                           0.85 |
 
-Verse gecombineerde live verificatie op 2026-04-04 kwam uit op:
+De laatst waargenomen basiswaarden (uit `live-cache-regression-baseline.ts`) waren: stabiel voorvoegsel `cacheRead=4864`, trefpercentage `0.966`; tooltranscript `cacheRead=4608`, trefpercentage `0.896`; afbeeldingstranscript `cacheRead=4864`, trefpercentage `0.954`; MCP-achtig transcript `cacheRead=4608`, trefpercentage `0.891`.
 
-- stabiel prefix: `cacheRead=4864`, trefferpercentage `0.966`
-- tooltranscript: `cacheRead=4608`, trefferpercentage `0.896`
-- afbeeldingstranscript: `cacheRead=4864`, trefferpercentage `0.954`
-- MCP-achtig transcript: `cacheRead=4608`, trefferpercentage `0.891`
+Waarom de controles verschillen: Anthropic biedt expliciete cachebreekpunten en voortschrijdend hergebruik van de gespreksgeschiedenis, terwijl het effectief herbruikbare voorvoegsel van OpenAI in liveverkeer eerder een plateau kan bereiken dan de volledige prompt. Vergelijking van beide providers met één providersoverschrijdende procentuele drempel leidt tot foutieve regressiemeldingen.
 
-Recente lokale kloktijd voor de gecombineerde gate was ongeveer `88s`.
-
-Waarom de assertions verschillen:
-
-- Anthropic stelt expliciete cachebreekpunten en bewegend hergebruik van gespreksgeschiedenis beschikbaar.
-- OpenAI prompt caching blijft gevoelig voor exacte prefixes, maar het effectieve herbruikbare prefix in live Responses-verkeer kan eerder een plateau bereiken dan de volledige prompt.
-- Daardoor veroorzaakt het vergelijken van Anthropic en OpenAI met één procentuele drempel voor alle providers valse regressies.
-
-### `diagnostics.cacheTrace`-configuratie
+## Configuratie van `diagnostics.cacheTrace`
 
 ```yaml
 diagnostics:
   cacheTrace:
     enabled: true
-    filePath: "~/.openclaw/logs/cache-trace.jsonl" # optional
-    includeMessages: false # default true
-    includePrompt: false # default true
-    includeSystem: false # default true
+    filePath: "~/.openclaw/logs/cache-trace.jsonl" # optioneel
+    includeMessages: false # standaard true
+    includePrompt: false # standaard true
+    includeSystem: false # standaard true
 ```
 
 Standaardwaarden:
 
-- `filePath`: `$OPENCLAW_STATE_DIR/logs/cache-trace.jsonl`
-- `includeMessages`: `true`
-- `includePrompt`: `true`
-- `includeSystem`: `true`
+| Sleutel            | Standaardwaarde                              |
+| ------------------ | -------------------------------------------- |
+| `filePath`         | `$OPENCLAW_STATE_DIR/logs/cache-trace.jsonl` |
+| `includeMessages`  | `true`                                       |
+| `includePrompt`    | `true`                                       |
+| `includeSystem`    | `true`                                       |
 
-### Env-schakelaars (eenmalig debuggen)
+### Omgevingsschakelaars (eenmalige foutopsporing)
 
-- `OPENCLAW_CACHE_TRACE=1` schakelt cachetracing in.
-- `OPENCLAW_CACHE_TRACE_FILE=/path/to/cache-trace.jsonl` overschrijft het uitvoerpad.
-- `OPENCLAW_CACHE_TRACE_MESSAGES=0|1` schakelt het vastleggen van de volledige berichtpayload om.
-- `OPENCLAW_CACHE_TRACE_PROMPT=0|1` schakelt het vastleggen van prompttekst om.
-- `OPENCLAW_CACHE_TRACE_SYSTEM=0|1` schakelt het vastleggen van de systeemprompt om.
+| Variabele                            | Effect                                        |
+| ------------------------------------ | --------------------------------------------- |
+| `OPENCLAW_CACHE_TRACE=1`             | Schakelt cachetracering in                     |
+| `OPENCLAW_CACHE_TRACE_FILE=path`     | Overschrijft het uitvoerpad                    |
+| `OPENCLAW_CACHE_TRACE_MESSAGES=0\|1` | Schakelt vastlegging van volledige berichten  |
+| `OPENCLAW_CACHE_TRACE_PROMPT=0\|1`   | Schakelt vastlegging van prompttekst           |
+| `OPENCLAW_CACHE_TRACE_SYSTEM=0\|1`   | Schakelt vastlegging van de systeemprompt      |
 
-### Wat te inspecteren
+### Wat te controleren
 
-- Cachetrace-events zijn JSONL en bevatten staged snapshots zoals `session:loaded`, `prompt:before`, `stream:context` en `session:after`.
-- De impact van cachetokens per beurt is zichtbaar in normale gebruiksoppervlakken via `cacheRead` en `cacheWrite` (bijvoorbeeld `/usage tokens`, `/status`, sessiegebruiksamenvattingen en aangepaste `messages.usageTemplate`-layouts).
-- Verwacht voor Anthropic zowel `cacheRead` als `cacheWrite` wanneer caching actief is.
-- Verwacht voor OpenAI `cacheRead` bij cachetreffers. GPT-5.6 Responses kan ook `cacheWrite` rapporteren terwijl promptsegmenten worden geschreven; andere Responses-payloads die de schrijfteller weglaten, houden die op `0`.
-- Als je requesttracing nodig hebt, log dan request-ID's en rate-limit-headers apart van cachemetrieken. De huidige cachetrace-uitvoer van OpenClaw is gericht op prompt-/sessievorm en genormaliseerd tokengebruik in plaats van ruwe provider-responseheaders.
+- Cachetraceringsgebeurtenissen zijn JSONL-records met gefaseerde momentopnamen zoals `session:loaded`, `prompt:before`, `stream:context` en `session:after`.
+- De invloed van cachetokens per beurt is zichtbaar in de normale gebruiksoverzichten: `cacheRead` en `cacheWrite` verschijnen in `/usage tokens`, `/status`, gebruikssamenvattingen van sessies en aangepaste indelingen voor `messages.usageTemplate`.
+- Verwacht bij Anthropic zowel `cacheRead` als `cacheWrite` wanneer caching actief is.
+- Verwacht bij OpenAI `cacheRead` bij cachetreffers; `cacheWrite` wordt alleen ingevuld voor payloads van de Responses API waarin dit veld is opgenomen (zie [OpenAI](#openai-direct-api) hierboven).
+- OpenAI retourneert ook tracerings- en snelheidslimietheaders zoals `x-request-id`, `openai-processing-ms` en `x-ratelimit-*`; gebruik deze voor het traceren van aanvragen, maar baseer de registratie van cachetreffers nog steeds op de gebruikspayload en niet op headers.
 
-## Snel problemen oplossen
+## Snelle probleemoplossing
 
-- Hoge `cacheWrite` op de meeste beurten: controleer op vluchtige systeempromptinvoer en verifieer dat model/provider je cache-instellingen ondersteunt.
-- Hoge `cacheWrite` op Anthropic: betekent vaak dat het cachebreekpunt terechtkomt op inhoud die bij elk request verandert.
-- Lage OpenAI `cacheRead`: verifieer dat het stabiele prefix vooraan staat, dat het herhaalde prefix minstens 1024 tokens is en dat dezelfde `prompt_cache_key` wordt hergebruikt voor beurten die een cache zouden moeten delen.
-- Geen effect van `cacheRetention`: bevestig dat de modelsleutel overeenkomt met `agents.defaults.models["provider/model"]`.
-- Bedrock Nova/Mistral-requests met cache-instellingen: verwachte runtimeforce naar `none`.
+- **Hoge `cacheWrite` bij de meeste beurten**: controleer op veranderlijke invoer voor de systeemprompt; verifieer dat het model/de provider uw cache-instellingen ondersteunt.
+- **Hoge `cacheWrite` bij Anthropic**: betekent vaak dat het cachebreekpunt terechtkomt op inhoud die bij elke aanvraag verandert.
+- **Lage `cacheRead` bij OpenAI**: verifieer dat het stabiele voorvoegsel vooraan staat, dat het herhaalde voorvoegsel minstens 1024 tokens bevat en dat dezelfde `prompt_cache_key` wordt hergebruikt voor beurten die een cache moeten delen.
+- **Geen effect van `cacheRetention`**: controleer of de modelsleutel overeenkomt met `agents.defaults.models["provider/model"]`.
+- **Bedrock Nova-aanvragen met cache-instellingen**: verwacht gedrag — deze worden tijdens runtime omgezet naar geen cachebewaring.
 
-Gerelateerde docs:
+Gerelateerde documentatie:
 
 - [Anthropic](/nl/providers/anthropic)
 - [Tokengebruik en kosten](/nl/reference/token-use)
-- [Sessiesnoeiing](/nl/concepts/session-pruning)
-- [Gateway-configuratiereferentie](/nl/gateway/configuration-reference)
+- [Sessies opschonen](/nl/concepts/session-pruning)
+- [Configuratiereferentie voor de Gateway](/nl/gateway/configuration-reference)
 
 ## Gerelateerd
 

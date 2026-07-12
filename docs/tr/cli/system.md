@@ -1,31 +1,33 @@
 ---
 read_when:
-    - Bir Cron işi oluşturmadan bir sistem olayını kuyruğa almak istiyorsunuz
+    - Bir cron işi oluşturmadan bir sistem olayını kuyruğa almak istiyorsunuz
     - Heartbeat'leri etkinleştirmeniz veya devre dışı bırakmanız gerekir
-    - Sistem varlık girdilerini incelemek istiyorsunuz
-summary: '`openclaw system` için CLI referansı (sistem olayları, Heartbeat, varlık durumu)'
+    - Sistem varlığı kayıtlarını incelemek istiyorsunuz
+summary: '`openclaw system` için CLI başvurusu (sistem olayları, Heartbeat, iletişim durumu)'
 title: Sistem
 x-i18n:
-    generated_at: "2026-05-11T20:27:00Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:36:47Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2810fb064ea4afeac24ca0d71419913a664bbec0721cabdb09196075914f4864
+    source_hash: aaca206d8b463fd33f9e3cb21382bbf36469e9daa2706d8a9e2c7fab14b76e7a
     source_path: cli/system.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw system`
 
-Gateway için sistem düzeyi yardımcılar: sistem olaylarını kuyruğa alır, Heartbeat'leri kontrol eder
-ve varlık durumunu görüntüler.
+Gateway için sistem düzeyinde yardımcılar: sistem olaylarını kuyruğa ekleyin, Heartbeat'leri denetleyin ve çevrimiçi durumunu görüntüleyin.
 
-Tüm `system` alt komutları Gateway RPC kullanır ve paylaşılan istemci bayraklarını kabul eder:
+Tüm `system` alt komutları Gateway RPC kullanır ve ortak istemci bayraklarını kabul eder:
 
-- `--url <url>`
-- `--token <token>`
-- `--timeout <ms>`
-- `--expect-final`
+| Bayrak            | Varsayılan                           | Açıklama                                                                                                                                                                                                 |
+| ----------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--url <url>`     | yapılandırıldığında `gateway.remote.url` | Gateway WebSocket URL'si.                                                                                                                                                                            |
+| `--token <token>` | yok                                  | Gateway belirteci (gerekiyorsa).                                                                                                                                                                         |
+| `--timeout <ms>`  | `30000`                              | Milisaniye cinsinden RPC zaman aşımı.                                                                                                                                                                    |
+| `--expect-final`  | kapalı                               | Son yanıtı (agent) bekleyin.                                                                                                                                                                             |
+| `--json`          | kapalı                               | JSON çıktısı verin. `heartbeat last/enable/disable` ve `system presence`, bu bayraktan bağımsız olarak her zaman ham RPC JSON yükünü yazdırır; `system event`, JSON ile düz bir `ok` satırı arasında geçiş yapmak için bu bayrağı kullanır. |
 
 ## Yaygın komutlar
 
@@ -39,58 +41,34 @@ openclaw system presence
 
 ## `system event`
 
-Varsayılan olarak **main** oturumda bir sistem olayını kuyruğa alır. Sonraki Heartbeat
-bunu istemde bir `System:` satırı olarak enjekte eder. Heartbeat'i hemen tetiklemek
-için `--mode now` kullanın; `next-heartbeat` bir sonraki zamanlanmış işareti bekler.
+Varsayılan olarak **ana** oturumda bir sistem olayını kuyruğa ekler. Bir sonraki Heartbeat, bunu isteme bir `System:` satırı olarak ekler. Heartbeat'i hemen tetiklemek için `--mode now` kullanın; `next-heartbeat` (varsayılan) bir sonraki zamanlanmış işareti bekler.
 
-Belirli bir oturumu hedeflemek için `--session-key` iletin (örneğin bir
-async-task tamamlanmasını, onu başlatan kanala geri aktarmak için).
+Belirli bir oturumu hedeflemek için `--session-key` iletin; örneğin, eşzamansız bir görevin tamamlanmasını onu başlatan kanala geri aktarmak için.
 
-> **`--session-key` ile zamanlama istisnası:** `--session-key` sağlandığında,
-> `--mode next-heartbeat` bir sonraki zamanlanmış işareti beklemek yerine
-> hemen hedeflenen bir uyandırmaya indirgenir. Hedeflenen uyandırmalar Heartbeat amacı olarak
-> `immediate` kullanır; böylece aksi halde bir `event` amaçlı uyandırmayı
-> erteleyecek (ve fiilen düşürecek) çalıştırıcının zamanı gelmemiş kapısını atlarlar. Gecikmeli
-> teslim istiyorsanız, `--session-key` kullanmayın; böylece olay main oturuma düşer ve
-> bir sonraki normal Heartbeat ile ilerler.
+<Note>
+**`--session-key` ile zamanlama istisnası:** `--session-key` sağlandığında, `--mode next-heartbeat` bir sonraki zamanlanmış işareti beklemek yerine anında hedeflenmiş uyandırmaya dönüşür. Hedeflenmiş uyandırmalar `immediate` Heartbeat amacını kullanır; böylece aksi takdirde `event` amaçlı bir uyandırmayı erteleyecek (ve fiilen düşürecek) olan çalıştırıcının henüz zamanı gelmedi kapısını atlar. Gecikmeli teslimat istiyorsanız olayın ana oturuma ulaşması ve bir sonraki düzenli Heartbeat ile iletilmesi için `--session-key` seçeneğini kullanmayın.
+</Note>
 
 Bayraklar:
 
 - `--text <text>`: gerekli sistem olayı metni.
 - `--mode <mode>`: `now` veya `next-heartbeat` (varsayılan).
-- `--session-key <sessionKey>`: isteğe bağlı; ajanın main oturumu yerine
-  belirli bir ajan oturumunu hedefler. Çözümlenen ajana ait olmayan anahtarlar
-  ajanın main oturumuna geri döner.
-- `--json`: makine tarafından okunabilir çıktı.
-- `--url`, `--token`, `--timeout`, `--expect-final`: paylaşılan Gateway RPC bayrakları.
+- `--session-key <sessionKey>`: isteğe bağlıdır; agent'ın ana oturumu yerine belirli bir agent oturumunu hedefler. Çözümlenen agent'a ait olmayan anahtarlar agent'ın ana oturumuna geri döner.
 
 ## `system heartbeat last|enable|disable`
-
-Heartbeat kontrolleri:
 
 - `last`: son Heartbeat olayını gösterir.
 - `enable`: Heartbeat'leri yeniden açar (devre dışı bırakılmışlarsa bunu kullanın).
 - `disable`: Heartbeat'leri duraklatır.
 
-Bayraklar:
-
-- `--json`: makine tarafından okunabilir çıktı.
-- `--url`, `--token`, `--timeout`, `--expect-final`: paylaşılan Gateway RPC bayrakları.
-
 ## `system presence`
 
-Gateway'in bildiği geçerli sistem varlığı girdilerini listeler (düğümler,
-örnekler ve benzer durum satırları).
-
-Bayraklar:
-
-- `--json`: makine tarafından okunabilir çıktı.
-- `--url`, `--token`, `--timeout`, `--expect-final`: paylaşılan Gateway RPC bayrakları.
+Gateway'in bildiği mevcut sistem çevrimiçi durumu girdilerini (Node'lar, örnekler ve benzer durum satırları) listeler.
 
 ## Notlar
 
-- Mevcut yapılandırmanızla erişilebilen çalışan bir Gateway gerektirir (yerel veya uzak).
-- Sistem olayları geçicidir ve yeniden başlatmalar arasında kalıcı değildir.
+- Geçerli yapılandırmanız üzerinden erişilebilen, çalışan bir Gateway gerektirir (yerel veya uzak).
+- Sistem olayları geçicidir ve yeniden başlatmalar arasında kalıcı olarak saklanmaz.
 
 ## İlgili
 

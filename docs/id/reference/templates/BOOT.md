@@ -1,24 +1,31 @@
 ---
 read_when:
-    - Menambahkan daftar periksa `BOOT.md`
-summary: Template workspace untuk `BOOT.md`
-title: Template `BOOT.md`
+    - Menambahkan daftar periksa BOOT.md
+summary: Templat ruang kerja untuk BOOT.md
+title: Templat BOOT.md
 x-i18n:
-    generated_at: "2026-04-24T09:26:47Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 78c31ef770af20fee60c5d9998c7b2eefb0e2139076f26707ee4cf84502b59f8
-    source_path: reference/templates/BOOT.md
-    workflow: 15
+    generated_at: "2026-07-12T14:41:05Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 1adfb4d71f1f03716a1ddc4774a4cb6ead4b8be65bd9bb34066a9e1929a36b21
+    source_path: reference/templates/BOOT.md
+    workflow: 16
 ---
 
 # BOOT.md
 
-Tambahkan instruksi singkat dan eksplisit tentang apa yang harus dilakukan OpenClaw saat startup (aktifkan `hooks.internal.enabled`).
-Jika tugas mengirim pesan, gunakan alat pesan lalu balas dengan token senyap yang persis
-`NO_REPLY` / `no_reply`.
+Tambahkan petunjuk awal mulai yang singkat dan eksplisit di sini. Hook bawaan `boot-md` menjalankan berkas ini satu kali per ruang kerja agen setiap kali Gateway dimulai, jika berkas tersebut ada dan memiliki konten selain spasi kosong. Beberapa agen yang berbagi ruang kerja hanya memicu satu kali eksekusi.
+
+Hook ini dinonaktifkan secara bawaan. Aktifkan terlebih dahulu:
+
+```bash
+openclaw hooks enable boot-md
+```
+
+Jika suatu butir daftar periksa mengirim pesan, gunakan alat pesan, lalu balas dengan token senyap persis `NO_REPLY` (tidak peka huruf besar-kecil).
 
 ## Terkait
 
-- [Agent workspace](/id/concepts/agent-workspace)
+- [Ruang kerja agen](/id/concepts/agent-workspace)
+- [Hook](/id/automation/hooks#boot-md)

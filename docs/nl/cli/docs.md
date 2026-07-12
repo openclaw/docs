@@ -1,22 +1,22 @@
 ---
 read_when:
-    - Je wilt de live OpenClaw-documentatie vanuit de terminal doorzoeken
-    - Je moet weten welke gehoste zoek-API de docs-CLI aanroept
-summary: CLI-referentie voor `openclaw docs` (doorzoek de live documentatie-index)
-title: Docs
+    - Je wilt vanuit de terminal de actuele OpenClaw-documentatie doorzoeken
+    - Je moet weten welke gehoste zoek-API de documentatie-CLI aanroept
+summary: CLI-referentie voor `openclaw docs` (doorzoek de actuele documentatie-index)
+title: Documentatie
 x-i18n:
-    generated_at: "2026-06-27T17:19:15Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:43:00Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f8be22f689d40ffec29df9562b69444c0f8b9bb607dfcb79de20b3023e0eb30a
+    source_hash: b0b575f0b76d40a53dd4f79c55fd65969a24eae27e27bd1c46d395f61fe89e42
     source_path: cli/docs.md
     workflow: 16
 ---
 
 # `openclaw docs`
 
-Doorzoek de live OpenClaw-documentatie-index vanuit de terminal. De opdracht roept de door Cloudflare gehoste zoek-API voor documentatie van OpenClaw aan en toont de resultaten in je terminal.
+Doorzoek de live OpenClaw-documentatie-index vanuit de terminal.
 
 ## Gebruik
 
@@ -25,11 +25,11 @@ openclaw docs                       # print docs entrypoint and example search
 openclaw docs <query...>            # search the live docs index
 ```
 
-Argumenten:
+| Argument     | Beschrijving                                                                    |
+| ------------ | ------------------------------------------------------------------------------- |
+| `[query...]` | Vrije zoekopdracht. Zoekopdrachten met meerdere woorden worden met spaties samengevoegd en als één geheel verzonden. |
 
-| Argument     | Beschrijving                                                                         |
-| ------------ | ------------------------------------------------------------------------------------ |
-| `[query...]` | Vrije zoekopdracht. Zoekopdrachten met meerdere woorden worden samengevoegd met spaties en als één geheel verzonden. |
+Zonder zoekopdracht toont `openclaw docs` de URL van het documentatie-ingangspunt en een voorbeeld van een zoekopdracht, in plaats van een zoekactie uit te voeren.
 
 ## Voorbeelden
 
@@ -39,17 +39,15 @@ openclaw docs sandbox allowHostControl
 openclaw docs gateway token secretref
 ```
 
-Zonder zoekopdracht toont `openclaw docs` de URL van het documentatie-startpunt plus een voorbeeldzoekopdracht in plaats van een zoekactie uit te voeren.
+## Werking
 
-## Hoe het werkt
-
-`openclaw docs` roept `https://docs.openclaw.ai/api/search` aan en toont de JSON-resultaten. De zoekaanroep gebruikt een vaste timeout van 30 seconden.
+`openclaw docs` roept `https://docs.openclaw.ai/api/search` aan en geeft de JSON-resultaten weer. Voor het zoekverzoek geldt een vaste time-out van 30 seconden.
 
 ## Uitvoer
 
-In een rijke (TTY-)terminal worden resultaten weergegeven als een kop gevolgd door een lijst met opsommingstekens. Elk opsommingsteken toont de paginatitel, de gekoppelde documentatie-URL en een kort fragment op de volgende regel. Lege resultaten tonen "Geen resultaten.".
+In een terminal met uitgebreide opmaak (TTY) worden de resultaten weergegeven als een kop gevolgd door een lijst met opsommingstekens: de paginatitel, een gekoppelde documentatie-URL en op de volgende regel een kort fragment. Bij lege resultaten wordt "Geen resultaten." weergegeven.
 
-In niet-rijke uitvoer (doorgevoerd via pipe, `--no-color`, scripts) worden dezelfde gegevens als Markdown weergegeven:
+In uitvoer zonder uitgebreide opmaak (via een pipe, `--no-color`, scripts) worden dezelfde gegevens als Markdown weergegeven:
 
 ```markdown
 # Docs search: <query>
@@ -58,12 +56,12 @@ In niet-rijke uitvoer (doorgevoerd via pipe, `--no-color`, scripts) worden dezel
 - [Title](https://docs.openclaw.ai/...) - snippet
 ```
 
-## Exitcodes
+## Afsluitcodes
 
-| Code | Betekenis                                                        |
-| ---- | ---------------------------------------------------------------- |
-| `0`  | Zoekactie geslaagd (inclusief antwoorden zonder resultaten).     |
-| `1`  | De aanroep naar de gehoste zoek-API voor documentatie is mislukt; stderr wordt inline afgedrukt. |
+| Code | Betekenis                                                                    |
+| ---- | ---------------------------------------------------------------------------- |
+| `0`  | De zoekactie is geslaagd, ook bij antwoorden zonder resultaten.              |
+| `1`  | De aanroep van de gehoste API voor het doorzoeken van de documentatie is mislukt; stderr toont de foutmelding. |
 
 ## Gerelateerd
 

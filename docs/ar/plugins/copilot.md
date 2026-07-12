@@ -1,74 +1,54 @@
 ---
 read_when:
-    - تريد استخدام حزمة اختبار GitHub Copilot SDK لوكيل
-    - تحتاج إلى أمثلة تكوين لوقت تشغيل `copilot`
-    - أنت توصل وكيلاً بخدمة Copilot بالاشتراك (github / openclaw / copilot) وتريد تشغيله عبر Copilot CLI
-summary: تشغيل دورات الوكيل المضمّن في OpenClaw عبر حزمة اختبار GitHub Copilot SDK الخارجية
-title: أداة اختبار Copilot SDK
+    - تريد استخدام إطار عمل GitHub Copilot SDK لوكيل
+    - تحتاج إلى أمثلة على الإعداد لبيئة التشغيل `copilot`
+    - أنت تربط وكيلاً باشتراك Copilot ‏(github / openclaw / copilot) وتريد تشغيله عبر Copilot CLI
+summary: شغّل أدوار وكيل OpenClaw المضمّن عبر إطار GitHub Copilot SDK الخارجي
+title: أداة تكامل Copilot SDK
 x-i18n:
-    generated_at: "2026-06-27T18:05:14Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:09:42Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e1a052cc21130b680f6af9ae32bc1dbaeaa15be5092939f0c236515a3233ab9b
+    source_hash: 4270a9b75a038540af6a8306f3e80c87d6085dde29d128adf85b930713209fc5
     source_path: plugins/copilot.md
     workflow: 16
 ---
 
-يسمح Plugin الخارجي `@openclaw/copilot` لـ OpenClaw بتشغيل دورات وكيل Copilot المضمنة ذات الاشتراك عبر GitHub Copilot CLI (`@github/copilot-sdk`) بدلًا من حزمة PI المدمجة.
+يشغّل Plugin الخارجي `@openclaw/copilot` دورات وكيل Copilot ذات الاشتراك المضمّن عبر GitHub Copilot CLI (`@github/copilot-sdk`) بدلًا من حاضنة OpenClaw المدمجة. تمتلك جلسة Copilot CLI حلقة الوكيل منخفضة المستوى: تنفيذ الأدوات الأصلي، وCompaction الأصلي (`infiniteSessions`)، وحالة سلسلة المحادثة التي يديرها CLI ضمن `copilotHome`. ويظل OpenClaw مسؤولًا عن قنوات الدردشة، وملفات الجلسات، واختيار النموذج، والأدوات الديناميكية (الموصولة بجسر)، والموافقات، وتسليم الوسائط، ونسخة السجل المرئية، والأسئلة الجانبية عبر `/btw` (راجع [الأسئلة الجانبية (`/btw`)](#side-questions-btw))، و`openclaw doctor`.
 
-استخدم حزمة Copilot SDK عندما تريد أن تملك جلسة Copilot CLI حلقة الوكيل منخفضة المستوى: تنفيذ الأدوات الأصلي، وCompaction الأصلي (`infiniteSessions`)، وحالة سلسلة المحادثة المُدارة بواسطة CLI تحت `copilotHome`.
-يظل OpenClaw مالكًا لقنوات الدردشة، وملفات الجلسات، واختيار النموذج، وأدوات OpenClaw الديناميكية (الموصولة)، والموافقات، وتسليم الوسائط، ومرآة النص المرئي، وأسئلة `/btw` الجانبية (تتعامل معها PI الاحتياطية داخل الشجرة — راجع
-[الأسئلة الجانبية (`/btw`)](#side-questions-btw))، و`openclaw doctor`.
-
-للتقسيم الأوسع للنموذج/المزوّد/وقت التشغيل، ابدأ بـ
-[أوقات تشغيل الوكلاء](/ar/concepts/agent-runtimes).
+للتعرّف على الفصل الأوسع بين النموذج والموفّر وبيئة التشغيل، ابدأ بصفحة
+[بيئات تشغيل الوكيل](/ar/concepts/agent-runtimes).
 
 ## المتطلبات
 
 - OpenClaw مع تثبيت Plugin ‏`@openclaw/copilot`.
-- إذا كان تكوينك يستخدم `plugins.allow`، فأدرج `copilot` (معرّف البيان
-  الذي يعلنه Plugin). ستترك قائمة السماح التقييدية التي تستخدم اسم حزمة npm بنمط `@openclaw/copilot`
-  Plugin محظورًا ولن يتم تحميل وقت التشغيل
-  حتى مع `agentRuntime.id: "copilot"`.
-- اشتراك GitHub Copilot يمكنه تشغيل Copilot CLI (أو إدخال `gitHubToken` في البيئة / ملف تعريف مصادقة للتشغيل بلا واجهة / تشغيل cron).
-- دليل `copilotHome` قابل للكتابة. تستخدم الحزمة افتراضيًا
-  `<agentDir>/copilot` عندما يوفر OpenClaw دليل وكيل، وإلا
-  `~/.openclaw/agents/<agentId>/copilot` لعزل كامل لكل وكيل.
+- إذا كان إعدادك يستخدم `plugins.allow`، فأدرج `copilot` (معرّف البيان الذي يعلنه Plugin). لن يتطابق إدخال قائمة السماح باسم حزمة npm ‏`@openclaw/copilot`، وسيظل Plugin محظورًا حتى مع ضبط `agentRuntime.id: "copilot"`.
+- اشتراك GitHub Copilot قادر على تشغيل Copilot CLI، أو متغير البيئة `gitHubToken` / إدخال ملف تعريف مصادقة لعمليات التشغيل دون واجهة أو عمليات Cron.
+- دليل `copilotHome` قابل للكتابة. القيمة الافتراضية هي `<agentDir>/copilot` عندما يوفّر OpenClaw دليلًا للوكيل، وإلا فهي `~/.openclaw/agents/<agentId>/copilot`.
 
-يشغّل `openclaw doctor` 
-[عقد الطبيب](#doctor) الخاص بـ Plugin لملكية حالة الجلسة التصريحية وترحيلات التوافق المستقبلية. ولا يشغّل فحوصات بيئة Copilot CLI.
+يشغّل `openclaw doctor` [عقد الفحص](#doctor) الخاص بـPlugin للتحقق من ملكية حالة الجلسة وترحيلات الإعداد المستقبلية. ولا يفحص بيئة Copilot CLI.
 
-## تثبيت Plugin
+## التثبيت
 
-وقت تشغيل Copilot هو Plugin خارجي، لذلك لا تحمل حزمة `openclaw` الأساسية
-اعتمادية `@github/copilot-sdk` أو ملف CLI الثنائي الخاص بالمنصة
-`@github/copilot-<platform>-<arch>`. يضيفان معًا نحو
-260 ميغابايت، لذا ثبّتهما فقط للوكلاء الذين يختارون هذا وقت التشغيل:
+تُشحن بيئة تشغيل Copilot بوصفها Plugin خارجيًا حتى لا تتضمن حزمة `openclaw` الأساسية `@github/copilot-sdk` أو ملف Copilot CLI الثنائي الخاص بالمنصة `@github/copilot-<platform>-<arch>` (بإجمالي يقارب 260 ميغابايت). ثبّتها فقط للوكلاء الذين يختارون استخدام بيئة التشغيل هذه:
 
 ```bash
 openclaw plugins install @openclaw/copilot
 ```
 
-يثبّت المعالج Plugin في المرة الأولى التي تختار فيها نموذج
-`github-copilot/*` **و** يختار تكوينك النموذج (أو مزوّده)
-ليستخدم وقت تشغيل وكيل Copilot عبر
-`agentRuntime: { id: "copilot" }` (راجع [البدء السريع](#quickstart) أدناه).
-ومن دون هذا الاشتراك، يستخدم openclaw مزوّد GitHub Copilot المدمج
-ولا يثبّت Plugin وقت التشغيل أبدًا.
+يثبّت معالج الإعداد Plugin تلقائيًا في المرة الأولى التي تختار فيها نموذجًا من `github-copilot/*` **ويكون** إعدادك قد وجّه ذلك النموذج (أو موفّره) إلى بيئة تشغيل Copilot عبر `agentRuntime: { id: "copilot" }`؛ راجع [البدء السريع](#quickstart). من دون هذا الاشتراك الصريح، يستخدم OpenClaw موفّر GitHub Copilot المدمج ولا يثبّت Plugin هذا مطلقًا.
 
-يحل وقت التشغيل SDK بهذا الترتيب:
+تحلّ بيئة التشغيل SDK بالترتيب الآتي:
 
-1. `import("@github/copilot-sdk")` من حزمة `@openclaw/copilot`
-   المثبتة.
-2. دليل الرجوع المعروف `~/.openclaw/npm-runtime/copilot/` (هدف التثبيت القديم عند الطلب).
+1. `import("@github/copilot-sdk")` من حزمة `@openclaw/copilot` المثبّتة.
+2. دليل الرجوع `~/.openclaw/npm-runtime/copilot/` (هدف التثبيت القديم عند الطلب).
 
-تظهر SDK المفقودة كخطأ واحد برمز `COPILOT_SDK_MISSING`
-ومعه أمر إعادة تثبيت Plugin أعلاه.
+يؤدي فقدان SDK إلى ظهور خطأ واحد بالرمز `COPILOT_SDK_MISSING` مع أمر إعادة التثبيت أعلاه.
 
 ## البدء السريع
 
-ثبّت نموذجًا واحدًا (أو مزوّدًا واحدًا) على الحزمة:
+ثبّت نموذجًا واحدًا (أو موفّرًا واحدًا) على الحاضنة:
 
 ```json5
 {
@@ -85,48 +65,27 @@ openclaw plugins install @openclaw/copilot
 }
 ```
 
-المساران متكافئان. استخدم `agentRuntime.id` على إدخال نموذج واحد
-عندما يجب توجيه ذلك النموذج فقط عبر الحزمة؛ واضبط
-`agentRuntime.id` على مزوّد عندما يجب أن يستخدمه كل نموذج تحت ذلك المزوّد.
+اضبط `agentRuntime.id` في إدخال نموذج واحد لتوجيه ذلك النموذج وحده عبر الحاضنة، أو اضبطه على موفّر لتوجيه كل نموذج تابع لذلك الموفّر.
 
-`github-copilot/auto` هو نقطة البداية المحمولة. تعتمد نماذج Copilot المسماة
-على سياسات الحساب والمؤسسة، لذا لا تثبّت واحدًا إلا بعد التأكد
-من أن Copilot CLI المصادق يعرضه.
+يمثّل `github-copilot/auto` نقطة البداية القابلة للنقل. تعتمد نماذج Copilot المسماة على الحساب وسياسة المؤسسة؛ تأكد من أن Copilot CLI المصادَق عليه يعرض النموذج فعلًا قبل تثبيته.
 
-## المزوّدون المدعومون
+## الموفّرون المدعومون
 
-تعلن الحزمة دعمها لمزوّد `github-copilot` القانوني
-(نفس المعرّف الذي يملكه `extensions/github-copilot`):
+تدعم الحاضنة موفّر `github-copilot` القياسي (المملوك لـ`extensions/github-copilot`)، إضافةً إلى إدخالات `models.providers` المخصصة عندما يحتوي النموذج على `baseUrl` غير فارغ وأحد أشكال `api` الآتية:
 
-- `github-copilot`
-
-كما تدعم إدخالات `models.providers` المخصصة عندما يحتوي النموذج المحدد على
-`baseUrl` غير فارغ وأحد أشكال API هذه:
-
-- `openai-responses`
-- `openai-completions`
-- `ollama` (إكمالات متوافقة مع OpenAI)
-- `azure-openai-responses`
 - `anthropic-messages`
+- `azure-openai-responses`
+- `ollama` (إكمالات متوافقة مع OpenAI)
+- `openai-completions`
+- `openai-responses`
 
-تظل معرّفات المزوّدين الأصلية مثل `openai` و`anthropic` و`google` و`ollama`
-مملوكة لأوقات تشغيلها الأصلية. استخدم معرّف مزوّد مخصصًا منفصلًا عند توجيه
-نقطة نهاية عبر Copilot BYOK.
+تظل معرّفات الموفّرين الأصليين (`openai`، و`anthropic`، و`google`، و`ollama`) مملوكة لبيئات تشغيلها الأصلية. استخدم معرّف موفّر مخصصًا ومختلفًا لتوجيه نقطة نهاية عبر Copilot BYOK بدلًا من ذلك.
 
-يجب أن تكون نقاط نهاية Copilot BYOK عناوين HTTPS على شبكة عامة. تمنح الحزمة
-Copilot SDK عنوان وكيل local loopback لكل محاولة، ثم تمرر حركة المزوّد
-عبر مسار fetch المحروس في OpenClaw حتى تظل سياسة تثبيت DNS وSSRF
-مملوكة لـ OpenClaw. استخدم وقت تشغيل OpenClaw الأصلي لـ Ollama المحلي أو LM Studio
-أو خوادم النماذج على LAN.
+يجب أن تكون نقاط نهاية Copilot BYOK عناوين HTTPS عامة. تمنح الحاضنة Copilot SDK وكيل local loopback لكل محاولة، ثم تمرّر حركة مرور الموفّر عبر مسار الجلب المحمي في OpenClaw حتى تظل سياسة تثبيت DNS ومنع SSRF مملوكة لـOpenClaw. استخدم بيئة تشغيل OpenClaw الأصلية لخوادم نماذج Ollama المحلية أو LM Studio أو خوادم الشبكة المحلية.
 
 ## BYOK
 
-يستخدم Copilot BYOK عقد المزوّد المخصص على مستوى الجلسة في SDK. يمرّر OpenClaw
-نقطة نهاية النموذج المحلولة، ومفتاح API، ووضع رمز الحامل، والرؤوس، ومعرّف النموذج،
-وحدود السياق/الإخراج من دون نقل منطق نقل المزوّد إلى
-النواة.
-
-على سبيل المثال:
+يستخدم Copilot BYOK عقد الموفّر المخصص على مستوى الجلسة في SDK. يمرّر OpenClaw نقطة نهاية النموذج المحلولة، ومفتاح API، ووضع رمز الحامل، والترويسات، ومعرّف النموذج، وحدود السياق/المخرجات؛ بينما يظل منطق نقل الموفّر في SDK لا في النواة.
 
 ```json5
 {
@@ -155,246 +114,192 @@ Copilot SDK عنوان وكيل local loopback لكل محاولة، ثم تمر
 }
 ```
 
-تُفهرس جلسات BYOK بشكل منفصل عن جلسات الاشتراك وعن نقاط النهاية الأخرى أو بصمات بيانات الاعتماد. يؤدي تدوير المفتاح أو الرؤوس أو النموذج أو
-نقطة النهاية إلى إنشاء جلسة Copilot SDK جديدة بدلًا من استئناف
-حالة غير متوافقة.
+تُفهرس جلسات BYOK بصورة منفصلة عن جلسات الاشتراك وعن نقاط نهاية BYOK أو بيانات اعتمادها الأخرى. يؤدي تدوير المفتاح أو الترويسات أو النموذج أو نقطة النهاية إلى بدء جلسة Copilot SDK جديدة بدلًا من استئناف حالة غير متوافقة.
 
 ## المصادقة
 
-الأولوية لكل وكيل، وتُطبّق أثناء `runCopilotAttempt`:
+ترتيب الأولوية، ويُطبّق لكل وكيل أثناء `runCopilotAttempt`:
 
-1. **`useLoggedInUser: true` صريح** على مُدخل المحاولة. يستخدم مستخدم Copilot
-   CLI المسجل دخوله والمحلول تحت `copilotHome` الخاص بالوكيل.
-2. **`gitHubToken` صريح** على مُدخل المحاولة (مع `profileId` +
-   `profileVersion`). مفيد لاستدعاءات CLI المباشرة والاختبارات حيث يريد
-   المستدعي تجاوز حل ملف تعريف المصادقة.
-3. **`resolvedApiKey` + `authProfileId` محلولان بالعقد** من شكل
-   `EmbeddedRunAttemptParams`. هذا هو **المسار الرئيسي للإنتاج**:
-   تحل النواة ملف تعريف مصادقة `github-copilot` المكوّن للوكيل
-   (عبر `src/infra/provider-usage.auth.ts:resolveProviderAuths`) قبل
-   استدعاء الحزمة، وتستهلك الحزمة كلا الحقلين مباشرة.
-   هذا يجعل ملف تعريف مصادقة `github-copilot:<profile>` يعمل من البداية إلى النهاية
-   لإعدادات بلا واجهة / cron / متعددة الملفات الشخصية من دون متغيرات بيئة.
-4. **رجوع متغير البيئة** لتشغيل CLI المباشر / dogfood عندما لا يكون هناك
-   ملف تعريف مصادقة مكوّن. يتحقق وقت التشغيل من المتغيرات التالية
-   بترتيب الأولوية، مطابقًا لمزوّد `github-copilot` المشحون
-   (`extensions/github-copilot/auth.ts`) وإعداد Copilot SDK
-   الموثق:
-   1. `OPENCLAW_GITHUB_TOKEN` -- تجاوز خاص بالحزمة؛ اضبط هذا
-      لتثبيت رمز لحزمة OpenClaw من دون إزعاج
-      تكوين `gh` / Copilot CLI على مستوى النظام.
-   2. `COPILOT_GITHUB_TOKEN` -- متغير البيئة القياسي لـ Copilot SDK / CLI.
-   3. `GH_TOKEN` -- متغير البيئة القياسي لـ `gh` CLI (يطابق أولوية مزوّد
-      `github-copilot` الحالية).
-   4. `GITHUB_TOKEN` -- رجوع رمز GitHub عام.
+1. **القيمة الصريحة `useLoggedInUser: true`** في مدخلات المحاولة — تستخدم مستخدم Copilot CLI المسجّل دخوله ضمن `copilotHome` الخاص بالوكيل.
+2. **القيمة الصريحة `gitHubToken`** في مدخلات المحاولة (تتطلب `profileId` + ‏`profileVersion`). وهي مخصصة لاستدعاءات CLI المباشرة والاختبارات التي تحتاج إلى تجاوز حل ملف تعريف المصادقة.
+3. **القيمتان `resolvedApiKey` + ‏`authProfileId` المحلولتان وفق العقد** — المسار الرئيسي في بيئة الإنتاج. تحلّ النواة ملف تعريف مصادقة `github-copilot` المضبوط للوكيل (`src/infra/provider-usage.auth.ts:resolveProviderAuths`) قبل استدعاء الحاضنة، وبذلك يعمل ملف تعريف مصادقة `github-copilot:<profile>` من البداية إلى النهاية في الإعدادات دون واجهة، أو Cron، أو متعددة الملفات الشخصية من دون متغيرات بيئة.
+4. **الرجوع إلى متغيرات البيئة**، مع فحصها بالترتيب الآتي (تفوز أول قيمة غير فارغة، وتُعد السلاسل الفارغة غير موجودة؛ وهذا يعكس أولوية موفّر `github-copilot` المشحون في `extensions/github-copilot/auth.ts`):
+   1. `OPENCLAW_GITHUB_TOKEN` — تجاوز خاص بالحاضنة؛ يتيح لك تثبيت رمز لحاضنة OpenClaw من دون إرباك إعداد `gh` / ‏Copilot CLI على مستوى النظام.
+   2. `COPILOT_GITHUB_TOKEN` — متغير البيئة القياسي لـCopilot SDK / ‏CLI.
+   3. `GH_TOKEN` — متغير البيئة القياسي لـ`gh` CLI.
+   4. `GITHUB_TOKEN` — رجوع عام لرمز GitHub.
 
-   تفوز أول قيمة غير فارغة؛ وتُعامل السلاسل الفارغة على أنها
-   غائبة. معرّف ملف تعريف التجمع المُركّب هو `env:<NAME>` و
-   `profileVersion` هو بصمة sha256 غير قابلة للعكس للرمز،
-   لذلك يؤدي تدوير قيمة البيئة إلى إبطال تجمع العميل بشكل نظيف.
+   يكون معرّف ملف التعريف المركّب في المجمّع هو `env:<NAME>`؛ وإصدار ملف التعريف هو بصمة sha256 غير قابلة للعكس للرمز، ولذلك يؤدي تدوير قيمة البيئة إلى إبطال مجمّع العملاء بصورة سليمة.
 
-5. **`useLoggedInUser` الافتراضي** عندما لا تتوفر إشارة رمز.
+5. **القيمة الافتراضية `useLoggedInUser`** عند عدم توفر أي إشارة لرمز.
 
-يحصل كل وكيل على `copilotHome` مخصص حتى لا تتسرب رموز Copilot CLI والجلسات و
-التكوين بين الوكلاء على الجهاز نفسه. الافتراضي هو
-`<agentDir>/copilot` عندما يمرر المضيف دليل وكيل إلى الحزمة
-(لعزل حالة SDK عن `models.json` / `auth-profiles.json` الخاصة بـ OpenClaw في
-الدليل نفسه)، أو `~/.openclaw/agents/<agentId>/copilot` خلاف ذلك.
-تجاوز ذلك باستخدام `copilotHome: <path>` على مُدخل المحاولة عندما تحتاج إلى
-موقع مخصص (مثلًا، نقطة تحميل مشتركة للترحيل).
+يحصل كل وكيل على `copilotHome` خاص به حتى لا تتسرّب رموز Copilot CLI وجلساته وإعداداته مطلقًا بين الوكلاء على الجهاز نفسه. القيمة الافتراضية:
+`<agentDir>/copilot` (تُبقي حالة SDK خارج الدليل نفسه الذي يحتوي ملفات `models.json` / ‏`auth-profiles.json` الخاصة بـOpenClaw)، أو
+`~/.openclaw/agents/<agentId>/copilot` عند عدم توفير دليل للوكيل.
+يمكنك تجاوزها باستخدام `copilotHome: <path>` في مدخلات المحاولة لتحديد موقع مخصص (مثل نقطة تحميل مشتركة للترحيل).
 
-تستخدم اختبارات الحزمة الحية `OPENCLAW_COPILOT_AGENT_LIVE_TOKEN` عندما تكون هناك حاجة إلى رمز مباشر.
-يمسح إعداد الاختبارات الحية المشترك عن قصد
-`COPILOT_GITHUB_TOKEN` و`GH_TOKEN` و`GITHUB_TOKEN` بعد تجهيز ملفات تعريف مصادقة حقيقية
-في منزل اختبار معزول، لذا فإن تمرير قيمة `gh auth token`
-عبر متغير الاختبار الحي المخصص يتجنب التخطي الخاطئ من دون كشف
-الرمز لمجموعات اختبار غير ذات صلة.
+تستخدم اختبارات الحاضنة الحية `OPENCLAW_COPILOT_AGENT_LIVE_TOKEN` لتوفير رمز مباشر. ينظّف إعداد الاختبارات الحية المشترك `COPILOT_GITHUB_TOKEN` و`GH_TOKEN` و`GITHUB_TOKEN` بعد تجهيز ملفات تعريف المصادقة الحقيقية في دليل الاختبار المعزول، ولذلك يؤدي تمرير قيمة `gh auth token` عبر المتغير المخصص إلى تجنّب عمليات التخطي الخاطئة من دون تسريبها إلى مجموعات اختبار غير ذات صلة.
 
-## سطح التكوين
+## سطح الإعداد
 
-تقرأ الحزمة تكوينها من مُدخل كل محاولة
-(`runCopilotAttempt({...})`) بالإضافة إلى مجموعة صغيرة من افتراضيات البيئة داخل
-`extensions/copilot/src/`:
+تقرأ الحاضنة الإعداد من مدخلات كل محاولة (`runCopilotAttempt({...})`) إضافةً إلى مجموعة صغيرة من قيم البيئة الافتراضية داخل `extensions/copilot/src/`:
 
-- `copilotHome` — دليل حالة CLI لكل وكيل (الافتراضيات موثقة أعلاه).
-- `model` — سلسلة أو `{ provider, id, api?, baseUrl?, headers?, authHeader? }`.
-  عند حذفه، يستخدم OpenClaw اختيار النموذج العادي للوكيل وتتحقق
-  الحزمة من أن المزوّد المحلول مدعوم.
-- `reasoningEffort` — `"low" | "medium" | "high" | "xhigh"`. يُطابق من
-  حل `ThinkLevel` / `ReasoningLevel` في OpenClaw ضمن
-  `auto-reply/thinking.ts`.
-- `infiniteSessionConfig` — تجاوز اختياري لكتلة SDK
-  `infiniteSessions` التي يقودها `harness.compact`. الافتراضيات آمنة
-  لتركها كما هي.
-- `hooksConfig` — تكوين توافق `SessionHooks` الأصلي الاختياري في Copilot SDK
-  لاستدعاءات الأدوات/MCP، وموجه المستخدم، والجلسة، والأخطاء.
-  وهو منفصل عن خطافات دورة الحياة المحمولة في OpenClaw.
-- `permissionPolicy` — تجاوز اختياري لمعالج
-  `onPermissionRequest` في SDK المستخدم لأنواع أدوات SDK المدمجة
-  (`shell`, `write`, `read`, `url`, `mcp`, `memory`, `hook`). يكون افتراضيًا
-  `rejectAllPolicy` كشبكة أمان؛ عمليًا لا تستدعي SDK أبدًا
-  أيًا من تلك الأنواع لأن كل أداة OpenClaw موصولة
-  تُسجّل مع `overridesBuiltInTool: true` و
-  `skipPermission: true` بحيث تمر 100% من استدعاءات الأدوات عبر
-  `execute()` المغلف الخاص بـ OpenClaw. راجع [الأذونات وask_user](#permissions-and-ask_user).
-- `enableSessionTelemetry` — علامة اختيارية لقياس بُعد جلسة SDK.
+| الحقل                    | الغرض                                                                                                                                                                                                                                                                                         |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `copilotHome`            | دليل حالة CLI لكل وكيل (القيم الافتراضية أعلاه).                                                                                                                                                                                                                                                 |
+| `model`                  | سلسلة أو `{ provider, id, api?, baseUrl?, headers?, authHeader? }`. احذفه لاستخدام اختيار النموذج المعتاد للوكيل؛ وتتحقق الحاضنة من أن الموفّر المحلول مدعوم.                                                                                                                   |
+| `reasoningEffort`        | `"low" \| "medium" \| "high" \| "xhigh"`. يُطابق نتيجة حل `ThinkLevel` / ‏`ReasoningLevel` في OpenClaw داخل `auto-reply/thinking.ts`.                                                                                                                                                          |
+| `infiniteSessionConfig`  | تجاوز اختياري لكتلة `infiniteSessions` في SDK التي يشغّلها `harness.compact`. يمكن تركه كما هو بأمان.                                                                                                                                                                                        |
+| `hooksConfig`            | إعداد اختياري وأصلي لـ`SessionHooks` في Copilot SDK لاستدعاءات الأدوات/MCP وموجّه المستخدم والجلسة والأخطاء. وهو منفصل عن خطافات دورة الحياة القابلة للنقل في OpenClaw.                                                                                                                                   |
+| `permissionPolicy`       | تجاوز اختياري لمعالج `onPermissionRequest` في SDK لأنواع أدوات SDK المدمجة (`shell`، و`write`، و`read`، و`url`، و`mcp`، و`memory`، و`hook`). القيمة الافتراضية هي `rejectAllPolicy` بوصفها شبكة أمان؛ راجع [الأذونات وask_user](#permissions-and-ask_user) لمعرفة سبب عدم تشغيلها فعليًا مطلقًا. |
+| `enableSessionTelemetry` | علامة اختيارية لقياس بيانات جلسة SDK.                                                                                                                                                                                                                                                            |
 
-لا تحتاج خطافات Plugin في OpenClaw إلى تكوين محاولة خاص بـ Copilot. تشغّل
-الحزمة `before_prompt_build` (وخطاف التوافق القديم `before_agent_start`)، و`llm_input`، و`llm_output`، و`agent_end` عبر
-مساعدات الحزمة القياسية. كما تشغّل عمليات Compaction الناجحة في SDK
-`before_compaction` و`after_compaction`. تواصل أدوات OpenClaw الموصولة
-تشغيل `before_tool_call` والإبلاغ عن `after_tool_call`؛ ويظل `hooksConfig` مخصصًا
-لاستدعاءات SDK الأصلية فقط التي لا تملك مكافئًا محمولًا.
+لا تحتاج خطافات Plugin في OpenClaw إلى أي إعداد خاص بـCopilot على مستوى المحاولة. تشغّل الحاضنة `before_prompt_build` (وخطاف التوافق القديم `before_agent_start`)، و`llm_input`، و`llm_output`، و`agent_end` عبر مساعدات الحاضنة القياسية. كما تشغّل عمليات Compaction الناجحة في SDK الخطافين `before_compaction` و`after_compaction`. تشغّل أدوات OpenClaw الموصولة بجسر `before_tool_call` وتبلّغ `after_tool_call`؛ ويظل `hooksConfig` مخصصًا لاستدعاءات SDK الأصلية فقط التي ليس لها مكافئ قابل للنقل.
 
-لا يحتاج أي شيء في بقية OpenClaw إلى معرفة هذه الحقول. لا ترى
-Plugins الأخرى والقنوات وكود النواة سوى شكل
-`AgentHarnessAttemptParams` / `AgentHarnessAttemptResult` القياسي.
+لا يحتاج أي جزء آخر من OpenClaw إلى معرفة هذه الحقول. لا ترى Plugins الأخرى والقنوات وكود النواة سوى الشكل القياسي `AgentHarnessAttemptParams` / ‏`AgentHarnessAttemptResult`.
 
 ## Compaction
 
-عند تشغيل `harness.compact`، تقوم حزمة Copilot SDK بما يلي:
+عند تشغيل `harness.compact`، تقوم حاضنة Copilot SDK بما يأتي:
 
 1. تستأنف جلسة SDK المتعقبة من دون متابعة العمل المعلّق.
-2. تستدعي RPC لضغط السجل على نطاق الجلسة في SDK.
-3. تعيد نتيجة Compaction من SDK من دون كتابة ملفات علامات توافق
-   تحت مساحة العمل.
+2. تستدعي RPC الخاص بضغط السجل على مستوى الجلسة في SDK.
+3. تعيد نتيجة Compaction في SDK من دون كتابة ملفات علامات توافق ضمن مساحة العمل.
 
-تستمر مرآة نص OpenClaw الجانبية (انظر أدناه) في تلقي
-رسائل ما بعد Compaction، لذلك يبقى سجل الدردشة المرئي للمستخدم متسقًا.
+تستمر نسخة سجل OpenClaw (أدناه) في تلقي الرسائل اللاحقة لعملية Compaction، بحيث يظل سجل الدردشة الموجّه للمستخدم متسقًا.
 
-## عكس النص
+## نسخ السجل
 
-يكتب `runCopilotAttempt` كتابة مزدوجة لكل رسائل الدور القابلة للعكس في
-نص تدقيق OpenClaw عبر
-`extensions/copilot/src/dual-write-transcripts.ts`. تكون المرآة
-ضمن نطاق كل جلسة (`copilot:${sessionId}`) وتستخدم هوية لكل رسالة
-(`${role}:${sha256_16(role,content)}`) بحيث تتصادم إعادة إصدار إدخالات الأدوار السابقة
-مع المفاتيح الموجودة على القرص ولا تتكرر.
+يكتب `runCopilotAttempt` نسخة مزدوجة من رسائل كل دورة القابلة للنسخ إلى سجل تدقيق OpenClaw عبر
+`extensions/copilot/src/dual-write-transcripts.ts`. ويكون نطاق النسخة محددًا لكل جلسة (`copilot:${sessionId}`)، ومفتاحها محددًا لكل رسالة
+(`${role}:${sha256_16(role,content)}`)، ولذلك تتصادم إدخالات الدورات السابقة المعاد إصدارها مع المفاتيح الموجودة على القرص بدلًا من تكرارها.
 
-تُغلّف المرآة بطبقتين من احتواء الفشل بحيث لا يمكن لفشل كتابة النص
-إفشال المحاولة: غلاف داخلي بأفضل جهد و`.catch(...)`
-دفاعي على مستوى المحاولة. تُسجّل حالات الفشل ولكن لا تُعرض.
+تُحيط بالمرآة طبقتان لاحتواء الأعطال، بحيث لا يؤدي فشل كتابة النص المنسوخ
+إلى إفشال المحاولة مطلقًا: غلاف داخلي قائم على بذل أفضل جهد، بالإضافة إلى
+`.catch(...)` للدفاع المتعمق على مستوى المحاولة. تُسجَّل الأعطال، ولا
+تُعرَض.
 
 ## الأسئلة الجانبية (`/btw`)
 
-`/btw` ليس **أصليًا** في هذا الحزام. يترك `createCopilotAgentHarness()`
-عن قصد `harness.runSideQuestion` غير معرّف، لذلك ينتقل موزّع `/btw` في OpenClaw
-(`src/agents/btw.ts`) إلى مسار رجوع PI نفسه داخل الشجرة الذي يستخدمه لكل
-بيئة تشغيل غير Codex: يُستدعى موفر النموذج المكوّن مباشرةً بموجّه قصير لسؤال
-جانبي، ثم يُعاد بثه عبر `streamSimple` (لا جلسة CLI، ولا خانة إضافية في المجمع).
+الأمر `/btw` **ليس** أصليًا في حاضنة الاختبار هذه. تتعمد
+`createCopilotAgentHarness()` ترك `harness.runSideQuestion` غير معرّف
+(كما هو مؤكَّد في `extensions/copilot/harness.test.ts` ضمن `describe("runSideQuestion")`)،
+لذلك يتراجع موزّع `/btw` في OpenClaw (`src/agents/btw.ts`) إلى المسار نفسه
+الذي يستخدمه لكل بيئة تشغيل غير Codex: يُستدعى موفّر النموذج المُعدّ مباشرةً
+باستخدام مطالبة قصيرة لسؤال جانبي، ثم يُعاد الرد عبر البث باستخدام
+`streamSimple` (من دون جلسة CLI ومن دون خانة إضافية في المجمّع).
 
-يبقي هذا جلسات Copilot CLI محجوزة لحلقة الدور الرئيسية للوكيل، ويبقي سلوك
-`/btw` مطابقًا لبيئات التشغيل الأخرى المدعومة بـ PI. يُثبَت العقد في
-[`extensions/copilot/harness.test.ts`](https://github.com/openclaw/openclaw/blob/main/extensions/copilot/harness.test.ts)
-ضمن `describe("runSideQuestion")`.
+يُبقي هذا جلسات Copilot CLI مخصّصة لحلقة الدور الرئيسية للوكيل، ويجعل
+سلوك `/btw` مطابقًا لسلوكه في بيئات التشغيل الأخرى غير Codex.
 
 ## Doctor
 
 يُحمَّل `extensions/copilot/doctor-contract-api.ts` تلقائيًا بواسطة
-`src/plugins/doctor-contract-registry.ts`. وهو يضيف:
+`src/plugins/doctor-contract-registry.ts`. ويساهم بما يلي:
 
-- `legacyConfigRules` فارغة (لا حقول متقاعدة في MVP).
-- `normalizeCompatibilityConfig` بلا إجراء (أُبقيت حتى تكون لتقاعد الحقول
-  مستقبلًا جهة ثابتة داخل الشجرة).
-- إدخال `sessionRouteStateOwners` واحد يطالب بالموفر `github-copilot`؛
-  وبيئة التشغيل `copilot`؛ ومفتاح جلسة CLI `copilot`؛ وبادئة ملف تعريف
-  المصادقة `github-copilot:`.
+- `legacyConfigRules` فارغ (لا توجد حقول متقاعدة حتى الآن).
+- `normalizeCompatibilityConfig` بلا عمليات (مُحتفَظ به كي يكون لعمليات
+  تقاعد الحقول مستقبلًا موضع ثابت داخل الشجرة).
+- إدخال واحد في `sessionRouteStateOwners`: الموفّر `github-copilot`، وبيئة
+  التشغيل `copilot`، ومفتاح جلسة CLI‏ `copilot`، وبادئة ملف تعريف المصادقة
+  `github-copilot:`.
 
 ## القيود
 
-- يطالب الحزام بـ `github-copilot` إضافةً إلى معرّفات موفر BYOK المخصصة غير المملوكة.
-  تبقى معرّفات الموفر الأصلي المملوكة للبيان على بيئة التشغيل المالكة لها حتى عندما
-  يُفرض `agentRuntime.id` على `copilot`.
-- لا يقدّم الحزام TUI؛ ولا يتأثر TUI الخاص بـ PI، ويبقى هو الرجوع لأي
-  بيئات تشغيل لا تملك سطحًا نظيرًا.
-- لا تُهاجَر حالة جلسة PI عندما ينتقل وكيل إلى `copilot`.
-  الاختيار لكل محاولة؛ وتبقى جلسات PI الحالية صالحة.
-- يستخدم `ask_user` مسار OpenClaw نفسه للمطالبة والرد مثل حزام Codex.
-  عندما يطلب Copilot SDK إدخالًا من المستخدم، ينشر OpenClaw مطالبة حاظرة
-  إلى القناة/TUI النشطة، وتقوم رسالة المستخدم التالية في الطابور بحل طلب SDK.
+- تطالب حاضنة الاختبار بالمعرّف `github-copilot` بالإضافة إلى معرّفات موفّري
+  BYOK المخصّصة غير المملوكة. تبقى معرّفات الموفّرين الأصليين المملوكة لبيان
+  التعريف ضمن بيئة التشغيل المالكة لها، حتى عند فرض `agentRuntime.id` على
+  القيمة `copilot`.
+- لا توجد واجهة TUI؛ تظل واجهة TUI الخاصة بـ PI هي البديل الاحتياطي لبيئات
+  التشغيل التي لا تملك واجهة نظيرة.
+- لا تُرحَّل حالة جلسة PI عندما ينتقل وكيل إلى `copilot`.
+  يجري الاختيار لكل محاولة؛ وتظل جلسات PI الحالية صالحة.
+- يستخدم `ask_user` مسار المطالبة والرد نفسه في OpenClaw الذي تستخدمه
+  حاضنة Codex: عندما تطلب Copilot SDK إدخالًا من المستخدم، ينشر OpenClaw
+  مطالبة حاجبة إلى القناة النشطة/واجهة TUI، وتحل رسالة المستخدم التالية
+  في قائمة الانتظار طلب SDK.
 
-## الأذونات و ask_user
+## الأذونات وask_user
 
-يحدث فرض الأذونات لأدوات OpenClaw الموصولة **داخل غلاف الأداة**،
-وليس عبر استدعاء SDK الرجعي `onPermissionRequest`. يُطبَّق
-`wrapToolWithBeforeToolCallHook` نفسه الذي يستخدمه PI
-(`src/agents/pi-tools.before-tool-call.ts`) بواسطة
-`createOpenClawCodingTools` على كل أداة برمجة: كشف الحلقات،
-وسياسات Plugin الموثوقة، وخطافات ما قبل استدعاء الأداة، وموافقات Plugin
-ذات المرحلتين عبر Gateway (`plugin.approval.request`) كلها تعمل بالمسار
-البرمجي نفسه تمامًا مثل محاولات PI الأصلية.
+يحدث فرض الأذونات لأدوات OpenClaw الموصولة **داخل غلاف الأداة**، وليس عبر
+رد النداء `onPermissionRequest` الخاص بـ SDK. تطبّق
+`createOpenClawCodingTools` على كل أداة برمجية الغلاف نفسه
+`wrapToolWithBeforeToolCallHook` الذي تستخدمه PI
+(`src/agents/agent-tools.before-tool-call.ts`): كشف الحلقات، وسياسات
+Plugins الموثوقة، وخطافات ما قبل استدعاء الأداة، وموافقات Plugins ثنائية
+المرحلة عبر Gateway (`plugin.approval.request`)؛ وكلها تمر عبر مسار الشيفرة
+نفسه تمامًا الذي تمر به محاولات PI الأصلية.
 
-للسماح لذلك الغلاف بامتلاك القرار، توضع على SDK Tool المعادة من
-`convertOpenClawToolToSdkTool` العلامات التالية:
+تُعلَّم أداة SDK التي يعيدها `convertOpenClawToolToSdkTool` بما يلي:
 
-- `overridesBuiltInTool: true` — تستبدل أداة Copilot CLI المضمّنة
-  ذات الاسم نفسه (edit، read، write، bash، …) بحيث يوجَّه كل استدعاء
-  أداة عائدًا إلى OpenClaw.
-- `skipPermission: true` — تخبر SDK ألا تشغّل
-  `onPermissionRequest({kind: "custom-tool"})` قبل استدعاء الأداة.
-  تنفّذ `execute()` المغلّفة فحص سياسة OpenClaw الأغنى داخليًا؛ أما
-  مطالبة على مستوى SDK فإما أن تتجاوز فرض OpenClaw (إذا سمحنا بالكل)
-  أو تحظر كل استدعاء أداة (إذا رفضنا الكل) — ولا يطابق أي منهما تكافؤ PI.
+- `overridesBuiltInTool: true` — تستبدل أداة Copilot CLI المضمّنة التي تحمل
+  الاسم نفسه (edit، read، write، bash، ...) بحيث يُعاد توجيه كل استدعاء
+  للأداة إلى OpenClaw.
+- `skipPermission: true` — تطلب من SDK عدم تشغيل
+  `onPermissionRequest({kind: "custom-tool"})` قبل استدعاء الأداة. تنفّذ
+  `execute()` المغلّفة بالفعل فحص سياسة OpenClaw الأكثر شمولًا؛ إذ إن مطالبة
+  على مستوى SDK ستتجاوز فرض OpenClaw (السماح للكل) أو تحظر كل استدعاء
+  للأدوات (رفض الكل)، ولا يطابق أي منهما التكافؤ مع PI.
 
-يستخدم حزام codex داخل الشجرة التقسيم نفسه: أدوات OpenClaw الموصولة
-تُغلّف (`extensions/codex/src/app-server/dynamic-tools.ts`) وأنواع الموافقة
-الأصلية _الخاصة_ بـ codex-app-server
-(`item/commandExecution/requestApproval`,
-`item/fileChange/requestApproval`,
-`item/permissions/requestApproval`) تُمرَّر عبر
-`plugin.approval.request`
-(`extensions/codex/src/app-server/approval-bridge.ts`). أما مكافئ Copilot SDK
-— سياسة `rejectAllPolicy` التي تفشل مغلقةً لأي نوع غير `custom-tool`
-قد يصل إلى `onPermissionRequest` — فهو شبكة الأمان نفسها، ولا يعمل عمليًا
-لأن `overridesBuiltInTool: true` يزيح كل أداة مضمّنة.
+تستخدم حاضنة Codex داخل الشجرة التقسيم نفسه: تُغلَّف أدوات OpenClaw الموصولة
+(`extensions/codex/src/app-server/dynamic-tools.ts`)، وتُوجَّه أنواع الموافقة
+الأصلية الخاصة بـ codex-app-server
+(`item/commandExecution/requestApproval`، و`item/fileChange/requestApproval`،
+و`item/permissions/requestApproval`) عبر `plugin.approval.request`
+(`extensions/codex/src/app-server/approval-bridge.ts`). والمكافئ لذلك في
+Copilot SDK، وهو `rejectAllPolicy` المغلق عند الفشل لأي نوع غير
+`custom-tool` يصل في أي وقت إلى `onPermissionRequest`، يمثّل شبكة الأمان
+نفسها، ولا يعمل عمليًا مطلقًا لأن `overridesBuiltInTool: true` تزيح كل أداة
+مضمّنة.
 
-كي تتخذ طبقة الأداة المغلّفة قرارات سياسة مكافئة لـ PI، يمرّر الحزام سياق
-أداة محاولة PI الكامل إلى `createOpenClawCodingTools` — الهوية
-(`senderIsOwner`, `memberRoleIds`, `ownerOnlyToolAllowlist`, …)،
-القناة/التوجيه (`groupId`, `currentChannelId`, `replyToMode`,
-مفاتيح تبديل أدوات الرسائل)، المصادقة (`authProfileStore`)، هوية التشغيل
-(`sessionKey`/`runSessionKey` المشتقة من `sandboxSessionKey`, `runId`)،
-سياق النموذج (`modelApi`, `modelContextWindowTokens`,
-`modelCompat`, `modelHasVision`)، وخطافات التشغيل (`onToolOutcome`,
-`onYield`). من دون هذه الحقول، تتصرف قوائم السماح الخاصة بالمالك فقط
-بصمت كرفض افتراضي، ولا تستطيع سياسات ثقة Plugin الحل إلى النطاق الصحيح،
-ويحل `session_status: "current"` إلى مفتاح sandbox قديم. يوجد باني الجسر في
-`extensions/copilot/src/tool-bridge.ts` ويطابق استدعاء PI المرجعي في
-`src/agents/pi-embedded-runner/run/attempt.ts:1029-1117`. يقوم `runAttempt`
-بالفعل بحل سياق sandbox عبر مسار `resolveSandboxContext` المشترك، ويمرّر
-إلى SDK دليل عمل فعّالًا، ويمرّر `sandbox` إضافةً إلى مساحة عمل إنشاء
-الوكيل الفرعي إلى جسر الأدوات. يمرّر الجسر أيضًا عناصر التحكم المحدودة
-في إنشاء الأدوات التي يمكنه فرضها عند حد SDK: `includeCoreTools`،
-وقائمة السماح لأدوات بيئة التشغيل، و`toolConstructionPlan`.
+لكي تتخذ طبقة الأدوات المغلّفة قرارات سياسة مكافئة لـ PI، تمرّر حاضنة
+الاختبار سياق أدوات محاولة PI الكامل إلى `createOpenClawCodingTools`:
+الهوية (`senderIsOwner`، و`memberRoleIds`، و`ownerOnlyToolAllowlist`، ...)،
+والقناة/التوجيه (`groupId`، و`currentChannelId`، و`replyToMode`، ومفاتيح
+تبديل أدوات الرسائل)، والمصادقة (`authProfileStore`)، وهوية التشغيل
+(`sessionKey` / `runSessionKey` المشتقان من `sandboxSessionKey`، و`runId`)،
+وسياق النموذج (`modelApi`، و`modelContextWindowTokens`، و`modelCompat`،
+و`modelHasVision`)، وخطافات التشغيل (`onToolOutcome`، و`onYield`). من دون
+هذه الحقول، ترفض قوائم السماح الخاصة بالمالك فقط افتراضيًا وبصمت، ولا
+يمكن لسياسات الثقة في Plugins تحديد النطاق الصحيح، وتُحل
+`session_status: "current"` إلى مفتاح بيئة اختبار معزولة قديم. منشئ الجسر
+هو `extensions/copilot/src/tool-bridge.ts`، ويحاكي الاستدعاء المرجعي الخاص
+بـ PI في `src/agents/embedded-agent-runner/run/attempt.ts:1262`.
+يحل `runAttempt` سياق بيئة الاختبار المعزولة عبر نقطة الربط المشتركة
+`resolveSandboxContext`، ويمرّر إلى SDK دليل عمل فعّالًا، كما يمرّر `sandbox`
+بالإضافة إلى مساحة عمل إنشاء الوكيل الفرعي إلى جسر الأدوات. ويمرّر الجسر
+أيضًا عناصر التحكم المحدودة في إنشاء الأدوات التي يمكنه فرضها عند حدود SDK:
+`includeCoreTools`، وقائمة السماح لأدوات بيئة التشغيل، و`toolConstructionPlan`.
 
-يستخدم الجسر أيضًا مساعد سطح أدوات الحزام المشترك من
-`openclaw/plugin-sdk/agent-harness-tool-runtime` لتكافؤ PI. عندما يكون
-بحث الأدوات مفعّلًا، ترى SDK أدوات تحكم مضغوطة إضافةً إلى منفّذ كتالوج
-مخفي بدل كل مخطط أدوات OpenClaw. عندما يكون وضع الكود مفعّلًا، يبني
-المساعد سطح التحكم نفسه لوضع الكود ودورة حياة الكتالوج المستخدمة بواسطة
-أحزمة الوكلاء الأخرى. تبقى الإعدادات الافتراضية الخفيفة للنموذج المحلي،
-وترشيح المخططات المتوافق مع بيئة التشغيل، وترطيب الأدلة، وتنظيف الكتالوج
-كلها في المساعد المشترك حتى لا تنحرف أحزمة Copilot والأحزمة المجاورة لـ Codex.
+يستخدم الجسر أيضًا مساعد سطح أدوات حاضنة الاختبار المشترك من
+`openclaw/plugin-sdk/agent-harness-tool-runtime` لتحقيق التكافؤ مع PI. عند
+تمكين البحث عن الأدوات، ترى SDK أدوات تحكم مدمجة بالإضافة إلى منفّذ مخفي
+للفهرس بدلًا من كل مخططات أدوات OpenClaw. وعند تمكين وضع الشيفرة، يبني
+المساعد سطح تحكم وضع الشيفرة نفسه ودورة حياة الفهرس المستخدمة في حاضنات
+الوكلاء الأخرى. وتظل الإعدادات الافتراضية الخفيفة للنماذج المحلية، وتصفية
+المخططات المتوافقة مع بيئة التشغيل، وتهيئة الأدلة، وتنظيف الفهرس، كلها في
+المساعد المشترك كي لا تنحرف حاضنات Copilot والحاضنات المرتبطة بـ Codex عن
+بعضها.
 
 ### رمز GitHub على مستوى الجلسة
 
-يميّز عقد Copilot SDK بين رمز GitHub على **مستوى العميل**
-(`CopilotClientOptions.gitHubToken`، المستخدم لمصادقة عملية CLI نفسها)
-ورمز **مستوى الجلسة** (`SessionConfig.gitHubToken`، الذي يحدد استبعاد
-المحتوى، وتوجيه النموذج، والحصة لتلك الجلسة، ويُحترم في كل من
-`createSession` و`resumeSession`). يحل الحزام المصادقة مرة واحدة عبر
-`resolveCopilotAuth` ويضبط كلا الحقلين عندما يكون نمط المصادقة
-`gitHubToken` (إما `auth.gitHubToken` صريح أو `resolvedApiKey` محلول
-بالعقد من ملف تعريف مصادقة `github-copilot` مكوّن). عندما يكون النمط
-المحلول `useLoggedInUser`، يُحذف حقل مستوى الجلسة حتى تواصل SDK اشتقاق
-الهوية من الهوية المسجّل دخولها.
+يميّز عقد Copilot SDK بين رمز GitHub **على مستوى العميل**
+(`CopilotClientOptions.gitHubToken`، الذي يصادق عملية CLI نفسها) والرمز
+**على مستوى الجلسة** (`SessionConfig.gitHubToken`، الذي يحدد استبعاد
+المحتوى وتوجيه النموذج والحصة لتلك الجلسة؛ ويُعتمد في كل من
+`createSession` و`resumeSession`). تحل حاضنة الاختبار المصادقة مرة واحدة
+عبر `resolveCopilotAuth` وتضبط كلا الحقلين عندما يكون وضع المصادقة
+`gitHubToken` (أي `auth.gitHubToken` صريح أو `resolvedApiKey` محلول وفق
+العقد من ملف تعريف مصادقة `github-copilot` مُعدّ). وعندما يكون الوضع
+المحلول `useLoggedInUser`، يُحذف الحقل على مستوى الجلسة لكي تواصل SDK
+اشتقاق الهوية من هوية المستخدم المسجّل دخوله.
 
-يستخدم `ask_user` `SessionConfig.onUserInputRequest`. يقبل الجسر فهارس
-الاختيارات أو تسمياتها لطلبات الاختيار الثابت، ويقبل إجابات حرة عندما
-يسمح طلب SDK بها، ويلغي طلبًا معلقًا عندما تُجهض محاولة OpenClaw.
+يستخدم `ask_user` الدالة `SessionConfig.onUserInputRequest`. يقبل الجسر
+فهارس الخيارات أو تسمياتها لطلبات الاختيار الثابت، ويقبل الإجابات الحرة
+عندما يسمح بها طلب SDK، ويلغي طلبًا معلّقًا عند إيقاف محاولة OpenClaw.
 
-## ذات صلة
+## ذو صلة
 
-- [بيئات تشغيل الوكيل](/ar/concepts/agent-runtimes)
-- [حزام Codex](/ar/plugins/codex-harness)
-- [إضافات حزام الوكيل (مرجع SDK)](/ar/plugins/sdk-agent-harness)
+- [بيئات تشغيل الوكلاء](/ar/concepts/agent-runtimes)
+- [حاضنة Codex](/ar/plugins/codex-harness)
+- [Plugins حاضنة الوكلاء (مرجع SDK)](/ar/plugins/sdk-agent-harness)

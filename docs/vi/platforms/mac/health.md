@@ -1,45 +1,54 @@
 ---
 read_when:
     - Gỡ lỗi các chỉ báo tình trạng của ứng dụng Mac
-summary: Cách ứng dụng macOS báo cáo các trạng thái sức khỏe của Gateway/Baileys
-title: Kiểm tra tình trạng hoạt động (macOS)
+summary: Cách ứng dụng macOS báo cáo trạng thái sức khỏe của Gateway/kênh
+title: Kiểm tra tình trạng (macOS)
 x-i18n:
-    generated_at: "2026-04-29T22:56:50Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:07:12Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a7488b39b0eec013083f52e2798d719bec35780acad743a97f5646a6891810e5
+    source_hash: a086c527796dbe453bdee1cc9cbe1e0fc1157de710c8c6de186411fe9aa3bc7b
     source_path: platforms/mac/health.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Kiểm tra tình trạng trên macOS
 
-Cách xem kênh đã liên kết có hoạt động bình thường hay không từ ứng dụng thanh menu.
+Cách đọc trạng thái tình trạng của kênh đã liên kết từ ứng dụng trên thanh menu.
 
 ## Thanh menu
 
-- Chấm trạng thái giờ phản ánh tình trạng Baileys:
-  - Xanh lá: đã liên kết + socket được mở gần đây.
-  - Cam: đang kết nối/đang thử lại.
-  - Đỏ: đã đăng xuất hoặc probe thất bại.
-- Dòng phụ hiển thị "đã liên kết · xác thực 12m" hoặc hiển thị lý do lỗi.
-- Mục menu "Chạy kiểm tra tình trạng" kích hoạt probe theo yêu cầu.
+Chấm trạng thái:
+
+- Xanh lá: đã liên kết + phép kiểm tra hoạt động bình thường.
+- Cam: đã liên kết nhưng phép kiểm tra kênh báo suy giảm/chưa kết nối.
+- Đỏ: chưa liên kết.
+
+Dòng phụ hiển thị "đã liên kết · xác thực 12 phút" hoặc cho biết nguyên nhân lỗi.
+Mục "Chạy kiểm tra tình trạng ngay" trong menu sẽ kích hoạt một phép kiểm tra theo yêu cầu.
 
 ## Cài đặt
 
-- Tab Chung có thêm thẻ Tình trạng hiển thị: thời gian từ lần xác thực liên kết, đường dẫn/số lượng session-store, thời gian kiểm tra gần nhất, lỗi/mã trạng thái gần nhất, và các nút Chạy kiểm tra tình trạng / Hiển thị nhật ký.
-- Dùng snapshot đã lưu trong cache để UI tải ngay lập tức và tự giảm cấp hợp lý khi ngoại tuyến.
-- **Tab Kênh** hiển thị trạng thái kênh + điều khiển cho WhatsApp/Telegram (QR đăng nhập, đăng xuất, probe, lần ngắt kết nối/lỗi gần nhất).
+- Thẻ General hiển thị một thẻ Tình trạng: chấm trạng thái, dòng tóm tắt (trạng thái liên kết +
+  thời gian xác thực) và một dòng chi tiết lỗi tùy chọn, cùng các nút **Thử lại ngay** và
+  **Mở nhật ký**.
+- **Thẻ Channels** hiển thị trạng thái và các điều khiển theo từng kênh (mã QR đăng nhập,
+  đăng xuất, kiểm tra, lần ngắt kết nối/lỗi gần nhất) cho WhatsApp và Telegram.
 
-## Cách probe hoạt động
+## Cách phép kiểm tra hoạt động
 
-- Ứng dụng chạy `openclaw health --json` qua `ShellExecutor` khoảng mỗi ~60 giây và theo yêu cầu. Probe tải thông tin xác thực và báo cáo trạng thái mà không gửi tin nhắn.
-- Lưu cache riêng snapshot tốt gần nhất và lỗi gần nhất để tránh nhấp nháy; hiển thị dấu thời gian của từng mục.
+Ứng dụng gọi RPC `health` của Gateway qua kết nối WebSocket hiện có
+(không gọi ra trình bao CLI) khoảng 60 giây một lần và theo yêu cầu. RPC tải
+thông tin xác thực và báo cáo trạng thái mà không gửi tin nhắn. Ứng dụng lưu đệm riêng
+ảnh chụp nhanh hợp lệ gần nhất và lỗi gần nhất để giao diện người dùng tải tức thì và
+không nhấp nháy khi ngoại tuyến.
 
 ## Khi không chắc chắn
 
-- Bạn vẫn có thể dùng luồng CLI trong [tình trạng Gateway](/vi/gateway/health) (`openclaw status`, `openclaw status --deep`, `openclaw health --json`) và theo dõi đuôi `/tmp/openclaw/openclaw-*.log` để xem `web-heartbeat` / `web-reconnect`.
+Sử dụng quy trình CLI trong [Tình trạng Gateway](/vi/gateway/health) (`openclaw status`,
+`openclaw status --deep`, `openclaw health --json`) và theo dõi
+`/tmp/openclaw/openclaw-*.log`, lọc theo `web-heartbeat` / `web-reconnect`.
 
 ## Liên quan
 

@@ -1,36 +1,35 @@
 ---
 read_when:
-    - Korzystanie z szablonów Gateway dla deweloperów
+    - Korzystanie z szablonów deweloperskiego Gatewayu
     - Aktualizowanie domyślnej tożsamości agenta deweloperskiego
-summary: Notatki dotyczące narzędzi agenta deweloperskiego (C-3PO)
+summary: Uwagi dotyczące narzędzi agenta programistycznego (C-3PO)
 title: Szablon TOOLS.dev
 x-i18n:
-    generated_at: "2026-04-24T09:32:40Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 23c11e2832ed0dcf9ddd43e5472e0c025c1a91a33299019c16f00a7230e8e99c
-    source_path: reference/templates/TOOLS.dev.md
-    workflow: 15
+    generated_at: "2026-07-12T15:37:04Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 3259107a9252ff3d01b98608e6005387cb54a75da5db64f833c945056abd4173
+    source_path: reference/templates/TOOLS.dev.md
+    workflow: 16
 ---
 
-# TOOLS.md - Notatki użytkownika o narzędziach (edytowalne)
+# TOOLS.md — Notatki użytkownika o narzędziach (edytowalne)
 
-Ten plik służy do _Twoich_ notatek o narzędziach zewnętrznych i przyjętych konwencjach.
-Nie określa, jakie narzędzia istnieją; OpenClaw wewnętrznie udostępnia wbudowane narzędzia.
+Ten plik służy do przechowywania _Twoich_ notatek dotyczących zewnętrznych narzędzi i konwencji. Nie określa, które narzędzia istnieją; OpenClaw udostępnia wewnętrznie narzędzia wbudowane, a Skills dodają pozostałe.
 
 ## Przykłady
 
 ### imsg
 
-- Wyślij iMessage/SMS: opisz do kogo i co wysłać, potwierdź przed wysłaniem.
+- Wyślij wiadomość iMessage/SMS: opisz odbiorcę i treść, a przed wysłaniem poproś o potwierdzenie.
 - Preferuj krótkie wiadomości; unikaj wysyłania sekretów.
 
 ### sag
 
-- Zamiana tekstu na mowę: określ głos, docelowy głośnik/pomieszczenie oraz czy dźwięk ma być strumieniowany.
+- Zamiana tekstu na mowę: określ głos, docelowy głośnik lub pomieszczenie oraz czy dźwięk ma być przesyłany strumieniowo.
 
-Dodaj wszystko, co chcesz, aby asystent wiedział o Twoim lokalnym zestawie narzędzi.
+Dodaj wszelkie inne informacje, które asystent powinien znać na temat Twojego lokalnego zestawu narzędzi.
 
 ## Powiązane
 

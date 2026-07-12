@@ -1,27 +1,25 @@
 ---
 read_when:
-    - Vuoi esaminare gli impegni successivi dedotti
+    - Vuoi esaminare gli impegni di follow-up dedotti
     - Vuoi ignorare i check-in in sospeso
-    - Stai verificando cosa può fornire Heartbeat
-summary: Riferimento CLI per `openclaw commitments` (ispeziona e scarta le azioni successive dedotte)
+    - Stai verificando ciò che Heartbeat può recapitare
+summary: Riferimento CLI per `openclaw commitments` (ispezionare e ignorare i follow-up dedotti)
 title: '`openclaw commitments`'
 x-i18n:
-    generated_at: "2026-04-30T08:42:22Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:55:34Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 37d5e5dca25cf649a5069360aa4e41fcc33d042dea99f643b98c07189c58f21c
+    source_hash: 4323273a5d73975532f4728dc5e40c5d59e0c6d2e31a538f96bf3451e3fdf4d9
     source_path: cli/commitments.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 Elenca e gestisce gli impegni di follow-up dedotti.
 
-Gli impegni sono memorie di follow-up facoltative e di breve durata create dal
-contesto della conversazione. Consulta [Impegni dedotti](/it/concepts/commitments)
-per la guida concettuale.
+Gli impegni sono facoltativi (`commitments.enabled`) e consistono in memorie di follow-up di breve durata create dal contesto della conversazione e recapitate tramite Heartbeat. Consulta [Impegni dedotti](/it/concepts/commitments) per la guida concettuale e la configurazione.
 
-Senza sottocomando, `openclaw commitments` elenca gli impegni in sospeso.
+Senza sottocomandi, `openclaw commitments` elenca gli impegni in sospeso.
 
 ## Utilizzo
 
@@ -33,45 +31,46 @@ openclaw commitments dismiss <id...> [--json]
 
 ## Opzioni
 
-- `--all`: mostra tutti gli stati invece dei soli impegni in sospeso.
-- `--agent <id>`: filtra per un singolo ID agente.
-- `--status <status>`: filtra per stato. Valori: `pending`, `sent`,
-  `dismissed`, `snoozed` o `expired`.
-- `--json`: produce JSON leggibile dalle macchine.
+- `--all`: mostra tutti gli stati anziché soltanto gli impegni in sospeso.
+- `--agent <id>`: filtra in base all'id di un singolo agente.
+- `--status <status>`: filtra per stato. Valori: `pending`, `sent`, `dismissed`, `snoozed` o `expired`. I valori sconosciuti causano la terminazione con un errore.
+- `--json`: produce JSON leggibile dalla macchina.
+
+`dismiss` contrassegna gli id degli impegni specificati come `dismissed`, affinché Heartbeat non li recapiti.
 
 ## Esempi
 
-Elenca gli impegni in sospeso:
+Elencare gli impegni in sospeso:
 
 ```bash
 openclaw commitments
 ```
 
-Elenca ogni impegno archiviato:
+Elencare tutti gli impegni memorizzati:
 
 ```bash
 openclaw commitments --all
 ```
 
-Filtra per un singolo agente:
+Filtrare in base a un singolo agente:
 
 ```bash
 openclaw commitments --agent main
 ```
 
-Trova gli impegni posticipati:
+Trovare gli impegni posticipati:
 
 ```bash
 openclaw commitments --status snoozed
 ```
 
-Ignora uno o più impegni:
+Ignorare uno o più impegni:
 
 ```bash
 openclaw commitments dismiss cm_abc123 cm_def456
 ```
 
-Esporta come JSON:
+Esportare in formato JSON:
 
 ```bash
 openclaw commitments --all --json
@@ -79,19 +78,18 @@ openclaw commitments --all --json
 
 ## Output
 
-L'output testuale include:
+L'output testuale mostra il numero di impegni, il percorso dell'archivio, gli eventuali filtri attivi e una riga per ciascun impegno:
 
-- ID dell'impegno
+- id dell'impegno
 - stato
-- tipo
-- prima scadenza utile
-- ambito
-- testo di check-in suggerito
+- tipo (`event_check_in`, `deadline_check`, `care_check_in` o `open_loop`)
+- prima scadenza possibile
+- ambito (agente/canale/destinazione)
+- testo suggerito per la verifica
 
-L'output JSON include anche il percorso dell'archivio degli impegni e i record
-archiviati completi.
+L'output JSON include il conteggio, i filtri attivi per stato e agente, il percorso dell'archivio degli impegni e i record memorizzati completi.
 
-## Correlati
+## Argomenti correlati
 
 - [Impegni dedotti](/it/concepts/commitments)
 - [Panoramica della memoria](/it/concepts/memory)

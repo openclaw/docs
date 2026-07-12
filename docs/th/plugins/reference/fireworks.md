@@ -1,11 +1,11 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin fireworks
-summary: เพิ่มการรองรับผู้ให้บริการโมเดล Fireworks ให้กับ OpenClaw.
+summary: เพิ่มการรองรับผู้ให้บริการโมเดล Fireworks ให้กับ OpenClaw
 title: Plugin Fireworks
 x-i18n:
-    generated_at: "2026-06-27T18:02:26Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:29:48Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 1750e345f485fa7d8735a16278422188ad761b0c682cd5f09227f4407d502203
@@ -13,19 +13,19 @@ x-i18n:
     workflow: 16
 ---
 
-# Fireworks Plugin
+# Plugin Fireworks
 
 เพิ่มการรองรับผู้ให้บริการโมเดล Fireworks ให้กับ OpenClaw
 
-## การแจกจ่าย
+## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/fireworks-provider`
-- เส้นทางการติดตั้ง: npm; ClawHub: `clawhub:@openclaw/fireworks-provider`
+- ช่องทางการติดตั้ง: npm; ClawHub: `clawhub:@openclaw/fireworks-provider`
 
-## พื้นผิว
+## ส่วนที่รองรับ
 
-providers: fireworks
+ผู้ให้บริการ: fireworks
 
 ## เอกสารที่เกี่ยวข้อง
 
-- [fireworks](/th/providers/fireworks)
+- [Fireworks](/th/providers/fireworks)

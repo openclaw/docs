@@ -1,19 +1,19 @@
 ---
 read_when:
-    - أنت تقوم بتثبيت Plugin xai أو تهيئته أو تدقيقه
-summary: يضيف دعم مزوّد نماذج xAI إلى OpenClaw.
-title: xAI Plugin
+    - أنت تقوم بتثبيت Plugin ‏xai أو تهيئته أو تدقيقه
+summary: يضيف دعم موفّر نماذج xAI إلى OpenClaw.
+title: Plugin ‏xAI
 x-i18n:
-    generated_at: "2026-05-02T21:01:12Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:23:24Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: 2ec2ac3af258ae6876b2c0957e4ffc5db2d780fc9f33458204c8089fd47238bc
     source_path: plugins/reference/xai.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# Plugin xAI
+# Plugin ‏xAI
 
 يضيف دعم موفّر نماذج xAI إلى OpenClaw.
 
@@ -22,10 +22,10 @@ x-i18n:
 - الحزمة: `@openclaw/xai-plugin`
 - مسار التثبيت: مضمّن في OpenClaw
 
-## الواجهة
+## الواجهات
 
 الموفّرون: xai؛ العقود: imageGenerationProviders، mediaUnderstandingProviders، realtimeTranscriptionProviders، speechProviders، tools، videoGenerationProviders، webSearchProviders
 
-## المستندات ذات الصلة
+## الوثائق ذات الصلة
 
-- [xai](/ar/providers/xai)
+- [xAI](/ar/providers/xai)

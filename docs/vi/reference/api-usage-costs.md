@@ -1,216 +1,152 @@
 ---
 read_when:
     - Bạn muốn hiểu những tính năng nào có thể gọi các API trả phí
-    - Bạn cần kiểm tra khóa, chi phí và khả năng hiển thị mức sử dụng
-    - Bạn đang giải thích báo cáo chi phí của /status hoặc /usage
-summary: Kiểm tra những gì có thể tiêu tiền, những khóa nào được dùng và cách xem mức sử dụng
-title: Cách sử dụng API và chi phí
+    - Bạn cần kiểm tra các khóa, chi phí và khả năng theo dõi mức sử dụng
+    - Bạn đang giải thích việc báo cáo chi phí của `/status` hoặc `/usage`
+summary: Kiểm tra những thành phần có thể phát sinh chi phí, các khóa được sử dụng và cách xem mức sử dụng
+title: Mức sử dụng API và chi phí
 x-i18n:
-    generated_at: "2026-06-27T18:07:57Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:20:47Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 473028747c3e8eab60667106d22616aa185f867d01238b856f4235faad957a9e
+    source_hash: b35ad64f83572eb8c01b59ee57368fd7ba20cb83ccac835281859796f782c1dd
     source_path: reference/api-usage-costs.md
     workflow: 16
 ---
 
-Tài liệu này liệt kê **các tính năng có thể gọi khóa API** và nơi chi phí của chúng xuất hiện. Tài liệu tập trung vào
-các tính năng OpenClaw có thể tạo mức sử dụng nhà cung cấp hoặc các lệnh gọi API trả phí.
+Bản đồ các tính năng của OpenClaw có thể gọi API của nhà cung cấp trả phí, nơi mỗi tính năng đọc thông tin xác thực và nơi chi phí phát sinh được hiển thị.
 
-## Nơi chi phí xuất hiện (chat + CLI)
+## Nơi hiển thị chi phí
 
-**Ảnh chụp chi phí theo phiên**
+**`/status`** (ảnh chụp nhanh theo phiên)
 
-- `/status` hiển thị mô hình của phiên hiện tại, mức sử dụng ngữ cảnh và token của phản hồi gần nhất.
-- Nếu OpenClaw có siêu dữ liệu sử dụng và giá cục bộ cho mô hình đang hoạt động,
-  `/status` cũng hiển thị **chi phí ước tính** cho phản hồi gần nhất. Điều này có thể bao gồm
-  các nhà cung cấp không dùng khóa API nhưng có giá rõ ràng, chẳng hạn như các mô hình Bedrock `aws-sdk`.
-- Nếu siêu dữ liệu phiên trực tiếp còn thưa, `/status` có thể khôi phục các bộ đếm token/cache
-  và nhãn mô hình runtime đang hoạt động từ mục sử dụng transcript mới nhất.
-  Các giá trị trực tiếp khác 0 hiện có vẫn được ưu tiên, và tổng transcript có kích thước theo prompt
-  có thể thắng khi tổng đã lưu bị thiếu hoặc nhỏ hơn.
+- Hiển thị mô hình của phiên hiện tại, mức sử dụng ngữ cảnh và số token của phản hồi gần nhất.
+- Thêm **chi phí ước tính** cho phản hồi gần nhất khi OpenClaw có siêu dữ liệu sử dụng và giá cục bộ cho mô hình đang hoạt động, bao gồm các nhà cung cấp không dùng khóa API có định giá rõ ràng như các mô hình Bedrock `aws-sdk`.
+- Nếu ảnh chụp nhanh của phiên trực tiếp có ít dữ liệu, `/status` khôi phục các bộ đếm token/bộ nhớ đệm và nhãn mô hình đang hoạt động từ mục sử dụng mới nhất trong bản chép lại. Các giá trị trực tiếp khác 0 hiện có được ưu tiên hơn dữ liệu bản chép lại; tổng trong bản chép lại có kích thước tương ứng với lời nhắc vẫn có thể được ưu tiên khi tổng đã lưu bị thiếu hoặc nhỏ hơn.
 
-**Chân trang chi phí theo tin nhắn**
+**`/usage`** (chân trang theo tin nhắn)
 
-- `/usage full` thêm chân trang sử dụng vào mọi phản hồi, bao gồm **chi phí ước tính**
-  khi giá cục bộ được cấu hình cho mô hình đang hoạt động và có siêu dữ liệu sử dụng.
-- `/usage tokens` chỉ hiển thị token; các luồng OAuth/token và CLI kiểu thuê bao
-  vẫn chỉ hiển thị token trừ khi runtime đó cung cấp siêu dữ liệu sử dụng tương thích
-  và đã cấu hình giá cục bộ rõ ràng.
-- Ghi chú Gemini CLI: đầu ra `stream-json` mặc định và các ghi đè JSON cũ
-  đều đọc mức sử dụng từ `stats`, chuẩn hóa `stats.cached` thành `cacheRead`, và
-  suy ra token đầu vào từ `stats.input_tokens - stats.cached` khi cần.
+- `/usage full` nối thêm chân trang sử dụng vào mọi phản hồi, bao gồm **chi phí ước tính** khi giá cục bộ được cấu hình và có siêu dữ liệu sử dụng.
+- `/usage tokens` chỉ hiển thị token. Các thời gian chạy OAuth/token kiểu thuê bao và CLI chỉ hiển thị token, trừ khi chúng cung cấp siêu dữ liệu sử dụng tương thích cùng với giá cục bộ rõ ràng.
+- `/usage cost` in bản tóm tắt chi phí cục bộ; `/usage off` tắt chân trang.
+- Lưu ý về Gemini CLI: cả đầu ra `stream-json` và `json` cũ đều chứa dữ liệu sử dụng trong `stats`. OpenClaw chuẩn hóa `stats.cached` thành `cacheRead` và suy ra số token đầu vào từ `stats.input_tokens - stats.cached` khi cần.
 
-Ghi chú Anthropic: nhân viên Anthropic đã nói với chúng tôi rằng việc sử dụng Claude CLI kiểu OpenClaw
-được cho phép trở lại, vì vậy OpenClaw coi việc tái sử dụng Claude CLI và sử dụng `claude -p` là
-được chấp thuận cho tích hợp này, trừ khi Anthropic công bố chính sách mới.
-Anthropic vẫn không cung cấp ước tính đô la theo từng tin nhắn mà OpenClaw có thể
-hiển thị trong `/usage full`.
+**Giao diện điều khiển → Mức sử dụng** (phân tích trên nhiều phiên)
 
-**Cửa sổ sử dụng CLI (hạn mức nhà cung cấp)**
+- Hiển thị tổng số token và chi phí ước tính được suy ra từ bản chép lại trong khoảng ngày đã chọn, với phân tích chi tiết theo nhà cung cấp, mô hình, tác nhân, kênh và loại token.
+- So sánh các khoảng thời gian theo lịch ngắn hơn kết thúc vào ngày cuối của khoảng đã chọn. Các ngày bị thiếu được tính là ngày theo lịch có mức sử dụng bằng 0; chúng không bị bỏ qua để tạo khoảng thời gian dày đặc hơn.
+- Gắn nhãn trực tiếp cho thang đo biểu đồ hằng ngày. Huy hiệu `√` cho biết phép nén căn bậc hai đang giúp các ngày có mức sử dụng thấp vẫn hiển thị rõ.
+- Các tổng này mô tả lịch sử phiên cục bộ hiện có, không phải hóa đơn của nhà cung cấp hay sổ cái thanh toán trọn đời. Giao diện cảnh báo khi một số mục bị thiếu thông tin giá.
 
-- `openclaw status --usage` và `openclaw channels list` hiển thị **cửa sổ sử dụng** của nhà cung cấp
-  (ảnh chụp hạn mức, không phải chi phí theo tin nhắn).
-- Đầu ra cho người dùng được chuẩn hóa thành `X% left` trên các nhà cung cấp.
-- Các nhà cung cấp cửa sổ sử dụng hiện tại: Anthropic, GitHub Copilot, Gemini CLI,
-  OpenAI Codex, MiniMax, Xiaomi và z.ai.
-- Ghi chú MiniMax: các trường thô `usage_percent` / `usagePercent` của nó có nghĩa là hạn mức
-  còn lại, vì vậy OpenClaw đảo ngược chúng trước khi hiển thị. Các trường dựa trên số lượng vẫn thắng
-  khi có mặt. Nếu nhà cung cấp trả về `model_remains`, OpenClaw ưu tiên mục mô hình chat,
-  suy ra nhãn cửa sổ từ dấu thời gian khi cần, và
-  đưa tên mô hình vào nhãn gói.
-- Xác thực mức sử dụng cho các cửa sổ hạn mức đó đến từ các hook riêng của nhà cung cấp khi
-  có sẵn; nếu không, OpenClaw quay về khớp thông tin đăng nhập OAuth/khóa API
-  từ hồ sơ xác thực, env hoặc cấu hình.
+**Khoảng sử dụng CLI** (hạn mức nhà cung cấp, không phải chi phí theo tin nhắn)
 
-Xem [Mức sử dụng token & chi phí](/vi/reference/token-use) để biết chi tiết và ví dụ.
+- `openclaw status --usage` và `openclaw channels list` hiển thị **khoảng sử dụng** của nhà cung cấp dưới dạng `X% left`.
+- Các nhà cung cấp khoảng sử dụng hiện tại: Anthropic, ClawRouter, DeepSeek, GitHub Copilot, Gemini CLI, MiniMax, OpenAI (bao gồm xác thực OAuth/token của ChatGPT/Codex), Xiaomi và z.ai. Xem [CLI mô hình](/vi/cli/models) và [CLI kênh](/vi/cli/channels) để biết danh sách đầy đủ các nhà cung cấp/cờ.
+- Các trường thô `usage_percent` / `usagePercent` của MiniMax báo cáo hạn mức còn lại, vì vậy OpenClaw đảo ngược chúng; các trường dựa trên số lượng được ưu tiên khi có. Nếu phản hồi chứa mảng `model_remains`, OpenClaw chọn mục mô hình trò chuyện, suy ra nhãn khoảng thời gian từ dấu thời gian khi cần và đưa tên mô hình vào nhãn gói.
+- Thông tin xác thực sử dụng đến từ các hook dành riêng cho nhà cung cấp khi có; nếu không, OpenClaw chuyển sang đối chiếu thông tin xác thực OAuth/khóa API từ hồ sơ xác thực, biến môi trường hoặc cấu hình.
 
-## Cách phát hiện khóa
+Xem [Mức sử dụng token và chi phí](/vi/reference/token-use) để biết các ví dụ chi tiết.
 
-OpenClaw có thể nhận thông tin đăng nhập từ:
+<Note>
+Anthropic đã xác nhận rằng việc tái sử dụng Claude CLI (bao gồm `claude -p`) là một mô hình tích hợp được chấp thuận, trừ khi họ công bố chính sách mới. Anthropic không cung cấp ước tính số tiền theo từng tin nhắn, vì vậy `/usage full` không thể hiển thị chi phí cho việc sử dụng Claude CLI.
+</Note>
 
-- **Hồ sơ xác thực** (theo từng agent, lưu trong `auth-profiles.json`).
-- **Biến môi trường** (ví dụ `OPENAI_API_KEY`, `BRAVE_API_KEY`, `FIRECRAWL_API_KEY`).
-- **Cấu hình** (`models.providers.*.apiKey`, `plugins.entries.*.config.webSearch.apiKey`,
-  `plugins.entries.firecrawl.config.webFetch.apiKey`, `memorySearch.*`,
-  `talk.providers.*.apiKey`).
-- **Skills** (`skills.entries.<name>.apiKey`) có thể xuất khóa vào env của tiến trình skill.
+## Cách tìm khóa
 
-## Các tính năng có thể tiêu khóa
+- **Hồ sơ xác thực**: theo từng tác nhân, được lưu trong `auth-profiles.json`.
+- **Biến môi trường**: ví dụ `OPENAI_API_KEY`, `BRAVE_API_KEY`, `FIRECRAWL_API_KEY`.
+- **Cấu hình**: `models.providers.*.apiKey`, `plugins.entries.*.config.webSearch.apiKey`, `plugins.entries.firecrawl.config.webFetch.apiKey`, `agents.defaults.memorySearch.*`, `talk.providers.*.apiKey`.
+- **Skills**: `skills.entries.<name>.apiKey`, có thể xuất khóa sang môi trường tiến trình của Skills.
 
-### 1) Phản hồi mô hình lõi (chat + công cụ)
+## Các tính năng có thể sử dụng khóa và phát sinh chi phí
 
-Mọi phản hồi hoặc lệnh gọi công cụ đều dùng **nhà cung cấp mô hình hiện tại** (OpenAI, Anthropic, v.v.). Đây là
-nguồn chính của mức sử dụng và chi phí.
+### Phản hồi mô hình cốt lõi (trò chuyện + công cụ)
 
-Điều này cũng bao gồm các nhà cung cấp lưu trữ kiểu thuê bao vẫn tính phí bên ngoài
-UI cục bộ của OpenClaw, chẳng hạn như **OpenAI Codex**, **Alibaba Cloud Model Studio
-Coding Plan**, **MiniMax Coding Plan**, **Z.AI / GLM Coding Plan**, và
-đường dẫn đăng nhập Claude của OpenClaw qua Anthropic khi bật **Extra Usage**.
+Mọi phản hồi hoặc lệnh gọi công cụ đều chạy trên nhà cung cấp mô hình hiện tại. Đây là nguồn sử dụng và chi phí chính, bao gồm các gói lưu trữ kiểu thuê bao tính phí bên ngoài giao diện cục bộ của OpenClaw: OpenAI Codex, Alibaba Cloud Model Studio Coding Plan, MiniMax Coding Plan, Z.AI/GLM Coding Plan và quy trình đăng nhập Claude của Anthropic khi bật Extra Usage.
 
-Xem [Mô hình](/vi/providers/models) để biết cấu hình giá và [Mức sử dụng token & chi phí](/vi/reference/token-use) để biết cách hiển thị.
+Xem [Mô hình](/vi/providers/models) để biết cấu hình giá và [Mức sử dụng token và chi phí](/vi/reference/token-use) để biết cách hiển thị.
 
-### 2) Hiểu phương tiện (âm thanh/hình ảnh/video)
+### Hiểu nội dung phương tiện (âm thanh/hình ảnh/video)
 
-Phương tiện đầu vào có thể được tóm tắt/chuyển lời nói thành văn bản trước khi phản hồi chạy. Điều này sử dụng API mô hình/nhà cung cấp.
+Phương tiện đầu vào có thể được tóm tắt hoặc phiên âm thông qua API của nhà cung cấp trước khi quy trình phản hồi chạy. Khả năng hỗ trợ nhà cung cấp được đăng ký theo từng Plugin và thay đổi khi có thêm Plugin; xem [Hiểu nội dung phương tiện](/vi/nodes/media-understanding) để biết danh sách và cấu hình hiện tại.
 
-- Âm thanh: OpenAI / Groq / Deepgram / DeepInfra / Google / Mistral.
-- Hình ảnh: OpenAI / OpenRouter / Anthropic / DeepInfra / Google / MiniMax / Moonshot / Qwen / Z.AI.
-- Video: Google / Qwen / Moonshot.
+### Tạo hình ảnh và video
 
-Xem [Hiểu phương tiện](/vi/nodes/media-understanding).
+`image_generate` và `video_generate` định tuyến đến bất kỳ nhà cung cấp đã cấu hình nào hiện có. Tính năng tạo hình ảnh có thể suy ra nhà cung cấp mặc định có hỗ trợ xác thực khi chưa đặt `agents.defaults.imageGenerationModel`; tính năng tạo video yêu cầu đặt rõ ràng `agents.defaults.videoGenerationModel` (ví dụ `qwen/wan2.6-t2v`).
 
-### 3) Tạo hình ảnh và video
+Xem [Tạo hình ảnh](/vi/tools/image-generation) và [Tạo video](/vi/tools/video-generation) để biết danh sách nhà cung cấp hiện tại.
 
-Các năng lực tạo nội dung dùng chung cũng có thể tiêu khóa nhà cung cấp:
+### Nhúng bộ nhớ và tìm kiếm ngữ nghĩa
 
-- Tạo hình ảnh: OpenAI / Google / DeepInfra / fal / MiniMax
-- Tạo video: DeepInfra / Qwen
-
-Tạo hình ảnh có thể suy ra mặc định nhà cung cấp được hỗ trợ bằng xác thực khi
-`agents.defaults.imageGenerationModel` chưa được đặt. Tạo video hiện
-yêu cầu `agents.defaults.videoGenerationModel` rõ ràng, chẳng hạn như
-`qwen/wan2.6-t2v`.
-
-Xem [Tạo hình ảnh](/vi/tools/image-generation), [Qwen Cloud](/vi/providers/qwen),
-và [Mô hình](/vi/concepts/models).
-
-### 4) Embedding bộ nhớ + tìm kiếm ngữ nghĩa
-
-Tìm kiếm bộ nhớ ngữ nghĩa sử dụng **API embedding** khi được cấu hình cho nhà cung cấp từ xa:
-
-- `memorySearch.provider = "openai"` → embedding OpenAI
-- `memorySearch.provider = "gemini"` → embedding Gemini
-- `memorySearch.provider = "voyage"` → embedding Voyage
-- `memorySearch.provider = "mistral"` → embedding Mistral
-- `memorySearch.provider = "deepinfra"` → embedding DeepInfra
-- `memorySearch.provider = "lmstudio"` → embedding LM Studio (cục bộ/tự lưu trữ)
-- `memorySearch.provider = "ollama"` → embedding Ollama (cục bộ/tự lưu trữ; thường không có tính phí API lưu trữ)
-- Fallback tùy chọn sang nhà cung cấp từ xa nếu embedding cục bộ thất bại
-
-Bạn có thể giữ nó cục bộ với `memorySearch.provider = "local"` (không sử dụng API).
+Tìm kiếm bộ nhớ ngữ nghĩa sử dụng API nhúng khi `agents.defaults.memorySearch.provider` chỉ định một bộ điều hợp từ xa (ví dụ `openai`, `gemini`, `voyage`, `mistral`, `deepinfra`, `github-copilot`, `amazon-bedrock`). `memorySearch.provider = "lmstudio"` hoặc `"ollama"` chạy trên máy chủ cục bộ/tự lưu trữ và thường không phát sinh phí dịch vụ lưu trữ. `memorySearch.provider = "local"` giữ mọi thứ trên thiết bị mà không sử dụng API. Có thể dùng nhà cung cấp `memorySearch.fallback` tùy chọn để xử lý lỗi nhúng cục bộ.
 
 Xem [Bộ nhớ](/vi/concepts/memory).
 
-### 5) Công cụ tìm kiếm web
+### Công cụ tìm kiếm web
 
-`web_search` có thể phát sinh phí sử dụng tùy theo nhà cung cấp của bạn:
+`web_search` có thể phát sinh phí sử dụng tùy thuộc vào nhà cung cấp đã chọn. Mỗi nhà cung cấp đọc khóa trước tiên từ một biến môi trường, sau đó từ `plugins.entries.<id>.config.webSearch.apiKey`:
 
-- **Brave Search API**: `BRAVE_API_KEY` hoặc `plugins.entries.brave.config.webSearch.apiKey`
-- **Exa**: `EXA_API_KEY` hoặc `plugins.entries.exa.config.webSearch.apiKey`
-- **Firecrawl**: `FIRECRAWL_API_KEY` hoặc `plugins.entries.firecrawl.config.webSearch.apiKey`
-- **Gemini (Google Search)**: `GEMINI_API_KEY` hoặc `plugins.entries.google.config.webSearch.apiKey`
-- **Grok (xAI)**: hồ sơ OAuth xAI, `XAI_API_KEY`, hoặc `plugins.entries.xai.config.webSearch.apiKey`
-- **Kimi (Moonshot)**: `KIMI_API_KEY`, `MOONSHOT_API_KEY`, hoặc `plugins.entries.moonshot.config.webSearch.apiKey`
-- **MiniMax Search**: `MINIMAX_CODE_PLAN_KEY`, `MINIMAX_CODING_API_KEY`, `MINIMAX_API_KEY`, hoặc `plugins.entries.minimax.config.webSearch.apiKey`
-- **Ollama Web Search**: không cần khóa đối với một máy chủ Ollama cục bộ đã đăng nhập và có thể truy cập; tìm kiếm trực tiếp `https://ollama.com` dùng `OLLAMA_API_KEY`, và các máy chủ được bảo vệ bằng xác thực có thể tái sử dụng xác thực bearer của nhà cung cấp Ollama thông thường
-- **Perplexity Search API**: `PERPLEXITY_API_KEY`, `OPENROUTER_API_KEY`, hoặc `plugins.entries.perplexity.config.webSearch.apiKey`
-- **Tavily**: `TAVILY_API_KEY` hoặc `plugins.entries.tavily.config.webSearch.apiKey`
-- **DuckDuckGo**: nhà cung cấp không cần khóa khi được chọn rõ ràng (không tính phí API, nhưng không chính thức và dựa trên HTML)
-- **SearXNG**: `SEARXNG_BASE_URL` hoặc `plugins.entries.searxng.config.webSearch.baseUrl` (không cần khóa/tự lưu trữ; không tính phí API lưu trữ)
+| Nhà cung cấp           | Biến môi trường                                                                                                                                                                            |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Brave Search           | `BRAVE_API_KEY`                                                                                                                                                                            |
+| DuckDuckGo             | không cần khóa; không chính thức, dựa trên HTML, không tính phí                                                                                                                            |
+| Exa                    | `EXA_API_KEY`                                                                                                                                                                              |
+| Firecrawl              | `FIRECRAWL_API_KEY`                                                                                                                                                                        |
+| Gemini (Google Search) | `GEMINI_API_KEY`                                                                                                                                                                           |
+| Grok (xAI)             | hồ sơ OAuth xAI hoặc `XAI_API_KEY`                                                                                                                                                         |
+| Kimi (Moonshot)        | `KIMI_API_KEY` hoặc `MOONSHOT_API_KEY`                                                                                                                                                     |
+| MiniMax Search         | `MINIMAX_CODE_PLAN_KEY`, `MINIMAX_CODING_API_KEY`, `MINIMAX_OAUTH_TOKEN` hoặc `MINIMAX_API_KEY`                                                                                            |
+| Ollama Web Search      | không cần khóa đối với máy chủ cục bộ có thể truy cập và đã đăng nhập; tìm kiếm trực tiếp qua `https://ollama.com` sử dụng `OLLAMA_API_KEY`; các máy chủ được bảo vệ bằng xác thực tái sử dụng xác thực bearer thông thường của nhà cung cấp Ollama |
+| Parallel               | `PARALLEL_API_KEY`                                                                                                                                                                         |
+| Perplexity Search API  | `PERPLEXITY_API_KEY` hoặc `OPENROUTER_API_KEY`                                                                                                                                             |
+| SearXNG                | `SEARXNG_BASE_URL`; không cần khóa/tự lưu trữ, không tính phí dịch vụ lưu trữ                                                                                                              |
+| Tavily                 | `TAVILY_API_KEY`                                                                                                                                                                           |
 
-Các đường dẫn nhà cung cấp `tools.web.search.*` cũ vẫn tải qua shim tương thích tạm thời, nhưng chúng không còn là bề mặt cấu hình được khuyến nghị.
+Các đường dẫn cấu hình `tools.web.search.*` cũ vẫn được tải thông qua một lớp tương thích nhưng không còn là bề mặt được khuyến nghị.
 
-**Tín dụng miễn phí của Brave Search:** Mỗi gói Brave bao gồm \$5/tháng tín dụng miễn phí
-được gia hạn. Gói Search có giá \$5 cho mỗi 1.000 yêu cầu, vì vậy tín dụng này bao phủ
-1.000 yêu cầu/tháng miễn phí. Đặt giới hạn sử dụng của bạn trong bảng điều khiển Brave
-để tránh phát sinh phí ngoài dự kiến.
-
-Xem [Công cụ web](/vi/tools/web).
-
-### 5) Công cụ fetch web (Firecrawl)
-
-`web_fetch` có thể gọi **Firecrawl** với quyền truy cập khởi đầu không cần khóa. Thêm khóa API
-để có giới hạn cao hơn:
-
-- `FIRECRAWL_API_KEY` hoặc `plugins.entries.firecrawl.config.webFetch.apiKey`
-
-Nếu Firecrawl chưa được cấu hình, công cụ quay về fetch trực tiếp cộng với plugin `web-readability` đi kèm (không có API trả phí). Tắt `plugins.entries.web-readability.enabled` để bỏ qua trích xuất Readability cục bộ.
+**Tín dụng miễn phí của Brave Search**: mỗi gói bao gồm 5 USD tín dụng miễn phí được gia hạn hằng tháng. Gói Search có giá 5 USD cho mỗi 1.000 yêu cầu, vì vậy khoản tín dụng này bao phủ miễn phí 1.000 yêu cầu/tháng. Hãy đặt giới hạn sử dụng trong bảng điều khiển Brave để tránh các khoản phí ngoài dự kiến.
 
 Xem [Công cụ web](/vi/tools/web).
 
-### 6) Ảnh chụp mức sử dụng nhà cung cấp (trạng thái/sức khỏe)
+### Công cụ truy xuất web (Firecrawl)
 
-Một số lệnh trạng thái gọi **điểm cuối mức sử dụng của nhà cung cấp** để hiển thị cửa sổ hạn mức hoặc sức khỏe xác thực.
-Đây thường là các lệnh gọi khối lượng thấp nhưng vẫn chạm tới API nhà cung cấp:
+`web_fetch` có thể gọi Firecrawl bằng quyền truy cập khởi đầu không cần khóa; thêm `FIRECRAWL_API_KEY` (hoặc `plugins.entries.firecrawl.config.webFetch.apiKey`) để có hạn mức cao hơn. Nếu Firecrawl chưa được cấu hình, công cụ sẽ chuyển sang truy xuất trực tiếp cùng với Plugin `web-readability` đi kèm (không dùng API trả phí). Tắt `plugins.entries.web-readability.enabled` để bỏ qua việc trích xuất Readability cục bộ.
 
-- `openclaw status --usage`
-- `openclaw models status --json`
+Xem [Công cụ web](/vi/tools/web).
 
-Xem [CLI mô hình](/vi/cli/models).
+### Ảnh chụp nhanh mức sử dụng của nhà cung cấp (trạng thái/tình trạng)
 
-### 7) Tóm tắt bảo vệ Compaction
-
-Bảo vệ Compaction có thể tóm tắt lịch sử phiên bằng **mô hình hiện tại**, việc này
-gọi API nhà cung cấp khi chạy.
-
-Xem [Quản lý phiên + Compaction](/vi/reference/session-management-compaction).
-
-### 8) Quét / thăm dò mô hình
-
-`openclaw models scan` có thể thăm dò các mô hình OpenRouter và dùng `OPENROUTER_API_KEY` khi
-bật thăm dò.
+`openclaw status --usage` và `openclaw models status --json` gọi các điểm cuối mức sử dụng của nhà cung cấp để hiển thị khoảng hạn mức hoặc tình trạng xác thực. Các lệnh gọi có tần suất thấp nhưng vẫn truy cập API của nhà cung cấp.
 
 Xem [CLI mô hình](/vi/cli/models).
 
-### 9) Talk (lời nói)
+### Tóm tắt bảo vệ Compaction
 
-Chế độ Talk có thể gọi **ElevenLabs** khi được cấu hình:
+Cơ chế bảo vệ Compaction có thể tóm tắt lịch sử phiên bằng mô hình hiện tại, qua đó gọi API của nhà cung cấp khi chạy.
 
-- `ELEVENLABS_API_KEY` hoặc `talk.providers.elevenlabs.apiKey`
+Xem [Quản lý phiên và Compaction](/vi/reference/session-management-compaction).
 
-Xem [Chế độ Talk](/vi/nodes/talk).
+### Quét/thăm dò mô hình
 
-### 10) Skills (API bên thứ ba)
+`openclaw models scan` có thể thăm dò các mô hình OpenRouter và sử dụng `OPENROUTER_API_KEY` khi tính năng thăm dò được bật.
 
-Skills có thể lưu `apiKey` trong `skills.entries.<name>.apiKey`. Nếu một skill dùng khóa đó cho API bên ngoài,
-nó có thể phát sinh chi phí theo nhà cung cấp của skill.
+Xem [CLI mô hình](/vi/cli/models).
+
+### Trò chuyện bằng giọng nói
+
+Chế độ trò chuyện bằng giọng nói có thể gọi ElevenLabs khi được cấu hình: `ELEVENLABS_API_KEY` hoặc `talk.providers.elevenlabs.apiKey`.
+
+Xem [Chế độ trò chuyện bằng giọng nói](/vi/nodes/talk).
+
+### Skills (API của bên thứ ba)
+
+Skills có thể lưu `apiKey` trong `skills.entries.<name>.apiKey`. Nếu một Skills sử dụng khóa đó với API bên ngoài, chi phí sẽ tuân theo nhà cung cấp của Skills đó.
 
 Xem [Skills](/vi/tools/skills).
 
 ## Liên quan
 
 - [Mức sử dụng token và chi phí](/vi/reference/token-use)
-- [Bộ nhớ đệm prompt](/vi/reference/prompt-caching)
+- [Bộ nhớ đệm lời nhắc](/vi/reference/prompt-caching)
 - [Theo dõi mức sử dụng](/vi/concepts/usage-tracking)

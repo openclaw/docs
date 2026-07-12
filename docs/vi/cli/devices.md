@@ -1,22 +1,34 @@
 ---
 read_when:
-    - Bạn đang phê duyệt yêu cầu ghép đôi thiết bị
-    - Bạn cần xoay vòng hoặc thu hồi token thiết bị
-summary: Tham chiếu CLI cho `openclaw devices` (ghép nối thiết bị + luân phiên/thu hồi token)
+    - Bạn đang phê duyệt các yêu cầu ghép nối thiết bị
+    - Bạn cần luân chuyển hoặc thu hồi token thiết bị
+summary: Tài liệu tham khảo CLI cho `openclaw devices` (ghép nối thiết bị + xoay vòng/thu hồi token)
 title: Thiết bị
 x-i18n:
-    generated_at: "2026-06-27T17:17:40Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:44:50Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 08d6945af4fa2403a97dfec94af7bbd0dc746efe90d3e5b4c9f5c5d6d27d70a4
+    source_hash: 83fb10f7a484fec06bfa5e53ae50181b12a9724746176bbace330ec468235494
     source_path: cli/devices.md
     workflow: 16
 ---
 
 # `openclaw devices`
 
-Quản lý yêu cầu ghép nối thiết bị và token theo phạm vi thiết bị.
+Quản lý các yêu cầu ghép nối thiết bị và token theo phạm vi thiết bị.
+
+## Tùy chọn thường dùng
+
+- `--url <url>`: URL WebSocket của Gateway (mặc định là `gateway.remote.url` khi đã cấu hình)
+- `--token <token>`: Token Gateway (nếu bắt buộc)
+- `--password <password>`: Mật khẩu Gateway (xác thực bằng mật khẩu)
+- `--timeout <ms>`: Thời gian chờ RPC
+- `--json`: Đầu ra JSON (khuyến nghị cho việc viết script)
+
+<Warning>
+Khi đặt `--url`, CLI không dự phòng sang thông tin xác thực trong cấu hình hoặc môi trường. Hãy truyền rõ `--token` hoặc `--password`, nếu không lệnh sẽ báo lỗi.
+</Warning>
 
 ## Lệnh
 
@@ -24,73 +36,170 @@ Quản lý yêu cầu ghép nối thiết bị và token theo phạm vi thiết 
 
 Liệt kê các yêu cầu ghép nối đang chờ và các thiết bị đã ghép nối.
 
-```
+```bash
 openclaw devices list
 openclaw devices list --json
 ```
 
-Đầu ra yêu cầu đang chờ hiển thị quyền truy cập được yêu cầu bên cạnh quyền truy cập hiện đã được phê duyệt của thiết bị khi thiết bị đã được ghép nối. Điều này làm rõ các nâng cấp phạm vi/vai trò thay vì trông như ghép nối đã bị mất.
+Đối với yêu cầu đang chờ trên một thiết bị đã ghép nối, đầu ra hiển thị quyền truy cập được yêu cầu bên cạnh quyền truy cập hiện đã được phê duyệt của thiết bị, nhờ đó có thể thấy rõ việc nâng cấp phạm vi/vai trò thay vì trông như ghép nối bị mất.
 
-### `openclaw devices remove <deviceId>`
-
-Xóa một mục thiết bị đã ghép nối.
-
-Khi bạn được xác thực bằng token thiết bị đã ghép nối, caller không phải quản trị viên chỉ có thể xóa mục thiết bị **của chính họ**. Xóa thiết bị khác yêu cầu `operator.admin`.
-
-```
-openclaw devices remove <deviceId>
-openclaw devices remove <deviceId> --json
-```
-
-### `openclaw devices clear --yes [--pending]`
-
-Xóa hàng loạt các thiết bị đã ghép nối.
-
-```
-openclaw devices clear --yes
-openclaw devices clear --yes --pending
-openclaw devices clear --yes --pending --json
-```
+Tên hiển thị của thiết bị đã ghép nối sử dụng thứ tự ưu tiên sau: nhãn của người vận hành (`operatorLabel` từ `devices rename`), sau đó là `displayName` của máy khách, rồi `clientId`, cuối cùng là `deviceId`.
 
 ### `openclaw devices approve [requestId] [--latest]`
 
-Phê duyệt một yêu cầu ghép nối thiết bị đang chờ bằng `requestId` chính xác. Nếu bỏ qua `requestId` hoặc truyền `--latest`, OpenClaw chỉ in yêu cầu đang chờ đã chọn rồi thoát; hãy chạy lại phê duyệt với ID yêu cầu chính xác sau khi xác minh chi tiết.
+Phê duyệt một yêu cầu ghép nối đang chờ bằng `requestId` chính xác. Nếu bỏ qua `requestId` hoặc truyền `--latest`, lệnh chỉ xem trước yêu cầu đang chờ mới nhất rồi thoát (mã 1); hãy chạy lại với ID yêu cầu chính xác để phê duyệt.
 
-<Note>
-Nếu một thiết bị thử lại ghép nối với thông tin xác thực đã thay đổi (vai trò, phạm vi, hoặc khóa công khai), OpenClaw sẽ thay thế mục đang chờ trước đó và cấp một `requestId` mới. Chạy `openclaw devices list` ngay trước khi phê duyệt để dùng ID hiện tại.
-</Note>
-
-Nếu thiết bị đã được ghép nối và yêu cầu phạm vi rộng hơn hoặc vai trò rộng hơn, OpenClaw giữ nguyên phê duyệt hiện có và tạo một yêu cầu nâng cấp mới đang chờ. Xem lại các cột `Requested` so với `Approved` trong `openclaw devices list` hoặc dùng `openclaw devices approve --latest` để xem trước nâng cấp chính xác trước khi phê duyệt.
-
-Nếu Gateway được cấu hình rõ ràng với `gateway.nodes.pairing.autoApproveCidrs`, các yêu cầu lần đầu có `role: node` từ IP máy khách khớp có thể được phê duyệt trước khi chúng xuất hiện trong danh sách này. Chính sách đó mặc định bị tắt và không bao giờ áp dụng cho máy khách operator/trình duyệt hoặc yêu cầu nâng cấp.
-
-Phê duyệt node hoặc các vai trò thiết bị không phải operator khác yêu cầu `operator.admin`. `operator.pairing` chỉ đủ cho phê duyệt thiết bị operator khi các phạm vi operator được yêu cầu vẫn nằm trong phạm vi riêng của caller. Xem [Phạm vi operator](/vi/gateway/operator-scopes) để biết các kiểm tra tại thời điểm phê duyệt.
-
-```
+```bash
 openclaw devices approve
 openclaw devices approve <requestId>
 openclaw devices approve --latest
 ```
 
-## Phê duyệt lần chạy đầu của Paperclip / `openclaw_gateway`
+<Note>
+Nếu thiết bị thử ghép nối lại với thông tin xác thực đã thay đổi (vai trò, phạm vi hoặc khóa công khai), OpenClaw sẽ thay thế mục đang chờ trước đó bằng một `requestId` mới. Chạy `openclaw devices list` ngay trước khi phê duyệt để lấy ID hiện tại.
+</Note>
 
-Khi một agent Paperclip mới kết nối qua adapter `openclaw_gateway` lần đầu, Gateway có thể yêu cầu phê duyệt ghép nối thiết bị một lần trước khi các lần chạy có thể thành công. Nếu Paperclip báo `openclaw_gateway_pairing_required`, hãy phê duyệt thiết bị đang chờ rồi thử lại.
+Hành vi phê duyệt:
 
-Với gateway cục bộ, xem trước yêu cầu đang chờ mới nhất:
+- Nếu thiết bị đã được ghép nối và yêu cầu phạm vi hoặc vai trò rộng hơn, OpenClaw giữ nguyên phê duyệt hiện có và tạo một yêu cầu nâng cấp mới đang chờ. Hãy so sánh `Requested` với `Approved` trong `openclaw devices list`, hoặc xem trước bằng `--latest`, trước khi phê duyệt.
+- Việc phê duyệt vai trò `node` hoặc vai trò không phải người vận hành khác yêu cầu `operator.admin`. `operator.pairing` là đủ để phê duyệt thiết bị của người vận hành, nhưng chỉ khi các phạm vi người vận hành được yêu cầu nằm trong phạm vi của chính bên gọi. Xem [Phạm vi của người vận hành](/vi/gateway/operator-scopes).
+- Nếu đã cấu hình `gateway.nodes.pairing.autoApproveCidrs`, các yêu cầu `role: node` lần đầu từ IP máy khách khớp có thể được tự động phê duyệt trước khi xuất hiện trong danh sách này. Tính năng này mặc định bị tắt; không bao giờ áp dụng cho máy khách người vận hành/trình duyệt hoặc yêu cầu nâng cấp.
+- `gateway.nodes.pairing.sshVerify` (mặc định bật) tự động phê duyệt các yêu cầu `role: node` lần đầu khi Gateway xác minh khóa thiết bị qua SSH tới máy chủ Node. Vì vậy, yêu cầu có thể chuyển sang trạng thái đã phê duyệt ngay sau khi xuất hiện. Đặt `sshVerify: false` để tắt xác minh SSH; tùy chọn này độc lập với `autoApproveCidrs`, vì vậy hãy bỏ đặt tùy chọn đó nếu chỉ muốn ghép nối thủ công.
+
+### `openclaw devices reject <requestId>`
+
+Từ chối một yêu cầu ghép nối thiết bị đang chờ.
+
+```bash
+openclaw devices reject <requestId>
+```
+
+### `openclaw devices remove <deviceId>`
+
+Xóa một mục thiết bị đã ghép nối.
+
+```bash
+openclaw devices remove <deviceId>
+openclaw devices remove <deviceId> --json
+```
+
+Bên gọi được xác thực bằng token của thiết bị đã ghép nối chỉ có thể xóa mục thiết bị **của chính mình**. Việc xóa thiết bị khác yêu cầu `operator.admin`.
+
+### `openclaw devices rename --device <id> --name <label>`
+
+Gán nhãn của người vận hành cho thiết bị đã ghép nối. Nhãn là trạng thái phía chủ sở hữu: chúng vẫn được giữ nguyên sau khi sửa chữa ghép nối và phê duyệt lại vai trò, đồng thời không thay đổi `deviceId` ổn định.
+
+```bash
+openclaw devices rename --device <deviceId> --name "Kitchen Mac"
+openclaw devices rename --device <deviceId> --name "Kitchen Mac" --json
+```
+
+- `--name` là bắt buộc, được cắt khoảng trắng, không được để trống và giới hạn ở 64 ký tự.
+- Các bề mặt hiển thị (danh sách CLI, danh mục Control UI) ưu tiên nhãn của người vận hành hơn tên hiển thị do máy khách báo cáo.
+- Bên gọi bằng thiết bị đã ghép nối không có quyền quản trị chỉ có thể đổi tên thiết bị **của chính mình**. Việc đổi tên thiết bị khác yêu cầu `operator.admin`.
+
+### `openclaw devices clear --yes [--pending]`
+
+Xóa hàng loạt các thiết bị đã ghép nối. Yêu cầu `--yes`.
+
+```bash
+openclaw devices clear --yes
+openclaw devices clear --yes --pending
+openclaw devices clear --yes --pending --json
+```
+
+`--pending` cũng từ chối tất cả yêu cầu ghép nối đang chờ.
+
+### `openclaw devices rotate --device <id> --role <role> [--scope <scope...>]`
+
+Luân chuyển token thiết bị cho một vai trò, đồng thời có thể cập nhật phạm vi của token.
+
+```bash
+openclaw devices rotate --device <deviceId> --role operator --scope operator.read --scope operator.write
+```
+
+- Vai trò đích phải tồn tại sẵn trong hợp đồng ghép nối đã được phê duyệt của thiết bị đó; việc luân chuyển không thể tạo một vai trò mới chưa được phê duyệt.
+- Nếu bỏ qua `--scope`, các lần kết nối lại sau này sẽ sử dụng lại phạm vi đã phê duyệt được lưu trong bộ nhớ đệm của token. Việc truyền các giá trị `--scope` rõ ràng sẽ thay thế tập hợp phạm vi đã lưu cho các lần kết nối lại bằng token được lưu trong bộ nhớ đệm trong tương lai.
+- Bên gọi bằng thiết bị đã ghép nối không có quyền quản trị chỉ có thể luân chuyển token thiết bị **của chính mình**, và tập hợp phạm vi đích phải nằm trong phạm vi người vận hành của chính bên gọi; việc luân chuyển không thể tạo hoặc duy trì token có quyền rộng hơn quyền mà bên gọi hiện có.
+
+Trả về siêu dữ liệu luân chuyển dưới dạng JSON. Nếu bên gọi luân chuyển token của chính mình trong khi được xác thực bằng token thiết bị đó, phản hồi sẽ bao gồm token thay thế để máy khách có thể lưu token trước khi kết nối lại. Các lần luân chuyển dùng chung/do quản trị viên thực hiện không bao giờ trả lại token mang quyền truy cập.
+
+### `openclaw devices revoke --device <id> --role <role>`
+
+Thu hồi token thiết bị cho một vai trò.
+
+```bash
+openclaw devices revoke --device <deviceId> --role node
+```
+
+Bên gọi bằng thiết bị đã ghép nối không có quyền quản trị chỉ có thể thu hồi token thiết bị **của chính mình**. Việc thu hồi token của thiết bị khác yêu cầu `operator.admin`. Tập hợp phạm vi đích cũng phải nằm trong phạm vi người vận hành của chính bên gọi; bên gọi chỉ có quyền ghép nối không thể thu hồi token người vận hành có quyền quản trị/ghi.
+
+## Ghi chú
+
+- Các lệnh này yêu cầu phạm vi `operator.pairing` (hoặc `operator.admin`). Các vai trò thiết bị không phải người vận hành luôn yêu cầu `operator.admin`; xem [Phạm vi của người vận hành](/vi/gateway/operator-scopes).
+- Việc luân chuyển và thu hồi token phải nằm trong tập hợp vai trò ghép nối và đường cơ sở phạm vi đã được phê duyệt của thiết bị. Một mục token rời rạc trong bộ nhớ đệm không cấp mục tiêu quản lý token.
+- Đối với phiên token của thiết bị đã ghép nối, việc quản lý giữa các thiết bị (`remove`, `rename`, `rotate`, `revoke`) chỉ áp dụng cho chính thiết bị đó, trừ khi bên gọi có `operator.admin`.
+- Việc luân chuyển token trả về một token mới (nhạy cảm) — hãy xử lý token đó như một bí mật.
+- Nếu phạm vi ghép nối không khả dụng trên local loopback và không truyền rõ `--url`, `list`/`approve` có thể dự phòng sang trạng thái ghép nối cục bộ.
+
+## Danh sách kiểm tra khôi phục sai lệch token
+
+Sử dụng phần này khi Control UI hoặc các máy khách khác liên tục gặp lỗi `AUTH_TOKEN_MISMATCH`, `AUTH_DEVICE_TOKEN_MISMATCH` hoặc `AUTH_SCOPE_MISMATCH`.
+
+1. Xác nhận nguồn token Gateway hiện tại:
+
+   ```bash
+   openclaw config get gateway.auth.token
+   ```
+
+2. Liệt kê các thiết bị đã ghép nối và xác định ID của thiết bị bị ảnh hưởng:
+
+   ```bash
+   openclaw devices list
+   ```
+
+3. Luân chuyển token người vận hành cho thiết bị bị ảnh hưởng:
+
+   ```bash
+   openclaw devices rotate --device <deviceId> --role operator
+   ```
+
+4. Nếu luân chuyển vẫn chưa đủ, hãy xóa ghép nối cũ và phê duyệt lại:
+
+   ```bash
+   openclaw devices remove <deviceId>
+   openclaw devices list
+   openclaw devices approve <requestId>
+   ```
+
+5. Thử lại kết nối máy khách bằng token/mật khẩu dùng chung hiện tại.
+
+Ghi chú:
+
+- Thứ tự ưu tiên xác thực khi kết nối lại thông thường: token/mật khẩu dùng chung được chỉ định rõ trước tiên, sau đó là `deviceToken` được chỉ định rõ, tiếp theo là token thiết bị đã lưu, cuối cùng là token khởi tạo.
+- Quá trình khôi phục `AUTH_TOKEN_MISMATCH` đáng tin cậy có thể tạm thời gửi cả token dùng chung và token thiết bị đã lưu cùng nhau trong một lần thử lại có giới hạn.
+- `AUTH_SCOPE_MISMATCH` có nghĩa là token thiết bị đã được nhận diện nhưng không mang tập hợp phạm vi được yêu cầu; hãy sửa hợp đồng phê duyệt ghép nối/phạm vi trước khi thay đổi xác thực Gateway dùng chung.
+
+Liên quan:
+
+- [Khắc phục sự cố xác thực Dashboard](/vi/web/dashboard#if-you-see-unauthorized-1008)
+- [Khắc phục sự cố Gateway](/vi/gateway/troubleshooting#dashboard-control-ui-connectivity)
+
+## Phê duyệt lần chạy đầu tiên của Paperclip / `openclaw_gateway`
+
+Các tác nhân Paperclip kết nối qua bộ điều hợp `openclaw_gateway` trải qua quy trình phê duyệt ghép nối thiết bị trong lần chạy đầu tiên giống như mọi máy khách mới khác. Nếu Paperclip báo `openclaw_gateway_pairing_required`, hãy phê duyệt thiết bị đang chờ rồi thử lại.
 
 ```bash
 openclaw devices approve --latest
 ```
 
-Bản xem trước in ra lệnh `openclaw devices approve <requestId>` chính xác. Xác minh chi tiết yêu cầu, rồi chạy lại lệnh đó với ID yêu cầu để phê duyệt.
-
-Với gateway từ xa hoặc thông tin xác thực rõ ràng, truyền cùng các tùy chọn khi xem trước và phê duyệt:
+Bản xem trước in ra lệnh `openclaw devices approve <requestId>` chính xác; hãy xác minh thông tin chi tiết, sau đó chạy lại lệnh đó với ID yêu cầu để phê duyệt. Đối với Gateway từ xa hoặc thông tin xác thực được chỉ định rõ, hãy truyền cùng các tùy chọn trong khi xem trước và phê duyệt:
 
 ```bash
 openclaw devices approve --latest --url <gateway-ws-url> --token <gateway-token>
 ```
 
-Để tránh phải phê duyệt lại sau khi khởi động lại, hãy giữ một khóa thiết bị bền vững trong cấu hình adapter Paperclip thay vì tạo một danh tính tạm thời mới cho mỗi lần chạy:
+Để tránh phải phê duyệt lại sau mỗi lần khởi động, hãy cấu hình `adapterConfig.devicePrivateKeyPem` bền vững trong Paperclip thay vì để Paperclip tạo danh tính thiết bị tạm thời mới trong mỗi lần chạy:
 
 ```json
 {
@@ -100,112 +209,9 @@ openclaw devices approve --latest --url <gateway-ws-url> --token <gateway-token>
 }
 ```
 
-Nếu phê duyệt tiếp tục thất bại, trước tiên hãy chạy `openclaw devices list` để xác nhận có yêu cầu đang chờ.
-
-### `openclaw devices reject <requestId>`
-
-Từ chối một yêu cầu ghép nối thiết bị đang chờ.
-
-```
-openclaw devices reject <requestId>
-```
-
-### `openclaw devices rotate --device <id> --role <role> [--scope <scope...>]`
-
-Xoay vòng token thiết bị cho một vai trò cụ thể (tùy chọn cập nhật phạm vi).
-Vai trò đích phải đã tồn tại trong hợp đồng ghép nối đã phê duyệt của thiết bị đó; xoay vòng không thể tạo một vai trò mới chưa được phê duyệt.
-Nếu bạn bỏ qua `--scope`, các lần kết nối lại sau với token đã xoay vòng được lưu trữ sẽ tái sử dụng các phạm vi đã phê duyệt được lưu trong bộ nhớ đệm của token đó. Nếu bạn truyền các giá trị `--scope` rõ ràng, chúng sẽ trở thành bộ phạm vi được lưu trữ cho các lần kết nối lại bằng token lưu trong bộ nhớ đệm trong tương lai.
-Caller thiết bị đã ghép nối không phải quản trị viên chỉ có thể xoay vòng token thiết bị **của chính họ**.
-Bộ phạm vi token đích phải nằm trong các phạm vi operator riêng của phiên caller; xoay vòng không thể tạo hoặc giữ một token operator rộng hơn token mà caller đã có.
-
-```
-openclaw devices rotate --device <deviceId> --role operator --scope operator.read --scope operator.write
-```
-
-Trả về metadata xoay vòng dưới dạng JSON. Nếu caller đang xoay vòng token của chính mình trong khi được xác thực bằng token thiết bị đó, phản hồi cũng bao gồm token thay thế để máy khách có thể lưu bền vững trước khi kết nối lại. Các xoay vòng dùng chung/quản trị viên không echo bearer token.
-
-### `openclaw devices revoke --device <id> --role <role>`
-
-Thu hồi token thiết bị cho một vai trò cụ thể.
-
-Caller thiết bị đã ghép nối không phải quản trị viên chỉ có thể thu hồi token thiết bị **của chính họ**.
-Thu hồi token của thiết bị khác yêu cầu `operator.admin`.
-Bộ phạm vi token đích cũng phải nằm trong các phạm vi operator riêng của phiên caller; caller chỉ có quyền ghép nối không thể thu hồi token operator admin/write.
-
-```
-openclaw devices revoke --device <deviceId> --role node
-```
-
-Trả về kết quả thu hồi dưới dạng JSON.
-
-## Tùy chọn chung
-
-- `--url <url>`: URL WebSocket của Gateway (mặc định là `gateway.remote.url` khi được cấu hình).
-- `--token <token>`: Token Gateway (nếu bắt buộc).
-- `--password <password>`: Mật khẩu Gateway (xác thực bằng mật khẩu).
-- `--timeout <ms>`: Thời gian chờ RPC.
-- `--json`: Đầu ra JSON (khuyến nghị cho script).
-
-<Warning>
-Khi bạn đặt `--url`, CLI không fallback về thông tin xác thực từ cấu hình hoặc môi trường. Hãy truyền `--token` hoặc `--password` một cách rõ ràng. Thiếu thông tin xác thực rõ ràng là một lỗi.
-</Warning>
-
-## Ghi chú
-
-- Xoay vòng token trả về một token mới (nhạy cảm). Hãy xử lý nó như một bí mật.
-- Các lệnh này yêu cầu phạm vi `operator.pairing` (hoặc `operator.admin`). Một số phê duyệt cũng yêu cầu caller sở hữu các phạm vi operator mà thiết bị đích sẽ tạo hoặc kế thừa. Vai trò thiết bị không phải operator yêu cầu `operator.admin`; xem [Phạm vi operator](/vi/gateway/operator-scopes).
-- `gateway.nodes.pairing.autoApproveCidrs` là một chính sách Gateway chọn tham gia chỉ dành cho ghép nối thiết bị node mới; nó không thay đổi quyền phê duyệt của CLI.
-- Xoay vòng và thu hồi token vẫn nằm trong bộ vai trò ghép nối đã phê duyệt và đường cơ sở phạm vi đã phê duyệt cho thiết bị đó. Một mục token lưu trong bộ nhớ đệm đi lạc không cấp mục tiêu quản lý token.
-- Với các phiên token thiết bị đã ghép nối, quản lý xuyên thiết bị chỉ dành cho quản trị viên: `remove`, `rotate`, và `revoke` chỉ áp dụng cho chính thiết bị đó trừ khi caller có `operator.admin`.
-- Đột biến token cũng bị giới hạn theo phạm vi caller: một phiên chỉ có quyền ghép nối không thể xoay vòng hoặc thu hồi token hiện mang `operator.admin` hoặc `operator.write`.
-- `devices clear` được cố ý chặn bằng `--yes`.
-- Nếu phạm vi ghép nối không khả dụng trên local loopback (và không truyền `--url` rõ ràng), list/approve có thể dùng fallback ghép nối cục bộ.
-- `devices approve` yêu cầu ID yêu cầu rõ ràng trước khi tạo token; bỏ qua `requestId` hoặc truyền `--latest` chỉ xem trước yêu cầu đang chờ mới nhất.
-
-## Danh sách kiểm tra khôi phục lệch token
-
-Dùng phần này khi Control UI hoặc các máy khách khác tiếp tục thất bại với `AUTH_TOKEN_MISMATCH`, `AUTH_DEVICE_TOKEN_MISMATCH`, hoặc `AUTH_SCOPE_MISMATCH`.
-
-1. Xác nhận nguồn token gateway hiện tại:
-
-```bash
-openclaw config get gateway.auth.token
-```
-
-2. Liệt kê các thiết bị đã ghép nối và xác định id thiết bị bị ảnh hưởng:
-
-```bash
-openclaw devices list
-```
-
-3. Xoay vòng token operator cho thiết bị bị ảnh hưởng:
-
-```bash
-openclaw devices rotate --device <deviceId> --role operator
-```
-
-4. Nếu xoay vòng chưa đủ, xóa ghép nối cũ và phê duyệt lại:
-
-```bash
-openclaw devices remove <deviceId>
-openclaw devices list
-openclaw devices approve <requestId>
-```
-
-5. Thử lại kết nối máy khách bằng token/mật khẩu dùng chung hiện tại.
-
-Ghi chú:
-
-- Thứ tự ưu tiên xác thực kết nối lại thông thường là token/mật khẩu dùng chung rõ ràng trước, sau đó là `deviceToken` rõ ràng, sau đó là token thiết bị đã lưu, rồi đến token bootstrap.
-- Khôi phục `AUTH_TOKEN_MISMATCH` đáng tin cậy có thể tạm thời gửi cả token dùng chung và token thiết bị đã lưu cùng nhau cho một lần thử lại có giới hạn.
-- `AUTH_SCOPE_MISMATCH` nghĩa là token thiết bị đã được nhận diện nhưng không mang bộ phạm vi được yêu cầu; hãy sửa hợp đồng phê duyệt ghép nối/phạm vi trước khi thay đổi xác thực gateway dùng chung.
-
-Liên quan:
-
-- [Khắc phục sự cố xác thực Dashboard](/vi/web/dashboard#if-you-see-unauthorized-1008)
-- [Khắc phục sự cố Gateway](/vi/gateway/troubleshooting#dashboard-control-ui-connectivity)
+Nếu việc phê duyệt liên tục thất bại, trước tiên hãy chạy `openclaw devices list` để xác nhận có yêu cầu đang chờ.
 
 ## Liên quan
 
-- [Tham chiếu CLI](/vi/cli)
+- [Tài liệu tham khảo CLI](/vi/cli)
 - [Node](/vi/nodes)

@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або аудіюєте Plugin deepinfra
-summary: Додає підтримку постачальника моделей DeepInfra в OpenClaw.
+    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin deepinfra
+summary: Додає до OpenClaw підтримку постачальника моделей DeepInfra.
 title: Plugin DeepInfra
 x-i18n:
-    generated_at: "2026-06-27T17:57:39Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:36:03Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 67ee0e714d812bbb72a05233ac52a17da796631766a9222bb9caa4d441c8433f
@@ -15,17 +15,17 @@ x-i18n:
 
 # Plugin DeepInfra
 
-Додає підтримку провайдера моделей DeepInfra до OpenClaw.
+Додає підтримку постачальника моделей DeepInfra до OpenClaw.
 
 ## Розповсюдження
 
-- Пакет: `@openclaw/deepinfra-provider`
-- Шлях встановлення: npm; ClawHub: `clawhub:@openclaw/deepinfra-provider`
+- Пакунок: `@openclaw/deepinfra-provider`
+- Спосіб установлення: npm; ClawHub: `clawhub:@openclaw/deepinfra-provider`
 
-## Поверхня
+## Інтерфейс
 
-провайдери: deepinfra; контракти: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, speechProviders, videoGenerationProviders
+постачальники: deepinfra; контракти: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, speechProviders, videoGenerationProviders
 
-## Пов’язані документи
+## Пов’язана документація
 
 - [deepinfra](/uk/providers/deepinfra)

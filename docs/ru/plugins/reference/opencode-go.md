@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Вы устанавливаете, настраиваете или проверяете плагин opencode-go
-summary: Добавляет поддержку поставщика моделей OpenCode Go в OpenClaw.
+    - Вы устанавливаете, настраиваете или проверяете Plugin opencode-go
+summary: Добавляет в OpenClaw поддержку провайдера моделей OpenCode Go.
 title: Plugin OpenCode Go
 x-i18n:
-    generated_at: "2026-06-28T23:27:13Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:43:08Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: adf5c43fc8e32041d5b58f5c7fa197015dcebcee3dfc0484081fbd67f14feeb6
@@ -15,14 +15,14 @@ x-i18n:
 
 # Plugin OpenCode Go
 
-Добавляет поддержку провайдера моделей OpenCode Go в OpenClaw.
+Добавляет в OpenClaw поддержку провайдера моделей OpenCode Go.
 
 ## Распространение
 
 - Пакет: `@openclaw/opencode-go-provider`
-- Способ установки: включено в OpenClaw
+- Способ установки: входит в состав OpenClaw
 
-## Поверхность
+## Интерфейс
 
 провайдеры: opencode-go; контракты: mediaUnderstandingProviders
 

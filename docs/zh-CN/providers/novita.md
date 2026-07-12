@@ -2,11 +2,11 @@
 read_when:
     - 你想使用 NovitaAI 模型运行 OpenClaw
     - 你需要 Novita 提供商 ID、密钥或端点
-summary: 在 OpenClaw 中使用 NovitaAI 的 OpenAI 兼容 API
+summary: 通过 OpenClaw 使用 NovitaAI 的 OpenAI 兼容 API
 title: NovitaAI
 x-i18n:
-    generated_at: "2026-07-05T11:36:21Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T20:52:33Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 83e0e43e68d85d73e790023858a49f971b683129dbbdf6092fbd8bba4d8da331
@@ -14,9 +14,9 @@ x-i18n:
     workflow: 16
 ---
 
-NovitaAI 是托管式 AI 基础设施提供商，提供 OpenAI 兼容 API。
-它作为内置的 OpenClaw 提供商交付（无需单独安装插件），因此
-凭证会走常规模型认证流程，模型引用看起来像
+NovitaAI 是一家托管式 AI 基础设施提供商，提供兼容 OpenAI 的 API。
+它作为 OpenClaw 内置提供商随附（无需单独安装插件），因此
+凭证通过常规模型身份验证流程处理，模型引用的格式类似于
 `novita/deepseek/deepseek-v3-0324`。
 
 ## 设置
@@ -52,9 +52,9 @@ export NOVITA_API_KEY="<your-novita-api-key>" # pragma: allowlist secret
 - `novita/deepseek/deepseek-r1-0528`
 - `novita/qwen/qwen3-235b-a22b-fp8`
 
-这是一个起点，不是实时目录。你的账户、区域或
-Novita 当前产品可能会新增、移除或限制路由。在
-设置长期默认值前请先检查：
+这只是一个起始列表，并非实时目录。你的账户、地区或
+Novita 当前提供的服务可能会添加、移除或限制路由。在设置
+长期使用的默认模型之前，请先检查：
 
 ```bash
 openclaw models list --provider novita
@@ -62,22 +62,22 @@ openclaw models list --provider novita
 
 ## 何时选择 Novita
 
-- 通过 OpenAI 兼容 API 访问托管式开放权重模型。
-- 通过单一提供商账户使用 DeepSeek、Kimi、MiniMax、GLM 或 Qwen 系列路由。
-- 在 DeepInfra、GMI、OpenRouter 或直接厂商 API 之外，获得另一条托管式回退路径。
-- 使用提供商侧模型托管，而不是维护 LM Studio、Ollama、SGLang 或 vLLM 基础设施。
+- 通过兼容 OpenAI 的 API 访问托管式开放权重模型。
+- 使用单个提供商账户访问 DeepSeek、Kimi、MiniMax、GLM 或 Qwen 系列路由。
+- 在 DeepInfra、GMI、OpenRouter 或供应商直连 API 之外，提供另一条托管式备用路径。
+- 使用提供商侧的模型托管，而不是自行维护 LM Studio、Ollama、SGLang 或 vLLM 基础设施。
 
-当你需要厂商原生请求参数或支持合同时，请选择直接厂商提供商。当模型必须
-运行在你自己的硬件或网络边界内时，请选择本地提供商。
+当你需要供应商原生请求参数或支持合同时，请选择供应商直连提供商。
+当模型必须在你自己的硬件或网络边界内运行时，请选择本地提供商。
 
 ## 故障排查
 
-- `401`/`403`：在 Novita 的密钥管理页面验证密钥；如果已存储的配置过期，
-  请重新运行 `openclaw onboard --auth-choice novita-api-key`。
-- 未知模型错误：使用 `openclaw models list --provider novita` 返回的精确
-  `novita/<route-id>`。
-- 路由缓慢或失败：尝试另一个 Novita 模型路由，或将 Novita 设置为可容忍
-  提供商特定差异的工作负载的回退提供商。
+- `401`/`403`：在 Novita 的密钥管理页面中验证密钥；如果存储的配置文件
+  已过期，请重新运行 `openclaw onboard --auth-choice novita-api-key`。
+- 未知模型错误：使用 `openclaw models list --provider novita`
+  返回的确切 `novita/<route-id>`。
+- 路由缓慢或失败：尝试其他 Novita 模型路由，或对于能够容忍
+  提供商特定差异的工作负载，将 Novita 设置为备用提供商。
 
 ## 相关内容
 

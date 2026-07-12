@@ -2,34 +2,34 @@
 read_when:
     - Anda ingin menjalankan OpenClaw pada klaster Kubernetes
     - Anda ingin menguji OpenClaw di lingkungan Kubernetes
-summary: Terapkan OpenClaw Gateway ke klaster Kubernetes dengan Kustomize
+summary: Terapkan Gateway OpenClaw ke klaster Kubernetes dengan Kustomize
 title: Kubernetes
 x-i18n:
-    generated_at: "2026-06-28T20:43:41Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:17:37Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5a38c2754b4a5267e79854958a252b2e4bc9811da191d8ccf3ac597534cc8e7a
+    source_hash: c05eb0eb923fa1f515aca1f6dcb6073aba69af0bdf30233243027edfedd45a39
     source_path: install/kubernetes.md
     workflow: 16
 ---
 
-Titik awal minimal untuk menjalankan OpenClaw di Kubernetes — bukan deployment yang siap produksi. Ini mencakup resource inti dan dimaksudkan untuk disesuaikan dengan lingkungan Anda.
+Titik awal minimal untuk menjalankan OpenClaw di Kubernetes, bukan deployment yang siap untuk produksi. Panduan ini mencakup sumber daya inti dan dimaksudkan untuk disesuaikan dengan lingkungan Anda.
 
-## Mengapa bukan Helm?
+## Mengapa tidak menggunakan Helm
 
-OpenClaw adalah satu container dengan beberapa file konfigurasi. Kustomisasi yang penting ada pada konten agent (file markdown, Skills, override konfigurasi), bukan templating infrastruktur. Kustomize menangani overlay tanpa overhead chart Helm. Jika deployment Anda menjadi lebih kompleks, chart Helm dapat dilapiskan di atas manifest ini.
+OpenClaw adalah satu kontainer dengan beberapa berkas konfigurasi. Penyesuaian yang utama terdapat dalam konten agen (berkas Markdown, Skills, penggantian konfigurasi), bukan pembuatan templat infrastruktur. Kustomize menangani lapisan penyesuaian tanpa beban tambahan bagan Helm. Tambahkan bagan Helm di atas manifes ini jika deployment Anda menjadi lebih kompleks.
 
-## Yang Anda butuhkan
+## Yang Anda perlukan
 
-- Cluster Kubernetes yang berjalan (AKS, EKS, GKE, k3s, kind, OpenShift, dll.)
-- `kubectl` yang terhubung ke cluster Anda
+- Klaster Kubernetes yang berjalan (AKS, EKS, GKE, k3s, kind, OpenShift, dan sebagainya)
+- `kubectl` yang terhubung ke klaster Anda
 - Kunci API untuk setidaknya satu penyedia model
 
 ## Mulai cepat
 
 ```bash
-# Replace with your provider: ANTHROPIC, GEMINI, OPENAI, or OPENROUTER
+# Ganti dengan penyedia Anda: ANTHROPIC, GEMINI, OPENAI, atau OPENROUTER
 export <PROVIDER>_API_KEY="..."
 ./scripts/k8s/deploy.sh
 
@@ -37,41 +37,40 @@ kubectl port-forward svc/openclaw 18789:18789 -n openclaw
 open http://localhost:18789
 ```
 
-Ambil shared secret yang dikonfigurasi untuk Control UI. Skrip deploy ini
-membuat autentikasi token secara default:
+`deploy.sh` membuat autentikasi token secara bawaan. Ambil token Gateway yang dihasilkan untuk UI Kontrol:
 
 ```bash
 kubectl get secret openclaw-secrets -n openclaw -o jsonpath='{.data.OPENCLAW_GATEWAY_TOKEN}' | base64 -d
 ```
 
-Untuk debugging lokal, `./scripts/k8s/deploy.sh --show-token` mencetak token setelah deploy.
+Untuk penelusuran kesalahan lokal, `./scripts/k8s/deploy.sh --show-token` mencetak token setelah deployment.
 
 ## Pengujian lokal dengan Kind
 
-Jika Anda tidak memiliki cluster, buat satu secara lokal dengan [Kind](https://kind.sigs.k8s.io/):
+Jika Anda tidak memiliki klaster, buat klaster secara lokal dengan [Kind](https://kind.sigs.k8s.io/):
 
 ```bash
-./scripts/k8s/create-kind.sh           # auto-detects docker or podman
-./scripts/k8s/create-kind.sh --delete  # tear down
+./scripts/k8s/create-kind.sh           # mendeteksi docker atau podman secara otomatis
+./scripts/k8s/create-kind.sh --delete  # menghapus
 ```
 
-Lalu deploy seperti biasa dengan `./scripts/k8s/deploy.sh`.
+Kemudian lakukan deployment seperti biasa dengan `./scripts/k8s/deploy.sh`.
 
 ## Langkah demi langkah
 
-### 1) Deploy
+### 1) Lakukan deployment
 
-**Opsi A** — kunci API di environment (satu langkah):
+**Opsi A: Kunci API di lingkungan (satu langkah)**
 
 ```bash
-# Replace with your provider: ANTHROPIC, GEMINI, OPENAI, or OPENROUTER
+# Ganti dengan penyedia Anda: ANTHROPIC, GEMINI, OPENAI, atau OPENROUTER
 export <PROVIDER>_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-Skrip membuat Kubernetes Secret dengan kunci API dan token gateway yang dibuat otomatis, lalu melakukan deploy. Jika Secret sudah ada, skrip mempertahankan token gateway saat ini dan kunci penyedia apa pun yang tidak diubah.
+Skrip membuat Secret Kubernetes dengan kunci API dan token Gateway yang dibuat secara otomatis, lalu melakukan deployment. Jika Secret sudah ada, skrip mempertahankan token Gateway saat ini dan semua kunci penyedia yang tidak diubah.
 
-**Opsi B** — buat secret secara terpisah:
+**Opsi B: Buat secret secara terpisah**
 
 ```bash
 export <PROVIDER>_API_KEY="..."
@@ -79,31 +78,31 @@ export <PROVIDER>_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-Gunakan `--show-token` dengan salah satu perintah jika Anda ingin token dicetak ke stdout untuk pengujian lokal.
+Tambahkan `--show-token` ke salah satu perintah untuk mencetak token ke stdout bagi pengujian lokal.
 
-### 2) Akses gateway
+### 2) Akses Gateway
 
 ```bash
 kubectl port-forward svc/openclaw 18789:18789 -n openclaw
 open http://localhost:18789
 ```
 
-## Yang di-deploy
+## Yang diterapkan
 
-```
-Namespace: openclaw (configurable via OPENCLAW_NAMESPACE)
-├── Deployment/openclaw        # Single pod, init container + gateway
-├── Service/openclaw           # ClusterIP on port 18789
-├── PersistentVolumeClaim      # 10Gi for agent state and config
+```text
+Namespace: openclaw (dapat dikonfigurasi melalui OPENCLAW_NAMESPACE)
+├── Deployment/openclaw        # Satu pod, kontainer init + Gateway
+├── Service/openclaw           # ClusterIP pada porta 18789
+├── PersistentVolumeClaim      # 10 Gi untuk status dan konfigurasi agen
 ├── ConfigMap/openclaw-config  # openclaw.json + AGENTS.md
-└── Secret/openclaw-secrets    # Gateway token + API keys
+└── Secret/openclaw-secrets    # Token Gateway + kunci API
 ```
 
-## Kustomisasi
+## Penyesuaian
 
-### Instruksi agent
+### Instruksi agen
 
-Edit `AGENTS.md` di `scripts/k8s/manifests/configmap.yaml` dan deploy ulang:
+Edit `AGENTS.md` di `scripts/k8s/manifests/configmap.yaml` dan lakukan deployment ulang:
 
 ```bash
 ./scripts/k8s/deploy.sh
@@ -111,11 +110,11 @@ Edit `AGENTS.md` di `scripts/k8s/manifests/configmap.yaml` dan deploy ulang:
 
 ### Konfigurasi Gateway
 
-Edit `openclaw.json` di `scripts/k8s/manifests/configmap.yaml`. Lihat [Konfigurasi Gateway](/id/gateway/configuration) untuk referensi lengkap.
+Edit `openclaw.json` di `scripts/k8s/manifests/configmap.yaml`. Lihat [konfigurasi Gateway](/id/gateway/configuration) untuk referensi lengkap.
 
 ### Tambahkan penyedia
 
-Jalankan ulang dengan kunci tambahan yang diekspor:
+Jalankan ulang dengan mengekspor kunci tambahan:
 
 ```bash
 export ANTHROPIC_API_KEY="..."
@@ -124,9 +123,9 @@ export OPENAI_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-Kunci penyedia yang sudah ada tetap berada di Secret kecuali Anda menimpanya.
+Kunci penyedia yang ada tetap berada di Secret kecuali Anda menimpanya.
 
-Atau patch Secret secara langsung:
+Atau tambal Secret secara langsung:
 
 ```bash
 kubectl patch secret openclaw-secrets -n openclaw \
@@ -134,71 +133,71 @@ kubectl patch secret openclaw-secrets -n openclaw \
 kubectl rollout restart deployment/openclaw -n openclaw
 ```
 
-### Namespace kustom
+### Namespace khusus
 
 ```bash
 OPENCLAW_NAMESPACE=my-namespace ./scripts/k8s/deploy.sh
 ```
 
-### Image kustom
+### Citra khusus
 
-Edit kolom `image` di `scripts/k8s/manifests/deployment.yaml`:
+Edit bidang `image` di `scripts/k8s/manifests/deployment.yaml`:
 
 ```yaml
-image: ghcr.io/openclaw/openclaw:latest # primary; official Docker Hub mirror: openclaw/openclaw:latest
+image: ghcr.io/openclaw/openclaw:slim # utama; mirror resmi Docker Hub: openclaw/openclaw
 ```
 
-### Ekspos di luar port-forward
+### Ekspos di luar penerusan porta
 
-Manifest default mengikat gateway ke loopback di dalam pod. Itu berfungsi dengan `kubectl port-forward`, tetapi tidak berfungsi dengan Kubernetes `Service` atau jalur Ingress yang perlu menjangkau IP pod.
+Manifes bawaan mengikat Gateway ke loopback di dalam pod. Konfigurasi ini berfungsi dengan `kubectl port-forward`, tetapi tidak dengan `Service` Kubernetes atau jalur Ingress yang perlu menjangkau IP pod secara langsung.
 
-Jika Anda ingin mengekspos gateway melalui Ingress atau load balancer:
+Untuk mengekspos Gateway melalui Ingress atau penyeimbang beban:
 
-- Ubah bind gateway di `scripts/k8s/manifests/configmap.yaml` dari `loopback` menjadi bind non-loopback yang sesuai dengan model deployment Anda
-- Tetap aktifkan autentikasi gateway dan gunakan entrypoint yang diterminasi TLS dengan benar
-- Konfigurasikan Control UI untuk akses jarak jauh menggunakan model keamanan web yang didukung (misalnya HTTPS/Tailscale Serve dan origin yang diizinkan secara eksplisit saat diperlukan)
+- Ubah pengikatan Gateway di `scripts/k8s/manifests/configmap.yaml` dari `loopback` menjadi pengikatan non-loopback yang sesuai dengan model deployment Anda.
+- Pertahankan autentikasi Gateway tetap aktif dan gunakan titik masuk yang mengakhiri TLS dengan benar.
+- Konfigurasikan UI Kontrol untuk akses jarak jauh menggunakan model keamanan web yang didukung (misalnya HTTPS/Tailscale Serve dan origin yang diizinkan secara eksplisit bila diperlukan).
 
-## Deploy ulang
+## Deployment ulang
 
 ```bash
 ./scripts/k8s/deploy.sh
 ```
 
-Ini menerapkan semua manifest dan memulai ulang pod agar setiap perubahan konfigurasi atau secret diterapkan.
+Perintah ini menerapkan semua manifes dan memulai ulang pod untuk mengambil setiap perubahan konfigurasi atau secret.
 
-## Bongkar
+## Pembongkaran
 
 ```bash
 ./scripts/k8s/deploy.sh --delete
 ```
 
-Ini menghapus namespace dan semua resource di dalamnya, termasuk PVC.
+Perintah ini menghapus namespace dan semua sumber daya di dalamnya, termasuk PVC.
 
 ## Catatan arsitektur
 
-- Gateway mengikat ke loopback di dalam pod secara default, jadi setup yang disertakan ditujukan untuk `kubectl port-forward`
-- Tidak ada resource berskala cluster — semuanya berada dalam satu namespace
-- Keamanan: `readOnlyRootFilesystem`, kapabilitas `drop: ALL`, pengguna non-root (UID 1000)
-- Konfigurasi default menjaga Control UI pada jalur akses lokal yang lebih aman: bind loopback plus `kubectl port-forward` ke `http://127.0.0.1:18789`
-- Jika Anda melampaui akses localhost, gunakan model jarak jauh yang didukung: HTTPS/Tailscale plus bind gateway yang sesuai dan pengaturan origin Control UI
-- Secret dibuat di direktori sementara dan diterapkan langsung ke cluster — tidak ada material secret yang ditulis ke checkout repo
+- Gateway terikat ke loopback di dalam pod secara bawaan, sehingga penyiapan yang disertakan ditujukan untuk `kubectl port-forward`.
+- Tidak ada sumber daya yang cakupannya seluruh klaster; semuanya berada dalam satu namespace.
+- Penguatan keamanan: `readOnlyRootFilesystem`, kapabilitas `drop: ALL`, pengguna non-root (UID 1000).
+- Konfigurasi bawaan mempertahankan UI Kontrol pada jalur akses lokal yang lebih aman: pengikatan loopback ditambah `kubectl port-forward` ke `http://127.0.0.1:18789`.
+- Jika Anda beralih dari akses localhost, gunakan model jarak jauh yang didukung: HTTPS/Tailscale ditambah pengikatan Gateway dan pengaturan origin UI Kontrol yang sesuai.
+- Secret dibuat dalam direktori sementara dan diterapkan langsung ke klaster; tidak ada materi rahasia yang ditulis ke checkout repositori.
 
-## Struktur file
+## Struktur berkas
 
-```
+```text
 scripts/k8s/
-├── deploy.sh                   # Creates namespace + secret, deploys via kustomize
-├── create-kind.sh              # Local Kind cluster (auto-detects docker/podman)
+├── deploy.sh                   # Membuat namespace + secret, melakukan deployment melalui kustomize
+├── create-kind.sh              # Klaster Kind lokal (mendeteksi docker/podman secara otomatis)
 └── manifests/
-    ├── kustomization.yaml      # Kustomize base
+    ├── kustomization.yaml      # Basis Kustomize
     ├── configmap.yaml          # openclaw.json + AGENTS.md
-    ├── deployment.yaml         # Pod spec with security hardening
-    ├── pvc.yaml                # 10Gi persistent storage
-    └── service.yaml            # ClusterIP on 18789
+    ├── deployment.yaml         # Spesifikasi pod dengan penguatan keamanan
+    ├── pvc.yaml                # Penyimpanan persisten 10 Gi
+    └── service.yaml            # ClusterIP pada 18789
 ```
 
 ## Terkait
 
 - [Docker](/id/install/docker)
-- [Runtime Docker VM](/id/install/docker-vm-runtime)
-- [Ringkasan instalasi](/id/install)
+- [Runtime VM Docker](/id/install/docker-vm-runtime)
+- [Ikhtisar instalasi](/id/install)

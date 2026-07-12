@@ -5,36 +5,35 @@ read_when:
 summary: Execute o OpenClaw com o LM Studio
 title: LM Studio
 x-i18n:
-    generated_at: "2026-07-12T15:33:34Z"
+    generated_at: "2026-07-12T00:19:39Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: b4223f90e786e285651fc889985dd61124c60758b4e9c3599d76201d9ac20b46
     source_path: providers/lmstudio.md
     workflow: 16
 ---
 
-O LM Studio executa modelos llama.cpp (GGUF) ou MLX localmente, como um aplicativo com interface gráfica ou pelo daemon headless `llmster`.
-Para obter instruções de instalação e a documentação do produto, consulte [lmstudio.ai](https://lmstudio.ai/).
+O LM Studio executa modelos llama.cpp (GGUF) ou MLX localmente, como um aplicativo com interface gráfica ou pelo daemon `llmster`
+sem interface gráfica. Para instalação e documentação do produto, consulte [lmstudio.ai](https://lmstudio.ai/).
 
 ## Início rápido
 
 <Steps>
   <Step title="Instale e inicie o servidor">
-    Instale o LM Studio (desktop) ou o `llmster` (headless) e, em seguida, inicie o servidor:
+    Instale o LM Studio (desktop) ou o `llmster` (sem interface gráfica) e, em seguida, inicie o servidor:
 
     ```bash
     lms server start --port 1234
     ```
 
-    Ou execute o daemon headless:
+    Ou execute o daemon sem interface gráfica:
 
     ```bash
     lms daemon up
     ```
 
-    Se estiver usando o aplicativo para desktop, habilite o JIT para obter um carregamento fluido dos modelos; consulte o
+    Se estiver usando o aplicativo para desktop, habilite o JIT para um carregamento fluido dos modelos; consulte o
     [guia de JIT e TTL do LM Studio](https://lmstudio.ai/docs/developer/core/ttl-and-auto-evict).
 
   </Step>
@@ -52,7 +51,7 @@ Para obter instruções de instalação e a documentação do produto, consulte 
     openclaw onboard
     ```
 
-    Escolha `LM Studio` e selecione um modelo no prompt `Default model`.
+    Escolha `LM Studio` e selecione um modelo quando a opção `Default model` for exibida.
 
   </Step>
 </Steps>
@@ -64,8 +63,8 @@ openclaw models set lmstudio/qwen/qwen3.5-9b
 ```
 
 As chaves de modelo do LM Studio usam o formato `author/model-name` (por exemplo, `qwen/qwen3.5-9b`); as referências de modelo do OpenClaw
-incluem o provedor como prefixo: `lmstudio/qwen/qwen3.5-9b`. Encontre a chave exata de um modelo executando o
-comando abaixo e verificando o campo `key`:
+adicionam o provedor como prefixo: `lmstudio/qwen/qwen3.5-9b`. Encontre a chave exata de um modelo executando o
+comando abaixo e consultando o campo `key`:
 
 ```bash
 curl http://localhost:1234/api/v1/models
@@ -91,32 +90,32 @@ openclaw onboard \
 
 `--custom-model-id` recebe a chave do modelo conforme retornada pelo LM Studio (por exemplo, `qwen/qwen3.5-9b`), sem
 o prefixo de provedor `lmstudio/`. Passe `--lmstudio-api-key` (ou defina `LM_API_TOKEN`) para servidores autenticados;
-omita-o para servidores sem autenticação, e o OpenClaw armazenará um marcador local não secreto.
-`--custom-api-key` ainda é aceito por compatibilidade, mas `--lmstudio-api-key` é preferível.
+omita essa opção para servidores sem autenticação, e o OpenClaw armazenará um marcador local não secreto.
+`--custom-api-key` ainda é aceito por compatibilidade, mas `--lmstudio-api-key` é a opção preferencial.
 
 Isso grava `models.providers.lmstudio` e define o modelo padrão como `lmstudio/<custom-model-id>`.
 Fornecer uma chave de API também grava o perfil de autenticação `lmstudio:default`.
 
-A configuração interativa também pode solicitar um tamanho preferencial para o contexto de carregamento e aplicá-lo a todos
-os modelos descobertos que ela salva na configuração.
+A configuração interativa também pode solicitar um tamanho preferencial para a janela de contexto carregada e aplicá-lo a todos
+os modelos descobertos que forem salvos na configuração.
 
 ## Configuração
 
-### Compatibilidade de uso em streaming
+### Compatibilidade do uso em streaming
 
-O LM Studio nem sempre emite um objeto `usage` no formato do OpenAI em respostas transmitidas por streaming. O OpenClaw
+O LM Studio nem sempre emite um objeto `usage` no formato da OpenAI em respostas transmitidas por streaming. O OpenClaw
 recupera as contagens de tokens dos metadados `timings.prompt_n` / `timings.predicted_n` no estilo do llama.cpp.
-Qualquer endpoint compatível com o OpenAI identificado como endpoint local (host de loopback) recebe o mesmo
+Qualquer endpoint compatível com a OpenAI identificado como endpoint local (host de loopback) recebe o mesmo
 fallback, abrangendo outros backends locais, como vLLM, SGLang, llama.cpp, LocalAI, Jan, TabbyAPI
 e text-generation-webui.
 
 ### Compatibilidade de raciocínio
 
-Quando a descoberta de `/api/v1/models` do LM Studio informa opções de raciocínio específicas do modelo, o OpenClaw
-expõe os valores correspondentes de `reasoning_effort` (`none`, `minimal`, `low`, `medium`, `high`, `xhigh`) nos
+Quando a descoberta por `/api/v1/models` do LM Studio informa opções de raciocínio específicas do modelo, o OpenClaw
+expõe valores correspondentes de `reasoning_effort` (`none`, `minimal`, `low`, `medium`, `high`, `xhigh`) nos
 metadados de compatibilidade do modelo. Algumas versões do LM Studio anunciam uma opção binária na interface (`allowed_options: ["off",
 "on"]`), mas rejeitam esses valores literais em `/v1/chat/completions`; o OpenClaw normaliza esse
-formato binário para a escala de seis níveis antes de enviar solicitações, inclusive para configurações salvas mais antigas que
+formato binário para a escala de seis níveis antes de enviar solicitações, inclusive em configurações antigas salvas que
 ainda contêm mapas de raciocínio `off`/`on`.
 
 ### Configuração explícita
@@ -146,11 +145,11 @@ ainda contêm mapas de raciocínio `off`/`on`.
 }
 ```
 
-### Desabilitar o pré-carregamento
+### Como desabilitar o pré-carregamento
 
 O LM Studio oferece suporte ao carregamento de modelos just-in-time (JIT), carregando-os na primeira solicitação. Por padrão, o OpenClaw
-pré-carrega os modelos por meio do endpoint de carregamento nativo do LM Studio, o que ajuda quando o JIT está
-desabilitado. Para que o JIT, o TTL de inatividade e o comportamento de remoção automática do LM Studio controlem o ciclo de vida dos modelos,
+pré-carrega os modelos pelo endpoint de carregamento nativo do LM Studio, o que ajuda quando o JIT está
+desabilitado. Para permitir que o JIT, o TTL de inatividade e a remoção automática do LM Studio controlem o ciclo de vida dos modelos,
 desabilite a etapa de pré-carregamento do OpenClaw:
 
 ```json5
@@ -170,7 +169,7 @@ desabilite a etapa de pré-carregamento do OpenClaw:
 
 ### Host na LAN ou tailnet
 
-Use o endereço acessível do host do LM Studio, mantenha `/v1` e verifique se o LM Studio está vinculado a endereços além do
+Use o endereço acessível do host do LM Studio, mantenha `/v1` e certifique-se de que o LM Studio esteja vinculado a uma interface além do
 loopback nessa máquina:
 
 ```json5
@@ -188,10 +187,10 @@ loopback nessa máquina:
 }
 ```
 
-`lmstudio` confia automaticamente no endpoint configurado para solicitações de modelos, incluindo hosts de loopback,
-LAN e tailnet (exceto origens de metadados/link-local). Qualquer entrada personalizada/local de provedor compatível com o OpenAI
-recebe a mesma confiança para a origem exata. Solicitações para outro host ou porta privados ainda
-exigem `models.providers.<id>.request.allowPrivateNetwork: true`; defina como `false` para desativar
+`lmstudio` confia automaticamente no endpoint configurado para solicitações de modelo, incluindo hosts de loopback,
+LAN e tailnet (exceto origens de metadados/link-local). Qualquer entrada de provedor personalizado/local compatível com a OpenAI
+recebe a mesma confiança de origem exata. Solicitações para outro host ou porta privada ainda
+exigem `models.providers.<id>.request.allowPrivateNetwork: true`; defina como `false` para não usar
 a confiança padrão.
 
 ## Solução de problemas
@@ -216,7 +215,7 @@ curl http://localhost:1234/api/v1/models
 - Consulte [Autenticação do LM Studio](https://lmstudio.ai/docs/developer/core/authentication).
 - Se o servidor não exigir autenticação, deixe a chave em branco durante a configuração.
 
-## Relacionados
+## Conteúdo relacionado
 
 - [Seleção de modelos](/pt-BR/concepts/model-providers)
 - [Ollama](/pt-BR/providers/ollama)

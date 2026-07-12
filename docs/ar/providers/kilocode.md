@@ -1,97 +1,74 @@
 ---
 read_when:
-    - تريد مفتاح API واحدًا للعديد من نماذج LLM
+    - تريد مفتاح API واحدًا للعديد من نماذج اللغة الكبيرة
     - تريد تشغيل النماذج عبر Kilo Gateway في OpenClaw
-summary: استخدم واجهة API الموحّدة في Kilo Gateway للوصول إلى نماذج عديدة في OpenClaw
+summary: استخدم واجهة API الموحّدة في Kilo Gateway للوصول إلى العديد من النماذج في OpenClaw
 title: Kilo Gateway
 x-i18n:
-    generated_at: "2026-06-27T18:25:28Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:22:58Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: be06295295b63ce9b9d00d6f3d73e132c805237fde056eac4619616bf992e803
+    source_hash: 2108e1bb5b2430f42bf9e798da1d5e40448f05d396ab1710a0d6708961960756
     source_path: providers/kilocode.md
     workflow: 16
 ---
 
-توفر Kilo Gateway **واجهة API موحدة** توجه الطلبات إلى نماذج كثيرة خلف نقطة نهاية واحدة ومفتاح API واحد. وهي متوافقة مع OpenAI، لذلك تعمل معظم حِزم OpenAI SDK عبر تغيير عنوان URL الأساسي.
+يوجّه Kilo Gateway الطلبات إلى العديد من النماذج من خلال نقطة نهاية واحدة متوافقة مع OpenAI ومفتاح API واحد.
 
-| الخاصية | القيمة                              |
+| الخاصية | القيمة                             |
 | -------- | ---------------------------------- |
-| الموفر | `kilocode`                         |
-| المصادقة     | `KILOCODE_API_KEY`                 |
-| واجهة API      | متوافقة مع OpenAI                  |
+| المزوّد  | `kilocode`                         |
+| المصادقة | `KILOCODE_API_KEY`                 |
+| API      | متوافقة مع OpenAI                  |
 | عنوان URL الأساسي | `https://api.kilo.ai/api/gateway/` |
 
 ## تثبيت Plugin
-
-ثبّت Plugin الرسمي، ثم أعد تشغيل Gateway:
 
 ```bash
 openclaw plugins install @openclaw/kilocode-provider
 openclaw gateway restart
 ```
 
-## البدء
+## الإعداد
 
 <Steps>
-  <Step title="Create an account">
-    انتقل إلى [app.kilo.ai](https://app.kilo.ai)، وسجّل الدخول أو أنشئ حسابًا، ثم انتقل إلى API Keys وأنشئ مفتاحًا جديدًا.
+  <Step title="إنشاء حساب">
+    انتقل إلى [app.kilo.ai](https://app.kilo.ai)، وسجّل الدخول أو أنشئ حسابًا، ثم أنشئ مفتاح API.
   </Step>
-  <Step title="Run onboarding">
+  <Step title="تشغيل الإعداد الأولي">
     ```bash
     openclaw onboard --auth-choice kilocode-api-key
     ```
 
-    أو اضبط متغير البيئة مباشرةً:
+    أو عيّن متغير البيئة مباشرةً:
 
     ```bash
     export KILOCODE_API_KEY="<your-kilocode-api-key>" # pragma: allowlist secret
     ```
 
   </Step>
-  <Step title="Verify the model is available">
+  <Step title="التحقق من توفر النموذج">
     ```bash
     openclaw models list --provider kilocode
     ```
   </Step>
 </Steps>
 
-## النموذج الافتراضي
+## النموذج الافتراضي والكتالوج
 
-النموذج الافتراضي هو `kilocode/kilo/auto`، وهو نموذج توجيه ذكي مملوك للموفر
-وتديره Kilo Gateway.
+النموذج الافتراضي هو `kilocode/kilo/auto`، وهو نموذج توجيه ذكي يملكه المزوّد. لا تنشر OpenClaw
+تعيينًا يربط المهام بالنماذج المصدرية له؛ إذ يمتلك Kilo Gateway التوجيه خلف `kilo/auto`.
 
-<Note>
-يتعامل OpenClaw مع `kilocode/kilo/auto` على أنه مرجع افتراضي مستقر، لكنه لا
-ينشر تعيينًا مدعومًا بالمصدر من المهمة إلى النموذج العلوي لذلك المسار. التوجيه
-العلوي الدقيق خلف `kilocode/kilo/auto` مملوك لـ Kilo Gateway، وليس
-مضمّنًا بشكل ثابت في OpenClaw.
-</Note>
+عند بدء التشغيل، تستعلم OpenClaw من `GET https://api.kilo.ai/api/gateway/models` وتدمج النماذج المكتشفة
+قبل كتالوج احتياطي ثابت. لا يحتوي الكتالوج الاحتياطي الثابت إلا على `kilocode/kilo/auto` ‏(`Kilo Auto`،
+`input: ["text", "image"]`، و`reasoning: true`، و`contextWindow: 1000000`، و`maxTokens: 128000`).
 
-## الفهرس المدمج
+يمكن الوصول إلى أي نموذج على Gateway بالصيغة `kilocode/<upstream-id>` (على سبيل المثال
+`kilocode/anthropic/claude-sonnet-4` و`kilocode/openai/gpt-5.5`). شغّل `/models kilocode` أو
+`openclaw models list --provider kilocode` للاطلاع على القائمة الكاملة المكتشفة.
 
-يكتشف OpenClaw النماذج المتاحة ديناميكيًا من Kilo Gateway عند بدء التشغيل. استخدم
-`/models kilocode` للاطلاع على القائمة الكاملة للنماذج المتاحة لحسابك.
-
-يمكن استخدام أي نموذج متاح على Gateway مع بادئة `kilocode/`:
-
-| مرجع النموذج                                | ملاحظات                              |
-| ---------------------------------------- | ---------------------------------- |
-| `kilocode/kilo/auto`                     | الافتراضي — توجيه ذكي            |
-| `kilocode/anthropic/claude-sonnet-4`     | Anthropic عبر Kilo                 |
-| `kilocode/openai/gpt-5.5`                | OpenAI عبر Kilo                    |
-| `kilocode/google/gemini-3.1-pro-preview` | Google عبر Kilo                    |
-| ...وغير ذلك الكثير                         | استخدم `/models kilocode` لسرد الكل |
-
-<Tip>
-عند بدء التشغيل، يستعلم OpenClaw عن `GET https://api.kilo.ai/api/gateway/models` ويدمج
-النماذج المكتشفة قبل فهرس الاحتياط الثابت. يتضمن الاحتياط الثابت دائمًا
-`kilocode/kilo/auto` (`Kilo Auto`) مع `input: ["text", "image"]`،
-و`reasoning: true`، و`contextWindow: 1000000`، و`maxTokens: 128000`.
-</Tip>
-
-## مثال إعداد
+## مثال على الإعداد
 
 ```json5
 {
@@ -104,48 +81,49 @@ openclaw gateway restart
 }
 ```
 
-<AccordionGroup>
-  <Accordion title="Transport and compatibility">
-    Kilo Gateway موثقة في المصدر على أنها متوافقة مع OpenRouter، لذلك تبقى على
-    المسار المتوافق مع OpenAI بنمط الوكيل بدلًا من تشكيل طلبات OpenAI الأصلي.
+## ملاحظات السلوك
 
-    - تبقى مراجع Kilo المدعومة بـ Gemini على مسار Gemini عبر الوكيل، لذلك يحتفظ OpenClaw
-      بتنقية توقيع التفكير الخاص بـ Gemini هناك دون تمكين تحقق إعادة التشغيل الأصلي لـ Gemini
-      أو إعادة كتابة التمهيد.
-    - تستخدم Kilo Gateway رمز Bearer مع مفتاح API الخاص بك داخليًا.
+<AccordionGroup>
+  <Accordion title="النقل والتوافق">
+    يتوافق Kilo Gateway مع OpenRouter، لذا يستخدم مسار الطلب المتوافق مع OpenAI بأسلوب الوكيل
+    بدلًا من تشكيل طلبات OpenAI الأصلي (من دون `store`، ومن دون حمولة جهد الاستدلال الخاصة بـ OpenAI).
+
+    - تظل مراجع Kilo المدعومة من Gemini على مسار Gemini عبر الوكيل: تنظّف OpenClaw تواقيع أفكار Gemini
+      هناك، لكنها لا تفعّل التحقق الأصلي من إعادة تشغيل Gemini أو عمليات إعادة كتابة التمهيد.
+    - تستخدم الطلبات رمز Bearer مميزًا مبنيًا من مفتاح API الخاص بك.
 
   </Accordion>
 
-  <Accordion title="Stream wrapper and reasoning">
-    يضيف مغلف البث المشترك في Kilo ترويسة تطبيق الموفر ويطبع
-    حمولات الاستدلال عبر الوكيل لمراجع النماذج المحددة المدعومة.
+  <Accordion title="غلاف التدفق والاستدلال">
+    يضيف غلاف تدفق Kilo ترويسة طلب `X-KILOCODE-FEATURE` (القيمة الافتراضية `openclaw`،
+    ويمكن تجاوزها باستخدام متغير البيئة `KILOCODE_FEATURE`) ويوحّد حمولات جهد الاستدلال
+    للنماذج التي تدعمه.
 
     <Warning>
-    يتخطى `kilocode/kilo/auto` والتلميحات الأخرى غير المدعومة للاستدلال عبر الوكيل
-    حقن الاستدلال. إذا كنت تحتاج إلى دعم الاستدلال، فاستخدم مرجع نموذج محددًا مثل
-    `kilocode/anthropic/claude-sonnet-4`.
+    تتجاوز مراجع `kilocode/kilo/auto` و`x-ai/*` حقن جهد الاستدلال. استخدم مرجع نموذج محددًا
+    مثل `kilocode/anthropic/claude-sonnet-4` إذا كنت تحتاج إلى دعم الاستدلال.
     </Warning>
 
   </Accordion>
 
-  <Accordion title="Troubleshooting">
-    - إذا فشل اكتشاف النماذج عند بدء التشغيل، يعود OpenClaw إلى الفهرس الثابت الذي يحتوي على `kilocode/kilo/auto`.
-    - تأكد من أن مفتاح API صالح وأن حساب Kilo الخاص بك لديه النماذج المطلوبة مفعلة.
-    - عندما يعمل Gateway كخدمة خلفية، تأكد من أن `KILOCODE_API_KEY` متاح لتلك العملية (مثلًا في `~/.openclaw/.env` أو عبر `env.shellEnv`).
+  <Accordion title="استكشاف الأخطاء وإصلاحها">
+    - إذا فشل اكتشاف النماذج عند بدء التشغيل، تعود OpenClaw إلى الكتالوج الاحتياطي الثابت الذي يحتوي على `kilocode/kilo/auto`.
+    - تأكد من صلاحية مفتاح API ومن تمكين النماذج المطلوبة في حساب Kilo الخاص بك.
+    - عند تشغيل Gateway كخدمة خفية، تأكد من إتاحة `KILOCODE_API_KEY` لتلك العملية (على سبيل المثال في `~/.openclaw/.env` أو عبر `env.shellEnv`).
 
   </Accordion>
 </AccordionGroup>
 
-## ذات صلة
+## ذو صلة
 
 <CardGroup cols={2}>
-  <Card title="Model selection" href="/ar/concepts/model-providers" icon="layers">
-    اختيار الموفرين، ومراجع النماذج، وسلوك تجاوز الفشل.
+  <Card title="اختيار النموذج" href="/ar/concepts/model-providers" icon="layers">
+    اختيار المزوّدين ومراجع النماذج وسلوك تجاوز الفشل.
   </Card>
-  <Card title="Configuration reference" href="/ar/gateway/configuration-reference" icon="gear">
-    مرجع إعداد OpenClaw الكامل.
+  <Card title="مرجع الإعداد" href="/ar/gateway/configuration-reference" icon="gear">
+    المرجع الكامل لإعداد OpenClaw.
   </Card>
   <Card title="Kilo Gateway" href="https://app.kilo.ai" icon="arrow-up-right-from-square">
-    لوحة معلومات Kilo Gateway، ومفاتيح API، وإدارة الحساب.
+    لوحة معلومات Kilo Gateway ومفاتيح API وإدارة الحساب.
   </Card>
 </CardGroup>

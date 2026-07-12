@@ -1,64 +1,65 @@
 ---
 read_when:
     - Você encaminha conversas em grupo para agentes dedicados
-    - Você quer trabalho em paralelo sem que uma tarefa longa bloqueie todas as conversas
+    - Você quer trabalho em paralelo sem que uma tarefa longa bloqueie todos os chats
     - Você está projetando uma configuração de operações multiagente
 sidebarTitle: Specialist lanes
 status: active
-summary: Execute agentes especialistas em paralelo sem sobrecarregar a capacidade compartilhada de modelos e ferramentas
-title: Faixas paralelas de especialistas
+summary: Execute agentes especialistas em paralelo sem sobrecarregar a capacidade compartilhada do modelo e das ferramentas
+title: Frentes paralelas de especialistas
 x-i18n:
-    generated_at: "2026-05-10T19:32:08Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T23:53:01Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8721056fbe08822ac92d4bc14c8c2b0977e93eaa58c2849f83b3c0f310992f93
+    source_hash: 09852b6cf5a790e98fb5e0805b0df57b2f3719b1387ecfacfb4973bb6841abb4
     source_path: concepts/parallel-specialist-lanes.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-As faixas especializadas paralelas permitem que um Gateway roteie diferentes chats ou salas para
-agentes diferentes, mantendo a experiência do usuário rápida. O ponto é tratar o
-paralelismo como um problema de projeto de recursos escassos, não apenas como "mais agentes".
+As vias paralelas de especialistas permitem que um Gateway encaminhe diferentes chats ou salas para
+diferentes agentes, mantendo a experiência do usuário rápida. Trate o paralelismo como
+um problema de projeto envolvendo recursos escassos, não apenas como "mais agentes".
 
-## Princípios básicos
+## Princípios fundamentais
 
-Uma faixa especializada só melhora a vazão quando reduz a contenção pelos
-gargalos reais:
+Uma via de especialista só melhora a capacidade de processamento quando reduz a contenção pelos
+verdadeiros gargalos:
 
-- **Bloqueios de sessão**: apenas uma execução deve modificar uma determinada sessão por vez.
+- **Bloqueios de sessão**: apenas uma execução deve alterar uma determinada sessão por vez.
 - **Capacidade global do modelo**: todas as execuções visíveis de chat ainda compartilham os limites do provedor.
-- **Capacidade de ferramentas**: shell, navegador, rede e trabalho no repositório podem ser mais lentos
-  do que a própria rodada do modelo.
-- **Orçamento de contexto**: transcrições longas tornam cada rodada futura mais lenta e menos
+- **Capacidade das ferramentas**: trabalhos no shell, navegador, rede e repositório podem ser mais lentos
+  que a própria interação com o modelo.
+- **Orçamento de contexto**: transcrições longas tornam cada interação futura mais lenta e menos
   focada.
-- **Ambiguidade de propriedade**: agentes duplicados fazendo o mesmo trabalho desperdiçam capacidade.
+- **Ambiguidade de responsabilidade**: agentes duplicados fazendo o mesmo trabalho desperdiçam capacidade.
 
-O OpenClaw já serializa execuções por sessão e limita o paralelismo global por meio da
-[fila de comandos](/pt-BR/concepts/queue). Faixas especializadas adicionam política por cima:
-qual agente é responsável por qual trabalho, o que permanece no chat e o que vira trabalho
-em segundo plano.
+O OpenClaw já serializa as execuções por sessão e limita o paralelismo global
+por meio da [fila de comandos](/pt-BR/concepts/queue). As vias de especialistas adicionam uma camada de
+política: qual agente é responsável por qual trabalho, o que permanece no chat e o que se torna
+trabalho em segundo plano.
 
 ## Implantação recomendada
 
-### Fase 1: contratos de faixa + trabalho pesado em segundo plano
+### Fase 1: contratos das vias + trabalho pesado em segundo plano
 
-Dê a cada faixa um contrato escrito em seu workspace e prompt de sistema:
+Forneça a cada via um contrato escrito em seu espaço de trabalho e prompt do sistema:
 
-- **Propósito**: o trabalho que esta faixa assume.
-- **Não objetivos**: trabalho que ela deve repassar em vez de tentar.
-- **Orçamento de chat**: respostas rápidas permanecem no chat; tarefas longas devem reconhecer
-  brevemente e então rodar em um subagente ou tarefa em segundo plano.
-- **Regra de repasse**: quando outra faixa for responsável pelo trabalho, diga para onde ele deve ir e
-  forneça um resumo compacto de repasse.
-- **Regra de risco de ferramenta**: prefira a menor superfície de ferramenta que possa fazer o trabalho.
+- **Finalidade**: o trabalho pelo qual esta via é responsável.
+- **Fora do escopo**: trabalho que ela deve encaminhar em vez de tentar realizar.
+- **Orçamento do chat**: respostas rápidas permanecem no chat; tarefas longas recebem uma confirmação breve
+  e são executadas por um subagente ou tarefa em segundo plano.
+- **Regra de encaminhamento**: quando outra via for responsável pelo trabalho, informe para onde ele deve ser enviado e
+  forneça um resumo conciso para o encaminhamento.
+- **Regra de risco das ferramentas**: prefira a menor superfície de ferramentas capaz de realizar o trabalho.
 
-Esta é a fase mais barata e corrige a maior parte dos congestionamentos: um trabalho de programação não
-transforma mais a faixa de pesquisa em lentidão extrema, e cada chat mantém seu próprio contexto limpo.
+Esta é a fase de menor custo e resolve a maior parte dos congestionamentos: um trabalho de programação não
+transforma mais a via de pesquisa em algo extremamente lento, e cada chat mantém seu próprio contexto
+limpo.
 
-### Fase 2: controles de prioridade e concorrência
+### Fase 2: controles de prioridade e simultaneidade
 
-Ajuste a fila e a capacidade do modelo em torno do valor de negócio de cada faixa:
+Ajuste a capacidade da fila e do modelo de acordo com o valor de negócio de cada via:
 
 ```json5
 {
@@ -79,56 +80,56 @@ Ajuste a fila e a capacidade do modelo em torno do valor de negócio de cada fai
 }
 ```
 
-Use chats diretos/pessoais e agentes de operações de produção para trabalho de alta prioridade. Deixe
-pesquisa, redação e programação em lote migrarem para tarefas em segundo plano quando o sistema estiver
+Use chats diretos/pessoais e agentes de operações de produção para trabalhos de alta prioridade. Permita
+que pesquisa, elaboração de textos e programação em lote sejam transferidas para tarefas em segundo plano quando o sistema estiver
 ocupado.
 
-### Fase 3: coordenador / controlador de tráfego
+### Fase 3: coordenador/controlador de tráfego
 
-Adicione um pequeno padrão de coordenador quando várias faixas estiverem ativas:
+Adicione um padrão simples de coordenação quando várias vias estiverem ativas:
 
-- Acompanhar tarefas e responsáveis ativos por faixa.
-- Detectar solicitações duplicadas entre grupos.
-- Rotear resumos de repasse entre faixas.
-- Exibir apenas bloqueadores, resultados concluídos e decisões que o humano precisa tomar.
+- Acompanhe as tarefas e os responsáveis ativos de cada via.
+- Detecte solicitações duplicadas entre grupos.
+- Encaminhe resumos de transferência entre as vias.
+- Apresente apenas bloqueios, resultados concluídos e decisões que a pessoa precisa tomar.
 
-Não comece por aqui. Um coordenador sem contratos de faixa apenas coordena caos.
+Não comece por aqui. Um coordenador sem contratos de vias apenas coordena o caos.
 
-## Modelo mínimo de contrato de faixa
+## Modelo mínimo de contrato de via
 
 ```md
-# Lane contract
+# Contrato da via
 
-## Owns
+## Responsabilidades
 
-- <job this lane is responsible for>
+- <trabalho pelo qual esta via é responsável>
 
-## Does not own
+## Fora das responsabilidades
 
-- <work to hand off>
+- <trabalho a ser encaminhado>
 
-## Chat budget
+## Orçamento do chat
 
-- Answer quick questions directly.
-- For multi-step, slow, or tool-heavy work: acknowledge briefly, spawn/background
-  the work, then return the result when complete.
+- Responda diretamente às perguntas rápidas.
+- Para trabalhos com várias etapas, lentos ou que exijam muitas ferramentas: confirme brevemente, inicie/execute
+  o trabalho em segundo plano e retorne o resultado quando estiver concluído.
 
-## Handoff
+## Encaminhamento
 
-If another lane owns the request, reply with:
+Se outra via for responsável pela solicitação, responda com:
 
-- target lane
-- objective
-- relevant context
-- exact next action
+- via de destino
+- objetivo
+- contexto relevante
+- próxima ação exata
 
-## Tool posture
+## Postura quanto às ferramentas
 
-Use the smallest tool surface that can complete the task. Avoid broad shell or
-network work unless this lane explicitly owns it.
+Use a menor superfície de ferramentas capaz de concluir a tarefa. Evite trabalhos abrangentes no shell ou
+na rede, a menos que esta via seja explicitamente responsável por eles.
 ```
 
-## Relacionado
+## Relacionados
 
 - [Roteamento multiagente](/pt-BR/concepts/multi-agent)
 - [Fila de comandos](/pt-BR/concepts/queue)

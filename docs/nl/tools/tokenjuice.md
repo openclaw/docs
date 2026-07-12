@@ -3,27 +3,27 @@ read_when:
     - Je wilt kortere `exec`- of `bash`-toolresultaten in OpenClaw
     - Je wilt de Tokenjuice-plugin installeren of inschakelen
     - Je moet begrijpen wat tokenjuice wijzigt en wat het onbewerkt laat
-summary: Comprimeer ruisige resultaten van exec- en bash-tools met de optionele Tokenjuice-Plugin
+summary: Comprimeer onoverzichtelijke resultaten van de exec- en bash-tools met de optionele Tokenjuice-plugin
 title: Tokenjuice
 x-i18n:
-    generated_at: "2026-06-27T18:30:59Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:25:41Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 183ab08d2a1150b446245514423b893cff9a85581980c15600cc16aec10eeae7
+    source_hash: 96b110563a2600429dd9f0d38997cf7cc5ae4952b7f146a6ab64c96f2f202440
     source_path: tools/tokenjuice.md
     workflow: 16
 ---
 
-`tokenjuice` is een optionele externe plugin die lawaaiige `exec`- en `bash`-
-toolresultaten comprimeert nadat de opdracht al is uitgevoerd.
+`tokenjuice` is een optionele externe plugin die uitvoerige resultaten van de tools `exec` en `bash`
+compacteert nadat de opdracht al is uitgevoerd.
 
-Het wijzigt de teruggegeven `tool_result`, niet de opdracht zelf. Tokenjuice
-herschrijft geen shellinvoer, voert opdrachten niet opnieuw uit en wijzigt geen exitcodes.
+De plugin wijzigt het geretourneerde `tool_result`, niet de opdracht zelf. Tokenjuice
+herschrijft geen shellinvoer, voert opdrachten niet opnieuw uit en wijzigt geen afsluitcodes.
 
-Vandaag is dit van toepassing op ingebedde OpenClaw-runs en dynamische OpenClaw-tools in de Codex
-app-server-harness. Tokenjuice haakt in op OpenClaw's middleware voor toolresultaten en
-snoeit de uitvoer voordat die teruggaat naar de actieve harness-sessie.
+Momenteel geldt dit voor ingebedde OpenClaw-uitvoeringen en dynamische OpenClaw-tools in de
+Codex-app-serverharnas. Tokenjuice haakt in op de toolresultaatmiddleware van OpenClaw en
+kort de uitvoer in voordat deze wordt teruggestuurd naar de actieve harnassessie.
 
 ## De plugin inschakelen
 
@@ -33,7 +33,7 @@ Eenmalig installeren:
 openclaw plugins install clawhub:@openclaw/tokenjuice
 ```
 
-Schakel deze daarna in:
+Daarna inschakelen:
 
 ```bash
 openclaw config set plugins.entries.tokenjuice.enabled true
@@ -45,7 +45,7 @@ Equivalent:
 openclaw plugins enable tokenjuice
 ```
 
-Als u liever de configuratie rechtstreeks bewerkt:
+Als u de configuratie liever rechtstreeks bewerkt:
 
 ```json5
 {
@@ -61,17 +61,17 @@ Als u liever de configuratie rechtstreeks bewerkt:
 
 ## Wat tokenjuice wijzigt
 
-- Comprimeert lawaaiige `exec`- en `bash`-resultaten voordat ze terug de sessie in worden gevoerd.
-- Laat de oorspronkelijke opdrachtuitvoering ongemoeid.
-- Behoudt exacte lezingen van bestandsinhoud en andere opdrachten die tokenjuice onbewerkt moet laten.
+- Compacteert uitvoerige resultaten van `exec` en `bash` voordat ze worden teruggekoppeld naar de sessie.
+- Laat de oorspronkelijke uitvoering van de opdracht ongewijzigd.
+- Past een beleid voor veilige inventarisatie toe: exacte uitlezingen van bestandsinhoud blijven ongewijzigd, zelfstandige opdrachten voor repository-inventarisatie kunnen worden gecompacteerd en onveilige gemengde opdrachtreeksen blijven ongewijzigd.
 - Blijft opt-in: schakel de plugin uit als u overal letterlijke uitvoer wilt.
 
-## Controleren of het werkt
+## Controleren of de plugin werkt
 
 1. Schakel de plugin in.
 2. Start een sessie die `exec` kan aanroepen.
-3. Voer een lawaaiige opdracht uit, zoals `git status`.
-4. Controleer of het teruggegeven toolresultaat korter en meer gestructureerd is dan de ruwe shelluitvoer.
+3. Voer een uitvoerige opdracht uit, zoals `git status`.
+4. Controleer of het geretourneerde toolresultaat korter en beter gestructureerd is dan de onbewerkte shelluitvoer.
 
 ## De plugin uitschakelen
 
@@ -89,4 +89,4 @@ openclaw plugins disable tokenjuice
 
 - [Exec-tool](/nl/tools/exec)
 - [Denkniveaus](/nl/tools/thinking)
-- [Context-engine](/nl/concepts/context-engine)
+- [Contextengine](/nl/concepts/context-engine)

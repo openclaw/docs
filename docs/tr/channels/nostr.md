@@ -1,48 +1,36 @@
 ---
 read_when:
-    - OpenClaw'un Nostr aracılığıyla doğrudan mesajlar almasını istiyorsunuz
+    - OpenClaw'un Nostr üzerinden doğrudan mesajlar almasını istiyorsunuz
     - Merkeziyetsiz mesajlaşmayı kuruyorsunuz
 summary: NIP-04 ile şifrelenmiş mesajlar üzerinden Nostr DM kanalı
 title: Nostr
 x-i18n:
-    generated_at: "2026-05-02T22:16:38Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:05:20Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d6158c22c0ffc5aea56d0ac2b68955f30c3a785013dba5410cbd70f9b689dc3c
+    source_hash: 31fa283f706036a37795ddad71602058ba94388a9cb01044927c4bb2d83ba4a8
     source_path: channels/nostr.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-**Durum:** İsteğe bağlı paketlenmiş Plugin (yapılandırılana kadar varsayılan olarak devre dışıdır).
+Nostr, OpenClaw'un Nostr aktarıcıları üzerinden NIP-04 ile şifrelenmiş doğrudan mesajları alıp yanıtlamasını sağlayan, indirilebilir bir kanal Plugin'idir (`@openclaw/nostr`). Her Gateway için bir hesap; yalnızca doğrudan mesajlar.
 
-Nostr, sosyal ağlar için merkeziyetsiz bir protokoldür. Bu kanal, OpenClaw’ın NIP-04 üzerinden şifrelenmiş doğrudan mesajları (DM’ler) almasını ve yanıtlamasını sağlar.
-
-## Paketlenmiş Plugin
-
-Güncel OpenClaw sürümleri Nostr’u paketlenmiş bir Plugin olarak sunar, bu yüzden normal paketlenmiş
-derlemeler ayrı bir kurulum gerektirmez.
-
-### Eski/özel kurulumlar
-
-- Onboarding (`openclaw onboard`) ve `openclaw channels add`, Nostr’u paylaşılan kanal kataloğundan
-  göstermeye devam eder.
-- Derlemeniz paketlenmiş Nostr’u hariç tutuyorsa npm paketini doğrudan kurun.
+## Kurulum
 
 ```bash
 openclaw plugins install @openclaw/nostr
 ```
 
-Güncel resmi sürüm etiketini takip etmek için yalın paketi kullanın. Tam bir
-sürümü yalnızca tekrarlanabilir bir kurulum gerektiğinde sabitleyin.
+Güncel resmî sürüm etiketini takip etmek için yalnızca paket belirtimini kullanın. Tam sürümü yalnızca yeniden üretilebilir bir kurulum gerektiğinde sabitleyin.
 
-Yerel bir checkout kullanın (geliştirme iş akışları):
+Yerel bir çalışma kopyasından (geliştirme iş akışları):
 
 ```bash
 openclaw plugins install --link <path-to-local-nostr-plugin>
 ```
 
-Plugin’leri kurduktan veya etkinleştirdikten sonra Gateway’i yeniden başlatın.
+Plugin'leri kurduktan veya etkinleştirdikten sonra Gateway'i yeniden başlatın. Plugin kurulduktan sonra ilk kurulum (`openclaw onboard`) ve `openclaw channels add`, paylaşılan kanal kataloğundaki Nostr'u gösterir.
 
 ### Etkileşimsiz kurulum
 
@@ -51,14 +39,14 @@ openclaw channels add --channel nostr --private-key "$NOSTR_PRIVATE_KEY"
 openclaw channels add --channel nostr --private-key "$NOSTR_PRIVATE_KEY" --relay-urls "wss://relay.damus.io,wss://relay.primal.net"
 ```
 
-Anahtarı yapılandırmada depolamak yerine `NOSTR_PRIVATE_KEY` değerini ortamda tutmak için `--use-env` kullanın.
+Anahtarı yapılandırmada saklamak yerine `NOSTR_PRIVATE_KEY` ortam değişkeninde tutmak için `--use-env` kullanın (yalnızca varsayılan hesap).
 
 ## Hızlı kurulum
 
 1. Bir Nostr anahtar çifti oluşturun (gerekiyorsa):
 
 ```bash
-# Using nak
+# nak kullanarak
 nak key generate
 ```
 
@@ -80,23 +68,23 @@ nak key generate
 export NOSTR_PRIVATE_KEY="nsec1..."
 ```
 
-4. Gateway’i yeniden başlatın.
+4. Gateway'i yeniden başlatın.
 
 ## Yapılandırma başvurusu
 
-| Anahtar     | Tür      | Varsayılan                                  | Açıklama                              |
-| ------------ | -------- | ------------------------------------------- | ------------------------------------- |
-| `privateKey` | string   | gerekli                                     | `nsec` veya hex biçiminde özel anahtar |
-| `relays`     | string[] | `['wss://relay.damus.io', 'wss://nos.lol']` | Relay URL’leri (WebSocket)            |
-| `dmPolicy`   | string   | `pairing`                                   | DM erişim ilkesi                      |
-| `allowFrom`  | string[] | `[]`                                        | İzin verilen gönderen pubkey’leri     |
-| `enabled`    | boolean  | `true`                                      | Kanalı etkinleştir/devre dışı bırak   |
-| `name`       | string   | -                                           | Görünen ad                            |
-| `profile`    | object   | -                                           | NIP-01 profil meta verileri           |
+| Anahtar      | Tür      | Varsayılan                                  | Açıklama                                                    |
+| ------------ | -------- | ------------------------------------------- | ----------------------------------------------------------- |
+| `privateKey` | string   | gerekli                                     | `nsec` veya onaltılık biçimde özel anahtar; gizli başvurularına izin verilir |
+| `relays`     | string[] | `['wss://relay.damus.io', 'wss://nos.lol']` | Aktarıcı URL'leri (WebSocket)                               |
+| `dmPolicy`   | string   | `pairing`                                   | Doğrudan mesaj erişim politikası                            |
+| `allowFrom`  | string[] | `[]`                                        | İzin verilen gönderen açık anahtarları                      |
+| `enabled`    | boolean  | `true`                                      | Kanalı etkinleştirir/devre dışı bırakır                     |
+| `name`       | string   | -                                           | Görünen ad                                                  |
+| `profile`    | object   | -                                           | NIP-01 profil meta verileri                                 |
 
 ## Profil meta verileri
 
-Profil verileri NIP-01 `kind:0` olayı olarak yayımlanır. Bunu Control UI’dan (Channels -> Nostr -> Profile) yönetebilir veya doğrudan yapılandırmada ayarlayabilirsiniz.
+Profil verileri, NIP-01 `kind:0` olayı olarak yayımlanır. Bunları Denetim Arayüzünden (Channels -> Nostr -> Profile) yönetebilir veya doğrudan yapılandırmada ayarlayabilirsiniz.
 
 Örnek:
 
@@ -108,7 +96,7 @@ Profil verileri NIP-01 `kind:0` olayı olarak yayımlanır. Bunu Control UI’da
       profile: {
         name: "openclaw",
         displayName: "OpenClaw",
-        about: "Personal assistant DM bot",
+        about: "Kişisel asistan doğrudan mesaj botu",
         picture: "https://example.com/avatar.png",
         banner: "https://example.com/banner.png",
         website: "https://example.com",
@@ -122,25 +110,25 @@ Profil verileri NIP-01 `kind:0` olayı olarak yayımlanır. Bunu Control UI’da
 
 Notlar:
 
-- Profil URL’leri `https://` kullanmalıdır.
-- Relay’lerden içe aktarma alanları birleştirir ve yerel geçersiz kılmaları korur.
+- Profil URL'leri `https://` kullanmalıdır.
+- Aktarıcılardan içe aktarma, alanları birleştirir ve yerel geçersiz kılmaları korur.
 
 ## Erişim denetimi
 
-### DM ilkeleri
+### Doğrudan mesaj politikaları
 
-- **pairing** (varsayılan): bilinmeyen gönderenler bir eşleştirme kodu alır.
-- **allowlist**: yalnızca `allowFrom` içindeki pubkey’ler DM gönderebilir.
-- **open**: herkese açık gelen DM’ler (`allowFrom: ["*"]` gerektirir).
-- **disabled**: gelen DM’leri yok sayar.
+- **pairing** (varsayılan): bilinmeyen gönderenlere bir eşleştirme kodu verilir.
+- **allowlist**: yalnızca `allowFrom` içindeki açık anahtarlar doğrudan mesaj gönderebilir.
+- **open**: herkese açık gelen doğrudan mesajlar (`allowFrom: ["*"]` gerektirir).
+- **disabled**: gelen doğrudan mesajları yok sayar.
 
-Zorunlu kılma notları:
+Uygulama notları:
 
-- Gelen olay imzaları, gönderen ilkesi ve NIP-04 şifre çözümünden önce doğrulanır; böylece sahte olaylar erken reddedilir.
-- Eşleştirme yanıtları, özgün DM gövdesi işlenmeden gönderilir.
-- Gelen DM’ler hız sınırlamasına tabidir ve aşırı büyük yükler şifre çözmeden önce düşürülür.
+- Gelen olay imzaları, gönderen politikası uygulanmadan ve NIP-04 şifre çözme işleminden önce doğrulanır; böylece sahte olaylar erkenden reddedilir.
+- Eşleştirme yanıtları, özgün doğrudan mesaj gövdesinin şifresi çözülmeden veya gövde işlenmeden gönderilir.
+- Gelen doğrudan mesajlar için hız sınırı uygulanır (genel olarak ve gönderen başına) ve aşırı büyük yükler şifreleri çözülmeden önce bırakılır.
 
-### Allowlist örneği
+### İzin verilenler listesi örneği
 
 ```json5
 {
@@ -158,10 +146,10 @@ Zorunlu kılma notları:
 
 Kabul edilen biçimler:
 
-- **Özel anahtar:** `nsec...` veya 64 karakterlik hex
-- **Pubkey’ler (`allowFrom`):** `npub...` veya hex
+- **Özel anahtar:** `nsec...` veya 64 karakterlik onaltılık değer
+- **Açık anahtarlar (`allowFrom`):** `npub...` veya onaltılık değer
 
-## Relay’ler
+## Aktarıcılar
 
 Varsayılanlar: `relay.damus.io` ve `nos.lol`.
 
@@ -178,26 +166,26 @@ Varsayılanlar: `relay.damus.io` ve `nos.lol`.
 
 İpuçları:
 
-- Yedeklilik için 2-3 relay kullanın.
-- Çok fazla relay’den kaçının (gecikme, çoğaltma).
-- Ücretli relay’ler güvenilirliği artırabilir.
-- Yerel relay’ler test için uygundur (`ws://localhost:7777`).
+- Yedeklilik için 2-3 aktarıcı kullanın.
+- Çok fazla aktarıcı kullanmaktan kaçının (gecikme, çoğaltma).
+- Ücretli aktarıcılar güvenilirliği artırabilir.
+- Yerel aktarıcılar test için uygundur (`ws://localhost:7777`).
 
 ## Protokol desteği
 
-| NIP    | Durum        | Açıklama                              |
-| ------ | ------------ | ------------------------------------- |
-| NIP-01 | Desteklenir  | Temel olay biçimi + profil meta verileri |
-| NIP-04 | Desteklenir  | Şifrelenmiş DM’ler (`kind:4`)         |
-| NIP-17 | Planlandı    | Hediye paketli DM’ler                 |
-| NIP-44 | Planlandı    | Sürümlü şifreleme                     |
+| NIP    | Durum        | Açıklama                                       |
+| ------ | ------------ | ---------------------------------------------- |
+| NIP-01 | Destekleniyor | Temel olay biçimi + profil meta verileri       |
+| NIP-04 | Destekleniyor | Şifrelenmiş doğrudan mesajlar (`kind:4`)       |
+| NIP-17 | Planlanıyor   | Hediye paketli doğrudan mesajlar               |
+| NIP-44 | Planlanıyor   | Sürümlendirilmiş şifreleme                     |
 
-## Test etme
+## Test
 
-### Yerel relay
+### Yerel aktarıcı
 
 ```bash
-# Start strfry
+# strfry'yi başlatın
 docker run -p 7777:7777 ghcr.io/hoytech/strfry
 ```
 
@@ -212,11 +200,11 @@ docker run -p 7777:7777 ghcr.io/hoytech/strfry
 }
 ```
 
-### Manuel test
+### Elle test
 
-1. Günlüklerden bot pubkey’ini (npub) not edin.
-2. Bir Nostr istemcisi açın (Damus, Amethyst vb.).
-3. Bot pubkey’ine DM gönderin.
+1. Gateway günlüklerinden veya `openclaw channels status` çıktısından botun açık anahtarını not edin (onaltılık; gerekirse istemcinizde npub biçimine dönüştürün).
+2. Bir Nostr istemcisi açın (Amethyst, Damus vb.).
+3. Botun açık anahtarına doğrudan mesaj gönderin.
 4. Yanıtı doğrulayın.
 
 ## Sorun giderme
@@ -224,38 +212,38 @@ docker run -p 7777:7777 ghcr.io/hoytech/strfry
 ### Mesajlar alınmıyor
 
 - Özel anahtarın geçerli olduğunu doğrulayın.
-- Relay URL’lerinin erişilebilir olduğundan ve `wss://` (veya yerel için `ws://`) kullandığından emin olun.
+- Aktarıcı URL'lerinin erişilebilir olduğundan ve `wss://` (yerel için `ws://`) kullandığından emin olun.
 - `enabled` değerinin `false` olmadığını doğrulayın.
-- Relay bağlantı hataları için Gateway günlüklerini kontrol edin.
+- Aktarıcı bağlantı hataları için Gateway günlüklerini kontrol edin.
 
 ### Yanıtlar gönderilmiyor
 
-- Relay’in yazmaları kabul ettiğini kontrol edin.
+- Aktarıcının yazma işlemlerini kabul edip etmediğini kontrol edin.
 - Giden bağlantıyı doğrulayın.
-- Relay hız sınırlarını izleyin.
+- Aktarıcı hız sınırlarını izleyin.
 
 ### Yinelenen yanıtlar
 
-- Birden fazla relay kullanırken beklenir.
-- Mesajlar olay kimliğine göre tekilleştirilir; yalnızca ilk teslimat bir yanıt tetikler.
+- Birden fazla aktarıcı kullanıldığında beklenen bir durumdur.
+- Mesajların yinelenmesi olay kimliğine göre engellenir; yalnızca ilk teslimat bir yanıtı tetikler.
 
 ## Güvenlik
 
-- Özel anahtarları asla commit etmeyin.
-- Anahtarlar için ortam değişkenleri kullanın.
+- Özel anahtarları hiçbir zaman işlemeyin.
+- Anahtarlar için ortam değişkenlerini kullanın.
 - Üretim botları için `allowlist` kullanmayı değerlendirin.
-- İmzalar gönderen ilkesinden önce doğrulanır ve gönderen ilkesi şifre çözmeden önce uygulanır; böylece sahte olaylar erken reddedilir ve bilinmeyen gönderenler tam kripto çalışmasını zorlayamaz.
+- İmzalar gönderen politikasından önce doğrulanır ve gönderen politikası şifre çözme işleminden önce uygulanır; böylece sahte olaylar erkenden reddedilir ve bilinmeyen gönderenler tüm kriptografik işlemleri zorla çalıştıramaz.
 
 ## Sınırlamalar (MVP)
 
-- Yalnızca doğrudan mesajlar (grup sohbeti yok).
-- Medya ekleri yok.
-- Yalnızca NIP-04 (NIP-17 hediye paketleme planlandı).
+- Yalnızca doğrudan mesajlar (grup sohbetleri yoktur).
+- Medya ekleri yoktur.
+- Yalnızca NIP-04 (NIP-17 hediye paketleme desteği planlanmaktadır).
 
 ## İlgili
 
 - [Kanallara Genel Bakış](/tr/channels) — desteklenen tüm kanallar
-- [Eşleştirme](/tr/channels/pairing) — DM kimlik doğrulaması ve eşleştirme akışı
-- [Gruplar](/tr/channels/groups) — grup sohbeti davranışı ve bahsetme kapısı
+- [Eşleştirme](/tr/channels/pairing) — doğrudan mesaj kimlik doğrulaması ve eşleştirme akışı
+- [Gruplar](/tr/channels/groups) — grup sohbeti davranışı ve bahsetme geçidi
 - [Kanal Yönlendirme](/tr/channels/channel-routing) — mesajlar için oturum yönlendirmesi
-- [Güvenlik](/tr/gateway/security) — erişim modeli ve sıkılaştırma
+- [Güvenlik](/tr/gateway/security) — erişim modeli ve sağlamlaştırma

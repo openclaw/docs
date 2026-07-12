@@ -1,39 +1,40 @@
 ---
 read_when:
-    - Chcesz używać syntezy mowy ElevenLabs w OpenClaw
-    - Chcesz korzystać z ElevenLabs Scribe do transkrypcji mowy na tekst dla załączników audio
-    - Chcesz transkrypcji w czasie rzeczywistym ElevenLabs dla Voice Call lub Google Meet
-summary: Używaj mowy ElevenLabs, Scribe STT i transkrypcji w czasie rzeczywistym z OpenClaw
+    - Chcesz korzystać z syntezy mowy ElevenLabs w OpenClaw
+    - Chcesz używać zamiany mowy na tekst ElevenLabs Scribe dla załączników audio
+    - Chcesz transkrypcję w czasie rzeczywistym ElevenLabs dla połączenia głosowego lub Google Meet
+summary: Korzystaj z syntezy mowy ElevenLabs, Scribe STT i transkrypcji w czasie rzeczywistym z OpenClaw
 title: ElevenLabs
 x-i18n:
-    generated_at: "2026-06-27T18:11:55Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:34:07Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 126161d7e378382700f203efa9bce1bdd5fe7267b230e2d3d0e45112407d6a7b
+    source_hash: c11b727bb0b1d645c424821dd1bc54c7109d50bd31e3853d04dfa25916bc66c7
     source_path: providers/elevenlabs.md
     workflow: 16
 ---
 
-OpenClaw używa ElevenLabs do zamiany tekstu na mowę, wsadowej zamiany mowy na tekst za pomocą Scribe
-v2 oraz strumieniowego STT za pomocą Scribe v2 Realtime.
+OpenClaw używa ElevenLabs do syntezy mowy z tekstu, wsadowego rozpoznawania mowy za pomocą Scribe
+v2 oraz strumieniowego rozpoznawania mowy za pomocą Scribe v2 Realtime. Plugin jest dołączony i
+domyślnie włączony; krok `plugins install` nie jest potrzebny.
 
-| Możliwość                | Interfejs OpenClaw                                                    | Domyślne                 |
-| ------------------------ | -------------------------------------------------------------------- | ------------------------ |
-| Zamiana tekstu na mowę   | `messages.tts` / `talk`                                              | `eleven_multilingual_v2` |
-| Wsadowa zamiana mowy na tekst | `tools.media.audio`                                                  | `scribe_v2`              |
-| Strumieniowa zamiana mowy na tekst | Strumieniowanie Voice Call lub Google Meet `realtime.transcriptionProvider` | `scribe_v2_realtime`     |
+| Funkcja                         | Obszar OpenClaw                                                       | Wartość domyślna         |
+| ------------------------------- | --------------------------------------------------------------------- | ------------------------ |
+| Synteza mowy z tekstu           | `messages.tts` / `talk`                                               | `eleven_multilingual_v2` |
+| Wsadowe rozpoznawanie mowy      | `tools.media.audio`                                                   | `scribe_v2`              |
+| Strumieniowe rozpoznawanie mowy | Strumieniowanie Voice Call lub `realtime.transcriptionProvider` w Google Meet | `scribe_v2_realtime`     |
 
 ## Uwierzytelnianie
 
-Ustaw `ELEVENLABS_API_KEY` w środowisku. `XI_API_KEY` jest również akceptowany w celu
-zgodności z istniejącymi narzędziami ElevenLabs.
+Ustaw `ELEVENLABS_API_KEY` w środowisku. Ze względu na zgodność z istniejącymi
+narzędziami ElevenLabs akceptowany jest również `XI_API_KEY`.
 
 ```bash
 export ELEVENLABS_API_KEY="..."
 ```
 
-## Zamiana tekstu na mowę
+## Synteza mowy z tekstu
 
 ```json5
 {
@@ -42,7 +43,7 @@ export ELEVENLABS_API_KEY="..."
       providers: {
         elevenlabs: {
           apiKey: "${ELEVENLABS_API_KEY}",
-          speakerVoiceId: "pMsXgVXv3BLzUgSXRplE",
+          voiceId: "pMsXgVXv3BLzUgSXRplE",
           modelId: "eleven_multilingual_v2",
         },
       },
@@ -51,19 +52,19 @@ export ELEVENLABS_API_KEY="..."
 }
 ```
 
-Ustaw `modelId` na `eleven_v3`, aby użyć ElevenLabs v3 TTS. OpenClaw zachowuje
-`eleven_multilingual_v2` jako wartość domyślną dla istniejących instalacji.
+Ustaw `modelId` na `eleven_v3`, aby używać syntezy mowy ElevenLabs v3. W istniejących
+instalacjach OpenClaw zachowuje `eleven_multilingual_v2` jako wartość domyślną.
 
-Kanały głosowe Discord używają strumieniowego punktu końcowego TTS ElevenLabs, gdy ElevenLabs jest
-wybranym dostawcą `voice.tts`/`messages.tts`. Odtwarzanie rozpoczyna się ze
-zwróconego strumienia audio zamiast czekać, aż OpenClaw najpierw pobierze i zapisze
-cały plik audio. `latencyTier` mapuje się na parametr zapytania ElevenLabs
-`optimize_streaming_latency` dla modeli, które go obsługują; OpenClaw
-pomija ten parametr dla `eleven_v3`, który go odrzuca.
+Gdy ElevenLabs jest wybranym dostawcą `voice.tts`/`messages.tts`, kanały głosowe Discord
+korzystają z jego strumieniowego punktu końcowego syntezy mowy: odtwarzanie rozpoczyna się
+zwracanym strumieniem audio, zamiast czekać, aż OpenClaw najpierw pobierze cały
+plik audio. `latencyTier` jest odwzorowywany na parametr zapytania
+`optimize_streaming_latency` usługi ElevenLabs w przypadku modeli, które go obsługują;
+OpenClaw pomija ten parametr dla `eleven_v3`, który go odrzuca.
 
-## Zamiana mowy na tekst
+## Rozpoznawanie mowy
 
-Użyj Scribe v2 dla przychodzących załączników audio i krótkich nagranych segmentów głosowych:
+Użyj Scribe v2 do przychodzących załączników audio i krótkich nagranych fragmentów głosowych:
 
 ```json5
 {
@@ -78,22 +79,23 @@ Użyj Scribe v2 dla przychodzących załączników audio i krótkich nagranych s
 }
 ```
 
-OpenClaw wysyła wieloczęściowe audio do ElevenLabs `/v1/speech-to-text` z
-`model_id: "scribe_v2"`. Wskazówki językowe mapują się na `language_code`, gdy są obecne.
+OpenClaw wysyła wieloczęściowe dane audio do punktu końcowego ElevenLabs `/v1/speech-to-text`
+z wartością `model_id: "scribe_v2"`. Jeśli podano wskazówki dotyczące języka, są one
+odwzorowywane na `language_code`.
 
-## Strumieniowe STT
+## Strumieniowe rozpoznawanie mowy
 
-Dołączony Plugin `elevenlabs` rejestruje Scribe v2 Realtime dla strumieniowej transkrypcji w trybie agenta
-Voice Call i Google Meet.
+Dołączony Plugin `elevenlabs` rejestruje Scribe v2 Realtime na potrzeby strumieniowej
+transkrypcji w Voice Call oraz w trybie agenta Google Meet.
 
-| Ustawienie      | Ścieżka konfiguracji                                                    | Domyślne                                         |
-| --------------- | ------------------------------------------------------------------------- | ------------------------------------------------- |
-| Klucz API       | `plugins.entries.voice-call.config.streaming.providers.elevenlabs.apiKey` | Wraca do `ELEVENLABS_API_KEY` / `XI_API_KEY` |
-| Model           | `...elevenlabs.modelId`                                                   | `scribe_v2_realtime`                              |
-| Format audio    | `...elevenlabs.audioFormat`                                               | `ulaw_8000`                                       |
-| Częstotliwość próbkowania | `...elevenlabs.sampleRate`                                                | `8000`                                            |
-| Strategia zatwierdzania | `...elevenlabs.commitStrategy`                                            | `vad`                                             |
-| Język           | `...elevenlabs.languageCode`                                              | (nie ustawiono)                                   |
+| Ustawienie             | Ścieżka konfiguracji                                                       | Wartość domyślna                                      |
+| ---------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------- |
+| Klucz API              | `plugins.entries.voice-call.config.streaming.providers.elevenlabs.apiKey`  | Używa zastępczo `ELEVENLABS_API_KEY` / `XI_API_KEY`   |
+| Model                  | `...elevenlabs.modelId`                                                    | `scribe_v2_realtime`                                  |
+| Format audio           | `...elevenlabs.audioFormat`                                                | `ulaw_8000`                                           |
+| Częstotliwość próbkowania | `...elevenlabs.sampleRate`                                              | `8000`                                                |
+| Strategia zatwierdzania | `...elevenlabs.commitStrategy`                                            | `vad`                                                 |
+| Język                  | `...elevenlabs.languageCode`                                               | (nie ustawiono)                                       |
 
 ```json5
 {
@@ -121,18 +123,18 @@ Voice Call i Google Meet.
 ```
 
 <Note>
-Voice Call odbiera multimedia Twilio jako 8 kHz G.711 u-law. Dostawca czasu rzeczywistego
-ElevenLabs domyślnie używa `ulaw_8000`, więc ramki telefoniczne można przekazywać bez
-transkodowania.
+Voice Call odbiera multimedia Twilio jako dźwięk G.711 u-law o częstotliwości 8 kHz. Dostawca
+usługi czasu rzeczywistego ElevenLabs domyślnie używa `ulaw_8000`, dzięki czemu ramki
+telefoniczne mogą być przekazywane bez transkodowania.
 </Note>
 
 W trybie agenta Google Meet ustaw
 `plugins.entries.google-meet.config.realtime.transcriptionProvider` na
-`"elevenlabs"` i skonfiguruj ten sam blok dostawcy pod
+`"elevenlabs"` i skonfiguruj ten sam blok dostawcy w
 `plugins.entries.google-meet.config.realtime.providers.elevenlabs`.
 
-## Powiązane
+## Powiązane materiały
 
-- [Zamiana tekstu na mowę](/pl/tools/tts)
+- [Synteza mowy z tekstu](/pl/tools/tts)
 - [Google Meet](/pl/plugins/google-meet)
 - [Wybór modelu](/pl/concepts/model-providers)

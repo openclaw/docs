@@ -1,30 +1,30 @@
 ---
 read_when:
-    - Anda sedang menginstal, mengonfigurasi, atau mengaudit Plugin iMessage
+    - Anda sedang memasang, mengonfigurasi, atau mengaudit plugin iMessage
 summary: Menambahkan antarmuka saluran iMessage untuk mengirim dan menerima pesan OpenClaw.
 title: Plugin iMessage
 x-i18n:
-    generated_at: "2026-05-02T20:53:10Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:28:35Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3cf902a898d37329fe52d3b7a26c0ecebd641a88c5e490ad678adccb2d9b0d8d
+    source_hash: 5c48bb24e59d5dea948c5f04f579df48b0ae51f923e5dc8a0fc35888ddbbc1c6
     source_path: plugins/reference/imessage.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Plugin iMessage
 
-Menambahkan permukaan channel iMessage untuk mengirim dan menerima pesan OpenClaw.
+Menambahkan antarmuka saluran iMessage untuk mengirim dan menerima pesan OpenClaw.
 
 ## Distribusi
 
 - Paket: `@openclaw/imessage`
-- Rute pemasangan: disertakan dalam OpenClaw
+- Jalur instalasi: disertakan dalam OpenClaw
 
-## Permukaan
+## Antarmuka
 
-channels: imessage
+saluran: imessage; Skills
 
 ## Dokumentasi terkait
 

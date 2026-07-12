@@ -2,39 +2,35 @@
 read_when:
     - Chcesz połączyć bota Yuanbao
     - Konfigurujesz kanał Yuanbao
-summary: Omówienie, funkcje i konfiguracja bota Yuanbao
+summary: Omówienie bota Yuanbao, funkcje i konfiguracja
 title: Yuanbao
 x-i18n:
-    generated_at: "2026-05-06T09:04:35Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:56:50Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3830af0206854e500132edfc9340724fe97f90ca60fa23ce05202d96d9cacf04
+    source_hash: 43488834f588530206b290cb0fb185fd1fe2e1f214ab4a4ccccc49b9b549b6ac
     source_path: channels/yuanbao.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Tencent Yuanbao to platforma asystenta AI firmy Tencent. Plugin kanału OpenClaw
-łączy boty Yuanbao z OpenClaw przez WebSocket, aby mogły komunikować się z użytkownikami
-przez wiadomości bezpośrednie i czaty grupowe.
+Tencent Yuanbao to platforma asystenta AI firmy Tencent. Utrzymywana przez społeczność wtyczka `openclaw-plugin-yuanbao` łączy boty Yuanbao z OpenClaw przez WebSocket na potrzeby wiadomości bezpośrednich i czatów grupowych.
 
-**Status:** gotowe do użycia produkcyjnego dla DM botów + czatów grupowych. WebSocket jest jedynym obsługiwanym trybem połączenia.
-
----
+**Status:** gotowa do użytku produkcyjnego w przypadku wiadomości bezpośrednich do bota i czatów grupowych. WebSocket jest jedynym obsługiwanym trybem połączenia. Ta wtyczka jest utrzymywana przez zespół Tencent Yuanbao jako zewnętrzna pozycja katalogu, a nie przez główny projekt OpenClaw; poniższe szczegóły konfiguracji i działania (poza instalacją i ogólnym interfejsem CLI) pochodzą z dokumentacji samej wtyczki i nie zostały zweryfikowane względem kodu źródłowego głównego projektu OpenClaw.
 
 ## Szybki start
 
-> **Wymaga OpenClaw 2026.4.10 lub nowszej wersji.** Uruchom `openclaw --version`, aby sprawdzić wersję. Zaktualizuj za pomocą `openclaw update`.
+Wymaga OpenClaw 2026.4.10 lub nowszego. Sprawdź wersję za pomocą `openclaw --version`; zaktualizuj za pomocą `openclaw update`.
 
 <Steps>
-  <Step title="Dodaj kanał Yuanbao ze swoimi poświadczeniami">
+  <Step title="Dodaj kanał Yuanbao, podając swoje dane uwierzytelniające">
   ```bash
   openclaw channels add --channel yuanbao --token "appKey:appSecret"
   ```
-  Wartość `--token` używa formatu `appKey:appSecret` rozdzielonego dwukropkiem. Możesz uzyskać te dane z aplikacji Yuanbao, tworząc robota w ustawieniach swojej aplikacji.
+  Opcja `--token` przyjmuje rozdzielone dwukropkiem wartości `appKey:appSecret`. Uzyskaj je z aplikacji Yuanbao, tworząc bota w ustawieniach swojej aplikacji.
   </Step>
 
-  <Step title="Po zakończeniu konfiguracji uruchom ponownie Gateway, aby zastosować zmiany">
+  <Step title="Uruchom ponownie Gateway, aby zastosować zmianę">
   ```bash
   openclaw gateway restart
   ```
@@ -43,28 +39,26 @@ przez wiadomości bezpośrednie i czaty grupowe.
 
 ### Konfiguracja interaktywna (alternatywa)
 
-Możesz też użyć interaktywnego kreatora:
-
 ```bash
 openclaw channels login --channel yuanbao
 ```
 
-Postępuj zgodnie z monitami, aby wprowadzić App ID i App Secret.
-
----
+Postępuj zgodnie z monitami, aby wprowadzić identyfikator aplikacji i sekret aplikacji.
 
 ## Kontrola dostępu
 
 ### Wiadomości bezpośrednie
 
-Skonfiguruj `dmPolicy`, aby kontrolować, kto może wysyłać DM do bota:
+`channels.yuanbao.dm.policy`:
 
-- `"pairing"` - nieznani użytkownicy otrzymują kod parowania; zatwierdź przez CLI
-- `"allowlist"` - czatować mogą tylko użytkownicy wymienieni w `allowFrom`
-- `"open"` - zezwól wszystkim użytkownikom (domyślnie)
-- `"disabled"` - wyłącz wszystkie DM
+| Wartość            | Działanie                                                                   |
+| ------------------ | --------------------------------------------------------------------------- |
+| `open` (domyślnie) | Zezwala wszystkim użytkownikom                                              |
+| `pairing`          | Nieznani użytkownicy otrzymują kod parowania; zatwierdzenie odbywa się w CLI |
+| `allowlist`        | Rozmawiać mogą tylko użytkownicy wymienieni w `allowFrom`                   |
+| `disabled`         | Wyłącza wszystkie wiadomości bezpośrednie                                   |
 
-**Zatwierdzanie prośby o parowanie:**
+Zatwierdź żądanie parowania:
 
 ```bash
 openclaw pairing list yuanbao
@@ -73,18 +67,11 @@ openclaw pairing approve yuanbao <CODE>
 
 ### Czaty grupowe
 
-**Wymaganie wzmianki** (`channels.yuanbao.requireMention`):
-
-- `true` - wymagaj @wzmianki (domyślnie)
-- `false` - odpowiadaj bez @wzmianki
-
-Odpowiedź na wiadomość bota w czacie grupowym jest traktowana jako niejawna wzmianka.
-
----
+`channels.yuanbao.requireMention` (domyślnie `true`): wymaga wzmianki @ przed udzieleniem przez bota odpowiedzi w grupie. Odpowiedź na wiadomość samego bota jest traktowana jako niejawna wzmianka.
 
 ## Przykłady konfiguracji
 
-### Podstawowa konfiguracja z otwartą zasadą DM
+Podstawowa konfiguracja z otwartą polityką wiadomości bezpośrednich:
 
 ```json5
 {
@@ -100,7 +87,7 @@ Odpowiedź na wiadomość bota w czacie grupowym jest traktowana jako niejawna w
 }
 ```
 
-### Ogranicz DM do konkretnych użytkowników
+Ograniczenie wiadomości bezpośrednich do określonych użytkowników:
 
 ```json5
 {
@@ -117,7 +104,7 @@ Odpowiedź na wiadomość bota w czacie grupowym jest traktowana jako niejawna w
 }
 ```
 
-### Wyłącz wymaganie @wzmianki w grupach
+Wyłączenie wymogu wzmianki @ w grupach:
 
 ```json5
 {
@@ -129,79 +116,62 @@ Odpowiedź na wiadomość bota w czacie grupowym jest traktowana jako niejawna w
 }
 ```
 
-### Optymalizuj dostarczanie wiadomości wychodzących
-
-```json5
-{
-  channels: {
-    yuanbao: {
-      // Send each chunk immediately without buffering
-      outboundQueueStrategy: "immediate",
-    },
-  },
-}
-```
-
-### Dostrój strategię merge-text
+Dostrajanie dostarczania wychodzącego:
 
 ```json5
 {
   channels: {
     yuanbao: {
       outboundQueueStrategy: "merge-text",
-      minChars: 2800, // buffer until this many chars
-      maxChars: 3000, // force split above this limit
-      idleMs: 5000, // auto-flush after idle timeout (ms)
+      minChars: 2800, // buforuj do osiągnięcia tej liczby znaków
+      maxChars: 3000, // wymuś podział po przekroczeniu tego limitu
+      idleMs: 5000, // automatycznie opróżnij bufor po okresie bezczynności (ms)
     },
   },
 }
 ```
 
----
+Ustaw `outboundQueueStrategy: "immediate"`, aby wysyłać każdy fragment bez buforowania.
 
 ## Typowe polecenia
 
-| Polecenie  | Opis                             |
-| ---------- | -------------------------------- |
-| `/help`    | Pokaż dostępne polecenia         |
-| `/status`  | Pokaż status bota                |
-| `/new`     | Rozpocznij nową sesję            |
-| `/stop`    | Zatrzymaj bieżące uruchomienie   |
-| `/restart` | Uruchom ponownie OpenClaw        |
-| `/compact` | Skompaktuj kontekst sesji        |
+| Polecenie  | Opis                               |
+| ---------- | ---------------------------------- |
+| `/help`    | Wyświetla dostępne polecenia       |
+| `/status`  | Wyświetla stan bota                |
+| `/new`     | Rozpoczyna nową sesję              |
+| `/stop`    | Zatrzymuje bieżące wykonanie       |
+| `/restart` | Uruchamia ponownie OpenClaw        |
+| `/compact` | Kompaktuje kontekst sesji          |
 
-> Yuanbao obsługuje natywne menu poleceń ukośnikowych. Polecenia są automatycznie synchronizowane z platformą po uruchomieniu Gateway.
-
----
+Yuanbao obsługuje natywne menu poleceń z ukośnikiem; polecenia są automatycznie synchronizowane z platformą podczas uruchamiania Gateway.
 
 ## Rozwiązywanie problemów
 
-### Bot nie odpowiada w czatach grupowych
+**Bot nie odpowiada na czatach grupowych:**
 
 1. Upewnij się, że bot został dodany do grupy
-2. Upewnij się, że używasz @wzmianki o bocie (domyślnie wymagane)
-3. Sprawdź logi: `openclaw logs --follow`
+2. Upewnij się, że oznaczasz bota wzmianką @ (domyślnie wymagane)
+3. Sprawdź dzienniki: `openclaw logs --follow`
 
-### Bot nie odbiera wiadomości
+**Bot nie odbiera wiadomości:**
 
 1. Upewnij się, że bot został utworzony i zatwierdzony w aplikacji Yuanbao
-2. Upewnij się, że `appKey` i `appSecret` są poprawnie skonfigurowane
+2. Upewnij się, że wartości `appKey` i `appSecret` są poprawnie skonfigurowane
 3. Upewnij się, że Gateway działa: `openclaw gateway status`
-4. Sprawdź logi: `openclaw logs --follow`
+4. Sprawdź dzienniki: `openclaw logs --follow`
 
-### Bot wysyła puste lub zastępcze odpowiedzi
+**Bot wysyła puste odpowiedzi lub odpowiedzi zastępcze:**
 
-1. Sprawdź, czy model AI zwraca poprawną treść
-2. Domyślna odpowiedź zastępcza to: "暂时无法解答，你可以换个问题问问我哦"
-3. Dostosuj ją przez `channels.yuanbao.fallbackReply`
+1. Sprawdź, czy model AI zwraca prawidłową treść
+2. Domyślna odpowiedź zastępcza: „暂时无法解答，你可以换个问题问问我哦”
+3. Dostosuj ją za pomocą `channels.yuanbao.fallbackReply`
 
-### Wyciekł App Secret
+**Sekret aplikacji wyciekł:**
 
-1. Zresetuj App Secret w YuanBao APP
-2. Zaktualizuj wartość w swojej konfiguracji
+1. Zresetuj sekret aplikacji w aplikacji Yuanbao
+2. Zaktualizuj wartość w konfiguracji
 3. Uruchom ponownie Gateway: `openclaw gateway restart`
-
----
 
 ## Konfiguracja zaawansowana
 
@@ -230,81 +200,77 @@ Odpowiedź na wiadomość bota w czacie grupowym jest traktowana jako niejawna w
 }
 ```
 
-`defaultAccount` kontroluje, które konto jest używane, gdy wychodzące API nie określają `accountId`.
+`defaultAccount` określa konto używane, gdy wychodzące interfejsy API nie podają wartości `accountId`.
 
 ### Limity wiadomości
 
-- `maxChars` - maksymalna liczba znaków w pojedynczej wiadomości (domyślnie: `3000` znaków)
-- `mediaMaxMb` - limit przesyłania/pobierania multimediów (domyślnie: `20` MB)
-- `overflowPolicy` - zachowanie, gdy wiadomość przekracza limit: `"split"` (domyślnie) lub `"stop"`
+- `maxChars`: maksymalna liczba znaków w pojedynczej wiadomości (domyślnie `3000`)
+- `mediaMaxMb`: limit przesyłania i pobierania multimediów (domyślnie `20` MB)
+- `overflowPolicy`: działanie po przekroczeniu przez wiadomość limitu: `"split"` (domyślnie) lub `"stop"`
 
-### Streaming
+### Przesyłanie strumieniowe
 
-Yuanbao obsługuje wyjście przesyłane strumieniowo na poziomie bloków. Po włączeniu bot wysyła tekst we fragmentach w miarę jego generowania.
+Yuanbao obsługuje strumieniowe wysyłanie danych na poziomie bloków; bot wysyła generowany tekst fragmentami.
 
 ```json5
 {
   channels: {
     yuanbao: {
-      disableBlockStreaming: false, // block streaming enabled (default)
+      disableBlockStreaming: false, // strumieniowanie blokowe włączone (domyślnie)
     },
   },
 }
 ```
 
-Ustaw `disableBlockStreaming: true`, aby wysłać pełną odpowiedź w jednej wiadomości.
+Ustaw `disableBlockStreaming: true`, aby wysyłać pełną odpowiedź w jednej wiadomości.
 
 ### Kontekst historii czatu grupowego
 
-Kontroluj, ile historycznych wiadomości jest uwzględnianych w kontekście AI dla czatów grupowych:
-
 ```json5
 {
   channels: {
     yuanbao: {
-      historyLimit: 100, // default: 100, set 0 to disable
+      historyLimit: 100, // domyślnie: 100; ustaw 0, aby wyłączyć
     },
   },
 }
 ```
 
-### Tryb odpowiedzi do wiadomości
+Określa liczbę historycznych wiadomości uwzględnianych w kontekście AI czatów grupowych.
 
-Kontroluj, jak bot cytuje wiadomości podczas odpowiadania w czatach grupowych:
+### Tryb odpowiedzi z cytatem
 
 ```json5
 {
   channels: {
     yuanbao: {
-      replyToMode: "first", // "off" | "first" | "all" (default: "first")
+      replyToMode: "first", // "off" | "first" | "all" (domyślnie: "first")
     },
   },
 }
 ```
 
-| Wartość   | Zachowanie                                               |
-| --------- | -------------------------------------------------------- |
-| `"off"`   | Bez odpowiedzi z cytatem                                 |
-| `"first"` | Cytuj tylko pierwszą odpowiedź na wiadomość przychodzącą (domyślnie) |
-| `"all"`   | Cytuj każdą odpowiedź                                    |
+| Wartość | Działanie                                                                       |
+| ------- | ------------------------------------------------------------------------------- |
+| `off`   | Bez odpowiedzi z cytatem                                                        |
+| `first` | Cytuje tylko pierwszą odpowiedź na każdą wiadomość przychodzącą (domyślnie)     |
+| `all`   | Cytuje każdą odpowiedź                                                          |
 
-### Wstrzykiwanie podpowiedzi Markdown
+### Wstrzykiwanie wskazówki dotyczącej Markdown
 
-Domyślnie bot wstrzykuje instrukcje do promptu systemowego, aby zapobiec opakowywaniu całej odpowiedzi przez model AI w bloki kodu markdown.
+Domyślnie bot wstrzykuje do monitu systemowego instrukcję zapobiegającą umieszczaniu przez model całej odpowiedzi w bloku kodu Markdown.
 
 ```json5
 {
   channels: {
     yuanbao: {
-      markdownHintEnabled: true, // default: true
+      markdownHintEnabled: true, // domyślnie: true
     },
   },
 }
 ```
 
 ### Tryb debugowania
-
-Włącz niezredagowane wyjście logów dla konkretnych identyfikatorów botów:
 
 ```json5
 {
@@ -316,9 +282,11 @@ Włącz niezredagowane wyjście logów dla konkretnych identyfikatorów botów:
 }
 ```
 
-### Routing wielu agentów
+Włącza nieoczyszczone dane wyjściowe dziennika dla wymienionych identyfikatorów botów.
 
-Użyj `bindings`, aby kierować DM lub grupy Yuanbao do różnych agentów.
+### Kierowanie do wielu agentów
+
+Użyj `bindings`, aby kierować wiadomości bezpośrednie lub grupy Yuanbao do różnych agentów:
 
 ```json5
 {
@@ -348,77 +316,51 @@ Użyj `bindings`, aby kierować DM lub grupy Yuanbao do różnych agentów.
 }
 ```
 
-Pola routingu:
-
 - `match.channel`: `"yuanbao"`
-- `match.peer.kind`: `"direct"` (DM) lub `"group"` (czat grupowy)
+- `match.peer.kind`: `"direct"` (wiadomość bezpośrednia) lub `"group"` (czat grupowy)
 - `match.peer.id`: identyfikator użytkownika lub kod grupy
-
----
 
 ## Dokumentacja konfiguracji
 
 Pełna konfiguracja: [Konfiguracja Gateway](/pl/gateway/configuration)
 
-| Ustawienie                                 | Opis                                              | Domyślnie                              |
-| ------------------------------------------ | ------------------------------------------------- | -------------------------------------- |
-| `channels.yuanbao.enabled`                 | Włącz/wyłącz kanał                                | `true`                                 |
-| `channels.yuanbao.defaultAccount`          | Domyślne konto dla routingu wychodzącego          | `default`                              |
-| `channels.yuanbao.accounts.<id>.appKey`    | App Key (używany do podpisywania i generowania biletu) | -                                      |
-| `channels.yuanbao.accounts.<id>.appSecret` | App Secret (używany do podpisywania)              | -                                      |
-| `channels.yuanbao.accounts.<id>.token`     | Wstępnie podpisany token (pomija automatyczne podpisywanie biletu) | -                                      |
-| `channels.yuanbao.accounts.<id>.name`      | Nazwa wyświetlana konta                           | -                                      |
-| `channels.yuanbao.accounts.<id>.enabled`   | Włącz/wyłącz konkretne konto                      | `true`                                 |
-| `channels.yuanbao.dm.policy`               | Zasada DM                                         | `open`                                 |
-| `channels.yuanbao.dm.allowFrom`            | Lista dozwolonych DM (lista identyfikatorów użytkowników) | -                                      |
-| `channels.yuanbao.requireMention`          | Wymagaj @wzmianki w grupach                       | `true`                                 |
-| `channels.yuanbao.overflowPolicy`          | Obsługa długich wiadomości (`split` lub `stop`)   | `split`                                |
-| `channels.yuanbao.replyToMode`             | Strategia odpowiedzi do wiadomości w grupach (`off`, `first`, `all`) | `first`                                |
-| `channels.yuanbao.outboundQueueStrategy`   | Strategia wychodząca (`merge-text` lub `immediate`) | `merge-text`                           |
-| `channels.yuanbao.minChars`                | Merge-text: minimalna liczba znaków wyzwalająca wysłanie | `2800`                                 |
-| `channels.yuanbao.maxChars`                | Merge-text: maksymalna liczba znaków na wiadomość | `3000`                                 |
-| `channels.yuanbao.idleMs`                  | Merge-text: limit bezczynności przed automatycznym opróżnieniem (ms) | `5000`                                 |
-| `channels.yuanbao.mediaMaxMb`              | Limit rozmiaru multimediów (MB)                   | `20`                                   |
-| `channels.yuanbao.historyLimit`            | Wpisy kontekstu historii czatu grupowego          | `100`                                  |
-| `channels.yuanbao.disableBlockStreaming`   | Wyłącz wyjście strumieniowe na poziomie bloków    | `false`                                |
-| `channels.yuanbao.fallbackReply`           | Odpowiedź zastępcza, gdy AI nie zwraca treści     | `暂时无法解答，你可以换个问题问问我哦` |
-| `channels.yuanbao.markdownHintEnabled`     | Wstrzykuj instrukcje zapobiegające opakowywaniu markdown | `true`                                 |
-| `channels.yuanbao.debugBotIds`             | Lista dozwolonych identyfikatorów botów do debugowania (niezredagowane logi) | `[]`                                   |
-
----
+| Ustawienie                                 | Opis                                                        | Wartość domyślna                       |
+| ------------------------------------------ | ----------------------------------------------------------- | -------------------------------------- |
+| `channels.yuanbao.enabled`                 | Włącza lub wyłącza kanał                                    | `true`                                 |
+| `channels.yuanbao.defaultAccount`          | Domyślne konto do kierowania wychodzącego                    | `default`                              |
+| `channels.yuanbao.accounts.<id>.appKey`    | Klucz aplikacji (podpisywanie i generowanie biletu)          | -                                      |
+| `channels.yuanbao.accounts.<id>.appSecret` | Sekret aplikacji (podpisywanie)                              | -                                      |
+| `channels.yuanbao.accounts.<id>.token`     | Wstępnie podpisany token (pomija automatyczne podpisywanie biletu) | -                                 |
+| `channels.yuanbao.accounts.<id>.name`      | Wyświetlana nazwa konta                                     | -                                      |
+| `channels.yuanbao.accounts.<id>.enabled`   | Włącza lub wyłącza określone konto                           | `true`                                 |
+| `channels.yuanbao.dm.policy`               | Polityka wiadomości bezpośrednich                            | `open`                                 |
+| `channels.yuanbao.dm.allowFrom`            | Lista dozwolonych nadawców wiadomości bezpośrednich (lista identyfikatorów użytkowników) | -                 |
+| `channels.yuanbao.requireMention`          | Wymaga wzmianki @ w grupach                                  | `true`                                 |
+| `channels.yuanbao.overflowPolicy`          | Obsługa długich wiadomości (`split` lub `stop`)              | `split`                                |
+| `channels.yuanbao.replyToMode`             | Strategia odpowiedzi z cytatem w grupach (`off`, `first`, `all`) | `first`                            |
+| `channels.yuanbao.outboundQueueStrategy`   | Strategia wychodząca (`merge-text` lub `immediate`)          | `merge-text`                           |
+| `channels.yuanbao.minChars`                | Łączenie tekstu: minimalna liczba znaków wyzwalająca wysłanie | `2800`                                |
+| `channels.yuanbao.maxChars`                | Łączenie tekstu: maksymalna liczba znaków na wiadomość       | `3000`                                 |
+| `channels.yuanbao.idleMs`                  | Łączenie tekstu: czas bezczynności przed automatycznym opróżnieniem bufora (ms) | `5000`             |
+| `channels.yuanbao.mediaMaxMb`              | Limit rozmiaru multimediów (MB)                              | `20`                                   |
+| `channels.yuanbao.historyLimit`            | Liczba wpisów historii czatu grupowego w kontekście          | `100`                                  |
+| `channels.yuanbao.disableBlockStreaming`   | Wyłącza strumieniowe wysyłanie na poziomie bloków            | `false`                                |
+| `channels.yuanbao.fallbackReply`           | Odpowiedź zastępcza, gdy model nie zwróci treści              | `暂时无法解答，你可以换个问题问问我哦` |
+| `channels.yuanbao.markdownHintEnabled`     | Wstrzykuje instrukcje zapobiegające opakowywaniu odpowiedzi w Markdown | `true`                       |
+| `channels.yuanbao.debugBotIds`             | Lista dozwolonych identyfikatorów botów w trybie debugowania (nieoczyszczone dzienniki) | `[]`             |
 
 ## Obsługiwane typy wiadomości
 
-### Odbieranie
+**Odbieranie:** tekst, obrazy, pliki, dźwięk/głos, wideo, naklejki/niestandardowe emoji, elementy niestandardowe (karty łączy).
 
-- ✅ Tekst
-- ✅ Obrazy
-- ✅ Pliki
-- ✅ Audio / głos
-- ✅ Wideo
-- ✅ Naklejki / niestandardowe emoji
-- ✅ Elementy niestandardowe (karty linków itp.)
+**Wysyłanie:** tekst (Markdown), obrazy, pliki, dźwięk, wideo, naklejki.
 
-### Wysyłanie
-
-- ✅ Tekst (z obsługą markdown)
-- ✅ Obrazy
-- ✅ Pliki
-- ✅ Audio
-- ✅ Wideo
-- ✅ Naklejki
-
-### Wątki i odpowiedzi
-
-- ✅ Odpowiedzi z cytatem (konfigurowalne przez `replyToMode`)
-- ❌ Odpowiedzi w wątkach (nieobsługiwane przez platformę)
-
----
+**Wątki i odpowiedzi:** odpowiedzi z cytatem (konfigurowane za pomocą `replyToMode`); platforma nie obsługuje odpowiedzi w wątkach.
 
 ## Powiązane
 
-- [Przegląd kanałów](/pl/channels) - wszystkie obsługiwane kanały
-- [Parowanie](/pl/channels/pairing) - uwierzytelnianie DM i przepływ parowania
-- [Grupy](/pl/channels/groups) - zachowanie czatu grupowego i bramkowanie wzmianek
-- [Routing kanałów](/pl/channels/channel-routing) - routing sesji dla wiadomości
-- [Bezpieczeństwo](/pl/gateway/security) - model dostępu i wzmacnianie zabezpieczeń
+- [Przegląd kanałów](/pl/channels) — wszystkie obsługiwane kanały
+- [Parowanie](/pl/channels/pairing) — uwierzytelnianie wiadomości bezpośrednich i proces parowania
+- [Grupy](/pl/channels/groups) — działanie czatów grupowych i wymaganie wzmianek
+- [Kierowanie kanałów](/pl/channels/channel-routing) — kierowanie sesji dla wiadomości
+- [Bezpieczeństwo](/pl/gateway/security) — model dostępu i wzmacnianie zabezpieczeń

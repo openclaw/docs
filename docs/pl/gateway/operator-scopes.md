@@ -1,126 +1,133 @@
 ---
 read_when:
-    - Debugowanie błędów brakującego zakresu operatora
-    - Przeglądanie zatwierdzeń parowania urządzeń lub węzłów
+    - Debugowanie błędów braku zakresu operatora
+    - Przeglądanie zatwierdzeń parowania urządzeń lub Node’ów
     - Dodawanie lub klasyfikowanie metod RPC Gateway
-summary: Role operatorów, zakresy i kontrole w czasie zatwierdzania dla klientów Gateway
+summary: Role operatorów, zakresy i kontrole podczas zatwierdzania dla klientów Gateway
 title: Zakresy operatora
 x-i18n:
-    generated_at: "2026-06-27T17:36:07Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:07:07Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: dc59453ae1a73b52276185de2cedd1ed4da027111168eda8107d6ba0b74aec2f
+    source_hash: cfda4486e8d31c01fb7ffff398dcc678d298194f0f0ce6308ae9e5388f5a2856
     source_path: gateway/operator-scopes.md
     workflow: 16
 ---
 
-Zakresy operatora określają, co klient Gateway może zrobić po uwierzytelnieniu.
-Są zabezpieczeniem płaszczyzny sterowania w obrębie jednej zaufanej domeny operatora Gateway,
-a nie izolacją przed wrogim środowiskiem wielodostępnym. Jeśli potrzebujesz silnego rozdzielenia między
-osobami, zespołami lub maszynami, uruchom osobne Gateway pod osobnymi użytkownikami systemu operacyjnego lub
-na osobnych hostach.
+Zakresy operatora ograniczają działania, które klient Gateway może wykonywać po uwierzytelnieniu.
+Stanowią mechanizm ochronny płaszczyzny sterowania w obrębie jednej zaufanej domeny operatora Gateway,
+a nie izolację przed wrogimi współdzierżawcami. Aby zapewnić silną separację między osobami,
+zespołami lub maszynami, uruchamiaj oddzielne instancje Gateway z użyciem oddzielnych użytkowników systemu operacyjnego lub hostów.
 
 Powiązane: [Bezpieczeństwo](/pl/gateway/security), [Protokół Gateway](/pl/gateway/protocol),
 [Parowanie Gateway](/pl/gateway/pairing), [CLI urządzeń](/pl/cli/devices).
 
 ## Role
 
-Klienci WebSocket Gateway łączą się z jedną rolą:
+Każdy klient WebSocket Gateway łączy się z jedną rolą:
 
-- `operator`: klienci płaszczyzny sterowania, tacy jak CLI, Control UI, automatyzacje i
+- `operator`: klienci płaszczyzny sterowania, takie jak CLI, interfejs sterowania, automatyzacja oraz
   zaufane procesy pomocnicze.
-- `node`: hosty funkcji, takie jak macOS, iOS, Android lub węzły bez interfejsu,
-  które udostępniają polecenia przez `node.invoke`.
+- `node`: hosty udostępniające funkcje (macOS, iOS, Android, bez interfejsu graficznego), które udostępniają
+  polecenia za pośrednictwem `node.invoke`.
 
-Metody RPC operatora wymagają roli `operator`. Metody pochodzące z węzła
+Metody RPC operatora wymagają roli `operator`, natomiast metody pochodzące z węzła
 wymagają roli `node`.
 
 ## Poziomy zakresów
 
-| Zakres                  | Znaczenie                                                                                                                                                                                   |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `operator.read`         | Status tylko do odczytu, listy, katalog, dzienniki, odczyty sesji i inne niemutujące wywołania płaszczyzny sterowania.                                                                      |
-| `operator.write`        | Zwykłe mutujące działania operatora, takie jak wysyłanie wiadomości, wywoływanie narzędzi, aktualizowanie ustawień rozmowy/głosu i przekazywanie poleceń węzła. Spełnia też `operator.read`. |
-| `operator.admin`        | Administracyjny dostęp do płaszczyzny sterowania. Spełnia każdy zakres `operator.*`. Wymagany do mutacji konfiguracji, aktualizacji, natywnych hooków, wrażliwych zarezerwowanych przestrzeni nazw i zatwierdzeń wysokiego ryzyka. |
-| `operator.pairing`      | Zarządzanie parowaniem urządzeń i węzłów, w tym wyświetlanie, zatwierdzanie, odrzucanie, usuwanie, rotowanie i unieważnianie rekordów parowania lub tokenów urządzeń.                      |
-| `operator.approvals`    | API zatwierdzania exec i pluginów.                                                                                                                                                          |
-| `operator.talk.secrets` | Odczytywanie konfiguracji Talk z uwzględnieniem sekretów.                                                                                                                                   |
+| Zakres                  | Znaczenie                                                                                                                                                                                                 |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `operator.read`         | Stan tylko do odczytu, listy, katalog, dzienniki, odczyty sesji i inne wywołania niemodyfikujące.                                                                                                          |
+| `operator.write`        | Działania operatora wprowadzające zmiany: wysyłanie wiadomości, wywoływanie narzędzi, aktualizowanie ustawień rozmowy/głosu, przekazywanie poleceń węzła. Spełnia również wymagania `operator.read`.           |
+| `operator.admin`        | Dostęp administracyjny. Spełnia wymagania każdego zakresu `operator.*`. Wymagany do modyfikowania konfiguracji, aktualizacji, natywnych haków, zastrzeżonych przestrzeni nazw i zatwierdzania operacji wysokiego ryzyka. |
+| `operator.pairing`      | Zarządzanie parowaniem urządzeń i węzłów: wyświetlanie listy, zatwierdzanie, odrzucanie, usuwanie, rotacja i unieważnianie.                                                                                  |
+| `operator.approvals`    | Interfejsy API zatwierdzania wykonywania poleceń i pluginów.                                                                                                                                               |
+| `operator.talk.secrets` | Odczytywanie konfiguracji rozmowy wraz z sekretami.                                                                                                                                                        |
 
-Nieznane przyszłe zakresy `operator.*` wymagają dokładnego dopasowania, chyba że wywołujący ma
-`operator.admin`.
+Nieznane przyszłe zakresy `operator.*` wymagają dokładnego dopasowania, chyba że wywołujący
+ma już zakres `operator.admin`.
 
-## Zakres metody jest tylko pierwszą bramką
+## Zakres metody jest tylko pierwszą bramą
 
-Każde RPC Gateway ma zakres metody o najniższych wymaganych uprawnieniach. Ten zakres metody decyduje,
-czy żądanie może dotrzeć do handlera. Niektóre handlery stosują następnie bardziej rygorystyczne
-kontrole w czasie zatwierdzania na podstawie konkretnej rzeczy, która jest zatwierdzana lub mutowana.
+Każde wywołanie RPC Gateway ma zakres metody zgodny z zasadą najmniejszych uprawnień, który określa, czy
+żądanie dotrze do jego procedury obsługi. Niektóre procedury obsługi stosują następnie bardziej rygorystyczne kontrole zależne od
+konkretnego zatwierdzanego lub modyfikowanego elementu:
 
-Przykłady:
+- `device.pair.approve` jest dostępne z zakresem `operator.pairing`, ale zatwierdzenie
+  urządzenia operatora może utworzyć lub zachować wyłącznie zakresy, które wywołujący już ma.
+- `node.pair.approve` jest dostępne z zakresem `operator.pairing`, a następnie wyznacza dodatkowe
+  zakresy zatwierdzania na podstawie zadeklarowanej listy poleceń oczekującego węzła.
+- `chat.send` jest metodą wymagającą zakresu zapisu, ale polecenia czatu `/config set` i
+  `/config unset` wymagają dodatkowo `operator.admin`,
+  niezależnie od zakresu wysyłania wiadomości na czacie posiadanego przez wywołującego.
 
-- `device.pair.approve` jest osiągalne z `operator.pairing`, ale zatwierdzenie
-  urządzenia operatora może wystawić lub zachować tylko zakresy, które wywołujący już ma.
-- `node.pair.approve` jest osiągalne z `operator.pairing`, a następnie wyprowadza dodatkowe
-  zakresy zatwierdzania z oczekującej listy poleceń węzła.
-- `chat.send` jest zwykle metodą w zakresie zapisu, ale trwałe `/config set`
-  i `/config unset` wymagają `operator.admin` na poziomie polecenia.
+Pozwala to operatorom o niższych zakresach wykonywać działania związane z parowaniem o niskim ryzyku bez
+wymagania uprawnień administratora dla wszystkich zatwierdzeń parowania.
 
-Dzięki temu operatorzy o niższym zakresie mogą wykonywać działania parowania niskiego ryzyka bez ustawiania
-wszystkich zatwierdzeń parowania jako dostępnych tylko dla administratora.
-
-## Zatwierdzenia parowania urządzeń
+## Zatwierdzanie parowania urządzeń
 
 Rekordy parowania urządzeń są trwałym źródłem zatwierdzonych ról i zakresów.
-Już sparowane urządzenia nie uzyskują po cichu szerszego dostępu: ponowne połączenia, które proszą
-o szerszą rolę lub szersze zakresy, tworzą nowe oczekujące żądanie rozszerzenia.
+Już sparowane urządzenie nie uzyskuje po cichu szerszego dostępu: ponowne połączenie
+żądające szerszej roli lub szerszych zakresów tworzy nowe oczekujące żądanie rozszerzenia uprawnień.
 
-Podczas zatwierdzania żądania urządzenia:
+Zatwierdzanie żądania urządzenia:
 
-- Żądanie bez roli operatora nie wymaga zatwierdzenia zakresu tokenu operatora.
-- Żądanie roli urządzenia niebędącej operatorem, takiej jak `node`, wymaga
-  `operator.admin`, nawet gdy `device.pair.approve` jest osiągalne z
+- Żądanie bez roli operatora nie wymaga zatwierdzenia zakresu operatora.
+- Żądanie roli urządzenia innej niż operator (na przykład `node`) wymaga
+  `operator.admin`, mimo że samo `device.pair.approve` wymaga jedynie
   `operator.pairing`.
-- Żądanie `operator.read`, `operator.write`, `operator.approvals`,
-  `operator.pairing` lub `operator.talk.secrets` wymaga, aby wywołujący miał
-  te zakresy albo `operator.admin`.
-- Żądanie `operator.admin` wymaga `operator.admin`.
-- Żądanie naprawcze bez jawnych zakresów może odziedziczyć istniejące zakresy
-  tokenu operatora. Jeśli ten istniejący token ma zakres administratora, zatwierdzenie nadal wymaga
+- Żądanie zakresu `operator.read`, `operator.write`, `operator.approvals`,
+  `operator.pairing` lub `operator.talk.secrets` wymaga, aby wywołujący już
+  miał ten zakres albo `operator.admin`.
+- Żądanie zakresu `operator.admin` wymaga `operator.admin`.
+- Żądanie naprawy bez jawnie określonych zakresów może odziedziczyć zakresy istniejącego tokenu
+  operatora; jeśli ten token ma zakres administracyjny, zatwierdzenie nadal wymaga
   `operator.admin`.
 
-Nieadministracyjne sesje współdzielonego sekretu i zaufanego proxy mogą zatwierdzać żądania urządzeń operatora
-tylko w obrębie własnych zadeklarowanych zakresów operatora. Zatwierdzanie ról niebędących operatorem
-jest dostępne tylko dla administratora, nawet gdy te sesje mogą poza tym używać
+Sesje bez uprawnień administratora korzystające ze współdzielonego sekretu lub zaufanego serwera proxy mogą zatwierdzać wyłącznie
+żądania urządzeń operatora mieszczące się w ich własnych zadeklarowanych zakresach operatora; zatwierdzanie
+ról innych niż operator wymaga uprawnień administratora, nawet jeśli te sesje mogą poza tym używać
 `operator.pairing`.
 
-W przypadku sesji tokenów sparowanych urządzeń zarządzanie jest również ograniczone do własnego zakresu, chyba że
-wywołujący ma `operator.admin`: wywołujący bez uprawnień administratora widzą tylko własne wpisy parowania,
-mogą zatwierdzać lub odrzucać tylko własne oczekujące żądania oraz mogą rotować,
-unieważniać lub usuwać tylko własny wpis urządzenia.
+W przypadku sesji tokenów sparowanych urządzeń zarządzanie jest ograniczone do własnego urządzenia, chyba że wywołujący
+ma `operator.admin`: wywołujący bez uprawnień administratora widzi wyłącznie własne wpisy parowania i
+może zatwierdzać, odrzucać, rotować, unieważniać lub usuwać wyłącznie wpis własnego urządzenia.
 
-## Zatwierdzenia parowania węzłów
+## Zatwierdzanie parowania węzłów
 
-Starsze `node.pair.*` używa osobnego magazynu parowania węzłów należącego do Gateway. Węzły WS
-używają parowania urządzeń z `role: node`, ale obowiązuje to samo słownictwo poziomów zatwierdzania.
+Starsze metody `node.pair.*` korzystają z oddzielnego magazynu parowania węzłów zarządzanego przez Gateway.
+Węzły WS korzystają zamiast tego z parowania urządzeń (`role: node`), ale obowiązuje ten sam zestaw
+pojęć związanych z zatwierdzaniem. Informacje o relacji między tymi dwoma
+magazynami zawiera sekcja [Parowanie Gateway](/pl/gateway/pairing).
 
-`node.pair.approve` używa oczekującej listy poleceń żądania do wyprowadzenia dodatkowych
-wymaganych zakresów:
+`node.pair.approve` wyznacza dodatkowe wymagane zakresy na podstawie listy poleceń
+oczekującego żądania:
 
-- Żądanie bez poleceń: `operator.pairing`
-- Polecenia węzła inne niż exec: `operator.pairing` + `operator.write`
-- `system.run`, `system.run.prepare` lub `system.which`:
-  `operator.pairing` + `operator.admin`
+| Zadeklarowane polecenia                                | Wymagane zakresy                       |
+| ----------------------------------------------------- | -------------------------------------- |
+| brak                                                  | `operator.pairing`                     |
+| polecenia węzła niewykonujące procesów                | `operator.pairing` + `operator.write`  |
+| `system.run`, `system.run.prepare` lub `system.which` | `operator.pairing` + `operator.admin`  |
 
-Parowanie węzła ustanawia tożsamość i zaufanie. Nie zastępuje własnej
-polityki zatwierdzania exec `system.run` węzła.
+Zatwierdzenie deklaracji węzła nie włącza poleceń, które mają oddzielną
+bramę listy dozwolonych operacji czasu wykonywania. Na przykład zatwierdzenie węzła deklarującego
+`computer.act` wymaga zakresu parowania i zapisu, ale jedynie rejestruje ten interfejs.
+Administrator lub właściciel nadal musi aktywować `computer.act`. Dopóki pozostaje ono
+aktywne, wywoływanie go za pośrednictwem wymagającej zakresu zapisu metody `node.invoke` nie
+wymaga zakresu administracyjnego dla każdego działania.
+
+Parowanie węzła ustanawia tożsamość i zaufanie; nie zastępuje własnych zasad zatwierdzania
+wykonywania poleceń `system.run` przez węzeł.
 
 ## Uwierzytelnianie współdzielonym sekretem
 
-Uwierzytelnianie współdzielonym tokenem/hasłem Gateway jest traktowane jako zaufany dostęp operatora dla
-tego Gateway. Powierzchnie HTTP zgodne z OpenAI, `/tools/invoke` i endpointy historii sesji HTTP
-przywracają zwykły pełny domyślny zestaw zakresów operatora dla uwierzytelniania bearer współdzielonym sekretem,
-nawet jeśli wywołujący wysyła węższe zadeklarowane zakresy.
+Uwierzytelnianie za pomocą współdzielonego tokenu/hasła Gateway jest traktowane jako zaufany dostęp operatora do
+tego Gateway. Interfejsy HTTP zgodne z OpenAI, `/tools/invoke` oraz punkty końcowe HTTP
+historii sesji przywracają pełny domyślny zestaw zakresów operatora w przypadku uwierzytelniania typu bearer
+za pomocą współdzielonego sekretu, nawet jeśli wywołujący przesyła węższe zadeklarowane zakresy.
 
-Tryby niosące tożsamość, takie jak uwierzytelnianie zaufanego proxy lub prywatne wejście `none`,
-nadal mogą respektować jawne zadeklarowane zakresy. Używaj osobnych Gateway do rzeczywistego rozdzielenia
-granic zaufania.
+Tryby przekazujące tożsamość, takie jak uwierzytelnianie przez zaufany serwer proxy lub `none` dla prywatnego ruchu przychodzącego,
+mogą nadal respektować jawnie zadeklarowane zakresy. Aby zapewnić rzeczywistą separację granic zaufania,
+używaj oddzielnych instancji Gateway.

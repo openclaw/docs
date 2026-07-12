@@ -4,10 +4,9 @@ read_when:
 summary: Links selecionados para a documentação mais usada do OpenClaw.
 title: Diretório da documentação
 x-i18n:
-    generated_at: "2026-07-12T15:41:24Z"
+    generated_at: "2026-07-12T00:25:09Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 48859dc0b31139f1f5acaa403e506cd6d9767ee32e502a4ef74340dbbc21918f
     source_path: start/docs-directory.md
@@ -15,20 +14,20 @@ x-i18n:
 ---
 
 <Note>
-Esta página é um índice selecionado. Se você está começando, consulte [Primeiros passos](/pt-BR/start/getting-started).
+Esta página é um índice selecionado. Se você é iniciante, comece por [Primeiros passos](/pt-BR/start/getting-started).
 Para ver um mapa completo da documentação, consulte [Centrais da documentação](/pt-BR/start/hubs).
 </Note>
 
 ## Comece aqui
 
-- [Centrais da documentação (todas as páginas vinculadas)](/pt-BR/start/hubs)
+- [Centrais da documentação (com links para todas as páginas)](/pt-BR/start/hubs)
 - [Ajuda](/pt-BR/help)
 - [Configuração](/pt-BR/gateway/configuration)
 - [Exemplos de configuração](/pt-BR/gateway/configuration-examples)
 - [Comandos de barra](/pt-BR/tools/slash-commands)
 - [Roteamento multiagente](/pt-BR/concepts/multi-agent)
 - [Atualização e reversão](/pt-BR/install/updating)
-- [Emparelhamento (mensagens diretas e Nodes)](/pt-BR/channels/pairing)
+- [Pareamento (mensagens diretas e Nodes)](/pt-BR/channels/pairing)
 - [Modo Nix](/pt-BR/install/nix)
 - [Configuração do assistente OpenClaw](/pt-BR/start/openclaw)
 - [Skills](/pt-BR/tools/skills)
@@ -50,10 +49,10 @@ Para ver um mapa completo da documentação, consulte [Centrais da documentaçã
 - [Mattermost](/pt-BR/channels/mattermost)
 - [Áudio de mídia](/pt-BR/nodes/audio)
 - [Imagens de mídia](/pt-BR/nodes/images)
-- [Bot do QQ](/pt-BR/channels/qqbot)
+- [QQ Bot](/pt-BR/channels/qqbot)
 - [Telegram](/pt-BR/channels/telegram)
 - [WebChat](/pt-BR/web/webchat)
-- [Mensagens de grupos do WhatsApp](/pt-BR/channels/group-messages)
+- [Mensagens de grupo do WhatsApp](/pt-BR/channels/group-messages)
 
 ## Aplicativos complementares
 
@@ -68,7 +67,7 @@ Para ver um mapa completo da documentação, consulte [Centrais da documentaçã
 - [Sessões](/pt-BR/concepts/session)
 - [Tarefas Cron](/pt-BR/automation/cron-jobs)
 - [Webhooks](/pt-BR/automation/cron-jobs#webhooks)
-- [Hooks do Gmail (Pub/Sub)](/pt-BR/automation/cron-jobs#gmail-pubsub-integration)
+- [Gatilhos do Gmail (Pub/Sub)](/pt-BR/automation/cron-jobs#gmail-pubsub-integration)
 - [Segurança](/pt-BR/gateway/security)
 - [Solução de problemas](/pt-BR/gateway/troubleshooting)
 

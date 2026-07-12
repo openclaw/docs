@@ -1,11 +1,11 @@
 ---
 read_when:
     - Estás instalando, configurando o auditando el plugin de Slack
-summary: Plugin de canal de Slack de OpenClaw para canales, mensajes directos, comandos y eventos de la app.
+summary: Plugin del canal de Slack de OpenClaw para canales, mensajes directos, comandos y eventos de la aplicación.
 title: Plugin de Slack
 x-i18n:
-    generated_at: "2026-06-27T12:24:23Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T23:22:19Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 602ccb21ce084219d922860d186664bbb098fd034117893dc7359d79495bedd6
@@ -15,16 +15,16 @@ x-i18n:
 
 # Plugin de Slack
 
-Plugin de canal de Slack de OpenClaw para canales, MD, comandos y eventos de app.
+Plugin del canal de Slack para OpenClaw, compatible con canales, mensajes directos, comandos y eventos de aplicaciones.
 
 ## Distribución
 
 - Paquete: `@openclaw/slack`
-- Ruta de instalación: npm; ClawHub
+- Vía de instalación: npm; ClawHub
 
 ## Superficie
 
-canales: slack; Skills
+canales: Slack; Skills
 
 ## Documentación relacionada
 

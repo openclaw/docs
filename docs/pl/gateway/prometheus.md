@@ -1,44 +1,48 @@
 ---
 read_when:
-    - Chcesz, aby Prometheus, Grafana, VictoriaMetrics lub inne narzędzie zbierające gromadziło metryki OpenClaw Gateway
-    - Potrzebujesz nazw metryk Prometheus i zasad etykiet dla pulpitów lub alertów
-    - Potrzebujesz metryk bez uruchamiania kolektora OpenTelemetry
+    - Chcesz, aby Prometheus, Grafana, VictoriaMetrics lub inny mechanizm zbierający gromadził metryki OpenClaw Gateway
+    - Potrzebujesz nazw metryk Prometheus i zasad dotyczących etykiet na potrzeby pulpitów nawigacyjnych lub alertów
+    - Chcesz korzystać z metryk bez uruchamiania kolektora OpenTelemetry
 sidebarTitle: Prometheus
-summary: Udostępnij diagnostykę OpenClaw jako metryki tekstowe Prometheus przez Plugin diagnostics-prometheus
+summary: Udostępniaj diagnostykę OpenClaw jako metryki tekstowe Prometheus za pośrednictwem pluginu diagnostics-prometheus
 title: Metryki Prometheus
 x-i18n:
-    generated_at: "2026-06-27T17:36:44Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:09:59Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f9d3f6cf5af2e3770cd3a86e968fe25d2c3b3b87524ba1d229ef585671d320a8
+    source_hash: 8a3975a9a79f32f1e9731b819613fdf6b9ffeee20bc71c841b9a6d7a5e0052f4
     source_path: gateway/prometheus.md
     workflow: 16
 ---
 
-  OpenClaw może udostępniać metryki diagnostyczne przez oficjalną wtyczkę `diagnostics-prometheus`. Nasłuchuje zaufanej diagnostyki oraz emitowanych przez rdzeń zdarzeń stabilności Gateway, a następnie renderuje tekstowy punkt końcowy Prometheus pod adresem:
+  OpenClaw może udostępniać metryki diagnostyczne za pośrednictwem oficjalnego
+  pluginu `diagnostics-prometheus`. Nasłuchuje on zaufanych danych diagnostycznych oraz
+  wewnętrznie oznaczonych zdarzeń diagnostycznych należących do dyspozytora (sygnałów
+  kolejki, pamięci i odzyskiwania sesji), a następnie udostępnia punkt końcowy w formacie tekstowym Prometheus pod adresem:
 
   ```text
   GET /api/diagnostics/prometheus
   ```
 
-  Typ zawartości to `text/plain; version=0.0.4; charset=utf-8`, standardowy format ekspozycji Prometheus.
+  Typ zawartości to `text/plain; version=0.0.4; charset=utf-8`, czyli standardowy
+  format ekspozycji Prometheus.
 
   <Warning>
-  Trasa używa uwierzytelniania Gateway (zakres operatora). Nie udostępniaj jej jako publicznego, nieuwierzytelnionego punktu końcowego `/metrics`. Pobieraj z niej metryki przez tę samą ścieżkę uwierzytelniania, której używasz dla innych interfejsów API operatora.
+  Trasa korzysta z uwierzytelniania Gateway (zakres operatora, interfejs dla zaufanego operatora). Nie udostępniaj jej jako publicznego, nieuwierzytelnionego punktu końcowego `/metrics`. Pobieraj z niej metryki przez tę samą ścieżkę uwierzytelniania, której używasz w przypadku innych interfejsów API operatora.
   </Warning>
 
-  Informacje o śladach, logach, wypychaniu OTLP i atrybutach semantycznych OpenTelemetry GenAI znajdziesz w sekcji [eksport OpenTelemetry](/pl/gateway/opentelemetry).
+  Informacje o śladach, dziennikach, wysyłaniu OTLP i atrybutach semantycznych OpenTelemetry GenAI znajdziesz w sekcji [Eksport OpenTelemetry](/pl/gateway/opentelemetry).
 
   ## Szybki start
 
   <Steps>
-  <Step title="Zainstaluj wtyczkę">
+  <Step title="Zainstaluj plugin">
     ```bash
     openclaw plugins install clawhub:@openclaw/diagnostics-prometheus
     ```
   </Step>
-  <Step title="Włącz wtyczkę">
+  <Step title="Włącz plugin">
     <Tabs>
       <Tab title="Konfiguracja">
         ```json5
@@ -63,10 +67,10 @@ x-i18n:
     </Tabs>
   </Step>
   <Step title="Uruchom ponownie Gateway">
-    Trasa HTTP jest rejestrowana podczas uruchamiania wtyczki, więc po włączeniu wykonaj ponowne wczytanie.
+    Trasa HTTP jest rejestrowana podczas uruchamiania pluginu, dlatego po jego włączeniu wykonaj ponowne załadowanie.
   </Step>
-  <Step title="Pobieraj metryki z chronionej trasy">
-    Wyślij to samo uwierzytelnianie Gateway, którego używają klienci operatora:
+  <Step title="Pobierz metryki z chronionej trasy">
+    Prześlij te same dane uwierzytelniające Gateway, których używają klienty operatora:
 
     ```bash
     curl -H "Authorization: Bearer $OPENCLAW_GATEWAY_TOKEN" \
@@ -90,7 +94,7 @@ x-i18n:
 </Steps>
 
 <Note>
-Wymagane jest `diagnostics.enabled: true`. Bez tego Plugin nadal rejestruje trasę HTTP, ale żadne zdarzenia diagnostyczne nie trafiają do eksportera, więc odpowiedź jest pusta.
+Domyślna wartość `diagnostics.enabled` to `true`; ustaw ją na `false` tylko w ściśle ograniczonych środowiskach. Jeśli ma wartość `false`, plugin nadal rejestruje trasę HTTP, ale żadne zdarzenia diagnostyczne nie trafiają do eksportera, więc odpowiedź jest pusta.
 </Note>
 
 ## Eksportowane metryki
@@ -105,6 +109,7 @@ Wymagane jest `diagnostics.enabled: true`. Bez tego Plugin nadal rejestruje tras
 | `openclaw_model_tokens_total`                    | licznik   | `agent`, `channel`, `model`, `provider`, `token_type`                                     |
 | `openclaw_gen_ai_client_token_usage`             | histogram | `model`, `provider`, `token_type`                                                         |
 | `openclaw_model_cost_usd_total`                  | licznik   | `agent`, `channel`, `model`, `provider`                                                   |
+| `openclaw_model_usage_duration_seconds`          | histogram | `agent`, `channel`, `model`, `provider`                                                   |
 | `openclaw_skill_used_total`                      | licznik   | `activation`, `agent`, `skill`, `source`                                                  |
 | `openclaw_tool_execution_total`                  | licznik   | `error_category`, `outcome`, `params_kind`, `tool`, `tool_owner`, `tool_source`           |
 | `openclaw_tool_execution_duration_seconds`       | histogram | `error_category`, `outcome`, `params_kind`, `tool`, `tool_owner`, `tool_source`           |
@@ -126,105 +131,107 @@ Wymagane jest `diagnostics.enabled: true`. Bez tego Plugin nadal rejestruje tras
 | `openclaw_talk_event_total`                      | licznik   | `brain`, `event_type`, `mode`, `provider`, `transport`                                    |
 | `openclaw_talk_event_duration_seconds`           | histogram | `brain`, `event_type`, `mode`, `provider`, `transport`                                    |
 | `openclaw_talk_audio_bytes`                      | histogram | `brain`, `event_type`, `mode`, `provider`, `transport`                                    |
-| `openclaw_queue_lane_size`                       | miernik   | `lane`                                                                                    |
+| `openclaw_queue_lane_size`                       | wskaźnik  | `lane`                                                                                    |
 | `openclaw_queue_lane_wait_seconds`               | histogram | `lane`                                                                                    |
 | `openclaw_session_state_total`                   | licznik   | `reason`, `state`                                                                         |
-| `openclaw_session_queue_depth`                   | miernik   | `state`                                                                                   |
+| `openclaw_session_queue_depth`                   | wskaźnik  | `state`                                                                                   |
 | `openclaw_session_turn_created_total`            | licznik   | `agent`, `channel`, `trigger`                                                             |
 | `openclaw_session_stuck_total`                   | licznik   | `reason`, `state`                                                                         |
 | `openclaw_session_stuck_age_seconds`             | histogram | `reason`, `state`                                                                         |
 | `openclaw_session_recovery_total`                | licznik   | `action`, `active_work_kind`, `state`, `status`                                           |
 | `openclaw_session_recovery_age_seconds`          | histogram | `action`, `active_work_kind`, `state`, `status`                                           |
 | `openclaw_liveness_warning_total`                | licznik   | `reason`                                                                                  |
-| `openclaw_liveness_sessions`                     | miernik   | `state`                                                                                   |
+| `openclaw_liveness_sessions`                     | wskaźnik  | `state`                                                                                   |
 | `openclaw_liveness_event_loop_delay_p99_seconds` | histogram | `reason`                                                                                  |
 | `openclaw_liveness_event_loop_delay_max_seconds` | histogram | `reason`                                                                                  |
 | `openclaw_liveness_event_loop_utilization_ratio` | histogram | `reason`                                                                                  |
 | `openclaw_liveness_cpu_core_ratio`               | histogram | `reason`                                                                                  |
 | `openclaw_payload_large_total`                   | licznik   | `action`, `channel`, `plugin`, `reason`, `surface`                                        |
 | `openclaw_payload_large_bytes`                   | histogram | `action`, `channel`, `plugin`, `reason`, `surface`                                        |
-| `openclaw_memory_bytes`                          | miernik   | `kind`                                                                                    |
+| `openclaw_memory_bytes`                          | wskaźnik  | `kind`                                                                                    |
 | `openclaw_memory_rss_bytes`                      | histogram | brak                                                                                      |
 | `openclaw_memory_pressure_total`                 | licznik   | `level`, `reason`                                                                         |
 | `openclaw_telemetry_exporter_total`              | licznik   | `exporter`, `reason`, `signal`, `status`                                                  |
 | `openclaw_prometheus_series_dropped_total`       | licznik   | brak                                                                                      |
+| `openclaw_diagnostic_async_queue_dropped_total`  | licznik   | `drop_class`                                                                              |
+| `openclaw_diagnostic_async_queue_length`         | wskaźnik  | brak                                                                                      |
 
-## Zasady etykiet
+## Zasady dotyczące etykiet
 
 <AccordionGroup>
   <Accordion title="Ograniczone etykiety o niskiej kardynalności">
-    Etykiety Prometheus pozostają ograniczone i mają niską kardynalność. Eksporter nie emituje surowych identyfikatorów diagnostycznych, takich jak `runId`, `sessionKey`, `sessionId`, `callId`, `toolCallId`, identyfikatory wiadomości, identyfikatory czatów ani identyfikatory żądań dostawcy.
+    Etykiety Prometheus pozostają ograniczone i mają niską kardynalność. Eksporter nie emituje nieprzetworzonych identyfikatorów diagnostycznych, takich jak `runId`, `sessionKey`, `sessionId`, `callId`, `toolCallId`, identyfikatory wiadomości, identyfikatory czatów ani identyfikatory żądań dostawcy.
 
-    Wartości etykiet są redagowane i muszą być zgodne z polityką znaków o niskiej kardynalności OpenClaw. Wartości, które nie spełniają tej polityki, są zastępowane przez `unknown`, `other` albo `none`, zależnie od metryki. Etykiety wyglądające jak zakresowe klucze sesji agenta również są zastępowane przez `unknown`.
+    Wartości etykiet są redagowane i muszą być zgodne z zasadami OpenClaw dotyczącymi znaków dozwolonych w wartościach o niskiej kardynalności. Wartości, które nie spełniają tych zasad, są zastępowane przez `unknown`, `other` lub `none`, zależnie od metryki. Etykiety przypominające klucze sesji agenta z określonym zakresem są również zastępowane przez `unknown`.
 
   </Accordion>
-  <Accordion title="Limit serii i rozliczanie przepełnienia">
-    Eksporter ogranicza przechowywane w pamięci szeregi czasowe do **2048** serii łącznie dla liczników, mierników i histogramów. Nowe serie ponad ten limit są odrzucane, a `openclaw_prometheus_series_dropped_total` jest zwiększane o jeden za każdym razem.
+  <Accordion title="Limit serii i rozliczanie nadmiaru">
+    Eksporter ogranicza liczbę przechowywanych w pamięci szeregów czasowych do **2048** łącznie dla liczników, mierników i histogramów. Nowe szeregi przekraczające ten limit są odrzucane, a wartość `openclaw_prometheus_series_dropped_total` jest za każdym razem zwiększana o jeden.
 
-    Obserwuj ten licznik jako jednoznaczny sygnał, że atrybut wyżej w potoku przepuszcza wartości o wysokiej kardynalności. Eksporter nigdy nie podnosi limitu automatycznie; jeśli licznik rośnie, napraw źródło zamiast wyłączać limit.
+    Obserwuj ten licznik jako jednoznaczny sygnał, że atrybut na wcześniejszym etapie przepływu powoduje wyciek wartości o wysokiej kardynalności. Eksporter nigdy nie zwiększa limitu automatycznie; jeśli licznik rośnie, napraw źródło zamiast wyłączać limit.
 
   </Accordion>
   <Accordion title="Co nigdy nie pojawia się w danych wyjściowych Prometheus">
-    - tekst promptu, tekst odpowiedzi, dane wejściowe narzędzi, dane wyjściowe narzędzi, prompty systemowe
-    - transkrypcje rozmów, ładunki audio, identyfikatory połączeń, identyfikatory pokojów, tokeny przekazania, identyfikatory tur i surowe identyfikatory sesji
-    - surowe identyfikatory żądań dostawcy (tylko ograniczone skróty, tam gdzie ma to zastosowanie, w spanach — nigdy w metrykach)
+    - teksty promptów, teksty odpowiedzi, dane wejściowe narzędzi, dane wyjściowe narzędzi, prompty systemowe
+    - transkrypcje rozmów, dane audio, identyfikatory połączeń, identyfikatory pokojów, tokeny przekazania, identyfikatory tur i nieprzetworzone identyfikatory sesji
+    - nieprzetworzone identyfikatory żądań dostawcy (tylko skróty o ograniczonej liczbie wartości, tam gdzie ma to zastosowanie, w spanach — nigdy w metrykach)
     - klucze sesji i identyfikatory sesji
     - nazwy hostów, ścieżki plików, wartości sekretów
 
   </Accordion>
 </AccordionGroup>
 
-## Przykłady PromQL
+## Przepisy PromQL
 
 ```promql
-# Tokens per minute, split by provider
+# Tokeny na minutę, z podziałem według dostawcy
 sum by (provider) (rate(openclaw_model_tokens_total[1m]))
 
-# Spend (USD) over the last hour, by model
+# Wydatki (USD) w ciągu ostatniej godziny, według modelu
 sum by (model) (increase(openclaw_model_cost_usd_total[1h]))
 
-# 95th percentile model run duration
+# 95. percentyl czasu trwania uruchomienia modelu
 histogram_quantile(
   0.95,
   sum by (le, provider, model)
     (rate(openclaw_run_duration_seconds_bucket[5m]))
 )
 
-# Queue wait time SLO (95p under 2s)
+# SLO czasu oczekiwania w kolejce (95. percentyl poniżej 2 s)
 histogram_quantile(
   0.95,
   sum by (le, lane) (rate(openclaw_queue_lane_wait_seconds_bucket[5m]))
 ) < 2
 
-# Skill usage, split by bounded source
+# Użycie Skill, z podziałem według ograniczonego zbioru źródeł
 sum by (skill, source) (increase(openclaw_skill_used_total[24h]))
 
-# Dropped Prometheus series (cardinality alarm)
+# Odrzucone szeregi Prometheus (alarm kardynalności)
 increase(openclaw_prometheus_series_dropped_total[15m]) > 0
 ```
 
 <Tip>
-Preferuj `gen_ai_client_token_usage` w panelach między dostawcami: jest zgodne z konwencjami semantycznymi OpenTelemetry GenAI i spójne z metrykami z usług GenAI innych niż OpenClaw.
+W przypadku pulpitów obejmujących wielu dostawców preferuj `gen_ai_client_token_usage`: metryka ta jest zgodna z konwencjami semantycznymi GenAI projektu OpenTelemetry i spójna z metrykami usług GenAI innych niż OpenClaw.
 </Tip>
 
 ## Wybór między eksportem Prometheus a OpenTelemetry
 
-OpenClaw obsługuje oba interfejsy niezależnie. Możesz uruchomić jeden z nich, oba albo żaden.
+OpenClaw obsługuje oba mechanizmy niezależnie. Można używać jednego z nich, obu lub żadnego.
 
 <Tabs>
   <Tab title="diagnostics-prometheus">
-    - Model **pull**: Prometheus odpytuje `/api/diagnostics/prometheus`.
-    - Nie wymaga zewnętrznego kolektora.
-    - Uwierzytelnianie odbywa się przez standardowe uwierzytelnianie Gateway.
-    - Interfejs obejmuje tylko metryki (bez trace’ów ani logów).
-    - Najlepsze dla stosów już zestandaryzowanych na Prometheus + Grafana.
+    - Model **pull**: Prometheus pobiera dane z `/api/diagnostics/prometheus`.
+    - Zewnętrzny kolektor nie jest wymagany.
+    - Uwierzytelnianie odbywa się przy użyciu standardowego mechanizmu uwierzytelniania Gateway.
+    - Udostępniane są tylko metryki (bez śladów i dzienników).
+    - Najlepsze rozwiązanie dla stosów już ustandaryzowanych na Prometheus + Grafana.
 
   </Tab>
   <Tab title="diagnostics-otel">
-    - Model **push**: OpenClaw wysyła OTLP/HTTP do kolektora lub backendu zgodnego z OTLP.
-    - Interfejs obejmuje metryki, trace’y i logi.
-    - Mostkuje do Prometheus przez OpenTelemetry Collector (eksporter `prometheus` lub `prometheusremotewrite`), gdy potrzebujesz obu.
-    - Pełny katalog znajdziesz w [eksporcie OpenTelemetry](/pl/gateway/opentelemetry).
+    - Model **push**: OpenClaw wysyła dane przez OTLP/HTTP do kolektora lub zaplecza zgodnego z OTLP.
+    - Udostępniane są metryki, ślady i dzienniki.
+    - Umożliwia integrację z Prometheus za pośrednictwem kolektora OpenTelemetry (eksporter `prometheus` lub `prometheusremotewrite`), gdy potrzebne są oba mechanizmy.
+    - Pełny katalog zawiera sekcja [Eksport OpenTelemetry](/pl/gateway/opentelemetry).
 
   </Tab>
 </Tabs>
@@ -233,25 +240,25 @@ OpenClaw obsługuje oba interfejsy niezależnie. Możesz uruchomić jeden z nich
 
 <AccordionGroup>
   <Accordion title="Pusta treść odpowiedzi">
-    - Sprawdź `diagnostics.enabled: true` w konfiguracji.
-    - Potwierdź, że Plugin jest włączony i załadowany za pomocą `openclaw plugins list --enabled`.
-    - Wygeneruj trochę ruchu; liczniki i histogramy emitują wiersze dopiero po co najmniej jednym zdarzeniu.
+    - Sprawdź, czy `diagnostics.enabled` nie ustawiono w konfiguracji na `false` (wartość domyślna to `true`).
+    - Potwierdź za pomocą polecenia `openclaw plugins list --enabled`, że Plugin jest włączony i załadowany.
+    - Wygeneruj ruch; liczniki i histogramy generują wiersze dopiero po wystąpieniu co najmniej jednego zdarzenia.
 
   </Accordion>
   <Accordion title="401 / brak autoryzacji">
-    Punkt końcowy wymaga zakresu operatora Gateway (`auth: "gateway"` z `gatewayRuntimeScopeSurface: "trusted-operator"`). Użyj tego samego tokenu lub hasła, którego Prometheus używa dla dowolnej innej trasy operatora Gateway. Nie ma publicznego trybu bez uwierzytelniania.
+    Punkt końcowy wymaga zakresu operatora Gateway (`auth: "gateway"` z `gatewayRuntimeScopeSurface: "trusted-operator"`). Użyj tego samego tokenu lub hasła, którego Prometheus używa dla pozostałych tras operatora Gateway. Publiczny tryb bez uwierzytelniania nie jest dostępny.
   </Accordion>
-  <Accordion title="`openclaw_prometheus_series_dropped_total` rośnie">
-    Nowy atrybut przekracza limit **2048** serii. Sprawdź ostatnie metryki pod kątem etykiety o nieoczekiwanie wysokiej kardynalności i napraw ją u źródła. Eksporter celowo odrzuca nowe serie zamiast po cichu przepisywać etykiety.
+  <Accordion title="Wartość `openclaw_prometheus_series_dropped_total` rośnie">
+    Nowy atrybut przekracza limit **2048** szeregów. Sprawdź ostatnie metryki pod kątem etykiety o nieoczekiwanie wysokiej kardynalności i usuń problem u źródła. Eksporter celowo odrzuca nowe szeregi zamiast niejawnie przepisywać etykiety.
   </Accordion>
-  <Accordion title="Prometheus pokazuje nieaktualne serie po restarcie">
-    Plugin przechowuje stan wyłącznie w pamięci. Po restarcie Gateway liczniki resetują się do zera, a mierniki wznawiają działanie od następnej zgłoszonej wartości. Użyj PromQL `rate()` i `increase()`, aby czysto obsłużyć resety.
+  <Accordion title="Prometheus pokazuje nieaktualne szeregi po ponownym uruchomieniu">
+    Plugin przechowuje stan wyłącznie w pamięci. Po ponownym uruchomieniu Gateway liczniki są zerowane, a mierniki rozpoczynają od kolejnej zgłoszonej wartości. Używaj funkcji PromQL `rate()` i `increase()`, aby prawidłowo obsługiwać zerowania.
   </Accordion>
 </AccordionGroup>
 
-## Powiązane
+## Powiązane materiały
 
-- [Eksport diagnostyki](/pl/gateway/diagnostics) — lokalne archiwum zip diagnostyki do pakietów wsparcia
+- [Eksport diagnostyki](/pl/gateway/diagnostics) — lokalne archiwum ZIP z diagnostyką dołączane do pakietów pomocy technicznej
 - [Kondycja i gotowość](/pl/gateway/health) — sondy `/healthz` i `/readyz`
 - [Rejestrowanie](/pl/logging) — rejestrowanie oparte na plikach
-- [Eksport OpenTelemetry](/pl/gateway/opentelemetry) — push OTLP dla trace’ów, metryk i logów
+- [Eksport OpenTelemetry](/pl/gateway/opentelemetry) — wysyłanie przez OTLP śladów, metryk i dzienników

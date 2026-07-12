@@ -1,58 +1,48 @@
 ---
 read_when:
-    - Membuat atau menandatangani build debug mac
-summary: Langkah penandatanganan untuk build debug macOS yang dihasilkan oleh skrip pengemasan
+    - Membuat atau menandatangani build debug Mac
+summary: Langkah-langkah penandatanganan untuk build debug macOS yang dihasilkan oleh skrip pengemasan
 title: Penandatanganan macOS
 x-i18n:
-    generated_at: "2026-06-27T17:43:20Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:21:47Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: df4ee44b6bdf09a24e0d05ed4354e2cb573372d12a667b4fcdfd7d6f88291082
+    source_hash: 663c08c031417d5a9f048581421e4fe9f69480917582f74746af675bcca5cf95
     source_path: platforms/mac/signing.md
     workflow: 16
 ---
 
 # penandatanganan mac (build debug)
 
-Aplikasi ini biasanya dibangun dari [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh), yang sekarang:
+[`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) membangun dan mengemas aplikasi ke jalur tetap (`dist/OpenClaw.app`), lalu memanggil [`scripts/codesign-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/codesign-mac-app.sh) untuk menandatanganinya. Izin TCC terikat pada ID bundel dan tanda tangan kode; menjaga keduanya tetap stabil (serta aplikasi tetap berada di jalur yang sama) di setiap pembangunan ulang mencegah macOS melupakan pemberian izin TCC (notifikasi, aksesibilitas, perekaman layar, mikrofon, pengenalan ucapan).
 
-- menetapkan pengenal bundel debug yang stabil: `ai.openclaw.mac.debug`
-- menulis Info.plist dengan id bundel tersebut (timpa melalui `BUNDLE_ID=...`)
-- memanggil [`scripts/codesign-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/codesign-mac-app.sh) untuk menandatangani biner utama dan bundel aplikasi sehingga macOS memperlakukan setiap build ulang sebagai bundel bertanda tangan yang sama dan mempertahankan izin TCC (notifikasi, aksesibilitas, perekaman layar, mikrofon, ucapan). Untuk izin yang stabil, gunakan identitas penandatanganan sungguhan; ad-hoc bersifat opt-in dan rapuh (lihat [izin macOS](/id/platforms/mac/permissions)).
-- menggunakan `CODESIGN_TIMESTAMP=auto` secara default; ini mengaktifkan timestamp tepercaya untuk tanda tangan Developer ID. Atur `CODESIGN_TIMESTAMP=off` untuk melewati pemberian timestamp (build debug offline).
-- menyuntikkan metadata build ke Info.plist: `OpenClawBuildTimestamp` (UTC) dan `OpenClawGitCommit` (hash pendek) sehingga panel About dapat menampilkan build, git, dan kanal debug/release.
-- **Packaging secara default menggunakan Node 24**: skrip menjalankan build TS dan build Control UI. Node 22 LTS, saat ini `22.19+`, tetap didukung untuk kompatibilitas.
-- membaca `SIGN_IDENTITY` dari lingkungan. Tambahkan `export SIGN_IDENTITY="Apple Development: Your Name (TEAMID)"` (atau sertifikat Developer ID Application Anda) ke shell rc Anda agar selalu menandatangani dengan sertifikat Anda. Penandatanganan ad-hoc memerlukan opt-in eksplisit melalui `ALLOW_ADHOC_SIGNING=1` atau `SIGN_IDENTITY="-"` (tidak direkomendasikan untuk pengujian izin).
-- menjalankan audit Team ID setelah penandatanganan dan gagal jika ada Mach-O di dalam bundel aplikasi yang ditandatangani oleh Team ID berbeda. Atur `SKIP_TEAM_ID_CHECK=1` untuk melewatinya.
+- Pengidentifikasi bundel debug secara default adalah `ai.openclaw.mac.debug` (ganti dengan `BUNDLE_ID=...`).
+- Node: `>=22.19.0 <23` atau `>=23.11.0` (`engines` dalam `package.json` repositori). Pengemas juga membangun UI Kontrol (`pnpm ui:build`).
+- Secara default memerlukan identitas penandatanganan yang valid; skrip penandatanganan kode berhenti dengan galat jika tidak menemukannya dan `ALLOW_ADHOC_SIGNING` tidak ditetapkan. Penandatanganan ad hoc (`SIGN_IDENTITY="-"`) harus diaktifkan secara eksplisit dan tidak mempertahankan izin TCC di setiap pembangunan ulang. Lihat [izin macOS](/id/platforms/mac/permissions).
+- Membaca `SIGN_IDENTITY` dari lingkungan (misalnya `export SIGN_IDENTITY="Apple Development: Your Name (TEAMID)"`, atau sertifikat Developer ID Application). Tanpa nilai tersebut, `codesign-mac-app.sh` memilih identitas secara otomatis dengan urutan berikut: Developer ID Application, Apple Distribution, Apple Development, lalu identitas penandatanganan kode valid pertama yang ditemukan.
+- `CODESIGN_TIMESTAMP=auto` (default) mengaktifkan stempel waktu tepercaya hanya untuk tanda tangan Developer ID Application. Tetapkan ke `on`/`off` untuk memaksakan pengaktifan atau penonaktifannya.
+- Menambahkan `OpenClawBuildTimestamp` (ISO8601 UTC) dan `OpenClawGitCommit` (hash pendek, `unknown` jika tidak tersedia) ke Info.plist agar tab Tentang dapat menampilkan build, git, serta saluran debug/rilis.
+- Menjalankan audit ID Tim setelah penandatanganan dan akan gagal jika ada Mach-O di dalam bundel yang memiliki ID Tim berbeda. Tetapkan `SKIP_TEAM_ID_CHECK=1` untuk melewatinya.
 
 ## Penggunaan
 
 ```bash
-# from repo root
-scripts/package-mac-app.sh               # auto-selects identity; errors if none found
-SIGN_IDENTITY="Developer ID Application: Your Name" scripts/package-mac-app.sh   # real cert
-ALLOW_ADHOC_SIGNING=1 scripts/package-mac-app.sh    # ad-hoc (permissions will not stick)
-SIGN_IDENTITY="-" scripts/package-mac-app.sh        # explicit ad-hoc (same caveat)
-DISABLE_LIBRARY_VALIDATION=1 scripts/package-mac-app.sh   # dev-only Sparkle Team ID mismatch workaround
+# dari root repositori
+scripts/package-mac-app.sh                                                      # memilih identitas secara otomatis; galat jika tidak ditemukan
+SIGN_IDENTITY="Developer ID Application: Your Name" scripts/package-mac-app.sh   # sertifikat asli
+ALLOW_ADHOC_SIGNING=1 scripts/package-mac-app.sh                                 # ad hoc (izin tidak akan dipertahankan)
+SIGN_IDENTITY="-" scripts/package-mac-app.sh                                     # ad hoc eksplisit (dengan peringatan yang sama)
+DISABLE_LIBRARY_VALIDATION=1 scripts/package-mac-app.sh                          # solusi sementara khusus pengembangan untuk ketidakcocokan ID Tim Sparkle
 ```
 
-### Catatan Penandatanganan Ad-hoc
+### Catatan penandatanganan ad hoc
 
-Saat menandatangani dengan `SIGN_IDENTITY="-"` (ad-hoc), skrip secara otomatis menonaktifkan **Hardened Runtime** (`--options runtime`). Ini diperlukan untuk mencegah crash saat aplikasi mencoba memuat framework tertanam (seperti Sparkle) yang tidak memakai Team ID yang sama. Tanda tangan ad-hoc juga merusak persistensi izin TCC; lihat [izin macOS](/id/platforms/mac/permissions) untuk langkah pemulihan.
+`SIGN_IDENTITY="-"` menonaktifkan Hardened Runtime (`--options runtime`) untuk mencegah kerusakan saat aplikasi memuat kerangka kerja tersemat (seperti Sparkle) yang tidak menggunakan ID Tim yang sama. Tanda tangan ad hoc juga menyebabkan izin TCC tidak dipertahankan; lihat [izin macOS](/id/platforms/mac/permissions) untuk langkah-langkah pemulihan.
 
-## Metadata build untuk About
+## Metadata build untuk Tentang
 
-`package-mac-app.sh` memberi cap pada bundel dengan:
-
-- `OpenClawBuildTimestamp`: ISO8601 UTC pada waktu packaging
-- `OpenClawGitCommit`: hash git pendek (atau `unknown` jika tidak tersedia)
-
-Tab About membaca kunci-kunci ini untuk menampilkan versi, tanggal build, commit git, dan apakah ini build debug (melalui `#if DEBUG`). Jalankan packager untuk menyegarkan nilai-nilai ini setelah perubahan kode.
-
-## Mengapa
-
-Izin TCC terikat pada pengenal bundel _dan_ tanda tangan kode. Build debug tanpa tanda tangan dengan UUID yang berubah menyebabkan macOS melupakan izin setelah setiap build ulang. Menandatangani biner (ad-hoc secara default) dan mempertahankan id/jalur bundel tetap (`dist/OpenClaw.app`) mempertahankan izin antar-build, sesuai dengan pendekatan VibeTunnel.
+Tab Tentang membaca `OpenClawBuildTimestamp` dan `OpenClawGitCommit` dari Info.plist untuk menampilkan versi, tanggal build, commit git, dan apakah build tersebut DEBUG (melalui `#if DEBUG`). Jalankan kembali pengemas setelah perubahan kode untuk memperbarui nilai-nilai ini.
 
 ## Terkait
 

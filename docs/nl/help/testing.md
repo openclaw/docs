@@ -1,61 +1,58 @@
 ---
 read_when:
     - Tests lokaal of in CI uitvoeren
-    - Regressietests toevoegen voor model-/providerfouten
+    - Regressietests toevoegen voor model-/providerbugs
     - Gateway- en agentgedrag debuggen
-summary: 'Testkit: unit-/e2e-/live-suites, Docker-runners en wat elke test dekt'
+summary: 'Testpakket: unit-/e2e-/live-testsuites, Docker-runners en wat elke test omvat'
 title: Testen
 x-i18n:
-    generated_at: "2026-07-04T03:55:33Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:54:24Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 09c125da9a4a4294d51f36f67901ef74929d9b6561d8a4fd605202497416161b
+    source_hash: 67eae48093add9188b07543080cdd0be41ae3d7b1c4a53ab187d17af6f6b2aeb
     source_path: help/testing.md
     workflow: 16
 ---
 
-OpenClaw heeft drie Vitest-suites (unit/integratie, e2e, live) en een kleine set
-Docker-runners. Dit document is een gids voor "hoe we testen":
-
-- Wat elke suite dekt (en wat deze bewust _niet_ dekt).
-- Welke commando's je uitvoert voor veelvoorkomende workflows (lokaal, pre-push, debuggen).
-- Hoe live tests inloggegevens ontdekken en modellen/providers selecteren.
-- Hoe je regressies toevoegt voor echte model-/providerproblemen.
+OpenClaw heeft drie Vitest-suites (unit/integratie, e2e, live) plus Docker-
+runners. Deze pagina beschrijft wat elke suite omvat, welke opdracht je voor
+een bepaalde workflow uitvoert, hoe livetests inloggegevens vinden en hoe je
+regressietests toevoegt voor praktijkproblemen met providers/modellen.
 
 <Note>
-**QA-stack (qa-lab, qa-channel, live transport lanes)** wordt afzonderlijk gedocumenteerd:
+De **QA-stack (qa-lab, qa-channel, live transport-lanes)** wordt afzonderlijk gedocumenteerd:
 
-- [QA-overzicht](/nl/concepts/qa-e2e-automation) - architectuur, commandosurface, scenario's schrijven.
-- [Matrix-QA](/nl/concepts/qa-matrix) - referentie voor `pnpm openclaw qa matrix`.
-- [Maturity scorecard](/nl/maturity/scorecard) - hoe QA-bewijs voor releases stabiliteits- en LTS-beslissingen ondersteunt.
-- [QA-kanaal](/nl/channels/qa-channel) - de synthetische transport-Plugin die wordt gebruikt door repo-ondersteunde scenario's.
+- [QA-overzicht](/nl/concepts/qa-e2e-automation) - architectuur, opdrachtinterface en scenario-ontwikkeling.
+- [Matrix-QA](/nl/concepts/qa-matrix) - naslag voor `pnpm openclaw qa matrix`.
+- [Volwassenheidsscorekaart](/nl/maturity/scorecard) - hoe QA-bewijs voor releases stabiliteits- en LTS-beslissingen ondersteunt.
+- [QA-kanaal](/nl/channels/qa-channel) - de synthetische transportplugin die wordt gebruikt door scenario's uit de repository.
 
-Deze pagina behandelt het uitvoeren van de reguliere testsuites en Docker/Parallels-runners. De sectie met QA-specifieke runners hieronder ([QA-specifieke runners](#qa-specific-runners)) vermeldt de concrete `qa`-aanroepen en verwijst terug naar de referenties hierboven.
+Deze pagina behandelt de reguliere testsuites en Docker/Parallels-runners. [QA-specifieke runners](#qa-specific-runners) hieronder vermeldt de concrete `qa`-aanroepen en verwijst terug naar de bovenstaande naslagdocumentatie.
 </Note>
 
 ## Snel aan de slag
 
-De meeste dagen:
+Op de meeste dagen:
 
-- Volledige gate (verwacht vóór push): `pnpm build && pnpm check && pnpm check:test-types && pnpm test`
-- Snellere lokale volledige suite-run op een ruime machine: `pnpm test:max`
-- Directe Vitest-watchloop: `pnpm test:watch`
-- Directe bestandstargeting routeert nu ook extension-/channel-paden: `pnpm test extensions/discord/src/monitor/message-handler.preflight.test.ts`
-- Geef eerst de voorkeur aan gerichte runs wanneer je aan één failure werkt.
-- Docker-ondersteunde QA-site: `pnpm qa:lab:up`
-- Linux-VM-ondersteunde QA-lane: `pnpm openclaw qa suite --runner multipass --scenario channel-chat-baseline`
+- Volledige controle (verwacht vóór pushen): `pnpm build && pnpm check && pnpm check:test-types && pnpm test`
+- Snellere lokale uitvoering van de volledige suite op een ruim bemeten machine: `pnpm test:max`
+- Directe Vitest-watchlus: `pnpm test:watch`
+- Directe bestandsselectie routeert ook plugin-/kanaalpaden: `pnpm test extensions/discord/src/monitor/message-handler.preflight.test.ts`
+- Geef bij het itereren op één fout eerst de voorkeur aan gerichte uitvoeringen.
+- Door Docker ondersteunde QA-site: `pnpm qa:lab:up`
+- Door een Linux-VM ondersteunde QA-lane: `pnpm openclaw qa suite --runner multipass --scenario channel-chat-baseline`
 
-Wanneer je tests aanraakt of extra vertrouwen wilt:
+Wanneer je tests wijzigt of extra zekerheid wilt:
 
-- Coverage-gate: `pnpm test:coverage`
+- Informatief V8-dekkingsrapport: `pnpm test:coverage`
 - E2E-suite: `pnpm test:e2e`
 
 ## Tijdelijke testmappen
 
-Geef de voorkeur aan de gedeelde helpers in `test/helpers/temp-dir.ts` voor
-test-eigen tijdelijke mappen. Ze maken eigenaarschap expliciet en houden cleanup in dezelfde
-testlevenscyclus:
+Gebruik de gedeelde helpers in `test/helpers/temp-dir.ts` voor tijdelijke mappen
+die eigendom zijn van tests, zodat het eigendom expliciet is en opschoning
+binnen de testlevenscyclus blijft:
 
 ```ts
 import { afterEach } from "vitest";
@@ -69,253 +66,279 @@ it("uses a temp workspace", () => {
 });
 ```
 
-`useAutoCleanupTempDirTracker(afterEach)` stelt bewust geen handmatige cleanup-methode beschikbaar; Vitest
-is eigenaar van cleanup na elke test. Bestaande lower-level helpers blijven beschikbaar voor tests die
-nog niet zijn verplaatst, maar nieuwe en gemigreerde tests moeten de automatisch opschonende
-tracker gebruiken. Vermijd nieuw handmatig gebruik van `makeTempDir`, `cleanupTempDirs` of
-`createTempDirTracker` en vermijd nieuwe kale `fs.mkdtemp*`-aanroepen in tests,
-tenzij een case expliciet raw temp-dir-gedrag verifieert. Voeg een auditeerbare
-allow-comment toe met een concrete reden wanneer een test bewust een kale tijdelijke
-map nodig heeft:
+`useAutoCleanupTempDirTracker(afterEach)` biedt bewust geen handmatige
+opschoningsmethode: Vitest beheert de opschoning na elke test. Oudere helpers
+op lager niveau (`makeTempDir`, `cleanupTempDirs`, `createTempDirTracker`)
+bestaan nog voor tests die niet zijn gemigreerd; vermijd nieuw gebruik ervan
+en vermijd nieuwe directe aanroepen van `fs.mkdtemp*`, tenzij een test
+expliciet het onbewerkte gedrag van tijdelijke mappen verifieert. Wanneer een
+direct aangemaakte tijdelijke map echt nodig is, voeg je een controleerbare
+toestemmingsopmerking met een reden toe:
 
 ```ts
 // openclaw-temp-dir: allow verifies raw fs cleanup behavior
 const workspace = fs.mkdtempSync(prefix);
 ```
 
-Voor migratiezichtbaarheid rapporteert `node scripts/report-test-temp-creations.mjs`
-nieuwe kale temp-dir-aanmaak en nieuw handmatig gebruik van gedeelde helpers in toegevoegde diffregels
-zonder bestaande cleanup-stijlen te blokkeren. De bestandsscope volgt bewust
-dezelfde testpadclassificatie die door `scripts/changed-lanes.mjs` wordt gebruikt,
-in plaats van een aparte test-helper-bestandsnaamheuristiek te onderhouden, terwijl
-de gedeelde helperimplementatie zelf wordt overgeslagen. `check:changed` voert dit rapport uit voor
-gewijzigde testpaden als een waarschuwing-only CI-signaal; bevindingen zijn GitHub-waarschuwingsannotaties,
-geen failures.
+`node scripts/report-test-temp-creations.mjs` rapporteert nieuwe directe
+aanmaak van tijdelijke mappen en nieuw handmatig gebruik van de gedeelde
+helper in toegevoegde diffregels, zonder bestaande opschoningsstijlen te
+blokkeren. Het volgt dezelfde classificatie van testpaden als
+`scripts/changed-lanes.mjs` en slaat de implementatie van de gedeelde helper
+zelf over. `check:changed` voert dit rapport voor gewijzigde testpaden uit als
+CI-signaal dat alleen waarschuwt (GitHub-waarschuwingsannotaties, geen fouten).
+
+## Live- en Docker/Parallels-workflows
 
 Bij het debuggen van echte providers/modellen (vereist echte inloggegevens):
 
-- Live suite (modellen + Gateway tool-/image-probes): `pnpm test:live`
-- Target één live bestand stil: `pnpm test:live -- src/agents/models.profiles.live.test.ts`
-- Runtimeperformancerapporten: dispatch `OpenClaw Performance` met
-  `live_openai_candidate=true` voor een echte `openai/gpt-5.5` agent-turn of
-  `deep_profile=true` voor Kova CPU-/heap-/trace-artefacten. Dagelijkse geplande runs
-  publiceren mock-provider-, deep-profile- en GPT 5.5-lane-artefacten naar
-  `openclaw/clawgrit-reports` wanneer `CLAWGRIT_REPORTS_TOKEN` is geconfigureerd. Het
-  mock-provider-rapport bevat ook source-level Gateway-boot-, geheugen-,
-  plugin-pressure-, herhaalde fake-model hello-loop- en CLI-opstartcijfers.
-- Docker live model sweep: `pnpm test:docker:live-models`
-  - Elk geselecteerd model voert nu een text-turn plus een kleine file-read-achtige probe uit.
-    Modellen waarvan de metadata `image`-input adverteert, voeren ook een tiny image-turn uit.
+- Livesuite (modellen + Gateway-tool-/afbeeldingsprobes): `pnpm test:live`
+- Eén livebestand stil gericht uitvoeren: `pnpm test:live -- src/agents/models.profiles.live.test.ts`
+- Rapporten over runtimeprestaties: start `OpenClaw Performance` met
+  `live_openai_candidate=true` voor een echte agentbeurt met `openai/gpt-5.6-luna` of
+  `deep_profile=true` voor Kova-artefacten voor CPU/heap/tracering. Dagelijks geplande
+  uitvoeringen publiceren rapporten voor de mockprovider-, deep-profile- en
+  GPT-5.6 Luna-lanes naar `openclaw/clawgrit-reports` vanuit een afzonderlijke
+  publicatietaak die artefacten verwerkt; ontbrekende of ongeldige authenticatie
+  voor publicatie laat geplande uitvoeringen en uitvoeringen met
+  `profile=release` mislukken. Handmatige uitvoeringen die geen release betreffen,
+  behouden de GitHub-artefacten en behandelen rapportpublicatie als adviserend.
+  Het mockproviderrapport bevat ook broncijfers voor het opstarten van de Gateway,
+  geheugen, pluginbelasting, herhaalde hello-lussen met nepmodellen en het
+  opstarten van de CLI.
+- Docker-sweep van live modellen: `pnpm test:docker:live-models`
+  - Elk geselecteerd model voert een tekstbeurt uit plus een kleine probe die
+    lijkt op het lezen van een bestand. Modellen waarvan de metadata
+    `image`-invoer vermeldt, voeren ook een kleine afbeeldingsbeurt uit.
     Schakel de extra probes uit met `OPENCLAW_LIVE_MODEL_FILE_PROBE=0` of
-    `OPENCLAW_LIVE_MODEL_IMAGE_PROBE=0` wanneer je providerfailures isoleert.
-  - CI-coverage: dagelijkse `OpenClaw Scheduled Live And E2E Checks` en handmatige
-    `OpenClaw Release Checks` roepen allebei de herbruikbare live/E2E-workflow aan met
-    `include_live_suites: true`, wat afzonderlijke Docker live model
-    matrixjobs bevat die per provider zijn geshard.
-  - Voor gerichte CI-herhalingen dispatch je `OpenClaw Live And E2E Checks (Reusable)`
+    `OPENCLAW_LIVE_MODEL_IMAGE_PROBE=0` wanneer je providerfouten isoleert.
+  - CI-dekking: zowel de dagelijkse `OpenClaw Scheduled Live And E2E Checks`
+    als de handmatige `OpenClaw Release Checks` roepen de herbruikbare
+    live-/E2E-workflow aan met `include_live_suites: true`, inclusief
+    Docker-matrixtaken voor live modellen, opgesplitst per provider.
+  - Start voor gerichte CI-heruitvoeringen `OpenClaw Live And E2E Checks (Reusable)`
     met `include_live_suites: true` en `live_models_only: true`.
-  - Voeg nieuwe high-signal providersecrets toe aan `scripts/ci-hydrate-live-auth.sh`
-    plus `.github/workflows/openclaw-live-and-e2e-checks-reusable.yml` en de
-    geplande/release-callers daarvan.
-- Native Codex bound-chat smoke: `pnpm test:docker:live-codex-bind`
-  - Voert een Docker live lane uit tegen het Codex app-server-pad, bindt een synthetische
-    Slack-DM met `/codex bind`, oefent `/codex fast` en
-    `/codex permissions`, en verifieert daarna dat een gewone reply en een image attachment
-    via de native Plugin-binding worden gerouteerd in plaats van via ACP.
-- Codex app-server harness smoke: `pnpm test:docker:live-codex-harness`
-  - Voert Gateway agent-turns uit via de Plugin-eigen Codex app-server harness,
-    verifieert `/codex status` en `/codex models`, en oefent standaard image,
-    Cron MCP, sub-agent en Guardian-probes. Schakel de sub-agent-probe uit met
-    `OPENCLAW_LIVE_CODEX_HARNESS_SUBAGENT_PROBE=0` wanneer je andere Codex
-    app-server-failures isoleert. Voor een gerichte sub-agent-check schakel je de andere probes uit:
+  - Voeg nieuwe providergeheimen met hoge signaalwaarde toe aan
+    `scripts/ci-hydrate-live-auth.sh` plus
+    `.github/workflows/openclaw-live-and-e2e-checks-reusable.yml` en de
+    geplande/release-aanroepers daarvan.
+- Native Codex-smoketest voor gekoppelde chat: `pnpm test:docker:live-codex-bind`
+  - Voert een Docker-livelane uit tegen het app-serverpad van Codex, koppelt een
+    synthetisch Slack-privébericht met `/codex bind`, oefent `/codex fast` en
+    `/codex permissions`, en verifieert vervolgens dat een gewoon antwoord en
+    een afbeeldingsbijlage via de native pluginkoppeling worden gerouteerd in
+    plaats van via ACP.
+- Smoketest voor het Codex-app-serverharnas: `pnpm test:docker:live-codex-harness`
+  - Voert Gateway-agentbeurten uit via het harnas van de Codex-app-server dat
+    eigendom is van de plugin, verifieert `/codex status` en `/codex models`,
+    en voert standaard probes uit voor afbeeldingen, cron-MCP, subagents en
+    Guardian. Schakel de subagentprobe uit met
+    `OPENCLAW_LIVE_CODEX_HARNESS_SUBAGENT_PROBE=0` wanneer je andere fouten
+    isoleert. Schakel voor een gerichte subagentcontrole de andere probes uit:
     `OPENCLAW_LIVE_CODEX_HARNESS_IMAGE_PROBE=0 OPENCLAW_LIVE_CODEX_HARNESS_MCP_PROBE=0 OPENCLAW_LIVE_CODEX_HARNESS_GUARDIAN_PROBE=0 OPENCLAW_LIVE_CODEX_HARNESS_SUBAGENT_PROBE=1 pnpm test:docker:live-codex-harness`.
-    Dit stopt na de sub-agent-probe tenzij
+    Dit stopt na de subagentprobe, tenzij
     `OPENCLAW_LIVE_CODEX_HARNESS_SUBAGENT_ONLY=0` is ingesteld.
-- Codex on-demand install smoke: `pnpm test:docker:codex-on-demand`
-  - Installeert de verpakte OpenClaw-tarball in Docker, voert OpenAI API-key
-    onboarding uit en verifieert dat de Codex-Plugin plus de `@openai/codex`-dependency
-    on demand zijn gedownload naar de beheerde npm-projectroot.
-- Live Plugin tool dependency smoke: `pnpm test:docker:live-plugin-tool`
-  - Pakt een fixture-Plugin met een echte `slugify`-dependency, installeert die via
-    `npm-pack:`, verifieert de dependency onder de beheerde npm-projectroot,
-    en vraagt vervolgens een live OpenAI-model om de Plugin-tool aan te roepen en de verborgen
-    slug terug te geven.
-- Crestodian rescue command smoke: `pnpm test:live:crestodian-rescue-channel`
-  - Opt-in belt-and-suspenders-check voor de rescue-command-surface van message-channel.
-    Deze oefent `/crestodian status`, zet een permanente modelwijziging in de wachtrij,
-    antwoordt `/crestodian yes` en verifieert het audit-/config-write-pad.
-- Crestodian planner Docker smoke: `pnpm test:docker:crestodian-planner`
-  - Voert Crestodian uit in een configloze container met een fake Claude CLI op `PATH`
-    en verifieert dat de fuzzy planner fallback wordt vertaald naar een geaudite typed
-    config-write.
-- Crestodian first-run Docker smoke: `pnpm test:docker:crestodian-first-run`
-  - Start vanuit een lege OpenClaw state-dir, verifieert de moderne onboard
-    Crestodian-entrypoint, past setup-/model-/agent-/Discord-Plugin + SecretRef
-    writes toe, valideert config en verifieert auditentries. Hetzelfde Ring 0 setup-pad
-    wordt ook gedekt in QA Lab door
+- Codex-smoketest voor installatie op aanvraag: `pnpm test:docker:codex-on-demand`
+  - Installeert het verpakte OpenClaw-tarball in Docker, voert onboarding met
+    een OpenAI-API-sleutel uit en verifieert dat de Codex-plugin plus de
+    afhankelijkheid `@openai/codex` op aanvraag naar de hoofdmap van het
+    beheerde npm-project zijn gedownload.
+- Live-smoketest voor afhankelijkheid van een plugintool: `pnpm test:docker:live-plugin-tool`
+  - Verpakt een fixtureplugin met een echte `slugify`-afhankelijkheid,
+    installeert deze via `npm-pack:`, verifieert de afhankelijkheid onder de
+    hoofdmap van het beheerde npm-project en vraagt vervolgens een live
+    OpenAI-model om de plugintool aan te roepen en de verborgen slug terug te geven.
+- Smoketest voor de Crestodian-reddingsopdracht: `pnpm test:live:crestodian-rescue-channel`
+  - Optionele extra controle voor het oppervlak van de reddingsopdracht in het
+    berichtkanaal. Voert `/crestodian status` uit, zet een blijvende
+    modelwijziging in de wachtrij, antwoordt met `/crestodian yes` en verifieert
+    het schrijfpad voor audit/configuratie.
+- Docker-smoketest voor de eerste uitvoering van Crestodian: `pnpm test:docker:crestodian-first-run`
+  - Begint met een lege OpenClaw-statusmap en bewijst eerst dat de verpakte
+    CLI `openclaw crestodian` veilig weigert zonder inferentie. Vervolgens
+    test en activeert deze nep-Claude via de verpakte activeringsmodule.
+    Pas daarna bereikt een onnauwkeurig geformuleerd verzoek via de verpakte
+    CLI de planner en wordt het omgezet in getypeerde configuratie, gevolgd
+    door eenmalige bewerkingen voor model, agent, Discord-plugin en SecretRef.
+    De test valideert configuratie- en auditvermeldingen. Dit is ondersteunend
+    bewijs voor controles/bewerkingen, geen bewijs voor interactieve onboarding
+    of voor een Crestodian-agent/tool/goedkeuringsproces. Dezelfde lane is in
+    QA Lab beschikbaar via
     `pnpm openclaw qa suite --scenario crestodian-ring-zero-setup`.
-- Moonshot/Kimi cost smoke: met `MOONSHOT_API_KEY` ingesteld, voer
-  `openclaw models list --provider moonshot --json` uit en voer daarna een geïsoleerde
+- Moonshot/Kimi-kostensmoketest: voer met ingestelde `MOONSHOT_API_KEY`
+  `openclaw models list --provider moonshot --json` uit en voer vervolgens een
+  geïsoleerde
   `openclaw agent --local --session-id live-kimi-cost --message 'Reply exactly: KIMI_LIVE_OK' --thinking off --json`
-  uit tegen `moonshot/kimi-k2.6`. Verifieer dat de JSON Moonshot/K2.6 rapporteert en dat het
-  assistant-transcript genormaliseerde `usage.cost` opslaat.
+  uit tegen `moonshot/kimi-k2.6`. Controleer of de JSON Moonshot/K2.6 rapporteert
+  en het transcript van de assistent genormaliseerde `usage.cost` opslaat.
 
 <Tip>
-Wanneer je maar één falende case nodig hebt, geef dan de voorkeur aan het vernauwen van live tests via de allowlist-env-vars die hieronder worden beschreven.
+Wanneer je slechts één falend geval nodig hebt, kun je livetests het beste beperken via de hieronder beschreven allowlist-omgevingsvariabelen.
 </Tip>
 
 ## QA-specifieke runners
 
-Deze commando's staan naast de hoofdtestsuites wanneer je QA-lab-realisme nodig hebt:
+Deze opdrachten staan naast de hoofdtestsuites wanneer je het realisme van QA Lab nodig hebt.
 
-CI voert QA Lab uit in dedicated workflows. Agentic parity is genest onder
-`QA-Lab - All Lanes` en releasevalidatie, niet als standalone PR-workflow.
-Brede validatie moet `Full Release Validation` gebruiken met
-`rerun_group=qa-parity` of de QA-groep van release-checks. Stabiele/standaard release
-checks houden uitputtende live/Docker-soak achter `run_release_soak=true`; het
-`full`-profiel forceert soak aan. `QA-Lab - All Lanes`
-draait nightly op `main` en via handmatige dispatch met de mock parity lane, live
-Matrix lane, Convex-beheerde live Telegram lane en Convex-beheerde live Discord
-lane als parallelle jobs. Geplande QA- en releasechecks geven Matrix
-`--profile fast` expliciet door, terwijl de Matrix CLI en handmatige workflowinput
-standaard `all` blijven; handmatige dispatch kan `all` sharden in `transport`,
-`media`, `e2ee-smoke`, `e2ee-deep` en `e2ee-cli`-jobs. `OpenClaw Release
-Checks` voert parity plus de snelle Matrix- en Telegram-lanes uit vóór releasegoedkeuring,
-met `mock-openai/gpt-5.5` voor release transport checks zodat ze
-deterministisch blijven en normale provider-Plugin-startup vermijden. Deze live transport
-gateways schakelen memory search uit; memory-gedrag blijft gedekt door de QA parity
-suites.
+CI voert QA Lab uit in speciale workflows. Pariteit voor agents valt onder
+`QA-Lab - All Lanes` en releasevalidatie, niet onder een zelfstandige
+PR-workflow. Gebruik voor brede validatie `Full Release Validation` met
+`rerun_group=qa-parity` of de QA-groep van de releasecontroles. Stabiele/standaard
+releasecontroles houden uitgebreide live-/Docker-duurtests achter
+`run_release_soak=true`; het profiel `full` schakelt duurtests verplicht in.
+`QA-Lab - All Lanes` wordt elke nacht op `main` en via handmatige uitvoering
+gestart, met de mockpariteitslane, live Matrix-lane, door Convex beheerde live
+Telegram-lane en door Convex beheerde live Discord-lane als parallelle taken.
+Geplande QA- en releasecontroles geven voor Matrix expliciet `--profile fast`
+door, terwijl de standaardwaarde voor de Matrix-CLI en de invoer van de
+handmatige workflow `all` blijft; handmatige uitvoering kan `all` opsplitsen
+in de taken `transport`, `media`, `e2ee-smoke`, `e2ee-deep` en `e2ee-cli`.
+`OpenClaw Release Checks` voert vóór releasegoedkeuring pariteit plus de snelle
+Matrix- en Telegram-lanes uit en gebruikt `mock-openai/gpt-5.6-luna` voor
+transportcontroles van releases, zodat deze deterministisch blijven en het
+normale opstarten van providerplugins vermijden. Deze live transport-Gateways
+schakelen geheugenzoekopdrachten uit; geheugengedrag blijft gedekt door de
+QA-pariteitssuites.
 
-Volledige release live media shards gebruiken
-`ghcr.io/openclaw/openclaw-live-media-runner:ubuntu-24.04`, waarin
-`ffmpeg` en `ffprobe` al aanwezig zijn. Docker live model/backend shards gebruiken de gedeelde
-`ghcr.io/openclaw/openclaw-live-test:<sha>`-image die één keer per geselecteerde
-commit wordt gebouwd, en pullen die daarna met `OPENCLAW_SKIP_DOCKER_BUILD=1` in plaats van
-opnieuw te bouwen binnen elke shard.
+Live-mediashards voor volledige releases gebruiken
+`ghcr.io/openclaw/openclaw-live-media-runner:ubuntu-24.04`, waarin `ffmpeg` en
+`ffprobe` al aanwezig zijn. Docker-shards voor live modellen/backends gebruiken
+de gedeelde image `ghcr.io/openclaw/openclaw-live-test:<sha>`, die eenmaal per
+geselecteerde commit wordt gebouwd, en halen deze vervolgens op met
+`OPENCLAW_SKIP_DOCKER_BUILD=1` in plaats van deze in elke shard opnieuw te bouwen.
 
 - `pnpm openclaw qa suite`
-  - Voert repo-ondersteunde QA-scenario's rechtstreeks op de host uit.
-  - Schrijft artefacten op topniveau `qa-evidence.json`, `qa-suite-summary.json` en
-    `qa-suite-report.md` voor de geselecteerde scenarioset, inclusief
-    selecties voor gemengde flow-, Vitest- en Playwright-scenario's.
-  - Wanneer gestart door `pnpm openclaw qa run --qa-profile <profile>`, wordt de
-    scorekaart van het geselecteerde taxonomieprofiel in dezelfde `qa-evidence.json`
-    opgenomen. `smoke-ci` schrijft beperkte bewijsgegevens, waarmee
-    `evidenceMode: "slim"` wordt ingesteld en `execution` per vermelding wordt
-    weggelaten. `release` dekt de samengestelde releasegereedheidsdoorsnede;
-    `all` selecteert elke actieve volwassenheidscategorie en is bedoeld voor
-    expliciete workflow-dispatches voor QA-profielbewijs wanneer een volledig
+  - Voert repositoryondersteunde QA-scenario's rechtstreeks op de host uit.
+  - Schrijft de artefacten `qa-evidence.json`, `qa-suite-summary.json` en
+    `qa-suite-report.md` op het hoogste niveau voor de geselecteerde scenarioset,
+    inclusief selecties van scenario's voor gemengde stromen, Vitest en Playwright.
+  - Bij aanroep via `pnpm openclaw qa run --qa-profile <profile>` wordt
+    de scorekaart van het geselecteerde taxonomieprofiel in dezelfde `qa-evidence.json`
+    opgenomen. `smoke-ci` schrijft beknopt bewijs (`evidenceMode: "slim"`, geen
+    `execution` per vermelding). `release` omvat de samengestelde selectie voor
+    releasegereedheid; `all` selecteert elke actieve volwassenheidscategorie en is
+    gericht op expliciete workflowaanroepen van QA-profielbewijs wanneer een volledig
     scorekaartartefact nodig is.
-  - Voert standaard meerdere geselecteerde scenario's parallel uit met geisoleerde
-    Gateway-workers. `qa-channel` gebruikt standaard concurrency 4 (begrensd door
-    het aantal geselecteerde scenario's). Gebruik `--concurrency <count>` om het
-    aantal workers af te stemmen, of `--concurrency 1` voor de oudere seriele baan.
-  - Sluit af met een niet-nulcode wanneer een scenario faalt. Gebruik
-    `--allow-failures` wanneer je artefacten wilt zonder falende afsluitcode.
-  - Ondersteunt providermodi `live-frontier`, `mock-openai` en `aimock`.
-    `aimock` start een lokale, door AIMock ondersteunde provider-server voor
-    experimentele fixture- en protocolmock-dekking zonder de scenariobewuste
-    `mock-openai`-baan te vervangen.
+  - Voert standaard meerdere geselecteerde scenario's parallel uit met geïsoleerde
+    Gateway-workers. `qa-channel` gebruikt standaard gelijktijdigheid 4 (begrensd door
+    het aantal geselecteerde scenario's). Gebruik `--concurrency <count>` om het aantal
+    workers af te stemmen, of `--concurrency 1` voor het oudere seriële traject.
+  - Sluit af met een niet-nulcode wanneer een scenario mislukt. Gebruik
+    `--allow-failures` voor artefacten zonder een afsluitcode die een fout aangeeft.
+  - Ondersteunt de providermodi `live-frontier`, `mock-openai` en `aimock`.
+    `aimock` start een lokale, door AIMock ondersteunde providerserver voor experimentele
+    dekking van fixtures en protocolmocks, zonder het scenariobewuste
+    `mock-openai`-traject te vervangen.
 - `pnpm openclaw qa coverage --match <query>`
-  - Doorzoekt scenario-ID's, titels, oppervlakken, dekkings-ID's, docs-verwijzingen,
-    codeverwijzingen, Plugins en providervereisten, en drukt daarna overeenkomende
-    suitedoelen af.
-  - Gebruik dit voor een QA Lab-run wanneer je het gewijzigde gedrag of bestandspad
-    kent, maar niet het kleinste scenario. Het is alleen adviserend; kies nog steeds
-    mock-, live-, Multipass-, Matrix- of transportbewijs op basis van het gedrag dat
-    wordt gewijzigd.
+  - Doorzoekt scenario-ID's, titels, oppervlakken, dekkings-ID's, documentatiereferenties,
+    codereferenties, plugins en providervereisten en toont vervolgens overeenkomende
+    suitedoelen.
+  - Gebruik dit vóór een QA Lab-uitvoering wanneer u het gewijzigde gedrag of bestandspad
+    kent, maar niet het kleinste scenario. Dit is alleen adviserend: kies nog steeds
+    bewijs via een mock, live-uitvoering, Multipass, Matrix of transport op basis van
+    het gedrag dat wordt gewijzigd.
 - `pnpm test:plugins:kitchen-sink-live`
-  - Voert de live OpenAI Kitchen Sink-Pluginproef uit via QA Lab. Het
-    installeert het externe Kitchen Sink-pakket, verifieert de inventaris van het
-    Plugin SDK-oppervlak, peilt `/healthz` en `/readyz`, registreert Gateway
-    CPU/RSS-bewijs, voert een live OpenAI-beurt uit en controleert vijandige
-    diagnostiek. Vereist live OpenAI-authenticatie zoals `OPENAI_API_KEY`. In
-    gehydrateerde Testbox-sessies laadt het automatisch het Testbox live-auth-profiel
-    wanneer de helper `openclaw-testbox-env` aanwezig is.
+  - Voert de live OpenAI Kitchen Sink-pluginproef uit via QA Lab.
+    Installeert het externe Kitchen Sink-pakket, verifieert de inventaris van het
+    plugin-SDK-oppervlak, test `/healthz` en `/readyz`, registreert bewijs voor
+    CPU/RSS van de Gateway, voert een live OpenAI-beurt uit en controleert
+    vijandige diagnostiek. Vereist live OpenAI-authenticatie, zoals
+    `OPENAI_API_KEY`. In gehydrateerde Testbox-sessies wordt automatisch het
+    Testbox-profiel voor live-authenticatie ingeladen wanneer de helper
+    `openclaw-testbox-env` aanwezig is.
 - `pnpm test:gateway:cpu-scenarios`
-  - Voert de Gateway-opstartbenchmark uit plus een klein mock-QA Lab-scenariopakket
-    (`channel-chat-baseline`, `memory-failure-fallback`,
-    `gateway-restart-inflight-run`) en schrijft een gecombineerde CPU-observatiesamenvatting
-    onder `.artifacts/gateway-cpu-scenarios/`.
-  - Markeert standaard alleen aanhoudende hete CPU-observaties (`--cpu-core-warn`
-    plus `--hot-wall-warn-ms`), zodat korte opstartpieken als meetwaarden worden
-    geregistreerd zonder eruit te zien als de minutenlange Gateway-pegregressie.
-  - Gebruikt gebouwde `dist`-artefacten; voer eerst een build uit wanneer de checkout
-    nog geen verse runtime-output heeft.
+  - Voert de opstartbenchmark van de Gateway uit, plus een klein pakket
+    mockscenario's van QA Lab (`channel-chat-baseline`,
+    `memory-failure-fallback`, `gateway-restart-inflight-run`) en schrijft een
+    gecombineerde samenvatting van CPU-waarnemingen onder
+    `.artifacts/gateway-cpu-scenarios/`.
+  - Markeert standaard alleen aanhoudende waarnemingen van hoge CPU-belasting
+    (`--cpu-core-warn`, standaard `0.9`; `--hot-wall-warn-ms`, standaard
+    `30000`), zodat korte pieken tijdens het opstarten als metingen worden
+    geregistreerd zonder te lijken op de regressie waarbij de Gateway minutenlang
+    de CPU volledig belast.
+  - Wordt uitgevoerd met gebouwde `dist`-artefacten; voer eerst een build uit
+    wanneer de checkout nog geen recente runtime-uitvoer bevat.
 - `pnpm openclaw qa suite --runner multipass`
-  - Voert dezelfde QA-suite uit binnen een wegwerpbare Multipass Linux-VM.
-  - Behoudt hetzelfde scenarioselectiegedrag als `qa suite` op de host.
-  - Hergebruikt dezelfde provider-/modelselectievlaggen als `qa suite`.
-  - Live-runs sturen de ondersteunde QA-authenticatie-invoer door die praktisch is
-    voor de guest: provider-sleutels via env, het configuratiepad voor de QA-liveprovider
-    en `CODEX_HOME` wanneer aanwezig.
-  - Uitvoermappen moeten onder de repo-root blijven zodat de guest via de gemounte
-    workspace kan terugschrijven.
-  - Schrijft het normale QA-rapport plus samenvatting en Multipass-logs onder
-    `.artifacts/qa-e2e/...`.
+  - Voert dezelfde QA-suite uit binnen een tijdelijke Multipass Linux-VM, met
+    dezelfde vlaggen voor scenarioselectie, provider en model als `qa suite`.
+  - Live-uitvoeringen sturen de QA-authenticatie-invoer door die bruikbaar is
+    voor de gast: providerkeys uit omgevingsvariabelen, het configuratiepad van
+    de live QA-provider en `CODEX_HOME` indien aanwezig.
+  - Uitvoermappen moeten onder de hoofdmap van de repository blijven, zodat de
+    gast via de gekoppelde werkruimte kan terugschrijven.
+  - Schrijft het normale QA-rapport en de samenvatting, plus Multipass-logboeken,
+    onder `.artifacts/qa-e2e/...`.
 - `pnpm qa:lab:up`
-  - Start de door Docker ondersteunde QA-site voor QA-werk in operatorstijl.
+  - Start de door Docker ondersteunde QA-site voor QA-werk door operators.
 - `pnpm test:docker:npm-onboard-channel-agent`
-  - Bouwt een npm-tarball uit de huidige checkout, installeert die globaal in
-    Docker, voert niet-interactieve onboarding met OpenAI API-sleutel uit, configureert
-    standaard Telegram, verifieert dat de verpakte Plugin-runtime zonder
-    opstartafhankelijkheidsherstel wordt geladen, voert doctor uit en voert een
-    lokale agentbeurt uit tegen een gemockt OpenAI-eindpunt.
-  - Gebruik `OPENCLAW_NPM_ONBOARD_CHANNEL=discord` om dezelfde verpakte-installatiebaan
-    met Discord uit te voeren.
+  - Bouwt een npm-tarball vanuit de huidige checkout, installeert deze globaal
+    in Docker, voert niet-interactieve onboarding met een OpenAI-API-key uit,
+    configureert standaard Telegram, verifieert dat de runtime van de verpakte
+    plugin wordt geladen zonder herstel van afhankelijkheden tijdens het opstarten,
+    voert doctor uit en voert één lokale agentbeurt uit tegen een gemockt
+    OpenAI-eindpunt.
+  - Gebruik `OPENCLAW_NPM_ONBOARD_CHANNEL=discord` om hetzelfde traject voor
+    verpakte installatie met Discord uit te voeren.
 - `pnpm test:docker:session-runtime-context`
-  - Voert een deterministische Docker-smoke voor de gebouwde app uit voor ingebedde
-    runtimecontexttranscripten. Het verifieert dat verborgen OpenClaw-runtimecontext
-    wordt bewaard als een aangepast bericht dat niet wordt weergegeven in plaats van
-    in de zichtbare gebruikersbeurt te lekken, seedt daarna een getroffen kapotte
-    sessie-JSONL en verifieert dat `openclaw doctor --fix` die herschrijft naar de
-    actieve branch met een back-up.
+  - Voert een deterministische Docker-smoketest van de gebouwde app uit voor
+    transcripties van ingebedde runtimecontext. Verifieert dat verborgen
+    OpenClaw-runtimecontext behouden blijft als een niet-weergegeven aangepast
+    bericht in plaats van in de zichtbare gebruikersbeurt terecht te komen,
+    initialiseert vervolgens een getroffen, defecte sessie-JSONL en verifieert
+    dat `openclaw doctor --fix` deze met een back-up herschrijft naar de actieve
+    vertakking.
 - `pnpm test:docker:npm-telegram-live`
-  - Installeert een OpenClaw-pakketkandidaat in Docker, voert onboarding voor het
-    geinstalleerde pakket uit, configureert Telegram via de geinstalleerde CLI en
-    hergebruikt daarna de live Telegram QA-baan met dat geinstalleerde pakket als
-    de SUT-Gateway.
-  - De wrapper mount alleen de `qa-lab`-harnessbron uit de checkout; het
-    geinstalleerde pakket bezit `dist`, `openclaw/plugin-sdk` en de gebundelde
-    Plugin-runtime, zodat de baan huidige checkout-Plugins niet mengt in het
-    pakket dat wordt getest.
-  - Gebruikt standaard `OPENCLAW_NPM_TELEGRAM_PACKAGE_SPEC=openclaw@beta`; stel
-    `OPENCLAW_NPM_TELEGRAM_PACKAGE_TGZ=/path/to/openclaw-current.tgz` of
-    `OPENCLAW_CURRENT_PACKAGE_TGZ` in om in plaats van installatie uit het register
-    een opgeloste lokale tarball te testen.
-  - Geeft standaard herhaalde RTT-timing in `qa-evidence.json` uit met
+  - Installeert een kandidaat-OpenClaw-pakket in Docker, voert onboarding voor
+    het geïnstalleerde pakket uit, configureert Telegram via de geïnstalleerde
+    CLI en hergebruikt vervolgens het live Telegram-QA-traject met dat
+    geïnstalleerde pakket als de te testen Gateway.
+  - De wrapper koppelt alleen de broncode van het `qa-lab`-harnas vanuit de
+    checkout; het geïnstalleerde pakket beheert `dist`, `openclaw/plugin-sdk`
+    en de runtime van gebundelde plugins, zodat het traject geen plugins uit
+    de huidige checkout vermengt met het geteste pakket.
+  - Standaard wordt `OPENCLAW_NPM_TELEGRAM_PACKAGE_SPEC=openclaw@beta` gebruikt;
+    stel `OPENCLAW_NPM_TELEGRAM_PACKAGE_TGZ=/path/to/openclaw-current.tgz` of
+    `OPENCLAW_CURRENT_PACKAGE_TGZ` in om in plaats van installatie vanuit het
+    register een opgeloste lokale tarball te testen.
+  - Schrijft standaard herhaalde RTT-tijdmetingen naar `qa-evidence.json` met
     `OPENCLAW_NPM_TELEGRAM_RTT_SAMPLES=20`. Overschrijf
     `OPENCLAW_NPM_TELEGRAM_RTT_SAMPLES`,
     `OPENCLAW_NPM_TELEGRAM_RTT_TIMEOUT_MS` of
-    `OPENCLAW_NPM_TELEGRAM_RTT_MAX_FAILURES` om de RTT-run af te stemmen.
-    `OPENCLAW_NPM_TELEGRAM_RTT_CHECKS` accepteert een door komma's gescheiden lijst
-    met Telegram QA-check-ID's om te samplen; wanneer niet ingesteld, is de standaard
-    RTT-geschikte check `telegram-mentioned-message-reply`.
-  - Gebruikt dezelfde Telegram-env-referenties of Convex-referentiebron als
-    `pnpm openclaw qa telegram`. Stel voor CI-/releaseautomatisering
-    `OPENCLAW_NPM_TELEGRAM_CREDENTIAL_SOURCE=convex` in plus
-    `OPENCLAW_QA_CONVEX_SITE_URL` en een rolsecret. Als
-    `OPENCLAW_QA_CONVEX_SITE_URL` en een Convex-rolsecret aanwezig zijn in CI,
-    selecteert de Docker-wrapper Convex automatisch.
-  - De wrapper valideert Telegram- of Convex-referentie-env op de host voordat
-    Docker-build-/installatiewerk begint. Stel `OPENCLAW_NPM_TELEGRAM_SKIP_CREDENTIAL_PREFLIGHT=1`
-    alleen in wanneer je doelbewust de setup voor referenties debugt.
-  - `OPENCLAW_NPM_TELEGRAM_CREDENTIAL_ROLE=ci|maintainer` overschrijft de gedeelde
-    `OPENCLAW_QA_CREDENTIAL_ROLE` alleen voor deze baan. Wanneer Convex-referenties
-    zijn geselecteerd en geen rol is ingesteld, gebruikt de wrapper `ci` in CI en
-    `maintainer` buiten CI.
-  - GitHub Actions stelt deze baan beschikbaar als de handmatige maintainerworkflow
-    `NPM Telegram Beta E2E`. Die draait niet bij merge. De workflow gebruikt de
-    omgeving `qa-live-shared` en Convex CI-referentieleases.
-- GitHub Actions stelt ook `Package Acceptance` beschikbaar voor aanvullend
-  productbewijs tegen een kandidaatpakket. Het accepteert een vertrouwde ref,
-  gepubliceerde npm-specificatie, HTTPS-tarball-URL plus SHA-256, of tarballartefact
-  uit een andere run, uploadt de genormaliseerde `openclaw-current.tgz` als
-  `package-under-test` en voert daarna de bestaande Docker E2E-planner uit met
-  smoke-, package-, product-, full- of aangepaste baanprofielen. Stel
-  `telegram_mode=mock-openai` of `live-frontier` in om de Telegram QA-workflow
-  tegen hetzelfde `package-under-test`-artefact uit te voeren.
-  - Productbewijs voor de nieuwste beta:
+    `OPENCLAW_NPM_TELEGRAM_RTT_MAX_FAILURES` om de uitvoering af te stemmen.
+    `OPENCLAW_NPM_TELEGRAM_RTT_CHECKS` accepteert een door komma's gescheiden
+    lijst met ID's van Telegram-QA-controles om te bemonsteren; wanneer deze
+    niet is ingesteld, is de standaard RTT-geschikte controle
+    `telegram-mentioned-message-reply`.
+  - Gebruikt dezelfde Telegram-inloggegevens uit omgevingsvariabelen of
+    Convex-inloggegevensbron als `pnpm openclaw qa telegram`. Stel voor
+    CI-/releaseautomatisering `OPENCLAW_NPM_TELEGRAM_CREDENTIAL_SOURCE=convex`
+    in, samen met `OPENCLAW_QA_CONVEX_SITE_URL` en een rolgeheim. Als
+    `OPENCLAW_QA_CONVEX_SITE_URL` en een Convex-rolgeheim aanwezig zijn in CI,
+    selecteert de Docker-wrapper automatisch Convex.
+  - De wrapper valideert de omgevingsvariabelen met Telegram- of
+    Convex-inloggegevens op de host voordat Docker met bouwen/installeren begint.
+    Stel `OPENCLAW_NPM_TELEGRAM_SKIP_CREDENTIAL_PREFLIGHT=1` alleen in wanneer
+    u doelbewust de installatie vóór het instellen van inloggegevens debugt.
+  - `OPENCLAW_NPM_TELEGRAM_CREDENTIAL_ROLE=ci|maintainer` overschrijft alleen
+    voor dit traject de gedeelde `OPENCLAW_QA_CREDENTIAL_ROLE`. Wanneer
+    Convex-inloggegevens zijn geselecteerd en geen rol is ingesteld, gebruikt
+    de wrapper `ci` binnen CI en `maintainer` buiten CI.
+  - GitHub Actions biedt dit traject aan als de handmatige maintainerworkflow
+    `NPM Telegram Beta E2E`. Deze wordt niet uitgevoerd bij samenvoegen. De
+    workflow gebruikt de omgeving `qa-live-shared` en leases voor
+    Convex-CI-inloggegevens.
+- GitHub Actions biedt ook `Package Acceptance` voor afzonderlijk uitgevoerd
+  productbewijs tegen één kandidaatpakket. De workflow accepteert een Git-ref,
+  gepubliceerde npm-specificatie, HTTPS-tarball-URL plus SHA-256, beleid voor
+  vertrouwde URL's of een tarballartefact uit een andere uitvoering
+  (`source=ref|npm|url|trusted-url|artifact`), uploadt het genormaliseerde
+  `openclaw-current.tgz` als `package-under-test` en voert vervolgens de
+  bestaande Docker-E2E-planner uit met de trajectprofielen `smoke`, `package`,
+  `product`, `full` of `custom`. Stel `telegram_mode=mock-openai` of
+  `live-frontier` in om de Telegram-QA-workflow tegen hetzelfde
+  `package-under-test`-artefact uit te voeren.
+  - Productbewijs voor de nieuwste bèta:
 
 ```bash
 gh workflow run package-acceptance.yml --ref main \
@@ -325,8 +348,8 @@ gh workflow run package-acceptance.yml --ref main \
   -f telegram_mode=mock-openai
 ```
 
-- Bewijs met exacte tarball-URL vereist een digest en gebruikt het veiligheidsbeleid
-  voor openbare URL's:
+- Bewijs met een exacte tarball-URL vereist een digest en gebruikt het
+  veiligheidsbeleid voor openbare URL's:
 
 ```bash
 gh workflow run package-acceptance.yml --ref main \
@@ -336,8 +359,8 @@ gh workflow run package-acceptance.yml --ref main \
   -f suite_profile=package
 ```
 
-- Enterprise-/prive-tarball-mirrors gebruiken een expliciet beleid voor vertrouwde
-  bronnen:
+- Tarballmirrors voor ondernemingen of privégebruik gebruiken een expliciet
+  beleid voor vertrouwde bronnen:
 
 ```bash
 gh workflow run package-acceptance.yml --ref main \
@@ -348,12 +371,13 @@ gh workflow run package-acceptance.yml --ref main \
   -f suite_profile=package
 ```
 
-`source=trusted-url` leest `.github/package-trusted-sources.json` uit de vertrouwde
-workflow-ref en accepteert geen URL-referenties of een private-network-bypass via
-workflowinvoer. Als het genoemde beleid bearer-auth declareert, configureer dan het
-vaste secret `OPENCLAW_TRUSTED_PACKAGE_TOKEN`.
+`source=trusted-url` leest `.github/package-trusted-sources.json` uit de
+vertrouwde workflowref en accepteert geen inloggegevens in URL's of een via
+workflowinvoer opgegeven omzeiling voor privénetwerken. Als het genoemde beleid
+bearer-authenticatie voorschrijft, configureert u het vaste geheim
+`OPENCLAW_TRUSTED_PACKAGE_TOKEN`.
 
-- Artefactbewijs downloadt een tarballartefact uit een andere Actions-run:
+- Artefactbewijs downloadt een tarballartefact uit een andere Actions-uitvoering:
 
 ```bash
 gh workflow run package-acceptance.yml --ref main \
@@ -364,76 +388,93 @@ gh workflow run package-acceptance.yml --ref main \
 ```
 
 - `pnpm test:docker:plugins`
-  - Verpakt en installeert de huidige OpenClaw-build in Docker, start de Gateway
-    met OpenAI geconfigureerd en schakelt daarna gebundelde kanalen/Plugins in via
-    configuratiebewerkingen.
-  - Verifieert dat setupdetectie niet-geconfigureerde downloadbare Plugins afwezig
-    laat, dat de eerste geconfigureerde doctor-reparatie elke ontbrekende
-    downloadbare Plugin expliciet installeert, en dat een tweede herstart geen
-    verborgen afhankelijkheidsherstel uitvoert.
-  - Installeert ook een bekende oudere npm-baseline, schakelt Telegram in voordat
-    `openclaw update --tag <candidate>` wordt uitgevoerd, en verifieert dat de
-    post-update doctor van de kandidaat verouderde Plugin-afhankelijkheidsresten
-    opruimt zonder postinstall-reparatie aan de harnesszijde.
+  - Verpakt en installeert de huidige OpenClaw-build in Docker, start de
+    Gateway met geconfigureerde OpenAI en schakelt vervolgens gebundelde
+    kanalen/plugins in via configuratiewijzigingen.
+  - Verifieert dat installatiedetectie niet-geconfigureerde downloadbare
+    plugins afwezig laat, dat het eerste geconfigureerde herstel door doctor
+    elke ontbrekende downloadbare plugin expliciet installeert en dat een
+    tweede herstart geen verborgen herstel van afhankelijkheden uitvoert.
+  - Installeert ook een bekende oudere npm-basisversie, schakelt Telegram in
+    vóór uitvoering van `openclaw update --tag <candidate>` en verifieert dat
+    doctor na de update van de kandidaat verouderde resten van
+    pluginafhankelijkheden opruimt zonder herstel via postinstall aan de kant
+    van het harnas.
 - `pnpm test:parallels:npm-update`
-  - Voert de native smoke voor verpakte-installatie-updates uit over Parallels-guests.
-    Elk geselecteerd platform installeert eerst het gevraagde baselinepakket, voert
-    daarna de geinstalleerde opdracht `openclaw update` in dezelfde guest uit en
-    verifieert de geinstalleerde versie, updatestatus, Gateway-gereedheid en een
-    lokale agentbeurt.
-  - Gebruik `--platform macos`, `--platform windows` of `--platform linux` terwijl
-    je aan een guest itereert. Gebruik `--json` voor het pad van het samenvattingsartefact
-    en de status per baan.
-  - De OpenAI-baan gebruikt standaard `openai/gpt-5.5` voor het bewijs van de live
-    agentbeurt. Geef `--model <provider/model>` door of stel
-    `OPENCLAW_PARALLELS_OPENAI_MODEL` in wanneer je doelbewust een ander OpenAI-model
-    valideert.
-  - Wikkel lange lokale runs in een host-timeout zodat Parallels-transportstalls
-    niet de rest van het testvenster kunnen verbruiken:
+  - Voert de native smoketest voor updates van verpakte installaties uit op
+    Parallels-gasten. Elk geselecteerd platform installeert eerst het gevraagde
+    basispakket, voert vervolgens de geïnstalleerde opdracht `openclaw update`
+    uit in dezelfde gast en verifieert de geïnstalleerde versie, updatestatus,
+    gereedheid van de Gateway en één lokale agentbeurt.
+  - Gebruik `--platform macos`, `--platform windows` of `--platform linux`
+    tijdens iteraties op één gast. Gebruik `--json` voor het pad van het
+    samenvattingsartefact en de status per traject.
+  - Het OpenAI-traject gebruikt standaard `openai/gpt-5.6-luna` voor het bewijs
+    van de live agentbeurt. Geef `--model <provider/model>` door of stel
+    `OPENCLAW_PARALLELS_OPENAI_MODEL` in om een ander OpenAI-model te valideren.
+  - Omwikkel lange lokale uitvoeringen met een time-out op de host, zodat
+    vastlopers in het Parallels-transport niet de rest van het testvenster
+    kunnen verbruiken:
 
     ```bash
     timeout --foreground 150m pnpm test:parallels:npm-update -- --json
     timeout --foreground 90m pnpm test:parallels:npm-update -- --platform windows --json
     ```
 
-  - Het script schrijft geneste baanlogs onder `/tmp/openclaw-parallels-npm-update.*`.
-    Inspecteer `windows-update.log`, `macos-update.log` of `linux-update.log`
-    voordat je aanneemt dat de buitenste wrapper hangt.
-  - Windows-update kan op een koude guest 10 tot 15 minuten besteden aan post-update
-    doctor- en pakketupdatewerk; dat is nog steeds gezond wanneer het geneste
-    npm-debuglog vooruitgaat.
-  - Voer deze aggregatiewrapper niet parallel uit met afzonderlijke Parallels-smokebanen
-    voor macOS, Windows of Linux. Ze delen VM-status en kunnen botsen bij
-    snapshotherstel, pakketservering of guest-Gateway-status.
-  - Het post-updatebewijs voert het normale gebundelde Plugin-oppervlak uit omdat
-    capability-facades zoals spraak, beeldgeneratie en mediabegrip via gebundelde
-    runtime-API's worden geladen, zelfs wanneer de agentbeurt zelf alleen een
-    eenvoudige tekstrespons controleert.
+  - Het script schrijft geneste trajectlogboeken onder
+    `/tmp/openclaw-parallels-npm-update.*`. Inspecteer `windows-update.log`,
+    `macos-update.log` of `linux-update.log` voordat u aanneemt dat de buitenste
+    wrapper is vastgelopen.
+  - Een Windows-update kan op een koude gast 10 tot 15 minuten besteden aan
+    doctor na de update en aan het bijwerken van pakketten; dit is nog steeds
+    normaal zolang het geneste npm-debuglogboek voortgang vertoont.
+  - Voer deze verzamelwrapper niet parallel uit met afzonderlijke
+    Parallels-smoketrajecten voor macOS, Windows of Linux. Ze delen VM-status
+    en kunnen botsen bij het herstellen van momentopnamen, het aanbieden van
+    pakketten of de Gateway-status van de gast.
+  - Het bewijs na de update voert het normale oppervlak van gebundelde plugins
+    uit, omdat capaciteitsfacades zoals spraak, afbeeldingsgeneratie en
+    mediabegrip via gebundelde runtime-API's worden geladen, zelfs wanneer de
+    agentbeurt zelf alleen een eenvoudige tekstreactie controleert.
 
 - `pnpm openclaw qa aimock`
-  - Start alleen de lokale AIMock-provider-server voor directe protocol-smoke
-    tests.
+  - Start alleen de lokale AIMock-providerserver voor directe protocolrooktests.
 - `pnpm openclaw qa matrix`
-  - Voert de Matrix live QA-lane uit tegen een wegwerpbare, door Docker ondersteunde Tuwunel-homeserver. Alleen source-checkout - verpakte installaties leveren `qa-lab` niet mee.
-  - Volledige CLI, profiel-/scenariocatalogus, env-vars en artifact-indeling: [Matrix QA](/nl/concepts/qa-matrix).
+  - Voert de live QA-lane voor Matrix uit op een tijdelijke, door Docker ondersteunde Tuwunel-homeserver. Alleen voor broncodecheck-outs; verpakte installaties bevatten `qa-lab` niet.
+  - Volledige CLI, profiel-/scenariocatalogus, omgevingsvariabelen en artefactindeling:
+    [Matrix-QA](/nl/concepts/qa-matrix).
 - `pnpm openclaw qa telegram`
-  - Voert de Telegram live QA-lane uit tegen een echte privégroep met de driver- en SUT-bottokens uit env.
-  - Vereist `OPENCLAW_QA_TELEGRAM_GROUP_ID`, `OPENCLAW_QA_TELEGRAM_DRIVER_BOT_TOKEN` en `OPENCLAW_QA_TELEGRAM_SUT_BOT_TOKEN`. De groeps-id moet de numerieke Telegram-chat-id zijn.
-  - Ondersteunt `--credential-source convex` voor gedeelde gepoolde credentials. Gebruik standaard de env-modus, of stel `OPENCLAW_QA_CREDENTIAL_SOURCE=convex` in om gepoolde leases te gebruiken.
-  - Standaardinstellingen dekken canary, mention-gating, command-adressering, `/status`, bot-naar-bot genoemde antwoorden en native core-commandantwoorden. `mock-openai`-standaarden dekken ook deterministische regressies voor reply-chain en Telegram final-message streaming. Gebruik `--list-scenarios` voor optionele probes zoals `session_status`.
-  - Sluit af met een niet-nulcode wanneer een scenario mislukt. Gebruik `--allow-failures` wanneer je
-    artifacts wilt zonder een falende exitcode.
-  - Vereist twee verschillende bots in dezelfde privégroep, waarbij de SUT-bot een Telegram-gebruikersnaam beschikbaar stelt.
-  - Schakel voor stabiele bot-naar-bot-observatie Bot-to-Bot Communication Mode in `@BotFather` in voor beide bots en zorg dat de driver-bot groepsbotverkeer kan observeren.
-  - Schrijft een Telegram QA-rapport, samenvatting en `qa-evidence.json` onder `.artifacts/qa-e2e/...`. Antwoordscenario's bevatten RTT vanaf het driver-verzendverzoek tot het geobserveerde SUT-antwoord.
+  - Voert de live QA-lane voor Telegram uit in een echte privégroep met de bot-tokens voor het stuurprogramma en het te testen systeem uit de omgeving.
+  - Vereist `OPENCLAW_QA_TELEGRAM_GROUP_ID`,
+    `OPENCLAW_QA_TELEGRAM_DRIVER_BOT_TOKEN` en
+    `OPENCLAW_QA_TELEGRAM_SUT_BOT_TOKEN`. De groeps-id moet de numerieke
+    Telegram-chat-id zijn.
+  - Ondersteunt `--credential-source convex` voor gedeelde referenties uit een pool.
+    Gebruik standaard de omgevingsmodus of stel `OPENCLAW_QA_CREDENTIAL_SOURCE=convex`
+    in om leases uit de pool te gebruiken.
+  - De standaardinstellingen omvatten canary-controle, vermeldingstoegang, opdrachtadressering, `/status`,
+    vermelde antwoorden tussen bots en antwoorden op ingebouwde kernopdrachten.
+    De standaardinstellingen van `mock-openai` omvatten ook deterministische regressies voor antwoordketens en
+    het streamen van definitieve Telegram-berichten. Gebruik `--list-scenarios`
+    voor optionele controles zoals `session_status`.
+  - Sluit af met een niet-nulcode wanneer een scenario mislukt. Gebruik `--allow-failures` voor
+    artefacten zonder een afsluitcode die een fout aangeeft.
+  - Vereist twee verschillende bots in dezelfde privégroep, waarbij de bot van het te testen systeem
+    een Telegram-gebruikersnaam heeft.
+  - Schakel voor stabiele waarneming tussen bots de Bot-to-Bot Communication Mode
+    in `@BotFather` voor beide bots in en zorg dat de stuurprogrammabot
+    botverkeer in de groep kan waarnemen.
+  - Schrijft een Telegram-QA-rapport, samenvatting en `qa-evidence.json` naar
+    `.artifacts/qa-e2e/...`. Antwoordscenario's bevatten de retourtijd vanaf het verzendverzoek
+    van het stuurprogramma tot het waargenomen antwoord van het te testen systeem.
 
-`Mantis Telegram Live` is de PR-evidence-wrapper rond deze lane. Deze voert de
-candidate-ref uit met door Convex geleasede Telegram-credentials, rendert de geredigeerde QA
-report/evidence-bundel in een Crabbox-desktopbrowser, neemt MP4-evidence op,
-genereert een op beweging getrimde GIF, uploadt de artifact-bundel en plaatst inline PR
-evidence via de Mantis GitHub App wanneer `pr_number` is ingesteld. Maintainers kunnen
-dit starten vanuit de Actions-UI via `Mantis Scenario` (`scenario_id:
-telegram-live`) of direct vanuit een pull request-comment:
+`Mantis Telegram Live` is de PR-bewijswrapper rond deze lane. Deze voert
+de kandidaatref uit met via Convex geleasete Telegram-referenties, geeft de
+geredigeerde QA-rapport-/bewijsbundel weer in een Crabbox-desktopbrowser, neemt MP4-bewijs
+op, genereert een op beweging bijgesneden GIF, uploadt de artefactbundel en
+plaatst inline PR-bewijs via de Mantis GitHub App wanneer `pr_number` is
+ingesteld. Beheerders kunnen deze vanuit de Actions-UI starten via `Mantis Scenario`
+(`scenario_id: telegram-live`) of rechtstreeks vanuit een opmerking bij een pull request:
 
 ```text
 @openclaw-mantis telegram
@@ -441,66 +482,79 @@ telegram-live`) of direct vanuit een pull request-comment:
 @openclaw-mantis telegram scenarios=telegram-status-command,telegram-mentioned-message-reply
 ```
 
-`Mantis Telegram Desktop Proof` is de agentische native Telegram Desktop
-before/after-wrapper voor visueel PR-bewijs. Start deze vanuit de Actions-UI met
+`Mantis Telegram Desktop Proof` is de agentgestuurde wrapper met systeemeigen Telegram Desktop
+voor visueel voor-en-na-bewijs van een PR. Start deze vanuit de Actions-UI met
 vrije `instructions`, via `Mantis Scenario` (`scenario_id:
-telegram-desktop-proof`), of vanuit een PR-comment:
+telegram-desktop-proof`) of vanuit een PR-opmerking:
 
 ```text
 @openclaw-mantis telegram desktop proof
 ```
 
-De Mantis-agent leest de PR, bepaalt welk Telegram-zichtbaar gedrag de
-wijziging bewijst, voert de real-user Crabbox Telegram Desktop proof-lane uit op baseline- en
-candidate-refs, itereert tot de native GIF's bruikbaar zijn, schrijft een gekoppeld
-`motionPreview`-manifest en plaatst dezelfde 2-koloms GIF-tabel via de
-Mantis GitHub App wanneer `pr_number` is ingesteld.
+De Mantis-agent leest de PR, bepaalt welk in Telegram zichtbaar gedrag de
+wijziging bewijst, voert de Crabbox-bewijslane voor Telegram Desktop met een echte gebruiker uit op
+basis- en kandidaatrefs, itereert totdat de systeemeigen GIF's bruikbaar zijn,
+schrijft een gekoppeld `motionPreview`-manifest en plaatst via de Mantis GitHub App
+dezelfde GIF-tabel met twee kolommen wanneer `pr_number` is ingesteld.
 
 - `pnpm openclaw qa mantis telegram-desktop-builder`
-  - Leaset of hergebruikt een Crabbox Linux-desktop, installeert native Telegram Desktop, configureert OpenClaw met een geleased Telegram SUT-bottoken, start de Gateway en neemt screenshot-/MP4-evidence op vanaf de zichtbare VNC-desktop.
-  - Gebruikt standaard `--credential-source convex` zodat workflows alleen het Convex broker-secret nodig hebben. Gebruik `--credential-source env` met dezelfde `OPENCLAW_QA_TELEGRAM_*`-variabelen als `pnpm openclaw qa telegram`.
-  - Telegram Desktop heeft nog steeds een gebruikerslogin/-profiel nodig. Het bottoken configureert alleen OpenClaw. Gebruik `--telegram-profile-archive-env <name>` voor een base64 `.tgz`-profielarchief, of gebruik `--keep-lease` en log eenmalig handmatig in via VNC.
-  - Schrijft `mantis-telegram-desktop-builder-report.md`, `mantis-telegram-desktop-builder-summary.json`, `telegram-desktop-builder.png` en `telegram-desktop-builder.mp4` onder de uitvoermap.
+  - Leaset of hergebruikt een Crabbox Linux-desktop, installeert het systeemeigen Telegram
+    Desktop, configureert OpenClaw met een geleaset Telegram-bot-token voor het te testen systeem,
+    start de Gateway en neemt schermafbeeldings-/MP4-bewijs op van het
+    zichtbare VNC-bureaublad.
+  - Gebruikt standaard `--credential-source convex`, zodat werkstromen alleen het
+    geheim van de Convex-broker nodig hebben. Gebruik `--credential-source env` met dezelfde
+    `OPENCLAW_QA_TELEGRAM_*`-variabelen als `pnpm openclaw qa telegram`.
+  - Telegram Desktop heeft nog steeds een gebruikersaanmelding/-profiel nodig. Het bot-token
+    configureert alleen OpenClaw. Gebruik `--telegram-profile-archive-env <name>`
+    voor een base64-`.tgz`-profielarchief of gebruik `--keep-lease` en meld u
+    eenmaal handmatig aan via VNC.
+  - Schrijft `mantis-telegram-desktop-builder-report.md`,
+    `mantis-telegram-desktop-builder-summary.json`,
+    `telegram-desktop-builder.png` en `telegram-desktop-builder.mp4`
+    naar de uitvoermap.
 
-Live transport-lanes delen één standaardcontract zodat nieuwe transports niet afwijken; de dekkingsmatrix per lane staat in [QA-overzicht → Live transport-dekking](/nl/concepts/qa-e2e-automation#live-transport-coverage). `qa-channel` is de brede synthetische suite en maakt geen deel uit van die matrix.
+Live transportlanes delen één standaardcontract, zodat nieuwe transporten niet
+uiteenlopen; de dekkingsmatrix per lane staat in
+[QA-overzicht - Dekking van live transporten](/nl/concepts/qa-e2e-automation#live-transport-coverage).
+`qa-channel` is de brede synthetische suite en maakt geen deel uit van die matrix.
 
-### Gedeelde Telegram-credentials via Convex (v1)
+### Gedeelde Telegram-referenties via Convex (v1)
 
-Wanneer `--credential-source convex` (of `OPENCLAW_QA_CREDENTIAL_SOURCE=convex`) is ingeschakeld voor
-live transport QA, verkrijgt QA lab een exclusieve lease uit een door Convex ondersteunde pool, heartbeatt die
-lease terwijl de lane draait en geeft de lease vrij bij afsluiten. De sectienaam dateert van vóór
-Discord-, Slack- en WhatsApp-ondersteuning; het leasecontract wordt gedeeld tussen soorten.
+Wanneer `--credential-source convex` (of `OPENCLAW_QA_CREDENTIAL_SOURCE=convex`)
+is ingeschakeld voor live transport-QA, verkrijgt het QA-lab een exclusieve lease uit een
+door Convex ondersteunde pool, stuurt het tijdens de uitvoering van de lane Heartbeats voor die lease en
+geeft het de lease vrij bij afsluiten. De sectienaam dateert van vóór ondersteuning voor Discord, Slack en
+WhatsApp; het leasecontract wordt tussen de typen gedeeld.
 
-Referentie-Convex-projectscaffold:
+Referentiesjabloon voor het Convex-project: `qa/convex-credential-broker/`
 
-- `qa/convex-credential-broker/`
-
-Vereiste env-vars:
+Vereiste omgevingsvariabelen:
 
 - `OPENCLAW_QA_CONVEX_SITE_URL` (bijvoorbeeld `https://your-deployment.convex.site`)
-- Eén secret voor de geselecteerde rol:
+- Eén geheim voor de geselecteerde rol:
   - `OPENCLAW_QA_CONVEX_SECRET_MAINTAINER` voor `maintainer`
   - `OPENCLAW_QA_CONVEX_SECRET_CI` voor `ci`
-- Selectie van credentialrol:
+- Selectie van referentierol:
   - CLI: `--credential-role maintainer|ci`
-  - Env-standaard: `OPENCLAW_QA_CREDENTIAL_ROLE` (standaard `ci` in CI, anders `maintainer`)
+  - Standaardwaarde uit omgeving: `OPENCLAW_QA_CREDENTIAL_ROLE` (standaard `ci` in CI, anders `maintainer`)
 
-Optionele env-vars:
+Optionele omgevingsvariabelen:
 
 - `OPENCLAW_QA_CREDENTIAL_LEASE_TTL_MS` (standaard `1200000`)
 - `OPENCLAW_QA_CREDENTIAL_HEARTBEAT_INTERVAL_MS` (standaard `30000`)
 - `OPENCLAW_QA_CREDENTIAL_ACQUIRE_TIMEOUT_MS` (standaard `90000`)
 - `OPENCLAW_QA_CREDENTIAL_HTTP_TIMEOUT_MS` (standaard `15000`)
 - `OPENCLAW_QA_CONVEX_ENDPOINT_PREFIX` (standaard `/qa-credentials/v1`)
-- `OPENCLAW_QA_CREDENTIAL_OWNER_ID` (optionele trace-id)
-- `OPENCLAW_QA_ALLOW_INSECURE_HTTP=1` staat loopback `http://` Convex-URL's toe voor uitsluitend lokale ontwikkeling.
+- `OPENCLAW_QA_CREDENTIAL_OWNER_ID` (optionele tracerings-id)
+- `OPENCLAW_QA_ALLOW_INSECURE_HTTP=1` staat Convex-URL's met local loopback via `http://` toe voor uitsluitend lokale ontwikkeling.
 
-`OPENCLAW_QA_CONVEX_SITE_URL` moet in normaal gebruik `https://` gebruiken.
+`OPENCLAW_QA_CONVEX_SITE_URL` moet bij normaal gebruik `https://` gebruiken.
 
-Maintainer-admincommands (pool toevoegen/verwijderen/listen) vereisen specifiek
+Beheeropdrachten voor beheerders (toevoegen aan/verwijderen uit/weergeven van pool) vereisen specifiek
 `OPENCLAW_QA_CONVEX_SECRET_MAINTAINER`.
 
-CLI-helpers voor maintainers:
+CLI-hulpprogramma's voor beheerders:
 
 ```bash
 pnpm openclaw qa credentials doctor
@@ -509,371 +563,392 @@ pnpm openclaw qa credentials list --kind telegram
 pnpm openclaw qa credentials remove --credential-id <credential-id>
 ```
 
-Gebruik `doctor` vóór live runs om de Convex-site-URL, broker-secrets,
-endpoint-prefix, HTTP-timeout en admin/list-bereikbaarheid te controleren zonder
-secretwaarden af te drukken. Gebruik `--json` voor machineleesbare uitvoer in scripts en CI
-utilities.
+Gebruik `doctor` vóór live uitvoeringen om de Convex-site-URL, brokergeheimen,
+het eindpuntvoorvoegsel, de HTTP-time-out en de bereikbaarheid van beheer/weergave te controleren zonder
+geheime waarden af te drukken. Gebruik `--json` voor machineleesbare uitvoer in scripts en CI-
+hulpprogramma's.
 
-Standaard endpointcontract (`OPENCLAW_QA_CONVEX_SITE_URL` + `/qa-credentials/v1`):
+Standaard eindpuntcontract (`OPENCLAW_QA_CONVEX_SITE_URL` + `/qa-credentials/v1`).
+Verzoeken verifiëren zich met een `Authorization: Bearer <role secret>`-header;
+de onderstaande berichtlichamen laten die header weg:
 
 - `POST /acquire`
   - Verzoek: `{ kind, ownerId, actorRole, leaseTtlMs, heartbeatIntervalMs }`
-  - Succes: `{ status: "ok", credentialId, leaseToken, payload, leaseTtlMs?, heartbeatIntervalMs? }`
+  - Geslaagd: `{ status: "ok", credentialId, leaseToken, payload, leaseTtlMs?, heartbeatIntervalMs? }`
   - Uitgeput/opnieuw te proberen: `{ status: "error", code: "POOL_EXHAUSTED" | "NO_CREDENTIAL_AVAILABLE", ... }`
 - `POST /payload-chunk`
   - Verzoek: `{ kind, ownerId, actorRole, credentialId, leaseToken, index }`
-  - Succes: `{ status: "ok", index, data }`
+  - Geslaagd: `{ status: "ok", index, data }`
 - `POST /heartbeat`
   - Verzoek: `{ kind, ownerId, actorRole, credentialId, leaseToken, leaseTtlMs }`
-  - Succes: `{ status: "ok" }` (of lege `2xx`)
+  - Geslaagd: `{ status: "ok" }` (of lege `2xx`)
 - `POST /release`
   - Verzoek: `{ kind, ownerId, actorRole, credentialId, leaseToken }`
-  - Succes: `{ status: "ok" }` (of lege `2xx`)
-- `POST /admin/add` (alleen maintainer-secret)
+  - Geslaagd: `{ status: "ok" }` (of lege `2xx`)
+- `POST /admin/add` (alleen beheerdersgeheim)
   - Verzoek: `{ kind, actorId, payload, note?, status? }`
-  - Succes: `{ status: "ok", credential }`
-- `POST /admin/remove` (alleen maintainer-secret)
+  - Geslaagd: `{ status: "ok", credential }`
+- `POST /admin/remove` (alleen beheerdersgeheim)
   - Verzoek: `{ credentialId, actorId }`
-  - Succes: `{ status: "ok", changed, credential }`
-  - Actieve lease-guard: `{ status: "error", code: "LEASE_ACTIVE", ... }`
-- `POST /admin/list` (alleen maintainer-secret)
+  - Geslaagd: `{ status: "ok", changed, credential }`
+  - Beveiliging tegen actieve lease: `{ status: "error", code: "LEASE_ACTIVE", ... }`
+- `POST /admin/list` (alleen beheerdersgeheim)
   - Verzoek: `{ kind?, status?, includePayload?, limit? }`
-  - Succes: `{ status: "ok", credentials, count }`
+  - Geslaagd: `{ status: "ok", credentials, count }`
 
-Payload-vorm voor Telegram-soort:
+Structuur van de payload voor het Telegram-type:
 
 - `{ groupId: string, driverToken: string, sutToken: string }`
-- `groupId` moet een numerieke Telegram-chat-id-string zijn.
-- `admin/add` valideert deze vorm voor `kind: "telegram"` en weigert verkeerd gevormde payloads.
+- `groupId` moet een tekenreeks met een numerieke Telegram-chat-id zijn.
+- `admin/add` valideert deze structuur voor `kind: "telegram"` en weigert onjuist gevormde payloads.
 
-Payload-vorm voor Telegram real-user-soort:
+Structuur van de payload voor het Telegram-type met echte gebruiker:
 
 - `{ groupId: string, sutToken: string, testerUserId: string, testerUsername: string, telegramApiId: string, telegramApiHash: string, tdlibDatabaseEncryptionKey: string, tdlibArchiveBase64: string, tdlibArchiveSha256: string, desktopTdataArchiveBase64: string, desktopTdataArchiveSha256: string }`
-- `groupId`, `testerUserId` en `telegramApiId` moeten numerieke strings zijn.
-- `tdlibArchiveSha256` en `desktopTdataArchiveSha256` moeten SHA-256-hexstrings zijn.
-- `kind: "telegram-user"` is gereserveerd voor de Mantis Telegram Desktop proof-workflow. Generieke QA Lab-lanes mogen deze niet verkrijgen.
+- `groupId`, `testerUserId` en `telegramApiId` moeten numerieke tekenreeksen zijn.
+- `tdlibArchiveSha256` en `desktopTdataArchiveSha256` moeten hexadecimale SHA-256-tekenreeksen zijn.
+- `kind: "telegram-user"` is gereserveerd voor de Mantis-werkstroom voor Telegram Desktop-bewijs. Algemene QA-lablanes mogen dit type niet verkrijgen.
 
-Door de broker gevalideerde multi-channel-payloads:
+Door de broker gevalideerde payloads voor meerdere kanalen:
 
 - Discord: `{ guildId: string, channelId: string, driverBotToken: string, sutBotToken: string, sutApplicationId: string, voiceChannelId?: string }`
 - WhatsApp: `{ driverPhoneE164: string, sutPhoneE164: string, driverAuthArchiveBase64: string, sutAuthArchiveBase64: string, groupJid?: string }`
 
-Slack-lanes kunnen ook uit de pool leasen, maar Slack-payloadvalidatie
-bevindt zich momenteel in de Slack QA-runner in plaats van de broker. Gebruik
+Slack-lanes kunnen ook uit de pool leasen, maar de validatie van Slack-payloads
+bevindt zich momenteel in de Slack-QA-runner in plaats van in de broker. Gebruik
 `{ channelId: string, driverBotToken: string, sutBotToken: string, sutAppToken: string }`
 voor Slack-rijen.
 
-### Een kanaal toevoegen aan QA
+### Een kanaal aan QA toevoegen
 
-De architectuur- en scenario-helpernamen voor nieuwe channel-adapters staan in [QA-overzicht → Een kanaal toevoegen](/nl/concepts/qa-e2e-automation#adding-a-channel). De minimumbasis: implementeer de transport-runner op de gedeelde `qa-lab`-hostseam, declareer `qaRunners` in het pluginmanifest, mount als `openclaw qa <runner>` en schrijf scenario's onder `qa/scenarios/`.
+De architectuur en namen van scenariohulpprogramma's voor nieuwe kanaaladapters staan in
+[QA-overzicht - Een kanaal toevoegen](/nl/concepts/qa-e2e-automation#adding-a-channel).
+De minimumvereisten: implementeer de transportrunner op de gedeelde `qa-lab`-host-
+naad, voeg een `adapterFactory` toe voor gedeelde scenario's, declareer `qaRunners` in het
+Plugin-manifest, koppel deze als `openclaw qa <runner>` en schrijf scenario's onder
+`qa/scenarios/`.
 
-## Testsuites (wat waar draait)
+## Testsuites (wat waar wordt uitgevoerd)
 
-Zie de suites als "toenemend realisme" (en toenemende instabiliteit/kosten):
+Beschouw de suites als een reeks met „toenemend realisme” (en toenemende instabiliteit/kosten).
 
-### Unit / integratie (standaard)
+### Unit-/integratietests (standaard)
 
-- Command: `pnpm test`
-- Config: ongerichte runs gebruiken de `vitest.full-*.config.ts`-shardset en kunnen multi-project-shards uitbreiden naar per-project-configs voor parallelle planning
-- Bestanden: core-/unit-inventarissen onder `src/**/*.test.ts`, `packages/**/*.test.ts` en `test/**/*.test.ts`; UI-unittests draaien in de speciale `unit-ui`-shard
-- Scope:
-  - Pure unittests
-  - In-process integratietests (Gateway-auth, routing, tooling, parsing, config)
-  - Deterministische regressies voor bekende bugs
+- Opdracht: `pnpm test`
+- Configuratie: niet-gerichte uitvoeringen gebruiken de shardset `vitest.full-*.config.ts` en kunnen
+  shards met meerdere projecten uitbreiden naar configuraties per project voor parallelle
+  planning
+- Bestanden: kern-/unitinventarissen onder `src/**/*.test.ts`,
+  `packages/**/*.test.ts` en `test/**/*.test.ts`; UI-unittests worden uitgevoerd in de
+  afzonderlijke `unit-ui`-shard
+- Bereik:
+  - Zuivere unittests
+  - Integratietests binnen het proces (Gateway-authenticatie, routering, hulpmiddelen, parsering, configuratie)
+  - Deterministische regressietests voor bekende fouten
 - Verwachtingen:
-  - Draait in CI
+  - Wordt uitgevoerd in CI
   - Geen echte sleutels vereist
   - Moet snel en stabiel zijn
-  - Resolver- en public-surface-loadertests moeten breed `api.js`- en
-    `runtime-api.js`-fallbackgedrag bewijzen met gegenereerde kleine plugin-fixtures, niet met
-    echte gebundelde plugin source-API's. Echte plugin-API-loads horen thuis in
-    plugin-eigen contract-/integratiesuites.
+  - Tests voor resolvers en loaders van openbare oppervlakken moeten breed terugvalgedrag voor `api.js` en
+    `runtime-api.js` aantonen met gegenereerde minimale Plugin-fixtures,
+    niet met echte bron-API's van gebundelde Plugins. Het laden van echte Plugin-API's hoort thuis in
+    contractsuites/integratiesuites van de betreffende Plugin.
 
-Native dependency-beleid:
+Beleid voor systeemeigen afhankelijkheden:
 
-- Standaard testinstallaties slaan optionele native Discord opus-builds over. Discord voice gebruikt gebundelde `libopus-wasm`, en `@discordjs/opus` blijft uitgeschakeld in `allowBuilds` zodat lokale tests en Testbox-lanes de native addon niet compileren.
-- Vergelijk native opus-prestaties in de `libopus-wasm`-benchmarkrepo, niet in standaard OpenClaw-installatie-/testloops. Zet `@discordjs/opus` niet op `true` in de standaard `allowBuilds`; daardoor gaan niet-gerelateerde installatie-/testloops native code compileren.
+- Standaard testinstallaties slaan optionele systeemeigen Discord-opusbuilds over. Discord-
+  spraak gebruikt de gebundelde `libopus-wasm` en `@discordjs/opus` blijft uitgeschakeld in
+  `allowBuilds`, zodat lokale tests en Testbox-lanes de systeemeigen
+  add-on niet compileren.
+- Vergelijk de prestaties van systeemeigen opus in de benchmarkrepository van `libopus-wasm`, niet
+  in de standaard installatie-/testlussen van OpenClaw. Stel `@discordjs/opus` niet in op
+  `true` in de standaardwaarde van `allowBuilds`; daardoor compileren niet-gerelateerde installatie-/testlussen
+  systeemeigen code.
 
 <AccordionGroup>
-  <Accordion title="Projecten, shards en scoped lanes">
+  <Accordion title="Projecten, shards en afgebakende lanes">
 
-    - Een niet-gerichte `pnpm test` draait twaalf kleinere shard-configuraties (`core-unit-fast`, `core-unit-src`, `core-unit-security`, `core-unit-ui`, `core-unit-support`, `core-support-boundary`, `core-contracts`, `core-bundled`, `core-runtime`, `agentic`, `auto-reply`, `extensions`) in plaats van één enorm native root-projectproces. Dit verlaagt de piek-RSS op zwaar belaste machines en voorkomt dat auto-reply-/extensionwerk niet-gerelateerde suites uithongert.
-    - `pnpm test --watch` gebruikt nog steeds de native root-`vitest.config.ts`-projectgrafiek, omdat een multi-shard watch-loop niet praktisch is.
-    - `pnpm test`, `pnpm test:watch` en `pnpm test:perf:imports` leiden expliciete bestands-/directorytargets eerst door scoped lanes, zodat `pnpm test extensions/discord/src/monitor/message-handler.preflight.test.ts` niet de volledige opstartkosten van het root-project hoeft te betalen.
-    - `pnpm test:changed` breidt gewijzigde git-paden standaard uit naar goedkope scoped lanes: directe testbewerkingen, naastliggende `*.test.ts`-bestanden, expliciete source-mappings en lokale import-grafiekafhankelijken. Config-/setup-/packagebewerkingen draaien tests niet breed, tenzij je expliciet `OPENCLAW_TEST_CHANGED_BROAD=1 pnpm test:changed` gebruikt.
-    - `pnpm check:changed` is de normale slimme lokale check-gate voor smal werk. Het classificeert de diff in core, core-tests, extensions, extension-tests, apps, docs, release-metadata, live Docker-tooling en tooling, en draait daarna de bijpassende typecheck-, lint- en guard-commando's. Het draait geen Vitest-tests; gebruik `pnpm test:changed` of expliciet `pnpm test <target>` voor testbewijs. Versiebumpen met alleen release-metadata draaien gerichte versie-/config-/root-dependencychecks, met een guard die packagewijzigingen buiten het top-level version-veld afwijst.
-    - Bewerkingen aan de live Docker ACP-harness draaien gerichte checks: shell-syntaxis voor de live Docker-authscripts en een dry-run van de live Docker-scheduler. `package.json`-wijzigingen worden alleen meegenomen wanneer de diff beperkt is tot `scripts["test:docker:live-*"]`; dependency-, export-, versie- en andere package-oppervlakbewerkingen gebruiken nog steeds de bredere guards.
-    - Import-lichte unit-tests uit agents, commands, plugins, auto-reply-helpers, `plugin-sdk` en vergelijkbare pure utility-gebieden lopen via de `unit-fast`-lane, die `test/setup-openclaw-runtime.ts` overslaat; stateful/runtime-zware bestanden blijven op de bestaande lanes.
-    - Geselecteerde `plugin-sdk`- en `commands`-helpersourcebestanden mappen changed-mode-runs ook naar expliciete naastliggende tests in die lichte lanes, zodat helperbewerkingen voorkomen dat de volledige zware suite voor die directory opnieuw draait.
-    - `auto-reply` heeft aparte buckets voor top-level core-helpers, top-level `reply.*`-integratietests en de `src/auto-reply/reply/**`-subtree. CI splitst de reply-subtree verder in shards voor agent-runner, dispatch en commands/state-routing, zodat één import-zware bucket niet de volledige Node-staart bezit.
-    - Normale PR-/main-CI slaat bewust de extension-batchsweep en de release-only `agentic-plugins`-shard over. Full Release Validation dispatcht de aparte child-workflow `Plugin Prerelease` voor die plugin-/extension-zware suites op release candidates.
+    - Niet-doelgerichte uitvoeringen van `pnpm test` gebruiken dertien kleinere shardconfiguraties (`core-unit-fast`, `core-unit-src`, `core-unit-security`, `core-unit-ui`, `core-unit-support`, `core-support-boundary`, `core-tooling`, `core-contracts`, `core-bundled`, `core-runtime`, `agentic`, `auto-reply`, `extensions`) in plaats van één gigantisch native hoofdprojectproces. Dit verlaagt het maximale RSS-gebruik op zwaarbelaste machines en voorkomt dat auto-reply-/Plugin-werk niet-gerelateerde suites verdringt.
+    - `pnpm test --watch` gebruikt nog steeds de native `vitest.config.ts`-projectgraaf van het hoofdproject, omdat een watch-lus met meerdere shards niet praktisch is.
+    - `pnpm test`, `pnpm test:watch` en `pnpm test:perf:imports` leiden expliciete bestands-/mapdoelen eerst door afgebakende lanes, zodat `pnpm test extensions/discord/src/monitor/message-handler.preflight.test.ts` niet de volledige opstartkosten van het hoofdproject hoeft te dragen.
+    - `pnpm test:changed` breidt gewijzigde git-paden standaard uit naar goedkope afgebakende lanes: directe testbewerkingen, naastgelegen `*.test.ts`-bestanden, expliciete bronkoppelingen en afhankelijke onderdelen uit de lokale importgraaf. Bewerkingen aan configuratie, installatie of pakketten voeren tests niet breed uit, tenzij u expliciet `OPENCLAW_TEST_CHANGED_BROAD=1 pnpm test:changed` gebruikt.
+    - `pnpm check:changed` is de normale slimme lokale controlepoort voor beperkt werk. Deze classificeert de diff in kern, kerntests, plugins, plugintests, apps, documentatie, releasemetagegevens, live Docker-hulpmiddelen en tooling, en voert vervolgens de bijbehorende typecontrole-, lint- en bewakingsopdrachten uit. Vitest-tests worden niet uitgevoerd; roep `pnpm test:changed` of expliciet `pnpm test <target>` aan als testbewijs. Versieverhogingen die uitsluitend releasemetagegevens wijzigen, voeren gerichte controles van versies, configuratie en hoofdafhankelijkheden uit, met een bewaking die pakketwijzigingen buiten het versieveld op het hoogste niveau afwijst.
+    - Bewerkingen aan de live Docker ACP-harnas voeren gerichte controles uit: shellsyntaxis voor de live Docker-authenticatiescripts en een proefuitvoering van de live Docker-planner. Wijzigingen in `package.json` worden alleen meegenomen wanneer de diff beperkt is tot `scripts["test:docker:live-*"]`; bewerkingen van afhankelijkheden, exports, versies en andere pakketoppervlakken gebruiken nog steeds de bredere bewakingen.
+    - Importarme unittests van agents, opdrachten, plugins, auto-reply-helpers, `plugin-sdk` en vergelijkbare gebieden met pure hulpprogramma's worden door de lane `unit-fast` geleid, die `test/setup-openclaw-runtime.ts` overslaat; bestanden met veel status- of runtimegebruik blijven op de bestaande lanes.
+    - Geselecteerde bronbestanden met helpers uit `plugin-sdk` en `commands` koppelen uitvoeringen in gewijzigde modus ook aan expliciete naastgelegen tests in die lichte lanes, zodat helperbewerkingen niet de volledige zware suite voor die map opnieuw uitvoeren.
+    - `auto-reply` heeft speciale groepen voor kernhelpers op het hoogste niveau, integratietests van `reply.*` op het hoogste niveau en de substructuur `src/auto-reply/reply/**`. CI splitst de reply-substructuur verder op in shards voor agent-runner, dispatch en opdracht-/statusroutering, zodat één importzware groep niet de volledige Node-staart beheert.
+    - Normale CI voor PR/main slaat bewust de batchsweep voor gebundelde plugins en de uitsluitend voor releases bedoelde shard `agentic-plugins` over. Volledige releasevalidatie start voor deze Plugin-zware suites bij releasekandidaten de afzonderlijke onderliggende workflow `Plugin Prerelease`.
 
   </Accordion>
 
-  <Accordion title="Embedded runner coverage">
+  <Accordion title="Dekking van de ingebedde runner">
 
-    - Wanneer je inputs voor message-tool discovery of Compaction-runtimecontext
-      wijzigt, behoud dan beide dekkingsniveaus.
-    - Voeg gerichte helperregressies toe voor pure routerings- en normalisatie-
-      grenzen.
-    - Houd de integratiesuites voor de embedded runner gezond:
+    - Wanneer u invoer voor de detectie van berichttools of de runtimecontext van Compaction wijzigt, moet u beide dekkingsniveaus behouden.
+    - Voeg gerichte helperregressietests toe voor zuivere routerings- en normalisatiegrenzen.
+    - Houd de integratiesuites van de ingebedde runner gezond:
       `src/agents/embedded-agent-runner/compact.hooks.test.ts`,
       `src/agents/embedded-agent-runner/run.overflow-compaction.test.ts` en
       `src/agents/embedded-agent-runner/run.overflow-compaction.loop.test.ts`.
-    - Die suites verifiëren dat scoped id's en Compaction-gedrag nog steeds
-      door de echte `run.ts`- / `compact.ts`-paden lopen; helper-only tests zijn
-      geen voldoende vervanging voor die integratiepaden.
+    - Deze suites verifiëren dat afgebakende id's en Compaction-gedrag nog steeds
+      door de echte paden `run.ts` / `compact.ts` stromen; tests die alleen
+      helpers testen, zijn geen voldoende vervanging voor die integratiepaden.
 
   </Accordion>
 
-  <Accordion title="Vitest pool and isolation defaults">
+  <Accordion title="Standaardwaarden voor Vitest-pool en -isolatie">
 
-    - De basis-Vitest-config gebruikt standaard `threads`.
-    - De gedeelde Vitest-config zet `isolate: false` vast en gebruikt de
-      niet-geïsoleerde runner voor de root-projecten, e2e en live configs.
-    - De root-UI-lane behoudt zijn `jsdom`-setup en optimizer, maar draait ook op
-      de gedeelde niet-geïsoleerde runner.
-    - Elke `pnpm test`-shard erft dezelfde standaardwaarden `threads` + `isolate: false`
-      uit de gedeelde Vitest-config.
-    - `scripts/run-vitest.mjs` voegt standaard `--no-maglev` toe voor Vitest-child-Node-
-      processen om V8-compilechurn tijdens grote lokale runs te verminderen.
-      Stel `OPENCLAW_VITEST_ENABLE_MAGLEV=1` in om te vergelijken met standaard V8-
-      gedrag.
-    - `scripts/run-vitest.mjs` beëindigt expliciete niet-watch Vitest-runs na
-      5 minuten zonder stdout- of stderr-output. Stel
-      `OPENCLAW_VITEST_NO_OUTPUT_TIMEOUT_MS=0` in om de watchdog uit te schakelen voor een
-      bewust stil onderzoek.
+    - De basisconfiguratie van Vitest gebruikt standaard `threads`.
+    - De gedeelde Vitest-configuratie stelt `isolate: false` vast en gebruikt de
+      niet-geïsoleerde runner in de hoofdprojecten en de e2e- en liveconfiguraties.
+    - De UI-lane van het hoofdproject behoudt de `jsdom`-installatie en optimalisator, maar gebruikt
+      eveneens de gedeelde niet-geïsoleerde runner.
+    - Elke `pnpm test`-shard neemt dezelfde standaardwaarden `threads` + `isolate: false`
+      over van de gedeelde Vitest-configuratie.
+    - `scripts/run-vitest.mjs` voegt standaard `--no-maglev` toe voor onderliggende Node-processen
+      van Vitest om V8-compilatieverloop tijdens grote lokale uitvoeringen te beperken.
+      Stel `OPENCLAW_VITEST_ENABLE_MAGLEV=1` in om te vergelijken met standaard V8-gedrag.
+    - `scripts/run-vitest.mjs` beëindigt expliciete Vitest-uitvoeringen buiten de watch-modus
+      na 5 minuten zonder uitvoer naar stdout of stderr. Stel
+      `OPENCLAW_VITEST_NO_OUTPUT_TIMEOUT_MS=0` in om de bewaking uit te schakelen voor
+      een bewust stil onderzoek.
 
   </Accordion>
 
-  <Accordion title="Fast local iteration">
+  <Accordion title="Snelle lokale iteratie">
 
-    - `pnpm changed:lanes` toont welke architecturale lanes een diff activeert.
-    - De pre-commit-hook is alleen voor formattering. Hij staged geformatteerde bestanden opnieuw en
-      draait geen lint, typecheck of tests.
-    - Draai `pnpm check:changed` expliciet vóór handoff of push wanneer je
-      de slimme lokale check-gate nodig hebt.
-    - `pnpm test:changed` loopt standaard via goedkope scoped lanes. Gebruik
+    - `pnpm changed:lanes` toont welke architecturale lanes door een diff worden geactiveerd.
+    - De pre-commithaak voert alleen formattering uit. Deze voegt geformatteerde bestanden
+      opnieuw toe aan de staging en voert geen lint, typecontrole of tests uit.
+    - Voer `pnpm check:changed` expliciet uit vóór overdracht of push wanneer u
+      de slimme lokale controlepoort nodig hebt.
+    - `pnpm test:changed` routeert standaard via goedkope afgebakende lanes. Gebruik
       `OPENCLAW_TEST_CHANGED_BROAD=1 pnpm test:changed` alleen wanneer de agent
-      besluit dat een harness-, config-, package- of contractbewerking echt bredere
-      Vitest-dekking nodig heeft.
-    - `pnpm test:max` en `pnpm test:changed:max` behouden hetzelfde routerings-
-      gedrag, alleen met een hogere workerlimiet.
-    - Lokale worker-autoscaling is bewust conservatief en schaalt terug
-      wanneer de load average van de host al hoog is, zodat meerdere gelijktijdige
-      Vitest-runs standaard minder schade veroorzaken.
-    - De basis-Vitest-config markeert de projecten/configbestanden als
-      `forceRerunTriggers`, zodat changed-mode reruns correct blijven wanneer test-
-      wiring verandert.
-    - De config houdt `OPENCLAW_VITEST_FS_MODULE_CACHE` ingeschakeld op ondersteunde
-      hosts; stel `OPENCLAW_VITEST_FS_MODULE_CACHE_PATH=/abs/path` in als je
-      één expliciete cachelocatie wilt voor directe profiling.
+      bepaalt dat een bewerking aan het harnas, de configuratie, een pakket of een contract
+      werkelijk bredere Vitest-dekking nodig heeft.
+    - `pnpm test:max` en `pnpm test:changed:max` behouden hetzelfde routeringsgedrag,
+      maar met een hogere limiet voor workers.
+    - Automatische schaling van lokale workers is bewust conservatief en schaalt terug
+      wanneer het gemiddelde belastingsniveau van de host al hoog is, zodat meerdere gelijktijdige
+      Vitest-uitvoeringen standaard minder schade aanrichten.
+    - De basisconfiguratie van Vitest markeert de projecten/configuratiebestanden als
+      `forceRerunTriggers`, zodat heruitvoeringen in gewijzigde modus correct blijven wanneer
+      de testbedrading verandert.
+    - De configuratie houdt `OPENCLAW_VITEST_FS_MODULE_CACHE` ingeschakeld op
+      ondersteunde hosts; stel `OPENCLAW_VITEST_FS_MODULE_CACHE_PATH=/abs/path`
+      in voor één expliciete cachelocatie voor directe profilering.
 
   </Accordion>
 
-  <Accordion title="Perf debugging">
+  <Accordion title="Prestatieproblemen opsporen">
 
-    - `pnpm test:perf:imports` schakelt Vitest-importduur-rapportage plus
-      import-breakdown-output in.
-    - `pnpm test:perf:imports:changed` beperkt dezelfde profilingweergave tot
+    - `pnpm test:perf:imports` schakelt Vitest-rapportage van importduur en
+      uitvoer met een uitsplitsing van imports in.
+    - `pnpm test:perf:imports:changed` beperkt dezelfde profileringsweergave tot
       bestanden die sinds `origin/main` zijn gewijzigd.
-    - Shard-timingdata wordt geschreven naar `.artifacts/vitest-shard-timings.json`.
-      Whole-config-runs gebruiken het configpad als key; include-pattern-CI-
-      shards voegen de shardnaam toe, zodat gefilterde shards apart kunnen worden gevolgd.
-    - Wanneer één hot test nog steeds het grootste deel van zijn tijd in startupimports doorbrengt,
-      houd zware dependencies dan achter een smalle lokale `*.runtime.ts`-seam en
-      mock die seam direct in plaats van runtime-helpers deep te importeren alleen
-      om ze door `vi.mock(...)` te halen.
-    - `pnpm test:perf:changed:bench -- --ref <git-ref>` vergelijkt gerouteerde
-      `test:changed` met het native root-projectpad voor die gecommitte diff
-      en print wall time plus macOS max RSS.
-    - `pnpm test:perf:changed:bench -- --worktree` benchmarkt de huidige
-      dirty tree door de lijst met gewijzigde bestanden via
-      `scripts/test-projects.mjs` en de root-Vitest-config te routeren.
-    - `pnpm test:perf:profile:main` schrijft een main-thread CPU-profiel voor
-      Vitest-/Vite-opstart en transform-overhead.
-    - `pnpm test:perf:profile:runner` schrijft runner-CPU+heapprofielen voor de
-      unit-suite met bestandsparallelisme uitgeschakeld.
+    - Timinggegevens van shards worden naar `.artifacts/vitest-shard-timings.json` geschreven.
+      Uitvoeringen van volledige configuraties gebruiken het configuratiepad als sleutel; CI-shards
+      met opnamepatronen voegen de shardnaam toe, zodat gefilterde shards
+      afzonderlijk kunnen worden gevolgd.
+    - Wanneer één zware test nog steeds het grootste deel van de tijd besteedt aan imports tijdens het opstarten,
+      houdt u zware afhankelijkheden achter een smalle lokale `*.runtime.ts`-grens en
+      mockt u die grens rechtstreeks in plaats van runtimehelpers diep te importeren
+      om ze alleen door te geven aan `vi.mock(...)`.
+    - `pnpm test:perf:changed:bench -- --ref <git-ref>` vergelijkt de gerouteerde
+      `test:changed` met het native hoofdprojectpad voor die
+      vastgelegde diff en toont de verstreken tijd plus het maximale RSS-gebruik op macOS.
+    - `pnpm test:perf:changed:bench -- --worktree` meet de prestaties van de huidige
+      onopgeslagen werkstructuur door de lijst met gewijzigde bestanden te routeren via
+      `scripts/test-projects.mjs` en de Vitest-configuratie van het hoofdproject.
+    - `pnpm test:perf:profile:main` schrijft een CPU-profiel van de hoofdthread voor
+      de opstart- en transformatieoverhead van Vitest/Vite.
+    - `pnpm test:perf:profile:runner` schrijft CPU- en heap-profielen van de runner voor
+      de unitsuite met bestandsparallellisme uitgeschakeld.
 
   </Accordion>
 </AccordionGroup>
 
 ### Stabiliteit (Gateway)
 
-- Commando: `pnpm test:stability:gateway`
-- Config: `vitest.gateway.config.ts`, geforceerd naar één worker
-- Scope:
-  - Start standaard een echte loopback-Gateway met diagnostics ingeschakeld
-  - Stuurt synthetische gateway message-, memory- en large-payload-churn door het diagnostic-eventpad
-  - Bevraagt `diagnostics.stability` via de Gateway WS RPC
-  - Dekt persistentiehelpers voor diagnostic-stabilitybundles
-  - Assert dat de recorder begrensd blijft, synthetische RSS-samples onder het pressure-budget blijven en per-session queuedieptes terug naar nul leeglopen
+- Opdracht: `pnpm test:stability:gateway`
+- Configuratie: `test/vitest/vitest.gateway.config.ts`, `test/vitest/vitest.logging.config.ts` en `test/vitest/vitest.infra.config.ts`, elk geforceerd tot één worker
+- Bereik:
+  - Start een echte local loopback Gateway waarbij diagnostiek standaard is ingeschakeld
+  - Stuurt synthetische Gateway-berichten, geheugenactiviteit en verwerking van grote payloads door het diagnostische gebeurtenispad
+  - Vraagt `diagnostics.stability` op via de Gateway WS RPC
+  - Dekt helpers voor het persistent opslaan van diagnostische stabiliteitsbundels
+  - Controleert dat de recorder begrensd blijft, synthetische RSS-metingen onder het drukbudget blijven en wachtrijdieptes per sessie weer tot nul afnemen
 - Verwachtingen:
-  - CI-veilig en keyless
-  - Smalle lane voor follow-up van stabiliteitsregressies, geen vervanging voor de volledige Gateway-suite
+  - Veilig voor CI en zonder sleutels
+  - Smalle lane voor opvolging van stabiliteitsregressies, geen vervanging voor de volledige Gateway-suite
 
 ### E2E (repo-aggregaat)
 
-- Commando: `pnpm test:e2e`
-- Scope:
-  - Draait de gateway-smoke-E2E-lane
-  - Draait de gemockte Control UI-browser-E2E-lane
+- Opdracht: `pnpm test:e2e`
+- Bereik:
+  - Voert de E2E-lane voor de Gateway-rooktest uit
+  - Voert de E2E-lane voor de browser met gemockte Control UI uit
 - Verwachtingen:
-  - CI-veilig en keyless
+  - Veilig voor CI en zonder sleutels
   - Vereist dat Playwright Chromium is geïnstalleerd
 
-### E2E (gateway smoke)
+### E2E (Gateway-rooktest)
 
-- Commando: `pnpm test:e2e:gateway`
-- Config: `vitest.e2e.config.ts`
-- Bestanden: `src/**/*.e2e.test.ts`, `test/**/*.e2e.test.ts` en gebundelde-plugin-E2E-tests onder `extensions/`
-- Runtime-standaardwaarden:
-  - Gebruikt Vitest `threads` met `isolate: false`, gelijk aan de rest van de repo.
-  - Gebruikt adaptieve workers (CI: tot 2, lokaal: standaard 1).
-  - Draait standaard in silent mode om console-I/O-overhead te verminderen.
-- Nuttige overrides:
-  - `OPENCLAW_E2E_WORKERS=<n>` om het aantal workers te forceren (afgetopt op 16).
-  - `OPENCLAW_E2E_VERBOSE=1` om verbose console-output opnieuw in te schakelen.
-- Scope:
-  - End-to-end gedrag van multi-instance gateway
-  - WebSocket-/HTTP-oppervlakken, node-pairing en zwaardere networking
+- Opdracht: `pnpm test:e2e:gateway`
+- Configuratie: `test/vitest/vitest.e2e.config.ts`
+- Bestanden: `src/**/*.e2e.test.ts`, `test/**/*.e2e.test.ts` en E2E-tests van gebundelde plugins onder `extensions/`
+- Standaardwaarden voor runtime:
+  - Gebruikt Vitest `threads` met `isolate: false`, overeenkomstig de rest van de repo.
+  - Gebruikt adaptieve workers (CI: maximaal 2, lokaal: standaard 1).
+  - Draait standaard in stille modus om overhead van console-I/O te verminderen.
+- Nuttige overschrijvingen:
+  - `OPENCLAW_E2E_WORKERS=<n>` om het aantal workers af te dwingen (beperkt tot 16).
+  - `OPENCLAW_E2E_VERBOSE=1` om uitgebreide console-uitvoer opnieuw in te schakelen.
+- Bereik:
+  - End-to-endgedrag van de Gateway met meerdere instanties
+  - WebSocket-/HTTP-oppervlakken, Node-koppeling en zwaarder netwerkverkeer
 - Verwachtingen:
-  - Draait in CI (wanneer ingeschakeld in de pipeline)
-  - Geen echte keys vereist
-  - Meer bewegende delen dan unit-tests (kan langzamer zijn)
+  - Wordt uitgevoerd in CI (wanneer ingeschakeld in de pijplijn)
+  - Geen echte sleutels vereist
+  - Meer bewegende onderdelen dan unittests (kan langzamer zijn)
 
-### E2E (Control UI gemockte browser)
+### E2E (gemockte browser voor Control UI)
 
-- Commando: `pnpm test:ui:e2e`
-- Config: `test/vitest/vitest.ui-e2e.config.ts`
+- Opdracht: `pnpm test:ui:e2e`
+- Configuratie: `test/vitest/vitest.ui-e2e.config.ts`
 - Bestanden: `ui/src/**/*.e2e.test.ts`
-- Scope:
+- Bereik:
   - Start de Vite Control UI
   - Stuurt een echte Chromium-pagina aan via Playwright
-  - Vervangt de Gateway WebSocket door deterministische in-browser mocks
+  - Vervangt de Gateway-WebSocket door deterministische mocks in de browser
 - Verwachtingen:
-  - Draait in CI als onderdeel van `pnpm test:e2e`
-  - Geen echte Gateway, agents of providerkeys vereist
-  - Browserdependency moet aanwezig zijn (`pnpm --dir ui exec playwright install chromium`)
+  - Wordt in CI uitgevoerd als onderdeel van `pnpm test:e2e`
+  - Geen echte Gateway, agents of providersleutels vereist
+  - Browserafhankelijkheid moet aanwezig zijn (`pnpm --dir ui exec playwright install chromium`)
 
-### E2E: OpenShell backend-smoke
+### E2E: rooktest voor OpenShell-backend
 
-- Commando: `pnpm test:e2e:openshell`
+- Opdracht: `pnpm test:e2e:openshell`
 - Bestand: `extensions/openshell/src/backend.e2e.test.ts`
-- Scope:
-  - Hergebruikt een actieve lokale OpenShell-gateway
-  - Maakt een sandbox vanuit een tijdelijk lokaal Dockerfile
-  - Oefent OpenClaw's OpenShell-backend via echte `sandbox ssh-config` + SSH exec
-  - Verifieert remote-canoniek filesystemgedrag via de sandbox fs bridge
+- Bereik:
+  - Hergebruikt een actieve lokale OpenShell Gateway
+  - Maakt een sandbox op basis van een tijdelijk lokaal Dockerfile
+  - Test de OpenShell-backend van OpenClaw via echte `sandbox ssh-config` + SSH-uitvoering
+  - Verifieert op de externe omgeving gebaseerde canonieke bestandssysteemwerking via de bestandssysteembrug van de sandbox
 - Verwachtingen:
-  - Alleen opt-in; geen onderdeel van de standaard `pnpm test:e2e`-run
+  - Alleen na expliciete inschakeling; geen onderdeel van de standaarduitvoering van `pnpm test:e2e`
   - Vereist een lokale `openshell`-CLI plus een werkende Docker-daemon
-  - Vereist een actieve lokale OpenShell-gateway en de configbron daarvan
+  - Vereist een actieve lokale OpenShell Gateway en de bijbehorende configuratiebron
   - Gebruikt geïsoleerde `HOME` / `XDG_CONFIG_HOME` en vernietigt daarna de testsandbox
-- Nuttige overrides:
-  - `OPENCLAW_E2E_OPENSHELL=1` om de test in te schakelen bij het handmatig draaien van de bredere e2e-suite
-  - `OPENCLAW_E2E_OPENSHELL_COMMAND=/path/to/openshell` om naar een niet-standaard CLI-binary of wrapper-script te wijzen
-  - `OPENCLAW_E2E_OPENSHELL_CONFIG_HOME=/path/to/config` om de geregistreerde gatewayconfig beschikbaar te maken voor de geïsoleerde test
-  - `OPENCLAW_E2E_OPENSHELL_HOST_IP=172.18.0.1` om het Docker-gateway-IP te overschrijven dat door de host-policy-fixture wordt gebruikt
+- Nuttige overschrijvingen:
+  - `OPENCLAW_E2E_OPENSHELL=1` om de test in te schakelen wanneer de bredere e2e-suite handmatig wordt uitgevoerd
+  - `OPENCLAW_E2E_OPENSHELL_COMMAND=/path/to/openshell` om naar een niet-standaard CLI-binair bestand of wrapperscript te verwijzen
+  - `OPENCLAW_E2E_OPENSHELL_CONFIG_HOME=/path/to/config` om de geregistreerde Gateway-configuratie beschikbaar te maken voor de geïsoleerde test
+  - `OPENCLAW_E2E_OPENSHELL_HOST_IP=172.18.0.1` om het IP-adres van de Docker Gateway te overschrijven dat door de hostbeleidsfixture wordt gebruikt
 
 ### Live (echte providers + echte modellen)
 
 - Opdracht: `pnpm test:live`
-- Configuratie: `vitest.live.config.ts`
-- Bestanden: `src/**/*.live.test.ts`, `test/**/*.live.test.ts` en live tests voor gebundelde Plugins onder `extensions/`
+- Configuratie: `test/vitest/vitest.live.config.ts`
+- Bestanden: `src/**/*.live.test.ts`, `test/**/*.live.test.ts` en live-tests voor meegeleverde plugins onder `extensions/`
 - Standaard: **ingeschakeld** door `pnpm test:live` (stelt `OPENCLAW_LIVE_TEST=1` in)
 - Bereik:
-  - "Werkt deze provider/dit model _vandaag_ echt met echte referenties?"
-  - Vang wijzigingen in providerindeling, eigenaardigheden bij tool-aanroepen, authenticatieproblemen en rate-limitgedrag op
+  - "Werkt deze provider/dit model _vandaag_ daadwerkelijk met echte referenties?"
+  - Detecteer wijzigingen in providerindelingen, eigenaardigheden bij het aanroepen van tools, authenticatieproblemen en gedrag rond snelheidslimieten
 - Verwachtingen:
-  - Ontwerp is niet CI-stabiel (echte netwerken, echt providerbeleid, quota, storingen)
-  - Kost geld / gebruikt rate limits
+  - Ontworpen om niet CI-stabiel te zijn (echte netwerken, echt providerbeleid, quota, storingen)
+  - Kost geld / gebruikt snelheidslimieten
   - Voer bij voorkeur beperkte subsets uit in plaats van "alles"
-- Live runs gebruiken al geexporteerde API-sleutels en voorbereide authenticatieprofielen.
-- Standaard isoleren live runs nog steeds `HOME` en kopieren ze configuratie-/authenticatiemateriaal naar een tijdelijke test-home, zodat unit-fixtures je echte `~/.openclaw` niet kunnen wijzigen.
-- Stel `OPENCLAW_LIVE_USE_REAL_HOME=1` alleen in wanneer je bewust wilt dat live tests je echte home-map gebruiken.
-- `pnpm test:live` gebruikt standaard een stillere modus: deze behoudt `[live] ...`-voortgangsuitvoer en dempt Gateway-bootstraplogs/Bonjour-ruis. Stel `OPENCLAW_LIVE_TEST_QUIET=0` in als je de volledige opstartlogs terug wilt.
-- Rotatie van API-sleutels (providerspecifiek): stel `*_API_KEYS` in met komma-/puntkomma-indeling of `*_API_KEY_1`, `*_API_KEY_2` (bijvoorbeeld `OPENAI_API_KEYS`, `ANTHROPIC_API_KEYS`, `GEMINI_API_KEYS`) of per-live override via `OPENCLAW_LIVE_*_KEY`; tests proberen opnieuw bij rate-limitantwoorden.
+- Live-uitvoeringen gebruiken reeds geëxporteerde API-sleutels en voorbereide authenticatieprofielen.
+- Standaard isoleren live-uitvoeringen nog steeds `HOME` en kopiëren ze configuratie- en authenticatiemateriaal naar een tijdelijke testthuismap, zodat eenheidsfixtures je echte `~/.openclaw` niet kunnen wijzigen.
+- Stel `OPENCLAW_LIVE_USE_REAL_HOME=1` alleen in wanneer je bewust wilt dat live-tests je echte thuismap gebruiken.
+- `pnpm test:live` gebruikt standaard een stillere modus: de voortgangsuitvoer `[live] ...` blijft zichtbaar en opstartlogboeken van de Gateway en Bonjour-berichten worden gedempt. Stel `OPENCLAW_LIVE_TEST_QUIET=0` in als je de volledige opstartlogboeken weer wilt zien.
+- Rotatie van API-sleutels (providerspecifiek): stel `*_API_KEYS` in met een komma-/puntkomma-indeling of gebruik `*_API_KEY_1`, `*_API_KEY_2` (bijvoorbeeld `OPENAI_API_KEYS`, `ANTHROPIC_API_KEYS`, `GEMINI_API_KEYS`), of gebruik per live-uitvoering een overschrijving via `OPENCLAW_LIVE_*_KEY`; tests proberen het opnieuw bij antwoorden wegens snelheidslimieten.
 - Voortgangs-/Heartbeat-uitvoer:
-  - Live suites schrijven nu voortgangsregels naar stderr, zodat lange provideraanroepen zichtbaar actief zijn, zelfs wanneer Vitest-consolecapture stil is.
-  - `vitest.live.config.ts` schakelt Vitest-console-interceptie uit, zodat provider-/Gateway-voortgangsregels tijdens live runs direct streamen.
-  - Stem direct-model-Heartbeats af met `OPENCLAW_LIVE_HEARTBEAT_MS`.
-  - Stem Gateway-/probe-Heartbeats af met `OPENCLAW_LIVE_GATEWAY_HEARTBEAT_MS`.
+  - Live-testsuites schrijven voortgangsregels naar stderr, zodat langdurige provideraanroepen zichtbaar actief blijven, zelfs wanneer de consolevastlegging van Vitest stil is.
+  - `test/vitest/vitest.live.config.ts` schakelt de consoleonderschepping van Vitest uit, zodat voortgangsregels van providers/de Gateway tijdens live-uitvoeringen direct worden doorgestuurd.
+  - Stem Heartbeats voor rechtstreekse modellen af met `OPENCLAW_LIVE_HEARTBEAT_MS`.
+  - Stem Heartbeats voor de Gateway/controles af met `OPENCLAW_LIVE_GATEWAY_HEARTBEAT_MS`.
 
-## Welke suite moet ik uitvoeren?
+## Welke testsuite moet ik uitvoeren?
 
-Gebruik deze beslistabel:
+Gebruik deze beslissingstabel:
 
 - Logica/tests bewerken: voer `pnpm test` uit (en `pnpm test:coverage` als je veel hebt gewijzigd)
-- Gateway-netwerken / WS-protocol / koppeling aanraken: voeg `pnpm test:e2e` toe
-- Debuggen van "mijn bot ligt eruit" / providerspecifieke fouten / tool-aanroepen: voer een beperkte `pnpm test:live` uit
+- Netwerken van de Gateway / het WS-protocol / koppeling wijzigen: voeg `pnpm test:e2e` toe
+- Problemen opsporen bij "mijn bot werkt niet" / providerspecifieke fouten / het aanroepen van tools: voer een beperkte `pnpm test:live` uit
 
-## Live (netwerk-aanrakende) tests
+## Live-tests (met netwerktoegang)
 
-Voor de live modelmatrix, CLI-backend-smokes, ACP-smokes, Codex app-server
-harness, en alle live tests voor mediaproviders (Deepgram, BytePlus, ComfyUI, image,
-music, video, media harness) - plus referentieafhandeling voor live runs - zie
-[Live suites testen](/nl/help/testing-live). Voor de speciale checklist voor updates en
-Plugin-validatie, zie
-[Updates en Plugins testen](/nl/help/testing-updates-plugins).
+Voor de livemodelmatrix, snelle controles van CLI-backends, snelle ACP-controles, de
+Codex-appserverharnas en alle live-tests voor mediaproviders (Deepgram, BytePlus,
+ComfyUI, afbeeldingen, muziek, video, mediaharnas), plus de verwerking van referenties
+voor live-uitvoeringen:
 
-## Docker-runners (optionele "werkt in Linux"-controles)
+- zie [Live-testsuites testen](/nl/help/testing-live). Zie voor de specifieke controlelijst
+  voor updates en pluginvalidatie
+  [Updates en plugins testen](/nl/help/testing-updates-plugins).
 
-Deze Docker-runners zijn opgesplitst in twee groepen:
+## Docker-uitvoeringen (optionele controles op "werkt onder Linux")
 
-- Live-model-runners: `test:docker:live-models` en `test:docker:live-gateway` voeren alleen hun overeenkomende live bestand met profielsleutel uit binnen de repo-Docker-image (`src/agents/models.profiles.live.test.ts` en `src/gateway/gateway-models.profiles.live.test.ts`), waarbij je lokale configuratiemap, workspace en optioneel profiel-env-bestand worden gemount. De overeenkomende lokale entrypoints zijn `test:live:models-profiles` en `test:live:gateway-profiles`.
-- Docker-live-runners behouden waar nodig hun eigen praktische limieten:
-  `test:docker:live-models` gebruikt standaard de samengestelde ondersteunde set met hoge signaalwaarde, en
+Deze Docker-uitvoeringen zijn verdeeld in twee categorieën:
+
+- Uitvoeringen voor livemodellen: `test:docker:live-models` en `test:docker:live-gateway` voeren alleen het bijbehorende live-bestand met profielsleutels uit binnen de Docker-installatiekopie van de repository (`src/agents/models.profiles.live.test.ts` en `src/gateway/gateway-models.profiles.live.test.ts`), waarbij je lokale configuratiemap, werkruimte en optionele profielomgevingsbestand worden gekoppeld. De bijbehorende lokale toegangspunten zijn `test:live:models-profiles` en `test:live:gateway-profiles`.
+- Docker-live-uitvoeringen behouden waar nodig hun eigen praktische limieten:
+  `test:docker:live-models` gebruikt standaard de samengestelde, ondersteunde set met veel informatieve waarde, en
   `test:docker:live-gateway` gebruikt standaard `OPENCLAW_LIVE_GATEWAY_SMOKE=1`,
   `OPENCLAW_LIVE_GATEWAY_MAX_MODELS=8`,
   `OPENCLAW_LIVE_GATEWAY_STEP_TIMEOUT_MS=45000` en
   `OPENCLAW_LIVE_GATEWAY_MODEL_TIMEOUT_MS=90000`. Stel `OPENCLAW_LIVE_MAX_MODELS`
-  of de Gateway-env-vars in wanneer je expliciet een kleinere limiet of grotere scan wilt.
-- `test:docker:all` bouwt de live Docker-image eenmalig via `test:docker:live-build`, verpakt OpenClaw eenmalig als npm-tarball via `scripts/package-openclaw-for-docker.mjs`, en bouwt/hergebruikt daarna twee `scripts/e2e/Dockerfile`-images. De kale image is alleen de Node/Git-runner voor install/update/plugin-dependency-lanes; die lanes mounten de vooraf gebouwde tarball. De functionele image installeert dezelfde tarball in `/app` voor lanes voor ingebouwde-appfunctionaliteit. Docker-lanedefinities staan in `scripts/lib/docker-e2e-scenarios.mjs`; plannerlogica staat in `scripts/lib/docker-e2e-plan.mjs`; `scripts/test-docker-all.mjs` voert het geselecteerde plan uit. De aggregaatrunner gebruikt een gewogen lokale scheduler: `OPENCLAW_DOCKER_ALL_PARALLELISM` bepaalt processlots, terwijl resourcelimieten voorkomen dat zware live-, npm-install- en multi-service-lanes allemaal tegelijk starten. Als een enkele lane zwaarder is dan de actieve limieten, kan de scheduler deze nog steeds starten wanneer de pool leeg is en deze daarna alleen laten draaien totdat er weer capaciteit beschikbaar is. Standaarden zijn 10 slots, `OPENCLAW_DOCKER_ALL_LIVE_LIMIT=9`, `OPENCLAW_DOCKER_ALL_NPM_LIMIT=5` en `OPENCLAW_DOCKER_ALL_SERVICE_LIMIT=7`; stem `OPENCLAW_DOCKER_ALL_WEIGHT_LIMIT` of `OPENCLAW_DOCKER_ALL_DOCKER_LIMIT` alleen af wanneer de Docker-host meer ruimte heeft. De runner voert standaard een Docker-preflight uit, verwijdert verouderde OpenClaw E2E-containers, print elke 30 seconden status, bewaart timings van geslaagde lanes in `.artifacts/docker-tests/lane-timings.json`, en gebruikt die timings om bij latere runs langere lanes eerst te starten. Gebruik `OPENCLAW_DOCKER_ALL_DRY_RUN=1` om het gewogen lanemanifest te printen zonder Docker te bouwen of uit te voeren, of `node scripts/test-docker-all.mjs --plan-json` om het CI-plan voor geselecteerde lanes, pakket-/imagebehoeften en referenties te printen.
-- `Package Acceptance` is de GitHub-native pakketpoort voor "werkt deze installeerbare tarball als product?" Deze lost een kandidaatpakket op uit `source=npm`, `source=ref`, `source=url` of `source=artifact`, uploadt het als `package-under-test`, en voert daarna de herbruikbare Docker E2E-lanes uit tegen exact die tarball in plaats van de geselecteerde ref opnieuw te verpakken. Profielen zijn gerangschikt op breedte: `smoke`, `package`, `product` en `full`. Zie [Updates en Plugins testen](/nl/help/testing-updates-plugins) voor het pakket-/update-/Plugin-contract, de survivor-matrix voor gepubliceerde upgrades, releasestandaarden en fouttriage.
-- Build- en releasecontroles voeren `scripts/check-cli-bootstrap-imports.mjs` uit na tsdown. De guard doorloopt de statische gebouwde graaf vanaf `dist/entry.js` en `dist/cli/run-main.js` en faalt als pre-dispatch-opstart package-afhankelijkheden importeert, zoals Commander, prompt-UI, undici of logging voor commandodispatch; deze houdt ook de gebundelde Gateway-run-chunk binnen budget en wijst statische imports van bekende koude Gateway-paden af. Packaged CLI smoke dekt ook roothelp, onboard-help, doctor-help, status, config-schema en een model-list-opdracht.
-- Legacycompatibiliteit voor Package Acceptance is begrensd op `2026.4.25` (`2026.4.25-beta.*` inbegrepen). Tot en met die grens tolereert de harness alleen metadatahiaten van verzonden pakketten: weggelaten prive-QA-inventarisitems, ontbrekende `gateway install --wrapper`, ontbrekende patchbestanden in de uit de tarball afgeleide git-fixture, ontbrekende gepersisteerde `update.channel`, legacylocaties voor Plugin-install-records, ontbrekende persistentie van marketplace-install-records en configuratiemetadata-migratie tijdens `plugins update`. Voor pakketten na `2026.4.25` zijn die paden strikte fouten.
-- Container-smoke-runners: `test:docker:openwebui`, `test:docker:onboard`, `test:docker:npm-onboard-channel-agent`, `test:docker:release-user-journey`, `test:docker:release-typed-onboarding`, `test:docker:release-media-memory`, `test:docker:release-upgrade-user-journey`, `test:docker:release-plugin-marketplace`, `test:docker:skill-install`, `test:docker:update-channel-switch`, `test:docker:upgrade-survivor`, `test:docker:published-upgrade-survivor`, `test:docker:session-runtime-context`, `test:docker:agents-delete-shared-workspace`, `test:docker:gateway-network`, `test:docker:browser-cdp-snapshot`, `test:docker:mcp-channels`, `test:docker:agent-bundle-mcp-tools`, `test:docker:cron-mcp-cleanup`, `test:docker:plugins`, `test:docker:plugin-update`, `test:docker:plugin-lifecycle-matrix` en `test:docker:config-reload` starten een of meer echte containers en verifieren integratiepaden op hoger niveau.
-- Docker/Bash E2E-lanes die de verpakte OpenClaw-tarball installeren via `scripts/lib/openclaw-e2e-instance.sh`, begrenzen `npm install` op `OPENCLAW_E2E_NPM_INSTALL_TIMEOUT` (standaard `600s`; stel `0` in om de wrapper uit te schakelen voor debuggen).
+  of de omgevingsvariabelen van de Gateway in wanneer je expliciet een lagere limiet of grotere scan wilt.
+- `test:docker:all` bouwt de live-Docker-installatiekopie eenmaal via `test:docker:live-build`, verpakt OpenClaw eenmaal als npm-tarball via `scripts/package-openclaw-for-docker.mjs` en bouwt/hergebruikt vervolgens twee `scripts/e2e/Dockerfile`-installatiekopieën. De kale installatiekopie is alleen de Node/Git-uitvoerder voor installatie-, update- en plugin-afhankelijkheidstrajecten; deze trajecten koppelen de vooraf gebouwde tarball. De functionele installatiekopie installeert dezelfde tarball in `/app` voor trajecten voor de functionaliteit van de gebouwde toepassing. Definities van Docker-trajecten staan in `scripts/lib/docker-e2e-scenarios.mjs`; de plannerlogica staat in `scripts/lib/docker-e2e-plan.mjs`; `scripts/test-docker-all.mjs` voert het geselecteerde plan uit. De gecombineerde uitvoering gebruikt een gewogen lokale planner: `OPENCLAW_DOCKER_ALL_PARALLELISM` bepaalt het aantal processlots, terwijl resourcelimieten voorkomen dat zware live-, npm-installatie- en multiservicetrajecten allemaal tegelijk starten. Als één traject zwaarder is dan de actieve limieten, kan de planner het toch starten wanneer de pool leeg is en laat deze het vervolgens alleen doorlopen totdat er weer capaciteit beschikbaar is. De standaardwaarden zijn 10 slots, `OPENCLAW_DOCKER_ALL_LIVE_LIMIT=9`, `OPENCLAW_DOCKER_ALL_NPM_LIMIT=5` en `OPENCLAW_DOCKER_ALL_SERVICE_LIMIT=7`; pas `OPENCLAW_DOCKER_ALL_WEIGHT_LIMIT` of `OPENCLAW_DOCKER_ALL_DOCKER_LIMIT` (en andere overschrijvingen van `OPENCLAW_DOCKER_ALL_<RESOURCE>_LIMIT`) alleen aan wanneer de Docker-host meer capaciteit heeft. De uitvoerder voert standaard een Docker-voorcontrole uit, verwijdert verouderde OpenClaw E2E-containers, toont elke 30 seconden de status, slaat tijdmetingen van geslaagde trajecten op in `.artifacts/docker-tests/lane-timings.json` en gebruikt die tijdmetingen om bij latere uitvoeringen langere trajecten eerst te starten. Gebruik `OPENCLAW_DOCKER_ALL_DRY_RUN=1` om het gewogen trajectmanifest af te drukken zonder Docker te bouwen of uit te voeren, of `node scripts/test-docker-all.mjs --plan-json` om het CI-plan af te drukken voor geselecteerde trajecten, pakket-/installatiekopiebehoeften en referenties.
+- `Package Acceptance` is de systeemeigen GitHub-pakketcontrole voor "werkt deze installeerbare tarball als product?" Deze bepaalt één kandidaatpakket uit `source=npm`, `source=ref`, `source=url`, `source=trusted-url` of `source=artifact`, uploadt dit als `package-under-test` en voert vervolgens de herbruikbare Docker E2E-trajecten uit met precies die tarball, in plaats van de geselecteerde referentie opnieuw te verpakken. Profielen zijn geordend op omvang: `smoke`, `package`, `product` en `full` (plus `custom` voor een expliciete trajectlijst). Zie [Updates en plugins testen](/nl/help/testing-updates-plugins) voor het pakket-/update-/plugincontract, de overlevingsmatrix voor gepubliceerde upgrades, standaardwaarden voor releases en fouttriage.
+- Bouw- en releasecontroles voeren na tsdown `scripts/check-cli-bootstrap-imports.mjs` uit. De controle doorloopt de statisch gebouwde graaf vanaf `dist/entry.js` en `dist/cli/run-main.js` en mislukt als die opstartgraaf vóór de opdrachtdispatch statisch een extern pakket importeert (Commander, gebruikersinterfaces voor prompts, undici, logregistratie en vergelijkbare opstartintensieve afhankelijkheden tellen allemaal mee); daarnaast beperkt deze het meegebundelde uitvoeringssegment van de Gateway tot 70 KB en weigert deze statische imports van bekende zelden gebruikte Gateway-paden (`control-ui-assets`, `diagnostic-stability-bundle`, `onboard-helpers`, `process-respawn`, `restart-sentinel`, `server-close`, `server-reload-handlers`) vanuit dat segment. `scripts/release-check.ts` voert afzonderlijk snelle tests uit op de verpakte CLI met `--help`, `onboard --help`, `doctor --help`, `status --json --timeout 1`, `config schema` en `models list --provider openai`.
+- Verouderde compatibiliteit van Package Acceptance is begrensd op `2026.4.25` (inclusief `2026.4.25-beta.*`). Tot en met die grens tolereert het harnas alleen hiaten in metadata van uitgebrachte pakketten: weggelaten vermeldingen in de persoonlijke QA-inventaris, ontbrekende `gateway install --wrapper`, ontbrekende patchbestanden in de uit de tarball afgeleide Git-fixture, ontbrekende opgeslagen `update.channel`, verouderde locaties van plugin-installatierecords, ontbrekende opslag van marketplace-installatierecords en migratie van configuratiemetadata tijdens `plugins update`. Voor pakketten na `2026.4.25` gelden deze paden als strikte fouten.
+- Uitvoerders voor snelle containertests: `test:docker:openwebui`, `test:docker:onboard`, `test:docker:npm-onboard-channel-agent`, `test:docker:release-user-journey`, `test:docker:release-typed-onboarding`, `test:docker:release-media-memory`, `test:docker:release-upgrade-user-journey`, `test:docker:release-plugin-marketplace`, `test:docker:skill-install`, `test:docker:update-channel-switch`, `test:docker:upgrade-survivor`, `test:docker:published-upgrade-survivor`, `test:docker:session-runtime-context`, `test:docker:agents-delete-shared-workspace`, `test:docker:gateway-network`, `test:docker:browser-cdp-snapshot`, `test:docker:mcp-channels`, `test:docker:agent-bundle-mcp-tools`, `test:docker:cron-mcp-cleanup`, `test:docker:plugins`, `test:docker:plugin-update`, `test:docker:plugin-lifecycle-matrix` en `test:docker:config-reload` starten een of meer echte containers en verifiëren integratiepaden op hoger niveau.
+- Docker/Bash E2E-trajecten die de verpakte OpenClaw-tarball installeren via `scripts/lib/openclaw-e2e-instance.sh`, begrenzen `npm install` met `OPENCLAW_E2E_NPM_INSTALL_TIMEOUT` (standaard `600s`; stel `0` in om de omhulling uit te schakelen voor foutopsporing).
 
-De live-model-Docker-runners bind-mounten ook alleen de benodigde CLI-auth-homes (of alle ondersteunde homes wanneer de run niet is beperkt), en kopieren die daarna naar de container-home voor de run, zodat external-CLI-OAuth tokens kan vernieuwen zonder de host-auth-store te wijzigen:
+De Docker-uitvoeringen voor livemodellen koppelen bovendien alleen de benodigde
+CLI-authenticatiethuismappen (of alle ondersteunde mappen wanneer de uitvoering niet
+is beperkt) en kopiëren deze vervolgens vóór de uitvoering naar de thuismap van de
+container, zodat OAuth van externe CLI's tokens kan vernieuwen zonder de
+authenticatieopslag van de host te wijzigen:
 
-- Directe modellen: `pnpm test:docker:live-models` (script: `scripts/test-live-models-docker.sh`)
-- ACP-bind-smoke: `pnpm test:docker:live-acp-bind` (script: `scripts/test-live-acp-bind-docker.sh`; dekt standaard Claude, Codex en Gemini, met strikte Droid/OpenCode-dekking via `pnpm test:docker:live-acp-bind:droid` en `pnpm test:docker:live-acp-bind:opencode`)
-- CLI-backend-smoke: `pnpm test:docker:live-cli-backend` (script: `scripts/test-live-cli-backend-docker.sh`)
-- Codex app-server harness-smoke: `pnpm test:docker:live-codex-harness` (script: `scripts/test-live-codex-harness-docker.sh`)
-- Gateway + dev-agent: `pnpm test:docker:live-gateway` (script: `scripts/test-live-gateway-models-docker.sh`)
-- Observability-smokes: `pnpm qa:otel:smoke`, `pnpm qa:prometheus:smoke` en `pnpm qa:observability:smoke` zijn prive-QA-lanes voor source-checkout. Ze maken bewust geen deel uit van package-Docker-releaselanes, omdat de npm-tarball QA Lab weglaat.
-- Open WebUI live smoke: `pnpm test:docker:openwebui` (script: `scripts/e2e/openwebui-docker.sh`)
-- Onboardingwizard (TTY, volledige scaffolding): `pnpm test:docker:onboard` (script: `scripts/e2e/onboard-docker.sh`)
-- Npm-tarball-onboarding/channel/agent-smoke: `pnpm test:docker:npm-onboard-channel-agent` installeert de verpakte OpenClaw-tarball globaal in Docker, configureert OpenAI via env-ref-onboarding plus standaard Telegram, voert doctor uit en voert een gemockte OpenAI-agentbeurt uit. Hergebruik een vooraf gebouwde tarball met `OPENCLAW_CURRENT_PACKAGE_TGZ=/path/to/openclaw-*.tgz`, sla de host-rebuild over met `OPENCLAW_NPM_ONBOARD_HOST_BUILD=0`, of wissel van kanaal met `OPENCLAW_NPM_ONBOARD_CHANNEL=discord` of `OPENCLAW_NPM_ONBOARD_CHANNEL=slack`.
+- Rechtstreekse modellen: `pnpm test:docker:live-models` (script: `scripts/test-live-models-docker.sh`)
+- Snelle ACP-bindingscontrole: `pnpm test:docker:live-acp-bind` (script: `scripts/test-live-acp-bind-docker.sh`; omvat standaard Claude, Codex en Gemini, met strikte dekking voor Droid/OpenCode via `pnpm test:docker:live-acp-bind:droid` en `pnpm test:docker:live-acp-bind:opencode`)
+- Snelle controle van de CLI-backend: `pnpm test:docker:live-cli-backend` (script: `scripts/test-live-cli-backend-docker.sh`)
+- Snelle controle van het Codex-appserverharnas: `pnpm test:docker:live-codex-harness` (script: `scripts/test-live-codex-harness-docker.sh`)
+- Gateway + ontwikkelagent: `pnpm test:docker:live-gateway` (script: `scripts/test-live-gateway-models-docker.sh`)
+- Snelle controles voor observeerbaarheid: `pnpm qa:otel:smoke`, `pnpm qa:prometheus:smoke` en `pnpm qa:observability:smoke` zijn persoonlijke QA-trajecten voor broncodecheck-outs. Ze maken bewust geen deel uit van Docker-releasetrajecten voor pakketten, omdat de npm-tarball QA Lab weglaat.
+- Snelle live-controle van Open WebUI: `pnpm test:docker:openwebui` (script: `scripts/e2e/openwebui-docker.sh`)
+- Wizard voor eerste configuratie (TTY, volledige basisstructuur): `pnpm test:docker:onboard` (script: `scripts/e2e/onboard-docker.sh`)
+- Snelle controle van eerste configuratie/kanaal/agent met een npm-tarball: `pnpm test:docker:npm-onboard-channel-agent` installeert de verpakte OpenClaw-tarball globaal in Docker, configureert OpenAI via eerste configuratie met een omgevingsverwijzing en standaard ook Telegram, voert doctor uit en voert één nagebootste OpenAI-agentbeurt uit. Hergebruik een vooraf gebouwde tarball met `OPENCLAW_CURRENT_PACKAGE_TGZ=/path/to/openclaw-*.tgz`, sla de herbouw op de host over met `OPENCLAW_NPM_ONBOARD_HOST_BUILD=0` of wissel van kanaal met `OPENCLAW_NPM_ONBOARD_CHANNEL=discord` of `OPENCLAW_NPM_ONBOARD_CHANNEL=slack`.
 
-- Release-gebruikersreis-smoketest: `pnpm test:docker:release-user-journey` installeert de verpakte OpenClaw-tarball globaal in een schone Docker-home, voert onboarding uit, configureert een gemockte OpenAI-provider, voert een agent-turn uit, installeert/deïnstalleert externe plugins, configureert ClickClack tegen een lokale fixture, verifieert uitgaande/inkomende berichten, herstart Gateway en voert doctor uit.
-- Release-getypte-onboarding-smoketest: `pnpm test:docker:release-typed-onboarding` installeert de verpakte tarball, stuurt `openclaw onboard` via een echte TTY aan, configureert OpenAI als een env-ref-provider, verifieert dat er geen ruwe sleutel persistent wordt opgeslagen en voert een gemockte agent-turn uit.
-- Release-media/geheugen-smoketest: `pnpm test:docker:release-media-memory` installeert de verpakte tarball, verifieert beeldbegrip uit een PNG-bijlage, OpenAI-compatibele uitvoer voor beeldgeneratie, geheugenzoekherinnering en behoud van herinnering na een Gateway-herstart.
-- Release-upgrade-gebruikersreis-smoketest: `pnpm test:docker:release-upgrade-user-journey` installeert standaard de nieuwste gepubliceerde baseline die ouder is dan de kandidaat-tarball, configureert provider-/plugin-/ClickClack-status op het gepubliceerde pakket, upgradet naar de kandidaat-tarball en voert daarna de kernreis voor agent/plugin/kanaal opnieuw uit. Als er geen oudere gepubliceerde baseline bestaat, wordt de kandidaatversie opnieuw gebruikt. Overschrijf de baseline met `OPENCLAW_RELEASE_UPGRADE_BASELINE_SPEC=openclaw@<version>`.
-- Release-plugin-marktplaats-smoketest: `pnpm test:docker:release-plugin-marketplace` installeert vanuit een lokale fixture-marktplaats, werkt de geïnstalleerde plugin bij, deïnstalleert deze en verifieert dat de plugin-CLI verdwijnt terwijl installatiemetadata worden opgeschoond.
-- Skill-installatie-smoketest: `pnpm test:docker:skill-install` installeert de verpakte OpenClaw-tarball globaal in Docker, schakelt geüploade archiefinstallaties uit in de configuratie, haalt de huidige live ClawHub-skill-slug op uit zoeken, installeert deze met `openclaw skills install` en verifieert de geïnstalleerde skill plus `.clawhub`-origin-/lock-metadata.
-- Update-kanaalwissel-smoketest: `pnpm test:docker:update-channel-switch` installeert de verpakte OpenClaw-tarball globaal in Docker, schakelt van pakket `stable` naar git `dev`, verifieert het persistent opgeslagen kanaal en plugin-werking na de update, schakelt daarna terug naar pakket `stable` en controleert de updatestatus.
-- Upgrade-overlevings-smoketest: `pnpm test:docker:upgrade-survivor` installeert de verpakte OpenClaw-tarball over een vuile fixture voor een oude gebruiker met agents, kanaalconfiguratie, plugin-allowlists, verouderde plugin-afhankelijkheidsstatus en bestaande workspace-/sessiebestanden. Deze voert een pakketupdate plus niet-interactieve doctor uit zonder live provider- of kanaalsleutels, start daarna een loopback-Gateway en controleert behoud van configuratie/status plus startup-/statusbudgetten.
-- Gepubliceerde-upgrade-overlevings-smoketest: `pnpm test:docker:published-upgrade-survivor` installeert standaard `openclaw@latest`, seedt realistische bestaande-gebruikersbestanden, configureert die baseline met een ingebakken commandorecept, valideert de resulterende configuratie, werkt die gepubliceerde installatie bij naar de kandidaat-tarball, voert niet-interactieve doctor uit, schrijft `.artifacts/upgrade-survivor/summary.json`, start daarna een loopback-Gateway en controleert geconfigureerde intents, behoud van status, startup, `/healthz`, `/readyz` en RPC-statusbudgetten. Overschrijf één baseline met `OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPEC`, vraag de aggregatiescheduler om exacte lokale baselines uit te breiden met `OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPECS` zoals `openclaw@2026.5.2 openclaw@2026.4.23 openclaw@2026.4.15`, en breid issue-vormige fixtures uit met `OPENCLAW_UPGRADE_SURVIVOR_SCENARIOS` zoals `reported-issues`; de reported-issues-set bevat `configured-plugin-installs` voor automatische reparatie van installatie van externe OpenClaw-plugins. Package Acceptance stelt deze beschikbaar als `published_upgrade_survivor_baseline`, `published_upgrade_survivor_baselines` en `published_upgrade_survivor_scenarios`, lost meta-baseline-tokens op zoals `last-stable-4` of `all-since-2026.4.23`, en Full Release Validation breidt de release-soak-pakketgate uit naar `last-stable-4 2026.4.23 2026.5.2 2026.4.15` plus `reported-issues`.
-- Sessie-runtimecontext-smoketest: `pnpm test:docker:session-runtime-context` verifieert persistentie van verborgen runtimecontexttranscripten plus doctor-reparatie van getroffen gedupliceerde prompt-herschrijfvertakkingen.
-- Bun-globale-installatie-smoketest: `bash scripts/e2e/bun-global-install-smoke.sh` verpakt de huidige tree, installeert deze met `bun install -g` in een geïsoleerde home en verifieert dat `openclaw infer image providers --json` gebundelde beeldproviders retourneert in plaats van te blijven hangen. Hergebruik een vooraf gebouwde tarball met `OPENCLAW_BUN_GLOBAL_SMOKE_PACKAGE_TGZ=/path/to/openclaw-*.tgz`, sla de host-build over met `OPENCLAW_BUN_GLOBAL_SMOKE_HOST_BUILD=0`, of kopieer `dist/` uit een gebouwde Docker-image met `OPENCLAW_BUN_GLOBAL_SMOKE_DIST_IMAGE=openclaw-dockerfile-smoke:local`.
-- Installer-Docker-smoketest: `bash scripts/test-install-sh-docker.sh` deelt één npm-cache tussen de root-, update- en direct-npm-containers. Update-smoketest gebruikt standaard npm `latest` als de stabiele baseline vóór upgrade naar de kandidaat-tarball. Overschrijf lokaal met `OPENCLAW_INSTALL_SMOKE_UPDATE_BASELINE=2026.4.22`, of met de `update_baseline_version`-input van de Install Smoke-workflow op GitHub. Niet-root-installatiecontroles houden een geïsoleerde npm-cache bij zodat cachevermeldingen van root geen gebruikerslokale installatiegedrag maskeren. Stel `OPENCLAW_INSTALL_SMOKE_NPM_CACHE_DIR=/path/to/cache` in om de root-/update-/direct-npm-cache opnieuw te gebruiken bij lokale heruitvoeringen.
-- Install Smoke CI slaat de dubbele directe globale npm-update over met `OPENCLAW_INSTALL_SMOKE_SKIP_NPM_GLOBAL=1`; voer het script lokaal uit zonder die env wanneer dekking voor directe `npm install -g` nodig is.
-- Agents-gedeelde-workspace-verwijderen-CLI-smoketest: `pnpm test:docker:agents-delete-shared-workspace` (script: `scripts/e2e/agents-delete-shared-workspace-docker.sh`) bouwt standaard de root-Dockerfile-image, seedt twee agents met één workspace in een geïsoleerde container-home, voert `agents delete --json` uit en verifieert geldige JSON plus gedrag voor behouden workspace. Hergebruik de install-smoke-image met `OPENCLAW_AGENTS_DELETE_SHARED_WORKSPACE_E2E_IMAGE=openclaw-dockerfile-smoke:local OPENCLAW_AGENTS_DELETE_SHARED_WORKSPACE_E2E_SKIP_BUILD=1`.
-- Gateway-netwerken (twee containers, WS-auth + health): `pnpm test:docker:gateway-network` (script: `scripts/e2e/gateway-network-docker.sh`)
-- Browser-CDP-snapshot-smoketest: `pnpm test:docker:browser-cdp-snapshot` (script: `scripts/e2e/browser-cdp-snapshot-docker.sh`) bouwt de bron-E2E-image plus een Chromium-laag, start Chromium met ruwe CDP, voert `browser doctor --deep` uit en verifieert dat CDP-rolsnapshots link-URL's, tot cursor gepromoveerde klikbare elementen, iframe-refs en framemetadata dekken.
-- OpenAI Responses web_search minimale-redenering-regressie: `pnpm test:docker:openai-web-search-minimal` (script: `scripts/e2e/openai-web-search-minimal-docker.sh`) voert een gemockte OpenAI-server uit via Gateway, verifieert dat `web_search` `reasoning.effort` verhoogt van `minimal` naar `low`, forceert daarna de provider-schema-afwijzing en controleert dat het ruwe detail in Gateway-logs verschijnt.
-- MCP-kanaalbrug (geseede Gateway + stdio-brug + ruwe Claude-notification-frame-smoketest): `pnpm test:docker:mcp-channels` (script: `scripts/e2e/mcp-channels-docker.sh`)
-- OpenClaw-bundel-MCP-tools (echte stdio-MCP-server + ingebedde OpenClaw-profiel-allow/deny-smoketest): `pnpm test:docker:agent-bundle-mcp-tools` (script: `scripts/e2e/agent-bundle-mcp-tools-docker.sh`)
-- Cron/subagent-MCP-cleanup (echte Gateway + afbreken van stdio-MCP-child na geïsoleerde cron- en eenmalige subagent-runs): `pnpm test:docker:cron-mcp-cleanup` (script: `scripts/e2e/cron-mcp-cleanup-docker.sh`)
-- Plugins (installatie-/update-smoketest voor lokaal pad, `file:`, npm-register met gehesen afhankelijkheden, misvormde npm-pakketmetadata, git moving refs, ClawHub kitchen-sink, marktplaatsupdates en Claude-bundel inschakelen/inspecteren): `pnpm test:docker:plugins` (script: `scripts/e2e/plugins-docker.sh`)
-  Stel `OPENCLAW_PLUGINS_E2E_CLAWHUB=0` in om het ClawHub-blok over te slaan, of overschrijf het standaard kitchen-sink-pakket/runtime-paar met `OPENCLAW_PLUGINS_E2E_CLAWHUB_SPEC` en `OPENCLAW_PLUGINS_E2E_CLAWHUB_ID`. Zonder `OPENCLAW_CLAWHUB_URL`/`CLAWHUB_URL` gebruikt de test een hermetische lokale ClawHub-fixtureserver.
-- Plugin-update-ongewijzigd-smoketest: `pnpm test:docker:plugin-update` (script: `scripts/e2e/plugin-update-unchanged-docker.sh`)
-- Plugin-levenscyclusmatrix-smoketest: `pnpm test:docker:plugin-lifecycle-matrix` installeert de verpakte OpenClaw-tarball in een kale container, installeert een npm-plugin, schakelt enable/disable om, upgradet en downgradet deze via een lokaal npm-register, verwijdert de geïnstalleerde code en verifieert daarna dat uninstall nog steeds verouderde status verwijdert terwijl RSS-/CPU-metrics voor elke levenscyclusfase worden gelogd.
-- Configuratie-herlaadmetadata-smoketest: `pnpm test:docker:config-reload` (script: `scripts/e2e/config-reload-source-docker.sh`)
-- Plugins: `pnpm test:docker:plugins` dekt installatie-/update-smoketest voor lokaal pad, `file:`, npm-register met gehesen afhankelijkheden, git moving refs, ClawHub-fixtures, marktplaatsupdates en Claude-bundel inschakelen/inspecteren. `pnpm test:docker:plugin-update` dekt ongewijzigd updategedrag voor geïnstalleerde plugins. `pnpm test:docker:plugin-lifecycle-matrix` dekt met resources bijgehouden npm-plugin-installatie, inschakelen, uitschakelen, upgrade, downgrade en uninstall bij ontbrekende code.
+- Smoke-test voor de gebruikersreis van een release: `pnpm test:docker:release-user-journey` installeert de verpakte OpenClaw-tarball globaal in een schone Docker-homemap, voert de onboarding uit, configureert een nagebootste OpenAI-provider, voert een agentbeurt uit, installeert en verwijdert externe plugins, configureert ClickClack met een lokale fixture, verifieert uitgaande en inkomende berichten, herstart de Gateway en voert doctor uit.
+- Smoke-test voor getypeerde onboarding van een release: `pnpm test:docker:release-typed-onboarding` installeert de verpakte tarball, doorloopt `openclaw onboard` via een echte TTY, configureert OpenAI als provider met een omgevingsvariabelereferentie, verifieert dat de onbewerkte sleutel niet wordt opgeslagen en voert een nagebootste agentbeurt uit.
+- Smoke-test voor media/geheugen van een release: `pnpm test:docker:release-media-memory` installeert de verpakte tarball en verifieert beeldbegrip van een PNG-bijlage, uitvoer van OpenAI-compatibele beeldgeneratie, herinnering via geheugenzoekopdrachten en het behoud daarvan na een herstart van de Gateway.
+- Smoke-test voor de gebruikersreis bij een release-upgrade: `pnpm test:docker:release-upgrade-user-journey` installeert standaard de nieuwste gepubliceerde basisversie die ouder is dan de kandidaat-tarball, configureert de status van de provider, plugin en ClickClack in het gepubliceerde pakket, voert een upgrade uit naar de kandidaat-tarball en doorloopt vervolgens opnieuw de kernreis voor agent, plugin en kanaal. Als er geen oudere gepubliceerde basisversie bestaat, wordt de kandidaatversie opnieuw gebruikt. Overschrijf de basisversie met `OPENCLAW_RELEASE_UPGRADE_BASELINE_SPEC=openclaw@<version>`.
+- Smoke-test voor de pluginmarktplaats van een release: `pnpm test:docker:release-plugin-marketplace` installeert vanuit een lokale fixturemarktplaats, werkt de geïnstalleerde plugin bij, verwijdert deze en verifieert dat de plugin-CLI verdwijnt en de installatiemetadata wordt opgeschoond.
+- Smoke-test voor de installatie van een Skill: `pnpm test:docker:skill-install` installeert de verpakte OpenClaw-tarball globaal in Docker, schakelt installaties van geüploade archieven uit in de configuratie, bepaalt via zoeken de slug van de huidige live ClawHub-Skill, installeert deze met `openclaw skills install` en verifieert de geïnstalleerde Skill plus de oorsprongs- en vergrendelingsmetadata van `.clawhub`.
+- Smoke-test voor het wisselen van updatekanaal: `pnpm test:docker:update-channel-switch` installeert de verpakte OpenClaw-tarball globaal in Docker, schakelt over van pakketkanaal `stable` naar git-kanaal `dev`, verifieert het opgeslagen kanaal en de werking van de plugin na de update, schakelt vervolgens terug naar pakketkanaal `stable` en controleert de updatestatus.
+- Smoke-test voor behoud na upgrades: `pnpm test:docker:upgrade-survivor` installeert de verpakte OpenClaw-tarball over een vervuilde fixture van een bestaande gebruiker met agents, kanaalconfiguratie, plugin-toelatingslijsten, verouderde status van pluginafhankelijkheden en bestaande werkruimte- en sessiebestanden. De test voert zonder actieve provider- of kanaalsleutels een pakketupdate en niet-interactieve doctor uit, start vervolgens een Gateway via local loopback en controleert het behoud van configuratie en status, plus de budgetten voor opstarten en status.
+- Smoke-test voor behoud na een gepubliceerde upgrade: `pnpm test:docker:published-upgrade-survivor` installeert standaard `openclaw@latest`, maakt realistische bestanden voor een bestaande gebruiker aan, configureert die basisversie met een ingebouwd opdrachtrecept, valideert de resulterende configuratie, werkt die gepubliceerde installatie bij naar de kandidaat-tarball, voert niet-interactieve doctor uit, schrijft `.artifacts/upgrade-survivor/summary.json` en start vervolgens een Gateway via local loopback om geconfigureerde intenties, statusbehoud, opstarten, `/healthz`, `/readyz` en RPC-statusbudgetten te controleren. Overschrijf één basisversie met `OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPEC`, laat de overkoepelende planner exacte lokale basisversies uitbreiden met `OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPECS`, zoals `openclaw@2026.5.2 openclaw@2026.4.23 openclaw@2026.4.15`, en breid probleemgerichte fixtures uit met `OPENCLAW_UPGRADE_SURVIVOR_SCENARIOS`, zoals `reported-issues`; de verzameling gemelde problemen bevat `configured-plugin-installs` voor automatisch herstel van de installatie van externe OpenClaw-plugins. Pakketacceptatie stelt deze beschikbaar als `published_upgrade_survivor_baseline`, `published_upgrade_survivor_baselines` en `published_upgrade_survivor_scenarios`, zet metatokens voor basisversies zoals `last-stable-4` of `all-since-2026.4.23` om en breidt bij volledige releasevalidatie de langdurige pakketcontrole van de release uit naar `last-stable-4 2026.4.23 2026.5.2 2026.4.15` plus `reported-issues`.
+- Smoke-test voor sessieruntimecontext: `pnpm test:docker:session-runtime-context` verifieert het opslaan van verborgen runtimecontext in het transcript, plus herstel door doctor van getroffen dubbele vertakkingen voor het herschrijven van prompts.
+- Smoke-test voor globale installatie met Bun: `bash scripts/e2e/bun-global-install-smoke.sh` verpakt de huidige bronstructuur, installeert deze met `bun install -g` in een geïsoleerde homemap en verifieert dat `openclaw infer image providers --json` gebundelde beeldproviders retourneert in plaats van te blijven hangen. Gebruik een vooraf gebouwde tarball opnieuw met `OPENCLAW_BUN_GLOBAL_SMOKE_PACKAGE_TGZ=/path/to/openclaw-*.tgz`, sla de build op de host over met `OPENCLAW_BUN_GLOBAL_SMOKE_HOST_BUILD=0` of kopieer `dist/` uit een gebouwde Docker-image met `OPENCLAW_BUN_GLOBAL_SMOKE_DIST_IMAGE=openclaw-dockerfile-smoke:local`.
+- Docker-smoke-test voor het installatieprogramma: `bash scripts/test-install-sh-docker.sh` deelt één npm-cache tussen de containers voor root, updates en rechtstreekse npm-installaties. De smoke-test voor updates gebruikt standaard npm `latest` als stabiele basisversie voordat een upgrade naar de kandidaat-tarball wordt uitgevoerd. Overschrijf dit lokaal met `OPENCLAW_INSTALL_SMOKE_UPDATE_BASELINE=2026.4.22` of op GitHub met de invoer `update_baseline_version` van de workflow voor de installatiesmoke-test. Controles van het installatieprogramma zonder rootrechten behouden een geïsoleerde npm-cache, zodat cachevermeldingen die eigendom zijn van root het gedrag van gebruikerslokale installaties niet verhullen. Stel `OPENCLAW_INSTALL_SMOKE_NPM_CACHE_DIR=/path/to/cache` in om de cache voor root, updates en rechtstreekse npm-installaties opnieuw te gebruiken bij lokale herhalingen.
+- De CI voor installatiesmoke-tests slaat de dubbele rechtstreekse globale npm-update over met `OPENCLAW_INSTALL_SMOKE_SKIP_NPM_GLOBAL=1`; voer het script lokaal zonder die omgevingsvariabele uit wanneer dekking van een rechtstreekse `npm install -g` nodig is.
+- CLI-smoke-test voor agents die een gedeelde werkruimte verwijderen: `pnpm test:docker:agents-delete-shared-workspace` (script: `scripts/e2e/agents-delete-shared-workspace-docker.sh`) bouwt standaard de image uit het Dockerfile in de hoofdmap, maakt in een geïsoleerde container-homemap twee agents met één werkruimte aan, voert `agents delete --json` uit en verifieert geldige JSON plus het behoud van de werkruimte. Gebruik de image van de installatiesmoke-test opnieuw met `OPENCLAW_AGENTS_DELETE_SHARED_WORKSPACE_E2E_IMAGE=openclaw-dockerfile-smoke:local OPENCLAW_AGENTS_DELETE_SHARED_WORKSPACE_E2E_SKIP_BUILD=1`.
+- Gateway-netwerken en levenscyclus van de host: `pnpm test:docker:gateway-network` (script: `scripts/e2e/gateway-network-docker.sh`) behoudt de LAN-smoke-test voor WebSocket-authenticatie en status met twee containers en gebruikt vervolgens Admin HTTP via local loopback om afscherming tijdens voorbereiding, toegang voor behouden besturing, herstel bij hervatting en een voorbereide stop/start in dezelfde container aan te tonen. De herstartcontrole moet zijn voltooid voordat de oorspronkelijke lease verloopt, verifieert dat de opschortingsstatus proceslokaal is terwijl de opgeslagen Gateway-configuratie en containeridentiteit behouden blijven, en produceert machineleesbare JSON met fasetijden.
+- Smoke-test voor CDP-snapshots van de browser: `pnpm test:docker:browser-cdp-snapshot` (script: `scripts/e2e/browser-cdp-snapshot-docker.sh`) bouwt de E2E-image uit de broncode plus een Chromium-laag, start Chromium met onbewerkte CDP, voert `browser doctor --deep` uit en verifieert dat CDP-rolsnapshots URL's van links, door de cursor als klikbaar aangemerkte elementen, iframe-verwijzingen en framemetadata omvatten.
+- Regressietest voor minimale redeneerinspanning bij OpenAI Responses `web_search`: `pnpm test:docker:openai-web-search-minimal` (script: `scripts/e2e/openai-web-search-minimal-docker.sh`) voert via de Gateway een nagebootste OpenAI-server uit, verifieert dat `web_search` `reasoning.effort` verhoogt van `minimal` naar `low`, forceert vervolgens een afwijzing door het providerschema en controleert of de onbewerkte details in de Gateway-logboeken verschijnen.
+- MCP-kanaalbrug (vooraf gevulde Gateway + stdio-brug + smoke-test met onbewerkte Claude-meldingsframes): `pnpm test:docker:mcp-channels` (script: `scripts/e2e/mcp-channels-docker.sh`)
+- MCP-hulpmiddelen in de OpenClaw-bundel (echte stdio-MCP-server + smoke-test voor toestaan/weigeren met een ingebed OpenClaw-profiel): `pnpm test:docker:agent-bundle-mcp-tools` (script: `scripts/e2e/agent-bundle-mcp-tools-docker.sh`)
+- MCP-opruiming voor Cron/subagents (echte Gateway + beëindiging van onderliggende stdio-MCP-processen na geïsoleerde Cron-uitvoeringen en eenmalige subagentuitvoeringen): `pnpm test:docker:cron-mcp-cleanup` (script: `scripts/e2e/cron-mcp-cleanup-docker.sh`)
+- Plugins (smoke-test voor installatie/update via lokaal pad, `file:`, npm-register met omhooggetilde afhankelijkheden, ongeldige metadata van npm-pakketten, veranderende git-verwijzingen, uitgebreide ClawHub-fixture, marktplaatsupdates en inschakelen/inspecteren van Claude-bundels): `pnpm test:docker:plugins` (script: `scripts/e2e/plugins-docker.sh`)
+  Stel `OPENCLAW_PLUGINS_E2E_CLAWHUB=0` in om het ClawHub-blok over te slaan, of overschrijf het standaardpaar van uitgebreid pakket en runtime met `OPENCLAW_PLUGINS_E2E_CLAWHUB_SPEC` en `OPENCLAW_PLUGINS_E2E_CLAWHUB_ID`. Zonder `OPENCLAW_CLAWHUB_URL`/`CLAWHUB_URL` gebruikt de test een hermetische lokale ClawHub-fixtureserver.
+- Smoke-test voor een ongewijzigde plugin-update: `pnpm test:docker:plugin-update` (script: `scripts/e2e/plugin-update-unchanged-docker.sh`)
+- Smoke-test voor de levenscyclusmatrix van plugins: `pnpm test:docker:plugin-lifecycle-matrix` installeert de verpakte OpenClaw-tarball in een kale container, installeert een npm-plugin, schakelt deze in en uit, voert via een lokaal npm-register upgrades en downgrades uit, verwijdert de geïnstalleerde code en verifieert vervolgens dat verwijdering nog steeds de verouderde status opruimt, terwijl voor elke levenscyclusfase RSS- en CPU-metrieken worden vastgelegd.
+- Smoke-test voor metadata bij het herladen van configuratie: `pnpm test:docker:config-reload` (script: `scripts/e2e/config-reload-source-docker.sh`)
+- Plugins: `pnpm test:docker:plugins` dekt smoke-tests voor installatie/update via een lokaal pad, `file:`, een npm-register met omhooggetilde afhankelijkheden, veranderende git-verwijzingen, ClawHub-fixtures, marktplaatsupdates en het inschakelen/inspecteren van Claude-bundels. `pnpm test:docker:plugin-update` dekt ongewijzigd updategedrag voor geïnstalleerde plugins. `pnpm test:docker:plugin-lifecycle-matrix` dekt met resourcebewaking uitgevoerde installatie, inschakeling, uitschakeling, upgrade, downgrade en verwijdering bij ontbrekende code van npm-plugins.
 
 Om de gedeelde functionele image handmatig vooraf te bouwen en opnieuw te gebruiken:
 
@@ -882,117 +957,122 @@ OPENCLAW_DOCKER_E2E_IMAGE=openclaw-docker-e2e-functional:local pnpm test:docker:
 OPENCLAW_DOCKER_E2E_IMAGE=openclaw-docker-e2e-functional:local OPENCLAW_SKIP_DOCKER_BUILD=1 pnpm test:docker:mcp-channels
 ```
 
-Suitespecifieke image-overschrijvingen zoals `OPENCLAW_GATEWAY_NETWORK_E2E_IMAGE` winnen nog steeds wanneer ze zijn ingesteld. Wanneer `OPENCLAW_SKIP_DOCKER_BUILD=1` naar een gedeelde externe image wijst, halen de scripts deze op als die nog niet lokaal aanwezig is. De QR- en installer-Docker-tests behouden hun eigen Dockerfiles omdat zij pakket-/installatiegedrag valideren in plaats van de gedeelde gebouwde-app-runtime.
+Suitespecifieke image-overschrijvingen zoals `OPENCLAW_GATEWAY_NETWORK_E2E_IMAGE` hebben nog steeds voorrang wanneer ze zijn ingesteld. Wanneer `OPENCLAW_SKIP_DOCKER_BUILD=1` naar een externe gedeelde image verwijst, halen de scripts deze op als de image nog niet lokaal aanwezig is. De Docker-tests voor QR en het installatieprogramma behouden hun eigen Dockerfiles, omdat ze het gedrag van pakketten en installaties valideren in plaats van de gedeelde runtime van de gebouwde app.
 
-De live-model-Docker-runners koppelen de huidige checkout ook alleen-lezen via een bind mount en
-plaatsen die in een tijdelijke werkmap binnen de container. Zo blijft de runtime-
-image slank, terwijl Vitest nog steeds tegen je exacte lokale source/config draait.
-De stagingstap slaat grote, alleen lokale caches en app-buildoutputs over, zoals
-`.pnpm-store`, `.worktrees`, `__openclaw_vitest__`, en app-lokale `.build`- of
-Gradle-outputmappen, zodat Docker-live-runs geen minuten besteden aan het kopiëren van
-machine-specifieke artefacten.
-Ze zetten ook `OPENCLAW_SKIP_CHANNELS=1`, zodat Gateway-liveprobes geen
-echte Telegram/Discord/enz.-kanaalworkers binnen de container starten.
-`test:docker:live-models` draait nog steeds `pnpm test:live`, dus geef ook
-`OPENCLAW_LIVE_GATEWAY_*` door wanneer je live Gateway-dekking in die Docker-baan
-wilt beperken of uitsluiten.
-`test:docker:openwebui` is een compatibiliteits-smoketest op hoger niveau: deze start een
-OpenClaw Gateway-container met de OpenAI-compatibele HTTP-eindpunten ingeschakeld,
-start een vastgepinde Open WebUI-container tegen die Gateway, meldt aan via
-Open WebUI, verifieert dat `/api/models` `openclaw/default` toont, en stuurt daarna een
-echt chatverzoek via Open WebUI's `/api/chat/completions`-proxy.
-Stel `OPENWEBUI_SMOKE_MODE=models` in voor CI-controles op het releasepad die moeten stoppen
-na aanmelden bij Open WebUI en modeldetectie, zonder te wachten op een live
-modelvoltooiing.
-De eerste run kan merkbaar trager zijn, omdat Docker mogelijk de
-Open WebUI-image moet ophalen en Open WebUI mogelijk zijn eigen cold-start-setup moet afronden.
-Deze baan verwacht een bruikbare live modelsleutel. Geef die door via de procesomgeving,
-gestagede auth-profielen, of een expliciet `OPENCLAW_PROFILE_FILE`.
-Geslaagde runs printen een kleine JSON-payload zoals `{ "ok": true, "model":
-"openclaw/default", ... }`.
-`test:docker:mcp-channels` is bewust deterministisch en heeft geen echt
-Telegram-, Discord- of iMessage-account nodig. Het start een seeded Gateway-
-container, start een tweede container die `openclaw mcp serve` spawnt, en
-verifieert daarna gerouteerde gespreksdetectie, transcriptreads, attachmentmetadata,
-live eventqueue-gedrag, routering van uitgaande verzendingen, en Claude-stijl kanaal- en
-toestemmingsmeldingen over de echte stdio MCP-bridge. De meldingscontrole
-inspecteert de ruwe stdio MCP-frames rechtstreeks, zodat de smoketest valideert wat de
-bridge echt uitzendt, niet alleen wat een specifieke client-SDK toevallig toont.
-`test:docker:agent-bundle-mcp-tools` is deterministisch en heeft geen live
-modelsleutel nodig. Het bouwt de repo-Docker-image, start een echte stdio MCP-probeserver
-binnen de container, materialiseert die server via de ingebedde OpenClaw-bundel
-MCP-runtime, voert de tool uit, en verifieert daarna dat `coding` en `messaging`
-`bundle-mcp`-tools behouden, terwijl `minimal` en `tools.deny: ["bundle-mcp"]` ze filteren.
-`test:docker:cron-mcp-cleanup` is deterministisch en heeft geen live model
-sleutel nodig. Het start een seeded Gateway met een echte stdio MCP-probeserver, draait een
-geisoleerde cron-turn en een `sessions_spawn` one-shot child-turn, en verifieert daarna
-dat het MCP-childproces na elke run afsluit.
+De Docker-runners voor live modellen koppelen de huidige checkout ook alleen-lezen aan
+en plaatsen deze in een tijdelijke werkmap in de container. Zo blijft de
+runtime-image klein, terwijl Vitest toch wordt uitgevoerd op exact uw lokale
+broncode en configuratie. De voorbereidingsstap slaat grote uitsluitend lokale caches en builduitvoer
+van apps over, zoals `.pnpm-store`, `.worktrees`, `__openclaw_vitest__` en
+app-lokale `.build`- of Gradle-uitvoermappen, zodat live Docker-uitvoeringen niet
+minutenlang machinespecifieke artefacten kopiëren. Ze stellen ook
+`OPENCLAW_SKIP_CHANNELS=1` in, zodat live Gateway-controles geen echte
+kanaalworkers voor Telegram/Discord/enzovoort in de container starten.
+`test:docker:live-models` voert nog steeds `pnpm test:live` uit, dus geef ook
+`OPENCLAW_LIVE_GATEWAY_*` door wanneer u de live Gateway-dekking in die
+Docker-lane wilt beperken of uitsluiten.
 
-Handmatige ACP-thread-smoketest in gewone taal (niet CI):
+`test:docker:openwebui` is een compatibiliteits-smoketest op een hoger niveau: deze start een
+OpenClaw Gateway-container waarin de OpenAI-compatibele HTTP-eindpunten zijn ingeschakeld,
+start een vastgezette Open WebUI-container die met die Gateway is verbonden, meldt zich aan via
+Open WebUI, controleert of `/api/models` `openclaw/default` beschikbaar stelt en verzendt vervolgens een
+echt chatverzoek via de proxy `/api/chat/completions` van Open WebUI. Stel
+`OPENWEBUI_SMOKE_MODE=models` in voor CI-controles van het releasepad die moeten stoppen
+na aanmelding bij Open WebUI en modeldetectie, zonder te wachten op de voltooiing door een live model.
+De eerste uitvoering kan merkbaar langzamer zijn omdat Docker mogelijk de
+Open WebUI-image moet ophalen en Open WebUI mogelijk de eigen
+installatie voor een koude start moet voltooien. Deze lane verwacht een bruikbare sleutel voor een live model, aangeleverd via
+de procesomgeving, voorbereide authenticatieprofielen of een expliciet
+`OPENCLAW_PROFILE_FILE`. Geslaagde uitvoeringen tonen een kleine JSON-payload zoals
+`{ "ok": true, "model": "openclaw/default", ... }`.
+
+`test:docker:mcp-channels` is opzettelijk deterministisch en heeft geen
+echt Telegram-, Discord- of iMessage-account nodig. Deze test start een vooraf gevulde Gateway-
+container, start een tweede container die `openclaw mcp serve` uitvoert en
+controleert vervolgens gerouteerde gespreksdetectie, het lezen van transcripties, metagegevens van
+bijlagen, het gedrag van de live-gebeurteniswachtrij, routering van uitgaande verzendingen en Claude-achtige
+kanaal- en machtigingsmeldingen via de echte stdio-MCP-brug. De
+meldingscontrole inspecteert de onbewerkte stdio-MCP-frames rechtstreeks, zodat de smoketest
+valideert wat de brug daadwerkelijk uitstuurt en niet alleen wat een specifieke client-SDK
+toevallig beschikbaar stelt.
+
+`test:docker:agent-bundle-mcp-tools` is deterministisch en heeft geen
+sleutel voor een live model nodig. Deze test bouwt de Docker-image van de repo, start een echte stdio-MCP-
+probeserver in de container, realiseert die server via de
+ingebedde MCP-runtime van de OpenClaw-bundel, voert de tool uit en controleert vervolgens
+of `coding` en `messaging` de `bundle-mcp`-tools behouden, terwijl `minimal` en
+`tools.deny: ["bundle-mcp"]` ze uitfilteren.
+
+`test:docker:cron-mcp-cleanup` is deterministisch en heeft geen sleutel voor een live
+model nodig. Deze test start een vooraf gevulde Gateway met een echte stdio-MCP-probeserver,
+voert een geïsoleerde Cron-beurt en een eenmalige onderliggende `sessions_spawn`-beurt uit en
+controleert vervolgens of het onderliggende MCP-proces na elke uitvoering wordt afgesloten.
+
+Handmatige ACP-smoketest voor threads in gewone taal (niet voor CI):
 
 - `bun scripts/dev/discord-acp-plain-language-smoke.ts --channel <discord-channel-id> ...`
-- Bewaar dit script voor regressie-/debugworkflows. Het kan opnieuw nodig zijn voor ACP-threadrouteringsvalidatie, dus verwijder het niet.
+- Bewaar dit script voor regressie- en foutopsporingsworkflows. Het kan opnieuw nodig zijn voor de validatie van ACP-threadroutering, dus verwijder het niet.
 
-Nuttige env-vars:
+Nuttige omgevingsvariabelen:
 
-- `OPENCLAW_CONFIG_DIR=...` (standaard: `~/.openclaw`) gemount naar `/home/node/.openclaw`
-- `OPENCLAW_WORKSPACE_DIR=...` (standaard: `~/.openclaw/workspace`) gemount naar `/home/node/.openclaw/workspace`
-- `OPENCLAW_PROFILE_FILE=...` gemount en gesourcet voordat tests worden uitgevoerd
-- `OPENCLAW_DOCKER_PROFILE_ENV_ONLY=1` om alleen env-vars te verifiëren die uit `OPENCLAW_PROFILE_FILE` zijn gesourcet, met tijdelijke config-/werkmapmappen en zonder externe CLI-auth-mounts
-- `OPENCLAW_DOCKER_CLI_TOOLS_DIR=...` (standaard: `~/.cache/openclaw/docker-cli-tools`) gemount naar `/home/node/.npm-global` voor gecachte CLI-installaties binnen Docker
-- Externe CLI-auth-mappen/-bestanden onder `$HOME` worden alleen-lezen gemount onder `/host-auth...` en daarna naar `/home/node/...` gekopieerd voordat tests starten
-  - Standaardmappen: `.minimax`
+- `OPENCLAW_CONFIG_DIR=...` (standaard: `~/.openclaw`) gekoppeld aan `/home/node/.openclaw`
+- `OPENCLAW_WORKSPACE_DIR=...` (standaard: `~/.openclaw/workspace`) gekoppeld aan `/home/node/.openclaw/workspace`
+- `OPENCLAW_PROFILE_FILE=...` gekoppeld en ingelezen voordat tests worden uitgevoerd
+- `OPENCLAW_DOCKER_PROFILE_ENV_ONLY=1` om alleen omgevingsvariabelen te controleren die uit `OPENCLAW_PROFILE_FILE` zijn ingelezen, met tijdelijke configuratie-/werkruimtemappen en zonder externe CLI-authenticatiekoppelingen
+- `OPENCLAW_DOCKER_CLI_TOOLS_DIR=...` (standaard: `~/.cache/openclaw/docker-cli-tools`, tenzij de uitvoering al een door CI/beheer bepaalde gekoppelde map gebruikt) gekoppeld aan `/home/node/.npm-global` voor gecachete CLI-installaties in Docker
+- Externe mappen/bestanden voor CLI-authenticatie onder `$HOME` worden als alleen-lezen gekoppeld onder `/host-auth...` en vervolgens naar `/home/node/...` gekopieerd voordat tests starten
+  - Standaardmappen (gebruikt wanneer de uitvoering niet tot specifieke providers is beperkt): `.factory`, `.gemini`, `.minimax`
   - Standaardbestanden: `~/.codex/auth.json`, `~/.codex/config.toml`, `.claude.json`, `~/.claude/.credentials.json`, `~/.claude/settings.json`, `~/.claude/settings.local.json`
-  - Beperkte providerruns mounten alleen de benodigde mappen/bestanden die uit `OPENCLAW_LIVE_PROVIDERS` / `OPENCLAW_LIVE_GATEWAY_PROVIDERS` worden afgeleid
-  - Overschrijf handmatig met `OPENCLAW_DOCKER_AUTH_DIRS=all`, `OPENCLAW_DOCKER_AUTH_DIRS=none`, of een kommagescheiden lijst zoals `OPENCLAW_DOCKER_AUTH_DIRS=.claude,.codex`
-- `OPENCLAW_LIVE_GATEWAY_MODELS=...` / `OPENCLAW_LIVE_MODELS=...` om de run te beperken
-- `OPENCLAW_LIVE_GATEWAY_PROVIDERS=...` / `OPENCLAW_LIVE_PROVIDERS=...` om providers in-container te filteren
-- `OPENCLAW_SKIP_DOCKER_BUILD=1` om een bestaande `openclaw:local-live`-image opnieuw te gebruiken voor herhalingen die geen rebuild nodig hebben
-- `OPENCLAW_LIVE_REQUIRE_PROFILE_KEYS=1` om te verzekeren dat credentials uit de profielopslag komen (niet uit env)
-- `OPENCLAW_OPENWEBUI_MODEL=...` om het model te kiezen dat door de Gateway voor de Open WebUI-smoketest wordt getoond
-- `OPENCLAW_OPENWEBUI_PROMPT=...` om de nonce-checkprompt te overschrijven die door de Open WebUI-smoketest wordt gebruikt
-- `OPENWEBUI_IMAGE=...` om de vastgepinde Open WebUI-imagetag te overschrijven
+  - Uitvoeringen die tot providers zijn beperkt, koppelen alleen de benodigde mappen/bestanden die zijn afgeleid uit `OPENCLAW_LIVE_PROVIDERS` / `OPENCLAW_LIVE_GATEWAY_PROVIDERS`
+  - Overschrijf dit handmatig met `OPENCLAW_DOCKER_AUTH_DIRS=all`, `OPENCLAW_DOCKER_AUTH_DIRS=none` of een door komma's gescheiden lijst zoals `OPENCLAW_DOCKER_AUTH_DIRS=.claude,.codex`
+- `OPENCLAW_LIVE_GATEWAY_MODELS=...` / `OPENCLAW_LIVE_MODELS=...` om de uitvoering te beperken
+- `OPENCLAW_LIVE_GATEWAY_PROVIDERS=...` / `OPENCLAW_LIVE_PROVIDERS=...` om providers in de container te filteren
+- `OPENCLAW_SKIP_DOCKER_BUILD=1` om een bestaande `openclaw:local-live`-image te hergebruiken voor nieuwe uitvoeringen waarvoor geen herbouw nodig is
+- `OPENCLAW_LIVE_REQUIRE_PROFILE_KEYS=1` om te waarborgen dat aanmeldgegevens uit de profielopslag komen (niet uit de omgeving)
+- `OPENCLAW_OPENWEBUI_MODEL=...` om het model te kiezen dat de Gateway voor de Open WebUI-smoketest beschikbaar stelt
+- `OPENCLAW_OPENWEBUI_PROMPT=...` om de prompt voor nonce-controle te overschrijven die door de Open WebUI-smoketest wordt gebruikt
+- `OPENWEBUI_IMAGE=...` om de vastgezette tag van de Open WebUI-image te overschrijven
 
-## Docs-sanity
+## Documentatiecontrole
 
-Draai docs-controles na docs-wijzigingen: `pnpm check:docs`.
-Draai volledige Mintlify-ankervalidatie wanneer je ook controles op koppen binnen pagina's nodig hebt: `pnpm docs:check-links:anchors`.
+Voer na documentatiewijzigingen documentatiecontroles uit: `pnpm check:docs`.
+Voer de volledige Mintlify-validatie van ankers uit wanneer u ook koppen binnen pagina's moet controleren: `pnpm docs:check-links:anchors`.
 
-## Offline regressie (CI-veilig)
+## Offline regressie (veilig voor CI)
 
-Dit zijn regressies van de "echte pipeline" zonder echte providers:
+Dit zijn regressies van de „echte pijplijn” zonder echte providers:
 
-- Gateway-toolaanroepen (mock OpenAI, echte Gateway + agentloop): `src/gateway/gateway.test.ts` (case: "runs a mock OpenAI tool call end-to-end via gateway agent loop")
-- Gateway-wizard (WS `wizard.start`/`wizard.next`, schrijft config + auth afgedwongen): `src/gateway/gateway.test.ts` (case: "runs wizard over ws and writes auth token config")
+- Toolaanroepen via de Gateway (nagebootste OpenAI, echte Gateway + agentlus): `src/gateway/gateway.test.ts` (testgeval: „voert een nagebootste OpenAI-toolaanroep end-to-end uit via de agentlus van de Gateway”)
+- Gateway-wizard (WS `wizard.start`/`wizard.next`, schrijft configuratie + dwingt authenticatie af): `src/gateway/gateway.test.ts` (testgeval: „voert de wizard uit via ws en schrijft de configuratie van het authenticatietoken”)
 
-## Agent-betrouwbaarheidsevaluaties (Skills)
+## Evaluaties van agentbetrouwbaarheid (Skills)
 
-We hebben al een paar CI-veilige tests die zich gedragen als "agent-betrouwbaarheidsevaluaties":
+We hebben al enkele CI-veilige tests die zich gedragen als „evaluaties van agentbetrouwbaarheid”:
 
-- Mock-toolaanroepen via de echte Gateway + agentloop (`src/gateway/gateway.test.ts`).
-- End-to-end wizardflows die sessiebedrading en configeffecten valideren (`src/gateway/gateway.test.ts`).
+- Nagebootste toolaanroepen via de echte Gateway + agentlus (`src/gateway/gateway.test.ts`).
+- End-to-end wizardstromen die sessiekoppeling en configuratie-effecten valideren (`src/gateway/gateway.test.ts`).
 
 Wat nog ontbreekt voor Skills (zie [Skills](/nl/tools/skills)):
 
-- **Besluitvorming:** wanneer Skills in de prompt worden vermeld, kiest de agent dan de juiste Skill (of vermijdt hij irrelevante)?
-- **Naleving:** leest de agent `SKILL.md` voor gebruik en volgt hij de vereiste stappen/args?
-- **Werkstroomcontracten:** multi-turn-scenario's die toolvolgorde, behoud van sessiegeschiedenis en sandboxgrenzen afdwingen.
+- **Besluitvorming:** wanneer Skills in de prompt worden vermeld, kiest de agent dan de juiste Skill (of vermijdt deze irrelevante Skills)?
+- **Naleving:** leest de agent `SKILL.md` vóór gebruik en volgt deze de vereiste stappen/argumenten?
+- **Workflowcontracten:** scenario's met meerdere beurten die de toolvolgorde, het meenemen van de sessiegeschiedenis en sandboxgrenzen controleren.
 
 Toekomstige evaluaties moeten eerst deterministisch blijven:
 
-- Een scenariorunner met mockproviders om toolaanroepen + volgorde, Skill-bestandsreads en sessiebedrading te controleren.
-- Een kleine suite met Skill-gerichte scenario's (gebruiken versus vermijden, gating, promptinjectie).
-- Optionele live-evaluaties (opt-in, env-gated) pas nadat de CI-veilige suite er is.
+- Een scenariorunner die nagebootste providers gebruikt om toolaanroepen + volgorde, het lezen van Skill-bestanden en sessiekoppeling te controleren.
+- Een kleine suite met op Skills gerichte scenario's (gebruiken versus vermijden, poortcontrole, promptinjectie).
+- Optionele live-evaluaties (opt-in, gestuurd via omgevingsvariabelen), maar pas nadat de CI-veilige suite beschikbaar is.
 
-## Contracttests (Plugin- en kanaalvorm)
+## Contracttests (vorm van plugins en kanalen)
 
-Contracttests verifiëren dat elke geregistreerde Plugin en elk kanaal aan het
-interfacecontract voldoet. Ze itereren over alle ontdekte Plugins en draaien een suite met
-vorm- en gedragsasserties. De standaard `pnpm test` unit-baan slaat deze gedeelde
-seam- en smokebestanden bewust over; draai de contractcommando's expliciet
-wanneer je gedeelde kanaal- of providersurfaces aanraakt.
+Contracttests controleren of elke geregistreerde plugin en elk geregistreerd kanaal voldoet aan
+het bijbehorende interfacecontract. Ze doorlopen alle gedetecteerde plugins en voeren een
+suite met controles op vorm en gedrag uit. De standaard unit-lane van `pnpm test`
+slaat deze gedeelde overgangs- en smoketestbestanden opzettelijk over; voer de contract-
+opdrachten expliciet uit wanneer u gedeelde kanaal- of provideroppervlakken wijzigt.
 
-### Commando's
+### Opdrachten
 
 - Alle contracten: `pnpm test:contracts`
 - Alleen kanaalcontracten: `pnpm test:contracts:channels`
@@ -1000,58 +1080,64 @@ wanneer je gedeelde kanaal- of providersurfaces aanraakt.
 
 ### Kanaalcontracten
 
-Te vinden in `src/channels/plugins/contracts/*.contract.test.ts`:
+Bevinden zich in `src/channels/plugins/contracts/*.contract.test.ts`. Huidige
+hoofdcategorieën:
 
-- **plugin** - Basis-Plugin-vorm (id, naam, capabilities)
-- **setup** - Setupwizardcontract
-- **session-binding** - Sessiebindinggedrag
-- **outbound-payload** - Berichtpayloadstructuur
-- **inbound** - Afhandeling van inkomende berichten
-- **actions** - Kanaalactiehandlers
-- **threading** - Afhandeling van thread-ID's
-- **directory** - Directory/roster-API
-- **group-policy** - Afdwinging van groepsbeleid
+- **kanaalcatalogus** - metagegevens van kanaalcatalogusvermeldingen uit de bundel/registry
+- **plugin** (gebaseerd op de registry, geshard) - basisvorm van pluginregistratie
+- **alleen-oppervlakken** (gebaseerd op de registry, geshard) - vormcontroles per oppervlak voor `actions`, `setup`, `status`, `outbound`, `messaging`, `threading`, `directory` en `gateway`
+- **sessiekoppeling** (gebaseerd op de registry) - gedrag van sessiekoppeling
+- **uitgaande-payload** - structuur en normalisatie van berichtpayloads
+- **groepsbeleid** (fallback) - afdwinging van het standaardgroepsbeleid per kanaal
+- **threads** (gebaseerd op de registry, geshard) - verwerking van thread-id's
+- **map** (gebaseerd op de registry, geshard) - API voor mappen/deelnemerslijsten
+- **registry** en **plugins-core.\*** - internals voor het kanaalpluginregister, de lader en autorisatie voor het schrijven van configuratie
 
-### Providerstatuscontracten
-
-Te vinden in `src/plugins/contracts/*.contract.test.ts`.
-
-- **status** - Kanaalstatusprobes
-- **registry** - Vorm van Plugin-register
+Helpers voor het testharnas voor het vastleggen van inkomende dispatches en uitgaande payloads die door deze
+suites worden gebruikt, zijn intern beschikbaar via `src/plugin-sdk/channel-contract-testing.ts`
+(uitgesloten van npm, geen openbaar SDK-subpad); er is geen zelfstandig
+bestand `inbound.contract.test.ts` in deze map.
 
 ### Providercontracten
 
-Te vinden in `src/plugins/contracts/*.contract.test.ts`:
+Bevinden zich in `src/plugins/contracts/*.contract.test.ts`. Huidige categorieën
+omvatten:
 
-- **auth** - Auth-flowcontract
-- **auth-choice** - Auth-keuze/selectie
-- **catalog** - Modelcatalogus-API
-- **discovery** - Plugin-detectie
-- **loader** - Plugin-laden
-- **runtime** - Provider-runtime
-- **shape** - Plugin-vorm/interface
-- **wizard** - Setupwizard
+- **vorm** - vorm van het pluginmanifest, de API en runtime-exports
+- **pluginregistratie** (+ parallel) - gevallen voor manifestregistratie
+- **pakketmanifest** - vereisten voor pakketmanifesten
+- **lader** - gedrag bij het instellen/afbreken van de pluginlader
+- **registry** - inhoud en zoekfunctionaliteit van de registry voor plugincontracten
+- **providers** - gedeeld providergedrag voor gebundelde providers, plus providers voor zoeken op het web
+- **authenticatiekeuze** - metagegevens van de authenticatiekeuze en installatiegedrag
+- **veroudering-providercatalogus** - metagegevens van verouderde providercatalogi
+- **wizard.choice-resolution**, **wizard.model-picker**, **wizard.setup-options** - contracten van de wizard voor providerinstallatie
+- **embedding-provider**, **memory-embedding-provider**, **web-fetch-provider**, **tts** - mogelijkhedenpecifieke providercontracten
+- **session-actions**, **session-attachments**, **session-entry-projection** - contracten voor sessiestatus in eigendom van plugins
+- **scheduled-turns** - metagegevens en tijdstempelgrenzen voor geplande pluginbeurten
+- **host-hooks**, **run-context-lifecycle**, **runtime-import-side-effects**, **runtime-seams** - contracten voor de levenscyclus en importgrenzen van pluginhosts/runtimes
+- **extension-runtime-dependencies** - plaatsing van runtime-afhankelijkheden voor extensies
 
-### Wanneer draaien
+### Wanneer uitvoeren
 
-- Na het wijzigen van plugin-sdk-exports of subpaden
-- Na het toevoegen of wijzigen van een kanaal- of provider-Plugin
-- Na het refactoren van Plugin-registratie of -detectie
+- Na het wijzigen van plugin-SDK-exports of subpaden
+- Na het toevoegen of wijzigen van een kanaal- of providerplugin
+- Na het herstructureren van pluginregistratie of -detectie
 
-Contracttests draaien in CI en vereisen geen echte API-sleutels.
+Contracttests worden uitgevoerd in CI en vereisen geen echte API-sleutels.
 
-## Regressies toevoegen (richtlijn)
+## Regressies toevoegen (richtlijnen)
 
-Wanneer je een provider-/modelprobleem oplost dat live is ontdekt:
+Wanneer u een live ontdekt provider-/modelprobleem oplost:
 
-- Voeg indien mogelijk een CI-veilige regressie toe (mock-/stubprovider, of leg de exacte request-shape-transformatie vast)
-- Als het inherent alleen live is (ratelimits, authbeleid), houd de live test dan smal en opt-in via env-vars
-- Richt je bij voorkeur op de kleinste laag die de bug vangt:
-  - provider-requestconversie-/replaybug → directe modeltest
-  - Gateway-sessie-/history-/toolpipelinebug → Gateway-live-smoketest of CI-veilige Gateway-mocktest
-- SecretRef-traversal-guardrail:
-  - `src/secrets/exec-secret-ref-id-parity.test.ts` leidt één gesampled doel per SecretRef-klasse af uit registermetadata (`listSecretTargetRegistryEntries()`), en assert daarna dat exec-id's met traversalsegmenten worden afgewezen.
-  - Als je een nieuwe `includeInPlan` SecretRef-doelfamilie toevoegt in `src/secrets/target-registry-data.ts`, werk dan `classifyTargetClass` in die test bij. De test faalt bewust op niet-geclassificeerde doel-id's, zodat nieuwe klassen niet stilzwijgend kunnen worden overgeslagen.
+- Voeg indien mogelijk een CI-veilige regressie toe (nagebootste/gestubde provider of leg de exacte transformatie van de verzoekvorm vast)
+- Als het probleem inherent alleen live optreedt (snelheidslimieten, authenticatiebeleid), houd de live-test dan beperkt en opt-in via omgevingsvariabelen
+- Richt u bij voorkeur op de kleinste laag die de fout opvangt:
+  - fout bij conversie/herhaling van providerverzoeken -> directe modeltest
+  - fout in de sessie-/geschiedenis-/toolpijplijn van de Gateway -> live-smoketest van de Gateway of CI-veilige nagebootste Gateway-test
+- Beveiliging voor het doorlopen van SecretRef:
+  - `src/secrets/exec-secret-ref-id-parity.test.ts` leidt per SecretRef-klasse één bemonsterd doel af uit registrymetagegevens (`listSecretTargetRegistryEntries()`) en controleert vervolgens of exec-id's met doorloopsegmenten worden geweigerd.
+  - Als u een nieuwe `includeInPlan`-SecretRef-doelfamilie toevoegt in `src/secrets/target-registry-data.ts`, werk dan `classifyTargetClass` in die test bij. De test faalt opzettelijk bij niet-geclassificeerde doel-id's, zodat nieuwe klassen niet ongemerkt kunnen worden overgeslagen.
 
 ## Gerelateerd
 

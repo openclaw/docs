@@ -2,24 +2,24 @@
 read_when:
     - Menjalankan pnpm openclaw qa matrix secara lokal
     - Menambahkan atau memilih skenario QA Matrix
-    - Melakukan triase kegagalan Matrix QA, timeout, atau pembersihan yang macet
-summary: 'Referensi pemelihara untuk jalur QA langsung Matrix yang didukung Docker: CLI, profil, variabel env, skenario, dan artefak keluaran.'
-title: Matriks QA
+    - Menangani kegagalan, batas waktu, atau pembersihan yang macet pada QA Matrix
+summary: 'Referensi pengelola untuk jalur QA langsung Matrix berbasis Docker: CLI, profil, variabel lingkungan, skenario, dan artefak keluaran.'
+title: QA Matrix
 x-i18n:
-    generated_at: "2026-07-04T20:44:03Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:11:17Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d4f7fd98b5e7fef7a30c8820c5a1fc48c199e4d09db34255e8b2287a047b339f
+    source_hash: a8034570f5a52619c88bee1f6708bd710744d3cb52a1eb82726aa118844045ef
     source_path: concepts/qa-matrix.md
     workflow: 16
 ---
 
-Lane QA Matrix menjalankan plugin `@openclaw/matrix` bawaan terhadap homeserver Tuwunel sekali pakai di Docker, dengan akun driver, SUT, dan observer sementara plus room yang telah di-seed. Ini adalah cakupan live transport-real untuk Matrix.
+Jalur QA Matrix menjalankan plugin bawaan `@openclaw/matrix` terhadap homeserver Tuwunel sekali pakai di Docker, dengan akun driver, SUT, dan pengamat sementara serta ruang yang telah diisi sebelumnya. Jalur ini merupakan cakupan nyata dengan transport langsung untuk Matrix.
 
-Ini adalah tooling khusus maintainer. Rilis OpenClaw terpaket sengaja menghilangkan `qa-lab`, jadi `openclaw qa` hanya tersedia dari checkout sumber. Checkout sumber memuat runner bawaan secara langsung - tidak diperlukan langkah instal plugin.
+Peralatan khusus pengelola. Rilis OpenClaw dalam bentuk paket tidak menyertakan `qa-lab`, sehingga `openclaw qa` hanya berjalan dari checkout sumber, yang memuat runner bawaan secara langsung tanpa langkah instalasi plugin.
 
-Untuk konteks framework QA yang lebih luas, lihat [ikhtisar QA](/id/concepts/qa-e2e-automation).
+Untuk konteks kerangka kerja QA yang lebih luas, lihat [ikhtisar QA](/id/concepts/qa-e2e-automation).
 
 ## Mulai cepat
 
@@ -27,17 +27,17 @@ Untuk konteks framework QA yang lebih luas, lihat [ikhtisar QA](/id/concepts/qa-
 pnpm openclaw qa matrix --profile fast --fail-fast
 ```
 
-`pnpm openclaw qa matrix` biasa menjalankan `--profile all` dan tidak berhenti pada kegagalan pertama. Gunakan `--profile fast --fail-fast` untuk gate rilis; shard katalog dengan `--profile transport|media|e2ee-smoke|e2ee-deep|e2ee-cli` saat menjalankan seluruh inventaris secara paralel.
+Perintah biasa `pnpm openclaw qa matrix` menjalankan `--profile all` dan tidak berhenti pada kegagalan pertama. Bagi seluruh inventaris ke beberapa tugas paralel dengan `--profile transport|media|e2ee-smoke|e2ee-deep|e2ee-cli`.
 
-## Yang dilakukan lane
+## Yang dilakukan jalur ini
 
-1. Memprovisikan homeserver Tuwunel sekali pakai di Docker (image default `ghcr.io/matrix-construct/tuwunel:v1.5.1`, nama server `matrix-qa.test`, port `28008`) di balik perekam permintaan/respons terbatas yang melakukan redaksi.
-2. Mendaftarkan tiga pengguna sementara - `driver` (mengirim lalu lintas inbound), `sut` (akun OpenClaw Matrix yang diuji), `observer` (capture lalu lintas pihak ketiga).
-3. Melakukan seed room yang diperlukan oleh skenario terpilih (main, threading, media, restart, secondary, allowlist, E2EE, DM verifikasi, dll.).
-4. Menjalankan probe protokol `matrix-qa-v1` yang netral substrate terhadap batas Tuwunel yang direkam. Unit test membuktikan kontrak probe dengan fixture protokol Matrix; host adapter transport QA kanonis di [#99707](https://github.com/openclaw/openclaw/pull/99707) memiliki wiring target Crabline nyata.
-5. Memulai gateway OpenClaw child dengan plugin Matrix nyata yang dibatasi ke akun SUT; `qa-channel` tidak dimuat di child.
-6. Menjalankan skenario secara berurutan, mengamati event melalui klien Matrix driver/observer dan menurunkan ekspektasi route/state dari lalu lintas yang direkam.
-7. Membongkar homeserver, menulis report dan artefak evidence, lalu keluar.
+1. Menyediakan homeserver Tuwunel sekali pakai di Docker (citra bawaan `ghcr.io/matrix-construct/tuwunel:v1.5.1`, nama server `matrix-qa.test`, port `28008`) di belakang perekam permintaan/respons terbatas yang menyamarkan data sensitif.
+2. Mendaftarkan tiga pengguna sementara: `driver` (mengirim lalu lintas masuk), `sut` (akun Matrix OpenClaw yang diuji), `observer` (menangkap lalu lintas pihak ketiga).
+3. Mengisi ruang yang diperlukan oleh skenario terpilih (utama, percakapan berutas, media, mulai ulang, sekunder, daftar izin, E2EE, DM verifikasi, dan sebagainya).
+4. Menjalankan pemeriksaan protokol `matrix-qa-v1` yang netral terhadap substrat pada batas Tuwunel yang direkam. Pengujian unit membuktikan kontrak pemeriksaan dengan perlengkapan protokol Matrix; host adaptor transport QA kanonis dalam [#99707](https://github.com/openclaw/openclaw/pull/99707) memiliki pengawatan target Crabline yang sebenarnya.
+5. Memulai Gateway OpenClaw turunan dengan plugin Matrix sebenarnya yang dicakup untuk akun SUT.
+6. Menjalankan skenario secara berurutan, mengamati peristiwa melalui klien Matrix driver/pengamat, serta memperoleh ekspektasi rute/status dari lalu lintas yang direkam.
+7. Menghentikan homeserver, menulis artefak laporan dan bukti, lalu keluar.
 
 ## CLI
 
@@ -47,103 +47,111 @@ pnpm openclaw qa matrix [options]
 
 ### Flag umum
 
-| Flag                  | Default                                       | Deskripsi                                                                                                                                                 |
-| --------------------- | --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--profile <profile>` | `all`                                         | Profil skenario. Lihat [Profil](#profiles).                                                                                                               |
-| `--fail-fast`         | off                                           | Berhenti setelah check atau skenario pertama yang gagal.                                                                                                   |
-| `--scenario <id>`     | -                                             | Jalankan hanya skenario ini. Dapat diulang. Lihat [Skenario](#scenarios).                                                                                  |
-| `--output-dir <path>` | `<repo>/.artifacts/qa-e2e/matrix-<timestamp>` | Tempat report, ringkasan, inventaris route/state, event yang diamati, dan log output ditulis. Path relatif di-resolve terhadap `--repo-root`.              |
-| `--repo-root <path>`  | `process.cwd()`                               | Root repositori saat dipanggil dari direktori kerja netral.                                                                                                |
-| `--sut-account <id>`  | `sut`                                         | ID akun Matrix di dalam konfigurasi gateway QA.                                                                                                           |
+| Flag                  | Bawaan                                        | Deskripsi                                                                                                                                                             |
+| --------------------- | --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--profile <profile>` | `all`                                         | Profil skenario. Lihat [Profil](#profiles).                                                                                                                            |
+| `--fail-fast`         | nonaktif                                      | Berhenti setelah pemeriksaan atau skenario pertama yang gagal.                                                                                                        |
+| `--scenario <id>`     | -                                             | Jalankan hanya skenario ini. Dapat diulang. Lihat [Skenario](#scenarios).                                                                                              |
+| `--output-dir <path>` | `<repo>/.artifacts/qa-e2e/matrix-<timestamp>` | Lokasi penulisan laporan, ringkasan, inventaris rute/status, peristiwa yang diamati, dan log keluaran. Jalur relatif diselesaikan terhadap `--repo-root`.               |
+| `--repo-root <path>`  | `process.cwd()`                               | Root repositori saat menjalankan dari direktori kerja netral.                                                                                                         |
+| `--sut-account <id>`  | `sut`                                         | ID akun Matrix di dalam konfigurasi Gateway QA.                                                                                                                       |
 
-### Flag provider
+### Flag penyedia
 
-Lane menggunakan transport Matrix nyata tetapi provider model dapat dikonfigurasi:
+Jalur ini menggunakan transport Matrix sebenarnya, tetapi penyedia model dapat dikonfigurasi:
 
-| Flag                     | Default          | Deskripsi                                                                                                                                     |
-| ------------------------ | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--provider-mode <mode>` | `live-frontier`  | `mock-openai` untuk dispatch mock deterministik atau `live-frontier` untuk provider frontier live. Alias lama `live-openai` masih berfungsi. |
-| `--model <ref>`          | default provider | Ref `provider/model` utama.                                                                                                                    |
-| `--alt-model <ref>`      | default provider | Ref `provider/model` alternatif saat skenario beralih di tengah run.                                                                           |
-| `--fast`                 | off              | Aktifkan mode cepat provider jika didukung.                                                                                                    |
+| Flag                     | Bawaan            | Deskripsi                                                                                                                                                                                  |
+| ------------------------ | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `--provider-mode <mode>` | `live-frontier`   | `mock-openai` untuk pengiriman tiruan deterministik atau `live-frontier` untuk penyedia frontier langsung. Alias lama `live-openai` masih berfungsi.                                       |
+| `--model <ref>`          | bawaan penyedia   | Referensi `provider/model` utama.                                                                                                                                                           |
+| `--alt-model <ref>`      | bawaan penyedia   | Referensi `provider/model` alternatif ketika skenario beralih di tengah proses.                                                                                                            |
+| `--fast`                 | nonaktif          | Aktifkan mode cepat penyedia jika didukung.                                                                                                                                                |
 
-QA Matrix tidak menerima `--credential-source` atau `--credential-role`. Lane memprovisikan pengguna sekali pakai secara lokal; tidak ada pool kredensial bersama untuk disewa.
+QA Matrix tidak menerima `--credential-source` atau `--credential-role`. Jalur ini menyediakan pengguna sekali pakai secara lokal; tidak ada kumpulan kredensial bersama yang dapat disewa.
 
 ## Profil
 
-Profil terpilih menentukan skenario mana yang berjalan.
+| Profil          | Kegunaan                                                                                                                                                                                                                                                   |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `all` (bawaan)  | Katalog lengkap. Lambat tetapi menyeluruh.                                                                                                                                                                                                                 |
+| `fast`          | Subset gerbang rilis yang menguji kontrak transport langsung imperatif: pemfilteran penyebutan, pemblokiran daftar izin, bentuk balasan, pelanjutan setelah mulai ulang, pengamatan reaksi, pengiriman metadata persetujuan eksekusi, dan balasan dasar E2EE. |
+| `transport`     | Skenario percakapan berutas, DM, ruang, bergabung otomatis, penyebutan/daftar izin, persetujuan, dan reaksi pada tingkat transport.                                                                                                                        |
+| `media`         | Cakupan lampiran gambar, audio, video, PDF, dan EPUB.                                                                                                                                                                                                      |
+| `e2ee-smoke`    | Cakupan E2EE minimum: balasan terenkripsi dasar, tindak lanjut utas, dan keberhasilan bootstrap.                                                                                                                                                           |
+| `e2ee-deep`     | Skenario menyeluruh untuk kehilangan status, cadangan, kunci, dan pemulihan E2EE.                                                                                                                                                                         |
+| `e2ee-cli`      | Skenario CLI `openclaw matrix encryption setup` dan `verify *` yang dijalankan melalui harness QA.                                                                                                                                                         |
 
-| Profile         | Gunakan untuk                                                                                                                                                                                                                                   |
-| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `all` (default) | Katalog penuh. Lambat tetapi menyeluruh.                                                                                                                                                                                                        |
-| `fast`          | Subset gate rilis yang menguji kontrak transport live: canary, mention gating, blok allowlist, bentuk balasan, resume restart, tindak lanjut thread, isolasi thread, observasi reaksi, dan pengiriman metadata persetujuan exec.              |
-| `transport`     | Skenario threading tingkat transport, DM, room, autojoin, mention/allowlist, persetujuan, dan reaksi.                                                                                                                                           |
-| `media`         | Cakupan lampiran gambar, audio, video, PDF, EPUB.                                                                                                                                                                                               |
-| `e2ee-smoke`    | Cakupan E2EE minimum - balasan terenkripsi dasar, tindak lanjut thread, keberhasilan bootstrap.                                                                                                                                                 |
-| `e2ee-deep`     | Skenario E2EE menyeluruh untuk kehilangan state, backup, kunci, dan pemulihan.                                                                                                                                                                  |
-| `e2ee-cli`      | Skenario CLI `openclaw matrix encryption setup` dan `verify *` yang dijalankan melalui harness QA.                                                                                                                                              |
-
-Pemetaan persisnya ada di `extensions/qa-matrix/src/runners/contract/scenario-catalog.ts`.
+Pemetaan persisnya berada di `extensions/qa-matrix/src/runners/contract/scenario-catalog.ts`.
 
 ## Skenario
 
-Daftar ID skenario lengkap adalah union `MatrixQaScenarioId` di `extensions/qa-matrix/src/runners/contract/scenario-catalog.ts:15`. Kategori mencakup:
+Adaptor Matrix bersama mengekspos skenario YAML kanonis berikut melalui `openclaw qa suite --channel-driver live --channel matrix`:
 
-- threading - `matrix-thread-*`, `matrix-subagent-thread-spawn`
-- level teratas / DM / room - `matrix-top-level-reply-shape`, `matrix-room-*`, `matrix-dm-*`
-- streaming dan progres tool - `matrix-room-partial-streaming-preview`, `matrix-room-quiet-streaming-preview`, `matrix-room-tool-progress-*`, `matrix-room-block-streaming`
-- media - `matrix-media-type-coverage`, `matrix-room-image-understanding-attachment`, `matrix-attachment-only-ignored`, `matrix-unsupported-media-safe`
-- routing - `matrix-room-autojoin-invite`, `matrix-secondary-room-*`
-- reaksi - `matrix-reaction-*`
-- persetujuan - `matrix-approval-*` (metadata exec/plugin, fallback chunked, reaksi penolakan, thread, dan routing `target: "both"`)
-- restart dan replay - `matrix-restart-*`, `matrix-stale-sync-replay-dedupe`, `matrix-room-membership-loss`, `matrix-homeserver-restart-resume`, `matrix-initial-catchup-then-incremental`
-- mention gating, bot-ke-bot, dan allowlist - `matrix-mention-*`, `matrix-allowbots-*`, `matrix-allowlist-*`, `matrix-multi-actor-ordering`, `matrix-inbound-edit-*`, `matrix-mxid-prefixed-command-block`, `matrix-observer-allowlist-override`
-- E2EE - `matrix-e2ee-*` (balasan dasar, tindak lanjut thread, bootstrap, siklus hidup recovery key, varian kehilangan state, perilaku backup server, higienitas perangkat, verifikasi SAS / QR / DM, restart, redaksi artefak)
-- CLI E2EE - `matrix-e2ee-cli-*` (setup enkripsi, setup idempoten, kegagalan bootstrap, siklus hidup recovery-key, multi-akun, round-trip gateway-reply, verifikasi mandiri)
+- `channel-chat-baseline`
+- `thread-follow-up`
+- `thread-isolation`
+- `thread-reply-override`
+- `dm-shared-session`
+- `dm-per-room-session`
 
-Berikan `--scenario <id>` (dapat diulang) untuk menjalankan set pilihan manual; kombinasikan dengan `--profile all` untuk mengabaikan gating profil.
+`subagent-thread-spawn` tetap tersedia melalui pemilihan eksplisit `--scenario subagent-thread-spawn`,
+tetapi belum menjadi bagian dari kumpulan Matrix bersama bawaan hingga bukti penyelesaian turunan langsung stabil.
+
+Daftar ID skenario imperatif lainnya adalah union `MatrixQaScenarioId` dalam `extensions/qa-matrix/src/runners/contract/scenario-catalog.ts`. Kategori:
+
+- percakapan berutas: `matrix-thread-root-preservation`, `matrix-thread-nested-reply-shape`
+- tingkat atas / DM / ruang: `matrix-top-level-reply-shape`, `matrix-room-*`, `matrix-dm-*`
+- streaming dan progres alat: `matrix-room-partial-streaming-preview`, `matrix-room-quiet-streaming-preview`, `matrix-room-tool-progress-*`, `matrix-room-block-streaming`
+- media: `matrix-media-type-coverage`, `matrix-room-image-understanding-attachment`, `matrix-attachment-only-ignored`, `matrix-unsupported-media-safe`
+- perutean: `matrix-room-autojoin-invite`, `matrix-secondary-room-*`
+- reaksi: `matrix-reaction-*`
+- persetujuan: `matrix-approval-*` (metadata eksekusi/plugin, fallback terpotong, reaksi penolakan, utas, dan perutean `target: "both"`)
+- mulai ulang dan pemutaran ulang: `matrix-restart-*`, `matrix-stale-sync-replay-dedupe`, `matrix-room-membership-loss`, `matrix-homeserver-restart-resume`, `matrix-initial-catchup-then-incremental`
+- pemfilteran penyebutan, bot-ke-bot, dan daftar izin: `matrix-mention-*`, `matrix-allowbots-*`, `matrix-allowlist-*`, `matrix-multi-actor-ordering`, `matrix-inbound-edit-*`, `matrix-mxid-prefixed-command-block`, `matrix-observer-allowlist-override`
+- E2EE: `matrix-e2ee-*` (balasan dasar, tindak lanjut utas, bootstrap, siklus hidup kunci pemulihan, varian kehilangan status, perilaku cadangan server, kebersihan perangkat, verifikasi SAS / QR / DM, mulai ulang, penyamaran artefak)
+- CLI E2EE: `matrix-e2ee-cli-*` (penyiapan enkripsi, penyiapan idempoten, kegagalan bootstrap, siklus hidup kunci pemulihan, multiakun, perjalanan pulang-pergi balasan Gateway, verifikasi mandiri)
+
+Berikan `--scenario <id>` (dapat diulang) untuk menjalankan kumpulan pilihan; kombinasikan dengan `--profile all` untuk mengabaikan pemfilteran profil.
 
 ## Variabel lingkungan
 
-| Variabel                                | Default                                   | Efek                                                                                                                                                                                        |
-| --------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `OPENCLAW_QA_MATRIX_TIMEOUT_MS`         | `1800000` (30 mnt)                        | Batas atas keras untuk seluruh proses berjalan.                                                                                                                                             |
-| `OPENCLAW_QA_MATRIX_CANARY_TIMEOUT_MS`  | `45000`                                   | Batas untuk balasan canary awal. CI rilis menaikkan ini pada runner bersama agar giliran gateway pertama yang lambat tidak gagal sebelum cakupan skenario dimulai.                         |
-| `OPENCLAW_QA_MATRIX_NO_REPLY_WINDOW_MS` | `8000`                                    | Jendela hening untuk asersi negatif tanpa balasan. Dibatasi hingga `≤` timeout proses berjalan.                                                                                            |
-| `OPENCLAW_QA_MATRIX_CLEANUP_TIMEOUT_MS` | `90000`                                   | Batas untuk pembongkaran Docker. Permukaan kegagalan mencakup perintah pemulihan `docker compose ... down --remove-orphans`.                                                               |
-| `OPENCLAW_QA_MATRIX_TUWUNEL_IMAGE`      | `ghcr.io/matrix-construct/tuwunel:v1.5.1` | Timpa image homeserver saat memvalidasi terhadap versi Tuwunel yang berbeda.                                                                                                                |
-| `OPENCLAW_QA_MATRIX_PROGRESS`           | aktif                                     | `0` membisukan baris progres `[matrix-qa] ...` di stderr. `1` memaksanya aktif.                                                                                                             |
-| `OPENCLAW_QA_MATRIX_CAPTURE_CONTENT`    | disunting                                 | `1` mempertahankan isi pesan dan `formatted_body` di `matrix-qa-observed-events.json`. Default menyuntingnya agar artefak CI tetap aman.                                                   |
-| `OPENCLAW_QA_MATRIX_DISABLE_FORCE_EXIT` | nonaktif                                  | `1` melewati `process.exit` deterministik setelah penulisan artefak. Default memaksa keluar karena handle kripto native matrix-js-sdk dapat membuat event loop tetap hidup setelah artefak selesai. |
-| `OPENCLAW_RUN_NODE_OUTPUT_LOG`          | tidak disetel                             | Saat disetel oleh launcher luar (mis. `scripts/run-node.mjs`), Matrix QA menggunakan ulang jalur log itu alih-alih memulai tee sendiri.                                                     |
+| Variabel                                | Nilai default                              | Efek                                                                                                                                                                                          |
+| --------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `OPENCLAW_QA_MATRIX_TIMEOUT_MS`         | `1800000` (30 menit)                       | Batas atas mutlak untuk keseluruhan proses.                                                                                                                                                   |
+| `OPENCLAW_QA_MATRIX_CANARY_TIMEOUT_MS`  | `45000`                                    | Batas waktu untuk balasan canary awal. CI rilis menaikkan nilai ini pada runner bersama agar giliran Gateway pertama yang lambat tidak gagal sebelum cakupan skenario dimulai.                |
+| `OPENCLAW_QA_MATRIX_NO_REPLY_WINDOW_MS` | `8000`                                     | Jendela tanpa aktivitas untuk asersi negatif tanpa balasan. Dibatasi agar `<=` waktu habis proses.                                                                                            |
+| `OPENCLAW_QA_MATRIX_CLEANUP_TIMEOUT_MS` | `90000`                                    | Batas waktu untuk pembongkaran Docker. Informasi kegagalan mencakup perintah pemulihan `docker compose ... down --remove-orphans`.                                                            |
+| `OPENCLAW_QA_MATRIX_TUWUNEL_IMAGE`      | `ghcr.io/matrix-construct/tuwunel:v1.5.1`  | Ganti image homeserver saat memvalidasi dengan versi Tuwunel yang berbeda.                                                                                                                    |
+| `OPENCLAW_QA_MATRIX_PROGRESS`           | aktif                                      | `0` menonaktifkan baris progres `[matrix-qa] ...` di stderr. `1` memaksa baris tersebut ditampilkan.                                                                                          |
+| `OPENCLAW_QA_MATRIX_CAPTURE_CONTENT`    | disunting                                  | `1` mempertahankan isi pesan dan `formatted_body` dalam `matrix-qa-observed-events.json`. Secara default, konten disunting agar artefak CI tetap aman.                                        |
+| `OPENCLAW_QA_MATRIX_DISABLE_FORCE_EXIT` | nonaktif                                   | `1` melewati `process.exit` deterministik setelah artefak ditulis. Secara default, proses dipaksa berhenti karena handle kriptografi native matrix-js-sdk dapat mempertahankan event loop tetap aktif setelah artefak selesai dibuat. |
+| `OPENCLAW_RUN_NODE_OUTPUT_LOG`          | tidak ditetapkan                           | Jika ditetapkan oleh peluncur luar (misalnya `scripts/run-node.mjs`), QA Matrix menggunakan kembali jalur log tersebut alih-alih memulai tee sendiri.                                         |
 
 ## Artefak keluaran
 
-Ditulis ke `--output-dir`:
+Ditulis ke `--output-dir` (default `<repo>/.artifacts/qa-e2e/matrix-<timestamp>` agar proses berturut-turut tidak saling menimpa):
 
-- `matrix-qa-report.md` - Laporan protokol Markdown (apa yang lulus, gagal, dilewati, dan alasannya).
-- `matrix-qa-summary.json` - Ringkasan terstruktur yang cocok untuk parsing CI dan dasbor.
-- `matrix-qa-route-state-manifest.json` - Inventaris `matrix-qa-v1` dinamis yang dikunci berdasarkan id skenario. Ini mencatat bentuk rute/isi yang disunting, urutan permintaan, percobaan ulang yang diamati, error, kontinuitas token sinkronisasi, serta keluarga status perangkat/kunci/media/cadangan yang diamati selama proses berjalan tersebut. Ini adalah bukti yang dapat dieksekusi, bukan baseline yang diperiksa masuk.
-- `matrix-qa-observed-events.json` - Event Matrix yang diamati dari klien driver dan observer. Isi disunting kecuali `OPENCLAW_QA_MATRIX_CAPTURE_CONTENT=1`; metadata persetujuan diringkas dengan kolom aman terpilih dan pratinjau perintah yang dipotong.
-- `matrix-qa-output.log` - Gabungan stdout/stderr dari proses berjalan. Jika `OPENCLAW_RUN_NODE_OUTPUT_LOG` disetel, log launcher luar digunakan ulang sebagai gantinya.
+- `matrix-qa-report.md`: Laporan protokol Markdown (apa yang berhasil, gagal, dilewati, dan alasannya).
+- `matrix-qa-summary.json`: Ringkasan terstruktur yang sesuai untuk penguraian CI dan dasbor.
+- `matrix-qa-route-state-manifest.json`: Inventaris `matrix-qa-v1` dinamis yang dikunci berdasarkan ID skenario. File ini mencatat bentuk rute/isi yang disunting, urutan permintaan, percobaan ulang yang diamati, kesalahan, kesinambungan token sinkronisasi, serta kelompok status perangkat/kunci/media/cadangan yang diamati selama proses tersebut. Ini adalah bukti yang dapat dieksekusi, bukan baseline yang dimasukkan ke repositori.
+- `matrix-qa-observed-events.json`: Peristiwa Matrix yang diamati dari klien pengendali dan pengamat. Isi disunting kecuali `OPENCLAW_QA_MATRIX_CAPTURE_CONTENT=1`; metadata persetujuan diringkas dengan bidang aman yang dipilih dan pratinjau perintah yang dipotong.
+- `matrix-qa-output.log`: Gabungan stdout/stderr dari proses. Jika `OPENCLAW_RUN_NODE_OUTPUT_LOG` ditetapkan, log peluncur luar digunakan kembali.
 
-Direktori keluaran default adalah `<repo>/.artifacts/qa-e2e/matrix-<timestamp>` sehingga proses berjalan berurutan tidak saling menimpa.
+## Kiat triase
 
-## Tips triase
+- **Proses macet menjelang akhir:** handle kriptografi native `matrix-js-sdk` dapat tetap aktif lebih lama daripada harness. Secara default, proses memaksa `process.exit` yang bersih setelah artefak ditulis; jika Anda menetapkan `OPENCLAW_QA_MATRIX_DISABLE_FORCE_EXIT=1`, proses diperkirakan akan tetap berjalan.
+- **Kesalahan pembersihan:** cari perintah pemulihan yang dicetak (pemanggilan `docker compose ... down --remove-orphans`) dan jalankan secara manual untuk membebaskan port homeserver.
+- **Jendela asersi negatif tidak stabil di CI:** turunkan `OPENCLAW_QA_MATRIX_NO_REPLY_WINDOW_MS` (default 8 dtk) saat CI cepat; naikkan nilainya pada runner bersama yang lambat.
+- **Memerlukan isi yang disunting untuk laporan bug:** jalankan ulang dengan `OPENCLAW_QA_MATRIX_CAPTURE_CONTENT=1` dan lampirkan `matrix-qa-observed-events.json`. Perlakukan artefak yang dihasilkan sebagai data sensitif.
+- **Versi Tuwunel berbeda:** arahkan `OPENCLAW_QA_MATRIX_TUWUNEL_IMAGE` ke versi yang sedang diuji. Lane hanya memasukkan image default yang disematkan ke repositori.
 
-- **Proses berjalan macet mendekati akhir:** handle kripto native `matrix-js-sdk` dapat hidup lebih lama daripada harness. Default memaksa `process.exit` yang bersih setelah penulisan artefak; jika Anda telah menghapus setelan `OPENCLAW_QA_MATRIX_DISABLE_FORCE_EXIT=1`, proses mungkin tetap bertahan.
-- **Error pembersihan:** cari perintah pemulihan yang dicetak (pemanggilan `docker compose ... down --remove-orphans`) dan jalankan secara manual untuk melepaskan port homeserver.
-- **Jendela asersi negatif flaky di CI:** turunkan `OPENCLAW_QA_MATRIX_NO_REPLY_WINDOW_MS` (default 8 dtk) saat CI cepat; naikkan pada runner bersama yang lambat.
-- **Memerlukan isi yang disunting untuk laporan bug:** jalankan ulang dengan `OPENCLAW_QA_MATRIX_CAPTURE_CONTENT=1` dan lampirkan `matrix-qa-observed-events.json`. Perlakukan artefak yang dihasilkan sebagai sensitif.
-- **Versi Tuwunel berbeda:** arahkan `OPENCLAW_QA_MATRIX_TUWUNEL_IMAGE` ke versi yang diuji. Lane hanya memeriksa image default yang dipin.
+## Kontrak transportasi langsung
 
-## Kontrak transport live
-
-Matrix adalah salah satu dari tiga lane transport live (Matrix, Telegram, Discord) yang berbagi satu daftar periksa kontrak yang didefinisikan di [Ikhtisar QA → Cakupan transport live](/id/concepts/qa-e2e-automation#live-transport-coverage). `qa-channel` tetap menjadi suite sintetis yang luas dan sengaja tidak menjadi bagian dari matriks tersebut.
+Matrix adalah salah satu dari tiga lane transportasi langsung (Matrix, Telegram, Discord) yang berbagi satu daftar periksa kontrak yang ditetapkan dalam [Ikhtisar QA: Cakupan transportasi langsung](/id/concepts/qa-e2e-automation#live-transport-coverage). `qa-channel` tetap menjadi rangkaian sintetis yang luas dan sengaja tidak menjadi bagian dari matriks tersebut.
 
 ## Terkait
 
-- [Ikhtisar QA](/id/concepts/qa-e2e-automation) - stack QA keseluruhan dan kontrak transport live
-- [QA Channel](/id/channels/qa-channel) - adapter kanal sintetis untuk skenario yang didukung repo
-- [Pengujian](/id/help/testing) - menjalankan pengujian dan menambahkan cakupan QA
-- [Matrix](/id/channels/matrix) - Plugin kanal yang sedang diuji
+- [Ikhtisar QA](/id/concepts/qa-e2e-automation): keseluruhan tumpukan QA dan kontrak transportasi langsung
+- [Kanal QA](/id/channels/qa-channel): adaptor kanal sintetis untuk skenario berbasis repositori
+- [Pengujian](/id/help/testing): menjalankan pengujian dan menambahkan cakupan QA
+- [Matrix](/id/channels/matrix): Plugin kanal yang sedang diuji

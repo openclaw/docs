@@ -1,11 +1,11 @@
 ---
 read_when:
-    - أنت تقوم بتثبيت أو تكوين أو تدقيق Plugin zalo
-summary: Plugin قناة Zalo في OpenClaw لدردشات الروبوت وWebhook.
+    - أنت تثبّت Plugin ‏zalo أو تهيّئه أو تدقّق فيه
+summary: Plugin قناة Zalo في OpenClaw لمحادثات البوت وWebhook.
 title: Plugin ‏Zalo
 x-i18n:
-    generated_at: "2026-06-27T18:16:43Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:23:19Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: ff9da1e1591eaad36db74a27f817dd9dac8791af2d5030fcd3419ee50d2ed4aa
@@ -15,17 +15,17 @@ x-i18n:
 
 # Plugin ‏Zalo
 
-Plugin قناة Zalo في OpenClaw لمحادثات البوت وWebhook.
+Plugin قناة Zalo في OpenClaw لمحادثات الروبوت وWebhook.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/zalo`
 - مسار التثبيت: npm؛ ClawHub
 
-## السطح
+## الواجهة
 
-channels: zalo
+القنوات: zalo
 
-## المستندات ذات الصلة
+## الوثائق ذات الصلة
 
-- [zalo](/ar/channels/zalo)
+- [Zalo](/ar/channels/zalo)

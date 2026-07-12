@@ -1,84 +1,82 @@
 ---
 read_when:
-    - Thay đổi quyền truy cập tệp, trích xuất tệp lưu trữ, lưu trữ không gian làm việc hoặc các helper hệ thống tệp của Plugin
-summary: Cách OpenClaw xử lý an toàn quyền truy cập tệp cục bộ và lý do trình trợ giúp Python fs-safe tùy chọn bị tắt theo mặc định
+    - Thay đổi quyền truy cập tệp, giải nén kho lưu trữ, lưu trữ không gian làm việc hoặc các trình trợ giúp hệ thống tệp của plugin
+summary: Cách OpenClaw xử lý quyền truy cập tệp cục bộ một cách an toàn và lý do trình trợ giúp Python fs-safe tùy chọn bị tắt theo mặc định
 title: Thao tác tệp an toàn
 x-i18n:
-    generated_at: "2026-05-06T09:15:07Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:58:11Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 19d5b31ec2f2c7ab1033bdb55a701c60468dfac58142f726ecbc9ac933f68e30
+    source_hash: 5c8edf36ddbb8c8bc1edc52ecdf481affe5395d1779c679a40439167dfe70299
     source_path: gateway/security/secure-file-operations.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw sử dụng [`@openclaw/fs-safe`](https://github.com/openclaw/fs-safe) cho các thao tác tệp cục bộ nhạy cảm về bảo mật: đọc/ghi giới hạn theo gốc, thay thế nguyên tử, trích xuất kho lưu trữ, không gian làm việc tạm thời, trạng thái JSON và xử lý tệp bí mật.
+OpenClaw sử dụng [`@openclaw/fs-safe`](https://github.com/openclaw/fs-safe) cho các thao tác tệp cục bộ nhạy cảm về bảo mật: đọc/ghi bị giới hạn trong thư mục gốc, thay thế nguyên tử, giải nén kho lưu trữ, không gian làm việc tạm thời, trạng thái JSON và xử lý tệp bí mật.
 
-Mục tiêu là một **lan can thư viện** nhất quán cho mã OpenClaw đáng tin cậy nhận tên đường dẫn không đáng tin cậy. Đây không phải là sandbox. Quyền hệ thống tệp của máy chủ, người dùng hệ điều hành, container và chính sách agent/công cụ vẫn xác định phạm vi ảnh hưởng thực tế.
+Đây là một **cơ chế bảo vệ ở cấp thư viện** dành cho mã OpenClaw đáng tin cậy nhận tên đường dẫn không đáng tin cậy, chứ không phải môi trường cô lập. Quyền truy cập hệ thống tệp của máy chủ, người dùng hệ điều hành, vùng chứa và chính sách tác nhân/công cụ vẫn xác định phạm vi ảnh hưởng thực tế.
 
 ## Mặc định: không có trình trợ giúp Python
 
-OpenClaw mặc định tắt trình trợ giúp Python POSIX của fs-safe.
+OpenClaw mặc định đặt trình trợ giúp Python POSIX của fs-safe thành **tắt**:
 
-Lý do:
+- Gateway không nên khởi chạy một tiến trình phụ Python thường trực trừ khi quản trị viên chủ động bật;
+- hầu hết bản cài đặt không cần cơ chế tăng cường bổ sung để bảo vệ các thao tác sửa đổi thư mục cha;
+- việc tắt Python giúp hành vi khi chạy có thể dự đoán được trong các môi trường máy tính để bàn, Docker, CI và ứng dụng đóng gói.
 
-- gateway không nên sinh một sidecar Python thường trú trừ khi operator đã chọn dùng;
-- nhiều bản cài đặt không cần tăng cường bổ sung cho việc thay đổi thư mục cha;
-- việc tắt Python giúp hành vi gói/runtime dễ dự đoán hơn trên môi trường desktop, Docker, CI và ứng dụng đóng gói.
-
-OpenClaw chỉ thay đổi mặc định. Nếu bạn đặt rõ một chế độ, fs-safe sẽ tuân theo:
+OpenClaw chỉ thay đổi _giá trị mặc định_. Thiết lập tường minh luôn được ưu tiên:
 
 ```bash
-# Hành vi OpenClaw mặc định: dự phòng fs-safe chỉ dùng Node.
+# Hành vi mặc định của OpenClaw: phương án dự phòng fs-safe chỉ dùng Node.
 OPENCLAW_FS_SAFE_PYTHON_MODE=off
 
-# Chọn dùng trình trợ giúp khi có, dự phòng nếu không có.
+# Bật trình trợ giúp khi khả dụng và dùng phương án dự phòng nếu không khả dụng.
 OPENCLAW_FS_SAFE_PYTHON_MODE=auto
 
-# Đóng an toàn nếu trình trợ giúp không thể khởi động.
+# Từ chối hoạt động nếu trình trợ giúp không thể khởi động.
 OPENCLAW_FS_SAFE_PYTHON_MODE=require
 
-# Trình thông dịch rõ ràng tùy chọn.
+# Đường dẫn tường minh tùy chọn đến trình thông dịch.
 OPENCLAW_FS_SAFE_PYTHON=/usr/bin/python3
 ```
 
-Các tên fs-safe chung cũng hoạt động: `FS_SAFE_PYTHON_MODE` và `FS_SAFE_PYTHON`.
+Các tên biến môi trường fs-safe dùng chung cũng hoạt động: `FS_SAFE_PYTHON_MODE` và `FS_SAFE_PYTHON`.
+
+Hãy dùng `require` (không phải `auto`) khi trình trợ giúp là một phần trong chiến lược bảo mật của bạn; `auto` âm thầm chuyển sang hành vi chỉ dùng Node nếu trình trợ giúp không thể khởi động.
 
 ## Những gì vẫn được bảo vệ khi không có Python
 
-Khi trình trợ giúp bị tắt, OpenClaw vẫn dùng các đường dẫn Node của fs-safe cho:
+Khi trình trợ giúp bị tắt, OpenClaw vẫn nhận được các cơ chế bảo vệ chỉ dùng Node của fs-safe:
 
-- từ chối các thoát đường dẫn tương đối như `..`, đường dẫn tuyệt đối và dấu phân cách đường dẫn ở nơi chỉ cho phép tên;
-- phân giải thao tác thông qua một handle gốc đáng tin cậy thay vì các kiểm tra tùy tiện kiểu `path.resolve(...).startsWith(...)`;
-- từ chối các mẫu symlink và hardlink trên các API yêu cầu chính sách đó;
-- mở tệp với kiểm tra danh tính ở nơi API trả về hoặc tiêu thụ nội dung tệp;
-- ghi nguyên tử qua tệp tạm cùng thư mục cho tệp trạng thái/cấu hình;
-- giới hạn byte cho đọc và trích xuất kho lưu trữ;
-- chế độ riêng tư cho bí mật và tệp trạng thái ở nơi API yêu cầu.
+- từ chối các đường dẫn tương đối thoát khỏi phạm vi (`..`), đường dẫn tuyệt đối và dấu phân cách đường dẫn tại những vị trí chỉ cho phép tên đơn;
+- thực hiện thao tác thông qua một tham chiếu thư mục gốc đáng tin cậy thay vì các phép kiểm tra tùy tiện bằng `path.resolve(...).startsWith(...)`;
+- từ chối các mẫu liên kết tượng trưng và liên kết cứng trên những API yêu cầu chính sách đó;
+- mở tệp kèm kiểm tra định danh khi API trả về hoặc sử dụng nội dung tệp;
+- ghi tệp trạng thái/cấu hình bằng tệp tạm cùng cấp và thao tác đổi tên nguyên tử;
+- áp dụng giới hạn byte cho việc đọc và giải nén kho lưu trữ;
+- áp dụng chế độ tệp riêng tư cho bí mật và tệp trạng thái khi API yêu cầu.
 
-Các biện pháp bảo vệ này bao phủ mô hình đe dọa OpenClaw thông thường: mã gateway đáng tin cậy xử lý đầu vào đường dẫn model/plugin/kênh không đáng tin cậy bên trong một ranh giới operator đáng tin cậy duy nhất.
+Điều này bao phủ mô hình đe dọa thông thường của OpenClaw: mã Gateway đáng tin cậy xử lý dữ liệu đường dẫn không đáng tin cậy từ mô hình/Plugin/kênh trong một ranh giới quản trị viên đáng tin cậy duy nhất.
 
-## Python bổ sung gì
+## Python bổ sung điều gì
 
-Trên POSIX, trình trợ giúp tùy chọn của fs-safe duy trì một tiến trình Python thường trú và dùng các thao tác hệ thống tệp tương đối theo fd cho các thay đổi thư mục cha như đổi tên, xóa, mkdir, stat/liệt kê và một số đường dẫn ghi.
+Trên POSIX, trình trợ giúp tùy chọn duy trì một tiến trình Python thường trực và sử dụng các thao tác hệ thống tệp tương đối theo bộ mô tả tệp cho các thao tác sửa đổi thư mục cha: đổi tên, xóa, tạo thư mục, lấy trạng thái/liệt kê và một số đường ghi.
 
-Điều đó thu hẹp các cửa sổ race cùng UID, nơi một tiến trình khác có thể tráo đổi thư mục cha giữa bước xác thực và bước thay đổi. Đây là phòng thủ chiều sâu cho các máy chủ nơi tiến trình cục bộ không đáng tin cậy có thể sửa đổi cùng các thư mục mà OpenClaw đang thao tác.
+Điều này thu hẹp các khoảng thời gian có thể xảy ra điều kiện tranh chấp với cùng UID, khi một tiến trình khác thay thế thư mục cha trong khoảng thời gian từ lúc xác thực đến lúc sửa đổi — một lớp phòng vệ chuyên sâu trên các máy chủ nơi tiến trình cục bộ không đáng tin cậy có thể sửa đổi chính các thư mục mà OpenClaw thao tác.
 
-Nếu triển khai của bạn có rủi ro đó và Python được đảm bảo tồn tại, hãy dùng:
+Nếu môi trường triển khai của bạn có rủi ro đó và chắc chắn có Python, hãy đặt:
 
 ```bash
 OPENCLAW_FS_SAFE_PYTHON_MODE=require
 ```
 
-Dùng `require` thay vì `auto` khi trình trợ giúp là một phần trong tư thế bảo mật của bạn; `auto` cố ý dự phòng về hành vi chỉ dùng Node nếu trình trợ giúp không có sẵn.
+## Hướng dẫn cho Plugin và lõi
 
-## Hướng dẫn cho Plugin và core
+- Quyền truy cập tệp dành cho Plugin nên đi qua các trình trợ giúp `openclaw/plugin-sdk/*`, thay vì dùng trực tiếp `fs`, khi đường dẫn đến từ tin nhắn, đầu ra mô hình, cấu hình hoặc dữ liệu đầu vào của Plugin.
+- Mã lõi nên sử dụng các trình bao bọc fs-safe trong `src/infra/*` để chính sách tiến trình của OpenClaw được áp dụng nhất quán.
+- Việc giải nén kho lưu trữ nên sử dụng các trình trợ giúp kho lưu trữ của fs-safe với giới hạn tường minh về kích thước, số lượng mục, liên kết và đích đến.
+- Bí mật nên sử dụng các trình trợ giúp bí mật của OpenClaw hoặc các trình trợ giúp bí mật/trạng thái riêng tư của fs-safe; không tự triển khai việc kiểm tra chế độ quanh `fs.writeFile`.
+- Để cô lập khỏi người dùng cục bộ thù địch, không được chỉ dựa vào fs-safe. Hãy chạy các Gateway riêng biệt dưới các người dùng hệ điều hành hoặc máy chủ riêng biệt, hoặc sử dụng môi trường cô lập.
 
-- Truy cập tệp hướng tới Plugin nên đi qua các helper `openclaw/plugin-sdk/*`, không phải `fs` thô, khi đường dẫn đến từ tin nhắn, đầu ra model, cấu hình hoặc đầu vào plugin.
-- Mã core nên dùng các wrapper fs-safe cục bộ dưới `src/infra/*` để chính sách tiến trình của OpenClaw được áp dụng nhất quán.
-- Trích xuất kho lưu trữ nên dùng các helper kho lưu trữ fs-safe với giới hạn rõ ràng về kích thước, số lượng entry, liên kết và đích đến.
-- Bí mật nên dùng helper bí mật của OpenClaw hoặc helper bí mật/trạng thái riêng tư của fs-safe; không tự viết kiểm tra chế độ quanh `fs.writeFile`.
-- Nếu bạn cần cách ly người dùng cục bộ thù địch, đừng chỉ dựa vào fs-safe. Chạy các gateway riêng dưới người dùng/máy chủ hệ điều hành riêng hoặc dùng sandboxing.
-
-Liên quan: [Bảo mật](/vi/gateway/security), [Sandboxing](/vi/gateway/sandboxing), [Phê duyệt exec](/vi/tools/exec-approvals), [Bí mật](/vi/gateway/secrets).
+Liên quan: [Bảo mật](/vi/gateway/security), [Môi trường cô lập](/vi/gateway/sandboxing), [Phê duyệt thực thi](/vi/tools/exec-approvals), [Bí mật](/vi/gateway/secrets).

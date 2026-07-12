@@ -1,39 +1,42 @@
 ---
 read_when:
     - Anda ingin menggunakan Hugging Face Inference dengan OpenClaw
-    - Anda memerlukan env var token HF atau pilihan auth CLI
-summary: Penyiapan Hugging Face Inference (auth + pemilihan model)
-title: Hugging Face (inference)
+    - Anda memerlukan variabel lingkungan token HF atau pilihan autentikasi CLI
+summary: Penyiapan Hugging Face Inference (autentikasi + pemilihan model)
+title: Hugging Face (inferensi)
 x-i18n:
-    generated_at: "2026-04-24T09:23:17Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 93b3049e8d42787acba12ec3ddf70603159251dae1d870047f8ffc9242f202a5
-    source_path: providers/huggingface.md
-    workflow: 15
+    generated_at: "2026-07-12T14:36:39Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: c4e0d98c844c053484559254a0bdf4258c3d39954ac5804cdb0d081a651b89df
+    source_path: providers/huggingface.md
+    workflow: 16
 ---
 
-[Hugging Face Inference Providers](https://huggingface.co/docs/inference-providers) menawarkan chat completions yang kompatibel dengan OpenAI melalui satu API router. Anda mendapatkan akses ke banyak model (DeepSeek, Llama, dan lainnya) dengan satu token. OpenClaw menggunakan **endpoint yang kompatibel dengan OpenAI** (khusus chat completions); untuk text-to-image, embedding, atau speech gunakan [klien inferensi HF](https://huggingface.co/docs/api-inference/quicktour) secara langsung.
+[Penyedia Inferensi Hugging Face](https://huggingface.co/docs/inference-providers) menyediakan perute penyelesaian percakapan yang kompatibel dengan OpenAI di depan banyak model yang dihosting (DeepSeek, Llama, dan lainnya) dengan satu token. OpenClaw hanya berkomunikasi dengan **titik akhir penyelesaian percakapan**; untuk teks-ke-gambar, embedding, atau ucapan, gunakan [klien inferensi HF](https://huggingface.co/docs/api-inference/quicktour) secara langsung.
 
-- Provider: `huggingface`
-- Auth: `HUGGINGFACE_HUB_TOKEN` atau `HF_TOKEN` (token fine-grained dengan izin **Make calls to Inference Providers**)
-- API: kompatibel dengan OpenAI (`https://router.huggingface.co/v1`)
-- Billing: Satu token HF; [harga](https://huggingface.co/docs/inference-providers/pricing) mengikuti tarif provider dengan tier gratis.
+| Properti              | Nilai                                                                                                                                |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| ID penyedia           | `huggingface`                                                                                                                        |
+| Plugin                | bawaan (diaktifkan secara default, tanpa langkah instalasi)                                                                          |
+| Variabel lingkungan autentikasi | `HUGGINGFACE_HUB_TOKEN` atau `HF_TOKEN` (token terperinci)                                                                |
+| API                   | Kompatibel dengan OpenAI (`https://router.huggingface.co/v1`)                                                                        |
+| Penagihan             | Satu token HF; [harga](https://huggingface.co/docs/inference-providers/pricing) mengikuti tarif penyedia dengan tingkatan gratis     |
 
 ## Memulai
 
 <Steps>
-  <Step title="Buat token fine-grained">
-    Buka [Hugging Face Settings Tokens](https://huggingface.co/settings/tokens/new?ownUserPermissions=inference.serverless.write&tokenType=fineGrained) lalu buat token fine-grained baru.
+  <Step title="Buat token terperinci">
+    Buka [Pengaturan Token Hugging Face](https://huggingface.co/settings/tokens/new?ownUserPermissions=inference.serverless.write&tokenType=fineGrained) dan buat token terperinci baru.
 
     <Warning>
-    Token tersebut harus memiliki izin **Make calls to Inference Providers** yang diaktifkan atau permintaan API akan ditolak.
+    Token harus mengaktifkan izin **Make calls to Inference Providers** atau permintaan API akan ditolak.
     </Warning>
 
   </Step>
-  <Step title="Jalankan onboarding">
-    Pilih **Hugging Face** di dropdown provider, lalu masukkan API key Anda saat diminta:
+  <Step title="Jalankan orientasi awal">
+    Pilih **Hugging Face** di menu tarik-turun penyedia, lalu masukkan kunci API Anda saat diminta:
 
     ```bash
     openclaw onboard --auth-choice huggingface-api-key
@@ -41,9 +44,7 @@ x-i18n:
 
   </Step>
   <Step title="Pilih model default">
-    Di dropdown **Default Hugging Face model**, pilih model yang Anda inginkan. Daftar ini dimuat dari Inference API saat Anda memiliki token yang valid; jika tidak, daftar bawaan akan ditampilkan. Pilihan Anda disimpan sebagai model default.
-
-    Anda juga dapat mengatur atau mengubah model default nanti di config:
+    Di menu tarik-turun **Model Hugging Face default**, pilih model. Daftar dimuat dari API Inferensi saat token Anda valid; jika tidak, OpenClaw menampilkan katalog bawaan di bawah ini. Pilihan Anda disimpan sebagai `agents.defaults.model.primary`:
 
     ```json5
     {
@@ -56,14 +57,14 @@ x-i18n:
     ```
 
   </Step>
-  <Step title="Verifikasi model tersedia">
+  <Step title="Verifikasi bahwa model tersedia">
     ```bash
     openclaw models list --provider huggingface
     ```
   </Step>
 </Steps>
 
-### Penyiapan non-interaktif
+### Penyiapan noninteraktif
 
 ```bash
 openclaw onboard --non-interactive \
@@ -72,48 +73,49 @@ openclaw onboard --non-interactive \
   --huggingface-api-key "$HF_TOKEN"
 ```
 
-Ini akan mengatur `huggingface/deepseek-ai/DeepSeek-R1` sebagai model default.
+Menetapkan `huggingface/deepseek-ai/DeepSeek-R1` sebagai model default.
 
 ## ID model
 
-Ref model menggunakan bentuk `huggingface/<org>/<model>` (ID gaya Hub). Daftar di bawah ini berasal dari **GET** `https://router.huggingface.co/v1/models`; katalog Anda mungkin mencakup lebih banyak.
+Referensi model menggunakan format `huggingface/<org>/<model>` (ID bergaya Hub). Katalog bawaan OpenClaw:
 
-| Model                  | Ref (awali dengan `huggingface/`)   |
-| ---------------------- | ----------------------------------- |
-| DeepSeek R1            | `deepseek-ai/DeepSeek-R1`           |
-| DeepSeek V3.2          | `deepseek-ai/DeepSeek-V3.2`         |
-| Qwen3 8B               | `Qwen/Qwen3-8B`                     |
-| Qwen2.5 7B Instruct    | `Qwen/Qwen2.5-7B-Instruct`          |
-| Qwen3 32B              | `Qwen/Qwen3-32B`                    |
-| Llama 3.3 70B Instruct | `meta-llama/Llama-3.3-70B-Instruct` |
-| Llama 3.1 8B Instruct  | `meta-llama/Llama-3.1-8B-Instruct`  |
-| GPT-OSS 120B           | `openai/gpt-oss-120b`               |
-| GLM 4.7                | `zai-org/GLM-4.7`                   |
-| Kimi K2.5              | `moonshotai/Kimi-K2.5`              |
+| Model                        | Referensi (awali dengan `huggingface/`)    |
+| ---------------------------- | ------------------------------------------ |
+| DeepSeek R1                  | `deepseek-ai/DeepSeek-R1`                  |
+| DeepSeek V3.1                | `deepseek-ai/DeepSeek-V3.1`                |
+| GPT-OSS 120B                 | `openai/gpt-oss-120b`                      |
+| Llama 3.3 70B Instruct Turbo | `meta-llama/Llama-3.3-70B-Instruct-Turbo`  |
 
 <Tip>
-Anda dapat menambahkan `:fastest` atau `:cheapest` ke ID model apa pun. Atur urutan default Anda di [Inference Provider settings](https://hf.co/settings/inference-providers); lihat [Inference Providers](https://huggingface.co/docs/inference-providers) dan **GET** `https://router.huggingface.co/v1/models` untuk daftar lengkap.
+Saat token Anda valid, OpenClaw juga menemukan model lain dari **GET** `https://router.huggingface.co/v1/models` pada saat orientasi awal dan ketika Gateway dimulai, sehingga katalog Anda dapat mencakup jauh lebih banyak daripada empat model di atas. Anda dapat menambahkan `:fastest` atau `:cheapest` ke ID model apa pun; perute HF mengarahkan permintaan ke penyedia inferensi yang sesuai. Atur urutan penyedia default Anda di [pengaturan Penyedia Inferensi](https://hf.co/settings/inference-providers).
 </Tip>
 
 ## Konfigurasi lanjutan
 
 <AccordionGroup>
-  <Accordion title="Discovery model dan dropdown onboarding">
-    OpenClaw menemukan model dengan memanggil **endpoint Inference secara langsung**:
+  <Accordion title="Penemuan model dan menu tarik-turun orientasi awal">
+    OpenClaw menemukan model dengan:
 
     ```bash
     GET https://router.huggingface.co/v1/models
+    Authorization: Bearer $HUGGINGFACE_HUB_TOKEN   # atau $HF_TOKEN
     ```
 
-    (Opsional: kirim `Authorization: Bearer $HUGGINGFACE_HUB_TOKEN` atau `$HF_TOKEN` untuk daftar lengkap; beberapa endpoint mengembalikan subset tanpa auth.) Responsnya bergaya OpenAI `{ "object": "list", "data": [ { "id": "Qwen/Qwen3-8B", "owned_by": "Qwen", ... }, ... ] }`.
+    Respons menggunakan gaya OpenAI: `{ "object": "list", "data": [ { "id": "Qwen/Qwen3-8B", "owned_by": "Qwen", ... }, ... ] }`.
 
-    Saat Anda mengonfigurasi API key Hugging Face (melalui onboarding, `HUGGINGFACE_HUB_TOKEN`, atau `HF_TOKEN`), OpenClaw menggunakan GET ini untuk menemukan model chat-completion yang tersedia. Selama **penyiapan interaktif**, setelah Anda memasukkan token, Anda akan melihat dropdown **Default Hugging Face model** yang diisi dari daftar itu (atau katalog bawaan jika permintaan gagal). Saat runtime (misalnya startup Gateway), ketika ada key, OpenClaw kembali memanggil **GET** `https://router.huggingface.co/v1/models` untuk menyegarkan katalog. Daftar ini digabungkan dengan katalog bawaan (untuk metadata seperti jendela konteks dan biaya). Jika permintaan gagal atau tidak ada key yang diatur, hanya katalog bawaan yang digunakan.
+    Dengan kunci yang telah dikonfigurasi (orientasi awal, `HUGGINGFACE_HUB_TOKEN`, atau `HF_TOKEN`), menu tarik-turun **Model Hugging Face default** selama penyiapan interaktif diisi dari titik akhir ini. Saat Gateway dimulai, panggilan yang sama diulangi untuk menyegarkan katalog. Model yang ditemukan digabungkan dengan katalog bawaan di atas (digunakan untuk metadata seperti jendela konteks dan biaya saat ID cocok). Jika permintaan gagal, tidak mengembalikan data, atau tidak ada kunci yang ditetapkan, OpenClaw hanya menggunakan katalog bawaan sebagai cadangan.
+
+    Nonaktifkan penemuan tanpa menghapus penyedia:
+
+    ```bash
+    openclaw config set plugins.entries.huggingface.config.discovery.enabled false
+    ```
 
   </Accordion>
 
   <Accordion title="Nama model, alias, dan sufiks kebijakan">
-    - **Nama dari API:** Nama tampilan model **diisi dari GET /v1/models** saat API mengembalikan `name`, `title`, atau `display_name`; jika tidak, nama itu diturunkan dari ID model (misalnya `deepseek-ai/DeepSeek-R1` menjadi "DeepSeek R1").
-    - **Ganti nama tampilan:** Anda dapat mengatur label kustom per model di config sehingga model tersebut muncul sesuai keinginan Anda di CLI dan UI:
+    - **Nama dari API:** model yang ditemukan menggunakan `name`, `title`, atau `display_name` dari API jika tersedia; jika tidak, OpenClaw memperoleh nama dari ID model (misalnya, `deepseek-ai/DeepSeek-R1` menjadi "DeepSeek R1").
+    - **Ganti nama tampilan:** tetapkan label khusus untuk setiap model dalam konfigurasi:
 
     ```json5
     {
@@ -128,76 +130,31 @@ Anda dapat menambahkan `:fastest` atau `:cheapest` ke ID model apa pun. Atur uru
     }
     ```
 
-    - **Sufiks kebijakan:** Dokumentasi dan helper Hugging Face bawaan OpenClaw saat ini memperlakukan dua sufiks ini sebagai varian kebijakan bawaan:
-      - **`:fastest`** — throughput tertinggi.
-      - **`:cheapest`** — biaya per token output terendah.
-
-      Anda dapat menambahkan ini sebagai entri terpisah di `models.providers.huggingface.models` atau mengatur `model.primary` dengan sufiks tersebut. Anda juga dapat mengatur urutan provider default Anda di [Inference Provider settings](https://hf.co/settings/inference-providers) (tanpa sufiks = gunakan urutan itu).
-
-    - **Penggabungan config:** Entri yang ada di `models.providers.huggingface.models` (misalnya di `models.json`) dipertahankan saat config digabungkan. Jadi `name`, `alias`, atau opsi model kustom yang Anda atur di sana akan tetap dipertahankan.
+    - **Sufiks kebijakan:** `:fastest` dan `:cheapest` adalah konvensi perute HF, bukan sesuatu yang ditulis ulang oleh OpenClaw: sufiks dikirim apa adanya sebagai bagian dari ID model dan perute HF memilih penyedia inferensi yang sesuai. Tambahkan setiap varian sebagai entri tersendiri di bawah `models.providers.huggingface.models` (atau dalam `model.primary`) jika Anda menginginkan alias yang berbeda untuk setiap sufiks.
+    - **Penggabungan konfigurasi:** entri yang sudah ada dalam `models.providers.huggingface.models` (misalnya, dalam `models.json`) dipertahankan saat konfigurasi digabungkan, sehingga `name`, `alias`, atau opsi model khusus apa pun yang Anda tetapkan di sana tetap ada setelah dimulai ulang.
 
   </Accordion>
 
-  <Accordion title="Environment dan penyiapan daemon">
-    Jika Gateway berjalan sebagai daemon (launchd/systemd), pastikan `HUGGINGFACE_HUB_TOKEN` atau `HF_TOKEN` tersedia untuk proses tersebut (misalnya, di `~/.openclaw/.env` atau melalui `env.shellEnv`).
+  <Accordion title="Penyiapan lingkungan dan daemon">
+    Jika Gateway berjalan sebagai daemon (launchd/systemd), pastikan `HUGGINGFACE_HUB_TOKEN` atau `HF_TOKEN` tersedia untuk proses tersebut (misalnya, dalam `~/.openclaw/.env` atau melalui `env.shellEnv`).
 
     <Note>
-    OpenClaw menerima `HUGGINGFACE_HUB_TOKEN` dan `HF_TOKEN` sebagai alias env var. Salah satu dapat digunakan; jika keduanya diatur, `HUGGINGFACE_HUB_TOKEN` yang diutamakan.
+    OpenClaw menerima `HUGGINGFACE_HUB_TOKEN` dan `HF_TOKEN`. Jika keduanya ditetapkan, `HUGGINGFACE_HUB_TOKEN` diprioritaskan.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Config: DeepSeek R1 dengan fallback Qwen">
+  <Accordion title="Konfigurasi: DeepSeek R1 dengan model cadangan">
     ```json5
     {
       agents: {
         defaults: {
           model: {
             primary: "huggingface/deepseek-ai/DeepSeek-R1",
-            fallbacks: ["huggingface/Qwen/Qwen3-8B"],
+            fallbacks: ["huggingface/openai/gpt-oss-120b"],
           },
           models: {
             "huggingface/deepseek-ai/DeepSeek-R1": { alias: "DeepSeek R1" },
-            "huggingface/Qwen/Qwen3-8B": { alias: "Qwen3 8B" },
-          },
-        },
-      },
-    }
-    ```
-  </Accordion>
-
-  <Accordion title="Config: Qwen dengan varian cheapest dan fastest">
-    ```json5
-    {
-      agents: {
-        defaults: {
-          model: { primary: "huggingface/Qwen/Qwen3-8B" },
-          models: {
-            "huggingface/Qwen/Qwen3-8B": { alias: "Qwen3 8B" },
-            "huggingface/Qwen/Qwen3-8B:cheapest": { alias: "Qwen3 8B (cheapest)" },
-            "huggingface/Qwen/Qwen3-8B:fastest": { alias: "Qwen3 8B (fastest)" },
-          },
-        },
-      },
-    }
-    ```
-  </Accordion>
-
-  <Accordion title="Config: DeepSeek + Llama + GPT-OSS dengan alias">
-    ```json5
-    {
-      agents: {
-        defaults: {
-          model: {
-            primary: "huggingface/deepseek-ai/DeepSeek-V3.2",
-            fallbacks: [
-              "huggingface/meta-llama/Llama-3.3-70B-Instruct",
-              "huggingface/openai/gpt-oss-120b",
-            ],
-          },
-          models: {
-            "huggingface/deepseek-ai/DeepSeek-V3.2": { alias: "DeepSeek V3.2" },
-            "huggingface/meta-llama/Llama-3.3-70B-Instruct": { alias: "Llama 3.3 70B" },
             "huggingface/openai/gpt-oss-120b": { alias: "GPT-OSS 120B" },
           },
         },
@@ -206,17 +163,39 @@ Anda dapat menambahkan `:fastest` atau `:cheapest` ke ID model apa pun. Atur uru
     ```
   </Accordion>
 
-  <Accordion title="Config: Banyak Qwen dan DeepSeek dengan sufiks kebijakan">
+  <Accordion title="Konfigurasi: DeepSeek dengan varian termurah dan tercepat">
     ```json5
     {
       agents: {
         defaults: {
-          model: { primary: "huggingface/Qwen/Qwen2.5-7B-Instruct:cheapest" },
+          model: { primary: "huggingface/deepseek-ai/DeepSeek-R1" },
           models: {
-            "huggingface/Qwen/Qwen2.5-7B-Instruct": { alias: "Qwen2.5 7B" },
-            "huggingface/Qwen/Qwen2.5-7B-Instruct:cheapest": { alias: "Qwen2.5 7B (cheap)" },
-            "huggingface/deepseek-ai/DeepSeek-R1:fastest": { alias: "DeepSeek R1 (fast)" },
-            "huggingface/meta-llama/Llama-3.1-8B-Instruct": { alias: "Llama 3.1 8B" },
+            "huggingface/deepseek-ai/DeepSeek-R1": { alias: "DeepSeek R1" },
+            "huggingface/deepseek-ai/DeepSeek-R1:cheapest": { alias: "DeepSeek R1 (cheapest)" },
+            "huggingface/deepseek-ai/DeepSeek-R1:fastest": { alias: "DeepSeek R1 (fastest)" },
+          },
+        },
+      },
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="Konfigurasi: DeepSeek + Llama + GPT-OSS dengan alias">
+    ```json5
+    {
+      agents: {
+        defaults: {
+          model: {
+            primary: "huggingface/deepseek-ai/DeepSeek-V3.1",
+            fallbacks: [
+              "huggingface/meta-llama/Llama-3.3-70B-Instruct-Turbo",
+              "huggingface/openai/gpt-oss-120b",
+            ],
+          },
+          models: {
+            "huggingface/deepseek-ai/DeepSeek-V3.1": { alias: "DeepSeek V3.1" },
+            "huggingface/meta-llama/Llama-3.3-70B-Instruct-Turbo": { alias: "Llama 3.3 70B Turbo" },
+            "huggingface/openai/gpt-oss-120b": { alias: "GPT-OSS 120B" },
           },
         },
       },
@@ -229,15 +208,15 @@ Anda dapat menambahkan `:fastest` atau `:cheapest` ke ID model apa pun. Atur uru
 
 <CardGroup cols={2}>
   <Card title="Pemilihan model" href="/id/concepts/model-providers" icon="layers">
-    Ikhtisar semua provider, ref model, dan perilaku failover.
+    Ikhtisar semua penyedia, referensi model, dan perilaku pengalihan kegagalan.
   </Card>
   <Card title="Pemilihan model" href="/id/concepts/models" icon="brain">
     Cara memilih dan mengonfigurasi model.
   </Card>
-  <Card title="Dokumentasi Inference Providers" href="https://huggingface.co/docs/inference-providers" icon="book">
-    Dokumentasi resmi Hugging Face Inference Providers.
+  <Card title="Dokumentasi Penyedia Inferensi" href="https://huggingface.co/docs/inference-providers" icon="book">
+    Dokumentasi resmi Penyedia Inferensi Hugging Face.
   </Card>
   <Card title="Konfigurasi" href="/id/gateway/configuration" icon="gear">
-    Referensi config lengkap.
+    Referensi konfigurasi lengkap.
   </Card>
 </CardGroup>

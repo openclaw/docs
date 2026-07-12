@@ -1,11 +1,11 @@
 ---
 read_when:
-    - llama-cpp プラグインをインストール、設定、または監査している
-summary: node-llama-cpp によるローカル GGUF 埋め込み。
+    - llama-cpp Pluginをインストール、設定、または監査している場合
+summary: node-llama-cpp を介したローカル GGUF 埋め込み。
 title: Llama Cpp Plugin
 x-i18n:
-    generated_at: "2026-06-27T12:25:40Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:29:34Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: be9fd199e252fd3f905e8064316e45b9b2816945a2e5e16a56a6a88fdd55ef8e
@@ -15,16 +15,16 @@ x-i18n:
 
 # Llama Cpp Plugin
 
-node-llama-cpp を通じたローカル GGUF 埋め込み。
+node-llama-cpp を介したローカル GGUF 埋め込み。
 
 ## 配布
 
 - パッケージ: `@openclaw/llama-cpp-provider`
-- インストール経路: npm; ClawHub
+- インストール経路: npm、ClawHub
 
-## サーフェス
+## 提供機能
 
-contracts: embeddingProviders
+コントラクト: embeddingProviders
 
 ## 関連ドキュメント
 

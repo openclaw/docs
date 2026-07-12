@@ -1,24 +1,31 @@
 ---
 read_when:
-    - Dodawanie checklisty BOOT.md
-summary: Szablon obszaru roboczego dla BOOT.md
+    - Dodawanie listy kontrolnej BOOT.md
+summary: Szablon przestrzeni roboczej dla BOOT.md
 title: Szablon BOOT.md
 x-i18n:
-    generated_at: "2026-04-24T09:32:00Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 78c31ef770af20fee60c5d9998c7b2eefb0e2139076f26707ee4cf84502b59f8
-    source_path: reference/templates/BOOT.md
-    workflow: 15
+    generated_at: "2026-07-12T15:39:17Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 1adfb4d71f1f03716a1ddc4774a4cb6ead4b8be65bd9bb34066a9e1929a36b21
+    source_path: reference/templates/BOOT.md
+    workflow: 16
 ---
 
 # BOOT.md
 
-Dodaj krótkie, jednoznaczne instrukcje opisujące, co OpenClaw powinien zrobić przy uruchomieniu (włącz `hooks.internal.enabled`).
-Jeśli zadanie wysyła wiadomość, użyj narzędzia wiadomości, a następnie odpowiedz dokładnym
-cichym tokenem `NO_REPLY` / `no_reply`.
+Dodaj tutaj krótkie, jednoznaczne instrukcje uruchamiania. Dołączony hook `boot-md` uruchamia ten plik raz dla każdego obszaru roboczego agenta przy każdym uruchomieniu Gateway, jeśli plik istnieje i zawiera znaki inne niż białe. Wielu agentów współdzielących obszar roboczy wyzwala tylko jedno uruchomienie.
+
+Hook jest domyślnie wyłączony. Najpierw go włącz:
+
+```bash
+openclaw hooks enable boot-md
+```
+
+Jeśli pozycja listy kontrolnej wysyła wiadomość, użyj narzędzia wiadomości, a następnie odpowiedz dokładnym tokenem ciszy `NO_REPLY` (bez rozróżniania wielkości liter).
 
 ## Powiązane
 
-- [Agent workspace](/pl/concepts/agent-workspace)
+- [Obszar roboczy agenta](/pl/concepts/agent-workspace)
+- [Hooki](/pl/automation/hooks#boot-md)

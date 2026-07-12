@@ -1,28 +1,28 @@
 ---
 read_when:
-    - Chcesz, aby odpowiedzi dla jednej aktywnej sesji trafiały z Telegram do Discord, Slack, Mattermost lub innego połączonego kanału
-    - Konfigurujesz session.identityLinks dla bezpośrednich wiadomości między kanałami
-    - Polecenie /dock informuje, że nadawca nie jest powiązany lub nie istnieje aktywna sesja
+    - Chcesz, aby odpowiedzi w jednej aktywnej sesji zostały przeniesione z Telegramu do Discorda, Slacka, Mattermost lub innego połączonego kanału
+    - Konfigurujesz `session.identityLinks` dla wiadomości bezpośrednich między kanałami
+    - Polecenie /dock informuje, że nadawca nie jest połączony lub nie istnieje aktywna sesja
 summary: Przenieś trasę odpowiedzi jednej sesji OpenClaw między połączonymi kanałami czatu
 title: Dokowanie kanału
 x-i18n:
-    generated_at: "2026-04-30T09:46:38Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:03:58Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b981cd177ed76194cf18667620a1f9b2f2ba50df42fe203f6f68916971ed6a61
+    source_hash: 6d7af3a59b95b2c73cb74a9529584e51caed055719db2df8aad2ba8e8c9b0593
     source_path: concepts/channel-docking.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Dokowanie kanału to przekazywanie połączeń dla jednej sesji OpenClaw.
-
-Zachowuje ten sam kontekst rozmowy, ale zmienia miejsce, do którego będą
-dostarczane przyszłe odpowiedzi dla tej sesji.
+Dokowanie kanału to przekierowanie odpowiedzi dla jednej sesji OpenClaw. Zachowuje ten sam
+kontekst konwersacji, ale zmienia miejsce dostarczania przyszłych odpowiedzi w tej sesji.
+Dokowanie działa tylko z czatu bezpośredniego; nie można go uruchomić z czatu
+grupowego.
 
 ## Przykład
 
-Alice może pisać do OpenClaw na Telegram i Discord:
+Alice może wysyłać wiadomości do OpenClaw w Telegramie i Discordzie:
 
 ```json5
 {
@@ -34,37 +34,37 @@ Alice może pisać do OpenClaw na Telegram i Discord:
 }
 ```
 
-Jeśli Alice wyśle to z Telegram:
+Jeśli Alice wyśle następujące polecenie z czatu bezpośredniego w Telegramie:
 
 ```text
 /dock_discord
 ```
 
-OpenClaw zachowuje bieżący kontekst sesji i zmienia trasę odpowiedzi:
+OpenClaw zachowa kontekst bieżącej sesji i zmieni trasę odpowiedzi:
 
-| Przed dokowaniem                 | Po `/dock_discord`          |
-| -------------------------------- | --------------------------- |
-| Odpowiedzi trafiają do Telegram `123` | Odpowiedzi trafiają do Discord `456` |
+| Przed dokowaniem                  | Po `/dock_discord`              |
+| --------------------------------- | ------------------------------- |
+| Odpowiedzi trafiają do Telegrama `123` | Odpowiedzi trafiają do Discorda `456` |
 
-Sesja nie jest tworzona ponownie. Historia transkryptu pozostaje przypisana do
-tej samej sesji.
+Sesja nie jest tworzona ponownie. Historia transkrypcji pozostaje powiązana z tą
+samą sesją.
 
-## Dlaczego tego używać
+## Dlaczego warto go używać
 
-Użyj dokowania, gdy zadanie zaczyna się w jednej aplikacji czatu, ale kolejne
-odpowiedzi powinny trafiać gdzie indziej.
+Dokowania należy używać, gdy zadanie rozpoczyna się w jednej aplikacji czatu, ale kolejne odpowiedzi
+powinny trafiać do innej.
 
-Typowy przepływ:
+Typowy przebieg:
 
-1. Uruchom zadanie agenta z Telegram.
-2. Przenieś się do Discord, gdzie koordynujesz pracę.
-3. Wyślij `/dock_discord` z sesji Telegram.
-4. Zachowaj tę samą sesję OpenClaw, ale odbieraj przyszłe odpowiedzi w Discord.
+1. Rozpocznij zadanie agenta w Telegramie.
+2. Przejdź do Discorda, gdzie koordynujesz pracę.
+3. Wyślij `/dock_discord` z czatu bezpośredniego w Telegramie.
+4. Zachowaj tę samą sesję OpenClaw, ale odbieraj przyszłe odpowiedzi w Discordzie.
 
 ## Wymagana konfiguracja
 
-Dokowanie wymaga `session.identityLinks`. Nadawca źródłowy i docelowy peer
-muszą znajdować się w tej samej grupie tożsamości:
+Dokowanie wymaga `session.identityLinks`. Nadawca źródłowy i docelowy uczestnik
+muszą należeć do tej samej grupy tożsamości:
 
 ```json5
 {
@@ -76,22 +76,23 @@ muszą znajdować się w tej samej grupie tożsamości:
 }
 ```
 
-Wartości to identyfikatory peerów z prefiksem kanału:
+Wartości są identyfikatorami uczestników poprzedzonymi nazwą kanału:
 
-| Wartość        | Znaczenie                                   |
-| -------------- | ------------------------------------------ |
-| `telegram:123` | identyfikator nadawcy Telegram `123`       |
-| `discord:456`  | identyfikator bezpośredniego peera Discord `456` |
-| `slack:U123`   | identyfikator użytkownika Slack `U123`     |
+| Wartość        | Znaczenie                              |
+| -------------- | -------------------------------------- |
+| `telegram:123` | Identyfikator nadawcy Telegram `123`   |
+| `discord:456`  | Identyfikator bezpośredniego uczestnika Discord `456` |
+| `slack:U123`   | Identyfikator użytkownika Slack `U123` |
 
-Klucz kanoniczny (`alice` powyżej) jest tylko wspólną nazwą grupy tożsamości.
-Polecenia dokowania używają wartości z prefiksem kanału, aby potwierdzić, że
-nadawca źródłowy i docelowy peer to ta sama osoba.
+Klucz kanoniczny (`alice` powyżej) jest jedynie nazwą wspólnej grupy tożsamości. Polecenia
+dokowania używają wartości poprzedzonych nazwą kanału, aby potwierdzić, że nadawca źródłowy i
+docelowy uczestnik są tą samą osobą.
 
 ## Polecenia
 
-Polecenia dokowania są generowane z załadowanych pluginów kanałów, które
-obsługują polecenia natywne. Obecne polecenia w pakiecie:
+OpenClaw generuje jedno polecenie `/dock-<channel>` dla każdego załadowanego pluginu kanału,
+który obsługuje polecenia natywne, więc lista rośnie wraz z dodawaniem pluginów. Dołączone
+pluginy, które obecnie je obsługują:
 
 | Kanał docelowy | Polecenie          | Alias              |
 | -------------- | ------------------ | ------------------ |
@@ -100,56 +101,59 @@ obsługują polecenia natywne. Obecne polecenia w pakiecie:
 | Slack          | `/dock-slack`      | `/dock_slack`      |
 | Telegram       | `/dock-telegram`   | `/dock_telegram`   |
 
-Aliasy z podkreśleniem są przydatne w natywnych powierzchniach poleceń, takich jak Telegram.
+Forma z podkreśleniem jest również nazwą natywnego polecenia w interfejsach takich jak Telegram,
+które bezpośrednio udostępniają polecenia z ukośnikiem.
 
 ## Co się zmienia
 
 Dokowanie aktualizuje pola dostarczania aktywnej sesji:
 
-| Pole sesji      | Przykład po `/dock_discord`                |
-| --------------- | ------------------------------------------ |
-| `lastChannel`   | `discord`                                  |
-| `lastTo`        | `456`                                      |
-| `lastAccountId` | konto kanału docelowego albo `default`     |
+| Pole sesji      | Przykład po `/dock_discord`             |
+| --------------- | --------------------------------------- |
+| `lastChannel`   | `discord`                               |
+| `lastTo`        | `456`                                   |
+| `lastAccountId` | konto kanału docelowego lub `default`   |
 
-Te pola są utrwalane w magazynie sesji i używane przez późniejsze dostarczanie
-odpowiedzi dla tej sesji.
+Pola te są zapisywane w magazynie sesji i używane do dostarczania późniejszych odpowiedzi
+w tej sesji.
 
 ## Co się nie zmienia
 
 Dokowanie nie:
 
 - tworzy kont kanałów
-- łączy nowego bota Discord, Telegram, Slack ani Mattermost
-- nadaje użytkownikowi dostępu
-- omija list dozwolonych kanałów ani zasad DM
-- przenosi historii transkryptu do innej sesji
-- sprawia, że niepowiązani użytkownicy współdzielą sesję
+- łączy nowego bota Discorda, Telegrama, Slacka ani Mattermosta
+- przyznaje użytkownikowi dostępu
+- omija list dozwolonych kanałów ani zasad wiadomości bezpośrednich
+- przenosi historii transkrypcji do innej sesji
+- powoduje współdzielenia sesji przez niepowiązanych użytkowników
 
-Zmienia tylko trasę dostarczania dla bieżącej sesji.
+Zmienia wyłącznie trasę dostarczania dla bieżącej sesji.
 
 ## Rozwiązywanie problemów
 
 **Polecenie informuje, że nadawca nie jest powiązany.**
 
-Dodaj zarówno bieżącego nadawcę, jak i docelowego peera do tej samej grupy
-`session.identityLinks`. Na przykład, jeśli nadawca Telegram `123` ma zostać
-zadokowany do peera Discord `456`, uwzględnij zarówno `telegram:123`, jak i
-`discord:456`.
+Dodaj zarówno bieżącego nadawcę, jak i docelowego uczestnika do tej samej grupy
+`session.identityLinks`. Jeśli na przykład nadawca Telegram `123` ma zadokować
+do uczestnika Discord `456`, uwzględnij zarówno `telegram:123`, jak i `discord:456`.
+
+**Polecenie informuje, że dokowanie jest dostępne tylko z czatów bezpośrednich.**
+
+Wyślij polecenie dokowania z czatu bezpośredniego z OpenClaw, a nie z czatu grupowego.
 
 **Polecenie informuje, że nie istnieje aktywna sesja.**
 
-Dokuj z istniejącej sesji czatu bezpośredniego. Polecenie wymaga aktywnego wpisu
-sesji, aby mogło utrwalić nową trasę.
+Dokuj z istniejącej sesji czatu bezpośredniego. Polecenie wymaga wpisu aktywnej sesji,
+aby móc zapisać nową trasę.
 
 **Odpowiedzi nadal trafiają do starego kanału.**
 
-Sprawdź, czy polecenie zwróciło komunikat powodzenia, i potwierdź, że
-identyfikator docelowego peera odpowiada identyfikatorowi używanemu przez ten
-kanał. Dokowanie zmienia tylko trasę aktywnej sesji; inna sesja może nadal
-kierować odpowiedzi gdzie indziej.
+Sprawdź, czy polecenie zwróciło komunikat o powodzeniu, i potwierdź, że identyfikator
+docelowego uczestnika odpowiada identyfikatorowi używanemu przez ten kanał. Dokowanie zmienia tylko trasę
+aktywnej sesji; inna sesja może nadal kierować odpowiedzi w inne miejsce.
 
-**Muszę przełączyć z powrotem.**
+**Muszę przełączyć się z powrotem.**
 
-Wyślij pasujące polecenie dla pierwotnego kanału, takie jak `/dock_telegram` lub
+Wyślij odpowiednie polecenie dla pierwotnego kanału, na przykład `/dock_telegram` lub
 `/dock-telegram`, od powiązanego nadawcy.

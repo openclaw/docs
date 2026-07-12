@@ -1,47 +1,44 @@
 ---
 read_when:
-    - Bạn muốn có một bot trợ lý Zalo cá nhân với đăng nhập bằng mã QR
+    - Bạn muốn một bot trợ lý Zalo cá nhân có chức năng đăng nhập bằng mã QR
     - Bạn đang cài đặt hoặc khắc phục sự cố Plugin kênh openclaw-zaloclawbot
-summary: Thiết lập kênh Zalo ClawBot thông qua Plugin openclaw-zaloclawbot bên ngoài
+summary: Thiết lập kênh Zalo ClawBot thông qua plugin openclaw-zaloclawbot bên ngoài
 title: Zalo ClawBot
 x-i18n:
-    generated_at: "2026-06-27T17:13:29Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:42:02Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 982ae27b58af013bb5398266837698052b30337df0fe132f7cdfc5b66f561a99
+    source_hash: 76c9f79d114856b86026a5e4b98a43f451b0d3f16dd41a67e9226da4f8b37b33
     source_path: channels/zaloclawbot.md
     workflow: 16
 ---
 
-OpenClaw kết nối với Zalo ClawBot thông qua Plugin bên ngoài
-`@zalo-platforms/openclaw-zaloclawbot` được liệt kê trong danh mục. Đăng nhập dùng mã QR của Zalo Mini App.
+OpenClaw kết nối với Zalo ClawBot thông qua Plugin bên ngoài `@zalo-platforms/openclaw-zaloclawbot` có trong danh mục. Quá trình đăng nhập sử dụng mã QR của Zalo Mini App; ID Plugin trong cấu hình là `openclaw-zaloclawbot`.
 
 ## Khả năng tương thích
 
-| Phiên bản Plugin | Phiên bản OpenClaw | npm dist-tag | Trạng thái        |
-| -------------- | ---------------- | ------------ | ------------- |
-| 0.1.x          | >=2026.4.10      | `latest`     | Đang hoạt động / Beta |
+| Phiên bản Plugin | Phiên bản OpenClaw | npm dist-tag | Trạng thái          |
+| ---------------- | ------------------ | ------------ | ------------------- |
+| 0.1.4            | >=2026.4.10        | `latest`     | Đang hoạt động / Beta |
 
 ## Điều kiện tiên quyết
 
-- Node.js **>= 22**
-- Phải cài đặt [OpenClaw](https://docs.openclaw.ai/install) (có sẵn CLI `openclaw`).
-- Một tài khoản Zalo trên thiết bị di động để quét mã QR đăng nhập.
+- Node.js >= 22
+- Đã cài đặt [OpenClaw](https://docs.openclaw.ai/install) (có thể sử dụng CLI `openclaw`)
+- Một tài khoản Zalo trên thiết bị di động để quét mã QR đăng nhập
 
-## Cài đặt bằng onboard (khuyến nghị)
-
-Chạy trình hướng dẫn onboarding của OpenClaw và chọn **Zalo ClawBot** từ menu kênh:
+## Cài đặt bằng quy trình thiết lập ban đầu (khuyến nghị)
 
 ```bash
 openclaw onboard
 ```
 
-Trình hướng dẫn cài đặt Plugin từ danh mục chính thức (đã xác minh tính toàn vẹn), hiển thị QR đăng nhập ngay trong terminal và hoàn tất kênh sau khi bạn quét bằng ứng dụng Zalo. Không cần lệnh bổ sung nào.
+Chọn **Zalo ClawBot** trong trình đơn kênh. Trình hướng dẫn sẽ cài đặt Plugin từ danh mục chính thức (đã xác minh tính toàn vẹn), hiển thị mã QR đăng nhập trong terminal và hoàn tất thiết lập kênh sau khi bạn quét mã bằng ứng dụng Zalo.
 
 ## Cài đặt thủ công
 
-Để thêm kênh vào một Gateway đã onboard, hãy làm theo các bước sau:
+Để thêm kênh vào một Gateway đã hoàn tất thiết lập ban đầu:
 
 ### 1. Cài đặt Plugin
 
@@ -49,7 +46,7 @@ Trình hướng dẫn cài đặt Plugin từ danh mục chính thức (đã xá
 openclaw plugins install "@zalo-platforms/openclaw-zaloclawbot@0.1.4"
 ```
 
-Dùng đúng phiên bản đã ghim hiển thị ở trên (khớp với mục trong danh mục chính thức), để OpenClaw xác minh gói dựa trên hash toàn vẹn của danh mục trong quá trình cài đặt.
+Hãy sử dụng chính xác phiên bản cố định này để OpenClaw xác minh gói dựa trên hàm băm toàn vẹn trong danh mục khi cài đặt.
 
 ### 2. Bật Plugin trong cấu hình
 
@@ -63,7 +60,7 @@ openclaw config set plugins.entries.openclaw-zaloclawbot.enabled true
 openclaw channels login --channel openclaw-zaloclawbot
 ```
 
-Quét mã QR được hiển thị trong terminal bằng ứng dụng di động Zalo, chấp nhận Điều khoản sử dụng trong Zalo Mini App và cấp quyền cho phiên.
+Quét mã QR hiển thị trong terminal bằng ứng dụng Zalo trên thiết bị di động, chấp nhận Điều khoản sử dụng bên trong Zalo Mini App và cấp quyền cho phiên.
 
 ### 4. Khởi động lại Gateway
 
@@ -71,32 +68,30 @@ Quét mã QR được hiển thị trong terminal bằng ứng dụng di động
 openclaw gateway restart
 ```
 
----
+## Cách thức hoạt động
 
-## Cách hoạt động
+Không giống kênh Zalo tiêu chuẩn, vốn yêu cầu bạn đăng ký Zalo Official Account (OA) riêng và cấu hình thông tin xác thực tĩnh dành cho nhà phát triển, Zalo ClawBot là một **trợ lý cá nhân gắn với chủ sở hữu** trên hạ tầng chính thức dùng chung:
 
-Khác với kênh Zalo dành cho nhà phát triển tiêu chuẩn, vốn yêu cầu bạn đăng ký Zalo Official Account (OA) riêng và dán thông tin xác thực nhà phát triển tĩnh, Zalo ClawBot hoạt động như một **trợ lý cá nhân gắn với chủ sở hữu** bằng hạ tầng chính thức dùng chung:
+1. **Thiết lập ban đầu:** mã QR dẫn đến một Zalo Mini App, ứng dụng này liên kết trực tiếp một bot riêng tư mới được cấp phát dưới một OA chính thức dùng chung với ID người dùng Zalo của bạn.
+2. **Quyền riêng tư gắn với chủ sở hữu:** bot chỉ giao tiếp với chủ sở hữu. Tin nhắn từ người dùng khác bị loại bỏ ở cấp nền tảng.
+3. **Đường dẫn API chính thức:** Plugin sử dụng API của Zalo Bot Platform, không sử dụng tự động hóa trình duyệt hoặc phiên web.
 
-1. **Onboarding bảo mật:** Mã QR trỏ đến một Zalo Mini App bảo mật, liên kết một bot riêng mới được cấp phát dưới một OA chính thức dùng chung trực tiếp với Zalo User ID của bạn.
-2. **Quyền riêng tư gắn với chủ sở hữu:** Theo thiết kế, bot bị giới hạn chỉ giao tiếp _duy nhất_ với chủ sở hữu của nó. Tin nhắn từ người dùng khác bị loại bỏ ở cấp nền tảng, giúp kết nối riêng tư và bảo mật.
-3. **Đường dẫn API chính thức:** Plugin sử dụng API Zalo Bot Platform thay vì
-   tự động hóa trình duyệt hoặc phiên web.
+## Cơ chế bên trong
 
-## Bên dưới hệ thống
+Plugin giao tiếp với Zalo qua một vòng lặp long-polling liên tục (`getUpdates`). Webhook mặc định bị vô hiệu hóa đối với các phiên chạy Gateway cục bộ trên máy tính hoặc terminal. Tin nhắn được xử lý ở phía máy khách và ánh xạ đến môi trường thực thi tác tử cục bộ của bạn.
 
-Plugin Zalo ClawBot giao tiếp với API Zalo thông qua một vòng lặp tin nhắn long-polling liên tục. Để duy trì runtime gọn nhẹ và sạch:
+Plugin quản lý thông tin xác thực của bot trong thư mục trạng thái OpenClaw. Hãy coi thư mục này là dữ liệu nhạy cảm và áp dụng cho nó cùng chính sách kiểm soát truy cập và sao lưu như phần còn lại của trạng thái OpenClaw.
 
-- Kết nối long-poll sử dụng endpoint `getUpdates`.
-- Webhook được tắt theo mặc định cho các lần chạy Gateway local trên máy tính/terminal.
-- Tin nhắn được xử lý phía máy khách và ánh xạ trực tiếp vào runtime tác nhân local của bạn.
-
-Plugin bên ngoài quản lý thông tin xác thực của bot trong thư mục trạng thái OpenClaw.
-Hãy coi thư mục đó là nhạy cảm và đưa nó vào cùng chính sách kiểm soát truy cập và
-sao lưu như phần còn lại của trạng thái OpenClaw.
-
----
+Môi trường thực thi của Plugin này nằm hoàn toàn trong gói bên ngoài `@zalo-platforms/openclaw-zaloclawbot`; các chi tiết hành vi bên dưới ngoài phạm vi cài đặt/cấu hình được trình bày theo thông tin từ những người bảo trì Plugin và chưa được xác minh dựa trên mã nguồn lõi OpenClaw.
 
 ## Khắc phục sự cố
 
-- **Hết thời gian đăng nhập bằng QR:** Token đăng nhập (`zbsk`) hết hạn sau 5 phút vì lý do bảo mật. Nếu mã QR hết hạn trước khi bạn quét, chỉ cần chạy lại lệnh đăng nhập để tạo mã mới.
-- **Gateway không tải được:** Đảm bảo phiên bản máy chủ OpenClaw của bạn là `2026.4.10` trở lên. Các phiên bản cũ hơn không hỗ trợ sổ cái cài đặt Plugin npm bên ngoài.
+- **Hết thời gian đăng nhập bằng mã QR:** vì lý do bảo mật, mã thông báo đăng nhập (`zbsk`) hết hạn sau 5 phút. Nếu mã QR hết hạn trước khi bạn quét, hãy chạy lại lệnh đăng nhập để tạo mã mới.
+- **Gateway không tải được:** hãy xác nhận phiên bản máy chủ OpenClaw của bạn là `2026.4.10` trở lên. Các phiên bản cũ hơn không hỗ trợ sổ theo dõi cài đặt Plugin npm bên ngoài mà ID này yêu cầu.
+
+## Nội dung liên quan
+
+- [Tổng quan về các kênh](/vi/channels) - tất cả các kênh được hỗ trợ
+- [Zalo](/vi/channels/zalo) - kênh Zalo Bot Creator / Marketplace được đóng gói sẵn
+- [Ghép nối](/vi/channels/pairing) - quy trình xác thực tin nhắn trực tiếp và ghép nối
+- [Plugin](/vi/tools/plugin) - cài đặt và quản lý các Plugin

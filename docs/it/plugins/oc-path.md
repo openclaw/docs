@@ -1,92 +1,92 @@
 ---
 read_when:
-    - Vuoi ispezionare o modificare una singola foglia all’interno di un file del workspace dal terminale
-    - Stai creando script contro lo stato del workspace e ti serve uno schema di indirizzamento stabile e indipendente dal tipo
-    - Stai decidendo se abilitare il Plugin opzionale `oc-path` su un Gateway ospitato autonomamente
-summary: 'Plugin `oc-path` in bundle: fornisce la CLI `openclaw path` per lo schema di indirizzamento dei file dell''area di lavoro `oc://`'
-title: Plugin Percorso OC
+    - Vuoi esaminare o modificare un singolo elemento terminale all'interno di un file dell'area di lavoro dal terminale
+    - Stai eseguendo script sullo stato dell'area di lavoro e hai bisogno di uno schema di indirizzamento stabile e indipendente dal tipo
+    - Stai decidendo se abilitare il Plugin facoltativo `oc-path` su un Gateway self-hosted
+summary: 'Plugin `oc-path` incluso: fornisce la CLI `openclaw path` per lo schema di indirizzamento dei file dell''area di lavoro `oc://`'
+title: Plugin OC Path
 x-i18n:
-    generated_at: "2026-06-27T17:52:23Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:16:48Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: afb8ab86d04ef783986d05203f2c06b9cb718ad44ec31c797159ed49d9e1d5e3
+    source_hash: eb7bb1aacd37e5cc9c391372b871dc519f4048232d93a0016138ae00a6985a59
     source_path: plugins/oc-path.md
     workflow: 16
 ---
 
-Il plugin `oc-path` incluso aggiunge la CLI [`openclaw path`](/it/cli/path) per lo
-schema di indirizzamento dei file dell'area di lavoro `oc://`. Viene distribuito nel repo OpenClaw sotto
-`extensions/oc-path/`, ma è facoltativo: installazione e build lo lasciano inattivo finché non lo
-abiliti.
+Il Plugin `oc-path` incluso aggiunge la CLI [`openclaw path`](/it/cli/path) per lo
+schema di indirizzamento dei file dell'area di lavoro `oc://`. È distribuito nel repository
+OpenClaw in `extensions/oc-path/`, ma è facoltativo: dopo l'installazione o la compilazione
+rimane inattivo finché non viene abilitato.
 
-Gli indirizzi `oc://` puntano a una singola foglia (o a un insieme di foglie con wildcard) dentro
-un file dell'area di lavoro. Oggi il plugin comprende quattro tipi di file:
+Gli indirizzi `oc://` puntano a una singola foglia (o a un insieme di foglie definito tramite caratteri jolly) all'interno
+di un file dell'area di lavoro. Il Plugin riconosce quattro tipi di file:
 
-- **markdown** (`.md`, `.mdx`): frontmatter, sezioni, elementi, campi
-- **jsonc** (`.jsonc`, `.json5`, `.json`): commenti e formattazione preservati
-- **jsonl** (`.jsonl`, `.ndjson`): record orientati alle righe
-- **yaml** (`.yaml`, `.yml`, `.lobster`): nodi mappa/sequenza/scalare tramite l'API del documento
-  YAML
+- **markdown** (`.md`): frontmatter, sezioni, elementi, campi
+- **jsonc** (`.jsonc`, `.json`): commenti e formattazione preservati
+- **jsonl** (`.jsonl`, `.ndjson`): record organizzati per riga
+- **yaml** (`.yaml`, `.yml`, `.lobster`): nodi mappa, sequenza e scalari tramite
+  l'API `Document` del pacchetto `yaml`
 
-Chi gestisce istanze self-hosted e le estensioni per editor usano la CLI per leggere o scrivere una singola foglia
-senza creare script direttamente contro l'SDK; agenti e hook lo trattano come un
-substrato deterministico, così i round-trip fedeli ai byte e la protezione del
-sentinella di redazione si applicano in modo uniforme tra i tipi.
+Chi gestisce un'installazione autonoma e le estensioni degli editor usa la CLI per leggere o scrivere una singola foglia
+senza interagire direttamente con l'SDK tramite script; gli agenti e gli hook la trattano come un
+substrato deterministico, così i round trip con fedeltà a livello di byte e la protezione
+della sentinella di oscuramento si applicano uniformemente a tutti i tipi. Consulta il
+[riferimento della CLI](/it/cli/path) per la grammatica completa, l'elenco dei flag per ogni verbo e
+gli esempi svolti per ciascun tipo di file; questa pagina spiega perché e come abilitare il
+Plugin.
 
 ## Perché abilitarlo
 
-Abilita `oc-path` quando vuoi che script, hook o strumenti locali per agenti puntino
-a una porzione precisa dello stato dell'area di lavoro senza inventare un parser per ogni forma
-di file. Un singolo indirizzo `oc://` può nominare una chiave di frontmatter Markdown, un elemento
-di sezione, una foglia di configurazione JSONC, un campo evento JSONL o un passaggio di workflow YAML.
+Abilita `oc-path` quando script, hook o strumenti locali degli agenti devono puntare a
+una parte precisa dello stato dell'area di lavoro senza richiedere un parser dedicato per ogni struttura di file. Un
+singolo indirizzo `oc://` può identificare una chiave del frontmatter markdown, un elemento di sezione, una
+foglia di configurazione JSONC, un campo evento JSONL o un passaggio di un flusso di lavoro YAML.
 
-Questo è importante per i workflow dei maintainer in cui la modifica deve essere piccola,
-ispezionabile e ripetibile: ispeziona un valore, trova i record corrispondenti, esegui una simulazione
-di scrittura, quindi applica solo quella foglia lasciando invariati commenti, terminatori di riga e
-formattazione vicina. Mantenerlo come plugin facoltativo offre agli utenti esperti il
-substrato di indirizzamento senza inserire dipendenze di parser o superficie CLI nel
-core per installazioni che non ne hanno mai bisogno.
+Questo è importante per i flussi di lavoro dei manutentori, nei quali la modifica deve rimanere contenuta,
+verificabile e ripetibile: esaminare un valore, trovare i record corrispondenti, simulare
+una scrittura, quindi applicare la modifica soltanto a quella foglia lasciando invariati commenti, terminazioni di riga e
+formattazione circostante.
 
 Motivi comuni per abilitarlo:
 
-- **Automazione locale**: gli script shell possono risolvere o aggiornare un valore dell'area di lavoro
-  con `openclaw path … --json` invece di portarsi dietro codice di parsing separato per Markdown, JSONC,
+- **Automazione locale**: gli script di shell risolvono o aggiornano un singolo valore dell'area di lavoro
+  con `openclaw path … --json`, anziché includere codice di analisi separato per markdown, JSONC,
   JSONL e YAML.
-- **Modifiche visibili all'agente**: un agente può mostrare un diff di simulazione per una singola
-  foglia indirizzata prima di scrivere, più facile da rivedere rispetto a una riscrittura libera del file.
-- **Integrazioni editor**: un editor può mappare `oc://AGENTS.md/tools/gh` al
-  nodo Markdown esatto e al numero di riga senza dedurlo dal testo dell'intestazione.
-- **Diagnostica**: `emit` esegue il round-trip di un file tramite parser ed emitter, così
-  puoi verificare se un tipo di file è stabile a livello di byte prima di affidarti a modifiche
-  automatizzate.
-
-Esempi concreti:
+- **Modifiche visibili agli agenti**: prima della scrittura, un agente mostra la differenza di una simulazione per una sola
+  foglia indirizzata, più semplice da esaminare rispetto alla riscrittura libera di un
+  file.
+- **Integrazioni con gli editor**: un editor associa `oc://AGENTS.md/tools/gh` al
+  nodo markdown e al numero di riga esatti, senza dedurli dal testo dell'intestazione.
+- **Diagnostica**: `emit` esegue un round trip di un file attraverso il parser e l'emettitore,
+  consentendo di verificare se un tipo di file è stabile a livello di byte prima di fare affidamento sulle
+  modifiche automatiche.
 
 ```bash
-# Is the GitHub plugin enabled in this config?
+# Il plugin GitHub è abilitato in questa configurazione?
 openclaw path resolve 'oc://config.jsonc/plugins/github/enabled' --json
 
-# Which tool-call names appear in this session log?
+# Quali nomi di chiamate agli strumenti compaiono nel registro di questa sessione?
 openclaw path find 'oc://session.jsonl/[event=tool_call]/name' --json
 
-# What bytes would this tiny config edit write?
+# Quali byte scriverebbe questa piccola modifica alla configurazione?
 openclaw path set 'oc://config.jsonc/plugins/github/enabled' 'true' --dry-run
 ```
 
-Il plugin non è intenzionalmente il proprietario della semantica di livello superiore. I plugin di memoria
-restano proprietari delle scritture in memoria, i comandi di configurazione restano proprietari della gestione completa
-della configurazione e la logica LKG resta proprietaria di ripristino/promozione. `oc-path` è lo stretto
-livello di indirizzamento e operazioni su file con preservazione dei byte attorno al quale quegli strumenti
-di livello superiore possono costruire.
+`oc-path` non è intenzionalmente responsabile della semantica di livello superiore. I Plugin di
+memoria continuano a gestire le scritture in memoria, i comandi di configurazione continuano a gestire l'intera
+configurazione e il ripristino dell'ultima configurazione valida nota (LKG) continua a gestire
+il ripristino e la promozione. `oc-path` è il livello ristretto di indirizzamento e di operazioni sui
+file con preservazione dei byte attorno al quale possono essere costruiti tali strumenti di livello superiore.
 
 ## Dove viene eseguito
 
-Il plugin viene eseguito **in-process dentro la CLI `openclaw`** sull'host da cui
-invochi il comando. Non richiede un Gateway in esecuzione e non apre alcun
-socket di rete: ogni verbo è una pura trasformazione su un file che indichi.
+Il Plugin viene eseguito **all'interno del processo della CLI `openclaw`** sull'host nel quale
+viene invocato il comando. Non richiede un Gateway in esecuzione e non apre alcun
+socket di rete; ogni verbo è una trasformazione pura applicata al file indicato.
 
-I metadati del plugin si trovano in `extensions/oc-path/openclaw.plugin.json`:
+I metadati del Plugin si trovano in `extensions/oc-path/openclaw.plugin.json`:
 
 ```json
 {
@@ -100,21 +100,22 @@ I metadati del plugin si trovano in `extensions/oc-path/openclaw.plugin.json`:
 }
 ```
 
-`onStartup: false` tiene il plugin fuori dal percorso critico del Gateway. `onCommands:
-["path"]` indica alla CLI di caricare il plugin in modo lazy la prima volta che esegui
-`openclaw path …`, quindi le installazioni che non usano mai il verbo non pagano alcun costo.
+`onStartup: false` esclude il Plugin dal percorso di avvio del Gateway.
+`commandAliases` e `activation.onCommands` indicano alla CLI di caricare il Plugin
+in modo differito la prima volta che viene eseguito `openclaw path …`, quindi le installazioni che non usano mai
+il verbo non sostengono alcun costo.
 
-## Abilitare
+## Abilitazione
 
 ```bash
 openclaw plugins enable oc-path
 ```
 
-Riavvia il Gateway (se ne esegui uno) così lo snapshot del manifest acquisisce il nuovo
-stato. Le invocazioni bare `openclaw path` funzionano subito sullo stesso host:
-la CLI carica il plugin on demand.
+Riavvia il Gateway, se ne esegui uno, affinché l'istantanea del manifesto acquisisca il nuovo
+stato. Le invocazioni dirette di `openclaw path` funzionano immediatamente sullo stesso host;
+la CLI carica il Plugin su richiesta.
 
-Disabilita con:
+Disabilitalo con:
 
 ```bash
 openclaw plugins disable oc-path
@@ -122,53 +123,54 @@ openclaw plugins disable oc-path
 
 ## Dipendenze
 
-Tutte le dipendenze dei parser sono locali al plugin: abilitare `oc-path` non porta
-nuovi pacchetti nel runtime core:
+Tutte le dipendenze dei parser sono locali al Plugin; l'abilitazione di `oc-path` non aggiunge
+nuovi pacchetti al runtime principale:
 
 | Dipendenza     | Scopo                                                                  |
 | -------------- | ---------------------------------------------------------------------- |
-| `commander`    | Cablaggio dei sottocomandi per `resolve`, `find`, `set`, `validate`, `emit`. |
-| `jsonc-parser` | Parsing JSONC + modifiche di foglie mantenendo commenti e virgole finali. |
-| `markdown-it`  | Tokenizzazione Markdown per il modello sezione / elemento / campo.      |
-| `yaml`         | Parsing / emit / modifica di `Document` YAML mantenendo commenti e stile flow. |
+| `commander`    | Collegamento dei sottocomandi `resolve`, `find`, `set`, `validate`, `emit`. |
+| `jsonc-parser` | Analisi JSONC e modifiche delle foglie con preservazione di commenti e virgole finali. |
+| `markdown-it`  | Tokenizzazione Markdown per il modello di sezioni, elementi e campi.   |
+| `yaml`         | Analisi, emissione e modifica di `Document` YAML con preservazione di commenti e stile di flusso. |
 
-JSONL resta implementato manualmente: il parsing orientato alle righe è più semplice di qualsiasi
-dipendenza, e il parsing JSONC per riga passa già da `jsonc-parser`.
+JSONL rimane implementato manualmente: l'analisi per riga è più semplice di qualsiasi
+dipendenza e l'analisi di ogni riga passa già attraverso `jsonc-parser`.
 
-## Cosa fornisce
+## Funzionalità fornite
 
-| Superficie                     | Fornita da                                             |
-| ------------------------------ | ------------------------------------------------------ |
-| CLI `openclaw path`            | `extensions/oc-path/cli-registration.ts`               |
-| Parser / formatter `oc://`     | `extensions/oc-path/src/oc-path/oc-path.ts`            |
-| Parsing / emit / modifica per tipo | `extensions/oc-path/src/oc-path/{md,jsonc,jsonl,yaml}` |
-| Resolve / find / set universali | `extensions/oc-path/src/oc-path/{resolve,find,edit}.ts` |
-| Protezione del sentinella di redazione | `extensions/oc-path/src/oc-path/sentinel.ts`           |
+| Superficie                     | Fornita da                                              |
+| ------------------------------ | ------------------------------------------------------- |
+| CLI `openclaw path`            | `extensions/oc-path/cli-registration.ts`                |
+| Parser/formattatore `oc://`    | `extensions/oc-path/src/oc-path/oc-path.ts`             |
+| Analisi/emissione/modifica per tipo | `extensions/oc-path/src/oc-path/{md,jsonc,jsonl,yaml}` |
+| Risoluzione/ricerca/impostazione universali | `extensions/oc-path/src/oc-path/{resolve,find,edit}.ts` |
+| Protezione della sentinella di oscuramento | `extensions/oc-path/src/oc-path/sentinel.ts`  |
 
-La CLI è oggi l'unica superficie pubblica. I verbi del substrato sono privati del
-plugin; i consumer usano la CLI (o costruiscono il proprio plugin contro l'SDK).
+Attualmente la CLI è l'unica superficie pubblica. I verbi del substrato sono privati del
+Plugin; i consumatori usano la CLI oppure creano il proprio Plugin basato
+sull'SDK.
 
-## Relazione con altri plugin
+## Relazione con altri Plugin
 
-- **`memory-*`**: le scritture in memoria passano dai plugin di memoria, non da `oc-path`.
-  `oc-path` è un substrato generico per file; i plugin di memoria vi stratificano sopra la propria
-  semantica.
-- **LKG**: `path` non conosce il ripristino della configurazione Last-Known-Good. Se un
-  file è tracciato da LKG, la chiamata `observe` successiva decide se promuovere o
-  recuperare; `set --batch` per multi-set atomico tramite il ciclo di vita di promozione/recupero
-  LKG è pianificato insieme al substrato di recupero LKG.
+- **`memory-*`**: le scritture in memoria passano attraverso i Plugin di memoria, non
+  attraverso `oc-path`. `oc-path` è un substrato generico per i file; i Plugin di memoria vi sovrappongono
+  la propria semantica.
+- **LKG**: `path` non gestisce il ripristino dell'ultima configurazione valida nota. Se un
+  file modificato tramite `path` è anche monitorato da LKG, il ciclo successivo di osservazione della configurazione
+  decide se promuoverlo o ripristinarlo; considera una modifica tramite `path` come
+  qualsiasi altra scrittura diretta sullo stesso file.
 
 ## Sicurezza
 
-`set` scrive byte grezzi tramite il percorso emit del substrato, che applica automaticamente
-la protezione del sentinella di redazione. Una foglia che contiene
-`__OPENCLAW_REDACTED__` (letteralmente o come sottostringa) viene rifiutata al momento della scrittura
-con `OC_EMIT_SENTINEL`. La CLI rimuove anche il sentinella letterale da qualsiasi
-output umano o JSON che stampa, sostituendolo con `[REDACTED]` affinché acquisizioni
-del terminale e pipeline non perdano mai il marker.
+`set` scrive byte non elaborati attraverso il percorso di emissione del substrato, che applica
+automaticamente la protezione della sentinella di oscuramento. La scrittura di una foglia contenente
+`__OPENCLAW_REDACTED__`, in forma esatta o come sottostringa, viene rifiutata
+con `OC_EMIT_SENTINEL`. La CLI rimuove inoltre la sentinella letterale da ogni
+output leggibile o JSON che stampa, sostituendola con `[REDACTED]`, affinché le
+acquisizioni del terminale e le pipeline non espongano mai il marcatore.
 
-## Correlati
+## Contenuti correlati
 
-- [Riferimento CLI `openclaw path`](/it/cli/path)
-- [Gestire i plugin](/it/plugins/manage-plugins)
-- [Creare plugin](/it/plugins/building-plugins)
+- [Riferimento della CLI `openclaw path`](/it/cli/path)
+- [Gestire i Plugin](/it/plugins/manage-plugins)
+- [Creare Plugin](/it/plugins/building-plugins)

@@ -1,28 +1,26 @@
 ---
 read_when:
-    - 모델 제공업체를 선택하려고 합니다
-    - 지원되는 LLM 백엔드에 대한 간략한 개요가 필요합니다
+    - 모델 제공업체를 선택하려는 경우
+    - 지원되는 LLM 백엔드를 빠르게 살펴봐야 합니다
 summary: OpenClaw에서 지원하는 모델 제공업체(LLM)
-title: 제공자 디렉터리
+title: 제공업체 디렉터리
 x-i18n:
-    generated_at: "2026-07-12T15:39:57Z"
+    generated_at: "2026-07-12T01:07:08Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: b59843b53265500866e87ee8d888892dacd6045bdb9401a1e7ec08ad4f364090
     source_path: providers/index.md
     workflow: 16
 ---
 
-OpenClaw는 다양한 LLM 제공자를 사용할 수 있습니다. 제공자를 선택하고 인증한 다음,
-기본 모델을 `provider/model` 형식으로 설정하십시오.
+OpenClaw은 다양한 LLM 제공자를 사용할 수 있습니다. 제공자를 선택하고 인증한 다음, 기본 모델을 `provider/model` 형식으로 설정하세요.
 
-채팅 채널 문서(WhatsApp/Telegram/Discord/Slack/Mattermost(Plugin)/기타)를 찾고 계십니까? [채널](/ko/channels)을 참조하십시오.
+채팅 채널 문서(WhatsApp/Telegram/Discord/Slack/Mattermost(Plugin)/기타)를 찾고 계신가요? [채널](/ko/channels)을 참조하세요.
 
 ## 빠른 시작
 
-1. 제공자를 인증합니다(일반적으로 `openclaw onboard` 사용).
+1. 제공자에 인증합니다(일반적으로 `openclaw onboard` 사용).
 2. 기본 모델을 설정합니다.
 
 ```json5
@@ -112,7 +110,6 @@ OpenClaw는 다양한 LLM 제공자를 사용할 수 있습니다. 제공자를 
 
 ## 커뮤니티 도구
 
-- [Claude Max API Proxy](/ko/providers/claude-max-api-proxy) - Claude 구독 자격 증명을 위한 커뮤니티 프록시(사용 전에 Anthropic 정책/약관을 확인하십시오)
+- [Claude Max API Proxy](/ko/providers/claude-max-api-proxy) - Claude 구독 자격 증명을 위한 커뮤니티 프록시(사용하기 전에 Anthropic 정책/약관을 확인하세요)
 
-전체 제공자 카탈로그(xAI, Groq, Mistral 등)와 고급 구성에 대해서는
-[모델 제공자](/ko/concepts/model-providers)를 참조하십시오.
+전체 제공자 카탈로그(xAI, Groq, Mistral 등)와 고급 구성은 [모델 제공자](/ko/concepts/model-providers)를 참조하세요.

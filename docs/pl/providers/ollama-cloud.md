@@ -1,78 +1,100 @@
 ---
 read_when:
-    - Chcesz używać hostowanych modeli Ollama bez lokalnego serwera Ollama
+    - Chcesz korzystać z hostowanych modeli Ollama bez lokalnego serwera Ollama
     - Potrzebujesz identyfikatora dostawcy ollama-cloud, klucza lub punktu końcowego
-summary: Używaj Ollama Cloud bezpośrednio z OpenClaw
+summary: Korzystaj z Ollama Cloud bezpośrednio w OpenClaw
 title: Ollama Cloud
 x-i18n:
-    generated_at: "2026-06-27T18:13:39Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:35:22Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 24b937085de1ed805b7bb0fe76a4197030bd45cd989ede8030386f3c721b9763
+    source_hash: 966e5237e37134cef109979079db390e9844714001e921e7976dc8ca7f58bcc4
     source_path: providers/ollama-cloud.md
     workflow: 16
 ---
 
-Ollama Cloud to hostowane API modeli Ollama. Pozwala OpenClaw wywoływać modele hostowane przez Ollama bezpośrednio, bez instalowania lokalnego serwera Ollama ani logowania lokalnej aplikacji Ollama w trybie chmurowym. Użyj identyfikatora dostawcy `ollama-cloud` i referencji modeli takich jak `ollama-cloud/kimi-k2.6`.
+Ollama Cloud to hostowane API modeli Ollama. Dostawca `ollama-cloud` wywołuje je
+bezpośrednio pod adresem `https://ollama.com` przez natywne API `/api/chat`
+Ollama, bez lokalnego serwera Ollama ani lokalnej aplikacji Ollama zalogowanej
+w trybie chmurowym. Używaj odwołań do modeli takich jak `ollama-cloud/kimi-k2.6`.
 
-Ta strona dotyczy bezpośredniego routingu wyłącznie przez chmurę. Dostawca używa natywnego stylu Ollama `/api/chat`, a nie trasy zgodnej z OpenAI `/v1`. OpenClaw rejestruje go jako osobny identyfikator dostawcy, aby poświadczenia tylko dla chmury, wykrywanie katalogu na żywo i wybór modelu nie mieszały się z lokalnym hostem `ollama`.
-
-Użyj tej strony, gdy chcesz routingu wyłącznie przez chmurę. Informacje o lokalnym Ollama, hybrydowym routingu chmura plus lokalnie, embeddingach i szczegółach hosta niestandardowego znajdziesz w [Ollama](/pl/providers/ollama).
+OpenClaw rejestruje `ollama-cloud` jako osobny identyfikator dostawcy, aby
+poświadczenia przeznaczone wyłącznie do chmury, wykrywanie katalogu na żywo
+i wybór modelu nie mieszały się z lokalnym hostem `ollama`. Informacje o
+lokalnym Ollama, hybrydowym routingu chmurowym i lokalnym, osadzaniu oraz
+szczegółach niestandardowego hosta znajdziesz w sekcji [Ollama](/pl/providers/ollama).
 
 ## Konfiguracja
 
-Utwórz klucz API Ollama Cloud na [ollama.com/settings/keys](https://ollama.com/settings/keys), a następnie uruchom:
+Utwórz klucz API Ollama Cloud na stronie [ollama.com/settings/keys](https://ollama.com/settings/keys), a następnie uruchom:
 
 ```bash
 openclaw onboard --auth-choice ollama-cloud
 ```
 
-Albo ustaw:
+Możesz też ustawić:
 
 ```bash
 export OLLAMA_API_KEY="<your-ollama-cloud-api-key>" # pragma: allowlist secret
 ```
 
-## Wartości domyślne
+Nieinteraktywne wdrażanie przyjmuje klucz bezpośrednio:
+
+```bash
+openclaw onboard --auth-choice ollama-cloud --ollama-cloud-api-key "<key>"
+```
+
+Wdrażanie ustawia domyślny model na `ollama-cloud/kimi-k2.5:cloud`.
+
+## Ustawienia domyślne
 
 - Dostawca: `ollama-cloud`
-- Bazowy URL: `https://ollama.com`
+- Bazowy adres URL: `https://ollama.com`
 - Zmienna środowiskowa: `OLLAMA_API_KEY`
-- Styl API: natywne Ollama `/api/chat`
-- Przykładowy model: `ollama-cloud/kimi-k2.6`
+- Styl API: natywne `/api/chat` Ollama
+- Domyślny model wdrażania: `ollama-cloud/kimi-k2.5:cloud`
 
 ## Kiedy wybrać Ollama Cloud
 
-- Chcesz używać hostowanych modeli Ollama bez lokalnego uruchamiania `ollama serve`.
-- Chcesz tego samego natywnego kształtu API czatu Ollama, którego OpenClaw używa dla lokalnego Ollama, ale skierowanego na `https://ollama.com`.
-- Chcesz prostej ścieżki chmurowej dla modeli, które są już w hostowanym katalogu Ollama.
-- Nie potrzebujesz lokalnego pobierania modeli, lokalnej kontroli GPU ani wnioskowania tylko w sieci LAN.
+- Chcesz korzystać z hostowanych modeli Ollama bez lokalnego uruchamiania `ollama serve`.
+- Chcesz używać tego samego natywnego formatu API czatu Ollama, którego OpenClaw
+  używa z lokalnym Ollama, ale skierowanego na `https://ollama.com`.
+- Chcesz prostej ścieżki chmurowej dla modeli dostępnych już w hostowanym
+  katalogu Ollama.
+- Nie potrzebujesz lokalnego pobierania modeli, lokalnej kontroli GPU ani
+  wnioskowania dostępnego wyłącznie w sieci LAN.
 
-Zamiast tego użyj [Ollama](/pl/providers/ollama), gdy chcesz routingu tylko lokalnego lub chmura plus lokalnie przez zalogowanego hosta Ollama. Użyj dostawcy zgodnego z OpenAI, gdy potrzebujesz semantyki `/v1/chat/completions` albo funkcji w stylu OpenAI specyficznych dla dostawcy.
+Zamiast tego użyj [Ollama](/pl/providers/ollama), jeśli chcesz routingu wyłącznie
+lokalnego lub chmurowego i lokalnego przez zalogowany host Ollama. Użyj
+dostawcy zgodnego z OpenAI, jeśli potrzebujesz semantyki
+`/v1/chat/completions` lub funkcji charakterystycznych dla danego dostawcy,
+działających w stylu OpenAI.
 
 ## Modele
 
-OpenClaw wykrywa modele Ollama Cloud z hostowanego katalogu na żywo. Często dostępne hostowane identyfikatory obejmują:
-
-- `ollama-cloud/gpt-oss:20b`
-- `ollama-cloud/kimi-k2.6`
-- `ollama-cloud/deepseek-v4-flash`
-- `ollama-cloud/minimax-m2.7`
-- `ollama-cloud/glm-5`
-
-Użyj identyfikatora modelu z bieżącego hostowanego katalogu:
+Dostawca wymaga klucza API; bez niego pozostaje nieaktywny. Gdy klucz jest
+dostępny, OpenClaw wykrywa modele Ollama Cloud na żywo w hostowanym katalogu:
 
 ```bash
 openclaw models list --provider ollama-cloud
 openclaw models set ollama-cloud/kimi-k2.6
 ```
 
-Identyfikatory modeli są identyfikatorami katalogu chmurowego, a nie nazwami lokalnego pobierania. Jeśli nazwa modelu działa na lokalnym hoście Ollama, ale nie ma jej w hostowanym katalogu, zamiast tego użyj dostawcy `ollama` z tym lokalnym hostem.
+Identyfikatory dostępne w katalogu na żywo obejmują `deepseek-v4-flash`, `glm-5`,
+`gpt-oss:20b`, `kimi-k2.6` i `minimax-m2.7`. Gdy wykrywanie na żywo nie zwraca
+żadnych wyników, OpenClaw używa awaryjnie dołączonych wpisów
+`kimi-k2.5:cloud`, `minimax-m2.7:cloud`, `glm-5.1:cloud` i `glm-5.2:cloud`.
+
+Identyfikatory modeli są identyfikatorami katalogu chmurowego, a nie nazwami
+lokalnie pobieranych modeli. Jeśli nazwa modelu działa na lokalnym hoście Ollama,
+ale nie występuje w hostowanym katalogu, użyj zamiast tego dostawcy `ollama`
+z tym lokalnym hostem.
 
 ## Test na żywo
 
-W przypadku testów dymnych klucza API Ollama Cloud skieruj test na żywo Ollama na hostowany endpoint i wybierz model z bieżącego katalogu:
+W przypadku testów dymnych Ollama Cloud z kluczem API skieruj test na żywo
+Ollama do hostowanego punktu końcowego i wybierz model z bieżącego katalogu:
 
 ```bash
 export OLLAMA_API_KEY="<your-ollama-cloud-api-key>" # pragma: allowlist secret
@@ -81,17 +103,26 @@ OPENCLAW_LIVE_TEST=1 \
 OPENCLAW_LIVE_OLLAMA=1 \
 OPENCLAW_LIVE_OLLAMA_BASE_URL=https://ollama.com \
 OPENCLAW_LIVE_OLLAMA_MODEL=kimi-k2.6 \
-OPENCLAW_LIVE_OLLAMA_WEB_SEARCH=1 \
 pnpm test:live -- extensions/ollama/ollama.live.test.ts
 ```
 
-Test dymny w chmurze uruchamia tekst, natywny strumień i wyszukiwanie w sieci. Domyślnie pomija embeddingi dla `https://ollama.com`, ponieważ klucze API Ollama Cloud mogą nie autoryzować `/api/embed`.
+Chmurowy test dymny sprawdza tekst, natywne strumieniowanie i wyszukiwanie
+w internecie; ustaw `OPENCLAW_LIVE_OLLAMA_WEB_SEARCH=0`, aby pominąć wyszukiwanie
+w internecie. Domyślnie pomija osadzanie dla `https://ollama.com`, ponieważ
+klucze API Ollama Cloud mogą nie mieć uprawnień do `/api/embed`; wymuś je za
+pomocą `OPENCLAW_LIVE_OLLAMA_EMBEDDINGS=1`.
 
 ## Rozwiązywanie problemów
 
-- Błędy `Set OLLAMA_API_KEY`: podaj prawdziwy klucz API chmury. Lokalny znacznik `ollama-local` służy tylko do lokalnych lub prywatnych hostów Ollama.
-- Błędy nieznanego modelu: uruchom `openclaw models list --provider ollama-cloud` i dokładnie skopiuj identyfikator hostowanego modelu.
-- Problemy z wywołaniami narzędzi lub surowym JSON na niestandardowych hostach Ollama: sprawdź, czy przypadkiem nie używasz zgodnego z OpenAI URL `/v1`. Trasy Ollama powinny używać natywnego bazowego URL bez sufiksu `/v1`.
+- Błędy `Ollama Cloud requires an API key` / `Set OLLAMA_API_KEY`: podaj
+  prawidłowy klucz API chmury. Znacznik `ollama-local` jest przeznaczony
+  wyłącznie dla lokalnych lub prywatnych hostów Ollama.
+- Błędy nieznanego modelu: uruchom `openclaw models list --provider ollama-cloud`
+  i skopiuj dokładny identyfikator hostowanego modelu.
+- Problemy z wywoływaniem narzędzi lub nieprzetworzonym kodem JSON na
+  niestandardowych hostach Ollama: sprawdź, czy przypadkowo nie używasz adresu
+  URL `/v1` zgodnego z OpenAI. Trasy Ollama powinny używać natywnego bazowego
+  adresu URL bez przyrostka `/v1`.
 
 ## Powiązane
 

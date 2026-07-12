@@ -1,42 +1,40 @@
 ---
 read_when:
-    - macOS-logboeken vastleggen of onderzoeken of privégegevens worden gelogd
-    - Foutopsporing bij problemen met de levenscyclus van spraakactivering/sessies
-summary: 'OpenClaw-logboekregistratie: roterend diagnostisch bestandslogboek + privacyvlaggen voor uniforme logboekregistratie'
+    - macOS-logboeken vastleggen of het loggen van privégegevens onderzoeken
+    - Problemen met de levenscyclus van spraakactivering en sessies opsporen
+summary: 'OpenClaw-logboekregistratie: doorlopend diagnostisch bestandslogboek + uniforme privacyvlaggen voor logboeken'
 title: macOS-logboekregistratie
 x-i18n:
-    generated_at: "2026-05-06T09:23:36Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:06:24Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 76c001008311d4e3f245add4cce32bdcc3eed9d897b30f6884c0649d2f0523df
+    source_hash: ef0fd91bd7fc0a8b5f598cfe8f5de551795a4badd0f6634c5bcbd4f3916bfc64
     source_path: platforms/mac/logging.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Logboekregistratie (macOS)
 
-## Roulerend diagnostisch bestandslogboek (debugpaneel)
+## Doorlopend diagnostisch bestandslogboek (foutopsporingspaneel)
 
-OpenClaw leidt macOS-app-logboeken via swift-log (standaard uniforme logboekregistratie) en kan een lokaal, roterend bestandslogboek naar schijf schrijven wanneer je een duurzame vastlegging nodig hebt.
+De macOS-app registreert logboeken via swift-log (standaard uniforme logboekregistratie) en kan ook een roterend lokaal bestandslogboek schrijven voor duurzame vastlegging (`DiagnosticsFileLog`).
 
-- Uitgebreidheid: **Debugpaneel → Logboeken → App-logboekregistratie → Uitgebreidheid**
-- Inschakelen: **Debugpaneel → Logboeken → App-logboekregistratie → "Roulerend diagnostisch logboek schrijven (JSONL)"**
-- Locatie: `~/Library/Logs/OpenClaw/diagnostics.jsonl` (roteert automatisch; oude bestanden krijgen een achtervoegsel met `.1`, `.2`, …)
-- Wissen: **Debugpaneel → Logboeken → App-logboekregistratie → "Wissen"**
+- Inschakelen: **Debug pane -> Logs -> App logging -> "Write rolling diagnostics log (JSONL)"** (standaard uitgeschakeld).
+- Uitgebreidheid: keuzelijst **Debug pane -> Logs -> App logging -> Verbosity**.
+- Locatie: `~/Library/Logs/OpenClaw/diagnostics.jsonl`.
+- Rotatie: roteert bij 5 MB; maximaal 5 back-ups met achtervoegsels `.1`...`.5` (de oudste wordt verwijderd).
+- Wissen: **Debug pane -> Logs -> App logging -> "Clear"** verwijdert het actieve bestand en alle back-ups.
 
-Opmerkingen:
-
-- Dit staat **standaard uit**. Schakel het alleen in terwijl je actief debugt.
-- Behandel het bestand als gevoelig; deel het niet zonder controle.
+Behandel het bestand als gevoelig; deel het niet zonder het eerst te controleren.
 
 ## Privégegevens in uniforme logboekregistratie op macOS
 
-Uniforme logboekregistratie redigeert de meeste payloads tenzij een subsysteem zich aanmeldt voor `privacy -off`. Volgens Peters artikel over macOS-[privacyproblemen bij logboekregistratie](https://steipete.me/posts/2025/logging-privacy-shenanigans) (2025) wordt dit geregeld door een plist in `/Library/Preferences/Logging/Subsystems/`, met de subsystemnaam als sleutel. Alleen nieuwe logboekvermeldingen nemen de vlag over, dus schakel dit in voordat je een probleem reproduceert.
+Uniforme logboekregistratie redigeert de meeste nettoladingen, tenzij een subsysteem zich aanmeldt voor `privacy -off`. Dit wordt beheerd door een plist in `/Library/Preferences/Logging/Subsystems/`, geïndexeerd op subsysteemnaam. Alleen nieuwe logboekvermeldingen nemen de vlag over; schakel deze dus in voordat u een probleem reproduceert. Achtergrondinformatie: [perikelen rond privacy bij macOS-logboekregistratie](https://steipete.me/posts/2025/logging-privacy-shenanigans).
 
 ## Inschakelen voor OpenClaw (`ai.openclaw`)
 
-- Schrijf de plist eerst naar een tijdelijk bestand en installeer die daarna atomisch als root:
+Schrijf de plist eerst naar een tijdelijk bestand en installeer deze vervolgens atomair als root:
 
 ```bash
 cat <<'EOF' >/tmp/ai.openclaw.plist
@@ -55,14 +53,13 @@ EOF
 sudo install -m 644 -o root -g wheel /tmp/ai.openclaw.plist /Library/Preferences/Logging/Subsystems/ai.openclaw.plist
 ```
 
-- Opnieuw opstarten is niet vereist; logd merkt het bestand snel op, maar alleen nieuwe logregels bevatten privépayloads.
-- Bekijk de uitgebreidere uitvoer met de bestaande helper, bijvoorbeeld `./scripts/clawlog.sh --category WebChat --last 5m`.
+Opnieuw opstarten is niet vereist; logd neemt het bestand snel over, maar alleen nieuwe logboekregels bevatten privé-nettoladingen. Bekijk de uitgebreidere uitvoer met `./scripts/clawlog.sh --category WebChat --last 5m` (`--last`/`-l` stelt het tijdsbereik in, standaard `5m`; `--category`/`-c` filtert op categorie).
 
-## Uitschakelen na het debuggen
+## Uitschakelen na foutopsporing
 
-- Verwijder de override: `sudo rm /Library/Preferences/Logging/Subsystems/ai.openclaw.plist`.
-- Voer eventueel `sudo log config --reload` uit om logd te dwingen de override onmiddellijk te laten vallen.
-- Onthoud dat dit oppervlak telefoonnummers en berichtinhoud kan bevatten; laat de plist alleen staan terwijl je de extra details actief nodig hebt.
+- Verwijder de overschrijving: `sudo rm /Library/Preferences/Logging/Subsystems/ai.openclaw.plist`.
+- Voer eventueel `sudo log config --reload` uit om logd te dwingen de overschrijving onmiddellijk te verwijderen.
+- Dit oppervlak kan telefoonnummers en berichtinhoud bevatten; laat de plist alleen staan wanneer deze actief nodig is.
 
 ## Gerelateerd
 

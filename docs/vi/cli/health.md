@@ -1,30 +1,30 @@
 ---
 read_when:
     - Bạn muốn nhanh chóng kiểm tra tình trạng hoạt động của Gateway đang chạy
-summary: Tài liệu tham chiếu CLI cho `openclaw health` (ảnh chụp nhanh tình trạng Gateway qua RPC)
-title: Tình trạng hoạt động
+summary: Tài liệu tham khảo CLI cho `openclaw health` (ảnh chụp nhanh tình trạng Gateway qua RPC)
+title: Sức khỏe
 x-i18n:
-    generated_at: "2026-05-10T19:28:09Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:48:00Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 26be7bbbf75c2eca1213fe145fdeeab6fee96798dff457278ac69a20145bf75d
+    source_hash: a26ce5ade9ab56c9751c3dde814c38a1e01e74d91c2fd57e56d3c44ca529d0d8
     source_path: cli/health.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw health`
 
-Lấy tình trạng từ Gateway đang chạy.
+Tìm nạp ảnh chụp nhanh tình trạng từ Gateway đang chạy qua WebSocket RPC (CLI không kết nối trực tiếp đến socket của kênh).
 
 ## Tùy chọn
 
-| Cờ               | Mặc định | Mô tả                                                                            |
-| ---------------- | -------- | -------------------------------------------------------------------------------- |
-| `--json`         | `false`  | In JSON máy có thể đọc được thay vì văn bản.                                     |
-| `--timeout <ms>` | `10000`  | Thời gian chờ kết nối tính bằng mili giây.                                       |
-| `--verbose`      | `false`  | Ghi log chi tiết. Buộc thăm dò trực tiếp và mở rộng đầu ra theo từng tác tử.     |
-| `--debug`        | `false`  | Bí danh cho `--verbose`.                                                         |
+| Cờ               | Mặc định | Mô tả                                                                                                        |
+| ---------------- | -------- | ------------------------------------------------------------------------------------------------------------ |
+| `--json`         | `false`  | In JSON mà máy có thể đọc thay vì văn bản.                                                                   |
+| `--timeout <ms>` | `10000`  | Thời gian chờ kết nối tính bằng mili giây.                                                                    |
+| `--verbose`      | `false`  | Buộc thực hiện phép thăm dò trực tiếp và mở rộng đầu ra cho tất cả tài khoản và tác tử đã được cấu hình.      |
+| `--debug`        | `false`  | Bí danh của `--verbose`.                                                                                      |
 
 Ví dụ:
 
@@ -36,16 +36,14 @@ openclaw health --verbose
 openclaw health --debug
 ```
 
-Ghi chú:
+## Hành vi
 
-- `openclaw health` mặc định yêu cầu Gateway đang chạy cung cấp ảnh chụp nhanh tình trạng. Khi
-  Gateway đã có ảnh chụp nhanh được lưu trong bộ nhớ đệm còn mới, nó có thể trả về payload đã lưu trong bộ nhớ đệm đó và
-  làm mới trong nền.
-- `--verbose` buộc thăm dò trực tiếp, in chi tiết kết nối Gateway và mở rộng
-  đầu ra dễ đọc cho người dùng trên tất cả tài khoản và tác tử đã cấu hình.
-- Đầu ra bao gồm kho lưu trữ phiên theo từng tác tử khi nhiều tác tử được cấu hình.
+- Khi không có `--verbose`, Gateway có thể trả về ảnh chụp nhanh được lưu trong bộ nhớ đệm (có hiệu lực tối đa 60 giây và không khác trạng thái thời gian chạy trực tiếp của kênh), đồng thời làm mới ảnh này trong nền cho lời gọi tiếp theo.
+- `--verbose` buộc thực hiện phép thăm dò trực tiếp (thăm dò tài khoản theo từng kênh), in chi tiết kết nối Gateway và mở rộng đầu ra dễ đọc cho tất cả tài khoản và tác tử đã được cấu hình thay vì chỉ tác tử mặc định.
+- `--json` luôn trả về ảnh chụp nhanh đầy đủ: các kênh, phép thăm dò theo từng tài khoản, trạng thái tải Plugin, trạng thái cách ly của công cụ ngữ cảnh, trạng thái bộ nhớ đệm giá mô hình, tình trạng vòng lặp sự kiện và kho phiên theo từng tác tử.
 
 ## Liên quan
 
-- [Tham chiếu CLI](/vi/cli)
+- [Tài liệu tham khảo CLI](/vi/cli)
+- [`openclaw status`](/vi/cli/status) — chẩn đoán cục bộ và thăm dò kênh mà không cần ảnh chụp nhanh tình trạng đầy đủ
 - [Tình trạng Gateway](/vi/gateway/health)

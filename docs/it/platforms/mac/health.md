@@ -1,47 +1,56 @@
 ---
 read_when:
-    - Eseguire il debug degli indicatori di salute dell’app Macോസ
-summary: Come l’app macOS segnala gli stati di salute di gateway/Baileys
-title: Controlli di salute (macOS)
+    - Debug degli indicatori di stato dell'app per Mac
+summary: Come l'app macOS segnala gli stati di integrità del Gateway e dei canali
+title: Controlli di integrità (macOS)
 x-i18n:
-    generated_at: "2026-04-24T08:50:18Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: a7488b39b0eec013083f52e2798d719bec35780acad743a97f5646a6891810e5
-    source_path: platforms/mac/health.md
-    workflow: 15
+    generated_at: "2026-07-12T07:13:53Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: a086c527796dbe453bdee1cc9cbe1e0fc1157de710c8c6de186411fe9aa3bc7b
+    source_path: platforms/mac/health.md
+    workflow: 16
 ---
 
-# Controlli di salute su macOS
+# Controlli di integrità su macOS
 
-Come vedere se il canale collegato è in salute dall’app nella barra dei menu.
+Come leggere lo stato di integrità del canale collegato dall'app nella barra dei menu.
 
 ## Barra dei menu
 
-- Il punto di stato ora riflette la salute di Baileys:
-  - Verde: collegato + socket aperto di recente.
-  - Arancione: connessione/riprova in corso.
-  - Rosso: disconnesso o probe fallito.
-- La riga secondaria mostra "linked · auth 12m" oppure il motivo del fallimento.
-- La voce di menu "Run Health Check" attiva un probe su richiesta.
+Indicatore di stato:
+
+- Verde: collegato e verifica riuscita.
+- Arancione: collegato, ma la verifica di un canale segnala uno stato degradato o non connesso.
+- Rosso: non ancora collegato.
+
+La riga secondaria mostra "collegato · autenticazione 12 min" oppure il motivo dell'errore.
+"Run Health Check Now" nel menu avvia una verifica su richiesta.
 
 ## Impostazioni
 
-- La scheda General aggiunge una card Health che mostra: età dell’autenticazione collegata, percorso/conteggio dell’archivio sessioni, ora dell’ultimo controllo, ultimo errore/codice di stato e pulsanti per Run Health Check / Reveal Logs.
-- Usa uno snapshot in cache così l’interfaccia si carica istantaneamente e usa un fallback in modo elegante quando è offline.
-- La **scheda Channels** mostra stato del canale + controlli per WhatsApp/Telegram (QR di login, logout, probe, ultima disconnessione/errore).
+- La scheda General mostra una scheda di integrità: indicatore di stato, riga di riepilogo (stato del collegamento +
+  durata dell'autenticazione) e una riga facoltativa con i dettagli dell'errore, con i pulsanti **Retry now** e
+  **Open logs**.
+- La **scheda Channels** mostra lo stato e i controlli di ciascun canale (codice QR di accesso,
+  disconnessione, verifica, ultima disconnessione/ultimo errore) per WhatsApp e Telegram.
 
-## Come funziona il probe
+## Funzionamento della verifica
 
-- L’app esegue `openclaw health --json` tramite `ShellExecutor` circa ogni 60 s e su richiesta. Il probe carica le credenziali e segnala lo stato senza inviare messaggi.
-- Memorizza in cache separatamente l’ultimo snapshot valido e l’ultimo errore per evitare sfarfallii; mostra il timestamp di ciascuno.
+L'app chiama l'RPC `health` del Gateway tramite la connessione WebSocket
+esistente (senza avviare una shell CLI) ogni ~60 secondi e su richiesta. L'RPC carica
+le credenziali e segnala lo stato senza inviare messaggi. L'app memorizza nella cache separatamente l'ultima
+istantanea valida e l'ultimo errore, in modo che l'interfaccia si carichi immediatamente e
+non presenti sfarfallii quando è offline.
 
 ## In caso di dubbi
 
-- Puoi comunque usare il flusso CLI in [Salute del Gateway](/it/gateway/health) (`openclaw status`, `openclaw status --deep`, `openclaw health --json`) e seguire `/tmp/openclaw/openclaw-*.log` per `web-heartbeat` / `web-reconnect`.
+Utilizza la procedura CLI descritta in [Integrità del Gateway](/it/gateway/health) (`openclaw status`,
+`openclaw status --deep`, `openclaw health --json`) e monitora
+`/tmp/openclaw/openclaw-*.log`, filtrando per `web-heartbeat` / `web-reconnect`.
 
-## Correlati
+## Contenuti correlati
 
-- [Salute del Gateway](/it/gateway/health)
+- [Integrità del Gateway](/it/gateway/health)
 - [App macOS](/it/platforms/macos)

@@ -2,129 +2,129 @@
 read_when:
     - Movendo a propriedade do host, das ferramentas, dos comandos, da documentação ou do protocolo do Canvas
     - Auditando se o Canvas ainda pertence ao núcleo
-    - Preparando ou revisando o PR do Plugin experimental Canvas
-summary: Plano e lista de verificação de auditoria para mover o Canvas para fora do núcleo e para um Plugin experimental incluído.
-title: Refatoração do Plugin Canvas
+    - Preparação ou revisão do PR do Plugin experimental Canvas
+summary: Plano e lista de verificação de auditoria para remover o Canvas do núcleo e transferi-lo para um plugin experimental incluído.
+title: Refatoração do plugin Canvas
 x-i18n:
-    generated_at: "2026-05-07T13:24:15Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T00:21:33Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: 1470edb74d5f8fe96224d38821ba0b3b13f8ce756124125af64fc3e49df0fcb8
     source_path: refactor/canvas.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# Refatoração do Plugin Canvas
+# Refatoração do plugin Canvas
 
-O Canvas é pouco usado e experimental. Trate-o como um Plugin integrado, não como um recurso central. O núcleo pode manter a infraestrutura genérica de Gateway, Node, HTTP, autenticação, configuração e cliente nativo, mas o comportamento específico do Canvas deve ficar em `extensions/canvas`.
+O Canvas tem pouco uso e é experimental. Trate-o como um plugin incluído, não como um recurso do núcleo. O núcleo pode manter a infraestrutura genérica de Gateway, Node, HTTP, autenticação, configuração e cliente nativo, mas o comportamento específico do Canvas deve ficar em `extensions/canvas`.
 
 ## Objetivo
 
-Mover a propriedade do Canvas para `extensions/canvas`, preservando o comportamento atual de nós pareados:
+Mover a responsabilidade pelo Canvas para `extensions/canvas`, preservando o comportamento atual de Node pareado:
 
-- a ferramenta `canvas` voltada para o agente é registrada pelo Plugin Canvas
-- comandos de nó do Canvas são permitidos somente quando o Plugin Canvas os registra
-- arquivos de host/fonte A2UI ficam no Plugin Canvas
-- a materialização de documentos Canvas fica no Plugin Canvas
-- a implementação de comandos da CLI fica no Plugin Canvas ou delega por meio de um barril de runtime pertencente ao Plugin
-- a documentação e o inventário de Plugins descrevem o Canvas como experimental e respaldado por Plugin
+- a ferramenta `canvas` voltada para o agente é registrada pelo plugin Canvas
+- os comandos de Node do Canvas são permitidos somente quando o plugin Canvas os registra
+- os arquivos de origem/hospedagem do A2UI ficam no plugin Canvas
+- a materialização de documentos do Canvas fica no plugin Canvas
+- a implementação do comando da CLI fica no plugin Canvas ou delega por meio de um barrel de runtime pertencente ao plugin
+- a documentação e o inventário de plugins descrevem o Canvas como experimental e baseado em plugin
 
-## Não objetivos
+## Fora do escopo
 
-- Não redesenhar a UI Canvas do app nativo nesta refatoração.
-- Não remover o suporte de protocolo/cliente Canvas do iOS, Android ou macOS, a menos que uma decisão separada de produto diga que o Canvas deve ser excluído.
-- Não criar uma estrutura ampla de serviço de Plugin apenas para o Canvas, a menos que pelo menos outro Plugin integrado precise do mesmo seam.
+- Não reprojete a interface do Canvas no aplicativo nativo nesta refatoração.
+- Não remova o suporte ao protocolo/cliente do Canvas no iOS, Android ou macOS, a menos que uma decisão de produto separada determine que o Canvas deve ser excluído.
+- Não crie uma estrutura ampla de serviços de plugin apenas para o Canvas, a menos que pelo menos outro plugin incluído precise da mesma interface.
 
 ## Estado atual da branch
 
 Concluído:
 
-- Adicionado pacote de Plugin integrado em `extensions/canvas`.
+- Adicionado o pacote de plugin incluído em `extensions/canvas`.
 - Adicionado `extensions/canvas/openclaw.plugin.json`.
 - Movida a ferramenta `canvas` do agente de `src/agents/tools/canvas-tool.ts` para `extensions/canvas/src/tool.ts`.
-- Removido o registro central de `createCanvasTool` de `src/agents/openclaw-tools.ts`.
-- Movida a implementação do host Canvas de `src/canvas-host` para `extensions/canvas/src/host`.
-- Mantido `extensions/canvas/runtime-api.ts` como o barril de compatibilidade pertencente ao Plugin para testes, empacotamento e helpers públicos externos do Canvas.
-- Movida a materialização de documentos Canvas de `src/gateway/canvas-documents.ts` para `extensions/canvas/src/documents.ts`.
-- Movida a implementação da CLI Canvas e helpers JSONL A2UI para `extensions/canvas/src/cli.ts`.
-- Movidos o URL do host Canvas e helpers de capacidade com escopo para `extensions/canvas/src`.
-- Movidos os padrões de comandos de nó do Canvas para fora de listas rígidas no núcleo e para `nodeInvokePolicies` do Plugin.
-- Adicionada configuração de host Canvas pertencente ao Plugin em `plugins.entries.canvas.config.host`.
-- Movido o serviço HTTP do Canvas e A2UI para trás do registro de rotas HTTP do Plugin Canvas.
-- Adicionado despacho genérico de upgrade WebSocket de Plugin para rotas HTTP pertencentes a Plugins.
-- Substituídos o URL de host Gateway específico do Canvas e a autenticação de capacidade de nó por superfície genérica de Plugin hospedado e helpers de capacidade de nó.
-- Adicionados resolvedores de mídia hospedada pertencentes ao Plugin, para que URLs de documentos Canvas sejam resolvidos pelo Plugin Canvas em vez de o núcleo importar detalhes internos de documentos Canvas.
-- Adicionado `api.registerNodeCliFeature(...)`, para que o Canvas possa declarar `openclaw nodes canvas` como um recurso de nó pertencente ao Plugin sem soletrar manualmente o caminho do comando pai.
-- Removidas importações de produção `src/**` de `extensions/canvas/runtime-api.js`.
-- Movida a fonte do bundle A2UI de `apps/shared/OpenClawKit/Tools/CanvasA2UI` para `extensions/canvas/src/host/a2ui-app`.
-- Movida a implementação de build/cópia A2UI para `extensions/canvas/scripts` e substituída a fiação de build raiz por hooks genéricos de assets de Plugins integrados.
-- Removido o alias legado de runtime de configuração de nível superior `canvasHost`.
-- Mantida a migração do doctor do Canvas para que `openclaw doctor --fix` reescreva configurações antigas de `canvasHost` para `plugins.entries.canvas.config.host`.
-- Removida a compatibilidade de protocolo Canvas de agentes antigos atrás do protocolo Gateway v4. Clientes nativos e Gateways agora usam somente `pluginSurfaceUrls.canvas` mais `node.pluginSurface.refresh`; o caminho obsoleto `canvasHostUrl`, `canvasCapability` e `node.canvas.capability.refresh` é intencionalmente sem suporte nesta refatoração experimental.
-- Atualizado o inventário gerado de Plugins para incluir Canvas.
-- Adicionada documentação de referência do Plugin em `docs/plugins/reference/canvas.md`.
+- Removido o registro de `createCanvasTool` pelo núcleo em `src/agents/openclaw-tools.ts`.
+- Movida a implementação do host do Canvas de `src/canvas-host` para `extensions/canvas/src/host`.
+- Mantido `extensions/canvas/runtime-api.ts` como o barrel de compatibilidade pertencente ao plugin para testes, empacotamento e auxiliares públicos externos do Canvas.
+- Movida a materialização de documentos do Canvas de `src/gateway/canvas-documents.ts` para `extensions/canvas/src/documents.ts`.
+- Movidas a implementação da CLI do Canvas e as funções auxiliares de JSONL do A2UI para `extensions/canvas/src/cli.ts`.
+- Movidas as funções auxiliares de URL do host do Canvas e de recursos com escopo para `extensions/canvas/src`.
+- Movidos os padrões de comandos de Node do Canvas das listas codificadas diretamente no núcleo para `nodeInvokePolicies` do plugin.
+- Adicionada a configuração do host do Canvas pertencente ao plugin em `plugins.entries.canvas.config.host`.
+- Movido o fornecimento HTTP do Canvas e do A2UI para trás do registro de rotas HTTP do plugin Canvas.
+- Adicionado o encaminhamento genérico de upgrade de WebSocket de plugins para rotas HTTP pertencentes a plugins.
+- Substituídas a URL do host e a autenticação de recursos de Node específicas do Canvas no Gateway por funções auxiliares genéricas de superfície hospedada de plugin e recursos de Node.
+- Adicionados resolvedores de mídia hospedada pertencentes ao plugin para que as URLs de documentos do Canvas sejam resolvidas pelo plugin Canvas, em vez de o núcleo importar componentes internos de documentos do Canvas.
+- Adicionado `api.registerNodeCliFeature(...)` para que o Canvas possa declarar `openclaw nodes canvas` como um recurso de Node pertencente ao plugin sem especificar manualmente o caminho do comando pai.
+- Removidas as importações de produção de `extensions/canvas/runtime-api.js` em `src/**`.
+- Movida a origem do pacote A2UI de `apps/shared/OpenClawKit/Tools/CanvasA2UI` para `extensions/canvas/src/host/a2ui-app`.
+- Movida a implementação de compilação/cópia do A2UI para `extensions/canvas/scripts`, substituindo a integração de compilação na raiz por ganchos genéricos de recursos de plugins incluídos.
+- Removido o alias legado de configuração `canvasHost` de nível superior no runtime.
+- Mantida a migração do Canvas no doctor para que `openclaw doctor --fix` reescreva configurações antigas de `canvasHost` como `plugins.entries.canvas.config.host`.
+- Removida a compatibilidade do protocolo do Canvas com agentes antigos no protocolo v4 do Gateway. Clientes nativos e gateways agora usam apenas `pluginSurfaceUrls.canvas` junto com `node.pluginSurface.refresh`; o caminho obsoleto `canvasHostUrl`, `canvasCapability` e `node.canvas.capability.refresh` não é intencionalmente compatível nesta refatoração experimental.
+- Atualizado o inventário gerado de plugins para incluir o Canvas.
+- Adicionada a documentação de referência do plugin em `docs/plugins/reference/canvas.md`.
 
-Superfícies Canvas conhecidas que ainda pertencem ao núcleo:
+Superfícies conhecidas do Canvas que ainda pertencem ao núcleo:
 
-- handlers Canvas do app nativo em `apps/` ainda consomem intencionalmente a superfície do Plugin Canvas
-- handlers de protocolo/cliente Canvas do app nativo em `apps/`
-- a saída do artefato publicado ainda usa `dist/canvas-host/a2ui` para busca de runtime compatível com versões anteriores, mas a etapa de cópia agora pertence ao Plugin
+- Os manipuladores do Canvas nos aplicativos nativos em `apps/` ainda consomem intencionalmente a superfície do plugin Canvas
+- manipuladores de protocolo/cliente do Canvas nos aplicativos nativos em `apps/`
+- a saída do artefato publicado ainda usa `dist/canvas-host/a2ui` para uma consulta de runtime retrocompatível, mas a etapa de cópia agora pertence ao plugin
 
-## Forma alvo
+## Estrutura pretendida
 
-`extensions/canvas` deve possuir:
+`extensions/canvas` deve ser responsável por:
 
-- manifesto do Plugin e metadados do pacote
-- registro de ferramenta do agente
-- política de comando de invocação de nó
-- host Canvas e runtime A2UI
-- fonte do bundle Canvas A2UI e scripts de build/cópia de assets
-- criação de documentos Canvas e resolução de assets
-- implementação da CLI Canvas
-- página de documentação do Canvas e entrada no inventário de Plugins
+- manifesto do plugin e metadados do pacote
+- registro da ferramenta do agente
+- política de comandos de invocação de Node
+- host do Canvas e runtime do A2UI
+- origem do pacote A2UI do Canvas e scripts de compilação/cópia de recursos
+- criação de documentos e resolução de recursos do Canvas
+- implementação da CLI do Canvas
+- página de documentação do Canvas e entrada no inventário de plugins
 
-O núcleo deve possuir apenas seams genéricos:
+O núcleo deve ser responsável apenas por interfaces genéricas:
 
-- descoberta e registro de Plugins
-- registro genérico de ferramentas de agente
-- registro genérico de políticas de invocação de nó
-- HTTP/autenticação genéricos do Gateway e despacho de upgrade WebSocket
-- resolução genérica de URL de superfície de Plugin hospedado
-- registro genérico de resolvedor de mídia hospedada
-- transporte genérico de capacidade de nó
+- descoberta e registro de plugins
+- registro genérico de ferramentas do agente
+- registro genérico de políticas de invocação de Node
+- HTTP/autenticação genéricos do Gateway e encaminhamento de upgrade de WebSocket
+- resolução genérica de URLs de superfícies hospedadas de plugins
+- registro genérico de resolvedores de mídia hospedada
+- transporte genérico de recursos de Node
 - infraestrutura genérica de configuração
-- descoberta genérica de hooks de assets de Plugins integrados
+- descoberta genérica de ganchos de recursos de plugins incluídos
 
-Apps nativos podem manter handlers de comando Canvas como clientes do protocolo. Eles não são os proprietários do runtime do Plugin.
+Os aplicativos nativos podem manter os manipuladores de comandos do Canvas como clientes do protocolo. Eles não são responsáveis pelo runtime do plugin.
 
-## Etapas de migração
+## Etapas da migração
 
-1. Tratar `plugins.entries.canvas.config.host` como a superfície de configuração pertencente ao Plugin.
-2. Atualizar a documentação para que o Canvas seja descrito como um Plugin integrado experimental.
-3. Executar testes focados do Canvas, verificações de inventário de Plugins, verificações da API do SDK de Plugin e gates de build/tipos afetados pelos limites de runtime.
+1. Trate `plugins.entries.canvas.config.host` como a superfície de configuração pertencente ao plugin.
+2. Atualize a documentação para descrever o Canvas como um plugin incluído experimental.
+3. Execute testes específicos do Canvas, verificações do inventário de plugins, verificações da API do SDK de plugins e as etapas de compilação/tipos afetadas pelos limites do runtime.
 
-## Checklist de auditoria
+## Lista de verificação da auditoria
 
 Antes de considerar a refatoração concluída:
 
-- `rg "src/canvas-host|../canvas-host"` não retorna importações de fonte ativas.
-- `rg "canvas-tool|createCanvasTool" src` não encontra implementação de ferramenta Canvas pertencente ao núcleo.
-- `rg "canvas.present|canvas.snapshot|canvas.a2ui" src/gateway` não encontra padrões de allowlist rígidos fora de testes genéricos de política de Plugin.
-- `rg "extensions/canvas/runtime-api" src --glob '!**/*.test.ts'` está vazio.
-- `rg "canvas-documents" src` está vazio.
-- `rg "registerNodesCanvasCommands|nodes-canvas" src` está vazio; o Plugin Canvas registra `openclaw nodes canvas` por meio de metadados aninhados de CLI de Plugin.
-- `rg "createCanvasHostHandler|handleA2uiHttpRequest" src/gateway` não retorna propriedade de runtime do Gateway.
-- `rg "apps/shared/OpenClawKit/Tools/CanvasA2UI|canvas-a2ui-copy|extensions/canvas/src/host/a2ui" scripts .github package.json` encontra somente wrappers de compatibilidade ou caminhos pertencentes ao Plugin.
-- `pnpm plugins:inventory:check` passa.
-- `pnpm plugin-sdk:api:check` passa, ou os baselines de API gerados são atualizados e revisados intencionalmente.
-- Testes Canvas direcionados passam.
-- Testes de lanes alteradas passam para caminhos Canvas host/A2UI.
-- O corpo do PR diz explicitamente que o Canvas é experimental e respaldado por Plugin.
+- `rg "src/canvas-host|../canvas-host"` não retorna importações ativas no código-fonte.
+- `rg "canvas-tool|createCanvasTool" src` não encontra nenhuma implementação da ferramenta Canvas pertencente ao núcleo.
+- `rg "canvas.present|canvas.snapshot|canvas.a2ui" src/gateway` não encontra padrões de lista de permissões codificados diretamente fora dos testes genéricos de políticas de plugins.
+- `rg "extensions/canvas/runtime-api" src --glob '!**/*.test.ts'` não retorna resultados.
+- `rg "canvas-documents" src` não retorna resultados.
+- `rg "registerNodesCanvasCommands|nodes-canvas" src` não retorna resultados; o plugin Canvas registra `openclaw nodes canvas` por meio de metadados aninhados da CLI do plugin.
+- `rg "createCanvasHostHandler|handleA2uiHttpRequest" src/gateway` não retorna nenhuma responsabilidade de runtime do Gateway.
+- `rg "apps/shared/OpenClawKit/Tools/CanvasA2UI|canvas-a2ui-copy|extensions/canvas/src/host/a2ui" scripts .github package.json` encontra apenas wrappers de compatibilidade ou caminhos pertencentes ao plugin.
+- `pnpm plugins:inventory:check` é aprovado.
+- `pnpm plugin-sdk:api:check` é aprovado, ou as linhas de base geradas da API são atualizadas e revisadas intencionalmente.
+- Os testes direcionados do Canvas são aprovados.
+- Os testes das áreas alteradas são aprovados para os caminhos de host/A2UI do Canvas.
+- O corpo do PR declara explicitamente que o Canvas é experimental e baseado em plugin.
 
 ## Comandos de verificação
 
-Use verificações locais direcionadas durante a iteração:
+Use verificações locais direcionadas durante as iterações:
 
 ```sh
 pnpm test extensions/canvas/src/host/server.test.ts extensions/canvas/src/host/server.state-dir.test.ts extensions/canvas/src/host/file-resolver.test.ts
@@ -136,4 +136,4 @@ pnpm plugins:inventory:check
 pnpm plugin-sdk:api:check
 ```
 
-Execute `pnpm build` antes do push se o barril de runtime, importação lazy, empacotamento ou superfícies publicadas do Plugin mudarem.
+Execute `pnpm build` antes de enviar se o barrel de runtime, a importação tardia, o empacotamento ou as superfícies publicadas do plugin forem alterados.

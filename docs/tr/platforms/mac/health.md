@@ -1,47 +1,55 @@
 ---
 read_when:
-    - mac uygulaması sağlık göstergelerinde hata ayıklama
-summary: macOS uygulamasının gateway/Baileys sağlık durumlarını nasıl bildirdiği
-title: Sağlık kontrolleri (macOS)
+    - Mac uygulaması sağlık göstergelerinde hata ayıklama
+summary: macOS uygulamasının Gateway/kanal sağlık durumlarını nasıl bildirdiği
+title: Sağlık denetimleri (macOS)
 x-i18n:
-    generated_at: "2026-04-24T09:19:49Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: a7488b39b0eec013083f52e2798d719bec35780acad743a97f5646a6891810e5
-    source_path: platforms/mac/health.md
-    workflow: 15
+    generated_at: "2026-07-12T12:28:56Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: a086c527796dbe453bdee1cc9cbe1e0fc1157de710c8c6de186411fe9aa3bc7b
+    source_path: platforms/mac/health.md
+    workflow: 16
 ---
 
-# macOS üzerinde Sağlık Kontrolleri
+# macOS'ta sistem durumu denetimleri
 
-Menü çubuğu uygulamasından bağlı kanalın sağlıklı olup olmadığını nasıl görebileceğiniz.
+Menü çubuğu uygulamasından bağlı kanalın sistem durumu bilgisinin nasıl okunacağı.
 
 ## Menü çubuğu
 
-- Durum noktası artık Baileys sağlığını yansıtır:
-  - Yeşil: bağlı + soket kısa süre önce açıldı.
-  - Turuncu: bağlanıyor/yeniden deniyor.
-  - Kırmızı: oturum kapatıldı veya yoklama başarısız oldu.
-- İkincil satır `"linked · auth 12m"` okur veya hata nedenini gösterir.
-- `"Run Health Check"` menü öğesi isteğe bağlı bir yoklama tetikler.
+Durum noktası:
+
+- Yeşil: bağlı + yoklama başarılı.
+- Turuncu: bağlı ancak bir kanal yoklaması performans düşüşü/bağlantı yok bildiriyor.
+- Kırmızı: henüz bağlı değil.
+
+İkincil satırda "bağlı · kimlik doğrulama 12 dk." ifadesi veya hata nedeni gösterilir.
+Menüdeki "Sistem Durumu Denetimini Şimdi Çalıştır" seçeneği, isteğe bağlı bir yoklamayı tetikler.
 
 ## Ayarlar
 
-- General sekmesi artık bağlı auth yaşı, oturum deposu yolu/sayısı, son denetim zamanı, son hata/durum kodu ve Run Health Check / Reveal Logs düğmelerini gösteren bir Health kartı içerir.
-- UI'nin anında yüklenmesi ve çevrimdışıyken sorunsuz şekilde geri dönmesi için önbelleğe alınmış anlık görüntü kullanır.
-- **Channels sekmesi**, WhatsApp/Telegram için kanal durumu + denetimleri gösterir (giriş QR, çıkış, yoklama, son kopma/hata).
+- Genel sekmesinde bir Sistem Durumu kartı gösterilir: durum noktası, özet satırı (bağlantı durumu +
+  kimlik doğrulama yaşı) ve isteğe bağlı bir hata ayrıntısı satırı ile **Şimdi yeniden dene** ve
+  **Günlükleri aç** düğmeleri.
+- **Kanallar sekmesi**, WhatsApp ve Telegram için kanal bazında durum ve denetimleri (oturum açma QR kodu,
+  oturumu kapatma, yoklama, son bağlantı kesilmesi/hata) sunar.
 
-## Yoklama nasıl çalışır
+## Yoklama nasıl çalışır?
 
-- Uygulama, `ShellExecutor` üzerinden yaklaşık her 60 saniyede bir ve isteğe bağlı olarak `openclaw health --json` çalıştırır. Yoklama, mesaj göndermeden kimlik bilgilerini yükler ve durumu bildirir.
-- Titremeyi önlemek için son iyi anlık görüntü ile son hatayı ayrı ayrı önbelleğe alın; her birinin zaman damgasını gösterin.
+Uygulama, mevcut WebSocket bağlantısı üzerinden (CLI kabuk çağrısı yapmak yerine) yaklaşık her 60 saniyede bir ve
+istek üzerine Gateway'in `health` RPC'sini çağırır. RPC, kimlik bilgilerini
+yükler ve mesaj göndermeden durumu bildirir. Uygulama, kullanıcı arayüzünün anında yüklenmesi ve
+çevrimdışıyken titrememesi için son başarılı anlık görüntüyü ve son hatayı ayrı ayrı önbelleğe alır.
 
-## Emin değilseniz
+## Şüphe durumunda
 
-- [Gateway sağlığı](/tr/gateway/health) içindeki CLI akışını yine de kullanabilirsiniz (`openclaw status`, `openclaw status --deep`, `openclaw health --json`) ve `web-heartbeat` / `web-reconnect` için `/tmp/openclaw/openclaw-*.log` dosyasını izleyebilirsiniz.
+[Gateway sistem durumu](/tr/gateway/health) bölümündeki CLI akışını kullanın (`openclaw status`,
+`openclaw status --deep`, `openclaw health --json`) ve `web-heartbeat` / `web-reconnect`
+ölçütlerine göre filtreleyerek `/tmp/openclaw/openclaw-*.log` günlüklerini canlı izleyin.
 
 ## İlgili
 
-- [Gateway sağlığı](/tr/gateway/health)
+- [Gateway sistem durumu](/tr/gateway/health)
 - [macOS uygulaması](/tr/platforms/macos)

@@ -1,15 +1,14 @@
 ---
 read_when:
-    - Sie möchten die OpenClaw-Einstellungen anhand einer erstellten policy.jsonc überprüfen
-    - Sie möchten Richtlinienbefunde in der Doctor-Prüfung sehen
-    - Sie benötigen einen Hash der Richtlinienbestätigung als Auditnachweis
+    - Sie möchten die OpenClaw-Einstellungen anhand einer erstellten `policy.jsonc` überprüfen.
+    - Sie möchten Richtlinienbefunde bei der Doctor-Prüfung sehen
+    - Sie benötigen einen Hash der Richtlinienbestätigung als Auditnachweis.
 summary: CLI-Referenz für `openclaw policy`-Konformitätsprüfungen
 title: Richtlinie
 x-i18n:
-    generated_at: "2026-07-12T15:08:09Z"
+    generated_at: "2026-07-12T01:29:50Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 280f9ed1e741786f85dfed978690eb18a03c8fbde20e0d01e31a9d215ae0a128
     source_path: cli/policy.md
@@ -18,21 +17,9 @@ x-i18n:
 
 # `openclaw policy`
 
-`openclaw policy` wird vom gebündelten Policy-Plugin bereitgestellt. Es handelt sich um eine unternehmensweite
-Konformitätsschicht über den vorhandenen OpenClaw-Einstellungen, nicht um ein zweites
-Konfigurationssystem. Sie definieren Anforderungen in `policy.jsonc`; OpenClaw erfasst den aktiven
-Workspace als Nachweis; Policy meldet Abweichungen über `doctor --lint`. Policy
-erzwingt keine Tool-Aufrufe und schreibt das Laufzeitverhalten nicht zum Anfragezeitpunkt um.
-Außerdem attestiert es keine agentspezifischen Anmeldedatenspeicher wie `auth-profiles.json`.
+`openclaw policy` wird durch das gebündelte Policy-Plugin bereitgestellt. Es ist eine unternehmensweite Konformitätsschicht über den bestehenden OpenClaw-Einstellungen und kein zweites Konfigurationssystem. Sie definieren Anforderungen in `policy.jsonc`; OpenClaw erfasst den aktiven Arbeitsbereich als Nachweis; Policy meldet Abweichungen über `doctor --lint`. Policy erzwingt keine Tool-Aufrufe und schreibt das Laufzeitverhalten nicht zur Anfragezeit um. Außerdem attestiert es keine agentenspezifischen Anmeldedatenspeicher wie `auth-profiles.json`.
 
-Policy prüft konfigurierte Kanäle, MCP-Server, Modell-Provider, die SSRF-
-Absicherung des Netzwerks, Ingress-/Kanalzugriff, Gateway-Exposition und die Befehlsabsicherung von Nodes,
-den Workspace-Zugriff von Agents, die Sandbox-Absicherung, die Datenverarbeitungsabsicherung, die Absicherung von Secret-
-Providern und Authentifizierungsprofilen sowie Metadaten verwalteter Tools (`TOOLS.md`). Verwenden Sie es,
-wenn ein Workspace eine dauerhafte, überprüfbare Vorgabe benötigt, beispielsweise „Telegram darf
-nicht aktiviert sein“ oder „verwaltete Tools müssen Risiko- und Eigentümermetadaten deklarieren“. Wenn
-Sie lediglich lokales Verhalten ohne Attestierung oder Abweichungserkennung benötigen, reicht die normale
-Konfiguration aus.
+Policy prüft konfigurierte Kanäle, MCP-Server, Modell-Provider, den Netzwerk-SSRF-Sicherheitsstatus, den Eingangs-/Kanalzugriff, die Gateway-Exposition und den Sicherheitsstatus von Node-Befehlen, den Zugriff von Agenten auf Arbeitsbereiche, den Sandbox-Sicherheitsstatus, den Datenverarbeitungsstatus, den Sicherheitsstatus von Secret-Providern und Authentifizierungsprofilen sowie Metadaten verwalteter Tools (`TOOLS.md`). Verwenden Sie es, wenn ein Arbeitsbereich eine dauerhafte, überprüfbare Vorgabe benötigt, etwa „Telegram darf nicht aktiviert sein“ oder „Verwaltete Tools müssen Risiko- und Verantwortlichenmetadaten deklarieren“. Wenn Sie lediglich lokales Verhalten ohne Attestierung oder Abweichungserkennung benötigen, genügt die normale Konfiguration.
 
 ## Schnellstart
 
@@ -40,14 +27,9 @@ Konfiguration aus.
 openclaw plugins enable policy
 ```
 
-Das Plugin bleibt auch dann aktiviert, wenn `policy.jsonc` fehlt, damit Doctor
-das fehlende Artefakt melden kann, statt Prüfungen stillschweigend zu überspringen.
+Das Plugin bleibt auch dann aktiviert, wenn `policy.jsonc` fehlt, sodass Doctor das fehlende Artefakt melden kann, anstatt Prüfungen stillschweigend zu überspringen.
 
-Erstellen Sie `policy.jsonc` manuell; die Datei wird nicht aus den aktuellen Einstellungen generiert. Jeder
-Abschnitt auf oberster Ebene ist ein Regel-Namespace: Eine Prüfung wird nur ausgeführt, wenn darunter eine konkrete Regel
-vorhanden ist (nicht unterstützte Abschnitte oder Schlüssel führen zu
-`policy/policy-jsonc-invalid`, statt stillschweigend ignoriert zu werden). Minimales
-Beispiel, das alle unterstützten Abschnitte abdeckt:
+Erstellen Sie `policy.jsonc` manuell; sie wird nicht aus den aktuellen Einstellungen generiert. Jeder Abschnitt auf oberster Ebene ist ein Regel-Namensraum: Eine Prüfung wird nur ausgeführt, wenn darunter eine konkrete Regel vorhanden ist (nicht unterstützte Abschnitte oder Schlüssel führen zu `policy/policy-jsonc-invalid`, anstatt stillschweigend ignoriert zu werden). Minimales Beispiel, das jeden unterstützten Abschnitt abdeckt:
 
 ```jsonc
 {
@@ -56,7 +38,7 @@ Beispiel, das alle unterstützten Abschnitte abdeckt:
       {
         "id": "no-telegram",
         "when": { "provider": "telegram" },
-        "reason": "Telegram ist für diesen Workspace nicht genehmigt.",
+        "reason": "Telegram is not approved for this workspace.",
       },
     ],
   },
@@ -171,48 +153,29 @@ Beispiel, das alle unterstützten Abschnitte abdeckt:
 }
 ```
 
-Abschnittsübergreifende Hinweise, die aus den folgenden Regeltabellen nicht unmittelbar hervorgehen:
+Abschnittsübergreifende Hinweise, die aus den nachfolgenden Regeltabellen nicht unmittelbar hervorgehen:
 
-- Wenn Sie `gateway.bind` weglassen und gleichzeitig Nicht-Loopback-Bindungen verweigern, akzeptieren Sie
-  den Laufzeitstandard; legen Sie für strikte Konformität `gateway.bind: "loopback"` fest.
-- Legen Sie für einen schreibgeschützten Agent den Sandbox-`mode` in den
-  zutreffenden Standardwerten bzw. beim Agent auf `all` oder `non-main` und `workspaceAccess` auf `none` oder `ro` fest. Ein fehlender oder
-  auf `off` gesetzter Sandbox-Modus erfüllt keine schreibgeschützte Policy.
-- `agents.workspace.denyTools` akzeptiert `exec`, `process`, `write`, `edit`,
-  `apply_patch`. Die Tool-Verweigerungsgruppen der Konfiguration `group:fs` (Dateiänderung) und
-  `group:runtime` (Shell/Prozess) erfüllen die entsprechende Absicherung.
-- Prüfungen der Ausführungsgenehmigungen lesen das aktuelle Artefakt `exec-approvals.json` nur, wenn
-  eine `execApprovals`-Regel vorhanden ist; ein fehlendes oder ungültiges Artefakt ist
-  nicht beobachtbarer Nachweis und kein künstlich erzeugter erfolgreicher Prüfstatus.
-- Nachweise zu Secrets und Authentifizierungsprofilen erfassen nur die Absicherung von Provider/Quelle und
-  SecretRef-Metadaten, niemals Rohwerte. Policy liest oder attestiert keine
-  agentspezifischen Anmeldedatenspeicher wie `auth-profiles.json`.
-- Nachweise zur Datenverarbeitung bilden nur die Absicherung auf Konfigurationsebene ab (Schwärzungsmodus,
-  Umschalter für Telemetrieerfassung, Sitzungswartungsmodus, Einstellung zur Transkriptindizierung).
-  Sie untersuchen weder Protokolle, Telemetrieexporte, Transkripte noch
-  Memory-Dateien, und ein einwandfreies Ergebnis beweist nicht, dass darin keine personenbezogenen Daten oder
-  Secrets enthalten sind.
+- Wenn Sie `gateway.bind` weglassen und gleichzeitig Bindungen außerhalb von local loopback verbieten, akzeptieren Sie den Laufzeitstandard; legen Sie für strikte Konformität `gateway.bind: "loopback"` fest.
+- Legen Sie für einen schreibgeschützten Agenten den Sandbox-`mode` in den zutreffenden Standardwerten bzw. beim Agenten auf `all` oder `non-main` und `workspaceAccess` auf `none` oder `ro` fest. Ein fehlender oder auf `off` gesetzter Sandbox-Modus erfüllt keine Schreibschutz-Policy.
+- `agents.workspace.denyTools` akzeptiert `exec`, `process`, `write`, `edit`, `apply_patch`. Die Tool-Verweigerungsgruppen `group:fs` (Dateiänderungen) und `group:runtime` (Shell/Prozess) in der Konfiguration erfüllen den entsprechenden Sicherheitsstatus.
+- Prüfungen von Ausführungsgenehmigungen lesen das aktive Artefakt `exec-approvals.json` nur, wenn eine `execApprovals`-Regel vorhanden ist; ein fehlendes oder ungültiges Artefakt ist ein nicht beobachtbarer Nachweis und kein konstruierter erfolgreicher Prüflauf.
+- Nachweise für Secrets und Authentifizierungsprofile erfassen ausschließlich den Provider-/Quellenstatus und SecretRef-Metadaten, niemals Rohwerte. Policy liest oder attestiert keine agentenspezifischen Anmeldedatenspeicher wie `auth-profiles.json`.
+- Nachweise zur Datenverarbeitung bilden ausschließlich den Sicherheitsstatus auf Konfigurationsebene ab (Schwärzungsmodus, Umschalter für Telemetrieerfassung, Sitzungswartungsmodus und Einstellung zur Transkriptindizierung). Sie prüfen keine Protokolle, Telemetrieexporte, Transkripte oder Memory-Dateien. Ein einwandfreies Ergebnis beweist nicht, dass diese keine personenbezogenen Daten oder Secrets enthalten.
 
 ### Referenz der Policy-Regeln
 
-Jede nachstehende Regel ist optional; eine Prüfung wird nur ausgeführt, wenn die Regel vorhanden ist. Der
-beobachtete Zustand besteht aus der vorhandenen OpenClaw-Konfiguration oder den Workspace-Metadaten.
+Jede nachfolgende Regel ist optional; eine Prüfung wird nur ausgeführt, wenn die Regel vorhanden ist. Der beobachtete Zustand entspricht der bestehenden OpenClaw-Konfiguration oder den Metadaten des Arbeitsbereichs.
 
-#### Bereichsbezogene Overlays
+#### Bereichsbezogene Überlagerungen
 
-Verwenden Sie `scopes.<scopeName>`, wenn bestimmte Agents oder Kanäle eine strengere Policy
-als die globale Basislinie benötigen. Der Bereichsname ist lediglich eine Bezeichnung; der Abgleich erfolgt über den
-Selektor innerhalb des Bereichs. Overlays sind additiv: Die globale Regel wird weiterhin ausgeführt,
-und die bereichsbezogene Regel kann für denselben Nachweis einen eigenen Befund hinzufügen.
+Verwenden Sie `scopes.<scopeName>`, wenn bestimmte Agenten oder Kanäle eine strengere Policy als die Basisvorgaben auf oberster Ebene benötigen. Der Bereichsname ist lediglich eine Bezeichnung; der Abgleich erfolgt anhand des Selektors innerhalb des Bereichs. Überlagerungen sind additiv: Die globale Regel wird weiterhin ausgeführt, und die bereichsbezogene Regel kann für denselben Nachweis einen eigenen Befund hinzufügen.
 
-| Selektor     | Unterstützte Abschnitte                                                         | Verwenden, wenn                                          |
-| ------------ | ------------------------------------------------------------------------------ | ------------------------------------------------- |
-| `agentIds`   | `tools`, `agents.workspace`, `sandbox`, `dataHandling.memory`, `execApprovals` | Ein oder mehrere Laufzeit-Agents strengere Regeln benötigen.   |
-| `channelIds` | `ingress.channels`                                                             | Ein oder mehrere Kanäle strengere Ingress-Regeln benötigen. |
+| Selektor     | Unterstützte Abschnitte                                                         | Verwendung                                                     |
+| ------------ | ------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| `agentIds`   | `tools`, `agents.workspace`, `sandbox`, `dataHandling.memory`, `execApprovals` | Ein oder mehrere Laufzeitagenten benötigen strengere Regeln.   |
+| `channelIds` | `ingress.channels`                                                              | Ein oder mehrere Kanäle benötigen strengere Eingangsregeln.    |
 
-Wenn ein `agentIds`-Eintrag nicht in `agents.list[]` vorhanden ist, wertet OpenClaw
-die bereichsbezogene Regel anhand der geerbten globalen/standardmäßigen Absicherung für diese Laufzeit-
-Agent-ID aus, statt sie zu überspringen.
+Wenn ein `agentIds`-Eintrag nicht in `agents.list[]` vorhanden ist, wertet OpenClaw die bereichsbezogene Regel anhand des geerbten globalen bzw. standardmäßigen Sicherheitsstatus für diese Laufzeitagenten-ID aus, anstatt sie zu überspringen.
 
 ```jsonc
 {
@@ -276,148 +239,135 @@ Agent-ID aus, statt sie zu überspringen.
 }
 ```
 
-Derselbe Agent kann in mehreren Bereichen vorkommen, wenn jeder Bereich wie oben ein anderes
-Feld verwaltet. Ein wiederholtes bereichsbezogenes Feld für denselben Agent muss gleich oder
-restriktiver sein; eine schwächere doppelte Vorgabe wird abgelehnt (Positivlisten sind
-Teilmengen, Sperrlisten sind Obermengen, erforderliche boolesche Werte sind festgelegt).
+Derselbe Agent kann wie oben in mehreren Bereichen vorkommen, wenn jeder Bereich ein anderes Feld regelt. Ein wiederholtes bereichsbezogenes Feld für denselben Agenten muss gleich streng oder strenger sein; eine schwächere doppelte Vorgabe wird abgelehnt (Positivlisten müssen Teilmengen, Sperrlisten Obermengen und erforderliche boolesche Werte unverändert sein).
 
-Regeln zur Container-Absicherung (`sandbox.containers.*`) werden nur anhand von
-Nachweisen geprüft, die das Sandbox-Backend des zugeordneten Agent bereitstellen kann. Wenn ein Backend
-eine dafür aktivierte Regel nicht beobachten kann, meldet Policy
-`policy/sandbox-container-posture-unobservable`, statt die Prüfung als erfolgreich zu werten; beschränken Sie
-Container-Regeln auf die Agent-Gruppen, die ein Backend verwenden, das sie bereitstellen kann.
+Regeln zum Container-Sicherheitsstatus (`sandbox.containers.*`) werden nur anhand von Nachweisen geprüft, die das Sandbox-Backend des übereinstimmenden Agenten bereitstellen kann. Wenn ein Backend eine dafür aktivierte Regel nicht beobachten kann, meldet Policy `policy/sandbox-container-posture-unobservable`, anstatt die Prüfung als erfolgreich zu werten. Beschränken Sie Container-Regeln auf die Agentengruppen, die ein Backend verwenden, das diese Nachweise bereitstellen kann.
 
-`ingress.session.requireDmScope` auf oberster Ebene bleibt global; `session.dmScope` ist
-kein einem Kanal zuordenbarer Nachweis und kann daher nicht über `channelIds` eingeschränkt werden.
+`ingress.session.requireDmScope` auf oberster Ebene bleibt global; `session.dmScope` ist kein einem Kanal zuordenbarer Nachweis und kann daher nicht über `channelIds` eingegrenzt werden.
 
 Jeder in `policy.jsonc` vorhandene Bereich muss gültig und durchsetzbar sein.
 
 #### Kanäle
 
-| Policy-Feld                         | Beobachteter Zustand                          | Verwenden, wenn                                                     |
-| ------------------------------------ | --------------------------------------- | ------------------------------------------------------------ |
-| `channels.denyRules[].when.provider` | Provider und Aktivierungsstatus von `channels.*` | Konfigurierte Kanäle eines Providers wie `telegram` verweigert werden sollen. |
-| `channels.denyRules[].reason`        | Kontext für Befundmeldung und Reparaturhinweis | Erläutert werden soll, warum der Provider verweigert wird.                          |
+| Policy-Feld                          | Beobachteter Zustand                   | Verwendung                                                          |
+| ------------------------------------ | -------------------------------------- | ------------------------------------------------------------------- |
+| `channels.denyRules[].when.provider` | Provider und Aktivierungsstatus unter `channels.*` | Konfigurierte Kanäle eines Providers wie `telegram` verbieten. |
+| `channels.denyRules[].reason`        | Kontext für Befundmeldung und Reparaturhinweis | Erklären, warum der Provider verboten ist.                    |
 
 #### MCP-Server
 
-| Policy-Feld        | Beobachteter Zustand      | Verwenden, wenn                                                   |
-| ------------------- | ------------------- | ---------------------------------------------------------- |
-| `mcp.servers.allow` | IDs von `mcp.servers.*` | Jeder konfigurierte MCP-Server in einer Positivliste enthalten sein muss. |
-| `mcp.servers.deny`  | IDs von `mcp.servers.*` | Bestimmte konfigurierte MCP-Server-IDs verweigert werden sollen.                   |
+| Policy-Feld        | Beobachteter Zustand | Verwendung                                                             |
+| ------------------ | --------------------- | ---------------------------------------------------------------------- |
+| `mcp.servers.allow` | IDs unter `mcp.servers.*` | Verlangen, dass jeder konfigurierte MCP-Server in einer Positivliste enthalten ist. |
+| `mcp.servers.deny`  | IDs unter `mcp.servers.*` | Bestimmte konfigurierte MCP-Server-IDs verbieten.                   |
 
 #### Modell-Provider
 
-| Policy-Feld             | Beobachteter Zustand                                   | Verwenden, wenn                                                                        |
-| ------------------------ | ------------------------------------------------ | ------------------------------------------------------------------------------- |
-| `models.providers.allow` | IDs von `models.providers.*` und ausgewählte Modellreferenzen | Konfigurierte Provider und ausgewählte Modellreferenzen genehmigte Provider verwenden müssen. |
-| `models.providers.deny`  | IDs von `models.providers.*` und ausgewählte Modellreferenzen | Konfigurierte Provider und ausgewählte Modellreferenzen anhand der Provider-ID verweigert werden sollen.               |
+| Policy-Feld              | Beobachteter Zustand                                    | Verwendung                                                                                         |
+| ------------------------ | ------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `models.providers.allow` | IDs unter `models.providers.*` und ausgewählte Modellreferenzen | Verlangen, dass konfigurierte Provider und ausgewählte Modellreferenzen genehmigte Provider verwenden. |
+| `models.providers.deny`  | IDs unter `models.providers.*` und ausgewählte Modellreferenzen | Konfigurierte Provider und ausgewählte Modellreferenzen anhand der Provider-ID verbieten.          |
 
 #### Netzwerk
 
-| Policy-Feld                   | Beobachteter Zustand                      | Verwenden, wenn                                                           |
-| ------------------------------ | ----------------------------------- | ------------------------------------------------------------------ |
-| `network.privateNetwork.allow` | SSRF-Ausnahmen für private Netzwerke | Auf `false` setzen, um zu verlangen, dass der Zugriff auf private Netzwerke deaktiviert bleibt. |
+| Policy-Feld                   | Beobachteter Zustand                      | Verwendung                                                                   |
+| ----------------------------- | ----------------------------------------- | ---------------------------------------------------------------------------- |
+| `network.privateNetwork.allow` | SSRF-Ausweichmöglichkeiten für private Netzwerke | Auf `false` setzen, damit der Zugriff auf private Netzwerke deaktiviert bleiben muss. |
 
-#### Ingress und Kanalzugriff
+#### Eingangs- und Kanalzugriff
 
 | Richtlinienfeld                           | Beobachteter Zustand                                          | Verwenden, wenn                                                        |
-| ----------------------------------------- | -------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| `ingress.session.requireDmScope`          | `session.dmScope`                                              | Ein geprüfter Isolationsbereich für Direktnachrichten erforderlich ist. |
-| `ingress.channels.allowDmPolicies`        | `channels.*.dmPolicy` und ältere DM-Richtlinienfelder für Kanäle | Nur geprüfte Kanalrichtlinien für Direktnachrichten zulässig sein sollen. |
-| `ingress.channels.denyOpenGroups`         | Eingangsrichtlinie für Kanal, Konto und Gruppe                 | Offener Gruppeneingang für konfigurierte Kanäle und Konten verweigert werden soll. |
-| `ingress.channels.requireMentionInGroups` | Konfiguration der Erwähnungssperre für Kanal, Konto, Gruppe, Guild und verschachtelte Ebenen | Erwähnungssperren erforderlich sein sollen, wenn der Gruppeneingang offen oder erwähnungsbeschränkt ist. |
+| ----------------------------------------- | ------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `ingress.session.requireDmScope`          | `session.dmScope`                                             | Ein geprüfter Isolationsbereich für Direktnachrichten erforderlich ist. |
+| `ingress.channels.allowDmPolicies`        | `channels.*.dmPolicy` und veraltete DM-Richtlinienfelder für Kanäle | Nur geprüfte Kanalrichtlinien für Direktnachrichten zulässig sein sollen. |
+| `ingress.channels.denyOpenGroups`         | Eingangsrichtlinie für Kanal, Konto und Gruppe                | Offener Gruppeneingang für konfigurierte Kanäle und Konten verweigert werden soll. |
+| `ingress.channels.requireMentionInGroups` | Konfiguration der Erwähnungssperre für Kanal, Konto, Gruppe, Server und verschachtelte Ebenen | Erwähnungssperren erforderlich sein sollen, wenn der Gruppeneingang offen oder an Erwähnungen gebunden ist. |
 
 #### Gateway
 
-| Richtlinienfeld                        | Beobachteter Zustand                            | Verwenden, wenn                                                                    |
-| -------------------------------------- | ----------------------------------------------- | ---------------------------------------------------------------------------------- |
-| `gateway.exposure.allowNonLoopbackBind` | `gateway.bind`                                 | Auf `false` setzen, um eine Gateway-Bindung an die Loopback-Schnittstelle zu verlangen. |
-| `gateway.exposure.allowTailscaleFunnel` | Tailscale-Serve-/Funnel-Gateway-Sicherheitsstatus | Auf `false` setzen, um eine Exposition über Tailscale Funnel zu verweigern.        |
-| `gateway.auth.requireAuth`              | `gateway.auth.mode`                            | Auf `true` setzen, um deaktivierte Gateway-Authentifizierung abzulehnen.           |
-| `gateway.auth.requireExplicitRateLimit` | `gateway.auth.rateLimit`                       | Auf `true` setzen, um eine explizite Konfiguration der Authentifizierungs-Ratenbegrenzung zu verlangen. |
-| `gateway.controlUi.allowInsecure`       | Unsichere Authentifizierungs-, Geräte- oder Ursprungsschalter der Control UI | Auf `false` setzen, um Schalter für eine unsichere Exposition der Control UI zu verweigern. |
-| `gateway.remote.allow`                  | Remote-Gateway-Modus/-Konfiguration            | Auf `false` setzen, um den Remote-Gateway-Modus zu verweigern.                     |
-| `gateway.http.denyEndpoints`            | Gateway-HTTP-API-Endpunkte                     | Endpunkt-IDs wie `chatCompletions` oder `responses` verweigern.                    |
-| `gateway.http.requireUrlAllowlists`      | URL-Abrufeingaben der Gateway-HTTP-API         | Auf `true` setzen, um URL-Zulassungslisten für URL-Abrufeingaben zu verlangen.     |
-| `gateway.nodes.denyCommands`            | `gateway.nodes.denyCommands`                   | Verlangen, dass exakte Node-Befehls-IDs wie `system.run` in der OpenClaw-Konfiguration verweigert werden. |
+| Richtlinienfeld                         | Beobachteter Zustand                                   | Verwenden, wenn                                                                      |
+| --------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| `gateway.exposure.allowNonLoopbackBind` | `gateway.bind`                                         | Auf `false` setzen, um eine Gateway-Bindung an loopback zu verlangen.                |
+| `gateway.exposure.allowTailscaleFunnel` | Gateway-Konfiguration für Tailscale Serve/Funnel       | Auf `false` setzen, um die Offenlegung über Tailscale Funnel zu verweigern.           |
+| `gateway.auth.requireAuth`              | `gateway.auth.mode`                                    | Auf `true` setzen, um deaktivierte Gateway-Authentifizierung abzulehnen.              |
+| `gateway.auth.requireExplicitRateLimit` | `gateway.auth.rateLimit`                               | Auf `true` setzen, um eine explizite Konfiguration der Authentifizierungsratenbegrenzung zu verlangen. |
+| `gateway.controlUi.allowInsecure`       | Unsichere Authentifizierungs-, Geräte- und Ursprungsschalter der Steuerungsoberfläche | Auf `false` setzen, um Schalter für die unsichere Offenlegung der Steuerungsoberfläche zu verweigern. |
+| `gateway.remote.allow`                  | Remote-Gateway-Modus/-Konfiguration                    | Auf `false` setzen, um den Remote-Gateway-Modus zu verweigern.                        |
+| `gateway.http.denyEndpoints`            | HTTP-API-Endpunkte des Gateways                         | Endpunkt-IDs wie `chatCompletions` oder `responses` verweigern.                       |
+| `gateway.http.requireUrlAllowlists`     | URL-Abrufeingaben der Gateway-HTTP-API                 | Auf `true` setzen, um URL-Zulassungslisten für URL-Abrufeingaben zu verlangen.        |
+| `gateway.nodes.denyCommands`            | `gateway.nodes.denyCommands`                           | Verlangen, dass exakte Node-Befehls-IDs wie `system.run` in der OpenClaw-Konfiguration verweigert werden. |
 
-`gateway.nodes.denyCommands` ist eine exakte, groß-/kleinschreibungssensitive
-Verweigerungs-Obermengenregel. Verwenden Sie sie, wenn die Richtlinie nachweisen
-muss, dass privilegierte Node-Befehle durch die OpenClaw-Konfiguration explizit
-verweigert werden. Eine Bereitstellung, die einen privilegierten Node-Befehl
-absichtlich zulässt, sollte nach der Prüfung `policy.jsonc` aktualisieren,
-anstatt sich ausschließlich auf `gateway.nodes.allowCommands` zu verlassen.
+`gateway.nodes.denyCommands` ist eine exakte, zwischen Groß- und Kleinschreibung unterscheidende Verweigerungs-Obermengenregel.
+Verwenden Sie sie, wenn die Richtlinie nachweisen muss, dass privilegierte Node-Befehle ausdrücklich
+durch die OpenClaw-Konfiguration verweigert werden. Eine Bereitstellung, die absichtlich einen privilegierten
+Node-Befehl zulässt, sollte nach einer Prüfung `policy.jsonc` aktualisieren, statt sich
+allein auf `gateway.nodes.allowCommands` zu verlassen.
 
 #### Agent-Arbeitsbereich
 
-| Richtlinienfeld                  | Beobachteter Zustand                                                                 | Verwenden, wenn                                                                           |
-| -------------------------------- | ------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
+| Richtlinienfeld                  | Beobachteter Zustand                                                                 | Verwenden, wenn                                                                          |
+| -------------------------------- | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
 | `agents.workspace.allowedAccess` | `agents.defaults.sandbox.workspaceAccess` und `agents.list[].sandbox.workspaceAccess` | Nur Sandbox-Arbeitsbereichszugriffswerte wie `none` oder `ro` zulässig sein sollen.       |
-| `agents.workspace.denyTools`     | Globale und agentspezifische Konfiguration zur Verweigerung von Tools                | Mutations-Tools (`exec`, `process`, `write`, `edit`, `apply_patch`) verweigert werden müssen. |
+| `agents.workspace.denyTools`     | Globale und agentspezifische Konfiguration zur Werkzeugverweigerung                  | Mutationswerkzeuge (`exec`, `process`, `write`, `edit`, `apply_patch`) verweigert werden müssen. |
 
-#### Sandbox-Sicherheitsstatus
+#### Sandbox-Sicherheitskonfiguration
 
-| Richtlinienfeld                                      | Beobachteter Zustand                                    | Verwenden, wenn                                                    |
-| ---------------------------------------------------- | ------------------------------------------------------- | ------------------------------------------------------------------ |
-| `sandbox.requireMode`                                 | `agents.defaults.sandbox.mode` und agentspezifischer Modus | Nur geprüfte Sandbox-Modi wie `all` oder `non-main` zulässig sein sollen. |
-| `sandbox.allowBackends`                               | `agents.defaults.sandbox.backend` und agentspezifisches Backend | Nur geprüfte Sandbox-Backends wie `docker` zulässig sein sollen. |
-| `sandbox.containers.denyHostNetwork`                  | Netzwerkmodus einer containerbasierten Sandbox/eines containerbasierten Browsers | Der Host-Netzwerkmodus verweigert werden soll. |
-| `sandbox.containers.denyContainerNamespaceJoin`       | Netzwerkmodus einer containerbasierten Sandbox/eines containerbasierten Browsers | Der Beitritt zum Netzwerk-Namespace eines anderen Containers verweigert werden soll. |
-| `sandbox.containers.requireReadOnlyMounts`            | Einbindungsmodus einer containerbasierten Sandbox/eines containerbasierten Browsers | Schreibgeschützte Einbindungen erforderlich sein sollen. |
-| `sandbox.containers.denyContainerRuntimeSocketMounts` | Einbindungsziele einer containerbasierten Sandbox/eines containerbasierten Browsers | Einbindungen von Container-Runtime-Sockets verweigert werden sollen. |
-| `sandbox.containers.denyUnconfinedProfiles`           | Sicherheitsstatus des Container-Sicherheitsprofils      | Uneingeschränkte Container-Sicherheitsprofile verweigert werden sollen. |
-| `sandbox.browser.requireCdpSourceRange`                | CDP-Quellbereich des Sandbox-Browsers                   | Für die CDP-Exposition des Browsers ein Quellbereich angegeben werden muss. |
+| Richtlinienfeld                                      | Beobachteter Zustand                                    | Verwenden, wenn                                                  |
+| ---------------------------------------------------- | ------------------------------------------------------- | ---------------------------------------------------------------- |
+| `sandbox.requireMode`                                | `agents.defaults.sandbox.mode` und agentspezifischer Modus | Nur geprüfte Sandbox-Modi wie `all` oder `non-main` zulässig sein sollen. |
+| `sandbox.allowBackends`                              | `agents.defaults.sandbox.backend` und agentspezifisches Backend | Nur geprüfte Sandbox-Backends wie `docker` zulässig sein sollen. |
+| `sandbox.containers.denyHostNetwork`                 | Netzwerkmodus der containerbasierten Sandbox/des Browsers | Der Host-Netzwerkmodus verweigert werden soll.                   |
+| `sandbox.containers.denyContainerNamespaceJoin`      | Netzwerkmodus der containerbasierten Sandbox/des Browsers | Der Beitritt zum Netzwerk-Namensraum eines anderen Containers verweigert werden soll. |
+| `sandbox.containers.requireReadOnlyMounts`           | Einbindungsmodus der containerbasierten Sandbox/des Browsers | Einbindungen schreibgeschützt sein müssen.                       |
+| `sandbox.containers.denyContainerRuntimeSocketMounts` | Einbindungsziele der containerbasierten Sandbox/des Browsers | Einbindungen von Container-Runtime-Sockets verweigert werden sollen. |
+| `sandbox.containers.denyUnconfinedProfiles`          | Konfiguration der Container-Sicherheitsprofile          | Uneingeschränkte Container-Sicherheitsprofile verweigert werden sollen. |
+| `sandbox.browser.requireCdpSourceRange`              | CDP-Quellbereich des Sandbox-Browsers                    | Die Browser-CDP-Offenlegung einen Quellbereich deklarieren muss. |
 
-Die Richtlinie behandelt einen fehlenden Wert für `sandbox.mode` als dessen
-impliziten Standardwert `off`, sodass `sandbox.requireMode` eine neue oder nicht
-konfigurierte Sandbox als außerhalb einer Zulassungsliste wie `["all"]` meldet.
+Die Richtlinie behandelt ein fehlendes `sandbox.mode` als dessen impliziten Standardwert `off`, sodass
+`sandbox.requireMode` eine neue oder nicht konfigurierte Sandbox als außerhalb einer
+Zulassungsliste wie `["all"]` meldet.
 
 #### Datenverarbeitung
 
-| Richtlinienfeld                                     | Beobachteter Zustand                                                                | Verwenden, wenn                                                              |
-| --------------------------------------------------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| `dataHandling.sensitiveLogging.requireRedaction`    | `logging.redactSensitive`                                                           | Auf `true` setzen, um `logging.redactSensitive: "off"` abzulehnen.            |
+| Richtlinienfeld                                    | Beobachteter Zustand                                                                | Verwenden, wenn                                                        |
+| -------------------------------------------------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `dataHandling.sensitiveLogging.requireRedaction`    | `logging.redactSensitive`                                                           | Auf `true` setzen, um `logging.redactSensitive: "off"` abzulehnen.      |
 | `dataHandling.telemetry.denyContentCapture`         | `diagnostics.otel.captureContent`                                                   | Auf `true` setzen, um die Erfassung von Inhalten durch Telemetrie abzulehnen. |
 | `dataHandling.retention.requireSessionMaintenance`  | `session.maintenance.mode`                                                          | Auf `true` setzen, um den effektiven Sitzungswartungsmodus `enforce` zu verlangen. |
 | `dataHandling.memory.denySessionTranscriptIndexing` | `memory.qmd.sessions.enabled` und `agents.*.memorySearch.experimental.sessionMemory` | Auf `true` setzen, um die Indizierung von Sitzungstranskripten im Speicher abzulehnen. |
 
 #### Geheimnisse
 
-| Richtlinienfeld                   | Beobachteter Zustand                                       | Verwenden, wenn                                                                  |
-| --------------------------------- | ---------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `secrets.requireManagedProviders` | SecretRefs der Konfiguration und Deklarationen unter `secrets.providers.*` | Auf `true` setzen, damit SecretRefs auf deklarierte Provider verweisen müssen.   |
-| `secrets.denySources`             | Quellen von Geheimnis-Providern und SecretRef-Quellen      | Quellen wie `exec`, `file` oder einen anderen konfigurierten Quellennamen verweigern. |
-| `secrets.allowInsecureProviders`  | Sicherheitsstatus-Schalter für unsichere Geheimnis-Provider | Auf `false` setzen, um Provider abzulehnen, die einen unsicheren Sicherheitsstatus aktivieren. |
+| Richtlinienfeld                    | Beobachteter Zustand                                        | Verwenden, wenn                                                            |
+| ---------------------------------- | ----------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `secrets.requireManagedProviders`  | SecretRefs der Konfiguration und Deklarationen unter `secrets.providers.*` | Auf `true` setzen, damit SecretRefs auf deklarierte Provider verweisen müssen. |
+| `secrets.denySources`              | Quellen von Geheimnis-Providern und SecretRef-Quellen       | Quellen wie `exec`, `file` oder einen anderen konfigurierten Quellnamen verweigern. |
+| `secrets.allowInsecureProviders`   | Unsichere Konfigurationsflags von Geheimnis-Providern       | Auf `false` setzen, um Provider abzulehnen, die eine unsichere Konfiguration aktivieren. |
 
-#### Exec-Genehmigungen
+#### Ausführungsgenehmigungen
 
-Prüfungen der Exec-Genehmigungen lesen das Runtime-Artefakt
-`exec-approvals.json`: standardmäßig `~/.openclaw/exec-approvals.json` oder
+Prüfungen der Ausführungsgenehmigungen lesen das Laufzeitartefakt `exec-approvals.json`:
+standardmäßig `~/.openclaw/exec-approvals.json` oder
 `$OPENCLAW_STATE_DIR/exec-approvals.json`, wenn `OPENCLAW_STATE_DIR` gesetzt ist.
-Sicherheitsstatusregeln unter `execApprovals.defaults.*` oder
-`execApprovals.agents.*` erfordern lesbare Artefaktnachweise; ein fehlendes oder
-ungültiges Artefakt wird als nicht beobachtbarer Nachweis gemeldet und nicht
-nach bestem Bemühen als bestanden gewertet. Sobald es lesbar ist, übernehmen
-ausgelassene Felder die Runtime-Standardwerte: Ein fehlender Wert für
-`defaults.security` ist `full`, und eine fehlende Agent-Sicherheit übernimmt
-diesen Standardwert. Der Nachweis umfasst `defaults`, `agents.*`,
-`agents.*.allowlist[].pattern`, optional `argPattern`, den effektiven
-`autoAllowSkills`-Sicherheitsstatus und die Eintragsquelle – niemals
-Socket-Pfad/-Token, `commandText`, `lastUsedCommand`, aufgelöste Pfade oder
-Zeitstempel.
+Konfigurationsregeln unter `execApprovals.defaults.*` oder `execApprovals.agents.*`
+erfordern lesbare Artefaktnachweise; ein fehlendes oder ungültiges Artefakt wird als
+nicht beobachtbarer Nachweis gemeldet und nicht nach bestem Bemühen akzeptiert. Sobald es lesbar ist, übernehmen
+ausgelassene Felder die Laufzeitstandardwerte: Ein fehlendes `defaults.security` ist `full`, und
+eine fehlende Agent-Sicherheitseinstellung übernimmt diesen Standardwert. Der Nachweis umfasst `defaults`,
+`agents.*`, `agents.*.allowlist[].pattern`, das optionale `argPattern`, die effektive
+`autoAllowSkills`-Konfiguration und die Eintragsquelle — niemals Socket-Pfad/-Token,
+`commandText`, `lastUsedCommand`, aufgelöste Pfade oder Zeitstempel.
 
 | Richtlinienfeld                              | Beobachteter Zustand                                                                  | Verwenden, wenn                                                                         |
 | -------------------------------------------- | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| `execApprovals.requireFile`                  | Pfad der aktiven Runtime-Datei `exec-approvals.json`                                  | Auf `true` setzen, damit das Genehmigungsartefakt vorhanden und syntaktisch gültig sein muss. |
-| `execApprovals.defaults.allowSecurity`       | `defaults.security`, mit dem Standardwert `full`                                      | Nur genehmigte Standardsicherheitsmodi für Genehmigungen zulässig sein sollen.          |
-| `execApprovals.agents.allowSecurity`         | `agents.*.security`, übernimmt die Standardwerte                                      | Nur genehmigte effektive agentspezifische Sicherheitsmodi für Genehmigungen zulässig sein sollen. |
-| `execApprovals.agents.allowAutoAllowSkills`  | `defaults.autoAllowSkills` und `agents.*.autoAllowSkills`, übernehmen Runtime-Standardwerte | Auf `false` setzen, um strikte manuelle Zulassungslisten ohne implizite CLI-Genehmigung für Skills zu verlangen. |
-| `execApprovals.agents.allowlist.expected`    | Zusammengefasste Muster- und optionale argPattern-Einträge aus `agents.*.allowlist[]` | Die Genehmigungs-Zulassungsliste mit dem geprüften Mustersatz übereinstimmen muss.       |
+| `execApprovals.requireFile`                  | Pfad der aktiven Laufzeitdatei `exec-approvals.json`                                  | Auf `true` setzen, damit das Genehmigungsartefakt vorhanden und analysierbar sein muss.  |
+| `execApprovals.defaults.allowSecurity`       | `defaults.security`, mit Standardwert `full`                                          | Nur genehmigte Standardsicherheitsmodi für Genehmigungen zulässig sein sollen.           |
+| `execApprovals.agents.allowSecurity`         | `agents.*.security`, übernimmt Standardwerte                                          | Nur genehmigte effektive agentspezifische Sicherheitsmodi für Genehmigungen zulässig sein sollen. |
+| `execApprovals.agents.allowAutoAllowSkills`  | `defaults.autoAllowSkills` und `agents.*.autoAllowSkills`, übernehmen Laufzeitstandardwerte | Auf `false` setzen, um strikte manuelle Zulassungslisten ohne implizite CLI-Genehmigung für Skills zu verlangen. |
+| `execApprovals.agents.allowlist.expected`    | Zusammengefasste Einträge für Muster und optionales argPattern aus `agents.*.allowlist[]` | Verlangen, dass die Genehmigungs-Zulassungsliste dem geprüften Mustersatz entspricht.    |
 
-Beispiel: Das Genehmigungsartefakt verlangen, freizügige Standardwerte
-verweigern und nur den geprüften Sicherheitsstatus für Exec-Genehmigungen
-ausgewählter Agents zulassen.
+Beispiel: Das Genehmigungsartefakt verlangen, freizügige Standardwerte verweigern und
+nur die geprüfte Konfiguration der Ausführungsgenehmigungen für ausgewählte Agenten zulassen.
 
 ```jsonc
 {
@@ -436,7 +386,7 @@ ausgewählter Agents zulassen.
         "agents": {
           // Ausgewählte Agenten dürfen die geprüfte Haltung "allowlist" verwenden, jedoch nicht "full".
           "allowSecurity": ["allowlist"],
-          // false bedeutet, dass Skill-CLIs in der geprüften Positivliste enthalten sein müssen,
+          // false bedeutet, dass Skill-CLIs in der geprüften Zulassungsliste aufgeführt sein müssen,
           // statt durch autoAllowSkills implizit genehmigt zu werden.
           "allowAutoAllowSkills": false,
           "allowlist": {
@@ -457,33 +407,33 @@ ausgewählter Agents zulassen.
 
 #### Authentifizierungsprofile
 
-| Richtlinienfeld                 | Beobachteter Zustand                           | Verwendung                                                                                                      |
-| ------------------------------- | ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `auth.profiles.requireMetadata` | Provider- und Modusmetadaten von `auth.profiles.*` | Metadatenschlüssel wie `provider` und `mode` für Authentifizierungsprofile in der Konfiguration vorschreiben. |
-| `auth.profiles.allowModes`      | `auth.profiles.*.mode`                         | Nur unterstützte Modi für Authentifizierungsprofile wie `api_key`, `aws-sdk`, `oauth` oder `token` zulassen.  |
+| Richtlinienfeld                 | Beobachteter Zustand                         | Verwenden, wenn                                                                                         |
+| ------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `auth.profiles.requireMetadata` | Provider- und Modusmetadaten von `auth.profiles.*` | Metadatenschlüssel wie `provider` und `mode` für Authentifizierungsprofile in der Konfiguration erforderlich sein sollen. |
+| `auth.profiles.allowModes`      | `auth.profiles.*.mode`                       | Nur unterstützte Modi für Authentifizierungsprofile wie `api_key`, `aws-sdk`, `oauth` oder `token` zugelassen werden sollen. |
 
 #### Werkzeugmetadaten
 
-| Richtlinienfeld         | Beobachteter Zustand                  | Verwendung                                                                                          |
-| ----------------------- | ------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| `tools.requireMetadata` | Verwaltete `TOOLS.md`-Deklarationen   | Für verwaltete Werkzeuge Metadatenschlüssel wie `risk`, `sensitivity` oder `owner` vorschreiben.   |
+| Richtlinienfeld         | Beobachteter Zustand                    | Verwenden, wenn                                                                                          |
+| ----------------------- | --------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `tools.requireMetadata` | Verwaltete Deklarationen in `TOOLS.md`  | Verwaltete Werkzeuge Metadatenschlüssel wie `risk`, `sensitivity` oder `owner` deklarieren müssen.       |
 
 #### Werkzeughaltung
 
-| Richtlinienfeld                 | Beobachteter Zustand                                          | Verwendung                                                                                                                         |
-| ------------------------------- | ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `tools.profiles.allow`          | `tools.profile` und `agents.list[].tools.profile`             | Nur Werkzeugprofil-IDs wie `minimal`, `messaging` oder `coding` zulassen.                                                         |
-| `tools.fs.requireWorkspaceOnly` | `tools.fs.workspaceOnly` und agentenspezifische `tools.fs`-Überschreibungen | Auf `true` setzen, um für Dateisystemwerkzeuge eine ausschließlich auf den Arbeitsbereich beschränkte Haltung vorzuschreiben. |
-| `tools.exec.allowSecurity`      | `tools.exec.security` und agentenspezifische Ausführungssicherheit | Nur Sicherheitsmodi für die Ausführung wie `deny` oder `allowlist` zulassen.                                                   |
-| `tools.exec.requireAsk`         | `tools.exec.ask` und agentenspezifischer Abfragemodus für die Ausführung | Eine Genehmigungshaltung wie `always` vorschreiben.                                                                          |
-| `tools.exec.allowHosts`         | `tools.exec.host` und agentenspezifisches Ausführungs-Host-Routing | Nur Routingmodi für Ausführungs-Hosts wie `sandbox` zulassen.                                                                |
-| `tools.elevated.allow`          | `tools.elevated.enabled` und agentenspezifische privilegierte Haltung | Auf `false` setzen, damit der privilegierte Werkzeugmodus deaktiviert bleiben muss.                                          |
-| `tools.alsoAllow.expected`      | `tools.alsoAllow` und agentenspezifisches `tools.alsoAllow`   | Exakte `alsoAllow`-Einträge vorschreiben und fehlende oder unerwartete zusätzliche Werkzeugfreigaben melden.                        |
-| `tools.denyTools`               | `tools.deny` und `agents.list[].tools.deny`                   | Vorschreiben, dass konfigurierte Werkzeug-Sperrlisten Werkzeug-IDs oder Gruppen wie `group:runtime` und `group:fs` enthalten.       |
+| Richtlinienfeld                 | Beobachteter Zustand                                        | Verwenden, wenn                                                                                                   |
+| ------------------------------- | ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `tools.profiles.allow`          | `tools.profile` und `agents.list[].tools.profile`           | Nur Werkzeugprofil-IDs wie `minimal`, `messaging` oder `coding` zugelassen werden sollen.                        |
+| `tools.fs.requireWorkspaceOnly` | `tools.fs.workspaceOnly` und agentenspezifische Überschreibungen von `tools.fs` | Auf `true` setzen, um eine auf den Arbeitsbereich beschränkte Haltung der Dateisystemwerkzeuge zu verlangen. |
+| `tools.exec.allowSecurity`      | `tools.exec.security` und agentenspezifische Ausführungssicherheit | Nur Sicherheitsmodi für die Ausführung wie `deny` oder `allowlist` zugelassen werden sollen.               |
+| `tools.exec.requireAsk`         | `tools.exec.ask` und agentenspezifischer Bestätigungsmodus für die Ausführung | Eine Bestätigungshaltung wie `always` erforderlich sein soll.                                            |
+| `tools.exec.allowHosts`         | `tools.exec.host` und agentenspezifisches Host-Routing für die Ausführung | Nur Host-Routing-Modi für die Ausführung wie `sandbox` zugelassen werden sollen.                           |
+| `tools.elevated.allow`          | `tools.elevated.enabled` und agentenspezifische privilegierte Haltung | Auf `false` setzen, damit der privilegierte Werkzeugmodus deaktiviert bleiben muss.                        |
+| `tools.alsoAllow.expected`      | `tools.alsoAllow` und agentenspezifisches `tools.alsoAllow` | Exakte `alsoAllow`-Einträge erforderlich sein und fehlende oder unerwartete zusätzliche Werkzeugfreigaben gemeldet werden sollen. |
+| `tools.denyTools`               | `tools.deny` und `agents.list[].tools.deny`                 | Konfigurierte Werkzeug-Sperrlisten Werkzeug-IDs oder Gruppen wie `group:runtime` und `group:fs` enthalten müssen. |
 
 ## Prüfungen ausführen
 
-Führen Sie während der Erstellung ausschließlich Richtlinienprüfungen aus:
+Führen Sie beim Erstellen ausschließlich Richtlinienprüfungen aus:
 
 ```bash
 openclaw policy check
@@ -503,15 +453,15 @@ openclaw policy compare --baseline official.policy.jsonc --policy policy.jsonc -
 ```
 
 `policy compare` prüft die Syntax einer Richtliniendatei gegen die Syntax einer anderen Richtliniendatei;
-Laufzeitzustand, Nachweise, Anmeldedaten oder Geheimnisse werden nicht geprüft. Es verwendet dieselben
-Regelmetadaten, die bereichsbezogene Überlagerungen steuern: Positivlisten müssen gleich bleiben oder
-enger werden, Sperrlisten müssen gleich bleiben oder weiter werden, vorgeschriebene boolesche Werte müssen
+Laufzeitzustand, Nachweise, Anmeldedaten oder Geheimnisse werden nicht untersucht. Dabei werden dieselben
+Regelmetadaten verwendet, die bereichsbezogene Überlagerungen steuern: Zulassungslisten müssen gleich bleiben
+oder enger werden, Sperrlisten müssen gleich bleiben oder weiter werden, erforderliche boolesche Werte müssen
 ihren Wert beibehalten, geordnete Zeichenfolgen dürfen sich nur zum strengeren Ende der
 konfigurierten Reihenfolge bewegen und exakte Listen müssen übereinstimmen. Die Baseline kann eine
-von der Organisation erstellte Richtlinie sein; die geprüfte Richtlinie darf strengere Werte oder
-zusätzliche Regeln hinzufügen. Eine geprüfte Regel auf oberster Ebene kann eine bereichsbezogene Baseline-Regel erfüllen, wenn
-sie genauso restriktiv oder restriktiver ist. Bereichsnamen müssen zwischen den
-Dateien nicht übereinstimmen; der Vergleich erfolgt anhand von Selektor (`agentIds`/`channelIds`) und Feld.
+von einer Organisation erstellte Richtlinie sein; die geprüfte Richtlinie darf strengere Werte oder
+zusätzliche Regeln hinzufügen. Eine geprüfte Regel auf oberster Ebene kann eine bereichsbezogene Baseline-Regel
+erfüllen, wenn sie gleich restriktiv oder restriktiver ist. Bereichsnamen müssen zwischen den
+Dateien nicht übereinstimmen; der Vergleich wird anhand des Selektors (`agentIds`/`channelIds`) und des Felds zugeordnet.
 
 Erfolgreicher Vergleich (`--json`):
 
@@ -525,8 +475,8 @@ Erfolgreicher Vergleich (`--json`):
 }
 ```
 
-Die erfolgreiche Ausgabe von `policy check --json` enthält stabile Hashes, die ein Betreiber oder
-Supervisor aufzeichnen kann:
+Die Ausgabe eines erfolgreichen `policy check --json` enthält stabile Hashes, die ein Betreiber oder
+eine Aufsicht aufzeichnen kann:
 
 ```json
 {
@@ -572,20 +522,20 @@ Die Richtlinienkonfiguration befindet sich unter `plugins.entries.policy.config`
 }
 ```
 
-| Einstellung               | Zweck                                                                                   |
-| ------------------------- | --------------------------------------------------------------------------------------- |
-| `enabled`                 | Richtlinienprüfungen aktivieren, noch bevor `policy.jsonc` vorhanden ist.               |
+| Einstellung               | Zweck                                                                    |
+| ------------------------- | ------------------------------------------------------------------------ |
+| `enabled`                 | Richtlinienprüfungen aktivieren, noch bevor `policy.jsonc` vorhanden ist. |
 | `workspaceRepairs`        | `doctor --fix` erlauben, richtlinienverwaltete Arbeitsbereichseinstellungen zu bearbeiten. |
-| `expectedHash`            | Optionale Hash-Sperre für das genehmigte Richtlinienartefakt.                           |
-| `expectedAttestationHash` | Optionale Hash-Sperre für die zuletzt akzeptierte erfolgreiche Richtlinienprüfung.      |
-| `path`                    | Relativ zum Arbeitsbereich angegebener Speicherort des Richtlinienartefakts.            |
+| `expectedHash`            | Optionale Hash-Sperre für das genehmigte Richtlinienartefakt.            |
+| `expectedAttestationHash` | Optionale Hash-Sperre für die zuletzt akzeptierte erfolgreiche Richtlinienprüfung. |
+| `path`                    | Relativ zum Arbeitsbereich angegebener Speicherort des Richtlinienartefakts. |
 
 Setzen Sie `plugins.entries.policy.config.enabled` auf `false`, um Richtlinienprüfungen
 für einen Arbeitsbereich zu deaktivieren, während das Plugin installiert bleibt.
 
 ## Richtlinienzustand akzeptieren
 
-Beispielhafte JSON-Ausgabe:
+Beispielausgabe im JSON-Format:
 
 ```json
 {
@@ -716,38 +666,38 @@ Beispielhafte JSON-Ausgabe:
 ```
 
 `attestation.policy.hash` identifiziert das erstellte Regelartefakt. `evidence`
-zeichnet den von den Prüfungen verwendeten beobachteten OpenClaw-Zustand auf, und
+zeichnet den beobachteten OpenClaw-Zustand auf, den die Prüfungen verwendet haben, und
 `workspace.hash` identifiziert diese Nachweisnutzlast. `findingsHash` identifiziert
-die exakte Feststellungsmenge. `checkedAt` zeichnet auf, wann die Prüfung ausgeführt wurde.
+den exakten Satz von Feststellungen. `checkedAt` zeichnet auf, wann die Prüfung ausgeführt wurde.
 `attestationHash` identifiziert die stabile Aussage (Richtlinienhash, Nachweishash,
 Feststellungshash und erfolgreicher/fehlerhafter Zustand) und schließt `checkedAt` bewusst aus,
-sodass derselbe Richtlinienzustand immer denselben Attestierungshash erzeugt. Zusammen
+sodass derselbe Richtlinienzustand stets denselben Attestierungshash erzeugt. Zusammen
 bilden diese vier Werte das Audit-Tupel für eine Richtlinienprüfung.
 
-Wenn ein Gateway oder Supervisor Richtlinien verwendet, um eine Laufzeitaktion zu blockieren, zu genehmigen oder mit Anmerkungen zu versehen,
-sollte der Attestierungshash der letzten erfolgreichen
-Prüfung aufgezeichnet werden. `checkedAt` bleibt für Audit-Protokolle in der JSON-Ausgabe enthalten, ist jedoch nicht Teil des
-stabilen Hashes.
+Wenn ein Gateway oder eine Aufsicht Richtlinien verwendet, um eine Laufzeitaktion zu blockieren,
+zu genehmigen oder mit Anmerkungen zu versehen, sollte der Attestierungshash der letzten
+erfolgreichen Prüfung aufgezeichnet werden. `checkedAt` verbleibt für Auditprotokolle in der JSON-Ausgabe,
+ist jedoch nicht Teil des stabilen Hashes.
 
-Lebenszyklus zum Akzeptieren des Richtlinienzustands:
+Lebenszyklus für die Akzeptanz eines Richtlinienzustands:
 
 1. Erstellen oder prüfen Sie `policy.jsonc`.
 2. Führen Sie `openclaw policy check --json` aus.
-3. Wenn die Prüfung erfolgreich ist, zeichnen Sie `attestation.policy.hash` als `expectedHash` auf.
+3. Zeichnen Sie bei erfolgreicher Prüfung `attestation.policy.hash` als `expectedHash` auf.
 4. Zeichnen Sie `attestation.attestationHash` als `expectedAttestationHash` auf.
-5. Führen Sie `openclaw doctor --lint` in CI- oder Release-Gates erneut aus.
+5. Führen Sie `openclaw doctor --lint` erneut in CI- oder Freigabeprüfungen aus.
 
-Wenn sich Richtlinienregeln absichtlich ändern, aktualisieren Sie beide akzeptierten Hashes anhand einer
-sauberen Prüfung. Wenn sich nur die Workspace-Einstellungen ändern (die Richtlinie bleibt gleich),
+Wenn Richtlinienregeln absichtlich geändert werden, aktualisieren Sie beide akzeptierten Hashes anhand einer
+sauberen Prüfung. Wenn sich nur Workspace-Einstellungen ändern (die Richtlinie bleibt unverändert),
 ändert sich normalerweise nur `expectedAttestationHash`.
 
-Das Aktivieren oder Aktualisieren von `agents.workspace`-Regeln fügt dem Workspace-Hash
-und dem Attestierungs-Hash `agentWorkspace`-Nachweise hinzu. Prüfen Sie die neuen Nachweise und
-aktualisieren Sie nach der Aktivierung die akzeptierten Attestierungs-Hashes. Das Aktivieren oder Aktualisieren
-von Regeln für die Tool-Sicherheitskonfiguration fügt auf dieselbe Weise `toolPosture`-Nachweise hinzu.
+Durch Aktivieren oder Aktualisieren von `agents.workspace`-Regeln werden `agentWorkspace`-Nachweise
+zum Workspace-Hash und zum Attestierungs-Hash hinzugefügt. Prüfen Sie die neuen Nachweise und
+aktualisieren Sie nach der Aktivierung die akzeptierten Attestierungs-Hashes. Durch Aktivieren oder Aktualisieren
+von Regeln für die Tool-Sicherheitskonfiguration werden auf dieselbe Weise `toolPosture`-Nachweise hinzugefügt.
 
-`openclaw policy watch` führt die Prüfung erneut aus und meldet, wenn die aktuellen Nachweise
-nicht mehr mit `expectedAttestationHash` übereinstimmen:
+`openclaw policy watch` führt die Prüfung erneut aus und meldet, wenn die aktuellen Nachweise nicht
+mehr mit `expectedAttestationHash` übereinstimmen:
 
 ```bash
 openclaw policy watch --json
@@ -757,90 +707,90 @@ Verwenden Sie `--once` in CI oder Skripten, die eine einmalige Abweichungsprüfu
 `--once` erfolgt die Abfrage standardmäßig alle zwei Sekunden. Verwenden Sie `--interval-ms`, um
 das Intervall zu ändern.
 
-## Feststellungen
+## Befunde
 
-| Prüf-ID                                                   | Feststellung                                                                                                        |
-| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `policy/policy-jsonc-missing`                             | Die Richtlinie ist aktiviert, aber `policy.jsonc` fehlt.                                                            |
-| `policy/policy-jsonc-invalid`                             | Die Richtlinie kann nicht analysiert werden oder enthält fehlerhafte Regeleinträge.                                 |
-| `policy/policy-hash-mismatch`                             | Die Richtlinie stimmt nicht mit dem konfigurierten `expectedHash` überein.                                           |
-| `policy/attestation-hash-mismatch`                        | Die aktuellen Richtliniennachweise stimmen nicht mehr mit der akzeptierten Attestierung überein.                    |
-| `policy/policy-conformance-invalid`                       | Eine Basisrichtliniendatei oder eine geprüfte Richtliniendatei weist eine ungültige Vergleichssyntax auf.           |
-| `policy/policy-conformance-missing`                       | In einer geprüften Richtliniendatei fehlt eine Regel, die von der Basisrichtliniendatei vorgeschrieben wird.         |
-| `policy/policy-conformance-weaker`                        | Eine geprüfte Richtliniendatei enthält einen schwächeren Wert als die Basisrichtliniendatei.                        |
-| `policy/channels-denied-provider`                         | Ein aktivierter Kanal entspricht einer Kanal-Ablehnungsregel.                                                       |
-| `policy/mcp-denied-server`                                | Ein konfigurierter MCP-Server wird von der Richtlinie abgelehnt.                                                    |
-| `policy/mcp-unapproved-server`                            | Ein konfigurierter MCP-Server befindet sich außerhalb der Zulassungsliste.                                          |
-| `policy/models-denied-provider`                           | Ein konfigurierter Modell-Provider oder eine Modellreferenz verwendet einen abgelehnten Provider.                   |
-| `policy/models-unapproved-provider`                       | Ein konfigurierter Modell-Provider oder eine Modellreferenz befindet sich außerhalb der Zulassungsliste.            |
-| `policy/network-private-access-enabled`                   | Eine SSRF-Ausnahmeregel für private Netzwerke ist aktiviert, obwohl die Richtlinie sie untersagt.                    |
-| `policy/ingress-dm-policy-unapproved`                     | Eine DM-Richtlinie eines Kanals befindet sich außerhalb der Richtlinien-Zulassungsliste.                             |
-| `policy/ingress-dm-scope-unapproved`                      | `session.dmScope` entspricht nicht dem von der Richtlinie vorgeschriebenen DM-Isolationsbereich.                    |
-| `policy/ingress-open-groups-denied`                       | Eine Kanalgruppenrichtlinie ist `open`, obwohl die Richtlinie offenen Gruppeneingang untersagt.                     |
-| `policy/ingress-group-mention-required`                   | Ein Kanal- oder Gruppeneintrag deaktiviert Erwähnungssperren, obwohl die Richtlinie sie vorschreibt.                 |
-| `policy/gateway-non-loopback-bind`                        | Die Gateway-Bindungskonfiguration erlaubt eine Nicht-Loopback-Exposition, obwohl die Richtlinie sie untersagt.       |
-| `policy/gateway-auth-disabled`                            | Die Gateway-Authentifizierung ist deaktiviert, obwohl die Richtlinie Authentifizierung vorschreibt.                 |
-| `policy/gateway-rate-limit-missing`                       | Die Konfiguration der Gateway-Authentifizierungsratenbegrenzung ist nicht explizit, obwohl die Richtlinie dies verlangt. |
-| `policy/gateway-control-ui-insecure`                      | Schalter für eine unsichere Exposition der Gateway Control UI sind aktiviert.                                      |
-| `policy/gateway-tailscale-funnel`                         | Die Exposition über Gateway Tailscale Funnel ist aktiviert, obwohl die Richtlinie sie untersagt.                    |
-| `policy/gateway-remote-enabled`                           | Der Gateway-Remote-Modus ist aktiv, obwohl die Richtlinie ihn untersagt.                                            |
-| `policy/gateway-http-endpoint-enabled`                    | Ein Gateway-HTTP-API-Endpunkt ist aktiviert, obwohl die Richtlinie ihn untersagt.                                   |
-| `policy/gateway-http-url-fetch-unrestricted`              | Für die URL-Abrufeingabe der Gateway-HTTP-API fehlt eine vorgeschriebene URL-Zulassungsliste.                       |
-| `policy/gateway-node-command-denied`                      | Ein von der Richtlinie abgelehnter Node-Befehl wird von der OpenClaw-Konfiguration nicht abgelehnt.                 |
-| `policy/agents-workspace-access-denied`                   | Der Agent-Sandbox-Modus oder der Workspace-Zugriff befindet sich außerhalb der Richtlinien-Zulassungsliste.         |
-| `policy/agents-tool-not-denied`                           | Eine Agent- oder Standardkonfiguration lehnt ein von der Richtlinie vorgeschriebenes Tool nicht ab.                 |
-| `policy/tools-profile-unapproved`                         | Ein konfiguriertes globales oder agentspezifisches Tool-Profil befindet sich außerhalb der Zulassungsliste.         |
-| `policy/tools-fs-workspace-only-required`                 | Dateisystem-Tools sind nicht mit einer ausschließlich auf den Workspace beschränkten Pfadkonfiguration eingerichtet. |
-| `policy/tools-exec-security-unapproved`                   | Der Exec-Sicherheitsmodus befindet sich außerhalb der Richtlinien-Zulassungsliste.                                  |
-| `policy/tools-exec-ask-unapproved`                        | Der Exec-Abfragemodus befindet sich außerhalb der Richtlinien-Zulassungsliste.                                      |
-| `policy/tools-exec-host-unapproved`                       | Das Exec-Host-Routing befindet sich außerhalb der Richtlinien-Zulassungsliste.                                      |
-| `policy/tools-elevated-enabled`                           | Der erweiterte Tool-Modus ist aktiviert, obwohl die Richtlinie ihn untersagt.                                       |
-| `policy/tools-also-allow-missing`                         | In einer konfigurierten `alsoAllow`-Liste fehlt ein von der Richtlinie vorgeschriebener Eintrag.                    |
-| `policy/tools-also-allow-unexpected`                      | Eine konfigurierte `alsoAllow`-Liste enthält einen von der Richtlinie nicht erwarteten Eintrag.                     |
-| `policy/tools-required-deny-missing`                      | Eine globale oder agentspezifische Tool-Ablehnungsliste enthält ein vorgeschriebenes abgelehntes Tool nicht.        |
-| `policy/sandbox-mode-unapproved`                          | Der Sandbox-Modus befindet sich außerhalb der Richtlinien-Zulassungsliste.                                          |
-| `policy/sandbox-backend-unapproved`                       | Das Sandbox-Backend befindet sich außerhalb der Richtlinien-Zulassungsliste.                                        |
-| `policy/sandbox-container-posture-unobservable`           | Eine Container-Konfigurationsregel ist für ein Backend aktiviert, das sie nicht beobachten kann.                   |
-| `policy/sandbox-container-host-network-denied`            | Eine containerbasierte Sandbox oder ein containerbasierter Browser verwendet den Hostnetzwerkmodus.                |
-| `policy/sandbox-container-namespace-join-denied`          | Eine containerbasierte Sandbox oder ein containerbasierter Browser tritt dem Namespace eines anderen Containers bei. |
-| `policy/sandbox-container-mount-mode-required`            | Eine Einbindung einer containerbasierten Sandbox oder eines containerbasierten Browsers ist nicht schreibgeschützt. |
-| `policy/sandbox-container-runtime-socket-mount`           | Eine Einbindung einer containerbasierten Sandbox oder eines containerbasierten Browsers legt den Container-Runtime-Socket offen. |
-| `policy/sandbox-container-unconfined-profile`             | Das Container-Sandbox-Profil ist uneingeschränkt, obwohl die Richtlinie dies untersagt.                             |
-| `policy/sandbox-browser-cdp-source-range-missing`         | Der CDP-Quellbereich des Sandbox-Browsers fehlt, obwohl die Richtlinie einen vorschreibt.                            |
-| `policy/data-handling-redaction-disabled`                 | Die Schwärzung sensibler Protokolldaten ist deaktiviert, obwohl die Richtlinie sie vorschreibt.                     |
-| `policy/data-handling-telemetry-content-capture`          | Die Erfassung von Telemetrieinhalten ist aktiviert, obwohl die Richtlinie sie untersagt.                            |
-| `policy/data-handling-session-retention-not-enforced`     | Die Wartung der Sitzungsaufbewahrung wird nicht durchgesetzt, obwohl die Richtlinie dies vorschreibt.               |
-| `policy/data-handling-session-transcript-memory-enabled`  | Die Speicherindizierung von Sitzungstranskripten ist aktiviert, obwohl die Richtlinie sie untersagt.                |
-| `policy/secrets-unmanaged-provider`                       | Eine SecretRef der Konfiguration verweist auf einen Provider, der nicht unter `secrets.providers` deklariert ist.   |
-| `policy/secrets-denied-provider-source`                   | Ein Geheimnis-Provider der Konfiguration oder eine SecretRef verwendet eine von der Richtlinie abgelehnte Quelle.   |
-| `policy/secrets-insecure-provider`                        | Ein Geheimnis-Provider aktiviert eine unsichere Konfiguration, obwohl die Richtlinie sie untersagt.                 |
-| `policy/auth-profile-invalid-metadata`                    | In einem Authentifizierungsprofil der Konfiguration fehlen gültige Provider- oder Modusmetadaten.                   |
-| `policy/auth-profile-unapproved-mode`                     | Der Modus eines Authentifizierungsprofils der Konfiguration befindet sich außerhalb der Richtlinien-Zulassungsliste. |
-| `policy/exec-approvals-missing`                           | Die Richtlinie schreibt `exec-approvals.json` vor, aber das Artefakt fehlt.                                         |
-| `policy/exec-approvals-invalid`                           | Das konfigurierte Exec-Genehmigungsartefakt kann nicht analysiert werden.                                           |
-| `policy/exec-approvals-default-security-unapproved`       | Die Standardwerte für Exec-Genehmigungen verwenden einen Sicherheitsmodus außerhalb der Richtlinien-Zulassungsliste. |
-| `policy/exec-approvals-agent-security-unapproved`         | Ein effektiver agentspezifischer Sicherheitsmodus für Exec-Genehmigungen befindet sich außerhalb der Zulassungsliste. |
-| `policy/exec-approvals-auto-allow-skills-enabled`         | Ein Exec-Genehmigungsagent lässt Skills-CLIs implizit automatisch zu, obwohl die Richtlinie dies untersagt.         |
-| `policy/exec-approvals-allowlist-missing`                 | In der Genehmigungs-Zulassungsliste fehlt ein von der Richtlinie vorgeschriebenes Muster.                           |
-| `policy/exec-approvals-allowlist-unexpected`              | Die Genehmigungs-Zulassungsliste enthält ein von der Richtlinie nicht erwartetes Muster.                            |
-| `policy/tools-missing-risk-level`                         | In einer kontrollierten Tool-Deklaration fehlen Risikometadaten.                                                    |
-| `policy/tools-unknown-risk-level`                         | Eine kontrollierte Tool-Deklaration verwendet einen unbekannten Risikowert.                                        |
-| `policy/tools-missing-sensitivity-token`                  | In einer kontrollierten Tool-Deklaration fehlen Sensitivitätsmetadaten.                                             |
-| `policy/tools-missing-owner`                              | In einer kontrollierten Tool-Deklaration fehlen Eigentümermetadaten.                                                |
-| `policy/tools-unknown-sensitivity-token`                  | Eine kontrollierte Tool-Deklaration verwendet einen unbekannten Sensitivitätswert.                                 |
+| Prüf-ID                                                  | Befund                                                                                             |
+| -------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `policy/policy-jsonc-missing`                            | Die Richtlinie ist aktiviert, aber `policy.jsonc` fehlt.                                           |
+| `policy/policy-jsonc-invalid`                            | Die Richtlinie kann nicht geparst werden oder enthält fehlerhafte Regeleinträge.                    |
+| `policy/policy-hash-mismatch`                            | Die Richtlinie stimmt nicht mit dem konfigurierten `expectedHash` überein.                           |
+| `policy/attestation-hash-mismatch`                       | Die aktuellen Richtliniennachweise stimmen nicht mehr mit der akzeptierten Attestierung überein.    |
+| `policy/policy-conformance-invalid`                      | Eine Basis- oder geprüfte Richtliniendatei enthält eine ungültige Vergleichssyntax.                 |
+| `policy/policy-conformance-missing`                      | In einer geprüften Richtliniendatei fehlt eine von der Basisrichtliniendatei verlangte Regel.       |
+| `policy/policy-conformance-weaker`                       | Eine geprüfte Richtliniendatei enthält einen schwächeren Wert als die Basisrichtliniendatei.        |
+| `policy/channels-denied-provider`                        | Ein aktivierter Kanal entspricht einer Kanal-Ablehnungsregel.                                      |
+| `policy/mcp-denied-server`                               | Ein konfigurierter MCP-Server wird von der Richtlinie abgelehnt.                                   |
+| `policy/mcp-unapproved-server`                           | Ein konfigurierter MCP-Server befindet sich außerhalb der Zulassungsliste.                          |
+| `policy/models-denied-provider`                          | Ein konfigurierter Modell-Provider oder eine Modellreferenz verwendet einen abgelehnten Provider.   |
+| `policy/models-unapproved-provider`                      | Ein konfigurierter Modell-Provider oder eine Modellreferenz befindet sich außerhalb der Zulassungsliste. |
+| `policy/network-private-access-enabled`                  | Eine SSRF-Ausnahmeregel für private Netzwerke ist aktiviert, obwohl die Richtlinie sie ablehnt.      |
+| `policy/ingress-dm-policy-unapproved`                    | Eine Direktnachrichtenrichtlinie eines Kanals befindet sich außerhalb der Richtlinien-Zulassungsliste. |
+| `policy/ingress-dm-scope-unapproved`                     | `session.dmScope` entspricht nicht dem von der Richtlinie verlangten Isolationsbereich für Direktnachrichten. |
+| `policy/ingress-open-groups-denied`                      | Eine Kanalgruppenrichtlinie ist `open`, obwohl die Richtlinie offenen Gruppeneingang ablehnt.       |
+| `policy/ingress-group-mention-required`                  | Ein Kanal- oder Gruppeneintrag deaktiviert Erwähnungsschranken, obwohl die Richtlinie sie verlangt. |
+| `policy/gateway-non-loopback-bind`                       | Die Gateway-Bindungskonfiguration erlaubt eine Offenlegung außerhalb von local loopback, obwohl die Richtlinie sie ablehnt. |
+| `policy/gateway-auth-disabled`                           | Die Gateway-Authentifizierung ist deaktiviert, obwohl die Richtlinie sie verlangt.                  |
+| `policy/gateway-rate-limit-missing`                      | Die Konfiguration der Gateway-Authentifizierungsratenbegrenzung ist nicht explizit, obwohl die Richtlinie dies verlangt. |
+| `policy/gateway-control-ui-insecure`                     | Schalter für eine unsichere Offenlegung der Gateway-Steuerungsoberfläche sind aktiviert.            |
+| `policy/gateway-tailscale-funnel`                        | Die Offenlegung über Gateway Tailscale Funnel ist aktiviert, obwohl die Richtlinie sie ablehnt.     |
+| `policy/gateway-remote-enabled`                          | Der Gateway-Remote-Modus ist aktiv, obwohl die Richtlinie ihn ablehnt.                              |
+| `policy/gateway-http-endpoint-enabled`                   | Ein Gateway-HTTP-API-Endpunkt ist aktiviert, obwohl die Richtlinie ihn ablehnt.                     |
+| `policy/gateway-http-url-fetch-unrestricted`             | Für die URL-Abrufeingabe über Gateway HTTP fehlt eine erforderliche URL-Zulassungsliste.             |
+| `policy/gateway-node-command-denied`                     | Ein von der Richtlinie abgelehnter Node-Befehl wird von der OpenClaw-Konfiguration nicht abgelehnt. |
+| `policy/agents-workspace-access-denied`                  | Der Agent-Sandbox-Modus oder Workspace-Zugriff befindet sich außerhalb der Richtlinien-Zulassungsliste. |
+| `policy/agents-tool-not-denied`                          | Eine Agenten- oder Standardkonfiguration lehnt ein von der Richtlinie vorgeschriebenes Tool nicht ab. |
+| `policy/tools-profile-unapproved`                        | Ein konfiguriertes globales oder agentenspezifisches Tool-Profil befindet sich außerhalb der Zulassungsliste. |
+| `policy/tools-fs-workspace-only-required`                | Dateisystem-Tools sind nicht mit einer ausschließlich auf den Workspace beschränkten Pfadkonfiguration eingerichtet. |
+| `policy/tools-exec-security-unapproved`                  | Der Exec-Sicherheitsmodus befindet sich außerhalb der Richtlinien-Zulassungsliste.                   |
+| `policy/tools-exec-ask-unapproved`                       | Der Exec-Abfragemodus befindet sich außerhalb der Richtlinien-Zulassungsliste.                      |
+| `policy/tools-exec-host-unapproved`                      | Das Exec-Host-Routing befindet sich außerhalb der Richtlinien-Zulassungsliste.                      |
+| `policy/tools-elevated-enabled`                          | Der Tool-Modus mit erhöhten Berechtigungen ist aktiviert, obwohl die Richtlinie ihn ablehnt.        |
+| `policy/tools-also-allow-missing`                        | In einer konfigurierten `alsoAllow`-Liste fehlt ein von der Richtlinie verlangter Eintrag.           |
+| `policy/tools-also-allow-unexpected`                     | Eine konfigurierte `alsoAllow`-Liste enthält einen von der Richtlinie nicht erwarteten Eintrag.     |
+| `policy/tools-required-deny-missing`                     | Eine globale oder agentenspezifische Tool-Ablehnungsliste enthält ein zwingend abzulehnendes Tool nicht. |
+| `policy/sandbox-mode-unapproved`                         | Der Sandbox-Modus befindet sich außerhalb der Richtlinien-Zulassungsliste.                           |
+| `policy/sandbox-backend-unapproved`                      | Das Sandbox-Backend befindet sich außerhalb der Richtlinien-Zulassungsliste.                         |
+| `policy/sandbox-container-posture-unobservable`          | Eine Container-Konfigurationsregel ist für ein Backend aktiviert, das sie nicht beobachten kann.    |
+| `policy/sandbox-container-host-network-denied`           | Eine containerbasierte Sandbox oder ein containerbasierter Browser verwendet den Host-Netzwerkmodus. |
+| `policy/sandbox-container-namespace-join-denied`         | Eine containerbasierte Sandbox oder ein containerbasierter Browser tritt dem Namespace eines anderen Containers bei. |
+| `policy/sandbox-container-mount-mode-required`           | Eine Einbindung einer containerbasierten Sandbox oder eines containerbasierten Browsers ist nicht schreibgeschützt. |
+| `policy/sandbox-container-runtime-socket-mount`          | Eine Einbindung einer containerbasierten Sandbox oder eines containerbasierten Browsers legt den Socket der Container-Laufzeit offen. |
+| `policy/sandbox-container-unconfined-profile`            | Das Container-Sandbox-Profil ist unbeschränkt, obwohl die Richtlinie dies ablehnt.                  |
+| `policy/sandbox-browser-cdp-source-range-missing`        | Der CDP-Quellbereich des Sandbox-Browsers fehlt, obwohl die Richtlinie einen verlangt.              |
+| `policy/data-handling-redaction-disabled`                | Die Schwärzung vertraulicher Protokolldaten ist deaktiviert, obwohl die Richtlinie sie verlangt.    |
+| `policy/data-handling-telemetry-content-capture`         | Die Erfassung von Telemetrieinhalten ist aktiviert, obwohl die Richtlinie sie ablehnt.              |
+| `policy/data-handling-session-retention-not-enforced`    | Die Wartung der Sitzungsaufbewahrung wird nicht durchgesetzt, obwohl die Richtlinie dies verlangt.  |
+| `policy/data-handling-session-transcript-memory-enabled` | Die Speicherindizierung von Sitzungstranskripten ist aktiviert, obwohl die Richtlinie sie ablehnt.  |
+| `policy/secrets-unmanaged-provider`                      | Eine SecretRef in der Konfiguration verweist auf einen Provider, der nicht unter `secrets.providers` deklariert ist. |
+| `policy/secrets-denied-provider-source`                  | Ein Secret-Provider oder eine SecretRef in der Konfiguration verwendet eine von der Richtlinie abgelehnte Quelle. |
+| `policy/secrets-insecure-provider`                       | Ein Secret-Provider aktiviert eine unsichere Konfiguration, obwohl die Richtlinie sie ablehnt.      |
+| `policy/auth-profile-invalid-metadata`                   | In einem Authentifizierungsprofil der Konfiguration fehlen gültige Provider- oder Modusmetadaten.   |
+| `policy/auth-profile-unapproved-mode`                    | Der Modus eines Authentifizierungsprofils der Konfiguration befindet sich außerhalb der Richtlinien-Zulassungsliste. |
+| `policy/exec-approvals-missing`                          | Die Richtlinie verlangt `exec-approvals.json`, aber das Artefakt fehlt.                             |
+| `policy/exec-approvals-invalid`                          | Das konfigurierte Artefakt für Exec-Genehmigungen kann nicht geparst werden.                        |
+| `policy/exec-approvals-default-security-unapproved`      | Die Standardwerte für Exec-Genehmigungen verwenden einen Sicherheitsmodus außerhalb der Richtlinien-Zulassungsliste. |
+| `policy/exec-approvals-agent-security-unapproved`        | Der effektive agentenspezifische Sicherheitsmodus für Exec-Genehmigungen befindet sich außerhalb der Zulassungsliste. |
+| `policy/exec-approvals-auto-allow-skills-enabled`        | Ein Agent für Exec-Genehmigungen lässt Skills-CLIs implizit automatisch zu, obwohl die Richtlinie dies ablehnt. |
+| `policy/exec-approvals-allowlist-missing`                | In der Genehmigungs-Zulassungsliste fehlt ein von der Richtlinie verlangtes Muster.                 |
+| `policy/exec-approvals-allowlist-unexpected`             | Die Genehmigungs-Zulassungsliste enthält ein von der Richtlinie nicht erwartetes Muster.            |
+| `policy/tools-missing-risk-level`                        | In einer verwalteten Tool-Deklaration fehlen Risikometadaten.                                      |
+| `policy/tools-unknown-risk-level`                        | Eine verwaltete Tool-Deklaration verwendet einen unbekannten Risikowert.                            |
+| `policy/tools-missing-sensitivity-token`                 | In einer verwalteten Tool-Deklaration fehlen Vertraulichkeitsmetadaten.                             |
+| `policy/tools-missing-owner`                             | In einer verwalteten Tool-Deklaration fehlen Eigentümermetadaten.                                  |
+| `policy/tools-unknown-sensitivity-token`                 | Eine verwaltete Tool-Deklaration verwendet einen unbekannten Vertraulichkeitswert.                  |
 
-Eine Feststellung kann sowohl `target` (das beobachtete Workspace-Element, das
-nicht konform ist) als auch `requirement` (die verfasste Regel, die zur Feststellung
-geführt hat) enthalten. Beide sind derzeit `oc://`-Adresszeichenfolgen, die Feldnamen
-beschreiben jedoch die Richtlinienrolle und nicht das Adressformat.
+Ein Befund kann sowohl `target` (das beobachtete Workspace-Objekt, das
+nicht konform ist) als auch `requirement` (die verfasste Regel, die den Befund ausgelöst hat)
+enthalten. Beide sind derzeit `oc://`-Adresszeichenfolgen, die Feldnamen beschreiben jedoch die
+Rolle in der Richtlinie und nicht das Adressformat.
 
-Beispiele für Feststellungen:
+Beispielbefunde:
 
 ```json
 {
   "checkId": "policy/channels-denied-provider",
   "severity": "error",
-  "message": "Der Kanal 'telegram' verwendet den abgelehnten Provider 'telegram'.",
+  "message": "Kanal 'telegram' verwendet den abgelehnten Provider 'telegram'.",
   "source": "policy",
   "path": "openclaw config",
   "ocPath": "oc://openclaw.config/channels/telegram",
@@ -854,7 +804,7 @@ Beispiele für Feststellungen:
 {
   "checkId": "policy/tools-missing-risk-level",
   "severity": "error",
-  "message": "Das Tool 'deploy' aus TOOLS.md hat keine explizite Risikoklassifizierung.",
+  "message": "Das Tool 'deploy' in TOOLS.md hat keine explizite Risikoklassifizierung.",
   "source": "policy",
   "path": "TOOLS.md",
   "line": 12,
@@ -868,7 +818,7 @@ Beispiele für Feststellungen:
 {
   "checkId": "policy/mcp-unapproved-server",
   "severity": "error",
-  "message": "Der MCP-Server 'remote' befindet sich nicht auf der Richtlinien-Zulassungsliste.",
+  "message": "MCP server 'remote' is not in the policy allowlist.",
   "source": "policy",
   "path": "openclaw config",
   "ocPath": "oc://openclaw.config/mcp/servers/remote",
@@ -881,7 +831,7 @@ Beispiele für Feststellungen:
 {
   "checkId": "policy/models-unapproved-provider",
   "severity": "error",
-  "message": "Die Modellreferenz 'anthropic/claude-sonnet-4.7' verwendet den nicht genehmigten Provider 'anthropic'.",
+  "message": "Model ref 'anthropic/claude-sonnet-4.7' uses unapproved provider 'anthropic'.",
   "source": "policy",
   "path": "openclaw config",
   "ocPath": "oc://openclaw.config/agents/defaults/model/fallbacks/#0",
@@ -894,7 +844,7 @@ Beispiele für Feststellungen:
 {
   "checkId": "policy/network-private-access-enabled",
   "severity": "error",
-  "message": "Die Netzwerkeinstellung 'browser-private-network' erlaubt den Zugriff auf private Netzwerke.",
+  "message": "Network setting 'browser-private-network' allows private-network access.",
   "source": "policy",
   "path": "openclaw config",
   "ocPath": "oc://openclaw.config/browser/ssrfPolicy/dangerouslyAllowPrivateNetwork",
@@ -907,7 +857,7 @@ Beispiele für Feststellungen:
 {
   "checkId": "policy/gateway-non-loopback-bind",
   "severity": "error",
-  "message": "Die Gateway-Bindungseinstellung 'gateway-bind' erlaubt die Erreichbarkeit über Nicht-Loopback-Adressen.",
+  "message": "Gateway bind setting 'gateway-bind' permits non-loopback exposure.",
   "source": "policy",
   "path": "openclaw config",
   "ocPath": "oc://openclaw.config/gateway/bind",
@@ -920,13 +870,13 @@ Beispiele für Feststellungen:
 {
   "checkId": "policy/gateway-node-command-denied",
   "severity": "error",
-  "message": "Der Gateway-Node-Befehl 'system.run' wird von der Richtlinie verweigert, aber nicht von der OpenClaw-Konfiguration.",
+  "message": "Gateway node command 'system.run' is denied by policy but not denied by OpenClaw config.",
   "source": "policy",
   "path": "openclaw config",
   "ocPath": "oc://openclaw.config/gateway/nodes/denyCommands",
   "target": "oc://openclaw.config/gateway/nodes/denyCommands",
   "requirement": "oc://policy.jsonc/gateway/nodes/denyCommands",
-  "fixHint": "Fügen Sie 'system.run' zu gateway.nodes.denyCommands hinzu oder aktualisieren Sie die Richtlinie nach der Überprüfung."
+  "fixHint": "Add 'system.run' to gateway.nodes.denyCommands or update policy after review."
 }
 ```
 
@@ -934,7 +884,7 @@ Beispiele für Feststellungen:
 {
   "checkId": "policy/agents-workspace-access-denied",
   "severity": "error",
-  "message": "Der Sandbox-Arbeitsbereichszugriff 'rw' von agents.defaults ist laut Richtlinie nicht zulässig.",
+  "message": "agents.defaults sandbox workspaceAccess 'rw' is not allowed by policy.",
   "source": "policy",
   "path": "openclaw config",
   "ocPath": "oc://openclaw.config/agents/defaults/sandbox/workspaceAccess",
@@ -948,54 +898,54 @@ Beispiele für Feststellungen:
 `doctor --lint` und `policy check` sind schreibgeschützt.
 
 `doctor --fix` bearbeitet richtlinienverwaltete Arbeitsbereichseinstellungen nur, wenn
-`workspaceRepairs` ausdrücklich aktiviert ist; andernfalls melden die Prüfungen, was sie
-reparieren würden, und lassen die Einstellungen unverändert.
+`workspaceRepairs` ausdrücklich aktiviert ist. Andernfalls melden die Prüfungen, welche
+Reparaturen sie durchführen würden, und lassen die Einstellungen unverändert.
 
-In dieser Version kann die Reparatur von `channels.denyRules` verweigerte Kanäle deaktivieren und
-die unten aufgeführten automatischen Einschränkungsreparaturen anwenden. Aktivieren Sie
-`workspaceRepairs` erst, nachdem die Richtliniendatei überprüft wurde, da eine gültige Regel die
-Arbeitsbereichskonfiguration ändern kann:
+In dieser Version kann die Reparatur durch `channels.denyRules` untersagte Kanäle deaktivieren
+und die unten aufgeführten automatischen Einschränkungsreparaturen anwenden. Aktivieren Sie
+`workspaceRepairs` erst, nachdem die Richtliniendatei überprüft wurde, da eine gültige Regel
+die Arbeitsbereichskonfiguration ändern kann:
 
-- `tools.elevated.enabled=false` festlegen, wenn eine globale Richtlinie privilegierte Tools verbietet
-- fehlende zwingend zu verweigernde Tool-IDs zu `tools.deny` oder
-  `agents.list[].tools.deny` hinzufügen, wenn die Richtlinie verlangt, dass diese Tools verweigert werden
+- `tools.elevated.enabled=false` festlegen, wenn eine globale Richtlinie privilegierte Werkzeuge untersagt
+- fehlende, zwingend zu sperrende Werkzeug-IDs zu `tools.deny` oder
+  `agents.list[].tools.deny` hinzufügen, wenn die Richtlinie die Sperrung dieser Werkzeuge vorschreibt
 - unsichere Schalter unter `gateway.controlUi.*` auf `false` setzen
-- `gateway.mode=local` festlegen, wenn die Richtlinie den Remote-Gateway-Modus verweigert
+- `gateway.mode=local` festlegen, wenn die Richtlinie den entfernten Gateway-Modus untersagt
 - gemeldete Pfade unter `gateway.http.endpoints.*.enabled` auf `false` setzen, wenn die Richtlinie
-  Gateway-HTTP-API-Endpunkte verweigert
-- gemeldete `groupPolicy`-Pfade für eingehende Kanalnachrichten auf `allowlist` setzen, wenn die Richtlinie
-  offenen Gruppenzugriff verweigert
-- gemeldete `requireMention`-Pfade für eingehende Kanalnachrichten auf `true` setzen, wenn die Richtlinie
-  Erwähnungen in Gruppen verlangt
-- `logging.redactSensitive=tools` festlegen, wenn die Richtlinie das Schwärzen sensibler Protokolldaten
-  verlangt
-- `diagnostics.otel.captureContent=false` oder bei objektförmigen Einstellungen zur Erfassung von
-  Telemetriedaten `diagnostics.otel.captureContent.enabled=false` festlegen, wenn die Richtlinie die
-  Erfassung von Telemetrieinhalten verweigert
+  HTTP-API-Endpunkte des Gateways untersagt
+- gemeldete `groupPolicy`-Pfade für den Kanaleingang auf `allowlist` setzen, wenn die Richtlinie
+  offenen Gruppeneingang untersagt
+- gemeldete `requireMention`-Pfade für den Kanaleingang auf `true` setzen, wenn die Richtlinie
+  Erwähnungen in Gruppen vorschreibt
+- `logging.redactSensitive=tools` festlegen, wenn die Richtlinie die Schwärzung sensibler
+  Protokolldaten vorschreibt
+- `diagnostics.otel.captureContent=false` oder bei Telemetrie-Erfassungseinstellungen
+  in Objektform `diagnostics.otel.captureContent.enabled=false` festlegen, wenn die Richtlinie
+  die Erfassung von Telemetrieinhalten untersagt
 
-Bereichsspezifische Reparaturen für privilegierte Tools werden nur erkannt. Bereichsspezifische
-Reparaturen der Datenverarbeitung werden ebenfalls übersprungen, wenn der Befund eine gemeinsam
-genutzte Protokollierungs- oder Telemetriekonfiguration meldet, da eine Änderung der gemeinsamen
-Einstellung mehr als das bereichsspezifische Richtlinienziel betreffen würde.
+Bereichsspezifische Reparaturen für privilegierte Werkzeuge werden nur erkannt, aber nicht angewendet.
+Bereichsspezifische Reparaturen für die Datenverarbeitung werden ebenfalls übersprungen, wenn der
+Befund eine gemeinsam genutzte Protokollierungs- oder Telemetriekonfiguration meldet, da eine Änderung
+der gemeinsamen Einstellung mehr als das bereichsspezifische Richtlinienziel betreffen würde.
 
-Bereichsspezifische Reparaturen zwingender Verweigerungen werden übersprungen, wenn der Befund das
-geerbte Stammverzeichnis-`tools.deny` meldet, da das Hinzufügen des erforderlichen Tools zur
+Bereichsspezifische Reparaturen für zwingend erforderliche Sperren werden übersprungen, wenn der Befund
+ein geerbtes `tools.deny` auf Stammebene meldet, da das Hinzufügen des erforderlichen Werkzeugs zur
 Stammkonfiguration mehr als das bereichsspezifische Richtlinienziel betreffen würde. Agent-lokale
-Reparaturen zwingender Verweigerungen können den gemeldeten Pfad `agents.list[].tools.deny`
-aktualisieren.
+Reparaturen für zwingend erforderliche Sperren können den gemeldeten Pfad
+`agents.list[].tools.deny` aktualisieren.
 
-Bereichsspezifische Reparaturen eingehender Kanalnachrichten werden übersprungen, wenn der Befund
-geerbte `channels.defaults.*` meldet, da eine Änderung des gemeinsam genutzten Kanalstandards mehr
-als das bereichsspezifische Richtlinienziel betreffen würde. Befunde zur Gateway-HTTP-URL-Abruf-
-Zulassungsliste bleiben manuell zu beheben, da die automatische Reparatur nicht die richtigen
-Zulassungslistenwerte für Endpunkt-URLs auswählen kann.
+Bereichsspezifische Reparaturen des Kanaleingangs werden übersprungen, wenn der Befund geerbte
+`channels.defaults.*` meldet, da eine Änderung des gemeinsam genutzten Kanalstandards mehr als das
+bereichsspezifische Richtlinienziel betreffen würde. Befunde zur URL-Abruf-Zulassungsliste für
+Gateway-HTTP müssen weiterhin manuell behoben werden, da die automatische Reparatur nicht die
+richtigen Zulassungslistenwerte für Endpunkt-URLs auswählen kann.
 
-Befunde zu Gateway-Bindungen und Node-Befehlen müssen weiterhin überprüft werden. Wenn
+Befunde zur Gateway-Bindung und zu Node-Befehlen müssen weiterhin überprüft werden. Wenn
 `policy/gateway-non-loopback-bind` oder `policy/gateway-node-command-denied`
-einem Konfigurationspfad zugeordnet werden kann, meldet `doctor --fix` die vorgeschlagene Änderung
-an `gateway.bind` oder `gateway.nodes.denyCommands` als übersprungene Vorschauempfehlung.
-Die Änderung wird nicht angewendet, und der Befund gilt erst dann als repariert, wenn ein Operator
-die Konfiguration oder Richtlinie überprüft und aktualisiert hat.
+einem Konfigurationspfad zugeordnet werden kann, meldet `doctor --fix` die vorgeschlagene
+Änderung an `gateway.bind` oder `gateway.nodes.denyCommands` als übersprungene
+Vorschauhilfe. Die Änderung wird nicht angewendet, und der Befund gilt erst dann als
+repariert, wenn ein Betreiber die Konfiguration oder Richtlinie überprüft und aktualisiert.
 
 ```jsonc
 {
@@ -1011,15 +961,15 @@ die Konfiguration oder Richtlinie überprüft und aktualisiert hat.
 }
 ```
 
-## Exit-Codes
+## Exitcodes
 
 | Befehl           | `0`                                                            | `1`                                                                         | `2`                              |
 | ---------------- | -------------------------------------------------------------- | --------------------------------------------------------------------------- | -------------------------------- |
 | `policy check`   | Keine Befunde ab dem Schwellenwert.                            | Mindestens ein Befund hat den Schwellenwert erreicht.                       | Argument- oder Laufzeitfehler.   |
-| `policy compare` | Die Richtliniendatei ist mindestens so streng wie die Baseline. | Die Richtliniendatei ist ungültig, fehlt oder ist schwächer als die Baseline-Regeln. | Argument- oder Laufzeitfehler.   |
-| `policy watch`   | Keine Befunde, und der akzeptierte Hash ist aktuell.           | Es liegen Befunde vor oder die akzeptierte Bestätigung ist veraltet.        | Argument- oder Laufzeitfehler.   |
+| `policy compare` | Die Richtliniendatei ist mindestens so streng wie die Basis.   | Die Richtliniendatei ist ungültig, fehlt oder ist schwächer als die Basisregeln. | Argument- oder Laufzeitfehler. |
+| `policy watch`   | Keine Befunde und der akzeptierte Hash ist aktuell.            | Es liegen Befunde vor oder die akzeptierte Bestätigung ist veraltet.        | Argument- oder Laufzeitfehler.   |
 
 ## Verwandte Themen
 
-- [Doctor-Lint-Modus](/de/cli/doctor#lint-mode)
+- [Lint-Modus von Doctor](/de/cli/doctor#lint-mode)
 - [Pfad-CLI](/de/cli/path)

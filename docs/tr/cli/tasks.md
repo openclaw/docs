@@ -1,23 +1,24 @@
 ---
 read_when:
     - Arka plan görev kayıtlarını incelemek, denetlemek veya iptal etmek istiyorsunuz
-    - Task Flow komutlarını `openclaw tasks flow` altında belgeliyorsunuz
-summary: '`openclaw tasks` için CLI başvurusu (arka plan görev defteri ve Task Flow durumu)'
+    - '`openclaw tasks flow` altında Task Flow komutlarını belgeliyorsunuz.'
+summary: '`openclaw tasks` için CLI başvurusu (arka plan görev kaydı ve TaskFlow durumu)'
 title: '`openclaw tasks`'
 x-i18n:
-    generated_at: "2026-05-10T19:30:59Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:12:59Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7bbb97690124a8e59ec5e6a517f33166ad449ee6268894ab132ad9cb69dcaa81
+    source_hash: b03a4aa9fab12b6e5773259a76a1e89fd6e6398c73e5b0533a31e5e3a3894f9c
     source_path: cli/tasks.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Dayanıklı arka plan görevlerini ve Task Flow durumunu inceleyin. Alt komut olmadan,
+Kalıcı arka plan görevlerini ve TaskFlow durumunu inceleyin. Alt komut belirtilmediğinde,
 `openclaw tasks`, `openclaw tasks list` ile eşdeğerdir.
 
-Yaşam döngüsü ve teslim modeli için [Arka Plan Görevleri](/tr/automation/tasks) bölümüne bakın.
+Yaşam döngüsü ve teslimat modeli için [Arka Plan Görevleri](/tr/automation/tasks)
+sayfasına; bulguların tam açıklamaları için bu sayfadaki `tasks audit` bölümüne bakın.
 
 ## Kullanım
 
@@ -37,11 +38,13 @@ openclaw tasks flow show <lookup>
 openclaw tasks flow cancel <lookup>
 ```
 
-## Kök Seçenekler
+## Kök Seçenekleri
 
-- `--json`: JSON çıktısı üretir.
-- `--runtime <name>`: türe göre filtreler: `subagent`, `acp`, `cron` veya `cli`.
-- `--status <name>`: duruma göre filtreler: `queued`, `running`, `succeeded`, `failed`, `timed_out`, `cancelled` veya `lost`.
+| Bayrak             | Açıklama                                                                                               |
+| ------------------ | ------------------------------------------------------------------------------------------------------ |
+| `--json`           | JSON çıktısı verir.                                                                                    |
+| `--runtime <name>` | Türe göre filtreler: `subagent`, `acp`, `cron` veya `cli`.                                             |
+| `--status <name>`  | Duruma göre filtreler: `queued`, `running`, `succeeded`, `failed`, `timed_out`, `cancelled` veya `lost`. |
 
 ## Alt Komutlar
 
@@ -59,7 +62,7 @@ openclaw tasks list [--runtime <name>] [--status <name>] [--json]
 openclaw tasks show <lookup> [--json]
 ```
 
-Görev kimliği, çalıştırma kimliği veya oturum anahtarıyla tek bir görevi gösterir.
+Görev kimliğine, çalıştırma kimliğine veya oturum anahtarına göre tek bir görevi gösterir.
 
 ### `notify`
 
@@ -83,7 +86,16 @@ openclaw tasks cancel <lookup>
 openclaw tasks audit [--severity <warn|error>] [--code <name>] [--limit <n>] [--json]
 ```
 
-Bayat, kayıp, teslimi başarısız olmuş veya başka şekilde tutarsız görev ve Task Flow kayıtlarını ortaya çıkarır. `cleanupAfter` zamanına kadar tutulan kayıp görevler uyarıdır; süresi dolmuş veya damgalanmamış kayıp görevler hatadır.
+Eskimiş, kayıp, teslimatı başarısız olmuş veya başka bir şekilde tutarsız görev ve
+TaskFlow kayıtlarını ortaya çıkarır. `cleanupAfter` zamanına kadar tutulan kayıp görevler
+uyarıdır; süresi dolmuş veya zaman damgası eklenmemiş kayıp görevler hatadır.
+
+`--code`, görev kodlarını (`stale_queued`, `stale_running`, `lost`,
+`delivery_failed`, `missing_cleanup`, `inconsistent_timestamps`) ve TaskFlow
+kodlarını (`restore_failed`, `stale_waiting`, `stale_blocked`,
+`cancel_stuck`, `missing_linked_tasks`, `blocked_task_missing`) kabul eder. Her
+kodun önem derecesi ve tetikleyici ayrıntıları için
+[Arka Plan Görevleri](/tr/automation/tasks) sayfasına bakın.
 
 ### `maintenance`
 
@@ -91,18 +103,20 @@ Bayat, kayıp, teslimi başarısız olmuş veya başka şekilde tutarsız görev
 openclaw tasks maintenance [--apply] [--json]
 ```
 
-Görev ve Task Flow mutabakatını, temizleme damgalamasını, budamayı
-ve bayat cron çalıştırma oturumu kayıt defteri temizliğini önizler veya uygular.
-Cron görevleri için mutabakat, eski bir etkin görevi `lost` olarak işaretlemeden
-önce kalıcı çalıştırma günlüklerini/iş durumunu kullanır; böylece tamamlanmış cron
-çalıştırmaları, yalnızca bellek içi Gateway çalışma zamanı durumu kaybolduğu için
-yanlış denetim hatalarına dönüşmez. Çevrimdışı CLI denetimi, Gateway'in süreç
-yerel cron etkin iş kümesi için yetkili kaynak değildir. Çalıştırma kimliği/kaynak
-kimliği olan CLI görevleri, eski bir alt oturum satırı kalsa bile canlı Gateway
-çalıştırma bağlamları kaybolduğunda `lost` olarak işaretlenir.
-Uygulandığında bakım, şu anda çalışan cron işlerini korurken ve cron olmayan oturum
-satırlarına dokunmadan 7 günden eski `cron:<jobId>:run:<uuid>` oturum kayıt defteri
-satırlarını da budar.
+Görev ve TaskFlow uzlaştırmasını, temizleme damgalamasını, budamayı ve eskimiş
+Cron çalıştırma oturumu kayıt defteri temizliğini önizler veya uygular.
+
+Cron görevlerinde uzlaştırma, eski ve etkin bir görevi `lost` olarak işaretlemeden
+önce kalıcı çalıştırma günlüklerini ve iş durumunu kullanır; böylece tamamlanmış Cron
+çalıştırmaları, yalnızca Gateway'in bellek içi çalışma zamanı durumu artık mevcut olmadığı
+için hatalı denetim sonuçlarına dönüşmez. Çevrimdışı CLI denetimi, Gateway'in işleme
+yerel etkin Cron işleri kümesi için yetkili kaynak değildir. Çalıştırma kimliği/kaynak
+kimliği bulunan CLI görevleri, eski bir alt oturum satırı kalsa bile canlı Gateway
+çalıştırma bağlamları artık mevcut olmadığında `lost` olarak işaretlenir.
+
+Bakım uygulandığında, çalışmakta olan Cron işleri korunurken ve Cron dışı oturum
+satırlarına dokunulmadan 7 günden eski `cron:<jobId>:run:<uuid>` oturum kayıt
+defteri satırları da budanır.
 
 ### `flow`
 
@@ -112,9 +126,11 @@ openclaw tasks flow show <lookup> [--json]
 openclaw tasks flow cancel <lookup>
 ```
 
-Görev defteri altındaki dayanıklı Task Flow durumunu inceler veya iptal eder.
+Görev defterindeki kalıcı TaskFlow durumunu inceler veya iptal eder.
+`flow list --status`; `queued`, `running`, `waiting`, `blocked`,
+`succeeded`, `failed`, `cancelled` veya `lost` değerlerini kabul eder.
 
-## İlgili
+## İlgili Kaynaklar
 
-- [CLI referansı](/tr/cli)
+- [CLI başvurusu](/tr/cli)
 - [Arka plan görevleri](/tr/automation/tasks)

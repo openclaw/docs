@@ -1,26 +1,27 @@
 ---
 read_when:
-    - می‌خواهید یک ارائه‌دهنده مدل انتخاب کنید
-    - به یک نمای کلی سریع از بک‌اندهای LLM پشتیبانی‌شده نیاز دارید
-summary: ارائه‌دهندگان مدل (LLMها) که توسط OpenClaw پشتیبانی می‌شوند
-title: دایرکتوری ارائه‌دهنده
+    - می‌خواهید یک ارائه‌دهندهٔ مدل انتخاب کنید
+    - به یک مرور سریع بر بک‌اندهای LLM پشتیبانی‌شده نیاز دارید
+summary: ارائه‌دهندگان مدل (مدل‌های زبانی بزرگ) پشتیبانی‌شده توسط OpenClaw
+title: فهرست ارائه‌دهندگان
 x-i18n:
-    generated_at: "2026-07-04T03:58:49Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:39:22Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3386b41b340048f7ace61077e724a70af36dda83c65d211dde5081b378b1b448
+    source_hash: b59843b53265500866e87ee8d888892dacd6045bdb9401a1e7ec08ad4f364090
     source_path: providers/index.md
     workflow: 16
 ---
 
-OpenClaw می‌تواند از بسیاری از ارائه‌دهندگان LLM استفاده کند. یک ارائه‌دهنده انتخاب کنید، احراز هویت کنید، سپس مدل پیش‌فرض را به‌صورت `provider/model` تنظیم کنید.
+OpenClaw می‌تواند از ارائه‌دهندگان متعدد LLM استفاده کند. یک ارائه‌دهنده را انتخاب و احراز هویت کنید، سپس مدل
+پیش‌فرض را به‌صورت `provider/model` تنظیم کنید.
 
-دنبال مستندات کانال‌های گفتگو (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/و غیره) هستید؟ [کانال‌ها](/fa/channels) را ببینید.
+به‌دنبال مستندات کانال‌های گفت‌وگو (WhatsApp/Telegram/Discord/Slack/Mattermost ‏(Plugin)/و غیره) هستید؟ به [کانال‌ها](/fa/channels) مراجعه کنید.
 
 ## شروع سریع
 
-1. با ارائه‌دهنده احراز هویت کنید (معمولاً از طریق `openclaw onboard`).
+1. نزد ارائه‌دهنده احراز هویت کنید (معمولاً از طریق `openclaw onboard`).
 2. مدل پیش‌فرض را تنظیم کنید:
 
 ```json5
@@ -34,20 +35,21 @@ OpenClaw می‌تواند از بسیاری از ارائه‌دهندگان LL
 - [Alibaba Model Studio](/fa/providers/alibaba)
 - [Amazon Bedrock](/fa/providers/bedrock)
 - [Amazon Bedrock Mantle](/fa/providers/bedrock-mantle)
-- [Anthropic (API + Claude CLI)](/fa/providers/anthropic)
+- [Anthropic ‏(API + Claude CLI)](/fa/providers/anthropic)
 - [Arcee AI (مدل‌های Trinity)](/fa/providers/arcee)
 - [Azure Speech](/fa/providers/azure-speech)
 - [BytePlus (بین‌المللی)](/fa/concepts/model-providers#byteplus-international)
 - [Cerebras](/fa/providers/cerebras)
 - [Chutes](/fa/providers/chutes)
-- [ClawRouter (مسیریابی چندارائه‌دهنده‌ای مدیریت‌شده)](/providers/clawrouter)
-- [Cohere](/fa/providers/cohere)
+- [ClawRouter (مسیریابی مدیریت‌شده میان چند ارائه‌دهنده)](/fa/providers/clawrouter)
 - [Cloudflare AI Gateway](/fa/providers/cloudflare-ai-gateway)
+- [Cohere](/fa/providers/cohere)
 - [ComfyUI](/fa/providers/comfy)
 - [DeepSeek](/fa/providers/deepseek)
-- [ds4 (DeepSeek V4 محلی)](/fa/providers/ds4)
+- [ds4 (‏DeepSeek V4 محلی)](/fa/providers/ds4)
 - [ElevenLabs](/fa/providers/elevenlabs)
 - [fal](/fa/providers/fal)
+- [Featherless AI](/providers/featherless)
 - [Fireworks](/fa/providers/fireworks)
 - [GitHub Copilot](/fa/providers/github-copilot)
 - [GMI Cloud](/fa/providers/gmi)
@@ -57,20 +59,21 @@ OpenClaw می‌تواند از بسیاری از ارائه‌دهندگان LL
 - [Hugging Face (استنتاج)](/fa/providers/huggingface)
 - [inferrs (مدل‌های محلی)](/fa/providers/inferrs)
 - [Kilocode](/fa/providers/kilocode)
-- [LiteLLM (gateway یکپارچه)](/fa/providers/litellm)
+- [LiteLLM (Gateway یکپارچه)](/fa/providers/litellm)
 - [LM Studio (مدل‌های محلی)](/fa/providers/lmstudio)
+- [LongCat](/fa/providers/longcat)
 - [MiniMax](/fa/providers/minimax)
 - [Mistral](/fa/providers/mistral)
-- [Moonshot AI (Kimi + Kimi Coding)](/fa/providers/moonshot)
-- [NVIDIA](/fa/providers/nvidia)
+- [Moonshot AI ‏(Kimi + Kimi Coding)](/fa/providers/moonshot)
 - [NovitaAI](/fa/providers/novita)
+- [NVIDIA](/fa/providers/nvidia)
 - [Ollama (مدل‌های ابری + محلی)](/fa/providers/ollama)
 - [Ollama Cloud](/fa/providers/ollama-cloud)
-- [OpenAI (API + Codex)](/fa/providers/openai)
+- [OpenAI ‏(API + Codex)](/fa/providers/openai)
 - [OpenCode](/fa/providers/opencode)
 - [OpenCode Go](/fa/providers/opencode-go)
 - [OpenRouter](/fa/providers/openrouter)
-- [Perplexity (جستجوی وب)](/fa/providers/perplexity-provider)
+- [Perplexity (جست‌وجوی وب)](/fa/providers/perplexity-provider)
 - [Qianfan](/fa/providers/qianfan)
 - [Qwen Cloud](/fa/providers/qwen)
 - [Qwen OAuth / Portal](/fa/providers/qwen-oauth)
@@ -79,9 +82,9 @@ OpenClaw می‌تواند از بسیاری از ارائه‌دهندگان LL
 - [SGLang (مدل‌های محلی)](/fa/providers/sglang)
 - [StepFun](/fa/providers/stepfun)
 - [Synthetic](/fa/providers/synthetic)
-- [Tencent Cloud (TokenHub)](/fa/providers/tencent)
+- [Tencent Cloud ‏(TokenHub / TokenPlan)](/fa/providers/tencent)
 - [Together AI](/fa/providers/together)
-- [Venice (Venice AI، متمرکز بر حریم خصوصی)](/fa/providers/venice)
+- [Venice ‏(Venice AI، با تمرکز بر حریم خصوصی)](/fa/providers/venice)
 - [Vercel AI Gateway](/fa/providers/vercel-ai-gateway)
 - [vLLM (مدل‌های محلی)](/fa/providers/vllm)
 - [Volcengine (Doubao)](/fa/providers/volcengine)
@@ -92,23 +95,23 @@ OpenClaw می‌تواند از بسیاری از ارائه‌دهندگان LL
 
 ## صفحه‌های نمای کلی مشترک
 
-- [گونه‌های بسته‌بندی‌شده اضافی](/fa/providers/models#additional-bundled-provider-variants) - Anthropic Vertex، Copilot Proxy، و Gemini CLI OAuth
-- [تولید تصویر](/fa/tools/image-generation) - ابزار مشترک `image_generate`، انتخاب ارائه‌دهنده، و failover
-- [تولید موسیقی](/fa/tools/music-generation) - ابزار مشترک `music_generate`، انتخاب ارائه‌دهنده، و failover
-- [تولید ویدئو](/fa/tools/video-generation) - ابزار مشترک `video_generate`، انتخاب ارائه‌دهنده، و failover
+- [گونه‌های دیگر ارائه‌دهندگان](/fa/providers/models#additional-provider-variants) - ‏Anthropic Vertex، Copilot Proxy و Gemini CLI OAuth
+- [تولید تصویر](/fa/tools/image-generation) - ابزار مشترک `image_generate`، انتخاب ارائه‌دهنده و انتقال خودکار هنگام خرابی
+- [تولید موسیقی](/fa/tools/music-generation) - ابزار مشترک `music_generate`، انتخاب ارائه‌دهنده و انتقال خودکار هنگام خرابی
+- [تولید ویدئو](/fa/tools/video-generation) - ابزار مشترک `video_generate`، انتخاب ارائه‌دهنده و انتقال خودکار هنگام خرابی
 
 ## ارائه‌دهندگان رونویسی
 
 - [Deepgram (رونویسی صوتی)](/fa/providers/deepgram)
 - [ElevenLabs](/fa/providers/elevenlabs#speech-to-text)
 - [Mistral](/fa/providers/mistral#audio-transcription-voxtral)
-- [OpenAI](/fa/providers/openai#speech-to-text)
+- [OpenAI](/fa/providers/openai)
 - [SenseAudio](/fa/providers/senseaudio)
-- [xAI](/fa/providers/xai#speech-to-text)
+- [xAI](/fa/providers/xai)
 
-## ابزارهای جامعه
+## ابزارهای جامعه کاربری
 
-- [Claude Max API Proxy](/fa/providers/claude-max-api-proxy) - پراکسی جامعه برای اعتبارنامه‌های اشتراک Claude (پیش از استفاده، سیاست/شرایط Anthropic را بررسی کنید)
+- [Claude Max API Proxy](/fa/providers/claude-max-api-proxy) - پراکسی جامعه کاربری برای اعتبارنامه‌های اشتراک Claude (پیش از استفاده، خط‌مشی/شرایط Anthropic را بررسی کنید)
 
-برای کاتالوگ کامل ارائه‌دهندگان (xAI، Groq، Mistral، و غیره) و پیکربندی پیشرفته،
-[ارائه‌دهندگان مدل](/fa/concepts/model-providers) را ببینید.
+برای مشاهده فهرست کامل ارائه‌دهندگان (xAI، Groq، Mistral و غیره) و پیکربندی پیشرفته،
+به [ارائه‌دهندگان مدل](/fa/concepts/model-providers) مراجعه کنید.

@@ -1,55 +1,55 @@
 ---
 read_when:
-    - می‌خواهید از مدل‌های متن‌باز در OpenClaw به‌صورت رایگان استفاده کنید
-    - باید NVIDIA_API_KEY را تنظیم کنید
+    - می‌خواهید به‌صورت رایگان از مدل‌های باز در OpenClaw استفاده کنید
+    - باید `NVIDIA_API_KEY` را تنظیم کنید
     - می‌خواهید از Nemotron 3 Ultra از طریق NVIDIA استفاده کنید
-summary: از API سازگار با OpenAI شرکت NVIDIA در OpenClaw استفاده کنید
+summary: استفاده از API سازگار با OpenAI شرکت NVIDIA در OpenClaw
 title: NVIDIA
 x-i18n:
-    generated_at: "2026-07-01T20:30:32Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:42:12Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7b738746acead8dcaa74a39b13b4413171c5bf60efa5166dbc9b259d883a4e22
+    source_hash: b5ac7bcc19400a661b2f2861a1dd4d2306c94e445783929e342e9184003314e9
     source_path: providers/nvidia.md
     workflow: 16
 ---
 
-NVIDIA یک API سازگار با OpenAI در `https://integrate.api.nvidia.com/v1` برای
-مدل‌های باز به‌صورت رایگان ارائه می‌کند. با یک کلید API از
-[build.nvidia.com](https://build.nvidia.com/settings/api-keys) احراز هویت کنید. OpenClaw
-ارائه‌دهنده NVIDIA را به‌طور پیش‌فرض روی Nemotron 3 Ultra قرار می‌دهد؛ مدل استدلال فعال
-NVIDIA با مجموع 550B / فعال 55B برای کارهای عامل‌محور با زمینه طولانی.
+NVIDIA مدل‌های باز را به‌صورت رایگان از طریق یک API سازگار با OpenAI در
+`https://integrate.api.nvidia.com/v1` ارائه می‌کند که با یک کلید API از
+[build.nvidia.com](https://build.nvidia.com/settings/api-keys) احراز هویت می‌شود. OpenClaw
+به‌طور پیش‌فرض ارائه‌دهنده NVIDIA را روی Nemotron 3 Ultra تنظیم می‌کند؛ مدل استدلالی NVIDIA
+با ۵۵۰ میلیارد پارامتر کل و ۵۵ میلیارد پارامتر فعال که برای کارهای عاملی با زمینه طولانی طراحی شده است.
 
 ## شروع به کار
 
 <Steps>
-  <Step title="Get your API key">
-    در [build.nvidia.com](https://build.nvidia.com/settings/api-keys) یک کلید API بسازید.
+  <Step title="دریافت کلید API">
+    در [build.nvidia.com](https://build.nvidia.com/settings/api-keys) یک کلید API ایجاد کنید.
   </Step>
-  <Step title="Export the key and run onboarding">
+  <Step title="خروجی‌گرفتن کلید و اجرای راه‌اندازی اولیه">
     ```bash
     export NVIDIA_API_KEY="nvapi-..."
     openclaw onboard --auth-choice nvidia-api-key
     ```
   </Step>
-  <Step title="Set an NVIDIA model">
+  <Step title="تنظیم یک مدل NVIDIA">
     ```bash
     openclaw models set nvidia/nvidia/nemotron-3-ultra-550b-a55b
     ```
   </Step>
 </Steps>
 
-<Warning>
-اگر به‌جای متغیر محیطی، `--nvidia-api-key` را ارسال کنید، مقدار آن در تاریخچه shell
-و خروجی `ps` ثبت می‌شود. در صورت امکان، متغیر محیطی `NVIDIA_API_KEY` را ترجیح دهید.
-</Warning>
-
-برای راه‌اندازی غیرتعاملی، می‌توانید کلید را مستقیماً هم ارسال کنید:
+برای راه‌اندازی غیرتعاملی، کلید را مستقیماً ارسال کنید:
 
 ```bash
 openclaw onboard --auth-choice nvidia-api-key --nvidia-api-key "nvapi-..."
 ```
+
+<Warning>
+`--nvidia-api-key` کلید را در تاریخچه پوسته و خروجی `ps` ثبت می‌کند. در صورت امکان،
+متغیر محیطی `NVIDIA_API_KEY` را ترجیح دهید.
+</Warning>
 
 ## نمونه پیکربندی
 
@@ -72,73 +72,89 @@ openclaw onboard --auth-choice nvidia-api-key --nvidia-api-key "nvapi-..."
 }
 ```
 
-## کاتالوگ برجسته
+## فهرست برگزیده
 
-وقتی یک کلید API برای NVIDIA پیکربندی شده باشد، مسیرهای راه‌اندازی و انتخاب مدل
-OpenClaw تلاش می‌کنند کاتالوگ عمومی مدل‌های برجسته NVIDIA را از
-`https://assets.ngc.nvidia.com/products/api-catalog/featured-models.json` دریافت کنند و
-نتیجه رتبه‌بندی‌شده را به‌مدت 24 ساعت cache می‌کنند. بنابراین مدل‌های برجسته جدید از build.nvidia.com
-بدون انتظار برای انتشار OpenClaw در سطوح راه‌اندازی و انتخاب مدل ظاهر می‌شوند.
-وقتی خوراک زنده در دسترس باشد، نخستین مدل برگشتی گزینه پیش‌فرضی است که هنگام راه‌اندازی NVIDIA نمایش داده می‌شود.
+هنگامی که یک کلید API برای NVIDIA پیکربندی شده باشد، مسیرهای راه‌اندازی و انتخاب مدل،
+فهرست عمومی مدل‌های برگزیده NVIDIA را از
+`https://assets.ngc.nvidia.com/products/api-catalog/featured-models.json`
+دریافت می‌کنند و نتیجه را به‌مدت ۲۴ ساعت در حافظه نهان نگه می‌دارند (۳۲ ورودی نخست که
+به‌صورت ردیف‌های رایگان با ورودی متنی وارد می‌شوند). بنابراین مدل‌های برگزیده جدید
+build.nvidia.com بدون نیاز به انتظار برای انتشار نسخه جدید OpenClaw، در بخش‌های
+راه‌اندازی و انتخاب مدل ظاهر می‌شوند. وقتی خوراک زنده در دسترس باشد، نخستین مدل
+بازگردانده‌شده گزینه ازپیش‌انتخاب‌شده در هنگام راه‌اندازی NVIDIA است.
 
-این دریافت از یک سیاست میزبان HTTPS ثابت برای `assets.ngc.nvidia.com` استفاده می‌کند. اگر هیچ
-کلید API برای NVIDIA پیکربندی نشده باشد، یا اگر آن کاتالوگ عمومی در دسترس نباشد یا
-ناقص باشد، OpenClaw به کاتالوگ bundled و پیش‌فرض bundled زیر برمی‌گردد.
+دریافت داده از یک سیاست ثابت میزبان HTTPS برای `assets.ngc.nvidia.com` استفاده می‌کند.
+اگر هیچ کلید API برای NVIDIA پیکربندی نشده باشد، یا خوراک در دسترس نباشد یا ساختار
+نامعتبری داشته باشد، OpenClaw به فهرست همراه و پیش‌فرض همراه زیر بازمی‌گردد.
 
 ## Nemotron 3 Ultra
 
-Nemotron 3 Ultra مدل پیش‌فرض NVIDIA در OpenClaw است. صفحه build متعلق به NVIDIA برای
+Nemotron 3 Ultra مدل پیش‌فرض NVIDIA در OpenClaw است. صفحه ساخت NVIDIA برای
 [`nvidia/nemotron-3-ultra-550b-a55b`](https://build.nvidia.com/nvidia/nemotron-3-ultra-550b-a55b)
-آن را به‌عنوان یک endpoint رایگان در دسترس با مشخصات زمینه 1M-token فهرست می‌کند.
-کاتالوگ bundled حداکثر خروجی 16,384-token را ثبت می‌کند تا با درخواست نمونه سازگار با OpenAI فعلی NVIDIA
-برای endpoint میزبانی‌شده مطابقت داشته باشد.
+آن را به‌عنوان یک نقطه پایانی رایگان و در دسترس با مشخصات زمینه یک‌میلیون‌توکنی معرفی می‌کند.
 
-برای بالاترین قابلیت در پیش‌فرض NVIDIA از Ultra استفاده کنید. وقتی گزینه کوچک‌تر Nemotron 3 را می‌خواهید،
-Super را انتخاب‌شده نگه دارید، یا وقتی زمینه، تأخیر، یا رفتار یکی از مدل‌های شخص ثالث
-میزبانی‌شده در کاتالوگ NVIDIA مناسب‌تر است، یکی از آن‌ها را انتخاب کنید.
-ردیف Ultra در کاتالوگ bundled به‌طور پیش‌فرض `chat_template_kwargs.enable_thinking: false` و
-`force_nonempty_content: true` را ارسال می‌کند تا خروجی عادی chat به‌جای افشای متن استدلال،
-در پاسخ قابل مشاهده باقی بماند.
+ردیف همراه Ultra به‌طور پیش‌فرض
+`chat_template_kwargs: { enable_thinking: false, force_nonempty_content: true }`
+را ارسال می‌کند تا خروجی عادی گفت‌وگو به‌جای آشکارکردن متن استدلال، در پاسخ قابل‌مشاهده باقی بماند.
 
-## کاتالوگ جایگزین bundled
+برای بهره‌گیری از توانمندترین گزینه پیش‌فرض NVIDIA از Ultra استفاده کنید. اگر گزینه
+کوچک‌تر Nemotron 3 را می‌خواهید، Super را انتخاب‌شده نگه دارید؛ یا هنگامی که زمینه،
+تأخیر یا رفتار یکی از مدل‌های شخص ثالث میزبانی‌شده در فهرست NVIDIA مناسب‌تر است،
+یکی از آن‌ها را انتخاب کنید.
 
-| ارجاع مدل                                  | نام                         | زمینه   | حداکثر خروجی | یادداشت‌ها                             |
-| ------------------------------------------ | ---------------------------- | --------- | ---------- | --------------------------------- |
-| `nvidia/nvidia/nemotron-3-ultra-550b-a55b` | NVIDIA Nemotron 3 Ultra 550B | 1,000,000 | 16,384     | پیش‌فرض                           |
-| `nvidia/nvidia/nemotron-3-super-120b-a12b` | NVIDIA Nemotron 3 Super 120B | 1,048,576 | 8,192      | جایگزین برجسته                 |
-| `nvidia/moonshotai/kimi-k2.5`              | Kimi K2.5                    | 262,144   | 8,192      | جایگزین برجسته                 |
-| `nvidia/minimaxai/minimax-m2.7`            | Minimax M2.7                 | 196,608   | 8,192      | جایگزین برجسته                 |
-| `nvidia/z-ai/glm-5.1`                      | GLM 5.1                      | 202,752   | 8,192      | جایگزین برجسته                 |
-| `nvidia/minimaxai/minimax-m2.5`            | MiniMax M2.5                 | 196,608   | 8,192      | منسوخ، سازگاری ارتقا |
-| `nvidia/z-ai/glm5`                         | GLM-5                        | 202,752   | 8,192      | منسوخ، سازگاری ارتقا |
+## فهرست جایگزین همراه
+
+ردیف‌های همراه قابل‌انتخاب، تصویری لحظه‌ای از فهرست مدل‌های برگزیده NVIDIA هستند.
+ردیف‌های سازگاری منسوخ همچنان با ارجاع دقیق قابل شناسایی‌اند، اما در انتخابگرهای مدل
+نمایش داده نمی‌شوند.
+
+| ارجاع مدل                                  | نام                   | زمینه     | حداکثر خروجی |
+| ------------------------------------------ | --------------------- | --------- | ------------ |
+| `nvidia/nvidia/nemotron-3-ultra-550b-a55b` | Nemotron 3 Ultra 550B | 1,048,576 | 8,192        |
+| `nvidia/nvidia/nemotron-3-super-120b-a12b` | Nemotron 3 Super 120B | 1,000,000 | 8,192        |
+| `nvidia/z-ai/glm-5.2`                      | GLM 5.2               | 202,752   | 8,192        |
+| `nvidia/moonshotai/kimi-k2.6`              | Kimi K2.6             | 262,144   | 8,192        |
+| `nvidia/minimaxai/minimax-m3`              | Minimax M3            | 196,608   | 8,192        |
+| `nvidia/deepseek-ai/deepseek-v4-pro`       | DeepSeek V4 Pro       | 262,144   | 16,384       |
+| `nvidia/qwen/qwen3.5-397b-a17b`            | Qwen3.5 397B A17B     | 262,144   | 16,384       |
+
+فهرست کامل سازگاری همچنین این ارجاع‌های منتشرشده را برای پیکربندی‌های موجود حفظ می‌کند:
+`nvidia/moonshotai/kimi-k2.5`، `nvidia/z-ai/glm-5.1`،
+`nvidia/minimaxai/minimax-m2.5`، `nvidia/z-ai/glm5` و
+`nvidia/minimaxai/minimax-m2.7`. آن‌ها همچنان با ارجاع دقیق در دسترس‌اند، اما
+هرگز در راه‌اندازی اولیه یا انتخابگرهای مدل ظاهر نمی‌شوند.
 
 ## پیکربندی پیشرفته
 
 <AccordionGroup>
-  <Accordion title="Auto-enable behavior">
-    وقتی متغیر محیطی `NVIDIA_API_KEY` تنظیم شده باشد، ارائه‌دهنده به‌طور خودکار فعال می‌شود.
-    فراتر از کلید، هیچ پیکربندی صریحی برای ارائه‌دهنده لازم نیست.
+  <Accordion title="رفتار فعال‌سازی خودکار">
+    ارائه‌دهنده هنگامی به‌طور خودکار فعال می‌شود که متغیر محیطی `NVIDIA_API_KEY`
+    تنظیم شده باشد یا کلیدی هنگام راه‌اندازی اولیه ذخیره شده باشد. فراتر از کلید،
+    هیچ پیکربندی صریحی برای ارائه‌دهنده لازم نیست.
   </Accordion>
 
-  <Accordion title="Catalog and pricing">
-    وقتی احراز هویت NVIDIA پیکربندی شده باشد، OpenClaw کاتالوگ عمومی مدل‌های برجسته NVIDIA را ترجیح می‌دهد
-    و آن را به‌مدت 24 ساعت cache می‌کند. کاتالوگ جایگزین bundled ایستا است
-    و ارجاع‌های shipped منسوخ را برای سازگاری ارتقا نگه می‌دارد. هزینه‌ها در منبع به‌طور پیش‌فرض
-    `0` هستند، چون NVIDIA در حال حاضر برای مدل‌های فهرست‌شده دسترسی رایگان API ارائه می‌کند.
+  <Accordion title="فهرست و قیمت‌گذاری">
+    وقتی احراز هویت NVIDIA پیکربندی شده باشد، OpenClaw فهرست عمومی مدل‌های برگزیده
+    NVIDIA را ترجیح می‌دهد و آن را به‌مدت ۲۴ ساعت در حافظه نهان نگه می‌دارد.
+    جایگزین همراه قابل‌انتخاب، تصویری ثابت از فهرست مدل‌های برگزیده NVIDIA است؛
+    ردیف‌های سازگاری منسوخ با ارجاع دقیق از انتخابگرهای مدل پنهان می‌شوند. هزینه‌ها
+    در منبع به‌طور پیش‌فرض `0` هستند، زیرا NVIDIA درحال‌حاضر برای مدل‌های فهرست‌شده
+    دسترسی رایگان به API ارائه می‌دهد.
   </Accordion>
 
-  <Accordion title="OpenAI-compatible endpoint">
-    NVIDIA از endpoint استاندارد completions با مسیر `/v1` استفاده می‌کند. هر ابزار سازگار با OpenAI
-    باید با URL پایه NVIDIA بدون تنظیمات اضافی کار کند.
+  <Accordion title="نقطه پایانی سازگار با OpenAI">
+    OpenClaw از طریق آداپتور `openai-completions` و مسیر استاندارد تکمیل گفت‌وگوی
+    `/v1` با NVIDIA ارتباط برقرار می‌کند. هر ابزار سازگار با OpenAI باید با نشانی
+    پایه NVIDIA بدون نیاز به پیکربندی اضافی کار کند.
   </Accordion>
 
-  <Accordion title="Nemotron 3 Ultra reasoning params">
-    درخواست نمونه Ultra متعلق به NVIDIA از `chat_template_kwargs.enable_thinking`
-    و `reasoning_budget` برای خروجی استدلال استفاده می‌کند. ردیف Ultra در کاتالوگ bundled OpenClaw
-    برای استفاده عادی chat، template thinking را به‌طور پیش‌فرض غیرفعال می‌کند. اگر لازم است
-    خروجی استدلال NVIDIA را فعال کنید یا فیلدهای درخواست اختصاصی دیگر NVIDIA را اجبار کنید،
-    params هر مدل را تنظیم کنید و overrideهای اختصاصی ارائه‌دهنده را محدود به
-    مدل NVIDIA نگه دارید:
+  <Accordion title="پارامترهای استدلال Nemotron 3 Ultra">
+    درخواست نمونه Ultra از NVIDIA برای خروجی استدلال از
+    `chat_template_kwargs.enable_thinking` و `reasoning_budget` استفاده می‌کند.
+    ردیف همراه Ultra در OpenClaw برای استفاده عادی از گفت‌وگو، تفکر الگو را
+    به‌طور پیش‌فرض غیرفعال می‌کند. اگر لازم است خروجی استدلال NVIDIA را فعال کنید
+    یا سایر فیلدهای درخواست مختص NVIDIA را اجباراً تنظیم کنید، پارامترهای هر مدل
+    را تنظیم کرده و بازنویسی‌های مختص ارائه‌دهنده را به مدل NVIDIA محدود نگه دارید:
 
     ```json5
     {
@@ -157,15 +173,21 @@ Super را انتخاب‌شده نگه دارید، یا وقتی زمینه، 
     }
     ```
 
-    `params.extra_body` override نهایی بدنه درخواست سازگار با OpenAI است، پس
-    آن را فقط برای فیلدهایی استفاده کنید که NVIDIA برای endpoint انتخاب‌شده مستند کرده است.
+    `params.chat_template_kwargs` به‌جای جایگزینی کل شیء، با هر
+    `chat_template_kwargs` موجود در درخواست ادغام می‌شود.
+    `params.extra_body` بازنویسی نهایی بدنه درخواست سازگار با OpenAI است و کلیدهای
+    متداخل داده ارسالی را بازنویسی می‌کند؛ بنابراین فقط برای فیلدهایی از آن استفاده
+    کنید که NVIDIA برای نقطه پایانی انتخاب‌شده مستند کرده است.
 
   </Accordion>
 
-  <Accordion title="Slow custom provider responses">
-    بعضی مدل‌های سفارشی میزبانی‌شده توسط NVIDIA می‌توانند پیش از انتشار نخستین قطعه پاسخ،
-    بیش از watchdog پیش‌فرض بیکاری مدل زمان ببرند. برای ورودی‌های سفارشی ارائه‌دهنده NVIDIA،
-    به‌جای افزایش timeout کل runtime عامل، timeout ارائه‌دهنده را افزایش دهید:
+  <Accordion title="پاسخ‌های کند ارائه‌دهنده سفارشی">
+    برخی مدل‌های سفارشی میزبانی‌شده توسط NVIDIA ممکن است پیش از ارسال نخستین بخش
+    پاسخ، بیشتر از زمان پیش‌فرض حدود ۱۲۰ ثانیه‌ای ناظر بی‌کاری مدل طول بکشند.
+    برای ورودی‌های ارائه‌دهنده سفارشی NVIDIA، به‌جای افزایش مهلت زمانی کل زمان
+    اجرای عامل، مهلت زمانی ارائه‌دهنده را افزایش دهید؛ `timeoutSeconds` درخواست‌های
+    HTTP ارائه‌دهنده را پوشش می‌دهد و سقف ناظر بی‌کاری/جریان را برای آن ارائه‌دهنده
+    افزایش می‌دهد:
 
     ```json5
     {
@@ -195,17 +217,18 @@ Super را انتخاب‌شده نگه دارید، یا وقتی زمینه، 
 </AccordionGroup>
 
 <Tip>
-استفاده از مدل‌های NVIDIA در حال حاضر رایگان است. برای آخرین جزئیات دسترس‌پذیری و
-محدودیت نرخ، [build.nvidia.com](https://build.nvidia.com/) را بررسی کنید.
+استفاده از مدل‌های NVIDIA درحال‌حاضر رایگان است. برای اطلاع از آخرین وضعیت
+دردسترس‌بودن و جزئیات محدودیت نرخ، به
+[build.nvidia.com](https://build.nvidia.com/) مراجعه کنید.
 </Tip>
 
 ## مرتبط
 
 <CardGroup cols={2}>
-  <Card title="Model selection" href="/fa/concepts/model-providers" icon="layers">
-    انتخاب ارائه‌دهندگان، ارجاع‌های مدل، و رفتار failover.
+  <Card title="انتخاب مدل" href="/fa/concepts/model-providers" icon="layers">
+    انتخاب ارائه‌دهندگان، ارجاع‌های مدل و رفتار جایگزینی هنگام خرابی.
   </Card>
-  <Card title="Configuration reference" href="/fa/gateway/configuration-reference" icon="gear">
-    مرجع کامل پیکربندی برای عامل‌ها، مدل‌ها، و ارائه‌دهندگان.
+  <Card title="مرجع پیکربندی" href="/fa/gateway/configuration-reference" icon="gear">
+    مرجع کامل پیکربندی برای عامل‌ها، مدل‌ها و ارائه‌دهندگان.
   </Card>
 </CardGroup>

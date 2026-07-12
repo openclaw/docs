@@ -1,11 +1,11 @@
 ---
 read_when:
-    - أنت تثبّت Plugin searxng أو تهيئه أو تراجعه.
-summary: يضيف دعم مزوّد البحث على الويب.
-title: Plugin SearXNG
+    - أنت تقوم بتثبيت Plugin ‏searxng أو تهيئته أو تدقيقه
+summary: يضيف دعم موفّر البحث على الويب.
+title: Plugin ‏SearXNG
 x-i18n:
-    generated_at: "2026-06-27T18:15:21Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:22:32Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 96d320ccd6ec69e380edfcfa33b498569058be6953257b5770cd4eea95cb401a
@@ -13,9 +13,9 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin SearXNG
+# Plugin ‏SearXNG
 
-يضيف دعم مزوّدات بحث الويب.
+يضيف دعم موفّر البحث على الويب.
 
 ## التوزيع
 

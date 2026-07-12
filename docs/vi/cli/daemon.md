@@ -1,26 +1,24 @@
 ---
 read_when:
     - Bạn vẫn sử dụng `openclaw daemon ...` trong các tập lệnh
-    - Bạn cần các lệnh vòng đời dịch vụ (install/start/stop/restart/status)
-summary: Tham chiếu CLI cho `openclaw daemon` (bí danh cũ cho quản lý dịch vụ Gateway)
-title: Trình nền
+    - Bạn cần các lệnh quản lý vòng đời dịch vụ (cài đặt/khởi động/dừng/khởi động lại/trạng thái)
+summary: Tài liệu tham khảo CLI cho `openclaw daemon` (bí danh cũ dùng để quản lý dịch vụ Gateway)
+title: Tiến trình nền
 x-i18n:
-    generated_at: "2026-06-30T14:09:44Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:49:21Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1a3ec72b22907994ecefac84b2b9e5b22bf1d922e5b2822a1c0db80f0362dade
+    source_hash: 4933885078d067ff2e077f25f14483aa5a10e3cd36951d0dc25c625d8b4d78e6
     source_path: cli/daemon.md
     workflow: 16
 ---
 
 # `openclaw daemon`
 
-Bí danh kế thừa cho các lệnh quản lý dịch vụ Gateway.
+Bí danh cũ để quản lý dịch vụ Gateway. `openclaw daemon ...` ánh xạ đến các lệnh điều khiển dịch vụ giống như `openclaw gateway ...`. Nên dùng [`openclaw gateway`](/vi/cli/gateway) trong tài liệu và ví dụ hiện tại.
 
-`openclaw daemon ...` ánh xạ tới cùng bề mặt điều khiển dịch vụ như các lệnh dịch vụ `openclaw gateway ...`.
-
-## Cách dùng
+## Cách sử dụng
 
 ```bash
 openclaw daemon status
@@ -31,45 +29,34 @@ openclaw daemon restart
 openclaw daemon uninstall
 ```
 
-## Lệnh con
+## Lệnh con và tùy chọn
 
-- `status`: hiển thị trạng thái cài đặt dịch vụ và kiểm tra sức khỏe Gateway
-- `install`: cài đặt dịch vụ (`launchd`/`systemd`/`schtasks`)
-- `uninstall`: gỡ bỏ dịch vụ
-- `start`: khởi động dịch vụ
-- `stop`: dừng dịch vụ
-- `restart`: khởi động lại dịch vụ
+| Lệnh con    | Tùy chọn                                                                                         |
+| ----------- | ------------------------------------------------------------------------------------------------ |
+| `status`    | `--url`, `--token`, `--password`, `--timeout`, `--no-probe`, `--require-rpc`, `--deep`, `--json` |
+| `install`   | `--port`, `--runtime <node\|bun>`, `--token`, `--wrapper <path>`, `--force`, `--json`            |
+| `uninstall` | `--json`                                                                                         |
+| `start`     | `--json`                                                                                         |
+| `stop`      | `--json`, `--disable` (chỉ dành cho launchd: vô hiệu hóa liên tục KeepAlive/RunAtLoad cho đến lần khởi động tiếp theo) |
+| `restart`   | `--force`, `--safe`, `--skip-deferral`, `--wait <duration>`, `--json`                            |
 
-## Tùy chọn thường dùng
+- `status`: hiển thị trạng thái cài đặt dịch vụ (launchd/systemd/schtasks) và thăm dò tình trạng của Gateway.
+- `install`: cài đặt dịch vụ; `--force` cài đặt lại/ghi đè một bản cài đặt hiện có.
+- `restart --safe`: yêu cầu Gateway đang chạy kiểm tra sơ bộ công việc đang hoạt động và lên lịch một lần khởi động lại được gộp sau khi công việc hoàn tất, với giới hạn bởi `gateway.reload.deferralTimeoutMs` (mặc định 300000ms/5 phút; đặt thành `0` để chờ vô thời hạn). Khi hết khoảng thời gian này, việc khởi động lại vẫn bị buộc thực hiện. `restart` thông thường sử dụng trực tiếp trình quản lý dịch vụ; `--force` là tùy chọn ghi đè để thực hiện ngay lập tức.
+- `restart --safe --skip-deferral`: bỏ qua cổng trì hoãn do công việc đang hoạt động để Gateway khởi động lại ngay cả khi có báo cáo về yếu tố cản trở. Yêu cầu `--safe`.
 
-- `status`: `--url`, `--token`, `--password`, `--timeout`, `--no-probe`, `--require-rpc`, `--deep`, `--json`
-- `install`: `--port`, `--runtime <node|bun>`, `--token`, `--force`, `--json`
-- `restart`: `--safe`, `--skip-deferral`, `--force`, `--wait <duration>`, `--json`
-- vòng đời (`uninstall|start|stop`): `--json`
+## Ghi chú
 
-Ghi chú:
-
-- `status` phân giải các SecretRefs xác thực đã cấu hình cho xác thực kiểm tra khi có thể.
-- Nếu một SecretRef xác thực bắt buộc chưa được phân giải trong đường dẫn lệnh này, `daemon status --json` báo cáo `rpc.authWarning` khi kết nối/xác thực kiểm tra thất bại; truyền rõ `--token`/`--password` hoặc phân giải nguồn bí mật trước.
-- Nếu kiểm tra thành công, các cảnh báo auth-ref chưa phân giải sẽ bị ẩn để tránh báo động giả.
-- `status --deep` thêm một lượt quét dịch vụ cấp hệ thống theo khả năng tốt nhất. Khi tìm thấy các dịch vụ giống Gateway khác, đầu ra dành cho người đọc sẽ in gợi ý dọn dẹp và cảnh báo rằng một Gateway trên mỗi máy vẫn là khuyến nghị thông thường.
-- `status --deep` cũng chạy xác thực cấu hình ở chế độ nhận biết Plugin và hiển thị cảnh báo manifest Plugin đã cấu hình (ví dụ thiếu siêu dữ liệu cấu hình kênh) để các kiểm tra smoke cài đặt và cập nhật phát hiện được chúng. `status` mặc định giữ đường dẫn chỉ đọc nhanh, bỏ qua xác thực Plugin.
-- Trên các bản cài đặt Linux systemd, kiểm tra sai lệch token của `status` bao gồm cả nguồn unit `Environment=` và `EnvironmentFile=`.
-- Kiểm tra sai lệch phân giải các SecretRefs `gateway.auth.token` bằng env runtime đã hợp nhất (env lệnh dịch vụ trước, rồi dự phòng bằng env tiến trình).
-- Nếu xác thực token không thực sự hoạt động (`gateway.auth.mode` rõ ràng là `password`/`none`/`trusted-proxy`, hoặc mode chưa đặt trong trường hợp mật khẩu có thể thắng và không có ứng viên token nào có thể thắng), kiểm tra sai lệch token sẽ bỏ qua phân giải token cấu hình.
-- Khi xác thực token yêu cầu token và `gateway.auth.token` do SecretRef quản lý, `install` xác thực rằng SecretRef có thể phân giải được nhưng không lưu token đã phân giải vào siêu dữ liệu môi trường dịch vụ.
-- Nếu xác thực token yêu cầu token và SecretRef token đã cấu hình chưa được phân giải, cài đặt sẽ thất bại đóng.
-- Nếu cả `gateway.auth.token` và `gateway.auth.password` đều được cấu hình và `gateway.auth.mode` chưa đặt, cài đặt sẽ bị chặn cho tới khi mode được đặt rõ ràng.
-- Trên macOS, `install` giữ các plist LaunchAgent chỉ dành cho chủ sở hữu và tải các giá trị môi trường dịch vụ được quản lý qua một tệp và wrapper chỉ dành cho chủ sở hữu thay vì tuần tự hóa API keys hoặc tham chiếu env hồ sơ xác thực vào `EnvironmentVariables`.
-- Nếu bạn chủ ý chạy nhiều Gateway trên một host, hãy cô lập cổng, cấu hình/trạng thái và workspace; xem [/gateway#multiple-gateways-same-host](/vi/gateway#multiple-gateways-same-host).
-- `restart --safe` yêu cầu Gateway đang chạy kiểm tra trước công việc đang hoạt động và lên lịch một lần khởi động lại đã gộp sau khi công việc đang hoạt động thoát hết. Khởi động lại an toàn mặc định chờ công việc đang hoạt động tối đa theo `gateway.reload.deferralTimeoutMs` đã cấu hình (mặc định 5 phút); khi hết ngân sách đó, khởi động lại sẽ bị ép buộc. Đặt `gateway.reload.deferralTimeoutMs` thành `0` để chờ an toàn vô thời hạn và không bao giờ ép buộc. `restart` thuần giữ hành vi trình quản lý dịch vụ hiện có; `--force` vẫn là đường dẫn ghi đè tức thì.
-- `restart --safe --skip-deferral` chạy khởi động lại an toàn nhận biết OpenClaw nhưng bỏ qua cổng trì hoãn công việc đang hoạt động để Gateway phát khởi động lại ngay cả khi có báo cáo blocker. Đây là lối thoát cho operator khi một lần chạy tác vụ bị kẹt giữ khởi động lại an toàn; yêu cầu `--safe`.
-
-## Nên dùng
-
-Dùng [`openclaw gateway`](/vi/cli/gateway) cho tài liệu và ví dụ hiện tại.
+- `status` phân giải các SecretRef xác thực đã cấu hình để xác thực phép thăm dò khi có thể. Nếu không phân giải được một SecretRef bắt buộc, `status --json` báo cáo `rpc.authWarning`; hãy truyền rõ `--token`/`--password` hoặc phân giải nguồn bí mật trước. Các cảnh báo xác thực chưa phân giải sẽ bị ẩn khi phép thăm dò vẫn thành công.
+- `status --deep` bổ sung quá trình quét cấp hệ thống theo khả năng tốt nhất để tìm các dịch vụ khác tương tự Gateway (in gợi ý dọn dẹp; vẫn khuyến nghị mỗi máy chỉ chạy một Gateway) và chạy xác thực cấu hình ở chế độ nhận biết Plugin, hiển thị các cảnh báo trong bản kê khai Plugin mà đường dẫn nhanh mặc định bỏ qua.
+- Trên các bản cài đặt systemd Linux, việc kiểm tra độ lệch token xem xét cả nguồn đơn vị `Environment=` và `EnvironmentFile=`.
+- Việc kiểm tra độ lệch token phân giải các SecretRef `gateway.auth.token` bằng môi trường thời gian chạy đã hợp nhất (môi trường lệnh dịch vụ trước, sau đó là môi trường tiến trình). Nếu xác thực bằng token không thực sự hoạt động (`gateway.auth.mode` là `password`/`none`/`trusted-proxy`, hoặc chưa đặt và mật khẩu có thể được ưu tiên), quá trình phân giải token cấu hình sẽ bị bỏ qua.
+- `install` xác thực rằng `gateway.auth.token` do SecretRef quản lý có thể phân giải được nhưng không bao giờ lưu giá trị đã phân giải vào siêu dữ liệu môi trường dịch vụ; nếu không thể phân giải, quá trình cài đặt sẽ dừng theo nguyên tắc an toàn.
+- Nếu cả `gateway.auth.token` và `gateway.auth.password` đều được cấu hình nhưng `gateway.auth.mode` chưa được đặt, `install` sẽ chặn cho đến khi bạn đặt chế độ rõ ràng.
+- Trên macOS, `install` giới hạn quyền truy cập các tệp plist LaunchAgent và tệp môi trường/trình bao bọc được tạo chỉ cho chủ sở hữu (chế độ `0600`/`0700`), thay vì nhúng bí mật vào `EnvironmentVariables`.
+- Chạy nhiều Gateway trên một máy chủ: tách biệt cổng, cấu hình/trạng thái và không gian làm việc. Xem [Nhiều Gateway](/vi/gateway#multiple-gateways-same-host).
 
 ## Liên quan
 
-- [Tham chiếu CLI](/vi/cli)
-- [Runbook Gateway](/vi/gateway)
+- [Tài liệu tham khảo CLI](/vi/cli)
+- [Hướng dẫn vận hành Gateway](/vi/gateway)

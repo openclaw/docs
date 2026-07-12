@@ -2,10 +2,10 @@
 read_when:
     - kilocode pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
 summary: OpenClaw'a Kilocode model sağlayıcısı desteği ekler.
-title: Kilocode Plugin
+title: Kilocode Plugin'i
 x-i18n:
-    generated_at: "2026-06-28T01:00:37Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:33:24Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 83843bd0e8a3e9944a60540a0329630f7660f8e9440c157b790ddca8655052f9
@@ -15,14 +15,14 @@ x-i18n:
 
 # Kilocode Plugin
 
-OpenClaw’a Kilocode model sağlayıcısı desteği ekler.
+OpenClaw'a Kilocode model sağlayıcısı desteği ekler.
 
 ## Dağıtım
 
 - Paket: `@openclaw/kilocode-provider`
 - Kurulum yolu: npm; ClawHub: `clawhub:@openclaw/kilocode-provider`
 
-## Yüzey
+## Kapsam
 
 sağlayıcılar: kilocode
 

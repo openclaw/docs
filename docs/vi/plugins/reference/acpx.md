@@ -1,11 +1,11 @@
 ---
 read_when:
     - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin acpx
-summary: Phần phụ trợ runtime ACP của OpenClaw với quản lý phiên và truyền tải do Plugin sở hữu.
+summary: Backend thời gian chạy ACP của OpenClaw với tính năng quản lý phiên và giao vận do Plugin đảm nhiệm.
 title: Plugin ACPx
 x-i18n:
-    generated_at: "2026-06-27T17:50:01Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:09:15Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 71e6762b6049c5eca3fa560f2d8d13a2538c2e913f9dbd9f0e2bb6b5aef160e4
@@ -15,14 +15,14 @@ x-i18n:
 
 # Plugin ACPx
 
-Backend runtime ACP của OpenClaw với quản lý phiên và transport do Plugin sở hữu.
+Backend thời gian chạy ACP của OpenClaw với khả năng quản lý phiên và phương thức truyền tải do Plugin sở hữu.
 
 ## Phân phối
 
 - Gói: `@openclaw/acpx`
-- Cách cài đặt: npm; ClawHub
+- Phương thức cài đặt: npm; ClawHub
 
-## Giao diện
+## Bề mặt
 
 Skills
 

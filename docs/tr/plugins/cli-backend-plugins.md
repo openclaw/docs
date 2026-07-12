@@ -1,52 +1,52 @@
 ---
 read_when:
-    - Yerel bir yapay zeka CLI arka uç Plugin oluşturuyorsunuz
+    - Yerel bir yapay zekâ CLI arka uç Plugin'i oluşturuyorsunuz
     - acme-cli/model gibi model referansları için bir arka uç kaydetmek istiyorsunuz
     - Üçüncü taraf bir CLI'yi OpenClaw'ın metin yedek çalıştırıcısına eşlemeniz gerekir
 sidebarTitle: CLI backend plugins
-summary: Yerel bir AI CLI arka ucu kaydeden bir Plugin oluşturun
-title: CLI arka uç Plugin'leri oluşturma
+summary: Yerel bir yapay zekâ CLI arka ucu kaydeden bir Plugin oluşturun
+title: CLI arka uç Pluginleri oluşturma
 x-i18n:
-    generated_at: "2026-06-28T00:50:57Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:27:58Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d91c2b712a821005303c6cbb0ccbd8f263c8c30c5dbd6ed05b842c47c63f0542
+    source_hash: 6448cdac02a03e5fdf0d802a54189998d97c08769b1b85c8d9963301fa2c5b79
     source_path: plugins/cli-backend-plugins.md
     workflow: 16
 ---
 
-CLI arka uç Plugin'leri, OpenClaw'ın metin çıkarımı arka ucu olarak yerel bir AI CLI'ı çağırmasını sağlar. Arka uç, model referanslarında sağlayıcı ön eki olarak görünür:
+CLI arka uç pluginleri, OpenClaw'ın metin çıkarımı arka ucu olarak yerel bir yapay zekâ CLI'ını çağırmasını sağlar. Arka uç, model referanslarında bir sağlayıcı öneki olarak görünür:
 
 ```text
 acme-cli/acme-large
 ```
 
-Yukarı akış entegrasyonu zaten yerel bir komut olarak sunuluyorsa, CLI yerel oturum açma durumuna sahipse veya API sağlayıcıları kullanılamadığında CLI kullanışlı bir yedekse CLI arka ucu kullanın.
+Üst sistem entegrasyonu zaten yerel bir komut olarak sunuluyorsa, CLI yerel oturum açma durumunu yönetiyorsa veya API sağlayıcıları kullanılamadığında yedek olarak bir CLI arka ucu kullanın.
 
 <Info>
-  Yukarı akış hizmeti normal bir HTTP model API'si sunuyorsa bunun yerine bir
-  [sağlayıcı Plugin'i](/tr/plugins/sdk-provider-plugins) yazın. Yukarı akış
-  çalışma zamanı tam aracı oturumlarına, araç olaylarına, compaction'a veya arka plan
-  görev durumuna sahipse bir [aracı harness'ı](/tr/plugins/sdk-agent-harness) kullanın.
+  Üst sistem hizmeti normal bir HTTP model API'si sunuyorsa bunun yerine bir
+  [sağlayıcı plugini](/tr/plugins/sdk-provider-plugins) yazın. Üst sistem çalışma
+  zamanı eksiksiz aracı oturumlarını, araç olaylarını, Compaction işlemini veya
+  arka plan görev durumunu yönetiyorsa bir [aracı donanımı](/tr/plugins/sdk-agent-harness) kullanın.
 </Info>
 
-## Plugin'in sahip oldukları
+## Pluginin yönettiği alanlar
 
-Bir CLI arka uç Plugin'inin üç sözleşmesi vardır:
+Bir CLI arka uç plugininin üç sözleşmesi vardır:
 
-| Sözleşme             | Dosya                  | Amaç                                                       |
+| Sözleşme             | Dosya                  | Amaç                                                      |
 | -------------------- | ---------------------- | --------------------------------------------------------- |
-| Paket girişi         | `package.json`         | OpenClaw'ı Plugin çalışma zamanı modülüne yönlendirir     |
+| Paket giriş noktası  | `package.json`         | OpenClaw'ı plugin çalışma zamanı modülüne yönlendirir      |
 | Manifest sahipliği   | `openclaw.plugin.json` | Çalışma zamanı yüklenmeden önce arka uç kimliğini bildirir |
-| Çalışma zamanı kaydı | `index.ts`             | Komut varsayılanlarıyla `api.registerCliBackend(...)` çağırır |
+| Çalışma zamanı kaydı | `index.ts`             | Komut varsayılanlarıyla `api.registerCliBackend(...)` çağrısı yapar |
 
-Manifest keşif meta verisidir. CLI'ı çalıştırmaz ve çalışma zamanı davranışını kaydetmez. Çalışma zamanı davranışı, Plugin girişi `api.registerCliBackend(...)` çağırdığında başlar.
+Manifest, keşif meta verisidir: CLI'ı çalıştırmaz veya çalışma zamanı davranışını kaydetmez. Çalışma zamanı davranışı, plugin giriş noktası `api.registerCliBackend(...)` çağrısı yaptığında başlar.
 
-## Minimal arka uç Plugin'i
+## En küçük arka uç plugini
 
 <Steps>
-  <Step title="Paket meta verisi oluştur">
+  <Step title="Paket meta verilerini oluşturun">
     ```json package.json
     {
       "name": "@acme/openclaw-acme-cli",
@@ -72,13 +72,11 @@ Manifest keşif meta verisidir. CLI'ı çalıştırmaz ve çalışma zamanı dav
     }
     ```
 
-    Yayımlanan paketler derlenmiş JavaScript çalışma zamanı dosyaları göndermelidir. Kaynak
-    girişiniz `./src/index.ts` ise derlenmiş JavaScript eş dosyasını gösteren
-    `openclaw.runtimeExtensions` ekleyin. Bkz. [Giriş noktaları](/tr/plugins/sdk-entrypoints).
+    Yayımlanan paketler, derlenmiş JavaScript çalışma zamanı dosyalarını içermelidir. Kaynak giriş noktanız `./src/index.ts` ise derlenmiş JavaScript eşini gösteren `openclaw.runtimeExtensions` alanını ekleyin. Bkz. [Giriş noktaları](/tr/plugins/sdk-entrypoints).
 
   </Step>
 
-  <Step title="Arka uç sahipliğini bildir">
+  <Step title="Arka uç sahipliğini bildirin">
     ```json openclaw.plugin.json
     {
       "id": "acme-cli",
@@ -99,16 +97,13 @@ Manifest keşif meta verisidir. CLI'ı çalıştırmaz ve çalışma zamanı dav
     }
     ```
 
-    `cliBackends`, çalışma zamanı sahiplik listesidir. Yapılandırma veya model seçimi
-    `acme-cli/...` ifadesinden bahsettiğinde OpenClaw'ın Plugin'i otomatik yüklemesini sağlar.
+    `cliBackends`, çalışma zamanı sahipliği listesidir; yapılandırma veya model seçimi `acme-cli/...` ifadesinden bahsettiğinde OpenClaw'ın plugini otomatik olarak yüklemesini sağlar.
 
-    `setup.cliBackends`, önce tanımlayıcı kurulum yüzeyidir. Model keşfi, ilk kurulum veya durumun
-    Plugin çalışma zamanı yüklenmeden arka ucu tanıması gerektiğinde ekleyin. `requiresRuntime: false`
-    yalnızca bu statik tanımlayıcılar kurulum için yeterli olduğunda kullanın.
+    `setup.cliBackends`, önce tanımlayıcı yaklaşımını kullanan kurulum yüzeyidir. Model keşfinin, ilk yapılandırmanın veya durum bilgisinin plugin çalışma zamanı yüklenmeden arka ucu tanıması gerekiyorsa bunu ekleyin. Yalnızca bu statik tanımlayıcılar kurulum için yeterliyse `requiresRuntime: false` kullanın.
 
   </Step>
 
-  <Step title="Arka ucu kaydet">
+  <Step title="Arka ucu kaydedin">
     ```typescript index.ts
     import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
     import {
@@ -163,75 +158,114 @@ Manifest keşif meta verisidir. CLI'ı çalıştırmaz ve çalışma zamanı dav
     });
     ```
 
-    Arka uç kimliği manifest `cliBackends` girdisiyle eşleşmelidir. Kaydedilen
-    `config` yalnızca varsayılandır; `agents.defaults.cliBackends.acme-cli` altındaki
-    kullanıcı yapılandırması çalışma zamanında bunun üzerine birleştirilir.
+    Arka uç kimliği, manifestteki `cliBackends` girdisiyle eşleşmelidir. Kaydedilen `config` yalnızca varsayılandır; `agents.defaults.cliBackends.acme-cli` altındaki kullanıcı yapılandırması çalışma zamanında bunun üzerine birleştirilir.
 
   </Step>
 </Steps>
 
-## Yapılandırma şekli
+## Yapılandırma biçimi
 
 `CliBackendConfig`, OpenClaw'ın CLI'ı nasıl başlatıp ayrıştırması gerektiğini açıklar:
 
-| Alan                                      | Kullanım                                                    |
-| ----------------------------------------- | ----------------------------------------------------------- |
-| `command`                                 | İkili adı veya mutlak komut yolu                            |
-| `args`                                    | Yeni çalıştırmalar için temel argv                          |
-| `resumeArgs`                              | Sürdürülen oturumlar için alternatif argv; `{sessionId}` destekler |
-| `output` / `resumeOutput`                 | Ayrıştırıcı: `json`, `jsonl` veya `text`                    |
-| `input`                                   | İstem taşıma: `arg` veya `stdin`                            |
-| `modelArg`                                | Model kimliğinden önce kullanılan bayrak                    |
-| `modelAliases`                            | OpenClaw model kimliklerini CLI'a özgü kimliklerle eşler    |
-| `sessionArg` / `sessionArgs`              | Oturum kimliğinin nasıl geçirileceği                        |
-| `sessionMode`                             | `always`, `existing` veya `none`                            |
-| `sessionIdFields`                         | OpenClaw'ın CLI çıktısından okuduğu JSON alanları           |
-| `systemPromptArg` / `systemPromptFileArg` | Sistem istemi taşıma                                        |
-| `systemPromptWhen`                        | `first`, `always` veya `never`                              |
-| `imageArg` / `imageMode`                  | Görsel yolu desteği                                         |
-| `serialize`                               | Aynı arka uç çalıştırmalarını sıralı tut                    |
-| `reliability.watchdog`                    | Çıktı yok zaman aşımı ayarı                                 |
+| Alan                                                      | Kullanım                                                                           |
+| --------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `command`                                                 | İkili dosya adı veya mutlak komut yolu                                              |
+| `args`                                                    | Yeni çalıştırmalar için temel argv                                                  |
+| `resumeArgs`                                              | Sürdürülen oturumlar için alternatif argv; `{sessionId}` destekler                 |
+| `output` / `resumeOutput`                                 | Ayrıştırıcı: `json`, `jsonl` veya `text`                                           |
+| `jsonlDialect`                                            | JSONL olay lehçesi: `claude-stream-json` veya `gemini-stream-json`                 |
+| `liveSession`                                             | Uzun ömürlü CLI işlemi modu (`claude-stdio`)                                        |
+| `input`                                                   | İstem aktarımı: `arg` veya `stdin`                                                  |
+| `maxPromptArgChars`                                       | stdin'e geri dönmeden önce `arg` modu için en fazla istem uzunluğu                 |
+| `env` / `clearEnv`                                        | Eklenecek ek ortam değişkenleri veya başlatmadan önce kaldırılacak adlar            |
+| `modelArg`                                                | Model kimliğinden önce kullanılan bayrak                                            |
+| `modelAliases`                                            | OpenClaw model kimliklerini CLI'ın yerel kimlikleriyle eşleştirir                   |
+| `sessionArg` / `sessionArgs`                              | Oturum kimliğinin nasıl geçirileceği                                                |
+| `sessionMode`                                             | `always`, `existing` veya `none`                                                    |
+| `sessionIdFields`                                         | OpenClaw'ın CLI çıktısından okuduğu JSON alanları                                   |
+| `systemPromptArg` / `systemPromptFileArg`                 | Sistem istemi aktarımı                                                              |
+| `systemPromptFileConfigArg` / `systemPromptFileConfigKey` | Sistem istemi dosyası için yapılandırma geçersiz kılma aktarımı (örneğin `-c`)      |
+| `systemPromptMode`                                        | `append` veya `replace`                                                             |
+| `systemPromptWhen`                                        | `first`, `always` veya `never`                                                      |
+| `imageArg` / `imageMode`                                  | Görsel yolu bayrağı ve birden fazla görselin nasıl geçirileceği (`repeat` veya `list`) |
+| `imagePathScope`                                          | Aktarım öncesinde hazırlanmış görsel dosyalarının bulunduğu yer: `temp` veya `workspace` |
+| `serialize`                                               | Aynı arka uçtaki çalıştırmaları sıralı tutar                                        |
+| `reseedFromRawTranscriptWhenUncompacted`                  | Güvenli oturum sıfırlamaları için Compaction öncesinde sınırlı ham döküm yeniden beslemesini etkinleştirir |
+| `reliability.outputLimits`                                | Tek bir canlı CLI turu için tutulan azami ham JSONL karakter/satır sayısı (canlı oturum arka uçları) |
+| `reliability.watchdog`                                    | Yeni ve sürdürülen çalıştırmalar için ayrı ayrı çıktısız zaman aşımı ayarı          |
 
 CLI ile eşleşen en küçük statik yapılandırmayı tercih edin. Plugin geri çağrılarını yalnızca gerçekten arka uca ait davranışlar için ekleyin.
 
-## Gelişmiş arka uç hook'ları
+## Gelişmiş arka uç kancaları
 
-`CliBackendPlugin` şunları da tanımlayabilir:
+`CliBackendPlugin` ayrıca şunları tanımlayabilir:
 
-| Hook                               | Kullanım                                                                    |
+| Kanca                              | Kullanım                                                                    |
 | ---------------------------------- | --------------------------------------------------------------------------- |
-| `normalizeConfig(config, context)` | Birleştirme sonrası eski kullanıcı yapılandırmasını yeniden yaz             |
-| `resolveExecutionArgs(ctx)`        | Düşünme çabası veya yan soru yalıtımı gibi istek kapsamlı bayraklar ekle    |
-| `prepareExecution(ctx)`            | Başlatmadan önce geçici kimlik doğrulama veya yapılandırma köprüleri oluştur |
-| `transformSystemPrompt(ctx)`       | Son bir CLI'a özgü sistem istemi dönüşümü uygula                            |
+| `normalizeConfig(config, context)` | Birleştirmeden sonra eski kullanıcı yapılandırmasını yeniden yazar          |
+| `resolveExecutionArgs(ctx)`        | Düşünme yoğunluğu veya yan soru yalıtımı gibi istek kapsamlı bayraklar ekler |
+| `prepareExecution(ctx)`            | Başlatmadan önce geçici kimlik doğrulama veya yapılandırma köprüleri oluşturur |
+| `transformSystemPrompt(ctx)`       | Son bir CLI'a özgü sistem istemi dönüşümü uygular                            |
 | `textTransforms`                   | Çift yönlü istem/çıktı değiştirmeleri                                       |
-| `defaultAuthProfileId`             | Belirli bir OpenClaw kimlik doğrulama profilini tercih et                   |
-| `authEpochMode`                    | Kimlik doğrulama değişikliklerinin saklanan CLI oturumlarını nasıl geçersiz kılacağını belirle |
-| `nativeToolMode`                   | CLI'ın her zaman açık yerel araçları olup olmadığını bildir                 |
-| `sideQuestionToolMode`             | `/btw` yan soruları için devre dışı yerel araçları bildir                   |
-| `bundleMcp` / `bundleMcpMode`      | OpenClaw'ın loopback MCP araç köprüsüne katıl                               |
-| `ownsNativeCompaction`             | Arka uç kendi compaction'ına sahiptir - OpenClaw erteler                    |
+| `defaultAuthProfileId`             | Belirli bir OpenClaw kimlik doğrulama profilini tercih eder                  |
+| `authEpochMode`                    | Kimlik doğrulama değişikliklerinin saklanan CLI oturumlarını nasıl geçersiz kılacağını belirler |
+| `nativeToolMode`                   | Yerel araçların bulunmadığını, her zaman açık olduğunu veya ana makine tarafından seçilebildiğini bildirir |
+| `sideQuestionToolMode`             | `/btw` yan soruları için devre dışı bırakılan yerel araçları bildirir        |
+| `bundleMcp` / `bundleMcpMode`      | OpenClaw'ın loopback MCP araç köprüsünü etkinleştirir                        |
+| `ownsNativeCompaction`             | Arka uç kendi Compaction işlemini yönetir; OpenClaw bunu arka uca bırakır    |
+| `runtimeArtifact`                  | Bir betik başlatıcısını eksiksiz paketlenmiş paket ağacıyla sınırlar         |
 
-Bu hook'ları sağlayıcının sahipliğinde tutun. Bir arka uç hook'ı davranışı ifade edebiliyorsa çekirdeğe CLI'a özgü dallar eklemeyin.
+Bu kancaları sağlayıcının yönetiminde tutun. Davranış bir arka uç kancasıyla ifade edilebiliyorsa çekirdeğe CLI'a özgü dallar eklemeyin.
 
-`ctx.executionMode`, normal dönüşler için `"agent"` ve geçici `/btw` çağrıları için `"side-question"` değeridir. CLI'ın BTW için yerel araçları, oturum kalıcılığını veya sürdürme davranışını devre dışı bırakmak gibi farklı tek seferlik bayraklara ihtiyacı olduğunda bunu kullanın. Bir arka uç normalde `nativeToolMode: "always-on"` değerine sahipse ancak yan soru argv'si bu araçları güvenilir biçimde devre dışı bırakıyorsa `sideQuestionToolMode: "disabled"` da ayarlayın; aksi halde BTW araçsız CLI çalıştırması gerektirdiğinde OpenClaw güvenli şekilde kapalı kalır.
+`runtimeArtifact` plugin tarafından yönetilir ve kullanıcı tarafından geçersiz kılınamaz. Yalnızca canlı bir çıkarım turu doğrulanmış kurulum yetkisi oluşturduğunda veya bunu yeniden doğruladığında kullanılır; normal CLI çalıştırmaları bunu gerektirmez. Bu bildirime sahip olmayan bir arka uç, doğrulanmış CLI kurulum yetkisi oluşturamaz. Bir `bundled-package-tree` bildirimi, tam `package.json` sahibini adlandırır ve paket giriş noktasının komut olmasını gerektirir. OpenClaw, iç içe bağımlılıklar dâhil olmak üzere sınırlandırılmış eksiksiz kurulu paket ağacının karmasını hesaplar ve başka yere yönlendiren sembolik bağlantılar, bildirilen paketin dışındaki başlatıcılar, gerekli harici bağımlılık bildirimleri, aşırı büyük ağaçlar ve bilinmeyen betikler için güvenli biçimde işlemi reddeder. Bunu yalnızca söz konusu ağaç eksiksiz çıkarım uygulamasını içeriyorsa bildirin; isteğe bağlı araç entegrasyonları harici bir uygulama grafiğini güvenli hâle getirmez.
 
-### `ownsNativeCompaction`: OpenClaw compaction'ından çıkma
+Aynı arka uç kendi kendine yeterli yerel bir yürütülebilir dosya da sağlıyorsa bunun standart temel adlarını `nativeExecutableNames` içinde listeleyin. Kullanıcı arka uç komutunu geçersiz kılsa bile diğer yerel komutlar doğrulanmamış olarak kalır.
 
-Arka ucunuz **kendi** transkriptini sıkıştıran bir aracı çalıştırıyorsa
-`ownsNativeCompaction: true` ayarlayın; böylece OpenClaw'ın koruma özetleyicisi onun oturumlarında asla çalışmaz - CLI compaction yaşam döngüsü no-op döndürür ve dönüş devam eder. `claude-cli`, Claude Code dahili olarak ve harness uç noktası olmadan sıkıştırdığı için bunu bildirir. Codex gibi yerel harness oturumları bunun yerine harness compaction uç noktalarına yönlendirilmeye devam eder.
+`ctx.executionMode`, normal turlar için `"agent"`, geçici `/btw` çağrıları için
+`"side-question"` değeridir. CLI, BTW için yerel araçları, oturum kalıcılığını
+veya sürdürme davranışını devre dışı bırakmak gibi farklı tek seferlik bayraklara
+ihtiyaç duyduğunda bunu kullanın. Bir arka uç normalde `nativeToolMode:
+"always-on"` değerine sahipse ancak yan soru argv'si bu araçları güvenilir biçimde
+devre dışı bırakıyorsa `sideQuestionToolMode: "disabled"` değerini de ayarlayın;
+aksi takdirde BTW araçsız bir CLI çalıştırması gerektirdiğinde OpenClaw güvenli
+biçimde başarısız olur.
 
-**Bunu yalnızca aşağıdakilerin tümü geçerliyse bildirin**, aksi halde ertelenmiş bütçe üstü bir oturum bütçe üstünde kalabilir / bayatlayabilir (OpenClaw artık onu kurtarmaz):
+`nativeToolMode: "selectable"` değerini yalnızca `resolveExecutionArgs`, tek bir
+çalıştırma için arka uca özgü tüm araçları devre dışı bırakabiliyorsa ayarlayın.
+Bu kısıtlı çalıştırmalarda `ctx.toolAvailability.native` boş bir demettir ve
+`ctx.toolAvailability.mcp`, ana bilgisayar tarafından yalıtılmış tam MCP izin
+listesidir. Kanca, çakışan araç bayraklarını değiştirmeli ve her iki değeri de
+uygulayan argv'yi döndürmelidir; OpenClaw bunu son yeni veya sürdürme argv'siyle
+bir kez çağırır ve arka uç kısıtlamayı uygulayamadığında güvenli biçimde başarısız
+olur. Bu bağlamdaki MCP adlarının otomatik olarak onaylanması yalnızca ana
+bilgisayarın oluşturulan MCP yapılandırmasını zaten bu sunucular ve araçlarla
+sınırlandırmış olması nedeniyle güvenlidir.
 
-- arka uç, penceresine yaklaştıkça kendi transkriptini güvenilir biçimde sıkıştırır veya sınırlar;
-- sıkıştırılmış durumun dönüşler arasında kalması için sürdürülebilir bir oturum saklar
-  (örn. `--resume` / `--session-id`);
-- yerel harness compaction oturumu değildir - eşleşen `agentHarnessId` oturumları
-  bunun yerine harness uç noktasına yönlendirilir.
+### `ownsNativeCompaction`: OpenClaw Compaction özelliğini devre dışı bırakma
+
+Arka ucunuz **kendi** dökümünü sıkıştıran bir ajan çalıştırıyorsa OpenClaw'ın
+koruyucu özetleyicisinin bu oturumlarda hiçbir zaman çalışmaması için
+`ownsNativeCompaction: true` değerini ayarlayın; CLI Compaction yaşam döngüsü
+işlem yapmadan döner ve tur devam eder. `claude-cli`, Claude Code herhangi bir
+çalıştırma düzeneği uç noktası olmadan dahili olarak sıkıştırma yaptığı için bunu
+bildirir. Codex gibi yerel çalıştırma düzeneği oturumları ise bunun yerine
+çalıştırma düzeneklerinin Compaction uç noktasına yönlendirilmeye devam eder.
+
+**Bunu yalnızca aşağıdakilerin tümü geçerliyse bildirin**; aksi takdirde ertelenmiş
+ve bütçeyi aşmış bir oturum bütçeyi aşmaya devam edebilir veya eskimeye
+başlayabilir (OpenClaw artık onu kurtarmaz):
+
+- arka uç, penceresine yaklaştıkça kendi dökümünü güvenilir biçimde sıkıştırır
+  veya sınırlar;
+- sıkıştırılmış durumun turlar arasında korunması için sürdürülebilir bir oturumu
+  kalıcılaştırır (örneğin `--resume` / `--session-id`);
+- yerel çalıştırma düzeneği Compaction oturumu değildir; eşleşen `agentHarnessId`
+  oturumları bunun yerine çalıştırma düzeneği uç noktasına yönlendirilir.
 
 ## MCP araç köprüsü
 
-CLI arka uçları varsayılan olarak OpenClaw araçlarını almaz. CLI bir MCP yapılandırmasını tüketebiliyorsa açıkça dahil edin:
+CLI arka uçları varsayılan olarak OpenClaw araçlarını almaz. CLI bir MCP
+yapılandırmasını kullanabiliyorsa bunu açıkça etkinleştirin:
 
 ```typescript
 return {
@@ -246,16 +280,20 @@ return {
 };
 ```
 
-Desteklenen köprü modları şunlardır:
+Desteklenen köprü modları:
 
-| Mod                      | Kullanım                                                        |
-| ------------------------ | --------------------------------------------------------------- |
-| `claude-config-file`     | MCP yapılandırma dosyası kabul eden CLI'lar                     |
-| `codex-config-overrides` | argv üzerinde yapılandırma geçersiz kılmaları kabul eden CLI'lar |
-| `gemini-system-settings` | MCP ayarlarını sistem ayarları dizininden okuyan CLI'lar        |
+| Mod                      | Kullanım                                                            |
+| ------------------------ | ------------------------------------------------------------------- |
+| `claude-config-file`     | Bir MCP yapılandırma dosyasını kabul eden CLI'lar                    |
+| `codex-config-overrides` | argv üzerinde yapılandırma geçersiz kılmalarını kabul eden CLI'lar  |
+| `gemini-system-settings` | MCP ayarlarını sistem ayarları dizininden okuyan CLI'lar             |
 
-Köprüyü yalnızca CLI gerçekten tüketebiliyorsa etkinleştirin. CLI'ın devre dışı bırakılamayan kendi yerleşik araç katmanı varsa `nativeToolMode:
-"always-on"` ayarlayın; böylece çağıran taraf yerel araç istemediğinde OpenClaw güvenli şekilde kapalı kalabilir.
+Köprüyü yalnızca CLI gerçekten kullanabiliyorsa etkinleştirin. CLI'ın devre dışı
+bırakılamayan kendi yerleşik araç katmanı varsa OpenClaw'ın bir çağıran yerel
+araçların bulunmamasını gerektirdiğinde güvenli biçimde başarısız olabilmesi için
+`nativeToolMode: "always-on"` değerini ayarlayın. Her yerel aracı çalıştırma
+başına devre dışı bırakabiliyorsa yukarıdaki `resolveExecutionArgs` sözleşmesiyle
+`"selectable"` değerini kullanın.
 
 ## Kullanıcı yapılandırması
 
@@ -275,7 +313,7 @@ Kullanıcılar herhangi bir arka uç varsayılanını geçersiz kılabilir:
         },
       },
       model: {
-        primary: "openai/gpt-5.5",
+        primary: "openai/gpt-5.6-sol",
         fallbacks: ["acme-cli/large"],
       },
     },
@@ -283,39 +321,45 @@ Kullanıcılar herhangi bir arka uç varsayılanını geçersiz kılabilir:
 }
 ```
 
-Kullanıcıların ihtiyaç duyması muhtemel en küçük geçersiz kılmayı belgeleyin. Bu genellikle yalnızca ikili `PATH` dışında olduğunda `command` olur.
+Kullanıcıların ihtiyaç duyma olasılığı bulunan asgari geçersiz kılmayı
+belgeleyin; ikili dosya `PATH` dışında olduğunda bu genellikle yalnızca
+`command` olur.
 
 ## Doğrulama
 
-Paketle gelen pluginler için, builder ve kurulum kaydı etrafında odaklı bir test ekleyin, ardından pluginin hedeflenen test hattını çalıştırın:
+Paketle gelen pluginler için oluşturucu ve kurulum kaydı çevresine odaklanmış
+bir test ekleyin, ardından pluginin hedeflenmiş test hattını çalıştırın:
 
 ```bash
 pnpm test extensions/acme-cli
 ```
 
-Yerel veya yüklü pluginler için keşfi ve bir gerçek model çalıştırmasını doğrulayın:
+Yerel veya kurulu pluginler için keşfi ve gerçek bir model çalıştırmasını
+doğrulayın:
 
 ```bash
 openclaw plugins inspect acme-cli --runtime --json
 openclaw agent --message "reply exactly: backend ok" --model acme-cli/acme-large
 ```
 
-Backend görüntüleri veya MCP'yi destekliyorsa, bu yolları gerçek CLI ile kanıtlayan canlı bir smoke testi ekleyin. İstem, görüntü, MCP veya oturum sürdürme davranışı için statik incelemeye güvenmeyin.
+Arka uç görüntüleri veya MCP'yi destekliyorsa bu yolları gerçek CLI ile
+kanıtlayan canlı bir duman testi ekleyin. İstem, görüntü, MCP veya oturum
+sürdürme davranışı için statik incelemeye güvenmeyin.
 
-## Kontrol Listesi
+## Kontrol listesi
 
-<Check>`package.json`, yayımlanan paketler için `openclaw.extensions` ve derlenmiş runtime girişlerine sahip</Check>
-<Check>`openclaw.plugin.json`, `cliBackends` ve kasıtlı `activation.onStartup` bildirir</Check>
-<Check>Kurulum/model keşfinin backend'i soğuk halde görmesi gerektiğinde `setup.cliBackends` mevcut</Check>
-<Check>`api.registerCliBackend(...)`, manifest ile aynı backend kimliğini kullanır</Check>
-<Check>`agents.defaults.cliBackends.<id>` altındaki kullanıcı geçersiz kılmaları hâlâ önceliklidir</Check>
-<Check>Oturum, sistem istemi, görüntü ve çıktı ayrıştırıcı ayarları gerçek CLI sözleşmesiyle eşleşir</Check>
-<Check>Hedeflenen testler ve en az bir canlı CLI smoke testi backend yolunu kanıtlar</Check>
+<Check>`package.json`, yayımlanan paketler için `openclaw.extensions` ve derlenmiş çalışma zamanı girdileri içeriyor</Check>
+<Check>`openclaw.plugin.json`, `cliBackends` ve bilinçli olarak seçilmiş `activation.onStartup` değerini bildiriyor</Check>
+<Check>Kurulum/model keşfinin arka ucu soğuk durumda görmesi gerekiyorsa `setup.cliBackends` mevcut</Check>
+<Check>`api.registerCliBackend(...)`, manifest ile aynı arka uç kimliğini kullanıyor</Check>
+<Check>`agents.defaults.cliBackends.<id>` altındaki kullanıcı geçersiz kılmaları hâlâ öncelikli</Check>
+<Check>Oturum, sistem istemi, görüntü ve çıktı ayrıştırıcı ayarları gerçek CLI sözleşmesiyle eşleşiyor</Check>
+<Check>Hedeflenmiş testler ve en az bir canlı CLI duman testi arka uç yolunu kanıtlıyor</Check>
 
 ## İlgili
 
-- [CLI backendleri](/tr/gateway/cli-backends) - kullanıcı yapılandırması ve runtime davranışı
+- [CLI arka uçları](/tr/gateway/cli-backends) - kullanıcı yapılandırması ve çalışma zamanı davranışı
 - [Plugin oluşturma](/tr/plugins/building-plugins) - paket ve manifest temelleri
-- [Plugin SDK genel bakışı](/tr/plugins/sdk-overview) - kayıt API başvurusu
+- [Plugin SDK'ya genel bakış](/tr/plugins/sdk-overview) - kayıt API'si başvurusu
 - [Plugin manifesti](/tr/plugins/manifest) - `cliBackends` ve kurulum tanımlayıcıları
-- [Agent harness](/tr/plugins/sdk-agent-harness) - tam harici agent runtimeları
+- [Ajan çalıştırma düzeneği](/tr/plugins/sdk-agent-harness) - tam harici ajan çalışma zamanları

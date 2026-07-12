@@ -1,11 +1,11 @@
 ---
 read_when:
     - Stai installando, configurando o verificando il plugin arcee
-summary: Aggiunge il supporto del provider di modelli Arcee a OpenClaw.
+summary: Aggiunge a OpenClaw il supporto per il provider di modelli Arcee.
 title: Plugin Arcee
 x-i18n:
-    generated_at: "2026-06-27T17:54:09Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:18:14Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 9d4880c859c2498ce3708834cdc62a8ff6babb0571672b99d62cc5c2c7299f8e
@@ -15,12 +15,12 @@ x-i18n:
 
 # Plugin Arcee
 
-Aggiunge il supporto del provider di modelli Arcee a OpenClaw.
+Aggiunge a OpenClaw il supporto per il provider di modelli Arcee.
 
 ## Distribuzione
 
 - Pacchetto: `@openclaw/arcee-provider`
-- Percorso di installazione: npm; ClawHub: `clawhub:@openclaw/arcee-provider`
+- Metodo di installazione: npm; ClawHub: `clawhub:@openclaw/arcee-provider`
 
 ## Superficie
 

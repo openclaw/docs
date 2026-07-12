@@ -1,64 +1,63 @@
 ---
 read_when:
-    - کار روی پروتکل Gateway، کلاینت‌ها یا سازوکارهای انتقال
-summary: معماری Gateway وب‌سوکت، اجزا، و جریان‌های کلاینت
+    - کار روی پروتکل Gateway، کلاینت‌ها یا انتقال‌ها
+summary: معماری Gateway مبتنی بر WebSocket، مؤلفه‌ها و جریان‌های کلاینت
 title: معماری Gateway
 x-i18n:
-    generated_at: "2026-05-06T09:09:08Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:48:50Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 433489081bfe07691b211f5076ec45ce0ed3fd043eb86128f73121f2cab71cd3
+    source_hash: f8054bd87f738b957c24f8d6965d55365de2293d44902530a9ba778afa597cc7
     source_path: concepts/architecture.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 ## نمای کلی
 
-- یک **Gateway** واحد و دیرپا مالک همه سطوح پیام‌رسانی است (WhatsApp از طریق
-  Baileys، Telegram از طریق grammY، Slack، Discord، Signal، iMessage، WebChat).
-- کلاینت‌های سطح کنترل (برنامه macOS، CLI، رابط وب، خودکارسازی‌ها) از طریق
-  **وب‌سوکت** روی میزبان bind پیکربندی‌شده (پیش‌فرض
-  `127.0.0.1:18789`) به Gateway وصل می‌شوند.
-- **نودها** (macOS/iOS/Android/headless) نیز از طریق **وب‌سوکت** وصل می‌شوند، اما
-  `role: node` را با caps/commands صریح اعلام می‌کنند.
-- برای هر میزبان یک Gateway وجود دارد؛ تنها جایی است که یک نشست WhatsApp را باز می‌کند.
-- **میزبان canvas** توسط سرور HTTP Gateway در مسیرهای زیر ارائه می‌شود:
+- یک **Gateway** واحد و با عمر طولانی، مالک همه بسترهای پیام‌رسانی است (WhatsApp از طریق
+  Baileys، Telegram از طریق grammY، Slack، Discord، Signal، iMessage و WebChat).
+- کلاینت‌های صفحه کنترل (برنامه macOS، CLI، رابط وب و خودکارسازی‌ها) از طریق
+  **WebSocket** روی میزبان اتصال پیکربندی‌شده (پیش‌فرض
+  `127.0.0.1:18789`) به Gateway متصل می‌شوند.
+- **Nodeها** (macOS/iOS/Android/بدون رابط) نیز از طریق **WebSocket** متصل می‌شوند، اما
+  `role: node` را همراه با قابلیت‌ها/فرمان‌های صریح اعلام می‌کنند.
+- برای هر میزبان یک Gateway وجود دارد؛ تنها همین Gateway نشست WhatsApp را باز می‌کند.
+- **میزبان canvas** توسط سرور HTTP متعلق به Gateway در مسیرهای زیر ارائه می‌شود:
   - `/__openclaw__/canvas/` (HTML/CSS/JS قابل ویرایش توسط عامل)
   - `/__openclaw__/a2ui/` (میزبان A2UI)
-    از همان پورت Gateway استفاده می‌کند (پیش‌فرض `18789`).
+
+  این میزبان از همان درگاه Gateway استفاده می‌کند (پیش‌فرض `18789`).
 
 ## مؤلفه‌ها و جریان‌ها
 
-### Gateway (daemon)
+### Gateway (سرویس پس‌زمینه)
 
-- اتصال‌های provider را نگه می‌دارد.
-- یک API نوع‌دار WS را ارائه می‌کند (درخواست‌ها، پاسخ‌ها، رویدادهای server-push).
-- فریم‌های ورودی را با JSON Schema اعتبارسنجی می‌کند.
-- رویدادهایی مانند `agent`، `chat`، `presence`، `health`، `heartbeat`، `cron` منتشر می‌کند.
+- اتصال‌های ارائه‌دهندگان را نگه می‌دارد.
+- یک API نوع‌دار WS ارائه می‌کند (درخواست‌ها، پاسخ‌ها و رویدادهای ارسالی سرور).
+- فریم‌های ورودی را در برابر JSON Schema اعتبارسنجی می‌کند.
+- رویدادهایی مانند `agent`، `chat`، `presence`، `health`، `heartbeat` و `cron` منتشر می‌کند.
 
-### کلاینت‌ها (برنامه mac / CLI / مدیریت وب)
+### کلاینت‌ها (برنامه مک / CLI / مدیریت وب)
 
-- برای هر کلاینت یک اتصال WS.
-- درخواست‌ها را می‌فرستند (`health`، `status`، `send`، `agent`، `system-presence`).
-- در رویدادها عضو می‌شوند (`tick`، `agent`، `presence`، `shutdown`).
+- برای هر کلاینت یک اتصال WS برقرار می‌شود.
+- درخواست‌ها را ارسال می‌کنند (`health`، `status`، `send`، `agent`، `system-presence`).
+- مشترک رویدادها می‌شوند (`tick`، `agent`، `presence`، `shutdown`).
 
-### نودها (macOS / iOS / Android / headless)
+### Nodeها (macOS / iOS / Android / بدون رابط)
 
-- با `role: node` به **همان سرور WS** وصل می‌شوند.
-- در `connect` یک هویت دستگاه ارائه می‌کنند؛ pairing **مبتنی بر دستگاه** است (نقش `node`) و
-  تأیید در مخزن pairing دستگاه نگهداری می‌شود.
-- فرمان‌هایی مانند `canvas.*`، `camera.*`، `screen.record`، `location.get` را ارائه می‌کنند.
+- با `role: node` به **همان سرور WS** متصل می‌شوند.
+- در `connect` یک هویت دستگاه ارائه می‌کنند؛ جفت‌سازی **مبتنی بر دستگاه** است (نقش `node`) و
+  تأیید در مخزن جفت‌سازی دستگاه نگهداری می‌شود.
+- فرمان‌هایی مانند `canvas.*`، `camera.*`، `screen.record` و `location.get` را ارائه می‌کنند.
 
-جزئیات پروتکل:
-
-- [پروتکل Gateway](/fa/gateway/protocol)
+جزئیات پروتکل: [پروتکل Gateway](/fa/gateway/protocol)
 
 ### WebChat
 
-- رابط ایستایی که از API وب‌سوکت Gateway برای تاریخچه گفت‌وگو و ارسال‌ها استفاده می‌کند.
-- در راه‌اندازی‌های ریموت، از همان تونل SSH/Tailscale مانند سایر
-  کلاینت‌ها وصل می‌شود.
+- رابط کاربری ایستایی است که برای تاریخچه گفتگو و ارسال پیام از API مبتنی بر WS متعلق به Gateway استفاده می‌کند.
+- در راه‌اندازی‌های راه دور، از طریق همان تونل SSH/Tailscale مورد استفاده سایر
+  کلاینت‌ها متصل می‌شود.
 
 ## چرخه عمر اتصال (یک کلاینت)
 
@@ -81,82 +80,81 @@ sequenceDiagram
     Gateway-->>Client: res:agent<br>final {runId, status, summary}
 ```
 
-## پروتکل سیمی (خلاصه)
+## پروتکل انتقال (خلاصه)
 
-- انتقال: وب‌سوکت، فریم‌های متنی با payloadهای JSON.
-- فریم اول **باید** `connect` باشد.
-- پس از handshake:
+- انتقال: WebSocket، با فریم‌های متنی حاوی بارهای JSON.
+- نخستین فریم **باید** `connect` باشد.
+- پس از دست‌دهی:
   - درخواست‌ها: `{type:"req", id, method, params}` → `{type:"res", id, ok, payload|error}`
   - رویدادها: `{type:"event", event, payload, seq?, stateVersion?}`
-- `hello-ok.features.methods` / `events` فراداده discovery هستند، نه
-  dump تولیدشده از هر مسیر helper قابل فراخوانی.
-- احراز هویت shared-secret بسته به حالت احراز هویت gateway پیکربندی‌شده، از
-  `connect.params.auth.token` یا
-  `connect.params.auth.password` استفاده می‌کند.
+- `hello-ok.features.methods` / `events` فراداده‌های شناسایی هستند، نه
+  خروجی تولیدشده‌ای از تمام مسیرهای کمکی قابل فراخوانی.
+- احراز هویت با راز مشترک، بسته به حالت احراز هویت پیکربندی‌شده Gateway، از
+  `connect.params.auth.token` یا `connect.params.auth.password` استفاده می‌کند.
 - حالت‌های دارای هویت مانند Tailscale Serve
-  (`gateway.auth.allowTailscale: true`) یا non-loopback
-  `gateway.auth.mode: "trusted-proxy"` احراز هویت را به‌جای `connect.params.auth.*`
-  از headerهای درخواست تأمین می‌کنند.
-- `gateway.auth.mode: "none"` برای private-ingress احراز هویت shared-secret را
-  کاملاً غیرفعال می‌کند؛ این حالت را برای ingress عمومی/نامطمئن خاموش نگه دارید.
-- کلیدهای idempotency برای متدهای دارای اثر جانبی (`send`، `agent`) لازم‌اند تا
-  retry ایمن باشد؛ سرور یک cache کوتاه‌عمر dedupe نگه می‌دارد.
-- نودها باید `role: "node"` به‌علاوه caps/commands/permissions را در `connect` شامل کنند.
+  (`gateway.auth.allowTailscale: true`) یا
+  `gateway.auth.mode: "trusted-proxy"` در اتصال‌های غیر local loopback، احراز هویت را به‌جای
+  `connect.params.auth.*` از سربرگ‌های درخواست انجام می‌دهند.
+- `gateway.auth.mode: "none"` برای ورودی خصوصی، احراز هویت با راز مشترک را
+  به‌طور کامل غیرفعال می‌کند؛ این حالت را برای ورودی عمومی/غیرقابل‌اعتماد غیرفعال نگه دارید.
+- کلیدهای هم‌توانی برای روش‌های دارای اثر جانبی (`send`، `agent`) الزامی‌اند تا
+  تلاش مجدد ایمن باشد؛ سرور یک حافظه نهان کوتاه‌عمر برای حذف موارد تکراری نگه می‌دارد.
+- Nodeها باید `role: "node"` را همراه با قابلیت‌ها/فرمان‌ها/مجوزها در `connect` قرار دهند.
 
-## Pairing + اعتماد محلی
+## جفت‌سازی و اعتماد محلی
 
-- همه کلاینت‌های WS (اپراتورها + نودها) هنگام `connect` یک **هویت دستگاه** دارند.
-- شناسه‌های دستگاه جدید به تأیید pairing نیاز دارند؛ Gateway برای اتصال‌های بعدی یک **توکن دستگاه**
+- همه کلاینت‌های WS (گردانندگان + Nodeها) هنگام `connect` یک **هویت دستگاه** ارائه می‌کنند.
+- شناسه‌های دستگاه جدید به تأیید جفت‌سازی نیاز دارند؛ Gateway برای اتصال‌های بعدی یک **توکن دستگاه**
   صادر می‌کند.
-- اتصال‌های مستقیم local loopback می‌توانند خودکار تأیید شوند تا تجربه همان میزبان
-  روان بماند.
-- OpenClaw همچنین یک مسیر محدود self-connect محلیِ backend/container برای
-  جریان‌های helper قابل اعتماد با shared-secret دارد.
-- اتصال‌های tailnet و LAN، از جمله bindهای tailnet روی همان میزبان، همچنان به
-  تأیید صریح pairing نیاز دارند.
-- همه اتصال‌ها باید nonce مربوط به `connect.challenge` را امضا کنند.
-- payload امضای `v3` همچنین `platform` + `deviceFamily` را bind می‌کند؛ gateway
-  فراداده paired را هنگام reconnect pin می‌کند و برای تغییرات فراداده به repair pairing نیاز دارد.
+- اتصال‌های مستقیم local loopback می‌توانند به‌طور خودکار تأیید شوند تا تجربه کاربری روی همان میزبان
+  روان باقی بماند.
+- OpenClaw همچنین یک مسیر محدود اتصال به خود در محدوده محلی بک‌اند/کانتینر برای
+  جریان‌های کمکی قابل‌اعتماد مبتنی بر راز مشترک دارد.
+- اتصال‌های Tailnet و LAN، از جمله اتصال‌های Tailnet روی همان میزبان، همچنان به
+  تأیید صریح جفت‌سازی نیاز دارند.
+- همه اتصال‌ها باید مقدار nonce در `connect.challenge` را امضا کنند. بار امضای `v3`
+  همچنین `platform` و `deviceFamily` را مقید می‌کند؛ Gateway هنگام اتصال مجدد، فراداده جفت‌شده را
+  ثابت نگه می‌دارد و برای تغییر فراداده، جفت‌سازی ترمیمی را الزامی می‌کند.
 - اتصال‌های **غیرمحلی** همچنان به تأیید صریح نیاز دارند.
-- احراز هویت Gateway (`gateway.auth.*`) همچنان برای **همه** اتصال‌ها، محلی یا
-  ریموت، اعمال می‌شود.
+- احراز هویت Gateway (`gateway.auth.*`) همچنان برای **همه** اتصال‌ها، چه محلی و چه
+  راه دور، اعمال می‌شود.
 
-جزئیات: [پروتکل Gateway](/fa/gateway/protocol)، [Pairing](/fa/channels/pairing)،
+جزئیات: [پروتکل Gateway](/fa/gateway/protocol)، [جفت‌سازی](/fa/channels/pairing)،
 [امنیت](/fa/gateway/security).
 
-## نوع‌دهی پروتکل و codegen
+## نوع‌دهی پروتکل و تولید کد
 
-- schemaهای TypeBox پروتکل را تعریف می‌کنند.
-- JSON Schema از آن schemaها تولید می‌شود.
+- طرح‌واره‌های TypeBox پروتکل را تعریف می‌کنند.
+- JSON Schema از این طرح‌واره‌ها تولید می‌شود.
 - مدل‌های Swift از JSON Schema تولید می‌شوند.
 
-## دسترسی ریموت
+## دسترسی راه دور
 
-- ترجیحی: Tailscale یا VPN.
-- جایگزین: تونل SSH
+- روش ترجیحی: Tailscale یا VPN.
+- روش جایگزین: تونل SSH
 
   ```bash
-  ssh -N -L 18789:127.0.0.1:18789 user@host
+  ssh -N -L 18789:127.0.0.1:18789 user@gateway-host
   ```
 
-- همان handshake + توکن احراز هویت روی تونل اعمال می‌شود.
-- TLS + pinning اختیاری را می‌توان برای WS در راه‌اندازی‌های ریموت فعال کرد.
+- همان دست‌دهی و توکن احراز هویت روی تونل نیز اعمال می‌شوند.
+- در راه‌اندازی‌های راه دور می‌توان TLS و سنجاق‌کردن اختیاری را برای WS فعال کرد.
 
-## نمای عملیات
+## نمای لحظه‌ای عملیات
 
-- شروع: `openclaw gateway` (foreground، لاگ‌ها به stdout).
-- سلامت: `health` روی WS (همچنین در `hello-ok` گنجانده شده است).
-- نظارت: launchd/systemd برای راه‌اندازی دوباره خودکار.
+- راه‌اندازی: `openclaw gateway` (در پیش‌زمینه، ثبت گزارش در stdout).
+- سلامت: `health` از طریق WS (در `hello-ok` نیز گنجانده شده است).
+- نظارت: launchd/systemd برای راه‌اندازی مجدد خودکار.
 
-## ناوردایی‌ها
+## ناورداها
 
-- دقیقاً یک Gateway یک نشست Baileys واحد را برای هر میزبان کنترل می‌کند.
-- Handshake الزامی است؛ هر فریم اول غیر JSON یا غیر `connect` باعث بستن سخت اتصال می‌شود.
-- رویدادها replay نمی‌شوند؛ کلاینت‌ها باید در صورت وجود gap تازه‌سازی کنند.
+- دقیقاً یک Gateway در هر میزبان، یک نشست Baileys را کنترل می‌کند.
+- دست‌دهی الزامی است؛ هر فریم نخستین غیر JSON یا غیر `connect` باعث بسته‌شدن قطعی اتصال می‌شود.
+- رویدادها بازپخش نمی‌شوند؛ کلاینت‌ها باید در صورت وجود فاصله، داده‌ها را تازه‌سازی کنند.
 
-## مرتبط
+## مطالب مرتبط
 
 - [حلقه عامل](/fa/concepts/agent-loop) — چرخه اجرای تفصیلی عامل
-- [پروتکل Gateway](/fa/gateway/protocol) — قرارداد پروتکل وب‌سوکت
-- [صف](/fa/concepts/queue) — صف فرمان و هم‌روندی
-- [امنیت](/fa/gateway/security) — مدل اعتماد و سخت‌سازی
+- [پروتکل Gateway](/fa/gateway/protocol) — قرارداد پروتکل WebSocket
+- [صف](/fa/concepts/queue) — صف فرمان و هم‌زمانی
+- [امنیت](/fa/gateway/security) — مدل اعتماد و مقاوم‌سازی

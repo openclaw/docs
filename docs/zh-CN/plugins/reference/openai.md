@@ -4,10 +4,9 @@ read_when:
 summary: 为 OpenClaw 添加 OpenAI 模型提供商支持。
 title: OpenAI 插件
 x-i18n:
-    generated_at: "2026-07-12T14:40:09Z"
+    generated_at: "2026-07-11T20:48:13Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 6df4bd8377204f49c5ec5470047ae60ff709f43bb31b06de82866901dca31aaa
     source_path: plugins/reference/openai.md
@@ -21,7 +20,7 @@ x-i18n:
 ## 分发
 
 - 软件包：`@openclaw/openai-provider`
-- 安装方式：已包含在 OpenClaw 中
+- 安装方式：随 OpenClaw 提供
 
 ## 接口
 
@@ -29,4 +28,4 @@ x-i18n:
 
 ## 相关文档
 
-- [openai](/zh-CN/providers/openai)
+- [OpenAI](/zh-CN/providers/openai)

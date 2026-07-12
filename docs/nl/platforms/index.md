@@ -1,27 +1,27 @@
 ---
 read_when:
-    - Zoekt naar OS-ondersteuning of installatiepaden
-    - Bepalen waar de Gateway moet draaien
-summary: Overzicht van platformondersteuning (Gateway + companion-apps)
+    - Op zoek naar OS-ondersteuning of installatiepaden
+    - Bepalen waar de Gateway moet worden uitgevoerd
+summary: Overzicht van platformondersteuning (Gateway + begeleidende apps)
 title: Platformen
 x-i18n:
-    generated_at: "2026-06-27T17:47:11Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:05:50Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4d6edfaf9c4b1f1bc824d4bddf8263244902676dd5df98da556a8a5f35afe566
+    source_hash: 6c91bf7fd41bf5433b9f1efb768a44dcf5fa55917cfc45f463688d00f23e725d
     source_path: platforms/index.md
     workflow: 16
 ---
 
-OpenClaw core is geschreven in TypeScript. **Node is de aanbevolen runtime**.
-Bun wordt niet aanbevolen voor de Gateway — bekende problemen met WhatsApp- en
-Telegram-kanalen; zie [Bun (experimenteel)](/nl/install/bun) voor details.
+De OpenClaw-kern is geschreven in TypeScript. **Node is de aanbevolen runtime**.
+Bun wordt niet aanbevolen voor de Gateway vanwege bekende problemen met WhatsApp- en
+Telegram-kanalen; zie [Bun (experimenteel)](/nl/install/bun) voor meer informatie.
 
-Companion-apps bestaan voor Windows Hub, macOS (menubalk-app) en mobiele nodes
-(iOS/Android). Linux-companion-apps zijn gepland, maar de Gateway wordt vandaag
-volledig ondersteund. Kies op Windows Windows Hub voor de desktop-app, native
-PowerShell-installatie voor terminalgericht gebruik, of WSL2 voor de meest
+Er zijn aanvullende apps voor Windows Hub, macOS (menubalk-app) en mobiele nodes
+(iOS/Android). Aanvullende Linux-apps staan gepland, maar de Gateway wordt momenteel
+volledig ondersteund. Kies op Windows voor Windows Hub als desktop-app, een systeemeigen
+PowerShell-installatie voor hoofdzakelijk terminalgebaseerd gebruik of WSL2 voor de meest
 Linux-compatibele Gateway-runtime.
 
 ## Kies je besturingssysteem
@@ -44,26 +44,26 @@ Linux-compatibele Gateway-runtime.
 
 ## Veelgebruikte links
 
-- Installatiegids: [Aan de slag](/nl/start/getting-started)
+- Installatiehandleiding: [Aan de slag](/nl/start/getting-started)
 - Windows Hub: [Windows](/nl/platforms/windows)
-- Gateway-runbook: [Gateway](/nl/gateway)
+- Gateway-draaiboek: [Gateway](/nl/gateway)
 - Gateway-configuratie: [Configuratie](/nl/gateway/configuration)
 - Servicestatus: `openclaw gateway status`
 
-## Gateway-service-installatie (CLI)
+## Gateway-service installeren (CLI)
 
-Gebruik een van deze (allemaal ondersteund):
+Gebruik een van deze opties (alle worden ondersteund):
 
 - Wizard (aanbevolen): `openclaw onboard --install-daemon`
-- Direct: `openclaw gateway install`
-- Configuratiestroom: `openclaw configure` → selecteer **Gateway-service**
-- Repareren/migreren: `openclaw doctor` (biedt aan de service te installeren of te herstellen)
+- Rechtstreeks: `openclaw gateway install`
+- Configuratieproces: `openclaw configure` → selecteer **Gateway-service**
+- Repareren/migreren: `openclaw doctor` (biedt aan de service te installeren of te repareren)
 
-Het servicedoel hangt af van het besturingssysteem:
+Het servicedoel is afhankelijk van het besturingssysteem:
 
-- macOS: LaunchAgent (`ai.openclaw.gateway` of `ai.openclaw.<profile>`; legacy `com.openclaw.*`)
+- macOS: LaunchAgent (`ai.openclaw.gateway`, of `ai.openclaw.<profile>` voor een benoemd profiel)
 - Linux/WSL2: systemd-gebruikersservice (`openclaw-gateway[-<profile>].service`)
-- Native Windows: Scheduled Task (`OpenClaw Gateway` of `OpenClaw Gateway (<profile>)`), met een fallback voor een per-gebruiker login-item in de Startup-map als het maken van de taak wordt geweigerd
+- Systeemeigen Windows: geplande taak (`OpenClaw Gateway` of `OpenClaw Gateway (<profile>)`), met als terugvaloptie een aanmeldingsitem per gebruiker in de map Opstarten als het maken van taken wordt geweigerd
 
 ## Gerelateerd
 

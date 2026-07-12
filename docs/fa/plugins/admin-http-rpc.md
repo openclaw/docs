@@ -1,41 +1,36 @@
 ---
 read_when:
-    - ساخت ابزارهای میزبان که نمی‌توانند از کلاینت RPC WebSocket مربوط به Gateway استفاده کنند
-    - ارائهٔ خودکارسازی مدیریت Gateway پشت یک ورودی خصوصیِ مورداعتماد
-    - ممیزی مدل امنیتی برای دسترسی HTTP به روش‌های Gateway
-summary: در دسترس قرار دادن متدهای منتخب سطح کنترل Gateway از طریق Plugin همراه و اختیاری admin-http-rpc
-title: Plugin ‏RPC‏ HTTP مدیریتی
+    - ساخت ابزارهای میزبان که نمی‌توانند از کلاینت RPC مبتنی بر WebSocket در Gateway استفاده کنند
+    - قرار دادن خودکارسازی مدیریت Gateway پشت یک ورودی خصوصی و مورد اعتماد
+    - ممیزی مدل امنیتی دسترسی HTTP به متدهای Gateway
+summary: متدهای منتخب صفحهٔ کنترل Gateway را از طریق Plugin داخلی و اختیاری admin-http-rpc در دسترس قرار دهید
+title: Plugin فراخوانی رویهٔ دوردست HTTP مدیریتی
 x-i18n:
-    generated_at: "2026-06-27T18:09:13Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:25:10Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f701ef6be7457cd518ecb80b7ec5dade61bb057d62f4ca90984a4c1aa8fdf700
+    source_hash: 0709081efd0ce65cef7edac54df9a71978cbad17e2b25df83ac9075de938376c
     source_path: plugins/admin-http-rpc.md
     workflow: 16
 ---
 
-Plugin همراه `admin-http-rpc` روش‌های منتخب صفحه کنترل Gateway را از طریق HTTP برای اتوماسیون میزبان مورداعتماد که نمی‌تواند از کلاینت عادی Gateway WebSocket RPC استفاده کند، در دسترس قرار می‌دهد.
+Plugin همراه `admin-http-rpc` مجموعه‌ای مجازشده از متدهای صفحهٔ کنترل Gateway را از طریق HTTP در اختیار خودکارسازی قابل‌اعتماد میزبان قرار می‌دهد که نمی‌تواند اتصال WebSocket به Gateway را باز نگه دارد.
 
-این Plugin همراه OpenClaw ارائه می‌شود، اما به‌طور پیش‌فرض غیرفعال است. وقتی غیرفعال باشد، مسیر ثبت نمی‌شود. وقتی فعال شود، این موارد را اضافه می‌کند:
+این Plugin همراه OpenClaw عرضه می‌شود، اما به‌طور پیش‌فرض غیرفعال است؛ در حالت غیرفعال، مسیر ثبت نمی‌شود. با فعال‌سازی، `POST /api/v1/admin/rpc` را روی همان شنوندهٔ Gateway اضافه می‌کند (`http://<gateway-host>:<port>/api/v1/admin/rpc`).
 
-- `POST /api/v1/admin/rpc`
-- همان شنونده Gateway: `http://<gateway-host>:<port>/api/v1/admin/rpc`
-
-آن را فقط برای ابزارسازی میزبان خصوصی، اتوماسیون tailnet، یا یک ورودی داخلی مورداعتماد فعال کنید. این مسیر را مستقیماً در معرض اینترنت عمومی قرار ندهید.
+آن را فقط برای ابزارهای خصوصی میزبان، خودکارسازی tailnet، یا یک ورودی داخلی قابل‌اعتماد فعال کنید. هرگز این مسیر را مستقیماً در معرض اینترنت عمومی قرار ندهید.
 
 ## پیش از فعال‌سازی
 
-Admin HTTP RPC یک سطح کامل صفحه کنترل اپراتور است. هر فراخوانی‌کننده‌ای که احراز هویت HTTP Gateway را با موفقیت بگذراند، می‌تواند روش‌های مجازشده در این صفحه را فراخوانی کند.
+RPC مدیریتی HTTP یک سطح کامل صفحهٔ کنترل اپراتور است: هر فراخواننده‌ای که احراز هویت HTTP مربوط به Gateway را با موفقیت پشت سر بگذارد، می‌تواند متدهای مجازشدهٔ زیر را فراخوانی کند. آن را فقط زمانی فعال کنید که همهٔ شرایط زیر برقرار باشند:
 
-زمانی از آن استفاده کنید که همه این موارد درست باشند:
+- به فراخواننده برای ادارهٔ Gateway اعتماد دارید.
+- فراخواننده نمی‌تواند از کلاینت RPC مبتنی بر WebSocket استفاده کند.
+- مسیر فقط از طریق local loopback، یک tailnet، یا یک ورودی خصوصی احرازشده قابل دسترسی است.
+- متدهای مجاز را بررسی کرده‌اید و با خودکارسازی موردنظر شما مطابقت دارند.
 
-- فراخوانی‌کننده برای اداره Gateway مورداعتماد است.
-- فراخوانی‌کننده نمی‌تواند از کلاینت WebSocket RPC استفاده کند.
-- مسیر فقط روی loopback، یک tailnet، یا یک ورودی خصوصی احرازهویت‌شده قابل دسترسی است.
-- روش‌های مجاز را بازبینی کرده‌اید و با اتوماسیونی که قصد اجرای آن را دارید منطبق هستند.
-
-برای کلاینت‌های OpenClaw و ابزارهای تعاملی که می‌توانند اتصال Gateway WebSocket را باز نگه دارند، از مسیر WebSocket RPC استفاده کنید.
+برای کلاینت‌های OpenClaw و ابزارهای تعاملی که می‌توانند اتصال WebSocket به Gateway را باز نگه دارند، به‌جای آن از RPC مبتنی بر WebSocket استفاده کنید.
 
 ## فعال‌سازی
 
@@ -61,7 +56,7 @@ Plugin همراه را فعال کنید:
   </Tab>
 </Tabs>
 
-مسیر هنگام راه‌اندازی Plugin ثبت می‌شود. پس از تغییر پیکربندی Plugin، Gateway را بازراه‌اندازی کنید.
+مسیر هنگام راه‌اندازی Plugin ثبت می‌شود؛ بنابراین پس از تغییر پیکربندی Plugin، Gateway را مجدداً راه‌اندازی کنید.
 
 وقتی دیگر به سطح HTTP نیاز ندارید، آن را غیرفعال کنید:
 
@@ -70,9 +65,9 @@ openclaw plugins disable admin-http-rpc
 openclaw gateway restart
 ```
 
-## تأیید مسیر
+## بررسی مسیر
 
-از `health` به‌عنوان کوچک‌ترین درخواست ایمن استفاده کنید:
+از `health` به‌عنوان کوچک‌ترین درخواست امن استفاده کنید:
 
 ```bash
 curl -sS http://<gateway-host>:<port>/api/v1/admin/rpc \
@@ -81,7 +76,7 @@ curl -sS http://<gateway-host>:<port>/api/v1/admin/rpc \
   -d '{"method":"health","params":{}}'
 ```
 
-یک پاسخ موفق `ok: true` دارد:
+پاسخ موفق دارای `ok: true` است:
 
 ```json
 {
@@ -93,33 +88,30 @@ curl -sS http://<gateway-host>:<port>/api/v1/admin/rpc \
 }
 ```
 
-وقتی Plugin غیرفعال باشد، مسیر `404` برمی‌گرداند، چون ثبت نشده است.
+وقتی Plugin غیرفعال است، مسیر `404` برمی‌گرداند، زیرا ثبت نشده است.
 
 ## احراز هویت
 
-مسیر Plugin از احراز هویت HTTP Gateway استفاده می‌کند.
+مسیر Plugin از احراز هویت HTTP مربوط به Gateway استفاده می‌کند.
 
-مسیرهای رایج احراز هویت:
+روش‌های رایج احراز هویت:
 
 - احراز هویت با راز مشترک (`gateway.auth.mode="token"` یا `"password"`): `Authorization: Bearer <token-or-password>`
-- احراز هویت HTTP دارای هویت مورداعتماد (`gateway.auth.mode="trusted-proxy"`): از طریق پروکسی پیکربندی‌شده آگاه از هویت مسیریابی کنید و بگذارید سرآیندهای هویت موردنیاز را تزریق کند
-- احراز هویت باز ورودی خصوصی (`gateway.auth.mode="none"`): به سرآیند احراز هویت نیازی نیست
+- احراز هویت HTTP مبتنی بر هویت قابل‌اعتماد (`gateway.auth.mode="trusted-proxy"`): درخواست را از پروکسی پیکربندی‌شده و آگاه از هویت عبور دهید تا سرآیندهای هویتی لازم را تزریق کند
+- احراز هویت باز در ورودی خصوصی (`gateway.auth.mode="none"`): نیازی به سرآیند احراز هویت نیست
 
 ## مدل امنیتی
 
-با این Plugin مانند یک سطح کامل اپراتور Gateway رفتار کنید.
+این Plugin را به‌عنوان سطح کامل اپراتوری Gateway در نظر بگیرید.
 
-- فعال‌سازی Plugin عمداً دسترسی به روش‌های admin RPC مجازشده را در `/api/v1/admin/rpc` فراهم می‌کند.
-- Plugin قرارداد manifest رزروشده `contracts.gatewayMethodDispatch: ["authenticated-request"]` را اعلام می‌کند تا مسیر HTTP احرازشده با Gateway بتواند روش‌های صفحه کنترل را در همان فرایند dispatch کند.
-- احراز هویت bearer با راز مشترک، داشتن راز اپراتور gateway را اثبات می‌کند.
-- برای احراز هویت `token` و `password`، سرآیندهای محدودتر `x-openclaw-scopes` نادیده گرفته می‌شوند و پیش‌فرض‌های کامل عادی اپراتور بازیابی می‌شوند.
-- حالت‌های HTTP دارای هویت مورداعتماد، در صورت وجود `x-openclaw-scopes`، آن را رعایت می‌کنند.
-- `gateway.auth.mode="none"` یعنی اگر Plugin فعال باشد، این مسیر احراز هویت ندارد. فقط پشت یک ورودی خصوصی که کاملاً به آن اعتماد دارید از آن استفاده کنید.
-- پس از عبور احراز هویت مسیر Plugin، درخواست‌ها از طریق همان هندلرهای روش Gateway و بررسی‌های scope مشابه WebSocket RPC dispatch می‌شوند.
-- این مسیر را روی loopback، tailnet، یا یک ورودی خصوصی مورداعتماد نگه دارید. آن را مستقیماً در معرض اینترنت عمومی قرار ندهید.
-- قراردادهای manifest Plugin سندباکس نیستند. آن‌ها از استفاده تصادفی از helperهای رزروشده SDK جلوگیری می‌کنند؛ Pluginهای مورداعتماد همچنان در فرایند Gateway اجرا می‌شوند.
-
-وقتی فراخوانی‌کنندگان از مرزهای اعتماد عبور می‌کنند، از gatewayهای جداگانه استفاده کنید.
+- فعال‌سازی Plugin عمداً دسترسی به متدهای RPC مدیریتی مجازشده را در `/api/v1/admin/rpc` فراهم می‌کند.
+- Plugin قرارداد رزروشدهٔ مانیفست `contracts.gatewayMethodDispatch: ["authenticated-request"]` را اعلام می‌کند که به مسیر HTTP احرازشده توسط Gateway اجازه می‌دهد متدهای صفحهٔ کنترل را درون فرایند ارسال کند. این یک محیط ایزوله نیست: قرارداد از استفادهٔ تصادفی از توابع کمکی رزروشدهٔ SDK جلوگیری می‌کند، اما Pluginهای قابل‌اعتماد همچنان در فرایند Gateway اجرا می‌شوند.
+- احراز هویت Bearer با راز مشترک (حالت‌های `token`/`password`) در اختیار داشتن راز اپراتور Gateway را اثبات می‌کند؛ سرآیندهای محدودتر `x-openclaw-scopes` در این مسیر نادیده گرفته می‌شوند و پیش‌فرض‌های عادی دسترسی کامل اپراتور بازیابی می‌شوند.
+- احراز هویت HTTP مبتنی بر هویت قابل‌اعتماد (حالت `trusted-proxy`) در صورت وجود، `x-openclaw-scopes` را رعایت می‌کند.
+- `gateway.auth.mode="none"` یعنی در صورت فعال بودن Plugin، این مسیر بدون احراز هویت است. فقط در پشت یک ورودی خصوصی که کاملاً به آن اعتماد دارید از این حالت استفاده کنید.
+- پس از موفقیت احراز هویت مسیر Plugin، درخواست‌ها از همان کنترل‌کننده‌های متد و بررسی‌های محدودهٔ Gateway عبور می‌کنند که RPC مبتنی بر WebSocket استفاده می‌کند.
+- مسیر در طول اجارهٔ تعلیق آماده‌شده همچنان قابل دسترسی می‌ماند. اعتبارسنجی محدود درخواست و پاسخ محلی کشف `commands.list` همچنان در دسترس‌اند. از میان متدهایی که به Gateway ارسال می‌شوند، هنگام بسته بودن پذیرش فقط `gateway.suspend.prepare`، `gateway.suspend.status` و `gateway.suspend.resume` قابل اجرا هستند؛ سایر متدهای مجازشده پاسخ عادی و قابل‌تلاش‌مجدد `UNAVAILABLE` از Gateway را برمی‌گردانند.
+- این مسیر را روی local loopback، tailnet، یا یک ورودی خصوصی قابل‌اعتماد نگه دارید. آن را مستقیماً در معرض اینترنت عمومی قرار ندهید. هنگامی که فراخوانندگان از مرزهای اعتماد عبور می‌کنند، از Gatewayهای جداگانه استفاده کنید.
 
 ## درخواست
 
@@ -139,15 +131,15 @@ Content-Type: application/json
 
 فیلدها:
 
-- `id` (رشته، اختیاری): در پاسخ کپی می‌شود. اگر حذف شود، یک UUID تولید می‌شود.
-- `method` (رشته، الزامی): نام روش مجاز Gateway.
-- `params` (هر نوع، اختیاری): پارامترهای مخصوص روش.
+- `id` (رشته، اختیاری): در پاسخ کپی می‌شود. در صورت حذف، یک UUID تولید می‌شود.
+- `method` (رشته، الزامی): نام متد مجاز Gateway.
+- `params` (هر نوع، اختیاری): پارامترهای مخصوص متد.
 
-حداکثر اندازه پیش‌فرض بدنه درخواست 1 MB است.
+حداکثر اندازهٔ پیش‌فرض بدنهٔ درخواست ۱ مگابایت است.
 
 ## پاسخ
 
-پاسخ‌های موفق از شکل Gateway RPC استفاده می‌کنند:
+پاسخ‌های موفق از ساختار RPC مربوط به Gateway استفاده می‌کنند:
 
 ```json
 {
@@ -157,7 +149,7 @@ Content-Type: application/json
 }
 ```
 
-خطاهای روش Gateway از این استفاده می‌کنند:
+خطاهای متد Gateway از ساختار زیر استفاده می‌کنند:
 
 ```json
 {
@@ -170,55 +162,72 @@ Content-Type: application/json
 }
 ```
 
-وضعیت HTTP در صورت امکان از خطای Gateway پیروی می‌کند. برای مثال، `INVALID_REQUEST` مقدار `400` و `UNAVAILABLE` مقدار `503` برمی‌گرداند.
+وضعیت HTTP از کد خطا پیروی می‌کند:
 
-## روش‌های مجاز
+| کد خطا                    | وضعیت HTTP |
+| -------------------------- | ----------- |
+| `INVALID_REQUEST`          | 400         |
+| `APPROVAL_NOT_FOUND`       | 404         |
+| `NOT_LINKED`, `NOT_PAIRED` | 409         |
+| `UNAVAILABLE`              | 503         |
+| `AGENT_TIMEOUT`            | 504         |
+| هر کد دیگر                 | 500         |
+
+## متدهای مجاز
 
 - کشف: `commands.list`
-  نام روش‌های HTTP RPC مجاز توسط این Plugin را برمی‌گرداند.
-- gateway: `health`, `status`, `logs.tail`, `usage.status`, `usage.cost`, `gateway.restart.request`
-- پیکربندی: `config.get`, `config.schema`, `config.schema.lookup`, `config.set`, `config.patch`, `config.apply`
-- کانال‌ها: `channels.status`, `channels.start`, `channels.stop`, `channels.logout`
-- وب: `web.login.start`, `web.login.wait`
-- مدل‌ها: `models.list`, `models.authStatus`
-- عامل‌ها: `agents.list`, `agents.create`, `agents.update`, `agents.delete`
-- تأییدیه‌ها: `exec.approvals.get`, `exec.approvals.set`, `exec.approvals.node.get`, `exec.approvals.node.set`
-- cron: `cron.status`, `cron.list`, `cron.get`, `cron.runs`, `cron.add`, `cron.update`, `cron.remove`, `cron.run`
-- دستگاه‌ها: `device.pair.list`, `device.pair.approve`, `device.pair.reject`, `device.pair.remove`
-- گره‌ها: `node.list`, `node.describe`, `node.pair.list`, `node.pair.approve`, `node.pair.reject`, `node.pair.remove`, `node.rename`
-- وظایف: `tasks.list`, `tasks.get`, `tasks.cancel`
-- عیب‌یابی: `doctor.memory.status`, `update.status`
+  نام متدهای RPC مبتنی بر HTTP را که این Plugin مجاز می‌داند برمی‌گرداند.
+- Gateway: `health`، `status`، `logs.tail`، `usage.status`، `usage.cost`، `gateway.restart.request`، `gateway.suspend.prepare`، `gateway.suspend.status`، `gateway.suspend.resume`
+- پیکربندی: `config.get`، `config.schema`، `config.schema.lookup`، `config.set`، `config.patch`، `config.apply`
+- کانال‌ها: `channels.status`، `channels.start`، `channels.stop`، `channels.logout`
+- وب: `web.login.start`، `web.login.wait`
+- مدل‌ها: `models.list`، `models.authStatus`
+- عامل‌ها: `agents.list`، `agents.create`، `agents.update`، `agents.delete`
+- تأییدها: `exec.approvals.get`، `exec.approvals.set`، `exec.approvals.node.get`، `exec.approvals.node.set`
+- Cron: `cron.status`، `cron.list`، `cron.get`، `cron.runs`، `cron.add`، `cron.update`، `cron.remove`، `cron.run`
+- دستگاه‌ها: `device.pair.list`، `device.pair.approve`، `device.pair.reject`، `device.pair.remove`
+- Nodeها: `node.list`، `node.describe`، `node.pair.list`، `node.pair.approve`، `node.pair.reject`، `node.pair.remove`، `node.rename`
+- وظایف: `tasks.list`، `tasks.get`، `tasks.cancel`
+- عیب‌یابی: `doctor.memory.status`، `update.status`
 
-روش‌های دیگر Gateway تا زمانی که عمداً اضافه شوند، مسدود هستند.
+سایر متدهای Gateway تا زمانی که عمداً اضافه نشوند مسدود هستند.
 
-## مقایسه WebSocket
+## مقایسه با WebSocket
 
-مسیر عادی Gateway WebSocket RPC همچنان API صفحه کنترل ترجیحی برای کلاینت‌های OpenClaw است. از admin HTTP RPC فقط برای ابزارسازی میزبان که به یک سطح HTTP درخواست/پاسخ نیاز دارد استفاده کنید.
+مسیر عادی RPC مبتنی بر WebSocket در Gateway همچنان API ترجیحی صفحهٔ کنترل برای کلاینت‌های OpenClaw است. از RPC مدیریتی HTTP فقط برای ابزارهای میزبان استفاده کنید که به یک سطح درخواست/پاسخ HTTP نیاز دارند.
 
-کلاینت‌های WebSocket با توکن مشترک و بدون هویت دستگاه مورداعتماد نمی‌توانند هنگام اتصال، scopeهای admin را خودشان اعلام کنند. Admin HTTP RPC عمداً از مدل موجود اپراتور HTTP مورداعتماد پیروی می‌کند: وقتی Plugin فعال است، احراز هویت bearer با راز مشترک برای این سطح admin به‌عنوان دسترسی کامل اپراتور در نظر گرفته می‌شود.
+کلاینت‌های WebSocket با توکن مشترک که هویت دستگاه قابل‌اعتماد ندارند، هنگام اتصال نمی‌توانند محدوده‌های مدیریتی را خودشان اعلام کنند. RPC مدیریتی HTTP عمداً از مدل موجود اپراتور HTTP قابل‌اعتماد پیروی می‌کند: وقتی Plugin فعال است، احراز هویت Bearer با راز مشترک برای این سطح مدیریتی به‌عنوان دسترسی کامل اپراتور در نظر گرفته می‌شود.
 
 ## عیب‌یابی
 
 `404 Not Found`
 
-: Plugin غیرفعال است، Gateway پس از فعال‌سازی آن بازراه‌اندازی نشده است، یا درخواست به فرایند Gateway دیگری می‌رود.
+: Plugin غیرفعال است، Gateway پس از فعال‌سازی آن مجدداً راه‌اندازی نشده است، یا درخواست به فرایند دیگری از Gateway ارسال می‌شود.
 
 `401 Unauthorized`
 
-: درخواست احراز هویت HTTP Gateway را برآورده نکرده است. توکن bearer یا سرآیندهای هویت trusted-proxy را بررسی کنید.
+: درخواست شرایط احراز هویت HTTP مربوط به Gateway را برآورده نکرده است. توکن Bearer یا سرآیندهای هویتی `trusted-proxy` را بررسی کنید.
+
+`405 Method Not Allowed`
+
+: درخواست از روشی غیر از `POST` استفاده کرده است.
+
+`413 Payload Too Large`
+
+: بدنهٔ درخواست از محدودیت ۱ مگابایت فراتر رفته است.
 
 `400 INVALID_REQUEST`
 
-: بدنه درخواست JSON معتبر نیست، فیلد `method` وجود ندارد، یا روش در فهرست مجاز Plugin نیست.
+: بدنهٔ درخواست JSON معتبر نیست، فیلد `method` وجود ندارد، متد در فهرست مجاز Plugin نیست، یا شناسهٔ ازسرگیری تعلیق با اجارهٔ فعال مطابقت ندارد.
 
 `503 UNAVAILABLE`
 
-: هندلر روش Gateway در دسترس نیست. لاگ‌های Gateway را بررسی کنید و پس از پایان راه‌اندازی Gateway دوباره تلاش کنید.
+: متد Gateway در حال راه‌اندازی، محدودشده از نظر نرخ، معلق، یا منتظر یک عملیات تعلیق/ازسرگیری رقیب است. در صورت وجود، `error.details` را بررسی کنید و پیش از تلاش مجدد، `error.retryAfterMs` را رعایت کنید.
 
 ## مرتبط
 
-- [scopeهای اپراتور](/fa/gateway/operator-scopes)
+- [محدوده‌های اپراتور](/fa/gateway/operator-scopes)
 - [امنیت Gateway](/fa/gateway/security)
 - [دسترسی راه دور](/fa/gateway/remote)
-- [manifest Plugin](/fa/plugins/manifest#contracts)
+- [مانیفست Plugin](/fa/plugins/manifest#contracts-reference)
 - [زیرمسیرهای SDK](/fa/plugins/sdk-subpaths)

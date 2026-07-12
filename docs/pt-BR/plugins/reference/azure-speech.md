@@ -1,28 +1,28 @@
 ---
 read_when:
-    - Você está instalando, configurando ou auditando o Plugin azure-speech
-summary: Conversão de texto em fala do Azure AI Speech (MP3, notas de voz nativas em Ogg/Opus, telefonia PCM).
+    - Você está instalando, configurando ou auditando o plugin azure-speech
+summary: Conversão de texto em fala do Azure AI Speech (MP3, mensagens de voz nativas em Ogg/Opus, telefonia PCM).
 title: Plugin do Azure Speech
 x-i18n:
-    generated_at: "2026-05-02T20:53:41Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T00:12:56Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: fdcf7c9166d90a92362478ebc361a2917b9e29c0a7dfdcfa86d34003647a8034
     source_path: plugins/reference/azure-speech.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# Plugin Azure Speech
+# Plugin do Azure Speech
 
-Conversão de texto em fala do Azure AI Speech (MP3, notas de voz nativas em Ogg/Opus, telefonia PCM).
+Conversão de texto em fala com o Azure AI Speech (MP3, mensagens de voz nativas em Ogg/Opus, telefonia PCM).
 
 ## Distribuição
 
 - Pacote: `@openclaw/azure-speech`
-- Rota de instalação: incluído no OpenClaw
+- Método de instalação: incluído no OpenClaw
 
-## Superfície
+## Interface
 
 contratos: speechProviders
 

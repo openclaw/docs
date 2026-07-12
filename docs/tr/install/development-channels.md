@@ -1,101 +1,109 @@
 ---
 read_when:
-    - Kararlı/beta/dev arasında geçiş yapmak istiyorsunuz
-    - Belirli bir sürümü, etiketi veya SHA’yı sabitlemek istiyorsunuz
+    - Kararlı/uzatılmış kararlı/beta/geliştirme sürümleri arasında geçiş yapmak istiyorsunuz
+    - Belirli bir sürümü, etiketi veya SHA'yı sabitlemek istiyorsunuz
     - Ön sürümleri etiketliyor veya yayımlıyorsunuz
 sidebarTitle: Release Channels
-summary: 'Stable, beta ve dev kanalları: anlamları, geçiş yapma, sabitleme ve etiketleme'
+summary: 'Kararlı, genişletilmiş kararlı, beta ve geliştirme kanalları: anlamları, geçiş, sürüm sabitleme ve etiketleme'
 title: Sürüm kanalları
 x-i18n:
-    generated_at: "2026-06-28T00:43:35Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:53:02Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7b5b0b8b43dd15b3fdd83d28c5d0292d260594325ad6e6e95533720ba3e59277
+    source_hash: a99e31f5121c0ab8696e638cb10a7ce16e8f32c81e4b2bef1f703eef71191494
     source_path: install/development-channels.md
     workflow: 16
 ---
 
-OpenClaw üç güncelleme kanalıyla gelir:
+OpenClaw dört güncelleme kanalı sunar:
 
-- **stable**: npm dist-tag `latest`. Çoğu kullanıcı için önerilir.
-- **beta**: Güncel olduğunda npm dist-tag `beta`; beta yoksa veya en son kararlı sürümden eskiyse
-  güncelleme akışı `latest` değerine geri döner.
-- **dev**: `main` (git) dalının hareketli başı. npm dist-tag: `dev` (yayımlandığında).
-  `main` dalı deneme ve etkin geliştirme içindir. Eksik özellikler veya kırıcı
-  değişiklikler içerebilir. Üretim Gateway’lerinde kullanmayın.
+- **kararlı**: npm dist-tag'i `latest`. Çoğu kullanıcı için önerilir.
+- **uzatılmış kararlı**: npm dist-tag'i `extended-stable`. Baştan oluşturulmuş, geriden gelen
+  desteklenen aylar için bir paket kanalıdır. Yalnızca paket olarak sunulur ve kurulum
+  yalnızca ön planda yapılır. Saklanan bir seçim, `update.checkOnStart`
+  etkinleştirildiğinde salt okunur güncelleme ipuçları alır ancak güncellemeleri hiçbir zaman otomatik olarak uygulamaz.
+- **beta**: npm dist-tag'i `beta`. `beta` yoksa veya mevcut kararlı sürümden
+  eskiyse `latest` etiketine geri döner.
+- **geliştirme**: `main` dalının hareketli ucu (git). Yayımlandığında npm dist-tag'i `dev`. `main`,
+  denemeler ve etkin geliştirme içindir; tamamlanmamış özellikler veya geriye dönük
+  uyumsuz değişiklikler içerebilir. Üretim Gateway'leri için kullanmayın.
 
-Kararlı derlemeleri genellikle önce **beta** kanalına gönderir, orada test eder, ardından
-incelenmiş derlemeyi sürüm numarasını değiştirmeden `latest` değerine taşıyan açık
-bir yükseltme adımı çalıştırırız. Bakımcılar gerektiğinde kararlı bir sürümü
-doğrudan `latest` olarak da yayımlayabilir. npm kurulumları için doğruluk kaynağı dist-tag’lerdir.
+Kararlı derlemeler genellikle önce **beta** kanalında yayımlanır, burada doğrulanır ve ardından
+sürüm numarası artırılmadan **latest** etiketine yükseltilir. Bakımcılar doğrudan
+`latest` etiketinde de yayımlayabilir. npm kurulumları için doğruluk kaynağı dist-tag'lerdir.
 
-## Kanalları değiştirme
+## Kanal değiştirme
 
 ```bash
 openclaw update --channel stable
+openclaw update --channel extended-stable
 openclaw update --channel beta
 openclaw update --channel dev
 ```
 
-`--channel`, seçiminizi config içinde (`update.channel`) kalıcılaştırır ve
-kurulum yöntemini hizalar:
+`--channel`, seçimi yapılandırmadaki `update.channel` alanına kalıcı olarak kaydeder ve her iki
+kurulum yolunu da yönetir:
 
-- **`stable`** (paket kurulumları): npm dist-tag `latest` üzerinden güncellenir.
-- **`beta`** (paket kurulumları): npm dist-tag `beta` tercih edilir, ancak `beta`
-  yoksa veya mevcut kararlı etiketten eskiyse `latest` değerine geri döner.
-- **`stable`** (git kurulumları): `-alpha.N`, `-beta.N`, `-rc.N`, `-dev.N`,
-  `-next.N`, `-preview.N`, `-canary.N`, `-nightly.N` gibi semver ön sürüm etiketleri
-  ve diğer ön sürüm sonekleri hariç, en son kararlı git etiketini checkout eder.
-- **`beta`** (git kurulumları): en son beta git etiketini tercih eder, ancak beta
-  yoksa veya eskiyse en son kararlı git etiketine geri döner.
-- **`dev`**: Bir git checkout olmasını sağlar (varsayılan `~/openclaw`, veya
-  `OPENCLAW_HOME` ayarlandığında `$OPENCLAW_HOME/openclaw`; `OPENCLAW_GIT_DIR`
-  ile geçersiz kılın), `main` dalına geçer, upstream üzerine rebase eder, derler ve
-  global CLI’yi bu checkout’tan kurar.
+| Kanal             | npm/paket kurulumları                                                                                                                                                                                   | git kurulumları                                                                                                                                                                                                                      |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `stable`          | dist-tag `latest`                                                                                                                                                                                       | en son kararlı git etiketi (`-alpha.N`, `-beta.N`, `-rc.N`, `-dev.N`, `-next.N`, `-preview.N`, `-canary.N`, `-nightly.N` ve diğer adlandırılmış ön sürüm son eklerini hariç tutar)                                                   |
+| `extended-stable` | herkese açık npm `extended-stable` seçicisini çözümler, seçilen paketi tam olarak doğrular ve o tam sürümü kurar. `latest`, `beta` veya `dev` için geri dönüş olmadan güvenli biçimde başarısız olur.       | desteklenmez: OpenClaw çalışma kopyasını değiştirmeden bırakır ve paket kurulumu kullanmanızı ister                                                                                                                                    |
+| `beta`            | dist-tag `beta`; `beta` yoksa veya daha eskiyse `latest` etiketine geri döner                                                                                                                           | en son beta git etiketi; beta yoksa veya daha eskiyse en son kararlı git etiketine geri döner                                                                                                                                         |
+| `dev`             | dist-tag `dev` (nadiren kullanılır; geliştirme kullanıcılarının çoğu git kurulumlarını çalıştırır)                                                                                                      | değişiklikleri getirir, çalışma kopyasını üst kaynak `main` dalı üzerinde yeniden temellendirir, derler ve genel CLI'yi yeniden kurar                                                                                                  |
+
+`dev` git kurulumları için varsayılan çalışma kopyası `~/openclaw` dizinidir
+(`OPENCLAW_HOME` ayarlanmışsa `$OPENCLAW_HOME/openclaw`); bunu `OPENCLAW_GIT_DIR`
+ile geçersiz kılabilirsiniz.
 
 <Tip>
-Kararlı ve dev’i paralel kullanmak istiyorsanız iki clone tutun ve gateway’inizi kararlı olana yönlendirin.
+Kararlı ve geliştirme sürümlerini paralel tutmak için iki ayrı çalışma kopyası kullanın ve her Gateway'i kendi çalışma kopyasına yönlendirin.
 </Tip>
 
 ## Tek seferlik sürüm veya etiket hedefleme
 
-Kalıcı kanalınızı değiştirmeden tek bir güncelleme için belirli bir dist-tag,
-sürüm veya paket spec hedeflemek üzere `--tag` kullanın:
+Kalıcı kanalı değiştirmeden tek bir güncelleme için belirli bir dist-tag'i,
+sürümü veya paket belirtimini hedeflemek üzere `--tag` kullanın:
 
 ```bash
-# Install a specific version
+# Belirli bir sürümü kur
 openclaw update --tag 2026.4.1-beta.1
 
-# Install from the beta dist-tag (one-off, does not persist)
+# Beta dist-tag'inden kur (tek seferliktir, kalıcı olmaz)
 openclaw update --tag beta
 
-# Switch to the moving GitHub main checkout
+# Hareketli GitHub main çalışma kopyasına geç (kalıcıdır)
 openclaw update --channel dev
 
-# Install a specific npm package spec
+# Belirli bir npm paket belirtimini kur
 openclaw update --tag openclaw@2026.4.1-beta.1
 
-# Install from GitHub main once without persisting the channel
+# Kanalı kalıcılaştırmadan GitHub main'den bir kez kur
 openclaw update --tag main
 ```
 
 Notlar:
 
-- `--tag` yalnızca **paket (npm) kurulumları** için geçerlidir. Git kurulumları bunu yok sayar.
-- Etiket kalıcılaştırılmaz. Bir sonraki `openclaw update`, yapılandırılmış
-  kanalınızı her zamanki gibi kullanır.
-- Paket kurulumlarında OpenClaw, aşamalı npm kurulumundan önce GitHub/git kaynak
-  spec’lerini geçici bir tarball olarak önceden paketler. Hareketli `main`
-  checkout’unu kalıcı kurulumunuz olarak istediğinizde `--channel dev` veya
-  `--install-method git --version main` kullanın.
-- Sürüm düşürme koruması: hedef sürüm mevcut sürümünüzden eskiyse OpenClaw
-  onay ister (`--yes` ile atlayın).
-- `--channel beta`, `--tag beta` ile farklıdır: kanal akışı beta yoksa veya eskiyse
-  stable/latest değerine geri dönebilirken, `--tag beta` o tek çalışma için ham
-  `beta` dist-tag’ini hedefler.
+- `--tag` **yalnızca paket (npm) kurulumlarına** uygulanır; git kurulumları bunu yok sayar.
+- Etiket kalıcı olarak kaydedilmez; sonraki `openclaw update`, yapılandırılmış
+  kanalı kullanır.
+- `--tag main`, bu tek çalıştırma için npm uyumlu
+  `github:openclaw/openclaw#main` belirtimine eşlenir. Kalıcı ve hareketli bir `main`
+  kurulumu için `openclaw update --channel dev` komutunu kullanın (paket kurulumları
+  bir git çalışma kopyasına geçer) veya yükleyicinin git yöntemiyle yeniden kurun:
+  `curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method git --version main`.
+  npm kurulum yolu, GitHub/git kaynak hedeflerini doğrudan reddeder ve bunun yerine
+  sizi git yöntemine yönlendirir.
+- Sürüm düşürme koruması: hedef sürüm mevcut sürümden eskiyse OpenClaw
+  onay ister (`--yes` ile atlayabilirsiniz).
+- Uzatılmış kararlı kanal her zaman doğrulanmış tam paket hedefini kullanır. Bu,
+  `--tag extended-stable` için tek seferlik bir takma ad değildir ve `--tag`,
+  etkin bir uzatılmış kararlı kanalla birlikte kullanılamaz.
+- `--channel beta`, `--tag beta` seçeneğinden farklıdır: kanal akışı, beta
+  yoksa veya daha eskiyse kararlı/latest sürüme geri dönebilir; `--tag beta` ise
+  bu tek çalıştırma için her zaman ham `beta` dist-tag'ini hedefler.
 
-## Dry run
+## Deneme çalıştırması
 
 Değişiklik yapmadan `openclaw update` komutunun ne yapacağını önizleyin:
 
@@ -106,49 +114,56 @@ openclaw update --tag 2026.4.1-beta.1 --dry-run
 openclaw update --dry-run --json
 ```
 
-Dry run, etkili kanalı, hedef sürümü, planlanan eylemleri ve sürüm düşürme
-onayı gerekip gerekmeyeceğini gösterir.
+Deneme çalıştırması; etkin kanalı, hedef sürümü, planlanan işlemleri ve sürüm düşürme
+onayının gerekip gerekmediğini bildirir.
 
-## Plugin’ler ve kanallar
+## Plugin'ler ve kanallar
 
-`openclaw update` ile kanal değiştirdiğinizde OpenClaw Plugin kaynaklarını da
-eşitler:
+`openclaw update` ile kanal değiştirmek, Plugin kaynaklarını da eşitler:
 
-- `dev`, git checkout’taki paketlenmiş Plugin’leri tercih eder.
-- `stable` ve `beta`, npm ile kurulmuş Plugin paketlerini geri yükler.
-- npm ile kurulmuş Plugin’ler çekirdek güncelleme tamamlandıktan sonra güncellenir.
+- `dev`, paketle gelen bir karşılığı bulunan kurulu Plugin'leri yeniden
+  paketle gelen (git çalışma kopyası) kaynaklarına geçirir.
+- `stable` ve `beta`, npm veya ClawHub aracılığıyla kurulan Plugin
+  paketlerini geri yükler.
+- `extended-stable`, çıplak/varsayılan veya `latest` amacı taşıyan uygun resmî
+  npm Plugin'lerini kurulu çekirdeğin tam sürümüne çözümler. Çalışma zamanında
+  Plugin `@extended-stable` etiketlerini sorgulamaz.
+- npm ile kurulan Plugin'ler, çekirdek güncellemesi tamamlandıktan sonra güncellenir.
 
-## Mevcut durumu kontrol etme
+## Geçerli durumu denetleme
 
 ```bash
 openclaw update status
 ```
 
-Etkin kanalı, kurulum türünü (git veya paket), mevcut sürümü ve kaynağı
-(config, git etiketi, git dalı veya varsayılan) gösterir.
+Etkin kanalı (bunu belirleyen kaynakla birlikte: yapılandırma, git etiketi,
+git dalı, kurulu sürüm veya varsayılan), kurulum türünü (git veya paket),
+geçerli sürümü ve güncelleme kullanılabilirliğini gösterir.
 
 ## Etiketleme için en iyi uygulamalar
 
-- Git checkout’larının varmasını istediğiniz sürümleri etiketleyin (kararlı için
-  `vYYYY.M.PATCH`, beta için `vYYYY.M.PATCH-beta.N`; `-alpha.N`, `-rc.N` ve
-  `-next.N` gibi adlandırılmış semver ön sürüm sonekleri kararlı hedefler değildir).
-- `vYYYY.M.PATCH-1` ve `v1.0.1-1` gibi eski sayısal kararlı etiketler uyumluluk
-  için hâlâ kararlı git etiketleri olarak tanınır.
-- `vYYYY.M.PATCH.beta.N` de uyumluluk için tanınır, ancak `-beta.N` tercih edin.
-- Etiketleri değişmez tutun: bir etiketi asla taşımayın veya yeniden kullanmayın.
-- npm dist-tag’leri, npm kurulumları için doğruluk kaynağı olmaya devam eder:
-  - `latest` -> stable
-  - `beta` -> aday derleme veya beta-öncelikli kararlı derleme
-  - `dev` -> main snapshot (isteğe bağlı)
+- Git çalışma kopyalarının ulaşmasını istediğiniz sürümleri etiketleyin: kararlı sürüm için
+  `vYYYY.M.PATCH`, beta için `vYYYY.M.PATCH-beta.N`. `-alpha.N`,
+  `-rc.N` ve `-next.N` gibi adlandırılmış ön sürüm son ekleri kararlı veya beta hedefleri değildir.
+- `vYYYY.M.PATCH-1` ve `v1.0.1-1` gibi eski sayısal kararlı etiketler, uyumluluk
+  amacıyla hâlâ kararlı git etiketleri olarak tanınır.
+- `vYYYY.M.PATCH.beta.N` (noktalarla ayrılmış) da uyumluluk amacıyla tanınır;
+  `-beta.N` biçimini tercih edin.
+- Etiketleri değişmez tutun: bir etiketi hiçbir zaman taşımayın veya yeniden kullanmayın.
+- npm kurulumları için doğruluk kaynağı npm dist-tag'leri olmaya devam eder:
+  - `latest` -> kararlı
+  - `extended-stable` -> geriden gelen desteklenen ayın paket sürümü
+  - `beta` -> aday derleme veya önce beta kanalında yayımlanan kararlı derleme
+  - `dev` -> main anlık görüntüsü (isteğe bağlı)
 
-## macOS uygulama kullanılabilirliği
+## macOS uygulamasının kullanılabilirliği
 
-Beta ve dev derlemeleri bir macOS uygulama sürümü içermeyebilir. Bu sorun değildir:
+Beta ve geliştirme derlemeleri bir macOS uygulama sürümü **içermeyebilir**. Bu sorun değildir:
 
-- Git etiketi ve npm dist-tag yine de yayımlanabilir.
-- Sürüm notlarında veya changelog’da "bu beta için macOS derlemesi yok" ifadesini belirtin.
+- Git etiketi ve npm dist-tag'i yine de birbirinden bağımsız olarak yayımlanabilir.
+- Sürüm notlarında veya değişiklik günlüğünde "bu beta için macOS derlemesi yok" ifadesini belirtin.
 
 ## İlgili
 
 - [Güncelleme](/tr/install/updating)
-- [Installer iç işleyişi](/tr/install/installer)
+- [Yükleyicinin iç işleyişi](/tr/install/installer)

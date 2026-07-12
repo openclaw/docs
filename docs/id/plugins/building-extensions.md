@@ -1,21 +1,21 @@
 ---
 read_when:
-    - Tautan legacy ke building-extensions
-summary: Pengalihan ke panduan Building Plugins saat ini
-title: Building plugins (pengalihan)
+    - Tautan lama ke building-extensions
+summary: Mengalihkan ke panduan Membuat Plugin yang terbaru
+title: Membuat Plugin (pengalihan)
 x-i18n:
-    generated_at: "2026-04-24T09:18:09Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: d687ccddfe7dcadf8bdd0fc903bf8a5da112902a8d23086b04da25df752facaf
-    source_path: plugins/building-extensions.md
-    workflow: 15
+    generated_at: "2026-07-12T14:22:48Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 912a6de72e2ea3a3fc7cc93a15f952d504c00873f7662ead0f50662bcc7771c5
+    source_path: plugins/building-extensions.md
+    workflow: 16
 ---
 
-Halaman ini telah dipindahkan ke [Building Plugins](/id/plugins/building-plugins).
+Halaman ini telah dipindahkan. Lihat [Membangun Plugin](/id/plugins/building-plugins).
 
 ## Terkait
 
-- [Building plugins](/id/plugins/building-plugins)
+- [Membangun Plugin](/id/plugins/building-plugins)
 - [Arsitektur Plugin](/id/plugins/architecture)

@@ -1,128 +1,113 @@
 ---
 read_when:
     - ACP-gebaseerde IDE-integraties instellen
-    - ACP-sessieroutering naar de Gateway debuggen
+    - Foutopsporing van ACP-sessieroutering naar de Gateway
 summary: Voer de ACP-bridge uit voor IDE-integraties
 title: ACP
 x-i18n:
-    generated_at: "2026-06-27T17:17:41Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:41:01Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 79fa816811f78c3fa59577342e568868ef63e88f5262fd954e346ed46b02afc3
+    source_hash: becdcfdd1cc62b206cc92e9b8248c79a2ff63cfc3779d8a124b9713e779ad33c
     source_path: cli/acp.md
     workflow: 16
 ---
 
-Voer de [Agent Client Protocol (ACP)](https://agentclientprotocol.com/)-brug uit die met een OpenClaw Gateway praat.
+Voer de [Agent Client Protocol (ACP)](https://agentclientprotocol.com/)-bridge uit die communiceert met een OpenClaw Gateway.
 
-Deze opdracht spreekt ACP via stdio voor IDE's en stuurt prompts door naar de Gateway
-via WebSocket. Het houdt ACP-sessies gekoppeld aan Gateway-sessiesleutels.
+`openclaw acp` spreekt ACP via stdio voor IDE's en stuurt prompts via WebSocket door naar de Gateway, waarbij ACP-sessies aan Gateway-sessiesleutels gekoppeld blijven. Het is een door een Gateway ondersteunde ACP-bridge, geen volledige ACP-native editorruntime: de nadruk ligt op sessieroutering, promptlevering en streamingupdates.
 
-`openclaw acp` is een ACP-brug met Gateway-backend, geen volledige ACP-native editorruntime. De focus ligt op sessieroutering, promptbezorging en eenvoudige streamingupdates.
-
-Als je wilt dat een externe MCP-client rechtstreeks met OpenClaw-kanaalgesprekken praat in plaats van een ACP-harness-sessie te hosten, gebruik dan in plaats daarvan
-[`openclaw mcp serve`](/nl/cli/mcp).
+Als je wilt dat een externe MCP-client rechtstreeks met OpenClaw-kanaalgesprekken communiceert in plaats van een ACP-harness-sessie te hosten, gebruik dan [`openclaw mcp serve`](/nl/cli/mcp).
 
 ## Wat dit niet is
 
-Deze pagina wordt vaak verward met ACP-harness-sessies.
+`openclaw acp` betekent dat OpenClaw als ACP-server fungeert: een IDE of ACP-client maakt verbinding met OpenClaw en OpenClaw stuurt dat werk door naar een Gateway-sessie.
 
-`openclaw acp` betekent:
+Dit verschilt van [ACP-agents](/nl/tools/acp-agents), waarbij OpenClaw via `acpx` een externe harness zoals Codex of Claude Code uitvoert.
 
-- OpenClaw fungeert als ACP-server
-- een IDE of ACP-client maakt verbinding met OpenClaw
-- OpenClaw stuurt dat werk door naar een Gateway-sessie
+Vuistregel:
 
-Dit is anders dan [ACP-agenten](/nl/tools/acp-agents), waarbij OpenClaw een externe harness zoals Codex of Claude Code via `acpx` uitvoert.
-
-Snelle regel:
-
-- editor/client wil via ACP met OpenClaw praten: gebruik `openclaw acp`
-- OpenClaw moet Codex/Claude/Gemini als ACP-harness starten: gebruik `/acp spawn` en [ACP-agenten](/nl/tools/acp-agents)
+- editor/client wil via ACP met OpenClaw communiceren: gebruik `openclaw acp`
+- OpenClaw moet Codex/Claude/Gemini als ACP-harness starten: gebruik `/acp spawn` en [ACP-agents](/nl/tools/acp-agents)
 
 ## Compatibiliteitsmatrix
 
-| ACP-gebied                                                            | Status              | Opmerkingen                                                                                                                                                                                                                                     |
-| --------------------------------------------------------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `initialize`, `newSession`, `prompt`, `cancel`                        | Geïmplementeerd     | Kernbrugstroom via stdio naar Gateway-chat/verzenden + afbreken.                                                                                                                                                                                |
-| `listSessions`, slash-opdrachten                                      | Geïmplementeerd     | Sessielijst werkt tegen Gateway-sessiestatus met begrensde cursorpaginering en `cwd`-filtering waar Gateway-sessierijen werkruimtemetadata bevatten; opdrachten worden aangekondigd via `available_commands_update`.                          |
-| Metadata voor sessieafstamming                                        | Geïmplementeerd     | Sessielijsten en momentopnamen van sessie-info bevatten OpenClaw-ouder- en kindafstamming in `_meta`, zodat ACP-clients subagentgrafieken kunnen weergeven zonder private Gateway-zijkanalen.                                                  |
-| `resumeSession`, `closeSession`                                       | Geïmplementeerd     | Hervatten koppelt een ACP-sessie opnieuw aan een bestaande Gateway-sessie zonder geschiedenis opnieuw af te spelen. Sluiten annuleert actief brugwerk, lost wachtende prompts op als geannuleerd en geeft brugsessiestatus vrij.               |
-| `loadSession`                                                         | Gedeeltelijk        | Koppelt de ACP-sessie opnieuw aan een Gateway-sessiesleutel en speelt ACP-gebeurtenisledgergeschiedenis opnieuw af voor door de brug gemaakte sessies. Oudere/sessies zonder ledger vallen terug op opgeslagen gebruikers-/assistenttekst.     |
-| Promptinhoud (`text`, ingesloten `resource`, afbeeldingen)            | Gedeeltelijk        | Tekst/resources worden samengevoegd tot chatinvoer; afbeeldingen worden Gateway-bijlagen.                                                                                                                                                       |
-| Sessiemodi                                                            | Gedeeltelijk        | `session/set_mode` wordt ondersteund en de brug biedt initiële, door Gateway ondersteunde sessiebediening voor denkniveau, tool-uitgebreidheid, reasoning, gebruiksdetail en verhoogde acties. Bredere ACP-native modus-/configuratieoppervlakken vallen nog buiten scope. |
-| Sessie-info en gebruiksupdates                                        | Gedeeltelijk        | De brug verzendt `session_info_update`- en best-effort `usage_update`-meldingen vanuit gecachete Gateway-sessiemomentopnamen. Gebruik is bij benadering en wordt alleen verzonden wanneer Gateway-tokentotalen als vers zijn gemarkeerd.       |
-| Tool-streaming                                                        | Gedeeltelijk        | `tool_call` / `tool_call_update`-gebeurtenissen bevatten ruwe I/O, tekstinhoud en best-effort bestandslocaties wanneer Gateway-toolargumenten/-resultaten die blootleggen. Ingesloten terminals en rijkere diff-native uitvoer worden nog niet blootgelegd. |
-| Exec-goedkeuringen                                                    | Gedeeltelijk        | Gateway-exec-goedkeuringsprompts tijdens actieve ACP-promptbeurten worden doorgestuurd naar de ACP-client met `session/request_permission`.                                                                                                    |
-| MCP-servers per sessie (`mcpServers`)                                 | Niet ondersteund    | Brugmodus weigert MCP-serververzoeken per sessie. Configureer MCP in plaats daarvan op de OpenClaw Gateway of agent.                                                                                                                           |
-| Clientbestandssysteemmethoden (`fs/read_text_file`, `fs/write_text_file`) | Niet ondersteund | De brug roept geen ACP-clientbestandssysteemmethoden aan.                                                                                                                                                                                       |
-| Clientterminalmethoden (`terminal/*`)                                 | Niet ondersteund    | De brug maakt geen ACP-clientterminals aan en streamt geen terminal-id's via toolaanroepen.                                                                                                                                                     |
-| Sessieplannen / gedachte-streaming                                    | Niet ondersteund    | De brug verzendt momenteel uitvoertekst en toolstatus, geen ACP-plan- of gedachte-updates.                                                                                                                                                      |
+| ACP-onderdeel                                                          | Status                | Opmerkingen                                                                                                                                                                                                                                                   |
+| ----------------------------------------------------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `initialize`, `newSession`, `prompt`, `cancel`                          | Geïmplementeerd       | Kernstroom van de bridge via stdio naar Gateway-chat/verzenden + afbreken.                                                                                                                                                                                     |
+| `listSessions`, slashopdrachten                                         | Geïmplementeerd       | De sessielijst werkt met de Gateway-sessiestatus, met begrensde cursorpaginering en `cwd`-filtering wanneer Gateway-sessierijen werkruimtemetadata bevatten; opdrachten worden via `available_commands_update` aangekondigd.                                    |
+| Metadata van sessieafstamming                                           | Geïmplementeerd       | Sessielijsten en momentopnamen van sessiegegevens bevatten de bovenliggende en onderliggende OpenClaw-afstamming in `_meta`, zodat ACP-clients subagentgrafen zonder private Gateway-nevenkanalen kunnen weergeven.                                           |
+| `resumeSession`, `closeSession`                                         | Geïmplementeerd       | Hervatten koppelt een ACP-sessie opnieuw aan een bestaande Gateway-sessie zonder de geschiedenis opnieuw af te spelen. Sluiten annuleert actief bridgewerk, handelt openstaande prompts als geannuleerd af en geeft de sessiestatus van de bridge vrij.         |
+| `loadSession`                                                           | Gedeeltelijk          | Koppelt de ACP-sessie opnieuw aan een Gateway-sessiesleutel en speelt de ACP-gebeurtenislogboekgeschiedenis opnieuw af voor sessies die door de bridge zijn gemaakt. Oudere sessies of sessies zonder logboek vallen terug op opgeslagen gebruikers-/assistenttekst. |
+| Promptinhoud (`text`, ingesloten `resource`, afbeeldingen)              | Gedeeltelijk          | Tekst/resources worden samengevoegd tot chatinvoer; afbeeldingen worden Gateway-bijlagen.                                                                                                                                                                    |
+| Sessiemodi                                                              | Gedeeltelijk          | `session/set_mode` wordt ondersteund; de bridge biedt door de Gateway ondersteunde sessiebesturing voor denkniveau, uitvoerigheid van tools, redenering, gebruiksdetails en acties met verhoogde rechten. Bredere ACP-native modus-/configuratieoppervlakken vallen nog buiten het bereik. |
+| Streaming van gedachten                                                 | Geïmplementeerd       | De denkinhoud van het model wordt als `agent_thought_chunk`-sessie-updates gestreamd. ACP-native sessieplannen worden niet verzonden.                                                                                                                          |
+| Sessiegegevens en gebruiksupdates                                       | Gedeeltelijk          | De bridge verzendt `session_info_update`- en naar beste vermogen `usage_update`-meldingen vanuit gecachte momentopnamen van Gateway-sessies. Het gebruik is bij benadering en wordt alleen verzonden wanneer de Gateway-token-totalen als actueel zijn gemarkeerd. |
+| Toolstreaming                                                           | Gedeeltelijk          | `tool_call`-/`tool_call_update`-gebeurtenissen bevatten ruwe invoer/uitvoer, tekstinhoud en naar beste vermogen bestandslocaties wanneer Gateway-toolargumenten/-resultaten deze beschikbaar stellen. Ingesloten terminals en uitgebreidere diff-native uitvoer worden niet beschikbaar gesteld. |
+| Goedkeuringen voor uitvoering                                           | Gedeeltelijk          | Gateway-prompts voor uitvoeringsgoedkeuring tijdens actieve ACP-promptbeurten worden met `session/request_permission` doorgestuurd naar de ACP-client.                                                                                                        |
+| MCP-servers per sessie (`mcpServers`)                                   | Niet ondersteund      | De bridgemodus weigert aanvragen voor MCP-servers per sessie. Configureer MCP in plaats daarvan op de OpenClaw Gateway of agent.                                                                                                                              |
+| Bestandssysteemmethoden van de client (`fs/read_text_file`, `fs/write_text_file`) | Niet ondersteund | De bridge roept geen ACP-bestandssysteemmethoden van de client aan.                                                                                                                                                                                           |
+| Terminalmethoden van de client (`terminal/*`)                           | Niet ondersteund      | De bridge maakt geen ACP-clientterminals en streamt geen terminal-id's via toolaanroepen.                                                                                                                                                                     |
 
 ## Bekende beperkingen
 
-- `loadSession` kan volledige ACP-gebeurtenisledgergeschiedenis alleen opnieuw afspelen voor door de brug gemaakte sessies. Oudere/sessies zonder ledger gebruiken nog steeds transcriptfallback en reconstrueren geen historische toolaanroepen of systeemmeldingen.
-- Als meerdere ACP-clients dezelfde Gateway-sessiesleutel delen, zijn gebeurtenis- en annuleringsroutering best-effort in plaats van strikt geïsoleerd per client. Geef de voorkeur aan de standaard geïsoleerde `acp-bridge:<uuid>`-sessies wanneer je schone editor-lokale beurten nodig hebt.
-- Gateway-stopstatussen worden vertaald naar ACP-stopredenen, maar die mapping is minder expressief dan een volledig ACP-native runtime.
-- Initiële sessiebediening toont momenteel een gerichte subset van Gateway-instellingen: denkniveau, tool-uitgebreidheid, reasoning, gebruiksdetail en verhoogde acties. Modelselectie en exec-hostbediening worden nog niet als ACP-configuratieopties blootgelegd.
-- `session_info_update` en `usage_update` worden afgeleid van Gateway-sessiemomentopnamen, niet van live ACP-native runtimeboekhouding. Gebruik is bij benadering, bevat geen kostengegevens en wordt alleen verzonden wanneer de Gateway totale tokengegevens als vers markeert.
-- Tool-meekijkgegevens zijn best-effort. De brug kan bestandspaden tonen die in bekende toolargumenten/-resultaten verschijnen, maar verzendt nog geen ACP-terminals of gestructureerde bestandsdiffs.
-- Exec-goedkeuringsdoorgifte is beperkt tot de actieve ACP-promptbeurt; goedkeuringen van andere Gateway-sessies worden genegeerd.
+- `loadSession` speelt alleen voor door de bridge gemaakte sessies de volledige geschiedenis van het ACP-gebeurtenislogboek opnieuw af. Oudere sessies of sessies zonder logboek gebruiken een terugval op het transcript en reconstrueren geen historische toolaanroepen of systeemberichten.
+- Als meerdere ACP-clients dezelfde Gateway-sessiesleutel delen, gebeurt de routering van gebeurtenissen en annuleringen naar beste vermogen in plaats van strikt geïsoleerd per client. Geef de voorkeur aan de standaard geïsoleerde `acp-bridge:<uuid>`-sessies wanneer je schone editorlokale beurten nodig hebt.
+- Gateway-stopstatussen worden vertaald naar ACP-stopredenen, maar die toewijzing is minder expressief dan bij een volledig ACP-native runtime.
+- Sessiebesturing biedt een gerichte subset van Gateway-instellingen: denkniveau, uitvoerigheid van tools, redenering, gebruiksdetails en acties met verhoogde rechten. Modelselectie en besturing van de uitvoeringshost worden niet als ACP-configuratieopties beschikbaar gesteld.
+- `session_info_update` en `usage_update` worden afgeleid van momentopnamen van Gateway-sessies, niet van live ACP-native runtimeboekhouding. Het gebruik is bij benadering, bevat geen kostengegevens en wordt alleen verzonden wanneer de Gateway de totale tokengegevens als actueel markeert.
+- Meeloopgegevens voor tools worden naar beste vermogen geleverd: de bridge toont bestandspaden die in bekende toolargumenten/-resultaten voorkomen, maar verzendt geen ACP-terminals of gestructureerde bestandsdiffs.
+- Het doorsturen van uitvoeringsgoedkeuringen is beperkt tot de actieve ACP-promptbeurt; goedkeuringen uit andere Gateway-sessies worden genegeerd.
 
 ## Gebruik
 
 ```bash
 openclaw acp
 
-# Remote Gateway
+# Externe Gateway
 openclaw acp --url wss://gateway-host:18789 --token <token>
 
-# Remote Gateway (token from file)
+# Externe Gateway (token uit bestand)
 openclaw acp --url wss://gateway-host:18789 --token-file ~/.openclaw/gateway.token
 
-# Attach to an existing session key
+# Koppelen aan een bestaande sessiesleutel
 openclaw acp --session agent:main:main
 
-# Attach by label (must already exist)
+# Koppelen op label (moet al bestaan)
 openclaw acp --session-label "support inbox"
 
-# Reset the session key before the first prompt
+# De sessiesleutel vóór de eerste prompt opnieuw instellen
 openclaw acp --session agent:main:main --reset-session
 ```
 
-## ACP-client (debug)
+## ACP-client (foutopsporing)
 
-Gebruik de ingebouwde ACP-client om de bridge zonder IDE te sanity-checken.
-Deze start de ACP-bridge en laat je interactief prompts typen.
+Gebruik de ingebouwde ACP-client om de bridge zonder IDE aan een snelle controle te onderwerpen. Deze start de ACP-bridge en laat je interactief prompts typen.
 
 ```bash
 openclaw acp client
 
-# Point the spawned bridge at a remote Gateway
+# Laat de gestarte bridge naar een externe Gateway wijzen
 openclaw acp client --server-args --url wss://gateway-host:18789 --token-file ~/.openclaw/gateway.token
 
-# Override the server command (default: openclaw)
+# Overschrijf de serveropdracht (standaard: openclaw)
 openclaw acp client --server "node" --server-args openclaw.mjs acp --url ws://127.0.0.1:19001
 ```
 
-Machtigingsmodel (client-debugmodus):
+Toestemmingsmodel (foutopsporingsmodus van client):
 
-- Automatische goedkeuring is gebaseerd op een toelatingslijst en geldt alleen voor vertrouwde core-tool-ID's.
+- Automatische goedkeuring is gebaseerd op een toestemmingslijst en geldt alleen voor vertrouwde tool-id's uit de kern.
 - Automatische goedkeuring voor `read` is beperkt tot de huidige werkmap (`--cwd` wanneer ingesteld).
-- ACP keurt alleen beperkte readonly-klassen automatisch goed: gescopete `read`-aanroepen onder de actieve cwd plus readonly-zoektools (`search`, `web_search`, `memory_search`). Onbekende/niet-core tools, reads buiten scope, tools die exec kunnen uitvoeren, control-plane-tools, muterende tools en interactieve flows vereisen altijd expliciete promptgoedkeuring.
-- Door de server geleverde `toolCall.kind` wordt behandeld als niet-vertrouwde metadata (niet als autorisatiebron).
-- Dit ACP-bridgebeleid staat los van ACPX-harnasmachtigingen. Als je OpenClaw uitvoert via de `acpx`-backend, is `plugins.entries.acpx.config.permissionMode=approve-all` de break-glass-"yolo"-schakelaar voor die harness-sessie.
+- ACP keurt alleen beperkte alleen-lezenklassen automatisch goed: afgebakende `read`-aanroepen binnen de actieve cwd, plus alleen-lezenzoektools (`search`, `web_search`, `memory_search`). Onbekende tools/tools buiten de kern, leesbewerkingen buiten het bereik, tools die opdrachten kunnen uitvoeren, tools voor het besturingsvlak, muterende tools en interactieve stromen vereisen altijd expliciete goedkeuring via een prompt.
+- Door de server verstrekte `toolCall.kind` wordt behandeld als niet-vertrouwde metadata, niet als autorisatiebron.
+- Dit ACP-bridgebeleid staat los van ACPX-harnesstoestemmingen. Als je OpenClaw via de `acpx`-backend uitvoert, is `plugins.entries.acpx.config.permissionMode=approve-all` de noodschakelaar "yolo" voor die harness-sessie.
 
-## Protocol-smoketest
+## Snelle protocoltest
 
-Start voor debugging op protocolniveau een Gateway met geïsoleerde state en stuur
-`openclaw acp` over stdio aan met een ACP JSON-RPC-client. Dek `initialize`,
-`session/new`, `session/list` met een absoluut `cwd`, `session/resume`,
-`session/close`, dubbele close en ontbrekende resume af.
+Start voor foutopsporing op protocolniveau een Gateway met geïsoleerde status en stuur `openclaw acp` via stdio aan met een ACP JSON-RPC-client. Test `initialize`, `session/new`, `session/list` met een absolute `cwd`, `session/resume`, `session/close`, dubbel sluiten en hervatten van een ontbrekende sessie.
 
-Het bewijs moet de geadverteerde lifecycle-capabilities, een door de Gateway ondersteunde
-sessierij, updatemeldingen en de Gateway-`sessions.list`-log bevatten:
+Het bewijs moet de aangekondigde levenscyclusmogelijkheden, een door een Gateway ondersteunde sessierij, updatemeldingen en het Gateway-`sessions.list`-logboek bevatten:
 
 ```json
 {
@@ -154,39 +139,34 @@ sessierij, updatemeldingen en de Gateway-`sessions.list`-log bevatten:
 }
 ```
 
-Vermijd `openclaw gateway call sessions.list` als het enige ACP-bewijs. Dat
-CLI-pad kan een scope-upgrade voor een operator met fresh-token aanvragen; de
-correctheid van de ACP-bridge wordt bewezen door ACP-stdioframes plus de Gateway-`sessions.list`-log.
+Gebruik niet alleen `openclaw gateway call sessions.list` als ACP-bewijs. Dat CLI-pad kan om een scope-upgrade voor een operator met een nieuw token vragen; de juistheid van de ACP-bridge wordt bewezen door ACP-stdioframes plus het Gateway-`sessions.list`-logboek.
 
 ## Dit gebruiken
 
-Gebruik ACP wanneer een IDE (of andere client) Agent Client Protocol spreekt en je wilt
-dat deze een OpenClaw Gateway-sessie aanstuurt.
+Gebruik ACP wanneer een IDE (of andere client) Agent Client Protocol spreekt en je daarmee een OpenClaw Gateway-sessie wilt aansturen.
 
-1. Zorg dat de Gateway draait (lokaal of remote).
-2. Configureer het Gateway-doel (configuratie of flags).
-3. Wijs je IDE aan om `openclaw acp` over stdio uit te voeren.
+1. Zorg dat de Gateway actief is (lokaal of extern).
+2. Configureer het Gateway-doel (configuratie of vlaggen).
+3. Stel je IDE zo in dat deze `openclaw acp` via stdio uitvoert.
 
-Voorbeeldconfiguratie (persistent):
+Voorbeeldconfiguratie (permanent opgeslagen):
 
 ```bash
 openclaw config set gateway.remote.url wss://gateway-host:18789
 openclaw config set gateway.remote.token <token>
 ```
 
-Voorbeeld van direct uitvoeren (geen config-write):
+Voorbeeld van rechtstreeks uitvoeren (zonder configuratie weg te schrijven):
 
 ```bash
 openclaw acp --url wss://gateway-host:18789 --token <token>
-# preferred for local process safety
+# aanbevolen voor de veiligheid van lokale processen
 openclaw acp --url wss://gateway-host:18789 --token-file ~/.openclaw/gateway.token
 ```
 
 ## Agents selecteren
 
-ACP kiest agents niet rechtstreeks. Het routeert via de Gateway-sessiesleutel.
-
-Gebruik agent-gescopete sessiesleutels om een specifieke agent te targeten:
+ACP kiest agents niet rechtstreeks. Het routeert op basis van de Gateway-sessiesleutel. Gebruik sessiesleutels binnen het bereik van een agent om een specifieke agent te kiezen:
 
 ```bash
 openclaw acp --session agent:main:main
@@ -194,30 +174,21 @@ openclaw acp --session agent:design:main
 openclaw acp --session agent:qa:bug-123
 ```
 
-Elke ACP-sessie wordt toegewezen aan één Gateway-sessiesleutel. Eén agent kan veel
-sessies hebben; ACP gebruikt standaard een geïsoleerde `acp-bridge:<uuid>`-sessie, tenzij je
-de sleutel of het label overschrijft.
+Elke ACP-sessie wordt aan één Gateway-sessiesleutel gekoppeld. Eén agent kan veel sessies hebben; ACP gebruikt standaard een geïsoleerde `acp-bridge:<uuid>`-sessie, tenzij je de sleutel of het label overschrijft.
 
-Per sessie ingestelde `mcpServers` worden niet ondersteund in bridgemodus. Als een ACP-client
-ze tijdens `newSession` of `loadSession` verstuurt, retourneert de bridge een duidelijke
-fout in plaats van ze stilzwijgend te negeren.
+`mcpServers` per sessie worden niet ondersteund in de bridge-modus. Als een ACP-client deze tijdens `newSession` of `loadSession` verzendt, retourneert de bridge een duidelijke foutmelding in plaats van ze stilzwijgend te negeren.
 
-Als je wilt dat door ACPX ondersteunde sessies OpenClaw Plugin-tools of geselecteerde
-ingebouwde tools zoals `cron` zien, schakel dan de Gateway-zijdige ACPX MCP-bridges in in plaats
-van te proberen per sessie `mcpServers` door te geven. Zie
-[ACP-agenten](/nl/tools/acp-agents-setup#plugin-tools-mcp-bridge) en
-[OpenClaw-tools MCP-bridge](/nl/tools/acp-agents-setup#openclaw-tools-mcp-bridge).
+Als je wilt dat door ACPX ondersteunde sessies toegang hebben tot OpenClaw-plugintools of geselecteerde ingebouwde tools zoals `cron`, schakel dan de ACPX MCP-bridges aan de Gateway-zijde in in plaats van te proberen `mcpServers` per sessie door te geven. Zie [ACP-agenten](/nl/tools/acp-agents-setup#plugin-tools-mcp-bridge) en [MCP-bridge voor OpenClaw-tools](/nl/tools/acp-agents-setup#openclaw-tools-mcp-bridge).
 
-## Gebruiken vanuit `acpx` (Codex, Claude, andere ACP-clients)
+## Gebruik vanuit `acpx` (Codex, Claude, andere ACP-clients)
 
-Als je wilt dat een codeeragent zoals Codex of Claude Code via ACP met je
-OpenClaw-bot praat, gebruik dan `acpx` met het ingebouwde `openclaw`-doel.
+Als je wilt dat een programmeeragent zoals Codex of Claude Code via ACP met je OpenClaw-bot communiceert, gebruik dan `acpx` met het ingebouwde doel `openclaw`.
 
-Typische flow:
+Gebruikelijke werkwijze:
 
-1. Start de Gateway en zorg dat de ACP-bridge deze kan bereiken.
-2. Wijs `acpx openclaw` naar `openclaw acp`.
-3. Richt je op de OpenClaw-sessiesleutel die de codeeragent moet gebruiken.
+1. Start de Gateway en zorg ervoor dat de ACP-bridge deze kan bereiken.
+2. Richt `acpx openclaw` op `openclaw acp`.
+3. Kies de OpenClaw-sessiesleutel die de programmeeragent moet gebruiken.
 
 Voorbeelden:
 
@@ -231,8 +202,7 @@ acpx openclaw -s codex-bridge --cwd /path/to/repo \
   "Ask my OpenClaw work agent for recent context relevant to this repo."
 ```
 
-Als je wilt dat `acpx openclaw` elke keer op een specifieke Gateway en sessiesleutel
-is gericht, overschrijf dan de agentopdracht `openclaw` in `~/.acpx/config.json`:
+Als je wilt dat `acpx openclaw` telkens een specifieke Gateway en sessiesleutel gebruikt, overschrijf dan de agentopdracht `openclaw` in `~/.acpx/config.json`:
 
 ```json
 {
@@ -244,19 +214,17 @@ is gericht, overschrijf dan de agentopdracht `openclaw` in `~/.acpx/config.json`
 }
 ```
 
-Gebruik voor een repo-lokale OpenClaw-checkout het directe CLI-entrypoint in plaats van de
-dev-runner, zodat de ACP-stream schoon blijft. Bijvoorbeeld:
+Gebruik voor een lokale OpenClaw-checkout in een repository het directe CLI-invoerpunt in plaats van de ontwikkelrunner, zodat de ACP-stream schoon blijft:
 
 ```bash
 env OPENCLAW_HIDE_BANNER=1 OPENCLAW_SUPPRESS_NOTES=1 node openclaw.mjs acp ...
 ```
 
-Dit is de eenvoudigste manier om Codex, Claude Code of een andere ACP-bewuste client
-contextuele informatie uit een OpenClaw-agent te laten ophalen zonder een terminal te scrapen.
+Dit is de eenvoudigste manier om Codex, Claude Code of een andere ACP-compatibele client contextuele informatie te laten ophalen bij een OpenClaw-agent zonder een terminal uit te lezen.
 
 ## Zed-editor instellen
 
-Voeg een aangepaste ACP-agent toe in `~/.config/zed/settings.json` (of gebruik de instellingen-UI van Zed):
+Voeg een aangepaste ACP-agent toe in `~/.config/zed/settings.json` (of gebruik de Settings-interface van Zed):
 
 ```json
 {
@@ -271,7 +239,7 @@ Voeg een aangepaste ACP-agent toe in `~/.config/zed/settings.json` (of gebruik d
 }
 ```
 
-Om een specifieke Gateway of agent te targeten:
+Om een specifieke Gateway of agent te gebruiken:
 
 ```json
 {
@@ -294,20 +262,17 @@ Om een specifieke Gateway of agent te targeten:
 }
 ```
 
-Open in Zed het Agent-paneel en selecteer "OpenClaw ACP" om een thread te starten.
+Open in Zed het paneel Agent en selecteer "OpenClaw ACP" om een thread te starten.
 
 ## Sessietoewijzing
 
-Standaard krijgen ACP-bridgesessies een geïsoleerde Gateway-sessiesleutel met een
-`acp-bridge:`-voorvoegsel. Deze bridgesessies met normaal model zijn synthetisch en
-onderhevig aan opschoning van verouderde vermeldingen en limieten op het aantal vermeldingen. Om een bekende sessie opnieuw te gebruiken,
-geef je een sessiesleutel of label door:
+ACP-bridgesessies krijgen standaard een geïsoleerde Gateway-sessiesleutel met het voorvoegsel `acp-bridge:`. Deze bridgesessies met een normaal model zijn synthetisch en tijdelijk: verouderde vermeldingen kunnen worden opgeschoond en ze worden niet behandeld als beschermde oppervlakken voor menselijke gesprekken. Geef een sessiesleutel of label door om een bekende sessie opnieuw te gebruiken:
 
 - `--session <key>`: gebruik een specifieke Gateway-sessiesleutel.
-- `--session-label <label>`: los een bestaande sessie op aan de hand van label.
-- `--reset-session`: maak een nieuw sessie-id voor die sleutel (dezelfde sleutel, nieuw transcript).
+- `--session-label <label>`: zoek een bestaande sessie op aan de hand van het label.
+- `--reset-session`: maak een nieuwe sessie-id voor die sleutel (dezelfde sleutel, nieuw transcript).
 
-Als je ACP-client metadata ondersteunt, kun je per sessie overschrijven:
+Als je ACP-client metadata ondersteunt, kun je dit per sessie overschrijven:
 
 ```json
 {
@@ -323,37 +288,35 @@ Lees meer over sessiesleutels op [/concepts/session](/nl/concepts/session).
 
 ## Opties
 
-- `--url <url>`: Gateway-WebSocket-URL (standaard `gateway.remote.url` wanneer geconfigureerd).
-- `--token <token>`: Gateway-authenticatietoken.
-- `--token-file <path>`: lees Gateway-authenticatietoken uit bestand.
-- `--password <password>`: Gateway-authenticatiewachtwoord.
-- `--password-file <path>`: lees Gateway-authenticatiewachtwoord uit bestand.
+- `--url <url>`: WebSocket-URL van de Gateway (standaard `gateway.remote.url` wanneer geconfigureerd).
+- `--token <token>`: authenticatietoken voor de Gateway.
+- `--token-file <path>`: lees het authenticatietoken voor de Gateway uit een bestand.
+- `--password <password>`: authenticatiewachtwoord voor de Gateway.
+- `--password-file <path>`: lees het authenticatiewachtwoord voor de Gateway uit een bestand.
 - `--session <key>`: standaardsessiesleutel.
-- `--session-label <label>`: standaard sessielabel om op te lossen.
-- `--require-existing`: misluk als de sessiesleutel of het label niet bestaat.
-- `--reset-session`: reset de sessiesleutel voor het eerste gebruik.
-- `--no-prefix-cwd`: zet de werkdirectory niet als voorvoegsel voor prompts.
-- `--provenance <off|meta|meta+receipt>`: neem ACP-herkomstmetadata of ontvangstbewijzen op.
-- `--verbose, -v`: uitgebreide logging naar stderr.
+- `--session-label <label>`: standaard op te zoeken sessielabel.
+- `--require-existing`: mislukt als de sessiesleutel of het sessielabel niet bestaat.
+- `--reset-session`: stel de sessiesleutel vóór het eerste gebruik opnieuw in.
+- `--no-prefix-cwd`: voeg de werkmap niet als voorvoegsel aan prompts toe.
+- `--provenance <off|meta|meta+receipt>`: voeg ACP-herkomstmetadata of ontvangstbewijzen toe.
+- `--verbose, -v`: uitgebreide logboekregistratie naar stderr.
 
 Beveiligingsopmerking:
 
-- `--token` en `--password` kunnen op sommige systemen zichtbaar zijn in lokale proceslijsten.
-- Geef de voorkeur aan `--token-file`/`--password-file` of omgevingsvariabelen (`OPENCLAW_GATEWAY_TOKEN`, `OPENCLAW_GATEWAY_PASSWORD`).
-- Gateway-authenticatieoplossing volgt het gedeelde contract dat door andere Gateway-clients wordt gebruikt:
-  - lokale modus: env (`OPENCLAW_GATEWAY_*`) -> `gateway.auth.*` -> `gateway.remote.*`-fallback alleen wanneer `gateway.auth.*` niet is ingesteld (geconfigureerde maar niet opgeloste lokale SecretRefs falen gesloten)
-  - externe modus: `gateway.remote.*` met env/config-fallback volgens externe precedentieregels
-  - `--url` is overschrijvingsveilig en hergebruikt geen impliciete config/env-referenties; geef expliciet `--token`/`--password` door (of bestandsvarianten)
-- Onderliggende processen van de ACP-runtimebackend ontvangen `OPENCLAW_SHELL=acp`, wat kan worden gebruikt voor contextspecifieke shell-/profielregels.
-- `openclaw acp client` stelt `OPENCLAW_SHELL=acp-client` in op het gestarte bridgeproces.
+- `--token` en `--password` kunnen op sommige systemen zichtbaar zijn in lokale proceslijsten. Geef de voorkeur aan `--token-file`/`--password-file` of omgevingsvariabelen (`OPENCLAW_GATEWAY_TOKEN`, `OPENCLAW_GATEWAY_PASSWORD`).
+- De oplossing van Gateway-authenticatie volgt het gedeelde contract dat andere Gateway-clients gebruiken:
+  - lokale modus: env (`OPENCLAW_GATEWAY_*`) en daarna `gateway.auth.*`, met terugval op `gateway.remote.*` alleen wanneer `gateway.auth.*` niet is ingesteld (een geconfigureerde maar niet-opgeloste lokale SecretRef weigert veilig in plaats van stilzwijgend terug te vallen)
+  - externe modus: `gateway.remote.*` met terugval op env/config volgens de voorrangsregels voor externe verbindingen
+  - `--url` kan veilig worden overschreven en gebruikt geen impliciete configuratie- of env-aanmeldgegevens opnieuw; geef expliciet `--token`/`--password` door (of de bestandsvarianten)
 
 ### Opties voor `acp client`
 
-- `--cwd <dir>`: werkdirectory voor de ACP-sessie.
+- `--cwd <dir>`: werkmap voor de ACP-sessie.
 - `--server <command>`: ACP-serveropdracht (standaard: `openclaw`).
-- `--server-args <args...>`: extra argumenten die aan de ACP-server worden doorgegeven.
-- `--server-verbose`: schakel uitgebreide logging op de ACP-server in.
-- `--verbose, -v`: uitgebreide clientlogging.
+- `--server-args <args...>`: aanvullende argumenten die aan de ACP-server worden doorgegeven.
+- `--server-verbose`: schakel uitgebreide logboekregistratie op de ACP-server in.
+- `--verbose, -v`: uitgebreide clientlogboekregistratie.
+- `openclaw acp client` stelt `OPENCLAW_SHELL=acp-client` in voor het gestarte bridgeproces; dit kan worden gebruikt voor contextspecifieke shell- of profielregels.
 
 ## Gerelateerd
 

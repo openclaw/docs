@@ -8,37 +8,36 @@ sidebarTitle: Getting Started
 summary: Crie seu primeiro plugin do OpenClaw em minutos
 title: Criando plugins
 x-i18n:
-    generated_at: "2026-07-12T15:27:33Z"
+    generated_at: "2026-07-12T00:08:11Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 99ef2f22f8ae55614d835bc4309881ce264ab1a2287ac08af328e0b311d8fd9a
     source_path: plugins/building-plugins.md
     workflow: 16
 ---
 
-Os plugins estendem o OpenClaw sem alterar o núcleo. Um plugin pode adicionar um
+Plugins estendem o OpenClaw sem alterar o núcleo. Um plugin pode adicionar um
 canal de mensagens, provedor de modelos, backend de CLI local, ferramenta de agente, hook, provedor de mídia
 ou outro recurso pertencente ao plugin.
 
 Você não precisa adicionar um plugin externo ao repositório do OpenClaw. Publique
-o pacote no [ClawHub](/pt-BR/clawhub), e os usuários poderão instalá-lo com:
+o pacote no [ClawHub](/clawhub), e os usuários poderão instalá-lo com:
 
 ```bash
 openclaw plugins install clawhub:<package-name>
 ```
 
-As especificações de pacote sem prefixo ainda são instaladas pelo npm durante a transição de lançamento. Use o
+Especificações de pacote sem prefixo ainda são instaladas pelo npm durante a transição de lançamento. Use o
 prefixo `clawhub:` quando quiser a resolução pelo ClawHub.
 
 ## Requisitos
 
 - Node 22.19+, Node 23.11+ ou Node 24+, e `npm` ou `pnpm`.
-- Módulos ESM em TypeScript.
+- Módulos ESM do TypeScript.
 - Para trabalhar em um plugin incluído no repositório, clone o repositório e execute `pnpm install`.
-  O desenvolvimento de plugins a partir do checkout do código-fonte aceita somente pnpm, pois o OpenClaw descobre
-  plugins incluídos por meio dos pacotes de workspace em `extensions/*`.
+  O desenvolvimento de plugins a partir do checkout do código-fonte usa somente pnpm, pois o OpenClaw descobre
+  plugins incluídos nos pacotes do workspace `extensions/*`.
 
 ## Escolha o formato do plugin
 
@@ -47,10 +46,10 @@ prefixo `clawhub:` quando quiser a resolução pelo ClawHub.
     Conecte o OpenClaw a uma plataforma de mensagens.
   </Card>
   <Card title="Plugin de provedor" icon="cpu" href="/pt-BR/plugins/sdk-provider-plugins">
-    Adicione um provedor de modelos, mídia, pesquisa, busca, fala ou tempo real.
+    Adicione um provedor de modelos, mídia, pesquisa, busca, fala ou comunicação em tempo real.
   </Card>
   <Card title="Plugin de backend de CLI" icon="terminal" href="/pt-BR/plugins/cli-backend-plugins">
-    Execute uma CLI de IA local por meio do fallback de modelos do OpenClaw.
+    Execute uma CLI local de IA por meio do fallback de modelos do OpenClaw.
   </Card>
   <Card title="Plugin de ferramenta" icon="wrench" href="/pt-BR/plugins/tool-plugins">
     Registre ferramentas de agente.
@@ -60,11 +59,11 @@ prefixo `clawhub:` quando quiser a resolução pelo ClawHub.
 ## Início rápido
 
 Crie um plugin de ferramenta mínimo registrando uma ferramenta de agente obrigatória. Esse é o
-formato de plugin útil mais simples e abrange o pacote, o manifesto, o ponto de entrada e a
+formato útil mais simples de plugin e abrange o pacote, o manifesto, o ponto de entrada e a
 validação local.
 
 <Steps>
-  <Step title="Crie os metadados do pacote">
+  <Step title="Criar os metadados do pacote">
     <CodeGroup>
 
 ```json package.json
@@ -112,27 +111,27 @@ validação local.
 
     </CodeGroup>
 
-    Plugins externos publicados devem apontar as entradas de runtime para arquivos JavaScript
-    compilados. Consulte [Pontos de entrada do SDK](/pt-BR/plugins/sdk-entrypoints) para ver o contrato completo de
-    pontos de entrada.
+    Plugins externos publicados devem direcionar as entradas de runtime para arquivos JavaScript
+    compilados. Consulte [Pontos de entrada do SDK](/pt-BR/plugins/sdk-entrypoints) para conhecer o contrato completo
+    dos pontos de entrada.
 
-    Todo plugin precisa de um manifesto, mesmo sem configuração. As ferramentas de runtime devem
-    aparecer em `contracts.tools` para que o OpenClaw possa descobrir a propriedade sem
-    carregar antecipadamente o runtime de cada plugin. Defina `activation.onStartup`
-    intencionalmente; este exemplo é carregado na inicialização do Gateway.
+    Todo plugin precisa de um manifesto, mesmo que não tenha configuração. As ferramentas de runtime devem
+    constar em `contracts.tools` para que o OpenClaw possa descobrir a propriedade sem
+    carregar antecipadamente o runtime de todos os plugins. Defina `activation.onStartup`
+    deliberadamente; este exemplo é carregado na inicialização do Gateway.
 
-    As superfícies de plugin confiáveis para o host também são controladas pelo manifesto e exigem
+    As superfícies de plugin confiáveis pelo host também são controladas pelo manifesto e exigem uma
     declaração explícita para plugins instalados: `api.registerAgentToolResultMiddleware(...)`
-    exige que cada runtime de destino esteja listado em `contracts.agentToolResultMiddleware`,
-    e `api.registerTrustedToolPolicy(...)` exige cada ID de política em
+    exige que cada runtime de destino seja listado em `contracts.agentToolResultMiddleware`,
+    e `api.registerTrustedToolPolicy(...)` exige cada id de política em
     `contracts.trustedToolPolicies`. Essas declarações mantêm alinhadas a
-    inspeção no momento da instalação e o registro em runtime.
+    inspeção durante a instalação e o registro no runtime.
 
-    Para conhecer todos os campos do manifesto, consulte [Manifesto de plugin](/pt-BR/plugins/manifest).
+    Para todos os campos do manifesto, consulte [Manifesto do plugin](/pt-BR/plugins/manifest).
 
   </Step>
 
-  <Step title="Registre a ferramenta">
+  <Step title="Registrar a ferramenta">
     ```typescript index.ts
     import { Type } from "typebox";
     import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
@@ -156,23 +155,23 @@ validação local.
     });
     ```
 
-    Use `definePluginEntry` para plugins que não sejam de canal. Plugins de canal usam
+    Use `definePluginEntry` para plugins que não sejam de canal. Em vez disso, plugins de canal usam
     `defineChannelPluginEntry` de `openclaw/plugin-sdk/core`.
 
   </Step>
 
-  <Step title="Teste o runtime">
+  <Step title="Testar o runtime">
     Para um plugin instalado ou externo, inspecione o runtime carregado:
 
     ```bash
     openclaw plugins inspect my-plugin --runtime --json
     ```
 
-    Se o plugin registrar um comando da CLI, execute também esse comando e confirme
+    Se o plugin registrar um comando de CLI, execute também esse comando e confirme
     a saída, por exemplo, `openclaw demo-plugin ping`.
 
     Para um plugin incluído neste repositório, o OpenClaw descobre os pacotes de plugin
-    do checkout do código-fonte por meio do workspace `extensions/*`. Execute o teste direcionado
+    do checkout do código-fonte no workspace `extensions/*`. Execute o teste direcionado
     mais próximo:
 
     ```bash
@@ -182,11 +181,11 @@ validação local.
 
   </Step>
 
-  <Step title="Teste a instalação do pacote">
+  <Step title="Testar a instalação do pacote">
     Antes de publicar um plugin pronto para empacotamento, teste o mesmo formato de instalação que os usuários
-    receberão. Primeiro, adicione uma etapa de compilação, aponte entradas de runtime como
+    receberão. Primeiro, adicione uma etapa de compilação, direcione entradas de runtime como
     `openclaw.extensions` para JavaScript compilado, como `./dist/index.js`, e
-    certifique-se de que `npm pack` inclua essa saída em `dist/`. Entradas de código-fonte TypeScript servem
+    garanta que `npm pack` inclua essa saída `dist/`. Entradas de código-fonte TypeScript são
     apenas para checkouts do código-fonte e caminhos de desenvolvimento local.
 
     Em seguida, empacote o plugin e instale o tarball com `npm-pack:`:
@@ -197,26 +196,26 @@ validação local.
     openclaw plugins inspect my-plugin --runtime --json
     ```
 
-    `npm-pack:` usa o projeto npm gerenciado por plugin do OpenClaw, portanto detecta
-    erros de dependência em runtime que testes a partir do checkout do código-fonte podem ocultar. Ele comprova
+    `npm-pack:` usa o projeto npm por plugin gerenciado pelo OpenClaw e, assim, detecta
+    erros de dependência do runtime que os testes em checkout do código-fonte podem ocultar. Ele valida
     o formato do pacote e das dependências, não a confiança oficial vinculada ao catálogo.
-    As importações em runtime devem estar em `dependencies` ou `optionalDependencies`;
+    As importações de runtime devem estar em `dependencies` ou `optionalDependencies`;
     dependências deixadas apenas em `devDependencies` não serão instaladas no
     projeto de runtime gerenciado.
 
-    Não use uma instalação bruta por arquivo compactado/caminho como validação final de comportamento oficial ou
+    Não use uma instalação bruta de arquivo/caminho como validação final do comportamento oficial ou
     privilegiado do plugin. Códigos-fonte brutos são úteis para depuração local, mas
-    não comprovam o mesmo caminho de dependências das instalações pelo npm ou ClawHub. Se
-    o seu plugin depender do status confiável de plugin oficial, adicione uma segunda validação
+    não validam o mesmo caminho de dependências das instalações pelo npm ou ClawHub. Se
+    o plugin depender do status confiável de plugin oficial, adicione uma segunda validação
     por meio de uma instalação oficial baseada em catálogo ou de um caminho de pacote publicado que
     registre a confiança oficial. Consulte
     [Resolução de dependências de plugins](/pt-BR/plugins/dependency-resolution) para obter
-    detalhes sobre a raiz de instalação e a propriedade das dependências.
+    detalhes sobre a raiz da instalação e a propriedade das dependências.
 
   </Step>
 
-  <Step title="Publique">
-    Valide o pacote antes de publicar:
+  <Step title="Publicar">
+    Valide o pacote antes de publicá-lo:
 
     ```bash
     clawhub package publish your-org/your-plugin --dry-run
@@ -227,8 +226,8 @@ validação local.
 
   </Step>
 
-  <Step title="Instale">
-    Instale o pacote publicado por meio do ClawHub:
+  <Step title="Instalar">
+    Instale o pacote publicado pelo ClawHub:
 
     ```bash
     openclaw plugins install clawhub:your-org/your-plugin
@@ -241,12 +240,12 @@ validação local.
 
 ## Registro de ferramentas
 
-As ferramentas podem ser obrigatórias ou opcionais. As ferramentas obrigatórias ficam sempre disponíveis quando o
-plugin está habilitado. As ferramentas opcionais exigem a adesão explícita do usuário antes que o OpenClaw
+As ferramentas podem ser obrigatórias ou opcionais. As ferramentas obrigatórias estão sempre disponíveis quando o
+plugin está habilitado. As ferramentas opcionais exigem consentimento explícito do usuário antes que o OpenClaw
 carregue o runtime do plugin proprietário.
 
 As fábricas de ferramentas recebem um contexto de runtime confiável, incluindo `deliveryContext`,
-`nativeChannelId` para a conversa ativa na plataforma, quando disponível, e
+`nativeChannelId` para a conversa ativa da plataforma, quando disponível, e
 `requesterSenderId`.
 
 ```typescript
@@ -281,35 +280,36 @@ manifesto do plugin:
 }
 ```
 
-Os usuários fazem a adesão por meio de `tools.allow`:
+Os usuários dão consentimento com `tools.allow`:
 
 ```json5
 {
-  tools: { allow: ["workflow_tool"] }, // ou ["my-plugin"] para todas as ferramentas de um plugin
+  tools: { allow: ["workflow_tool"] }, // or ["my-plugin"] for every tool from one plugin
 }
 ```
 
 As ferramentas opcionais controlam se uma ferramenta é exposta ao modelo. Use
-[solicitações de permissão do plugin](/pt-BR/plugins/plugin-permission-requests) quando uma ferramenta
+[solicitações de permissão de plugins](/pt-BR/plugins/plugin-permission-requests) quando uma ferramenta
 ou hook precisar solicitar aprovação depois que o modelo a selecionar e antes que a
 ação seja executada.
 
 Use ferramentas opcionais para efeitos colaterais, binários incomuns ou recursos que
-não devam ser expostos por padrão. Os nomes das ferramentas não podem entrar em conflito com nomes de ferramentas
-do núcleo; os conflitos são ignorados e informados nos diagnósticos do plugin. Registros
-malformados são ignorados e informados da mesma maneira: um `name` ausente ou vazio,
-um `execute` que não seja uma função ou um descritor de ferramenta sem um objeto `parameters`.
+não devem ser expostos por padrão. Os nomes das ferramentas não podem entrar em conflito com os nomes das ferramentas
+do núcleo; os conflitos são ignorados e relatados nos diagnósticos do plugin. Registros
+malformados são ignorados e relatados da mesma forma: ausência de um
+`name` não vazio, um `execute` que não seja uma função ou um descritor de ferramenta sem um objeto
+`parameters`.
 
 As fábricas de ferramentas recebem um objeto de contexto fornecido pelo runtime. Use `ctx.activeModel`
-quando uma ferramenta precisar registrar, exibir ou se adaptar ao modelo ativo no turno
+quando uma ferramenta precisar registrar, exibir ou se adaptar ao modelo ativo do turno
 atual; ele pode incluir `provider`, `modelId` e `modelRef`. Trate-o como
-metadados informativos de runtime, não como um limite de segurança contra o operador
-local, código de plugin instalado ou um runtime modificado do OpenClaw. Ferramentas locais
-sensíveis ainda devem exigir uma adesão explícita do plugin ou do operador e
-falhar de modo fechado quando os metadados do modelo ativo estiverem ausentes ou forem inadequados.
+metadados informativos do runtime, não como uma barreira de segurança contra o operador
+local, o código de plugins instalados ou um runtime modificado do OpenClaw. Ferramentas
+locais confidenciais ainda devem exigir consentimento explícito do plugin ou do operador e
+falhar de forma fechada quando os metadados do modelo ativo estiverem ausentes ou forem inadequados.
 
 O manifesto declara a propriedade e a descoberta; a execução ainda chama a implementação
-da ferramenta registrada em uso. Mantenha `toolMetadata.<tool>.optional: true`
+registrada ativa da ferramenta. Mantenha `toolMetadata.<tool>.optional: true`
 alinhado com `api.registerTool(..., { optional: true })` para que o OpenClaw possa evitar
 carregar o runtime desse plugin até que a ferramenta seja explicitamente incluída na lista de permissões.
 
@@ -328,19 +328,19 @@ Não importe do barrel raiz obsoleto:
 import { definePluginEntry } from "openclaw/plugin-sdk";
 ```
 
-No pacote do seu plugin, use arquivos barrel locais, como `api.ts` e
-`runtime-api.ts`, para importações internas. Não importe o próprio plugin por meio de um
-caminho do SDK. Auxiliares específicos de provedor devem permanecer no pacote do provedor, a menos que
+No pacote do plugin, use arquivos barrel locais, como `api.ts` e
+`runtime-api.ts`, para importações internas. Não importe seu próprio plugin por meio de um
+caminho do SDK. Auxiliares específicos de um provedor devem permanecer no pacote do provedor, a menos que
 a interface seja realmente genérica.
 
 Métodos RPC personalizados do Gateway são um ponto de entrada avançado. Mantenha-os em um
 prefixo específico do plugin; namespaces administrativos do núcleo, como `config.*`,
 `exec.approvals.*`, `operator.admin.*`, `wizard.*` e `update.*`, permanecem reservados
-e são resolvidos como `operator.admin`. A ponte
-`openclaw/plugin-sdk/gateway-method-runtime` é reservada para rotas HTTP do plugin
+e são resolvidos para `operator.admin`. A ponte
+`openclaw/plugin-sdk/gateway-method-runtime` é reservada para rotas HTTP de plugins
 que declaram `contracts.gatewayMethodDispatch: ["authenticated-request"]`.
 
-Para ver o mapa completo de importações, consulte [Visão geral do SDK de plugins](/pt-BR/plugins/sdk-overview).
+Para consultar o mapa completo de importações, veja [Visão geral do SDK de plugins](/pt-BR/plugins/sdk-overview).
 
 ## Lista de verificação antes do envio
 
@@ -350,16 +350,16 @@ Para ver o mapa completo de importações, consulte [Visão geral do SDK de plug
 <Check>Todas as importações usam caminhos específicos `plugin-sdk/<subpath>`</Check>
 <Check>As importações internas usam módulos locais, não autoimportações do SDK</Check>
 <Check>Os testes passam (`pnpm test <bundled-plugin-root>/my-plugin/`)</Check>
-<Check>`pnpm check` passa (plugins no repositório)</Check>
+<Check>`pnpm check` passa (plugins do repositório)</Check>
 
 ## Teste com versões beta
 
 1. Acompanhe os lançamentos de [openclaw/openclaw](https://github.com/openclaw/openclaw/releases) (`Watch` > `Releases`). As tags beta têm o formato `v2026.3.N-beta.1`. Você também pode seguir [@openclaw](https://x.com/openclaw) no X para receber anúncios de lançamentos.
-2. Teste seu plugin com a tag beta assim que ela aparecer. O período antes da versão estável normalmente dura apenas algumas horas.
-3. Após o teste, publique no tópico do seu plugin no canal `plugin-forum` do Discord ([discord.gg/clawd](https://discord.gg/clawd)), informando `all good` ou o que deixou de funcionar. Crie um tópico caso ainda não tenha um.
-4. Se algo deixar de funcionar, abra ou atualize uma issue com o título `Beta blocker: <plugin-name> - <summary>` e aplique o rótulo `beta-blocker`. Inclua o link da issue no seu tópico.
-5. Abra um PR para `main` com o título `fix(<plugin-id>): beta blocker - <summary>` e inclua o link da issue tanto no PR quanto no seu tópico do Discord. Colaboradores não podem aplicar rótulos a PRs, portanto o título é o sinal do PR para mantenedores e automações. Bloqueadores com um PR são mesclados; bloqueadores sem um PR ainda podem ser incluídos no lançamento.
-6. O silêncio indica que está tudo certo. Perder esse período normalmente significa que sua correção será incluída no próximo ciclo.
+2. Teste seu plugin com a tag beta assim que ela aparecer. O intervalo antes da versão estável costuma ser de apenas algumas horas.
+3. Após o teste, publique no tópico do seu plugin no canal `plugin-forum` do Discord ([discord.gg/clawd](https://discord.gg/clawd)), informando `all good` ou descrevendo o que apresentou falha. Crie um tópico caso ainda não tenha um.
+4. Se algo apresentar falha, abra ou atualize uma issue com o título `Beta blocker: <plugin-name> - <summary>` e aplique o rótulo `beta-blocker`. Inclua o link da issue no seu tópico.
+5. Abra um PR para `main` com o título `fix(<plugin-id>): beta blocker - <summary>` e inclua o link da issue tanto no PR quanto no seu tópico do Discord. Colaboradores não podem aplicar rótulos a PRs, portanto o título é o sinal do PR para os mantenedores e a automação. Bloqueadores com um PR são mesclados; bloqueadores sem um PR podem acabar sendo lançados mesmo assim.
+6. O silêncio significa que está tudo certo. Perder esse intervalo normalmente significa que sua correção será incluída no próximo ciclo.
 
 ## Próximas etapas
 
@@ -374,20 +374,20 @@ Para ver o mapa completo de importações, consulte [Visão geral do SDK de plug
     Registre um backend local de CLI de IA
   </Card>
   <Card title="Visão geral do SDK" icon="book-open" href="/pt-BR/plugins/sdk-overview">
-    Referência do mapa de importações e da API de registro
+    Referência do mapa de importação e da API de registro
   </Card>
-  <Card title="Auxiliares de runtime" icon="settings" href="/pt-BR/plugins/sdk-runtime">
+  <Card title="Utilitários de runtime" icon="settings" href="/pt-BR/plugins/sdk-runtime">
     TTS, pesquisa e subagente via api.runtime
   </Card>
   <Card title="Testes" icon="test-tubes" href="/pt-BR/plugins/sdk-testing">
     Utilitários e padrões de teste
   </Card>
-  <Card title="Manifesto do plugin" icon="file-json" href="/pt-BR/plugins/manifest">
+  <Card title="Manifesto do Plugin" icon="file-json" href="/pt-BR/plugins/manifest">
     Referência completa do esquema do manifesto
   </Card>
 </CardGroup>
 
-## Conteúdo relacionado
+## Relacionado
 
-- [Hooks de plugin](/pt-BR/plugins/hooks)
-- [Arquitetura de plugins](/pt-BR/plugins/architecture)
+- [Hooks de Plugin](/pt-BR/plugins/hooks)
+- [Arquitetura de Plugin](/pt-BR/plugins/architecture)

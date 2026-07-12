@@ -1,59 +1,79 @@
 ---
 read_when:
-    - Codex modundaki OpenClaw ajanlarının yerel Codex Plugin'lerini kullanmasını istiyorsunuz
-    - Kaynaktan kurulmuş openai-curated Codex Plugin'lerini taşıyorsunuz
-    - codexPlugins, uygulama envanteri, yıkıcı eylemler veya Plugin uygulama tanılamalarıyla ilgili sorun gideriyorsunuz
-summary: Codex modu OpenClaw ajanları için taşınmış yerel Codex Plugin'lerini yapılandırın
-title: Yerel Codex Plugin'leri
+    - Codex modundaki OpenClaw ajanlarının yerel Codex eklentilerini kullanmasını istiyorsunuz
+    - Kaynak koddan kurulmuş, OpenAI tarafından seçilmiş Codex pluginlerini taşıyorsunuz
+    - Mevcut bir çalışma alanı dizini Codex Plugin'ini yapılandırıyorsunuz
+    - codexPlugins, uygulama envanteri, yıkıcı işlemler veya plugin uygulaması tanılamalarıyla ilgili sorunları gideriyorsunuz
+summary: Codex modundaki OpenClaw ajanları için yerel Codex Pluginlerini yapılandırın
+title: Yerel Codex pluginleri
 x-i18n:
-    generated_at: "2026-07-02T01:11:31Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:31:46Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 11a883137ba89936cf564a45b22c9e76097af669e2ef6c70c8c710bb2b79d3c0
+    source_hash: 0b1cfa39838d4dbd1f33a1e5b7f52faec4b033f9fa98ef5c029003177c2e27e5
     source_path: plugins/codex-native-plugins.md
     workflow: 16
 ---
 
-Yerel Codex plugin desteği, Codex modundaki bir OpenClaw agent'ının OpenClaw dönüşünü işleyen aynı Codex thread'i içinde Codex app-server'ın kendi app ve plugin yeteneklerini kullanmasını sağlar.
+Yerel Codex Plugin desteği, Codex modundaki bir OpenClaw aracısının, OpenClaw turunu
+işleyen aynı Codex iş parçacığı içinde Codex app-server'ın kendi uygulama ve Plugin
+yeteneklerini kullanmasına olanak tanır. Plugin çağrıları yerel Codex transkriptinde
+kalır; uygulama destekli MCP yürütmesini Codex app-server yönetir. OpenClaw,
+Codex Pluginlerini yapay `codex_plugin_*` OpenClaw dinamik araçlarına dönüştürmez.
 
-OpenClaw, Codex plugin'lerini yapay `codex_plugin_*` OpenClaw dinamik araçlarına çevirmez. Plugin çağrıları yerel Codex transcript'inde kalır ve app destekli MCP yürütmesinin sahibi Codex app-server'dır.
-
-Bu sayfayı, temel [Codex harness](/tr/plugins/codex-harness) çalıştıktan sonra kullanın.
+Bu sayfayı, temel [Codex çalıştırma sistemi](/tr/plugins/codex-harness) çalışmaya
+başladıktan sonra kullanın.
 
 ## Gereksinimler
 
-- Seçilen OpenClaw agent runtime'ı yerel Codex harness olmalıdır.
-- `plugins.entries.codex.enabled` true olmalıdır.
-- `plugins.entries.codex.config.codexPlugins.enabled` true olmalıdır.
-- V1 yalnızca migration'ın kaynak Codex home içinde kaynak olarak kurulmuş gözlemlediği `openai-curated` plugin'lerini destekler.
-- Hedef Codex app-server'ın beklenen marketplace, plugin ve app envanterini görebilmesi gerekir.
+- Aracı çalışma zamanı, yerel Codex çalıştırma sistemi olmalıdır.
+- `plugins.entries.codex.enabled`, `true` olmalıdır.
+- `plugins.entries.codex.config.codexPlugins.enabled`, `true` olmalıdır.
+- Hedef Codex app-server, beklenen pazar yeri, Plugin ve uygulama envanterini görebilmelidir.
+- Geçiş yalnızca kaynak Codex ana dizininde kaynaktan yüklenmiş olarak gözlemlediği
+  `openai-curated` Pluginlerini destekler.
+- Elle yapılandırılan `workspace-directory` Pluginleri, `plugin/list` çağrısı
+  `marketplaceKinds` kabul eden ve yolsuz çalışma alanı özetlerinde
+  `remotePluginId` içeren bir Codex app-server gerektirir. Plugin zaten yüklenmiş
+  ve etkinleştirilmiş olmalı, sahip olduğu uygulamalara da `app/list` içinde
+  erişilebilmelidir.
 
-`codexPlugins`; OpenClaw çalıştırmaları, normal OpenAI provider çalıştırmaları, ACP conversation bağlamaları veya diğer harness'lar üzerinde etkili değildir, çünkü bu yollar yerel `apps` config ile Codex app-server thread'leri oluşturmaz.
+`codexPlugins`, OpenClaw sağlayıcısı çalıştırmalarını, ACP konuşma
+bağlamalarını veya diğer çalıştırma sistemlerini etkilemez; çünkü bu yollar,
+yerel `apps` yapılandırmasına sahip Codex app-server iş parçacıkları oluşturmaz.
 
-OpenAI tarafındaki Codex erişimi, app kullanılabilirliği ve workspace app/plugin denetimleri, oturum açılmış Codex hesabından gelir. OpenAI hesabı ve admin modeli için bkz. [ChatGPT planınızla Codex kullanma](https://help.openai.com/en/articles/11369540-using-codex-with-your-chatgpt-plan).
+OpenAI tarafındaki Codex hesabı, uygulama kullanılabilirliği ve çalışma alanı
+uygulama/Plugin denetimleri, oturum açılmış Codex hesabından gelir. OpenAI hesap
+ve yönetici modeli için
+[ChatGPT planınızla Codex'i kullanma](https://help.openai.com/en/articles/11369540-using-codex-with-your-chatgpt-plan)
+sayfasına bakın.
 
 ## Hızlı başlangıç
 
-Kaynak Codex home'dan migration'ı önizleyin:
+Kaynak Codex ana dizininden geçişi önizleyin:
 
 ```bash
 openclaw migrate codex --dry-run
 ```
 
-Migration'ın yerel plugin etkinleştirmesini planlamadan önce kaynak app erişilebilirliğini denetlemesini istediğinizde katı kaynak app doğrulamasını kullanın:
+Geçişin kaynak `app/list` çağrısını yapmasını ve yerel etkinleştirmeyi
+planlamadan önce sahip olunan her uygulamanın mevcut, etkin ve erişilebilir
+olmasını zorunlu kılmak için `--verify-plugin-apps` ekleyin:
 
 ```bash
 openclaw migrate codex --dry-run --verify-plugin-apps
 ```
 
-Plan doğru göründüğünde migration'ı uygulayın:
+Plan doğru görünüyorsa geçişi uygulayın:
 
 ```bash
 openclaw migrate apply codex --yes
 ```
 
-Migration, uygun plugin'ler için açık `codexPlugins` girdileri yazar ve seçilen plugin'ler için Codex app-server `plugin/install` çağrısı yapar. Tipik bir migration uygulanmış config şöyle görünür:
+Geçiş, uygun Pluginler için açık `codexPlugins` girdileri yazar ve seçilen
+Pluginler için Codex app-server `plugin/install` çağrısını yapar. Geçirilmiş bir
+yapılandırma şöyle görünür:
 
 ```json5
 {
@@ -80,11 +100,54 @@ Migration, uygun plugin'ler için açık `codexPlugins` girdileri yazar ve seçi
 }
 ```
 
-`codexPlugins` değiştirildikten sonra yeni Codex conversation'ları güncellenmiş app kümesini otomatik olarak alır. Geçerli conversation'ı yenilemek için `/new` veya `/reset` kullanın. Plugin etkinleştirme veya devre dışı bırakma değişiklikleri için gateway'i yeniden başlatmak gerekmez.
+Geçiş `openai-curated` ile sınırlı kalır. Mevcut bir `workspace-directory`
+Plugini kullanmak için onu, `plugin/list` tarafından döndürülen pazar yeri
+nitelemeli tam `summary.id` değeriyle elle ekleyin. Örneğin Codex,
+`example-plugin@workspace-directory` döndürürse görüntüleme adı yerine bu tam
+değeri yapılandırın:
 
-## Chat'ten plugin'leri yönetin
+```json5
+{
+  plugins: {
+    entries: {
+      codex: {
+        enabled: true,
+        config: {
+          codexPlugins: {
+            enabled: true,
+            plugins: {
+              "example-plugin": {
+                enabled: true,
+                marketplaceName: "workspace-directory",
+                pluginName: "example-plugin@workspace-directory",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+```
 
-Codex harness'ı çalıştırdığınız aynı chat'ten yapılandırılmış yerel Codex plugin'lerini incelemek veya değiştirmek istediğinizde `/codex plugins` kullanın:
+OpenClaw, bir `workspace-directory` Plugini için `plugin/install` çağrısı yapmaz
+veya kimlik doğrulaması başlatmaz. OpenClaw ilkesini eklemeden veya
+etkinleştirmeden önce Plugini Codex'te yükleyin, etkinleştirin ve kimliğini
+doğrulayın. Yanıt tam pazar yeri, Plugin kimliği, ayrıntı kimliği veya uygulama
+hazırlığı kanıtını içermediğinde OpenClaw uygulamaları gizli tutar. Codex açık
+çalışma alanı `plugin/list` isteğini reddederse OpenClaw, etkinleştirilmiş her
+çalışma alanı Plugini için `marketplace_missing` bildirir ve bağımsız olarak
+keşfedilen seçilmiş Pluginleri kullanılabilir tutar.
+
+Bir `codexPlugins` değişikliğinden sonra yeni Codex konuşmaları, güncellenen
+uygulama kümesini otomatik olarak alır. Geçerli konuşmayı yenilemek için `/new`
+veya `/reset` çalıştırın. Plugin etkinleştirme/devre dışı bırakma değişiklikleri
+için Gateway'in yeniden başlatılması gerekmez.
+
+## Pluginleri sohbetten yönetme
+
+`/codex plugins`, Codex çalıştırma sistemini kullandığınız aynı sohbetten
+yapılandırılmış yerel Codex Pluginlerini inceler veya değiştirir:
 
 ```text
 /codex plugins
@@ -93,104 +156,251 @@ Codex harness'ı çalıştırdığınız aynı chat'ten yapılandırılmış yer
 /codex plugins enable google-calendar
 ```
 
-`/codex plugins`, `/codex plugins list` için bir alias'tır. Liste çıktısı, `plugins.entries.codex.config.codexPlugins.plugins` içinden yapılandırılmış plugin anahtarlarını, açık/kapalı durumunu, Codex plugin adını ve marketplace'i gösterir.
+`/codex plugins`, `/codex plugins list` için bir diğer addır. Liste,
+`plugins.entries.codex.config.codexPlugins.plugins` içindeki yapılandırılmış her
+Pluginin anahtarını, açık/kapalı durumunu, Codex Plugin adını ve pazar yerini
+gösterir.
 
-`enable` ve `disable` yalnızca `~/.openclaw/openclaw.json` konumundaki OpenClaw config'e yazar; `~/.codex/config.toml` dosyasını düzenlemez veya yeni Codex plugin'leri kurmaz. Plugin durumunu yalnızca owner veya `operator.admin` scope'una sahip bir gateway client değiştirebilir.
+`enable`/`disable` yalnızca `~/.openclaw/openclaw.json` dosyasına yazar;
+`~/.codex/config.toml` dosyasını hiçbir zaman düzenlemez veya yeni Codex
+Pluginleri yüklemez. Bunları yalnızca sahip ya da `operator.admin` kapsamına
+sahip bir Gateway istemcisi çalıştırabilir.
 
-Yapılandırılmış bir plugin'i etkinleştirmek, global `codexPlugins.enabled` anahtarını da açar. Plugin, migration `auth_required` döndürdüğü için devre dışı yazıldıysa, OpenClaw'da etkinleştirmeden önce app'i Codex'te yeniden yetkilendirin.
+Yapılandırılmış bir Plugini etkinleştirmek, genel `codexPlugins.enabled`
+anahtarını da açar. Geçiş `auth_required` döndürdüğü için seçilmiş bir Plugin
+devre dışı olarak yazıldıysa OpenClaw'da etkinleştirmeden önce uygulamayı
+Codex'te yeniden yetkilendirin. Bir `workspace-directory` girdisini burada
+etkinleştirmek yalnızca OpenClaw ilkesini değiştirir; Plugin ve uygulama
+Codex'te zaten etkin olmalıdır.
 
-## Yerel plugin kurulumu nasıl çalışır
+## Yerel Plugin kurulumu nasıl çalışır?
 
-Entegrasyonun üç ayrı durumu vardır:
+Entegrasyon üç durumu izler:
 
-- Kurulu: Codex, hedef app-server runtime'ında yerel plugin bundle'a sahiptir.
-- Etkin: OpenClaw config, plugin'i Codex harness dönüşleri için kullanılabilir yapmaya isteklidir.
-- Erişilebilir: Codex app-server, plugin'in app girdilerinin etkin hesap için kullanılabilir olduğunu ve migration uygulanmış plugin kimliğine eşlenebildiğini onaylar.
+| Durum       | Anlamı                                                                                                                                 |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Yüklü       | Codex, hedef app-server çalışma zamanında Plugin paketine sahiptir.                                                                    |
+| Etkin       | Codex, Pluginin etkin olduğunu bildirir ve OpenClaw yapılandırması Codex çalıştırma sistemi turlarında kullanılmasına izin verir.      |
+| Erişilebilir | Codex app-server, Pluginin uygulama girdilerinin etkin hesapta kullanılabildiğini ve yapılandırılmış Plugin kimliğiyle eşleştiğini doğrular. |
 
-Migration, kalıcı kurulum/uygunluk adımıdır. Planlama sırasında OpenClaw, kaynak Codex `plugin/read` ayrıntılarını okur ve kaynak Codex app-server hesap yanıtının bir ChatGPT abonelik hesabı olduğunu denetler. ChatGPT olmayan veya eksik hesap yanıtları, app destekli plugin'leri `codex_subscription_required` ile atlar. Varsayılan olarak migration kaynak `app/list` çağrısı yapmaz; hesap geçidini geçen app destekli kaynak plugin'ler, kaynak app erişilebilirlik doğrulaması olmadan planlanır ve hesap arama transport hataları `codex_account_unavailable` ile atlanır. `--verify-plugin-apps` ile migration yeni bir kaynak `app/list` anlık görüntüsü alır ve yerel etkinleştirmeyi planlamadan önce sahip olunan her app'in mevcut, etkin ve erişilebilir olmasını gerektirir. Bu modda, hesap arama transport hataları kaynak app envanteri geçidine düşer. Runtime app envanteri, migration sonrası hedef oturum erişilebilirlik denetimidir. Ardından Codex harness oturum kurulumu, etkin ve erişilebilir plugin app'leri için kısıtlayıcı bir thread app config hesaplar.
+`openai-curated` Pluginleri için geçiş, kalıcı yükleme/uygunluk adımıdır:
 
-Thread app config, OpenClaw bir Codex harness oturumu kurduğunda veya eski bir Codex thread bağlamasını değiştirdiğinde hesaplanır. Her dönüşte yeniden hesaplanmaz; bu nedenle `/codex plugins enable` ve `/codex plugins disable` yeni Codex conversation'larını etkiler. Geçerli conversation'ın güncellenmiş app kümesini alması gerektiğinde `/new` veya `/reset` kullanın.
+- Planlama sırasında OpenClaw, kaynak Codex `plugin/read` ayrıntılarını okur ve
+  kaynak Codex app-server hesabının bir ChatGPT abonelik hesabı olduğunu
+  denetler. ChatGPT olmayan veya eksik bir hesap yanıtı, uygulama destekli
+  Pluginleri `codex_subscription_required` ile atlar.
+- Geçiş varsayılan olarak kaynak `app/list` çağrısını atlar: hesap kapısından
+  geçen uygulama destekli kaynak Pluginler, kaynak uygulama erişilebilirliği
+  doğrulanmadan planlanır; hesap sorgulama aktarım hataları ise
+  `codex_account_unavailable` ile atlanır.
+- `--verify-plugin-apps` kullanıldığında geçiş, yeni bir kaynak `app/list`
+  anlık görüntüsü alır ve yerel etkinleştirmeyi planlamadan önce sahip olunan
+  her uygulamanın mevcut, etkin ve erişilebilir olmasını zorunlu kılar. Bu
+  durumda hesap sorgulama aktarım hataları, doğrudan atlanmak yerine kaynak
+  uygulama envanteri kapısına geçer.
+
+`workspace-directory` Pluginlerinin kurulumu OpenClaw dışında gerçekleşir.
+OpenClaw bu pazar yerini yalnızca en az bir etkin çalışma alanı girdisi
+yapılandırıldığında sorgular, her Plugini tam `summary.id` değeriyle çözümler ve
+mevcut `plugin/read` sahiplik denetimleriyle `app/list` hazırlık denetimlerini
+yeniden kullanır. Yüklenmemiş, devre dışı, erişilemez veya kimliği doğrulanmamış
+bir Plugin hiçbir uygulamayı açığa çıkarmaz; OpenClaw yükleme veya kimlik
+doğrulaması yapmaya çalışmaz.
+
+Çalışma zamanı uygulama envanteri, hem geçirilmiş seçilmiş Pluginler hem de elle
+yapılandırılmış çalışma alanı Pluginleri için hedef oturum erişilebilirliği
+denetimidir. Codex çalıştırma sistemi oturum kurulumu, etkin ve erişilebilir
+Plugin uygulamalarından kısıtlayıcı bir iş parçacığı uygulama yapılandırması
+hesaplar; bu yapılandırma her turda yeniden hesaplanmaz. Bu nedenle
+`/codex plugins enable`/`disable` yalnızca yeni Codex konuşmalarını etkiler.
+Geçerli konuşmada değişikliği almak için `/new` veya `/reset` kullanın.
 
 ## V1 destek sınırı
 
-V1 bilinçli olarak dardır:
+- Yalnızca kaynak Codex app-server envanterinde zaten yüklü olan
+  `openai-curated` Pluginleri geçişe uygundur.
+- Çalışma zamanı ayrıca `plugin/list` uygulamasının `marketplaceKinds`
+  desteklediği ve yolsuz çalışma alanı özetleri için `remotePluginId` döndürdüğü
+  app-server derlemelerinde açık `workspace-directory` girdilerini destekler.
+  Bu girdiler pazar yeri nitelemeli tam `summary.id` değerlerini kullanmalı ve
+  zaten yüklenmiş, etkin ve uygulama açısından erişilebilir olmalıdır.
+  Reddedilen bir çalışma alanı listeleme isteği, mevcut Plugin başına
+  `marketplace_missing` tanılamasını üretir; eksik pazar yeri, Plugin, ayrıntı
+  veya uygulama kanıtı hiçbir çalışma alanı uygulamasını açığa çıkarmaz.
+  Varsayılan liste isteğinden gelen seçilmiş envanter kullanılmaya devam eder.
+- Uygulama destekli kaynak Pluginler, geçiş zamanındaki abonelik kapısından
+  geçmelidir. `--verify-plugin-apps`, kaynak uygulama envanteri kapısını ekler.
+  Abonelik kapısına takılan hesaplar ve doğrulama modunda erişilemeyen, devre
+  dışı veya eksik kaynak uygulamalar ya da uygulama envanteri yenileme hataları,
+  etkin yapılandırma girdileri yerine atlanan elle işlem öğeleri olarak
+  bildirilir. Okunamayan Plugin ayrıntıları, uygulama envanteri kapısından önce
+  atlanır.
+- Geçiş açık Plugin kimlikleri (`marketplaceName` ve `pluginName`) yazar; yerel
+  `marketplacePath` önbellek yollarını yazmaz.
+- `codexPlugins.enabled` tek genel etkinleştirme anahtarıdır; rastgele yükleme
+  yetkisi veren bir `plugins["*"]` joker karakteri veya yapılandırma anahtarı
+  yoktur.
+- Seçilmiş olmayan pazar yerleri, önbelleğe alınmış Plugin paketleri, kancalar
+  ve Codex yapılandırma dosyaları otomatik olarak etkinleştirilmek yerine elle
+  inceleme için geçiş raporunda korunur. Çalışma zamanı, elle yapılandırılmış
+  `workspace-directory` girdilerini kabul eder; diğer pazar yerleri
+  desteklenmez.
 
-- Yalnızca kaynak Codex app-server envanterinde zaten kurulu olan `openai-curated` plugin'leri migration'a uygundur.
-- App destekli kaynak plugin'ler, migration zamanındaki abonelik geçidini geçmelidir. `--verify-plugin-apps` kaynak app envanteri geçidini ekler. Abonelik geçidine takılan hesaplar ve doğrulama modunda erişilemeyen, devre dışı, eksik kaynak app'ler veya kaynak app envanteri yenileme hataları, etkin config girdileri yerine atlanmış manuel öğeler olarak raporlanır. Okunamayan plugin ayrıntıları, kaynak app envanteri geçidinden önce atlanır.
-- Migration, `marketplaceName` ve `pluginName` ile açık plugin kimlikleri yazar; yerel `marketplacePath` cache yolları yazmaz.
-- `codexPlugins.enabled` global etkinleştirme anahtarıdır.
-- `plugins["*"]` wildcard'ı ve keyfi kurulum yetkisi veren bir config anahtarı yoktur.
-- Desteklenmeyen marketplace'ler, cache'lenmiş plugin bundle'ları, hook'lar ve Codex config dosyaları manuel inceleme için migration raporunda korunur.
+## Uygulama envanteri ve sahiplik
 
-## App envanteri ve sahiplik
+OpenClaw, Codex uygulama envanterini app-server `app/list` üzerinden okur, bir
+saat boyunca bellekte önbelleğe alır ve eski ya da eksik girdileri eşzamansız
+olarak yeniler. Önbellek işleme özeldir; CLI veya Gateway yeniden
+başlatıldığında silinir ve OpenClaw onu bir sonraki `app/list` okumasından
+yeniden oluşturur.
 
-OpenClaw, Codex app envanterini app-server `app/list` üzerinden okur, bir saat cache'ler ve eski veya eksik girdileri asenkron olarak yeniler. Cache yalnızca bellektedir; CLI veya gateway yeniden başlatıldığında düşer ve OpenClaw bunu bir sonraki `app/list` okumasından yeniden oluşturur.
+Geçiş ve çalışma zamanı ayrı önbellek anahtarları kullanır:
 
-Migration ve runtime ayrı cache anahtarları kullanır:
+- Kaynak geçiş doğrulaması, kaynak Codex ana dizinini ve başlatma seçeneklerini
+  kullanır. Yalnızca `--verify-plugin-apps` ile çalışır ve söz konusu planlama
+  çalıştırması için yeni bir kaynak `app/list` dolaşımını zorunlu kılar.
+- Hedef çalışma zamanı kurulumu, iş parçacığı uygulama yapılandırmasını
+  oluştururken hedef aracının Codex app-server kimliğini kullanır. Seçilmiş
+  Plugin etkinleştirmesi bu hedef önbellek anahtarını geçersiz kılar, ardından
+  `plugin/install` sonrasında zorunlu olarak yeniler. `workspace-directory`
+  kurulumu bu etkinleştirme yolunu hiçbir zaman çalıştırmaz.
 
-- Kaynak migration doğrulaması, kaynak Codex home'u ve kaynak app-server başlatma seçeneklerini kullanır. Bu yalnızca `--verify-plugin-apps` ayarlandığında çalışır ve o planlama çalıştırması için yeni bir kaynak `app/list` dolaşımını zorunlu kılar.
-- Hedef runtime kurulumu, Codex thread app config'i oluştururken hedef agent'ın Codex app-server kimliğini kullanır. Plugin etkinleştirme, bu hedef cache anahtarını geçersiz kılar ve ardından `plugin/install` sonrasında onu zorla yeniler.
+Bir Plugin uygulaması yalnızca OpenClaw onu kararlı sahiplik üzerinden
+yapılandırılmış Plugine geri eşleyebildiğinde açığa çıkarılır: Plugin
+ayrıntısındaki tam uygulama kimliği, bilinen bir MCP sunucusu adı veya benzersiz
+kararlı meta veri. Yalnızca görüntüleme adına dayalı veya belirsiz sahiplik, bir
+sonraki envanter yenilemesi sahipliği kanıtlayana kadar hariç tutulur.
 
-Bir plugin app'i yalnızca OpenClaw onu kararlı sahiplik üzerinden migration uygulanmış plugin'e geri eşleyebildiğinde gösterilir:
+## Bağlı hesap uygulamaları
 
-- plugin ayrıntısından tam app id
-- bilinen MCP server adı
-- benzersiz kararlı metadata
+Sahip tarafından işletilen aracılar, eşleşen bir Plugin paketi gerektirmeden
+Codex hesaplarına zaten bağlı olan tüm uygulamaları kullanmayı seçebilir:
 
-Yalnızca görünen adla eşleşen veya belirsiz sahiplik, bir sonraki envanter yenilemesi sahipliği kanıtlayana kadar hariç tutulur.
+```json5
+{
+  plugins: {
+    entries: {
+      codex: {
+        enabled: true,
+        config: {
+          codexPlugins: {
+            enabled: true,
+            allow_all_plugins: true,
+            allow_destructive_actions: "auto",
+          },
+        },
+      },
+    },
+  },
+}
+```
 
-## Thread app config
+`allow_all_plugins: true`, yeni bir yerel Codex iş parçacığı oluşturulduğunda
+tam bir `app/list` anlık görüntüsü alır ve yalnızca o hesap için erişilebilir
+olarak işaretlenen uygulamaları kabul eder. Uygulamaları genel olarak yüklemez,
+kimliklerini doğrulamaz veya etkinleştirmez. Mevcut iş parçacıkları kalıcı
+uygulama kümelerini korur; yeni bağlanan veya erişimi kaldırılan uygulamaları
+almak için `/new`, `/reset` kullanın ya da Gateway'i yeniden başlatın.
 
-OpenClaw, Codex thread'i için kısıtlayıcı bir `config.apps` patch'i enjekte eder: `_default` devre dışıdır ve yalnızca etkin migration uygulanmış plugin'lerin sahibi olduğu app'ler etkinleştirilir.
+Hesap uygulamaları; `true`, `false`, `"auto"` veya `"ask"` kabul eden genel
+`codexPlugins.allow_destructive_actions` değerini devralır. Açık Plugin başına
+ilke, çakışan uygulama kimlikleri için genel ilkeyi geçersiz kılar. Envanter
+hataları, kısıtlamasız bir varsayılana geri dönmek yerine güvenli biçimde
+başarısız olur.
 
-OpenClaw, app düzeyi `destructive_enabled` değerini etkili global veya plugin başına `allow_destructive_actions` politikasından ayarlar ve Codex'in yerel app tool annotation'larından destructive tool metadata'sını uygulamasına izin verir. `true`, `"auto"` ve `"ask"` `destructive_enabled: true` olarak ayarlar; `false` bunu false yapar. `_default` app config'i `open_world_enabled: false` ile devre dışı bırakılır. Etkin plugin app'leri `open_world_enabled: true` ile yayımlanır; OpenClaw ayrı bir plugin open-world policy knob'u sunmaz ve plugin başına destructive tool-name deny list'leri tutmaz.
+## İş parçacığı uygulama yapılandırması
 
-Tool approval modu, plugin app'leri için varsayılan olarak otomatiktir; böylece destructive olmayan okuma araçları aynı thread approval UI olmadan çalışabilir. Destructive araçlar, her app'in `destructive_enabled` politikası tarafından denetlenmeye devam eder.
+OpenClaw, Codex iş parçacığı için kısıtlayıcı bir `config.apps` yaması ekler:
+`_default` devre dışı bırakılır ve yalnızca etkinleştirilmiş yapılandırılmış pluginlerin sahip olduğu veya
+`allow_all_plugins` tarafından kabul edilen erişilebilir hesap uygulamaları etkinleştirilir.
 
-## Destructive action policy
+Her uygulamadaki `destructive_enabled`, geçerli genel veya
+plugin başına `allow_destructive_actions` politikasından gelir; `true`, `"auto"` ve `"ask"`
+değerlerinin tümü `destructive_enabled: true` ayarını yaparken `false`, bunu `false` olarak ayarlar. Codex,
+yerel uygulama aracı ek açıklamalarındaki yıkıcı araç meta verilerini uygulamaya devam eder.
+`_default`, `open_world_enabled: false` ile devre dışı bırakılır; etkinleştirilmiş plugin uygulamaları
+`open_world_enabled: true` değerini alır. OpenClaw, plugin düzeyinde ayrı bir
+açık dünya politikası ayarı sunmaz ve plugin başına
+yıkıcı araç adı engelleme listeleri tutmaz.
 
-Destructive plugin elicitation'larına migration uygulanmış Codex plugin'leri için varsayılan olarak izin verilir; güvenli olmayan schema'lar ve belirsiz sahiplik ise yine fail closed olur:
+Araç onay modu, kabul edilen uygulamalar için varsayılan olarak otomatiktir; böylece yıkıcı olmayan
+okuma araçları aynı iş parçacığında onay istemi olmadan çalışır. Yıkıcı araçlar,
+her uygulamanın `destructive_enabled` politikası tarafından denetlenmeye devam eder.
 
-- Global `allow_destructive_actions` varsayılan olarak `true` olur.
-- Plugin başına `allow_destructive_actions`, o plugin için global politikayı geçersiz kılar.
-- Politika `false` olduğunda OpenClaw deterministik bir ret döndürür.
-- Politika `true` olduğunda OpenClaw yalnızca boolean approve field gibi bir approval response'a eşleyebildiği güvenli schema'ları otomatik kabul eder.
-- Politika `"auto"` olduğunda OpenClaw, destructive plugin action'larını Codex'e gösterir ancak sahipliği kanıtlanmış MCP approval elicitation'larını Codex approval response'u döndürmeden önce OpenClaw plugin approval'larına dönüştürür.
-- Politika `"ask"` olduğunda OpenClaw `"auto"` ile aynı Codex yazma/destructive gating'i kullanır, thread başlamadan önce app için kalıcı Codex araç başına approval override'larını temizler ve kalıcı approval'ların daha sonraki write-action prompt'larını bastıramaması için yalnızca tek seferlik approval veya denial sunar.
-- `"ask"` kullanan her kabul edilmiş app için OpenClaw, Codex'in approval elicitation'larını OpenClaw'a göndermesi amacıyla o app için Codex'in human approvals reviewer'ını seçer. Diğer app'ler ve app olmayan thread approval'ları yapılandırılmış reviewer ve politikalarını korur.
-- Eksik plugin kimliği, belirsiz sahiplik, eksik turn id, yanlış turn id veya güvenli olmayan elicitation schema'sı, prompt göstermek yerine reddeder.
+## Yıkıcı eylem politikası
+
+Yapılandırılmış Codex pluginleri için yıkıcı plugin bilgi taleplerine varsayılan olarak izin verilir;
+güvenli olmayan şemalar ve belirsiz sahiplik ise güvenli biçimde reddedilir:
+
+- Genel `allow_destructive_actions` varsayılan olarak `true` değerindedir.
+- Plugin başına `allow_destructive_actions`, söz konusu plugin için genel politikayı
+  geçersiz kılar.
+- `false`: OpenClaw, belirlenimsel bir ret yanıtı döndürür.
+- `true`: OpenClaw yalnızca bir boole onay alanı gibi, onay
+  yanıtına eşleyebildiği güvenli şemaları otomatik olarak kabul eder.
+- `"auto"`: OpenClaw, yıkıcı plugin eylemlerini Codex'e sunar, ardından
+  sahipliği kanıtlanmış MCP onay bilgi taleplerini Codex onay yanıtını
+  döndürmeden önce OpenClaw plugin onaylarına dönüştürür.
+- `"ask"`: OpenClaw, `"auto"` ile aynı Codex yazma/yıkıcı eylem denetimini
+  kullanır, iş parçacığı başlamadan önce uygulama için kalıcı Codex araç başına
+  onay geçersiz kılmalarını temizler ve kalıcı onayların sonraki yazma eylemi
+  istemlerini engelleyememesi için yalnızca tek seferlik onay veya ret sunar.
+  OpenClaw, `"ask"` kullanan kabul edilmiş her uygulama için Codex'in insan onayları
+  inceleyicisini seçer; böylece Codex onay bilgi taleplerini OpenClaw'a gönderir.
+  Diğer uygulamalar ve uygulama dışı iş parçacığı onayları, yapılandırılmış
+  inceleyicilerini ve politikalarını korur.
+- Eksik plugin kimliği, belirsiz sahiplik, eksik veya eşleşmeyen
+  işlem kimliği ya da güvenli olmayan bir bilgi talebi şeması, istem göstermek yerine reddedilir.
 
 ## Sorun giderme
 
-**`auth_required`:** migration plugin'i kurdu, ancak app'lerinden birinin hâlâ authentication'a ihtiyacı var. Açık plugin girdisi, siz yeniden yetkilendirip etkinleştirene kadar devre dışı yazılır.
+| Kod                                               | Anlamı                                                                                                                                        | Çözüm                                                                                                                     |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `auth_required`                                   | Geçiş plugin'i yükledi ancak uygulamalarından biri hâlâ kimlik doğrulaması gerektiriyor. Yeniden yetkilendirene kadar girdi devre dışı olarak yazılır. | Uygulamayı Codex'te yeniden yetkilendirin, ardından plugin'i OpenClaw'da etkinleştirin.                                    |
+| `app_inaccessible`, `app_disabled`, `app_missing` | `--verify-plugin-apps` kullanıldığında kaynak Codex uygulama envanteri, sahip olunan tüm uygulamaları mevcut, etkin ve erişilebilir olarak göstermedi. | Uygulamayı Codex'te yeniden yetkilendirin veya etkinleştirin, ardından geçişi `--verify-plugin-apps` ile yeniden çalıştırın. |
+| `app_inventory_unavailable`                       | Katı kaynak uygulama doğrulaması istendi ancak kaynak Codex uygulama envanteri yenilenemedi.                                                    | Kaynak Codex uygulama sunucusu erişimini düzeltin veya daha hızlı hesap denetimli planı kabul etmek için `--verify-plugin-apps` olmadan yeniden deneyin. |
+| `codex_subscription_required`                     | Kaynak Codex uygulama sunucusu hesabı bir ChatGPT abonelik hesabı değildi.                                                                     | Codex uygulamasında abonelik kimlik doğrulamasıyla oturum açın, ardından geçişi yeniden çalıştırın.                         |
+| `codex_account_unavailable`                       | Kaynak Codex uygulama sunucusu hesabı okunamadı.                                                                                               | Kaynak Codex uygulama sunucusu kimlik doğrulamasını düzeltin veya uygunluğa kaynak uygulama envanterinin karar vermesi için `--verify-plugin-apps` ile yeniden çalıştırın. |
+| `marketplace_missing`, `plugin_missing`           | Pazar yeri veya tam plugin kullanılamıyor; açık çalışma alanı katalog isteği reddedilmiş olabilir; çalışma alanı uygulamaları güvenli biçimde reddedilir. | Aşağıda açıklanan uyumlu uygulama sunucusu sözleşmesini ve tam kimliği doğrulayın.                                         |
+| `plugin_detail_unavailable`                       | OpenClaw, plugin sahipliği ayrıntılarını okuyamadı.                                                                                            | Hedef uygulama sunucusunun `plugin/list` ve `plugin/read` yanıtlarını inceleyin.                                           |
+| `plugin_disabled`                                 | Codex, plugin'in yüklü ancak devre dışı olduğunu bildiriyor.                                                                                   | Seçkili etkinleştirme bunu düzeltebilir; yeniden denemeden önce Codex'te bir çalışma alanı plugin'ini etkinleştirin.        |
+| `plugin_activation_failed`                        | Plugin etkinleştirmesi tamamlanmadı.                                                                                                           | Pazar yeri, kimlik doğrulama, yenileme veya çalışma alanı hazır olma hatalarını ayırt etmek için ekli tanılamayı kullanın.  |
+| `app_inventory_missing`, `app_inventory_stale`    | Uygulama hazır olma durumu boş veya güncelliğini yitirmiş bir önbellekten geldi.                                                               | OpenClaw otomatik olarak eşzamansız yenileme zamanlar; sahiplik ve hazır olma durumu bilininceye kadar plugin uygulamaları hariç tutulur. |
+| `app_ownership_ambiguous`                         | Uygulama envanteri yalnızca görünen ada göre eşleşti.                                                                                          | Daha sonraki bir yenileme sahipliği kanıtlayana kadar uygulama Codex iş parçacığından gizli kalır.                         |
 
-**`app_inaccessible`, `app_disabled` veya `app_missing`:**
-migration plugin'i kurmadı çünkü kaynak Codex app envanteri, `--verify-plugin-apps` ayarlıyken sahip olunan tüm app'leri mevcut, etkin ve erişilebilir olarak göstermedi. App'i Codex'te yeniden yetkilendirin veya etkinleştirin, ardından migration'ı `--verify-plugin-apps` ile yeniden çalıştırın.
+**Çalışma alanı plugin'i yüklü ancak görünmüyor:** çalışma alanı
+`plugin/list` sonucunun tam yapılandırılmış kimliği yüklü ve etkin olarak bildirdiğini doğrulayın,
+ardından `app/list` sonucunun sahip olunan her uygulamayı aynı Codex
+hesabı için erişilebilir olarak bildirdiğini doğrulayın. OpenClaw, hesap
+envanteri uygulamayı şu anda devre dışı olarak bildirse bile erişilebilir bir uygulamayı iş parçacığı için etkinleştirebilir.
+Gateway uygulama envanterini önbelleğe aldıktan sonra bu durumu değiştirdiyseniz,
+bir saatlik önbellek yenilemesini bekleyin veya Gateway'i yeniden başlatın, ardından
+`/new` ya da `/reset` kullanın. OpenClaw, çalışma alanı pluginlerini onarmaz veya bunların kimliğini doğrulamaz.
+Açık çalışma alanı liste isteği reddedilirse, etkinleştirilmiş her çalışma alanı
+girdisi `marketplace_missing` bildirir; ilgisiz seçkili girdiler varsayılan liste
+yanıtından ilerlemeye devam eder.
 
-**`app_inventory_unavailable`:** migration plugin'i kurmadı çünkü katı kaynak app doğrulaması istendi ve kaynak Codex app envanteri yenilemesi başarısız oldu. Kaynak Codex app-server erişimini düzeltin veya daha hızlı hesap geçitli planı kabul ediyorsanız `--verify-plugin-apps` olmadan yeniden deneyin.
+`plugin_detail_unavailable` için yolsuz bir çalışma alanı özeti
+`remotePluginId` içermelidir; bu seçici veya sonraki
+`plugin/read` sonucu kullanılamadığında OpenClaw, sahip olunan uygulamaları gizli tutar.
+`plugin_activation_failed` için seçkili pluginler pazar yeri, kimlik doğrulama veya
+yükleme sonrası yenileme hatası bildirebilir. Bir çalışma alanı plugin'i, hâlihazırda
+etkin değilse bu kodu bildirir; onu OpenClaw dışında yükleyin, etkinleştirin ve kimliğini doğrulayın.
 
-**`codex_subscription_required`:** migration app destekli plugin'i kurmadı çünkü kaynak Codex app-server hesabı bir ChatGPT abonelik hesabıyla oturum açmamıştı. Codex app'te abonelik auth ile oturum açın, ardından migration'ı yeniden çalıştırın.
+**Yapılandırma değişti ancak aracı plugin'i göremiyor:** yapılandırılmış durumu
+doğrulamak için `/codex plugins list` komutunu, ardından `/new` veya `/reset` komutunu çalıştırın.
+Mevcut Codex iş parçacığı bağlamaları, OpenClaw yeni bir çalıştırma altyapısı oturumu
+oluşturana veya güncelliğini yitirmiş bir bağlamanın yerini alana kadar başlangıçtaki uygulama
+yapılandırmalarını korur.
 
-**`codex_account_unavailable`:** migration app destekli plugin'i kurmadı çünkü kaynak Codex app-server hesabı okunamadı. Kaynak Codex app-server auth'unu düzeltin veya hesap araması başarısız olduğunda uygunluğu kaynak app envanterinin belirlemesini istiyorsanız `--verify-plugin-apps` ile yeniden çalıştırın.
-
-**`marketplace_missing` veya `plugin_missing`:** hedef Codex app-server, beklenen `openai-curated` marketplace'i veya plugin'i göremiyor. Migration'ı hedef runtime'a karşı yeniden çalıştırın veya Codex app-server plugin durumunu inceleyin.
-
-**`app_inventory_missing` veya `app_inventory_stale`:** app readiness boş veya eski bir cache'ten geldi. OpenClaw asenkron yenileme zamanlar ve sahiplik ile readiness bilinene kadar plugin app'lerini hariç tutar.
-
-**`app_ownership_ambiguous`:** app envanteri yalnızca görünen ada göre eşleşti, bu yüzden app Codex thread'ine gösterilmez.
-
-**Yapılandırma değişti ancak ajan Plugin öğesini göremiyor:** yapılandırılmış durumu doğrulamak için `/codex plugins
-list` kullanın, ardından `/new` veya `/reset` kullanın. Mevcut
-Codex iş parçacığı bağlamaları, OpenClaw yeni bir harness oturumu kurana veya güncelliğini yitirmiş bir bağlamayı değiştirene kadar başladıkları uygulama yapılandırmasını korur.
-
-**Yıkıcı eylem reddedilir:** genel ve Plugin başına
-`allow_destructive_actions` değerlerini denetleyin. İlke true, `"auto"` veya
-`"ask"` olsa bile, güvenli olmayan elicitation şemaları ve belirsiz Plugin kimliği yine de kapalı varsayımla başarısız olur.
+**Yıkıcı eylem reddediliyor:** genel ve plugin başına
+`allow_destructive_actions` değerlerini denetleyin. `true`, `"auto"` veya `"ask"` kullanıldığında bile
+güvenli olmayan bilgi talebi şemaları ve belirsiz plugin kimliği güvenli biçimde reddedilmeye devam eder.
 
 ## İlgili
 
-- [Codex harness](/tr/plugins/codex-harness)
-- [Codex harness referansı](/tr/plugins/codex-harness-reference)
-- [Codex harness çalışma zamanı](/tr/plugins/codex-harness-runtime)
-- [Yapılandırma referansı](/tr/gateway/configuration-reference#codex-harness-plugin-config)
-- [CLI'yı taşı](/tr/cli/migrate)
+- [Codex çalıştırma altyapısı](/tr/plugins/codex-harness)
+- [Codex çalıştırma altyapısı başvurusu](/tr/plugins/codex-harness-reference)
+- [Codex çalıştırma altyapısı çalışma zamanı](/tr/plugins/codex-harness-runtime)
+- [Yapılandırma başvurusu](/tr/gateway/configuration-reference#codex-harness-plugin-config)
+- [Geçiş CLI'si](/tr/cli/migrate)

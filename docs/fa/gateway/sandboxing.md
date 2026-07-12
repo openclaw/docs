@@ -2,131 +2,100 @@
 read_when: You want a dedicated explanation of sandboxing or need to tune agents.defaults.sandbox.
 sidebarTitle: Sandboxing
 status: active
-summary: 'سندباکس‌سازی OpenClaw چگونه کار می‌کند: حالت‌ها، دامنه‌ها، دسترسی به فضای کاری، و تصاویر'
-title: ایزوله‌سازی
+summary: 'نحوهٔ عملکرد سندباکس OpenClaw: حالت‌ها، دامنه‌ها، دسترسی به فضای کاری و ایمیج‌ها'
+title: سندباکس‌سازی
 x-i18n:
-    generated_at: "2026-06-27T17:48:42Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:05:46Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7c9754fbfc71ee5fb48df72eece8ba3b155ce5e0d9c55aae75ce21801dceb07d
+    source_hash: 60d6695c5d8f4e8d3bfb80dd387a50c104dc4e140d5974a66d5a2176594782a4
     source_path: gateway/sandboxing.md
     workflow: 16
 ---
 
-OpenClaw می‌تواند **ابزارها را داخل backendهای sandbox** اجرا کند تا دامنه اثر کاهش یابد. این کار **اختیاری** است و با پیکربندی (`agents.defaults.sandbox` یا `agents.list[].sandbox`) کنترل می‌شود. اگر sandboxing خاموش باشد، ابزارها روی میزبان اجرا می‌شوند. Gateway روی میزبان باقی می‌ماند؛ اجرای ابزار، در صورت فعال بودن، در یک sandbox ایزوله اجرا می‌شود.
+OpenClaw می‌تواند اجرای ابزارها را درون یک بک‌اند سندباکس انجام دهد تا دامنهٔ آسیب احتمالی کاهش یابد. سندباکس‌سازی به‌طور پیش‌فرض غیرفعال است و با `agents.defaults.sandbox` (سراسری) یا `agents.list[].sandbox` (برای هر عامل) کنترل می‌شود. فرایند Gateway همیشه روی میزبان باقی می‌ماند؛ در صورت فعال‌سازی، فقط اجرای ابزارها به سندباکس منتقل می‌شود.
 
 <Note>
-این یک مرز امنیتی بی‌نقص نیست، اما وقتی مدل کار نادرستی انجام می‌دهد، دسترسی به فایل‌سیستم و فرایندها را به‌طور معناداری محدود می‌کند.
+این یک مرز امنیتی بی‌نقص نیست، اما وقتی مدل کار نابخردانه‌ای انجام می‌دهد، دسترسی به سیستم فایل و فرایندها را به‌طور محسوسی محدود می‌کند.
 </Note>
 
-## چه چیزهایی sandbox می‌شوند
+## چه چیزهایی در سندباکس اجرا می‌شوند
 
-- اجرای ابزار (`exec`، `read`، `write`، `edit`، `apply_patch`، `process` و غیره).
-- مرورگر sandboxشده اختیاری (`agents.defaults.sandbox.browser`).
+- اجرای ابزارها: `exec`، `read`، `write`، `edit`، `apply_patch`، `process` و غیره.
+- مرورگر سندباکس‌شدهٔ اختیاری (`agents.defaults.sandbox.browser`).
 
-<AccordionGroup>
-  <Accordion title="جزئیات مرورگر sandboxشده">
-    - به‌طور پیش‌فرض، وقتی ابزار مرورگر به آن نیاز داشته باشد، مرورگر sandbox به‌صورت خودکار شروع می‌شود (اطمینان می‌دهد CDP در دسترس است). از طریق `agents.defaults.sandbox.browser.autoStart` و `agents.defaults.sandbox.browser.autoStartTimeoutMs` پیکربندی کنید.
-    - به‌طور پیش‌فرض، کانتینرهای مرورگر sandbox به‌جای شبکه سراسری `bridge` از یک شبکه Docker اختصاصی (`openclaw-sandbox-browser`) استفاده می‌کنند. با `agents.defaults.sandbox.browser.network` پیکربندی کنید.
-    - گزینه اختیاری `agents.defaults.sandbox.browser.cdpSourceRange` ورودی CDP در لبه کانتینر را با یک allowlist از نوع CIDR محدود می‌کند (برای مثال `172.21.0.1/32`).
-    - دسترسی مشاهده‌گر noVNC به‌طور پیش‌فرض با گذرواژه محافظت می‌شود؛ OpenClaw یک URL توکن کوتاه‌عمر صادر می‌کند که یک صفحه bootstrap محلی ارائه می‌دهد و noVNC را با گذرواژه در قطعه URL باز می‌کند (نه در query/header logs).
-    - `agents.defaults.sandbox.browser.allowHostControl` به نشست‌های sandboxشده اجازه می‌دهد مرورگر میزبان را به‌صورت صریح هدف بگیرند.
-    - allowlistهای اختیاری، `target: "custom"` را کنترل می‌کنند: `allowedControlUrls`، `allowedControlHosts`، `allowedControlPorts`.
-
-  </Accordion>
-</AccordionGroup>
-
-sandbox نمی‌شوند:
+مواردی که در سندباکس اجرا نمی‌شوند:
 
 - خود فرایند Gateway.
-- هر ابزاری که صریحاً اجازه داشته باشد خارج از sandbox اجرا شود (مثلاً `tools.elevated`).
-  - **اجرای elevated از sandboxing عبور می‌کند و از مسیر خروج پیکربندی‌شده استفاده می‌کند (`gateway` به‌طور پیش‌فرض، یا `node` وقتی هدف exec برابر `node` است).**
-  - اگر sandboxing خاموش باشد، `tools.elevated` اجرا را تغییر نمی‌دهد (از قبل روی میزبان است). [حالت Elevated](/fa/tools/elevated) را ببینید.
+- هر ابزاری که از طریق `tools.elevated` صراحتاً اجازه داشته باشد بیرون از سندباکس اجرا شود. اجرای ارتقایافته سندباکس‌سازی را دور می‌زند و در مسیر خروج پیکربندی‌شده اجرا می‌شود (به‌طور پیش‌فرض `gateway`، یا هنگامی که مقصد اجرا `node` است، `node`). اگر سندباکس‌سازی غیرفعال باشد، `tools.elevated` هیچ تغییری ایجاد نمی‌کند، زیرا اجرا از قبل روی میزبان انجام می‌شود. به [حالت ارتقایافته](/fa/tools/elevated) مراجعه کنید.
 
-## حالت‌ها
+## حالت‌ها، دامنه و بک‌اند
 
-`agents.defaults.sandbox.mode` کنترل می‌کند sandboxing **چه زمانی** استفاده شود:
+سه تنظیم مستقل رفتار سندباکس را کنترل می‌کنند:
 
-<Tabs>
-  <Tab title="off">
-    بدون sandboxing.
-  </Tab>
-  <Tab title="non-main">
-    فقط نشست‌های **غیر main** را sandbox می‌کند (پیش‌فرض اگر چت‌های عادی را روی میزبان می‌خواهید).
+| تنظیم | کلید                               | مقادیر                       | پیش‌فرض  |
+| ------- | --------------------------------- | ---------------------------- | -------- |
+| حالت    | `agents.defaults.sandbox.mode`    | `off`، `non-main`، `all`     | `off`    |
+| دامنه   | `agents.defaults.sandbox.scope`   | `agent`، `session`، `shared` | `agent`  |
+| بک‌اند | `agents.defaults.sandbox.backend` | `docker`، `ssh`، `openshell` | `docker` |
 
-    `"non-main"` بر اساس `session.mainKey` است (پیش‌فرض `"main"`)، نه شناسه agent. نشست‌های گروه/کانال کلیدهای خودشان را دارند، بنابراین غیر main محسوب می‌شوند و sandbox خواهند شد.
+**حالت** تعیین می‌کند سندباکس‌سازی چه زمانی اعمال شود:
 
-  </Tab>
-  <Tab title="all">
-    هر نشست در یک sandbox اجرا می‌شود.
-  </Tab>
-</Tabs>
+- `off`: بدون سندباکس‌سازی.
+- `non-main`: همهٔ نشست‌ها به‌جز نشست اصلی عامل در سندباکس اجرا می‌شوند. کلید نشست اصلی همیشه `agent:<agentId>:main` است (یا وقتی `session.scope` برابر `"global"` باشد، `global`) و قابل پیکربندی نیست. نشست‌های گروهی/کانالی از کلیدهای خود استفاده می‌کنند، بنابراین همیشه غیر اصلی محسوب می‌شوند و در سندباکس اجرا خواهند شد.
+- `all`: همهٔ نشست‌ها در سندباکس اجرا می‌شوند.
 
-## دامنه
+**دامنه** تعیین می‌کند چند کانتینر/محیط ایجاد شود:
 
-`agents.defaults.sandbox.scope` کنترل می‌کند **چند کانتینر** ساخته شود:
+- `agent`: یک کانتینر برای هر عامل.
+- `session`: یک کانتینر برای هر نشست.
+- `shared`: یک کانتینر مشترک میان همهٔ نشست‌های سندباکس‌شده (در این دامنه، بازنویسی‌های مختص هر عامل برای `docker`/`ssh`/`browser` نادیده گرفته می‌شوند).
 
-- `"agent"` (پیش‌فرض): یک کانتینر برای هر agent.
-- `"session"`: یک کانتینر برای هر نشست.
-- `"shared"`: یک کانتینر مشترک برای همه نشست‌های sandboxشده.
-
-## Backend
-
-`agents.defaults.sandbox.backend` کنترل می‌کند **کدام runtime** sandbox را فراهم کند:
-
-- `"docker"` (پیش‌فرض وقتی sandboxing فعال است): runtime sandbox محلی با پشتوانه Docker.
-- `"ssh"`: runtime sandbox راه‌دور عمومی با پشتوانه SSH.
-- `"openshell"`: runtime sandbox با پشتوانه OpenShell.
-
-پیکربندی اختصاصی SSH زیر `agents.defaults.sandbox.ssh` قرار دارد. پیکربندی اختصاصی OpenShell زیر `plugins.entries.openshell.config` قرار دارد.
-
-### انتخاب backend
+**بک‌اند** تعیین می‌کند کدام محیط اجرا ابزارهای سندباکس‌شده را اجرا کند. پیکربندی مختص SSH زیر `agents.defaults.sandbox.ssh` و پیکربندی مختص OpenShell زیر `plugins.entries.openshell.config` قرار دارد.
 
 |                     | Docker                           | SSH                            | OpenShell                                           |
 | ------------------- | -------------------------------- | ------------------------------ | --------------------------------------------------- |
-| **محل اجرا**        | کانتینر محلی                     | هر میزبان قابل‌دسترسی با SSH   | sandbox مدیریت‌شده OpenShell                        |
-| **راه‌اندازی**      | `scripts/sandbox-setup.sh`       | کلید SSH + میزبان هدف          | Plugin مربوط به OpenShell فعال باشد                |
-| **مدل workspace**   | Bind-mount یا کپی                | remote-canonical (یک‌بار seed) | `mirror` یا `remote`                                |
-| **کنترل شبکه**      | `docker.network` (پیش‌فرض: none) | وابسته به میزبان راه‌دور       | وابسته به OpenShell                                 |
-| **sandbox مرورگر**  | پشتیبانی می‌شود                 | پشتیبانی نمی‌شود               | هنوز پشتیبانی نمی‌شود                              |
-| **Bind mountها**    | `docker.binds`                   | N/A                            | N/A                                                 |
-| **بهترین کاربرد**   | توسعه محلی، ایزوله‌سازی کامل    | واگذاری بار به ماشین راه‌دور   | sandboxهای راه‌دور مدیریت‌شده با همگام‌سازی دوسویه اختیاری |
+| **محل اجرا**   | کانتینر محلی                  | هر میزبان قابل‌دسترسی با SSH        | سندباکس مدیریت‌شده توسط OpenShell                           |
+| **راه‌اندازی**           | `scripts/sandbox-setup.sh`       | کلید SSH + میزبان مقصد          | Plugin مربوط به OpenShell فعال باشد                            |
+| **مدل فضای کاری** | اتصال مستقیم یا کپی               | مرجع راه‌دور (یک‌بار مقداردهی اولیه)   | `mirror` یا `remote`                                |
+| **کنترل شبکه** | `docker.network` (پیش‌فرض: هیچ‌کدام) | وابسته به میزبان راه‌دور         | وابسته به OpenShell                                |
+| **سندباکس مرورگر** | پشتیبانی می‌شود                        | پشتیبانی نمی‌شود                  | هنوز پشتیبانی نمی‌شود                                   |
+| **اتصال‌های مستقیم**     | `docker.binds`                   | نامرتبط                            | نامرتبط                                                 |
+| **مناسب برای**        | توسعهٔ محلی، جداسازی کامل        | واگذاری پردازش به یک دستگاه راه‌دور | سندباکس‌های راه‌دور مدیریت‌شده با همگام‌سازی دوطرفهٔ اختیاری |
 
-### Docker backend
+## بک‌اند Docker
 
-sandboxing به‌طور پیش‌فرض خاموش است. اگر sandboxing را فعال کنید و backend انتخاب نکنید، OpenClaw از Docker backend استفاده می‌کند. ابزارها و مرورگرهای sandbox را به‌صورت محلی از طریق سوکت daemon Docker (`/var/run/docker.sock`) اجرا می‌کند. ایزوله‌سازی کانتینر sandbox توسط namespaceهای Docker تعیین می‌شود.
+پس از فعال‌شدن سندباکس‌سازی، Docker بک‌اند پیش‌فرض است. ابزارها و مرورگرهای سندباکس را به‌صورت محلی از طریق سوکت دیمن Docker (`/var/run/docker.sock`) اجرا می‌کند؛ جداسازی توسط فضای نام‌های Docker فراهم می‌شود.
 
-برای در دسترس گذاشتن GPUهای میزبان برای sandboxهای Docker، `agents.defaults.sandbox.docker.gpus` یا override اختصاصی هر agent یعنی `agents.list[].sandbox.docker.gpus` را تنظیم کنید. مقدار به‌عنوان یک آرگومان جداگانه به flag `--gpus` در Docker پاس داده می‌شود، برای مثال `"all"` یا `"device=GPU-uuid"`، و به یک runtime میزبان سازگار مانند NVIDIA Container Toolkit نیاز دارد.
+پیش‌فرض‌ها: `network: "none"` (بدون دسترسی خروجی)، `readOnlyRoot: true`، `capDrop: ["ALL"]`، تصویر `openclaw-sandbox:bookworm-slim`.
+
+برای در دسترس قرار دادن GPUهای میزبان، `agents.defaults.sandbox.docker.gpus` (یا بازنویسی مختص هر عامل) را روی مقداری مانند `"all"` یا `"device=GPU-uuid"` تنظیم کنید. این مقدار به پرچم `--gpus` در Docker منتقل می‌شود و به یک محیط اجرای سازگار روی میزبان، مانند NVIDIA Container Toolkit، نیاز دارد.
 
 <Warning>
-**محدودیت‌های Docker-out-of-Docker (DooD)**
+**Docker بیرون از Docker (DooD): محدودیت‌ها**
 
-اگر خود OpenClaw Gateway را به‌عنوان کانتینر Docker مستقر کنید، کانتینرهای sandbox هم‌رده را با استفاده از سوکت Docker میزبان هماهنگ می‌کند (DooD). این کار یک محدودیت خاص در نگاشت مسیر ایجاد می‌کند:
+اگر خود Gateway متعلق به OpenClaw را به‌صورت کانتینر Docker استقرار دهید، با استفاده از سوکت Docker میزبان، کانتینرهای سندباکس هم‌سطح را هماهنگ می‌کند (DooD). این کار یک محدودیت نگاشت مسیر ایجاد می‌کند:
 
-- **پیکربندی به مسیرهای میزبان نیاز دارد**: پیکربندی `workspace` در `openclaw.json` باید شامل **مسیر مطلق میزبان** باشد (مثلاً `/home/user/.openclaw/workspaces`)، نه مسیر داخلی کانتینر Gateway. وقتی OpenClaw از daemon Docker می‌خواهد یک sandbox ایجاد کند، daemon مسیرها را نسبت به namespace سیستم‌عامل میزبان ارزیابی می‌کند، نه namespace Gateway.
-- **همسانی پل FS (نگاشت volume یکسان)**: فرایند native مربوط به OpenClaw Gateway همچنین فایل‌های heartbeat و bridge را در دایرکتوری `workspace` می‌نویسد. چون Gateway همان رشته دقیق (مسیر میزبان) را از داخل محیط کانتینری خودش ارزیابی می‌کند، استقرار Gateway باید یک نگاشت volume یکسان داشته باشد که namespace میزبان را به‌صورت native وصل کند (`-v /home/user/.openclaw:/home/user/.openclaw`).
-- **حالت کد Codex**: وقتی یک sandbox در OpenClaw فعال است، OpenClaw برای آن نوبت Code Mode بومی app-server در Codex، سرورهای MCP کاربر، و اجرای Pluginهای متکی به app را غیرفعال می‌کند، چون این سطوح native از فرایند app-server میزبان Gateway اجرا می‌شوند، نه از backend sandbox در OpenClaw. وقتی ابزارهای عادی exec/process در دسترس باشند، دسترسی shell از طریق ابزارهای متکی به sandbox در OpenClaw مانند `sandbox_exec` و `sandbox_process` ارائه می‌شود. سوکت Docker میزبان را داخل کانتینرهای sandbox agent یا sandboxهای سفارشی Codex mount نکنید.
+- **پیکربندی به مسیرهای میزبان نیاز دارد**: مقدار `workspace` در `openclaw.json` باید شامل **مسیر مطلق میزبان** باشد (برای مثال `/home/user/.openclaw/workspaces`)، نه مسیر داخلی کانتینر Gateway. دیمن Docker مسیرها را نسبت به فضای نام سیستم‌عامل میزبان ارزیابی می‌کند، نه فضای نام خود Gateway.
+- **نگاشت حجمی یکسان الزامی است**: فرایند Gateway فایل‌های Heartbeat و پل را نیز در همان مسیر `workspace` می‌نویسد. یک نگاشت حجمی یکسان (`-v /home/user/.openclaw:/home/user/.openclaw`) به کانتینر Gateway بدهید تا همان مسیر میزبان از درون کانتینر Gateway نیز به‌درستی resolve شود. نگاشت‌های ناسازگار هنگامی که Gateway می‌کوشد Heartbeat خود را بنویسد، به‌صورت `EACCES` نمایان می‌شوند.
+- **حالت کد Codex**: وقتی یک سندباکس OpenClaw فعال باشد، OpenClaw حالت کد بومی app-server در Codex، سرورهای MCP کاربر و اجرای Pluginهای متکی به برنامه را برای آن نوبت غیرفعال می‌کند (این موارد از فرایند app-server میزبان Gateway اجرا می‌شوند، نه از بک‌اند سندباکس OpenClaw)، مگر آنکه خط‌مشی ابزار سندباکس ابزارهای لازم را در دسترس قرار دهد و مسیر آزمایشی exec-server سندباکس را فعال کنید. سپس دسترسی پوسته از طریق ابزارهای متکی به سندباکس OpenClaw، مانند `sandbox_exec` و `sandbox_process`، مسیریابی می‌شود. سوکت Docker میزبان را داخل کانتینرهای سندباکس عامل یا سندباکس‌های سفارشی Codex متصل نکنید. برای رفتار کامل، به [مهار Codex](/fa/plugins/codex-harness) مراجعه کنید.
 
-در میزبان‌های Ubuntu/AppArmor، `workspace-write` در Codex می‌تواند پیش از شروع shell شکست بخورد
-وقتی عمداً `workspace-write` بومی Codex را بدون sandboxing فعال
-OpenClaw اجرا می‌کنید و کاربر سرویس اجازه ساخت namespaceهای کاربر بدون امتیاز را ندارد.
-وقتی خروجی شبکه sandbox در Docker غیرفعال است (`network: "none"`، مقدار
-پیش‌فرض)، Codex همچنین به یک namespace شبکه بدون امتیاز نیاز دارد. نشانه‌های رایج عبارت‌اند از
-`bwrap: setting up uid map: Permission denied` و
-`bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted`. دستور
-`openclaw doctor` را اجرا کنید؛ اگر شکست probe مربوط به namespace bwrap در Codex را گزارش کرد، ترجیحاً
-از یک profile در AppArmor استفاده کنید که namespaceهای لازم را به فرایند سرویس OpenClaw
-اعطا کند. `kernel.apparmor_restrict_unprivileged_userns=0` یک fallback در سطح میزبان
-با tradeoffهای امنیتی است؛ فقط وقتی از نظر وضعیت امنیتی آن میزبان
-قابل‌قبول است از آن استفاده کنید.
-
-اگر مسیرها را به‌صورت داخلی و بدون همسانی مطلق با میزبان نگاشت کنید، OpenClaw به‌صورت native یک خطای مجوز `EACCES` هنگام تلاش برای نوشتن heartbeat خودش داخل محیط کانتینر پرتاب می‌کند، چون رشته مسیر کامل به‌صورت native وجود ندارد.
+در میزبان‌های Ubuntu/AppArmor که حالت سندباکس Docker فعال است، اجرای پوستهٔ `workspace-write` در app-server متعلق به Codex به فضای نام کاربر بدون امتیاز درون کانتینر سندباکس نیاز دارد و اگر کاربر سرویس نتواند آن را ایجاد کند، ممکن است پیش از راه‌اندازی پوسته شکست بخورد. وقتی دسترسی خروجی سندباکس Docker غیرفعال است (`network: "none"` که مقدار پیش‌فرض است)، این فرایند به یک فضای نام شبکهٔ بدون امتیاز نیز نیاز دارد. نشانه‌های رایج: `bwrap: setting up uid map: Permission denied` و `bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted`. دستور `openclaw doctor` را اجرا کنید؛ اگر شکست کاوش فضای نام bwrap متعلق به Codex را گزارش کرد، ترجیحاً از یک نمایهٔ AppArmor استفاده کنید که فضای نام‌های لازم را به فرایند سرویس OpenClaw اعطا می‌کند. `kernel.apparmor_restrict_unprivileged_userns=0` یک راهکار جایگزین در سطح کل میزبان با ملاحظات امنیتی است؛ فقط زمانی از آن استفاده کنید که چنین وضعیت امنیتی برای میزبان پذیرفتنی باشد.
 </Warning>
 
-### SSH backend
+### مرورگر سندباکس‌شده
 
-وقتی می‌خواهید OpenClaw، `exec`، ابزارهای فایل، و خواندن‌های رسانه را روی یک ماشین دلخواه قابل‌دسترسی با SSH sandbox کند، از `backend: "ssh"` استفاده کنید.
+- مرورگر سندباکس هنگامی که ابزار مرورگر به آن نیاز دارد به‌طور خودکار آغاز می‌شود (و اطمینان حاصل می‌کند CDP قابل‌دسترسی است). آن را از طریق `agents.defaults.sandbox.browser.autoStart` (پیش‌فرض `true`) و `autoStartTimeoutMs` (پیش‌فرض ۱۲ ثانیه) پیکربندی کنید.
+- کانتینرهای مرورگر سندباکس به‌جای شبکهٔ سراسری `bridge` از یک شبکهٔ اختصاصی Docker با نام `openclaw-sandbox-browser` استفاده می‌کنند. آن را با `agents.defaults.sandbox.browser.network` پیکربندی کنید.
+- `agents.defaults.sandbox.browser.cdpSourceRange` ورود CDP در لبهٔ کانتینر را با فهرست مجاز CIDR محدود می‌کند (برای مثال `172.21.0.1/32`).
+- دسترسی ناظر noVNC به‌طور پیش‌فرض با گذرواژه محافظت می‌شود؛ OpenClaw یک نشانی URL دارای توکن کوتاه‌عمر ایجاد می‌کند که یک صفحهٔ راه‌انداز محلی ارائه می‌دهد و noVNC را با گذرواژه در قطعهٔ URL باز می‌کند (نه در رشتهٔ پرس‌وجو یا گزارش‌های سربرگ).
+- `agents.defaults.sandbox.browser.allowHostControl` (پیش‌فرض `false`) به نشست‌های سندباکس‌شده اجازه می‌دهد مرورگر میزبان را صراحتاً هدف قرار دهند.
+- فهرست‌های مجاز اختیاری دسترسی به `target: "custom"` را کنترل می‌کنند: `allowedControlUrls`، `allowedControlHosts`، `allowedControlPorts`.
+
+## بک‌اند SSH
+
+از `backend: "ssh"` برای اجرای سندباکس‌شدهٔ `exec`، ابزارهای فایل و خواندن رسانه روی هر دستگاه قابل‌دسترسی با SSH استفاده کنید.
 
 ```json5
 {
@@ -156,36 +125,15 @@ OpenClaw اجرا می‌کنید و کاربر سرویس اجازه ساخت n
 }
 ```
 
-<AccordionGroup>
-  <Accordion title="نحوه کار">
-    - OpenClaw یک ریشه راه‌دور برای هر scope زیر `sandbox.ssh.workspaceRoot` می‌سازد.
-    - در اولین استفاده پس از ساخت یا بازسازی، OpenClaw آن workspace راه‌دور را یک‌بار از workspace محلی seed می‌کند.
-    - پس از آن، `exec`، `read`، `write`، `edit`، `apply_patch`، خواندن رسانه‌های prompt، و staging رسانه‌های ورودی مستقیماً روی workspace راه‌دور از طریق SSH اجرا می‌شوند.
-    - OpenClaw تغییرات راه‌دور را به‌صورت خودکار به workspace محلی همگام‌سازی نمی‌کند.
+پیش‌فرض‌ها: `command: "ssh"`، `workspaceRoot: "/tmp/openclaw-sandboxes"`، `strictHostKeyChecking: true`، `updateHostKeys: true`.
 
-  </Accordion>
-  <Accordion title="مواد احراز هویت">
-    - `identityFile`، `certificateFile`، `knownHostsFile`: از فایل‌های محلی موجود استفاده می‌کنند و آن‌ها را از طریق پیکربندی OpenSSH عبور می‌دهند.
-    - `identityData`، `certificateData`، `knownHostsData`: از رشته‌های inline یا SecretRefs استفاده می‌کنند. OpenClaw آن‌ها را از طریق snapshot معمول runtime اسرار resolve می‌کند، با مجوز `0600` در فایل‌های موقت می‌نویسد، و پس از پایان نشست SSH حذف می‌کند.
-    - اگر هم `*File` و هم `*Data` برای یک مورد تنظیم شده باشند، `*Data` برای آن نشست SSH برنده است.
+- **چرخهٔ حیات**: OpenClaw زیر `sandbox.ssh.workspaceRoot` یک ریشهٔ راه‌دور برای هر دامنه ایجاد می‌کند. در نخستین استفاده پس از ایجاد یا بازآفرینی، فضای کاری راه‌دور را یک‌بار از فضای کاری محلی مقداردهی اولیه می‌کند. پس از آن، `exec`، `read`، `write`، `edit`، `apply_patch`، خواندن رسانه‌های اعلان و آماده‌سازی رسانه‌های ورودی، مستقیماً از طریق SSH روی فضای کاری راه‌دور اجرا می‌شوند. OpenClaw تغییرات راه‌دور را به‌طور خودکار با فضای کاری محلی همگام نمی‌کند.
+- **مواد احراز هویت**: `identityFile`/`certificateFile`/`knownHostsFile` به فایل‌های محلی موجود اشاره می‌کنند. `identityData`/`certificateData`/`knownHostsData` رشته‌های درون‌خطی یا SecretRefها را می‌پذیرند؛ این موارد از طریق تصویر لحظه‌ای معمول محیط اجرای اسرار resolve می‌شوند، در فایل‌های موقت با حالت `0600` نوشته می‌شوند و با پایان نشست SSH حذف می‌شوند. اگر برای یک مورد، هم نوع `*File` و هم نوع `*Data` تنظیم شده باشد، `*Data` برای آن نشست اولویت دارد.
+- **پیامدهای مرجع‌بودن محیط راه‌دور**: پس از مقداردهی اولیه، فضای کاری راه‌دور SSH به وضعیت واقعی سندباکس تبدیل می‌شود. ویرایش‌های محلی میزبان که پس از مرحلهٔ مقداردهی اولیه بیرون از OpenClaw انجام شوند، تا زمانی که سندباکس را بازآفرینی نکنید در محیط راه‌دور قابل مشاهده نیستند. `openclaw sandbox recreate` ریشهٔ راه‌دور مختص دامنه را حذف می‌کند و در استفادهٔ بعدی دوباره از محیط محلی مقداردهی اولیه می‌کند. سندباکس‌سازی مرورگر در این بک‌اند پشتیبانی نمی‌شود و تنظیمات `sandbox.docker.*` بر آن اعمال نمی‌شوند.
 
-  </Accordion>
-  <Accordion title="پیامدهای remote-canonical">
-    این یک مدل **remote-canonical** است. workspace راه‌دور SSH پس از seed اولیه به وضعیت واقعی sandbox تبدیل می‌شود.
+## بک‌اند OpenShell
 
-    - ویرایش‌های محلی میزبان که پس از مرحله seed خارج از OpenClaw انجام شوند، تا وقتی sandbox را بازسازی نکنید در راه‌دور قابل مشاهده نیستند.
-    - `openclaw sandbox recreate` ریشه راه‌دور مربوط به هر scope را حذف می‌کند و در استفاده بعدی دوباره از محلی seed می‌کند.
-    - sandboxing مرورگر در SSH backend پشتیبانی نمی‌شود.
-    - تنظیمات `sandbox.docker.*` برای SSH backend اعمال نمی‌شوند.
-
-  </Accordion>
-</AccordionGroup>
-
-### OpenShell backend
-
-وقتی می‌خواهید OpenClaw ابزارها را در یک محیط راه‌دور مدیریت‌شده توسط OpenShell sandbox کند، از `backend: "openshell"` استفاده کنید. برای راهنمای کامل راه‌اندازی، مرجع پیکربندی، و مقایسه حالت‌های workspace، صفحه اختصاصی [OpenShell](/fa/gateway/openshell) را ببینید.
-
-OpenShell از همان انتقال SSH هسته‌ای و پل فایل‌سیستم راه‌دور backend عمومی SSH دوباره استفاده می‌کند و lifecycle اختصاصی OpenShell (`sandbox create/get/delete`، `sandbox ssh-config`) به‌علاوه حالت اختیاری workspace با نام `mirror` را اضافه می‌کند.
+از `backend: "openshell"` برای اجرای سندباکس‌شدهٔ ابزارها در یک محیط راه‌دور مدیریت‌شده توسط OpenShell استفاده کنید. OpenShell از همان انتقال SSH و پل سیستم فایل راه‌دور بک‌اند عمومی SSH استفاده می‌کند و چرخهٔ حیات OpenShell (`sandbox create/get/delete/ssh-config`) را به‌همراه یک حالت اختیاری همگام‌سازی فضای کاری `mirror` می‌افزاید.
 
 ```json5
 {
@@ -206,8 +154,6 @@ OpenShell از همان انتقال SSH هسته‌ای و پل فایل‌سی
         config: {
           from: "openclaw",
           mode: "remote", // mirror | remote
-          remoteWorkspaceDir: "/sandbox",
-          remoteAgentWorkspaceDir: "/agent",
         },
       },
     },
@@ -215,132 +161,37 @@ OpenShell از همان انتقال SSH هسته‌ای و پل فایل‌سی
 }
 ```
 
-حالت‌های OpenShell:
+`mode: "mirror"` (پیش‌فرض) فضای کاری محلی را مرجع نگه می‌دارد: OpenClaw پیش از `exec` محیط محلی را با سندباکس همگام می‌کند و پس از آن تغییرات را بازمی‌گرداند. `mode: "remote"` فضای کاری راه‌دور را یک‌بار از محیط محلی مقداردهی اولیه می‌کند، سپس `exec`/`read`/`write`/`edit`/`apply_patch` را مستقیماً روی فضای کاری راه‌دور و بدون همگام‌سازی معکوس اجرا می‌کند؛ ویرایش‌های محلی پس از مقداردهی اولیه تا زمانی که `openclaw sandbox recreate` را اجرا نکنید قابل مشاهده نیستند. در `scope: "agent"` یا `scope: "shared"`، آن فضای کاری راه‌دور در همان دامنه مشترک است. محدودیت‌های فعلی: سندباکس مرورگر هنوز پشتیبانی نمی‌شود و `sandbox.docker.binds` بر این بک‌اند اعمال نمی‌شود.
 
-- `mirror` (پیش‌فرض): workspace محلی canonical باقی می‌ماند. OpenClaw فایل‌های محلی را پیش از exec به OpenShell همگام‌سازی می‌کند و workspace راه‌دور را پس از exec برمی‌گرداند.
-- `remote`: پس از ساخت sandbox، workspace در OpenShell canonical است. OpenClaw یک‌بار workspace راه‌دور را از workspace محلی seed می‌کند، سپس ابزارهای فایل و exec مستقیماً روی sandbox راه‌دور اجرا می‌شوند، بدون اینکه تغییرات به عقب همگام‌سازی شوند.
+دستورهای `openclaw sandbox list`/`recreate`/prune همگی با محیط‌های اجرای OpenShell همانند محیط‌های اجرای Docker رفتار می‌کنند؛ منطق هرس از نوع بک‌اند آگاه است.
 
-<AccordionGroup>
-  <Accordion title="جزئیات انتقال از راه دور">
-    - OpenClaw پیکربندی SSH مخصوص sandbox را از OpenShell از طریق `openshell sandbox ssh-config <name>` درخواست می‌کند.
-    - هسته آن پیکربندی SSH را در یک فایل موقت می‌نویسد، نشست SSH را باز می‌کند و همان پل فایل‌سیستم راه دور را که توسط `backend: "ssh"` استفاده می‌شود، دوباره به‌کار می‌گیرد.
-    - در حالت `mirror` فقط چرخه عمر متفاوت است: پیش از exec، محلی را با راه دور همگام می‌کند و سپس پس از exec دوباره همگام‌سازی را برمی‌گرداند.
+برای پیش‌نیازهای کامل، مرجع پیکربندی، مقایسهٔ حالت‌های فضای کاری و جزئیات چرخهٔ حیات، به [OpenShell](/fa/gateway/openshell) مراجعه کنید.
 
-  </Accordion>
-  <Accordion title="محدودیت‌های فعلی OpenShell">
-    - مرورگر sandbox هنوز پشتیبانی نمی‌شود
-    - `sandbox.docker.binds` در backend OpenShell پشتیبانی نمی‌شود
-    - تنظیمات runtime ویژه Docker زیر `sandbox.docker.*` همچنان فقط برای backend Docker اعمال می‌شوند
+## دسترسی به فضای کاری
 
-  </Accordion>
-</AccordionGroup>
+`agents.defaults.sandbox.workspaceAccess` تعیین می‌کند سندباکس چه چیزهایی را می‌تواند ببیند:
 
-#### حالت‌های workspace
+| مقدار            | رفتار                                                                                  |
+| ---------------- | ----------------------------------------------------------------------------------------- |
+| `none` (پیش‌فرض) | ابزارها یک فضای کاری جعبه‌شنی ایزوله را در `~/.openclaw/sandboxes` می‌بینند.                    |
+| `ro`             | فضای کاری عامل را به‌صورت فقط‌خواندنی در `/agent` سوار می‌کند (`write`/`edit`/`apply_patch` را غیرفعال می‌کند). |
+| `rw`             | فضای کاری عامل را به‌صورت خواندنی/نوشتنی در `/workspace` سوار می‌کند.                                    |
 
-OpenShell دو مدل workspace دارد. این همان بخشی است که در عمل بیشترین اهمیت را دارد.
+با پشتیبان OpenShell، حالت `mirror` همچنان بین نوبت‌های اجرا از فضای کاری محلی به‌عنوان منبع مرجع استفاده می‌کند، حالت `remote` پس از بذرگذاری اولیه فضای کاری راه‌دور OpenShell را مرجع قرار می‌دهد، و `workspaceAccess: "ro"`/`"none"` همچنان رفتار نوشتن را به همان شیوه محدود می‌کند.
 
-<Tabs>
-  <Tab title="mirror (local canonical)">
-    وقتی می‌خواهید **workspace محلی canonical باقی بماند** از `plugins.entries.openshell.config.mode: "mirror"` استفاده کنید.
-
-    رفتار:
-
-    - پیش از `exec`، OpenClaw workspace محلی را در sandbox OpenShell همگام می‌کند.
-    - پس از `exec`، OpenClaw workspace راه دور را دوباره به workspace محلی همگام می‌کند.
-    - ابزارهای فایل همچنان از طریق پل sandbox کار می‌کنند، اما workspace محلی بین نوبت‌ها منبع حقیقت باقی می‌ماند.
-
-    وقتی از این استفاده کنید که:
-
-    - فایل‌ها را خارج از OpenClaw به‌صورت محلی ویرایش می‌کنید و می‌خواهید آن تغییرات به‌طور خودکار در sandbox ظاهر شوند
-    - می‌خواهید sandbox OpenShell تا حد ممکن شبیه backend Docker رفتار کند
-    - می‌خواهید workspace میزبان پس از هر نوبت exec، نوشتن‌های sandbox را منعکس کند
-
-    موازنه: هزینه همگام‌سازی اضافی پیش و پس از exec.
-
-  </Tab>
-  <Tab title="remote (OpenShell canonical)">
-    وقتی می‌خواهید **workspace OpenShell به canonical تبدیل شود** از `plugins.entries.openshell.config.mode: "remote"` استفاده کنید.
-
-    رفتار:
-
-    - وقتی sandbox برای نخستین بار ساخته می‌شود، OpenClaw یک‌بار workspace راه دور را از workspace محلی مقداردهی اولیه می‌کند.
-    - پس از آن، `exec`، `read`، `write`، `edit` و `apply_patch` مستقیماً روی workspace راه دور OpenShell عمل می‌کنند.
-    - OpenClaw پس از exec تغییرات راه دور را به workspace محلی همگام **نمی‌کند**.
-    - خواندن رسانه‌ها در زمان prompt همچنان کار می‌کند، چون ابزارهای فایل و رسانه به‌جای فرض گرفتن مسیر میزبان محلی، از طریق پل sandbox می‌خوانند.
-    - انتقال، SSH به sandbox OpenShell است که توسط `openshell sandbox ssh-config` برگردانده می‌شود.
-
-    پیامدهای مهم:
-
-    - اگر پس از مرحله مقداردهی اولیه، فایل‌ها را روی میزبان خارج از OpenClaw ویرایش کنید، sandbox راه دور آن تغییرات را به‌طور خودکار **نخواهد دید**.
-    - اگر sandbox دوباره ساخته شود، workspace راه دور دوباره از workspace محلی مقداردهی اولیه می‌شود.
-    - با `scope: "agent"` یا `scope: "shared"`، آن workspace راه دور در همان scope مشترک است.
-
-    وقتی از این استفاده کنید که:
-
-    - sandbox باید عمدتاً در سمت راه دور OpenShell زندگی کند
-    - می‌خواهید سربار همگام‌سازی در هر نوبت کمتر باشد
-    - نمی‌خواهید ویرایش‌های محلی میزبان به‌صورت پنهانی وضعیت sandbox راه دور را بازنویسی کنند
-
-  </Tab>
-</Tabs>
-
-اگر sandbox را یک محیط اجرای موقت می‌دانید، `mirror` را انتخاب کنید. اگر sandbox را workspace واقعی می‌دانید، `remote` را انتخاب کنید.
-
-#### چرخه عمر OpenShell
-
-sandboxهای OpenShell همچنان از طریق چرخه عمر معمول sandbox مدیریت می‌شوند:
-
-- `openclaw sandbox list` هم runtimeهای OpenShell و هم runtimeهای Docker را نشان می‌دهد
-- `openclaw sandbox recreate` runtime فعلی را حذف می‌کند و اجازه می‌دهد OpenClaw آن را در استفاده بعدی دوباره بسازد
-- منطق prune نیز از backend آگاه است
-
-برای حالت `remote`، ساخت دوباره اهمیت ویژه‌ای دارد:
-
-- ساخت دوباره، workspace راه دور canonical را برای آن scope حذف می‌کند
-- استفاده بعدی، یک workspace راه دور تازه را از workspace محلی مقداردهی اولیه می‌کند
-
-برای حالت `mirror`، ساخت دوباره عمدتاً محیط اجرای راه دور را بازنشانی می‌کند، چون workspace محلی در هر حال canonical باقی می‌ماند.
-
-## دسترسی به workspace
-
-`agents.defaults.sandbox.workspaceAccess` کنترل می‌کند **sandbox چه چیزی را می‌تواند ببیند**:
-
-<Tabs>
-  <Tab title="none (default)">
-    ابزارها یک workspace مربوط به sandbox را زیر `~/.openclaw/sandboxes` می‌بینند.
-  </Tab>
-  <Tab title="ro">
-    workspace عامل را به‌صورت فقط‌خواندنی در `/agent` mount می‌کند (`write`/`edit`/`apply_patch` را غیرفعال می‌کند).
-  </Tab>
-  <Tab title="rw">
-    workspace عامل را به‌صورت خواندن/نوشتن در `/workspace` mount می‌کند.
-  </Tab>
-</Tabs>
-
-با backend OpenShell:
-
-- حالت `mirror` همچنان از workspace محلی به‌عنوان منبع canonical بین نوبت‌های exec استفاده می‌کند
-- حالت `remote` پس از مقداردهی اولیه، از workspace راه دور OpenShell به‌عنوان منبع canonical استفاده می‌کند
-- `workspaceAccess: "ro"` و `"none"` همچنان رفتار نوشتن را به همان شکل محدود می‌کنند
-
-رسانه ورودی در workspace فعال sandbox کپی می‌شود (`media/inbound/*`).
+رسانه‌های ورودی در فضای کاری جعبه‌شنی فعال کپی می‌شوند (`media/inbound/*`).
 
 <Note>
-**یادداشت Skills:** ابزار `read` در ریشه sandbox قرار دارد. با `workspaceAccess: "none"`، OpenClaw مهارت‌های واجد شرایط را در workspace sandbox (`.../skills`) mirror می‌کند تا قابل خواندن باشند. با `"rw"`، مهارت‌های workspace از `/workspace/skills` خواندنی هستند، و مهارت‌های واجد شرایطِ مدیریت‌شده، همراه، یا Plugin در مسیر فقط‌خواندنی تولیدشده `/workspace/.openclaw/sandbox-skills/skills` materialize می‌شوند.
+**Skills**: ابزار `read` به ریشه جعبه‌شنی محدود است. با `workspaceAccess: "none"`، OpenClaw مهارت‌های واجد شرایط را در فضای کاری جعبه‌شنی (`.../skills`) بازتاب می‌دهد تا قابل خواندن باشند. با `"rw"`، مهارت‌های فضای کاری از `/workspace/skills` قابل خواندن‌اند و مهارت‌های واجد شرایطِ مدیریت‌شده، همراه‌شده یا افزونه‌ای در مسیر فقط‌خواندنی تولیدشده `/workspace/.openclaw/sandbox-skills/skills` قرار می‌گیرند.
 </Note>
 
-## mountهای bind سفارشی
+## اتصال‌های سفارشی
 
-`agents.defaults.sandbox.docker.binds` دایرکتوری‌های اضافی میزبان را در container mount می‌کند. قالب: `host:container:mode` (برای مثال، `"/home/user/source:/source:rw"`).
+`agents.defaults.sandbox.docker.binds` دایرکتوری‌های میزبان بیشتری را در کانتینر سوار می‌کند. قالب: `host:container:mode` (برای مثال، `"/home/user/source:/source:rw"`).
 
-bindهای سراسری و مخصوص هر عامل **ادغام** می‌شوند (جایگزین نمی‌شوند). زیر `scope: "shared"`، bindهای مخصوص هر عامل نادیده گرفته می‌شوند.
+اتصال‌های سراسری و مختص هر عامل با هم ادغام می‌شوند (جایگزین نمی‌شوند). در `scope: "shared"`، اتصال‌های مختص هر عامل نادیده گرفته می‌شوند.
 
-`agents.defaults.sandbox.browser.binds` دایرکتوری‌های اضافی میزبان را فقط در container **مرورگر sandbox** mount می‌کند.
-
-- وقتی تنظیم شود (از جمله `[]`)، برای container مرورگر جایگزین `agents.defaults.sandbox.docker.binds` می‌شود.
-- وقتی حذف شود، container مرورگر به `agents.defaults.sandbox.docker.binds` برمی‌گردد (سازگار با نسخه‌های قبلی).
-
-مثال (منبع فقط‌خواندنی + یک دایرکتوری داده اضافی):
+`agents.defaults.sandbox.browser.binds` دایرکتوری‌های میزبان بیشتری را فقط در کانتینر **مرورگر جعبه‌شنی** سوار می‌کند. وقتی تنظیم شده باشد (از جمله `[]`)، برای کانتینر مرورگر جایگزین `docker.binds` می‌شود؛ وقتی حذف شده باشد، کانتینر مرورگر از `docker.binds` استفاده می‌کند.
 
 ```json5
 {
@@ -367,41 +218,40 @@ bindهای سراسری و مخصوص هر عامل **ادغام** می‌شون
 ```
 
 <Warning>
-**امنیت bind**
+**امنیت اتصال‌ها**
 
-- bindها فایل‌سیستم sandbox را دور می‌زنند: آن‌ها مسیرهای میزبان را با هر حالتی که تنظیم کنید (`:ro` یا `:rw`) در معرض قرار می‌دهند.
-- OpenClaw منابع bind خطرناک را مسدود می‌کند (برای مثال: `docker.sock`، `/etc`، `/proc`، `/sys`، `/dev` و mountهای والدی که آن‌ها را در معرض قرار می‌دهند).
-- OpenClaw همچنین ریشه‌های رایج اعتبارنامه در دایرکتوری خانگی مانند `~/.aws`، `~/.cargo`، `~/.config`، `~/.docker`، `~/.gnupg`، `~/.netrc`، `~/.npm` و `~/.ssh` را مسدود می‌کند.
-- اعتبارسنجی bind فقط تطبیق رشته‌ای نیست. OpenClaw مسیر منبع را نرمال‌سازی می‌کند، سپس آن را دوباره از طریق عمیق‌ترین جد موجود resolve می‌کند و پس از آن مسیرهای مسدودشده و ریشه‌های مجاز را دوباره بررسی می‌کند.
-- این یعنی فرار از طریق والد symlink همچنان fail closed می‌شود، حتی وقتی برگ نهایی هنوز وجود ندارد. مثال: اگر `run-link` به آن‌جا اشاره کند، `/workspace/run-link/new-file` همچنان به‌صورت `/var/run/...` resolve می‌شود.
-- ریشه‌های منبع مجاز نیز به همان شکل canonicalize می‌شوند، بنابراین مسیری که فقط پیش از resolve شدن symlink داخل allowlist به نظر می‌رسد، همچنان با `outside allowed roots` رد می‌شود.
-- mountهای حساس (secrets، کلیدهای SSH، اعتبارنامه‌های سرویس) باید `:ro` باشند مگر اینکه کاملاً ضروری باشد.
-- اگر فقط به دسترسی خواندن به workspace نیاز دارید، با `workspaceAccess: "ro"` ترکیب کنید؛ حالت‌های bind مستقل باقی می‌مانند.
-- برای این‌که bindها چگونه با سیاست ابزار و exec ارتقایافته تعامل دارند، [Sandbox vs Tool Policy vs Elevated](/fa/gateway/sandbox-vs-tool-policy-vs-elevated) را ببینید.
+- اتصال‌ها سامانه فایل جعبه‌شنی را دور می‌زنند: آن‌ها مسیرهای میزبان را با همان حالتی که تنظیم می‌کنید (`:ro` یا `:rw`) در معرض قرار می‌دهند.
+- OpenClaw به‌طور پیش‌فرض منابع اتصال خطرناک را مسدود می‌کند: مسیرهای سیستمی (`/etc`، `/proc`، `/sys`، `/dev`، `/root`، `/boot`)، دایرکتوری‌های سوکت Docker (`/run`، `/var/run` و گونه‌های `docker.sock` آن‌ها)، و ریشه‌های رایج اطلاعات اعتبارسنجی در دایرکتوری خانه (`~/.aws`، `~/.cargo`، `~/.config`، `~/.docker`، `~/.gnupg`، `~/.netrc`، `~/.npm`، `~/.ssh`).
+- اعتبارسنجی مسیر منبع را نرمال‌سازی می‌کند، سپس آن را دوباره از طریق عمیق‌ترین جد موجود تفکیک می‌کند و بعد مسیرهای مسدودشده و ریشه‌های مجاز را دوباره بررسی می‌کند؛ بنابراین فرار از طریق والدِ پیوند نمادین حتی اگر برگ نهایی هنوز وجود نداشته باشد به‌صورت بسته شکست می‌خورد (برای مثال، اگر `run-link` به آنجا اشاره کند، `/workspace/run-link/new-file` همچنان به‌صورت `/var/run/...` تفکیک می‌شود).
+- مقصدهای اتصالی که نقاط سوارشدن رزروشده کانتینر (`/workspace`، `/agent`) را می‌پوشانند نیز به‌طور پیش‌فرض مسدودند؛ برای نادیده‌گرفتن این محدودیت، `agents.defaults.sandbox.docker.dangerouslyAllowReservedContainerTargets: true` را تنظیم کنید.
+- منابع اتصال خارج از ریشه‌های مجاز فضای کاری/فضای کاری عامل به‌طور پیش‌فرض مسدودند؛ برای نادیده‌گرفتن این محدودیت، `agents.defaults.sandbox.docker.dangerouslyAllowExternalBindSources: true` را تنظیم کنید. ریشه‌های مجاز نیز به همان شیوه متعارف‌سازی می‌شوند، بنابراین مسیری که فقط پیش از تفکیک پیوند نمادین درون فهرست مجاز به نظر می‌رسد، همچنان به‌عنوان مسیری خارج از ریشه‌های مجاز رد می‌شود.
+- سوارشدن‌های حساس (اسرار، کلیدهای SSH، اطلاعات اعتبارسنجی سرویس) باید `:ro` باشند، مگر اینکه نوشتن مطلقاً ضروری باشد.
+- اگر فقط به دسترسی خواندن فضای کاری نیاز دارید، آن را با `workspaceAccess: "ro"` ترکیب کنید؛ حالت‌های اتصال مستقل باقی می‌مانند.
+- برای چگونگی تعامل اتصال‌ها با سیاست ابزار و اجرای ارتقایافته، به [جعبه‌شنی در برابر سیاست ابزار در برابر اجرای ارتقایافته](/fa/gateway/sandbox-vs-tool-policy-vs-elevated) مراجعه کنید.
 
 </Warning>
 
-## imageها و راه‌اندازی
+## تصویرها و راه‌اندازی
 
-image پیش‌فرض Docker: `openclaw-sandbox:bookworm-slim`
+تصویر پیش‌فرض Docker: `openclaw-sandbox:bookworm-slim`
 
 <Note>
-**checkout منبع در برابر نصب npm**
+**دریافت کد منبع در برابر نصب npm**
 
-اسکریپت‌های کمکی `scripts/sandbox-setup.sh`، `scripts/sandbox-common-setup.sh` و `scripts/sandbox-browser-setup.sh` فقط هنگام اجرا از یک [checkout منبع](https://github.com/openclaw/openclaw) در دسترس هستند. آن‌ها در بسته npm گنجانده نشده‌اند.
+اسکریپت‌های کمکی `scripts/sandbox-setup.sh`، `scripts/sandbox-common-setup.sh` و `scripts/sandbox-browser-setup.sh` فقط هنگام اجرا از یک [دریافت کد منبع](https://github.com/openclaw/openclaw) در دسترس‌اند. آن‌ها در بسته npm گنجانده نشده‌اند.
 
-اگر OpenClaw را از طریق `npm install -g openclaw` نصب کرده‌اید، به‌جای آن از فرمان‌های درون‌خطی `docker build` که در ادامه نشان داده شده‌اند استفاده کنید.
+اگر OpenClaw را از طریق `npm install -g openclaw` نصب کرده‌اید، به‌جای آن از فرمان‌های درون‌خطی `docker build` که در ادامه آمده‌اند استفاده کنید.
 </Note>
 
 <Steps>
-  <Step title="ساخت image پیش‌فرض">
-    از یک checkout منبع:
+  <Step title="ساخت تصویر پیش‌فرض">
+    از یک دریافت کد منبع:
 
     ```bash
     scripts/sandbox-setup.sh
     ```
 
-    از یک نصب npm (بدون نیاز به checkout منبع):
+    از یک نصب npm (بدون نیاز به دریافت کد منبع):
 
     ```bash
     docker build -t openclaw-sandbox:bookworm-slim - <<'DOCKERFILE'
@@ -417,117 +267,114 @@ image پیش‌فرض Docker: `openclaw-sandbox:bookworm-slim`
     DOCKERFILE
     ```
 
-    image پیش‌فرض شامل Node **نیست**. اگر یک مهارت به Node (یا runtimeهای دیگر) نیاز دارد، یا یک image سفارشی بسازید یا از طریق `sandbox.docker.setupCommand` نصب کنید (نیازمند خروجی شبکه + ریشه قابل‌نوشتن + کاربر root).
+    تصویر پیش‌فرض شامل Node **نیست**. اگر یک مهارت به Node (یا محیط‌های اجرایی دیگر) نیاز دارد، یا یک تصویر سفارشی بسازید یا از طریق `sandbox.docker.setupCommand` نصب کنید (نیازمند خروجی شبکه + ریشه قابل‌نوشتن + کاربر ریشه).
 
-    وقتی `openclaw-sandbox:bookworm-slim` وجود ندارد، OpenClaw به‌صورت پنهانی `debian:bookworm-slim` ساده را جایگزین نمی‌کند. اجراهای sandbox که image پیش‌فرض را هدف می‌گیرند تا زمانی که آن را بسازید، با یک دستور ساخت سریعاً fail می‌شوند، چون image همراه `python3` را برای helperهای نوشتن/ویرایش sandbox حمل می‌کند.
+    وقتی `openclaw-sandbox:bookworm-slim` موجود نیست، OpenClaw به‌صورت پنهانی `debian:bookworm-slim` ساده را جایگزین نمی‌کند. اجراهای جعبه‌شنی که تصویر پیش‌فرض را هدف می‌گیرند، تا زمانی که آن را نسازید، با دستورالعمل ساخت فوراً شکست می‌خورند؛ زیرا تصویر همراه‌شده برای ابزارهای کمکی نوشتن/ویرایش جعبه‌شنی شامل `python3` است.
 
   </Step>
-  <Step title="اختیاری: ساخت image عمومی">
-    برای یک image sandbox کاربردی‌تر با ابزارهای رایج (برای مثال `curl`، `jq`، Node 24، pnpm، `python3` و `git`):
+  <Step title="اختیاری: ساخت تصویر مشترک">
+    برای یک تصویر جعبه‌شنی کاربردی‌تر با ابزارهای رایج (برای مثال `curl`، `jq`، Node 24، pnpm، `python3` و `git`):
 
-    از یک checkout منبع:
+    از یک دریافت کد منبع:
 
     ```bash
     scripts/sandbox-common-setup.sh
     ```
 
-    از یک نصب npm، ابتدا image پیش‌فرض را بسازید (بالا را ببینید)، سپس با استفاده از [`scripts/docker/sandbox/Dockerfile.common`](https://github.com/openclaw/openclaw/blob/main/scripts/docker/sandbox/Dockerfile.common) از repository، image عمومی را روی آن بسازید.
+    از یک نصب npm، ابتدا تصویر پیش‌فرض را بسازید (بالا را ببینید)، سپس با استفاده از [`scripts/docker/sandbox/Dockerfile.common`](https://github.com/openclaw/openclaw/blob/main/scripts/docker/sandbox/Dockerfile.common) از مخزن، تصویر مشترک را روی آن بسازید.
 
     سپس `agents.defaults.sandbox.docker.image` را روی `openclaw-sandbox-common:bookworm-slim` تنظیم کنید.
 
   </Step>
-  <Step title="اختیاری: ساخت image مرورگر sandbox">
-    از یک checkout منبع:
+  <Step title="اختیاری: ساخت تصویر مرورگر جعبه‌شنی">
+    از یک دریافت کد منبع:
 
     ```bash
     scripts/sandbox-browser-setup.sh
     ```
 
-    از یک نصب npm، با استفاده از [`scripts/docker/sandbox/Dockerfile.browser`](https://github.com/openclaw/openclaw/blob/main/scripts/docker/sandbox/Dockerfile.browser) از repository بسازید.
+    از یک نصب npm، با استفاده از [`scripts/docker/sandbox/Dockerfile.browser`](https://github.com/openclaw/openclaw/blob/main/scripts/docker/sandbox/Dockerfile.browser) از مخزن تصویر را بسازید.
 
   </Step>
 </Steps>
 
-به‌طور پیش‌فرض، containerهای sandbox Docker با **بدون شبکه** اجرا می‌شوند. با `agents.defaults.sandbox.docker.network` بازنویسی کنید.
+به‌طور پیش‌فرض، کانتینرهای جعبه‌شنی Docker **هیچ شبکه‌ای ندارند**. با `agents.defaults.sandbox.docker.network` این رفتار را تغییر دهید.
 
 <AccordionGroup>
-  <Accordion title="پیش‌فرض‌های Chromium مرورگر sandbox">
-    image همراه مرورگر sandbox همچنین پیش‌فرض‌های محافظه‌کارانه راه‌اندازی Chromium را برای workloadهای containerized اعمال می‌کند. پیش‌فرض‌های فعلی container شامل این‌ها هستند:
+  <Accordion title="پیش‌فرض‌های Chromium مرورگر جعبه‌شنی">
+    تصویر همراه‌شده مرورگر جعبه‌شنی برای بارهای کاری کانتینری پرچم‌های محافظه‌کارانه‌ای را هنگام راه‌اندازی Chromium اعمال می‌کند:
 
     - `--remote-debugging-address=127.0.0.1`
     - `--remote-debugging-port=<derived from OPENCLAW_BROWSER_CDP_PORT>`
     - `--user-data-dir=${HOME}/.chrome`
     - `--no-first-run`
     - `--no-default-browser-check`
-    - `--disable-3d-apis`
-    - `--disable-gpu`
     - `--disable-dev-shm-usage`
     - `--disable-background-networking`
-    - `--disable-extensions`
-    - `--disable-features=TranslateUI`
     - `--disable-breakpad`
     - `--disable-crash-reporter`
-    - `--disable-software-rasterizer`
     - `--no-zygote`
     - `--metrics-recording-only`
-    - `--renderer-process-limit=2`
-    - `--no-sandbox` وقتی `noSandbox` فعال باشد.
-    - سه flag سخت‌سازی گرافیک (`--disable-3d-apis`، `--disable-software-rasterizer`، `--disable-gpu`) اختیاری هستند و زمانی مفیدند که containerها پشتیبانی GPU ندارند. اگر workload شما به WebGL یا دیگر قابلیت‌های 3D/مرورگر نیاز دارد، `OPENCLAW_BROWSER_DISABLE_GRAPHICS_FLAGS=0` را تنظیم کنید.
-    - `--disable-extensions` به‌طور پیش‌فرض فعال است و برای flowهای وابسته به extension می‌توان آن را با `OPENCLAW_BROWSER_DISABLE_EXTENSIONS=0` غیرفعال کرد.
-    - `--renderer-process-limit=2` توسط `OPENCLAW_BROWSER_RENDERER_PROCESS_LIMIT=<N>` کنترل می‌شود، که در آن `0` پیش‌فرض Chromium را نگه می‌دارد.
+    - `--password-store=basic`
+    - `--use-mock-keychain`
+    - وقتی `browser.headless` فعال باشد، `--headless=new`.
+    - وقتی `browser.noSandbox` فعال باشد، `--no-sandbox --disable-setuid-sandbox`.
+    - به‌طور پیش‌فرض `--disable-3d-apis`، `--disable-gpu` و `--disable-software-rasterizer`؛ این پرچم‌های سخت‌سازی گرافیکی به کانتینرهای بدون پشتیبانی GPU کمک می‌کنند. اگر بار کاری شما به WebGL یا دیگر قابلیت‌های سه‌بعدی نیاز دارد، `OPENCLAW_BROWSER_DISABLE_GRAPHICS_FLAGS=0` را تنظیم کنید.
+    - به‌طور پیش‌فرض `--disable-extensions`؛ برای جریان‌های وابسته به افزونه، `OPENCLAW_BROWSER_DISABLE_EXTENSIONS=0` را تنظیم کنید.
+    - به‌طور پیش‌فرض `--renderer-process-limit=2`؛ با `OPENCLAW_BROWSER_RENDERER_PROCESS_LIMIT=<N>` کنترل می‌شود، که در آن `0` پیش‌فرض Chromium را حفظ می‌کند.
 
-    اگر به پروفایل runtime متفاوتی نیاز دارید، از یک image مرورگر سفارشی استفاده کنید و entrypoint خودتان را ارائه دهید. برای پروفایل‌های Chromium محلی (غیر-container)، از `browser.extraArgs` برای افزودن flagهای راه‌اندازی اضافی استفاده کنید.
+    اگر به نمایه اجرایی متفاوتی نیاز دارید، از یک تصویر مرورگر سفارشی استفاده کنید و نقطه ورود خود را ارائه دهید. برای نمایه‌های محلی Chromium (غیرکانتینری)، از `browser.extraArgs` برای افزودن پرچم‌های راه‌اندازی بیشتر استفاده کنید.
 
   </Accordion>
   <Accordion title="پیش‌فرض‌های امنیت شبکه">
     - `network: "host"` مسدود است.
-    - `network: "container:<id>"` به‌طور پیش‌فرض مسدود است (خطر دور زدن از طریق پیوستن به namespace).
-    - کنارگذاری اضطراری: `agents.defaults.sandbox.docker.dangerouslyAllowContainerNamespaceJoin: true`.
+    - `network: "container:<id>"` به‌طور پیش‌فرض مسدود است (خطر دورزدن با پیوستن به فضای نام).
+    - نادیده‌گیری اضطراری: `agents.defaults.sandbox.docker.dangerouslyAllowContainerNamespaceJoin: true`.
 
   </Accordion>
 </AccordionGroup>
 
-نصب‌های Docker و Gateway کانتینری اینجا هستند: [Docker](/fa/install/docker)
+نصب‌های Docker و Gateway کانتینری در اینجا قرار دارند: [Docker](/fa/install/docker)
 
-برای استقرارهای Docker Gateway، `scripts/docker/setup.sh` می‌تواند پیکربندی سندباکس را راه‌اندازی اولیه کند. `OPENCLAW_SANDBOX=1` (یا `true`/`yes`/`on`) را تنظیم کنید تا آن مسیر فعال شود. می‌توانید مکان سوکت را با `OPENCLAW_DOCKER_SOCKET` بازنویسی کنید. راه‌اندازی کامل و مرجع env: [Docker](/fa/install/docker#agent-sandbox).
+برای استقرارهای Gateway مبتنی بر Docker، `scripts/docker/setup.sh` می‌تواند پیکربندی جعبه‌شنی را راه‌اندازی اولیه کند. برای فعال‌کردن این مسیر، `OPENCLAW_SANDBOX=1` (یا `true`/`yes`/`on`) را تنظیم کنید. محل سوکت را با `OPENCLAW_DOCKER_SOCKET` تغییر دهید. مرجع کامل راه‌اندازی و متغیرهای محیطی: [Docker](/fa/install/docker#agent-sandbox).
 
 ## setupCommand (راه‌اندازی یک‌باره کانتینر)
 
-`setupCommand` پس از ایجاد کانتینر سندباکس، **یک بار** اجرا می‌شود (نه در هر اجرا). این دستور داخل کانتینر از طریق `sh -lc` اجرا می‌شود.
+`setupCommand` پس از ایجاد کانتینر جعبه‌شنی **یک‌بار** اجرا می‌شود (نه در هر اجرا). این فرمان داخل کانتینر از طریق `sh -lc` اجرا می‌شود.
 
 مسیرها:
 
 - سراسری: `agents.defaults.sandbox.docker.setupCommand`
-- برای هر عامل: `agents.list[].sandbox.docker.setupCommand`
+- مختص هر عامل: `agents.list[].sandbox.docker.setupCommand`
 
 <AccordionGroup>
   <Accordion title="دام‌های رایج">
-    - مقدار پیش‌فرض `docker.network` برابر `"none"` است (بدون خروجی شبکه)، بنابراین نصب بسته‌ها شکست می‌خورد.
-    - `docker.network: "container:<id>"` به `dangerouslyAllowContainerNamespaceJoin: true` نیاز دارد و فقط برای کنارگذاری اضطراری است.
+    - مقدار پیش‌فرض `docker.network` برابر با `"none"` است (بدون خروجی شبکه)، بنابراین نصب بسته‌ها شکست می‌خورد.
+    - `docker.network: "container:<id>"` به `dangerouslyAllowContainerNamespaceJoin: true` نیاز دارد و فقط برای شرایط اضطراری است.
     - `readOnlyRoot: true` مانع نوشتن می‌شود؛ `readOnlyRoot: false` را تنظیم کنید یا یک تصویر سفارشی بسازید.
-    - برای نصب بسته‌ها، `user` باید root باشد (`user` را حذف کنید یا `user: "0:0"` را تنظیم کنید).
-    - اجرای سندباکس، `process.env` میزبان را **به ارث نمی‌برد**. برای کلیدهای API مربوط به Skills از `agents.defaults.sandbox.docker.env` (یا یک تصویر سفارشی) استفاده کنید.
-    - مقادیر در `agents.defaults.sandbox.docker.env` به‌عنوان متغیرهای محیطی صریح کانتینر Docker پاس داده می‌شوند. هر کسی که به daemon Docker دسترسی داشته باشد می‌تواند آن‌ها را با دستورهای فراداده Docker مانند `docker inspect` بررسی کند. اگر این افشای فراداده قابل قبول نیست، از یک تصویر سفارشی، فایل secret متصل‌شده، یا مسیر تحویل secret دیگری استفاده کنید.
+    - برای نصب بسته‌ها، `user` باید ریشه باشد (`user` را حذف کنید یا `user: "0:0"` را تنظیم کنید).
+    - اجرای جعبه‌شنی، `process.env` میزبان را به ارث **نمی‌برد**. برای کلیدهای API مهارت‌ها از `agents.defaults.sandbox.docker.env` (یا یک تصویر سفارشی) استفاده کنید.
+    - مقادیر موجود در `agents.defaults.sandbox.docker.env` به‌عنوان متغیرهای محیطی صریح کانتینر Docker ارسال می‌شوند. هر کسی که به دیمن Docker دسترسی داشته باشد می‌تواند آن‌ها را با فرمان‌های فراداده Docker مانند `docker inspect` مشاهده کند. اگر این افشای فراداده پذیرفتنی نیست، از یک تصویر سفارشی، فایل اسرار سوارشده یا مسیر دیگری برای تحویل اسرار استفاده کنید.
 
   </Accordion>
 </AccordionGroup>
 
-## سیاست ابزار و راه‌های خروج اضطراری
+## سیاست ابزار و راه‌های گریز
 
-سیاست‌های مجاز/غیرمجاز ابزار همچنان پیش از قوانین سندباکس اعمال می‌شوند. اگر ابزاری به‌صورت سراسری یا برای هر عامل غیرمجاز شده باشد، سندباکس‌کردن آن را برنمی‌گرداند.
+سیاست‌های مجاز/ممنوع ابزار همچنان پیش از قواعد جعبه‌شنی اعمال می‌شوند. اگر ابزاری به‌صورت سراسری یا برای یک عامل ممنوع باشد، جعبه‌شنی آن را دوباره در دسترس قرار نمی‌دهد.
 
-`tools.elevated` یک راه خروج اضطراری صریح است که `exec` را خارج از سندباکس اجرا می‌کند (به‌طور پیش‌فرض `gateway`، یا وقتی هدف اجرای `exec` برابر `node` باشد، `node`). دستورالعمل‌های `/exec` فقط برای فرستندگان مجاز اعمال می‌شوند و در هر نشست ماندگار می‌مانند؛ برای غیرفعال‌سازی سخت `exec`، از غیرمجازکردن در سیاست ابزار استفاده کنید (ببینید [سندباکس در برابر سیاست ابزار در برابر Elevated](/fa/gateway/sandbox-vs-tool-policy-vs-elevated)).
+`tools.elevated` یک راه گریز صریح است که `exec` را بیرون از جعبه‌شنی اجرا می‌کند (به‌طور پیش‌فرض روی `gateway`، یا وقتی مقصد اجرا `node` است روی `node`). دستورالعمل‌های `/exec` فقط برای فرستندگان مجاز اعمال می‌شوند و در هر نشست پایدار می‌مانند؛ برای غیرفعال‌سازی قطعی `exec`، از سیاست ممنوعیت ابزار استفاده کنید (به [جعبه‌شنی در برابر سیاست ابزار در برابر اجرای ارتقایافته](/fa/gateway/sandbox-vs-tool-policy-vs-elevated) مراجعه کنید).
 
 اشکال‌زدایی:
 
-- از `openclaw sandbox explain` برای بررسی حالت مؤثر سندباکس، سیاست ابزار، و کلیدهای پیکربندی fix-it استفاده کنید.
-- برای مدل ذهنی «چرا این مسدود شده است؟» ببینید [سندباکس در برابر سیاست ابزار در برابر Elevated](/fa/gateway/sandbox-vs-tool-policy-vs-elevated).
-
-آن را قفل‌شده نگه دارید.
+- `openclaw sandbox list` کانتینرهای جعبه‌شنی، وضعیت، تطابق تصویر، عمر، زمان بیکاری و نشست/عامل مرتبط را نشان می‌دهد.
+- `openclaw sandbox explain [--session <key>] [--agent <id>]` حالت مؤثر جعبه‌شنی، فضای کاری میزبان، دایرکتوری کاری زمان اجرا، سوارشدن‌های Docker، سیاست ابزار و کلیدهای پیکربندی اصلاح را بررسی می‌کند. فیلد `workspaceRoot` آن همان ریشه جعبه‌شنی پیکربندی‌شده باقی می‌ماند؛ `effectiveHostWorkspaceRoot` نشان می‌دهد فضای کاری فعال واقعاً کجا قرار دارد.
+- `openclaw sandbox recreate [--all | --session <key> | --agent <id>] [--browser] [--force]` کانتینرها/محیط‌ها را حذف می‌کند تا در استفاده بعدی با پیکربندی فعلی دوباره ایجاد شوند.
+- برای مدل ذهنی «چرا این مسدود شده است؟»، به [جعبه‌شنی در برابر سیاست ابزار در برابر اجرای ارتقایافته](/fa/gateway/sandbox-vs-tool-policy-vs-elevated) مراجعه کنید.
 
 ## بازنویسی‌های چندعاملی
 
-هر عامل می‌تواند سندباکس + ابزارها را بازنویسی کند: `agents.list[].sandbox` و `agents.list[].tools` (به‌علاوه `agents.list[].tools.sandbox.tools` برای سیاست ابزار سندباکس). برای تقدم، ببینید [سندباکس و ابزارهای چندعاملی](/fa/tools/multi-agent-sandbox-tools).
+هر عامل می‌تواند جعبه‌شنی و ابزارها را بازنویسی کند: `agents.list[].sandbox` و `agents.list[].tools` (به‌علاوه `agents.list[].tools.sandbox.tools` برای سیاست ابزار جعبه‌شنی). برای تقدم، به [جعبه‌شنی و ابزارهای چندعاملی](/fa/tools/multi-agent-sandbox-tools) مراجعه کنید.
 
 ## نمونه حداقلی فعال‌سازی
 
@@ -547,8 +394,8 @@ image پیش‌فرض Docker: `openclaw-sandbox:bookworm-slim`
 
 ## مرتبط
 
-- [سندباکس و ابزارهای چندعاملی](/fa/tools/multi-agent-sandbox-tools) — بازنویسی‌ها و تقدم برای هر عامل
-- [OpenShell](/fa/gateway/openshell) — راه‌اندازی backend سندباکس مدیریت‌شده، حالت‌های workspace، و مرجع پیکربندی
+- [سندباکس و ابزارهای چندعاملی](/fa/tools/multi-agent-sandbox-tools) -- بازنویسی‌های مختص هر عامل و ترتیب تقدم
+- [OpenShell](/fa/gateway/openshell) -- راه‌اندازی بک‌اند مدیریت‌شدهٔ سندباکس، حالت‌های فضای کاری و مرجع پیکربندی
 - [پیکربندی سندباکس](/fa/gateway/config-agents#agentsdefaultssandbox)
-- [سندباکس در برابر سیاست ابزار در برابر Elevated](/fa/gateway/sandbox-vs-tool-policy-vs-elevated) — اشکال‌زدایی «چرا این مسدود شده است؟»
+- [سندباکس در برابر سیاست ابزار در برابر دسترسی ارتقایافته](/fa/gateway/sandbox-vs-tool-policy-vs-elevated) -- اشکال‌زدایی «چرا این مسدود شده است؟»
 - [امنیت](/fa/gateway/security)

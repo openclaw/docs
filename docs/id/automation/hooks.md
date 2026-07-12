@@ -1,116 +1,128 @@
 ---
 read_when:
     - Anda menginginkan otomatisasi berbasis peristiwa untuk /new, /reset, /stop, dan peristiwa siklus hidup agen
-    - Anda ingin membuat, menginstal, atau men-debug hook
-summary: 'Hooks: otomasi berbasis peristiwa untuk perintah dan peristiwa siklus hidup'
-title: Kait
+    - Anda ingin membuat, memasang, atau men-debug hook
+summary: 'Hook: otomatisasi berbasis peristiwa untuk perintah dan peristiwa siklus hidup'
+title: Hook
 x-i18n:
-    generated_at: "2026-06-27T17:08:59Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:57:22Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 0259739b0547ba4826b540d392c6d6b72c6bec24fd50d5e297817694fd728438
+    source_hash: ba09acf45cc09d4ce84b9dda36af2a720ccefbfaed23a1558dd36358ce56701a
     source_path: automation/hooks.md
     workflow: 16
 ---
 
-Hook adalah skrip kecil yang berjalan ketika sesuatu terjadi di dalam Gateway. Hook dapat ditemukan dari direktori dan diperiksa dengan `openclaw hooks`. Gateway memuat hook internal hanya setelah Anda mengaktifkan hook atau mengonfigurasi setidaknya satu entri hook, paket hook, handler lama, atau direktori hook tambahan.
+Hook adalah skrip kecil yang berjalan di dalam Gateway ketika peristiwa agen dipicu: perintah seperti `/new`, `/reset`, `/stop`, Compaction sesi, siklus hidup Gateway, dan alur pesan. Hook ditemukan dari direktori dan dikelola dengan `openclaw hooks`. Gateway memuat hook internal hanya setelah Anda mengaktifkan hook atau mengonfigurasi setidaknya satu entri hook, paket hook, penangan lama, atau direktori hook tambahan.
 
 Ada dua jenis hook di OpenClaw:
 
-- **Hook internal** (halaman ini): berjalan di dalam Gateway ketika peristiwa agen dipicu, seperti `/new`, `/reset`, `/stop`, atau peristiwa siklus hidup.
-- **Webhook**: endpoint HTTP eksternal yang memungkinkan sistem lain memicu pekerjaan di OpenClaw. Lihat [Webhook](/id/automation/cron-jobs#webhooks).
+- **Hook internal** (halaman ini): berjalan di dalam Gateway ketika peristiwa agen dipicu.
+- **Webhook**: titik akhir HTTP eksternal yang memungkinkan sistem lain memicu pekerjaan di OpenClaw. Lihat [Webhook](/id/automation/cron-jobs#webhooks).
 
-Hook juga dapat dibundel di dalam plugin. `openclaw hooks list` menampilkan hook mandiri dan hook yang dikelola plugin.
+Hook juga dapat dibundel di dalam Plugin. `openclaw hooks list` menampilkan hook mandiri maupun hook yang dikelola Plugin (ditampilkan sebagai `plugin:<id>`).
 
 ## Pilih permukaan yang tepat
 
 OpenClaw memiliki beberapa permukaan ekstensi yang terlihat serupa tetapi menyelesaikan masalah yang berbeda:
 
-| Jika Anda ingin...                                                                                                         | Gunakan...                                  | Mengapa                                                                                                  |
-| -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
-| Menyimpan snapshot saat `/new`, mencatat `/reset`, memanggil API eksternal setelah `message:sent`, atau menambahkan automasi operator kasar | Hook internal (`HOOK.md`, halaman ini)      | Hook berbasis file ditujukan untuk efek samping yang dikelola operator dan automasi perintah/siklus hidup |
-| Menulis ulang prompt, memblokir tool, membatalkan pesan keluar, atau menambahkan middleware/kebijakan berurutan             | Hook plugin bertipe melalui `api.on(...)`   | Hook bertipe memiliki kontrak eksplisit, prioritas, aturan penggabungan, dan semantik blok/batal         |
-| Menambahkan ekspor khusus telemetri atau observabilitas                                                                     | Peristiwa diagnostik                        | Observabilitas adalah bus peristiwa terpisah, bukan permukaan hook kebijakan                            |
+| Jika Anda ingin...                                                                                                                     | Gunakan...                                      | Alasan                                                                                                          |
+| -------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| Menyimpan snapshot saat `/new`, mencatat `/reset`, memanggil API eksternal setelah `message:sent`, atau menambahkan automasi operator umum | Hook internal (`HOOK.md`, halaman ini)          | Hook berbasis berkas ditujukan untuk efek samping yang dikelola operator serta automasi perintah/siklus hidup   |
+| Menulis ulang prompt, memblokir alat, membatalkan pesan keluar, atau menambahkan middleware/kebijakan berurutan                         | Hook Plugin bertipe melalui `api.on(...)`       | Hook bertipe memiliki kontrak, prioritas, aturan penggabungan, serta semantik pemblokiran/pembatalan yang eksplisit |
+| Menambahkan ekspor khusus telemetri atau observabilitas                                                                                | Peristiwa diagnostik                            | Observabilitas adalah bus peristiwa terpisah, bukan permukaan hook kebijakan                                    |
 
-Gunakan hook internal ketika Anda menginginkan automasi yang berperilaku seperti integrasi kecil yang terpasang. Gunakan hook plugin bertipe ketika Anda memerlukan kontrol siklus hidup runtime.
+Gunakan hook internal jika Anda menginginkan automasi yang berperilaku seperti integrasi kecil yang terpasang. Gunakan hook Plugin bertipe jika Anda memerlukan kendali siklus hidup waktu proses.
 
 ## Mulai cepat
 
 ```bash
-# List available hooks
+# Daftar hook yang tersedia
 openclaw hooks list
 
-# Enable a hook
+# Aktifkan hook
 openclaw hooks enable session-memory
 
-# Check hook status
+# Periksa status hook
 openclaw hooks check
 
-# Get detailed information
+# Dapatkan informasi terperinci
 openclaw hooks info session-memory
 ```
 
 ## Jenis peristiwa
 
-| Peristiwa                | Kapan dipicu                                              |
-| ------------------------ | --------------------------------------------------------- |
-| `command:new`            | Perintah `/new` diterbitkan                               |
-| `command:reset`          | Perintah `/reset` diterbitkan                             |
-| `command:stop`           | Perintah `/stop` diterbitkan                              |
-| `command`                | Peristiwa perintah apa pun (listener umum)                |
-| `session:compact:before` | Sebelum Compaction merangkum riwayat                      |
-| `session:compact:after`  | Setelah Compaction selesai                                |
-| `session:patch`          | Ketika properti sesi dimodifikasi                         |
-| `agent:bootstrap`        | Sebelum file bootstrap ruang kerja disuntikkan            |
-| `gateway:startup`        | Setelah channel dimulai dan hook dimuat                   |
-| `gateway:shutdown`       | Ketika penghentian gateway dimulai                        |
-| `gateway:pre-restart`    | Sebelum restart gateway yang diharapkan                   |
-| `message:received`       | Pesan masuk dari channel apa pun                          |
-| `message:transcribed`    | Setelah transkripsi audio selesai                         |
+Hook berlangganan ke kunci tertentu dari tabel ini, atau ke nama keluarga saja
+(`command`, `session`, `agent`, `gateway`, `message`) untuk menerima setiap tindakan
+dalam keluarga tersebut. Inti OpenClaw tidak memancarkan peristiwa lain, sehingga nama lainnya hampir
+selalu merupakan salah ketik yang membuat hook diam-diam tidak aktif (hanya Plugin yang memancarkan
+peristiwa khusus yang dapat memicunya). Pemuat hook mencatat peringatan untuk nama tersebut
+(misalnya `command:nwe`), dan `openclaw hooks info <name>` menandainya, sehingga
+hook yang tidak pernah berjalan dapat didiagnosis.
+
+| Peristiwa                | Waktu dipicu                                                |
+| ------------------------ | ----------------------------------------------------------- |
+| `command:new`            | Perintah `/new` diberikan                                   |
+| `command:reset`          | Perintah `/reset` diberikan                                 |
+| `command:stop`           | Perintah `/stop` diberikan                                  |
+| `command`                | Peristiwa perintah apa pun (pendengar umum)                 |
+| `session:compact:before` | Sebelum Compaction merangkum riwayat                         |
+| `session:compact:after`  | Setelah Compaction selesai                                  |
+| `session:patch`          | Ketika properti sesi diubah                                  |
+| `agent:bootstrap`        | Sebelum berkas bootstrap ruang kerja disuntikkan            |
+| `gateway:startup`        | Setelah kanal dimulai dan hook dimuat                        |
+| `gateway:shutdown`       | Ketika penonaktifan Gateway dimulai                          |
+| `gateway:pre-restart`    | Sebelum Gateway dimulai ulang sesuai rencana                 |
+| `message:received`       | Pesan masuk dari kanal mana pun                              |
+| `message:transcribed`    | Setelah transkripsi audio selesai                            |
 | `message:preprocessed`   | Setelah prapemrosesan media dan tautan selesai atau dilewati |
-| `message:sent`           | Pesan keluar dikirim                                      |
+| `message:sent`           | Upaya pengiriman keluar dilakukan (`context.success` berisi hasilnya) |
 
 ## Menulis hook
 
 ### Struktur hook
 
-Setiap hook adalah direktori yang berisi dua file:
+Setiap hook adalah direktori yang berisi dua berkas:
 
-```
+```text
 my-hook/
-├── HOOK.md          # Metadata + documentation
-└── handler.ts       # Handler implementation
+├── HOOK.md          # Metadata + dokumentasi
+└── handler.ts       # Implementasi penangan
 ```
+
+Berkas penangan dapat berupa `handler.ts`, `handler.js`, `index.ts`, atau `index.js`.
 
 ### Format HOOK.md
 
 ```markdown
 ---
 name: my-hook
-description: "Short description of what this hook does"
+description: "Deskripsi singkat tentang fungsi hook ini"
 metadata:
   { "openclaw": { "emoji": "🔗", "events": ["command:new"], "requires": { "bins": ["node"] } } }
 ---
 
-# My Hook
+# Hook Saya
 
-Detailed documentation goes here.
+Dokumentasi terperinci ditempatkan di sini.
 ```
 
-**Kolom metadata** (`metadata.openclaw`):
+**Bidang metadata** (`metadata.openclaw`):
 
-| Kolom      | Deskripsi                                            |
-| ---------- | ---------------------------------------------------- |
-| `emoji`    | Emoji tampilan untuk CLI                             |
-| `events`   | Array peristiwa yang akan didengarkan                |
-| `export`   | Ekspor bernama yang digunakan (default ke `"default"`) |
-| `os`       | Platform yang diperlukan (misalnya, `["darwin", "linux"]`) |
-| `requires` | Path `bins`, `anyBins`, `env`, atau `config` yang diperlukan |
-| `always`   | Lewati pemeriksaan kelayakan (boolean)               |
-| `install`  | Metode instalasi                                     |
+| Bidang     | Deskripsi                                                    |
+| ---------- | ------------------------------------------------------------ |
+| `emoji`    | Emoji tampilan untuk CLI                                     |
+| `events`   | Larik peristiwa yang akan didengarkan                        |
+| `export`   | Ekspor bernama yang digunakan (nilai bawaan `"default"`)     |
+| `os`       | Platform yang diperlukan (misalnya, `["darwin", "linux"]`)   |
+| `requires` | Jalur `bins`, `anyBins`, `env`, atau `config` yang diperlukan |
+| `always`   | Melewati pemeriksaan kelayakan (boolean)                     |
+| `hookKey`  | Penggantian kunci konfigurasi (nilai bawaan nama hook)       |
+| `homepage` | URL dokumentasi yang ditampilkan oleh `openclaw hooks info`  |
+| `install`  | Metode instalasi                                             |
 
-### Implementasi handler
+### Implementasi penangan
 
 ```typescript
 const handler = async (event) => {
@@ -128,36 +140,43 @@ const handler = async (event) => {
 export default handler;
 ```
 
-Setiap peristiwa mencakup: `type`, `action`, `sessionKey`, `timestamp`, `messages` (dorong balasan di sini hanya pada permukaan yang dapat dibalas), dan `context` (data khusus peristiwa). Konteks hook plugin agen dan tool juga dapat mencakup `trace`, konteks jejak diagnostik kompatibel W3C hanya-baca yang dapat diteruskan plugin ke log terstruktur untuk korelasi OTEL.
+Setiap peristiwa mencakup: `type`, `action`, `sessionKey`, `timestamp`, `messages`, dan `context` (data khusus peristiwa). Konteks hook Plugin bertipe untuk hook agen dan alat juga dapat mencakup `trace`, yaitu konteks jejak diagnostik hanya-baca yang kompatibel dengan W3C dan dapat diteruskan oleh Plugin ke log terstruktur untuk korelasi OTEL.
 
-`event.messages` hanya dikirim secara otomatis pada permukaan yang dapat dibalas seperti
-`command:*` dan `message:received`. Peristiwa khusus siklus hidup seperti
-`agent:bootstrap`, `session:*`, `gateway:*`, atau `message:sent` tidak memiliki
-channel balasan dan mengabaikan pesan yang didorong.
+String yang ditambahkan ke `event.messages` dikirim kembali ke percakapan hanya untuk
+`command:new` dan `command:reset` (dirutekan sebagai balasan ke percakapan
+asal) serta untuk `session:compact:before` / `session:compact:after`
+(dikirim sebagai pemberitahuan status Compaction). Semua peristiwa lainnya, termasuk
+`command:stop`, `message:*`, `agent:bootstrap`, `session:patch`, dan
+`gateway:*`, mengabaikan pesan yang ditambahkan.
 
 ### Sorotan konteks peristiwa
 
-**Peristiwa perintah** (`command:new`, `command:reset`): `context.sessionEntry`, `context.previousSessionEntry`, `context.commandSource`, `context.workspaceDir`, `context.cfg`.
+**Peristiwa perintah** (`command:new`, `command:reset`): `context.sessionEntry`, `context.previousSessionEntry`, `context.commandSource`, `context.senderId`, `context.workspaceDir`, `context.cfg`.
 
-**Peristiwa pesan** (`message:received`): `context.from`, `context.content`, `context.channelId`, `context.metadata` (data khusus penyedia termasuk `senderId`, `senderName`, `guildId`). `context.content` lebih memilih isi perintah yang tidak kosong untuk pesan mirip perintah, lalu fallback ke isi masuk mentah dan isi generik; ini tidak mencakup pengayaan khusus agen seperti riwayat thread atau ringkasan tautan.
+**Peristiwa perintah** (`command:stop`): `context.sessionEntry`, `context.sessionId`, `context.commandSource`, `context.senderId`.
 
-**Peristiwa pesan** (`message:sent`): `context.to`, `context.content`, `context.success`, `context.channelId`.
+**Peristiwa pesan** (`message:received`): `context.from`, `context.content`, `context.channelId`, `context.metadata` (data khusus penyedia termasuk `senderId`, `senderName`, `guildId`). `context.content` mengutamakan isi perintah yang tidak kosong untuk pesan menyerupai perintah, lalu beralih ke isi pesan masuk mentah dan isi generik; nilai ini tidak menyertakan pengayaan khusus agen seperti riwayat utas atau ringkasan tautan.
+
+**Peristiwa pesan** (`message:sent`): `context.to`, `context.content`, `context.success`, `context.channelId`, serta `context.error` ketika pengiriman gagal.
 
 **Peristiwa pesan** (`message:transcribed`): `context.transcript`, `context.from`, `context.channelId`, `context.mediaPath`.
 
-**Peristiwa pesan** (`message:preprocessed`): `context.bodyForAgent` (isi akhir yang diperkaya), `context.from`, `context.channelId`.
+**Peristiwa pesan** (`message:preprocessed`): `context.bodyForAgent` (isi akhir yang telah diperkaya), `context.from`, `context.channelId`.
 
-**Peristiwa bootstrap** (`agent:bootstrap`): `context.bootstrapFiles` (array yang dapat diubah), `context.agentId`.
+**Peristiwa bootstrap** (`agent:bootstrap`): `context.bootstrapFiles` (larik yang dapat diubah), `context.agentId`.
 
-**Peristiwa patch sesi** (`session:patch`): `context.sessionEntry`, `context.patch` (hanya kolom yang berubah), `context.cfg`. Hanya klien berhak istimewa yang dapat memicu peristiwa patch.
+**Peristiwa tambalan sesi** (`session:patch`): `context.sessionEntry`, `context.patch` (hanya bidang yang berubah), `context.cfg`. Hanya klien berhak istimewa yang dapat memicu peristiwa tambalan; konteksnya berupa klona, sehingga penangan tidak dapat mengubah entri sesi aktif.
 
 **Peristiwa Compaction**: `session:compact:before` mencakup `messageCount`, `tokenCount`. `session:compact:after` menambahkan `compactedCount`, `summaryLength`, `tokensBefore`, `tokensAfter`.
 
-`command:stop` mengamati pengguna menerbitkan `/stop`; ini adalah siklus hidup pembatalan/perintah, bukan gerbang finalisasi agen. Plugin yang perlu memeriksa jawaban akhir alami dan meminta agen melakukan satu lintasan lagi harus menggunakan hook plugin bertipe `before_agent_finalize` sebagai gantinya. Lihat [Hook plugin](/id/plugins/hooks).
+`command:stop` mengamati saat pengguna memberikan `/stop`; ini merupakan siklus hidup
+pembatalan/perintah, bukan gerbang finalisasi agen. Plugin yang perlu memeriksa
+jawaban akhir alami dan meminta agen melakukan satu lintasan lagi harus menggunakan hook
+Plugin bertipe `before_agent_finalize`. Lihat [Hook Plugin](/id/plugins/hooks).
 
-**Peristiwa siklus hidup Gateway**: `gateway:shutdown` mencakup `reason` dan `restartExpectedMs` serta dipicu ketika penghentian gateway dimulai. `gateway:pre-restart` mencakup konteks yang sama tetapi hanya dipicu ketika penghentian adalah bagian dari restart yang diharapkan dan nilai `restartExpectedMs` terbatas diberikan. Selama penghentian, setiap penantian hook siklus hidup bersifat upaya terbaik dan dibatasi sehingga penghentian berlanjut jika handler macet. Anggaran tunggu default adalah 5 detik untuk `gateway:shutdown` dan 10 detik untuk `gateway:pre-restart`.
+**Peristiwa siklus hidup Gateway**: `gateway:shutdown` mencakup `reason` dan `restartExpectedMs`, serta dipicu ketika penonaktifan Gateway dimulai. `gateway:pre-restart` mencakup konteks yang sama, tetapi hanya dipicu ketika penonaktifan merupakan bagian dari mulai ulang yang direncanakan dan nilai `restartExpectedMs` terbatas diberikan. Selama penonaktifan, setiap penantian hook siklus hidup dilakukan dengan upaya terbaik dan dibatasi agar penonaktifan tetap berlanjut jika penangan terhenti. Anggaran waktu tunggu bawaan adalah 5 detik untuk `gateway:shutdown` dan 10 detik untuk `gateway:pre-restart`.
 
-Gunakan `gateway:pre-restart` untuk pemberitahuan restart singkat saat channel masih tersedia:
+Gunakan `gateway:pre-restart` untuk pemberitahuan singkat mulai ulang saat kanal masih tersedia:
 
 ```typescript
 import { execFile } from "node:child_process";
@@ -182,40 +201,40 @@ export default async function handler(event) {
 }
 ```
 
-Di antara peristiwa `gateway:shutdown` (atau `gateway:pre-restart`) dan sisa urutan penghentian, gateway juga memicu hook plugin bertipe `session_end` untuk setiap sesi yang masih aktif saat proses berhenti. `reason` peristiwa adalah `shutdown` untuk penghentian SIGTERM/SIGINT biasa dan `restart` ketika penutupan dijadwalkan sebagai bagian dari restart yang diharapkan. Pengurasan ini dibatasi sehingga handler `session_end` yang lambat tidak dapat memblokir keluarnya proses, dan sesi yang sudah difinalisasi melalui replace / reset / delete / compaction dilewati untuk menghindari pemicuan ganda.
+Di antara peristiwa `gateway:shutdown` (atau `gateway:pre-restart`) dan rangkaian penonaktifan lainnya, Gateway juga memicu hook Plugin bertipe `session_end` untuk setiap sesi yang masih aktif ketika proses berhenti. `reason` peristiwa tersebut adalah `shutdown` untuk penghentian SIGTERM/SIGINT biasa dan `restart` ketika penutupan dijadwalkan sebagai bagian dari mulai ulang yang direncanakan. Pengurasan ini dibatasi agar penangan `session_end` yang lambat tidak dapat menghalangi keluarnya proses, dan sesi yang telah difinalisasi melalui penggantian / pengaturan ulang / penghapusan / Compaction dilewati untuk menghindari pemicuan ganda.
 
 ## Penemuan hook
 
-Hook ditemukan dari direktori berikut, dalam urutan prioritas override yang meningkat:
+Hook ditemukan dari empat sumber:
 
 1. **Hook bawaan**: dikirim bersama OpenClaw
-2. **Hook plugin**: hook yang dibundel di dalam plugin yang terinstal
-3. **Hook terkelola**: `~/.openclaw/hooks/` (diinstal pengguna, dibagikan di seluruh ruang kerja). Direktori tambahan dari `hooks.internal.load.extraDirs` berbagi prioritas ini.
-4. **Hook ruang kerja**: `<workspace>/hooks/` (per agen, dinonaktifkan secara default sampai diaktifkan secara eksplisit)
+2. **Hook Plugin**: dibundel di dalam Plugin yang terpasang; dapat menggantikan hook bawaan dengan nama yang sama
+3. **Hook terkelola**: `~/.openclaw/hooks/` (dipasang pengguna, digunakan bersama di seluruh ruang kerja); dapat menggantikan hook bawaan dan hook Plugin. Direktori tambahan dari `hooks.internal.load.extraDirs` memiliki prioritas yang sama.
+4. **Hook ruang kerja**: `<workspace>/hooks/` (per agen, dinonaktifkan secara bawaan hingga diaktifkan secara eksplisit)
 
-Hook ruang kerja dapat menambahkan nama hook baru tetapi tidak dapat meng-override hook bawaan, terkelola, atau yang disediakan plugin dengan nama yang sama.
+Hook ruang kerja dapat menambahkan nama hook baru, tetapi tidak dapat menggantikan hook bawaan, terkelola, atau yang disediakan Plugin dengan nama yang sama.
 
-Gateway melewati penemuan hook internal saat startup hingga hook internal dikonfigurasi. Aktifkan hook bawaan atau terkelola dengan `openclaw hooks enable <name>`, instal paket hook, atau setel `hooks.internal.enabled=true` untuk ikut serta. Ketika Anda mengaktifkan satu hook bernama, Gateway hanya memuat handler hook tersebut; `hooks.internal.enabled=true`, direktori hook tambahan, dan handler lama ikut serta dalam penemuan luas.
+Gateway melewati penemuan hook internal saat dimulai hingga hook internal dikonfigurasi. Aktifkan hook bawaan atau terkelola dengan `openclaw hooks enable <name>`, pasang paket hook, atau tetapkan `hooks.internal.enabled=true` untuk memilih ikut serta. Ketika Anda mengaktifkan satu hook bernama, Gateway hanya memuat penangan hook tersebut; `hooks.internal.enabled=true`, direktori hook tambahan, dan penangan lama memilih ikut serta dalam penemuan luas.
 
 ### Paket hook
 
-Paket hook adalah paket npm yang mengekspor hook melalui `openclaw.hooks` di `package.json`. Instal dengan:
+Paket hook adalah paket npm yang mengekspor hook melalui `openclaw.hooks` di `package.json`. Pasang dengan:
 
 ```bash
 openclaw plugins install <path-or-spec>
 ```
 
-Spesifikasi npm hanya dari registry (nama paket + versi persis opsional atau dist-tag). Spesifikasi Git/URL/file dan rentang semver ditolak.
+Spesifikasi npm hanya boleh berasal dari registri (nama paket + versi persis atau dist-tag opsional). Spesifikasi Git/URL/file dan rentang semver ditolak. Perintah lama `openclaw hooks install` dan `openclaw hooks update` merupakan alias usang untuk `openclaw plugins install` / `openclaw plugins update`.
 
 ## Hook bawaan
 
-| Hook                  | Peristiwa                                         | Fungsinya                                                      |
-| --------------------- | ------------------------------------------------- | -------------------------------------------------------------- |
-| session-memory        | `command:new`, `command:reset`                    | Menyimpan konteks sesi ke `<workspace>/memory/`                |
-| bootstrap-extra-files | `agent:bootstrap`                                 | Menyuntikkan file bootstrap tambahan dari pola glob            |
-| command-logger        | `command`                                         | Mencatat semua perintah ke `~/.openclaw/logs/commands.log`     |
-| compaction-notifier   | `session:compact:before`, `session:compact:after` | Mengirim pemberitahuan chat yang terlihat saat Compaction sesi dimulai/berakhir |
-| boot-md               | `gateway:startup`                                 | Menjalankan `BOOT.md` saat Gateway dimulai                     |
+| Hook                  | Peristiwa                                         | Fungsinya                                                       |
+| --------------------- | ------------------------------------------------- | --------------------------------------------------------------- |
+| session-memory        | `command:new`, `command:reset`                    | Menyimpan konteks sesi ke `<workspace>/memory/`                  |
+| bootstrap-extra-files | `agent:bootstrap`                                 | Menyisipkan file bootstrap tambahan dari pola glob               |
+| command-logger        | `command`                                         | Mencatat semua perintah ke `~/.openclaw/logs/commands.log`       |
+| compaction-notifier   | `session:compact:before`, `session:compact:after` | Mengirim pemberitahuan obrolan yang terlihat saat Compaction sesi dimulai/berakhir |
+| boot-md               | `gateway:startup`                                 | Menjalankan `BOOT.md` saat Gateway dimulai                       |
 
 Aktifkan hook bawaan apa pun:
 
@@ -225,13 +244,13 @@ openclaw hooks enable <hook-name>
 
 <a id="session-memory"></a>
 
-### detail session-memory
+### Detail session-memory
 
-Mengekstrak 15 pesan pengguna/asisten terakhir dan menyimpannya ke `<workspace>/memory/YYYY-MM-DD-HHMM.md` menggunakan tanggal lokal host. Pengambilan memori berjalan di latar belakang sehingga konfirmasi `/new` dan `/reset` tidak tertunda oleh pembacaan transkrip atau pembuatan slug opsional. Atur `hooks.internal.entries.session-memory.llmSlug: true` untuk membuat slug nama file deskriptif dengan model yang dikonfigurasi. Memerlukan `workspace.dir` untuk dikonfigurasi.
+Mengekstrak pesan terakhir pengguna/asisten (bawaan 15, dapat dikonfigurasi dengan `hooks.internal.entries.session-memory.messages`) dan menyimpannya ke `<workspace>/memory/YYYY-MM-DD-HHMM.md` menggunakan tanggal lokal host. Pengambilan memori berjalan di latar belakang sehingga konfirmasi `/new` dan `/reset` tidak tertunda oleh pembacaan transkrip atau pembuatan slug opsional. Atur `hooks.internal.entries.session-memory.llmSlug: true` untuk menghasilkan slug nama file yang deskriptif, dan secara opsional atur `hooks.internal.entries.session-memory.model` ke alias yang telah dikonfigurasi seperti `sonnet`, ID model polos pada penyedia bawaan agen, atau referensi `provider/model`. Pembuatan slug menggunakan model bawaan agen saat `model` tidak ditentukan dan beralih ke slug stempel waktu jika tidak tersedia. Mengharuskan `workspace.dir` dikonfigurasi.
 
 <a id="bootstrap-extra-files"></a>
 
-### konfigurasi bootstrap-extra-files
+### Konfigurasi bootstrap-extra-files
 
 ```json
 {
@@ -248,39 +267,39 @@ Mengekstrak 15 pesan pengguna/asisten terakhir dan menyimpannya ke `<workspace>/
 }
 ```
 
-Path diselesaikan relatif terhadap workspace. Hanya basename bootstrap yang dikenali yang dimuat (`AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md`, `MEMORY.md`).
+`patterns` dan `files` diterima sebagai alias untuk `paths`. Jalur diuraikan relatif terhadap ruang kerja dan harus tetap berada di dalamnya. Hanya nama dasar bootstrap yang dikenali yang dimuat (`AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md`, `MEMORY.md`).
 
 <a id="command-logger"></a>
 
-### detail command-logger
+### Detail command-logger
 
-Mencatat setiap perintah slash ke `~/.openclaw/logs/commands.log`.
+Mencatat setiap perintah garis miring sebagai satu baris JSON (stempel waktu, tindakan, kunci sesi, ID pengirim, sumber) ke `~/.openclaw/logs/commands.log`.
 
 <a id="compaction-notifier"></a>
 
-### detail compaction-notifier
+### Detail compaction-notifier
 
-Mengirim pesan status singkat ke percakapan saat ini ketika OpenClaw mulai dan selesai memadatkan transkrip sesi. Ini membuat giliran panjang tidak terlalu membingungkan di permukaan chat karena pengguna dapat melihat bahwa asisten sedang meringkas konteks dan akan melanjutkan setelah Compaction.
+Mengirim pesan status singkat ke percakapan saat ini ketika OpenClaw memulai dan menyelesaikan Compaction transkrip sesi. Ini membuat giliran panjang tidak terlalu membingungkan pada antarmuka obrolan karena pengguna dapat melihat bahwa asisten sedang merangkum konteks dan akan melanjutkan setelah Compaction.
 
 <a id="boot-md"></a>
 
-### detail boot-md
+### Detail boot-md
 
-Menjalankan `BOOT.md` dari workspace aktif saat Gateway dimulai.
+Menjalankan `BOOT.md` saat Gateway dimulai untuk setiap cakupan agen yang dikonfigurasi, jika file tersebut ada di ruang kerja agen yang telah diuraikan.
 
 ## Hook Plugin
 
 Plugin dapat mendaftarkan hook bertipe melalui Plugin SDK untuk integrasi yang lebih mendalam:
-mencegat panggilan alat, memodifikasi prompt, mengontrol alur pesan, dan lainnya.
+mencegat pemanggilan alat, memodifikasi prompt, mengendalikan alur pesan, dan lainnya.
 Gunakan hook Plugin saat Anda memerlukan `before_tool_call`, `before_agent_reply`,
 `before_install`, atau hook siklus hidup dalam proses lainnya.
 
 Hook internal yang dikelola Plugin berbeda: hook tersebut berpartisipasi dalam sistem
-peristiwa perintah/siklus hidup kasar di halaman ini dan muncul di `openclaw hooks list` sebagai
-`plugin:<id>`. Gunakan itu untuk efek samping dan kompatibilitas dengan paket hook, bukan
+peristiwa perintah/siklus hidup tingkat kasar di halaman ini dan muncul dalam `openclaw hooks list` sebagai
+`plugin:<id>`. Gunakan hook tersebut untuk efek samping dan kompatibilitas dengan paket hook, bukan
 untuk middleware berurutan atau gerbang kebijakan.
 
-Untuk referensi hook Plugin lengkap, lihat [Hook Plugin](/id/plugins/hooks).
+Untuk referensi lengkap hook Plugin, lihat [Hook Plugin](/id/plugins/hooks).
 
 ## Konfigurasi
 
@@ -298,7 +317,7 @@ Untuk referensi hook Plugin lengkap, lihat [Hook Plugin](/id/plugins/hooks).
 }
 ```
 
-Variabel lingkungan per hook:
+Nilai lingkungan per hook memenuhi pemeriksaan kelayakan `requires.env` milik hook (bersama lingkungan proses), dan penangan dapat membacanya dari entri konfigurasi hook:
 
 ```json
 {
@@ -330,7 +349,7 @@ Direktori hook tambahan:
 ```
 
 <Note>
-Format konfigurasi array `hooks.internal.handlers` legacy masih didukung untuk kompatibilitas mundur, tetapi hook baru sebaiknya menggunakan sistem berbasis penemuan.
+Format konfigurasi array lama `hooks.internal.handlers` masih didukung untuk kompatibilitas mundur, tetapi hook baru sebaiknya menggunakan sistem berbasis penemuan.
 </Note>
 
 ## Referensi CLI
@@ -352,10 +371,10 @@ openclaw hooks disable <hook-name>
 
 ## Praktik terbaik
 
-- **Jaga handler tetap cepat.** Hook berjalan selama pemrosesan perintah. Jalankan pekerjaan berat secara fire-and-forget dengan `void processInBackground(event)`.
-- **Tangani kesalahan dengan baik.** Bungkus operasi berisiko dalam try/catch; jangan throw agar handler lain dapat berjalan.
-- **Filter peristiwa sejak awal.** Return segera jika jenis/tindakan peristiwa tidak relevan.
-- **Gunakan kunci peristiwa spesifik.** Lebih pilih `"events": ["command:new"]` daripada `"events": ["command"]` untuk mengurangi overhead.
+- **Jaga agar penangan tetap cepat.** Hook berjalan selama pemrosesan perintah. Jalankan pekerjaan berat tanpa menunggu hasilnya dengan `void processInBackground(event)`.
+- **Tangani kesalahan dengan baik.** Bungkus operasi berisiko dalam try/catch; jangan melempar kesalahan agar penangan lain dapat berjalan.
+- **Filter peristiwa sejak awal.** Segera kembali jika jenis/tindakan peristiwa tidak relevan.
+- **Gunakan kunci peristiwa yang spesifik.** Utamakan `"events": ["command:new"]` daripada `"events": ["command"]` untuk mengurangi beban tambahan.
 
 ## Pemecahan masalah
 
@@ -376,17 +395,17 @@ openclaw hooks list
 openclaw hooks info my-hook
 ```
 
-Periksa binary yang hilang (PATH), variabel lingkungan, nilai konfigurasi, atau kompatibilitas OS.
+Periksa biner yang hilang (PATH), variabel lingkungan, nilai konfigurasi, atau kompatibilitas sistem operasi.
 
-### Hook tidak dieksekusi
+### Hook tidak dijalankan
 
-1. Verifikasi hook diaktifkan: `openclaw hooks list`
+1. Pastikan hook diaktifkan: `openclaw hooks list`
 2. Mulai ulang proses Gateway Anda agar hook dimuat ulang.
-3. Periksa log Gateway: `./scripts/clawlog.sh | grep hook`
+3. Periksa log Gateway: `openclaw logs --follow | grep -i hook`
 
 ## Terkait
 
-- [Referensi CLI: hooks](/id/cli/hooks)
+- [Referensi CLI: hook](/id/cli/hooks)
 - [Webhook](/id/automation/cron-jobs#webhooks)
 - [Hook Plugin](/id/plugins/hooks) — hook siklus hidup Plugin dalam proses
 - [Konfigurasi](/id/gateway/configuration-reference#hooks)

@@ -1,96 +1,92 @@
 ---
 read_when:
-    - Debugowanie skryptów deweloperskich działających wyłącznie w Node lub awarii trybu obserwowania
-    - Badanie awarii loadera tsx/esbuild w OpenClaw
-summary: 'Node + tsx: notatki dotyczące awarii "__name is not a function" i obejścia'
+    - Badanie awarii modułu ładującego tsx/esbuild, która informuje o brakującym helperze __name
+summary: Historyczna awaria Node + tsx „__name is not a function” i jej przyczyna
 title: Awaria Node + tsx
 x-i18n:
-    generated_at: "2026-05-06T17:55:14Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:07:41Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 808f04959c70c96c983fb2517234d4c06712049d7afebb9b1b4b340df75d7d70
+    source_hash: 97d2f62d24860cee65753027ba84c14c8d4ffb910ee17bb0032cf0409c427589
     source_path: debug/node-issue.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# Awaria Node + tsx „__name is not a function”
+# Awaria Node + tsx „\_\_name is not a function”
 
-## Podsumowanie
+## Stan
 
-Uruchamianie OpenClaw przez Node z `tsx` kończy się niepowodzeniem podczas startu:
+Rozwiązano. Ta awaria nie występuje w obecnej wersji `tsx` przypiętej w
+`package.json` (`4.22.3`) ani w aktualnych wydaniach Node. Zachowano tę stronę na wypadek,
+gdyby przyszła aktualizacja `tsx`/esbuild ponownie wprowadziła ten problem.
 
-```
+## Pierwotny objaw
+
+Uruchamianie skryptów deweloperskich OpenClaw za pośrednictwem `tsx` kończyło się niepowodzeniem podczas uruchamiania:
+
+```text
 [openclaw] Failed to start CLI: TypeError: __name is not a function
-    at createSubsystemLogger (.../src/logging/subsystem.ts:203:25)
-    at .../src/agents/auth-profiles/constants.ts:25:20
+    at createSubsystemLogger (src/logging/subsystem.ts)
+    at <caller> (src/agents/auth-profiles/constants.ts)
 ```
 
-Problem pojawił się po przełączeniu skryptów deweloperskich z Bun na `tsx` (commit `2871657e`, 2026-01-06). Ta sama ścieżka uruchomieniowa działała z Bun.
+Numery wierszy pominięto; oba pliki zmieniły się od czasu pierwotnej awarii
+i konkretne wiersze już się nie zgadzają.
 
-## Środowisko
+Problem pojawił się po przejściu skryptów deweloperskich z Bun na `tsx` (`2871657e`,
+2026-01-06), aby Bun stał się opcjonalny. Odpowiednia ścieżka oparta na Bun nie ulegała awarii.
+Problem pierwotnie zaobserwowano w Node v25.3.0 na macOS; uznano, że może on również
+dotyczyć innych platform korzystających z Node 25.
 
-- Node: v25.x (zaobserwowano na v25.3.0)
-- tsx: 4.21.0
-- System operacyjny: macOS (reprodukcja prawdopodobnie także na innych platformach uruchamiających Node 25)
+## Przyczyna
 
-## Reprodukcja (tylko Node)
+`tsx` przekształca TS/ESM za pośrednictwem esbuild z ustawieniem `keepNames: true` zakodowanym na stałe
+w opcjach transformacji. To ustawienie powoduje, że esbuild opakowuje nazwane deklaracje funkcji/klas
+w wywołanie funkcji pomocniczej `__name`, dzięki czemu `fn.name` zostaje zachowane podczas minifikacji
+i pakowania. Awaria oznacza, że w dotkniętej kombinacji `tsx`/Node funkcja pomocnicza
+była niedostępna lub przesłonięta w miejscu wywołania tego modułu, dlatego `__name(...)`
+zgłaszało wyjątek zamiast zwracać opakowaną wartość.
+
+## Obecna kontrola reprodukcji
 
 ```bash
-# in repo root
 node --version
 pnpm install
 node --import tsx src/entry.ts status
 ```
 
-## Minimalna reprodukcja w repozytorium
+Minimalna izolowana reprodukcja (ładuje tylko moduł z pierwotnego śladu stosu):
 
 ```bash
 node --import tsx scripts/repro/tsx-name-repro.ts
 ```
 
-## Sprawdzenie wersji Node
+Oba polecenia kończą się obecnie bez błędów. Jeśli którekolwiek z nich ponownie zgłosi
+`__name is not a function`, przed zgłoszeniem problemu w projekcie nadrzędnym zapisz dokładną wersję Node, wersję `tsx`
+(`node_modules/tsx/package.json`) oraz pełny ślad stosu.
 
-- Node 25.3.0: kończy się niepowodzeniem
-- Node 22.22.0 (Homebrew `node@22`): kończy się niepowodzeniem
-- Node 24: jeszcze nie zainstalowano tutaj; wymaga weryfikacji
+## Obejścia (jeśli awaria powróci)
 
-## Notatki / hipoteza
-
-- `tsx` używa esbuild do transformacji TS/ESM. `keepNames` w esbuild emituje helper `__name` i opakowuje definicje funkcji przez `__name(...)`.
-- Awaria wskazuje, że `__name` istnieje, ale w czasie działania nie jest funkcją, co sugeruje, że helpera brakuje albo został nadpisany dla tego modułu w ścieżce loadera Node 25.
-- Podobne problemy z helperem `__name` zgłaszano w innych narzędziach używających esbuild, gdy helpera brakowało albo był przepisywany.
-
-## Historia regresji
-
-- `2871657e` (2026-01-06): skrypty zmieniono z Bun na tsx, aby Bun był opcjonalny.
-- Wcześniej (ścieżka Bun) `openclaw status` i `gateway:watch` działały.
-
-## Obejścia
-
-- Użyj Bun dla skryptów deweloperskich (obecne tymczasowe wycofanie).
-- Użyj `tsgo` do sprawdzania typów w repozytorium, a następnie uruchom zbudowany wynik:
+- Uruchamiaj skrypty deweloperskie za pomocą Bun zamiast `node --import tsx`.
+- Uruchom `pnpm tsgo`, aby sprawdzić typy, a następnie uruchom zbudowany wynik zamiast
+  kodu źródłowego za pośrednictwem `tsx`:
 
   ```bash
   pnpm tsgo
   node openclaw.mjs status
   ```
 
-- Uwaga historyczna: podczas debugowania tego problemu Node/tsx używano tutaj `tsc`, ale ścieżki sprawdzania typów w repozytorium używają teraz `tsgo`.
-- Wyłącz esbuild keepNames w loaderze TS, jeśli to możliwe (zapobiega wstawianiu helpera `__name`); tsx obecnie tego nie udostępnia.
-- Przetestuj Node LTS (22/24) z `tsx`, aby sprawdzić, czy problem jest specyficzny dla Node 25.
+- Wypróbuj inną wersję `tsx` (`pnpm add -D tsx@<version>` zmienia zależności
+  i zgodnie z zasadami repozytorium wymaga zatwierdzenia), aby metodą bisekcji ustalić, czy dołączona
+  wersja esbuild ponownie wprowadziła błąd.
+- Przetestuj inną główną/poboczną wersję Node, aby sprawdzić, czy awaria jest zależna
+  od wersji.
 
-## Odnośniki
+## Materiały referencyjne
 
-- [https://opennext.js.org/cloudflare/howtos/keep_names](https://opennext.js.org/cloudflare/howtos/keep_names)
 - [https://esbuild.github.io/api/#keep-names](https://esbuild.github.io/api/#keep-names)
 - [https://github.com/evanw/esbuild/issues/1031](https://github.com/evanw/esbuild/issues/1031)
-
-## Następne kroki
-
-- Odtwórz na Node 22/24, aby potwierdzić regresję w Node 25.
-- Przetestuj nightly `tsx` albo przypnij wcześniejszą wersję, jeśli istnieje znana regresja.
-- Jeśli problem odtwarza się na Node LTS, zgłoś upstream minimalną reprodukcję ze śladem stosu `__name`.
 
 ## Powiązane
 

@@ -1,43 +1,38 @@
 ---
 read_when:
-    - Membangun perkakas host yang tidak dapat menggunakan klien RPC WebSocket Gateway
+    - Membangun alat untuk host yang tidak dapat menggunakan klien RPC WebSocket Gateway
     - Mengekspos otomatisasi admin Gateway di balik ingress privat tepercaya
     - Mengaudit model keamanan untuk akses HTTP ke metode Gateway
-summary: Mengekspos metode control-plane Gateway yang dipilih melalui plugin admin-http-rpc bawaan yang bersifat opt-in
+summary: Ekspos metode bidang kontrol Gateway yang dipilih melalui Plugin admin-http-rpc bawaan yang bersifat opsional
 title: Plugin RPC HTTP admin
 x-i18n:
-    generated_at: "2026-06-27T17:43:57Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:24:25Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f701ef6be7457cd518ecb80b7ec5dade61bb057d62f4ca90984a4c1aa8fdf700
+    source_hash: 0709081efd0ce65cef7edac54df9a71978cbad17e2b25df83ac9075de938376c
     source_path: plugins/admin-http-rpc.md
     workflow: 16
 ---
 
-Plugin bawaan `admin-http-rpc` mengekspos metode bidang kontrol Gateway tertentu melalui HTTP untuk otomatisasi host tepercaya yang tidak dapat menggunakan klien RPC WebSocket Gateway normal.
+Plugin bawaan `admin-http-rpc` mengekspos sekumpulan metode bidang kontrol Gateway yang tercantum dalam daftar izin melalui HTTP, untuk otomatisasi host tepercaya yang tidak dapat mempertahankan koneksi WebSocket Gateway tetap terbuka.
 
-Plugin ini disertakan dengan OpenClaw, tetapi nonaktif secara bawaan. Saat dinonaktifkan, rute tidak didaftarkan. Saat diaktifkan, Plugin ini menambahkan:
+Plugin ini disertakan bersama OpenClaw tetapi dinonaktifkan secara bawaan; saat dinonaktifkan, rute tidak didaftarkan. Saat diaktifkan, plugin ini menambahkan `POST /api/v1/admin/rpc` pada listener yang sama dengan Gateway (`http://<gateway-host>:<port>/api/v1/admin/rpc`).
 
-- `POST /api/v1/admin/rpc`
-- listener yang sama dengan Gateway: `http://<gateway-host>:<port>/api/v1/admin/rpc`
-
-Aktifkan hanya untuk alat host privat, otomatisasi tailnet, atau ingress internal tepercaya. Jangan mengekspos rute ini langsung ke internet publik.
+Aktifkan hanya untuk peralatan host privat, otomatisasi tailnet, atau ingress internal tepercaya. Jangan pernah mengekspos rute ini secara langsung ke internet publik.
 
 ## Sebelum Anda mengaktifkannya
 
-Admin HTTP RPC adalah permukaan bidang kontrol operator penuh. Pemanggil apa pun yang lolos autentikasi HTTP Gateway dapat memanggil metode yang masuk daftar izin di halaman ini.
-
-Gunakan ini saat semua hal berikut benar:
+RPC HTTP admin adalah permukaan bidang kontrol operator penuh: setiap pemanggil yang lolos autentikasi HTTP Gateway dapat memanggil metode dalam daftar izin di bawah. Aktifkan hanya jika semua hal berikut terpenuhi:
 
 - Pemanggil dipercaya untuk mengoperasikan Gateway.
 - Pemanggil tidak dapat menggunakan klien RPC WebSocket.
-- Rute hanya dapat dijangkau di loopback, tailnet, atau ingress privat yang terautentikasi.
-- Anda telah meninjau metode yang diizinkan dan metode tersebut sesuai dengan otomatisasi yang Anda rencanakan untuk dijalankan.
+- Rute hanya dapat dijangkau melalui loopback, tailnet, atau ingress privat yang diautentikasi.
+- Anda telah meninjau metode yang diizinkan dan metode tersebut sesuai dengan otomatisasi yang akan dijalankan.
 
-Gunakan jalur RPC WebSocket untuk klien OpenClaw dan alat interaktif yang dapat mempertahankan koneksi WebSocket Gateway tetap terbuka.
+Untuk klien OpenClaw dan alat interaktif yang dapat mempertahankan koneksi WebSocket Gateway tetap terbuka, gunakan RPC WebSocket sebagai gantinya.
 
-## Aktifkan
+## Mengaktifkan
 
 Aktifkan Plugin bawaan:
 
@@ -48,7 +43,7 @@ Aktifkan Plugin bawaan:
     openclaw gateway restart
     ```
   </Tab>
-  <Tab title="Config">
+  <Tab title="Konfigurasi">
     ```json5
     {
       plugins: {
@@ -61,7 +56,7 @@ Aktifkan Plugin bawaan:
   </Tab>
 </Tabs>
 
-Rute didaftarkan saat startup Plugin. Mulai ulang Gateway setelah mengubah konfigurasi Plugin.
+Rute didaftarkan saat Plugin dimulai, jadi mulai ulang Gateway setelah mengubah konfigurasi Plugin.
 
 Nonaktifkan saat Anda tidak lagi memerlukan permukaan HTTP:
 
@@ -70,7 +65,7 @@ openclaw plugins disable admin-http-rpc
 openclaw gateway restart
 ```
 
-## Verifikasi rute
+## Memverifikasi rute
 
 Gunakan `health` sebagai permintaan aman terkecil:
 
@@ -102,24 +97,21 @@ Rute Plugin menggunakan autentikasi HTTP Gateway.
 Jalur autentikasi umum:
 
 - autentikasi rahasia bersama (`gateway.auth.mode="token"` atau `"password"`): `Authorization: Bearer <token-or-password>`
-- autentikasi HTTP pembawa identitas tepercaya (`gateway.auth.mode="trusted-proxy"`): rutekan melalui proxy sadar identitas yang dikonfigurasi dan biarkan proxy menyuntikkan header identitas yang diperlukan
-- autentikasi terbuka ingress privat (`gateway.auth.mode="none"`): tidak memerlukan header autentikasi
+- autentikasi HTTP tepercaya yang memuat identitas (`gateway.auth.mode="trusted-proxy"`): rutekan melalui proksi sadar-identitas yang dikonfigurasi dan biarkan proksi tersebut menyuntikkan header identitas yang diperlukan
+- autentikasi terbuka pada ingress privat (`gateway.auth.mode="none"`): tidak memerlukan header autentikasi
 
 ## Model keamanan
 
 Perlakukan Plugin ini sebagai permukaan operator Gateway penuh.
 
-- Mengaktifkan Plugin secara sengaja memberikan akses ke metode RPC admin yang masuk daftar izin di `/api/v1/admin/rpc`.
-- Plugin mendeklarasikan kontrak manifes `contracts.gatewayMethodDispatch: ["authenticated-request"]` yang dicadangkan agar rute HTTP yang diautentikasi Gateway dapat mendispatch metode bidang kontrol di dalam proses.
-- Autentikasi bearer rahasia bersama membuktikan kepemilikan rahasia operator gateway.
-- Untuk autentikasi `token` dan `password`, header `x-openclaw-scopes` yang lebih sempit diabaikan dan default operator penuh normal dipulihkan.
-- Mode HTTP pembawa identitas tepercaya menghormati `x-openclaw-scopes` saat ada.
-- `gateway.auth.mode="none"` berarti rute ini tidak terautentikasi jika Plugin diaktifkan. Gunakan itu hanya di balik ingress privat yang sepenuhnya Anda percaya.
-- Permintaan didispatch melalui handler metode Gateway dan pemeriksaan cakupan yang sama seperti RPC WebSocket setelah autentikasi rute Plugin lolos.
-- Pertahankan rute ini pada loopback, tailnet, atau ingress privat tepercaya. Jangan mengeksposnya langsung ke internet publik.
-- Kontrak manifes Plugin bukan sandbox. Kontrak tersebut mencegah penggunaan tidak sengaja atas helper SDK yang dicadangkan; Plugin tepercaya tetap berjalan di dalam proses Gateway.
-
-Gunakan gateway terpisah saat pemanggil melintasi batas kepercayaan.
+- Mengaktifkan Plugin secara sengaja menyediakan akses ke metode RPC admin dalam daftar izin di `/api/v1/admin/rpc`.
+- Plugin mendeklarasikan kontrak manifes khusus `contracts.gatewayMethodDispatch: ["authenticated-request"]`, yang memungkinkan rute HTTP-nya yang diautentikasi Gateway meneruskan metode bidang kontrol dalam proses. Ini bukan sandbox: kontrak tersebut mencegah penggunaan pembantu SDK khusus secara tidak sengaja, tetapi Plugin tepercaya tetap berjalan dalam proses Gateway.
+- Autentikasi bearer dengan rahasia bersama (mode `token`/`password`) membuktikan kepemilikan rahasia operator Gateway; header `x-openclaw-scopes` yang lebih sempit diabaikan pada jalur tersebut dan cakupan bawaan operator penuh yang normal dipulihkan.
+- Autentikasi HTTP tepercaya yang memuat identitas (mode `trusted-proxy`) mematuhi `x-openclaw-scopes` jika tersedia.
+- `gateway.auth.mode="none"` berarti rute ini tidak diautentikasi jika Plugin diaktifkan. Gunakan hanya di belakang ingress privat yang sepenuhnya Anda percayai.
+- Permintaan diteruskan melalui penangan metode dan pemeriksaan cakupan Gateway yang sama seperti RPC WebSocket setelah autentikasi rute Plugin berhasil.
+- Rute tetap dapat dijangkau selama lease penangguhan yang telah disiapkan. Validasi permintaan terbatas dan respons penemuan lokal `commands.list` tetap tersedia. Dari metode yang diteruskan ke Gateway, hanya `gateway.suspend.prepare`, `gateway.suspend.status`, dan `gateway.suspend.resume` yang dapat berjalan saat penerimaan ditutup; metode lain dalam daftar izin mengembalikan respons Gateway `UNAVAILABLE` normal yang dapat dicoba ulang.
+- Pertahankan rute ini pada loopback, tailnet, atau ingress privat tepercaya. Jangan mengeksposnya secara langsung ke internet publik. Gunakan Gateway terpisah jika pemanggil melintasi batas kepercayaan.
 
 ## Permintaan
 
@@ -137,13 +129,13 @@ Content-Type: application/json
 }
 ```
 
-Bidang:
+Kolom:
 
-- `id` (string, opsional): disalin ke dalam respons. UUID dibuat saat dihilangkan.
+- `id` (string, opsional): disalin ke respons. UUID dibuat jika dihilangkan.
 - `method` (string, wajib): nama metode Gateway yang diizinkan.
-- `params` (apa pun, opsional): params khusus metode.
+- `params` (apa pun, opsional): parameter khusus metode.
 
-Ukuran badan permintaan maksimum bawaan adalah 1 MB.
+Ukuran maksimum bawaan isi permintaan adalah 1 MB.
 
 ## Respons
 
@@ -170,55 +162,72 @@ Kesalahan metode Gateway menggunakan:
 }
 ```
 
-Status HTTP mengikuti kesalahan Gateway jika memungkinkan. Misalnya, `INVALID_REQUEST` mengembalikan `400`, dan `UNAVAILABLE` mengembalikan `503`.
+Status HTTP mengikuti kode kesalahan:
+
+| Kode kesalahan             | Status HTTP |
+| -------------------------- | ----------- |
+| `INVALID_REQUEST`          | 400         |
+| `APPROVAL_NOT_FOUND`       | 404         |
+| `NOT_LINKED`, `NOT_PAIRED` | 409         |
+| `UNAVAILABLE`              | 503         |
+| `AGENT_TIMEOUT`            | 504         |
+| kode lainnya               | 500         |
 
 ## Metode yang diizinkan
 
-- discovery: `commands.list`
-  Mengembalikan nama metode HTTP RPC yang diizinkan oleh Plugin ini.
-- gateway: `health`, `status`, `logs.tail`, `usage.status`, `usage.cost`, `gateway.restart.request`
-- config: `config.get`, `config.schema`, `config.schema.lookup`, `config.set`, `config.patch`, `config.apply`
-- channels: `channels.status`, `channels.start`, `channels.stop`, `channels.logout`
+- penemuan: `commands.list`
+  Mengembalikan nama metode RPC HTTP yang diizinkan oleh Plugin ini.
+- Gateway: `health`, `status`, `logs.tail`, `usage.status`, `usage.cost`, `gateway.restart.request`, `gateway.suspend.prepare`, `gateway.suspend.status`, `gateway.suspend.resume`
+- konfigurasi: `config.get`, `config.schema`, `config.schema.lookup`, `config.set`, `config.patch`, `config.apply`
+- saluran: `channels.status`, `channels.start`, `channels.stop`, `channels.logout`
 - web: `web.login.start`, `web.login.wait`
-- models: `models.list`, `models.authStatus`
-- agents: `agents.list`, `agents.create`, `agents.update`, `agents.delete`
-- approvals: `exec.approvals.get`, `exec.approvals.set`, `exec.approvals.node.get`, `exec.approvals.node.set`
+- model: `models.list`, `models.authStatus`
+- agen: `agents.list`, `agents.create`, `agents.update`, `agents.delete`
+- persetujuan: `exec.approvals.get`, `exec.approvals.set`, `exec.approvals.node.get`, `exec.approvals.node.set`
 - Cron: `cron.status`, `cron.list`, `cron.get`, `cron.runs`, `cron.add`, `cron.update`, `cron.remove`, `cron.run`
-- devices: `device.pair.list`, `device.pair.approve`, `device.pair.reject`, `device.pair.remove`
-- nodes: `node.list`, `node.describe`, `node.pair.list`, `node.pair.approve`, `node.pair.reject`, `node.pair.remove`, `node.rename`
-- tasks: `tasks.list`, `tasks.get`, `tasks.cancel`
-- diagnostics: `doctor.memory.status`, `update.status`
+- perangkat: `device.pair.list`, `device.pair.approve`, `device.pair.reject`, `device.pair.remove`
+- Node: `node.list`, `node.describe`, `node.pair.list`, `node.pair.approve`, `node.pair.reject`, `node.pair.remove`, `node.rename`
+- tugas: `tasks.list`, `tasks.get`, `tasks.cancel`
+- diagnostik: `doctor.memory.status`, `update.status`
 
-Metode Gateway lainnya diblokir sampai metode tersebut sengaja ditambahkan.
+Metode Gateway lainnya diblokir hingga ditambahkan secara sengaja.
 
 ## Perbandingan WebSocket
 
-Jalur RPC WebSocket Gateway normal tetap menjadi API bidang kontrol yang disukai untuk klien OpenClaw. Gunakan admin HTTP RPC hanya untuk alat host yang memerlukan permukaan HTTP permintaan/respons.
+Jalur RPC WebSocket Gateway normal tetap menjadi API bidang kontrol yang diutamakan untuk klien OpenClaw. Gunakan RPC HTTP admin hanya untuk peralatan host yang memerlukan permukaan permintaan/respons HTTP.
 
-Klien WebSocket token bersama tanpa identitas perangkat tepercaya tidak dapat mendeklarasikan sendiri cakupan admin saat terhubung. Admin HTTP RPC secara sengaja mengikuti model operator HTTP tepercaya yang sudah ada: saat Plugin diaktifkan, autentikasi bearer rahasia bersama diperlakukan sebagai akses operator penuh untuk permukaan admin ini.
+Klien WebSocket dengan token bersama tanpa identitas perangkat tepercaya tidak dapat mendeklarasikan sendiri cakupan admin saat tersambung. RPC HTTP admin secara sengaja mengikuti model operator HTTP tepercaya yang sudah ada: saat Plugin diaktifkan, autentikasi bearer dengan rahasia bersama diperlakukan sebagai akses operator penuh untuk permukaan admin ini.
 
 ## Pemecahan masalah
 
 `404 Not Found`
 
-: Plugin dinonaktifkan, Gateway belum dimulai ulang sejak diaktifkan, atau permintaan menuju proses Gateway yang berbeda.
+: Plugin dinonaktifkan, Gateway belum dimulai ulang sejak Plugin diaktifkan, atau permintaan dikirim ke proses Gateway yang berbeda.
 
 `401 Unauthorized`
 
-: Permintaan tidak memenuhi autentikasi HTTP Gateway. Periksa token bearer atau header identitas trusted-proxy.
+: Permintaan tidak memenuhi autentikasi HTTP Gateway. Periksa token bearer atau header identitas proksi tepercaya.
+
+`405 Method Not Allowed`
+
+: Permintaan menggunakan metode selain `POST`.
+
+`413 Payload Too Large`
+
+: Isi permintaan melampaui batas 1 MB.
 
 `400 INVALID_REQUEST`
 
-: Badan permintaan bukan JSON yang valid, bidang `method` tidak ada, atau metode tidak ada dalam daftar izin Plugin.
+: Isi permintaan bukan JSON yang valid, kolom `method` tidak ada, metode tidak terdapat dalam daftar izin Plugin, atau ID pelanjutan penangguhan tidak cocok dengan lease aktif.
 
 `503 UNAVAILABLE`
 
-: Handler metode Gateway tidak tersedia. Periksa log Gateway dan coba lagi setelah Gateway selesai startup.
+: Metode Gateway sedang dimulai, dibatasi lajunya, ditangguhkan, atau menunggu operasi penangguhan/pelanjutan lain yang bersaing. Periksa `error.details` jika tersedia dan patuhi `error.retryAfterMs` sebelum mencoba lagi.
 
 ## Terkait
 
 - [Cakupan operator](/id/gateway/operator-scopes)
 - [Keamanan Gateway](/id/gateway/security)
 - [Akses jarak jauh](/id/gateway/remote)
-- [Manifes Plugin](/id/plugins/manifest#contracts)
-- [Subpath SDK](/id/plugins/sdk-subpaths)
+- [Manifes Plugin](/id/plugins/manifest#contracts-reference)
+- [Subjalur SDK](/id/plugins/sdk-subpaths)

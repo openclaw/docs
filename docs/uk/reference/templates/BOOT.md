@@ -4,21 +4,28 @@ read_when:
 summary: Шаблон робочого простору для BOOT.md
 title: Шаблон BOOT.md
 x-i18n:
-    generated_at: "2026-04-24T04:18:20Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 78c31ef770af20fee60c5d9998c7b2eefb0e2139076f26707ee4cf84502b59f8
-    source_path: reference/templates/BOOT.md
-    workflow: 15
+    generated_at: "2026-07-12T13:47:00Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 1adfb4d71f1f03716a1ddc4774a4cb6ead4b8be65bd9bb34066a9e1929a36b21
+    source_path: reference/templates/BOOT.md
+    workflow: 16
 ---
 
 # BOOT.md
 
-Додайте короткі, явні інструкції щодо того, що OpenClaw має робити під час запуску (увімкніть `hooks.internal.enabled`).
-Якщо завдання надсилає повідомлення, використовуйте інструмент повідомлень, а потім дайте відповідь точним
-тихим токеном `NO_REPLY` / `no_reply`.
+Додайте тут короткі й чіткі інструкції із запуску. Вбудований хук `boot-md` запускає цей файл один раз для кожного робочого простору агента щоразу, коли запускається Gateway, якщо файл існує та містить не лише пробільні символи. Якщо кілька агентів використовують спільний робочий простір, виконується лише один запуск.
 
-## Пов’язане
+За початкових налаштувань хук вимкнено. Спочатку ввімкніть його:
+
+```bash
+openclaw hooks enable boot-md
+```
+
+Якщо пункт контрольного списку передбачає надсилання повідомлення, скористайтеся інструментом повідомлень, а потім дайте відповідь точним беззвучним токеном `NO_REPLY` (регістр не враховується).
+
+## Пов’язані матеріали
 
 - [Робочий простір агента](/uk/concepts/agent-workspace)
+- [Хуки](/uk/automation/hooks#boot-md)

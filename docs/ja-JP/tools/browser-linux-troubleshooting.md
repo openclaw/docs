@@ -1,10 +1,10 @@
 ---
 read_when: Browser control fails on Linux, especially with snap Chromium
-summary: Linux における OpenClaw ブラウザー制御の Chrome/Brave/Edge/Chromium CDP 起動問題を修正
-title: ブラウザーのトラブルシューティング
+summary: Linux での OpenClaw ブラウザー制御における Chrome/Brave/Edge/Chromium の CDP 起動問題を修正する
+title: ブラウザのトラブルシューティング
 x-i18n:
-    generated_at: "2026-07-05T11:48:51Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:43:47Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: e0256e8ee441802086cd486923060be54f8966b423e5dcb71fc8961bbab5d729
@@ -12,7 +12,7 @@ x-i18n:
     workflow: 16
 ---
 
-## 問題: ポート 18800 で Chrome CDP の起動に失敗する
+## 問題: ポート18800でChrome CDPを起動できない
 
 ```json
 { "error": "Error: Failed to start Chrome CDP on port 18800 for profile \"openclaw\"." }
@@ -20,38 +20,29 @@ x-i18n:
 
 ### 根本原因
 
-Ubuntu とほとんどの Linux ディストリビューションでは、`apt install chromium` は実際のブラウザではなく snap
-ラッパーをインストールします。
+UbuntuおよびほとんどのLinuxディストリビューションでは、`apt install chromium`を実行すると、実際のブラウザではなくsnapラッパーがインストールされます。
 
 ```text
 Note, selecting 'chromium-browser' instead of 'chromium'
 chromium-browser is already the newest version (2:1snap1-0ubuntu2).
 ```
 
-Snap の AppArmor confinement は、OpenClaw がブラウザプロセスを起動して監視する方法と干渉します。
+snapのAppArmorによる制限が、OpenClawによるブラウザプロセスの起動と監視に干渉します。
 
-その他の一般的な Linux 起動失敗:
+Linuxでよくあるその他の起動失敗:
 
-- `The profile appears to be in use by another Chromium process`: 管理対象プロファイルディレクトリ内の古い
-  `Singleton*` ロックファイル。OpenClaw は、ロックが停止済みまたは
-  別ホストのプロセスを指している場合、これらのロックを削除して一度だけ再試行します。
-- `Missing X server or $DISPLAY`: デスクトップセッションのないホストで、表示可能なブラウザが明示的に要求されています。ローカル管理対象プロファイルは、
-  `DISPLAY` と `WAYLAND_DISPLAY` の両方が未設定の場合、Linux ではヘッドレスモードにフォールバックします。
-  `OPENCLAW_BROWSER_HEADLESS=0`、`browser.headless: false`、または
-  `browser.profiles.<name>.headless: false` を設定している場合は、その headed override を削除するか、
-  `OPENCLAW_BROWSER_HEADLESS=1` を設定するか、`Xvfb` を起動するか、
-  1 回限りの管理対象起動として `openclaw browser start --headless` を実行するか、実際のデスクトップセッションで
-  OpenClaw を実行してください。
+- `The profile appears to be in use by another Chromium process`: 管理対象プロファイルディレクトリに古い`Singleton*`ロックファイルがあります。ロックが終了済みまたは別ホストのプロセスを指している場合、OpenClawはこれらのロックを削除し、1回再試行します。
+- `Missing X server or $DISPLAY`: デスクトップセッションがないホストで、表示ありのブラウザが明示的に要求されています。Linuxでは、`DISPLAY`と`WAYLAND_DISPLAY`がどちらも未設定の場合、ローカル管理対象プロファイルはヘッドレスモードにフォールバックします。`OPENCLAW_BROWSER_HEADLESS=0`、`browser.headless: false`、または`browser.profiles.<name>.headless: false`を設定している場合は、その表示ありのオーバーライドを削除するか、`OPENCLAW_BROWSER_HEADLESS=1`を設定するか、`Xvfb`を起動するか、1回限りの管理対象起動として`openclaw browser start --headless`を実行するか、実際のデスクトップセッションでOpenClawを実行してください。
 
-### 解決策 1: Google Chrome をインストールする（推奨）
+### 解決策1: Google Chromeをインストールする（推奨）
 
 ```bash
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 sudo dpkg -i google-chrome-stable_current_amd64.deb
-sudo apt --fix-broken install -y  # if there are dependency errors
+sudo apt --fix-broken install -y  # 依存関係エラーがある場合
 ```
 
-`~/.openclaw/openclaw.json` を更新します。
+`~/.openclaw/openclaw.json`を更新します。
 
 ```json
 {
@@ -64,10 +55,9 @@ sudo apt --fix-broken install -y  # if there are dependency errors
 }
 ```
 
-### 解決策 2: snap Chromium を attach-only モードで使用する
+### 解決策2: snap版Chromiumをアタッチ専用モードで使用する
 
-snap Chromium を維持する必要がある場合は、OpenClaw がブラウザを起動する代わりに、
-手動で起動したブラウザへアタッチするように設定します。
+snap版Chromiumを使い続ける必要がある場合は、OpenClawがブラウザを起動するのではなく、手動で起動したブラウザにアタッチするよう設定します。
 
 ```json
 {
@@ -80,7 +70,7 @@ snap Chromium を維持する必要がある場合は、OpenClaw がブラウザ
 }
 ```
 
-Chromium を手動で起動します。
+Chromiumを手動で起動します。
 
 ```bash
 chromium-browser --headless --no-sandbox --disable-gpu \
@@ -89,7 +79,7 @@ chromium-browser --headless --no-sandbox --disable-gpu \
   about:blank &
 ```
 
-必要に応じて、systemd ユーザーサービスで自動起動します。
+必要に応じて、systemdユーザーサービスで自動起動します。
 
 ```ini
 # ~/.config/systemd/user/openclaw-browser.service
@@ -120,54 +110,41 @@ curl -s http://127.0.0.1:18791/tabs
 
 ### 設定リファレンス
 
-| オプション                       | 説明                                                               | デフォルト                                                         |
-| -------------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------ |
-| `browser.enabled`                | ブラウザ制御を有効化                                               | `true`                                                             |
-| `browser.executablePath`         | Chromium ベースのブラウザバイナリ（Chrome/Brave/Edge/Chromium）へのパス | 自動検出（Chromium ベースの場合は OS のデフォルトブラウザを優先） |
-| `browser.headless`               | GUI なしで実行                                                     | `false`                                                            |
-| `OPENCLAW_BROWSER_HEADLESS`      | ローカル管理対象ブラウザのヘッドレスモードに対するプロセス単位の上書き | 未設定                                                             |
-| `browser.noSandbox`              | `--no-sandbox` フラグを追加（一部の Linux セットアップで必要）     | `false`                                                            |
-| `browser.attachOnly`             | ブラウザを起動せず、既存のブラウザにのみアタッチ                   | `false`                                                            |
-| `browser.cdpPortRangeStart`      | 自動割り当てプロファイル用の開始ローカル CDP ポート                | `18800`（gateway ポートから派生）                                  |
-| `browser.localLaunchTimeoutMs`   | ローカル管理対象 Chrome の検出タイムアウト、最大 `120000`          | `15000`                                                            |
-| `browser.localCdpReadyTimeoutMs` | ローカル管理対象の起動後 CDP 準備完了タイムアウト、最大 `120000`   | `8000`                                                             |
+| オプション                       | 説明                                                                 | デフォルト                                                         |
+| -------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `browser.enabled`                | ブラウザ制御を有効にする                                             | `true`                                                             |
+| `browser.executablePath`         | Chromiumベースのブラウザバイナリ（Chrome/Brave/Edge/Chromium）へのパス | 自動検出（OSのデフォルトブラウザがChromiumベースの場合はそれを優先） |
+| `browser.headless`               | GUIなしで実行する                                                     | `false`                                                            |
+| `OPENCLAW_BROWSER_HEADLESS`      | ローカル管理対象ブラウザのヘッドレスモードに対するプロセス単位のオーバーライド | 未設定                                                             |
+| `browser.noSandbox`              | `--no-sandbox`フラグを追加する（一部のLinux環境で必要）               | `false`                                                            |
+| `browser.attachOnly`             | ブラウザを起動せず、既存のブラウザへのアタッチのみを行う              | `false`                                                            |
+| `browser.cdpPortRangeStart`      | 自動割り当てプロファイルで使用するローカルCDPポートの開始番号          | `18800`（Gatewayポートから導出）                                   |
+| `browser.localLaunchTimeoutMs`   | ローカル管理対象Chromeの検出タイムアウト（最大`120000`）              | `15000`                                                            |
+| `browser.localCdpReadyTimeoutMs` | ローカル管理対象Chrome起動後のCDP準備完了タイムアウト（最大`120000`）  | `8000`                                                             |
 
-どちらのタイムアウト値も `120000` ms 以下の正の整数である必要があります。それ以外の値は
-設定読み込み時に拒否されます。Raspberry Pi、古い VPS ホスト、または低速な
-ストレージでは、Chrome が CDP HTTP エンドポイントを公開するまでにさらに時間が必要な場合、
-`browser.localLaunchTimeoutMs` を増やしてください。起動は成功するものの
-`openclaw browser start` が引き続き `not reachable
-after start` を報告する場合は、`browser.localCdpReadyTimeoutMs` を増やしてください。
+両方のタイムアウト値には、`120000`ミリ秒以下の正の整数を指定する必要があります。それ以外の値は設定読み込み時に拒否されます。Raspberry Pi、古いVPSホスト、または低速なストレージで、ChromeがCDP HTTPエンドポイントを公開するまでに時間がかかる場合は、`browser.localLaunchTimeoutMs`を増やしてください。起動には成功しているものの、`openclaw browser start`で引き続き`not reachable after start`と報告される場合は、`browser.localCdpReadyTimeoutMs`を増やしてください。
 
-### 問題: profile="user" の Chrome タブが見つからない
+### 問題: profile="user"のChromeタブが見つからない
 
-`user`（`existing-session` / Chrome MCP）プロファイルを使用していますが、
-アタッチ先のタブが開かれていません。
+`user`（`existing-session` / Chrome MCP）プロファイルを使用していますが、アタッチ可能なタブが開かれていません。
 
-修正オプション:
+修正方法:
 
-1. 代わりに管理対象ブラウザを使用します:
+1. 代わりに管理対象ブラウザを使用します。
    `openclaw browser --browser-profile openclaw start`（または
-   `browser.defaultProfile: "openclaw"` を設定します）。
-2. 少なくとも 1 つのタブを開いた状態でローカル Chrome を実行し続け、その後
-   `--browser-profile user` で再試行します。
+   `browser.defaultProfile: "openclaw"`を設定）。
+2. ローカルのChromeを少なくとも1つのタブを開いた状態で実行し続けてから、
+   `--browser-profile user`を指定して再試行します。
 
-注記:
+注:
 
-- `user` はホスト専用です。Linux サーバー、コンテナ、またはリモートホストでは、代わりに
-  CDP プロファイルを推奨します。
-- `user` とその他の `existing-session` プロファイルは、現在の Chrome MCP
-  の制限を共有します: ref 駆動のアクションのみ、アップロードは 1 ファイルずつ、ダイアログの `timeoutMs`
-  上書きなし、`wait --load networkidle` なし、そして `responsebody`、PDF エクスポート、
-  ダウンロードインターセプト、バッチアクションなし。
-- ローカルの `openclaw` ドライバープロファイルは `cdpPort`/`cdpUrl` を自動割り当てします。これらは
-  リモート CDP の場合にのみ手動設定してください。
-- リモート CDP プロファイルは `http://`、`https://`、`ws://`、`wss://` を受け入れます。
-  `/json/version` 検出には HTTP(S) を使用し、ブラウザサービスが直接の DevTools ソケット URL を提供する場合は
-  WS(S) を使用してください。
+- `user`はホスト専用です。Linuxサーバー、コンテナ、またはリモートホストでは、代わりにCDPプロファイルを使用してください。
+- `user`およびその他の`existing-session`プロファイルには、現在のChrome MCPの制限が共通して適用されます。参照駆動型アクションのみ、アップロードごとに1ファイル、ダイアログの`timeoutMs`オーバーライド不可、`wait --load networkidle`不可、さらに`responsebody`、PDFエクスポート、ダウンロードのインターセプト、バッチアクションは使用できません。
+- ローカルの`openclaw`ドライバープロファイルでは、`cdpPort`/`cdpUrl`が自動的に割り当てられます。これらを手動で設定するのはリモートCDPの場合だけです。
+- リモートCDPプロファイルでは、`http://`、`https://`、`ws://`、`wss://`を使用できます。`/json/version`による検出にはHTTP(S)を使用し、ブラウザサービスからDevToolsソケットの直接URLが提供される場合はWS(S)を使用します。
 
-## 関連
+## 関連項目
 
 - [ブラウザ](/ja-JP/tools/browser)
-- [ブラウザログイン](/ja-JP/tools/browser-login)
-- [ブラウザ WSL2 トラブルシューティング](/ja-JP/tools/browser-wsl2-windows-remote-cdp-troubleshooting)
+- [ブラウザへのログイン](/ja-JP/tools/browser-login)
+- [ブラウザのWSL2トラブルシューティング](/ja-JP/tools/browser-wsl2-windows-remote-cdp-troubleshooting)

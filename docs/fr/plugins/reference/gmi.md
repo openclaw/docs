@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Vous installez, configurez ou auditez le plugin gmi
-summary: Plugin de fournisseur GMI Cloud OpenClaw.
+    - Vous installez, configurez ou auditez le Plugin gmi
+summary: Plugin de fournisseur GMI Cloud pour OpenClaw.
 title: Plugin Gmi
 x-i18n:
-    generated_at: "2026-06-27T17:54:27Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T02:56:58Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 19b0adb711875e2b7a1bbded01df13b8bec6c043b04acfd634b8acd897c3fa0f
@@ -15,17 +15,17 @@ x-i18n:
 
 # Plugin Gmi
 
-Plugin de fournisseur OpenClaw GMI Cloud.
+Plugin de fournisseur GMI Cloud pour OpenClaw.
 
 ## Distribution
 
-- Paquet : `@openclaw/gmi-provider`
-- Voie d’installation : npm ; ClawHub : `clawhub:@openclaw/gmi-provider`
+- Paquet : `@openclaw/gmi-provider`
+- Méthode d’installation : npm ; ClawHub : `clawhub:@openclaw/gmi-provider`
 
-## Surface
+## Interface
 
-fournisseurs : gmi, gmi-cloud, gmicloud
+fournisseurs : gmi, gmi-cloud, gmicloud
 
-## Docs connexes
+## Documentation associée
 
 - [gmi](/fr/providers/gmi)

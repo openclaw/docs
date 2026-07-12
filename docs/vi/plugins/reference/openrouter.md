@@ -4,27 +4,27 @@ read_when:
 summary: Thêm hỗ trợ nhà cung cấp mô hình OpenRouter cho OpenClaw.
 title: Plugin OpenRouter
 x-i18n:
-    generated_at: "2026-06-27T17:54:28Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:10:49Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3d23878973853230ff2621d9ea75b6fd3536366fa8520139d5424a4d261bc44a
+    source_hash: 67d69a5b9ea397b276596bd69023ae6ccc0b35051d6de0d843a68b98b641b843
     source_path: plugins/reference/openrouter.md
     workflow: 16
 ---
 
 # Plugin OpenRouter
 
-Thêm hỗ trợ nhà cung cấp mô hình OpenRouter cho OpenClaw.
+Bổ sung hỗ trợ nhà cung cấp mô hình OpenRouter cho OpenClaw.
 
 ## Phân phối
 
 - Gói: `@openclaw/openrouter-provider`
-- Tuyến cài đặt: được bao gồm trong OpenClaw
+- Cách cài đặt: đi kèm trong OpenClaw
 
-## Bề mặt
+## Phạm vi
 
-providers: openrouter; contracts: imageGenerationProviders, mediaUnderstandingProviders, musicGenerationProviders, speechProviders, videoGenerationProviders
+nhà cung cấp: openrouter; hợp đồng: imageGenerationProviders, mediaUnderstandingProviders, musicGenerationProviders, speechProviders, usageProviders, videoGenerationProviders
 
 ## Tài liệu liên quan
 

@@ -5,10 +5,9 @@ read_when:
 summary: Referência da CLI para `openclaw dns` (auxiliares de descoberta em redes de longa distância)
 title: DNS
 x-i18n:
-    generated_at: "2026-07-12T15:04:16Z"
+    generated_at: "2026-07-11T23:48:15Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: bb07353df03f9d169e1aede2da0b711ffb68e8c9d21d51359e93e92cc0818ca2
     source_path: cli/dns.md
@@ -17,12 +16,12 @@ x-i18n:
 
 # `openclaw dns`
 
-Utilitários de DNS para descoberta em redes de longa distância (Tailscale + CoreDNS). Atualmente, apenas macOS + CoreDNS do Homebrew.
+Utilitários de DNS para descoberta em redes de longa distância (Tailscale + CoreDNS). Atualmente, apenas macOS + CoreDNS via Homebrew.
 
 Relacionado:
 
 - Descoberta do Gateway: [Descoberta](/pt-BR/gateway/discovery)
-- Configuração da descoberta em redes de longa distância: [Configuração](/pt-BR/gateway/configuration)
+- Configuração de descoberta em redes de longa distância: [Configuração](/pt-BR/gateway/configuration)
 
 ## `dns setup`
 
@@ -34,24 +33,24 @@ openclaw dns setup --domain openclaw.internal
 openclaw dns setup --apply
 ```
 
-| Opção               | Efeito                                                                                                       |
-| ------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `--domain <domain>` | Domínio de descoberta em redes de longa distância (por exemplo, `openclaw.internal`).                        |
-| `--apply`           | Instala/atualiza a configuração do CoreDNS e (re)inicia o serviço. Requer sudo, apenas no macOS.             |
+| Opção               | Efeito                                                                                                      |
+| ------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `--domain <domain>` | Domínio de descoberta em redes de longa distância (por exemplo, `openclaw.internal`).                       |
+| `--apply`           | Instala/atualiza a configuração do CoreDNS e (re)inicia o serviço. Requer sudo; disponível apenas no macOS. |
 
 Sem `--domain`, o OpenClaw usa `discovery.wideArea.domain` da configuração.
 
-Sem `--apply`, o comando exibe apenas:
+Sem `--apply`, o comando apenas exibe:
 
 - Domínio de descoberta resolvido e caminho do arquivo de zona
 - IPs atuais da tailnet
 - Configuração de descoberta recomendada para `openclaw.json`
-- Valores de servidor de nomes/domínio do Split DNS do Tailscale a serem definidos no console de administração do Tailscale
+- Valores do servidor de nomes e do domínio do Split DNS do Tailscale a serem definidos no console de administração do Tailscale
 
-Com `--apply` (apenas no macOS, requer o CoreDNS do Homebrew):
+Com `--apply` (apenas no macOS; requer CoreDNS via Homebrew):
 
-- Inicializa o arquivo de zona caso ele não exista
-- Adiciona a diretiva de importação do CoreDNS caso ela não exista
+- Inicializa o arquivo de zona, caso não exista
+- Adiciona a seção de importação do CoreDNS, caso não exista
 - Reinicia o serviço `coredns` do brew
 
 ## Relacionado

@@ -1,102 +1,70 @@
 ---
 read_when:
-    - Anda ingin OpenClaw berjalan 24/7 di VPS awan (bukan laptop Anda)
-    - Anda menginginkan Gateway tingkat produksi yang selalu aktif di VPS Anda sendiri
+    - Anda ingin OpenClaw berjalan 24/7 di VPS cloud (bukan di laptop Anda)
+    - Anda menginginkan Gateway kelas produksi yang selalu aktif di VPS Anda sendiri
     - Anda menginginkan kendali penuh atas persistensi, berkas biner, dan perilaku mulai ulang
-    - Anda menjalankan OpenClaw di Docker di Hetzner atau penyedia serupa
-summary: Jalankan OpenClaw Gateway 24/7 di VPS Hetzner murah (Docker) dengan keadaan persisten dan biner bawaan
+    - Anda menjalankan OpenClaw di Docker pada Hetzner atau penyedia serupa
+summary: Jalankan Gateway OpenClaw 24/7 pada VPS Hetzner murah (Docker) dengan status persisten dan biner bawaan
 title: Hetzner
 x-i18n:
-    generated_at: "2026-05-06T17:57:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:19:16Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6102649b381b3b1ecd6f52e1cf518fc36147fe143ebc8fd4be5f44ab26cb3b4d
+    source_hash: 8ffebc0ce725fd219d13d0a556940327e70dab810b8fbee0b365c4870dc7109b
     source_path: install/hetzner.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-## Tujuan
+Jalankan Gateway OpenClaw persisten pada VPS Hetzner menggunakan Docker, dengan status tahan lama, biner bawaan, dan perilaku mulai ulang yang aman.
 
-Menjalankan OpenClaw Gateway yang persisten di VPS Hetzner menggunakan Docker, dengan state yang tahan lama, biner yang sudah disertakan, dan perilaku restart yang aman.
+Harga Hetzner dapat berubah; pilih VPS Debian/Ubuntu terkecil yang memenuhi kebutuhan dan tingkatkan kapasitasnya jika terjadi OOM.
 
-Jika Anda menginginkan "OpenClaw 24/7 seharga sekitar $5", ini adalah penyiapan andal yang paling sederhana.
-Harga Hetzner dapat berubah; pilih VPS Debian/Ubuntu terkecil dan tingkatkan skalanya jika Anda mengalami OOM.
+Gateway dapat diakses melalui penerusan porta SSH dari laptop Anda, atau melalui pemaparan porta langsung jika Anda mengelola firewall dan token sendiri.
 
 Pengingat model keamanan:
 
-- Agen yang dibagikan di perusahaan tidak masalah ketika semua orang berada dalam batas kepercayaan yang sama dan runtime hanya untuk bisnis.
-- Pertahankan pemisahan ketat: VPS/runtime khusus + akun khusus; jangan gunakan profil Apple/Google/browser/password-manager pribadi di host tersebut.
-- Jika pengguna saling tidak tepercaya, pisahkan berdasarkan gateway/host/pengguna OS.
+- Agen yang digunakan bersama dalam perusahaan dapat digunakan jika semua orang berada dalam batas kepercayaan yang sama dan runtime hanya digunakan untuk keperluan bisnis.
+- Pertahankan pemisahan ketat: VPS/runtime khusus + akun khusus; jangan gunakan profil Apple/Google/peramban/pengelola kata sandi pribadi pada host tersebut.
+- Jika para pengguna dapat saling bermusuhan, pisahkan berdasarkan Gateway/host/pengguna OS.
 
-Lihat [Keamanan](/id/gateway/security) dan [hosting VPS](/id/vps).
+Lihat [Keamanan](/id/gateway/security) dan [Hosting VPS](/id/vps).
 
-## Apa yang kita lakukan (dalam istilah sederhana)?
-
-- Menyewa server Linux kecil (VPS Hetzner)
-- Menginstal Docker (runtime aplikasi terisolasi)
-- Memulai OpenClaw Gateway di Docker
-- Mempertahankan `~/.openclaw` + `~/.openclaw/workspace` di host (tetap ada setelah restart/rebuild)
-- Mengakses Control UI dari laptop Anda melalui tunnel SSH
-
-State `~/.openclaw` yang di-mount tersebut mencakup `openclaw.json`, per agen
-`agents/<agentId>/agent/auth-profiles.json`, dan `.env`.
-
-Gateway dapat diakses melalui:
-
-- Penerusan port SSH dari laptop Anda
-- Paparan port langsung jika Anda mengelola firewall dan token sendiri
-
-Panduan ini mengasumsikan Ubuntu atau Debian di Hetzner.  
-Jika Anda menggunakan VPS Linux lain, sesuaikan paketnya.
-Untuk alur Docker generik, lihat [Docker](/id/install/docker).
-
----
-
-## Jalur cepat (operator berpengalaman)
-
-1. Sediakan VPS Hetzner
-2. Instal Docker
-3. Clone repositori OpenClaw
-4. Buat direktori host persisten
-5. Konfigurasikan `.env` dan `docker-compose.yml`
-6. Sertakan biner yang diperlukan ke dalam image
-7. `docker compose up -d`
-8. Verifikasi persistensi dan akses Gateway
-
----
+Panduan ini mengasumsikan penggunaan Ubuntu atau Debian di Hetzner. Pada VPS Linux lain, sesuaikan paketnya. Untuk alur Docker generik, lihat [Docker](/id/install/docker).
 
 ## Yang Anda perlukan
 
 - VPS Hetzner dengan akses root
 - Akses SSH dari laptop Anda
-- Kenyamanan dasar dengan SSH + salin/tempel
-- ~20 menit
 - Docker dan Docker Compose
-- Kredensial auth model
-- Kredensial provider opsional
-  - QR WhatsApp
-  - Token bot Telegram
-  - OAuth Gmail
+- Kredensial autentikasi model
+- Kredensial penyedia opsional (QR WhatsApp, token bot Telegram, OAuth Gmail)
+- ~20 menit
 
----
+## Jalur cepat
+
+1. Sediakan VPS Hetzner
+2. Instal Docker
+3. Klona repositori OpenClaw
+4. Buat direktori host persisten
+5. Konfigurasikan `.env` dan `docker-compose.yml`
+6. Tanamkan biner yang diperlukan ke dalam image
+7. `docker compose up -d`
+8. Verifikasi persistensi dan akses Gateway
 
 <Steps>
-  <Step title="Provision the VPS">
-    Buat VPS Ubuntu atau Debian di Hetzner.
-
-    Hubungkan sebagai root:
+  <Step title="Sediakan VPS">
+    Buat VPS Ubuntu atau Debian di Hetzner, lalu hubungkan sebagai root:
 
     ```bash
     ssh root@YOUR_VPS_IP
     ```
 
-    Panduan ini mengasumsikan VPS bersifat stateful.
-    Jangan perlakukan sebagai infrastruktur sekali pakai.
+    Perlakukan VPS sebagai infrastruktur yang memiliki status, bukan infrastruktur sekali pakai.
 
   </Step>
 
-  <Step title="Install Docker (on the VPS)">
+  <Step title="Instal Docker (di VPS)">
     ```bash
     apt-get update
     apt-get install -y git curl ca-certificates
@@ -112,31 +80,30 @@ Untuk alur Docker generik, lihat [Docker](/id/install/docker).
 
   </Step>
 
-  <Step title="Clone the OpenClaw repository">
+  <Step title="Klona repositori OpenClaw">
     ```bash
     git clone https://github.com/openclaw/openclaw.git
     cd openclaw
     ```
 
-    Panduan ini mengasumsikan Anda akan membangun image kustom untuk menjamin persistensi biner.
+    Panduan ini membangun image khusus agar semua biner yang Anda tanamkan tetap tersedia setelah mulai ulang.
 
   </Step>
 
-  <Step title="Create persistent host directories">
-    Container Docker bersifat sementara.
-    Semua state jangka panjang harus berada di host.
+  <Step title="Buat direktori host persisten">
+    Kontainer Docker bersifat sementara; semua status berumur panjang harus berada di host.
 
     ```bash
     mkdir -p /root/.openclaw/workspace
 
-    # Set ownership to the container user (uid 1000):
+    # Atur kepemilikan ke pengguna kontainer (uid 1000):
     chown -R 1000:1000 /root/.openclaw
     ```
 
   </Step>
 
-  <Step title="Configure environment variables">
-    Buat `.env` di root repositori.
+  <Step title="Konfigurasikan variabel lingkungan">
+    Buat `.env` di root repositori:
 
     ```bash
     OPENCLAW_IMAGE=openclaw:latest
@@ -151,26 +118,23 @@ Untuk alur Docker generik, lihat [Docker](/id/install/docker).
     XDG_CONFIG_HOME=/home/node/.openclaw
     ```
 
-    Atur `OPENCLAW_GATEWAY_TOKEN` ketika Anda ingin mengelola token gateway
-    stabil melalui `.env`; jika tidak, konfigurasikan `gateway.auth.token` sebelum
-    mengandalkan klien lintas restart. Jika kedua sumber tidak ada, OpenClaw menggunakan
-    token khusus runtime untuk startup tersebut. Buat kata sandi keyring dan tempelkan
-    ke `GOG_KEYRING_PASSWORD`:
+    Atur `OPENCLAW_GATEWAY_TOKEN` untuk mengelola token Gateway yang stabil melalui
+    `.env`; jika tidak, konfigurasikan `gateway.auth.token` sebelum mengandalkan klien
+    setelah mulai ulang. Jika keduanya tidak diatur, OpenClaw menggunakan token khusus runtime
+    untuk proses awal tersebut. Buat kata sandi keyring untuk `GOG_KEYRING_PASSWORD`:
 
     ```bash
     openssl rand -hex 32
     ```
 
-    **Jangan commit file ini.**
-
-    File `.env` ini untuk env container/runtime seperti `OPENCLAW_GATEWAY_TOKEN`.
-    Auth OAuth/API-key provider yang disimpan berada di
-    `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` yang di-mount.
+    **Jangan commit berkas ini.** Berkas ini menyimpan lingkungan kontainer/runtime seperti
+    `OPENCLAW_GATEWAY_TOKEN`. Autentikasi OAuth/kunci API penyedia yang tersimpan berada dalam
+    `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` yang dipasang.
 
   </Step>
 
-  <Step title="Docker Compose configuration">
-    Buat atau perbarui `docker-compose.yml`.
+  <Step title="Konfigurasi Docker Compose">
+    Buat atau perbarui `docker-compose.yml`:
 
     ```yaml
     services:
@@ -194,8 +158,8 @@ Untuk alur Docker generik, lihat [Docker](/id/install/docker).
           - ${OPENCLAW_CONFIG_DIR}:/home/node/.openclaw
           - ${OPENCLAW_WORKSPACE_DIR}:/home/node/.openclaw/workspace
         ports:
-          # Recommended: keep the Gateway loopback-only on the VPS; access via SSH tunnel.
-          # To expose it publicly, remove the `127.0.0.1:` prefix and firewall accordingly.
+          # Disarankan: pertahankan Gateway hanya pada loopback di VPS; akses melalui terowongan SSH.
+          # Untuk memaparkannya secara publik, hapus awalan `127.0.0.1:` dan konfigurasikan firewall sebagaimana mestinya.
           - "127.0.0.1:${OPENCLAW_GATEWAY_PORT}:18789"
         command:
           [
@@ -210,84 +174,80 @@ Untuk alur Docker generik, lihat [Docker](/id/install/docker).
           ]
     ```
 
-    `--allow-unconfigured` hanya untuk kemudahan bootstrap, bukan pengganti konfigurasi gateway yang benar. Tetap atur auth (`gateway.auth.token` atau kata sandi) dan gunakan pengaturan bind yang aman untuk deployment Anda.
+    `--allow-unconfigured` hanya ditujukan untuk memudahkan bootstrap, bukan sebagai pengganti konfigurasi Gateway yang sebenarnya. Tetap atur autentikasi (`gateway.auth.token` atau kata sandi) dan mode pengikatan yang aman untuk penerapan Anda.
 
   </Step>
 
-  <Step title="Shared Docker VM runtime steps">
-    Gunakan panduan runtime bersama untuk alur host Docker umum:
+  <Step title="Langkah runtime VM Docker bersama">
+    Ikuti panduan runtime bersama untuk alur host Docker umum:
 
-    - [Sertakan biner yang diperlukan ke dalam image](/id/install/docker-vm-runtime#bake-required-binaries-into-the-image)
-    - [Build dan luncurkan](/id/install/docker-vm-runtime#build-and-launch)
-    - [Apa yang bertahan di mana](/id/install/docker-vm-runtime#what-persists-where)
+    - [Tanamkan biner yang diperlukan ke dalam image](/id/install/docker-vm-runtime#bake-required-binaries-into-the-image)
+    - [Bangun dan jalankan](/id/install/docker-vm-runtime#build-and-launch)
+    - [Lokasi persistensi data](/id/install/docker-vm-runtime#what-persists-where)
     - [Pembaruan](/id/install/docker-vm-runtime#updates)
 
   </Step>
 
-  <Step title="Hetzner-specific access">
-    Setelah langkah build dan peluncuran bersama, selesaikan penyiapan berikut untuk membuka tunnel:
+  <Step title="Akses khusus Hetzner">
+    Setelah menyelesaikan langkah pembangunan dan peluncuran bersama, buka terowongan.
 
-    **Prasyarat:** Pastikan konfigurasi sshd VPS Anda mengizinkan penerusan TCP. Jika Anda
+    **Prasyarat:** pastikan konfigurasi sshd VPS Anda mengizinkan penerusan TCP. Jika Anda
     telah memperketat konfigurasi SSH, periksa `/etc/ssh/sshd_config` dan atur:
 
-    ```
+    ```text
     AllowTcpForwarding local
     ```
 
     `local` mengizinkan penerusan lokal `ssh -L` dari laptop Anda sekaligus memblokir
-    penerusan jarak jauh dari server. Mengaturnya ke `no` akan membuat tunnel gagal
-    dengan:
+    penerusan jarak jauh dari server. Mengaturnya ke `no` menyebabkan terowongan gagal dengan:
     `channel 3: open failed: administratively prohibited: open failed`
 
-    Setelah mengonfirmasi penerusan TCP diaktifkan, restart layanan SSH
-    (`systemctl restart ssh`) dan jalankan tunnel dari laptop Anda:
+    Setelah memastikan penerusan TCP diaktifkan, mulai ulang layanan SSH
+    (`systemctl restart ssh`) dan jalankan terowongan dari laptop Anda:
 
     ```bash
     ssh -N -L 18789:127.0.0.1:18789 root@YOUR_VPS_IP
     ```
 
-    Buka:
-
-    `http://127.0.0.1:18789/`
-
-    Tempel rahasia bersama yang dikonfigurasi. Panduan ini menggunakan token gateway secara
-    default; jika Anda beralih ke auth kata sandi, gunakan kata sandi tersebut.
+    Buka `http://127.0.0.1:18789/` dan tempelkan rahasia bersama yang telah dikonfigurasi.
+    Panduan ini menggunakan token Gateway secara default; gunakan kata sandi yang telah dikonfigurasi
+    jika Anda beralih ke autentikasi kata sandi.
 
   </Step>
 </Steps>
 
-Peta persistensi bersama berada di [Runtime VM Docker](/id/install/docker-vm-runtime#what-persists-where).
+Peta persistensi bersama tersedia di [Runtime VM Docker](/id/install/docker-vm-runtime#what-persists-where).
 
-## Infrastructure as Code (Terraform)
+## Infrastruktur sebagai Kode (Terraform)
 
-Untuk tim yang lebih memilih alur kerja infrastructure-as-code, penyiapan Terraform yang dikelola komunitas menyediakan:
+Untuk tim yang memilih alur kerja infrastruktur sebagai kode, konfigurasi Terraform yang dikelola komunitas menyediakan:
 
-- Konfigurasi Terraform modular dengan manajemen state jarak jauh
-- Provisioning otomatis melalui cloud-init
-- Skrip deployment (bootstrap, deploy, backup/restore)
-- Pengerasan keamanan (firewall, UFW, akses khusus SSH)
-- Konfigurasi tunnel SSH untuk akses gateway
+- Konfigurasi Terraform modular dengan pengelolaan status jarak jauh
+- Penyediaan otomatis melalui cloud-init
+- Skrip penerapan (bootstrap, penerapan, pencadangan/pemulihan)
+- Penguatan keamanan (firewall, UFW, akses hanya melalui SSH)
+- Konfigurasi terowongan SSH untuk akses Gateway
 
 **Repositori:**
 
 - Infrastruktur: [openclaw-terraform-hetzner](https://github.com/andreesg/openclaw-terraform-hetzner)
 - Konfigurasi Docker: [openclaw-docker-config](https://github.com/andreesg/openclaw-docker-config)
 
-Pendekatan ini melengkapi penyiapan Docker di atas dengan deployment yang dapat direproduksi, infrastruktur yang dikontrol versi, dan pemulihan bencana otomatis.
+Pendekatan ini melengkapi konfigurasi Docker di atas dengan penerapan yang dapat direproduksi, infrastruktur yang dikontrol versinya, dan pemulihan bencana otomatis.
 
 <Note>
-Dikelola komunitas. Untuk masalah atau kontribusi, lihat tautan repositori di atas.
+Dikelola oleh komunitas. Untuk masalah atau kontribusi, lihat tautan repositori di atas.
 </Note>
 
 ## Langkah berikutnya
 
-- Siapkan channel perpesanan: [Channel](/id/channels)
+- Siapkan saluran perpesanan: [Saluran](/id/channels)
 - Konfigurasikan Gateway: [Konfigurasi Gateway](/id/gateway/configuration)
-- Tetap perbarui OpenClaw: [Memperbarui](/id/install/updating)
+- Jaga agar OpenClaw tetap mutakhir: [Memperbarui](/id/install/updating)
 
 ## Terkait
 
 - [Ikhtisar instalasi](/id/install)
 - [Fly.io](/id/install/fly)
 - [Docker](/id/install/docker)
-- [hosting VPS](/id/vps)
+- [Hosting VPS](/id/vps)

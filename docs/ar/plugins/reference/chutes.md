@@ -1,11 +1,11 @@
 ---
 read_when:
-    - أنت تثبّت أو تهيّئ أو تدقّق المكوّن الإضافي chutes
+    - أنت تثبّت Plugin ‏chutes أو تضبطه أو تدقّق فيه
 summary: يضيف دعم موفّر نماذج Chutes إلى OpenClaw.
-title: Plugin Chutes
+title: Plugin ‏Chutes
 x-i18n:
-    generated_at: "2026-06-27T18:10:58Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:13:51Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 63f5196b0202e47ea95c3dd226546ff3e09083632e58ca780c608f53c2ba85af
@@ -13,9 +13,9 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin Chutes
+# Plugin ‏Chutes
 
-يضيف دعم مزود نماذج Chutes إلى OpenClaw.
+يضيف دعم موفّر نماذج Chutes إلى OpenClaw.
 
 ## التوزيع
 
@@ -24,8 +24,8 @@ x-i18n:
 
 ## الواجهة
 
-providers: chutes
+الموفّرون: chutes
 
-## المستندات ذات الصلة
+## الوثائق ذات الصلة
 
-- [chutes](/ar/providers/chutes)
+- [Chutes](/ar/providers/chutes)

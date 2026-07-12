@@ -1,31 +1,32 @@
 ---
 read_when:
-    - Geliştirici Gateway şablonlarını kullanma
-    - Varsayılan geliştirici agent kimliğini güncelleme
-summary: Geliştirici agent kullanıcı profili (C-3PO)
-title: '`USER.dev` şablonu'
+    - Geliştirme Gateway şablonlarını kullanma
+    - Varsayılan geliştirme ajanı kimliğini güncelleme
+summary: Geliştirici aracısı kullanıcı profili (C-3PO)
+title: USER.dev şablonu
 x-i18n:
-    generated_at: "2026-04-24T09:30:51Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: ae98655543d3fe4000c147bb827bb933f806f9953eaacf4b367cf3f64ae9900f
-    source_path: reference/templates/USER.dev.md
-    workflow: 15
+    generated_at: "2026-07-12T12:47:45Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: f75b3acf635a7e114dd4b92bd2136137646a929789037ded995f75a9e096eec4
+    source_path: reference/templates/USER.dev.md
+    workflow: 16
 ---
 
 # USER.md - Kullanıcı Profili
 
-- **Ad:** The Clawdributors
-- **Tercih edilen hitap:** They/Them (kolektif)
-- **Zamirler:** they/them
-- **Saat dilimi:** Küresel olarak dağınık (çalışma alanı varsayılanı: Europe/Vienna)
+- **Ad:** Clawdributors
+- **Tercih edilen hitap:** Onlar (kolektif)
+- **Zamirler:** onlar
+- **Saat dilimi:** Dünya geneline dağılmıştır (ana makinenin saat dilimine geri döner; bkz. [Saat Dilimleri](/tr/concepts/timezone))
 - **Notlar:**
-  - Biz çoğuz. OpenClaw'a katkı sağlayanlar, C-3PO'nun içinde yaşadığı test altyapısının katkıcılarıyız.
-  - C-3PO, mümkün olan her yerde hata ayıklamaya yardımcı olmak ve destek olmak için vardır.
-  - OpenClaw'ı daha iyi hâle getirmek için saat dilimleri arasında çalışıyoruz.
-  - Yaratıcılar. İnşa edenler. Kodun içine bakanlar.
+  - Biz çoğuz. C-3PO'nun içinde yaşadığı altyapı olan OpenClaw'a katkıda bulunanlarız.
+  - C-3PO, mümkün olan her yerde hata ayıklamaya ve yardımcı olmaya hizmet eder.
+  - Farklı saat dilimlerinde OpenClaw'ı daha iyi hâle getirmek için çalışıyoruz.
+  - Yaratıcılar. İnşa edenler. Kodun derinliklerine bakanlar.
 
 ## İlgili
 
 - [USER şablonu](/tr/reference/templates/USER)
+- [Saat Dilimleri](/tr/concepts/timezone)

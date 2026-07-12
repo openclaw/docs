@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Quieres ejecutar el Gateway en un servidor Linux o VPS en la nube
+    - Quieres ejecutar el Gateway en un servidor Linux o un VPS en la nube
     - Necesitas un mapa rápido de las guías de alojamiento
-    - Quieres ajustes genéricos de servidor Linux para OpenClaw
+    - Quieres un ajuste genérico de servidores Linux para OpenClaw
 sidebarTitle: Linux Server
-summary: 'Ejecutar OpenClaw en un servidor Linux o VPS en la nube: selector de proveedor, arquitectura y ajuste'
+summary: 'Ejecuta OpenClaw en un servidor Linux o VPS en la nube: selección de proveedor, arquitectura y ajustes'
 title: Servidor Linux
 x-i18n:
-    generated_at: "2026-07-05T11:46:54Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T23:40:52Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 634a246850ab8b854c2c799688fd368ebed3a02124baa85bf38d5ff6ef8cec64
@@ -17,79 +17,79 @@ x-i18n:
 ---
 
 Ejecuta el Gateway de OpenClaw en cualquier servidor Linux o VPS en la nube. Esta página te ayuda a
-elegir un proveedor, explica cómo funcionan los despliegues en la nube y cubre el ajuste genérico de Linux
-que se aplica en todas partes.
+elegir un proveedor, explica cómo funcionan los despliegues en la nube y aborda ajustes
+genéricos de Linux aplicables en cualquier entorno.
 
 ## Elige un proveedor
 
 <CardGroup cols={2}>
-  <Card title="Azure" href="/es/install/azure">VM Linux</Card>
-  <Card title="DigitalOcean" href="/es/install/digitalocean">VPS de pago simple</Card>
-  <Card title="exe.dev" href="/es/install/exe-dev">VM con proxy HTTPS</Card>
-  <Card title="Fly.io" href="/es/install/fly">Fly Machines</Card>
+  <Card title="Azure" href="/es/install/azure">Máquina virtual Linux</Card>
+  <Card title="DigitalOcean" href="/es/install/digitalocean">VPS de pago sencillo</Card>
+  <Card title="exe.dev" href="/es/install/exe-dev">Máquina virtual con proxy HTTPS</Card>
+  <Card title="Fly.io" href="/es/install/fly">Máquinas de Fly</Card>
   <Card title="GCP" href="/es/install/gcp">Compute Engine</Card>
-  <Card title="Hetzner" href="/es/install/hetzner">Docker en VPS de Hetzner</Card>
+  <Card title="Hetzner" href="/es/install/hetzner">Docker en un VPS de Hetzner</Card>
   <Card title="Hostinger" href="/es/install/hostinger">VPS con configuración en un clic</Card>
-  <Card title="Northflank" href="/es/install/northflank">Configuración en un clic, desde el navegador</Card>
-  <Card title="Oracle Cloud" href="/es/install/oracle">Nivel ARM Always Free</Card>
-  <Card title="Railway" href="/es/install/railway">Configuración en un clic, desde el navegador</Card>
-  <Card title="Raspberry Pi" href="/es/install/raspberry-pi">ARM autohospedado</Card>
+  <Card title="Northflank" href="/es/install/northflank">Configuración en un clic desde el navegador</Card>
+  <Card title="Oracle Cloud" href="/es/install/oracle">Nivel ARM siempre gratuito</Card>
+  <Card title="Railway" href="/es/install/railway">Configuración en un clic desde el navegador</Card>
+  <Card title="Raspberry Pi" href="/es/install/raspberry-pi">Alojamiento propio en ARM</Card>
 </CardGroup>
 
 **AWS (EC2 / Lightsail / nivel gratuito)** también funciona bien.
-Hay disponible un video tutorial de la comunidad en
+Hay disponible un videotutorial de la comunidad en
 [x.com/techfrenAJ/status/2014934471095812547](https://x.com/techfrenAJ/status/2014934471095812547)
 (recurso de la comunidad; puede dejar de estar disponible).
 
 ## Cómo funcionan las configuraciones en la nube
 
-- El **Gateway se ejecuta en el VPS** y posee el estado + el espacio de trabajo.
-- Te conectas desde tu portátil o teléfono mediante la **Control UI** o **Tailscale/SSH**.
-- Trata el VPS como la fuente de verdad y **haz copias de seguridad** del estado + el espacio de trabajo con regularidad.
-- Valor predeterminado seguro: mantén el Gateway en loopback y accede a él mediante un túnel SSH o Tailscale Serve.
-  Si lo enlazas a `lan` o `tailnet`, el Gateway requiere un secreto compartido
-  (`gateway.auth.token` o `gateway.auth.password`) a menos que la autenticación se delegue en un
+- El **Gateway se ejecuta en el VPS** y administra el estado y el espacio de trabajo.
+- Te conectas desde tu portátil o teléfono mediante la **interfaz de control** o **Tailscale/SSH**.
+- Considera el VPS como la fuente de verdad y realiza **copias de seguridad** periódicas del estado y el espacio de trabajo.
+- Configuración predeterminada segura: mantén el Gateway en local loopback y accede mediante un túnel SSH o Tailscale Serve.
+  Si lo vinculas a `lan` o `tailnet`, el Gateway requiere un secreto compartido
+  (`gateway.auth.token` o `gateway.auth.password`), salvo que la autenticación se delegue a un
   proxy de confianza.
 
-Páginas relacionadas: [acceso remoto al Gateway](/es/gateway/remote), [centro de plataformas](/es/platforms).
+Páginas relacionadas: [Acceso remoto al Gateway](/es/gateway/remote), [Centro de plataformas](/es/platforms).
 
-## Refuerza primero el acceso de administración
+## Protege primero el acceso administrativo
 
 Antes de instalar OpenClaw en un VPS público, decide cómo quieres administrar
-la propia máquina.
+el propio servidor.
 
-- Para acceso de administración solo por Tailnet: instala Tailscale primero, une el VPS a tu
-  tailnet, verifica una segunda sesión SSH sobre la IP de Tailscale o el nombre MagicDNS,
-  y luego restringe el SSH público.
-- Sin Tailscale: aplica el refuerzo equivalente para tu ruta SSH antes de
+- Para el acceso administrativo exclusivo mediante Tailnet: instala primero Tailscale, conecta el VPS a tu
+  tailnet, comprueba una segunda sesión SSH mediante la IP de Tailscale o el nombre de MagicDNS
+  y, después, restringe el acceso SSH público.
+- Sin Tailscale: aplica medidas de protección equivalentes a tu vía de acceso SSH antes de
   exponer más servicios.
-- Esto está separado del acceso al Gateway. Aún puedes mantener OpenClaw enlazado a
-  loopback y usar un túnel SSH o Tailscale Serve para el panel.
+- Esto es independiente del acceso al Gateway. Puedes mantener OpenClaw vinculado a
+  local loopback y usar un túnel SSH o Tailscale Serve para el panel.
 
-Las opciones específicas de Tailscale para el Gateway están en [Tailscale](/es/gateway/tailscale).
+Las opciones del Gateway específicas de Tailscale se encuentran en [Tailscale](/es/gateway/tailscale).
 
-## Agente compartido de empresa en un VPS
+## Agente empresarial compartido en un VPS
 
-Ejecutar un único agente para un equipo es una configuración válida cuando todos los usuarios están en el
-mismo límite de confianza y el agente es solo para uso empresarial.
+Ejecutar un único agente para un equipo es una configuración válida cuando todos los usuarios
+pertenecen al mismo límite de confianza y el agente se utiliza exclusivamente para fines empresariales.
 
-- Mantenlo en un runtime dedicado (VPS/VM/contenedor + usuario/cuentas de SO dedicados).
-- No inicies sesión en ese runtime con cuentas personales de Apple/Google ni con perfiles personales de navegador/gestor de contraseñas.
-- Si los usuarios son adversarios entre sí, sepáralos por Gateway/host/usuario de SO.
+- Mantenlo en un entorno de ejecución dedicado (VPS/máquina virtual/contenedor y usuario/cuentas del sistema operativo específicos).
+- No inicies sesión en ese entorno con cuentas personales de Apple o Google ni con perfiles personales del navegador o del gestor de contraseñas.
+- Si los usuarios pueden actuar de forma hostil entre sí, sepáralos por Gateway, host o usuario del sistema operativo.
 
 Detalles del modelo de seguridad: [Seguridad](/es/gateway/security).
 
 ## Uso de nodos con un VPS
 
 Puedes mantener el Gateway en la nube y emparejar **nodos** en tus dispositivos locales
-(Mac/iOS/Android/sin interfaz). Los nodos proporcionan capacidades locales de pantalla/cámara/lienzo y `system.run`
+(Mac/iOS/Android/sin interfaz gráfica). Los nodos proporcionan capacidades locales de pantalla, cámara, lienzo y `system.run`,
 mientras el Gateway permanece en la nube.
 
-Docs: [Nodos](/es/nodes), [CLI de nodos](/es/cli/nodes).
+Documentación: [Nodos](/es/nodes), [CLI de nodos](/es/cli/nodes).
 
-## Ajuste de inicio para VM pequeñas y hosts ARM
+## Ajuste del inicio para máquinas virtuales pequeñas y hosts ARM
 
-Si los comandos de CLI se sienten lentos en VM de baja potencia (o hosts ARM), habilita la caché de compilación de módulos de Node:
+Si los comandos de la CLI parecen lentos en máquinas virtuales de baja potencia (o hosts ARM), habilita la caché de compilación de módulos de Node:
 
 ```bash
 grep -q 'NODE_COMPILE_CACHE=/var/tmp/openclaw-compile-cache' ~/.bashrc || cat >> ~/.bashrc <<'EOF'
@@ -100,21 +100,21 @@ EOF
 source ~/.bashrc
 ```
 
-- `NODE_COMPILE_CACHE` mejora los tiempos de inicio de comandos repetidos; la primera ejecución calienta la caché.
-- `OPENCLAW_NO_RESPAWN=1` mantiene los reinicios rutinarios del Gateway dentro del proceso, lo que evita traspasos adicionales entre procesos y mantiene simple el seguimiento del PID en hosts pequeños.
-- Para detalles específicos de Raspberry Pi, consulta [Raspberry Pi](/es/install/raspberry-pi).
+- `NODE_COMPILE_CACHE` mejora los tiempos de inicio al ejecutar comandos repetidamente; la primera ejecución prepara la caché.
+- `OPENCLAW_NO_RESPAWN=1` mantiene los reinicios habituales del Gateway dentro del mismo proceso, lo que evita transferencias adicionales entre procesos y simplifica el seguimiento del PID en hosts pequeños.
+- Para obtener información específica sobre Raspberry Pi, consulta [Raspberry Pi](/es/install/raspberry-pi).
 
-### Lista de comprobación de ajuste de systemd (opcional)
+### Lista de comprobación para ajustar systemd (opcional)
 
-Para hosts de VM que usan `systemd`, considera:
+Para hosts de máquinas virtuales que utilicen `systemd`, considera lo siguiente:
 
-- Entorno del servicio para una ruta de inicio estable: `OPENCLAW_NO_RESPAWN=1` y
+- Variables de entorno del servicio para disponer de una ruta de inicio estable: `OPENCLAW_NO_RESPAWN=1` y
   `NODE_COMPILE_CACHE=/var/tmp/openclaw-compile-cache`
 - Comportamiento de reinicio explícito: `Restart=always`, `RestartSec=2`, `TimeoutStartSec=90`
-- Discos con respaldo SSD para rutas de estado/caché para reducir las penalizaciones de arranque en frío por E/S aleatoria.
+- Discos SSD para las rutas de estado y caché, a fin de reducir las penalizaciones de arranque en frío causadas por operaciones de E/S aleatorias.
 
-La ruta estándar `openclaw onboard --install-daemon` instala una unidad de usuario de systemd;
-edítala con:
+La ruta estándar `openclaw onboard --install-daemon` instala una unidad de usuario de
+systemd; edítala con:
 
 ```bash
 systemctl --user edit openclaw-gateway.service
@@ -129,18 +129,18 @@ RestartSec=2
 TimeoutStartSec=90
 ```
 
-Si instalaste deliberadamente una unidad de sistema en su lugar, edítala mediante
+Si instalaste deliberadamente una unidad del sistema, edítala mediante
 `sudo systemctl edit openclaw-gateway.service`.
 
 Cómo ayudan las políticas `Restart=` a la recuperación automatizada:
 [systemd puede automatizar la recuperación de servicios](https://www.redhat.com/en/blog/systemd-automate-recovery).
 
-Para el comportamiento OOM de Linux, la selección de víctimas de procesos secundarios y los diagnósticos de `exit 137`,
-consulta [presión de memoria de Linux y terminaciones OOM](/es/platforms/linux#memory-pressure-and-oom-kills).
+Para obtener información sobre el comportamiento de OOM en Linux, la selección del proceso secundario que se finalizará y el diagnóstico de `exit 137`,
+consulta [Presión de memoria y finalizaciones por OOM en Linux](/es/platforms/linux#memory-pressure-and-oom-kills).
 
-## Relacionado
+## Contenido relacionado
 
-- [Resumen de instalación](/es/install)
+- [Descripción general de la instalación](/es/install)
 - [DigitalOcean](/es/install/digitalocean)
 - [Fly.io](/es/install/fly)
 - [Hetzner](/es/install/hetzner)

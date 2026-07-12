@@ -1,31 +1,31 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz plugin tencent
-summary: Dodaje obsługę dostawcy modeli Tencent TokenHub w OpenClaw.
+    - Instalujesz, konfigurujesz lub przeprowadzasz audyt pluginu tencent
+summary: Dodaje do OpenClaw obsługę dostawców modeli Tencent TokenHub i Tencent Tokenplan.
 title: Plugin Tencent
 x-i18n:
-    generated_at: "2026-06-27T18:04:03Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:24:37Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: bf977c889dd59aff6f106fd14c19d23f28464622047a37c292f5f7ef1a6b0551
+    source_hash: 7f7925d89feaded27708e3f31d08ed4e29650cb8ce1152011fd920ed4fb864ef
     source_path: plugins/reference/tencent.md
     workflow: 16
 ---
 
-# Tencent Plugin
+# Plugin Tencent
 
-Dodaje obsługę dostawcy modeli Tencent TokenHub do OpenClaw.
+Dodaje do OpenClaw obsługę dostawców modeli Tencent TokenHub i Tencent Tokenplan.
 
 ## Dystrybucja
 
 - Pakiet: `@openclaw/tencent-provider`
-- Ścieżka instalacji: npm; ClawHub: `clawhub:@openclaw/tencent-provider`
+- Sposób instalacji: npm; ClawHub: `clawhub:@openclaw/tencent-provider`
 
-## Powierzchnia
+## Zakres
 
-providers: tencent-tokenhub
+dostawcy: tencent-tokenhub, tencent-tokenplan
 
 ## Powiązana dokumentacja
 
-- [tencent](/pl/providers/tencent)
+- [Tencent](/pl/providers/tencent)

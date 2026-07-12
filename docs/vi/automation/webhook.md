@@ -2,16 +2,16 @@
 summary: Chuyển hướng đến /automation/cron-jobs
 title: Webhook
 x-i18n:
-    generated_at: "2026-04-29T22:23:56Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:41:52Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b0241fc7232c73d1f595f18fdf1a2d65475c6a82e3068b0aefb4f95f41712086
+    source_hash: fde1180946aef371d4e44b24f3880f28e935a033c9a722ea3b188f893faf9e17
     source_path: automation/webhook.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Trang này đã được chuyển đến [Tác vụ đã lên lịch](/vi/automation/cron-jobs#webhooks). Xem [Tác vụ đã lên lịch](/vi/automation/cron-jobs#webhooks) để biết tài liệu Webhook.
+Trang này đã được chuyển. Tài liệu về Webhook hiện nằm tại [Tác vụ đã lên lịch](/vi/automation/cron-jobs#webhooks).
 
 ## Liên quan
 

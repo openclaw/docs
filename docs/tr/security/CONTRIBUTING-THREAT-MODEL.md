@@ -1,109 +1,93 @@
 ---
 read_when:
-    - Güvenlik bulguları veya tehdit senaryolarıyla katkıda bulunmak istiyorsunuz
+    - Güvenlik bulgılarına veya tehdit senaryolarına katkıda bulunmak istiyorsunuz
     - Tehdit modelini gözden geçirme veya güncelleme
 summary: OpenClaw tehdit modeline nasıl katkıda bulunulur
 title: Tehdit modeline katkıda bulunma
 x-i18n:
-    generated_at: "2026-05-06T18:00:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:14:39Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a23ca088d7893180a83c02d6971bbf1c32affa724e43019fd40276eaadc52278
+    source_hash: 4e2e5cd95e8a2bf5ee4bd167afedfadf9aa876e4260e2d0bfb5f414cd4255410
     source_path: security/CONTRIBUTING-THREAT-MODEL.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw'ı daha güvenli hale getirmeye yardımcı olduğunuz için teşekkürler. Bu tehdit modeli yaşayan bir belgedir ve herkesin katkısını memnuniyetle karşılarız; güvenlik uzmanı olmanız gerekmez.
+[Tehdit modeli](/tr/security/THREAT-MODEL-ATLAS) yaşayan bir belgedir. Herkesin katkısı memnuniyetle karşılanır; güvenlik veya MITRE ATLAS geçmişine sahip olmanız gerekmez.
+
+<Note>
+Bu bölüm, etkin güvenlik açıklarını bildirmek için değil, tehdit modeline ekleme yapmak içindir. İstismar edilebilir bir güvenlik açığı bulduysanız bunun yerine [Trust sayfasındaki](https://trust.openclaw.ai) sorumlu açıklama talimatlarını izleyin.
+</Note>
 
 ## Katkıda bulunma yolları
 
-### Tehdit ekleme
+**Tehdit ekleyin.** Saldırı senaryosunu kendi ifadelerinizle açıklayan bir konu kaydını [openclaw/trust](https://github.com/openclaw/trust/issues) üzerinde açın. Aşağıdakiler yararlıdır ancak zorunlu değildir:
 
-Ele almadığımız bir saldırı vektörü veya risk mi fark ettiniz? [openclaw/trust](https://github.com/openclaw/trust/issues) üzerinde bir issue açın ve bunu kendi sözlerinizle açıklayın. Herhangi bir çerçeveyi bilmeniz veya her alanı doldurmanız gerekmez; sadece senaryoyu açıklayın.
+- Saldırı senaryosu ve bunun nasıl istismar edilebileceği.
+- Etkilenen bileşenler (CLI, Gateway, kanallar, ClawHub, MCP sunucuları vb.).
+- Önem derecesine ilişkin tahmininiz (düşük / orta / yüksek / kritik).
+- İlgili araştırmalara, CVE'lere veya gerçek dünya örneklerine bağlantılar.
 
-**Eklenmesi faydalı olanlar (ancak zorunlu değildir):**
+Bakım sorumluları inceleme sırasında ATLAS eşlemesini, tehdit kimliğini ve risk düzeyini belirler.
 
-- Saldırı senaryosu ve nasıl istismar edilebileceği
-- OpenClaw'ın hangi bölümlerinin etkilendiği (CLI, Gateway, kanallar, ClawHub, MCP sunucuları vb.)
-- Sizce ne kadar ciddi olduğu (düşük / orta / yüksek / kritik)
-- İlgili araştırmalara, CVE'lere veya gerçek dünyadan örneklere bağlantılar
+**Bir azaltma önlemi önerin.** Tehdide başvuran bir konu kaydı veya PR açın. Öneriniz belirli ve uygulanabilir olsun: "Gateway üzerinde gönderici başına dakikada 10 iletiyle hız sınırlaması", "hız sınırlaması uygulayın" ifadesinden daha yararlıdır.
 
-İnceleme sırasında ATLAS eşlemesini, tehdit kimliklerini ve risk değerlendirmesini biz ele alırız. Bu ayrıntıları eklemek isterseniz harika, ancak beklenmez.
+**Bir saldırı zinciri önerin.** Saldırı zincirleri, birden fazla tehdidin gerçekçi bir senaryoda nasıl birleştiğini gösterir. Adımları ve bir saldırganın bunları nasıl zincirleyeceğini açıklayın; kısa bir anlatım, resmî bir şablondan daha etkilidir.
 
-> **Bu, canlı güvenlik açıklarını bildirmek için değil, tehdit modeline ekleme yapmak içindir.** İstismar edilebilir bir güvenlik açığı bulduysanız, sorumlu açıklama yönergeleri için [Trust sayfamıza](https://trust.openclaw.ai) bakın.
+**Mevcut içeriği düzeltin veya iyileştirin.** Yazım hataları, açıklamalar, güncelliğini yitirmiş bilgiler ve daha iyi örnekler için PR'lar memnuniyetle karşılanır; konu kaydı gerekmez.
 
-### Bir azaltım önerme
+## Çerçeve başvurusu
 
-Mevcut bir tehdidi nasıl ele alabileceğinize dair bir fikriniz mi var? Tehdide referans veren bir issue veya PR açın. Yararlı azaltımlar belirli ve uygulanabilirdir; örneğin "Gateway'de gönderici başına dakikada 10 mesaj oran sınırlaması", "oran sınırlaması uygulayın" ifadesinden daha iyidir.
+Tehditler; istem enjeksiyonu, araçların kötüye kullanılması ve ajan istismarı gibi yapay zekâ/makine öğrenimine özgü tehditlere yönelik bir çerçeve olan [MITRE ATLAS](https://atlas.mitre.org/) (Yapay Zekâ Sistemleri için Hasmane Tehdit Ortamı) ile eşleştirilir. Katkıda bulunmak için ATLAS'ı bilmeniz gerekmez; bakım sorumluları gönderimleri inceleme sırasında eşler.
 
-### Bir saldırı zinciri önerme
+**Tehdit kimlikleri.** Her tehdit, inceleme sırasında bakım sorumluları tarafından atanan `T-EXEC-003` benzeri bir kimlik alır.
 
-Saldırı zincirleri, birden çok tehdidin gerçekçi bir saldırı senaryosunda nasıl birleştiğini gösterir. Tehlikeli bir kombinasyon görürseniz, adımları ve bir saldırganın bunları nasıl zincirleyeceğini açıklayın. Saldırının pratikte nasıl geliştiğine dair kısa bir anlatı, resmi bir şablondan daha değerlidir.
+| Kod     | Kategori                                      |
+| ------- | --------------------------------------------- |
+| RECON   | Keşif - bilgi toplama                         |
+| ACCESS  | İlk erişim - sisteme giriş elde etme          |
+| EXEC    | Yürütme - kötü amaçlı eylemler gerçekleştirme |
+| PERSIST | Kalıcılık - erişimi sürdürme                   |
+| EVADE   | Savunmadan kaçınma - tespit edilmekten kaçınma |
+| DISC    | Ortam keşfi - ortam hakkında bilgi edinme     |
+| EXFIL   | Veri sızdırma - verileri çalma                |
+| IMPACT  | Etki - hasar veya kesinti                     |
 
-### Mevcut içeriği düzeltme veya iyileştirme
+**Risk düzeyleri.** Düzeyden emin değilseniz yalnızca etkiyi açıklayın; bakım sorumluları düzeyi değerlendirir.
 
-Yazım hataları, açıklamalar, güncel olmayan bilgiler, daha iyi örnekler; PR'lar memnuniyetle karşılanır, issue gerekmez.
-
-## Ne kullanıyoruz
-
-### MITRE ATLAS çerçevesi
-
-Bu tehdit modeli, prompt injection, araçların kötüye kullanımı ve ajan istismarı gibi AI/ML tehditleri için özel olarak tasarlanmış bir çerçeve olan [MITRE ATLAS](https://atlas.mitre.org/) (Adversarial Threat Landscape for AI Systems) üzerine kuruludur. Katkıda bulunmak için ATLAS bilmeniz gerekmez; gönderimleri inceleme sırasında çerçeveyle eşleştiririz.
-
-### Tehdit kimlikleri
-
-Her tehdit `T-EXEC-003` gibi bir kimlik alır. Kategoriler şunlardır:
-
-| Kod     | Kategori                                 |
-| ------- | ---------------------------------------- |
-| RECON   | Keşif - bilgi toplama                    |
-| ACCESS  | İlk erişim - giriş elde etme             |
-| EXEC    | Yürütme - kötü amaçlı eylemler çalıştırma |
-| PERSIST | Kalıcılık - erişimi sürdürme             |
-| EVADE   | Savunmadan kaçınma - tespitten kaçınma   |
-| DISC    | Keşif - ortam hakkında bilgi edinme      |
-| EXFIL   | Dışarı sızdırma - veri çalma             |
-| IMPACT  | Etki - hasar veya kesinti                |
-
-Kimlikler inceleme sırasında bakımcılar tarafından atanır. Birini seçmeniz gerekmez.
-
-### Risk seviyeleri
-
-| Seviye       | Anlam                                                            |
-| ------------ | ---------------------------------------------------------------- |
-| **Kritik**   | Tam sistem ele geçirilmesi veya yüksek olasılık + kritik etki    |
-| **Yüksek**   | Önemli hasar olası veya orta olasılık + kritik etki              |
-| **Orta**     | Orta düzey risk veya düşük olasılık + yüksek etki                |
-| **Düşük**    | Olası değil ve sınırlı etki                                      |
-
-Risk seviyesinden emin değilseniz, yalnızca etkiyi açıklayın; biz değerlendiririz.
+| Düzey        | Anlam                                                               |
+| ------------ | ------------------------------------------------------------------- |
+| **Kritik**   | Sistemin tamamen ele geçirilmesi veya yüksek olasılık + kritik etki |
+| **Yüksek**   | Önemli hasar olasılığı veya orta olasılık + kritik etki             |
+| **Orta**     | Orta düzey risk veya düşük olasılık + yüksek etki                   |
+| **Düşük**    | Düşük olasılık ve sınırlı etki                                     |
 
 ## İnceleme süreci
 
-1. **Triyaj** - Yeni gönderimleri 48 saat içinde inceleriz
-2. **Değerlendirme** - Uygulanabilirliği doğrular, ATLAS eşlemesini ve tehdit kimliğini atar, risk seviyesini doğrularız
-3. **Dokümantasyon** - Her şeyin biçimlendirilmiş ve eksiksiz olduğundan emin oluruz
-4. **Birleştirme** - Tehdit modeline ve görselleştirmeye eklenir
+1. **Ön değerlendirme** - yeni gönderimler 48 saat içinde incelenir.
+2. **Değerlendirme** - bakım sorumluları uygulanabilirliği doğrular, ATLAS eşlemesini ve tehdit kimliğini atar, risk düzeyini doğrular.
+3. **Belgelendirme** - biçimlendirme ve eksiksizlik denetimi yapılır.
+4. **Birleştirme** - tehdit modeline ve görselleştirmeye eklenir.
 
 ## Kaynaklar
 
-- [ATLAS Web Sitesi](https://atlas.mitre.org/)
-- [ATLAS Teknikleri](https://atlas.mitre.org/techniques/)
-- [ATLAS Vaka Çalışmaları](https://atlas.mitre.org/studies/)
-- [OpenClaw Tehdit Modeli](/tr/security/THREAT-MODEL-ATLAS)
+- [ATLAS web sitesi](https://atlas.mitre.org/)
+- [ATLAS teknikleri](https://atlas.mitre.org/techniques/)
+- [ATLAS vaka çalışmaları](https://atlas.mitre.org/studies/)
 
 ## İletişim
 
-- **Güvenlik açıkları:** Bildirim yönergeleri için [Trust sayfamıza](https://trust.openclaw.ai) bakın
-- **Tehdit modeli soruları:** [openclaw/trust](https://github.com/openclaw/trust/issues) üzerinde bir issue açın
-- **Genel sohbet:** Discord #security kanalı
+- **Güvenlik açıkları:** Bildirim talimatları için [Trust sayfasına](https://trust.openclaw.ai) bakın veya `security@openclaw.ai` adresini kullanın.
+- **Tehdit modeli soruları:** [openclaw/trust](https://github.com/openclaw/trust/issues) üzerinde bir konu kaydı açın.
+- **Genel sohbet:** Discord `#security` kanalı.
 
 ## Takdir
 
-Tehdit modeline katkıda bulunanlar, önemli katkıları için tehdit modeli teşekkürlerinde, sürüm notlarında ve OpenClaw güvenlik onur listesinde takdir edilir.
+Tehdit modeline katkıda bulunanlar, tehdit modeli teşekkür bölümünde ve sürüm notlarında anılır; önemli katkılar ayrıca OpenClaw güvenlik onur listesinde yer alır.
 
 ## İlgili
 
 - [Tehdit modeli](/tr/security/THREAT-MODEL-ATLAS)
-- [Resmi doğrulama](/tr/security/formal-verification)
+- [Olay müdahalesi](/tr/security/incident-response)
+- [Biçimsel doğrulama](/tr/security/formal-verification)

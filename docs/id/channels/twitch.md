@@ -2,30 +2,26 @@
 read_when:
     - Menyiapkan integrasi obrolan Twitch untuk OpenClaw
 sidebarTitle: Twitch
-summary: Konfigurasi dan penyiapan bot obrolan Twitch
+summary: 'Bot obrolan Twitch: instalasi, kredensial, kontrol akses, penyegaran token'
 title: Twitch
 x-i18n:
-    generated_at: "2026-05-02T22:16:41Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:01:56Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c0d5f16d1369e2783bec6e0c7b2d7bee8aae86f2a424b77b9adf14850de0f20b
+    source_hash: 70890c0c6a648a06ad47c35016571a57c3e518296ef95311e75e32c81e60e2db
     source_path: channels/twitch.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Dukungan chat Twitch melalui koneksi IRC. OpenClaw terhubung sebagai pengguna Twitch (akun bot) untuk menerima dan mengirim pesan di channel.
+Dukungan obrolan Twitch melalui antarmuka obrolan (IRC) Twitch dengan klien Twurple. OpenClaw masuk sebagai akun bot Twitch, bergabung dengan satu kanal untuk setiap akun yang dikonfigurasi, dan membalas di kanal tersebut.
 
-## Plugin bawaan
+## Instalasi
 
-<Note>
-Twitch disertakan sebagai Plugin bawaan dalam rilis OpenClaw saat ini, jadi build paket normal tidak memerlukan instalasi terpisah.
-</Note>
-
-Jika Anda menggunakan build lama atau instalasi kustom yang mengecualikan Twitch, instal paket npm secara langsung:
+Twitch disediakan sebagai plugin resmi; plugin ini bukan bagian dari instalasi inti.
 
 <Tabs>
-  <Tab title="npm registry">
+  <Tab title="registri npm">
     ```bash
     openclaw plugins install @openclaw/twitch
     ```
@@ -37,15 +33,15 @@ Jika Anda menggunakan build lama atau instalasi kustom yang mengecualikan Twitch
   </Tab>
 </Tabs>
 
-Gunakan paket dasar untuk mengikuti tag rilis resmi saat ini. Pin versi persis hanya ketika Anda memerlukan instalasi yang dapat direproduksi.
+`plugins install` mendaftarkan dan mengaktifkan plugin. Memilih Twitch saat menjalankan `openclaw onboard` atau `openclaw channels add` akan menginstalnya sesuai kebutuhan. Gunakan nama paket tanpa versi untuk mengikuti rilis saat ini; sematkan versi tertentu hanya untuk instalasi yang dapat direproduksi. Memerlukan OpenClaw 2026.4.10 atau yang lebih baru.
 
 Detail: [Plugin](/id/tools/plugin)
 
-## Penyiapan cepat (pemula)
+## Penyiapan cepat
 
 <Steps>
-  <Step title="Pastikan Plugin tersedia">
-    Rilis OpenClaw paket saat ini sudah menyertakannya. Instalasi lama/kustom dapat menambahkannya secara manual dengan perintah di atas.
+  <Step title="Instal plugin">
+    Lihat [Instalasi](#install) di atas.
   </Step>
   <Step title="Buat akun bot Twitch">
     Buat akun Twitch khusus untuk bot (atau gunakan akun yang sudah ada).
@@ -54,7 +50,7 @@ Detail: [Plugin](/id/tools/plugin)
     Gunakan [Twitch Token Generator](https://twitchtokengenerator.com/):
 
     - Pilih **Bot Token**
-    - Pastikan scope `chat:read` dan `chat:write` dipilih
+    - Pastikan cakupan `chat:read` dan `chat:write` dipilih
     - Salin **Client ID** dan **Access Token**
 
   </Step>
@@ -62,113 +58,53 @@ Detail: [Plugin](/id/tools/plugin)
     Gunakan [https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/](https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/) untuk mengonversi nama pengguna menjadi ID pengguna Twitch.
   </Step>
   <Step title="Konfigurasikan token">
-    - Env: `OPENCLAW_TWITCH_ACCESS_TOKEN=...` (hanya akun default)
-    - Atau config: `channels.twitch.accessToken`
+    - Variabel lingkungan: `OPENCLAW_TWITCH_ACCESS_TOKEN=...` (hanya akun bawaan)
+    - Atau konfigurasi: `channels.twitch.accessToken`
 
-    Jika keduanya diatur, config lebih diprioritaskan (fallback env hanya untuk akun default).
+    Jika keduanya ditetapkan, konfigurasi diprioritaskan (variabel lingkungan hanya menjadi fallback untuk akun bawaan).
 
   </Step>
-  <Step title="Mulai gateway">
-    Mulai gateway dengan channel yang telah dikonfigurasi.
+  <Step title="Mulai Gateway">
+    ```bash
+    openclaw gateway run
+    ```
   </Step>
 </Steps>
 
 <Warning>
-Tambahkan kontrol akses (`allowFrom` atau `allowedRoles`) untuk mencegah pengguna tidak sah memicu bot. `requireMention` bernilai default `true`.
+Tambahkan kontrol akses (`allowFrom` atau `allowedRoles`) untuk mencegah pengguna tanpa otorisasi memicu bot. Nilai bawaan `requireMention` adalah `true`.
 </Warning>
 
-Config minimal:
+Konfigurasi minimal:
 
 ```json5
 {
   channels: {
     twitch: {
       enabled: true,
-      username: "openclaw", // Bot's Twitch account
-      accessToken: "oauth:abc123...", // OAuth Access Token (or use OPENCLAW_TWITCH_ACCESS_TOKEN env var)
-      clientId: "xyz789...", // Client ID from Token Generator
-      channel: "vevisk", // Which Twitch channel's chat to join (required)
-      allowFrom: ["123456789"], // (recommended) Your Twitch user ID only - get it from https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/
+      username: "openclaw", // Akun Twitch bot (melakukan autentikasi)
+      accessToken: "oauth:abc123...", // Token akses OAuth (atau gunakan variabel lingkungan OPENCLAW_TWITCH_ACCESS_TOKEN)
+      clientId: "xyz789...", // ID klien dari Token Generator
+      channel: "yourchannel", // Obrolan kanal Twitch yang akan dimasuki (wajib)
+      allowFrom: ["123456789"], // (disarankan) Hanya ID pengguna Twitch Anda
     },
   },
 }
 ```
 
-## Apa ini
+## Apa itu
 
-- Channel Twitch yang dimiliki oleh Gateway.
-- Perutean deterministik: balasan selalu kembali ke Twitch.
-- Setiap akun dipetakan ke kunci sesi terisolasi `agent:<agentId>:twitch:<accountName>`.
-- `username` adalah akun bot (yang melakukan autentikasi), `channel` adalah ruang chat yang akan dimasuki.
+- Kanal Twitch yang dimiliki oleh Gateway.
+- Perutean deterministik: balasan selalu dikirim kembali ke kanal Twitch asal pesan.
+- Setiap kanal yang dimasuki dipetakan ke kunci sesi grup terisolasi `agent:<agentId>:twitch:group:<channel>`.
+- `username` adalah akun bot (yang melakukan autentikasi), sedangkan `channel` adalah ruang obrolan yang akan dimasuki. Setiap entri akun bergabung dengan tepat satu kanal.
+- Token berfungsi dengan atau tanpa prefiks `oauth:`; OpenClaw menormalisasi keduanya (wizard penyiapan mengharapkan bentuk `oauth:`).
 
-## Penyiapan (terperinci)
+## Penyegaran token (opsional)
 
-### Buat kredensial
+Token dari [Twitch Token Generator](https://twitchtokengenerator.com/) tidak dapat disegarkan oleh OpenClaw—buat ulang setelah kedaluwarsa (token bertahan beberapa jam; pendaftaran aplikasi tidak diperlukan).
 
-Gunakan [Twitch Token Generator](https://twitchtokengenerator.com/):
-
-- Pilih **Bot Token**
-- Pastikan scope `chat:read` dan `chat:write` dipilih
-- Salin **Client ID** dan **Access Token**
-
-<Note>
-Tidak perlu pendaftaran aplikasi manual. Token kedaluwarsa setelah beberapa jam.
-</Note>
-
-### Konfigurasikan bot
-
-<Tabs>
-  <Tab title="Variabel env (hanya akun default)">
-    ```bash
-    OPENCLAW_TWITCH_ACCESS_TOKEN=oauth:abc123...
-    ```
-  </Tab>
-  <Tab title="Config">
-    ```json5
-    {
-      channels: {
-        twitch: {
-          enabled: true,
-          username: "openclaw",
-          accessToken: "oauth:abc123...",
-          clientId: "xyz789...",
-          channel: "vevisk",
-        },
-      },
-    }
-    ```
-  </Tab>
-</Tabs>
-
-Jika env dan config sama-sama diatur, config lebih diprioritaskan.
-
-### Kontrol akses (direkomendasikan)
-
-```json5
-{
-  channels: {
-    twitch: {
-      allowFrom: ["123456789"], // (recommended) Your Twitch user ID only
-    },
-  },
-}
-```
-
-Utamakan `allowFrom` untuk allowlist ketat. Gunakan `allowedRoles` sebagai gantinya jika Anda menginginkan akses berbasis peran.
-
-**Peran yang tersedia:** `"moderator"`, `"owner"`, `"vip"`, `"subscriber"`, `"all"`.
-
-<Note>
-**Mengapa ID pengguna?** Nama pengguna dapat berubah, sehingga memungkinkan impersonasi. ID pengguna bersifat permanen.
-
-Temukan ID pengguna Twitch Anda: [https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/](https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/) (Konversi nama pengguna Twitch Anda menjadi ID)
-</Note>
-
-## Refresh token (opsional)
-
-Token dari [Twitch Token Generator](https://twitchtokengenerator.com/) tidak dapat direfresh secara otomatis - buat ulang saat kedaluwarsa.
-
-Untuk refresh token otomatis, buat aplikasi Twitch Anda sendiri di [Twitch Developer Console](https://dev.twitch.tv/console) dan tambahkan ke config:
+Untuk penyegaran otomatis, buat aplikasi Anda sendiri di [Twitch Developer Console](https://dev.twitch.tv/console), lalu tambahkan:
 
 ```json5
 {
@@ -181,13 +117,13 @@ Untuk refresh token otomatis, buat aplikasi Twitch Anda sendiri di [Twitch Devel
 }
 ```
 
-Bot otomatis merefresh token sebelum kedaluwarsa dan mencatat event refresh.
+Jika keduanya ditetapkan, plugin menggunakan penyedia autentikasi dengan penyegaran yang memperbarui token sebelum kedaluwarsa dan mencatat setiap penyegaran. Tanpa `refreshToken`, plugin mencatat `token refresh disabled (no refresh token)`; tanpa `clientSecret`, plugin menggunakan fallback berupa token statis (tanpa penyegaran).
 
-## Dukungan multi-akun
+## Dukungan multiakun
 
-Gunakan `channels.twitch.accounts` dengan token per akun. Lihat [Konfigurasi](/id/gateway/configuration) untuk pola bersama.
+Gunakan `channels.twitch.accounts` dengan kredensial per akun. Lihat [Konfigurasi](/id/gateway/configuration) untuk pola bersama.
 
-Contoh (satu akun bot di dua channel):
+Contoh (satu akun bot di dua kanal):
 
 ```json5
 {
@@ -198,7 +134,7 @@ Contoh (satu akun bot di dua channel):
           username: "openclaw",
           accessToken: "oauth:abc123...",
           clientId: "xyz789...",
-          channel: "vevisk",
+          channel: "yourchannel",
         },
         channel2: {
           username: "openclaw",
@@ -213,13 +149,17 @@ Contoh (satu akun bot di dua channel):
 ```
 
 <Note>
-Setiap akun memerlukan tokennya sendiri (satu token per channel).
+Setiap entri akun memerlukan `accessToken` tersendiri (variabel lingkungan hanya mencakup akun bawaan). Satu akun bergabung dengan tepat satu kanal, sehingga bergabung dengan dua kanal berarti memerlukan dua akun. `channels.twitch.defaultAccount` memilih akun yang menjadi bawaan.
 </Note>
 
 ## Kontrol akses
 
+`allowFrom` adalah daftar izin wajib berisi ID pengguna Twitch. Jika ditetapkan, `allowedRoles` diabaikan; jangan tetapkan `allowFrom` untuk menggunakan akses berbasis peran.
+
+**Peran yang tersedia:** `"moderator"`, `"owner"`, `"vip"`, `"subscriber"`, `"all"`.
+
 <Tabs>
-  <Tab title="Allowlist ID pengguna (paling aman)">
+  <Tab title="Daftar izin ID pengguna (paling aman)">
     ```json5
     {
       channels: {
@@ -248,12 +188,9 @@ Setiap akun memerlukan tokennya sendiri (satu token per channel).
       },
     }
     ```
-
-    `allowFrom` adalah allowlist ketat. Ketika diatur, hanya ID pengguna tersebut yang diizinkan. Jika Anda menginginkan akses berbasis peran, biarkan `allowFrom` tidak diatur dan konfigurasikan `allowedRoles` sebagai gantinya.
-
   </Tab>
   <Tab title="Nonaktifkan persyaratan @mention">
-    Secara default, `requireMention` bernilai `true`. Untuk menonaktifkan dan merespons semua pesan:
+    Secara bawaan, `requireMention` bernilai `true`. Untuk merespons semua pesan yang diizinkan:
 
     ```json5
     {
@@ -272,6 +209,12 @@ Setiap akun memerlukan tokennya sendiri (satu token per channel).
   </Tab>
 </Tabs>
 
+<Note>
+**Mengapa ID pengguna?** Nama pengguna dapat berubah sehingga memungkinkan penyamaran. ID pengguna bersifat permanen.
+
+Temukan ID Anda dengan [pengonversi nama pengguna ke ID](https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/).
+</Note>
+
 ## Pemecahan masalah
 
 Pertama, jalankan perintah diagnostik:
@@ -283,27 +226,28 @@ openclaw channels status --probe
 
 <AccordionGroup>
   <Accordion title="Bot tidak merespons pesan">
-    - **Periksa kontrol akses:** Pastikan ID pengguna Anda ada di `allowFrom`, atau hapus `allowFrom` sementara dan atur `allowedRoles: ["all"]` untuk menguji.
-    - **Periksa apakah bot berada di channel:** Bot harus masuk ke channel yang ditentukan di `channel`.
+    - **Periksa kontrol akses:** Pastikan ID pengguna Anda tercantum dalam `allowFrom`, atau hapus `allowFrom` untuk sementara dan tetapkan `allowedRoles: ["all"]` untuk menguji.
+    - **Periksa gerbang penyebutan:** Dengan `requireMention: true` (bawaan), pesan harus menyebut nama pengguna bot menggunakan @mention.
+    - **Periksa apakah bot berada di kanal:** Bot hanya bergabung dengan kanal yang disebutkan dalam `channel`.
 
   </Accordion>
   <Accordion title="Masalah token">
-    "Gagal terhubung" atau error autentikasi:
+    Kesalahan "Failed to connect" atau autentikasi:
 
-    - Pastikan `accessToken` adalah nilai token akses OAuth (biasanya dimulai dengan prefiks `oauth:`)
-    - Periksa apakah token memiliki scope `chat:read` dan `chat:write`
-    - Jika menggunakan refresh token, pastikan `clientSecret` dan `refreshToken` diatur
+    - Pastikan `accessToken` adalah nilai token akses OAuth (prefiks `oauth:` bersifat opsional)
+    - Pastikan token memiliki cakupan `chat:read` dan `chat:write`
+    - Jika menggunakan penyegaran token, pastikan `clientSecret` dan `refreshToken` ditetapkan
 
   </Accordion>
-  <Accordion title="Refresh token tidak berfungsi">
-    Periksa log untuk event refresh:
+  <Accordion title="Penyegaran token tidak berfungsi">
+    Periksa log untuk peristiwa penyegaran:
 
-    ```
+    ```text
     Using env token source for mybot
     Access token refreshed for user 123456 (expires in 14400s)
     ```
 
-    Jika Anda melihat "token refresh disabled (no refresh token)":
+    Jika Anda melihat `token refresh disabled (no refresh token)`:
 
     - Pastikan `clientSecret` disediakan
     - Pastikan `refreshToken` disediakan
@@ -311,55 +255,57 @@ openclaw channels status --probe
   </Accordion>
 </AccordionGroup>
 
-## Config
+## Konfigurasi
 
-### Config akun
+### Konfigurasi akun
 
-<ParamField path="username" type="string">
-  Nama pengguna bot.
+<ParamField path="username" type="string" required>
+  Nama pengguna bot (akun yang melakukan autentikasi).
 </ParamField>
-<ParamField path="accessToken" type="string">
-  Token akses OAuth dengan `chat:read` dan `chat:write`.
+<ParamField path="accessToken" type="string" required>
+  Token akses OAuth dengan `chat:read` dan `chat:write` (konfigurasi atau variabel lingkungan untuk akun bawaan).
 </ParamField>
-<ParamField path="clientId" type="string">
-  Client ID Twitch (dari Token Generator atau aplikasi Anda).
+<ParamField path="clientId" type="string" required>
+  ID Klien Twitch (dari Token Generator atau aplikasi Anda). Opsional dalam skema, tetapi wajib untuk terhubung.
 </ParamField>
 <ParamField path="channel" type="string" required>
-  Channel yang akan dimasuki.
+  Kanal yang akan dimasuki.
 </ParamField>
 <ParamField path="enabled" type="boolean" default="true">
   Aktifkan akun ini.
 </ParamField>
 <ParamField path="clientSecret" type="string">
-  Opsional: untuk refresh token otomatis.
+  Opsional: untuk penyegaran token otomatis.
 </ParamField>
 <ParamField path="refreshToken" type="string">
-  Opsional: untuk refresh token otomatis.
+  Opsional: untuk penyegaran token otomatis.
 </ParamField>
 <ParamField path="expiresIn" type="number">
-  Kedaluwarsa token dalam detik.
+  Masa kedaluwarsa token dalam detik (pelacakan penyegaran).
 </ParamField>
 <ParamField path="obtainmentTimestamp" type="number">
-  Timestamp token diperoleh.
+  Stempel waktu saat token diperoleh (pelacakan penyegaran).
 </ParamField>
 <ParamField path="allowFrom" type="string[]">
-  Allowlist ID pengguna.
+  Daftar izin ID pengguna. Jika ditetapkan, peran diabaikan.
 </ParamField>
 <ParamField path="allowedRoles" type='Array<"moderator" | "owner" | "vip" | "subscriber" | "all">'>
   Kontrol akses berbasis peran.
 </ParamField>
 <ParamField path="requireMention" type="boolean" default="true">
-  Memerlukan @mention.
+  Wajibkan @mention untuk memicu bot.
+</ParamField>
+<ParamField path="responsePrefix" type="string">
+  Penggantian prefiks respons keluar untuk akun ini.
 </ParamField>
 
-### Opsi provider
+### Opsi penyedia
 
-- `channels.twitch.enabled` - Aktifkan/nonaktifkan startup channel
-- `channels.twitch.username` - Nama pengguna bot (config satu akun yang disederhanakan)
-- `channels.twitch.accessToken` - Token akses OAuth (config satu akun yang disederhanakan)
-- `channels.twitch.clientId` - Client ID Twitch (config satu akun yang disederhanakan)
-- `channels.twitch.channel` - Channel yang akan dimasuki (config satu akun yang disederhanakan)
-- `channels.twitch.accounts.<accountName>` - Config multi-akun (semua field akun di atas)
+- `channels.twitch.enabled` - Aktifkan/nonaktifkan pemulaian kanal
+- `channels.twitch.username` / `accessToken` / `clientId` / `channel` - Konfigurasi satu akun yang disederhanakan (akun `default` implisit; diprioritaskan daripada `accounts.default`)
+- `channels.twitch.accounts.<accountName>` - Konfigurasi multiakun (semua bidang akun di atas)
+- `channels.twitch.defaultAccount` - Nama akun yang menjadi bawaan
+- `channels.twitch.markdown.tables` - Mode perenderan tabel Markdown (`off` | `bullets` | `code` | `block`)
 
 Contoh lengkap:
 
@@ -371,23 +317,19 @@ Contoh lengkap:
       username: "openclaw",
       accessToken: "oauth:abc123...",
       clientId: "xyz789...",
-      channel: "vevisk",
+      channel: "yourchannel",
       clientSecret: "secret123...",
       refreshToken: "refresh456...",
       allowFrom: ["123456789"],
-      allowedRoles: ["moderator", "vip"],
       accounts: {
-        default: {
+        second: {
           username: "mybot",
-          accessToken: "oauth:abc123...",
-          clientId: "xyz789...",
+          accessToken: "oauth:def456...",
+          clientId: "uvw012...",
           channel: "your_channel",
           enabled: true,
-          clientSecret: "secret123...",
-          refreshToken: "refresh456...",
           expiresIn: 14400,
           obtainmentTimestamp: 1706092800000,
-          allowFrom: ["123456789", "987654321"],
           allowedRoles: ["moderator"],
         },
       },
@@ -398,41 +340,38 @@ Contoh lengkap:
 
 ## Tindakan alat
 
-Agent dapat memanggil `twitch` dengan tindakan:
-
-- `send` - Kirim pesan ke channel
-
-Contoh:
+Agen dapat mengirim pesan Twitch melalui tindakan `send` pada alat pesan:
 
 ```json5
 {
-  action: "twitch",
-  params: {
-    message: "Hello Twitch!",
-    to: "#mychannel",
-  },
+  channel: "twitch",
+  action: "send",
+  to: "#mychannel",
+  message: "Hello Twitch!",
 }
 ```
 
-## Keamanan dan ops
+`to` bersifat opsional dan nilai bawaannya adalah `channel` yang dikonfigurasi untuk akun.
 
-- **Perlakukan token seperti kata sandi** — Jangan pernah commit token ke git.
-- **Gunakan refresh token otomatis** untuk bot yang berjalan lama.
-- **Gunakan allowlist ID pengguna** alih-alih nama pengguna untuk kontrol akses.
-- **Pantau log** untuk event refresh token dan status koneksi.
-- **Batasi scope token seminimal mungkin** — Hanya minta `chat:read` dan `chat:write`.
-- **Jika macet**: Mulai ulang gateway setelah memastikan tidak ada proses lain yang memiliki sesi.
+## Keamanan dan operasi
+
+- **Perlakukan token seperti kata sandi**—jangan pernah melakukan commit token ke git.
+- **Gunakan penyegaran token otomatis** untuk bot yang berjalan lama.
+- **Gunakan daftar izin ID pengguna** alih-alih nama pengguna untuk kontrol akses.
+- **Pantau log** untuk peristiwa penyegaran token dan status koneksi.
+- **Batasi cakupan token seminimal mungkin**—hanya minta `chat:read` dan `chat:write`.
+- **Jika mengalami kendala**: mulai ulang Gateway setelah memastikan tidak ada proses lain yang memiliki sesi tersebut.
 
 ## Batasan
 
-- **500 karakter** per pesan (dipecah otomatis pada batas kata).
-- Markdown dihapus sebelum pemecahan.
-- Tidak ada pembatasan laju (menggunakan batas laju bawaan Twitch).
+- **500 karakter** per pesan; balasan yang lebih panjang dipecah pada batas kata.
+- Markdown dihapus sebelum pengiriman (obrolan Twitch berupa teks biasa; baris baru menjadi spasi).
+- OpenClaw tidak menambahkan pembatasan laju sendiri; klien obrolan Twurple menangani batas laju Twitch.
 
 ## Terkait
 
-- [Perutean Channel](/id/channels/channel-routing) — perutean sesi untuk pesan
-- [Ikhtisar Channel](/id/channels) — semua channel yang didukung
-- [Grup](/id/channels/groups) — perilaku chat grup dan gating mention
-- [Pairing](/id/channels/pairing) — autentikasi DM dan alur pairing
-- [Keamanan](/id/gateway/security) — model akses dan hardening
+- [Perutean Kanal](/id/channels/channel-routing) — perutean sesi untuk pesan
+- [Ikhtisar Kanal](/id/channels) — semua kanal yang didukung
+- [Grup](/id/channels/groups) — perilaku obrolan grup dan gerbang penyebutan
+- [Pemasangan](/id/channels/pairing) — autentikasi DM dan alur pemasangan
+- [Keamanan](/id/gateway/security) — model akses dan penguatan

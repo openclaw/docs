@@ -1,34 +1,24 @@
 ---
 read_when:
-    - می‌خواهید وضعیت محلی را پاک کنید و در عین حال CLI نصب‌شده باقی بماند
-    - می‌خواهید ببینید در یک اجرای آزمایشی چه چیزهایی حذف می‌شوند
+    - می‌خواهید ضمن حفظ نصب CLI، وضعیت محلی را پاک کنید
+    - می‌خواهید پیش‌نمایشی آزمایشی از مواردی که حذف خواهند شد ببینید
 summary: مرجع CLI برای `openclaw reset` (بازنشانی وضعیت/پیکربندی محلی)
 title: بازنشانی
 x-i18n:
-    generated_at: "2026-04-29T22:38:36Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:54:08Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e4a4aba32fb44905d079bf2a22e582a3affbe9809eac9af237ce3e48da72b42c
+    source_hash: f18af9c5e187217de4c02f4b55de9a1c94f7246b74056dc660aa172168edcef9
     source_path: cli/reset.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw reset`
 
-پیکربندی/وضعیت محلی را بازنشانی کنید (CLI نصب‌شده باقی می‌ماند).
-
-گزینه‌ها:
-
-- `--scope <scope>`: `config`، `config+creds+sessions`، یا `full`
-- `--yes`: پیام‌های تأیید را رد کنید
-- `--non-interactive`: پیام‌ها را غیرفعال کنید؛ به `--scope` و `--yes` نیاز دارد
-- `--dry-run`: اقدام‌ها را بدون حذف فایل‌ها چاپ کنید
-
-مثال‌ها:
+پیکربندی/وضعیت محلی را بازنشانی می‌کند (CLI را نصب‌شده نگه می‌دارد).
 
 ```bash
-openclaw backup create
 openclaw reset
 openclaw reset --dry-run
 openclaw reset --scope config --yes --non-interactive
@@ -36,11 +26,29 @@ openclaw reset --scope config+creds+sessions --yes --non-interactive
 openclaw reset --scope full --yes --non-interactive
 ```
 
-نکات:
+## گزینه‌ها
 
-- اگر پیش از حذف وضعیت محلی یک نماگرفت قابل‌بازیابی می‌خواهید، ابتدا `openclaw backup create` را اجرا کنید.
-- اگر `--scope` را حذف کنید، `openclaw reset` از یک پیام تعاملی برای انتخاب آنچه باید حذف شود استفاده می‌کند.
-- `--non-interactive` فقط زمانی معتبر است که هر دو `--scope` و `--yes` تنظیم شده باشند.
+- `--scope <scope>`: یکی از `config`، `config+creds+sessions` یا `full`
+- `--yes`: از اعلان‌های تأیید عبور می‌کند
+- `--non-interactive`: اعلان‌ها را غیرفعال می‌کند؛ به `--scope` و `--yes` نیاز دارد
+- `--dry-run`: عملیات را بدون حذف فایل‌ها نمایش می‌دهد
+
+## محدوده‌ها
+
+| محدوده                 | موارد حذف‌شده                                                                                               | ابتدا Gateway را متوقف می‌کند |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| `config`                | فقط فایل پیکربندی                                                                                           | خیر                           |
+| `config+creds+sessions` | فایل پیکربندی، پوشه OAuth/اعتبارنامه‌ها و پوشه‌های نشست هر عامل                                            | بله                           |
+| `full`                  | پوشه وضعیت (شامل پیکربندی/اعتبارنامه‌ها، اگر درون آن قرار داشته باشند)، به‌همراه پوشه‌های فضای کاری و گواهی‌های فضای کاری | بله                           |
+
+`config+creds+sessions` و `full` پیش از حذف وضعیت، سرویس مدیریت‌شده Gateway در حال اجرا را متوقف می‌کنند.
+
+## نکته‌ها
+
+- پیش از حذف وضعیت محلی، ابتدا `openclaw backup create` را اجرا کنید تا یک اسنپ‌شات قابل‌بازیابی ایجاد شود.
+- بدون `--scope`، دستور `openclaw reset` به‌صورت تعاملی محدوده‌ای را که باید حذف شود درخواست می‌کند.
+- `--non-interactive` فقط زمانی معتبر است که هر دو گزینه `--scope` و `--yes` تنظیم شده باشند.
+- `config+creds+sessions` و `full` پس از پایان، پیام `Next: openclaw onboard --install-daemon` را نمایش می‌دهند.
 
 ## مرتبط
 

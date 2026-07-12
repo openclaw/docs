@@ -2,34 +2,34 @@
 read_when:
     - Harici CLI entegrasyonları ekleme veya değiştirme
     - RPC bağdaştırıcılarında hata ayıklama (signal-cli, imsg)
-summary: Harici CLI'ler (signal-cli, imsg) ve Gateway kalıpları için RPC adaptörleri
+summary: Harici CLI'lar (signal-cli, imsg) için RPC adaptörleri ve Gateway kalıpları
 title: RPC bağdaştırıcıları
 x-i18n:
-    generated_at: "2026-05-10T19:53:55Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:13:20Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 63556f140bee55821fa0a09ff9808e163728049f8db4c58f7bb4ceca6e1cac1a
+    source_hash: 6ddb3fb741c90fe7b01ba35376b71865584b1e507cf610705392452790fb76f5
     source_path: reference/rpc.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw, harici CLI'ları JSON-RPC aracılığıyla entegre eder. Bugün iki kalıp kullanılır.
+OpenClaw, harici CLI'ları JSON-RPC aracılığıyla entegre eder. Günümüzde iki kalıp kullanılır.
 
-## Kalıp A: HTTP daemon (signal-cli)
+## Kalıp A: HTTP daemon'ı (signal-cli)
 
-- `signal-cli`, HTTP üzerinden JSON-RPC ile daemon olarak çalışır.
+- `signal-cli`, HTTP üzerinden JSON-RPC kullanan bir daemon olarak çalışır.
 - Olay akışı SSE'dir (`/api/v1/events`).
-- Sağlık yoklaması: `/api/v1/check`.
+- Sistem durumu yoklaması: `/api/v1/check`.
 - `channels.signal.autoStart=true` olduğunda yaşam döngüsünü OpenClaw yönetir.
 
-Kurulum ve uç noktalar için [Signal](/tr/channels/signal) bölümüne bakın.
+Kurulum ve uç noktalar için [Signal](/tr/channels/signal) sayfasına bakın.
 
 ## Kalıp B: stdio alt süreci (imsg)
 
-- OpenClaw, [iMessage](/tr/channels/imessage) için `imsg rpc` komutunu alt süreç olarak başlatır.
-- JSON-RPC, stdin/stdout üzerinden satır sınırlıdır (satır başına bir JSON nesnesi).
-- TCP portu yoktur, daemon gerekmez.
+- OpenClaw, [iMessage](/tr/channels/imessage) için `imsg rpc` komutunu bir alt süreç olarak başlatır.
+- JSON-RPC, stdin/stdout üzerinden satırlarla ayrılmış biçimde iletilir (her satırda bir JSON nesnesi).
+- TCP bağlantı noktası ve daemon gerekmez.
 
 Kullanılan temel yöntemler:
 
@@ -38,12 +38,12 @@ Kullanılan temel yöntemler:
 - `send`
 - `chats.list` (yoklama/tanılama)
 
-Eski kurulum ve adresleme için [iMessage](/tr/channels/imessage) bölümüne bakın (`chat_id` tercih edilir).
+Kurulum ve adresleme (`chat_id`, görüntüleme dizelerine tercih edilir) için [iMessage](/tr/channels/imessage) sayfasına bakın.
 
 ## Bağdaştırıcı yönergeleri
 
-- Sürecin sahibi Gateway'dir (başlatma/durdurma sağlayıcı yaşam döngüsüne bağlıdır).
-- RPC istemcilerini dayanıklı tutun: zaman aşımları, çıkışta yeniden başlatma.
+- Süreci Gateway yönetir (başlatma/durdurma, sağlayıcının yaşam döngüsüne bağlıdır).
+- RPC istemcilerini dayanıklı tutun: zaman aşımları uygulayın, çıkış durumunda yeniden başlatın.
 - Görüntüleme dizeleri yerine kararlı kimlikleri (ör. `chat_id`) tercih edin.
 
 ## İlgili

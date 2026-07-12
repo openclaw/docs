@@ -1,45 +1,40 @@
 ---
 read_when:
-    - Створення інструментів хоста, які не можуть використовувати клієнт Gateway WebSocket RPC
+    - Створення інструментів для хоста, які не можуть використовувати RPC-клієнт WebSocket для Gateway
     - Надання доступу до автоматизації адміністрування Gateway через приватну довірену точку входу
-    - Аудит моделі безпеки для HTTP-доступу до методів Gateway
-summary: Надати доступ до вибраних методів площини керування Gateway через вбудований Plugin admin-http-rpc, який вмикається явно
-title: Адміністративний HTTP RPC Plugin
+    - Аудит моделі безпеки HTTP-доступу до методів Gateway
+summary: Надайте доступ до вибраних методів площини керування Gateway через вбудований Plugin admin-http-rpc, який потрібно явно ввімкнути
+title: Plugin адміністративного HTTP RPC
 x-i18n:
-    generated_at: "2026-06-27T17:48:13Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:28:50Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f701ef6be7457cd518ecb80b7ec5dade61bb057d62f4ca90984a4c1aa8fdf700
+    source_hash: 0709081efd0ce65cef7edac54df9a71978cbad17e2b25df83ac9075de938376c
     source_path: plugins/admin-http-rpc.md
     workflow: 16
 ---
 
-Вбудований Plugin `admin-http-rpc` надає вибрані методи площини керування Gateway через HTTP для довіреної автоматизації хоста, яка не може використовувати звичайний клієнт Gateway WebSocket RPC.
+Вбудований plugin `admin-http-rpc` надає через HTTP дозволений список методів площини керування Gateway для довіреної автоматизації на хості, яка не може підтримувати відкрите WebSocket-з’єднання з Gateway.
 
-Plugin входить до складу OpenClaw, але типово вимкнений. Коли його вимкнено, маршрут не реєструється. Коли його ввімкнено, він додає:
+Він постачається з OpenClaw, але за замовчуванням вимкнений; коли його вимкнено, маршрут не реєструється. Коли його ввімкнено, він додає `POST /api/v1/admin/rpc` до того самого прослуховувача, що й Gateway (`http://<gateway-host>:<port>/api/v1/admin/rpc`).
 
-- `POST /api/v1/admin/rpc`
-- той самий слухач, що й Gateway: `http://<gateway-host>:<port>/api/v1/admin/rpc`
-
-Вмикайте його лише для приватних інструментів хоста, автоматизації tailnet або довіреного внутрішнього ingress. Не відкривайте цей маршрут напряму для публічного інтернету.
+Вмикайте його лише для приватних інструментів хоста, автоматизації в tailnet або довіреної внутрішньої точки входу. Ніколи не надавайте прямий доступ до цього маршруту з публічного Інтернету.
 
 ## Перед увімкненням
 
-Адміністративний HTTP RPC — це повна операторська поверхня площини керування. Будь-який викликач, що проходить HTTP-автентифікацію Gateway, може викликати дозволені методи на цій сторінці.
+Адміністративний HTTP RPC — це повноцінна операторська поверхня площини керування: будь-який клієнт, що проходить HTTP-автентифікацію Gateway, може викликати наведені нижче дозволені методи. Вмикайте його, лише якщо виконуються всі ці умови:
 
-Використовуйте його, коли виконуються всі ці умови:
+- Клієнт є довіреним для керування Gateway.
+- Клієнт не може використовувати RPC-клієнт WebSocket.
+- Маршрут доступний лише через loopback, tailnet або приватну автентифіковану точку входу.
+- Ви перевірили дозволені методи, і вони відповідають автоматизації, яку плануєте запускати.
 
-- Викликачу довірено керувати Gateway.
-- Викликач не може використовувати клієнт WebSocket RPC.
-- Маршрут доступний лише через loopback, tailnet або приватний автентифікований ingress.
-- Ви переглянули дозволені методи, і вони відповідають автоматизації, яку ви плануєте запускати.
-
-Використовуйте шлях WebSocket RPC для клієнтів OpenClaw та інтерактивних інструментів, які можуть тримати WebSocket-з’єднання з Gateway відкритим.
+Для клієнтів OpenClaw та інтерактивних інструментів, які можуть підтримувати відкрите WebSocket-з’єднання з Gateway, натомість використовуйте WebSocket RPC.
 
 ## Увімкнення
 
-Увімкніть вбудований Plugin:
+Увімкніть вбудований plugin:
 
 <Tabs>
   <Tab title="CLI">
@@ -48,7 +43,7 @@ Plugin входить до складу OpenClaw, але типово вимкн
     openclaw gateway restart
     ```
   </Tab>
-  <Tab title="Config">
+  <Tab title="Конфігурація">
     ```json5
     {
       plugins: {
@@ -61,7 +56,7 @@ Plugin входить до складу OpenClaw, але типово вимкн
   </Tab>
 </Tabs>
 
-Маршрут реєструється під час запуску Plugin. Перезапустіть Gateway після зміни конфігурації Plugin.
+Маршрут реєструється під час запуску plugin, тому після зміни конфігурації plugin перезапустіть Gateway.
 
 Вимкніть його, коли HTTP-поверхня більше не потрібна:
 
@@ -81,7 +76,7 @@ curl -sS http://<gateway-host>:<port>/api/v1/admin/rpc \
   -d '{"method":"health","params":{}}'
 ```
 
-Успішна відповідь має `ok: true`:
+Успішна відповідь містить `ok: true`:
 
 ```json
 {
@@ -93,33 +88,30 @@ curl -sS http://<gateway-host>:<port>/api/v1/admin/rpc \
 }
 ```
 
-Коли Plugin вимкнено, маршрут повертає `404`, бо його не зареєстровано.
+Коли plugin вимкнено, маршрут повертає `404`, оскільки він не зареєстрований.
 
 ## Автентифікація
 
-Маршрут Plugin використовує HTTP-автентифікацію Gateway.
+Маршрут plugin використовує HTTP-автентифікацію Gateway.
 
-Поширені шляхи автентифікації:
+Поширені способи автентифікації:
 
-- автентифікація зі спільним секретом (`gateway.auth.mode="token"` або `"password"`): `Authorization: Bearer <token-or-password>`
-- довірена HTTP-автентифікація з ідентичністю (`gateway.auth.mode="trusted-proxy"`): маршрутизуйте через налаштований identity-aware proxy і дозвольте йому вставити потрібні заголовки ідентичності
-- відкритий доступ через приватний ingress (`gateway.auth.mode="none"`): заголовок автентифікації не потрібен
+- автентифікація за спільним секретом (`gateway.auth.mode="token"` або `"password"`): `Authorization: Bearer <token-or-password>`
+- довірена HTTP-автентифікація з даними ідентичності (`gateway.auth.mode="trusted-proxy"`): спрямуйте маршрут через налаштований проксі-сервер із підтримкою ідентичності та дозвольте йому додати необхідні заголовки ідентичності
+- відкрита автентифікація приватної точки входу (`gateway.auth.mode="none"`): заголовок автентифікації не потрібен
 
 ## Модель безпеки
 
-Ставтеся до цього Plugin як до повної операторської поверхні Gateway.
+Розглядайте цей plugin як повноцінну операторську поверхню Gateway.
 
-- Увімкнення Plugin навмисно надає доступ до дозволених адміністративних методів RPC за адресою `/api/v1/admin/rpc`.
-- Plugin оголошує зарезервований контракт маніфесту `contracts.gatewayMethodDispatch: ["authenticated-request"]`, щоб його HTTP-маршрут, автентифікований Gateway, міг диспетчеризувати методи площини керування в процесі.
-- Bearer-автентифікація зі спільним секретом підтверджує володіння операторським секретом gateway.
-- Для автентифікації `token` і `password` вужчі заголовки `x-openclaw-scopes` ігноруються, а звичайні повні операторські значення за замовчуванням відновлюються.
-- Довірені HTTP-режими з ідентичністю враховують `x-openclaw-scopes`, коли він наявний.
-- `gateway.auth.mode="none"` означає, що цей маршрут не автентифікований, якщо Plugin увімкнено. Використовуйте це лише за приватним ingress, якому ви повністю довіряєте.
-- Запити диспетчеризуються через ті самі обробники методів Gateway і перевірки scope, що й WebSocket RPC, після успішної автентифікації маршруту Plugin.
-- Тримайте цей маршрут на loopback, tailnet або приватному довіреному ingress. Не відкривайте його напряму для публічного інтернету.
-- Контракти маніфесту Plugin не є sandbox. Вони запобігають випадковому використанню зарезервованих допоміжних засобів SDK; довірені Plugin усе одно виконуються в процесі Gateway.
-
-Використовуйте окремі gateway, коли викликачі перетинають межі довіри.
+- Увімкнення plugin навмисно надає доступ до дозволених адміністративних методів RPC за адресою `/api/v1/admin/rpc`.
+- Plugin оголошує зарезервований контракт маніфесту `contracts.gatewayMethodDispatch: ["authenticated-request"]`, який дає змогу його HTTP-маршруту, автентифікованому через Gateway, передавати методи площини керування всередині процесу. Це не пісочниця: контракт запобігає випадковому використанню зарезервованих допоміжних засобів SDK, але довірені plugins усе одно виконуються в процесі Gateway.
+- Автентифікація за спільним секретом у форматі Bearer (`token`/`password`) підтверджує володіння операторським секретом Gateway; вужчі заголовки `x-openclaw-scopes` у цьому режимі ігноруються, а звичайні повні операторські дозволи за замовчуванням відновлюються.
+- Довірена HTTP-автентифікація з даними ідентичності (режим `trusted-proxy`) враховує `x-openclaw-scopes`, якщо його вказано.
+- `gateway.auth.mode="none"` означає, що цей маршрут не потребує автентифікації, якщо plugin увімкнено. Використовуйте цей режим лише за приватною точкою входу, якій ви повністю довіряєте.
+- Після успішної автентифікації маршруту plugin запити передаються через ті самі обробники методів Gateway і перевірки областей доступу, що й WebSocket RPC.
+- Маршрут залишається доступним під час підготовленої оренди призупинення. Обмежена перевірка запитів і локальна відповідь виявлення `commands.list` залишаються доступними. Серед методів, що передаються до Gateway, лише `gateway.suspend.prepare`, `gateway.suspend.status` і `gateway.suspend.resume` можуть виконуватися, коли приймання запитів закрито; інші дозволені методи повертають звичайну повторювану відповідь Gateway `UNAVAILABLE`.
+- Залишайте цей маршрут доступним лише через loopback, tailnet або приватну довірену точку входу. Не надавайте прямий доступ до нього з публічного Інтернету. Використовуйте окремі Gateway, коли клієнти належать до різних меж довіри.
 
 ## Запит
 
@@ -139,15 +131,15 @@ Content-Type: application/json
 
 Поля:
 
-- `id` (рядок, необов’язково): копіюється у відповідь. UUID генерується, якщо поле пропущено.
-- `method` (рядок, обов’язково): назва дозволеного методу Gateway.
-- `params` (будь-що, необов’язково): параметри, специфічні для методу.
+- `id` (рядок, необов’язкове): копіюється у відповідь. Якщо його не вказано, генерується UUID.
+- `method` (рядок, обов’язкове): ім’я дозволеного методу Gateway.
+- `params` (будь-який тип, необов’язкове): параметри конкретного методу.
 
-Типовий максимальний розмір тіла запиту становить 1 MB.
+Максимальний розмір тіла запиту за замовчуванням становить 1 МБ.
 
 ## Відповідь
 
-Успішні відповіді використовують форму Gateway RPC:
+Успішні відповіді використовують формат RPC Gateway:
 
 ```json
 {
@@ -157,7 +149,7 @@ Content-Type: application/json
 }
 ```
 
-Помилки методів Gateway використовують:
+Помилки методів Gateway використовують такий формат:
 
 ```json
 {
@@ -170,55 +162,72 @@ Content-Type: application/json
 }
 ```
 
-HTTP-статус відповідає помилці Gateway, коли це можливо. Наприклад, `INVALID_REQUEST` повертає `400`, а `UNAVAILABLE` повертає `503`.
+Статус HTTP відповідає коду помилки:
+
+| Код помилки                | Статус HTTP |
+| -------------------------- | ----------- |
+| `INVALID_REQUEST`          | 400         |
+| `APPROVAL_NOT_FOUND`       | 404         |
+| `NOT_LINKED`, `NOT_PAIRED` | 409         |
+| `UNAVAILABLE`              | 503         |
+| `AGENT_TIMEOUT`            | 504         |
+| будь-який інший код        | 500         |
 
 ## Дозволені методи
 
-- discovery: `commands.list`
-  Повертає назви методів HTTP RPC, дозволені цим Plugin.
-- gateway: `health`, `status`, `logs.tail`, `usage.status`, `usage.cost`, `gateway.restart.request`
-- config: `config.get`, `config.schema`, `config.schema.lookup`, `config.set`, `config.patch`, `config.apply`
-- channels: `channels.status`, `channels.start`, `channels.stop`, `channels.logout`
-- web: `web.login.start`, `web.login.wait`
-- models: `models.list`, `models.authStatus`
-- agents: `agents.list`, `agents.create`, `agents.update`, `agents.delete`
-- approvals: `exec.approvals.get`, `exec.approvals.set`, `exec.approvals.node.get`, `exec.approvals.node.set`
-- cron: `cron.status`, `cron.list`, `cron.get`, `cron.runs`, `cron.add`, `cron.update`, `cron.remove`, `cron.run`
-- devices: `device.pair.list`, `device.pair.approve`, `device.pair.reject`, `device.pair.remove`
-- nodes: `node.list`, `node.describe`, `node.pair.list`, `node.pair.approve`, `node.pair.reject`, `node.pair.remove`, `node.rename`
-- tasks: `tasks.list`, `tasks.get`, `tasks.cancel`
-- diagnostics: `doctor.memory.status`, `update.status`
+- виявлення: `commands.list`
+  Повертає імена методів HTTP RPC, дозволених цим plugin.
+- Gateway: `health`, `status`, `logs.tail`, `usage.status`, `usage.cost`, `gateway.restart.request`, `gateway.suspend.prepare`, `gateway.suspend.status`, `gateway.suspend.resume`
+- конфігурація: `config.get`, `config.schema`, `config.schema.lookup`, `config.set`, `config.patch`, `config.apply`
+- канали: `channels.status`, `channels.start`, `channels.stop`, `channels.logout`
+- веб: `web.login.start`, `web.login.wait`
+- моделі: `models.list`, `models.authStatus`
+- агенти: `agents.list`, `agents.create`, `agents.update`, `agents.delete`
+- схвалення: `exec.approvals.get`, `exec.approvals.set`, `exec.approvals.node.get`, `exec.approvals.node.set`
+- Cron: `cron.status`, `cron.list`, `cron.get`, `cron.runs`, `cron.add`, `cron.update`, `cron.remove`, `cron.run`
+- пристрої: `device.pair.list`, `device.pair.approve`, `device.pair.reject`, `device.pair.remove`
+- вузли: `node.list`, `node.describe`, `node.pair.list`, `node.pair.approve`, `node.pair.reject`, `node.pair.remove`, `node.rename`
+- завдання: `tasks.list`, `tasks.get`, `tasks.cancel`
+- діагностика: `doctor.memory.status`, `update.status`
 
-Інші методи Gateway заблоковані, доки їх навмисно не додадуть.
+Інші методи Gateway заблоковані, доки їх не буде додано навмисно.
 
 ## Порівняння з WebSocket
 
-Звичайний шлях Gateway WebSocket RPC залишається рекомендованим API площини керування для клієнтів OpenClaw. Використовуйте адміністративний HTTP RPC лише для інструментів хоста, яким потрібна HTTP-поверхня запит/відповідь.
+Звичайний шлях RPC через WebSocket Gateway залишається рекомендованим API площини керування для клієнтів OpenClaw. Використовуйте адміністративний HTTP RPC лише для інструментів хоста, яким потрібна HTTP-поверхня запит-відповідь.
 
-Клієнти WebSocket зі спільним токеном без довіреної ідентичності пристрою не можуть самостійно оголошувати адміністративні scope під час підключення. Адміністративний HTTP RPC навмисно дотримується наявної моделі довіреного HTTP-оператора: коли Plugin увімкнено, bearer-автентифікація зі спільним секретом трактується як повний операторський доступ до цієї адміністративної поверхні.
+WebSocket-клієнти зі спільним токеном без довіреної ідентичності пристрою не можуть самостійно оголошувати адміністративні області доступу під час підключення. Адміністративний HTTP RPC навмисно дотримується наявної моделі довіреного HTTP-оператора: коли plugin увімкнено, Bearer-автентифікація за спільним секретом вважається повним операторським доступом до цієї адміністративної поверхні.
 
 ## Усунення несправностей
 
 `404 Not Found`
 
-: Plugin вимкнено, Gateway не було перезапущено після його увімкнення, або запит надсилається до іншого процесу Gateway.
+: Plugin вимкнено, Gateway не було перезапущено після його увімкнення або запит надсилається до іншого процесу Gateway.
 
 `401 Unauthorized`
 
-: Запит не задовольнив HTTP-автентифікацію Gateway. Перевірте bearer-токен або заголовки ідентичності trusted-proxy.
+: Запит не пройшов HTTP-автентифікацію Gateway. Перевірте Bearer-токен або заголовки ідентичності `trusted-proxy`.
+
+`405 Method Not Allowed`
+
+: У запиті використано метод, відмінний від `POST`.
+
+`413 Payload Too Large`
+
+: Розмір тіла запиту перевищив обмеження в 1 МБ.
 
 `400 INVALID_REQUEST`
 
-: Тіло запиту не є дійсним JSON, поле `method` відсутнє, або метод не входить до allowlist Plugin.
+: Тіло запиту не є коректним JSON, поле `method` відсутнє, методу немає в дозволеному списку plugin або ідентифікатор відновлення після призупинення не відповідає активній оренді.
 
 `503 UNAVAILABLE`
 
-: Обробник методу Gateway недоступний. Перевірте журнали Gateway і повторіть спробу після завершення запуску Gateway.
+: Метод Gateway запускається, обмежений за частотою, призупинений або очікує завершення конкурентної операції призупинення чи відновлення. Перевірте `error.details`, якщо воно наявне, і зачекайте `error.retryAfterMs` перед повторною спробою.
 
-## Пов’язане
+## Пов’язані матеріали
 
-- [Операторські scope](/uk/gateway/operator-scopes)
+- [Області доступу оператора](/uk/gateway/operator-scopes)
 - [Безпека Gateway](/uk/gateway/security)
 - [Віддалений доступ](/uk/gateway/remote)
-- [Маніфест Plugin](/uk/plugins/manifest#contracts)
+- [Маніфест plugin](/uk/plugins/manifest#contracts-reference)
 - [Підшляхи SDK](/uk/plugins/sdk-subpaths)

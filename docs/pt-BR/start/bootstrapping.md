@@ -2,23 +2,22 @@
 read_when:
     - Entendendo o que acontece na primeira execução do agente
     - Explicando onde ficam os arquivos de inicialização
-    - Depuração da configuração de identidade da integração inicial
+    - Depuração da configuração de identidade na integração inicial
 sidebarTitle: Bootstrapping
-summary: Ritual de inicialização do agente que prepara o espaço de trabalho e os arquivos de identidade
+summary: Ritual de inicialização do agente que prepara o workspace e os arquivos de identidade
 title: Inicialização do agente
 x-i18n:
-    generated_at: "2026-07-12T15:46:22Z"
+    generated_at: "2026-07-12T00:24:23Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: d8356684e8567b02f558ce2b455a20019e55579e5dcb4625bb441d66656098e0
     source_path: start/bootstrapping.md
     workflow: 16
 ---
 
-A inicialização é o ritual da primeira execução que prepara um novo espaço de trabalho do agente e
-orienta o agente na escolha de uma identidade. Ela é executada uma vez, logo após
+O bootstrap é o ritual da primeira execução que prepara um novo espaço de trabalho do agente e
+orienta o agente na escolha de uma identidade. Ele é executado uma única vez, logo após
 a integração, no primeiro turno real do agente.
 
 ## O que acontece
@@ -26,10 +25,10 @@ a integração, no primeiro turno real do agente.
 Na primeira execução em um espaço de trabalho totalmente novo (o padrão é `~/.openclaw/workspace`),
 o OpenClaw:
 
-- Cria os arquivos iniciais `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md` e `BOOTSTRAP.md`.
-- Faz o agente seguir `BOOTSTRAP.md`: uma conversa em formato livre (não um formulário fixo de perguntas e respostas) para definir nome, personalidade e estilo.
-- Registra o que aprendeu em `IDENTITY.md`, `USER.md` e `SOUL.md`.
-- Exclui `BOOTSTRAP.md` quando o espaço de trabalho parece configurado, para que o ritual seja executado apenas uma vez.
+- Cria inicialmente `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md` e `BOOTSTRAP.md`.
+- Faz o agente seguir `BOOTSTRAP.md`: uma conversa em formato livre (não um formulário fixo de perguntas e respostas) para definir um nome, uma personalidade e um estilo.
+- Registra o que aprende em `IDENTITY.md`, `USER.md` e `SOUL.md`.
+- Exclui `BOOTSTRAP.md` assim que o espaço de trabalho parece configurado, para que o ritual seja executado apenas uma vez.
 
 Um espaço de trabalho é considerado configurado quando `SOUL.md`, `IDENTITY.md` ou `USER.md`
 difere de seu modelo inicial, ou quando existe uma pasta `memory/`.
@@ -43,23 +42,23 @@ difere de seu modelo inicial, ou quando existe uma pasta `memory/`.
 
 Para execuções com modelos integrados ou locais, o OpenClaw mantém `BOOTSTRAP.md` fora do
 contexto privilegiado do sistema. Na primeira execução interativa principal, ele ainda
-transmite o conteúdo do arquivo pelo prompt do usuário, para que modelos que não
-chamam a ferramenta `read` de forma confiável ainda possam concluir o ritual. Se a execução
+transmite o conteúdo do arquivo por meio do prompt do usuário, para que modelos que não
+chamam a ferramenta `read` de forma confiável ainda consigam concluir o ritual. Se a execução
 atual não puder acessar o espaço de trabalho com segurança, o agente receberá uma breve observação
-sobre a inicialização limitada em vez de uma saudação genérica.
+sobre bootstrap limitado em vez de uma saudação genérica.
 
-## Como ignorar a inicialização
+## Como ignorar o bootstrap
 
-Para ignorá-la em um espaço de trabalho previamente preparado, execute:
+Para ignorar essa etapa em um espaço de trabalho previamente preparado, execute:
 
 ```bash
 openclaw onboard --skip-bootstrap
 ```
 
-## Onde ela é executada
+## Onde ele é executado
 
-A inicialização sempre é executada no host do Gateway. Se o aplicativo para macOS se conectar a um
-Gateway remoto, o espaço de trabalho e seus arquivos de inicialização ficarão nessa máquina
+O bootstrap sempre é executado no host do Gateway. Se o aplicativo para macOS se conectar a um
+Gateway remoto, o espaço de trabalho e seus arquivos de bootstrap ficarão nessa máquina
 remota, não no Mac.
 
 <Note>

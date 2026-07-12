@@ -1,77 +1,190 @@
 ---
 read_when:
     - Запуск або виправлення тестів
-summary: Як запускати тести локально (vitest) і коли використовувати режими force/coverage
+summary: Як запускати тести локально (vitest) і коли використовувати режими примусового запуску та покриття коду
 title: Тести
 x-i18n:
-    generated_at: "2026-06-28T00:13:42Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:47:53Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7d1aed76ed59713ee320eb2d18dc8c392ea7a810096a0ef3131388001bbe5d8d
+    source_hash: 63806ea72da1579f4aa0b92c14a6d2d3e67990d6c10cb6d9b1b2bb4a63c8e140
     source_path: reference/test.md
     workflow: 16
 ---
 
-- Повний набір для тестування (набори тестів, live, Docker): [Тестування](/uk/help/testing)
-- Перевірка оновлень і пакетів Plugin: [Тестування оновлень і Plugin](/uk/help/testing-updates-plugins)
+- Повний набір засобів тестування (набори тестів, перевірки наживо, Docker): [Тестування](/uk/help/testing)
+- Перевірка оновлень і пакетів плагінів: [Тестування оновлень і плагінів](/uk/help/testing-updates-plugins)
 
-- Звичайний порядок локального тестування:
-  1. `pnpm test:changed` для Vitest-доказу в межах зміненої області.
-  2. `pnpm test <path-or-filter>` для одного файлу, каталогу або явної цілі.
-  3. `pnpm test` лише коли навмисно потрібен повний локальний набір Vitest.
-- `pnpm test:force`: завершує будь-який завислий процес gateway, що утримує типовий контрольний порт, а потім запускає повний набір Vitest з ізольованим портом gateway, щоб серверні тести не конфліктували із запущеним екземпляром. Використовуйте це, коли попередній запуск gateway залишив порт 18789 зайнятим.
-- `pnpm test:coverage`: запускає модульний набір із покриттям V8 (через `vitest.unit.config.ts`). Це coverage gate для типової модульної смуги, а не покриття всіх файлів усього репозиторію. Пороги становлять 70% для рядків/функцій/інструкцій і 55% для гілок. Оскільки `coverage.all` має значення false, а типова смуга обмежує включення покриття нешвидкими модульними тестами із сусідніми вихідними файлами, gate вимірює вихідний код, що належить цій смузі, замість кожного транзитивного імпорту, який випадково завантажується.
-- `pnpm test:coverage:changed`: запускає модульне покриття лише для файлів, змінених відносно `origin/main`.
-- `pnpm test:changed`: дешевий розумний запуск змінених тестів. Він запускає точні цілі з прямих змін тестів, сусідніх файлів `*.test.ts`, явних зіставлень вихідного коду та локального графа імпортів. Широкі зміни конфігурації/пакетів пропускаються, якщо вони не зіставляються з точними тестами.
-- `OPENCLAW_TEST_CHANGED_BROAD=1 pnpm test:changed`: явний широкий запуск змінених тестів. Використовуйте його, коли зміна тестового harness/конфігурації/пакета має повертатися до ширшої поведінки Vitest для змінених тестів.
-- `pnpm changed:lanes`: показує архітектурні смуги, спрацьовані diff відносно `origin/main`.
-- `pnpm check:changed`: поза CI типово делегує до Crabbox/Testbox, а потім запускає розумний changed check gate для diff відносно `origin/main` всередині віддаленої дочірньої задачі. Він запускає typecheck, lint і guard-команди для зачеплених архітектурних смуг, але не запускає тести Vitest. Використовуйте `pnpm test:changed` або явний `pnpm test <target>` для тестового доказу.
-- Робочі дерева Codex і linked/sparse checkouts: уникайте прямих локальних `pnpm test*`, `pnpm check*` і `pnpm crabbox:run`, якщо ви не перевірили, що pnpm не виконуватиме reconciliation залежностей. Для крихітного доказу з явним файлом використовуйте `node scripts/run-vitest.mjs <path-or-filter>`; для changed gates або широкого доказу використовуйте `node scripts/crabbox-wrapper.mjs run --provider blacksmith-testbox ... -- env OPENCLAW_CHECK_CHANGED_REMOTE_CHILD=1 OPENCLAW_CHANGED_LANES_RAW_SYNC=1 corepack pnpm check:changed`, щоб pnpm виконувався всередині Testbox.
-- Доказ Testbox через Crabbox: використовуйте фінальні `exitCode` і timing JSON з wrapper як результат команди. Делегований запуск Blacksmith GitHub Actions може показати `cancelled` після успішної SSH-команди, бо Testbox зупинено ззовні keepalive action; перевірте підсумок wrapper і вивід команди, перш ніж вважати це помилкою тесту.
-- `OPENCLAW_HEAVY_CHECK_LOCK_SCOPE=worktree <local-heavy-check command>`: утримує серіалізацію heavy-check всередині поточного робочого дерева замість спільного каталогу Git для команд на кшталт `pnpm check:changed` і таргетованого `pnpm test ...`. Використовуйте це лише на локальних хостах високої потужності, коли навмисно запускаєте незалежні перевірки в linked worktrees.
-- `pnpm test`: маршрутизує явні файлові/каталожні цілі через scoped Vitest lanes. Нецільові запуски є доказом повного набору: вони використовують фіксовані shard-групи, розгортаються до leaf configs для локального паралельного виконання та друкують очікуваний локальний shard fanout перед стартом. Група розширень завжди розгортається до shard configs для кожного розширення замість одного величезного процесу root-project.
-- Запуски test wrapper завершуються коротким підсумком `[test] passed|failed|skipped ... in ...`. Власний рядок тривалості Vitest залишається деталлю для кожного shard.
-- Спільний тестовий стан OpenClaw: використовуйте `src/test-utils/openclaw-test-state.ts` з Vitest, коли тесту потрібні ізольовані `HOME`, `OPENCLAW_STATE_DIR`, `OPENCLAW_CONFIG_PATH`, config fixture, workspace, agent dir або auth-profile store.
-- `pnpm test:env-mutations:report`: неблокувальний звіт про тести й harnesses, які напряму змінюють `HOME`, `OPENCLAW_STATE_DIR`, `OPENCLAW_CONFIG_PATH`, `OPENCLAW_WORKSPACE_DIR` або пов’язані env keys OpenClaw. Використовуйте його, щоб знаходити кандидатів для міграції на спільний helper test-state.
-- Мокований E2E Control UI: використовуйте `pnpm test:ui:e2e` для смуги Vitest + Playwright, яка запускає Vite Control UI і керує реальною сторінкою Chromium проти мокованого Gateway WebSocket. Тести розташовані в `ui/src/**/*.e2e.test.ts`; спільні mocks і controls розташовані в `ui/src/test-helpers/control-ui-e2e.ts`. `pnpm test:e2e` включає цю смугу. У робочих деревах Codex віддавайте перевагу `node scripts/run-vitest.mjs run --config test/vitest/vitest.ui-e2e.config.ts --configLoader runner ui/src/ui/e2e/chat-flow.e2e.test.ts` для крихітного таргетованого доказу після встановлення залежностей або Testbox/Crabbox для ширшого GUI-доказу.
-- Process E2E helpers: використовуйте `test/helpers/openclaw-test-instance.ts`, коли process-level E2E тесту Vitest потрібні запущений Gateway, CLI env, захоплення логів і cleanup в одному місці.
-- TUI PTY тести: використовуйте `node scripts/run-vitest.mjs run --config test/vitest/vitest.tui-pty.config.ts` для швидкої PTY-смуги з fake-backend. Використовуйте `OPENCLAW_TUI_PTY_INCLUDE_LOCAL=1` або `pnpm tui:pty:test:watch --mode local` для повільнішого smoke `tui --local`, який мокує лише зовнішній model endpoint. Перевіряйте стабільний видимий текст або виклики fixture, а не сирі ANSI snapshots.
-- Docker/Bash E2E helpers: смуги, що source `scripts/lib/docker-e2e-image.sh`, можуть передавати `docker_e2e_test_state_shell_b64 <label> <scenario>` у контейнер і декодувати це за допомогою `scripts/lib/openclaw-e2e-instance.sh`; multi-home scripts можуть передавати `docker_e2e_test_state_function_b64` і викликати `openclaw_test_state_create <label> <scenario>` у кожному flow. Нижчорівневі callers можуть використовувати `scripts/lib/openclaw-test-state.mjs shell --label <name> --scenario <name>` для shell snippet всередині контейнера або `node scripts/lib/openclaw-test-state.mjs -- create --label <name> --scenario <name> --env-file <path> --json` для sourceable host env file. `--` перед `create` не дає новішим Node runtimes трактувати `--env-file` як Node flag. Docker/Bash lanes, які запускають Gateway, можуть source `scripts/lib/openclaw-e2e-instance.sh` всередині контейнера для entrypoint resolution, мокованого запуску OpenAI, foreground/background запуску Gateway, readiness probes, state env export, log dumps і process cleanup.
-- Повні запуски, запуски розширень і include-pattern shard runs оновлюють локальні timing data в `.artifacts/vitest-shard-timings.json`; подальші whole-config runs використовують ці timings для балансування повільних і швидких shards. Include-pattern CI shards додають shard name до timing key, що зберігає видимість filtered shard timings без заміни whole-config timing data. Установіть `OPENCLAW_TEST_PROJECTS_TIMINGS=0`, щоб ігнорувати локальний timing artifact.
-- Вибрані test files `plugin-sdk` і `commands` тепер маршрутизуються через dedicated light lanes, які залишають лише `test/setup.ts`, залишаючи runtime-heavy cases на їхніх наявних смугах.
-- Вихідні файли із сусідніми тестами зіставляються з цим сусіднім тестом перед fallback до ширших directory globs. Зміни helper під `src/channels/plugins/contracts/test-helpers`, `src/plugin-sdk/test-helpers` і `src/plugins/contracts` використовують локальний граф імпортів для запуску importing tests замість broad-running кожного shard, коли dependency path точний.
-- `auto-reply` тепер також розділяється на три dedicated configs (`core`, `top-level`, `reply`), щоб reply harness не домінував над легшими top-level status/token/helper tests.
-- Базова конфігурація Vitest тепер типово використовує `pool: "threads"` і `isolate: false`, зі спільним non-isolated runner, увімкненим у configs репозиторію.
+## Типова поведінка агента
+
+Сеанси агента запускають тести й обчислювально інтенсивні перевірки віддалено
+через Crabbox. Для довіреного коду супровідників типовим є Blacksmith Testbox.
+Налаштований робочий процес Testbox завантажує облікові дані, тому недовірений код
+учасників або форків натомість має використовувати CI форку без секретів або
+санітизований прямий AWS Crabbox.
+
+Якщо завдання з довіреним кодом, імовірно, потребуватиме тестів або ретельного
+підтвердження, негайно виконайте попередній прогрів у фоновому командному сеансі,
+продовжуйте працювати, поки він готується, повторно використовуйте повернений
+ідентифікатор `tbx_...`, синхронізуйте поточну робочу копію під час кожного запуску
+та зупиніть його перед передаванням роботи:
+
+```bash
+node scripts/crabbox-wrapper.mjs warmup --provider blacksmith-testbox --keep --timing-json
+```
+
+Після першого успішного повторного використання обгортка записує базу оренди,
+залежності та відбиток робочого процесу Testbox у `.crabbox/testbox-leases/`.
+Після змін лише у вихідному коді прогріте середовище продовжує використовуватися.
+Зміна бази злиття, файла блокування, вхідних даних менеджера пакетів, обгортки або
+робочого процесу Testbox спричиняє безпечну відмову й вимагає нової оренди. Кожен
+запуск усе одно синхронізує поточну робочу копію.
+`OPENCLAW_TESTBOX_ALLOW_STALE=1` призначено лише для навмисної діагностики, а не
+для підтвердження випуску.
+
+Наведені нижче команди локального тестування призначені для робочих процесів
+людей або явного резервного варіанта для агента, запитаного користувачем.
+Про недоступність віддаленого постачальника потрібно повідомити; вона не дає
+дозволу непомітно запускати широкий набір локальних перевірок.
+
+Для недовіреного коду виконайте попередній прогрів із `--provider aws`. Кожен
+запуск має встановлювати `CRABBOX_ENV_ALLOW=CI`, передавати
+`--provider aws --no-hydrate` і використовувати новий тимчасовий віддалений
+`HOME` перед установленням залежностей або запуском тестів. Використовуйте
+щойно прогріту оренду, призначену саме для цього недовіреного джерела; ніколи
+не використовуйте повторно довірену або раніше завантажену обліковими даними
+оренду. Запускайте встановлений довірений виконуваний файл Crabbox із чистої
+довіреної робочої копії `main` і отримуйте лише віддалений PR за допомогою
+`--fresh-pr`; ніколи не виконуйте локально обгортку чи конфігурацію з
+недовіреної робочої копії. Скасуйте встановлення
+`CRABBOX_AWS_INSTANCE_PROFILE` і виконайте безпечну відмову, якщо визначене
+значення `aws.instanceProfile` не порожнє. Перед будь-яким установленням або
+тестуванням за допомогою довірених інструментів з абсолютними шляхами вимагайте
+токен IMDSv2, доведіть, що кінцева точка облікових даних IAM повертає 404, і
+перевірте, що віддалене значення `git rev-parse HEAD` дорівнює повному
+перевіреному SHA головної версії PR. Прив’яжіть оренду до цього SHA та
+зупиніть і прогрійте її повторно, коли головна версія зміниться. Завантажте
+довірений `scripts/crabbox-untrusted-bootstrap.sh` із чистої гілки `main`
+разом із `--fresh-pr`; він установлює закріплені версії Node/pnpm, перевіряє
+SHA та закріплену версію менеджера пакетів, ізолює `HOME`, установлює
+залежності, а потім виконує запитаний тест. Якщо брокер не може довести
+відсутність ролі або віддаленого PR, використовуйте CI форку без секретів.
+Не використовуйте `hydrate-github`, `--no-sync` або робочий процес Testbox із
+завантаженими обліковими даними.
+Скасуйте всі перевизначення `CRABBOX_TAILSCALE*`, примусово встановіть
+`--network public --tailscale=false`, очистьте прапорці вузла виходу та LAN
+і перед завантаженням будь-якого сценарію вимагайте, щоб `crabbox inspect`
+повідомляв про загальнодоступну мережу без стану Tailscale.
+
+## Звичайний порядок локального запуску
+
+1. `pnpm test:changed` для підтвердження зміненого обсягу за допомогою Vitest.
+2. `pnpm test <path-or-filter>` для одного файла, каталогу або явно заданої цілі.
+3. `pnpm test` лише тоді, коли вам навмисно потрібен повний локальний набір тестів Vitest.
+
+У робочому дереві Codex або пов’язаній чи розрідженій робочій копії агенти
+уникають безпосереднього локального запуску
+`pnpm test*` / `pnpm check*` / `pnpm crabbox:run`:
+
+- Явно запитаний користувачем локальний резервний варіант для невеликого файла:
+  `node scripts/run-vitest.mjs <path-or-filter>`.
+- Перевірки змін або широке підтвердження: `node scripts/crabbox-wrapper.mjs run --provider blacksmith-testbox ... -- env OPENCLAW_CHECK_CHANGED_REMOTE_CHILD=1 OPENCLAW_CHANGED_LANES_RAW_SYNC=1 corepack pnpm check:changed`, щоб pnpm запускався всередині Testbox.
+- Підсумкові `exitCode` та JSON із часовими показниками обгортки є результатом команди. Делегований запуск Blacksmith GitHub Actions може показувати `cancelled` після успішної команди SSH, оскільки Testbox зупиняється ззовні дії підтримання активності; перш ніж вважати це помилкою, перевірте підсумок обгортки та вивід команди.
+- `OPENCLAW_HEAVY_CHECK_LOCK_SCOPE=worktree <local-heavy-check command>`: зберігає послідовне виконання ресурсомістких перевірок у поточному робочому дереві, а не в спільному каталозі Git, для таких команд, як `pnpm check:changed` і цільові `pnpm test ...`. Використовуйте лише на локальних хостах із високою потужністю, коли навмисно запускаєте незалежні перевірки в пов’язаних робочих деревах.
+
+## Основні команди
+
+Запуски обгортки тестів завершуються коротким підсумком `[test] passed|failed|skipped ... in ...`; власний рядок тривалості Vitest залишається деталізацією для окремого сегмента.
+
+| Команда                                           | Що вона робить                                                                                                                                                                                                                                                                                                                                          |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm test`                                       | Явні цілі у вигляді файлів або каталогів спрямовуються через обмежені за областю смуги Vitest. Запуски без цілі слугують підтвердженням повного набору: фіксовані групи сегментів розгортаються до кінцевих конфігурацій для локального паралельного виконання, а очікувана кількість сегментів виводиться перед початком. Група розширень завжди розгортається в окремі конфігурації сегментів для кожного розширення замість одного гігантського процесу кореневого проєкту. |
+| `pnpm test:changed`                               | Швидкий інтелектуальний запуск тестів для змін: точні цілі з безпосередніх змін тестів, сусідніх файлів `*.test.ts`, явних зіставлень вихідного коду та локального графа імпортів. Широкі зміни конфігурації або пакетів пропускаються, якщо їх неможливо зіставити з точними тестами.                                                                                                                     |
+| `OPENCLAW_TEST_CHANGED_BROAD=1 pnpm test:changed` | Явний широкий запуск тестів для змін; використовуйте, коли зміна тестового каркаса, конфігурації або пакета має повертатися до ширшої поведінки Vitest для тестування змін.                                                                                                                                                                                                              |
+| `pnpm test:force`                                 | Звільняє налаштований порт Gateway OpenClaw (типово `18789`), а потім запускає повний набір з ізольованим портом Gateway, щоб серверні тести не конфліктували із запущеним екземпляром.                                                                                                                                                                          |
+| `pnpm test:coverage`                              | Створює інформаційний звіт про покриття V8 для типової смуги модульних тестів (`vitest.unit.config.ts`); порогові значення покриття не застосовуються.                                                                                                                                                                                                                   |
+| `pnpm test:coverage:changed`                      | Покриття модульних тестів лише для файлів, змінених відносно `origin/main`.                                                                                                                                                                                                                                                                                             |
+| `pnpm changed:lanes`                              | Показує архітектурні смуги, активовані різницею відносно `origin/main`.                                                                                                                                                                                                                                                                            |
+| `pnpm check:changed`                              | Поза CI типово делегує виконання Crabbox/Testbox, а потім запускає інтелектуальний шлюз перевірки змін у віддаленому дочірньому середовищі: форматування, перевірку типів, лінтинг і захисні команди для відповідних смуг. Не запускає Vitest; для підтвердження тестами використовуйте `pnpm test:changed` або `pnpm test <target>`.                                                                      |
+
+## Спільний стан тестів і допоміжні засоби процесів
+
+- `src/test-utils/openclaw-test-state.ts`: використовуйте у Vitest, коли тесту потрібні ізольовані `HOME`, `OPENCLAW_STATE_DIR`, `OPENCLAW_CONFIG_PATH`, тестова конфігурація, робочий простір, каталог агента або сховище профілів автентифікації.
+- `pnpm test:env-mutations:report`: неблокувальний звіт про тести та каркаси, які безпосередньо змінюють `HOME`, `OPENCLAW_STATE_DIR`, `OPENCLAW_CONFIG_PATH`, `OPENCLAW_WORKSPACE_DIR` або пов’язані ключі середовища. Використовуйте його для пошуку кандидатів на міграцію до спільного допоміжного засобу стану тестів.
+- `test/helpers/openclaw-test-instance.ts`: для процесних наскрізних тестів, яким потрібні запущений Gateway, середовище CLI, збирання журналів і очищення в одному місці.
+- Смуги наскрізного тестування Docker/Bash, що підключають `scripts/lib/docker-e2e-image.sh`, можуть передавати `docker_e2e_test_state_shell_b64 <label> <scenario>` у контейнер і декодувати його за допомогою `scripts/lib/openclaw-e2e-instance.sh`; сценарії з кількома домашніми каталогами можуть передавати `docker_e2e_test_state_function_b64` і викликати `openclaw_test_state_create <label> <scenario>` у кожному потоці. `node scripts/lib/openclaw-test-state.mjs -- create --label <name> --scenario <name> --env-file <path> --json` записує файл змінних середовища хоста, який можна підключити як джерело (`--` перед `create` не дає новішим середовищам виконання Node трактувати `--env-file` як прапорець Node). Смуги, що запускають Gateway, можуть підключати `scripts/lib/openclaw-e2e-instance.sh` для визначення точки входу, запуску імітатора OpenAI, запуску на передньому чи задньому плані, перевірок готовності, експорту змінних середовища стану, виведення журналів і очищення процесів.
+
+## Смуги Control UI, TUI та розширень
+
+- **Імітовані E2E-тести Control UI:** `pnpm test:ui:e2e` запускає контур Vitest + Playwright, який запускає Vite Control UI та керує реальною сторінкою Chromium, підключеною до імітованого WebSocket Gateway. Тести містяться в `ui/src/**/*.e2e.test.ts`; спільні імітації та засоби керування — у `ui/src/test-helpers/control-ui-e2e.ts`. `pnpm test:e2e` включає цей контур. Запуски агентом типово виконуються в Testbox/Crabbox, зокрема для цільової перевірки; використовуйте `node scripts/run-vitest.mjs run --config test/vitest/vitest.ui-e2e.config.ts --configLoader runner ui/src/ui/e2e/chat-flow.e2e.test.ts` лише як явно вибраний локальний резервний варіант.
+- **PTY-тести TUI:** `node scripts/run-vitest.mjs run --config test/vitest/vitest.tui-pty.config.ts` запускає швидкий PTY-контур із фіктивним бекендом. `OPENCLAW_TUI_PTY_INCLUDE_LOCAL=1` або `pnpm tui:pty:test:watch --mode local` запускає повільнішу димову перевірку `tui --local`, яка імітує лише зовнішню кінцеву точку моделі. Перевіряйте стабільний видимий текст або виклики фікстур, а не необроблені знімки ANSI.
+- `pnpm test:extensions` і `pnpm test extensions` запускають усі шарди розширень/плагінів. Ресурсомісткі плагіни каналів, плагін браузера та OpenAI запускаються як окремі шарди; інші групи плагінів залишаються пакетними. `pnpm test extensions/<id>` запускає контур одного вбудованого плагіна.
+- Файли вихідного коду із сусідніми тестами зіставляються спочатку з цими тестами, а вже потім — із ширшими шаблонами каталогів. Зміни допоміжного коду в `src/channels/plugins/contracts/test-helpers`, `src/plugin-sdk/test-helpers` і `src/plugins/contracts` використовують локальний граф імпортів, щоб запускати тести, які імпортують цей код, замість широкого запуску всіх шардів, коли шлях залежності визначено точно.
+- Цілі каталогів контрактів розгалужуються на відповідні контури контрактів: `pnpm test src/channels/plugins/contracts` запускає чотири конфігурації контрактів каналів, а `pnpm test src/plugins/contracts` — конфігурацію контрактів плагінів, оскільки загальні проєкти `channels`/`plugins` виключають `contracts/**`.
+- `auto-reply` розділено на три окремі конфігурації (`core`, `top-level`, `reply`), щоб тестова обв'язка відповідей не переважала над легшими високорівневими тестами стану, токенів і допоміжного коду.
+- Вибрані тестові файли `plugin-sdk` і `commands` спрямовуються через окремі легкі контури, які залишають лише `test/setup.ts`, тоді як ресурсомісткі сценарії середовища виконання залишаються у своїх наявних контурах.
+- Базова конфігурація Vitest типово використовує `pool: "threads"` та `isolate: false`, а спільний неізольований засіб запуску ввімкнено в усіх конфігураціях репозиторію.
 - `pnpm test:channels` запускає `vitest.channels.config.ts`.
-- `pnpm test:extensions` і `pnpm test extensions` запускають усі extension/plugin shards. Важкі channel plugins, browser plugin і OpenAI запускаються як dedicated shards; інші plugin groups залишаються batched. Використовуйте `pnpm test extensions/<id>` для однієї смуги bundled plugin.
-- `pnpm test:perf:imports`: вмикає звітність Vitest import-duration + import-breakdown, водночас продовжуючи використовувати scoped lane routing для явних file/directory targets.
-- `pnpm test:perf:imports:changed`: те саме профілювання імпортів, але лише для файлів, змінених відносно `origin/main`.
-- `pnpm test:perf:changed:bench -- --ref <git-ref>` бенчмаркить routed changed-mode path проти native root-project run для того самого committed git diff.
-- `pnpm test:perf:changed:bench -- --worktree` бенчмаркить поточний набір змін робочого дерева без попереднього commit.
-- `pnpm test:perf:profile:main`: записує CPU profile для головного потоку Vitest (`.artifacts/vitest-main-profile`).
-- `pnpm test:perf:profile:runner`: записує CPU + heap profiles для unit runner (`.artifacts/vitest-runner-profile`).
-- `pnpm test:perf:groups --full-suite --allow-failures --output .artifacts/test-perf/baseline-before.json`: запускає кожен full-suite Vitest leaf config послідовно та записує grouped duration data плюс JSON/log artifacts для кожної config. Test Performance Agent використовує це як baseline перед спробами виправити повільні тести.
-- `pnpm test:perf:groups:compare .artifacts/test-perf/baseline-before.json .artifacts/test-perf/after-agent.json`: порівнює grouped reports після зміни, сфокусованої на продуктивності.
-- `pnpm test:docker:timings <summary.json>` перевіряє повільні Docker lanes після Docker all run; використовуйте `pnpm test:docker:rerun <run-id|summary.json|failures.json>`, щоб надрукувати дешеві таргетовані rerun commands з тих самих artifacts.
-- Інтеграція Gateway: opt-in через `OPENCLAW_TEST_INCLUDE_GATEWAY=1 pnpm test` або `pnpm test:gateway`.
-- `pnpm test:e2e`: запускає репозиторний E2E aggregate: gateway end-to-end smoke tests плюс моковану browser E2E lane Control UI.
-- `pnpm test:e2e:gateway`: запускає gateway end-to-end smoke tests (multi-instance WS/HTTP/node pairing). Типово використовує `threads` + `isolate: false` з adaptive workers у `vitest.e2e.config.ts`; налаштовуйте через `OPENCLAW_E2E_WORKERS=<n>` і встановіть `OPENCLAW_E2E_VERBOSE=1` для verbose logs.
-- `pnpm test:live`: запускає provider live tests (minimax/zai). Потребує API keys і `LIVE=1` (або provider-specific `*_LIVE_TEST=1`), щоб прибрати skip.
-- `pnpm test:docker:all`: Збирає спільний образ live-test, один раз пакує OpenClaw як npm-тарбол, збирає/повторно використовує мінімальний образ раннера Node/Git і функціональний образ, який встановлює цей тарбол у `/app`, а потім запускає Docker smoke-лінії з `OPENCLAW_SKIP_DOCKER_BUILD=1` через зважений планувальник. Мінімальний образ (`OPENCLAW_DOCKER_E2E_BARE_IMAGE`) використовується для ліній інсталятора/оновлення/залежностей Plugin; ці лінії монтують попередньо зібраний тарбол замість використання скопійованих вихідних файлів репозиторію. Функціональний образ (`OPENCLAW_DOCKER_E2E_FUNCTIONAL_IMAGE`) використовується для звичайних ліній функціональності зібраного застосунку. `scripts/package-openclaw-for-docker.mjs` є єдиним локальним/CI пакувальником пакета й перевіряє тарбол і `dist/postinstall-inventory.json` перед тим, як Docker їх використає. Визначення Docker-ліній містяться в `scripts/lib/docker-e2e-scenarios.mjs`; логіка планувальника міститься в `scripts/lib/docker-e2e-plan.mjs`; `scripts/test-docker-all.mjs` виконує вибраний план. `node scripts/test-docker-all.mjs --plan-json` виводить CI-план, яким володіє планувальник, для вибраних ліній, типів образів, потреб у пакеті/live-образі, сценаріїв стану та перевірок облікових даних без збирання або запуску Docker. `OPENCLAW_DOCKER_ALL_PARALLELISM=<n>` керує слотами процесів і за замовчуванням дорівнює 10; `OPENCLAW_DOCKER_ALL_TAIL_PARALLELISM=<n>` керує чутливим до провайдера хвостовим пулом і за замовчуванням дорівнює 10. Обмеження важких ліній за замовчуванням: `OPENCLAW_DOCKER_ALL_LIVE_LIMIT=9`, `OPENCLAW_DOCKER_ALL_NPM_LIMIT=5` і `OPENCLAW_DOCKER_ALL_SERVICE_LIMIT=7`; обмеження провайдерів за замовчуванням дають одну важку лінію на провайдера через `OPENCLAW_DOCKER_ALL_LIVE_CLAUDE_LIMIT=4`, `OPENCLAW_DOCKER_ALL_LIVE_CODEX_LIMIT=4` і `OPENCLAW_DOCKER_ALL_LIVE_GEMINI_LIMIT=4`. Для більших хостів використовуйте `OPENCLAW_DOCKER_ALL_WEIGHT_LIMIT` або `OPENCLAW_DOCKER_ALL_DOCKER_LIMIT`. Якщо одна лінія перевищує ефективне обмеження ваги або ресурсів на хості з низьким паралелізмом, вона все одно може стартувати з порожнього пулу й виконуватиметься сама, доки не звільнить ємність. Запуски ліній за замовчуванням рознесені на 2 секунди, щоб уникнути локальних сплесків створення в демоні Docker; перевизначте це через `OPENCLAW_DOCKER_ALL_START_STAGGER_MS=<ms>`. Раннер за замовчуванням виконує попередні перевірки Docker, очищає застарілі контейнери OpenClaw E2E, виводить стан активних ліній кожні 30 секунд, спільно використовує кеші CLI-інструментів провайдерів між сумісними лініями, за замовчуванням один раз повторює тимчасові збої live-провайдера (`OPENCLAW_DOCKER_ALL_LIVE_RETRIES=<n>`) і зберігає час виконання ліній у `.artifacts/docker-tests/lane-timings.json` для впорядкування від найдовших до найкоротших у наступних запусках. Використовуйте `OPENCLAW_DOCKER_ALL_DRY_RUN=1`, щоб надрукувати маніфест ліній без запуску Docker, `OPENCLAW_DOCKER_ALL_STATUS_INTERVAL_MS=<ms>`, щоб налаштувати вивід стану, або `OPENCLAW_DOCKER_ALL_TIMINGS=0`, щоб вимкнути повторне використання таймінгів. Використовуйте `OPENCLAW_DOCKER_ALL_LIVE_MODE=skip` лише для детермінованих/локальних ліній або `OPENCLAW_DOCKER_ALL_LIVE_MODE=only` лише для ліній live-провайдера; псевдоніми пакетів: `pnpm test:docker:local:all` і `pnpm test:docker:live:all`. Режим лише live об’єднує основні й хвостові live-лінії в один пул, упорядкований від найдовших до найкоротших, щоб кошики провайдерів могли разом пакувати роботу Claude, Codex і Gemini. Раннер припиняє планувати нові pooled-лінії після першого збою, якщо не встановлено `OPENCLAW_DOCKER_ALL_FAIL_FAST=0`, а кожна лінія має резервний таймаут 120 хвилин, який можна перевизначити через `OPENCLAW_DOCKER_ALL_LANE_TIMEOUT_MS`; вибрані live/хвостові лінії використовують суворіші обмеження для окремих ліній. Команди налаштування Docker для бекенду CLI мають власний таймаут через `OPENCLAW_LIVE_CLI_BACKEND_SETUP_TIMEOUT_SECONDS` (за замовчуванням 180). Журнали окремих ліній, `summary.json`, `failures.json` і таймінги фаз записуються в `.artifacts/docker-tests/<run-id>/`; використовуйте `pnpm test:docker:timings <summary.json>`, щоб переглянути повільні лінії, і `pnpm test:docker:rerun <run-id|summary.json|failures.json>`, щоб надрукувати дешеві цільові команди повторного запуску.
-- `pnpm test:docker:browser-cdp-snapshot`: Збирає вихідний E2E-контейнер на базі Chromium, запускає сирий CDP разом з ізольованим Gateway, виконує `browser doctor --deep` і перевіряє, що знімки ролей CDP містять URL-адреси посилань, клікабельні елементи, підвищені курсором, посилання на iframe і метадані фреймів.
-- `pnpm test:docker:skill-install`: Встановлює запакований тарбол OpenClaw у мінімальний Docker-раннер, вимикає `skills.install.allowUploadedArchives`, визначає поточний slug навички з live-пошуку ClawHub, встановлює її через `openclaw skills install` і перевіряє `SKILL.md`, `.clawhub/origin.json`, `.clawhub/lock.json` і `skills info --json`.
-- Live-проби бекенду CLI в Docker можна запускати як сфокусовані лінії, наприклад `pnpm test:docker:live-cli-backend:claude`, `pnpm test:docker:live-cli-backend:claude:resume` або `pnpm test:docker:live-cli-backend:claude:mcp`. Gemini має відповідні псевдоніми `:resume` і `:mcp`.
-- `pnpm test:docker:openwebui`: Запускає контейнеризовані OpenClaw + Open WebUI, виконує вхід через Open WebUI, перевіряє `/api/models`, а потім запускає справжній проксійований чат через `/api/chat/completions`. Потребує придатного ключа live-моделі, завантажує зовнішній образ Open WebUI і не очікується як CI-стабільний на рівні звичайних unit/e2e-наборів.
-- `pnpm test:docker:mcp-channels`: Запускає попередньо заповнений контейнер Gateway і другий клієнтський контейнер, який породжує `openclaw mcp serve`, а потім перевіряє виявлення маршрутизованих розмов, читання стенограм, метадані вкладень, поведінку черги live-подій, маршрутизацію вихідного надсилання та сповіщення каналу й дозволів у стилі Claude через справжній stdio-міст. Перевірка сповіщення Claude читає сирі stdio MCP-фрейми напряму, щоб smoke відображав те, що міст фактично видає.
-- `pnpm test:docker:upgrade-survivor`: Встановлює запакований тарбол OpenClaw поверх забрудненої фікстури старого користувача, запускає оновлення пакета й неінтерактивний doctor без ключів live-провайдера або каналу, потім запускає loopback Gateway і перевіряє, що агенти, конфігурація каналу, списки дозволів Plugin, файли workspace/session, застарілий стан залежностей legacy Plugin, запуск і статус RPC зберігаються.
-- `pnpm test:docker:published-upgrade-survivor`: За замовчуванням встановлює `openclaw@latest`, засіває реалістичні файли наявного користувача без ключів live-провайдера або каналу, налаштовує цю базову версію вбудованим рецептом команди `openclaw config set`, оновлює цю опубліковану інсталяцію до запакованого тарбола OpenClaw, запускає неінтерактивний doctor, записує `.artifacts/upgrade-survivor/summary.json`, потім запускає loopback Gateway і перевіряє, що налаштовані наміри, файли workspace/session, застаріла конфігурація Plugin і legacy-стан залежностей, запуск, `/healthz`, `/readyz` і статус RPC зберігаються або коректно ремонтуються. Перевизначте одну базову версію через `OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPEC`, розширте точну локальну матрицю через `OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPECS`, наприклад `openclaw@2026.5.2 openclaw@2026.4.23 openclaw@2026.4.15`, або додайте фікстури сценаріїв через `OPENCLAW_UPGRADE_SURVIVOR_SCENARIOS=reported-issues`; набір reported-issues містить `configured-plugin-installs`, щоб перевірити, що налаштовані зовнішні OpenClaw plugins автоматично встановлюються під час оновлення, і `stale-source-plugin-shadow`, щоб тіні Plugin лише з вихідного коду не ламали запуск. Package Acceptance надає їх як `published_upgrade_survivor_baseline`, `published_upgrade_survivor_baselines` і `published_upgrade_survivor_scenarios`, а також розв’язує мета-токени базових версій, як-от `last-stable-4` або `all-since-2026.4.23`, перед передаванням точних специфікацій пакетів Docker-лініям.
-- `pnpm test:docker:update-migration`: Запускає harness published-upgrade survivor у сценарії `plugin-deps-cleanup` з інтенсивним очищенням, за замовчуванням починаючи з `openclaw@2026.4.23`. Окремий workflow `Update Migration` розширює цю лінію з `baselines=all-since-2026.4.23`, щоб кожен стабільний опублікований пакет, починаючи з `.23`, оновлювався до кандидата й доводив очищення залежностей налаштованих Plugin поза Full Release CI.
-- `pnpm test:docker:plugins`: Запускає install/update smoke для локального шляху, `file:`, пакетів npm registry з hoisted-залежностями, рухомих git-посилань, фікстур ClawHub, оновлень marketplace і ввімкнення/перегляду Claude-bundle.
 
-## Локальний гейт PR
+## Gateway та E2E
 
-Для локальних перевірок перед злиттям/гейтом PR виконайте:
+- Інтеграція Gateway вмикається за явною згодою: `OPENCLAW_TEST_INCLUDE_GATEWAY=1 pnpm test` або `pnpm test:gateway`.
+- `pnpm test:e2e`: сукупний набір E2E репозиторію = `pnpm test:e2e:gateway && pnpm test:ui:e2e`.
+- `pnpm test:e2e:gateway`: наскрізні димові тести Gateway (кілька екземплярів, сполучення WS/HTTP/вузлів). Типово використовує `threads` + `isolate: false` з адаптивною кількістю виконавців у `vitest.e2e.config.ts`; налаштування кількості — через `OPENCLAW_E2E_WORKERS=<n>`, докладних журналів — через `OPENCLAW_E2E_VERBOSE=1`.
+- `pnpm test:live`: тести провайдерів у реальному середовищі (Claude/Minimax/DeepSeek/z.ai тощо, обмежені файлами `*.live.test.ts`). Для скасування пропуску потрібні ключі API та `LIVE=1` (або `OPENCLAW_LIVE_TEST=1`); докладний вивід вмикається через `OPENCLAW_LIVE_TEST_QUIET=0`.
+
+## Повний набір Docker (`pnpm test:docker:all`)
+
+Збирає спільний образ для тестування в реальному середовищі, один раз пакує OpenClaw як tar-архів npm, збирає або повторно використовує базовий образ виконавця Node/Git і функціональний образ, який установлює цей tar-архів у `/app`, а потім запускає контури димових Docker-тестів через зважений планувальник. `scripts/package-openclaw-for-docker.mjs` — єдиний локальний і CI-пакувальник; він перевіряє tar-архів і `dist/postinstall-inventory.json`, перш ніж Docker їх використає.
+
+- Базовий образ (`OPENCLAW_DOCKER_E2E_BARE_IMAGE`): контури інсталятора, оновлення та залежностей плагінів; монтує попередньо зібраний tar-архів замість скопійованого вихідного коду репозиторію.
+- Функціональний образ (`OPENCLAW_DOCKER_E2E_FUNCTIONAL_IMAGE`): контури звичайної функціональності зібраного застосунку.
+- Визначення контурів: `scripts/lib/docker-e2e-scenarios.mjs`. Планувальник: `scripts/lib/docker-e2e-plan.mjs`. Виконавець: `scripts/test-docker-all.mjs`.
+- `node scripts/test-docker-all.mjs --plan-json` виводить план CI, яким керує планувальник (контури, типи образів, потреби в пакеті/образі для реального середовища, сценарії стану, перевірки облікових даних), не збираючи й не запускаючи Docker.
+
+Параметри планування (змінні середовища, типові значення в дужках):
+
+| Змінна середовища                                                                                               | Типове значення     | Призначення                                                                                                                                                                                                                                                                                                                                                                      |
+| --------------------------------------------------------------------------------------------------------------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `OPENCLAW_DOCKER_ALL_PARALLELISM`                                                                               | 10                  | Слоти процесів.                                                                                                                                                                                                                                                                                                                                                                  |
+| `OPENCLAW_DOCKER_ALL_TAIL_PARALLELISM`                                                                          | 10                  | Хвостовий пул, чутливий до провайдера.                                                                                                                                                                                                                                                                                                                                           |
+| `OPENCLAW_DOCKER_ALL_LIVE_LIMIT`                                                                                | 9                   | Обмеження кількості ресурсомістких контурів провайдерів у реальному середовищі.                                                                                                                                                                                                                                                                                                   |
+| `OPENCLAW_DOCKER_ALL_NPM_LIMIT`                                                                                 | 5                   | Обмеження кількості контурів, які використовують ресурси npm.                                                                                                                                                                                                                                                                                                                     |
+| `OPENCLAW_DOCKER_ALL_SERVICE_LIMIT`                                                                             | 7                   | Обмеження кількості контурів, які використовують ресурси сервісів.                                                                                                                                                                                                                                                                                                                |
+| `OPENCLAW_DOCKER_ALL_LIVE_CLAUDE_LIMIT` / `_CODEX_LIMIT` / `_GEMINI_LIMIT` / `_DROID_LIMIT` / `_OPENCODE_LIMIT` | 4                   | Обмеження кількості ресурсомістких контурів для кожного провайдера.                                                                                                                                                                                                                                                                                                                |
+| `OPENCLAW_DOCKER_ALL_LIVE_OPENAI_LIMIT` / `_TELEGRAM_LIMIT`                                                     | 1                   | Суворіші обмеження для кожного провайдера.                                                                                                                                                                                                                                                                                                                                        |
+| `OPENCLAW_DOCKER_ALL_WEIGHT_LIMIT` / `OPENCLAW_DOCKER_ALL_DOCKER_LIMIT`                                         | -                   | Перевизначення для потужніших хостів.                                                                                                                                                                                                                                                                                                                                             |
+| `OPENCLAW_DOCKER_ALL_START_STAGGER_MS`                                                                          | 2000                | Затримка між запусками контурів, що запобігає сплескам створення ресурсів локальним демоном Docker.                                                                                                                                                                                                                                                                               |
+| `OPENCLAW_DOCKER_ALL_LANE_TIMEOUT_MS`                                                                           | 7,200,000 (120 хв)  | Резервний тайм-аут для кожного контуру; для вибраних контурів реального середовища та хвостових контурів застосовуються суворіші обмеження.                                                                                                                                                                                                                                         |
+| `OPENCLAW_DOCKER_ALL_LIVE_RETRIES`                                                                              | 1                   | Повторні спроби в разі тимчасових збоїв провайдера в реальному середовищі.                                                                                                                                                                                                                                                                                                        |
+| `OPENCLAW_DOCKER_ALL_DRY_RUN`                                                                                   | вимкнено            | Виводить маніфест контурів без запуску Docker.                                                                                                                                                                                                                                                                                                                                    |
+| `OPENCLAW_DOCKER_ALL_STATUS_INTERVAL_MS`                                                                        | 30000               | Інтервал виведення стану активних контурів.                                                                                                                                                                                                                                                                                                                                       |
+| `OPENCLAW_DOCKER_ALL_TIMINGS`                                                                                   | увімкнено           | Повторно використовує `.artifacts/docker-tests/lane-timings.json` для впорядкування від найдовшого до найкоротшого; установіть `0`, щоб вимкнути.                                                                                                                                                                                                                                   |
+| `OPENCLAW_DOCKER_ALL_LIVE_MODE`                                                                                 | -                   | `skip` — лише для детермінованих/локальних контурів, `only` — лише для контурів провайдерів у реальному середовищі. Псевдоніми: `pnpm test:docker:local:all`, `pnpm test:docker:live:all`. Режим лише реального середовища об'єднує основні та хвостові контури в один пул, упорядкований від найдовшого до найкоротшого, щоб групи провайдерів разом розподіляли завдання Claude/Codex/Gemini. |
+| `OPENCLAW_LIVE_CLI_BACKEND_SETUP_TIMEOUT_SECONDS`                                                               | 180                 | Тайм-аут налаштування Docker для бекенду CLI.                                                                                                                                                                                                                                                                                                                                     |
+
+Шаблон змінної середовища для обмежень ресурсів: `OPENCLAW_DOCKER_ALL_<RESOURCE>_LIMIT` (назва ресурсу у верхньому регістрі, послідовності неалфавітно-цифрових символів замінено на `_`).
+
+Інша поведінка: засіб запуску за замовчуванням виконує попередню перевірку Docker, очищає застарілі E2E-контейнери OpenClaw, спільно використовує кеші інструментів CLI провайдерів між сумісними смугами та припиняє планувати нові об’єднані в пул смуги після першої помилки, якщо не встановлено `OPENCLAW_DOCKER_ALL_FAIL_FAST=0`. Якщо одна смуга перевищує фактичне обмеження ваги або ресурсів на хості з низьким рівнем паралелізму, вона все одно може запуститися з порожнього пулу й виконуватися самостійно, доки не звільнить ресурси. Журнали окремих смуг, `summary.json`, `failures.json` і часові показники фаз записуються в `.artifacts/docker-tests/<run-id>/`; використовуйте `pnpm test:docker:timings <summary.json>`, щоб перевірити повільні смуги, і `pnpm test:docker:rerun <run-id|summary.json|failures.json>`, щоб вивести команди для недорогого цільового повторного запуску.
+
+### Важливі смуги Docker
+
+| Команда                                                                     | Що перевіряє                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm test:docker:browser-cdp-snapshot`                                     | E2E-контейнер джерела на базі Chromium із необробленим CDP та ізольованим Gateway; знімки ролей CDP від `browser doctor --deep` містять URL-адреси посилань, інтерактивні елементи, підвищені до доступних для натискання за допомогою курсора, посилання на iframe та метадані фреймів.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `pnpm test:docker:skill-install`                                            | Установлює запакований tar-архів у чистому засобі запуску Docker з `skills.install.allowUploadedArchives: false`, визначає поточний ідентифікатор навички за допомогою пошуку в активному ClawHub, установлює через `openclaw skills install` і перевіряє `SKILL.md`, `.clawhub/origin.json`, `.clawhub/lock.json` та `skills info --json`.                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `pnpm test:docker:live-cli-backend:claude`, `:claude:resume`, `:claude:mcp` | Цільові інтерактивні перевірки серверної частини CLI; Gemini має відповідні псевдоніми `:resume` та `:mcp`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `pnpm test:docker:openwebui`                                                | Контейнеризовані OpenClaw + Open WebUI: вхід у систему, перевірка `/api/models`, виконання справжнього проксійованого чату через `/api/chat/completions`. Потребує придатного ключа активної моделі та завантажує зовнішній образ; не очікується така сама стабільність у CI, як у наборах модульних/E2E-тестів.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `pnpm test:docker:mcp-channels`                                             | Попередньо заповнений контейнер Gateway разом із клієнтським контейнером, що запускає `openclaw mcp serve`: виявлення маршрутизованих розмов, читання транскриптів, метадані вкладень, поведінка черги подій у реальному часі, маршрутизація вихідного надсилання та сповіщення про канали й дозволи у стилі Claude через справжній міст stdio (перевірка безпосередньо читає необроблені MCP-фрейми stdio).                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `pnpm test:docker:upgrade-survivor`                                         | Установлює запакований tar-архів поверх забрудненої фікстури старого користувача, запускає оновлення пакета та неінтерактивний doctor без активних ключів провайдерів/каналів, запускає Gateway через local loopback і перевіряє, що агенти, конфігурація каналів, списки дозволених Plugin, файли робочого простору й сеансів, застарілий стан залежностей старих Plugin, запуск і стан RPC зберігаються.                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `pnpm test:docker:published-upgrade-survivor`                               | За замовчуванням установлює `openclaw@latest`, створює реалістичні файли наявного користувача, налаштовує їх за допомогою вбудованого рецепта `openclaw config set`, оновлює до запакованого tar-архіву, запускає неінтерактивний doctor, записує `.artifacts/upgrade-survivor/summary.json`, перевіряє `/healthz`, `/readyz` і стан RPC. Базову специфікацію можна перевизначити через `OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPEC`, розширити матрицю через `OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPECS` або додати фікстури сценаріїв через `OPENCLAW_UPGRADE_SURVIVOR_SCENARIOS=reported-issues` (включає `configured-plugin-installs` і `stale-source-plugin-shadow`). Package Acceptance надає їх як `published_upgrade_survivor_baseline(s)` / `_scenarios` і розпізнає метатокени на кшталт `last-stable-4` або `all-since-2026.4.23`. |
+| `pnpm test:docker:update-migration`                                         | Стенд перевірки збереження працездатності після опублікованого оновлення у сценарії `plugin-deps-cleanup`, що за замовчуванням починається з `openclaw@2026.4.23`. Робочий процес `Update Migration` розширює його параметром `baselines=all-since-2026.4.23`, щоб підтвердити очищення залежностей налаштованих Plugin поза межами повного CI випуску.                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `pnpm test:docker:plugins`                                                  | Димова перевірка встановлення/оновлення для локального шляху, `file:`, пакетів реєстру npm із піднятими залежностями, рухомих посилань git, фікстур ClawHub, оновлень маркетплейсу та ввімкнення/перевірки пакета Claude.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+
+## Локальний шлюз PR
+
+Для локальних перевірок перед інтеграцією PR або перевірок шлюзу виконайте:
 
 - `pnpm check:changed`
 - `pnpm check`
@@ -80,178 +193,113 @@ x-i18n:
 - `pnpm test`
 - `pnpm check:docs`
 
-Якщо `pnpm test` дає нестабільний збій на навантаженому хості, перезапустіть один раз, перш ніж вважати це регресією, а потім ізолюйте за допомогою `pnpm test <path/to/test>`. Для хостів з обмеженою памʼяттю використовуйте:
+Якщо `pnpm test` нестабільно завершується на завантаженому хості, повторіть запуск один раз, перш ніж вважати це регресією, а потім ізолюйте проблему за допомогою `pnpm test <path/to/test>`. Для хостів з обмеженим обсягом пам’яті:
 
 - `OPENCLAW_VITEST_MAX_WORKERS=1 pnpm test`
 - `OPENCLAW_VITEST_FS_MODULE_CACHE_PATH=/tmp/openclaw-vitest-cache pnpm test:changed`
 
-## Бенчмарк затримки моделей (локальні ключі)
+## Інструменти аналізу продуктивності тестів
 
-Скрипт: [`scripts/bench-model.ts`](https://github.com/openclaw/openclaw/blob/main/scripts/bench-model.ts)
+- `pnpm test:perf:imports`: вмикає звіти Vitest про тривалість імпорту та її деталізацію, водночас зберігаючи маршрутизацію за областями для явно вказаних цільових файлів/каталогів. `pnpm test:perf:imports:changed` обмежує таке саме профілювання файлами, зміненими після `origin/main`.
+- `pnpm test:perf:changed:bench -- --ref <git-ref>` порівнює продуктивність маршрутизованого шляху в режимі змін із нативним запуском кореневого проєкту для тієї самої зафіксованої різниці git; `pnpm test:perf:changed:bench -- --worktree` вимірює продуктивність поточного набору змін у робочому дереві без попередньої фіксації.
+- `pnpm test:perf:profile:main` записує профіль CPU для головного потоку Vitest (`.artifacts/vitest-main-profile`); `pnpm test:perf:profile:runner` записує профілі CPU та купи для засобу запуску модульних тестів (`.artifacts/vitest-runner-profile`).
+- `pnpm test:perf:groups --full-suite --allow-failures --output .artifacts/test-perf/baseline-before.json`: послідовно запускає кожну кінцеву конфігурацію Vitest повного набору тестів і записує згруповані дані про тривалість, а також JSON-артефакти й журнали для кожної конфігурації. Звіти повного набору тестів типово ізолюють файли, щоб збережені графи модулів і паузи збирання сміття від попередніх файлів не зараховувалися до наступних перевірок; передавайте `-- --no-isolate` лише для навмисного профілювання накопичення у спільному робочому процесі. Агент продуктивності тестів використовує це як базовий показник перед спробами виправити повільні тести. `pnpm test:perf:groups:compare .artifacts/test-perf/baseline-before.json .artifacts/test-perf/after-agent.json` порівнює згруповані звіти після зміни, спрямованої на підвищення продуктивності.
+- Запуски сегментів повного набору, розширень і шаблонів включення оновлюють локальні дані про тривалість у `.artifacts/vitest-shard-timings.json`; подальші запуски цілої конфігурації використовують ці дані для балансування повільних і швидких сегментів. Сегменти CI з шаблонами включення додають назву сегмента до ключа тривалості, завдяки чому дані про тривалість відфільтрованих сегментів залишаються видимими, не замінюючи даних про тривалість цілої конфігурації. Установіть `OPENCLAW_TEST_PROJECTS_TIMINGS=0`, щоб ігнорувати локальний артефакт із даними про тривалість.
 
-Використання:
+## Тести продуктивності
 
-- `pnpm tsx scripts/bench-model.ts --runs 10`
-- Необовʼязкові змінні середовища: `MINIMAX_API_KEY`, `MINIMAX_BASE_URL`, `MINIMAX_MODEL`, `ANTHROPIC_API_KEY`
-- Типовий промпт: "Відповідай одним словом: ok. Без пунктуації або додаткового тексту."
+<Accordion title="Затримка моделі (scripts/bench-model.ts)">
 
-Останній запуск (2025-12-31, 20 запусків):
+```bash
+pnpm tsx scripts/bench-model.ts --runs 10
+```
 
-- minimax медіана 1279 мс (мін. 1114, макс. 2431)
-- opus медіана 2454 мс (мін. 1224, макс. 3170)
+Необов’язкові змінні середовища: `MINIMAX_API_KEY`, `MINIMAX_BASE_URL`, `MINIMAX_MODEL`, `ANTHROPIC_API_KEY`. Типовий запит: «Відповідай одним словом: ok. Без розділових знаків або додаткового тексту».
 
-## Бенчмарк запуску CLI
+</Accordion>
 
-Скрипт: [`scripts/bench-cli-startup.ts`](https://github.com/openclaw/openclaw/blob/main/scripts/bench-cli-startup.ts)
+<Accordion title="Запуск CLI (scripts/bench-cli-startup.ts)">
 
-Використання:
+```bash
+pnpm test:startup:bench
+pnpm test:startup:bench:smoke
+pnpm test:startup:bench:save
+pnpm test:startup:bench:update
+pnpm test:startup:bench:check
+pnpm tsx scripts/bench-cli-startup.ts --runs 12
+pnpm tsx scripts/bench-cli-startup.ts --preset real --case status --case gatewayStatus --runs 3
+pnpm tsx scripts/bench-cli-startup.ts --entry openclaw.mjs --entry-secondary dist/entry.js --preset all
+```
 
-- `pnpm test:startup:bench`
-- `pnpm test:startup:bench:smoke`
-- `pnpm test:startup:bench:save`
-- `pnpm test:startup:bench:update`
-- `pnpm test:startup:bench:check`
-- `pnpm tsx scripts/bench-cli-startup.ts`
-- `pnpm tsx scripts/bench-cli-startup.ts --runs 12`
-- `pnpm tsx scripts/bench-cli-startup.ts --preset real`
-- `pnpm tsx scripts/bench-cli-startup.ts --preset real --case status --case gatewayStatus --runs 3`
-- `pnpm tsx scripts/bench-cli-startup.ts --preset real --case tasksJson --case tasksListJson --case tasksAuditJson --runs 3`
-- `pnpm tsx scripts/bench-cli-startup.ts --entry openclaw.mjs --entry-secondary dist/entry.js --preset all`
-- `pnpm tsx scripts/bench-cli-startup.ts --preset all --output .artifacts/cli-startup-bench-all.json`
-- `pnpm tsx scripts/bench-cli-startup.ts --preset real --case gatewayStatusJson --output .artifacts/cli-startup-bench-smoke.json`
-- `pnpm tsx scripts/bench-cli-startup.ts --preset real --cpu-prof-dir .artifacts/cli-cpu`
-- `pnpm tsx scripts/bench-cli-startup.ts --json`
-
-Пресети:
+Набори параметрів:
 
 - `startup`: `--version`, `--help`, `health`, `health --json`, `status --json`, `status`
 - `real`: `health`, `status`, `status --json`, `sessions`, `sessions --json`, `tasks --json`, `tasks list --json`, `tasks audit --json`, `agents list --json`, `gateway status`, `gateway status --json`, `gateway health --json`, `config get gateway.port`
-- `all`: обидва пресети
+- `all`: обидва набори параметрів разом
 
-Вивід містить `sampleCount`, середнє, p50, p95, мін./макс., розподіл кодів виходу/сигналів і підсумки максимального RSS для кожної команди. Необовʼязкові `--cpu-prof-dir` / `--heap-prof-dir` записують профілі V8 для кожного запуску, щоб вимірювання часу й захоплення профілю використовували той самий harness.
+Результат містить `sampleCount`, середнє значення, p50, p95, мінімум/максимум, розподіл кодів виходу/сигналів і максимальний RSS для кожної команди. `--cpu-prof-dir` / `--heap-prof-dir` записують профілі V8 для кожного запуску.
 
-Угоди щодо збереженого виводу:
+Збережений результат: `pnpm test:startup:bench:smoke` записує `.artifacts/cli-startup-bench-smoke.json`; `pnpm test:startup:bench:save` записує `.artifacts/cli-startup-bench-all.json` (`runs=5 warmup=1`). Зафіксований у репозиторії тестовий зразок: `test/fixtures/cli-startup-bench.json`, який оновлюється командою `pnpm test:startup:bench:update` і порівнюється командою `pnpm test:startup:bench:check`.
 
-- `pnpm test:startup:bench:smoke` записує цільовий smoke-артефакт у `.artifacts/cli-startup-bench-smoke.json`
-- `pnpm test:startup:bench:save` записує артефакт повного набору в `.artifacts/cli-startup-bench-all.json` з `runs=5` і `warmup=1`
-- `pnpm test:startup:bench:update` оновлює зафіксовану в репозиторії базову fixture у `test/fixtures/cli-startup-bench.json` з `runs=5` і `warmup=1`
+</Accordion>
 
-Зафіксована в репозиторії fixture:
+<Accordion title="Запуск Gateway (scripts/bench-gateway-startup.ts)">
 
-- `test/fixtures/cli-startup-bench.json`
-- Оновити за допомогою `pnpm test:startup:bench:update`
-- Порівняти поточні результати з fixture за допомогою `pnpm test:startup:bench:check`
+Типово використовується зібрана точка входу CLI у `dist/entry.js`; спочатку виконайте `pnpm build`. Передайте `--entry scripts/run-node.mjs`, щоб натомість вимірювати засіб запуску з вихідного коду, і зберігайте ці результати окремо від базових показників зібраної точки входу.
 
-## Бенчмарк запуску Gateway
+```bash
+pnpm test:startup:gateway -- --runs 5 --warmup 1
+pnpm test:startup:gateway -- --case skipChannels --case fiftyPlugins --runs 5
+node --import tsx scripts/bench-gateway-startup.ts --case default --runs 5 --output .artifacts/gateway-startup.json
+```
 
-Скрипт: [`scripts/bench-gateway-startup.ts`](https://github.com/openclaw/openclaw/blob/main/scripts/bench-gateway-startup.ts)
+Ідентифікатори сценаріїв: `default`, `skipChannels` (запуск каналів пропущено), `oneInternalHook`, `allInternalHooks`, `fiftyPlugins` (50 плагінів із маніфестами), `fiftyStartupLazyPlugins` (50 плагінів із маніфестами та відкладеним завантаженням під час запуску).
 
-Бенчмарк типово використовує зібрану точку входу CLI в `dist/entry.js`; виконайте
-`pnpm build` перед використанням команд package-script. Щоб натомість виміряти source
-runner, передайте `--entry scripts/run-node.mjs` і тримайте ці результати
-окремо від базових показників зібраної точки входу.
+Результат містить перший вивід процесу, `/healthz`, `/readyz`, час журналу початку прослуховування HTTP, час журналу готовності Gateway, час CPU, коефіцієнт використання ядра CPU, максимальний RSS, купу, метрики трасування запуску, затримку циклу подій і детальні метрики таблиці пошуку плагінів. Скрипт установлює `OPENCLAW_GATEWAY_STARTUP_TRACE=1` у середовищі дочірнього процесу Gateway.
 
-Використання:
+`/healthz` перевіряє життєздатність (HTTP-сервер може відповідати). `/readyz` перевіряє готовність до використання (допоміжні процеси плагінів запуску, канали та критична для готовності робота після приєднання завершилися). Обробники запуску виконуються асинхронно й не входять до гарантії готовності. Час журналу готовності — це внутрішня позначка часу Gateway, корисна для визначення внеску процесу, але вона не замінює зовнішню перевірку `/readyz`.
 
-- `pnpm test:startup:gateway -- --runs 5 --warmup 1`
-- `pnpm test:startup:gateway -- --case default --runs 10 --warmup 1`
-- `pnpm test:startup:gateway -- --case skipChannels --case fiftyPlugins --runs 5`
-- `node --import tsx scripts/bench-gateway-startup.ts --case default --runs 5 --output .artifacts/gateway-startup.json`
-- `node --import tsx scripts/bench-gateway-startup.ts --case default --runs 3 --cpu-prof-dir .artifacts/gateway-startup-cpu`
+Під час порівняння змін використовуйте вивід JSON або `--output`. Використовуйте `--cpu-prof-dir` лише після того, як результати трасування вкажуть на імпорт, компіляцію або роботу, обмежену ресурсами CPU, яку неможливо пояснити лише тривалістю фаз.
 
-Ідентифікатори сценаріїв:
+</Accordion>
 
-- `default`: звичайний запуск Gateway.
-- `skipChannels`: запуск Gateway із пропущеним запуском каналів.
-- `oneInternalHook`: один налаштований внутрішній hook.
-- `allInternalHooks`: усі внутрішні hooks.
-- `fiftyPlugins`: 50 плагінів маніфестів.
-- `fiftyStartupLazyPlugins`: 50 startup-lazy плагінів маніфестів.
+<Accordion title="Перезапуск Gateway (scripts/bench-gateway-restart.ts)">
 
-Вивід містить перший вивід процесу, `/healthz`, `/readyz`, час журналу прослуховування HTTP,
-час журналу готовності Gateway, час CPU, співвідношення ядра CPU, максимальний RSS, heap, метрики трасування запуску,
-затримку event-loop і детальні метрики таблиці пошуку плагінів. Скрипт
-увімкнює `OPENCLAW_GATEWAY_STARTUP_TRACE=1` у середовищі дочірнього Gateway.
+Лише macOS і Linux (використовує SIGUSR1 для перезапусків усередині процесу; у Windows одразу завершується помилкою). Типово використовується та сама зібрана точка входу й перевизначення `--entry scripts/run-node.mjs`, що й для запуску Gateway вище.
 
-Читайте `/healthz` як ознаку життєздатності: HTTP-сервер може відповідати. Читайте `/readyz` як
-придатну готовність: sidecar-процеси startup-плагінів, канали й ready-critical
-робота після приєднання завершилися. Startup hooks Gateway диспетчеризуються
-асинхронно й не є частиною гарантії готовності. Час журналу готовності — це
-внутрішня позначка часу журналу готовності Gateway; вона корисна для атрибуції
-з боку процесу, але не замінює зовнішній probe `/readyz`.
+```bash
+pnpm test:restart:gateway -- --case skipChannels --runs 1 --restarts 5
+pnpm test:restart:gateway -- --case default --runs 3 --restarts 3 --warmup 1
+```
 
-Використовуйте JSON-вивід або `--output` під час порівняння змін. Використовуйте `--cpu-prof-dir` лише
-після того, як вивід трасування вказує на імпорт, компіляцію або CPU-bound роботу, яку неможливо
-пояснити лише фазовими таймінгами. Не порівнюйте результати source-runner із
-результатами зібраного `dist/entry.js` як одну й ту саму базову лінію.
+Ідентифікатори сценаріїв: `skipChannels`, `skipChannelsAcpxProbe` (перевірку запуску ACPX увімкнено), `skipChannelsNoAcpxProbe` (перевірку вимкнено), `default`, `fiftyPlugins`.
 
-## Бенчмарк перезапуску Gateway
+Результат містить наступні `/healthz` і `/readyz`, тривалість простою, час готовності після перезапуску, CPU, RSS, метрики трасування запуску для процесу-замінника та метрики трасування перезапуску для обробки сигналу, завершення активної роботи, фаз закриття, наступного запуску, часу готовності й знімків пам’яті. Скрипт установлює `OPENCLAW_GATEWAY_STARTUP_TRACE=1` і `OPENCLAW_GATEWAY_RESTART_TRACE=1`.
 
-Скрипт: [`scripts/bench-gateway-restart.ts`](https://github.com/openclaw/openclaw/blob/main/scripts/bench-gateway-restart.ts)
+Використовуйте цей тест продуктивності, коли зміна стосується сигналізації перезапуску, обробників закриття, запуску після перезапуску, завершення роботи допоміжних процесів, передавання керування службою або готовності після перезапуску. Починайте з `skipChannels`, щоб ізолювати механіку Gateway від запуску каналів; використовуйте `default` або сценарії з великою кількістю плагінів лише після того, як вузький сценарій пояснить шлях перезапуску. Метрики трасування — це підказки для визначення причин, а не остаточні висновки: оцінюйте зміну перезапуску за кількома зразками, відповідним діапазоном власника, поведінкою `/healthz`/`/readyz` і видимим для користувача контрактом перезапуску.
 
-Бенчмарк перезапуску підтримується лише на macOS і Linux. Він використовує SIGUSR1 для
-перезапусків усередині процесу й одразу завершується помилкою на Windows.
+</Accordion>
 
-Бенчмарк типово використовує зібрану точку входу CLI в `dist/entry.js`; виконайте
-`pnpm build` перед використанням команд package-script. Щоб натомість виміряти source
-runner, передайте `--entry scripts/run-node.mjs` і тримайте ці результати
-окремо від базових показників зібраної точки входу.
+## Наскрізне тестування початкового налаштування (Docker)
 
-Використання:
-
-- `pnpm test:restart:gateway -- --case skipChannels --runs 1 --restarts 5`
-- `pnpm test:restart:gateway -- --case default --runs 3 --restarts 3 --warmup 1`
-- `pnpm test:restart:gateway -- --case skipChannelsAcpxProbe --case skipChannelsNoAcpxProbe --runs 1 --restarts 5`
-- `node --import tsx scripts/bench-gateway-restart.ts --case fiftyPlugins --runs 1 --restarts 5 --output .artifacts/gateway-restart.json`
-- `node --import tsx scripts/bench-gateway-restart.ts --json`
-
-Ідентифікатори сценаріїв:
-
-- `skipChannels`: перезапуск із пропущеними каналами.
-- `skipChannelsAcpxProbe`: перезапуск із пропущеними каналами та ввімкненим startup probe ACPX.
-- `skipChannelsNoAcpxProbe`: перезапуск із пропущеними каналами та вимкненим startup probe ACPX.
-- `default`: звичайний перезапуск.
-- `fiftyPlugins`: перезапуск із 50 плагінами маніфестів.
-
-Вивід містить наступний `/healthz`, наступний `/readyz`, downtime, таймінг готовності після перезапуску,
-CPU, RSS, метрики трасування запуску для процесу-заміни та метрики трасування перезапуску
-для обробки сигналу, drain активної роботи, фаз закриття, наступного старту, таймінгу
-готовності й знімків памʼяті. Скрипт увімкнює
-`OPENCLAW_GATEWAY_STARTUP_TRACE=1` і `OPENCLAW_GATEWAY_RESTART_TRACE=1` у
-середовищі дочірнього Gateway.
-
-Використовуйте цей бенчмарк, коли зміна торкається сигналізації перезапуску, close handlers,
-startup-after-restart, завершення sidecar-процесів, передавання сервісу або готовності після
-перезапуску. Починайте зі `skipChannels`, коли ізолюєте механіку Gateway від запуску каналів.
-Використовуйте `default` або сценарії з великою кількістю плагінів лише після того, як вузький сценарій пояснює
-шлях перезапуску.
-
-Метрики трасування — це підказки для атрибуції, а не вердикти. Зміну перезапуску слід
-оцінювати за кількома зразками, відповідним owner span, поведінкою `/healthz` і `/readyz`
-та користувацьким контрактом перезапуску.
-
-## Onboarding E2E (Docker)
-
-Docker необовʼязковий; це потрібно лише для контейнеризованих smoke-тестів onboarding.
-
-Повний cold-start flow у чистому Linux-контейнері:
+Необов’язково; потрібно лише для контейнеризованих швидких перевірок початкового налаштування. Повний процес холодного запуску в чистому контейнері Linux:
 
 ```bash
 scripts/e2e/onboard-docker.sh
 ```
 
-Цей скрипт керує інтерактивним майстром через pseudo-tty, перевіряє файли config/workspace/session, потім запускає Gateway і виконує `openclaw health`.
+Керує інтерактивним майстром через псевдотермінал, перевіряє файли конфігурації, робочого простору та сеансу, а потім запускає Gateway і виконує `openclaw health`.
 
-## Smoke-тест імпорту QR (Docker)
+## Швидка перевірка імпорту QR (Docker)
 
-Перевіряє, що підтримуваний runtime helper QR завантажується в підтримуваних Docker runtime Node (Node 24 за замовчуванням, Node 22 сумісний):
+Перевіряє, що підтримуваний допоміжний засіб середовища виконання QR завантажується в підтримуваних середовищах виконання Docker Node (типово Node 24, сумісний із Node 22):
 
 ```bash
 pnpm test:docker:qr
 ```
 
-## Повʼязане
+## Пов’язані матеріали
 
 - [Тестування](/uk/help/testing)
-- [Тестування live](/uk/help/testing-live)
+- [Тестування наживо](/uk/help/testing-live)
 - [Тестування оновлень і плагінів](/uk/help/testing-updates-plugins)

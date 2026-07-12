@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Вы устанавливаете, настраиваете или аудируете Plugin gradium
+    - Вы устанавливаете, настраиваете или проверяете плагин gradium
 summary: Добавляет поддержку провайдера преобразования текста в речь.
 title: Plugin Gradium
 x-i18n:
-    generated_at: "2026-06-28T23:24:49Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:39:30Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 4ae70f3e901d44c238d6e1abcec13f67c0d19df6f82d92e365c3ddf0355ea23d
@@ -22,10 +22,10 @@ x-i18n:
 - Пакет: `@openclaw/gradium-speech`
 - Способ установки: npm; ClawHub: `clawhub:@openclaw/gradium-speech`
 
-## Поверхность
+## Интерфейс
 
 контракты: speechProviders
 
-## Связанные документы
+## Связанная документация
 
-- [gradium](/ru/providers/gradium)
+- [Gradium](/ru/providers/gradium)

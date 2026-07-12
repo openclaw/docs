@@ -1,35 +1,35 @@
 ---
 read_when:
-    - Canlı OpenClaw belgelerini terminalden aramak istiyorsunuz
-    - Belge CLI'sinin hangi barındırılan arama API'sini çağırdığını bilmeniz gerekir
-summary: '`openclaw docs` için CLI başvurusu (canlı dokümanlar dizininde arama yapın)'
+    - Terminalden canlı OpenClaw belgelerinde arama yapmak istiyorsunuz
+    - Dokümanlar CLI'sinin hangi barındırılan arama API'sini çağırdığını bilmeniz gerekir
+summary: '`openclaw docs` için CLI referansı (canlı dokümantasyon dizininde arama yapın)'
 title: Belgeler
 x-i18n:
-    generated_at: "2026-06-28T00:21:53Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:34:54Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f8be22f689d40ffec29df9562b69444c0f8b9bb607dfcb79de20b3023e0eb30a
+    source_hash: b0b575f0b76d40a53dd4f79c55fd65969a24eae27e27bd1c46d395f61fe89e42
     source_path: cli/docs.md
     workflow: 16
 ---
 
 # `openclaw docs`
 
-Terminalden canlı OpenClaw dokümanları dizininde arama yapın. Komut, OpenClaw'ın Cloudflare üzerinde barındırılan doküman arama API'sini çağırır ve sonuçları terminalinizde işler.
+Canlı OpenClaw dokümantasyon dizininde terminalden arama yapın.
 
 ## Kullanım
 
 ```bash
-openclaw docs                       # print docs entrypoint and example search
-openclaw docs <query...>            # search the live docs index
+openclaw docs                       # dokümantasyon giriş noktasını ve örnek aramayı yazdır
+openclaw docs <query...>            # canlı dokümantasyon dizininde ara
 ```
 
-Argümanlar:
+| Argüman      | Açıklama                                                                                              |
+| ------------ | ----------------------------------------------------------------------------------------------------- |
+| `[query...]` | Serbest biçimli arama sorgusu. Birden çok sözcüklü sorgular boşluklarla birleştirilip tek sorgu olarak gönderilir. |
 
-| Argüman      | Açıklama                                                                          |
-| ------------ | ---------------------------------------------------------------------------------- |
-| `[query...]` | Serbest biçimli arama sorgusu. Çok sözcüklü sorgular boşluklarla birleştirilir ve tek parça olarak gönderilir. |
+Sorgu verilmediğinde `openclaw docs`, arama çalıştırmak yerine dokümantasyon giriş noktası URL'sini ve örnek bir arama komutunu yazdırır.
 
 ## Örnekler
 
@@ -39,33 +39,31 @@ openclaw docs sandbox allowHostControl
 openclaw docs gateway token secretref
 ```
 
-Sorgu olmadığında `openclaw docs`, arama çalıştırmak yerine doküman giriş noktası URL'sini ve örnek bir arama komutunu yazdırır.
-
 ## Nasıl çalışır?
 
-`openclaw docs`, `https://docs.openclaw.ai/api/search` adresini çağırır ve JSON sonuçlarını işler. Arama çağrısı sabit 30 saniyelik zaman aşımı kullanır.
+`openclaw docs`, `https://docs.openclaw.ai/api/search` adresini çağırır ve JSON sonuçlarını görüntüler. Arama isteği, sabit 30 saniyelik zaman aşımı kullanır.
 
 ## Çıktı
 
-Zengin (TTY) terminalde sonuçlar, bir başlığın ardından madde işaretli liste olarak işlenir. Her madde sayfa başlığını, bağlantılı doküman URL'sini ve sonraki satırda kısa bir parçayı gösterir. Boş sonuçlar "Sonuç yok." yazdırır.
+Zengin özellikli bir terminalde (TTY) sonuçlar, bir başlığın ardından madde işaretli liste olarak görüntülenir: sayfa başlığı, bağlantılı dokümantasyon URL'si ve sonraki satırda kısa bir alıntı. Sonuç yoksa "Sonuç yok." yazdırılır.
 
-Zengin olmayan çıktıda (pipe ile aktarılan, `--no-color`, betikler), aynı veri Markdown olarak işlenir:
+Zengin olmayan çıktıda (boruya aktarıldığında, `--no-color` kullanıldığında veya betiklerde) aynı veriler Markdown olarak görüntülenir:
 
 ```markdown
-# Docs search: <query>
+# Dokümantasyon araması: <query>
 
-- [Title](https://docs.openclaw.ai/...) - snippet
-- [Title](https://docs.openclaw.ai/...) - snippet
+- [Başlık](https://docs.openclaw.ai/...) - alıntı
+- [Başlık](https://docs.openclaw.ai/...) - alıntı
 ```
 
 ## Çıkış kodları
 
-| Kod | Anlamı                                                            |
-| --- | ----------------------------------------------------------------- |
-| `0` | Arama başarılı oldu (sıfır sonuçlu yanıtlar dahil).               |
-| `1` | Barındırılan doküman arama API çağrısı başarısız oldu; stderr satır içinde yazdırılır. |
+| Kod | Anlam                                                                                       |
+| --- | ------------------------------------------------------------------------------------------- |
+| `0` | Sıfır sonuç dönen yanıtlar dâhil olmak üzere arama başarıyla tamamlandı.                    |
+| `1` | Barındırılan dokümantasyon arama API'si çağrısı başarısız oldu; hata iletisi stderr'e yazdırılır. |
 
 ## İlgili
 
 - [CLI başvurusu](/tr/cli)
-- [Canlı dokümanlar](https://docs.openclaw.ai)
+- [Canlı dokümantasyon](https://docs.openclaw.ai)

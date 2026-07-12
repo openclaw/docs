@@ -1,15 +1,15 @@
 ---
 read_when:
-    - OpenClaw'u bir makineden kaldırmak istiyorsunuz
-    - Gateway hizmeti kaldırmadan sonra hâlâ çalışıyor
-summary: OpenClaw’ı tamamen kaldırın (CLI, servis, durum, çalışma alanı)
+    - OpenClaw'ı bir makineden kaldırmak istiyorsunuz
+    - Gateway hizmeti, kaldırma işleminden sonra hâlâ çalışıyor
+summary: OpenClaw'u tamamen kaldırın (CLI, hizmet, durum, çalışma alanı)
 title: Kaldırma
 x-i18n:
-    generated_at: "2026-06-28T00:45:13Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:54:56Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 0f63bde2769b3d35d928aed1668121086a2952338f2634d45d55da8cc637025b
+    source_hash: 84f01dc11defe6f19c89232375e48bad383b2e71379f47f43e759d3d7bb908b5
     source_path: install/uninstall.md
     workflow: 16
 ---
@@ -17,7 +17,7 @@ x-i18n:
 İki yol:
 
 - `openclaw` hâlâ yüklüyse **kolay yol**.
-- CLI kaldırılmışsa ancak hizmet hâlâ çalışıyorsa **elle hizmet kaldırma**.
+- CLI kaldırılmış ancak hizmet hâlâ çalışıyorsa **hizmeti elle kaldırma**.
 
 ## Kolay yol (CLI hâlâ yüklü)
 
@@ -27,22 +27,24 @@ x-i18n:
 openclaw uninstall
 ```
 
-CLI kullanılırken, `--workspace` seçeneğini de seçmediğiniz sürece durum kaldırma, yapılandırılmış çalışma alanı dizinlerini korur.
+Durum verilerini kaldırma işlemi, `--workspace` seçeneğini de belirtmediğiniz sürece yapılandırılmış çalışma alanı dizinlerini korur.
 
-Nelerin kaldırılacağını önizleyin (güvenli):
+Nelerin kaldırılacağını önizleyin (güvenlidir):
 
 ```bash
 openclaw uninstall --dry-run --all
 ```
 
-Etkileşimsiz (otomasyon / npx). Dikkatli kullanın ve yalnızca kapsamları doğruladıktan sonra çalıştırın:
+Etkileşimsiz kullanım (otomasyon / npx). Dikkatli kullanın ve yalnızca kapsamları doğruladıktan sonra çalıştırın:
 
 ```bash
 openclaw uninstall --all --yes --non-interactive
 npx -y openclaw uninstall --all --yes --non-interactive
 ```
 
-Elle adımlar (aynı sonuç):
+Bayraklar: `--service`, `--state`, `--workspace` ve `--app` ayrı kapsamları seçer; `--all` dördünü de seçer.
+
+Elle uygulanan adımlar (aynı sonucu verir):
 
 1. Gateway hizmetini durdurun:
 
@@ -56,22 +58,22 @@ openclaw gateway stop
 openclaw gateway uninstall
 ```
 
-3. Durumu + yapılandırmayı silin:
+3. Durum verilerini ve yapılandırmayı silin:
 
 ```bash
 rm -rf "${OPENCLAW_STATE_DIR:-$HOME/.openclaw}"
 ```
 
-`OPENCLAW_CONFIG_PATH` değerini durum dizininin dışında özel bir konuma ayarladıysanız, o dosyayı da silin.
-Durum dizininin içinde `~/.openclaw/workspace` gibi bir çalışma alanını tutmak istiyorsanız, `rm -rf` çalıştırmadan önce onu kenara taşıyın veya durum içeriklerini seçerek silin.
+`OPENCLAW_CONFIG_PATH` değişkenini durum dizini dışında özel bir konuma ayarladıysanız bu dosyayı da silin.
+Durum dizini içindeki `~/.openclaw/workspace` gibi bir çalışma alanını korumak istiyorsanız `rm -rf` komutunu çalıştırmadan önce onu başka bir yere taşıyın veya durum dizininin içeriğini seçerek silin.
 
-4. Çalışma alanınızı silin (isteğe bağlı, ajan dosyalarını kaldırır):
+4. Çalışma alanınızı silin (isteğe bağlıdır, ajan dosyalarını kaldırır):
 
 ```bash
 rm -rf ~/.openclaw/workspace
 ```
 
-5. CLI kurulumunu kaldırın (kullandığınızı seçin):
+5. CLI kurulumunu kaldırın (kullandığınız yöntemi seçin):
 
 ```bash
 npm rm -g openclaw
@@ -87,27 +89,27 @@ rm -rf /Applications/OpenClaw.app
 
 Notlar:
 
-- Profiller kullandıysanız (`--profile` / `OPENCLAW_PROFILE`), her durum dizini için 3. adımı tekrarlayın (varsayılanlar `~/.openclaw-<profile>` şeklindedir).
-- Uzak modda durum dizini **gateway ana makinesinde** bulunur, bu nedenle 1-4. adımları orada da çalıştırın.
+- Profiller (`--profile` / `OPENCLAW_PROFILE`) kullandıysanız 3. adımı her durum dizini için tekrarlayın (varsayılan dizinler `~/.openclaw-<profile>` biçimindedir).
+- Uzak modda durum dizini **Gateway ana makinesinde** bulunur; bu nedenle 1-4. adımları orada da çalıştırın.
 
-## Elle hizmet kaldırma (CLI yüklü değil)
+## Hizmeti elle kaldırma (CLI yüklü değil)
 
-Gateway hizmeti çalışmaya devam ediyorsa ancak `openclaw` eksikse bunu kullanın.
+Gateway hizmeti çalışmaya devam ediyor ancak `openclaw` bulunamıyorsa bu yöntemi kullanın.
 
 ### macOS (launchd)
 
-Varsayılan etiket `ai.openclaw.gateway` şeklindedir (veya `ai.openclaw.<profile>`; eski `com.openclaw.*` hâlâ mevcut olabilir):
+Varsayılan etiket `ai.openclaw.gateway` şeklindedir (profil kullanılıyorsa `ai.openclaw.<profile>`):
 
 ```bash
 launchctl bootout gui/$UID/ai.openclaw.gateway
 rm -f ~/Library/LaunchAgents/ai.openclaw.gateway.plist
 ```
 
-Profil kullandıysanız, etiketi ve plist adını `ai.openclaw.<profile>` ile değiştirin. Varsa eski `com.openclaw.*` plist dosyalarını kaldırın.
+Profil kullandıysanız etiketi ve plist adını `ai.openclaw.<profile>` ile değiştirin.
 
 ### Linux (systemd kullanıcı birimi)
 
-Varsayılan birim adı `openclaw-gateway.service` şeklindedir (veya `openclaw-gateway-<profile>.service`):
+Varsayılan birim adı `openclaw-gateway.service` şeklindedir (veya `openclaw-gateway-<profile>.service`). Çok eski kurulumlardan yükseltilmiş makinelerde, yeniden adlandırma öncesinden kalma bir `clawdbot-gateway.service` birimi hâlâ bulunabilir; `openclaw uninstall` / `openclaw gateway uninstall` bunu otomatik olarak algılar ve kaldırır.
 
 ```bash
 systemctl --user disable --now openclaw-gateway.service
@@ -118,9 +120,8 @@ systemctl --user daemon-reload
 ### Windows (Zamanlanmış Görev)
 
 Varsayılan görev adı `OpenClaw Gateway` şeklindedir (veya `OpenClaw Gateway (<profile>)`).
-Görev betiği durum dizininizin altında `gateway.cmd` olarak bulunur; güncel kurulumlar
-ayrıca Görev Zamanlayıcı'nın `gateway.cmd` dosyasını doğrudan açmak yerine çalıştırdığı penceresiz bir `gateway.vbs` başlatıcısı da
-oluşturabilir.
+Görev, durum dizininizdeki penceresiz bir `gateway.vbs` betiğini başlatır; bu betik de
+`gateway.cmd` dosyasını çalıştırır. İkisini de kaldırın.
 
 ```powershell
 schtasks /Delete /F /TN "OpenClaw Gateway"
@@ -128,25 +129,25 @@ Remove-Item -Force "$env:USERPROFILE\.openclaw\gateway.cmd" -ErrorAction Silentl
 Remove-Item -Force "$env:USERPROFILE\.openclaw\gateway.vbs" -ErrorAction SilentlyContinue
 ```
 
-Profil kullandıysanız, eşleşen görev adını ve `~\.openclaw-<profile>` altındaki `gateway.cmd` /
+Profil kullandıysanız eşleşen görev adını ve `~\.openclaw-<profile>` altındaki `gateway.cmd` /
 `gateway.vbs` dosyalarını silin.
 
-## Normal kurulum ve kaynak deposu çalışma kopyası
+## Normal kurulum ile kaynak kod deposundan çalıştırma arasındaki fark
 
 ### Normal kurulum (install.sh / npm / pnpm / bun)
 
-`https://openclaw.ai/install.sh` veya `install.ps1` kullandıysanız, CLI `npm install -g openclaw@latest` ile yüklenmiştir.
-`npm rm -g openclaw` ile kaldırın (veya o şekilde yüklediyseniz `pnpm remove -g` / `bun remove -g`).
+`https://openclaw.ai/install.sh` veya `install.ps1` kullandıysanız CLI, `npm install -g openclaw@latest` komutuyla yüklenmiştir.
+`npm rm -g openclaw` komutuyla kaldırın (veya bu yöntemlerden biriyle yüklediyseniz `pnpm remove -g` / `bun remove -g` kullanın).
 
-### Kaynak deposu çalışma kopyası (git clone)
+### Kaynak kod deposundan çalıştırma (git clone)
 
-Bir repo çalışma kopyasından çalıştırıyorsanız (`git clone` + `openclaw ...` / `bun run openclaw ...`):
+Bir depo kopyasından çalıştırıyorsanız (`git clone` + `openclaw ...` / `bun run openclaw ...`):
 
-1. Repoyu silmeden **önce** Gateway hizmetini kaldırın (yukarıdaki kolay yolu veya elle hizmet kaldırmayı kullanın).
-2. Repo dizinini silin.
-3. Durumu + çalışma alanını yukarıda gösterildiği gibi kaldırın.
+1. Depoyu silmeden **önce** Gateway hizmetini kaldırın (yukarıdaki kolay yolu veya hizmeti elle kaldırma yöntemini kullanın).
+2. Depo dizinini silin.
+3. Durum verilerini ve çalışma alanını yukarıda gösterildiği gibi kaldırın.
 
-## İlgili
+## İlgili konular
 
-- [Kurulum özeti](/tr/install)
+- [Kuruluma genel bakış](/tr/install)
 - [Geçiş kılavuzu](/tr/install/migrating)

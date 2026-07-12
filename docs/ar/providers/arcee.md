@@ -1,40 +1,38 @@
 ---
 read_when:
     - تريد استخدام Arcee AI مع OpenClaw
-    - تحتاج إلى متغير بيئة مفتاح API أو خيار مصادقة CLI
+    - تحتاج إلى متغير البيئة لمفتاح API أو خيار المصادقة عبر CLI
 summary: إعداد Arcee AI (المصادقة + اختيار النموذج)
 title: Arcee AI
 x-i18n:
-    generated_at: "2026-06-27T18:22:16Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:25:52Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 15570c1d018104377a473fe5f9b556d9a6ffd2dea6db5d55d46ca3702e237101
+    source_hash: fe519393db3cf39f1b14b8121603b6f667102ac8c122fb6560d9b73a6ee6b0a3
     source_path: providers/arcee.md
     workflow: 16
 ---
 
-[Arcee AI](https://arcee.ai) يوفّر الوصول إلى عائلة Trinity من نماذج خليط الخبراء عبر API متوافقة مع OpenAI. جميع نماذج Trinity مرخّصة بموجب Apache 2.0.
+[Arcee AI](https://arcee.ai) توفّر عائلة Trinity من نماذج مزيج الخبراء عبر واجهة API متوافقة مع OpenAI. جميع نماذج Trinity مرخّصة بموجب Apache 2.0. ‏Arcee هي Plugin رسمية لـ OpenClaw، وليست مضمّنة مع النواة، لذا تتطلب خطوة تثبيت قبل الإعداد الأولي.
 
-يمكن الوصول إلى نماذج Arcee AI مباشرةً عبر منصة Arcee أو من خلال [OpenRouter](/ar/providers/openrouter).
+يمكنك الوصول إلى نماذج Arcee مباشرةً عبر منصة Arcee أو من خلال [OpenRouter](/ar/providers/openrouter).
 
-| الخاصية | القيمة                                                                                |
+| الخاصية | القيمة                                                                                 |
 | -------- | ------------------------------------------------------------------------------------- |
 | المزوّد | `arcee`                                                                               |
-| المصادقة | `ARCEEAI_API_KEY` (مباشر) أو `OPENROUTER_API_KEY` (عبر OpenRouter)                   |
+| المصادقة     | `ARCEEAI_API_KEY` (مباشر) أو `OPENROUTER_API_KEY` (عبر OpenRouter)                   |
 | API      | متوافقة مع OpenAI                                                                     |
 | عنوان URL الأساسي | `https://api.arcee.ai/api/v1` (مباشر) أو `https://openrouter.ai/api/v1` (OpenRouter) |
 
 ## تثبيت Plugin
-
-ثبّت Plugin الرسمي، ثم أعد تشغيل Gateway:
 
 ```bash
 openclaw plugins install @openclaw/arcee-provider
 openclaw gateway restart
 ```
 
-## بدء الاستخدام
+## البدء
 
 <Tabs>
   <Tab title="مباشر (منصة Arcee)">
@@ -42,7 +40,7 @@ openclaw gateway restart
       <Step title="الحصول على مفتاح API">
         أنشئ مفتاح API في [Arcee AI](https://chat.arcee.ai/).
       </Step>
-      <Step title="تشغيل التهيئة الأولية">
+      <Step title="تشغيل الإعداد الأولي">
         ```bash
         openclaw onboard --auth-choice arceeai-api-key
         ```
@@ -66,7 +64,7 @@ openclaw gateway restart
       <Step title="الحصول على مفتاح API">
         أنشئ مفتاح API في [OpenRouter](https://openrouter.ai/keys).
       </Step>
-      <Step title="تشغيل التهيئة الأولية">
+      <Step title="تشغيل الإعداد الأولي">
         ```bash
         openclaw onboard --auth-choice arceeai-openrouter
         ```
@@ -82,14 +80,14 @@ openclaw gateway restart
         }
         ```
 
-        تعمل مراجع النماذج نفسها لكل من إعدادات الاتصال المباشر وOpenRouter (على سبيل المثال `arcee/trinity-large-thinking`).
+        تعمل مراجع النماذج نفسها مع كلٍ من الإعداد المباشر وإعداد OpenRouter.
       </Step>
     </Steps>
 
   </Tab>
 </Tabs>
 
-## إعداد غير تفاعلي
+## الإعداد غير التفاعلي
 
 <Tabs>
   <Tab title="مباشر (منصة Arcee)">
@@ -113,38 +111,37 @@ openclaw gateway restart
 
 ## الكتالوج المضمّن
 
-يشحن OpenClaw حاليًا كتالوج Arcee الثابت هذا:
-
-| مرجع النموذج                      | الاسم                   | الإدخال | السياق | التكلفة (إدخال/إخراج لكل 1M) | ملاحظات                                     |
-| ------------------------------ | ---------------------- | ----- | ------- | -------------------- | ----------------------------------------- |
-| `arcee/trinity-large-thinking` | Trinity Large Thinking | نص  | 256K    | $0.25 / $0.90        | النموذج الافتراضي؛ الاستدلال مفعّل          |
-| `arcee/trinity-large-preview`  | Trinity Large Preview  | نص  | 128K    | $0.25 / $1.00        | للأغراض العامة؛ 400B معلمة، و13B نشطة  |
-| `arcee/trinity-mini`           | Trinity Mini 26B       | نص  | 128K    | $0.045 / $0.15       | سريع وفعّال من حيث التكلفة؛ استدعاء الدوال |
+| مرجع النموذج                      | الاسم                   | الإدخال | السياق | الحد الأقصى للإخراج | التكلفة (الإدخال/الإخراج لكل مليون) | الأدوات | ملاحظات                                     |
+| ------------------------------ | ---------------------- | ----- | ------- | ---------- | -------------------- | ----- | ----------------------------------------- |
+| `arcee/trinity-large-thinking` | Trinity Large Thinking | نص  | 256K    | 80K        | $0.25 / $0.90        | لا    | النموذج الافتراضي؛ تفكير موسّع          |
+| `arcee/trinity-large-preview`  | Trinity Large Preview  | نص  | 128K    | 16K        | $0.25 / $1.00        | نعم   | للأغراض العامة؛ 400 مليار مُعامل، منها 13 مليار نشط  |
+| `arcee/trinity-mini`           | Trinity Mini 26B       | نص  | 128K    | 80K        | $0.045 / $0.15       | نعم   | سريع وفعّال من حيث التكلفة؛ استدعاء الدوال |
 
 <Tip>
-يضبط إعداد التهيئة الأولية المسبق `arcee/trinity-large-thinking` بوصفه النموذج الافتراضي.
+يضبط الإعداد المسبق للإعداد الأولي `arcee/trinity-large-thinking` بوصفه النموذج الافتراضي.
 </Tip>
 
 ## الميزات المدعومة
 
-| الميزة                                       | مدعومة                                    |
+| الميزة                                       | الدعم                                    |
 | --------------------------------------------- | -------------------------------------------- |
 | البث                                     | نعم                                          |
-| استخدام الأدوات / استدعاء الدوال                   | نعم (Trinity Mini، Trinity Large Preview)    |
-| المخرجات المنظمة (وضع JSON ومخطط JSON) | نعم                                          |
-| التفكير الممتد                             | نعم (Trinity Large Thinking؛ الأدوات معطّلة) |
+| استخدام الأدوات / استدعاء الدوال                   | نعم (Trinity Mini وTrinity Large Preview)    |
+| الإخراج المنظّم (وضع JSON ومخطط JSON) | نعم                                          |
+| التفكير الموسّع                             | نعم (Trinity Large Thinking؛ الأدوات معطّلة) |
 
 <AccordionGroup>
   <Accordion title="ملاحظة حول البيئة">
-    إذا كان Gateway يعمل كخدمة خفية (launchd/systemd)، فتأكد من أن `ARCEEAI_API_KEY`
-    (أو `OPENROUTER_API_KEY`) متاح لتلك العملية (على سبيل المثال، في
-    `~/.openclaw/.env` أو عبر `env.shellEnv`).
+    إذا كان Gateway يعمل كخدمة خلفية (launchd/systemd)، فتأكد من إتاحة `ARCEEAI_API_KEY`
+    (أو `OPENROUTER_API_KEY`) لتلك العملية، على سبيل المثال في
+    `~/.openclaw/.env` أو عبر `env.shellEnv`.
   </Accordion>
 
-  <Accordion title="توجيه OpenRouter">
-    عند استخدام نماذج Arcee عبر OpenRouter، تنطبق مراجع النماذج نفسها بصيغة `arcee/*`.
-    يتولى OpenClaw التوجيه بشفافية بناءً على اختيار المصادقة لديك. راجع
-    [وثائق مزوّد OpenRouter](/ar/providers/openrouter) للحصول على تفاصيل الإعداد الخاصة بـ OpenRouter.
+  <Accordion title="التوجيه عبر OpenRouter">
+    عند استخدام نماذج Arcee عبر OpenRouter، تنطبق مراجع النماذج `arcee/*` نفسها.
+    يوجّه OpenClaw الطلبات بشفافية استنادًا إلى خيار المصادقة لديك. راجع
+    [وثائق مزوّد OpenRouter](/ar/providers/openrouter) للاطلاع على تفاصيل
+    الإعداد الخاصة بـ OpenRouter.
   </Accordion>
 </AccordionGroup>
 
@@ -152,9 +149,9 @@ openclaw gateway restart
 
 <CardGroup cols={2}>
   <Card title="OpenRouter" href="/ar/providers/openrouter" icon="shuffle">
-    يمكنك الوصول إلى نماذج Arcee والعديد غيرها عبر مفتاح API واحد.
+    يمكنك الوصول إلى نماذج Arcee والعديد من النماذج الأخرى من خلال مفتاح API واحد.
   </Card>
   <Card title="اختيار النموذج" href="/ar/concepts/model-providers" icon="layers">
-    اختيار المزوّدين، ومراجع النماذج، وسلوك تجاوز الفشل.
+    اختيار المزوّدين ومراجع النماذج وسلوك تجاوز الأعطال.
   </Card>
 </CardGroup>

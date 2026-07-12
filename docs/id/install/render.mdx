@@ -1,43 +1,33 @@
 ---
 read_when:
-    - Men-deploy OpenClaw ke Render
-    - Anda menginginkan deployment cloud deklaratif dengan Render Blueprints
-summary: Deploy OpenClaw di Render dengan Infrastructure-as-Code
+    - Menerapkan OpenClaw ke Render
+    - Anda menginginkan penerapan cloud deklaratif dengan Render Blueprints
+summary: Terapkan OpenClaw di Render dengan Infrastruktur sebagai Kode
 title: Render
 x-i18n:
-    generated_at: "2026-04-23T09:23:07Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 95ffe98a60e9919826a7c7fdb9cbafd63d20ce3de111ac305f43907b1ae442dc
-    source_path: install/render.mdx
-    workflow: 15
+    generated_at: "2026-07-12T14:18:26Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: a5fbb3c6df04e186df958a62a6130da4e3e485acfeecc7e85fee0d5b69a0438f
+    source_path: install/render.mdx
+    workflow: 16
 ---
 
-# Render
-
-Deploy OpenClaw di Render menggunakan Infrastructure as Code. Blueprint `render.yaml` yang disertakan mendefinisikan seluruh stack Anda secara deklaratif, layanan, disk, variabel lingkungan, sehingga Anda dapat melakukan deployment dengan satu klik dan membuat versi infrastruktur Anda berdampingan dengan kode Anda.
+Deploy OpenClaw di [Render](https://render.com) menggunakan Blueprint `render.yaml` dari repositori. File tersebut mendeklarasikan layanan, disk, dan variabel lingkungan dalam satu file.
 
 ## Prasyarat
 
-- Akun [Render](https://render.com) (tersedia tier gratis)
-- API key dari [provider model](/id/providers) pilihan Anda
+- [Akun Render](https://render.com) (tersedia paket gratis)
+- Kunci API dari [penyedia model](/id/providers) pilihan Anda
 
-## Deploy dengan Render Blueprint
+## Deployment
 
-[Deploy to Render](https://render.com/deploy?repo=https://github.com/openclaw/openclaw)
+[Deploy ke Render](https://render.com/deploy?repo=https://github.com/openclaw/openclaw)
 
-Mengklik tautan ini akan:
+Tindakan ini membuat layanan Render dari `render.yaml`, membangun image Docker, lalu melakukan deployment. URL layanan Anda mengikuti pola `https://<service-name>.onrender.com`.
 
-1. Membuat layanan Render baru dari Blueprint `render.yaml` di root repo ini.
-2. Membangun image Docker dan men-deploy
-
-Setelah di-deploy, URL layanan Anda mengikuti pola `https://<service-name>.onrender.com`.
-
-## Memahami Blueprint
-
-Render Blueprints adalah file YAML yang mendefinisikan infrastruktur Anda. `render.yaml` di
-repository ini mengonfigurasi semua yang diperlukan untuk menjalankan OpenClaw:
+## Blueprint
 
 ```yaml
 services:
@@ -54,122 +44,100 @@ services:
       - key: OPENCLAW_WORKSPACE_DIR
         value: /data/workspace
       - key: OPENCLAW_GATEWAY_TOKEN
-        generateValue: true # otomatis membuat token aman
+        generateValue: true # membuat token aman secara otomatis
     disk:
       name: openclaw-data
       mountPath: /data
       sizeGB: 1
 ```
 
-Fitur Blueprint utama yang digunakan:
-
-| Fitur                 | Tujuan                                                     |
-| --------------------- | ---------------------------------------------------------- |
-| `runtime: docker`     | Membangun dari Dockerfile repo                             |
-| `healthCheckPath`     | Render memantau `/health` dan me-restart instance yang tidak sehat |
-| `generateValue: true` | Otomatis membuat nilai yang aman secara kriptografis       |
-| `disk`                | Penyimpanan persisten yang bertahan setelah redeploy       |
+| Fitur                 | Tujuan                                                         |
+| --------------------- | -------------------------------------------------------------- |
+| `runtime: docker`     | Membangun dari Dockerfile repositori                            |
+| `healthCheckPath`     | Render memantau `/health` dan memulai ulang instans yang bermasalah |
+| `generateValue: true` | Membuat nilai yang aman secara kriptografis secara otomatis     |
+| `disk`                | Penyimpanan persisten yang tetap ada setelah deployment ulang   |
 
 ## Memilih paket
 
-| Paket     | Spin-down         | Disk          | Terbaik untuk                 |
-| --------- | ----------------- | ------------- | ----------------------------- |
-| Free      | Setelah 15 mnt idle | Tidak tersedia | Pengujian, demo              |
-| Starter   | Tidak pernah      | 1GB+          | Penggunaan pribadi, tim kecil |
-| Standard+ | Tidak pernah      | 1GB+          | Produksi, banyak channel      |
+| Paket     | Penonaktifan             | Disk          | Paling sesuai untuk               |
+| --------- | ------------------------ | ------------- | --------------------------------- |
+| Gratis    | Setelah 15 menit nonaktif | Tidak tersedia | Pengujian, demo                   |
+| Starter   | Tidak pernah             | 1GB+          | Penggunaan pribadi, tim kecil     |
+| Standard+ | Tidak pernah             | 1GB+          | Produksi, beberapa kanal          |
 
-Blueprint secara default menggunakan `starter`. Untuk menggunakan tier gratis, ubah `plan: free` di
-`render.yaml` fork Anda (tetapi perhatikan: tanpa disk persisten berarti status OpenClaw
-di-reset pada setiap deployment).
+Blueprint menggunakan `starter` secara default. Untuk menggunakan paket gratis, ubah `plan: free` dalam `render.yaml` di fork Anda — perlu diketahui bahwa tanpa disk persisten, status OpenClaw akan direset pada setiap deployment.
 
 ## Setelah deployment
 
-### Akses UI Control
+### Mengakses UI Kontrol
 
-Dashboard web tersedia di `https://<your-service>.onrender.com/`.
-
-Hubungkan menggunakan shared secret yang dikonfigurasi. Template deployment ini otomatis membuat
-`OPENCLAW_GATEWAY_TOKEN` (temukan di **Dashboard → layanan Anda →
-Environment**); jika Anda menggantinya dengan autentikasi kata sandi, gunakan kata sandi
-tersebut.
-
-## Fitur Dashboard Render
+Dasbor web tersedia di `https://<your-service>.onrender.com/`. Hubungkan menggunakan rahasia bersama: `OPENCLAW_GATEWAY_TOKEN` yang dibuat secara otomatis (temukan di **Dashboard → your service → Environment**), atau kata sandi Anda jika beralih ke autentikasi kata sandi.
 
 ### Log
 
-Lihat log real-time di **Dashboard → layanan Anda → Logs**. Filter berdasarkan:
-
-- Log build (pembuatan image Docker)
-- Log deployment (startup layanan)
-- Log runtime (output aplikasi)
+**Dashboard → your service → Logs** menampilkan log pembangunan (pembuatan image Docker), log deployment (pengaktifan layanan), dan log waktu proses (keluaran aplikasi).
 
 ### Akses shell
 
-Untuk debugging, buka sesi shell melalui **Dashboard → layanan Anda → Shell**. Disk persisten dipasang di `/data`.
+**Dashboard → your service → Shell** membuka sesi shell. Disk persisten dipasang di `/data`.
 
 ### Variabel lingkungan
 
-Ubah variabel di **Dashboard → layanan Anda → Environment**. Perubahan memicu redeploy otomatis.
+Edit variabel di **Dashboard → your service → Environment**. Perubahan memicu deployment ulang otomatis.
 
-### Auto-deploy
+### Deployment otomatis
 
-Jika Anda menggunakan repository OpenClaw asli, Render tidak akan melakukan auto-deploy OpenClaw Anda. Untuk memperbaruinya, jalankan sinkronisasi Blueprint manual dari dashboard.
+Render secara otomatis melakukan deployment ulang ketika cabang repositori yang terhubung menerima commit baru. Jika Anda melakukan deployment langsung dari `openclaw/openclaw`, bukan dari fork sendiri, Anda tidak memiliki akses push untuk memicunya. Oleh karena itu, lakukan pembaruan dengan menjalankan sinkronisasi Blueprint secara manual dari Dashboard, atau arahkan layanan ke fork Anda sendiri.
 
-## Domain kustom
+## Domain khusus
 
-1. Buka **Dashboard → layanan Anda → Settings → Custom Domains**
+1. **Dashboard → your service → Settings → Custom Domains**
 2. Tambahkan domain Anda
 3. Konfigurasikan DNS sesuai petunjuk (CNAME ke `*.onrender.com`)
 4. Render menyediakan sertifikat TLS secara otomatis
 
-## Scaling
+## Penskalaan
 
-Render mendukung scaling horizontal dan vertikal:
+- **Vertikal**: ubah paket untuk mendapatkan lebih banyak CPU/RAM. Biasanya memadai untuk OpenClaw.
+- **Horizontal**: tingkatkan jumlah instans (paket Standard dan yang lebih tinggi). Memerlukan sesi lengket atau pengelolaan status eksternal karena OpenClaw menyimpan status waktu proses di disk lokal.
 
-- **Vertikal**: Ubah paket untuk mendapatkan lebih banyak CPU/RAM
-- **Horizontal**: Tambahkan jumlah instance (paket Standard ke atas)
+## Pencadangan dan migrasi
 
-Untuk OpenClaw, scaling vertikal biasanya sudah cukup. Scaling horizontal memerlukan sticky session atau manajemen status eksternal.
-
-## Backup dan migrasi
-
-Ekspor status, konfigurasi, profil auth, dan workspace Anda kapan saja menggunakan
-akses shell di Dashboard Render:
+Dari shell Render Dashboard, ekspor status, konfigurasi, profil autentikasi, dan ruang kerja kapan saja:
 
 ```bash
 openclaw backup create
 ```
 
-Ini membuat arsip backup portabel dengan status OpenClaw plus workspace
-yang dikonfigurasi. Lihat [Backup](/id/cli/backup) untuk detail.
+Perintah ini membuat arsip cadangan portabel. Lihat [Pencadangan](/id/cli/backup).
 
 ## Pemecahan masalah
 
-### Layanan tidak mau mulai
+### Layanan tidak dapat dimulai
 
-Periksa log deployment di Dashboard Render. Masalah umum:
+Periksa log deployment di Render Dashboard. Masalah umum:
 
-- `OPENCLAW_GATEWAY_TOKEN` hilang — verifikasi bahwa nilainya sudah disetel di **Dashboard → Environment**
-- Ketidakcocokan port — pastikan `OPENCLAW_GATEWAY_PORT=8080` disetel agar Gateway bind ke port yang diharapkan Render
+- `OPENCLAW_GATEWAY_TOKEN` tidak ada — pastikan variabel tersebut telah ditetapkan di **Dashboard → Environment**
+- Port tidak cocok — pastikan `OPENCLAW_GATEWAY_PORT=8080` agar Gateway mengikat ke port yang diharapkan Render
 
-### Cold start lambat (tier gratis)
+### Cold start lambat (paket gratis)
 
-Layanan tier gratis akan spin down setelah 15 menit tidak aktif. Permintaan pertama setelah spin-down memerlukan beberapa detik saat container mulai. Upgrade ke paket Starter untuk always-on.
+Layanan paket gratis dinonaktifkan setelah 15 menit tidak aktif; permintaan pertama setelah penonaktifan memerlukan beberapa detik saat kontainer dimulai. Tingkatkan ke Starter agar layanan selalu aktif.
 
-### Kehilangan data setelah redeploy
+### Kehilangan data setelah deployment ulang
 
-Ini terjadi pada tier gratis (tanpa disk persisten). Upgrade ke paket berbayar, atau
-ekspor backup lengkap secara rutin melalui `openclaw backup create` di shell Render.
+Hal ini terjadi pada paket gratis (tanpa disk persisten). Tingkatkan ke paket berbayar, atau ekspor cadangan secara rutin dengan `openclaw backup create` dari shell Render.
 
-### Kegagalan health check
+### Kegagalan pemeriksaan kesehatan
 
-Render mengharapkan respons 200 dari `/health` dalam 30 detik. Jika build berhasil tetapi deployment gagal, layanan mungkin memerlukan waktu terlalu lama untuk mulai. Periksa:
+Jika pembangunan berhasil tetapi deployment gagal, layanan mungkin memerlukan waktu terlalu lama untuk dimulai atau `/health` mungkin tidak dapat dijangkau. Periksa:
 
-- Log build untuk error
-- Apakah container berjalan secara lokal dengan `docker build && docker run`
+- Log pembangunan untuk menemukan kesalahan
+- Apakah kontainer berjalan secara lokal dengan `docker build && docker run`
 
 ## Langkah berikutnya
 
-- Siapkan channel pesan: [Channels](/id/channels)
+- Siapkan kanal perpesanan: [Kanal](/id/channels)
 - Konfigurasikan Gateway: [Konfigurasi Gateway](/id/gateway/configuration)
-- Jaga OpenClaw tetap mutakhir: [Updating](/id/install/updating)
+- Pastikan OpenClaw selalu diperbarui: [Pembaruan](/id/install/updating)

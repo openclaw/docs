@@ -1,108 +1,84 @@
 ---
 read_when:
-    - Uruchamianie OpenClaw za proxy świadomym tożsamości
+    - Uruchamianie OpenClaw za serwerem proxy uwzględniającym tożsamość
     - Konfigurowanie Pomerium, Caddy lub nginx z OAuth przed OpenClaw
-    - Naprawianie błędów WebSocket 1008 unauthorized w konfiguracjach z reverse proxy
-    - Decydowanie, gdzie ustawić HSTS i inne nagłówki wzmacniające zabezpieczenia HTTP
+    - Naprawianie błędów WebSocket 1008 „brak autoryzacji” w konfiguracjach z odwrotnym serwerem proxy
+    - Wybór miejsca konfiguracji HSTS i innych nagłówków zwiększających bezpieczeństwo HTTP
 sidebarTitle: Trusted proxy auth
-summary: Deleguj uwierzytelnianie Gateway do zaufanego odwrotnego proxy (Pomerium, Caddy, nginx + OAuth)
-title: Uwierzytelnianie zaufanego proxy
+summary: Delegowanie uwierzytelniania Gateway do zaufanego odwrotnego serwera proxy (Pomerium, Caddy, nginx + OAuth)
+title: Uwierzytelnianie zaufanego serwera proxy
 x-i18n:
-    generated_at: "2026-06-27T17:38:55Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:12:58Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 498a8aca666f88201302af3895b11ba43ab9c0b1bff00a262145fc9e21e80fa7
+    source_hash: 612070e4872af23c2ac41b529c8b2fa8513bf18fccc053783f55ad00b44e1a5f
     source_path: gateway/trusted-proxy-auth.md
     workflow: 16
 ---
 
 <Warning>
-**Funkcja wrażliwa pod względem bezpieczeństwa.** Ten tryb deleguje uwierzytelnianie całkowicie do Twojego reverse proxy. Błędna konfiguracja może narazić Twój Gateway na nieautoryzowany dostęp. Przeczytaj tę stronę uważnie przed włączeniem.
+**Funkcja o krytycznym znaczeniu dla bezpieczeństwa.** Ten tryb przekazuje uwierzytelnianie w całości odwrotnemu serwerowi proxy. Błędna konfiguracja może narazić Gateway na nieautoryzowany dostęp. Przed włączeniem uważnie przeczytaj tę stronę.
 </Warning>
 
 ## Kiedy używać
 
-Używaj trybu uwierzytelniania `trusted-proxy`, gdy:
-
-- Uruchamiasz OpenClaw za **proxy świadomym tożsamości** (Pomerium, Caddy + OAuth, nginx + oauth2-proxy, Traefik + forward auth).
-- Twoje proxy obsługuje całe uwierzytelnianie i przekazuje tożsamość użytkownika przez nagłówki.
-- Pracujesz w środowisku Kubernetes lub kontenerowym, gdzie proxy jest jedyną ścieżką do Gateway.
+- Uruchamiasz OpenClaw za **serwerem proxy rozpoznającym tożsamość** (Pomerium, Caddy + OAuth, nginx + oauth2-proxy, Traefik + forward auth).
+- Serwer proxy obsługuje całe uwierzytelnianie i przekazuje tożsamość użytkownika w nagłówkach.
+- Korzystasz ze środowiska Kubernetes lub kontenerowego, w którym serwer proxy jest jedyną drogą do Gateway.
 - Napotykasz błędy WebSocket `1008 unauthorized`, ponieważ przeglądarki nie mogą przekazywać tokenów w ładunkach WS.
 
 ## Kiedy NIE używać
 
-- Jeśli Twoje proxy nie uwierzytelnia użytkowników (jest tylko terminatorem TLS albo load balancerem).
-- Jeśli istnieje jakakolwiek ścieżka do Gateway, która omija proxy (luki w firewallu, dostęp z sieci wewnętrznej).
-- Jeśli nie masz pewności, czy Twoje proxy poprawnie usuwa/nadpisuje przekazywane nagłówki.
-- Jeśli potrzebujesz tylko osobistego dostępu dla jednego użytkownika (rozważ Tailscale Serve + loopback dla prostszej konfiguracji).
+- Serwer proxy nie uwierzytelnia użytkowników (jest tylko terminatorem TLS lub modułem równoważenia obciążenia).
+- Istnieje jakakolwiek droga do Gateway omijająca serwer proxy (luki w zaporze, dostęp z sieci wewnętrznej).
+- Nie masz pewności, czy serwer proxy prawidłowo usuwa lub nadpisuje przekazywane nagłówki.
+- Potrzebujesz tylko osobistego dostępu dla jednego użytkownika (zamiast tego rozważ Tailscale Serve + local loopback).
 
 ## Jak to działa
 
 <Steps>
-  <Step title="Proxy uwierzytelnia użytkownika">
-    Twoje reverse proxy uwierzytelnia użytkowników (OAuth, OIDC, SAML itd.).
+  <Step title="Serwer proxy uwierzytelnia użytkownika">
+    Odwrotny serwer proxy uwierzytelnia użytkowników (OAuth, OIDC, SAML itd.).
   </Step>
-  <Step title="Proxy dodaje nagłówek tożsamości">
-    Proxy dodaje nagłówek z tożsamością uwierzytelnionego użytkownika (np. `x-forwarded-user: nick@example.com`).
+  <Step title="Serwer proxy dodaje nagłówek tożsamości">
+    Serwer proxy dodaje nagłówek z tożsamością uwierzytelnionego użytkownika (np. `x-forwarded-user: nick@example.com`).
   </Step>
   <Step title="Gateway weryfikuje zaufane źródło">
-    OpenClaw sprawdza, czy żądanie przyszło z **zaufanego adresu IP proxy** (skonfigurowanego w `gateway.trustedProxies`).
+    OpenClaw sprawdza, czy żądanie pochodzi z **adresu IP zaufanego serwera proxy** (`gateway.trustedProxies`) i nie jest adresem local loopback ani adresem lokalnego interfejsu samego Gateway.
   </Step>
   <Step title="Gateway wyodrębnia tożsamość">
-    OpenClaw wyodrębnia tożsamość użytkownika ze skonfigurowanego nagłówka.
+    OpenClaw odczytuje wymagane nagłówki, a następnie tożsamość użytkownika ze skonfigurowanego nagłówka.
   </Step>
   <Step title="Autoryzacja">
-    Jeśli wszystko się zgadza, żądanie zostaje autoryzowane.
+    Jeśli wszystkie kontrole zakończą się powodzeniem, a użytkownik przejdzie kontrolę `allowUsers` (gdy jest ustawiona), żądanie zostaje autoryzowane.
   </Step>
 </Steps>
-
-## Zachowanie parowania Control UI
-
-Gdy `gateway.auth.mode = "trusted-proxy"` jest aktywne, a żądanie przejdzie kontrole trusted-proxy, sesje WebSocket Control UI mogą łączyć się bez tożsamości parowania urządzenia.
-
-Implikacje zakresu:
-
-- Sesje WebSocket Control UI bez urządzenia łączą się, ale domyślnie nie otrzymują żadnych zakresów operatora. OpenClaw czyści żądaną listę zakresów do `[]`, aby sesja, która nie jest powiązana z zatwierdzonym sparowanym urządzeniem/tokenem, nie mogła samodzielnie deklarować uprawnień.
-- Jeśli metody kończą się błędem `missing scope` po udanym połączeniu WebSocket, użyj HTTPS, aby przeglądarka mogła wygenerować tożsamość urządzenia i dokończyć parowanie. Zobacz [niezabezpieczony HTTP Control UI](/pl/web/control-ui#insecure-http).
-- Tylko awaryjnie: `gateway.controlUi.dangerouslyDisableDeviceAuth=true` zachowuje żądane zakresy nawet bez tożsamości urządzenia. To poważne obniżenie poziomu bezpieczeństwa; szybko je wycofaj. Zobacz [niezabezpieczony HTTP Control UI](/pl/web/control-ui#insecure-http).
-
-Ograniczanie zakresów przez reverse proxy:
-
-- Jeśli Twoje proxy wysyła `x-openclaw-scopes` w żądaniu aktualizacji WebSocket Control UI, OpenClaw ogranicza zakresy sesji do części wspólnej żądanych zakresów i zadeklarowanych zakresów. Ten nagłówek nie przyznaje zakresów; tylko zawęża to, co sesja może posiadać.
-
-Implikacje:
-
-- Parowanie nie jest już główną bramą dostępu do Control UI w tym trybie.
-- Polityka uwierzytelniania Twojego reverse proxy i `allowUsers` stają się faktyczną kontrolą dostępu.
-- Ogranicz dostęp przychodzący do Gateway wyłącznie do zaufanych adresów IP proxy (`gateway.trustedProxies` + firewall).
-
-Niestandardowi klienci WebSocket nie są sesjami Control UI. `gateway.controlUi.dangerouslyDisableDeviceAuth` nie przyznaje zakresów dowolnym klientom `client.mode: "backend"` ani klientom o kształcie CLI. Niestandardowa automatyzacja powinna używać tożsamości urządzenia/parowania, zarezerwowanej bezpośredniej lokalnej ścieżki pomocniczej backendu `client.id: "gateway-client"` albo [Pluginu admin HTTP RPC](/pl/plugins/admin-http-rpc), gdy powierzchnia żądanie/odpowiedź HTTP pasuje lepiej.
 
 ## Konfiguracja
 
 ```json5
 {
   gateway: {
-    // Trusted-proxy auth expects requests from a non-loopback trusted proxy source by default
+    // Uwierzytelnianie przez zaufany serwer proxy domyślnie wymaga, aby źródłowy adres IP serwera proxy nie był adresem pętli zwrotnej
     bind: "lan",
 
-    // CRITICAL: Only add your proxy's IP(s) here
+    // KRYTYCZNE: dodaj tutaj wyłącznie adresy IP swojego serwera proxy
     trustedProxies: ["10.0.0.1", "172.17.0.1"],
 
     auth: {
       mode: "trusted-proxy",
       trustedProxy: {
-        // Header containing authenticated user identity (required)
+        // Nagłówek zawierający tożsamość uwierzytelnionego użytkownika (wymagany)
         userHeader: "x-forwarded-user",
 
-        // Optional: headers that MUST be present (proxy verification)
+        // Opcjonalnie: nagłówki, które MUSZĄ być obecne (weryfikacja serwera proxy)
         requiredHeaders: ["x-forwarded-proto", "x-forwarded-host"],
 
-        // Optional: restrict to specific users (empty = allow all)
+        // Opcjonalnie: ograniczenie do określonych użytkowników (pusta lista = zezwól wszystkim)
         allowUsers: ["nick@example.com", "admin@company.org"],
 
-        // Optional: allow a same-host loopback proxy after explicit opt-in
+        // Opcjonalnie: zezwolenie na serwer proxy local loopback na tym samym hoście po jawnym włączeniu
         allowLoopback: false,
       },
     },
@@ -111,21 +87,25 @@ Niestandardowi klienci WebSocket nie są sesjami Control UI. `gateway.controlUi.
 ```
 
 <Warning>
-**Ważne reguły wykonywania**
+**Reguły działania, w kolejności oceny**
 
-- Uwierzytelnianie trusted-proxy domyślnie odrzuca żądania ze źródła loopback (`127.0.0.1`, `::1`, CIDR loopback).
-- Reverse proxy loopback na tym samym hoście **nie** spełnia wymagań uwierzytelniania trusted-proxy, chyba że jawnie ustawisz `gateway.auth.trustedProxy.allowLoopback = true` i uwzględnisz adres loopback w `gateway.trustedProxies`.
-- `allowLoopback` ufa lokalnym procesom na hoście Gateway w takim samym stopniu jak reverse proxy. Włączaj to tylko wtedy, gdy Gateway nadal jest chroniony firewallem przed bezpośrednim dostępem zdalnym, a lokalne proxy usuwa lub nadpisuje nagłówki tożsamości dostarczone przez klienta.
-- Wewnętrzni klienci Gateway, którzy nie przechodzą przez reverse proxy, powinni używać `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD`, a nie nagłówków tożsamości trusted-proxy.
-- Nieloopbackowe wdrożenia Control UI nadal wymagają jawnego `gateway.controlUi.allowedOrigins`.
-- **Dowody z przekazywanych nagłówków zastępują lokalność loopback dla lokalnego bezpośredniego fallbacku.** Jeśli żądanie przychodzi przez loopback, ale zawiera dowody w nagłówkach `Forwarded`, dowolnym `X-Forwarded-*` lub `X-Real-IP`, te dowody dyskwalifikują fallback lokalnego bezpośredniego hasła i bramkowanie tożsamości urządzenia. Przy `allowLoopback: true` uwierzytelnianie trusted-proxy nadal może zaakceptować żądanie jako żądanie proxy na tym samym hoście, a `requiredHeaders` i `allowUsers` nadal mają zastosowanie.
+1. Źródłowy adres IP żądania musi odpowiadać wpisowi w `gateway.trustedProxies` (z uwzględnieniem CIDR), w przeciwnym razie żądanie zostaje odrzucone (`trusted_proxy_untrusted_source`).
+2. Żądania ze źródła local loopback (`127.0.0.1`, `::1`) są odrzucane, chyba że ustawiono `gateway.auth.trustedProxy.allowLoopback = true`, a adres local loopback znajduje się również w `trustedProxies` (`trusted_proxy_loopback_source`). Ta kontrola odbywa się przed sprawdzeniem nagłówków, dlatego źródło local loopback zakończy się tym błędem, nawet jeśli brakuje również wymaganych nagłówków.
+3. Źródła inne niż local loopback, które odpowiadają jednemu z adresów własnych lokalnych interfejsów sieciowych hosta Gateway, są odrzucane w celu ochrony przed podszywaniem się (`trusted_proxy_local_interface_source`). Jeśli samo wykrywanie interfejsów nie powiedzie się, żądanie również zostaje odrzucone (`trusted_proxy_local_interface_check_failed`).
+4. `requiredHeaders` i `userHeader` muszą być obecne i nie mogą być puste.
+5. Jeśli `allowUsers` nie jest puste, musi zawierać wyodrębnionego użytkownika.
 
+**Dowód w postaci przekazanych nagłówków ma pierwszeństwo przed lokalnością local loopback w przypadku lokalnego bezpośredniego mechanizmu awaryjnego.** Jeśli żądanie dociera przez local loopback, ale zawiera nagłówek `Forwarded`, dowolny `X-Forwarded-*` lub `X-Real-IP`, taki dowód wyklucza je z lokalnego bezpośredniego awaryjnego uwierzytelniania hasłem oraz kontroli tożsamości urządzenia, mimo że uwierzytelnianie przez zaufany serwer proxy nadal kończy się niepowodzeniem z powodu źródła local loopback.
+
+`allowLoopback` przyznaje lokalnym procesom na hoście Gateway taki sam poziom zaufania jak odwrotnemu serwerowi proxy. Włącz tę opcję tylko wtedy, gdy Gateway jest nadal chroniony zaporą przed bezpośrednim dostępem zdalnym, a lokalny serwer proxy usuwa lub nadpisuje nagłówki tożsamości dostarczone przez klienta.
+
+Wewnętrzni klienci Gateway, których ruch nie przechodzi przez odwrotny serwer proxy, powinni używać `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD`, a nie nagłówków tożsamości zaufanego serwera proxy. Wdrożenia interfejsu Control UI poza local loopback nadal wymagają jawnego ustawienia `gateway.controlUi.allowedOrigins`.
 </Warning>
 
-### Referencja konfiguracji
+### Dokumentacja konfiguracji
 
 <ParamField path="gateway.trustedProxies" type="string[]" required>
-  Tablica adresów IP proxy, którym należy ufać. Żądania z innych adresów IP są odrzucane.
+  Tablica zaufanych adresów IP serwerów proxy (lub zakresów CIDR). Żądania z innych adresów IP są odrzucane.
 </ParamField>
 <ParamField path="gateway.auth.mode" type="string" required>
   Musi mieć wartość `"trusted-proxy"`.
@@ -134,30 +114,72 @@ Niestandardowi klienci WebSocket nie są sesjami Control UI. `gateway.controlUi.
   Nazwa nagłówka zawierającego tożsamość uwierzytelnionego użytkownika.
 </ParamField>
 <ParamField path="gateway.auth.trustedProxy.requiredHeaders" type="string[]">
-  Dodatkowe nagłówki, które muszą być obecne, aby żądanie było zaufane.
+  Dodatkowe nagłówki, które muszą być obecne, aby żądanie zostało uznane za zaufane.
 </ParamField>
 <ParamField path="gateway.auth.trustedProxy.allowUsers" type="string[]">
-  Lista dozwolonych tożsamości użytkowników. Pusta oznacza zezwolenie wszystkim uwierzytelnionym użytkownikom.
+  Lista dozwolonych tożsamości użytkowników. Pusta lista oznacza zezwolenie wszystkim uwierzytelnionym użytkownikom.
 </ParamField>
-<ParamField path="gateway.auth.trustedProxy.allowLoopback" type="boolean">
-  Opcjonalna obsługa reverse proxy loopback na tym samym hoście. Domyślnie `false`.
+<ParamField path="gateway.auth.trustedProxy.allowLoopback" type="boolean" default="false">
+  Opcjonalna obsługa odwrotnych serwerów proxy local loopback działających na tym samym hoście.
 </ParamField>
 
 <Warning>
-Włączaj `allowLoopback` tylko wtedy, gdy lokalne reverse proxy jest zamierzoną granicą zaufania. Każdy lokalny proces, który może połączyć się z Gateway, może próbować wysyłać nagłówki tożsamości proxy, więc utrzymuj bezpośredni dostęp do Gateway jako prywatny dla hosta i wymagaj nagłówków należących do proxy, takich jak `x-forwarded-proto`, albo podpisanego nagłówka asercji, jeśli Twoje proxy go obsługuje.
+Włączaj `allowLoopback` tylko wtedy, gdy lokalny odwrotny serwer proxy stanowi zamierzoną granicę zaufania. Każdy lokalny proces, który może połączyć się z Gateway, może próbować wysyłać nagłówki tożsamości serwera proxy, dlatego bezpośredni dostęp do Gateway należy ograniczyć do hosta i wymagać nagłówków kontrolowanych przez serwer proxy, takich jak `x-forwarded-proto`, lub podpisanego nagłówka potwierdzenia, jeśli serwer proxy go obsługuje.
 </Warning>
 
-## Terminacja TLS i HSTS
+## Zachowanie parowania interfejsu Control UI
 
-Użyj jednego punktu terminacji TLS i zastosuj tam HSTS.
+Gdy aktywne jest `gateway.auth.mode = "trusted-proxy"`, a żądanie przejdzie kontrole zaufanego serwera proxy, sesje WebSocket interfejsu Control UI mogą łączyć się bez tożsamości parowanego urządzenia.
+
+Konsekwencje dotyczące zakresów:
+
+- Sesje WebSocket interfejsu Control UI bez urządzenia łączą się, ale domyślnie nie otrzymują żadnych zakresów operatora. OpenClaw czyści listę żądanych zakresów do `[]`, aby sesja niepowiązana z zatwierdzonym sparowanym urządzeniem lub tokenem nie mogła samodzielnie deklarować uprawnień.
+- Jeśli po pomyślnym połączeniu WebSocket metody kończą się błędem `missing scope`, użyj HTTPS, aby przeglądarka mogła wygenerować tożsamość urządzenia i ukończyć parowanie. Zobacz [niezabezpieczony HTTP interfejsu Control UI](/pl/web/control-ui#insecure-http).
+- Wyłącznie awaryjnie: `gateway.controlUi.dangerouslyDisableDeviceAuth=true` zachowuje żądane zakresy nawet bez tożsamości urządzenia. Jest to poważne obniżenie poziomu bezpieczeństwa; szybko wycofaj tę zmianę. Zobacz [niezabezpieczony HTTP interfejsu Control UI](/pl/web/control-ui#insecure-http).
+
+Ograniczanie zakresów przez odwrotny serwer proxy: jeśli serwer proxy wysyła `x-openclaw-scopes` w żądaniu uaktualnienia WebSocket interfejsu Control UI, OpenClaw ogranicza zakresy sesji do części wspólnej zakresów żądanych i zadeklarowanych. Ten nagłówek nie przyznaje zakresów; jedynie ogranicza zakresy, które może posiadać sesja.
+
+Konsekwencje:
+
+- W tym trybie parowanie nie jest już podstawową bramą dostępu do interfejsu Control UI.
+- Zasady uwierzytelniania odwrotnego serwera proxy i `allowUsers` stają się faktycznym mechanizmem kontroli dostępu.
+- Ogranicz ruch przychodzący do Gateway wyłącznie do adresów IP zaufanych serwerów proxy (`gateway.trustedProxies` + zapora).
+
+Niestandardowi klienci WebSocket nie są sesjami interfejsu Control UI. `gateway.controlUi.dangerouslyDisableDeviceAuth` nie przyznaje zakresów dowolnym klientom o `client.mode: "backend"` ani klientom o strukturze CLI. Niestandardowa automatyzacja powinna używać tożsamości urządzenia i parowania, zastrzeżonej bezpośredniej lokalnej ścieżki pomocniczej zaplecza `client.id: "gateway-client"` albo [pluginu administracyjnego HTTP RPC](/pl/plugins/admin-http-rpc), gdy interfejs żądanie/odpowiedź HTTP jest lepiej dopasowany.
+
+## Nagłówek zakresów operatora
+
+Uwierzytelnianie przez zaufany serwer proxy jest trybem HTTP **przenoszącym tożsamość**, dlatego wywołujący mogą opcjonalnie deklarować zakresy operatora za pomocą `x-openclaw-scopes` w żądaniach API HTTP.
+
+Uwaga: zakresy WebSocket są określane przez uzgadnianie protokołu Gateway i powiązanie tożsamości urządzenia. W żądaniach uaktualnienia WebSocket interfejsu Control UI nagłówek `x-openclaw-scopes` jedynie ogranicza wynegocjowane zakresy sesji, a ich nie przyznaje. Zobacz [zachowanie parowania interfejsu Control UI](#control-ui-pairing-behavior).
+
+Przykłady:
+
+- `x-openclaw-scopes: operator.read`
+- `x-openclaw-scopes: operator.read,operator.write`
+- `x-openclaw-scopes: operator.admin,operator.write`
+
+Zachowanie:
+
+- Gdy nagłówek jest obecny, OpenClaw respektuje zadeklarowany zestaw zakresów.
+- Gdy nagłówek jest obecny, ale pusty, żądanie deklaruje **brak** zakresów operatora.
+- Gdy nagłówek jest nieobecny, standardowe interfejsy API HTTP przenoszące tożsamość używają standardowego domyślnego zestawu zakresów operatora (`operator.admin`, `operator.read`, `operator.write`, `operator.approvals`, `operator.pairing`, `operator.talk.secrets`).
+- **Trasy HTTP pluginów** uwierzytelniane przez Gateway są domyślnie bardziej ograniczone: gdy `x-openclaw-scopes` jest nieobecny, ich zakres działania ogranicza się wyłącznie do `operator.write`.
+- Żądania HTTP pochodzące z przeglądarki nadal muszą przejść kontrolę `gateway.controlUi.allowedOrigins` (lub celowo włączony awaryjny tryb nagłówka Host), nawet po pomyślnym uwierzytelnieniu przez zaufany serwer proxy.
+
+Praktyczna zasada: wysyłaj `x-openclaw-scopes` jawnie, gdy żądanie zaufanego serwera proxy ma mieć węższe uprawnienia niż domyślne albo gdy trasa pluginu uwierzytelniana przez Gateway wymaga zakresu silniejszego niż zakres zapisu.
+
+## Terminowanie TLS i HSTS
+
+Użyj jednego punktu terminowania TLS i zastosuj w nim HSTS.
 
 <Tabs>
-  <Tab title="Terminacja TLS w proxy (zalecane)">
-    Gdy Twoje reverse proxy obsługuje HTTPS dla `https://control.example.com`, ustaw `Strict-Transport-Security` w proxy dla tej domeny.
+  <Tab title="Terminowanie TLS na serwerze proxy (zalecane)">
+    Gdy odwrotny serwer proxy obsługuje HTTPS dla `https://control.example.com`, ustaw `Strict-Transport-Security` na serwerze proxy dla tej domeny.
 
-    - Dobre dopasowanie do wdrożeń wystawionych do internetu.
-    - Utrzymuje certyfikat i politykę utwardzania HTTP w jednym miejscu.
-    - OpenClaw może pozostać za proxy na HTTP loopback.
+    - Dobre rozwiązanie dla wdrożeń dostępnych z internetu.
+    - Utrzymuje certyfikat i zasady zabezpieczeń HTTP w jednym miejscu.
+    - OpenClaw może pozostać dostępny przez HTTP na local loopback za serwerem proxy.
 
     Przykładowa wartość nagłówka:
 
@@ -166,8 +188,8 @@ Użyj jednego punktu terminacji TLS i zastosuj tam HSTS.
     ```
 
   </Tab>
-  <Tab title="Terminacja TLS w Gateway">
-    Jeśli sam OpenClaw obsługuje HTTPS bezpośrednio (bez proxy terminującego TLS), ustaw:
+  <Tab title="Terminowanie TLS w Gateway">
+    Jeśli OpenClaw samodzielnie i bezpośrednio udostępnia HTTPS (bez serwera proxy terminującego TLS), ustaw:
 
     ```json5
     {
@@ -182,30 +204,30 @@ Użyj jednego punktu terminacji TLS i zastosuj tam HSTS.
     }
     ```
 
-    `strictTransportSecurity` przyjmuje tekstową wartość nagłówka albo `false`, aby jawnie wyłączyć.
+    `strictTransportSecurity` przyjmuje wartość nagłówka jako ciąg znaków albo `false`, aby jawnie go wyłączyć.
 
   </Tab>
 </Tabs>
 
-### Wskazówki wdrożeniowe
+### Wskazówki dotyczące wdrażania
 
-- Zacznij najpierw od krótkiego maksymalnego wieku (na przykład `max-age=300`) podczas walidacji ruchu.
-- Zwiększ do wartości długotrwałych (na przykład `max-age=31536000`) dopiero po uzyskaniu wysokiej pewności.
-- Dodaj `includeSubDomains` tylko wtedy, gdy każda subdomena jest gotowa na HTTPS.
-- Używaj preload tylko wtedy, gdy celowo spełniasz wymagania preload dla całego zestawu domen.
-- Lokalne programowanie wyłącznie na loopback nie odnosi korzyści z HSTS.
+- Zacznij od krótkiego maksymalnego czasu ważności (na przykład `max-age=300`) podczas weryfikowania ruchu.
+- Zwiększ go do wartości długoterminowych (na przykład `max-age=31536000`) dopiero po uzyskaniu wysokiego poziomu pewności.
+- Dodaj `includeSubDomains` tylko wtedy, gdy każda subdomena jest gotowa do obsługi HTTPS.
+- Używaj preload tylko wtedy, gdy świadomie spełniasz wymagania wstępnego ładowania dla całego zestawu domen.
+- Lokalne programowanie ograniczone wyłącznie do local loopback nie odnosi korzyści z HSTS.
 
-## Przykłady konfiguracji proxy
+## Przykłady konfiguracji serwera proxy
 
 <AccordionGroup>
   <Accordion title="Pomerium">
-    Pomerium przekazuje tożsamość w `x-pomerium-claim-email` (lub innych nagłówkach roszczeń) oraz JWT w `x-pomerium-jwt-assertion`.
+    Pomerium przekazuje tożsamość w `x-pomerium-claim-email` (lub innych nagłówkach deklaracji) oraz JWT w `x-pomerium-jwt-assertion`.
 
     ```json5
     {
       gateway: {
         bind: "lan",
-        trustedProxies: ["10.0.0.1"], // Pomerium's IP
+        trustedProxies: ["10.0.0.1"], // Adres IP Pomerium
         auth: {
           mode: "trusted-proxy",
           trustedProxy: {
@@ -250,9 +272,9 @@ Użyj jednego punktu terminacji TLS i zastosuj tam HSTS.
     }
     ```
 
-    Fragment Caddyfile:
+    Fragment pliku Caddyfile:
 
-    ```
+    ```caddy
     openclaw.example.com {
         authenticate with oauth2_provider
         authorize with policy1
@@ -265,7 +287,7 @@ Użyj jednego punktu terminacji TLS i zastosuj tam HSTS.
 
   </Accordion>
   <Accordion title="nginx + oauth2-proxy">
-    oauth2-proxy uwierzytelnia użytkowników i przekazuje tożsamość w `x-auth-request-email`.
+    oauth2-proxy uwierzytelnia użytkowników i przekazuje tożsamość w nagłówku `x-auth-request-email`.
 
     ```json5
     {
@@ -298,7 +320,7 @@ Użyj jednego punktu terminacji TLS i zastosuj tam HSTS.
     ```
 
   </Accordion>
-  <Accordion title="Traefik z forward auth">
+  <Accordion title="Traefik with forward auth">
     ```json5
     {
       gateway: {
@@ -316,176 +338,167 @@ Użyj jednego punktu terminacji TLS i zastosuj tam HSTS.
   </Accordion>
 </AccordionGroup>
 
-## Mieszana konfiguracja tokenów
+## Konfiguracja mieszana z tokenem
 
-OpenClaw odrzuca niejednoznaczne konfiguracje, w których jednocześnie aktywne są `gateway.auth.token` (lub `OPENCLAW_GATEWAY_TOKEN`) oraz tryb `trusted-proxy`. Mieszane konfiguracje tokenów mogą powodować, że żądania loopback po cichu uwierzytelniają się niewłaściwą ścieżką uwierzytelniania.
+Gateway odrzuca podczas uruchamiania uwierzytelnianie przez zaufane proxy, jeśli skonfigurowano również współdzielony token (`gateway.auth.token` lub `OPENCLAW_GATEWAY_TOKEN`). Te opcje wzajemnie się wykluczają, ponieważ współdzielony token umożliwiłby procesom na tym samym hoście uwierzytelnianie całkowicie inną ścieżką niż tożsamość zweryfikowana przez proxy, której egzekwowanie jest celem tego trybu.
 
-Jeśli zobaczysz błąd `mixed_trusted_proxy_token` podczas uruchamiania:
+Jeśli uruchamianie kończy się niepowodzeniem z błędem takim jak `gateway auth mode is trusted-proxy, but a shared token is also configured`:
 
-- Usuń współdzielony token podczas używania trybu trusted-proxy albo
-- Przełącz `gateway.auth.mode` na `"token"`, jeśli zamierzasz używać uwierzytelniania opartego na tokenach.
+- Usuń współdzielony token podczas korzystania z trybu zaufanego proxy albo
+- Zmień `gateway.auth.mode` na `"token"`, jeśli zamierzasz korzystać z uwierzytelniania opartego na tokenie.
 
-Nagłówki tożsamości zaufanego proxy dla loopback nadal odmawiają dostępu domyślnie: wywołujący z tego samego hosta nie są po cichu uwierzytelniani jako użytkownicy proxy. Wewnętrzni wywołujący OpenClaw, którzy omijają proxy, mogą zamiast tego uwierzytelniać się za pomocą `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD`. Awaryjne użycie tokena pozostaje celowo nieobsługiwane w trybie zaufanego proxy.
-
-## Nagłówek zakresów operatora
-
-Uwierzytelnianie przez zaufane proxy to tryb HTTP **niosący tożsamość**, więc wywołujący mogą opcjonalnie deklarować zakresy operatora za pomocą `x-openclaw-scopes` w żądaniach HTTP API.
-
-Uwaga: zakresy WebSocket są określane przez uzgadnianie protokołu Gateway i powiązanie tożsamości urządzenia. W żądaniach aktualizacji WebSocket Control UI `x-openclaw-scopes` jest wyłącznie limitem wynegocjowanych zakresów sesji, a nie nadaniem uprawnień. Zachowanie zakresów WebSocket z zaufanym proxy opisuje sekcja [zachowanie parowania Control UI](#control-ui-pairing-behavior).
-
-Przykłady:
-
-- `x-openclaw-scopes: operator.read`
-- `x-openclaw-scopes: operator.read,operator.write`
-- `x-openclaw-scopes: operator.admin,operator.write`
-
-Zachowanie:
-
-- Gdy nagłówek jest obecny, OpenClaw respektuje zadeklarowany zestaw zakresów.
-- Gdy nagłówek jest obecny, ale pusty, żądanie deklaruje **brak** zakresów operatora.
-- Gdy nagłówka nie ma, zwykłe HTTP API niosące tożsamość wracają do standardowego domyślnego zestawu zakresów operatora.
-- **Trasy HTTP Plugin** uwierzytelniane przez Gateway są domyślnie węższe: gdy `x-openclaw-scopes` nie występuje, ich zakres środowiska uruchomieniowego wraca do `operator.write`.
-- Żądania HTTP pochodzące z przeglądarki nadal muszą przejść `gateway.controlUi.allowedOrigins` (albo celowy tryb awaryjny na podstawie nagłówka Host), nawet po powodzeniu uwierzytelniania przez zaufane proxy.
-- Dla sesji WebSocket Control UI `x-openclaw-scopes` jest limitem zakresu, gdy występuje w żądaniu aktualizacji. Pusta wartość nie daje żadnych zakresów.
-
-Praktyczna zasada: wysyłaj `x-openclaw-scopes` jawnie, gdy chcesz, aby żądanie zaufanego proxy było węższe niż wartości domyślne, albo gdy trasa Plugin uwierzytelniana przez Gateway potrzebuje czegoś silniejszego niż zakres zapisu.
+Nagłówki tożsamości zaufanego proxy pochodzące z interfejsu pętli zwrotnej nadal są odrzucane w razie wątpliwości: procesy na tym samym hoście nie są niejawnie uwierzytelniane jako użytkownicy proxy. Wewnętrzne procesy OpenClaw, które omijają proxy, mogą zamiast tego uwierzytelniać się za pomocą `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD`. Uwierzytelnianie zapasowe tokenem pozostaje celowo nieobsługiwane w trybie zaufanego proxy.
 
 ## Lista kontrolna bezpieczeństwa
 
 Przed włączeniem uwierzytelniania przez zaufane proxy sprawdź:
 
-- [ ] **Proxy jest jedyną ścieżką**: port Gateway jest odgrodzony zaporą od wszystkiego poza Twoim proxy.
-- [ ] **trustedProxies jest minimalne**: tylko rzeczywiste adresy IP proxy, nie całe podsieci.
-- [ ] **Źródło proxy loopback jest celowe**: uwierzytelnianie przez zaufane proxy odmawia dostępu domyślnie dla żądań ze źródła loopback, chyba że `gateway.auth.trustedProxy.allowLoopback` jest jawnie włączone dla proxy na tym samym hoście.
-- [ ] **Proxy usuwa nagłówki**: Twoje proxy nadpisuje (nie dopisuje) nagłówki `x-forwarded-*` od klientów.
+- [ ] **Proxy jest jedyną ścieżką**: Port Gateway jest chroniony zaporą przed wszystkim poza Twoim proxy.
+- [ ] **Lista trustedProxies jest minimalna**: Zawiera wyłącznie rzeczywiste adresy IP proxy, a nie całe podsieci.
+- [ ] **Źródło proxy w interfejsie pętli zwrotnej jest zamierzone**: Uwierzytelnianie przez zaufane proxy odrzuca w razie wątpliwości żądania pochodzące z interfejsu pętli zwrotnej, chyba że dla proxy na tym samym hoście jawnie włączono `gateway.auth.trustedProxy.allowLoopback`.
+- [ ] **Proxy usuwa nagłówki**: Twoje proxy nadpisuje (zamiast dołączać) nagłówki `x-forwarded-*` pochodzące od klientów.
 - [ ] **Terminacja TLS**: Twoje proxy obsługuje TLS; użytkownicy łączą się przez HTTPS.
-- [ ] **allowedOrigins jest jawne**: Control UI poza loopback używa jawnego `gateway.controlUi.allowedOrigins`.
-- [ ] **allowUsers jest ustawione** (zalecane): ogranicz dostęp do znanych użytkowników zamiast dopuszczać każdego uwierzytelnionego.
-- [ ] **Brak mieszanej konfiguracji tokenów**: nie ustawiaj jednocześnie `gateway.auth.token` i `gateway.auth.mode: "trusted-proxy"`.
-- [ ] **Lokalny awaryjny dostęp hasłem jest prywatny**: jeśli konfigurujesz `gateway.auth.password` dla wewnętrznych bezpośrednich wywołujących, utrzymuj port Gateway za zaporą, aby zdalni klienci spoza proxy nie mogli dotrzeć do niego bezpośrednio.
+- [ ] **Lista allowedOrigins jest jawna**: Interfejs sterowania używany poza interfejsem pętli zwrotnej korzysta z jawnej wartości `gateway.controlUi.allowedOrigins`.
+- [ ] **Ustawiono allowUsers** (zalecane): Ogranicz dostęp do znanych użytkowników zamiast zezwalać każdemu uwierzytelnionemu użytkownikowi.
+- [ ] **Brak mieszanej konfiguracji tokenu**: Nie ustawiaj jednocześnie `gateway.auth.token` i `gateway.auth.mode: "trusted-proxy"`.
+- [ ] **Lokalne uwierzytelnianie zapasowe hasłem jest prywatne**: Jeśli konfigurujesz `gateway.auth.password` dla wewnętrznych klientów łączących się bezpośrednio, zabezpiecz port Gateway zaporą, aby zdalni klienci niekorzystający z proxy nie mogli uzyskać do niego bezpośredniego dostępu.
 
 ## Audyt bezpieczeństwa
 
-`openclaw security audit` oznaczy uwierzytelnianie przez zaufane proxy wynikiem o wadze **critical**. To celowe — jest to przypomnienie, że delegujesz bezpieczeństwo do konfiguracji swojego proxy.
+Polecenie `openclaw security audit` zgłasza uwierzytelnianie przez zaufane proxy jako problem o **krytycznym** poziomie ważności. Jest to zamierzone przypomnienie, że przekazujesz odpowiedzialność za bezpieczeństwo konfiguracji proxy.
 
 Audyt sprawdza:
 
-- Podstawowe ostrzeżenie/przypomnienie krytyczne `gateway.trusted_proxy_auth`
-- Brak konfiguracji `trustedProxies`
-- Brak konfiguracji `userHeader`
-- Puste `allowUsers` (pozwala dowolnemu uwierzytelnionemu użytkownikowi)
-- Włączone `allowLoopback` dla źródeł proxy na tym samym hoście
-- Wieloznaczną albo brakującą politykę źródeł przeglądarki na wystawionych powierzchniach Control UI
+- Podstawowe ostrzeżenie lub krytyczne przypomnienie `gateway.trusted_proxy_auth`.
+- Brak konfiguracji `trustedProxies`.
+- Brak konfiguracji `userHeader`.
+- Pustą listę `allowUsers` (zezwala każdemu uwierzytelnionemu użytkownikowi).
+- Włączoną opcję `allowLoopback` dla źródeł proxy na tym samym hoście.
+
+Gdy interfejs sterowania jest udostępniony, obowiązują również osobne ustalenia niezwiązane bezpośrednio z zaufanym proxy: symbol wieloznaczny lub brak `gateway.controlUi.allowedOrigins` oraz zapasowe określanie źródła na podstawie nagłówka Host.
 
 ## Rozwiązywanie problemów
 
 <AccordionGroup>
   <Accordion title="trusted_proxy_untrusted_source">
-    Żądanie nie przyszło z adresu IP w `gateway.trustedProxies`. Sprawdź:
+    Żądanie nie pochodziło z adresu IP znajdującego się w `gateway.trustedProxies`. Sprawdź:
 
-    - Czy adres IP proxy jest poprawny? (Adresy IP kontenerów Docker mogą się zmieniać).
-    - Czy przed Twoim proxy znajduje się równoważnik obciążenia?
-    - Użyj `docker inspect` albo `kubectl get pods -o wide`, aby znaleźć rzeczywiste adresy IP.
+    - Czy adres IP proxy jest prawidłowy? (Adresy IP kontenerów Docker mogą się zmieniać).
+    - Czy przed Twoim proxy znajduje się moduł równoważenia obciążenia?
+    - Użyj `docker inspect` lub `kubectl get pods -o wide`, aby znaleźć rzeczywiste adresy IP.
 
   </Accordion>
   <Accordion title="trusted_proxy_loopback_source">
-    OpenClaw odrzucił żądanie zaufanego proxy ze źródła loopback.
+    OpenClaw odrzucił żądanie zaufanego proxy pochodzące z interfejsu pętli zwrotnej.
 
     Sprawdź:
 
-    - Czy proxy łączy się z `127.0.0.1` / `::1`?
-    - Czy próbujesz używać uwierzytelniania przez zaufane proxy z odwrotnym proxy loopback na tym samym hoście?
+    - Czy proxy łączy się z adresu `127.0.0.1` / `::1`?
+    - Czy próbujesz używać uwierzytelniania przez zaufane proxy z odwrotnym proxy działającym na tym samym hoście i korzystającym z interfejsu pętli zwrotnej?
 
-    Naprawa:
+    Rozwiązanie:
 
-    - Preferuj uwierzytelnianie tokenem/hasłem dla wewnętrznych klientów na tym samym hoście, którzy nie przechodzą przez proxy, albo
-    - kieruj ruch przez adres zaufanego proxy inny niż loopback i zachowaj ten adres IP w `gateway.trustedProxies`, albo
-    - dla celowo używanego odwrotnego proxy na tym samym hoście ustaw `gateway.auth.trustedProxy.allowLoopback = true`, zachowaj adres loopback w `gateway.trustedProxies` i upewnij się, że proxy usuwa albo nadpisuje nagłówki tożsamości.
+    - Preferuj uwierzytelnianie tokenem lub hasłem dla wewnętrznych klientów na tym samym hoście, którzy nie korzystają z proxy, albo
+    - Kieruj ruch przez adres zaufanego proxy spoza interfejsu pętli zwrotnej i zachowaj ten adres IP w `gateway.trustedProxies`, albo
+    - W przypadku celowo skonfigurowanego odwrotnego proxy na tym samym hoście ustaw `gateway.auth.trustedProxy.allowLoopback = true`, zachowaj adres interfejsu pętli zwrotnej w `gateway.trustedProxies` i upewnij się, że proxy usuwa lub nadpisuje nagłówki tożsamości.
+
+  </Accordion>
+  <Accordion title="trusted_proxy_local_interface_source / trusted_proxy_local_interface_check_failed">
+    Źródłowy adres IP żądania odpowiadał jednemu z własnych adresów interfejsów sieciowych hosta Gateway innych niż interfejs pętli zwrotnej (a nie adresowi proxy). Jest to zabezpieczenie przed podszytym ruchem z tego samego hosta w sieciach tailnet lub sieciach mostkowych Docker. Błąd `..._check_failed` oznacza, że samo wykrywanie interfejsów zakończyło się błędem, dlatego OpenClaw odrzuca żądanie w razie wątpliwości.
+
+    Sprawdź:
+
+    - Czy proces działający bezpośrednio na hoście Gateway wysyła nagłówki tożsamości, omijając proxy?
+    - Czy proxy działa w tej samej przestrzeni nazw sieci co Gateway, a jego adres IP jest również widoczny jako interfejs lokalny?
+
+    Rozwiązanie: kieruj ruch proxy przez adres, który nie jest jednocześnie powiązany lokalnie z hostem Gateway, albo używaj `allowLoopback` wyłącznie w rzeczywistej konfiguracji proxy na tym samym hoście.
 
   </Accordion>
   <Accordion title="trusted_proxy_user_missing">
-    Nagłówek użytkownika był pusty albo go brakowało. Sprawdź:
+    Nagłówek użytkownika był pusty lub nieobecny. Sprawdź:
 
     - Czy Twoje proxy jest skonfigurowane do przekazywania nagłówków tożsamości?
-    - Czy nazwa nagłówka jest poprawna? (wielkość liter nie ma znaczenia, ale pisownia tak)
-    - Czy użytkownik jest faktycznie uwierzytelniony na proxy?
+    - Czy nazwa nagłówka jest prawidłowa? (Wielkość liter nie ma znaczenia, ale pisownia tak).
+    - Czy użytkownik został rzeczywiście uwierzytelniony przez proxy?
 
   </Accordion>
   <Accordion title="trusted_proxy_missing_header_*">
-    Brakowało wymaganego nagłówka. Sprawdź:
+    Wymagany nagłówek nie był obecny. Sprawdź:
 
-    - konfigurację proxy dla tych konkretnych nagłówków.
-    - czy nagłówki nie są usuwane gdzieś w łańcuchu.
+    - Konfigurację proxy dotyczącą tych konkretnych nagłówków.
+    - Czy nagłówki nie są usuwane gdzieś w łańcuchu.
 
   </Accordion>
   <Accordion title="trusted_proxy_user_not_allowed">
-    Użytkownik jest uwierzytelniony, ale nie znajduje się w `allowUsers`. Dodaj go albo usuń listę dozwolonych.
+    Użytkownik jest uwierzytelniony, ale nie znajduje się na liście `allowUsers`. Dodaj go albo usuń listę dozwolonych użytkowników.
+  </Accordion>
+  <Accordion title="trusted_proxy_no_proxies_configured / trusted_proxy_config_missing">
+    Wartość `gateway.auth.mode` to `"trusted-proxy"`, ale lista `gateway.trustedProxies` jest pusta albo brakuje samej konfiguracji `gateway.auth.trustedProxy`. Każde żądanie jest odrzucane, dopóki nie zostaną ustawione obie wartości.
   </Accordion>
   <Accordion title="trusted_proxy_origin_not_allowed">
-    Uwierzytelnianie przez zaufane proxy powiodło się, ale nagłówek przeglądarki `Origin` nie przeszedł kontroli źródeł Control UI.
+    Uwierzytelnianie przez zaufane proxy powiodło się, ale nagłówek przeglądarki `Origin` nie przeszedł kontroli źródła interfejsu sterowania.
 
     Sprawdź:
 
-    - `gateway.controlUi.allowedOrigins` zawiera dokładne źródło przeglądarki.
-    - Nie polegasz na źródłach wieloznacznych, chyba że celowo chcesz zachowania zezwalającego wszystkim.
-    - Jeśli celowo używasz trybu awaryjnego na podstawie nagłówka Host, `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true` jest ustawione świadomie.
+    - Czy `gateway.controlUi.allowedOrigins` zawiera dokładne źródło przeglądarki.
+    - Czy nie polegasz na źródłach z symbolem wieloznacznym, chyba że celowo chcesz zezwolić na wszystkie źródła.
+    - Jeśli celowo używasz trybu zapasowego opartego na nagłówku Host, upewnij się, że `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true` ustawiono świadomie.
 
   </Accordion>
   <Accordion title="Connection succeeds but methods report missing scope">
-    WebSocket łączy się, ale `chat.history`, `sessions.list` albo
+    Połączenie WebSocket zostaje nawiązane, ale wywołanie `chat.history`, `sessions.list` lub
     `models.list` kończy się błędem `missing scope: operator.read`.
 
     Typowe przyczyny:
 
-    - Sesja Control UI bez urządzenia: uwierzytelnianie przez zaufane proxy może dopuścić połączenie WebSocket bez tożsamości urządzenia, ale OpenClaw z założenia czyści zakresy w sesjach bez urządzenia.
-    - Niestandardowy klient backendu: `gateway.controlUi.dangerouslyDisableDeviceAuth` jest ograniczone do Control UI i nie nadaje zakresów dowolnym klientom WebSocket backendu albo w stylu CLI.
-    - Zbyt wąskie `x-openclaw-scopes`: jeśli Twoje proxy wstrzykuje ten nagłówek w żądaniu aktualizacji WebSocket Control UI, zakresy sesji są ograniczane do tego zestawu. Pusta wartość nagłówka nie daje żadnych zakresów.
+    - Sesja interfejsu sterowania bez tożsamości urządzenia: uwierzytelnianie przez zaufane proxy może dopuścić połączenie WebSocket bez tożsamości urządzenia, ale OpenClaw z założenia usuwa zakresy z sesji bez urządzenia.
+    - Niestandardowy klient zaplecza: opcja `gateway.controlUi.dangerouslyDisableDeviceAuth` dotyczy interfejsu sterowania i nie przyznaje zakresów dowolnym klientom WebSocket zaplecza ani klientom o strukturze CLI.
+    - Zbyt wąski zakres `x-openclaw-scopes`: jeśli proxy wstrzykuje ten nagłówek do żądania aktualizacji połączenia WebSocket interfejsu sterowania, zakresy sesji są ograniczane do tego zestawu. Pusta wartość nagłówka oznacza brak zakresów.
 
-    Naprawa:
+    Rozwiązanie:
 
-    - Dla Control UI użyj HTTPS, aby przeglądarka mogła wygenerować tożsamość urządzenia i ukończyć parowanie.
-    - Dla niestandardowej automatyzacji użyj tożsamości urządzenia/parowania, zarezerwowanej bezpośredniej lokalnej ścieżki pomocniczej backendu `gateway-client` albo [admin HTTP RPC](/pl/plugins/admin-http-rpc).
-    - Używaj `gateway.controlUi.dangerouslyDisableDeviceAuth: true` tylko jako tymczasowej ścieżki awaryjnej Control UI.
+    - W przypadku interfejsu sterowania użyj HTTPS, aby przeglądarka mogła wygenerować tożsamość urządzenia i ukończyć parowanie.
+    - W przypadku niestandardowej automatyzacji użyj tożsamości urządzenia i parowania, zastrzeżonej bezpośredniej lokalnej ścieżki pomocniczej zaplecza `gateway-client` albo [administracyjnego RPC HTTP](/pl/plugins/admin-http-rpc).
+    - Używaj `gateway.controlUi.dangerouslyDisableDeviceAuth: true` wyłącznie jako tymczasowej, awaryjnej ścieżki dostępu do interfejsu sterowania.
 
   </Accordion>
   <Accordion title="WebSocket still failing">
     Upewnij się, że Twoje proxy:
 
-    - obsługuje aktualizacje WebSocket (`Upgrade: websocket`, `Connection: upgrade`).
-    - przekazuje nagłówki tożsamości w żądaniach aktualizacji WebSocket (nie tylko HTTP).
-    - nie ma osobnej ścieżki uwierzytelniania dla połączeń WebSocket.
+    - Obsługuje aktualizację połączeń WebSocket (`Upgrade: websocket`, `Connection: upgrade`).
+    - Przekazuje nagłówki tożsamości w żądaniach aktualizacji połączenia WebSocket (nie tylko HTTP).
+    - Nie ma osobnej ścieżki uwierzytelniania dla połączeń WebSocket.
 
   </Accordion>
 </AccordionGroup>
 
 ## Migracja z uwierzytelniania tokenem
 
-Jeśli przechodzisz z uwierzytelniania tokenem na zaufane proxy:
-
 <Steps>
   <Step title="Configure the proxy">
     Skonfiguruj proxy tak, aby uwierzytelniało użytkowników i przekazywało nagłówki.
   </Step>
   <Step title="Test the proxy independently">
-    Przetestuj konfigurację proxy niezależnie (`curl` z nagłówkami).
+    Niezależnie przetestuj konfigurację proxy (użyj curl z nagłówkami).
   </Step>
   <Step title="Update OpenClaw config">
-    Zaktualizuj konfigurację OpenClaw, używając uwierzytelniania przez zaufane proxy.
+    Zaktualizuj konfigurację OpenClaw, dodając uwierzytelnianie przez zaufane proxy.
   </Step>
   <Step title="Restart the Gateway">
     Uruchom ponownie Gateway.
   </Step>
   <Step title="Test WebSocket">
-    Przetestuj połączenia WebSocket z Control UI.
+    Przetestuj połączenia WebSocket z interfejsu sterowania.
   </Step>
   <Step title="Audit">
-    Uruchom `openclaw security audit` i przejrzyj wyniki.
+    Uruchom `openclaw security audit` i przejrzyj ustalenia.
   </Step>
 </Steps>
 
-## Powiązane
+## Powiązane materiały
 
 - [Konfiguracja](/pl/gateway/configuration) — dokumentacja konfiguracji
+- [Zakresy operatora](/pl/gateway/operator-scopes) — role, zakresy i kontrole zatwierdzeń
 - [Dostęp zdalny](/pl/gateway/remote) — inne wzorce dostępu zdalnego
-- [Bezpieczeństwo](/pl/gateway/security) — pełny przewodnik bezpieczeństwa
-- [Tailscale](/pl/gateway/tailscale) — prostsza alternatywa dla dostępu wyłącznie z tailnet
+- [Bezpieczeństwo](/pl/gateway/security) — pełny przewodnik dotyczący bezpieczeństwa
+- [Tailscale](/pl/gateway/tailscale) — prostsza alternatywa dla dostępu ograniczonego do sieci tailnet

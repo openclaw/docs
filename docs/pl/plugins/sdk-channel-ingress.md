@@ -1,33 +1,32 @@
 ---
 read_when:
-    - Tworzenie lub migracja Plugin kanału komunikacyjnego
-    - Zmiana list dozwolonych wiadomości bezpośrednich lub grup, bramek tras, autoryzacji poleceń, autoryzacji zdarzeń lub aktywacji wzmianek
-    - Przegląd maskowania danych przychodzących kanału lub granic zgodności SDK
+    - Tworzenie lub migrowanie Pluginu kanału komunikacyjnego
+    - Zmiana list dozwolonych nadawców wiadomości prywatnych lub grup, ograniczeń tras, autoryzacji poleceń, autoryzacji zdarzeń lub aktywacji przez wzmiankę
+    - Przeglądanie anonimizacji danych przychodzących kanału lub granic zgodności SDK
 sidebarTitle: Channel Ingress
-summary: Eksperymentalny interfejs API wejścia kanału do autoryzacji wiadomości przychodzących
-title: API wejścia kanału
+summary: Eksperymentalne API obsługi komunikatów przychodzących kanału do autoryzacji wiadomości przychodzących
+title: API ruchu przychodzącego kanału
 x-i18n:
-    generated_at: "2026-05-10T19:47:54Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:25:10Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b7f32b9b2e91a2d8cf5a8f2706d071e8daebb3954de4913646aaaaeae4c7141d
+    source_hash: 9e7b7d16bb0d53cec824cb353f691a2e17b37ca648eaefe6c0cbbdcd68a4c155
     source_path: plugins/sdk-channel-ingress.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# API ingressu kanałów
+Ingress kanału jest eksperymentalną granicą kontroli dostępu dla przychodzących
+zdarzeń kanału. Pluginy odpowiadają za fakty dotyczące platformy i skutki uboczne; rdzeń odpowiada za
+ogólne zasady: listy dozwolonych nadawców wiadomości prywatnych i grupowych, wpisy wiadomości prywatnych w magazynie parowania, bramki tras,
+bramki poleceń, autoryzację zdarzeń, aktywację przez wzmiankę, zredagowaną diagnostykę oraz
+dopuszczanie.
 
-Ingress kanałów to eksperymentalna granica kontroli dostępu dla przychodzących
-zdarzeń kanałów. Używaj `openclaw/plugin-sdk/channel-ingress-runtime` dla ścieżek odbioru.
-Starsza ścieżka podrzędna `openclaw/plugin-sdk/channel-ingress` pozostaje eksportowana jako
-przestarzała fasada zgodności dla Pluginów zewnętrznych.
+Dla nowych ścieżek odbioru używaj `openclaw/plugin-sdk/channel-ingress-runtime`. Starsza
+podścieżka `openclaw/plugin-sdk/channel-ingress` pozostaje eksportowana jako
+przestarzała fasada zgodności dla pluginów innych firm.
 
-Pluginy są właścicielami faktów platformowych i skutków ubocznych. Rdzeń jest właścicielem ogólnej polityki: list dozwolonych DM/grup,
-wpisów DM w magazynie parowania, bramek tras, bramek poleceń, autoryzacji zdarzeń,
-aktywacji przez wzmiankę, zredagowanej diagnostyki i dopuszczenia.
-
-## Resolver środowiska uruchomieniowego
+## Mechanizm rozstrzygający środowiska wykonawczego
 
 ```ts
 import {
@@ -62,48 +61,51 @@ const result = await resolveChannelMessageIngress({
 });
 ```
 
-Nie obliczaj z góry efektywnych list dozwolonych, właścicieli poleceń ani grup poleceń. Resolver
-wyprowadza je z surowych list dozwolonych, wywołań zwrotnych magazynu, deskryptorów tras,
-grup dostępu, polityki i rodzaju rozmowy.
+Nie obliczaj wcześniej efektywnych list dozwolonych nadawców, właścicieli poleceń ani grup poleceń.
+Mechanizm rozstrzygający wyznacza je na podstawie nieprzetworzonych list dozwolonych nadawców, wywołań zwrotnych magazynu, deskryptorów
+tras, grup dostępu, zasad i rodzaju konwersacji.
 
 ## Wynik
 
-Dołączone Pluginy powinny używać nowoczesnych projekcji bezpośrednio:
+Dołączone pluginy powinny bezpośrednio używać nowoczesnych projekcji:
 
-- `ingress`: uporządkowana decyzja bramki i dopuszczenie
-- `senderAccess`: tylko autoryzacja nadawcy/rozmowy
-- `routeAccess`: projekcja trasy i nadawcy trasy
-- `commandAccess`: autoryzacja polecenia; false, gdy nie uruchomiono bramki polecenia
-- `activationAccess`: wynik wzmianki/aktywacji
+| Pole               | Znaczenie                                                                |
+| ------------------ | ------------------------------------------------------------------------ |
+| `ingress`          | uporządkowana decyzja bramek i dopuszczenie                              |
+| `senderAccess`     | wyłącznie autoryzacja nadawcy/konwersacji                                |
+| `routeAccess`      | projekcja trasy i nadawcy trasy                                          |
+| `commandAccess`    | autoryzacja polecenia; `requested: false`, gdy nie uruchomiono bramki poleceń |
+| `activationAccess` | wynik wzmianki/aktywacji                                                  |
 
-Autoryzacja zdarzeń pozostaje dostępna w uporządkowanym `ingress.graph` oraz decydującym
-`ingress.reasonCode`; nie jest emitowana żadna osobna projekcja zdarzenia.
+Autoryzacja zdarzenia pozostaje dostępna w uporządkowanym `ingress.graph` oraz rozstrzygającym
+`ingress.reasonCode`; nie jest emitowana oddzielna projekcja zdarzenia.
 
-Przestarzałe pomocniki SDK dla zewnętrznych Pluginów mogą wewnętrznie odtwarzać starsze kształty. Nowe
-dołączone ścieżki odbioru nie powinny tłumaczyć nowoczesnych wyników z powrotem na lokalne DTO.
+Przestarzałe pomocnicze elementy SDK dla innych firm mogą wewnętrznie odtwarzać starsze struktury. Nowe
+dołączone ścieżki odbioru nie powinny przekształcać nowoczesnych wyników z powrotem w lokalne
+obiekty DTO.
 
 ## Grupy dostępu
 
-Wpisy `accessGroup:<name>` pozostają zredagowane. Rdzeń sam rozwiązuje statyczne grupy
-`message.senders` i wywołuje `resolveAccessGroupMembership` tylko
-dla grup dynamicznych, które wymagają wyszukiwania na platformie. Brakujące, nieobsługiwane i
-nieudane grupy kończą się odmową.
+Wpisy `accessGroup:<name>` pozostają zredagowane. Rdzeń samodzielnie rozstrzyga statyczne
+grupy `message.senders` i wywołuje `resolveAccessGroupMembership` tylko
+dla grup dynamicznych, które wymagają sprawdzenia na platformie. Brakujące, nieobsługiwane i
+zakończone błędem grupy powodują domyślną odmowę dostępu.
 
 ## Tryby zdarzeń
 
-| `authMode`       | Znaczenie                                             |
-| ---------------- | ----------------------------------------------------- |
-| `inbound`        | zwykłe bramki nadawcy przychodzącego                  |
-| `command`        | bramki poleceń dla wywołań zwrotnych lub przycisków zakresowych |
-| `origin-subject` | aktor musi pasować do podmiotu oryginalnej wiadomości |
-| `route-only`     | tylko bramki tras dla zaufanych zdarzeń zakresowych trasy |
-| `none`           | wewnętrzne zdarzenia zarządzane przez Plugin omijają wspólną autoryzację |
+| `authMode`       | Znaczenie                                                        |
+| ---------------- | ---------------------------------------------------------------- |
+| `inbound`        | standardowe bramki przychodzącego nadawcy                        |
+| `command`        | bramki poleceń dla wywołań zwrotnych lub przycisków o ograniczonym zakresie |
+| `origin-subject` | wykonawca musi odpowiadać podmiotowi pierwotnej wiadomości        |
+| `route-only`     | wyłącznie bramki tras dla zaufanych zdarzeń ograniczonych do trasy |
+| `none`           | zdarzenia wewnętrzne należące do pluginu omijają współdzieloną autoryzację |
 
-Używaj `mayPair: false` dla reakcji, przycisków, wywołań zwrotnych i natywnych poleceń.
+Dla reakcji, przycisków, wywołań zwrotnych i poleceń natywnych używaj `mayPair: false`.
 
 ## Trasy i aktywacja
 
-Używaj deskryptorów tras dla pokoju, tematu, gildii, wątku lub zagnieżdżonej polityki tras:
+Używaj deskryptorów tras do definiowania zasad pokoju, tematu, serwera, wątku lub zagnieżdżonych tras:
 
 ```ts
 route: {
@@ -116,26 +118,26 @@ route: {
 }
 ```
 
-Używaj `channelIngressRoutes(...)`, gdy Plugin ma kilka opcjonalnych deskryptorów tras;
-filtruje on wyłączone gałęzie, zachowując fakty tras jako ogólne i
-uporządkowane według `precedence` każdego deskryptora.
+Używaj `channelIngressRoutes(...)`, gdy plugin ma kilka opcjonalnych deskryptorów
+tras; funkcja filtruje wyłączone gałęzie, zachowując ogólny charakter faktów dotyczących tras
+oraz kolejność zgodną z wartością `precedence` każdego deskryptora.
 
-Bramkowanie wzmianki jest bramką aktywacji. Brak trafienia wzmianki zwraca
-`admission: "skip"`, więc jądro tury nie przetwarza tury wyłącznie obserwacyjnej.
-Większość kanałów powinna pozostawić aktywację po bramkach nadawcy i poleceń. Publiczne
-powierzchnie czatu, które muszą wyciszyć ruch bez wzmianki przed szumem z listy dozwolonych nadawców,
-mogą włączyć `activation.order: "before-sender"`, gdy obejście poleceń tekstowych
-jest wyłączone. Kanały z niejawną aktywacją, takie jak odpowiedzi w wątkach bota,
-mogą przekazać `activation.allowedImplicitMentionKinds`; projektowane
-`activationAccess.shouldBypassMention` zgłasza wtedy, kiedy polecenie lub niejawna
-aktywacja ominęła jawną wzmiankę.
+Filtrowanie wzmianek jest bramką aktywacji. Brak wzmianki zwraca
+`admission: "skip"`, dzięki czemu jądro tury nie przetwarza tury przeznaczonej wyłącznie do obserwacji.
+W większości kanałów aktywacja powinna następować po bramkach nadawcy i poleceń. Publiczne
+powierzchnie czatu, które muszą wyciszać ruch bez wzmianek przed komunikatami wynikającymi z listy dozwolonych
+nadawców, mogą włączyć `activation.order: "before-sender"`, gdy obejście przez polecenia tekstowe
+jest wyłączone. Kanały z niejawną aktywacją, takie jak odpowiedzi w wątkach
+bota, mogą przekazać `activation.allowedImplicitMentionKinds`; projekcja
+`activationAccess.shouldBypassMention` informuje wtedy, kiedy polecenie lub niejawna
+aktywacja ominęły wymóg jawnej wzmianki.
 
-## Redakcja
+## Redagowanie
 
-Surowe wartości nadawców i surowe wpisy list dozwolonych są wyłącznie wejściem resolvera. Nie mogą
-pojawiać się w rozwiązanym stanie, decyzjach, diagnostyce, migawkach ani
-faktach zgodności. Używaj nieprzezroczystych identyfikatorów podmiotów, identyfikatorów wpisów, identyfikatorów tras i
-identyfikatorów diagnostycznych.
+Nieprzetworzone wartości nadawców i wpisy list dozwolonych nadawców służą wyłącznie jako dane wejściowe mechanizmu rozstrzygającego. Nie
+mogą występować w rozstrzygniętym stanie, decyzjach, diagnostyce, migawkach ani
+danych zgodności. Używaj nieprzejrzystych identyfikatorów podmiotów, wpisów, tras i
+diagnostyki.
 
 ## Weryfikacja
 

@@ -1,32 +1,37 @@
 ---
 read_when:
-    - Ręczne bootstrapping obszaru roboczego
+    - Ręczne inicjowanie przestrzeni roboczej
 summary: Szablon obszaru roboczego dla HEARTBEAT.md
 title: Szablon HEARTBEAT.md
 x-i18n:
-    generated_at: "2026-06-27T18:20:42Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:35:22Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 44a1ea787d67110ca53d752706b62f5ce5c4df8637897dee97ce6502f6a05eb6
+    source_hash: 1605f546995e0bdcb11f9bf905173b14aca25cfad664fe2c7644d18c2b4142e2
     source_path: reference/templates/HEARTBEAT.md
     workflow: 16
 ---
 
 # Szablon HEARTBEAT.md
 
-`HEARTBEAT.md` znajduje się w obszarze roboczym agenta. Pozostaw plik pusty albo zawierający tylko komentarze i nagłówki Markdown, gdy chcesz, aby OpenClaw pomijał wywołania modelu Heartbeat.
+Plik `HEARTBEAT.md` znajduje się w przestrzeni roboczej agenta i zawiera listę kontrolną okresowych Heartbeatów. Pozostaw go pustym albo zawierającym wyłącznie białe znaki, komentarze Markdown, nagłówki ATX, puste elementy list (`- `, `* [ ]`) lub znaczniki bloków kodu, aby OpenClaw całkowicie pomijał wywołanie modelu Heartbeat (`reason=empty-heartbeat-file`).
 
-Domyślny szablon środowiska uruchomieniowego to:
+Domyślna dostarczana zawartość:
 
 ```markdown
-# Keep this file empty (or with only comments) to skip heartbeat API calls.
+<!-- Szablon Heartbeat; zawartość składająca się wyłącznie z komentarzy zapobiega zaplanowanym wywołaniom API Heartbeat. -->
 
-# Add tasks below when you want the agent to check something periodically.
+# Pozostaw ten plik pusty (lub zawierający wyłącznie komentarze), aby pominąć wywołania API Heartbeat.
+
+# Dodaj zadania poniżej, gdy chcesz, aby agent okresowo coś sprawdzał.
 ```
 
-Dodawaj krótkie zadania pod komentarzami tylko wtedy, gdy chcesz, aby agent okresowo coś sprawdzał. Instrukcje Heartbeat powinny być krótkie, ponieważ są odczytywane podczas powtarzających się wybudzeń.
+Dodawaj krótkie zadania poniżej wierszy komentarzy tylko wtedy, gdy potrzebujesz okresowych kontroli. Zachowaj zwięzłość: przy każdym takcie Heartbeat odczytuje ten plik (domyślnie co 30 minut), więc rozbudowane instrukcje zużywają tokeny przy każdym wybudzeniu.
+
+Aby zamiast zwykłej listy kontrolnej wykonywać wyłącznie zadania, których termin przypada w danym momencie, użyj ustrukturyzowanego bloku `tasks:` z polami `interval` i `prompt` dla każdego zadania; format i sposób działania opisano w sekcji [HEARTBEAT.md](/pl/gateway/heartbeat#heartbeatmd-optional).
 
 ## Powiązane
 
+- [Heartbeat](/pl/gateway/heartbeat)
 - [Konfiguracja Heartbeat](/pl/gateway/config-agents)

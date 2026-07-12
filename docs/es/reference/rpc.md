@@ -1,12 +1,12 @@
 ---
 read_when:
-    - Agregar o cambiar integraciones externas de CLI
-    - Depurar adaptadores RPC (signal-cli, imsg)
+    - Adición o modificación de integraciones externas de CLI
+    - Depuración de adaptadores RPC (signal-cli, imsg)
 summary: Adaptadores RPC para CLI externas (signal-cli, imsg) y patrones de Gateway
 title: Adaptadores RPC
 x-i18n:
-    generated_at: "2026-07-05T11:45:04Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T23:30:37Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 6ddb3fb741c90fe7b01ba35376b71865584b1e507cf610705392452790fb76f5
@@ -14,38 +14,38 @@ x-i18n:
     workflow: 16
 ---
 
-OpenClaw integra CLI externas mediante JSON-RPC. Hoy se usan dos patrones.
+OpenClaw integra CLI externas mediante JSON-RPC. Actualmente se utilizan dos patrones.
 
-## Patrón A: daemon HTTP (signal-cli)
+## Patrón A: demonio HTTP (signal-cli)
 
-- `signal-cli` se ejecuta como daemon con JSON-RPC sobre HTTP.
-- El flujo de eventos es SSE (`/api/v1/events`).
-- Sondeo de estado: `/api/v1/check`.
-- OpenClaw gestiona el ciclo de vida cuando `channels.signal.autoStart=true`.
+- `signal-cli` se ejecuta como demonio con JSON-RPC sobre HTTP.
+- El flujo de eventos utiliza SSE (`/api/v1/events`).
+- Comprobación de estado: `/api/v1/check`.
+- OpenClaw controla el ciclo de vida cuando `channels.signal.autoStart=true`.
 
-Consulta [Signal](/es/channels/signal) para la configuración y los endpoints.
+Consulta [Signal](/es/channels/signal) para obtener información sobre la configuración y los endpoints.
 
-## Patrón B: proceso hijo stdio (imsg)
+## Patrón B: proceso hijo mediante stdio (imsg)
 
-- OpenClaw genera `imsg rpc` como proceso hijo para [iMessage](/es/channels/imessage).
-- JSON-RPC está delimitado por líneas sobre stdin/stdout (un objeto JSON por línea).
-- No se requiere puerto TCP ni daemon.
+- OpenClaw inicia `imsg rpc` como proceso hijo para [iMessage](/es/channels/imessage).
+- JSON-RPC se delimita por líneas a través de stdin/stdout (un objeto JSON por línea).
+- No se requiere ningún puerto TCP ni demonio.
 
-Métodos principales usados:
+Métodos principales utilizados:
 
 - `watch.subscribe` → notificaciones (`method: "message"`)
 - `watch.unsubscribe`
 - `send`
-- `chats.list` (sondeo/diagnósticos)
+- `chats.list` (comprobación/diagnóstico)
 
-Consulta [iMessage](/es/channels/imessage) para la configuración y el direccionamiento (se prefiere `chat_id` a las cadenas de visualización).
+Consulta [iMessage](/es/channels/imessage) para obtener información sobre la configuración y el direccionamiento (se prefiere `chat_id` a las cadenas de visualización).
 
-## Directrices del adaptador
+## Directrices para adaptadores
 
-- Gateway gestiona el proceso (inicio/detención vinculados al ciclo de vida del proveedor).
-- Mantén resilientes los clientes RPC: tiempos de espera, reinicio al salir.
-- Prefiere identificadores estables (por ejemplo, `chat_id`) a cadenas de visualización.
+- Gateway controla el proceso (el inicio y la detención están vinculados al ciclo de vida del proveedor).
+- Mantén la resiliencia de los clientes RPC: tiempos de espera y reinicio al finalizar.
+- Prefiere identificadores estables (p. ej., `chat_id`) a las cadenas de visualización.
 
-## Relacionado
+## Temas relacionados
 
 - [Protocolo de Gateway](/es/gateway/protocol)

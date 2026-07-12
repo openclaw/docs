@@ -1,47 +1,44 @@
 ---
 read_when:
-    - Вам нужно автоматизированное развертывание сервера с усилением безопасности
-    - Вам нужна изолированная брандмауэром установка с доступом через VPN
-    - Вы выполняете развертывание на удалённых серверах Debian/Ubuntu
-summary: Автоматизированная защищенная установка OpenClaw с Ansible, Tailscale VPN и изоляцией firewall
+    - Вам нужно автоматизированное развертывание сервера с усиленной защитой
+    - Вам нужна изолированная брандмауэром конфигурация с доступом через VPN
+    - Вы развёртываете систему на удалённых серверах Debian/Ubuntu
+summary: Автоматизированная защищённая установка OpenClaw с помощью Ansible, VPN Tailscale и изоляции брандмауэром
 title: Ansible
 x-i18n:
-    generated_at: "2026-06-28T23:04:37Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:28:00Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 03eb6f40139d7e154eee92a7a1a67471da90b128cc90daf86fbc87e383a5297c
+    source_hash: 8d3626ab364169609f92f636cb6b86cb980dca2b235500e748296128765444ae
     source_path: install/ansible.md
     workflow: 16
 ---
 
-Разверните OpenClaw на производственных серверах с **[openclaw-ansible](https://github.com/openclaw/openclaw-ansible)** -- автоматическим установщиком с архитектурой, ориентированной на безопасность.
+Разверните OpenClaw на производственных серверах с помощью **[openclaw-ansible](https://github.com/openclaw/openclaw-ansible)** — автоматизированного установщика с архитектурой, ориентированной на безопасность.
 
 <Info>
-Репозиторий [openclaw-ansible](https://github.com/openclaw/openclaw-ansible) является источником истины для развертывания через Ansible. Эта страница содержит краткий обзор.
+Репозиторий [openclaw-ansible](https://github.com/openclaw/openclaw-ansible) — основной источник сведений о развертывании с помощью Ansible. На этой странице представлен краткий обзор.
 </Info>
 
 ## Предварительные требования
 
-| Требование | Подробности                                              |
-| ---------- | --------------------------------------------------------- |
-| **ОС**     | Debian 11+ или Ubuntu 20.04+                              |
-| **Доступ** | Права root или sudo                                       |
-| **Сеть**   | Подключение к Интернету для установки пакетов             |
-| **Ansible** | 2.14+ (устанавливается автоматически скриптом быстрого старта) |
+| Требование | Подробности                                                    |
+| ---------- | -------------------------------------------------------------- |
+| ОС         | Debian 11+ или Ubuntu 20.04+                                   |
+| Доступ     | Права root или sudo                                            |
+| Сеть       | Подключение к Интернету для установки пакетов                  |
+| Ansible    | 2.14+ (автоматически устанавливается скриптом быстрого запуска) |
 
-## Что вы получаете
+## Что вы получите
 
-- **Безопасность с приоритетом межсетевого экрана** -- изоляция UFW + Docker (доступны только SSH + Tailscale)
-- **Tailscale VPN** -- безопасный удаленный доступ без публичного раскрытия сервисов
-- **Docker** -- изолированные контейнеры-песочницы, привязки только к localhost
-- **Глубоко эшелонированная защита** -- 4-уровневая архитектура безопасности
-- **Интеграция с systemd** -- автозапуск при загрузке с усилением безопасности
-- **Настройка одной командой** -- полное развертывание за минуты
+- Защита на уровне межсетевого экрана: UFW + изоляция Docker (доступны только SSH + Tailscale)
+- VPN Tailscale для удаленного доступа без публичного открытия сервисов
+- Docker для изолированных контейнеров песочницы с привязкой только к localhost
+- Интеграция с systemd, усиление защиты и автоматический запуск при загрузке
+- Настройка одной командой
 
-## Быстрый старт
-
-Установка одной командой:
+## Быстрый запуск
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/openclaw/openclaw-ansible/main/install.sh | bash
@@ -49,19 +46,18 @@ curl -fsSL https://raw.githubusercontent.com/openclaw/openclaw-ansible/main/inst
 
 ## Что устанавливается
 
-Playbook Ansible устанавливает и настраивает:
-
-1. **Tailscale** -- mesh VPN для безопасного удаленного доступа
-2. **Межсетевой экран UFW** -- только порты SSH + Tailscale
-3. **Docker CE + Compose V2** -- для стандартного backend песочницы агента
-4. **Node.js 24 + pnpm** -- зависимости среды выполнения (Node 22 LTS, сейчас `22.19+`, остается поддерживаемым)
-5. **OpenClaw** -- размещается на хосте, не контейнеризируется
-6. **Сервис systemd** -- автозапуск с усилением безопасности
+1. Tailscale (ячеистая VPN для безопасного удаленного доступа)
+2. Межсетевой экран UFW (только порты SSH + Tailscale)
+3. Docker CE + Compose V2 (стандартный бэкенд песочницы агента)
+4. Node.js и pnpm (для OpenClaw требуется Node 22.19+ или 23.11+; рекомендуется Node 24)
+5. OpenClaw, устанавливаемый непосредственно на хосте, а не в контейнере
+6. Сервис systemd с усиленной защитой
 
 <Note>
-Gateway запускается напрямую на хосте (не в Docker). Песочница агента
-необязательна; этот playbook устанавливает Docker, потому что это стандартный
-backend песочницы. Подробнее и о других backend см. [Изоляция в песочнице](/ru/gateway/sandboxing).
+Gateway работает непосредственно на хосте, а не в Docker. Песочница агента
+необязательна; этот плейбук устанавливает Docker, поскольку он является
+стандартным бэкендом песочницы. Другие бэкенды описаны в разделе
+[«Песочница»](/ru/gateway/sandboxing).
 </Note>
 
 ## Настройка после установки
@@ -72,13 +68,13 @@ backend песочницы. Подробнее и о других backend см. 
     sudo -i -u openclaw
     ```
   </Step>
-  <Step title="Запустите мастер первичной настройки">
-    Скрипт после установки проведет вас через настройку параметров OpenClaw.
+  <Step title="Запустите мастер первоначальной настройки">
+    Скрипт после установки поможет вам настроить OpenClaw.
   </Step>
-  <Step title="Подключите провайдеры сообщений">
+  <Step title="Подключите каналы обмена сообщениями">
     Войдите в WhatsApp, Telegram, Discord или Signal:
     ```bash
-    openclaw channels login
+    openclaw channels login --channel <name>
     ```
   </Step>
   <Step title="Проверьте установку">
@@ -88,52 +84,50 @@ backend песочницы. Подробнее и о других backend см. 
     ```
   </Step>
   <Step title="Подключитесь к Tailscale">
-    Присоединитесь к вашей VPN mesh для безопасного удаленного доступа.
+    Присоединитесь к своей ячеистой VPN для безопасного удаленного доступа.
   </Step>
 </Steps>
 
 ### Быстрые команды
 
 ```bash
-# Check service status
+# Проверить состояние сервиса
 sudo systemctl status openclaw
 
-# View live logs
+# Просмотреть журналы в реальном времени
 sudo journalctl -u openclaw -f
 
-# Restart gateway
+# Перезапустить Gateway
 sudo systemctl restart openclaw
 
-# Provider login (run as openclaw user)
+# Войти в канал (выполнять от имени пользователя openclaw)
 sudo -i -u openclaw
-openclaw channels login
+openclaw channels login --channel <name>
 ```
 
 ## Архитектура безопасности
 
-Развертывание использует 4-уровневую модель защиты:
+Четырехуровневая модель защиты:
 
-1. **Межсетевой экран (UFW)** -- публично открыты только SSH (22) + Tailscale (41641/udp)
-2. **VPN (Tailscale)** -- Gateway доступен только через VPN mesh
-3. **Изоляция Docker** -- цепочка iptables DOCKER-USER предотвращает внешнее раскрытие портов
-4. **Усиление systemd** -- NoNewPrivileges, PrivateTmp, непривилегированный пользователь
+1. Межсетевой экран (UFW): публично открыты только SSH (22) и Tailscale (41641/udp)
+2. VPN (Tailscale): Gateway доступен только через ячеистую VPN
+3. Изоляция Docker: цепочка iptables `DOCKER-USER` предотвращает открытие портов для внешнего доступа
+4. Усиление защиты systemd: `NoNewPrivileges`, `PrivateTmp`, непривилегированный пользователь
 
-Чтобы проверить вашу внешнюю поверхность атаки:
+Проверьте поверхность внешней атаки:
 
 ```bash
 nmap -p- YOUR_SERVER_IP
 ```
 
-Открыт должен быть только порт 22 (SSH). Все остальные сервисы (Gateway, Docker) заблокированы.
+Открытым должен быть только порт 22 (SSH). Доступ к Gateway и Docker остается закрытым.
 
-Docker устанавливается для песочниц агентов (изолированного выполнения инструментов), а не для запуска самого Gateway. Настройку песочницы см. в [Многоагентная песочница и инструменты](/ru/tools/multi-agent-sandbox-tools).
+Docker устанавливается для песочниц агентов (изолированного выполнения инструментов), а не для запуска Gateway. Настройка песочницы описана в разделе [«Мультиагентная песочница и инструменты»](/ru/tools/multi-agent-sandbox-tools).
 
-## Ручная установка
-
-Если вы предпочитаете ручной контроль вместо автоматизации:
+## Установка вручную
 
 <Steps>
-  <Step title="Установите предварительные зависимости">
+  <Step title="Установите необходимые компоненты">
     ```bash
     sudo apt update && sudo apt install -y ansible git
     ```
@@ -149,15 +143,15 @@ Docker устанавливается для песочниц агентов (и
     ansible-galaxy collection install -r requirements.yml
     ```
   </Step>
-  <Step title="Запустите playbook">
+  <Step title="Запустите плейбук">
     ```bash
     ./run-playbook.sh
     ```
 
-    Либо запустите напрямую, а затем вручную выполните скрипт настройки:
+    Или запустите плейбук напрямую, а затем вручную выполните скрипт настройки:
     ```bash
     ansible-playbook playbook.yml --ask-become-pass
-    # Then run: /tmp/openclaw-setup.sh
+    # Затем выполните: /tmp/openclaw-setup.sh
     ```
 
   </Step>
@@ -165,35 +159,34 @@ Docker устанавливается для песочниц агентов (и
 
 ## Обновление
 
-Установщик Ansible настраивает OpenClaw для ручных обновлений. Стандартный процесс обновления см. в [Обновление](/ru/install/updating).
+Установщик Ansible настраивает OpenClaw для обновления вручную; стандартный процесс описан в разделе [«Обновление»](/ru/install/updating).
 
-Чтобы повторно запустить playbook Ansible (например, для изменений конфигурации):
+Чтобы повторно запустить плейбук (например, после изменения конфигурации), выполните:
 
 ```bash
 cd openclaw-ansible
 ./run-playbook.sh
 ```
 
-Это идемпотентно и безопасно для многократного запуска.
+Этот процесс идемпотентен, поэтому его можно безопасно запускать многократно.
 
 ## Устранение неполадок
 
 <AccordionGroup>
-  <Accordion title="Межсетевой экран блокирует мое подключение">
-    - Сначала убедитесь, что у вас есть доступ через Tailscale VPN
-    - Доступ по SSH (порт 22) всегда разрешен
-    - Gateway по проекту доступен только через Tailscale
+  <Accordion title="Межсетевой экран блокирует подключение">
+    - Сначала подключитесь через VPN Tailscale; по замыслу Gateway доступен только таким способом.
+    - SSH (порт 22) разрешен всегда.
 
   </Accordion>
   <Accordion title="Сервис не запускается">
     ```bash
-    # Check logs
+    # Проверить журналы
     sudo journalctl -u openclaw -n 100
 
-    # Verify permissions
+    # Проверить права доступа
     sudo ls -la /opt/openclaw
 
-    # Test manual start
+    # Проверить запуск вручную
     sudo -i -u openclaw
     cd ~/openclaw
     openclaw gateway run
@@ -202,32 +195,32 @@ cd openclaw-ansible
   </Accordion>
   <Accordion title="Проблемы с песочницей Docker">
     ```bash
-    # Verify Docker is running
+    # Проверить, работает ли Docker
     sudo systemctl status docker
 
-    # Check sandbox image
+    # Проверить образ песочницы
     sudo docker images | grep openclaw-sandbox
 
-    # Build sandbox image if missing (requires source checkout)
+    # Собрать образ песочницы, если он отсутствует (требуется рабочая копия исходного кода)
     cd /opt/openclaw/openclaw
     sudo -u openclaw ./scripts/sandbox-setup.sh
-    # For npm installs without a source checkout, see
+    # Сведения об установке через npm без рабочей копии исходного кода:
     # https://docs.openclaw.ai/gateway/sandboxing#images-and-setup
     ```
 
   </Accordion>
-  <Accordion title="Вход в провайдер не удается">
-    Убедитесь, что вы запускаете команды от пользователя `openclaw`:
+  <Accordion title="Не удается войти в канал">
+    Убедитесь, что команда выполняется от имени пользователя `openclaw`:
     ```bash
     sudo -i -u openclaw
-    openclaw channels login
+    openclaw channels login --channel <name>
     ```
   </Accordion>
 </AccordionGroup>
 
 ## Расширенная конфигурация
 
-Подробную архитектуру безопасности и устранение неполадок см. в репозитории openclaw-ansible:
+Подробные сведения об архитектуре безопасности и устранении неполадок см. в репозитории openclaw-ansible:
 
 - [Архитектура безопасности](https://github.com/openclaw/openclaw-ansible/blob/main/docs/security.md)
 - [Технические подробности](https://github.com/openclaw/openclaw-ansible/blob/main/docs/architecture.md)
@@ -235,7 +228,7 @@ cd openclaw-ansible
 
 ## Связанные материалы
 
-- [openclaw-ansible](https://github.com/openclaw/openclaw-ansible) -- полное руководство по развертыванию
-- [Docker](/ru/install/docker) -- настройка контейнеризированного Gateway
-- [Изоляция в песочнице](/ru/gateway/sandboxing) -- конфигурация песочницы агента
-- [Многоагентная песочница и инструменты](/ru/tools/multi-agent-sandbox-tools) -- изоляция для каждого агента
+- [openclaw-ansible](https://github.com/openclaw/openclaw-ansible): полное руководство по развертыванию
+- [Docker](/ru/install/docker): настройка контейнерного Gateway
+- [Песочница](/ru/gateway/sandboxing): настройка песочницы агента
+- [Мультиагентная песочница и инструменты](/ru/tools/multi-agent-sandbox-tools): изоляция отдельных агентов

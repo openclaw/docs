@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Está instalando, configurando o auditando el plugin canvas
-summary: Superficies experimentales de control de Canvas y renderizado de A2UI para nodos emparejados.
+    - Estás instalando, configurando o auditando el plugin de lienzo
+summary: Superficies experimentales de control de Canvas y renderizado A2UI para nodos emparejados.
 title: Plugin de lienzo
 x-i18n:
-    generated_at: "2026-06-27T12:19:01Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T23:19:30Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 623f241907be5c88e7b20139f8a03e9c54e29df4bc7d3411fa90a029bfcb285f
@@ -20,8 +20,8 @@ Superficies experimentales de control de Canvas y renderizado A2UI para nodos em
 ## Distribución
 
 - Paquete: `@openclaw/canvas-plugin`
-- Ruta de instalación: incluida en OpenClaw
+- Método de instalación: incluido en OpenClaw
 
 ## Superficie
 
-contratos: herramientas; skills
+contratos: herramientas; Skills

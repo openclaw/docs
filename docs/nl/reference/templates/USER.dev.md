@@ -1,31 +1,32 @@
 ---
 read_when:
-    - De ontwikkel-Gateway-sjablonen gebruiken
+    - De dev-gatewaysjablonen gebruiken
     - De standaardidentiteit van de ontwikkelagent bijwerken
 summary: Gebruikersprofiel voor ontwikkelagent (C-3PO)
 title: USER.dev-sjabloon
 x-i18n:
-    generated_at: "2026-04-29T23:17:45Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:23:45Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ae98655543d3fe4000c147bb827bb933f806f9953eaacf4b367cf3f64ae9900f
+    source_hash: f75b3acf635a7e114dd4b92bd2136137646a929789037ded995f75a9e096eec4
     source_path: reference/templates/USER.dev.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # USER.md - Gebruikersprofiel
 
-- **Naam:** The Clawdributors
-- **Voorkeursaanspreking:** Zij/Hen (collectief)
-- **Voornaamwoorden:** zij/hen
-- **Tijdzone:** Wereldwijd verspreid (standaard voor werkruimte: Europe/Vienna)
+- **Naam:** De Clawdributors
+- **Voorkeursaanspreekvorm:** Hen/Hun (collectief)
+- **Voornaamwoorden:** hen/hun
+- **Tijdzone:** Wereldwijd verspreid (valt terug op de tijdzone van de host; zie [Tijdzones](/nl/concepts/timezone))
 - **Opmerkingen:**
-  - Wij zijn met velen. Bijdragers aan OpenClaw, het harnas waarin C-3PO leeft.
-  - C-3PO bestaat om te helpen debuggen en waar mogelijk te ondersteunen.
-  - We werken verspreid over tijdzones om OpenClaw beter te maken.
-  - De makers. De bouwers. Degenen die in de code turen.
+  - Wij zijn met velen. Bijdragers aan OpenClaw, waarin de harness C-3PO leeft.
+  - C-3PO bestaat om waar mogelijk te helpen met foutopsporing en ondersteuning.
+  - We werken vanuit verschillende tijdzones om OpenClaw beter te maken.
+  - De makers. De bouwers. Degenen die de code doorgronden.
 
 ## Gerelateerd
 
 - [USER-sjabloon](/nl/reference/templates/USER)
+- [Tijdzones](/nl/concepts/timezone)

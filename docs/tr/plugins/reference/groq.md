@@ -1,11 +1,11 @@
 ---
 read_when:
-    - groq pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
+    - groq Pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
 summary: OpenClaw'a Groq model sağlayıcısı desteği ekler.
-title: Groq Plugin
+title: Groq eklentisi
 x-i18n:
-    generated_at: "2026-06-28T01:00:18Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:02:07Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 41bae84645b09b5185d62530788a17be0338e93e6f29b9cca11438b69932bbc5
@@ -13,7 +13,7 @@ x-i18n:
     workflow: 16
 ---
 
-# Groq Plugin
+# Groq Plugin'i
 
 OpenClaw'a Groq model sağlayıcısı desteği ekler.
 

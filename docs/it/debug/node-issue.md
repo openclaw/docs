@@ -1,98 +1,94 @@
 ---
 read_when:
-    - Debug degli script di sviluppo solo Node o degli errori della modalità watch
-    - Analisi degli arresti anomali del loader tsx/esbuild in OpenClaw
-summary: Note e soluzioni alternative per il crash di Node + tsx "__name is not a function"
+    - Analisi di un arresto anomalo del loader tsx/esbuild che segnala la mancanza dell'helper __name
+summary: Arresto anomalo storico di Node + tsx con "__name is not a function" e relativa causa
 title: Arresto anomalo di Node + tsx
 x-i18n:
-    generated_at: "2026-05-06T17:55:13Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:02:48Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 808f04959c70c96c983fb2517234d4c06712049d7afebb9b1b4b340df75d7d70
+    source_hash: 97d2f62d24860cee65753027ba84c14c8d4ffb910ee17bb0032cf0409c427589
     source_path: debug/node-issue.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Arresto anomalo di Node + tsx con "\_\_name is not a function"
 
-## Riepilogo
+## Stato
 
-L'esecuzione di OpenClaw tramite Node con `tsx` non riesce all'avvio con:
+Risolto. Questo arresto anomalo non si riproduce con la versione corrente di `tsx` fissata in
+`package.json` (`4.22.3`) né con le versioni correnti di Node. Questa pagina viene conservata nel caso in cui un
+futuro aggiornamento di `tsx`/esbuild reintroduca il problema.
 
-```
+## Sintomo originale
+
+L'esecuzione degli script di sviluppo di OpenClaw tramite `tsx` non riusciva all'avvio con:
+
+```text
 [openclaw] Failed to start CLI: TypeError: __name is not a function
-    at createSubsystemLogger (.../src/logging/subsystem.ts:203:25)
-    at .../src/agents/auth-profiles/constants.ts:25:20
+    at createSubsystemLogger (src/logging/subsystem.ts)
+    at <caller> (src/agents/auth-profiles/constants.ts)
 ```
 
-Il problema è iniziato dopo il passaggio degli script di sviluppo da Bun a `tsx` (commit `2871657e`, 2026-01-06). Lo stesso percorso di runtime funzionava con Bun.
+I numeri di riga sono omessi; entrambi i file sono cambiati dall'arresto anomalo originale
+e le righe specifiche non corrispondono più.
 
-## Ambiente
+Il problema è comparso dopo il passaggio degli script di sviluppo da Bun a `tsx` (`2871657e`,
+2026-01-06), effettuato per rendere Bun facoltativo. Il percorso equivalente basato su Bun non
+causava arresti anomali. Il problema è stato osservato inizialmente con Node v25.3.0 su macOS; si
+riteneva probabile che fossero interessate anche altre piattaforme che eseguivano Node 25.
 
-- Node: v25.x (osservato su v25.3.0)
-- tsx: 4.21.0
-- OS: macOS (riproduzione probabilmente possibile anche su altre piattaforme che eseguono Node 25)
+## Causa
 
-## Riproduzione (solo Node)
+`tsx` trasforma TS/ESM tramite esbuild con `keepNames: true` impostato direttamente
+nelle relative opzioni di trasformazione. Questa impostazione fa sì che esbuild racchiuda le dichiarazioni
+di funzioni/classi con nome in una chiamata a un helper `__name`, in modo che `fn.name` venga preservato
+durante la minificazione e il bundling. L'arresto anomalo indica che l'helper era assente o sottoposto a
+shadowing nel punto di chiamata di quel modulo nella combinazione di `tsx`/Node interessata, pertanto
+`__name(...)` generava un'eccezione invece di restituire il valore racchiuso.
+
+## Verifica di riproduzione attuale
 
 ```bash
-# in repo root
 node --version
 pnpm install
 node --import tsx src/entry.ts status
 ```
 
-## Riproduzione minima nel repo
+Riproduzione minima isolata (carica solo il modulo della traccia dello stack originale):
 
 ```bash
 node --import tsx scripts/repro/tsx-name-repro.ts
 ```
 
-## Verifica della versione di Node
+Attualmente entrambi i comandi terminano senza errori. Se uno dei due genera nuovamente
+`__name is not a function`, acquisire la versione esatta di Node, la versione di `tsx`
+(`node_modules/tsx/package.json`) e la traccia dello stack completa prima di segnalare il problema upstream.
 
-- Node 25.3.0: fallisce
-- Node 22.22.0 (Homebrew `node@22`): fallisce
-- Node 24: non ancora installato qui; richiede verifica
+## Soluzioni alternative (se l'arresto anomalo si ripresenta)
 
-## Note / ipotesi
-
-- `tsx` usa esbuild per trasformare TS/ESM. Il `keepNames` di esbuild emette un helper `__name` e avvolge le definizioni di funzione con `__name(...)`.
-- L'arresto anomalo indica che `__name` esiste ma non è una funzione a runtime, il che implica che l'helper sia mancante o sovrascritto per questo modulo nel percorso del loader di Node 25.
-- Problemi simili dell'helper `__name` sono stati segnalati in altri consumer di esbuild quando l'helper è mancante o riscritto.
-
-## Cronologia della regressione
-
-- `2871657e` (2026-01-06): gli script sono passati da Bun a tsx per rendere Bun opzionale.
-- Prima di allora (percorso Bun), `openclaw status` e `gateway:watch` funzionavano.
-
-## Soluzioni alternative
-
-- Usare Bun per gli script di sviluppo (ripristino temporaneo attuale).
-- Usare `tsgo` per il controllo dei tipi del repo, poi eseguire l'output compilato:
+- Eseguire gli script di sviluppo con Bun anziché con `node --import tsx`.
+- Eseguire `pnpm tsgo` per il controllo dei tipi, quindi eseguire l'output compilato anziché il
+  codice sorgente tramite `tsx`:
 
   ```bash
   pnpm tsgo
   node openclaw.mjs status
   ```
 
-- Nota storica: `tsc` è stato usato qui durante il debug di questo problema Node/tsx, ma le lane di controllo dei tipi del repo ora usano `tsgo`.
-- Disabilitare esbuild keepNames nel loader TS, se possibile (impedisce l'inserimento dell'helper `__name`); attualmente tsx non lo espone.
-- Testare Node LTS (22/24) con `tsx` per vedere se il problema è specifico di Node 25.
+- Provare una versione diversa di `tsx` (`pnpm add -D tsx@<version>` costituisce una modifica
+  delle dipendenze e richiede l'approvazione secondo le regole del repository) per individuare se la versione
+  di esbuild inclusa abbia reintrodotto il bug.
+- Eseguire il test con una versione principale/secondaria diversa di Node per verificare se l'errore
+  dipenda dalla versione.
 
 ## Riferimenti
 
-- [https://opennext.js.org/cloudflare/howtos/keep_names](https://opennext.js.org/cloudflare/howtos/keep_names)
 - [https://esbuild.github.io/api/#keep-names](https://esbuild.github.io/api/#keep-names)
 - [https://github.com/evanw/esbuild/issues/1031](https://github.com/evanw/esbuild/issues/1031)
 
-## Passaggi successivi
-
-- Riprodurre su Node 22/24 per confermare la regressione di Node 25.
-- Testare `tsx` nightly o fissarlo a una versione precedente se esiste una regressione nota.
-- Se si riproduce su Node LTS, aprire una riproduzione minima upstream con lo stack trace di `__name`.
-
-## Correlati
+## Contenuti correlati
 
 - [Installazione di Node.js](/it/install/node)
 - [Risoluzione dei problemi del Gateway](/it/gateway/troubleshooting)

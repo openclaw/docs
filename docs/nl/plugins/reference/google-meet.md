@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Je installeert, configureert of controleert de google-meet-plugin
-summary: OpenClaw Google Meet-deelnemersplugin voor deelname aan gesprekken via Chrome- of Twilio-transports.
-title: Google Meet-plugin
+    - U installeert, configureert of controleert de google-meet-Plugin
+summary: OpenClaw Google Meet-deelnemersplugin om via Chrome- of Twilio-transports aan gesprekken deel te nemen.
+title: Google Meet-Plugin
 x-i18n:
-    generated_at: "2026-06-27T18:01:19Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:07:15Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 2f0086a8b48f6e120ad391a99d60a14d7682910ca3ad176e41a51b341e9bdb49
@@ -15,7 +15,7 @@ x-i18n:
 
 # Google Meet-Plugin
 
-OpenClaw Google Meet-deelnemers-Plugin voor deelname aan gesprekken via Chrome- of Twilio-transports.
+OpenClaw Google Meet-deelnemersplugin om via Chrome- of Twilio-transports aan gesprekken deel te nemen.
 
 ## Distributie
 
@@ -24,7 +24,7 @@ OpenClaw Google Meet-deelnemers-Plugin voor deelname aan gesprekken via Chrome- 
 
 ## Oppervlak
 
-contracts: tools
+contracten: tools
 
 ## Gerelateerde documentatie
 

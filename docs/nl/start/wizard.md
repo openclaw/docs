@@ -3,54 +3,62 @@ read_when:
     - CLI-onboarding uitvoeren of configureren
     - Een nieuwe machine instellen
 sidebarTitle: 'Onboarding: CLI'
-summary: 'CLI-onboarding: begeleide configuratie voor Gateway, werkruimte, kanalen en Skills'
+summary: 'CLI-onboarding: verifieer inferentie en laat Crestodian vervolgens de resterende configuratie afhandelen'
 title: Onboarding (CLI)
 x-i18n:
-    generated_at: "2026-06-28T20:45:35Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:26:56Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8abf6ac4644e0a49668cbfa1277f6eb3ac5b4fd822cd7805bb647c94ae76895f
+    source_hash: 62dd8fc2780940f738fc99f04ef0c765f5582161c55d11100fae3b4bbbb0ea15
     source_path: start/wizard.md
     workflow: 16
 ---
-
-CLI-onboarding is het **aanbevolen** terminalinstallatiepad voor OpenClaw op
-macOS, Linux of Windows. Windows-desktopgebruikers kunnen ook beginnen met
-[Windows Hub](/nl/platforms/windows).
-Het configureert een lokale Gateway of een externe Gateway-verbinding, plus kanalen, Skills
-en standaardinstellingen voor de werkruimte in één begeleide flow.
 
 ```bash
 openclaw onboard
 ```
 
-Snelstart duurt meestal maar een paar minuten, maar volledige onboarding kan langer duren
-wanneer inloggen bij een aanbieder, kanaalkoppeling, daemoninstallatie, netwerkdownloads,
-Skills of optionele Plugins extra configuratie nodig hebben. De wizard toont deze tijdlijn
-vooraf, en optionele stappen kunnen worden overgeslagen en later opnieuw worden geopend met
-`openclaw configure`.
+CLI-onboarding is het aanbevolen terminaltraject voor configuratie op macOS, Linux en
+Windows (native of WSL2). Standaard detecteert het AI-toegang die al beschikbaar is op
+de machine, verifieert het die met een echte voltooiing en start het Crestodian om
+de werkruimte, Gateway en optionele functies te configureren. `openclaw setup` voert hetzelfde traject uit ([Configuratie](/nl/cli/setup) behandelt
+de variant `--baseline`, die alleen de configuratie instelt). Gebruikers van de Windows-desktop kunnen ook beginnen
+via [Windows Hub](/nl/platforms/windows).
 
-## Locale
+Begeleide onboarding stelt eerst inferentie in. Het detecteert beschikbare AI-toegang,
+vereist een echte voltooiing en start pas daarna [Crestodian](/nl/cli/crestodian)
+om de rest van OpenClaw te configureren. In het begeleide traject is er geen Crestodian vóór
+inferentie en geen mogelijkheid om AI over te slaan.
 
-De CLI-wizard lokaliseert vaste onboardingtekst. De locale wordt bepaald via
-`OPENCLAW_LOCALE`, daarna `LC_ALL`, daarna `LC_MESSAGES`, daarna `LANG`, met
-Engels als terugval. Ondersteunde wizardlocales zijn `en`, `zh-CN` en `zh-TW`.
+De klassieke wizard blijft beschikbaar voor aanmelding bij providers, configuratie van een externe Gateway,
+kanaalkoppeling, daemonbesturing, Skills en imports. Start deze expliciet
+met `openclaw onboard --classic`; het scherm met kandidaten voor begeleide inferentie
+draagt de uitvoering niet eraan over. Nadat inferentie is geslaagd, kan Crestodian `open channel
+wizard for <channel>` gebruiken om kanaalconfiguratie waarvoor geheimen nodig zijn over te dragen aan een gemaskeerde
+terminalwizard. Als je de modelprovider of de authenticatie ervan wilt wijzigen, sluit je
+Crestodian af en voer je `openclaw onboard` uit; Crestodian opent geen begeleide of
+klassieke providertrajecten.
+
+<Info>
+Snelste eerste chat: voltooi de begeleide configuratie, voer `openclaw dashboard` uit en chat in
+de browser via de Control UI. Documentatie: [Dashboard](/nl/web/dashboard).
+</Info>
+
+## Landinstelling
+
+De wizard lokaliseert vaste onboardingtekst. Volgorde voor bepaling: `OPENCLAW_LOCALE`,
+`LC_ALL`, `LC_MESSAGES`, `LANG` en vervolgens Engels. Ondersteunde landinstellingen: `en`,
+`zh-CN`, `zh-TW`.
 
 ```bash
 OPENCLAW_LOCALE=zh-CN openclaw onboard
 ```
 
-Namen en stabiele identifiers blijven letterlijk: `OpenClaw`, `Gateway`, `Tailscale`,
-opdrachten, configuratiesleutels, URL's, aanbieder-ID's, model-ID's en Plugin-/kanaallabels
-worden niet vertaald.
+Productnamen, opdrachten, configuratiesleutels, URL's, provider-ID's, model-ID's en
+Plugin-/kanaallabels blijven ongeacht de landinstelling in het Engels.
 
-<Info>
-Snelste eerste chat: open de Control UI (geen kanaalconfiguratie nodig). Voer
-`openclaw dashboard` uit en chat in de browser. Docs: [Dashboard](/nl/web/dashboard).
-</Info>
-
-Om later opnieuw te configureren:
+Om niet-inferentie-instellingen later opnieuw te configureren:
 
 ```bash
 openclaw configure
@@ -58,77 +66,137 @@ openclaw agents add <name>
 ```
 
 <Note>
-`--json` impliceert geen niet-interactieve modus. Gebruik voor scripts `--non-interactive`.
+`--json` impliceert geen niet-interactieve modus. Gebruik voor scripts `--non-interactive` (zie [CLI-automatisering](/nl/start/wizard-cli-automation)).
 </Note>
 
 <Tip>
-CLI-onboarding bevat een webzoekstap waarin je een aanbieder kunt kiezen,
-zoals Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search,
-Ollama Web Search, Perplexity, SearXNG of Tavily. Sommige aanbieders vereisen een
-API-sleutel, terwijl andere geen sleutel nodig hebben. Je kunt dit later ook configureren met
-`openclaw configure --section web`. Docs: [Webtools](/nl/tools/web).
+De klassieke wizard bevat een stap voor zoeken op het web waarin je een provider kunt kiezen: Brave,
+DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Ollama Web
+Search, Perplexity, SearXNG of Tavily. Sommige vereisen een API-sleutel; andere werken
+zonder sleutel. Configureer dit later met `openclaw configure --section web`. Documentatie:
+[Webhulpmiddelen](/nl/tools/web).
 </Tip>
 
-## Snelstart versus Geavanceerd
+## Begeleide standaardinstelling
 
-Onboarding begint met **Snelstart** (standaardinstellingen) versus **Geavanceerd** (volledige controle).
+Een gewone uitvoering van `openclaw onboard` volgt dit traject:
+
+1. Accepteer de beveiligingsmelding.
+2. Detecteer geconfigureerde modellen, omgevingsvariabelen voor API-sleutels en ondersteunde lokale
+   AI-CLI's.
+3. Test de eerste gedetecteerde kandidaat met een echte voltooiing. Toon bij een fout de
+   reden en ga door naar de volgende bruikbare kandidaat.
+4. Als alle detectiemogelijkheden zijn uitgeput, probeer dan opnieuw een gedetecteerde kandidaat of voer een
+   API-sleutel van een provider in via een gemaskeerde prompt. Begeleide onboarding
+   biedt Crestodian of een optie om AI over te slaan pas aan nadat inferentie werkt.
+5. Sla alleen de geverifieerde modelroute en eventueel vereiste referentie-/Pluginstatus
+   permanent op. Instellingen voor de werkruimte en Gateway blijven ongewijzigd.
+6. Start Crestodian met het geverifieerde model, zodat het de werkruimte,
+   Gateway, kanalen, agents, Plugins en de resterende optionele configuratie kan instellen.
+
+Als de opdracht opnieuw wordt uitgevoerd op een geconfigureerde installatie, wordt eerst het huidige standaardmodel
+getest, waardoor het begeleide traject als verificatie- en herstelronde dient. Een mislukte
+controle vervangt het geconfigureerde model nooit automatisch; onboarding stopt en
+vraagt hoe verder te gaan. Voer `openclaw channels add` of `openclaw configure` uit voor
+latere toevoegingen die niet met inferentie te maken hebben; gebruik `openclaw onboard` voor wijzigingen aan
+provider- of authenticatieroutes.
+
+## Klassieke wizard: Snelle start versus Geavanceerd
+
+Voer `openclaw onboard --classic` uit om de volledige wizard te openen. Deze begint met een
+keuze tussen **Snelle start** (standaardinstellingen) en **Geavanceerd** (volledige controle). Geef
+`--flow quickstart` of `--flow advanced` (alias `manual`) door om het klassieke
+traject te selecteren en die prompt over te slaan.
 
 <Tabs>
-  <Tab title="Snelstart (standaardinstellingen)">
-    - Lokale Gateway (loopback)
+  <Tab title="Snelle start (standaardinstellingen)">
+    - Lokale Gateway, binding aan local loopback
     - Standaardwerkruimte (of bestaande werkruimte)
     - Gateway-poort **18789**
-    - Gateway-authenticatie **Token** (automatisch gegenereerd, zelfs op loopback)
-    - Standaardtoolbeleid voor nieuwe lokale installaties: `tools.profile: "coding"` (bestaand expliciet profiel blijft behouden)
-    - Standaard DM-isolatie: lokale onboarding schrijft `session.dmScope: "per-channel-peer"` wanneer niet ingesteld. Details: [CLI-installatiereferentie](/nl/start/wizard-cli-reference#outputs-and-internals)
-    - Tailscale-blootstelling **Uit**
-    - Telegram- en WhatsApp-DM's gebruiken standaard een **toelatingslijst** (je wordt om je telefoonnummer gevraagd)
+    - Gateway-authenticatie **Token** (automatisch gegenereerd, ook bij local loopback)
+    - Hulpmiddelenbeleid: `tools.profile: "coding"` voor nieuwe configuraties (een bestaand expliciet profiel blijft behouden)
+    - DM-isolatie: `session.dmScope: "per-channel-peer"` voor nieuwe configuraties. Details: [Referentie voor CLI-configuratie](/nl/start/wizard-cli-reference#outputs-and-internals)
+    - Beschikbaarstelling via Tailscale **Uit**
+    - DM's van Telegram en WhatsApp gebruiken standaard een **toelatingslijst**: Telegram vraagt om een numerieke Telegram-gebruikers-ID, WhatsApp vraagt om een telefoonnummer
 
   </Tab>
   <Tab title="Geavanceerd (volledige controle)">
-    - Toont elke stap (modus, werkruimte, Gateway, kanalen, daemon, Skills).
+    - Toont elke stap: modus, werkruimte, Gateway, kanalen, daemon, Skills
 
   </Tab>
 </Tabs>
 
-## Wat onboarding configureert
+De externe modus (`--mode remote`) gebruikt altijd het geavanceerde traject; deze
+configureert deze machine alleen om verbinding te maken met een Gateway elders en installeert of
+wijzigt nooit iets op de externe host.
 
-**Lokale modus (standaard)** leidt je door deze stappen:
+## Wat klassieke onboarding configureert
 
-1. **Model/Auth** — kies een ondersteunde aanbieder-/authenticatieflow (API-sleutel, OAuth of aanbieder-specifieke handmatige authenticatie), inclusief Custom Provider
-   (OpenAI-compatibel, Anthropic-compatibel of Unknown automatische detectie). Kies een standaardmodel.
-   Beveiligingsopmerking: als deze agent tools gaat uitvoeren of Webhook-/hooks-inhoud gaat verwerken, gebruik dan bij voorkeur het sterkste beschikbare model van de nieuwste generatie en houd het toolbeleid strikt. Zwakkere/oudere niveaus zijn makkelijker te prompt-injecteren.
-   Voor niet-interactieve runs slaat `--secret-input-mode ref` omgevingsvariabele-ondersteunde refs op in auth-profielen in plaats van platte API-sleutelwaarden.
-   In niet-interactieve `ref`-modus moet de omgevingsvariabele van de aanbieder zijn ingesteld; inline sleutelvlaggen doorgeven zonder die omgevingsvariabele faalt snel.
-   In interactieve runs kun je met de geheime-referentiemodus verwijzen naar een omgevingsvariabele of een geconfigureerde aanbieder-ref (`file` of `exec`), met een snelle preflightvalidatie vóór het opslaan.
-   Voor Anthropic biedt interactieve onboarding/configuratie **Anthropic Claude CLI** als het voorkeurs lokale pad en **Anthropic API key** als het aanbevolen productiepad. Anthropic setup-token blijft ook beschikbaar als ondersteund token-authenticatiepad.
-2. **Werkruimte** — Locatie voor agentbestanden (standaard `~/.openclaw/workspace`). Plaatst bootstrapbestanden.
-3. **Gateway** — Poort, bindadres, authenticatiemodus, Tailscale-blootstelling.
-   Kies in interactieve tokenmodus standaard opslag van platteteksttokens of kies voor SecretRef.
-   Niet-interactief token-SecretRef-pad: `--gateway-token-ref-env <ENV_VAR>`.
-4. **Kanalen** — ingebouwde en officiële Plugin-chatkanalen zoals iMessage, Discord, Feishu, Google Chat, Mattermost, Microsoft Teams, QQ Bot, Signal, Slack, Telegram, WhatsApp en meer.
-5. **Daemon** — Installeert een LaunchAgent (macOS), systemd-gebruikerseenheid (Linux/WSL2) of native Windows Scheduled Task met terugval via de Startup-map per gebruiker.
-   Als tokenauthenticatie een token vereist en `gateway.auth.token` door SecretRef wordt beheerd, valideert daemoninstallatie dit maar bewaart het opgeloste token niet in metagegevens van de supervisor-serviceomgeving.
-   Als tokenauthenticatie een token vereist en de geconfigureerde token-SecretRef niet kan worden opgelost, wordt daemoninstallatie geblokkeerd met bruikbare aanwijzingen.
-   Als zowel `gateway.auth.token` als `gateway.auth.password` zijn geconfigureerd en `gateway.auth.mode` niet is ingesteld, wordt daemoninstallatie geblokkeerd totdat de modus expliciet is ingesteld.
-6. **Gezondheidscontrole** — Start de Gateway en verifieert dat deze draait.
-7. **Skills** — Installeert aanbevolen Skills en optionele afhankelijkheden.
+De lokale modus (standaard) doorloopt deze stappen:
+
+1. **Model/authenticatie** - kies een authenticatietraject van een provider (API-sleutel, OAuth of
+   providerspecifieke handmatige authenticatie), waaronder een aangepaste provider
+   (compatibel met OpenAI, compatibel met OpenAI Responses, compatibel met Anthropic of
+   automatische detectie van onbekend type). Kies een standaardmodel.
+   Een nieuwe configuratie met een OpenAI-API-sleutel gebruikt standaard `openai/gpt-5.6` (de kale ID voor de directe API
+   wordt omgezet naar Sol); een nieuwe ChatGPT-/Codex-configuratie gebruikt standaard
+   `openai/gpt-5.6-sol`. Als de configuratie opnieuw wordt uitgevoerd, blijft een bestaand expliciet model behouden,
+   waaronder `openai/gpt-5.5`. Selecteer `openai/gpt-5.5` expliciet als het
+   account geen toegang biedt tot GPT-5.6.
+   Beveiligingsopmerking: als deze agent hulpmiddelen uitvoert of inhoud van webhooks/hooks
+   verwerkt, gebruik dan bij voorkeur het krachtigste beschikbare model van de nieuwste generatie en houd
+   het hulpmiddelenbeleid strikt: zwakkere of oudere niveaus zijn vatbaarder voor promptinjectie.
+   Voor niet-interactieve uitvoeringen slaat `--secret-input-mode ref` door omgevingsvariabelen ondersteunde verwijzingen
+   op in plaats van API-sleutelwaarden in platte tekst; de omgevingsvariabele waarnaar wordt verwezen moet al
+   zijn ingesteld, anders mislukt onboarding onmiddellijk. De interactieve modus voor verwijzingen naar geheimen kan
+   verwijzen naar een omgevingsvariabele of een geconfigureerde providerverwijzing (`file` of
+   `exec`), met een snelle voorafgaande controle vóór het opslaan. Na de configuratie van model/authenticatie
+   biedt de wizard een optionele live voltooiingstest aan; na een fout kan één keer worden teruggekeerd naar
+   de configuratie van model/authenticatie, of de fout kan worden genegeerd zonder de rest van de
+   klassieke wizard te blokkeren. Negeren ontgrendelt Crestodian niet; conversationele configuratie
+   vereist nog steeds een geslaagde inferentiecontrole.
+2. **Werkruimte** - map voor agentbestanden (standaard `~/.openclaw/workspace`). Maakt initiële opstartbestanden aan.
+3. **Gateway** - poort, bindingsadres, authenticatiemodus, beschikbaarstelling via Tailscale. Kies in
+   de interactieve tokenmodus voor opslag van het token in platte tekst (standaard) of kies
+   voor een SecretRef. Niet-interactief SecretRef-pad: `--gateway-token-ref-env <ENV_VAR>`.
+4. **Kanalen** - ingebouwde chatkanalen en chatkanalen van officiële Plugins, waaronder
+   Discord, Feishu, Google Chat, iMessage, Mattermost, Microsoft Teams,
+   QQ Bot, Signal, Slack, Telegram, WhatsApp en meer.
+5. **Daemon** - installeert een LaunchAgent (macOS), een systemd-gebruikerseenheid
+   (Linux/WSL2) of een native geplande Windows-taak met een terugvaloptie per gebruiker
+   via de map Opstarten.
+   Als tokenauthenticatie vereist is en `gateway.auth.token` door SecretRef wordt beheerd,
+   valideert de daemoninstallatie deze, maar slaat geen herleid token op in
+   omgevingsmetadata van de supervisorservice; een niet-opgeloste SecretRef blokkeert
+   de installatie en toont instructies. Als zowel `gateway.auth.token` als
+   `gateway.auth.password` zijn ingesteld terwijl `gateway.auth.mode` niet is ingesteld, wordt de installatie
+   geblokkeerd totdat je de modus expliciet instelt.
+6. **Statuscontrole** - start de Gateway en controleert of deze bereikbaar is.
+7. **Skills** - installeert aanbevolen Skills en hun optionele afhankelijkheden.
 
 <Note>
-Onboarding opnieuw uitvoeren wist **niets**, tenzij je expliciet **Resetten** kiest (of `--reset` doorgeeft).
-CLI `--reset` geldt standaard voor configuratie, referenties en sessies; gebruik `--reset-scope full` om de werkruimte mee te nemen.
-Als de configuratie ongeldig is of verouderde sleutels bevat, vraagt onboarding je eerst `openclaw doctor` uit te voeren.
+Als onboarding opnieuw wordt uitgevoerd, wordt **niets** gewist tenzij je expliciet
+**Opnieuw instellen** kiest (of `--reset` doorgeeft). CLI-`--reset` geldt standaard voor configuratie, referenties
+en sessies; gebruik `--reset-scope full` om ook de werkruimte te verwijderen. Als de
+configuratie ongeldig is of verouderde sleutels bevat, vraagt onboarding je eerst
+`openclaw doctor` uit te voeren.
 </Note>
 
-**Externe modus** configureert alleen de lokale client om verbinding te maken met een Gateway elders.
-Deze installeert of wijzigt **niets** op de externe host.
+`--flow import` voert in de klassieke wizard een gedetecteerd migratietraject uit (bijvoorbeeld Hermes) in plaats van
+een nieuwe configuratie; zie [Migreren](/nl/cli/migrate) en de migratiehandleidingen onder
+[Installeren](/nl/install/migrating-hermes). `openclaw onboard --modern` is een
+compatibiliteitsalias voor [Crestodian](/nl/cli/crestodian). Deze gebruikt dezelfde
+inferentiepoort als `openclaw crestodian`: geverifieerde inferentie start de
+assistent, terwijl een interactieve fout terugkeert naar de begeleide inferentieconfiguratie.
 
 ## Nog een agent toevoegen
 
-Gebruik `openclaw agents add <name>` om een afzonderlijke agent te maken met een eigen werkruimte,
-sessies en auth-profielen. Uitvoeren zonder `--workspace` start onboarding.
+Gebruik `openclaw agents add <name>` om een afzonderlijke agent te maken met een eigen
+werkruimte, sessies en authenticatieprofielen. Uitvoering zonder `--workspace` start
+een interactief traject voor naam, werkruimte, authenticatie, kanalen en bindingen; dit is
+niet de volledige wizard van `openclaw onboard`.
 
-Wat dit instelt:
+Wat hiermee wordt ingesteld:
 
 - `agents.list[].name`
 - `agents.list[].workspace`
@@ -136,21 +204,21 @@ Wat dit instelt:
 
 Opmerkingen:
 
-- Standaardwerkruimten volgen `~/.openclaw/workspace-<agentId>`.
-- Voeg `bindings` toe om inkomende berichten te routeren (onboarding kan dit doen).
+- Standaardwerkruimte: `~/.openclaw/workspace-<agentId>` (of onder
+  `agents.defaults.workspace` als dat is ingesteld).
+- Voeg `bindings` toe om inkomende berichten naar deze agent te routeren (onboarding kan dit voor je doen).
 - Niet-interactieve vlaggen: `--model`, `--agent-dir`, `--bind`, `--non-interactive`.
 
 ## Volledige referentie
 
-Zie voor gedetailleerde stapsgewijze uitsplitsingen en configuratie-uitvoer
-[CLI-installatiereferentie](/nl/start/wizard-cli-reference).
+Zie voor gedetailleerd stapsgewijs gedrag en configuratie-uitvoer
+[Referentie voor CLI-configuratie](/nl/start/wizard-cli-reference).
 Zie voor niet-interactieve voorbeelden [CLI-automatisering](/nl/start/wizard-cli-automation).
-Zie voor de diepere technische referentie, inclusief RPC-details,
-[Onboardingreferentie](/nl/reference/wizard).
+Zie voor de volledige vlaggenreferentie [`openclaw onboard`](/nl/cli/onboard).
 
-## Gerelateerde docs
+## Gerelateerde documentatie
 
-- CLI-opdrachtenreferentie: [`openclaw onboard`](/nl/cli/onboard)
-- Onboardingoverzicht: [Onboardingoverzicht](/nl/start/onboarding-overview)
-- macOS-app-onboarding: [Onboarding](/nl/start/onboarding)
-- Eerste-runritueel voor agent: [Agentbootstrapping](/nl/start/bootstrapping)
+- Referentie voor CLI-opdrachten: [`openclaw onboard`](/nl/cli/onboard)
+- Overzicht van onboarding: [Overzicht van onboarding](/nl/start/onboarding-overview)
+- Onboarding voor de macOS-app: [Onboarding](/nl/start/onboarding)
+- Eerste-opstartritueel van de agent: [Agentinitialisatie](/nl/start/bootstrapping)

@@ -1,52 +1,44 @@
 ---
 read_when:
-    - Bạn muốn chạy một lượt tác nhân từ các tập lệnh (tùy chọn gửi phản hồi)
-summary: Tham chiếu CLI cho `openclaw agent` (gửi một lượt agent qua Gateway)
+    - Bạn muốn chạy một lượt tác tử từ các tập lệnh (có thể gửi phản hồi)
+summary: Tài liệu tham khảo CLI cho `openclaw agent` (gửi một lượt tác tử qua Gateway)
 title: Tác nhân
 x-i18n:
-    generated_at: "2026-06-27T17:16:29Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:48:37Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: be2aad94ba288d14b4b18086dae54eb10c1cd0a6c7b27a836d07f39200e651d8
+    source_hash: 2e137c037a2fa58ac6534adbf1603218fc695e4c61e6c3118ce2c4ec6f1f2143
     source_path: cli/agent.md
     workflow: 16
 ---
 
 # `openclaw agent`
 
-Chạy một lượt tác tử qua Gateway (dùng `--local` để chạy nhúng).
-Dùng `--agent <id>` để nhắm trực tiếp đến một tác tử đã cấu hình.
+Chạy một lượt agent thông qua Gateway. Nếu yêu cầu Gateway thất bại, lệnh sẽ chuyển sang agent nhúng; truyền `--local` để buộc thực thi bằng agent nhúng ngay từ đầu.
 
-Truyền ít nhất một bộ chọn phiên:
+Truyền ít nhất một bộ chọn phiên: `--to`, `--session-key`, `--session-id` hoặc `--agent`.
 
-- `--to <dest>`
-- `--session-key <key>`
-- `--session-id <id>`
-- `--agent <id>`
-
-Liên quan:
-
-- Công cụ gửi tác tử: [Gửi tác tử](/vi/tools/agent-send)
+Liên quan: [Công cụ gửi của agent](/vi/tools/agent-send)
 
 ## Tùy chọn
 
-- `-m, --message <text>`: nội dung thông điệp
-- `--message-file <path>`: đọc nội dung thông điệp từ một tệp UTF-8
+- `-m, --message <text>`: nội dung tin nhắn
+- `--message-file <path>`: đọc nội dung tin nhắn từ tệp UTF-8
 - `-t, --to <dest>`: người nhận dùng để suy ra khóa phiên
 - `--session-key <key>`: khóa phiên tường minh dùng để định tuyến
-- `--session-id <id>`: mã phiên tường minh
-- `--agent <id>`: mã tác tử; ghi đè các ràng buộc định tuyến
-- `--model <id>`: ghi đè mô hình cho lần chạy này (`provider/model` hoặc mã mô hình)
-- `--thinking <level>`: mức suy nghĩ của tác tử (`off`, `minimal`, `low`, `medium`, `high`, cộng với các mức tùy chỉnh do nhà cung cấp hỗ trợ như `xhigh`, `adaptive`, hoặc `max`)
-- `--verbose <on|off>`: lưu mức chi tiết cho phiên
-- `--channel <channel>`: kênh gửi; bỏ qua để dùng kênh phiên chính
+- `--session-id <id>`: mã định danh phiên tường minh
+- `--agent <id>`: mã định danh agent; ghi đè các liên kết định tuyến
+- `--model <id>`: ghi đè mô hình cho lần chạy này (`provider/model` hoặc mã định danh mô hình)
+- `--thinking <level>`: mức suy luận của agent (`off`, `minimal`, `low`, `medium`, `high`, cùng các mức tùy chỉnh được nhà cung cấp hỗ trợ như `xhigh`, `adaptive` hoặc `max`)
+- `--verbose <on|off>`: lưu giữ mức chi tiết cho phiên
+- `--channel <channel>`: kênh gửi; bỏ qua để dùng kênh của phiên chính
 - `--reply-to <target>`: ghi đè đích gửi
 - `--reply-channel <channel>`: ghi đè kênh gửi
 - `--reply-account <id>`: ghi đè tài khoản gửi
-- `--local`: chạy trực tiếp tác tử nhúng (sau khi tải trước sổ đăng ký Plugin)
+- `--local`: chạy trực tiếp agent nhúng (sau khi tải trước sổ đăng ký plugin)
 - `--deliver`: gửi phản hồi trở lại kênh/đích đã chọn
-- `--timeout <seconds>`: ghi đè thời gian chờ của tác tử (mặc định 600 hoặc giá trị cấu hình)
+- `--timeout <seconds>`: ghi đè thời gian chờ của agent (mặc định là 600 hoặc `agents.defaults.timeoutSeconds`); `0` vô hiệu hóa thời gian chờ
 - `--json`: xuất JSON
 
 ## Ví dụ
@@ -66,23 +58,20 @@ openclaw agent --agent ops --message "Run locally" --local
 
 ## Ghi chú
 
-- Truyền đúng một trong hai tùy chọn `--message` hoặc `--message-file`. `--message-file` giữ nguyên nội dung tệp nhiều dòng sau khi loại bỏ BOM UTF-8 tùy chọn, và từ chối các tệp không phải UTF-8 hợp lệ.
-- Chế độ Gateway quay về tác tử nhúng khi yêu cầu Gateway thất bại. Dùng `--local` để buộc thực thi nhúng ngay từ đầu.
-- `--local` vẫn tải trước sổ đăng ký Plugin trước, nên các nhà cung cấp, công cụ và kênh do Plugin cung cấp vẫn khả dụng trong các lần chạy nhúng.
-- `--local` và các lần chạy dự phòng nhúng được xem là các lần chạy một lượt. Các tài nguyên loopback MCP đi kèm và phiên Claude stdio ấm được mở cho tiến trình cục bộ đó sẽ được thu hồi sau phản hồi, để các lệnh gọi theo script không giữ các tiến trình con cục bộ còn sống.
-- Các lần chạy dựa trên Gateway để lại tài nguyên loopback MCP do Gateway sở hữu dưới tiến trình Gateway đang chạy; các máy khách cũ hơn vẫn có thể gửi cờ dọn dẹp lịch sử, nhưng Gateway chấp nhận cờ đó như một thao tác tương thích không làm gì.
-- `--channel`, `--reply-channel`, và `--reply-account` ảnh hưởng đến việc gửi phản hồi, không ảnh hưởng đến định tuyến phiên.
-- `--session-key` chọn một khóa phiên tường minh. Các khóa có tiền tố tác tử phải dùng `agent:<agent-id>:<session-key>`, và `--agent` phải khớp với mã tác tử của khóa khi cả hai đều được cung cấp. Các khóa trần không phải sentinel được đặt phạm vi theo `--agent` khi được cung cấp, hoặc theo tác tử mặc định đã cấu hình nếu không; ví dụ, `--agent ops --session-key incident-42` định tuyến đến `agent:ops:incident-42`. Các giá trị nguyên văn `global` và `unknown` chỉ giữ nguyên không đặt phạm vi khi không cung cấp `--agent`; trong trường hợp đó, dự phòng nhúng và quyền sở hữu kho lưu trữ dùng tác tử mặc định đã cấu hình.
-- `--json` giữ stdout dành riêng cho phản hồi JSON. Chẩn đoán của Gateway, Plugin và dự phòng nhúng được định tuyến đến stderr để script có thể phân tích stdout trực tiếp.
-- JSON dự phòng nhúng bao gồm `meta.transport: "embedded"` và `meta.fallbackFrom: "gateway"` để script có thể phân biệt các lần chạy dự phòng với các lần chạy Gateway.
-- Nếu Gateway chấp nhận một lần chạy tác tử nhưng CLI hết thời gian chờ phản hồi cuối cùng, dự phòng nhúng dùng một mã phiên/lần chạy tường minh mới `gateway-fallback-*` và báo cáo `meta.fallbackReason: "gateway_timeout"` cùng các trường phiên dự phòng. Điều này tránh chạy đua với khóa bản ghi hội thoại do Gateway sở hữu hoặc âm thầm thay thế phiên hội thoại được định tuyến ban đầu.
-- Với các lần chạy dựa trên Gateway, `SIGTERM` và `SIGINT` ngắt yêu cầu CLI đang chờ. Nếu Gateway đã chấp nhận lần chạy, CLI cũng gửi `chat.abort` cho mã lần chạy đã chấp nhận đó trước khi thoát. Các lần chạy `--local` cục bộ và các lần chạy dự phòng nhúng nhận cùng tín hiệu hủy, nhưng không gửi `chat.abort`. Nếu một `--run-id` trùng lặp đến Gateway trong khi lần chạy tác tử ban đầu vẫn đang hoạt động, phản hồi trùng lặp báo cáo `status: "in_flight"` và CLI không dùng JSON in chẩn đoán ra stderr thay vì phản hồi rỗng. Với các trình bao bọc cron/systemd bên ngoài, hãy giữ một chốt chặn buộc dừng bên ngoài như `timeout -k 60 600 openclaw agent ...` để trình giám sát vẫn có thể thu hồi tiến trình nếu quá trình tắt không thể xả hết.
-- Khi lệnh này kích hoạt tái tạo `models.json`, thông tin xác thực nhà cung cấp do SecretRef quản lý được lưu dưới dạng dấu mốc không bí mật (ví dụ tên biến môi trường, `secretref-env:ENV_VAR_NAME`, hoặc `secretref-managed`), không phải bản rõ bí mật đã phân giải.
-- Việc ghi dấu mốc lấy nguồn làm thẩm quyền: OpenClaw lưu các dấu mốc từ ảnh chụp cấu hình nguồn đang hoạt động, không phải từ các giá trị bí mật thời gian chạy đã phân giải.
+- Chỉ truyền một trong hai tùy chọn `--message` hoặc `--message-file`. `--message-file` loại bỏ BOM UTF-8 ở đầu và giữ nguyên nội dung nhiều dòng; tùy chọn này từ chối các tệp không phải UTF-8 hợp lệ.
+- Các lệnh gạch chéo (ví dụ `/compact`) không thể chạy thông qua `--message`. CLI từ chối chúng và hướng bạn đến lệnh chuyên dụng tương ứng (`openclaw sessions compact <key>` để thực hiện Compaction).
+- Các lần chạy bằng `--local` và phương án dự phòng nhúng chỉ thực thi một lần: tài nguyên local loopback MCP đi kèm và các phiên stdio Claude được khởi động sẵn cho lần chạy sẽ bị đóng sau phản hồi, nhờ đó các lệnh gọi bằng tập lệnh không để lại tiến trình con cục bộ đang chạy. Thay vào đó, các lần chạy thông qua Gateway giữ tài nguyên local loopback MCP do Gateway sở hữu trong tiến trình Gateway đang chạy.
+- Khi dùng đồng thời `--agent`, `--channel` và `--to`, việc định tuyến phiên tuân theo người nhận chuẩn của kênh và `session.dmScope`. Các kênh có danh tính người nhận ổn định chỉ dành cho chiều gửi đi sẽ dùng một phiên do nhà cung cấp sở hữu, tách biệt với phiên chính của agent. `--reply-channel` và `--reply-account` chỉ ảnh hưởng đến việc gửi.
+- `--session-key` chọn một khóa phiên tường minh. Các khóa có tiền tố agent phải dùng định dạng `agent:<agent-id>:<session-key>`, và khi cả hai được cung cấp, `--agent` phải khớp với mã định danh agent trong khóa. Các khóa thuần không phải khóa sentinel sẽ thuộc phạm vi của `--agent` nếu được cung cấp, hoặc của agent mặc định đã cấu hình trong trường hợp ngược lại; ví dụ, `--agent ops --session-key incident-42` định tuyến đến `agent:ops:incident-42`. Các khóa nguyên văn `global` và `unknown` chỉ giữ nguyên không thuộc phạm vi khi không cung cấp `--agent`.
+- `--json` dành riêng stdout cho phản hồi JSON; thông tin chẩn đoán của Gateway, plugin và phương án dự phòng nhúng được ghi vào stderr để tập lệnh có thể phân tích trực tiếp stdout.
+- JSON của phương án dự phòng nhúng bao gồm `meta.transport: "embedded"` và `meta.fallbackFrom: "gateway"` để tập lệnh có thể phát hiện một lần chạy dự phòng.
+- Nếu Gateway chấp nhận một lần chạy nhưng CLI hết thời gian chờ phản hồi cuối cùng, phương án dự phòng nhúng sẽ dùng mã định danh phiên/lần chạy mới có dạng `gateway-fallback-*` và báo cáo `meta.fallbackReason: "gateway_timeout"` cùng các trường phiên dự phòng, thay vì chạy tranh chấp với bản ghi hội thoại do Gateway sở hữu hoặc âm thầm thay thế phiên ban đầu.
+- `SIGTERM`/`SIGINT` ngắt một yêu cầu thông qua Gateway đang chờ; nếu Gateway đã chấp nhận lần chạy, CLI cũng gửi `chat.abort` cho mã định danh lần chạy đó trước khi thoát. Các lần chạy bằng `--local` và phương án dự phòng nhúng nhận cùng tín hiệu nhưng không gửi `chat.abort`. Nếu khóa khử trùng lặp lần chạy nội bộ đã có một lần chạy đang hoạt động cho phiên này, phản hồi sẽ báo cáo `status: "in_flight"` và CLI không dùng JSON sẽ in thông tin chẩn đoán ra stderr thay vì phản hồi trống. Đối với các trình bao bọc cron/systemd bên ngoài, hãy giữ một cơ chế buộc dừng dự phòng như `timeout -k 60 600 openclaw agent ...` để trình giám sát có thể thu hồi tiến trình nếu quá trình tắt không thể hoàn tất.
+- Khi lệnh này kích hoạt việc tạo lại `models.json`, thông tin xác thực của nhà cung cấp do SecretRef quản lý được lưu dưới dạng dấu hiệu không chứa bí mật (ví dụ tên biến môi trường, `secretref-env:ENV_VAR_NAME` hoặc `secretref-managed`), tuyệt đối không phải văn bản thuần của bí mật đã được phân giải. Các dấu hiệu được ghi từ ảnh chụp nhanh cấu hình nguồn đang hoạt động, không phải từ các giá trị bí mật thời gian chạy đã được phân giải.
 
 ## Trạng thái gửi JSON
 
-Khi dùng `--json --deliver`, phản hồi JSON của CLI có thể bao gồm `deliveryStatus` cấp cao nhất để script có thể phân biệt các lần gửi đã gửi, bị chặn, một phần và thất bại:
+Khi dùng `--json --deliver`, phản hồi JSON của CLI bao gồm `deliveryStatus` ở cấp cao nhất để tập lệnh có thể phân biệt các lượt gửi đã hoàn tất, bị chặn, thất bại một phần và thất bại:
 
 ```json
 {
@@ -98,23 +87,30 @@ Khi dùng `--json --deliver`, phản hồi JSON của CLI có thể bao gồm `d
 }
 ```
 
-`deliveryStatus.status` là một trong `sent`, `suppressed`, `partial_failed`, hoặc `failed`. `suppressed` nghĩa là việc gửi đã cố ý không được thực hiện, ví dụ một hook gửi thông điệp đã hủy nó hoặc không có kết quả hiển thị; đây vẫn là kết quả kết thúc không thử lại. `partial_failed` nghĩa là ít nhất một payload đã được gửi trước khi payload sau đó thất bại. `failed` nghĩa là không có lần gửi bền vững nào hoàn tất hoặc bước kiểm tra trước khi gửi thất bại.
+Các phản hồi CLI thông qua Gateway cũng giữ nguyên cấu trúc kết quả thô của Gateway tại `result.deliveryStatus`.
 
-Phản hồi CLI dựa trên Gateway cũng giữ nguyên hình dạng kết quả Gateway thô, trong đó cùng đối tượng có sẵn tại `result.deliveryStatus`.
+`deliveryStatus.status` là một trong các giá trị sau:
 
-Các trường phổ biến:
+| Trạng thái       | Ý nghĩa                                                                                                                                     |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sent`           | Việc gửi đã hoàn tất.                                                                                                                        |
+| `suppressed`     | Việc gửi đã bị chủ ý bỏ qua (ví dụ một hook gửi tin nhắn đã hủy hoặc không có kết quả hiển thị). Đây là trạng thái cuối, không thử lại.       |
+| `partial_failed` | Ít nhất một tải trọng đã được gửi trước khi một tải trọng sau đó thất bại.                                                                    |
+| `failed`         | Không có lượt gửi bền vững nào hoàn tất hoặc bước kiểm tra trước khi gửi thất bại.                                                           |
+
+Các trường thường gặp:
 
 - `requested`: luôn là `true` khi đối tượng hiện diện.
-- `attempted`: `true` sau khi đường dẫn gửi bền vững đã chạy; `false` cho các lỗi kiểm tra trước hoặc khi không có payload hiển thị.
-- `succeeded`: `true`, `false`, hoặc `"partial"`; `"partial"` đi kèm với `status: "partial_failed"`.
-- `reason`: lý do dạng snake-case chữ thường từ gửi bền vững hoặc xác thực kiểm tra trước. Các lý do đã biết bao gồm `cancelled_by_message_sending_hook`, `no_visible_payload`, `no_visible_result`, `channel_resolved_to_internal`, `unknown_channel`, `invalid_delivery_target`, và `no_delivery_target`; các lần gửi bền vững thất bại cũng có thể báo cáo giai đoạn thất bại. Xem các giá trị không xác định là mờ đục vì tập giá trị có thể mở rộng.
-- `resultCount`: số lượng kết quả gửi kênh khi có sẵn.
-- `sentBeforeError`: `true` khi một lỗi một phần đã gửi ít nhất một payload trước lỗi.
-- `error`: boolean `true` cho các lần gửi thất bại hoặc thất bại một phần.
-- `errorMessage`: chỉ được bao gồm khi thu được thông báo lỗi gửi bên dưới. Các lỗi kiểm tra trước mang `error` và `reason` nhưng không có `errorMessage`.
-- `payloadOutcomes`: kết quả tùy chọn theo từng payload với `index`, `status`, `reason`, `resultCount`, `error`, `stage`, `sentBeforeError`, hoặc siêu dữ liệu hook khi có sẵn.
+- `attempted`: là `true` sau khi đường dẫn gửi bền vững đã chạy; là `false` khi bước kiểm tra trước thất bại hoặc không có tải trọng hiển thị.
+- `succeeded`: `true`, `false` hoặc `"partial"`; `"partial"` đi cùng `status: "partial_failed"`.
+- `reason`: lý do dạng chữ thường snake-case từ quá trình gửi bền vững hoặc xác thực trước khi gửi. Các giá trị đã biết bao gồm `cancelled_by_message_sending_hook`, `no_visible_payload`, `no_visible_result`, `channel_resolved_to_internal`, `unknown_channel`, `invalid_delivery_target` và `no_delivery_target`; các lượt gửi bền vững thất bại cũng có thể báo cáo giai đoạn thất bại. Hãy coi các giá trị không xác định là dữ liệu mờ vì tập giá trị có thể mở rộng.
+- `resultCount`: số lượng kết quả gửi qua kênh, khi có.
+- `sentBeforeError`: là `true` khi lỗi một phần xảy ra sau khi đã gửi ít nhất một tải trọng.
+- `error`: là `true` đối với các lượt gửi thất bại hoặc thất bại một phần.
+- `errorMessage`: chỉ hiện diện khi đã ghi nhận được thông báo lỗi gửi cơ sở. Các lỗi kiểm tra trước khi gửi có `error`/`reason` nhưng không có `errorMessage`.
+- `payloadOutcomes`: kết quả tùy chọn theo từng tải trọng, gồm `index`, `status`, `reason`, `resultCount`, `error`, `stage`, `sentBeforeError` hoặc siêu dữ liệu hook khi có.
 
 ## Liên quan
 
-- [Tham chiếu CLI](/vi/cli)
-- [Thời gian chạy tác tử](/vi/concepts/agent)
+- [Tài liệu tham khảo CLI](/vi/cli)
+- [Môi trường chạy agent](/vi/concepts/agent)

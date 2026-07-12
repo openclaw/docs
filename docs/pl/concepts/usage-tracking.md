@@ -1,120 +1,121 @@
 ---
 read_when:
-    - Konfigurujesz powierzchnie użycia/limitów dostawcy
-    - Musisz wyjaśnić zachowanie śledzenia użycia lub wymagania dotyczące uwierzytelniania
-summary: Powierzchnie śledzenia użycia i wymagania dotyczące poświadczeń
+    - Integrujesz interfejsy wykorzystania i limitów dostawcy
+    - Musisz wyjaśnić sposób działania śledzenia użycia lub wymagania dotyczące uwierzytelniania
+summary: Mechanizmy monitorowania użycia i wymagania dotyczące danych uwierzytelniających
 title: Śledzenie użycia
 x-i18n:
-    generated_at: "2026-07-01T20:37:17Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:06:00Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: fa9b2b0b19ca0b4beeea40bfd50b07a92155178d5ec0e1877013843e0caba4fb
+    source_hash: c413dcbe838d94c57ba3f6ef9609331e139de6d0abbdb3860753a519bd490314
     source_path: concepts/usage-tracking.md
     workflow: 16
 ---
 
-## Czym to jest
+## Co to jest
 
-- Pobiera użycie/limity dostawcy bezpośrednio z jego endpointów użycia.
-- Bez szacowanych kosztów; tylko okna limitów lub podsumowania stanu konta
-  raportowane przez dostawcę.
-- Czytelne dla człowieka wyjście stanu okna limitu jest normalizowane do
-  `X% left`, nawet gdy nadrzędne API raportuje zużyty limit, pozostały limit
-  albo tylko surowe liczby. Dostawcy bez resetowalnych okien limitów mogą
-  zamiast tego pokazywać tekst podsumowania dostawcy, na przykład saldo.
-- `/status` na poziomie sesji i `session_status` mogą wrócić do najnowszego
-  wpisu użycia z transkrypcji, gdy bieżący snapshot sesji jest skąpy. Ten
-  mechanizm uzupełnia brakujące liczniki tokenów/pamięci podręcznej, może
-  odzyskać etykietę aktywnego modelu środowiska uruchomieniowego i preferuje
-  większą sumę zorientowaną na prompt, gdy metadanych sesji brakuje albo są
-  mniejsze. Istniejące niezerowe wartości bieżące nadal mają pierwszeństwo.
+- Pobiera dane o użyciu i limitach bezpośrednio z punktu końcowego użycia każdego dostawcy. Bez szacowania opłat dostawcy; wyłącznie zgłaszane przez dostawcę nazwy planów, okna limitów, salda, wydatki, budżety, dzienna historia kosztów, przypisanie tokenów i modeli lub podsumowania stanu konta.
+- Czytelne dla człowieka dane wyjściowe okna limitu są normalizowane do postaci `X% pozostało`, nawet gdy dostawca zgłasza wykorzystany limit, pozostały limit albo tylko nieprzetworzone liczby. W przypadku dostawców bez resetowalnych okien limitów zamiast tego wyświetlany jest tekst podsumowania dostawcy (na przykład saldo).
+- Polecenie `/status` na poziomie sesji i narzędzie `session_status` korzystają awaryjnie z dziennika transkrypcji sesji, gdy bieżąca migawka sesji nie zawiera danych o tokenach lub modelu. To zachowanie uzupełnia brakujące liczniki tokenów i pamięci podręcznej, może odzyskać etykietę aktywnego modelu środowiska uruchomieniowego oraz preferuje większą sumę zorientowaną na prompt, gdy metadane sesji są niedostępne lub zawierają mniejszą wartość (`totalTokensFresh !== true`, zero albo wartość niższą niż wyprowadzona z transkrypcji). Niezerowe wartości bieżące zawsze mają pierwszeństwo przed danymi awaryjnymi.
 
 ## Gdzie się pojawia
 
-- `/status` w czatach: karta stanu bogata w emoji z tokenami sesji + szacowanym kosztem (tylko klucz API). Użycie dostawcy jest pokazywane dla **bieżącego dostawcy modelu**, gdy jest dostępne, jako znormalizowane okno `X% left` albo tekst podsumowania dostawcy.
+- `/status` w czatach: karta stanu z tokenami sesji i szacowanym kosztem (tylko modele używające klucza API). Gdy dane są dostępne, użycie dostawcy jest wyświetlane dla **dostawcy bieżącego modelu** jako znormalizowane okno `X% pozostało` lub tekst podsumowania dostawcy.
 - `/usage off|tokens|full` w czatach: stopka użycia dla każdej odpowiedzi.
-- `/usage cost` w czatach: lokalne podsumowanie kosztów agregowane z logów sesji OpenClaw.
-- CLI: `openclaw status --usage` wypisuje pełny podział według dostawców.
-- CLI: `openclaw channels list` wypisuje ten sam snapshot użycia obok konfiguracji dostawcy (użyj `--no-usage`, aby pominąć).
-- Pasek menu macOS: sekcja „Użycie” pod Context (tylko jeśli dostępna).
+- `/usage cost` w czatach: lokalne podsumowanie kosztów zagregowane z dzienników sesji OpenClaw.
+- CLI: `openclaw status --usage` wyświetla pełne zestawienie użycia i limitów dla poszczególnych dostawców.
+- CLI: `openclaw models status` wyświetla profile uwierzytelniania OAuth/tokenem oraz podsumowanie okna użycia obok każdego dostawcy, który je udostępnia.
+- Interfejs sterowania: **Użycie** wyświetla karty planu i rozliczeń dostawcy nad analizą tokenów i szacowanych kosztów OpenClaw, wyprowadzoną z sesji. Dane uwierzytelniające interfejsów Anthropic i OpenAI Admin API dodają zgłaszane przez dostawcę wydatki z dzisiaj, 7 i 30 dni, dzienne trendy, sumy tokenów, najczęściej używane modele oraz kategorie kosztów.
+- Interfejs sterowania: wyskakujące okno pierścienia kontekstu w polu tworzenia wiadomości wyświetla **użycie planu** dla dostawców subskrypcyjnych — paski poszczególnych okien (5-godzinnych, tygodniowych i ograniczonych do modelu) z czasami resetowania, plan dostawcy, jeśli jest znany (na przykład `Max (20x)`), oraz środki na dodatkowe użycie. Sesje rozliczane w ramach planu ukrywają kwotowe oszacowania kosztu poszczególnych tokenów; sesje rozliczane przez API zachowują `Szac. koszt` i zestawienie kosztów według typu. Konfiguracje Claude Code CLI (`claude-cli`) korzystają z tych samych danych użycia subskrypcji Anthropic.
+- Pasek menu systemu macOS: główna sekcja „Użycie” pojawia się pod sekcją Kontekst, gdy dostępne są migawki użycia dostawcy. Zobacz [Pasek menu](/pl/platforms/mac/menu-bar).
+
+Polecenie `openclaw channels list` nie wyświetla już użycia dostawcy; zamiast tego kieruje użytkowników do `openclaw status` lub `openclaw models list`.
+
+## Historia kosztów Anthropic i OpenAI
+
+Limit subskrypcji i rozliczenia API to odrębne obszary dostawcy:
+
+- Dane uwierzytelniające subskrypcji lub konfiguracji Anthropic nadal wyświetlają okna limitów Claude i opcjonalne budżety dodatkowego użycia. Ustaw `ANTHROPIC_ADMIN_KEY` lub `ANTHROPIC_ADMIN_API_KEY`, aby zamiast tego wyświetlać historię interfejsów Usage API i Cost API organizacji. Dane uwierzytelniające dostawcy Anthropic zaczynające się od `sk-ant-admin` są wykrywane automatycznie.
+- OAuth OpenAI ChatGPT/Codex nadal wyświetla plan, okna limitów i saldo środków. Ustaw `OPENAI_ADMIN_KEY`, aby zamiast tego wyświetlać historię kosztów i użycia uzupełnień w organizacji; opcjonalnie ustaw `OPENAI_PROJECT_ID`, aby ograniczyć zakres do jednego projektu. OpenClaw nigdy nie wysyła danych uwierzytelniających wnioskowania z `OPENAI_API_KEY`, konfiguracji dostawcy ani profili uwierzytelniania do interfejsów API organizacji, ponieważ klucze te mogą należeć do niestandardowych punktów końcowych.
+
+Dane uwierzytelniające administratora mają pierwszeństwo, ponieważ zapewniają rzeczywiste dane rozliczeniowe organizacji. OpenClaw nie łączy tych sum zgłaszanych przez dostawcę z lokalnymi oszacowaniami sesji; obie sekcje celowo odpowiadają na inne pytania.
 
 ## Domyślny tryb stopki użycia
 
-`/usage off|tokens|full` ustawia stopkę dla sesji i jest zapamiętywany dla tej
-sesji. `messages.responseUsage` ustawia początkowo ten tryb dla sesji, które go
-jeszcze nie wybrały, więc stopka może być domyślnie włączona bez wpisywania
-`/usage` za każdym razem.
+Polecenie `/usage off|tokens|full` ustawia stopkę sesji, a wybór jest zapamiętywany dla tej
+sesji. `messages.responseUsage` ustawia początkową wartość tego trybu dla sesji, które jeszcze
+go nie wybrały, dzięki czemu stopka może być domyślnie włączona bez każdorazowego wpisywania `/usage`.
 
-Ustaw jeden tryb dla każdego kanału albo mapę dla poszczególnych kanałów z
-zapasowym `default`:
+Ustaw jeden tryb dla wszystkich kanałów albo mapę dla poszczególnych kanałów z wartością rezerwową `default`:
 
 ```jsonc
 {
   "messages": {
     "responseUsage": "tokens",
-    // or: { "default": "off", "discord": "full" }
+    // lub: { "default": "off", "discord": "full" }
   },
 }
 ```
 
+Akceptowane wartości: `"off"`, `"tokens"`, `"full"` oraz starszy alias `"on"` (traktowany jako `"tokens"`).
+
 ### Trzy odrębne stany sesji
 
-Pole `responseUsage` sesji ma trzy reprezentowalne stany, każdy o innej
-semantyce:
+Pole `responseUsage` sesji może reprezentować trzy stany, z których każdy ma
+inną semantykę:
 
-| Stan                    | Przechowywana wartość           | Efektywny tryb                                                        |
-| ----------------------- | ------------------------------- | --------------------------------------------------------------------- |
-| **Nieustawione / dziedziczenie** | `undefined` (brak)       | Przechodzi do domyślnej konfiguracji `messages.responseUsage`, potem `off`. |
-| **Jawnie wyłączone**    | `"off"` (przechowywane)         | Zawsze wyłączone — domyślna konfiguracja inna niż off nie może ponownie włączyć stopki. |
-| **Jawnie włączone**     | `"tokens"` albo `"full"` (przechowywane) | Ten tryb, niezależnie od domyślnej konfiguracji.                      |
+| Stan                           | Przechowywana wartość            | Obowiązujący tryb                                                              |
+| ------------------------------ | -------------------------------- | ------------------------------------------------------------------------------ |
+| **Nieustawiony / dziedziczony** | `undefined` (brak)              | Przechodzi do domyślnej konfiguracji `messages.responseUsage`, a następnie `off`. |
+| **Jawnie wyłączony**            | `"off"` (przechowywane)         | Zawsze wyłączony; konfiguracja domyślna inna niż `off` nie może ponownie włączyć stopki. |
+| **Jawnie włączony**             | `"tokens"` lub `"full"` (przechowywane) | Ten tryb, niezależnie od konfiguracji domyślnej.                         |
 
-### Kolejność pierwszeństwa
+### Pierwszeństwo
 
-Efektywny tryb = nadpisanie sesji → wpis konfiguracji kanału → `default` → `off`.
+Obowiązujący tryb = nadpisanie sesji → wpis konfiguracji kanału → `default` → `off`.
 
-Jawne `/usage off` jest **utrwalane** jako dosłowna wartość `"off"` w sesji, a
-nie jako „nieustawione”. Oznacza to, że domyślne `messages.responseUsage` inne
-niż off nie może ponownie włączyć stopki po tym, jak użytkownik jawnie ją
-wyłączył.
+Jawne `/usage off` jest **utrwalane** w sesji jako dosłowna wartość `"off"`,
+co nie jest tym samym co „nieustawione”. Domyślna wartość `messages.responseUsage`
+inna niż `off` nie może ponownie włączyć stopki po jej jawnym wyłączeniu przez użytkownika.
 
 ### Resetowanie a wyłączanie
 
-- `/usage off` — wymusza wyłączenie stopki i utrwala ten wybór. Skonfigurowana
-  wartość domyślna inna niż off nie może tego nadpisać.
-- `/usage reset` (aliasy: `inherit`, `clear`, `default`) — czyści nadpisanie
-  sesji. Sesja następnie **dziedziczy** efektywną wartość domyślną konfiguracji
-  (`messages.responseUsage`). Jeśli nie skonfigurowano wartości domyślnej,
-  stopka jest wyłączona (bez zmiany względem wcześniej). Użyj tego, aby „wrócić
-  do wartości domyślnej” bez jawnego włączania stopki.
-- Pełny reset sesji (`/reset` albo `/new`) lub rollover sesji **zachowuje**
-  jawną preferencję trybu użycia, aby wybór wyświetlania użytkownika przetrwał
-  rollovery sesji. Tylko `/usage reset` (i jego aliasy) faktycznie czyści
-  nadpisanie.
+- `/usage off` wymusza wyłączenie stopki i utrwala ten wybór. Skonfigurowana
+  domyślna wartość inna niż `off` nie może go nadpisać.
+- `/usage reset` (aliasy: `default`, `inherit`, `inherited`, `clear`, `unpin`) usuwa nadpisanie
+  sesji. Sesja następnie **dziedziczy** obowiązującą konfigurację domyślną
+  (`messages.responseUsage`). Jeśli nie skonfigurowano wartości domyślnej, stopka pozostaje wyłączona.
+- Pełny reset sesji (`/reset` lub `/new`) albo przejście do kolejnej sesji **zachowuje**
+  jawną preferencję trybu użycia, dzięki czemu wybór sposobu wyświetlania dokonany przez użytkownika
+  przetrwa przejścia między sesjami. Tylko `/usage reset` (i jego aliasy) usuwa nadpisanie.
 
-### Zachowanie przełącznika
+### Działanie przełącznika
 
-`/usage` bez argumentów przełącza cyklicznie: off → tokens → full → off. Punktem
-startowym cyklu jest **efektywny** bieżący tryb (nadpisanie sesji przechodzące
-do domyślnej konfiguracji, gdy jest nieustawione), więc cykl jest zawsze spójny
-z tym, co użytkownik widzi w stopce.
+Polecenie `/usage` bez argumentów przełącza cyklicznie: off → tokens → full → off. Punktem początkowym
+cyklu jest **obowiązujący** bieżący tryb (nadpisanie sesji, a jeśli go nie ustawiono —
+domyślna konfiguracja), dlatego cykl zawsze odpowiada temu, co
+użytkownik aktualnie widzi w stopce.
 
 ### Konfiguracja
 
-Bez konfiguracji zachowanie pozostaje wcześniejsze (stopka wyłączona do czasu
-`/usage`). Użyj `/usage reset`, aby wyczyścić nadpisanie sesji i ponownie
-odziedziczyć skonfigurowaną wartość domyślną.
+Bez konfiguracji zachowane zostaje wcześniejsze działanie (stopka jest wyłączona do czasu użycia `/usage`). Użyj
+`/usage reset`, aby usunąć nadpisanie sesji i ponownie odziedziczyć skonfigurowaną wartość domyślną.
 
 ## Niestandardowa stopka `/usage full`
 
-`/usage full` pokazuje wbudowaną kompaktową stopkę z modelem, reasoning, trybem
-szybkim/wolnym, oknem kontekstu i kosztem, gdy te pola są dostępne. Pola tokenów
-i pamięci podręcznej pozostają dostępne dla niestandardowych szablonów. Plik
-szablonu nie jest wymagany.
+Polecenie `/usage tokens` zawsze renderuje zwykły wiersz `Użycie: X wejściowych / Y wyjściowych` (uzupełniony o informacje o pamięci podręcznej i
+szacowanym koszcie, gdy są dostępne). Tylko `/usage full` renderuje bogatszą
+stopkę opisaną poniżej.
 
-`messages.usageTemplate` służy tylko do zaawansowanych niestandardowych układów.
-Wartością jest ścieżka do pliku JSON (obsługuje `~`) albo obiekt inline, i gdy
-jest poprawna, zastępuje wbudowaną stopkę:
+Polecenie `/usage full` wyświetla wbudowaną, zwartą stopkę z modelem, trybem rozumowania, trybem szybkim/wolnym,
+oknem kontekstu i kosztem, gdy te pola są dostępne. Wbudowana stopka nie wymaga
+pliku szablonu.
+
+`messages.usageTemplate` służy wyłącznie do zaawansowanych, niestandardowych układów. Wartością jest
+ścieżka do pliku JSON (obsługuje `~`) albo obiekt osadzony bezpośrednio; poprawna wartość zastępuje wbudowaną
+stopkę. Ścieżka pliku jest monitorowana, a zmiany są wczytywane na bieżąco.
 
 ```json
 {
@@ -124,12 +125,12 @@ jest poprawna, zastępuje wbudowaną stopkę:
 }
 ```
 
-Brakujące albo puste szablony po cichu wracają do wbudowanej stopki.
-Nieczytelne albo nieprawidłowe skonfigurowane szablony również wracają do
-wbudowanej stopki i emitują ostrzeżenie operatora.
+Brakujące lub puste szablony po cichu przełączają się na wbudowaną stopkę. Nieczytelne
+lub nieprawidłowo skonfigurowane szablony (błędny JSON albo struktura bez możliwych do wyrenderowania
+elementów wyjściowych) również przełączają się na wbudowaną stopkę i generują ostrzeżenie dla operatora.
 
-Zacznij niestandardowe szablony od wbudowanego kształtu, a następnie edytuj
-części, które chcesz zmienić:
+Tworzenie niestandardowych szablonów zacznij od wbudowanej struktury, a następnie zmodyfikuj wybrane
+części:
 
 ```jsonc
 {
@@ -171,9 +172,9 @@ części, które chcesz zmienić:
       { "map": "state.fast_mode", "cases": { "true": "⚡️", "false": "🐌" } },
       {
         "when": "context.max_tokens",
-        "text": "\u00A0| 📚[{context.pct_used|meter:5:braille}]{context.max_tokens|num}",
+        "text": " | 📚[{context.pct_used|meter:5:braille}]{context.max_tokens|num}",
       },
-      { "when": "cost.turn_usd", "text": "\u00A0💰{cost.turn_usd|fixed:4}" },
+      { "when": "cost.turn_usd", "text": " 💰{cost.turn_usd|fixed:4}" },
     ],
     "surfaces": {
       "discord": [
@@ -185,86 +186,87 @@ części, które chcesz zmienić:
         { "map": "state.fast_mode", "cases": { "true": "⚡️", "false": "🐌" } },
         {
           "when": "context.max_tokens",
-          "text": "\u00A0| 📚[{context.pct_used|meter:5:braille}]{context.max_tokens|num}",
+          "text": " | 📚[{context.pct_used|meter:5:braille}]{context.max_tokens|num}",
         },
-        { "when": "cost.turn_usd", "text": "\u00A0💰{cost.turn_usd|fixed:4}" },
+        { "when": "cost.turn_usd", "text": " 💰{cost.turn_usd|fixed:4}" },
       ],
     },
   },
 }
 ```
 
-### Kształt
+### Struktura
 
 ```jsonc
 {
   "schema": "openclaw.usageBar.v1",
-  "scales": { "<name>": "low-to-high glyphs" }, // string (1 glyph/char) or array
+  "scales": { "<name>": "low-to-high glyphs" }, // ciąg znaków (1 glif/znak) albo tablica
   "aliases": { "<table>": { "<value>": "<label>" } },
   "output": {
-    "sep": "", // joins surviving pieces
-    "default": [
-      /* pieces */
-    ], // fallback for any surface
+    "sep": "", // łączy pozostałe elementy
+    "default": [/* elementy */], // wartość rezerwowa dla dowolnej powierzchni
     "surfaces": {
-      "discord": [
-        /* pieces */
-      ],
-      "telegram": [
-        /* pieces */
-      ],
+      "discord": [/* elementy */],
+      "telegram": [/* elementy */],
     },
   },
 }
 ```
 
-Każda powierzchnia jest uporządkowaną listą **części**; silnik renderuje każdą,
-usuwa puste i łączy pozostałe z użyciem `sep`. Powierzchnia bez wpisu używa
+Każda powierzchnia jest uporządkowaną listą **elementów**; mechanizm renderuje każdy z nich, odrzuca
+puste i łączy pozostałe za pomocą `sep`. Powierzchnia bez wpisu używa
 `output.default`.
 
 ### Ścieżki kontraktu
 
-Część odczytuje wartości z kontraktu dla danego turn przez ścieżkę z kropkami.
-Brakujące wartości są puste (więc warunek `when` albo `|fallback` utrzymuje
-część w czystej postaci).
+Element odczytuje wartości z kontraktu pojedynczego przebiegu według ścieżki z kropkami. Brakujące wartości są
+puste (dzięki czemu warunek `when` lub wartość `|fallback` zachowuje czystość elementu).
 
-| Ścieżka                                                                            | Znaczenie                              |
-| ----------------------------------------------------------------------------------- | -------------------------------------- |
-| `surface`                                                                           | id kanału (`discord`/`telegram`/itd.) |
-| `model.provider` / `model.display_name`                                             | id dostawcy / id modelu                |
-| `model.reasoning`                                                                   | effort (od `off` do `xhigh`)           |
-| `model.is_fallback` / `model.is_override`                                           | bool: użyto fallbacku / model przypięty |
-| `state.fast_mode`                                                                   | bool: szybki vs wolny                  |
-| `context.max_tokens` / `context.pct_used`                                           | budżet okna / 0-100 użyte              |
-| `usage.input_tokens` / `usage.output_tokens` / `usage.total_tokens`                 | agregat turn                           |
-| `usage.has_split_tokens` / `usage.has_total_only_tokens` / `usage.cache_hit_pct`    | warunki wyświetlania tokenów i procent trafień pamięci podręcznej |
-| `usage.last.input_tokens` / `usage.last.output_tokens` / `usage.last.cache_hit_pct` | tylko ostatnie wywołanie modelu        |
-| `cost.turn_usd`                                                                     | szacowany koszt turn                   |
-| `identity.name` / `identity.emoji`                                                  | nazwa agenta / wybrane emoji           |
+| Ścieżka                                                                             | Znaczenie                                                                                                      |
+| ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `surface`                                                                           | identyfikator kanału (`discord`/`telegram`/itd.)                                                               |
+| `agentId` / `chat_type`                                                             | identyfikator agenta będącego właścicielem / rodzaj powierzchni czatu                                           |
+| `model.id` / `model.display_name` / `model.provider`                                | identyfikator modelu / nazwa wyświetlana / identyfikator dostawcy                                              |
+| `model.actual`, `model.resolved_ref`                                                | odwołanie do dostawcy/modelu faktycznie użyte w turze                                                          |
+| `model.requested`                                                                   | żądane odwołanie do dostawcy/modelu (przed użyciem wariantu zapasowego)                                        |
+| `model.reasoning`                                                                   | poziom wysiłku (od `off` do `xhigh`)                                                                           |
+| `model.is_fallback` / `model.is_override`                                           | wartość logiczna: użyto wariantu zapasowego / model przypięty                                                  |
+| `model.override_source` / `model.auth_mode`                                         | etykieta źródła nadpisania / tryb poświadczeń (`oauth`, `api-key`, `token`, `mixed`, `aws-sdk`, `unknown`)     |
+| `state.fast_mode`                                                                   | wartość logiczna: tryb szybki lub wolny                                                                        |
+| `state.compactions`                                                                 | liczba operacji Compaction w sesji                                                                             |
+| `context.max_tokens` / `context.used_tokens` / `context.pct_used`                   | budżet okna / zajęte tokeny / wykorzystanie 0–100                                                             |
+| `usage.input_tokens` / `usage.output_tokens` / `usage.total_tokens`                 | wartości zbiorcze dla tury                                                                                     |
+| `usage.cache_read_tokens` / `usage.cache_write_tokens`                              | tokeny odczytu i zapisu pamięci podręcznej dla tury                                                            |
+| `usage.has_tokens` / `usage.has_split_tokens` / `usage.has_total_only_tokens`       | warunki wyświetlania tokenów                                                                                   |
+| `usage.cache_hit_pct`                                                               | udział odczytów z pamięci podręcznej we wszystkich tokenach promptu                                            |
+| `usage.last.input_tokens` / `usage.last.output_tokens` / `usage.last.cache_hit_pct` | tylko końcowe wywołanie modelu (zawiera też `cache_read_tokens`, `cache_write_tokens`, `total_tokens`)         |
+| `cost.turn_usd` / `cost.available`                                                  | szacowany koszt tury / informacja, czy udało się ustalić tabelę kosztów                                        |
+| `timing.duration_ms`                                                                | rzeczywisty czas trwania tury                                                                                  |
+| `identity.name` / `identity.emoji` / `identity.avatar`                              | nazwa tożsamości agenta / emoji / awatar                                                                       |
+| `session.id`                                                                        | identyfikator sesji                                                                                            |
 
-(Okna limitów szybkości dostawcy **nie** są w tym kontrakcie.)
+(Okna limitów szybkości dostawcy **nie** należą do tego kontraktu; obecnie żadna ścieżka nie ma wartości tablicowej, więc element `each` nie ma po czym iterować).
 
-### Czasowniki
+### Operatory
 
-Przepuść wartość przez czasowniki od lewej do prawej; segment niebędący
-czasownikiem jest wartością fallback.
+Przekazuj wartość przez operatory od lewej do prawej; segment niebędący operatorem stanowi wartość zapasową.
 
-| Czasownik       | Efekt                                 | Przykład                          |
-| --------------- | ------------------------------------- | --------------------------------- |
-| `num`           | kompaktowa liczba                     | `272000 -> 272k`                  |
-| `fixed:N`       | N miejsc dziesiętnych (domyślnie 2)   | `0.0377`                          |
-| `dur`           | sekundy na czas trwania               | `14820 -> 4h07m`                  |
-| `pct`           | dołącz `%`                            | `96 -> 96%`                       |
-| `inv`           | `100 - x`                             | z użytego na pozostałe            |
-| `alias:TABLE`   | wyszukiwanie w `aliases`, echo jeśli poza listą | `medium -> 🌗`                    |
-| `meter:W:SCALE` | pasek glifów o W komórkach dla wartości 0-100 | `[⣿⣿⠐⠐⠐]` (`meter:1` = jeden glif) |
+| Operator        | Efekt                                             | Przykład                              |
+| --------------- | ------------------------------------------------- | ------------------------------------- |
+| `num`           | skrócony zapis liczby                             | `272000 -> 272k`                      |
+| `fixed:N`       | N miejsc po przecinku (domyślnie 2)               | `0.0377`                              |
+| `dur`           | konwersja sekund na czas trwania                  | `14820 -> 4h07m`                      |
+| `pct`           | dołączenie `%`                                    | `96 -> 96%`                           |
+| `inv`           | `100 - x`                                         | z wykorzystanej wartości na pozostałą |
+| `alias:TABLE`   | wyszukiwanie w `aliases`; brak wpisu zwraca wejście | `medium -> 🌗`                      |
+| `meter:W:SCALE` | pasek glifów o szerokości W dla wartości 0–100    | `[⣿⣿⠐⠐⠐]` (`meter:1` = jeden glif) |
 
-### Formy części
+### Formy elementów
 
 - `{ "text": "📚 {context.max_tokens|num}" }`: literał + interpolacja.
-- `{ "when": "<path>", "text": "..." }`: renderuj tylko, jeśli ścieżka jest truthy.
-- `{ "map": "<path>", "cases": { "true": "⚡", "false": "🐌" } }`: wartość na glif.
-- `{ "each": "limits.windows", "item": "{label}" }`: iteruj po tablicy.
+- `{ "when": "<path>", "text": "..." }`: renderowanie tylko wtedy, gdy wartość ścieżki jest prawdziwa.
+- `{ "map": "<path>", "cases": { "true": "⚡", "false": "🐌" } }`: mapowanie wartości na glif (przypadek `_default` obsługuje niedopasowane wartości).
+- `{ "each": "<array-path>", "item": "{label}" }`: iteracja po ścieżce o wartości tablicowej (żadna obecna ścieżka kontraktu nie jest tablicą).
 
 ### Przykład
 
@@ -289,45 +291,30 @@ czasownikiem jest wartością fallback.
 }
 ```
 
-renderuje np. `claude-sonnet-4-6 🌗 🐌 | 📚 [⣿⣿⣿⣿⣧]272k`.
+renderuje na przykład `claude-sonnet-4-6 🌗 🐌 | 📚 [⣿⣿⣿⣿⣧]272k`.
 
-## Dostawcy + dane uwierzytelniające
+## Dostawcy i poświadczenia
 
-- **Anthropic (Claude)**: tokeny OAuth w profilach uwierzytelniania.
+Informacje o użyciu są ukrywane, gdy nie można ustalić użytecznych poświadczeń dostawcy do pobierania danych o użyciu. OpenClaw automatycznie wykrywa włączone Pluginy dostawców, które deklarują `contracts.usageProviders` i implementują zarówno `resolveUsageAuth`, jak i `fetchUsageSnapshot`; w rdzeniu nie ma osobnej listy dozwolonych dostawców. Statyczny kontrakt ogranicza zakres wykrywania bez importowania każdego Pluginu dostawcy. Każdy Plugin odpowiada za własny nadrzędny punkt końcowy i mapowanie odpowiedzi. Wspólna migawka zachowuje neutralność względem dostawców w zakresie nazw planów, okien limitów, sald, wydatków i budżetów dla klientów CLI, aplikacji i interfejsu sterowania.
+
+- **Anthropic (Claude)**: tokeny OAuth w profilach uwierzytelniania. Jeśli token OAuth nie ma zakresu `user:profile`, używana jest zapasowo sesja internetowa `claude.ai` (`CLAUDE_AI_SESSION_KEY`, `CLAUDE_WEB_SESSION_KEY` lub ciasteczko `sessionKey=` w `CLAUDE_WEB_COOKIE`), jeśli ją skonfigurowano. Limity dotyczące modelu oraz włączone miesięczne wydatki i budżety dodatkowego użycia są uwzględniane, gdy Anthropic je zgłasza. Jawny klucz Anthropic Admin API albo automatycznie wykryty profil dostawcy `sk-ant-admin...` zamiast tego pokazuje 30-dniowy koszt organizacji i historię Messages API.
+- **ClawRouter**: klucz API (`CLAWROUTER_API_KEY`). Pokazuje miesięczne okno budżetowe i określony typowo budżet w USD, jeśli je skonfigurowano; w przeciwnym razie pokazuje łączne wydatki oraz podsumowanie żądań, tokenów i kosztów.
+- **DeepSeek**: klucz API ze zmiennej środowiskowej, konfiguracji lub magazynu uwierzytelniania (`DEEPSEEK_API_KEY`). Pokazuje każde saldo walutowe zgłoszone przez dostawcę.
 - **GitHub Copilot**: tokeny OAuth w profilach uwierzytelniania.
 - **Gemini CLI**: tokeny OAuth w profilach uwierzytelniania.
-  - Użycie JSON wraca awaryjnie do `stats`; `stats.cached` jest normalizowane do
-    `cacheRead`.
-- **OpenAI Codex**: tokeny OAuth w profilach uwierzytelniania (`accountId` używany, gdy jest obecny).
-- **MiniMax**: klucz API albo profil uwierzytelniania MiniMax OAuth. OpenClaw traktuje
-  `minimax`, `minimax-cn` i `minimax-portal` jako tę samą powierzchnię limitu
-  MiniMax, preferuje zapisany MiniMax OAuth, gdy jest obecny, a w przeciwnym razie
-  wraca awaryjnie do `MINIMAX_CODE_PLAN_KEY`, `MINIMAX_CODING_API_KEY` albo `MINIMAX_API_KEY`.
-  Odpytywanie użycia wyprowadza host Coding Plan z `models.providers.minimax-portal.baseUrl`
-  albo `models.providers.minimax.baseUrl`, gdy jest skonfigurowany, a w przeciwnym razie używa
-  hosta MiniMax CN.
-  Surowe pola MiniMax `usage_percent` / `usagePercent` oznaczają **pozostały**
-  limit, więc OpenClaw odwraca je przed wyświetleniem; pola oparte na liczniku mają pierwszeństwo,
-  gdy są obecne.
-  - Etykiety okna planu kodowania pochodzą z pól godzin/minut dostawcy, gdy
-    są obecne, a następnie wracają awaryjnie do zakresu `start_time` / `end_time`.
-  - Jeśli punkt końcowy planu kodowania zwraca `model_remains`, OpenClaw preferuje
-    wpis modelu czatu, wyprowadza etykietę okna ze znaczników czasu, gdy jawne
-    pola `window_hours` / `window_minutes` są nieobecne, i uwzględnia nazwę modelu
-    w etykiecie planu.
-- **Xiaomi MiMo**: klucz API przez zmienne środowiskowe/konfigurację/magazyn uwierzytelniania (`XIAOMI_API_KEY`).
-- **z.ai**: klucz API przez zmienne środowiskowe/konfigurację/magazyn uwierzytelniania.
-- **DeepSeek**: klucz API przez zmienne środowiskowe/konfigurację/magazyn uwierzytelniania (`DEEPSEEK_API_KEY`).
-  OpenClaw wywołuje punkt końcowy salda DeepSeek i pokazuje saldo zgłoszone przez dostawcę
-  jako tekst zamiast okna limitu z procentem pozostałej puli.
-
-Użycie jest ukryte, gdy nie można rozwiązać żadnego użytecznego uwierzytelniania użycia dostawcy. Dostawcy
-mogą dostarczać logikę uwierzytelniania użycia specyficzną dla Pluginów; w przeciwnym razie OpenClaw wraca awaryjnie do
-pasujących poświadczeń OAuth/klucza API z profili uwierzytelniania, zmiennych środowiskowych
-albo konfiguracji.
+- **MiniMax**: klucz API lub profil uwierzytelniania MiniMax OAuth. OpenClaw traktuje `minimax`, `minimax-cn` i `minimax-portal` jako tę samą powierzchnię limitów MiniMax, preferuje zapisane dane MiniMax OAuth, jeśli są dostępne, a w przeciwnym razie używa zapasowo `MINIMAX_CODE_PLAN_KEY`, `MINIMAX_CODING_API_KEY` lub `MINIMAX_API_KEY`. Odpytywanie o użycie ustala host planu Coding Plan na podstawie `models.providers.minimax-portal.baseUrl` lub `models.providers.minimax.baseUrl`, jeśli je skonfigurowano, a w przeciwnym razie używa hosta MiniMax CN.
+  Nieprzetworzone pola `usage_percent` / `usagePercent` MiniMax oznaczają **pozostały** limit, dlatego OpenClaw odwraca je przed wyświetleniem; pola oparte na licznikach mają pierwszeństwo, jeśli są dostępne.
+  - Etykiety okien pochodzą z pól godzin/minut dostawcy, jeśli są dostępne, a następnie zapasowo z przedziału `start_time` / `end_time`.
+  - Jeśli punkt końcowy planu programistycznego zwraca `model_remains`, OpenClaw preferuje wpis modelu czatu, ustala etykietę okna na podstawie znaczników czasu, gdy brakuje jawnych pól `window_hours` / `window_minutes`, i uwzględnia nazwę modelu w etykiecie planu.
+- **OpenAI (plan Codex/ChatGPT)**: tokeny OAuth w profilach uwierzytelniania (nagłówek `ChatGPT-Account-Id` jest wysyłany, gdy dostępny jest identyfikator konta). Pokazuje plan ChatGPT, resetowalne okna Codex oraz saldo kredytów, gdy są zgłaszane. Kredyty pozostają kredytami dostawcy; OpenClaw nie oznacza ich jako dolarów. `OPENAI_ADMIN_KEY` dodaje 30-dniowy koszt organizacji i historię użycia uzupełnień, gdy klucz ma dostęp do Usage Dashboard. Poświadczenia do wnioskowania nigdy nie są przekazywane do interfejsów API organizacji.
+- **OpenRouter**: klucz API lub klucz API oparty na OAuth (`OPENROUTER_API_KEY` albo profil uwierzytelniania). Łączy punkt końcowy kredytów konta z punktem końcowym limitu klucza, dzięki czemu saldo i wydatki konta, budżet klucza oraz dzienne, tygodniowe i miesięczne użycie pojawiają się, gdy poświadczenie zapewnia do nich dostęp. Każdy z punktów końcowych może niezależnie uzupełnić migawkę.
+- **Venice**: klucz API ze zmiennej środowiskowej, konfiguracji lub magazynu uwierzytelniania (`VENICE_API_KEY`). Pokazuje salda USD i DIEM oraz wykorzystanie przydziału epoki DIEM, gdy są zgłaszane.
+- **Xiaomi MiMo**: dwie oddzielne powierzchnie użycia. Rozliczanie według zużycia korzysta z klucza API (`XIAOMI_API_KEY`); Token Plan korzysta z osobnego klucza (`XIAOMI_TOKEN_PLAN_API_KEY`). Żadna z nich obecnie nie zgłasza okien limitów.
+- **z.ai**: klucz API ze zmiennej środowiskowej, konfiguracji lub magazynu uwierzytelniania (`ZAI_API_KEY` lub `Z_AI_API_KEY`).
 
 ## Powiązane
 
 - [Użycie tokenów i koszty](/pl/reference/token-use)
 - [Użycie API i koszty](/pl/reference/api-usage-costs)
 - [Buforowanie promptów](/pl/reference/prompt-caching)
+- [Pasek menu](/pl/platforms/mac/menu-bar)

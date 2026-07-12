@@ -1,11 +1,11 @@
 ---
 read_when:
     - Вы устанавливаете, настраиваете или проверяете Plugin kilocode
-summary: Добавляет поддержку поставщика моделей Kilocode в OpenClaw.
-title: Kilocode Plugin
+summary: Добавляет в OpenClaw поддержку провайдера моделей Kilocode.
+title: Plugin Kilocode
 x-i18n:
-    generated_at: "2026-06-28T23:24:57Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:39:42Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 83843bd0e8a3e9944a60540a0329630f7660f8e9440c157b790ddca8655052f9
@@ -15,17 +15,17 @@ x-i18n:
 
 # Plugin Kilocode
 
-Добавляет в OpenClaw поддержку поставщика моделей Kilocode.
+Добавляет в OpenClaw поддержку провайдера моделей Kilocode.
 
 ## Распространение
 
 - Пакет: `@openclaw/kilocode-provider`
-- Маршрут установки: npm; ClawHub: `clawhub:@openclaw/kilocode-provider`
+- Способ установки: npm; ClawHub: `clawhub:@openclaw/kilocode-provider`
 
-## Поверхность
+## Интерфейс
 
-providers: kilocode
+провайдеры: kilocode
 
-## Связанные документы
+## Связанная документация
 
-- [kilocode](/ru/providers/kilocode)
+- [Kilocode](/ru/providers/kilocode)

@@ -1,12 +1,12 @@
 ---
 read_when:
-    - Quieres borrar el estado local mientras mantienes la CLI instalada
+    - Quieres borrar el estado local y mantener instalada la CLI
     - Quieres una simulación de lo que se eliminaría
-summary: Referencia de CLI para `openclaw reset` (restablecer estado/configuración locales)
+summary: Referencia de la CLI para `openclaw reset` (restablecer el estado y la configuración locales)
 title: Restablecer
 x-i18n:
-    generated_at: "2026-07-05T11:11:14Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T23:01:28Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: f18af9c5e187217de4c02f4b55de9a1c94f7246b74056dc660aa172168edcef9
@@ -16,7 +16,7 @@ x-i18n:
 
 # `openclaw reset`
 
-Restablece la configuración/el estado local (mantiene la CLI instalada).
+Restablece la configuración y el estado locales (mantiene instalada la CLI).
 
 ```bash
 openclaw reset
@@ -31,25 +31,25 @@ openclaw reset --scope full --yes --non-interactive
 - `--scope <scope>`: `config`, `config+creds+sessions` o `full`
 - `--yes`: omite las solicitudes de confirmación
 - `--non-interactive`: desactiva las solicitudes; requiere `--scope` y `--yes`
-- `--dry-run`: imprime las acciones sin eliminar archivos
+- `--dry-run`: muestra las acciones sin eliminar archivos
 
-## Alcances
+## Ámbitos
 
-| Alcance                 | Elimina                                                                                                                 | Detiene primero el gateway |
-| ----------------------- | ----------------------------------------------------------------------------------------------------------------------- | -------------------------- |
-| `config`                | solo el archivo de configuración                                                                                        | no                         |
-| `config+creds+sessions` | archivo de configuración, directorio de OAuth/credenciales, directorios de sesión por agente                            | sí                         |
-| `full`                  | directorio de estado (incluidos config/credenciales si están anidados dentro) más directorios de trabajo y atestaciones de espacios de trabajo | sí                         |
+| Ámbito                  | Elimina                                                                                                              | Detiene primero el Gateway |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| `config`                | solo el archivo de configuración                                                                                     | no                         |
+| `config+creds+sessions` | el archivo de configuración, el directorio de OAuth/credenciales y los directorios de sesiones de cada agente        | sí                         |
+| `full`                  | el directorio de estado (incluidos configuración/credenciales si están dentro de él), los directorios del espacio de trabajo y las certificaciones del espacio de trabajo | sí |
 
-`config+creds+sessions` y `full` detienen un servicio de gateway administrado en ejecución antes de eliminar el estado.
+`config+creds+sessions` y `full` detienen un servicio Gateway administrado que esté en ejecución antes de eliminar el estado.
 
 ## Notas
 
 - Ejecuta primero `openclaw backup create` para crear una instantánea restaurable antes de eliminar el estado local.
-- Sin `--scope`, `openclaw reset` solicita interactivamente el alcance que se va a eliminar.
-- `--non-interactive` solo es válido cuando tanto `--scope` como `--yes` están definidos.
-- `config+creds+sessions` y `full` imprimen `Next: openclaw onboard --install-daemon` al finalizar.
+- Sin `--scope`, `openclaw reset` solicita interactivamente el ámbito que se eliminará.
+- `--non-interactive` solo es válido cuando se especifican tanto `--scope` como `--yes`.
+- Al finalizar, `config+creds+sessions` y `full` muestran `Next: openclaw onboard --install-daemon`.
 
-## Relacionado
+## Temas relacionados
 
 - [Referencia de la CLI](/es/cli)

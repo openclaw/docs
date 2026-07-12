@@ -1,31 +1,31 @@
 ---
 read_when:
-    - أنت تقوم بتثبيت Plugin volcengine أو تهيئته أو تدقيقه
-summary: يضيف دعم مزوّد نماذج Volcengine وVolcengine Plan إلى OpenClaw.
+    - أنت تثبّت Plugin ‏volcengine أو تهيّئه أو تدقّق فيه
+summary: يضيف دعم موفّر نماذج Volcengine وVolcengine Plan إلى OpenClaw.
 title: Plugin Volcengine
 x-i18n:
-    generated_at: "2026-05-02T21:00:44Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:17:11Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: 1b2b3e14d69cd0a8629d7c63c907efaba7fc71dbc1453d4bf92830b9b9a8ed7f
     source_path: plugins/reference/volcengine.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Plugin Volcengine
 
-يضيف دعم مزوّد نماذج Volcengine وVolcengine Plan إلى OpenClaw.
+يضيف دعم موفّر نماذج Volcengine وVolcengine Plan إلى OpenClaw.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/volcengine-provider`
-- مسار التثبيت: مضمن في OpenClaw
+- مسار التثبيت: مضمّن في OpenClaw
 
-## الواجهة
+## الواجهات
 
-providers: volcengine, volcengine-plan; contracts: speechProviders
+الموفّرون: volcengine، وvolcengine-plan؛ العقود: speechProviders
 
-## المستندات ذات الصلة
+## الوثائق ذات الصلة
 
 - [volcengine](/ar/providers/volcengine)

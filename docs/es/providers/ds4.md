@@ -6,8 +6,8 @@ read_when:
 summary: Ejecuta OpenClaw mediante ds4, un servidor local compatible con OpenAI para DeepSeek V4 Flash
 title: ds4
 x-i18n:
-    generated_at: "2026-07-05T11:35:34Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T23:26:01Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: be449813295648694625ef8003b3f4b12903535b74816916ca5af0695174fbf4
@@ -15,43 +15,43 @@ x-i18n:
     workflow: 16
 ---
 
-[ds4](https://github.com/antirez/ds4) sirve DeepSeek V4 Flash desde un backend
-Metal local con una API `/v1` compatible con OpenAI. OpenClaw se conecta a ds4
-mediante la familia de proveedores genérica `openai-completions`.
+[ds4](https://github.com/antirez/ds4) sirve DeepSeek V4 Flash desde un backend Metal local
+con una API `/v1` compatible con OpenAI. OpenClaw se conecta a ds4
+mediante la familia genérica de proveedores `openai-completions`.
 
-ds4 no es un Plugin de proveedor incluido con OpenClaw. Configúralo en
-`models.providers.ds4` y luego selecciona `ds4/deepseek-v4-flash`.
+ds4 no es un Plugin de proveedor incluido con OpenClaw. Configúrelo en
+`models.providers.ds4` y, a continuación, seleccione `ds4/deepseek-v4-flash`.
 
-| Propiedad             | Valor                                                     |
-| --------------------- | --------------------------------------------------------- |
-| ID de proveedor       | `ds4`                                                     |
-| Plugin                | ninguno (solo configuración)                             |
-| API                   | Chat Completions compatible con OpenAI (`openai-completions`) |
-| URL base              | `http://127.0.0.1:18000/v1` (sugerida)                   |
-| ID de modelo          | `deepseek-v4-flash`                                       |
-| Llamadas a herramientas | `tools` / `tool_calls` al estilo OpenAI                |
-| Razonamiento          | `thinking` y `reasoning_effort` al estilo DeepSeek        |
+| Propiedad        | Valor                                                     |
+| ---------------- | --------------------------------------------------------- |
+| Id. del proveedor | `ds4`                                                    |
+| Plugin           | ninguno (solo configuración)                              |
+| API              | Chat Completions compatible con OpenAI (`openai-completions`) |
+| URL base         | `http://127.0.0.1:18000/v1` (sugerida)                    |
+| Id. del modelo   | `deepseek-v4-flash`                                       |
+| Llamadas a herramientas | `tools` / `tool_calls` al estilo de OpenAI          |
+| Razonamiento     | `thinking` y `reasoning_effort` al estilo de DeepSeek     |
 
 ## Requisitos
 
-- macOS con soporte de Metal.
-- Una copia de trabajo de ds4 funcional con `ds4-server` y el archivo GGUF de DeepSeek V4 Flash.
-- Memoria suficiente para el contexto que elijas; los valores `--ctx` más grandes asignan más
+- macOS con compatibilidad con Metal.
+- Una copia de trabajo funcional de ds4 con `ds4-server` y el archivo GGUF de DeepSeek V4 Flash.
+- Memoria suficiente para el contexto que elija; los valores de `--ctx` más grandes asignan más
   memoria KV al iniciar el servidor.
 
 <Warning>
-Los turnos de agente de OpenClaw incluyen esquemas de herramientas y contexto del espacio de trabajo. Un contexto pequeño
-como `--ctx 4096` puede superar pruebas directas con curl, pero fallar en ejecuciones completas de agente con
-`500 prompt exceeds context`. Usa al menos `--ctx 32768` para pruebas de humo de agentes y herramientas.
-Usa `--ctx 393216` solo con memoria suficiente y para habilitar ds4
-Think Max.
+Los turnos del agente de OpenClaw incluyen esquemas de herramientas y contexto del espacio de trabajo. Un contexto
+pequeño, como `--ctx 4096`, puede superar las pruebas directas con curl, pero provocar que las ejecuciones completas del agente fallen con
+`500 prompt exceeds context`. Use al menos `--ctx 32768` para las pruebas de humo del agente y las herramientas.
+Use `--ctx 393216` únicamente si dispone de memoria suficiente y para habilitar
+Think Max de ds4.
 </Warning>
 
 ## Inicio rápido
 
 <Steps>
-  <Step title="Iniciar ds4-server">
-    Sustituye `<DS4_DIR>` por la ruta de tu copia de trabajo de ds4.
+  <Step title="Start ds4-server">
+    Sustituya `<DS4_DIR>` por la ruta de su copia de trabajo de ds4.
 
     ```bash
     <DS4_DIR>/ds4-server \
@@ -63,17 +63,17 @@ Think Max.
     ```
 
   </Step>
-  <Step title="Verificar el endpoint compatible con OpenAI">
+  <Step title="Verify the OpenAI-compatible endpoint">
     ```bash
     curl http://127.0.0.1:18000/v1/models
     ```
 
-    La respuesta debería incluir `deepseek-v4-flash`.
+    La respuesta debe incluir `deepseek-v4-flash`.
 
   </Step>
-  <Step title="Agregar la configuración de proveedor de OpenClaw">
-    Agrega la configuración de [Configuración completa](#full-config) y luego ejecuta una comprobación de modelo
-    de una sola ejecución:
+  <Step title="Add the OpenClaw provider config">
+    Añada la configuración de [Configuración completa](#full-config) y, a continuación, ejecute una comprobación puntual del
+    modelo:
 
     ```bash
     openclaw infer model run \
@@ -89,7 +89,7 @@ Think Max.
 
 ## Configuración completa
 
-Usa esta configuración cuando ds4 ya se esté ejecutando en `127.0.0.1:18000`.
+Use esta configuración cuando ds4 ya se esté ejecutando en `127.0.0.1:18000`.
 
 ```json5
 {
@@ -136,14 +136,14 @@ Usa esta configuración cuando ds4 ya se esté ejecutando en `127.0.0.1:18000`.
 }
 ```
 
-Mantén `contextWindow` alineado con `ds4-server --ctx`. Mantén `maxTokens` alineado
-con `--tokens`, salvo que quieras intencionadamente que OpenClaw solicite menos salida
+Mantenga `contextWindow` alineado con `ds4-server --ctx`. Mantenga `maxTokens` alineado
+con `--tokens`, salvo que quiera deliberadamente que OpenClaw solicite menos salida
 que el valor predeterminado del servidor.
 
 ## Inicio bajo demanda
 
-OpenClaw puede iniciar ds4 solo cuando se selecciona un modelo `ds4/...`. Agrega
-`localService` a la misma entrada de proveedor:
+OpenClaw puede iniciar ds4 solo cuando se selecciona un modelo `ds4/...`. Añada
+`localService` a la misma entrada del proveedor:
 
 ```json5
 {
@@ -198,19 +198,19 @@ OpenClaw puede iniciar ds4 solo cuando se selecciona un modelo `ds4/...`. Agrega
 }
 ```
 
-`command` debe ser una ruta absoluta a un ejecutable. No se usan la búsqueda del shell ni la expansión de `~`.
-Consulta [Servicios de modelos locales](/es/gateway/local-model-services) para ver
+`command` debe ser una ruta absoluta a un ejecutable. No se utilizan la búsqueda del shell ni la expansión de `~`.
+Consulte [Servicios de modelos locales](/es/gateway/local-model-services) para conocer
 todos los campos de `localService`.
 
 ## Think Max
 
-ds4 aplica Think Max solo cuando se cumplen ambas condiciones:
+ds4 aplica Think Max únicamente cuando se cumplen ambas condiciones:
 
-- `ds4-server` se inicia con `--ctx 393216` o superior.
+- `ds4-server` se inicia con `--ctx 393216` o un valor superior.
 - La solicitud usa `reasoning_effort: "max"` (o el campo de esfuerzo equivalente de ds4).
 
-Si ejecutas ese contexto grande, actualiza tanto las marcas del servidor como los metadatos del modelo
-de OpenClaw:
+Si ejecuta ese contexto de gran tamaño, actualice tanto los indicadores del servidor como los metadatos del modelo de
+OpenClaw:
 
 ```json5
 {
@@ -237,7 +237,7 @@ curl http://127.0.0.1:18000/v1/chat/completions \
   -d '{"model":"deepseek-v4-flash","messages":[{"role":"user","content":"Reply with exactly: ds4-ok"}],"max_tokens":16,"stream":false,"thinking":{"type":"disabled"}}'
 ```
 
-Enrutamiento de modelo de OpenClaw (igual que la comprobación de Inicio rápido):
+Enrutamiento del modelo de OpenClaw (igual que la comprobación del inicio rápido):
 
 ```bash
 openclaw infer model run \
@@ -248,7 +248,7 @@ openclaw infer model run \
   --json
 ```
 
-Prueba de humo completa de agente y llamada a herramientas, con contexto de al menos 32768:
+Prueba de humo completa del agente y de las llamadas a herramientas, con un contexto de al menos 32768:
 
 ```bash
 openclaw agent \
@@ -266,14 +266,14 @@ Resultado esperado:
 - `executionTrace.winnerProvider` es `ds4`
 - `executionTrace.winnerModel` es `deepseek-v4-flash`
 - `toolSummary.calls` es al menos `1`
-- `finalAssistantVisibleText` empieza con `tool-ok`
+- `finalAssistantVisibleText` comienza por `tool-ok`
 
 ## Solución de problemas
 
 <AccordionGroup>
-  <Accordion title="curl /v1/models no puede conectarse">
-    ds4 no se está ejecutando o no está vinculado al host/puerto de `baseUrl`. Inicia
-    `ds4-server` y vuelve a intentarlo:
+  <Accordion title="curl /v1/models cannot connect">
+    ds4 no se está ejecutando o no está vinculado al host/puerto de `baseUrl`. Inicie
+    `ds4-server` y vuelva a intentarlo:
 
     ```bash
     curl http://127.0.0.1:18000/v1/models
@@ -282,34 +282,36 @@ Resultado esperado:
   </Accordion>
 
   <Accordion title="500 prompt exceeds context">
-    El `--ctx` configurado es demasiado pequeño para el turno de OpenClaw. Aumenta
-    `ds4-server --ctx` y luego actualiza `models.providers.ds4.models[].contextWindow`
-    para que coincida. Los turnos completos de agente con herramientas necesitan mucho más contexto que una
-    solicitud directa de curl de un solo mensaje.
+    El valor configurado de `--ctx` es demasiado pequeño para el turno de OpenClaw. Aumente
+    `ds4-server --ctx` y, a continuación, actualice `models.providers.ds4.models[].contextWindow`
+    para que coincida. Los turnos completos del agente con herramientas necesitan considerablemente más contexto que una
+    solicitud directa de curl con un solo mensaje.
   </Accordion>
 
-  <Accordion title="Think Max no se activa">
+  <Accordion title="Think Max does not activate">
     ds4 solo usa Think Max cuando `--ctx` es al menos `393216` y la solicitud
-    pide `reasoning_effort: "max"`. Los contextos más pequeños vuelven a razonamiento alto.
+    pide `reasoning_effort: "max"`. Los contextos más pequeños recurren al nivel de razonamiento
+    alto.
   </Accordion>
 
-  <Accordion title="La primera solicitud es lenta">
-    ds4 tiene una fase de residencia Metal en frío y calentamiento del modelo. Define
-    `localService.readyTimeoutMs: 300000` cuando OpenClaw inicia el servidor bajo demanda.
+  <Accordion title="The first request is slow">
+    ds4 tiene una fase inicial de residencia en Metal y calentamiento del modelo. Establezca
+    `localService.readyTimeoutMs: 300000` cuando OpenClaw inicie el servidor bajo
+    demanda.
   </Accordion>
 </AccordionGroup>
 
-## Relacionado
+## Contenido relacionado
 
 <CardGroup cols={2}>
-  <Card title="Servicios de modelos locales" href="/es/gateway/local-model-services" icon="play">
-    Inicia servidores de modelos locales bajo demanda antes de las solicitudes de modelo.
+  <Card title="Local model services" href="/es/gateway/local-model-services" icon="play">
+    Inicie servidores de modelos locales bajo demanda antes de las solicitudes al modelo.
   </Card>
-  <Card title="Modelos locales" href="/es/gateway/local-models" icon="server">
-    Elige y opera backends de modelos locales.
+  <Card title="Local models" href="/es/gateway/local-models" icon="server">
+    Elija y gestione backends de modelos locales.
   </Card>
-  <Card title="Proveedores de modelos" href="/es/concepts/model-providers" icon="layers">
-    Configura referencias de proveedor, autenticación y conmutación por error.
+  <Card title="Model providers" href="/es/concepts/model-providers" icon="layers">
+    Configure referencias de proveedores, autenticación y conmutación por error.
   </Card>
   <Card title="DeepSeek" href="/es/providers/deepseek" icon="brain">
     Comportamiento nativo del proveedor DeepSeek y controles de pensamiento.

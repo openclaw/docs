@@ -1,11 +1,11 @@
 ---
 read_when:
-    - أنت تثبّت Plugin الفروقات أو تهيئه أو تراجعه.
-summary: OpenClaw Plugin لعرض الفروقات للقراءة فقط ومصيّر ملفات للوكلاء.
+    - أنت تُثبّت إضافة الفروقات أو تهيئها أو تدققها
+summary: Plugin لعرض الفروقات للقراءة فقط ومُصيّر ملفات للوكلاء في OpenClaw.
 title: Plugin الفروقات
 x-i18n:
-    generated_at: "2026-06-27T18:11:54Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:20:15Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 836ed7a32a0868ee24eacf8f72e8c7888ebbd5d07ca62b2b6170d6a1919f7382
@@ -13,15 +13,15 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin الفروقات
+# Plugin الفروق
 
-Plugin عارض فروقات للقراءة فقط في OpenClaw ومصيّر ملفات للوكلاء.
+Plugin من OpenClaw لعرض الفروق للقراءة فقط وعرض الملفات للوكلاء.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/diffs`
 - مسار التثبيت: npm؛ ClawHub
 
-## الواجهة
+## الواجهات
 
 العقود: الأدوات؛ Skills

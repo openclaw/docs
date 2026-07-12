@@ -1,86 +1,77 @@
 ---
 read_when:
     - Lavorare sui percorsi di attivazione vocale o PTT
-summary: Modalità di attivazione vocale e push-to-talk, più dettagli di instradamento nell’app mac
-title: Risveglio vocale (macOS)
+summary: Modalità di attivazione vocale e push-to-talk, oltre ai dettagli di instradamento nell’app per Mac
+title: Attivazione vocale (macOS)
 x-i18n:
-    generated_at: "2026-06-27T17:45:55Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:12:21Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 33c6132d03efb837ae06f4810ff87eb981ad742d793657bc607f4ec214bc2afa
+    source_hash: 2a0a5ac44931b578daa4f74b3728a65a1c19ab9742e2d4b9f4c6db49fa5d7b8a
     source_path: platforms/mac/voicewake.md
     workflow: 16
 ---
 
-# Risveglio vocale e premi per parlare
+# Attivazione vocale e push-to-talk
 
 ## Requisiti
 
-Risveglio vocale e premi per parlare richiedono macOS 26 o versioni successive. Nelle versioni precedenti di macOS,
-i controlli sono nascosti dalla pagina delle impostazioni Voce, che mostra il requisito di macOS 26.
+L'attivazione vocale e il push-to-talk richiedono macOS 26 o versioni successive. Nelle versioni precedenti di macOS, i controlli sono nascosti nella pagina delle impostazioni vocali, che mostra invece il requisito di macOS 26.
 
 ## Modalità
 
-- **Modalità parola di attivazione** (predefinita): il riconoscitore vocale sempre attivo attende i token di attivazione (`swabbleTriggerWords`). Quando trova una corrispondenza avvia la cattura, mostra l'overlay con testo parziale e invia automaticamente dopo il silenzio.
-- **Premi per parlare (tieni premuto Option destro)**: tieni premuto il tasto Option destro per catturare immediatamente, senza attivazione necessaria. L'overlay appare mentre il tasto è premuto; il rilascio finalizza e inoltra dopo un breve ritardo, così puoi correggere il testo.
+- **Modalità parola di attivazione** (predefinita): un riconoscitore vocale sempre attivo attende i termini di attivazione (`swabbleTriggerWords`). Quando li rileva, avvia l'acquisizione, mostra la sovrimpressione con il testo parziale e invia automaticamente dopo un periodo di silenzio.
+- **Push-to-talk (tieni premuto Opzione destro)**: tieni premuto il tasto Opzione destro per avviare immediatamente l'acquisizione, senza bisogno di un termine di attivazione. La sovrimpressione appare mentre il tasto è premuto; al rilascio, finalizza e inoltra dopo un breve ritardo, consentendoti di modificare il testo.
 
-## Comportamento runtime (parola di attivazione)
+## Comportamento in fase di esecuzione (parola di attivazione)
 
-- Il riconoscitore vocale risiede in `VoiceWakeRuntime`.
-- L'attivazione scatta solo quando c'è una **pausa significativa** tra la parola di attivazione e la parola successiva (intervallo di ~0,55 s). L'overlay/il segnale acustico possono partire sulla pausa anche prima dell'inizio del comando.
-- Finestre di silenzio: 2,0 s quando il parlato sta proseguendo, 5,0 s se è stata rilevata solo l'attivazione.
-- Arresto forzato: 120 s per prevenire sessioni incontrollate.
-- Debounce tra le sessioni: 350 ms.
-- L'overlay è gestito tramite `VoiceWakeOverlayController` con colorazione committed/volatile.
-- Dopo l'invio, il riconoscitore si riavvia in modo pulito per ascoltare l'attivazione successiva.
+- Il riconoscitore risiede in `VoiceWakeRuntime`.
+- L'attivazione avviene solo in presenza di una pausa significativa tra la parola di attivazione e quella successiva (`triggerPauseWindow` = 0,55 s). La sovrimpressione e il segnale acustico possono avviarsi durante la pausa, anche prima dell'inizio del comando.
+- Intervalli di silenzio: 2,0 s (`silenceWindow`) mentre il parlato prosegue, 5,0 s (`triggerOnlySilenceWindow`) se è stata rilevata soltanto la parola di attivazione.
+- Arresto forzato: 120 s (`captureHardStop`) per evitare sessioni incontrollate.
+- Antirimbalzo tra le sessioni: 350 ms (`debounceAfterSend`) dopo un invio.
+- La sovrimpressione è gestita tramite `VoiceWakeOverlayController`, con una colorazione distinta per il testo confermato e quello provvisorio.
+- Dopo l'invio, il riconoscitore si riavvia in modo pulito per attendere l'attivazione successiva.
 
 ## Invarianti del ciclo di vita
 
-- Se Risveglio vocale è abilitato e le autorizzazioni sono concesse, il riconoscitore della parola di attivazione dovrebbe essere in ascolto (tranne durante una cattura esplicita premi per parlare).
-- La visibilità dell'overlay (inclusa la chiusura manuale tramite il pulsante X) non deve mai impedire la ripresa del riconoscitore.
+- Se l'attivazione vocale è abilitata e le autorizzazioni sono concesse, il riconoscitore della parola di attivazione rimane in ascolto, tranne durante un'acquisizione push-to-talk attiva.
+- La chiusura della sovrimpressione, inclusa quella manuale tramite il pulsante X, riattiva sempre il riconoscitore: `VoiceSessionCoordinator.overlayDidDismiss` chiama `VoiceWakeRuntime.refresh(state:)` in ogni percorso di chiusura. Consulta [Sovrimpressione vocale](/it/platforms/mac/voice-overlay) per il modello di sessione e token.
 
-## Modalità di errore dell'overlay bloccato (precedente)
+## Dettagli del push-to-talk
 
-In precedenza, se l'overlay rimaneva bloccato visibile e lo chiudevi manualmente, Risveglio vocale poteva sembrare "morto" perché il tentativo di riavvio del runtime poteva essere bloccato dalla visibilità dell'overlay e non veniva pianificato alcun riavvio successivo.
-
-Rafforzamento:
-
-- Il riavvio del runtime di risveglio non è più bloccato dalla visibilità dell'overlay.
-- Il completamento della chiusura dell'overlay attiva un `VoiceWakeRuntime.refresh(...)` tramite `VoiceSessionCoordinator`, quindi la chiusura manuale con X riprende sempre l'ascolto.
-
-## Dettagli del premi per parlare
-
-- Il rilevamento della scorciatoia usa un monitor globale `.flagsChanged` per **Option destro** (`keyCode 61` + `.option`). Osserviamo solo gli eventi (senza intercettarli).
-- La pipeline di cattura risiede in `VoicePushToTalk`: avvia subito Speech, trasmette i parziali all'overlay e chiama `VoiceWakeForwarder` al rilascio.
-- Quando premi per parlare si avvia, mettiamo in pausa il runtime della parola di attivazione per evitare tap audio concorrenti; si riavvia automaticamente dopo il rilascio.
-- Autorizzazioni: richiede Microfono + Riconoscimento vocale; per vedere gli eventi serve l'approvazione di Accessibilità/Monitoraggio input.
-- Tastiere esterne: alcune potrebbero non esporre Option destro come previsto; offri una scorciatoia alternativa se gli utenti segnalano mancate rilevazioni.
+- Il rilevamento del tasto di scelta rapida utilizza un monitor globale `.flagsChanged` per il tasto Opzione destro (`keyCode 61` + `.option`). Osserva soltanto gli eventi, senza mai intercettarli.
+- L'acquisizione risiede in `VoicePushToTalk`: avvia immediatamente il riconoscimento vocale, trasmette i risultati parziali alla sovrimpressione e chiama `VoiceWakeForwarder` al rilascio.
+- L'avvio del push-to-talk mette in pausa il runtime della parola di attivazione per evitare acquisizioni audio concorrenti; questo si riavvia automaticamente dopo il rilascio.
+- Autorizzazioni: richiede l'accesso a microfono e riconoscimento vocale; la ricezione degli eventi da tastiera richiede l'autorizzazione per accessibilità e monitoraggio input.
+- Tastiere esterne: alcune non espongono il tasto Opzione destro come previsto. Offri una scorciatoia alternativa se gli utenti segnalano mancate attivazioni.
 
 ## Impostazioni visibili all'utente
 
-- Interruttore **Risveglio vocale**: abilita il runtime della parola di attivazione.
-- **Tieni premuto Option destro per parlare**: abilita il monitor premi per parlare.
-- Selettori di lingua e microfono, misuratore di livello in tempo reale, tabella delle parole di attivazione, tester (solo locale; non inoltra).
-- Il selettore del microfono conserva l'ultima selezione se un dispositivo si disconnette, mostra un suggerimento di disconnessione e ripiega temporaneamente sul valore predefinito di sistema finché non torna disponibile.
-- **Suoni**: segnali acustici al rilevamento dell'attivazione e all'invio; l'impostazione predefinita è il suono di sistema macOS "Glass". Puoi scegliere qualsiasi file caricabile da `NSSound` (ad es. MP3/WAV/AIFF) per ogni evento oppure scegliere **Nessun suono**.
+- Interruttore **Attivazione vocale**: abilita il runtime della parola di attivazione.
+- **Tieni premuto Opzione destro per parlare**: abilita il monitoraggio push-to-talk.
+- Selettori della lingua e del microfono, indicatore del livello in tempo reale, tabella delle parole di attivazione e strumento di prova (solo locale, non inoltra mai).
+- Il selettore del microfono conserva l'ultima scelta se un dispositivo si disconnette, mostra un'indicazione di disconnessione e usa temporaneamente il dispositivo predefinito del sistema finché quello selezionato non torna disponibile.
+- **Suoni**: segnali acustici al rilevamento dell'attivazione e all'invio, con il suono di sistema "Glass" di macOS come impostazione predefinita. Scegli per ciascun evento qualsiasi file caricabile da `NSSound` (ad esempio MP3/WAV/AIFF), oppure seleziona **Nessun suono**.
 
 ## Comportamento di inoltro
 
-- Quando Risveglio vocale è abilitato, le trascrizioni vengono inoltrate al gateway/agente attivo (la stessa modalità locale o remota usata dal resto dell'app Mac).
-- Le risposte vengono recapitate all'**ultimo provider principale usato** (WhatsApp/Telegram/Discord/WebChat). Se il recapito non riesce, l'errore viene registrato e l'esecuzione resta comunque visibile tramite WebChat/log di sessione.
+- Durante l'inoltro, `VoiceWakeForwarder.selectedSessionOptions` seleziona la chiave della sessione WebChat attiva, se impostata; in caso contrario, usa la chiave della sessione principale del Gateway.
+- Cerca la sessione tramite `sessions.list` e ricava il canale e la destinazione di consegna dal contesto di consegna della sessione, usando come ripiego prima l'ultimo canale e l'ultima destinazione, poi una chiave di sessione analizzata; se non viene risolto nulla, usa WebChat come impostazione predefinita.
+- Se la consegna non riesce, l'errore viene registrato (categoria `voicewake.forward`) e l'esecuzione rimane comunque visibile tramite WebChat o i registri della sessione.
 
 ## Payload di inoltro
 
-- `VoiceWakeForwarder.prefixedTranscript(_:)` antepone il suggerimento della macchina prima dell'invio. Condiviso tra i percorsi parola di attivazione e premi per parlare.
+- `VoiceWakeForwarder.prefixedTranscript(_:)` antepone alla trascrizione una riga di indicazione per la macchina (nome host risolto, con "questo Mac" come ripiego), condivisa tra i percorsi della parola di attivazione e del push-to-talk.
 
 ## Verifica rapida
 
-- Attiva premi per parlare, tieni premuto Option destro, parla, rilascia: l'overlay dovrebbe mostrare i parziali e poi inviare.
-- Durante la pressione, le orecchie nella barra dei menu dovrebbero restare ingrandite (usa `triggerVoiceEars(ttl:nil)`); tornano normali dopo il rilascio.
+- Attiva il push-to-talk, tieni premuto Opzione destro, parla e rilascia: la sovrimpressione dovrebbe mostrare i risultati parziali e poi inviarli.
+- Mentre tieni premuto il tasto, le orecchie nella barra dei menu devono rimanere ingrandite (`triggerVoiceEars(ttl: nil)`); tornano alle dimensioni normali dopo il rilascio.
 
-## Correlati
+## Argomenti correlati
 
-- [Risveglio vocale](/it/nodes/voicewake)
-- [Overlay vocale](/it/platforms/mac/voice-overlay)
+- [Attivazione vocale](/it/nodes/voicewake)
+- [Sovrimpressione vocale](/it/platforms/mac/voice-overlay)
 - [App macOS](/it/platforms/macos)

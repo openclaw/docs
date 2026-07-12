@@ -1,64 +1,56 @@
 ---
 read_when:
-    - การดีบักปัญหาการค้นพบ Bonjour บน macOS/iOS
-    - การเปลี่ยนประเภทบริการ mDNS, ระเบียน TXT หรือประสบการณ์ผู้ใช้ในการค้นพบ
-summary: การค้นพบและการดีบัก Bonjour/mDNS (บีคอน Gateway, ไคลเอนต์ และรูปแบบความล้มเหลวที่พบบ่อย)
-title: การค้นพบ Bonjour
+    - การแก้ไขข้อบกพร่องเกี่ยวกับการค้นหาบริการ Bonjour บน macOS/iOS
+    - การเปลี่ยนประเภทบริการ mDNS, ระเบียน TXT หรือประสบการณ์ผู้ใช้ในการค้นหาอุปกรณ์
+summary: การค้นหาและการดีบัก Bonjour/mDNS (บีคอนของ Gateway, ไคลเอนต์ และรูปแบบความล้มเหลวที่พบบ่อย)
+title: การค้นหาผ่าน Bonjour
 x-i18n:
-    generated_at: "2026-05-12T12:50:44Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:02:11Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 05892ee8f0dc880f68f7cf024de9452b8d999ff1af3c7ca9850fb4f2d732af0c
+    source_hash: c0526c9e20dd02d143ae7aa4c8e1e6830763763e95c9a74c4d73332c5e5e155e
     source_path: gateway/bonjour.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw สามารถใช้ Bonjour (mDNS / DNS-SD) เพื่อค้นหา Gateway ที่ใช้งานอยู่ (WebSocket endpoint) ได้
-การ browse แบบ multicast `local.` เป็น **ความสะดวกเฉพาะ LAN เท่านั้น** Plugin `bonjour`
-ที่รวมมาด้วยเป็นเจ้าของการโฆษณาบน LAN โดยจะเริ่มทำงานอัตโนมัติบนโฮสต์ macOS และต้องเลือกเปิดใช้เองบน
-Linux, Windows และการปรับใช้ Gateway ในคอนเทนเนอร์ สำหรับการค้นหาข้ามเครือข่าย beacon เดียวกัน
-ยังสามารถเผยแพร่ผ่านโดเมน wide-area DNS-SD ที่กำหนดค่าไว้ได้ด้วย การค้นหา
-ยังคงเป็นแบบ best-effort และ **ไม่** แทนที่การเชื่อมต่อผ่าน SSH หรือ Tailnet
+OpenClaw สามารถใช้ Bonjour (mDNS/DNS-SD) เพื่อค้นหา Gateway ที่กำลังทำงานอยู่ (ปลายทาง WebSocket) การเรียกดูแบบมัลติแคสต์ `local.` เป็นเพียง **สิ่งอำนวยความสะดวกภายใน LAN เท่านั้น** โดย Plugin `bonjour` ที่มาพร้อมระบบเป็นผู้รับผิดชอบการประกาศภายใน LAN ซึ่งจะเริ่มทำงานอัตโนมัติบนโฮสต์ macOS และต้องเลือกเปิดใช้งานบน Linux, Windows และการติดตั้งใช้งาน Gateway ภายในคอนเทนเนอร์ บีคอนเดียวกันนี้ยังสามารถเผยแพร่ผ่านโดเมน DNS-SD แบบเครือข่ายบริเวณกว้างที่กำหนดค่าไว้ เพื่อให้ค้นหาข้ามเครือข่ายได้อีกด้วย การค้นหาเป็นแบบพยายามให้ดีที่สุดและ **ไม่** ใช้แทนการเชื่อมต่อผ่าน SSH หรือ Tailnet
 
-## Wide-area Bonjour (Unicast DNS-SD) ผ่าน Tailscale
+## Bonjour แบบเครือข่ายบริเวณกว้าง (Unicast DNS-SD) ผ่าน Tailscale
 
-หาก node และ gateway อยู่คนละเครือข่าย multicast mDNS จะไม่ข้าม
-ขอบเขตนั้น คุณสามารถคง UX การค้นหาเดิมไว้ได้โดยเปลี่ยนไปใช้ **unicast DNS-SD**
-("Wide-Area Bonjour") ผ่าน Tailscale
+หาก Node และ Gateway อยู่คนละเครือข่าย mDNS แบบมัลติแคสต์จะไม่สามารถข้ามขอบเขตเครือข่ายได้ คุณสามารถคงประสบการณ์การค้นหาแบบเดิมไว้โดยเปลี่ยนไปใช้ **DNS-SD แบบยูนิแคสต์** ("Bonjour แบบเครือข่ายบริเวณกว้าง") ผ่าน Tailscale:
 
-ขั้นตอนระดับสูง:
+1. เรียกใช้เซิร์ฟเวอร์ DNS บนโฮสต์ Gateway ซึ่งเข้าถึงได้ผ่าน Tailnet
+2. เผยแพร่ระเบียน DNS-SD สำหรับ `_openclaw-gw._tcp` ภายใต้โซนเฉพาะ (ตัวอย่าง: `openclaw.internal.`)
+3. กำหนดค่า **DNS แบบแยก** ของ Tailscale เพื่อให้โดเมนที่คุณเลือกได้รับการแก้ชื่อผ่านเซิร์ฟเวอร์ DNS นั้นสำหรับไคลเอนต์ รวมถึง iOS
 
-1. รัน DNS server บนโฮสต์ gateway (เข้าถึงได้ผ่าน Tailnet)
-2. เผยแพร่ระเบียน DNS-SD สำหรับ `_openclaw-gw._tcp` ภายใต้โซนเฉพาะ
-   (ตัวอย่าง: `openclaw.internal.`)
-3. กำหนดค่า Tailscale **split DNS** เพื่อให้โดเมนที่คุณเลือก resolve ผ่าน
-   DNS server นั้นสำหรับ client (รวมถึง iOS)
+`openclaw.internal.` ข้างต้นเป็นเพียงตัวอย่าง — OpenClaw รองรับโดเมนการค้นหาใดก็ได้ Node บน iOS/Android จะเรียกดูทั้ง `local.` และโดเมนแบบเครือข่ายบริเวณกว้างที่คุณกำหนดค่าไว้
 
-OpenClaw รองรับโดเมนค้นหาใดก็ได้; `openclaw.internal.` เป็นเพียงตัวอย่าง
-node iOS/Android จะ browse ทั้ง `local.` และโดเมน wide-area ที่คุณกำหนดค่าไว้
-
-### การกำหนดค่า Gateway (แนะนำ)
+### การกำหนดค่า Gateway
 
 ```json5
 {
-  gateway: { bind: "tailnet" }, // tailnet-only (recommended)
-  discovery: { wideArea: { enabled: true } }, // enables wide-area DNS-SD publishing
+  gateway: { bind: "tailnet" }, // เฉพาะ tailnet (แนะนำ)
+  discovery: { wideArea: { enabled: true, domain: "openclaw.internal" } },
 }
 ```
 
-### การตั้งค่า DNS server ครั้งเดียว (โฮสต์ gateway)
+`discovery.wideArea.domain` ยังยอมรับตัวแปรสภาพแวดล้อม `OPENCLAW_WIDE_AREA_DOMAIN` เป็นค่าทดแทนเมื่อไม่ได้ตั้งค่าไว้
+
+### การตั้งค่าเซิร์ฟเวอร์ DNS ครั้งเดียว (โฮสต์ Gateway, เฉพาะ macOS)
 
 ```bash
 openclaw dns setup --apply
 ```
 
-คำสั่งนี้ติดตั้ง CoreDNS และกำหนดค่าให้:
+คำสั่งนี้ใช้ได้เฉพาะ macOS และต้องมี Homebrew รวมถึงการเชื่อมต่อ Tailscale ที่กำลังทำงานอยู่ คำสั่งจะติดตั้ง CoreDNS (`brew install coredns`) และกำหนดค่าให้:
 
-- listen บนพอร์ต 53 เฉพาะบนอินเทอร์เฟซ Tailscale ของ gateway
+- รับฟังที่พอร์ต 53 เฉพาะบนอินเทอร์เฟซ Tailscale ของ Gateway
 - ให้บริการโดเมนที่คุณเลือก (ตัวอย่าง: `openclaw.internal.`) จาก `~/.openclaw/dns/<domain>.db`
 
-ตรวจสอบจากเครื่องที่เชื่อมต่อกับ tailnet:
+เรียกใช้โดยไม่มี `--apply` ก่อนเพื่อดูตัวอย่างแผน (โดเมน พาธไฟล์โซน IP ของ Tailnet ที่ตรวจพบ และการกำหนดค่าที่แนะนำ) โดยไม่ติดตั้งสิ่งใด
+
+ตรวจสอบจากเครื่องที่เชื่อมต่อกับ Tailnet:
 
 ```bash
 dns-sd -B _openclaw-gw._tcp openclaw.internal.
@@ -69,79 +61,65 @@ dig @<TAILNET_IPV4> -p 53 _openclaw-gw._tcp.openclaw.internal PTR +short
 
 ในคอนโซลผู้ดูแลระบบ Tailscale:
 
-- เพิ่ม nameserver ที่ชี้ไปยัง IP tailnet ของ gateway (UDP/TCP 53)
-- เพิ่ม split DNS เพื่อให้โดเมนค้นหาของคุณใช้ nameserver นั้น
+- เพิ่มเซิร์ฟเวอร์ชื่อที่ชี้ไปยัง IP ของ Tailnet ของ Gateway (UDP/TCP 53)
+- เพิ่ม DNS แบบแยกเพื่อให้โดเมนการค้นหาของคุณใช้เซิร์ฟเวอร์ชื่อนั้น
 
-เมื่อ client ยอมรับ DNS ของ tailnet แล้ว node iOS และการค้นหาของ CLI จะสามารถ browse
-`_openclaw-gw._tcp` ในโดเมนค้นหาของคุณได้โดยไม่ต้องใช้ multicast
+เมื่อไคลเอนต์ยอมรับ DNS ของ Tailnet แล้ว Node บน iOS และการค้นหาผ่าน CLI จะสามารถเรียกดู `_openclaw-gw._tcp` ในโดเมนการค้นหาของคุณได้โดยไม่ต้องใช้มัลติแคสต์
 
-### ความปลอดภัยของ Gateway listener (แนะนำ)
+### ความปลอดภัยของตัวรับฟัง Gateway
 
-พอร์ต WS ของ Gateway (ค่าเริ่มต้น `18789`) bind กับ loopback โดยค่าเริ่มต้น สำหรับการเข้าถึงผ่าน LAN/tailnet
-ให้ bind อย่างชัดเจนและเปิด auth ไว้
+โดยค่าเริ่มต้น พอร์ต WS ของ Gateway (ค่าเริ่มต้น `18789`) จะผูกกับลูปแบ็ก สำหรับการเข้าถึงผ่าน LAN/Tailnet ให้ผูกอย่างชัดเจนและเปิดใช้การยืนยันตัวตนไว้เสมอ สำหรับการตั้งค่าที่ใช้เฉพาะ Tailnet ให้ตั้งค่า `gateway.bind: "tailnet"` ใน `~/.openclaw/openclaw.json` แล้วเริ่ม Gateway ใหม่ (หรือแอปแถบเมนูของ macOS)
 
-สำหรับการตั้งค่าแบบ tailnet-only:
+## สิ่งที่ทำการประกาศ
 
-- ตั้งค่า `gateway.bind: "tailnet"` ใน `~/.openclaw/openclaw.json`
-- รีสตาร์ท Gateway (หรือรีสตาร์ทแอป menubar บน macOS)
-
-## สิ่งที่โฆษณา
-
-มีเพียง Gateway ที่โฆษณา `_openclaw-gw._tcp` การโฆษณาแบบ multicast บน LAN
-จัดให้โดย Plugin `bonjour` ที่รวมมาด้วยเมื่อเปิดใช้ Plugin; ส่วนการเผยแพร่
-DNS-SD แบบ wide-area ยังคงเป็นของ Gateway
+มีเพียง Gateway เท่านั้นที่ประกาศ `_openclaw-gw._tcp` การประกาศมัลติแคสต์ภายใน LAN มาจาก Plugin `bonjour` ที่มาพร้อมระบบเมื่อเปิดใช้งาน ส่วนการเผยแพร่ DNS-SD แบบเครือข่ายบริเวณกว้างยังคงอยู่ภายใต้การควบคุมของ Gateway
 
 ## ประเภทบริการ
 
-- `_openclaw-gw._tcp` - beacon สำหรับการขนส่งของ gateway (ใช้โดย node macOS/iOS/Android)
+- `_openclaw-gw._tcp` - บีคอนการรับส่งข้อมูลของ Gateway ซึ่ง Node บน macOS/iOS/Android ใช้งาน
 
-## คีย์ TXT (hint ที่ไม่ใช่ความลับ)
+## คีย์ TXT (ข้อมูลบอกใบ้ที่ไม่เป็นความลับ)
 
-Gateway โฆษณา hint ขนาดเล็กที่ไม่ใช่ความลับเพื่อให้โฟลว์ UI สะดวก:
-
-- `role=gateway`
-- `displayName=<friendly name>`
-- `lanHost=<hostname>.local`
-- `gatewayPort=<port>` (Gateway WS + HTTP)
-- `gatewayTls=1` (เฉพาะเมื่อเปิดใช้ TLS)
-- `gatewayTlsSha256=<sha256>` (เฉพาะเมื่อเปิดใช้ TLS และมี fingerprint)
-- `canvasPort=<port>` (เฉพาะเมื่อเปิดใช้โฮสต์ canvas; ปัจจุบันเหมือนกับ `gatewayPort`)
-- `transport=gateway`
-- `tailnetDns=<magicdns>` (เฉพาะโหมด mDNS แบบ full, เป็น hint เสริมเมื่อมี Tailnet)
-- `sshPort=<port>` (เฉพาะโหมด full; ไม่รวมในโหมด minimal และ off)
-- `cliPath=<path>` (เฉพาะโหมด full; ไม่รวมในโหมด minimal และ off)
+| คีย์                           | เมื่อปรากฏ                                                                   |
+| ----------------------------- | ------------------------------------------------------------------------------ |
+| `role=gateway`                | เสมอ                                                                        |
+| `displayName=<friendly name>` | เสมอ                                                                        |
+| `lanHost=<hostname>.local`    | เสมอ                                                                        |
+| `gatewayPort=<port>`          | เสมอ (WS + HTTP ของ Gateway)                                                    |
+| `transport=gateway`           | เสมอ                                                                        |
+| `gatewayTls=1`                | เฉพาะเมื่อเปิดใช้ TLS                                                      |
+| `gatewayTlsSha256=<sha256>`   | เฉพาะเมื่อเปิดใช้ TLS และมีลายนิ้วมือให้ใช้งาน                       |
+| `gatewayDirectReachable=1`    | เฉพาะเมื่อเข้าถึง Gateway ได้โดยตรง (ไม่ใช่เฉพาะผ่านเส้นทางรีเลย์/พร็อกซี) |
+| `canvasPort=<port>`           | เฉพาะเมื่อเปิดใช้โฮสต์แคนวาส ปัจจุบันเป็นค่าเดียวกับ `gatewayPort`     |
+| `tailnetDns=<magicdns>`       | เฉพาะโหมด mDNS แบบ `full` เป็นข้อมูลบอกใบ้เสริมเมื่อ Tailnet พร้อมใช้งาน                  |
+| `sshPort=<port>`              | เฉพาะโหมด `full` ไม่รวมอยู่ในโหมด `minimal` และ `off`                              |
+| `cliPath=<path>`              | เฉพาะโหมด `full` ไม่รวมอยู่ในโหมด `minimal` และ `off`                              |
 
 หมายเหตุด้านความปลอดภัย:
 
-- ระเบียน TXT ของ Bonjour/mDNS **ไม่ได้ผ่านการตรวจสอบตัวตน** client ต้องไม่ถือว่า TXT เป็นข้อมูล routing ที่เชื่อถือได้
-- client ควร route โดยใช้ service endpoint ที่ resolve แล้ว (SRV + A/AAAA) ให้ถือว่า `lanHost`, `tailnetDns`, `gatewayPort` และ `gatewayTlsSha256` เป็นเพียง hint เท่านั้น
-- การตั้งเป้าหมาย SSH อัตโนมัติก็ควรใช้ service host ที่ resolve แล้วเช่นกัน ไม่ใช่ hint จาก TXT เท่านั้น
-- TLS pinning ต้องไม่อนุญาตให้ `gatewayTlsSha256` ที่โฆษณามา override pin ที่เคยจัดเก็บไว้
-- node iOS/Android ควรถือว่าการเชื่อมต่อโดยตรงจากการค้นหาเป็น **TLS-only** และต้องให้ผู้ใช้ยืนยันอย่างชัดเจนก่อนเชื่อถือ fingerprint ครั้งแรก
+- ระเบียน TXT ของ Bonjour/mDNS **ไม่ได้รับการยืนยันตัวตน** ไคลเอนต์ต้องไม่ถือว่า TXT เป็นข้อมูลกำหนดเส้นทางที่เชื่อถือได้
+- ไคลเอนต์ควรกำหนดเส้นทางโดยใช้ปลายทางบริการที่แก้ชื่อแล้ว (SRV + A/AAAA) ให้ถือว่า `lanHost`, `tailnetDns`, `gatewayPort` และ `gatewayTlsSha256` เป็นเพียงข้อมูลบอกใบ้
+- การกำหนดเป้าหมาย SSH อัตโนมัติควรใช้โฮสต์บริการที่แก้ชื่อแล้วเช่นกัน ไม่ใช่ข้อมูลบอกใบ้จาก TXT เพียงอย่างเดียว
+- การตรึง TLS ต้องไม่ยอมให้ `gatewayTlsSha256` ที่ประกาศมาแทนที่ค่าตรึงที่จัดเก็บไว้ก่อนหน้านี้
+- Node บน iOS/Android ควรถือว่าการเชื่อมต่อโดยตรงจากการค้นหาเป็นแบบ **TLS เท่านั้น** และต้องให้ผู้ใช้ยืนยันอย่างชัดเจนก่อนเชื่อถือลายนิ้วมือที่พบเป็นครั้งแรก
 
-## การดีบักบน macOS
+## การแก้จุดบกพร่องบน macOS
 
-เครื่องมือที่มีในตัวและมีประโยชน์:
+เครื่องมือที่มีมาให้:
 
-- Browse instance:
+```bash
+# เรียกดูอินสแตนซ์
+dns-sd -B _openclaw-gw._tcp local.
 
-  ```bash
-  dns-sd -B _openclaw-gw._tcp local.
-  ```
+# แก้ชื่อหนึ่งอินสแตนซ์ (แทนที่ <instance>)
+dns-sd -L "<instance>" _openclaw-gw._tcp local.
+```
 
-- Resolve instance หนึ่งรายการ (แทนที่ `<instance>`):
+หากการเรียกดูทำงานได้แต่การแก้ชื่อล้มเหลว โดยทั่วไปคุณกำลังพบปัญหาจากนโยบาย LAN หรือตัวแก้ชื่อ mDNS
 
-  ```bash
-  dns-sd -L "<instance>" _openclaw-gw._tcp local.
-  ```
+## การแก้จุดบกพร่องในบันทึกของ Gateway
 
-หาก browse ได้แต่ resolve ล้มเหลว โดยปกติคุณมักเจอนโยบาย LAN หรือ
-ปัญหากับ mDNS resolver
-
-## การดีบักใน log ของ Gateway
-
-Gateway เขียนไฟล์ log แบบ rolling (พิมพ์ตอนเริ่มต้นเป็น
-`gateway log file: ...`) ให้มองหาบรรทัด `bonjour:` โดยเฉพาะ:
+Gateway จะเขียนไฟล์บันทึกแบบหมุนเวียน (แสดงเมื่อเริ่มต้นเป็น `gateway log file: ...`) ให้มองหาบรรทัด `bonjour:` โดยเฉพาะ:
 
 - `bonjour: advertise failed ...`
 - `bonjour: suppressing ciao cancellation ...`
@@ -149,163 +127,121 @@ Gateway เขียนไฟล์ log แบบ rolling (พิมพ์ตอ
 - `bonjour: watchdog detected non-announced service ...`
 - `bonjour: disabling advertiser after ... failed restarts ...`
 
-watchdog ถือว่าสถานะ `probing`, `announcing` ที่ใช้งานอยู่ และการเปลี่ยนชื่อหลัง conflict ที่ยังใหม่
-เป็นสถานะที่กำลังดำเนินการ หากบริการไม่เคยไปถึง `announced` ในที่สุด OpenClaw จะ
-สร้าง advertiser ใหม่ และหลังจากล้มเหลวซ้ำ ๆ จะปิดใช้ Bonjour สำหรับ
-โปรเซส Gateway นั้นแทนที่จะโฆษณาซ้ำไปเรื่อย ๆ
+ตัวเฝ้าระวังจะถือว่าสถานะ `probing`, `announcing` ที่กำลังทำงาน และการเปลี่ยนชื่อเนื่องจากข้อขัดแย้งที่เพิ่งเกิดขึ้น เป็นสถานะที่ยังดำเนินการอยู่ หากบริการไม่เคยเข้าสู่สถานะ `announced` OpenClaw จะสร้างตัวประกาศขึ้นใหม่ และหลังจากล้มเหลวซ้ำหลายครั้ง จะปิดใช้ Bonjour สำหรับกระบวนการ Gateway นั้นแทนที่จะประกาศใหม่ไปตลอด
 
-Bonjour ใช้ hostname ของระบบสำหรับโฮสต์ `.local` ที่โฆษณาเมื่อเป็น
-DNS label ที่ถูกต้อง หาก hostname ของระบบมีช่องว่าง underscore หรืออักขระอื่น
-ที่ไม่ถูกต้องสำหรับ DNS-label OpenClaw จะ fallback ไปที่ `openclaw.local` ตั้งค่า
-`OPENCLAW_MDNS_HOSTNAME=<name>` ก่อนเริ่ม Gateway เมื่อคุณต้องการ
-host label แบบชัดเจน
+Bonjour ใช้ชื่อโฮสต์ของระบบเป็นโฮสต์ `.local` ที่ประกาศ หากชื่อดังกล่าวเป็นป้ายกำกับ DNS ที่ถูกต้อง หากชื่อโฮสต์ของระบบมีช่องว่าง ขีดล่าง หรืออักขระอื่นที่ไม่ถูกต้องสำหรับป้ายกำกับ DNS OpenClaw จะใช้ `openclaw.local` แทน ตั้งค่า `OPENCLAW_MDNS_HOSTNAME=<name>` ก่อนเริ่ม Gateway เมื่อต้องการระบุป้ายกำกับโฮสต์อย่างชัดเจน
 
-## การดีบักบน node iOS
+## การแก้จุดบกพร่องบน Node iOS
 
-node iOS ใช้ `NWBrowser` เพื่อค้นหา `_openclaw-gw._tcp`
+Node iOS ใช้ `NWBrowser` เพื่อค้นหา `_openclaw-gw._tcp`
 
-เพื่อเก็บ log:
-
-- Settings → Gateway → Advanced → **Discovery Debug Logs**
-- Settings → Gateway → Advanced → **Discovery Logs** → ทำซ้ำปัญหา → **Copy**
-
-log จะรวมการเปลี่ยนสถานะของ browser และการเปลี่ยนแปลงของ result-set
+วิธีเก็บบันทึก: Settings -> Gateway -> Advanced -> **Discovery Debug Logs** จากนั้นไปที่ Settings -> Gateway -> Advanced -> **Discovery Logs** -> ทำให้ปัญหาเกิดขึ้นอีกครั้ง -> **Copy** บันทึกจะรวมการเปลี่ยนสถานะของเบราว์เซอร์และการเปลี่ยนแปลงของชุดผลลัพธ์
 
 ## เมื่อใดควรเปิดใช้ Bonjour
 
-Bonjour จะเริ่มอัตโนมัติสำหรับการเริ่ม Gateway แบบ empty-config บนโฮสต์ macOS เพราะ
-แอป local และ node iOS/Android ที่อยู่ใกล้กันมักพึ่งพาการค้นหาใน LAN เดียวกัน
+Bonjour จะเริ่มทำงานอัตโนมัติเมื่อเริ่มต้น Gateway ด้วยการกำหนดค่าว่างบนโฮสต์ macOS เนื่องจากแอปภายในเครื่องและ Node บน iOS/Android ที่อยู่ใกล้เคียงมักอาศัยการค้นหาภายใน LAN เดียวกัน
 
-เปิดใช้ Bonjour อย่างชัดเจนเมื่อการค้นหาอัตโนมัติใน LAN เดียวกันมีประโยชน์บน Linux,
-Windows หรือโฮสต์อื่นที่ไม่ใช่ macOS:
+เปิดใช้งานอย่างชัดเจนเมื่อการค้นหาอัตโนมัติภายใน LAN เดียวกันมีประโยชน์บน Linux, Windows หรือโฮสต์อื่นที่ไม่ใช่ macOS:
 
 ```bash
 openclaw plugins enable bonjour
 ```
 
-เมื่อเปิดใช้ Bonjour จะใช้ `discovery.mdns.mode` เพื่อตัดสินใจว่าจะเผยแพร่ metadata TXT
-มากเท่าใด โหมดเดียวกันนี้ควบคุม hint TXT เสริมในระเบียน DNS-SD แบบ wide-area ด้วย
-โหมดเริ่มต้นคือ `minimal`; ใช้ `full` เฉพาะเมื่อ client ต้องการ hint `cliPath` หรือ
-`sshPort` ใช้ `off` เพื่อระงับ multicast บน LAN โดยไม่เปลี่ยนการเปิดใช้ Plugin;
-wide-area DNS-SD ยังสามารถเผยแพร่ beacon ของ Gateway แบบ minimal ได้เมื่อ
-`discovery.wideArea.enabled` เป็น true
+เมื่อเปิดใช้งาน Bonjour จะใช้ `discovery.mdns.mode` เพื่อกำหนดปริมาณข้อมูลเมตา TXT ที่จะเผยแพร่ โดยโหมดเดียวกันนี้จะควบคุมข้อมูลบอกใบ้ TXT เสริมในระเบียน DNS-SD แบบเครือข่ายบริเวณกว้างด้วย โหมดต่าง ๆ:
+
+| โหมด                | ลักษณะการทำงาน                                                                                                                                                      |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `minimal` (ค่าเริ่มต้น) | เฉพาะคีย์ TXT หลัก ไม่รวม `sshPort`, `cliPath`, `tailnetDns`                                                                                                 |
+| `full`              | เพิ่ม `sshPort`, `cliPath`, `tailnetDns` — ใช้เมื่อไคลเอนต์ต้องการข้อมูลบอกใบ้เหล่านี้                                                                                  |
+| `off`               | ระงับมัลติแคสต์ภายใน LAN โดยไม่เปลี่ยนสถานะการเปิดใช้ Plugin โดย DNS-SD แบบเครือข่ายบริเวณกว้างยังคงเผยแพร่บีคอนแบบ `minimal` ได้เมื่อ `discovery.wideArea.enabled` เป็นจริง |
 
 ## เมื่อใดควรปิดใช้ Bonjour
 
-ปล่อยให้ Bonjour ปิดอยู่เมื่อการโฆษณาแบบ multicast บน LAN ไม่จำเป็น ใช้ไม่ได้
-หรือเป็นผลเสีย กรณีที่พบบ่อยคือ server ที่ไม่ใช่ macOS, Docker bridge networking,
-WSL หรือนโยบายเครือข่ายที่ drop mDNS multicast ในสภาพแวดล้อมเหล่านั้น
-Gateway ยังเข้าถึงได้ผ่าน URL ที่เผยแพร่ไว้, SSH, Tailnet หรือ wide-area
-DNS-SD แต่การค้นหาอัตโนมัติบน LAN ไม่น่าเชื่อถือ
+ควรปิด Bonjour ไว้เมื่อการประกาศมัลติแคสต์ภายใน LAN ไม่จำเป็น ไม่พร้อมใช้งาน หรือก่อให้เกิดปัญหา — กรณีที่พบบ่อย ได้แก่ เซิร์ฟเวอร์ที่ไม่ใช่ macOS, เครือข่ายแบบบริดจ์ของ Docker, WSL หรือนโยบายเครือข่ายที่ทิ้งมัลติแคสต์ mDNS Gateway ยังคงเข้าถึงได้ผ่าน URL ที่เผยแพร่ไว้, SSH, Tailnet หรือ DNS-SD แบบเครือข่ายบริเวณกว้าง มีเพียงการค้นหาอัตโนมัติภายใน LAN เท่านั้นที่ไม่น่าเชื่อถือ
 
-ควรใช้ environment override ที่มีอยู่เมื่อปัญหามีขอบเขตตามการปรับใช้:
+ใช้การแทนค่าด้วยตัวแปรสภาพแวดล้อมสำหรับปัญหาเฉพาะการติดตั้งใช้งาน (ปลอดภัยสำหรับอิมเมจ Docker, ไฟล์บริการ, สคริปต์เริ่มต้น และการแก้จุดบกพร่องครั้งเดียว — ค่านี้จะหายไปเมื่อสภาพแวดล้อมสิ้นสุดลง):
 
 ```bash
 OPENCLAW_DISABLE_BONJOUR=1
 ```
 
-การตั้งค่านี้ปิดการโฆษณาแบบ multicast บน LAN โดยไม่เปลี่ยนการกำหนดค่า Plugin
-ปลอดภัยสำหรับ Docker image, service file, launch script และการดีบักเฉพาะครั้ง
-เพราะการตั้งค่านี้หายไปเมื่อ environment หายไป
-
-ใช้การกำหนดค่า Plugin เมื่อคุณตั้งใจปิด Plugin การค้นหา LAN ที่รวมมาด้วย
-สำหรับ config ของ OpenClaw นั้น:
+ใช้การกำหนดค่า Plugin เมื่อต้องการปิด Plugin การค้นหาภายใน LAN ที่มาพร้อมระบบโดยเจตนาสำหรับการกำหนดค่า OpenClaw นั้น:
 
 ```bash
 openclaw plugins disable bonjour
 ```
 
-## ข้อควรระวังของ Docker
+## ข้อควรระวังเกี่ยวกับ Docker
 
-Plugin Bonjour ที่รวมมาด้วยจะปิดการโฆษณาแบบ multicast บน LAN อัตโนมัติในคอนเทนเนอร์
-ที่ตรวจพบเมื่อไม่ได้ตั้งค่า `OPENCLAW_DISABLE_BONJOUR` เครือข่าย Docker bridge
-โดยปกติจะไม่ forward mDNS multicast (`224.0.0.251:5353`) ระหว่างคอนเทนเนอร์
-กับ LAN ดังนั้นการโฆษณาจากคอนเทนเนอร์จึงแทบไม่ทำให้การค้นหาใช้งานได้
+Plugin Bonjour ที่มาพร้อมระบบจะปิดการประกาศมัลติแคสต์ภายใน LAN โดยอัตโนมัติในคอนเทนเนอร์ที่ตรวจพบ เมื่อไม่ได้ตั้งค่า `OPENCLAW_DISABLE_BONJOUR` เครือข่ายแบบบริดจ์ของ Docker โดยทั่วไปไม่ส่งต่อมัลติแคสต์ mDNS (`224.0.0.251:5353`) ระหว่างคอนเทนเนอร์กับ LAN ดังนั้นการประกาศจากคอนเทนเนอร์จึงแทบไม่ทำให้การค้นหาทำงานได้
 
-ข้อควรระวังสำคัญ:
+ข้อควรระวัง:
 
-- Bonjour เริ่มอัตโนมัติบนโฮสต์ macOS และต้องเลือกเปิดใช้เองที่อื่น การปล่อยให้
-  ปิดอยู่ไม่ได้หยุด Gateway; เพียงแค่ข้ามการโฆษณาแบบ multicast บน LAN
-- การปิดใช้ Bonjour ไม่เปลี่ยน `gateway.bind`; Docker ยังใช้ค่าเริ่มต้นเป็น
-  `OPENCLAW_GATEWAY_BIND=lan` เพื่อให้พอร์ตโฮสต์ที่เผยแพร่ทำงานได้
-- การปิดใช้ Bonjour ไม่ได้ปิด wide-area DNS-SD ใช้การค้นหาแบบ wide-area
-  หรือ Tailnet เมื่อ Gateway และ node ไม่ได้อยู่บน LAN เดียวกัน
-- การใช้ `OPENCLAW_CONFIG_DIR` เดียวกันนอก Docker ซ้ำจะไม่คงนโยบาย
-  auto-disable ของคอนเทนเนอร์ไว้
-- ตั้งค่า `OPENCLAW_DISABLE_BONJOUR=0` เฉพาะสำหรับ host networking, macvlan หรือเครือข่ายอื่น
-  ที่ทราบว่า mDNS multicast ผ่านได้; ตั้งเป็น `1` เพื่อบังคับปิด
+- Bonjour เริ่มทำงานอัตโนมัติบนโฮสต์ macOS และต้องเลือกเปิดใช้งานบนระบบอื่น การปิดไว้ไม่ได้หยุด Gateway แต่เพียงข้ามการประกาศมัลติแคสต์ภายใน LAN
+- การปิด Bonjour ไม่เปลี่ยน `gateway.bind` โดย Docker ยังคงใช้ค่าเริ่มต้น `OPENCLAW_GATEWAY_BIND=lan` เพื่อให้พอร์ตโฮสต์ที่เผยแพร่ไว้ทำงานได้
+- การปิด Bonjour ไม่ได้ปิด DNS-SD แบบเครือข่ายบริเวณกว้าง ใช้การค้นหาแบบเครือข่ายบริเวณกว้างหรือ Tailnet เมื่อ Gateway และ Node ไม่ได้อยู่บน LAN เดียวกัน
+- การนำ `OPENCLAW_CONFIG_DIR` เดียวกันไปใช้ซ้ำนอก Docker จะไม่คงนโยบายการปิดอัตโนมัติของคอนเทนเนอร์ไว้
+- ตั้งค่า `OPENCLAW_DISABLE_BONJOUR=0` เฉพาะสำหรับเครือข่ายโฮสต์, macvlan หรือเครือข่ายอื่นที่ทราบว่ามัลติแคสต์ mDNS สามารถผ่านได้ ตั้งค่าเป็น `1` เพื่อบังคับปิด
 
-## การแก้ปัญหาเมื่อ Bonjour ถูกปิดใช้
+## การแก้ไขปัญหาเมื่อ Bonjour ถูกปิด
 
-หาก node ไม่ค้นพบ Gateway อัตโนมัติอีกหลังการตั้งค่า Docker:
+หาก Node ไม่ค้นพบ Gateway โดยอัตโนมัติอีกต่อไปหลังตั้งค่า Docker:
 
-1. ยืนยันว่า Gateway กำลังรันในโหมด auto, forced-on หรือ forced-off:
+1. ตรวจสอบว่า Gateway กำลังทำงานในโหมดอัตโนมัติ บังคับเปิด หรือบังคับปิด:
 
    ```bash
    docker compose config | grep OPENCLAW_DISABLE_BONJOUR
    ```
 
-2. ยืนยันว่า Gateway เองเข้าถึงได้ผ่านพอร์ตที่เผยแพร่:
+2. ตรวจสอบว่าสามารถเข้าถึงตัว Gateway เองผ่านพอร์ตที่เผยแพร่ไว้:
 
    ```bash
    curl -fsS http://127.0.0.1:18789/healthz
    ```
 
-3. ใช้ target โดยตรงเมื่อ Bonjour ถูกปิดใช้:
-   - Control UI หรือเครื่องมือ local: `http://127.0.0.1:18789`
-   - client บน LAN: `http://<gateway-host>:18789`
-   - client ข้ามเครือข่าย: Tailnet MagicDNS, Tailnet IP, SSH tunnel หรือ
-     wide-area DNS-SD
+3. ใช้เป้าหมายโดยตรงเมื่อ Bonjour ถูกปิด:
+   - Control UI หรือเครื่องมือภายในเครื่อง: `http://127.0.0.1:18789`
+   - ไคลเอนต์ใน LAN: `http://<gateway-host>:18789`
+   - ไคลเอนต์ข้ามเครือข่าย: Tailnet MagicDNS, IP ของ Tailnet, อุโมงค์ SSH หรือ DNS-SD แบบเครือข่ายบริเวณกว้าง
 
-4. หากคุณตั้งใจเปิดใช้ Plugin Bonjour ใน Docker และบังคับโฆษณา
-   ด้วย `OPENCLAW_DISABLE_BONJOUR=0` ให้ทดสอบ multicast จากโฮสต์:
+4. หากคุณจงใจเปิดใช้ Plugin Bonjour ใน Docker และบังคับการประกาศด้วย `OPENCLAW_DISABLE_BONJOUR=0` ให้ทดสอบมัลติแคสต์จากโฮสต์:
 
    ```bash
    dns-sd -B _openclaw-gw._tcp local.
    ```
 
-   หาก browse ได้ผลว่าง หรือ log ของ Gateway แสดงการยกเลิกจาก ciao watchdog
-   ซ้ำ ๆ ให้คืนค่า `OPENCLAW_DISABLE_BONJOUR=1` และใช้ route โดยตรงหรือ
-   Tailnet
+   หากการเรียกดูไม่แสดงผลลัพธ์ หรือบันทึกของ Gateway แสดงการยกเลิกจากตัวเฝ้าระวัง ciao ซ้ำ ๆ ให้คืนค่า `OPENCLAW_DISABLE_BONJOUR=1` และใช้เส้นทางโดยตรงหรือเส้นทางผ่าน Tailnet
 
-## โหมดความล้มเหลวที่พบบ่อย
+## รูปแบบความล้มเหลวที่พบบ่อย
 
-- **Bonjour ไม่ข้ามเครือข่าย**: ใช้ Tailnet หรือ SSH
-- **Multicast ถูกบล็อก**: เครือข่าย Wi-Fi บางแห่งปิดใช้ mDNS
-- **Advertiser ค้างอยู่ใน probing/announcing**: โฮสต์ที่ multicast ถูกบล็อก,
-  bridge ของคอนเทนเนอร์, WSL หรือการเปลี่ยนแปลงของอินเทอร์เฟซอาจทำให้ ciao advertiser อยู่ใน
-  สถานะที่ยังไม่ announced OpenClaw จะลองซ้ำไม่กี่ครั้งแล้วปิดใช้ Bonjour
-  สำหรับโปรเซส Gateway ปัจจุบันแทนที่จะรีสตาร์ท advertiser ไปเรื่อย ๆ
-- **Docker bridge networking**: Bonjour ปิดอัตโนมัติในคอนเทนเนอร์ที่ตรวจพบ
-  ตั้งค่า `OPENCLAW_DISABLE_BONJOUR=0` เฉพาะสำหรับ host, macvlan หรือเครือข่ายอื่น
-  ที่รองรับ mDNS
-- **Sleep / การเปลี่ยนแปลงของอินเทอร์เฟซ**: macOS อาจ drop ผลลัพธ์ mDNS ชั่วคราว; ลองใหม่
-- **Browse ได้แต่ resolve ล้มเหลว**: ใช้ชื่อเครื่องให้ง่าย (หลีกเลี่ยง emoji หรือ
-  เครื่องหมายวรรคตอน) แล้วรีสตาร์ท Gateway ชื่อ service instance มาจาก
-  host name ดังนั้นชื่อที่ซับซ้อนเกินไปอาจทำให้ resolver บางตัวสับสนได้
+- **Bonjour ไม่สามารถข้ามเครือข่ายได้**: ใช้ Tailnet หรือ SSH
+- **มัลติแคสต์ถูกบล็อก**: เครือข่าย Wi-Fi บางเครือข่ายปิดใช้งาน mDNS
+- **ตัวประกาศค้างอยู่ในสถานะตรวจสอบ/ประกาศ**: โฮสต์ที่บล็อกมัลติแคสต์ บริดจ์ของคอนเทนเนอร์ WSL หรือการเปลี่ยนแปลงอินเทอร์เฟซบ่อยครั้ง อาจทำให้ตัวประกาศ ciao อยู่ในสถานะที่ไม่ได้ประกาศ OpenClaw จะลองใหม่สองสามครั้ง จากนั้นปิดใช้งาน Bonjour สำหรับโปรเซส Gateway ปัจจุบัน แทนที่จะเริ่มตัวประกาศใหม่ไปเรื่อย ๆ
+- **เครือข่ายบริดจ์ของ Docker**: Bonjour จะปิดใช้งานโดยอัตโนมัติเมื่อตรวจพบคอนเทนเนอร์ ตั้งค่า `OPENCLAW_DISABLE_BONJOUR=0` เฉพาะสำหรับเครือข่ายแบบโฮสต์ macvlan หรือเครือข่ายอื่นที่รองรับ mDNS
+- **การพักเครื่อง/การเปลี่ยนแปลงอินเทอร์เฟซบ่อยครั้ง**: macOS อาจไม่แสดงผลลัพธ์ mDNS ชั่วคราว ให้ลองใหม่
+- **เรียกดูได้แต่แก้ชื่อไม่ได้**: ใช้ชื่อเครื่องที่เรียบง่าย (หลีกเลี่ยงอีโมจิหรือเครื่องหมายวรรคตอน) แล้วเริ่ม Gateway ใหม่ ชื่ออินสแตนซ์บริการมาจากชื่อโฮสต์ ดังนั้นชื่อที่ซับซ้อนเกินไปอาจทำให้ตัวแก้ชื่อบางตัวทำงานสับสน
 
-## ชื่อ instance ที่ escape แล้ว (`\032`)
+## ชื่ออินสแตนซ์ที่มีการหลีกอักขระ (`\032`)
 
-Bonjour/DNS-SD มัก escape byte ในชื่อ service instance เป็นลำดับ decimal `\DDD`
-(เช่น ช่องว่างจะกลายเป็น `\032`)
+Bonjour/DNS-SD มักหลีกไบต์ในชื่ออินสแตนซ์บริการเป็นลำดับเลขฐานสิบ `\DDD` (ช่องว่างจะกลายเป็น `\032`) ซึ่งเป็นพฤติกรรมปกติในระดับโปรโตคอล ส่วนติดต่อผู้ใช้ควรถอดรหัสเพื่อแสดงผล (iOS ใช้ `BonjourEscapes.decode`)
 
-- สิ่งนี้เป็นปกติในระดับโปรโตคอล
-- UI ควรถอดรหัสเพื่อแสดงผล (iOS ใช้ `BonjourEscapes.decode`)
+## การเปิดใช้งาน / การปิดใช้งาน / การกำหนดค่า
 
-## การเปิดใช้ / ปิดใช้ / การกำหนดค่า
+| การตั้งค่า                                             | ผลลัพธ์                                                                                             |
+| ---------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `openclaw plugins enable bonjour`                    | เปิดใช้งาน Plugin การค้นหาภายใน LAN ที่มาพร้อมระบบบนโฮสต์ซึ่งไม่ได้เปิดใช้งานเป็นค่าเริ่มต้น |
+| `openclaw plugins disable bonjour`                   | ปิดใช้งานการประกาศแบบมัลติแคสต์บน LAN โดยปิดใช้งาน Plugin ที่มาพร้อมระบบ                    |
+| `OPENCLAW_DISABLE_BONJOUR=1` (หรือ `true`/`yes`/`on`)  | ปิดใช้งานการประกาศแบบมัลติแคสต์บน LAN โดยไม่เปลี่ยนการกำหนดค่า Plugin                         |
+| `OPENCLAW_DISABLE_BONJOUR=0` (หรือ `false`/`no`/`off`) | บังคับเปิดการประกาศแบบมัลติแคสต์บน LAN รวมถึงภายในคอนเทนเนอร์ที่ตรวจพบ                         |
+| `discovery.mdns.mode`                                | `off` \| `minimal` (ค่าเริ่มต้น) \| `full` — ดูโหมดด้านบน                                        |
+| `gateway.bind`                                       | ควบคุมโหมดการผูกของ Gateway ใน `~/.openclaw/openclaw.json`                                      |
+| `OPENCLAW_SSH_PORT`                                  | แทนที่พอร์ต SSH เมื่อมีการประกาศ `sshPort` (โหมด full)                                            |
+| `OPENCLAW_TAILNET_DNS`                               | เผยแพร่คำแนะนำ MagicDNS ใน TXT เมื่อเปิดใช้โหมด full ของ mDNS                                    |
+| `OPENCLAW_CLI_PATH`                                  | แทนที่พาธ CLI ที่ประกาศ (โหมด full)                                                                |
 
-- โฮสต์ macOS จะเริ่มต้น Plugin การค้นหา LAN ที่บันเดิลมาให้โดยอัตโนมัติตามค่าเริ่มต้น
-- `openclaw plugins enable bonjour` เปิดใช้ Plugin การค้นหา LAN ที่บันเดิลมาให้บนโฮสต์ที่ไม่ได้เปิดใช้ตามค่าเริ่มต้น
-- `openclaw plugins disable bonjour` ปิดการโฆษณาแบบมัลติคาสต์บน LAN โดยปิดใช้ Plugin ที่บันเดิลมาให้
-- `OPENCLAW_DISABLE_BONJOUR=1` ปิดการโฆษณาแบบมัลติคาสต์บน LAN โดยไม่เปลี่ยนการกำหนดค่า Plugin; ค่าที่ถือว่าเป็นจริงที่ยอมรับคือ `1`, `true`, `yes` และ `on` (เดิม: `OPENCLAW_DISABLE_BONJOUR`)
-- `OPENCLAW_DISABLE_BONJOUR=0` บังคับเปิดการโฆษณาแบบมัลติคาสต์บน LAN รวมถึงภายในคอนเทนเนอร์ที่ตรวจพบ; ค่าที่ถือว่าเป็นเท็จที่ยอมรับคือ `0`, `false`, `no` และ `off`
-- เมื่อเปิดใช้ Plugin Bonjour และไม่ได้ตั้งค่า `OPENCLAW_DISABLE_BONJOUR` ไว้ Bonjour จะโฆษณาบนโฮสต์ทั่วไปและปิดใช้อัตโนมัติภายในคอนเทนเนอร์ที่ตรวจพบ
-- `gateway.bind` ใน `~/.openclaw/openclaw.json` ควบคุมโหมดการผูกของ Gateway
-- `OPENCLAW_SSH_PORT` แทนที่พอร์ต SSH เมื่อมีการโฆษณา `sshPort` (เดิม: `OPENCLAW_SSH_PORT`)
-- `OPENCLAW_TAILNET_DNS` เผยแพร่คำใบ้ MagicDNS ใน TXT เมื่อเปิดใช้โหมด mDNS แบบเต็ม (เดิม: `OPENCLAW_TAILNET_DNS`)
-- `OPENCLAW_CLI_PATH` แทนที่เส้นทาง CLI ที่โฆษณา (เดิม: `OPENCLAW_CLI_PATH`)
+ตามค่าเริ่มต้น โฮสต์ macOS จะเริ่ม Plugin การค้นหาภายใน LAN ที่มาพร้อมระบบโดยอัตโนมัติ เมื่อเปิดใช้งาน Plugin Bonjour และไม่ได้ตั้งค่า `OPENCLAW_DISABLE_BONJOUR` Bonjour จะประกาศบนโฮสต์ทั่วไป และปิดใช้งานโดยอัตโนมัติภายในคอนเทนเนอร์ที่ตรวจพบ (Docker, เครื่อง Fly.io และรันไทม์คอนเทนเนอร์ที่ใช้กันทั่วไป)
 
 ## เอกสารที่เกี่ยวข้อง
 
-- นโยบายการค้นหาและการเลือกทรานสปอร์ต: [การค้นหา](/th/gateway/discovery)
-- การจับคู่ Node + การอนุมัติ: [การจับคู่ Gateway](/th/gateway/pairing)
+- นโยบายการค้นหาและการเลือกการรับส่งข้อมูล: [การค้นหา](/th/gateway/discovery)
+- การจับคู่ Node และการอนุมัติ: [การจับคู่ Gateway](/th/gateway/pairing)

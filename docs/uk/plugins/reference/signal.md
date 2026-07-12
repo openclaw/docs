@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або перевіряєте плагін Signal
-summary: Додає поверхню каналу Signal для надсилання й отримання повідомлень OpenClaw.
+    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin Signal
+summary: Додає канал Signal для надсилання й отримання повідомлень OpenClaw.
 title: Plugin Signal
 x-i18n:
-    generated_at: "2026-06-27T18:01:41Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:38:02Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 7136222af25d73d50b9a973d287b863176c58d634da4c9d7726d5cc6942135bb
@@ -15,17 +15,17 @@ x-i18n:
 
 # Plugin Signal
 
-Додає канальний інтерфейс Signal для надсилання й отримання повідомлень OpenClaw.
+Додає канал Signal для надсилання та отримання повідомлень OpenClaw.
 
 ## Розповсюдження
 
 - Пакет: `@openclaw/signal`
-- Маршрут установлення: npm; ClawHub: `clawhub:@openclaw/signal`
+- Спосіб встановлення: npm; ClawHub: `clawhub:@openclaw/signal`
 
 ## Інтерфейс
 
-channels: signal
+канали: signal
 
 ## Пов’язана документація
 
-- [signal](/uk/channels/signal)
+- [Signal](/uk/channels/signal)

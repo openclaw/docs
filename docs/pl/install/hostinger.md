@@ -1,106 +1,106 @@
 ---
 read_when:
-    - Konfigurowanie OpenClaw na Hostinger
-    - Szukasz zarządzanego VPS dla OpenClaw
-    - Korzystanie z Hostinger 1-Click OpenClaw
-summary: Hostowanie OpenClaw na Hostinger
+    - Konfigurowanie OpenClaw na Hostingerze
+    - Szukasz zarządzanego VPS-a dla OpenClaw
+    - Korzystanie z OpenClaw instalowanego jednym kliknięciem w Hostinger
+summary: Hostuj OpenClaw na Hostingerze
 title: Hostinger
 x-i18n:
-    generated_at: "2026-04-24T09:17:21Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: d9d221f54d6cd1697a48615c09616ad86968937941899ea7018622302e6ceb53
-    source_path: install/hostinger.md
-    workflow: 15
+    generated_at: "2026-07-12T15:13:32Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 7dc49e741f8581928553e2426ed91f92df6e7b0c31dd8780c0d6e891a07be263
+    source_path: install/hostinger.md
+    workflow: 16
 ---
 
-Uruchom trwały Gateway OpenClaw na [Hostinger](https://www.hostinger.com/openclaw) przez zarządzone wdrożenie **1-Click** albo instalację na **VPS**.
+Uruchom trwały Gateway OpenClaw na platformie [Hostinger](https://www.hostinger.com/openclaw) — jako zarządzane wdrożenie **1-Click** albo instalację na **VPS**, którą administrujesz samodzielnie.
 
 ## Wymagania wstępne
 
-- konto Hostinger ([rejestracja](https://www.hostinger.com/openclaw))
-- około 5-10 minut
+- Konto Hostinger ([rejestracja](https://www.hostinger.com/openclaw))
+- Około 5–10 minut
 
 ## Opcja A: OpenClaw 1-Click
 
-Najszybszy sposób na start. Hostinger obsługuje infrastrukturę, Docker i automatyczne aktualizacje.
+Hostinger zajmuje się infrastrukturą, Dockerem i automatycznymi aktualizacjami. To najszybszy sposób na uruchomienie instancji.
 
 <Steps>
-  <Step title="Kup i uruchom">
-    1. Na [stronie Hostinger OpenClaw](https://www.hostinger.com/openclaw) wybierz plan Managed OpenClaw i dokończ zakup.
+  <Step title="Zakup i uruchomienie">
+    1. Na [stronie OpenClaw w Hostinger](https://www.hostinger.com/openclaw) wybierz zarządzany plan OpenClaw i sfinalizuj zakup.
 
     <Note>
-    Podczas zakupu możesz wybrać kredyty **Ready-to-Use AI**, które są opłacane z góry i od razu integrowane w OpenClaw — bez potrzeby zakładania zewnętrznych kont ani używania kluczy API od innych dostawców. Możesz od razu zacząć czatować. Alternatywnie podczas konfiguracji możesz podać własny klucz od Anthropic, OpenAI, Google Gemini albo xAI.
+    Podczas finalizowania zakupu możesz wybrać środki **Ready-to-Use AI**, które są kupowane z góry i natychmiast integrowane z OpenClaw — nie potrzebujesz zewnętrznych kont ani kluczy API innych dostawców. Możesz od razu rozpocząć rozmowę. Możesz też podczas konfiguracji podać własny klucz Anthropic, OpenAI, Google Gemini lub xAI.
     </Note>
 
   </Step>
 
-  <Step title="Wybierz kanał wiadomości">
-    Wybierz jeden lub więcej kanałów do połączenia:
+  <Step title="Wybór kanału komunikacji">
+    Wybierz co najmniej jeden kanał do połączenia:
 
-    - **WhatsApp** — zeskanuj kod QR pokazany w kreatorze konfiguracji.
-    - **Telegram** — wklej token bota z [BotFather](https://t.me/BotFather).
+    - **WhatsApp** — zeskanuj kod QR wyświetlony w kreatorze konfiguracji.
+    - **Telegram** — wklej token bota otrzymany od [BotFather](https://t.me/BotFather).
 
   </Step>
 
-  <Step title="Zakończ instalację">
-    Kliknij **Finish**, aby wdrożyć instancję. Gdy będzie gotowa, uzyskaj dostęp do dashboardu OpenClaw z poziomu **OpenClaw Overview** w hPanel.
+  <Step title="Dokończenie instalacji">
+    Kliknij **Finish**, aby wdrożyć instancję. Gdy będzie gotowa, otwórz panel OpenClaw z poziomu **OpenClaw Overview** w hPanel.
   </Step>
 
 </Steps>
 
 ## Opcja B: OpenClaw na VPS
 
-Większa kontrola nad serwerem. Hostinger wdraża OpenClaw przez Docker na twoim VPS, a ty zarządzasz nim przez **Docker Manager** w hPanel.
+Ta opcja zapewnia większą kontrolę nad serwerem. Hostinger wdraża OpenClaw za pośrednictwem Dockera na Twoim VPS; zarządzasz nim za pomocą **Docker Manager** w hPanel.
 
 <Steps>
-  <Step title="Kup VPS">
-    1. Na [stronie Hostinger OpenClaw](https://www.hostinger.com/openclaw) wybierz plan OpenClaw on VPS i dokończ zakup.
+  <Step title="Zakup VPS">
+    1. Na [stronie OpenClaw w Hostinger](https://www.hostinger.com/openclaw) wybierz plan OpenClaw na VPS i sfinalizuj zakup.
 
     <Note>
-    Podczas zakupu możesz wybrać kredyty **Ready-to-Use AI** — są one opłacane z góry i od razu integrowane w OpenClaw, dzięki czemu możesz zacząć czatować bez żadnych zewnętrznych kont ani kluczy API od innych dostawców.
+    Podczas finalizowania zakupu możesz wybrać środki **Ready-to-Use AI** — są one kupowane z góry i natychmiast integrowane z OpenClaw, dzięki czemu możesz rozpocząć rozmowę bez zewnętrznych kont ani kluczy API innych dostawców.
     </Note>
 
   </Step>
 
-  <Step title="Skonfiguruj OpenClaw">
-    Gdy VPS zostanie przygotowany, wypełnij pola konfiguracji:
+  <Step title="Konfiguracja OpenClaw">
+    Po przygotowaniu VPS wypełnij pola konfiguracji:
 
-    - **Gateway token** — generowany automatycznie; zachowaj go na później.
-    - **WhatsApp number** — twój numer z kodem kraju (opcjonalnie).
-    - **Telegram bot token** — z [BotFather](https://t.me/BotFather) (opcjonalnie).
-    - **API keys** — potrzebne tylko wtedy, gdy podczas zakupu nie wybrałeś kredytów Ready-to-Use AI.
+    - **Gateway token** — generowany automatycznie; zapisz go do późniejszego użycia.
+    - **WhatsApp number** — Twój numer wraz z numerem kierunkowym kraju (opcjonalnie).
+    - **Telegram bot token** — otrzymany od [BotFather](https://t.me/BotFather) (opcjonalnie).
+    - **API keys** — wymagane tylko wtedy, gdy podczas finalizowania zakupu nie wybrano środków Ready-to-Use AI.
 
   </Step>
 
-  <Step title="Uruchom OpenClaw">
-    Kliknij **Deploy**. Gdy wszystko będzie działać, otwórz dashboard OpenClaw z hPanel, klikając **Open**.
+  <Step title="Uruchomienie OpenClaw">
+    Kliknij **Deploy**. Po uruchomieniu otwórz panel OpenClaw z poziomu hPanel, klikając **Open**.
   </Step>
 
 </Steps>
 
-Logami, restartami i aktualizacjami zarządza się bezpośrednio z interfejsu Docker Manager w hPanel. Aby zaktualizować, kliknij **Update** w Docker Manager, co pobierze najnowszy obraz.
+Dzienniki, ponowne uruchamianie i aktualizacje są obsługiwane w interfejsie Docker Manager w hPanel. Aby przeprowadzić aktualizację, naciśnij **Update** w Docker Manager, co spowoduje pobranie najnowszego obrazu.
 
-## Zweryfikuj konfigurację
+## Weryfikacja konfiguracji
 
-Wyślij „Hi” do swojego asystenta na podłączonym kanale. OpenClaw odpowie i przeprowadzi cię przez początkowe preferencje.
+Wyślij „Cześć” do asystenta w połączonym kanale. OpenClaw odpowie i przeprowadzi Cię przez konfigurację początkowych preferencji.
 
 ## Rozwiązywanie problemów
 
-**Dashboard się nie ładuje** — poczekaj kilka minut, aż kontener zakończy provisioning. Sprawdź logi Docker Manager w hPanel.
+**Panel się nie wczytuje** — poczekaj kilka minut na zakończenie przygotowywania kontenera, a następnie sprawdź dzienniki Docker Manager w hPanel.
 
-**Kontener Docker ciągle się restartuje** — otwórz logi Docker Manager i sprawdź błędy konfiguracji (brakujące tokeny, nieprawidłowe klucze API).
+**Kontener Docker ciągle uruchamia się ponownie** — otwórz dzienniki Docker Manager i poszukaj błędów konfiguracji, takich jak brakujące tokeny lub nieprawidłowe klucze API.
 
-**Bot Telegram nie odpowiada** — wyślij wiadomość z kodem parowania bezpośrednio z Telegram jako wiadomość w swoim czacie OpenClaw, aby zakończyć połączenie.
+**Bot Telegram nie odpowiada** — jeśli wymagane jest parowanie wiadomości prywatnych, nieznany nadawca zamiast odpowiedzi otrzyma krótki kod parowania. Zatwierdź go w czacie panelu OpenClaw lub za pomocą polecenia `openclaw pairing approve telegram <CODE>`, jeśli masz dostęp do powłoki kontenera. Zobacz [Parowanie](/pl/channels/pairing).
 
-## Kolejne kroki
+## Następne kroki
 
-- [Kanały](/pl/channels) — połącz Telegram, WhatsApp, Discord i inne
+- [Kanały](/pl/channels) — połącz Telegram, WhatsApp, Discord i inne usługi
 - [Konfiguracja Gateway](/pl/gateway/configuration) — wszystkie opcje konfiguracji
 
-## Powiązane
+## Powiązane materiały
 
-- [Przegląd instalacji](/pl/install)
+- [Omówienie instalacji](/pl/install)
 - [Hosting VPS](/pl/vps)
 - [DigitalOcean](/pl/install/digitalocean)

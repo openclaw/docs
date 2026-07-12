@@ -1,12 +1,12 @@
 ---
 read_when:
     - Docker を使用してクラウド VM に OpenClaw をデプロイしています
-    - 共有バイナリのベイク、永続化、更新フローが必要です
-summary: 長期稼働する OpenClaw Gateway ホスト向けの共有 Docker VM ランタイム手順
+    - 共有バイナリのビルド、永続化、更新フローが必要です
+summary: 長期間稼働する OpenClaw Gateway ホスト向けの共有 Docker VM ランタイム手順
 title: Docker VM ランタイム
 x-i18n:
-    generated_at: "2026-07-05T11:25:53Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:18:57Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: d1c474b1f826077ac03c7aaa1e334ed2f38d2de2770f32f2cc907846ecc8bb19
@@ -14,25 +14,25 @@ x-i18n:
     workflow: 16
 ---
 
-GCP、Hetzner、および類似の VPS プロバイダーなど、VM ベースの Docker インストール向けの共有ランタイム手順。
+GCP、Hetzner、および同様のVPSプロバイダーなど、VMベースのDockerインストールに共通するランタイム手順です。
 
 ## 必要なバイナリをイメージに組み込む
 
-実行中のコンテナ内でバイナリをインストールするのは罠です。ランタイムでインストールされたものは、再起動時に失われます。スキルが必要とするすべての外部バイナリを、ビルド時にイメージへ組み込んでください。
+実行中のコンテナ内にバイナリをインストールする方法は避けてください。ランタイムにインストールしたものは、再起動すると失われます。スキルが必要とするすべての外部バイナリを、ビルド時にイメージへ組み込んでください。
 
 以下の例では、アルファベット順に3つのバイナリのみを扱います。
 
-- Gmail アクセス用の `gog`（`gogcli` 由来）
-- Google Places 用の `goplaces`
-- WhatsApp 用の `wacli`
+- Gmailへのアクセス用の`gog`（`gogcli`から提供）
+- Google Places用の`goplaces`
+- WhatsApp用の`wacli`
 
-これらは例であり、完全な一覧ではありません。スキルが必要とするバイナリを、同じパターンで必要なだけインストールしてください。後から新しいバイナリを必要とするスキルを追加する場合は、次のようにします。
+これらは例であり、完全な一覧ではありません。同じパターンを使用して、スキルが必要とする数だけバイナリをインストールしてください。後から新しいバイナリを必要とするスキルを追加する場合は、次の手順を実行します。
 
-1. Dockerfile を更新します。
+1. Dockerfileを更新します。
 2. イメージを再ビルドします。
 3. コンテナを再起動します。
 
-**Dockerfile の例**
+**Dockerfileの例**
 
 ```dockerfile
 FROM node:24-bookworm
@@ -78,7 +78,7 @@ CMD ["node","dist/index.js"]
 ```
 
 <Note>
-上記の URL は例です。ARM ベースの VM では、`arm64` アセットを選択してください。再現可能なビルドにするには、バージョン付きリリース URL に固定してください。
+上記のURLは例です。ARMベースのVMでは、`arm64`アセットを選択してください。再現可能なビルドにするには、バージョンを指定したリリースURLに固定してください。
 </Note>
 
 ## ビルドと起動
@@ -88,7 +88,7 @@ docker compose build
 docker compose up -d openclaw-gateway
 ```
 
-`pnpm install --frozen-lockfile` 中にビルドが `Killed` または終了コード 137 で失敗する場合、VM のメモリが不足しています。再試行する前に、より大きいマシンクラスを使用してください。
+`pnpm install --frozen-lockfile`の実行中に`Killed`または終了コード137でビルドが失敗した場合、VMのメモリが不足しています。再試行する前に、より大きなマシンクラスを使用してください。
 
 バイナリを確認します。
 
@@ -98,7 +98,7 @@ docker compose exec openclaw-gateway which goplaces
 docker compose exec openclaw-gateway which wacli
 ```
 
-期待される出力:
+期待される出力：
 
 ```text
 /usr/local/bin/gog
@@ -106,38 +106,38 @@ docker compose exec openclaw-gateway which wacli
 /usr/local/bin/wacli
 ```
 
-Gateway が起動していることを確認します。
+Gatewayが起動していることを確認します。
 
 ```bash
 docker compose logs -f openclaw-gateway
 curl -fsS http://127.0.0.1:18789/healthz
 ```
 
-`/healthz` が 200 レスポンスを返す場合、Gateway プロセスがリッスン中で正常であることを確認できます。組み込みイメージの `HEALTHCHECK` は同じエンドポイントをポーリングします。
+`/healthz`が200レスポンスを返せば、Gatewayプロセスがリッスン中で正常であることを確認できます。組み込みイメージの`HEALTHCHECK`も同じエンドポイントをポーリングします。
 
-## 何がどこに永続化されるか
+## 保存場所と永続化対象
 
-OpenClaw は Docker 内で実行されますが、Docker は信頼できる情報源ではありません。長期間保持されるすべての状態は、再起動、再ビルド、リブートをまたいで存続する必要があります。
+OpenClawはDocker内で動作しますが、Dockerは信頼できる唯一の情報源ではありません。長期間保持するすべての状態は、再起動、再ビルド、およびリブート後も維持される必要があります。
 
-| コンポーネント | 場所 | 永続化メカニズム | 備考 |
-| ---------------------- | ------------------------------------------------------ | ---------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| Gateway 設定 | `/home/node/.openclaw/` | ホストボリュームマウント | `openclaw.json` を含む |
-| チャンネル/プロバイダー認証情報 | `/home/node/.openclaw/credentials/` | ホストボリュームマウント | チャンネルおよびプロバイダーの認証情報マテリアル |
-| モデル認証プロファイル | `/home/node/.openclaw/agents/` | ホストボリュームマウント | `agents/<agentId>/agent/auth-profiles.json`（OAuth、API キー） |
-| レガシー OAuth キーファイル | `/home/node/.config/openclaw/` | ホストボリュームマウント | 移行前 OAuth サイドカー向けの読み取り専用互換性。`openclaw doctor --fix` がこれらを `auth-profiles.json` に移行します |
-| スキル設定 | `/home/node/.openclaw/skills/` | ホストボリュームマウント | スキルレベルの状態 |
-| エージェントワークスペース | `/home/node/.openclaw/workspace/` | ホストボリュームマウント | コードとエージェント成果物 |
-| WhatsApp セッション | `/home/node/.openclaw/` | ホストボリュームマウント | QR ログインを保持 |
-| Gmail キーリング | `/home/node/.openclaw/` | ホストボリューム + パスワード | `GOG_KEYRING_PASSWORD` が必要 |
-| Plugin パッケージ | `/home/node/.openclaw/npm`, `/home/node/.openclaw/git` | ホストボリュームマウント | ダウンロード可能な Plugin パッケージのルート |
-| 外部バイナリ | `/usr/local/bin/` | Docker イメージ | ビルド時に組み込む必要があります |
-| Node ランタイム | コンテナファイルシステム | Docker イメージ | イメージをビルドするたびに再ビルド |
-| OS パッケージ | コンテナファイルシステム | Docker イメージ | ランタイムでインストールしないでください |
-| Docker コンテナ | 一時的 | 再起動可能 | 破棄しても安全 |
+| コンポーネント         | 場所                                                   | 永続化の仕組み           | 注記                                                                                                                |
+| ---------------------- | ------------------------------------------------------ | ------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| Gateway設定            | `/home/node/.openclaw/`                                | ホストボリュームマウント | `openclaw.json`を含む                                                                                               |
+| チャネル/プロバイダーの認証情報 | `/home/node/.openclaw/credentials/`                    | ホストボリュームマウント | チャネルおよびプロバイダーの認証情報                                                                                |
+| モデル認証プロファイル | `/home/node/.openclaw/agents/`                         | ホストボリュームマウント | `agents/<agentId>/agent/auth-profiles.json`（OAuth、APIキー）                                                       |
+| 旧OAuthキーファイル    | `/home/node/.config/openclaw/`                         | ホストボリュームマウント | 移行前のOAuthサイドカー用の読み取り専用互換機能。`openclaw doctor --fix`はこれらを`auth-profiles.json`に移行する     |
+| スキル設定             | `/home/node/.openclaw/skills/`                         | ホストボリュームマウント | スキルレベルの状態                                                                                                  |
+| エージェントワークスペース | `/home/node/.openclaw/workspace/`                      | ホストボリュームマウント | コードおよびエージェントの成果物                                                                                    |
+| WhatsAppセッション     | `/home/node/.openclaw/`                                | ホストボリュームマウント | QRログインを維持                                                                                                    |
+| Gmailキーリング        | `/home/node/.openclaw/`                                | ホストボリューム＋パスワード | `GOG_KEYRING_PASSWORD`が必要                                                                                        |
+| Pluginパッケージ       | `/home/node/.openclaw/npm`, `/home/node/.openclaw/git` | ホストボリュームマウント | ダウンロード可能なPluginパッケージのルート                                                                          |
+| 外部バイナリ           | `/usr/local/bin/`                                      | Dockerイメージ           | ビルド時に組み込む必要がある                                                                                        |
+| Nodeランタイム         | コンテナファイルシステム                               | Dockerイメージ           | イメージのビルドごとに再構築される                                                                                  |
+| OSパッケージ           | コンテナファイルシステム                               | Dockerイメージ           | ランタイムにはインストールしない                                                                                    |
+| Dockerコンテナ         | 一時的                                                 | 再起動可能               | 破棄しても安全                                                                                                      |
 
 ## 更新
 
-VM 上の OpenClaw を更新するには:
+VM上のOpenClawを更新するには、次を実行します。
 
 ```bash
 git pull
@@ -145,7 +145,7 @@ docker compose build
 docker compose up -d
 ```
 
-## 関連
+## 関連項目
 
 - [Docker](/ja-JP/install/docker)
 - [Podman](/ja-JP/install/podman)

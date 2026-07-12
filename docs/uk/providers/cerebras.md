@@ -1,35 +1,33 @@
 ---
 read_when:
     - Ви хочете використовувати Cerebras з OpenClaw
-    - Вам потрібна змінна середовища ключа API Cerebras або вибір автентифікації CLI.
+    - Вам потрібна змінна середовища з API-ключем Cerebras або вибір автентифікації через CLI
 summary: Налаштування Cerebras (автентифікація + вибір моделі)
 title: Cerebras
 x-i18n:
-    generated_at: "2026-06-27T18:09:18Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:35:33Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cd21756ac521c7b60ca6d3dfbef8665574dca52d1a25e6293169b24f4af6273e
+    source_hash: fca8110d345c796f0481ebf1a8d85c2cc9630b8bd55db8d4bf60772151b35b37
     source_path: providers/cerebras.md
     workflow: 16
 ---
 
-[Cerebras](https://www.cerebras.ai) забезпечує високошвидкісний OpenAI-сумісний інференс на спеціалізованому апаратному забезпеченні для інференсу. Plugin провайдера Cerebras містить статичний каталог із чотирьох моделей.
+[Cerebras](https://www.cerebras.ai) забезпечує високошвидкісний, сумісний з OpenAI інференс на спеціалізованому обладнанні для інференсу. Plugin постачається зі статичним каталогом із чотирьох моделей (без динамічного виявлення).
 
-| Властивість     | Значення                                 |
-| --------------- | ---------------------------------------- |
-| ID провайдера   | `cerebras`                               |
-| Plugin          | офіційний зовнішній пакет                |
-| Змінна env auth | `CEREBRAS_API_KEY`                       |
-| Прапорець onboarding | `--auth-choice cerebras-api-key`    |
-| Прямий прапорець CLI | `--cerebras-api-key <key>`          |
-| API             | OpenAI-сумісний (`openai-completions`)   |
-| Базовий URL     | `https://api.cerebras.ai/v1`             |
-| Модель за замовчуванням | `cerebras/zai-glm-4.7`            |
+| Властивість                   | Значення                                                  |
+| ----------------------------- | --------------------------------------------------------- |
+| Ідентифікатор постачальника   | `cerebras`                                                |
+| Plugin                        | офіційний зовнішній пакет (`@openclaw/cerebras-provider`) |
+| Змінна середовища авторизації | `CEREBRAS_API_KEY`                                        |
+| Прапорець початкового налаштування | `--auth-choice cerebras-api-key`                     |
+| Прямий прапорець CLI          | `--cerebras-api-key <key>`                                |
+| API                           | сумісний з OpenAI (`openai-completions`)                  |
+| Базова URL-адреса             | `https://api.cerebras.ai/v1`                              |
+| Модель за замовчуванням       | `cerebras/zai-glm-4.7`                                    |
 
 ## Установлення Plugin
-
-Установіть офіційний Plugin, а потім перезапустіть Gateway:
 
 ```bash
 openclaw plugins install @openclaw/cerebras-provider
@@ -39,13 +37,13 @@ openclaw gateway restart
 ## Початок роботи
 
 <Steps>
-  <Step title="Отримайте API-ключ">
-    Створіть API-ключ у [Cerebras Cloud Console](https://cloud.cerebras.ai).
+  <Step title="Отримайте ключ API">
+    Створіть ключ API в [консолі Cerebras Cloud](https://cloud.cerebras.ai).
   </Step>
-  <Step title="Запустіть onboarding">
+  <Step title="Запустіть початкове налаштування">
     <CodeGroup>
 
-```bash Onboarding
+```bash Початкове налаштування
 openclaw onboard --auth-choice cerebras-api-key
 ```
 
@@ -55,24 +53,24 @@ openclaw onboard --non-interactive \
   --cerebras-api-key "$CEREBRAS_API_KEY"
 ```
 
-```bash Лише env
+```bash Лише змінна середовища
 export CEREBRAS_API_KEY=csk-...
 ```
 
     </CodeGroup>
 
   </Step>
-  <Step title="Перевірте, що моделі доступні">
+  <Step title="Перевірте доступність моделей">
     ```bash
     openclaw models list --provider cerebras
     ```
 
-    Список має містити всі чотири статичні моделі. Якщо `CEREBRAS_API_KEY` не розв’язано, `openclaw models status --json` повідомляє про відсутні облікові дані в `auth.unusableProfiles`.
+    Виводить усі чотири статичні моделі. Якщо значення `CEREBRAS_API_KEY` не вдається визначити, `openclaw models status --json` повідомляє про відсутні облікові дані в `auth.unusableProfiles`.
 
   </Step>
 </Steps>
 
-## Налаштування без інтерактивного режиму
+## Неінтерактивне налаштування
 
 ```bash
 openclaw onboard --non-interactive \
@@ -83,22 +81,22 @@ openclaw onboard --non-interactive \
 
 ## Вбудований каталог
 
-OpenClaw постачається зі статичним каталогом Cerebras, який віддзеркалює публічний OpenAI-сумісний endpoint. Усі чотири моделі мають контекст 128k і максимум 8 192 токени виводу.
+Усі чотири моделі мають контекстне вікно на 128 тис. токенів і максимальний обсяг виводу 8 192 токени.
 
-| Посилання на модель                       | Назва                | Міркування | Примітки                              |
-| ----------------------------------------- | -------------------- | ---------- | ------------------------------------- |
-| `cerebras/zai-glm-4.7`                    | Z.ai GLM 4.7         | так        | Модель за замовчуванням; preview-модель для міркування |
-| `cerebras/gpt-oss-120b`                   | GPT OSS 120B         | так        | Production-модель для міркування      |
-| `cerebras/qwen-3-235b-a22b-instruct-2507` | Qwen 3 235B Instruct | ні         | Preview-модель без міркування         |
-| `cerebras/llama3.1-8b`                    | Llama 3.1 8B         | ні         | Production-модель, орієнтована на швидкість |
+| Посилання на модель                       | Назва                | Міркування | Примітки                                      |
+| ----------------------------------------- | -------------------- | ---------- | --------------------------------------------- |
+| `cerebras/zai-glm-4.7`                    | Z.ai GLM 4.7         | так        | Модель за замовчуванням; попередня модель міркування |
+| `cerebras/gpt-oss-120b`                   | GPT OSS 120B         | так        | Продукційна модель міркування                  |
+| `cerebras/qwen-3-235b-a22b-instruct-2507` | Qwen 3 235B Instruct | ні         | Попередня модель без міркування                |
+| `cerebras/llama3.1-8b`                    | Llama 3.1 8B         | ні         | Продукційна модель, оптимізована для швидкості |
 
 <Warning>
-  Cerebras позначає `zai-glm-4.7` і `qwen-3-235b-a22b-instruct-2507` як preview-моделі, а `llama3.1-8b` разом із `qwen-3-235b-a22b-instruct-2507` задокументовані для виведення з експлуатації 27 травня 2026 року. Перевірте сторінку підтримуваних моделей Cerebras, перш ніж покладатися на них у production-навантаженнях.
+Cerebras позначає `zai-glm-4.7` і `qwen-3-235b-a22b-instruct-2507` як попередні моделі, а припинення підтримки `llama3.1-8b` і `qwen-3-235b-a22b-instruct-2507` задокументовано на 27 травня 2026 року. Перш ніж покладатися на них у продукційних робочих навантаженнях, перевірте [сторінку підтримуваних моделей](https://inference-docs.cerebras.ai/models/overview) Cerebras.
 </Warning>
 
-## Ручна конфігурація
+## Налаштування вручну
 
-Зазвичай Plugin означає, що вам потрібен лише API-ключ. Використовуйте явну конфігурацію `models.providers.cerebras`, коли хочете перевизначити метадані моделі або працювати в `mode: "merge"` зі статичним каталогом:
+Для більшості конфігурацій потрібен лише ключ API. Використовуйте явну конфігурацію `models.providers.cerebras`, щоб перевизначити метадані моделей або працювати в режимі `mode: "merge"` зі статичним каталогом:
 
 ```json5
 {
@@ -126,22 +124,22 @@ OpenClaw постачається зі статичним каталогом Cer
 ```
 
 <Note>
-  Якщо Gateway працює як daemon (launchd, systemd, Docker), переконайтеся, що `CEREBRAS_API_KEY` доступний цьому процесу — наприклад, у `~/.openclaw/.env` або через `env.shellEnv`. Ключ, експортований лише в інтерактивній оболонці, не допоможе керованому сервісу, якщо env не імпортовано окремо.
+Якщо Gateway працює як фоновий процес (launchd, systemd, Docker), переконайтеся, що `CEREBRAS_API_KEY` доступна цьому процесу — наприклад, у `~/.openclaw/.env` або через `env.shellEnv`. Ключ, експортований лише в інтерактивній оболонці, не допоможе керованій службі, якщо середовище не імпортовано окремо.
 </Note>
 
-## Пов’язане
+## Пов’язані матеріали
 
 <CardGroup cols={2}>
-  <Card title="Провайдери моделей" href="/uk/concepts/model-providers" icon="layers">
-    Вибір провайдерів, посилань на моделі та поведінки failover.
+  <Card title="Постачальники моделей" href="/uk/concepts/model-providers" icon="layers">
+    Вибір постачальників, посилань на моделі та поведінки перемикання в разі відмови.
   </Card>
   <Card title="Режими мислення" href="/uk/tools/thinking" icon="brain">
-    Рівні зусилля міркування для двох моделей Cerebras, здатних до міркування.
+    Рівні інтенсивності міркування для двох моделей Cerebras із підтримкою міркування.
   </Card>
-  <Card title="Довідник конфігурації" href="/uk/gateway/config-agents#agent-defaults" icon="gear">
-    Значення за замовчуванням для агентів і конфігурація моделей.
+  <Card title="Довідник із конфігурації" href="/uk/gateway/config-agents#agent-defaults" icon="gear">
+    Значення агентів за замовчуванням і конфігурація моделей.
   </Card>
-  <Card title="FAQ щодо моделей" href="/uk/help/faq-models" icon="circle-question">
-    Auth-профілі, перемикання моделей і усунення помилок "no profile".
+  <Card title="Поширені запитання про моделі" href="/uk/help/faq-models" icon="circle-question">
+    Профілі авторизації, перемикання моделей і усунення помилок «no profile».
   </Card>
 </CardGroup>

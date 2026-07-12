@@ -1,50 +1,50 @@
 ---
 read_when:
-    - إضافة تكاملات CLI الخارجية أو تغييرها
-    - تصحيح أخطاء محولات RPC (signal-cli، imsg)
-summary: مهايئات RPC لواجهات CLI الخارجية (signal-cli، imsg) وأنماط Gateway
+    - إضافة عمليات تكامل خارجية مع CLI أو تغييرها
+    - تصحيح أخطاء محوّلات RPC ‏(`signal-cli`، `imsg`)
+summary: مهايئات RPC لأدوات CLI الخارجية (signal-cli، imsg) وأنماط Gateway
 title: مهايئات RPC
 x-i18n:
-    generated_at: "2026-05-10T20:00:49Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:35:53Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 63556f140bee55821fa0a09ff9808e163728049f8db4c58f7bb4ceca6e1cac1a
+    source_hash: 6ddb3fb741c90fe7b01ba35376b71865584b1e507cf610705392452790fb76f5
     source_path: reference/rpc.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-يدمج OpenClaw أدوات CLI خارجية عبر JSON-RPC. يُستخدم نمطان حاليًا.
+يدمج OpenClaw واجهات CLI خارجية عبر JSON-RPC. ويُستخدم حاليًا نمطان.
 
-## النمط A: خدمة HTTP خفية (signal-cli)
+## النمط أ: خدمة HTTP خفية (`signal-cli`)
 
-- يعمل `signal-cli` كخدمة خفية مع JSON-RPC عبر HTTP.
-- تدفق الأحداث هو SSE (`/api/v1/events`).
-- فحص الصحة: `/api/v1/check`.
-- يتحكم OpenClaw في دورة الحياة عندما تكون `channels.signal.autoStart=true`.
+- يعمل `signal-cli` كخدمة خفية تستخدم JSON-RPC عبر HTTP.
+- تدفق الأحداث هو SSE ‏(`/api/v1/events`).
+- فحص السلامة: `/api/v1/check`.
+- يتولى OpenClaw إدارة دورة الحياة عندما يكون `channels.signal.autoStart=true`.
 
-راجع [Signal](/ar/channels/signal) للإعداد ونقاط النهاية.
+راجع [Signal](/ar/channels/signal) لمعرفة خطوات الإعداد ونقاط النهاية.
 
-## النمط B: عملية فرعية عبر stdio (imsg)
+## النمط ب: عملية فرعية عبر stdio ‏(`imsg`)
 
-- يشغّل OpenClaw الأمر `imsg rpc` كعملية فرعية لـ [iMessage](/ar/channels/imessage).
-- يكون JSON-RPC محددًا بالأسطر عبر stdin/stdout (كائن JSON واحد لكل سطر).
+- يُشغّل OpenClaw الأمر `imsg rpc` كعملية فرعية من أجل [iMessage](/ar/channels/imessage).
+- تُفصل رسائل JSON-RPC بأسطر عبر stdin/stdout (كائن JSON واحد في كل سطر).
 - لا يلزم منفذ TCP ولا خدمة خفية.
 
-الطرق الأساسية المستخدمة:
+الأساليب الأساسية المستخدمة:
 
-- `watch.subscribe` → إشعارات (`method: "message"`)
+- `watch.subscribe` ← إشعارات (`method: "message"`)
 - `watch.unsubscribe`
 - `send`
-- `chats.list` (فحص/تشخيصات)
+- `chats.list` (الفحص/التشخيص)
 
-راجع [iMessage](/ar/channels/imessage) للإعداد القديم والعنونة (يُفضّل `chat_id`).
+راجع [iMessage](/ar/channels/imessage) لمعرفة خطوات الإعداد والعنونة (يُفضّل `chat_id` على سلاسل العرض).
 
-## إرشادات المحوّل
+## إرشادات المهايئ
 
-- يتحكم Gateway في العملية (يرتبط البدء/الإيقاف بدورة حياة المزوّد).
-- اجعل عملاء RPC قادرين على الصمود: مهلات، وإعادة تشغيل عند الخروج.
-- فضّل المعرّفات المستقرة (مثل `chat_id`) على سلاسل العرض.
+- يتولى Gateway إدارة العملية (يرتبط التشغيل/الإيقاف بدورة حياة المزوّد).
+- حافظ على مرونة عملاء RPC: استخدم المهل الزمنية وأعد التشغيل عند الخروج.
+- فضّل المعرّفات الثابتة (مثل `chat_id`) على سلاسل العرض.
 
 ## ذو صلة
 

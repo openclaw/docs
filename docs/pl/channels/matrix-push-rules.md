@@ -1,30 +1,32 @@
 ---
 read_when:
-    - Konfigurowanie cichego przesyłania strumieniowego Matrix dla samodzielnie hostowanego Synapse lub Tuwunel
-    - Użytkownicy chcą otrzymywać powiadomienia tylko o ukończonych blokach, a nie przy każdej edycji podglądu.
-summary: Reguły push Matrix dla poszczególnych odbiorców przy cichych sfinalizowanych edycjach podglądu
-title: Reguły powiadomień push Matrixa dla cichych podglądów
+    - Konfigurowanie cichego strumieniowania w Matrix dla samodzielnie hostowanego Synapse lub Tuwunel
+    - Użytkownicy chcą otrzymywać powiadomienia tylko po zakończeniu bloków, a nie po każdej zmianie podglądu
+summary: Reguły powiadomień push Matrix dla poszczególnych odbiorców dotyczące cichych edycji sfinalizowanego podglądu
+title: Reguły push dla Matrix dotyczące cichych podglądów
 x-i18n:
-    generated_at: "2026-04-30T09:37:48Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:53:51Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e2f037a50a85b350163c74cf6b9cce335ecaaa5cccc762124122ad6d0321a1fa
+    source_hash: 3f2260b4cc68f82cbe1aef86b8963b6b40e93f089b31991964fc9282b2c121fb
     source_path: channels/matrix-push-rules.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Gdy `channels.matrix.streaming` ma wartość `"quiet"`, OpenClaw edytuje jedno zdarzenie podglądu w miejscu i oznacza sfinalizowaną edycję niestandardową flagą treści. Klienci Matrix wysyłają powiadomienie o końcowej edycji tylko wtedy, gdy reguła powiadomień push dla danego użytkownika pasuje do tej flagi. Ta strona jest przeznaczona dla operatorów, którzy samodzielnie hostują Matrix i chcą zainstalować tę regułę dla każdego konta odbiorcy.
+Gdy `channels.matrix.streaming` ma wartość `"quiet"`, OpenClaw przesyła odpowiedź strumieniowo, edytując w miejscu pojedyncze zdarzenie podglądu. Podglądy są wysyłane jako niegenerujące powiadomień zdarzenia `m.notice`, a końcowa edycja jest oznaczana za pomocą `content["com.openclaw.finalized_preview"] = true`. Klienci Matrix powiadamiają o tej końcowej edycji tylko wtedy, gdy znacznik pasuje do reguły powiadomień danego użytkownika. Ta strona jest przeznaczona dla operatorów samodzielnie hostujących Matrix, którzy chcą zainstalować tę regułę dla każdego konta odbiorcy.
 
-Jeśli chcesz tylko standardowego zachowania powiadomień Matrix, użyj `streaming: "partial"` albo pozostaw streaming wyłączony. Zobacz [Konfiguracja kanału Matrix](/pl/channels/matrix#streaming-previews).
+`streaming: "progress"` finalizuje wersje robocze tą samą ścieżką, dlatego ta sama reguła jest również wyzwalana dla sfinalizowanych edycji w trybie postępu.
+
+Jeśli chcesz korzystać wyłącznie ze standardowego mechanizmu powiadomień Matrix, użyj `streaming: "partial"` albo wyłącz przesyłanie strumieniowe. Zobacz [Konfiguracja kanału Matrix](/pl/channels/matrix#streaming-previews).
 
 ## Wymagania wstępne
 
-- użytkownik odbiorcy = osoba, która powinna otrzymać powiadomienie
-- użytkownik bota = konto OpenClaw Matrix wysyłające odpowiedź
-- użyj tokena dostępu użytkownika odbiorcy do poniższych wywołań API
-- dopasuj `sender` w regule push do pełnego MXID użytkownika bota
-- konto odbiorcy musi mieć już działające pushery — reguły cichego podglądu działają tylko wtedy, gdy standardowe dostarczanie powiadomień push Matrix działa poprawnie
+- użytkownik będący odbiorcą = osoba, która powinna otrzymać powiadomienie
+- użytkownik będący botem = konto OpenClaw w Matrix, które wysyła odpowiedź
+- w poniższych wywołaniach API użyj tokenu dostępu użytkownika będącego odbiorcą
+- w regule powiadomień dopasuj `sender` do pełnego identyfikatora MXID użytkownika będącego botem
+- konto odbiorcy musi już mieć działające elementy pusher; reguły cichych podglądów działają tylko wtedy, gdy standardowe dostarczanie powiadomień push przez Matrix działa prawidłowo
 
 ## Kroki
 
@@ -44,7 +46,7 @@ Jeśli chcesz tylko standardowego zachowania powiadomień Matrix, użyj `streami
   </Step>
 
   <Step title="Uzyskaj token dostępu odbiorcy">
-    Jeśli to możliwe, użyj ponownie tokena istniejącej sesji klienta. Aby wygenerować nowy:
+    Jeśli to możliwe, użyj ponownie tokenu istniejącej sesji klienta. Aby wygenerować nowy:
 
 ```bash
 curl -sS -X POST \
@@ -59,7 +61,7 @@ curl -sS -X POST \
 
   </Step>
 
-  <Step title="Sprawdź, czy istnieją pushery">
+  <Step title="Sprawdź, czy istnieją elementy pusher">
 
 ```bash
 curl -sS \
@@ -67,12 +69,12 @@ curl -sS \
   "https://matrix.example.org/_matrix/client/v3/pushers"
 ```
 
-Jeśli nie zostaną zwrócone żadne pushery, napraw standardowe dostarczanie powiadomień push Matrix dla tego konta przed kontynuowaniem.
+Jeśli odpowiedź nie zawiera żadnych elementów pusher, przed kontynuowaniem napraw standardowe dostarczanie powiadomień push przez Matrix dla tego konta.
 
   </Step>
 
-  <Step title="Zainstaluj regułę push override">
-    OpenClaw oznacza sfinalizowane, tekstowe edycje podglądu za pomocą `content["com.openclaw.finalized_preview"] = true`. Zainstaluj regułę, która dopasowuje ten znacznik oraz MXID bota jako nadawcę:
+  <Step title="Zainstaluj nadrzędną regułę powiadomień">
+    Zainstaluj regułę dopasowującą znacznik sfinalizowanego podglądu oraz MXID bota jako nadawcę:
 
 ```bash
 curl -sS -X PUT \
@@ -102,12 +104,12 @@ curl -sS -X PUT \
   }'
 ```
 
-    Zastąp przed uruchomieniem:
+    Przed uruchomieniem zastąp:
 
-    - `https://matrix.example.org`: bazowy URL twojego homeservera
-    - `$USER_ACCESS_TOKEN`: token dostępu użytkownika odbiorcy
-    - `openclaw-finalized-preview-botname`: identyfikator reguły unikalny dla każdego bota i odbiorcy (wzorzec: `openclaw-finalized-preview-<botname>`)
-    - `@bot:example.org`: MXID twojego bota OpenClaw, a nie odbiorcy
+    - `https://matrix.example.org`: podstawowy adres URL Twojego serwera macierzystego
+    - `$USER_ACCESS_TOKEN`: token dostępu użytkownika będącego odbiorcą
+    - `openclaw-finalized-preview-botname`: identyfikator reguły unikatowy dla każdego bota i odbiorcy (wzorzec: `openclaw-finalized-preview-<botname>`)
+    - `@bot:example.org`: MXID Twojego bota OpenClaw, a nie odbiorcy
 
   </Step>
 
@@ -119,40 +121,40 @@ curl -sS \
   "https://matrix.example.org/_matrix/client/v3/pushrules/global/override/openclaw-finalized-preview-botname"
 ```
 
-Następnie przetestuj streamowaną odpowiedź. W trybie cichym pokój pokazuje cichy podgląd wersji roboczej i wysyła powiadomienie po zakończeniu bloku lub tury.
+Następnie przetestuj odpowiedź przesyłaną strumieniowo. W trybie cichym w pokoju jest wyświetlany cichy podgląd wersji roboczej, a powiadomienie pojawia się po zakończeniu bloku lub tury.
 
   </Step>
 </Steps>
 
-Aby później usunąć regułę, wykonaj `DELETE` dla tego samego URL reguły, używając tokena odbiorcy.
+Aby później usunąć regułę, wyślij żądanie `DELETE` pod ten sam adres URL reguły, używając tokenu odbiorcy.
 
 ## Uwagi dotyczące wielu botów
 
-Reguły push są indeksowane według `ruleId`: ponowne wykonanie `PUT` dla tego samego identyfikatora aktualizuje pojedynczą regułę. Jeśli wiele botów OpenClaw powiadamia tego samego odbiorcę, utwórz jedną regułę dla każdego bota z odrębnym dopasowaniem nadawcy.
+Reguły powiadomień są identyfikowane przez `ruleId`: ponowne wysłanie żądania `PUT` dla tego samego identyfikatora aktualizuje pojedynczą regułę. Jeśli wiele botów OpenClaw ma powiadamiać tego samego odbiorcę, utwórz osobną regułę dla każdego bota, z odrębnym dopasowaniem nadawcy.
 
-Nowe reguły `override` zdefiniowane przez użytkownika są wstawiane przed domyślnymi regułami wyciszającymi, więc nie jest potrzebny dodatkowy parametr kolejności. Reguła wpływa tylko na tekstowe edycje podglądu, które można sfinalizować w miejscu; awaryjne obsługi mediów i awaryjne obsługi nieaktualnych podglądów używają standardowego dostarczania Matrix.
+Nowe, zdefiniowane przez użytkownika reguły `override` są wstawiane przed domyślnymi regułami serwera wyłączającymi powiadomienia, dlatego dodatkowy parametr kolejności nie jest potrzebny. Reguła wpływa wyłącznie na edycje podglądu zawierające sam tekst, które można sfinalizować w miejscu; odpowiedzi z multimediami, mechanizmy awaryjne dla nieaktualnych podglądów oraz końcowe teksty, które aktywowałyby wzmianki Matrix, są zamiast tego dostarczane jako zwykłe wiadomości generujące powiadomienia.
 
-## Uwagi dotyczące homeservera
+## Uwagi dotyczące serwera macierzystego
 
 <AccordionGroup>
   <Accordion title="Synapse">
-    Nie jest wymagana żadna specjalna zmiana w `homeserver.yaml`. Jeśli standardowe powiadomienia Matrix już docierają do tego użytkownika, token odbiorcy i powyższe wywołanie `pushrules` są głównym krokiem konfiguracji.
+    Nie jest wymagana żadna specjalna zmiana w `homeserver.yaml`. Jeśli standardowe powiadomienia Matrix już docierają do tego użytkownika, głównym krokiem konfiguracji jest użycie tokenu odbiorcy i wykonanie powyższego wywołania `pushrules`.
 
-    Jeśli uruchamiasz Synapse za reverse proxy lub workerami, upewnij się, że `/_matrix/client/.../pushrules/` poprawnie dociera do Synapse. Dostarczaniem powiadomień push zajmuje się główny proces albo `synapse.app.pusher` / skonfigurowane workery pushera — upewnij się, że działają poprawnie.
+    Jeśli Synapse działa za odwrotnym serwerem proxy lub korzysta z procesów roboczych, upewnij się, że żądania `/_matrix/client/.../pushrules/` prawidłowo docierają do Synapse. Dostarczaniem powiadomień push zajmuje się proces główny albo `synapse.app.pusher` lub skonfigurowane procesy robocze pusher — upewnij się, że działają prawidłowo.
 
-    Reguła używa warunku reguły push `event_property_is` (MSC3758, reguła push v1.10), który został dodany do Synapse w 2023 roku. Starsze wydania Synapse akceptują wywołanie `PUT pushrules/...`, ale po cichu nigdy nie dopasowują warunku — zaktualizuj Synapse, jeśli po sfinalizowanej edycji podglądu nie przychodzi powiadomienie.
+    Reguła używa warunku `event_property_is` reguły powiadomień (MSC3758, reguła powiadomień w wersji 1.10), który dodano do Synapse w 2023 roku. Starsze wersje Synapse akceptują wywołanie `PUT pushrules/...`, ale warunek nigdy nie zostaje dopasowany i nie pojawia się żaden komunikat o błędzie — zaktualizuj Synapse, jeśli po sfinalizowanej edycji podglądu nie pojawia się powiadomienie.
 
   </Accordion>
 
   <Accordion title="Tuwunel">
-    Ten sam przepływ co w Synapse; dla znacznika sfinalizowanego podglądu nie jest potrzebna żadna konfiguracja specyficzna dla Tuwunel.
+    Przebieg jest taki sam jak w przypadku Synapse; znacznik sfinalizowanego podglądu nie wymaga konfiguracji specyficznej dla Tuwunel.
 
-    Jeśli powiadomienia znikają, gdy użytkownik jest aktywny na innym urządzeniu, sprawdź, czy włączono `suppress_push_when_active`. Tuwunel dodał tę opcję w wersji 1.4.2 (wrzesień 2025) i może ona celowo wyciszać powiadomienia push do innych urządzeń, gdy jedno urządzenie jest aktywne.
+    Jeśli powiadomienia znikają, gdy użytkownik jest aktywny na innym urządzeniu, sprawdź, czy opcja `suppress_push_when_active` jest włączona. Tuwunel dodał tę opcję w wersji 1.4.2 (we wrześniu 2025 roku) i może ona celowo wyłączać powiadomienia push na innych urządzeniach, gdy jedno urządzenie jest aktywne.
 
   </Accordion>
 </AccordionGroup>
 
-## Powiązane
+## Powiązane materiały
 
 - [Konfiguracja kanału Matrix](/pl/channels/matrix)
-- [Koncepcje streamingu](/pl/concepts/streaming)
+- [Pojęcia związane z przesyłaniem strumieniowym](/pl/concepts/streaming)

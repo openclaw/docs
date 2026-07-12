@@ -2,33 +2,33 @@
 read_when:
     - می‌خواهید پیکربندی را به‌صورت غیرتعاملی بخوانید یا ویرایش کنید
 sidebarTitle: Config
-summary: مرجع CLI برای `openclaw config` (get/set/patch/unset/file/schema/validate)
+summary: مرجع CLI برای `openclaw config` ‏(get/set/patch/unset/file/schema/validate)
 title: پیکربندی
 x-i18n:
-    generated_at: "2026-06-28T22:33:33Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:43:23Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 92878977e8fb6670f12c0a77937a7c41f9230da82e20ec7690731bbda1e910ca
+    source_hash: 1a9531407b2314d1a6bc05a87eb7efb6c37a847378b150125693f4d59733a2e9
     source_path: cli/config.md
     workflow: 16
 ---
 
-راهنماهای پیکربندی برای ویرایش‌های غیرتعاملی در `openclaw.json`: دریافت/تنظیم/وصله/لغو تنظیم/فایل/طرح‌واره/اعتبارسنجی مقدارها بر اساس مسیر و چاپ فایل پیکربندی فعال. بدون زیرفرمان اجرا کنید تا جادوگر پیکربندی باز شود (همانند `openclaw configure`).
+کمک‌ابزارهای غیرتعاملی برای `openclaw.json`: دریافت/تنظیم/وصله‌کردن/حذف یک مقدار بر اساس مسیر، چاپ طرح‌واره، اعتبارسنجی، یا چاپ مسیر فایل فعال. برای بازکردن همان راهنمای گام‌به‌گام `openclaw configure`، دستور `openclaw config` را بدون زیردستور اجرا کنید.
 
 <Note>
-وقتی `OPENCLAW_NIX_MODE=1` باشد، OpenClaw با `openclaw.json` به‌عنوان تغییرناپذیر رفتار می‌کند. فرمان‌های فقط‌خواندنی مانند `config get`، `config file`، `config schema` و `config validate` همچنان کار می‌کنند، اما نویسنده‌های پیکربندی امتناع می‌کنند. عامل‌ها باید به‌جای آن منبع Nix نصب را ویرایش کنند؛ برای توزیع رسمی nix-openclaw، از [شروع سریع nix-openclaw](https://github.com/openclaw/nix-openclaw#quick-start) استفاده کنید و مقدارها را زیر `programs.openclaw.config` یا `instances.<name>.config` تنظیم کنید.
+وقتی `OPENCLAW_NIX_MODE=1` باشد، OpenClaw فایل `openclaw.json` را تغییرناپذیر در نظر می‌گیرد. دستورهای فقط‌خواندنی (`config get`، `config file`، `config schema`، `config validate`) همچنان کار می‌کنند؛ دستورهای تغییردهندهٔ پیکربندی اجرا نمی‌شوند. به‌جای آن، منبع Nix نصب را ویرایش کنید؛ برای توزیع رسمی nix-openclaw، از [شروع سریع nix-openclaw](https://github.com/openclaw/nix-openclaw#quick-start) استفاده کنید و مقادیر را زیر `programs.openclaw.config` یا `instances.<name>.config` تنظیم کنید.
 </Note>
 
 ## گزینه‌های ریشه
 
 <ParamField path="--section <section>" type="string">
-  فیلتر بخش راه‌اندازی هدایت‌شده و قابل تکرار، وقتی `openclaw config` را بدون زیرفرمان اجرا می‌کنید.
+  پالایهٔ تکرارپذیر بخش راه‌اندازی هدایت‌شده، هنگام اجرای `openclaw config` بدون زیردستور.
 </ParamField>
 
-بخش‌های هدایت‌شده پشتیبانی‌شده: `workspace`، `model`، `web`، `gateway`، `daemon`، `channels`، `plugins`، `skills`، `health`.
+بخش‌های هدایت‌شده: `workspace`، `model`، `web`، `gateway`، `daemon`، `channels`، `plugins`، `skills`، `health`.
 
-## مثال‌ها
+## نمونه‌ها
 
 ```bash
 openclaw config file
@@ -50,54 +50,70 @@ openclaw config validate
 openclaw config validate --json
 ```
 
+### مسیرها
+
+نمادگذاری نقطه‌ای یا کروشه‌ای. مسیرهای کروشه‌ای را در نمونه‌های پوسته داخل نقل‌قول قرار دهید تا zsh عبارت `[0]` را به‌صورت الگوی glob گسترش ندهد:
+
+```bash
+openclaw config get agents.defaults.workspace
+openclaw config get 'agents.list[0].id'
+openclaw config get agents.list
+openclaw config set 'agents.list[1].tools.exec.node' "node-id-or-name"
+```
+
+### `config get`
+
+مقداری را از نمای لحظه‌ای پیکربندیِ پوشانده‌شده می‌خواند (مقادیر محرمانه هرگز چاپ نمی‌شوند). گزینهٔ `--json` مقدار خام را به‌صورت JSON چاپ می‌کند؛ در غیر این صورت، رشته‌ها/عددها/مقادیر بولی بدون قالب‌بندی و اشیا/آرایه‌ها به‌صورت JSON قالب‌بندی‌شده چاپ می‌شوند.
+
+```bash
+openclaw config get browser.executablePath
+openclaw config get agents.defaults.model --json
+```
+
+### `config file`
+
+مسیر فایل پیکربندی فعال را چاپ می‌کند که از `OPENCLAW_CONFIG_PATH` یا مکان پیش‌فرض تعیین می‌شود. این مسیر به یک فایل معمولی اشاره می‌کند، نه پیوند نمادین؛ [ایمنی نوشتن](#write-safety) را ببینید.
+
 ### `config schema`
 
-طرح‌واره JSON تولیدشده برای `openclaw.json` را به‌صورت JSON در stdout چاپ کنید.
+طرح‌وارهٔ JSON تولیدشده برای `openclaw.json` را در خروجی استاندارد چاپ می‌کند.
 
 <AccordionGroup>
-  <Accordion title="آنچه شامل می‌شود">
-    - طرح‌واره پیکربندی ریشه فعلی، به‌علاوه یک فیلد رشته‌ای `$schema` در ریشه برای ابزارهای ویرایشگر.
-    - فراداده مستندات فیلدهای `title` و `description` که توسط رابط کاربری Control استفاده می‌شود.
-    - گره‌های شیء تودرتو، وایلدکارت (`*`) و مورد آرایه (`[]`) وقتی مستندات فیلد مطابق وجود داشته باشد، همان فراداده `title` / `description` را به ارث می‌برند.
-    - شاخه‌های `anyOf` / `oneOf` / `allOf` نیز وقتی مستندات فیلد مطابق وجود داشته باشد، همان فراداده مستندات را به ارث می‌برند.
-    - فراداده طرح‌واره زنده Plugin + کانال، به بهترین تلاش، وقتی مانیفست‌های زمان اجرا قابل بارگذاری باشند.
-    - یک طرح‌واره جایگزین تمیز، حتی وقتی پیکربندی فعلی نامعتبر باشد.
+  <Accordion title="محتویات آن">
+    - طرح‌وارهٔ فعلی پیکربندی ریشه، به‌همراه یک فیلد رشته‌ای `$schema` در ریشه برای ابزارهای ویرایشگر.
+    - فرادادهٔ مستندات فیلدهای `title` / `description` که Control UI از آن استفاده می‌کند.
+    - گره‌های شیء تودرتو، نویسهٔ عام (`*`) و عضو آرایه (`[]`) در صورت وجود مستندات متناظر فیلد، همان فرادادهٔ `title` / `description` را به ارث می‌برند.
+    - شاخه‌های `anyOf` / `oneOf` / `allOf` نیز همان فرادادهٔ مستندات را به ارث می‌برند.
+    - فرادادهٔ زندهٔ طرح‌وارهٔ Plugin و کانال، به‌صورت بهترین تلاش، هنگامی که مانیفست‌های زمان اجرا قابل بارگذاری باشند.
+    - یک طرح‌وارهٔ جایگزین پاک حتی زمانی که پیکربندی فعلی نامعتبر باشد.
 
   </Accordion>
-  <Accordion title="RPC زمان اجرای مرتبط">
-    `config.schema.lookup` یک مسیر پیکربندی نرمال‌سازی‌شده را با یک گره طرح‌واره کم‌عمق (`title`، `description`، `type`، `enum`، `const`، کران‌های رایج)، فراداده راهنمای رابط کاربری مطابق، و خلاصه‌های فرزند بلافاصله بازمی‌گرداند. از آن برای واکاوی محدود به مسیر در رابط کاربری Control یا کلاینت‌های سفارشی استفاده کنید.
+  <Accordion title="RPC مرتبط زمان اجرا">
+    `config.schema.lookup` یک مسیر پیکربندی نرمال‌شده را همراه با یک گرهٔ کم‌عمق طرح‌واره (`title`، `description`، `type`، `enum`، `const`، محدودیت‌های متداول)، فرادادهٔ راهنمای رابط کاربری منطبق و خلاصهٔ فرزندان مستقیم برمی‌گرداند. از آن برای واکاوی محدود به مسیر در Control UI یا کارخواه‌های سفارشی استفاده کنید.
   </Accordion>
 </AccordionGroup>
 
 ```bash
 openclaw config schema
-```
-
-وقتی می‌خواهید آن را با ابزارهای دیگر بررسی یا اعتبارسنجی کنید، خروجی را به یک فایل پایپ کنید:
-
-```bash
 openclaw config schema > openclaw.schema.json
 ```
 
-### مسیرها
+### `config validate`
 
-مسیرها از نگارش نقطه‌ای یا کروشه‌ای استفاده می‌کنند. مسیرهای با نگارش کروشه‌ای را در مثال‌های پوسته داخل نقل‌قول بگذارید تا پوسته‌هایی مانند zsh، پیش از دریافت مسیر توسط OpenClaw، `[0]` را به‌عنوان glob گسترش ندهند:
-
-```bash
-openclaw config get agents.defaults.workspace
-openclaw config get 'agents.list[0].id'
-```
-
-برای هدف‌گرفتن یک عامل مشخص، از نمایه فهرست عامل‌ها استفاده کنید:
+پیکربندی فعلی را بدون راه‌اندازی Gateway در برابر طرح‌وارهٔ فعال اعتبارسنجی می‌کند.
 
 ```bash
-openclaw config get agents.list
-openclaw config set 'agents.list[1].tools.exec.node' "node-id-or-name"
+openclaw config validate
+openclaw config validate --json
 ```
 
-## مقدارها
+<Note>
+اگر اعتبارسنجی از قبل ناموفق است، با `openclaw configure` یا `openclaw doctor --fix` شروع کنید. `openclaw chat` محافظ پیکربندی نامعتبر را دور نمی‌زند.
+</Note>
 
-مقدارها در صورت امکان به‌عنوان JSON5 تجزیه می‌شوند؛ در غیر این صورت به‌عنوان رشته در نظر گرفته می‌شوند. برای الزام به تجزیه JSON استاندارد بدون جایگزین رشته‌ای، از `--strict-json` استفاده کنید. `--json` همچنان به‌عنوان نام مستعار قدیمی برای `--strict-json` پشتیبانی می‌شود.
+## مقادیر
+
+مقادیر در صورت امکان به‌صورت JSON5 تجزیه می‌شوند؛ در غیر این صورت، رشتهٔ خام در نظر گرفته می‌شوند. برای الزام JSON استاندارد بدون بازگشت به رشته از `--strict-json` استفاده کنید (در این حالت، نحو مختص JSON5 مانند توضیحات، ویرگول‌های انتهایی یا کلیدهای بدون نقل‌قول رد می‌شود). در `config set`، گزینهٔ `--json` نام مستعار قدیمی `--strict-json` است.
 
 ```bash
 openclaw config set agents.defaults.heartbeat.every "0m"
@@ -105,26 +121,22 @@ openclaw config set gateway.port 19001 --strict-json
 openclaw config set channels.whatsapp.groups '["*"]' --strict-json
 ```
 
-وقتی `--strict-json` فعال باشد، نحوهای فقط JSON5 مانند نظرها، ویرگول‌های پایانی، یا کلیدهای شیء بدون نقل‌قول رد می‌شوند. برای تجزیه مقدار JSON5 همراه با جایگزین رشته خام، `--strict-json` را حذف کنید.
-
-`config get <path> --json` مقدار خام را به‌جای متن قالب‌بندی‌شده ترمینال، به‌صورت JSON چاپ می‌کند.
+دستور `config get <path> --json` به‌جای متن قالب‌بندی‌شده برای پایانه، مقدار خام را به‌صورت JSON چاپ می‌کند.
 
 <Note>
-انتساب شیء به‌صورت پیش‌فرض مسیر هدف را جایگزین می‌کند. مسیرهای نقشه/فهرست محافظت‌شده که معمولا ورودی‌های افزوده‌شده توسط کاربر را نگه می‌دارند، مانند `agents.defaults.models`، `models.providers`، `models.providers.<id>.models`، `plugins.entries` و `auth.profiles`، جایگزینی‌هایی را که ورودی‌های موجود را حذف می‌کنند رد می‌کنند، مگر اینکه `--replace` را پاس دهید.
+تخصیص شیء به‌طور پیش‌فرض مسیر مقصد را جایگزین می‌کند. مسیرهای محافظت‌شده‌ای که معمولاً حاوی ورودی‌های افزوده‌شده توسط کاربر هستند، جایگزینی‌هایی را که ورودی‌های موجود را حذف کنند نمی‌پذیرند، مگر اینکه `--replace` را ارسال کنید: `agents.defaults.models`، `agents.list`، `models.providers`، `models.providers.<id>`، `models.providers.<id>.models`، `plugins.entries` و `auth.profiles`.
 </Note>
 
-هنگام افزودن ورودی‌ها به این نقشه‌ها از `--merge` استفاده کنید:
+هنگام افزودن ورودی به این نگاشت‌ها از `--merge` استفاده کنید:
 
 ```bash
 openclaw config set agents.defaults.models '{"openai/gpt-5.4":{}}' --strict-json --merge
 openclaw config set models.providers.ollama.models '[{"id":"llama3.2","name":"Llama 3.2"}]' --strict-json --merge
 ```
 
-فقط وقتی از `--replace` استفاده کنید که عمدا می‌خواهید مقدار ارائه‌شده، مقدار کامل هدف شود.
+از `--replace` فقط زمانی استفاده کنید که مقدار ارائه‌شده باید عمداً کل مقدار مقصد شود.
 
 ## حالت‌های `config set`
-
-`openclaw config set` از چهار سبک انتساب پشتیبانی می‌کند:
 
 <Tabs>
   <Tab title="حالت مقدار">
@@ -132,7 +144,7 @@ openclaw config set models.providers.ollama.models '[{"id":"llama3.2","name":"Ll
     openclaw config set <path> <value>
     ```
   </Tab>
-  <Tab title="حالت سازنده SecretRef">
+  <Tab title="حالت سازندهٔ SecretRef">
     ```bash
     openclaw config set channels.discord.token \
       --ref-provider default \
@@ -140,8 +152,8 @@ openclaw config set models.providers.ollama.models '[{"id":"llama3.2","name":"Ll
       --ref-id DISCORD_BOT_TOKEN
     ```
   </Tab>
-  <Tab title="حالت سازنده ارائه‌دهنده">
-    حالت سازنده ارائه‌دهنده فقط مسیرهای `secrets.providers.<alias>` را هدف می‌گیرد:
+  <Tab title="حالت سازندهٔ ارائه‌دهنده">
+    فقط مسیرهای `secrets.providers.<alias>` را هدف می‌گیرد:
 
     ```bash
     openclaw config set secrets.providers.vault \
@@ -175,28 +187,90 @@ openclaw config set models.providers.ollama.models '[{"id":"llama3.2","name":"Ll
 </Tabs>
 
 <Warning>
-انتساب‌های SecretRef روی سطوح تغییرپذیر زمان اجرای پشتیبانی‌نشده رد می‌شوند (برای مثال `hooks.token`، `commands.ownerDisplaySecret`، توکن‌های Webhook اتصال ریسمان Discord، و JSON اعتبارنامه‌های WhatsApp). [سطح اعتبارنامه SecretRef](/fa/reference/secretref-credential-surface) را ببینید.
+تخصیص‌های SecretRef روی سطوح پشتیبانی‌نشده‌ای که در زمان اجرا قابل تغییرند رد می‌شوند (برای نمونه `hooks.token`، `commands.ownerDisplaySecret`، توکن‌های Webhook اتصال رشته‌های Discord و JSON اعتبارنامه‌های WhatsApp). [سطح اعتبارنامهٔ SecretRef](/fa/reference/secretref-credential-surface) را ببینید.
 </Warning>
 
-تجزیه دسته‌ای همیشه از بار دسته‌ای (`--batch-json`/`--batch-file`) به‌عنوان منبع حقیقت استفاده می‌کند. `--strict-json` / `--json` رفتار تجزیه دسته‌ای را تغییر نمی‌دهند.
+تجزیهٔ دسته‌ای همیشه محمولهٔ دسته‌ای (`--batch-json`/`--batch-file`) را منبع حقیقت در نظر می‌گیرد؛ `--strict-json` / `--json` رفتار تجزیهٔ دسته‌ای را تغییر نمی‌دهند.
+
+حالت مسیر/مقدار JSON مستقیماً برای SecretRefها و ارائه‌دهندگان نیز کار می‌کند:
+
+```bash
+openclaw config set channels.discord.token \
+  '{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}' \
+  --strict-json
+
+openclaw config set secrets.providers.vaultfile \
+  '{"source":"file","path":"/etc/openclaw/secrets.json","mode":"json"}' \
+  --strict-json
+```
+
+### پرچم‌های سازندهٔ ارائه‌دهنده
+
+مقصدهای سازندهٔ ارائه‌دهنده باید از `secrets.providers.<alias>` به‌عنوان مسیر استفاده کنند.
+
+<AccordionGroup>
+  <Accordion title="پرچم‌های مشترک">
+    - `--provider-source <env|file|exec>`
+    - `--provider-timeout-ms <ms>` (`file`، `exec`)
+
+  </Accordion>
+  <Accordion title="ارائه‌دهندهٔ محیطی (--provider-source env)">
+    - `--provider-allowlist <ENV_VAR>` (تکرارپذیر)
+
+  </Accordion>
+  <Accordion title="ارائه‌دهندهٔ فایل (--provider-source file)">
+    - `--provider-path <path>` (الزامی)
+    - `--provider-mode <singleValue|json>`
+    - `--provider-max-bytes <bytes>`
+    - `--provider-allow-insecure-path`
+
+  </Accordion>
+  <Accordion title="ارائه‌دهندهٔ اجرایی (--provider-source exec)">
+    - `--provider-command <path>` (الزامی)
+    - `--provider-arg <arg>` (تکرارپذیر)
+    - `--provider-no-output-timeout-ms <ms>`
+    - `--provider-max-output-bytes <bytes>`
+    - `--provider-json-only`
+    - `--provider-env <KEY=VALUE>` (تکرارپذیر)
+    - `--provider-pass-env <ENV_VAR>` (تکرارپذیر)
+    - `--provider-trusted-dir <path>` (تکرارپذیر)
+    - `--provider-allow-insecure-path`
+    - `--provider-allow-symlink-command`
+
+  </Accordion>
+</AccordionGroup>
+
+نمونهٔ ارائه‌دهندهٔ اجرایی سخت‌گیری‌شده:
+
+```bash
+openclaw config set secrets.providers.vault \
+  --provider-source exec \
+  --provider-command /usr/local/bin/openclaw-vault \
+  --provider-arg read \
+  --provider-arg openai/api-key \
+  --provider-json-only \
+  --provider-pass-env VAULT_TOKEN \
+  --provider-trusted-dir /usr/local/bin \
+  --provider-timeout-ms 5000
+```
 
 ## `config patch`
 
-وقتی می‌خواهید به‌جای اجرای تعداد زیادی فرمان مسیرمحور `config set`، یک وصله با شکل پیکربندی را جای‌گذاری یا پایپ کنید، از `config patch` استفاده کنید. ورودی یک شیء JSON5 است. شیءها به‌صورت بازگشتی ادغام می‌شوند، آرایه‌ها و مقدارهای اسکالر مقدار هدف را جایگزین می‌کنند، و `null` مسیر هدف را حذف می‌کند.
+به‌جای اجرای چندین دستور مسیرمحور `config set`، یک وصلهٔ JSON5 با شکل پیکربندی را جای‌گذاری یا از طریق لوله ارسال کنید. اشیا به‌صورت بازگشتی ادغام می‌شوند؛ آرایه‌ها و مقادیر اسکالر مقصد را جایگزین می‌کنند؛ `null` مسیر مقصد را حذف می‌کند.
 
 ```bash
 openclaw config patch --file ./openclaw.patch.json5 --dry-run
 openclaw config patch --file ./openclaw.patch.json5
 ```
 
-همچنین می‌توانید یک وصله را از طریق stdin پایپ کنید، که برای اسکریپت‌های راه‌اندازی راه‌دور مفید است:
+برای اسکریپت‌های راه‌اندازی راه‌دور، وصله را از طریق ورودی استاندارد لوله کنید:
 
 ```bash
-ssh openclaw-host 'openclaw config patch --stdin --dry-run' < ./openclaw.patch.json5
-ssh openclaw-host 'openclaw config patch --stdin' < ./openclaw.patch.json5
+ssh user@gateway-host 'openclaw config patch --stdin --dry-run' < ./openclaw.patch.json5
+ssh user@gateway-host 'openclaw config patch --stdin' < ./openclaw.patch.json5
 ```
 
-نمونه وصله:
+نمونهٔ وصله:
 
 ```json5
 {
@@ -219,96 +293,28 @@ ssh openclaw-host 'openclaw config patch --stdin' < ./openclaw.patch.json5
   },
   agents: {
     defaults: {
-      model: { primary: "openai/gpt-5.5" },
+      model: { primary: "openai/gpt-5.6-sol" },
       models: {
-        "openai/gpt-5.5": { params: { fastMode: true } },
+        "openai/gpt-5.6-sol": { params: { fastMode: true } },
       },
     },
   },
 }
 ```
 
-وقتی یک شیء یا آرایه باید دقیقا به مقدار ارائه‌شده تبدیل شود، به‌جای اینکه به‌صورت بازگشتی وصله شود، از `--replace-path <path>` استفاده کنید:
+وقتی یک شیء یا آرایه باید به‌جای وصله‌شدن بازگشتی دقیقاً به مقدار ارائه‌شده تبدیل شود، از `--replace-path <path>` استفاده کنید:
 
 ```bash
 openclaw config patch --file ./discord.patch.json5 --replace-path 'channels.discord.guilds["123"].channels'
 ```
 
-`--dry-run` بررسی‌های طرح‌واره و قابل‌حل‌بودن SecretRef را بدون نوشتن اجرا می‌کند. SecretRefهای مبتنی بر exec در حالت dry-run به‌صورت پیش‌فرض نادیده گرفته می‌شوند؛ وقتی عمدا می‌خواهید dry-run فرمان‌های ارائه‌دهنده را اجرا کند، `--allow-exec` را اضافه کنید.
-
-حالت مسیر/مقدار JSON همچنان برای SecretRefها و ارائه‌دهنده‌ها پشتیبانی می‌شود:
-
-```bash
-openclaw config set channels.discord.token \
-  '{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}' \
-  --strict-json
-
-openclaw config set secrets.providers.vaultfile \
-  '{"source":"file","path":"/etc/openclaw/secrets.json","mode":"json"}' \
-  --strict-json
-```
-
-## پرچم‌های سازنده ارائه‌دهنده
-
-هدف‌های سازنده ارائه‌دهنده باید از `secrets.providers.<alias>` به‌عنوان مسیر استفاده کنند.
-
-<AccordionGroup>
-  <Accordion title="پرچم‌های رایج">
-    - `--provider-source <env|file|exec>`
-    - `--provider-timeout-ms <ms>` (`file`, `exec`)
-
-  </Accordion>
-  <Accordion title="ارائه‌دهنده Env (--provider-source env)">
-    - `--provider-allowlist <ENV_VAR>` (قابل تکرار)
-
-  </Accordion>
-  <Accordion title="ارائه‌دهنده فایل (--provider-source file)">
-    - `--provider-path <path>` (الزامی)
-    - `--provider-mode <singleValue|json>`
-    - `--provider-max-bytes <bytes>`
-    - `--provider-allow-insecure-path`
-
-  </Accordion>
-  <Accordion title="ارائه‌دهنده Exec (--provider-source exec)">
-    - `--provider-command <path>` (الزامی)
-    - `--provider-arg <arg>` (قابل تکرار)
-    - `--provider-no-output-timeout-ms <ms>`
-    - `--provider-max-output-bytes <bytes>`
-    - `--provider-json-only`
-    - `--provider-env <KEY=VALUE>` (قابل تکرار)
-    - `--provider-pass-env <ENV_VAR>` (قابل تکرار)
-    - `--provider-trusted-dir <path>` (قابل تکرار)
-    - `--provider-allow-insecure-path`
-    - `--provider-allow-symlink-command`
-
-  </Accordion>
-</AccordionGroup>
-
-نمونه ارائه‌دهنده exec سخت‌سازی‌شده:
-
-```bash
-openclaw config set secrets.providers.vault \
-  --provider-source exec \
-  --provider-command /usr/local/bin/openclaw-vault \
-  --provider-arg read \
-  --provider-arg openai/api-key \
-  --provider-json-only \
-  --provider-pass-env VAULT_TOKEN \
-  --provider-trusted-dir /usr/local/bin \
-  --provider-timeout-ms 5000
-```
+گزینهٔ `--dry-run` بررسی طرح‌واره و قابلیت تفکیک SecretRef را بدون نوشتن اجرا می‌کند. SecretRefهای متکی به exec به‌طور پیش‌فرض هنگام اجرای آزمایشی نادیده گرفته می‌شوند؛ اگر عمداً می‌خواهید اجرای آزمایشی دستورهای ارائه‌دهنده را اجرا کند، `--allow-exec` را اضافه کنید.
 
 ## اجرای آزمایشی
 
-برای اعتبارسنجی تغییرها بدون نوشتن در `openclaw.json`، از `--dry-run` استفاده کنید.
+گزینهٔ `--dry-run` تغییرات را بدون نوشتن در `openclaw.json` اعتبارسنجی می‌کند. این گزینه برای `config set`، `config patch` و `config unset` در دسترس است.
 
 ```bash
-openclaw config set channels.discord.token \
-  --ref-provider default \
-  --ref-source env \
-  --ref-id DISCORD_BOT_TOKEN \
-  --dry-run
-
 openclaw config set channels.discord.token \
   --ref-provider default \
   --ref-source env \
@@ -327,29 +333,24 @@ openclaw config set channels.discord.token \
 <AccordionGroup>
   <Accordion title="رفتار اجرای آزمایشی">
     - حالت سازنده: بررسی‌های قابل‌حل‌بودن SecretRef را برای ارجاع‌ها/ارائه‌دهندگان تغییریافته اجرا می‌کند.
-    - حالت JSON (`--strict-json`، `--json`، یا حالت دسته‌ای): اعتبارسنجی طرح‌واره به‌همراه بررسی‌های قابل‌حل‌بودن SecretRef را اجرا می‌کند.
-    - اعتبارسنجی خط‌مشی همچنین برای سطوح هدف SecretRef شناخته‌شده و پشتیبانی‌نشده اجرا می‌شود.
-    - بررسی‌های خط‌مشی کل پیکربندی پس از تغییر را ارزیابی می‌کنند، بنابراین نوشتن شیء والد (برای مثال تنظیم `hooks` به‌عنوان یک شیء) نمی‌تواند اعتبارسنجی سطح پشتیبانی‌نشده را دور بزند.
-    - بررسی‌های SecretRef اجرایی به‌طور پیش‌فرض هنگام اجرای آزمایشی رد می‌شوند تا از عوارض جانبی فرمان جلوگیری شود.
-    - از `--allow-exec` همراه با `--dry-run` استفاده کنید تا بررسی‌های SecretRef اجرایی را فعال کنید (این ممکن است فرمان‌های ارائه‌دهنده را اجرا کند).
-    - `--allow-exec` فقط برای اجرای آزمایشی است و اگر بدون `--dry-run` استفاده شود خطا می‌دهد.
+    - حالت JSON (`--strict-json`، `--json` یا حالت دسته‌ای): اعتبارسنجی طرح‌واره را همراه با بررسی‌های قابل‌حل‌بودن SecretRef اجرا می‌کند.
+    - اعتبارسنجی خط‌مشی روی پیکربندی کامل پس از تغییر اجرا می‌شود؛ بنابراین نوشتن اشیای والد (برای مثال، تنظیم `hooks` به‌صورت یک شیء) نمی‌تواند اعتبارسنجی سطوح پشتیبانی‌نشده را دور بزند.
+    - بررسی‌های SecretRef اجرایی به‌طور پیش‌فرض رد می‌شوند تا از عوارض جانبی فرمان جلوگیری شود؛ برای فعال‌سازی آن‌ها `--allow-exec` را وارد کنید (ممکن است فرمان‌های ارائه‌دهنده اجرا شوند). `--allow-exec` فقط برای اجرای آزمایشی است و بدون `--dry-run` خطا می‌دهد.
 
   </Accordion>
   <Accordion title="فیلدهای --dry-run --json">
-    `--dry-run --json` یک گزارش قابل‌خواندن برای ماشین چاپ می‌کند:
-
-    - `ok`: آیا اجرای آزمایشی موفق شد
+    - `ok`: آیا اجرای آزمایشی موفق بوده است
     - `operations`: تعداد انتساب‌های ارزیابی‌شده
-    - `checks`: آیا بررسی‌های طرح‌واره/قابل‌حل‌بودن اجرا شدند
-    - `checks.resolvabilityComplete`: آیا بررسی‌های قابل‌حل‌بودن تا پایان اجرا شدند (وقتی ارجاع‌های اجرایی رد شوند false است)
-    - `refsChecked`: تعداد ارجاع‌هایی که واقعاً در طول اجرای آزمایشی حل شدند
-    - `skippedExecRefs`: تعداد ارجاع‌های اجرایی که چون `--allow-exec` تنظیم نشده بود رد شدند
-    - `errors`: خطاهای ساختاریافته مسیرِ مفقود، طرح‌واره، یا قابل‌حل‌بودن وقتی `ok=false` است
+    - `checks`: آیا بررسی‌های طرح‌واره/قابل‌حل‌بودن اجرا شده‌اند
+    - `checks.resolvabilityComplete`: آیا بررسی‌های قابل‌حل‌بودن تا پایان اجرا شده‌اند (وقتی ارجاع‌های اجرایی رد می‌شوند، مقدار آن false است)
+    - `refsChecked`: تعداد ارجاع‌هایی که واقعاً در اجرای آزمایشی حل شده‌اند
+    - `skippedExecRefs`: تعداد ارجاع‌های اجرایی ردشده به‌دلیل تنظیم‌نشدن `--allow-exec`
+    - `errors`: خطاهای ساخت‌یافتهٔ مسیر ناموجود، طرح‌واره یا قابل‌حل‌بودن، وقتی `ok=false` است
 
   </Accordion>
 </AccordionGroup>
 
-### شکل خروجی JSON
+### ساختار خروجی JSON
 
 ```json5
 {
@@ -375,7 +376,7 @@ openclaw config set channels.discord.token \
 ```
 
 <Tabs>
-  <Tab title="نمونه موفق">
+  <Tab title="نمونهٔ موفق">
     ```json
     {
       "ok": true,
@@ -392,7 +393,7 @@ openclaw config set channels.discord.token \
     }
     ```
   </Tab>
-  <Tab title="نمونه شکست">
+  <Tab title="نمونهٔ ناموفق">
     ```json
     {
       "ok": false,
@@ -419,22 +420,34 @@ openclaw config set channels.discord.token \
 </Tabs>
 
 <AccordionGroup>
-  <Accordion title="اگر اجرای آزمایشی شکست بخورد">
-    - `config schema validation failed`: شکل پیکربندی پس از تغییر شما نامعتبر است؛ مسیر/مقدار یا شکل شیء ارائه‌دهنده/ارجاع را اصلاح کنید.
-    - `Config policy validation failed: unsupported SecretRef usage`: آن اعتبارنامه را به ورودی متن ساده/رشته‌ای برگردانید و SecretRefها را فقط روی سطوح پشتیبانی‌شده نگه دارید.
-    - `SecretRef assignment(s) could not be resolved`: ارائه‌دهنده/ارجاع مورد اشاره در حال حاضر قابل حل نیست (متغیر محیطی مفقود، اشاره‌گر فایل نامعتبر، شکست ارائه‌دهنده اجرایی، یا عدم تطابق ارائه‌دهنده/منبع).
-    - `Dry run note: skipped <n> exec SecretRef resolvability check(s)`: اجرای آزمایشی ارجاع‌های اجرایی را رد کرد؛ اگر به اعتبارسنجی قابل‌حل‌بودن اجرایی نیاز دارید، با `--allow-exec` دوباره اجرا کنید.
-    - برای حالت دسته‌ای، ورودی‌های ناموفق را اصلاح کنید و پیش از نوشتن، `--dry-run` را دوباره اجرا کنید.
+  <Accordion title="اگر اجرای آزمایشی ناموفق باشد">
+    - `config schema validation failed`: ساختار پیکربندی پس از تغییر نامعتبر است؛ مسیر/مقدار یا ساختار شیء ارائه‌دهنده/ارجاع را اصلاح کنید.
+    - `Config policy validation failed: unsupported SecretRef usage`: آن اعتبارنامه را دوباره به ورودی متن ساده/رشته‌ای تبدیل کنید؛ SecretRefها را فقط در سطوح پشتیبانی‌شده نگه دارید.
+    - `SecretRef assignment(s) could not be resolved`: ارائه‌دهنده/ارجاع موردنظر در حال حاضر قابل‌حل نیست (متغیر محیطی ناموجود، اشاره‌گر فایل نامعتبر، خرابی ارائه‌دهندهٔ اجرایی یا عدم تطابق ارائه‌دهنده/منبع).
+    - `Dry run note: skipped <n> exec SecretRef resolvability check(s)`: اگر به اعتبارسنجی قابل‌حل‌بودن اجرایی نیاز دارید، با `--allow-exec` دوباره اجرا کنید.
+    - در حالت دسته‌ای، ورودی‌های ناموفق را اصلاح کنید و پیش از نوشتن، `--dry-run` را دوباره اجرا کنید.
 
   </Accordion>
 </AccordionGroup>
 
+## اعمال تغییرات
+
+پس از هر اجرای موفق `config set` / `config patch` / `config unset`، CLI یکی از سه راهنمای زیر را نمایش می‌دهد تا بدانید آیا Gateway نیاز به راه‌اندازی مجدد دارد:
+
+| راهنما                                               | معنی                                             |
+| --------------------------------------------------- | ------------------------------------------------ |
+| `Restart the gateway to apply.`                     | مسیر تغییریافته به راه‌اندازی مجدد کامل نیاز دارد. |
+| `Change will apply without restarting the gateway.` | بارگذاری مجدد آنی، تغییر را خودکار اعمال می‌کند. |
+| `No gateway restart needed.`                        | هیچ مورد مرتبط با زمان اجرا تغییر نکرده است.    |
+
+نوشتن در `plugins.entries` (یا هر زیرمسیر آن) همیشه به راه‌اندازی مجدد نیاز دارد، زیرا CLI نمی‌تواند اثبات کند که فرادادهٔ بارگذاری مجدد همهٔ Pluginها بارگذاری شده است.
+
 ## ایمنی نوشتن
 
-`openclaw config set` و سایر نویسنده‌های پیکربندی متعلق به OpenClaw، پیش از ثبت روی دیسک، کل پیکربندی پس از تغییر را اعتبارسنجی می‌کنند. اگر بار جدید در اعتبارسنجی طرح‌واره شکست بخورد یا شبیه بازنویسی مخرب باشد، پیکربندی فعال دست‌نخورده می‌ماند و بار ردشده کنار آن با نام `openclaw.json.rejected.*` ذخیره می‌شود.
+`openclaw config set` و دیگر نویسنده‌های پیکربندی متعلق به OpenClaw، پیش از ثبت روی دیسک، پیکربندی کامل پس از تغییر را اعتبارسنجی می‌کنند. اگر محتوای جدید در اعتبارسنجی طرح‌واره ناموفق باشد یا شبیه بازنویسی مخرب به نظر برسد، پیکربندی فعال دست‌نخورده باقی می‌ماند و محتوای ردشده در کنار آن با نام `openclaw.json.rejected.*` ذخیره می‌شود.
 
 <Warning>
-مسیر پیکربندی فعال باید یک فایل عادی باشد. چیدمان‌های `openclaw.json` که symlink شده‌اند برای نوشتن پشتیبانی نمی‌شوند؛ به‌جای آن از `OPENCLAW_CONFIG_PATH` برای اشاره مستقیم به فایل واقعی استفاده کنید.
+مسیر پیکربندی فعال باید یک فایل معمولی باشد. چیدمان‌هایی که در آن‌ها `openclaw.json` پیوند نمادین است، برای نوشتن پشتیبانی نمی‌شوند؛ در عوض با `OPENCLAW_CONFIG_PATH` مستقیماً به فایل واقعی اشاره کنید.
 </Warning>
 
 برای ویرایش‌های کوچک، نوشتن با CLI را ترجیح دهید:
@@ -445,7 +458,7 @@ openclaw config set gateway.reload.mode hybrid
 openclaw config validate
 ```
 
-اگر نوشتن رد شد، بار ذخیره‌شده را بررسی کنید و شکل کامل پیکربندی را اصلاح کنید:
+اگر نوشتن رد شد، محتوای ذخیره‌شده را بررسی و ساختار کامل پیکربندی را اصلاح کنید:
 
 ```bash
 CONFIG="$(openclaw config file)"
@@ -453,36 +466,19 @@ ls -lt "$CONFIG".rejected.* 2>/dev/null | head
 openclaw config validate
 ```
 
-نوشتن مستقیم با ویرایشگر همچنان مجاز است، اما Gateway در حال اجرا تا زمانی که اعتبارسنجی نشود با آن به‌عنوان نامطمئن رفتار می‌کند. ویرایش‌های مستقیم نامعتبر باعث شکست راه‌اندازی می‌شوند یا توسط بارگذاری مجدد داغ رد می‌شوند؛ Gateway فایل `openclaw.json` را بازنویسی نمی‌کند. برای تعمیر پیکربندی پیشونددار/بازنویسی‌شده یا بازیابی آخرین نسخه سالم شناخته‌شده، `openclaw doctor --fix` را اجرا کنید. [عیب‌یابی Gateway](/fa/gateway/troubleshooting#gateway-rejected-invalid-config) را ببینید.
+نوشتن مستقیم با ویرایشگر همچنان مجاز است، اما Gateway در حال اجرا تا زمان اعتبارسنجی موفق، آن را نامطمئن تلقی می‌کند. ویرایش‌های مستقیم نامعتبر باعث شکست راه‌اندازی می‌شوند یا بارگذاری مجدد آنی آن‌ها را نادیده می‌گیرد؛ Gateway فایل `openclaw.json` را بازنویسی نمی‌کند. برای ترمیم پیکربندی دارای پیشوند/بازنویسی‌شده یا بازیابی آخرین نسخهٔ سالم شناخته‌شده، `openclaw doctor --fix` را اجرا کنید. به [عیب‌یابی Gateway](/fa/gateway/troubleshooting#gateway-rejected-invalid-config) مراجعه کنید.
 
-بازیابی کل فایل فقط برای تعمیر doctor نگه داشته شده است. تغییرات طرح‌واره Plugin یا ناهمخوانی `minHostVersion` به‌جای برگشت‌دادن تنظیمات نامرتبط کاربر مانند پیکربندی مدل‌ها، ارائه‌دهندگان، پروفایل‌های احراز هویت، کانال‌ها، آشکارسازی gateway، ابزارها، حافظه، مرورگر، یا cron، آشکارا خطا می‌دهند.
+بازیابی کل فایل فقط برای ترمیم توسط doctor در نظر گرفته شده است. تغییرات طرح‌وارهٔ Plugin یا ناسازگاری `minHostVersion` به‌صورت آشکار خطا می‌دهند و باعث بازگردانی تنظیمات نامرتبط کاربر، مانند پیکربندی مدل‌ها، ارائه‌دهندگان، نمایه‌های احراز هویت، کانال‌ها، دسترسی Gateway، ابزارها، حافظه، مرورگر یا cron نمی‌شوند.
 
-## زیرفرمان‌ها
+## چرخهٔ ترمیم
 
-- `config file`: مسیر فایل پیکربندی فعال را چاپ می‌کند (حل‌شده از `OPENCLAW_CONFIG_PATH` یا مکان پیش‌فرض). مسیر باید به یک فایل عادی اشاره کند، نه symlink.
-
-پس از ویرایش‌ها، gateway را دوباره راه‌اندازی کنید.
-
-## اعتبارسنجی
-
-پیکربندی فعلی را بدون راه‌اندازی gateway در برابر طرح‌واره فعال اعتبارسنجی کنید.
-
-```bash
-openclaw config validate
-openclaw config validate --json
-```
-
-پس از موفق‌شدن `openclaw config validate`، می‌توانید از TUI محلی استفاده کنید تا یک عامل تعبیه‌شده پیکربندی فعال را با مستندات مقایسه کند، درحالی‌که هر تغییر را از همان پایانه اعتبارسنجی می‌کنید:
-
-<Note>
-اگر اعتبارسنجی از قبل شکست می‌خورد، با `openclaw configure` یا `openclaw doctor --fix` شروع کنید. `openclaw chat` نگهبان پیکربندی نامعتبر را دور نمی‌زند.
-</Note>
+پس از موفقیت `openclaw config validate`، از TUI محلی استفاده کنید تا یک عامل تعبیه‌شده پیکربندی فعال را با مستندات مقایسه کند، درحالی‌که هر تغییر را از همان پایانه اعتبارسنجی می‌کنید:
 
 ```bash
 openclaw chat
 ```
 
-سپس داخل TUI:
+درون TUI، علامت `!` در ابتدای خط یک فرمان واقعی پوستهٔ محلی را اجرا می‌کند (پس از یک پیام تأیید که در هر نشست فقط یک‌بار نمایش داده می‌شود):
 
 ```text
 !openclaw config file
@@ -491,20 +487,18 @@ openclaw chat
 !openclaw doctor
 ```
 
-چرخه معمول تعمیر:
-
 <Steps>
   <Step title="مقایسه با مستندات">
-    از عامل بخواهید پیکربندی فعلی شما را با صفحه مستندات مرتبط مقایسه کند و کوچک‌ترین اصلاح را پیشنهاد دهد.
+    از عامل بخواهید پیکربندی فعلی شما را با صفحهٔ مرتبط مستندات مقایسه کند و کوچک‌ترین اصلاح را پیشنهاد دهد.
   </Step>
   <Step title="اعمال ویرایش‌های هدفمند">
     ویرایش‌های هدفمند را با `openclaw config set` یا `openclaw configure` اعمال کنید.
   </Step>
-  <Step title="اعتبارسنجی دوباره">
+  <Step title="اعتبارسنجی مجدد">
     پس از هر تغییر، `openclaw config validate` را دوباره اجرا کنید.
   </Step>
-  <Step title="Doctor برای مشکلات زمان اجرا">
-    اگر اعتبارسنجی موفق شد اما زمان اجرا همچنان ناسالم است، برای کمک به مهاجرت و تعمیر، `openclaw doctor` یا `openclaw doctor --fix` را اجرا کنید.
+  <Step title="استفاده از doctor برای مشکلات زمان اجرا">
+    اگر اعتبارسنجی موفق است اما زمان اجرا همچنان ناسالم است، برای کمک به مهاجرت و ترمیم، `openclaw doctor` یا `openclaw doctor --fix` را اجرا کنید.
   </Step>
 </Steps>
 

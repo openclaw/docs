@@ -1,12 +1,12 @@
 ---
 read_when:
-    - 您想要搭配 OpenClaw 使用 LongCat-2.0
-    - 你需要 LongCat API 金鑰或模型限制
+    - 你想要搭配 OpenClaw 使用 LongCat-2.0
+    - 你需要 LongCat API 金鑰或模型限制資訊
 summary: LongCat-2.0 的 LongCat API 設定
 title: LongCat
 x-i18n:
-    generated_at: "2026-07-06T21:53:17Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T21:43:28Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 7c447f9c42e6547a69d2124debcb685c32fe59de29bfc551e18e791d9f280584
@@ -14,19 +14,17 @@ x-i18n:
     workflow: 16
 ---
 
-[LongCat](https://longcat.ai) 提供 LongCat-2.0 的託管 API，這是一個
-為程式開發與代理式工作負載打造的推理模型。OpenClaw 提供官方
-`longcat` 外掛，用於 LongCat 的 OpenAI 相容端點。
+[LongCat](https://longcat.ai) 為 LongCat-2.0 提供託管 API；LongCat-2.0 是專為程式開發及代理式工作負載打造的推理模型。OpenClaw 為 LongCat 的 OpenAI 相容端點提供官方 `longcat` 外掛。
 
 | 屬性       | 值                                 |
 | ---------- | ---------------------------------- |
-| 供應商     | `longcat`                          |
+| 提供者     | `longcat`                          |
 | 驗證       | `LONGCAT_API_KEY`                  |
-| API        | OpenAI 相容的 Chat Completions     |
+| API        | OpenAI 相容的聊天補全              |
 | 基礎 URL   | `https://api.longcat.chat/openai`  |
 | 模型       | `longcat/LongCat-2.0`              |
-| 上下文     | 1,048,576 個 token                 |
-| 最大輸出   | 131,072 個 token                   |
+| 上下文     | 1,048,576 個權杖                   |
+| 最大輸出   | 131,072 個權杖                     |
 | 輸入       | 文字                               |
 
 ## 安裝外掛
@@ -41,23 +39,23 @@ openclaw gateway restart
 ## 開始使用
 
 <Steps>
-  <Step title="Create an API key">
-    登入 [LongCat API Platform](https://longcat.chat/platform/)，並在
+  <Step title="建立 API 金鑰">
+    登入 [LongCat API 平台](https://longcat.chat/platform/)，並在
     [API Keys](https://longcat.chat/platform/api_keys) 頁面建立金鑰。
   </Step>
-  <Step title="Run onboarding">
+  <Step title="執行新手設定">
     ```bash
     openclaw onboard --auth-choice longcat-api-key
     ```
   </Step>
-  <Step title="Verify the model">
+  <Step title="驗證模型">
     ```bash
     openclaw models list --provider longcat
     ```
   </Step>
 </Steps>
 
-當尚未設定主要模型時，導覽設定會加入託管型目錄，並選取 `longcat/LongCat-2.0`。
+若尚未設定主要模型，新手設定會新增託管目錄並選取 `longcat/LongCat-2.0`。
 
 ### 非互動式設定
 
@@ -70,56 +68,49 @@ openclaw onboard --non-interactive \
 
 ## 推理行為
 
-LongCat 提供二元思考控制。OpenClaw 會將啟用的思考層級對應到
-`thinking: { type: "enabled" }`，並將 `/think off` 對應到
-`thinking: { type: "disabled" }`。LongCat 目前未記錄
-`reasoning_effort`，因此 OpenClaw 不會傳送它。
+LongCat 提供二元思考控制。OpenClaw 會將已啟用的思考層級對應至 `thinking: { type: "enabled" }`，並將 `/think off` 對應至 `thinking: { type: "disabled" }`。LongCat 目前未提供 `reasoning_effort` 的文件，因此 OpenClaw 不會傳送此參數。
 
-LongCat 會在 `reasoning_content` 中回傳推理內容。OpenClaw 在重播助理工具呼叫回合時會保留該欄位，讓多回合代理工作階段維持供應商預期的訊息形狀。
+LongCat 會在 `reasoning_content` 中傳回推理內容。OpenClaw 在重播助理工具呼叫輪次時會保留此欄位，讓多輪代理工作階段維持提供者預期的訊息格式。
 
-## 價格
+## 定價
 
-內建目錄使用 LongCat 以百萬 token 為單位、以美元計價的隨用隨付定價：未快取輸入 $0.75、已快取輸入 $0.015、輸出 $2.95。LongCat 可能提供臨時折扣；[價格頁面](https://longcat.chat/platform/docs/Pricing/LongCat-2.0.html)
-和你的帳單紀錄才是權威依據。
+內建目錄採用 LongCat 的隨用隨付牌價，以每百萬個權杖的美元價格計算：未快取輸入為 $0.75、已快取輸入為 $0.015，輸出為 $2.95。LongCat 可能提供限時折扣；請以[定價頁面](https://longcat.chat/platform/docs/Pricing/LongCat-2.0.html)及您的帳單紀錄為準。
 
 ## 自行託管 LongCat-2.0
 
-`longcat` 供應商目標是 LongCat 的託管 API。若要使用
-[Hugging Face](https://huggingface.co/meituan-longcat/LongCat-2.0) 上的開放權重，請透過 OpenAI 相容執行階段提供模型，並改用 OpenClaw 現有的
-[vLLM](/zh-TW/providers/vllm) 或 [SGLang](/zh-TW/providers/sglang) 供應商。
+`longcat` 提供者以 LongCat 的託管 API 為目標。若要使用 [Hugging Face](https://huggingface.co/meituan-longcat/LongCat-2.0) 上的開放權重，請透過 OpenAI 相容的執行環境提供模型服務，並改用 OpenClaw 現有的 [vLLM](/zh-TW/providers/vllm) 或 [SGLang](/zh-TW/providers/sglang) 提供者。
 
-請在自行託管的供應商目錄中保留執行階段的確切模型識別碼；不要透過 `longcat/LongCat-2.0` 路由本機部署。
+請在自行託管的提供者目錄中保留執行環境的確切模型識別碼；請勿透過 `longcat/LongCat-2.0` 路由本機部署。
 
 ## 疑難排解
 
 <AccordionGroup>
-  <Accordion title="The key works in a shell but not in the Gateway">
-    由守護程式管理的閘道程序不會繼承每個互動式 shell 變數。請將
-    `LONGCAT_API_KEY` 放入 `~/.openclaw/.env`，透過導覽設定進行設定，或使用核准的密鑰參照。
+  <Accordion title="金鑰可在命令殼層中使用，但無法在閘道中使用">
+    由常駐程式管理的閘道程序不會繼承每個互動式命令殼層變數。請將 `LONGCAT_API_KEY` 放入 `~/.openclaw/.env`、透過新手設定進行配置，或使用已核准的祕密參照。
   </Accordion>
 
-  <Accordion title="Requests fail with 402 or 429">
-    `402` 表示帳戶的 token 配額不足。`429` 表示 API 金鑰達到速率限制。請查看 [LongCat 用量](https://longcat.chat/platform/usage)，並在供應商的退避視窗後重試受速率限制的請求。
+  <Accordion title="請求因 402 或 429 而失敗">
+    `402` 表示帳戶的權杖配額不足。`429` 表示 API 金鑰觸發速率限制。請檢查 [LongCat 用量](https://longcat.chat/platform/usage)，並在提供者的退避等待期間結束後重試遭速率限制的請求。
   </Accordion>
 
-  <Accordion title="The model does not appear">
+  <Accordion title="模型未顯示">
     執行 `openclaw plugins list` 並確認 `longcat` 外掛已啟用，然後執行 `openclaw models list --provider longcat`。
   </Accordion>
 </AccordionGroup>
 
-## 相關
+## 相關內容
 
 <CardGroup cols={2}>
-  <Card title="Model providers" href="/zh-TW/concepts/model-providers" icon="layers">
-    供應商設定、模型參照與容錯移轉行為。
+  <Card title="模型提供者" href="/zh-TW/concepts/model-providers" icon="layers">
+    提供者設定、模型參照及容錯移轉行為。
   </Card>
-  <Card title="LongCat API docs" href="https://longcat.chat/platform/docs/" icon="arrow-up-right-from-square">
-    託管 API 端點、驗證、限制與範例。
+  <Card title="LongCat API 文件" href="https://longcat.chat/platform/docs/" icon="arrow-up-right-from-square">
+    託管 API 端點、驗證、限制及範例。
   </Card>
-  <Card title="LongCat-2.0 model card" href="https://huggingface.co/meituan-longcat/LongCat-2.0" icon="arrow-up-right-from-square">
-    架構、部署指引與模型詳細資訊。
+  <Card title="LongCat-2.0 模型說明卡" href="https://huggingface.co/meituan-longcat/LongCat-2.0" icon="arrow-up-right-from-square">
+    架構、部署指南及模型詳細資料。
   </Card>
-  <Card title="Secrets" href="/zh-TW/gateway/secrets" icon="key">
-    儲存供應商憑證，而不在設定中嵌入純文字。
+  <Card title="祕密" href="/zh-TW/gateway/secrets" icon="key">
+    儲存提供者憑證，無須在設定中嵌入明文。
   </Card>
 </CardGroup>

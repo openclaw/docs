@@ -1,22 +1,22 @@
 ---
 read_when:
-    - Gmail Pub/Sub etkinliklerini OpenClaw'a bağlamak istiyorsunuz
+    - Gmail Pub/Sub olaylarını OpenClaw'a bağlamak istiyorsunuz
     - Tam bayrak listesine ve varsayılan değerlere ihtiyacınız var
 summary: '`openclaw webhooks` için CLI referansı (Gmail Pub/Sub kurulumu ve çalıştırıcısı)'
 title: Webhook'lar
 x-i18n:
-    generated_at: "2026-05-10T19:31:30Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:13:19Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b9ce17ca78bbe9836edd4643a262833e52cceb27f441d5922c036777e47a6f74
+    source_hash: 83fff0ac2ce247402f45523eda0b5cdd551bd65212636118698e45cb8740236c
     source_path: cli/webhooks.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw webhooks`
 
-Webhook yardımcıları ve entegrasyonları. Bugün bu yüzey, paketle birlikte gelen `gog` izleyicisiyle entegre olan Gmail Pub/Sub akışlarıyla sınırlıdır.
+Webhook yardımcıları ve entegrasyonları. Bu alan şu anda paketle birlikte sunulan `gog` izleyicisi üzerine kurulu Gmail Pub/Sub akışlarıyla sınırlıdır.
 
 ## Alt komutlar
 
@@ -25,14 +25,16 @@ openclaw webhooks gmail setup --account <email> [...]
 openclaw webhooks gmail run   [--account <email>] [...]
 ```
 
-| Alt komut     | Açıklama                                                                                         |
-| ------------- | ------------------------------------------------------------------------------------------------ |
-| `gmail setup` | Gmail izlemeyi, Pub/Sub konu/aboneliğini ve OpenClaw webhook teslim hedefini yapılandırın.       |
-| `gmail run`   | `gog watch serve` ile izleme otomatik yenileme döngüsünü çalıştırın.                             |
+| Alt komut     | Açıklama                                                                                       |
+| ------------- | ---------------------------------------------------------------------------------------------- |
+| `gmail setup` | Tek seferlik sihirbaz: Gmail izleme, Pub/Sub konusu/aboneliği ve OpenClaw hook teslimi.         |
+| `gmail run`   | `gog watch serve` ile izleme otomatik yenileme döngüsünü ön planda çalıştırır.                  |
+
+<Note>
+Gateway, `hooks.enabled=true` olduğunda ve `hooks.gmail.account` ayarlandığında (`gmail setup` tarafından ayarlanır) başlangıçta `gog gmail watch serve` komutunu da otomatik olarak başlatır. `gmail run`, aynı mantığı ön planda çalıştırır; hata ayıklama için veya Gateway izleyicisi devre dışı bırakıldığında kullanışlıdır. Otomatik başlatma ayrıntıları ve `OPENCLAW_SKIP_GMAIL_WATCHER` ile devre dışı bırakma seçeneği için [Gmail Pub/Sub entegrasyonu](/tr/automation/cron-jobs#gmail-pubsub-integration) bölümüne bakın.
+</Note>
 
 ## `webhooks gmail setup`
-
-Gmail izlemeyi, Pub/Sub'ı ve OpenClaw webhook teslimini yapılandırın.
 
 ```bash
 openclaw webhooks gmail setup --account you@example.com
@@ -40,68 +42,70 @@ openclaw webhooks gmail setup --account you@example.com --project my-gcp-project
 openclaw webhooks gmail setup --account you@example.com --hook-url https://gateway.example.com/hooks/gmail
 ```
 
-### Zorunlu
+Eksiklerse `gcloud` ve `gog` araçlarını kurar, `gcloud` kimlik doğrulamasını gerçekleştirir, Pub/Sub konusunu ve aboneliğini oluşturur, Gmail izlemeyi başlatır ve `hooks.enabled=true` ile `hooks.gmail` yapılandırmasını yazar. `Sonraki: openclaw webhooks gmail run` çıktısını verir.
 
-| Bayrak              | Açıklama                    |
-| ------------------- | --------------------------- |
-| `--account <email>` | İzlenecek Gmail hesabı.     |
+### Gerekli
+
+| Bayrak              | Açıklama                     |
+| ------------------- | ---------------------------- |
+| `--account <email>` | İzlenecek Gmail hesabı.      |
 
 ### Pub/Sub seçenekleri
 
-| Bayrak                  | Varsayılan             | Açıklama                                                        |
-| ----------------------- | ---------------------- | --------------------------------------------------------------- |
-| `--project <id>`        | (yok)                  | GCP proje kimliği (OAuth istemci sahibi).                       |
-| `--topic <name>`        | `gog-gmail-watch`      | Pub/Sub konu adı.                                               |
-| `--subscription <name>` | `gog-gmail-watch-push` | Pub/Sub abonelik adı.                                           |
-| `--label <label>`       | `INBOX`                | İzlenecek Gmail etiketi.                                        |
-| `--push-endpoint <url>` | (yok)                  | Açık Pub/Sub push uç noktası. Tailscale'i geçersiz kılar.       |
+| Bayrak                  | Varsayılan             | Açıklama                                                                                                                                          |
+| ----------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--project <id>`        | (yok)                  | GCP proje kimliği (OAuth istemcisinin sahibi). Önce konunun kendi proje kimliğine, ardından `gog` kimlik bilgilerinden çözümlenen projeye döner.    |
+| `--topic <name>`        | `gog-gmail-watch`      | Pub/Sub konu adı.                                                                                                                                 |
+| `--subscription <name>` | `gog-gmail-watch-push` | Pub/Sub abonelik adı.                                                                                                                             |
+| `--label <label>`       | `INBOX`                | İzlenecek Gmail etiketi.                                                                                                                          |
+| `--push-endpoint <url>` | (yok)                  | Açıkça belirtilen Pub/Sub push uç noktası. Tailscale ayarını geçersiz kılar.                                                                       |
 
 ### OpenClaw teslim seçenekleri
 
-| Bayrak                 | Varsayılan | Açıklama                                      |
-| ---------------------- | ---------- | --------------------------------------------- |
-| `--hook-url <url>`     | (yok)      | OpenClaw webhook URL'si.                      |
-| `--hook-token <token>` | (yok)      | OpenClaw webhook belirteci.                   |
-| `--push-token <token>` | (yok)      | `gog watch serve`'e iletilen push belirteci.  |
+| Bayrak                 | Varsayılan                                             | Açıklama                    |
+| ---------------------- | ------------------------------------------------------ | --------------------------- |
+| `--hook-url <url>`     | `hooks.path` ve Gateway bağlantı noktasından oluşturulur | OpenClaw webhook URL'si.    |
+| `--hook-token <token>` | `hooks.token` veya oluşturulan bir token               | OpenClaw webhook token'ı.   |
+| `--push-token <token>` | Oluşturulan token                                      | `gog watch serve` komutuna iletilen push token'ı. |
 
 ### `gog watch serve` seçenekleri
 
-| Bayrak                | Varsayılan      | Açıklama                                                                  |
-| --------------------- | --------------- | ------------------------------------------------------------------------- |
-| `--bind <host>`       | `127.0.0.1`     | `gog watch serve` bağlanma ana makinesi.                                  |
-| `--port <port>`       | `8788`          | `gog watch serve` portu.                                                  |
-| `--path <path>`       | `/gmail-pubsub` | `gog watch serve` yolu.                                                   |
-| `--include-body`      | `true`          | E-posta gövdesi parçalarını dahil edin. Devre dışı bırakmak için `--no-include-body` geçirin. |
-| `--max-bytes <n>`     | `20000`         | Her gövde parçası için en fazla bayt.                                      |
-| `--renew-minutes <n>` | `720` (12h)     | Gmail izlemeyi her N dakikada bir yenileyin.                              |
+| Bayrak                | Varsayılan      | Açıklama                                                                                                                                                                 |
+| --------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `--bind <host>`       | `127.0.0.1`     | `gog watch serve` bağlanma ana bilgisayarı.                                                                                                                              |
+| `--port <port>`       | `8788`          | `gog watch serve` bağlantı noktası.                                                                                                                                      |
+| `--path <path>`       | `/gmail-pubsub` | Tailscale açık bir hedef olmadan etkinleştirildiğinde, Tailscale proxy'lemeden önce yolu kaldırdığı için `/` değerine zorlanan `gog watch serve` yolu.                     |
+| `--include-body`      | `true`          | E-posta gövdesi parçalarını dahil eder. Bunu kapatmak için CLI bayrağı yoktur; bunun yerine yapılandırmada `hooks.gmail.includeBody: false` ayarını kullanın.              |
+| `--max-bytes <n>`     | `20000`         | Her gövde parçası için azami bayt sayısı.                                                                                                                                |
+| `--renew-minutes <n>` | `720` (12 sa.)  | Gmail izlemeyi her N dakikada bir yeniler.                                                                                                                               |
 
-### Tailscale'e açma
+### Tailscale üzerinden erişime açma
 
-| Bayrak                    | Varsayılan | Açıklama                                                                   |
-| ------------------------- | ---------- | -------------------------------------------------------------------------- |
-| `--tailscale <mode>`      | `funnel`   | Push uç noktasını tailscale üzerinden açın: `funnel`, `serve` veya `off`.  |
-| `--tailscale-path <path>` | (yok)      | tailscale serve/funnel için yol.                                           |
-| `--tailscale-target <t>`  | (yok)      | Tailscale serve/funnel hedefi (port, `host:port` veya URL).                |
+| Bayrak                    | Varsayılan | Açıklama                                                                 |
+| ------------------------- | ---------- | ------------------------------------------------------------------------ |
+| `--tailscale <mode>`      | `funnel`   | Push uç noktasını tailscale üzerinden açar: `funnel`, `serve` veya `off`. |
+| `--tailscale-path <path>` | (yok)      | Tailscale serve/funnel yolu.                                             |
+| `--tailscale-target <t>`  | (yok)      | Tailscale serve/funnel hedefi (bağlantı noktası, `host:port` veya URL).   |
 
 ### Çıktı
 
-| Bayrak   | Açıklama                                                     |
-| -------- | ------------------------------------------------------------ |
-| `--json` | Metin yerine makine tarafından okunabilir bir özet yazdırın. |
+| Bayrak   | Açıklama                                              |
+| -------- | ----------------------------------------------------- |
+| `--json` | Metin yerine makine tarafından okunabilir bir özet yazdırır. |
 
 ## `webhooks gmail run`
-
-`gog watch serve` ile izleme otomatik yenileme döngüsünü ön planda çalıştırın.
 
 ```bash
 openclaw webhooks gmail run --account you@example.com
 ```
 
-`run`, `setup` ile aynı `gog watch serve`, OpenClaw teslim, Pub/Sub ve Tailscale bayraklarını kabul eder; şu istisnalarla:
+`gog watch serve` ile izleme otomatik yenileme döngüsünü ön planda çalıştırır ve `gog watch serve` beklenmedik biçimde sonlanırsa 2 saniyelik gecikmenin ardından yeniden başlatır.
 
-- `--account`, `run` üzerinde **isteğe bağlıdır** (yapılandırılmış hesaba geri döner).
-- `run`, `--project`, `--push-endpoint` veya `--json` kabul etmez.
-- `run` bayraklarının yerleşik varsayılanları yoktur; eksik değerler `setup` tarafından yazılan değerlere geri döner.
+`run`, `setup` ile aynı Pub/Sub, OpenClaw teslimi, `gog watch serve` ve Tailscale bayraklarını kabul eder; ancak şu farklar vardır:
+
+- `run` komutunda `--account` **isteğe bağlıdır**; belirtilmezse `hooks.gmail.account` kullanılır.
+- `run`, `--project`, `--push-endpoint` veya `--json` bayraklarını kabul **etmez**.
+- Her bayrak önce eşleşen `hooks.gmail.*` yapılandırma değerine (`setup` tarafından yazılır), ardından `setup` tarafından kullanılan aynı yerleşik varsayılana döner; tek istisna şudur: ne bayrak ne de `hooks.gmail.tailscale.mode` ayarlanmışsa `run` komutunda `--tailscale` varsayılan olarak `funnel` değil `off` değerini kullanır.
 
 | Kategori          | Bayraklar                                                                        |
 | ----------------- | -------------------------------------------------------------------------------- |
@@ -111,15 +115,11 @@ openclaw webhooks gmail run --account you@example.com
 | Tailscale         | `--tailscale`, `--tailscale-path`, `--tailscale-target`                          |
 
 <Note>
-`run` için `--topic` değeri, yalnızca kısa konu adı değil, tam Pub/Sub konu yoludur (`projects/.../topics/...`).
+`run` için `--topic` değeri yalnızca kısa konu adı değil, tam Pub/Sub konu yoludur (`projects/.../topics/...`).
 </Note>
-
-## Uçtan uca akış
-
-Bu CLI komutlarıyla eşleşen GCP projesi, OAuth ve Gateway tarafı kurulumu için [Gmail Pub/Sub entegrasyonu](/tr/automation/cron-jobs#gmail-pubsub-integration) bölümüne bakın.
 
 ## İlgili
 
 - [CLI başvurusu](/tr/cli)
 - [Webhook otomasyonu](/tr/automation/cron-jobs)
-- [Gmail Pub/Sub](/tr/automation/cron-jobs#gmail-pubsub-integration)
+- [Gmail Pub/Sub entegrasyonu](/tr/automation/cron-jobs#gmail-pubsub-integration)

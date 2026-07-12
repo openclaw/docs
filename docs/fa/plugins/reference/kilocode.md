@@ -1,11 +1,11 @@
 ---
 read_when:
-    - شما در حال نصب، پیکربندی یا ممیزی Plugin کیلکد هستید
+    - شما در حال نصب، پیکربندی یا ممیزی Plugin kilocode هستید
 summary: پشتیبانی از ارائه‌دهندهٔ مدل Kilocode را به OpenClaw اضافه می‌کند.
-title: Kilocode Plugin
+title: Plugin کیلوکد
 x-i18n:
-    generated_at: "2026-06-27T18:26:20Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:30:04Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 83843bd0e8a3e9944a60540a0329630f7660f8e9440c157b790ddca8655052f9
@@ -13,9 +13,9 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin Kilocode
+# Plugin کیلُکُد
 
-پشتیبانی از ارائه‌دهنده مدل Kilocode را به OpenClaw اضافه می‌کند.
+پشتیبانی از ارائه‌دهنده مدل کیلُکُد را به OpenClaw اضافه می‌کند.
 
 ## توزیع
 
@@ -24,8 +24,8 @@ x-i18n:
 
 ## سطح
 
-providers: kilocode
+ارائه‌دهندگان: kilocode
 
 ## مستندات مرتبط
 
-- [kilocode](/fa/providers/kilocode)
+- [کیلُکُد](/fa/providers/kilocode)

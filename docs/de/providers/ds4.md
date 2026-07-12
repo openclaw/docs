@@ -6,10 +6,9 @@ read_when:
 summary: Führen Sie OpenClaw über ds4 aus, einen lokalen, OpenAI-kompatiblen DeepSeek-V4-Flash-Server
 title: ds4
 x-i18n:
-    generated_at: "2026-07-12T15:42:47Z"
+    generated_at: "2026-07-12T02:03:19Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: be449813295648694625ef8003b3f4b12903535b74816916ca5af0695174fbf4
     source_path: providers/ds4.md
@@ -30,10 +29,10 @@ ds4 ist kein mitgeliefertes OpenClaw-Provider-Plugin. Konfigurieren Sie es unter
 | API         | OpenAI-kompatible Chat Completions (`openai-completions`) |
 | Basis-URL   | `http://127.0.0.1:18000/v1` (empfohlen)                   |
 | Modell-ID   | `deepseek-v4-flash`                                       |
-| Tool-Aufrufe | `tools` / `tool_calls` im OpenAI-Stil                    |
-| Reasoning   | `thinking` und `reasoning_effort` im DeepSeek-Stil        |
+| Tool-Aufrufe | OpenAI-ähnliche `tools` / `tool_calls`                   |
+| Reasoning   | DeepSeek-ähnliches `thinking` und `reasoning_effort`      |
 
-## Anforderungen
+## Voraussetzungen
 
 - macOS mit Metal-Unterstützung.
 - Ein funktionsfähiger ds4-Checkout mit `ds4-server` und der GGUF-Datei von DeepSeek V4 Flash.
@@ -51,7 +50,7 @@ Arbeitsspeicher und um ds4 Think Max zu aktivieren.
 ## Schnellstart
 
 <Steps>
-  <Step title="ds4-server starten">
+  <Step title="Start ds4-server">
     Ersetzen Sie `<DS4_DIR>` durch den Pfad zu Ihrem ds4-Checkout.
 
     ```bash
@@ -64,7 +63,7 @@ Arbeitsspeicher und um ds4 Think Max zu aktivieren.
     ```
 
   </Step>
-  <Step title="OpenAI-kompatiblen Endpunkt überprüfen">
+  <Step title="Verify the OpenAI-compatible endpoint">
     ```bash
     curl http://127.0.0.1:18000/v1/models
     ```
@@ -72,16 +71,16 @@ Arbeitsspeicher und um ds4 Think Max zu aktivieren.
     Die Antwort sollte `deepseek-v4-flash` enthalten.
 
   </Step>
-  <Step title="OpenClaw-Provider-Konfiguration hinzufügen">
-    Fügen Sie die Konfiguration aus [Vollständige Konfiguration](#full-config) hinzu und führen Sie anschließend
-    eine einmalige Modellprüfung aus:
+  <Step title="Add the OpenClaw provider config">
+    Fügen Sie die Konfiguration aus [Vollständige Konfiguration](#full-config) hinzu und führen Sie anschließend eine einmalige
+    Modellprüfung aus:
 
     ```bash
     openclaw infer model run \
       --local \
       --model ds4/deepseek-v4-flash \
       --thinking off \
-      --prompt "Antworte exakt mit: openclaw-ds4-ok" \
+      --prompt "Reply with exactly: openclaw-ds4-ok" \
       --json
     ```
 
@@ -99,7 +98,7 @@ Verwenden Sie diese Konfiguration, wenn ds4 bereits unter `127.0.0.1:18000` ausg
       model: { primary: "ds4/deepseek-v4-flash" },
       models: {
         "ds4/deepseek-v4-flash": {
-          alias: "DS4 lokal",
+          alias: "DS4 local",
         },
       },
     },
@@ -138,12 +137,12 @@ Verwenden Sie diese Konfiguration, wenn ds4 bereits unter `127.0.0.1:18000` ausg
 ```
 
 Halten Sie `contextWindow` mit `ds4-server --ctx` synchron. Halten Sie `maxTokens` mit
-`--tokens` synchron, sofern OpenClaw nicht absichtlich weniger Ausgabetokens anfordern soll
-als der Standardwert des Servers.
+`--tokens` synchron, sofern OpenClaw nicht absichtlich weniger Ausgabe
+als den Serverstandard anfordern soll.
 
 ## Bedarfsgesteuerter Start
 
-OpenClaw kann ds4 nur dann starten, wenn ein Modell vom Typ `ds4/...` ausgewählt wird. Fügen Sie
+OpenClaw kann ds4 erst starten, wenn ein `ds4/...`-Modell ausgewählt wird. Fügen Sie
 demselben Provider-Eintrag `localService` hinzu:
 
 ```json5
@@ -199,9 +198,9 @@ demselben Provider-Eintrag `localService` hinzu:
 }
 ```
 
-`command` muss ein absoluter Pfad zu einer ausführbaren Datei sein. Die Shell-Suche und die
-Expansion von `~` werden nicht verwendet. Eine Beschreibung aller `localService`-Felder finden Sie unter
-[Lokale Modelldienste](/de/gateway/local-model-services).
+`command` muss ein absoluter Pfad zu einer ausführbaren Datei sein. Shell-Suche und `~`-Erweiterung
+werden nicht verwendet. Unter [Lokale Modelldienste](/de/gateway/local-model-services) finden Sie
+alle `localService`-Felder.
 
 ## Think Max
 
@@ -210,8 +209,7 @@ ds4 wendet Think Max nur an, wenn beide Bedingungen erfüllt sind:
 - `ds4-server` wird mit `--ctx 393216` oder höher gestartet.
 - Die Anfrage verwendet `reasoning_effort: "max"` (oder das entsprechende ds4-Aufwandsfeld).
 
-Wenn Sie einen derart großen Kontext verwenden, aktualisieren Sie sowohl die Server-Flags als auch die
-OpenClaw-Modellmetadaten:
+Wenn Sie einen so großen Kontext verwenden, aktualisieren Sie sowohl die Server-Flags als auch die OpenClaw-Modellmetadaten:
 
 ```json5
 {
@@ -235,21 +233,21 @@ Direkte HTTP-Prüfung unter Umgehung von OpenClaw:
 ```bash
 curl http://127.0.0.1:18000/v1/chat/completions \
   -H 'content-type: application/json' \
-  -d '{"model":"deepseek-v4-flash","messages":[{"role":"user","content":"Antworte exakt mit: ds4-ok"}],"max_tokens":16,"stream":false,"thinking":{"type":"disabled"}}'
+  -d '{"model":"deepseek-v4-flash","messages":[{"role":"user","content":"Reply with exactly: ds4-ok"}],"max_tokens":16,"stream":false,"thinking":{"type":"disabled"}}'
 ```
 
-OpenClaw-Modell-Routing (identisch mit der Prüfung im Schnellstart):
+OpenClaw-Modellrouting (wie bei der Schnellstartprüfung):
 
 ```bash
 openclaw infer model run \
   --local \
   --model ds4/deepseek-v4-flash \
   --thinking off \
-  --prompt "Antworte exakt mit: openclaw-ds4-ok" \
+  --prompt "Reply with exactly: openclaw-ds4-ok" \
   --json
 ```
 
-Vollständiger Smoke-Test für Agent und Tool-Aufrufe mit einem Kontext von mindestens 32768:
+Vollständiger Smoke-Test für Agent- und Tool-Aufrufe mit einem Kontext von mindestens 32768:
 
 ```bash
 openclaw agent \
@@ -257,7 +255,7 @@ openclaw agent \
   --session-id ds4-tool-smoke \
   --model ds4/deepseek-v4-flash \
   --thinking off \
-  --message "Verwende einmal den Shell-Befehl pwd und antworte anschließend exakt mit: tool-ok <output>" \
+  --message "Use the shell command pwd once, then reply exactly: tool-ok <output>" \
   --json \
   --timeout 240
 ```
@@ -266,15 +264,15 @@ Erwartetes Ergebnis:
 
 - `executionTrace.winnerProvider` ist `ds4`
 - `executionTrace.winnerModel` ist `deepseek-v4-flash`
-- `toolSummary.calls` beträgt mindestens `1`
+- `toolSummary.calls` ist mindestens `1`
 - `finalAssistantVisibleText` beginnt mit `tool-ok`
 
 ## Fehlerbehebung
 
 <AccordionGroup>
-  <Accordion title="curl kann keine Verbindung zu /v1/models herstellen">
-    ds4 wird nicht ausgeführt oder ist nicht an den Host/Port in `baseUrl` gebunden. Starten Sie
-    `ds4-server` und versuchen Sie es erneut:
+  <Accordion title="curl /v1/models cannot connect">
+    ds4 wird nicht ausgeführt oder ist nicht an den Host beziehungsweise Port in `baseUrl` gebunden. Starten Sie
+    `ds4-server` und versuchen Sie es anschließend erneut:
 
     ```bash
     curl http://127.0.0.1:18000/v1/models
@@ -289,14 +287,14 @@ Erwartetes Ergebnis:
     direkte curl-Anfrage mit einer einzelnen Nachricht.
   </Accordion>
 
-  <Accordion title="Think Max wird nicht aktiviert">
+  <Accordion title="Think Max does not activate">
     ds4 verwendet Think Max nur, wenn `--ctx` mindestens `393216` beträgt und die Anfrage
     `reasoning_effort: "max"` anfordert. Bei kleineren Kontexten wird auf hohes
     Reasoning zurückgegriffen.
   </Accordion>
 
-  <Accordion title="Die erste Anfrage ist langsam">
-    ds4 weist eine kalte Metal-Residency und eine Modell-Aufwärmphase auf. Legen Sie
+  <Accordion title="The first request is slow">
+    ds4 verfügt über eine kalte Metal-Residency- und Modellaufwärmphase. Legen Sie
     `localService.readyTimeoutMs: 300000` fest, wenn OpenClaw den Server bei Bedarf
     startet.
   </Accordion>
@@ -305,13 +303,13 @@ Erwartetes Ergebnis:
 ## Verwandte Themen
 
 <CardGroup cols={2}>
-  <Card title="Lokale Modelldienste" href="/de/gateway/local-model-services" icon="play">
+  <Card title="Local model services" href="/de/gateway/local-model-services" icon="play">
     Starten Sie lokale Modellserver bei Bedarf vor Modellanfragen.
   </Card>
-  <Card title="Lokale Modelle" href="/de/gateway/local-models" icon="server">
+  <Card title="Local models" href="/de/gateway/local-models" icon="server">
     Wählen und betreiben Sie lokale Modell-Backends.
   </Card>
-  <Card title="Modell-Provider" href="/de/concepts/model-providers" icon="layers">
+  <Card title="Model providers" href="/de/concepts/model-providers" icon="layers">
     Konfigurieren Sie Provider-Referenzen, Authentifizierung und Failover.
   </Card>
   <Card title="DeepSeek" href="/de/providers/deepseek" icon="brain">

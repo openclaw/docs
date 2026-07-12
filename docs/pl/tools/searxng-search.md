@@ -1,54 +1,54 @@
 ---
 read_when:
-    - Chcesz samodzielnie hostowanego dostawcy wyszukiwania w sieci
+    - Chcesz samodzielnie hostowanego dostawcę wyszukiwania internetowego
     - Chcesz używać SearXNG do web_search
-    - Potrzebujesz opcji wyszukiwania skoncentrowanej na prywatności lub odizolowanej od sieci
-summary: Wyszukiwanie internetowe SearXNG -- samodzielnie hostowany dostawca metawyszukiwarki bez klucza
+    - Potrzebujesz opcji wyszukiwania ukierunkowanej na prywatność lub działającej w środowisku odizolowanym od sieci
+summary: Wyszukiwanie internetowe SearXNG — samodzielnie hostowany dostawca metawyszukiwania niewymagający klucza
 title: Wyszukiwanie SearXNG
 x-i18n:
-    generated_at: "2026-06-27T18:30:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:46:33Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4bd00a20e45f71b7bd855a6588d5c829a0202839fc93ddcec1e255b7858ff183
+    source_hash: cae8de9f8e2c8dd9cec615adb48da5c1fd7654bffe96c7afc1acea3effbcf1fc
     source_path: tools/searxng-search.md
     workflow: 16
 ---
 
 OpenClaw obsługuje [SearXNG](https://docs.searxng.org/) jako **samodzielnie hostowanego,
-bezkluczowego** dostawcę `web_search`. SearXNG to otwartoźródłowa metawyszukiwarka,
+niewymagającego klucza** dostawcę `web_search`. SearXNG to metawyszukiwarka o otwartym kodzie źródłowym,
 która agreguje wyniki z Google, Bing, DuckDuckGo i innych źródeł.
 
 Zalety:
 
-- **Bezpłatna i bez limitów** -- nie wymaga klucza API ani komercyjnej subskrypcji
-- **Prywatność / air-gap** -- zapytania nigdy nie opuszczają Twojej sieci
-- **Działa wszędzie** -- brak ograniczeń regionalnych komercyjnych API wyszukiwania
+- **Bezpłatne i bez limitów** -- nie wymaga klucza API ani komercyjnej subskrypcji
+- **Prywatność / izolacja sieciowa** -- zapytania nigdy nie opuszczają Twojej sieci
+- **Działa wszędzie** -- brak ograniczeń regionalnych komercyjnych interfejsów API wyszukiwania
 
 ## Konfiguracja
 
 <Steps>
-  <Step title="Install the plugin">
+  <Step title="Zainstaluj Plugin">
     ```bash
     openclaw plugins install @openclaw/searxng-plugin
     ```
   </Step>
-  <Step title="Run a SearXNG instance">
+  <Step title="Uruchom instancję SearXNG">
     ```bash
     docker run -d -p 8888:8080 searxng/searxng
     ```
 
-    Albo użyj dowolnego istniejącego wdrożenia SearXNG, do którego masz dostęp. Zobacz
-    [dokumentację SearXNG](https://docs.searxng.org/) dotyczącą konfiguracji produkcyjnej.
+    Możesz również użyć dowolnego istniejącego wdrożenia SearXNG, do którego masz dostęp. Instrukcje dotyczące
+    konfiguracji produkcyjnej znajdziesz w [dokumentacji SearXNG](https://docs.searxng.org/).
 
   </Step>
-  <Step title="Configure">
+  <Step title="Skonfiguruj">
     ```bash
     openclaw configure --section web
-    # Select "searxng" as the provider
+    # Wybierz "searxng" jako dostawcę
     ```
 
-    Albo ustaw zmienną środowiskową i pozwól, aby automatyczne wykrywanie ją znalazło:
+    Możesz też ustawić zmienną środowiskową i pozwolić mechanizmowi automatycznego wykrywania ją znaleźć:
 
     ```bash
     export SEARXNG_BASE_URL="http://localhost:8888"
@@ -71,7 +71,7 @@ Zalety:
 }
 ```
 
-Ustawienia na poziomie Plugin dla instancji SearXNG:
+Ustawienia instancji SearXNG na poziomie Pluginu:
 
 ```json5
 {
@@ -81,8 +81,8 @@ Ustawienia na poziomie Plugin dla instancji SearXNG:
         config: {
           webSearch: {
             baseUrl: "http://localhost:8888",
-            categories: "general,news", // optional
-            language: "en", // optional
+            categories: "general,news", // opcjonalne
+            language: "en", // opcjonalne
           },
         },
       },
@@ -91,64 +91,63 @@ Ustawienia na poziomie Plugin dla instancji SearXNG:
 }
 ```
 
-Pole `baseUrl` akceptuje również obiekty SecretRef.
-
-Reguły transportu:
-
-- `https://` działa dla publicznych lub prywatnych hostów SearXNG
-- `http://` jest akceptowane tylko dla zaufanych hostów w sieci prywatnej lub hostów loopback
-- publiczne hosty SearXNG muszą używać `https://`
-- hosty prywatne/wewnętrzne używają strażnika sieci samodzielnie hostowanej; publiczne hosty `https://`
-  pozostają objęte ścisłym strażnikiem wyszukiwania w sieci i nie mogą przekierowywać na adresy
-  prywatne
+`baseUrl` akceptuje również obiekt SecretRef (na przykład `{ source: "env", id: "SEARXNG_BASE_URL" }`).
 
 ## Zmienna środowiskowa
 
-Ustaw `SEARXNG_BASE_URL` jako alternatywę dla konfiguracji:
+Jako alternatywę dla konfiguracji ustaw `SEARXNG_BASE_URL`:
 
 ```bash
 export SEARXNG_BASE_URL="http://localhost:8888"
 ```
 
-Gdy `SEARXNG_BASE_URL` jest ustawiona i nie skonfigurowano jawnego dostawcy, automatyczne wykrywanie
-automatycznie wybiera SearXNG (z najniższym priorytetem -- każdy dostawca oparty na API z
-kluczem wygrywa jako pierwszy).
+Kolejność rozpoznawania: skonfigurowany ciąg `baseUrl`, następnie wbudowany SecretRef zmiennej środowiskowej w
+`baseUrl`, a następnie `SEARXNG_BASE_URL`. Gdy żadna ze ścieżek konfiguracji nie jest ustawiona,
+zmienna `SEARXNG_BASE_URL` jest dostępna i nie wybrano jawnie dostawcy, mechanizm automatycznego wykrywania
+wybiera SearXNG.
 
-## Dokumentacja konfiguracji Plugin
+## Dokumentacja konfiguracji Pluginu
 
-| Pole         | Opis                                                                |
-| ------------ | ------------------------------------------------------------------- |
-| `baseUrl`    | Bazowy URL Twojej instancji SearXNG (wymagane)                      |
+| Pole         | Opis                                                               |
+| ------------ | ------------------------------------------------------------------ |
+| `baseUrl`    | Bazowy adres URL instancji SearXNG (wymagany)                       |
 | `categories` | Kategorie rozdzielone przecinkami, takie jak `general`, `news` lub `science` |
 | `language`   | Kod języka wyników, taki jak `en`, `de` lub `fr`                    |
 
+Wywołanie narzędzia `web_search` akceptuje również parametry `count` (1–10 wyników), `categories`
+i `language` jako ustawienia zastępujące dla poszczególnych wywołań.
+
 ## Uwagi
 
-- **API JSON** -- używa natywnego punktu końcowego SearXNG `format=json`, a nie scrapowania HTML
-- **Adresy URL wyników obrazów** -- wyniki z kategorii obrazów zawierają `img_src`, gdy SearXNG
+- **API JSON** -- korzysta z natywnego punktu końcowego `format=json` SearXNG, a nie z pozyskiwania danych z HTML
+- **Adresy URL wyników graficznych** -- wyniki z kategorii obrazów zawierają `img_src`, gdy SearXNG
   zwraca bezpośredni adres URL obrazu
-- **Brak klucza API** -- działa od razu z dowolną instancją SearXNG
-- **Walidacja bazowego URL** -- `baseUrl` musi być prawidłowym adresem URL `http://` lub `https://`;
-  hosty publiczne muszą używać `https://`
-- **Strażnik sieci** -- prywatne/wewnętrzne punkty końcowe SearXNG jawnie włączają
-  dostęp do sieci prywatnej; publiczne punkty końcowe SearXNG `https://` zachowują ścisłą
-  ochronę SSRF
-- **Kolejność automatycznego wykrywania** -- SearXNG jest sprawdzany po dostawcach opartych na API
-  ze skonfigurowanymi kluczami (kolejność 200). Dostawcy bez klucza, tacy jak DuckDuckGo lub
-  Ollama Web Search, nie są automatycznie wybierani bez jawnego wyboru dostawcy
-- **Samodzielnie hostowane** -- kontrolujesz instancję, zapytania i nadrzędne wyszukiwarki
-- **Kategorie** domyślnie mają wartość `general`, gdy nie są skonfigurowane
-- **Awaryjna kategoria** -- jeśli żądanie kategorii innej niż `general` powiedzie się, ale
-  zwróci zero wyników, OpenClaw ponawia to samo zapytanie raz z `general`
-  przed zwróceniem pustego zestawu wyników
+- **Bez klucza API** -- działa od razu z dowolną instancją SearXNG
+- **Walidacja bazowego adresu URL** -- `baseUrl` musi być prawidłowym adresem URL `http://` lub `https://`
+- **Ochrona sieciowa** -- bazowe adresy URL `http://` muszą wskazywać zaufany prywatny host lub
+  local loopback (hosty publiczne muszą używać `https://`); bazowe adresy URL `https://`, które
+  są rozpoznawane jako adres prywatny lub wewnętrzny, otrzymują takie samo zezwolenie dla samodzielnego hostowania,
+  natomiast bazowe adresy URL `https://`, które są rozpoznawane jako publiczne, zachowują ścisłą ochronę przed SSRF
+- **Kolejność automatycznego wykrywania** -- SearXNG wymaga skonfigurowanego `baseUrl` (pozycja
+  200 wśród dostawców, którzy mają już wymagane dane uwierzytelniające). Dostawcy niewymagający klucza,
+  tacy jak DuckDuckGo lub Ollama Web Search, nigdy nie są wybierani niejawnie przez automatyczne wykrywanie;
+  aktywują się tylko po jawnym wyborze `provider`
+- **Samodzielne hostowanie** -- kontrolujesz instancję, zapytania i nadrzędne wyszukiwarki
+- **Kategorie** domyślnie przyjmują wartość `general`, jeśli nie zostały skonfigurowane
+- **Mechanizm zastępczy kategorii** -- jeśli żądanie kategorii innej niż `general` zakończy się powodzeniem, ale
+  zwróci zero wyników, OpenClaw ponowi to samo zapytanie jeden raz z kategorią `general`,
+  zanim zwróci pusty zestaw wyników
+- **Buforowanie wyników** -- identyczne zapytania (to samo zapytanie, liczba wyników, kategorie,
+  język i bazowy adres URL) są przez krótki czas TTL przechowywane w pamięci podręcznej procesu
+- **Wymagana wersja** -- Plugin deklaruje `minHostVersion: >=2026.6.9`
 
 <Tip>
-  Aby API JSON SearXNG działało, upewnij się, że Twoja instancja SearXNG ma włączony format `json`
-  w pliku `settings.yml` pod `search.formats`.
+  Aby interfejs API JSON SearXNG działał, upewnij się, że w instancji SearXNG włączono format `json`
+  w pliku `settings.yml` w sekcji `search.formats`.
 </Tip>
 
 ## Powiązane
 
-- [Omówienie wyszukiwania w sieci](/pl/tools/web) -- wszyscy dostawcy i automatyczne wykrywanie
-- [DuckDuckGo Search](/pl/tools/duckduckgo-search) -- kolejny dostawca bez klucza
-- [Brave Search](/pl/tools/brave-search) -- uporządkowane wyniki z bezpłatnym poziomem
+- [Omówienie wyszukiwania internetowego](/pl/tools/web) -- wszyscy dostawcy i automatyczne wykrywanie
+- [Wyszukiwanie DuckDuckGo](/pl/tools/duckduckgo-search) -- kolejny dostawca niewymagający klucza
+- [Wyszukiwanie Brave](/pl/tools/brave-search) -- ustrukturyzowane wyniki z bezpłatnym pakietem

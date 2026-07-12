@@ -2,51 +2,51 @@
 read_when:
     - OpenClaw instellen op Oracle Cloud
     - Op zoek naar gratis VPS-hosting voor OpenClaw
-    - Wil OpenClaw 24/7 op een kleine server
+    - Wilt u OpenClaw 24/7 op een kleine server gebruiken?
 summary: Host OpenClaw op de Always Free ARM-laag van Oracle Cloud
 title: Oracle Cloud
 x-i18n:
-    generated_at: "2026-05-06T09:20:41Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:00:48Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 9115c83c7a78b78d8b6701b028a2f6e9f08a71f7fff14b7b45f1610b8052c14e
+    source_hash: 5e1eb95b6bc8ad73e1492a03d8ebe32d89c80e58347614e6ae12d2d3d926d577
     source_path: install/oracle.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Voer een persistente OpenClaw Gateway uit op de **Always Free** ARM-laag van Oracle Cloud (tot 4 OCPU, 24 GB RAM, 200 GB opslag) zonder kosten.
+Voer kosteloos een permanente OpenClaw Gateway uit op de **Always Free** ARM-laag van Oracle Cloud (maximaal 4 OCPU's, 24 GB RAM en 200 GB opslag).
 
 ## Vereisten
 
-- Oracle Cloud-account ([registreren](https://www.oracle.com/cloud/free/)) -- zie de [registratiegids van de community](https://gist.github.com/rssnyder/51e3cfedd730e7dd5f4a816143b25dbd) als je problemen ondervindt
-- Tailscale-account (gratis op [tailscale.com](https://tailscale.com))
+- Oracle Cloud-account ([registreren](https://www.oracle.com/cloud/free/)) -- raadpleeg de [registratiehandleiding van de community](https://gist.github.com/rssnyder/51e3cfedd730e7dd5f4a816143b25dbd) als u problemen ondervindt
+- Tailscale-account (gratis via [tailscale.com](https://tailscale.com))
 - Een SSH-sleutelpaar
 - Ongeveer 30 minuten
 
 ## Installatie
 
 <Steps>
-  <Step title="Maak een OCI-instantie aan">
-    1. Log in op de [Oracle Cloud Console](https://cloud.oracle.com/).
+  <Step title="Een OCI-instance maken">
+    1. Meld u aan bij de [Oracle Cloud Console](https://cloud.oracle.com/).
     2. Ga naar **Compute > Instances > Create Instance**.
     3. Configureer:
-       - **Naam:** `openclaw`
+       - **Name:** `openclaw`
        - **Image:** Ubuntu 24.04 (aarch64)
        - **Shape:** `VM.Standard.A1.Flex` (Ampere ARM)
-       - **OCPU's:** 2 (of tot 4)
-       - **Geheugen:** 12 GB (of tot 24 GB)
-       - **Bootvolume:** 50 GB (tot 200 GB gratis)
-       - **SSH-sleutel:** Voeg je publieke sleutel toe
+       - **OCPUs:** 2 (of maximaal 4)
+       - **Memory:** 12 GB (of maximaal 24 GB)
+       - **Boot volume:** 50 GB (maximaal 200 GB gratis)
+       - **SSH key:** Voeg uw openbare sleutel toe
     4. Klik op **Create** en noteer het openbare IP-adres.
 
     <Tip>
-    Als het aanmaken van de instantie mislukt met "Out of capacity", probeer dan een ander beschikbaarheidsdomein of probeer het later opnieuw. De capaciteit van de gratis laag is beperkt.
+    Als het maken van de instance mislukt met "Out of capacity", probeer dan een ander beschikbaarheidsdomein of probeer het later opnieuw. De capaciteit van de gratis laag is beperkt.
     </Tip>
 
   </Step>
 
-  <Step title="Maak verbinding en werk het systeem bij">
+  <Step title="Verbinding maken en het systeem bijwerken">
     ```bash
     ssh ubuntu@YOUR_PUBLIC_IP
 
@@ -54,43 +54,43 @@ Voer een persistente OpenClaw Gateway uit op de **Always Free** ARM-laag van Ora
     sudo apt install -y build-essential
     ```
 
-    `build-essential` is vereist voor ARM-compilatie van sommige afhankelijkheden.
+    `build-essential` is vereist om bepaalde afhankelijkheden voor ARM te compileren.
 
   </Step>
 
-  <Step title="Configureer gebruiker en hostnaam">
+  <Step title="Gebruiker en hostnaam configureren">
     ```bash
     sudo hostnamectl set-hostname openclaw
     sudo passwd ubuntu
     sudo loginctl enable-linger ubuntu
     ```
 
-    Het inschakelen van linger houdt gebruikersservices actief na afmelden.
+    Door linger in te schakelen, blijven gebruikersservices na het afmelden actief.
 
   </Step>
 
-  <Step title="Installeer Tailscale">
+  <Step title="Tailscale installeren">
     ```bash
     curl -fsSL https://tailscale.com/install.sh | sh
     sudo tailscale up --ssh --hostname=openclaw
     ```
 
-    Maak vanaf nu verbinding via Tailscale: `ssh ubuntu@openclaw`.
+    Maak voortaan verbinding via Tailscale: `ssh ubuntu@openclaw`.
 
   </Step>
 
-  <Step title="Installeer OpenClaw">
+  <Step title="OpenClaw installeren">
     ```bash
     curl -fsSL https://openclaw.ai/install.sh | bash
     source ~/.bashrc
     ```
 
-    Wanneer je wordt gevraagd "How do you want to hatch your bot?", selecteer je **Do this later**.
+    Wanneer u wordt gevraagd "How do you want to hatch your bot?", selecteert u **Do this later**.
 
   </Step>
 
-  <Step title="Configureer de Gateway">
-    Gebruik token-authenticatie met Tailscale Serve voor veilige externe toegang.
+  <Step title="De Gateway configureren">
+    Gebruik tokenauthenticatie met Tailscale Serve voor beveiligde externe toegang.
 
     ```bash
     openclaw config set gateway.bind loopback
@@ -102,23 +102,23 @@ Voer een persistente OpenClaw Gateway uit op de **Always Free** ARM-laag van Ora
     systemctl --user restart openclaw-gateway.service
     ```
 
-    `gateway.trustedProxies=["127.0.0.1"]` is hier alleen bedoeld voor de verwerking van doorgestuurde IP's/lokale clients door de lokale Tailscale Serve-proxy. Het is **niet** `gateway.auth.mode: "trusted-proxy"`. Diff-viewerroutes behouden fail-closed gedrag in deze configuratie: ruwe viewerverzoeken naar `127.0.0.1` zonder doorgestuurde proxyheaders kunnen `Diff not found` retourneren. Gebruik `mode=file` / `mode=both` voor bijlagen, of schakel bewust externe viewers in en stel `plugins.entries.diffs.config.viewerBaseUrl` in (of geef een proxy-`baseUrl` door) als je deelbare viewerlinks nodig hebt.
+    `gateway.trustedProxies=["127.0.0.1"]` dient hier uitsluitend voor de verwerking van doorgestuurde IP-adressen en lokale clients door de lokale Tailscale Serve-proxy. Het is **niet** `gateway.auth.mode: "trusted-proxy"`. Routes van de diffviewer blijven in deze configuratie gesloten bij fouten: rechtstreekse viewerverzoeken vanaf `127.0.0.1` zonder doorgestuurde proxyheaders retourneren `Diff not found`. Gebruik `mode=file` / `mode=both` voor bijlagen, of schakel externe viewers bewust in en stel `plugins.entries.diffs.config.viewerBaseUrl` in (of geef een proxy-`baseUrl` door) als u deelbare viewerlinks nodig hebt.
 
   </Step>
 
-  <Step title="Vergrendel VCN-beveiliging">
-    Blokkeer al het verkeer behalve Tailscale aan de netwerkrand:
+  <Step title="VCN-beveiliging aanscherpen">
+    Blokkeer aan de netwerkgrens al het verkeer behalve Tailscale:
 
-    1. Ga naar **Networking > Virtual Cloud Networks** in de OCI Console.
-    2. Klik op je VCN en daarna op **Security Lists > Default Security List**.
-    3. **Verwijder** alle ingress-regels behalve `0.0.0.0/0 UDP 41641` (Tailscale).
-    4. Behoud de standaard egress-regels (alle uitgaande verbindingen toestaan).
+    1. Ga in de OCI Console naar **Networking > Virtual Cloud Networks**.
+    2. Klik op uw VCN en vervolgens op **Security Lists > Default Security List**.
+    3. **Verwijder** alle regels voor inkomend verkeer, behalve `0.0.0.0/0 UDP 41641` (Tailscale).
+    4. Behoud de standaardregels voor uitgaand verkeer (al het uitgaande verkeer toestaan).
 
-    Dit blokkeert SSH op poort 22, HTTP, HTTPS en al het andere aan de netwerkrand. Vanaf dit punt kun je alleen nog via Tailscale verbinding maken.
+    Hierdoor worden SSH op poort 22, HTTP, HTTPS en al het overige verkeer aan de netwerkgrens geblokkeerd. Vanaf dit moment kunt u alleen via Tailscale verbinding maken.
 
   </Step>
 
-  <Step title="Verifieer">
+  <Step title="Verifiëren">
     ```bash
     openclaw --version
     systemctl --user status openclaw-gateway.service
@@ -126,92 +126,92 @@ Voer een persistente OpenClaw Gateway uit op de **Always Free** ARM-laag van Ora
     curl http://localhost:18789
     ```
 
-    Open de Control UI vanaf elk apparaat op je tailnet:
+    Open de beheerinterface vanaf elk apparaat in uw tailnet:
 
     ```
     https://openclaw.<tailnet-name>.ts.net/
     ```
 
-    Vervang `<tailnet-name>` door je tailnetnaam (zichtbaar in `tailscale status`).
+    Vervang `<tailnet-name>` door de naam van uw tailnet (zichtbaar in `tailscale status`).
 
   </Step>
 </Steps>
 
-## Verifieer de beveiligingshouding
+## De beveiligingsstatus verifiëren
 
-Met de VCN vergrendeld (alleen UDP 41641 open) en de Gateway gebonden aan loopback, wordt openbaar verkeer aan de netwerkrand geblokkeerd en is beheertoegang alleen via het tailnet mogelijk. Daardoor zijn meerdere traditionele VPS-hardeningstappen niet meer nodig:
+Wanneer de VCN is vergrendeld (alleen UDP 41641 is geopend) en de Gateway aan local loopback is gebonden, wordt openbaar verkeer aan de netwerkgrens geblokkeerd en is beheerderstoegang uitsluitend via het tailnet mogelijk. Hierdoor zijn verschillende traditionele stappen voor het beveiligen van een VPS niet nodig:
 
-| Traditionele stap       | Nodig?            | Waarom                                                                   |
-| ----------------------- | ----------------- | ------------------------------------------------------------------------ |
-| UFW-firewall            | Nee               | De VCN blokkeert verkeer voordat het de instantie bereikt.               |
-| fail2ban                | Nee               | Poort 22 is geblokkeerd op de VCN; geen brute-force-oppervlak.           |
-| sshd-hardening          | Nee               | Tailscale SSH gebruikt geen sshd.                                        |
-| Root-login uitschakelen | Nee               | Tailscale authenticeert via tailnetidentiteit, niet via systeemgebruikers. |
-| Alleen SSH-sleutel-auth | Nee               | Hetzelfde — tailnetidentiteit vervangt systeem-SSH-sleutels.             |
-| IPv6-hardening          | Meestal niet      | Afhankelijk van VCN-/subnetinstellingen; verifieer wat werkelijk is toegewezen/blootgesteld. |
+| Traditionele stap                 | Nodig?       | Waarom                                                                     |
+| --------------------------------- | ------------ | -------------------------------------------------------------------------- |
+| UFW-firewall                      | Nee          | De VCN blokkeert verkeer voordat het de instance bereikt.                  |
+| fail2ban                          | Nee          | Poort 22 is in de VCN geblokkeerd; er is geen oppervlak voor brute force. |
+| sshd aanscherpen                  | Nee          | Tailscale SSH gebruikt sshd niet.                                          |
+| Aanmelding als root uitschakelen  | Nee          | Tailscale verifieert de tailnet-identiteit, niet systeemgebruikers.        |
+| Alleen SSH-sleutelauthenticatie   | Nee          | Hetzelfde -- de tailnet-identiteit vervangt SSH-systeemsleutels.           |
+| IPv6 aanscherpen                  | Meestal niet | Hangt af van de VCN-/subnetinstellingen; controleer wat daadwerkelijk is toegewezen of blootgesteld. |
 
 Nog steeds aanbevolen:
 
-- `chmod 700 ~/.openclaw` om machtigingen voor credentialbestanden te beperken.
-- `openclaw security audit` voor een OpenClaw-specifieke controle van de beveiligingshouding.
-- Regelmatig `sudo apt update && sudo apt upgrade` voor OS-patches.
-- Controleer periodiek apparaten in de [Tailscale-beheerconsole](https://login.tailscale.com/admin).
+- `chmod 700 ~/.openclaw` om de bestandsmachtigingen voor referenties te beperken.
+- `openclaw security audit` voor een OpenClaw-specifieke controle van de beveiligingsstatus.
+- Regelmatig `sudo apt update && sudo apt upgrade` uitvoeren voor patches van het besturingssysteem.
+- Controleer regelmatig de apparaten in de [Tailscale-beheerconsole](https://login.tailscale.com/admin).
 
 Snelle verificatieopdrachten:
 
 ```bash
-# Confirm no public ports are listening
+# Controleer of er geen openbare poorten luisteren
 sudo ss -tlnp | grep -v '127.0.0.1\|::1'
 
-# Verify Tailscale SSH is active
+# Controleer of Tailscale SSH actief is
 tailscale status | grep -q 'offers: ssh' && echo "Tailscale SSH active"
 
-# Optional: disable sshd entirely once Tailscale SSH is confirmed working
+# Optioneel: schakel sshd volledig uit nadat is bevestigd dat Tailscale SSH werkt
 sudo systemctl disable --now ssh
 ```
 
 ## ARM-opmerkingen
 
-De Always Free-laag is ARM (`aarch64`). De meeste OpenClaw-functies werken prima; een klein aantal native binaries heeft ARM-builds nodig:
+De Always Free-laag gebruikt ARM (`aarch64`). De meeste OpenClaw-functies werken zonder problemen; een klein aantal systeemeigen binaire bestanden vereist ARM-builds:
 
-- Node.js, Telegram, WhatsApp (Baileys): pure JavaScript, geen problemen.
-- De meeste npm-pakketten met native code: vooraf gebouwde `linux-arm64`-artefacten beschikbaar.
-- Optionele CLI-helpers (bijv. Go-/Rust-binaries geleverd door Skills): controleer op een `aarch64`- / `linux-arm64`-release voordat je ze installeert.
+- Node.js, Telegram, WhatsApp (Baileys): uitsluitend JavaScript, geen problemen.
+- De meeste npm-pakketten met systeemeigen code: vooraf gebouwde `linux-arm64`-artefacten zijn beschikbaar.
+- Optionele CLI-hulpprogramma's (bijvoorbeeld Go-/Rust-binaire bestanden die door Skills worden meegeleverd): controleer vóór de installatie of er een `aarch64`- of `linux-arm64`-release beschikbaar is.
 
-Verifieer de architectuur met `uname -m` (moet `aarch64` afdrukken). Installeer binaries zonder ARM-build vanuit broncode of sla ze over.
+Controleer de architectuur met `uname -m` (dit moet `aarch64` weergeven). Installeer binaire bestanden zonder ARM-build vanuit de broncode of sla ze over.
 
 ## Persistentie en back-ups
 
-OpenClaw-status bevindt zich onder:
+De status van OpenClaw bevindt zich in:
 
-- `~/.openclaw/` — `openclaw.json`, per-agent `auth-profiles.json`, kanaal-/providerstatus en sessiegegevens.
-- `~/.openclaw/workspace/` — de agentworkspace (SOUL.md, geheugen, artefacten).
+- `~/.openclaw/` -- `openclaw.json`, `auth-profiles.json` per agent, kanaal-/providerstatus en sessiegegevens.
+- `~/.openclaw/workspace/` -- de werkruimte van de agent (SOUL.md, geheugen, artefacten).
 
-Deze blijven behouden na herstarts. Maak een draagbare snapshot met:
+Deze blijven na herstarts behouden. Een overdraagbare momentopname maken:
 
 ```bash
 openclaw backup create
 ```
 
-## Fallback: SSH-tunnel
+## Terugvaloptie: SSH-tunnel
 
-Als Tailscale Serve niet werkt, gebruik dan een SSH-tunnel vanaf je lokale machine:
+Als Tailscale Serve niet werkt, gebruikt u een SSH-tunnel vanaf uw lokale computer:
 
 ```bash
 ssh -L 18789:127.0.0.1:18789 ubuntu@openclaw
 ```
 
-Open daarna `http://localhost:18789`.
+Open vervolgens `http://localhost:18789`.
 
 ## Probleemoplossing
 
-**Het aanmaken van de instantie mislukt ("Out of capacity")** -- Gratis ARM-instanties zijn populair. Probeer een ander beschikbaarheidsdomein of probeer het opnieuw buiten piekuren.
+**Het maken van de instance mislukt ("Out of capacity")** -- ARM-instances in de gratis laag zijn populair. Probeer een ander beschikbaarheidsdomein of probeer het opnieuw buiten de piekuren.
 
 **Tailscale maakt geen verbinding** -- Voer `sudo tailscale up --ssh --hostname=openclaw --reset` uit om opnieuw te authenticeren.
 
-**Gateway start niet** -- Voer `openclaw doctor --non-interactive` uit en controleer logs met `journalctl --user -u openclaw-gateway.service -n 50`.
+**Gateway start niet** -- Voer `openclaw doctor --non-interactive` uit en controleer de logboeken met `journalctl --user -u openclaw-gateway.service -n 50`.
 
-**ARM-binaryproblemen** -- De meeste npm-pakketten werken op ARM64. Zoek voor native binaries naar `linux-arm64`- of `aarch64`-releases. Verifieer de architectuur met `uname -m`.
+**Problemen met ARM-binaire bestanden** -- De meeste npm-pakketten werken op ARM64. Zoek voor systeemeigen binaire bestanden naar `linux-arm64`- of `aarch64`-releases. Controleer de architectuur met `uname -m`.
 
 ## Volgende stappen
 

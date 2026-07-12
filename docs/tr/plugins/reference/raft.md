@@ -1,11 +1,11 @@
 ---
 read_when:
-    - raft Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
-summary: Güvenli CLI uyandırma köprüleri için OpenClaw Raft kanal Plugin’i.
-title: Raft Plugin
+    - Raft Pluginini yüklüyor, yapılandırıyor veya denetliyorsunuz
+summary: Güvenli CLI uyandırma köprüleri için OpenClaw Raft kanal plugini.
+title: Raft Plugin'i
 x-i18n:
-    generated_at: "2026-06-28T01:02:29Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:34:48Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: fea04ec6a2f3e08d69fd95c8a8e368fdbc8e179b243b8f6b41b5f8ef70039efc
@@ -13,16 +13,16 @@ x-i18n:
     workflow: 16
 ---
 
-# Raft Plugin'i
+# Raft Plugin’i
 
-Güvenli CLI uyandırma köprüleri için OpenClaw Raft kanal Plugin'i.
+Güvenli CLI uyandırma köprüleri için OpenClaw Raft kanal Plugin’i.
 
 ## Dağıtım
 
 - Paket: `@openclaw/raft`
 - Kurulum yolu: npm; ClawHub
 
-## Yüzey
+## Kullanım alanı
 
 kanallar: raft
 

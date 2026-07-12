@@ -1,11 +1,11 @@
 ---
 read_when:
-    - moonshot Pluginをインストール、設定、または監査している
+    - moonshot Pluginをインストール、設定、または監査している場合
 summary: OpenClaw に Moonshot モデルプロバイダーのサポートを追加します。
-title: Moonshot プラグイン
+title: Moonshot Plugin
 x-i18n:
-    generated_at: "2026-06-27T12:26:37Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:29:57Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 477307769a710ac8d430a837d7b5ffda012a942f3b44f367bf4ea0770b87f48e
@@ -15,17 +15,17 @@ x-i18n:
 
 # Moonshot Plugin
 
-OpenClaw に Moonshot モデルプロバイダー対応を追加します。
+OpenClaw に Moonshot モデルプロバイダーのサポートを追加します。
 
 ## 配布
 
 - パッケージ: `@openclaw/moonshot-provider`
-- インストール経路: npm; ClawHub: `clawhub:@openclaw/moonshot-provider`
+- インストール経路: npm、ClawHub: `clawhub:@openclaw/moonshot-provider`
 
-## サーフェス
+## 提供機能
 
-providers: moonshot; contracts: mediaUnderstandingProviders, webSearchProviders
+プロバイダー: moonshot、コントラクト: mediaUnderstandingProviders、webSearchProviders
 
 ## 関連ドキュメント
 
-- [moonshot](/ja-JP/providers/moonshot)
+- [Moonshot](/ja-JP/providers/moonshot)

@@ -2,12 +2,12 @@
 read_when:
     - Generación o revisión de planes de `openclaw secrets apply`
     - Depuración de errores `Invalid plan target path`
-    - Comprensión del comportamiento de validación del tipo y la ruta de destino
-summary: 'Contrato para planes de `secrets apply`: validación de destino, coincidencia de rutas y alcance de destino de `auth-profiles.json`'
+    - Comprender el comportamiento de la validación del tipo y la ruta de destino
+summary: 'Contrato para planes de `secrets apply`: validación de objetivos, coincidencia de rutas y ámbito de objetivos de `auth-profiles.json`'
 title: Contrato del plan de aplicación de secretos
 x-i18n:
-    generated_at: "2026-07-05T11:22:28Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T23:07:43Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: ddaf3df7f0be326fa1c8dc8c360b03697fb58329d03c4eb8106a8740ddf6c47a
@@ -15,11 +15,11 @@ x-i18n:
     workflow: 16
 ---
 
-Esta página define el contrato estricto que aplica `openclaw secrets apply`. Si un destino no coincide con estas reglas, apply falla antes de modificar cualquier archivo.
+Esta página define el contrato estricto que aplica `openclaw secrets apply`. Si un destino no cumple estas reglas, la aplicación falla antes de modificar ningún archivo.
 
-## Forma del archivo de plan
+## Estructura del archivo de plan
 
-`openclaw secrets apply --from <plan.json>` espera un array `targets` de destinos de plan:
+`openclaw secrets apply --from <plan.json>` espera un arreglo `targets` de destinos del plan:
 
 ```json5
 {
@@ -44,16 +44,16 @@ Esta página define el contrato estricto que aplica `openclaw secrets apply`. Si
 }
 ```
 
-`openclaw secrets configure` genera planes con esta forma. También puedes escribir o editar uno manualmente.
+`openclaw secrets configure` genera planes con esta estructura. También puede escribir o editar uno manualmente.
 
-## Upserts y eliminaciones de proveedores
+## Inserciones o actualizaciones y eliminaciones de proveedores
 
-Los planes también pueden incluir dos campos opcionales de nivel superior que modifican el mapa `secrets.providers` junto con las escrituras por destino:
+Los planes también pueden incluir dos campos opcionales de nivel superior que modifican el mapa `secrets.providers` junto con las escrituras de cada destino:
 
-- `providerUpserts` -- un objeto indexado por alias de proveedor. Cada valor es una definición de proveedor (la misma forma aceptada bajo `secrets.providers.<alias>` en `openclaw.json`, por ejemplo, un proveedor `exec` o `file`).
-- `providerDeletes` -- un array de alias de proveedores que se eliminarán.
+- `providerUpserts` -- un objeto cuyas claves son alias de proveedores. Cada valor es una definición de proveedor (con la misma estructura aceptada en `secrets.providers.<alias>` en `openclaw.json`, por ejemplo, un proveedor `exec` o `file`).
+- `providerDeletes` -- un arreglo de alias de proveedores que se eliminarán.
 
-`providerUpserts` se ejecuta antes que `targets`, por lo que un `target.ref.provider` puede hacer referencia a un alias de proveedor que el mismo plan introduce en `providerUpserts`. Sin este orden, los planes que hacen referencia a un alias aún no configurado en `openclaw.json` fallan con `provider "<alias>" is not configured`.
+`providerUpserts` se ejecuta antes que `targets`, por lo que `target.ref.provider` puede hacer referencia a un alias de proveedor que el mismo plan introduce en `providerUpserts`. Sin este orden, los planes que hacen referencia a un alias que aún no está configurado en `openclaw.json` fallan con `provider "<alias>" is not configured`.
 
 ```json5
 {
@@ -79,19 +79,19 @@ Los planes también pueden incluir dos campos opcionales de nivel superior que m
 }
 ```
 
-Los proveedores exec introducidos mediante `providerUpserts` siguen sujetos a las reglas de consentimiento de exec en [Comportamiento del consentimiento del proveedor exec](#exec-provider-consent-behavior): los planes que contienen proveedores exec requieren `--allow-exec` en modo de escritura.
+Los proveedores de ejecución introducidos mediante `providerUpserts` siguen sujetos a las reglas de consentimiento de ejecución descritas en [Comportamiento del consentimiento para proveedores de ejecución](#exec-provider-consent-behavior): los planes que contienen proveedores de ejecución requieren `--allow-exec` en el modo de escritura.
 
-## Alcance de destino compatible
+## Alcance de destinos admitido
 
-Los destinos de plan se aceptan para rutas de credenciales compatibles en [Superficie de credenciales SecretRef](/es/reference/secretref-credential-surface).
+Se aceptan destinos del plan para las rutas de credenciales admitidas en [Superficie de credenciales SecretRef](/es/reference/secretref-credential-surface).
 
-## Comportamiento del tipo de destino
+## Comportamiento de los tipos de destino
 
-`target.type` debe ser un tipo de destino reconocido, y el `target.path` normalizado debe coincidir con la forma de ruta registrada para ese tipo.
+`target.type` debe ser un tipo de destino reconocido y el `target.path` normalizado debe coincidir con la estructura de ruta registrada para ese tipo.
 
-Algunos tipos de destino aceptan un alias de compatibilidad como `target.type` para planes existentes, además de su nombre de tipo canónico:
+Algunos tipos de destino aceptan un alias de compatibilidad como `target.type` para los planes existentes, además de su nombre de tipo canónico:
 
-| Tipo canónico                       | Alias aceptado                                  |
+| Tipo canónico                        | Alias aceptado                                  |
 | ------------------------------------ | ----------------------------------------------- |
 | `models.providers.apiKey`            | `models.providers.*.apiKey`                     |
 | `skills.entries.apiKey`              | `skills.entries.*.apiKey`                       |
@@ -99,55 +99,55 @@ Algunos tipos de destino aceptan un alias de compatibilidad como `target.type` p
 
 ## Reglas de validación de rutas
 
-Cada destino se valida con todo lo siguiente:
+Cada destino se valida conforme a todo lo siguiente:
 
 - `type` debe ser un tipo de destino reconocido.
 - `path` debe ser una ruta de puntos no vacía.
 - `pathSegments` puede omitirse. Si se proporciona, debe normalizarse exactamente a la misma ruta que `path`.
-- Los segmentos prohibidos se rechazan: `__proto__`, `prototype`, `constructor`.
-- La ruta normalizada debe coincidir con la forma de ruta registrada para el tipo de destino.
-- Si `providerId` o `accountId` está establecido, debe coincidir con el id codificado en la ruta.
-- Los destinos `auth-profiles.json` requieren `agentId`.
-- Al crear una nueva asignación `auth-profiles.json`, incluye `authProfileProvider`.
+- Se rechazan los segmentos prohibidos: `__proto__`, `prototype`, `constructor`.
+- La ruta normalizada debe coincidir con la estructura de ruta registrada para el tipo de destino.
+- Si se establece `providerId` o `accountId`, debe coincidir con el identificador codificado en la ruta.
+- Los destinos de `auth-profiles.json` requieren `agentId`.
+- Al crear una nueva asignación en `auth-profiles.json`, incluya `authProfileProvider`.
 
 ## Comportamiento ante fallos
 
-Si un destino falla la validación, apply sale con un error como:
+Si un destino no supera la validación, la aplicación finaliza con un error como el siguiente:
 
 ```text
 Invalid plan target path for models.providers.apiKey: models.providers.openai.baseUrl
 ```
 
-No se confirma ninguna escritura para un plan no válido: la resolución de destinos y la validación de rutas se ejecutan antes de tocar cualquier archivo. Por separado, una vez que un plan válido empieza a escribir, apply primero toma snapshots de cada archivo tocado y restaura esos snapshots si falla una escritura posterior en la misma ejecución, de modo que una escritura parcial nunca deja la configuración, el perfil de autenticación o el estado de env desincronizados.
+No se confirma ninguna escritura si el plan no es válido: la resolución de destinos y la validación de rutas se ejecutan antes de modificar cualquier archivo. Por otra parte, una vez que un plan válido comienza a escribir, la aplicación crea primero una instantánea de cada archivo modificado y restaura esas instantáneas si falla una escritura posterior de la misma ejecución, por lo que una escritura parcial nunca deja sin sincronizar el estado de la configuración, de los perfiles de autenticación ni del entorno.
 
-## Comportamiento del consentimiento del proveedor exec
+## Comportamiento del consentimiento para proveedores de ejecución
 
-- `--dry-run` omite las comprobaciones de SecretRef exec de forma predeterminada.
-- Los planes que contienen SecretRefs/proveedores exec se rechazan en modo de escritura a menos que se establezca `--allow-exec`.
-- Al validar/aplicar planes que contienen exec, pasa `--allow-exec` tanto en los comandos dry-run como en los de escritura.
+- `--dry-run` omite de forma predeterminada las comprobaciones de SecretRef de ejecución.
+- Los planes que contienen SecretRefs o proveedores de ejecución se rechazan en el modo de escritura, a menos que se establezca `--allow-exec`.
+- Al validar o aplicar planes que contengan elementos de ejecución, pase `--allow-exec` tanto en los comandos de simulación como en los de escritura.
 
-## Notas de alcance de runtime y auditoría
+## Notas sobre el alcance de la ejecución y la auditoría
 
-- Las entradas solo de referencia de `auth-profiles.json` (`keyRef`/`tokenRef`) se incluyen en la resolución de credenciales de runtime y en la cobertura de auditoría.
-- `secrets apply` escribe destinos compatibles de `openclaw.json`, destinos compatibles de `auth-profiles.json` y tres pasadas opcionales de limpieza, cada una activada de forma predeterminada: `scrubEnv` (elimina valores de texto plano migrados de `.env`), `scrubAuthProfilesForProviderTargets` (borra residuos de texto plano/referencias no usadas en `auth-profiles.json` para proveedores que un plan acaba de migrar) y `scrubLegacyAuthJson` (elimina entradas `api_key` migradas de almacenes heredados `auth.json`). Establece cualquiera de `options.scrubEnv`, `options.scrubAuthProfilesForProviderTargets`, `options.scrubLegacyAuthJson` en `false` en el plan para omitir esa pasada.
+- Las entradas de `auth-profiles.json` que solo contienen referencias (`keyRef`/`tokenRef`) se incluyen en la resolución de credenciales en tiempo de ejecución y en la cobertura de auditoría.
+- `secrets apply` escribe los destinos admitidos de `openclaw.json`, los destinos admitidos de `auth-profiles.json` y ejecuta tres pasadas opcionales de limpieza, todas activadas de forma predeterminada: `scrubEnv` (elimina de `.env` los valores de texto sin formato migrados), `scrubAuthProfilesForProviderTargets` (elimina los residuos de texto sin formato o referencias sin usar en `auth-profiles.json` para los proveedores que el plan acaba de migrar) y `scrubLegacyAuthJson` (elimina las entradas `api_key` migradas de los almacenes heredados `auth.json`). Establezca cualquiera de `options.scrubEnv`, `options.scrubAuthProfilesForProviderTargets` u `options.scrubLegacyAuthJson` en `false` en el plan para omitir esa pasada.
 
 ## Comprobaciones del operador
 
 ```bash
-# Validate plan without writes
+# Validar el plan sin realizar escrituras
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run
 
-# Then apply for real
+# Después, aplicarlo realmente
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json
 
-# For exec-containing plans, opt in explicitly in both modes
+# Para planes que contienen elementos de ejecución, habilitarlos explícitamente en ambos modos
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run --allow-exec
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --allow-exec
 ```
 
-Si apply falla con un mensaje de ruta de destino no válida, regenera el plan con `openclaw secrets configure` o corrige la ruta de destino para que tenga una forma compatible de las anteriores.
+Si la aplicación falla con un mensaje de ruta de destino no válida, vuelva a generar el plan con `openclaw secrets configure` o corrija la ruta del destino para que tenga una de las estructuras admitidas indicadas anteriormente.
 
-## Documentos relacionados
+## Documentación relacionada
 
 - [Gestión de secretos](/es/gateway/secrets)
 - [CLI `secrets`](/es/cli/secrets)

@@ -4,27 +4,27 @@ read_when:
 summary: Додає інтерфейс каналу iMessage для надсилання й отримання повідомлень OpenClaw.
 title: Plugin iMessage
 x-i18n:
-    generated_at: "2026-05-02T15:18:46Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:30:12Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3cf902a898d37329fe52d3b7a26c0ecebd641a88c5e490ad678adccb2d9b0d8d
+    source_hash: 5c48bb24e59d5dea948c5f04f579df48b0ae51f923e5dc8a0fc35888ddbbc1c6
     source_path: plugins/reference/imessage.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# iMessage Plugin
+# Plugin iMessage
 
-Додає поверхню каналу iMessage для надсилання й отримання повідомлень OpenClaw.
+Додає канал iMessage для надсилання й отримання повідомлень OpenClaw.
 
-## Поширення
+## Розповсюдження
 
 - Пакет: `@openclaw/imessage`
-- Спосіб встановлення: включено до OpenClaw
+- Спосіб встановлення: входить до складу OpenClaw
 
-## Поверхня
+## Можливості
 
-channels: imessage
+канали: imessage; Skills
 
 ## Пов’язана документація
 

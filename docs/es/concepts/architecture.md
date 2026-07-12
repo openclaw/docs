@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Trabajar en el protocolo de Gateway, clientes o transportes
+    - Trabajo con el protocolo del Gateway, los clientes o los transportes
 summary: Arquitectura, componentes y flujos de cliente del Gateway WebSocket
-title: Arquitectura de Gateway
+title: Arquitectura del Gateway
 x-i18n:
-    generated_at: "2026-07-05T11:13:30Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:58:48Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: f8054bd87f738b957c24f8d6965d55365de2293d44902530a9ba778afa597cc7
@@ -13,53 +13,53 @@ x-i18n:
     workflow: 16
 ---
 
-## Resumen
+## Descripción general
 
-- Un único **Gateway** de larga duración posee todas las superficies de mensajería (WhatsApp mediante
-  Baileys, Telegram mediante grammY, Slack, Discord, Signal, iMessage, WebChat).
-- Los clientes del plano de control (app de macOS, CLI, interfaz web, automatizaciones) se conectan al
-  Gateway mediante **WebSocket** en el host de enlace configurado (predeterminado
+- Un único **Gateway** de larga duración administra todas las superficies de mensajería (WhatsApp mediante
+  Baileys, Telegram mediante grammY, Slack, Discord, Signal, iMessage y WebChat).
+- Los clientes del plano de control (aplicación para macOS, CLI, interfaz web y automatizaciones) se conectan al
+  Gateway mediante **WebSocket** en el host de enlace configurado (valor predeterminado:
   `127.0.0.1:18789`).
-- Los **Nodes** (macOS/iOS/Android/sin interfaz) también se conectan mediante **WebSocket**, pero
-  declaran `role: node` con capacidades/comandos explícitos.
-- Un Gateway por host; es el único lugar que abre una sesión de WhatsApp.
-- El **host del canvas** lo sirve el servidor HTTP del Gateway en:
+- Los **Nodes** (macOS/iOS/Android/sin interfaz gráfica) también se conectan mediante **WebSocket**, pero
+  declaran `role: node` con capacidades y comandos explícitos.
+- Se usa un Gateway por host; es el único lugar que abre una sesión de WhatsApp.
+- El **host del lienzo** se sirve mediante el servidor HTTP del Gateway en:
   - `/__openclaw__/canvas/` (HTML/CSS/JS editable por el agente)
-  - `/__openclaw__/a2ui/` (host A2UI)
+  - `/__openclaw__/a2ui/` (host de A2UI)
 
-  Usa el mismo puerto que el Gateway (predeterminado `18789`).
+  Utiliza el mismo puerto que el Gateway (valor predeterminado: `18789`).
 
 ## Componentes y flujos
 
 ### Gateway (demonio)
 
-- Mantiene conexiones con proveedores.
-- Expone una API WS tipada (solicitudes, respuestas, eventos enviados por el servidor).
-- Valida los frames entrantes contra JSON Schema.
-- Emite eventos como `agent`, `chat`, `presence`, `health`, `heartbeat`, `cron`.
+- Mantiene las conexiones con los proveedores.
+- Expone una API de WS tipada (solicitudes, respuestas y eventos enviados por el servidor).
+- Valida las tramas entrantes con JSON Schema.
+- Emite eventos como `agent`, `chat`, `presence`, `health`, `heartbeat` y `cron`.
 
-### Clientes (app de Mac / CLI / administración web)
+### Clientes (aplicación para Mac / CLI / administración web)
 
 - Una conexión WS por cliente.
 - Envían solicitudes (`health`, `status`, `send`, `agent`, `system-presence`).
 - Se suscriben a eventos (`tick`, `agent`, `presence`, `shutdown`).
 
-### Nodes (macOS / iOS / Android / sin interfaz)
+### Nodes (macOS / iOS / Android / sin interfaz gráfica)
 
 - Se conectan al **mismo servidor WS** con `role: node`.
-- Proporcionan una identidad de dispositivo en `connect`; el emparejamiento está **basado en dispositivos** (rol `node`) y
-  la aprobación vive en el almacén de emparejamiento de dispositivos.
-- Exponen comandos como `canvas.*`, `camera.*`, `screen.record`, `location.get`.
+- Proporcionan una identidad de dispositivo en `connect`; el emparejamiento se basa en el **dispositivo** (rol `node`) y
+  la aprobación se almacena en el repositorio de emparejamiento de dispositivos.
+- Exponen comandos como `canvas.*`, `camera.*`, `screen.record` y `location.get`.
 
-Detalles del protocolo: [protocolo del Gateway](/es/gateway/protocol)
+Detalles del protocolo: [Protocolo del Gateway](/es/gateway/protocol)
 
 ### WebChat
 
-- Interfaz estática que usa la API WS del Gateway para el historial de chat y los envíos.
-- En configuraciones remotas, se conecta a través del mismo túnel SSH/Tailscale que otros
+- Interfaz estática que utiliza la API WS del Gateway para consultar el historial del chat y enviar mensajes.
+- En configuraciones remotas, se conecta mediante el mismo túnel SSH/Tailscale que los demás
   clientes.
 
-## Ciclo de vida de conexión (cliente único)
+## Ciclo de vida de la conexión (un solo cliente)
 
 ```mermaid
 sequenceDiagram
@@ -80,81 +80,81 @@ sequenceDiagram
     Gateway-->>Client: res:agent<br>final {runId, status, summary}
 ```
 
-## Protocolo de cable (resumen)
+## Protocolo de comunicación (resumen)
 
-- Transporte: WebSocket, frames de texto con cargas JSON.
-- El primer frame **debe** ser `connect`.
-- Después del handshake:
+- Transporte: WebSocket, tramas de texto con cargas útiles JSON.
+- La primera trama **debe** ser `connect`.
+- Después del protocolo de enlace:
   - Solicitudes: `{type:"req", id, method, params}` → `{type:"res", id, ok, payload|error}`
   - Eventos: `{type:"event", event, payload, seq?, stateVersion?}`
 - `hello-ok.features.methods` / `events` son metadatos de descubrimiento, no un
-  volcado generado de cada ruta auxiliar invocable.
-- La autenticación con secreto compartido usa `connect.params.auth.token` o
-  `connect.params.auth.password`, según el modo de autenticación del gateway configurado.
-- Los modos que llevan identidad, como Tailscale Serve
-  (`gateway.auth.allowTailscale: true`) o no loopback
-  `gateway.auth.mode: "trusted-proxy"` satisfacen la autenticación desde las cabeceras de la solicitud
+  volcado generado de todas las rutas auxiliares invocables.
+- La autenticación mediante secreto compartido utiliza `connect.params.auth.token` o
+  `connect.params.auth.password`, según el modo de autenticación configurado para el Gateway.
+- Los modos que incluyen identidad, como Tailscale Serve
+  (`gateway.auth.allowTailscale: true`) o `gateway.auth.mode: "trusted-proxy"`
+  fuera de local loopback, satisfacen la autenticación mediante los encabezados de la solicitud
   en lugar de `connect.params.auth.*`.
-- El ingreso privado `gateway.auth.mode: "none"` desactiva por completo la autenticación con secreto compartido;
-  mantén ese modo desactivado en ingresos públicos/no confiables.
-- Las claves de idempotencia son obligatorias para métodos con efectos secundarios (`send`, `agent`) para
-  reintentar de forma segura; el servidor mantiene una caché de deduplicación de corta duración.
-- Los nodos deben incluir `role: "node"` más capacidades/comandos/permisos en `connect`.
+- `gateway.auth.mode: "none"` para el ingreso privado desactiva por completo la autenticación mediante
+  secreto compartido; no utilice ese modo en ingresos públicos o no confiables.
+- Las claves de idempotencia son obligatorias para los métodos con efectos secundarios (`send`, `agent`) a fin de
+  permitir reintentos seguros; el servidor mantiene una caché de deduplicación de corta duración.
+- Los Nodes deben incluir `role: "node"`, además de las capacidades, los comandos y los permisos, en `connect`.
 
 ## Emparejamiento y confianza local
 
-- Todos los clientes WS (operadores + nodos) incluyen una **identidad de dispositivo** en `connect`.
-- Los IDs de dispositivos nuevos requieren aprobación de emparejamiento; el Gateway emite un **token de dispositivo**
-  para conexiones posteriores.
-- Las conexiones directas por local loopback se pueden aprobar automáticamente para mantener fluida la UX
+- Todos los clientes WS (operadores y Nodes) incluyen una **identidad de dispositivo** en `connect`.
+- Los nuevos identificadores de dispositivo requieren aprobación de emparejamiento; el Gateway emite un **token de dispositivo**
+  para las conexiones posteriores.
+- Las conexiones directas mediante local loopback pueden aprobarse automáticamente para mantener una experiencia fluida
   en el mismo host.
-- OpenClaw también tiene una ruta estrecha de autoconexión local del backend/contenedor para
-  flujos auxiliares confiables con secreto compartido.
-- Las conexiones por tailnet y LAN, incluidos los enlaces de tailnet en el mismo host, siguen requiriendo
+- OpenClaw también cuenta con una ruta restringida de autoconexión local al backend o contenedor para
+  flujos auxiliares confiables que utilizan secretos compartidos.
+- Las conexiones mediante tailnet y LAN, incluidos los enlaces a tailnet en el mismo host, siguen requiriendo
   aprobación explícita de emparejamiento.
-- Todas las conexiones deben firmar el nonce `connect.challenge`. La carga de firma `v3`
-  también vincula `platform` y `deviceFamily`; el gateway fija los metadatos emparejados al
-  reconectar y exige emparejamiento de reparación para cambios de metadatos.
+- Todas las conexiones deben firmar el nonce `connect.challenge`. La carga útil de firma `v3`
+  también vincula `platform` y `deviceFamily`; el Gateway fija los metadatos emparejados al
+  volver a conectarse y exige repetir el emparejamiento si cambian los metadatos.
 - Las conexiones **no locales** siguen requiriendo aprobación explícita.
-- La autenticación del Gateway (`gateway.auth.*`) sigue aplicándose a **todas** las conexiones, locales o
+- La autenticación del Gateway (`gateway.auth.*`) sigue aplicándose a **todas** las conexiones, tanto locales como
   remotas.
 
-Detalles: [protocolo del Gateway](/es/gateway/protocol), [Emparejamiento](/es/channels/pairing),
+Detalles: [Protocolo del Gateway](/es/gateway/protocol), [Emparejamiento](/es/channels/pairing),
 [Seguridad](/es/gateway/security).
 
-## Tipado del protocolo y codegen
+## Tipado del protocolo y generación de código
 
-- Los esquemas TypeBox definen el protocolo.
+- Los esquemas de TypeBox definen el protocolo.
 - JSON Schema se genera a partir de esos esquemas.
-- Los modelos Swift se generan a partir de JSON Schema.
+- Los modelos de Swift se generan a partir de JSON Schema.
 
 ## Acceso remoto
 
-- Preferido: Tailscale o VPN.
+- Opción preferida: Tailscale o VPN.
 - Alternativa: túnel SSH
 
   ```bash
   ssh -N -L 18789:127.0.0.1:18789 user@gateway-host
   ```
 
-- El mismo handshake + token de autenticación se aplican a través del túnel.
-- TLS + pinning opcional se pueden habilitar para WS en configuraciones remotas.
+- El mismo protocolo de enlace y token de autenticación se aplican a través del túnel.
+- En configuraciones remotas, se puede habilitar TLS con fijación opcional para WS.
 
-## Instantánea de operaciones
+## Resumen de operaciones
 
-- Inicio: `openclaw gateway` (primer plano, registra en stdout).
-- Salud: `health` mediante WS (también incluido en `hello-ok`).
-- Supervisión: launchd/systemd para reinicio automático.
+- Inicio: `openclaw gateway` (en primer plano, registra la salida en stdout).
+- Estado: `health` mediante WS (también se incluye en `hello-ok`).
+- Supervisión: launchd/systemd para el reinicio automático.
 
 ## Invariantes
 
 - Exactamente un Gateway controla una única sesión de Baileys por host.
-- El handshake es obligatorio; cualquier primer frame que no sea JSON o no sea connect provoca un cierre firme.
-- Los eventos no se reproducen; los clientes deben actualizarse si hay brechas.
+- El protocolo de enlace es obligatorio; cualquier primera trama que no sea JSON o `connect` provoca el cierre inmediato.
+- Los eventos no se reproducen; los clientes deben actualizarse cuando haya interrupciones.
 
-## Relacionado
+## Contenido relacionado
 
 - [Bucle del agente](/es/concepts/agent-loop) — ciclo detallado de ejecución del agente
 - [Protocolo del Gateway](/es/gateway/protocol) — contrato del protocolo WebSocket
 - [Cola](/es/concepts/queue) — cola de comandos y concurrencia
-- [Seguridad](/es/gateway/security) — modelo de confianza y endurecimiento
+- [Seguridad](/es/gateway/security) — modelo de confianza y refuerzo de seguridad

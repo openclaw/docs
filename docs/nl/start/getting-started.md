@@ -1,36 +1,36 @@
 ---
 read_when:
     - Eerste installatie vanaf nul
-    - Je wilt de snelste weg naar een werkende chat
-summary: Installeer OpenClaw en voer binnen enkele minuten je eerste chat uit.
+    - Je wilt de snelste manier om een werkende chat op te zetten
+summary: Installeer OpenClaw en start binnen enkele minuten je eerste chat.
 title: Aan de slag
 x-i18n:
-    generated_at: "2026-06-28T20:45:36Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:18:52Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 579ed2b4797dc851b0293b96a4177cc356641b6842fe45c4d48f4e8c224eef75
+    source_hash: 308ca58b8a11832b5a4c0d4634d1c88ef44681ef755a18d675bcff60b5aba929
     source_path: start/getting-started.md
     workflow: 16
 ---
 
-Installeer OpenClaw, voer onboarding uit en chat met je AI-assistent — allemaal in
-ongeveer 5 minuten. Aan het einde heb je een draaiende Gateway, geconfigureerde auth
-en een werkende chatsessie.
+Installeer OpenClaw, doorloop de onboarding en chat binnen ongeveer 5 minuten
+met je AI-assistent. Aan het einde heb je een actieve Gateway, geconfigureerde
+authenticatie en een werkende chatsessie.
 
 ## Wat je nodig hebt
 
-- **Node.js** — Node 24 aanbevolen (Node 22.19+ wordt ook ondersteund)
-- **Een API-sleutel** van een modelprovider (Anthropic, OpenAI, Google, enz.) — onboarding vraagt hierom
+- **Node.js 22.19+, 23.11+ of 24+** (24 is de aanbevolen standaardversie)
+- **Een API-sleutel** van een modelprovider (Anthropic, OpenAI, Google enzovoort) — tijdens de onboarding wordt hierom gevraagd
 
 <Tip>
 Controleer je Node-versie met `node --version`.
-**Windows-gebruikers:** de native Windows Hub-app is het eenvoudigste desktoppad. De
-PowerShell-installer en WSL2 Gateway-paden worden ook ondersteund. Zie [Windows](/nl/platforms/windows).
-Moet je Node installeren? Zie [Node-installatie](/nl/install/node).
+**Windows-gebruikers:** de systeemeigen Windows Hub-app is de eenvoudigste optie voor desktopgebruik. Ook het
+PowerShell-installatieprogramma en Gateway via WSL2 worden ondersteund. Zie [Windows](/nl/platforms/windows).
+Moet je Node installeren? Zie [Node installeren](/nl/install/node).
 </Tip>
 
-## Snelle installatie
+## Snel instellen
 
 <Steps>
   <Step title="OpenClaw installeren">
@@ -41,7 +41,7 @@ Moet je Node installeren? Zie [Node-installatie](/nl/install/node).
         ```
         <img
   src="/assets/install-script.svg"
-  alt="Installatiescriptproces"
+  alt="Installatieproces van het script"
   className="rounded-lg"
 />
       </Tab>
@@ -53,30 +53,30 @@ Moet je Node installeren? Zie [Node-installatie](/nl/install/node).
     </Tabs>
 
     <Note>
-    Andere installatiemethoden (Docker, Nix, npm): [Installeren](/nl/install).
+    Andere installatiemethoden (Docker, Nix, npm): [Installatie](/nl/install).
     </Note>
 
   </Step>
-  <Step title="Onboarding uitvoeren">
+  <Step title="De onboarding doorlopen">
     ```bash
     openclaw onboard --install-daemon
     ```
 
     De wizard begeleidt je bij het kiezen van een modelprovider, het instellen van een API-sleutel
-    en het configureren van de Gateway. QuickStart duurt meestal maar een paar minuten, maar
-    aanmelden bij de provider, kanaalkoppeling, daemon-installatie, netwerkdownloads, Skills
-    of optionele plugins kunnen ervoor zorgen dat volledige onboarding langer duurt. Je kunt optionele
-    stappen overslaan en later terugkomen met `openclaw configure`.
+    en het configureren van de Gateway. QuickStart duurt meestal maar enkele minuten, maar
+    aanmelden bij de provider, het koppelen van een kanaal, het installeren van de daemon, netwerkdownloads, Skills
+    of optionele plugins kunnen ervoor zorgen dat de volledige onboarding langer duurt. Sla optionele
+    stappen over en ga er later naar terug met `openclaw configure`.
 
-    Zie [Onboarding (CLI)](/nl/start/wizard) voor de volledige referentie.
+    Zie [Onboarding (CLI)](/nl/start/wizard) voor de volledige naslaginformatie.
 
   </Step>
-  <Step title="Controleren of de Gateway draait">
+  <Step title="Controleren of de Gateway actief is">
     ```bash
     openclaw gateway status
     ```
 
-    Je zou moeten zien dat de Gateway luistert op poort 18789.
+    Je hoort te zien dat de Gateway luistert op poort 18789.
 
   </Step>
   <Step title="Het dashboard openen">
@@ -84,30 +84,30 @@ Moet je Node installeren? Zie [Node-installatie](/nl/install/node).
     openclaw dashboard
     ```
 
-    Dit opent de Control UI in je browser. Als deze laadt, werkt alles.
+    Hiermee wordt de Control UI in je browser geopend. Als deze wordt geladen, werkt alles.
 
   </Step>
-  <Step title="Je eerste bericht verzenden">
-    Typ een bericht in de Control UI-chat en je zou een AI-antwoord moeten krijgen.
+  <Step title="Je eerste bericht versturen">
+    Typ een bericht in de chat van de Control UI. Je hoort vervolgens een antwoord van de AI te krijgen.
 
-    Wil je liever vanaf je telefoon chatten? Het snelste kanaal om in te stellen is
-    [Telegram](/nl/channels/telegram) (alleen een bottoken). Zie [Kanalen](/nl/channels)
+    Wil je liever vanaf je telefoon chatten? Het snelst in te stellen kanaal is
+    [Telegram](/nl/channels/telegram) (je hebt alleen een bottoken nodig). Zie [Kanalen](/nl/channels)
     voor alle opties.
 
   </Step>
 </Steps>
 
-<Accordion title="Geavanceerd: een aangepaste Control UI-build mounten">
-  Als je een gelokaliseerde of aangepaste dashboard-build onderhoudt, wijs
-  `gateway.controlUi.root` naar een map die je gebouwde statische
-  assets en `index.html` bevat.
+<Accordion title="Geavanceerd: een aangepaste Control UI-build koppelen">
+  Als je een gelokaliseerde of aangepaste dashboardbuild onderhoudt, laat je
+  `gateway.controlUi.root` verwijzen naar een map met je gebouwde statische
+  bestanden en `index.html`.
 
 ```bash
 mkdir -p "$HOME/.openclaw/control-ui-custom"
-# Copy your built static files into that directory.
+# Kopieer je gebouwde statische bestanden naar die map.
 ```
 
-Stel vervolgens in:
+Stel vervolgens het volgende in:
 
 ```json
 {
@@ -120,7 +120,7 @@ Stel vervolgens in:
 }
 ```
 
-Herstart de Gateway en open het dashboard opnieuw:
+Start de Gateway opnieuw en open het dashboard opnieuw:
 
 ```bash
 openclaw gateway restart
@@ -129,35 +129,35 @@ openclaw dashboard
 
 </Accordion>
 
-## Wat je hierna kunt doen
+## Volgende stappen
 
 <Columns>
   <Card title="Een kanaal verbinden" href="/nl/channels" icon="message-square">
     Discord, Feishu, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo en meer.
   </Card>
-  <Card title="Koppelen en veiligheid" href="/nl/channels/pairing" icon="shield">
-    Bepaal wie je agent berichten kan sturen.
+  <Card title="Koppeling en veiligheid" href="/nl/channels/pairing" icon="shield">
+    Bepaal wie berichten naar je agent kan sturen.
   </Card>
   <Card title="De Gateway configureren" href="/nl/gateway/configuration" icon="settings">
-    Modellen, tools, sandbox en geavanceerde instellingen.
+    Modellen, hulpmiddelen, sandbox en geavanceerde instellingen.
   </Card>
-  <Card title="Tools bekijken" href="/nl/tools" icon="wrench">
-    Browser, exec, zoeken op het web, Skills en plugins.
+  <Card title="Hulpmiddelen bekijken" href="/nl/tools" icon="wrench">
+    Browser, uitvoering, zoeken op het web, Skills en plugins.
   </Card>
 </Columns>
 
 <Accordion title="Geavanceerd: omgevingsvariabelen">
-  Als je OpenClaw uitvoert als serviceaccount of aangepaste paden wilt:
+  Als je OpenClaw uitvoert als een serviceaccount of aangepaste paden wilt gebruiken:
 
-- `OPENCLAW_HOME` — thuismap voor interne padresolutie
-- `OPENCLAW_STATE_DIR` — overschrijf de statusmap
-- `OPENCLAW_CONFIG_PATH` — overschrijf het pad naar het configuratiebestand
+- `OPENCLAW_HOME` — basismap voor interne padomzetting
+- `OPENCLAW_STATE_DIR` — de statusmap overschrijven
+- `OPENCLAW_CONFIG_PATH` — het pad naar het configuratiebestand overschrijven
 
-Volledige referentie: [Omgevingsvariabelen](/nl/help/environment).
+Volledige naslaginformatie: [Omgevingsvariabelen](/nl/help/environment).
 </Accordion>
 
 ## Gerelateerd
 
 - [Installatieoverzicht](/nl/install)
-- [Kanalenoverzicht](/nl/channels)
-- [Installatie](/nl/start/setup)
+- [Overzicht van kanalen](/nl/channels)
+- [Configuratie](/nl/start/setup)

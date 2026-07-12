@@ -2,10 +2,10 @@
 read_when:
     - شما در حال نصب، پیکربندی یا ممیزی Plugin ‏exa هستید
 summary: پشتیبانی از ارائه‌دهندهٔ جست‌وجوی وب را اضافه می‌کند.
-title: Plugin اگزایی
+title: Plugin اکسـا
 x-i18n:
-    generated_at: "2026-06-27T18:25:20Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:29:22Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 6170d70f03913f87b62f7a85647b4748032b7d01c56e909826e10e261e58160f
@@ -13,9 +13,9 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin اگز‌ا
+# Plugin Exa
 
-پشتیبانی از ارائه‌دهنده جست‌وجوی وب را اضافه می‌کند.
+پشتیبانی از ارائه‌دهندهٔ جست‌وجوی وب را اضافه می‌کند.
 
 ## توزیع
 
@@ -28,4 +28,4 @@ x-i18n:
 
 ## مستندات مرتبط
 
-- [اگز‌ا](/fa/tools/exa-search)
+- [exa](/fa/tools/exa-search)

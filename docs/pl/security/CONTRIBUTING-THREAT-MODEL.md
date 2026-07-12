@@ -1,109 +1,93 @@
 ---
 read_when:
-    - Chcesz zgłosić ustalenia dotyczące bezpieczeństwa lub scenariusze zagrożeń
+    - Chcesz zgłosić odkryte problemy z bezpieczeństwem lub scenariusze zagrożeń
     - Przeglądanie lub aktualizowanie modelu zagrożeń
-summary: Jak współtworzyć model zagrożeń OpenClaw
-title: Współtworzenie modelu zagrożeń
+summary: Jak wnieść wkład w model zagrożeń OpenClaw
+title: Wkład w model zagrożeń
 x-i18n:
-    generated_at: "2026-05-06T18:00:10Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:36:19Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a23ca088d7893180a83c02d6971bbf1c32affa724e43019fd40276eaadc52278
+    source_hash: 4e2e5cd95e8a2bf5ee4bd167afedfadf9aa876e4260e2d0bfb5f414cd4255410
     source_path: security/CONTRIBUTING-THREAT-MODEL.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Dziękujemy za pomoc w zwiększaniu bezpieczeństwa OpenClaw. Ten model zagrożeń jest żywym dokumentem i chętnie przyjmujemy wkład od każdego - nie musisz być ekspertem od bezpieczeństwa.
+[Model zagrożeń](/pl/security/THREAT-MODEL-ATLAS) jest stale rozwijanym dokumentem. Zachęcamy wszystkich do współtworzenia go; wiedza z zakresu bezpieczeństwa ani MITRE ATLAS nie jest wymagana.
+
+<Note>
+Ta sekcja służy do uzupełniania modelu zagrożeń, a nie do zgłaszania aktywnych podatności. Jeśli znajdziesz podatność możliwą do wykorzystania, postępuj zgodnie z instrukcjami odpowiedzialnego ujawniania na [stronie zaufania](https://trust.openclaw.ai).
+</Note>
 
 ## Sposoby wnoszenia wkładu
 
-### Dodaj zagrożenie
+**Dodaj zagrożenie.** Otwórz zgłoszenie w repozytorium [openclaw/trust](https://github.com/openclaw/trust/issues), opisując scenariusz ataku własnymi słowami. Pomocne, ale niewymagane informacje:
 
-Zauważyłeś wektor ataku lub ryzyko, którego nie opisaliśmy? Otwórz zgłoszenie w [openclaw/trust](https://github.com/openclaw/trust/issues) i opisz je własnymi słowami. Nie musisz znać żadnych frameworków ani wypełniać każdego pola - po prostu opisz scenariusz.
+- Scenariusz ataku i sposób, w jaki można go wykorzystać.
+- Komponenty, których dotyczy zagrożenie (CLI, Gateway, kanały, ClawHub, serwery MCP itp.).
+- Twoja ocena dotkliwości (niska / średnia / wysoka / krytyczna).
+- Odnośniki do powiązanych badań, podatności CVE lub rzeczywistych przykładów.
 
-**Warto uwzględnić (ale nie jest to wymagane):**
+Opiekunowie przypisują mapowanie ATLAS, identyfikator zagrożenia i poziom ryzyka podczas przeglądu.
 
-- Scenariusz ataku i sposób, w jaki można go wykorzystać
-- Które części OpenClaw są dotknięte (CLI, Gateway, kanały, ClawHub, serwery MCP itd.)
-- Jak poważne według Ciebie jest zagrożenie (niskie / średnie / wysokie / krytyczne)
-- Linki do powiązanych badań, CVE lub przykładów z rzeczywistych wdrożeń
+**Zaproponuj środek zaradczy.** Otwórz zgłoszenie lub PR z odniesieniem do zagrożenia. Propozycja powinna być konkretna i możliwa do wdrożenia: „ograniczenie liczby wiadomości na nadawcę do 10 na minutę na poziomie Gateway” jest bardziej użyteczne niż „wdrożyć ograniczanie liczby żądań”.
 
-Mapowaniem ATLAS, identyfikatorami zagrożeń i oceną ryzyka zajmiemy się podczas przeglądu. Jeśli chcesz uwzględnić te szczegóły, świetnie - ale nie jest to oczekiwane.
+**Zaproponuj łańcuch ataków.** Łańcuchy ataków pokazują, jak wiele zagrożeń może połączyć się w realistyczny scenariusz. Opisz kroki i sposób, w jaki atakujący mógłby je połączyć; krótki opis jest lepszy niż formalny szablon.
 
-> **To miejsce służy do dodawania informacji do modelu zagrożeń, a nie do zgłaszania aktywnych podatności.** Jeśli znalazłeś podatność możliwą do wykorzystania, zobacz naszą [stronę Trust](https://trust.openclaw.ai), aby poznać instrukcje odpowiedzialnego ujawniania.
+**Popraw lub ulepsz istniejącą treść.** Literówki, doprecyzowania, nieaktualne informacje, lepsze przykłady — zachęcamy do przesyłania PR-ów, bez konieczności wcześniejszego otwierania zgłoszenia.
 
-### Zaproponuj mitygację
+## Informacje o strukturze
 
-Masz pomysł, jak rozwiązać istniejące zagrożenie? Otwórz zgłoszenie lub PR odnoszące się do tego zagrożenia. Przydatne mitygacje są konkretne i możliwe do wdrożenia - na przykład „ograniczanie liczby wiadomości per nadawca do 10 wiadomości/minutę na Gateway” jest lepsze niż „wdrożyć ograniczanie liczby żądań”.
+Zagrożenia są mapowane na [MITRE ATLAS](https://atlas.mitre.org/) (Adversarial Threat Landscape for AI Systems), strukturę zagrożeń specyficznych dla AI/ML, takich jak wstrzykiwanie poleceń, niewłaściwe użycie narzędzi i wykorzystywanie agentów. Znajomość ATLAS nie jest wymagana do wniesienia wkładu; opiekunowie mapują zgłoszenia podczas przeglądu.
 
-### Zaproponuj łańcuch ataku
+**Identyfikatory zagrożeń.** Każde zagrożenie otrzymuje identyfikator, taki jak `T-EXEC-003`, przypisywany przez opiekunów podczas przeglądu.
 
-Łańcuchy ataku pokazują, jak wiele zagrożeń łączy się w realistyczny scenariusz ataku. Jeśli widzisz niebezpieczną kombinację, opisz kroki i sposób, w jaki atakujący połączyłby je w łańcuch. Krótka narracja pokazująca, jak atak przebiega w praktyce, jest bardziej wartościowa niż formalny szablon.
+| Kod     | Kategoria                                     |
+| ------- | --------------------------------------------- |
+| RECON   | Rozpoznanie — zbieranie informacji            |
+| ACCESS  | Uzyskanie początkowego dostępu                 |
+| EXEC    | Wykonanie — uruchamianie złośliwych działań   |
+| PERSIST | Utrzymywanie dostępu                           |
+| EVADE   | Omijanie zabezpieczeń — unikanie wykrycia     |
+| DISC    | Odkrywanie — poznawanie środowiska            |
+| EXFIL   | Eksfiltracja — wykradanie danych              |
+| IMPACT  | Wpływ — wyrządzanie szkód lub zakłóceń        |
 
-### Popraw lub ulepsz istniejącą treść
+**Poziomy ryzyka.** Jeśli nie masz pewności co do poziomu, po prostu opisz skutki; opiekunowie dokonają oceny.
 
-Literówki, doprecyzowania, nieaktualne informacje, lepsze przykłady - PR-y są mile widziane, zgłoszenie nie jest potrzebne.
-
-## Czego używamy
-
-### Framework MITRE ATLAS
-
-Ten model zagrożeń jest oparty na [MITRE ATLAS](https://atlas.mitre.org/) (Adversarial Threat Landscape for AI Systems), frameworku zaprojektowanym specjalnie dla zagrożeń AI/ML, takich jak wstrzykiwanie promptów, nadużywanie narzędzi i wykorzystywanie agentów. Nie musisz znać ATLAS, aby wnieść wkład - mapujemy zgłoszenia do frameworku podczas przeglądu.
-
-### Identyfikatory zagrożeń
-
-Każde zagrożenie otrzymuje identyfikator, taki jak `T-EXEC-003`. Kategorie to:
-
-| Kod     | Kategoria                                  |
-| ------- | ------------------------------------------ |
-| RECON   | Rozpoznanie - zbieranie informacji         |
-| ACCESS  | Dostęp początkowy - uzyskiwanie wejścia    |
-| EXEC    | Wykonanie - uruchamianie złośliwych działań |
-| PERSIST | Utrwalenie - utrzymywanie dostępu          |
-| EVADE   | Omijanie obrony - unikanie wykrycia        |
-| DISC    | Odkrywanie - poznawanie środowiska         |
-| EXFIL   | Eksfiltracja - wykradanie danych           |
-| IMPACT  | Wpływ - szkody lub zakłócenia              |
-
-Identyfikatory są przypisywane przez opiekunów podczas przeglądu. Nie musisz wybierać żadnego.
-
-### Poziomy ryzyka
-
-| Poziom       | Znaczenie                                                        |
-| ------------ | ---------------------------------------------------------------- |
-| **Krytyczny** | Pełne przejęcie systemu albo wysokie prawdopodobieństwo + krytyczny wpływ |
-| **Wysoki**   | Prawdopodobne znaczące szkody albo średnie prawdopodobieństwo + krytyczny wpływ |
-| **Średni**   | Umiarkowane ryzyko albo niskie prawdopodobieństwo + wysoki wpływ |
-| **Niski**    | Mało prawdopodobne i ograniczony wpływ                           |
-
-Jeśli nie masz pewności co do poziomu ryzyka, po prostu opisz wpływ, a my go ocenimy.
+| Poziom        | Znaczenie                                                                  |
+| ------------- | -------------------------------------------------------------------------- |
+| **Krytyczny** | Pełne przejęcie systemu albo wysokie prawdopodobieństwo i krytyczne skutki |
+| **Wysoki**    | Prawdopodobne znaczne szkody albo średnie prawdopodobieństwo i krytyczne skutki |
+| **Średni**    | Umiarkowane ryzyko albo niskie prawdopodobieństwo i poważne skutki         |
+| **Niski**     | Mało prawdopodobne i ograniczone skutki                                    |
 
 ## Proces przeglądu
 
-1. **Triage** - Przeglądamy nowe zgłoszenia w ciągu 48 godzin
-2. **Ocena** - Weryfikujemy wykonalność, przypisujemy mapowanie ATLAS i identyfikator zagrożenia, potwierdzamy poziom ryzyka
-3. **Dokumentacja** - Upewniamy się, że wszystko jest sformatowane i kompletne
-4. **Scalenie** - Dodanie do modelu zagrożeń i wizualizacji
+1. **Wstępna kwalifikacja** — nowe zgłoszenia są przeglądane w ciągu 48 godzin.
+2. **Ocena** — opiekunowie weryfikują wykonalność, przypisują mapowanie ATLAS i identyfikator zagrożenia oraz zatwierdzają poziom ryzyka.
+3. **Dokumentacja** — kontrola formatowania i kompletności.
+4. **Scalenie** — dodanie do modelu zagrożeń i wizualizacji.
 
 ## Zasoby
 
 - [Witryna ATLAS](https://atlas.mitre.org/)
 - [Techniki ATLAS](https://atlas.mitre.org/techniques/)
 - [Studia przypadków ATLAS](https://atlas.mitre.org/studies/)
-- [Model zagrożeń OpenClaw](/pl/security/THREAT-MODEL-ATLAS)
 
 ## Kontakt
 
-- **Podatności bezpieczeństwa:** Zobacz naszą [stronę Trust](https://trust.openclaw.ai), aby poznać instrukcje zgłaszania
-- **Pytania dotyczące modelu zagrożeń:** Otwórz zgłoszenie w [openclaw/trust](https://github.com/openclaw/trust/issues)
-- **Czat ogólny:** kanał #security na Discord
+- **Podatności bezpieczeństwa:** instrukcje zgłaszania znajdują się na [stronie zaufania](https://trust.openclaw.ai); można też napisać na adres `security@openclaw.ai`.
+- **Pytania dotyczące modelu zagrożeń:** otwórz zgłoszenie w repozytorium [openclaw/trust](https://github.com/openclaw/trust/issues).
+- **Czat ogólny:** kanał Discord `#security`.
 
 ## Uznanie
 
-Autorzy wkładu w model zagrożeń są wymieniani w podziękowaniach modelu zagrożeń, informacjach o wydaniu oraz w galerii zasłużonych dla bezpieczeństwa OpenClaw za znaczący wkład.
+Autorzy wkładu w model zagrożeń są wymieniani w podziękowaniach w modelu zagrożeń i informacjach o wydaniu, a w przypadku znaczącego wkładu także w galerii sław bezpieczeństwa OpenClaw.
 
-## Powiązane
+## Powiązane materiały
 
 - [Model zagrożeń](/pl/security/THREAT-MODEL-ATLAS)
+- [Reagowanie na incydenty](/pl/security/incident-response)
 - [Weryfikacja formalna](/pl/security/formal-verification)

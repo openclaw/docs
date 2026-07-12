@@ -1,11 +1,11 @@
 ---
 read_when:
     - Stai installando, configurando o verificando il plugin llama-cpp
-summary: Rappresentazioni vettoriali GGUF locali tramite node-llama-cpp.
+summary: Embedding GGUF locali tramite node-llama-cpp.
 title: Plugin Llama Cpp
 x-i18n:
-    generated_at: "2026-06-27T17:57:10Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:19:11Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: be9fd199e252fd3f905e8064316e45b9b2816945a2e5e16a56a6a88fdd55ef8e
@@ -20,7 +20,7 @@ Embedding GGUF locali tramite node-llama-cpp.
 ## Distribuzione
 
 - Pacchetto: `@openclaw/llama-cpp-provider`
-- Percorso di installazione: npm; ClawHub
+- Metodo di installazione: npm; ClawHub
 
 ## Superficie
 

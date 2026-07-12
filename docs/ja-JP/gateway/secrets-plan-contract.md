@@ -1,13 +1,13 @@
 ---
 read_when:
-    - '`openclaw secrets apply` 計画の生成またはレビュー'
+    - '`openclaw secrets apply` プランの生成またはレビュー'
     - '`Invalid plan target path` エラーのデバッグ'
-    - 対象タイプとパス検証の動作を理解する
-summary: '`secrets apply` プランのコントラクト: ターゲット検証、パスマッチング、`auth-profiles.json` ターゲットスコープ'
-title: Secrets 適用計画コントラクト
+    - ターゲットの種類とパス検証の動作を理解する
+summary: '`secrets apply` プランのコントラクト：ターゲット検証、パス照合、`auth-profiles.json` ターゲットのスコープ'
+title: シークレット適用プランのコントラクト
 x-i18n:
-    generated_at: "2026-07-05T11:25:02Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:15:12Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: ddaf3df7f0be326fa1c8dc8c360b03697fb58329d03c4eb8106a8740ddf6c47a
@@ -15,9 +15,9 @@ x-i18n:
     workflow: 16
 ---
 
-このページは、`openclaw secrets apply` によって強制される厳密なコントラクトを定義します。ターゲットがこれらのルールに一致しない場合、apply はどのファイルも変更する前に失敗します。
+このページでは、`openclaw secrets apply` によって適用される厳密な契約を定義します。ターゲットがこれらのルールに一致しない場合、apply はファイルを変更する前に失敗します。
 
-## プランファイルの形状
+## プランファイルの形式
 
 `openclaw secrets apply --from <plan.json>` は、プランターゲットの `targets` 配列を想定します。
 
@@ -44,16 +44,16 @@ x-i18n:
 }
 ```
 
-`openclaw secrets configure` はこの形状でプランを生成します。手書きまたは編集することもできます。
+`openclaw secrets configure` はこの形式のプランを生成します。手動で作成または編集することもできます。
 
-## プロバイダーの upsert と削除
+## プロバイダーの追加・更新と削除
 
-プランには、ターゲットごとの書き込みに加えて `secrets.providers` マップを変更する、2 つの任意のトップレベルフィールドを含めることもできます。
+プランには、ターゲットごとの書き込みとともに `secrets.providers` マップを変更する、次の2つの省略可能なトップレベルフィールドも含められます。
 
-- `providerUpserts` -- プロバイダーエイリアスをキーにしたオブジェクトです。各値はプロバイダー定義です（`openclaw.json` の `secrets.providers.<alias>` で受け付けられるものと同じ形状。例: `exec` または `file` プロバイダー）。
-- `providerDeletes` -- 削除するプロバイダーエイリアスの配列です。
+- `providerUpserts` -- プロバイダーエイリアスをキーとするオブジェクト。各値はプロバイダー定義です（`openclaw.json` の `secrets.providers.<alias>` で受け付けられるものと同じ形式。たとえば `exec` または `file` プロバイダー）。
+- `providerDeletes` -- 削除するプロバイダーエイリアスの配列。
 
-`providerUpserts` は `targets` より前に実行されるため、`target.ref.provider` は同じプランが `providerUpserts` で導入するプロバイダーエイリアスを参照できます。この順序がない場合、`openclaw.json` でまだ構成されていないエイリアスを参照するプランは、`provider "<alias>" is not configured` で失敗します。
+`providerUpserts` は `targets` より先に実行されるため、`target.ref.provider` は同じプランの `providerUpserts` で導入されるプロバイダーエイリアスを参照できます。この順序でない場合、`openclaw.json` にまだ設定されていないエイリアスを参照するプランは、`provider "<alias>" is not configured` というエラーで失敗します。
 
 ```json5
 {
@@ -79,19 +79,19 @@ x-i18n:
 }
 ```
 
-`providerUpserts` を通じて導入された exec プロバイダーにも、[exec プロバイダー同意動作](#exec-provider-consent-behavior) の exec 同意ルールが適用されます。exec プロバイダーを含むプランでは、書き込みモードで `--allow-exec` が必要です。
+`providerUpserts` で導入される exec プロバイダーにも、[Exec プロバイダーの同意動作](#exec-provider-consent-behavior)にある exec の同意ルールが適用されます。exec プロバイダーを含むプランでは、書き込みモードで `--allow-exec` が必要です。
 
-## サポートされるターゲットスコープ
+## サポート対象のターゲット範囲
 
-プランターゲットは、[SecretRef 認証情報サーフェス](/ja-JP/reference/secretref-credential-surface) のサポートされる認証情報パスで受け付けられます。
+プランターゲットは、[SecretRef 認証情報サーフェス](/ja-JP/reference/secretref-credential-surface)に記載されたサポート対象の認証情報パスで受け付けられます。
 
-## ターゲットタイプの動作
+## ターゲット型の動作
 
-`target.type` は認識されるターゲットタイプである必要があり、正規化された `target.path` はそのタイプの登録済みパス形状と一致する必要があります。
+`target.type` は認識可能なターゲット型である必要があり、正規化された `target.path` はその型に登録されたパス形式と一致する必要があります。
 
-一部のターゲットタイプは、正規タイプ名に加えて、既存プラン向けに `target.type` として互換エイリアスを受け付けます。
+一部のターゲット型では、既存のプラン向けに、正規の型名に加えて互換性エイリアスを `target.type` として受け付けます。
 
-| 正規タイプ                         | 受け付けるエイリアス                          |
+| 正規の型                             | 受け付けるエイリアス                            |
 | ------------------------------------ | ----------------------------------------------- |
 | `models.providers.apiKey`            | `models.providers.*.apiKey`                     |
 | `skills.entries.apiKey`              | `skills.entries.*.apiKey`                       |
@@ -99,57 +99,57 @@ x-i18n:
 
 ## パス検証ルール
 
-各ターゲットは、以下のすべてで検証されます。
+各ターゲットは、次のすべての条件で検証されます。
 
-- `type` は認識されるターゲットタイプである必要があります。
-- `path` は空でないドットパスである必要があります。
-- `pathSegments` は省略できます。指定する場合、`path` と完全に同じパスに正規化される必要があります。
-- 禁止されたセグメントは拒否されます: `__proto__`、`prototype`、`constructor`。
-- 正規化されたパスは、ターゲットタイプの登録済みパス形状と一致する必要があります。
+- `type` は認識可能なターゲット型である必要があります。
+- `path` は空でないドット区切りパスである必要があります。
+- `pathSegments` は省略できます。指定する場合、正規化後のパスが `path` と完全に一致する必要があります。
+- 禁止されているセグメント `__proto__`、`prototype`、`constructor` は拒否されます。
+- 正規化されたパスは、ターゲット型に登録されたパス形式と一致する必要があります。
 - `providerId` または `accountId` が設定されている場合、パスにエンコードされた ID と一致する必要があります。
-- `auth-profiles.json` ターゲットには `agentId` が必要です。
+- `auth-profiles.json` のターゲットには `agentId` が必要です。
 - 新しい `auth-profiles.json` マッピングを作成する場合は、`authProfileProvider` を含めます。
 
 ## 失敗時の動作
 
-ターゲットが検証に失敗すると、apply は次のようなエラーで終了します。
+ターゲットが検証に失敗した場合、apply は次のようなエラーを出して終了します。
 
 ```text
 Invalid plan target path for models.providers.apiKey: models.providers.openai.baseUrl
 ```
 
-無効なプランでは書き込みはコミットされません。ターゲット解決とパス検証は、どのファイルにも触れる前に実行されます。別途、有効なプランが書き込みを開始すると、apply は最初に触れるすべてのファイルのスナップショットを作成し、同じ実行内の後続の書き込みが失敗した場合はそれらのスナップショットを復元します。そのため、部分的な書き込みによって config、auth-profile、env の状態が同期しなくなることはありません。
+無効なプランでは、書き込みは一切確定されません。ターゲットの解決とパスの検証は、ファイルに触れる前に実行されます。また、有効なプランが書き込みを開始すると、apply は最初に変更対象のすべてのファイルのスナップショットを作成し、同じ実行内の後続の書き込みが失敗した場合はそれらのスナップショットを復元します。そのため、部分的な書き込みによって設定、認証プロファイル、または環境変数の状態が不整合になることはありません。
 
-## exec プロバイダー同意動作
+## Exec プロバイダーの同意動作
 
-- `--dry-run` はデフォルトで exec SecretRef チェックをスキップします。
-- exec SecretRef/プロバイダーを含むプランは、`--allow-exec` が設定されていない限り、書き込みモードで拒否されます。
-- exec を含むプランを検証/適用する場合は、dry-run と書き込みコマンドの両方で `--allow-exec` を渡します。
+- `--dry-run` は、デフォルトで exec SecretRef のチェックを省略します。
+- exec SecretRef またはプロバイダーを含むプランは、`--allow-exec` が設定されていない限り、書き込みモードで拒否されます。
+- exec を含むプランを検証または適用する場合は、ドライランと書き込みの両方のコマンドに `--allow-exec` を渡します。
 
-## ランタイムと監査スコープの注記
+## ランタイムと監査範囲に関する注意事項
 
-- ref のみの `auth-profiles.json` エントリ（`keyRef`/`tokenRef`）は、ランタイム認証情報解決と監査範囲に含まれます。
-- `secrets apply` は、サポートされる `openclaw.json` ターゲット、サポートされる `auth-profiles.json` ターゲット、および 3 つの任意のスクラブパスを書き込みます。各スクラブパスはデフォルトで有効です: `scrubEnv`（移行済みの平文値を `.env` から削除）、`scrubAuthProfilesForProviderTargets`（プランが移行したばかりのプロバイダーについて、`auth-profiles.json` 内の平文/未使用 ref の残留物をクリア）、`scrubLegacyAuthJson`（レガシー `auth.json` ストアから移行済みの `api_key` エントリを削除）。そのパスをスキップするには、プラン内で `options.scrubEnv`、`options.scrubAuthProfilesForProviderTargets`、`options.scrubLegacyAuthJson` のいずれかを `false` に設定します。
+- 参照のみの `auth-profiles.json` エントリ（`keyRef`/`tokenRef`）は、ランタイムの認証情報解決と監査の対象に含まれます。
+- `secrets apply` は、サポート対象の `openclaw.json` ターゲットと `auth-profiles.json` ターゲットに書き込み、さらにデフォルトで有効な3つの省略可能なスクラブ処理を実行します。`scrubEnv`（移行済みの平文値を `.env` から削除）、`scrubAuthProfilesForProviderTargets`（プランで移行したプロバイダーについて、`auth-profiles.json` に残る平文または未使用の参照を消去）、`scrubLegacyAuthJson`（従来の `auth.json` ストアから移行済みの `api_key` エントリを削除）です。処理を省略するには、プラン内の `options.scrubEnv`、`options.scrubAuthProfilesForProviderTargets`、`options.scrubLegacyAuthJson` のいずれかを `false` に設定します。
 
-## オペレーター確認
+## 運用者向け確認手順
 
 ```bash
-# Validate plan without writes
+# 書き込まずにプランを検証
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run
 
-# Then apply for real
+# 続いて実際に適用
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json
 
-# For exec-containing plans, opt in explicitly in both modes
+# exec を含むプランでは、両方のモードで明示的に許可
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run --allow-exec
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --allow-exec
 ```
 
-apply が無効なターゲットパスのメッセージで失敗する場合は、`openclaw secrets configure` でプランを再生成するか、ターゲットパスを上記のサポートされる形状に修正します。
+無効なターゲットパスを示すメッセージで apply が失敗した場合は、`openclaw secrets configure` でプランを再生成するか、ターゲットパスを上記のサポート対象形式に修正してください。
 
 ## 関連ドキュメント
 
 - [シークレット管理](/ja-JP/gateway/secrets)
 - [CLI `secrets`](/ja-JP/cli/secrets)
 - [SecretRef 認証情報サーフェス](/ja-JP/reference/secretref-credential-surface)
-- [構成リファレンス](/ja-JP/gateway/configuration-reference)
+- [設定リファレンス](/ja-JP/gateway/configuration-reference)

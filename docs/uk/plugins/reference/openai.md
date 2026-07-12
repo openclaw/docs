@@ -1,30 +1,30 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або аудіюєте Plugin openai
-summary: Додає підтримку провайдера моделей OpenAI до OpenClaw.
-title: OpenAI Plugin
+    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin openai
+summary: Додає підтримку постачальника моделей OpenAI в OpenClaw.
+title: Plugin OpenAI
 x-i18n:
-    generated_at: "2026-06-27T18:00:57Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:35:34Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c8fa47c22cb54090493f3cbacc461344242e078716760289c0dd4fd0ae8c0085
+    source_hash: 6df4bd8377204f49c5ec5470047ae60ff709f43bb31b06de82866901dca31aaa
     source_path: plugins/reference/openai.md
     workflow: 16
 ---
 
-# OpenAI Plugin
+# Plugin OpenAI
 
-Додає підтримку постачальника моделей OpenAI до OpenClaw.
+Додає до OpenClaw підтримку постачальника моделей OpenAI.
 
-## Поширення
+## Розповсюдження
 
 - Пакет: `@openclaw/openai-provider`
-- Маршрут установлення: включено до OpenClaw
+- Спосіб установлення: входить до складу OpenClaw
 
-## Поверхня
+## Інтерфейс
 
-providers: openai; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders
+постачальники: openai; контракти: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders, realtimeVoiceProviders, speechProviders, usageProviders, videoGenerationProviders
 
 ## Пов’язана документація
 

@@ -1,190 +1,164 @@
 ---
 read_when:
-    - اختيار النماذج أو التبديل بينها، وتهيئة الأسماء المستعارة
-    - تصحيح أخطاء تجاوز فشل النماذج / "فشلت كل النماذج"
+    - اختيار النماذج أو التبديل بينها، وتكوين الأسماء المستعارة
+    - تصحيح أخطاء تجاوز فشل النموذج / «فشلت جميع النماذج»
     - فهم ملفات تعريف المصادقة وكيفية إدارتها
 sidebarTitle: Models FAQ
-summary: 'الأسئلة الشائعة: الإعدادات الافتراضية للنماذج، والاختيار، والأسماء المستعارة، والتبديل، وتجاوز الفشل، وملفات تعريف المصادقة'
+summary: 'الأسئلة الشائعة: إعدادات النماذج الافتراضية، والاختيار، والأسماء المستعارة، والتبديل، والتجاوز عند الفشل، وملفات تعريف المصادقة'
 title: 'الأسئلة الشائعة: النماذج والمصادقة'
 x-i18n:
-    generated_at: "2026-06-28T20:43:54Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T05:57:39Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3bfff016fc8b5afff5dde2b939b7fa431aa5a0309aa2833e7dd4675b638ca225
+    source_hash: 071e89c01120849179d3bc372153eb2c76a0fa4e93846df42920f0d961d597df
     source_path: help/faq-models.md
     workflow: 16
 ---
 
-  أسئلة وأجوبة حول النماذج وملفات تعريف المصادقة. للإعداد والجلسات وGateway والقنوات
-  واستكشاف الأخطاء وإصلاحها، راجع [الأسئلة الشائعة](/ar/help/faq) الرئيسية.
+  أسئلة وأجوبة حول النماذج وملفات تعريف المصادقة. لإعداد النظام والجلسات وGateway والقنوات واستكشاف الأخطاء وإصلاحها، راجع [الأسئلة الشائعة](/ar/help/faq) الرئيسية.
 
-  ## النماذج: الإعدادات الافتراضية، والاختيار، والأسماء المستعارة، والتبديل
+  ## النماذج: الإعدادات الافتراضية والاختيار والأسماء المستعارة والتبديل
 
   <AccordionGroup>
-  <Accordion title='ما هو "النموذج الافتراضي"؟'>
-    النموذج الافتراضي في OpenClaw هو أي نموذج تضبطه كالتالي:
+  <Accordion title='What is the "default model"?'>
+    يُضبط باستخدام:
 
-    ```
+    ```text
     agents.defaults.model.primary
     ```
 
-    تتم الإشارة إلى النماذج بصيغة `provider/model` (مثال: `openai/gpt-5.5` أو `anthropic/claude-sonnet-4-6`). إذا حذفت المزوّد، يحاول OpenClaw أولًا استخدام اسم مستعار، ثم مطابقة فريدة لمزوّد مُهيأ لمعرّف النموذج نفسه، وبعد ذلك فقط يعود إلى المزوّد الافتراضي المُهيأ كمسار توافق مهمل. إذا لم يعد ذلك المزوّد يوفّر النموذج الافتراضي المُهيأ، يعود OpenClaw إلى أول مزوّد/نموذج مُهيأ بدلًا من إظهار افتراضي قديم لمزوّد أزيل. مع ذلك، يجب أن تضبط `provider/model` **صراحةً**.
+    النماذج هي مراجع بصيغة `provider/model` (مثال: `openai/gpt-5.5`،
+    `anthropic/claude-sonnet-4-6`). عيّن دائمًا `provider/model` صراحةً. إذا
+    حذفت المزوّد، يحاول OpenClaw أولًا مطابقة اسم مستعار، ثم مطابقة مزوّد
+    مُهيأ وفريد لمعرّف النموذج، ثم يعود إلى المزوّد الافتراضي
+    المُهيأ (مسار توافق مهمل). إذا لم يعد ذلك المزوّد يتضمن النموذج الافتراضي
+    المُهيأ، يعود OpenClaw إلى أول مزوّد/نموذج مُهيأ بدلًا من استخدام إعداد
+    افتراضي قديم.
 
   </Accordion>
 
-  <Accordion title="ما النموذج الذي توصون به؟">
-    **الإعداد الافتراضي الموصى به:** استخدم أقوى نموذج من أحدث جيل متاح في حزمة المزوّدين لديك.
-    **للوكلاء الممكّنين بالأدوات أو الذين يتعاملون مع مُدخلات غير موثوقة:** أعطِ أولوية لقوة النموذج على التكلفة.
-    **للدردشة الروتينية/منخفضة المخاطر:** استخدم نماذج احتياطية أرخص ووجّه حسب دور الوكيل.
+  <Accordion title="What model do you recommend?">
+    استخدم أقوى نموذج من أحدث جيل توفره مجموعة مزوّديك،
+    خصوصًا للوكلاء الذين يستخدمون الأدوات أو يتعاملون مع مدخلات غير موثوقة؛
+    فالنماذج الأضعف أو المفرطة في التكميم أكثر عرضة لحقن الموجّهات والسلوك
+    غير الآمن (راجع [الأمان](/ar/gateway/security)). وجّه النماذج الأقل تكلفة إلى
+    المحادثات الروتينية أو منخفضة المخاطر وفقًا لدور الوكيل.
 
-    لدى MiniMax وثائق خاصة به: [MiniMax](/ar/providers/minimax) و
-    [النماذج المحلية](/ar/gateway/local-models).
-
-    قاعدة عامة: استخدم **أفضل نموذج يمكنك تحمل تكلفته** للأعمال عالية المخاطر، ونموذجًا أرخص
-    للدردشة الروتينية أو الملخصات. يمكنك توجيه النماذج لكل وكيل واستخدام الوكلاء الفرعيين
-    لموازاة المهام الطويلة (كل وكيل فرعي يستهلك رموزًا). راجع [النماذج](/ar/concepts/models) و
-    [الوكلاء الفرعيين](/ar/tools/subagents).
-
-    تحذير قوي: النماذج الأضعف/المكمّمة أكثر من اللازم أكثر عرضة لحقن التعليمات
-    والسلوك غير الآمن. راجع [الأمان](/ar/gateway/security).
-
-    مزيد من السياق: [النماذج](/ar/concepts/models).
+    وجّه النماذج لكل وكيل واستخدم الوكلاء الفرعيين لتنفيذ المهام الطويلة
+    بالتوازي (يستهلك كل وكيل فرعي رموزه الخاصة). راجع
+    [النماذج](/ar/concepts/models)، و[الوكلاء الفرعيين](/ar/tools/subagents)،
+    و[MiniMax](/ar/providers/minimax)، و[النماذج المحلية](/ar/gateway/local-models).
 
   </Accordion>
 
-  <Accordion title="كيف أبدّل النماذج دون مسح الإعدادات؟">
-    استخدم **أوامر النموذج** أو عدّل حقول **النموذج** فقط. تجنّب استبدال الإعدادات بالكامل.
+  <Accordion title="How do I switch models without wiping my config?">
+    غيّر حقول النموذج فقط، وتجنب استبدال الإعدادات بالكامل.
 
-    خيارات آمنة:
-
-    - `/model` في الدردشة (سريع، لكل جلسة)
+    - `/model` في المحادثة (لكل جلسة، راجع [أوامر الشرطة المائلة](/ar/tools/slash-commands))
     - `openclaw models set ...` (يحدّث إعدادات النموذج فقط)
     - `openclaw configure --section model` (تفاعلي)
-    - عدّل `agents.defaults.model` في `~/.openclaw/openclaw.json`
+    - عدّل `agents.defaults.model` مباشرةً في `~/.openclaw/openclaw.json`
 
-    تجنّب `config.apply` مع كائن جزئي إلا إذا كنت تقصد استبدال الإعدادات كلها.
-    لتعديلات RPC، افحص أولًا باستخدام `config.schema.lookup` وفضّل `config.patch`. تمنحك حمولة البحث المسار المطبّع، ووثائق/قيود المخطط السطحية، وملخصات الأبناء المباشرين.
-    للتحديثات الجزئية.
-    إذا استبدلت الإعدادات فعلًا، فاستعدها من نسخة احتياطية أو أعد تشغيل `openclaw doctor` للإصلاح.
+    بالنسبة إلى تعديلات RPC، افحص أولًا باستخدام `config.schema.lookup`
+    (المسار الموحّد، ووثائق المخطط السطحية، وملخصات العناصر الفرعية)، ثم فضّل
+    `config.patch` على `config.apply` مع كائن جزئي. إذا كنت قد استبدلت
+    الإعدادات بالفعل، فاستعدها من النسخة الاحتياطية أو شغّل `openclaw doctor`
+    لإصلاحها.
 
-    الوثائق: [النماذج](/ar/concepts/models)، [التهيئة](/ar/cli/configure)، [الإعدادات](/ar/cli/config)، [Doctor](/ar/gateway/doctor).
+    الوثائق: [النماذج](/ar/concepts/models)، و[التهيئة](/ar/cli/configure)،
+    و[الإعدادات](/ar/cli/config)، و[Doctor](/ar/gateway/doctor).
 
   </Accordion>
 
-  <Accordion title="هل يمكنني استخدام نماذج مستضافة ذاتيًا (llama.cpp، vLLM، Ollama)؟">
-    نعم. Ollama هو أسهل مسار للنماذج المحلية.
-
-    أسرع إعداد:
+  <Accordion title="Can I use self-hosted models (llama.cpp, vLLM, Ollama)?">
+    نعم، Ollama هو المسار الأسهل. إعداد سريع:
 
     1. ثبّت Ollama من `https://ollama.com/download`
-    2. اسحب نموذجًا محليًا مثل `ollama pull gemma4`
-    3. إذا كنت تريد نماذج سحابية أيضًا، شغّل `ollama signin`
-    4. شغّل `openclaw onboard` واختر `Ollama`
-    5. اختر `Local` أو `Cloud + Local`
+    2. نزّل نموذجًا محليًا، مثل `ollama pull gemma4`
+    3. لاستخدام النماذج السحابية أيضًا، شغّل `ollama signin`
+    4. شغّل `openclaw onboard`، واختر `Ollama`، ثم `Local` أو `Cloud + Local`
 
-    ملاحظات:
+    يمنحك `Cloud + Local` النماذج السحابية إلى جانب نماذج Ollama المحلية؛
+    ولا تحتاج النماذج السحابية مثل `kimi-k2.5:cloud` إلى تنزيل محلي. للتبديل
+    يدويًا: `openclaw models list`، ثم `openclaw models set ollama/<model>`.
 
-    - يمنحك `Cloud + Local` نماذج سحابية بالإضافة إلى نماذج Ollama المحلية لديك
-    - النماذج السحابية مثل `kimi-k2.5:cloud` لا تحتاج إلى سحب محلي
-    - للتبديل اليدوي، استخدم `openclaw models list` و`openclaw models set ollama/<model>`
+    النماذج الأصغر أو شديدة التكميم أكثر عرضة لحقن الموجّهات.
+    استخدم نماذج كبيرة لأي روبوت لديه صلاحية الوصول إلى الأدوات؛ وإذا استخدمت
+    نماذج صغيرة رغم ذلك، ففعّل العزل وقوائم السماح الصارمة للأدوات.
 
-    ملاحظة أمان: النماذج الأصغر أو المكمّمة بشدة أكثر عرضة لحقن التعليمات.
-    نوصي بشدة باستخدام **نماذج كبيرة** لأي بوت يمكنه استخدام الأدوات.
-    إذا كنت لا تزال تريد نماذج صغيرة، فعّل العزل وقوائم السماح الصارمة للأدوات.
-
-    الوثائق: [Ollama](/ar/providers/ollama)، [النماذج المحلية](/ar/gateway/local-models)،
-    [مزوّدو النماذج](/ar/concepts/model-providers)، [الأمان](/ar/gateway/security)،
-    [العزل](/ar/gateway/sandboxing).
+    الوثائق: [Ollama](/ar/providers/ollama)، و[النماذج المحلية](/ar/gateway/local-models)،
+    و[مزوّدو النماذج](/ar/concepts/model-providers)، و[الأمان](/ar/gateway/security)،
+    و[العزل](/ar/gateway/sandboxing).
 
   </Accordion>
 
-  <Accordion title="ما النماذج التي يستخدمها OpenClaw وFlawd وKrill؟">
-    - يمكن أن تختلف هذه النشرات وقد تتغير بمرور الوقت؛ لا توجد توصية ثابتة لمزوّد.
-    - تحقق من إعداد التشغيل الحالي على كل gateway باستخدام `openclaw models status`.
-    - للوكلاء الحسّاسين أمنيًا/الممكّنين بالأدوات، استخدم أقوى نموذج من أحدث جيل متاح.
+  <Accordion title="How do I switch models on the fly (without restarting)?">
+    أرسل `/model <name>` كرسالة مستقلة. راجع
+    [أوامر الشرطة المائلة](/ar/tools/slash-commands) للاطلاع على
+    قائمة الأوامر الكاملة، بما فيها أداة الاختيار المرقمة (`/model`، و`/model
+    list`، و`/model 3`)، والأمر `/model default` لمسح تجاوز الجلسة، والأمر
+    `/model status` لعرض تفاصيل نقطة النهاية/وضع API.
 
-  </Accordion>
+    افرض ملف تعريف مصادقة محددًا لكل جلسة باستخدام `@profile`:
 
-  <Accordion title="كيف أبدّل النماذج فورًا (دون إعادة التشغيل)؟">
-    استخدم الأمر `/model` كرسالة مستقلة:
-
-    ```
-    /model sonnet
-    /model opus
-    /model gpt
-    /model gpt-mini
-    /model gemini
-    /model gemini-flash
-    /model gemini-flash-lite
-    ```
-
-    هذه هي الأسماء المستعارة المدمجة. يمكن إضافة أسماء مستعارة مخصصة عبر `agents.defaults.models`.
-
-    يمكنك سرد النماذج المتاحة باستخدام `/model` أو `/model list` أو `/model status`.
-
-    يعرض `/model` (و`/model list`) منتقيًا مرقمًا وموجزًا. اختر بالرقم:
-
-    ```
-    /model 3
-    ```
-
-    يمكنك أيضًا فرض ملف تعريف مصادقة محدد للمزوّد (لكل جلسة):
-
-    ```
+    ```text
     /model opus@anthropic:default
     /model opus@anthropic:work
     ```
 
-    نصيحة: يعرض `/model status` الوكيل النشط، وملف `auth-profiles.json` المستخدم، وملف تعريف المصادقة الذي ستتم تجربته تاليًا.
-    كما يعرض نقطة نهاية المزوّد المُهيأة (`baseUrl`) ووضع API (`api`) عند توفرهما.
-
-    **كيف ألغي تثبيت ملف تعريف ضبطته باستخدام @profile؟**
-
-    أعد تشغيل `/model` **من دون** لاحقة `@profile`:
-
-    ```
-    /model anthropic/claude-opus-4-6
-    ```
-
-    إذا أردت الرجوع إلى الافتراضي، فاختره من `/model` (أو أرسل `/model <default provider/model>`).
-    استخدم `/model status` لتأكيد ملف تعريف المصادقة النشط.
+    لإلغاء تثبيت ملف تعريف ضُبط باستخدام `@profile`، أعد تشغيل `/model` من دون
+    اللاحقة (مثل `/model anthropic/claude-opus-4-6`)، أو اختر الإعداد الافتراضي من
+    `/model`. استخدم `/model status` للتأكد من ملف تعريف المصادقة النشط.
 
   </Accordion>
 
-  <Accordion title="إذا كان مزوّدان يعرِضان معرّف النموذج نفسه، فأيهما يستخدم /model؟">
-    يختار `/model provider/model` مسار ذلك المزوّد المحدد للجلسة.
+  <Accordion title="If two providers expose the same model id, which one does /model use?">
+    يحدد `/model provider/model` مسار ذلك المزوّد بالضبط. على سبيل المثال،
+    يُعد `qianfan/deepseek-v4-flash` و`deepseek/deepseek-v4-flash` مرجعين
+    مختلفين رغم تطابق معرّف النموذج؛ ولا يبدّل OpenClaw المزوّدين بصمت
+    عند مطابقة معرّف مجرد.
 
-    على سبيل المثال، `qianfan/deepseek-v4-flash` و`deepseek/deepseek-v4-flash` هما مرجعان مختلفان للنموذج رغم أن كليهما يحتوي على `deepseek-v4-flash`. يجب ألا يبدّل OpenClaw بصمت من مزوّد إلى آخر لمجرد تطابق معرّف النموذج المجرد.
+    يكون مرجع `/model` الذي اختاره المستخدم صارمًا عند الرجوع الاحتياطي: إذا أصبح
+    ذلك المزوّد/النموذج غير متاح، يفشل الرد بشكل ظاهر بدلًا من
+    الرجوع إلى `agents.defaults.model.fallbacks`. تظل سلاسل الرجوع الاحتياطي
+    المُهيأة مطبقة على الإعدادات الافتراضية المُهيأة، والنماذج الأساسية لمهام
+    Cron، وحالة الرجوع الاحتياطي المحددة تلقائيًا. عندما يُسمح لتشغيل لا يستخدم
+    تجاوزًا خاصًا بالجلسة بالرجوع الاحتياطي، يحاول OpenClaw أولًا
+    المزوّد/النموذج المطلوب، ثم البدائل المُهيأة، ثم النموذج الأساسي المُهيأ؛
+    ولذلك لا تقفز معرّفات النماذج المجردة المتكررة مباشرةً إلى المزوّد الافتراضي.
 
-    يكون مرجع `/model` الذي اختاره المستخدم صارمًا أيضًا لسياسة الرجوع الاحتياطي. إذا لم يكن ذلك المزوّد/النموذج المحدد متاحًا، يفشل الرد بوضوح بدلًا من الإجابة من `agents.defaults.model.fallbacks`. لا تزال سلاسل الرجوع الاحتياطي المُهيأة تنطبق على الإعدادات الافتراضية المُهيأة، والأساسيات الأساسية لمهام Cron، وحالة الرجوع الاحتياطي المختارة تلقائيًا.
-
-    إذا كان يُسمح لتشغيل بدأ من تجاوز غير خاص بالجلسة باستخدام الرجوع الاحتياطي، يجرّب OpenClaw المزوّد/النموذج المطلوب أولًا، ثم خيارات الرجوع الاحتياطي المُهيأة، وبعد ذلك فقط الأساسي المُهيأ. يمنع ذلك معرّفات النماذج المجردة المكررة من القفز مباشرةً إلى المزوّد الافتراضي.
-
-    راجع [النماذج](/ar/concepts/models) و[تجاوز فشل النماذج](/ar/concepts/model-failover).
+    راجع [النماذج](/ar/concepts/models) و[تجاوز فشل النموذج](/ar/concepts/model-failover).
 
   </Accordion>
 
-  <Accordion title="هل يمكنني استخدام GPT 5.5 للمهام اليومية وCodex 5.5 للبرمجة؟">
-    نعم. تعامل مع اختيار النموذج واختيار وقت التشغيل كأمرين منفصلين:
+  <Accordion title="Can I use GPT 5.5 for daily tasks and Codex 5.5 for coding?">
+    نعم، اختيار النموذج واختيار بيئة التشغيل أمران منفصلان:
 
-    - **وكيل البرمجة الأصلي Codex:** اضبط `agents.defaults.model.primary` على `openai/gpt-5.5`. سجّل الدخول باستخدام `openclaw models auth login --provider openai` عندما تريد مصادقة اشتراك ChatGPT/Codex.
-    - **مهام OpenAI API المباشرة خارج حلقة الوكيل:** هيّئ `OPENAI_API_KEY` للصور، والتضمينات، والكلام، والوقت الفعلي، وغيرها من أسطح OpenAI API غير الخاصة بالوكيل.
-    - **مصادقة مفتاح API لوكيل OpenAI:** استخدم `/model openai/gpt-5.5` مع ملف تعريف مفتاح API مرتب لـ`openai`.
-    - **الوكلاء الفرعيون:** وجّه مهام البرمجة إلى وكيل يركز على Codex مع نموذج `openai/gpt-5.5` خاص به.
+    - **وكيل البرمجة الأصلي Codex:** عيّن `agents.defaults.model.primary` إلى
+      `openai/gpt-5.5`. سجّل الدخول باستخدام `openclaw models auth login --provider
+      openai` لمصادقة اشتراك ChatGPT/Codex.
+    - **مهام OpenAI API المباشرة خارج حلقة الوكيل:** هيّئ
+      `OPENAI_API_KEY` للصور والتضمينات والكلام والوقت الفعلي وغيرها من
+      واجهات OpenAI API غير الخاصة بالوكيل.
+    - **مصادقة وكيل OpenAI باستخدام مفتاح API:** استخدم `/model openai/gpt-5.5`
+      مع ملف تعريف مفتاح API مرتب تابع لـ`openai`.
+    - **الوكلاء الفرعيون:** وجّه مهام البرمجة إلى وكيل يركز على Codex وله
+      نموذج `openai/gpt-5.5` خاص به.
 
     راجع [النماذج](/ar/concepts/models) و[أوامر الشرطة المائلة](/ar/tools/slash-commands).
 
   </Accordion>
 
-  <Accordion title="كيف أهيئ الوضع السريع لـ GPT 5.5؟">
-    استخدم إما تبديلًا للجلسة أو إعدادًا افتراضيًا في الإعدادات:
-
-    - **لكل جلسة:** أرسل `/fast on` أثناء استخدام الجلسة لـ`openai/gpt-5.5`.
-    - **افتراضي لكل نموذج:** اضبط `agents.defaults.models["openai/gpt-5.5"].params.fastMode` على `true`.
-    - **الحد التلقائي:** استخدم `/fast auto` أو `params.fastMode: "auto"` لبدء استدعاءات النماذج الجديدة بسرعة حتى الحد التلقائي، ثم بدء الاستدعاءات اللاحقة الخاصة بإعادة المحاولة، أو الرجوع الاحتياطي، أو نتيجة الأداة، أو المتابعة من دون الوضع السريع. القيمة الافتراضية للحد هي 60 ثانية؛ اضبط `params.fastAutoOnSeconds` على النموذج النشط لتغييرها.
-
-    مثال:
+  <Accordion title="How do I configure fast mode for GPT 5.5?">
+    - **لكل جلسة:** أرسل `/fast on` أثناء استخدام `openai/gpt-5.5`.
+    - **كإعداد افتراضي لكل نموذج:** عيّن
+      `agents.defaults.models["openai/gpt-5.5"].params.fastMode` إلى `true`.
+    - **حد الإيقاف التلقائي:** يشغّل `/fast auto` أو `params.fastMode: "auto"`
+      استدعاءات النموذج الجديدة بسرعة حتى بلوغ حد الإيقاف، ثم يشغّل استدعاءات
+      إعادة المحاولة أو الرجوع الاحتياطي أو نتائج الأدوات أو المتابعة اللاحقة
+      من دون الوضع السريع. القيمة الافتراضية لحد الإيقاف هي
+      60 ثانية؛ ويمكن تجاوزها باستخدام `params.fastAutoOnSeconds` في النموذج.
 
     ```json5
     {
@@ -203,61 +177,50 @@ x-i18n:
     }
     ```
 
-    بالنسبة إلى OpenAI، يطابق الوضع السريع `service_tier = "priority"` في طلبات Responses الأصلية المدعومة. تتفوق تجاوزات `/fast` الخاصة بالجلسة على الإعدادات الافتراضية في الإعدادات. لا يمكن لمنعطفات خادم تطبيق Codex تلقي الطبقة إلا عند بدء المنعطف، لذلك ينطبق `auto` على منعطف النموذج التالي الذي يبدأه OpenClaw بدلًا من داخل منعطف خادم تطبيق قيد التشغيل بالفعل.
+    يتطابق الوضع السريع مع `service_tier = "priority"` في طلبات OpenAI Responses
+    الأصلية؛ وتُحفظ قيم `service_tier` الحالية، ولا يعيد الوضع السريع كتابة
+    `reasoning` أو `text.verbosity`. تتقدم تجاوزات `/fast` الخاصة بالجلسة على
+    إعدادات التهيئة الافتراضية.
 
-    راجع [التفكير والوضع السريع](/ar/tools/thinking) و[الوضع السريع في OpenAI](/ar/providers/openai#fast-mode).
+    راجع [التفكير والوضع السريع](/ar/tools/thinking) وقسم الوضع السريع
+    ضمن الإعدادات المتقدمة في صفحة مزوّد [OpenAI](/ar/providers/openai).
 
   </Accordion>
 
-  <Accordion title='لماذا أرى "Model ... is not allowed" ثم لا يصل أي رد؟'>
-    إذا تم ضبط `agents.defaults.models`، فتصبح **قائمة السماح** لـ`/model` وأي
-    تجاوزات للجلسة. اختيار نموذج غير موجود في تلك القائمة يعيد:
+  <Accordion title='Why do I see "Model ... is not allowed" and then no reply?'>
+    إذا ضُبط `agents.defaults.models`، فإنه يصبح **قائمة السماح** الخاصة
+    بـ`/model` وتجاوزات الجلسة. يؤدي اختيار نموذج خارج تلك القائمة إلى إرجاع
+    ما يلي بدلًا من رد عادي:
 
-    ```
+    ```text
     Model "provider/model" is not allowed. Use /models to list providers, or /models <provider> to list models.
     Add it with: openclaw config set agents.defaults.models '{"provider/model":{}}' --strict-json --merge
     ```
 
-    يُعاد هذا الخطأ **بدلًا من** رد عادي. الإصلاح: أضف النموذج المحدد بالضبط إلى
-    `agents.defaults.models`، أو أضف حرف بدل للمزوّد مثل `"provider/*": {}` لكتالوجات المزوّد الديناميكية، أو أزِل قائمة السماح، أو اختر نموذجًا من `/model list`.
-    إذا تضمن الأمر أيضًا `--runtime codex`، فحدّث قائمة السماح أولًا ثم أعد محاولة
-    أمر `/model provider/model --runtime codex` نفسه.
+    الإصلاح: أضف النموذج المحدد إلى `agents.defaults.models`، أو أضف حرف بدل
+    للمزوّد مثل `"provider/*": {}` للفهارس الديناميكية، أو أزل
+    قائمة السماح، أو اختر نموذجًا من `/model list`. إذا تضمن الأمر أيضًا
+    `--runtime codex`، فحدّث قائمة السماح أولًا، ثم أعد محاولة
+    الأمر نفسه `/model provider/model --runtime codex`.
 
   </Accordion>
 
-  <Accordion title='لماذا أرى "Unknown model: minimax/MiniMax-M3"؟'>
-    هذا يعني أن **المزوّد غير مُهيأ** (لم يُعثر على إعداد مزوّد MiniMax أو ملف تعريف
-    مصادقة)، لذلك لا يمكن حل النموذج.
-
-    قائمة تحقق الإصلاح:
-
-    1. رقِّ إلى إصدار OpenClaw حالي (أو شغّل من مصدر `main`)، ثم أعد تشغيل gateway.
-    2. تأكد من أن MiniMax مُهيأ (المعالج أو JSON)، أو أن مصادقة MiniMax
-       موجودة في ملفات تعريف البيئة/المصادقة حتى يمكن حقن المزوّد المطابق
-       (`MINIMAX_API_KEY` لـ`minimax`، أو `MINIMAX_OAUTH_TOKEN` أو OAuth مخزن لـMiniMax
-       لـ`minimax-portal`).
-    3. استخدم معرّف النموذج الدقيق (حساس لحالة الأحرف) لمسار المصادقة لديك:
-       `minimax/MiniMax-M3`، أو `minimax/MiniMax-M2.7`، أو
-       `minimax/MiniMax-M2.7-highspeed` لإعداد مفتاح API، أو
-       `minimax-portal/MiniMax-M3`، أو `minimax-portal/MiniMax-M2.7`، أو
-       `minimax-portal/MiniMax-M2.7-highspeed` لإعداد OAuth.
-    4. شغّل:
-
-       ```bash
-       openclaw models list
-       ```
-
-       واختر من القائمة (أو `/model list` في الدردشة).
-
-    راجع [MiniMax](/ar/providers/minimax) و[النماذج](/ar/concepts/models).
+  <Accordion title='Why do I see "Unknown model: minimax/MiniMax-M3"?'>
+    إذا كنت تستخدم إصدارًا أقدم من OpenClaw، فقم بالترقية أولًا (أو شغّل من فرع
+    المصدر `main`) وأعد تشغيل Gateway؛ فقد لا يكون `MiniMax-M3` موجودًا بعد
+    في فهرس الإصدار المثبّت لديك. بخلاف ذلك، يكون مزوّد MiniMax غير
+    مُهيأ (لم يُعثر على إدخال للمزوّد أو ملف تعريف مصادقة)، ولذلك يتعذر
+    حل النموذج. راجع قسم استكشاف الأخطاء وإصلاحها في صفحة مزوّد
+    [MiniMax](/ar/providers/minimax) للاطلاع على قائمة التحقق الكاملة للإصلاح،
+    وجدول معرّفات المزوّد/النموذج، ومثال كتلة الإعدادات.
 
   </Accordion>
 
-  <Accordion title="هل يمكنني استخدام MiniMax كافتراضي وOpenAI للمهام المعقدة؟">
-    نعم. استخدم **MiniMax كافتراضي** وبدّل النماذج **لكل جلسة** عند الحاجة.
-    الرجوعات الاحتياطية مخصصة **للأخطاء**، وليس "للمهام الصعبة"، لذا استخدم `/model` أو وكيلًا منفصلًا.
+  <Accordion title="Can I use MiniMax as my default and OpenAI for complex tasks?">
+    نعم. استخدم MiniMax كنموذج افتراضي وبدّل النماذج لكل جلسة؛ فالبدائل
+    مخصصة للأخطاء، لا «للمهام الصعبة»، لذلك استخدم `/model` أو وكيلًا منفصلًا.
 
-    **الخيار A: التبديل لكل جلسة**
+    **الخيار أ: التبديل لكل جلسة**
 
     ```json5
     {
@@ -274,40 +237,37 @@ x-i18n:
     }
     ```
 
-    ثم:
+    ثم استخدم `/model gpt`.
 
-    ```
-    /model gpt
-    ```
+    **الخيار ب: وكلاء منفصلون** — يستخدم الوكيل أ MiniMax افتراضيًا، ويستخدم
+    الوكيل ب OpenAI افتراضيًا؛ وجّه حسب الوكيل أو استخدم `/agent` للتبديل.
 
-    **الخيار B: وكلاء منفصلون**
-
-    - افتراضي الوكيل A: MiniMax
-    - افتراضي الوكيل B: OpenAI
-    - وجّه حسب الوكيل أو استخدم `/agent` للتبديل
-
-    الوثائق: [النماذج](/ar/concepts/models)، [توجيه الوكلاء المتعددين](/ar/concepts/multi-agent)، [MiniMax](/ar/providers/minimax)، [OpenAI](/ar/providers/openai).
+    الوثائق: [النماذج](/ar/concepts/models)، و[توجيه الوكلاء المتعددين](/ar/concepts/multi-agent)،
+    و[MiniMax](/ar/providers/minimax)، و[OpenAI](/ar/providers/openai).
 
   </Accordion>
 
-  <Accordion title="هل opus / sonnet / gpt اختصارات مدمجة؟">
-    نعم. يأتي OpenClaw مع بضعة اختصارات افتراضية (تُطبَّق فقط عندما يكون النموذج موجودًا في `agents.defaults.models`):
+  <Accordion title="Are opus / sonnet / gpt built-in shortcuts?">
+    نعم، هذه اختصارات مضمّنة، ولا تُطبّق إلا عندما يكون النموذج المستهدف موجودًا في
+    `agents.defaults.models`:
 
-    - `opus` → `anthropic/claude-opus-4-8`
-    - `sonnet` → `anthropic/claude-sonnet-4-6`
-    - `gpt` → `openai/gpt-5.4`
-    - `gpt-mini` → `openai/gpt-5.4-mini`
-    - `gpt-nano` → `openai/gpt-5.4-nano`
-    - `gemini` → `google/gemini-3.1-pro-preview`
-    - `gemini-flash` → `google/gemini-3-flash-preview`
-    - `gemini-flash-lite` → `google/gemini-3.1-flash-lite`
+    | الاسم المستعار | يُحل إلى |
+    | --- | --- |
+    | `opus` | `anthropic/claude-opus-4-8` |
+    | `sonnet` | `anthropic/claude-sonnet-4-6` |
+    | `gpt` | `openai/gpt-5.4` |
+    | `gpt-mini` | `openai/gpt-5.4-mini` |
+    | `gpt-nano` | `openai/gpt-5.4-nano` |
+    | `gemini` | `google/gemini-3.1-pro-preview` |
+    | `gemini-flash` | `google/gemini-3-flash-preview` |
+    | `gemini-flash-lite` | `google/gemini-3.1-flash-lite` |
 
-    إذا عرّفت اسمًا مستعارًا خاصًا بك بالاسم نفسه، فستكون قيمتك هي المعتمدة.
+    يتجاوز اسمك المستعار الذي يحمل الاسم نفسه الاسم المضمّن.
 
   </Accordion>
 
-  <Accordion title="كيف أعرّف/أتجاوز اختصارات النماذج (الأسماء المستعارة)؟">
-    تأتي الأسماء المستعارة من `agents.defaults.models.<modelId>.alias`. مثال:
+  <Accordion title="How do I define/override model shortcuts (aliases)?">
+    توجد الأسماء المستعارة في `agents.defaults.models.<modelId>.alias`:
 
     ```json5
     {
@@ -323,12 +283,13 @@ x-i18n:
     }
     ```
 
-    بعد ذلك يُحلّ `/model sonnet` (أو `/<alias>` عند دعمه) إلى معرّف ذلك النموذج.
+    بعد ذلك يُحل `/model sonnet` (أو `/<alias>` عند دعمه) إلى
+    معرّف ذلك النموذج.
 
   </Accordion>
 
-  <Accordion title="كيف أضيف نماذج من مزودين آخرين مثل OpenRouter أو Z.AI؟">
-    OpenRouter (الدفع حسب الرموز؛ نماذج كثيرة):
+  <Accordion title="How do I add models from other providers like OpenRouter or Z.AI?">
+    OpenRouter (الدفع لكل رمز؛ نماذج عديدة):
 
     ```json5
     {
@@ -348,172 +309,181 @@ x-i18n:
     {
       agents: {
         defaults: {
-          model: { primary: "zai/glm-5" },
-          models: { "zai/glm-5": {} },
+          model: { primary: "zai/glm-5.1" },
+          models: { "zai/glm-5.1": {} },
         },
       },
       env: { ZAI_API_KEY: "..." },
     }
     ```
 
-    إذا أشرت إلى مزود/نموذج لكن مفتاح المزود المطلوب مفقود، فستحصل على خطأ مصادقة وقت التشغيل (مثل `No API key found for provider "zai"`).
+    يؤدي غياب مفتاح المزوّد لمزوّد/نموذج مُشار إليه إلى ظهور خطأ مصادقة
+    وقت التشغيل (مثل `No API key found for provider "zai"`).
 
-    **لم يُعثر على مفتاح API للمزود بعد إضافة وكيل جديد**
+    **لم يُعثر على مفتاح API للمزوّد بعد إضافة وكيل جديد**
 
-    يعني هذا عادةً أن **الوكيل الجديد** لديه مخزن مصادقة فارغ. المصادقة تكون لكل وكيل وتُخزَّن في:
+    يكون مخزن المصادقة للوكيل الجديد فارغًا؛ فالمصادقة خاصة بكل وكيل، وتُخزّن في:
 
-    ```
+    ```text
     ~/.openclaw/agents/<agentId>/agent/auth-profiles.json
     ```
 
-    خيارات الإصلاح:
-
-    - شغّل `openclaw agents add <id>` وهيّئ المصادقة أثناء المعالج.
-    - أو انسخ فقط ملفات تعريف `api_key` / `token` الثابتة القابلة للنقل من مخزن مصادقة الوكيل الرئيسي إلى مخزن مصادقة الوكيل الجديد.
-    - بالنسبة إلى ملفات تعريف OAuth، سجّل الدخول من الوكيل الجديد عندما يحتاج إلى حسابه الخاص؛ وإلا يستطيع OpenClaw القراءة عبر الوكيل الافتراضي/الرئيسي دون استنساخ رموز التحديث.
-
-    لا تُعد استخدام `agentDir` بين الوكلاء؛ فهذا يسبب تصادمات في المصادقة/الجلسات.
+    الإصلاح: شغّل `openclaw agents add <id>` واضبط المصادقة في المعالج، أو
+    انسخ فقط ملفات تعريف `api_key`/`token` الثابتة القابلة للنقل من مخزن
+    الوكيل الرئيسي. بالنسبة إلى OAuth، سجّل الدخول من الوكيل الجديد عندما يحتاج إلى
+    حسابه الخاص. راجع [توجيه الوكلاء المتعددين](/ar/concepts/multi-agent) للاطلاع على
+    القواعد الكاملة لإعادة استخدام `agentDir` ومشاركة بيانات الاعتماد — لا تُعِد أبدًا استخدام
+    `agentDir` بين الوكلاء.
 
   </Accordion>
 </AccordionGroup>
 
-## تجاوز فشل النموذج و"فشلت كل النماذج"
+## تجاوز فشل النموذج و"فشلت جميع النماذج"
 
 <AccordionGroup>
   <Accordion title="كيف يعمل تجاوز الفشل؟">
-    يحدث تجاوز الفشل على مرحلتين:
+    مرحلتان:
 
-    1. **تدوير ملف تعريف المصادقة** ضمن المزود نفسه.
-    2. **الرجوع الاحتياطي للنموذج** إلى النموذج التالي في `agents.defaults.model.fallbacks`.
+    1. **تدوير ملفات تعريف المصادقة** ضمن المزوّد نفسه.
+    2. **الرجوع إلى نموذج بديل** بالانتقال إلى النموذج التالي في `agents.defaults.model.fallbacks`.
 
-    تُطبَّق فترات تهدئة على الملفات التعريفية الفاشلة (تراجع أسي)، لذلك يمكن لـ OpenClaw مواصلة الاستجابة حتى عندما يكون المزود محدود المعدل أو يفشل مؤقتًا.
+    تُطبَّق فترات تهدئة على ملفات التعريف التي تفشل (تراجع أُسّي)، لذا يواصل OpenClaw
+    الاستجابة عندما يفرض المزوّد حدًا على المعدل أو يتعطل مؤقتًا.
 
-    يشمل حاوي حدود المعدل أكثر من استجابات `429` العادية. يتعامل OpenClaw
-    أيضًا مع رسائل مثل `Too many concurrent requests`،
-    و`ThrottlingException`، و`concurrency limit reached`،
-    و`workers_ai ... quota limit exceeded`، و`resource exhausted`، وحدود
-    نوافذ الاستخدام الدورية (`weekly/monthly limit reached`) كحدود معدل
-    تستحق تجاوز الفشل.
+    تشمل فئة تحديد المعدل أكثر من مجرد `429`: تُعدّ `Too many concurrent
+    requests` و`ThrottlingException` و`concurrency limit reached` و`workers_ai
+    ... quota limit exceeded` وقيود نافذة
+    الاستخدام الدورية (`weekly/monthly limit reached`) جميعها قيودًا على المعدل
+    تستدعي تجاوز الفشل.
 
-    بعض الاستجابات التي تبدو مرتبطة بالفوترة ليست `402`، وبعض استجابات HTTP `402`
-    تبقى أيضًا ضمن ذلك الحاوي المؤقت. إذا أعاد مزود نص فوترة صريحًا مع `401` أو `403`،
-    فيمكن لـ OpenClaw إبقاؤه في مسار الفوترة، لكن مطابقات النصوص الخاصة بالمزود تبقى
-    محصورة في المزود الذي يملكها (مثل OpenRouter `Key limit exceeded`). أما إذا بدت رسالة `402`
-    بدلًا من ذلك كنافذة استخدام قابلة لإعادة المحاولة أو حد إنفاق للمؤسسة/مساحة العمل
-    (`daily limit reached, resets tomorrow`، `organization spending limit exceeded`)،
-    فيتعامل OpenClaw معها باعتبارها `rate_limit`، لا تعطيل فوترة طويلًا.
+    لا تكون استجابات الفوترة دائمًا `402`، كما تبقى بعض استجابات `402` في
+    فئة الأخطاء العابرة/تحديد المعدل بدلًا من مسار الفوترة. وقد يظل نص
+    الفوترة الصريح في `401`/`403` موجّهًا إلى الفوترة؛ وتظل
+    مطابقات النص الخاصة بكل مزوّد (مثل `Key limit exceeded` في OpenRouter) محصورة في
+    المزوّد الخاص بها. وتُعامَل استجابة `402` التي تبدو كحد قابل لإعادة المحاولة لنافذة الاستخدام أو
+    حد إنفاق للمؤسسة/مساحة العمل (`daily limit reached, resets tomorrow`
+    و`organization spending limit exceeded`) على أنها `rate_limit`، لا
+    تعطيلًا طويلًا بسبب الفوترة.
 
-    أخطاء فيض السياق مختلفة: تبقى بصمات مثل
-    `request_too_large`، و`input exceeds the maximum number of tokens`،
-    و`input token count exceeds the maximum number of input tokens`،
-    و`input is too long for the model`، أو `ollama error: context length
-    exceeded` على مسار Compaction/إعادة المحاولة بدلًا من التقدم إلى الرجوع
-    الاحتياطي للنموذج.
+    تُستبعد أخطاء تجاوز السياق تمامًا من مسار الرجوع إلى البديل — فالتواقيع
+    مثل `request_too_large` و`input exceeds the maximum number of tokens`
+    و`input token count exceeds the maximum number of input tokens` و`input is
+    too long for the model` و`ollama error: context length exceeded` تنتقل إلى
+    Compaction/إعادة المحاولة بدلًا من الانتقال إلى النموذج البديل التالي.
 
-    نص خطأ الخادم العام أضيق عمدًا من "أي شيء يحتوي على
-    unknown/error". يتعامل OpenClaw فعلًا مع الأشكال المؤقتة المحصورة بالمزود
-    مثل Anthropic العارية `An unknown error occurred`، وOpenRouter العارية
-    `Provider returned error`، وأخطاء سبب الإيقاف مثل `Unhandled stop reason:
-    error`، وحمولات JSON `api_error` التي تحتوي على نص خادم مؤقت
-    (`internal server error`، و`unknown error, 520`، و`upstream error`، و`backend
-    error`)، وأخطاء انشغال المزود مثل `ModelNotReadyException` على أنها
-    إشارات انتهاء مهلة/تحميل زائد تستحق تجاوز الفشل عندما يطابق سياق المزود.
-    يبقى نص الرجوع الاحتياطي الداخلي العام مثل `LLM request failed with an unknown
-    error.` محافظًا ولا يطلق الرجوع الاحتياطي للنموذج بحد ذاته.
+    نطاق نص أخطاء الخادم العام أضيق من «أي شيء يحتوي على unknown/error
+    بداخله». ومن أشكال الأخطاء العابرة المقيّدة بالمزوّد التي تُعد إشارات
+    لتجاوز الفشل: رسالة Anthropic المجرّدة `An unknown error occurred`، ورسالة OpenRouter المجرّدة
+    `Provider returned error`، وأخطاء سبب التوقف مثل `Unhandled stop reason:
+    error`، وحمولات JSON من نوع `api_error` التي تحتوي على نص خادم عابر (`internal
+    server error` و`unknown error, 520` و`upstream error` و`backend error`)،
+    وأخطاء انشغال المزوّد مثل `ModelNotReadyException` عندما يتطابق سياق
+    المزوّد. ويظل نص الرجوع الداخلي العام مثل `LLM request failed
+    with an unknown error.` محافظًا ولا يؤدي إلى الرجوع إلى بديل
+    بمفرده.
 
   </Accordion>
 
-  <Accordion title='ماذا يعني "No credentials found for profile anthropic:default"؟'>
-    يعني أن النظام حاول استخدام معرّف ملف تعريف المصادقة `anthropic:default`، لكنه لم يجد بيانات اعتماد له في مخزن المصادقة المتوقع.
+  <Accordion title='ما معنى "No credentials found for profile anthropic:default"؟'>
+    لا يحتوي معرّف ملف تعريف المصادقة `anthropic:default` على بيانات اعتماد في
+    مخزن المصادقة المتوقع.
 
-    **قائمة تحقق الإصلاح:**
+    **قائمة تحقق للإصلاح:**
 
-    - **تأكد من مكان وجود ملفات تعريف المصادقة** (المسارات الجديدة مقابل القديمة)
-      - الحالي: `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
-      - القديم: `~/.openclaw/agent/*` (يُرحَّل بواسطة `openclaw doctor`)
-    - **تأكد من أن متغير البيئة لديك محمّل بواسطة Gateway**
-      - إذا ضبطت `ANTHROPIC_API_KEY` في الصدفة لديك لكنك تشغّل Gateway عبر systemd/launchd، فقد لا يرثه. ضعه في `~/.openclaw/.env` أو فعّل `env.shellEnv`.
-    - **تأكد من أنك تعدّل الوكيل الصحيح**
-      - تعني إعدادات الوكلاء المتعددين أنه قد توجد عدة ملفات `auth-profiles.json`.
-    - **تحقق سريعًا من حالة النموذج/المصادقة**
-      - استخدم `openclaw models status` لرؤية النماذج المهيأة وما إذا كان المزودون مصادقين.
+    - تأكد من مكان ملفات التعريف — الحالي:
+      `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`؛ القديم:
+      `~/.openclaw/agent/*` (يرحّله `openclaw doctor`).
+    - تأكد من أن Gateway يحمّل متغير البيئة لديك. لن يصل `ANTHROPIC_API_KEY` المضبوط فقط في
+      صدفتك إلى تشغيل Gateway عبر systemd/launchd — ضعه في
+      `~/.openclaw/.env` أو فعّل `env.shellEnv`.
+    - تأكد من أنك تعدّل الوكيل الصحيح — تحتوي إعدادات الوكلاء المتعددين على
+      عدة ملفات `auth-profiles.json`.
+    - شغّل `openclaw models status` لرؤية النماذج المضبوطة وحالة
+      مصادقة المزوّد.
 
-    **قائمة تحقق الإصلاح لـ "No credentials found for profile anthropic"**
+    **بالنسبة إلى "No credentials found for profile anthropic" (من دون لاحقة بريد إلكتروني):**
 
-    يعني هذا أن التشغيل مثبت على ملف تعريف مصادقة Anthropic، لكن Gateway
-    لا يستطيع العثور عليه في مخزن المصادقة الخاص به.
+    التشغيل مثبّت على ملف تعريف Anthropic لا يستطيع Gateway العثور عليه.
 
-    - **استخدم Claude CLI**
-      - شغّل `openclaw models auth login --provider anthropic --method cli --set-default` على مضيف Gateway.
-    - **إذا كنت تريد استخدام مفتاح API بدلًا من ذلك**
-      - ضع `ANTHROPIC_API_KEY` في `~/.openclaw/.env` على **مضيف Gateway**.
-      - امسح أي ترتيب مثبت يفرض ملفًا تعريفيًا مفقودًا:
+    - استخدم Claude CLI: شغّل `openclaw models auth login --provider anthropic
+      --method cli --set-default` على مضيف Gateway.
+    - يُفضّل استخدام مفتاح API بدلًا من ذلك: ضع `ANTHROPIC_API_KEY` في
+      `~/.openclaw/.env` على مضيف Gateway، ثم امسح أي ترتيب مثبّت
+      يفرض استخدام ملف التعريف المفقود:
 
-        ```bash
-        openclaw models auth order clear --provider anthropic
-        ```
+      ```bash
+      openclaw models auth order clear --provider anthropic
+      ```
 
-    - **تأكد من أنك تشغّل الأوامر على مضيف Gateway**
-      - في الوضع البعيد، تعيش ملفات تعريف المصادقة على جهاز Gateway، وليس على حاسوبك المحمول.
+    - الوضع البعيد: توجد ملفات تعريف المصادقة على جهاز Gateway، لا على
+      حاسوبك المحمول — تأكد من أنك تشغّل الأوامر هناك.
 
   </Accordion>
 
   <Accordion title="لماذا حاول أيضًا استخدام Google Gemini وفشل؟">
-    إذا كان تكوين النموذج لديك يتضمن Google Gemini كخيار رجوع احتياطي (أو بدّلت إلى اختصار Gemini)، فسيحاول OpenClaw استخدامه أثناء الرجوع الاحتياطي للنموذج. إذا لم تكن قد هيأت بيانات اعتماد Google، فسترى `No API key found for provider "google"`.
-
-    الإصلاح: إما أن توفر مصادقة Google، أو تزيل/تتجنب نماذج Google في `agents.defaults.model.fallbacks` / الأسماء المستعارة حتى لا يوجّه الرجوع الاحتياطي إليها.
+    إذا كان ضبط النموذج لديك يتضمن Google Gemini كخيار بديل (أو إذا
+    انتقلت إلى اختصار Gemini)، فسيحاول OpenClaw استخدامه أثناء الرجوع إلى البديل. يؤدي عدم
+    ضبط بيانات اعتماد Google إلى `No API key found for provider
+    "google"`. الإصلاح: أضف مصادقة Google، أو أزل نماذج Google من
+    `agents.defaults.model.fallbacks`/الأسماء المستعارة.
 
     **رُفض طلب LLM: توقيع التفكير مطلوب (Google Antigravity)**
 
-    السبب: يحتوي تاريخ الجلسة على **كتل تفكير بلا تواقيع** (غالبًا من
-    دفق مُجهض/جزئي). يتطلب Google Antigravity تواقيع لكتل التفكير.
-
-    الإصلاح: يزيل OpenClaw الآن كتل التفكير غير الموقعة لـ Google Antigravity Claude. إذا استمرت في الظهور، فابدأ **جلسة جديدة** أو اضبط `/thinking off` لذلك الوكيل.
+    السبب: يحتوي سجل الجلسة على كتل تفكير بلا تواقيع (غالبًا
+    من دفق أُجهض أو اكتمل جزئيًا)؛ يتطلب Google Antigravity تواقيع
+    على كتل التفكير. يزيل OpenClaw كتل التفكير غير الموقعة لـ Google
+    Antigravity Claude؛ وإذا استمرت المشكلة، فابدأ جلسة جديدة أو اضبط
+    `/thinking off` لذلك الوكيل.
 
   </Accordion>
 </AccordionGroup>
 
-## ملفات تعريف المصادقة: ما هي وكيف تديرها
+## ملفات تعريف المصادقة: ماهيتها وكيفية إدارتها
 
-ذو صلة: [/concepts/oauth](/ar/concepts/oauth) (تدفقات OAuth، تخزين الرموز، أنماط الحسابات المتعددة)
+ذو صلة: [/concepts/oauth](/ar/concepts/oauth) (تدفقات OAuth، وتخزين الرموز، وأنماط الحسابات المتعددة)
 
 <AccordionGroup>
   <Accordion title="ما ملف تعريف المصادقة؟">
-    ملف تعريف المصادقة هو سجل بيانات اعتماد مسمى (OAuth أو مفتاح API) مرتبط بمزود. تعيش الملفات التعريفية في:
+    سجل بيانات اعتماد مُسمّى (OAuth أو مفتاح API) مرتبط بمزوّد، ومخزّن
+    في:
 
-    ```
+    ```text
     ~/.openclaw/agents/<agentId>/agent/auth-profiles.json
     ```
 
-    لفحص الملفات التعريفية المحفوظة دون كشف الأسرار، شغّل `openclaw models auth list` (اختياريًا `--provider <id>` أو `--json`). راجع [Models CLI](/ar/cli/models#auth-profiles) للتفاصيل.
+    افحص ملفات التعريف المحفوظة دون كشف الأسرار: `openclaw models auth
+    list` (اختياريًا مع `--provider <id>` أو `--json`). راجع
+    [CLI للنماذج](/ar/cli/models#auth-profiles).
 
   </Accordion>
 
-  <Accordion title="ما معرّفات الملفات التعريفية النموذجية؟">
-    يستخدم OpenClaw معرّفات مسبوقة بالمزود مثل:
-
-    - `anthropic:default` (شائع عندما لا توجد هوية بريد إلكتروني)
-    - `anthropic:<email>` لهويات OAuth
-    - معرّفات مخصصة تختارها (مثل `anthropic:work`)
+  <Accordion title="ما معرّفات ملفات التعريف الشائعة؟">
+    مسبوقة باسم المزوّد: `anthropic:default` (شائع عند عدم وجود هوية
+    بريد إلكتروني)، و`anthropic:<email>` لهويات OAuth، أو معرّف مخصص
+    تختاره (مثل `anthropic:work`).
 
   </Accordion>
 
   <Accordion title="هل يمكنني التحكم في ملف تعريف المصادقة الذي يُجرَّب أولًا؟">
-    نعم. يدعم التكوين بيانات وصفية اختيارية للملفات التعريفية وترتيبًا لكل مزود (`auth.order.<provider>`). هذا لا يخزن أسرارًا؛ بل يربط المعرّفات بالمزود/الوضع ويضبط ترتيب التدوير.
+    نعم. يحدد ضبط `auth.order.<provider>` ترتيب التدوير لكل مزوّد
+    (بيانات وصفية فقط — لا تُخزّن أسرار).
 
-    قد يتخطى OpenClaw ملفًا تعريفيًا مؤقتًا إذا كان في **فترة تهدئة** قصيرة (حدود معدل/انتهاء مهل/إخفاقات مصادقة) أو حالة **معطلة** أطول (فوترة/أرصدة غير كافية). لفحص ذلك، شغّل `openclaw models status --json` وتحقق من `auth.unusableProfiles`. الضبط: `auth.cooldowns.billingBackoffHours*`.
+    قد يتخطى OpenClaw ملف تعريف في **فترة تهدئة** قصيرة (بسبب قيود المعدل،
+    أو انتهاء المهلة، أو فشل المصادقة) أو في حالة **تعطيل** أطول
+    (بسبب الفوترة/عدم كفاية الرصيد). افحص ذلك باستخدام `openclaw models status
+    --json` وتحقق من `auth.unusableProfiles`. اضبطه باستخدام
+    `auth.cooldowns.billingBackoffHours*`. يمكن أن تكون فترات تهدئة تحديد المعدل
+    مقيّدة بالنموذج — إذ يمكن لملف تعريف في فترة تهدئة لنموذج واحد أن يظل يخدم
+    نموذجًا شقيقًا لدى المزوّد نفسه؛ بينما تحظر نوافذ الفوترة/التعطيل
+    ملف التعريف بأكمله.
 
-    يمكن أن تكون فترات تهدئة حدود المعدل محصورة بالنموذج. قد يبقى ملف تعريفي في فترة تهدئة
-    لنموذج واحد قابلًا للاستخدام لنموذج شقيق على المزود نفسه،
-    بينما تستمر نوافذ الفوترة/التعطيل في حظر الملف التعريفي كله.
-
-    يمكنك أيضًا ضبط تجاوز ترتيب **لكل وكيل** (مخزن في `auth-state.json` لذلك الوكيل) عبر CLI:
+    عيّن تجاوزًا للترتيب لكل وكيل (يُخزّن في `auth-state.json` لذلك الوكيل):
 
     ```bash
     # Defaults to the configured default agent (omit --agent)
     openclaw models auth order get --provider anthropic
 
-    # Lock rotation to a single profile (only try this one)
+    # Lock rotation to a single profile
     openclaw models auth order set --provider anthropic anthropic:default
 
     # Or set an explicit order (fallback within provider)
@@ -521,38 +491,27 @@ x-i18n:
 
     # Clear override (fall back to config auth.order / round-robin)
     openclaw models auth order clear --provider anthropic
-    ```
 
-    لاستهداف وكيل محدد:
-
-    ```bash
+    # Target a specific agent
     openclaw models auth order set --provider anthropic --agent main anthropic:default
     ```
 
-    للتحقق مما سيُجرَّب فعليًا، استخدم:
-
-    ```bash
-    openclaw models status --probe
-    ```
-
-    إذا أُغفل ملف تعريفي مخزن من الترتيب الصريح، فسيبلغ الفحص
-    عن `excluded_by_auth_order` لذلك الملف التعريفي بدلًا من تجربته بصمت.
+    تحقق مما سيُجرَّب فعليًا: `openclaw models status --probe`. ويُبلّغ عن
+    ملف تعريف مخزّن محذوف من ترتيب صريح بالحالة
+    `excluded_by_auth_order` بدلًا من تجربته بصمت.
 
   </Accordion>
 
-  <Accordion title="OAuth مقابل مفتاح API - ما الفرق؟">
-    يدعم OpenClaw كليهما:
+  <Accordion title="ما الفرق بين OAuth ومفتاح API؟">
+    - غالبًا ما يستخدم **OAuth / تسجيل الدخول عبر CLI** وصول الاشتراك عندما
+      يدعمه المزوّد. بالنسبة إلى Anthropic، تستخدم الواجهة الخلفية لـ Claude CLI في OpenClaw
+      الأمر `claude -p` من Claude Code، والذي تتعامل معه Anthropic حاليًا على أنه
+      استخدام Agent SDK/برمجي يُحتسب ضمن حدود استخدام الاشتراك —
+      راجع [Anthropic](/ar/providers/anthropic) للاطلاع على حالة إيقاف الفوترة مؤقتًا
+      الحالية وروابط المصادر.
+    - تستخدم **مفاتيح API** فوترة بحسب عدد الرموز.
 
-    - غالبًا ما يستفيد **تسجيل الدخول عبر OAuth / CLI** من وصول الاشتراك حيثما
-      يدعمه المزود. بالنسبة إلى Anthropic، تستخدم واجهة Claude CLI الخلفية في OpenClaw
-      الأمر Claude Code `claude -p`؛ وتعامل Anthropic ذلك حاليًا باعتباره استخدام Agent
-      SDK/برمجيًا. أوقفت Anthropic مؤقتًا تغيير أرصدة Agent
-      SDK المنفصل بتاريخ 15 يونيو 2026، لذلك في الوقت الحالي لا يزال هذا يُسحب من حدود
-      استخدام الاشتراك. راجع [مقالة خطة Agent SDK من Anthropic](https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan)
-      للاطلاع على إشعار الإيقاف المؤقت الحالي.
-    - تستخدم **مفاتيح API** فوترة الدفع حسب الرموز.
-
-    يدعم المعالج صراحةً Anthropic Claude CLI، وOpenAI Codex OAuth، ومفاتيح API.
+    يدعم المعالج Anthropic Claude CLI، وOpenAI Codex OAuth، ومفاتيح API.
 
   </Accordion>
 </AccordionGroup>
@@ -562,4 +521,4 @@ x-i18n:
 - [الأسئلة الشائعة](/ar/help/faq) — الأسئلة الشائعة الرئيسية
 - [الأسئلة الشائعة — البدء السريع وإعداد التشغيل الأول](/ar/help/faq-first-run)
 - [اختيار النموذج](/ar/concepts/model-providers)
-- [التحويل عند فشل النموذج](/ar/concepts/model-failover)
+- [تجاوز فشل النموذج](/ar/concepts/model-failover)

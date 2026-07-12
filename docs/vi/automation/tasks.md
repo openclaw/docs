@@ -1,55 +1,55 @@
 ---
 read_when:
-    - Đang kiểm tra công việc nền đang diễn ra hoặc vừa hoàn tất
-    - Gỡ lỗi lỗi gửi cho các lượt chạy tác nhân tách rời
-    - Hiểu cách các lần chạy nền liên quan đến phiên, cron và heartbeat
+    - Kiểm tra công việc nền đang diễn ra hoặc vừa hoàn tất
+    - Gỡ lỗi các sự cố gửi kết quả của những lượt chạy agent tách rời
+    - Tìm hiểu mối liên hệ giữa các lượt chạy nền với phiên, cron và heartbeat
 sidebarTitle: Background tasks
-summary: Theo dõi tác vụ nền cho các lượt chạy ACP, subagent, công việc cron cô lập và thao tác CLI
+summary: Theo dõi tác vụ nền cho các lượt chạy ACP, tác tử phụ, các lần thực thi cron và thao tác CLI
 title: Tác vụ nền
 x-i18n:
-    generated_at: "2026-06-27T17:08:56Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:38:51Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4a630a52d0d6bfd387a37415dd63fc4bfbce23f99eaa8cb780c3d6f8913675fd
+    source_hash: 0a945e8103c5df5a64785f326a9d0b08784ac32a2ca6fa3d4c399d75fc54be2b
     source_path: automation/tasks.md
     workflow: 16
 ---
 
 <Note>
-Bạn đang tìm tính năng lập lịch? Xem [Tự động hóa](/vi/automation) để chọn cơ chế phù hợp. Trang này là sổ cái hoạt động cho công việc nền, không phải bộ lập lịch.
+Bạn đang tìm cách lập lịch? Xem [Tự động hóa](/vi/automation) để chọn cơ chế phù hợp. Trang này là sổ ghi hoạt động của công việc nền, không phải bộ lập lịch.
 </Note>
 
-Tác vụ nền theo dõi công việc chạy **bên ngoài phiên hội thoại chính của bạn**: lượt chạy ACP, lần sinh subagent, lần thực thi cron job biệt lập, và thao tác do CLI khởi tạo.
+Các tác vụ nền theo dõi công việc chạy **bên ngoài phiên hội thoại chính của bạn**: các lượt chạy ACP, việc khởi tạo subagent, các lần thực thi công việc cron và các thao tác được khởi tạo từ CLI.
 
-Tác vụ **không** thay thế phiên, cron job, hay Heartbeat - chúng là **sổ cái hoạt động** ghi lại công việc tách rời nào đã diễn ra, khi nào, và có thành công hay không.
+Tác vụ **không** thay thế phiên, công việc cron hoặc heartbeat — chúng là **sổ ghi hoạt động** ghi lại công việc tách rời nào đã diễn ra, vào thời điểm nào và có thành công hay không.
 
 <Note>
-Không phải mọi lượt chạy agent đều tạo tác vụ. Lượt Heartbeat và trò chuyện tương tác bình thường thì không. Tất cả lượt thực thi Cron, lần sinh ACP, lần sinh subagent, và lệnh agent từ CLI thì có.
+Không phải mọi lượt chạy của tác nhân đều tạo tác vụ. Các lượt heartbeat và trò chuyện tương tác thông thường không tạo tác vụ. Mọi lần thực thi cron, khởi tạo ACP, khởi tạo subagent và lệnh tác nhân CLI do Gateway điều phối đều tạo tác vụ.
 </Note>
 
-## Tóm tắt nhanh
+## Tóm tắt
 
-- Tác vụ là **bản ghi**, không phải bộ lập lịch - Cron và Heartbeat quyết định _khi nào_ công việc chạy, tác vụ theo dõi _điều gì đã xảy ra_.
-- ACP, subagent, tất cả cron job, và thao tác CLI tạo tác vụ. Lượt Heartbeat thì không.
-- Mỗi tác vụ đi qua `queued → running → terminal` (succeeded, failed, timed_out, cancelled, hoặc lost).
-- Tác vụ Cron vẫn hoạt động khi runtime Cron vẫn sở hữu job; nếu trạng thái runtime trong bộ nhớ đã mất, bảo trì tác vụ trước tiên kiểm tra lịch sử lượt chạy Cron bền vững trước khi đánh dấu tác vụ là lost.
-- Hoàn tất được đẩy chủ động: công việc tách rời có thể thông báo trực tiếp hoặc đánh thức phiên/Heartbeat của bên yêu cầu khi hoàn tất, nên các vòng lặp thăm dò trạng thái thường là sai mô hình.
-- Lượt chạy Cron biệt lập và hoàn tất subagent sẽ cố gắng tối đa dọn dẹp các tab/quy trình trình duyệt được theo dõi cho phiên con trước khi ghi sổ dọn dẹp cuối cùng.
-- Gửi kết quả Cron biệt lập chặn các phản hồi cha tạm thời đã cũ trong khi công việc subagent hậu duệ vẫn đang xả, và ưu tiên đầu ra cuối cùng của hậu duệ khi đầu ra đó đến trước lúc gửi.
-- Thông báo hoàn tất được gửi trực tiếp tới kênh hoặc xếp hàng cho Heartbeat tiếp theo.
-- `openclaw tasks list` hiển thị tất cả tác vụ; `openclaw tasks audit` hiển thị vấn đề.
-- Bản ghi terminal được giữ trong 7 ngày, sau đó tự động được cắt tỉa.
+- Tác vụ là **bản ghi**, không phải bộ lập lịch — cron và heartbeat quyết định công việc chạy _khi nào_, còn tác vụ theo dõi _điều gì đã xảy ra_.
+- ACP, subagent, mọi công việc cron và thao tác CLI đều tạo tác vụ. Các lượt heartbeat thì không.
+- Mỗi tác vụ chuyển qua `queued → running → terminal` (thành công, thất bại, hết thời gian, bị hủy hoặc bị mất).
+- Tác vụ cron vẫn hoạt động khi môi trường chạy cron còn sở hữu công việc; nếu trạng thái môi trường chạy trong bộ nhớ đã mất, quá trình bảo trì tác vụ trước tiên sẽ kiểm tra lịch sử lượt chạy cron bền vững rồi mới đánh dấu tác vụ là bị mất.
+- Việc hoàn tất được điều khiển bằng cơ chế đẩy: công việc tách rời có thể thông báo trực tiếp hoặc đánh thức phiên/heartbeat của bên yêu cầu khi hoàn tất, vì vậy vòng lặp thăm dò trạng thái thường không phải là cách phù hợp.
+- Các lượt chạy cron cô lập và lượt hoàn tất của subagent sẽ cố gắng dọn dẹp các thẻ trình duyệt/tiến trình được theo dõi của phiên con trước khi thực hiện bước ghi sổ dọn dẹp cuối cùng.
+- Quá trình phân phối cron cô lập sẽ chặn các phản hồi tạm thời đã lỗi thời từ tác nhân cha trong khi công việc của subagent hậu duệ vẫn đang kết thúc, đồng thời ưu tiên đầu ra cuối cùng của hậu duệ nếu đầu ra đó đến trước khi phân phối.
+- Thông báo hoàn tất được gửi trực tiếp đến một kênh hoặc đưa vào hàng đợi cho heartbeat tiếp theo.
+- `openclaw tasks list` hiển thị tất cả tác vụ; `openclaw tasks audit` nêu bật các vấn đề.
+- Bản ghi trạng thái kết thúc được giữ trong 7 ngày (bản ghi `lost` trong 24 giờ), sau đó tự động bị xóa bớt.
 
 ## Bắt đầu nhanh
 
 <Tabs>
   <Tab title="Liệt kê và lọc">
     ```bash
-    # List all tasks (newest first)
+    # Liệt kê tất cả tác vụ (mới nhất trước)
     openclaw tasks list
 
-    # Filter by runtime or status
+    # Lọc theo môi trường chạy hoặc trạng thái
     openclaw tasks list --runtime acp
     openclaw tasks list --status running
     ```
@@ -57,26 +57,26 @@ Không phải mọi lượt chạy agent đều tạo tác vụ. Lượt Heartbe
   </Tab>
   <Tab title="Kiểm tra">
     ```bash
-    # Show details for a specific task (by ID, run ID, or session key)
+    # Hiển thị chi tiết của một tác vụ cụ thể (theo ID tác vụ, ID lượt chạy hoặc khóa phiên)
     openclaw tasks show <lookup>
     ```
   </Tab>
   <Tab title="Hủy và thông báo">
     ```bash
-    # Cancel a running task (kills the child session)
+    # Hủy một tác vụ đang chạy (kết thúc phiên con)
     openclaw tasks cancel <lookup>
 
-    # Change notification policy for a task
+    # Thay đổi chính sách thông báo của một tác vụ
     openclaw tasks notify <lookup> state_changes
     ```
 
   </Tab>
-  <Tab title="Kiểm toán và bảo trì">
+  <Tab title="Kiểm tra và bảo trì">
     ```bash
-    # Run a health audit
+    # Chạy kiểm tra tình trạng
     openclaw tasks audit
 
-    # Preview or apply maintenance
+    # Xem trước hoặc áp dụng bảo trì
     openclaw tasks maintenance
     openclaw tasks maintenance --apply
     ```
@@ -84,7 +84,7 @@ Không phải mọi lượt chạy agent đều tạo tác vụ. Lượt Heartbe
   </Tab>
   <Tab title="Luồng tác vụ">
     ```bash
-    # Inspect TaskFlow state
+    # Kiểm tra trạng thái TaskFlow
     openclaw tasks flow list
     openclaw tasks flow show <lookup>
     openclaw tasks flow cancel <lookup>
@@ -92,30 +92,30 @@ Không phải mọi lượt chạy agent đều tạo tác vụ. Lượt Heartbe
   </Tab>
 </Tabs>
 
-## Điều gì tạo tác vụ
+## Những gì tạo ra tác vụ
 
-| Nguồn                  | Loại runtime | Khi bản ghi tác vụ được tạo                                            | Chính sách thông báo mặc định |
-| ---------------------- | ------------ | ---------------------------------------------------------------------- | ----------------------------- |
-| Lượt chạy nền ACP      | `acp`        | Sinh một phiên ACP con                                                 | `done_only`                   |
-| Điều phối subagent     | `subagent`   | Sinh một subagent qua `sessions_spawn`                                 | `done_only`                   |
-| Cron job (mọi loại)    | `cron`       | Mỗi lượt thực thi Cron (phiên chính và biệt lập)                       | `silent`                      |
-| Thao tác CLI           | `cli`        | Lệnh `openclaw agent` chạy qua Gateway                                 | `silent`                      |
-| Job media của agent    | `cli`        | Lượt chạy `image_generate`/`music_generate`/`video_generate` có phiên hậu thuẫn | `silent`              |
+| Nguồn                  | Loại môi trường chạy | Thời điểm bản ghi tác vụ được tạo                                         | Chính sách thông báo mặc định |
+| ---------------------- | -------------------- | ------------------------------------------------------------------------- | ----------------------------- |
+| Lượt chạy nền ACP      | `acp`                | Khởi tạo một phiên ACP con                                                 | `done_only`                   |
+| Điều phối subagent     | `subagent`           | Khởi tạo một subagent qua `sessions_spawn`                                 | `done_only`                   |
+| Công việc cron (mọi loại) | `cron`            | Mỗi lần thực thi cron (phiên chính và cô lập)                              | `silent`                      |
+| Thao tác CLI           | `cli`                | Các lệnh `openclaw agent` chạy qua Gateway                                 | `silent`                      |
+| Công việc phương tiện của tác nhân | `cli`     | Các lượt chạy `image_generate`/`music_generate`/`video_generate` dựa trên phiên | `silent`                  |
 
 <AccordionGroup>
-  <Accordion title="Mặc định thông báo cho Cron và media">
-    Tác vụ Cron phiên chính dùng chính sách thông báo `silent` theo mặc định - chúng tạo bản ghi để theo dõi nhưng không tạo thông báo. Tác vụ Cron biệt lập cũng mặc định là `silent` nhưng dễ thấy hơn vì chúng chạy trong phiên riêng.
+  <Accordion title="Mặc định thông báo cho cron và phương tiện">
+    Các tác vụ cron (phiên chính và cô lập) sử dụng chính sách thông báo `silent` — chúng tạo bản ghi để theo dõi nhưng không tự tạo thông báo tác vụ; cron sở hữu đường dẫn phân phối của mình.
 
-    Lượt chạy `image_generate`, `music_generate`, và `video_generate` có phiên hậu thuẫn cũng dùng chính sách thông báo `silent`. Chúng vẫn tạo bản ghi tác vụ, nhưng việc hoàn tất được trao lại cho phiên agent ban đầu dưới dạng đánh thức nội bộ để agent có thể viết tin nhắn tiếp theo và tự đính kèm media đã hoàn tất. Agent yêu cầu tuân theo hợp đồng phản hồi hiển thị bình thường: phản hồi cuối tự động khi được cấu hình, hoặc `message(action="send")` cộng với `NO_REPLY` khi phiên yêu cầu phản hồi bằng công cụ tin nhắn. Nếu phiên yêu cầu không còn hoạt động hoặc lượt đánh thức hoạt động của nó thất bại, và agent hoàn tất bỏ lỡ một phần hoặc toàn bộ media đã tạo, OpenClaw gửi một dự phòng trực tiếp bất biến với chỉ media còn thiếu tới mục tiêu kênh ban đầu.
+    Các lượt chạy `image_generate`, `music_generate` và `video_generate` dựa trên phiên cũng sử dụng chính sách thông báo `silent`. Chúng vẫn tạo bản ghi tác vụ, nhưng việc hoàn tất được trả về phiên tác nhân ban đầu dưới dạng một lần đánh thức nội bộ để tác nhân có thể tự viết thông báo tiếp theo và đính kèm phương tiện đã hoàn tất. Tác nhân yêu cầu tuân theo hợp đồng phản hồi hiển thị thông thường: tự động gửi phản hồi cuối cùng khi được cấu hình, hoặc dùng `message(action="send")` cùng với `NO_REPLY` khi phiên yêu cầu phản hồi qua công cụ nhắn tin. Nếu phiên yêu cầu không còn hoạt động hoặc lần đánh thức chủ động thất bại, đồng thời tác nhân hoàn tất bỏ sót một phần hoặc toàn bộ phương tiện đã tạo, OpenClaw sẽ gửi một phương án dự phòng trực tiếp có tính lũy đẳng chỉ chứa phương tiện còn thiếu đến đích kênh ban đầu.
 
   </Accordion>
-  <Accordion title="Lan can bảo vệ tạo media đồng thời">
-    Khi một tác vụ tạo media có phiên hậu thuẫn vẫn đang hoạt động, các công cụ media cũng đóng vai trò lan can bảo vệ trước các lần thử lại vô tình. Các lệnh gọi `image_generate` lặp lại cho cùng prompt trả về trạng thái tác vụ hoạt động khớp, trong khi một prompt hình ảnh khác có thể bắt đầu tác vụ riêng. Lệnh gọi `music_generate` và `video_generate` vẫn trả về trạng thái tác vụ hoạt động cho phiên đó thay vì bắt đầu một lần tạo thứ hai đồng thời. Dùng `action: "status"` khi bạn muốn tra cứu tiến độ/trạng thái rõ ràng từ phía agent.
+  <Accordion title="Cơ chế bảo vệ khi tạo phương tiện đồng thời">
+    Khi một tác vụ tạo phương tiện dựa trên phiên vẫn đang hoạt động, `image_generate`, `music_generate` và `video_generate` sẽ ngăn các lần thử lại ngoài ý muốn: lặp lại lời gọi cho cùng một lời nhắc/yêu cầu sẽ trả về trạng thái của tác vụ đang hoạt động tương ứng thay vì bắt đầu một tác vụ trùng lặp, trong khi một lời nhắc khác biệt có thể bắt đầu tác vụ riêng. Dùng `action: "status"` khi bạn muốn tra cứu rõ ràng tiến độ/trạng thái từ phía tác nhân.
   </Accordion>
-  <Accordion title="Điều gì không tạo tác vụ">
-    - Lượt Heartbeat - phiên chính; xem [Heartbeat](/vi/gateway/heartbeat)
-    - Lượt trò chuyện tương tác bình thường
-    - Phản hồi `/command` trực tiếp
+  <Accordion title="Những gì không tạo tác vụ">
+    - Các lượt heartbeat — phiên chính; xem [Heartbeat](/vi/gateway/heartbeat)
+    - Các lượt trò chuyện tương tác thông thường
+    - Phản hồi trực tiếp cho `/command`
 
   </Accordion>
 </AccordionGroup>
@@ -125,61 +125,62 @@ Không phải mọi lượt chạy agent đều tạo tác vụ. Lượt Heartbe
 ```mermaid
 stateDiagram-v2
     [*] --> queued
-    queued --> running : agent starts
-    running --> succeeded : completes ok
-    running --> failed : error
-    running --> timed_out : timeout exceeded
-    running --> cancelled : operator cancels
-    queued --> lost : session gone > 5 min
-    running --> lost : session gone > 5 min
+    queued --> running : tác nhân bắt đầu
+    running --> succeeded : hoàn tất thành công
+    running --> failed : lỗi
+    running --> timed_out : vượt quá thời gian chờ
+    queued --> cancelled : người vận hành hủy
+    running --> cancelled : người vận hành hủy
+    queued --> lost : trạng thái nền mất > 5 phút
+    running --> lost : trạng thái nền mất > 5 phút
 ```
 
-| Trạng thái  | Ý nghĩa                                                                    |
-| ----------- | -------------------------------------------------------------------------- |
-| `queued`    | Đã tạo, đang chờ agent bắt đầu                                             |
-| `running`   | Lượt agent đang thực thi chủ động                                          |
-| `succeeded` | Hoàn tất thành công                                                        |
-| `failed`    | Hoàn tất với lỗi                                                           |
-| `timed_out` | Vượt quá thời gian chờ đã cấu hình                                         |
-| `cancelled` | Bị operator dừng qua `openclaw tasks cancel`                               |
-| `lost`      | Runtime mất trạng thái hậu thuẫn có thẩm quyền sau thời gian gia hạn 5 phút |
+| Trạng thái  | Ý nghĩa                                                                     |
+| ----------- | --------------------------------------------------------------------------- |
+| `queued`    | Đã tạo, đang chờ tác nhân bắt đầu                                           |
+| `running`   | Lượt tác nhân đang được thực thi                                            |
+| `succeeded` | Đã hoàn tất thành công                                                      |
+| `failed`    | Đã hoàn tất với lỗi                                                         |
+| `timed_out` | Đã vượt quá thời gian chờ được cấu hình                                     |
+| `cancelled` | Bị người vận hành dừng qua `openclaw tasks cancel`, hoặc lượt chạy bị hủy bỏ |
+| `lost`      | Môi trường chạy mất trạng thái nền có thẩm quyền sau thời gian gia hạn 5 phút |
 
-Chuyển trạng thái diễn ra tự động - khi lượt chạy agent liên kết kết thúc, trạng thái tác vụ cập nhật để khớp.
+Quá trình chuyển trạng thái diễn ra tự động — các sự kiện vòng đời lượt chạy của tác nhân (bắt đầu, kết thúc, lỗi) cập nhật trạng thái tác vụ; bạn không quản lý thủ công.
 
-Hoàn tất lượt chạy agent là nguồn có thẩm quyền cho bản ghi tác vụ đang hoạt động. Một lượt chạy tách rời thành công kết thúc là `succeeded`, lỗi lượt chạy thông thường kết thúc là `failed`, và kết quả hết thời gian chờ hoặc hủy bỏ kết thúc là `timed_out`. Nếu operator đã hủy tác vụ, hoặc runtime đã ghi một trạng thái terminal mạnh hơn như `failed`, `timed_out`, hoặc `lost`, tín hiệu thành công đến sau sẽ không hạ cấp trạng thái terminal đó.
+Việc hoàn tất lượt chạy của tác nhân là căn cứ có thẩm quyền đối với các bản ghi tác vụ đang hoạt động. Một lượt chạy tách rời thành công được hoàn tất với trạng thái `succeeded`, lỗi lượt chạy thông thường được hoàn tất với trạng thái `failed`, hết thời gian được hoàn tất với trạng thái `timed_out`, còn kết quả hủy/dừng được hoàn tất với trạng thái `cancelled`. Khi tác vụ đã ở trạng thái kết thúc, các tín hiệu vòng đời đến sau không hạ cấp trạng thái đó — tác vụ đã bị người vận hành hủy hoặc đã ở trạng thái `failed`/`timed_out`/`lost` vẫn giữ nguyên ngay cả khi tín hiệu thành công đến sau đó.
 
-`lost` nhận biết runtime:
+`lost` phụ thuộc vào môi trường chạy:
 
-- Tác vụ ACP: metadata phiên ACP con hậu thuẫn đã biến mất.
-- Tác vụ subagent: phiên con hậu thuẫn đã biến mất khỏi kho agent mục tiêu.
-- Tác vụ Cron: runtime Cron không còn theo dõi job là đang hoạt động và lịch sử lượt chạy Cron bền vững không hiển thị kết quả terminal cho lượt chạy đó. Kiểm toán CLI ngoại tuyến không coi trạng thái runtime Cron trong tiến trình rỗng của chính nó là có thẩm quyền.
-- Tác vụ CLI: tác vụ có run id/source id dùng ngữ cảnh lượt chạy trực tiếp, nên các hàng phiên con hoặc phiên trò chuyện còn sót lại không giữ chúng sống sau khi lượt chạy do Gateway sở hữu biến mất. Tác vụ CLI cũ không có danh tính lượt chạy vẫn dự phòng về phiên con. Lượt chạy `openclaw agent` có Gateway hậu thuẫn cũng kết thúc từ kết quả lượt chạy, nên lượt chạy đã hoàn tất không nằm ở trạng thái hoạt động cho đến khi sweeper đánh dấu chúng là `lost`.
+- Tác vụ ACP: chỉ một lượt ACP trực tiếp trong cùng tiến trình ở Gateway mới chứng minh lượt chạy còn hoạt động; chỉ riêng siêu dữ liệu phiên được lưu bền vững là không đủ. Kiểm tra CLI ngoại tuyến giữ cách xử lý thận trọng và không bao giờ thu hồi tác vụ ACP.
+- Tác vụ subagent: phiên con nền đã biến mất khỏi kho tác nhân đích (hoặc mang dấu mốc khôi phục sau khi khởi động lại).
+- Tác vụ cron: môi trường chạy cron không còn theo dõi công việc là đang hoạt động và lịch sử lượt chạy cron bền vững không hiển thị kết quả kết thúc cho lượt chạy đó. Kiểm tra CLI ngoại tuyến không coi trạng thái môi trường chạy cron trống trong chính tiến trình của nó là căn cứ có thẩm quyền.
+- Tác vụ CLI: tác vụ có ID lượt chạy/ID nguồn sử dụng ngữ cảnh lượt chạy trực tiếp, vì vậy các hàng phiên con hoặc phiên trò chuyện còn sót lại không giữ chúng ở trạng thái hoạt động sau khi lượt chạy do Gateway sở hữu biến mất. Tác vụ CLI cũ không có danh tính lượt chạy vẫn quay về dùng phiên con. Các lượt chạy `openclaw agent` dựa trên Gateway cũng được hoàn tất từ kết quả lượt chạy, nên lượt chạy đã hoàn tất không tiếp tục ở trạng thái hoạt động cho đến khi trình quét đánh dấu chúng là `lost`.
 
-## Gửi và thông báo
+## Phân phối và thông báo
 
-Khi một tác vụ đạt trạng thái terminal, OpenClaw thông báo cho bạn. Có hai đường gửi:
+Khi một tác vụ đạt trạng thái kết thúc, OpenClaw sẽ thông báo cho bạn. Có hai đường dẫn phân phối:
 
-**Gửi trực tiếp** - nếu tác vụ có mục tiêu kênh (`requesterOrigin`), tin nhắn hoàn tất đi thẳng tới kênh đó (Telegram, Discord, Slack, v.v.). Hoàn tất tác vụ nhóm và kênh thay vào đó được định tuyến qua phiên yêu cầu để agent cha có thể viết phản hồi hiển thị. Với hoàn tất subagent, OpenClaw cũng giữ định tuyến luồng/chủ đề đã ràng buộc khi có sẵn và có thể điền `to` / tài khoản còn thiếu từ tuyến đã lưu của phiên yêu cầu (`lastChannel` / `lastTo` / `lastAccountId`) trước khi từ bỏ gửi trực tiếp.
+**Phân phối trực tiếp** — nếu tác vụ có đích kênh (`requesterOrigin`), thông báo hoàn tất sẽ được gửi thẳng đến kênh đó (Discord, Slack, Telegram, v.v.). Thay vào đó, lượt hoàn tất tác vụ nhóm và kênh được định tuyến qua phiên của bên yêu cầu để tác nhân cha có thể viết phản hồi hiển thị. Đối với lượt hoàn tất của subagent, OpenClaw cũng giữ nguyên định tuyến luồng/chủ đề đã liên kết khi có thể và có thể điền `to` / tài khoản còn thiếu từ tuyến được lưu của phiên yêu cầu (`lastChannel` / `lastTo` / `lastAccountId`) trước khi từ bỏ phân phối trực tiếp.
 
-**Gửi xếp hàng trong phiên** - nếu gửi trực tiếp thất bại hoặc không đặt origin, bản cập nhật được xếp hàng dưới dạng sự kiện hệ thống trong phiên của bên yêu cầu và xuất hiện ở Heartbeat tiếp theo.
+**Phân phối qua hàng đợi phiên** — nếu phân phối trực tiếp thất bại hoặc không đặt nguồn gốc, bản cập nhật sẽ được đưa vào hàng đợi dưới dạng sự kiện hệ thống trong phiên của bên yêu cầu và xuất hiện ở heartbeat tiếp theo.
 
 <Tip>
-Hoàn tất tác vụ kích hoạt một lượt đánh thức Heartbeat ngay lập tức để bạn thấy kết quả nhanh - bạn không phải chờ nhịp Heartbeat đã lập lịch tiếp theo.
+Các lượt hoàn tất tác vụ trong hàng đợi phiên kích hoạt đánh thức heartbeat ngay lập tức, nên bạn sẽ thấy kết quả nhanh chóng — không cần chờ đến nhịp heartbeat được lập lịch tiếp theo.
 </Tip>
 
-Điều đó nghĩa là quy trình thường dùng dựa trên đẩy: bắt đầu công việc tách rời một lần, sau đó để runtime đánh thức hoặc thông báo cho bạn khi hoàn tất. Chỉ thăm dò trạng thái tác vụ khi bạn cần gỡ lỗi, can thiệp, hoặc kiểm toán rõ ràng.
+Điều đó có nghĩa là quy trình thông thường dựa trên cơ chế đẩy: bắt đầu công việc tách rời một lần, sau đó để môi trường chạy đánh thức hoặc thông báo cho bạn khi hoàn tất. Chỉ thăm dò trạng thái tác vụ khi bạn cần gỡ lỗi, can thiệp hoặc thực hiện một cuộc kiểm tra rõ ràng.
 
 ### Chính sách thông báo
 
-Kiểm soát mức độ bạn được nghe về từng tác vụ:
+Kiểm soát lượng thông tin bạn nhận được về mỗi tác vụ:
 
-| Chính sách            | Nội dung được gửi                                                       |
-| --------------------- | ----------------------------------------------------------------------- |
-| `done_only` (mặc định) | Chỉ trạng thái terminal (succeeded, failed, v.v.) - **đây là mặc định** |
-| `state_changes`       | Mọi chuyển trạng thái và cập nhật tiến độ                               |
-| `silent`              | Không có gì                                                            |
+| Chính sách            | Nội dung được phân phối                                      |
+| --------------------- | ------------------------------------------------------------ |
+| `done_only` (mặc định) | Chỉ trạng thái kết thúc (thành công, thất bại, v.v.)         |
+| `state_changes`       | Mọi lần chuyển trạng thái và cập nhật tiến độ                 |
+| `silent`              | Không có gì (mặc định cho tác vụ cron, CLI và phương tiện)    |
 
-Đổi chính sách khi tác vụ đang chạy:
+Thay đổi chính sách khi tác vụ đang chạy:
 
 ```bash
 openclaw tasks notify <lookup> state_changes
@@ -193,15 +194,15 @@ openclaw tasks notify <lookup> state_changes
     openclaw tasks list [--runtime <acp|subagent|cron|cli>] [--status <status>] [--json]
     ```
 
-    Cột đầu ra: ID tác vụ, Loại, Trạng thái, Gửi, Run ID, Phiên con, Tóm tắt.
+    Các cột đầu ra: Tác vụ, Loại, Trạng thái, Phân phối, Lượt chạy, Phiên con, Tóm tắt. Lệnh `openclaw tasks` không có đối số hoạt động giống `openclaw tasks list`.
 
   </Accordion>
   <Accordion title="tasks show">
     ```bash
-    openclaw tasks show <lookup>
+    openclaw tasks show <lookup> [--json]
     ```
 
-    Mã tra cứu chấp nhận ID tác vụ, run ID, hoặc khóa phiên. Hiển thị bản ghi đầy đủ gồm thời gian, trạng thái gửi, lỗi, và tóm tắt terminal.
+    Mã tra cứu chấp nhận ID tác vụ, ID lượt chạy hoặc khóa phiên. Hiển thị toàn bộ bản ghi, bao gồm thời gian, trạng thái phân phối, lỗi và tóm tắt kết thúc.
 
   </Accordion>
   <Accordion title="tasks cancel">
@@ -209,7 +210,7 @@ openclaw tasks notify <lookup> state_changes
     openclaw tasks cancel <lookup>
     ```
 
-    Với tác vụ ACP và subagent, lệnh này giết phiên con. Với tác vụ do CLI theo dõi, việc hủy được ghi trong sổ đăng ký tác vụ (không có handle runtime con riêng). Trạng thái chuyển sang `cancelled` và thông báo gửi được gửi khi áp dụng.
+    Đối với tác vụ ACP và subagent, thao tác này kết thúc phiên con; việc hủy ACP và cron được định tuyến qua Gateway đang chạy (`tasks.cancel`). Đối với tác vụ được CLI theo dõi, thao tác hủy được ghi vào sổ đăng ký tác vụ (không có bộ xử lý môi trường chạy con riêng). Trạng thái chuyển thành `cancelled` và thông báo phân phối được gửi khi áp dụng.
 
   </Accordion>
   <Accordion title="tasks notify">
@@ -219,152 +220,169 @@ openclaw tasks notify <lookup> state_changes
   </Accordion>
   <Accordion title="tasks audit">
     ```bash
-    openclaw tasks audit [--json]
+    openclaw tasks audit [--severity <warn|error>] [--code <name>] [--limit <n>] [--json]
     ```
 
-    Hiển thị vấn đề vận hành. Phát hiện cũng xuất hiện trong `openclaw status` khi phát hiện vấn đề.
+    Nêu bật các vấn đề vận hành của cả tác vụ **và** TaskFlow trong một báo cáo. Các phát hiện cũng xuất hiện trong `openclaw status` khi phát hiện vấn đề.
 
-    | Phát hiện                 | Mức độ     | Kích hoạt                                                                                                      |
-    | ------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------ |
-    | `stale_queued`            | cảnh báo   | Đã xếp hàng hơn 10 phút                                                                                       |
-    | `stale_running`           | lỗi        | Đang chạy hơn 30 phút                                                                                         |
-    | `lost`                    | cảnh báo/lỗi | Quyền sở hữu tác vụ dựa trên runtime đã biến mất; các tác vụ bị mất được giữ lại sẽ cảnh báo cho đến `cleanupAfter`, rồi trở thành lỗi |
-    | `delivery_failed`         | cảnh báo   | Gửi không thành công và chính sách thông báo không phải là `silent`                                           |
-    | `missing_cleanup`         | cảnh báo   | Tác vụ kết thúc không có dấu thời gian dọn dẹp                                                                |
-    | `inconsistent_timestamps` | cảnh báo   | Vi phạm dòng thời gian (ví dụ kết thúc trước khi bắt đầu)                                                     |
+    Phát hiện về tác vụ:
+
+    | Phát hiện                  | Mức độ     | Điều kiện kích hoạt                                                                                                     |
+    | ------------------------- | ---------- | ----------------------------------------------------------------------------------------------------------------------- |
+    | `stale_queued`            | warn       | Đã xếp hàng hơn 10 phút                                                                                                 |
+    | `stale_running`           | error      | Đã chạy hơn 30 phút                                                                                                     |
+    | `lost`                    | warn/error | Quyền sở hữu tác vụ do runtime hỗ trợ đã biến mất; các tác vụ bị mất được giữ lại sẽ cảnh báo cho đến `cleanupAfter`, sau đó trở thành lỗi |
+    | `delivery_failed`         | warn       | Gửi thất bại và chính sách thông báo không phải là `silent`                                                             |
+    | `missing_cleanup`         | warn       | Tác vụ đã kết thúc nhưng không có dấu thời gian dọn dẹp                                                                 |
+    | `inconsistent_timestamps` | warn       | Vi phạm trình tự thời gian (ví dụ: kết thúc trước khi bắt đầu)                                                          |
+
+    Các phát hiện của TaskFlow:
+
+    | Phát hiện             | Mức độ     | Điều kiện kích hoạt                                                               |
+    | ---------------------- | ---------- | -------------------------------------------------------------------------------- |
+    | `restore_failed`       | error      | Khôi phục sổ đăng ký luồng từ SQLite thất bại                                    |
+    | `stale_running`        | error      | Luồng đang chạy không tiến triển trong hơn 30 phút                               |
+    | `stale_waiting`        | warn       | Luồng đang chờ không tiến triển trong hơn 30 phút                                |
+    | `stale_blocked`        | warn       | Luồng bị chặn không tiến triển trong hơn 30 phút                                 |
+    | `cancel_stuck`         | warn       | Đã yêu cầu hủy hơn 5 phút trước, không có tác vụ con đang hoạt động nhưng vẫn chưa kết thúc |
+    | `missing_linked_tasks` | warn/error | Luồng được quản lý đã cũ, không có tác vụ liên kết hoặc trạng thái chờ            |
+    | `blocked_task_missing` | warn       | Luồng bị chặn trỏ đến một mã tác vụ không còn tồn tại                            |
 
   </Accordion>
-  <Accordion title="bảo trì tác vụ">
+  <Accordion title="tasks maintenance">
     ```bash
     openclaw tasks maintenance [--json]
     openclaw tasks maintenance --apply [--json]
     ```
 
-    Dùng lệnh này để xem trước hoặc áp dụng việc đối soát, đóng dấu dọn dẹp và cắt tỉa cho các tác vụ, trạng thái Task Flow và các hàng sổ đăng ký phiên chạy cron đã cũ.
+    Dùng lệnh này để xem trước hoặc áp dụng việc đối soát, ghi dấu dọn dẹp và loại bỏ cho tác vụ, trạng thái TaskFlow và các hàng sổ đăng ký phiên chạy cron đã cũ.
 
-    Việc đối soát có nhận biết runtime:
+    Việc đối soát nhận biết runtime:
 
-    - Các tác vụ ACP/subagent kiểm tra phiên con nền tảng của chúng.
-    - Các tác vụ subagent có phiên con mang tombstone phục hồi sau khởi động lại được đánh dấu là bị mất thay vì được xem là các phiên nền tảng có thể phục hồi.
-    - Các tác vụ Cron kiểm tra xem runtime cron còn sở hữu job hay không, rồi khôi phục trạng thái kết thúc từ log chạy cron/trạng thái job đã lưu trước khi chuyển sang `lost`. Chỉ tiến trình Gateway mới có thẩm quyền với tập hợp job đang hoạt động trong bộ nhớ của cron; kiểm tra CLI ngoại tuyến dùng lịch sử bền vững nhưng không đánh dấu một tác vụ cron là bị mất chỉ vì Set cục bộ đó rỗng.
-    - Các tác vụ CLI có danh tính lần chạy kiểm tra ngữ cảnh lần chạy trực tiếp đang sở hữu, không chỉ các hàng phiên con hoặc phiên chat.
+    - Tác vụ ACP yêu cầu một lượt xử lý trực tiếp trong tiến trình tại Gateway; tác vụ tác nhân phụ kiểm tra phiên con làm nền tảng của chúng.
+    - Tác vụ tác nhân phụ có phiên con chứa dấu mốc khôi phục sau khi khởi động lại sẽ được đánh dấu là bị mất thay vì được coi là phiên nền tảng có thể khôi phục.
+    - Tác vụ Cron kiểm tra xem runtime cron còn sở hữu công việc hay không, sau đó khôi phục trạng thái kết thúc từ nhật ký chạy cron hoặc trạng thái công việc đã lưu trước khi chuyển sang `lost`. Chỉ tiến trình Gateway mới có thẩm quyền đối với tập hợp công việc cron đang hoạt động trong bộ nhớ; kiểm tra CLI ngoại tuyến sử dụng lịch sử bền vững nhưng không đánh dấu tác vụ cron là bị mất chỉ vì tập hợp cục bộ đó trống.
+    - Tác vụ CLI có danh tính lượt chạy sẽ kiểm tra ngữ cảnh lượt chạy trực tiếp đang sở hữu, không chỉ các hàng phiên con hoặc phiên trò chuyện.
 
-    Dọn dẹp khi hoàn tất cũng có nhận biết runtime:
+    Việc dọn dẹp khi hoàn tất cũng nhận biết runtime:
 
-    - Hoàn tất subagent cố gắng hết mức để đóng các tab/quy trình trình duyệt được theo dõi cho phiên con trước khi tiếp tục dọn dẹp thông báo.
-    - Hoàn tất cron cô lập cố gắng hết mức để đóng các tab/quy trình trình duyệt được theo dõi cho phiên cron trước khi lần chạy tháo dỡ hoàn toàn.
-    - Gửi cron cô lập chờ theo dõi tiếp nối từ subagent con khi cần và chặn văn bản xác nhận cha đã cũ thay vì thông báo nó.
-    - Gửi kết quả hoàn tất subagent chỉ dùng văn bản trợ lý hiển thị mới nhất của con. Đầu ra tool/toolResult không được nâng thành văn bản kết quả con. Các lần chạy kết thúc thất bại thông báo trạng thái thất bại mà không phát lại văn bản phản hồi đã ghi lại.
-    - Lỗi dọn dẹp không che khuất kết quả tác vụ thực sự.
+    - Khi tác nhân phụ hoàn tất, hệ thống cố gắng hết sức đóng các thẻ trình duyệt và tiến trình được theo dõi cho phiên con trước khi tiếp tục dọn dẹp phần thông báo.
+    - Khi Cron cô lập hoàn tất, hệ thống cố gắng hết sức đóng các thẻ trình duyệt và tiến trình được theo dõi cho phiên cron trước khi lượt chạy được tháo dỡ hoàn toàn.
+    - Việc gửi kết quả của Cron cô lập sẽ chờ tác nhân phụ hậu duệ xử lý tiếp khi cần và chặn văn bản xác nhận cũ của tác vụ cha thay vì thông báo văn bản đó.
+    - Việc gửi kết quả hoàn tất của tác nhân phụ chỉ sử dụng văn bản trợ lý hiển thị mới nhất của tác nhân con. Đầu ra `tool`/`toolResult` không được đưa vào văn bản kết quả của tác nhân con. Các lượt chạy kết thúc với lỗi sẽ thông báo trạng thái thất bại mà không phát lại văn bản phản hồi đã thu thập.
+    - Lỗi dọn dẹp không che khuất kết quả thực tế của tác vụ.
 
-    Khi áp dụng bảo trì, OpenClaw cũng xóa các hàng sổ đăng ký phiên `cron:<jobId>:run:<uuid>` đã cũ hơn 7 ngày, đồng thời giữ lại các hàng cho job cron hiện đang chạy và không động đến các hàng phiên không phải cron.
+    Khi áp dụng bảo trì, OpenClaw cũng xóa các hàng sổ đăng ký phiên `cron:<jobId>:run:<runId>` đã cũ hơn 7 ngày, đồng thời giữ lại các hàng của công việc cron hiện đang chạy và không thay đổi các hàng phiên không thuộc cron.
 
   </Accordion>
-  <Accordion title="liệt kê | hiển thị | hủy flow tác vụ">
+  <Accordion title="tasks flow list | show | cancel">
     ```bash
     openclaw tasks flow list [--status <status>] [--json]
     openclaw tasks flow show <lookup> [--json]
     openclaw tasks flow cancel <lookup>
     ```
 
-    Dùng các lệnh này khi Task Flow điều phối mới là thứ bạn quan tâm, thay vì một bản ghi tác vụ nền riêng lẻ.
+    Mã tra cứu luồng chấp nhận mã luồng hoặc khóa chủ sở hữu. Dùng các lệnh này khi bạn quan tâm đến [Luồng tác vụ](/vi/automation/taskflow) điều phối thay vì một bản ghi tác vụ nền riêng lẻ.
 
   </Accordion>
 </AccordionGroup>
 
-## Bảng tác vụ chat (`/tasks`)
+## Bảng tác vụ trong trò chuyện (`/tasks`)
 
-Dùng `/tasks` trong bất kỳ phiên chat nào để xem các tác vụ nền được liên kết với phiên đó. Bảng hiển thị các tác vụ đang hoạt động và mới hoàn tất gần đây, kèm runtime, trạng thái, thời gian, tiến độ hoặc chi tiết lỗi.
+Dùng `/tasks` trong bất kỳ phiên trò chuyện nào để xem các tác vụ nền được liên kết với phiên đó. Bảng hiển thị tối đa năm tác vụ đang hoạt động và vừa hoàn tất, kèm theo runtime, trạng thái, thời gian và thông tin chi tiết về tiến độ hoặc lỗi.
 
-Khi phiên hiện tại không có tác vụ liên kết nào hiển thị, `/tasks` sẽ dùng số lượng tác vụ cục bộ của agent để bạn vẫn có được tổng quan mà không làm lộ chi tiết của phiên khác.
+Khi phiên hiện tại không có tác vụ liên kết nào hiển thị, `/tasks` sẽ chuyển sang số lượng tác vụ cục bộ của tác nhân để bạn vẫn có thông tin tổng quan mà không làm lộ chi tiết của các phiên khác.
 
-Để xem sổ cái đầy đủ cho operator, dùng CLI: `openclaw tasks list`.
+Để xem sổ cái đầy đủ dành cho người vận hành, hãy dùng CLI: `openclaw tasks list`.
+
+### Giao diện điều khiển
+
+Giao diện điều khiển web có trang **Tác vụ** trong thanh bên, hiển thị trực tiếp các tác vụ nền đang hoạt động và gần đây. Dùng trang này để kiểm tra tiến độ, mở các phiên được liên kết, làm mới sổ cái hoặc hủy tác vụ đang xếp hàng và đang chạy.
+
+Các ngăn trò chuyện cũng có thanh **Tác vụ nền** có thể thu gọn, được giới hạn theo tác nhân của ngăn: các tác vụ và tác nhân phụ đang chạy kèm nút dừng, một phần đã hoàn tất và các liên kết Xem bản ghi đến phiên con của từng tác vụ. Mở thanh này từ nút chuyển đổi hoạt động trong tiêu đề ngăn (hoặc nút hoạt động nổi trong chế độ trò chuyện một ngăn).
 
 ## Tích hợp trạng thái (áp lực tác vụ)
 
-`openclaw status` bao gồm một tóm tắt tác vụ có thể xem nhanh:
+`openclaw status` bao gồm một dòng tổng quan nhanh về tác vụ:
 
 ```
-Tasks: 3 queued · 2 running · 1 issues
+Tác vụ    2 đang hoạt động · 1 đang xếp hàng · 1 đang chạy · 1 sự cố · kiểm tra sạch · 6 được theo dõi
 ```
 
-Tóm tắt báo cáo:
+Bản tóm tắt đếm công việc đang hoạt động (`queued` + `running`), thất bại (`failed` + `timed_out` + `lost`), các phát hiện kiểm tra và tổng số bản ghi được theo dõi; tải JSON cũng phân chia số lượng theo runtime (`acp`, `subagent`, `cron`, `cli`).
 
-- **active** - số lượng `queued` + `running`
-- **failures** - số lượng `failed` + `timed_out` + `lost`
-- **byRuntime** - phân rã theo `acp`, `subagent`, `cron`, `cli`
-
-Cả `/status` và công cụ `session_status` đều dùng ảnh chụp nhanh tác vụ có nhận biết dọn dẹp: ưu tiên tác vụ đang hoạt động, ẩn các hàng đã hoàn tất cũ, và chỉ hiển thị lỗi gần đây khi không còn công việc đang hoạt động. Điều này giữ cho thẻ trạng thái tập trung vào những gì quan trọng ngay lúc này.
+Cả `/status` và công cụ `session_status` đều sử dụng ảnh chụp tác vụ có nhận biết việc dọn dẹp: ưu tiên các tác vụ đang hoạt động, ẩn các hàng đã hết hạn và chỉ hiển thị tác vụ đã kết thúc trong một khoảng thời gian ngắn gần đây (5 phút), đồng thời tập trung vào các thất bại khi không còn công việc đang hoạt động. Điều này giúp thẻ trạng thái tập trung vào những gì quan trọng ngay lúc này.
 
 ## Lưu trữ và bảo trì
 
-### Nơi lưu tác vụ
+### Vị trí lưu tác vụ
 
-Bản ghi tác vụ được lưu bền vững trong SQLite tại:
+Các bản ghi tác vụ và trạng thái gửi được lưu bền vững trong cơ sở dữ liệu trạng thái SQLite dùng chung của OpenClaw:
 
 ```
-$OPENCLAW_STATE_DIR/tasks/runs.sqlite
+~/.openclaw/state/openclaw.sqlite   (các bảng: task_runs, task_delivery_state, flow_runs)
 ```
 
-Sổ đăng ký được nạp vào bộ nhớ khi Gateway khởi động và đồng bộ các lần ghi vào SQLite để bền vững qua các lần khởi động lại.
-Gateway giữ cho nhật ký ghi trước của SQLite có giới hạn bằng cách dùng ngưỡng autocheckpoint mặc định của SQLite cùng với các checkpoint `PASSIVE` định kỳ. Các checkpoint khi tắt và khi bảo trì rõ ràng vẫn dùng `TRUNCATE` để các lần đóng thông thường có thể thu hồi dung lượng WAL mà không bắt sweeper nền chờ các trình đọc đang hoạt động.
+Đặt `OPENCLAW_STATE_DIR` để chuyển toàn bộ thư mục gốc trạng thái (mặc định là `~/.openclaw`) sang vị trí khác; đường dẫn cơ sở dữ liệu dùng chung cũng di chuyển theo.
+
+Sổ đăng ký được nạp vào bộ nhớ trong lần sử dụng đầu tiên và mọi thao tác ghi đều được lưu trở lại SQLite, vì vậy các bản ghi vẫn tồn tại sau khi Gateway khởi động lại. Mức tăng trưởng của WAL được giới hạn bằng ngưỡng điểm kiểm tra tự động mặc định của SQLite cùng các điểm kiểm tra `PASSIVE` định kỳ; khi tắt và khi bảo trì rõ ràng, các điểm kiểm tra sử dụng `TRUNCATE` để quá trình đóng thông thường thu hồi không gian WAL mà không khiến trình quét nền phải chờ các trình đọc đang hoạt động.
+
+Các kho tệp phụ trợ cũ từ những bản cài đặt trước (`tasks/runs.sqlite`, `flows/registry.sqlite`) được `openclaw doctor` nhập vào cơ sở dữ liệu dùng chung.
 
 ### Bảo trì tự động
 
-Một sweeper chạy mỗi **60 giây** và xử lý bốn việc:
+Một trình quét chạy mỗi **60 giây** (lượt đầu tiên khoảng 5 giây sau khi Gateway khởi động) và xử lý bốn việc:
 
 <Steps>
-  <Step title="Đối soát">
-    Kiểm tra xem các tác vụ đang hoạt động còn có nền tảng runtime có thẩm quyền hay không. Các tác vụ ACP/subagent dùng trạng thái phiên con, tác vụ cron dùng quyền sở hữu job đang hoạt động, và tác vụ CLI có danh tính lần chạy dùng ngữ cảnh lần chạy đang sở hữu. Nếu trạng thái nền tảng đó biến mất hơn 5 phút, tác vụ được đánh dấu `lost`.
+  <Step title="Reconciliation">
+    Kiểm tra xem các tác vụ đang hoạt động còn có nền tảng runtime có thẩm quyền hay không. Tác vụ ACP yêu cầu một lượt xử lý trực tiếp trong tiến trình, tác vụ tác nhân phụ sử dụng trạng thái phiên con, tác vụ cron sử dụng quyền sở hữu công việc đang hoạt động cùng lịch sử chạy bền vững và tác vụ CLI có danh tính lượt chạy sử dụng ngữ cảnh lượt chạy đang sở hữu. Nếu trạng thái nền tảng đã biến mất hơn 5 phút (30 phút đối với tác vụ tác nhân phụ nguyên bản không có tác nhân con), tác vụ được đánh dấu là `lost`.
   </Step>
-  <Step title="Sửa chữa phiên ACP">
-    Đóng các phiên ACP một lượt do cha sở hữu đã kết thúc hoặc mồ côi, và chỉ đóng các phiên ACP bền bỉ đã kết thúc hoặc mồ côi đã cũ khi không còn ràng buộc hội thoại đang hoạt động.
+  <Step title="ACP session repair">
+    Đóng các phiên ACP dùng một lần do tác vụ cha sở hữu đã kết thúc hoặc bị mất liên kết, đồng thời chỉ đóng các phiên ACP bền vững đã cũ, đã kết thúc hoặc bị mất liên kết khi không còn liên kết hội thoại nào đang hoạt động.
   </Step>
-  <Step title="Đóng dấu dọn dẹp">
-    Đặt dấu thời gian `cleanupAfter` trên các tác vụ kết thúc (endedAt + 7 ngày). Trong thời gian giữ lại, các tác vụ bị mất vẫn xuất hiện trong kiểm toán dưới dạng cảnh báo; sau khi `cleanupAfter` hết hạn hoặc khi thiếu siêu dữ liệu dọn dẹp, chúng là lỗi.
+  <Step title="Cleanup stamping">
+    Đặt dấu thời gian `cleanupAfter` cho các tác vụ đã kết thúc (thời điểm kết thúc + khoảng thời gian lưu giữ). Trong thời gian lưu giữ, các tác vụ bị mất vẫn xuất hiện dưới dạng cảnh báo khi kiểm tra; sau khi `cleanupAfter` hết hạn hoặc khi thiếu siêu dữ liệu dọn dẹp, chúng trở thành lỗi.
   </Step>
-  <Step title="Cắt tỉa">
-    Xóa các bản ghi đã quá ngày `cleanupAfter`.
+  <Step title="Pruning">
+    Xóa các bản ghi đã qua ngày `cleanupAfter`.
   </Step>
 </Steps>
 
 <Note>
-**Thời gian giữ lại:** bản ghi tác vụ kết thúc được giữ trong **7 ngày**, rồi tự động bị cắt tỉa. Không cần cấu hình.
+**Thời gian lưu giữ:** các bản ghi tác vụ đã kết thúc được giữ trong **7 ngày** (các bản ghi `lost` trong **24 giờ**), sau đó tự động bị loại bỏ. Không cần cấu hình.
 </Note>
 
-## Cách tác vụ liên quan đến các hệ thống khác
+## Mối quan hệ giữa tác vụ và các hệ thống khác
 
 <AccordionGroup>
-  <Accordion title="Tác vụ và Task Flow">
-    [Task Flow](/vi/automation/taskflow) là lớp điều phối flow phía trên các tác vụ nền. Một flow đơn có thể điều phối nhiều tác vụ trong suốt vòng đời của nó bằng các chế độ đồng bộ được quản lý hoặc phản chiếu. Dùng `openclaw tasks` để kiểm tra từng bản ghi tác vụ và `openclaw tasks flow` để kiểm tra flow điều phối.
-
-    Xem [Task Flow](/vi/automation/taskflow) để biết chi tiết.
+  <Accordion title="Tasks and Task Flow">
+    [Luồng tác vụ](/vi/automation/taskflow) là lớp điều phối luồng phía trên các tác vụ nền. Một luồng có thể phối hợp nhiều tác vụ trong suốt vòng đời của nó bằng các chế độ đồng bộ được quản lý hoặc phản chiếu. Dùng `openclaw tasks` để kiểm tra từng bản ghi tác vụ và `openclaw tasks flow` để kiểm tra luồng điều phối.
 
   </Accordion>
-  <Accordion title="Tác vụ và cron">
-    Định nghĩa job Cron, trạng thái thực thi runtime và lịch sử lần chạy nằm trong cơ sở dữ liệu trạng thái SQLite dùng chung của OpenClaw. **Mọi** lần thực thi cron đều tạo một bản ghi tác vụ - cả phiên chính và cô lập. Tác vụ cron phiên chính mặc định dùng chính sách thông báo `silent` để chúng theo dõi mà không tạo thông báo.
+  <Accordion title="Tasks and cron">
+    Định nghĩa công việc Cron, trạng thái thực thi runtime và lịch sử chạy nằm trong cơ sở dữ liệu trạng thái SQLite dùng chung của OpenClaw. **Mọi** lần thực thi cron đều tạo một bản ghi tác vụ — cả trong phiên chính lẫn phiên cô lập — với chính sách thông báo `silent`, vì vậy các lượt chạy cron được theo dõi mà không tự tạo thông báo tác vụ.
 
-    Xem [Cron Jobs](/vi/automation/cron-jobs).
+    Xem [Công việc Cron](/vi/automation/cron-jobs).
 
   </Accordion>
-  <Accordion title="Tác vụ và heartbeat">
-    Các lần chạy Heartbeat là lượt phiên chính - chúng không tạo bản ghi tác vụ. Khi một tác vụ hoàn tất, nó có thể kích hoạt đánh thức heartbeat để bạn thấy kết quả kịp thời.
+  <Accordion title="Tasks and heartbeat">
+    Các lượt chạy Heartbeat là các lượt xử lý của phiên chính — chúng không tạo bản ghi tác vụ. Khi một tác vụ hoàn tất, nó có thể kích hoạt đánh thức Heartbeat để bạn nhanh chóng thấy kết quả.
 
     Xem [Heartbeat](/vi/gateway/heartbeat).
 
   </Accordion>
-  <Accordion title="Tác vụ và phiên">
-    Một tác vụ có thể tham chiếu `childSessionKey` (nơi công việc chạy) và `requesterSessionKey` (người đã bắt đầu nó). `agentId` của nó xác định agent thực thi công việc, trong khi các trường requester và owner giữ lại ngữ cảnh khởi chạy và điều khiển. Phiên là ngữ cảnh hội thoại; tác vụ là lớp theo dõi hoạt động phía trên đó.
+  <Accordion title="Tasks and sessions">
+    Một tác vụ có thể tham chiếu đến `childSessionKey` (nơi công việc chạy) và `requesterSessionKey` (bên đã khởi chạy tác vụ). `agentId` xác định tác nhân thực thi công việc, trong khi các trường bên yêu cầu và chủ sở hữu lưu giữ ngữ cảnh khởi chạy và điều khiển. Phiên là ngữ cảnh hội thoại; tác vụ là lớp theo dõi hoạt động nằm trên ngữ cảnh đó.
   </Accordion>
-  <Accordion title="Tác vụ và lần chạy agent">
-    `runId` của tác vụ liên kết đến lần chạy agent đang thực hiện công việc. Các sự kiện vòng đời agent (bắt đầu, kết thúc, lỗi) tự động cập nhật trạng thái tác vụ - bạn không cần quản lý vòng đời theo cách thủ công.
+  <Accordion title="Tasks and agent runs">
+    `runId` của tác vụ liên kết đến lượt chạy tác nhân đang thực hiện công việc. Các sự kiện vòng đời tác nhân (bắt đầu, kết thúc, lỗi) tự động cập nhật trạng thái tác vụ — bạn không cần quản lý vòng đời theo cách thủ công.
   </Accordion>
 </AccordionGroup>
 
-## Liên quan
+## Nội dung liên quan
 
-- [Tự động hóa](/vi/automation) - tất cả cơ chế tự động hóa trong nháy mắt
+- [Tự động hóa](/vi/automation) - tổng quan nhanh về tất cả cơ chế tự động hóa
 - [CLI: Tác vụ](/vi/cli/tasks) - tài liệu tham khảo lệnh CLI
-- [Heartbeat](/vi/gateway/heartbeat) - các lượt phiên chính định kỳ
-- [Tác vụ đã lên lịch](/vi/automation/cron-jobs) - lên lịch công việc nền
-- [Task Flow](/vi/automation/taskflow) - điều phối flow phía trên tác vụ
+- [Heartbeat](/vi/gateway/heartbeat) - các lượt xử lý định kỳ của phiên chính
+- [Tác vụ theo lịch](/vi/automation/cron-jobs) - lập lịch công việc nền
+- [Luồng tác vụ](/vi/automation/taskflow) - điều phối luồng phía trên các tác vụ

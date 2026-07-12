@@ -1,52 +1,49 @@
 ---
 read_when:
-    - Anda sedang membangun Plugin backend CLI AI lokal
-    - Anda ingin mendaftarkan backend untuk ref model seperti acme-cli/model
+    - Anda sedang membuat Plugin backend CLI AI lokal
+    - Anda ingin mendaftarkan backend untuk referensi model seperti acme-cli/model
     - Anda perlu memetakan CLI pihak ketiga ke runner fallback teks OpenClaw
 sidebarTitle: CLI backend plugins
-summary: Buat Plugin yang mendaftarkan backend CLI AI lokal
+summary: Buat plugin yang mendaftarkan backend CLI AI lokal
 title: Membangun plugin backend CLI
 x-i18n:
-    generated_at: "2026-06-27T17:44:48Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:23:06Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d91c2b712a821005303c6cbb0ccbd8f263c8c30c5dbd6ed05b842c47c63f0542
+    source_hash: 6448cdac02a03e5fdf0d802a54189998d97c08769b1b85c8d9963301fa2c5b79
     source_path: plugins/cli-backend-plugins.md
     workflow: 16
 ---
 
-Plugin backend CLI memungkinkan OpenClaw memanggil CLI AI lokal sebagai backend
-inferensi teks. Backend muncul sebagai prefiks provider dalam ref model:
+Plugin backend CLI memungkinkan OpenClaw memanggil CLI AI lokal sebagai backend inferensi teks. Backend muncul sebagai prefiks penyedia dalam referensi model:
 
 ```text
 acme-cli/acme-large
 ```
 
-Gunakan backend CLI ketika integrasi upstream sudah diekspos sebagai perintah
-lokal, ketika CLI memiliki status login lokal, atau ketika CLI berguna sebagai
-fallback jika provider API tidak tersedia.
+Gunakan backend CLI ketika integrasi upstream sudah tersedia sebagai perintah lokal, ketika CLI mengelola status login lokal, atau sebagai fallback ketika penyedia API tidak tersedia.
 
 <Info>
-  Jika layanan upstream mengekspos API model HTTP biasa, tulis
-  [Plugin provider](/id/plugins/sdk-provider-plugins) sebagai gantinya. Jika runtime
-  upstream memiliki sesi agen lengkap, peristiwa tool, Compaction, atau status
-  tugas latar belakang, gunakan [harness agen](/id/plugins/sdk-agent-harness).
+  Jika layanan upstream menyediakan API model HTTP biasa, buat
+  [plugin penyedia](/id/plugins/sdk-provider-plugins) sebagai gantinya. Jika runtime upstream
+  mengelola sesi agen lengkap, peristiwa alat, Compaction, atau status tugas
+  latar belakang, gunakan [harness agen](/id/plugins/sdk-agent-harness).
 </Info>
 
-## Yang dimiliki Plugin
+## Yang dikelola plugin
 
 Plugin backend CLI memiliki tiga kontrak:
 
-| Kontrak              | File                   | Tujuan                                                    |
-| -------------------- | ---------------------- | --------------------------------------------------------- |
-| Entri paket          | `package.json`         | Mengarahkan OpenClaw ke modul runtime Plugin              |
-| Kepemilikan manifest | `openclaw.plugin.json` | Mendeklarasikan id backend sebelum runtime dimuat         |
-| Registrasi runtime   | `index.ts`             | Memanggil `api.registerCliBackend(...)` dengan default perintah |
+| Kontrak              | File                   | Tujuan                                                        |
+| -------------------- | ---------------------- | ------------------------------------------------------------- |
+| Entri paket          | `package.json`         | Mengarahkan OpenClaw ke modul runtime plugin                   |
+| Kepemilikan manifes  | `openclaw.plugin.json` | Mendeklarasikan ID backend sebelum runtime dimuat              |
+| Pendaftaran runtime  | `index.ts`             | Memanggil `api.registerCliBackend(...)` dengan nilai baku perintah |
 
-Manifest adalah metadata discovery. Manifest tidak mengeksekusi CLI dan tidak
-mendaftarkan perilaku runtime. Perilaku runtime dimulai ketika entri Plugin
-memanggil `api.registerCliBackend(...)`.
+Manifes merupakan metadata penemuan: manifes tidak menjalankan CLI atau mendaftarkan
+perilaku runtime. Perilaku runtime dimulai ketika entri plugin memanggil
+`api.registerCliBackend(...)`.
 
 ## Plugin backend minimal
 
@@ -77,10 +74,9 @@ memanggil `api.registerCliBackend(...)`.
     }
     ```
 
-    Paket yang dipublikasikan harus menyertakan file runtime JavaScript yang
-    sudah dibangun. Jika entri sumber Anda adalah `./src/index.ts`, tambahkan
-    `openclaw.runtimeExtensions` yang menunjuk ke peer JavaScript hasil build.
-    Lihat [Titik entri](/id/plugins/sdk-entrypoints).
+    Paket yang dipublikasikan harus menyertakan file runtime JavaScript yang telah dibangun. Jika entri
+    sumber Anda adalah `./src/index.ts`, tambahkan `openclaw.runtimeExtensions` yang menunjuk ke
+    padanan JavaScript hasil pembangunan. Lihat [Titik entri](/id/plugins/sdk-entrypoints).
 
   </Step>
 
@@ -105,14 +101,13 @@ memanggil `api.registerCliBackend(...)`.
     }
     ```
 
-    `cliBackends` adalah daftar kepemilikan runtime. Ini memungkinkan OpenClaw
-    memuat Plugin secara otomatis ketika konfigurasi atau pemilihan model
-    menyebut `acme-cli/...`.
+    `cliBackends` adalah daftar kepemilikan runtime; daftar ini memungkinkan OpenClaw memuat otomatis
+    plugin ketika konfigurasi atau pemilihan model menyebutkan `acme-cli/...`.
 
-    `setup.cliBackends` adalah permukaan setup berbasis descriptor terlebih
-    dahulu. Tambahkan ini ketika discovery model, onboarding, atau status perlu
-    mengenali backend tanpa memuat runtime Plugin. Gunakan `requiresRuntime:
-    false` hanya ketika descriptor statis tersebut cukup untuk setup.
+    `setup.cliBackends` adalah permukaan penyiapan yang mengutamakan deskriptor. Tambahkan ini ketika
+    penemuan model, orientasi awal, atau status harus mengenali backend
+    tanpa memuat runtime plugin. Gunakan `requiresRuntime: false` hanya ketika
+    deskriptor statis tersebut sudah mencukupi untuk penyiapan.
 
   </Step>
 
@@ -171,92 +166,127 @@ memanggil `api.registerCliBackend(...)`.
     });
     ```
 
-    Id backend harus cocok dengan entri `cliBackends` di manifest. `config` yang
-    didaftarkan hanyalah default; konfigurasi pengguna di bawah
-    `agents.defaults.cliBackends.acme-cli` digabungkan di atasnya saat runtime.
+    ID backend harus cocok dengan entri `cliBackends` dalam manifes.
+    `config` yang didaftarkan hanyalah nilai baku; konfigurasi pengguna di bawah
+    `agents.defaults.cliBackends.acme-cli` digabungkan menimpanya saat runtime.
 
   </Step>
 </Steps>
 
 ## Bentuk konfigurasi
 
-`CliBackendConfig` menjelaskan bagaimana OpenClaw harus meluncurkan dan
-mengurai CLI:
+`CliBackendConfig` menjelaskan cara OpenClaw harus meluncurkan dan mengurai CLI:
 
-| Field                                     | Use                                                         |
-| ----------------------------------------- | ----------------------------------------------------------- |
-| `command`                                 | Nama binary atau path perintah absolut                      |
-| `args`                                    | argv dasar untuk run baru                                   |
-| `resumeArgs`                              | argv alternatif untuk sesi yang dilanjutkan; mendukung `{sessionId}` |
-| `output` / `resumeOutput`                 | Parser: `json`, `jsonl`, atau `text`                        |
-| `input`                                   | Transport prompt: `arg` atau `stdin`                        |
-| `modelArg`                                | Flag yang digunakan sebelum id model                        |
-| `modelAliases`                            | Memetakan id model OpenClaw ke id native CLI                |
-| `sessionArg` / `sessionArgs`              | Cara meneruskan id sesi                                     |
-| `sessionMode`                             | `always`, `existing`, atau `none`                           |
-| `sessionIdFields`                         | Field JSON yang dibaca OpenClaw dari output CLI             |
-| `systemPromptArg` / `systemPromptFileArg` | Transport system prompt                                     |
-| `systemPromptWhen`                        | `first`, `always`, atau `never`                             |
-| `imageArg` / `imageMode`                  | Dukungan path gambar                                        |
-| `serialize`                               | Menjaga run backend yang sama tetap berurutan               |
-| `reliability.watchdog`                    | Penyetelan timeout tanpa output                             |
+| Bidang                                                    | Penggunaan                                                                         |
+| --------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `command`                                                 | Nama biner atau jalur perintah absolut                                             |
+| `args`                                                    | Argumen argv dasar untuk eksekusi baru                                             |
+| `resumeArgs`                                              | Argumen argv alternatif untuk sesi yang dilanjutkan; mendukung `{sessionId}`       |
+| `output` / `resumeOutput`                                 | Pengurai: `json`, `jsonl`, atau `text`                                             |
+| `jsonlDialect`                                            | Dialek peristiwa JSONL: `claude-stream-json` atau `gemini-stream-json`             |
+| `liveSession`                                             | Mode proses CLI berumur panjang (`claude-stdio`)                                   |
+| `input`                                                   | Transportasi prompt: `arg` atau `stdin`                                            |
+| `maxPromptArgChars`                                       | Panjang maksimum prompt untuk mode `arg` sebelum beralih ke stdin                  |
+| `env` / `clearEnv`                                        | Variabel lingkungan tambahan yang disuntikkan, atau nama yang dihapus sebelum peluncuran |
+| `modelArg`                                                | Flag yang digunakan sebelum ID model                                               |
+| `modelAliases`                                            | Memetakan ID model OpenClaw ke ID asli CLI                                         |
+| `sessionArg` / `sessionArgs`                              | Cara meneruskan ID sesi                                                            |
+| `sessionMode`                                             | `always`, `existing`, atau `none`                                                  |
+| `sessionIdFields`                                         | Bidang JSON yang dibaca OpenClaw dari keluaran CLI                                 |
+| `systemPromptArg` / `systemPromptFileArg`                 | Transportasi prompt sistem                                                        |
+| `systemPromptFileConfigArg` / `systemPromptFileConfigKey` | Transportasi penggantian konfigurasi untuk file prompt sistem (misalnya `-c`)      |
+| `systemPromptMode`                                        | `append` atau `replace`                                                            |
+| `systemPromptWhen`                                        | `first`, `always`, atau `never`                                                    |
+| `imageArg` / `imageMode`                                  | Flag jalur gambar dan cara meneruskan beberapa gambar (`repeat` atau `list`)       |
+| `imagePathScope`                                          | Lokasi file gambar yang disiapkan sebelum diserahkan: `temp` atau `workspace`      |
+| `serialize`                                               | Menjaga urutan eksekusi pada backend yang sama                                     |
+| `reseedFromRawTranscriptWhenUncompacted`                  | Mengaktifkan pengisian ulang terbatas dari transkrip mentah sebelum Compaction untuk pengaturan ulang sesi yang aman |
+| `reliability.outputLimits`                                | Jumlah maksimum karakter/baris JSONL mentah yang dipertahankan untuk satu giliran CLI langsung (backend sesi langsung) |
+| `reliability.watchdog`                                    | Penyesuaian batas waktu tanpa keluaran, terpisah untuk eksekusi baru dan lanjutan  |
 
-Pilih konfigurasi statis terkecil yang cocok dengan CLI. Tambahkan callback
-Plugin hanya untuk perilaku yang benar-benar menjadi milik backend.
+Utamakan konfigurasi statis terkecil yang sesuai dengan CLI. Tambahkan callback plugin
+hanya untuk perilaku yang benar-benar menjadi tanggung jawab backend.
 
 ## Hook backend lanjutan
 
 `CliBackendPlugin` juga dapat mendefinisikan:
 
-| Hook                               | Use                                                                         |
-| ---------------------------------- | --------------------------------------------------------------------------- |
-| `normalizeConfig(config, context)` | Menulis ulang konfigurasi pengguna lama setelah penggabungan                |
-| `resolveExecutionArgs(ctx)`        | Menambahkan flag berbasis request seperti effort berpikir atau isolasi pertanyaan sampingan |
-| `prepareExecution(ctx)`            | Membuat bridge autentikasi atau konfigurasi sementara sebelum peluncuran    |
-| `transformSystemPrompt(ctx)`       | Menerapkan transformasi system prompt khusus CLI terakhir                   |
-| `textTransforms`                   | Penggantian prompt/output dua arah                                          |
-| `defaultAuthProfileId`             | Mengutamakan profil autentikasi OpenClaw tertentu                           |
-| `authEpochMode`                    | Menentukan bagaimana perubahan autentikasi membatalkan sesi CLI tersimpan   |
-| `nativeToolMode`                   | Mendeklarasikan apakah CLI memiliki tool native yang selalu aktif           |
-| `sideQuestionToolMode`             | Mendeklarasikan tool native yang dinonaktifkan untuk pertanyaan sampingan `/btw` |
-| `bundleMcp` / `bundleMcpMode`      | Ikut menggunakan bridge tool MCP local loopback milik OpenClaw              |
-| `ownsNativeCompaction`             | Backend memiliki Compaction sendiri - OpenClaw menundanya                   |
+| Hook                               | Penggunaan                                                                   |
+| ---------------------------------- | ----------------------------------------------------------------------------- |
+| `normalizeConfig(config, context)` | Menulis ulang konfigurasi pengguna lama setelah penggabungan                  |
+| `resolveExecutionArgs(ctx)`        | Menambahkan flag dalam cakupan permintaan, seperti tingkat pemikiran atau isolasi pertanyaan sampingan |
+| `prepareExecution(ctx)`            | Membuat jembatan autentikasi atau konfigurasi sementara sebelum peluncuran    |
+| `transformSystemPrompt(ctx)`       | Menerapkan transformasi akhir prompt sistem khusus CLI                        |
+| `textTransforms`                   | Penggantian prompt/keluaran dua arah                                          |
+| `defaultAuthProfileId`             | Mengutamakan profil autentikasi OpenClaw tertentu                             |
+| `authEpochMode`                    | Menentukan bagaimana perubahan autentikasi membatalkan sesi CLI tersimpan    |
+| `nativeToolMode`                   | Mendeklarasikan apakah alat asli tidak tersedia, selalu aktif, atau dapat dipilih host |
+| `sideQuestionToolMode`             | Mendeklarasikan alat asli yang dinonaktifkan untuk pertanyaan sampingan `/btw` |
+| `bundleMcp` / `bundleMcpMode`      | Mengaktifkan jembatan alat MCP local loopback milik OpenClaw                  |
+| `ownsNativeCompaction`             | Backend mengelola Compaction-nya sendiri - OpenClaw menangguhkannya           |
+| `runtimeArtifact`                  | Membatasi peluncur skrip pada seluruh pohon paket bundelnya                   |
 
-Pertahankan hook ini sebagai milik provider. Jangan menambahkan cabang khusus
-CLI ke core ketika hook backend dapat mengekspresikan perilaku tersebut.
+Pertahankan kepemilikan hook ini pada penyedia. Jangan menambahkan cabang khusus CLI ke inti ketika
+hook backend dapat mengekspresikan perilaku tersebut.
 
-`ctx.executionMode` bernilai `"agent"` untuk giliran normal dan
-`"side-question"` untuk panggilan `/btw` sementara. Gunakan ini ketika CLI
-memerlukan flag sekali pakai yang berbeda, seperti menonaktifkan tool native,
-persistensi sesi, atau perilaku resume untuk BTW. Jika backend biasanya memiliki
-`nativeToolMode: "always-on"` tetapi argv pertanyaan sampingannya secara andal
-menonaktifkan tool tersebut, tetapkan juga `sideQuestionToolMode: "disabled"`;
-jika tidak, OpenClaw akan gagal tertutup ketika BTW memerlukan run CLI tanpa
-tool.
+`runtimeArtifact` dimiliki plugin dan tidak dapat ditimpa oleh pengguna. Nilai ini diperiksa
+hanya ketika satu giliran inferensi langsung membuat atau memvalidasi ulang otoritas penyiapan terverifikasi;
+eksekusi CLI normal tidak memerlukannya. Backend tanpa deklarasi ini tidak dapat
+membuat otoritas penyiapan CLI terverifikasi. Deklarasi `bundled-package-tree` menyebutkan
+pemilik `package.json` yang tepat dan mewajibkan titik entri paket menjadi
+perintahnya. OpenClaw melakukan hash terhadap seluruh pohon paket terpasang yang dibatasi, termasuk
+dependensi bertingkat, dan menolak secara tertutup symlink yang mengalihkan,
+peluncur di luar paket yang dideklarasikan, deklarasi dependensi eksternal
+yang diwajibkan, pohon yang terlalu besar, dan skrip yang tidak dikenal. Deklarasikan ini hanya ketika
+pohon tersebut memuat implementasi inferensi lengkap; integrasi alat opsional
+tidak membuat graf implementasi eksternal menjadi aman.
 
-### `ownsNativeCompaction`: memilih keluar dari Compaction OpenClaw
+Jika backend yang sama juga menyertakan executable asli mandiri, cantumkan
+nama dasar kanonisnya dalam `nativeExecutableNames`. Perintah asli lainnya tetap
+tidak terverifikasi meskipun pengguna menimpa perintah backend.
 
-Jika backend Anda menjalankan agen yang memadatkan transkripnya **sendiri**,
-tetapkan `ownsNativeCompaction: true` agar summarizer pengaman OpenClaw tidak
-pernah berjalan terhadap sesinya - siklus hidup Compaction CLI mengembalikan
-no-op dan giliran berlanjut. `claude-cli` mendeklarasikannya karena Claude Code
-melakukan Compaction secara internal tanpa endpoint harness. Sesi native-harness
-seperti Codex tetap diarahkan ke endpoint Compaction harness-nya.
+`ctx.executionMode` bernilai `"agent"` untuk giliran normal dan `"side-question"` untuk
+panggilan `/btw` sementara. Gunakan ini ketika CLI memerlukan flag sekali jalan yang berbeda,
+seperti menonaktifkan alat native, persistensi sesi, atau perilaku melanjutkan sesi untuk
+BTW. Jika backend biasanya memiliki `nativeToolMode: "always-on"` tetapi argv
+pertanyaan sampingnya secara andal menonaktifkan alat tersebut, tetapkan juga
+`sideQuestionToolMode: "disabled"`; jika tidak, OpenClaw akan gagal secara tertutup ketika BTW
+memerlukan eksekusi CLI tanpa alat.
 
-**Deklarasikan hanya ketika semua hal berikut berlaku**, atau sesi tertunda yang
-melebihi anggaran dapat tetap melebihi anggaran / menjadi usang (OpenClaw tidak
-lagi menyelamatkannya):
+Tetapkan `nativeToolMode: "selectable"` hanya jika `resolveExecutionArgs` dapat menonaktifkan
+setiap alat native backend untuk satu eksekusi. Untuk eksekusi terbatas tersebut,
+`ctx.toolAvailability.native` adalah tuple kosong dan
+`ctx.toolAvailability.mcp` adalah daftar izin MCP terisolasi host yang persis. Hook tersebut
+harus mengganti flag alat yang berkonflik dan mengembalikan argv yang memberlakukan kedua nilai;
+OpenClaw memanggilnya sekali dengan argv baru atau lanjutan final dan gagal secara tertutup ketika
+backend tidak dapat memberlakukan pembatasan. Nama MCP dalam konteks ini aman
+untuk disetujui otomatis hanya karena host telah membatasi konfigurasi MCP yang dihasilkan
+ke server dan alat tersebut.
 
-- backend secara andal melakukan Compaction atau membatasi transkripnya sendiri saat mendekati jendelanya;
-- backend mempertahankan sesi yang dapat dilanjutkan agar status yang telah dipadatkan bertahan lintas giliran
-  (mis. `--resume` / `--session-id`);
-- ini bukan sesi Compaction native-harness - sesi yang cocok dengan `agentHarnessId`
-  diarahkan ke endpoint harness sebagai gantinya.
+### `ownsNativeCompaction`: tidak menggunakan Compaction OpenClaw
 
-## Bridge tool MCP
+Jika backend Anda menjalankan agen yang memadatkan transkripnya **sendiri**, tetapkan
+`ownsNativeCompaction: true` agar peringkas pengaman OpenClaw tidak pernah dijalankan
+terhadap sesinya—siklus hidup Compaction CLI tidak melakukan apa pun dan
+giliran berlanjut. `claude-cli` mendeklarasikannya karena Claude Code melakukan Compaction
+secara internal tanpa endpoint harness. Sesi harness native seperti Codex
+tetap diarahkan ke endpoint Compaction harness masing-masing.
 
-Backend CLI tidak menerima tool OpenClaw secara default. Jika CLI dapat
-mengonsumsi konfigurasi MCP, aktifkan secara eksplisit:
+**Deklarasikan hanya jika semua hal berikut terpenuhi**, atau sesi tertunda
+yang melebihi anggaran dapat tetap melebihi anggaran atau menjadi kedaluwarsa (OpenClaw tidak lagi
+menyelamatkannya):
+
+- backend secara andal melakukan Compaction atau membatasi transkripnya sendiri saat mendekati
+  jendelanya;
+- backend mempertahankan sesi yang dapat dilanjutkan agar status hasil Compaction bertahan antar-giliran
+  (misalnya `--resume` / `--session-id`);
+- sesi tersebut bukan sesi Compaction harness native—sesi dengan `agentHarnessId` yang cocok
+  diarahkan ke endpoint harness.
+
+## Jembatan alat MCP
+
+Backend CLI tidak menerima alat OpenClaw secara default. Jika CLI dapat menggunakan
+konfigurasi MCP, aktifkan secara eksplisit:
 
 ```typescript
 return {
@@ -271,18 +301,19 @@ return {
 };
 ```
 
-Mode bridge yang didukung adalah:
+Mode jembatan yang didukung:
 
-| Mode                     | Use                                                              |
-| ------------------------ | ---------------------------------------------------------------- |
-| `claude-config-file`     | CLI yang menerima file konfigurasi MCP                           |
-| `codex-config-overrides` | CLI yang menerima override konfigurasi pada argv                 |
+| Mode                     | Penggunaan                                                        |
+| ------------------------ | ----------------------------------------------------------------- |
+| `claude-config-file`     | CLI yang menerima berkas konfigurasi MCP                          |
+| `codex-config-overrides` | CLI yang menerima penggantian konfigurasi pada argv               |
 | `gemini-system-settings` | CLI yang membaca pengaturan MCP dari direktori pengaturan sistemnya |
 
-Aktifkan bridge hanya ketika CLI benar-benar dapat mengonsumsinya. Jika CLI
-memiliki lapisan tool bawaan sendiri yang tidak dapat dinonaktifkan, tetapkan
-`nativeToolMode: "always-on"` agar OpenClaw dapat gagal tertutup ketika pemanggil
-memerlukan tanpa tool native.
+Aktifkan jembatan hanya jika CLI benar-benar dapat menggunakannya. Jika CLI memiliki
+lapisan alat bawaan sendiri yang tidak dapat dinonaktifkan, tetapkan `nativeToolMode:
+"always-on"` agar OpenClaw dapat gagal secara tertutup ketika pemanggil mengharuskan tidak adanya alat
+native. Jika CLI dapat menonaktifkan setiap alat native per eksekusi, gunakan `"selectable"` dengan
+kontrak `resolveExecutionArgs` di atas.
 
 ## Konfigurasi pengguna
 
@@ -302,7 +333,7 @@ Pengguna dapat mengganti default backend apa pun:
         },
       },
       model: {
-        primary: "openai/gpt-5.5",
+        primary: "openai/gpt-5.6-sol",
         fallbacks: ["acme-cli/large"],
       },
     },
@@ -310,43 +341,43 @@ Pengguna dapat mengganti default backend apa pun:
 }
 ```
 
-Dokumentasikan override minimum yang kemungkinan dibutuhkan pengguna. Biasanya
-hanya `command` ketika binary berada di luar `PATH`.
+Dokumentasikan penggantian minimum yang kemungkinan diperlukan pengguna—biasanya hanya
+`command` ketika biner berada di luar `PATH`.
 
 ## Verifikasi
 
-Untuk Plugin bawaan, tambahkan pengujian terfokus pada builder dan registrasi
-setup, lalu jalankan lane pengujian yang ditargetkan untuk Plugin tersebut:
+Untuk Plugin yang dibundel, tambahkan pengujian terfokus pada builder dan registrasi
+penyiapan, lalu jalankan jalur pengujian tertarget Plugin tersebut:
 
 ```bash
 pnpm test extensions/acme-cli
 ```
 
-Untuk Plugin lokal atau terinstal, verifikasi discovery dan satu eksekusi model nyata:
+Untuk Plugin lokal atau terinstal, verifikasi penemuan dan satu eksekusi model nyata:
 
 ```bash
 openclaw plugins inspect acme-cli --runtime --json
 openclaw agent --message "reply exactly: backend ok" --model acme-cli/acme-large
 ```
 
-Jika backend mendukung gambar atau MCP, tambahkan smoke langsung yang membuktikan jalur tersebut
-dengan CLI nyata. Jangan mengandalkan inspeksi statis untuk perilaku prompt, gambar, MCP, atau
-resume sesi.
+Jika backend mendukung gambar atau MCP, tambahkan uji asap langsung yang membuktikan jalur
+tersebut dengan CLI nyata. Jangan mengandalkan pemeriksaan statis untuk perilaku prompt, gambar,
+MCP, atau pelanjutan sesi.
 
-## Checklist
+## Daftar periksa
 
-<Check>`package.json` memiliki `openclaw.extensions` dan entri runtime yang dibangun untuk paket yang dipublikasikan</Check>
+<Check>`package.json` memiliki `openclaw.extensions` dan entri runtime hasil build untuk paket yang dipublikasikan</Check>
 <Check>`openclaw.plugin.json` mendeklarasikan `cliBackends` dan `activation.onStartup` yang disengaja</Check>
-<Check>`setup.cliBackends` ada ketika setup/discovery model harus melihat backend dalam kondisi cold</Check>
-<Check>`api.registerCliBackend(...)` menggunakan id backend yang sama dengan manifest</Check>
-<Check>Override pengguna di bawah `agents.defaults.cliBackends.<id>` tetap menang</Check>
-<Check>Pengaturan sesi, system prompt, gambar, dan parser output cocok dengan kontrak CLI nyata</Check>
-<Check>Pengujian yang ditargetkan dan setidaknya satu smoke CLI langsung membuktikan jalur backend</Check>
+<Check>`setup.cliBackends` tersedia ketika penyiapan/penemuan model harus dapat melihat backend dalam keadaan dingin</Check>
+<Check>`api.registerCliBackend(...)` menggunakan id backend yang sama dengan manifes</Check>
+<Check>Penggantian pengguna di bawah `agents.defaults.cliBackends.<id>` tetap diutamakan</Check>
+<Check>Pengaturan sesi, prompt sistem, gambar, dan parser keluaran sesuai dengan kontrak CLI nyata</Check>
+<Check>Pengujian tertarget dan setidaknya satu uji asap CLI langsung membuktikan jalur backend</Check>
 
 ## Terkait
 
 - [Backend CLI](/id/gateway/cli-backends) - konfigurasi pengguna dan perilaku runtime
-- [Membangun Plugin](/id/plugins/building-plugins) - dasar-dasar paket dan manifest
+- [Membangun Plugin](/id/plugins/building-plugins) - dasar-dasar paket dan manifes
 - [Ikhtisar SDK Plugin](/id/plugins/sdk-overview) - referensi API registrasi
-- [Manifest Plugin](/id/plugins/manifest) - `cliBackends` dan deskriptor setup
+- [Manifes Plugin](/id/plugins/manifest) - `cliBackends` dan deskriptor penyiapan
 - [Harness agen](/id/plugins/sdk-agent-harness) - runtime agen eksternal lengkap

@@ -1,31 +1,26 @@
 ---
 read_when:
-    - Je wilt opgeslagen transcriptoverzichten lezen vanuit de terminal
+    - Je wilt opgeslagen trans samenvattingen vanuit de terminal lezen
     - Je hebt het pad naar een Markdown-samenvatting van transcripties nodig
     - Je debugt de opslagindeling van de kerntranscripten
 summary: CLI-referentie voor `openclaw transcripts` (opgeslagen transcripties weergeven, tonen en lokaliseren)
-title: Transcripten-CLI
+title: Transcripties-CLI
 x-i18n:
-    generated_at: "2026-06-27T17:23:55Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:44:22Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ae6010cfb4e051182f1c48d0d728b30d054542e1e7983ff15a2432840193f9c0
+    source_hash: dde02e924339c64cf6acd5c4b6162785dcfccf4a1df2aac0d9d52d5306511579
     source_path: cli/transcripts.md
     workflow: 16
 ---
 
 # `openclaw transcripts`
 
-Inspecteer transcripties die zijn geschreven door OpenClaw's kern-tool `transcripts`. Deze CLI is
-alleen-lezen; vastleggen, importeren en samenvatten zijn eigendom van de agenttool en
-geconfigureerde automatisch startende bronnen.
+Alleen-lezeninspectie voor transcripties die door de agenttool `transcripts` zijn geschreven.
+Opname, import en samenvatting worden uitgevoerd via die tool, niet via deze CLI.
 
-Gebruik de CLI wanneer je de notities van gisteren wilt vinden, het Markdown-bestand in
-een editor wilt openen, een transcriptie aan een ander hulpmiddel wilt doorgeven, of wilt debuggen waar een sessie op
-schijf is beland. De CLI start of stopt het vastleggen niet.
-
-Artefacten staan onder de OpenClaw-statusmap:
+Artefacten bevinden zich in de statusmap:
 
 ```text
 $OPENCLAW_STATE_DIR/transcripts/YYYY-MM-DD/<session>/
@@ -35,9 +30,9 @@ $OPENCLAW_STATE_DIR/transcripts/YYYY-MM-DD/<session>/
   summary.md
 ```
 
-De standaard statusmap is `~/.openclaw`; stel `OPENCLAW_STATE_DIR` in om een
-andere te gebruiken. De datummap komt van de starttijd van de sessie, en de
-sessiemap is een veilig bestandssysteemsegment dat is afgeleid van de sessie-id.
+De standaardstatusmap is `~/.openclaw`; overschrijf deze met `OPENCLAW_STATE_DIR`.
+De datummap is gebaseerd op de begintijd van de sessie; de sessiemap is
+een bestandssysteemveilige slug die is afgeleid van de sessie-id.
 
 ## Opdrachten
 
@@ -55,51 +50,45 @@ openclaw transcripts show <session> --json
 openclaw transcripts path <session> --json
 ```
 
-- `list`: toon opgeslagen sessies, datumgekwalificeerde selector, starttijd, titel en pad naar `summary.md`.
-- `show <session>`: druk de opgeslagen `summary.md` af.
-- `path <session>`: druk het pad naar `summary.md` af.
-- `path <session> --dir`: druk de sessiemap af.
-- `path <session> --metadata`: druk `metadata.json` af.
-- `path <session> --transcript`: druk `transcript.jsonl` af.
-- `--json`: druk machineleesbare uitvoer af.
+| Opdracht                      | Beschrijving                                           |
+| ----------------------------- | ------------------------------------------------------ |
+| `list`                        | Opgeslagen sessies weergeven.                          |
+| `show <session>`              | De opgeslagen `summary.md` afdrukken.                  |
+| `path <session>`              | Het pad naar `summary.md` afdrukken.                   |
+| `path <session> --dir`        | De sessiemap afdrukken.                                |
+| `path <session> --metadata`   | `metadata.json` afdrukken.                             |
+| `path <session> --transcript` | `transcript.jsonl` afdrukken.                          |
+| `--json`                      | Machineleesbare uitvoer afdrukken (elke subopdracht).  |
 
-Wanneer een menselijke sessie-id op meerdere dagen voorkomt, gebruik je de datumgekwalificeerde selector
-uit `list`, bijvoorbeeld `openclaw transcripts show 2026-05-22/standup`.
-Standaard sessie-id's bevatten een tijdstempel en willekeurig achtervoegsel; configureer vaste
-sessie-id's alleen wanneer ze binnen de dag uniek zijn.
+`<session>` accepteert een losse sessie-id of een datumgekwalificeerde selector
+(`YYYY-MM-DD/<session>`). Gebruik de gekwalificeerde vorm wanneer dezelfde sessie-id
+op meer dan één dag voorkomt, bijvoorbeeld `openclaw transcripts show
+2026-05-22/standup`. Standaard bevatten sessie-id's een tijdstempel en een willekeurig
+achtervoegsel; geef een sessie alleen een vaste id als die id binnen de dag uniek is.
 
 ## Uitvoer
 
-`list` drukt één sessie per regel af:
+`list` drukt per sessie één door tabs gescheiden regel af: selector, begintijd, titel,
+pad naar samenvatting.
 
 ```text
-2026-05-22/standup  2026-05-22T09:00:00.000Z  Weekly standup  /Users/alex/.openclaw/transcripts/2026-05-22/standup/summary.md
+2026-05-22/standup  2026-05-22T09:00:00.000Z  Wekelijks werkoverleg  /Users/user/.openclaw/transcripts/2026-05-22/standup/summary.md
 ```
 
-De uitvoer is door tabs gescheiden. De kolommen zijn selector, starttijd, titel en
-samenvattingspad. De selector is de veiligste waarde om terug te geven aan `show` of `path`.
+De selector is de veiligste waarde om terug te geven aan `show` of `path`.
 
-`list --json` drukt objecten af met:
-
-- `sessionId`
-- `selector`
-- `date`
-- `title`
-- `startedAt`
-- `stoppedAt`
-- `source`
-- `path`
-- `summaryPath`
-- `hasSummary`
+`list --json` retourneert objecten met `sessionId`, `selector`, `date`, `title`,
+`startedAt`, `stoppedAt`, `source`, `path`, `summaryPath`, `hasSummary`.
 
 `show --json` retourneert de opgeslagen sessiemetadata, selector, sessiemap,
-samenvattingspad en Markdown-tekst van de samenvatting. `path --json` retourneert het geselecteerde pad
-en of dat bestand bestaat.
+het pad naar de samenvatting en de Markdown-tekst van de samenvatting.
 
-## Veel vergaderingen per dag
+`path --json` retourneert het geselecteerde pad en of dat bestand bestaat.
 
-Transcripts groepeert sessies op datum en vervolgens op sessie-id. Tien vergaderingen op één
-dag worden tien naast elkaar liggende mappen:
+## Meerdere sessies per dag
+
+Sessies worden eerst op datum en daarna op sessie-id gegroepeerd. Tien vergaderingen
+op één dag worden tien mappen naast elkaar:
 
 ```text
 ~/.openclaw/transcripts/2026-05-22/
@@ -108,23 +97,24 @@ dag worden tien naast elkaar liggende mappen:
   standup/
 ```
 
-Gebruik standaard gegenereerde id's voor de meeste automatisering. Gebruik een vaste id zoals `standup`
-alleen wanneer dezelfde id niet twee keer op dezelfde datum wordt gebruikt.
+Gebruik standaard gegenereerde id's voor automatisering. Gebruik alleen een vaste id zoals
+`standup` wanneer deze op dezelfde datum niet opnieuw wordt gebruikt.
 
 ## Ontbrekende samenvattingen
 
-Live sessies schrijven `summary.md` wanneer de sessie stopt. Geïmporteerde transcripties
-schrijven `summary.md` direct na import. Een sessie kan nog steeds in
-`list` verschijnen zonder samenvatting wanneer vastleggen actief is, een provider tijdens het stoppen is mislukt,
-of metadata is geschreven voordat er uitingen binnenkwamen.
+Live sessies schrijven `summary.md` wanneer de sessie stopt; geïmporteerde transcripties
+schrijven dit bestand direct na het importeren. Een sessie kan zonder samenvatting in
+`list` verschijnen terwijl de opname nog actief is, als een provider tijdens het stoppen
+is mislukt of als metadata is geschreven voordat er uitingen binnenkwamen.
 
-Gebruik `path <session> --transcript` om de append-only transcriptie te inspecteren, en gebruik
-de toolactie `summarize` van `transcripts` om de Markdown-samenvatting opnieuw te genereren.
+Gebruik `path <session> --transcript` om de onbewerkte alleen-toevoegen-transcriptie te
+inspecteren, of voer de actie `summarize` van de tool `transcripts` uit om de
+Markdown-samenvatting opnieuw te genereren.
 
 ## Configuratie
 
-Transcriptievastlegging is opt-in omdat live bronnen kunnen deelnemen aan vergaderingen en
-audio kunnen opnemen. Schakel de tool in met top-level `transcripts.enabled`:
+Opname vereist expliciete inschakeling (live bronnen kunnen deelnemen en vergaderaudio opnemen).
+Schakel deze als volgt in:
 
 ```json
 {
@@ -135,8 +125,14 @@ audio kunnen opnemen. Schakel de tool in met top-level `transcripts.enabled`:
 }
 ```
 
-Configureer automatisch startende bronnen met `transcripts.autoStart` in `openclaw.json`.
-Elke vermelding wordt ingeschakeld doordat deze aanwezig is; laat een vermelding weg om die bron uit te schakelen.
+- `enabled` (standaard `false`): schakel de tool in.
+- `maxUtterances` (standaard `2000`, begrensd op 1-10000): grootte van de uitingenbuffer per
+  sessie.
+
+Configureer automatisch startende bronnen met `transcripts.autoStart`. Elke vermelding wordt
+ingeschakeld door aanwezig te zijn; laat een vermelding weg om die bron uit te schakelen. `discord-voice`
+is de meegeleverde bron met ondersteuning voor automatisch starten en vereist `guildId` en
+`channelId`:
 
 ```json
 {
@@ -147,11 +143,6 @@ Elke vermelding wordt ingeschakeld doordat deze aanwezig is; laat een vermelding
         "providerId": "discord-voice",
         "guildId": "1234567890",
         "channelId": "2345678901"
-      },
-      {
-        "providerId": "slack-huddle",
-        "accountId": "workspace",
-        "channelId": "C123"
       }
     ]
   }

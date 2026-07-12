@@ -1,48 +1,43 @@
 ---
 read_when:
-    - Thiết lập Zalo Personal cho OpenClaw
-    - Gỡ lỗi đăng nhập hoặc luồng tin nhắn Zalo Personal
-summary: Hỗ trợ tài khoản cá nhân Zalo thông qua zca-js gốc (đăng nhập bằng QR), các khả năng và cấu hình
+    - Thiết lập Zalo Cá nhân cho OpenClaw
+    - Gỡ lỗi quy trình đăng nhập hoặc nhắn tin của Zalo Personal
+summary: Hỗ trợ tài khoản Zalo cá nhân thông qua zca-js gốc (đăng nhập bằng mã QR), các tính năng và cấu hình
 title: Zalo cá nhân
 x-i18n:
-    generated_at: "2026-06-27T17:13:19Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:47:04Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: fdd331d118bfc0d9aba90ac5e42c2ba52e010eafba1342bd3523c64642057dc6
+    source_hash: 962697c4a56dfb733fe4973e23129ccb365506e35c09e673365842f45a837949
     source_path: channels/zalouser.md
     workflow: 16
 ---
 
-Trạng thái: thử nghiệm. Tích hợp này tự động hóa **tài khoản Zalo cá nhân** thông qua `zca-js` gốc bên trong OpenClaw.
+Trạng thái: thử nghiệm. Tích hợp này tự động hóa một **tài khoản Zalo cá nhân** thông qua `zca-js` gốc, ngay trong tiến trình, không cần tệp nhị phân CLI bên ngoài.
 
 <Warning>
-Đây là một tích hợp không chính thức và có thể khiến tài khoản bị đình chỉ hoặc cấm. Tự chịu rủi ro khi sử dụng.
+Đây là một tích hợp không chính thức và có thể khiến tài khoản bị đình chỉ hoặc cấm. Bạn tự chịu rủi ro khi sử dụng.
 </Warning>
 
-## Plugin được đóng gói sẵn
+## Cài đặt
 
-Zalo Personal được phát hành dưới dạng Plugin được đóng gói sẵn trong các bản phát hành OpenClaw hiện tại, nên các bản dựng
-đóng gói thông thường không cần cài đặt riêng.
+Zalo Personal là một plugin bên ngoài chính thức, không được đóng gói trong lõi. Hãy cài đặt trước khi sử dụng:
 
-Nếu bạn đang dùng bản dựng cũ hơn hoặc một bản cài đặt tùy chỉnh loại trừ Zalo Personal,
-hãy cài đặt trực tiếp gói npm:
+```bash
+openclaw plugins install @openclaw/zalouser
+```
 
-- Cài đặt qua CLI: `openclaw plugins install @openclaw/zalouser`
-- Phiên bản được ghim: `openclaw plugins install @openclaw/zalouser@2026.5.2`
-- Hoặc từ một checkout mã nguồn: `openclaw plugins install ./path/to/local/zalouser-plugin`
-- Chi tiết: [Plugins](/vi/tools/plugin)
+- Ghim phiên bản: `openclaw plugins install @openclaw/zalouser@<version>`
+- Từ bản sao mã nguồn đã checkout: `openclaw plugins install ./path/to/local/zalouser-plugin`
+- Chi tiết: [Plugin](/vi/tools/plugin)
 
-Không cần binary CLI `zca`/`openzca` bên ngoài.
+## Thiết lập nhanh
 
-## Thiết lập nhanh (người mới bắt đầu)
-
-1. Đảm bảo Plugin Zalo Personal có sẵn.
-   - Các bản phát hành OpenClaw đóng gói hiện tại đã bao gồm Plugin này.
-   - Các bản cài đặt cũ hơn/tùy chỉnh có thể thêm thủ công bằng các lệnh ở trên.
-2. Đăng nhập (QR, trên máy Gateway):
+1. Cài đặt plugin (ở trên).
+2. Đăng nhập (bằng mã QR, trên máy chạy Gateway):
    - `openclaw channels login --channel zalouser`
-   - Quét mã QR bằng ứng dụng Zalo di động.
+   - Quét mã QR bằng ứng dụng Zalo trên thiết bị di động.
 3. Bật kênh:
 
 ```json5
@@ -57,22 +52,20 @@ Không cần binary CLI `zca`/`openzca` bên ngoài.
 ```
 
 4. Khởi động lại Gateway (hoặc hoàn tất thiết lập).
-5. Quyền truy cập DM mặc định dùng ghép cặp; phê duyệt mã ghép cặp khi liên hệ lần đầu.
+5. Quyền truy cập tin nhắn trực tiếp mặc định sử dụng ghép nối; hãy phê duyệt mã ghép nối trong lần liên hệ đầu tiên.
 
 ## Đây là gì
 
-- Chạy hoàn toàn trong tiến trình thông qua `zca-js`.
-- Dùng trình lắng nghe sự kiện gốc để nhận tin nhắn đến.
-- Gửi trả lời trực tiếp qua JS API (văn bản/phương tiện/liên kết).
-- Được thiết kế cho các trường hợp dùng "tài khoản cá nhân" khi Zalo Bot API không có sẵn.
+- Chạy hoàn toàn trong tiến trình thông qua thư viện `zca-js` (không cần tệp nhị phân `zca`/`openzca` bên ngoài).
+- Sử dụng các trình lắng nghe sự kiện gốc (`message`, `error`) để nhận tin nhắn đến.
+- Gửi phản hồi trực tiếp thông qua API JS (văn bản/phương tiện/liên kết).
+- Được thiết kế cho các trường hợp sử dụng "tài khoản cá nhân" khi không có Zalo Bot API.
 
-## Đặt tên
+## Quy ước đặt tên
 
-ID kênh là `zalouser` để thể hiện rõ rằng kênh này tự động hóa một **tài khoản người dùng Zalo cá nhân** (không chính thức). Chúng tôi giữ `zalo` dành riêng cho một tích hợp Zalo API chính thức có thể có trong tương lai.
+ID kênh là `zalouser` để thể hiện rõ rằng tích hợp này tự động hóa một **tài khoản người dùng Zalo cá nhân** (không chính thức). `zalo` được dành riêng cho một tích hợp API Zalo chính thức có thể xuất hiện trong tương lai.
 
 ## Tìm ID (danh bạ)
-
-Dùng CLI danh bạ để khám phá các đối tượng ngang hàng/nhóm và ID của họ:
 
 ```bash
 openclaw directory self --channel zalouser
@@ -82,36 +75,34 @@ openclaw directory groups list --channel zalouser --query "work"
 
 ## Giới hạn
 
-- Văn bản gửi đi được chia thành các đoạn khoảng ~2000 ký tự (giới hạn của ứng dụng Zalo).
-- Streaming bị chặn theo mặc định.
+- Văn bản gửi đi được chia thành các đoạn dài tối đa 2000 ký tự (giới hạn của ứng dụng Zalo).
+- Không hỗ trợ truyền phát trực tiếp.
 
-## Kiểm soát truy cập (DM)
+## Kiểm soát quyền truy cập (tin nhắn trực tiếp)
 
-`channels.zalouser.dmPolicy` hỗ trợ: `pairing | allowlist | open | disabled` (mặc định: `pairing`).
+`channels.zalouser.dmPolicy`: `pairing | allowlist | open | disabled` (mặc định: `pairing`).
 
-`channels.zalouser.allowFrom` nên dùng ID người dùng Zalo ổn định. Nó cũng có thể tham chiếu các nhóm truy cập người gửi tĩnh (`accessGroup:<name>`). Trong quá trình thiết lập tương tác, các tên đã nhập có thể được phân giải thành ID bằng tra cứu liên hệ trong tiến trình của Plugin.
+`channels.zalouser.allowFrom` nên sử dụng ID người dùng Zalo ổn định. Trường này cũng có thể tham chiếu các nhóm truy cập người gửi tĩnh (`accessGroup:<name>`). Trong quá trình thiết lập tương tác, tên đã nhập có thể được phân giải thành ID bằng chức năng tra cứu liên hệ trong tiến trình của plugin.
 
-Nếu một tên thô vẫn còn trong cấu hình, khi khởi động chỉ phân giải tên đó khi đã bật `channels.zalouser.dangerouslyAllowNameMatching: true`. Nếu không chọn tham gia, kiểm tra người gửi trong runtime chỉ dùng ID và các tên thô bị bỏ qua khi cấp quyền.
+Nếu tên thô vẫn còn trong cấu hình, quá trình khởi động chỉ phân giải tên đó khi `channels.zalouser.dangerouslyAllowNameMatching: true` được bật. Nếu không chủ động bật tùy chọn này, việc kiểm tra người gửi khi chạy chỉ dựa trên ID và các tên thô sẽ bị bỏ qua khi cấp quyền.
 
 Phê duyệt bằng:
 
 - `openclaw pairing list zalouser`
 - `openclaw pairing approve zalouser <code>`
 
-## Truy cập nhóm (tùy chọn)
+## Quyền truy cập nhóm (tùy chọn)
 
-- Mặc định: `channels.zalouser.groupPolicy = "open"` (cho phép nhóm). Dùng `channels.defaults.groupPolicy` để ghi đè mặc định khi chưa đặt.
-- Giới hạn vào danh sách cho phép bằng:
-  - `channels.zalouser.groupPolicy = "allowlist"`
-  - `channels.zalouser.groups` (khóa nên là ID nhóm ổn định; tên chỉ được phân giải thành ID khi khởi động nếu đã bật `channels.zalouser.dangerouslyAllowNameMatching: true`)
-  - `channels.zalouser.groupAllowFrom` (kiểm soát người gửi nào trong các nhóm được phép có thể kích hoạt bot; có thể tham chiếu các nhóm truy cập người gửi tĩnh bằng `accessGroup:<name>`)
-- Chặn tất cả nhóm: `channels.zalouser.groupPolicy = "disabled"`.
-- Trình hướng dẫn cấu hình có thể nhắc nhập danh sách cho phép cho nhóm.
-- Khi khởi động, OpenClaw phân giải tên nhóm/người dùng trong danh sách cho phép thành ID và chỉ ghi log ánh xạ khi đã bật `channels.zalouser.dangerouslyAllowNameMatching: true`.
-- Khớp danh sách cho phép của nhóm mặc định chỉ dùng ID. Các tên chưa phân giải bị bỏ qua khi xác thực trừ khi đã bật `channels.zalouser.dangerouslyAllowNameMatching: true`.
-- `channels.zalouser.dangerouslyAllowNameMatching: true` là chế độ tương thích phá kính khẩn cấp, bật lại phân giải tên có thể thay đổi khi khởi động và khớp tên nhóm trong runtime.
-- Nếu chưa đặt `groupAllowFrom`, runtime sẽ dùng dự phòng `allowFrom` cho các kiểm tra người gửi trong nhóm.
-- Kiểm tra người gửi áp dụng cho cả tin nhắn nhóm thông thường và lệnh điều khiển (ví dụ `/new`, `/reset`).
+- Mặc định: `channels.zalouser.groupPolicy = "allowlist"` (các nhóm cần có mục rõ ràng trong danh sách cho phép).
+- Mở tất cả các nhóm: `channels.zalouser.groupPolicy = "open"`.
+- Chặn tất cả các nhóm: `channels.zalouser.groupPolicy = "disabled"`.
+- Với `groupPolicy = "allowlist"`:
+  - Các khóa trong `channels.zalouser.groups` nên là ID nhóm ổn định; tên chỉ được phân giải thành ID khi khởi động nếu `channels.zalouser.dangerouslyAllowNameMatching: true` được bật.
+  - `channels.zalouser.groupAllowFrom` kiểm soát những người gửi nào trong các nhóm được phép có thể kích hoạt bot; có thể tham chiếu các nhóm truy cập người gửi tĩnh bằng `accessGroup:<name>`.
+- Trình hướng dẫn cấu hình có thể yêu cầu nhập danh sách nhóm được phép.
+- Theo mặc định, việc đối chiếu danh sách nhóm được phép chỉ dựa trên ID. Các tên chưa phân giải sẽ bị bỏ qua khi xác thực, trừ khi `channels.zalouser.dangerouslyAllowNameMatching: true` được bật.
+- `channels.zalouser.dangerouslyAllowNameMatching: true` là chế độ tương thích khẩn cấp, bật lại khả năng phân giải tên có thể thay đổi khi khởi động và đối chiếu tên nhóm trong thời gian chạy.
+- `groupAllowFrom` **không** dự phòng về `allowFrom` đối với tin nhắn nhóm thông thường: nếu để trống trường này trong một nhóm thuộc danh sách cho phép, mọi người gửi đều có thể truy cập nhóm đó. Các lệnh điều khiển đã được cấp quyền (ví dụ `/new`) là ngoại lệ; việc kiểm tra người gửi lệnh sẽ dự phòng về `allowFrom` khi `groupAllowFrom` để trống.
 
 Ví dụ:
 
@@ -122,23 +113,27 @@ Ví dụ:
       groupPolicy: "allowlist",
       groupAllowFrom: ["1471383327500481391"],
       groups: {
-        "123456789": { allow: true },
-        "Work Chat": { allow: true },
+        "123456789": { enabled: true },
+        "Work Chat": { enabled: true },
       },
     },
   },
 }
 ```
 
-### Kiểm soát yêu cầu nhắc trong nhóm
+<Note>
+`channels.zalouser.groups.<id>.allow` là tên trường cũ; cấu hình hiện tại sử dụng `enabled`. `openclaw doctor --fix` tự động di chuyển `allow` sang `enabled`.
+</Note>
 
-- `channels.zalouser.groups.<group>.requireMention` kiểm soát việc trả lời trong nhóm có yêu cầu một lượt nhắc hay không.
-- Thứ tự phân giải: ID/tên nhóm chính xác -> slug nhóm đã chuẩn hóa -> `*` -> mặc định (`true`).
-- Điều này áp dụng cho cả nhóm trong danh sách cho phép và chế độ nhóm mở.
-- Trích dẫn tin nhắn của bot được tính là một lượt nhắc ngầm định để kích hoạt nhóm.
-- Các lệnh điều khiển đã được cấp quyền (ví dụ `/new`) có thể bỏ qua kiểm soát yêu cầu nhắc.
-- Khi một tin nhắn nhóm bị bỏ qua vì yêu cầu lượt nhắc, OpenClaw lưu nó dưới dạng lịch sử nhóm đang chờ và đưa vào tin nhắn nhóm được xử lý tiếp theo.
-- Giới hạn lịch sử nhóm mặc định là `messages.groupChat.historyLimit` (dự phòng `50`). Bạn có thể ghi đè theo từng tài khoản bằng `channels.zalouser.historyLimit`.
+### Yêu cầu đề cập trong nhóm
+
+- `channels.zalouser.groups.<group>.requireMention` kiểm soát việc phản hồi trong nhóm có yêu cầu đề cập hay không.
+- Thứ tự phân giải: ID nhóm -> bí danh `group:<id>` -> tên/slug của nhóm (các ứng viên dựa trên tên chỉ áp dụng khi `dangerouslyAllowNameMatching: true`) -> `*` -> mặc định (`true`).
+- Áp dụng cho cả các nhóm thuộc danh sách cho phép và chế độ nhóm mở.
+- Trích dẫn tin nhắn của bot được tính là một lượt đề cập ngầm để kích hoạt trong nhóm.
+- Các lệnh điều khiển đã được cấp quyền (ví dụ `/new`) có thể bỏ qua yêu cầu đề cập.
+- Khi một tin nhắn nhóm bị bỏ qua do yêu cầu đề cập, OpenClaw lưu tin nhắn đó dưới dạng lịch sử nhóm đang chờ và đưa nó vào tin nhắn nhóm được xử lý tiếp theo.
+- Giới hạn lịch sử nhóm: `channels.zalouser.historyLimit`, sau đó là `messages.groupChat.historyLimit`, rồi giá trị dự phòng `50`.
 
 Ví dụ:
 
@@ -148,8 +143,8 @@ Ví dụ:
     zalouser: {
       groupPolicy: "allowlist",
       groups: {
-        "*": { allow: true, requireMention: true },
-        "Work Chat": { allow: true, requireMention: false },
+        "*": { enabled: true, requireMention: true },
+        "Work Chat": { enabled: true, requireMention: false },
       },
     },
   },
@@ -158,7 +153,7 @@ Ví dụ:
 
 ## Nhiều tài khoản
 
-Tài khoản ánh xạ tới hồ sơ `zalouser` trong trạng thái OpenClaw. Ví dụ:
+Các tài khoản ánh xạ tới hồ sơ `zalouser` trong trạng thái OpenClaw. Ví dụ:
 
 ```json5
 {
@@ -176,50 +171,49 @@ Tài khoản ánh xạ tới hồ sơ `zalouser` trong trạng thái OpenClaw. V
 
 ## Biến môi trường
 
-Plugin Zalo Personal cũng có thể đọc lựa chọn hồ sơ từ biến môi trường:
+Việc chọn hồ sơ cũng có thể dựa trên các biến môi trường:
 
-- `ZALOUSER_PROFILE`: tên hồ sơ cần dùng khi không đặt `profile` trong cấu hình kênh hoặc tài khoản.
-- `ZCA_PROFILE`: tên hồ sơ dự phòng kế thừa, chỉ dùng khi chưa đặt `ZALOUSER_PROFILE`.
+| Biến               | Mục đích                                                                                         |
+| ------------------ | ----------------------------------------------------------------------------------------------- |
+| `ZALOUSER_PROFILE` | Tên hồ sơ cần dùng khi không đặt `profile` trong cấu hình kênh hoặc tài khoản.                   |
+| `ZCA_PROFILE`      | Giá trị dự phòng cũ, chỉ được dùng khi chưa đặt `ZALOUSER_PROFILE`.                              |
 
-Tên hồ sơ chọn thông tin đăng nhập Zalo đã lưu trong trạng thái OpenClaw. Thứ tự phân giải là:
+Tên hồ sơ chọn thông tin xác thực đăng nhập Zalo đã lưu trong trạng thái OpenClaw. Thứ tự phân giải:
 
-1. `profile` rõ ràng trong cấu hình.
+1. `profile` được chỉ định rõ trong cấu hình.
 2. `ZALOUSER_PROFILE`.
 3. `ZCA_PROFILE`.
-4. ID tài khoản cho tài khoản không mặc định, hoặc `default` cho tài khoản mặc định.
+4. ID tài khoản đối với tài khoản không mặc định, hoặc `default` đối với tài khoản mặc định.
 
-Đối với thiết lập nhiều tài khoản, nên đặt `profile` trên từng tài khoản trong cấu hình để
-một biến môi trường không khiến nhiều tài khoản dùng chung cùng một phiên
-đăng nhập.
+Đối với thiết lập nhiều tài khoản, nên đặt `profile` cho từng tài khoản trong cấu hình để một biến môi trường không khiến nhiều tài khoản dùng chung một phiên đăng nhập.
 
-## Nhập liệu, phản ứng và xác nhận giao hàng
+## Trạng thái đang nhập, cảm xúc và xác nhận gửi
 
-- OpenClaw gửi một sự kiện đang nhập trước khi phát một trả lời (nỗ lực tối đa).
-- Hành động phản ứng tin nhắn `react` được hỗ trợ cho `zalouser` trong hành động kênh.
-  - Dùng `remove: true` để xóa một emoji phản ứng cụ thể khỏi tin nhắn.
-  - Ngữ nghĩa phản ứng: [Phản ứng](/vi/tools/reactions)
-- Đối với tin nhắn đến có bao gồm siêu dữ liệu sự kiện, OpenClaw gửi xác nhận đã giao + đã xem (nỗ lực tối đa).
+- OpenClaw gửi sự kiện đang nhập trước khi gửi phản hồi (trong phạm vi khả năng tốt nhất).
+- Hành động cảm xúc tin nhắn `react` được hỗ trợ cho `zalouser` trong các hành động của kênh.
+  - Sử dụng `remove: true` để xóa một emoji cảm xúc cụ thể khỏi tin nhắn.
+  - Ngữ nghĩa cảm xúc: [Cảm xúc](/vi/tools/reactions)
+- Đối với tin nhắn đến có chứa siêu dữ liệu sự kiện, OpenClaw gửi xác nhận đã chuyển + đã xem (trong phạm vi khả năng tốt nhất).
 
 ## Khắc phục sự cố
 
-**Đăng nhập không được giữ lại:**
+**Trạng thái đăng nhập không được duy trì:**
 
 - `openclaw channels status --probe`
 - Đăng nhập lại: `openclaw channels logout --channel zalouser && openclaw channels login --channel zalouser`
 
-**Tên trong danh sách cho phép/nhóm không phân giải được:**
+**Tên trong danh sách cho phép/tên nhóm không được phân giải:**
 
-- Dùng ID số trong `allowFrom`/`groupAllowFrom` và ID nhóm ổn định trong `groups`. Nếu bạn cố ý cần tên bạn bè/nhóm chính xác, hãy bật `channels.zalouser.dangerouslyAllowNameMatching: true`.
+- Sử dụng ID dạng số trong `allowFrom`/`groupAllowFrom` và ID nhóm ổn định trong `groups`. Nếu bạn chủ đích cần sử dụng chính xác tên bạn bè/nhóm, hãy bật `channels.zalouser.dangerouslyAllowNameMatching: true`.
 
-**Đã nâng cấp từ thiết lập cũ dựa trên CLI:**
+**Đã nâng cấp từ thiết lập cũ dựa trên `zca`/CLI bên ngoài:**
 
-- Xóa mọi giả định cũ về tiến trình `zca` bên ngoài.
-- Kênh hiện chạy hoàn toàn trong OpenClaw mà không cần binary CLI bên ngoài.
+- Loại bỏ mọi giả định về tiến trình `zca` bên ngoài; giờ đây kênh chạy hoàn toàn trong tiến trình thông qua `zca-js`, không cần tệp nhị phân CLI bên ngoài.
 
 ## Liên quan
 
-- [Tổng quan kênh](/vi/channels) — tất cả kênh được hỗ trợ
-- [Ghép cặp](/vi/channels/pairing) — xác thực DM và luồng ghép cặp
-- [Nhóm](/vi/channels/groups) — hành vi trò chuyện nhóm và kiểm soát yêu cầu nhắc
-- [Định tuyến kênh](/vi/channels/channel-routing) — định tuyến phiên cho tin nhắn
-- [Bảo mật](/vi/gateway/security) — mô hình truy cập và tăng cường bảo vệ
+- [Tổng quan về kênh](/vi/channels) - tất cả các kênh được hỗ trợ
+- [Ghép nối](/vi/channels/pairing) - quy trình xác thực và ghép nối tin nhắn trực tiếp
+- [Nhóm](/vi/channels/groups) - hành vi trò chuyện nhóm và yêu cầu đề cập
+- [Định tuyến kênh](/vi/channels/channel-routing) - định tuyến phiên cho tin nhắn
+- [Bảo mật](/vi/gateway/security) - mô hình truy cập và tăng cường bảo mật

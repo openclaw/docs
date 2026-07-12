@@ -2,33 +2,23 @@
 read_when:
     - Vuoi cancellare lo stato locale mantenendo installata la CLI
     - Vuoi una simulazione di ciò che verrebbe rimosso
-summary: Riferimento CLI per `openclaw reset` (reimpostare stato/configurazione locali)
+summary: Riferimento della CLI per `openclaw reset` (reimposta stato/configurazione locale)
 title: Reimposta
 x-i18n:
-    generated_at: "2026-04-24T08:34:57Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: e4a4aba32fb44905d079bf2a22e582a3affbe9809eac9af237ce3e48da72b42c
-    source_path: cli/reset.md
-    workflow: 15
+    generated_at: "2026-07-12T06:58:11Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: f18af9c5e187217de4c02f4b55de9a1c94f7246b74056dc660aa172168edcef9
+    source_path: cli/reset.md
+    workflow: 16
 ---
 
 # `openclaw reset`
 
-Reimposta configurazione/stato locali (mantiene installata la CLI).
-
-Opzioni:
-
-- `--scope <scope>`: `config`, `config+creds+sessions` oppure `full`
-- `--yes`: salta le richieste di conferma
-- `--non-interactive`: disabilita i prompt; richiede `--scope` e `--yes`
-- `--dry-run`: stampa le azioni senza rimuovere i file
-
-Esempi:
+Reimposta la configurazione e lo stato locali (mantiene installata la CLI).
 
 ```bash
-openclaw backup create
 openclaw reset
 openclaw reset --dry-run
 openclaw reset --scope config --yes --non-interactive
@@ -36,12 +26,30 @@ openclaw reset --scope config+creds+sessions --yes --non-interactive
 openclaw reset --scope full --yes --non-interactive
 ```
 
-Note:
+## Opzioni
 
-- Esegui prima `openclaw backup create` se vuoi uno snapshot ripristinabile prima di rimuovere lo stato locale.
-- Se ometti `--scope`, `openclaw reset` usa un prompt interattivo per scegliere cosa rimuovere.
+- `--scope <scope>`: `config`, `config+creds+sessions` o `full`
+- `--yes`: ignora le richieste di conferma
+- `--non-interactive`: disabilita le richieste; richiede `--scope` e `--yes`
+- `--dry-run`: mostra le azioni senza rimuovere i file
+
+## Ambiti
+
+| Ambito                  | Rimuove                                                                                                                 | Arresta prima il Gateway |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| `config`                | solo il file di configurazione                                                                                          | no                       |
+| `config+creds+sessions` | file di configurazione, directory OAuth/delle credenziali, directory delle sessioni per agente                          | sì                       |
+| `full`                  | directory dello stato (incluse configurazione e credenziali, se annidate al suo interno), directory dello spazio di lavoro e relative attestazioni | sì                       |
+
+`config+creds+sessions` e `full` arrestano un servizio Gateway gestito in esecuzione prima di eliminare lo stato.
+
+## Note
+
+- Esegui prima `openclaw backup create` per creare un'istantanea ripristinabile prima di rimuovere lo stato locale.
+- Senza `--scope`, `openclaw reset` richiede interattivamente l'ambito da rimuovere.
 - `--non-interactive` è valido solo quando sono impostati sia `--scope` sia `--yes`.
+- Al termine, `config+creds+sessions` e `full` mostrano `Next: openclaw onboard --install-daemon`.
 
-## Correlati
+## Argomenti correlati
 
-- [Riferimento CLI](/it/cli)
+- [Riferimento della CLI](/it/cli)

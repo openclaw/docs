@@ -1,20 +1,20 @@
 ---
 redirect: /plugins/adding-capabilities
-summary: Redirection vers /plugins/adding-capabilities
-title: Ajout de capacités (redirection)
+summary: Rediriger vers /plugins/adding-capabilities
+title: Ajout de fonctionnalités (redirection)
 x-i18n:
-    generated_at: "2026-05-06T07:40:02Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T03:11:34Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: 21ba4dfed555b9f4165ee28066f2c584f539f71416a4aa3b95dde055bc16ab0a
     source_path: tools/capability-cookbook.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Ce guide contributeur a été déplacé vers [Ajouter des capacités](/fr/plugins/adding-capabilities).
+Ce guide de contribution a été déplacé vers [Ajout de fonctionnalités](/fr/plugins/adding-capabilities).
 
-## Associé
+## Voir aussi
 
-- [Internes des Plugins](/fr/plugins/architecture)
-- [Créer des Plugins](/fr/plugins/building-plugins)
+- [Fonctionnement interne des Plugins](/fr/plugins/architecture)
+- [Création de Plugins](/fr/plugins/building-plugins)

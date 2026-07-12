@@ -1,310 +1,157 @@
 ---
 read_when:
     - Menambahkan atau memodifikasi tindakan CLI pesan
-    - Mengubah perilaku saluran keluar
-summary: Referensi CLI untuk `openclaw message` (kirim + tindakan channel)
+    - Mengubah perilaku kanal keluar
+summary: Referensi CLI untuk `openclaw message` (pengiriman + tindakan saluran)
 title: Pesan
 x-i18n:
-    generated_at: "2026-06-27T17:19:22Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:02:10Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4a8a716435313efa41a13ee5c6392eb2e4cfca2ede3e4690b157d26d077f7d56
+    source_hash: e2d1cca9be7cfa7625cac3e440ecb5847d9fab9c545c9267a41a2f99c26c514b
     source_path: cli/message.md
     workflow: 16
 ---
 
 # `openclaw message`
 
-Perintah keluar tunggal untuk mengirim pesan dan tindakan kanal
-(Discord/Google Chat/iMessage/Matrix/Mattermost (plugin)/Microsoft Teams/Signal/Slack/Telegram/WhatsApp).
+Perintah keluar tunggal untuk mengirim pesan dan tindakan saluran melalui
+Discord, Google Chat, iMessage, Matrix, Mattermost (Plugin), Microsoft Teams,
+Signal, Slack, Telegram, dan WhatsApp.
 
-## Penggunaan
-
-```
+```bash
 openclaw message <subcommand> [flags]
 ```
 
-Pemilihan kanal:
+## Pemilihan saluran
 
-- `--channel` wajib jika lebih dari satu kanal dikonfigurasi.
-- Jika tepat satu kanal dikonfigurasi, kanal itu menjadi default.
-- Nilai: `discord|googlechat|imessage|matrix|mattermost|msteams|signal|slack|telegram|whatsapp` (Mattermost memerlukan plugin)
-- `openclaw message` menyelesaikan kanal yang dipilih ke plugin pemiliknya saat `--channel` atau target berprefiks kanal tersedia; jika tidak, perintah ini memuat plugin kanal yang dikonfigurasi untuk inferensi kanal default.
+- `--channel <name>` wajib digunakan jika lebih dari satu saluran dikonfigurasi;
+  jika tepat satu saluran dikonfigurasi, saluran tersebut menjadi bawaan.
+- Nilai: `discord|googlechat|imessage|matrix|mattermost|msteams|signal|slack|telegram|whatsapp`
+  (Mattermost memerlukan Plugin).
+- Target dengan prefiks saluran (misalnya `discord:channel:123`) menentukan
+  Plugin pemilik tanpa `--channel` eksplisit.
 
-Format target (`--target`):
+## Format target (`-t, --target`)
 
-- WhatsApp: E.164, JID grup, atau JID Kanal/Buletin WhatsApp (`...@newsletter`)
-- Telegram: id chat, `@username`, atau target topik forum (`-1001234567890:topic:42`, atau `--thread-id 42`)
-- Discord: `channel:<id>` atau `user:<id>` (atau sebutan `<@id>`; id numerik mentah diperlakukan sebagai kanal)
-- Google Chat: `spaces/<spaceId>` atau `users/<userId>`
-- Slack: `channel:<id>` atau `user:<id>` (id kanal mentah diterima)
-- Mattermost (plugin): `channel:<id>`, `user:<id>`, atau `@username` (id polos diperlakukan sebagai kanal)
-- Signal: `+E.164`, `group:<id>`, `signal:+E.164`, `signal:group:<id>`, atau `username:<name>`/`u:<name>`
-- iMessage: handle, `chat_id:<id>`, `chat_guid:<guid>`, atau `chat_identifier:<id>`
-- Matrix: `@user:server`, `!room:server`, atau `#alias:server`
-- Microsoft Teams: id percakapan (`19:...@thread.tacv2`) atau `conversation:<id>` atau `user:<aad-object-id>`
+| Saluran             | Format                                                                                                                   |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Discord             | `channel:<id>`, `user:<id>`, penyebutan `<@id>`, atau ID numerik polos (diperlakukan sebagai ID saluran)                 |
+| Google Chat         | `spaces/<spaceId>` atau `users/<userId>`                                                                                 |
+| iMessage            | alamat, `chat_id:<id>`, `chat_guid:<guid>`, atau `chat_identifier:<id>`                                                  |
+| Mattermost (Plugin) | `channel:<id>`, `user:<id>`, `@username`, atau ID polos (diperlakukan sebagai saluran)                                   |
+| Matrix              | `@user:server`, `!room:server`, atau `#alias:server`                                                                      |
+| Microsoft Teams     | `conversation:<id>` (`19:...@thread.tacv2`), ID percakapan polos, atau `user:<aad-object-id>`                            |
+| Signal              | `+E.164`, `group:<id>`, `uuid:<id>`, `username:<name>`/`u:<name>`, atau salah satunya dengan prefiks `signal:`           |
+| Slack               | `channel:<id>` atau `user:<id>` (ID polos diperlakukan sebagai saluran)                                                  |
+| Telegram            | ID obrolan, `@username`, atau target topik forum: `<chatId>:topic:<topicId>` (atau `--thread-id <topicId>`)              |
+| WhatsApp            | E.164, JID grup (`...@g.us`), atau JID Saluran/Buletin (`...@newsletter`)                                                |
 
-Pencarian nama:
-
-- Untuk penyedia yang didukung (Discord/Slack/dll.), nama kanal seperti `Help` atau `#help` diselesaikan melalui cache direktori.
-- Saat cache tidak ditemukan, OpenClaw akan mencoba pencarian direktori langsung jika penyedia mendukungnya.
+Pencarian nama saluran: untuk penyedia yang memiliki direktori
+(Discord/Slack/dan sebagainya), nama seperti `Help` atau `#help` ditentukan
+melalui singgahan direktori. Jika tidak ditemukan dalam singgahan, pencarian
+direktori langsung digunakan apabila didukung oleh penyedia.
 
 ## Flag umum
 
-- `--channel <name>`
-- `--account <id>`
-- `--target <dest>` (kanal target atau pengguna untuk send/poll/read/dll.)
-- `--targets <name>` (ulang; hanya broadcast)
-- `--json`
-- `--dry-run`
-- `--verbose`
+Setiap tindakan menerima: `--channel <name>`, `--account <id>`, `--json`,
+`--dry-run`, `--verbose`. Tindakan yang memerlukan tujuan juga menerima
+`-t, --target <dest>`.
 
-## Perilaku SecretRef
+## Resolusi SecretRef
 
-- `openclaw message` menyelesaikan SecretRef kanal yang didukung sebelum menjalankan tindakan yang dipilih.
-- Penyelesaian dibatasi ke target tindakan aktif jika memungkinkan:
-  - cakupan kanal saat `--channel` ditetapkan (atau diinferensikan dari target berprefiks seperti `discord:...`)
-  - cakupan akun saat `--account` ditetapkan (global kanal + permukaan akun yang dipilih)
-  - saat `--account` dihilangkan, OpenClaw tidak memaksa cakupan SecretRef akun `default`
-- SecretRef yang belum terselesaikan pada kanal yang tidak terkait tidak memblokir tindakan pesan tertarget.
-- Jika SecretRef kanal/akun yang dipilih belum terselesaikan, perintah gagal tertutup untuk tindakan tersebut.
+`openclaw message` menyelesaikan SecretRef saluran sebelum menjalankan tindakan,
+dengan cakupan sesempit mungkin:
+
+- cakupan saluran ketika `--channel` ditetapkan (atau disimpulkan dari target berprefiks)
+- cakupan akun ketika `--account` juga ditetapkan
+- semua saluran yang dikonfigurasi ketika keduanya tidak ditetapkan
+
+SecretRef yang belum terselesaikan pada saluran yang tidak terkait tidak pernah
+memblokir tindakan bertarget; SecretRef yang belum terselesaikan pada
+saluran/akun terpilih menyebabkan tindakan gagal secara tertutup.
 
 ## Tindakan
 
 ### Inti
 
-- `send`
-  - Kanal: WhatsApp/Telegram/Discord/Google Chat/Slack/Mattermost (plugin)/Signal/iMessage/Matrix/Microsoft Teams
-  - Wajib: `--target`, ditambah `--message`, `--media`, atau `--presentation`
-  - Opsional: `--media`, `--presentation`, `--delivery`, `--pin`, `--reply-to`, `--thread-id`, `--gif-playback`, `--force-document`, `--silent`
-  - Payload presentasi bersama: `--presentation` mengirim blok semantik (`text`, `context`, `divider`, `buttons`, `select`) yang dirender inti melalui kapabilitas yang dideklarasikan kanal terpilih. Lihat [Presentasi Pesan](/id/plugins/message-presentation).
-  - Preferensi pengiriman generik: `--delivery` menerima petunjuk pengiriman seperti `{ "pin": true }`; `--pin` adalah singkatan untuk pengiriman yang disematkan saat kanal mendukungnya.
-  - Telegram + WhatsApp: `--force-document` (mengirim gambar, GIF, dan video sebagai dokumen untuk menghindari kompresi kanal)
-  - Khusus Telegram: `--thread-id` (id topik forum)
-  - Khusus Slack: `--thread-id` (timestamp thread; `--reply-to` menggunakan bidang yang sama)
-  - Telegram + Discord: `--silent`
-  - Khusus WhatsApp: `--gif-playback`; Kanal/Buletin WhatsApp dialamatkan dengan JID native `@newsletter` mereka.
+| Tindakan        | Saluran                                                                                                         | Wajib                                                          | Catatan                                                                                                                                                                                                                                                                                                                                         |
+| --------------- | --------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `send`          | Discord, Google Chat, iMessage, Matrix, Mattermost (Plugin), Microsoft Teams, Signal, Slack, Telegram, WhatsApp | `--target`, ditambah salah satu `--message`/`--media`/`--presentation` | Lihat [Kirim](#send) di bawah.                                                                                                                                                                                                                                                                                                                   |
+| `poll`          | Discord, Matrix, Microsoft Teams, Telegram, WhatsApp                                                            | `--target`, `--poll-question`, `--poll-option` (berulang)      | Lihat [Jajak pendapat](#poll) di bawah.                                                                                                                                                                                                                                                                                                          |
+| `react`         | Discord, Matrix, Nextcloud Talk, Signal, Slack, Telegram, WhatsApp                                              | `--message-id`, `--target`                                     | `--emoji`, `--remove` (memerlukan `--emoji`; hilangkan untuk menghapus reaksi sendiri jika didukung, lihat [Reaksi](/id/tools/reactions)). WhatsApp: `--participant`, `--from-me`. Reaksi grup Signal memerlukan `--target-author` atau `--target-author-uuid`. Nextcloud Talk hanya menambahkan reaksi; `--remove` menghasilkan galat. |
+| `reactions`     | Discord, Matrix, Microsoft Teams, Slack                                                                         | `--message-id`, `--target`                                     | `--limit`.                                                                                                                                                                                                                                                                                                                                      |
+| `read`          | Discord, Matrix, Microsoft Teams, Slack                                                                         | `--target`                                                     | `--limit`, `--message-id`, `--before`, `--after`. Discord: `--around`, `--include-thread`. Slack: `--message-id` membaca stempel waktu tertentu; gabungkan dengan `--thread-id` untuk balasan utas yang tepat.                                                                                                                                       |
+| `edit`          | Discord, Matrix, Microsoft Teams, Slack, Telegram                                                               | `--message-id`, `--message`, `--target`                        | Utas forum Telegram menggunakan `--thread-id`.                                                                                                                                                                                                                                                                                                  |
+| `delete`        | Discord, Matrix, Microsoft Teams, Slack, Telegram                                                               | `--message-id`, `--target`                                     |                                                                                                                                                                                                                                                                                                                                                 |
+| `pin` / `unpin` | Discord, Matrix, Microsoft Teams, Slack                                                                         | `--message-id`, `--target`                                     | `unpin` juga menerima `--pinned-message-id` (Microsoft Teams: ID sumber daya sematkan/daftar sematan, bukan ID pesan obrolan).                                                                                                                                                                                                                   |
+| `pins` (daftar) | Discord, Matrix, Microsoft Teams, Slack                                                                         | `--target`                                                     | `--limit`.                                                                                                                                                                                                                                                                                                                                      |
+| `permissions`   | Discord, Matrix                                                                                                 | `--target`                                                     | Matrix: hanya tersedia ketika enkripsi diaktifkan dan tindakan verifikasi diizinkan.                                                                                                                                                                                                                                                            |
+| `search`        | Discord                                                                                                         | `--guild-id`, `--query`                                        | `--channel-id`, `--channel-ids` (berulang), `--author-id`, `--author-ids` (berulang), `--limit`.                                                                                                                                                                                                                                                 |
+| `member info`   | Discord, Matrix, Microsoft Teams, Slack                                                                         | `--user-id`                                                    | `--guild-id` (Discord).                                                                                                                                                                                                                                                                                                                         |
 
-- `poll`
-  - Kanal: WhatsApp/Telegram/Discord/Matrix/Microsoft Teams
-  - Wajib: `--target`, `--poll-question`, `--poll-option` (ulang)
-  - Opsional: `--poll-multi`
-  - Khusus Discord: `--poll-duration-hours`, `--silent`, `--message`
-  - Khusus Telegram: `--poll-duration-seconds` (5-600), `--silent`, `--poll-anonymous` / `--poll-public`, `--thread-id`
+### Kirim
 
-- `react`
-  - Kanal: Discord/Google Chat/Matrix/Nextcloud Talk/Signal/Slack/Telegram/WhatsApp
-  - Wajib: `--message-id`, `--target`
-  - Opsional: `--emoji`, `--remove`, `--participant`, `--from-me`, `--target-author`, `--target-author-uuid`
-  - Catatan: `--remove` memerlukan `--emoji` (hilangkan `--emoji` untuk menghapus reaksi sendiri jika didukung; lihat /tools/reactions)
-  - Khusus WhatsApp: `--participant`, `--from-me`
-  - Reaksi grup Signal: `--target-author` atau `--target-author-uuid` wajib
-  - Nextcloud Talk: hanya menambahkan reaksi; `--remove` ditolak dengan galat yang jelas (lihat /tools/reactions)
-
-- `reactions`
-  - Kanal: Discord/Google Chat/Slack/Matrix
-  - Wajib: `--message-id`, `--target`
-  - Opsional: `--limit`
-
-- `read`
-  - Kanal: Discord/Slack/Matrix
-  - Wajib: `--target`
-  - Opsional: `--limit`, `--message-id`, `--before`, `--after`
-  - Khusus Slack: `--message-id` membaca timestamp pesan Slack tertentu; gabungkan dengan `--thread-id` untuk membaca balasan thread yang persis.
-  - Khusus Discord: `--around`
-
-- `edit`
-  - Kanal: Discord/Slack/Matrix
-  - Wajib: `--message-id`, `--message`, `--target`
-
-- `delete`
-  - Kanal: Discord/Slack/Telegram/Matrix
-  - Wajib: `--message-id`, `--target`
-
-- `pin` / `unpin`
-  - Kanal: Discord/Slack/Matrix
-  - Wajib: `--message-id`, `--target`
-
-- `pins` (daftar)
-  - Kanal: Discord/Slack/Matrix
-  - Wajib: `--target`
-
-- `permissions`
-  - Kanal: Discord/Matrix
-  - Wajib: `--target`
-  - Khusus Matrix: tersedia saat enkripsi Matrix diaktifkan dan tindakan verifikasi diizinkan
-
-- `search`
-  - Kanal: Discord
-  - Wajib: `--guild-id`, `--query`
-  - Opsional: `--channel-id`, `--channel-ids` (ulang), `--author-id`, `--author-ids` (ulang), `--limit`
-
-### Thread
-
-- `thread create`
-  - Kanal: Discord
-  - Wajib: `--thread-name`, `--target` (id kanal)
-  - Opsional: `--message-id`, `--message`, `--auto-archive-min`
-
-- `thread list`
-  - Kanal: Discord
-  - Wajib: `--guild-id`
-  - Opsional: `--channel-id`, `--include-archived`, `--before`, `--limit`
-
-- `thread reply`
-  - Kanal: Discord
-  - Wajib: `--target` (id thread), `--message`
-  - Opsional: `--media`, `--reply-to`
-
-### Emoji
-
-- `emoji list`
-  - Discord: `--guild-id`
-  - Slack: tidak ada flag tambahan
-
-- `emoji upload`
-  - Kanal: Discord
-  - Wajib: `--guild-id`, `--emoji-name`, `--media`
-  - Opsional: `--role-ids` (ulang)
-
-### Stiker
-
-- `sticker send`
-  - Kanal: Discord
-  - Wajib: `--target`, `--sticker-id` (ulang)
-  - Opsional: `--message`
-
-- `sticker upload`
-  - Kanal: Discord
-  - Wajib: `--guild-id`, `--sticker-name`, `--sticker-desc`, `--sticker-tags`, `--media`
-
-### Peran / Kanal / Anggota / Suara
-
-- `role info` (Discord): `--guild-id`
-- `role add` / `role remove` (Discord): `--guild-id`, `--user-id`, `--role-id`
-- `channel info` (Discord): `--target`
-- `channel list` (Discord): `--guild-id`
-- `member info` (Discord/Slack): `--user-id` (+ `--guild-id` untuk Discord)
-- `voice status` (Discord): `--guild-id`, `--user-id`
-
-### Peristiwa
-
-- `event list` (Discord): `--guild-id`
-- `event create` (Discord): `--guild-id`, `--event-name`, `--start-time`
-  - Opsional: `--end-time`, `--desc`, `--channel-id`, `--location`, `--event-type`
-
-### Moderasi (Discord)
-
-- `timeout`: `--guild-id`, `--user-id` (`--duration-min` atau `--until` opsional; hilangkan keduanya untuk menghapus timeout)
-- `kick`: `--guild-id`, `--user-id` (+ `--reason`)
-- `ban`: `--guild-id`, `--user-id` (+ `--delete-days`, `--reason`)
-  - `timeout` juga mendukung `--reason`
-
-### Broadcast
-
-- `broadcast`
-  - Saluran: saluran apa pun yang dikonfigurasi; gunakan `--channel all` untuk menargetkan semua provider
-  - Wajib: `--targets <target...>`
-  - Opsional: `--message`, `--media`, `--dry-run`
-
-## Contoh
-
-Kirim balasan Discord:
-
-```
+```bash
 openclaw message send --channel discord \
   --target channel:123 --message "hi" --reply-to 456
 ```
 
-Kirim pesan dengan tombol semantik:
+- `--media <path-or-url>`: lampirkan gambar/audio/video/dokumen (jalur lokal atau
+  URL).
+- `--presentation <json>`: muatan bersama dengan blok `text`, `context`,
+  `divider`, `chart`, `table`, `buttons`, dan `select`, yang dirender sesuai
+  kemampuan setiap saluran. Lihat [Presentasi Pesan](/id/plugins/message-presentation).
+- `--delivery <json>`: preferensi pengiriman umum, misalnya `{"pin":
+true}`. `--pin` merupakan bentuk singkat untuk pengiriman yang disematkan jika
+  didukung oleh saluran.
+- `--reply-to <id>`, `--thread-id <id>` (topik forum Telegram; stempel waktu
+  utas Slack, bidang yang sama dengan `--reply-to`).
+- `--force-document` (Telegram, WhatsApp): kirim gambar/GIF/video sebagai
+  dokumen untuk menghindari kompresi saluran.
+- `--silent` (Telegram, Discord): kirim tanpa notifikasi.
+- `--gif-playback` (khusus WhatsApp): perlakukan media video sebagai pemutaran GIF.
 
-```
+```bash
 openclaw message send --channel discord \
   --target channel:123 --message "Choose:" \
   --presentation '{"blocks":[{"type":"buttons","buttons":[{"label":"Approve","value":"approve","style":"success"},{"label":"Decline","value":"decline","style":"danger"}]}]}'
 ```
 
-Core merender payload `presentation` yang sama menjadi komponen Discord, blok Slack, tombol inline Telegram, props Mattermost, atau kartu Teams/Feishu bergantung pada kapabilitas saluran. Lihat [Presentasi Pesan](/id/plugins/message-presentation) untuk kontrak lengkap dan aturan fallback.
-
-Kirim payload presentasi yang lebih kaya:
-
 ```bash
-openclaw message send --channel googlechat --target spaces/AAA... \
-  --message "Choose:" \
-  --presentation '{"title":"Deploy approval","tone":"warning","blocks":[{"type":"text","text":"Choose a path"},{"type":"buttons","buttons":[{"label":"Approve","value":"approve"},{"label":"Decline","value":"decline"}]}]}'
-```
-
-Buat polling Discord:
-
-```
-openclaw message poll --channel discord \
-  --target channel:123 \
-  --poll-question "Snack?" \
-  --poll-option Pizza --poll-option Sushi \
-  --poll-multi --poll-duration-hours 48
-```
-
-Buat polling Telegram (tutup otomatis dalam 2 menit):
-
-```
-openclaw message poll --channel telegram \
-  --target @mychat \
-  --poll-question "Lunch?" \
-  --poll-option Pizza --poll-option Sushi \
-  --poll-duration-seconds 120 --silent
-```
-
-Kirim pesan proaktif Teams:
-
-```
-openclaw message send --channel msteams \
-  --target conversation:19:abc@thread.tacv2 --message "hi"
-```
-
-Buat polling Teams:
-
-```
-openclaw message poll --channel msteams \
-  --target conversation:19:abc@thread.tacv2 \
-  --poll-question "Lunch?" \
-  --poll-option Pizza --poll-option Sushi
-```
-
-Beri reaksi di Slack:
-
-```
-openclaw message react --channel slack \
-  --target C123 --message-id 456 --emoji "✅"
-```
-
-Beri reaksi di grup Signal:
-
-```
-openclaw message react --channel signal \
-  --target signal:group:abc123 --message-id 1737630212345 \
-  --emoji "✅" --target-author-uuid 123e4567-e89b-12d3-a456-426614174000
-```
-
-Kirim tombol inline Telegram melalui presentasi generik:
-
-```
 openclaw message send --channel telegram --target @mychat --message "Choose:" \
   --presentation '{"blocks":[{"type":"buttons","buttons":[{"label":"Yes","value":"cmd:yes"},{"label":"No","value":"cmd:no"}]}]}'
 ```
 
-Kirim tombol Mini App Telegram melalui presentasi generik:
+Slack merender blok bagan yang didukung secara native; saluran lain menerima
+data yang sama sebagai teks yang mudah dibaca:
 
+```bash
+openclaw message send --channel slack --target channel:C123 \
+  --presentation '{"blocks":[{"type":"chart","chartType":"bar","title":"Quarterly revenue","categories":["Q1","Q2"],"series":[{"name":"Revenue","values":[120,145]}],"xLabel":"Quarter"}]}'
 ```
+
+Slack juga merender blok tabel eksplisit secara native. Kanal lain menerima
+keterangan dan setiap baris sebagai teks deterministik:
+
+```bash
+openclaw message send --channel slack --target channel:C123 \
+  --presentation '{"title":"Pipeline report","blocks":[{"type":"table","caption":"Open pipeline","headers":["Account","Stage","ARR"],"rows":[["Acme","Won",125000],["Globex","Review",82000]],"rowHeaderColumnIndex":0}]}'
+```
+
+Tombol Mini App Telegram menggunakan `webApp` (`web_app` masih dapat diurai untuk JSON
+lama) dan hanya dirender dalam obrolan privat antara pengguna dan bot:
+
+```bash
 openclaw message send --channel telegram --target 123456789 --message "Open app:" \
   --presentation '{"blocks":[{"type":"buttons","buttons":[{"label":"Launch","webApp":{"url":"https://example.com/app"}}]}]}'
 ```
 
-Tombol web app Telegram hanya didukung dalam chat privat antara pengguna dan
-bot. Payload JSON lama yang menggunakan `web_app` masih dapat di-parse, tetapi `webApp` adalah
-bidang presentasi kanonis.
-
-Kirim kartu Teams melalui presentasi generik:
+```bash
+openclaw message send --channel telegram --target @mychat \
+  --media ./diagram.png --force-document
+```
 
 ```bash
 openclaw message send --channel msteams \
@@ -312,14 +159,89 @@ openclaw message send --channel msteams \
   --presentation '{"title":"Status update","blocks":[{"type":"text","text":"Build completed"}]}'
 ```
 
-Kirim gambar Telegram atau WhatsApp sebagai dokumen untuk menghindari kompresi:
+### Jajak pendapat
 
 ```bash
-openclaw message send --channel telegram --target @mychat \
-  --media ./diagram.png --force-document
+openclaw message poll --channel discord \
+  --target channel:123 \
+  --poll-question "Snack?" \
+  --poll-option Pizza --poll-option Sushi \
+  --poll-multi --poll-duration-hours 48
 ```
+
+- `--poll-option <choice>`: ulangi 2-12 kali.
+- `--poll-multi`: izinkan beberapa pilihan.
+- Discord: `--poll-duration-hours`, `--silent`, `--message`.
+- Telegram: `--poll-duration-seconds <n>` (5-600), `--silent`,
+  `--poll-anonymous` / `--poll-public`, `--thread-id`.
+
+```bash
+openclaw message poll --channel telegram \
+  --target @mychat \
+  --poll-question "Lunch?" \
+  --poll-option Pizza --poll-option Sushi \
+  --poll-duration-seconds 120 --silent
+```
+
+```bash
+openclaw message poll --channel msteams \
+  --target conversation:19:abc@thread.tacv2 \
+  --poll-question "Lunch?" \
+  --poll-option Pizza --poll-option Sushi
+```
+
+### Utas
+
+- `thread create`: kanal Discord. Wajib: `--thread-name`, `--target`
+  (ID kanal). Opsional: `--message-id`, `--message`, `--auto-archive-min`.
+- `thread list`: kanal Discord. Wajib: `--guild-id`. Opsional:
+  `--channel-id`, `--include-archived`, `--before`, `--limit`.
+- `thread reply`: kanal Discord. Wajib: `--target` (ID utas),
+  `--message`. Opsional: `--media`, `--reply-to`.
+
+### Emoji
+
+- `emoji list`: Discord (`--guild-id`), Slack (tanpa flag tambahan).
+- `emoji upload`: Discord. Wajib: `--guild-id`, `--emoji-name`, `--media`.
+  Opsional: `--role-ids` (ulangi).
+
+### Stiker
+
+- `sticker send`: Discord. Wajib: `--target`, `--sticker-id` (ulangi).
+  Opsional: `--message`.
+- `sticker upload`: Discord. Wajib: `--guild-id`, `--sticker-name`,
+  `--sticker-desc`, `--sticker-tags`, `--media`.
+
+### Peran, kanal, suara, acara (Discord)
+
+- `role info`: `--guild-id`.
+- `role add` / `role remove`: `--guild-id`, `--user-id`, `--role-id`.
+- `channel info`: `--target`.
+- `channel list`: `--guild-id`.
+- `voice status`: `--guild-id`, `--user-id`.
+- `event list`: `--guild-id`.
+- `event create`: wajib `--guild-id`, `--event-name`, `--start-time`;
+  opsional `--end-time`, `--desc`, `--channel-id`, `--location`,
+  `--event-type`, `--image <url-or-path>`.
+
+### Moderasi (Discord)
+
+- `timeout`: `--guild-id`, `--user-id`; opsional `--duration-min` atau
+  `--until` (hilangkan keduanya untuk menghapus batas waktu), `--reason`.
+- `kick`: `--guild-id`, `--user-id`, `--reason`.
+- `ban`: `--guild-id`, `--user-id`, `--delete-days`, `--reason`.
+
+### Siaran
+
+```bash
+openclaw message broadcast --targets <target...> [--channel all] [--message <text>] [--media <url>] [--dry-run]
+```
+
+Mengirim satu muatan ke beberapa target. `--targets` menerima daftar yang dipisahkan
+spasi. Gunakan `--channel all` untuk menargetkan setiap penyedia yang dikonfigurasi.
 
 ## Terkait
 
 - [Referensi CLI](/id/cli)
 - [Pengiriman agen](/id/tools/agent-send)
+- [Presentasi Pesan](/id/plugins/message-presentation)

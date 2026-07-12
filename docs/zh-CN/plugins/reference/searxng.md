@@ -4,8 +4,8 @@ read_when:
 summary: 添加 Web 搜索提供商支持。
 title: SearXNG 插件
 x-i18n:
-    generated_at: "2026-06-27T02:51:45Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T20:49:23Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 96d320ccd6ec69e380edfcfa33b498569058be6953257b5770cd4eea95cb401a
@@ -19,9 +19,9 @@ x-i18n:
 
 ## 分发
 
-- 包：`@openclaw/searxng-plugin`
-- 安装路径：npm；ClawHub：`clawhub:@openclaw/searxng-plugin`
+- 软件包：`@openclaw/searxng-plugin`
+- 安装方式：npm；ClawHub：`clawhub:@openclaw/searxng-plugin`
 
-## 暴露面
+## 接口
 
-contracts: webSearchProviders
+契约：webSearchProviders

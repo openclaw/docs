@@ -1,31 +1,31 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin tencent
-summary: เพิ่มการรองรับผู้ให้บริการโมเดล Tencent TokenHub ให้กับ OpenClaw.
-title: Tencent Plugin
+summary: เพิ่มการรองรับผู้ให้บริการโมเดล Tencent TokenHub และ Tencent Tokenplan ให้กับ OpenClaw
+title: Plugin Tencent
 x-i18n:
-    generated_at: "2026-06-27T18:05:36Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:28:58Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: bf977c889dd59aff6f106fd14c19d23f28464622047a37c292f5f7ef1a6b0551
+    source_hash: 7f7925d89feaded27708e3f31d08ed4e29650cb8ce1152011fd920ed4fb864ef
     source_path: plugins/reference/tencent.md
     workflow: 16
 ---
 
 # Plugin Tencent
 
-เพิ่มการรองรับผู้ให้บริการโมเดล Tencent TokenHub ให้กับ OpenClaw
+เพิ่มการรองรับผู้ให้บริการโมเดล Tencent TokenHub และ Tencent Tokenplan ให้กับ OpenClaw
 
-## การแจกจ่าย
+## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/tencent-provider`
 - ช่องทางการติดตั้ง: npm; ClawHub: `clawhub:@openclaw/tencent-provider`
 
-## พื้นผิว
+## ส่วนที่รองรับ
 
-providers: tencent-tokenhub
+ผู้ให้บริการ: tencent-tokenhub, tencent-tokenplan
 
 ## เอกสารที่เกี่ยวข้อง
 
-- [tencent](/th/providers/tencent)
+- [Tencent](/th/providers/tencent)

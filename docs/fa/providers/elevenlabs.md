@@ -1,32 +1,34 @@
 ---
 read_when:
-    - می‌خواهید از تبدیل متن به گفتار ElevenLabs در OpenClaw استفاده کنید
-    - شما می‌خواهید برای پیوست‌های صوتی از تبدیل گفتار به متن ElevenLabs Scribe استفاده کنید.
-    - شما رونویسی بلادرنگ ElevenLabs را برای Voice Call یا Google Meet می‌خواهید
-summary: از گفتار ElevenLabs، Scribe STT و رونویسی بی‌درنگ با OpenClaw استفاده کنید
+    - شما می‌خواهید از تبدیل متن به گفتار ElevenLabs در OpenClaw استفاده کنید
+    - برای پیوست‌های صوتی، تبدیل گفتار به متن ElevenLabs Scribe را می‌خواهید
+    - برای تماس صوتی یا Google Meet به رونویسی هم‌زمان ElevenLabs نیاز دارید
+summary: از گفتار ElevenLabs، تبدیل گفتار به متن Scribe و رونویسی بلادرنگ با OpenClaw استفاده کنید
 title: ElevenLabs
 x-i18n:
-    generated_at: "2026-06-27T18:39:36Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:43:33Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 126161d7e378382700f203efa9bce1bdd5fe7267b230e2d3d0e45112407d6a7b
+    source_hash: c11b727bb0b1d645c424821dd1bc54c7109d50bd31e3853d04dfa25916bc66c7
     source_path: providers/elevenlabs.md
     workflow: 16
 ---
 
-OpenClaw از ElevenLabs برای تبدیل متن به گفتار، تبدیل گفتار به متن دسته‌ای با Scribe
-v2، و STT جریانی با Scribe v2 Realtime استفاده می‌کند.
+OpenClaw برای تبدیل متن به گفتار، تبدیل دسته‌ای گفتار به متن با Scribe
+v2 و تبدیل جریانی گفتار به متن با Scribe v2 Realtime از ElevenLabs استفاده می‌کند. این Plugin همراه محصول ارائه شده و
+به‌طور پیش‌فرض فعال است؛ نیازی به اجرای مرحله `plugins install` نیست.
 
-| قابلیت | سطح OpenClaw | پیش‌فرض |
-| ------------------------ | -------------------------------------------------------------------- | ------------------------ |
-| تبدیل متن به گفتار | `messages.tts` / `talk` | `eleven_multilingual_v2` |
-| تبدیل گفتار به متن دسته‌ای | `tools.media.audio` | `scribe_v2` |
-| تبدیل گفتار به متن جریانی | پخش جریانی Voice Call یا Google Meet `realtime.transcriptionProvider` | `scribe_v2_realtime` |
+| قابلیت                    | سطح OpenClaw                                                         | پیش‌فرض                 |
+| ------------------------- | -------------------------------------------------------------------- | ----------------------- |
+| تبدیل متن به گفتار        | `messages.tts` / `talk`                                              | `eleven_multilingual_v2` |
+| تبدیل دسته‌ای گفتار به متن | `tools.media.audio`                                                  | `scribe_v2`             |
+| تبدیل جریانی گفتار به متن | پخش جریانی Voice Call یا `realtime.transcriptionProvider` در Google Meet | `scribe_v2_realtime`    |
 
 ## احراز هویت
 
-`ELEVENLABS_API_KEY` را در محیط تنظیم کنید. `XI_API_KEY` نیز برای سازگاری با ابزارهای موجود ElevenLabs پذیرفته می‌شود.
+متغیر `ELEVENLABS_API_KEY` را در محیط تنظیم کنید. برای سازگاری با ابزارهای موجود
+ElevenLabs، متغیر `XI_API_KEY` نیز پذیرفته می‌شود.
 
 ```bash
 export ELEVENLABS_API_KEY="..."
@@ -41,7 +43,7 @@ export ELEVENLABS_API_KEY="..."
       providers: {
         elevenlabs: {
           apiKey: "${ELEVENLABS_API_KEY}",
-          speakerVoiceId: "pMsXgVXv3BLzUgSXRplE",
+          voiceId: "pMsXgVXv3BLzUgSXRplE",
           modelId: "eleven_multilingual_v2",
         },
       },
@@ -50,14 +52,19 @@ export ELEVENLABS_API_KEY="..."
 }
 ```
 
-برای استفاده از TTS نسخه 3 ElevenLabs، `modelId` را روی `eleven_v3` تنظیم کنید. OpenClaw
-`eleven_multilingual_v2` را برای نصب‌های موجود به‌عنوان پیش‌فرض نگه می‌دارد.
+برای استفاده از تبدیل متن به گفتار ElevenLabs v3، مقدار `modelId` را روی `eleven_v3` تنظیم کنید. OpenClaw برای
+نصب‌های موجود، `eleven_multilingual_v2` را به‌عنوان پیش‌فرض حفظ می‌کند.
 
-وقتی ElevenLabs ارائه‌دهنده انتخاب‌شده `voice.tts`/`messages.tts` باشد، کانال‌های صوتی Discord از endpoint جریانی TTS در ElevenLabs استفاده می‌کنند. پخش از جریان صوتی بازگردانده‌شده شروع می‌شود، به‌جای اینکه منتظر بماند OpenClaw ابتدا کل فایل صوتی را دانلود و بنویسد. `latencyTier` برای مدل‌هایی که آن را می‌پذیرند به پارامتر query با نام `optimize_streaming_latency` در ElevenLabs نگاشت می‌شود؛ OpenClaw این پارامتر را برای `eleven_v3`، که آن را رد می‌کند، حذف می‌کند.
+وقتی ElevenLabs به‌عنوان ارائه‌دهنده `voice.tts`/`messages.tts` انتخاب شده باشد، کانال‌های صوتی Discord
+از نقطه پایانی تبدیل جریانی متن به گفتار ElevenLabs استفاده می‌کنند: پخش از جریان صوتی
+بازگردانده‌شده آغاز می‌شود، به‌جای آن‌که منتظر بماند OpenClaw ابتدا کل
+فایل صوتی را بارگیری کند. `latencyTier` برای مدل‌هایی که آن را می‌پذیرند، به پارامتر پرس‌وجوی
+`optimize_streaming_latency` در ElevenLabs نگاشت می‌شود؛ OpenClaw این پارامتر را برای
+`eleven_v3` که آن را رد می‌کند، ارسال نمی‌کند.
 
 ## تبدیل گفتار به متن
 
-از Scribe v2 برای پیوست‌های صوتی ورودی و بخش‌های کوتاه صدای ضبط‌شده استفاده کنید:
+برای پیوست‌های صوتی ورودی و بخش‌های کوتاه صدای ضبط‌شده از Scribe v2 استفاده کنید:
 
 ```json5
 {
@@ -72,20 +79,22 @@ export ELEVENLABS_API_KEY="..."
 }
 ```
 
-OpenClaw صوت چندبخشی را با `model_id: "scribe_v2"` به `/v1/speech-to-text` در ElevenLabs می‌فرستد. راهنمایی‌های زبان، در صورت وجود، به `language_code` نگاشت می‌شوند.
+OpenClaw صدای چندبخشی را با
+`model_id: "scribe_v2"` به `/v1/speech-to-text` در ElevenLabs ارسال می‌کند. در صورت وجود راهنمای زبان، آن به `language_code` نگاشت می‌شود.
 
-## STT جریانی
+## تبدیل جریانی گفتار به متن
 
-Plugin همراه `elevenlabs`، Scribe v2 Realtime را برای Voice Call و رونویسی جریانی حالت عامل Google Meet ثبت می‌کند.
+Plugin همراه `elevenlabs`، قابلیت Scribe v2 Realtime را برای Voice Call و
+رونویسی جریانی در حالت عامل Google Meet ثبت می‌کند.
 
-| تنظیم | مسیر پیکربندی | پیش‌فرض |
-| --------------- | ------------------------------------------------------------------------- | ------------------------------------------------- |
-| کلید API | `plugins.entries.voice-call.config.streaming.providers.elevenlabs.apiKey` | به `ELEVENLABS_API_KEY` / `XI_API_KEY` برمی‌گردد |
-| مدل | `...elevenlabs.modelId` | `scribe_v2_realtime` |
-| قالب صوتی | `...elevenlabs.audioFormat` | `ulaw_8000` |
-| نرخ نمونه‌برداری | `...elevenlabs.sampleRate` | `8000` |
-| راهبرد commit | `...elevenlabs.commitStrategy` | `vad` |
-| زبان | `...elevenlabs.languageCode` | (تنظیم‌نشده) |
+| تنظیم             | مسیر پیکربندی                                                             | پیش‌فرض                                          |
+| ----------------- | ------------------------------------------------------------------------- | ------------------------------------------------ |
+| کلید API          | `plugins.entries.voice-call.config.streaming.providers.elevenlabs.apiKey` | در صورت نبود، از `ELEVENLABS_API_KEY` / `XI_API_KEY` استفاده می‌شود |
+| مدل               | `...elevenlabs.modelId`                                                   | `scribe_v2_realtime`                             |
+| قالب صوتی         | `...elevenlabs.audioFormat`                                               | `ulaw_8000`                                      |
+| نرخ نمونه‌برداری  | `...elevenlabs.sampleRate`                                                | `8000`                                           |
+| راهبرد ثبت        | `...elevenlabs.commitStrategy`                                            | `vad`                                            |
+| زبان              | `...elevenlabs.languageCode`                                              | (تنظیم‌نشده)                                     |
 
 ```json5
 {
@@ -113,13 +122,14 @@ Plugin همراه `elevenlabs`، Scribe v2 Realtime را برای Voice Call و 
 ```
 
 <Note>
-Voice Call رسانه Twilio را به‌صورت G.711 u-law با نرخ 8 کیلوهرتز دریافت می‌کند. ارائه‌دهنده realtime در ElevenLabs به‌طور پیش‌فرض از `ulaw_8000` استفاده می‌کند، بنابراین فریم‌های تلفنی می‌توانند بدون
-transcoding ارسال شوند.
+Voice Call رسانه Twilio را به‌صورت G.711 u-law با نرخ ۸ کیلوهرتز دریافت می‌کند. ارائه‌دهنده بلادرنگ ElevenLabs
+به‌طور پیش‌فرض از `ulaw_8000` استفاده می‌کند؛ بنابراین فریم‌های تلفنی را می‌توان بدون
+بازکدگذاری ارسال کرد.
 </Note>
 
 برای حالت عامل Google Meet، مقدار
 `plugins.entries.google-meet.config.realtime.transcriptionProvider` را روی
-`"elevenlabs"` تنظیم کنید و همان بلوک ارائه‌دهنده را زیر
+`"elevenlabs"` تنظیم کنید و همان بلوک ارائه‌دهنده را در
 `plugins.entries.google-meet.config.realtime.providers.elevenlabs` پیکربندی کنید.
 
 ## مرتبط

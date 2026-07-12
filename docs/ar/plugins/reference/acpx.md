@@ -1,11 +1,11 @@
 ---
 read_when:
-    - أنت تقوم بتثبيت Plugin acpx أو تكوينه أو تدقيقه
-summary: واجهة OpenClaw الخلفية لوقت تشغيل ACP مع إدارة الجلسات والنقل المملوكة من Plugin.
-title: ملحق ACPx
+    - أنت تقوم بتثبيت Plugin ‏acpx أو تهيئته أو تدقيقه
+summary: واجهة تشغيل ACP الخلفية لـ OpenClaw مع إدارة الجلسات والنقل المملوكة للـ Plugin.
+title: Plugin ACPx
 x-i18n:
-    generated_at: "2026-06-27T18:09:37Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:13:09Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 71e6762b6049c5eca3fa560f2d8d13a2538c2e913f9dbd9f0e2bb6b5aef160e4
@@ -13,7 +13,7 @@ x-i18n:
     workflow: 16
 ---
 
-# ACPx Plugin
+# Plugin ACPx
 
 واجهة خلفية لوقت تشغيل ACP في OpenClaw مع إدارة الجلسات والنقل المملوكة للـ Plugin.
 
@@ -22,10 +22,10 @@ x-i18n:
 - الحزمة: `@openclaw/acpx`
 - مسار التثبيت: npm؛ ClawHub
 
-## السطح
+## الواجهة
 
 Skills
 
-## المستندات ذات الصلة
+## الوثائق ذات الصلة
 
 - [acpx](/ar/tools/acp-agents-setup)

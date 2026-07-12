@@ -1,14 +1,13 @@
 ---
 read_when:
-    - Procurando compatibilidade com sistemas operacionais ou caminhos de instalação
+    - Procurando suporte a sistemas operacionais ou caminhos de instalação
     - Decidindo onde executar o Gateway
 summary: Visão geral do suporte a plataformas (Gateway + aplicativos complementares)
 title: Plataformas
 x-i18n:
-    generated_at: "2026-07-12T15:25:17Z"
+    generated_at: "2026-07-12T00:07:00Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 6c91bf7fd41bf5433b9f1efb768a44dcf5fa55917cfc45f463688d00f23e725d
     source_path: platforms/index.md
@@ -16,14 +15,14 @@ x-i18n:
 ---
 
 O núcleo do OpenClaw é escrito em TypeScript. **Node é o runtime recomendado**.
-O Bun não é recomendado para o Gateway — há problemas conhecidos com os canais do WhatsApp e
+Bun não é recomendado para o Gateway — há problemas conhecidos com os canais do WhatsApp e
 Telegram; consulte [Bun (experimental)](/pt-BR/install/bun) para obter detalhes.
 
-Há aplicativos complementares para o Windows Hub, macOS (aplicativo da barra de menus) e nodes móveis
-(iOS/Android). Aplicativos complementares para Linux estão planejados, mas o Gateway já é
-totalmente compatível. No Windows, escolha o Windows Hub para usar o aplicativo para desktop, a instalação
-nativa pelo PowerShell para uso prioritário do terminal ou o WSL2 para obter o runtime do Gateway mais
-compatível com Linux.
+Há aplicativos complementares para o Windows Hub, macOS (aplicativo da barra de menus) e Nodes móveis
+(iOS/Android). Aplicativos complementares para Linux estão planejados, mas o Gateway já conta com
+suporte completo. No Windows, escolha o Windows Hub para usar o aplicativo para desktop, a instalação
+nativa pelo PowerShell para uso prioritariamente pelo terminal ou o WSL2 para obter o runtime do Gateway
+com maior compatibilidade com Linux.
 
 ## Escolha seu sistema operacional
 
@@ -47,18 +46,18 @@ compatível com Linux.
 
 - Guia de instalação: [Primeiros passos](/pt-BR/start/getting-started)
 - Windows Hub: [Windows](/pt-BR/platforms/windows)
-- Manual operacional do Gateway: [Gateway](/pt-BR/gateway)
+- Manual de operações do Gateway: [Gateway](/pt-BR/gateway)
 - Configuração do Gateway: [Configuração](/pt-BR/gateway/configuration)
 - Status do serviço: `openclaw gateway status`
 
-## Instalação do serviço Gateway (CLI)
+## Instalação do serviço do Gateway (CLI)
 
 Use uma destas opções (todas são compatíveis):
 
 - Assistente (recomendado): `openclaw onboard --install-daemon`
 - Direta: `openclaw gateway install`
-- Fluxo de configuração: `openclaw configure` → selecione **Serviço Gateway**
-- Reparar/migrar: `openclaw doctor` (oferece a instalação ou correção do serviço)
+- Fluxo de configuração: `openclaw configure` → selecione **Serviço do Gateway**
+- Reparo/migração: `openclaw doctor` (oferece a opção de instalar ou corrigir o serviço)
 
 O destino do serviço depende do sistema operacional:
 

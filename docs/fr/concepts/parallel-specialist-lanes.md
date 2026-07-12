@@ -1,25 +1,25 @@
 ---
 read_when:
     - Vous acheminez les discussions de groupe vers des agents dédiés
-    - Vous voulez travailler en parallèle sans qu’une longue tâche bloque toutes les conversations
-    - Vous concevez une configuration d’opérations multi-agents
+    - Vous souhaitez exécuter des tâches en parallèle sans qu’une tâche longue ne bloque toutes les conversations
+    - Vous concevez une configuration d’exploitation multi-agents
 sidebarTitle: Specialist lanes
 status: active
 summary: Exécutez des agents spécialisés en parallèle sans saturer les capacités partagées du modèle et des outils
 title: Voies spécialisées parallèles
 x-i18n:
-    generated_at: "2026-05-11T20:33:46Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T02:48:08Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8721056fbe08822ac92d4bc14c8c2b0977e93eaa58c2849f83b3c0f310992f93
+    source_hash: 09852b6cf5a790e98fb5e0805b0df57b2f3719b1387ecfacfb4973bb6841abb4
     source_path: concepts/parallel-specialist-lanes.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Les voies spécialisées parallèles permettent à un même Gateway d’acheminer différentes discussions ou différents salons vers
-différents agents, tout en gardant une expérience utilisateur rapide. L’astuce consiste à traiter
-le parallélisme comme un problème de conception lié à une ressource rare, et pas seulement comme « plus d’agents ».
+Les voies spécialisées parallèles permettent à un Gateway d’acheminer différentes conversations ou différents salons vers
+différents agents tout en conservant une expérience utilisateur rapide. Considérez le parallélisme comme
+un problème de conception lié à des ressources limitées, et non simplement comme « davantage d’agents ».
 
 ## Principes fondamentaux
 
@@ -27,38 +27,39 @@ Une voie spécialisée n’améliore le débit que lorsqu’elle réduit la cont
 véritables goulots d’étranglement :
 
 - **Verrous de session** : une seule exécution doit modifier une session donnée à la fois.
-- **Capacité globale du modèle** : toutes les exécutions de discussion visibles partagent toujours les limites du fournisseur.
-- **Capacité des outils** : le shell, le navigateur, le réseau et le travail sur le dépôt peuvent être plus lents
-  que le tour de modèle lui-même.
-- **Budget de contexte** : les longs historiques rendent chaque tour futur plus lent et moins
-  ciblé.
-- **Ambiguïté de responsabilité** : des agents en double qui font le même travail gaspillent de la capacité.
+- **Capacité globale du modèle** : toutes les exécutions de conversation visibles partagent toujours les limites du fournisseur.
+- **Capacité des outils** : les opérations dans le shell, le navigateur, le réseau et le dépôt peuvent être plus lentes
+  que le tour du modèle lui-même.
+- **Budget de contexte** : les longues transcriptions ralentissent chaque tour ultérieur et réduisent
+  sa précision.
+- **Ambiguïté de responsabilité** : plusieurs agents effectuant la même tâche gaspillent de la capacité.
 
-OpenClaw sérialise déjà les exécutions par session et plafonne le parallélisme global via
-la [file de commandes](/fr/concepts/queue). Les voies spécialisées ajoutent une politique par-dessus :
-quel agent possède quel travail, ce qui reste dans la discussion, et ce qui devient un travail
-en arrière-plan.
+OpenClaw sérialise déjà les exécutions par session et limite le parallélisme global
+au moyen de la [file d’attente des commandes](/fr/concepts/queue). Les voies spécialisées ajoutent une politique
+par-dessus : quel agent est responsable de quel travail, ce qui reste dans la conversation et ce qui devient
+une tâche en arrière-plan.
 
 ## Déploiement recommandé
 
-### Phase 1 : contrats de voie + travail lourd en arrière-plan
+### Phase 1 : contrats de voie et travaux lourds en arrière-plan
 
-Donnez à chaque voie un contrat écrit dans son espace de travail et son prompt système :
+Attribuez à chaque voie un contrat écrit dans son espace de travail et son invite système :
 
 - **Objectif** : le travail dont cette voie est responsable.
-- **Non-objectifs** : le travail qu’elle doit déléguer au lieu de tenter.
-- **Budget de discussion** : les réponses rapides restent dans la discussion ; les longues tâches doivent accuser réception
-  brièvement, puis s’exécuter dans un sous-agent ou une tâche en arrière-plan.
-- **Règle de transfert** : lorsqu’une autre voie possède le travail, dites où il doit aller et
-  fournissez un résumé compact de transfert.
-- **Règle de risque des outils** : privilégiez la plus petite surface d’outil capable d’effectuer le travail.
+- **Non-objectifs** : le travail qu’elle doit transmettre au lieu de tenter de l’effectuer.
+- **Budget de conversation** : les réponses rapides restent dans la conversation ; les tâches longues font l’objet d’un bref accusé de réception,
+  puis sont exécutées par un sous-agent ou une tâche en arrière-plan.
+- **Règle de transfert** : lorsqu’une autre voie est responsable du travail, indiquez où il doit être envoyé et
+  fournissez un résumé de transfert concis.
+- **Règle relative aux risques des outils** : privilégiez la surface d’outils minimale permettant d’accomplir la tâche.
 
-C’est la phase la moins coûteuse et elle corrige la plupart des engorgements : une tâche de codage ne
-transforme plus la voie de recherche en mélasse, et chaque discussion garde son propre contexte propre.
+Il s’agit de la phase la moins coûteuse, qui élimine la plupart des encombrements : une tâche de programmation ne
+transforme plus la voie de recherche en mélasse, et chaque conversation conserve son propre contexte
+propre.
 
 ### Phase 2 : contrôles de priorité et de concurrence
 
-Réglez la file et la capacité du modèle autour de la valeur métier de chaque voie :
+Ajustez la capacité de la file d’attente et du modèle en fonction de la valeur opérationnelle de chaque voie :
 
 ```json5
 {
@@ -79,57 +80,57 @@ Réglez la file et la capacité du modèle autour de la valeur métier de chaque
 }
 ```
 
-Utilisez les discussions directes/personnelles et les agents d’opérations de production pour le travail hautement prioritaire. Laissez
-la recherche, la rédaction et le codage par lots passer aux tâches en arrière-plan lorsque le système est
+Réservez les conversations directes ou personnelles et les agents d’exploitation en production aux tâches hautement prioritaires. Laissez
+les recherches, la rédaction et la programmation par lots passer à des tâches en arrière-plan lorsque le système est
 occupé.
 
 ### Phase 3 : coordinateur / contrôleur de trafic
 
-Ajoutez un petit modèle de coordinateur une fois que plusieurs voies sont actives :
+Ajoutez un modèle de coordination léger une fois que plusieurs voies sont actives :
 
-- Suivre les tâches de voie actives et leurs responsables.
+- Suivre les tâches et les responsables actifs de chaque voie.
 - Détecter les demandes en double entre les groupes.
 - Acheminer les résumés de transfert entre les voies.
-- Remonter uniquement les blocages, les résultats terminés et les décisions que l’humain doit prendre.
+- Ne présenter que les blocages, les résultats terminés et les décisions que l’utilisateur doit prendre.
 
-Ne commencez pas ici. Un coordinateur sans contrats de voie ne fait que coordonner le chaos.
+Ne commencez pas par cette phase. Un coordinateur sans contrats de voie ne fait que coordonner le chaos.
 
 ## Modèle minimal de contrat de voie
 
 ```md
-# Lane contract
+# Contrat de voie
 
-## Owns
+## Responsabilités
 
-- <job this lane is responsible for>
+- <tâche dont cette voie est responsable>
 
-## Does not own
+## Hors périmètre
 
-- <work to hand off>
+- <travail à transférer>
 
-## Chat budget
+## Budget de conversation
 
-- Answer quick questions directly.
-- For multi-step, slow, or tool-heavy work: acknowledge briefly, spawn/background
-  the work, then return the result when complete.
+- Répondre directement aux questions rapides.
+- Pour les travaux en plusieurs étapes, lents ou exigeants en outils : en accuser brièvement réception, lancer/exécuter
+  le travail en arrière-plan, puis renvoyer le résultat une fois terminé.
 
-## Handoff
+## Transfert
 
-If another lane owns the request, reply with:
+Si une autre voie est responsable de la demande, répondre avec :
 
-- target lane
-- objective
-- relevant context
-- exact next action
+- voie cible
+- objectif
+- contexte pertinent
+- prochaine action exacte
 
-## Tool posture
+## Utilisation des outils
 
-Use the smallest tool surface that can complete the task. Avoid broad shell or
-network work unless this lane explicitly owns it.
+Utiliser la surface d’outils minimale permettant d’accomplir la tâche. Éviter les opérations générales dans le shell ou
+sur le réseau, sauf si cette voie en est explicitement responsable.
 ```
 
-## Connexe
+## Voir aussi
 
 - [Routage multi-agent](/fr/concepts/multi-agent)
-- [File de commandes](/fr/concepts/queue)
+- [File d’attente des commandes](/fr/concepts/queue)
 - [Sous-agents](/fr/tools/subagents)

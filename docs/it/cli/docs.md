@@ -1,35 +1,35 @@
 ---
 read_when:
-    - Vuoi cercare nella documentazione live di OpenClaw dal terminale
-    - Devi sapere quale API di ricerca ospitata chiama la CLI della documentazione
-summary: Riferimento CLI per `openclaw docs` (cerca nell'indice della documentazione live)
+    - Vuoi cercare nella documentazione aggiornata di OpenClaw dal terminale
+    - Devi sapere quale API di ricerca in hosting chiama la CLI della documentazione
+summary: Riferimento CLI per `openclaw docs` (cerca nell'indice della documentazione online)
 title: Documentazione
 x-i18n:
-    generated_at: "2026-06-27T17:19:07Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:53:44Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f8be22f689d40ffec29df9562b69444c0f8b9bb607dfcb79de20b3023e0eb30a
+    source_hash: b0b575f0b76d40a53dd4f79c55fd65969a24eae27e27bd1c46d395f61fe89e42
     source_path: cli/docs.md
     workflow: 16
 ---
 
 # `openclaw docs`
 
-Cerca l'indice live della documentazione di OpenClaw dal terminale. Il comando chiama l'API di ricerca della documentazione di OpenClaw ospitata su Cloudflare e mostra i risultati nel terminale.
+Cerca nell'indice aggiornato della documentazione di OpenClaw dal terminale.
 
 ## Utilizzo
 
 ```bash
-openclaw docs                       # print docs entrypoint and example search
-openclaw docs <query...>            # search the live docs index
+openclaw docs                       # mostra il punto di accesso alla documentazione e un esempio di ricerca
+openclaw docs <query...>            # cerca nell'indice aggiornato della documentazione
 ```
 
-Argomenti:
+| Argomento    | Descrizione                                                                                               |
+| ------------ | --------------------------------------------------------------------------------------------------------- |
+| `[query...]` | Query di ricerca in formato libero. Le query composte da più parole vengono unite con spazi e inviate come un'unica query. |
 
-| Argomento    | Descrizione                                                                                |
-| ------------ | ------------------------------------------------------------------------------------------ |
-| `[query...]` | Query di ricerca in formato libero. Le query con più parole vengono unite con spazi e inviate come una sola. |
+Se non viene specificata alcuna query, `openclaw docs` mostra l'URL del punto di accesso alla documentazione e un comando di ricerca di esempio anziché eseguire una ricerca.
 
 ## Esempi
 
@@ -39,33 +39,31 @@ openclaw docs sandbox allowHostControl
 openclaw docs gateway token secretref
 ```
 
-Senza query, `openclaw docs` stampa l'URL del punto di ingresso della documentazione più un comando di ricerca di esempio invece di eseguire una ricerca.
+## Funzionamento
 
-## Come funziona
-
-`openclaw docs` chiama `https://docs.openclaw.ai/api/search` e mostra i risultati JSON. La chiamata di ricerca usa un timeout fisso di 30 secondi.
+`openclaw docs` chiama `https://docs.openclaw.ai/api/search` e visualizza i risultati JSON. La richiesta di ricerca utilizza un timeout fisso di 30 secondi.
 
 ## Output
 
-In un terminale avanzato (TTY), i risultati vengono mostrati come un'intestazione seguita da un elenco puntato. Ogni punto mostra il titolo della pagina, l'URL collegato della documentazione e un breve frammento nella riga successiva. I risultati vuoti stampano "Nessun risultato.".
+In un terminale avanzato (TTY), i risultati vengono visualizzati come un'intestazione seguita da un elenco puntato: titolo della pagina, URL collegato della documentazione e un breve estratto nella riga successiva. Se non ci sono risultati, viene mostrato "Nessun risultato.".
 
-Nell'output non avanzato (pipe, `--no-color`, script), gli stessi dati vengono mostrati come Markdown:
+Nell'output non avanzato (reindirizzato tramite pipe, `--no-color`, script), gli stessi dati vengono visualizzati in Markdown:
 
 ```markdown
-# Docs search: <query>
+# Ricerca nella documentazione: <query>
 
-- [Title](https://docs.openclaw.ai/...) - snippet
-- [Title](https://docs.openclaw.ai/...) - snippet
+- [Titolo](https://docs.openclaw.ai/...) - estratto
+- [Titolo](https://docs.openclaw.ai/...) - estratto
 ```
 
 ## Codici di uscita
 
-| Codice | Significato                                                             |
-| ------ | ----------------------------------------------------------------------- |
-| `0`    | Ricerca riuscita (incluse le risposte senza risultati).                 |
-| `1`    | La chiamata all'API di ricerca della documentazione ospitata non è riuscita; stderr viene stampato inline. |
+| Codice | Significato                                                                                             |
+| ------ | ------------------------------------------------------------------------------------------------------- |
+| `0`    | Ricerca completata correttamente, incluse le risposte senza risultati.                                  |
+| `1`    | La chiamata all'API ospitata per la ricerca nella documentazione non è riuscita; stderr mostra il messaggio di errore. |
 
-## Correlati
+## Contenuti correlati
 
-- [Riferimento CLI](/it/cli)
-- [Documentazione live](https://docs.openclaw.ai)
+- [Riferimento della CLI](/it/cli)
+- [Documentazione aggiornata](https://docs.openclaw.ai)

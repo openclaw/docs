@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Inicializar manualmente un espacio de trabajo
-summary: Plantilla de espacio de trabajo para HEARTBEAT.md
+    - Inicialización manual de un espacio de trabajo
+summary: Plantilla del espacio de trabajo para HEARTBEAT.md
 title: Plantilla de HEARTBEAT.md
 x-i18n:
-    generated_at: "2026-07-05T11:45:41Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T23:31:05Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 1605f546995e0bdcb11f9bf905173b14aca25cfad664fe2c7644d18c2b4142e2
@@ -15,23 +15,23 @@ x-i18n:
 
 # Plantilla de HEARTBEAT.md
 
-`HEARTBEAT.md` vive en el espacio de trabajo del agente y contiene la lista de comprobación periódica de Heartbeat. Mantenlo vacío, o solo con espacios en blanco, comentarios de Markdown, encabezados ATX, esqueletos de lista vacíos (`- `, `* [ ]`) o marcadores de bloque, para hacer que OpenClaw omita por completo la llamada al modelo de Heartbeat (`reason=empty-heartbeat-file`).
+`HEARTBEAT.md` se encuentra en el espacio de trabajo del agente y contiene la lista de comprobación periódica de Heartbeat. Manténgalo vacío, o solo con espacios en blanco, comentarios de Markdown, encabezados ATX, marcadores de lista vacíos (`- `, `* [ ]`) o delimitadores de bloques, para que OpenClaw omita por completo la llamada al modelo de Heartbeat (`reason=empty-heartbeat-file`).
 
-Contenido predeterminado enviado:
+Contenido predeterminado incluido:
 
 ```markdown
-<!-- Heartbeat template; comments-only content prevents scheduled heartbeat API calls. -->
+<!-- Plantilla de Heartbeat; el contenido que solo contiene comentarios evita las llamadas programadas a la API de Heartbeat. -->
 
-# Keep this file empty (or with only comments) to skip heartbeat API calls.
+# Mantenga este archivo vacío (o solo con comentarios) para omitir las llamadas a la API de Heartbeat.
 
-# Add tasks below when you want the agent to check something periodically.
+# Añada tareas a continuación cuando quiera que el agente compruebe algo periódicamente.
 ```
 
-Añade tareas breves debajo de las líneas de comentario solo cuando quieras comprobaciones periódicas. Mantenlo pequeño: las ejecuciones de Heartbeat leen este archivo en cada pulso (de forma predeterminada, cada 30 minutos), por lo que las instrucciones infladas consumen tokens en cada activación.
+Añada tareas breves debajo de las líneas de comentarios solo cuando quiera realizar comprobaciones periódicas. Manténgalo reducido: las ejecuciones de Heartbeat leen este archivo en cada ciclo (de forma predeterminada, cada 30 minutos), por lo que unas instrucciones excesivas consumen tokens en cada activación.
 
-Para comprobaciones solo al vencimiento en lugar de una lista de comprobación simple, usa un bloque `tasks:` estructurado con campos `interval` y `prompt` por tarea; consulta [HEARTBEAT.md](/es/gateway/heartbeat#heartbeatmd-optional) para ver el formato y el comportamiento.
+Para realizar comprobaciones solo cuando corresponda, en lugar de usar una lista de comprobación simple, utilice un bloque estructurado `tasks:` con los campos `interval` y `prompt` para cada tarea; consulte [HEARTBEAT.md](/es/gateway/heartbeat#heartbeatmd-optional) para conocer el formato y el comportamiento.
 
-## Relacionado
+## Contenido relacionado
 
 - [Heartbeat](/es/gateway/heartbeat)
 - [Configuración de Heartbeat](/es/gateway/config-agents)

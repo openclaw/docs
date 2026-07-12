@@ -1,15 +1,15 @@
 ---
 read_when:
-    - به یک صفحهٔ مرجع برای یک Plugin مشخص OpenClaw نیاز دارید
+    - شما به یک صفحهٔ مرجع برای Plugin مشخصی از OpenClaw نیاز دارید
     - شما در حال ممیزی پوشش مستندات Plugin هستید
-summary: نمایهٔ تولیدشدهٔ صفحه‌های مرجع Plugin در OpenClaw
+summary: فهرست تولیدشدهٔ صفحات مرجع Pluginهای OpenClaw
 title: مرجع Plugin
 x-i18n:
-    generated_at: "2026-07-04T03:58:01Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:28:45Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ba0c5e453eec38249f79746aebcc9a977d8eaffd70b558a558eb64d74c8c4ba1
+    source_hash: 03099acfb0bcbe9814fa53f5d2d893a08a39f42bf713ff140e9604783f9cef0e
     source_path: plugins/reference.md
     workflow: 16
 ---
@@ -17,11 +17,10 @@ x-i18n:
 # مرجع Plugin
 
 این صفحه از `extensions/*/package.json` و
-`openclaw.plugin.json` تولید می‌شود. آن را با دستور زیر بازتولید کنید:
+`openclaw.plugin.json` تولید شده است. برای تولید مجدد آن، از دستور زیر استفاده کنید:
 
 ```bash
 pnpm plugins:inventory:gen
 ```
 
-از [فهرست Plugin](/fa/plugins/plugin-inventory) برای مرور همهٔ ۱۳۰
-صفحهٔ مرجع Plugin تولیدشده بر اساس توزیع، بسته و توضیحات استفاده کنید.
+برای مرور هر ۱۳۶ صفحهٔ مرجع Plugin تولیدشده بر اساس توزیع، بسته و توضیحات، از [فهرست Pluginها](/fa/plugins/plugin-inventory) استفاده کنید.

@@ -1,163 +1,186 @@
 ---
 read_when:
     - تريد فهرسة الذاكرة الدلالية أو البحث فيها
-    - تقوم بتصحيح أخطاء توفر الذاكرة أو الفهرسة
-    - تريد ترقية الذاكرة قصيرة المدى المستدعاة إلى `MEMORY.md`
-summary: مرجع CLI لـ `openclaw memory` (status/index/search/promote/promote-explain/rem-harness)
+    - أنت تصحح أخطاء إتاحة الذاكرة أو فهرستها
+    - تريد ترقية الذاكرة قصيرة الأمد المسترجعة إلى `MEMORY.md`
+summary: مرجع CLI لـ `openclaw memory` ‏(الحالة/الفهرس/البحث/الترقية/شرح الترقية/مجموعة اختبار rem/الملء الرجعي لـ rem)
 title: الذاكرة
 x-i18n:
-    generated_at: "2026-06-30T14:03:09Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T05:41:50Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 74b85d7299cc12e6133a10678f7c8fe17ee704e029993aebea417727ba94e629
+    source_hash: f0002c48044455520f32a5a3e111415a746fbafba2a27a655ded90abdc94623b
     source_path: cli/memory.md
     workflow: 16
 ---
 
 # `openclaw memory`
 
-إدارة فهرسة الذاكرة الدلالية والبحث فيها.
-يوفرها Plugin المضمّن `memory-core`. يكون الأمر متاحًا عندما يحدد
-`plugins.slots.memory` القيمة `memory-core` (الافتراضي)؛ وتعرض Plugins الذاكرة الأخرى
-مساحات أسماء CLI الخاصة بها.
+إدارة فهرسة الذاكرة الدلالية والبحث فيها وترقيتها إلى `MEMORY.md`.
+تتوفر هذه الأوامر عبر Plugin المضمّن `memory-core` عندما يحدد
+`plugins.slots.memory` القيمة `memory-core` (وهي القيمة الافتراضية). تعرض Plugins الذاكرة
+الأخرى نطاقات CLI الخاصة بها.
 
-ذات صلة:
+ذو صلة: مفهوم [الذاكرة](/ar/concepts/memory)، و[Dreaming](/ar/concepts/dreaming)،
+و[مرجع إعدادات الذاكرة](/ar/reference/memory-config)، و[ويكي الذاكرة](/ar/plugins/memory-wiki)،
+و[الويكي](/ar/cli/wiki)، و[Plugins](/ar/tools/plugin).
 
-- مفهوم الذاكرة: [الذاكرة](/ar/concepts/memory)
-- ويكي الذاكرة: [ويكي الذاكرة](/ar/plugins/memory-wiki)
-- CLI الويكي: [wiki](/ar/cli/wiki)
-- Plugins: [Plugins](/ar/tools/plugin)
-
-## أمثلة
+## `memory status`
 
 ```bash
-openclaw memory status
-openclaw memory status --deep
-openclaw memory status --fix
-openclaw memory index --force
-openclaw memory search "meeting notes"
-openclaw memory search --query "deployment" --max-results 20
-openclaw memory promote --limit 10 --min-score 0.75
-openclaw memory promote --apply
-openclaw memory promote --json --min-recall-count 0 --min-unique-queries 0
-openclaw memory promote-explain "router vlan"
-openclaw memory promote-explain "router vlan" --json
-openclaw memory rem-harness
-openclaw memory rem-harness --json
-openclaw memory status --json
-openclaw memory status --deep --index
-openclaw memory status --deep --index --verbose
-openclaw memory status --agent main
-openclaw memory index --agent main --verbose
+openclaw memory status [--agent <id>] [--deep] [--index] [--fix] [--json] [--verbose]
 ```
 
-## الخيارات
+من دون `--agent`، يُشغّل الأمر لكل وكيل في `agents.list`؛ وإذا لم تكن قائمة الوكلاء
+مُعدّة، فإنه يعود إلى الوكيل الافتراضي.
 
-`memory status` و`memory index`:
+| العلامة     | التأثير                                                                                                                                                                                                                                                                                                    |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--deep`    | يتحقق من جاهزية مخزن المتجهات وموفّر التضمينات والبحث الدلالي (ويتضمن استدعاءات إضافية للموفّر). يظل `memory status` العادي سريعًا ويتجاوز ذلك؛ وتعني حالة المتجهات/الدلالة غير المعروفة أنه لم يُتحقق منها. يتجاوز وضع البحث المعجمي في QMD،‏ `searchMode: "search"`، عمليات التحقق من المتجهات الدلالية دائمًا، حتى مع `--deep`. |
+| `--index`   | يعيد الفهرسة إذا كان المخزن غير متزامن. يتضمن `--deep`.                                                                                                                                                                                                                                                    |
+| `--fix`     | يصلح أقفال الاسترجاع القديمة ويوحّد بيانات تعريف الترقية.                                                                                                                                                                                                                                                  |
+| `--json`    | يطبع JSON.                                                                                                                                                                                                                                                                                                 |
+| `--verbose` | يصدر سجلات مفصلة لكل مرحلة.                                                                                                                                                                                                                                                                                |
 
-- `--agent <id>`: حصر النطاق في وكيل واحد. من دونه، تعمل هذه الأوامر لكل وكيل مُكوَّن؛ وإذا لم تكن قائمة الوكلاء مُكوَّنة، فإنها تعود إلى الوكيل الافتراضي.
-- `--verbose`: إخراج سجلات تفصيلية أثناء الفحوصات والفهرسة.
+إذا ظل سطر `Dreaming` على `off` حتى مع `dreaming.enabled: true`، أو بدا أن
+عمليات المسح المجدولة لا تعمل مطلقًا، فإن Cron المُدار لـ Dreaming يعتمد على
+تشغيل Heartbeat للوكيل الافتراضي لبدء المطابقة. راجع
+[Dreaming](/ar/concepts/dreaming) للاطلاع على تفاصيل الجدولة.
 
-`memory status`:
+تسرد الحالة أيضًا أي مسارات بحث إضافية من `agents.defaults.memorySearch.extraPaths`.
 
-- `--deep`: فحص جاهزية مخزن المتجهات المحلي، وجاهزية موفر التضمينات، وجاهزية البحث الدلالي بالمتجهات. يبقى `memory status` العادي سريعًا ولا يشغّل عمل تضمين مباشر أو اكتشاف موفرين؛ وتعني حالة مخزن المتجهات أو المتجه الدلالي غير المعروفة أنها لم تُفحص في ذلك الأمر. يتجاوز QMD lexical `searchMode: "search"` فحوصات المتجهات الدلالية وصيانة التضمينات حتى مع `--deep`.
-- `--index`: تشغيل إعادة فهرسة إذا كان المخزن متسخًا (يتضمن `--deep`).
-- `--fix`: إصلاح أقفال الاستدعاء القديمة وتطبيع بيانات تعريف الترويج.
-- `--json`: طباعة مخرجات JSON.
-
-إذا عرض `memory status` الحالة `Dreaming status: blocked`، فهذا يعني أن Cron المُدار لـ Dreaming مفعّل لكن Heartbeat الذي يشغّله لا يعمل للوكيل الافتراضي. راجع [Dreaming لا يعمل أبدًا](/ar/concepts/dreaming#dreaming-never-runs-status-shows-blocked) لمعرفة السببين الشائعين.
-
-`memory index`:
-
-- `--force`: فرض إعادة فهرسة كاملة.
-
-`memory search`:
-
-- إدخال الاستعلام: مرّر إما `[query]` موضعيًا أو `--query <text>`.
-- إذا قُدّما معًا، تكون الأولوية لـ `--query`.
-- إذا لم يُقدَّم أي منهما، يخرج الأمر بخطأ.
-- `--agent <id>`: حصر النطاق في وكيل واحد (الافتراضي: الوكيل الافتراضي).
-- `--max-results <n>`: تحديد عدد النتائج المُعادة.
-- `--min-score <n>`: تصفية المطابقات ذات الدرجات المنخفضة.
-- `--json`: طباعة نتائج JSON.
-
-`memory promote`:
-
-معاينة ترقيات الذاكرة قصيرة الأمد وتطبيقها.
+## `memory index`
 
 ```bash
-openclaw memory promote [--apply] [--limit <n>] [--include-promoted]
+openclaw memory index [--agent <id>] [--force] [--verbose]
 ```
 
-- `--apply` -- كتابة الترقيات إلى `MEMORY.md` (الافتراضي: معاينة فقط).
-- `--limit <n>` -- تحديد الحد الأقصى لعدد المرشحين المعروضين.
-- `--include-promoted` -- تضمين الإدخالات التي رُقّيت بالفعل في الدورات السابقة.
+نطاق التنفيذ لكل وكيل هو نفسه في `status`. يشغّل `--force` إعادة فهرسة كاملة بدلًا من
+إعادة فهرسة تزايدية. يطبع `--verbose` تفاصيل الموفّر والنموذج والمصادر
+والمسارات الإضافية لكل وكيل قبل عرض تقدم الفهرسة.
 
-الخيارات الكاملة:
+## `memory search`
 
-- يرتّب المرشحين قصيري الأمد من `memory/YYYY-MM-DD.md` باستخدام إشارات ترويج موزونة (`frequency`، `relevance`، `query diversity`، `recency`، `consolidation`، `conceptual richness`).
-- يستخدم إشارات قصيرة الأمد من استدعاءات الذاكرة ومرورات الإدخال اليومية، إضافة إلى إشارات التعزيز في مرحلتي light/REM.
-- عند تفعيل Dreaming، يدير `memory-core` تلقائيًا مهمة Cron واحدة تُشغّل مسحًا كاملًا (`light -> REM -> deep`) في الخلفية (لا يلزم تنفيذ `openclaw cron add` يدويًا).
-- `--agent <id>`: حصر النطاق في وكيل واحد (الافتراضي: الوكيل الافتراضي).
-- `--limit <n>`: الحد الأقصى للمرشحين المطلوب إرجاعهم/تطبيقهم.
-- `--min-score <n>`: الحد الأدنى لدرجة الترويج الموزونة.
-- `--min-recall-count <n>`: الحد الأدنى المطلوب لعدد الاستدعاءات للمرشح.
-- `--min-unique-queries <n>`: الحد الأدنى المطلوب لعدد الاستعلامات المميزة للمرشح.
-- `--apply`: إلحاق المرشحين المحددين في `MEMORY.md` ووضع علامة أنهم رُقّوا.
-- `--include-promoted`: تضمين المرشحين الذين رُقّوا بالفعل في المخرجات.
-- `--json`: طباعة مخرجات JSON.
+```bash
+openclaw memory search [query] [--query <text>] [--agent <id>] [--max-results <n>] [--min-score <n>] [--json]
+```
 
-`memory promote-explain`:
+- الاستعلام: `[query]` كوسيط موضعي أو `--query <text>`. إذا حُددا معًا، تكون الأولوية لـ `--query`.
+  وإذا لم يُحدد أي منهما، يُرجع الأمر خطأ.
+- `--agent <id>`: يستخدم الوكيل الافتراضي افتراضيًا (وليس قائمة الوكلاء كاملة).
+- `--max-results <n>`: يحدد حدًا أقصى لعدد النتائج (عدد صحيح موجب).
+- `--min-score <n>`: يستبعد التطابقات التي تقل عن هذه الدرجة.
 
-شرح مرشح ترويج محدد وتفصيل درجته.
+## `memory promote`
+
+يرتّب المرشحين قصيري الأمد من `memory/YYYY-MM-DD.md`، ويلحق اختياريًا
+أفضل الإدخالات بـ `MEMORY.md`.
+
+```bash
+openclaw memory promote [--agent <id>] [--limit <n>] [--min-score <n>] \
+  [--min-recall-count <n>] [--min-unique-queries <n>] [--apply] [--include-promoted] [--json]
+```
+
+| العلامة                    | القيمة الافتراضية | التأثير                                                      |
+| -------------------------- | ----------------- | ------------------------------------------------------------ |
+| `--limit <n>`              |                   | الحد الأقصى للمرشحين المراد إرجاعهم/تطبيقهم.                 |
+| `--min-score <n>`          | `0.75`            | الحد الأدنى لدرجة الترقية الموزونة.                          |
+| `--min-recall-count <n>`   | `3`               | الحد الأدنى المطلوب لعدد مرات الاسترجاع.                     |
+| `--min-unique-queries <n>` | `2`               | الحد الأدنى المطلوب لعدد الاستعلامات المتميزة.               |
+| `--apply`                  | معاينة فقط        | يلحق المرشحين المحددين بـ `MEMORY.md` ويضع علامة ترقية عليهم. |
+| `--include-promoted`       |                   | يضمّن المرشحين الذين رُقّوا بالفعل في دورات سابقة.           |
+| `--json`                   |                   | يطبع JSON.                                                   |
+
+تختلف قيم CLI الافتراضية هذه عن حدود المرحلة العميقة لعملية مسح Dreaming المجدولة
+(راجع [Dreaming](#dreaming) أدناه)؛ مرّر علامات صريحة لمطابقة
+سلوك المسح عند تشغيل يدوي لمرة واحدة.
+
+إشارات الترتيب: تكرار الاسترجاع، ومدى صلة الاسترداد، وتنوع الاستعلامات،
+والحداثة الزمنية، والدمج عبر الأيام، وثراء المفاهيم المشتقة، وتُستمد
+من عمليات استرجاع الذاكرة وعمليات الاستيعاب اليومية، بالإضافة إلى دفعة تعزيز
+طفيفة من مرحلتي الضوء/REM لزيارات Dreaming المتكررة. قبل الكتابة، تعيد عملية الترقية
+قراءة الملاحظة اليومية الحالية، وبذلك تُحترم التعديلات أو الحذف في المقاطع قصيرة الأمد
+منذ الترتيب بدلًا من الترقية من لقطة قديمة.
+
+## `memory promote-explain`
+
+يشرح تفاصيل درجة أحد مرشحي الترقية.
 
 ```bash
 openclaw memory promote-explain <selector> [--agent <id>] [--include-promoted] [--json]
 ```
 
-- `<selector>`: مفتاح المرشح، أو جزء من المسار، أو جزء من مقتطف للبحث عنه.
-- `--agent <id>`: حصر النطاق في وكيل واحد (الافتراضي: الوكيل الافتراضي).
-- `--include-promoted`: تضمين المرشحين الذين رُقّوا بالفعل.
-- `--json`: طباعة مخرجات JSON.
+يطابق `<selector>` مفتاح المرشح (مطابقة تامة أو جزئية)، أو مساره، أو نص المقطع.
 
-`memory rem-harness`:
+## `memory rem-harness`
 
-معاينة تأملات REM، والحقائق المرشحة، ومخرجات الترويج العميق من دون كتابة أي شيء.
+يعاين تأملات REM والحقائق المرشحة ومخرجات ترقية المرحلة العميقة
+من دون كتابة أي شيء.
 
 ```bash
-openclaw memory rem-harness [--agent <id>] [--include-promoted] [--json]
+openclaw memory rem-harness [--agent <id>] [--path <file-or-dir>] [--grounded] [--include-promoted] [--json]
 ```
 
-- `--agent <id>`: حصر النطاق في وكيل واحد (الافتراضي: الوكيل الافتراضي).
-- `--include-promoted`: تضمين المرشحين العميقين الذين رُقّوا بالفعل.
-- `--json`: طباعة مخرجات JSON.
+- `--path <file-or-dir>`: يهيئ حزمة الاختبار من الملفات اليومية التاريخية
+  `YYYY-MM-DD.md` بدلًا من مساحة العمل الحالية.
+- `--grounded`: يعرض أيضًا معاينة موثّقة للأقسام `ما حدث` / `تأملات` /
+  `تحديثات دائمة محتملة` من الملاحظات التاريخية.
+
+## `memory rem-backfill`
+
+يكتب ملخصات REM تاريخية موثّقة في `DREAMS.md` لمراجعتها في واجهة المستخدم.
+قابل للتراجع.
+
+```bash
+openclaw memory rem-backfill --path <file-or-dir> [--agent <id>] [--stage-short-term] [--json]
+openclaw memory rem-backfill --rollback [--rollback-short-term] [--json]
+```
+
+- `--path <file-or-dir>`: مطلوب ما لم يُحدد `--rollback`/`--rollback-short-term`.
+  ملف (أو ملفات) ذاكرة يومية تاريخية أو دليل لملء البيانات منه بأثر رجعي.
+- `--stage-short-term`: يضيف أيضًا مرشحين دائمين وموثّقين إلى مخزن الترقية
+  قصير الأمد الحالي كي تتمكن المرحلة العميقة العادية من ترتيبهم.
+- `--rollback`: يزيل إدخالات اليوميات الموثّقة المكتوبة سابقًا من
+  `DREAMS.md`.
+- `--rollback-short-term`: يزيل المرشحين الموثّقين قصيري الأمد الذين سبق
+  إعدادهم.
 
 ## Dreaming
 
-Dreaming هو نظام توحيد الذاكرة في الخلفية بثلاث مراحل متعاونة:
-**light** (فرز/تجهيز المواد قصيرة الأمد)، و**deep** (ترقية الحقائق الدائمة
-إلى `MEMORY.md`)، و**REM** (التأمل وإبراز الموضوعات).
+Dreaming هو نظام دمج الذاكرة في الخلفية ويتألف من ثلاث مراحل متعاونة
+تعمل بالترتيب وفق جدول واحد: **خفيفة** (فرز/إعداد المواد قصيرة الأمد)،
+و**REM** (التأمل وإبراز الموضوعات)، و**عميقة** (ترقية الحقائق الدائمة
+إلى `MEMORY.md`). لا تكتب في `MEMORY.md` إلا المرحلة العميقة.
 
-- فعّله باستخدام `plugins.entries.memory-core.config.dreaming.enabled: true`.
-- بدّله من المحادثة باستخدام `/dreaming on|off` (أو افحصه باستخدام `/dreaming status`).
-  يجب أن يكون مستدعو القناة مالكين لتغيير الإعداد؛ ويحتاج عملاء Gateway إلى
-  `operator.admin`. تظل حالة القراءة فقط والمساعدة متاحتين لمرسلي الأوامر
-  المخولين.
-- يعمل Dreaming على جدول مسح مُدار واحد (`dreaming.frequency`) وينفّذ المراحل بالترتيب: light، REM، deep.
-- مرحلة deep فقط هي التي تكتب الذاكرة الدائمة إلى `MEMORY.md`.
-- تُكتب مخرجات المراحل المقروءة بشريًا وإدخالات اليوميات إلى `DREAMS.md` (أو `dreams.md` الموجود)، مع تقارير اختيارية لكل مرحلة في `memory/dreaming/<phase>/YYYY-MM-DD.md`.
-- يستخدم الترتيب إشارات موزونة: تكرار الاستدعاء، صلة الاسترجاع، تنوع الاستعلامات، الحداثة الزمنية، التوحيد عبر الأيام، وثراء المفاهيم المشتق.
-- يعيد الترويج قراءة الملاحظة اليومية الحية قبل الكتابة إلى `MEMORY.md`، لذلك لا تُرقّى المقتطفات قصيرة الأمد التي عُدّلت أو حُذفت من لقطات قديمة لمخزن الاستدعاء.
-- تشترك عمليات `memory promote` المجدولة واليدوية في الإعدادات الافتراضية نفسها لمرحلة deep ما لم تمرر تجاوزات عتبات عبر CLI.
-- تتوسع العمليات التلقائية عبر مساحات عمل الذاكرة المُكوَّنة.
+- فعّله باستخدام `plugins.entries.memory-core.config.dreaming.enabled: true`
+  (القيمة الافتراضية `false`)؛ يدير `memory-core` مهمة Cron للمسح تلقائيًا، ولا يلزم
+  تنفيذ `openclaw cron add` يدويًا.
+- بدّل حالته من المحادثة باستخدام `/dreaming on|off`؛ وافحصه باستخدام `/dreaming status`
+  (أو `/dreaming`/`/dreaming help`). يتطلب `on`/`off` حالة مالك القناة
+  أو صلاحية `operator.admin` في Gateway؛ وتظل الحالة والمساعدة متاحتين لكل من
+  يمكنه استدعاء الأمر.
+- تُكتب مخرجات المراحل المقروءة للبشر في `DREAMS.md` (أو ملف `dreams.md` موجود).
+  افتراضيًا (`dreaming.storage.mode: "separate"`)، تكتب كل مرحلة أيضًا
+  تقريرًا مستقلًا في `memory/dreaming/<phase>/YYYY-MM-DD.md`؛ اضبط `mode:
+"inline"` لدمج التقارير في ملف الذاكرة اليومي بدلًا من ذلك، أو `"both"`
+  لاستخدام الخيارين معًا.
+- تشترك عمليات `memory promote` المجدولة واليدوية في إشارات ترتيب
+  المرحلة العميقة نفسها؛ ولا تختلف إلا الحدود الافتراضية (راجع الجدول أعلاه مقابل
+  القيم المجدولة الافتراضية أدناه).
+- تتوزع عمليات التشغيل المجدولة على مساحات عمل الذاكرة لكل الوكلاء المُعدّين.
 
-الجدولة الافتراضية:
+القيم المجدولة الافتراضية (`plugins.entries.memory-core.config.dreaming`):
 
-- **وتيرة المسح**: `dreaming.frequency = 0 3 * * *`
-- **عتبات deep**: `minScore=0.8`، `minRecallCount=3`، `minUniqueQueries=3`، `recencyHalfLifeDays=14`، `maxAgeDays=30`
-
-مثال:
+| المفتاح                                | القيمة الافتراضية |
+| -------------------------------------- | ----------------- |
+| `frequency`                            | `0 3 * * *`       |
+| `phases.deep.minScore`                 | `0.8`             |
+| `phases.deep.minRecallCount`           | `3`               |
+| `phases.deep.minUniqueQueries`         | `3`               |
+| `phases.deep.recencyHalfLifeDays`      | `14`              |
+| `phases.deep.maxAgeDays`               | `30`              |
+| `phases.deep.maxPromotedSnippetTokens` | `160`             |
 
 ```json
 {
@@ -175,20 +198,17 @@ Dreaming هو نظام توحيد الذاكرة في الخلفية بثلاث 
 }
 ```
 
-ملاحظات:
+القائمة الكاملة للمفاتيح وتفاصيل المراحل: [Dreaming](/ar/concepts/dreaming)،
+و[مرجع إعدادات الذاكرة](/ar/reference/memory-config#dreaming).
 
-- يطبع `memory index --verbose` تفاصيل لكل مرحلة (الموفر، النموذج، المصادر، نشاط الدُفعات).
-- يتضمن `memory status` أي مسارات إضافية مُكوَّنة عبر `memorySearch.extraPaths`.
-- إذا كانت حقول مفاتيح واجهة API البعيدة لـ Active Memory الفعالة مُكوَّنة كـ SecretRefs، فإن الأمر يحل تلك القيم من لقطة Gateway النشطة. إذا كان Gateway غير متاح، يفشل الأمر بسرعة.
-- ملاحظة انحراف إصدار Gateway: يتطلب مسار الأمر هذا Gateway يدعم `secrets.resolve`؛ وتعيد Gateways الأقدم خطأ طريقة غير معروفة.
-- اضبط وتيرة المسح المجدول باستخدام `dreaming.frequency`. بخلاف ذلك، تكون سياسة الترويج العميق داخلية باستثناء `dreaming.phases.deep.maxPromotedSnippetTokens`، الذي يحد طول المقتطف المُرقّى مع إبقاء الأصل ظاهرًا. استخدم علامات CLI في `memory promote` عندما تحتاج إلى تجاوزات عتبات يدوية لمرة واحدة.
-- يعاين `memory rem-harness --path <file-or-dir> --grounded` عناصر `What Happened` و`Reflections` و`Possible Lasting Updates` المؤسَّسة من الملاحظات اليومية التاريخية من دون كتابة أي شيء.
-- يكتب `memory rem-backfill --path <file-or-dir>` إدخالات يوميات مؤسَّسة وقابلة للعكس في `DREAMS.md` لمراجعة واجهة المستخدم.
-- يقوم `memory rem-backfill --path <file-or-dir> --stage-short-term` أيضًا بزرع مرشحين دائمين مؤسَّسين في مخزن الترويج قصير الأمد الحي حتى تتمكن مرحلة deep العادية من ترتيبهم.
-- يزيل `memory rem-backfill --rollback` إدخالات اليوميات المؤسَّسة المكتوبة سابقًا، ويزيل `memory rem-backfill --rollback-short-term` المرشحين المؤسَّسين قصيري الأمد الذين جرى تجهيزهم سابقًا.
-- راجع [Dreaming](/ar/concepts/dreaming) للاطلاع على أوصاف المراحل الكاملة ومرجع التكوين.
+## اعتماد Gateway لـ SecretRef
 
-## ذات صلة
+إذا كانت حقول مفتاح API البعيد للذاكرة النشطة مُعدّة بصيغة SecretRefs، فإن أوامر `memory`
+تحلّها من لقطة Gateway النشطة؛ وإذا لم يكن Gateway متاحًا، يفشل الأمر فورًا.
+يتطلب ذلك Gateway يدعم الطريقة `secrets.resolve`؛ وتُرجع إصدارات Gateway الأقدم
+خطأ يفيد بأن الطريقة غير معروفة.
+
+## ذو صلة
 
 - [مرجع CLI](/ar/cli)
 - [نظرة عامة على الذاكرة](/ar/concepts/memory)

@@ -1,49 +1,40 @@
 ---
 read_when:
-    - Konfigurowanie wiadomości kanału tworzonych przez bota
-    - Dostrajanie ochrony przed pętlami bot-bot
+    - Konfigurowanie wiadomości na kanałach tworzonych przez boty
+    - Dostrajanie ochrony przed pętlami między botami
 sidebarTitle: Bot loop protection
-summary: Domyślna ochrona przed pętlami między botami i nadpisania kanałów
-title: Ochrona przed pętlą botów
+summary: Domyślne ustawienia ochrony przed pętlami między botami i nadpisania dla kanałów
+title: Ochrona przed zapętleniem botów
 x-i18n:
-    generated_at: "2026-06-27T17:09:17Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:47:23Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7a36794332e89dc7a9cf558e1687beabf4a6d10fb8e73c39794b0f0fd01c65b7
+    source_hash: 08637267cd3422d3154315e709c85c85fa57641f1adb0e8ef10c32e8a7b73312
     source_path: channels/bot-loop-protection.md
     workflow: 16
 ---
 
-# Ochrona przed pętlą botów
+OpenClaw może przyjmować wiadomości napisane przez inne boty w kanałach obsługujących `allowBots`. Gdy ta ścieżka jest włączona, ochrona przed pętlą między parami zapobiega bezterminowemu odpowiadaniu sobie przez dwie tożsamości botów.
 
-OpenClaw może przyjmować wiadomości napisane przez inne boty w kanałach obsługujących `allowBots`.
-Gdy ta ścieżka jest włączona, ochrona przed pętlą par zapobiega nieskończonemu
-odpowiadaniu sobie nawzajem przez dwie tożsamości botów.
+Mechanizm ochronny jest egzekwowany przez główny moduł obsługi odpowiedzi przychodzących. Każdy obsługiwany kanał przekształca zdarzenie przychodzące w ogólne dane: konto lub zakres, identyfikator konwersacji, identyfikator bota nadawcy i identyfikator bota odbiorcy. Rdzeń śledzi parę uczestników w obu kierunkach (A do B i B do A są traktowane jako ta sama para), stosuje limit w przesuwanym oknie i blokuje parę na czas karencji po przekroczeniu limitu.
 
-Zabezpieczenie jest egzekwowane przez główny mechanizm uruchamiania odpowiedzi przychodzących. Każdy obsługiwany kanał
-mapuje własne zdarzenie przychodzące na ogólne fakty: konto lub zakres, identyfikator rozmowy,
-identyfikator bota nadawcy i identyfikator bota odbiorcy. Następnie rdzeń śledzi parę uczestników w obu
-kierunkach, stosuje budżet w oknie kroczącym i wycisza parę podczas
-okresu schłodzenia po przekroczeniu budżetu.
+## Wartości domyślne
 
-## Domyślne ustawienia
+Ochrona przed pętlą między parami jest aktywna zawsze, gdy kanał dopuszcza wiadomości utworzone przez boty do przekazania dalej. Wbudowane wartości domyślne:
 
-Ochrona przed pętlą par jest aktywna, gdy kanał pozwala wiadomościom utworzonym przez boty trafiać do
-dyspozycji. Wbudowane wartości domyślne to:
+| Klucz                | Wartość domyślna | Znaczenie                                                    |
+| -------------------- | ----------------- | ------------------------------------------------------------ |
+| `enabled`            | `true`            | Ochrona aktywna dla kanałów, które ją obsługują.              |
+| `maxEventsPerWindow` | `20`              | Liczba zdarzeń, które para botów może wymienić w danym oknie. |
+| `windowSeconds`      | `60`              | Długość przesuwanego okna.                                   |
+| `cooldownSeconds`    | `60`              | Czas blokady po przekroczeniu limitu przez parę.              |
 
-- `maxEventsPerWindow: 20` - para botów może wymienić 20 zdarzeń w oknie
-- `windowSeconds: 60` - długość okna kroczącego
-- `cooldownSeconds: 60` - czas wyciszenia po przekroczeniu budżetu przez parę
+Mechanizm ochronny nie wpływa na wiadomości napisane przez ludzi, wdrożenia z jednym botem, filtrowanie własnych wiadomości ani odpowiedzi botów mieszczące się w limicie.
 
-Zabezpieczenie nie wpływa na zwykłe wiadomości napisane przez ludzi, wdrożenia z jednym botem,
-filtrowanie wiadomości własnych ani jednorazowe odpowiedzi botów, które mieszczą się w budżecie.
+## Konfigurowanie wspólnych wartości domyślnych
 
-## Konfigurowanie współdzielonych ustawień domyślnych
-
-Ustaw `channels.defaults.botLoopProtection` raz, aby nadać każdemu obsługiwanemu kanałowi
-taką samą podstawę. Nadpisania kanałów i kont nadal mogą dostrajać poszczególne
-powierzchnie.
+Ustaw `channels.defaults.botLoopProtection` jednokrotnie, aby zapewnić wszystkim obsługiwanym kanałom tę samą konfigurację bazową. Nadpisania na poziomie kanału, konta i pokoju nadal mogą dostosowywać poszczególne obszary.
 
 ```json5
 {
@@ -59,18 +50,17 @@ powierzchnie.
 }
 ```
 
-Ustaw `enabled: false` tylko wtedy, gdy polityka kanału celowo zezwala na
-rozmowy między botami bez automatycznego wyciszania.
+Ustaw `enabled: false` tylko wtedy, gdy zasady kanału celowo zezwalają na konwersacje między botami bez automatycznej blokady.
 
-## Nadpisywanie dla kanału lub konta
+## Nadpisywanie dla kanału, konta lub pokoju
 
-Obsługiwane kanały nakładają własną konfigurację na współdzielone ustawienie domyślne. Priorytet jest następujący:
+Obsługiwane kanały nakładają własną konfigurację na wspólne wartości domyślne, klucz po kluczu. Kolejność pierwszeństwa, od najbardziej szczegółowej:
 
-- `channels.<channel>.<room-or-space>.botLoopProtection`, gdy kanał obsługuje nadpisania dla poszczególnych rozmów
-- `channels.<channel>.accounts.<account>.botLoopProtection`, gdy kanał obsługuje konta
-- `channels.<channel>.botLoopProtection`, gdy kanał obsługuje ustawienia domyślne najwyższego poziomu
-- `channels.defaults.botLoopProtection`
-- wbudowane ustawienia domyślne
+1. `channels.<channel>.<room-or-space>.botLoopProtection`, gdy kanał obsługuje nadpisania dla poszczególnych konwersacji
+2. `channels.<channel>.accounts.<account>.botLoopProtection`, gdy kanał obsługuje konta
+3. `channels.<channel>.botLoopProtection`, gdy kanał obsługuje wartości domyślne najwyższego poziomu
+4. `channels.defaults.botLoopProtection`
+5. wbudowane wartości domyślne
 
 ```json5
 {
@@ -85,27 +75,11 @@ Obsługiwane kanały nakładają własną konfigurację na współdzielone ustaw
         maxEventsPerWindow: 8,
       },
       accounts: {
-        molty: {
+        secondary: {
           allowBots: "mentions",
           botLoopProtection: {
             maxEventsPerWindow: 5,
             cooldownSeconds: 90,
-          },
-        },
-      },
-    },
-    slack: {
-      allowBots: "mentions",
-      botLoopProtection: {
-        maxEventsPerWindow: 8,
-      },
-    },
-    matrix: {
-      allowBots: "mentions",
-      groups: {
-        "!roomid:example.org": {
-          botLoopProtection: {
-            maxEventsPerWindow: 5,
           },
         },
       },
@@ -120,19 +94,33 @@ Obsługiwane kanały nakładają własną konfigurację na współdzielone ustaw
         },
       },
     },
+    matrix: {
+      allowBots: "mentions",
+      groups: {
+        "!roomid:example.org": {
+          botLoopProtection: {
+            maxEventsPerWindow: 5,
+          },
+        },
+      },
+    },
+    slack: {
+      allowBots: "mentions",
+      botLoopProtection: {
+        maxEventsPerWindow: 8,
+      },
+    },
   },
 }
 ```
 
 ## Obsługa kanałów
 
-- Discord: natywne fakty `author.bot`, kluczowane według konta Discord, kanału i pary botów.
-- Slack: natywne fakty `bot_id` dla zaakceptowanych wiadomości utworzonych przez boty, kluczowane według konta Slack, kanału i pary botów.
-- Matrix: skonfigurowane konta botów Matrix, kluczowane według konta Matrix, pokoju i skonfigurowanej pary botów.
-- Google Chat: natywne fakty `sender.type=BOT` dla zaakceptowanych wiadomości utworzonych przez boty, kluczowane według konta, przestrzeni i pary botów.
+- Discord: natywne dane `author.bot`, indeksowane według konta Discord, kanału i pary botów.
+- Google Chat: natywne dane `sender.type=BOT` dla zaakceptowanych wiadomości napisanych przez boty, indeksowane według konta, przestrzeni i pary botów.
+- Matrix: skonfigurowane konta botów Matrix, indeksowane według konta Matrix, pokoju i skonfigurowanej pary botów.
+- Slack: natywne dane `bot_id` dla zaakceptowanych wiadomości napisanych przez boty, indeksowane według konta Slack, kanału i pary botów.
 
-Kanały, które nie ujawniają wiarygodnej tożsamości bota przychodzącego, nadal używają swoich
-normalnych filtrów wiadomości własnych i polityki dostępu. Nie powinny włączać tego
-zabezpieczenia, dopóki nie będą mogły zidentyfikować obu uczestników pary botów.
+Kanały, które nie udostępniają wiarygodnej tożsamości przychodzącego bota, nadal korzystają ze standardowych filtrów własnych wiadomości i zasad dostępu. Nie powinny korzystać z tego mechanizmu ochronnego, dopóki nie będą w stanie zidentyfikować obu uczestników pary botów.
 
-Szczegóły implementacji pluginu znajdziesz w [środowisku uruchomieniowym SDK](/pl/plugins/sdk-runtime#reusable-runtime-utilities).
+Szczegóły implementacji Pluginów zawiera sekcja [środowisko wykonawcze SDK](/pl/plugins/sdk-runtime#reusable-runtime-utilities).

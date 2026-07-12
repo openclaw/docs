@@ -1,25 +1,25 @@
 ---
 read_when:
-    - Oracle Cloud’da OpenClaw kurulumu
-    - OpenClaw için ücretsiz VPS barındırma arıyorum
-    - Küçük bir sunucuda 7/24 OpenClaw çalıştırmak istiyorum
-summary: OpenClaw'u Oracle Cloud'un Always Free ARM katmanında barındırın
+    - Oracle Cloud'da OpenClaw kurulumu
+    - OpenClaw için ücretsiz VPS barındırma hizmeti arıyorsunuz
+    - Küçük bir sunucuda 7/24 OpenClaw istiyorsanız
+summary: OpenClaw'u Oracle Cloud'un Daima Ücretsiz ARM katmanında barındırın
 title: Oracle Cloud
 x-i18n:
-    generated_at: "2026-05-06T09:19:58Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:25:34Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 9115c83c7a78b78d8b6701b028a2f6e9f08a71f7fff14b7b45f1610b8052c14e
+    source_hash: 5e1eb95b6bc8ad73e1492a03d8ebe32d89c80e58347614e6ae12d2d3d926d577
     source_path: install/oracle.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Ücretsiz olarak Oracle Cloud'un **Always Free** ARM katmanında (4 OCPU'ya, 24 GB RAM'e, 200 GB depolamaya kadar) kalıcı bir OpenClaw Gateway çalıştırın.
+Oracle Cloud'un **Always Free** ARM katmanında (4 OCPU, 24 GB RAM ve 200 GB depolamaya kadar) kalıcı bir OpenClaw Gateway'i ücretsiz çalıştırın.
 
-## Önkoşullar
+## Ön koşullar
 
-- Oracle Cloud hesabı ([kayıt](https://www.oracle.com/cloud/free/)) -- sorun yaşarsanız [topluluk kayıt kılavuzuna](https://gist.github.com/rssnyder/51e3cfedd730e7dd5f4a816143b25dbd) bakın
+- Oracle Cloud hesabı ([kaydolun](https://www.oracle.com/cloud/free/)) -- sorun yaşarsanız [topluluk kayıt kılavuzuna](https://gist.github.com/rssnyder/51e3cfedd730e7dd5f4a816143b25dbd) bakın
 - Tailscale hesabı ([tailscale.com](https://tailscale.com) adresinde ücretsiz)
 - Bir SSH anahtar çifti
 - Yaklaşık 30 dakika
@@ -29,19 +29,19 @@ x-i18n:
 <Steps>
   <Step title="Bir OCI örneği oluşturun">
     1. [Oracle Cloud Console](https://cloud.oracle.com/) üzerinde oturum açın.
-    2. **Compute > Instances > Create Instance** bölümüne gidin.
-    3. Yapılandırın:
-       - **Ad:** `openclaw`
-       - **İmaj:** Ubuntu 24.04 (aarch64)
-       - **Şekil:** `VM.Standard.A1.Flex` (Ampere ARM)
-       - **OCPU'lar:** 2 (veya 4'e kadar)
-       - **Bellek:** 12 GB (veya 24 GB'a kadar)
-       - **Önyükleme birimi:** 50 GB (200 GB'a kadar ücretsiz)
-       - **SSH anahtarı:** Açık anahtarınızı ekleyin
-    4. **Create** öğesine tıklayın ve genel IP adresini not edin.
+    2. **Compute > Instances > Create Instance** yoluna gidin.
+    3. Şunları yapılandırın:
+       - **Name:** `openclaw`
+       - **Image:** Ubuntu 24.04 (aarch64)
+       - **Shape:** `VM.Standard.A1.Flex` (Ampere ARM)
+       - **OCPUs:** 2 (veya 4'e kadar)
+       - **Memory:** 12 GB (veya 24 GB'a kadar)
+       - **Boot volume:** 50 GB (200 GB'a kadar ücretsiz)
+       - **SSH key:** Açık anahtarınızı ekleyin
+    4. **Create** düğmesine tıklayın ve genel IP adresini not edin.
 
     <Tip>
-    Örnek oluşturma "Out of capacity" hatasıyla başarısız olursa farklı bir kullanılabilirlik etki alanı deneyin veya daha sonra yeniden deneyin. Ücretsiz katman kapasitesi sınırlıdır.
+    Örnek oluşturma işlemi "Out of capacity" hatasıyla başarısız olursa farklı bir kullanılabilirlik etki alanı deneyin veya daha sonra yeniden deneyin. Ücretsiz katman kapasitesi sınırlıdır.
     </Tip>
 
   </Step>
@@ -54,18 +54,18 @@ x-i18n:
     sudo apt install -y build-essential
     ```
 
-    Bazı bağımlılıkların ARM derlemesi için `build-essential` gereklidir.
+    Bazı bağımlılıkların ARM üzerinde derlenmesi için `build-essential` gereklidir.
 
   </Step>
 
-  <Step title="Kullanıcıyı ve ana makine adını yapılandırın">
+  <Step title="Kullanıcıyı ve ana bilgisayar adını yapılandırın">
     ```bash
     sudo hostnamectl set-hostname openclaw
     sudo passwd ubuntu
     sudo loginctl enable-linger ubuntu
     ```
 
-    Linger'ı etkinleştirmek, oturum kapatıldıktan sonra kullanıcı hizmetlerinin çalışmaya devam etmesini sağlar.
+    Kalıcılığı etkinleştirmek, kullanıcı hizmetlerinin oturum kapatıldıktan sonra çalışmaya devam etmesini sağlar.
 
   </Step>
 
@@ -85,12 +85,12 @@ x-i18n:
     source ~/.bashrc
     ```
 
-    "How do you want to hatch your bot?" sorulduğunda **Do this later** öğesini seçin.
+    "How do you want to hatch your bot?" sorulduğunda **Do this later** seçeneğini belirleyin.
 
   </Step>
 
   <Step title="Gateway'i yapılandırın">
-    Güvenli uzaktan erişim için Tailscale Serve ile belirteç kimlik doğrulamasını kullanın.
+    Güvenli uzaktan erişim için Tailscale Serve ile token kimlik doğrulamasını kullanın.
 
     ```bash
     openclaw config set gateway.bind loopback
@@ -102,19 +102,19 @@ x-i18n:
     systemctl --user restart openclaw-gateway.service
     ```
 
-    Buradaki `gateway.trustedProxies=["127.0.0.1"]` yalnızca yerel Tailscale Serve proxy'sinin iletilen IP/yerel istemci işlemesi içindir. Bu, `gateway.auth.mode: "trusted-proxy"` **değildir**. Diff görüntüleyici rotaları bu kurulumda kapalı başarısız davranışı korur: iletilen proxy üst bilgileri olmadan yapılan ham `127.0.0.1` görüntüleyici istekleri `Diff not found` döndürebilir. Ekler için `mode=file` / `mode=both` kullanın veya paylaşılabilir görüntüleyici bağlantılarına ihtiyacınız varsa uzaktan görüntüleyicileri bilinçli olarak etkinleştirip `plugins.entries.diffs.config.viewerBaseUrl` değerini ayarlayın (ya da bir proxy `baseUrl` geçirin).
+    Buradaki `gateway.trustedProxies=["127.0.0.1"]` yalnızca yerel Tailscale Serve proxy'sinin iletilen IP/yerel istemci işlemesi içindir. Bu, `gateway.auth.mode: "trusted-proxy"` **değildir**. Bu kurulumda fark görüntüleyici rotaları güvenli biçimde kapalı kalma davranışını korur: iletilen proxy üstbilgileri bulunmayan ham `127.0.0.1` görüntüleyici istekleri `Diff not found` döndürür. Ekler için `mode=file` / `mode=both` kullanın ya da paylaşılabilir görüntüleyici bağlantılarına ihtiyacınız varsa uzaktan görüntüleyicileri bilinçli olarak etkinleştirip `plugins.entries.diffs.config.viewerBaseUrl` değerini ayarlayın (veya bir proxy `baseUrl` değeri iletin).
 
   </Step>
 
-  <Step title="VCN güvenliğini kilitleyin">
+  <Step title="VCN güvenliğini sıkılaştırın">
     Ağ sınırında Tailscale dışındaki tüm trafiği engelleyin:
 
-    1. OCI Console'da **Networking > Virtual Cloud Networks** bölümüne gidin.
-    2. VCN'nize, ardından **Security Lists > Default Security List** öğesine tıklayın.
-    3. `0.0.0.0/0 UDP 41641` (Tailscale) dışındaki tüm giriş kurallarını **kaldırın**.
-    4. Varsayılan çıkış kurallarını koruyun (tüm dış trafiğe izin ver).
+    1. OCI Console'da **Networking > Virtual Cloud Networks** yoluna gidin.
+    2. VCN'nize, ardından **Security Lists > Default Security List** seçeneğine tıklayın.
+    3. `0.0.0.0/0 UDP 41641` (Tailscale) dışındaki tüm giriş kurallarını **Remove**.
+    4. Varsayılan çıkış kurallarını koruyun (tüm giden trafiğe izin verin).
 
-    Bu, ağ sınırında 22 numaralı bağlantı noktasındaki SSH'yi, HTTP'yi, HTTPS'yi ve diğer her şeyi engeller. Bu noktadan sonra yalnızca Tailscale üzerinden bağlanabilirsiniz.
+    Bu işlem ağ sınırında 22 numaralı bağlantı noktasındaki SSH'yi, HTTP'yi, HTTPS'yi ve diğer her şeyi engeller. Bu noktadan sonra yalnızca Tailscale üzerinden bağlanabilirsiniz.
 
   </Step>
 
@@ -126,74 +126,74 @@ x-i18n:
     curl http://localhost:18789
     ```
 
-    Control UI'ye tailnet'inizdeki herhangi bir cihazdan erişin:
+    Kontrol Arayüzü'ne tailnet'inizdeki herhangi bir cihazdan erişin:
 
     ```
     https://openclaw.<tailnet-name>.ts.net/
     ```
 
-    `<tailnet-name>` değerini tailnet adınızla değiştirin (`tailscale status` içinde görünür).
+    `<tailnet-name>` yerine tailnet adınızı yazın (`tailscale status` çıktısında görülebilir).
 
   </Step>
 </Steps>
 
-## Güvenlik duruşunu doğrulayın
+## Güvenlik durumunu doğrulayın
 
-VCN kilitliyken (yalnızca UDP 41641 açık) ve Gateway loopback'e bağlıyken, genel trafik ağ sınırında engellenir ve yönetici erişimi yalnızca tailnet üzerinden olur. Bu, birkaç geleneksel VPS sertleştirme adımına olan ihtiyacı ortadan kaldırır:
+VCN sıkılaştırıldığında (yalnızca UDP 41641 açıkken) ve Gateway loopback'e bağlandığında genel trafik ağ sınırında engellenir ve yönetici erişimi yalnızca tailnet ile sınırlandırılır. Bu, geleneksel VPS sıkılaştırma adımlarından birkaçına duyulan ihtiyacı ortadan kaldırır:
 
-| Geleneksel adım    | Gerekli mi? | Neden                                                                     |
-| ------------------ | ----------- | ------------------------------------------------------------------------- |
-| UFW güvenlik duvarı | Hayır      | VCN, trafiği örneğe ulaşmadan önce engeller.                              |
-| fail2ban           | Hayır       | 22 numaralı bağlantı noktası VCN'de engellenir; brute-force yüzeyi yoktur. |
-| sshd sertleştirme  | Hayır       | Tailscale SSH, sshd kullanmaz.                                            |
-| Root oturum açmayı devre dışı bırakma | Hayır | Tailscale, sistem kullanıcılarıyla değil tailnet kimliğiyle kimlik doğrular. |
-| Yalnızca SSH anahtarıyla kimlik doğrulama | Hayır | Aynı nedenle; tailnet kimliği sistem SSH anahtarlarının yerini alır. |
-| IPv6 sertleştirme  | Genellikle hayır | VCN/alt ağ ayarlarına bağlıdır; gerçekten neyin atandığını/açığa çıktığını doğrulayın. |
+| Geleneksel adım                    | Gerekli mi?       | Nedeni                                                                          |
+| ---------------------------------- | ----------------- | ------------------------------------------------------------------------------- |
+| UFW güvenlik duvarı                | Hayır             | VCN, trafiği örneğe ulaşmadan önce engeller.                                    |
+| fail2ban                           | Hayır             | 22 numaralı bağlantı noktası VCN'de engellenir; kaba kuvvet saldırı yüzeyi yoktur. |
+| sshd sıkılaştırması                | Hayır             | Tailscale SSH, sshd kullanmaz.                                                  |
+| Kök kullanıcı oturumunu devre dışı bırakma | Hayır     | Tailscale, sistem kullanıcılarıyla değil tailnet kimliğiyle kimlik doğrular.    |
+| Yalnızca SSH anahtarıyla kimlik doğrulama | Hayır     | Aynı nedenle -- tailnet kimliği sistem SSH anahtarlarının yerini alır.          |
+| IPv6 sıkılaştırması                | Genellikle hayır  | VCN/alt ağ ayarlarına bağlıdır; gerçekten neyin atandığını/açığa çıkarıldığını doğrulayın. |
 
-Yine de önerilir:
+Yine de önerilenler:
 
-- Kimlik bilgisi dosyası izinlerini kısıtlamak için `chmod 700 ~/.openclaw`.
-- OpenClaw'a özgü duruş denetimi için `openclaw security audit`.
-- İşletim sistemi yamaları için düzenli `sudo apt update && sudo apt upgrade`.
-- [Tailscale yönetici konsolundaki](https://login.tailscale.com/admin) cihazları düzenli olarak gözden geçirin.
+- Kimlik bilgisi dosyalarının izinlerini kısıtlamak için `chmod 700 ~/.openclaw`.
+- OpenClaw'a özgü güvenlik durumu denetimi için `openclaw security audit`.
+- İşletim sistemi yamaları için düzenli olarak `sudo apt update && sudo apt upgrade`.
+- [Tailscale yönetim konsolundaki](https://login.tailscale.com/admin) cihazları düzenli aralıklarla gözden geçirin.
 
 Hızlı doğrulama komutları:
 
 ```bash
-# Confirm no public ports are listening
+# Genel bağlantı noktalarının dinlemede olmadığını doğrulayın
 sudo ss -tlnp | grep -v '127.0.0.1\|::1'
 
-# Verify Tailscale SSH is active
+# Tailscale SSH'nin etkin olduğunu doğrulayın
 tailscale status | grep -q 'offers: ssh' && echo "Tailscale SSH active"
 
-# Optional: disable sshd entirely once Tailscale SSH is confirmed working
+# İsteğe bağlı: Tailscale SSH'nin çalıştığı doğrulandıktan sonra sshd'yi tamamen devre dışı bırakın
 sudo systemctl disable --now ssh
 ```
 
 ## ARM notları
 
-Always Free katmanı ARM'dir (`aarch64`). Çoğu OpenClaw özelliği sorunsuz çalışır; az sayıda yerel ikilinin ARM derlemesine ihtiyacı vardır:
+Always Free katmanı ARM (`aarch64`) kullanır. OpenClaw özelliklerinin çoğu sorunsuz çalışır; az sayıda yerel ikili dosyanın ARM derlemelerine ihtiyacı vardır:
 
-- Node.js, Telegram, WhatsApp (Baileys): saf JavaScript, sorun yok.
+- Node.js, Telegram, WhatsApp (Baileys): saf JavaScript olduğundan sorun yoktur.
 - Yerel kod içeren çoğu npm paketi: önceden derlenmiş `linux-arm64` yapıtları mevcuttur.
-- İsteğe bağlı CLI yardımcıları (ör. Skills tarafından gönderilen Go/Rust ikilileri): yüklemeden önce bir `aarch64` / `linux-arm64` sürümü olup olmadığını kontrol edin.
+- İsteğe bağlı CLI yardımcıları (ör. Skills tarafından sunulan Go/Rust ikili dosyaları): yüklemeden önce bir `aarch64` / `linux-arm64` sürümü olup olmadığını kontrol edin.
 
-Mimariyi `uname -m` ile doğrulayın (`aarch64` yazdırmalıdır). ARM derlemesi olmayan ikililer için kaynaktan yükleyin veya bunları atlayın.
+Mimariyi `uname -m` ile doğrulayın (`aarch64` yazdırmalıdır). ARM derlemesi olmayan ikili dosyaları kaynaktan yükleyin veya atlayın.
 
-## Kalıcılık ve yedekler
+## Kalıcılık ve yedeklemeler
 
-OpenClaw durumu şunların altında bulunur:
+OpenClaw durumu şu konumlarda bulunur:
 
-- `~/.openclaw/` — `openclaw.json`, ajan başına `auth-profiles.json`, kanal/sağlayıcı durumu ve oturum verileri.
-- `~/.openclaw/workspace/` — ajan çalışma alanı (SOUL.md, bellek, yapıtlar).
+- `~/.openclaw/` -- `openclaw.json`, aracı başına `auth-profiles.json`, kanal/sağlayıcı durumu ve oturum verileri.
+- `~/.openclaw/workspace/` -- aracı çalışma alanı (SOUL.md, bellek, yapıtlar).
 
-Bunlar yeniden başlatmalardan sonra korunur. Taşınabilir bir anlık görüntü almak için:
+Bunlar yeniden başlatmalardan etkilenmez. Taşınabilir bir anlık görüntü almak için:
 
 ```bash
 openclaw backup create
 ```
 
-## Geri dönüş: SSH tüneli
+## Alternatif: SSH tüneli
 
 Tailscale Serve çalışmıyorsa yerel makinenizden bir SSH tüneli kullanın:
 
@@ -205,13 +205,13 @@ Ardından `http://localhost:18789` adresini açın.
 
 ## Sorun giderme
 
-**Örnek oluşturma başarısız oluyor ("Out of capacity")** -- Ücretsiz katman ARM örnekleri popülerdir. Farklı bir kullanılabilirlik etki alanı deneyin veya yoğun olmayan saatlerde yeniden deneyin.
+**Örnek oluşturma başarısız oluyor ("Out of capacity")** -- Ücretsiz katman ARM örnekleri yoğun talep görür. Farklı bir kullanılabilirlik etki alanı deneyin veya yoğun olmayan saatlerde yeniden deneyin.
 
-**Tailscale bağlanmıyor** -- Yeniden kimlik doğrulamak için `sudo tailscale up --ssh --hostname=openclaw --reset` çalıştırın.
+**Tailscale bağlanmıyor** -- Yeniden kimlik doğrulamak için `sudo tailscale up --ssh --hostname=openclaw --reset` komutunu çalıştırın.
 
-**Gateway başlamıyor** -- `openclaw doctor --non-interactive` çalıştırın ve günlükleri `journalctl --user -u openclaw-gateway.service -n 50` ile kontrol edin.
+**Gateway başlamıyor** -- `openclaw doctor --non-interactive` komutunu çalıştırın ve günlükleri `journalctl --user -u openclaw-gateway.service -n 50` ile denetleyin.
 
-**ARM ikili sorunları** -- Çoğu npm paketi ARM64 üzerinde çalışır. Yerel ikililer için `linux-arm64` veya `aarch64` sürümlerini arayın. Mimariyi `uname -m` ile doğrulayın.
+**ARM ikili dosyası sorunları** -- Çoğu npm paketi ARM64 üzerinde çalışır. Yerel ikili dosyalar için `linux-arm64` veya `aarch64` sürümlerini arayın. Mimariyi `uname -m` ile doğrulayın.
 
 ## Sonraki adımlar
 
@@ -221,6 +221,6 @@ Ardından `http://localhost:18789` adresini açın.
 
 ## İlgili
 
-- [Yükleme özeti](/tr/install)
+- [Kuruluma genel bakış](/tr/install)
 - [GCP](/tr/install/gcp)
 - [VPS barındırma](/tr/vps)

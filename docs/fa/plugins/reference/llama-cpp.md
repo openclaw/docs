@@ -1,11 +1,11 @@
 ---
 read_when:
-    - شما در حال نصب، پیکربندی یا ممیزی Plugin ‏llama-cpp هستید
-summary: جاسازی‌های محلی GGUF از طریق node-llama-cpp.
-title: Plugin Llama Cpp
+    - شما در حال نصب، پیکربندی یا ممیزی Plugin llama-cpp هستید
+summary: تعبیه‌های محلی GGUF از طریق node-llama-cpp.
+title: Plugin ‏Llama Cpp
 x-i18n:
-    generated_at: "2026-06-27T18:26:47Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:31:08Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: be9fd199e252fd3f905e8064316e45b9b2816945a2e5e16a56a6a88fdd55ef8e
@@ -13,14 +13,14 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin Llama Cpp
+# Plugin‏ Llama Cpp
 
-تعبیه‌های GGUF محلی از طریق `node-llama-cpp`.
+تعبیه‌سازی‌های محلی GGUF از طریق node-llama-cpp.
 
 ## توزیع
 
 - بسته: `@openclaw/llama-cpp-provider`
-- مسیر نصب: npm؛ ClawHub
+- روش نصب: npm؛ ClawHub
 
 ## سطح
 

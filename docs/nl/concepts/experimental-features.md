@@ -1,70 +1,67 @@
 ---
 read_when:
-    - Je ziet een `.experimental`-configuratiesleutel en wilt weten of die stabiel is
-    - Je wilt preview-runtimefuncties uitproberen zonder ze te verwarren met normale standaardinstellingen
-    - Je wilt één plek om de momenteel gedocumenteerde experimentele flags te vinden
-summary: Wat experimentele flags betekenen in OpenClaw en welke momenteel gedocumenteerd zijn
+    - Je ziet een configuratiesleutel ``.experimental`` en wilt weten of deze stabiel is
+    - U wilt runtimefuncties in voorvertoning uitproberen zonder ze te verwarren met de normale standaardinstellingen
+    - U wilt één plek waar u de momenteel gedocumenteerde experimentele vlaggen kunt vinden
+summary: Wat experimentele vlaggen in OpenClaw betekenen en welke momenteel zijn gedocumenteerd
 title: Experimentele functies
 x-i18n:
-    generated_at: "2026-06-27T17:26:04Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:45:49Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a0f42e6b574c5db9508412c9c5d9919d1a54a16fe00edea43664f3a01e8e38f5
+    source_hash: 1d4f6d066ef80cad2fb8a54c8aecb9fca5b4ed91cd5a3626dad4ad889dc3e8f2
     source_path: concepts/experimental-features.md
     workflow: 16
 ---
 
-Experimentele functies in OpenClaw zijn **opt-in previewoppervlakken**. Ze staan
-achter expliciete flags omdat ze nog praktijkervaring nodig hebben voordat ze
-een stabiele standaard of een langlevend openbaar contract verdienen.
+Experimentele functies zijn previewmogelijkheden waarvoor u zich expliciet moet aanmelden via specifieke vlaggen. Ze moeten zich verder in de praktijk bewijzen voordat ze een stabiele standaardinstelling of langdurig contract krijgen.
 
-Behandel ze anders dan normale configuratie:
+- Standaard uitgeschakeld, tenzij documentatie aangeeft dat u er een moet inschakelen.
+- Vorm en gedrag kunnen sneller veranderen dan stabiele configuratie.
+- Geef de voorkeur aan een stabiele aanpak als die al bestaat.
+- Rol pas breed uit nadat u eerst in een kleinere omgeving hebt getest.
 
-- Houd ze **standaard uitgeschakeld**, tenzij de bijbehorende documentatie aangeeft dat je er een moet proberen.
-- Verwacht dat **vorm en gedrag sneller veranderen** dan bij stabiele configuratie.
-- Geef eerst de voorkeur aan het stabiele pad wanneer dat al bestaat.
-- Als je OpenClaw breed uitrolt, test experimentele flags dan eerst in een kleinere
-  omgeving voordat je ze in een gedeelde baseline opneemt.
+## Momenteel gedocumenteerde vlaggen
 
-## Momenteel gedocumenteerde flags
+| Onderdeel                | Sleutel                                                                                    | Gebruik dit wanneer                                                                                                                          | Meer                                                                                          |
+| ------------------------ | ------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Lokale modelruntime      | `agents.defaults.experimental.localModelLean`, `agents.list[].experimental.localModelLean` | Een kleinere of strengere lokale backend vastloopt op het volledige standaardaanbod aan tools van OpenClaw                                  | [Lokale modellen](/nl/gateway/local-models)                                                      |
+| Geheugen doorzoeken      | `agents.defaults.memorySearch.experimental.sessionMemory`                                  | U wilt dat `memory_search` transcripties van eerdere sessies indexeert en accepteert de extra kosten voor opslag en indexering                | [Naslag voor geheugenconfiguratie](/nl/reference/memory-config#session-memory-search-experimental) |
+| Codex-harnas             | `plugins.entries.codex.config.appServer.experimental.sandboxExecServer`                    | U wilt dat de native Codex-appserver 0.132.0 of nieuwer een door een OpenClaw-sandbox ondersteunde exec-server gebruikt in plaats van Code Mode uit te schakelen | [Naslag voor het Codex-harnas](/nl/plugins/codex-harness-reference#sandboxed-native-execution)    |
+| Tool voor gestructureerde planning | `tools.experimental.planTool`                                                     | U wilt de gestructureerde tool `update_plan` beschikbaar stellen voor het volgen van werk met meerdere stappen in compatibele runtimes en UI's | [Naslag voor Gateway-configuratie](/nl/gateway/config-tools#toolsexperimental)                    |
 
-| Oppervlak                | Sleutel                                                                                    | Gebruik dit wanneer                                                                                                             | Meer                                                                                          |
-| ------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| Lokale modelruntime      | `agents.defaults.experimental.localModelLean`, `agents.list[].experimental.localModelLean` | Een kleinere of striktere lokale backend vastloopt op OpenClaw's volledige standaard tool-oppervlak                             | [Lokale modellen](/nl/gateway/local-models)                                                       |
-| Geheugenzoekfunctie      | `agents.defaults.memorySearch.experimental.sessionMemory`                                  | Je wilt dat `memory_search` eerdere sessietranscripten indexeert en accepteert de extra opslag- en indexeringskosten            | [Geheugenconfiguratiereferentie](/nl/reference/memory-config#session-memory-search-experimental) |
-| Codex-harness            | `plugins.entries.codex.config.appServer.experimental.sandboxExecServer`                    | Je wilt dat native Codex app-server 0.132.0 of nieuwer een OpenClaw sandbox-ondersteunde exec-server target in plaats van Code Mode uit te schakelen | [Codex-harnessreferentie](/nl/plugins/codex-harness-reference#sandboxed-native-execution)        |
-| Gestructureerde planningstool | `tools.experimental.planTool`                                                              | Je wilt de gestructureerde `update_plan`-tool beschikbaar maken voor het volgen van meerstapswerk in compatibele runtimes en UI's | [Gateway-configuratiereferentie](/nl/gateway/config-tools#toolsexperimental)                    |
+## Lichtgewicht modus voor lokale modellen
 
-## Lean-modus voor lokaal model
+`agents.defaults.experimental.localModelLean: true` verwijdert bij elke beurt zware optionele tools uit het directe aanbod van de agent: `browser`, `cron`, `message`, `image_generate`, `music_generate`, `video_generate`, `tts` en `pdf`. Expliciet toegestane tools of tools die vereist zijn voor aflevering blijven beschikbaar, hoewel Tool Search ze mogelijk catalogiseert in plaats van rechtstreeks beschikbaar te stellen. De lichtgewicht modus stelt catalogi van plugins, MCP en clients ook standaard in op gestructureerde Tool Search (`tool_search`, `tool_describe`, `tool_call`) wanneer `tools.toolSearch` nog niet is ingesteld. Gebruik `agents.list[].experimental.localModelLean` om dit tot één agent te beperken.
 
-`agents.defaults.experimental.localModelLean: true` is een overdrukventiel voor zwakkere lokale-modelopstellingen. Wanneer dit is ingeschakeld, verwijdert OpenClaw drie standaardtools — `browser`, `cron` en `message` — uit het tool-oppervlak van de agent voor elke beurt. Het zet die run ook standaard op gestructureerde Tool Search-besturingen wanneer `tools.toolSearch` niet expliciet is geconfigureerd, zodat grotere plugin-, MCP- of clienttoolcatalogi achter `tool_search`, `tool_describe` en `tool_call` blijven in plaats van in de prompt te worden gedumpt. Runs die directe `message`-levering vereisen, houden die tool direct in plaats van de Tool Search-standaard van lean-modus in te schakelen. Gebruik `agents.list[].experimental.localModelLean` om hetzelfde gedrag voor één geconfigureerde agent in of uit te schakelen.
+Als u Tool Search al globaal afstemt, laat OpenClaw die configuratie ongewijzigd. Stel `tools.toolSearch: false` in om de standaardinstelling voor Tool Search van de lichtgewicht modus uit te schakelen.
 
-### Waarom deze drie tools
+In de gestructureerde `tools`-modus houden lichtgewicht uitvoeringen `exec` rechtstreeks zichtbaar naast de bedieningselementen van Tool Search, zodat lokale modellen die op programmeren zijn afgestemd nog steeds hun vertrouwde shell-route kunnen kiezen. Dit verandert alleen de zichtbaarheid van het schema: normaal toolbeleid, sandboxing en goedkeuringen voor `exec` blijven van toepassing. Expliciete modi `code` en `directory` behouden hun normale Compaction-gedrag.
 
-Deze drie tools hebben de langste beschrijvingen en de meeste parametervormen in de standaard OpenClaw-runtime. Op een backend met kleine context of een striktere OpenAI-compatibele backend is dat het verschil tussen:
+### Waarom deze tools
 
-- Tool-schema's die netjes in de prompt passen tegenover schema's die gespreksgeschiedenis verdringen.
-- Het model dat de juiste tool kiest tegenover misvormde tool-aanroepen doordat er te veel vergelijkbaar ogende schema's zijn.
-- De Chat Completions-adapter die binnen de gestructureerde-uitvoerlimieten van de server blijft tegenover een 400 door de payloadgrootte van tool-aanroepen.
+Deze tools hebben de grootste beschrijvingen, de breedste parameterstructuren of de grootste kans dat ze een klein model afleiden van het normale programmeer- en gesprekspad. Bij een backend met een kleine context of een strengere OpenAI-compatibele backend maakt dat het verschil tussen:
 
-Het verwijderen ervan bedraadt OpenClaw niet stilzwijgend opnieuw — het maakt alleen de directe toollijst korter. Het model heeft nog steeds `read`, `write`, `edit`, `exec`, `apply_patch`, webzoek-/ophaalfuncties (wanneer geconfigureerd), geheugen en sessie-/agenttools beschikbaar. Extra catalogi blijven aanroepbaar via Tool Search, tenzij je expliciet `tools.toolSearch: false` instelt.
+- Toolschema's die in de prompt passen tegenover schema's die de gespreksgeschiedenis verdringen.
+- Het model dat de juiste tool kiest tegenover ongeldige toolaanroepen door te veel vergelijkbare schema's.
+- De Chat Completions-adapter die binnen de limieten voor gestructureerde uitvoer blijft tegenover een 400-fout vanwege de grootte van de payload voor toolaanroepen.
 
-### Wanneer je dit inschakelt
+Door ze te verwijderen, wordt alleen de directe lijst met tools korter. Het model beschikt nog steeds over `read`, `write`, `edit`, `exec`, `apply_patch`, beeldbegrip, zoeken en ophalen op het web (indien geconfigureerd), geheugen en tools voor sessies en agents. Aanvullende catalogi blijven bereikbaar via Tool Search, tenzij u `tools.toolSearch: false` instelt; met expliciete toestemmingen voor tools kan een lichtgewicht agent opnieuw deelnemen aan een afgeslankte workflow.
 
-Schakel lean-modus in wanneer je al hebt bewezen dat het model met de Gateway kan praten, maar volledige agentbeurten zich verkeerd gedragen. De typische signaalketen is:
+### Wanneer u dit inschakelt
+
+Schakel de lichtgewicht modus in zodra u hebt aangetoond dat het model met de Gateway kan communiceren, maar volledige agentbeurten niet goed werken:
 
 1. `openclaw infer model run --gateway --model <ref> --prompt "Reply with exactly: pong"` slaagt.
-2. Een normale agentbeurt mislukt met misvormde tool-aanroepen, te grote prompts of doordat het model zijn tools negeert.
-3. Het omschakelen van `localModelLean: true` verhelpt de fout.
+2. Een normale agentbeurt mislukt door ongeldige toolaanroepen, te grote prompts of doordat het model zijn tools negeert.
+3. Het instellen van `localModelLean: true` verhelpt de fout.
 
-### Wanneer je dit uitgeschakeld laat
+### Wanneer u dit uitgeschakeld laat
 
-Als je backend de volledige standaardruntime netjes afhandelt, laat dit dan uitgeschakeld. Lean-modus is een tijdelijke oplossing, geen standaard. Deze bestaat omdat sommige lokale stacks een kleiner tool-oppervlak nodig hebben om goed te werken; gehoste modellen en goed uitgeruste lokale systemen niet.
+Als uw backend de volledige standaardruntime probleemloos afhandelt, laat u dit uitgeschakeld. Het is een tijdelijke oplossing voor lokale stacks die een kleiner toolaanbod nodig hebben, geen standaardinstelling voor gehoste modellen of lokale systemen met voldoende middelen.
 
-Lean-modus vervangt ook niet `tools.profile`, `tools.allow`/`tools.deny` of de uitweg `compat.supportsTools: false` van het model. Als je een permanent smaller tool-oppervlak nodig hebt voor een specifieke agent, geef dan de voorkeur aan die stabiele knoppen boven de experimentele flag.
-
-Als je Tool Search al globaal afstemt, laat OpenClaw die operatorconfiguratie met rust. Stel `tools.toolSearch: false` in om je af te melden voor de Tool Search-standaard van lean-modus.
+De lichtgewicht modus vervangt `tools.profile`, `tools.allow`/`tools.deny` of de uitweg via `compat.supportsTools: false` van het model niet. Voor een permanent kleiner toolaanbod voor een specifieke agent geeft u de voorkeur aan deze stabiele instellingen.
 
 ### Inschakelen
 
@@ -98,20 +95,11 @@ Alleen voor één agent:
 }
 ```
 
-Start de Gateway opnieuw nadat je de flag hebt gewijzigd en bevestig daarna de ingekorte toollijst met:
-
-```bash
-openclaw status --deep
-```
-
-De diepe statusuitvoer toont de actieve agenttools; `browser`, `cron` en `message` zouden afwezig moeten zijn wanneer lean-modus is ingeschakeld, tenzij de huidige leveringsmodus directe `message`-antwoorden afdwingt.
+Start de Gateway opnieuw nadat u de vlag hebt gewijzigd. Lichtgewicht filtering verwijdert `browser`, `cron`, `message`, `image_generate`, `music_generate`, `video_generate`, `tts` en `pdf`, tenzij u ze expliciet behoudt met `tools.allow` of `tools.alsoAllow`; Tool Search kan behouden tools nog steeds catalogiseren in plaats van ze rechtstreeks beschikbaar te stellen.
 
 ## Experimenteel betekent niet verborgen
 
-Als een functie experimenteel is, moet OpenClaw dat duidelijk zeggen in de documentatie en in het
-configuratiepad zelf. Wat het **niet** moet doen, is previewgedrag binnensmokkelen in een
-stabiel ogende standaardknop en doen alsof dat normaal is. Zo worden configuratieoppervlakken
-rommelig.
+Bij een experimentele functie moet dit duidelijk in de documentatie en in het configuratiepad zelf worden vermeld, in plaats van deze te verbergen achter een standaardinstelling die er stabiel uitziet.
 
 ## Gerelateerd
 

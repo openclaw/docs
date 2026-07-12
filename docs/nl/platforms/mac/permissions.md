@@ -1,64 +1,51 @@
 ---
 read_when:
-    - Ontbrekende of vastgelopen macOS-machtigingenprompts debuggen
-    - Beslissen of Toegankelijkheid aan node of een CLI-runtime moet worden verleend
+    - Foutopsporing voor ontbrekende of vastgelopen macOS-toestemmingsvragen
+    - Beslissen of u toegankelijkheid wilt verlenen aan Node of een CLI-runtime
     - De macOS-app verpakken of ondertekenen
-    - App-bundel-ID's of installatiepaden wijzigen
+    - Bundle-ID's of installatiepaden van apps wijzigen
 summary: Persistentie van macOS-machtigingen (TCC) en ondertekeningsvereisten
 title: macOS-machtigingen
 x-i18n:
-    generated_at: "2026-06-27T17:48:33Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:06:34Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7b7e21c53bff16c3023e2b6509894717c3d0ef96524951b0d0c5975d2fc91019
+    source_hash: c8431a1d5a27aed00c50c5d6c8c36554cf766051dfdccea677d0523bbc4189d4
     source_path: platforms/mac/permissions.md
     workflow: 16
 ---
 
-macOS-machtigingen zijn kwetsbaar. TCC koppelt een machtiging aan de
-codehandtekening, bundle-ID en het pad op schijf van de app. Als een daarvan verandert,
-behandelt macOS de app als nieuw en kan het prompts laten vervallen of verbergen.
+macOS-machtigingen zijn kwetsbaar. TCC koppelt een machtiging aan de codehandtekening, bundel-ID en locatie op schijf van de app. Als een daarvan verandert, beschouwt macOS de app als nieuw en worden prompts mogelijk verwijderd of verborgen.
 
 ## Vereisten voor stabiele machtigingen
 
-- Zelfde pad: voer de app uit vanaf een vaste locatie (voor OpenClaw, `dist/OpenClaw.app`).
-- Zelfde bundle-ID: het wijzigen van de bundle-ID maakt een nieuwe machtigingsidentiteit aan.
-- Ondertekende app: niet-ondertekende of ad-hoc ondertekende builds behouden geen machtigingen.
-- Consistente handtekening: gebruik een echt Apple Development- of Developer ID-certificaat
-  zodat de handtekening stabiel blijft tussen rebuilds.
+- Hetzelfde pad: voer de app uit vanaf een vaste locatie (voor OpenClaw: `dist/OpenClaw.app`).
+- Dezelfde bundel-ID: de bundel-ID van OpenClaw is `ai.openclaw.mac`; als u deze wijzigt, ontstaat een nieuwe machtigingsidentiteit.
+- Ondertekende app: bij niet-ondertekende of ad-hoc ondertekende builds blijven machtigingen niet behouden.
+- Consistente handtekening: gebruik een echt Apple Development- of Developer ID-certificaat, zodat de handtekening bij nieuwe builds hetzelfde blijft.
 
-Ad-hoc handtekeningen genereren bij elke build een nieuwe identiteit. macOS vergeet eerdere
-machtigingen, en prompts kunnen volledig verdwijnen totdat de verouderde vermeldingen worden gewist.
+Ad-hochandtekeningen genereren bij elke build een nieuwe identiteit. macOS vergeet eerdere machtigingen en prompts kunnen volledig verdwijnen totdat de verouderde vermeldingen zijn gewist.
 
 ## Toegankelijkheidsmachtigingen voor Node- en CLI-runtimes
 
-Geef Toegankelijkheid bij voorkeur aan OpenClaw.app, Peekaboo.app of een andere ondertekende
-helper met een eigen bundle-ID in plaats van aan een generieke `node`-binary.
+Geef bij voorkeur toegankelijkheidstoegang aan OpenClaw.app, Peekaboo.app of een andere ondertekende helper met een eigen bundel-ID, in plaats van aan een algemeen `node`-binair bestand.
 
-macOS TCC verleent Toegankelijkheid aan de code-identiteit van het proces dat het ziet. Als een
-Homebrew-, nvm-, pnpm- of npm-workflow ervoor zorgt dat een gedeeld `node`-uitvoerbaar bestand
-Toegankelijkheid ontvangt, kan elk JavaScript-pakket dat via datzelfde
-uitvoerbare bestand wordt gestart GUI-automatiseringsrechten erven.
+macOS TCC verleent toegankelijkheidstoegang aan de code-identiteit van het proces dat het waarneemt. Als een workflow met Homebrew, nvm, pnpm of npm ertoe leidt dat een gedeeld uitvoerbaar `node`-bestand toegankelijkheidstoegang krijgt, kan elk JavaScript-pakket dat via datzelfde uitvoerbare bestand wordt gestart, bevoegdheden voor GUI-automatisering overnemen.
 
-Beschouw een `node`-vermelding in Systeeminstellingen als brede toestemming voor die Node-runtime,
-niet als toestemming voor één npm-pakket. Geef geen Toegankelijkheid aan
-`node`, tenzij je elk script en pakket vertrouwt dat via precies die
-Node-installatie wordt gestart.
+Beschouw een vermelding voor `node` in System Settings als een brede machtiging voor die Node-runtime, niet als een machtiging voor één npm-pakket. Verleen geen toegankelijkheidstoegang aan `node`, tenzij u elk script en pakket vertrouwt dat via precies die Node-installatie wordt gestart.
 
-Als je per ongeluk Toegankelijkheid aan `node` hebt gegeven, verwijder die vermelding dan uit
-Systeeminstellingen -> Privacy en beveiliging -> Toegankelijkheid. Geef daarna machtiging aan de ondertekende
-app of helper die UI-automatisering hoort te beheren.
+Als u per ongeluk toegankelijkheidstoegang aan `node` hebt verleend, verwijdert u die vermelding via System Settings -> Privacy & Security -> Accessibility. Verleen de machtiging vervolgens aan de ondertekende app of helper die verantwoordelijk moet zijn voor UI-automatisering.
 
-## Herstelchecklist wanneer prompts verdwijnen
+## Herstelcontrolelijst wanneer prompts verdwijnen
 
-1. Sluit de app af.
-2. Verwijder de app-vermelding in Systeeminstellingen -> Privacy en beveiliging.
+1. Sluit de app.
+2. Verwijder de appvermelding in System Settings -> Privacy & Security.
 3. Start de app opnieuw vanaf hetzelfde pad en verleen de machtigingen opnieuw.
-4. Als de prompt nog steeds niet verschijnt, reset dan TCC-vermeldingen met `tccutil` en probeer het opnieuw.
-5. Sommige machtigingen verschijnen pas opnieuw na een volledige herstart van macOS.
+4. Als de prompt nog steeds niet verschijnt, stelt u de TCC-vermeldingen opnieuw in met `tccutil` en probeert u het opnieuw.
+5. Sommige machtigingen verschijnen pas opnieuw nadat macOS volledig opnieuw is opgestart.
 
-Voorbeeldresets (vervang de bundle-ID waar nodig):
+Voorbeelden van opnieuw instellen (met de bundel-ID van OpenClaw, `ai.openclaw.mac`):
 
 ```bash
 sudo tccutil reset Accessibility ai.openclaw.mac
@@ -68,12 +55,11 @@ sudo tccutil reset AppleEvents
 
 ## Machtigingen voor bestanden en mappen (Bureaublad/Documenten/Downloads)
 
-macOS kan ook Bureaublad, Documenten en Downloads afschermen voor terminal- en achtergrondprocessen. Als het lezen van bestanden of het weergeven van mappen blijft hangen, geef dan toegang aan dezelfde procescontext die de bestandsbewerkingen uitvoert (bijvoorbeeld Terminal/iTerm, een door LaunchAgent gestarte app of een SSH-proces).
+macOS kan ook de toegang tot Bureaublad, Documenten en Downloads beperken voor terminal- en achtergrondprocessen. Als het lezen van bestanden of weergeven van mapinhoud blijft hangen, verleent u toegang aan dezelfde procescontext die de bestandsbewerkingen uitvoert (bijvoorbeeld Terminal/iTerm, een door LaunchAgent gestarte app of een SSH-proces).
 
-Workaround: verplaats bestanden naar de OpenClaw-workspace (`~/.openclaw/workspace`) als je machtigingen per map wilt vermijden.
+Tijdelijke oplossing: verplaats bestanden naar de OpenClaw-werkruimte (`~/.openclaw/workspace`) als u machtigingen per map wilt vermijden.
 
-Als je machtigingen test, onderteken dan altijd met een echt certificaat. Ad-hoc
-builds zijn alleen acceptabel voor snelle lokale runs waarbij machtigingen niet van belang zijn.
+Als u machtigingen test, moet u altijd ondertekenen met een echt certificaat. Ad-hocbuilds zijn alleen geschikt voor snelle lokale uitvoeringen waarbij machtigingen niet van belang zijn.
 
 ## Gerelateerd
 

@@ -1,65 +1,62 @@
 ---
 read_when:
-    - تريد تمكين code_execution أو تكوينه
-    - تريد تحليلاً عن بُعد من دون وصول إلى الصدفة المحلية
-    - تريد دمج x_search أو web_search مع تحليل Python عن بُعد
-summary: 'code_execution: تشغيل تحليل Python بعيد داخل بيئة معزولة باستخدام xAI'
+    - تريد تمكين `code_execution` أو تكوينه
+    - تريد إجراء تحليل عن بُعد دون الوصول إلى الصدفة المحلية
+    - تريد دمج `x_search` أو `web_search` مع تحليل Python عن بُعد
+summary: 'code_execution: تشغيل تحليل Python عن بُعد ضمن بيئة معزولة باستخدام xAI'
 title: تنفيذ التعليمات البرمجية
 x-i18n:
-    generated_at: "2026-06-27T18:39:14Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:40:31Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d510d0d2b41deab527d456e675a23ef80ac3b55b5f01906ba2c43d90e4452e36
+    source_hash: 1ab391daed9154f113535e6d241c45d5c08c22abdc012148a9f0f2ae5ec548b3
     source_path: tools/code-execution.md
     workflow: 16
 ---
 
-يشغّل `code_execution` تحليلاً بعيداً للغة Python داخل sandbox على واجهة Responses API الخاصة بـ xAI. يتم تسجيله بواسطة Plugin `xai` المضمّن (ضمن عقد `tools`) ويرسل الطلبات إلى نقطة النهاية نفسها `https://api.x.ai/v1/responses` التي يستخدمها `x_search`.
+يشغّل `code_execution` تحليل Python بعيدًا ومعزولًا على Responses API من xAI
+(`https://api.x.ai/v1/responses`، وهي نقطة النهاية نفسها التي يستخدمها `x_search`). وتُسجّله
+إضافة `xai` المضمّنة ضمن عقد `tools`.
 
-| الخاصية           | القيمة                                                                             |
+<Warning>
+  يعمل `code_execution` على خوادم xAI. تفرض xAI رسومًا قدرها 5 دولارات لكل 1,000 استدعاء للأداة،
+  بالإضافة إلى رموز الإدخال والإخراج الخاصة بالنموذج.
+</Warning>
+
+| الخاصية            | القيمة                                                                            |
 | ------------------ | --------------------------------------------------------------------------------- |
-| اسم الأداة          | `code_execution`                                                                  |
-| Plugin المزوّد    | `xai` (مضمّن، `enabledByDefault: true`)                                         |
-| المصادقة               | ملف مصادقة xAI، أو `XAI_API_KEY`، أو `plugins.entries.xai.config.webSearch.apiKey` |
-| النموذج الافتراضي      | `grok-4-1-fast`                                                                   |
-| المهلة الافتراضية    | 30 ثانية                                                                        |
-| `maxTurns` الافتراضي | غير مضبوط (تطبّق xAI حدّها الداخلي الخاص)                                        |
+| اسم الأداة         | `code_execution`                                                                  |
+| إضافة المزوّد      | `xai` (مضمّنة، `enabledByDefault: true`)                                          |
+| المصادقة           | ملف مصادقة xAI، أو `XAI_API_KEY`، أو `plugins.entries.xai.config.webSearch.apiKey` |
+| النموذج الافتراضي  | `grok-4.3`                                                                        |
+| المهلة الافتراضية  | 30 ثانية                                                                          |
+| `maxTurns` الافتراضي | غير معيّن (تطبّق xAI حدها الداخلي الخاص)                                        |
 
-يختلف هذا عن [`exec`](/ar/tools/exec) المحلي:
+استخدمه لإجراء الحسابات، وإنشاء الجداول، والإحصاءات السريعة، والتحليلات
+الشبيهة بالمخططات، بما في ذلك تحليل البيانات التي يعيدها `x_search` أو `web_search`. ولا يمكنه
+الوصول إلى الملفات المحلية أو الصدفة أو المستودع أو الأجهزة المقترنة، كما أنه لا
+يحتفظ بالحالة بين الاستدعاءات، لذا تعامل مع كل استدعاء بوصفه تحليلًا مؤقتًا، لا
+جلسة دفتر ملاحظات. للحصول على بيانات X حديثة، شغّل [`x_search`](/ar/tools/web#x_search)
+أولًا ومرّر النتيجة إليه.
 
-- يشغّل `exec` أوامر shell على جهازك أو على عقدة مقترنة.
-- يشغّل `code_execution` لغة Python في sandbox بعيد خاص بـ xAI.
-
-استخدم `code_execution` من أجل:
-
-- الحسابات.
-- الجداول.
-- الإحصاءات السريعة.
-- التحليل بأسلوب المخططات.
-- تحليل البيانات التي يعيدها `x_search` أو `web_search`.
-
-لا تستخدمه عندما تحتاج إلى ملفات محلية، أو shell الخاص بك، أو المستودع، أو أجهزة مقترنة. استخدم [`exec`](/ar/tools/exec) لذلك.
+للتنفيذ المحلي، استخدم [`exec`](/ar/tools/exec) بدلًا منه.
 
 ## الإعداد
 
 <Steps>
-  <Step title="Provide xAI credentials">
-    سجّل الدخول باستخدام Grok OAuth عبر اشتراك SuperGrok أو X Premium مؤهل،
-    أو خزّن مفتاح API. يستخدم xAI OAuth التحقق برمز الجهاز، لذلك يعمل
-    من المضيفات البعيدة دون استدعاء localhost. يعمل OAuth مع
-    `code_execution` و`x_search`؛ ويمكن أيضاً لـ `XAI_API_KEY` أو إعداد web-search في Plugin
-    تشغيل Grok `web_search`.
+  <Step title="توفير بيانات اعتماد xAI">
+    تتطلب OAuth اشتراكًا مؤهلًا في SuperGrok أو X Premium
+    (مع التحقق باستخدام رمز الجهاز، لذا تعمل من المضيفات البعيدة من دون
+    رد اتصال عبر المضيف المحلي):
 
     ```bash
     openclaw models auth login --provider xai --method oauth
     ```
 
-    أثناء التثبيت الجديد، تتوفر خيارات المصادقة نفسها داخل
-    التهيئة الأولية:
+    أثناء التثبيت الجديد، يتوفر الخيار نفسه في الإعداد الأولي:
 
     ```bash
-    openclaw onboard --install-daemon
     openclaw onboard --install-daemon --auth-choice xai-oauth
     ```
 
@@ -88,12 +85,20 @@ x-i18n:
     }
     ```
 
+    يتيح أي من هذه الخيارات الثلاثة أيضًا تشغيل `x_search` و`web_search` في Grok.
+
   </Step>
 
-  <Step title="Enable and tune code_execution">
-    يتوفر `code_execution` عندما تكون بيانات اعتماد xAI متاحة. اضبط
-    `plugins.entries.xai.config.codeExecution.enabled` على `false` لتعطيله،
-    أو استخدم الكتلة نفسها لضبط النموذج والمهلة.
+  <Step title="تمكين code_execution وضبطه">
+    عند حذف `enabled`، لا تُعرض `code_execution` إلا عندما يكون مزوّد
+    النموذج النشط هو `xai` ويمكن العثور على بيانات اعتماد xAI. بالنسبة إلى نموذج نشط
+    مزوّده المعروف ليس xAI، اضبط
+    `plugins.entries.xai.config.codeExecution.enabled` على `true` للاشتراك في
+    الاستخدام عبر المزوّدين. إذا كان مزوّد النموذج النشط مفقودًا أو تعذّر تحديده،
+    تظل الأداة مخفية. اضبط `enabled` على `false` لتعطيلها لدى جميع
+    المزوّدين. وتظل بيانات اعتماد xAI مطلوبة دائمًا.
+
+    استخدم الكتلة نفسها لتجاوز النموذج أو الحد الأقصى للدورات أو المهلة:
 
     ```json5
     {
@@ -102,10 +107,10 @@ x-i18n:
           xai: {
             config: {
               codeExecution: {
-                enabled: true,
-                model: "grok-4-1-fast", // override the default xAI code-execution model
-                maxTurns: 2,            // optional cap on internal tool turns
-                timeoutSeconds: 30,     // request timeout (default: 30)
+                enabled: true, // مطلوب لمزوّد نموذج معروف ليس xAI
+                model: "grok-4.3", // تجاوز نموذج تنفيذ التعليمات البرمجية الافتراضي من xAI
+                maxTurns: 2,            // حد اختياري لدورات الأداة الداخلية
+                timeoutSeconds: 30,     // مهلة الطلب (الافتراضي: 30)
               },
             },
           },
@@ -116,66 +121,60 @@ x-i18n:
 
   </Step>
 
-  <Step title="Restart the Gateway">
+  <Step title="إعادة تشغيل Gateway">
     ```bash
     openclaw gateway restart
     ```
 
-    يظهر `code_execution` في قائمة أدوات الوكيل بمجرد أن يعيد Plugin `xai` التسجيل مع `enabled: true`.
+    تظهر `code_execution` في قائمة أدوات الوكيل بمجرد أن تعيد إضافة xAI
+    تسجيلها وتنجح عمليات التحقق من المزوّد والتمكين والمصادقة أعلاه.
 
   </Step>
 </Steps>
 
-## كيفية استخدامه
+## كيفية استخدامها
 
-اطلب بشكل طبيعي واجعل نية التحليل صريحة:
+وضّح هدف التحليل صراحةً؛ تأخذ الأداة معامل `task` واحدًا،
+لذا أرسل الطلب الكامل وأي بيانات مضمنة في موجّه واحد:
 
 ```text
-Use code_execution to calculate the 7-day moving average for these numbers: ...
+استخدم code_execution لحساب المتوسط المتحرك لمدة 7 أيام لهذه الأرقام: ...
 ```
 
 ```text
-Use x_search to find posts mentioning OpenClaw this week, then use code_execution to count them by day.
+استخدم x_search للعثور على المنشورات التي تذكر OpenClaw هذا الأسبوع، ثم استخدم code_execution لحساب عددها حسب اليوم.
 ```
 
 ```text
-Use web_search to gather the latest AI benchmark numbers, then use code_execution to compare percent changes.
+استخدم web_search لجمع أحدث أرقام معايير أداء الذكاء الاصطناعي، ثم استخدم code_execution لمقارنة التغيّرات المئوية.
 ```
-
-تأخذ الأداة معاملاً داخلياً واحداً هو `task`، لذلك ينبغي أن يرسل الوكيل طلب التحليل كاملاً وأي بيانات مضمنة في مطالبة واحدة.
 
 ## الأخطاء
 
-عند تشغيل الأداة دون مصادقة، تُرجع خطأ `missing_xai_api_key` منظماً يشير إلى خيارات ملف المصادقة ومتغير البيئة والإعدادات. يكون الخطأ بصيغة JSON، وليس استثناءً مطروحاً، لذلك يمكن للوكيل تصحيح نفسه:
+من دون مصادقة، تعيد الأداة خطأ JSON منظمًا (وليس استثناءً
+مُلقى)، بحيث يستطيع الوكيل تصحيح الخطأ ذاتيًا:
 
 ```json
 {
   "error": "missing_xai_api_key",
-  "message": "code_execution needs xAI credentials. Run `openclaw onboard --auth-choice xai-oauth` to sign in with Grok, run `openclaw onboard --auth-choice xai-api-key`, set `XAI_API_KEY` in the Gateway environment, or configure `plugins.entries.xai.config.webSearch.apiKey`.",
+  "message": "تحتاج code_execution إلى بيانات اعتماد xAI. شغّل `openclaw onboard --auth-choice xai-oauth` لتسجيل الدخول باستخدام Grok، أو شغّل `openclaw onboard --auth-choice xai-api-key`، أو اضبط `XAI_API_KEY` في بيئة Gateway، أو اضبط `plugins.entries.xai.config.webSearch.apiKey`.",
   "docs": "https://docs.openclaw.ai/tools/code-execution"
 }
 ```
 
-## الحدود
-
-- هذا تنفيذ بعيد عبر xAI، وليس تنفيذ عملية محلية.
-- تعامل مع النتائج كتحليل عابر، وليس كجلسة دفتر ملاحظات دائمة.
-- لا تفترض الوصول إلى الملفات المحلية أو مساحة عملك.
-- للحصول على بيانات X حديثة، استخدم [`x_search`](/ar/tools/web#x_search) أولاً ومرّر النتيجة إلى `code_execution`.
-
-## ذات صلة
+## ذو صلة
 
 <CardGroup cols={2}>
-  <Card title="Exec tool" href="/ar/tools/exec" icon="terminal">
-    تنفيذ shell محلي على جهازك أو عقدة مقترنة.
+  <Card title="أداة Exec" href="/ar/tools/exec" icon="terminal">
+    تنفيذ الصدفة محليًا على جهازك أو Node المقترنة.
   </Card>
-  <Card title="Exec approvals" href="/ar/tools/exec-approvals" icon="shield">
-    سياسة السماح/الرفض لتنفيذ shell.
+  <Card title="موافقات Exec" href="/ar/tools/exec-approvals" icon="shield">
+    سياسة السماح أو الرفض لتنفيذ الصدفة.
   </Card>
-  <Card title="Web tools" href="/ar/tools/web" icon="globe">
+  <Card title="أدوات الويب" href="/ar/tools/web" icon="globe">
     `web_search` و`x_search` و`web_fetch`.
   </Card>
-  <Card title="xAI provider" href="/ar/providers/xai" icon="microchip">
-    نماذج Grok، وبحث الويب/X، وإعدادات تنفيذ الكود.
+  <Card title="مزوّد xAI" href="/ar/providers/xai" icon="microchip">
+    نماذج Grok، والبحث في الويب/X، وإعدادات تنفيذ التعليمات البرمجية.
   </Card>
 </CardGroup>

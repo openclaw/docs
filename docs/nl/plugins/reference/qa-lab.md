@@ -1,27 +1,27 @@
 ---
 read_when:
-    - U installeert, configureert of auditeert de qa-lab-Plugin
-summary: OpenClaw QA-lab-Plugin met privédebugger-UI en scenariorunner.
-title: QA Lab-Plugin
+    - U installeert, configureert of controleert de qa-lab-plugin
+summary: OpenClaw QA-labplugin met privédebuggerinterface en scenariorunner.
+title: QA Lab-plugin
 x-i18n:
-    generated_at: "2026-06-27T18:03:19Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:13:35Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 0de3ac126939c822225cfd4bf75af594e6066f7992cacc71b1455638aab3af0b
+    source_hash: d838dbed6758468b159743ccebb904cf2a40c5edf3691c6851e6ae090e3e9eb7
     source_path: plugins/reference/qa-lab.md
     workflow: 16
 ---
 
-# QA Lab Plugin
+# QA-labplugin
 
-OpenClaw QA Lab Plugin met privé-debugger-UI en scenariorunner.
+OpenClaw QA-labplugin met een privégebruikersinterface voor foutopsporing en een scenario-uitvoerder.
 
 ## Distributie
 
 - Pakket: `@openclaw/qa-lab`
-- Installatieroute: alleen source-checkout
+- Installatieroute: alleen vanuit een broncode-check-out
 
 ## Oppervlak
 
-contracten: webSearchProviders
+contracten: webSearchProviders, workerProviders

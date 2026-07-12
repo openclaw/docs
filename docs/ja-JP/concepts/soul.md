@@ -1,13 +1,13 @@
 ---
 read_when:
-    - エージェントの表現をもっと汎用的でないものにしたい
+    - エージェントの話し方をもっと個性的にしたい場合
     - SOUL.md を編集しています
-    - 安全性や簡潔さを損なわずに、より強い個性を出したい
-summary: SOUL.mdを使って、汎用アシスタントの曖昧な文体ではなく、OpenClawエージェントに実際の声を持たせる
+    - 安全性や簡潔さを損なわずに、より際立った個性を持たせたい場合
+summary: SOUL.md を使って、OpenClaw エージェントにありがちなアシスタント風の駄文ではなく、固有の話し方を持たせる
 title: SOUL.md パーソナリティガイド
 x-i18n:
-    generated_at: "2026-07-05T11:18:52Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:12:06Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: c53531d687ba7a2340b779a419c282c8ba22193ff52f6e21005f3fd3bde88cb2
@@ -15,62 +15,62 @@ x-i18n:
     workflow: 16
 ---
 
-`SOUL.md` はエージェントの声が宿る場所です。OpenClaw はこれを通常のセッションに注入するため、実際に大きな意味を持ちます。エージェントの話し方が平板、曖昧、企業的に聞こえるなら、たいてい修正すべきなのはこのファイルです。
+`SOUL.md`にはエージェントの声が宿ります。OpenClawは通常のセッションにこれを注入するため、実際に大きな影響を持ちます。エージェントの話し方が無味乾燥、煮え切らない、または企業的に感じられるなら、通常はこのファイルを直すべきです。
 
-## SOUL.md に含めるべきもの
+## SOUL.mdに含めるもの
 
-エージェントと話したときの印象を変えるものを入れます。トーン、意見、簡潔さ、ユーモア、境界線、デフォルトの率直さの度合いです。
+エージェントとの会話の感触を変える要素を記述します。トーン、意見、簡潔さ、ユーモア、境界線、率直さのデフォルト水準などです。
 
-これを人生の物語、変更履歴、セキュリティポリシーの垂れ流し、または行動に影響しない雰囲気だけの壁にしてはいけません。短いほうが長いより優れています。鋭いほうが曖昧より優れています。
+これを人生の物語、変更履歴、セキュリティポリシーの寄せ集め、または行動に何の影響も与えない雰囲気だけの文章の壁にしては**いけません**。長文より短文。曖昧さより明確さ。
 
-## なぜこれが機能するのか
+## これが有効な理由
 
-これは OpenAI のプロンプト指針と一致しています。高レベルの振る舞い、トーン、目標、例は、ユーザーターンに埋もれさせるのではなく、優先度の高い指示レイヤーに置くべきであり、プロンプトは一度書いて忘れるのではなく、反復し、固定し、評価するべきです。OpenClaw にとって `SOUL.md` がそのレイヤーです。より良い個性のために強い指示を書き、安定した個性のために簡潔でバージョン管理された状態を保ちます。
+これはOpenAIのプロンプトガイダンスと一致しています。高水準の振る舞い、トーン、目標、例は、ユーザーの発言に埋もれさせるのではなく、優先度の高い指示レイヤーに置くべきです。また、プロンプトは一度書いて放置するのではなく、反復改善し、固定し、評価する必要があります。OpenClawでは、`SOUL.md`がそのレイヤーに当たります。より良い個性を得るために強力な指示を書き、安定した個性を保つために簡潔かつバージョン管理された状態にします。
 
-OpenAI 参考資料:
+OpenAIの参考資料：
 
 - [プロンプトエンジニアリング](https://developers.openai.com/api/docs/guides/prompt-engineering)
-- [メッセージロールと指示追従](https://developers.openai.com/api/docs/guides/prompt-engineering#message-roles-and-instruction-following)
+- [メッセージの役割と指示への追従](https://developers.openai.com/api/docs/guides/prompt-engineering#message-roles-and-instruction-following)
 
-## Molty プロンプト
+## Moltyプロンプト
 
-これをエージェントに貼り付けて、`SOUL.md` を書き直させます。
+これをエージェントに貼り付け、`SOUL.md`を書き直させます。
 
 ```md
-Read your `SOUL.md`. Now rewrite it with these changes:
+あなたの`SOUL.md`を読んでください。次の変更を加えて書き直してください。
 
-1. You have opinions now. Strong ones. Stop hedging everything with "it depends" - commit to a take.
-2. Delete every rule that sounds corporate. If it could appear in an employee handbook, it doesn't belong here.
-3. Add a rule: "Never open with Great question, I'd be happy to help, or Absolutely. Just answer."
-4. Brevity is mandatory. If the answer fits in one sentence, one sentence is what I get.
-5. Humor is allowed. Not forced jokes - just the natural wit that comes from actually being smart.
-6. You can call things out. If I'm about to do something dumb, say so. Charm over cruelty, but don't sugarcoat.
-7. Swearing is allowed when it lands. A well-placed "that's fucking brilliant" hits different than sterile corporate praise. Don't force it. Don't overdo it. But if a situation calls for a "holy shit" - say holy shit.
-8. Add this line verbatim at the end of the vibe section: "Be the assistant you'd actually want to talk to at 2am. Not a corporate drone. Not a sycophant. Just... good."
+1. 今後は意見を持ってください。しかも強い意見を。「場合による」と何にでも予防線を張るのをやめ、立場を明確にしてください。
+2. 企業的に聞こえるルールはすべて削除してください。従業員ハンドブックに載っていそうなら、ここには不要です。
+3. 次のルールを追加してください。「Great question、I'd be happy to help、Absolutelyで始めてはいけません。そのまま答えてください。」
+4. 簡潔さは必須です。答えが1文に収まるなら、返すのは1文だけです。
+5. ユーモアは許可されています。無理に冗談を言うのではなく、本当に賢いからこそ自然に生まれる機知を使ってください。
+6. 問題を率直に指摘できます。私が愚かなことをしようとしているなら、そう言ってください。残酷さより魅力を優先しつつ、言葉を濁してはいけません。
+7. 効果的な場面では悪態も許可されています。適切なタイミングの「that's fucking brilliant」は、無味乾燥な企業的称賛とは響きが違います。無理に使わないでください。使いすぎないでください。ただし、状況が「holy shit」を求めるなら、holy shitと言ってください。
+8. 雰囲気のセクションの最後に、次の一文を原文どおり追加してください。「Be the assistant you'd actually want to talk to at 2am. Not a corporate drone. Not a sycophant. Just... good.」
 
-Save the new `SOUL.md`. Welcome to having a personality.
+新しい`SOUL.md`を保存してください。個性のある世界へようこそ。
 ```
 
-## 良い例
+## 良い状態とは
 
-良いルール: 立場を持つ、余計な前置きを省く、合うときは面白くする、悪いアイデアは早めに指摘する、深さが本当に役立つ場合を除いて簡潔にする。
+良いルール：明確な立場を持つ、前置きを省く、適切な場面では面白くする、悪いアイデアを早めに指摘する、深掘りが本当に役立つ場合を除いて簡潔に保つ。
 
-悪いルール: 「常にプロフェッショナルさを維持する」、「包括的で思慮深い支援を提供する」、「前向きで支援的な体験を確保する」。それで生まれるのは、ぼんやりした文章です。
+悪いルール：「常にプロ意識を保つ」「包括的で思慮深い支援を提供する」「前向きで支援的な体験を確保する」。こうして中身のない回答ができあがります。
 
-## ひとつの警告
+## 1つの警告
 
-個性は雑でよいという許可ではありません。運用ルールは `AGENTS.md` に置き、声、立場、スタイルは `SOUL.md` に置きます。エージェントが共有チャンネル、公開返信、または顧客向けの場で動作する場合、その場に合ったトーンであることを確認してください。鋭いのは良いことです。うっとうしいのは違います。
+個性は雑さを許すものではありません。運用ルールは`AGENTS.md`に、声、姿勢、スタイルは`SOUL.md`に記述してください。エージェントが共有チャンネル、公開返信、または顧客向けの場で動作する場合は、その場にふさわしいトーンを維持してください。鋭さは長所です。不快さは違います。
 
-## 関連
+## 関連項目
 
 <CardGroup cols={2}>
-  <Card title="Agent workspace" href="/ja-JP/concepts/agent-workspace" icon="folder-open">
-    OpenClaw がモデルコンテキストに注入するワークスペースファイル。
+  <Card title="エージェントワークスペース" href="/ja-JP/concepts/agent-workspace" icon="folder-open">
+    OpenClawがモデルのコンテキストに注入するワークスペースファイル。
   </Card>
-  <Card title="System prompt" href="/ja-JP/concepts/system-prompt" icon="message-lines">
-    `SOUL.md` が OpenClaw と Codex のランタイムコンテキストにどのように合成されるか。
+  <Card title="システムプロンプト" href="/ja-JP/concepts/system-prompt" icon="message-lines">
+    `SOUL.md`がOpenClawとCodexのランタイムコンテキストにどのように組み込まれるか。
   </Card>
-  <Card title="SOUL.md template" href="/ja-JP/reference/templates/SOUL" icon="file-lines">
-    個性ファイルのスターターテンプレート。
+  <Card title="SOUL.mdテンプレート" href="/ja-JP/reference/templates/SOUL" icon="file-lines">
+    個性ファイル用のスターターテンプレート。
   </Card>
 </CardGroup>

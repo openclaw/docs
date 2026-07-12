@@ -1,80 +1,65 @@
 ---
 read_when:
-    - Zmiana renderowania danych wyjściowych asystenta w interfejsie Control UI
-    - Debugowanie `[embed ...]`, mediów strukturalnych, odpowiedzi lub dyrektyw prezentacji audio
-summary: Protokół rozbudowanego wyjścia dla mediów strukturalnych, osadzeń, wskazówek audio i odpowiedzi
-title: Protokół bogatego wyjścia
+    - Zmiana sposobu renderowania odpowiedzi asystenta w interfejsie sterowania
+    - Debugowanie dyrektyw `[embed ...]` dotyczących prezentacji multimediów strukturalnych, odpowiedzi lub dźwięku
+summary: Protokół rozszerzonego wyjścia dla ustrukturyzowanych multimediów, osadzonych treści, wskazówek audio i odpowiedzi
+title: Protokół rozszerzonego wyjścia
 x-i18n:
-    generated_at: "2026-06-27T18:19:11Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:36:10Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f5915f0ba29e6b0d27c99b1c7fdc632f1b58a4d96eae26bf6670205bd4fb88b1
+    source_hash: cbfe68f38c871f5f6d2811eb52b18d0143606f30283023ae96db64543eed95a1
     source_path: reference/rich-output-protocol.md
     workflow: 16
 ---
 
-Dane wyjściowe asystenta mogą zawierać mały zestaw dyrektyw dostarczania/renderowania:
+Dane wyjściowe asystenta przekazują dyrektywy dostarczania/renderowania za pośrednictwem kilku dedykowanych kanałów:
 
-- ustrukturyzowane pola `mediaUrl` / `mediaUrls` do dostarczania załączników
-- `[[audio_as_voice]]` dla wskazówek prezentacji audio
-- `[[reply_to_current]]` / `[[reply_to:<id>]]` dla metadanych odpowiedzi
-- `[embed ...]` dla bogatego renderowania w Control UI
+- Ustrukturyzowane pola `mediaUrl` / `mediaUrls` do dostarczania załączników.
+- `[[audio_as_voice]]` dla wskazówek dotyczących prezentacji dźwięku.
+- `[[reply_to_current]]` / `[[reply_to:<id>]]` dla metadanych odpowiedzi.
+- `[embed ...]` do rozszerzonego renderowania w interfejsie Control UI.
 
-Zdalne załączniki multimedialne muszą być publicznymi adresami URL `https:`. Zwykłe `http:`,
-loopback, link-local, prywatne i wewnętrzne nazwy hostów są ignorowane jako dyrektywy
-załączników; pobierające multimedia komponenty po stronie serwera nadal egzekwują własne zabezpieczenia sieciowe.
+Ustrukturyzowane pola multimediów oraz znaczniki `[[...]]` stanowią metadane dostarczania. `[embed ...]` jest osobną, dostępną wyłącznie w interfejsie internetowym ścieżką rozszerzonego renderowania; nie jest aliasem multimediów.
 
-Lokalne załączniki multimedialne mogą używać ścieżek bezwzględnych, ścieżek względnych wobec workspace albo
-ścieżek względnych wobec katalogu domowego `~/`. Przed dostarczeniem nadal przechodzą przez politykę odczytu plików agenta oraz
-kontrole typu multimediów.
+## Załączniki multimedialne
+
+Załączniki zdalne muszą być publicznymi adresami URL `https:`. Adresy `http:`, local loopback i link-local oraz prywatne i wewnętrzne nazwy hostów są odrzucane jako dyrektywy załączników; mechanizmy pobierania multimediów po stronie serwera stosują dodatkowo własne zabezpieczenia sieciowe.
+
+Załączniki lokalne mogą używać ścieżek bezwzględnych, ścieżek względnych wobec obszaru roboczego lub ścieżek `~/` względnych wobec katalogu domowego. Przed dostarczeniem nadal podlegają zasadom odczytu plików przez agenta oraz kontroli typu multimediów.
 
 <Warning>
-Nie emituj tekstowych poleceń dla załączników z narzędzi, plugins, bloków strumieniowania,
-danych wyjściowych przeglądarki ani akcji wiadomości. Zamiast tego używaj ustrukturyzowanych pól multimediów.
-
-Prawidłowy ładunek narzędzia wiadomości:
+Nie emituj tekstowych poleceń dotyczących załączników z narzędzi, pluginów, bloków przesyłania strumieniowego, danych wyjściowych przeglądarki ani akcji wiadomości. Zamiast tego używaj ustrukturyzowanych pól multimediów:
 
 ```json
-{ "message": "Here is your image.", "mediaUrl": "/workspace/image.png" }
+{ "message": "Oto Twój obraz.", "mediaUrl": "/workspace/image.png" }
 ```
 
-Starszy tekst końcowej odpowiedzi asystenta może nadal być normalizowany dla zgodności, ale
-nie jest ogólnym protokołem plugin/narzędzie.
+Tekst starszych odpowiedzi końcowych może być nadal normalizowany w celu zapewnienia zgodności, ale nie jest to ogólny protokół pluginów ani narzędzi.
 </Warning>
 
-Zwykła składnia obrazów Markdown domyślnie pozostaje tekstem. Kanały, które celowo
-mapują odpowiedzi z obrazami Markdown na załączniki multimedialne, włączają to w swoim adapterze
-wyjściowym; Telegram robi to, aby `![alt](url)` nadal mogło stać się odpowiedzią multimedialną.
+Zwykła składnia obrazów Markdown (`![alt](url)`) domyślnie pozostaje tekstem. Kanały, które chcą traktować obrazy Markdown jako odpowiedzi multimedialne, włączają tę funkcję w swoim adapterze wychodzącym; Telegram robi to, dzięki czemu `![alt](url)` staje się załącznikiem multimedialnym.
 
-Te dyrektywy są oddzielne. Ustrukturyzowane pola multimediów oraz tagi odpowiedzi/głosu są
-metadanymi dostarczania; `[embed ...]` jest ścieżką bogatego renderowania wyłącznie dla webu.
-
-Gdy strumieniowanie bloków jest włączone, multimedia muszą być przenoszone w ustrukturyzowanych polach ładunku.
-Jeśli ten sam URL multimediów zostanie wysłany w strumieniowanym bloku i powtórzony w
-końcowym ładunku asystenta, OpenClaw dostarcza załącznik raz i usuwa
-duplikat z końcowego ładunku.
+Gdy włączone jest strumieniowanie blokowe, multimedia muszą być przesyłane w ustrukturyzowanych polach ładunku. Jeśli ten sam adres URL multimediów pojawi się w przesyłanym strumieniowo bloku, a następnie ponownie w końcowym ładunku asystenta, OpenClaw dostarczy go raz i usunie duplikat z końcowego ładunku.
 
 ## `[embed ...]`
 
-`[embed ...]` to jedyna składnia bogatego renderowania dostępna dla agenta w Control UI.
-
-Przykład samozamykający:
+`[embed ...]` jest jedyną składnią rozszerzonego renderowania dostępną dla agenta w interfejsie Control UI. Przykład samozamykający:
 
 ```text
 [embed ref="cv_123" title="Status" /]
 ```
 
-Reguły:
+Zasady:
 
-- `[view ...]` nie jest już prawidłowe dla nowych danych wyjściowych.
-- Shortcodes osadzania renderują się wyłącznie w powierzchni wiadomości asystenta.
-- Renderowane są tylko osadzenia oparte na URL. Użyj `ref="..."` albo `url="..."`.
-- Blokowe shortcodes osadzania HTML inline nie są renderowane.
-- Webowy interfejs użytkownika usuwa shortcode z widocznego tekstu i renderuje osadzenie inline.
-- Ustrukturyzowane multimedia nie są aliasem osadzenia i nie powinny być używane do bogatego renderowania osadzeń.
+- `[view ...]` nie jest już prawidłową składnią dla nowych danych wyjściowych.
+- Skrócone znaczniki osadzania są renderowane wyłącznie w obszarze wiadomości asystenta.
+- Renderowane są wyłącznie osadzenia oparte na adresach URL; użyj `ref="..."` lub `url="..."`.
+- Blokowe skrócone znaczniki osadzania w formacie HTML nie są renderowane.
+- Interfejs internetowy usuwa skrócony znacznik z widocznego tekstu i renderuje osadzenie w tekście.
 
-## Przechowywany kształt renderowania
+## Przechowywana postać renderowania
 
 Znormalizowany/przechowywany blok treści asystenta jest ustrukturyzowanym elementem `canvas`:
 
@@ -93,7 +78,7 @@ Znormalizowany/przechowywany blok treści asystenta jest ustrukturyzowanym eleme
 }
 ```
 
-Przechowywane/renderowane bloki bogate używają bezpośrednio tego kształtu `canvas`. `present_view` nie jest rozpoznawane.
+`present_view` nie jest rozpoznawane; przechowywane/renderowane bloki rozszerzone zawsze używają tej postaci `canvas`.
 
 ## Powiązane
 

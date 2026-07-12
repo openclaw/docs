@@ -1,11 +1,11 @@
 ---
 read_when:
     - Você está instalando, configurando ou auditando o plugin tokenjuice
-summary: Compacta resultados das ferramentas exec e bash com redutores tokenjuice.
+summary: Compacta os resultados das ferramentas exec e bash com redutores do tokenjuice.
 title: Plugin Tokenjuice
 x-i18n:
-    generated_at: "2026-06-27T17:56:32Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T00:13:53Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: a51416caa94a17799e3a55c1d3b88bf2c026fd003317b86d7926cf11b9b81fab
@@ -13,14 +13,14 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin tokenjuice
+# Plugin Tokenjuice
 
-Compacta resultados das ferramentas exec e bash com redutores tokenjuice.
+Compacta os resultados das ferramentas exec e bash com redutores do tokenjuice.
 
 ## Distribuição
 
 - Pacote: `@openclaw/tokenjuice`
-- Rota de instalação: npm; ClawHub: `clawhub:@openclaw/tokenjuice`
+- Método de instalação: npm; ClawHub: `clawhub:@openclaw/tokenjuice`
 
 ## Superfície
 

@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Je installeert, configureert of controleert de admin-http-rpc-plugin
+    - U installeert, configureert of controleert de admin-http-rpc-plugin
 summary: OpenClaw-beheer-HTTP-RPC-eindpunt.
-title: Beheer-HTTP-RPC-Plugin
+title: Beheer-HTTP-RPC-plugin
 x-i18n:
-    generated_at: "2026-06-27T17:58:11Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:11:24Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 58909f4c97bfacc22d3a597939ff8724ec111995841822962c66305140aef4ba
@@ -13,9 +13,9 @@ x-i18n:
     workflow: 16
 ---
 
-# Admin HTTP RPC-Plugin
+# Admin-HTTP-RPC-Plugin
 
-OpenClaw-beheer-HTTP-RPC-eindpunt.
+OpenClaw-beheereindpunt voor HTTP-RPC.
 
 ## Distributie
 

@@ -1,136 +1,130 @@
 ---
 read_when:
-    - Provider-runtimehooks, kanaallevenscyclus of pakketpacks implementeren
-    - Plugin-laadvolgorde of registerstatus debuggen
-    - Een nieuwe Plugin-mogelijkheid of context-engine-Plugin toevoegen
-summary: 'Plugin-architectuurinternals: laadpijplijn, register, runtime-hooks, HTTP-routes en referentietabellen'
+    - Runtimehooks voor providers, de levenscyclus van kanalen of pakketbundels implementeren
+    - Fouten opsporen in de laadvolgorde van plugins of de registerstatus
+    - Een nieuwe Plugin-mogelijkheid of contextengine-Plugin toevoegen
+summary: 'Interne werking van de Plugin-architectuur: laadpijplijn, register, runtime-hooks, HTTP-routes en referentietabellen'
 title: Interne werking van de Plugin-architectuur
 x-i18n:
-    generated_at: "2026-06-27T17:49:37Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:07:11Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 29abbd75d696a26cf33702a78abfcc987aaf5358eca2dc1ebe43f039f4ff6edf
+    source_hash: 2fe5b7f34c638da40b43c24da9425ecdeb9ce7381e233b3ebdd5cc95276ba04f
     source_path: plugins/architecture-internals.md
     workflow: 16
 ---
 
-Zie [Plugin-architectuur](/nl/plugins/architecture) voor het publieke capabilitymodel, Plugin-vormen en eigendoms-/uitvoeringscontracten. Deze pagina is de referentie voor de interne werking: laadpipeline, register, runtime-hooks, Gateway-HTTP-routes, importpaden en schematabellen.
+Voor het openbare capaciteitenmodel, de pluginstructuren en de contracten voor eigenaarschap/uitvoering, zie [Pluginarchitectuur](/nl/plugins/architecture). Deze pagina behandelt de interne werking: laadpijplijn, register, runtime-hooks, Gateway-HTTP-routes, importpaden en schematabellen.
 
-## Laadpipeline
+## Laadpijplijn
 
-Bij het opstarten doet OpenClaw grofweg dit:
+Bij het opstarten doet OpenClaw ongeveer het volgende:
 
-1. kandidaat-Plugin-roots ontdekken
-2. native of compatibele bundelmanifests en package-metadata lezen
-3. onveilige kandidaten weigeren
-4. Plugin-configuratie normaliseren (`plugins.enabled`, `allow`, `deny`, `entries`,
+1. potentiële pluginhoofdmappen detecteren
+2. systeemeigen of compatibele bundelmanifesten en pakketmetadata lezen
+3. onveilige kandidaten afwijzen
+4. pluginconfiguratie normaliseren (`plugins.enabled`, `allow`, `deny`, `entries`,
    `slots`, `load.paths`)
-5. enablement voor elke kandidaat bepalen
-6. ingeschakelde native modules laden: gebouwde gebundelde modules gebruiken een native loader;
-   lokale TypeScript-broncode van derden gebruikt de noodfallback Jiti
-7. native `register(api)`-hooks aanroepen en registraties verzamelen in het Plugin-register
-8. het register beschikbaar maken voor commando’s/runtime-oppervlakken
+5. voor elke kandidaat bepalen of deze wordt ingeschakeld
+6. ingeschakelde systeemeigen modules laden: gebouwde gebundelde modules gebruiken een systeemeigen loader;
+   lokale TypeScript-broncode van derden gebruikt de Jiti-noodoplossing
+7. systeemeigen `register(api)`-hooks aanroepen en registraties in het pluginregister verzamelen
+8. het register beschikbaar stellen aan opdrachten en runtime-interfaces
 
 <Note>
-`activate` is een legacy-alias voor `register` — de loader kiest wat aanwezig is (`def.register ?? def.activate`) en roept het op hetzelfde punt aan. Alle gebundelde Plugins gebruiken `register`; geef voor nieuwe Plugins de voorkeur aan `register`.
+`activate` is een verouderde alias voor `register` — de loader kiest de beschikbare variant (`def.register ?? def.activate`) en roept deze op hetzelfde punt aan. Alle gebundelde plugins gebruiken `register`; gebruik bij voorkeur `register` voor nieuwe plugins.
 </Note>
 
-De veiligheidspoorten vinden **voor** runtime-uitvoering plaats. Kandidaten worden geblokkeerd
-wanneer de entry buiten de Plugin-root ontsnapt, het pad door iedereen schrijfbaar is, of padeigendom verdacht lijkt voor niet-gebundelde Plugins.
+Veiligheidscontroles worden **vóór** runtime-uitvoering uitgevoerd. Detectie blokkeert een kandidaat wanneer:
 
-Geblokkeerde kandidaten blijven gekoppeld aan hun Plugin-id voor diagnostiek. Als de configuratie nog steeds naar die id verwijst, meldt validatie de Plugin als aanwezig maar geblokkeerd en verwijst terug naar de padveiligheidswaarschuwing in plaats van de configuratie-entry als verouderd te behandelen.
+- het herleide toegangspunt buiten de pluginhoofdmap valt
+- het pad (of de hoofdmap ervan) voor iedereen beschrijfbaar is
+- bij niet-gebundelde plugins het eigenaarschap van het pad niet overeenkomt met de huidige uid (of root)
 
-### Manifest-first-gedrag
+Voor gebundelde mappen die voor iedereen beschrijfbaar zijn, wordt eerst ter plaatse een `chmod`-herstelpoging uitgevoerd (npm-/globale installaties kunnen pakketmappen met `0777` leveren), voordat de controle opnieuw wordt uitgevoerd; eigenaarschapscontroles worden voor een gebundelde oorsprong volledig overgeslagen.
 
-Het manifest is de control-plane-bron van waarheid. OpenClaw gebruikt het om:
+Geblokkeerde kandidaten bevatten in de uitgegeven diagnose nog steeds hun plugin-id wanneer deze bekend is (inclusief id's die zijn herleid uit een manifest in een anderszins afgewezen map), zodat configuratie die naar die id verwijst een geblokkeerde plugin ziet die aan een waarschuwing over padveiligheid is gekoppeld, in plaats van een niet-gerelateerde foutmelding 'onbekende plugin'.
 
-- de Plugin te identificeren
-- gedeclareerde kanalen/Skills/configuratieschema’s of bundelcapabilities te ontdekken
+### Manifest-eerst-gedrag
+
+Het manifest is de gezaghebbende bron voor het besturingsvlak. OpenClaw gebruikt het om:
+
+- de plugin te identificeren
+- gedeclareerde kanalen/Skills/configuratieschema's of bundelcapaciteiten te detecteren
 - `plugins.entries.<id>.config` te valideren
-- Control UI-labels/placeholders aan te vullen
-- installatie-/catalogusmetadata te tonen
-- goedkope activerings- en setupdescriptoren te behouden zonder Plugin-runtime te laden
+- labels en tijdelijke aanduidingen in de bedieningsinterface aan te vullen
+- installatie- en catalogusmetadata weer te geven
+- goedkope activerings- en instellingsdescriptors te behouden zonder de pluginruntime te laden
 
-Voor native Plugins is de runtime-module het data-plane-deel. Die registreert daadwerkelijk gedrag zoals hooks, tools, commando’s of providerflows.
+Voor systeemeigen plugins vormt de runtimemodule het gegevensvlak. Deze registreert daadwerkelijk gedrag, zoals hooks, hulpmiddelen, opdrachten of providerstromen.
 
-Optionele manifestblokken `activation` en `setup` blijven op de control plane. Het zijn metadata-only descriptoren voor activeringsplanning en setupdetectie; ze vervangen runtime-registratie, `register(...)` of `setupEntry` niet.
-De eerste live activeringsconsumenten gebruiken nu manifesthints voor commando’s, kanalen en providers om het laden van Plugins te beperken voordat bredere registermaterialisatie plaatsvindt:
+Optionele manifestblokken `activation` en `setup` blijven op het besturingsvlak. Het zijn uitsluitend metadatadescriptors voor activeringsplanning en het detecteren van instellingen; ze vervangen runtimeregistratie, `register(...)` of `setupEntry` niet. Actieve activeringsconsumenten gebruiken hints voor manifestopdrachten, -kanalen en -providers om het laden van plugins te beperken voordat het register breder wordt opgebouwd:
 
-- CLI-laden beperkt zich tot Plugins die eigenaar zijn van het gevraagde primaire commando
-- kanaalsetup/Plugin-resolutie beperkt zich tot Plugins die eigenaar zijn van de gevraagde
-  kanaal-id
-- expliciete provider-setup/runtime-resolutie beperkt zich tot Plugins die eigenaar zijn van de
-  gevraagde provider-id
-- Gateway-opstartplanning gebruikt `activation.onStartup` voor expliciete opstartimports
-  en opstart-opt-outs; Plugins zonder opstartmetadata laden alleen
-  via nauwere activeringstriggers
+- bij CLI-laden wordt beperkt tot plugins die eigenaar zijn van de gevraagde primaire opdracht
+- bij kanaalinstelling/pluginherleiding wordt beperkt tot plugins die eigenaar zijn van de gevraagde kanaal-id
+- bij expliciete providerinstelling/runtimeherleiding wordt beperkt tot plugins die eigenaar zijn van de gevraagde provider-id
+- de opstartplanning van de Gateway gebruikt `activation.onStartup` voor expliciete opstartimports; plugins zonder opstartmetadata worden alleen via specifiekere activeringstriggers geladen
 
-Request-time runtime-preloads die om de brede scope `all` vragen, leiden nog steeds een expliciete effectieve set Plugin-id’s af uit configuratie, opstartplanning, geconfigureerde kanalen, slots en auto-enable-regels. Als die afgeleide set leeg is, laadt OpenClaw een leeg runtime-register in plaats van te verbreden naar elke ontdekbare Plugin.
+De activeringsplanner biedt zowel een API met alleen id's voor bestaande aanroepers als een plan-API voor diagnostiek. Planitems melden waarom een plugin is geselecteerd en maken onderscheid tussen expliciete `activation.*`-hints en terugval op manifesteigenaarschap:
 
-De activeringsplanner biedt zowel een ids-only API voor bestaande callers als een plan-API voor nieuwe diagnostiek. Plan-entries melden waarom een Plugin is geselecteerd, met scheiding tussen expliciete `activation.*`-plannerhints en fallback op manifesteigendom zoals `providers`, `channels`, `commandAliases`, `setup.providers`, `contracts.tools` en hooks. Die scheiding in redenen is de compatibiliteitsgrens: bestaande Plugin-metadata blijft werken, terwijl nieuwe code brede hints of fallbackgedrag kan detecteren zonder de semantiek van runtime-laden te wijzigen.
+| Reden (uit `activation.*`-hints)      | Reden (uit manifesteigenaarschap)                                                          |
+| ------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `activation-agent-harness-hint`       | —                                                                                          |
+| `activation-capability-hint`          | —                                                                                          |
+| `activation-channel-hint`             | `manifest-channel-owner` (`channels`)                                                      |
+| `activation-command-hint`             | `manifest-command-alias` (`commandAliases`)                                                |
+| `activation-provider-hint`            | `manifest-provider-owner` (`providers`), `manifest-setup-provider-owner` (`setup.providers`) |
+| `activation-route-hint`               | —                                                                                          |
+| — (hooktrigger heeft geen hintvariant) | `manifest-hook-owner` (`hooks`), `manifest-tool-contract` (`contracts.tools`)              |
 
-Setupdetectie geeft nu de voorkeur aan descriptor-owned id’s zoals `setup.providers` en `setup.cliBackends` om kandidaat-Plugins te beperken voordat wordt teruggevallen op `setup-api` voor Plugins die nog runtime-hooks tijdens setup nodig hebben. Provider-setuplijsten gebruiken manifest `providerAuthChoices`, uit descriptoren afgeleide setupkeuzes en installatiecatalogusmetadata zonder provider-runtime te laden. Expliciet `setup.requiresRuntime: false` is een descriptor-only afsluiting; weggelaten `requiresRuntime` behoudt de legacy `setup-api`-fallback voor compatibiliteit. Als meer dan één ontdekte Plugin dezelfde genormaliseerde setup-provider- of CLI-backend-id claimt, weigert setup-lookup de dubbelzinnige eigenaar in plaats van op ontdekkingsvolgorde te vertrouwen. Wanneer setup-runtime wel wordt uitgevoerd, meldt registerdiagnostiek drift tussen `setup.providers` / `setup.cliBackends` en de providers of CLI-backends die door setup-api zijn geregistreerd, zonder legacy Plugins te blokkeren.
+Die scheiding van redenen vormt de compatibiliteitsgrens: bestaande pluginmetadata blijft werken, terwijl nieuwe code brede hints of terugvalgedrag kan detecteren zonder de semantiek van het runtime-laden te wijzigen.
 
-### Plugin-cachegrens
+Runtime-voorladingen tijdens verzoeken die om het brede bereik `all` vragen, leiden nog steeds een expliciete effectieve set plugin-id's af uit configuratie, opstartplanning, geconfigureerde kanalen, slots en regels voor automatisch inschakelen (`resolveEffectivePluginIds` in `src/plugins/effective-plugin-ids.ts`). Als die afgeleide set leeg is, houdt OpenClaw het bereik leeg in plaats van dit uit te breiden naar elke detecteerbare plugin.
 
-OpenClaw cachet geen Plugin-ontdekkingsresultaten of directe manifestregisterdata achter wall-clock-vensters. Installaties, manifestbewerkingen en wijzigingen in laadpaden moeten zichtbaar worden bij de volgende expliciete metadatalezing of snapshot-rebuild.
-De manifestbestandparser mag een begrensde bestandshandtekeningcache bijhouden, keyed op het geopende manifestpad, inode, grootte en timestamps; die cache voorkomt alleen het opnieuw parsen van ongewijzigde bytes en mag geen discovery-, register-, eigenaar- of policy-antwoorden cachen.
+Bij het detecteren van instellingen wordt de voorkeur gegeven aan id's die eigendom zijn van descriptors, zoals `setup.providers` en `setup.cliBackends`, om potentiële plugins te beperken voordat wordt teruggevallen op `setup-api` voor plugins die nog runtime-hooks tijdens de instelling nodig hebben. Lijsten voor providerinstelling gebruiken manifestgegevens uit `providerAuthChoices`, van descriptors afgeleide instellingskeuzes en installatiecatalogusmetadata zonder de providerruntime te laden. Expliciete `setup.requiresRuntime: false` vormt een afkappunt waarbij alleen descriptors worden gebruikt; als `requiresRuntime` is weggelaten, blijft de verouderde terugval op setup-api behouden voor compatibiliteit. Als meerdere gedetecteerde plugins aanspraak maken op dezelfde genormaliseerde instellingsprovider- of CLI-backend-id, weigert het opzoeken van instellingen de dubbelzinnige eigenaar in plaats van te vertrouwen op de detectievolgorde. Wanneer de instellingsruntime wel wordt uitgevoerd, meldt registerdiagnostiek afwijkingen tussen `setup.providers` / `setup.cliBackends` en de providers of CLI-backends die daadwerkelijk door setup-api zijn geregistreerd, zonder verouderde plugins te blokkeren.
 
-Het veilige metadata-fast path is expliciet objecteigendom, geen verborgen cache. Gateway-opstart-hot paths moeten de huidige `PluginMetadataSnapshot`, de afgeleide `PluginLookUpTable` of een expliciet manifestregister door de call chain doorgeven. Configuratievalidatie, opstart-auto-enable, Plugin-bootstrap en providerselectie kunnen die objecten hergebruiken zolang ze de huidige configuratie en Plugin-inventaris vertegenwoordigen. Setup-lookup reconstrueert manifestmetadata nog steeds op aanvraag, tenzij het specifieke setuppad een expliciet manifestregister ontvangt; behoud dat als cold-path-fallback in plaats van verborgen lookup-caches toe te voegen. Wanneer de input verandert, bouw de snapshot opnieuw op en vervang die, in plaats van deze te muteren of historische kopieën te bewaren.
-Views over het actieve Plugin-register en gebundelde kanaal-bootstraphelpers moeten opnieuw worden berekend vanuit het huidige register/de huidige root. Kortlevende maps zijn prima binnen één call om werk te dedupliceren of reentry te bewaken; ze mogen geen procesmetadatacaches worden.
+### Cachegrens van plugins
 
-Voor het laden van Plugins is de persistente cachelaag runtime-laden. Die mag loaderstatus hergebruiken wanneer code of geïnstalleerde artifacts daadwerkelijk worden geladen, zoals:
+OpenClaw slaat resultaten van plugindetectie of directe manifestregistergegevens niet op in een cache met tijdsvensters. Installaties, manifestbewerkingen en wijzigingen in laadpaden moeten zichtbaar worden bij de volgende expliciete metadatalezing of herbouw van de momentopname. De parser voor manifestbestanden houdt een begrensde cache van bestandskenmerken bij, met als sleutel het geopende manifestpad plus apparaat/inode, grootte en mtime/ctime; die cache voorkomt alleen dat ongewijzigde bytes opnieuw worden geparseerd en mag geen antwoorden over detectie, registers, eigenaars of beleid cachen.
 
-- `PluginLoaderCacheState` en compatibele actieve runtime-registers
-- jiti-/modulecaches en public-surface loader-caches die worden gebruikt om te voorkomen dat
-  hetzelfde runtime-oppervlak herhaaldelijk wordt geïmporteerd
-- bestandssysteemcaches voor geïnstalleerde Plugin-artifacts
-- kortlevende per-call maps voor padnormalisatie of duplicate resolution
+Het veilige snelle pad voor metadata bestaat uit expliciet objecteigenaarschap, niet uit een verborgen cache. Intensief gebruikte opstartpaden van de Gateway moeten de huidige `PluginMetadataSnapshot`, de afgeleide `PluginLookUpTable` of een expliciet manifestregister door de aanroepketen doorgeven. Configuratievalidatie, automatisch inschakelen bij het opstarten, plugininitialisatie en providerselectie kunnen die objecten hergebruiken zolang ze de huidige configuratie en plugininventaris vertegenwoordigen. Bij het opzoeken van instellingen worden manifestmetadata nog steeds op aanvraag opnieuw opgebouwd, tenzij het specifieke instellingspad een expliciet manifestregister ontvangt; behoud dit als terugval voor weinig gebruikte paden in plaats van verborgen opzoekcaches toe te voegen. Wanneer de invoer verandert, bouwt en vervangt u de momentopname opnieuw in plaats van deze te wijzigen of historische kopieën te bewaren. Weergaven van het actieve pluginregister en gebundelde helpers voor kanaalinitialisatie moeten opnieuw worden berekend vanuit het huidige register/de huidige hoofdmap. Kortstondige maps zijn binnen één aanroep geschikt om dubbel werk te voorkomen of herintreding te bewaken; ze mogen geen procesmetadatacaches worden.
 
-Die caches zijn data-plane-implementatiedetails. Ze mogen geen control-plane-vragen beantwoorden zoals "welke Plugin is eigenaar van deze provider?", tenzij de caller bewust om runtime-laden heeft gevraagd.
+Voor het laden van plugins is runtime-laden de permanente cachelaag. Deze mag loaderstatus hergebruiken wanneer code of geïnstalleerde artefacten daadwerkelijk worden geladen, zoals:
 
-Voeg geen persistente of wall-clock-caches toe voor:
+- `PluginLoaderCacheState` en compatibele actieve runtimeregisters
+- jiti-/modulecaches en loadercaches voor openbare interfaces die voorkomen dat dezelfde runtime-interface herhaaldelijk wordt geïmporteerd
+- bestandssysteemcaches voor geïnstalleerde pluginartefacten
+- kortstondige maps per aanroep voor padnormalisatie of het oplossen van duplicaten
 
-- ontdekkingsresultaten
+Deze caches zijn implementatiedetails van het gegevensvlak. Ze mogen geen vragen van het besturingsvlak beantwoorden, zoals 'welke plugin is eigenaar van deze provider?', tenzij de aanroeper bewust om runtime-laden heeft gevraagd.
+
+Voeg geen permanente caches of caches op basis van verstreken tijd toe voor:
+
+- detectieresultaten
 - directe manifestregisters
-- manifestregisters die zijn gereconstrueerd uit de geïnstalleerde Plugin-index
-- provider-eigenaarlookup, modelonderdrukking, providerpolicy of public-artifact
-  metadata
-- elk ander manifest-afgeleid antwoord waarbij een gewijzigd manifest, geïnstalleerde index
-  of laadpad zichtbaar moet zijn bij de volgende metadatalezing
+- manifestregisters die opnieuw zijn opgebouwd vanuit de index van geïnstalleerde plugins
+- het opzoeken van providereigenaars, modelonderdrukking, providerbeleid of metadata van openbare artefacten
+- elk ander van een manifest afgeleid antwoord waarbij een gewijzigd manifest, een gewijzigde geïnstalleerde index of een gewijzigd laadpad bij de volgende metadatalezing zichtbaar moet zijn
 
-Callers die manifestmetadata opnieuw opbouwen uit de persistente geïnstalleerde Plugin-index reconstrueren dat register op aanvraag. De geïnstalleerde index is duurzame source-plane-status; het is geen verborgen in-process metadatacache.
+Aanroepers die manifestmetadata opnieuw opbouwen vanuit de permanente index van geïnstalleerde plugins, reconstrueren dat register op aanvraag. De geïnstalleerde index is duurzame status van het bronvlak; het is geen verborgen metadatacache in het proces.
 
 ## Registermodel
 
-Geladen Plugins muteren niet rechtstreeks willekeurige core-globals. Ze registreren in een centraal Plugin-register.
+Geladen plugins wijzigen niet rechtstreeks willekeurige globale kernvariabelen. Ze registreren zich in een centraal pluginregister (`PluginRegistry` in `src/plugins/registry-types.ts`), dat pluginrecords (identiteit, bron, oorsprong, status, diagnostiek) bijhoudt, plus arrays voor elke capaciteit: hulpmiddelen, verouderde hooks en getypeerde hooks, kanalen, providers, Gateway-RPC-handlers, HTTP-routes, CLI-registrators, achtergrondservices, opdrachten waarvan plugins eigenaar zijn en tientallen aanvullende getypeerde providerfamilies (spraak, embeddings, beeld-/video-/muziekgeneratie, ophalen/zoeken op het web, agentharnassen, sessieacties enzovoort).
 
-Het register houdt bij:
+Kernfuncties lezen vervolgens uit dat register in plaats van rechtstreeks met pluginmodules te communiceren. Hierdoor blijft het laden eenrichtingsverkeer:
 
-- Plugin-records (identiteit, bron, herkomst, status, diagnostiek)
-- tools
-- legacy hooks en getypeerde hooks
-- kanalen
-- providers
-- Gateway-RPC-handlers
-- HTTP-routes
-- CLI-registrars
-- achtergrondservices
-- Plugin-owned commando’s
+- pluginmodule -> registratie in register
+- kernruntime -> gebruik van register
 
-Core-features lezen vervolgens uit dat register in plaats van rechtstreeks met Plugin-modules te praten. Dit houdt laden eenrichtingsverkeer:
+Die scheiding is belangrijk voor de onderhoudbaarheid. Dit betekent dat de meeste kerninterfaces slechts één integratiepunt nodig hebben: 'het register lezen', niet 'elke pluginmodule afzonderlijk behandelen'.
 
-- Plugin-module -> registerregistratie
-- core-runtime -> registerconsumptie
+## Callbacks voor gesprekskoppelingen
 
-Die scheiding is belangrijk voor onderhoudbaarheid. Het betekent dat de meeste core-oppervlakken maar één integratiepunt nodig hebben: "lees het register", niet "special-case elke Plugin-module".
+Plugins die een gesprek koppelen, kunnen reageren wanneer een goedkeuring is afgehandeld.
 
-## Conversation binding callbacks
-
-Plugins die een gesprek binden, kunnen reageren wanneer een goedkeuring is opgelost.
-
-Gebruik `api.onConversationBindingResolved(...)` om een callback te ontvangen nadat een bind-request is goedgekeurd of geweigerd:
+Gebruik `api.onConversationBindingResolved(...)` om een callback te ontvangen nadat een koppelingsverzoek is goedgekeurd of geweigerd:
 
 ```ts
 export default {
@@ -138,120 +132,141 @@ export default {
   register(api) {
     api.onConversationBindingResolved(async (event) => {
       if (event.status === "approved") {
-        // A binding now exists for this plugin + conversation.
+        // Er bestaat nu een koppeling voor deze plugin en dit gesprek.
         console.log(event.binding?.conversationId);
         return;
       }
 
-      // The request was denied; clear any local pending state.
+      // Het verzoek is geweigerd; wis eventuele lokale status in afwachting.
       console.log(event.request.conversation.conversationId);
     });
   },
 };
 ```
 
-Callback-payloadvelden:
+Velden in de callbackpayload:
 
 - `status`: `"approved"` of `"denied"`
 - `decision`: `"allow-once"`, `"allow-always"` of `"deny"`
-- `binding`: de opgeloste binding voor goedgekeurde requests
-- `request`: de oorspronkelijke request-samenvatting, detach-hint, sender-id en
-  gespreksmetadata
+- `binding`: de herleide koppeling voor goedgekeurde verzoeken
+- `request`: de oorspronkelijke samenvatting van het verzoek, ontkoppelingshint, afzender-id en gespreksmetadata
 
-Deze callback is alleen een melding. Hij verandert niet wie een gesprek mag binden, en hij draait nadat de core-goedkeuringsafhandeling is afgerond.
+Deze callback dient uitsluitend als melding. Deze wijzigt niet wie een gesprek mag koppelen en wordt uitgevoerd nadat de kernafhandeling van de goedkeuring is voltooid.
 
-## Provider-runtime-hooks
+## Runtime-hooks voor providers
 
-Provider-Plugins hebben drie lagen:
+Providerplugins hebben drie lagen:
 
-- **Manifestmetadata** voor goedkope lookup voor runtime:
-  `setup.providers[].envVars`, verouderde compatibiliteit `providerAuthEnvVars`,
+- **Manifestmetadata** voor snelle opzoekacties vóór de runtime:
+  `setup.providers[].envVars`, de verouderde compatibiliteitsoptie `providerAuthEnvVars`,
   `providerAuthAliases`, `providerAuthChoices` en `channelEnvVars`.
-- **Config-time hooks**: `catalog` (legacy `discovery`) plus
+- **Hooks tijdens de configuratie**: `catalog` (verouderd: `discovery`) plus
   `applyConfigDefaults`.
-- **Runtime-hooks**: meer dan 40 optionele hooks voor auth, modelresolutie,
-  stream-wrapping, thinking levels, replaypolicy en usage-eindpunten. Zie
-  de volledige lijst onder [Hookvolgorde en gebruik](#hook-order-and-usage).
+- **Runtime-hooks**: meer dan 40 optionele hooks voor authenticatie, modelherleiding,
+  streamomwikkeling, denkniveaus, herhalingsbeleid en gebruikseindpunten. Zie
+  [Volgorde en gebruik van hooks](#hook-order-and-usage).
 
-OpenClaw blijft eigenaar van de generieke agent-loop, failover, transcriptverwerking en toolpolicy. Deze hooks zijn het extensieoppervlak voor provider-specifiek gedrag zonder dat een volledig aangepast inference-transport nodig is.
+OpenClaw blijft eigenaar van de algemene agentlus, failover, transcriptverwerking en het hulpmiddelenbeleid. Deze hooks vormen de uitbreidingsinterface voor providerspecifiek gedrag zonder dat een volledig aangepast inferentietransport nodig is.
 
-Gebruik manifest `setup.providers[].envVars` wanneer de provider env-gebaseerde credentials heeft die generieke auth-/status-/model-picker-paden moeten zien zonder Plugin-runtime te laden. Verouderde `providerAuthEnvVars` wordt tijdens de deprecation window nog steeds gelezen door de compatibiliteitsadapter, en niet-gebundelde Plugins die dit gebruiken ontvangen een manifestdiagnostic. Gebruik manifest `providerAuthAliases` wanneer één provider-id de env-vars, auth-profielen, config-backed auth en API-key-onboardingkeuze van een andere provider-id moet hergebruiken. Gebruik manifest `providerAuthChoices` wanneer onboarding-/auth-choice-CLI-oppervlakken de keuze-id, groeplabels en eenvoudige one-flag-auth-wiring van de provider moeten kennen zonder provider-runtime te laden. Houd provider-runtime
-`envVars` voor operatorgerichte hints zoals onboardinglabels of OAuth-client-id-/client-secret-setupvars.
+Gebruik manifest `setup.providers[].envVars` wanneer de provider op omgevingsvariabelen gebaseerde
+inloggegevens heeft die generieke paden voor authenticatie, status en modelkeuze moeten kunnen zien zonder
+de Plugin-runtime te laden. De verouderde `providerAuthEnvVars` wordt tijdens de
+uitfaseringsperiode nog door de compatibiliteitsadapter gelezen, en niet-meegeleverde plugins
+die deze gebruiken, ontvangen een manifestdiagnose. Gebruik manifest `providerAuthAliases`
+wanneer één provider-id de omgevingsvariabelen, authenticatieprofielen,
+configuratiegebaseerde authenticatie en API-sleutelkeuze tijdens de onboarding van een andere provider-id moet hergebruiken. Gebruik manifest
+`providerAuthChoices` wanneer CLI-oppervlakken voor onboarding en authenticatiekeuze de
+keuze-id van de provider, groepslabels en eenvoudige authenticatiekoppeling met één vlag moeten kennen zonder
+de provider-runtime te laden. Behoud `envVars` van de provider-runtime
+voor aanwijzingen voor beheerders, zoals onboardinglabels of instelvariabelen voor
+de OAuth-client-id en het OAuth-clientgeheim.
 
-Gebruik manifest `channelEnvVars` wanneer een kanaal env-gedreven auth of setup heeft die generieke shell-env-fallback, config-/statuschecks of setupprompts moeten zien zonder channel-runtime te laden.
+Gebruik manifest `channelEnvVars` wanneer een kanaal via omgevingsvariabelen aangestuurde authenticatie of configuratie heeft die
+generieke terugval op shell-omgevingsvariabelen, configuratie-/statuscontroles of configuratieprompts moeten kunnen zien
+zonder de kanaalruntime te laden.
 
-### Hookvolgorde en gebruik
+### Volgorde en gebruik van hooks
 
-Voor model-/provider-Plugins roept OpenClaw hooks in deze grove volgorde aan.
-De kolom "Wanneer gebruiken" is de snelle beslisgids.
-Compatibility-only providervelden die OpenClaw niet meer aanroept, zoals
+Voor model-/providerplugins roept OpenClaw hooks ongeveer in deze volgorde aan.
+De kolom "Wanneer te gebruiken" is de beknopte beslissingsgids.
+Provider-velden die uitsluitend voor compatibiliteit bestaan en die OpenClaw niet meer aanroept, zoals
 `ProviderPlugin.capabilities` en `suppressBuiltInModel`, worden hier bewust niet
 vermeld.
 
-| #   | Hook                              | Wat het doet                                                                                                   | Wanneer gebruiken                                                                                                                                   |
-| --- | --------------------------------- | -------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | `catalog`                         | Publiceer providerconfiguratie in `models.providers` tijdens het genereren van `models.json`                                | Provider beheert een catalogus of standaardwaarden voor de basis-URL                                                                                                  |
-| 2   | `applyConfigDefaults`             | Pas globale standaardconfiguratie van de provider toe tijdens configuratiematerialisatie                                      | Standaardwaarden hangen af van verificatiemodus, env of providersemantiek voor de modelfamilie                                                                         |
-| --  | _(ingebouwde modelzoekopdracht)_         | OpenClaw probeert eerst het normale registry-/cataloguspad                                                          | _(geen Plugin-hook)_                                                                                                                         |
-| 3   | `normalizeModelId`                | Normaliseer verouderde of preview-aliassen voor model-id's vóór het opzoeken                                                     | Provider beheert aliassen opschonen vóór canonieke modelresolutie                                                                                 |
-| 4   | `normalizeTransport`              | Normaliseer providerfamilie-`api` / `baseUrl` vóór generieke modelsamenstelling                                      | Provider beheert transportopschoning voor aangepaste provider-id's in dezelfde transportfamilie                                                          |
-| 5   | `normalizeConfig`                 | Normaliseer `models.providers.<id>` vóór runtime-/providerresolutie                                           | Provider heeft configuratieopschoning nodig die bij de Plugin hoort; gebundelde Google-familiehelpers ondersteunen ook ondersteunde Google-configuratie-items   |
-| 6   | `applyNativeStreamingUsageCompat` | Pas compat-herschrijvingen voor native streaminggebruik toe op configuratieproviders                                               | Provider heeft door het endpoint aangestuurde metadatafixes voor native streaminggebruik nodig                                                                          |
-| 7   | `resolveConfigApiKey`             | Los env-marker-auth op voor configuratieproviders vóór het laden van runtime-auth                                       | Providers bieden hun eigen hooks voor env-marker-API-sleutelresolutie                                                                                |
-| 8   | `resolveSyntheticAuth`            | Toon lokale/zelfgehoste of configuratieondersteunde auth zonder platte tekst persistent op te slaan                                   | Provider kan werken met een synthetische/lokale credential-marker                                                                                 |
-| 9   | `resolveExternalAuthProfiles`     | Leg door de provider beheerde externe auth-profielen eroverheen; standaard `persistence` is `runtime-only` voor CLI-/app-beheerde credentials | Provider hergebruikt externe auth-credentials zonder gekopieerde refreshtokens persistent op te slaan; declareer `contracts.externalAuthProviders` in het manifest |
-| 10  | `shouldDeferSyntheticProfileAuth` | Verlaag opgeslagen synthetische profielplaatshouders achter auth op basis van env/configuratie                                      | Provider slaat synthetische plaatshouderprofielen op die geen voorrang mogen krijgen                                                                 |
-| 11  | `resolveDynamicModel`             | Synchrone fallback voor providerbeheerde model-id's die nog niet in het lokale registry staan                                       | Provider accepteert willekeurige upstream-model-id's                                                                                                 |
-| 12  | `prepareDynamicModel`             | Asynchrone warming-up, daarna wordt `resolveDynamicModel` opnieuw uitgevoerd                                                           | Provider heeft netwerkmetadata nodig voordat onbekende id's worden opgelost                                                                                  |
-| 13  | `normalizeResolvedModel`          | Laatste herschrijving voordat de embedded runner het opgeloste model gebruikt                                               | Provider heeft transportherschrijvingen nodig maar gebruikt nog steeds een kerntransport                                                                             |
-| 14  | `normalizeToolSchemas`            | Normaliseer toolschema's voordat de embedded runner ze ziet                                                    | Provider heeft schemaopschoning voor de transportfamilie nodig                                                                                                |
-| 15  | `inspectToolSchemas`              | Toon door de provider beheerde schemadiagnostiek na normalisatie                                                  | Provider wil trefwoordwaarschuwingen zonder core providerspecifieke regels te leren                                                                 |
-| 16  | `resolveReasoningOutputMode`      | Selecteer native versus getagd reasoning-outputcontract                                                              | Provider heeft getagde redenering/einduitvoer nodig in plaats van native velden                                                                         |
-| 17  | `prepareExtraParams`              | Normalisatie van aanvraagparameters vóór generieke wrappers voor streamopties                                              | Provider heeft standaardaanvraagparameters of parameteropschoning per provider nodig                                                                           |
-| 18  | `createStreamFn`                  | Vervang het normale streampad volledig door een aangepast transport                                                   | Provider heeft een aangepast wireprotocol nodig, niet alleen een wrapper                                                                                     |
-| 20  | `wrapStreamFn`                    | Streamwrapper nadat generieke wrappers zijn toegepast                                                              | Provider heeft compat-wrappers voor aanvraagheaders/body/model nodig zonder aangepast transport                                                          |
-| 21  | `resolveTransportTurnState`       | Voeg native transportheaders of metadata per beurt toe                                                           | Provider wil dat generieke transporten providerspecifieke beurtidentiteit meesturen                                                                       |
-| 22  | `resolveWebSocketSessionPolicy`   | Voeg native WebSocket-headers of beleid voor sessieafkoeling toe                                                    | Provider wil dat generieke WS-transporten sessieheaders of fallbackbeleid afstemmen                                                               |
-| 23  | `formatApiKey`                    | Formatter voor auth-profielen: opgeslagen profiel wordt de runtime-`apiKey`-tekenreeks                                     | Provider slaat extra auth-metadata op en heeft een aangepaste vorm voor het runtime-token nodig                                                                    |
-| 24  | `refreshOAuth`                    | OAuth-refresh-override voor aangepaste refresh-endpoints of beleid voor refreshfouten                                  | Provider past niet bij de gedeelde OpenClaw-refreshers                                                                                          |
-| 25  | `buildAuthDoctorHint`             | Herstelhint die wordt toegevoegd wanneer OAuth-refresh mislukt                                                                  | Provider heeft providerbeheerde auth-herstelbegeleiding nodig na een refreshfout                                                                      |
-| 26  | `matchesContextOverflowError`     | Providerbeheerde matcher voor overflow van contextvensters                                                                 | Provider heeft ruwe overflowfouten die generieke heuristieken zouden missen                                                                                |
-| 27  | `classifyFailoverReason`          | Providerbeheerde classificatie van failoverredenen                                                                  | Provider kan ruwe API-/transportfouten mappen naar rate-limit/overbelasting/enzovoort                                                                          |
-| 28  | `isCacheTtlEligible`              | Prompt-cachebeleid voor proxy-/backhaulproviders                                                               | Provider heeft proxyspecifieke cache-TTL-gating nodig                                                                                                |
-| 29  | `buildMissingAuthMessage`         | Vervanging voor het generieke herstelbericht bij ontbrekende auth                                                      | Provider heeft een providerspecifieke herstelhint voor ontbrekende auth nodig                                                                                 |
-| 30  | `augmentModelCatalog`             | Synthetische/definitieve catalogusrijen die na discovery worden toegevoegd                                                          | Provider heeft synthetische forward-compat-rijen nodig in `models list` en pickers                                                                     |
-| 31  | `resolveThinkingProfile`          | Modelspecifieke `/think`-niveauset, weergavelabels en standaardwaarde                                                 | Provider biedt een aangepaste thinking-ladder of binair label voor geselecteerde modellen                                                                 |
-| 32  | `isBinaryThinking`                | Compatibiliteitshook voor aan/uit-redeneringsschakelaar                                                                     | Provider biedt alleen binair thinking aan/uit                                                                                                  |
-| 33  | `supportsXHighThinking`           | Compatibiliteitshook voor `xhigh`-redeneringsondersteuning                                                                   | Provider wil `xhigh` alleen op een subset van modellen                                                                                             |
-| 34  | `resolveDefaultThinkingLevel`     | Compatibiliteitshook voor standaard `/think`-niveau                                                                      | Provider beheert standaard `/think`-beleid voor een modelfamilie                                                                                      |
-| 35  | `isModernModelRef`                | Matcher voor moderne modellen voor live-profielfilters en smokeselectie                                              | Provider beheert voorkeursmodelmatching voor live/smoke                                                                                             |
-| 36  | `prepareRuntimeAuth`              | Wissel een geconfigureerde credential om naar het daadwerkelijke runtime-token/de daadwerkelijke runtime-sleutel vlak vóór inferentie                       | Provider heeft een tokenuitwisseling of kortlevende aanvraagcredential nodig                                                                             |
-| 37  | `resolveUsageAuth`                | Los gebruiks-/factureringscredentials op voor `/usage` en gerelateerde statusoppervlakken                                     | Provider heeft aangepaste parsing van gebruiks-/quotatokens of een andere gebruikscredential nodig                                                               |
-| 38  | `fetchUsageSnapshot`              | Haal providerspecifieke gebruiks-/quotasnapshots op en normaliseer ze nadat auth is opgelost                             | Provider heeft een providerspecifiek gebruikseindpunt of payloadparser nodig                                                                           |
-| 39  | `createEmbeddingProvider`         | Bouw een embeddingadapter in eigendom van de provider voor geheugen/zoeken                                                     | Gedrag voor geheugenembeddings hoort bij de providerplugin                                                                                    |
-| 40  | `buildReplayPolicy`               | Retourneer een replaybeleid dat transcriptafhandeling voor de provider aanstuurt                                        | Provider heeft aangepast transcriptbeleid nodig (bijvoorbeeld het verwijderen van thinking-blokken)                                                               |
-| 41  | `sanitizeReplayHistory`           | Herschrijf replaygeschiedenis na generieke transcriptopschoning                                                        | Provider heeft providerspecifieke replayherschrijvingen nodig naast gedeelde Compaction-helpers                                                             |
-| 42  | `validateReplayTurns`             | Voer definitieve validatie of hervorming van replay-turns uit vóór de ingebedde runner                                           | Providertransport vereist strengere turnvalidatie na generieke opschoning                                                                    |
-| 43  | `onModelSelected`                 | Voer side-effects na selectie uit die in eigendom zijn van de provider                                                                 | Provider heeft telemetrie of providerstatus in eigendom van de provider nodig wanneer een model actief wordt                                                                  |
+| Hook                              | Wat deze doet                                                                                                                 | Wanneer te gebruiken                                                                                                                                                             |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `catalog`                         | Publiceer providerconfiguratie naar `models.providers` tijdens het genereren van `models.json`                                 | De provider beheert een catalogus of standaardwaarden voor de basis-URL                                                                                                          |
+| `applyConfigDefaults`             | Pas door de provider beheerde algemene configuratiestandaarden toe tijdens het materialiseren van de configuratie              | Standaarden zijn afhankelijk van de authenticatiemodus, omgeving of semantiek van de modelfamilie van de provider                                                                |
+| _(ingebouwde modelzoekfunctie)_   | OpenClaw probeert eerst het normale register-/cataloguspad                                                                     | _(geen Plugin-hook)_                                                                                                                                                             |
+| `normalizeModelId`                | Normaliseer verouderde aliassen of previewaliassen voor model-ID's vóór het opzoeken                                           | De provider beheert het opschonen van aliassen vóór de canonieke modelresolutie                                                                                                  |
+| `normalizeTransport`              | Normaliseer `api` / `baseUrl` van de providerfamilie vóór de generieke modelsamenstelling                                     | De provider beheert transportopschoning voor aangepaste provider-ID's in dezelfde transportfamilie                                                                               |
+| `normalizeConfig`                 | Normaliseer `models.providers.<id>` vóór runtime-/providerresolutie                                                            | De provider heeft configuratieopschoning nodig die bij de Plugin hoort; gebundelde helpers voor de Google-familie dienen ook als vangnet voor ondersteunde Google-configuratie-items |
+| `applyNativeStreamingUsageCompat` | Pas compatibiliteitsherschrijvingen voor native streaminggebruik toe op configuratieproviders                                  | De provider heeft door het eindpunt gestuurde correcties voor metagegevens over native streaminggebruik nodig                                                                    |
+| `resolveConfigApiKey`             | Los authenticatie via omgevingsmarkeringen voor configuratieproviders op vóór het laden van runtime-authenticatie             | Providers stellen hun eigen hooks voor API-sleutelresolutie via omgevingsmarkeringen beschikbaar                                                                                 |
+| `resolveSyntheticAuth`            | Maak lokale/zelfgehoste of configuratiegebaseerde authenticatie beschikbaar zonder platte tekst permanent op te slaan         | De provider kan werken met een synthetische/lokale referentiemarkering                                                                                                           |
+| `resolveExternalAuthProfiles`     | Leg door de provider beheerde externe authenticatieprofielen eroverheen; standaardwaarde van `persistence` is `runtime-only` voor referenties die door de CLI/app worden beheerd | De provider hergebruikt externe authenticatiegegevens zonder gekopieerde vernieuwingstokens permanent op te slaan; declareer `contracts.externalAuthProviders` in het manifest |
+| `shouldDeferSyntheticProfileAuth` | Verlaag de prioriteit van opgeslagen tijdelijke aanduidingen voor synthetische profielen ten opzichte van omgevings-/configuratiegebaseerde authenticatie | De provider slaat synthetische profielen met tijdelijke aanduidingen op die geen voorrang mogen krijgen                                                                          |
+| `resolveDynamicModel`             | Synchrone terugval voor door de provider beheerde model-ID's die nog niet in het lokale register staan                         | De provider accepteert willekeurige upstream-model-ID's                                                                                                                          |
+| `prepareDynamicModel`             | Asynchrone opwarming, waarna `resolveDynamicModel` opnieuw wordt uitgevoerd                                                    | De provider heeft netwerkmetagegevens nodig voordat onbekende ID's kunnen worden opgelost                                                                                        |
+| `normalizeResolvedModel`          | Laatste herschrijving voordat de ingebedde runner het opgeloste model gebruikt                                                 | De provider heeft transportherschrijvingen nodig, maar gebruikt nog steeds een kerntransport                                                                                     |
+| `normalizeToolSchemas`            | Normaliseer toolschema's voordat de ingebedde runner ze verwerkt                                                              | De provider heeft schemasopschoning voor de transportfamilie nodig                                                                                                               |
+| `inspectToolSchemas`              | Maak door de provider beheerde schemadiagnostiek beschikbaar na normalisatie                                                  | De provider wil waarschuwingen voor trefwoorden zonder de kern providerspecifieke regels te leren                                                                                |
+| `resolveReasoningOutputMode`      | Selecteer een native of gelabeld contract voor redeneeruitvoer                                                                | De provider heeft gelabelde redeneer-/einduitvoer nodig in plaats van native velden                                                                                              |
+| `prepareExtraParams`              | Normaliseer aanvraagparameters vóór generieke wrappers voor streamopties                                                      | De provider heeft standaardaanvraagparameters of providerspecifieke parameteropschoning nodig                                                                                    |
+| `createStreamFn`                  | Vervang het normale streampad volledig door een aangepast transport                                                           | De provider heeft een aangepast wireprotocol nodig, niet alleen een wrapper                                                                                                     |
+| `wrapStreamFn`                    | Streamwrapper nadat generieke wrappers zijn toegepast                                                                         | De provider heeft compatibiliteitswrappers voor aanvraagheaders/-body/model nodig zonder aangepast transport                                                                    |
+| `resolveTransportTurnState`       | Voeg native transportheaders of metagegevens per beurt toe                                                                    | De provider wil dat generieke transporten de provider-native beurtidentiteit verzenden                                                                                           |
+| `resolveWebSocketSessionPolicy`   | Voeg native WebSocket-headers of afkoelbeleid voor sessies toe                                                                | De provider wil dat generieke WS-transporten sessieheaders of terugvalbeleid afstemmen                                                                                           |
+| `formatApiKey`                    | Formatter voor authenticatieprofielen: het opgeslagen profiel wordt de runtime-tekenreeks `apiKey`                            | De provider slaat extra authenticatiemetagegevens op en heeft een aangepaste vorm voor het runtime-token nodig                                                                   |
+| `refreshOAuth`                    | Overschrijf OAuth-vernieuwing voor aangepaste vernieuwingseindpunten of beleid bij mislukte vernieuwing                       | De provider past niet bij de gedeelde vernieuwingsmechanismen van OpenClaw                                                                                                      |
+| `buildAuthDoctorHint`             | Herstelhint die wordt toegevoegd wanneer OAuth-vernieuwing mislukt                                                            | De provider heeft eigen richtlijnen nodig voor herstel van authenticatie na een mislukte vernieuwing                                                                             |
+| `matchesContextOverflowError`     | Door de provider beheerde matcher voor overschrijding van het contextvenster                                                  | De provider heeft onbewerkte overloopfouten die generieke heuristieken zouden missen                                                                                             |
+| `classifyFailoverReason`          | Door de provider beheerde classificatie van redenen voor failover                                                             | De provider kan onbewerkte API-/transportfouten koppelen aan snelheidslimiet/overbelasting/enzovoort                                                                             |
+| `isCacheTtlEligible`              | Beleid voor promptcache voor proxy-/backhaulproviders                                                                         | De provider heeft proxyspecifieke controle op geschiktheid voor cache-TTL nodig                                                                                                  |
+| `buildMissingAuthMessage`         | Vervanging voor het generieke herstelbericht bij ontbrekende authenticatie                                                    | De provider heeft een providerspecifieke herstelhint voor ontbrekende authenticatie nodig                                                                                        |
+| `augmentModelCatalog`             | Synthetische/definitieve catalogusrijen die na detectie worden toegevoegd (verouderd, zie hieronder)                          | De provider heeft synthetische voorwaarts compatibele rijen nodig in `models list` en keuzelijsten                                                                               |
+| `resolveThinkingProfile`          | Modelspecifieke set `/think`-niveaus, weergavelabels en standaardwaarde                                                       | De provider stelt een aangepaste denkladder of binair label beschikbaar voor geselecteerde modellen                                                                             |
+| `isBinaryThinking`                | Compatibiliteitshook voor het in-/uitschakelen van redeneren                                                                  | De provider stelt alleen binair in-/uitschakelen van denken beschikbaar                                                                                                         |
+| `supportsXHighThinking`           | Compatibiliteitshook voor ondersteuning van `xhigh`-redeneren                                                                 | De provider wil `xhigh` alleen voor een subset van modellen                                                                                                                      |
+| `resolveDefaultThinkingLevel`     | Compatibiliteitshook voor het standaardniveau van `/think`                                                                    | De provider beheert het standaardbeleid voor `/think` voor een modelfamilie                                                                                                     |
+| `isModernModelRef`                | Matcher voor moderne modellen voor live profielfilters en smoketestselectie                                                   | De provider beheert het matchen van voorkeursmodellen voor livegebruik/smoketests                                                                                                |
+| `prepareRuntimeAuth`              | Wissel een geconfigureerde referentie vlak vóór inferentie om voor het daadwerkelijke runtime-token/de daadwerkelijke sleutel | De provider heeft een tokenuitwisseling of kortlevende aanvraagreferentie nodig                                                                                                  |
+| `resolveUsageAuth`                | Los gebruiks-/factureringsreferenties op voor `/usage` en gerelateerde statusoppervlakken                                     | De provider heeft aangepaste parsing van gebruiks-/quotatokens of een andere gebruiksreferentie nodig                                                                            |
+| `fetchUsageSnapshot`              | Haal providerspecifieke momentopnamen van gebruik/quota op en normaliseer deze nadat de authenticatie is opgelost             | De provider heeft een providerspecifiek gebruikseindpunt of parser voor de payload nodig                                                                                         |
+| `createEmbeddingProvider`         | Bouw een embeddingadapter van de provider voor geheugen/zoeken                                                 | Gedrag voor geheugen-embeddings hoort bij de provider-Plugin                                                                                   |
+| `buildReplayPolicy`               | Retourneer een replaybeleid dat de verwerking van transcripties voor de provider regelt                        | De provider vereist een aangepast transcriptiebeleid (bijvoorbeeld het verwijderen van denkblokken)                                           |
+| `sanitizeReplayHistory`           | Herschrijf de replaygeschiedenis na algemene opschoning van transcripties                                      | De provider vereist providerspecifieke replayherschrijvingen naast gedeelde Compaction-hulpfuncties                                           |
+| `validateReplayTurns`             | Voer de laatste validatie of hervorming van replaybeurten uit vóór de ingesloten runner                         | Het providertransport vereist strengere beurtvalidatie na algemene opschoning                                                                 |
+| `onModelSelected`                 | Voer neveneffecten van de provider uit na de selectie                                                          | De provider vereist telemetrie of providerstatus wanneer een model actief wordt                                                               |
 
 `normalizeModelId`, `normalizeTransport` en `normalizeConfig` controleren eerst de
-overeenkomende provider-Plugin en vallen daarna terug op andere provider-Plugins
-met hook-ondersteuning totdat er een daadwerkelijk de model-id of transport/configuratie wijzigt. Zo blijven
-alias-/compatibiliteitsprovider-shims werken zonder dat de aanroeper hoeft te weten welke
-gebundelde Plugin eigenaar is van de herschrijving. Als geen provider-hook een ondersteunde
-Google-familieconfiguratie-entry herschrijft, past de gebundelde Google-configuratienormalisator nog steeds
-die compatibiliteitsopschoning toe.
+overeenkomende providerplugin en vallen daarna terug op andere providerplugins
+die hooks ondersteunen, totdat er daadwerkelijk een model-id of transport/configuratie
+wordt gewijzigd. Zo blijven alias-/compatibiliteitsshims voor providers werken zonder
+dat de aanroeper hoeft te weten welke gebundelde plugin verantwoordelijk is voor
+de herschrijving. Als geen providerhook een ondersteunde configuratievermelding
+uit de Google-familie herschrijft, past de gebundelde Google-configuratienormalisator
+die compatibiliteitsopschoning alsnog toe.
 
-Als de provider een volledig aangepast wire-protocol of aangepaste request-executor nodig heeft,
-is dat een andere klasse extensie. Deze hooks zijn voor providergedrag
-dat nog steeds op OpenClaw's normale inference-loop draait.
+Als de provider een volledig aangepast draadprotocol of een aangepaste
+aanvraaguitvoerder nodig heeft, is dat een andere klasse uitbreiding. Deze hooks
+zijn bedoeld voor providergedrag dat nog steeds binnen de normale inferentielus
+van OpenClaw wordt uitgevoerd.
 
 `resolveUsageAuth` bepaalt of OpenClaw `fetchUsageSnapshot` moet aanroepen of
-moet terugvallen op generieke credential-resolutie voor gebruiks-/statusoppervlakken. Retourneer
-`{ token, accountId? }` wanneer de provider een gebruikscredential heeft, retourneer
-`{ handled: true }` wanneer gebruiksauthenticatie die eigendom is van de provider de request heeft afgehandeld en
-generieke API-key-/OAuth-terugval moet onderdrukken, en retourneer `null` of `undefined`
-wanneer de provider gebruiksauthenticatie niet heeft afgehandeld.
+moet terugvallen op algemene referentieresolutie voor gebruiks-/statusoppervlakken.
+Retourneer `{ token, accountId?, subscriptionType?, rateLimitTier? }` wanneer de
+provider een gebruiksreferentie heeft (de optionele abonnementsmetadata wordt
+doorgegeven aan `fetchUsageSnapshot`), retourneer
+`{ handled: true }` wanneer gebruiksauthenticatie in eigendom van de provider het
+verzoek heeft afgehandeld en de algemene terugval op API-sleutel/OAuth moet
+onderdrukken, en retourneer `null` of `undefined` wanneer de provider de
+gebruiksauthenticatie niet heeft afgehandeld.
+
+Declareer organisatie- of factureringsreferenties in
+`providerUsageAuthEnvVars` van het manifest. Hierdoor kunnen algemene
+detectie- en geheimopschoningsoppervlakken deze herkennen zonder ze als
+kandidaten voor inferentieauthenticatie te behandelen.
 
 ### Providervoorbeeld
 
@@ -309,45 +324,48 @@ api.registerProvider({
 
 ### Ingebouwde voorbeelden
 
-Gebundelde provider-Plugins combineren de hooks hierboven om aan te sluiten op de catalogus-,
-authenticatie-, denk-, replay- en gebruiksbehoeften van elke vendor. De gezaghebbende hook-set staat bij
-elke Plugin onder `extensions/`; deze pagina illustreert de vormen in plaats van
-de lijst te spiegelen.
+Gebundelde providerplugins combineren de bovenstaande hooks om aan de catalogus-,
+authenticatie-, redeneer-, herhalings- en gebruiksbehoeften van elke leverancier
+te voldoen. De gezaghebbende verzameling hooks bevindt zich bij elke plugin onder
+`extensions/`; deze pagina illustreert de vormen in plaats van de lijst te
+spiegelen.
 
 <AccordionGroup>
-  <Accordion title="Doorgeefcatalogusproviders">
-    OpenRouter, Kilocode, Z.AI, xAI registreren `catalog` plus
-    `resolveDynamicModel` / `prepareDynamicModel` zodat ze upstream
-    model-id's vóór OpenClaw's statische catalogus kunnen tonen.
+  <Accordion title="Catalogusproviders met directe doorgifte">
+    OpenRouter, Kilocode, Z.AI en xAI registreren `catalog` plus
+    `resolveDynamicModel` / `prepareDynamicModel`, zodat ze bovenliggende
+    model-id's vóór de statische catalogus van OpenClaw beschikbaar kunnen maken.
   </Accordion>
-  <Accordion title="OAuth- en gebruiksendpointproviders">
-    GitHub Copilot, Gemini CLI, ChatGPT Codex, MiniMax, Xiaomi, z.ai combineren
+  <Accordion title="Providers voor OAuth- en gebruikseindpunten">
+    GitHub Copilot, Gemini CLI, ChatGPT Codex, MiniMax, Xiaomi en z.ai combineren
     `prepareRuntimeAuth` of `formatApiKey` met `resolveUsageAuth` +
     `fetchUsageSnapshot` om tokenuitwisseling en `/usage`-integratie te beheren.
   </Accordion>
-  <Accordion title="Families voor replay- en transcriptopschoning">
+  <Accordion title="Families voor herhaling en transcriptopschoning">
     Gedeelde benoemde families (`google-gemini`, `passthrough-gemini`,
-    `anthropic-by-model`, `hybrid-anthropic-openai`) laten providers zich aanmelden voor
-    transcriptbeleid via `buildReplayPolicy` in plaats van dat elke Plugin
-    opschoning opnieuw implementeert.
+    `anthropic-by-model`, `hybrid-anthropic-openai`) laten providers zich via
+    `buildReplayPolicy` aanmelden voor transcriptbeleid, in plaats van dat elke
+    plugin de opschoning opnieuw implementeert.
   </Accordion>
-  <Accordion title="Catalogus-only providers">
+  <Accordion title="Providers met alleen een catalogus">
     `byteplus`, `cloudflare-ai-gateway`, `huggingface`, `kimi-coding`, `nvidia`,
     `qianfan`, `synthetic`, `together`, `venice`, `vercel-ai-gateway` en
-    `volcengine` registreren alleen `catalog` en gebruiken de gedeelde inference-loop.
+    `volcengine` registreren alleen `catalog` en gebruiken de gedeelde
+    inferentielus.
   </Accordion>
-  <Accordion title="Anthropic-specifieke streamhelpers">
-    Beta-headers, `/fast` / `serviceTier` en `context1m` staan binnen de
-    publieke `api.ts` / `contract-api.ts`-seam van de Anthropic-Plugin
+  <Accordion title="Anthropic-specifieke streamhulpmiddelen">
+    Bètaheaders, `/fast` / `serviceTier` en `context1m` bevinden zich binnen de
+    openbare `api.ts`- / `contract-api.ts`-grens van de Anthropic-plugin
     (`wrapAnthropicProviderStream`, `resolveAnthropicBetas`,
     `resolveAnthropicFastMode`, `resolveAnthropicServiceTier`) in plaats van in
-    de generieke SDK.
+    de algemene SDK.
   </Accordion>
 </AccordionGroup>
 
-## Runtimehelpers
+## Runtimehulpmiddelen
 
-Plugins kunnen geselecteerde core-helpers openen via `api.runtime`. Voor TTS:
+Plugins hebben via `api.runtime` toegang tot geselecteerde kernhulpmiddelen.
+Voor TTS:
 
 ```ts
 const clip = await api.runtime.tts.textToSpeech({
@@ -368,12 +386,13 @@ const voices = await api.runtime.tts.listVoices({
 
 Opmerkingen:
 
-- `textToSpeech` retourneert de normale core-TTS-outputpayload voor bestands-/spraaknotitieoppervlakken.
-- Gebruikt core-`messages.tts`-configuratie en providerselectie.
-- Retourneert PCM-audiobuffer + samplerate. Plugins moeten resamplen/coderen voor providers.
-- `listVoices` is optioneel per provider. Gebruik het voor voice-pickers of setupflows die eigendom zijn van de vendor.
-- Stemlijsten kunnen rijkere metadata bevatten, zoals locale, gender en persoonlijkheidstags voor providerbewuste pickers.
-- OpenAI en ElevenLabs ondersteunen vandaag telefonie. Microsoft niet.
+- `textToSpeech` retourneert de normale TTS-uitvoerpayload van de kern voor bestands-/spraaknotitieoppervlakken.
+- Gebruikt de kernconfiguratie `messages.tts` en providerselectie.
+- Retourneert een PCM-audiobuffer plus bemonsteringsfrequentie. Plugins moeten opnieuw bemonsteren/coderen voor providers.
+- `listVoices` is optioneel per provider. Gebruik dit voor stemkiezers of instelstromen die eigendom zijn van de leverancier.
+- De kern geeft een opgeloste aanvraagdeadline door aan `listVoices`-hooks van providers; providerspecifieke time-outinstellingen kunnen deze overschrijven.
+- Stemlijsten kunnen rijkere metadata bevatten, zoals landinstelling, geslacht en persoonlijkheidstags voor providerbewuste kiezers.
+- OpenAI en ElevenLabs ondersteunen momenteel telefonie. Microsoft niet.
 
 Plugins kunnen ook spraakproviders registreren via `api.registerSpeechProvider(...)`.
 
@@ -395,15 +414,15 @@ api.registerSpeechProvider({
 
 Opmerkingen:
 
-- Houd TTS-beleid, terugval en antwoordbezorging in core.
-- Gebruik spraakproviders voor synthese gedrag dat eigendom is van de vendor.
-- Legacy Microsoft-`edge`-input wordt genormaliseerd naar de provider-id `microsoft`.
-- Het voorkeursmodel voor eigenaarschap is bedrijfsgericht: één vendor-Plugin kan eigenaar zijn van
-  tekst-, spraak-, beeld- en toekomstige mediaproviders naarmate OpenClaw die
-  capability-contracten toevoegt.
+- Houd TTS-beleid, terugval en antwoordbezorging in de kern.
+- Gebruik spraakproviders voor synthesegedrag dat eigendom is van de leverancier.
+- Verouderde Microsoft-`edge`-invoer wordt genormaliseerd naar de provider-id `microsoft`.
+- Het voorkeursmodel voor eigenaarschap is bedrijfsgericht: één leveranciersplugin kan
+  tekst-, spraak-, afbeeldings- en toekomstige mediaproviders beheren naarmate OpenClaw
+  die capaciteitscontracten toevoegt.
 
-Voor begrip van beeld/audio/video registreren Plugins één getypte
-media-understanding-provider in plaats van een generieke key/value-bag:
+Voor begrip van afbeeldingen/audio/video registreren plugins één getypeerde
+provider voor mediabegrip in plaats van een algemene sleutel-/waardeverzameling:
 
 ```ts
 api.registerMediaUnderstandingProvider({
@@ -417,16 +436,16 @@ api.registerMediaUnderstandingProvider({
 
 Opmerkingen:
 
-- Houd orchestratie, terugval, configuratie en kanaalbedrading in core.
-- Houd vendorgedrag in de provider-Plugin.
-- Additieve uitbreiding moet getypt blijven: nieuwe optionele methoden, nieuwe optionele
-  resultaatvelden, nieuwe optionele capabilities.
+- Houd orkestratie, terugval, configuratie en kanaalbedrading in de kern.
+- Houd leveranciersgedrag in de providerplugin.
+- Additieve uitbreiding moet getypeerd blijven: nieuwe optionele methoden, nieuwe optionele
+  resultaatvelden en nieuwe optionele capaciteiten.
 - Videogeneratie volgt al hetzelfde patroon:
-  - core is eigenaar van het capability-contract en de runtimehelper
-  - vendor-Plugins registreren `api.registerVideoGenerationProvider(...)`
-  - feature-/kanaal-Plugins gebruiken `api.runtime.videoGeneration.*`
+  - de kern beheert het capaciteitscontract en het runtimehulpmiddel
+  - leveranciersplugins registreren `api.registerVideoGenerationProvider(...)`
+  - functie-/kanaalplugins gebruiken `api.runtime.videoGeneration.*`
 
-Voor runtimehelpers voor media-understanding kunnen Plugins aanroepen:
+Voor runtimehulpmiddelen voor mediabegrip kunnen plugins het volgende aanroepen:
 
 ```ts
 const image = await api.runtime.mediaUnderstanding.describeImageFile({
@@ -442,7 +461,7 @@ const video = await api.runtime.mediaUnderstanding.describeVideoFile({
 
 const extraction = await api.runtime.mediaUnderstanding.extractStructuredWithModel({
   provider: "codex",
-  model: "gpt-5.5",
+  model: "gpt-5.6-sol",
   input: [
     {
       type: "image",
@@ -465,8 +484,8 @@ const extraction = await api.runtime.mediaUnderstanding.extractStructuredWithMod
 });
 ```
 
-Voor audiotranscriptie kunnen Plugins de media-understanding-runtime
-of de oudere STT-alias gebruiken:
+Voor audiotranscriptie kunnen plugins de runtime voor mediabegrip of de oudere
+STT-alias gebruiken:
 
 ```ts
 const { text } = await api.runtime.mediaUnderstanding.transcribeAudioFile({
@@ -479,18 +498,17 @@ const { text } = await api.runtime.mediaUnderstanding.transcribeAudioFile({
 
 Opmerkingen:
 
-- `api.runtime.mediaUnderstanding.*` is het aanbevolen gedeelde oppervlak voor
-  begrip van beeld/audio/video.
-- `extractStructuredWithModel(...)` is de Plugin-gerichte seam voor begrensde
-  provider-owned image-first extractie. Neem ten minste één beeldinput op;
-  tekstinputs zijn aanvullende context.
-  product-Plugins zijn eigenaar van hun routes en schema's, terwijl OpenClaw eigenaar is van de
-  provider-/runtimegrens.
-- Gebruikt core media-understanding-audioconfiguratie (`tools.media.audio`) en provider-terugvalvolgorde.
-- Retourneert `{ text: undefined }` wanneer er geen transcriptie-output wordt geproduceerd (bijvoorbeeld overgeslagen/niet-ondersteunde input).
-- `api.runtime.stt.transcribeAudioFile(...)` blijft als compatibiliteitsalias bestaan.
+- `api.runtime.mediaUnderstanding.*` is het gedeelde voorkeursoppervlak voor
+  begrip van afbeeldingen/audio/video.
+- `extractStructuredWithModel(...)` is de plugingerichte grens voor begrensde,
+  providerbeheerde extractie waarbij afbeeldingen vooropstaan. Neem ten minste
+  één afbeeldingsinvoer op; tekstinvoer is aanvullende context. Productplugins
+  beheren hun routes en schema's, terwijl OpenClaw de provider-/runtimegrens beheert.
+- Gebruikt de audio-configuratie voor mediabegrip van de kern (`tools.media.audio`) en de terugvalvolgorde van providers.
+- Retourneert `{ text: undefined }` wanneer geen transcriptie-uitvoer wordt geproduceerd (bijvoorbeeld bij overgeslagen/niet-ondersteunde invoer).
+- `api.runtime.stt.transcribeAudioFile(...)` blijft beschikbaar als compatibiliteitsalias.
 
-Plugins kunnen ook achtergrondsubagent-runs starten via `api.runtime.subagent`:
+Plugins kunnen ook subagentuitvoeringen op de achtergrond starten via `api.runtime.subagent`:
 
 ```ts
 const result = await api.runtime.subagent.run({
@@ -504,15 +522,15 @@ const result = await api.runtime.subagent.run({
 
 Opmerkingen:
 
-- `provider` en `model` zijn optionele overrides per run, geen persistente sessiewijzigingen.
-- OpenClaw respecteert die override-velden alleen voor vertrouwde aanroepers.
-- Voor terugvalruns die eigendom zijn van Plugins moeten operators zich aanmelden met `plugins.entries.<id>.subagent.allowModelOverride: true`.
-- Gebruik `plugins.entries.<id>.subagent.allowedModels` om vertrouwde Plugins te beperken tot specifieke canonieke `provider/model`-doelen, of `"*"` om elk doel expliciet toe te staan.
-- Subagent-runs van niet-vertrouwde Plugins werken nog steeds, maar override-verzoeken worden geweigerd in plaats van stilzwijgend terug te vallen.
-- Door Plugins gemaakte subagent-sessies worden getagd met de id van de makende Plugin. Terugval `api.runtime.subagent.deleteSession(...)` mag alleen die sessies in eigendom verwijderen; willekeurige sessieverwijdering vereist nog steeds een admin-scoped Gateway-request.
+- `provider` en `model` zijn optionele overschrijvingen per uitvoering, geen permanente sessiewijzigingen.
+- OpenClaw respecteert die overschrijvingsvelden alleen voor vertrouwde aanroepers.
+- Voor terugvaluitvoeringen die eigendom zijn van een plugin moeten operators zich aanmelden met `plugins.entries.<id>.subagent.allowModelOverride: true`.
+- Gebruik `plugins.entries.<id>.subagent.allowedModels` om vertrouwde plugins te beperken tot specifieke canonieke `provider/model`-doelen, of `"*"` om elk doel expliciet toe te staan.
+- Subagentuitvoeringen van niet-vertrouwde plugins blijven werken, maar overschrijvingsverzoeken worden afgewezen in plaats van stilletjes terug te vallen.
+- Door plugins aangemaakte subagentsessies worden gemarkeerd met de id van de aanmakende plugin. Terugval via `api.runtime.subagent.deleteSession(...)` mag alleen die eigen sessies verwijderen; het verwijderen van willekeurige sessies vereist nog steeds een Gateway-verzoek met beheerdersbereik.
 
-Voor webzoeken kunnen Plugins de gedeelde runtimehelper gebruiken in plaats van
-in de agent-toolbedrading te grijpen:
+Voor zoeken op het web kunnen plugins het gedeelde runtimehulpmiddel gebruiken in
+plaats van toegang te zoeken tot de bedrading van agenthulpmiddelen:
 
 ```ts
 const providers = api.runtime.webSearch.listProviders({
@@ -533,9 +551,9 @@ Plugins kunnen ook webzoekproviders registreren via
 
 Opmerkingen:
 
-- Houd providerselectie, credentialresolutie en gedeelde requestsemantiek in core.
-- Gebruik webzoekproviders voor vendorspecifieke zoektransporten.
-- `api.runtime.webSearch.*` is het aanbevolen gedeelde oppervlak voor feature-/kanaal-Plugins die zoekgedrag nodig hebben zonder afhankelijk te zijn van de agent-toolwrapper.
+- Houd providerselectie, referentieresolutie en gedeelde aanvraagsemantiek in de kern.
+- Gebruik webzoekproviders voor leveranciersspecifieke zoektransporten.
+- `api.runtime.webSearch.*` is het gedeelde voorkeursoppervlak voor functie-/kanaalplugins die zoekgedrag nodig hebben zonder afhankelijk te zijn van de wrapper van het agenthulpmiddel.
 
 ### `api.runtime.imageGeneration`
 
@@ -550,12 +568,12 @@ const providers = api.runtime.imageGeneration.listProviders({
 });
 ```
 
-- `generate(...)`: genereer een afbeelding met de geconfigureerde keten van afbeeldinggeneratieproviders.
-- `listProviders(...)`: lijst beschikbare afbeeldinggeneratieproviders en hun capabilities.
+- `generate(...)`: genereer een afbeelding met de geconfigureerde keten van afbeeldingsgeneratieproviders.
+- `listProviders(...)`: geef de beschikbare afbeeldingsgeneratieproviders en hun capaciteiten weer.
 
 ## Gateway-HTTP-routes
 
-Plugins kunnen HTTP-endpoints beschikbaar maken met `api.registerHttpRoute(...)`.
+Plugins kunnen HTTP-eindpunten beschikbaar maken met `api.registerHttpRoute(...)`.
 
 ```ts
 api.registerHttpRoute({
@@ -572,224 +590,243 @@ api.registerHttpRoute({
 
 Routevelden:
 
-- `path`: routepad onder de Gateway HTTP-server.
-- `auth`: vereist. Gebruik `"gateway"` om normale Gateway-authenticatie te vereisen, of `"plugin"` voor door plugins beheerde authenticatie/webhook-verificatie.
+- `path`: routepad onder de HTTP-server van de Gateway.
+- `auth`: verplicht, `"gateway"` of `"plugin"`. Gebruik `"gateway"` om normale Gateway-authenticatie te vereisen, of `"plugin"` voor door de Plugin beheerde authenticatie/Webhook-verificatie.
 - `match`: optioneel. `"exact"` (standaard) of `"prefix"`.
-- `replaceExisting`: optioneel. Staat dezelfde plugin toe zijn eigen bestaande routeregistratie te vervangen.
+- `handleUpgrade`: optionele handler voor WebSocket-upgradeverzoeken op dezelfde route.
+- `replaceExisting`: optioneel. Hiermee kan dezelfde Plugin zijn eigen bestaande routeregistratie vervangen.
 - `handler`: retourneer `true` wanneer de route het verzoek heeft afgehandeld.
 
 Opmerkingen:
 
-- `api.registerHttpHandler(...)` is verwijderd en veroorzaakt een plugin-laadfout. Gebruik in plaats daarvan `api.registerHttpRoute(...)`.
-- Pluginroutes moeten `auth` expliciet declareren.
-- Exacte `path + match`-conflicten worden geweigerd tenzij `replaceExisting: true`, en de ene plugin kan de route van een andere plugin niet vervangen.
-- Overlappende routes met verschillende `auth`-niveaus worden geweigerd. Houd `exact`/`prefix`-fallthroughketens alleen op hetzelfde authenticatieniveau.
-- `auth: "plugin"`-routes ontvangen **niet** automatisch operator-runtime-scopes. Ze zijn bedoeld voor door plugins beheerde webhooks/handtekeningverificatie, niet voor geprivilegieerde Gateway-helperaanroepen.
-- `auth: "gateway"`-routes worden uitgevoerd binnen een Gateway-request-runtime-scope, maar die scope is opzettelijk conservatief:
-  - shared-secret bearer-authenticatie (`gateway.auth.mode = "token"` / `"password"`) houdt runtime-scopes van pluginroutes vastgezet op `operator.write`, zelfs als de aanroeper `x-openclaw-scopes` verzendt
-  - vertrouwde HTTP-modi met identiteit (bijvoorbeeld `trusted-proxy` of `gateway.auth.mode = "none"` op een private ingress) honoreren `x-openclaw-scopes` alleen wanneer de header expliciet aanwezig is
-  - als `x-openclaw-scopes` ontbreekt bij die identiteit-dragende pluginrouteverzoeken, valt runtime-scope terug op `operator.write`
-- Praktische regel: ga er niet van uit dat een Gateway-auth-pluginroute een impliciet adminoppervlak is. Als je route gedrag nodig heeft dat alleen voor admins is, vereis dan een authenticatiemodus met identiteit en documenteer het expliciete `x-openclaw-scopes`-headercontract.
+- `api.registerHttpHandler(...)` is verwijderd en veroorzaakt een fout bij het laden van een Plugin. Gebruik in plaats daarvan `api.registerHttpRoute(...)`.
+- Plugin-routes moeten `auth` expliciet declareren.
+- Conflicten met exact dezelfde combinatie van `path + match` worden geweigerd, tenzij `replaceExisting: true`; een Plugin kan de route van een andere Plugin niet vervangen.
+- Overlappende routes met verschillende `auth`-niveaus worden geweigerd. Houd terugvalketens met `exact`/`prefix` uitsluitend op hetzelfde authenticatieniveau.
+- Routes met `auth: "plugin"` ontvangen **niet** automatisch runtimescopes voor operators. Ze zijn bedoeld voor door de Plugin beheerde webhooks/handtekeningverificatie, niet voor bevoorrechte aanroepen van Gateway-hulpfuncties.
+- Routes met `auth: "gateway"` worden uitgevoerd binnen een runtimescope voor Gateway-verzoeken. Het standaardoppervlak (`gatewayRuntimeScopeSurface: "write-default"`) is bewust behoudend:
+  - bearer-authenticatie met een gedeeld geheim (`gateway.auth.mode = "token"` / `"password"`) en elke authenticatiemethode die geen vertrouwde proxy gebruikt, krijgen één scope `operator.write`, zelfs als de aanroeper `x-openclaw-scopes` meestuurt
+  - aanroepers via `trusted-proxy` zonder een expliciete header `x-openclaw-scopes` behouden ook het verouderde oppervlak met uitsluitend `operator.write`
+  - aanroepers via `trusted-proxy` die wel `x-openclaw-scopes` meesturen, krijgen in plaats daarvan de gedeclareerde scopes
+  - een route kan kiezen voor `gatewayRuntimeScopeSurface: "trusted-operator"` om `x-openclaw-scopes` altijd te respecteren voor authenticatiemodi die een identiteit bevatten (met als terugval de volledige standaardset CLI-scopes wanneer de header ontbreekt)
+- Praktische regel: ga er niet van uit dat een Plugin-route met Gateway-authenticatie impliciet een beheerdersoppervlak is. Als uw route gedrag vereist dat uitsluitend voor beheerders beschikbaar is, kies dan voor het scope-oppervlak `trusted-operator`, vereis een authenticatiemodus die een identiteit bevat en documenteer het expliciete headercontract voor `x-openclaw-scopes`.
+- Na routematching en authenticatie nemen gewone handlers deel aan de toelating van hoofdwerk voor de Gateway. Een voorbereide of opnieuw startende Gateway retourneert `503` voordat de handler wordt aangeroepen. De beperkte uitzondering is een route met een manifestmachtiging en `auth: "gateway"` die ook kiest voor het routespecifieke oppervlak `trusted-operator`; deze blijft bereikbaar zodat de dispatch van opschortingsbesturing niet vastloopt, terwijl gewone zusterroutes van dezelfde Plugin achter de toelatingsgrens blijven. Het eigendom van WebSocket-`handleUpgrade` gebruikt dezelfde atomaire toelatingsgrens; zodra de handler een socket accepteert, valt de verdere levensduur van de socket onder het beheer van de Plugin en wordt deze niet door deze grens gevolgd.
 
-## Plugin SDK-importpaden
+## Importpaden van de Plugin-SDK
 
-Gebruik smalle SDK-subpaden in plaats van de monolithische `openclaw/plugin-sdk`-rootbarrel
-bij het maken van nieuwe plugins. Kernsubpaden:
+Gebruik bij het maken van nieuwe plugins smalle SDK-subpaden in plaats van de monolithische root-barrel `openclaw/plugin-sdk`. Kernsubpaden:
 
 | Subpad                              | Doel                                               |
 | ----------------------------------- | -------------------------------------------------- |
-| `openclaw/plugin-sdk/plugin-entry`  | Primitieven voor pluginregistratie                 |
-| `openclaw/plugin-sdk/channel-core`  | Helpers voor kanaalinvoer/opbouw                   |
-| `openclaw/plugin-sdk/core`          | Generieke gedeelde helpers en overkoepelend contract |
-| `openclaw/plugin-sdk/config-schema` | Root `openclaw.json` Zod-schema (`OpenClawSchema`) |
+| `openclaw/plugin-sdk/plugin-entry`  | Primitieven voor Plugin-registratie                 |
+| `openclaw/plugin-sdk/channel-core`  | Hulpfuncties voor kanaalinvoer en -opbouw           |
+| `openclaw/plugin-sdk/core`          | Generieke gedeelde hulpfuncties en overkoepelend contract |
+| `openclaw/plugin-sdk/config-schema` | Zod-schema voor het rootbestand `openclaw.json` (`OpenClawSchema`) |
 
-Kanaalplugins kiezen uit een familie van smalle raakvlakken — `channel-setup`,
+Kanaalplugins kiezen uit een familie van smalle koppelvlakken — `channel-setup`,
 `setup-runtime`, `setup-tools`, `channel-pairing`,
 `channel-contract`, `channel-feedback`, `channel-inbound`, `channel-outbound`,
 `command-auth`, `secret-input`, `webhook-ingress`,
-`channel-targets` en `channel-actions`. Goedkeuringsgedrag moet worden geconsolideerd
-op één `approvalCapability`-contract in plaats van te mengen tussen niet-gerelateerde
-pluginvelden. Zie [Kanaalplugins](/nl/plugins/sdk-channel-plugins).
+`channel-targets` en `channel-actions`. Goedkeuringsgedrag moet worden
+geconsolideerd in één `approvalCapability`-contract in plaats van te worden
+verspreid over niet-gerelateerde Plugin-velden. Zie [Kanaalplugins](/nl/plugins/sdk-channel-plugins).
 
-Runtime- en configuratiehelpers staan onder overeenkomende gerichte `*-runtime`-subpaden
-(`approval-runtime`, `agent-runtime`, `lazy-runtime`, `directory-runtime`,
-`text-runtime`, `runtime-store`, `system-event-runtime`, `heartbeat-runtime`,
-`channel-activity-runtime`, enz.). Geef de voorkeur aan `config-contracts`,
-`plugin-config-runtime`, `runtime-config-snapshot` en `config-mutation`
-in plaats van de brede `config-runtime`-compatibiliteitsbarrel.
+Runtime- en configuratiehulpfuncties bevinden zich onder overeenkomstige,
+gerichte `*-runtime`-subpaden (`approval-runtime`, `agent-runtime`, `lazy-runtime`,
+`directory-runtime`, `text-runtime`, `runtime-store`, `system-event-runtime`,
+`heartbeat-runtime`, `channel-activity-runtime`, enzovoort). Geef de voorkeur aan
+`config-contracts`, `plugin-config-runtime`, `runtime-config-snapshot` en
+`config-mutation` in plaats van de brede compatibiliteitsbarrel `config-runtime`.
 
 <Info>
 `openclaw/plugin-sdk/channel-runtime`, `openclaw/plugin-sdk/channel-lifecycle`,
-kleine kanaalhelperfacades, `openclaw/plugin-sdk/outbound-runtime`,
-`openclaw/plugin-sdk/outbound-send-deps`, `openclaw/plugin-sdk/config-runtime`,
-en `openclaw/plugin-sdk/infra-runtime` zijn verouderde compatibiliteitsshims voor
-oudere plugins. Nieuwe code moet in plaats daarvan smallere generieke primitieven importeren.
+kleine façades voor kanaalhulpfuncties, `openclaw/plugin-sdk/outbound-runtime`,
+`openclaw/plugin-sdk/outbound-send-deps`, `openclaw/plugin-sdk/config-runtime`
+en `openclaw/plugin-sdk/infra-runtime` zijn verouderde compatibiliteitsshimlagen
+voor oudere plugins. Nieuwe code moet in plaats daarvan smallere generieke
+primitieven importeren.
 </Info>
 
-Repo-interne entrypoints (per root van gebundeld pluginpakket):
+Interne toegangspunten van de repository (per root van een gebundeld Plugin-pakket):
 
-- `index.js` — entry voor gebundelde plugin
-- `api.js` — barrel voor helpers/types
-- `runtime-api.js` — barrel alleen voor runtime
-- `setup-entry.js` — entry voor setup-plugin
+- `index.js` — toegangspunt van de gebundelde Plugin
+- `api.js` — barrel voor hulpfuncties/typen
+- `runtime-api.js` — barrel uitsluitend voor runtime
+- `setup-entry.js` — toegangspunt van de installatie-Plugin
 
-Externe plugins mogen alleen `openclaw/plugin-sdk/*`-subpaden importeren. Importeer nooit
-`src/*` van een ander pluginpakket vanuit core of vanuit een andere plugin.
-Via facade geladen entrypoints geven de voorkeur aan de actieve runtime-configuratiesnapshot wanneer die
-bestaat, en vallen daarna terug op het opgeloste configuratiebestand op schijf.
+Externe plugins mogen uitsluitend subpaden van `openclaw/plugin-sdk/*` importeren.
+Importeer nooit `src/*` van een ander Plugin-pakket vanuit de kern of een andere
+Plugin. Via een façade geladen toegangspunten geven de voorkeur aan de actieve
+snapshot van de runtimeconfiguratie wanneer deze bestaat en vallen vervolgens
+terug op het opgeloste configuratiebestand op schijf.
 
-Capability-specifieke subpaden zoals `image-generation`, `media-understanding`,
-en `speech` bestaan omdat gebundelde plugins ze vandaag gebruiken. Het zijn niet
-automatisch langdurig bevroren externe contracten — controleer de relevante SDK-
-referentiepagina wanneer je erop vertrouwt.
+Mogelijkheidsspecifieke subpaden zoals `image-generation`, `media-understanding`
+en `speech` bestaan omdat gebundelde plugins ze momenteel gebruiken. Het zijn
+niet automatisch langdurig bevroren externe contracten — controleer de
+relevante SDK-referentiepagina wanneer u ervan afhankelijk bent.
 
 ## Schema's voor berichttools
 
-Plugins moeten kanaalspecifieke `describeMessageTool(...)`-schema-
-bijdragen beheren voor niet-berichtprimitieven zoals reacties, leesbevestigingen en polls.
-Gedeelde verzendpresentatie moet het generieke `MessagePresentation`-contract gebruiken
-in plaats van provider-native knop-, component-, blok- of kaartvelden.
-Zie [Berichtpresentatie](/nl/plugins/message-presentation) voor het contract,
-fallbackregels, providertoewijzing en de checklist voor pluginauteurs.
+Plugins moeten eigenaar zijn van kanaalspecifieke schemabijdragen via
+`describeMessageTool(...)` voor primitieven die geen berichten zijn, zoals
+reacties, leesacties en peilingen. Gedeelde verzendpresentatie moet het generieke
+`MessagePresentation`-contract gebruiken in plaats van provider-eigen velden
+voor knoppen, componenten, blokken of kaarten. Zie
+[Berichtpresentatie](/nl/plugins/message-presentation) voor het contract, de
+terugvalregels, providertoewijzing en de controlelijst voor Plugin-auteurs.
 
-Plugins die kunnen verzenden, declareren wat ze kunnen renderen via berichtcapabilities:
+Plugins die kunnen verzenden, declareren via berichtmogelijkheden wat ze kunnen weergeven:
 
-- `presentation` voor semantische presentatieblokken (`text`, `context`, `divider`, `buttons`, `select`)
+- `presentation` voor semantische presentatieblokken (`text`, `context`,
+  `divider`, `chart`, `table`, `buttons`, `select`)
 - `delivery-pin` voor verzoeken om vastgezette aflevering
 
-Core beslist of de presentatie native wordt gerenderd of tot tekst wordt gedegradeerd.
-Stel geen provider-native UI-uitwijkmogelijkheden bloot vanuit de generieke berichttool.
-Verouderde SDK-helpers voor legacy native schema's blijven geëxporteerd voor bestaande
-plugins van derden, maar nieuwe plugins moeten ze niet gebruiken.
+De kern bepaalt of de presentatie systeemeigen wordt weergegeven of wordt
+teruggebracht tot tekst. Stel geen provider-eigen uitwegen voor de UI beschikbaar
+vanuit de generieke berichttool. Verouderde SDK-hulpfuncties voor oude
+systeemeigen schema's blijven geëxporteerd voor bestaande plugins van derden,
+maar nieuwe plugins mogen ze niet gebruiken.
 
-## Resolutie van kanaaldoelen
+## Oplossing van kanaaldoelen
 
-Kanaalplugins moeten kanaalspecifieke doelsemantiek beheren. Houd de gedeelde
-outbound-host generiek en gebruik het messaging-adapteroppervlak voor providerregels:
+Kanaalplugins moeten eigenaar zijn van kanaalspecifieke doelsemantiek. Houd de
+gedeelde uitgaande host generiek en gebruik het oppervlak van de berichtenadapter
+voor providerregels:
 
-- `messaging.inferTargetChatType({ to })` beslist of een genormaliseerd doel
-  moet worden behandeld als `direct`, `group` of `channel` vóór directory-lookup.
-- `messaging.targetResolver.looksLikeId(raw, normalized)` vertelt core of een
-  invoer direct moet doorgaan naar id-achtige resolutie in plaats van directoryzoekopdracht.
-- `messaging.targetResolver.reservedLiterals` vermeldt losse woorden die
-  kanaal-/sessiereferenties zijn voor die provider. Resolutie behoudt geconfigureerde
-  directoryvermeldingen voordat gereserveerde literals worden geweigerd, en faalt daarna gesloten bij een
-  directory-mis.
-- `messaging.targetResolver.resolveTarget(...)` is de pluginfallback wanneer
-  core een definitieve provider-beheerde resolutie nodig heeft na normalisatie of na een
-  directory-mis.
-- `messaging.resolveOutboundSessionRoute(...)` beheert provider-specifieke sessie-
-  routeconstructie zodra een doel is opgelost.
+- `messaging.inferTargetChatType({ to })` bepaalt vóór het opzoeken in de map of
+  een genormaliseerd doel moet worden behandeld als `direct`, `group` of `channel`.
+- `messaging.targetResolver.looksLikeId(raw, normalized)` vertelt de kern of een
+  invoer direct moet doorgaan naar ID-achtige oplossing in plaats van zoeken in
+  de map.
+- `messaging.targetResolver.reservedLiterals` vermeldt losse woorden die voor
+  die provider kanaal-/sessieverwijzingen zijn. Bij het oplossen blijven
+  geconfigureerde mapvermeldingen behouden voordat gereserveerde letterlijke
+  waarden worden geweigerd; vervolgens wordt bij een gemiste mapvermelding
+  veilig gestopt.
+- `messaging.targetResolver.resolveTarget(...)` is de terugval van de Plugin
+  wanneer de kern een laatste oplossing onder beheer van de provider nodig
+  heeft na normalisatie of een gemiste mapvermelding.
+- `messaging.resolveOutboundSessionRoute(...)` beheert de providerspecifieke
+  opbouw van de sessieroute zodra een doel is opgelost.
 
 Aanbevolen verdeling:
 
 - Gebruik `inferTargetChatType` voor categoriebeslissingen die vóór het zoeken
   naar peers/groepen moeten plaatsvinden.
-- Gebruik `looksLikeId` voor controles op "behandel dit als een expliciete/native doel-id".
-- Gebruik `resolveTarget` voor provider-specifieke normalisatiefallback, niet voor
-  brede directoryzoekopdrachten.
-- Houd provider-native ids zoals chat-id's, thread-id's, JID's, handles en room-
-  id's binnen `target`-waarden of provider-specifieke parameters, niet in generieke SDK-
-  velden.
+- Gebruik `looksLikeId` voor controles in de trant van 'behandel dit als een
+  expliciete/systeemeigen doel-ID'.
+- Gebruik `resolveTarget` voor providerspecifieke normalisatieterugval, niet
+  voor breed zoeken in de map.
+- Houd provider-eigen ID's, zoals chat-ID's, thread-ID's, JID's, handles en
+  ruimte-ID's, binnen `target`-waarden of providerspecifieke parameters, niet
+  in generieke SDK-velden.
 
-## Configuratie-ondersteunde directories
+## Door configuratie ondersteunde mappen
 
-Plugins die directoryvermeldingen afleiden uit configuratie moeten die logica in de
-plugin houden en de gedeelde helpers hergebruiken uit
-`openclaw/plugin-sdk/directory-runtime`.
+Plugins die mapvermeldingen uit configuratie afleiden, moeten die logica in de
+Plugin houden en de gedeelde hulpfuncties uit
+`openclaw/plugin-sdk/directory-runtime` hergebruiken.
 
-Gebruik dit wanneer een kanaal configuratie-ondersteunde peers/groepen nodig heeft, zoals:
+Gebruik dit wanneer een kanaal door configuratie ondersteunde peers/groepen
+nodig heeft, zoals:
 
-- door allowlists aangestuurde DM-peers
-- geconfigureerde kanaal-/groepsmaps
-- statische directoryfallbacks per account
+- DM-peers op basis van een toestemmingslijst
+- geconfigureerde kanaal-/groepstoewijzingen
+- statische, accountgebonden terugvalopties voor mappen
 
-De gedeelde helpers in `directory-runtime` verwerken alleen generieke bewerkingen:
+De gedeelde hulpfuncties in `directory-runtime` verwerken alleen generieke bewerkingen:
 
 - queryfiltering
-- limiettoepassing
-- deduplicatie-/normalisatiehelpers
-- bouwen van `ChannelDirectoryEntry[]`
+- toepassing van limieten
+- hulpfuncties voor ontdubbeling/normalisatie
+- opbouw van `ChannelDirectoryEntry[]`
 
-Kanaalspecifieke accountinspectie en id-normalisatie moeten in de
-pluginimplementatie blijven.
+Kanaalspecifieke accountinspectie en ID-normalisatie moeten in de
+Plugin-implementatie blijven.
 
 ## Providercatalogi
 
-Providerplugins kunnen modelcatalogi voor inference definiëren met
+Providerplugins kunnen modelcatalogi voor inferentie definiëren met
 `registerProvider({ catalog: { run(...) { ... } } })`.
 
-`catalog.run(...)` retourneert dezelfde vorm die OpenClaw schrijft naar
-`models.providers`:
+`catalog.run(...)` retourneert dezelfde vorm die OpenClaw naar
+`models.providers` schrijft:
 
 - `{ provider }` voor één providervermelding
 - `{ providers }` voor meerdere providervermeldingen
 
-Gebruik `catalog` wanneer de plugin provider-specifieke model-id's, base-URL-
-standaarden of door authenticatie afgeschermde modelmetadata beheert.
+Gebruik `catalog` wanneer de Plugin eigenaar is van providerspecifieke
+model-ID's, standaardwaarden voor basis-URL's of door authenticatie afgeschermde
+modelmetadata.
 
-`catalog.order` bepaalt wanneer de catalogus van een plugin wordt samengevoegd ten opzichte van OpenClaw's
-ingebouwde impliciete providers:
+`catalog.order` bepaalt wanneer de catalogus van een Plugin wordt samengevoegd
+ten opzichte van de ingebouwde impliciete providers van OpenClaw:
 
-- `simple`: gewone API-key- of env-gestuurde providers
+- `simple`: gewone providers op basis van API-sleutels of omgevingsvariabelen
 - `profile`: providers die verschijnen wanneer authenticatieprofielen bestaan
-- `paired`: providers die meerdere gerelateerde providervermeldingen synthetiseren
-- `late`: laatste pass, na andere impliciete providers
+- `paired`: providers die meerdere gerelateerde providervermeldingen samenstellen
+- `late`: laatste doorgang, na andere impliciete providers
 
-Latere providers winnen bij keyconflicten, dus plugins kunnen opzettelijk een
-ingebouwde providervermelding overschrijven met dezelfde provider-id.
+Latere providers winnen bij een sleutelconflict, zodat plugins bewust een
+ingebouwde providervermelding met dezelfde provider-ID kunnen overschrijven.
 
-Plugins kunnen ook alleen-lezen modelrijen publiceren via
+Plugins kunnen ook alleen-lezenmodelrijen publiceren via
 `api.registerModelCatalogProvider({ provider, kinds, staticCatalog, liveCatalog
-})`. Dit is het toekomstige pad voor lijst-/help-/pickeroppervlakken en ondersteunt
-`text`, `image_generation`, `video_generation` en `music_generation`-rijen.
-Providerplugins blijven eigenaar van live endpointaanroepen, tokenuitwisseling en vendor-
-responsmapping; core beheert de gemeenschappelijke rijvorm, bronlabels en media-tool-
-helpopmaak. Providerregistraties voor mediageneratie synthetiseren automatisch statische
-catalogusrijen uit `defaultModel`, `models` en `capabilities`.
+})`. Dit is het toekomstige pad voor lijst-, hulp- en keuzeoppervlakken en
+ondersteunt rijen voor `text`, `voice`, `image_generation`, `video_generation`
+en `music_generation`. Providerplugins blijven eigenaar van live
+eindpuntaanroepen, tokenuitwisseling en toewijzing van leveranciersreacties; de
+kern beheert de gemeenschappelijke rijvorm, bronlabels en de opmaak van hulp
+voor mediatools. Registraties van providers voor mediageneratie stellen
+automatisch statische catalogusrijen samen uit `defaultModel`, `models` en
+`capabilities`.
 
 Compatibiliteit:
 
-- `discovery` werkt nog als legacy alias, maar geeft een deprecationwaarschuwing
-- als zowel `catalog` als `discovery` zijn geregistreerd, gebruikt OpenClaw `catalog`
+- `discovery` werkt nog als een verouderde alias, maar geeft een
+  afschrijvingswaarschuwing
+- als zowel `catalog` als `discovery` zijn geregistreerd, gebruikt OpenClaw
+  `catalog` en geeft het een waarschuwing
 - `augmentModelCatalog` is verouderd; gebundelde providers moeten aanvullende
   rijen publiceren via `registerModelCatalogProvider`
 
-## Alleen-lezen kanaalinspectie
+## Alleen-lezeninspectie van kanalen
 
-Als je plugin een kanaal registreert, geef dan de voorkeur aan implementatie van
+Als uw Plugin een kanaal registreert, implementeer dan bij voorkeur
 `plugin.config.inspectAccount(cfg, accountId)` naast `resolveAccount(...)`.
 
 Waarom:
 
-- `resolveAccount(...)` is het runtimepad. Het mag aannemen dat credentials
-  volledig gematerialiseerd zijn en snel falen wanneer vereiste secrets ontbreken.
-- Alleen-lezen commandopaden zoals `openclaw status`, `openclaw status --all`,
-  `openclaw channels status`, `openclaw channels resolve` en doctor-/configuratie-
-  reparatieflows zouden geen runtimecredentials hoeven te materialiseren alleen om
-  configuratie te beschrijven.
+- `resolveAccount(...)` is het runtimepad. Het mag ervan uitgaan dat
+  aanmeldgegevens volledig beschikbaar zijn en kan direct mislukken wanneer
+  vereiste geheimen ontbreken.
+- Alleen-lezenopdrachtpaden zoals `openclaw status`, `openclaw status --all`,
+  `openclaw channels status`, `openclaw channels resolve` en herstelstromen
+  voor doctor/configuratie hoeven geen runtimeaanmeldgegevens beschikbaar te
+  maken om alleen de configuratie te beschrijven.
 
 Aanbevolen gedrag voor `inspectAccount(...)`:
 
-- Retourneer alleen beschrijvende accountstatus.
+- Retourneer alleen een beschrijvende accountstatus.
 - Behoud `enabled` en `configured`.
-- Neem credentialbron-/statusvelden op wanneer relevant, zoals:
+- Neem waar relevant velden voor de bron/status van aanmeldgegevens op, zoals:
   - `tokenSource`, `tokenStatus`
   - `botTokenSource`, `botTokenStatus`
   - `appTokenSource`, `appTokenStatus`
   - `signingSecretSource`, `signingSecretStatus`
-- Je hoeft geen ruwe tokenwaarden te retourneren alleen om alleen-lezen
-  beschikbaarheid te rapporteren. `tokenStatus: "available"` retourneren (en het overeenkomende bron-
-  veld) is genoeg voor statusachtige commando's.
-- Gebruik `configured_unavailable` wanneer een credential via SecretRef is geconfigureerd maar
-  niet beschikbaar is in het huidige commandopad.
+- U hoeft geen onbewerkte tokenwaarden te retourneren alleen om alleen-lezen
+  beschikbaarheid te rapporteren. Het retourneren van `tokenStatus: "available"`
+  (en het bijbehorende bronveld) volstaat voor statusopdrachten.
+- Gebruik `configured_unavailable` wanneer aanmeldgegevens via SecretRef zijn
+  geconfigureerd, maar niet beschikbaar zijn in het huidige opdrachtpad.
 
-Hierdoor kunnen alleen-lezen commando's "geconfigureerd maar niet beschikbaar in dit commando-
-pad" rapporteren in plaats van te crashen of het account onterecht als niet geconfigureerd te rapporteren.
+Hierdoor kunnen alleen-lezen opdrachten "geconfigureerd maar niet beschikbaar in
+dit opdrachtpad" rapporteren in plaats van vast te lopen of ten onrechte te
+melden dat het account niet is geconfigureerd.
 
-## Pakketpacks
+## Pakketbundels
 
-Een plugindirectory kan een `package.json` bevatten met `openclaw.extensions`:
+Een pluginmap kan een `package.json` met `openclaw.extensions` bevatten:
 
 ```json
 {
@@ -801,41 +838,79 @@ Een plugindirectory kan een `package.json` bevatten met `openclaw.extensions`:
 }
 ```
 
-Elke entry wordt een plugin. Als de pack meerdere extensions vermeldt, wordt de plugin-id
-`name/<fileBase>`.
+Elke vermelding wordt een plugin. Als de bundel meerdere extensies vermeldt,
+wordt de plugin-id `<manifestOrPackageName>/<fileBase>` (de manifest-id heeft
+voorrang wanneer deze aanwezig is; anders wordt de naam zonder bereik uit
+`package.json` gebruikt).
 
-Als je plugin npm-deps importeert, installeer ze dan in die directory zodat
-`node_modules` beschikbaar is (`npm install` / `pnpm install`).
+Als uw plugin npm-afhankelijkheden importeert, installeer deze dan in die map,
+zodat `node_modules` beschikbaar is (`npm install` / `pnpm install`).
 
-Beveiligingsgrens: elke `openclaw.extensions`-entry moet binnen de plugin-
-directory blijven na symlinkresolutie. Entries die buiten de pakketdirectory komen,
-worden geweigerd.
+Beveiligingsmaatregel: elke vermelding in `openclaw.extensions` moet na het
+oplossen van symbolische koppelingen binnen de pluginmap blijven. Vermeldingen
+die buiten de pakketmap vallen, worden geweigerd.
 
-Beveiligingsopmerking: `openclaw plugins install` installeert pluginafhankelijkheden met een projectlokale `npm install --omit=dev --ignore-scripts` (geen lifecycle-scripts, geen dev-afhankelijkheden tijdens runtime), waarbij overgeërfde globale npm-installatie-instellingen worden genegeerd. Houd pluginafhankelijkheidsbomen "pure JS/TS" en vermijd pakketten die `postinstall`-builds vereisen.
+Beveiligingsopmerking: `openclaw plugins install` installeert
+plugin-afhankelijkheden met een projectlokale
+`npm install --omit=dev --ignore-scripts` (geen levenscyclusscripts en geen
+ontwikkelafhankelijkheden tijdens runtime), waarbij overgenomen algemene
+npm-installatie-instellingen worden genegeerd. Houd de afhankelijkheidsstructuren
+van plugins "puur JS/TS" en vermijd pakketten waarvoor `postinstall`-builds nodig
+zijn.
 
-Optioneel: `openclaw.setupEntry` kan verwijzen naar een lichte module die alleen voor setup is bedoeld. Wanneer OpenClaw setup-oppervlakken nodig heeft voor een uitgeschakelde kanaalplugin, of wanneer een kanaalplugin is ingeschakeld maar nog niet is geconfigureerd, laadt het `setupEntry` in plaats van de volledige plugin-entry. Dit houdt opstarten en setup lichter wanneer je hoofd-plugin-entry ook tools, hooks of andere code die alleen tijdens runtime nodig is, aansluit.
+Optioneel: `openclaw.setupEntry` kan verwijzen naar een lichte module die alleen
+voor de installatie is bestemd. Wanneer OpenClaw installatieoppervlakken nodig
+heeft voor een uitgeschakelde kanaalplugin, of wanneer een kanaalplugin is
+ingeschakeld maar nog niet is geconfigureerd, laadt het `setupEntry` in plaats
+van het volledige pluginingangspunt. Dit houdt het opstarten en de installatie
+lichter wanneer het hoofdingangspunt van uw plugin ook hulpmiddelen, hooks of
+andere uitsluitend voor runtime bestemde code koppelt.
 
-Optioneel: `openclaw.startup.deferConfiguredChannelFullLoadUntilAfterListen` kan een kanaalplugin tijdens de pre-listen-opstartfase van de Gateway voor hetzelfde `setupEntry`-pad kiezen, zelfs wanneer het kanaal al is geconfigureerd.
+Optioneel: met `openclaw.startup.deferConfiguredChannelFullLoadUntilAfterListen`
+kan een kanaalplugin tijdens de fase vóór het luisteren van de Gateway voor
+hetzelfde `setupEntry`-pad kiezen, zelfs wanneer het kanaal al is geconfigureerd.
 
-Gebruik dit alleen wanneer `setupEntry` het opstartoppervlak dat moet bestaan voordat de Gateway begint te luisteren volledig dekt. In de praktijk betekent dit dat de setup-entry elke kanaaleigen capability moet registreren waarvan opstarten afhankelijk is, zoals:
+Gebruik dit alleen wanneer `setupEntry` het opstartoppervlak dat aanwezig moet
+zijn voordat de Gateway begint te luisteren volledig afdekt. In de praktijk
+betekent dit dat het installatie-ingangspunt elke kanaaleigen mogelijkheid moet
+registreren waarvan het opstarten afhankelijk is, zoals:
 
-- kanaalregistratie zelf
+- de kanaalregistratie zelf
 - alle HTTP-routes die beschikbaar moeten zijn voordat de Gateway begint te luisteren
-- alle Gateway-methoden, tools of services die tijdens datzelfde venster moeten bestaan
+- alle Gateway-methoden, hulpmiddelen of services die gedurende hetzelfde tijdsvenster moeten bestaan
 
-Als je volledige entry nog steeds eigenaar is van een vereiste opstart-capability, schakel deze vlag dan niet in. Houd de Plugin op het standaardgedrag en laat OpenClaw de volledige entry tijdens het opstarten laden.
+Als uw volledige ingangspunt nog steeds eigenaar is van een vereiste
+opstartmogelijkheid, schakel deze vlag dan niet in. Behoud het standaardgedrag
+voor de plugin en laat OpenClaw het volledige ingangspunt tijdens het opstarten
+laden.
 
-Gebundelde kanalen kunnen ook setup-only helpers voor contractoppervlakken publiceren die core kan raadplegen voordat de volledige kanaalruntime is geladen. Het huidige setup-promotieoppervlak is:
+Meegeleverde kanalen kunnen ook helpers publiceren voor
+contractoppervlakken die uitsluitend voor de installatie zijn bedoeld en die
+door de kern kunnen worden geraadpleegd voordat de volledige kanaalruntime is
+geladen. Het huidige promotieoppervlak voor de installatie is:
 
 - `singleAccountKeysToMove`
 - `namedAccountPromotionKeys`
 - `resolveSingleAccountPromotionTarget(...)`
 
-Core gebruikt dat oppervlak wanneer het een verouderde single-account-kanaalconfiguratie moet promoveren naar `channels.<id>.accounts.*` zonder de volledige plugin-entry te laden. Matrix is het huidige gebundelde voorbeeld: het verplaatst alleen auth/bootstrap-sleutels naar een benoemd gepromoveerd account wanneer benoemde accounts al bestaan, en het kan een geconfigureerde niet-canonieke standaardaccountsleutel behouden in plaats van altijd `accounts.default` aan te maken.
+De kern gebruikt dat oppervlak wanneer een verouderde kanaalconfiguratie voor
+één account naar `channels.<id>.accounts.*` moet worden gepromoveerd zonder het
+volledige pluginingangspunt te laden. Matrix is het huidige meegeleverde
+voorbeeld: het verplaatst alleen authenticatie-/bootstrap-sleutels naar een
+benoemd gepromoveerd account wanneer er al benoemde accounts bestaan, en het kan
+een geconfigureerde niet-canonieke standaardsleutel voor een account behouden in
+plaats van altijd `accounts.default` aan te maken.
 
-Die setup-patchadapters houden gebundelde ontdekking van contractoppervlakken lazy. De importtijd blijft licht; het promotieoppervlak wordt pas bij eerste gebruik geladen in plaats van gebundelde kanaalstart opnieuw binnen te gaan bij module-import.
+Deze installatiepatchadapters houden de detectie van meegeleverde
+contractoppervlakken lui. De importtijd blijft kort; het promotieoppervlak wordt
+pas bij het eerste gebruik geladen in plaats van het opstarten van meegeleverde
+kanalen opnieuw te activeren bij de module-import.
 
-Wanneer die opstartoppervlakken Gateway-RPC-methoden bevatten, houd ze dan op een plugin-specifiek prefix. Core-beheernamespaces (`config.*`, `exec.approvals.*`, `wizard.*`, `update.*`) blijven gereserveerd en resolven altijd naar `operator.admin`, zelfs als een Plugin een nauwere scope aanvraagt.
+Wanneer deze opstartoppervlakken Gateway-RPC-methoden bevatten, houdt u deze
+onder een pluginspecifiek voorvoegsel. Beheerdersnaamruimten van de kern
+(`config.*`, `exec.approvals.*`, `wizard.*`, `update.*`) blijven gereserveerd
+en worden altijd omgezet naar `operator.admin`, zelfs als een plugin om een
+beperktere reikwijdte vraagt.
 
 Voorbeeld:
 
@@ -852,9 +927,11 @@ Voorbeeld:
 }
 ```
 
-### Metadata van de kanaalcatalogus
+### Metagegevens van de kanaalcatalogus
 
-Kanaalplugins kunnen setup-/ontdekkingsmetadata adverteren via `openclaw.channel` en installatietips via `openclaw.install`. Dit houdt de core-catalogus vrij van data.
+Kanaalplugins kunnen metagegevens voor installatie/detectie bekendmaken via
+`openclaw.channel` en installatieaanwijzingen via `openclaw.install`. Hierdoor
+blijft de kerncatalogus vrij van gegevens.
 
 Voorbeeld:
 
@@ -882,41 +959,81 @@ Voorbeeld:
 }
 ```
 
-Nuttige `openclaw.channel`-velden naast het minimale voorbeeld:
+Nuttige velden van `openclaw.channel` naast het minimale voorbeeld:
 
-- `detailLabel`: secundair label voor rijkere catalogus-/statusoppervlakken
-- `docsLabel`: linktekst voor de docs-link overschrijven
-- `preferOver`: plugin-/kanaal-id's met lagere prioriteit die deze catalogusentry moet overtreffen
-- `selectionDocsPrefix`, `selectionDocsOmitLabel`, `selectionExtras`: kopieerinstellingen voor selectieoppervlakken
-- `markdownCapable`: markeert het kanaal als markdown-capable voor beslissingen over uitgaande opmaak
-- `exposure.configured`: verberg het kanaal van oppervlakken met lijsten van geconfigureerde kanalen wanneer ingesteld op `false`
-- `exposure.setup`: verberg het kanaal van interactieve setup-/configure-kiezers wanneer ingesteld op `false`
-- `exposure.docs`: markeer het kanaal als intern/privé voor docs-navigatieoppervlakken
+- `detailLabel`: secundair label voor uitgebreidere catalogus-/statusoppervlakken
+- `docsLabel`: overschrijft de koppelingstekst voor de documentatiekoppeling
+- `preferOver`: plugin-/kanaal-id's met lagere prioriteit die door deze catalogusvermelding moeten worden overtroffen
+- `selectionDocsPrefix`, `selectionDocsOmitLabel`, `selectionExtras`: tekstinstellingen voor het selectieoppervlak
+- `markdownCapable`: markeert het kanaal als geschikt voor Markdown voor beslissingen over uitgaande opmaak
+- `exposure.configured`: verbergt het kanaal op oppervlakken met lijsten van geconfigureerde kanalen wanneer ingesteld op `false`
+- `exposure.setup`: verbergt het kanaal in interactieve selectievelden voor installatie/configuratie wanneer ingesteld op `false`
+- `exposure.docs`: markeert het kanaal als intern/privé voor oppervlakken voor documentatienavigatie
 - `showConfigured` / `showInSetup`: verouderde aliassen die nog steeds worden geaccepteerd voor compatibiliteit; geef de voorkeur aan `exposure`
-- `quickstartAllowFrom`: laat het kanaal deelnemen aan de standaard quickstart-`allowFrom`-flow
-- `forceAccountBinding`: vereis expliciete accountbinding, zelfs wanneer er maar één account bestaat
-- `preferSessionLookupForAnnounceTarget`: geef de voorkeur aan sessieopzoeking bij het resolven van aankondigingsdoelen
+- `quickstartAllowFrom`: neemt het kanaal op in de standaard `allowFrom`-stroom voor snel starten
+- `forceAccountBinding`: vereist expliciete accountkoppeling, zelfs wanneer er slechts één account bestaat
+- `preferSessionLookupForAnnounceTarget`: geeft de voorkeur aan sessieopzoeking bij het bepalen van aankondigingsdoelen
 
-OpenClaw kan ook **externe kanaalcatalogi** samenvoegen (bijvoorbeeld een MPM-registerexport). Plaats een JSON-bestand op een van:
+OpenClaw kan ook **externe kanaalcatalogi** samenvoegen (bijvoorbeeld een export
+van een MPM-register). Plaats een JSON-bestand op een van de volgende locaties:
 
 - `~/.openclaw/mpm/plugins.json`
 - `~/.openclaw/mpm/catalog.json`
 - `~/.openclaw/plugins/catalog.json`
 
-Of wijs `OPENCLAW_PLUGIN_CATALOG_PATHS` (of `OPENCLAW_MPM_CATALOG_PATHS`) naar een of meer JSON-bestanden (gescheiden door komma/puntkomma/`PATH`). Elk bestand moet `{ "entries": [ { "name": "@scope/pkg", "openclaw": { "channel": {...}, "install": {...} } } ] }` bevatten. De parser accepteert ook `"packages"` of `"plugins"` als verouderde aliassen voor de sleutel `"entries"`.
+Of laat `OPENCLAW_PLUGIN_CATALOG_PATHS` (of `OPENCLAW_MPM_CATALOG_PATHS`) naar
+een of meer JSON-bestanden verwijzen (gescheiden door komma's, puntkomma's of
+`PATH`). Elk bestand moet
+`{ "entries": [ { "name": "@scope/pkg", "openclaw": { "channel": {...}, "install": {...} } } ] }`
+bevatten. De parser accepteert ook `"packages"` of `"plugins"` als verouderde
+aliassen voor de sleutel `"entries"`.
 
-Gegenereerde kanaalcatalogusentries en provider-installatiecatalogusentries tonen genormaliseerde install-source-feiten naast het ruwe `openclaw.install`-blok. De genormaliseerde feiten identificeren of de npm-specificatie een exacte versie of zwevende selector is, of verwachte integriteitsmetadata aanwezig is, en of er ook een lokaal bronpad beschikbaar is. Wanneer de catalogus-/pakketidentiteit bekend is, waarschuwen de genormaliseerde feiten als de geparste npm-pakketnaam afwijkt van die identiteit. Ze waarschuwen ook wanneer `defaultChoice` ongeldig is of naar een bron wijst die niet beschikbaar is, en wanneer npm-integriteitsmetadata aanwezig is zonder geldige npm-bron. Consumers moeten `installSource` behandelen als een aanvullend optioneel veld, zodat handgemaakte entries en catalogus-shims het niet hoeven te synthetiseren. Hierdoor kunnen onboarding en diagnostiek de source-plane-status uitleggen zonder pluginruntime te importeren.
+Gegenereerde vermeldingen in de kanaalcatalogus en vermeldingen in de
+installatiecatalogus van providers stellen genormaliseerde feiten over de
+installatiebron beschikbaar naast het onbewerkte blok `openclaw.install`. De
+genormaliseerde feiten geven aan of de npm-specificatie een exacte versie of
+een zwevende selector is, of de verwachte integriteitsmetagegevens aanwezig
+zijn en of er ook een lokaal bronpad beschikbaar is. Wanneer de identiteit van
+de catalogus/het pakket bekend is, waarschuwen de genormaliseerde feiten als de
+geparseerde npm-pakketnaam afwijkt van die identiteit. Ze waarschuwen ook
+wanneer `defaultChoice` ongeldig is of verwijst naar een bron die niet
+beschikbaar is, en wanneer npm-integriteitsmetagegevens aanwezig zijn zonder
+geldige npm-bron. Consumenten moeten `installSource` behandelen als een
+aanvullend optioneel veld, zodat handmatig samengestelde vermeldingen en
+catalogusshims dit niet hoeven te genereren.
+Hierdoor kunnen onboarding en diagnostiek de toestand van het bronvlak
+verklaren zonder de pluginruntime te importeren.
 
-Officiële externe npm-entries moeten bij voorkeur een exacte `npmSpec` plus `expectedIntegrity` gebruiken. Kale pakketnamen en dist-tags blijven werken voor compatibiliteit, maar ze tonen source-plane-waarschuwingen zodat de catalogus kan opschuiven naar vastgepinde, op integriteit gecontroleerde installaties zonder bestaande plugins te breken. Wanneer onboarding installeert vanuit een lokaal cataloguspad, registreert het een beheerde plugin-indexentry met `source: "path"` en waar mogelijk een workspace-relatief `sourcePath`. Het absolute operationele laadpad blijft in `plugins.load.paths`; het installatierecord vermijdt het dupliceren van lokale workstation-paden naar langlevende configuratie. Dit houdt lokale ontwikkelinstallaties zichtbaar voor source-plane-diagnostiek zonder een tweede ruw disclosure-oppervlak voor bestandssysteempaden toe te voegen. De gepersisteerde SQLite-rij `installed_plugin_index` is de bron van waarheid voor installatie en kan worden vernieuwd zonder pluginruntime-modules te laden. De `installRecords`-map is duurzaam, zelfs wanneer een pluginmanifest ontbreekt of ongeldig is; de `plugins`-payload is een opnieuw opbouwbare manifestweergave.
+Officiële externe npm-vermeldingen moeten bij voorkeur een exacte `npmSpec` plus
+`expectedIntegrity` gebruiken. Kale pakketnamen en distributietags blijven
+werken voor compatibiliteit, maar ze tonen waarschuwingen op het bronvlak, zodat
+de catalogus kan overstappen op vastgezette installaties met integriteitscontrole
+zonder bestaande plugins te verstoren. Wanneer onboarding installeert vanuit een
+lokaal cataloguspad, legt het een beheerde vermelding in de pluginindex vast met
+`source: "path"` en, waar mogelijk, een werkruimterelatief `sourcePath`. Het
+absolute operationele laadpad blijft in `plugins.load.paths`; het
+installatierecord voorkomt dat lokale werkstationpaden worden gedupliceerd in
+langdurige configuratie. Hierdoor blijven lokale ontwikkelinstallaties zichtbaar
+voor diagnostiek van het bronvlak zonder een tweede oppervlak toe te voegen dat
+onbewerkte bestandssysteempaden openbaar maakt. De permanente SQLite-tabel
+`installed_plugin_index` is de gezaghebbende bron voor installaties en kan
+worden vernieuwd zonder pluginruntimemodules te laden. De `installRecords`-map
+is duurzaam, zelfs wanneer een pluginmanifest ontbreekt of ongeldig is; de
+`plugins`-inhoud is een opnieuw op te bouwen manifestweergave.
 
-## Context-engine-plugins
+## Plugins voor contextengines
 
-Context-engine-plugins zijn eigenaar van sessiecontextorkestratie voor ingest, assembly en Compaction. Registreer ze vanuit je Plugin met `api.registerContextEngine(id, factory)` en selecteer vervolgens de actieve engine met `plugins.slots.contextEngine`.
+Plugins voor contextengines beheren de orkestratie van sessiecontext voor
+opname, samenstelling en Compaction. Registreer ze vanuit uw plugin met
+`api.registerContextEngine(id, factory)` en selecteer vervolgens de actieve
+engine met `plugins.slots.contextEngine`.
 
-Gebruik dit wanneer je Plugin de standaard contextpipeline moet vervangen of uitbreiden, in plaats van alleen geheugenzoekopdrachten of hooks toe te voegen.
+Gebruik dit wanneer uw plugin de standaardcontextpijplijn moet vervangen of
+uitbreiden, in plaats van alleen geheugenzoekfuncties of hooks toe te voegen.
 
 ```ts
 import { buildMemorySystemPromptAddition } from "openclaw/plugin-sdk/core";
+import { resolveSessionAgentId } from "openclaw/plugin-sdk/memory-host-core";
 
 export default function (api) {
   api.registerContextEngine("lossless-claw", (ctx) => ({
@@ -924,13 +1041,15 @@ export default function (api) {
     async ingest() {
       return { ingested: true };
     },
-    async assemble({ messages, availableTools, citationsMode }) {
+    async assemble({ messages, sessionKey, availableTools, citationsMode }) {
       return {
         messages,
         estimatedTokens: 0,
         systemPromptAddition: buildMemorySystemPromptAddition({
           availableTools: availableTools ?? new Set(),
           citationsMode,
+          agentId: resolveSessionAgentId({ config: ctx.config, sessionKey }),
+          agentSessionKey: sessionKey,
         }),
       };
     },
@@ -941,17 +1060,29 @@ export default function (api) {
 }
 ```
 
-De factory `ctx` exposeert optionele waarden `config`, `agentDir` en `workspaceDir` voor initialisatie tijdens constructie.
+De factory-`ctx` stelt optionele waarden `config`, `agentDir` en
+`workspaceDir` beschikbaar voor initialisatie tijdens de constructie.
 
-`assemble()` kan `contextProjection` retourneren wanneer de actieve harness een persistente backend-thread heeft. Laat dit weg voor verouderde per-turn-projectie. Retourneer `{ mode: "thread_bootstrap", epoch }` wanneer de samengestelde context één keer in een backend-thread moet worden geïnjecteerd en opnieuw moet worden gebruikt totdat de epoch verandert. Wijzig de epoch nadat de semantische context van de engine verandert, zoals na een engine-eigen Compaction-pass. Hosts kunnen tool-call-metadata, invoervorm en geredigeerde toolresultaten in een thread-bootstrap-projectie behouden, zodat nieuwe backend-threads toolcontinuïteit behouden zonder ruwe payloads met secrets te kopiëren.
+`assemble()` kan `contextProjection` retourneren wanneer de actieve harness een
+permanente backendthread heeft. Laat dit weg voor verouderde projectie per
+beurt. Retourneer `{ mode: "thread_bootstrap", epoch }` wanneer de samengestelde
+context eenmaal in een backendthread moet worden geïnjecteerd en opnieuw moet
+worden gebruikt totdat de epoch verandert. Wijzig de epoch nadat de semantische
+context van de engine verandert, bijvoorbeeld na een door de engine beheerde
+Compaction-doorgang. Hosts kunnen metagegevens van hulpmiddelaanroepen, de
+invoervorm en geredigeerde hulpmiddelresultaten behouden in een
+thread-bootstrapprojectie, zodat nieuwe backendthreads de continuïteit van
+hulpmiddelen behouden zonder onbewerkte gegevens met geheimen te kopiëren.
 
-Als je engine **niet** eigenaar is van het Compaction-algoritme, houd `compact()` geïmplementeerd en delegeer het expliciet:
+Als uw engine **niet** verantwoordelijk is voor het Compaction-algoritme, laat
+`compact()` dan geïmplementeerd en delegeer dit expliciet:
 
 ```ts
 import {
   buildMemorySystemPromptAddition,
   delegateCompactionToRuntime,
 } from "openclaw/plugin-sdk/core";
+import { resolveSessionAgentId } from "openclaw/plugin-sdk/memory-host-core";
 
 export default function (api) {
   api.registerContextEngine("my-memory-engine", (ctx) => ({
@@ -963,13 +1094,15 @@ export default function (api) {
     async ingest() {
       return { ingested: true };
     },
-    async assemble({ messages, availableTools, citationsMode }) {
+    async assemble({ messages, sessionKey, availableTools, citationsMode }) {
       return {
         messages,
         estimatedTokens: 0,
         systemPromptAddition: buildMemorySystemPromptAddition({
           availableTools: availableTools ?? new Set(),
           citationsMode,
+          agentId: resolveSessionAgentId({ config: ctx.config, sessionKey }),
+          agentSessionKey: sessionKey,
         }),
       };
     },
@@ -980,41 +1113,50 @@ export default function (api) {
 }
 ```
 
-## Een nieuwe capability toevoegen
+## Een nieuwe mogelijkheid toevoegen
 
-Wanneer een Plugin gedrag nodig heeft dat niet in de huidige API past, omzeil het pluginsysteem dan niet met een private reach-in. Voeg de ontbrekende capability toe.
+Wanneer een Plugin gedrag nodig heeft dat niet binnen de huidige API past, omzeil dan niet
+het Pluginsysteem met een persoonlijke rechtstreekse toegang. Voeg de ontbrekende mogelijkheid toe.
 
 Aanbevolen volgorde:
 
-1. definieer het core-contract
-   Bepaal welk gedeeld gedrag core moet bezitten: beleid, fallback, config-merge, lifecycle, kanaalgerichte semantiek en vorm van runtime-helper.
-2. voeg getypte pluginregistratie-/runtime-oppervlakken toe
-   Breid `OpenClawPluginApi` en/of `api.runtime` uit met het kleinste nuttige getypte capability-oppervlak.
-3. sluit core + kanaal-/featureconsumers aan
-   Kanalen en feature-plugins moeten de nieuwe capability via core consumeren, niet door rechtstreeks een vendor-implementatie te importeren.
-4. registreer vendor-implementaties
-   Vendor-plugins registreren vervolgens hun backends tegen de capability.
-5. voeg contractdekking toe
-   Voeg tests toe zodat eigenaarschap en registratievorm in de loop van de tijd expliciet blijven.
+1. **Definieer het kerncontract.** Bepaal welk gedeeld gedrag de kern moet beheren:
+   beleid, terugvaloptie, configuratiesamenvoeging, levenscyclus, kanaalgerichte semantiek en
+   de vorm van runtimehelpers.
+2. **Voeg getypeerde oppervlakken voor Pluginregistratie/runtime toe.** Breid
+   `OpenClawPluginApi` en/of `api.runtime` uit met het kleinste bruikbare getypeerde
+   mogelijkheidsoppervlak.
+3. **Verbind kern- en kanaal-/functieconsumenten.** Kanalen en functie-Plugins
+   moeten de nieuwe mogelijkheid via de kern gebruiken, niet door rechtstreeks een
+   leveranciersimplementatie te importeren.
+4. **Registreer leveranciersimplementaties.** Leveranciers-Plugins registreren vervolgens hun
+   backends voor de mogelijkheid.
+5. **Voeg contractdekking toe.** Voeg tests toe zodat eigenaarschap en registratievorm
+   in de loop van de tijd expliciet blijven.
 
-Zo blijft OpenClaw opinionated zonder hardcoded te worden naar het wereldbeeld van één provider. Zie het [Capability Cookbook](/nl/plugins/adding-capabilities) voor een concrete bestandschecklist en uitgewerkt voorbeeld.
+Zo blijft OpenClaw een duidelijke visie hanteren zonder vast te worden gecodeerd op het
+wereldbeeld van één provider. Zie het [receptenboek voor mogelijkheden](/nl/plugins/adding-capabilities)
+voor een concrete bestandschecklist en een uitgewerkt voorbeeld.
 
-### Capability-checklist
+### Checklist voor mogelijkheden
 
-Wanneer je een nieuwe capability toevoegt, moet de implementatie meestal deze oppervlakken samen raken:
+Wanneer je een nieuwe mogelijkheid toevoegt, moet de implementatie doorgaans deze
+oppervlakken gezamenlijk wijzigen:
 
-- core-contracttypen in `src/<capability>/types.ts`
-- core-runner/runtime-helper in `src/<capability>/runtime.ts`
-- plugin-API-registratieoppervlak in `src/plugins/types.ts`
-- pluginregistry-bedrading in `src/plugins/registry.ts`
-- pluginruntime-exposure in `src/plugins/runtime/*` wanneer feature-/kanaalplugins het moeten consumeren
-- capture-/testhelpers in `src/test-utils/plugin-registration.ts`
-- eigenaarschaps-/contractassertions in `src/plugins/contracts/registry.ts`
-- operator-/plugin-docs in `docs/`
+- kerncontracttypen in `src/<capability>/types.ts`
+- kernrunner/runtimehelper in `src/<capability>/runtime.ts`
+- registratieoppervlak van de Plugin-API in `src/plugins/types.ts`
+- bedrading van het Pluginregister in `src/plugins/registry.ts`
+- beschikbaarstelling van de Pluginruntime in `src/plugins/runtime/*` wanneer functie-/kanaal-Plugins
+  deze moeten gebruiken
+- helpers voor vastlegging/tests in `src/test-utils/plugin-registration.ts`
+- beweringen over eigenaarschap/contracten in `src/plugins/contracts/registry.ts`
+- documentatie voor operators/Plugins in `docs/`
 
-Als een van die oppervlakken ontbreekt, is dat meestal een teken dat de capability nog niet volledig is geïntegreerd.
+Als een van die oppervlakken ontbreekt, is dat meestal een teken dat de mogelijkheid
+nog niet volledig is geïntegreerd.
 
-### Capability-template
+### Mogelijkheidssjabloon
 
 Minimaal patroon:
 
@@ -1042,22 +1184,24 @@ const clip = await api.runtime.videoGeneration.generate({
 });
 ```
 
-Contracttestpatroon:
+Patroon voor contracttests (`src/plugins/contracts/registry.ts` stelt zoekfuncties voor eigenaarschap
+beschikbaar, zoals `providerContractPluginIds`; tests controleren of de lijst
+`contracts.videoGenerationProviders` van een Plugin overeenkomt met wat deze daadwerkelijk registreert):
 
 ```ts
-expect(findVideoGenerationProviderIdsForPlugin("openai")).toEqual(["openai"]);
+expect(pluginManifest.contracts?.videoGenerationProviders).toEqual(["openai"]);
 ```
 
 Dat houdt de regel eenvoudig:
 
-- core is eigenaar van het capabilitycontract + orkestratie
-- vendor-Plugins zijn eigenaar van vendor-implementaties
-- feature-/kanaal-Plugins gebruiken runtime-helpers
-- contracttests houden eigenaarschap expliciet
+- de kern beheert het mogelijkheidscontract en de orkestratie
+- leveranciers-Plugins beheren leveranciersimplementaties
+- functie-/kanaal-Plugins gebruiken runtimehelpers
+- contracttests houden het eigenaarschap expliciet
 
 ## Gerelateerd
 
-- [Plugin-architectuur](/nl/plugins/architecture) — openbaar capabilitymodel en vormen
-- [Plugin SDK-subpaden](/nl/plugins/sdk-subpaths)
-- [Plugin SDK-installatie](/nl/plugins/sdk-setup)
+- [Pluginarchitectuur](/nl/plugins/architecture) — openbaar mogelijkheidsmodel en vormen
+- [Subpaden van de Plugin-SDK](/nl/plugins/sdk-subpaths)
+- [Installatie van de Plugin-SDK](/nl/plugins/sdk-setup)
 - [Plugins bouwen](/nl/plugins/building-plugins)

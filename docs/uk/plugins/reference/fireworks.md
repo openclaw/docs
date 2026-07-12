@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або перевіряєте plugin fireworks
-summary: Додає підтримку провайдера моделей Fireworks до OpenClaw.
-title: Plugin Fireworks
+    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin fireworks
+summary: Додає підтримку постачальника моделей Fireworks до OpenClaw.
+title: Плагін Fireworks
 x-i18n:
-    generated_at: "2026-06-27T17:58:30Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:29:50Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 1750e345f485fa7d8735a16278422188ad761b0c682cd5f09227f4407d502203
@@ -15,17 +15,17 @@ x-i18n:
 
 # Plugin Fireworks
 
-Додає підтримку провайдера моделей Fireworks до OpenClaw.
+Додає до OpenClaw підтримку постачальника моделей Fireworks.
 
 ## Розповсюдження
 
 - Пакет: `@openclaw/fireworks-provider`
-- Маршрут встановлення: npm; ClawHub: `clawhub:@openclaw/fireworks-provider`
+- Спосіб встановлення: npm; ClawHub: `clawhub:@openclaw/fireworks-provider`
 
 ## Інтерфейс
 
-providers: fireworks
+постачальники: fireworks
 
 ## Пов’язана документація
 
-- [fireworks](/uk/providers/fireworks)
+- [Fireworks](/uk/providers/fireworks)

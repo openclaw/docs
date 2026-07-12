@@ -1,12 +1,12 @@
 ---
 read_when:
     - Quieres usar Arcee AI con OpenClaw
-    - Necesitas la variable de entorno de la clave de API o elegir la autenticación de la CLI
-summary: Configuración de Arcee AI (autenticación + selección de modelo)
+    - Necesitas la variable de entorno de la clave de API o la opción de autenticación de la CLI
+summary: Configuración de Arcee AI (autenticación + selección del modelo)
 title: Arcee AI
 x-i18n:
-    generated_at: "2026-07-05T11:38:38Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T23:28:05Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: fe519393db3cf39f1b14b8121603b6f667102ac8c122fb6560d9b73a6ee6b0a3
@@ -14,18 +14,18 @@ x-i18n:
     workflow: 16
 ---
 
-[Arcee AI](https://arcee.ai) proporciona la familia Trinity de modelos de mezcla de expertos mediante una API compatible con OpenAI. Todos los modelos Trinity tienen licencia Apache 2.0. Arcee es un Plugin oficial de OpenClaw, no incluido en el núcleo, por lo que necesita un paso de instalación antes de la incorporación.
+[Arcee AI](https://arcee.ai) ofrece la familia Trinity de modelos de mezcla de expertos mediante una API compatible con OpenAI. Todos los modelos Trinity tienen licencia Apache 2.0. Arcee es un plugin oficial de OpenClaw que no está incluido en el núcleo, por lo que debe instalarse antes de la incorporación.
 
-Accede a los modelos de Arcee directamente mediante la plataforma de Arcee o mediante [OpenRouter](/es/providers/openrouter).
+Accede a los modelos de Arcee directamente mediante la plataforma Arcee o a través de [OpenRouter](/es/providers/openrouter).
 
-| Propiedad | Valor                                                                                 |
-| -------- | ------------------------------------------------------------------------------------- |
-| Proveedor | `arcee`                                                                               |
-| Autenticación     | `ARCEEAI_API_KEY` (directo) o `OPENROUTER_API_KEY` (mediante OpenRouter)                   |
-| API      | Compatible con OpenAI                                                                     |
-| URL base | `https://api.arcee.ai/api/v1` (directo) o `https://openrouter.ai/api/v1` (OpenRouter) |
+| Propiedad | Valor                                                                                  |
+| --------- | -------------------------------------------------------------------------------------- |
+| Proveedor | `arcee`                                                                                |
+| Autenticación | `ARCEEAI_API_KEY` (directa) o `OPENROUTER_API_KEY` (mediante OpenRouter)           |
+| API       | Compatible con OpenAI                                                                  |
+| URL base  | `https://api.arcee.ai/api/v1` (directa) o `https://openrouter.ai/api/v1` (OpenRouter)  |
 
-## Instalar Plugin
+## Instalar el plugin
 
 ```bash
 openclaw plugins install @openclaw/arcee-provider
@@ -35,17 +35,17 @@ openclaw gateway restart
 ## Primeros pasos
 
 <Tabs>
-  <Tab title="Directo (plataforma de Arcee)">
+  <Tab title="Directo (plataforma Arcee)">
     <Steps>
-      <Step title="Obtén una clave de API">
+      <Step title="Obtener una clave de API">
         Crea una clave de API en [Arcee AI](https://chat.arcee.ai/).
       </Step>
-      <Step title="Ejecuta la incorporación">
+      <Step title="Ejecutar la incorporación">
         ```bash
         openclaw onboard --auth-choice arceeai-api-key
         ```
       </Step>
-      <Step title="Define un modelo predeterminado">
+      <Step title="Establecer un modelo predeterminado">
         ```json5
         {
           agents: {
@@ -61,15 +61,15 @@ openclaw gateway restart
 
   <Tab title="Mediante OpenRouter">
     <Steps>
-      <Step title="Obtén una clave de API">
+      <Step title="Obtener una clave de API">
         Crea una clave de API en [OpenRouter](https://openrouter.ai/keys).
       </Step>
-      <Step title="Ejecuta la incorporación">
+      <Step title="Ejecutar la incorporación">
         ```bash
         openclaw onboard --auth-choice arceeai-openrouter
         ```
       </Step>
-      <Step title="Define un modelo predeterminado">
+      <Step title="Establecer un modelo predeterminado">
         ```json5
         {
           agents: {
@@ -80,7 +80,7 @@ openclaw gateway restart
         }
         ```
 
-        Las mismas referencias de modelo funcionan tanto para configuraciones directas como de OpenRouter.
+        Las mismas referencias de modelo funcionan tanto para la configuración directa como para la de OpenRouter.
       </Step>
     </Steps>
 
@@ -90,7 +90,7 @@ openclaw gateway restart
 ## Configuración no interactiva
 
 <Tabs>
-  <Tab title="Directo (plataforma de Arcee)">
+  <Tab title="Directo (plataforma Arcee)">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -111,47 +111,47 @@ openclaw gateway restart
 
 ## Catálogo integrado
 
-| Ref. de modelo                 | Nombre                 | Entrada | Contexto | Salida máx. | Costo (entrada/salida por 1 M) | Herramientas | Notas                                     |
-| ------------------------------ | ---------------------- | ----- | ------- | ---------- | -------------------- | ----- | ----------------------------------------- |
-| `arcee/trinity-large-thinking` | Trinity Large Thinking | texto  | 256K    | 80K        | $0.25 / $0.90        | No    | Modelo predeterminado; razonamiento extendido          |
-| `arcee/trinity-large-preview`  | Trinity Large Preview  | texto  | 128K    | 16K        | $0.25 / $1.00        | Sí   | Uso general; 400B parámetros, 13B activos  |
-| `arcee/trinity-mini`           | Trinity Mini 26B       | texto  | 128K    | 80K        | $0.045 / $0.15       | Sí   | Rápido y rentable; llamadas a funciones |
+| Referencia del modelo           | Nombre                 | Entrada | Contexto | Salida máxima | Coste (entrada/salida por 1 M) | Herramientas | Notas                                              |
+| ------------------------------- | ---------------------- | ------- | -------- | ------------- | ----------------------------- | ------------ | -------------------------------------------------- |
+| `arcee/trinity-large-thinking`  | Trinity Large Thinking | texto   | 256K     | 80K           | $0.25 / $0.90                 | No           | Modelo predeterminado; razonamiento extendido      |
+| `arcee/trinity-large-preview`   | Trinity Large Preview  | texto   | 128K     | 16K           | $0.25 / $1.00                 | Sí           | Uso general; 400B parámetros, 13B activos          |
+| `arcee/trinity-mini`            | Trinity Mini 26B       | texto   | 128K     | 80K           | $0.045 / $0.15                | Sí           | Rápido y económico; llamadas a funciones           |
 
 <Tip>
-El ajuste preestablecido de incorporación define `arcee/trinity-large-thinking` como el modelo predeterminado.
+El ajuste preestablecido de incorporación establece `arcee/trinity-large-thinking` como modelo predeterminado.
 </Tip>
 
 ## Funciones compatibles
 
-| Función                                       | Compatible                                    |
-| --------------------------------------------- | -------------------------------------------- |
-| Streaming                                     | Sí                                          |
-| Uso de herramientas / llamadas a funciones                   | Sí (Trinity Mini, Trinity Large Preview)    |
-| Salida estructurada (modo JSON y esquema JSON) | Sí                                          |
-| Razonamiento extendido                             | Sí (Trinity Large Thinking; herramientas deshabilitadas) |
+| Función                                             | Compatibilidad                                      |
+| --------------------------------------------------- | --------------------------------------------------- |
+| Transmisión en tiempo real                          | Sí                                                  |
+| Uso de herramientas / llamadas a funciones         | Sí (Trinity Mini, Trinity Large Preview)            |
+| Salida estructurada (modo JSON y esquema JSON)      | Sí                                                  |
+| Razonamiento extendido                              | Sí (Trinity Large Thinking; herramientas desactivadas) |
 
 <AccordionGroup>
   <Accordion title="Nota sobre el entorno">
-    Si el Gateway se ejecuta como daemon (launchd/systemd), asegúrate de que `ARCEEAI_API_KEY`
+    Si el Gateway se ejecuta como demonio (launchd/systemd), asegúrate de que `ARCEEAI_API_KEY`
     (o `OPENROUTER_API_KEY`) esté disponible para ese proceso, por ejemplo en
     `~/.openclaw/.env` o mediante `env.shellEnv`.
   </Accordion>
 
   <Accordion title="Enrutamiento de OpenRouter">
     Al usar modelos de Arcee mediante OpenRouter, se aplican las mismas referencias de modelo `arcee/*`.
-    OpenClaw enruta de forma transparente según tu opción de autenticación. Consulta la
-    [documentación del proveedor OpenRouter](/es/providers/openrouter) para ver detalles de
-    configuración específicos de OpenRouter.
+    OpenClaw realiza el enrutamiento de forma transparente según la opción de autenticación elegida. Consulta la
+    [documentación del proveedor OpenRouter](/es/providers/openrouter) para obtener información específica de OpenRouter
+    sobre la configuración.
   </Accordion>
 </AccordionGroup>
 
-## Relacionado
+## Contenido relacionado
 
 <CardGroup cols={2}>
   <Card title="OpenRouter" href="/es/providers/openrouter" icon="shuffle">
-    Accede a modelos de Arcee y muchos otros mediante una sola clave de API.
+    Accede a los modelos de Arcee y a muchos otros mediante una única clave de API.
   </Card>
-  <Card title="Selección de modelo" href="/es/concepts/model-providers" icon="layers">
-    Elección de proveedores, referencias de modelo y comportamiento de conmutación por error.
+  <Card title="Selección de modelos" href="/es/concepts/model-providers" icon="layers">
+    Elección de proveedores, referencias de modelos y comportamiento de conmutación por error.
   </Card>
 </CardGroup>

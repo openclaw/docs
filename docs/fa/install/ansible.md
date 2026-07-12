@@ -1,136 +1,129 @@
 ---
 read_when:
-    - به استقرار خودکار سرور با سخت‌سازی امنیتی نیاز دارید
-    - به راه‌اندازی ایزوله‌شده با فایروال و دسترسی VPN نیاز دارید
-    - در حال استقرار روی سرورهای راه دور Debian/Ubuntu هستید
-summary: نصب خودکار و سخت‌سازی‌شده OpenClaw با Ansible، VPN ‏Tailscale و جداسازی فایروال
+    - می‌خواهید استقرار خودکار سرور را همراه با مقاوم‌سازی امنیتی انجام دهید
+    - به راه‌اندازی ایزوله‌شده با فایروال و دارای دسترسی VPN نیاز دارید
+    - شما در حال استقرار روی سرورهای راه‌دور Debian/Ubuntu هستید
+summary: نصب خودکار و ایمن‌سازی‌شده OpenClaw با Ansible، شبکه خصوصی مجازی Tailscale و جداسازی دیوار آتش
 title: Ansible
 x-i18n:
-    generated_at: "2026-06-27T17:57:03Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:09:09Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 03eb6f40139d7e154eee92a7a1a67471da90b128cc90daf86fbc87e383a5297c
+    source_hash: 8d3626ab364169609f92f636cb6b86cb980dca2b235500e748296128765444ae
     source_path: install/ansible.md
     workflow: 16
 ---
 
-OpenClaw را با **[openclaw-ansible](https://github.com/openclaw/openclaw-ansible)** در سرورهای تولید مستقر کنید -- یک نصب‌کننده خودکار با معماری امنیت‌محور.
+OpenClaw را با **[openclaw-ansible](https://github.com/openclaw/openclaw-ansible)**، یک نصب‌کنندهٔ خودکار با معماری امنیت‌محور، روی سرورهای عملیاتی مستقر کنید.
 
 <Info>
-مخزن [openclaw-ansible](https://github.com/openclaw/openclaw-ansible) منبع حقیقت برای استقرار Ansible است. این صفحه یک مرور سریع است.
+مخزن [openclaw-ansible](https://github.com/openclaw/openclaw-ansible) مرجع اصلی استقرار با Ansible است. این صفحه یک مرور سریع ارائه می‌دهد.
 </Info>
 
 ## پیش‌نیازها
 
 | نیازمندی | جزئیات                                                   |
 | ----------- | --------------------------------------------------------- |
-| **سیستم‌عامل**      | Debian 11+ یا Ubuntu 20.04+                               |
-| **دسترسی**  | امتیازهای root یا sudo                                   |
-| **شبکه** | اتصال اینترنت برای نصب بسته‌ها              |
-| **Ansible** | 2.14+ (به‌صورت خودکار توسط اسکریپت شروع سریع نصب می‌شود) |
+| سیستم‌عامل          | Debian 11+ یا Ubuntu 20.04+                               |
+| دسترسی      | دسترسی‌های root یا sudo                                   |
+| شبکه     | اتصال اینترنت برای نصب بسته‌ها              |
+| Ansible     | نسخهٔ 2.14+ (به‌طور خودکار توسط اسکریپت شروع سریع نصب می‌شود) |
 
-## چه چیزی دریافت می‌کنید
+## آنچه دریافت می‌کنید
 
-- **امنیت با اولویت فایروال** -- جداسازی UFW + Docker (فقط SSH + Tailscale قابل دسترسی است)
-- **VPN مبتنی بر Tailscale** -- دسترسی راه دور امن بدون عمومی کردن سرویس‌ها
-- **Docker** -- کانتینرهای sandbox جداشده، اتصال‌ها فقط روی localhost
-- **دفاع چندلایه** -- معماری امنیتی ۴ لایه
-- **یکپارچه‌سازی Systemd** -- شروع خودکار هنگام بوت با سخت‌سازی
-- **راه‌اندازی با یک دستور** -- استقرار کامل در چند دقیقه
+- امنیت مبتنی بر دیوار آتش: UFW + جداسازی Docker (فقط SSH + Tailscale در دسترس هستند)
+- VPN مبتنی بر Tailscale برای دسترسی از راه دور بدون در معرض عموم قرار دادن سرویس‌ها
+- Docker برای کانتینرهای sandbox ایزوله با اتصال فقط به localhost
+- یکپارچه‌سازی با systemd همراه با مقاوم‌سازی و راه‌اندازی خودکار هنگام بوت
+- راه‌اندازی با یک فرمان
 
 ## شروع سریع
-
-نصب با یک دستور:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/openclaw/openclaw-ansible/main/install.sh | bash
 ```
 
-## چه چیزهایی نصب می‌شود
+## موارد نصب‌شده
 
-playbook مربوط به Ansible موارد زیر را نصب و پیکربندی می‌کند:
-
-1. **Tailscale** -- VPN مش برای دسترسی راه دور امن
-2. **فایروال UFW** -- فقط پورت‌های SSH + Tailscale
-3. **Docker CE + Compose V2** -- برای backend پیش‌فرض sandbox عامل
-4. **Node.js 24 + pnpm** -- وابستگی‌های زمان اجرا (Node 22 LTS، در حال حاضر `22.19+`، همچنان پشتیبانی می‌شود)
-5. **OpenClaw** -- مبتنی بر میزبان، نه کانتینری
-6. **سرویس Systemd** -- شروع خودکار با سخت‌سازی امنیتی
+1. Tailscale (VPN مش برای دسترسی امن از راه دور)
+2. دیوار آتش UFW (فقط درگاه‌های SSH + Tailscale)
+3. Docker CE + Compose V2 (بک‌اند پیش‌فرض sandbox عامل)
+4. Node.js و pnpm (OpenClaw به Node 22.19+ یا 23.11+ نیاز دارد؛ Node 24 توصیه می‌شود)
+5. OpenClaw که مستقیماً روی میزبان نصب می‌شود، نه در کانتینر
+6. یک سرویس systemd با مقاوم‌سازی امنیتی
 
 <Note>
-Gateway مستقیما روی میزبان اجرا می‌شود (نه در Docker). sandbox کردن عامل
-اختیاری است؛ این playbook چون Docker، backend پیش‌فرض sandbox است، آن را نصب
-می‌کند. برای جزئیات و backendهای دیگر، [Sandboxing](/fa/gateway/sandboxing) را ببینید.
+Gateway مستقیماً روی میزبان اجرا می‌شود، نه در Docker. sandbox کردن عامل
+اختیاری است؛ این playbook به این دلیل Docker را نصب می‌کند که بک‌اند پیش‌فرض
+sandbox است. برای بک‌اندهای دیگر به [Sandbox کردن](/fa/gateway/sandboxing) مراجعه کنید.
 </Note>
 
 ## راه‌اندازی پس از نصب
 
 <Steps>
-  <Step title="رفتن به کاربر openclaw">
+  <Step title="تغییر به کاربر openclaw">
     ```bash
     sudo -i -u openclaw
     ```
   </Step>
-  <Step title="اجرای راهنمای شروع">
-    اسکریپت پس از نصب شما را در پیکربندی تنظیمات OpenClaw راهنمایی می‌کند.
+  <Step title="اجرای راهنمای راه‌اندازی اولیه">
+    اسکریپت پس از نصب شما را در پیکربندی OpenClaw راهنمایی می‌کند.
   </Step>
-  <Step title="اتصال ارائه‌دهندگان پیام‌رسانی">
-    به WhatsApp، Telegram، Discord، یا Signal وارد شوید:
+  <Step title="اتصال کانال‌های پیام‌رسانی">
+    وارد WhatsApp، Telegram، Discord یا Signal شوید:
     ```bash
-    openclaw channels login
+    openclaw channels login --channel <name>
     ```
   </Step>
-  <Step title="تایید نصب">
+  <Step title="تأیید نصب">
     ```bash
     sudo systemctl status openclaw
     sudo journalctl -u openclaw -f
     ```
   </Step>
   <Step title="اتصال به Tailscale">
-    برای دسترسی راه دور امن به مش VPN خود بپیوندید.
+    برای دسترسی امن از راه دور به شبکهٔ مش VPN خود بپیوندید.
   </Step>
 </Steps>
 
-### دستورهای سریع
+### فرمان‌های سریع
 
 ```bash
-# Check service status
+# بررسی وضعیت سرویس
 sudo systemctl status openclaw
 
-# View live logs
+# مشاهدهٔ زندهٔ گزارش‌ها
 sudo journalctl -u openclaw -f
 
-# Restart gateway
+# راه‌اندازی مجدد Gateway
 sudo systemctl restart openclaw
 
-# Provider login (run as openclaw user)
+# ورود به کانال (به‌عنوان کاربر openclaw اجرا شود)
 sudo -i -u openclaw
-openclaw channels login
+openclaw channels login --channel <name>
 ```
 
 ## معماری امنیتی
 
-استقرار از یک مدل دفاعی ۴ لایه استفاده می‌کند:
+مدل دفاعی چهارلایه:
 
-1. **فایروال (UFW)** -- فقط SSH (22) + Tailscale (41641/udp) به‌صورت عمومی در معرض دسترسی هستند
-2. **VPN (Tailscale)** -- Gateway فقط از طریق مش VPN قابل دسترسی است
-3. **جداسازی Docker** -- زنجیره iptables مربوط به DOCKER-USER از قرار گرفتن پورت‌های خارجی در معرض دسترسی جلوگیری می‌کند
-4. **سخت‌سازی Systemd** -- NoNewPrivileges، PrivateTmp، کاربر بدون امتیاز
+1. دیوار آتش (UFW): فقط SSH (22) و Tailscale (41641/udp) در معرض دسترسی عمومی قرار دارند
+2. VPN (Tailscale): Gateway فقط از طریق شبکهٔ مش VPN قابل دسترسی است
+3. جداسازی Docker: زنجیرهٔ iptables با نام `DOCKER-USER` از در معرض قرار گرفتن درگاه‌ها برای دسترسی خارجی جلوگیری می‌کند
+4. مقاوم‌سازی systemd: `NoNewPrivileges`، `PrivateTmp`، کاربر بدون امتیاز ویژه
 
-برای تایید سطح حمله خارجی خود:
+سطح حملهٔ خارجی خود را بررسی کنید:
 
 ```bash
 nmap -p- YOUR_SERVER_IP
 ```
 
-فقط پورت 22 (SSH) باید باز باشد. همه سرویس‌های دیگر (Gateway، Docker) قفل شده‌اند.
+فقط درگاه 22 (SSH) باید باز باشد. Gateway و Docker محدود و محافظت‌شده باقی می‌مانند.
 
-Docker برای sandboxهای عامل (اجرای ابزار جداشده) نصب می‌شود، نه برای اجرای خود Gateway. برای پیکربندی sandbox، [Multi-Agent Sandbox and Tools](/fa/tools/multi-agent-sandbox-tools) را ببینید.
+Docker برای sandboxهای عامل (اجرای ایزولهٔ ابزارها) نصب می‌شود، نه برای اجرای Gateway. برای پیکربندی sandbox به [Sandbox و ابزارهای چندعاملی](/fa/tools/multi-agent-sandbox-tools) مراجعه کنید.
 
 ## نصب دستی
-
-اگر کنترل دستی را به خودکارسازی ترجیح می‌دهید:
 
 <Steps>
   <Step title="نصب پیش‌نیازها">
@@ -138,7 +131,7 @@ Docker برای sandboxهای عامل (اجرای ابزار جداشده) نص
     sudo apt update && sudo apt install -y ansible git
     ```
   </Step>
-  <Step title="کلون کردن مخزن">
+  <Step title="همانندسازی مخزن">
     ```bash
     git clone https://github.com/openclaw/openclaw-ansible.git
     cd openclaw-ansible
@@ -154,10 +147,10 @@ Docker برای sandboxهای عامل (اجرای ابزار جداشده) نص
     ./run-playbook.sh
     ```
 
-    همچنین می‌توانید آن را مستقیما اجرا کنید و سپس اسکریپت راه‌اندازی را بعدا به‌صورت دستی اجرا کنید:
+    یا playbook را مستقیماً اجرا کنید و سپس اسکریپت راه‌اندازی را به‌صورت دستی اجرا کنید:
     ```bash
     ansible-playbook playbook.yml --ask-become-pass
-    # Then run: /tmp/openclaw-setup.sh
+    # سپس اجرا کنید: /tmp/openclaw-setup.sh
     ```
 
   </Step>
@@ -165,35 +158,34 @@ Docker برای sandboxهای عامل (اجرای ابزار جداشده) نص
 
 ## به‌روزرسانی
 
-نصب‌کننده Ansible، OpenClaw را برای به‌روزرسانی‌های دستی راه‌اندازی می‌کند. برای جریان استاندارد به‌روزرسانی، [Updating](/fa/install/updating) را ببینید.
+نصب‌کنندهٔ Ansible، OpenClaw را برای به‌روزرسانی دستی آماده می‌کند؛ برای روند استاندارد به [به‌روزرسانی](/fa/install/updating) مراجعه کنید.
 
-برای اجرای دوباره playbook مربوط به Ansible (مثلا برای تغییرات پیکربندی):
+برای اجرای دوبارهٔ playbook (برای مثال، پس از تغییرات پیکربندی):
 
 ```bash
 cd openclaw-ansible
 ./run-playbook.sh
 ```
 
-این کار idempotent است و اجرای چندباره آن امن است.
+این عملیات ایدمپوتنت است و می‌توان آن را چندین بار با خیال آسوده اجرا کرد.
 
 ## عیب‌یابی
 
 <AccordionGroup>
-  <Accordion title="فایروال اتصال من را مسدود می‌کند">
-    - مطمئن شوید ابتدا از طریق VPN مبتنی بر Tailscale دسترسی دارید
-    - دسترسی SSH (پورت 22) همیشه مجاز است
-    - Gateway بنا به طراحی فقط از طریق Tailscale قابل دسترسی است
+  <Accordion title="دیوار آتش اتصال من را مسدود می‌کند">
+    - ابتدا از طریق VPN مبتنی بر Tailscale متصل شوید؛ Gateway طبق طراحی فقط از این طریق قابل دسترسی است.
+    - SSH (درگاه 22) همیشه مجاز است.
 
   </Accordion>
-  <Accordion title="سرویس شروع نمی‌شود">
+  <Accordion title="سرویس راه‌اندازی نمی‌شود">
     ```bash
-    # Check logs
+    # بررسی گزارش‌ها
     sudo journalctl -u openclaw -n 100
 
-    # Verify permissions
+    # تأیید مجوزها
     sudo ls -la /opt/openclaw
 
-    # Test manual start
+    # آزمایش راه‌اندازی دستی
     sudo -i -u openclaw
     cd ~/openclaw
     openclaw gateway run
@@ -202,40 +194,40 @@ cd openclaw-ansible
   </Accordion>
   <Accordion title="مشکلات sandbox در Docker">
     ```bash
-    # Verify Docker is running
+    # بررسی اجرای Docker
     sudo systemctl status docker
 
-    # Check sandbox image
+    # بررسی تصویر sandbox
     sudo docker images | grep openclaw-sandbox
 
-    # Build sandbox image if missing (requires source checkout)
+    # ساخت تصویر sandbox در صورت نبودن آن (به یک نسخهٔ وارسی‌شده از کد منبع نیاز دارد)
     cd /opt/openclaw/openclaw
     sudo -u openclaw ./scripts/sandbox-setup.sh
-    # For npm installs without a source checkout, see
+    # برای نصب‌های npm بدون نسخهٔ وارسی‌شده از کد منبع، مراجعه کنید به
     # https://docs.openclaw.ai/gateway/sandboxing#images-and-setup
     ```
 
   </Accordion>
-  <Accordion title="ورود ارائه‌دهنده ناموفق است">
+  <Accordion title="ورود به کانال ناموفق است">
     مطمئن شوید که به‌عنوان کاربر `openclaw` اجرا می‌کنید:
     ```bash
     sudo -i -u openclaw
-    openclaw channels login
+    openclaw channels login --channel <name>
     ```
   </Accordion>
 </AccordionGroup>
 
 ## پیکربندی پیشرفته
 
-برای معماری امنیتی و عیب‌یابی تفصیلی، مخزن openclaw-ansible را ببینید:
+برای معماری امنیتی و عیب‌یابی تفصیلی، به مخزن openclaw-ansible مراجعه کنید:
 
 - [معماری امنیتی](https://github.com/openclaw/openclaw-ansible/blob/main/docs/security.md)
 - [جزئیات فنی](https://github.com/openclaw/openclaw-ansible/blob/main/docs/architecture.md)
 - [راهنمای عیب‌یابی](https://github.com/openclaw/openclaw-ansible/blob/main/docs/troubleshooting.md)
 
-## مرتبط
+## مطالب مرتبط
 
-- [openclaw-ansible](https://github.com/openclaw/openclaw-ansible) -- راهنمای کامل استقرار
-- [Docker](/fa/install/docker) -- راه‌اندازی Gateway کانتینری
-- [Sandboxing](/fa/gateway/sandboxing) -- پیکربندی sandbox عامل
-- [Multi-Agent Sandbox and Tools](/fa/tools/multi-agent-sandbox-tools) -- جداسازی برای هر عامل
+- [openclaw-ansible](https://github.com/openclaw/openclaw-ansible): راهنمای کامل استقرار
+- [Docker](/fa/install/docker): راه‌اندازی کانتینری Gateway
+- [Sandbox کردن](/fa/gateway/sandboxing): پیکربندی sandbox عامل
+- [Sandbox و ابزارهای چندعاملی](/fa/tools/multi-agent-sandbox-tools): جداسازی برای هر عامل

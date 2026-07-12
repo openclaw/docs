@@ -1,30 +1,26 @@
 ---
 read_when:
-    - Je onderhoudt oudere scripts met `openclaw clawbot ...`
-    - Je hebt migratiebegeleiding nodig voor de huidige opdrachten
-summary: CLI-referentie voor `openclaw clawbot` (verouderde alias-naamruimte)
+    - Je onderhoudt oudere scripts die `openclaw clawbot ...` gebruiken
+    - U hebt migratierichtlijnen nodig voor de huidige opdrachten
+summary: CLI-referentie voor `openclaw clawbot` (naamruimte voor verouderde aliassen)
 title: Clawbot
 x-i18n:
-    generated_at: "2026-04-29T22:30:56Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:41:53Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4ca7f189071d170a94ec3eda276a3ba1202ccdee43c610f214b65bda8375d300
+    source_hash: 6baf9b4e9bbe8bb31cdc4923c38cd45a883b6e5be921a403335e257dacdc2cd5
     source_path: cli/clawbot.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw clawbot`
 
-Verouderde alias-naamruimte behouden voor achterwaartse compatibiliteit.
-
-Momenteel ondersteunde alias:
-
-- `openclaw clawbot qr` (hetzelfde gedrag als [`openclaw qr`](/nl/cli/qr))
+Verouderde aliasnaamruimte die behouden blijft voor achterwaartse compatibiliteit. Deze registreert dezelfde QR-opdracht als de CLI op het hoogste niveau, zodat `openclaw clawbot qr` elke optie van [`openclaw qr`](/nl/cli/qr) accepteert.
 
 ## Migratie
 
-Gebruik bij voorkeur moderne top-level opdrachten rechtstreeks:
+Geef de voorkeur aan de moderne opdracht op het hoogste niveau:
 
 - `openclaw clawbot qr` -> `openclaw qr`
 

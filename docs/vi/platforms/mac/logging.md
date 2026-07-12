@@ -1,42 +1,40 @@
 ---
 read_when:
-    - Ghi lại nhật ký macOS hoặc điều tra việc ghi nhật ký dữ liệu riêng tư
-    - Gỡ lỗi các sự cố về vòng đời đánh thức bằng giọng nói/phiên thoại
-summary: 'Ghi nhật ký OpenClaw: nhật ký tệp chẩn đoán xoay vòng + cờ quyền riêng tư của nhật ký hợp nhất'
+    - Thu thập nhật ký macOS hoặc điều tra việc ghi nhật ký dữ liệu riêng tư
+    - Gỡ lỗi các sự cố về vòng đời kích hoạt bằng giọng nói/phiên làm việc
+summary: 'Nhật ký OpenClaw: nhật ký tệp chẩn đoán luân phiên + các cờ quyền riêng tư thống nhất cho nhật ký'
 title: Ghi nhật ký trên macOS
 x-i18n:
-    generated_at: "2026-05-06T09:21:53Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:05:13Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 76c001008311d4e3f245add4cce32bdcc3eed9d897b30f6884c0649d2f0523df
+    source_hash: ef0fd91bd7fc0a8b5f598cfe8f5de551795a4badd0f6634c5bcbd4f3916bfc64
     source_path: platforms/mac/logging.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Ghi nhật ký (macOS)
 
 ## Nhật ký tệp chẩn đoán luân phiên (ngăn Gỡ lỗi)
 
-OpenClaw định tuyến nhật ký ứng dụng macOS qua swift-log (mặc định là ghi nhật ký hợp nhất) và có thể ghi nhật ký tệp cục bộ, luân phiên vào ổ đĩa khi bạn cần một bản ghi bền vững.
+Ứng dụng macOS ghi nhật ký thông qua swift-log (mặc định là hệ thống ghi nhật ký hợp nhất) và cũng có thể ghi vào một tệp nhật ký cục bộ luân phiên để lưu giữ lâu dài (`DiagnosticsFileLog`).
 
-- Mức độ chi tiết: **ngăn Gỡ lỗi → Nhật ký → Ghi nhật ký ứng dụng → Mức độ chi tiết**
-- Bật: **ngăn Gỡ lỗi → Nhật ký → Ghi nhật ký ứng dụng → "Ghi nhật ký chẩn đoán luân phiên (JSONL)"**
-- Vị trí: `~/Library/Logs/OpenClaw/diagnostics.jsonl` (tự động luân phiên; các tệp cũ được thêm hậu tố `.1`, `.2`, …)
-- Xóa: **ngăn Gỡ lỗi → Nhật ký → Ghi nhật ký ứng dụng → "Xóa"**
+- Bật: **Debug pane -> Logs -> App logging -> "Write rolling diagnostics log (JSONL)"** (mặc định tắt).
+- Mức độ chi tiết: bộ chọn **Debug pane -> Logs -> App logging -> Verbosity**.
+- Vị trí: `~/Library/Logs/OpenClaw/diagnostics.jsonl`.
+- Luân phiên: luân phiên khi đạt 5 MB; tối đa 5 bản sao lưu có hậu tố `.1`...`.5` (bản cũ nhất bị xóa).
+- Xóa: **Debug pane -> Logs -> App logging -> "Clear"** xóa tệp đang hoạt động và tất cả bản sao lưu.
 
-Ghi chú:
+Hãy coi tệp này là dữ liệu nhạy cảm; không chia sẻ khi chưa kiểm tra.
 
-- Tính năng này **tắt theo mặc định**. Chỉ bật khi đang chủ động gỡ lỗi.
-- Xem tệp này là nhạy cảm; đừng chia sẻ khi chưa xem xét.
+## Dữ liệu riêng tư trong hệ thống ghi nhật ký hợp nhất trên macOS
 
-## Dữ liệu riêng tư trong ghi nhật ký hợp nhất trên macOS
-
-Ghi nhật ký hợp nhất sẽ biên tập lại hầu hết payload trừ khi một subsystem chọn tham gia `privacy -off`. Theo bài viết của Peter về [những rắc rối về quyền riêng tư khi ghi nhật ký](https://steipete.me/posts/2025/logging-privacy-shenanigans) trên macOS (2025), điều này được kiểm soát bởi một plist trong `/Library/Preferences/Logging/Subsystems/` được khóa theo tên subsystem. Chỉ các mục nhật ký mới nhận cờ này, vì vậy hãy bật trước khi tái hiện sự cố.
+Hệ thống ghi nhật ký hợp nhất che giấu hầu hết nội dung dữ liệu trừ khi một hệ thống con bật `privacy -off`. Thiết lập này được kiểm soát bằng một tệp plist trong `/Library/Preferences/Logging/Subsystems/`, với khóa là tên hệ thống con. Chỉ các mục nhật ký mới áp dụng cờ này, vì vậy hãy bật nó trước khi tái hiện sự cố. Thông tin nền: [những rắc rối về quyền riêng tư khi ghi nhật ký trên macOS](https://steipete.me/posts/2025/logging-privacy-shenanigans).
 
 ## Bật cho OpenClaw (`ai.openclaw`)
 
-- Trước tiên ghi plist vào một tệp tạm, sau đó cài đặt nguyên tử dưới quyền root:
+Trước tiên, ghi plist vào một tệp tạm, sau đó cài đặt nguyên tử với quyền root:
 
 ```bash
 cat <<'EOF' >/tmp/ai.openclaw.plist
@@ -55,16 +53,15 @@ EOF
 sudo install -m 644 -o root -g wheel /tmp/ai.openclaw.plist /Library/Preferences/Logging/Subsystems/ai.openclaw.plist
 ```
 
-- Không cần khởi động lại; logd nhận thấy tệp nhanh chóng, nhưng chỉ các dòng nhật ký mới sẽ bao gồm payload riêng tư.
-- Xem đầu ra chi tiết hơn bằng trình trợ giúp hiện có, ví dụ: `./scripts/clawlog.sh --category WebChat --last 5m`.
+Không cần khởi động lại; logd nhanh chóng nhận tệp, nhưng chỉ các dòng nhật ký mới chứa nội dung dữ liệu riêng tư. Xem đầu ra chi tiết hơn bằng `./scripts/clawlog.sh --category WebChat --last 5m` (`--last`/`-l` đặt khoảng thời gian, mặc định là `5m`; `--category`/`-c` lọc theo danh mục).
 
 ## Tắt sau khi gỡ lỗi
 
-- Gỡ bỏ override: `sudo rm /Library/Preferences/Logging/Subsystems/ai.openclaw.plist`.
-- Có thể chạy `sudo log config --reload` để buộc logd bỏ override ngay lập tức.
-- Hãy nhớ rằng bề mặt này có thể bao gồm số điện thoại và nội dung tin nhắn; chỉ giữ plist tại chỗ trong khi bạn chủ động cần chi tiết bổ sung.
+- Xóa thiết lập ghi đè: `sudo rm /Library/Preferences/Logging/Subsystems/ai.openclaw.plist`.
+- Có thể chạy `sudo log config --reload` để buộc logd loại bỏ thiết lập ghi đè ngay lập tức.
+- Bề mặt này có thể chứa số điện thoại và nội dung tin nhắn; chỉ giữ plist tại chỗ khi đang thực sự cần dùng.
 
 ## Liên quan
 
-- [ứng dụng macOS](/vi/platforms/macos)
-- [ghi nhật ký Gateway](/vi/gateway/logging)
+- [Ứng dụng macOS](/vi/platforms/macos)
+- [Ghi nhật ký Gateway](/vi/gateway/logging)

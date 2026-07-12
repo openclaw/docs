@@ -1,78 +1,76 @@
 ---
 read_when:
     - تريد استخدام Cerebras مع OpenClaw
-    - تحتاج إلى متغيّر بيئة مفتاح Cerebras API أو اختيار مصادقة CLI
+    - تحتاج إلى متغير البيئة لمفتاح واجهة Cerebras البرمجية أو خيار المصادقة عبر CLI
 summary: إعداد Cerebras (المصادقة + اختيار النموذج)
 title: Cerebras
 x-i18n:
-    generated_at: "2026-06-27T18:22:55Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:21:14Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cd21756ac521c7b60ca6d3dfbef8665574dca52d1a25e6293169b24f4af6273e
+    source_hash: fca8110d345c796f0481ebf1a8d85c2cc9630b8bd55db8d4bf60772151b35b37
     source_path: providers/cerebras.md
     workflow: 16
 ---
 
-[Cerebras](https://www.cerebras.ai) يوفّر استدلالًا عالي السرعة متوافقًا مع OpenAI على عتاد استدلال مخصص. يتضمن Plugin مزوّد Cerebras كتالوجًا ثابتًا من أربعة نماذج.
+[Cerebras](https://www.cerebras.ai) توفر استدلالًا عالي السرعة متوافقًا مع OpenAI على عتاد استدلال مخصص. تأتي Plugin مع كتالوج ثابت يضم أربعة نماذج (من دون اكتشاف مباشر).
 
-| الخاصية          | القيمة                                  |
-| ---------------- | --------------------------------------- |
-| معرّف المزوّد     | `cerebras`                              |
-| Plugin           | حزمة خارجية رسمية                      |
-| متغير بيئة المصادقة | `CEREBRAS_API_KEY`                    |
-| علم الإعداد الأولي | `--auth-choice cerebras-api-key`       |
-| علم CLI المباشر  | `--cerebras-api-key <key>`              |
-| API              | متوافق مع OpenAI (`openai-completions`) |
-| عنوان URL الأساسي | `https://api.cerebras.ai/v1`           |
-| النموذج الافتراضي | `cerebras/zai-glm-4.7`                 |
+| الخاصية                 | القيمة                                                    |
+| ----------------------- | --------------------------------------------------------- |
+| معرّف المزوّد           | `cerebras`                                                |
+| Plugin                  | حزمة خارجية رسمية (`@openclaw/cerebras-provider`)         |
+| متغير بيئة المصادقة     | `CEREBRAS_API_KEY`                                        |
+| خيار الإعداد الأولي     | `--auth-choice cerebras-api-key`                          |
+| خيار CLI المباشر        | `--cerebras-api-key <key>`                                |
+| API                     | متوافقة مع OpenAI (`openai-completions`)                  |
+| عنوان URL الأساسي       | `https://api.cerebras.ai/v1`                              |
+| النموذج الافتراضي       | `cerebras/zai-glm-4.7`                                    |
 
 ## تثبيت Plugin
-
-ثبّت Plugin الرسمي، ثم أعد تشغيل Gateway:
 
 ```bash
 openclaw plugins install @openclaw/cerebras-provider
 openclaw gateway restart
 ```
 
-## البدء
+## بدء الاستخدام
 
 <Steps>
-  <Step title="Get an API key">
-    أنشئ مفتاح API في [Cerebras Cloud Console](https://cloud.cerebras.ai).
+  <Step title="الحصول على مفتاح API">
+    أنشئ مفتاح API في [وحدة تحكم Cerebras السحابية](https://cloud.cerebras.ai).
   </Step>
-  <Step title="Run onboarding">
+  <Step title="تشغيل الإعداد الأولي">
     <CodeGroup>
 
-```bash Onboarding
+```bash الإعداد الأولي
 openclaw onboard --auth-choice cerebras-api-key
 ```
 
-```bash Direct flag
+```bash الخيار المباشر
 openclaw onboard --non-interactive \
   --auth-choice cerebras-api-key \
   --cerebras-api-key "$CEREBRAS_API_KEY"
 ```
 
-```bash Env only
+```bash البيئة فقط
 export CEREBRAS_API_KEY=csk-...
 ```
 
     </CodeGroup>
 
   </Step>
-  <Step title="Verify models are available">
+  <Step title="التحقق من توفر النماذج">
     ```bash
     openclaw models list --provider cerebras
     ```
 
-    يجب أن تتضمن القائمة النماذج الثابتة الأربعة كلها. إذا لم يُحلّ `CEREBRAS_API_KEY`، فسيبلغ `openclaw models status --json` عن بيانات الاعتماد المفقودة ضمن `auth.unusableProfiles`.
+    يسرد هذا النماذج الثابتة الأربعة جميعها. إذا تعذّر العثور على قيمة `CEREBRAS_API_KEY`، فسيُبلغ `openclaw models status --json` عن بيانات الاعتماد المفقودة ضمن `auth.unusableProfiles`.
 
   </Step>
 </Steps>
 
-## إعداد غير تفاعلي
+## الإعداد غير التفاعلي
 
 ```bash
 openclaw onboard --non-interactive \
@@ -81,24 +79,24 @@ openclaw onboard --non-interactive \
   --cerebras-api-key "$CEREBRAS_API_KEY"
 ```
 
-## الكتالوج المدمج
+## الكتالوج المضمّن
 
-يشحن OpenClaw كتالوج Cerebras ثابتًا يعكس نقطة النهاية العامة المتوافقة مع OpenAI. تشترك النماذج الأربعة كلها في سياق 128 ألفًا و8,192 رمزًا كحد أقصى للإخراج.
+تشترك النماذج الأربعة جميعها في نافذة سياق بسعة 128 ألف رمز وحد أقصى للمخرجات يبلغ 8,192 رمزًا.
 
-| مرجع النموذج                              | الاسم                | الاستدلال | ملاحظات                                      |
-| ----------------------------------------- | -------------------- | --------- | -------------------------------------------- |
-| `cerebras/zai-glm-4.7`                    | Z.ai GLM 4.7         | نعم       | النموذج الافتراضي؛ نموذج استدلال للمعاينة   |
-| `cerebras/gpt-oss-120b`                   | GPT OSS 120B         | نعم       | نموذج استدلال للإنتاج                        |
-| `cerebras/qwen-3-235b-a22b-instruct-2507` | Qwen 3 235B Instruct | لا        | نموذج معاينة بلا استدلال                     |
-| `cerebras/llama3.1-8b`                    | Llama 3.1 8B         | لا        | نموذج إنتاج يركّز على السرعة                 |
+| مرجع النموذج                              | الاسم                 | الاستدلال | الملاحظات                                  |
+| ----------------------------------------- | -------------------- | --------- | ------------------------------------------ |
+| `cerebras/zai-glm-4.7`                    | Z.ai GLM 4.7         | نعم       | النموذج الافتراضي؛ نموذج استدلال تجريبي    |
+| `cerebras/gpt-oss-120b`                   | GPT OSS 120B         | نعم       | نموذج استدلال للإنتاج                      |
+| `cerebras/qwen-3-235b-a22b-instruct-2507` | Qwen 3 235B Instruct | لا        | نموذج تجريبي دون استدلال                   |
+| `cerebras/llama3.1-8b`                    | Llama 3.1 8B         | لا        | نموذج إنتاج يركز على السرعة                |
 
 <Warning>
-  تضع Cerebras علامتي `zai-glm-4.7` و`qwen-3-235b-a22b-instruct-2507` كنماذج معاينة، وتوثّق أن `llama3.1-8b` مع `qwen-3-235b-a22b-instruct-2507` سيُلغيان في 27 مايو 2026. تحقّق من صفحة النماذج المدعومة لدى Cerebras قبل الاعتماد عليها لأحمال عمل الإنتاج.
+تصنّف Cerebras النموذجين `zai-glm-4.7` و`qwen-3-235b-a22b-instruct-2507` كنموذجين تجريبيين، كما تشير وثائقها إلى إيقاف `llama3.1-8b` و`qwen-3-235b-a22b-instruct-2507` في 27 مايو 2026. راجع [صفحة النماذج المدعومة](https://inference-docs.cerebras.ai/models/overview) لدى Cerebras قبل الاعتماد عليها في أعباء عمل الإنتاج.
 </Warning>
 
-## إعداد يدوي
+## الضبط اليدوي
 
-يعني Plugin عادة أنك لا تحتاج إلا إلى مفتاح API. استخدم إعداد `models.providers.cerebras` الصريح عندما تريد تجاوز بيانات تعريف النموذج أو التشغيل في `mode: "merge"` مقابل الكتالوج الثابت:
+لا تحتاج معظم عمليات الإعداد إلا إلى مفتاح API. استخدم إعداد `models.providers.cerebras` الصريح لتجاوز بيانات النموذج الوصفية أو التشغيل باستخدام `mode: "merge"` مع الكتالوج الثابت:
 
 ```json5
 {
@@ -126,22 +124,22 @@ openclaw onboard --non-interactive \
 ```
 
 <Note>
-  إذا كان Gateway يعمل كخدمة خفية (launchd أو systemd أو Docker)، فتأكد من أن `CEREBRAS_API_KEY` متاح لتلك العملية، على سبيل المثال في `~/.openclaw/.env` أو عبر `env.shellEnv`. لن يفيد المفتاح المُصدَّر فقط في صدفة تفاعلية خدمةً مُدارة ما لم تُستورد البيئة بشكل منفصل.
+إذا كان Gateway يعمل كخدمة خفية (launchd أو systemd أو Docker)، فتأكد من إتاحة `CEREBRAS_API_KEY` لتلك العملية، على سبيل المثال في `~/.openclaw/.env` أو عبر `env.shellEnv`. لن يفيد المفتاح المصدَّر في صدفة تفاعلية فقط خدمةً مُدارة ما لم تُستورد البيئة بصورة منفصلة.
 </Note>
 
-## ذات صلة
+## موضوعات ذات صلة
 
 <CardGroup cols={2}>
-  <Card title="Model providers" href="/ar/concepts/model-providers" icon="layers">
-    اختيار المزوّدين، ومراجع النماذج، وسلوك تجاوز الفشل.
+  <Card title="مزوّدو النماذج" href="/ar/concepts/model-providers" icon="layers">
+    اختيار المزوّدين ومراجع النماذج وسلوك تجاوز الأعطال.
   </Card>
-  <Card title="Thinking modes" href="/ar/tools/thinking" icon="brain">
+  <Card title="أوضاع التفكير" href="/ar/tools/thinking" icon="brain">
     مستويات جهد الاستدلال لنموذجي Cerebras القادرين على الاستدلال.
   </Card>
-  <Card title="Configuration reference" href="/ar/gateway/config-agents#agent-defaults" icon="gear">
-    الإعدادات الافتراضية للوكيل وإعدادات النموذج.
+  <Card title="مرجع الإعدادات" href="/ar/gateway/config-agents#agent-defaults" icon="gear">
+    الإعدادات الافتراضية للوكيل وإعداد النماذج.
   </Card>
-  <Card title="Models FAQ" href="/ar/help/faq-models" icon="circle-question">
-    ملفات تعريف المصادقة، وتبديل النماذج، وحل أخطاء "no profile".
+  <Card title="الأسئلة الشائعة حول النماذج" href="/ar/help/faq-models" icon="circle-question">
+    ملفات تعريف المصادقة والتبديل بين النماذج وحل أخطاء "no profile".
   </Card>
 </CardGroup>

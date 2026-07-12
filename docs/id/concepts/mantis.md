@@ -1,66 +1,81 @@
 ---
 read_when:
-    - Membangun atau menjalankan QA visual live untuk bug OpenClaw
+    - Membangun atau menjalankan QA visual langsung untuk bug OpenClaw
     - Menambahkan verifikasi sebelum dan sesudah untuk pull request
-    - Menambahkan skenario transport langsung Discord, Slack, WhatsApp, atau lainnya
-    - Men-debug proses QA yang memerlukan tangkapan layar, otomasi browser, atau akses VNC
-summary: Mantis adalah sistem verifikasi end-to-end visual untuk mereproduksi bug OpenClaw pada transport live, menangkap bukti sebelum dan sesudah, serta melampirkan artefak ke PR.
+    - Menambahkan skenario transportasi langsung untuk Discord, Slack, WhatsApp, atau platform lainnya
+    - Menjalankan pembuktian browser Control UI yang terfokus untuk ref kandidat
+    - Men-debug proses QA yang memerlukan tangkapan layar, otomatisasi browser, atau akses VNC
+summary: Mantis merekam bukti visual menyeluruh untuk perbandingan transportasi langsung dan bukti browser terfokus yang hanya mencakup kandidat, lalu melampirkan artefak tersebut ke PR.
 title: Mantis
 x-i18n:
-    generated_at: "2026-06-27T17:24:32Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:05:02Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b9de83fac9bfa64b4828dab96fcbf5fac33466c7ede9406472801dc7322bf3ae
+    source_hash: 86b65ae8503b23407b600aa08f16940f9fcaa9a4e598963f7f878a3b336784f0
     source_path: concepts/mantis.md
     workflow: 16
 ---
 
-Mantis adalah sistem verifikasi end-to-end OpenClaw untuk bug yang membutuhkan runtime nyata, transport nyata, dan bukti yang terlihat. Sistem ini menjalankan skenario terhadap ref yang diketahui bermasalah, menangkap bukti, menjalankan skenario yang sama terhadap ref kandidat, lalu menerbitkan perbandingannya sebagai artefak yang dapat diperiksa maintainer dari PR atau dari perintah lokal.
-
-Mantis dimulai dengan Discord karena Discord memberi kita lane pertama bernilai tinggi: autentikasi bot nyata, channel guild nyata, reaction, thread, perintah native, dan UI browser tempat manusia dapat mengonfirmasi secara visual apa yang ditampilkan transport.
-
-## Tujuan
-
-- Mereproduksi bug dari issue atau PR GitHub dengan bentuk transport yang sama seperti yang dilihat pengguna.
-- Menangkap artefak **sebelum** pada ref baseline sebelum menerapkan perbaikan.
-- Menangkap artefak **sesudah** pada ref kandidat setelah menerapkan perbaikan.
-- Menggunakan oracle deterministik kapan pun memungkinkan, seperti pembacaan reaction Discord REST atau pemeriksaan transkrip channel.
-- Menangkap screenshot ketika bug memiliki permukaan UI yang terlihat.
-- Berjalan secara lokal dari CLI yang dikendalikan agen dan secara remote dari GitHub.
-- Menyimpan machine state yang cukup untuk penyelamatan VNC ketika login, otomasi browser, atau autentikasi provider tersangkut.
-- Memposting status ringkas ke channel Discord operator ketika run terblokir, membutuhkan bantuan VNC manual, atau selesai.
-
-## Bukan tujuan
-
-- Mantis bukan pengganti unit test. Run Mantis biasanya harus menjadi regression test yang lebih kecil setelah perbaikannya dipahami.
-- Mantis bukan gate CI cepat normal. Ia lebih lambat, menggunakan kredensial live, dan dicadangkan untuk bug ketika lingkungan live penting.
-- Mantis tidak boleh membutuhkan manusia untuk operasi normal. VNC manual adalah jalur penyelamatan, bukan jalur utama.
-- Mantis tidak menyimpan secret mentah dalam artefak, log, screenshot, laporan Markdown, atau komentar PR.
+Mantis menerbitkan bukti CI visual dan komentar PR untuk perilaku OpenClaw.
+Skenario transportasi langsung membandingkan baseline yang diketahui bermasalah dengan ref kandidat;
+jalur browser terfokus sebagai gantinya dapat membuktikan satu kandidat terhadap
+transportasi tiruan deterministik. Discord menjadi yang pertama dirilis dengan autentikasi bot nyata, kanal guild,
+reaksi, utas, dan saksi browser. Jalur Slack, Telegram, dan obrolan Control
+UI terfokus juga tersedia; WhatsApp dan Matrix belum diimplementasikan.
 
 ## Kepemilikan
 
-Mantis berada di stack QA OpenClaw.
+- OpenClaw (`extensions/qa-lab/src/mantis/*`): runtime skenario, CLI `pnpm openclaw qa mantis <command>`, skema bukti.
+- QA Lab (`extensions/qa-lab/src/live-transports/*`): harness transportasi langsung, bot driver/SUT, penulis laporan/bukti.
+- Crabbox (`openclaw/crabbox`): mesin Linux yang telah dipanaskan, sewa, VNC, `crabbox media preview`.
+- GitHub Actions (`.github/workflows/mantis-*.yml`): titik masuk jarak jauh, retensi artefak.
+- ClawSweeper: mengurai perintah PR pengelola, menjalankan alur kerja, memposting komentar PR akhir.
 
-- OpenClaw memiliki runtime skenario, adapter transport, skema bukti, dan CLI lokal di bawah `pnpm openclaw qa mantis`.
-- QA Lab memiliki bagian harness transport live, helper capture browser, dan penulis artefak.
-- Crabbox memiliki mesin Linux yang sudah dipanaskan ketika VM remote diperlukan.
-- GitHub Actions memiliki entrypoint workflow remote dan retensi artefak.
-- ClawSweeper memiliki routing komentar GitHub: mengurai perintah maintainer, men-dispatch workflow, dan memposting komentar PR akhir.
-- Agen OpenClaw menjalankan Mantis melalui Codex ketika skenario membutuhkan setup agenik, debugging, atau pelaporan state tersangkut.
+## Perintah CLI
 
-Batas ini menjaga pengetahuan transport di OpenClaw, penjadwalan mesin di Crabbox, dan perekat workflow maintainer di ClawSweeper.
+Semua perintah berbentuk `pnpm openclaw qa mantis <command>`, yang didefinisikan di
+`extensions/qa-lab/src/mantis/cli.ts`. Memerlukan `OPENCLAW_ENABLE_PRIVATE_QA_CLI=1`
+saat build/runtime (alur kerja yang dibundel menetapkan `OPENCLAW_BUILD_PRIVATE_QA=1` dan
+`OPENCLAW_ENABLE_PRIVATE_QA_CLI=1` sebelum melakukan build).
 
-## Bentuk perintah
+| Perintah                        | Tujuan                                                                                                                                                    |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `discord-smoke`                 | Memverifikasi bahwa bot Discord Mantis dapat melihat guild/kanal, memposting, dan memberikan reaksi.                                                      |
+| `run`                           | Menjalankan skenario sebelum/sesudah terhadap ref baseline dan kandidat (khusus Discord).                                                                  |
+| `desktop-browser-smoke`         | Menyewa/menggunakan kembali desktop Crabbox, membuka browser yang terlihat, mengambil tangkapan layar + video.                                             |
+| `slack-desktop-smoke`           | Menyewa/menggunakan kembali desktop Crabbox, menjalankan QA Slack di dalamnya, membuka Slack Web, mengambil bukti.                                         |
+| `telegram-desktop-builder`      | Menyewa/menggunakan kembali desktop Crabbox, memasang Telegram Desktop, dan secara opsional mengonfigurasi Gateway OpenClaw.                               |
+| `visual-task` / `visual-driver` | Pengambilan tampilan desktop Crabbox generik dengan asersi pemahaman gambar opsional; `visual-driver` adalah bagian driver yang diluncurkan di bawah `crabbox record --while`. |
 
-Perintah lokal pertama memverifikasi bot Discord, guild, channel, pengiriman pesan, pengiriman reaction, dan jalur artefak:
+Setiap perintah menerima `--repo-root <path>` dan `--output-dir <path>`; perintah Crabbox
+juga menerima `--crabbox-bin`, `--provider`, `--machine-class`/`--class`,
+`--lease-id`, `--idle-timeout`, `--ttl`, dan `--keep-lease`. Nilai bawaan CLI lokal
+untuk penyedia/kelas adalah `hetzner`/`beast` kecuali dinyatakan lain; alur kerja CI
+biasanya menimpa keduanya.
+
+### `discord-smoke`
 
 ```bash
 pnpm openclaw qa mantis discord-smoke \
   --output-dir .artifacts/qa-e2e/mantis/discord-smoke
 ```
 
-Runner lokal sebelum dan sesudah menerima bentuk ini:
+Memanggil API REST Discord (`https://discord.com/api/v10`) untuk mengambil pengguna
+bot, guild, kanal milik guild, dan kanal target, memastikan bahwa
+kanal tersebut milik guild, lalu (kecuali jika menggunakan `--skip-post`) memposting pesan dan
+menambahkan reaksi `👀`. Menulis `mantis-discord-smoke-summary.json` dan
+`mantis-discord-smoke-report.md`.
+
+Urutan resolusi token: nilai `--token-file`, lalu `OPENCLAW_QA_DISCORD_MANTIS_BOT_TOKEN`
+(timpa dengan `--token-env`), lalu berkas yang namanya ditentukan oleh `OPENCLAW_QA_DISCORD_MANTIS_BOT_TOKEN_FILE`
+(timpa dengan `--token-file-env`). ID guild/kanal berasal dari
+`OPENCLAW_QA_DISCORD_GUILD_ID` / `OPENCLAW_QA_DISCORD_CHANNEL_ID` (timpa dengan
+`--guild-id` / `--channel-id`) dan harus berupa snowflake Discord sepanjang 17–20 digit. Tetapkan
+`OPENCLAW_QA_REDACT_PUBLIC_METADATA=1` untuk mengganti ID bot/guild/kanal/pesan
+dan nama dengan `<redacted>` dalam ringkasan dan laporan yang diterbitkan.
+
+### `run`
 
 ```bash
 pnpm openclaw qa mantis run \
@@ -71,46 +86,72 @@ pnpm openclaw qa mantis run \
   --output-dir .artifacts/qa-e2e/mantis/local-discord-status-reactions
 ```
 
-Runner membuat worktree baseline dan kandidat yang terpisah di bawah direktori output, menginstal dependensi, membangun setiap ref, menjalankan skenario dengan `--allow-failures`, lalu menulis `baseline/`, `candidate/`, `comparison.json`, dan `mantis-report.md`. Untuk skenario Discord pertama, verifikasi yang berhasil berarti status baseline adalah `fail` dan status kandidat adalah `pass`.
+`--transport` saat ini hanya menerima `discord`. `--scenario` adalah salah satu dari dua
+ID bawaan, masing-masing dengan ref baseline bawaan dan label sebelum/sesudah
+yang diharapkan (`extensions/qa-lab/src/mantis/run.runtime.ts`):
 
-Probe sebelum/sesudah Discord kedua menargetkan attachment thread:
+| Skenario                                   | Baseline bawaan                            | Harapan baseline                                 | Harapan kandidat             |
+| ------------------------------------------ | ------------------------------------------ | ------------------------------------------------ | ---------------------------- |
+| `discord-status-reactions-tool-only`       | `0bf06e953fdda290799fc9fb9244a8f67fdae593` | `queued-only`                                    | `queued -> thinking -> done` |
+| `discord-thread-reply-filepath-attachment` | `81349cdc2a9d5143fd0991ed858b739e7d96e05c` | balasan utas tidak menyertakan lampiran `filePath` | balasan utas menyertakannya  |
 
-```bash
-pnpm openclaw qa mantis run \
-  --transport discord \
-  --scenario discord-thread-reply-filepath-attachment \
-  --baseline <bug-ref> \
-  --candidate <fix-ref> \
-  --output-dir .artifacts/qa-e2e/mantis/local-discord-thread-attachment
-```
+`--candidate` secara bawaan bernilai `HEAD`. Flag lainnya: `--credential-source`
+(bawaan `convex`), `--credential-role` (bawaan `ci`), `--provider-mode`
+(bawaan `live-frontier`), `--fast` (aktif secara bawaan), `--skip-install`, `--skip-build`.
 
-Skenario itu memposting pesan induk dengan bot driver, membuat thread Discord nyata, memanggil aksi `message.thread-reply` OpenClaw dengan `filePath` lokal repo, lalu melakukan polling thread untuk balasan SUT dan nama file attachment. Screenshot baseline menampilkan balasan tanpa attachment; screenshot kandidat menampilkan attachment `mantis-thread-report.md` yang diharapkan.
+Runner membuat checkout `git worktree` terpisah untuk baseline dan
+kandidat di bawah `<output-dir>/worktrees/`, menjalankan `pnpm install`/`pnpm build` pada
+masing-masing (kecuali dilewati), lalu menjalankan
+`pnpm openclaw qa discord --scenario <id> --model openai/gpt-5.4 --alt-model openai/gpt-5.4 --allow-failures`
+terhadap setiap worktree. Setiap jalur menulis `discord-qa-reaction-timelines.json`
+serta pasangan `<scenario-id>-timeline.html`/`.png`; runner menyalin
+bukti ini kembali ke bawah `baseline/`/`candidate/`, menulis `comparison.json`,
+`mantis-report.md`, dan `mantis-evidence.json` di direktori keluaran, serta
+keluar dengan kode bukan nol jika perbandingan tidak lulus (baseline `fail` dan kandidat
+`pass`).
 
-Primitif VM/browser pertama adalah smoke desktop:
+Skenario Discord kedua (`discord-thread-reply-filepath-attachment`) memposting
+pesan induk dengan bot driver, membuat utas nyata, memanggil tindakan
+`message.thread-reply` milik SUT dengan `filePath` lokal repo, lalu melakukan polling pada
+utas untuk menemukan balasan dan nama berkas lampiran. Skenario ini mengharapkan lampiran
+bernama `mantis-thread-report.md`.
+
+### `desktop-browser-smoke`
 
 ```bash
 pnpm openclaw qa mantis desktop-browser-smoke \
   --output-dir .artifacts/qa-e2e/mantis/desktop-browser
 ```
 
-Ini menyewa atau menggunakan ulang mesin desktop Crabbox, memulai browser yang terlihat di dalam sesi VNC, menangkap desktop, menarik artefak kembali ke direktori output lokal, dan menulis perintah reconnect ke dalam laporan. Perintah ini secara default menggunakan provider Hetzner karena itu adalah provider pertama dengan cakupan desktop/VNC yang berfungsi di lane Mantis. Override dengan `--provider`, `--crabbox-bin`, atau `OPENCLAW_MANTIS_CRABBOX_PROVIDER` ketika berjalan terhadap fleet Crabbox lain.
+Menyewa atau menggunakan kembali desktop Crabbox, meluncurkan browser di dalam sesi VNC
+yang diarahkan ke `--browser-url` (bawaan `https://openclaw.ai`) atau
+`--html-file` yang dirender, menunggu, mengambil tangkapan layar dengan `scrot`, secara opsional merekam MP4 dengan
+`ffmpeg`, dan melakukan rsync terhadap `desktop-browser-smoke.png` / `.mp4` / `remote-metadata.json`
+kembali ke `--output-dir`.
 
-Flag smoke desktop yang berguna:
+Flag:
 
-- `--lease-id <cbx_...>` atau `OPENCLAW_MANTIS_CRABBOX_LEASE_ID` menggunakan ulang desktop yang sudah dipanaskan.
-- `--browser-url <url>` mengubah halaman yang dibuka di browser yang terlihat.
-- `--html-file <path>` merender artefak HTML lokal repo di browser yang terlihat. Mantis menggunakan ini untuk menangkap timeline reaction status Discord yang dihasilkan melalui desktop Crabbox nyata.
-- `--browser-profile-dir <remote-path>` menggunakan ulang Chrome user-data-dir remote sehingga desktop Mantis persisten dapat tetap login antar-run. Gunakan ini untuk profil penampil Discord Web yang berjalan lama.
-- `--browser-profile-archive-env <name>` memulihkan arsip Chrome user-data-dir `.tgz` base64 dari environment variable bernama sebelum meluncurkan browser. Gunakan ini untuk saksi yang sudah login seperti Discord Web. Env var default adalah `OPENCLAW_MANTIS_BROWSER_PROFILE_TGZ_B64`.
-- `--video-duration <seconds>` mengontrol durasi capture MP4. Gunakan durasi yang lebih panjang untuk aplikasi web login yang lambat dan membutuhkan waktu untuk stabil.
-- `--keep-lease` atau `OPENCLAW_MANTIS_KEEP_VM=1` menjaga lease baru yang berhasil tetap terbuka untuk inspeksi VNC. Run yang gagal mempertahankan lease secara default ketika lease dibuat agar operator dapat reconnect.
-- `--class`, `--idle-timeout`, dan `--ttl` menyesuaikan ukuran mesin dan masa pakai lease.
+- `--lease-id <cbx_...>` menggunakan kembali desktop yang telah dipanaskan alih-alih membuat yang baru.
+- `--browser-profile-dir <remote-path>` menggunakan kembali direktori data pengguna Chrome jarak jauh agar desktop persisten tetap dalam keadaan login di antara eksekusi (digunakan untuk profil penampil Discord Web jangka panjang).
+- `--browser-profile-archive-env <name>` memulihkan arsip profil Chrome `.tgz` base64 dari variabel lingkungan tersebut sebelum peluncuran (bawaan `OPENCLAW_MANTIS_BROWSER_PROFILE_TGZ_B64`); digunakan untuk saksi yang sudah login seperti Discord Web.
+- `--video-duration <seconds>` mengatur durasi pengambilan MP4 (bawaan 10 detik).
+- `--keep-lease` (atau `OPENCLAW_MANTIS_KEEP_VM=1`) mempertahankan sewa yang dibuat oleh eksekusi ini agar tetap terbuka untuk pemeriksaan VNC; eksekusi gagal yang membuat sewa juga mempertahankannya secara bawaan.
 
-Untuk bukti Discord Web, Mantis menggunakan akun penampil khusus alih-alih token bot. Skenario API Discord live tetap menjadi oracle: ia membuat thread nyata, mengirim `thread-reply` SUT, dan memeriksa attachment melalui Discord REST. Ketika `OPENCLAW_QA_DISCORD_CAPTURE_UI_METADATA=1` disetel, skenario juga menulis artefak URL Discord Web. Ketika `OPENCLAW_QA_DISCORD_KEEP_THREADS=1` disetel, skenario membiarkan thread itu tersedia cukup lama agar browser yang sudah login dapat membuka dan merekamnya.
+Untuk bukti Discord Web, Mantis menggunakan akun penampil khusus, bukan token
+bot. Oracle REST Discord (melalui `qa discord`) tetap menjadi sumber otoritatif; ketika
+`OPENCLAW_QA_DISCORD_CAPTURE_UI_METADATA=1` ditetapkan, skenario juga menulis artefak
+URL Discord Web, dan `OPENCLAW_QA_DISCORD_KEEP_THREADS=1` membiarkan
+utas tetap terbuka cukup lama agar browser dapat membukanya.
 
-Workflow GitHub membuka URL thread kandidat di Discord Web, menangkap screenshot, merekam MP4, dan menghasilkan pratinjau GIF yang dipangkas berdasarkan gerakan ketika tooling media Crabbox tersedia. Utamakan jalur profil penampil persisten yang dikonfigurasi melalui `MANTIS_DISCORD_VIEWER_CHROME_PROFILE_DIR`, karena arsip profil Chrome penuh dapat melampaui batas ukuran secret GitHub. Untuk profil kecil/bootstrap, workflow juga dapat memulihkan arsip `.tgz` base64 dari `MANTIS_DISCORD_VIEWER_CHROME_PROFILE_TGZ_B64`. Jika tidak ada sumber profil yang dikonfigurasi, workflow tetap menerbitkan screenshot attachment baseline/kandidat yang deterministik dan mencatat pemberitahuan bahwa saksi Discord Web yang sudah login dilewati.
+Alur kerja GitHub mengutamakan profil penampil persisten melalui
+`MANTIS_DISCORD_VIEWER_CHROME_PROFILE_DIR` (arsip profil lengkap dapat melampaui
+batas ukuran rahasia GitHub); untuk profil kecil/bootstrap, alur kerja dapat memulihkan
+`.tgz` base64 dari `MANTIS_DISCORD_VIEWER_CHROME_PROFILE_TGZ_B64` sebagai gantinya. Jika
+tidak ada sumber yang dikonfigurasi, alur kerja tetap menerbitkan tangkapan layar
+baseline/kandidat deterministik dan mencatat bahwa saksi yang telah login
+dilewati.
 
-Primitif transport desktop penuh pertama adalah smoke desktop Slack:
+### `slack-desktop-smoke`
 
 ```bash
 pnpm openclaw qa mantis slack-desktop-smoke \
@@ -120,80 +161,53 @@ pnpm openclaw qa mantis slack-desktop-smoke \
   --keep-lease
 ```
 
-Ini menyewa atau menggunakan ulang mesin desktop Crabbox, menyinkronkan checkout saat ini ke VM, menjalankan `pnpm openclaw qa slack` di dalam VM itu, membuka Slack Web di browser VNC, menangkap desktop yang terlihat, dan menyalin artefak QA Slack serta screenshot VNC kembali ke direktori output lokal. Ini adalah bentuk Mantis pertama ketika Gateway OpenClaw SUT dan browser sama-sama berada di dalam VM desktop Linux yang sama.
+Menyewa atau menggunakan kembali desktop Crabbox, menyinkronkan checkout ke dalam VM, menjalankan
+`pnpm openclaw qa slack` di dalamnya, membuka Slack Web di browser VNC,
+mengambil tampilan desktop, dan menyalin artefak QA Slack (`slack-qa/`) serta
+tangkapan layar/video VNC kembali ke lokal. Ini adalah satu-satunya bentuk Mantis tempat
+Gateway SUT dan browser berjalan di dalam VM yang sama.
 
-Dengan `--gateway-setup`, perintah menyiapkan home OpenClaw sekali pakai yang persisten di `$HOME/.openclaw-mantis/slack-openclaw`, mem-patch konfigurasi Slack Socket Mode untuk channel yang dipilih, memulai `openclaw gateway run` pada port `38973`, dan menjaga Chrome tetap berjalan di sesi VNC. Ini adalah mode "tinggalkan desktop Linux dengan Slack dan claw yang berjalan"; lane QA Slack bot-ke-bot tetap menjadi default ketika `--gateway-setup` dihilangkan.
+Dengan `--gateway-setup`, perintah membuat home OpenClaw sekali pakai yang persisten
+di `$HOME/.openclaw-mantis/slack-openclaw` dalam VM, menambal
+konfigurasi Slack Socket Mode untuk kanal target, memulai
+`openclaw gateway run --dev --allow-unconfigured --port 38973`, dan membiarkan
+Chrome tetap berjalan dalam sesi VNC; menghilangkan `--gateway-setup` akan menjalankan jalur
+QA Slack bot-ke-bot normal sebagai gantinya.
 
-Input wajib untuk `--credential-source env`:
+Variabel lingkungan yang diperlukan untuk `--credential-source env` (nilai bawaan lokal adalah `env`; peran
+bawaan adalah `maintainer`):
 
 - `OPENCLAW_QA_SLACK_CHANNEL_ID`
 - `OPENCLAW_QA_SLACK_DRIVER_BOT_TOKEN`
 - `OPENCLAW_QA_SLACK_SUT_BOT_TOKEN`
 - `OPENCLAW_QA_SLACK_SUT_APP_TOKEN`
-- `OPENCLAW_LIVE_OPENAI_KEY` untuk lane model remote. Jika hanya `OPENAI_API_KEY` yang disetel secara lokal, Mantis memetakannya ke `OPENCLAW_LIVE_OPENAI_KEY` sebelum memanggil Crabbox sehingga forwarding env `OPENCLAW_*` Crabbox dapat membawanya ke VM.
+- `OPENCLAW_LIVE_OPENAI_KEY` untuk jalur model jarak jauh (jika hanya `OPENAI_API_KEY`
+  yang ditetapkan secara lokal, Mantis menyalinnya ke `OPENCLAW_LIVE_OPENAI_KEY` sebelum
+  memanggil Crabbox)
 
-Dengan `--gateway-setup --credential-source convex`, Mantis menyewa kredensial SUT Slack dari pool bersama sebelum membuat VM dan meneruskan channel id yang disewa, token app Socket Mode, dan token bot sebagai env runtime `OPENCLAW_MANTIS_SLACK_*` di dalam desktop. Itu menjaga workflow GitHub tetap tipis: workflow hanya membutuhkan secret broker Convex, bukan token bot atau app Slack mentah.
+Dengan `--credential-source convex`, Mantis menyewa kredensial SUT Slack dari
+kumpulan bersama sebelum membuat VM dan meneruskan ID kanal, token aplikasi, dan
+token bot ke dalam VM sebagai variabel lingkungan `OPENCLAW_MANTIS_SLACK_*`, sehingga alur kerja
+GitHub hanya memerlukan rahasia broker Convex, bukan token Slack mentah.
 
-Flag desktop Slack yang berguna:
+Flag lainnya: `--slack-url <url>` membuka URL tertentu (jika tidak, Mantis memperoleh
+`https://app.slack.com/client/<team>/<channel>` dari `auth.test`);
+`--slack-channel-id <id>` menetapkan kanal daftar izin Gateway;
+`OPENCLAW_MANTIS_SLACK_BROWSER_PROFILE_DIR` mengendalikan profil Chrome persisten
+di dalam VM (bawaan `$HOME/.config/openclaw-mantis/slack-chrome-profile`);
+`--approval-checkpoints` menjalankan skenario persetujuan Slack native
+(`slack-approval-exec-native`, `slack-approval-plugin-native`) dan merender
+tangkapan layar titik pemeriksaan tertunda/terselesaikan alih-alih penyiapan Gateway (saling
+eksklusif dengan `--gateway-setup`); `--hydrate-mode source|prehydrated`,
+`--provider-mode`, `--model`, `--alt-model`, dan `--fast` diteruskan ke
+jalur langsung Slack.
 
-- `--lease-id <cbx_...>` menjalankan ulang terhadap mesin tempat operator sudah login ke Slack Web melalui VNC.
-- `--gateway-setup` memulai Gateway Slack OpenClaw persisten di VM alih-alih hanya menjalankan lane QA bot-ke-bot.
-- `--keep-lease` menjaga VM Gateway tetap terbuka untuk inspeksi VNC setelah berhasil; `--no-keep-lease` menghentikannya setelah mengumpulkan artefak.
-- `--slack-url <url>` membuka URL Slack Web tertentu. Tanpanya, Mantis menurunkan `https://app.slack.com/client/<team>/<channel>` dari Slack `auth.test` ketika token bot SUT tersedia.
-- `--slack-channel-id <id>` mengontrol allowlist channel Slack yang digunakan oleh setup Gateway.
-- `OPENCLAW_MANTIS_SLACK_BROWSER_PROFILE_DIR` mengontrol profil Chrome persisten di dalam VM. Defaultnya adalah `$HOME/.config/openclaw-mantis/slack-chrome-profile`, sehingga login Slack Web manual bertahan pada rerun di lease yang sama.
-- `--credential-source convex --credential-role ci` menggunakan pool kredensial bersama alih-alih token env Slack langsung.
-- `--provider-mode`, `--model`, `--alt-model`, dan `--fast` diteruskan ke lane live Slack.
+Tangkapan layar titik pemeriksaan persetujuan dirender dari pesan API Slack yang
+diamati skenario, bukan UI Slack langsung; `slack-desktop-smoke.png` hanya
+merupakan bukti Slack Web itu sendiri ketika profil browser sewa sudah dalam keadaan
+login.
 
-Run checkpoint approval merender snapshot pesan API Slack menjadi PNG checkpoint untuk bukti visual yang aman bagi CI. `slack-desktop-smoke.png` hanya menjadi bukti Slack Web ketika lease menggunakan profil browser hangat yang sudah login.
-
-Workflow smoke GitHub adalah `Mantis Discord Smoke`. Workflow GitHub sebelum dan sesudah untuk skenario nyata pertama adalah `Mantis Discord Status Reactions`. Ia menerima:
-
-- `baseline_ref`: ref yang diharapkan mereproduksi perilaku hanya queued.
-- `candidate_ref`: ref yang diharapkan menampilkan `queued -> thinking -> done`.
-
-Ia melakukan checkout ref harness workflow, membangun worktree baseline dan kandidat terpisah, menjalankan `discord-status-reactions-tool-only` terhadap setiap worktree, dan mengunggah `baseline/`, `candidate/`, `comparison.json`, dan `mantis-report.md` sebagai artefak Actions. Ia juga merender HTML timeline setiap lane di browser desktop Crabbox dan menerbitkan screenshot VNC itu di samping PNG timeline deterministik dalam komentar PR. Komentar PR yang sama menyematkan pratinjau GIF ringan yang dipangkas berdasarkan gerakan dan dihasilkan oleh `crabbox media preview`, menautkan ke klip MP4 yang juga dipangkas berdasarkan gerakan, serta mempertahankan file MP4 desktop penuh untuk inspeksi mendalam. Screenshot tetap inline untuk peninjauan cepat. Workflow membangun CLI Crabbox dari main `openclaw/crabbox` agar dapat menggunakan flag lease desktop/browser saat ini sebelum rilis biner Crabbox berikutnya dibuat.
-
-`Mantis Scenario` adalah titik masuk manual generik. Ia menerima `scenario_id`,
-`candidate_ref`, `baseline_ref` opsional, dan `pr_number` opsional, lalu
-mendispatch alur kerja milik skenario. Pembungkus ini sengaja dibuat tipis:
-alur kerja skenario tetap memiliki penyiapan transport, kredensial, kelas VM,
-oracle yang diharapkan, dan manifest artefak masing-masing.
-
-`Mantis Slack Desktop Smoke` adalah alur kerja VM Slack pertama. Ia melakukan checkout
-ref kandidat tepercaya di worktree terpisah, menyewa desktop Linux Crabbox,
-menjalankan `pnpm openclaw qa mantis slack-desktop-smoke --gateway-setup` terhadap
-kandidat tersebut, membuka Slack Web di browser VNC, merekam desktop, membuat
-pratinjau yang dipangkas berdasarkan gerakan dengan `crabbox media preview`, mengunggah
-direktori artefak lengkap, dan secara opsional memposting komentar bukti inline pada PR target.
-Secara default ia menggunakan AWS untuk sewa desktop dan menyediakan input penyedia manual agar
-operator dapat beralih ke Hetzner saat kapasitas AWS lambat atau tidak tersedia. Gunakan
-jalur ini saat Anda menginginkan "desktop Linux dengan Slack dan claw yang berjalan", bukan
-hanya transkrip Slack bot-ke-bot.
-
-`Mantis Telegram Live` membungkus jalur QA live Telegram yang ada dalam pipeline
-bukti PR yang sama. Ia melakukan checkout ref kandidat tepercaya di worktree terpisah,
-menjalankan `pnpm openclaw qa telegram --credential-source convex
---credential-role ci`, menulis manifest `mantis-evidence.json` dari ringkasan
-QA Telegram, `qa-evidence.json`, dan artefak laporan, merender HTML bukti
-yang telah disamarkan melalui browser desktop Crabbox, membuat GIF yang dipangkas
-berdasarkan gerakan dengan `crabbox media preview`, dan memposting komentar bukti
-PR inline saat nomor PR tersedia. Jalur ini adalah visual bukti QA, bukan bukti
-Telegram Web yang sudah login: Telegram Bot API menyediakan bukti pesan live yang stabil,
-tetapi status login Telegram Web tidak diperlukan untuk otomatisasi Mantis normal.
-
-`Mantis Telegram Desktop Proof` adalah pembungkus sebelum/sesudah Telegram Desktop
-native yang agentik. Pemelihara dapat memicunya dari komentar PR dengan
-`@openclaw-mantis telegram desktop proof`, dari UI Actions dengan instruksi
-bentuk bebas, atau melalui dispatcher generik `Mantis Scenario`. Alur kerja
-menyerahkan PR, ref baseline, ref kandidat, dan instruksi pemelihara kepada Codex.
-Agent membaca PR, memutuskan perilaku yang terlihat di Telegram untuk membuktikan
-perubahan, menjalankan jalur bukti Crabbox Telegram Desktop pengguna nyata untuk baseline dan
-kandidat, melakukan iterasi hingga GIF native berguna, menulis artefak
-`motionPreview` berpasangan ke dalam `mantis-evidence.json`, mengunggah bundel, dan
-memposting tabel bukti PR 2 kolom saat nomor PR tersedia.
-
-Untuk penyiapan desktop Telegram dengan manusia dalam loop, gunakan pembuat skenario:
+### `telegram-desktop-builder`
 
 ```bash
 pnpm openclaw qa mantis telegram-desktop-builder \
@@ -202,26 +216,27 @@ pnpm openclaw qa mantis telegram-desktop-builder \
   --keep-lease
 ```
 
-Pembuat menyewa atau menggunakan ulang desktop Crabbox, memasang binary native Linux
-Telegram Desktop, secara opsional memulihkan arsip sesi pengguna, mengonfigurasi
-OpenClaw dengan token bot SUT Telegram yang disewa, memulai `openclaw gateway run`
-pada port `38974`, memposting pesan kesiapan bot driver ke grup privat yang disewa,
-lalu mengambil screenshot dan MP4 dari desktop VNC yang terlihat. Token bot
-tidak pernah login ke Telegram Desktop; token hanya mengonfigurasi OpenClaw. Penampil
-desktop adalah sesi pengguna Telegram terpisah yang dipulihkan dari
-`--telegram-profile-archive-env <name>` atau dibuat secara manual melalui VNC dan tetap
-hidup dengan `--keep-lease`.
+Menyewa atau menggunakan kembali desktop Crabbox, memasang Telegram Desktop Linux native,
+secara opsional memulihkan arsip sesi pengguna, mengonfigurasi OpenClaw dengan
+token bot SUT Telegram yang disewa, memulai
+`openclaw gateway run --dev --allow-unconfigured --port 38974`, mengirim pesan
+kesiapan bot pengendali ke grup privat yang disewa, lalu mengambil
+tangkapan layar dan MP4. Token bot hanya mengonfigurasi OpenClaw; token tersebut tidak pernah
+memasukkan Telegram Desktop ke akun. Penampil desktop adalah sesi pengguna Telegram terpisah
+yang dipulihkan dari `--telegram-profile-archive-env <name>` atau dimasukkan ke akun secara manual
+melalui VNC dan dipertahankan tetap aktif dengan `--keep-lease`.
 
-Flag pembuat desktop Telegram yang berguna:
+Flag: `--lease-id <cbx_...>` menjalankan ulang pada VM yang sudah masuk ke
+Telegram Desktop; `--telegram-profile-archive-env <name>` memulihkan arsip profil
+`.tgz` base64 sebelum peluncuran; `--telegram-profile-dir <remote-path>`
+menetapkan direktori profil jarak jauh (bawaan `$HOME/.local/share/TelegramDesktop`);
+`--no-gateway-setup` hanya memasang dan membuka Telegram Desktop;
+`--credential-source`/`--credential-role` secara bawaan menggunakan `convex`/`maintainer`.
 
-- `--lease-id <cbx_...>` menjalankan ulang terhadap VM tempat operator sudah login ke Telegram Desktop.
-- `--telegram-profile-archive-env <name>` membaca arsip profil Telegram Desktop `.tgz` base64 dari variabel env tersebut dan memulihkannya sebelum peluncuran.
-- `--telegram-profile-dir <remote-path>` mengontrol direktori profil Telegram Desktop jarak jauh. Defaultnya adalah `$HOME/.local/share/TelegramDesktop`.
-- `--no-gateway-setup` memasang dan membuka Telegram Desktop tanpa mengonfigurasi OpenClaw.
-- `--credential-source convex --credential-role ci` menggunakan broker kredensial bersama, bukan token env Telegram langsung.
+## Manifes bukti
 
-Setiap skenario yang memublikasikan PR menulis `mantis-evidence.json` di samping laporannya.
-Skema ini adalah serah-terima antara kode skenario dan komentar GitHub:
+Setiap skenario yang dipublikasikan ke PR menulis `mantis-evidence.json` di samping
+laporannya:
 
 ```json
 {
@@ -249,424 +264,174 @@ Skema ini adalah serah-terima antara kode skenario dan komentar GitHub:
 }
 ```
 
-Nilai `path` artefak relatif terhadap direktori manifest. Nilai `targetPath`
-adalah path relatif di bawah prefiks artefak Mantis R2/S3 yang dikonfigurasi. Publisher
-menolak traversal path dan melewati entri bertanda `"required": false`
-saat pratinjau atau video opsional tidak tersedia.
+`path` artefak bersifat relatif terhadap direktori manifes; `targetPath` bersifat
+relatif terhadap prefiks artefak R2/S3 yang dikonfigurasi. `scripts/mantis/publish-pr-evidence.mjs`
+menolak penelusuran jalur dan melewati entri dengan `"required": false` ketika
+berkas tidak ada.
 
-Jenis artefak yang didukung:
+Jenis artefak: `timeline` (tangkapan layar sebelum/sesudah yang deterministik),
+`desktopScreenshot` (tangkapan layar VNC/peramban), `motionPreview` (GIF animasi
+sebaris dari rekaman), `motionClip` (MP4 yang dipangkas berdasarkan gerakan), `fullVideo` (rekaman
+lengkap), `metadata` (berkas pendamping JSON/log), `report` (laporan Markdown).
 
-- `timeline`: screenshot skenario deterministik, biasanya sebelum/sesudah.
-- `desktopScreenshot`: screenshot desktop VNC/browser.
-- `motionPreview`: GIF animasi inline yang dibuat dari rekaman desktop.
-- `motionClip`: MP4 yang dipangkas berdasarkan gerakan yang menghapus awal dan akhir statis.
-- `fullVideo`: rekaman MP4 lengkap untuk inspeksi mendalam.
-- `metadata`: sidecar JSON/log.
-- `report`: laporan Markdown.
-
-Publisher yang dapat digunakan ulang adalah `scripts/mantis/publish-pr-evidence.mjs`. Alur kerja
-memanggilnya dengan manifest, PR target, root target artefak, penanda komentar,
-URL artefak Actions, URL run, dan sumber permintaan. Ia mengunggah artefak yang dideklarasikan
-ke bucket Mantis R2/S3 yang dikonfigurasi, membuat komentar PR yang mendahulukan ringkasan dengan
-gambar/pratinjau inline dan video tertaut, lalu memperbarui komentar berpenanda yang ada
-atau membuat yang baru. Alur kerja memublikasikan ke `openclaw-crabbox-artifacts`
-dengan URL publik di bawah `https://artifacts.openclaw.ai`. Alur kerja menyediakan nilai bucket,
-region, dan URL publik secara langsung. Publisher yang dapat digunakan ulang memerlukan:
-
-- `MANTIS_ARTIFACT_R2_ACCESS_KEY_ID`
-- `MANTIS_ARTIFACT_R2_SECRET_ACCESS_KEY`
-- `MANTIS_ARTIFACT_R2_BUCKET`
-- `MANTIS_ARTIFACT_R2_ENDPOINT`
-- `MANTIS_ARTIFACT_R2_REGION`
-- `MANTIS_ARTIFACT_R2_PUBLIC_BASE_URL`
-
-Anda juga dapat memicu run status-reactions langsung dari komentar PR:
-
-```text
-@openclaw-mantis discord status reactions
-```
-
-Pemicu komentar sengaja dibuat sempit. Ia hanya berjalan pada komentar pull request
-dari pengguna dengan akses write, maintain, atau admin, dan hanya mengenali
-permintaan reaksi status Discord. Secara default ia menggunakan ref baseline buruk yang diketahui
-dan SHA head PR saat ini sebagai kandidat. Pemelihara dapat mengganti salah satu
-ref:
-
-```text
-@openclaw-mantis discord status reactions baseline=origin/main candidate=HEAD
-```
-
-QA live Telegram juga dapat dipicu dari komentar PR:
-
-```text
-@openclaw-mantis telegram
-@openclaw-mantis telegram scenario=telegram-status-command
-@openclaw-mantis telegram scenarios=telegram-status-command,telegram-mentioned-message-reply
-```
-
-Secara default ia menggunakan SHA head PR saat ini sebagai kandidat dan menjalankan
-`telegram-status-command`. Pemelihara dapat mengganti `candidate=...`,
-`provider=aws|hetzner`, dan `lease=<cbx_...>` saat membutuhkan ref tertentu atau
-desktop Crabbox yang sudah dipanaskan.
-
-Contoh perintah ClawSweeper:
-
-```text
-@clawsweeper mantis discord discord-status-reactions-tool-only
-@clawsweeper verify e2e discord
-```
-
-Perintah pertama eksplisit dan berfokus pada skenario. Perintah kedua nantinya dapat memetakan PR
-atau issue ke skenario Mantis yang direkomendasikan dari label, file yang berubah, dan
-temuan tinjauan ClawSweeper.
-
-## Siklus hidup run
-
-1. Dapatkan kredensial.
-2. Alokasikan atau gunakan ulang VM.
-3. Siapkan profil desktop/browser saat skenario membutuhkan bukti UI.
-4. Siapkan checkout bersih untuk ref baseline.
-5. Pasang dependensi dan build hanya yang dibutuhkan skenario.
-6. Mulai Gateway OpenClaw anak dengan direktori state terisolasi.
-7. Konfigurasikan transport live, penyedia, model, dan profil browser.
-8. Jalankan skenario dan tangkap bukti baseline.
-9. Hentikan gateway dan pertahankan log.
-10. Siapkan ref kandidat di VM yang sama.
-11. Jalankan skenario yang sama dan tangkap bukti kandidat.
-12. Bandingkan hasil oracle dan bukti visual.
-13. Tulis Markdown, JSON, log, screenshot, dan artefak trace opsional.
-14. Unggah artefak GitHub Actions.
-15. Posting pesan status PR atau Discord yang ringkas.
-
-Skenario harus dapat gagal dalam dua cara berbeda:
-
-- **Bug direproduksi**: baseline gagal dengan cara yang diharapkan.
-- **Kegagalan harness**: penyiapan lingkungan, kredensial, Discord API, browser, atau
-  penyedia gagal sebelum oracle bug bermakna.
-
-Laporan akhir harus memisahkan kasus-kasus ini agar pemelihara tidak keliru
-menganggap lingkungan yang fluktuatif sebagai perilaku produk.
-
-## MVP Discord
-
-Skenario pertama harus menargetkan reaksi status Discord di kanal guild tempat
-mode pengiriman balasan sumber adalah `message_tool_only`.
-
-Mengapa ini seed Mantis yang baik:
-
-- Ini terlihat di Discord sebagai reaksi pada pesan pemicu.
-- Ini memiliki oracle REST yang kuat melalui state reaksi pesan Discord.
-- Ini melatih Gateway OpenClaw nyata, auth bot Discord, dispatch pesan,
-  mode pengiriman balasan sumber, state reaksi status, dan siklus hidup giliran model.
-- Ini cukup sempit untuk menjaga implementasi pertama tetap jujur.
-
-Bentuk skenario yang diharapkan:
-
-```yaml
-id: discord-status-reactions-tool-only
-transport: discord
-baseline:
-  expect:
-    reproduced: true
-candidate:
-  expect:
-    fixed: true
-config:
-  messages:
-    ackReaction: "👀"
-    ackReactionScope: "group-mentions"
-    groupChat:
-      visibleReplies: "message_tool"
-    statusReactions:
-      enabled: true
-      timing:
-        debounceMs: 0
-discord:
-  requireMention: true
-  notifyChannel: operator-notify
-evidence:
-  rest:
-    messageReactions: true
-  browser:
-    screenshotMessageRow: true
-```
-
-Bukti baseline harus menunjukkan reaksi pengakuan antrean tetapi tanpa
-transisi siklus hidup dalam mode tool-only. Bukti kandidat harus menunjukkan reaksi status
-siklus hidup berjalan saat `messages.statusReactions.enabled` secara eksplisit
-`true`.
-
-Irisan pertama yang dapat dieksekusi adalah skenario QA live Discord opt-in:
-
-```bash
-pnpm openclaw qa discord \
-  --scenario discord-status-reactions-tool-only \
-  --provider-mode live-frontier \
-  --model openai/gpt-5.4 \
-  --alt-model openai/gpt-5.4 \
-  --fast \
-  --output-dir .artifacts/qa-e2e/mantis/discord-status-reactions-candidate
-```
-
-Ini mengonfigurasi SUT dengan penanganan guild selalu aktif, `visibleReplies:
-"message_tool"`, `ackReaction: "👀"`, dan reaksi status eksplisit. Oracle
-melakukan polling pesan pemicu Discord nyata dan mengharapkan urutan yang diamati
-`👀 -> 🤔 -> 👍`. Artefak mencakup `discord-qa-reaction-timelines.json`,
-`discord-status-reactions-tool-only-timeline.html`, dan
-`discord-status-reactions-tool-only-timeline.png`.
-
-## Komponen QA yang ada
-
-Mantis harus dibangun di atas stack QA privat yang sudah ada, bukan memulai dari
-nol:
-
-- `pnpm openclaw qa discord` sudah menjalankan jalur Discord live dengan bot driver dan
-  SUT.
-- Runner transport live sudah menulis laporan, bukti QA, dan
-  artefak khusus transport di bawah `.artifacts/qa-e2e/`.
-- Sewa kredensial Convex sudah menyediakan akses eksklusif ke kredensial transport
-  live bersama.
-- Layanan kontrol browser sudah mendukung screenshot, snapshot,
-  profil terkelola headless, dan profil CDP jarak jauh.
-- QA Lab sudah memiliki UI debugger dan bus untuk pengujian berbentuk transport.
-
-Implementasi Mantis pertama dapat berupa runner sebelum/sesudah yang tipis di atas
-komponen-komponen ini, ditambah satu lapisan bukti visual.
-
-## Model bukti
-
-Setiap run menulis direktori artefak yang stabil:
+Tata letak artefak proses pada disk:
 
 ```text
 .artifacts/qa-e2e/mantis/<run-id>/
   mantis-report.md
-  mantis-summary.json
+  mantis-evidence.json
   baseline/
-    summary.json
-    discord-message.json
-    screenshot-message-row.png
-    gateway-debug/
   candidate/
-    summary.json
-    discord-message.json
-    screenshot-message-row.png
-    gateway-debug/
   comparison.json
-  run.log
 ```
 
-`mantis-summary.json` harus menjadi sumber kebenaran yang dapat dibaca mesin. Laporan
-Markdown ditujukan untuk komentar PR dan tinjauan manusia.
+Tangkapan layar adalah bukti, bukan rahasia, tetapi tetap memerlukan disiplin penyuntingan:
+nama kanal privat, nama pengguna, atau isi pesan mungkin muncul. Tetapkan
+`OPENCLAW_QA_REDACT_PUBLIC_METADATA=1` untuk unggahan artefak publik; pengaturan ini
+diaktifkan secara bawaan dalam alur kerja GitHub Discord/Slack/Telegram.
 
-Ringkasan harus mencakup:
+## Otomatisasi GitHub
 
-- ref dan SHA yang diuji
-- transport dan id skenario
-- penyedia mesin dan id mesin atau id lease
-- sumber kredensial tanpa nilai rahasia
-- hasil baseline
-- hasil kandidat
-- apakah bug tereproduksi pada baseline
-- apakah kandidat memperbaikinya
-- path artefak
-- masalah penyiapan atau pembersihan yang telah disanitasi
+`scripts/mantis/publish-pr-evidence.mjs` adalah penerbit yang dapat digunakan kembali. Alur kerja
+memanggilnya dengan manifes, PR target, akar target artefak, penanda komentar,
+URL artefak, URL proses, dan sumber permintaan. Skrip tersebut mengunggah artefak yang dideklarasikan ke
+bucket R2 Mantis, membuat komentar PR yang mendahulukan ringkasan dengan
+gambar/pratinjau sebaris dan video tertaut, lalu memperbarui komentar penanda yang ada atau
+membuat komentar baru. Variabel lingkungan yang diperlukan:
 
-Screenshot adalah bukti, bukan rahasia. Screenshot tetap memerlukan disiplin redaksi:
-nama kanal privat, nama pengguna, atau isi pesan dapat muncul. Untuk PR publik,
-utamakan tautan artefak GitHub Actions daripada gambar inline sampai cerita
-redaksinya lebih kuat.
+- `MANTIS_ARTIFACT_R2_ACCESS_KEY_ID`
+- `MANTIS_ARTIFACT_R2_SECRET_ACCESS_KEY`
+- `MANTIS_ARTIFACT_R2_BUCKET` (alur kerja menetapkan `openclaw-crabbox-artifacts`)
+- `MANTIS_ARTIFACT_R2_ENDPOINT`
+- `MANTIS_ARTIFACT_R2_REGION` (alur kerja menetapkan `auto`)
+- `MANTIS_ARTIFACT_R2_PUBLIC_BASE_URL` (alur kerja menetapkan `https://artifacts.openclaw.ai`)
 
-## Browser dan VNC
+Komentar dikirim melalui Aplikasi GitHub Mantis (`MANTIS_GITHUB_APP_ID` /
+`MANTIS_GITHUB_APP_PRIVATE_KEY`), bukan `github-actions[bot]`, dengan menggunakan komentar
+penanda tersembunyi sebagai kunci upsert.
 
-Lane browser memiliki dua mode:
+| Alur kerja                        | Pemicu                                                                                     | Tindakan                                                                                                                                                                                                                                                                                                         |
+| --------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Mantis Discord Smoke`            | pemicuan manual                                                                            | Menjalankan `discord-smoke` terhadap ref yang dipilih.                                                                                                                                                                                                                                                           |
+| `Mantis Discord Status Reactions` | komentar PR atau pemicuan manual                                                           | Membuat pohon kerja baseline/kandidat terpisah, menjalankan `discord-status-reactions-tool-only` pada masing-masing, merender linimasa setiap jalur di peramban desktop Crabbox, menghasilkan pratinjau GIF/MP4 yang dipangkas berdasarkan gerakan dengan `crabbox media preview`, mengunggah artefak, dan mengirim bukti PR sebaris. |
+| `Mantis Scenario`                 | pemicuan manual                                                                            | Dispatcher generik: menerima `scenario_id` (`discord-status-reactions-tool-only`, `discord-thread-reply-filepath-attachment`, `slack-desktop-smoke`, `telegram-live`, `telegram-desktop-proof`, `web-ui-chat-proof`), `baseline_ref`, `candidate_ref`, `pr_number`, lalu meneruskannya ke alur kerja skenario yang sesuai. |
+| `Mantis Slack Desktop Smoke`      | pemicuan manual                                                                            | Menyewa desktop Linux Crabbox (bawaan `aws`, pilihan `hetzner`), menjalankan `slack-desktop-smoke --gateway-setup` terhadap kandidat, merekam desktop, menghasilkan pratinjau gerakan, mengunggah artefak, dan mengirim bukti PR jika nomor PR diberikan.                                                           |
+| `Mantis Telegram Live`            | komentar PR atau pemicuan manual                                                           | Menjalankan jalur QA langsung Telegram API bot (`openclaw qa telegram`), menulis `mantis-evidence.json` dari ringkasan QA, merender HTML bukti yang disunting melalui peramban desktop Crabbox, menghasilkan GIF gerakan, dan mengirim bukti PR. Masuk ke Telegram Web tidak diperlukan untuk jalur ini.               |
+| `Mantis Telegram Desktop Proof`   | label PR pengelola (`mantis: telegram-visible-proof`) beserta komentar PR, atau pemicuan manual | Bukti sebelum/sesudah Telegram Desktop native yang dijalankan agen. Menyerahkan PR, ref baseline/kandidat, dan instruksi pengelola kepada Codex, yang menjalankan jalur bukti Telegram Desktop Crabbox pengguna nyata untuk kedua ref dan mengirim tabel bukti PR 2 kolom.                                           |
+| `Mantis Web UI Chat Proof`        | komentar PR atau pemicuan manual                                                           | Menjalankan bukti Playwright obrolan Control UI OpenClaw yang terfokus terhadap kandidat, memverifikasi bahwa peramban mengirim melalui Gateway tiruan, mengambil artefak tangkapan layar/video, dan mengirim bukti PR. Jalur ini hanya untuk bukti obrolan web, bukan WinUI/aplikasi native atau bukti visual arbitrer. |
 
-- **Otomasi headless**: default untuk CI. Chrome berjalan dengan CDP diaktifkan, dan
-  Playwright atau kontrol browser OpenClaw menangkap screenshot.
-- **Penyelamatan VNC**: diaktifkan pada VM yang sama ketika login, MFA, anti-otomasi Discord,
-  atau debugging visual membutuhkan manusia.
+`Mantis Discord Status Reactions` dan `Mantis Telegram Live` keduanya menerima
+`baseline_ref`/`candidate_ref` (atau `baseline=`/`candidate=` dalam komentar PR)
+dan memvalidasi bahwa SHA yang diresolusi merupakan leluhur `origin/main`, sebuah
+tag rilis (`v*`), atau head dari PR terbuka sebelum berjalan dengan
+kredensial yang memuat rahasia.
 
-Profil browser pengamat Discord harus cukup persisten agar tidak perlu
-login untuk setiap run, tetapi terisolasi dari status browser pribadi. Profil
-milik pool mesin Mantis, bukan laptop developer.
+Pemicu komentar, dari PR dengan akses tulis/pengelolaan/admin:
 
-Ketika Mantis macet, ia memposting pesan status Discord dengan:
+```text
+@openclaw-mantis discord status reactions
+@openclaw-mantis discord status reactions baseline=origin/main candidate=HEAD
+@openclaw-mantis telegram
+@openclaw-mantis telegram scenario=telegram-status-command
+@openclaw-mantis telegram scenarios=telegram-status-command,telegram-mentioned-message-reply
+@openclaw-mantis web ui chat
+@openclaw-mantis web-ui-chat candidate=HEAD
+```
 
-- id run
-- id skenario
-- penyedia mesin
-- direktori artefak
-- instruksi koneksi VNC atau noVNC jika tersedia
-- teks pemblokir singkat
+Pemicu komentar Telegram secara bawaan menggunakan SHA head PR sebagai kandidat dan
+`telegram-status-command` sebagai skenario; pemicu tersebut menerima `provider=aws|hetzner` dan
+`lease=<cbx_...>` untuk menargetkan penyedia Crabbox tertentu atau desktop yang telah
+dipanaskan sebelumnya. `Mantis Telegram Desktop Proof` hanya merespons komentar PR ketika
+PR tersebut sudah memiliki label `mantis: telegram-visible-proof`.
 
-Deployment privat pertama dapat memposting pesan ini ke kanal operator yang sudah ada
-dan berpindah ke kanal Mantis khusus nanti.
+Pemicu komentar obrolan Web UI secara bawaan menggunakan SHA head PR sebagai kandidat. Pemicu tersebut menjalankan
+bukti obrolan Gateway tiruan Control UI dan memublikasikan artefak peramban; gunakan
+bukti Playwright/peramban biasa, tangkapan layar pengelola, Crabbox, atau artefak
+lokal untuk halaman web lain dan permukaan aplikasi native.
 
-## Mesin
+ClawSweeper juga dapat memicu skenario secara langsung:
 
-Mantis harus mengutamakan AWS melalui Crabbox untuk implementasi remote pertama.
-Crabbox memberi kita mesin yang sudah dipanaskan, pelacakan lease, hydration, log, hasil, dan
-pembersihan. Jika kapasitas AWS terlalu lambat atau tidak tersedia, tambahkan penyedia Hetzner
-di balik antarmuka mesin yang sama.
+```text
+@clawsweeper mantis discord discord-status-reactions-tool-only
+```
 
-Persyaratan VM minimum:
+## Mesin dan rahasia
 
-- Linux dengan instalasi Chrome atau Chromium yang mendukung desktop
-- akses CDP untuk otomasi browser
-- VNC atau noVNC untuk penyelamatan
-- Node 22 dan pnpm
-- checkout OpenClaw dan cache dependensi
-- cache browser Playwright Chromium ketika Playwright digunakan
-- CPU dan memori yang cukup untuk satu OpenClaw Gateway, satu browser, dan satu run model
-- akses keluar ke Discord, GitHub, penyedia model, dan broker kredensial
+Bawaan Crabbox CLI lokal adalah `--provider hetzner --class beast`; timpa
+dengan `--provider`, `--class`/`--machine-class`, atau
+`OPENCLAW_MANTIS_CRABBOX_PROVIDER` / `OPENCLAW_MANTIS_CRABBOX_CLASS`. Alur kerja GitHub
+umumnya menimpa keduanya (misalnya `--class standard`, serta masukan pilihan penyedia
+`aws`/`hetzner` pada alur kerja Slack). Jika penyedia terlalu
+lambat atau tidak tersedia, tambahkan penyedia tersebut di balik antarmuka Crabbox yang sama alih-alih
+mengodekan fallback secara permanen.
 
-VM tidak boleh menyimpan rahasia mentah berumur panjang di luar penyimpanan kredensial atau
-profil browser yang diharapkan.
+Baseline VM: Linux dengan Chrome/Chromium yang mendukung desktop, akses CDP, VNC/
+noVNC, Node 22+ dan pnpm, checkout OpenClaw, serta akses keluar ke
+transport target, GitHub, penyedia model, dan perantara kredensial.
 
-## Rahasia
-
-Rahasia berada di rahasia organisasi atau repositori GitHub untuk run remote, dan di
-file rahasia lokal yang dikendalikan operator untuk run lokal.
-
-Nama rahasia yang direkomendasikan:
+Nama rahasia yang digunakan di seluruh alur kerja Mantis:
 
 - `OPENCLAW_QA_DISCORD_MANTIS_BOT_TOKEN`
 - `OPENCLAW_QA_DISCORD_DRIVER_BOT_TOKEN`
 - `OPENCLAW_QA_DISCORD_SUT_BOT_TOKEN`
 - `OPENCLAW_QA_DISCORD_GUILD_ID`
 - `OPENCLAW_QA_DISCORD_CHANNEL_ID`
-- `OPENCLAW_QA_DISCORD_NOTIFY_CHANNEL_ID`
-- `OPENCLAW_QA_REDACT_PUBLIC_METADATA=1` untuk unggahan artefak GitHub publik
-- `OPENCLAW_QA_CONVEX_SITE_URL`
-- `OPENCLAW_QA_CONVEX_SECRET_CI`
-- `OPENCLAW_QA_MANTIS_CRABBOX_COORDINATOR`
-- `OPENCLAW_QA_MANTIS_CRABBOX_COORDINATOR_TOKEN`
+- `OPENCLAW_QA_REDACT_PUBLIC_METADATA=1` untuk unggahan artefak publik
+- `OPENCLAW_QA_CONVEX_SITE_URL`, `OPENCLAW_QA_CONVEX_SECRET_CI`
+- `CRABBOX_COORDINATOR` / `CRABBOX_COORDINATOR_TOKEN` (alur kerja juga menerima
+  `OPENCLAW_QA_MANTIS_CRABBOX_COORDINATOR` / `_TOKEN` sebagai fallback dan memetakannya
+  ke nama biasa sebelum memanggil Crabbox)
+- `MANTIS_GITHUB_APP_ID`, `MANTIS_GITHUB_APP_PRIVATE_KEY`
 
-Jangka panjang, pool kredensial Convex harus tetap menjadi sumber normal untuk kredensial
-transport live. Rahasia GitHub mem-bootstrap broker dan lane fallback.
-Workflow reaksi status Discord memetakan rahasia Mantis Crabbox kembali ke
-variabel lingkungan `CRABBOX_COORDINATOR` dan `CRABBOX_COORDINATOR_TOKEN`
-yang diharapkan CLI Crabbox. Nama rahasia GitHub `CRABBOX_*` polos tetap
-diterima sebagai fallback kompatibilitas.
+Runner Mantis tidak boleh pernah mencetak token bot Discord/Slack/Telegram,
+kunci API penyedia, kuki peramban, isi profil autentikasi, kata sandi VNC, atau
+muatan kredensial mentah. Jika token bocor ke dalam isu, PR, obrolan, atau log,
+rotasikan token tersebut setelah rahasia pengganti disimpan.
 
-Runner Mantis tidak boleh pernah mencetak:
+## Hasil proses
 
-- token bot Discord
-- kunci API penyedia
-- cookie browser
-- isi profil auth
-- kata sandi VNC
-- payload kredensial mentah
+Skenario transport sebelum/sesudah membedakan hasil berikut agar lingkungan yang
+tidak stabil tidak dianggap sebagai regresi produk:
 
-Unggahan artefak publik juga harus meredaksi metadata target Discord seperti id bot,
-guild, kanal, dan pesan. Workflow smoke GitHub mengaktifkan
-`OPENCLAW_QA_REDACT_PUBLIC_METADATA=1` untuk alasan ini.
+- **Bug direproduksi**: baseline gagal dengan cara yang diharapkan oleh skenario.
+- **Kegagalan harness**: penyiapan lingkungan, kredensial, API transport, peramban,
+  atau penyedia gagal sebelum oracle dapat memberikan hasil yang bermakna.
 
-Jika token tidak sengaja ditempelkan ke issue, PR, chat, atau log, rotasi token tersebut
-setelah rahasia baru disimpan.
-
-## Artefak GitHub dan komentar PR
-
-Workflow Mantis harus mengunggah bundel bukti lengkap sebagai artefak Actions
-berumur pendek. Ketika workflow dijalankan untuk laporan bug atau PR perbaikan, workflow juga harus
-menerbitkan media inline yang telah direduksi ke bucket Mantis R2/S3 yang dikonfigurasi dan melakukan upsert
-komentar pada bug atau PR perbaikan tersebut dengan screenshot sebelum/sesudah inline. Jangan memposting
-bukti utama hanya pada PR otomasi QA generik. Log mentah, pesan yang diamati,
-dan bukti besar lainnya tetap berada di artefak Actions.
-
-Workflow produksi harus memposting komentar tersebut dengan Mantis GitHub App, bukan
-dengan `github-actions[bot]`. Simpan id app dan kunci privat sebagai rahasia GitHub Actions
-`MANTIS_GITHUB_APP_ID` dan `MANTIS_GITHUB_APP_PRIVATE_KEY`.
-Workflow menggunakan marker tersembunyi sebagai kunci upsert, memperbarui komentar tersebut
-ketika token dapat mengeditnya, dan membuat komentar baru milik Mantis ketika
-marker lama milik bot tidak dapat diedit.
-
-Komentar PR harus singkat dan visual:
-
-```md
-Mantis Discord Status Reactions QA
-
-Summary: Mantis reran the reported Discord status-reaction bug against the known
-bad baseline and the candidate fix. The baseline reproduced the bug, while the
-candidate showed the expected queued -> thinking -> done sequence.
-
-- Scenario: `discord-status-reactions-tool-only`
-- Run: <workflow run link>
-- Artifact: <artifact link>
-- Baseline: `<status>` at `<sha>`
-- Candidate: `<status>` at `<sha>`
-
-| Baseline            | Candidate           |
-| ------------------- | ------------------- |
-| <inline screenshot> | <inline screenshot> |
-```
-
-Ketika run gagal karena harness gagal, komentar harus menyatakan hal itu, bukan
-menyiratkan kandidat gagal.
-
-## Catatan deployment privat
-
-Deployment privat mungkin sudah memiliki aplikasi Discord Mantis. Gunakan kembali
-aplikasi itu alih-alih membuat app lain ketika aplikasi tersebut memiliki izin bot
-yang tepat dan dapat dirotasi dengan aman.
-
-Atur kanal notifikasi operator awal melalui rahasia atau konfigurasi deployment.
-Kanal tersebut dapat menunjuk ke kanal maintainer atau operasi yang sudah ada terlebih dahulu,
-lalu berpindah ke kanal Mantis khusus setelah tersedia.
-
-Jangan letakkan id guild, id kanal, token bot, cookie browser, atau kata sandi VNC
-di dokumen ini. Simpan semuanya di rahasia GitHub, broker kredensial, atau penyimpanan
-rahasia lokal operator.
+Bukti khusus kandidat pada peramban melaporkan apakah kandidat lulus pemeriksaan Gateway
+tiruan dan pernyataan UI yang terlihat; bukti tersebut tidak mengklaim reproduksi baseline.
 
 ## Menambahkan skenario
 
-Skenario Mantis harus mendeklarasikan:
+Skenario transport langsung didefinisikan dengan TypeScript per transport (lihat
+`MANTIS_SCENARIO_CONFIGS` dalam `extensions/qa-lab/src/mantis/run.runtime.ts` untuk
+bentuk sebelum/sesudah Discord), bukan format berkas deklaratif mandiri.
+Setiap skenario memerlukan: id dan judul, transport, kredensial yang diperlukan, kebijakan ref
+baseline, kebijakan ref kandidat, tambalan konfigurasi OpenClaw, langkah penyiapan/stimulus,
+oracle baseline dan kandidat yang diharapkan, target pengambilan visual, anggaran
+batas waktu, dan langkah pembersihan.
 
-- id dan judul
-- transport
-- kredensial yang diperlukan
-- kebijakan ref baseline
-- kebijakan ref kandidat
-- patch konfigurasi OpenClaw
-- langkah penyiapan
-- stimulus
-- oracle baseline yang diharapkan
-- oracle kandidat yang diharapkan
-- target tangkapan visual
-- anggaran timeout
-- langkah pembersihan
+Bukti peramban khusus kandidat yang terfokus dapat menggunakan pengujian E2E
+deterministik dan alur kerja khusus. Pertahankan cakupannya agar eksplisit,
+validasi ref kandidat sebelum eksekusi, isolasikan penerbitan yang didukung
+rahasia, dan hasilkan kontrak manifes bukti yang sama.
 
-Skenario harus mengutamakan oracle kecil dan bertipe:
+Utamakan oracle kecil dan bertipe daripada pemeriksaan visual: status reaksi
+Discord atau referensi pesan, `ts` utas/status API reaksi Slack, ID pesan
+email dan header. Gunakan tangkapan layar peramban ketika UI merupakan
+satu-satunya hal teramati yang andal, dan pertahankan pemeriksaan visual
+sebagai tambahan terhadap oracle API platform jika tersedia.
 
-- status reaksi Discord untuk bug reaksi
-- referensi pesan Discord untuk bug threading
-- ts thread Slack dan status API reaksi untuk bug Slack
-- id pesan dan header email untuk bug email
-- screenshot browser ketika UI adalah satu-satunya observasi yang andal
-
-Pemeriksaan vision harus bersifat aditif. Jika API platform dapat membuktikan bug, gunakan
-API sebagai oracle lulus/gagal dan pertahankan screenshot untuk keyakinan manusia.
-
-## Ekspansi penyedia
-
-Setelah Discord, runner yang sama dapat menambahkan:
-
-- Slack: reaksi, thread, mention app, modal, unggahan file.
-- Email: auth Gmail dan threading pesan menggunakan `gog` ketika konektor tidak
-  cukup.
-- WhatsApp: login QR, identifikasi ulang, pengiriman pesan, media, reaksi.
-- Telegram: gating mention grup, perintah, reaksi jika tersedia.
-- Matrix: room terenkripsi, relasi thread atau balasan, resume restart.
-
-Setiap transport harus memiliki satu skenario smoke murah dan satu atau beberapa skenario
-kelas bug. Skenario visual yang mahal harus tetap opt-in.
+Setelah Discord, Slack, dan Telegram, bentuk runner yang sama dapat diperluas
+ke WhatsApp (login QR, identifikasi ulang, pengiriman, media, reaksi) dan Matrix
+(ruang terenkripsi, relasi utas/balasan, melanjutkan setelah mulai ulang);
+keduanya belum diimplementasikan.
 
 ## Pertanyaan terbuka
 
-- Bot Discord mana yang harus menjadi driver, dan mana yang harus menjadi SUT, ketika
+- Bot Discord mana yang harus menjadi driver dan mana yang menjadi SUT ketika
   bot Mantis yang ada digunakan kembali?
-- Apakah login browser pengamat harus menggunakan akun Discord manusia, akun uji,
-  atau hanya bukti REST yang dapat dibaca bot untuk fase pertama?
 - Berapa lama GitHub harus menyimpan artefak Mantis untuk PR?
-- Kapan ClawSweeper harus secara otomatis merekomendasikan Mantis alih-alih menunggu
-  perintah maintainer?
-- Apakah screenshot harus direduksi atau dipangkas sebelum diunggah untuk PR publik?
+- Kapan ClawSweeper harus secara otomatis merekomendasikan skenario Mantis,
+  alih-alih menunggu perintah pengelola?
+- Haruskah tangkapan layar disamarkan atau dipangkas sebelum diunggah untuk PR
+  publik?

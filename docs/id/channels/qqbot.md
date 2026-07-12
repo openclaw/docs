@@ -2,26 +2,29 @@
 read_when:
     - Anda ingin menghubungkan OpenClaw ke QQ
     - Anda perlu menyiapkan kredensial QQ Bot
-    - Anda menginginkan dukungan grup QQ Bot atau obrolan privat
-summary: Pengaturan, konfigurasi, dan penggunaan QQ Bot
-title: Bot QQ
+    - Anda menginginkan dukungan obrolan grup atau pribadi QQ Bot
+summary: Penyiapan, konfigurasi, dan penggunaan QQ Bot
+title: bot QQ
 x-i18n:
-    generated_at: "2026-06-27T17:12:19Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:01:18Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: eb452e331ce196d1517af2f87a5187cb4b2cb53aee2bbff47cbdf73e2b3e7dee
+    source_hash: e654d1a3e501ef825e857cf0fdd780401c6dc0012d729db0aa1ae72a8a6871ed
     source_path: channels/qqbot.md
     workflow: 16
 ---
 
-QQ Bot terhubung ke OpenClaw melalui QQ Bot API resmi (Gateway WebSocket). Plugin ini mendukung obrolan privat C2C, @pesan grup, dan pesan channel guild dengan media kaya (gambar, suara, video, file).
+QQ Bot terhubung ke OpenClaw melalui API QQ Bot resmi (Gateway WebSocket).
+Chat privat C2C dan sebutan `@` dalam grup merupakan jenis chat utama, dengan media
+kaya (gambar, suara, video, berkas). Pesan saluran guild hanya mendukung teks
+dan gambar dari URL jarak jauh; suara, video, unggahan berkas, serta gambar
+lokal/Base64 tidak tersedia di saluran guild. Reaksi dan utas tidak didukung
+di mana pun.
 
-Status: Plugin yang dapat diunduh. Pesan langsung, obrolan grup, channel guild, dan media didukung. Reaksi dan utas tidak didukung.
+Status: plugin resmi yang dapat diunduh.
 
-## Instal
-
-Instal QQ Bot sebelum penyiapan:
+## Instalasi
 
 ```bash
 openclaw plugins install @openclaw/qqbot
@@ -34,10 +37,11 @@ openclaw plugins install @openclaw/qqbot
 2. Klik **Create Bot** untuk membuat bot QQ baru.
 3. Temukan **AppID** dan **AppSecret** di halaman pengaturan bot, lalu salin keduanya.
 
-> AppSecret tidak disimpan dalam teks biasa — jika Anda meninggalkan halaman tanpa menyimpannya,
-> Anda harus membuat ulang yang baru.
+<Note>
+AppSecret tidak disimpan sebagai teks biasa. Jika Anda meninggalkan halaman tanpa menyimpannya, Anda harus membuat ulang yang baru.
+</Note>
 
-4. Tambahkan channel:
+4. Tambahkan saluran:
 
 ```bash
 openclaw channels add --channel qqbot --token "AppID:AppSecret"
@@ -45,12 +49,16 @@ openclaw channels add --channel qqbot --token "AppID:AppSecret"
 
 5. Mulai ulang Gateway.
 
-Jalur penyiapan interaktif:
+Penyiapan interaktif:
 
 ```bash
 openclaw channels add
-openclaw configure --section channels
 ```
+
+Wizard juga menawarkan pengaitan melalui kode QR sebagai alternatif untuk
+mengetik AppID/AppSecret secara manual: pindai kode dengan aplikasi ponsel yang
+terhubung ke QQ Bot target untuk menyelesaikan pengaitan. OpenClaw menyimpan
+kredensial yang dikembalikan dalam cakupan konfigurasi akun.
 
 ## Konfigurasi
 
@@ -68,12 +76,12 @@ Konfigurasi minimal:
 }
 ```
 
-Variabel env akun default:
+Variabel lingkungan akun default (khusus akun tingkat teratas):
 
 - `QQBOT_APP_ID`
 - `QQBOT_CLIENT_SECRET`
 
-AppSecret berbasis file:
+AppSecret berbasis berkas:
 
 ```json5
 {
@@ -87,7 +95,7 @@ AppSecret berbasis file:
 }
 ```
 
-AppSecret SecretRef env:
+AppSecret SecretRef dari lingkungan:
 
 ```json5
 {
@@ -103,14 +111,28 @@ AppSecret SecretRef env:
 
 Catatan:
 
-- Fallback env hanya berlaku untuk akun QQ Bot default.
-- `openclaw channels add --channel qqbot --token-file ...` hanya menyediakan
-  AppSecret; AppID harus sudah ditetapkan dalam konfigurasi atau `QQBOT_APP_ID`.
-- `clientSecret` juga menerima input SecretRef, bukan hanya string teks biasa.
-- String marker `secretref:/...` lama bukan nilai `clientSecret` yang valid;
-  gunakan objek SecretRef terstruktur seperti contoh di atas.
+- `openclaw channels add --channel qqbot --token-file ...` hanya menetapkan
+  AppSecret; `appId` harus sudah ditetapkan dalam konfigurasi atau `QQBOT_APP_ID`.
+- `clientSecret` menerima string teks biasa, jalur berkas (`clientSecretFile`),
+  atau objek SecretRef terstruktur.
+- String penanda lama `secretref:...` / `secretref-env:...` ditolak untuk
+  `clientSecret`; gunakan objek SecretRef terstruktur sebagai gantinya.
 
-### Penyiapan multi-akun
+### Kebijakan akses
+
+- `allowFrom` / `groupAllowFrom` membatasi siapa yang dapat mengobrol dengan bot
+  dalam konteks C2C / grup. `dmPolicy` / `groupPolicy` (`open` | `allowlist` |
+  `disabled`) mengendalikan mode penerapan. `dmPolicy` secara default menjadi
+  `allowlist` setelah `allowFrom` memiliki entri konkret (bukan wildcard);
+  jika tidak, nilainya `open`. `groupPolicy` secara default menjadi `allowlist`
+  setelah `groupAllowFrom` atau `allowFrom` memiliki entri konkret; jika tidak,
+  nilainya `open`.
+- Perintah garis miring dengan "Autorisasi: daftar izin" memerlukan entri
+  eksplisit bukan wildcard dalam `allowFrom` (atau `groupAllowFrom` untuk
+  pemanggilan dari grup), terlepas dari `dmPolicy` / `groupPolicy` — lihat
+  [Perintah garis miring](#slash-commands).
+
+### Penyiapan multiakun
 
 Jalankan beberapa bot QQ dalam satu instans OpenClaw:
 
@@ -133,8 +155,10 @@ Jalankan beberapa bot QQ dalam satu instans OpenClaw:
 }
 ```
 
-Setiap akun meluncurkan koneksi WebSocket miliknya sendiri dan mempertahankan
-cache token independen (diisolasi berdasarkan `appId`).
+Setiap akun memiliki koneksi WebSocket, klien API, dan cache token yang
+terisolasi, dengan kunci `appId`. Baris log diberi tag ID akun pemilik agar
+diagnostik tetap dapat dipisahkan saat Anda menjalankan beberapa bot dalam satu
+Gateway.
 
 Tambahkan bot kedua melalui CLI:
 
@@ -142,10 +166,11 @@ Tambahkan bot kedua melalui CLI:
 openclaw channels add --channel qqbot --account bot2 --token "222222222:secret-of-bot-2"
 ```
 
-### Obrolan grup
+### Chat grup
 
-Dukungan obrolan grup QQ Bot menggunakan OpenID grup QQ, bukan nama tampilan. Tambahkan bot
-ke grup, lalu mention bot tersebut atau konfigurasikan grup agar berjalan tanpa mention.
+Dukungan grup menggunakan OpenID grup QQ, bukan nama tampilan. Tambahkan bot ke
+grup, lalu sebut bot tersebut atau konfigurasikan grup agar berjalan tanpa
+sebutan.
 
 ```json5
 {
@@ -174,50 +199,51 @@ ke grup, lalu mention bot tersebut atau konfigurasikan grup agar berjalan tanpa 
 }
 ```
 
-`groups["*"]` menetapkan default untuk setiap grup, dan entri konkret
-`groups.GROUP_OPENID` menimpa default tersebut untuk satu grup. Pengaturan grup
-mencakup:
+`groups["*"]` menetapkan nilai default untuk setiap grup; entri konkret
+`groups.GROUP_OPENID` menimpa nilai default tersebut untuk satu grup.
+Pengaturan grup:
 
-- `requireMention`: mewajibkan @mention sebelum bot membalas. Default: `true`.
-- `commandLevel`: mengontrol perintah slash bawaan mana yang dapat berjalan di grup.
-  Default: `all`, yang mempertahankan perilaku grup QQBot yang sudah ada saat
-  pengaturan dihilangkan.
-- `ignoreOtherMentions`: membuang pesan yang mention orang lain tetapi bukan bot.
-- `historyLimit`: menyimpan pesan grup non-mention terbaru sebagai konteks untuk giliran berikutnya yang di-mention. Atur ke `0` untuk menonaktifkan.
-- `tools`: mengizinkan/menolak tool untuk seluruh grup.
-- `toolsBySender`: penimpaan tool grup per pengirim; lihat [Grup](/id/channels/groups#groupchannel-tool-restrictions-optional).
-- `name`: label ramah yang digunakan dalam log dan konteks grup.
-- `prompt`: prompt perilaku per grup yang ditambahkan ke konteks agen.
+| Bidang                | Default          | Deskripsi                                                                                                 |
+| --------------------- | ---------------- | --------------------------------------------------------------------------------------------------------- |
+| `requireMention`      | `true`           | Mengharuskan sebutan `@` sebelum bot merespons.                                                           |
+| `commandLevel`        | `all`            | Menentukan perintah garis miring bawaan yang dapat dijalankan dalam grup (lihat di bawah).                |
+| `ignoreOtherMentions` | `false`          | Mengabaikan pesan yang menyebut orang lain, tetapi tidak menyebut bot.                                    |
+| `historyLimit`        | `50`             | Pesan terbaru tanpa sebutan yang disimpan sebagai konteks untuk giliran berikutnya yang menyebut bot. `0` menonaktifkan riwayat. |
+| `tools`               | —                | Mengizinkan/menolak alat untuk seluruh grup.                                                              |
+| `toolsBySender`       | —                | Penimpaan alat per pengirim; lihat [Grup](/id/channels/groups#groupchannel-tool-restrictions-optional).      |
+| `name`                | awalan openid     | Label ramah yang digunakan dalam log dan konteks grup.                                                    |
+| `prompt`              | default bawaan   | Prompt perilaku per grup yang ditambahkan ke konteks agen.                                               |
 
 `commandLevel` menerima:
 
-- `all`: mempertahankan perintah bawaan yang dikenali agar tetap tersedia seperti sebelumnya. Beberapa perintah mungkin
-  tetap tersembunyi dari menu, tetapi pengguna yang berwenang tetap dapat menjalankannya di grup.
-- `safety`: mengizinkan perintah kolaborasi umum seperti `/help`, `/btw`, dan
-  `/stop`; meminta pengguna menjalankan perintah sensitif seperti `/config`, `/tools`, dan
-  `/bash` dalam obrolan privat.
-- `strict`: hanya mengizinkan kontrol sesi grup yang diperlukan untuk operasi grup
-  ketat. `/stop` tetap bersifat mendesak agar pengirim yang berwenang dapat menginterupsi
-  run yang aktif.
+| Tingkat  | Perilaku                                                                                                                                                  |
+| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `all`    | Perintah bawaan yang ada tetap tersedia. Sebagian tetap tersembunyi dari menu, tetapi pengguna yang berwenang masih dapat menjalankannya dalam grup.       |
+| `safety` | `/help`, `/btw`, `/stop` tetap terlihat dalam grup; perintah sensitif (`/config`, `/tools`, `/bash`, dan lain-lain) harus dijalankan dalam chat privat.    |
+| `strict` | Hanya kontrol sesi grup yang diperlukan untuk operasi ketat yang diizinkan. `/stop` tetap berfungsi agar pengirim yang berwenang dapat menghentikan proses aktif. |
 
-Entri `toolPolicy` QQBot lama telah dihentikan. Jalankan `openclaw doctor --fix` untuk memigrasikannya ke `tools`.
+Entri `toolPolicy` QQBot lama telah dihentikan. Jalankan `openclaw doctor --fix`
+untuk memigrasikannya ke `tools`.
 
 Mode aktivasi adalah `mention` dan `always`. `requireMention: true` dipetakan ke
-`mention`; `requireMention: false` dipetakan ke `always`. Jika ada, penimpaan aktivasi
-tingkat sesi mengalahkan konfigurasi.
+`mention`; `requireMention: false` dipetakan ke `always`. Penimpaan aktivasi
+tingkat sesi, jika ada, lebih diprioritaskan daripada konfigurasi.
 
-Antrean masuk bersifat per peer. Peer grup mendapat batas antrean yang lebih besar, mempertahankan pesan manusia
-di depan percakapan yang ditulis bot saat penuh, dan menggabungkan ledakan pesan grup normal
-menjadi satu giliran yang diberi atribusi. Perintah slash tetap berjalan satu per satu.
+Antrean masuk dibuat per rekan. Rekan grup mendapatkan batas antrean yang lebih
+besar (50 dibandingkan 20 untuk rekan langsung), mengeluarkan pesan buatan bot
+sebelum pesan manusia ketika penuh, dan menggabungkan rangkaian pesan grup biasa
+menjadi satu giliran dengan atribusi. Perintah garis miring dijalankan satu per
+satu, terpisah dari kelompok penggabungan apa pun.
 
 ### Suara (STT / TTS)
 
-Dukungan STT dan TTS menggunakan konfigurasi dua tingkat dengan fallback prioritas:
+STT dan TTS mendukung konfigurasi dua tingkat dengan fallback berdasarkan
+prioritas:
 
-| Pengaturan | Khusus Plugin                                             | Fallback framework           |
-| ---------- | --------------------------------------------------------- | ---------------------------- |
-| STT        | `channels.qqbot.stt`                                      | `tools.media.audio.models[0]` |
-| TTS        | `channels.qqbot.tts`, `channels.qqbot.accounts.<id>.tts`  | `messages.tts`               |
+| Pengaturan | Khusus Plugin                                             | Fallback kerangka kerja        |
+| ---------- | --------------------------------------------------------- | ------------------------------ |
+| STT        | `channels.qqbot.stt`                                      | `tools.media.audio.models[0]`  |
+| TTS        | `channels.qqbot.tts`, `channels.qqbot.accounts.<id>.tts`  | `messages.tts`                 |
 
 ```json5
 {
@@ -246,16 +272,22 @@ Dukungan STT dan TTS menggunakan konfigurasi dua tingkat dengan fallback priorit
 }
 ```
 
-Atur `enabled: false` pada salah satunya untuk menonaktifkan.
-Penimpaan TTS tingkat akun menggunakan bentuk yang sama seperti `messages.tts` dan melakukan deep-merge
-di atas konfigurasi TTS channel/global.
+Tetapkan `enabled: false` pada salah satunya untuk menonaktifkannya. Penimpaan
+TTS tingkat akun menggunakan bentuk yang sama dengan `messages.tts` dan
+digabungkan secara mendalam di atas konfigurasi TTS saluran/global.
 
-Lampiran suara QQ masuk diekspos ke agen sebagai metadata media audio sambil
-menjaga file suara mentah tetap berada di luar `MediaPaths` generik. Balasan teks biasa
-`[[audio_as_voice]]` mensintesis TTS dan mengirim pesan suara QQ native saat TTS
-dikonfigurasi.
+Permintaan STT secara default mengalami batas waktu setelah 60 detik. STT khusus
+Plugin menggunakan penimpaan `models.providers.<id>.timeoutSeconds` yang
+dipilih. STT audio kerangka kerja menggunakan
+`tools.media.audio.models[0].timeoutSeconds`, lalu
+`tools.media.audio.timeoutSeconds`, kemudian penimpaan penyedia yang dipilih.
 
-Perilaku unggah/transcode audio keluar juga dapat disesuaikan dengan
+Lampiran suara QQ yang masuk diekspos kepada agen sebagai metadata media audio,
+sementara berkas suara mentah tidak dimasukkan ke dalam `MediaPaths` generik.
+`[[audio_as_voice]]` dalam balasan teks biasa menyintesis TTS dan mengirim pesan
+suara QQ asli ketika TTS dikonfigurasi.
+
+Perilaku unggah/transkode audio keluar juga dapat disesuaikan dengan
 `channels.qqbot.audioFormatPolicy`:
 
 - `sttDirectFormats`
@@ -266,73 +298,85 @@ Perilaku unggah/transcode audio keluar juga dapat disesuaikan dengan
 
 | Format                     | Deskripsi          |
 | -------------------------- | ------------------ |
-| `qqbot:c2c:OPENID`         | Obrolan privat (C2C) |
-| `qqbot:group:GROUP_OPENID` | Obrolan grup       |
-| `qqbot:channel:CHANNEL_ID` | Channel guild      |
+| `qqbot:c2c:OPENID`         | Chat privat (C2C)  |
+| `qqbot:group:GROUP_OPENID` | Chat grup          |
+| `qqbot:channel:CHANNEL_ID` | Saluran guild      |
 
-> Setiap bot memiliki kumpulan OpenID penggunanya sendiri. OpenID yang diterima oleh Bot A **tidak dapat**
-> digunakan untuk mengirim pesan melalui Bot B.
+<Note>
+Setiap bot memiliki kumpulan OpenID pengguna sendiri. OpenID yang diterima oleh Bot A **tidak dapat** digunakan untuk mengirim pesan melalui Bot B.
+</Note>
 
-## Perintah slash
+## Perintah garis miring
 
-Perintah bawaan yang diintersep sebelum antrean AI:
+Perintah bawaan yang dicegat sebelum antrean AI:
 
-| Perintah       | Deskripsi                                                                                               |
-| -------------- | ------------------------------------------------------------------------------------------------------- |
-| `/bot-ping`    | Uji latensi                                                                                             |
-| `/bot-version` | Menampilkan versi framework OpenClaw                                                                    |
-| `/bot-help`    | Mencantumkan semua perintah                                                                             |
-| `/bot-me`      | Menampilkan ID pengguna QQ pengirim (openid) untuk penyiapan `allowFrom`/`groupAllowFrom`               |
-| `/bot-upgrade` | Menampilkan tautan panduan peningkatan QQBot                                                            |
-| `/bot-logs`    | Mengekspor log gateway terbaru sebagai file                                                             |
-| `/bot-approve` | Menyetujui tindakan QQ Bot yang tertunda (misalnya, mengonfirmasi unggahan C2C atau grup) melalui alur native. |
+| Perintah             | Autorisasi  | Cakupan            | Deskripsi                                                                                      |
+| -------------------- | ----------- | ------------------ | ---------------------------------------------------------------------------------------------- |
+| `/bot-ping`          | —           | apa pun            | Uji latensi                                                                                    |
+| `/bot-help`          | —           | apa pun            | Mencantumkan semua perintah                                                                    |
+| `/bot-me`            | —           | hanya privat       | Menampilkan ID pengguna QQ pengirim (openid) untuk penyiapan `allowFrom` / `groupAllowFrom`    |
+| `/bot-version`       | —           | hanya privat       | Menampilkan versi kerangka kerja OpenClaw dan versi plugin                                     |
+| `/bot-upgrade`       | —           | hanya privat       | Menampilkan tautan panduan peningkatan QQBot                                                   |
+| `/bot-approve`       | daftar izin | hanya privat       | Mengelola konfigurasi persetujuan eksekusi perintah (aktif / nonaktif / selalu / atur ulang / status) |
+| `/bot-logs`          | daftar izin | hanya privat       | Mengekspor log Gateway terbaru sebagai berkas                                                  |
+| `/bot-clear-storage` | daftar izin | hanya privat       | Menghapus unduhan yang di-cache di direktori media QQBot                                       |
+| `/bot-streaming`     | daftar izin | hanya privat       | Mengaktifkan atau menonaktifkan balasan streaming C2C                                          |
+| `/bot-group-allways` | daftar izin | hanya privat       | Mengalihkan mode aktivasi grup default (wajib sebutan atau selalu aktif)                        |
 
-Tambahkan `?` ke perintah apa pun untuk bantuan penggunaan (misalnya `/bot-upgrade ?`).
+Tambahkan `?` ke perintah apa pun untuk mendapatkan bantuan penggunaan
+(misalnya `/bot-upgrade ?`).
 
-Perintah admin (`/bot-me`, `/bot-upgrade`, `/bot-logs`, `/bot-clear-storage`, `/bot-streaming`, `/bot-approve`) hanya untuk pesan langsung dan memerlukan openid pengirim dalam daftar `allowFrom` eksplisit non-wildcard. Wildcard `allowFrom: ["*"]` mengizinkan obrolan tetapi tidak memberikan akses perintah admin. Pesan grup dicocokkan terhadap `groupAllowFrom` terlebih dahulu dan fallback ke `allowFrom`. Menjalankan perintah admin dalam grup mengembalikan petunjuk alih-alih dibuang diam-diam.
+Perintah dengan "Autorisasi: daftar izin" juga mengharuskan openid pengirim
+tercantum dalam daftar `allowFrom` eksplisit bukan wildcard
+(`groupAllowFrom` lebih diprioritaskan untuk perintah yang dikeluarkan dari
+grup, dengan fallback ke `allowFrom`). Wildcard `allowFrom: ["*"]` mengizinkan
+chat, tetapi tidak mengizinkan perintah-perintah ini. Menjalankan salah satunya
+di luar chat privat atau tanpa otorisasi akan mengembalikan petunjuk, bukan
+mengabaikan pesan secara diam-diam.
 
-Saat persetujuan exec QQ Bot menggunakan fallback obrolan yang sama secara default, klik tombol persetujuan native
-mengikuti allowlist perintah eksplisit non-wildcard yang sama. Untuk memberikan akses
-khusus persetujuan tanpa akses perintah yang lebih luas, konfigurasikan
-`channels.qqbot.execApprovals.approvers`.
+`/bot-me`, `/bot-version`, dan `/bot-upgrade` hanya tersedia untuk percakapan privat, tetapi tidak
+memerlukan daftar izin — pengirim C2C mana pun dapat menjalankannya.
 
-## Arsitektur engine
+Saat persetujuan eksekusi QQ Bot menggunakan fallback percakapan yang sama secara default, klik tombol
+persetujuan native mengikuti daftar izin perintah eksplisit tanpa wildcard yang sama. Untuk
+memberikan akses khusus persetujuan tanpa akses perintah yang lebih luas, konfigurasikan
+`channels.qqbot.execApprovals.approvers`. Persetujuan eksekusi native diaktifkan secara
+default.
 
-QQ Bot dikirim sebagai engine mandiri di dalam Plugin:
+## Media dan penyimpanan
 
-- Setiap akun memiliki stack resource terisolasi (koneksi WebSocket, klien API, cache token, root penyimpanan media) yang dikunci berdasarkan `appId`. Akun tidak pernah berbagi state masuk/keluar.
-- Logger multi-akun menandai baris log dengan akun pemilik agar diagnostik tetap dapat dipisahkan saat Anda menjalankan beberapa bot di bawah satu Gateway.
-- Jalur masuk, keluar, dan bridge Gateway berbagi satu root payload media di bawah `~/.openclaw/media`, sehingga unggahan, unduhan, dan cache transcode berada di bawah satu direktori terlindungi, bukan pohon per subsistem.
-- Pengiriman media kaya melewati satu jalur `sendMedia` untuk target C2C dan grup. File lokal dan buffer di atas ambang file besar menggunakan endpoint unggah bersegmen milik QQ, sedangkan payload yang lebih kecil menggunakan API media sekali jalan.
-- Kredensial dapat dicadangkan dan dipulihkan sebagai bagian dari snapshot kredensial OpenClaw standar; engine memasang ulang stack resource setiap akun saat pemulihan tanpa memerlukan pasangan kode QR baru.
-
-## Onboarding kode QR
-
-Sebagai alternatif untuk menempelkan `AppID:AppSecret` secara manual, engine mendukung alur onboarding kode QR untuk menautkan QQ Bot ke OpenClaw:
-
-1. Jalankan jalur penyiapan QQ Bot (misalnya `openclaw channels add --channel qqbot`) dan pilih alur kode QR saat diminta.
-2. Pindai kode QR yang dihasilkan dengan aplikasi ponsel yang terhubung ke QQ Bot target.
-3. Setujui pemasangan di ponsel. OpenClaw menyimpan kredensial yang dikembalikan ke `credentials/` di bawah cakupan akun yang benar.
-
-Prompt persetujuan yang dibuat oleh bot itu sendiri (misalnya, alur "izinkan tindakan ini?" yang diekspos oleh QQ Bot API) muncul sebagai prompt OpenClaw native yang dapat Anda terima dengan `/bot-approve`, bukan membalas melalui klien QQ mentah.
+- Media masuk, keluar, dan jembatan Gateway menggunakan satu direktori akar payload bersama di bawah
+  `~/.openclaw/media/qqbot` (mengikuti `OPENCLAW_HOME` jika ditetapkan), sehingga unggahan,
+  unduhan, dan cache transkode tetap berada dalam satu direktori yang terlindungi.
+- Pengiriman media kaya untuk target C2C dan grup melewati satu jalur `sendMedia`.
+  Berkas lokal dan buffer dalam memori berukuran 5&nbsp;MiB atau lebih menggunakan endpoint
+  unggahan bertahap QQ; payload yang lebih kecil dan sumber URL jarak jauh/Base64 menggunakan
+  API unggahan sekali jalan.
+- Jika pemutakhiran langsung menginterupsi Gateway sebelum selesai menulis
+  `openclaw.json`, Plugin memulihkan `appId` / `clientSecret` terakhir yang diketahui
+  untuk akun tersebut dari snapshot internal pada proses mulai berikutnya (tanpa pernah
+  menimpa perubahan konfigurasi yang disengaja), sehingga pemindaian ulang kode QR tidak
+  diperlukan.
 
 ## Pemecahan masalah
 
-- **Bot membalas "pergi ke Mars":** kredensial belum dikonfigurasi atau Gateway belum dimulai.
-- **Tidak ada pesan masuk:** verifikasi bahwa `appId` dan `clientSecret` sudah benar, dan
-  bot diaktifkan di QQ Open Platform.
-- **Balasan mandiri berulang:** OpenClaw mencatat indeks referensi keluar QQ sebagai
-  dibuat oleh bot dan mengabaikan peristiwa masuk yang `msgIdx` saat ini cocok dengan
-  akun bot yang sama. Ini mencegah loop gema platform sambil tetap memungkinkan pengguna
-  mengutip atau membalas pesan bot sebelumnya.
-- **Penyiapan dengan `--token-file` masih menampilkan belum dikonfigurasi:** `--token-file` hanya mengatur
-  AppSecret. Anda masih memerlukan `appId` di konfigurasi atau `QQBOT_APP_ID`.
-- **Pesan proaktif tidak diterima:** QQ dapat mencegat pesan yang dimulai oleh bot jika
+- **Gateway tidak dimulai / tidak ada pesan masuk:** pastikan `appId` dan
+  `clientSecret` sudah benar serta bot diaktifkan di QQ Open Platform.
+  Kredensial yang tidak ada ditampilkan sebagai "QQBot belum dikonfigurasi (`appId` atau
+  `clientSecret` tidak ada)".
+- **Penyiapan dengan `--token-file` masih ditampilkan sebagai belum dikonfigurasi:** `--token-file` hanya
+  menetapkan AppSecret. `appId` tetap harus ditetapkan dalam konfigurasi atau `QQBOT_APP_ID`.
+- **Balasan grup beruntun saling bertabrakan:** antrean masuk mengeluarkan pesan yang dibuat bot
+  sebelum pesan manusia ketika antrean rekan penuh, serta menggabungkan
+  rentetan pesan grup normal (bukan perintah) menjadi satu giliran yang disertai atribusi, sehingga
+  banjir percakapan bot tidak akan menghambat pesan manusia.
+- **Pesan proaktif tidak diterima:** QQ dapat memblokir pesan yang dimulai oleh bot jika
   pengguna belum berinteraksi baru-baru ini.
-- **Suara tidak ditranskripsikan:** pastikan STT dikonfigurasi dan penyedia dapat dijangkau.
+- **Suara tidak ditranskripsikan:** pastikan STT telah dikonfigurasi dan penyedianya
+  dapat dijangkau.
 
 ## Terkait
 
 - [Pemasangan](/id/channels/pairing)
 - [Grup](/id/channels/groups)
-- [Pemecahan masalah channel](/id/channels/troubleshooting)
+- [Pemecahan masalah saluran](/id/channels/troubleshooting)

@@ -1,15 +1,14 @@
 ---
 read_when:
-    - Déploiement d’OpenClaw sur EasyRunner
+    - Déployer OpenClaw sur EasyRunner
     - Exécution du Gateway derrière le proxy Caddy d’EasyRunner
     - Choisir des volumes persistants et l’authentification pour un Gateway hébergé
-summary: Exécutez le Gateway OpenClaw sur EasyRunner avec Podman et Caddy
+summary: Exécuter le Gateway OpenClaw sur EasyRunner avec Podman et Caddy
 title: EasyRunner
 x-i18n:
-    generated_at: "2026-07-12T15:35:57Z"
+    generated_at: "2026-07-12T03:00:16Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 80cbde016a8bf7662d4b4a056a3d122a423264179daf70b5705e8f10b0dad5cb
     source_path: platforms/easyrunner.md
@@ -17,16 +16,16 @@ x-i18n:
 ---
 
 EasyRunner héberge le Gateway OpenClaw sous la forme d’une petite application conteneurisée derrière son
-proxy Caddy. Ce guide suppose un hôte EasyRunner exécutant des applications Compose
-compatibles avec Podman et assurant la terminaison HTTPS via Caddy.
+proxy Caddy. Ce guide suppose que l’hôte EasyRunner exécute des applications Compose compatibles
+avec Podman et assure la terminaison HTTPS via Caddy.
 
 ## Avant de commencer
 
 - Un serveur EasyRunner avec un domaine qui pointe vers celui-ci.
-- L’image OpenClaw officielle (`ghcr.io/openclaw/openclaw`) ou votre propre build.
+- L’image officielle d’OpenClaw (`ghcr.io/openclaw/openclaw`) ou votre propre version.
 - Un volume de configuration persistant pour `/home/node/.openclaw`.
 - Un volume d’espace de travail persistant pour `/home/node/.openclaw/workspace`.
-- Un jeton ou mot de passe Gateway robuste.
+- Un jeton ou un mot de passe robuste pour le Gateway.
 
 Conservez l’authentification des appareils activée lorsque cela est possible. Si votre proxy inverse ne peut pas transmettre
 correctement l’identité de l’appareil, corrigez d’abord les paramètres de proxy de confiance (voir
@@ -62,8 +61,8 @@ volumes:
 ```
 
 Remplacez `openclaw.example.com` par le nom d’hôte de votre Gateway. Stockez
-`OPENCLAW_GATEWAY_TOKEN` dans le gestionnaire de secrets ou de variables d’environnement d’EasyRunner au lieu de
-l’enregistrer dans la définition de l’application. Par défaut, l’image écoute sur l’interface de bouclage ;
+`OPENCLAW_GATEWAY_TOKEN` dans le gestionnaire de secrets ou de variables d’environnement d’EasyRunner plutôt que de
+l’intégrer à la définition de l’application. Par défaut, l’image se lie à local loopback ;
 les options explicites `--bind lan --port 1455` dans `command` sont donc nécessaires pour que Caddy puisse
 atteindre le conteneur.
 
@@ -85,7 +84,7 @@ l’intermédiaire du proxy et exigez une authentification :
 ```
 
 Si Caddy assure la terminaison TLS pour le Gateway, configurez les paramètres de proxy de confiance pour
-le chemin exact du proxy plutôt que de désactiver globalement les contrôles d’authentification. Voir
+le chemin exact du proxy plutôt que de désactiver globalement les contrôles d’authentification. Consultez
 [Authentification par proxy de confiance](/fr/gateway/trusted-proxy-auth).
 
 ## Vérifier
@@ -98,10 +97,9 @@ openclaw gateway status --url https://openclaw.example.com --token <token>
 ```
 
 Depuis l’hôte EasyRunner, `GET /healthz` (état de fonctionnement) et `GET /readyz`
-(état de préparation) ne nécessitent aucune authentification et servent au contrôle d’intégrité
-du conteneur intégré à l’image. Vérifiez également dans les journaux de l’application que le Gateway
-est à l’écoute et qu’aucun échec au démarrage ne concerne SecretRef, un plugin ou l’authentification
-d’un canal.
+(état de préparation) ne nécessitent aucune authentification et servent au contrôle d’état
+intégré du conteneur de l’image. Vérifiez également dans les journaux de l’application que le Gateway est à l’écoute et qu’aucun échec
+lié à SecretRef, à un Plugin ou à l’authentification d’un canal ne survient au démarrage.
 
 ## Mises à jour et sauvegardes
 
@@ -113,7 +111,7 @@ d’un canal.
 - Exécutez `openclaw doctor` après les mises à jour majeures afin de détecter les migrations de configuration et
   les avertissements de service.
 
-## Résolution des problèmes
+## Dépannage
 
 - `gateway probe` ne parvient pas à se connecter : vérifiez que le nom d’hôte Caddy pointe vers l’application
   et que le conteneur écoute sur `0.0.0.0:1455`.
@@ -123,5 +121,5 @@ d’un canal.
   corrigez les volumes montés afin que cet utilisateur puisse écrire dans
   `/home/node/.openclaw` et `/home/node/.openclaw/workspace`.
 - Les plugins de navigateur ou de canal échouent : vérifiez que les binaires externes requis,
-  l’accès réseau sortant et les identifiants montés sont disponibles dans le
+  la sortie réseau et les identifiants montés sont disponibles dans le
   conteneur.

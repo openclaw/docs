@@ -1,96 +1,79 @@
 ---
 read_when:
     - Đang tìm trạng thái ứng dụng đồng hành cho Linux
-    - Lên kế hoạch phạm vi nền tảng hoặc đóng góp
-    - Gỡ lỗi các lần Linux OOM kill hoặc thoát mã 137 trên VPS hoặc container
-summary: Trạng thái hỗ trợ Linux + ứng dụng đồng hành
+    - Lập kế hoạch hỗ trợ nền tảng hoặc đóng góp
+    - Gỡ lỗi tiến trình bị Linux OOM chấm dứt hoặc mã thoát 137 trên VPS hay container
+summary: Hỗ trợ Linux + trạng thái ứng dụng đồng hành
 title: Ứng dụng Linux
 x-i18n:
-    generated_at: "2026-06-27T17:41:54Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:04:10Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 437eb12d373ff9161ec7fa1e6fc04bf5662f903374d17f55b45ae1ea355c9085
+    source_hash: 3a1b57fc7e37257a05eb06f265a49f165eef429f1c8d93c988853f39eba89627
     source_path: platforms/linux.md
     workflow: 16
 ---
 
-Gateway được hỗ trợ đầy đủ trên Linux. **Node là runtime được khuyến nghị**.
-Bun không được khuyến nghị cho Gateway (lỗi WhatsApp/Telegram).
+Gateway được hỗ trợ đầy đủ trên Linux. Node là runtime được khuyến nghị; Bun
+không được khuyến nghị (đã biết có vấn đề với WhatsApp/Telegram).
 
-Các ứng dụng đồng hành Linux native đang được lên kế hoạch. Chúng tôi hoan nghênh đóng góp nếu bạn muốn giúp xây dựng một ứng dụng như vậy.
+Hiện chưa có ứng dụng đồng hành gốc cho Linux. Chúng tôi hoan nghênh các đóng góp.
 
-## Lộ trình nhanh cho người mới bắt đầu (VPS)
+## Cách nhanh (VPS)
 
-1. Cài đặt Node 24 (khuyến nghị; Node 22 LTS, hiện là `22.19+`, vẫn hoạt động để tương thích)
+1. Cài đặt Node 24 (khuyến nghị) hoặc Node 22.19+ (LTS, vẫn được hỗ trợ).
 2. `npm i -g openclaw@latest`
 3. `openclaw onboard --install-daemon`
-4. Từ laptop của bạn: `ssh -N -L 18789:127.0.0.1:18789 <user>@<host>`
-5. Mở `http://127.0.0.1:18789/` và xác thực bằng shared secret đã cấu hình (mặc định là token; mật khẩu nếu bạn đặt `gateway.auth.mode: "password"`)
+4. Từ máy tính xách tay của bạn: `ssh -N -L 18789:127.0.0.1:18789 <user>@<host>`
+5. Mở `http://127.0.0.1:18789/` và xác thực bằng bí mật dùng chung đã cấu hình
+   (mặc định là token; mật khẩu nếu `gateway.auth.mode` là `"password"`).
 
-Hướng dẫn đầy đủ cho máy chủ Linux: [Máy chủ Linux](/vi/vps). Ví dụ VPS từng bước: [exe.dev](/vi/install/exe-dev)
+Hướng dẫn máy chủ đầy đủ: [Máy chủ Linux](/vi/vps). Ví dụ VPS từng bước:
+[exe.dev](/vi/install/exe-dev).
 
 ## Cài đặt
 
 - [Bắt đầu](/vi/start/getting-started)
-- [Cài đặt & cập nhật](/vi/install/updating)
-- Luồng tùy chọn: [Bun (thử nghiệm)](/vi/install/bun), [Nix](/vi/install/nix), [Docker](/vi/install/docker)
+- [Cài đặt và cập nhật](/vi/install/updating)
+- Tùy chọn: [Bun (thử nghiệm)](/vi/install/bun), [Nix](/vi/install/nix), [Docker](/vi/install/docker)
 
-## Gateway
+## Dịch vụ Gateway (systemd)
 
-- [Runbook Gateway](/vi/gateway)
-- [Cấu hình](/vi/gateway/configuration)
+Cài đặt bằng một trong các lệnh sau:
 
-## Cài đặt dịch vụ Gateway (CLI)
-
-Dùng một trong các lệnh sau:
-
-```
+```bash
 openclaw onboard --install-daemon
-```
-
-Hoặc:
-
-```
 openclaw gateway install
+openclaw configure   # chọn "Gateway service" khi được nhắc
 ```
 
-Hoặc:
+Sửa chữa hoặc di chuyển một bản cài đặt hiện có:
 
-```
-openclaw configure
-```
-
-Chọn **Dịch vụ Gateway** khi được nhắc.
-
-Sửa chữa/di chuyển:
-
-```
+```bash
 openclaw doctor
 ```
 
-## Điều khiển hệ thống (systemd user unit)
+Theo mặc định, `openclaw gateway install` tạo một unit systemd cấp **người dùng**. Hướng dẫn
+dịch vụ đầy đủ, bao gồm biến thể unit cấp **hệ thống** dành cho các máy chủ dùng chung hoặc
+luôn hoạt động, có trong [cẩm nang vận hành Gateway](/vi/gateway#supervision-and-service-lifecycle).
 
-OpenClaw mặc định cài đặt một dịch vụ systemd **user**. Dùng dịch vụ **system**
-cho máy chủ dùng chung hoặc luôn bật. `openclaw gateway install` và
-`openclaw onboard --install-daemon` đã render unit chuẩn hiện tại
-cho bạn; chỉ tự viết thủ công khi bạn cần một thiết lập system/service-manager
-tùy chỉnh. Hướng dẫn dịch vụ đầy đủ nằm trong [Runbook Gateway](/vi/gateway).
+Chỉ tự viết unit cho thiết lập tùy chỉnh. Ví dụ unit người dùng tối thiểu
+(`~/.config/systemd/user/openclaw-gateway[-<profile>].service`):
 
-Thiết lập tối thiểu:
-
-Tạo `~/.config/systemd/user/openclaw-gateway[-<profile>].service`:
-
-```
+```ini
 [Unit]
 Description=OpenClaw Gateway (profile: <profile>, v<version>)
 After=network-online.target
 Wants=network-online.target
+StartLimitBurst=5
+StartLimitIntervalSec=60
 
 [Service]
 ExecStart=/usr/local/bin/openclaw gateway --port 18789
 Restart=always
 RestartSec=5
+RestartPreventExitStatus=78
 TimeoutStopSec=30
 TimeoutStartSec=30
 SuccessExitStatus=0 143
@@ -101,55 +84,57 @@ KillMode=control-group
 WantedBy=default.target
 ```
 
-Bật nó:
+Bật unit:
 
-```
+```bash
 systemctl --user enable --now openclaw-gateway[-<profile>].service
 ```
 
-## Áp lực bộ nhớ và OOM kill
+## Áp lực bộ nhớ và việc tiến trình bị kết thúc do OOM
 
-Trên Linux, kernel chọn một nạn nhân OOM khi một host, VM hoặc container cgroup
-hết bộ nhớ. Gateway có thể là một nạn nhân không phù hợp vì nó sở hữu các
-phiên tồn tại lâu và kết nối kênh. Vì vậy, OpenClaw ưu tiên để các tiến trình con
-tạm thời bị kill trước Gateway khi có thể.
+Trên Linux, kernel chọn một tiến trình nạn nhân của OOM khi máy chủ, máy ảo hoặc cgroup của
+container hết bộ nhớ. Gateway không phải là lựa chọn phù hợp để bị kết thúc vì nó quản lý các
+phiên tồn tại lâu dài và kết nối kênh, do đó OpenClaw ưu tiên để các tiến trình con tạm thời
+bị kết thúc trước khi có thể.
 
-Với các lần spawn tiến trình con Linux đủ điều kiện, OpenClaw khởi động tiến trình con thông qua một wrapper
-`/bin/sh` ngắn, tăng `oom_score_adj` riêng của tiến trình con lên `1000`, rồi
-`exec` lệnh thật. Đây là thao tác không cần đặc quyền vì tiến trình con
-chỉ đang tăng khả năng chính nó bị OOM kill.
+Đối với các tiến trình con đủ điều kiện trên Linux, OpenClaw bọc lệnh trong một shim
+`/bin/sh` ngắn để tăng `oom_score_adj` của chính tiến trình con lên `1000`, sau đó
+dùng `exec` chạy lệnh thực tế. Thao tác này không yêu cầu đặc quyền: một tiến trình luôn có thể
+tăng điểm OOM của chính nó.
 
-Các bề mặt tiến trình con được bao phủ bao gồm:
+Các bề mặt tiến trình con được áp dụng:
 
-- tiến trình con command do supervisor quản lý,
-- tiến trình con PTY shell,
-- tiến trình con MCP stdio server,
-- tiến trình browser/Chrome do OpenClaw khởi chạy.
+- Tiến trình con của lệnh do trình giám sát quản lý
+- Tiến trình con của shell PTY
+- Tiến trình con của máy chủ MCP qua stdio
+- Các tiến trình trình duyệt/Chrome do OpenClaw khởi chạy (thông qua runtime tiến trình của SDK Plugin)
 
-Wrapper này chỉ dành cho Linux và được bỏ qua khi không có `/bin/sh`. Nó cũng
-được bỏ qua nếu env của tiến trình con đặt `OPENCLAW_CHILD_OOM_SCORE_ADJ=0`, `false`,
-`no`, hoặc `off`.
+Trình bọc chỉ dành cho Linux và bị bỏ qua khi `/bin/sh` không khả dụng hoặc khi
+môi trường của tiến trình con đặt `OPENCLAW_CHILD_OOM_SCORE_ADJ` thành `0`, `false`, `no` hoặc
+`off`.
 
-Để xác minh một tiến trình con:
+Xác minh một tiến trình con:
 
 ```bash
 cat /proc/<child-pid>/oom_score_adj
 ```
 
-Giá trị kỳ vọng cho các tiến trình con được bao phủ là `1000`. Tiến trình Gateway nên giữ
-điểm bình thường của nó, thường là `0`.
+Giá trị dự kiến cho các tiến trình con được áp dụng là `1000`; bản thân tiến trình Gateway
+giữ điểm số thông thường (thường là `0`).
 
-Unit systemd được khuyến nghị cũng đặt `OOMPolicy=continue`. Điều này giữ cho
-unit Gateway tiếp tục hoạt động khi một tiến trình con tạm thời được OOM killer chọn;
-command/session của tiến trình con có thể thất bại và báo lỗi mà systemd không đánh dấu
-toàn bộ dịch vụ gateway là thất bại và khởi động lại tất cả các kênh.
+`OOMPolicy=continue` của unit systemd giữ cho dịch vụ Gateway tiếp tục hoạt động khi
+một tiến trình con tạm thời bị trình kết thúc OOM chọn, thay vì đánh dấu toàn bộ
+unit là thất bại và khởi động lại tất cả các kênh; tiến trình con hoặc phiên thất bại sẽ báo cáo
+lỗi riêng.
 
-Điều này không thay thế việc tinh chỉnh bộ nhớ thông thường. Nếu một VPS hoặc container liên tục
-kill tiến trình con, hãy tăng giới hạn bộ nhớ, giảm concurrency, hoặc thêm các
-kiểm soát tài nguyên mạnh hơn như systemd `MemoryMax=` hoặc giới hạn bộ nhớ cấp container.
+Điều này không thay thế việc tinh chỉnh bộ nhớ thông thường. Nếu VPS hoặc container liên tục
+kết thúc các tiến trình con, hãy tăng giới hạn bộ nhớ, giảm mức đồng thời hoặc thêm các biện pháp
+kiểm soát tài nguyên mạnh hơn (`MemoryMax=` của systemd, giới hạn bộ nhớ container).
 
 ## Liên quan
 
 - [Tổng quan cài đặt](/vi/install)
 - [Máy chủ Linux](/vi/vps)
 - [Raspberry Pi](/vi/install/raspberry-pi)
+- [Cẩm nang vận hành Gateway](/vi/gateway)
+- [Cấu hình Gateway](/vi/gateway/configuration)

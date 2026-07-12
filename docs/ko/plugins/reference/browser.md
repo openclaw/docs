@@ -4,13 +4,13 @@ read_when:
 summary: 에이전트가 호출할 수 있는 도구를 추가합니다.
 title: 브라우저 Plugin
 x-i18n:
-    generated_at: "2026-05-02T21:01:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T01:05:04Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: 2dcf562660fa3d05d22856335a7d2e6e467a432ee6dda5650efd94edde661ba4
     source_path: plugins/reference/browser.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # 브라우저 Plugin
@@ -22,7 +22,7 @@ x-i18n:
 - 패키지: `@openclaw/browser-plugin`
 - 설치 경로: OpenClaw에 포함됨
 
-## 노출 영역
+## 제공 기능
 
 계약: 도구; Skills
 

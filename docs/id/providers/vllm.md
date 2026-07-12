@@ -1,54 +1,49 @@
 ---
 read_when:
-    - Anda ingin menjalankan OpenClaw terhadap server vLLM lokal
-    - Anda menginginkan endpoint /v1 yang kompatibel dengan OpenAI dengan model Anda sendiri
+    - Anda ingin menjalankan OpenClaw dengan server vLLM lokal
+    - Anda menginginkan endpoint /v1 yang kompatibel dengan OpenAI untuk model Anda sendiri
 summary: Jalankan OpenClaw dengan vLLM (server lokal yang kompatibel dengan OpenAI)
 title: vLLM
 x-i18n:
-    generated_at: "2026-06-27T18:08:07Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:35:16Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a3a5da5ce359bf62c44cddd0c97d2852d98c996ad6d44552a68d4aeb4d1d2893
+    source_hash: 98d1044c0a82efb6c9937e961d765d0cfcea8664cbaa043168921b457756512c
     source_path: providers/vllm.md
     workflow: 16
 ---
 
-vLLM dapat menyajikan model sumber terbuka (dan beberapa model kustom) melalui API HTTP yang **kompatibel dengan OpenAI**. OpenClaw terhubung ke vLLM menggunakan API `openai-completions`.
+vLLM menyajikan model sumber terbuka (dan beberapa model khusus) melalui API HTTP yang **kompatibel dengan OpenAI**. OpenClaw terhubung menggunakan API `openai-completions` dan dapat **menemukan otomatis** model saat Anda mengaktifkannya dengan `VLLM_API_KEY`.
 
-OpenClaw juga dapat **menemukan otomatis** model yang tersedia dari vLLM saat Anda ikut serta dengan `VLLM_API_KEY` (nilai apa pun berfungsi jika server Anda tidak memberlakukan autentikasi). Gunakan `vllm/*` di `agents.defaults.models` agar penemuan tetap dinamis saat Anda juga mengonfigurasi URL dasar vLLM kustom.
-
-OpenClaw memperlakukan `vllm` sebagai penyedia lokal yang kompatibel dengan OpenAI dan mendukung
-akuntansi penggunaan streaming, sehingga jumlah token status/konteks dapat diperbarui dari
-respons `stream_options.include_usage`.
-
-| Properti         | Nilai                                    |
-| ---------------- | ---------------------------------------- |
-| ID Penyedia      | `vllm`                                   |
+| Properti         | Nilai                                      |
+| ---------------- | ------------------------------------------ |
+| ID penyedia      | `vllm`                                     |
 | API              | `openai-completions` (kompatibel dengan OpenAI) |
-| Autentikasi      | variabel lingkungan `VLLM_API_KEY`      |
-| URL dasar default | `http://127.0.0.1:8000/v1`               |
+| Autentikasi      | variabel lingkungan `VLLM_API_KEY`         |
+| URL dasar bawaan | `http://127.0.0.1:8000/v1`                 |
+| Penggunaan streaming | Didukung (`stream_options.include_usage`) |
 
 ## Memulai
 
 <Steps>
-  <Step title="Start vLLM with an OpenAI-compatible server">
-    URL dasar Anda harus mengekspos endpoint `/v1` (misalnya `/v1/models`, `/v1/chat/completions`). vLLM umumnya berjalan di:
+  <Step title="Mulai vLLM dengan server yang kompatibel dengan OpenAI">
+    URL dasar Anda harus menyediakan endpoint `/v1` (`/v1/models`, `/v1/chat/completions`). vLLM umumnya berjalan di:
 
-    ```
+    ```text
     http://127.0.0.1:8000/v1
     ```
 
   </Step>
-  <Step title="Set the API key environment variable">
-    Nilai apa pun berfungsi jika server Anda tidak memberlakukan autentikasi:
+  <Step title="Tetapkan variabel lingkungan kunci API">
+    Nilai apa pun yang tidak kosong dapat digunakan jika server Anda tidak mewajibkan autentikasi:
 
     ```bash
     export VLLM_API_KEY="vllm-local"
     ```
 
   </Step>
-  <Step title="Select a model">
+  <Step title="Pilih model">
     Ganti dengan salah satu ID model vLLM Anda:
 
     ```json5
@@ -62,35 +57,38 @@ respons `stream_options.include_usage`.
     ```
 
   </Step>
-  <Step title="Verify the model is available">
+  <Step title="Verifikasi bahwa model tersedia">
     ```bash
     openclaw models list --provider vllm
     ```
   </Step>
 </Steps>
 
+<Tip>
+Untuk penyiapan noninteraktif (CI, skrip), berikan URL dasar, kunci, dan model secara langsung:
+
+```bash
+openclaw onboard --non-interactive \
+  --mode local \
+  --auth-choice vllm \
+  --custom-base-url "http://127.0.0.1:8000/v1" \
+  --custom-api-key "vllm-local" \
+  --custom-model-id "your-model-id"
+```
+
+</Tip>
+
 ## Penemuan model (penyedia implisit)
 
-Saat `VLLM_API_KEY` ditetapkan (atau profil autentikasi ada) dan Anda **tidak** mendefinisikan `models.providers.vllm`, OpenClaw mengkueri:
-
-```
-GET http://127.0.0.1:8000/v1/models
-```
-
-dan mengonversi ID yang dikembalikan menjadi entri model.
+Saat `VLLM_API_KEY` ditetapkan (atau terdapat profil autentikasi) dan `models.providers.vllm` **tidak** ditentukan, OpenClaw mengirim kueri ke `GET http://127.0.0.1:8000/v1/models` dan mengubah ID yang dikembalikan menjadi entri model.
 
 <Note>
-Jika Anda menetapkan `models.providers.vllm` secara eksplisit, OpenClaw menggunakan model yang Anda deklarasikan secara default. Tambahkan `"vllm/*": {}` ke `agents.defaults.models` saat Anda ingin OpenClaw mengkueri endpoint `/models` penyedia yang dikonfigurasi tersebut dan menyertakan semua model vLLM yang diiklankan.
+Jika Anda menetapkan `models.providers.vllm` secara eksplisit, OpenClaw hanya menggunakan model yang Anda nyatakan. Tambahkan `"vllm/*": {}` ke `agents.defaults.models` agar OpenClaw juga mengirim kueri ke endpoint `/models` milik penyedia yang dikonfigurasi tersebut dan menyertakan semua model vLLM yang diumumkan.
 </Note>
 
-## Konfigurasi eksplisit (model manual)
+## Konfigurasi eksplisit
 
-Gunakan konfigurasi eksplisit saat:
-
-- vLLM berjalan pada host atau port yang berbeda
-- Anda ingin menetapkan nilai `contextWindow` atau `maxTokens`
-- Server Anda memerlukan kunci API sungguhan (atau Anda ingin mengontrol header)
-- Anda terhubung ke endpoint vLLM loopback tepercaya, LAN, atau Tailscale
+Konfigurasikan secara eksplisit saat vLLM berjalan pada host atau porta yang berbeda, Anda ingin menetapkan `contextWindow`/`maxTokens`, server Anda memerlukan kunci API yang sebenarnya, atau Anda terhubung ke endpoint local loopback, LAN, atau Tailscale tepercaya:
 
 ```json5
 {
@@ -100,7 +98,7 @@ Gunakan konfigurasi eksplisit saat:
         baseUrl: "http://127.0.0.1:8000/v1",
         apiKey: "${VLLM_API_KEY}",
         api: "openai-completions",
-        timeoutSeconds: 300, // Optional: extend connect/header/body/request timeout for slow local models
+        timeoutSeconds: 300, // Optional: extend request timeout for slow local models
         models: [
           {
             id: "your-model-id",
@@ -118,8 +116,7 @@ Gunakan konfigurasi eksplisit saat:
 }
 ```
 
-Agar penyedia ini tetap dinamis tanpa mencantumkan setiap model secara manual, tambahkan wildcard
-penyedia ke katalog model yang terlihat:
+Agar penyedia tetap dinamis tanpa mencantumkan setiap model, tambahkan wildcard ke katalog model yang terlihat:
 
 ```json5
 {
@@ -136,28 +133,22 @@ penyedia ke katalog model yang terlihat:
 ## Konfigurasi lanjutan
 
 <AccordionGroup>
-  <Accordion title="Proxy-style behavior">
-    vLLM diperlakukan sebagai backend `/v1` bergaya proxy yang kompatibel dengan OpenAI, bukan endpoint
-    OpenAI native. Artinya:
+  <Accordion title="Perilaku bergaya proksi">
+    vLLM diperlakukan sebagai backend `/v1` bergaya proksi yang kompatibel dengan OpenAI, bukan endpoint OpenAI native:
 
-    | Perilaku | Diterapkan? |
-    |----------|----------|
-    | Pembentukan permintaan OpenAI native | Tidak |
-    | `service_tier` | Tidak dikirim |
-    | Responses `store` | Tidak dikirim |
-    | Petunjuk cache prompt | Tidak dikirim |
-    | Pembentukan payload kompatibilitas penalaran OpenAI | Tidak diterapkan |
-    | Header atribusi OpenClaw tersembunyi | Tidak disuntikkan pada URL dasar kustom |
+    | Perilaku                               | Diterapkan?                      |
+    | -------------------------------------- | -------------------------------- |
+    | Pembentukan permintaan OpenAI native   | Tidak                            |
+    | `service_tier`                         | Tidak dikirim                    |
+    | `store` Responses                      | Tidak dikirim                    |
+    | Petunjuk cache prompt                  | Tidak dikirim                    |
+    | Pembentukan payload kompatibilitas penalaran OpenAI | Tidak diterapkan       |
+    | Header atribusi OpenClaw tersembunyi   | Tidak disisipkan pada URL dasar khusus |
 
   </Accordion>
 
-  <Accordion title="Qwen thinking controls">
-    Untuk model Qwen yang disajikan melalui vLLM, tetapkan
-    `compat.thinkingFormat: "qwen-chat-template"` pada baris model penyedia
-    yang dikonfigurasi saat server mengharapkan kwargs templat chat Qwen. Model
-    yang dikonfigurasi dengan cara ini mengekspos profil `/think` biner (`off`, `on`) karena
-    pemikiran templat Qwen adalah flag permintaan aktif/nonaktif, bukan tangga upaya
-    bergaya OpenAI.
+  <Accordion title="Kontrol pemikiran Qwen">
+    Untuk model Qwen, tetapkan `compat.thinkingFormat: "qwen-chat-template"` pada baris model saat server mengharapkan argumen kata kunci templat percakapan Qwen. Model ini menyediakan profil biner `/think` (`off`, `on`) karena pemikiran templat percakapan Qwen merupakan penanda aktif/nonaktif, bukan jenjang tingkat upaya bergaya OpenAI.
 
     ```json5
     {
@@ -178,7 +169,7 @@ penyedia ke katalog model yang terlihat:
     }
     ```
 
-    OpenClaw memetakan `/think off` ke:
+    OpenClaw memetakan `/think off` menjadi:
 
     ```json
     {
@@ -189,17 +180,12 @@ penyedia ke katalog model yang terlihat:
     }
     ```
 
-    Tingkat pemikiran selain `off` mengirim `enable_thinking: true`. Jika endpoint Anda
-    mengharapkan flag tingkat atas bergaya DashScope, gunakan
-    `compat.thinkingFormat: "qwen"` untuk mengirim `enable_thinking` di root
-    permintaan.
+    Tingkat pemikiran selain `off` mengirim `enable_thinking: true`. Jika endpoint Anda mengharapkan penanda tingkat teratas bergaya DashScope, gunakan `compat.thinkingFormat: "qwen"` untuk mengirim `enable_thinking` pada akar permintaan.
 
   </Accordion>
 
-  <Accordion title="Nemotron 3 thinking controls">
-    vLLM/Nemotron 3 dapat menggunakan kwargs templat chat untuk mengontrol apakah penalaran
-    dikembalikan sebagai penalaran tersembunyi atau teks jawaban yang terlihat. Saat sesi OpenClaw
-    menggunakan `vllm/nemotron-3-*` dengan pemikiran nonaktif, Plugin vLLM bawaan mengirim:
+  <Accordion title="Kontrol pemikiran Nemotron 3">
+    Untuk model `vllm/nemotron-3-*` dengan pemikiran dinonaktifkan, plugin bawaan mengirim:
 
     ```json
     {
@@ -210,9 +196,7 @@ penyedia ke katalog model yang terlihat:
     }
     ```
 
-    Untuk menyesuaikan nilai-nilai ini, tetapkan `chat_template_kwargs` di bawah parameter model.
-    Jika Anda juga menetapkan `params.extra_body.chat_template_kwargs`, nilai tersebut memiliki
-    prioritas akhir karena `extra_body` adalah override isi permintaan terakhir.
+    Untuk menyesuaikan nilai ini, tetapkan `chat_template_kwargs` di bawah parameter model. Jika Anda juga menetapkan `params.extra_body.chat_template_kwargs`, nilai tersebut diprioritaskan karena `extra_body` merupakan penimpaan isi permintaan terakhir.
 
     ```json5
     {
@@ -236,20 +220,11 @@ penyedia ke katalog model yang terlihat:
   </Accordion>
 
   <Accordion title="Panggilan alat Qwen muncul sebagai teks">
-    Pertama, pastikan vLLM dimulai dengan parser panggilan alat dan template chat
-    yang tepat untuk model. Misalnya, vLLM mendokumentasikan `hermes` untuk model
-    Qwen2.5 dan `qwen3_xml` untuk model Qwen3-Coder.
+    Pertama, pastikan vLLM dimulai dengan parser panggilan alat dan templat percakapan yang tepat untuk model tersebut. Dokumentasi vLLM menetapkan `hermes` untuk model Qwen2.5 dan `qwen3_xml` untuk model Qwen3-Coder.
 
-    Gejala:
+    Gejala: Skills/alat tidak pernah dijalankan, asisten mencetak JSON/XML mentah seperti `{"name":"read","arguments":...}`, atau vLLM mengembalikan larik `tool_calls` kosong saat OpenClaw mengirim `tool_choice: "auto"`.
 
-    - Skills atau alat tidak pernah berjalan
-    - asisten mencetak JSON/XML mentah seperti `{"name":"read","arguments":...}`
-    - vLLM mengembalikan array `tool_calls` kosong saat OpenClaw mengirim
-      `tool_choice: "auto"`
-
-    Beberapa kombinasi Qwen/vLLM mengembalikan panggilan alat terstruktur hanya saat
-    permintaan menggunakan `tool_choice: "required"`. Untuk entri model tersebut, paksa
-    kolom permintaan yang kompatibel dengan OpenAI menggunakan `params.extra_body`:
+    Beberapa kombinasi Qwen/vLLM hanya mengembalikan panggilan alat terstruktur saat permintaan menggunakan `tool_choice: "required"`. Paksa pengaturan ini per model dengan `params.extra_body`:
 
     ```json5
     {
@@ -269,28 +244,18 @@ penyedia ke katalog model yang terlihat:
     }
     ```
 
-    Ganti `Qwen-Qwen2.5-Coder-32B-Instruct` dengan id persis yang dikembalikan oleh:
-
-    ```bash
-    openclaw models list --provider vllm
-    ```
-
-    Anda dapat menerapkan override yang sama dari CLI:
+    Ganti ID model dengan ID persis dari `openclaw models list --provider vllm`, atau terapkan penimpaan yang sama melalui CLI:
 
     ```bash
     openclaw config set agents.defaults.models '{"vllm/Qwen-Qwen2.5-Coder-32B-Instruct":{"params":{"extra_body":{"tool_choice":"required"}}}}' --strict-json --merge
     ```
 
-    Ini adalah solusi kompatibilitas yang bersifat opt-in. Solusi ini membuat setiap giliran model dengan
-    alat mewajibkan panggilan alat, jadi gunakan hanya untuk entri model lokal khusus
-    ketika perilaku tersebut dapat diterima. Jangan gunakan sebagai default global untuk semua
-    model vLLM, dan jangan gunakan proxy yang secara membabi buta mengonversi
-    teks asisten sembarang menjadi panggilan alat yang dapat dieksekusi.
+    Ini merupakan solusi sementara yang harus diaktifkan secara eksplisit: pengaturan ini memaksa setiap giliran yang memiliki alat untuk melakukan panggilan alat, jadi gunakan hanya untuk entri model khusus saat perilaku tersebut dapat diterima. Jangan menetapkannya sebagai bawaan global untuk semua model vLLM, dan jangan memasangkannya dengan proksi yang mengubah sembarang teks asisten menjadi panggilan alat yang dapat dieksekusi.
 
   </Accordion>
 
-  <Accordion title="URL dasar kustom">
-    Jika server vLLM Anda berjalan pada host atau port non-default, tetapkan `baseUrl` dalam konfigurasi penyedia eksplisit:
+  <Accordion title="URL dasar khusus">
+    Jika server vLLM Anda berjalan pada host atau porta nonbawaan, tetapkan `baseUrl` dalam konfigurasi penyedia eksplisit:
 
     ```json5
     {
@@ -320,12 +285,11 @@ penyedia ke katalog model yang terlihat:
   </Accordion>
 </AccordionGroup>
 
-## Pemecahan Masalah
+## Pemecahan masalah
 
 <AccordionGroup>
-  <Accordion title="Respons pertama lambat atau server jarak jauh timeout">
-    Untuk model lokal besar, host LAN jarak jauh, atau tautan tailnet, tetapkan
-    timeout permintaan dalam cakupan penyedia:
+  <Accordion title="Respons pertama lambat atau waktu tunggu server jarak jauh habis">
+    Untuk model lokal berukuran besar, host LAN jarak jauh, atau sambungan tailnet, tetapkan batas waktu permintaan dengan cakupan penyedia:
 
     ```json5
     {
@@ -343,70 +307,59 @@ penyedia ke katalog model yang terlihat:
     }
     ```
 
-    `timeoutSeconds` hanya berlaku untuk permintaan HTTP model vLLM, termasuk
-    penyiapan koneksi, header respons, streaming isi, dan total
-    pembatalan guarded-fetch. Utamakan ini sebelum meningkatkan
-    `agents.defaults.timeoutSeconds`, yang mengontrol seluruh proses agen.
+    `timeoutSeconds` hanya berlaku untuk permintaan HTTP model vLLM: penyiapan koneksi, header respons, streaming isi, dan pembatalan pengambilan terlindungi secara keseluruhan. Pengaturan ini juga menaikkan batas pengawas keadaan diam/streaming LLM di atas nilai bawaan implisit sekitar 120 detik untuk penyedia ini. Pilih pengaturan ini daripada menaikkan `agents.defaults.timeoutSeconds`, yang mengendalikan seluruh proses agen.
 
   </Accordion>
 
   <Accordion title="Server tidak dapat dijangkau">
-    Periksa bahwa server vLLM berjalan dan dapat diakses:
+    Periksa apakah server vLLM berjalan dan dapat diakses:
 
     ```bash
     curl http://127.0.0.1:8000/v1/models
     ```
 
-    Jika Anda melihat kesalahan koneksi, verifikasi host, port, dan bahwa vLLM dimulai dengan mode server yang kompatibel dengan OpenAI.
-    Untuk endpoint loopback eksplisit, LAN, atau Tailscale, OpenClaw memercayai
-    origin `models.providers.vllm.baseUrl` yang dikonfigurasi persis untuk permintaan model
-    yang dijaga. Origin metadata/link-local tetap diblokir tanpa
-    opt-in eksplisit. Tetapkan `models.providers.vllm.request.allowPrivateNetwork: true` hanya
-    saat permintaan vLLM harus menjangkau origin privat lain, dan tetapkan ke `false`
-    untuk keluar dari kepercayaan origin persis.
+    Jika Anda melihat galat koneksi, verifikasi host, porta, dan bahwa vLLM dimulai dalam mode server yang kompatibel dengan OpenAI. OpenClaw memercayai origin `models.providers.vllm.baseUrl` yang dikonfigurasi secara persis untuk permintaan model terlindungi pada endpoint local loopback, LAN, dan Tailscale. Origin metadata/link-local tetap diblokir tanpa pengaktifan eksplisit. Tetapkan `models.providers.vllm.request.allowPrivateNetwork: true` hanya saat permintaan vLLM harus menjangkau origin privat lain, atau `false` untuk menonaktifkan kepercayaan terhadap origin persis tersebut.
 
   </Accordion>
 
-  <Accordion title="Kesalahan autentikasi pada permintaan">
-    Jika permintaan gagal dengan kesalahan autentikasi, tetapkan `VLLM_API_KEY` nyata yang cocok dengan konfigurasi server Anda, atau konfigurasikan penyedia secara eksplisit di bawah `models.providers.vllm`.
+  <Accordion title="Galat autentikasi pada permintaan">
+    Jika permintaan gagal dengan galat autentikasi, tetapkan `VLLM_API_KEY` sebenarnya yang sesuai dengan konfigurasi server Anda, atau konfigurasikan penyedia secara eksplisit di bawah `models.providers.vllm`.
 
     <Tip>
-    Jika server vLLM Anda tidak memberlakukan autentikasi, nilai non-kosong apa pun untuk `VLLM_API_KEY` berfungsi sebagai sinyal opt-in untuk OpenClaw.
+    Jika server vLLM Anda tidak mewajibkan autentikasi, nilai apa pun yang tidak kosong untuk `VLLM_API_KEY` dapat digunakan sebagai sinyal pengaktifan eksplisit bagi OpenClaw.
     </Tip>
 
   </Accordion>
 
   <Accordion title="Tidak ada model yang ditemukan">
-    Penemuan otomatis mengharuskan `VLLM_API_KEY` ditetapkan. Jika Anda telah mendefinisikan `models.providers.vllm`, OpenClaw hanya menggunakan model yang Anda deklarasikan kecuali `agents.defaults.models` menyertakan `"vllm/*": {}`.
+    Penemuan otomatis mengharuskan `VLLM_API_KEY` ditetapkan. Jika Anda telah menentukan `models.providers.vllm`, OpenClaw hanya menggunakan model yang Anda nyatakan kecuali `agents.defaults.models` menyertakan `"vllm/*": {}`.
   </Accordion>
 
   <Accordion title="Alat dirender sebagai teks mentah">
-    Jika model Qwen mencetak sintaks alat JSON/XML alih-alih menjalankan skill,
-    periksa panduan Qwen dalam Konfigurasi lanjutan di atas. Perbaikan biasanya adalah:
+    Jika model Qwen mencetak sintaks alat JSON/XML alih-alih menjalankan Skills:
 
-    - mulai vLLM dengan parser/template yang benar untuk model tersebut
-    - konfirmasi id model persis dengan `openclaw models list --provider vllm`
-    - tambahkan override khusus per model `params.extra_body.tool_choice: "required"`
-      hanya jika `tool_choice: "auto"` masih mengembalikan panggilan alat kosong atau hanya teks
+    - Mulai vLLM dengan parser/templat yang benar untuk model tersebut.
+    - Konfirmasikan ID model persis dengan `openclaw models list --provider vllm`.
+    - Tambahkan penimpaan khusus per model `params.extra_body.tool_choice: "required"` hanya jika `tool_choice: "auto"` masih mengembalikan panggilan alat yang kosong atau hanya berupa teks.
 
   </Accordion>
 </AccordionGroup>
 
 <Warning>
-Bantuan lainnya: [Pemecahan Masalah](/id/help/troubleshooting) dan [FAQ](/id/help/faq).
+Bantuan lainnya: [Pemecahan masalah](/id/help/troubleshooting) dan [Tanya Jawab Umum](/id/help/faq).
 </Warning>
 
 ## Terkait
 
 <CardGroup cols={2}>
   <Card title="Pemilihan model" href="/id/concepts/model-providers" icon="layers">
-    Memilih penyedia, referensi model, dan perilaku alih gagal.
+    Memilih penyedia, referensi model, dan perilaku pengalihan saat gagal.
   </Card>
   <Card title="OpenAI" href="/id/providers/openai" icon="bolt">
     Penyedia OpenAI native dan perilaku rute yang kompatibel dengan OpenAI.
   </Card>
   <Card title="OAuth dan autentikasi" href="/id/gateway/authentication" icon="key">
-    Detail autentikasi dan aturan penggunaan ulang kredensial.
+    Detail autentikasi dan aturan penggunaan kembali kredensial.
   </Card>
   <Card title="Pemecahan masalah" href="/id/help/troubleshooting" icon="wrench">
     Masalah umum dan cara mengatasinya.

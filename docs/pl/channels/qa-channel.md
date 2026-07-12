@@ -1,32 +1,32 @@
 ---
 read_when:
-    - Podłączasz syntetyczny transport QA do lokalnego lub CI uruchomienia testów
-    - Potrzebujesz powierzchni konfiguracji dołączonego qa-channel
-    - Iteracyjnie rozwijasz automatyzację zapewniania jakości w całym przepływie.
-summary: Syntetyczny Plugin kanału klasy Slack do deterministycznych scenariuszy QA OpenClaw
+    - Podłączasz syntetyczny transport QA do lokalnego przebiegu testowego lub przebiegu testowego w CI
+    - Potrzebujesz wbudowanego interfejsu konfiguracji qa-channel
+    - Pracujesz iteracyjnie nad automatyzacją kontroli jakości typu end-to-end
+summary: Syntetyczny plugin kanału typu Slack do deterministycznych scenariuszy kontroli jakości OpenClaw
 title: Kanał QA
 x-i18n:
-    generated_at: "2026-05-10T19:23:38Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:49:31Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8f28962032bc5f6b228de731ae6bd9a22831604b506b7073aeffba19ac22e0e8
+    source_hash: f33af6ef31515e0cab0ee2540f48f3ffea8aba3d13915dc8cf66111599354187
     source_path: channels/qa-channel.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-`qa-channel` to wbudowany syntetyczny transport wiadomości do zautomatyzowanej kontroli jakości OpenClaw. Nie jest to kanał produkcyjny - istnieje po to, aby ćwiczyć tę samą granicę Plugin kanału, której używają prawdziwe transporty, przy zachowaniu deterministycznego i w pełni kontrolowalnego stanu.
+`qa-channel` to lokalny dla repozytorium syntetyczny transport wiadomości do zautomatyzowanej kontroli jakości OpenClaw (`extensions/qa-channel`, pakiet prywatny, wykluczony z instalacji dystrybucyjnych). Nie jest to kanał produkcyjny — służy do testowania tej samej granicy pluginu kanału, której używają rzeczywiste transporty, przy zachowaniu deterministycznego i w pełni kontrolowalnego stanu.
 
-## Co robi
+## Działanie
 
 - Gramatyka celów klasy Slack:
   - `dm:<user>`
   - `channel:<room>`
   - `group:<room>`
   - `thread:<room>/<thread>`
-- Współdzielone konwersacje `channel:` i `group:` są udostępniane agentom jako tury pomieszczeń grup/kanałów, dzięki czemu ćwiczą tę samą politykę widocznych odpowiedzi i routingu narzędzi wiadomości, której używają Discord, Slack, Telegram oraz podobne transporty.
-- Syntetyczna magistrala oparta na HTTP do wstrzykiwania wiadomości przychodzących, przechwytywania transkrypcji wychodzących, tworzenia wątków, reakcji, edycji, usuwania oraz akcji wyszukiwania/odczytu.
-- Runner samokontroli po stronie hosta, który zapisuje raport Markdown do `.artifacts/qa-e2e/`.
+- Współdzielone konwersacje `channel:` i `group:` są przedstawiane agentom jako tury pokojów grupowych/kanałowych, dzięki czemu testują tę samą politykę routingu widocznych odpowiedzi i narzędzi wiadomości, której używają Discord, Slack, Telegram i podobne transporty.
+- Syntetyczna magistrala oparta na HTTP do wstrzykiwania wiadomości przychodzących, przechwytywania transkrypcji wychodzących, tworzenia wątków, reakcji, edycji, usuwania oraz operacji wyszukiwania i odczytu.
+- Uruchamiany po stronie hosta moduł samokontroli, który zapisuje raport Markdown w `.artifacts/qa-e2e/`.
 
 ## Konfiguracja
 
@@ -46,29 +46,25 @@ x-i18n:
 
 Klucze konta:
 
-- `enabled` - główny przełącznik dla tego konta.
-- `name` - opcjonalna etykieta wyświetlana.
-- `baseUrl` - URL syntetycznej magistrali.
-- `botUserId` - identyfikator użytkownika bota w stylu Matrix używany w gramatyce celów.
-- `botDisplayName` - nazwa wyświetlana dla wiadomości wychodzących.
-- `pollTimeoutMs` - okno oczekiwania długiego odpytywania. Liczba całkowita od 100 do 30000.
-- `allowFrom` - lista dozwolonych nadawców (identyfikatory użytkowników lub `"*"`). Wiadomości bezpośrednie i
-  polityka dozwolonych grup używają tych samych syntetycznych identyfikatorów nadawców.
-- `groupPolicy` - polityka współdzielonych pomieszczeń: `"open"` (domyślnie), `"allowlist"` lub
-  `"disabled"`.
-- `groupAllowFrom` - opcjonalna lista dozwolonych nadawców dla współdzielonych pomieszczeń. Gdy zostanie pominięta przy
-  `"allowlist"`, QA Channel używa awaryjnie `allowFrom`.
-- `groups.<room>.requireMention` - wymaga wzmianki o bocie przed odpowiedzią w
-  konkretnym pomieszczeniu grupy/kanału. `groups."*"` ustawia wartość domyślną.
-- `defaultTo` - cel awaryjny, gdy nie podano żadnego.
-- `actions.messages` / `actions.reactions` / `actions.search` / `actions.threads` - bramkowanie narzędzi dla poszczególnych akcji.
+- `enabled` — główny przełącznik tego konta.
+- `name` — opcjonalna etykieta wyświetlana.
+- `baseUrl` — adres URL syntetycznej magistrali. Konto jest uznawane za skonfigurowane po ustawieniu tej wartości.
+- `botUserId` — syntetyczny identyfikator użytkownika bota używany w gramatyce celów (domyślnie: `openclaw`).
+- `botDisplayName` — nazwa wyświetlana dla wiadomości wychodzących (domyślnie: `OpenClaw QA`).
+- `pollTimeoutMs` — okno oczekiwania długiego odpytywania. Liczba całkowita od 100 do 30000 (domyślnie: 1000).
+- `allowFrom` — lista dozwolonych nadawców (identyfikatory użytkowników lub `"*"`; domyślnie: `["*"]`). Wiadomości prywatne zawsze używają polityki `open`; polityka grupowa z listą dozwolonych nadawców również używa tych syntetycznych identyfikatorów nadawców.
+- `groupPolicy` — polityka współdzielonego pokoju: `"open"` (domyślnie), `"allowlist"` lub `"disabled"`.
+- `groupAllowFrom` — opcjonalna lista dozwolonych nadawców we współdzielonych pokojach. Jeśli zostanie pominięta przy polityce `"allowlist"`, kanał QA użyje wartości `allowFrom`.
+- `groups.<room>.requireMention` — wymaga wzmianki o bocie przed odpowiedzią w określonym pokoju grupowym/kanałowym (domyślnie: false). `groups."*"` ustawia wartość domyślną; ustawienia `tools` / `toolsBySender` dla poszczególnych pokojów zastępują politykę narzędzi.
+- `defaultTo` — cel zapasowy, gdy nie podano żadnego.
+- `actions.messages` / `actions.reactions` / `actions.search` / `actions.threads` — kontrola dostępu do narzędzi dla poszczególnych operacji.
 
-Klucze wielu kont na najwyższym poziomie:
+Klucze obsługi wielu kont na najwyższym poziomie:
 
-- `accounts` - rekord nazwanych nadpisań dla poszczególnych kont, indeksowany identyfikatorem konta.
-- `defaultAccount` - preferowany identyfikator konta, gdy skonfigurowano wiele kont.
+- `accounts` — rekord nazwanych nadpisań dla poszczególnych kont, indeksowany według identyfikatora konta.
+- `defaultAccount` — preferowany identyfikator konta, gdy skonfigurowano wiele kont.
 
-## Runnery
+## Moduły uruchamiające
 
 Samokontrola po stronie hosta (zapisuje raport Markdown w `.artifacts/qa-e2e/`):
 
@@ -76,7 +72,7 @@ Samokontrola po stronie hosta (zapisuje raport Markdown w `.artifacts/qa-e2e/`):
 pnpm qa:e2e
 ```
 
-To przechodzi przez `qa-lab`, uruchamia magistralę QA z repozytorium, startuje wbudowany wycinek runtime `qa-channel` i wykonuje deterministyczną samokontrolę.
+Polecenie kieruje wykonanie przez `qa-lab`, uruchamia magistralę QA z repozytorium, inicjuje wycinek środowiska uruchomieniowego `qa-channel` i przeprowadza deterministyczną samokontrolę.
 
 Pełny zestaw scenariuszy oparty na repozytorium:
 
@@ -84,20 +80,20 @@ Pełny zestaw scenariuszy oparty na repozytorium:
 pnpm openclaw qa suite
 ```
 
-Uruchamia scenariusze równolegle względem pasa Gateway QA. Zobacz [przegląd QA](/pl/concepts/qa-e2e-automation), aby poznać scenariusze, profile i tryby providerów.
+Uruchamia scenariusze równolegle w ścieżce Gateway QA. Informacje o scenariuszach, profilach i trybach dostawców zawiera [omówienie QA](/pl/concepts/qa-e2e-automation).
 
-Witryna QA oparta na Dockerze (Gateway + interfejs debuggera QA Lab w jednym stosie):
+Witryna QA oparta na Dockerze (Gateway i interfejs debugera QA Lab w jednym stosie):
 
 ```bash
 pnpm qa:lab:up
 ```
 
-Buduje witrynę QA, uruchamia oparty na Dockerze stos Gateway + QA Lab i wypisuje URL QA Lab. Stamtąd możesz wybierać scenariusze, wybrać pas modelu, uruchamiać pojedyncze przebiegi i obserwować wyniki na żywo. Debugger QA Lab jest oddzielny od dostarczanego pakietu Control UI.
+Buduje witrynę QA, uruchamia oparty na Dockerze stos Gateway i QA Lab oraz wyświetla adres URL QA Lab. Następnie można wybierać scenariusze, ścieżkę modelu, uruchamiać poszczególne przebiegi i obserwować wyniki na żywo. Debuger QA Lab jest oddzielony od dostarczanego pakietu interfejsu Control UI.
 
-## Powiązane
+## Powiązane materiały
 
-- [przegląd QA](/pl/concepts/qa-e2e-automation) - ogólny stos, adaptery transportu, tworzenie scenariuszy
-- [Matrix QA](/pl/concepts/qa-matrix) - przykładowy runner transportu na żywo, który steruje prawdziwym kanałem
+- [Omówienie QA](/pl/concepts/qa-e2e-automation) — cały stos, adaptery transportu, tworzenie scenariuszy
+- [Macierz QA](/pl/concepts/qa-matrix) — przykładowy moduł uruchamiający dla aktywnego transportu, który steruje rzeczywistym kanałem
 - [Parowanie](/pl/channels/pairing)
 - [Grupy](/pl/channels/groups)
-- [Przegląd kanałów](/pl/channels)
+- [Omówienie kanałów](/pl/channels)

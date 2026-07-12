@@ -1,11 +1,11 @@
 ---
 read_when:
-    - أنت بصدد تثبيت Plugin moonshot أو تهيئته أو تدقيقه
+    - أنت تثبّت أو تهيّئ أو تدقّق في Plugin ‏moonshot
 summary: يضيف دعم موفّر نماذج Moonshot إلى OpenClaw.
-title: Plugin Moonshot
+title: Plugin ‏Moonshot
 x-i18n:
-    generated_at: "2026-06-27T18:14:08Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:21:22Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 477307769a710ac8d430a837d7b5ffda012a942f3b44f367bf4ea0770b87f48e
@@ -13,19 +13,19 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin Moonshot
+# Plugin ‏Moonshot
 
 يضيف دعم مزوّد نماذج Moonshot إلى OpenClaw.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/moonshot-provider`
-- مسار التثبيت: npm؛ ClawHub: `clawhub:@openclaw/moonshot-provider`
+- مسار التثبيت: npm؛ ‏ClawHub: ‏`clawhub:@openclaw/moonshot-provider`
 
-## السطح
+## الواجهة
 
-providers: moonshot; contracts: mediaUnderstandingProviders, webSearchProviders
+المزوّدون: moonshot؛ العقود: mediaUnderstandingProviders، webSearchProviders
 
-## المستندات ذات الصلة
+## الوثائق ذات الصلة
 
 - [moonshot](/ar/providers/moonshot)

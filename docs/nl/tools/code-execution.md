@@ -1,76 +1,75 @@
 ---
 read_when:
-    - U wilt code_execution inschakelen of configureren
-    - Je wilt externe analyse zonder lokale shelltoegang
-    - Je wilt x_search of web_search combineren met Python-analyse op afstand
-summary: 'code_execution: voer gesandboxte externe Python-analyse uit met xAI'
+    - Je wilt code_execution inschakelen of configureren
+    - Je wilt analyse op afstand zonder toegang tot de lokale shell
+    - U wilt x_search of web_search combineren met externe Python-analyse
+summary: 'code_execution: voer Python-analyse op afstand uit in een sandbox met xAI'
 title: Code-uitvoering
 x-i18n:
-    generated_at: "2026-06-27T18:24:29Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:28:39Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d510d0d2b41deab527d456e675a23ef80ac3b55b5f01906ba2c43d90e4452e36
+    source_hash: 1ab391daed9154f113535e6d241c45d5c08c22abdc012148a9f0f2ae5ec548b3
     source_path: tools/code-execution.md
     workflow: 16
 ---
 
-`code_execution` voert sandboxed externe Python-analyse uit op xAI's Responses API. Het wordt geregistreerd door de gebundelde `xai`-Plugin (onder het `tools`-contract) en stuurt door naar hetzelfde `https://api.x.ai/v1/responses`-eindpunt dat door `x_search` wordt gebruikt.
+`code_execution` voert Python-analyses op afstand uit in een sandbox via xAI's Responses API
+(`https://api.x.ai/v1/responses`, hetzelfde eindpunt dat `x_search` gebruikt). Het wordt
+door de meegeleverde `xai`-plugin geregistreerd onder het `tools`-contract.
+
+<Warning>
+  `code_execution` wordt uitgevoerd op de servers van xAI. xAI brengt $5 per 1.000 toolaanroepen
+  in rekening, plus de invoer- en uitvoertokens van het model.
+</Warning>
 
 | Eigenschap         | Waarde                                                                            |
 | ------------------ | --------------------------------------------------------------------------------- |
 | Toolnaam           | `code_execution`                                                                  |
-| Provider-Plugin    | `xai` (gebundeld, `enabledByDefault: true`)                                       |
-| Auth               | xAI-authprofiel, `XAI_API_KEY`, of `plugins.entries.xai.config.webSearch.apiKey`  |
-| Standaardmodel     | `grok-4-1-fast`                                                                   |
-| Standaardtimeout   | 30 seconden                                                                       |
-| Standaard `maxTurns` | niet ingesteld (xAI past zijn eigen interne limiet toe)                         |
+| Providerplugin     | `xai` (meegeleverd, `enabledByDefault: true`)                                     |
+| Authenticatie      | xAI-authenticatieprofiel, `XAI_API_KEY` of `plugins.entries.xai.config.webSearch.apiKey` |
+| Standaardmodel     | `grok-4.3`                                                                        |
+| Standaardtime-out  | 30 seconden                                                                       |
+| Standaard-`maxTurns` | niet ingesteld (xAI past zijn eigen interne limiet toe)                         |
 
-Dit is anders dan lokale [`exec`](/nl/tools/exec):
+Gebruik het voor berekeningen, tabellen, snelle statistieken en analyses in
+grafiekvorm, ook voor gegevens die door `x_search` of `web_search` zijn
+geretourneerd. Het heeft geen toegang tot lokale bestanden, je shell, je
+repository of gekoppelde apparaten en bewaart geen status tussen aanroepen.
+Beschouw elke aanroep daarom als een tijdelijke analyse, niet als een
+notebooksessie. Voer voor actuele gegevens van X eerst
+[`x_search`](/nl/tools/web#x_search) uit en geef het resultaat door.
 
-- `exec` voert shell-opdrachten uit op je machine of gekoppelde Node.
-- `code_execution` voert Python uit in xAI's externe sandbox.
-
-Gebruik `code_execution` voor:
-
-- Berekeningen.
-- Tabellering.
-- Snelle statistiek.
-- Analyse in grafiekstijl.
-- Het analyseren van gegevens die door `x_search` of `web_search` zijn geretourneerd.
-
-Gebruik het **niet** wanneer je lokale bestanden, je shell, je repo of gekoppelde apparaten nodig hebt. Gebruik daarvoor [`exec`](/nl/tools/exec).
+Gebruik in plaats daarvan [`exec`](/nl/tools/exec) voor lokale uitvoering.
 
 ## Installatie
 
 <Steps>
   <Step title="Provide xAI credentials">
-    Log in met Grok OAuth via een geschikt SuperGrok- of X Premium-abonnement,
-    of sla een API-sleutel op. xAI OAuth gebruikt device-codeverificatie, dus het werkt
-    vanaf externe hosts zonder localhost-callback. OAuth werkt voor
-    `code_execution` en `x_search`; `XAI_API_KEY` of Plugin-webzoekconfiguratie
-    kan ook Grok `web_search` aandrijven.
+    OAuth vereist een geschikt SuperGrok- of X Premium-abonnement
+    (verificatie met een apparaatcode, zodat het vanaf externe hosts werkt
+    zonder callback naar localhost):
 
     ```bash
     openclaw models auth login --provider xai --method oauth
     ```
 
-    Tijdens een nieuwe installatie zijn dezelfde auth-keuzes beschikbaar in
+    Tijdens een nieuwe installatie is dezelfde keuze beschikbaar in de
     onboarding:
 
     ```bash
-    openclaw onboard --install-daemon
     openclaw onboard --install-daemon --auth-choice xai-oauth
     ```
 
-    Of gebruik een API-sleutel:
+    Of met een API-sleutel:
 
     ```bash
     openclaw models auth login --provider xai --method api-key
     export XAI_API_KEY=xai-...
     ```
 
-    Of via configuratie:
+    Of via de configuratie:
 
     ```json5
     {
@@ -88,12 +87,24 @@ Gebruik het **niet** wanneer je lokale bestanden, je shell, je repo of gekoppeld
     }
     ```
 
+    Elk van deze drie opties voorziet ook `x_search` en Grok `web_search` van
+    authenticatie.
+
   </Step>
 
   <Step title="Enable and tune code_execution">
-    `code_execution` is beschikbaar wanneer xAI-inloggegevens beschikbaar zijn. Stel
-    `plugins.entries.xai.config.codeExecution.enabled` in op `false` om het uit te schakelen,
-    of gebruik hetzelfde blok om het model en de timeout af te stemmen.
+    Als `enabled` is weggelaten, wordt `code_execution` alleen beschikbaar
+    gemaakt wanneer de provider van het actieve model `xai` is en de
+    xAI-inloggegevens kunnen worden gevonden. Stel bij een actief model met
+    een bekende niet-xAI-provider
+    `plugins.entries.xai.config.codeExecution.enabled` in op `true` om gebruik
+    met meerdere providers in te schakelen. Als de provider van het actieve
+    model ontbreekt of niet kan worden bepaald, blijft de tool verborgen. Stel
+    `enabled` in op `false` om de tool voor elke provider uit te schakelen.
+    xAI-inloggegevens zijn altijd vereist.
+
+    Gebruik hetzelfde blok om het model, de aanroeplimiet of de time-out te
+    overschrijven:
 
     ```json5
     {
@@ -102,8 +113,8 @@ Gebruik het **niet** wanneer je lokale bestanden, je shell, je repo of gekoppeld
           xai: {
             config: {
               codeExecution: {
-                enabled: true,
-                model: "grok-4-1-fast", // override the default xAI code-execution model
+                enabled: true, // required for a known non-xAI model provider
+                model: "grok-4.3", // override the default xAI code-execution model
                 maxTurns: 2,            // optional cap on internal tool turns
                 timeoutSeconds: 30,     // request timeout (default: 30)
               },
@@ -121,14 +132,17 @@ Gebruik het **niet** wanneer je lokale bestanden, je shell, je repo of gekoppeld
     openclaw gateway restart
     ```
 
-    `code_execution` verschijnt in de toollijst van de agent zodra de xAI-Plugin zich opnieuw registreert met `enabled: true`.
+    `code_execution` verschijnt in de toollijst van de agent zodra de
+    xAI-plugin zich opnieuw registreert en de bovenstaande controles voor
+    provider, inschakeling en authenticatie slagen.
 
   </Step>
 </Steps>
 
-## Hoe je het gebruikt
+## Gebruik
 
-Vraag op een natuurlijke manier en maak de analysebedoeling expliciet:
+Maak het doel van de analyse expliciet. De tool heeft één `task`-parameter,
+dus stuur het volledige verzoek en eventuele inlinegegevens in één prompt:
 
 ```text
 Use code_execution to calculate the 7-day moving average for these numbers: ...
@@ -142,11 +156,10 @@ Use x_search to find posts mentioning OpenClaw this week, then use code_executio
 Use web_search to gather the latest AI benchmark numbers, then use code_execution to compare percent changes.
 ```
 
-De tool gebruikt intern één `task`-parameter, dus de agent moet het volledige analyseverzoek en eventuele inline gegevens in één prompt verzenden.
-
 ## Fouten
 
-Wanneer de tool zonder auth wordt uitgevoerd, retourneert deze een gestructureerde `missing_xai_api_key`-fout die wijst naar het authprofiel, de omgevingsvariabele en de configuratieopties. De fout is JSON, geen gegooide uitzondering, zodat de agent zichzelf kan corrigeren:
+Zonder authenticatie retourneert de tool een gestructureerde JSON-fout
+(en genereert deze geen exception), zodat de agent zichzelf kan corrigeren:
 
 ```json
 {
@@ -156,26 +169,19 @@ Wanneer de tool zonder auth wordt uitgevoerd, retourneert deze een gestructureer
 }
 ```
 
-## Limieten
-
-- Dit is externe xAI-uitvoering, geen lokale procesuitvoering.
-- Behandel resultaten als tijdelijke analyse, niet als een persistente notebooksessie.
-- Ga niet uit van toegang tot lokale bestanden of je werkruimte.
-- Gebruik voor actuele X-gegevens eerst [`x_search`](/nl/tools/web#x_search) en voer het resultaat door naar `code_execution`.
-
 ## Gerelateerd
 
 <CardGroup cols={2}>
   <Card title="Exec tool" href="/nl/tools/exec" icon="terminal">
-    Lokale shell-uitvoering op je machine of gekoppelde Node.
+    Lokale shell-uitvoering op je computer of gekoppelde Node.
   </Card>
   <Card title="Exec approvals" href="/nl/tools/exec-approvals" icon="shield">
-    Toestaan/weigeren-beleid voor shell-uitvoering.
+    Beleid voor het toestaan of weigeren van shell-uitvoering.
   </Card>
   <Card title="Web tools" href="/nl/tools/web" icon="globe">
     `web_search`, `x_search` en `web_fetch`.
   </Card>
   <Card title="xAI provider" href="/nl/providers/xai" icon="microchip">
-    Grok-modellen, web-/x-zoekopdrachten en configuratie voor code-uitvoering.
+    Grok-modellen, zoeken op het web en X, en configuratie voor code-uitvoering.
   </Card>
 </CardGroup>

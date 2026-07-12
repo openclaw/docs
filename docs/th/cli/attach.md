@@ -1,21 +1,20 @@
 ---
 read_when:
     - คุณต้องการให้ Claude Code ใช้เครื่องมือ MCP ของ OpenClaw Gateway
-    - คุณต้องมีสิทธิ์อนุญาต MCP ชั่วคราวที่ผูกกับเซสชันสำหรับ harness ภายนอก
-summary: ข้อมูลอ้างอิง CLI สำหรับ `openclaw attach` (เปิดใช้ Claude Code ด้วยสิทธิ์อนุญาต MCP ของ Gateway แบบจำกัดขอบเขต)
+    - คุณต้องมีสิทธิ์อนุญาต MCP ชั่วคราวที่ผูกกับเซสชันสำหรับชุดทดสอบภายนอก
+summary: เอกสารอ้างอิง CLI สำหรับ `openclaw attach` (เปิดใช้ Claude Code พร้อมสิทธิ์อนุญาต Gateway MCP ที่จำกัดขอบเขต)
 title: แนบ CLI
 x-i18n:
-    generated_at: "2026-07-02T01:20:28Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:59:40Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1445c9bbf28e5365d070f69bf8f53e249d70ac6e8690ed68831404d041e41e86
+    source_hash: 0d8ac60724adef1439af09179806af537b8f2925f06b3715850e4dd3b83b080f
     source_path: cli/attach.md
     workflow: 16
 ---
 
-`openclaw attach` เปิด Claude Code ด้วยการกำหนดค่า MCP ชั่วคราวที่เข้มงวดซึ่งผูกกับ
-หนึ่งเซสชันของ Gateway
+`openclaw attach` เปิด Claude Code ด้วยการกำหนดค่า MCP ชั่วคราวแบบเข้มงวดซึ่งผูกกับเซสชัน Gateway หนึ่งเซสชัน
 
 ```sh
 openclaw attach
@@ -25,14 +24,11 @@ openclaw attach --print-config
 
 ตัวเลือก:
 
-- `--session <key>` ผูกสิทธิ์อนุญาตกับเซสชันของ Gateway ค่าเริ่มต้นคือเซสชันหลัก
-- `--ttl <ms>` ขอ TTL ของสิทธิ์อนุญาตที่เป็นค่าบวกในหน่วยมิลลิวินาที Gateway จะใช้เพดานของตัวเอง
-- `--bin <path>` เลือกไบนารี Claude Code ค่าเริ่มต้นคือ `claude`
-- `--print-config` เขียน `.mcp.json` ชั่วคราว พิมพ์คำสั่งเปิดใช้งานและ env และปล่อยให้สิทธิ์อนุญาตยังมีผลจนกว่า TTL จะหมดอายุ
+- `--session <key>` ผูกสิทธิ์อนุญาตกับเซสชัน Gateway โดยมีค่าเริ่มต้นเป็นเซสชันหลัก
+- `--ttl <ms>` ร้องขอ TTL ของสิทธิ์อนุญาตที่เป็นค่าบวกในหน่วยมิลลิวินาที โดย Gateway จะใช้เพดานที่กำหนดไว้เอง
+- `--bin <path>` เลือกไฟล์ไบนารี Claude Code ค่าเริ่มต้น: `claude`
+- `--print-config` เขียนไฟล์ `.mcp.json` ชั่วคราว แสดงคำสั่งเปิดใช้งานและตัวแปรสภาพแวดล้อม และคงสิทธิ์อนุญาตไว้จนกว่า TTL จะหมดอายุ (ตัวเลือกนี้จะไม่เปิดกระบวนการ Claude Code หรือเพิกถอนสิทธิ์อนุญาต)
 
-โทเค็น bearer ถูกส่งผ่านตัวแปรสภาพแวดล้อม ไม่ใช่ argv OpenClaw
-เปิด Claude Code ด้วย `--strict-mcp-config --mcp-config <path>` เพื่อให้เซิร์ฟเวอร์
-Claude MCP ในสภาพแวดล้อมโดยรอบไม่เข้าร่วมเซสชันที่แนบอยู่ การเปิดใช้งานตามปกติจะเพิกถอน
-สิทธิ์อนุญาตเมื่อกระบวนการ Claude Code ออก
+โทเค็นแบบ bearer จะถูกส่งผ่านตัวแปรสภาพแวดล้อม ไม่ใช่ argv OpenClaw เปิด Claude Code ด้วย `--strict-mcp-config --mcp-config <path>` เพื่อไม่ให้เซิร์ฟเวอร์ Claude MCP ที่มีอยู่ในสภาพแวดล้อมเข้าร่วมเซสชันที่แนบ การเปิดใช้งานตามปกติ (โดยไม่มี `--print-config`) จะเพิกถอนสิทธิ์อนุญาตเมื่อกระบวนการ Claude Code สิ้นสุดลง
 
-ดูเพิ่มเติม: [Gateway CLI](/th/cli/gateway), [MCP CLI](/th/cli/mcp), และ [ACP CLI](/th/cli/acp).
+ดูเพิ่มเติม: [CLI ของ Gateway](/th/cli/gateway), [CLI ของ MCP](/th/cli/mcp) และ [CLI ของ ACP](/th/cli/acp)

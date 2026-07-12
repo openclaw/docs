@@ -2,23 +2,23 @@
 read_when:
     - En hızlı yerel geliştirme döngüsünü istiyorsunuz (bun + watch)
     - Bun yükleme/yama/yaşam döngüsü betiği sorunlarıyla karşılaştınız
-summary: 'Bun iş akışı (deneysel): pnpm’e kıyasla kurulumlar ve dikkat edilmesi gerekenler'
+summary: 'Bun iş akışı (deneysel): kurulumlar ve pnpm''e kıyasla dikkat edilmesi gerekenler'
 title: Bun (deneysel)
 x-i18n:
-    generated_at: "2026-06-28T00:43:18Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:24:26Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1c31f2c09f3c1f99ae1a306184a86f2240b0c0f4f655c2759f5aeb6bac6b745a
+    source_hash: b836be354166ceb073d170e472e8b69c3f517e754fe71417df1d85d27a18ae94
     source_path: install/bun.md
     workflow: 16
 ---
 
 <Warning>
-Bun, **Gateway çalışma zamanı için önerilmez** (WhatsApp ve Telegram ile bilinen sorunlar). Üretim için Node kullanın.
+Bun, Gateway çalışma zamanı için önerilmez (WhatsApp ve Telegram ile ilgili bilinen sorunlar vardır). Üretimde Node kullanın.
 </Warning>
 
-Bun, TypeScript'i doğrudan çalıştırmak için isteğe bağlı bir yerel çalışma zamanıdır (`bun run ...`, `bun --watch ...`). Varsayılan paket yöneticisi, tamamen desteklenen ve dokümantasyon araçları tarafından kullanılan `pnpm` olarak kalır. Bun, `pnpm-lock.yaml` kullanamaz ve bunu yok sayar.
+Bun, TypeScript'i doğrudan çalıştırmak için isteğe bağlı bir yerel çalışma zamanıdır (`bun run ...`, `bun --watch ...`). Varsayılan paket yöneticisi, tam olarak desteklenen ve dokümantasyon araçları tarafından kullanılan `pnpm` olarak kalır. Bun, `pnpm-lock.yaml` dosyasını kullanamaz ve bu dosyayı yok sayar.
 
 ## Kurulum
 
@@ -28,7 +28,7 @@ Bun, TypeScript'i doğrudan çalıştırmak için isteğe bağlı bir yerel çal
     bun install
     ```
 
-    `bun.lock` / `bun.lockb` git tarafından yok sayılır, bu nedenle depoda gereksiz değişiklik oluşmaz. Kilit dosyası yazımlarını tamamen atlamak için:
+    `bun.lock` / `bun.lockb` dosyaları git tarafından yok sayılır, dolayısıyla depoda gereksiz değişiklik oluşmaz. Kilit dosyasına yazmayı tamamen atlamak için:
 
     ```sh
     bun install --no-save
@@ -45,23 +45,23 @@ Bun, TypeScript'i doğrudan çalıştırmak için isteğe bağlı bir yerel çal
 
 ## Yaşam döngüsü betikleri
 
-Bun, açıkça güvenilmediği sürece bağımlılık yaşam döngüsü betiklerini engeller. Bu depo için yaygın olarak engellenen betikler gerekli değildir:
+Bun, açıkça güvenilir olarak işaretlenmedikçe bağımlılık yaşam döngüsü betiklerini engeller. Bu depo için yaygın olarak engellenen betikler gerekli değildir:
 
-- `baileys` `preinstall` -- Node ana sürümünün >= 20 olduğunu denetler (OpenClaw varsayılan olarak Node 24 kullanır ve hâlâ Node 22 LTS'yi destekler, şu anda `22.19+`)
-- `protobufjs` `postinstall` -- uyumsuz sürüm şemaları hakkında uyarılar üretir (derleme çıktısı yoktur)
+- `baileys` `preinstall`: Node ana sürümünün >= 20 olup olmadığını denetler (OpenClaw, Node 22.19+ veya 23.11+ gerektirir; Node 24 önerilir)
+- `protobufjs` `postinstall`: uyumsuz sürüm şemaları hakkında uyarılar verir (derleme çıktısı oluşturmaz)
 
-Bu betikleri gerektiren bir çalışma zamanı sorunuyla karşılaşırsanız, bunlara açıkça güvenin:
+Bu betikleri gerektiren bir çalışma zamanı sorunuyla karşılaşırsanız bunları açıkça güvenilir olarak işaretleyin:
 
 ```sh
 bun pm trust baileys protobufjs
 ```
 
-## Uyarılar
+## Dikkat edilmesi gerekenler
 
-Bazı betikler hâlâ pnpm'i sabit kodlar (örneğin `check:docs`, `ui:*`, `protocol:check`). Şimdilik bunları pnpm üzerinden çalıştırın.
+Bazı paket betikleri kendi içinde `pnpm` kullanımını sabit kodlar (örneğin `check:docs`, `ui:*`, `protocol:check`). Bunları `bun run` aracılığıyla çalıştırmak yine de kabuk üzerinden `pnpm` komutunu çağırır; bu nedenle söz konusu betikleri doğrudan `pnpm` ile çalıştırın.
 
-## İlgili
+## İlgili konular
 
-- [Kurulum genel bakışı](/tr/install)
+- [Kuruluma genel bakış](/tr/install)
 - [Node.js](/tr/install/node)
 - [Güncelleme](/tr/install/updating)

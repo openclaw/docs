@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz Plugin raft
-summary: Plugin kanału OpenClaw Raft do bezpiecznych mostów wybudzania CLI.
+    - Instalujesz, konfigurujesz lub audytujesz plugin raft
+summary: Plugin kanału Raft dla OpenClaw do bezpiecznych mostów wybudzania CLI.
 title: Plugin Raft
 x-i18n:
-    generated_at: "2026-06-27T18:03:38Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:27:10Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: fea04ec6a2f3e08d69fd95c8a8e368fdbc8e179b243b8f6b41b5f8ef70039efc
@@ -15,16 +15,16 @@ x-i18n:
 
 # Plugin Raft
 
-Plugin kanału Raft OpenClaw do bezpiecznych mostów wybudzania CLI.
+Plugin kanału Raft dla OpenClaw, przeznaczony do bezpiecznych mostów wybudzania CLI.
 
 ## Dystrybucja
 
 - Pakiet: `@openclaw/raft`
-- Ścieżka instalacji: npm; ClawHub
+- Sposób instalacji: npm; ClawHub
 
-## Powierzchnia
+## Interfejs
 
-channels: raft
+kanały: raft
 
 ## Powiązana dokumentacja
 

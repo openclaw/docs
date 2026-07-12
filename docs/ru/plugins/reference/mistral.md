@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Вы устанавливаете, настраиваете или проверяете плагин mistral
-summary: Добавляет поддержку провайдера моделей Mistral в OpenClaw.
-title: Mistral Plugin
+    - Вы устанавливаете, настраиваете или проверяете Plugin Mistral
+summary: Добавляет в OpenClaw поддержку провайдера моделей Mistral.
+title: Plugin Mistral
 x-i18n:
-    generated_at: "2026-06-28T23:26:31Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:40:19Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 8d9fc0fb6fd98f8f0157e82c8f75b14e1289c802dc97bb2cdaee1956d6507ebd
@@ -13,18 +13,18 @@ x-i18n:
     workflow: 16
 ---
 
-# Mistral Plugin
+# Plugin Mistral
 
-Добавляет поддержку поставщика моделей Mistral в OpenClaw.
+Добавляет в OpenClaw поддержку провайдера моделей Mistral.
 
 ## Распространение
 
 - Пакет: `@openclaw/mistral-provider`
-- Способ установки: включен в OpenClaw
+- Способ установки: входит в состав OpenClaw
 
-## Поверхность
+## Интерфейс
 
-providers: mistral; contracts: mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders
+провайдеры: mistral; контракты: mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders
 
 ## Связанная документация
 

@@ -1,14 +1,13 @@
 ---
 read_when:
-    - 你需要 OpenCode Go 目錄
-    - 你需要 Go 託管模型的執行階段模型參照
+    - 你想要 OpenCode Go 目錄
+    - 你需要 Go 託管模型的執行階段模型參照。
 summary: 搭配共用的 OpenCode 設定使用 OpenCode Go 目錄
 title: OpenCode Go
 x-i18n:
-    generated_at: "2026-07-12T14:49:01Z"
+    generated_at: "2026-07-11T21:45:55Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: df647721e8966fd4fad3178550b071a2eb827148fe765bda53b3d7c97ceaadc2
     source_path: providers/opencode-go.md
@@ -16,14 +15,14 @@ x-i18n:
 ---
 
 OpenCode Go 是 [OpenCode](/zh-TW/providers/opencode) 內的 Go 目錄。它與 Zen 目錄共用
-`OPENCODE_API_KEY` 認證資訊，但保有自己的執行階段供應商 ID
-（`opencode-go`），以確保上游依模型路由維持正確。
+`OPENCODE_API_KEY` 憑證，但保有自己的執行階段提供者 ID（`opencode-go`），
+以確保上游依模型進行的路由維持正確。
 
-| 屬性             | 值                                                 |
-| ---------------- | -------------------------------------------------- |
-| 執行階段供應商   | `opencode-go`                                      |
-| 驗證             | `OPENCODE_API_KEY`（別名：`OPENCODE_ZEN_API_KEY`） |
-| 上層設定         | [OpenCode](/zh-TW/providers/opencode)                    |
+| 屬性           | 值                                                 |
+| -------------- | -------------------------------------------------- |
+| 執行階段提供者 | `opencode-go`                                      |
+| 驗證           | `OPENCODE_API_KEY`（別名：`OPENCODE_ZEN_API_KEY`） |
+| 上層設定       | [OpenCode](/zh-TW/providers/opencode)                    |
 
 ## 開始使用
 
@@ -78,14 +77,14 @@ OpenCode Go 是 [OpenCode](/zh-TW/providers/opencode) 內的 Go 目錄。它與 
 執行 `openclaw models list --provider opencode-go` 以取得目前的模型清單。
 隨附項目：
 
-| 模型參照                        | 名稱              | 上下文    | 最大輸出   | 圖像輸入 |
+| 模型參照                        | 名稱              | 上下文    | 最大輸出量 | 圖片輸入 |
 | ------------------------------- | ----------------- | --------- | ---------- | -------- |
 | `opencode-go/deepseek-v4-pro`   | DeepSeek V4 Pro   | 1M        | 384K       | 否       |
 | `opencode-go/deepseek-v4-flash` | DeepSeek V4 Flash | 1M        | 384K       | 否       |
 | `opencode-go/glm-5`             | GLM-5             | 202,752   | 32,768     | 否       |
 | `opencode-go/glm-5.1`           | GLM-5.1           | 202,752   | 32,768     | 否       |
 | `opencode-go/glm-5.2`           | GLM-5.2           | 1M        | 131,072    | 否       |
-| `opencode-go/hy3-preview`       | HY3 Preview       | 262,144   | 32,768     | 否       |
+| `opencode-go/hy3-preview`       | HY3 預覽版        | 262,144   | 32,768     | 否       |
 | `opencode-go/kimi-k2.5`         | Kimi K2.5         | 262,144   | 65,536     | 是       |
 | `opencode-go/kimi-k2.6`         | Kimi K2.6         | 262,144   | 65,536     | 是       |
 | `opencode-go/kimi-k2.7-code`    | Kimi K2.7 Code    | 262,144   | 262,144    | 是       |
@@ -104,22 +103,22 @@ OpenCode Go 是 [OpenCode](/zh-TW/providers/opencode) 內的 Go 目錄。它與 
 <AccordionGroup>
   <Accordion title="路由行為">
     OpenClaw 會自動路由任何 `opencode-go/...` 模型參照。不需要額外的
-    供應商設定。
+    提供者設定。
   </Accordion>
 
   <Accordion title="執行階段參照慣例">
-    執行階段參照會維持明確：Zen 使用 `opencode/...`，Go 使用
-    `opencode-go/...`。這可確保兩個目錄的上游依模型路由維持正確。
+    執行階段參照會保持明確：Zen 使用 `opencode/...`，Go 使用
+    `opencode-go/...`。這能讓上游依模型進行的路由在兩個目錄中都維持正確。
   </Accordion>
 
-  <Accordion title="共用認證資訊">
-    一組 `OPENCODE_API_KEY` 同時適用於 Zen 和 Go 目錄。在設定期間輸入
-    金鑰，會為兩個執行階段供應商儲存認證資訊。
+  <Accordion title="共用憑證">
+    一組 `OPENCODE_API_KEY` 即可涵蓋 Zen 與 Go 兩個目錄。在設定期間輸入
+    金鑰，會為兩個執行階段提供者儲存憑證。
   </Accordion>
 </AccordionGroup>
 
 <Tip>
-請參閱 [OpenCode](/zh-TW/providers/opencode)，瞭解共用的初始設定概覽，以及完整的
+請參閱 [OpenCode](/zh-TW/providers/opencode)，以瞭解共用初始設定概覽及完整的
 Zen + Go 目錄參考資料。
 </Tip>
 
@@ -130,6 +129,6 @@ Zen + Go 目錄參考資料。
     共用初始設定、目錄概覽與進階說明。
   </Card>
   <Card title="模型選擇" href="/zh-TW/concepts/model-providers" icon="layers">
-    選擇供應商、模型參照與容錯移轉行為。
+    選擇提供者、模型參照與容錯移轉行為。
   </Card>
 </CardGroup>

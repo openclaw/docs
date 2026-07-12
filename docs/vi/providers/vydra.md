@@ -5,66 +5,66 @@ read_when:
 summary: Sử dụng hình ảnh, video và giọng nói Vydra trong OpenClaw
 title: Vydra
 x-i18n:
-    generated_at: "2026-06-27T18:06:51Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:20:12Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4cb1128d877e06a274fe07c42282a7990c322e4d88d4232a1cac78e54deaf163
+    source_hash: e775bdd6f4ec7d1f5189910af450b92d8d6e831c17c338271afee962636ba69f
     source_path: providers/vydra.md
     workflow: 16
 ---
 
-Plugin Vydra được đóng gói kèm bổ sung:
+Plugin Vydra đi kèm bổ sung:
 
 - Tạo hình ảnh qua `vydra/grok-imagine`
-- Tạo video qua `vydra/veo3` và `vydra/kling`
-- Tổng hợp giọng nói qua tuyến TTS dùng ElevenLabs của Vydra
+- Tạo video qua `vydra/veo3` (văn bản thành video) và `vydra/kling` (hình ảnh thành video)
+- Tổng hợp giọng nói qua tuyến TTS của Vydra sử dụng ElevenLabs
 
-OpenClaw dùng cùng một `VYDRA_API_KEY` cho cả ba năng lực.
+OpenClaw sử dụng cùng một `VYDRA_API_KEY` cho cả ba khả năng.
 
-| Thuộc tính                  | Giá trị                                                                   |
-| --------------------------- | ------------------------------------------------------------------------- |
-| ID nhà cung cấp             | `vydra`                                                                   |
-| Plugin                      | được đóng gói kèm, `enabledByDefault: true`                               |
-| Biến môi trường xác thực    | `VYDRA_API_KEY`                                                           |
-| Cờ thiết lập ban đầu        | `--auth-choice vydra-api-key`                                             |
-| Cờ CLI trực tiếp            | `--vydra-api-key <key>`                                                   |
-| Hợp đồng                    | `imageGenerationProviders`, `videoGenerationProviders`, `speechProviders` |
-| URL cơ sở                   | `https://www.vydra.ai/api/v1` (dùng máy chủ `www`)                        |
+| Thuộc tính             | Giá trị                                                                   |
+| ---------------------- | ------------------------------------------------------------------------- |
+| ID nhà cung cấp        | `vydra`                                                                   |
+| Plugin                 | đi kèm, `enabledByDefault: true`                                          |
+| Biến môi trường xác thực | `VYDRA_API_KEY`                                                         |
+| Cờ thiết lập ban đầu   | `--auth-choice vydra-api-key`                                             |
+| Cờ CLI trực tiếp       | `--vydra-api-key <key>`                                                   |
+| Hợp đồng               | `imageGenerationProviders`, `videoGenerationProviders`, `speechProviders` |
+| URL cơ sở              | `https://www.vydra.ai/api/v1` (sử dụng máy chủ `www`)                     |
 
 <Warning>
-  Dùng `https://www.vydra.ai/api/v1` làm URL cơ sở. Máy chủ apex của Vydra (`https://vydra.ai/api/v1`) hiện chuyển hướng đến `www`. Một số HTTP client bỏ `Authorization` trên chuyển hướng khác máy chủ đó, khiến một khóa API hợp lệ trở thành lỗi xác thực gây hiểu nhầm. Plugin được đóng gói kèm dùng trực tiếp URL cơ sở `www` để tránh điều đó.
+Sử dụng `https://www.vydra.ai/api/v1` làm URL cơ sở. Máy chủ miền gốc của Vydra (`https://vydra.ai/api/v1`) hiện chuyển hướng đến `www`. Một số trình khách HTTP loại bỏ `Authorization` khi chuyển hướng giữa các máy chủ, khiến khóa API hợp lệ bị báo lỗi xác thực gây hiểu nhầm. Plugin đi kèm chuẩn hóa mọi URL cơ sở `vydra.ai` đã cấu hình thành `www.vydra.ai` để tránh sự cố này.
 </Warning>
 
 ## Thiết lập
 
 <Steps>
-  <Step title="Chạy thiết lập ban đầu tương tác">
+  <Step title="Chạy quy trình thiết lập ban đầu tương tác">
     ```bash
     openclaw onboard --auth-choice vydra-api-key
     ```
 
-    Hoặc đặt biến môi trường trực tiếp:
+    Hoặc đặt trực tiếp biến môi trường:
 
     ```bash
     export VYDRA_API_KEY="vydra_live_..."
     ```
 
   </Step>
-  <Step title="Chọn một năng lực mặc định">
-    Chọn một hoặc nhiều năng lực bên dưới (hình ảnh, video hoặc giọng nói) và áp dụng cấu hình tương ứng.
+  <Step title="Chọn một khả năng mặc định">
+    Chọn một hoặc nhiều khả năng bên dưới (hình ảnh, video hoặc giọng nói) và áp dụng cấu hình tương ứng.
   </Step>
 </Steps>
 
-## Năng lực
+## Khả năng
 
 <AccordionGroup>
   <Accordion title="Tạo hình ảnh">
-    Mô hình hình ảnh mặc định:
+    Mô hình hình ảnh mặc định và duy nhất đi kèm:
 
     - `vydra/grok-imagine`
 
-    Đặt làm nhà cung cấp hình ảnh mặc định:
+    Đặt mô hình này làm nhà cung cấp hình ảnh mặc định:
 
     ```json5
     {
@@ -78,10 +78,10 @@ OpenClaw dùng cùng một `VYDRA_API_KEY` cho cả ba năng lực.
     }
     ```
 
-    Hỗ trợ được đóng gói kèm hiện chỉ là text-to-image. Các tuyến chỉnh sửa được Vydra lưu trữ yêu cầu URL hình ảnh từ xa, và OpenClaw chưa thêm cầu nối tải lên riêng cho Vydra trong Plugin được đóng gói kèm.
+    Hỗ trợ đi kèm chỉ chuyển văn bản thành hình ảnh, tối đa một hình ảnh cho mỗi yêu cầu. Các tuyến chỉnh sửa được Vydra lưu trữ yêu cầu URL hình ảnh từ xa và Plugin đi kèm không bổ sung cầu nối tải lên dành riêng cho Vydra.
 
     <Note>
-    Xem [Tạo hình ảnh](/vi/tools/image-generation) để biết các tham số công cụ dùng chung, lựa chọn nhà cung cấp và hành vi chuyển đổi dự phòng.
+    Xem [Tạo hình ảnh](/vi/tools/image-generation) để biết các tham số công cụ dùng chung, cách chọn nhà cung cấp và hành vi chuyển đổi dự phòng.
     </Note>
 
   </Accordion>
@@ -89,8 +89,8 @@ OpenClaw dùng cùng một `VYDRA_API_KEY` cho cả ba năng lực.
   <Accordion title="Tạo video">
     Các mô hình video đã đăng ký:
 
-    - `vydra/veo3` cho text-to-video
-    - `vydra/kling` cho image-to-video
+    - `vydra/veo3` để chuyển văn bản thành video (từ chối đầu vào tham chiếu hình ảnh)
+    - `vydra/kling` để chuyển hình ảnh thành video (yêu cầu chính xác một URL hình ảnh từ xa)
 
     Đặt Vydra làm nhà cung cấp video mặc định:
 
@@ -106,21 +106,20 @@ OpenClaw dùng cùng một `VYDRA_API_KEY` cho cả ba năng lực.
     }
     ```
 
-    Ghi chú:
+    Lưu ý:
 
-    - `vydra/veo3` được đóng gói kèm chỉ dưới dạng text-to-video.
-    - `vydra/kling` hiện yêu cầu một tham chiếu URL hình ảnh từ xa. Tải lên tệp cục bộ bị từ chối ngay từ đầu.
-    - Tuyến HTTP `kling` hiện tại của Vydra không nhất quán về việc yêu cầu `image_url` hay `video_url`; nhà cung cấp được đóng gói kèm ánh xạ cùng URL hình ảnh từ xa vào cả hai trường.
-    - Plugin được đóng gói kèm giữ cách tiếp cận thận trọng và không chuyển tiếp các núm điều chỉnh kiểu chưa được tài liệu hóa như tỷ lệ khung hình, độ phân giải, watermark hoặc âm thanh được tạo.
+    - `vydra/kling` từ chối ngay từ đầu việc tải tệp cục bộ lên; chỉ tham chiếu URL hình ảnh từ xa mới hoạt động.
+    - Tuyến HTTP `kling` của Vydra chưa nhất quán về việc yêu cầu `image_url` hay `video_url`; nhà cung cấp đi kèm gửi cùng một URL hình ảnh từ xa trong cả hai trường.
+    - Plugin đi kèm duy trì cách tiếp cận thận trọng và không chuyển tiếp các tùy chọn kiểu chưa được lập tài liệu như tỷ lệ khung hình, độ phân giải, hình mờ hoặc âm thanh được tạo.
 
     <Note>
-    Xem [Tạo video](/vi/tools/video-generation) để biết các tham số công cụ dùng chung, lựa chọn nhà cung cấp và hành vi chuyển đổi dự phòng.
+    Xem [Tạo video](/vi/tools/video-generation) để biết các tham số công cụ dùng chung, cách chọn nhà cung cấp và hành vi chuyển đổi dự phòng.
     </Note>
 
   </Accordion>
 
   <Accordion title="Kiểm thử trực tiếp video">
-    Phạm vi kiểm thử trực tiếp riêng cho nhà cung cấp:
+    Phạm vi kiểm thử trực tiếp dành riêng cho nhà cung cấp:
 
     ```bash
     OPENCLAW_LIVE_TEST=1 \
@@ -128,12 +127,12 @@ OpenClaw dùng cùng một `VYDRA_API_KEY` cho cả ba năng lực.
     pnpm test:live -- extensions/vydra/vydra.live.test.ts
     ```
 
-    Tệp trực tiếp Vydra được đóng gói kèm hiện bao phủ:
+    Tệp kiểm thử trực tiếp Vydra đi kèm bao quát:
 
-    - `vydra/veo3` text-to-video
-    - `vydra/kling` image-to-video dùng một URL hình ảnh từ xa
+    - `vydra/veo3` chuyển văn bản thành video
+    - `vydra/kling` chuyển hình ảnh thành video bằng URL hình ảnh từ xa
 
-    Ghi đè fixture hình ảnh từ xa khi cần:
+    Ghi đè dữ liệu mẫu hình ảnh từ xa khi cần:
 
     ```bash
     export OPENCLAW_LIVE_VYDRA_KLING_IMAGE_URL="https://example.com/reference.png"
@@ -152,7 +151,7 @@ OpenClaw dùng cùng một `VYDRA_API_KEY` cho cả ba năng lực.
           providers: {
             vydra: {
               apiKey: "${VYDRA_API_KEY}",
-              speakerVoiceId: "21m00Tcm4TlvDq8ikWAM",
+              voiceId: "21m00Tcm4TlvDq8ikWAM",
             },
           },
         },
@@ -160,12 +159,12 @@ OpenClaw dùng cùng một `VYDRA_API_KEY` cho cả ba năng lực.
     }
     ```
 
-    Mặc định:
+    Giá trị mặc định:
 
     - Mô hình: `elevenlabs/tts`
-    - ID giọng nói: `21m00Tcm4TlvDq8ikWAM`
+    - ID giọng nói: `21m00Tcm4TlvDq8ikWAM` ("Rachel")
 
-    Plugin được đóng gói kèm hiện phơi bày một giọng nói mặc định đã biết là hoạt động tốt và trả về các tệp âm thanh MP3.
+    Plugin đi kèm cung cấp một giọng nói mặc định đã được xác nhận hoạt động tốt này và trả về các tệp âm thanh MP3.
 
   </Accordion>
 </AccordionGroup>
@@ -173,16 +172,16 @@ OpenClaw dùng cùng một `VYDRA_API_KEY` cho cả ba năng lực.
 ## Liên quan
 
 <CardGroup cols={2}>
-  <Card title="Thư mục nhà cung cấp" href="/vi/providers/index" icon="list">
-    Duyệt tất cả nhà cung cấp hiện có.
+  <Card title="Danh mục nhà cung cấp" href="/vi/providers/index" icon="list">
+    Duyệt qua tất cả nhà cung cấp hiện có.
   </Card>
   <Card title="Tạo hình ảnh" href="/vi/tools/image-generation" icon="image">
-    Các tham số công cụ hình ảnh dùng chung và lựa chọn nhà cung cấp.
+    Các tham số công cụ hình ảnh dùng chung và cách chọn nhà cung cấp.
   </Card>
   <Card title="Tạo video" href="/vi/tools/video-generation" icon="video">
-    Các tham số công cụ video dùng chung và lựa chọn nhà cung cấp.
+    Các tham số công cụ video dùng chung và cách chọn nhà cung cấp.
   </Card>
-  <Card title="Tham chiếu cấu hình" href="/vi/gateway/config-agents#agent-defaults" icon="gear">
-    Giá trị mặc định của agent và cấu hình mô hình.
+  <Card title="Tài liệu tham chiếu cấu hình" href="/vi/gateway/config-agents#agent-defaults" icon="gear">
+    Giá trị mặc định của tác tử và cấu hình mô hình.
   </Card>
 </CardGroup>

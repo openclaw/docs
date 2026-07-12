@@ -4,16 +4,16 @@ read_when:
 summary: Chuyển hướng đến hướng dẫn Xây dựng Plugin hiện tại
 title: Xây dựng Plugin (chuyển hướng)
 x-i18n:
-    generated_at: "2026-04-29T22:58:36Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:05:39Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d687ccddfe7dcadf8bdd0fc903bf8a5da112902a8d23086b04da25df752facaf
+    source_hash: 912a6de72e2ea3a3fc7cc93a15f952d504c00873f7662ead0f50662bcc7771c5
     source_path: plugins/building-extensions.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Trang này đã được chuyển đến [Xây dựng Plugin](/vi/plugins/building-plugins).
+Trang này đã được chuyển sang vị trí mới. Xem [Xây dựng Plugin](/vi/plugins/building-plugins).
 
 ## Liên quan
 

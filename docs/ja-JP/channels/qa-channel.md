@@ -1,13 +1,13 @@
 ---
 read_when:
-    - ローカルまたは CI テスト実行に合成 QA トランスポートを接続しています
-    - バンドルされた qa-channel 設定サーフェスが必要です
-    - エンドツーエンド QA 自動化を反復改善しています
-summary: 決定論的な OpenClaw QA シナリオ用の合成 Slack クラスチャンネル Plugin
+    - ローカルまたは CI のテスト実行に合成 QA トランスポートを接続しています
+    - バンドルされた qa-channel の設定インターフェースが必要です
+    - エンドツーエンドのQA自動化を反復改善しています
+summary: 決定論的な OpenClaw QA シナリオ向けの合成 Slack クラスチャンネル Plugin
 title: QA チャネル
 x-i18n:
-    generated_at: "2026-07-05T11:03:46Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T21:58:07Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: f33af6ef31515e0cab0ee2540f48f3ffea8aba3d13915dc8cf66111599354187
@@ -15,18 +15,18 @@ x-i18n:
     workflow: 16
 ---
 
-`qa-channel` は、自動化された OpenClaw QA 用のリポジトリローカルな合成メッセージトランスポートです（`extensions/qa-channel`、非公開パッケージ、パッケージ化されたインストールからは除外）。これは本番用チャンネルではありません。実際のトランスポートで使われるものと同じチャンネル Plugin 境界を実行しつつ、状態を決定的かつ完全に検査可能に保つために存在します。
+`qa-channel` は、自動化された OpenClaw QA 用のリポジトリローカルな合成メッセージトランスポートです（`extensions/qa-channel`、非公開パッケージ、パッケージ化されたインストールからは除外）。これは本番環境向けのチャンネルではありません。状態を決定論的かつ完全に検査可能に保ちながら、実際のトランスポートと同じチャンネル Plugin 境界を検証するために存在します。
 
-## 何をするか
+## 機能
 
-- Slack クラスのターゲット文法:
+- Slack と同等のターゲット構文:
   - `dm:<user>`
   - `channel:<room>`
   - `group:<room>`
   - `thread:<room>/<thread>`
-- 共有 `channel:` と `group:` の会話は、グループ/チャンネルルームのターンとしてエージェントに提示されるため、Discord、Slack、Telegram、および類似のトランスポートで使われるものと同じ可視返信とメッセージツールのルーティングポリシーを実行します。
-- 受信メッセージ注入、送信トランスクリプト取得、スレッド作成、リアクション、編集、削除、検索/読み取りアクションのための HTTP ベースの合成バス。
-- `.artifacts/qa-e2e/` に Markdown レポートを書き込むホスト側セルフチェックランナー。
+- 共有の `channel:` および `group:` 会話は、グループ／チャンネルルームのターンとしてエージェントに提示されるため、Discord、Slack、Telegram、および同様のトランスポートで使用されるものと同じ、表示される返信とメッセージツールのルーティングポリシーを検証できます。
+- 受信メッセージの注入、送信トランスクリプトの取得、スレッドの作成、リアクション、編集、削除、検索／読み取りアクションに対応する HTTP ベースの合成バス。
+- Markdown レポートを `.artifacts/qa-e2e/` に書き込むホスト側セルフチェックランナー。
 
 ## 設定
 
@@ -46,28 +46,29 @@ x-i18n:
 
 アカウントキー:
 
-- `enabled` - このアカウントのマスタートグル。
-- `name` - 任意の表示ラベル。
-- `baseUrl` - 合成バス URL。これが設定されると、アカウントは設定済みとして扱われます。
-- `botUserId` - ターゲット文法で使われる合成 bot ユーザー ID（デフォルト: `openclaw`）。
+- `enabled` - このアカウント全体の有効／無効を切り替えます。
+- `name` - 省略可能な表示ラベル。
+- `baseUrl` - 合成バスの URL。これを設定すると、アカウントは設定済みと見なされます。
+- `botUserId` - ターゲット構文で使用する合成ボットのユーザー ID（デフォルト: `openclaw`）。
 - `botDisplayName` - 送信メッセージの表示名（デフォルト: `OpenClaw QA`）。
-- `pollTimeoutMs` - ロングポーリングの待機ウィンドウ。100 から 30000 までの整数（デフォルト: 1000）。
-- `allowFrom` - 送信者許可リスト（ユーザー ID または `"*"`、デフォルト: `["*"]`）。DM は
-  常に `open` ポリシーです。許可リスト付きグループポリシーも、これらの合成
+- `pollTimeoutMs` - ロングポーリングの待機時間。100～30000 の整数（デフォルト: 1000）。
+- `allowFrom` - 送信者の許可リスト（ユーザー ID または `"*"`、デフォルト: `["*"]`）。DM のポリシーは
+  常に `open` です。許可リスト方式のグループポリシーでも、これらの合成
   送信者 ID を使用します。
-- `groupPolicy` - 共有ルームポリシー: `"open"`（デフォルト）、`"allowlist"`、または
+- `groupPolicy` - 共有ルームのポリシー: `"open"`（デフォルト）、`"allowlist"`、または
   `"disabled"`。
-- `groupAllowFrom` - 任意の共有ルーム送信者許可リスト。`"allowlist"` で省略された場合、
-  QA Channel は `allowFrom` にフォールバックします。
-- `groups.<room>.requireMention` - 特定のグループ/チャンネルルームで返信する前に bot メンションを要求します（デフォルト: false）。`groups."*"` はデフォルトを設定します。
-  ルームごとの `tools` / `toolsBySender` はツールポリシーのオーバーライドを設定します。
-- `defaultTo` - 何も指定されていない場合のフォールバックターゲット。
-- `actions.messages` / `actions.reactions` / `actions.search` / `actions.threads` - アクションごとのツールゲーティング。
+- `groupAllowFrom` - 省略可能な共有ルーム送信者の許可リスト。`"allowlist"` で省略した
+  場合、QA Channel は `allowFrom` にフォールバックします。
+- `groups.<room>.requireMention` - 特定のグループ／チャンネルルームで返信する前に、ボットへのメンションを
+  必須にします（デフォルト: false）。`groups."*"` でデフォルトを設定し、
+  ルームごとの `tools` / `toolsBySender` でツールポリシーを上書きします。
+- `defaultTo` - ターゲットが指定されていない場合のフォールバック先。
+- `actions.messages` / `actions.reactions` / `actions.search` / `actions.threads` - アクションごとのツール利用制御。
 
-トップレベルのマルチアカウントキー:
+トップレベルのマルチアカウント用キー:
 
-- `accounts` - アカウント ID をキーにした、名前付きアカウントごとのオーバーライドのレコード。
-- `defaultAccount` - 複数が設定されている場合の優先アカウント ID。
+- `accounts` - アカウント ID をキーとする、アカウントごとの名前付き上書き設定のレコード。
+- `defaultAccount` - 複数のアカウントが設定されている場合に優先するアカウント ID。
 
 ## ランナー
 
@@ -77,28 +78,28 @@ x-i18n:
 pnpm qa:e2e
 ```
 
-これは `qa-lab` 経由でルーティングし、リポジトリ内の QA バスを起動し、`qa-channel` ランタイムスライスをブートして、決定的なセルフチェックを実行します。
+これは `qa-lab` を経由して、リポジトリ内の QA バスを起動し、`qa-channel` のランタイムスライスを立ち上げ、決定論的なセルフチェックを実行します。
 
-リポジトリに基づく完全なシナリオスイート:
+リポジトリ全体を使用するシナリオスイート:
 
 ```bash
 pnpm openclaw qa suite
 ```
 
-QA Gateway レーンに対してシナリオを並列実行します。シナリオ、プロファイル、プロバイダーモードについては [QA 概要](/ja-JP/concepts/qa-e2e-automation) を参照してください。
+QA Gateway レーンに対してシナリオを並列実行します。シナリオ、プロファイル、プロバイダーモードについては、[QA の概要](/ja-JP/concepts/qa-e2e-automation)を参照してください。
 
-Docker ベースの QA サイト（Gateway + QA Lab デバッガー UI を 1 つのスタックにまとめたもの）:
+Docker ベースの QA サイト（Gateway と QA Lab デバッガー UI を単一スタックで実行）:
 
 ```bash
 pnpm qa:lab:up
 ```
 
-QA サイトをビルドし、Docker ベースの Gateway + QA Lab スタックを起動し、QA Lab URL を表示します。そこからシナリオを選択し、モデルレーンを選び、個別の実行を開始し、結果をライブで確認できます。QA Lab デバッガーは、出荷される Control UI バンドルとは別です。
+QA サイトをビルドし、Docker ベースの Gateway と QA Lab スタックを起動して、QA Lab の URL を表示します。そこからシナリオを選択し、モデルレーンを選び、個別の実行を開始して、結果をリアルタイムで確認できます。QA Lab デバッガーは、リリース版の Control UI バンドルとは別のものです。
 
-## 関連
+## 関連項目
 
-- [QA 概要](/ja-JP/concepts/qa-e2e-automation) - 全体スタック、トランスポートアダプター、シナリオ作成
+- [QA の概要](/ja-JP/concepts/qa-e2e-automation) - スタック全体、トランスポートアダプター、シナリオの作成
 - [Matrix QA](/ja-JP/concepts/qa-matrix) - 実際のチャンネルを駆動するライブトランスポートランナーの例
 - [ペアリング](/ja-JP/channels/pairing)
 - [グループ](/ja-JP/channels/groups)
-- [チャンネル概要](/ja-JP/channels)
+- [チャンネルの概要](/ja-JP/channels)

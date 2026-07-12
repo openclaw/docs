@@ -1,11 +1,11 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin novita
-summary: เพิ่มการรองรับผู้ให้บริการโมเดล Novita, Novita AI, Novitaai ให้กับ OpenClaw
+summary: เพิ่มการรองรับผู้ให้บริการโมเดล Novita, Novita AI และ Novitaai ให้กับ OpenClaw
 title: Plugin Novita
 x-i18n:
-    generated_at: "2026-06-27T18:04:05Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:34:14Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: ac6689ad781f0a0ead936521c1ce90a7347ed930b1e4ccd3d21efe640ac916c2
@@ -13,18 +13,18 @@ x-i18n:
     workflow: 16
 ---
 
-# Novita Plugin
+# Plugin Novita
 
-เพิ่มการรองรับผู้ให้บริการโมเดล Novita, Novita AI, Novitaai ให้กับ OpenClaw
+เพิ่มการรองรับผู้ให้บริการโมเดล Novita, Novita AI และ Novitaai ให้กับ OpenClaw
 
 ## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/novita-provider`
-- เส้นทางการติดตั้ง: รวมอยู่ใน OpenClaw
+- วิธีติดตั้ง: รวมอยู่ใน OpenClaw
 
-## อินเทอร์เฟซ
+## ส่วนที่รองรับ
 
-providers: novita, novita-ai, novitaai
+ผู้ให้บริการ: novita, novita-ai, novitaai
 
 ## เอกสารที่เกี่ยวข้อง
 

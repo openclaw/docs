@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Je installeert, configureert of controleert de diagnostics-prometheus-plugin
-summary: OpenClaw-diagnostische Prometheus-exporter voor runtime-metrics.
-title: Diagnostische Prometheus-Plugin
+    - U installeert, configureert of controleert de Plugin diagnostics-prometheus
+summary: OpenClaw-diagnostiekexporter voor Prometheus voor runtime-metrieken.
+title: Prometheus-plugin voor diagnostiek
 x-i18n:
-    generated_at: "2026-06-27T18:00:04Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:13:04Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: dbf2b296f6ff8a468ad0072dc78066a48a9bee26cf1d233506aeae79149b5822
@@ -13,9 +13,9 @@ x-i18n:
     workflow: 16
 ---
 
-# Diagnostiek-Prometheus-Plugin
+# Prometheus-plugin voor diagnostiek
 
-OpenClaw Prometheus-exporter voor diagnostiek voor runtime-metrieken.
+OpenClaw Prometheus-exporter voor diagnostiek van runtimegegevens.
 
 ## Distributie
 

@@ -1,55 +1,56 @@
 ---
 x-i18n:
-    generated_at: "2026-06-27T17:08:36Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:50:44Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a0c67d049eb1d0f1d4e675a71e69b2d34d3ce5c733ca9582bf08ac717c233644
+    source_hash: a8712b1aeb2e605055c22cf308049e5e74fdf33061870026be20bd55cb0c3d1d
     source_path: AGENTS.md
     workflow: 16
 ---
 
 # Przewodnik po dokumentacji
 
-Ten katalog odpowiada za tworzenie dokumentacji, reguły linków Mintlify oraz politykę i18n dokumentacji.
+Ten katalog obejmuje tworzenie dokumentacji, reguły linków Mintlify oraz zasady internacjonalizacji dokumentacji.
 
 ## Reguły Mintlify
 
 - Dokumentacja jest hostowana w Mintlify (`https://docs.openclaw.ai`).
-- Wewnętrzne linki dokumentacji w `docs/**/*.md` muszą pozostać względne względem katalogu głównego, bez sufiksu `.md` ani `.mdx` (przykład: `[Konfiguracja](/gateway/configuration)`).
-- Odwołania między sekcjami powinny używać kotwic na ścieżkach względnych względem katalogu głównego (przykład: `[Haki](/gateway/configuration-reference#hooks)`).
-- Nagłówki dokumentacji powinny unikać półpauz i apostrofów, ponieważ generowanie kotwic w Mintlify jest w tych przypadkach kruche.
-- README i inna dokumentacja renderowana przez GitHub powinny zachowywać bezwzględne adresy URL dokumentacji, aby linki działały poza Mintlify.
-- Treść dokumentacji musi pozostać ogólna: bez nazw urządzeń osobistych, nazw hostów ani ścieżek lokalnych; używaj symboli zastępczych, takich jak `user@gateway-host`.
+- Wewnętrzne linki do dokumentacji w `docs/**/*.md` muszą pozostać względne względem katalogu głównego, bez rozszerzenia `.md` ani `.mdx` (przykład: `[Konfiguracja](/gateway/configuration)`).
+- Odwołania do sekcji powinny używać kotwic w ścieżkach względnych względem katalogu głównego (przykład: `[Hooki](/gateway/configuration-reference#hooks)`).
+- W nagłówkach dokumentacji należy unikać pauz i apostrofów, ponieważ generowanie kotwic przez Mintlify jest w ich przypadku zawodne.
+- README i inne dokumenty renderowane przez GitHub powinny zachowywać bezwzględne adresy URL dokumentacji, aby linki działały poza Mintlify.
+- Treść dokumentacji musi pozostać ogólna: bez osobistych nazw urządzeń, nazw hostów ani lokalnych ścieżek; należy używać symboli zastępczych, takich jak `user@gateway-host`.
 
-## Reguły treści dokumentacji
+## Reguły dotyczące treści dokumentacji
 
-- W dokumentacji, tekstach UI i listach wyboru porządkuj usługi/dostawców alfabetycznie, chyba że sekcja wyraźnie opisuje kolejność środowiska uruchomieniowego lub kolejność automatycznego wykrywania.
-- Zachowaj spójne nazewnictwo dołączonych pluginów z ogólnorepozytoryjnymi regułami terminologii pluginów w głównym `AGENTS.md`.
+- W dokumentacji, tekstach interfejsu użytkownika i listach wyboru należy porządkować usługi/dostawców alfabetycznie, chyba że sekcja wyraźnie opisuje kolejność działania lub kolejność automatycznego wykrywania.
+- Nazewnictwo dołączonych pluginów należy utrzymywać zgodnie z ogólnorepozytoryjnymi regułami terminologii pluginów w głównym pliku `AGENTS.md`.
+- Dokumentacja generowana — nigdy nie edytuj jej ręcznie: `docs/plugins/reference/**`, `docs/plugins/reference.md` i `docs/plugins/plugin-inventory.md` pochodzą z `pnpm plugins:inventory:gen`; `docs/docs_map.md` z `pnpm docs:map:gen`; `docs/maturity/**` z `pnpm maturity:render`.
 
 ## Dokumentacja wewnętrzna
 
-- Długoterminowa prywatna dokumentacja operatorska należy do `~/Projects/manager/docs/`.
-- Lokalne dla repozytorium wewnętrzne dokumenty robocze/kopie lustrzane mogą znajdować się w ignorowanym `docs/internal/`.
-- Nigdy nie dodawaj stron `docs/internal/**` do nawigacji `docs/docs.json` ani nie linkuj do nich z publicznej dokumentacji.
-- `scripts/docs-sync-publish.mjs` wyklucza i usuwa `docs/internal/**` z publicznego repozytorium publikacji `openclaw/docs`, jeśli strona zostanie później wymuszona do dodania.
-- Dokumentacja wewnętrzna może wspominać ścieżki repozytorium, prywatne nazwy aplikacji, nazwy elementów 1Password i runbooki, ale nigdy nie może zawierać wartości sekretów.
+- Długoterminowa prywatna dokumentacja operatora powinna znajdować się w `~/Projects/manager/docs/`.
+- Wewnętrzne dokumenty robocze lub kopie lokalne repozytorium mogą znajdować się w ignorowanym katalogu `docs/internal/`.
+- Nigdy nie dodawaj stron `docs/internal/**` do nawigacji `docs/docs.json` ani nie umieszczaj do nich linków w publicznej dokumentacji.
+- `scripts/docs-sync-publish.mjs` wyklucza i usuwa `docs/internal/**` z publicznego repozytorium publikacyjnego `openclaw/docs`, jeśli strona zostanie później dodana wymuszenie.
+- Dokumentacja wewnętrzna może zawierać ścieżki repozytorium, nazwy prywatnych aplikacji, nazwy elementów 1Password i procedury operacyjne, ale nigdy wartości tajnych danych.
 
-## Edycja karty oceny dojrzałości
+## Edytowanie karty wyników dojrzałości
 
-`taxonomy.yaml` i `qa/maturity-scores.yaml` są źródłowymi danymi wejściowymi; wygenerowana dokumentacja dojrzałości w `docs/maturity/` jest projekcją i nie powinna być edytowana ręcznie w zakresie punktacji, LTS, taksonomii, profilu QA ani tabel dowodów.
-`scripts/qa/render-maturity-docs.ts` odpowiada za generowanie; użyj `pnpm maturity:render`, aby odświeżyć zatwierdzone dokumenty, oraz `pnpm maturity:check`, aby je zweryfikować.
-`.github/workflows/maturity-scorecard.yml` renderuje podglądy artefaktów i może otwierać PR-y z wygenerowaną dokumentacją; `.github/workflows/openclaw-release-checks.yml` uruchamia go dla QA wydania.
-Przechowuj deterministyczne dane `qa-evidence.json.scorecard` w artefaktach GitHub Actions, chyba że maintainer wyraźnie poprosi o oczyszczoną, zatwierdzoną projekcję.
-Ręczne nadpisania muszą zmienić stan źródłowy w PR-ze oraz wyjaśnić powód wraz z publicznymi lub zredagowanymi dowodami.
+`taxonomy.yaml` i `qa/maturity-scores.yaml` są danymi źródłowymi; wygenerowane dokumenty dojrzałości w `docs/maturity/` są ich odwzorowaniem i nie powinny być edytowane ręcznie w zakresie wyników, LTS, taksonomii, profilu QA ani tabel dowodów.
+Za generowanie odpowiada `scripts/qa/render-maturity-docs.ts`; użyj `pnpm maturity:render`, aby odświeżyć zatwierdzone dokumenty, oraz `pnpm maturity:check`, aby je zweryfikować.
+`.github/workflows/maturity-scorecard.yml` generuje podglądy artefaktów i może otwierać PR-y z wygenerowaną dokumentacją; `.github/workflows/openclaw-release-checks.yml` uruchamia go na potrzeby kontroli jakości wydania.
+Deterministyczne dane `qa-evidence.json.scorecard` przechowuj w artefaktach GitHub Actions, chyba że opiekun wyraźnie poprosi o oczyszczone odwzorowanie zatwierdzone w repozytorium.
+Ręczne nadpisania muszą zmieniać stan źródłowy w PR-ze oraz wyjaśniać przyczynę wraz z publicznymi lub zredagowanymi dowodami.
 
-## i18n dokumentacji
+## Internacjonalizacja dokumentacji
 
-- Dokumentacja w językach obcych nie jest utrzymywana w tym repozytorium. Wygenerowany wynik publikacji znajduje się w osobnym repozytorium `openclaw/docs` (często klonowanym lokalnie jako `../openclaw-docs`).
+- Dokumentacja w językach obcych nie jest utrzymywana w tym repozytorium. Wygenerowane dane publikacyjne znajdują się w oddzielnym repozytorium `openclaw/docs` (często klonowanym lokalnie jako `../openclaw-docs`).
 - Nie dodawaj ani nie edytuj tutaj zlokalizowanej dokumentacji w `docs/<locale>/**`.
-- Traktuj angielską dokumentację w tym repozytorium oraz pliki glosariusza jako źródło prawdy.
-- Pipeline: zaktualizuj tutaj angielską dokumentację, w razie potrzeby zaktualizuj `docs/.i18n/glossary.<locale>.json`, a następnie pozwól synchronizacji repozytorium publikacji i `scripts/docs-i18n` uruchomić się w `openclaw/docs`.
-- Przed ponownym uruchomieniem `scripts/docs-i18n` dodaj wpisy glosariusza dla wszystkich nowych terminów technicznych, tytułów stron lub krótkich etykiet nawigacji, które muszą pozostać po angielsku albo używać stałego tłumaczenia.
-- `pnpm docs:check-i18n-glossary` jest zabezpieczeniem dla zmienionych angielskich tytułów dokumentacji i krótkich wewnętrznych etykiet dokumentacji.
-- Pamięć tłumaczeniowa znajduje się w wygenerowanych plikach `docs/.i18n/*.tm.jsonl` w repozytorium publikacji.
+- Traktuj angielską dokumentację w tym repozytorium oraz pliki glosariuszy jako źródło prawdy.
+- Potok: zaktualizuj tutaj angielską dokumentację, w razie potrzeby zaktualizuj `docs/.i18n/glossary.<locale>.json`, a następnie pozwól na uruchomienie synchronizacji repozytorium publikacyjnego i `scripts/docs-i18n` w `openclaw/docs`.
+- Przed ponownym uruchomieniem `scripts/docs-i18n` dodaj wpisy do glosariusza dla wszystkich nowych terminów technicznych, tytułów stron lub krótkich etykiet nawigacyjnych, które muszą pozostać po angielsku albo mieć stałe tłumaczenie.
+- `pnpm docs:check-i18n-glossary` zabezpiecza zmienione angielskie tytuły dokumentów i krótkie etykiety dokumentacji wewnętrznej.
+- Pamięć tłumaczeniowa znajduje się w wygenerowanych plikach `docs/.i18n/*.tm.jsonl` w repozytorium publikacyjnym.
 - Zobacz `docs/.i18n/README.md`.

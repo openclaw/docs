@@ -1,14 +1,13 @@
 ---
 read_when:
     - Externe CLI-Integrationen hinzufügen oder ändern
-    - Debugging von RPC-Adaptern (signal-cli, imsg)
+    - RPC-Adapter debuggen (signal-cli, imsg)
 summary: RPC-Adapter für externe CLIs (signal-cli, imsg) und Gateway-Muster
 title: RPC-Adapteren
 x-i18n:
-    generated_at: "2026-07-12T15:52:08Z"
+    generated_at: "2026-07-12T02:08:45Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 6ddb3fb741c90fe7b01ba35376b71865584b1e507cf610705392452790fb76f5
     source_path: reference/rpc.md
@@ -30,7 +29,7 @@ Einrichtung und Endpunkte finden Sie unter [Signal](/de/channels/signal).
 
 - OpenClaw startet `imsg rpc` als untergeordneten Prozess für [iMessage](/de/channels/imessage).
 - JSON-RPC wird zeilenweise über stdin/stdout übertragen (ein JSON-Objekt pro Zeile).
-- Kein TCP-Port und kein Daemon erforderlich.
+- Es ist weder ein TCP-Port noch ein Daemon erforderlich.
 
 Verwendete Kernmethoden:
 
@@ -44,7 +43,7 @@ Einrichtung und Adressierung finden Sie unter [iMessage](/de/channels/imessage) 
 ## Richtlinien für Adapter
 
 - Der Gateway verwaltet den Prozess (Start/Stopp sind an den Lebenszyklus des Providers gekoppelt).
-- Gestalten Sie RPC-Clients robust: Zeitüberschreitungen und Neustart beim Beenden.
+- RPC-Clients müssen robust sein: Zeitüberschreitungen und Neustart bei Prozessbeendigung.
 - Bevorzugen Sie stabile IDs (z. B. `chat_id`) gegenüber Anzeigenamen.
 
 ## Verwandte Themen

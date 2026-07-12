@@ -1,53 +1,45 @@
 ---
 read_when:
     - تحديث واجهة مستخدم إعدادات Skills في macOS
-    - تغيير ضوابط بوابات Skills أو سلوك التثبيت
-summary: واجهة إعدادات Skills في macOS والحالة المدعومة بـ Gateway
+    - تغيير تقييد Skills أو سلوك التثبيت
+summary: واجهة مستخدم إعدادات Skills في macOS والحالة المدعومة من Gateway
 title: Skills (macOS)
 x-i18n:
-    generated_at: "2026-06-27T17:58:56Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:13:15Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5ecc470f1645051e03ab4f51bcb4972da4853c690354bc8ea18a89fcd387d413
+    source_hash: fd9d8f1190320889029335e008c3605bd4bf0194f83398cedd4ae658fd90065c
     source_path: platforms/mac/skills.md
     workflow: 16
 ---
 
-يعرض تطبيق macOS ‏Skills في OpenClaw عبر Gateway؛ ولا يحلل Skills محليًا.
+يعرض تطبيق macOS مهارات OpenClaw عبر Gateway؛ ولا يحلّل المهارات محليًا.
 
 ## مصدر البيانات
 
-- يعيد `skills.status` (Gateway) جميع Skills بالإضافة إلى الأهلية والمتطلبات الناقصة
-  (بما في ذلك حظر قائمة السماح لـ Skills المضمّنة).
-- تُشتق المتطلبات من `metadata.openclaw.requires` في كل `SKILL.md`.
+- تُعيد `skills.status` ‏(Gateway) جميع المهارات مع حالة الأهلية والمتطلبات المفقودة، بما في ذلك عمليات الحظر بقائمة السماح للمهارات المضمّنة.
+- تأتي المتطلبات من `metadata.openclaw.requires` في كل ملف `SKILL.md`.
 
 ## إجراءات التثبيت
 
-- يحدد `metadata.openclaw.install` خيارات التثبيت (brew/node/go/uv).
-- يستدعي التطبيق `skills.install` لتشغيل أدوات التثبيت على مضيف Gateway.
-- يمكن لـ `security.installPolicy` المملوكة للمشغّل حظر عمليات تثبيت Skills
-  المدعومة من Gateway قبل تشغيل بيانات التعريف الخاصة بأداة التثبيت. لا يُعد حظر التعليمات البرمجية الخطرة المدمج وقت التثبيت
-  جزءًا من تدفق تثبيت Skills.
-- إذا كان كل خيار تثبيت هو `download`، يعرض Gateway جميع
-  خيارات التنزيل.
-- بخلاف ذلك، يختار Gateway أداة تثبيت مفضلة واحدة باستخدام تفضيلات
-  التثبيت الحالية والملفات التنفيذية للمضيف: Homebrew أولًا عندما
-  يكون `skills.install.preferBrew` مفعّلًا ويكون `brew` موجودًا، ثم `uv`، ثم مدير
-  Node المكوّن من `skills.install.nodeManager`، ثم البدائل اللاحقة
-  مثل `go` أو `download`.
-- تعكس تسميات تثبيت Node مدير Node المكوّن، بما في ذلك `yarn`.
+- يحدّد `metadata.openclaw.install` خيارات التثبيت (brew/node/go/uv/download).
+- يستدعي التطبيق `skills.install` لتشغيل برامج التثبيت على مضيف Gateway.
+- يمكن لسياسة `security.installPolicy` التي يديرها المشغّل (`enabled` و`targets` و`exec`) حظر عمليات تثبيت المهارات المدعومة من Gateway قبل تشغيل بيانات برنامج التثبيت الوصفية. فحص التعليمات البرمجية الخطرة المضمّن (المستخدم في عمليات تثبيت Plugin) غير موصول بمسار تثبيت المهارات.
+- إذا كان كل خيار تثبيت هو `download`، فسيعرض Gateway جميع خيارات التنزيل.
+- وإلا، يختار Gateway برنامج تثبيت مفضّلًا واحدًا باستخدام تفضيلات التثبيت الحالية (`skills.install.preferBrew` و`skills.install.nodeManager`) والملفات التنفيذية المتوفرة على المضيف: Homebrew أولًا عند تمكين `preferBrew` وتوفر `brew`، ثم `uv`، ثم مدير node المُهيّأ، ثم Homebrew مرة أخرى إذا كان متوفرًا (حتى من دون `preferBrew`)، ثم `go`، ثم `download`.
+- تعكس تسميات تثبيت Node مدير node المُهيّأ، بما في ذلك `yarn`.
 
-## مفاتيح البيئة/API
+## مفاتيح البيئة وواجهة API
 
-- يخزن التطبيق المفاتيح في `~/.openclaw/openclaw.json` ضمن `skills.entries.<skillKey>`.
-- يحدّث `skills.update` كلًا من `enabled` و`apiKey` و`env`.
+- يخزّن التطبيق المفاتيح في `~/.openclaw/openclaw.json` ضمن `skills.entries.<skillKey>`.
+- يُحدّث `skills.update` القيم `enabled` و`apiKey` و`env`.
 
 ## الوضع البعيد
 
-- تحدث عمليات التثبيت وتحديثات الإعداد على مضيف Gateway (وليس على جهاز Mac المحلي).
+- تحدث تحديثات التثبيت والتهيئة على مضيف Gateway، وليس على جهاز Mac المحلي.
 
-## ذات صلة
+## ذو صلة
 
 - [Skills](/ar/tools/skills)
 - [تطبيق macOS](/ar/platforms/macos)

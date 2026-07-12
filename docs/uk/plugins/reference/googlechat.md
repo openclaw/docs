@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або аудіюєте плагін googlechat
-summary: Plugin каналу OpenClaw Google Chat для просторів і прямих повідомлень.
+    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin googlechat.
+summary: Plugin каналу Google Chat для просторів і прямих повідомлень в OpenClaw.
 title: Plugin Google Chat
 x-i18n:
-    generated_at: "2026-06-27T17:58:58Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:36:43Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 04febb1ead7d63e9ef79ecc52ce69f38a7c4eb404c90019717363f57477cd37d
@@ -15,17 +15,17 @@ x-i18n:
 
 # Plugin Google Chat
 
-OpenClaw Plugin каналу Google Chat для просторів і прямих повідомлень.
+Plugin каналу Google Chat для OpenClaw, призначений для просторів і прямих повідомлень.
 
-## Поширення
+## Розповсюдження
 
 - Пакет: `@openclaw/googlechat`
-- Маршрут встановлення: npm; ClawHub
+- Спосіб установлення: npm; ClawHub
 
-## Інтерфейс
+## Поверхня
 
-channels: googlechat
+канали: googlechat
 
-## Пов’язані документи
+## Пов’язана документація
 
 - [googlechat](/uk/channels/googlechat)

@@ -1,32 +1,30 @@
 ---
 read_when:
     - Synology Chat instellen met OpenClaw
-    - Foutopsporing voor Synology Chat Webhook-routering
-summary: Synology Chat Webhook-installatie en OpenClaw-configuratie
+    - Routering van Synology Chat-webhooks debuggen
+summary: Installatie van de Synology Chat-webhook en OpenClaw-configuratie
 title: Synology Chat
 x-i18n:
-    generated_at: "2026-05-02T11:09:56Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:37:53Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1f1946425fa6e7a071b03d212854476dc2c0af98097f38da93d3711e5a5c7e96
+    source_hash: 7829bb1464c4f5546adf086a96b7f3478e6f03e35ed2443bd92c160fa3d2bb8b
     source_path: channels/synology-chat.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Status: gebundeld Plugin voor direct-message-kanaal dat Synology Chat-webhooks gebruikt.
-De Plugin accepteert inkomende berichten van uitgaande webhooks van Synology Chat en verstuurt antwoorden
-via een inkomende webhook van Synology Chat.
+Synology Chat maakt verbinding met OpenClaw via een Webhook-paar: een uitgaande Webhook van Synology Chat plaatst inkomende privéberichten bij de Gateway en antwoorden worden teruggestuurd via een inkomende Webhook van Synology Chat.
 
-## Gebundelde Plugin
+Status: officiële Plugin, afzonderlijk geïnstalleerd. Alleen privéberichten; tekst en op URL gebaseerde bestandsverzending worden ondersteund.
 
-Synology Chat wordt meegeleverd als gebundelde Plugin in huidige OpenClaw-releases, dus normale
-pakketbuilds hebben geen aparte installatie nodig.
+## Installeren
 
-Als je een oudere build gebruikt of een aangepaste installatie waarin Synology Chat is uitgesloten,
-installeer deze dan handmatig:
+```bash
+openclaw plugins install @openclaw/synology-chat
+```
 
-Installeren vanuit een lokale checkout:
+Lokale checkout (bij uitvoering vanuit een git-repository):
 
 ```bash
 openclaw plugins install ./path/to/local/synology-chat-plugin
@@ -34,34 +32,31 @@ openclaw plugins install ./path/to/local/synology-chat-plugin
 
 Details: [Plugins](/nl/tools/plugin)
 
-## Snelle installatie
+## Snelle configuratie
 
-1. Zorg dat de Synology Chat-Plugin beschikbaar is.
-   - Huidige pakketversies van OpenClaw leveren deze al mee.
-   - Oudere/aangepaste installaties kunnen deze handmatig toevoegen vanuit een source-checkout met de bovenstaande opdracht.
-   - `openclaw onboard` toont Synology Chat nu in dezelfde lijst voor kanaalinstellingen als `openclaw channels add`.
-   - Niet-interactieve installatie: `openclaw channels add --channel synology-chat --token <token> --url <incoming-webhook-url>`
-2. In Synology Chat-integraties:
-   - Maak een inkomende webhook en kopieer de URL.
-   - Maak een uitgaande webhook met je geheime token.
-3. Laat de URL van de uitgaande webhook naar je OpenClaw-Gateway wijzen:
-   - `https://gateway-host/webhook/synology` standaard.
-   - Of je aangepaste `channels.synology-chat.webhookPath`.
-4. Rond de installatie af in OpenClaw.
-   - Begeleid: `openclaw onboard`
-   - Direct: `openclaw channels add --channel synology-chat --token <token> --url <incoming-webhook-url>`
-5. Herstart de Gateway en stuur een DM naar de Synology Chat-bot.
+1. Installeer de Plugin (hierboven).
+2. In de integraties van Synology Chat:
+   - Maak een inkomende Webhook en kopieer de URL ervan.
+   - Maak een uitgaande Webhook met uw geheime token.
+3. Laat de URL van de uitgaande Webhook naar uw OpenClaw Gateway verwijzen:
+   - Standaard `https://gateway-host/webhook/synology`.
+   - Of uw aangepaste `channels.synology-chat.webhookPath`.
+4. Voltooi de configuratie in OpenClaw. Synology Chat verschijnt in beide flows in dezelfde lijst voor kanaalconfiguratie:
+   - Begeleid: `openclaw onboard` of `openclaw channels add`
+   - Rechtstreeks: `openclaw channels add --channel synology-chat --token <token> --url <incoming-webhook-url>`
+5. Start de Gateway opnieuw en stuur een privébericht naar de Synology Chat-bot.
 
-Details voor webhook-authenticatie:
+Details over Webhook-authenticatie:
 
-- OpenClaw accepteert het token van de uitgaande webhook uit `body.token`, daarna
-  `?token=...`, en daarna headers.
-- Geaccepteerde headervormen:
+- OpenClaw accepteert het token van de uitgaande Webhook eerst uit `body.token`, vervolgens uit
+  `?token=...` en daarna uit headers.
+- Geaccepteerde headerindelingen:
   - `x-synology-token`
   - `x-webhook-token`
   - `x-openclaw-token`
   - `Authorization: Bearer <token>`
-- Lege of ontbrekende tokens falen gesloten.
+- Lege of ontbrekende tokens worden standaard geweigerd.
+- Payloads mogen `application/x-www-form-urlencoded` of `application/json` zijn; `token`, `user_id` en `text` zijn vereist.
 
 Minimale configuratie:
 
@@ -84,57 +79,53 @@ Minimale configuratie:
 
 ## Omgevingsvariabelen
 
-Voor het standaardaccount kun je env vars gebruiken:
+Voor het standaardaccount kunt u omgevingsvariabelen gebruiken:
 
 - `SYNOLOGY_CHAT_TOKEN`
 - `SYNOLOGY_CHAT_INCOMING_URL`
 - `SYNOLOGY_NAS_HOST`
-- `SYNOLOGY_ALLOWED_USER_IDS` (komma-gescheiden)
+- `SYNOLOGY_ALLOWED_USER_IDS` (door komma's gescheiden)
 - `SYNOLOGY_RATE_LIMIT`
 - `OPENCLAW_BOT_NAME`
 
-Configuratiewaarden overschrijven env vars.
+Configuratiewaarden hebben voorrang op omgevingsvariabelen.
 
-`SYNOLOGY_CHAT_INCOMING_URL` kan niet worden ingesteld vanuit een workspace-`.env`; zie [Workspace-`.env`-bestanden](/nl/gateway/security).
+`SYNOLOGY_CHAT_INCOMING_URL` en `SYNOLOGY_NAS_HOST` kunnen niet vanuit een `.env` van een werkruimte worden ingesteld; zie [`.env`-bestanden van werkruimten](/nl/gateway/security#workspace-env-files).
 
-## DM-beleid en toegangscontrole
+## Beleid voor privéberichten en toegangscontrole
 
-- `dmPolicy: "allowlist"` is de aanbevolen standaard.
-- `allowedUserIds` accepteert een lijst (of komma-gescheiden string) van Synology-gebruikers-ID's.
-- In de modus `allowlist` wordt een lege lijst `allowedUserIds` als misconfiguratie behandeld en zal de webhookroute niet starten (gebruik `dmPolicy: "open"` met `allowedUserIds: ["*"]` om iedereen toe te staan).
-- `dmPolicy: "open"` staat publieke DM's alleen toe wanneer `allowedUserIds` `"*"` bevat; met beperkende vermeldingen kunnen alleen overeenkomende gebruikers chatten.
-- `dmPolicy: "disabled"` blokkeert DM's.
-- Koppeling van antwoordontvangers blijft standaard gebaseerd op stabiele numerieke `user_id`. `channels.synology-chat.dangerouslyAllowNameMatching: true` is een break-glass-compatibiliteitsmodus die opzoeking via veranderbare gebruikersnaam/bijnaam opnieuw inschakelt voor antwoordbezorging.
-- Koppelingsgoedkeuringen werken met:
-  - `openclaw pairing list synology-chat`
-  - `openclaw pairing approve synology-chat <CODE>`
+- Ondersteunde waarden voor `dmPolicy`: `allowlist` (standaard), `open` en `disabled`. Synology Chat heeft geen koppelingsflow; keur afzenders goed door hun numerieke Synology-gebruikers-ID's aan `allowedUserIds` toe te voegen.
+- `allowedUserIds` accepteert een lijst (of een door komma's gescheiden tekenreeks) met Synology-gebruikers-ID's.
+- In de modus `allowlist` wordt een lege lijst `allowedUserIds` als een onjuiste configuratie beschouwd en wordt de Webhook-route niet gestart.
+- `dmPolicy: "open"` staat openbare privéberichten alleen toe wanneer `allowedUserIds` `"*"` bevat; bij beperkende vermeldingen kunnen alleen overeenkomende gebruikers chatten. Bij `open` met een lege lijst `allowedUserIds` wordt eveneens geweigerd de route te starten.
+- `dmPolicy: "disabled"` blokkeert privéberichten.
+- De koppeling van de ontvanger van antwoorden blijft standaard gebaseerd op de stabiele numerieke `user_id`. `channels.synology-chat.dangerouslyAllowNameMatching: true` is een compatibiliteitsmodus voor noodgevallen die het opzoeken via veranderlijke gebruikersnamen/bijnamen voor de bezorging van antwoorden opnieuw inschakelt.
 
 ## Uitgaande bezorging
 
-Gebruik numerieke Synology Chat-gebruikers-ID's als doelen.
+Gebruik numerieke Synology Chat-gebruikers-ID's als doelen. De voorvoegsels `synology-chat:`, `synology_chat:` en `synology:` worden geaccepteerd.
 
 Voorbeelden:
 
 ```bash
-openclaw message send --channel synology-chat --target 123456 --text "Hello from OpenClaw"
-openclaw message send --channel synology-chat --target synology-chat:123456 --text "Hello again"
-openclaw message send --channel synology-chat --target synology:123456 --text "Short prefix"
+openclaw message send --channel synology-chat --target 123456 --message "Hello from OpenClaw"
+openclaw message send --channel synology-chat --target synology-chat:123456 --message "Hello again"
+openclaw message send --channel synology-chat --target synology:123456 --message "Short prefix"
 ```
 
-Mediaverzendingen worden ondersteund via bestandsbezorging op basis van URL's.
-Uitgaande bestands-URL's moeten `http` of `https` gebruiken, en privé- of anderszins geblokkeerde netwerkdoelen worden geweigerd voordat OpenClaw de URL doorstuurt naar de NAS-webhook.
+Uitgaande tekst wordt opgesplitst in delen van 2000 tekens. Mediaverzending wordt ondersteund via op URL gebaseerde bestandsbezorging: de NAS downloadt het bestand en voegt het als bijlage toe (maximaal 32 MB). URL's van uitgaande bestanden moeten `http` of `https` gebruiken en privé- of anderszins geblokkeerde netwerkdoelen worden geweigerd voordat OpenClaw de URL naar de NAS-Webhook doorstuurt.
 
 ## Meerdere accounts
 
 Meerdere Synology Chat-accounts worden ondersteund onder `channels.synology-chat.accounts`.
-Elk account kan token, inkomende URL, webhookpad, DM-beleid en limieten overschrijven.
-Direct-message-sessies zijn per account en gebruiker geïsoleerd, zodat dezelfde numerieke `user_id`
-op twee verschillende Synology-accounts geen transcriptiestatus deelt.
-Geef elk ingeschakeld account een eigen `webhookPath`. OpenClaw weigert nu dubbele exacte paden
-en weigert genoemde accounts te starten die in configuraties met meerdere accounts alleen een gedeeld webhookpad erven.
-Als je bewust verouderde overerving nodig hebt voor een genoemd account, stel dan
-`dangerouslyAllowInheritedWebhookPath: true` in op dat account of bij `channels.synology-chat`,
-maar dubbele exacte paden worden nog steeds fail-closed geweigerd. Geef de voorkeur aan expliciete paden per account.
+Elk account kan het token, de inkomende URL, het Webhook-pad, het beleid voor privéberichten en de limieten overschrijven.
+Sessies voor privéberichten worden per account en gebruiker geïsoleerd, zodat dezelfde numerieke `user_id`
+op twee verschillende Synology-accounts geen transcriptstatus deelt.
+Geef elk ingeschakeld account een afzonderlijk `webhookPath`. OpenClaw weigert exact dubbele paden
+en weigert benoemde accounts te starten die in configuraties met meerdere accounts alleen een gedeeld Webhook-pad overnemen.
+Als u bewust verouderde overname voor een benoemd account nodig hebt, stelt u
+`dangerouslyAllowInheritedWebhookPath: true` in voor dat account of onder `channels.synology-chat`,
+maar exact dubbele paden worden nog steeds standaard geweigerd. Geef de voorkeur aan expliciete paden per account.
 
 ```json5
 {
@@ -159,37 +150,37 @@ maar dubbele exacte paden worden nog steeds fail-closed geweigerd. Geef de voork
 }
 ```
 
-## Beveiligingsnotities
+## Beveiligingsopmerkingen
 
-- Houd `token` geheim en roteer het als het is gelekt.
-- Houd `allowInsecureSsl: false` tenzij je expliciet een zelfondertekend lokaal NAS-certificaat vertrouwt.
-- Inkomende webhookverzoeken worden per afzender met token geverifieerd en aan snelheidslimieten onderworpen.
-- Controles op ongeldige tokens gebruiken constante-tijd geheime vergelijking en falen gesloten.
+- Houd `token` geheim en roteer het als het is uitgelekt.
+- Houd `allowInsecureSsl: false`, tenzij u een zelfondertekend lokaal NAS-certificaat expliciet vertrouwt.
+- Inkomende Webhook-verzoeken worden op token gecontroleerd en per afzender beperkt (`rateLimitPerMinute`, standaard 30).
+- Controles van ongeldige tokens gebruiken een vergelijking van geheimen met constante uitvoeringstijd en weigeren standaard; herhaalde pogingen met ongeldige tokens blokkeren het bron-IP-adres tijdelijk.
+- De tekst van inkomende berichten wordt opgeschoond tegen bekende patronen voor promptinjectie en afgekapt op 4000 tekens.
 - Geef voor productie de voorkeur aan `dmPolicy: "allowlist"`.
-- Houd `dangerouslyAllowNameMatching` uitgeschakeld tenzij je expliciet verouderde antwoordbezorging op basis van gebruikersnaam nodig hebt.
-- Houd `dangerouslyAllowInheritedWebhookPath` uitgeschakeld tenzij je expliciet het routeringsrisico van gedeelde paden accepteert in een configuratie met meerdere accounts.
+- Houd `dangerouslyAllowNameMatching` uitgeschakeld, tenzij u expliciet verouderde, op gebruikersnamen gebaseerde bezorging van antwoorden nodig hebt.
+- Houd `dangerouslyAllowInheritedWebhookPath` uitgeschakeld, tenzij u bij een configuratie met meerdere accounts expliciet het routeringsrisico van een gedeeld pad accepteert.
 
 ## Probleemoplossing
 
 - `Missing required fields (token, user_id, text)`:
-  - de payload van de uitgaande webhook mist een van de vereiste velden
-  - als Synology het token in headers verstuurt, zorg er dan voor dat de Gateway/proxy die headers behoudt
+  - in de payload van de uitgaande Webhook ontbreekt een van de vereiste velden
+  - als Synology het token in headers verzendt, controleer dan of de Gateway/proxy die headers behoudt
 - `Invalid token`:
-  - het geheim van de uitgaande webhook komt niet overeen met `channels.synology-chat.token`
-  - het verzoek komt terecht bij het verkeerde account/webhookpad
+  - het geheim van de uitgaande Webhook komt niet overeen met `channels.synology-chat.token`
+  - het verzoek bereikt het verkeerde account of Webhook-pad
   - een reverse proxy heeft de tokenheader verwijderd voordat het verzoek OpenClaw bereikte
 - `Rate limit exceeded`:
-  - te veel pogingen met ongeldige tokens vanaf dezelfde bron kunnen die bron tijdelijk buitensluiten
-  - geauthenticeerde afzenders hebben ook een aparte berichtsnelheidslimiet per gebruiker
+  - te veel pogingen met ongeldige tokens vanaf dezelfde bron kunnen die bron tijdelijk blokkeren
+  - geauthenticeerde afzenders hebben daarnaast een afzonderlijke berichtlimiet per gebruiker
 - `Allowlist is empty. Configure allowedUserIds or use dmPolicy=open with allowedUserIds=["*"].`:
-  - `dmPolicy="allowlist"` is ingeschakeld maar er zijn geen gebruikers geconfigureerd
+  - `dmPolicy="allowlist"` is ingeschakeld, maar er zijn geen gebruikers geconfigureerd
 - `User not authorized`:
   - de numerieke `user_id` van de afzender staat niet in `allowedUserIds`
 
 ## Gerelateerd
 
-- [Kanalenoverzicht](/nl/channels) — alle ondersteunde kanalen
-- [Koppelen](/nl/channels/pairing) — DM-authenticatie en koppelingsflow
-- [Groepen](/nl/channels/groups) — gedrag van groepschats en gating voor vermeldingen
+- [Overzicht van kanalen](/nl/channels) — alle ondersteunde kanalen
+- [Groepen](/nl/channels/groups) — gedrag van groepschats en beperking op basis van vermeldingen
 - [Kanaalroutering](/nl/channels/channel-routing) — sessieroutering voor berichten
-- [Beveiliging](/nl/gateway/security) — toegangsmodel en hardening
+- [Beveiliging](/nl/gateway/security) — toegangsmodel en versterking

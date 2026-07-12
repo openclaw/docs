@@ -1,20 +1,20 @@
 ---
 read_when:
-    - Node terhubung tetapi alat camera/canvas/screen/exec gagal
-    - Anda memerlukan model mental penyandingan Node versus persetujuan
-summary: Pecahkan masalah pemasangan Node, persyaratan latar depan, izin, dan kegagalan alat
+    - Node terhubung tetapi alat kamera/kanvas/layar/eksekusi gagal
+    - Anda perlu memahami model mental pemasangan Node dibandingkan dengan persetujuan
+summary: Atasi masalah pemasangan Node, persyaratan berjalan di latar depan, izin, dan kegagalan alat
 title: Pemecahan masalah Node
 x-i18n:
-    generated_at: "2026-05-10T19:41:25Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:21:11Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d53f06367b63125f04b4b542c322e6e50e1f33153e0fbdd09e7a38772c69a438
+    source_hash: 53d082dcd2f4bb022eb683d72d193dbb6800b5a81a8f5ab9506d82feaa0dbc49
     source_path: nodes/troubleshooting.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Gunakan halaman ini saat sebuah Node terlihat di status tetapi alat Node gagal.
+Gunakan halaman ini ketika sebuah Node terlihat dalam status, tetapi alat Node gagal.
 
 ## Urutan perintah
 
@@ -26,7 +26,7 @@ openclaw doctor
 openclaw channels status --probe
 ```
 
-Lalu jalankan pemeriksaan khusus Node:
+Kemudian jalankan pemeriksaan khusus Node:
 
 ```bash
 openclaw nodes status
@@ -34,15 +34,15 @@ openclaw nodes describe --node <idOrNameOrIp>
 openclaw approvals get --node <idOrNameOrIp>
 ```
 
-Sinyal sehat:
+Indikator kondisi sehat:
 
 - Node terhubung dan dipasangkan untuk peran `node`.
-- `nodes describe` mencakup kapabilitas yang Anda panggil.
-- Persetujuan exec menampilkan mode/daftar izin yang diharapkan.
+- `nodes describe` mencantumkan kapabilitas yang Anda panggil.
+- Persetujuan eksekusi menampilkan mode/daftar izin yang diharapkan.
 
 ## Persyaratan latar depan
 
-`canvas.*`, `camera.*`, dan `screen.*` hanya dapat berjalan di latar depan pada Node iOS/Android.
+`canvas.*`, `camera.*`, dan `screen.*` hanya dapat digunakan di latar depan pada Node iOS/Android.
 
 Pemeriksaan dan perbaikan cepat:
 
@@ -52,24 +52,27 @@ openclaw nodes canvas snapshot --node <idOrNameOrIp>
 openclaw logs --follow
 ```
 
-Jika Anda melihat `NODE_BACKGROUND_UNAVAILABLE`, bawa aplikasi Node ke latar depan dan coba lagi.
+Jika Anda melihat `NODE_BACKGROUND_UNAVAILABLE`, tampilkan aplikasi Node di latar depan dan coba lagi.
 
 ## Matriks izin
 
-| Kapabilitas                  | iOS                                           | Android                                         | aplikasi Node macOS           | Kode kegagalan umum            |
-| ---------------------------- | --------------------------------------------- | ----------------------------------------------- | ----------------------------- | ------------------------------ |
-| `camera.snap`, `camera.clip` | Kamera (+ mikrofon untuk audio klip)          | Kamera (+ mikrofon untuk audio klip)            | Kamera (+ mikrofon untuk audio klip) | `*_PERMISSION_REQUIRED`        |
-| `screen.record`              | Perekaman Layar (+ mikrofon opsional)         | Prompt tangkapan layar (+ mikrofon opsional)    | Perekaman Layar               | `*_PERMISSION_REQUIRED`        |
-| `location.get`               | Saat Menggunakan atau Selalu (bergantung mode) | Lokasi latar depan/latar belakang berdasarkan mode | Izin lokasi                   | `LOCATION_PERMISSION_REQUIRED` |
-| `system.run`                 | n/a (jalur host Node)                         | n/a (jalur host Node)                           | Persetujuan exec diperlukan   | `SYSTEM_RUN_DENIED`            |
+| Kapabilitas                   | iOS                                           | Android                                               | Aplikasi Node macOS                  | Kode kegagalan umum                           |
+| ---------------------------- | --------------------------------------------- | ----------------------------------------------------- | ------------------------------------ | --------------------------------------------- |
+| `camera.snap`, `camera.clip` | Kamera (+ mikrofon untuk audio klip)          | Kamera (+ mikrofon untuk audio klip)                  | Kamera (+ mikrofon untuk audio klip) | `*_PERMISSION_REQUIRED`                       |
+| `screen.record`              | Perekaman Layar (+ mikrofon opsional)         | Permintaan perekaman layar (+ mikrofon opsional)      | Perekaman Layar                     | `*_PERMISSION_REQUIRED`                       |
+| `computer.act`               | tidak tersedia                                | tidak tersedia                                        | Aksesibilitas + Perekaman Layar      | `COMPUTER_DISABLED`, `ACCESSIBILITY_REQUIRED` |
+| `location.get`               | Saat Digunakan atau Selalu (bergantung mode)  | Lokasi latar depan/latar belakang berdasarkan mode    | Izin lokasi                          | `LOCATION_PERMISSION_REQUIRED`                |
+| `system.run`                 | tidak tersedia (jalur host Node)              | tidak tersedia (jalur host Node)                      | Persetujuan eksekusi diperlukan      | `SYSTEM_RUN_DENIED`                           |
 
 ## Pemasangan versus persetujuan
 
-Ini adalah gerbang yang berbeda:
+Tiga gerbang terpisah menentukan keberhasilan perintah Node:
 
-1. **Pemasangan perangkat**: bisakah Node ini terhubung ke Gateway?
-2. **Kebijakan perintah Node Gateway**: apakah ID perintah RPC diizinkan oleh `gateway.nodes.allowCommands` / `denyCommands` dan default platform?
-3. **Persetujuan exec**: bisakah Node ini menjalankan perintah shell tertentu secara lokal?
+1. **Pemasangan perangkat**: dapatkah Node ini terhubung ke Gateway?
+2. **Kebijakan perintah Node Gateway**: apakah ID perintah RPC diizinkan oleh `gateway.nodes.allowCommands` / `denyCommands` dan pengaturan bawaan platform?
+3. **Persetujuan eksekusi**: dapatkah Node ini menjalankan perintah shell tertentu secara lokal?
+
+Pemasangan Node adalah gerbang identitas/kepercayaan, bukan sarana persetujuan per perintah. Untuk `system.run`, kebijakan per Node berada dalam berkas persetujuan eksekusi Node tersebut (`openclaw approvals get --node ...`), bukan dalam catatan pemasangan Gateway.
 
 Pemeriksaan cepat:
 
@@ -80,31 +83,28 @@ openclaw approvals get --node <idOrNameOrIp>
 openclaw approvals allowlist add --node <idOrNameOrIp> "/usr/bin/uname"
 ```
 
-Jika pemasangan belum ada, setujui perangkat Node terlebih dahulu.
-Jika `nodes describe` tidak memuat sebuah perintah, periksa kebijakan perintah Node Gateway dan apakah Node benar-benar mendeklarasikan perintah itu saat terhubung.
-Jika pemasangan baik-baik saja tetapi `system.run` gagal, perbaiki persetujuan exec/daftar izin pada Node tersebut.
+- Pemasangan tidak ada: setujui perangkat Node terlebih dahulu.
+- `nodes describe` tidak mencantumkan perintah: periksa kebijakan perintah Node Gateway dan apakah Node benar-benar mendeklarasikan perintah tersebut saat terhubung.
+- Pemasangan tidak bermasalah, tetapi `system.run` gagal: perbaiki persetujuan eksekusi/daftar izin pada Node tersebut.
 
-Pemasangan Node adalah gerbang identitas/kepercayaan, bukan permukaan persetujuan per perintah. Untuk `system.run`, kebijakan per-Node berada di file persetujuan exec Node tersebut (`openclaw approvals get --node ...`), bukan di catatan pemasangan Gateway.
+Untuk eksekusi `host=node` yang memerlukan persetujuan, Gateway juga mengikat eksekusi ke `systemRunPlan` kanonis yang telah disiapkan. Jika pemanggil berikutnya mengubah perintah, direktori kerja, atau metadata sesi sebelum eksekusi yang disetujui diteruskan, Gateway akan menolak eksekusi karena ketidakcocokan persetujuan, alih-alih memercayai muatan yang telah diedit.
 
-Untuk eksekusi `host=node` yang didukung persetujuan, Gateway juga mengikat eksekusi ke
-`systemRunPlan` kanonis yang telah disiapkan. Jika pemanggil berikutnya mengubah command/cwd atau
-metadata sesi sebelum eksekusi yang disetujui diteruskan, Gateway menolak
-eksekusi sebagai ketidakcocokan persetujuan alih-alih memercayai payload yang diedit.
+## Kode kesalahan Node yang umum
 
-## Kode kesalahan Node umum
+| Kode                                   | Arti                                                                                                                                                                                                            |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `NODE_BACKGROUND_UNAVAILABLE`          | Aplikasi berada di latar belakang; tampilkan di latar depan.                                                                                                                                                     |
+| `CAMERA_DISABLED`                      | Tombol kamera dinonaktifkan dalam pengaturan Node.                                                                                                                                                               |
+| `*_PERMISSION_REQUIRED`                | Izin sistem operasi tidak ada/ditolak.                                                                                                                                                                           |
+| `LOCATION_DISABLED`                    | Mode lokasi dinonaktifkan.                                                                                                                                                                                       |
+| `LOCATION_PERMISSION_REQUIRED`         | Mode lokasi yang diminta belum diberikan.                                                                                                                                                                        |
+| `LOCATION_BACKGROUND_UNAVAILABLE`      | Aplikasi berada di latar belakang, tetapi hanya memiliki izin Saat Digunakan.                                                                                                                                    |
+| `COMPUTER_DISABLED`                    | Aktifkan **Allow Computer Control** di aplikasi macOS, lalu setujui pembaruan pemasangan.                                                                                                                         |
+| `ACCESSIBILITY_REQUIRED`               | Berikan izin Accessibility kepada bundel aplikasi OpenClaw saat ini di macOS System Settings.                                                                                                                    |
+| `SYSTEM_RUN_DENIED: approval required` | Permintaan eksekusi memerlukan persetujuan eksplisit.                                                                                                                                                            |
+| `SYSTEM_RUN_DENIED: allowlist miss`    | Perintah diblokir oleh mode daftar izin. Pada host Node Windows, bentuk pembungkus shell seperti `cmd.exe /c ...` dianggap tidak cocok dengan daftar izin dalam mode daftar izin, kecuali disetujui melalui alur permintaan. |
 
-- `NODE_BACKGROUND_UNAVAILABLE` → aplikasi berada di latar belakang; bawa ke latar depan.
-- `CAMERA_DISABLED` → toggle kamera dinonaktifkan di pengaturan Node.
-- `*_PERMISSION_REQUIRED` → izin OS hilang/ditolak.
-- `LOCATION_DISABLED` → mode lokasi mati.
-- `LOCATION_PERMISSION_REQUIRED` → mode lokasi yang diminta belum diberikan.
-- `LOCATION_BACKGROUND_UNAVAILABLE` → aplikasi berada di latar belakang tetapi hanya izin Saat Menggunakan yang tersedia.
-- `SYSTEM_RUN_DENIED: approval required` → permintaan exec membutuhkan persetujuan eksplisit.
-- `SYSTEM_RUN_DENIED: allowlist miss` → perintah diblokir oleh mode daftar izin.
-  Pada host Node Windows, bentuk pembungkus shell seperti `cmd.exe /c ...` diperlakukan sebagai ketidakcocokan daftar izin dalam
-  mode daftar izin kecuali disetujui melalui alur tanya.
-
-## Loop pemulihan cepat
+## Siklus pemulihan cepat
 
 ```bash
 openclaw nodes status
@@ -113,19 +113,22 @@ openclaw approvals get --node <idOrNameOrIp>
 openclaw logs --follow
 ```
 
-Jika masih macet:
+Jika masih mengalami kendala:
 
 - Setujui ulang pemasangan perangkat.
-- Buka ulang aplikasi Node (latar depan).
-- Berikan ulang izin OS.
-- Buat ulang/sesuaikan kebijakan persetujuan exec.
+- Buka kembali aplikasi Node (di latar depan).
+- Berikan ulang izin sistem operasi.
+- Buat ulang/sesuaikan kebijakan persetujuan eksekusi.
+
+Untuk kontrol komputer, pastikan juga bahwa agen berkemampuan visi menyediakan alat `computer`, `screen.snapshot` berhasil dengan izin Perekaman Layar, dan `/phone status` menampilkan otorisasi Gateway sementara atau permanen yang Anda inginkan. Entri `gateway.nodes.denyCommands` selalu mengesampingkan `allowCommands`.
 
 ## Terkait
 
-- [Ringkasan Node](/id/nodes)
+- [Ikhtisar Node](/id/nodes)
 - [Node kamera](/id/nodes/camera)
 - [Perintah lokasi](/id/nodes/location-command)
-- [Persetujuan exec](/id/tools/exec-approvals)
+- [Penggunaan komputer](/id/nodes/computer-use)
+- [Persetujuan eksekusi](/id/tools/exec-approvals)
 - [Pemasangan Gateway](/id/gateway/pairing)
 - [Pemecahan masalah Gateway](/id/gateway/troubleshooting)
-- [Pemecahan masalah channel](/id/channels/troubleshooting)
+- [Pemecahan masalah saluran](/id/channels/troubleshooting)

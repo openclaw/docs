@@ -1,26 +1,25 @@
 ---
 read_when:
-    - Sie möchten OpenClaw rund um die Uhr auf Azure mit gehärteter Network Security Group betreiben
-    - Sie möchten ein produktionsreifes, dauerhaft verfügbares OpenClaw Gateway auf Ihrer eigenen Azure-Linux-VM.
-    - Sie möchten eine sichere Administration mit Azure Bastion SSH durchführen
-summary: OpenClaw Gateway rund um die Uhr auf einer Azure-Linux-VM mit persistentem Zustand ausführen
+    - Sie möchten OpenClaw rund um die Uhr auf Azure mit gehärteten Netzwerksicherheitsgruppen betreiben
+    - Sie möchten ein produktionsreifes, dauerhaft verfügbares OpenClaw Gateway auf Ihrer eigenen Azure-Linux-VM betreiben
+    - Sie möchten eine sichere Administration mit Azure Bastion SSH
+summary: OpenClaw Gateway rund um die Uhr auf einer Azure-Linux-VM mit dauerhaftem Zustand betreiben
 title: Azure
 x-i18n:
-    generated_at: "2026-07-12T15:32:37Z"
+    generated_at: "2026-07-12T01:47:32Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: e8598014cdc2786a47039ffb42ddd85354da9c87fd55ea46bb6dad7714171a14
     source_path: install/azure.md
     workflow: 16
 ---
 
-Richten Sie mit der Azure CLI eine Azure-Linux-VM ein, härten Sie die Netzwerksicherheitsgruppe (NSG), konfigurieren Sie Azure Bastion für den SSH-Zugriff und installieren Sie OpenClaw.
+Richten Sie mit der Azure CLI eine Azure-Linux-VM ein, härten Sie die Netzwerksicherheitsgruppe (Network Security Group, NSG), konfigurieren Sie Azure Bastion für den SSH-Zugriff und installieren Sie OpenClaw.
 
 ## Was Sie tun werden
 
-- Azure-Netzwerk- (VNet, Subnetze, NSG) und Computeressourcen mit der Azure CLI erstellen
+- Azure-Netzwerkressourcen (VNet, Subnetze, NSG) und Computeressourcen mit der Azure CLI erstellen
 - NSG-Regeln anwenden, sodass SSH-Zugriff auf die VM nur über Azure Bastion zulässig ist
 - Azure Bastion für den SSH-Zugriff verwenden (keine öffentliche IP-Adresse für die VM)
 - OpenClaw mit dem Installationsskript installieren
@@ -28,8 +27,8 @@ Richten Sie mit der Azure CLI eine Azure-Linux-VM ein, härten Sie die Netzwerks
 
 ## Was Sie benötigen
 
-- Ein Azure-Abonnement mit der Berechtigung, Computer- und Netzwerkressourcen zu erstellen
-- Installierte Azure CLI (siehe [Installationsschritte für die Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli))
+- Ein Azure-Abonnement mit der Berechtigung zum Erstellen von Computer- und Netzwerkressourcen
+- Eine installierte Azure CLI (siehe [Installationsschritte für die Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli))
 - Ein SSH-Schlüsselpaar (diese Anleitung beschreibt bei Bedarf dessen Erstellung)
 - Etwa 20–30 Minuten
 
@@ -52,7 +51,7 @@ Richten Sie mit der Azure CLI eine Azure-Linux-VM ein, härten Sie die Netzwerks
     az provider register --namespace Microsoft.Network
     ```
 
-    Überprüfen Sie die Registrierung und warten Sie, bis für beide `Registered` angezeigt wird.
+    Überprüfen Sie die Registrierung und warten Sie, bis beide `Registered` anzeigen.
 
     ```bash
     az provider show --namespace Microsoft.Compute --query registrationState -o tsv
@@ -82,7 +81,7 @@ Richten Sie mit der Azure CLI eine Azure-Linux-VM ein, härten Sie die Netzwerks
   </Step>
 
   <Step title="SSH-Schlüssel auswählen">
-    Verwenden Sie Ihren vorhandenen öffentlichen Schlüssel, falls Sie einen haben:
+    Verwenden Sie Ihren vorhandenen öffentlichen Schlüssel, falls Sie bereits einen besitzen:
 
     ```bash
     SSH_PUB_KEY="$(cat ~/.ssh/id_ed25519.pub)"
@@ -104,8 +103,8 @@ Richten Sie mit der Azure CLI eine Azure-Linux-VM ein, härten Sie die Netzwerks
     ```
 
     - Beginnen Sie bei geringer Nutzung mit einer kleineren Größe und skalieren Sie später hoch.
-    - Verwenden Sie für umfangreichere Automatisierung, mehr Kanäle oder größere Modell- und Tool-Arbeitslasten mehr vCPU, RAM und Speicherplatz.
-    - Wenn eine Größe in Ihrer Region oder innerhalb Ihres Abonnementkontingents nicht verfügbar ist, wählen Sie die ähnlichste verfügbare SKU.
+    - Verwenden Sie für umfangreichere Automatisierung, mehr Kanäle oder größere Modell- und Tool-Arbeitslasten mehr vCPUs, RAM und Speicherplatz.
+    - Wenn eine Größe in Ihrer Region oder im Kontingent Ihres Abonnements nicht verfügbar ist, wählen Sie die ähnlichste verfügbare SKU.
 
     Listen Sie die in Ihrer Zielregion verfügbaren VM-Größen auf:
 
@@ -113,7 +112,7 @@ Richten Sie mit der Azure CLI eine Azure-Linux-VM ein, härten Sie die Netzwerks
     az vm list-skus --location "${LOCATION}" --resource-type virtualMachines -o table
     ```
 
-    Prüfen Sie Ihre aktuelle vCPU- und Datenträgernutzung sowie die entsprechenden Kontingente:
+    Überprüfen Sie Ihre aktuelle vCPU- und Datenträgernutzung sowie die entsprechenden Kontingente:
 
     ```bash
     az vm list-usage --location "${LOCATION}" -o table
@@ -138,7 +137,7 @@ Richten Sie mit der Azure CLI eine Azure-Linux-VM ein, härten Sie die Netzwerks
     az network nsg create \
       -g "${RG}" -n "${NSG_NAME}" -l "${LOCATION}"
 
-    # SSH nur aus dem Bastion-Subnetz zulassen
+    # Allow SSH from the Bastion subnet only
     az network nsg rule create \
       -g "${RG}" --nsg-name "${NSG_NAME}" \
       -n AllowSshFromBastionSubnet --priority 100 \
@@ -146,7 +145,7 @@ Richten Sie mit der Azure CLI eine Azure-Linux-VM ein, härten Sie die Netzwerks
       --source-address-prefixes "${BASTION_SUBNET_PREFIX}" \
       --destination-port-ranges 22
 
-    # SSH aus dem öffentlichen Internet verweigern
+    # Deny SSH from the public internet
     az network nsg rule create \
       -g "${RG}" --nsg-name "${NSG_NAME}" \
       -n DenyInternetSsh --priority 110 \
@@ -154,7 +153,7 @@ Richten Sie mit der Azure CLI eine Azure-Linux-VM ein, härten Sie die Netzwerks
       --source-address-prefixes Internet \
       --destination-port-ranges 22
 
-    # SSH aus anderen VNet-Quellen verweigern
+    # Deny SSH from other VNet sources
     az network nsg rule create \
       -g "${RG}" --nsg-name "${NSG_NAME}" \
       -n DenyVnetSsh --priority 120 \
@@ -163,12 +162,12 @@ Richten Sie mit der Azure CLI eine Azure-Linux-VM ein, härten Sie die Netzwerks
       --destination-port-ranges 22
     ```
 
-    Regeln werden nach Priorität ausgewertet, beginnend mit der niedrigsten Zahl: Bastion-Datenverkehr wird mit 100 zugelassen, anschließend wird sämtlicher anderer SSH-Datenverkehr mit 110 und 120 blockiert.
+    Regeln werden nach Priorität ausgewertet, beginnend mit der niedrigsten Zahl: Bastion-Datenverkehr wird mit Priorität 100 zugelassen; anschließend wird sämtlicher anderer SSH-Datenverkehr mit den Prioritäten 110 und 120 blockiert.
 
   </Step>
 
   <Step title="Virtuelles Netzwerk und Subnetze erstellen">
-    Erstellen Sie das VNet mit dem VM-Subnetz (mit zugeordneter NSG) und fügen Sie anschließend das Bastion-Subnetz hinzu.
+    Erstellen Sie das VNet mit dem VM-Subnetz und der zugeordneten NSG und fügen Sie anschließend das Bastion-Subnetz hinzu.
 
     ```bash
     az network vnet create \
@@ -177,12 +176,12 @@ Richten Sie mit der Azure CLI eine Azure-Linux-VM ein, härten Sie die Netzwerks
       --subnet-name "${VM_SUBNET_NAME}" \
       --subnet-prefixes "${VM_SUBNET_PREFIX}"
 
-    # NSG dem VM-Subnetz zuordnen
+    # Attach the NSG to the VM subnet
     az network vnet subnet update \
       -g "${RG}" --vnet-name "${VNET_NAME}" \
       -n "${VM_SUBNET_NAME}" --nsg "${NSG_NAME}"
 
-    # AzureBastionSubnet: Dieser exakte Name wird von Azure vorausgesetzt
+    # AzureBastionSubnet: this exact name is required by Azure
     az network vnet subnet create \
       -g "${RG}" --vnet-name "${VNET_NAME}" \
       -n AzureBastionSubnet \
@@ -222,7 +221,7 @@ Richten Sie mit der Azure CLI eine Azure-Linux-VM ein, härten Sie die Netzwerks
   </Step>
 
   <Step title="Azure Bastion erstellen">
-    Azure Bastion ermöglicht verwalteten SSH-Zugriff, ohne eine öffentliche IP-Adresse auf der VM offenzulegen. Für CLI-basiertes `az network bastion ssh` ist die Standard-SKU mit aktiviertem Tunneling erforderlich.
+    Azure Bastion ermöglicht verwalteten SSH-Zugriff, ohne eine öffentliche IP-Adresse für die VM offenzulegen. Für den CLI-basierten Befehl `az network bastion ssh` ist die Standard-SKU mit aktiviertem Tunneling erforderlich.
 
     ```bash
     az network public-ip create \
@@ -236,7 +235,7 @@ Richten Sie mit der Azure CLI eine Azure-Linux-VM ein, härten Sie die Netzwerks
       --sku Standard --enable-tunneling true
     ```
 
-    Die Bereitstellung von Bastion dauert in der Regel 5–10 Minuten, kann in einigen Regionen jedoch bis zu 15–30 Minuten dauern.
+    Die Bereitstellung von Bastion dauert üblicherweise 5–10 Minuten, kann in einigen Regionen jedoch bis zu 15–30 Minuten dauern.
 
   </Step>
 </Steps>
@@ -266,18 +265,18 @@ Richten Sie mit der Azure CLI eine Azure-Linux-VM ein, härten Sie die Netzwerks
     rm -f /tmp/install.sh
     ```
 
-    Das Installationsprogramm installiert Node und die Abhängigkeiten, sofern diese noch nicht vorhanden sind, installiert OpenClaw und startet das Onboarding. Weitere Informationen finden Sie unter [Installation](/de/install).
+    Das Installationsprogramm installiert Node und die Abhängigkeiten, sofern sie noch nicht vorhanden sind, installiert OpenClaw und startet das Onboarding. Weitere Informationen finden Sie unter [Installation](/de/install).
 
   </Step>
 
   <Step title="Gateway überprüfen">
-    Nach Abschluss des Onboardings:
+    Nachdem das Onboarding abgeschlossen ist:
 
     ```bash
     openclaw gateway status
     ```
 
-    Wenn Ihre Organisation bereits über GitHub-Copilot-Lizenzen verfügt, können Sie während des Onboardings den GitHub-Copilot-Provider anstelle eines separaten Modell-API-Schlüssels auswählen. Siehe [GitHub-Copilot-Provider](/de/providers/github-copilot).
+    Wenn Ihre Organisation bereits über GitHub-Copilot-Lizenzen verfügt, können Sie während des Onboardings den GitHub-Copilot-Provider auswählen, anstatt einen separaten Modell-API-Schlüssel zu verwenden. Weitere Informationen finden Sie unter [GitHub-Copilot-Provider](/de/providers/github-copilot).
 
   </Step>
 </Steps>
@@ -286,20 +285,20 @@ Richten Sie mit der Azure CLI eine Azure-Linux-VM ein, härten Sie die Netzwerks
 
 Ungefähre monatliche Kosten (überprüfen Sie die aktuellen Preise im Azure-Preisrechner, da die Preise je nach Region variieren und sich im Laufe der Zeit ändern):
 
-- Azure Bastion Standard-SKU: ungefähr 140 USD/Monat
-- VM (`Standard_B2as_v2`): ungefähr 55 USD/Monat
+- Azure Bastion Standard-SKU: etwa 140 USD/Monat
+- VM (`Standard_B2as_v2`): etwa 55 USD/Monat
 
-So senken Sie die Kosten:
+So reduzieren Sie die Kosten:
 
-- Heben Sie die Zuordnung der VM auf, wenn sie nicht verwendet wird. Dadurch endet die Abrechnung der Computeressourcen (Datenträgerkosten fallen weiterhin an). Das Gateway ist nicht erreichbar, solange die Zuordnung aufgehoben ist.
+- Heben Sie die Zuordnung der VM auf, wenn sie nicht verwendet wird. Dadurch wird die Abrechnung der Rechenleistung beendet; Datenträgerkosten fallen weiterhin an. Während die Zuordnung aufgehoben ist, ist das Gateway nicht erreichbar.
 
   ```bash
   az vm deallocate -g "${RG}" -n "${VM_NAME}"
-  az vm start -g "${RG}" -n "${VM_NAME}"   # später neu starten
+  az vm start -g "${RG}" -n "${VM_NAME}"   # restart later
   ```
 
-- Löschen Sie Bastion, wenn es nicht benötigt wird, und erstellen Sie es erneut, wenn Sie wieder SSH-Zugriff benötigen. Es ist der größte Kostenfaktor und wird innerhalb weniger Minuten bereitgestellt.
-- Verwenden Sie die Bastion Basic-SKU (ungefähr 38 USD/Monat), wenn Sie nur Portal-basierten SSH-Zugriff und kein CLI-Tunneling (`az network bastion ssh`) benötigen.
+- Löschen Sie Bastion, wenn es nicht benötigt wird, und erstellen Sie es erneut, sobald Sie wieder SSH-Zugriff benötigen. Bastion ist der größte Kostenfaktor und lässt sich innerhalb weniger Minuten bereitstellen.
+- Verwenden Sie die Bastion-Basic-SKU (etwa 38 USD/Monat), wenn Sie nur portalbasierten SSH-Zugriff benötigen und kein CLI-Tunneling (`az network bastion ssh`) verwenden.
 
 ## Bereinigung
 
@@ -309,14 +308,14 @@ Löschen Sie alle mit dieser Anleitung erstellten Ressourcen:
 az group delete -n "${RG}" --yes --no-wait
 ```
 
-Dadurch werden die Ressourcengruppe und alle darin enthaltenen Ressourcen entfernt (VM, VNet, NSG, Bastion, öffentliche IP-Adresse).
+Dadurch werden die Ressourcengruppe und alle darin enthaltenen Ressourcen entfernt (VM, VNet, NSG, Bastion und öffentliche IP-Adresse).
 
 ## Nächste Schritte
 
 - Nachrichtenkanäle einrichten: [Kanäle](/de/channels)
 - Lokale Geräte als Nodes koppeln: [Nodes](/de/nodes)
 - Gateway konfigurieren: [Gateway-Konfiguration](/de/gateway/configuration)
-- Weitere Einzelheiten zur Azure-Bereitstellung mit dem GitHub-Copilot-Modell-Provider: [OpenClaw auf Azure mit GitHub Copilot](https://github.com/johnsonshi/openclaw-azure-github-copilot)
+- Weitere Einzelheiten zur Azure-Bereitstellung mit dem GitHub-Copilot-Modell-Provider: [OpenClaw in Azure mit GitHub Copilot](https://github.com/johnsonshi/openclaw-azure-github-copilot)
 
 ## Verwandte Themen
 

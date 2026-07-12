@@ -5,22 +5,21 @@ read_when:
 summary: Implante o OpenClaw no Railway com um modelo de um clique
 title: Railway
 x-i18n:
-    generated_at: "2026-07-12T15:22:13Z"
+    generated_at: "2026-07-12T00:05:57Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: cbef00b8de61545e9971b18164472c2f47fe607f69ec36f83a27a11b65ea863f
     source_path: install/railway.mdx
     workflow: 16
 ---
 
-Implante o OpenClaw no Railway com um modelo de um clique e acesse-o pela interface web Control UI. Este é o caminho mais fácil "sem terminal no servidor": o Railway executa o Gateway para você.
+Implante o OpenClaw na Railway com um modelo de um clique e acesse-o pela interface web de controle. Este é o caminho mais fácil, “sem terminal no servidor”: a Railway executa o Gateway para você.
 
 ## Implantação com um clique
 
 <a href="https://railway.com/deploy/clawdbot-railway-template" target="_blank" rel="noreferrer">
-  Implantar no Railway
+  Deploy on Railway
 </a>
 
 <Steps>
@@ -29,7 +28,7 @@ Implante o OpenClaw no Railway com um modelo de um clique e acesse-o pela interf
   </Step>
 
 <Step title="Adicione um volume">
-  Anexe um volume montado em `/data` (obrigatório para estado persistente).
+  Anexe um volume montado em `/data` (obrigatório para a persistência do estado).
 </Step>
 
   <Step title="Defina as variáveis">
@@ -47,21 +46,21 @@ Implante o OpenClaw no Railway com um modelo de um clique e acesse-o pela interf
 </Step>
 
   <Step title="Conecte-se">
-    Encontre sua URL pública em **Railway -> your service -> Settings -> Domains** -- seja um domínio gerado (geralmente `https://<something>.up.railway.app`) ou seu domínio personalizado vinculado.
+    Encontre sua URL pública em **Railway -> your service -> Settings -> Domains** -- seja um domínio gerado (geralmente `https://<something>.up.railway.app`) ou o domínio personalizado que você vinculou.
 
-    Abra `https://<your-railway-domain>/openclaw` e conecte-se usando o segredo compartilhado configurado. Por padrão, o modelo usa `OPENCLAW_GATEWAY_TOKEN`; se você substituí-lo por autenticação por senha, use essa senha.
+    Abra `https://<your-railway-domain>/openclaw` e conecte-se usando o segredo compartilhado configurado. Por padrão, o modelo usa `OPENCLAW_GATEWAY_TOKEN`; se você substituí-lo pela autenticação por senha, use essa senha.
 
   </Step>
 </Steps>
 
 ## O que você obtém
 
-- Gateway do OpenClaw hospedado + Control UI
-- Armazenamento persistente pelo volume do Railway (`/data`), para que `openclaw.json`, os arquivos `auth-profiles.json` de cada agente, o estado dos canais/provedores, as sessões e o espaço de trabalho sobrevivam a novas implantações
+- Gateway do OpenClaw hospedado + interface de controle
+- Armazenamento persistente por meio do volume da Railway (`/data`), para que `openclaw.json`, os arquivos `auth-profiles.json` de cada agente, o estado dos canais e provedores, as sessões e o espaço de trabalho sobrevivam às reimplantações
 
 ## Conecte um canal
 
-Use a Control UI em `/openclaw` ou execute `openclaw onboard` pelo shell do Railway para obter instruções de configuração de canais:
+Use a interface de controle em `/openclaw` ou execute `openclaw onboard` pelo shell da Railway para obter instruções de configuração de canais:
 
 - [Discord](/pt-BR/channels/discord)
 - [Telegram](/pt-BR/channels/telegram) (mais rápido -- basta um token de bot)

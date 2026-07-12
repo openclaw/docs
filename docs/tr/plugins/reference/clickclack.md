@@ -1,11 +1,11 @@
 ---
 read_when:
-    - clickclack Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
-summary: OpenClaw iletilerini göndermek ve almak için Clickclack kanal yüzeyini ekler.
-title: Clickclack Plugin
+    - clickclack pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
+summary: OpenClaw mesajlarını göndermek ve almak için Clickclack kanal yüzeyini ekler.
+title: Clickclack Plugin'i
 x-i18n:
-    generated_at: "2026-06-28T00:58:23Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:36:33Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: d939f5291de0510eaac361732f93fb79cac94656ac56a653f3c9e97394c6a9ae
@@ -13,7 +13,7 @@ x-i18n:
     workflow: 16
 ---
 
-# Clickclack Plugin
+# Clickclack Plugin'i
 
 OpenClaw mesajlarını göndermek ve almak için Clickclack kanal yüzeyini ekler.
 

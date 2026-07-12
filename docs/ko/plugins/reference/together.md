@@ -4,27 +4,27 @@ read_when:
 summary: OpenClaw에 Together 모델 제공자 지원을 추가합니다.
 title: Together Plugin
 x-i18n:
-    generated_at: "2026-05-02T21:08:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T01:02:25Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: c6d9c45bb128e18cbb931c6e6f429a3f60b25a1f1faeb83676989da2a12b5866
     source_path: plugins/reference/together.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Together Plugin
 
-OpenClaw에 Together 모델 공급자 지원을 추가합니다.
+OpenClaw에 Together 모델 제공자 지원을 추가합니다.
 
 ## 배포
 
 - 패키지: `@openclaw/together-provider`
 - 설치 경로: OpenClaw에 포함됨
 
-## 지원 범위
+## 제공 범위
 
-providers: together; contracts: videoGenerationProviders
+제공자: together; 계약: videoGenerationProviders
 
 ## 관련 문서
 

@@ -1,185 +1,164 @@
 ---
 read_when:
-    - Chẩn đoán xoay vòng hồ sơ xác thực, thời gian hồi, hoặc hành vi chuyển dự phòng mô hình
-    - Cập nhật quy tắc chuyển đổi dự phòng cho hồ sơ xác thực hoặc mô hình
-    - Tìm hiểu cách các ghi đè mô hình phiên tương tác với các lần thử lại dự phòng
+    - Chẩn đoán hành vi luân chuyển hồ sơ xác thực, thời gian chờ hoặc chuyển sang mô hình dự phòng
+    - Cập nhật các quy tắc chuyển đổi dự phòng cho hồ sơ xác thực hoặc mô hình
+    - Tìm hiểu cách các giá trị ghi đè mô hình của phiên tương tác với các lần thử lại dự phòng
 sidebarTitle: Model failover
-summary: Cách OpenClaw xoay vòng hồ sơ xác thực và chuyển dự phòng giữa các mô hình
+summary: Cách OpenClaw luân phiên các hồ sơ xác thực và chuyển sang mô hình dự phòng
 title: Chuyển đổi dự phòng mô hình
 x-i18n:
-    generated_at: "2026-07-04T15:23:48Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:48:48Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1521e27c53029ead305f29b7a29b627b519adbd28ed30688c01f32542625855f
+    source_hash: 2da6399c8f5c6d9ab40486b553a41600a3c8eb64efa09e72784b81e42edbba61
     source_path: concepts/model-failover.md
     workflow: 16
 ---
 
 OpenClaw xử lý lỗi theo hai giai đoạn:
 
-1. **Luân phiên hồ sơ xác thực** trong provider hiện tại.
-2. **Chuyển dự phòng mô hình** sang mô hình tiếp theo trong `agents.defaults.model.fallbacks`.
+1. **Luân chuyển hồ sơ xác thực** trong nhà cung cấp hiện tại.
+2. **Chuyển sang mô hình dự phòng** tiếp theo trong `agents.defaults.model.fallbacks`.
 
-Tài liệu này giải thích các quy tắc runtime và dữ liệu hỗ trợ chúng.
-
-## Luồng runtime
-
-Đối với một lượt chạy văn bản thông thường, OpenClaw đánh giá các ứng viên theo thứ tự này:
+## Luồng thời gian chạy
 
 <Steps>
   <Step title="Phân giải trạng thái phiên">
-    Phân giải mô hình phiên đang hoạt động và tùy chọn hồ sơ xác thực.
+    Phân giải mô hình của phiên đang hoạt động và tùy chọn ưu tiên hồ sơ xác thực.
   </Step>
   <Step title="Xây dựng chuỗi ứng viên">
-    Xây dựng chuỗi ứng viên mô hình từ lựa chọn mô hình hiện tại và chính sách dự phòng cho nguồn lựa chọn đó. Các mặc định đã cấu hình, mô hình chính của cron job và các mô hình dự phòng được tự động chọn có thể dùng các dự phòng đã cấu hình; các lựa chọn phiên rõ ràng của người dùng thì nghiêm ngặt.
+    Xây dựng chuỗi mô hình ứng viên từ lựa chọn mô hình hiện tại và chính sách dự phòng dành cho nguồn lựa chọn đó. Các giá trị mặc định đã cấu hình, mô hình chính của tác vụ cron và mô hình dự phòng được tự động chọn có thể sử dụng các phương án dự phòng đã cấu hình; lựa chọn phiên rõ ràng của người dùng được áp dụng nghiêm ngặt.
   </Step>
-  <Step title="Thử provider hiện tại">
-    Thử provider hiện tại với các quy tắc luân phiên/cooldown hồ sơ xác thực.
+  <Step title="Thử nhà cung cấp hiện tại">
+    Thử nhà cung cấp hiện tại theo các quy tắc luân chuyển/thời gian chờ hồ sơ xác thực.
   </Step>
-  <Step title="Chuyển tiếp khi gặp lỗi đáng failover">
-    Nếu provider đó cạn lựa chọn với một lỗi đáng failover, chuyển sang ứng viên mô hình tiếp theo.
+  <Step title="Chuyển tiếp khi gặp lỗi đủ điều kiện chuyển đổi dự phòng">
+    Nếu nhà cung cấp đó đã hết phương án với một lỗi đủ điều kiện chuyển đổi dự phòng, hãy chuyển sang ứng viên mô hình tiếp theo.
   </Step>
-  <Step title="Lưu ghi đè dự phòng">
-    Lưu ghi đè dự phòng đã chọn trước khi bắt đầu thử lại để các trình đọc phiên khác thấy cùng provider/mô hình mà runner sắp dùng. Ghi đè mô hình đã lưu được đánh dấu `modelOverrideSource: "auto"`.
+  <Step title="Lưu đè lựa chọn dự phòng">
+    Lưu đè lựa chọn dự phòng đã chọn trước khi bắt đầu thử lại để các trình đọc phiên khác thấy cùng nhà cung cấp/mô hình mà trình chạy sắp sử dụng. Giá trị đè mô hình đã lưu được đánh dấu là `modelOverrideSource: "auto"`.
   </Step>
-  <Step title="Hoàn nguyên hẹp khi thất bại">
-    Nếu ứng viên dự phòng thất bại, chỉ hoàn nguyên các trường ghi đè phiên thuộc sở hữu dự phòng khi chúng vẫn khớp với ứng viên đã thất bại đó.
+  <Step title="Chỉ hoàn tác phạm vi hẹp khi thất bại">
+    Nếu ứng viên dự phòng thất bại, chỉ hoàn tác các trường đè phiên thuộc quyền sở hữu của cơ chế dự phòng khi chúng vẫn khớp với ứng viên thất bại đó.
   </Step>
-  <Step title="Ném FallbackSummaryError nếu cạn lựa chọn">
-    Nếu mọi ứng viên đều thất bại, ném một `FallbackSummaryError` với chi tiết theo từng lần thử và thời điểm cooldown hết hạn sớm nhất khi biết được.
+  <Step title="Ném FallbackSummaryError nếu hết mọi phương án">
+    Nếu mọi ứng viên đều thất bại, ném `FallbackSummaryError` kèm thông tin chi tiết cho từng lần thử và thời điểm kết thúc thời gian chờ sớm nhất nếu xác định được.
   </Step>
 </Steps>
 
-Điều này cố ý hẹp hơn so với "lưu và khôi phục toàn bộ phiên". Reply runner chỉ lưu các trường chọn mô hình mà nó sở hữu cho dự phòng:
-
-- `providerOverride`
-- `modelOverride`
-- `modelOverrideSource`
-- `authProfileOverride`
-- `authProfileOverrideSource`
-- `authProfileOverrideCompactionCount`
-
-Điều đó ngăn một lần thử lại dự phòng thất bại ghi đè các thay đổi phiên mới hơn và không liên quan, chẳng hạn như thay đổi `/model` thủ công hoặc cập nhật luân phiên phiên xảy ra trong khi lần thử đang chạy.
+Phạm vi này được chủ ý thu hẹp hơn so với “lưu và khôi phục toàn bộ phiên”. Trình chạy phản hồi chỉ lưu các trường lựa chọn mô hình mà nó sở hữu cho cơ chế dự phòng: `providerOverride`, `modelOverride`, `modelOverrideSource`, `authProfileOverride`, `authProfileOverrideSource`, `authProfileOverrideCompactionCount`. Điều này ngăn một lần thử lại bằng mô hình dự phòng bị thất bại ghi đè các thay đổi phiên mới hơn và không liên quan, chẳng hạn như thay đổi `/model` thủ công hoặc cập nhật luân chuyển phiên xảy ra trong khi lần thử đang chạy.
 
 ## Chính sách nguồn lựa chọn
 
-OpenClaw tách provider/mô hình đã chọn khỏi lý do nó được chọn. Nguồn đó kiểm soát việc chuỗi dự phòng có được phép dùng hay không:
+Nguồn lựa chọn kiểm soát việc có cho phép chuỗi dự phòng hay không:
 
-- **Mặc định đã cấu hình**: `agents.defaults.model.primary` dùng `agents.defaults.model.fallbacks`.
-- **Mô hình chính của agent**: `agents.list[].model` là nghiêm ngặt trừ khi đối tượng mô hình của agent đó có `fallbacks` riêng. Dùng `fallbacks: []` để làm rõ hành vi nghiêm ngặt, hoặc cung cấp danh sách không rỗng để bật chuyển dự phòng mô hình cho agent đó.
-- **Ghi đè dự phòng tự động**: một dự phòng runtime ghi `providerOverride`, `modelOverride`, `modelOverrideSource: "auto"` và mô hình gốc đã chọn trước khi thử lại. Ghi đè tự động đó có thể tiếp tục đi theo chuỗi dự phòng đã cấu hình mà không thăm dò mô hình chính trên mọi tin nhắn, nhưng OpenClaw định kỳ thăm dò lại mô hình gốc đã cấu hình và xóa ghi đè tự động khi mô hình đó phục hồi. `/new`, `/reset` và `sessions.reset` cũng xóa các ghi đè có nguồn tự động. Heartbeat chạy không có `heartbeat.model` rõ ràng sẽ xóa các ghi đè tự động trực tiếp khi nguồn gốc của chúng không còn khớp với mặc định hiện đã cấu hình.
-- **Ghi đè phiên của người dùng**: `/model`, bộ chọn mô hình, `session_status(model=...)` và `sessions.patch` ghi `modelOverrideSource: "user"`. Đó là một lựa chọn phiên chính xác. Nếu provider/mô hình đã chọn thất bại trước khi tạo phản hồi, OpenClaw báo lỗi thay vì trả lời từ một dự phòng đã cấu hình không liên quan.
-- **Ghi đè phiên cũ**: các mục phiên cũ hơn có thể có `modelOverride` mà không có `modelOverrideSource`. OpenClaw xem chúng là ghi đè của người dùng để một lựa chọn cũ rõ ràng không bị âm thầm chuyển thành hành vi dự phòng.
-- **Mô hình payload Cron**: `payload.model` / `--model` của cron job là mô hình chính của job, không phải ghi đè phiên của người dùng. Nó dùng các dự phòng đã cấu hình trừ khi job cung cấp `payload.fallbacks`; `payload.fallbacks: []` làm cho lượt chạy Cron nghiêm ngặt.
+- **Giá trị mặc định đã cấu hình**: `agents.defaults.model.primary` sử dụng `agents.defaults.model.fallbacks`.
+- **Mô hình chính của tác nhân**: `agents.list[].model` được áp dụng nghiêm ngặt trừ khi đối tượng mô hình của tác nhân đó chứa `fallbacks` riêng. Dùng `fallbacks: []` để thể hiện rõ hành vi nghiêm ngặt hoặc danh sách không rỗng để cho phép tác nhân đó sử dụng mô hình dự phòng.
+- **Đè lựa chọn dự phòng tự động**: cơ chế dự phòng thời gian chạy ghi `providerOverride`, `modelOverride`, `modelOverrideSource: "auto"` và mô hình nguồn đã chọn trước khi thử lại. Giá trị đè này tiếp tục đi qua chuỗi dự phòng đã cấu hình mà không thăm dò mô hình chính ở mỗi tin nhắn, nhưng OpenClaw thăm dò mô hình nguồn đã cấu hình mỗi 5 phút (không thể cấu hình) và xóa giá trị đè khi mô hình đó phục hồi. `/new`, `/reset` và `sessions.reset` cũng xóa các giá trị đè có nguồn tự động. Các lần chạy Heartbeat không có `heartbeat.model` rõ ràng sẽ xóa giá trị đè tự động trực tiếp khi mô hình nguồn của chúng không còn khớp với giá trị mặc định hiện được cấu hình.
+- **Đè lựa chọn phiên của người dùng**: `/model`, trình chọn mô hình, `session_status(model=...)` và `sessions.patch` ghi `modelOverrideSource: "user"`. Đây là lựa chọn phiên chính xác. Nếu nhà cung cấp/mô hình được chọn thất bại trước khi tạo phản hồi, OpenClaw báo lỗi thay vì trả lời bằng một mô hình dự phòng đã cấu hình nhưng không liên quan.
+- **Đè lựa chọn phiên cũ**: các mục phiên cũ có thể có `modelOverride` nhưng không có `modelOverrideSource`. OpenClaw xem chúng là giá trị đè của người dùng để lựa chọn cũ rõ ràng không bị âm thầm chuyển thành hành vi dự phòng.
+- **Mô hình trong tải trọng Cron**: `payload.model` / `--model` của tác vụ cron là mô hình chính của tác vụ, không phải giá trị đè phiên của người dùng. Nó sử dụng các phương án dự phòng đã cấu hình trừ khi tác vụ cung cấp `payload.fallbacks`; `payload.fallbacks: []` khiến lần chạy cron được áp dụng nghiêm ngặt.
 
-Khoảng thời gian thăm dò mô hình chính của dự phòng tự động là năm phút và không thể cấu hình. OpenClaw ghi nhớ các lần thăm dò gần đây theo phiên và mô hình chính để một mô hình chính đang lỗi không bị thử lại ở mọi lượt. OpenClaw gửi thông báo hiển thị khi một phiên chuyển sang dự phòng và một thông báo khác khi phiên quay lại mô hình chính đã chọn; OpenClaw không lặp lại thông báo ở mọi lượt dự phòng sticky.
+OpenClaw ghi nhớ các lần thăm dò mô hình chính gần đây theo từng phiên và mô hình chính để không thử lại mô hình chính đang lỗi ở mỗi lượt. Hệ thống gửi một thông báo hiển thị khi phiên chuyển sang mô hình dự phòng và một thông báo khác khi quay lại mô hình chính đã chọn; hệ thống không lặp lại thông báo ở mỗi lượt tiếp tục dùng mô hình dự phòng.
 
 ## Bộ nhớ đệm bỏ qua lỗi xác thực
 
-Theo mặc định, mỗi lượt mới giữ hành vi thử lại dự phòng hiện có: OpenClaw
-sẽ thử lại từng ứng viên dự phòng đã cấu hình, bao gồm cả các ứng viên không phải mô hình chính
-vừa thất bại gần đây với `auth` hoặc `auth_permanent`.
+Theo mặc định, mỗi lượt mới giữ nguyên hành vi thử lại dự phòng hiện có: OpenClaw thử lại từng ứng viên dự phòng đã cấu hình, bao gồm các ứng viên không phải mô hình chính gần đây đã thất bại với `auth` hoặc `auth_permanent`.
 
-Operator muốn chặn các lỗi xác thực lặp lại đó có thể bật bằng:
+Bật tùy chọn ngăn lặp lại lỗi xác thực bằng:
 
 ```bash
 OPENCLAW_FALLBACK_SKIP_TTL_MS=60000
 ```
 
-Khi được bật, OpenClaw ghi một dấu bỏ qua trong bộ nhớ, phạm vi theo phiên, cho một
-ứng viên dự phòng không phải mô hình chính sau lỗi thuộc lớp xác thực. Dấu này được định danh
-bằng id phiên, provider và mô hình. Các ứng viên chính không bao giờ bị bỏ qua, nên một
-lựa chọn mô hình rõ ràng của người dùng vẫn hiển thị lỗi xác thực thật. Bộ nhớ đệm này
-cục bộ theo tiến trình và bị xóa khi Gateway khởi động lại.
+Khi được bật, OpenClaw ghi một dấu bỏ qua trong bộ nhớ và có phạm vi theo phiên cho ứng viên dự phòng không phải mô hình chính sau một lỗi thuộc lớp xác thực, được định danh theo mã phiên, nhà cung cấp và mô hình. Các ứng viên chính không bao giờ bị bỏ qua, vì vậy lựa chọn mô hình rõ ràng của người dùng vẫn hiển thị lỗi xác thực thực tế. Bộ nhớ đệm chỉ tồn tại cục bộ trong tiến trình và bị xóa khi Gateway khởi động lại.
 
-Giá trị là TTL tính bằng mili giây. `0` hoặc giá trị chưa đặt sẽ tắt bộ nhớ đệm.
-Các giá trị dương được giới hạn trong khoảng từ 1 giây đến 10 phút.
+Giá trị này là TTL tính bằng mili giây. `0` hoặc không đặt sẽ tắt bộ nhớ đệm. Các giá trị dương được giới hạn trong khoảng từ 1 giây đến 10 phút.
 
-## Thông báo dự phòng hiển thị với người dùng
+## Thông báo dự phòng hiển thị cho người dùng
 
-Khi một phiên chuyển sang dự phòng được tự động chọn, OpenClaw gửi thông báo trạng thái trên cùng bề mặt trả lời:
+Khi một phiên chuyển sang mô hình dự phòng được tự động chọn, OpenClaw gửi thông báo trạng thái trên cùng bề mặt phản hồi:
 
 ```text
-↪️ Model Fallback: <fallback> (selected <primary>; <reason>)
+↪️ Mô hình dự phòng: <fallback> (đã chọn <primary>; <reason>)
 ```
 
 Khi một lần thăm dò sau đó thành công và phiên quay lại mô hình chính đã chọn, OpenClaw gửi:
 
 ```text
-↪️ Model Fallback cleared: <primary> (was <fallback>)
+↪️ Đã xóa mô hình dự phòng: <primary> (trước đó là <fallback>)
 ```
 
-Các thông báo này là thông điệp vận hành, không phải nội dung của trợ lý. Chúng được gửi một lần cho mỗi thay đổi trạng thái, bao gồm các lượt chỉ có tác dụng phụ khi khả thi, nhưng các lượt dự phòng sticky không lặp lại chúng. Việc gửi bỏ qua cơ chế chặn trả lời nguồn thông thường, thông báo không chiếm ô trả lời đầu tiên của trợ lý đối với các kênh theo luồng, và bị loại khỏi chuyển văn bản thành giọng nói cũng như trích xuất cam kết.
+Các thông báo này là thông điệp vận hành, không phải nội dung của trợ lý. Chúng được gửi một lần cho mỗi thay đổi trạng thái, bao gồm cả các lượt chỉ có hiệu ứng phụ khi khả thi, nhưng các lượt tiếp tục dùng mô hình dự phòng không lặp lại chúng. Việc gửi bỏ qua cơ chế chặn phản hồi nguồn thông thường, không chiếm vị trí phản hồi đầu tiên của trợ lý đối với các kênh theo luồng và không được đưa vào quá trình chuyển văn bản thành giọng nói hoặc trích xuất cam kết.
 
 ## Lưu trữ xác thực (khóa + OAuth)
 
-OpenClaw dùng **hồ sơ xác thực** cho cả khóa API và token OAuth.
+OpenClaw sử dụng **hồ sơ xác thực** cho cả khóa API và token OAuth.
 
-- Bí mật và trạng thái định tuyến xác thực runtime nằm trong `~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite`.
-- Cấu hình `auth.profiles` / `auth.order` chỉ là **siêu dữ liệu + định tuyến** (không có bí mật).
-- Tệp OAuth cũ chỉ nhập: `~/.openclaw/credentials/oauth.json` (được nhập vào kho xác thực theo agent trong lần dùng đầu tiên).
-- Các tệp `auth-profiles.json`, `auth-state.json` cũ và các tệp `auth.json` theo agent được nhập bởi `openclaw doctor --fix`.
+- Bí mật và trạng thái định tuyến xác thực thời gian chạy nằm trong `~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite`.
+- Cấu hình `auth.profiles` / `auth.order` **chỉ chứa siêu dữ liệu + thông tin định tuyến** (không chứa bí mật).
+- Tệp OAuth cũ chỉ dùng để nhập: `~/.openclaw/credentials/oauth.json` (được nhập vào kho xác thực theo từng tác nhân trong lần sử dụng đầu tiên).
+- Các tệp cũ `auth-profiles.json`, `auth-state.json` và `auth.json` theo từng tác nhân được nhập bằng `openclaw doctor --fix`.
 
 Chi tiết thêm: [OAuth](/vi/concepts/oauth)
 
-Loại thông tin xác thực:
+Các loại thông tin xác thực:
 
 - `type: "api_key"` → `{ provider, key }`
-- `type: "oauth"` → `{ provider, access, refresh, expires, email? }` (+ `projectId`/`enterpriseUrl` cho một số provider)
+- `type: "oauth"` → `{ provider, access, refresh, expires, email? }` (+ `projectId`/`enterpriseUrl` đối với một số nhà cung cấp)
+- `type: "token"` → token tĩnh kiểu bearer, có thể có thời hạn; OpenClaw không làm mới token này (được dùng cho `aws-sdk` và các chế độ xác thực theo chuỗi thông tin xác thực khác)
 
-## ID hồ sơ
+## Mã hồ sơ
 
-Đăng nhập OAuth tạo các hồ sơ riêng biệt để nhiều tài khoản có thể cùng tồn tại.
+Các lần đăng nhập OAuth tạo những hồ sơ riêng biệt để nhiều tài khoản có thể cùng tồn tại.
 
 - Mặc định: `provider:default` khi không có email.
 - OAuth có email: `provider:<email>` (ví dụ `google-antigravity:user@gmail.com`).
 
-Hồ sơ nằm trong kho hồ sơ xác thực `openclaw-agent.sqlite` theo agent.
+Các hồ sơ nằm trong kho hồ sơ xác thực `openclaw-agent.sqlite` theo từng tác nhân.
 
-## Thứ tự luân phiên
+## Thứ tự luân chuyển
 
-Khi một provider có nhiều hồ sơ, OpenClaw chọn thứ tự như sau:
+Khi một nhà cung cấp có nhiều hồ sơ, OpenClaw chọn thứ tự như sau:
 
 <Steps>
   <Step title="Cấu hình rõ ràng">
     `auth.order[provider]` (nếu được đặt).
   </Step>
   <Step title="Hồ sơ đã cấu hình">
-    `auth.profiles` được lọc theo provider.
+    `auth.profiles` được lọc theo nhà cung cấp.
   </Step>
   <Step title="Hồ sơ đã lưu">
-    Các mục hồ sơ xác thực SQLite theo agent cho provider.
+    Các mục hồ sơ xác thực SQLite theo từng tác nhân dành cho nhà cung cấp.
   </Step>
 </Steps>
 
-Nếu không có thứ tự rõ ràng nào được cấu hình, OpenClaw dùng thứ tự round-robin:
+Nếu không có thứ tự rõ ràng được cấu hình, OpenClaw sử dụng thứ tự xoay vòng:
 
-- **Khóa chính:** loại hồ sơ (**OAuth trước khóa API**).
-- **Khóa phụ:** `usageStats.lastUsed` (cũ nhất trước, trong từng loại).
-- **Hồ sơ cooldown/bị tắt** được chuyển xuống cuối, sắp xếp theo thời điểm hết hạn sớm nhất.
+- **Khóa chính:** loại hồ sơ (**OAuth, sau đó là token tĩnh, rồi khóa API**).
+- **Khóa phụ:** `usageStats.lastUsed` (cũ nhất trước trong từng loại).
+- **Các hồ sơ đang trong thời gian chờ/bị vô hiệu hóa** được chuyển xuống cuối và sắp xếp theo thời điểm hết hạn sớm nhất.
 
-### Độ bám phiên (thân thiện với bộ nhớ đệm)
+### Gắn kết với phiên (thân thiện với bộ nhớ đệm)
 
-OpenClaw **ghim hồ sơ xác thực đã chọn theo phiên** để giữ ấm bộ nhớ đệm của provider. OpenClaw **không** luân phiên ở mọi yêu cầu. Hồ sơ đã ghim được dùng lại cho đến khi:
+OpenClaw **ghim hồ sơ xác thực đã chọn theo từng phiên** để giữ ấm bộ nhớ đệm của nhà cung cấp. Hệ thống **không** luân chuyển ở mỗi yêu cầu. Hồ sơ đã ghim được tái sử dụng cho đến khi:
 
 - phiên được đặt lại (`/new` / `/reset`)
-- một lần compaction hoàn tất (số đếm compaction tăng)
-- hồ sơ đang trong cooldown/bị tắt
+- một lần Compaction hoàn tất (số lần Compaction tăng)
+- hồ sơ đang trong thời gian chờ/bị vô hiệu hóa
 
-Lựa chọn thủ công qua `/model …@<profileId>` đặt một **ghi đè của người dùng** cho phiên đó và không được tự động luân phiên cho đến khi một phiên mới bắt đầu.
+Lựa chọn thủ công qua `/model …@<profileId>` đặt một **giá trị đè của người dùng** cho phiên đó và không được tự động luân chuyển cho đến khi bắt đầu phiên mới.
 
 <Note>
-Các hồ sơ được tự động ghim (do session router chọn) được xem là một **tùy chọn ưu tiên**: chúng được thử trước, nhưng OpenClaw có thể luân phiên sang hồ sơ khác khi gặp giới hạn tốc độ/hết thời gian. Khi hồ sơ ban đầu khả dụng trở lại, các lượt chạy mới có thể ưu tiên lại hồ sơ đó mà không thay đổi mô hình đã chọn hoặc runtime. Các hồ sơ do người dùng ghim vẫn khóa vào hồ sơ đó; nếu hồ sơ thất bại và các dự phòng mô hình đã được cấu hình, OpenClaw chuyển sang mô hình tiếp theo thay vì đổi hồ sơ.
+Các hồ sơ được tự động ghim (do bộ định tuyến phiên chọn) được xem là một **tùy chọn ưu tiên**: chúng được thử trước, nhưng OpenClaw có thể luân chuyển sang hồ sơ khác khi gặp giới hạn tốc độ/hết thời gian chờ. Khi hồ sơ ban đầu khả dụng trở lại, các lần chạy mới có thể tiếp tục ưu tiên hồ sơ đó mà không thay đổi mô hình hoặc thời gian chạy đã chọn. Hồ sơ do người dùng ghim vẫn bị khóa vào hồ sơ đó; nếu hồ sơ thất bại và đã cấu hình mô hình dự phòng, OpenClaw chuyển sang mô hình tiếp theo thay vì đổi hồ sơ.
 </Note>
 
-### Gói đăng ký OpenAI Codex cộng với khóa API dự phòng
+### Gói đăng ký OpenAI Codex cùng khóa API dự phòng
 
-Đối với các mô hình agent OpenAI, xác thực và runtime là riêng biệt. `openai/gpt-*` vẫn ở trên
-Codex harness trong khi xác thực có thể luân phiên giữa một hồ sơ đăng ký Codex và
-một khóa API OpenAI dự phòng.
+Đối với các mô hình tác nhân OpenAI, xác thực và thời gian chạy là riêng biệt. `openai/gpt-*` vẫn dùng bộ khung Codex trong khi cơ chế xác thực có thể luân chuyển giữa hồ sơ đăng ký Codex và khóa API OpenAI dự phòng.
 
-Dùng `auth.order.openai` cho thứ tự hiển thị với người dùng:
+Dùng `auth.order.openai` để thiết lập thứ tự hiển thị cho người dùng:
 
 ```json5
 {
@@ -191,52 +170,47 @@ Dùng `auth.order.openai` cho thứ tự hiển thị với người dùng:
 }
 ```
 
-Dùng `openai:*` cho cả hồ sơ OAuth ChatGPT/Codex và hồ sơ khóa API OpenAI.
-Khi gói đăng ký chạm giới hạn sử dụng Codex,
-OpenClaw ghi lại thời điểm đặt lại chính xác khi Codex cung cấp, thử hồ sơ xác thực
-tiếp theo theo thứ tự, và giữ lượt chạy bên trong Codex harness. Khi thời điểm đặt lại
-đã qua, hồ sơ đăng ký đủ điều kiện trở lại và lựa chọn tự động tiếp theo có thể quay lại hồ sơ đó.
+Dùng `openai:*` cho cả hồ sơ OAuth ChatGPT/Codex và hồ sơ khóa API OpenAI. Khi gói đăng ký đạt giới hạn sử dụng Codex, OpenClaw ghi lại thời điểm đặt lại chính xác nếu Codex cung cấp, thử hồ sơ xác thực tiếp theo theo thứ tự và giữ lần chạy trong bộ khung Codex. Sau khi thời điểm đặt lại trôi qua, hồ sơ đăng ký lại đủ điều kiện sử dụng và lần lựa chọn tự động tiếp theo có thể quay lại hồ sơ đó.
 
-Chỉ dùng hồ sơ do người dùng ghim khi bạn muốn bắt buộc một tài khoản/khóa cho
-phiên đó. Các hồ sơ do người dùng ghim cố ý nghiêm ngặt và không âm thầm nhảy
-sang hồ sơ khác.
+Chỉ dùng hồ sơ do người dùng ghim khi bạn muốn bắt buộc sử dụng một tài khoản/khóa cho phiên đó. Các hồ sơ do người dùng ghim được chủ ý áp dụng nghiêm ngặt và không âm thầm chuyển sang hồ sơ khác.
 
-## Cooldown
+## Thời gian chờ
 
-Khi một hồ sơ thất bại do lỗi xác thực/giới hạn tốc độ (hoặc hết thời gian trông giống giới hạn tốc độ), OpenClaw đánh dấu hồ sơ đó vào cooldown và chuyển sang hồ sơ tiếp theo.
+Khi một hồ sơ thất bại do lỗi xác thực/giới hạn tốc độ (hoặc lỗi hết thời gian có biểu hiện giống giới hạn tốc độ), OpenClaw đánh dấu hồ sơ đó đang trong thời gian chờ và chuyển sang hồ sơ tiếp theo.
 
 <AccordionGroup>
-  <Accordion title="Những gì rơi vào nhóm giới hạn tốc độ / hết thời gian">
-    Nhóm giới hạn tốc độ đó rộng hơn `429` thuần túy: nó cũng bao gồm các thông báo provider như `Too many concurrent requests`, `ThrottlingException`, `concurrency limit reached`, `workers_ai ... quota limit exceeded`, `throttled`, `resource exhausted` và các giới hạn cửa sổ sử dụng định kỳ như `weekly/monthly limit reached`.
+  <Accordion title="Những lỗi được xếp vào nhóm giới hạn tốc độ / hết thời gian chờ">
+    Nhóm giới hạn tốc độ đó rộng hơn mã `429` thông thường: nó cũng bao gồm các thông báo từ nhà cung cấp như `Too many concurrent requests`, `ThrottlingException`, `concurrency limit reached`, `workers_ai ... quota limit exceeded`, `throttled`, `resource exhausted` và các giới hạn cửa sổ sử dụng định kỳ như `weekly limit reached` hoặc `monthly limit exhausted`.
 
-    Lỗi định dạng/yêu cầu không hợp lệ thường là lỗi kết thúc vì thử lại cùng payload sẽ thất bại theo cùng cách, nên OpenClaw hiển thị chúng thay vì luân phiên hồ sơ xác thực. Các đường dẫn sửa lỗi khi thử lại đã biết có thể bật rõ ràng: ví dụ lỗi xác thực ID lượt gọi công cụ Cloud Code Assist được làm sạch và thử lại một lần thông qua chính sách `allowFormatRetry`. Các lỗi lý do dừng tương thích OpenAI như `Unhandled stop reason: error`, `stop reason: error` và `reason: error` được phân loại là tín hiệu hết thời gian/failover.
+    Lỗi định dạng/yêu cầu không hợp lệ thường là lỗi kết thúc vì việc thử lại cùng tải trọng sẽ thất bại theo cùng cách, nên OpenClaw hiển thị chúng thay vì luân chuyển hồ sơ xác thực. Các đường dẫn sửa chữa rồi thử lại đã biết có thể được bật rõ ràng: ví dụ lỗi xác thực mã lệnh gọi công cụ Cloud Code Assist được làm sạch và thử lại một lần theo chính sách `allowFormatRetry`. Các lỗi lý do dừng tương thích với OpenAI như `Unhandled stop reason: error`, `stop reason: error` và `reason: error` được phân loại là tín hiệu hết thời gian chờ/chuyển đổi dự phòng.
 
-    Văn bản server chung cũng có thể rơi vào nhóm hết thời gian đó khi nguồn khớp với một mẫu tạm thời đã biết. Ví dụ, thông báo stream-wrapper runtime mô hình trần `An unknown error occurred` được xem là đáng failover cho mọi provider vì runtime mô hình dùng chung phát ra nó khi stream của provider kết thúc với `stopReason: "aborted"` hoặc `stopReason: "error"` mà không có chi tiết cụ thể. Payload JSON `api_error` với văn bản server tạm thời như `internal server error`, `unknown error, 520`, `upstream error` hoặc `backend error` cũng được xem là hết thời gian đáng failover.
+    Văn bản lỗi máy chủ chung cũng có thể được xếp vào nhóm hết thời gian chờ đó khi nguồn khớp với một mẫu lỗi tạm thời đã biết. Ví dụ, thông báo thuần túy từ trình bọc luồng thời gian chạy mô hình `An unknown error occurred` được xem là đủ điều kiện chuyển đổi dự phòng đối với mọi nhà cung cấp vì thời gian chạy mô hình dùng chung phát thông báo này khi luồng nhà cung cấp kết thúc với `stopReason: "aborted"` hoặc `stopReason: "error"` mà không có chi tiết cụ thể. Tải trọng JSON `api_error` chứa văn bản lỗi máy chủ tạm thời như `internal server error`, `unknown error, 520`, `upstream error` hoặc `backend error` cũng được xem là lỗi hết thời gian chờ đủ điều kiện chuyển đổi dự phòng.
 
-    Văn bản upstream chung đặc thù OpenRouter như `Provider returned error` trần chỉ được xem là hết thời gian khi ngữ cảnh provider thực sự là OpenRouter. Văn bản dự phòng nội bộ chung như `LLM request failed with an unknown error.` vẫn được xử lý thận trọng và tự nó không kích hoạt failover.
+    Văn bản lỗi thượng nguồn chung dành riêng cho OpenRouter như `Provider returned error` chỉ được xem là lỗi hết thời gian chờ khi ngữ cảnh nhà cung cấp thực sự là OpenRouter. Văn bản dự phòng nội bộ chung như `LLM request failed with an unknown error.` được xử lý thận trọng và không tự kích hoạt chuyển đổi dự phòng.
 
   </Accordion>
   <Accordion title="Giới hạn retry-after của SDK">
-    Một số SDK của nhà cung cấp có thể sẽ chờ trong một khoảng `Retry-After` dài trước khi trả quyền điều khiển về OpenClaw. Với các SDK dựa trên Stainless như Anthropic và OpenAI, mặc định OpenClaw giới hạn các lần chờ `retry-after-ms` / `retry-after` nội bộ SDK ở 60 giây và hiển thị ngay các phản hồi có thể thử lại lâu hơn để đường dẫn chuyển đổi dự phòng này có thể chạy. Điều chỉnh hoặc tắt giới hạn bằng `OPENCLAW_SDK_RETRY_MAX_WAIT_SECONDS`; xem [Hành vi thử lại](/vi/concepts/retry).
+    Nếu không, một số SDK của nhà cung cấp có thể tạm dừng trong khoảng thời gian `Retry-After` dài trước khi trả lại quyền điều khiển cho OpenClaw. Đối với các SDK dựa trên Stainless như Anthropic và OpenAI, theo mặc định OpenClaw giới hạn thời gian chờ `retry-after-ms` / `retry-after` nội bộ của SDK ở mức 60 giây và lập tức đưa ra các phản hồi có thể thử lại với thời gian chờ dài hơn để đường chuyển đổi dự phòng này có thể chạy. Điều chỉnh hoặc vô hiệu hóa giới hạn bằng `OPENCLAW_SDK_RETRY_MAX_WAIT_SECONDS`; xem [Hành vi thử lại](/vi/concepts/retry).
   </Accordion>
-  <Accordion title="Cooldown theo phạm vi mô hình">
-    Cooldown do giới hạn tốc độ cũng có thể được giới hạn theo mô hình:
+  <Accordion title="Thời gian tạm ngưng theo mô hình">
+    Thời gian tạm ngưng do giới hạn tốc độ cũng có thể áp dụng theo từng mô hình:
 
-    - OpenClaw ghi lại `cooldownModel` cho các lỗi giới hạn tốc độ khi biết id mô hình bị lỗi.
-    - Một mô hình cùng cấp trên cùng nhà cung cấp vẫn có thể được thử khi cooldown được giới hạn cho một mô hình khác.
-    - Các khoảng thời gian billing/bị tắt vẫn chặn toàn bộ hồ sơ trên mọi mô hình.
+    - OpenClaw ghi lại `cooldownModel` cho các lỗi giới hạn tốc độ khi biết mã định danh của mô hình gặp lỗi.
+    - Vẫn có thể thử một mô hình cùng cấp trên cùng nhà cung cấp khi thời gian tạm ngưng được giới hạn cho một mô hình khác.
+    - Các khoảng thời gian liên quan đến thanh toán hoặc bị vô hiệu hóa vẫn chặn toàn bộ hồ sơ trên mọi mô hình.
 
   </Accordion>
 </AccordionGroup>
 
-Cooldown sử dụng backoff hàm mũ:
+Thời gian tạm ngưng thông thường (không liên quan đến thanh toán, không phải lỗi xác thực vĩnh viễn) tăng theo số lỗi gần đây của hồ sơ:
 
-- 1 phút
-- 5 phút
-- 25 phút
-- 1 giờ (giới hạn)
+- Lần lỗi thứ 1: 30 giây
+- Lần lỗi thứ 2: 1 phút
+- Từ lần lỗi thứ 3 trở đi: 5 phút (giới hạn tối đa)
 
-Trạng thái được lưu trong trạng thái xác thực SQLite theo từng tác tử dưới `usageStats`:
+Bộ đếm được đặt lại sau khi khoảng thời gian lỗi của hồ sơ kết thúc (`auth.cooldowns.failureWindowHours`, mặc định là 24).
+
+Trạng thái được lưu trong trạng thái xác thực SQLite theo từng tác nhân, dưới `usageStats`:
 
 ```json
 {
@@ -250,17 +224,19 @@ Trạng thái được lưu trong trạng thái xác thực SQLite theo từng t
 }
 ```
 
-## Tắt do billing
+## Vô hiệu hóa do thanh toán
 
-Các lỗi billing/tín dụng (ví dụ "insufficient credits" / "credit balance too low") được xem là đủ điều kiện chuyển đổi dự phòng, nhưng thường không phải lỗi tạm thời. Thay vì cooldown ngắn, OpenClaw đánh dấu hồ sơ là **bị tắt** (với backoff dài hơn) và xoay sang hồ sơ/nhà cung cấp tiếp theo.
+Các lỗi thanh toán/tín dụng (ví dụ: "không đủ tín dụng" / "số dư tín dụng quá thấp") được coi là đủ điều kiện để chuyển đổi dự phòng, nhưng thường không phải lỗi tạm thời. Thay vì áp dụng thời gian tạm ngưng ngắn, OpenClaw đánh dấu hồ sơ là **đã bị vô hiệu hóa** (với thời gian chờ lùi dài hơn) và chuyển sang hồ sơ/nhà cung cấp tiếp theo.
 
 <Note>
-Không phải mọi phản hồi có dạng billing đều là `402`, và không phải mọi HTTP `402` đều đi vào đây. OpenClaw giữ văn bản billing rõ ràng trong luồng billing ngay cả khi nhà cung cấp trả về `401` hoặc `403`, nhưng các bộ khớp riêng của nhà cung cấp vẫn chỉ giới hạn trong nhà cung cấp sở hữu chúng (ví dụ OpenRouter `403 Key limit exceeded`).
+Không phải mọi phản hồi có dạng lỗi thanh toán đều là `402`, và không phải mọi phản hồi HTTP `402` đều được xử lý tại đây. OpenClaw vẫn xếp nội dung thanh toán rõ ràng vào luồng thanh toán ngay cả khi nhà cung cấp trả về `401` hoặc `403`, nhưng các bộ so khớp dành riêng cho nhà cung cấp vẫn chỉ áp dụng cho nhà cung cấp sở hữu chúng (ví dụ: OpenRouter `403 Key limit exceeded`).
 
-Trong khi đó, các lỗi `402` tạm thời về khoảng thời gian sử dụng và giới hạn chi tiêu của tổ chức/không gian làm việc được phân loại là `rate_limit` khi thông báo trông có thể thử lại (ví dụ `weekly usage limit exhausted`, `daily limit reached, resets tomorrow`, hoặc `organization spending limit exceeded`). Các lỗi đó vẫn nằm trên đường dẫn cooldown/chuyển đổi dự phòng ngắn thay vì đường dẫn tắt billing dài.
+Trong khi đó, các lỗi `402` tạm thời về cửa sổ sử dụng và giới hạn chi tiêu của tổ chức/không gian làm việc được phân loại là `rate_limit` khi thông báo có vẻ cho phép thử lại (ví dụ: `weekly usage limit exhausted`, `daily limit reached, resets tomorrow` hoặc `organization spending limit exceeded`). Các lỗi này vẫn đi theo đường thời gian tạm ngưng ngắn/chuyển đổi dự phòng thay vì đường vô hiệu hóa dài hạn do thanh toán.
 </Note>
 
-Trạng thái được lưu trong trạng thái xác thực SQLite theo từng tác tử:
+Các lỗi xác thực vĩnh viễn có độ tin cậy cao (khóa đã bị thu hồi/vô hiệu hóa, không gian làm việc đã bị vô hiệu hóa) được đưa vào một luồng vô hiệu hóa tương tự, nhưng phục hồi sớm hơn nhiều so với lỗi thanh toán vì một số nhà cung cấp có thể tạm thời trả về tải trọng trông giống lỗi xác thực trong thời gian xảy ra sự cố.
+
+Trạng thái được lưu trong trạng thái xác thực SQLite theo từng tác nhân:
 
 ```json
 {
@@ -273,130 +249,138 @@ Trạng thái được lưu trong trạng thái xác thực SQLite theo từng t
 }
 ```
 
-Mặc định:
+Giá trị mặc định (`auth.cooldowns.*`):
 
-- Backoff billing bắt đầu ở **5 giờ**, tăng gấp đôi sau mỗi lỗi billing, và giới hạn ở **24 giờ**.
-- Bộ đếm backoff đặt lại nếu hồ sơ không lỗi trong **24 giờ** (có thể cấu hình).
-- Các lần thử lại khi quá tải cho phép **1 lần xoay hồ sơ cùng nhà cung cấp** trước khi fallback mô hình.
-- Các lần thử lại khi quá tải mặc định dùng **backoff 0 ms**.
+| Khóa                          | Mặc định | Mục đích                                                                                  |
+| ----------------------------- | -------- | ----------------------------------------------------------------------------------------- |
+| `billingBackoffHours`         | 5        | Thời gian chờ lùi cơ sở cho thanh toán, tăng gấp đôi sau mỗi lỗi thanh toán               |
+| `billingMaxHours`             | 24       | Giới hạn tối đa của thời gian chờ lùi do thanh toán                                       |
+| `authPermanentBackoffMinutes` | 10       | Thời gian chờ lùi cơ sở cho các lỗi xác thực vĩnh viễn có độ tin cậy cao                  |
+| `authPermanentMaxMinutes`     | 60       | Giới hạn tối đa cho thời gian chờ lùi đó                                                  |
+| `failureWindowHours`          | 24       | Bộ đếm lỗi được đặt lại nếu không có lỗi nào xảy ra trong khoảng thời gian này            |
+| `overloadedProfileRotations`  | 1        | Số lần được phép chuyển hồ sơ cùng nhà cung cấp trước khi dự phòng mô hình khi quá tải     |
+| `overloadedBackoffMs`         | 0        | Độ trễ cố định trước khi thử lại một lần chuyển đổi do quá tải                            |
+| `rateLimitedProfileRotations` | 1        | Số lần được phép chuyển hồ sơ cùng nhà cung cấp trước khi dự phòng mô hình khi bị giới hạn tốc độ |
 
-## Fallback mô hình
+Các lỗi quá tải và giới hạn tốc độ được xử lý quyết liệt hơn thời gian tạm ngưng do thanh toán: theo mặc định, OpenClaw cho phép thử lại một hồ sơ xác thực của cùng nhà cung cấp, sau đó chuyển sang mô hình dự phòng được cấu hình tiếp theo mà không chờ đợi.
 
-Nếu tất cả hồ sơ cho một nhà cung cấp đều lỗi, OpenClaw chuyển sang mô hình tiếp theo trong `agents.defaults.model.fallbacks`. Điều này áp dụng cho lỗi xác thực, giới hạn tốc độ và thời gian chờ đã dùng hết xoay hồ sơ (các lỗi khác không chuyển tiếp fallback). Lỗi nhà cung cấp không lộ đủ chi tiết vẫn được gắn nhãn chính xác trong trạng thái fallback: `empty_response` nghĩa là nhà cung cấp không trả về thông báo hoặc trạng thái có thể dùng, `no_error_details` nghĩa là nhà cung cấp trả về rõ ràng `Unknown error (no error details in response)`, và `unclassified` nghĩa là OpenClaw đã giữ bản xem trước thô nhưng chưa có bộ phân loại nào khớp.
+## Dự phòng mô hình
 
-Lỗi quá tải và giới hạn tốc độ được xử lý mạnh tay hơn cooldown billing. Mặc định, OpenClaw cho phép một lần thử lại hồ sơ xác thực cùng nhà cung cấp, rồi chuyển sang fallback mô hình đã cấu hình tiếp theo mà không chờ. Các tín hiệu nhà cung cấp bận như `ModelNotReadyException` đi vào nhóm quá tải đó. Điều chỉnh bằng `auth.cooldowns.overloadedProfileRotations`, `auth.cooldowns.overloadedBackoffMs`, và `auth.cooldowns.rateLimitedProfileRotations`.
+Nếu tất cả hồ sơ của một nhà cung cấp đều gặp lỗi, OpenClaw chuyển sang mô hình tiếp theo trong `agents.defaults.model.fallbacks`. Điều này áp dụng cho lỗi xác thực, giới hạn tốc độ và thời gian chờ đã dùng hết các lượt chuyển hồ sơ (các lỗi khác không chuyển sang dự phòng). Các lỗi nhà cung cấp không cung cấp đủ chi tiết vẫn được gắn nhãn chính xác trong trạng thái dự phòng: `empty_response` nghĩa là nhà cung cấp không trả về thông báo hoặc trạng thái có thể sử dụng, `no_error_details` nghĩa là nhà cung cấp trả về rõ ràng `Unknown error (no error details in response)`, và `unclassified` nghĩa là OpenClaw đã giữ nguyên bản xem trước thô nhưng chưa có bộ phân loại nào khớp.
 
-Khi một lượt chạy bắt đầu từ primary mặc định đã cấu hình, primary của cron job, primary của tác tử có fallback rõ ràng, hoặc ghi đè fallback được tự động chọn, OpenClaw có thể đi theo chuỗi fallback đã cấu hình tương ứng. Các primary của tác tử không có fallback rõ ràng và các lựa chọn người dùng rõ ràng (ví dụ `/model ollama/qwen3.5:27b`, bộ chọn mô hình, `sessions.patch`, hoặc ghi đè nhà cung cấp/mô hình CLI một lần) là nghiêm ngặt: nếu nhà cung cấp/mô hình đó không truy cập được hoặc lỗi trước khi tạo phản hồi, OpenClaw báo lỗi thay vì trả lời từ một fallback không liên quan.
+Các tín hiệu nhà cung cấp đang bận như `ModelNotReadyException` được đưa vào nhóm quá tải và tuân theo cùng chính sách chuyển một lần rồi dự phòng như giới hạn tốc độ (xem bảng giá trị mặc định ở trên).
+
+Khi một lượt chạy bắt đầu từ mô hình chính mặc định đã cấu hình, mô hình chính của một tác vụ Cron, mô hình chính của tác nhân có các phương án dự phòng rõ ràng hoặc một giá trị ghi đè dự phòng được chọn tự động, OpenClaw có thể duyệt chuỗi dự phòng được cấu hình tương ứng. Các mô hình chính của tác nhân không có phương án dự phòng rõ ràng và các lựa chọn trực tiếp của người dùng (ví dụ: `/model ollama/qwen3.5:27b`, bộ chọn mô hình, `sessions.patch` hoặc giá trị ghi đè nhà cung cấp/mô hình dùng một lần của CLI) đều nghiêm ngặt: nếu không thể truy cập nhà cung cấp/mô hình đó hoặc nó gặp lỗi trước khi tạo ra phản hồi, OpenClaw báo cáo lỗi thay vì trả lời bằng một phương án dự phòng không liên quan.
 
 ### Quy tắc chuỗi ứng viên
 
-OpenClaw xây dựng danh sách ứng viên từ `provider/model` hiện được yêu cầu cộng với các fallback đã cấu hình.
+OpenClaw xây dựng danh sách ứng viên từ `provider/model` đang được yêu cầu cùng các phương án dự phòng đã cấu hình.
 
 <AccordionGroup>
   <Accordion title="Quy tắc">
     - Mô hình được yêu cầu luôn đứng đầu.
-    - Các fallback được cấu hình rõ ràng được loại trùng nhưng không bị lọc bởi allowlist mô hình. Chúng được xem là ý định vận hành rõ ràng.
-    - Nếu lượt chạy hiện tại đã ở trên một fallback đã cấu hình trong cùng họ nhà cung cấp, OpenClaw tiếp tục dùng toàn bộ chuỗi đã cấu hình.
-    - Khi không cung cấp ghi đè fallback rõ ràng, các fallback đã cấu hình được thử trước primary đã cấu hình ngay cả khi mô hình được yêu cầu dùng một nhà cung cấp khác.
-    - Khi không cung cấp ghi đè fallback rõ ràng cho trình chạy fallback, primary đã cấu hình được thêm vào cuối để chuỗi có thể quay lại mặc định bình thường sau khi các ứng viên trước đó cạn.
-    - Khi caller cung cấp `fallbacksOverride`, trình chạy dùng chính xác mô hình được yêu cầu cộng với danh sách ghi đè đó. Danh sách rỗng tắt fallback mô hình và ngăn primary đã cấu hình được thêm vào như một mục tiêu thử lại ẩn.
+    - Các phương án dự phòng được cấu hình rõ ràng được loại bỏ mục trùng lặp nhưng không bị lọc theo danh sách mô hình cho phép. Chúng được coi là ý định rõ ràng của người vận hành.
+    - Nếu lượt chạy hiện tại đã sử dụng một phương án dự phòng được cấu hình trong cùng họ nhà cung cấp, OpenClaw tiếp tục sử dụng toàn bộ chuỗi đã cấu hình.
+    - Khi không cung cấp giá trị ghi đè dự phòng rõ ràng, các phương án dự phòng đã cấu hình được thử trước mô hình chính đã cấu hình, ngay cả khi mô hình được yêu cầu sử dụng một nhà cung cấp khác.
+    - Khi không cung cấp giá trị ghi đè dự phòng rõ ràng cho trình chạy dự phòng, mô hình chính đã cấu hình được thêm vào cuối để chuỗi có thể quay lại giá trị mặc định thông thường sau khi các ứng viên trước đó đã cạn.
+    - Khi bên gọi cung cấp `fallbacksOverride`, trình chạy chỉ sử dụng chính xác mô hình được yêu cầu cộng với danh sách ghi đè đó. Danh sách rỗng sẽ vô hiệu hóa dự phòng mô hình và ngăn mô hình chính đã cấu hình được thêm vào như một mục tiêu thử lại ẩn.
 
   </Accordion>
 </AccordionGroup>
 
-### Lỗi nào chuyển tiếp fallback
+### Những lỗi nào chuyển sang dự phòng
 
 <Tabs>
   <Tab title="Tiếp tục khi">
     - lỗi xác thực
-    - giới hạn tốc độ và cạn cooldown
-    - lỗi quá tải/nhà cung cấp bận
-    - lỗi chuyển đổi dự phòng có dạng thời gian chờ
-    - tắt do billing
-    - `LiveSessionModelSwitchError`, được chuẩn hóa thành đường dẫn chuyển đổi dự phòng để mô hình cũ được lưu bền vững không tạo vòng lặp thử lại bên ngoài
-    - các lỗi không nhận diện khác khi vẫn còn ứng viên
+    - giới hạn tốc độ và hết thời gian tạm ngưng
+    - lỗi quá tải/nhà cung cấp đang bận
+    - lỗi chuyển đổi dự phòng có dạng hết thời gian chờ
+    - vô hiệu hóa do thanh toán
+    - `LiveSessionModelSwitchError`, được chuẩn hóa thành đường chuyển đổi dự phòng để một mô hình cũ được lưu bền vững không tạo ra vòng lặp thử lại bên ngoài
+    - các lỗi không được nhận diện khác khi vẫn còn ứng viên
 
   </Tab>
   <Tab title="Không tiếp tục khi">
-    - các hủy bỏ rõ ràng không có dạng thời gian chờ/chuyển đổi dự phòng
-    - lỗi tràn ngữ cảnh nên ở lại trong logic Compaction/thử lại (ví dụ `request_too_large`, `INVALID_ARGUMENT: input exceeds the maximum number of tokens`, `input token count exceeds the maximum number of input tokens`, `The input is too long for the model`, hoặc `ollama error: context length exceeded`)
-    - lỗi không xác định cuối cùng khi không còn ứng viên nào
-    - các từ chối an toàn của Claude Fable 5; yêu cầu khóa API trực tiếp xử lý các lỗi đó ở cấp nhà cung cấp thông qua fallback phía máy chủ của Anthropic sang `claude-opus-4-8` thay vào đó (xem [Anthropic](/vi/providers/anthropic#safety-refusal-fallback-claude-fable-5))
+    - thao tác hủy rõ ràng không có dạng hết thời gian chờ/chuyển đổi dự phòng
+    - lỗi tràn ngữ cảnh phải được giữ trong logic Compaction/thử lại (ví dụ: `request_too_large`, `input token count exceeds the maximum number of input tokens`, `input exceeds the maximum number of tokens`, `input too long for the model` hoặc `ollama error: context length exceeded`)
+    - lỗi cuối cùng không xác định khi không còn ứng viên
+    - yêu cầu bị từ chối vì an toàn của Claude Fable 5; thay vào đó, các yêu cầu trực tiếp bằng khóa API xử lý trường hợp này ở cấp nhà cung cấp thông qua cơ chế dự phòng phía máy chủ của Anthropic sang `claude-opus-4-8` (xem [Anthropic](/vi/providers/anthropic#safety-refusal-fallback-claude-fable-5))
 
   </Tab>
 </Tabs>
 
-### Hành vi bỏ qua cooldown so với probe
+### Hành vi bỏ qua thời gian tạm ngưng so với thăm dò
 
-Khi mọi hồ sơ xác thực cho một nhà cung cấp đã ở trong cooldown, OpenClaw không tự động bỏ qua nhà cung cấp đó mãi mãi. Nó đưa ra quyết định theo từng ứng viên:
+Khi mọi hồ sơ xác thực của một nhà cung cấp đều đang trong thời gian tạm ngưng, OpenClaw không tự động bỏ qua nhà cung cấp đó mãi mãi. Hệ thống đưa ra quyết định theo từng ứng viên:
 
 <AccordionGroup>
   <Accordion title="Quyết định theo từng ứng viên">
-    - Lỗi xác thực dai dẳng bỏ qua toàn bộ nhà cung cấp ngay lập tức.
-    - Tắt do billing thường bị bỏ qua, nhưng ứng viên primary vẫn có thể được probe theo throttle để có thể phục hồi mà không cần khởi động lại.
-    - Ứng viên primary có thể được probe gần lúc hết cooldown, với throttle theo từng nhà cung cấp.
-    - Các fallback cùng cấp trong cùng nhà cung cấp có thể được thử bất chấp cooldown khi lỗi trông tạm thời (`rate_limit`, `overloaded`, hoặc không xác định). Điều này đặc biệt liên quan khi giới hạn tốc độ theo phạm vi mô hình và một mô hình cùng cấp vẫn có thể phục hồi ngay.
-    - Các probe cooldown tạm thời bị giới hạn ở một lần cho mỗi nhà cung cấp trong mỗi lượt chạy fallback để một nhà cung cấp đơn lẻ không làm đình trệ fallback xuyên nhà cung cấp.
+    - Lỗi xác thực dai dẳng khiến toàn bộ nhà cung cấp bị bỏ qua ngay lập tức.
+    - Việc vô hiệu hóa do thanh toán thường khiến ứng viên bị bỏ qua, nhưng ứng viên chính vẫn có thể được thăm dò theo cơ chế điều tiết để có thể phục hồi mà không cần khởi động lại.
+    - Ứng viên chính có thể được thăm dò khi gần hết thời gian tạm ngưng, với cơ chế điều tiết theo từng nhà cung cấp.
+    - Có thể thử các mô hình dự phòng cùng cấp của cùng nhà cung cấp bất chấp thời gian tạm ngưng khi lỗi có vẻ tạm thời (`rate_limit`, `overloaded` hoặc không xác định). Điều này đặc biệt hữu ích khi giới hạn tốc độ chỉ áp dụng cho một mô hình và mô hình cùng cấp có thể phục hồi ngay lập tức.
+    - Mỗi lượt chạy dự phòng chỉ cho phép một lần thăm dò thời gian tạm ngưng tạm thời cho mỗi nhà cung cấp, để một nhà cung cấp duy nhất không làm đình trệ quá trình dự phòng giữa các nhà cung cấp.
 
   </Accordion>
 </AccordionGroup>
 
-## Ghi đè phiên và chuyển đổi mô hình trực tiếp
+## Giá trị ghi đè phiên và chuyển đổi mô hình trực tiếp
 
-Thay đổi mô hình phiên là trạng thái dùng chung. Trình chạy đang hoạt động, lệnh `/model`, cập nhật Compaction/phiên, và đối soát phiên trực tiếp đều đọc hoặc ghi các phần của cùng một mục phiên.
+Các thay đổi mô hình của phiên là trạng thái dùng chung. Trình chạy đang hoạt động, lệnh `/model`, các bản cập nhật Compaction/phiên và quá trình đối soát phiên trực tiếp đều đọc hoặc ghi các phần của cùng một mục phiên.
 
-Điều đó nghĩa là các lần thử lại fallback phải phối hợp với chuyển đổi mô hình trực tiếp:
+Điều đó có nghĩa là các lần thử lại dự phòng phải phối hợp với việc chuyển đổi mô hình trực tiếp:
 
-- Chỉ các thay đổi mô hình do người dùng chủ động rõ ràng mới đánh dấu một chuyển đổi trực tiếp đang chờ. Điều đó bao gồm `/model`, `session_status(model=...)`, và `sessions.patch`.
-- Các thay đổi mô hình do hệ thống điều khiển như xoay fallback, ghi đè Heartbeat, hoặc Compaction không tự đánh dấu một chuyển đổi trực tiếp đang chờ.
-- Ghi đè mô hình do người dùng điều khiển được xem là lựa chọn chính xác cho chính sách fallback, nên nhà cung cấp đã chọn nhưng không truy cập được sẽ hiển thị lỗi thay vì bị che bởi `agents.defaults.model.fallbacks`.
-- Trước khi bắt đầu một lần thử lại fallback, trình chạy phản hồi lưu bền vững các trường ghi đè fallback đã chọn vào mục phiên.
-- Ghi đè fallback tự động vẫn được chọn ở các lượt tiếp theo để OpenClaw không probe một primary đã biết là lỗi trên mọi tin nhắn. OpenClaw định kỳ probe lại origin đã cấu hình và xóa ghi đè tự động khi nó phục hồi; `/new`, `/reset`, và `sessions.reset` xóa ngay các ghi đè có nguồn tự động.
-- Phản hồi người dùng thông báo chuyển tiếp fallback và khôi phục đã xóa fallback một lần cho mỗi thay đổi trạng thái. Các lượt fallback dính không lặp lại thông báo.
-- `/status` hiển thị mô hình đã chọn và, khi trạng thái fallback khác, mô hình fallback đang hoạt động cùng lý do.
-- Đối soát phiên trực tiếp ưu tiên ghi đè phiên đã lưu bền vững hơn các trường mô hình runtime cũ.
-- Nếu lỗi chuyển đổi trực tiếp trỏ tới một ứng viên sau trong chuỗi fallback đang hoạt động, OpenClaw nhảy thẳng tới mô hình đã chọn đó thay vì đi qua các ứng viên không liên quan trước.
-- Nếu lần thử fallback lỗi, trình chạy chỉ rollback các trường ghi đè mà nó đã ghi, và chỉ khi chúng vẫn khớp với ứng viên đã lỗi đó.
+- Chỉ các thay đổi mô hình rõ ràng do người dùng thực hiện mới đánh dấu một lượt chuyển đổi trực tiếp đang chờ xử lý. Các thay đổi này bao gồm `/model`, `session_status(model=...)` và `sessions.patch`.
+- Các thay đổi mô hình do hệ thống thực hiện như chuyển đổi dự phòng, giá trị ghi đè Heartbeat hoặc Compaction không bao giờ tự đánh dấu một lượt chuyển đổi trực tiếp đang chờ xử lý.
+- Các giá trị ghi đè mô hình do người dùng thực hiện được coi là lựa chọn chính xác cho chính sách dự phòng, vì vậy một nhà cung cấp được chọn nhưng không thể truy cập sẽ hiển thị dưới dạng lỗi thay vì bị che khuất bởi `agents.defaults.model.fallbacks`.
+- Trước khi bắt đầu một lần thử lại dự phòng, trình chạy phản hồi lưu bền vững các trường ghi đè dự phòng đã chọn vào mục phiên.
+- Các giá trị ghi đè dự phòng tự động tiếp tục được chọn trong các lượt tiếp theo để OpenClaw không thăm dò một mô hình chính đã biết là lỗi trong mọi tin nhắn. OpenClaw định kỳ thăm dò lại nguồn gốc đã cấu hình và xóa giá trị ghi đè tự động khi nguồn đó phục hồi; `/new`, `/reset` và `sessions.reset` xóa ngay các giá trị ghi đè có nguồn tự động.
+- Phản hồi cho người dùng thông báo các lần chuyển sang dự phòng và phục hồi sau khi xóa dự phòng một lần cho mỗi thay đổi trạng thái. Các lượt tiếp tục dùng dự phòng cố định không lặp lại thông báo.
+- `/status` hiển thị mô hình đã chọn và, khi trạng thái dự phòng khác biệt, mô hình dự phòng đang hoạt động cùng lý do.
+- Quá trình đối soát phiên trực tiếp ưu tiên các giá trị ghi đè phiên đã lưu bền vững hơn các trường mô hình thời gian chạy đã cũ.
+- Nếu lỗi chuyển đổi trực tiếp trỏ đến một ứng viên phía sau trong chuỗi dự phòng đang hoạt động, OpenClaw chuyển thẳng đến mô hình đã chọn đó thay vì duyệt các ứng viên không liên quan trước.
+- Nếu lần thử dự phòng thất bại, trình chạy chỉ khôi phục các trường ghi đè mà nó đã ghi và chỉ khi chúng vẫn khớp với ứng viên thất bại đó.
 
-Điều này ngăn cuộc đua cổ điển:
+Điều này ngăn chặn tình trạng tranh chấp kinh điển:
 
 <Steps>
-  <Step title="Primary lỗi">
-    Mô hình primary đã chọn bị lỗi.
+  <Step title="Mô hình chính gặp lỗi">
+    Mô hình chính đã chọn gặp lỗi.
   </Step>
-  <Step title="Fallback được chọn trong bộ nhớ">
-    Ứng viên fallback được chọn trong bộ nhớ.
+  <Step title="Phương án dự phòng được chọn trong bộ nhớ">
+    Ứng viên dự phòng được chọn trong bộ nhớ.
   </Step>
-  <Step title="Kho phiên vẫn nói primary cũ">
-    Kho phiên vẫn phản ánh primary cũ.
+  <Step title="Kho phiên vẫn ghi mô hình chính cũ">
+    Kho phiên vẫn phản ánh mô hình chính cũ.
   </Step>
-  <Step title="Đối soát trực tiếp đọc trạng thái cũ">
-    Đối soát phiên trực tiếp đọc trạng thái phiên cũ.
+  <Step title="Quá trình đối soát trực tiếp đọc trạng thái cũ">
+    Quá trình đối soát phiên trực tiếp đọc trạng thái phiên đã cũ.
   </Step>
-  <Step title="Thử lại bị kéo về lại">
-    Lần thử lại bị kéo về mô hình cũ trước khi lần thử fallback bắt đầu.
+  <Step title="Lần thử lại bị chuyển ngược">
+    Lần thử lại bị chuyển ngược về mô hình cũ trước khi lần thử dự phòng bắt đầu.
   </Step>
 </Steps>
 
-Ghi đè fallback được lưu bền vững đóng khoảng hở đó, và rollback hẹp giữ nguyên các thay đổi phiên thủ công hoặc runtime mới hơn.
+Giá trị ghi đè dự phòng được lưu bền vững sẽ khép lại khoảng trống đó, còn cơ chế khôi phục có phạm vi hẹp sẽ giữ nguyên các thay đổi phiên thủ công hoặc thời gian chạy mới hơn.
 
-## Khả năng quan sát và tóm tắt lỗi
+## Khả năng quan sát và bản tóm tắt lỗi
 
-`runWithModelFallback(...)` ghi lại chi tiết theo từng lần thử để đưa vào log và thông báo cooldown hướng tới người dùng:
+`runWithModelFallback(...)` ghi lại chi tiết theo từng lần thử để cung cấp dữ liệu cho nhật ký và thông báo thời gian tạm ngưng hiển thị cho người dùng:
 
 - nhà cung cấp/mô hình đã thử
-- lý do (`rate_limit`, `overloaded`, `billing`, `auth`, `model_not_found`, và các lý do chuyển đổi dự phòng tương tự)
+- lý do (`rate_limit`, `overloaded`, `billing`, `auth`, `model_not_found` và các lý do chuyển đổi dự phòng tương tự)
 - trạng thái/mã tùy chọn
-- tóm tắt lỗi dễ đọc cho con người
+- bản tóm tắt lỗi dễ hiểu
 
-Log có cấu trúc `model_fallback_decision` cũng bao gồm các trường phẳng `fallbackStep*` khi một ứng viên lỗi, bị bỏ qua, hoặc một fallback sau đó thành công. Các trường này làm rõ lần chuyển tiếp đã thử (`fallbackStepFromModel`, `fallbackStepToModel`, `fallbackStepFromFailureReason`, `fallbackStepFromFailureDetail`, `fallbackStepFinalOutcome`) để log và bộ xuất chẩn đoán có thể dựng lại lỗi primary ngay cả khi fallback cuối cùng cũng lỗi.
+Nhật ký `model_fallback_decision` có cấu trúc cũng bao gồm các trường phẳng `fallbackStep*` khi một ứng viên thất bại, bị bỏ qua hoặc một phương án dự phòng sau đó thành công. Các trường này biểu thị rõ quá trình chuyển đổi đã thử (`fallbackStepFromModel`, `fallbackStepToModel`, `fallbackStepFromFailureReason`, `fallbackStepFromFailureDetail`, `fallbackStepFinalOutcome`) để các trình xuất nhật ký và chẩn đoán có thể tái dựng lỗi ban đầu ngay cả khi phương án dự phòng cuối cùng cũng thất bại.
 
-Khi mọi ứng viên đều lỗi, OpenClaw ném `FallbackSummaryError`. Trình chạy phản hồi bên ngoài có thể dùng lỗi đó để xây dựng thông báo cụ thể hơn như "tất cả mô hình tạm thời đang bị giới hạn tốc độ" và bao gồm thời điểm cooldown sớm nhất hết hạn khi biết được.
+Khi tất cả ứng viên đều thất bại, OpenClaw ném `FallbackSummaryError`. Trình chạy phản hồi bên ngoài có thể dùng lỗi này để tạo thông báo cụ thể hơn, chẳng hạn như "tất cả các mô hình hiện đang tạm thời bị giới hạn tốc độ", đồng thời cung cấp thời điểm hết hạn chờ sớm nhất nếu xác định được.
 
-Tóm tắt cooldown đó có nhận biết mô hình:
+Bản tóm tắt thời gian chờ đó nhận biết mô hình:
 
-- các giới hạn tốc độ theo phạm vi mô hình không liên quan bị bỏ qua cho chuỗi nhà cung cấp/mô hình đã thử
-- nếu phần chặn còn lại là giới hạn tốc độ theo phạm vi mô hình khớp, OpenClaw báo thời điểm hết hạn khớp cuối cùng vẫn đang chặn mô hình đó
+- bỏ qua các giới hạn tốc độ theo phạm vi mô hình không liên quan đối với chuỗi nhà cung cấp/mô hình đã thử
+- nếu hạn chế còn lại là giới hạn tốc độ theo phạm vi mô hình phù hợp, OpenClaw báo cáo thời điểm hết hạn phù hợp cuối cùng vẫn đang chặn mô hình đó
 
 ## Cấu hình liên quan
 
@@ -405,9 +389,10 @@ Xem [Cấu hình Gateway](/vi/gateway/configuration) để biết:
 - `auth.profiles` / `auth.order`
 - `auth.cooldowns.billingBackoffHours` / `auth.cooldowns.billingBackoffHoursByProvider`
 - `auth.cooldowns.billingMaxHours` / `auth.cooldowns.failureWindowHours`
+- `auth.cooldowns.authPermanentBackoffMinutes` / `auth.cooldowns.authPermanentMaxMinutes`
 - `auth.cooldowns.overloadedProfileRotations` / `auth.cooldowns.overloadedBackoffMs`
 - `auth.cooldowns.rateLimitedProfileRotations`
 - `agents.defaults.model.primary` / `agents.defaults.model.fallbacks`
 - định tuyến `agents.defaults.imageModel`
 
-Xem [Mô hình](/vi/concepts/models) để biết tổng quan rộng hơn về lựa chọn mô hình và dự phòng.
+Xem [Mô hình](/vi/concepts/models) để biết tổng quan rộng hơn về việc lựa chọn mô hình và chuyển đổi dự phòng.

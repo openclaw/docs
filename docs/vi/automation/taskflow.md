@@ -1,43 +1,107 @@
 ---
 read_when:
     - Bạn muốn hiểu Task Flow liên quan như thế nào đến các tác vụ nền
-    - Bạn gặp TaskFlow hoặc luồng tác vụ openclaw trong ghi chú phát hành hoặc tài liệu
-    - Bạn muốn kiểm tra hoặc quản lý trạng thái flow bền vững
+    - Bạn bắt gặp Task Flow hoặc luồng tác vụ OpenClaw trong ghi chú phát hành hoặc tài liệu
+    - Bạn muốn kiểm tra hoặc quản lý trạng thái luồng bền vững
 summary: Lớp điều phối TaskFlow phía trên các tác vụ nền
 title: Luồng tác vụ
 x-i18n:
-    generated_at: "2026-07-02T08:28:39Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:41:53Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e4f5ff3c9a68eb0408a180bc947a03b410568d7914cb1c1d7f31d6013e036096
+    source_hash: 5ccc6acf58b4b44c2989e3061bff08dabce8ef385706102360c756a1286ddd1b
     source_path: automation/taskflow.md
     workflow: 16
 ---
 
-Task Flow là nền tảng điều phối luồng nằm phía trên [tác vụ nền](/vi/automation/tasks). Nó quản lý các luồng nhiều bước bền vững với trạng thái riêng, theo dõi bản sửa đổi và ngữ nghĩa đồng bộ hóa, trong khi từng tác vụ vẫn là đơn vị của công việc tách rời.
+Luồng tác vụ là lớp điều phối nằm trên [các tác vụ nền](/vi/automation/tasks). Một luồng là bản ghi bền vững về công việc gồm nhiều bước, có trạng thái, trạng thái JSON, bộ đếm bản sửa đổi và các bản ghi tác vụ được liên kết riêng. Các luồng vẫn tồn tại sau khi Gateway khởi động lại; từng tác vụ riêng lẻ vẫn là đơn vị công việc tách rời.
 
-## Khi nào dùng Task Flow
+## Khi nào nên sử dụng Luồng tác vụ
 
-Dùng Task Flow khi công việc trải qua nhiều bước tuần tự hoặc phân nhánh và bạn cần theo dõi tiến độ bền vững qua các lần Gateway khởi động lại. Với các thao tác nền đơn lẻ, một [tác vụ](/vi/automation/tasks) thông thường là đủ.
+| Tình huống                                      | Sử dụng                                            |
+| ------------------------------------------------ | -------------------------------------------------- |
+| Một công việc nền                                | Tác vụ thông thường                                |
+| Quy trình nhiều bước do mã Plugin điều khiển     | Luồng tác vụ (được quản lý)                        |
+| Khởi chạy ACP hoặc tác tử con theo kiểu tách rời | Luồng tác vụ (phản chiếu, được tạo tự động)        |
+| Lời nhắc dùng một lần                            | Công việc Cron                                     |
 
-| Kịch bản                              | Nên dùng              |
-| ------------------------------------- | -------------------- |
-| Công việc nền đơn lẻ                  | Tác vụ thông thường  |
-| Pipeline nhiều bước (A rồi B rồi C)   | Task Flow (được quản lý) |
-| Quan sát các tác vụ được tạo bên ngoài | Task Flow (phản chiếu) |
-| Nhắc nhở một lần                      | Công việc Cron       |
+## Chế độ đồng bộ hóa
 
-## Mẫu quy trình được lên lịch đáng tin cậy
+### Chế độ được quản lý
 
-Với các quy trình lặp lại như bản tin tình báo thị trường, hãy xem lịch chạy, điều phối và kiểm tra độ tin cậy là các lớp riêng biệt:
+Một luồng được quản lý có bộ điều khiển: mã Plugin tạo luồng thông qua API Luồng tác vụ của môi trường chạy Plugin, kèm theo mục tiêu và mã định danh bộ điều khiển bắt buộc, sau đó điều khiển luồng một cách tường minh.
 
-1. Dùng [Scheduled Tasks](/vi/automation/cron-jobs) để định thời.
-2. Dùng một phiên cron duy trì lâu dài khi quy trình cần xây dựng dựa trên ngữ cảnh trước đó.
-3. Dùng [Lobster](/vi/tools/lobster) cho các bước xác định, cổng phê duyệt và token tiếp tục.
-4. Dùng Task Flow để theo dõi lượt chạy nhiều bước qua các tác vụ con, khoảng chờ, lần thử lại và các lần Gateway khởi động lại.
+- Mỗi bước chạy dưới dạng một tác vụ nền được tạo trong luồng; khóa chủ sở hữu và nguồn gốc người yêu cầu của luồng được truyền sang các tác vụ con.
+- Bộ điều khiển chuyển luồng giữa `running`, `waiting` và các trạng thái kết thúc, đồng thời lưu trạng thái bước JSON tùy ý trong bản ghi luồng.
+- Mỗi thao tác thay đổi đều truyền bản sửa đổi dự kiến của luồng. Một thao tác ghi dựa trên bản sửa đổi cũ sẽ bị từ chối do xung đột bản sửa đổi thay vì ghi đè lên trạng thái mới hơn.
+- Sau khi có yêu cầu hủy, các tác vụ con mới sẽ bị từ chối và luồng kết thúc với trạng thái `cancelled` khi không còn tác vụ con nào đang hoạt động.
 
-Ví dụ về dạng cron:
+Ví dụ: một luồng báo cáo hằng tuần (1) thu thập dữ liệu, (2) tạo báo cáo và (3) phân phối báo cáo, với một tác vụ nền cho mỗi bước:
+
+```
+Flow: weekly-report
+  Step 1: gather-data     → task created → succeeded
+  Step 2: generate-report → task created → succeeded
+  Step 3: deliver         → task created → running
+```
+
+### Chế độ phản chiếu
+
+OpenClaw tự động tạo một luồng phản chiếu gồm một tác vụ khi một lượt chạy ACP hoặc tác tử con tách rời bắt đầu (các tác vụ theo phạm vi phiên có kết quả hoàn thành có thể chuyển giao). Bản ghi luồng phản chiếu tác vụ nền duy nhất của nó — trạng thái, mục tiêu và thời gian — để các lượt khởi chạy tách rời có một định danh luồng ổn định cho các giao diện trạng thái và thử lại mà không cần bộ điều khiển. Các luồng phản chiếu hiển thị chế độ đồng bộ hóa `task_mirrored` trong CLI.
+
+## Trạng thái luồng
+
+| Trạng thái  | Ý nghĩa                                                                                      |
+| ----------- | -------------------------------------------------------------------------------------------- |
+| `queued`    | Đã tạo, chưa bắt đầu tiến triển                                                              |
+| `running`   | Luồng đang tích cực tiến triển                                                               |
+| `waiting`   | Luồng được quản lý đang tạm dừng theo siêu dữ liệu chờ (bộ hẹn giờ, sự kiện bên ngoài)       |
+| `blocked`   | Một bước đã kết thúc nhưng không có kết quả sử dụng được; `blockedTaskId`/bản tóm tắt cho biết bước nào |
+| `succeeded` | Hoàn tất thành công                                                                          |
+| `failed`    | Hoàn tất với lỗi                                                                             |
+| `cancelled` | Đã yêu cầu hủy và tất cả tác vụ con đã ổn định                                               |
+| `lost`      | Luồng đã mất trạng thái nền có thẩm quyền                                                    |
+
+## Trạng thái bền vững và theo dõi bản sửa đổi
+
+Các bản ghi luồng được lưu bền vững trong cơ sở dữ liệu trạng thái SQLite dùng chung (`~/.openclaw/state/openclaw.sqlite`, bảng `flow_runs`) cùng với các bản ghi tác vụ, vì vậy tiến trình vẫn được giữ lại sau khi Gateway khởi động lại. Mỗi thao tác ghi làm tăng `revision` của luồng; các trình ghi đồng thời truyền bản sửa đổi dự kiến cũ sẽ nhận được xung đột và phải đọc lại. Mức tăng trưởng WAL được giới hạn bằng cơ chế tự động tạo điểm kiểm tra của SQLite kết hợp với các điểm kiểm tra thụ động định kỳ và các điểm kiểm tra cắt gọn khi tắt. Tệp cơ sở dữ liệu phụ `flows/registry.sqlite` cũ từ các bản cài đặt trước đây được nhập bởi `openclaw doctor`.
+
+## Hành vi hủy
+
+`openclaw tasks flow cancel` đặt ý định hủy cố định cho luồng, hủy các tác vụ con đang hoạt động và từ chối các tác vụ con được quản lý mới. Khi không còn tác vụ con nào đang hoạt động, luồng kết thúc với trạng thái `cancelled` — ngay lập tức hoặc thông qua lượt quét bảo trì nếu các tác vụ con cần nhiều thời gian hơn để ổn định. Ý định này được lưu bền vững, vì vậy một luồng đã hủy vẫn giữ trạng thái hủy ngay cả khi Gateway khởi động lại trước khi tất cả tác vụ con chấm dứt.
+
+## Các lệnh CLI
+
+```bash
+# List active and recent flows
+openclaw tasks flow list [--status <status>] [--json]
+
+# Show details for a specific flow
+openclaw tasks flow show <lookup> [--json]
+
+# Cancel a running flow and its active tasks
+openclaw tasks flow cancel <lookup>
+```
+
+| Lệnh                              | Mô tả                                                                                      |
+| --------------------------------- | ------------------------------------------------------------------------------------------ |
+| `openclaw tasks flow list`        | Các luồng được theo dõi cùng chế độ đồng bộ hóa, trạng thái, bản sửa đổi, bộ điều khiển và số lượng tác vụ |
+| `openclaw tasks flow show <id>`   | Kiểm tra một luồng theo mã định danh luồng hoặc khóa chủ sở hữu, bao gồm các tác vụ được liên kết |
+| `openclaw tasks flow cancel <id>` | Hủy một luồng đang chạy và các tác vụ đang hoạt động của luồng                              |
+
+Các luồng cũng được `openclaw tasks audit` kiểm tra (phát hiện luồng cũ hoặc bị lỗi) và được `openclaw tasks maintenance` bảo trì (hoàn tất các lượt hủy bị kẹt, xóa các luồng đã kết thúc sau 7 ngày).
+
+## Mẫu quy trình công việc theo lịch đáng tin cậy
+
+Đối với các quy trình công việc định kỳ như bản tin tình báo thị trường, hãy xem lịch chạy, việc điều phối và các bước kiểm tra độ tin cậy là những lớp riêng biệt:
+
+1. Sử dụng [Tác vụ theo lịch](/vi/automation/cron-jobs) để định thời gian.
+2. Sử dụng một phiên Cron bền vững khi quy trình công việc cần xây dựng dựa trên ngữ cảnh trước đó.
+3. Sử dụng [Lobster](/vi/tools/lobster) cho các bước có tính xác định, các cổng phê duyệt và mã thông báo tiếp tục.
+4. Sử dụng Luồng tác vụ để theo dõi lượt chạy nhiều bước qua các tác vụ con, thời gian chờ, lần thử lại và các lần Gateway khởi động lại.
+
+Ví dụ về cấu trúc Cron:
 
 ```bash
 openclaw cron add \
@@ -51,9 +115,9 @@ openclaw cron add \
   --to "channel:C1234567890"
 ```
 
-Dùng `session:<id>` thay vì `isolated` khi quy trình lặp lại cần lịch sử có chủ đích, tóm tắt lượt chạy trước hoặc ngữ cảnh thường trực. Dùng `isolated` khi mỗi lượt chạy nên bắt đầu mới và mọi trạng thái bắt buộc đều được nêu rõ trong quy trình.
+Sử dụng `--session session:<id>` thay cho `isolated` khi quy trình công việc định kỳ cần chủ ý sử dụng lịch sử, bản tóm tắt các lượt chạy trước hoặc ngữ cảnh thường trực. Sử dụng `isolated` khi mỗi lượt chạy cần bắt đầu mới hoàn toàn và mọi trạng thái bắt buộc đều được khai báo tường minh trong quy trình công việc.
 
-Bên trong quy trình, đặt các kiểm tra độ tin cậy trước bước tóm tắt bằng LLM:
+Bên trong quy trình công việc, hãy đặt các bước kiểm tra độ tin cậy trước bước tóm tắt bằng LLM:
 
 ```yaml
 name: market-intel-brief
@@ -76,13 +140,13 @@ steps:
     condition: $approve.approved
 ```
 
-Các kiểm tra preflight được khuyến nghị:
+Các bước kiểm tra sơ bộ được khuyến nghị:
 
-- Tình trạng khả dụng của trình duyệt và lựa chọn hồ sơ, ví dụ `openclaw` cho trạng thái được quản lý hoặc `user` khi cần phiên Chrome đã đăng nhập. Xem [Browser](/vi/tools/browser).
+- Tính khả dụng của trình duyệt và lựa chọn hồ sơ, chẳng hạn `openclaw` cho trạng thái được quản lý hoặc `user` khi cần một phiên Chrome đã đăng nhập. Xem [Trình duyệt](/vi/tools/browser).
 - Thông tin xác thực API và hạn ngạch cho từng nguồn.
-- Khả năng truy cập mạng tới các endpoint bắt buộc.
-- Các công cụ bắt buộc đã được bật cho agent, chẳng hạn như `lobster`, `browser` và `llm-task`.
-- Điểm đến khi thất bại đã được cấu hình cho cron để các lỗi preflight hiển thị rõ. Xem [Scheduled Tasks](/vi/automation/cron-jobs#delivery-and-output).
+- Khả năng kết nối mạng đến các điểm cuối bắt buộc.
+- Các công cụ bắt buộc được bật cho tác tử, chẳng hạn `lobster`, `browser` và `llm-task`.
+- Đích nhận lỗi được cấu hình cho Cron để các lỗi kiểm tra sơ bộ có thể được nhìn thấy. Xem [Tác vụ theo lịch](/vi/automation/cron-jobs#delivery-and-output).
 
 Các trường nguồn gốc dữ liệu được khuyến nghị cho mọi mục đã thu thập:
 
@@ -96,68 +160,17 @@ Các trường nguồn gốc dữ liệu được khuyến nghị cho mọi mụ
 }
 ```
 
-Hãy để quy trình từ chối hoặc đánh dấu các mục cũ trước khi tóm tắt. Bước LLM chỉ nên nhận JSON có cấu trúc và nên được yêu cầu giữ nguyên `sourceUrl`, `retrievedAt` và `asOf` trong đầu ra. Dùng [LLM Task](/vi/tools/llm-task) khi bạn cần một bước mô hình được xác thực bằng schema bên trong quy trình.
+Yêu cầu quy trình công việc từ chối hoặc đánh dấu các mục đã cũ trước khi tóm tắt. Bước LLM chỉ nên nhận JSON có cấu trúc và cần được yêu cầu giữ nguyên `sourceUrl`, `retrievedAt` và `asOf` trong đầu ra. Sử dụng [Tác vụ LLM](/vi/tools/llm-task) khi bạn cần một bước mô hình được xác thực bằng lược đồ bên trong quy trình công việc.
 
-Với các quy trình có thể tái sử dụng cho nhóm hoặc cộng đồng, hãy đóng gói CLI, các tệp `.lobster` và mọi ghi chú thiết lập dưới dạng skill hoặc plugin rồi phát hành qua [ClawHub](/clawhub). Giữ các biện pháp bảo vệ riêng của quy trình trong gói đó, trừ khi API plugin thiếu một năng lực chung cần thiết.
+Đối với các quy trình công việc có thể tái sử dụng trong nhóm hoặc cộng đồng, hãy đóng gói CLI, các tệp `.lobster` và mọi ghi chú thiết lập dưới dạng một skill hoặc Plugin rồi phát hành thông qua [ClawHub](/clawhub). Giữ các biện pháp bảo vệ dành riêng cho quy trình công việc trong gói đó, trừ khi API Plugin thiếu một khả năng chung cần thiết.
 
-## Chế độ đồng bộ hóa
+## Mối quan hệ giữa luồng và tác vụ
 
-### Chế độ được quản lý
-
-Task Flow sở hữu toàn bộ vòng đời từ đầu đến cuối. Nó tạo tác vụ dưới dạng các bước của luồng, điều khiển chúng đến khi hoàn tất và tự động tiến trạng thái luồng.
-
-Ví dụ: một luồng báo cáo hằng tuần (1) thu thập dữ liệu, (2) tạo báo cáo và (3) gửi báo cáo. Task Flow tạo từng bước dưới dạng tác vụ nền, chờ hoàn tất rồi chuyển sang bước tiếp theo.
-
-```
-Flow: weekly-report
-  Step 1: gather-data     → task created → succeeded
-  Step 2: generate-report → task created → succeeded
-  Step 3: deliver         → task created → running
-```
-
-### Chế độ phản chiếu
-
-Task Flow quan sát các tác vụ được tạo bên ngoài và giữ trạng thái luồng đồng bộ mà không sở hữu việc tạo tác vụ. Điều này hữu ích khi tác vụ bắt nguồn từ công việc cron, lệnh CLI hoặc các nguồn khác, và bạn muốn có một góc nhìn thống nhất về tiến độ của chúng như một luồng.
-
-Ví dụ: ba công việc cron độc lập cùng tạo thành một quy trình "morning ops". Một luồng phản chiếu theo dõi tiến độ tập thể của chúng mà không kiểm soát thời điểm hoặc cách chúng chạy.
-
-## Trạng thái bền vững và theo dõi bản sửa đổi
-
-Mỗi luồng duy trì trạng thái riêng và theo dõi các bản sửa đổi để tiến độ vẫn tồn tại qua các lần Gateway khởi động lại. Theo dõi bản sửa đổi cho phép phát hiện xung đột khi nhiều nguồn cố gắng tiến cùng một luồng đồng thời.
-Sổ đăng ký luồng dùng SQLite với bảo trì write-ahead-log có giới hạn, bao gồm
-checkpoint định kỳ và khi tắt, để các Gateway chạy lâu không giữ lại
-các tệp sidecar `registry.sqlite-wal` không giới hạn.
-
-## Hành vi hủy
-
-`openclaw tasks flow cancel` đặt một ý định hủy bám dính trên luồng. Các tác vụ đang hoạt động trong luồng bị hủy và không bước mới nào được bắt đầu. Ý định hủy vẫn tồn tại qua các lần khởi động lại, nên một luồng đã hủy vẫn giữ trạng thái đã hủy ngay cả khi Gateway khởi động lại trước khi mọi tác vụ con kết thúc.
-
-## Lệnh CLI
-
-```bash
-# List active and recent flows
-openclaw tasks flow list
-
-# Show details for a specific flow
-openclaw tasks flow show <lookup>
-
-# Cancel a running flow and its active tasks
-openclaw tasks flow cancel <lookup>
-```
-
-| Lệnh                              | Mô tả                                        |
-| --------------------------------- | -------------------------------------------- |
-| `openclaw tasks flow list`        | Hiển thị các luồng được theo dõi cùng trạng thái và chế độ đồng bộ hóa |
-| `openclaw tasks flow show <id>`   | Kiểm tra một luồng theo ID luồng hoặc khóa tra cứu |
-| `openclaw tasks flow cancel <id>` | Hủy một luồng đang chạy và các tác vụ đang hoạt động của nó |
-
-## Luồng liên quan thế nào đến tác vụ
-
-Luồng điều phối tác vụ, không thay thế chúng. Một luồng đơn lẻ có thể điều khiển nhiều tác vụ nền trong vòng đời của nó. Dùng `openclaw tasks` để kiểm tra từng bản ghi tác vụ và `openclaw tasks flow` để kiểm tra luồng điều phối.
+Các luồng điều phối tác vụ chứ không thay thế tác vụ. Một luồng có thể điều khiển nhiều tác vụ nền trong suốt vòng đời của nó. Sử dụng `openclaw tasks` để kiểm tra từng bản ghi tác vụ và `openclaw tasks flow` để kiểm tra luồng điều phối.
 
 ## Liên quan
 
-- [Background Tasks](/vi/automation/tasks) — sổ cái công việc tách rời mà các luồng điều phối
-- [CLI: tasks](/vi/cli/tasks) — tham chiếu lệnh CLI cho `openclaw tasks flow`
-- [Automation Overview](/vi/automation) — toàn bộ cơ chế tự động hóa trong một cái nhìn tổng quan
-- [Cron Jobs](/vi/automation/cron-jobs) — các công việc được lên lịch có thể đưa dữ liệu vào luồng
+- [Tác vụ nền](/vi/automation/tasks) — sổ ghi công việc tách rời mà các luồng điều phối
+- [CLI: tác vụ](/vi/cli/tasks) — tài liệu tham khảo lệnh CLI cho `openclaw tasks flow`
+- [Tổng quan về tự động hóa](/vi/automation) — tổng quan nhanh về tất cả cơ chế tự động hóa
+- [Công việc Cron](/vi/automation/cron-jobs) — các công việc theo lịch có thể cung cấp đầu vào cho các luồng

@@ -6,64 +6,62 @@ read_when:
 summary: 'code_execution: jalankan analisis Python jarak jauh dalam sandbox dengan xAI'
 title: Eksekusi kode
 x-i18n:
-    generated_at: "2026-06-27T18:16:20Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:45:55Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d510d0d2b41deab527d456e675a23ef80ac3b55b5f01906ba2c43d90e4452e36
+    source_hash: 1ab391daed9154f113535e6d241c45d5c08c22abdc012148a9f0f2ae5ec548b3
     source_path: tools/code-execution.md
     workflow: 16
 ---
 
-`code_execution` menjalankan analisis Python jarak jauh yang di-sandbox pada Responses API xAI. Ini didaftarkan oleh Plugin `xai` bawaan (di bawah kontrak `tools`) dan meneruskan ke endpoint `https://api.x.ai/v1/responses` yang sama dengan yang digunakan oleh `x_search`.
+`code_execution` menjalankan analisis Python jarak jauh dalam sandbox pada Responses API xAI
+(`https://api.x.ai/v1/responses`, endpoint yang sama dengan yang digunakan `x_search`). Alat ini
+didaftarkan oleh plugin bawaan `xai` berdasarkan kontrak `tools`.
+
+<Warning>
+  `code_execution` berjalan di server xAI. xAI mengenakan biaya $5 per 1.000 panggilan alat,
+  ditambah token masukan dan keluaran model.
+</Warning>
 
 | Properti           | Nilai                                                                             |
 | ------------------ | --------------------------------------------------------------------------------- |
-| Nama tool          | `code_execution`                                                                  |
+| Nama alat          | `code_execution`                                                                  |
 | Plugin penyedia    | `xai` (bawaan, `enabledByDefault: true`)                                          |
-| Auth               | profil auth xAI, `XAI_API_KEY`, atau `plugins.entries.xai.config.webSearch.apiKey` |
-| Model default      | `grok-4-1-fast`                                                                   |
-| Timeout default    | 30 detik                                                                          |
-| `maxTurns` default | tidak disetel (xAI menerapkan batas internalnya sendiri)                          |
+| Autentikasi        | Profil autentikasi xAI, `XAI_API_KEY`, atau `plugins.entries.xai.config.webSearch.apiKey` |
+| Model default      | `grok-4.3`                                                                        |
+| Batas waktu default | 30 detik                                                                         |
+| `maxTurns` default | tidak ditetapkan (xAI menerapkan batas internalnya sendiri)                       |
 
-Ini berbeda dari [`exec`](/id/tools/exec) lokal:
+Gunakan alat ini untuk perhitungan, tabulasi, statistik cepat, dan
+analisis bergaya bagan, termasuk data yang dikembalikan oleh `x_search` atau
+`web_search`. Alat ini tidak memiliki akses ke berkas lokal, shell, repositori,
+atau perangkat tersanding Anda, dan tidak mempertahankan status di antara
+panggilan, jadi perlakukan setiap panggilan sebagai analisis sementara, bukan
+sesi notebook. Untuk data X terbaru, jalankan [`x_search`](/id/tools/web#x_search)
+terlebih dahulu dan salurkan hasilnya.
 
-- `exec` menjalankan perintah shell di mesin Anda atau node yang dipasangkan.
-- `code_execution` menjalankan Python di sandbox jarak jauh xAI.
-
-Gunakan `code_execution` untuk:
-
-- Perhitungan.
-- Tabulasi.
-- Statistik cepat.
-- Analisis bergaya bagan.
-- Menganalisis data yang dikembalikan oleh `x_search` atau `web_search`.
-
-Jangan gunakan ini saat Anda memerlukan file lokal, shell Anda, repo Anda, atau perangkat yang dipasangkan. Gunakan [`exec`](/id/tools/exec) untuk itu.
+Untuk eksekusi lokal, gunakan [`exec`](/id/tools/exec) sebagai gantinya.
 
 ## Penyiapan
 
 <Steps>
   <Step title="Berikan kredensial xAI">
-    Masuk dengan Grok OAuth menggunakan langganan SuperGrok atau X Premium yang memenuhi syarat,
-    atau simpan API key. xAI OAuth menggunakan verifikasi kode perangkat, sehingga berfungsi
-    dari host jarak jauh tanpa callback localhost. OAuth berfungsi untuk
-    `code_execution` dan `x_search`; `XAI_API_KEY` atau konfigurasi web-search Plugin
-    juga dapat menjalankan Grok `web_search`.
+    OAuth memerlukan langganan SuperGrok atau X Premium yang memenuhi syarat
+    (verifikasi kode perangkat, sehingga dapat digunakan dari host jarak jauh tanpa
+    callback localhost):
 
     ```bash
     openclaw models auth login --provider xai --method oauth
     ```
 
-    Selama instalasi baru, pilihan auth yang sama tersedia di dalam
-    onboarding:
+    Selama instalasi baru, pilihan yang sama tersedia dalam proses orientasi:
 
     ```bash
-    openclaw onboard --install-daemon
     openclaw onboard --install-daemon --auth-choice xai-oauth
     ```
 
-    Atau gunakan API key:
+    Atau kunci API:
 
     ```bash
     openclaw models auth login --provider xai --method api-key
@@ -88,12 +86,20 @@ Jangan gunakan ini saat Anda memerlukan file lokal, shell Anda, repo Anda, atau 
     }
     ```
 
+    Ketiga metode ini juga mendukung `x_search` dan `web_search` Grok.
+
   </Step>
 
   <Step title="Aktifkan dan sesuaikan code_execution">
-    `code_execution` tersedia saat kredensial xAI tersedia. Setel
-    `plugins.entries.xai.config.codeExecution.enabled` ke `false` untuk menonaktifkannya,
-    atau gunakan blok yang sama untuk menyesuaikan model dan timeout.
+    Jika `enabled` tidak dicantumkan, `code_execution` hanya ditampilkan ketika
+    penyedia model aktif adalah `xai` dan kredensial xAI berhasil ditemukan.
+    Untuk model aktif dengan penyedia non-xAI yang diketahui, tetapkan
+    `plugins.entries.xai.config.codeExecution.enabled` ke `true` untuk memilih
+    penggunaan lintas penyedia. Jika penyedia model aktif tidak ada atau tidak
+    dapat ditentukan, alat tetap disembunyikan. Tetapkan `enabled` ke `false`
+    untuk menonaktifkannya bagi setiap penyedia. Kredensial xAI selalu diperlukan.
+
+    Gunakan blok yang sama untuk mengganti model, batas giliran, atau batas waktu:
 
     ```json5
     {
@@ -102,10 +108,10 @@ Jangan gunakan ini saat Anda memerlukan file lokal, shell Anda, repo Anda, atau 
           xai: {
             config: {
               codeExecution: {
-                enabled: true,
-                model: "grok-4-1-fast", // override the default xAI code-execution model
-                maxTurns: 2,            // optional cap on internal tool turns
-                timeoutSeconds: 30,     // request timeout (default: 30)
+                enabled: true, // diperlukan untuk penyedia model non-xAI yang diketahui
+                model: "grok-4.3", // mengganti model eksekusi kode xAI default
+                maxTurns: 2,            // batas opsional untuk giliran alat internal
+                timeoutSeconds: 30,     // batas waktu permintaan (default: 30)
               },
             },
           },
@@ -121,61 +127,55 @@ Jangan gunakan ini saat Anda memerlukan file lokal, shell Anda, repo Anda, atau 
     openclaw gateway restart
     ```
 
-    `code_execution` muncul di daftar tool agen setelah Plugin xAI mendaftar ulang dengan `enabled: true`.
+    `code_execution` muncul dalam daftar alat agen setelah plugin xAI
+    mendaftar ulang dan pemeriksaan penyedia, pengaktifan, serta autentikasi di atas berhasil.
 
   </Step>
 </Steps>
 
 ## Cara menggunakannya
 
-Ajukan permintaan secara alami dan buat maksud analisisnya eksplisit:
+Nyatakan tujuan analisis secara eksplisit; alat ini menerima satu parameter `task`,
+jadi kirim permintaan lengkap dan semua data sebaris dalam satu prompt:
 
 ```text
-Use code_execution to calculate the 7-day moving average for these numbers: ...
+Gunakan code_execution untuk menghitung rata-rata bergerak 7 hari bagi angka-angka ini: ...
 ```
 
 ```text
-Use x_search to find posts mentioning OpenClaw this week, then use code_execution to count them by day.
+Gunakan x_search untuk menemukan postingan yang menyebut OpenClaw minggu ini, lalu gunakan code_execution untuk menghitungnya berdasarkan hari.
 ```
 
 ```text
-Use web_search to gather the latest AI benchmark numbers, then use code_execution to compare percent changes.
+Gunakan web_search untuk mengumpulkan angka tolok ukur AI terbaru, lalu gunakan code_execution untuk membandingkan perubahan persentase.
 ```
 
-Tool ini menerima satu parameter `task` secara internal, sehingga agen harus mengirim permintaan analisis lengkap dan data inline apa pun dalam satu prompt.
+## Kesalahan
 
-## Error
-
-Saat tool berjalan tanpa auth, tool mengembalikan error `missing_xai_api_key` terstruktur yang menunjuk ke opsi profil auth, env var, dan konfigurasi. Error tersebut berupa JSON, bukan exception yang dilempar, sehingga agen dapat memperbaiki sendiri:
+Tanpa autentikasi, alat mengembalikan kesalahan JSON terstruktur (bukan
+pengecualian yang dilempar), sehingga agen dapat mengoreksi dirinya sendiri:
 
 ```json
 {
   "error": "missing_xai_api_key",
-  "message": "code_execution needs xAI credentials. Run `openclaw onboard --auth-choice xai-oauth` to sign in with Grok, run `openclaw onboard --auth-choice xai-api-key`, set `XAI_API_KEY` in the Gateway environment, or configure `plugins.entries.xai.config.webSearch.apiKey`.",
+  "message": "code_execution memerlukan kredensial xAI. Jalankan `openclaw onboard --auth-choice xai-oauth` untuk masuk dengan Grok, jalankan `openclaw onboard --auth-choice xai-api-key`, tetapkan `XAI_API_KEY` di lingkungan Gateway, atau konfigurasikan `plugins.entries.xai.config.webSearch.apiKey`.",
   "docs": "https://docs.openclaw.ai/tools/code-execution"
 }
 ```
 
-## Batasan
-
-- Ini adalah eksekusi jarak jauh xAI, bukan eksekusi proses lokal.
-- Perlakukan hasil sebagai analisis sementara, bukan sesi notebook persisten.
-- Jangan berasumsi ada akses ke file lokal atau workspace Anda.
-- Untuk data X terbaru, gunakan [`x_search`](/id/tools/web#x_search) terlebih dahulu dan teruskan hasilnya ke `code_execution`.
-
 ## Terkait
 
 <CardGroup cols={2}>
-  <Card title="Tool Exec" href="/id/tools/exec" icon="terminal">
-    Eksekusi shell lokal di mesin Anda atau node yang dipasangkan.
+  <Card title="Alat Exec" href="/id/tools/exec" icon="terminal">
+    Eksekusi shell lokal pada mesin atau Node tersanding Anda.
   </Card>
   <Card title="Persetujuan Exec" href="/id/tools/exec-approvals" icon="shield">
     Kebijakan izinkan/tolak untuk eksekusi shell.
   </Card>
-  <Card title="Tool web" href="/id/tools/web" icon="globe">
+  <Card title="Alat web" href="/id/tools/web" icon="globe">
     `web_search`, `x_search`, dan `web_fetch`.
   </Card>
   <Card title="Penyedia xAI" href="/id/providers/xai" icon="microchip">
-    Model Grok, pencarian web/x, dan konfigurasi eksekusi kode.
+    Model Grok, pencarian web/X, dan konfigurasi eksekusi kode.
   </Card>
 </CardGroup>

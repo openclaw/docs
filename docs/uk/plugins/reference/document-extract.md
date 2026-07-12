@@ -1,31 +1,31 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin document-extract
-summary: Витягуйте текст і резервні зображення сторінок із локальних вкладень документів.
-title: Plugin для вилучення документів
+    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin для видобування даних із документів
+summary: Видобувайте текст і резервні зображення сторінок із локальних вкладень документів.
+title: Plugin вилучення документів
 x-i18n:
-    generated_at: "2026-05-02T15:17:42Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:29:40Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: 3745783e57c15e75caf28491c6693c64fea018593662a43268e299ed42c3d574
     source_path: plugins/reference/document-extract.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# Plugin витягання документів
+# Plugin для вилучення вмісту документів
 
-Витягає текст і резервні зображення сторінок із локальних вкладень документів.
+Вилучає текст і резервні зображення сторінок із локальних вкладень документів.
 
-## Дистрибуція
+## Розповсюдження
 
 - Пакет: `@openclaw/document-extract-plugin`
-- Шлях встановлення: входить до складу OpenClaw
+- Спосіб встановлення: входить до складу OpenClaw
 
-## Поверхня
+## Інтерфейс
 
-contracts: documentExtractors
+контракти: documentExtractors
 
-## Пов’язані документи
+## Пов’язана документація
 
-- [document-extract](/uk/tools/pdf)
+- [вилучення вмісту документів](/uk/tools/pdf)

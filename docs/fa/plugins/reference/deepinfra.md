@@ -1,11 +1,11 @@
 ---
 read_when:
-    - در حال نصب، پیکربندی یا ممیزی Plugin deepinfra هستید
+    - شما در حال نصب، پیکربندی یا ممیزی Plugin ‏deepinfra هستید
 summary: پشتیبانی از ارائه‌دهندهٔ مدل DeepInfra را به OpenClaw اضافه می‌کند.
-title: Plugin DeepInfra
+title: Plugin دیپ‌اینفرا
 x-i18n:
-    generated_at: "2026-06-27T18:24:47Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:35:34Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 67ee0e714d812bbb72a05233ac52a17da796631766a9222bb9caa4d441c8433f
@@ -15,7 +15,7 @@ x-i18n:
 
 # Plugin دیپ‌اینفرا
 
-پشتیبانی از ارائه‌دهندهٔ مدل DeepInfra را به OpenClaw اضافه می‌کند.
+پشتیبانی از ارائه‌دهنده مدل دیپ‌اینفرا را به OpenClaw اضافه می‌کند.
 
 ## توزیع
 
@@ -24,8 +24,8 @@ x-i18n:
 
 ## سطح
 
-ارائه‌دهندگان: deepinfra؛ قراردادها: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, speechProviders, videoGenerationProviders
+ارائه‌دهندگان: deepinfra؛ قراردادها: imageGenerationProviders، mediaUnderstandingProviders، memoryEmbeddingProviders، speechProviders، videoGenerationProviders
 
 ## مستندات مرتبط
 
-- [deepinfra](/fa/providers/deepinfra)
+- [دیپ‌اینفرا](/fa/providers/deepinfra)

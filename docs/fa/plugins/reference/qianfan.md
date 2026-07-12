@@ -1,11 +1,11 @@
 ---
 read_when:
-    - در حال نصب، پیکربندی، یا ممیزی Plugin qianfan هستید
+    - شما در حال نصب، پیکربندی یا ممیزی Plugin ‏qianfan هستید
 summary: پشتیبانی از ارائه‌دهندهٔ مدل Qianfan را به OpenClaw اضافه می‌کند.
-title: افزونه Qianfan
+title: Plugin کیان‌فان
 x-i18n:
-    generated_at: "2026-06-27T18:28:48Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:31:27Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 49d639836cefb6c96502e614e1b5d06615fbef31a50ea186e1a02c060882019a
@@ -13,19 +13,19 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin Qianfan
+# Plugin کیان‌فان
 
-پشتیبانی از ارائه‌دهندهٔ مدل Qianfan را به OpenClaw اضافه می‌کند.
+پشتیبانی از ارائه‌دهنده مدل کیان‌فان را به OpenClaw اضافه می‌کند.
 
 ## توزیع
 
 - بسته: `@openclaw/qianfan-provider`
-- مسیر نصب: npm؛ ClawHub: `clawhub:@openclaw/qianfan-provider`
+- روش نصب: npm؛ ClawHub: `clawhub:@openclaw/qianfan-provider`
 
-## سطح
+## سطح ارائه‌شده
 
-providers: qianfan
+ارائه‌دهندگان: qianfan
 
 ## مستندات مرتبط
 
-- [qianfan](/fa/providers/qianfan)
+- [کیان‌فان](/fa/providers/qianfan)

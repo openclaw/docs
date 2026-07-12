@@ -1,25 +1,23 @@
 ---
 read_when:
-    - Je gebruikt privéberichten in koppelingsmodus en moet afzenders goedkeuren
+    - Je gebruikt DM's in de koppelingsmodus en moet afzenders goedkeuren
 summary: CLI-referentie voor `openclaw pairing` (koppelingsverzoeken goedkeuren/weergeven)
 title: Koppelen
 x-i18n:
-    generated_at: "2026-05-06T17:54:16Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:43:44Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 022018239ab1134b18986be42b8e019f412a1a730a9671f422979909c4a31dc5
+    source_hash: ca83ad9d9e55cfffd49301cb529b28df370c2dcff03484880f7cfc85ec2d6440
     source_path: cli/pairing.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw pairing`
 
-Keur DM-koppelingsverzoeken goed of inspecteer ze (voor kanalen die koppeling ondersteunen).
+Keur DM-koppelingsverzoeken goed of bekijk ze voor kanalen die koppeling ondersteunen (alleen chat-DM's; voor het koppelen van nodes/apparaten gebruikt u `openclaw devices`).
 
-Gerelateerd:
-
-- Koppelingsflow: [Koppeling](/nl/channels/pairing)
+Gerelateerd: [Koppelingsproces](/nl/channels/pairing)
 
 ## Opdrachten
 
@@ -35,49 +33,36 @@ openclaw pairing approve --channel telegram --account work <code> --notify
 
 ## `pairing list`
 
-Toon wachtende koppelingsverzoeken voor één kanaal.
+Toon openstaande koppelingsverzoeken voor één kanaal.
 
-Opties:
+| Optie                   | Beschrijving                                      |
+| ----------------------- | ------------------------------------------------- |
+| `[channel]`             | positionele kanaal-id                             |
+| `--channel <channel>`   | expliciete kanaal-id                              |
+| `--account <accountId>` | account-id voor kanalen met meerdere accounts     |
+| `--json`                | machineleesbare uitvoer                           |
 
-- `[channel]`: positionele kanaal-id
-- `--channel <channel>`: expliciete kanaal-id
-- `--account <accountId>`: account-id voor kanalen met meerdere accounts
-- `--json`: machineleesbare uitvoer
-
-Opmerkingen:
-
-- Als meerdere kanalen met koppelingsondersteuning zijn geconfigureerd, moet je een kanaal opgeven, positioneel of met `--channel`.
-- Extensiekanalen zijn toegestaan zolang de kanaal-id geldig is.
+Als meerdere kanalen zijn geconfigureerd die koppeling ondersteunen, geeft u een kanaal positioneel of met `--channel` op. Uitbreidingskanalen werken zolang de kanaal-id geldig is.
 
 ## `pairing approve`
 
-Keur een wachtende koppelingscode goed en sta die afzender toe.
+Keur een openstaande koppelingscode goed en sta die afzender toe.
 
 Gebruik:
 
 - `openclaw pairing approve <channel> <code>`
 - `openclaw pairing approve --channel <channel> <code>`
-- `openclaw pairing approve <code>` wanneer precies één kanaal met koppelingsondersteuning is geconfigureerd
+- `openclaw pairing approve <code>` wanneer precies één kanaal is geconfigureerd dat koppeling ondersteunt
 
-Opties:
+Opties: `--channel <channel>`, `--account <accountId>`, `--notify` (stuur via hetzelfde kanaal een bevestiging terug naar de aanvrager).
 
-- `--channel <channel>`: expliciete kanaal-id
-- `--account <accountId>`: account-id voor kanalen met meerdere accounts
-- `--notify`: stuur een bevestiging terug naar de aanvrager op hetzelfde kanaal
+### Initiële eigenaar instellen
 
-Bootstrap voor eigenaar:
+Als `commands.ownerAllowFrom` leeg is wanneer u een koppelingscode goedkeurt, registreert OpenClaw de goedgekeurde afzender ook als opdrachteigenaar met een kanaalspecifieke vermelding, zoals `telegram:123456789`. Hiermee wordt alleen de eerste eigenaar ingesteld; latere goedkeuringen van koppelingen vervangen of breiden `commands.ownerAllowFrom` nooit uit.
 
-- Als `commands.ownerAllowFrom` leeg is wanneer je een koppelingscode goedkeurt, registreert OpenClaw de goedgekeurde afzender ook als de opdrachteigenaar, met een kanaalgebonden vermelding zoals `telegram:123456789`.
-- Dit bootstrapt alleen de eerste eigenaar. Latere koppelingsgoedkeuringen vervangen of breiden `commands.ownerAllowFrom` niet uit.
-- De opdrachteigenaar is het menselijke operatoraccount dat eigenaar-only opdrachten mag uitvoeren en gevaarlijke acties mag goedkeuren, zoals `/diagnostics`, `/export-trajectory`, `/config` en exec-goedkeuringen.
+De opdrachteigenaar is het account van de menselijke beheerder dat opdrachten mag uitvoeren die uitsluitend voor de eigenaar bestemd zijn en gevaarlijke acties mag goedkeuren, zoals `/diagnostics`, `/export-trajectory`, `/config` en goedkeuringen voor uitvoering. Koppeling stelt een afzender alleen in staat met de agent te communiceren; op zichzelf verleent dit geen eigenaarsrechten buiten deze eenmalige initiële instelling.
 
-## Opmerkingen
-
-- Kanaalinvoer: geef die positioneel door (`pairing list telegram`) of met `--channel <channel>`.
-- `pairing list` ondersteunt `--account <accountId>` voor kanalen met meerdere accounts.
-- `pairing approve` ondersteunt `--account <accountId>` en `--notify`.
-- Als slechts één kanaal met koppelingsondersteuning is geconfigureerd, is `pairing approve <code>` toegestaan.
-- Als je een afzender hebt goedgekeurd voordat deze bootstrap bestond, voer dan `openclaw doctor` uit; dit waarschuwt wanneer er geen opdrachteigenaar is geconfigureerd en toont de opdracht `openclaw config set commands.ownerAllowFrom ...` om dit te herstellen.
+Als u een afzender hebt goedgekeurd voordat deze initiële instelling bestond, voert u `openclaw doctor` uit. Dit waarschuwt wanneer er geen opdrachteigenaar is geconfigureerd en toont de exacte opdracht `openclaw config set commands.ownerAllowFrom ...` om dit te verhelpen.
 
 ## Gerelateerd
 

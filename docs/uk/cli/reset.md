@@ -1,34 +1,24 @@
 ---
 read_when:
-    - Ви хочете очистити локальний стан, залишивши CLI встановленим
-    - Ви хочете пробний запуск, щоб побачити, що буде видалено
-summary: Довідка CLI для `openclaw reset` (скидання локального стану/конфігурації)
-title: Reset
+    - Ви хочете стерти локальний стан, зберігши встановлений CLI
+    - Ви хочете виконати пробний запуск, щоб побачити, що буде видалено
+summary: Довідник CLI для `openclaw reset` (скидання локального стану/конфігурації)
+title: Скинути
 x-i18n:
-    generated_at: "2026-04-24T04:12:49Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: e4a4aba32fb44905d079bf2a22e582a3affbe9809eac9af237ce3e48da72b42c
-    source_path: cli/reset.md
-    workflow: 15
+    generated_at: "2026-07-12T13:09:18Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: f18af9c5e187217de4c02f4b55de9a1c94f7246b74056dc660aa172168edcef9
+    source_path: cli/reset.md
+    workflow: 16
 ---
 
 # `openclaw reset`
 
-Скидання локальної конфігурації/стану (CLI залишається встановленим).
-
-Параметри:
-
-- `--scope <scope>`: `config`, `config+creds+sessions` або `full`
-- `--yes`: пропустити запити на підтвердження
-- `--non-interactive`: вимкнути запити; потребує `--scope` і `--yes`
-- `--dry-run`: вивести дії без видалення файлів
-
-Приклади:
+Скидає локальну конфігурацію/стан (залишає CLI встановленим).
 
 ```bash
-openclaw backup create
 openclaw reset
 openclaw reset --dry-run
 openclaw reset --scope config --yes --non-interactive
@@ -36,12 +26,30 @@ openclaw reset --scope config+creds+sessions --yes --non-interactive
 openclaw reset --scope full --yes --non-interactive
 ```
 
-Примітки:
+## Параметри
 
-- Спочатку виконайте `openclaw backup create`, якщо хочете мати відновлюваний знімок перед видаленням локального стану.
-- Якщо не вказати `--scope`, `openclaw reset` використає інтерактивний запит, щоб вибрати, що видаляти.
-- `--non-interactive` є чинним лише тоді, коли встановлено і `--scope`, і `--yes`.
+- `--scope <scope>`: `config`, `config+creds+sessions` або `full`
+- `--yes`: пропустити запити на підтвердження
+- `--non-interactive`: вимкнути запити; потребує `--scope` і `--yes`
+- `--dry-run`: вивести дії без видалення файлів
+
+## Області скидання
+
+| Область                 | Видаляє                                                                                                            | Спочатку зупиняє Gateway |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| `config`                | лише файл конфігурації                                                                                            | ні                       |
+| `config+creds+sessions` | файл конфігурації, каталог OAuth/облікових даних і каталоги сеансів для кожного агента                            | так                      |
+| `full`                  | каталог стану (включно з конфігурацією/обліковими даними, якщо вони вкладені в нього), каталоги робочих просторів і атестації робочих просторів | так                      |
+
+`config+creds+sessions` і `full` зупиняють запущену керовану службу Gateway перед видаленням стану.
+
+## Примітки
+
+- Перш ніж видаляти локальний стан, спочатку виконайте `openclaw backup create`, щоб створити знімок, придатний для відновлення.
+- Без `--scope` команда `openclaw reset` інтерактивно пропонує вибрати область для видалення.
+- `--non-interactive` допустимий лише тоді, коли задано і `--scope`, і `--yes`.
+- Після завершення `config+creds+sessions` і `full` виводять `Next: openclaw onboard --install-daemon`.
 
 ## Пов’язане
 
-- [Довідка CLI](/uk/cli)
+- [Довідник CLI](/uk/cli)

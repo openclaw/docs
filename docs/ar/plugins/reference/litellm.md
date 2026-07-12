@@ -1,31 +1,31 @@
 ---
 read_when:
-    - أنت تثبّت Plugin litellm أو تهيّئه أو تدقّقه
-summary: يضيف دعم مزوّد نماذج LiteLLM إلى OpenClaw.
-title: LiteLLM Plugin
+    - أنت تثبّت أو تهيّئ أو تدقّق في Plugin ‏litellm
+summary: يضيف دعم موفّر نماذج LiteLLM إلى OpenClaw.
+title: Plugin ‏LiteLLM
 x-i18n:
-    generated_at: "2026-05-02T20:56:57Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:15:19Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: 8bbe9b35112012185719c87aa0f027422f574e995cefcfe2bc1f243d9b3b43a9
     source_path: plugins/reference/litellm.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# LiteLLM Plugin
+# Plugin ‏LiteLLM
 
-يضيف دعم مزود نماذج LiteLLM إلى OpenClaw.
+يضيف دعم موفّر نماذج LiteLLM إلى OpenClaw.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/litellm-provider`
 - مسار التثبيت: مضمن في OpenClaw
 
-## الواجهة
+## السطح
 
-providers: litellm; contracts: imageGenerationProviders
+الموفّرون: litellm؛ العقود: imageGenerationProviders
 
-## المستندات ذات الصلة
+## الوثائق ذات الصلة
 
 - [litellm](/ar/providers/litellm)

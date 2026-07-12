@@ -5,8 +5,8 @@ redirect: /network#core-model
 summary: Перенаправление на /network#core-model
 title: Модель сети
 x-i18n:
-    generated_at: "2026-06-28T22:58:46Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:25:53Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: a0ef2806cfb539157d827fe9c2ffddc914aa680e3ef318c211b2ec1f374cfed2
@@ -14,10 +14,10 @@ x-i18n:
     workflow: 16
 ---
 
-Этот материал был объединен с [Сеть — базовая модель](/ru/network#core-model).
+Этот материал объединён с разделом [Сеть — базовая модель](/ru/network#core-model).
 
 ## Связанные материалы
 
-- [Удаленный доступ](/ru/gateway/remote)
-- [Аутентификация доверенного прокси](/ru/gateway/trusted-proxy-auth)
+- [Удалённый доступ](/ru/gateway/remote)
+- [Аутентификация через доверенный прокси](/ru/gateway/trusted-proxy-auth)
 - [Протокол Gateway](/ru/gateway/protocol)

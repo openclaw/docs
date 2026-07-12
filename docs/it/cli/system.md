@@ -1,31 +1,34 @@
 ---
 read_when:
-    - Vuoi accodare un evento di sistema senza creare un job Cron
-    - È necessario abilitare o disabilitare gli Heartbeat
-    - Vuoi ispezionare le voci di presenza del sistema
+    - Vuoi accodare un evento di sistema senza creare un processo Cron
+    - Devi abilitare o disabilitare gli Heartbeat
+    - Vuoi esaminare le voci di presenza del sistema
 summary: Riferimento CLI per `openclaw system` (eventi di sistema, Heartbeat, presenza)
 title: Sistema
 x-i18n:
-    generated_at: "2026-05-11T20:26:33Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:55:16Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2810fb064ea4afeac24ca0d71419913a664bbec0721cabdb09196075914f4864
+    source_hash: aaca206d8b463fd33f9e3cb21382bbf36469e9daa2706d8a9e2c7fab14b76e7a
     source_path: cli/system.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw system`
 
-Helper a livello di sistema per il Gateway: accodano eventi di sistema, controllano gli heartbeat
-e visualizzano la presenza.
+Strumenti di supporto a livello di sistema per il Gateway: accodano eventi di sistema, controllano gli
+heartbeat e visualizzano la presenza.
 
-Tutti i sottocomandi `system` usano Gateway RPC e accettano i flag client condivisi:
+Tutti i sottocomandi `system` usano l'RPC del Gateway e accettano le opzioni client condivise:
 
-- `--url <url>`
-- `--token <token>`
-- `--timeout <ms>`
-- `--expect-final`
+| Opzione           | Valore predefinito                        | Descrizione                                                                                                                                                                                                 |
+| ----------------- | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--url <url>`     | `gateway.remote.url` se configurato       | URL WebSocket del Gateway.                                                                                                                                                                                  |
+| `--token <token>` | nessuno                                   | Token del Gateway (se richiesto).                                                                                                                                                                           |
+| `--timeout <ms>`  | `30000`                                   | Timeout RPC in millisecondi.                                                                                                                                                                                |
+| `--expect-final`  | disattivato                               | Attende la risposta finale (agente).                                                                                                                                                                        |
+| `--json`          | disattivato                               | Produce output JSON. `heartbeat last/enable/disable` e `system presence` stampano sempre il payload JSON RPC non elaborato indipendentemente da questa opzione; `system event` la usa per scegliere tra JSON e una semplice riga `ok`. |
 
 ## Comandi comuni
 
@@ -39,59 +42,49 @@ openclaw system presence
 
 ## `system event`
 
-Accoda un evento di sistema nella sessione **main** per impostazione predefinita. Il prossimo heartbeat
-lo inserirà come riga `System:` nel prompt. Usa `--mode now` per attivare
-subito l'heartbeat; `next-heartbeat` attende il prossimo tick pianificato.
+Per impostazione predefinita, accoda un evento di sistema nella sessione **principale**. Il successivo
+heartbeat lo inserisce nel prompt come riga `System:`. Usa `--mode now` per
+attivare immediatamente l'heartbeat; `next-heartbeat` (valore predefinito) attende il
+successivo ciclo pianificato.
 
-Passa `--session-key` per indirizzare una sessione specifica (per esempio per inoltrare il completamento di un
-async-task al canale che l'ha avviato).
+Specifica `--session-key` per scegliere come destinazione una sessione specifica, ad esempio per inoltrare il
+completamento di un'attività asincrona al canale che l'ha avviata.
 
-> **Eccezione di timing con `--session-key`:** quando viene fornito `--session-key`,
-> `--mode next-heartbeat` si riduce a un risveglio mirato immediato invece di
-> attendere il prossimo tick pianificato. I risvegli mirati usano l'intent heartbeat
-> `immediate`, quindi bypassano il gate not-due del runner che altrimenti
-> differirebbe (e di fatto scarterebbe) un risveglio con intent `event`. Se vuoi una
-> consegna ritardata, ometti `--session-key` così l'evento arriva nella sessione main e
-> segue il successivo heartbeat regolare.
+<Note>
+**Eccezione temporale con `--session-key`:** quando viene specificato `--session-key`,
+`--mode next-heartbeat` si riduce a un'attivazione mirata immediata anziché
+attendere il successivo ciclo pianificato. Le attivazioni mirate usano l'intento heartbeat
+`immediate`, quindi ignorano il controllo del runner che verificherebbe se l'esecuzione non è ancora prevista e altrimenti
+rinvierebbe (e di fatto eliminerebbe) un'attivazione con intento `event`. Per ottenere una consegna
+ritardata, ometti `--session-key`, così l'evento viene inserito nella sessione principale e
+viene trasportato dal successivo heartbeat regolare.
+</Note>
 
-Flag:
+Opzioni:
 
-- `--text <text>`: testo dell'evento di sistema obbligatorio.
-- `--mode <mode>`: `now` o `next-heartbeat` (predefinito).
-- `--session-key <sessionKey>`: opzionale; indirizza una sessione agente specifica
-  invece della sessione main dell'agente. Le chiavi che non appartengono
-  all'agente risolto ricadono sulla sessione main dell'agente.
-- `--json`: output leggibile dalla macchina.
-- `--url`, `--token`, `--timeout`, `--expect-final`: flag Gateway RPC condivisi.
+- `--text <text>`: testo obbligatorio dell'evento di sistema.
+- `--mode <mode>`: `now` o `next-heartbeat` (valore predefinito).
+- `--session-key <sessionKey>`: facoltativo; sceglie come destinazione una sessione specifica dell'agente
+  anziché la sessione principale dell'agente. Le chiavi che non appartengono all'agente
+  individuato ripiegano sulla sessione principale dell'agente.
 
 ## `system heartbeat last|enable|disable`
 
-Controlli heartbeat:
-
 - `last`: mostra l'ultimo evento heartbeat.
-- `enable`: riattiva gli heartbeat (usalo se erano stati disabilitati).
-- `disable`: mette in pausa gli heartbeat.
-
-Flag:
-
-- `--json`: output leggibile dalla macchina.
-- `--url`, `--token`, `--timeout`, `--expect-final`: flag Gateway RPC condivisi.
+- `enable`: riattiva gli heartbeat (usalo se erano stati disattivati).
+- `disable`: sospende gli heartbeat.
 
 ## `system presence`
 
-Elenca le voci di presenza di sistema correnti note al Gateway (nodi,
+Elenca le voci correnti relative alla presenza del sistema note al Gateway (nodi,
 istanze e righe di stato simili).
-
-Flag:
-
-- `--json`: output leggibile dalla macchina.
-- `--url`, `--token`, `--timeout`, `--expect-final`: flag Gateway RPC condivisi.
 
 ## Note
 
-- Richiede un Gateway in esecuzione raggiungibile dalla configurazione corrente (locale o remoto).
-- Gli eventi di sistema sono effimeri e non vengono mantenuti tra i riavvii.
+- Richiede un Gateway in esecuzione e raggiungibile tramite la configurazione corrente (locale o
+  remota).
+- Gli eventi di sistema sono temporanei e non vengono conservati dopo i riavvii.
 
-## Correlati
+## Contenuti correlati
 
-- [Riferimento CLI](/it/cli)
+- [Riferimento della CLI](/it/cli)

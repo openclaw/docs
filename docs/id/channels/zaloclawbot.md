@@ -2,68 +2,65 @@
 read_when:
     - Anda menginginkan bot asisten Zalo pribadi dengan login kode QR
     - Anda sedang memasang atau memecahkan masalah plugin saluran openclaw-zaloclawbot
-summary: Penyiapan kanal Zalo ClawBot melalui plugin eksternal openclaw-zaloclawbot
+summary: Penyiapan saluran Zalo ClawBot melalui plugin eksternal openclaw-zaloclawbot
 title: Zalo ClawBot
 x-i18n:
-    generated_at: "2026-06-27T17:13:26Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:58:36Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 982ae27b58af013bb5398266837698052b30337df0fe132f7cdfc5b66f561a99
+    source_hash: 76c9f79d114856b86026a5e4b98a43f451b0d3f16dd41a67e9226da4f8b37b33
     source_path: channels/zaloclawbot.md
     workflow: 16
 ---
 
-OpenClaw terhubung ke Zalo ClawBot melalui Plugin eksternal
-`@zalo-platforms/openclaw-zaloclawbot` yang tercantum di katalog. Login menggunakan kode QR Zalo Mini App.
+OpenClaw terhubung ke Zalo ClawBot melalui plugin eksternal `@zalo-platforms/openclaw-zaloclawbot` yang tercantum dalam katalog. Proses masuk menggunakan kode QR Zalo Mini App; id plugin dalam konfigurasi adalah `openclaw-zaloclawbot`.
 
 ## Kompatibilitas
 
-| Versi Plugin | Versi OpenClaw | npm dist-tag | Status        |
-| -------------- | ---------------- | ------------ | ------------- |
-| 0.1.x          | >=2026.4.10      | `latest`     | Aktif / Beta |
+| Versi Plugin | Versi OpenClaw | dist-tag npm | Status        |
+| ------------- | --------------- | ------------ | ------------- |
+| 0.1.4         | >=2026.4.10     | `latest`     | Aktif / Beta  |
 
 ## Prasyarat
 
-- Node.js **>= 22**
-- [OpenClaw](https://docs.openclaw.ai/install) harus sudah terinstal (CLI `openclaw` tersedia).
-- Akun Zalo di perangkat seluler untuk memindai kode QR login.
+- Node.js >= 22
+- [OpenClaw](https://docs.openclaw.ai/install) telah terpasang (CLI `openclaw` tersedia)
+- Akun Zalo pada perangkat seluler untuk memindai kode QR masuk
 
-## Instal dengan onboard (direkomendasikan)
-
-Jalankan wizard orientasi OpenClaw dan pilih **Zalo ClawBot** dari menu channel:
+## Instalasi dengan onboard (disarankan)
 
 ```bash
 openclaw onboard
 ```
 
-Wizard memasang Plugin dari katalog resmi (dengan integritas terverifikasi), menampilkan QR login langsung di terminal, dan menyelesaikan channel setelah Anda memindainya dengan aplikasi Zalo. Tidak diperlukan perintah tambahan.
+Pilih **Zalo ClawBot** dari menu kanal. Wizard memasang plugin dari katalog resmi (dengan integritas yang diverifikasi), menampilkan QR masuk di terminal, dan menyelesaikan penyiapan kanal setelah Anda memindainya dengan aplikasi Zalo.
 
-## Instalasi Manual
+## Instalasi manual
 
-Untuk menambahkan channel ke Gateway yang sudah menjalani orientasi, ikuti langkah-langkah berikut:
+Untuk menambahkan kanal ke Gateway yang telah melalui proses onboard:
 
-### 1. Instal Plugin
+### 1. Pasang plugin
 
 ```bash
 openclaw plugins install "@zalo-platforms/openclaw-zaloclawbot@0.1.4"
 ```
 
-Gunakan versi tersemat persis seperti yang ditampilkan di atas (sesuai dengan entri katalog resmi), agar OpenClaw memverifikasi paket terhadap hash integritas katalog selama instalasi.
+Gunakan versi tersemat yang tepat agar OpenClaw memverifikasi paket terhadap hash integritas katalog selama instalasi.
 
-### 2. Aktifkan Plugin di config
+### 2. Aktifkan plugin dalam konfigurasi
 
 ```bash
 openclaw config set plugins.entries.openclaw-zaloclawbot.enabled true
 ```
 
-### 3. Buat kode QR dan login
+### 3. Buat kode QR dan masuk
 
 ```bash
 openclaw channels login --channel openclaw-zaloclawbot
 ```
 
-Pindai kode QR yang ditampilkan di terminal menggunakan aplikasi seluler Zalo, terima Ketentuan Penggunaan di dalam Zalo Mini App, dan otorisasi sesi.
+Pindai kode QR yang ditampilkan di terminal dengan aplikasi seluler Zalo, setujui Ketentuan Penggunaan di dalam Zalo Mini App, lalu otorisasi sesi tersebut.
 
 ### 4. Mulai ulang Gateway
 
@@ -71,32 +68,30 @@ Pindai kode QR yang ditampilkan di terminal menggunakan aplikasi seluler Zalo, t
 openclaw gateway restart
 ```
 
----
+## Cara kerjanya
 
-## Cara Kerjanya
+Tidak seperti kanal Zalo standar, yang mengharuskan Anda mendaftarkan Zalo Official Account (OA) sendiri dan mengonfigurasi kredensial pengembang statis, Zalo ClawBot adalah **asisten pribadi yang terikat pada pemilik** di infrastruktur resmi bersama:
 
-Berbeda dengan channel developer Zalo standar yang mengharuskan Anda mendaftarkan Zalo Official Account (OA) sendiri dan menempelkan kredensial developer statis, Zalo ClawBot beroperasi sebagai **asisten pribadi yang terikat pemilik** menggunakan infrastruktur resmi bersama:
+1. **Onboarding:** kode QR mengarah ke Zalo Mini App yang mengikat bot privat yang baru disediakan di bawah OA resmi bersama secara langsung ke ID pengguna Zalo Anda.
+2. **Privasi terikat pemilik:** bot hanya berkomunikasi dengan pemiliknya. Pesan dari pengguna lain dibuang pada tingkat platform.
+3. **Jalur API resmi:** plugin menggunakan API Zalo Bot Platform, bukan otomatisasi browser atau sesi web.
 
-1. **Orientasi Aman:** Kode QR mengarah ke Zalo Mini App aman yang mengikat bot privat yang baru disediakan di bawah OA resmi bersama langsung ke Zalo User ID Anda.
-2. **Privasi Terikat Pemilik:** Secara desain, bot dibatasi untuk berkomunikasi _hanya_ dengan pemiliknya. Pesan dari pengguna lain dibuang di tingkat platform, sehingga koneksi tetap privat dan aman.
-3. **Jalur API Resmi:** Plugin menggunakan API Zalo Bot Platform, bukan
-   otomatisasi browser atau sesi web.
+## Mekanisme internal
 
-## Di Balik Layar
+Plugin berkomunikasi dengan Zalo melalui loop long-polling persisten (`getUpdates`). Webhook dinonaktifkan secara default untuk Gateway lokal yang dijalankan dari desktop/terminal. Pesan diproses di sisi klien dan dipetakan ke runtime agen lokal Anda.
 
-Plugin Zalo ClawBot berkomunikasi dengan API Zalo melalui loop pesan long-polling persisten. Untuk mempertahankan runtime yang bersih dan ringan:
+Plugin mengelola kredensial bot di dalam direktori status OpenClaw. Perlakukan direktori tersebut sebagai data sensitif dan lindungi dengan kebijakan kontrol akses serta pencadangan yang sama seperti status OpenClaw lainnya.
 
-- Koneksi long-poll menggunakan endpoint `getUpdates`.
-- Webhook dinonaktifkan secara default untuk eksekusi Gateway desktop/terminal lokal.
-- Pesan diproses di sisi klien dan dipetakan langsung ke runtime agen lokal Anda.
+Runtime plugin ini sepenuhnya berada dalam paket eksternal `@zalo-platforms/openclaw-zaloclawbot`; detail perilaku di bawah ini selain instalasi/konfigurasi dilaporkan oleh pengelola plugin dan tidak diverifikasi terhadap kode sumber inti OpenClaw.
 
-Plugin eksternal mengelola kredensial bot di bawah direktori state OpenClaw.
-Perlakukan direktori tersebut sebagai sensitif dan sertakan dalam kebijakan kontrol akses dan
-cadangan yang sama seperti state OpenClaw lainnya.
+## Pemecahan masalah
 
----
+- **Batas waktu masuk melalui QR:** token masuk (`zbsk`) kedaluwarsa setelah 5 menit demi keamanan. Jika kode QR kedaluwarsa sebelum Anda memindainya, jalankan kembali perintah masuk untuk membuat kode baru.
+- **Gateway gagal dimuat:** pastikan versi host OpenClaw Anda adalah `2026.4.10` atau yang lebih baru. Versi lama tidak mendukung ledger instalasi plugin npm eksternal yang diperlukan oleh ID ini.
 
-## Pemecahan Masalah
+## Terkait
 
-- **Waktu Login QR Habis:** Token login (`zbsk`) kedaluwarsa setelah 5 menit karena alasan keamanan. Jika kode QR kedaluwarsa sebelum Anda memindainya, cukup jalankan ulang perintah login untuk membuat yang baru.
-- **Gateway Gagal Dimuat:** Pastikan versi host OpenClaw Anda adalah `2026.4.10` atau lebih tinggi. Versi yang lebih lama tidak mendukung ledger instalasi Plugin npm eksternal.
+- [Ikhtisar Kanal](/id/channels) - semua kanal yang didukung
+- [Zalo](/id/channels/zalo) - kanal Zalo Bot Creator / Marketplace bawaan
+- [Pemasangan](/id/channels/pairing) - autentikasi DM dan alur pemasangan
+- [Plugin](/id/tools/plugin) - memasang dan mengelola plugin

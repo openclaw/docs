@@ -1,12 +1,11 @@
 ---
 read_when: Connecting the macOS app to a remote gateway over SSH
-summary: SSH-Tunnel-Einrichtung für OpenClaw.app zur Verbindung mit einem entfernten Gateway
+summary: Einrichtung eines SSH-Tunnels für OpenClaw.app zur Verbindung mit einem entfernten Gateway
 title: Einrichtung eines Remote-Gateways
 x-i18n:
-    generated_at: "2026-07-12T15:26:52Z"
+    generated_at: "2026-07-12T01:41:59Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 842578eb74e99d115b04abff5e9673a6454fa6d2cf7905d056999469e1c6b66d
     source_path: gateway/remote-gateway-readme.md
@@ -23,7 +22,7 @@ OpenClaw.app erreicht einen entfernten Gateway über einen SSH-Tunnel: Ein SSH-`
 
 ```mermaid
 flowchart TB
-    subgraph Client["Clientcomputer"]
+    subgraph Client["Client-Computer"]
         direction TB
         A["OpenClaw.app"]
         B["ws://127.0.0.1:18789\n(lokaler Port)"]
@@ -50,16 +49,16 @@ flowchart TB
 4. Starten Sie den Tunnel: `ssh -N remote-gateway &`.
 5. Beenden und öffnen Sie OpenClaw.app erneut.
 
-Verwenden Sie für einen Tunnel, der Neustarts übersteht und automatisch erneut eine Verbindung herstellt, statt eines manuellen `ssh -N` die LaunchAgent-Einrichtung auf der Seite [Remotezugriff](/de/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent).
+Für einen Tunnel, der Neustarts übersteht und die Verbindung automatisch wiederherstellt, verwenden Sie statt eines manuellen `ssh -N` die LaunchAgent-Einrichtung auf der Seite [Remotezugriff](/de/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent).
 
 ## Funktionsweise
 
-| Komponente                           | Funktion                                                                    |
-| ------------------------------------ | --------------------------------------------------------------------------- |
-| `LocalForward 18789 127.0.0.1:18789` | Leitet den lokalen Port 18789 an den entfernten Port 18789 weiter            |
-| `ssh -N`                             | SSH ohne Ausführung entfernter Befehle (nur Portweiterleitung)               |
-| `KeepAlive`                          | Startet den Tunnel bei einem Absturz automatisch neu (LaunchAgent)           |
-| `RunAtLoad`                          | Startet den Tunnel beim Laden des LaunchAgent (LaunchAgent)                  |
+| Komponente                           | Funktion                                                             |
+| ------------------------------------ | -------------------------------------------------------------------- |
+| `LocalForward 18789 127.0.0.1:18789` | Leitet den lokalen Port 18789 an den entfernten Port 18789 weiter    |
+| `ssh -N`                             | SSH ohne Ausführung entfernter Befehle (nur Portweiterleitung)       |
+| `KeepAlive`                          | Startet den Tunnel nach einem Absturz automatisch neu (LaunchAgent)  |
+| `RunAtLoad`                          | Startet den Tunnel beim Laden des LaunchAgent (LaunchAgent)          |
 
 OpenClaw.app stellt auf dem Client eine Verbindung zu `ws://127.0.0.1:18789` her. Der Tunnel leitet diese Verbindung an Port 18789 auf dem entfernten Host weiter, auf dem der Gateway ausgeführt wird.
 

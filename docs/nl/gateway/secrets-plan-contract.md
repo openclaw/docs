@@ -1,25 +1,23 @@
 ---
 read_when:
     - '`openclaw secrets apply`-plannen genereren of beoordelen'
-    - '`Invalid plan target path`-fouten debuggen'
-    - Gedrag voor validatie van doeltype en pad begrijpen
-summary: 'Contract voor `secrets apply`-plannen: doelvalidatie, padmatching en doelbereik van `auth-profiles.json`'
-title: Contract voor het toepassingsplan van geheimen
+    - Fouten met `Invalid plan target path` opsporen
+    - Inzicht in het gedrag van doeltype- en padvalidatie
+summary: 'Contract voor `secrets apply`-plannen: doelvalidatie, padvergelijking en doelbereik van `auth-profiles.json`'
+title: Contract voor het plan voor het toepassen van geheimen
 x-i18n:
-    generated_at: "2026-06-27T17:37:17Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:56:50Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 03f0ca9b433553a2f6d86d01b8c227a24b6f53ef7034a94bd648fbf04c81f13e
+    source_hash: ddaf3df7f0be326fa1c8dc8c360b03697fb58329d03c4eb8106a8740ddf6c47a
     source_path: gateway/secrets-plan-contract.md
     workflow: 16
 ---
 
-Deze pagina definieert het strikte contract dat wordt afgedwongen door `openclaw secrets apply`.
+Deze pagina definieert het strikte contract dat wordt afgedwongen door `openclaw secrets apply`. Als een doel niet aan deze regels voldoet, mislukt apply voordat een bestand wordt gewijzigd.
 
-Als een doel niet aan deze regels voldoet, mislukt apply voordat de configuratie wordt gewijzigd.
-
-## Vorm van planbestand
+## Structuur van het planbestand
 
 `openclaw secrets apply --from <plan.json>` verwacht een `targets`-array met plandoelen:
 
@@ -46,22 +44,16 @@ Als een doel niet aan deze regels voldoet, mislukt apply voordat de configuratie
 }
 ```
 
-## Provider-upserts en verwijderingen
+`openclaw secrets configure` genereert plannen met deze structuur. U kunt er ook handmatig een schrijven of bewerken.
 
-Plannen kunnen ook twee optionele velden op het hoogste niveau bevatten die de
-`secrets.providers`-map wijzigen naast de schrijfbewerkingen per doel:
+## Providers toevoegen of bijwerken en verwijderen
 
-- `providerUpserts` — een object met provideralias als sleutel. Elke waarde is een
-  providerdefinitie (dezelfde vorm die wordt geaccepteerd onder
-  `secrets.providers.<alias>` in `openclaw.json`, bijvoorbeeld een `exec`- of `file`-
-  provider).
-- `providerDeletes` — een array met provideraliassen die moeten worden verwijderd.
+Plannen kunnen ook twee optionele velden op het hoogste niveau bevatten die de `secrets.providers`-toewijzing naast de schrijfbewerkingen per doel wijzigen:
 
-`providerUpserts` wordt uitgevoerd vóór `targets`, zodat een `target.ref.provider` kan
-verwijzen naar een provideralias die hetzelfde plan introduceert in
-`providerUpserts`. Zonder dit mislukken plannen die verwijzen naar een alias die nog niet
-is geconfigureerd in `openclaw.json` met `provider "<alias>" is not
-configured`.
+- `providerUpserts` -- een object met provideraliassen als sleutels. Elke waarde is een providerdefinitie (dezelfde structuur die wordt geaccepteerd onder `secrets.providers.<alias>` in `openclaw.json`, bijvoorbeeld een `exec`- of `file`-provider).
+- `providerDeletes` -- een array met provideraliassen die moeten worden verwijderd.
+
+`providerUpserts` wordt vóór `targets` uitgevoerd, zodat een `target.ref.provider` kan verwijzen naar een provideralias die door hetzelfde plan in `providerUpserts` wordt geïntroduceerd. Zonder deze volgorde mislukken plannen die verwijzen naar een alias die nog niet in `openclaw.json` is geconfigureerd met `provider "<alias>" is not configured`.
 
 ```json5
 {
@@ -87,81 +79,77 @@ configured`.
 }
 ```
 
-Exec-providers die via `providerUpserts` worden geïntroduceerd, blijven onderworpen aan de
-exec-toestemmingsregels in [Toestemmingsgedrag voor exec-providers](#exec-provider-consent-behavior):
-plannen met exec-providers vereisen `--allow-exec` in schrijfmodus.
+Exec-providers die via `providerUpserts` worden geïntroduceerd, blijven onderworpen aan de toestemmingsregels voor exec in [Toestemmingsgedrag voor exec-providers](#exec-provider-consent-behavior): voor plannen die exec-providers bevatten, is `--allow-exec` vereist in de schrijfmodus.
 
 ## Ondersteund doelbereik
 
-Plandoelen worden geaccepteerd voor ondersteunde paden voor referenties in:
+Plandoelen worden geaccepteerd voor ondersteunde referentiepaden in [Referentieoppervlak voor SecretRef-referenties](/nl/reference/secretref-credential-surface).
 
-- [SecretRef-referentieoppervlak](/nl/reference/secretref-credential-surface)
+## Gedrag van doeltypen
 
-## Gedrag van doeltype
+`target.type` moet een herkend doeltype zijn en het genormaliseerde `target.path` moet overeenkomen met de geregistreerde padstructuur van dat type.
 
-Algemene regel:
+Sommige doeltypen accepteren naast hun canonieke typenaam ook een compatibiliteitsalias als `target.type` voor bestaande plannen:
 
-- `target.type` moet worden herkend en moet overeenkomen met de genormaliseerde vorm van `target.path`.
+| Canoniek type                        | Geaccepteerde alias                              |
+| ------------------------------------ | ----------------------------------------------- |
+| `models.providers.apiKey`            | `models.providers.*.apiKey`                     |
+| `skills.entries.apiKey`              | `skills.entries.*.apiKey`                       |
+| `channels.googlechat.serviceAccount` | `channels.googlechat.accounts.*.serviceAccount` |
 
-Compatibiliteitsaliassen blijven geaccepteerd voor bestaande plannen:
+## Regels voor padvalidatie
 
-- `models.providers.apiKey`
-- `skills.entries.apiKey`
-- `channels.googlechat.serviceAccount`
-
-## Padvalidatieregels
-
-Elk doel wordt gevalideerd met al het volgende:
+Elk doel wordt aan de hand van alle volgende regels gevalideerd:
 
 - `type` moet een herkend doeltype zijn.
-- `path` moet een niet-leeg puntpad zijn.
-- `pathSegments` mag worden weggelaten. Als het is opgegeven, moet het normaliseren naar exact hetzelfde pad als `path`.
+- `path` moet een niet-leeg, door punten gescheiden pad zijn.
+- `pathSegments` mag worden weggelaten. Indien opgegeven, moet het na normalisatie exact hetzelfde pad opleveren als `path`.
 - Verboden segmenten worden geweigerd: `__proto__`, `prototype`, `constructor`.
-- Het genormaliseerde pad moet overeenkomen met de geregistreerde padvorm voor het doeltype.
-- Als `providerId` of `accountId` is ingesteld, moet dit overeenkomen met de id die in het pad is gecodeerd.
-- `auth-profiles.json`-doelen vereisen `agentId`.
-- Neem `authProfileProvider` op bij het maken van een nieuwe `auth-profiles.json`-toewijzing.
+- Het genormaliseerde pad moet overeenkomen met de geregistreerde padstructuur voor het doeltype.
+- Als `providerId` of `accountId` is ingesteld, moet deze overeenkomen met de id die in het pad is opgenomen.
+- Doelen voor `auth-profiles.json` vereisen `agentId`.
+- Neem `authProfileProvider` op wanneer u een nieuwe toewijzing in `auth-profiles.json` maakt.
 
-## Foutgedrag
+## Gedrag bij fouten
 
-Als een doel niet door de validatie komt, sluit apply af met een fout zoals:
+Als de validatie van een doel mislukt, wordt apply afgesloten met een fout zoals:
 
 ```text
 Invalid plan target path for models.providers.apiKey: models.providers.openai.baseUrl
 ```
 
-Er worden geen schrijfbewerkingen vastgelegd voor een ongeldig plan.
+Voor een ongeldig plan worden geen schrijfbewerkingen vastgelegd: doelresolutie en padvalidatie worden uitgevoerd voordat een bestand wordt aangeraakt. Zodra een geldig plan begint te schrijven, maakt apply bovendien eerst een momentopname van elk betrokken bestand en herstelt het die momentopnamen als een latere schrijfbewerking binnen dezelfde uitvoering mislukt. Daardoor kunnen configuratie-, authenticatieprofiel- en omgevingsstatus nooit door een gedeeltelijke schrijfbewerking uit synchronisatie raken.
 
 ## Toestemmingsgedrag voor exec-providers
 
-- `--dry-run` slaat standaard exec-SecretRef-controles over.
-- Plannen met exec-SecretRefs/providers worden in schrijfmodus geweigerd tenzij `--allow-exec` is ingesteld.
-- Geef bij het valideren/toepassen van plannen met exec `--allow-exec` door in zowel dry-run- als schrijfopdrachten.
+- `--dry-run` slaat controles voor exec-SecretRefs standaard over.
+- Plannen met exec-SecretRefs/providers worden in de schrijfmodus geweigerd, tenzij `--allow-exec` is ingesteld.
+- Geef bij het valideren/toepassen van plannen die exec bevatten `--allow-exec` door aan zowel de proefuitvoer- als de schrijfopdracht.
 
 ## Opmerkingen over runtime- en auditbereik
 
-- Alleen-ref-vermeldingen in `auth-profiles.json` (`keyRef`/`tokenRef`) worden opgenomen in runtime-resolutie en auditdekking.
-- `secrets apply` schrijft ondersteunde `openclaw.json`-doelen, ondersteunde `auth-profiles.json`-doelen en optionele scrubdoelen.
+- Alleen uit verwijzingen bestaande vermeldingen in `auth-profiles.json` (`keyRef`/`tokenRef`) vallen onder het oplossen van referenties tijdens runtime en onder de auditdekking.
+- `secrets apply` schrijft ondersteunde doelen in `openclaw.json`, ondersteunde doelen in `auth-profiles.json` en voert drie optionele opschoningsrondes uit, die elk standaard zijn ingeschakeld: `scrubEnv` (verwijdert gemigreerde waarden in platte tekst uit `.env`), `scrubAuthProfilesForProviderTargets` (verwijdert resten in platte tekst en ongebruikte verwijzingen uit `auth-profiles.json` voor providers die zojuist door een plan zijn gemigreerd) en `scrubLegacyAuthJson` (verwijdert gemigreerde `api_key`-vermeldingen uit verouderde `auth.json`-opslaglocaties). Stel `options.scrubEnv`, `options.scrubAuthProfilesForProviderTargets` of `options.scrubLegacyAuthJson` in het plan in op `false` om de betreffende ronde over te slaan.
 
-## Operatorcontroles
+## Controles voor beheerders
 
 ```bash
-# Validate plan without writes
+# Plan valideren zonder te schrijven
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run
 
-# Then apply for real
+# Daarna daadwerkelijk toepassen
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json
 
-# For exec-containing plans, opt in explicitly in both modes
+# Voor plannen die exec bevatten, in beide modi expliciet toestemming geven
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run --allow-exec
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --allow-exec
 ```
 
-Als apply mislukt met een bericht over een ongeldig doelpad, genereer het plan dan opnieuw met `openclaw secrets configure` of corrigeer het doelpad naar een ondersteunde vorm hierboven.
+Als apply mislukt met een melding over een ongeldig doelpad, genereert u het plan opnieuw met `openclaw secrets configure` of corrigeert u het doelpad naar een hierboven ondersteunde structuur.
 
 ## Gerelateerde documentatie
 
-- [Geheimenbeheer](/nl/gateway/secrets)
+- [Beheer van geheimen](/nl/gateway/secrets)
 - [CLI `secrets`](/nl/cli/secrets)
-- [SecretRef-referentieoppervlak](/nl/reference/secretref-credential-surface)
+- [Referentieoppervlak voor SecretRef-referenties](/nl/reference/secretref-credential-surface)
 - [Configuratiereferentie](/nl/gateway/configuration-reference)

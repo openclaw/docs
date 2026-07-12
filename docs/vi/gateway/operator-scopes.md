@@ -1,127 +1,133 @@
 ---
 read_when:
-    - Gỡ lỗi lỗi thiếu phạm vi người vận hành
-    - Xem xét phê duyệt ghép nối thiết bị hoặc node
+    - Gỡ lỗi thiếu phạm vi người vận hành
+    - Xem xét phê duyệt ghép cặp thiết bị hoặc Node
     - Thêm hoặc phân loại các phương thức RPC của Gateway
-summary: Vai trò người vận hành, phạm vi và kiểm tra tại thời điểm phê duyệt cho các client Gateway
+summary: Vai trò người vận hành, phạm vi và các bước kiểm tra tại thời điểm phê duyệt dành cho máy khách Gateway
 title: Phạm vi của người vận hành
 x-i18n:
-    generated_at: "2026-06-27T17:31:27Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:55:54Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: dc59453ae1a73b52276185de2cedd1ed4da027111168eda8107d6ba0b74aec2f
+    source_hash: cfda4486e8d31c01fb7ffff398dcc678d298194f0f0ce6308ae9e5388f5a2856
     source_path: gateway/operator-scopes.md
     workflow: 16
 ---
 
-Phạm vi operator xác định một client Gateway có thể làm gì sau khi xác thực.
-Chúng là một biện pháp bảo vệ control plane bên trong một miền operator Gateway đáng tin cậy,
-không phải cơ chế cô lập đa đối tượng thuê đối địch. Nếu bạn cần tách biệt mạnh giữa
-người dùng, đội nhóm hoặc máy móc, hãy chạy các Gateway riêng dưới các người dùng OS hoặc
-máy chủ riêng.
+Phạm vi của toán tử giới hạn những gì một máy khách Gateway có thể thực hiện sau khi xác thực.
+Đây là rào chắn mặt phẳng điều khiển trong một miền toán tử Gateway đáng tin cậy,
+không phải cơ chế cô lập đa đối tượng thuê có khả năng chống lại tác nhân thù địch. Để phân tách chặt chẽ giữa người dùng,
+nhóm hoặc máy, hãy chạy các Gateway riêng biệt dưới các người dùng hệ điều hành hoặc máy chủ riêng biệt.
 
 Liên quan: [Bảo mật](/vi/gateway/security), [Giao thức Gateway](/vi/gateway/protocol),
 [Ghép đôi Gateway](/vi/gateway/pairing), [CLI thiết bị](/vi/cli/devices).
 
 ## Vai trò
 
-Các client WebSocket Gateway kết nối với một vai trò:
+Mỗi máy khách WebSocket của Gateway kết nối với một vai trò:
 
-- `operator`: các client control plane như CLI, Control UI, tự động hóa và
-  các tiến trình trợ giúp đáng tin cậy.
-- `node`: các máy chủ năng lực như macOS, iOS, Android hoặc các node không giao diện
-  để lộ lệnh thông qua `node.invoke`.
+- `operator`: các máy khách mặt phẳng điều khiển như CLI, giao diện điều khiển, tác vụ tự động hóa và
+  các tiến trình hỗ trợ đáng tin cậy.
+- `node`: các máy chủ cung cấp khả năng (macOS, iOS, Android, không giao diện) công khai
+  các lệnh thông qua `node.invoke`.
 
-Các phương thức RPC của operator yêu cầu vai trò `operator`. Các phương thức bắt nguồn từ node
+Các phương thức RPC của toán tử yêu cầu vai trò `operator`; các phương thức bắt nguồn từ Node
 yêu cầu vai trò `node`.
 
 ## Cấp độ phạm vi
 
-| Phạm vi                 | Ý nghĩa                                                                                                                                                                              |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `operator.read`         | Trạng thái chỉ đọc, danh sách, catalog, nhật ký, đọc phiên và các lệnh gọi control plane không thay đổi khác.                                                                       |
-| `operator.write`        | Các hành động operator có thay đổi thông thường như gửi tin nhắn, gọi công cụ, cập nhật cài đặt talk/voice và chuyển tiếp lệnh node. Cũng thỏa mãn `operator.read`.                 |
-| `operator.admin`        | Quyền truy cập control plane quản trị. Thỏa mãn mọi phạm vi `operator.*`. Bắt buộc để thay đổi cấu hình, cập nhật, native hooks, namespace dành riêng nhạy cảm và phê duyệt rủi ro cao. |
-| `operator.pairing`      | Quản lý ghép đôi thiết bị và node, bao gồm liệt kê, phê duyệt, từ chối, xóa, xoay vòng và thu hồi bản ghi ghép đôi hoặc token thiết bị.                                             |
-| `operator.approvals`    | API phê duyệt exec và plugin.                                                                                                                                                       |
-| `operator.talk.secrets` | Đọc cấu hình Talk có bao gồm bí mật.                                                                                                                                                 |
+| Phạm vi                 | Ý nghĩa                                                                                                                                                                            |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `operator.read`         | Trạng thái, danh sách, danh mục, nhật ký, thao tác đọc phiên và các lệnh gọi không thay đổi dữ liệu khác ở chế độ chỉ đọc.                                                          |
+| `operator.write`        | Các thao tác thay đổi dữ liệu của toán tử: gửi tin nhắn, gọi công cụ, cập nhật cài đặt trò chuyện/giọng nói, chuyển tiếp lệnh Node. Đồng thời đáp ứng `operator.read`.               |
+| `operator.admin`        | Quyền truy cập quản trị. Đáp ứng mọi phạm vi `operator.*`. Bắt buộc để thay đổi cấu hình, cập nhật, dùng hook gốc, không gian tên dành riêng và phê duyệt có rủi ro cao.             |
+| `operator.pairing`      | Quản lý ghép đôi thiết bị và Node: liệt kê, phê duyệt, từ chối, xóa, luân chuyển, thu hồi.                                                                                          |
+| `operator.approvals`    | Các API phê duyệt thực thi và Plugin.                                                                                                                                              |
+| `operator.talk.secrets` | Đọc cấu hình Talk, bao gồm cả thông tin bí mật.                                                                                                                                    |
 
-Các phạm vi `operator.*` chưa biết trong tương lai yêu cầu khớp chính xác trừ khi bên gọi có
-`operator.admin`.
+Các phạm vi `operator.*` chưa xác định trong tương lai yêu cầu khớp chính xác, trừ khi bên gọi
+đã có `operator.admin`.
 
-## Phạm vi phương thức chỉ là cổng đầu tiên
+## Phạm vi phương thức chỉ là cổng kiểm tra đầu tiên
 
-Mỗi RPC Gateway có một phạm vi phương thức đặc quyền tối thiểu. Phạm vi phương thức đó quyết định
-liệu yêu cầu có thể tới handler hay không. Sau đó, một số handler áp dụng các kiểm tra nghiêm ngặt hơn
-tại thời điểm phê duyệt dựa trên đối tượng cụ thể đang được phê duyệt hoặc thay đổi.
+Mỗi RPC của Gateway có một phạm vi phương thức theo nguyên tắc đặc quyền tối thiểu để quyết định liệu
+yêu cầu có được chuyển đến trình xử lý hay không. Sau đó, một số trình xử lý áp dụng các bước kiểm tra nghiêm ngặt hơn dựa trên
+đối tượng cụ thể đang được phê duyệt hoặc thay đổi:
 
-Ví dụ:
+- Có thể truy cập `device.pair.approve` bằng `operator.pairing`, nhưng khi phê duyệt một
+  thiết bị của toán tử, chỉ có thể cấp mới hoặc giữ nguyên các phạm vi mà bên gọi đã có.
+- Có thể truy cập `node.pair.approve` bằng `operator.pairing`, sau đó phương thức này suy ra các
+  phạm vi phê duyệt bổ sung từ danh sách lệnh đã khai báo của Node đang chờ xử lý.
+- `chat.send` là phương thức có phạm vi ghi, nhưng các lệnh trò chuyện `/config set` và
+  `/config unset` còn yêu cầu thêm `operator.admin`,
+  bất kể phạm vi gửi trò chuyện của bên gọi.
 
-- `device.pair.approve` có thể truy cập bằng `operator.pairing`, nhưng việc phê duyệt một
-  thiết bị operator chỉ có thể tạo hoặc giữ lại các phạm vi mà bên gọi đã có.
-- `node.pair.approve` có thể truy cập bằng `operator.pairing`, rồi suy ra các phạm vi
-  phê duyệt bổ sung từ danh sách lệnh node đang chờ.
-- `chat.send` thông thường là một phương thức thuộc phạm vi ghi, nhưng `/config set`
-  và `/config unset` lâu dài yêu cầu `operator.admin` ở cấp lệnh.
-
-Điều này cho phép các operator có phạm vi thấp hơn thực hiện các hành động ghép đôi rủi ro thấp mà không biến
-mọi phê duyệt ghép đôi thành chỉ dành cho admin.
+Điều này cho phép các toán tử có phạm vi thấp hơn thực hiện thao tác ghép đôi ít rủi ro mà không
+khiến mọi phê duyệt ghép đôi đều chỉ dành cho quản trị viên.
 
 ## Phê duyệt ghép đôi thiết bị
 
-Bản ghi ghép đôi thiết bị là nguồn bền vững của các vai trò và phạm vi đã được phê duyệt.
-Các thiết bị đã ghép đôi không âm thầm nhận quyền truy cập rộng hơn: các lần kết nối lại yêu cầu
-vai trò rộng hơn hoặc phạm vi rộng hơn sẽ tạo một yêu cầu nâng cấp mới đang chờ.
+Bản ghi ghép đôi thiết bị là nguồn lưu trữ lâu dài của các vai trò và phạm vi đã được phê duyệt.
+Một thiết bị đã ghép đôi không âm thầm nhận quyền truy cập rộng hơn: một lần kết nối lại
+yêu cầu vai trò hoặc phạm vi rộng hơn sẽ tạo yêu cầu nâng cấp mới đang chờ xử lý.
 
 Khi phê duyệt một yêu cầu thiết bị:
 
-- Một yêu cầu không có vai trò operator không cần phê duyệt phạm vi token operator.
-- Một yêu cầu cho vai trò thiết bị không phải operator, chẳng hạn như `node`, yêu cầu
-  `operator.admin`, ngay cả khi `device.pair.approve` có thể truy cập bằng
+- Yêu cầu không có vai trò toán tử không cần phê duyệt phạm vi toán tử.
+- Yêu cầu vai trò thiết bị không phải toán tử (ví dụ `node`) cần
+  `operator.admin`, mặc dù bản thân `device.pair.approve` chỉ cần
   `operator.pairing`.
-- Một yêu cầu cho `operator.read`, `operator.write`, `operator.approvals`,
-  `operator.pairing`, hoặc `operator.talk.secrets` yêu cầu bên gọi nắm giữ
-  các phạm vi đó, hoặc `operator.admin`.
-- Một yêu cầu cho `operator.admin` yêu cầu `operator.admin`.
-- Một yêu cầu sửa chữa không có phạm vi rõ ràng có thể kế thừa các phạm vi token operator
-  hiện có. Nếu token hiện có đó thuộc phạm vi admin, việc phê duyệt vẫn yêu cầu
+- Yêu cầu `operator.read`, `operator.write`, `operator.approvals`,
+  `operator.pairing` hoặc `operator.talk.secrets` yêu cầu bên gọi phải
+  đã có phạm vi đó hoặc có `operator.admin`.
+- Yêu cầu `operator.admin` cần `operator.admin`.
+- Yêu cầu sửa chữa không có phạm vi tường minh có thể kế thừa các phạm vi của token toán tử
+  hiện có; nếu token đó có phạm vi quản trị, việc phê duyệt vẫn cần
   `operator.admin`.
 
-Các phiên shared-secret và trusted-proxy không phải admin chỉ có thể phê duyệt các yêu cầu
-thiết bị operator trong phạm vi operator đã khai báo của chính chúng. Phê duyệt các vai trò không phải operator
-chỉ dành cho admin, ngay cả khi các phiên đó vẫn có thể dùng
-`operator.pairing`.
+Các phiên dùng thông tin bí mật dùng chung không có quyền quản trị và các phiên proxy đáng tin cậy chỉ có thể phê duyệt
+yêu cầu thiết bị toán tử trong phạm vi toán tử đã khai báo của chính chúng; việc phê duyệt
+vai trò không phải toán tử chỉ dành cho quản trị viên, ngay cả khi các phiên đó vẫn có thể sử dụng
+`operator.pairing` cho mục đích khác.
 
-Đối với các phiên token thiết bị đã ghép đôi, việc quản lý cũng bị giới hạn trong phạm vi của chính nó trừ khi
-bên gọi có `operator.admin`: các bên gọi không phải admin chỉ thấy các mục ghép đôi của riêng mình,
-chỉ có thể phê duyệt hoặc từ chối yêu cầu đang chờ của riêng mình, và chỉ có thể xoay vòng,
-thu hồi hoặc xóa mục thiết bị của riêng mình.
+Đối với các phiên dùng token của thiết bị đã ghép đôi, việc quản lý bị giới hạn trong phạm vi của chính thiết bị đó, trừ khi bên gọi
+có `operator.admin`: bên gọi không phải quản trị viên chỉ thấy các mục ghép đôi của chính mình và
+chỉ có thể phê duyệt, từ chối, luân chuyển, thu hồi hoặc xóa mục thiết bị của chính mình.
 
-## Phê duyệt ghép đôi node
+## Phê duyệt ghép đôi Node
 
-`node.pair.*` legacy sử dụng một kho ghép đôi node riêng do Gateway sở hữu. Các node WS
-sử dụng ghép đôi thiết bị với `role: node`, nhưng cùng bộ từ vựng cấp phê duyệt
-vẫn được áp dụng.
+Các phương thức `node.pair.*` cũ sử dụng một kho ghép đôi Node riêng do Gateway sở hữu.
+Các Node WS sử dụng ghép đôi thiết bị (`role: node`) thay thế, nhưng vẫn áp dụng cùng
+hệ thuật ngữ phê duyệt. Xem [Ghép đôi Gateway](/vi/gateway/pairing) để biết mối liên hệ giữa hai
+kho này.
 
-`node.pair.approve` sử dụng danh sách lệnh trong yêu cầu đang chờ để suy ra các
-phạm vi bắt buộc bổ sung:
+`node.pair.approve` suy ra các phạm vi bắt buộc bổ sung từ danh sách lệnh của
+yêu cầu đang chờ xử lý:
 
-- Yêu cầu không có lệnh: `operator.pairing`
-- Lệnh node không phải exec: `operator.pairing` + `operator.write`
-- `system.run`, `system.run.prepare`, hoặc `system.which`:
-  `operator.pairing` + `operator.admin`
+| Lệnh đã khai báo                                      | Phạm vi bắt buộc                       |
+| ----------------------------------------------------- | -------------------------------------- |
+| không có                                              | `operator.pairing`                     |
+| các lệnh Node không thực thi                          | `operator.pairing` + `operator.write`  |
+| `system.run`, `system.run.prepare` hoặc `system.which` | `operator.pairing` + `operator.admin`  |
 
-Ghép đôi node thiết lập danh tính và niềm tin. Nó không thay thế chính sách phê duyệt exec
-`system.run` riêng của node.
+Việc phê duyệt khai báo của Node không bật các lệnh có cổng danh sách cho phép
+thời gian chạy riêng. Ví dụ, phê duyệt một Node khai báo
+`computer.act` yêu cầu phạm vi ghép đôi cộng với phạm vi ghi, nhưng chỉ ghi nhận bề mặt khả năng đó.
+Quản trị viên hoặc chủ sở hữu vẫn phải kích hoạt `computer.act`. Trong thời gian tính năng này vẫn
+được kích hoạt, việc gọi nó thông qua phương thức `node.invoke` có phạm vi ghi không
+yêu cầu phạm vi quản trị cho từng thao tác.
 
-## Xác thực shared-secret
+Ghép đôi Node thiết lập danh tính và độ tin cậy; nó không thay thế chính sách phê duyệt thực thi
+`system.run` riêng của Node.
 
-Xác thực bằng token/mật khẩu Gateway dùng chung được xem là quyền truy cập operator đáng tin cậy cho
-Gateway đó. Các bề mặt HTTP tương thích OpenAI, `/tools/invoke`, và các endpoint lịch sử phiên HTTP
-khôi phục bộ phạm vi mặc định operator đầy đủ thông thường cho xác thực bearer shared-secret,
+## Xác thực bằng thông tin bí mật dùng chung
+
+Xác thực bằng token/mật khẩu Gateway dùng chung được coi là quyền truy cập toán tử đáng tin cậy đối với
+Gateway đó. Các bề mặt HTTP tương thích với OpenAI, `/tools/invoke` và các điểm cuối HTTP
+lịch sử phiên khôi phục đầy đủ tập phạm vi toán tử mặc định cho xác thực bearer bằng thông tin bí mật dùng chung,
 ngay cả khi bên gọi gửi các phạm vi khai báo hẹp hơn.
 
-Các chế độ mang danh tính, chẳng hạn như xác thực trusted proxy hoặc private-ingress `none`,
-vẫn có thể tôn trọng các phạm vi khai báo rõ ràng. Hãy dùng các Gateway riêng cho việc tách biệt
-ranh giới tin cậy thực sự.
+Các chế độ có gắn danh tính, chẳng hạn như xác thực proxy đáng tin cậy hoặc `none` qua cổng vào riêng tư,
+vẫn có thể tuân theo các phạm vi được khai báo tường minh. Hãy sử dụng các Gateway riêng biệt để thực sự
+phân tách ranh giới tin cậy.

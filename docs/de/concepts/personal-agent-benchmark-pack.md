@@ -1,15 +1,14 @@
 ---
 read_when:
-    - Zuverlässigkeitsprüfungen für lokale persönliche Agenten ausführen
-    - Erweitern des Repository-gestützten Katalogs von QA-Szenarien
-    - Überprüfung von Erinnerungen, Antworten, Speicher, Schwärzung, sicherer Tool-Weiterverarbeitung, Aufgabenstatus, bedenkenlos teilbaren Diagnosedaten, beleggestützten Abschlussbehauptungen und Fehlerbehebung
-summary: Lokale qa-channel-Szenarien zur Überprüfung datenschutzfreundlicher Workflows für persönliche Assistenten.
+    - Lokale Zuverlässigkeitsprüfungen für persönliche Agenten ausführen
+    - Erweitern des repositorygestützten Katalogs für QA-Szenarien
+    - Überprüfung von Erinnerungen, Antworten, Active Memory, Schwärzung, sicherer Tool-Nachverfolgung, Aufgabenstatus, sicher teilbaren Diagnosedaten, belegten Abschlussangaben und Fehlerbehebung
+summary: Lokale qa-channel-Szenarien zur Überprüfung datenschutzwahrender Workflows für persönliche Assistenten.
 title: Benchmark-Paket für persönliche Agenten
 x-i18n:
-    generated_at: "2026-07-12T15:13:37Z"
+    generated_at: "2026-07-12T01:33:33Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 35da45e4b22b1044a777fa8d6bce87f9ace377950dd0af3f2419b40cfe4d9be6
     source_path: concepts/personal-agent-benchmark-pack.md
@@ -26,18 +25,18 @@ YAML-Katalog unter `qa/scenarios`.
 
 Zehn Szenarien, definiert in `qa/scenarios/personal/*.yaml`:
 
-| Szenario-ID                                | Prüfungen                                                                                                           |
-| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
-| `personal-reminder-roundtrip`              | Simulierte persönliche Erinnerungen über lokale Cron-Zustellung                                                     |
-| `personal-channel-thread-reply`            | Routing simulierter Direktnachrichten und Thread-Antworten über `qa-channel`                                        |
-| `personal-memory-preference-recall`        | Simulierter Abruf von Präferenzen aus den temporären Speicherdateien des QA-Arbeitsbereichs                         |
-| `personal-redaction-no-secret-leak`        | Prüfungen, dass simulierte Geheimnisse nicht wiedergegeben werden                                                   |
-| `personal-tool-safety-followthrough`       | Sichere, durch Lesezugriff gestützte Werkzeugausführung nach einem kurzen genehmigungsähnlichen Dialogschritt       |
-| `personal-approval-denial-stop`            | Abbruchverhalten bei verweigerter Genehmigung einer sensiblen lokalen Leseanforderung                               |
-| `personal-task-followthrough-status`       | Nachweisgestützte Aufgabenstatusberichte, die ausstehende, blockierte und erledigte Aufgaben getrennt halten        |
-| `personal-share-safe-diagnostics-artifact` | Sicher teilbare Diagnoseartefakte, die nützliche Statusinformationen ohne unverarbeitete persönliche Inhalte bieten |
-| `personal-no-fake-progress`                | Nachweisgestützte Abschlussmeldungen, die vor dem Vorliegen lokaler Belege keinen falschen Fortschritt vortäuschen  |
-| `personal-failure-recovery`                | Fehlerbehebung, die den Teilstatus meldet und Grenzen für erneute Versuche klar ausweist                            |
+| Szenario-ID                                | Prüfungen                                                                                                         |
+| ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| `personal-reminder-roundtrip`              | Simulierte persönliche Erinnerungen durch lokale Cron-Zustellung                                                  |
+| `personal-channel-thread-reply`            | Routing simulierter Direktnachrichten und Thread-Antworten über `qa-channel`                                      |
+| `personal-memory-preference-recall`        | Simulierter Abruf von Präferenzen aus den Speicherdateien des temporären QA-Arbeitsbereichs                       |
+| `personal-redaction-no-secret-leak`        | Prüfungen, dass simulierte Geheimnisse nicht wiedergegeben werden                                                 |
+| `personal-tool-safety-followthrough`       | Sichere, lesegestützte Tool-Ausführung nach einem kurzen, genehmigungsähnlichen Dialogschritt                     |
+| `personal-approval-denial-stop`            | Abbruchverhalten bei verweigerter Genehmigung einer sensiblen lokalen Leseanforderung                             |
+| `personal-task-followthrough-status`       | Nachweisgestützte Aufgabenstatusmeldung, die ausstehende, blockierte und abgeschlossene Aufgaben getrennt hält    |
+| `personal-share-safe-diagnostics-artifact` | Sicher teilbare Diagnoseartefakte, die nützliche Statusinformationen enthalten, aber persönliche Rohdaten auslassen |
+| `personal-no-fake-progress`                | Nachweisgestützte Abschlussmeldungen, die vor dem Vorliegen lokaler Belege keinen falschen Fortschritt vortäuschen |
+| `personal-failure-recovery`                | Fehlerbehebung, die den Teilstatus meldet und die Grenzen für erneute Versuche klar ausweist                      |
 
 Die maschinenlesbaren Metadaten des Pakets (ID-Liste, Titel, Beschreibung) befinden sich in
 `extensions/qa-lab/src/scenario-packs.ts` unter `QA_PERSONAL_AGENT_SCENARIO_IDS`.
@@ -50,7 +49,7 @@ OPENCLAW_ENABLE_PRIVATE_QA_CLI=1 pnpm openclaw qa suite \
   --concurrency 1
 ```
 
-`--pack` ergänzt wiederholte `--scenario`-Flags. Explizit angegebene Szenarien werden
+`--pack` lässt sich additiv mit wiederholten `--scenario`-Flags verwenden. Explizit angegebene Szenarien werden
 zuerst ausgeführt, anschließend die Paketszenarien in der Reihenfolge von `QA_PERSONAL_AGENT_SCENARIO_IDS`,
 wobei Duplikate entfernt werden.
 
@@ -60,22 +59,22 @@ Lane vorgesehen. Richten Sie es nicht auf Live-Chatdienste oder echte persönlic
 ## Datenschutzmodell
 
 Die Szenarien verwenden ausschließlich simulierte Benutzer, simulierte Präferenzen, simulierte Geheimnisse und den
-temporären QA-Gateway-Arbeitsbereich, der von der Suite erstellt wird. Sie dürfen keine echten
-OpenClaw-Benutzerspeicher, Sitzungen, Anmeldedaten, Launch Agents, globalen
-Konfigurationen oder Live-Gateway-Zustände lesen oder schreiben.
+temporären QA-Gateway-Arbeitsbereich, den die Suite erstellt. Sie dürfen weder reale OpenClaw-Benutzerspeicher,
+Sitzungen, Anmeldedaten, Startagenten, globale Konfigurationen noch den Live-Zustand des Gateway lesen oder
+schreiben.
 
 Artefakte verbleiben im vorhandenen Artefaktverzeichnis der QA-Suite und werden
-wie Testausgaben behandelt. Schwärzungsprüfungen verwenden simulierte Markierungen, sodass Fehler sicher
-untersucht und in Issues erfasst werden können.
+wie Testausgaben behandelt. Schwärzungsprüfungen verwenden simulierte Markierungen, sodass Fehler gefahrlos
+untersucht und in Issues dokumentiert werden können.
 
 ## Paket erweitern
 
 Fügen Sie neue `.yaml`-Fälle unter `qa/scenarios/personal/` hinzu und ergänzen Sie anschließend die Szenario-ID
 in `QA_PERSONAL_AGENT_SCENARIO_IDS`. Halten Sie jeden Fall klein, lokal und in
-`mock-openai` deterministisch und konzentrieren Sie ihn auf ein Verhalten eines persönlichen Assistenten.
+`mock-openai` deterministisch und konzentrieren Sie ihn auf ein einzelnes Verhalten eines persönlichen Assistenten.
 
-Gute Kandidaten für weitere Ergänzungen: Prüfungen des Exports geschwärzter Abläufe, Prüfungen ausschließlich lokaler
+Gute Kandidaten für Folgearbeiten: Prüfungen des Exports geschwärzter Abläufe, Prüfungen rein lokaler
 Plugin-Arbeitsabläufe.
 
-Fügen Sie keinen neuen Runner, kein Plugin, keine Abhängigkeit, keinen Live-Transport und keine Modellbewertung hinzu,
-bis der Szenariokatalog genügend stabile Fälle enthält, um diese Oberfläche zu rechtfertigen.
+Fügen Sie keinen neuen Runner, kein Plugin, keine Abhängigkeit, keinen Live-Transport und keine Modellbewertung
+hinzu, bis der Szenariokatalog genügend stabile Fälle enthält, um diese zusätzliche Oberfläche zu rechtfertigen.

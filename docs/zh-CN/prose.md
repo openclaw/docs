@@ -1,14 +1,14 @@
 ---
 read_when:
-    - 你想运行或编写 .prose 工作流文件
+    - 你想运行或编写 `.prose` 工作流文件
     - 你想启用 OpenProse 插件
-    - 你需要了解 OpenProse 如何映射到 OpenClaw 基元
+    - 你需要了解 OpenProse 如何映射到 OpenClaw 的基础概念
 sidebarTitle: OpenProse
-summary: OpenProse 是一种面向多 Agent AI 会话、Markdown 优先的工作流格式。在 OpenClaw 中，它以插件形式提供，包含 `/prose` 斜杠命令和 Skills 包。
+summary: OpenProse 是一种面向多智能体 AI 会话、以 Markdown 为优先的工作流格式。在 OpenClaw 中，它以插件形式提供，包含 `/prose` 斜杠命令和 Skills 包。
 title: OpenProse
 x-i18n:
-    generated_at: "2026-07-05T11:35:51Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T20:51:27Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 8b04eb23bf827fbec6db11c1e95993e7f6c617451c5f4fda771ad078674c12bc
@@ -16,10 +16,7 @@ x-i18n:
     workflow: 16
 ---
 
-OpenProse 是一种可移植、Markdown 优先的工作流格式，用于编排 AI
-会话。在 OpenClaw 中，它以插件形式提供，会安装一个 OpenProse Skills
-包和一个 `/prose` 斜杠命令。程序位于 `.prose` 文件中，并且可以
-通过显式控制流生成多个子智能体。
+OpenProse 是一种可移植、以 Markdown 为优先的工作流格式，用于编排 AI 会话。在 OpenClaw 中，它以插件形式提供，会安装一个 OpenProse Skills 包和一个 `/prose` 斜杠命令。程序存放在 `.prose` 文件中，并可通过显式控制流生成多个子智能体。
 
 <CardGroup cols={3}>
   <Card title="安装" icon="download" href="#install">
@@ -29,7 +26,7 @@ OpenProse 是一种可移植、Markdown 优先的工作流格式，用于编排 
     使用 `/prose run` 执行 `.prose` 文件或远程程序。
   </Card>
   <Card title="编写程序" icon="pencil" href="#example-parallel-research-and-synthesis">
-    使用并行和顺序步骤编写多 Agent 工作流。
+    使用并行和顺序步骤编写多智能体工作流。
   </Card>
 </CardGroup>
 
@@ -37,7 +34,7 @@ OpenProse 是一种可移植、Markdown 优先的工作流格式，用于编排 
 
 <Steps>
   <Step title="启用插件">
-    OpenProse 已内置，但默认禁用。启用它：
+    OpenProse 已内置，但默认处于禁用状态。启用它：
 
     ```bash
     openclaw plugins enable open-prose
@@ -54,13 +51,12 @@ OpenProse 是一种可移植、Markdown 优先的工作流格式，用于编排 
     openclaw plugins list | grep prose
     ```
 
-    你应该会看到 `open-prose` 已启用。`/prose` Skills 命令现在
-    可在聊天中使用。
+    你应该会看到 `open-prose` 已启用。现在可以在聊天中使用 `/prose` Skills 命令。
 
   </Step>
 </Steps>
 
-从仓库检出版本中，你可以直接安装该插件：
+从仓库检出目录中，你可以直接安装该插件：
 `openclaw plugins install ./extensions/open-prose`
 
 ## 斜杠命令
@@ -78,20 +74,17 @@ OpenProse 将 `/prose` 注册为用户可调用的 Skills 命令：
 ```
 
 `/prose run <handle/slug>` 会解析为 `https://p.prose.md/<handle>/<slug>`。
-直接 URL 会原样使用 `web_fetch` 工具获取。
+直接 URL 会使用 `web_fetch` 工具按原样获取。
 
-顶层远程运行是显式的。`.prose` 程序中的远程导入是
-传递性的代码依赖：在 OpenProse 获取任何远程 `use` 目标之前，
-它会显示已解析的导入列表，并要求操作员针对该次运行准确回复
-`approve remote prose imports`。
+顶层远程运行是显式操作。`.prose` 程序中的远程导入属于传递性代码依赖：OpenProse 获取任何远程 `use` 目标前，会显示已解析的导入列表，并要求操作员为该次运行准确回复 `approve remote prose imports`。
 
-## 它能做什么
+## 功能
 
-- 通过显式并行实现多 Agent 研究和综合。
-- 可重复、审批安全的工作流（代码审查、事件分诊、内容流水线）。
+- 通过显式并行机制进行多智能体研究与综合。
+- 可重复且审批安全的工作流（代码审查、事件分类、内容流水线）。
 - 可在受支持的 Agent Runtimes 中运行的可复用 `.prose` 程序。
 
-## 示例：并行研究和综合
+## 示例：并行研究与综合
 
 ```prose
 # Research + synthesis with two agents running in parallel.
@@ -118,17 +111,17 @@ session "Merge the findings + draft into a final answer."
 
 ## OpenClaw 运行时映射
 
-OpenProse 程序会映射到 OpenClaw 基元：
+OpenProse 程序会映射到 OpenClaw 的基础能力：
 
-| OpenProse 概念         | OpenClaw 工具                                   |
+| OpenProse 概念           | OpenClaw 工具                                   |
 | ------------------------- | ----------------------------------------------- |
-| 生成会话 / Task 工具 | `sessions_spawn`                                |
-| 文件读取 / 写入         | `read` / `write`                                |
-| Web 获取                 | `web_fetch`（需要 POST 时使用 `exec` + curl） |
+| 生成会话 / Task 工具      | `sessions_spawn`                                |
+| 文件读取 / 写入           | `read` / `write`                                |
+| Web 获取                  | `web_fetch`（需要 POST 时使用 `exec` + curl）   |
 
 <Warning>
   如果你的工具允许列表阻止了 `sessions_spawn`、`read`、`write` 或
-  `web_fetch`，OpenProse 程序将失败。请检查你的
+  `web_fetch`，OpenProse 程序将会失败。请检查你的
   [工具允许列表配置](/zh-CN/gateway/config-tools)。
 </Warning>
 
@@ -159,52 +152,46 @@ OpenProse 将状态保存在工作区的 `.prose/` 下：
 
 <AccordionGroup>
   <Accordion title="文件系统（默认）">
-    状态会写入工作区中的 `.prose/runs/...`。不需要额外
-    依赖。
+    状态会写入工作区的 `.prose/runs/...`。无需额外依赖。
   </Accordion>
   <Accordion title="上下文内">
-    保存在上下文窗口中的临时状态；使用 `--in-context` 选择。
-    适合小型、短生命周期的程序。
+    临时状态保存在上下文窗口中；使用 `--in-context` 选择。
+    适合小型、短期运行的程序。
   </Accordion>
   <Accordion title="sqlite（实验性）">
     使用 `--state=sqlite` 选择。需要 `PATH` 中存在 `sqlite3` 二进制文件
-    （缺失时回退到文件系统）；状态会写入
+    （缺失时回退到文件系统）；状态保存在
     `.prose/runs/{id}/state.db`。
   </Accordion>
   <Accordion title="postgres（实验性）">
-    使用 `--state=postgres` 选择。需要 `psql`，并且需要在
+    使用 `--state=postgres` 选择。需要 `psql`，并在
     `OPENPROSE_POSTGRES_URL` 中提供连接字符串（在 `.prose/.env` 中设置）。
 
     <Warning>
-      Postgres 凭证会流入子智能体日志。请使用专用的、
-      最小权限数据库。
+      Postgres 凭据会写入子智能体日志。请使用专用且遵循最小权限原则的数据库。
     </Warning>
 
   </Accordion>
 </AccordionGroup>
 
-## 安全
+## 安全性
 
-将 `.prose` 文件视为代码。运行前请审查它们，包括远程
-`use` 导入。顶层 `/prose run https://...` 请求是显式的，但
-传递性远程导入在获取或执行之前需要逐次运行审批。使用 OpenClaw
-工具允许列表和审批关卡来控制副作用。对于确定性、带审批门控的工作流，
-可与 [Lobster](/zh-CN/tools/lobster) 对比。
+请将 `.prose` 文件视为代码。运行前应进行审查，包括远程 `use` 导入。顶层 `/prose run https://...` 请求是显式操作，但传递性远程导入在获取或执行前需要逐次运行审批。使用 OpenClaw 工具允许列表和审批门禁来控制副作用。对于确定性且带审批门禁的工作流，可与 [Lobster](/zh-CN/tools/lobster) 进行比较。
 
-## 相关
+## 相关内容
 
 <CardGroup cols={2}>
   <Card title="Skills 参考" href="/zh-CN/tools/skills" icon="puzzle-piece">
-    OpenProse 的 Skills 包如何加载，以及适用哪些门控。
+    了解 OpenProse 的 Skills 包如何加载，以及适用哪些门禁。
   </Card>
   <Card title="子智能体" href="/zh-CN/tools/subagents" icon="users">
-    OpenClaw 原生多 Agent 协调层。
+    OpenClaw 原生的多智能体协调层。
   </Card>
   <Card title="文本转语音" href="/zh-CN/tools/tts" icon="volume-high">
-    向你的工作流添加音频输出。
+    为你的工作流添加音频输出。
   </Card>
   <Card title="斜杠命令" href="/zh-CN/tools/slash-commands" icon="terminal">
-    所有可用聊天命令，包括 /prose。
+    所有可用的聊天命令，包括 /prose。
   </Card>
 </CardGroup>
 

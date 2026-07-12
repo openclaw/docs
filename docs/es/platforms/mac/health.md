@@ -1,11 +1,11 @@
 ---
 read_when:
     - Depuración de los indicadores de estado de la app para Mac
-summary: Cómo informa la app de macOS los estados de salud del gateway/canal
+summary: Cómo informa la aplicación para macOS sobre los estados de salud del Gateway y de los canales
 title: Comprobaciones de estado (macOS)
 x-i18n:
-    generated_at: "2026-07-05T11:31:56Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T23:16:22Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: a086c527796dbe453bdee1cc9cbe1e0fc1157de710c8c6de186411fe9aa3bc7b
@@ -15,42 +15,42 @@ x-i18n:
 
 # Comprobaciones de estado en macOS
 
-Cómo leer el estado de salud del canal vinculado desde la aplicación de la barra de menús.
+Cómo consultar el estado de los canales vinculados desde la aplicación de la barra de menús.
 
 ## Barra de menús
 
-Punto de estado:
+Indicador de estado:
 
-- Verde: vinculado + sondeo correcto.
-- Naranja: vinculado, pero un sondeo de canal informa degradación/no conectado.
-- Rojo: aún no vinculado.
+- Verde: vinculado y comprobación correcta.
+- Naranja: vinculado, pero la comprobación de un canal indica que está degradado o no conectado.
+- Rojo: aún no está vinculado.
 
-La línea secundaria dice "vinculado · autenticación 12m" o muestra el motivo del error.
-"Ejecutar comprobación de estado ahora" en el menú activa un sondeo bajo demanda.
+La línea secundaria muestra «vinculado · autenticación hace 12 min» o el motivo del fallo.
+La opción "Run Health Check Now" del menú inicia una comprobación bajo demanda.
 
 ## Ajustes
 
-- La pestaña General muestra una tarjeta de estado: punto de estado, línea de resumen (estado del vínculo +
-  antigüedad de la autenticación) y una línea opcional de detalle del error, con botones **Reintentar ahora** y
-  **Abrir registros**.
-- La **pestaña Canales** muestra el estado y los controles por canal (QR de inicio de sesión,
-  cierre de sesión, sondeo, última desconexión/error) para WhatsApp y Telegram.
+- La pestaña General muestra una tarjeta de estado: indicador de estado, línea de resumen (estado de vinculación +
+  antigüedad de la autenticación) y una línea opcional con los detalles del fallo, además de los botones **Retry now** y
+  **Open logs**.
+- La **pestaña Channels** muestra el estado y los controles de cada canal (código QR de inicio de sesión,
+  cierre de sesión, comprobación, última desconexión/error) para WhatsApp y Telegram.
 
-## Cómo funciona el sondeo
+## Cómo funciona la comprobación
 
-La aplicación llama al RPC `health` del Gateway a través de su conexión WebSocket
-existente (no mediante una llamada a la CLI) cada ~60 s y bajo demanda. El RPC carga
-credenciales e informa el estado sin enviar mensajes. La aplicación almacena en caché la última
-instantánea correcta y el último error por separado para que la UI cargue al instante y
+La aplicación llama al RPC `health` del Gateway mediante su conexión WebSocket
+existente (sin invocar un shell de la CLI) aproximadamente cada 60 s y bajo demanda. El RPC carga
+las credenciales e informa del estado sin enviar mensajes. La aplicación almacena en caché por separado la última
+instantánea correcta y el último error para que la interfaz se cargue al instante y
 no parpadee mientras está sin conexión.
 
 ## En caso de duda
 
-Use el flujo de CLI en [Salud del Gateway](/es/gateway/health) (`openclaw status`,
+Utilice el flujo de la CLI descrito en [Estado del Gateway](/es/gateway/health) (`openclaw status`,
 `openclaw status --deep`, `openclaw health --json`) y siga
 `/tmp/openclaw/openclaw-*.log`, filtrando por `web-heartbeat` / `web-reconnect`.
 
-## Relacionado
+## Contenido relacionado
 
-- [Salud del Gateway](/es/gateway/health)
-- [Aplicación de macOS](/es/platforms/macos)
+- [Estado del Gateway](/es/gateway/health)
+- [Aplicación para macOS](/es/platforms/macos)

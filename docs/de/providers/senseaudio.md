@@ -1,14 +1,13 @@
 ---
 read_when:
-    - Sie möchten SenseAudio-Spracherkennung für Audioanhänge verwenden
-    - Sie benötigen die Umgebungsvariable für den SenseAudio-API-Schlüssel oder den Pfad zur Audiokonfiguration
-summary: SenseAudio-Stapeltranskription für eingehende Sprachnachrichten
+    - Sie möchten die Spracherkennung von SenseAudio für Audioanhänge verwenden.
+    - Sie benötigen die Umgebungsvariable für den SenseAudio-API-Schlüssel oder den Pfad zur Audiokonfiguration.
+summary: SenseAudio-Batch-Spracherkennung für eingehende Sprachnachrichten
 title: SenseAudio
 x-i18n:
-    generated_at: "2026-07-12T15:49:50Z"
+    generated_at: "2026-07-12T02:06:36Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 2d2b310982a9e0f1afe2f95ae92d1516d490314f40b4b0e4eded25c72dfca586
     source_path: providers/senseaudio.md
@@ -22,7 +21,7 @@ SenseAudio transkribiert eingehende Audio- und Sprachnotizanhänge über die gem
 | Provider-ID   | `senseaudio`                                     |
 | Plugin        | gebündelt, `enabledByDefault: true`              |
 | Vertrag       | `mediaUnderstandingProviders` (Audio)            |
-| Auth.-Umgebungsvariable | `SENSEAUDIO_API_KEY`                    |
+| Auth.-Umgebungsvariable | `SENSEAUDIO_API_KEY`                   |
 | Standardmodell | `senseaudio-asr-pro-1.5-260319`                 |
 | Standard-URL  | `https://api.senseaudio.cn/v1`                   |
 | Website       | [senseaudio.cn](https://senseaudio.cn)           |
@@ -31,12 +30,12 @@ SenseAudio transkribiert eingehende Audio- und Sprachnotizanhänge über die gem
 ## Erste Schritte
 
 <Steps>
-  <Step title="Legen Sie Ihren API-Schlüssel fest">
+  <Step title="API-Schlüssel festlegen">
     ```bash
     export SENSEAUDIO_API_KEY="..."
     ```
   </Step>
-  <Step title="Aktivieren Sie den Audio-Provider">
+  <Step title="Audio-Provider aktivieren">
     ```json5
     {
       tools: {
@@ -50,7 +49,7 @@ SenseAudio transkribiert eingehende Audio- und Sprachnotizanhänge über die gem
     }
     ```
   </Step>
-  <Step title="Senden Sie eine Sprachnotiz">
+  <Step title="Sprachnotiz senden">
     Senden Sie eine Audionachricht über einen beliebigen verbundenen Kanal. OpenClaw lädt die
     Audiodaten zu SenseAudio hoch und verwendet das Transkript in der Antwort-Pipeline.
   </Step>
@@ -60,14 +59,14 @@ SenseAudio transkribiert eingehende Audio- und Sprachnotizanhänge über die gem
 
 | Option     | Pfad                                  | Beschreibung                              |
 | ---------- | ------------------------------------- | ----------------------------------------- |
-| `model`    | `tools.media.audio.models[].model`    | SenseAudio-ASR-Modell-ID                  |
-| `language` | `tools.media.audio.models[].language` | Optionaler Sprachhinweis                  |
+| `model`    | `tools.media.audio.models[].model`    | ID des SenseAudio-ASR-Modells             |
+| `language` | `tools.media.audio.models[].language` | Optionaler Hinweis zur Sprache            |
 | `prompt`   | `tools.media.audio.prompt`            | Optionaler Transkriptions-Prompt          |
-| `baseUrl`  | `tools.media.audio.baseUrl` oder Modell | Überschreibt die OpenAI-kompatible Basis |
+| `baseUrl`  | `tools.media.audio.baseUrl` oder Modell | OpenAI-kompatible Basis-URL überschreiben |
 | `headers`  | `tools.media.audio.request.headers`   | Zusätzliche Anfrage-Header                |
 
 <Note>
-SenseAudio unterstützt in OpenClaw ausschließlich Batch-STT. Die Echtzeittranskription für Sprachanrufe
+SenseAudio unterstützt in OpenClaw nur Batch-STT. Die Echtzeittranskription für Sprachanrufe
 verwendet weiterhin Provider mit Unterstützung für Streaming-STT.
 </Note>
 

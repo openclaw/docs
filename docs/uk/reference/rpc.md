@@ -1,51 +1,51 @@
 ---
 read_when:
-    - Додавання або зміна зовнішніх інтеграцій CLI
+    - Додавання або змінення інтеграцій із зовнішніми CLI
     - Налагодження RPC-адаптерів (signal-cli, imsg)
 summary: RPC-адаптери для зовнішніх CLI (signal-cli, imsg) і шаблони Gateway
 title: RPC-адаптери
 x-i18n:
-    generated_at: "2026-05-11T20:56:34Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:46:40Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 63556f140bee55821fa0a09ff9808e163728049f8db4c58f7bb4ceca6e1cac1a
+    source_hash: 6ddb3fb741c90fe7b01ba35376b71865584b1e507cf610705392452790fb76f5
     source_path: reference/rpc.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw інтегрує зовнішні CLI через JSON-RPC. Сьогодні використовуються два шаблони.
+OpenClaw інтегрує зовнішні CLI через JSON-RPC. Наразі використовуються дві схеми.
 
-## Шаблон A: HTTP-демон (signal-cli)
+## Схема A: HTTP-демон (signal-cli)
 
 - `signal-cli` працює як демон із JSON-RPC через HTTP.
-- Потік подій — SSE (`/api/v1/events`).
-- Перевірка стану: `/api/v1/check`.
+- Потік подій використовує SSE (`/api/v1/events`).
+- Перевірка працездатності: `/api/v1/check`.
 - OpenClaw керує життєвим циклом, коли `channels.signal.autoStart=true`.
 
-Див. [Signal](/uk/channels/signal) для налаштування та кінцевих точок.
+Налаштування та кінцеві точки описано в розділі [Signal](/uk/channels/signal).
 
-## Шаблон B: дочірній процес stdio (imsg)
+## Схема B: дочірній процес stdio (imsg)
 
 - OpenClaw запускає `imsg rpc` як дочірній процес для [iMessage](/uk/channels/imessage).
-- JSON-RPC передається рядками через stdin/stdout (один JSON-об’єкт на рядок).
-- Порт TCP не потрібен, демон не потрібен.
+- JSON-RPC передається рядками через stdin/stdout (один об’єкт JSON у кожному рядку).
+- TCP-порт і демон не потрібні.
 
-Використовувані основні методи:
+Основні використовувані методи:
 
 - `watch.subscribe` → сповіщення (`method: "message"`)
 - `watch.unsubscribe`
 - `send`
 - `chats.list` (перевірка/діагностика)
 
-Див. [iMessage](/uk/channels/imessage) для застарілого налаштування та адресації (переважно `chat_id`).
+Налаштування й адресацію описано в розділі [iMessage](/uk/channels/imessage) (`chat_id` має перевагу над відображуваними рядками).
 
 ## Рекомендації щодо адаптерів
 
-- Gateway керує процесом (запуск/зупинка прив’язані до життєвого циклу провайдера).
-- Забезпечуйте стійкість RPC-клієнтів: тайм-аути, перезапуск після завершення.
-- Віддавайте перевагу стабільним ідентифікаторам (наприклад, `chat_id`) замість рядків для відображення.
+- Gateway керує процесом (запуск і зупинка прив’язані до життєвого циклу провайдера).
+- Забезпечуйте стійкість клієнтів RPC: використовуйте тайм-аути та перезапуск після завершення процесу.
+- Надавайте перевагу стабільним ідентифікаторам (наприклад, `chat_id`) над відображуваними рядками.
 
-## Пов’язане
+## Пов’язані матеріали
 
 - [Протокол Gateway](/uk/gateway/protocol)

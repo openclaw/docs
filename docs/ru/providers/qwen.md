@@ -1,38 +1,40 @@
 ---
 read_when:
     - Вы хотите использовать Qwen с OpenClaw
+    - У вас есть подписка на тарифный план Alibaba Cloud Token Plan
     - Ранее вы использовали Qwen OAuth
-summary: Используйте Qwen Cloud через его OpenClaw Plugin
+summary: Используйте Qwen Cloud через его Plugin для OpenClaw
 title: Qwen
 x-i18n:
-    generated_at: "2026-06-28T23:39:58Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:48:05Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4e42a38f3e7f2db54092886f2ef8c3ab27163c3c3d0f9b4d95affd58555f58d3
+    source_hash: 18030a70c024cd5c0713262874f5353bac50576e850f68a61bef4fa73ccf9b9c
     source_path: providers/qwen.md
     workflow: 16
 ---
 
-OpenClaw теперь рассматривает Qwen как полноправный Plugin провайдера с каноническим идентификатором
-`qwen`. Plugin провайдера нацелен на конечные точки Qwen Cloud / Alibaba DashScope и
-Coding Plan, сохраняет работоспособность устаревших идентификаторов `modelstudio` как совместимого
-псевдонима, а также предоставляет поток токенов Qwen Portal как провайдер `qwen-oauth`.
+Qwen Cloud — официальный внешний Plugin провайдера OpenClaw с каноническим идентификатором `qwen`. Он предназначен для конечных точек Qwen Cloud / Alibaba DashScope Standard и Coding Plan, предоставляет Token Plan как `qwen-token-plan`, сохраняет `modelstudio` как псевдоним для совместимости, независимо владеет документированным Alibaba идентификатором пользовательского провайдера `bailian-token-plan` и предоставляет поток токена Qwen Portal как [`qwen-oauth`](/ru/providers/qwen-oauth).
 
-- Провайдер: `qwen`
-- Провайдер Portal: [`qwen-oauth`](/ru/providers/qwen-oauth)
-- Предпочтительная переменная окружения: `QWEN_API_KEY`
-- Также принимаются для совместимости: `MODELSTUDIO_API_KEY`, `DASHSCOPE_API_KEY`
-- Стиль API: совместимый с OpenAI
+| Свойство                         | Значение                                   |
+| -------------------------------- | ------------------------------------------ |
+| Провайдер                        | `qwen`                                     |
+| Провайдер Token Plan             | `qwen-token-plan`                          |
+| Провайдер Portal                 | [`qwen-oauth`](/ru/providers/qwen-oauth)      |
+| Предпочтительная переменная среды | `QWEN_API_KEY`                             |
+| Переменная среды Token Plan      | `QWEN_TOKEN_PLAN_API_KEY`                  |
+| Также принимаются (совместимость) | `MODELSTUDIO_API_KEY`, `DASHSCOPE_API_KEY` |
+| Стиль API                        | Совместимый с OpenAI                       |
 
 <Tip>
-Если вам нужен `qwen3.6-plus`, предпочитайте конечную точку **Standard (pay-as-you-go)**.
-Поддержка Coding Plan может отставать от публичного каталога.
+`qwen3.7-plus` и `qwen3.6-plus` работают с конечными точками Coding Plan и Standard.
+Для `qwen3.7-max` или `qwen3.6-flash` используйте конечную точку **Standard (с оплатой по мере использования)**.
 </Tip>
 
-## Установите Plugin
+## Установка Plugin
 
-Установите официальный Plugin, затем перезапустите Gateway:
+`qwen` поставляется как официальный внешний Plugin и не входит в состав ядра. Установите его и перезапустите Gateway:
 
 ```bash
 openclaw plugins install @openclaw/qwen-provider
@@ -44,27 +46,27 @@ openclaw gateway restart
 Выберите тип плана и выполните шаги настройки.
 
 <Tabs>
-  <Tab title="Coding Plan (subscription)">
+  <Tab title="Coding Plan (подписка)">
     **Лучше всего подходит для:** доступа по подписке через Qwen Coding Plan.
 
     <Steps>
-      <Step title="Get your API key">
-        Создайте или скопируйте API-ключ на [home.qwencloud.com/api-keys](https://home.qwencloud.com/api-keys).
+      <Step title="Получите ключ API">
+        Создайте или скопируйте ключ API на странице [home.qwencloud.com/api-keys](https://home.qwencloud.com/api-keys).
       </Step>
-      <Step title="Run onboarding">
-        Для конечной точки **Global**:
+      <Step title="Запустите первоначальную настройку">
+        Для **глобальной** конечной точки:
 
         ```bash
         openclaw onboard --auth-choice qwen-api-key
         ```
 
-        Для конечной точки **China**:
+        Для конечной точки в **Китае**:
 
         ```bash
         openclaw onboard --auth-choice qwen-api-key-cn
         ```
       </Step>
-      <Step title="Set a default model">
+      <Step title="Задайте модель по умолчанию">
         ```json5
         {
           agents: {
@@ -75,7 +77,7 @@ openclaw gateway restart
         }
         ```
       </Step>
-      <Step title="Verify the model is available">
+      <Step title="Убедитесь, что модель доступна">
         ```bash
         openclaw models list --provider qwen
         ```
@@ -83,37 +85,37 @@ openclaw gateway restart
     </Steps>
 
     <Note>
-    Устаревшие идентификаторы auth-choice `modelstudio-*` и ссылки на модели `modelstudio/...` по-прежнему
-    работают как совместимые псевдонимы, но новым потокам настройки следует предпочитать канонические
-    идентификаторы auth-choice `qwen-*` и ссылки на модели `qwen/...`. Если вы определяете точную
-    пользовательскую запись `models.providers.modelstudio` с другим значением `api`, этот
-    пользовательский провайдер владеет ссылками `modelstudio/...` вместо совместимого
-    псевдонима Qwen.
+    Устаревшие идентификаторы выбора аутентификации `modelstudio-*` и ссылки на модели `modelstudio/...`
+    по-прежнему работают как псевдонимы для совместимости, но в новых процессах настройки следует
+    предпочитать канонические идентификаторы выбора аутентификации `qwen-*` и ссылки на модели
+    `qwen/...`. Если вы определите точную пользовательскую запись
+    `models.providers.modelstudio` с другим значением `api`, этот пользовательский
+    провайдер будет владеть ссылками `modelstudio/...` вместо псевдонима Qwen для совместимости.
     </Note>
 
   </Tab>
 
-  <Tab title="Standard (pay-as-you-go)">
-    **Лучше всего подходит для:** доступа с оплатой по мере использования через конечную точку Standard Model Studio, включая модели вроде `qwen3.6-plus`, которые могут быть недоступны в Coding Plan.
+  <Tab title="Standard (с оплатой по мере использования)">
+    **Лучше всего подходит для:** доступа с оплатой по мере использования через стандартную конечную точку Model Studio, включая `qwen3.7-max` и `qwen3.6-flash`, которые недоступны в Coding Plan.
 
     <Steps>
-      <Step title="Get your API key">
-        Создайте или скопируйте API-ключ на [home.qwencloud.com/api-keys](https://home.qwencloud.com/api-keys).
+      <Step title="Получите ключ API">
+        Создайте или скопируйте ключ API на странице [home.qwencloud.com/api-keys](https://home.qwencloud.com/api-keys).
       </Step>
-      <Step title="Run onboarding">
-        Для конечной точки **Global**:
+      <Step title="Запустите первоначальную настройку">
+        Для **глобальной** конечной точки:
 
         ```bash
         openclaw onboard --auth-choice qwen-standard-api-key
         ```
 
-        Для конечной точки **China**:
+        Для конечной точки в **Китае**:
 
         ```bash
         openclaw onboard --auth-choice qwen-standard-api-key-cn
         ```
       </Step>
-      <Step title="Set a default model">
+      <Step title="Задайте модель по умолчанию">
         ```json5
         {
           agents: {
@@ -124,7 +126,7 @@ openclaw gateway restart
         }
         ```
       </Step>
-      <Step title="Verify the model is available">
+      <Step title="Убедитесь, что модель доступна">
         ```bash
         openclaw models list --provider qwen
         ```
@@ -132,29 +134,74 @@ openclaw gateway restart
     </Steps>
 
     <Note>
-    Устаревшие идентификаторы auth-choice `modelstudio-*` и ссылки на модели `modelstudio/...` по-прежнему
-    работают как совместимые псевдонимы, но новым потокам настройки следует предпочитать канонические
-    идентификаторы auth-choice `qwen-*` и ссылки на модели `qwen/...`. Если вы определяете точную
-    пользовательскую запись `models.providers.modelstudio` с другим значением `api`, этот
-    пользовательский провайдер владеет ссылками `modelstudio/...` вместо совместимого
-    псевдонима Qwen.
+    Устаревшие идентификаторы выбора аутентификации `modelstudio-*` и ссылки на модели `modelstudio/...`
+    по-прежнему работают как псевдонимы для совместимости, но в новых процессах настройки следует
+    предпочитать канонические идентификаторы выбора аутентификации `qwen-*` и ссылки на модели
+    `qwen/...`. Если вы определите точную пользовательскую запись
+    `models.providers.modelstudio` с другим значением `api`, этот пользовательский
+    провайдер будет владеть ссылками `modelstudio/...` вместо псевдонима Qwen для совместимости.
     </Note>
+
+  </Tab>
+
+  <Tab title="Token Plan (командная редакция)">
+    **Лучше всего подходит для:** доступа команды по подписке на основе кредитов к Qwen и поддерживаемым сторонним моделям через Alibaba Cloud Model Studio.
+
+    <Steps>
+      <Step title="Получите выделенный ключ">
+        Назначьте место Token Plan и создайте для него выделенный ключ `sk-sp-...`. Ключи Token Plan, Coding Plan и планы с оплатой по мере использования не взаимозаменяемы. См. [обзор глобального Token Plan](https://www.alibabacloud.com/help/en/model-studio/token-plan-overview) или [обзор Token Plan для Китая](https://help.aliyun.com/zh/model-studio/token-plan-overview).
+      </Step>
+      <Step title="Запустите первоначальную настройку">
+        Для **глобальной / международной** конечной точки в Сингапуре:
+
+        ```bash
+        openclaw onboard --auth-choice qwen-token-plan
+        ```
+
+        Для конечной точки в **Китае**, расположенной в Пекине:
+
+        ```bash
+        openclaw onboard --auth-choice qwen-token-plan-cn
+        ```
+      </Step>
+      <Step title="Проверьте провайдера">
+        ```bash
+        openclaw models list --provider qwen-token-plan
+        openclaw agent --model qwen-token-plan/qwen3.7-plus --message "Reply with: token plan ready"
+        ```
+      </Step>
+    </Steps>
+
+    <Note>
+    В руководстве Alibaba по OpenClaw для пользовательского провайдера с ручной настройкой
+    используется `bailian-token-plan`. Plugin регистрирует этот идентификатор как владельца
+    для совместимости, но в новых конфигурациях следует использовать `qwen-token-plan`.
+    Точная пользовательская запись `models.providers.bailian-token-plan` сохраняет
+    владение настроенным транспортом и каталогом; она никогда не объединяется с
+    каноническим каталогом OpenAI.
+    </Note>
+
+    <Warning>
+    Используйте Token Plan только для интерактивных сеансов OpenClaw. Не выбирайте его для
+    заданий cron, автоматических сценариев или серверной части приложений. Alibaba указывает,
+    что неинтерактивное использование может привести к приостановке подписки или отзыву ключа API.
+    </Warning>
 
   </Tab>
 
   <Tab title="Qwen OAuth / Portal">
     **Лучше всего подходит для:** токена Qwen Portal для `https://portal.qwen.ai/v1`.
 
-    См. [Qwen OAuth / Portal](/ru/providers/qwen-oauth) для отдельной страницы провайдера
-    и заметок о миграции.
+    Специальная страница провайдера и примечания по миграции приведены в разделе
+    [Qwen OAuth / Portal](/ru/providers/qwen-oauth).
 
     <Steps>
-      <Step title="Provide your portal token">
+      <Step title="Укажите токен Portal">
         ```bash
         openclaw onboard --auth-choice qwen-oauth
         ```
       </Step>
-      <Step title="Set a default model">
+      <Step title="Задайте модель по умолчанию">
         ```json5
         {
           agents: {
@@ -165,7 +212,7 @@ openclaw gateway restart
         }
         ```
       </Step>
-      <Step title="Verify the model is available">
+      <Step title="Убедитесь, что модель доступна">
         ```bash
         openclaw models list --provider qwen-oauth
         ```
@@ -173,9 +220,9 @@ openclaw gateway restart
     </Steps>
 
     <Note>
-    `qwen-oauth` использует то же имя переменной окружения `QWEN_API_KEY`, что и провайдер
-    DashScope, но сохраняет аутентификацию под идентификатором провайдера `qwen-oauth` при настройке
-    через onboarding OpenClaw.
+    `qwen-oauth` использует то же имя переменной среды `QWEN_API_KEY`, что и провайдер
+    Qwen Cloud, но при настройке через первоначальную настройку OpenClaw сохраняет
+    данные аутентификации с идентификатором провайдера `qwen-oauth`.
     </Note>
 
   </Tab>
@@ -183,17 +230,19 @@ openclaw gateway restart
 
 ## Типы планов и конечные точки
 
-| План                       | Регион | Вариант аутентификации                | Конечная точка                                         |
-| -------------------------- | ------ | -------------------------- | ------------------------------------------------ |
-| Standard (pay-as-you-go)   | Китай  | `qwen-standard-api-key-cn` | `dashscope.aliyuncs.com/compatible-mode/v1`      |
-| Standard (pay-as-you-go)   | Global | `qwen-standard-api-key`    | `dashscope-intl.aliyuncs.com/compatible-mode/v1` |
-| Coding Plan (subscription) | Китай  | `qwen-api-key-cn`          | `coding.dashscope.aliyuncs.com/v1`               |
-| Coding Plan (subscription) | Global | `qwen-api-key`             | `coding-intl.dashscope.aliyuncs.com/v1`          |
-| Qwen Portal                | Global | `qwen-oauth`               | `portal.qwen.ai/v1`                              |
+| План                                     | Регион    | Выбор аутентификации       | Конечная точка                                                   |
+| ---------------------------------------- | --------- | -------------------------- | ---------------------------------------------------------------- |
+| Coding Plan (подписка)                   | Китай     | `qwen-api-key-cn`          | `coding.dashscope.aliyuncs.com/v1`                               |
+| Coding Plan (подписка)                   | Глобальный | `qwen-api-key`             | `coding-intl.dashscope.aliyuncs.com/v1`                          |
+| Qwen Portal                              | Глобальный | `qwen-oauth`               | `portal.qwen.ai/v1`                                              |
+| Standard (с оплатой по мере использования) | Китай     | `qwen-standard-api-key-cn` | `dashscope.aliyuncs.com/compatible-mode/v1`                      |
+| Standard (с оплатой по мере использования) | Глобальный | `qwen-standard-api-key`    | `dashscope-intl.aliyuncs.com/compatible-mode/v1`                 |
+| Token Plan (командная редакция)          | Китай     | `qwen-token-plan-cn`       | `token-plan.cn-beijing.maas.aliyuncs.com/compatible-mode/v1`     |
+| Token Plan (командная редакция)          | Глобальный | `qwen-token-plan`          | `token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1` |
 
-Провайдер автоматически выбирает конечную точку на основе выбранного варианта аутентификации. Канонические
-варианты используют семейство `qwen-*`; `modelstudio-*` остается только для совместимости.
-Вы можете переопределить это пользовательским `baseUrl` в конфигурации.
+Провайдер автоматически выбирает конечную точку на основе выбранного варианта аутентификации.
+Канонические варианты относятся к семейству `qwen-*`; `modelstudio-*` сохраняется только
+для совместимости. Переопределить адрес можно с помощью пользовательского `baseUrl` в конфигурации.
 
 <Tip>
 **Управление ключами:** [home.qwencloud.com/api-keys](https://home.qwencloud.com/api-keys) |
@@ -202,44 +251,87 @@ openclaw gateway restart
 
 ## Встроенный каталог
 
-В настоящее время OpenClaw поставляется с этим статическим каталогом Qwen. Настроенный каталог
-учитывает конечную точку: конфигурации Coding Plan исключают модели, о которых известно, что они
-работают только на конечной точке Standard.
+OpenClaw поставляется с этим статическим каталогом Qwen. Каталог учитывает конечную
+точку: из конфигураций Coding Plan исключаются модели, работающие только со стандартной конечной точкой.
 
-| Model ref                   | Ввод        | Контекст  | Примечания                                                  |
-| --------------------------- | ----------- | --------- | ----------------------------------------------------------- |
-| `qwen/qwen3.5-plus`         | текст, изображение | 1,000,000 | Модель по умолчанию                                         |
-| `qwen/qwen3.6-plus`         | текст, изображение | 1,000,000 | Предпочитайте конечные точки Standard, когда нужна эта модель |
-| `qwen/qwen3-max-2026-01-23` | текст       | 262,144   | Линейка Qwen Max                                            |
-| `qwen/qwen3-coder-next`     | текст       | 262,144   | Кодирование                                                 |
-| `qwen/qwen3-coder-plus`     | текст       | 1,000,000 | Кодирование                                                 |
-| `qwen/MiniMax-M2.5`         | текст       | 1,000,000 | Рассуждение включено                                        |
-| `qwen/glm-5`                | текст       | 202,752   | GLM                                                         |
-| `qwen/glm-4.7`              | текст       | 202,752   | GLM                                                         |
-| `qwen/kimi-k2.5`            | текст, изображение | 262,144   | Moonshot AI через Alibaba                                   |
-| `qwen-oauth/qwen3.5-plus`   | текст, изображение | 1,000,000 | Значение по умолчанию для Qwen Portal                       |
+| Ссылка на модель             | Входные данные     | Контекст  | Примечания                               |
+| ---------------------------- | ------------------ | --------- | ---------------------------------------- |
+| `qwen/qwen3.5-plus`          | текст, изображение | 1,000,000 | Модель по умолчанию                      |
+| `qwen/qwen3.6-flash`         | текст, изображение | 1,000,000 | Только стандартные конечные точки        |
+| `qwen/qwen3.6-plus`          | текст, изображение | 1,000,000 | Coding Plan + Standard                   |
+| `qwen/qwen3.7-max`           | текст              | 1,000,000 | Только стандартные конечные точки        |
+| `qwen/qwen3.7-plus`          | текст, изображение | 1,000,000 | Coding Plan + Standard                   |
+| `qwen/qwen3-max-2026-01-23`  | текст              | 262,144   | Линейка Qwen Max                         |
+| `qwen/qwen3-coder-next`      | текст              | 262,144   | Программирование                         |
+| `qwen/qwen3-coder-plus`      | текст              | 1,000,000 | Программирование                         |
+| `qwen/MiniMax-M2.5`          | текст              | 1,000,000 | Рассуждения включены                     |
+| `qwen/glm-5`                 | текст              | 202,752   | GLM                                      |
+| `qwen/glm-4.7`               | текст              | 202,752   | GLM                                      |
+| `qwen/kimi-k2.5`             | текст, изображение | 262,144   | Moonshot AI через Alibaba                |
+| `qwen-oauth/qwen3.5-plus`    | текст, изображение | 1,000,000 | Модель Qwen Portal по умолчанию          |
 
 <Note>
-Доступность всё равно может различаться в зависимости от конечной точки и тарифного плана,
+Доступность может различаться в зависимости от конечной точки и тарифного плана,
 даже если модель присутствует в статическом каталоге.
 </Note>
 
-## Элементы управления мышлением
+### Каталог Token Plan
 
-Для моделей Qwen Cloud с поддержкой рассуждения провайдер сопоставляет уровни
-мышления OpenClaw с флагом запроса верхнего уровня DashScope `enable_thinking`. Отключённое
-мышление отправляет `enable_thinking: false`; остальные уровни мышления отправляют
-`enable_thinking: true`.
+Token Plan использует отдельный список разрешённых точных строк. Модели плана,
+предназначенные только для генерации изображений, здесь не представлены, поскольку
+они используют другие API.
 
-## Мультимодальные дополнения
+| Ссылка на модель                    | Входные данные     | Контекст  |
+| ----------------------------------- | ------------------ | --------- |
+| `qwen-token-plan/qwen3.7-max`       | текст              | 1,000,000 |
+| `qwen-token-plan/qwen3.7-plus`      | текст, изображение | 1,000,000 |
+| `qwen-token-plan/qwen3.6-plus`      | текст, изображение | 1,000,000 |
+| `qwen-token-plan/qwen3.6-flash`     | текст, изображение | 1,000,000 |
+| `qwen-token-plan/deepseek-v4-pro`   | текст              | 1,000,000 |
+| `qwen-token-plan/deepseek-v4-flash` | текст              | 1,000,000 |
+| `qwen-token-plan/deepseek-v3.2`     | текст              | 131,072   |
+| `qwen-token-plan/kimi-k2.7-code`    | текст, изображение | 262,144   |
+| `qwen-token-plan/kimi-k2.6`         | текст, изображение | 262,144   |
+| `qwen-token-plan/kimi-k2.5`         | текст, изображение | 262,144   |
+| `qwen-token-plan/glm-5.2`           | текст              | 1,000,000 |
+| `qwen-token-plan/glm-5.1`           | текст              | 202,752   |
+| `qwen-token-plan/glm-5`             | текст              | 202,752   |
+| `qwen-token-plan/MiniMax-M2.5`      | текст              | 196,608   |
 
-Plugin `qwen` также предоставляет мультимодальные возможности на конечных точках DashScope
-**Standard** (не на конечных точках Coding Plan):
+## Управление рассуждениями
 
-- **Понимание видео** через `qwen-vl-max-latest`
-- **Генерация видео Wan** через `wan2.6-t2v` (по умолчанию), `wan2.6-i2v`, `wan2.6-r2v`, `wan2.6-r2v-flash`, `wan2.7-r2v`
+`qwen3.7-max`, `qwen3.7-plus`, `qwen3.6-flash` и `qwen3.6-plus`
+поддерживают рассуждения во встроенном каталоге. Для моделей с рассуждениями
+семейства `qwen` провайдер сопоставляет уровни рассуждений OpenClaw с флагом
+верхнего уровня `enable_thinking` в запросах DashScope: при отключённых
+рассуждениях отправляется `enable_thinking: false`, а при любом другом уровне —
+`enable_thinking: true`. Для пользовательских моделей можно включить
+альтернативную полезную нагрузку рассуждений на основе шаблона чата, задав
+`compat.thinkingFormat: "qwen-chat-template"` в записи модели.
 
-Чтобы использовать Qwen как видеопровайдера по умолчанию:
+Модели Token Plan также отмечены как поддерживающие рассуждения.
+`kimi-k2.7-code` и `MiniMax-M2.5` работают только с рассуждениями, поэтому
+OpenClaw сохраняет рассуждения включёнными, даже если в сеансе запрошено
+`/think off`. Для DeepSeek V4 уровни от `minimal` до `high` сопоставляются с
+уровнем усилий `high` сервиса, а `xhigh` и `max` — с `max`. GLM 5.2 принимает
+весь диапазон от `minimal` до `max`; GLM 5.1 и GLM 5 принимают уровни до
+`xhigh`, а уровнем по умолчанию для всех трёх является `high`. Остальные
+гибридные модели следуют запрошенному состоянию включения или отключения.
+
+## Дополнения для мультимодальных возможностей
+
+Plugin `qwen` предоставляет мультимодальные возможности только через конечные
+точки DashScope **Standard**, но не через конечные точки Coding Plan:
+
+- **Распознавание изображений и видео** с помощью `qwen-vl-max-latest`
+- **Генерация видео Wan** с помощью `wan2.6-t2v` (по умолчанию), `wan2.6-i2v`, `wan2.6-r2v`, `wan2.6-r2v-flash`, `wan2.7-r2v`
+
+Возможности распознавания мультимедиа автоматически определяются на основе
+настроенной аутентификации Qwen; дополнительная настройка не требуется. Для
+работы распознавания мультимедиа убедитесь, что используется конечная точка
+Standard с оплатой по мере использования.
+
+Чтобы сделать Qwen провайдером видео по умолчанию:
 
 ```json5
 {
@@ -251,130 +343,98 @@ Plugin `qwen` также предоставляет мультимодальны
 }
 ```
 
+Ограничения генерации видео: одно выходное видео на запрос, до одного входного
+изображения для преобразования изображения в видео, до четырёх входных видео
+для преобразования видео в видео, максимальная длительность — 10 секунд.
+Поддерживаются `size`, `aspectRatio`, `resolution`, `audio` и `watermark`.
+Для входных эталонных изображений и видео требуются удалённые URL-адреса
+http(s); локальные пути к файлам отклоняются до отправки запроса, поскольку
+конечная точка видео DashScope не принимает загруженные локальные буферы для
+таких материалов.
+
 <Note>
-См. [Генерация видео](/ru/tools/video-generation), чтобы узнать об общих параметрах инструмента, выборе провайдера и поведении при отказе.
+Общие параметры инструмента, выбор провайдера и поведение при переключении после сбоя описаны в разделе [Генерация видео](/ru/tools/video-generation).
 </Note>
 
-## Расширенная конфигурация
+## Расширенная настройка
 
 <AccordionGroup>
-  <Accordion title="Понимание изображений и видео">
-    Plugin Qwen регистрирует понимание медиа для изображений и видео
-    на конечных точках DashScope **Standard** (не на конечных точках Coding Plan).
-
-    | Свойство      | Значение              |
-    | ------------- | --------------------- |
-    | Модель        | `qwen-vl-max-latest`  |
-    | Поддерживаемый ввод | Изображения, видео |
-
-    Понимание медиа автоматически определяется из настроенной авторизации Qwen — дополнительная
-    конфигурация не нужна. Убедитесь, что вы используете конечную точку Standard (с оплатой по мере использования)
-    для поддержки понимания медиа.
-
-  </Accordion>
-
-  <Accordion title="Доступность Qwen 3.6 Plus">
-    `qwen3.6-plus` доступна на конечных точках Model Studio Standard (с оплатой по мере использования):
+  <Accordion title="Qwen 3.6 and 3.7 availability">
+    `qwen3.7-plus` и `qwen3.6-plus` доступны на конечных точках Coding Plan и Standard. `qwen3.7-max` и `qwen3.6-flash` доступны только на Standard. Конечные точки Standard с оплатой по мере использования:
 
     - Китай: `dashscope.aliyuncs.com/compatible-mode/v1`
-    - Global: `dashscope-intl.aliyuncs.com/compatible-mode/v1`
+    - Другие регионы: `dashscope-intl.aliyuncs.com/compatible-mode/v1`
 
-    Если конечные точки Coding Plan возвращают ошибку "unsupported model" для
-    `qwen3.6-plus`, переключитесь на Standard (с оплатой по мере использования) вместо пары
-    конечной точки/ключа Coding Plan.
-
-    Статический каталог Qwen в OpenClaw не публикует `qwen3.6-plus` на конечных точках Coding
-    Plan, но явно настроенные записи `qwen/qwen3.6-plus` в
-    `models.providers.qwen.models` учитываются для baseUrls Coding Plan, поэтому
-    вы можете подключить эту модель, если Aliyun включит её для вашей подписки. Вышестоящий
-    API всё равно решает, будет ли вызов успешным.
+    OpenClaw не включает `qwen3.7-max` и `qwen3.6-flash` в каталоги Coding Plan.
+    Если конечная точка Coding Plan возвращает ошибку "unsupported model" для одной из этих моделей,
+    перейдите на соответствующую конечную точку Standard и используйте соответствующий ключ.
 
   </Accordion>
 
-  <Accordion title="План возможностей">
-    Plugin `qwen` позиционируется как основное место поставщика для всей поверхности Qwen
-    Cloud, а не только для моделей кодирования/текста.
+  <Accordion title="Video generation region routing">
+    Перед отправкой задания генерации видео OpenClaw сопоставляет настроенный
+    регион Qwen с соответствующим хостом DashScope AIGC:
 
-    - **Текстовые/чат-модели:** доступны через Plugin
-    - **Вызов инструментов, структурированный вывод, мышление:** наследуются от OpenAI-совместимого транспорта
-    - **Генерация изображений:** запланирована на уровне provider-Plugin
-    - **Понимание изображений/видео:** доступно через Plugin на конечной точке Standard
-    - **Речь/аудио:** запланировано на уровне provider-Plugin
-    - **Эмбеддинги памяти/переранжирование:** запланированы через поверхность адаптера эмбеддингов
-    - **Генерация видео:** доступна через Plugin с помощью общей возможности генерации видео
-
-  </Accordion>
-
-  <Accordion title="Подробности генерации видео">
-    Для генерации видео OpenClaw сопоставляет настроенный регион Qwen с соответствующим
-    хостом DashScope AIGC перед отправкой задания:
-
-    - Global/Intl: `https://dashscope-intl.aliyuncs.com`
+    - Другие регионы: `https://dashscope-intl.aliyuncs.com`
     - Китай: `https://dashscope.aliyuncs.com`
 
-    Это означает, что обычный `models.providers.qwen.baseUrl`, указывающий либо на хосты
-    Coding Plan, либо на хосты Standard Qwen, всё равно сохраняет генерацию видео на правильной
-    региональной видеоконечной точке DashScope.
-
-    Текущие ограничения генерации видео Qwen:
-
-    - До **1** выходного видео на запрос
-    - До **1** входного изображения
-    - До **4** входных видео
-    - Длительность до **10 секунд**
-    - Поддерживает `size`, `aspectRatio`, `resolution`, `audio` и `watermark`
-    - Режим эталонного изображения/видео в настоящее время требует **удалённые URL-адреса http(s)**. Локальные
-      пути к файлам отклоняются заранее, потому что видеоконечная точка DashScope не
-      принимает загруженные локальные буферы для таких эталонов.
+    Обычный параметр `models.providers.qwen.baseUrl`, указывающий на хост Qwen
+    для Coding Plan или Standard, по-прежнему направляет генерацию видео на
+    соответствующую региональную конечную точку видео DashScope.
 
   </Accordion>
 
-  <Accordion title="Совместимость использования потоковой передачи">
-    Нативные конечные точки Model Studio заявляют о совместимости использования потоковой передачи на
-    общем транспорте `openai-completions`. Теперь OpenClaw определяет это по
-    возможностям конечной точки, поэтому пользовательские идентификаторы провайдеров, совместимые с DashScope и нацеленные на
-    те же нативные хосты, наследуют то же поведение использования потоковой передачи, вместо того чтобы
-    требовать именно встроенный идентификатор провайдера `qwen`.
-
-    Совместимость использования нативной потоковой передачи применяется как к хостам Coding Plan, так и
-    к стандартным хостам, совместимым с DashScope:
+  <Accordion title="Streaming usage compatibility">
+    Нативные конечные точки Qwen заявляют о совместимости с передачей данных об
+    использовании в потоковом режиме через общий транспорт `openai-completions`,
+    поэтому идентификаторы пользовательских провайдеров, совместимых с
+    DashScope и нацеленных на те же нативные хосты, наследуют это поведение без
+    обязательного использования встроенного идентификатора провайдера `qwen`.
+    Это относится к конечным точкам Coding Plan, Standard и Token Plan:
 
     - `https://coding.dashscope.aliyuncs.com/v1`
     - `https://coding-intl.dashscope.aliyuncs.com/v1`
     - `https://dashscope.aliyuncs.com/compatible-mode/v1`
     - `https://dashscope-intl.aliyuncs.com/compatible-mode/v1`
+    - `https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1`
+    - `https://token-plan.cn-beijing.maas.aliyuncs.com/compatible-mode/v1`
 
   </Accordion>
 
-  <Accordion title="Регионы мультимодальных конечных точек">
-    Мультимодальные поверхности (понимание видео и генерация видео Wan) используют
-    **стандартные** конечные точки DashScope, а не конечные точки Coding Plan:
+  <Accordion title="Capability plan">
+    Plugin `qwen` позиционируется как основная интеграция поставщика для всех
+    возможностей Qwen Cloud, а не только для моделей программирования и текста.
 
-    - Глобальный/международный стандартный базовый URL: `https://dashscope-intl.aliyuncs.com/compatible-mode/v1`
-    - Китайский стандартный базовый URL: `https://dashscope.aliyuncs.com/compatible-mode/v1`
+    - **Текстовые и чат-модели:** доступны через Plugin
+    - **Вызов инструментов, структурированный вывод и рассуждения:** наследуются от транспорта, совместимого с OpenAI
+    - **Генерация изображений:** запланирована на уровне Plugin провайдера
+    - **Распознавание изображений и видео:** доступно через Plugin на конечной точке Standard
+    - **Речь и аудио:** запланированы на уровне Plugin провайдера
+    - **Векторные представления и переранжирование памяти:** запланированы через интерфейс адаптера векторных представлений
+    - **Генерация видео:** доступна через Plugin посредством общей возможности генерации видео
 
   </Accordion>
 
-  <Accordion title="Настройка окружения и демона">
-    Если Gateway работает как демон (launchd/systemd), убедитесь, что `QWEN_API_KEY`
-    доступен этому процессу (например, в `~/.openclaw/.env` или через
-    `env.shellEnv`).
+  <Accordion title="Environment and daemon setup">
+    Если Gateway работает как демон (launchd/systemd), убедитесь, что
+    `QWEN_API_KEY` или `QWEN_TOKEN_PLAN_API_KEY` доступен этому процессу
+    (например, через `~/.openclaw/.env` или `env.shellEnv`).
   </Accordion>
 </AccordionGroup>
 
-## Связанные материалы
+## Связанные разделы
 
 <CardGroup cols={2}>
-  <Card title="Выбор модели" href="/ru/concepts/model-providers" icon="layers">
-    Выбор провайдеров, ссылок на модели и поведения при отказе.
+  <Card title="Model selection" href="/ru/concepts/model-providers" icon="layers">
+    Выбор провайдеров, ссылок на модели и поведения при переключении после сбоя.
   </Card>
-  <Card title="Генерация видео" href="/ru/tools/video-generation" icon="video">
-    Общие параметры инструмента видео и выбор провайдера.
+  <Card title="Video generation" href="/ru/tools/video-generation" icon="video">
+    Общие параметры инструмента генерации видео и выбор провайдера.
   </Card>
-  <Card title="Alibaba (ModelStudio)" href="/ru/providers/alibaba" icon="cloud">
-    Устаревший провайдер ModelStudio и примечания по миграции.
+  <Card title="Alibaba Model Studio" href="/ru/providers/alibaba" icon="cloud">
+    Встроенный провайдер генерации видео Wan на той же платформе DashScope.
   </Card>
-  <Card title="Устранение неполадок" href="/ru/help/troubleshooting" icon="wrench">
-    Общее устранение неполадок и FAQ.
+  <Card title="Troubleshooting" href="/ru/help/troubleshooting" icon="wrench">
+    Общие рекомендации по устранению неполадок и часто задаваемые вопросы.
   </Card>
 </CardGroup>

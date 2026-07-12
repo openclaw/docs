@@ -1,55 +1,43 @@
 ---
 read_when:
-    - Chcesz zbudować prosty Plugin OpenClaw, który dodaje tylko narzędzia agenta
-    - Chcesz użyć defineToolPlugin zamiast ręcznie pisać metadane manifestu Plugin
-    - Musisz utworzyć szkielet, wygenerować, zweryfikować, przetestować lub opublikować Plugin zawierający wyłącznie narzędzia
+    - Chcesz utworzyć prosty plugin OpenClaw, który dodaje tylko narzędzia agenta
+    - Chcesz użyć `defineToolPlugin` zamiast ręcznie pisać metadane manifestu Pluginu
+    - Musisz utworzyć szkielet, wygenerować, zweryfikować, przetestować lub opublikować plugin zawierający wyłącznie narzędzia
 sidebarTitle: Tool Plugins
-summary: Twórz proste typowane narzędzia agenta za pomocą defineToolPlugin oraz openclaw plugins init/build/validate
+summary: Twórz proste, typowane narzędzia agenta za pomocą defineToolPlugin oraz openclaw plugins init/build/validate
 title: Pluginy narzędziowe
 x-i18n:
-    generated_at: "2026-06-27T18:09:03Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:32:25Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5e0ead3e9162b0e9e930a7a69dcd4a72a78063dae09a173efb70d0db32f73c9a
+    source_hash: 231eba96d4927b7411cb17d79b96e6df09ed111fc8a54eac0ca7717e58803d26
     source_path: plugins/tool-plugins.md
     workflow: 16
 ---
 
-Pluginy narzędzi dodają do OpenClaw narzędzia wywoływalne przez agenta bez dodawania kanału,
-dostawcy modeli, hooka, usługi ani backendu konfiguracji. Użyj `defineToolPlugin`, gdy
-plugin posiada stałą listę narzędzi i chcesz, aby OpenClaw wygenerował metadane manifestu,
-dzięki którym te narzędzia pozostają wykrywalne bez ładowania kodu uruchomieniowego.
+`defineToolPlugin` tworzy Plugin, który dodaje wyłącznie narzędzia wywoływane przez agenta: bez
+kanału, dostawcy modeli, haka, usługi ani zaplecza konfiguracji. Generuje
+metadane manifestu potrzebne OpenClaw do wykrywania narzędzi bez ładowania
+kodu środowiska uruchomieniowego Pluginu.
 
-Zalecany przepływ wygląda tak:
-
-1. Utwórz szkielet pakietu za pomocą `openclaw plugins init`.
-2. Napisz narzędzia z `defineToolPlugin`.
-3. Zbuduj JavaScript.
-4. Wygeneruj metadane `openclaw.plugin.json` i `package.json` za pomocą
-   `openclaw plugins build`.
-5. Zweryfikuj wygenerowane metadane przed publikacją lub instalacją.
-
-Dla pluginów dostawców, kanałów, hooków, usług albo pluginów o mieszanych możliwościach zacznij
-zamiast tego od [Tworzenie pluginów](/pl/plugins/building-plugins), [Pluginy kanałów](/pl/plugins/sdk-channel-plugins)
-albo [Pluginy dostawców](/pl/plugins/sdk-provider-plugins).
+W przypadku Pluginów dostawców, kanałów, haków, usług lub Pluginów o mieszanych
+możliwościach zacznij zamiast tego od [Tworzenie Pluginów](/pl/plugins/building-plugins),
+[Pluginy kanałów](/pl/plugins/sdk-channel-plugins) albo
+[Pluginy dostawców](/pl/plugins/sdk-provider-plugins).
 
 ## Wymagania
 
-- Node >= 22.
-- Wyjście pakietu TypeScript ESM.
-- `typebox` dla schematów konfiguracji i parametrów narzędzi.
-- `openclaw >=2026.5.17`, pierwsza wersja OpenClaw eksportująca
+- Node 22.19+, Node 23.11+ lub Node 24+.
+- Pakiet TypeScript ESM generujący dane wyjściowe.
+- `typebox` w `dependencies` (nie tylko w `devDependencies` — wygenerowany
+  Plugin importuje go w czasie działania).
+- `openclaw >=2026.5.17`, czyli pierwsza wersja eksportująca
   `openclaw/plugin-sdk/tool-plugin`.
-- Katalog główny pakietu, który może dostarczać `dist/`, `openclaw.plugin.json` i
+- Katalog główny pakietu zawierający `dist/`, `openclaw.plugin.json` oraz
   `package.json`.
 
-Wygenerowany plugin importuje `typebox` w czasie uruchomienia, więc trzymaj `typebox` w
-`dependencies`, nie tylko w `devDependencies`.
-
 ## Szybki start
-
-Utwórz nowy pakiet pluginu:
 
 ```bash
 openclaw plugins init stock-quotes --name "Stock Quotes"
@@ -60,26 +48,40 @@ npm run plugin:validate
 npm test
 ```
 
-Szkielet tworzy:
+`plugins init` tworzy szkielet:
 
-- `src/index.ts`: punkt wejścia `defineToolPlugin` z narzędziem `echo`.
-- `src/index.test.ts`: mały test metadanych.
-- `tsconfig.json`: wyjście TypeScript NodeNext do `dist/`.
-- `package.json`: skrypty, zależności uruchomieniowe i
-  `openclaw.extensions: ["./dist/index.js"]`.
-- `openclaw.plugin.json`: wygenerowane metadane manifestu dla początkowego narzędzia.
+| Plik                   | Przeznaczenie                                                     |
+| ---------------------- | ----------------------------------------------------------------- |
+| `src/index.ts`         | Punkt wejścia `defineToolPlugin` z jednym narzędziem `echo`       |
+| `src/index.test.ts`    | Test metadanych sprawdzający listę narzędzi                       |
+| `tsconfig.json`        | Dane wyjściowe TypeScript NodeNext w `dist/`                      |
+| `vitest.config.ts`     | Konfiguracja Vitest dla `src/**/*.test.ts`                        |
+| `package.json`         | Skrypty, zależności środowiska uruchomieniowego, `openclaw.extensions: ["./dist/index.js"]` |
+| `openclaw.plugin.json` | Wygenerowane metadane manifestu dla początkowego narzędzia        |
 
-Oczekiwane wyjście walidacji:
+`npm run plugin:build` uruchamia `npm run build` (tsc), a następnie
+`openclaw plugins build --entry ./dist/index.js`. `npm run plugin:validate`
+ponownie buduje projekt i uruchamia `openclaw plugins validate --entry ./dist/index.js`.
+Pomyślna walidacja wyświetla:
 
 ```text
 Plugin stock-quotes is valid.
 ```
 
-## Napisz narzędzie
+Opcje `openclaw plugins init <id>`:
 
-`defineToolPlugin` przyjmuje tożsamość pluginu, opcjonalny schemat konfiguracji i
-statyczną listę narzędzi. Typy parametrów i konfiguracji są wnioskowane ze schematów
-TypeBox.
+| Flaga                | Wartość domyślna         | Działanie                                      |
+| -------------------- | ------------------------ | ---------------------------------------------- |
+| `--directory <path>` | `<id>`                   | Katalog wyjściowy                              |
+| `--name <name>`      | `<id>` w formacie tytułu | Nazwa wyświetlana                              |
+| `--type <type>`      | `tool`                   | Typ szkieletu: `tool` lub `provider`           |
+| `--force`            | wyłączona                | Zastępuje istniejący katalog wyjściowy         |
+
+## Pisanie narzędzia
+
+`defineToolPlugin` przyjmuje tożsamość Pluginu, opcjonalny schemat konfiguracji
+oraz statyczną listę narzędzi. Typy parametrów i konfiguracji są wywnioskowane
+ze schematów TypeBox.
 
 ```typescript
 import { Type } from "typebox";
@@ -114,13 +116,17 @@ export default defineToolPlugin({
 });
 ```
 
-Nazwy narzędzi są stabilnym API. Wybieraj nazwy unikalne, pisane małymi literami i
-wystarczająco konkretne, aby uniknąć kolizji z narzędziami rdzenia lub innymi pluginami.
+Nazwy narzędzi stanowią stabilny interfejs API. Wybieraj nazwy unikatowe,
+pisane małymi literami i wystarczająco szczegółowe, aby uniknąć kolizji
+z narzędziami rdzenia lub innych Pluginów.
 
 ## Narzędzia opcjonalne i fabryczne
 
-Ustaw `optional: true`, gdy użytkownicy powinni jawnie dodać narzędzie do listy dozwolonych,
-zanim zostanie wysłane do modelu:
+Ustaw `optional: true`, gdy użytkownicy powinni jawnie dodać narzędzie do listy
+dozwolonych, zanim zostanie ono wysłane do modelu. `openclaw plugins build`
+zapisuje odpowiadający wpis manifestu `toolMetadata.<tool>.optional`, dzięki
+czemu OpenClaw może rozpoznać narzędzie jako opcjonalne bez ładowania kodu
+środowiska uruchomieniowego Pluginu.
 
 ```typescript
 tool({
@@ -132,13 +138,11 @@ tool({
 });
 ```
 
-`openclaw plugins build` zapisuje odpowiadający wpis manifestu `toolMetadata.<tool>.optional`,
-dzięki czemu OpenClaw może wykryć narzędzie bez ładowania kodu uruchomieniowego
-pluginu.
-
-Użyj `factory`, gdy narzędzie potrzebuje kontekstu narzędzia uruchomieniowego, zanim może
-zostać utworzone. Fabryka utrzymuje statyczne metadane, jednocześnie pozwalając narzędziu wyłączyć się dla
-konkretnego uruchomienia, sprawdzić stan piaskownicy albo powiązać pomocniki uruchomieniowe.
+Użyj `factory`, gdy narzędzie przed utworzeniem potrzebuje kontekstu narzędzia
+środowiska uruchomieniowego — aby wyłączyć je dla konkretnego uruchomienia,
+sprawdzić stan piaskownicy lub powiązać pomocnicze elementy środowiska
+uruchomieniowego. Metadane pozostają statyczne, mimo że konkretne narzędzie
+jest tworzone w czasie działania.
 
 ```typescript
 tool({
@@ -155,9 +159,9 @@ tool({
 });
 ```
 
-Fabryki nadal są przeznaczone dla stałych nazw narzędzi. Użyj bezpośrednio `definePluginEntry`, gdy
-plugin oblicza nazwy narzędzi dynamicznie albo łączy narzędzia z hookami,
-usługami, dostawcami, poleceniami lub innymi powierzchniami uruchomieniowymi.
+Fabryki nadal deklarują z góry stałą nazwę narzędzia. Użyj bezpośrednio
+`definePluginEntry`, gdy Plugin dynamicznie oblicza nazwy narzędzi lub łączy
+narzędzia z hakami, usługami, dostawcami albo poleceniami.
 
 ## Wartości zwracane
 
@@ -165,8 +169,8 @@ usługami, dostawcami, poleceniami lub innymi powierzchniami uruchomieniowymi.
 OpenClaw:
 
 - Zwróć ciąg znaków, gdy model powinien zobaczyć dokładnie ten tekst.
-- Zwróć wartość zgodną z JSON, gdy chcesz, aby model zobaczył sformatowany JSON,
-  a OpenClaw zachował oryginalną wartość w `details`.
+- Zwróć wartość zgodną z JSON, gdy model powinien zobaczyć sformatowany JSON,
+  a OpenClaw ma zachować oryginalną wartość w `details`.
 
 ```typescript
 tool({
@@ -190,15 +194,15 @@ tool({
 });
 ```
 
-Użyj narzędzia fabrycznego, gdy musisz zwrócić niestandardowy `AgentToolResult` albo ponownie użyć
-istniejącej implementacji `api.registerTool`. Użyj `definePluginEntry` zamiast
-`defineToolPlugin`, gdy potrzebujesz w pełni dynamicznych narzędzi albo mieszanych
-możliwości pluginu.
+Użyj narzędzia fabrycznego, gdy potrzebujesz niestandardowego
+`AgentToolResult` lub chcesz ponownie wykorzystać istniejącą implementację
+`api.registerTool`.
 
 ## Konfiguracja
 
-`configSchema` jest opcjonalny. Jeśli go pominiesz, OpenClaw użyje ścisłego schematu
-pustego obiektu, a wygenerowany manifest nadal będzie zawierać `configSchema`.
+`configSchema` jest opcjonalny. Jeśli go pominiesz, OpenClaw zastosuje ścisły
+schemat pustego obiektu; wygenerowany manifest nadal będzie zawierał
+`configSchema`.
 
 ```typescript
 export default defineToolPlugin({
@@ -209,8 +213,8 @@ export default defineToolPlugin({
 });
 ```
 
-Gdy dołączysz `configSchema`, drugi argument `execute` jest typowany na podstawie
-schematu:
+W przypadku użycia `configSchema` typ drugiego argumentu `execute` jest z niego
+wywnioskowany:
 
 ```typescript
 const configSchema = Type.Object({
@@ -233,26 +237,25 @@ export default defineToolPlugin({
 });
 ```
 
-OpenClaw odczytuje konfigurację pluginu z wpisu pluginu w konfiguracji Gateway. Nie
-wpisuj sekretów na stałe w kodzie źródłowym ani w przykładach dokumentacji. Używaj konfiguracji, zmiennych
-środowiskowych albo SecretRefs zgodnie z modelem bezpieczeństwa pluginu.
+OpenClaw odczytuje konfigurację Pluginu z jego wpisu w konfiguracji Gateway.
+Nie zapisuj na stałe sekretów w kodzie źródłowym ani przykładach dokumentacji;
+zgodnie z modelem bezpieczeństwa Pluginu używaj konfiguracji, zmiennych
+środowiskowych lub SecretRefs.
 
 ## Wygenerowane metadane
 
-OpenClaw wykrywa zainstalowane pluginy z zimnych metadanych. Musi być w stanie odczytać
-manifest pluginu przed zaimportowaniem kodu uruchomieniowego pluginu. Dlatego `defineToolPlugin`
-udostępnia statyczne metadane, a `openclaw plugins build` zapisuje te
-metadane w pakiecie.
-
-Uruchom generator po zmianie identyfikatora pluginu, nazwy, opisu, schematu konfiguracji,
-aktywacji lub nazw narzędzi:
+OpenClaw musi odczytać manifest Pluginu przed zaimportowaniem kodu jego
+środowiska uruchomieniowego. `defineToolPlugin` udostępnia w tym celu statyczne
+metadane, a `openclaw plugins build` zapisuje je w pakiecie. Uruchom generator
+ponownie po zmianie identyfikatora, nazwy, opisu, schematu konfiguracji,
+aktywacji lub nazw narzędzi Pluginu:
 
 ```bash
 npm run build
 openclaw plugins build --entry ./dist/index.js
 ```
 
-Dla pluginu z jednym narzędziem wygenerowany manifest wygląda tak:
+Wygenerowany manifest Pluginu z jednym narzędziem:
 
 ```json
 {
@@ -274,15 +277,16 @@ Dla pluginu z jednym narzędziem wygenerowany manifest wygląda tak:
 }
 ```
 
-`contracts.tools` jest ważnym kontraktem wykrywania. Informuje OpenClaw, który
-plugin posiada każde narzędzie, bez ładowania każdego zainstalowanego środowiska uruchomieniowego pluginu. Jeśli
-manifest jest nieaktualny, narzędzia może brakować w wykrywaniu albo za błąd
-rejestracji może zostać obwiniony niewłaściwy plugin.
+`contracts.tools` jest istotnym kontraktem wykrywania: informuje OpenClaw,
+który Plugin jest właścicielem każdego narzędzia, bez ładowania środowiska
+uruchomieniowego wszystkich zainstalowanych Pluginów. Nieaktualny manifest
+może spowodować, że narzędzie nie zostanie wykryte albo błąd rejestracji
+zostanie przypisany niewłaściwemu Pluginowi.
 
 ## Metadane pakietu
 
-Dla prostego przepływu pluginu narzędziowego `openclaw plugins build` uzgadnia
-`package.json` z wybranym pojedynczym punktem wejścia uruchomieniowego:
+`openclaw plugins build` dostosowuje również `package.json` do wybranego punktu
+wejścia środowiska uruchomieniowego:
 
 ```json
 {
@@ -300,14 +304,14 @@ Dla prostego przepływu pluginu narzędziowego `openclaw plugins build` uzgadnia
 }
 ```
 
-Dla zainstalowanych pakietów używaj zbudowanego JavaScriptu, takiego jak `./dist/index.js`. Wpisy
-źródłowe są przydatne podczas programowania w workspace, ale opublikowane pakiety nie powinny
-zależeć od ładowania TypeScriptu w czasie uruchomienia.
+Publikuj zbudowany JavaScript (`./dist/index.js`), a nie punkt wejścia w kodzie
+źródłowym TypeScript. Punkty wejścia w kodzie źródłowym działają wyłącznie
+podczas programowania lokalnie w obszarze roboczym.
 
 ## Walidacja w CI
 
-Użyj `plugins build --check`, aby CI zakończyło się błędem, gdy wygenerowane metadane są nieaktualne, bez
-przepisywania plików:
+`plugins build --check` kończy się niepowodzeniem bez nadpisywania plików,
+gdy wygenerowane metadane są nieaktualne:
 
 ```bash
 npm run build
@@ -316,24 +320,27 @@ openclaw plugins validate --entry ./dist/index.js
 npm test
 ```
 
-`plugins validate` sprawdza, że:
+`plugins validate` sprawdza, czy:
 
-- `openclaw.plugin.json` istnieje i przechodzi przez standardowy loader manifestu.
+- `openclaw.plugin.json` istnieje i przechodzi standardowe wczytywanie manifestu.
 - Bieżący punkt wejścia eksportuje metadane `defineToolPlugin`.
-- Wygenerowane pola manifestu pasują do metadanych punktu wejścia.
-- `contracts.tools` pasuje do zadeklarowanych nazw narzędzi.
-- `package.json` wskazuje `openclaw.extensions` na wybrany punkt wejścia uruchomieniowego.
+- Wygenerowane pola manifestu odpowiadają metadanym punktu wejścia.
+- `contracts.tools` odpowiada zadeklarowanym nazwom narzędzi.
+- `package.json` wskazuje w `openclaw.extensions` wybrany punkt wejścia
+  środowiska uruchomieniowego.
 
-## Instalacja i lokalna inspekcja
+## Lokalna instalacja i inspekcja
 
-Z oddzielnego checkoutu OpenClaw albo zainstalowanego CLI zainstaluj ścieżkę pakietu:
+W osobnym katalogu roboczym OpenClaw lub przy użyciu zainstalowanego CLI
+zainstaluj pakiet ze ścieżki:
 
 ```bash
 openclaw plugins install ./stock-quotes
 openclaw plugins inspect stock-quotes --runtime
 ```
 
-Dla pakietowego smoke testu najpierw spakuj, a potem zainstaluj archiwum tarball:
+Aby przeprowadzić test dymny spakowanego pakietu, najpierw go spakuj,
+a następnie zainstaluj archiwum tar:
 
 ```bash
 npm pack
@@ -341,79 +348,85 @@ openclaw plugins install npm-pack:./openclaw-plugin-stock-quotes-0.1.0.tgz
 openclaw plugins inspect stock-quotes --runtime --json
 ```
 
-Po instalacji uruchom lub zrestartuj Gateway i poproś agenta o użycie
-narzędzia. Jeśli debugujesz widoczność narzędzia, sprawdź środowisko uruchomieniowe pluginu i
-efektywny katalog narzędzi przed zmianą kodu.
+Po instalacji uruchom ponownie lub przeładuj Gateway i poproś agenta o użycie
+narzędzia. Jeśli narzędzie nie jest widoczne, przed zmianą kodu sprawdź
+środowisko uruchomieniowe Pluginu i efektywny katalog narzędzi (zobacz
+[Rozwiązywanie problemów](#troubleshooting)).
 
-## Publikacja
+## Publikowanie
 
-Publikuj przez ClawHub, gdy pakiet jest gotowy:
+Gdy pakiet będzie gotowy, opublikuj go za pośrednictwem ClawHub.
+`clawhub package publish` przyjmuje źródło: lokalny folder, repozytorium GitHub
+(`owner/repo[@ref]`) lub adres URL archiwum tar.
 
 ```bash
-clawhub package publish your-org/stock-quotes --dry-run
-clawhub package publish your-org/stock-quotes
+clawhub package publish ./stock-quotes --dry-run
+clawhub package publish ./stock-quotes
 ```
 
-Zainstaluj z jawnym lokatorem ClawHub:
+Zainstaluj przy użyciu jawnego lokalizatora ClawHub:
 
 ```bash
 openclaw plugins install clawhub:your-org/stock-quotes
 ```
 
-Same specyfikacje pakietów npm pozostają obsługiwane podczas przejścia startowego, ale ClawHub
-jest preferowaną powierzchnią wykrywania i dystrybucji dla pluginów OpenClaw.
+Same specyfikatory pakietów npm nadal instalują pakiety z npm w okresie
+przejściowym wdrożenia, ale ClawHub jest preferowaną platformą wykrywania
+i dystrybucji Pluginów OpenClaw. Informacje o zakresie właściciela i przeglądzie
+wydania znajdziesz w sekcji [Publikowanie w ClawHub](/pl/clawhub/publishing).
 
 ## Rozwiązywanie problemów
 
 ### `plugin entry not found: ./dist/index.js`
 
-Wybrany plik punktu wejścia nie istnieje. Uruchom `npm run build`, a następnie ponownie uruchom
-`openclaw plugins build --entry ./dist/index.js` albo
+Wybrany plik punktu wejścia nie istnieje. Uruchom `npm run build`, a następnie
+ponownie uruchom `openclaw plugins build --entry ./dist/index.js` albo
 `openclaw plugins validate --entry ./dist/index.js`.
 
 ### `plugin entry does not expose defineToolPlugin metadata`
 
-Punkt wejścia nie wyeksportował wartości utworzonej przez `defineToolPlugin`. Sprawdź, czy
-domyślny eksport modułu jest wynikiem `defineToolPlugin(...)`, albo przekaż poprawny
-punkt wejścia przez `--entry`.
+Punkt wejścia nie wyeksportował wartości utworzonej przez `defineToolPlugin`.
+Upewnij się, że domyślnym eksportem modułu jest wynik `defineToolPlugin(...)`,
+albo przekaż właściwy punkt wejścia za pomocą `--entry`.
 
 ### `openclaw.plugin.json generated metadata is stale`
 
-Manifest nie pasuje już do metadanych punktu wejścia. Uruchom:
+Manifest nie odpowiada już metadanym punktu wejścia. Uruchom:
 
 ```bash
 npm run build
 openclaw plugins build --entry ./dist/index.js
 ```
 
-Zacommituj zmiany w `openclaw.plugin.json` i `package.json`.
+Zatwierdź zmiany zarówno w `openclaw.plugin.json`, jak i `package.json`.
 
 ### `package.json openclaw.extensions must include ./dist/index.js`
 
-Metadane pakietu wskazują inny punkt wejścia uruchomieniowego. Uruchom
-`openclaw plugins build --entry ./dist/index.js`, aby generator uzgodnił
-metadane pakietu z punktem wejścia, który zamierzasz dostarczyć.
+Metadane pakietu wskazują inny punkt wejścia środowiska uruchomieniowego.
+Uruchom `openclaw plugins build --entry ./dist/index.js`, aby generator
+dostosował metadane pakietu do punktu wejścia, który zamierzasz opublikować.
 
 ### `Cannot find package 'typebox'`
 
-Zbudowany plugin importuje `typebox` w czasie uruchomienia. Trzymaj `typebox` w
-`dependencies`, zainstaluj ponownie zależności pakietu, zbuduj ponownie i ponownie uruchom walidację.
+Zbudowany Plugin importuje `typebox` w czasie działania. Pozostaw go
+w `dependencies`, ponownie zainstaluj zależności, przebuduj projekt i ponownie
+uruchom walidację.
 
 ### Narzędzie nie pojawia się po instalacji
 
-Sprawdź te elementy w kolejności:
+Sprawdź kolejno następujące elementy:
 
 1. `openclaw plugins inspect <plugin-id> --runtime`
 2. `openclaw plugins validate --root <plugin-root> --entry ./dist/index.js`
-3. `openclaw.plugin.json` ma `contracts.tools` z oczekiwanymi nazwami narzędzi.
-4. `package.json` ma `openclaw.extensions: ["./dist/index.js"]`.
-5. Gateway został zrestartowany lub przeładowany po zainstalowaniu pluginu.
+3. Plik `openclaw.plugin.json` zawiera `contracts.tools` z oczekiwanymi nazwami narzędzi.
+4. Plik `package.json` zawiera `openclaw.extensions: ["./dist/index.js"]`.
+5. Po zainstalowaniu pluginu Gateway został uruchomiony ponownie lub przeładowany.
 
-## Zobacz też
+## Zobacz także
 
 - [Tworzenie pluginów](/pl/plugins/building-plugins)
 - [Punkty wejścia pluginów](/pl/plugins/sdk-entrypoints)
-- [Podścieżki SDK pluginów](/pl/plugins/sdk-subpaths)
+- [Ścieżki podrzędne SDK pluginów](/pl/plugins/sdk-subpaths)
 - [Manifest pluginu](/pl/plugins/manifest)
 - [CLI pluginów](/pl/cli/plugins)
 - [Publikowanie w ClawHub](/pl/clawhub/publishing)

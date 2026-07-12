@@ -1,15 +1,14 @@
 ---
 read_when:
-    - Sie benötigen eine andere Installationsmethode als die Schnellstartanleitung „Erste Schritte“
+    - Sie benötigen eine andere Installationsmethode als den Schnellstart unter „Erste Schritte“
     - Sie möchten die Bereitstellung auf einer Cloud-Plattform durchführen
     - Sie müssen aktualisieren, migrieren oder deinstallieren
 summary: OpenClaw installieren – Installationsskript, npm/pnpm/bun, aus dem Quellcode, Docker und mehr
 title: Installieren
 x-i18n:
-    generated_at: "2026-07-12T15:34:45Z"
+    generated_at: "2026-07-12T01:48:49Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: cc819cc6c1d57af0739a7d11f0f2834479ddabbca0571b105b8cb9325e87b145
     source_path: install/index.md
@@ -18,16 +17,16 @@ x-i18n:
 
 ## Systemanforderungen
 
-- **Node 22.19+, 23.11+ oder 24+** – Node 24 ist das standardmäßige Ziel; das Installationsskript übernimmt dies automatisch.
-- **macOS, Linux oder Windows** – Windows-Benutzer können mit der nativen Windows Hub-App, dem PowerShell-CLI-Installationsprogramm oder einem WSL2-Gateway beginnen. Siehe [Windows](/de/platforms/windows).
-- `pnpm` wird nur benötigt, wenn Sie aus dem Quellcode bauen.
+- **Node 22.19+, 23.11+ oder 24+** – Node 24 ist das Standardziel; das Installationsskript übernimmt dies automatisch.
+- **macOS, Linux oder Windows** – Windows-Benutzer können mit der nativen Windows-Hub-App, dem PowerShell-CLI-Installationsprogramm oder einem WSL2-Gateway beginnen. Siehe [Windows](/de/platforms/windows).
+- `pnpm` wird nur benötigt, wenn Sie aus dem Quellcode kompilieren.
 
 ## Empfohlen: Installationsskript
 
-Die schnellste Installationsmethode. Es erkennt Ihr Betriebssystem, installiert bei Bedarf Node, installiert OpenClaw und startet das Onboarding.
+Die schnellste Installationsmethode. Das Skript erkennt Ihr Betriebssystem, installiert bei Bedarf Node, installiert OpenClaw und startet die Ersteinrichtung.
 
 <Note>
-Benutzer von Windows-Desktop-Systemen können auch die native Begleit-App [Windows Hub](/de/platforms/windows#recommended-windows-hub) installieren, die Einrichtung, Taskleistenstatus, Chat, Node-Modus und lokalen MCP-Modus umfasst.
+Benutzer der Windows-Desktopversion können auch die native Begleit-App [Windows Hub](/de/platforms/windows#recommended-windows-hub) installieren. Sie umfasst Einrichtung, Taskleistenstatus, Chat, Node-Modus und lokalen MCP-Modus.
 </Note>
 
 <Tabs>
@@ -43,7 +42,7 @@ Benutzer von Windows-Desktop-Systemen können auch die native Begleit-App [Windo
   </Tab>
 </Tabs>
 
-So installieren Sie ohne Ausführung des Onboardings:
+So installieren Sie OpenClaw, ohne die Ersteinrichtung auszuführen:
 
 <Tabs>
   <Tab title="macOS / Linux / WSL2">
@@ -58,7 +57,7 @@ So installieren Sie ohne Ausführung des Onboardings:
   </Tab>
 </Tabs>
 
-Alle Flags und Optionen für CI/Automatisierung finden Sie unter [Interna des Installationsprogramms](/de/install/installer).
+Alle Flags und Optionen für CI und Automatisierung finden Sie unter [Interna des Installationsprogramms](/de/install/installer).
 
 ## Alternative Installationsmethoden
 
@@ -90,9 +89,9 @@ Wenn Sie Node bereits selbst verwalten:
     ```
 
     <Note>
-    Das gehostete Installationsprogramm deaktiviert für die Installation des OpenClaw-Pakets npm-Aktualitätsfilter wie `min-release-age`.
-    Wenn Sie die Installation manuell mit npm durchführen, gilt weiterhin Ihre eigene
-    npm-Richtlinie.
+    Das bereitgestellte Installationsprogramm setzt npm-Aktualitätsfilter wie `min-release-age`
+    für die Installation des OpenClaw-Pakets außer Kraft. Wenn Sie die Installation manuell mit npm durchführen, gilt weiterhin
+    Ihre eigene npm-Richtlinie.
     </Note>
 
   </Tab>
@@ -135,7 +134,7 @@ openclaw onboard --install-daemon
 
 Alternativ können Sie die Verknüpfung überspringen und `pnpm openclaw ...` innerhalb des Repositorys verwenden. Vollständige Entwicklungsabläufe finden Sie unter [Einrichtung](/de/start/setup).
 
-### Aus dem GitHub-Main-Checkout installieren
+### Aus dem GitHub-Checkout des main-Branches installieren
 
 ```bash
 curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --install-method git --version main
@@ -154,26 +153,26 @@ curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -
     Deklarative Installation über einen Nix-Flake.
   </Card>
   <Card title="Ansible" href="/de/install/ansible" icon="server">
-    Automatisierte Bereitstellung für Geräteflotten.
+    Automatisierte Bereitstellung für eine Serverflotte.
   </Card>
   <Card title="Bun" href="/de/install/bun" icon="zap">
-    Reine CLI-Nutzung über die Bun-Laufzeit.
+    Ausschließliche CLI-Nutzung über die Bun-Laufzeit.
   </Card>
 </CardGroup>
 
 ## Installation überprüfen
 
 ```bash
-openclaw --version      # bestätigen, dass die CLI verfügbar ist
-openclaw doctor         # auf Konfigurationsprobleme prüfen
-openclaw gateway status # überprüfen, ob das Gateway ausgeführt wird
+openclaw --version      # confirm the CLI is available
+openclaw doctor         # check for config issues
+openclaw gateway status # verify the Gateway is running
 ```
 
 Wenn Sie nach der Installation einen verwalteten Start wünschen:
 
 - macOS: LaunchAgent über `openclaw onboard --install-daemon` oder `openclaw gateway install`
 - Linux/WSL2: systemd-Benutzerdienst über dieselben Befehle
-- Natives Windows: zunächst eine geplante Aufgabe, mit einem benutzerspezifischen Anmeldeeintrag im Autostartordner als Ausweichlösung, falls die Aufgabenerstellung verweigert wird
+- Natives Windows: zunächst eine geplante Aufgabe; falls die Aufgabenerstellung verweigert wird, wird ersatzweise pro Benutzer ein Anmeldeelement im Autostartordner verwendet
 
 ## Hosting und Bereitstellung
 
@@ -210,10 +209,10 @@ Northflank, Oracle Cloud, Raspberry Pi und weitere). Alternativ können Sie Open
 
 ## Fehlerbehebung: `openclaw` nicht gefunden
 
-Fast immer handelt es sich um ein PATH-Problem: Das globale Binärverzeichnis von npm ist nicht im `PATH` Ihrer Shell enthalten. Unter [Node.js-Fehlerbehebung](/de/install/node#troubleshooting) finden Sie die vollständige Lösung einschließlich des Windows-Pfads.
+Fast immer handelt es sich um ein PATH-Problem: Das globale Binärverzeichnis von npm ist nicht im `PATH` Ihrer Shell enthalten. Unter [Fehlerbehebung für Node.js](/de/install/node#troubleshooting) finden Sie die vollständige Lösung einschließlich des Windows-Pfads.
 
 ```bash
-node -v           # Ist Node installiert?
-npm prefix -g     # Wo befinden sich globale Pakete?
-echo "$PATH"      # Befindet sich das globale Binärverzeichnis im PATH?
+node -v           # Node installed?
+npm prefix -g     # Where are global packages?
+echo "$PATH"      # Is the global bin dir in PATH?
 ```

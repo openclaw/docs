@@ -4,8 +4,8 @@ read_when:
 summary: Thêm bề mặt kênh Mattermost để gửi và nhận tin nhắn OpenClaw.
 title: Plugin Mattermost
 x-i18n:
-    generated_at: "2026-06-27T17:53:34Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:16:02Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 7a05711dbd897c71a19537dc7a2461be3c1c7aa37aa25f3fa0135848644040b4
@@ -15,16 +15,16 @@ x-i18n:
 
 # Plugin Mattermost
 
-Thêm bề mặt kênh Mattermost để gửi và nhận tin nhắn OpenClaw.
+Thêm giao diện kênh Mattermost để gửi và nhận tin nhắn OpenClaw.
 
 ## Phân phối
 
 - Gói: `@openclaw/mattermost`
-- Tuyến cài đặt: npm; ClawHub: `clawhub:@openclaw/mattermost`
+- Phương thức cài đặt: npm; ClawHub: `clawhub:@openclaw/mattermost`
 
-## Bề mặt
+## Giao diện
 
-channels: mattermost
+kênh: mattermost
 
 ## Tài liệu liên quan
 

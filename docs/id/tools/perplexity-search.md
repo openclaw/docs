@@ -1,28 +1,26 @@
 ---
 read_when:
     - Anda ingin menggunakan Perplexity Search untuk pencarian web
-    - Anda perlu menyiapkan PERPLEXITY_API_KEY atau OPENROUTER_API_KEY
-summary: Kompatibilitas Perplexity Search API dan Sonar/OpenRouter untuk web_search
+    - Anda perlu menyiapkan `PERPLEXITY_API_KEY` atau `OPENROUTER_API_KEY`
+summary: API Perplexity Search dan kompatibilitas Sonar/OpenRouter untuk web_search
 title: Pencarian Perplexity
 x-i18n:
-    generated_at: "2026-06-27T18:20:19Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:47:41Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6ef003238bc38dd3d92b98654598cba05fb1c324d8ca766a683cf1defe5bd435
+    source_hash: a7ca97355110e70a05f1d57acab475dda8dec89393804df40c6e9be5e30780e8
     source_path: tools/perplexity-search.md
     workflow: 16
 ---
 
-OpenClaw mendukung Perplexity Search API sebagai penyedia `web_search`.
-Ini mengembalikan hasil terstruktur dengan kolom `title`, `url`, dan `snippet`.
+OpenClaw mendukung Perplexity Search API sebagai penyedia `web_search`. API ini mengembalikan hasil terstruktur dengan bidang `title`, `url`, dan `snippet`.
 
-Untuk kompatibilitas, OpenClaw juga mendukung penyiapan Perplexity Sonar/OpenRouter lama.
-Jika Anda menggunakan `OPENROUTER_API_KEY`, kunci `sk-or-...` di `plugins.entries.perplexity.config.webSearch.apiKey`, atau mengatur `plugins.entries.perplexity.config.webSearch.baseUrl` / `model`, penyedia beralih ke jalur chat-completions dan mengembalikan jawaban yang disintesis AI dengan kutipan, bukan hasil Search API terstruktur.
+Untuk kompatibilitas, OpenClaw juga mendukung konfigurasi lama Perplexity Sonar/OpenRouter. Jika Anda menggunakan `OPENROUTER_API_KEY`, kunci `sk-or-...` di `plugins.entries.perplexity.config.webSearch.apiKey`, atau menetapkan `plugins.entries.perplexity.config.webSearch.baseUrl` / `model`, penyedia akan beralih ke jalur penyelesaian percakapan dan mengembalikan jawaban yang disintesis AI beserta kutipan, alih-alih hasil Search API terstruktur.
 
-## Pasang plugin
+## Instal Plugin
 
-Pasang plugin resmi, lalu mulai ulang Gateway:
+Instal Plugin resmi, lalu mulai ulang Gateway:
 
 ```bash
 openclaw plugins install @openclaw/perplexity-plugin
@@ -31,13 +29,13 @@ openclaw gateway restart
 
 ## Mendapatkan kunci API Perplexity
 
-1. Buat akun Perplexity di [perplexity.ai/settings/api](https://www.perplexity.ai/settings/api)
-2. Buat kunci API di dasbor
-3. Simpan kunci di konfigurasi atau atur `PERPLEXITY_API_KEY` di lingkungan Gateway.
+1. Buat akun Perplexity di [perplexity.ai/settings/api](https://www.perplexity.ai/settings/api).
+2. Buat kunci API di dasbor.
+3. Simpan kunci dalam konfigurasi atau tetapkan `PERPLEXITY_API_KEY` di lingkungan Gateway.
 
 ## Kompatibilitas OpenRouter
 
-Jika Anda sudah menggunakan OpenRouter untuk Perplexity Sonar, pertahankan `provider: "perplexity"` dan atur `OPENROUTER_API_KEY` di lingkungan Gateway, atau simpan kunci `sk-or-...` di `plugins.entries.perplexity.config.webSearch.apiKey`.
+Jika Anda telah menggunakan OpenRouter untuk Perplexity Sonar, pertahankan `provider: "perplexity"` dan tetapkan `OPENROUTER_API_KEY` di lingkungan Gateway, atau simpan kunci `sk-or-...` di `plugins.entries.perplexity.config.webSearch.apiKey`.
 
 Kontrol kompatibilitas opsional:
 
@@ -46,7 +44,7 @@ Kontrol kompatibilitas opsional:
 
 ## Contoh konfigurasi
 
-### Perplexity Search API native
+### Perplexity Search API asli
 
 ```json5
 {
@@ -98,107 +96,100 @@ Kontrol kompatibilitas opsional:
 }
 ```
 
-## Tempat mengatur kunci
+## Tempat menetapkan kunci
 
-**Melalui konfigurasi:** jalankan `openclaw configure --section web`. Ini menyimpan kunci di
-`~/.openclaw/openclaw.json` di bawah `plugins.entries.perplexity.config.webSearch.apiKey`.
-Kolom tersebut juga menerima objek SecretRef.
+**Melalui konfigurasi:** jalankan `openclaw configure --section web`. Perintah ini menyimpan kunci di `~/.openclaw/openclaw.json` pada `plugins.entries.perplexity.config.webSearch.apiKey`. Bidang tersebut juga menerima objek SecretRef.
 
-**Melalui lingkungan:** atur `PERPLEXITY_API_KEY` atau `OPENROUTER_API_KEY`
-di lingkungan proses Gateway. Untuk pemasangan gateway, letakkan di
-`~/.openclaw/.env` (atau lingkungan layanan Anda). Lihat [Variabel lingkungan](/id/help/faq#env-vars-and-env-loading).
+**Melalui lingkungan:** tetapkan `PERPLEXITY_API_KEY` atau `OPENROUTER_API_KEY` di lingkungan proses Gateway. Untuk instalasi Gateway, letakkan di `~/.openclaw/.env` (atau lingkungan layanan Anda). Lihat [Variabel lingkungan](/id/help/faq#env-vars-and-env-loading).
 
-Jika `provider: "perplexity"` dikonfigurasi dan SecretRef kunci Perplexity tidak terselesaikan tanpa fallback env, startup/reload langsung gagal.
+Jika `provider: "perplexity"` dikonfigurasi dan SecretRef kunci Perplexity tidak dapat diurai tanpa nilai pengganti dari lingkungan, proses mulai ulang/pemuatan ulang akan segera gagal.
 
 ## Parameter alat
 
-Parameter ini berlaku untuk jalur Perplexity Search API native.
+Parameter ini berlaku untuk jalur Perplexity Search API asli.
 
 <ParamField path="query" type="string" required>
 Kueri pencarian.
 </ParamField>
 
 <ParamField path="count" type="number" default="5">
-Jumlah hasil yang dikembalikan (1-10).
+Jumlah hasil yang akan dikembalikan (1-10).
 </ParamField>
 
 <ParamField path="country" type="string">
-Kode negara ISO 2 huruf (mis. `US`, `DE`).
+Kode negara ISO 2 huruf (misalnya `US`, `DE`).
 </ParamField>
 
 <ParamField path="language" type="string">
-Kode bahasa ISO 639-1 (mis. `en`, `de`, `fr`).
+Kode bahasa ISO 639-1 (misalnya `en`, `de`, `fr`).
 </ParamField>
 
 <ParamField path="freshness" type="'day' | 'week' | 'month' | 'year'">
-Filter waktu - `day` adalah 24 jam.
+Filter waktu—`day` berarti 24 jam.
 </ParamField>
 
 <ParamField path="date_after" type="string">
-Hanya hasil yang dipublikasikan setelah tanggal ini (`YYYY-MM-DD`).
+Hanya hasil yang diterbitkan setelah tanggal ini (`YYYY-MM-DD`).
 </ParamField>
 
 <ParamField path="date_before" type="string">
-Hanya hasil yang dipublikasikan sebelum tanggal ini (`YYYY-MM-DD`).
+Hanya hasil yang diterbitkan sebelum tanggal ini (`YYYY-MM-DD`).
 </ParamField>
 
 <ParamField path="domain_filter" type="string[]">
-Array allowlist/denylist domain (maks. 20).
+Larik daftar izin/daftar blokir domain (maks. 20).
 </ParamField>
 
 <ParamField path="max_tokens" type="number" default="25000">
-Total anggaran konten (maks. 1000000).
+Anggaran konten total (maks. 1000000).
 </ParamField>
 
 <ParamField path="max_tokens_per_page" type="number" default="2048">
 Batas token per halaman.
 </ParamField>
 
-Untuk jalur kompatibilitas Sonar/OpenRouter lama:
+Untuk jalur kompatibilitas lama Sonar/OpenRouter:
 
-- `query`, `count`, dan `freshness` diterima
-- `count` hanya untuk kompatibilitas di sana; respons tetap berupa satu jawaban
-  tersintesis dengan kutipan, bukan daftar N hasil
-- Filter khusus Search API seperti `country`, `language`, `date_after`,
-  `date_before`, `domain_filter`, `max_tokens`, dan `max_tokens_per_page`
-  mengembalikan kesalahan eksplisit
+- `query`, `count`, dan `freshness` diterima.
+- Di jalur tersebut, `count` hanya untuk kompatibilitas; responsnya tetap berupa satu jawaban yang disintesis beserta kutipan, bukan daftar berisi N hasil.
+- Filter khusus Search API (`country`, `language`, `date_after`, `date_before`, `domain_filter`, `max_tokens`, `max_tokens_per_page`) mengembalikan galat eksplisit.
 
 **Contoh:**
 
 ```javascript
-// Country and language-specific search
+// Pencarian khusus negara dan bahasa
 await web_search({
   query: "renewable energy",
   country: "DE",
   language: "de",
 });
 
-// Recent results (past week)
+// Hasil terbaru (seminggu terakhir)
 await web_search({
   query: "AI news",
   freshness: "week",
 });
 
-// Date range search
+// Pencarian rentang tanggal
 await web_search({
   query: "AI developments",
   date_after: "2024-01-01",
   date_before: "2024-06-30",
 });
 
-// Domain filtering (allowlist)
+// Pemfilteran domain (daftar izin)
 await web_search({
   query: "climate research",
   domain_filter: ["nature.com", "science.org", ".edu"],
 });
 
-// Domain filtering (denylist - prefix with -)
+// Pemfilteran domain (daftar blokir—awali dengan -)
 await web_search({
   query: "product reviews",
   domain_filter: ["-reddit.com", "-pinterest.com"],
 });
 
-// More content extraction
+// Ekstraksi konten lebih banyak
 await web_search({
   query: "detailed AI research",
   max_tokens: 50000,
@@ -208,16 +199,16 @@ await web_search({
 
 ### Aturan filter domain
 
-- Maksimum 20 domain per filter
-- Tidak dapat mencampur allowlist dan denylist dalam permintaan yang sama
-- Gunakan prefiks `-` untuk entri denylist (mis., `["-reddit.com"]`)
+- Maksimal 20 domain per filter.
+- Entri daftar izin dan daftar blokir tidak dapat digabungkan dalam permintaan yang sama.
+- Gunakan awalan `-` untuk entri daftar blokir (misalnya `["-reddit.com"]`).
 
 ## Catatan
 
-- Perplexity Search API mengembalikan hasil pencarian web terstruktur (`title`, `url`, `snippet`)
-- OpenRouter atau `plugins.entries.perplexity.config.webSearch.baseUrl` / `model` eksplisit mengalihkan Perplexity kembali ke Sonar chat completions untuk kompatibilitas
-- Kompatibilitas Sonar/OpenRouter mengembalikan satu jawaban tersintesis dengan kutipan, bukan baris hasil terstruktur
-- Hasil di-cache selama 15 menit secara default (dapat dikonfigurasi melalui `cacheTtlMinutes`)
+- Perplexity Search API mengembalikan hasil pencarian web terstruktur (`title`, `url`, `snippet`).
+- OpenRouter, atau `plugins.entries.perplexity.config.webSearch.baseUrl` / `model` yang ditetapkan secara eksplisit, mengalihkan Perplexity kembali ke penyelesaian percakapan Sonar demi kompatibilitas.
+- Kompatibilitas Sonar/OpenRouter mengembalikan satu jawaban yang disintesis beserta kutipan, bukan baris hasil terstruktur.
+- Secara default, hasil disimpan dalam tembolok selama 15 menit (dapat dikonfigurasi melalui `cacheTtlMinutes`).
 
 ## Terkait
 
@@ -232,6 +223,6 @@ await web_search({
     Pencarian neural dengan ekstraksi konten.
   </Card>
   <Card title="Dokumentasi Perplexity Search API" href="https://docs.perplexity.ai/docs/search/quickstart" icon="arrow-up-right-from-square">
-    Panduan mulai cepat dan referensi resmi Perplexity Search API.
+    Panduan memulai cepat dan referensi resmi Perplexity Search API.
   </Card>
 </CardGroup>

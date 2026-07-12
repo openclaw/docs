@@ -1,12 +1,12 @@
 ---
 read_when:
-    - Quieres acceso a modelos alojado en OpenCode
+    - Quieres acceso a modelos alojados en OpenCode
     - Quieres elegir entre los catálogos Zen y Go
-summary: Usa los catálogos OpenCode Zen y Go con OpenClaw
+summary: Usa los catálogos Zen y Go de OpenCode con OpenClaw
 title: OpenCode
 x-i18n:
-    generated_at: "2026-07-05T11:38:19Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T23:27:47Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: de287eb8a349f26c265f95b8b1de3af4035aa2bdc3501c7279f714d297bb8b9b
@@ -16,25 +16,25 @@ x-i18n:
 
 OpenCode expone dos catálogos alojados en OpenClaw:
 
-| Catálogo | Prefijo           | Proveedor de runtime |
-| -------- | ----------------- | -------------------- |
-| **Zen**  | `opencode/...`    | `opencode`           |
-| **Go**   | `opencode-go/...` | `opencode-go`        |
+| Catálogo | Prefijo           | Proveedor de ejecución |
+| -------- | ----------------- | ---------------------- |
+| **Zen**  | `opencode/...`    | `opencode`             |
+| **Go**   | `opencode-go/...` | `opencode-go`          |
 
 Ambos catálogos comparten una clave de API de OpenCode (`OPENCODE_API_KEY`, alias
-`OPENCODE_ZEN_API_KEY`). OpenClaw mantiene separados los ids de proveedor de runtime para que
-el enrutamiento ascendente por modelo siga siendo correcto, pero la configuración inicial y la documentación los tratan como
-una sola configuración de OpenCode.
+`OPENCODE_ZEN_API_KEY`). OpenClaw mantiene separados los identificadores de los proveedores de ejecución para que
+el enrutamiento ascendente por modelo siga siendo correcto, pero la incorporación y la documentación los tratan como
+una única configuración de OpenCode.
 
 ## Primeros pasos
 
 <Tabs>
-  <Tab title="Zen catalog">
+  <Tab title="Catálogo Zen">
     **Ideal para:** el proxy multimodelo seleccionado de OpenCode (Claude, GPT, Gemini, GLM,
     DeepSeek, Kimi, MiniMax, Qwen).
 
     <Steps>
-      <Step title="Run onboarding">
+      <Step title="Ejecutar la incorporación">
         ```bash
         openclaw onboard --auth-choice opencode-zen
         ```
@@ -45,12 +45,12 @@ una sola configuración de OpenCode.
         openclaw onboard --opencode-zen-api-key "$OPENCODE_API_KEY"
         ```
       </Step>
-      <Step title="Set a Zen model as the default">
+      <Step title="Establecer un modelo Zen como predeterminado">
         ```bash
         openclaw config set agents.defaults.model.primary "opencode/claude-opus-4-6"
         ```
       </Step>
-      <Step title="Verify models are available">
+      <Step title="Verificar que los modelos estén disponibles">
         ```bash
         openclaw models list --provider opencode
         ```
@@ -59,11 +59,11 @@ una sola configuración de OpenCode.
 
   </Tab>
 
-  <Tab title="Go catalog">
-    **Ideal para:** la línea alojada en OpenCode de Kimi, GLM, MiniMax, Qwen y DeepSeek.
+  <Tab title="Catálogo Go">
+    **Ideal para:** la gama de Kimi, GLM, MiniMax, Qwen y DeepSeek alojada en OpenCode.
 
     <Steps>
-      <Step title="Run onboarding">
+      <Step title="Ejecutar la incorporación">
         ```bash
         openclaw onboard --auth-choice opencode-go
         ```
@@ -74,12 +74,12 @@ una sola configuración de OpenCode.
         openclaw onboard --opencode-go-api-key "$OPENCODE_API_KEY"
         ```
       </Step>
-      <Step title="Set a Go model as the default">
+      <Step title="Establecer un modelo Go como predeterminado">
         ```bash
         openclaw config set agents.defaults.model.primary "opencode-go/kimi-k2.6"
         ```
       </Step>
-      <Step title="Verify models are available">
+      <Step title="Verificar que los modelos estén disponibles">
         ```bash
         openclaw models list --provider opencode-go
         ```
@@ -102,63 +102,63 @@ una sola configuración de OpenCode.
 
 ### Zen
 
-| Propiedad            | Valor                                                                                         |
-| -------------------- | --------------------------------------------------------------------------------------------- |
-| Proveedor de runtime | `opencode`                                                                                    |
-| Modelos de ejemplo   | `opencode/claude-opus-4-6`, `opencode/gpt-5.5`, `opencode/gemini-3.1-pro`, `opencode/glm-5.2` |
+| Propiedad              | Valor                                                                                         |
+| ---------------------- | --------------------------------------------------------------------------------------------- |
+| Proveedor de ejecución | `opencode`                                                                                    |
+| Modelos de ejemplo     | `opencode/claude-opus-4-6`, `opencode/gpt-5.5`, `opencode/gemini-3.1-pro`, `opencode/glm-5.2` |
 
-Ejecuta `openclaw models list --provider opencode` para ver la lista actual completa, que
-también incluye filas de nivel gratuito como `opencode/big-pickle` y
+Ejecuta `openclaw models list --provider opencode` para consultar la lista actual completa, que
+también incluye entradas del nivel gratuito como `opencode/big-pickle` y
 `opencode/deepseek-v4-flash-free`.
 
 ### Go
 
-| Propiedad            | Valor                                                                    |
-| -------------------- | ------------------------------------------------------------------------ |
-| Proveedor de runtime | `opencode-go`                                                            |
-| Modelos de ejemplo   | `opencode-go/kimi-k2.6`, `opencode-go/glm-5`, `opencode-go/minimax-m2.5` |
+| Propiedad              | Valor                                                                    |
+| ---------------------- | ------------------------------------------------------------------------ |
+| Proveedor de ejecución | `opencode-go`                                                            |
+| Modelos de ejemplo     | `opencode-go/kimi-k2.6`, `opencode-go/glm-5`, `opencode-go/minimax-m2.5` |
 
 Consulta [OpenCode Go](/es/providers/opencode-go) para ver la tabla completa de modelos Go.
 
 ## Configuración avanzada
 
 <AccordionGroup>
-  <Accordion title="API key aliases">
+  <Accordion title="Alias de la clave de API">
     `OPENCODE_ZEN_API_KEY` también se acepta como alias de `OPENCODE_API_KEY`.
   </Accordion>
 
-  <Accordion title="Shared credentials">
-    Introducir una clave de OpenCode durante la configuración almacena credenciales para ambos proveedores de runtime.
-    No necesitas configurar cada catálogo por separado.
+  <Accordion title="Credenciales compartidas">
+    Al introducir una clave de OpenCode durante la configuración, se almacenan las credenciales de ambos proveedores de
+    ejecución. No necesitas incorporar cada catálogo por separado.
   </Accordion>
 
-  <Accordion title="Getting an API key">
+  <Accordion title="Obtener una clave de API">
     Crea una cuenta de OpenCode y genera una clave de API en
     [opencode.ai/auth](https://opencode.ai/auth). La facturación y la disponibilidad del catálogo
     se gestionan desde el panel de OpenCode.
   </Accordion>
 
-  <Accordion title="Gemini replay behavior">
-    Las refs de OpenCode respaldadas por Gemini permanecen en la ruta proxy-Gemini, por lo que OpenClaw mantiene
-    allí la limpieza de firmas de pensamiento de Gemini sin habilitar la validación de repetición nativa de Gemini
-    ni reescrituras de arranque.
+  <Accordion title="Comportamiento de reproducción de Gemini">
+    Las referencias de OpenCode respaldadas por Gemini permanecen en la ruta del proxy de Gemini, por lo que OpenClaw mantiene
+    allí el saneamiento de las firmas de razonamiento de Gemini sin habilitar la validación de reproducción nativa de Gemini
+    ni las reescrituras de inicialización.
   </Accordion>
 
-  <Accordion title="Non-Gemini replay behavior">
-    Las refs de OpenCode que no son Gemini mantienen la política mínima de repetición compatible con OpenAI.
+  <Accordion title="Comportamiento de reproducción para modelos que no son Gemini">
+    Las referencias de OpenCode que no son de Gemini mantienen la política mínima de reproducción compatible con OpenAI.
   </Accordion>
 </AccordionGroup>
 
-## Relacionado
+## Contenido relacionado
 
 <CardGroup cols={2}>
   <Card title="OpenCode Go" href="/es/providers/opencode-go" icon="server">
     Referencia completa del catálogo Go.
   </Card>
-  <Card title="Model selection" href="/es/concepts/model-providers" icon="layers">
-    Elegir proveedores, refs de modelo y comportamiento de conmutación por error.
+  <Card title="Selección de modelos" href="/es/concepts/model-providers" icon="layers">
+    Elección de proveedores, referencias de modelos y comportamiento de conmutación por error.
   </Card>
-  <Card title="Configuration reference" href="/es/gateway/configuration-reference" icon="gear">
+  <Card title="Referencia de configuración" href="/es/gateway/configuration-reference" icon="gear">
     Referencia completa de configuración para agentes, modelos y proveedores.
   </Card>
 </CardGroup>

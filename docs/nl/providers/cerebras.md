@@ -1,35 +1,33 @@
 ---
 read_when:
     - Je wilt Cerebras gebruiken met OpenClaw
-    - Je hebt de omgevingsvariabele voor de Cerebras API-sleutel of de CLI-authenticatiekeuze nodig
-summary: Cerebras-instelling (authenticatie + modelselectie)
+    - Je hebt de omgevingsvariabele voor de Cerebras-API-sleutel of de CLI-authenticatiekeuze nodig
+summary: Cerebras-configuratie (authenticatie + modelselectie)
 title: Cerebras
 x-i18n:
-    generated_at: "2026-06-27T18:10:40Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:12:29Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cd21756ac521c7b60ca6d3dfbef8665574dca52d1a25e6293169b24f4af6273e
+    source_hash: fca8110d345c796f0481ebf1a8d85c2cc9630b8bd55db8d4bf60772151b35b37
     source_path: providers/cerebras.md
     workflow: 16
 ---
 
-[Cerebras](https://www.cerebras.ai) biedt snelle OpenAI-compatibele inferentie op aangepaste inferentiehardware. De Cerebras-provider-Plugin bevat een statische catalogus met vier modellen.
+[Cerebras](https://www.cerebras.ai) biedt snelle, met OpenAI compatibele inferentie op speciaal ontwikkelde inferentiehardware. De plugin wordt geleverd met een statische catalogus van vier modellen (geen live-detectie).
 
-| Eigenschap      | Waarde                                   |
-| --------------- | ---------------------------------------- |
-| Provider-id     | `cerebras`                               |
-| Plugin          | officieel extern pakket                  |
-| Auth-env-var    | `CEREBRAS_API_KEY`                       |
-| Onboarding-vlag | `--auth-choice cerebras-api-key`         |
-| Directe CLI-vlag | `--cerebras-api-key <key>`              |
-| API             | OpenAI-compatibel (`openai-completions`) |
-| Basis-URL       | `https://api.cerebras.ai/v1`             |
-| Standaardmodel  | `cerebras/zai-glm-4.7`                   |
+| Eigenschap             | Waarde                                                    |
+| ---------------------- | --------------------------------------------------------- |
+| Provider-id            | `cerebras`                                                |
+| Plugin                 | officieel extern pakket (`@openclaw/cerebras-provider`)   |
+| Omgevingsvariabele voor authenticatie | `CEREBRAS_API_KEY`                          |
+| Onboarding-vlag        | `--auth-choice cerebras-api-key`                          |
+| Directe CLI-vlag       | `--cerebras-api-key <key>`                                |
+| API                    | OpenAI-compatibel (`openai-completions`)                  |
+| Basis-URL              | `https://api.cerebras.ai/v1`                              |
+| Standaardmodel         | `cerebras/zai-glm-4.7`                                    |
 
 ## Plugin installeren
-
-Installeer de officiële Plugin en start daarna de Gateway opnieuw:
 
 ```bash
 openclaw plugins install @openclaw/cerebras-provider
@@ -39,7 +37,7 @@ openclaw gateway restart
 ## Aan de slag
 
 <Steps>
-  <Step title="Een API-sleutel ophalen">
+  <Step title="Een API-sleutel verkrijgen">
     Maak een API-sleutel aan in de [Cerebras Cloud Console](https://cloud.cerebras.ai).
   </Step>
   <Step title="Onboarding uitvoeren">
@@ -55,7 +53,7 @@ openclaw onboard --non-interactive \
   --cerebras-api-key "$CEREBRAS_API_KEY"
 ```
 
-```bash Alleen env
+```bash Alleen omgevingsvariabele
 export CEREBRAS_API_KEY=csk-...
 ```
 
@@ -67,12 +65,12 @@ export CEREBRAS_API_KEY=csk-...
     openclaw models list --provider cerebras
     ```
 
-    De lijst moet alle vier statische modellen bevatten. Als `CEREBRAS_API_KEY` niet kan worden opgelost, rapporteert `openclaw models status --json` de ontbrekende referentie onder `auth.unusableProfiles`.
+    Toont alle vier statische modellen. Als `CEREBRAS_API_KEY` niet kan worden gevonden, meldt `openclaw models status --json` de ontbrekende referentie onder `auth.unusableProfiles`.
 
   </Step>
 </Steps>
 
-## Niet-interactieve setup
+## Niet-interactieve configuratie
 
 ```bash
 openclaw onboard --non-interactive \
@@ -83,22 +81,22 @@ openclaw onboard --non-interactive \
 
 ## Ingebouwde catalogus
 
-OpenClaw levert een statische Cerebras-catalogus die het openbare OpenAI-compatibele eindpunt weerspiegelt. Alle vier modellen delen een context van 128k en 8.192 maximale uitvoertokens.
+Alle vier modellen hebben een contextvenster van 128k en maximaal 8.192 uitvoertokens.
 
-| Model-ref                                 | Naam                 | Reasoning | Notities                               |
-| ----------------------------------------- | -------------------- | --------- | -------------------------------------- |
-| `cerebras/zai-glm-4.7`                    | Z.ai GLM 4.7         | ja        | Standaardmodel; preview-reasoningmodel |
-| `cerebras/gpt-oss-120b`                   | GPT OSS 120B         | ja        | Productie-reasoningmodel               |
-| `cerebras/qwen-3-235b-a22b-instruct-2507` | Qwen 3 235B Instruct | nee       | Previewmodel zonder reasoning          |
-| `cerebras/llama3.1-8b`                    | Llama 3.1 8B         | nee       | Productiemodel gericht op snelheid     |
+| Modelreferentie                            | Naam                 | Redeneren | Opmerkingen                                      |
+| ------------------------------------------ | -------------------- | --------- | ------------------------------------------------ |
+| `cerebras/zai-glm-4.7`                     | Z.ai GLM 4.7         | ja        | Standaardmodel; previewmodel voor redeneren      |
+| `cerebras/gpt-oss-120b`                    | GPT OSS 120B         | ja        | Productiemodel voor redeneren                     |
+| `cerebras/qwen-3-235b-a22b-instruct-2507`  | Qwen 3 235B Instruct | nee       | Previewmodel zonder redeneervermogen             |
+| `cerebras/llama3.1-8b`                     | Llama 3.1 8B         | nee       | Op snelheid gericht productiemodel               |
 
 <Warning>
-  Cerebras markeert `zai-glm-4.7` en `qwen-3-235b-a22b-instruct-2507` als previewmodellen, en `llama3.1-8b` plus `qwen-3-235b-a22b-instruct-2507` zijn gedocumenteerd voor uitfasering op 27 mei 2026. Controleer de pagina met ondersteunde modellen van Cerebras voordat u erop vertrouwt voor productieworkloads.
+Cerebras markeert `zai-glm-4.7` en `qwen-3-235b-a22b-instruct-2507` als previewmodellen. Volgens de documentatie worden daarnaast `llama3.1-8b` en `qwen-3-235b-a22b-instruct-2507` op 27 mei 2026 uitgefaseerd. Raadpleeg de [pagina met ondersteunde modellen](https://inference-docs.cerebras.ai/models/overview) van Cerebras voordat u deze voor productieworkloads gebruikt.
 </Warning>
 
 ## Handmatige configuratie
 
-De Plugin betekent meestal dat u alleen de API-sleutel nodig hebt. Gebruik expliciete `models.providers.cerebras`-configuratie wanneer u modelmetadata wilt overschrijven of in `mode: "merge"` tegen de statische catalogus wilt draaien:
+Voor de meeste configuraties is alleen de API-sleutel nodig. Gebruik een expliciete configuratie voor `models.providers.cerebras` om modelmetagegevens te overschrijven of met `mode: "merge"` in combinatie met de statische catalogus te werken:
 
 ```json5
 {
@@ -126,22 +124,22 @@ De Plugin betekent meestal dat u alleen de API-sleutel nodig hebt. Gebruik expli
 ```
 
 <Note>
-  Als de Gateway als daemon draait (launchd, systemd, Docker), zorg er dan voor dat `CEREBRAS_API_KEY` beschikbaar is voor dat proces — bijvoorbeeld in `~/.openclaw/.env` of via `env.shellEnv`. Een sleutel die alleen in een interactieve shell is geëxporteerd, helpt een beheerde service niet tenzij de env afzonderlijk wordt geïmporteerd.
+Als de Gateway als daemon wordt uitgevoerd (launchd, systemd, Docker), zorgt u ervoor dat `CEREBRAS_API_KEY` beschikbaar is voor dat proces, bijvoorbeeld in `~/.openclaw/.env` of via `env.shellEnv`. Een sleutel die alleen in een interactieve shell is geëxporteerd, helpt een beheerde service niet, tenzij de omgevingsvariabele afzonderlijk wordt geïmporteerd.
 </Note>
 
 ## Gerelateerd
 
 <CardGroup cols={2}>
   <Card title="Modelproviders" href="/nl/concepts/model-providers" icon="layers">
-    Providers, model-refs en failovergedrag kiezen.
+    Providers, modelreferenties en failovergedrag kiezen.
   </Card>
   <Card title="Denkmodi" href="/nl/tools/thinking" icon="brain">
-    Reasoning-inspanningsniveaus voor de twee Cerebras-modellen die reasoning ondersteunen.
+    Niveaus voor de redeneerinspanning van de twee Cerebras-modellen met redeneervermogen.
   </Card>
   <Card title="Configuratiereferentie" href="/nl/gateway/config-agents#agent-defaults" icon="gear">
-    Agentstandaarden en modelconfiguratie.
+    Standaardinstellingen voor agents en modelconfiguratie.
   </Card>
   <Card title="Veelgestelde vragen over modellen" href="/nl/help/faq-models" icon="circle-question">
-    Auth-profielen, wisselen van model en fouten met "no profile" oplossen.
+    Authenticatieprofielen, wisselen tussen modellen en fouten over ontbrekende profielen oplossen.
   </Card>
 </CardGroup>

@@ -5,10 +5,9 @@ read_when:
 summary: Aplique patches em vários arquivos com a ferramenta apply_patch
 title: ferramenta apply_patch
 x-i18n:
-    generated_at: "2026-07-12T15:42:34Z"
+    generated_at: "2026-07-12T00:23:43Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 1c0422550ea8d9b0cb6b0ea22d7dcaecc462426f9600003f70c177746f30a3d9
     source_path: tools/apply-patch.md
@@ -18,17 +17,17 @@ x-i18n:
 Aplique alterações em arquivos usando um formato de patch estruturado. Isso é ideal para edições em vários arquivos
 ou com vários trechos, nas quais uma única chamada `edit` seria frágil.
 
-A ferramenta aceita uma única string `input` que encapsula uma ou mais operações de arquivo:
+A ferramenta aceita uma única string `input` que envolve uma ou mais operações de arquivo:
 
 ```text
 *** Begin Patch
 *** Add File: path/to/file.txt
-+linha 1
-+linha 2
++line 1
++line 2
 *** Update File: src/app.ts
-@@ contexto opcional da alteração
--linha antiga
-+linha nova
+@@ optional change context
+-old line
++new line
 *** Delete File: obsolete.txt
 *** End Patch
 ```
@@ -40,9 +39,9 @@ A ferramenta aceita uma única string `input` que encapsula uma ou mais operaç�
 ## Observações
 
 - Os caminhos do patch aceitam caminhos relativos (a partir do diretório do espaço de trabalho) e caminhos absolutos.
-- O padrão de `tools.exec.applyPatch.workspaceOnly` é `true` (restrito ao espaço de trabalho). Defina-o como `false` somente se quiser intencionalmente que `apply_patch` grave/exclua fora do diretório do espaço de trabalho.
+- O padrão de `tools.exec.applyPatch.workspaceOnly` é `true` (restrito ao espaço de trabalho). Defina-o como `false` somente se você quiser intencionalmente que `apply_patch` grave/exclua fora do diretório do espaço de trabalho.
 - Use `*** Move to:` dentro de um trecho `*** Update File:` para renomear arquivos.
-- `*** End of File` marca uma inserção apenas no fim do arquivo quando necessário.
+- `*** End of File` marca uma inserção somente no fim do arquivo quando necessário.
 - Habilitado por padrão para todos os modelos. Defina `tools.exec.applyPatch.enabled: false`
   para desabilitá-lo ou restrinja-o a modelos específicos com
   `tools.exec.applyPatch.allowModels` (aceita IDs simples, como `gpt-5.4`, ou IDs
@@ -65,9 +64,9 @@ A ferramenta aceita uma única string `input` que encapsula uma ou mais operaç�
     Visualizador de diferenças somente leitura para apresentação de alterações.
   </Card>
   <Card title="Ferramenta Exec" href="/pt-BR/tools/exec" icon="terminal">
-    Execução de comandos de shell pelo agente.
+    Execução de comandos do shell pelo agente.
   </Card>
   <Card title="Execução de código" href="/pt-BR/tools/code-execution" icon="square-code">
-    Análise remota de Python em sandbox com xAI.
+    Análise remota de Python em ambiente isolado com xAI.
   </Card>
 </CardGroup>

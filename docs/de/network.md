@@ -1,42 +1,40 @@
 ---
 read_when:
-    - Sie benötigen den Überblick über Netzwerkarchitektur und Sicherheit
+    - Sie benötigen den Überblick über die Netzwerkarchitektur und Sicherheit.
     - Sie debuggen den lokalen Zugriff im Vergleich zum Tailnet-Zugriff oder die Kopplung
     - Sie möchten die kanonische Liste der Netzwerkdokumentation.
-summary: 'Netzwerk-Hub: Gateway-Oberflächen, Kopplung, Erkennung und Sicherheit'
+summary: 'Netzwerkzentrale: Gateway-Schnittstellen, Kopplung, Erkennung und Sicherheit'
 title: Netzwerk
 x-i18n:
-    generated_at: "2026-07-12T15:28:36Z"
+    generated_at: "2026-07-12T01:49:54Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 9751bb0fe71009455b243b109ef7ef4eda08d58f940f7dcef305800a5ed89586
     source_path: network.md
     workflow: 16
 ---
 
-Dieser Hub verlinkt die zentralen Dokumentationen dazu, wie OpenClaw Geräte
-über localhost, LAN und Tailnet hinweg verbindet, koppelt und absichert.
+Dieser Hub verlinkt die zentralen Dokumentationen dazu, wie OpenClaw Geräte über
+localhost, LAN und Tailnet hinweg verbindet, koppelt und absichert.
 
 ## Kernmodell
 
-Die meisten Vorgänge laufen über das Gateway (`openclaw gateway`), einen einzelnen langlebigen Prozess, der die Kanalverbindungen und die WebSocket-Steuerungsebene verwaltet.
+Die meisten Vorgänge laufen über das Gateway (`openclaw gateway`), einen einzelnen dauerhaft ausgeführten Prozess, der die Kanalverbindungen und die WebSocket-Steuerungsebene verwaltet.
 
-- **Loopback zuerst**: Für die Gateway-WS-Verbindung gilt standardmäßig `ws://127.0.0.1:18789`.
-  Bindungen außerhalb von Loopback verweigern den Start ohne einen gültigen
-  Gateway-Authentifizierungspfad: Authentifizierung per gemeinsam verwendetem
-  geheimen Token/Passwort oder eine korrekt konfigurierte `trusted-proxy`-Bereitstellung
-  außerhalb von Loopback.
-- **Ein Gateway pro Host** wird empfohlen. Führen Sie zur Isolierung mehrere Gateways mit isolierten Profilen und Ports aus ([Mehrere Gateways](/de/gateway/multiple-gateways)).
-- **Canvas-Host** wird über denselben Port wie das Gateway bereitgestellt (`/__openclaw__/canvas/`, `/__openclaw__/a2ui/`) und bei einer Bindung außerhalb von Loopback durch die Gateway-Authentifizierung geschützt.
-- **Remote-Zugriff** erfolgt üblicherweise über einen SSH-Tunnel oder Tailscale VPN ([Remote-Zugriff](/de/gateway/remote)).
+- **Zuerst Loopback**: Die Gateway-WS-Verbindung verwendet standardmäßig `ws://127.0.0.1:18789`.
+  Bindungen außerhalb von Loopback verweigern den Start ohne einen gültigen Gateway-Authentifizierungspfad:
+  Authentifizierung per gemeinsamem geheimem Token/Passwort oder eine korrekt konfigurierte
+  `trusted-proxy`-Bereitstellung außerhalb von Loopback.
+- **Ein Gateway pro Host** wird empfohlen. Führen Sie zur Isolation mehrere Gateways mit getrennten Profilen und Ports aus ([Mehrere Gateways](/de/gateway/multiple-gateways)).
+- **Canvas-Host** wird über denselben Port wie das Gateway bereitgestellt (`/__openclaw__/canvas/`, `/__openclaw__/a2ui/`) und bei einer Bindung über Loopback hinaus durch die Gateway-Authentifizierung geschützt.
+- **Remotezugriff** erfolgt üblicherweise über einen SSH-Tunnel oder ein Tailscale-VPN ([Remotezugriff](/de/gateway/remote)).
 
 Wichtige Referenzen:
 
 - [Gateway-Architektur](/de/concepts/architecture)
 - [Gateway-Protokoll](/de/gateway/protocol)
-- [Gateway-Runbook](/de/gateway)
+- [Gateway-Betriebshandbuch](/de/gateway)
 - [Weboberflächen und Bindungsmodi](/de/web)
 
 ## Kopplung und Identität
@@ -44,30 +42,30 @@ Wichtige Referenzen:
 - [Übersicht zur Kopplung (Direktnachrichten und Nodes)](/de/channels/pairing)
 - [Vom Gateway verwaltete Node-Kopplung](/de/gateway/pairing)
 - [Geräte-CLI (Kopplung und Token-Rotation)](/de/cli/devices)
-- [Kopplungs-CLI (Genehmigungen per Direktnachricht)](/de/cli/pairing)
+- [Kopplungs-CLI (Genehmigungen für Direktnachrichten)](/de/cli/pairing)
 
 Lokales Vertrauen:
 
 - Direkte lokale Loopback-Verbindungen (ohne weitergeleitete Header oder Proxy-Header) können
-  für die Kopplung automatisch genehmigt werden, um eine reibungslose Nutzung auf demselben Host zu gewährleisten.
-- OpenClaw verfügt außerdem über einen eng begrenzten backend- bzw. containerlokalen
-  Selbstverbindungspfad für vertrauenswürdige Hilfsabläufe mit einem gemeinsam verwendeten geheimen Schlüssel.
-- Tailnet- und LAN-Clients, einschließlich Tailnet-Bindungen auf demselben Host, erfordern
-  weiterhin eine ausdrückliche Genehmigung der Kopplung.
+  automatisch für die Kopplung genehmigt werden, um eine reibungslose Benutzererfahrung auf demselben Host zu gewährleisten.
+- OpenClaw verfügt außerdem über einen eng begrenzten, Backend- beziehungsweise Container-lokalen Selbstverbindungspfad für
+  vertrauenswürdige Hilfsabläufe mit gemeinsamem Geheimnis.
+- Tailnet- und LAN-Clients, einschließlich Tailnet-Bindungen auf demselben Host, benötigen weiterhin
+  eine ausdrückliche Genehmigung der Kopplung.
 
 ## Erkennung und Transporte
 
 - [Erkennung und Transporte](/de/gateway/discovery)
-- [Bonjour / mDNS](/de/gateway/bonjour)
-- [Remote-Zugriff (SSH)](/de/gateway/remote)
+- [Bonjour/mDNS](/de/gateway/bonjour)
+- [Remotezugriff (SSH)](/de/gateway/remote)
 - [Tailscale](/de/gateway/tailscale)
 
 ## Nodes und Transporte
 
 - [Node-Übersicht](/de/nodes)
-- [Bridge-Protokoll (Legacy-Nodes, historisch)](/de/gateway/bridge-protocol)
-- [Node-Runbook: iOS](/de/platforms/ios)
-- [Node-Runbook: Android](/de/platforms/android)
+- [Bridge-Protokoll (veraltete Nodes, historisch)](/de/gateway/bridge-protocol)
+- [Node-Betriebshandbuch: iOS](/de/platforms/ios)
+- [Node-Betriebshandbuch: Android](/de/platforms/android)
 
 ## Sicherheit
 
@@ -78,5 +76,5 @@ Lokales Vertrauen:
 
 ## Verwandte Themen
 
-- [Gateway-Runbook](/de/gateway)
-- [Remote-Zugriff](/de/gateway/remote)
+- [Gateway-Betriebshandbuch](/de/gateway)
+- [Remotezugriff](/de/gateway/remote)

@@ -1,97 +1,91 @@
 ---
 read_when:
-    - OpenClaw ile Chutes kullanmak istiyorsunuz
+    - Chutes'u OpenClaw ile kullanmak istiyorsunuz
     - OAuth veya API anahtarı kurulum yoluna ihtiyacınız var
     - Varsayılan modeli, takma adları veya keşif davranışını istiyorsunuz
 summary: Chutes kurulumu (OAuth veya API anahtarı, model keşfi, takma adlar)
-title: Oluklar
+title: Chutes
 x-i18n:
-    generated_at: "2026-06-28T01:09:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:07:53Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8f1898c568fd664303a8bb5c2e46228c75f9c217bec5a65e752d9c7e10b980bb
+    source_hash: dafa96c4a56b9d38d033b87cc077d359cb71adaf1ca41a0ab6b6cc77b66484a7
     source_path: providers/chutes.md
     workflow: 16
 ---
 
-[Chutes](https://chutes.ai), açık kaynak model kataloglarını
-OpenAI uyumlu bir API üzerinden sunar. OpenClaw, `chutes` sağlayıcısı için
-hem tarayıcı OAuth hem de doğrudan API anahtarı kimlik doğrulamasını destekler.
+[Chutes](https://chutes.ai), açık kaynaklı model kataloglarını OpenAI uyumlu bir
+API üzerinden sunar. OpenClaw hem tarayıcı OAuth'unu hem de API anahtarıyla kimlik doğrulamayı destekler.
 
-| Özellik | Değer                        |
-| -------- | ---------------------------- |
-| Sağlayıcı | `chutes`                     |
-| API      | OpenAI uyumlu            |
-| Temel URL | `https://llm.chutes.ai/v1`   |
-| Kimlik doğrulama     | OAuth veya API anahtarı (aşağıya bakın) |
+| Özellik                 | Değer                                                   |
+| ----------------------- | ------------------------------------------------------- |
+| Sağlayıcı               | `chutes`                                                |
+| Plugin                  | resmi harici paket (`@openclaw/chutes-provider`)        |
+| API                     | OpenAI uyumlu                                           |
+| Temel URL               | `https://llm.chutes.ai/v1`                              |
+| Kimlik doğrulama        | OAuth veya API anahtarı (aşağıya bakın)                 |
+| Çalışma zamanı ortam değişkenleri | `CHUTES_API_KEY`, `CHUTES_OAUTH_TOKEN`          |
 
-## Plugin'i yükleyin
+`CHUTES_OAUTH_TOKEN`, önceden alınmış bir OAuth erişim belirtecini doğrudan sağlar
+(örneğin CI ortamında) ve aşağıdaki etkileşimli tarayıcı akışını atlar.
 
-Resmi Plugin'i yükleyin, ardından Gateway'i yeniden başlatın:
+## Plugin'i yükleme
 
 ```bash
 openclaw plugins install @openclaw/chutes-provider
 openclaw gateway restart
 ```
 
-## Başlarken
+## Başlangıç
+
+Her iki yol da varsayılan modeli `chutes/zai-org/GLM-4.7-TEE` olarak ayarlar ve
+Chutes kataloğunu kaydeder.
 
 <Tabs>
   <Tab title="OAuth">
     <Steps>
-      <Step title="Run the OAuth onboarding flow">
+      <Step title="OAuth ilk kurulum akışını çalıştırın">
         ```bash
         openclaw onboard --auth-choice chutes
         ```
-        OpenClaw, tarayıcı akışını yerel olarak başlatır veya uzak/başsız
-        ana makinelerde URL + yönlendirme yapıştırma akışı gösterir. OAuth belirteçleri,
-        OpenClaw kimlik doğrulama profilleri üzerinden otomatik yenilenir.
-      </Step>
-      <Step title="Verify the default model">
-        Onboarding sonrası varsayılan model
-        `chutes/zai-org/GLM-4.7-TEE` olarak ayarlanır ve Chutes statik kataloğu
-        kaydedilir.
+        OpenClaw tarayıcı akışını yerel olarak başlatır veya uzak/başsız
+        ana makinelerde bir URL ve yönlendirme adresini yapıştırma akışı gösterir. OAuth belirteçleri,
+        OpenClaw kimlik doğrulama profilleri aracılığıyla otomatik olarak yenilenir.
       </Step>
     </Steps>
   </Tab>
-  <Tab title="API key">
+  <Tab title="API anahtarı">
     <Steps>
-      <Step title="Get an API key">
+      <Step title="Bir API anahtarı edinin">
         [chutes.ai/settings/api-keys](https://chutes.ai/settings/api-keys)
         adresinde bir anahtar oluşturun.
       </Step>
-      <Step title="Run the API key onboarding flow">
+      <Step title="API anahtarı ilk kurulum akışını çalıştırın">
         ```bash
         openclaw onboard --auth-choice chutes-api-key
         ```
-      </Step>
-      <Step title="Verify the default model">
-        Onboarding sonrası varsayılan model
-        `chutes/zai-org/GLM-4.7-TEE` olarak ayarlanır ve Chutes statik kataloğu
-        kaydedilir.
       </Step>
     </Steps>
   </Tab>
 </Tabs>
 
-<Note>
-Her iki kimlik doğrulama yolu da Chutes statik kataloğunu kaydeder ve varsayılan modeli
-`chutes/zai-org/GLM-4.7-TEE` olarak ayarlar. Çalışma zamanı ortam değişkenleri: `CHUTES_API_KEY`,
-`CHUTES_OAUTH_TOKEN`.
-</Note>
-
 ## Keşif davranışı
 
-Chutes kimlik doğrulaması kullanılabilir olduğunda OpenClaw, bu kimlik bilgisiyle
-Chutes kataloğunu sorgular ve keşfedilen modelleri kullanır. Keşif başarısız olursa
-OpenClaw, onboarding ve başlatma yine çalışsın diye statik bir kataloğa geri döner.
+Chutes kimlik doğrulaması kullanılabilir olduğunda OpenClaw, ilgili kimlik
+bilgisiyle `GET /v1/models` sorgusu yapar ve keşfedilen modelleri kullanır;
+sonuçlar kimlik bilgisi başına 5 dakika önbelleğe alınır. Süresi dolmuş/yetkisiz
+bir anahtarda (HTTP 401), OpenClaw kimlik bilgileri olmadan bir kez daha dener.
+Keşif yine de hiçbir satır döndürmezse, başarısız olursa veya 2xx dışındaki
+başka bir durum kodu döndürürse paketle birlikte gelen statik kataloğa geri döner
+(hem API anahtarı hem de OAuth keşfi aynı yolu kullanır). Keşif başlangıçta
+başarısız olursa statik katalog otomatik olarak kullanılır.
 
 ## Varsayılan takma adlar
 
-OpenClaw, Chutes statik kataloğu için üç kullanışlı takma ad kaydeder:
+OpenClaw, Chutes kataloğu için üç kullanışlı takma ad kaydeder:
 
-| Takma ad           | Hedef model                                          |
+| Takma ad        | Hedef model                                           |
 | --------------- | ----------------------------------------------------- |
 | `chutes-fast`   | `chutes/zai-org/GLM-4.7-FP8`                          |
 | `chutes-pro`    | `chutes/deepseek-ai/DeepSeek-V3.2-TEE`                |
@@ -99,9 +93,9 @@ OpenClaw, Chutes statik kataloğu için üç kullanışlı takma ad kaydeder:
 
 ## Yerleşik başlangıç kataloğu
 
-Statik geri dönüş kataloğu güncel Chutes ref'lerini içerir:
+Paketle birlikte gelen yedek katalog 47 model içerir. Güncel başvurulardan temsili bir örnek:
 
-| Model ref                                             |
+| Model başvurusu                                       |
 | ----------------------------------------------------- |
 | `chutes/zai-org/GLM-4.7-TEE`                          |
 | `chutes/zai-org/GLM-5-TEE`                            |
@@ -111,6 +105,8 @@ Statik geri dönüş kataloğu güncel Chutes ref'lerini içerir:
 | `chutes/chutesai/Mistral-Small-3.2-24B-Instruct-2506` |
 | `chutes/Qwen/Qwen3-Coder-Next-TEE`                    |
 | `chutes/openai/gpt-oss-120b-TEE`                      |
+
+Tam liste için `openclaw models list --all --provider chutes` komutunu çalıştırın.
 
 ## Yapılandırma örneği
 
@@ -129,42 +125,41 @@ Statik geri dönüş kataloğu güncel Chutes ref'lerini içerir:
 ```
 
 <AccordionGroup>
-  <Accordion title="OAuth overrides">
-    OAuth akışını isteğe bağlı ortam değişkenleriyle özelleştirebilirsiniz:
+  <Accordion title="OAuth geçersiz kılmaları">
+    OAuth akışını isteğe bağlı ortam değişkenleriyle özelleştirin:
 
     | Değişken | Amaç |
-    | -------- | ------- |
-    | `CHUTES_CLIENT_ID` | Özel OAuth istemci kimliği |
-    | `CHUTES_CLIENT_SECRET` | Özel OAuth istemci gizli anahtarı |
-    | `CHUTES_OAUTH_REDIRECT_URI` | Özel yönlendirme URI'si |
-    | `CHUTES_OAUTH_SCOPES` | Özel OAuth kapsamları |
+    | -------- | ---- |
+    | `CHUTES_CLIENT_ID` | OAuth istemci kimliği (ayarlanmamışsa sorulur) |
+    | `CHUTES_CLIENT_SECRET` | OAuth istemci gizli anahtarı |
+    | `CHUTES_OAUTH_REDIRECT_URI` | Yönlendirme URI'si (varsayılan `http://127.0.0.1:1456/oauth-callback`) |
+    | `CHUTES_OAUTH_SCOPES` | Boşlukla ayrılmış kapsamlar (varsayılan `openid profile chutes:invoke`) |
 
     Yönlendirme uygulaması gereksinimleri ve yardım için
     [Chutes OAuth belgelerine](https://chutes.ai/docs/sign-in-with-chutes/overview) bakın.
 
   </Accordion>
 
-  <Accordion title="Notes">
-    - API anahtarı ve OAuth keşfi aynı `chutes` sağlayıcı kimliğini kullanır.
-    - Chutes modelleri `chutes/<model-id>` olarak kaydedilir.
-    - Başlatma sırasında keşif başarısız olursa statik katalog otomatik olarak kullanılır.
+  <Accordion title="Notlar">
+    - Chutes modelleri `chutes/<model-id>` biçiminde kaydedilir.
+    - Chutes, akış sırasında belirteç kullanımını bildirmez (`supportsUsageInStreaming: false`); kullanım toplamları akış tamamlandığında yine de gösterilir.
 
   </Accordion>
 </AccordionGroup>
 
-## İlgili
+## İlgili içerikler
 
 <CardGroup cols={2}>
-  <Card title="Model selection" href="/tr/concepts/model-providers" icon="layers">
-    Sağlayıcı kuralları, model ref'leri ve yük devretme davranışı.
+  <Card title="Model seçimi" href="/tr/concepts/model-providers" icon="layers">
+    Sağlayıcı kuralları, model başvuruları ve yük devretme davranışı.
   </Card>
-  <Card title="Configuration reference" href="/tr/gateway/configuration-reference" icon="gear">
-    Sağlayıcı ayarları dahil tam yapılandırma şeması.
+  <Card title="Yapılandırma başvurusu" href="/tr/gateway/configuration-reference" icon="gear">
+    Sağlayıcı ayarlarını da içeren eksiksiz yapılandırma şeması.
   </Card>
   <Card title="Chutes" href="https://chutes.ai" icon="arrow-up-right-from-square">
-    Chutes panosu ve API belgeleri.
+    Chutes kontrol paneli ve API belgeleri.
   </Card>
-  <Card title="Chutes API keys" href="https://chutes.ai/settings/api-keys" icon="key">
-    Chutes API anahtarları oluşturun ve yönetin.
+  <Card title="Chutes API anahtarları" href="https://chutes.ai/settings/api-keys" icon="key">
+    Chutes API anahtarlarını oluşturun ve yönetin.
   </Card>
 </CardGroup>

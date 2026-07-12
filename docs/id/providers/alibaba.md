@@ -5,38 +5,38 @@ read_when:
 summary: Pembuatan video Alibaba Model Studio Wan di OpenClaw
 title: Alibaba Model Studio
 x-i18n:
-    generated_at: "2026-05-06T09:24:07Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:33:46Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c390da201e2c8685fafa6171a6028bf18fc676b2d46f784651f91cdc6137fdf2
+    source_hash: cb74e2361500ccfbc5d3c4f2d08c3b62aacba8c79c704570952e2181abacf9fb
     source_path: providers/alibaba.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw menyertakan Plugin `alibaba` bawaan yang mendaftarkan penyedia pembuatan video untuk model Wan di Alibaba Model Studio (nama internasional untuk DashScope). Plugin ini diaktifkan secara default; Anda hanya perlu menetapkan API key.
+Plugin `alibaba` bawaan mendaftarkan penyedia pembuatan video untuk model Wan di Alibaba Model Studio (nama internasional untuk DashScope). Plugin ini diaktifkan secara default; hanya kunci API yang diperlukan.
 
 | Properti         | Nilai                                                                           |
 | ---------------- | ------------------------------------------------------------------------------- |
 | ID penyedia      | `alibaba`                                                                       |
 | Plugin           | bawaan, `enabledByDefault: true`                                                |
-| Variabel env auth | `MODELSTUDIO_API_KEY` → `DASHSCOPE_API_KEY` → `QWEN_API_KEY` (kecocokan pertama menang) |
-| Flag onboarding  | `--auth-choice alibaba-model-studio-api-key`                                    |
-| Flag CLI langsung | `--alibaba-model-studio-api-key <key>`                                          |
+| Variabel env autentikasi | `MODELSTUDIO_API_KEY` → `DASHSCOPE_API_KEY` → `QWEN_API_KEY` (kecocokan pertama digunakan) |
+| Flag orientasi awal | `--auth-choice alibaba-model-studio-api-key`                                 |
+| Flag CLI langsung | `--alibaba-model-studio-api-key <key>`                                         |
 | Model default    | `alibaba/wan2.6-t2v`                                                            |
-| URL dasar default | `https://dashscope-intl.aliyuncs.com`                                           |
+| URL dasar default | `https://dashscope-intl.aliyuncs.com`                                          |
 
 ## Memulai
 
 <Steps>
-  <Step title="Tetapkan API key">
-    Gunakan onboarding untuk menyimpan key pada penyedia `alibaba`:
+  <Step title="Tetapkan kunci API">
+    Simpan kunci untuk penyedia `alibaba` melalui orientasi awal:
 
     ```bash
     openclaw onboard --auth-choice alibaba-model-studio-api-key
     ```
 
-    Atau teruskan key secara langsung selama instalasi/onboarding:
+    Atau berikan kunci secara langsung:
 
     ```bash
     openclaw onboard --alibaba-model-studio-api-key <your-key>
@@ -46,8 +46,8 @@ OpenClaw menyertakan Plugin `alibaba` bawaan yang mendaftarkan penyedia pembuata
 
     ```bash
     export MODELSTUDIO_API_KEY=sk-...
-    # or DASHSCOPE_API_KEY=...
-    # or QWEN_API_KEY=...
+    # atau DASHSCOPE_API_KEY=...
+    # atau QWEN_API_KEY=...
     ```
 
   </Step>
@@ -69,46 +69,46 @@ OpenClaw menyertakan Plugin `alibaba` bawaan yang mendaftarkan penyedia pembuata
     openclaw models list --provider alibaba
     ```
 
-    Daftar tersebut seharusnya menyertakan kelima model Wan bawaan. Jika `MODELSTUDIO_API_KEY` belum terselesaikan, `openclaw models status --json` melaporkan kredensial yang hilang di bawah `auth.unusableProfiles`.
+    Daftar tersebut mencakup kelima model Wan bawaan. Jika `MODELSTUDIO_API_KEY` tidak dapat ditemukan, `openclaw models status --json` melaporkan kredensial yang tidak tersedia di bawah `auth.unusableProfiles`.
 
   </Step>
 </Steps>
 
 <Note>
-  Plugin Alibaba dan [Plugin Qwen](/id/providers/qwen) sama-sama mengautentikasi ke DashScope dan menerima variabel env yang saling tumpang tindih. Gunakan ID model `alibaba/...` untuk menjalankan permukaan video Wan khusus; gunakan ID `qwen/...` saat Anda menginginkan permukaan chat, embedding, atau pemahaman media Qwen.
+  Plugin Alibaba dan [Plugin Qwen](/id/providers/qwen) sama-sama melakukan autentikasi ke DashScope dan menerima variabel env yang tumpang tindih. Gunakan ID model `alibaba/...` untuk antarmuka video Wan khusus; gunakan ID `qwen/...` untuk percakapan, penyematan, atau pemahaman media Qwen.
 </Note>
 
 ## Model Wan bawaan
 
-| Ref model                  | Mode                      |
-| -------------------------- | ------------------------- |
-| `alibaba/wan2.6-t2v`       | Teks-ke-video (default)   |
-| `alibaba/wan2.6-i2v`       | Gambar-ke-video           |
-| `alibaba/wan2.6-r2v`       | Referensi-ke-video        |
-| `alibaba/wan2.6-r2v-flash` | Referensi-ke-video (cepat) |
-| `alibaba/wan2.7-r2v`       | Referensi-ke-video        |
+| Referensi model            | Mode                         |
+| -------------------------- | ---------------------------- |
+| `alibaba/wan2.6-t2v`       | Teks-ke-video (default)      |
+| `alibaba/wan2.6-i2v`       | Gambar-ke-video              |
+| `alibaba/wan2.6-r2v`       | Referensi-ke-video           |
+| `alibaba/wan2.6-r2v-flash` | Referensi-ke-video (cepat)   |
+| `alibaba/wan2.7-r2v`       | Referensi-ke-video           |
 
 ## Kemampuan dan batasan
 
-Penyedia bawaan ini mencerminkan batas API video Wan DashScope. Ketiga mode memiliki jumlah video dan batas durasi per permintaan yang sama; hanya bentuk inputnya yang berbeda.
+Ketiga mode memiliki jumlah video per permintaan dan batas durasi yang sama; hanya bentuk masukannya yang berbeda.
 
-| Mode               | Video output maks | Gambar input maks | Video input maks | Durasi maks | Kontrol yang didukung                                    |
-| ------------------ | ----------------- | ----------------- | ---------------- | ----------- | --------------------------------------------------------- |
-| Teks-ke-video      | 1                 | n/a               | n/a              | 10 dtk      | `size`, `aspectRatio`, `resolution`, `audio`, `watermark` |
-| Gambar-ke-video    | 1                 | 1                 | n/a              | 10 dtk      | `size`, `aspectRatio`, `resolution`, `audio`, `watermark` |
-| Referensi-ke-video | 1                 | n/a               | 4                | 10 dtk      | `size`, `aspectRatio`, `resolution`, `audio`, `watermark` |
+| Mode               | Maks. video keluaran | Maks. gambar masukan | Maks. video masukan | Durasi maks. | Kontrol yang didukung                                      |
+| ------------------ | -------------------- | -------------------- | ------------------- | ------------ | --------------------------------------------------------- |
+| Teks-ke-video      | 1                    | tidak berlaku        | tidak berlaku       | 10 dtk       | `size`, `aspectRatio`, `resolution`, `audio`, `watermark` |
+| Gambar-ke-video    | 1                    | 1                    | tidak berlaku       | 10 dtk       | `size`, `aspectRatio`, `resolution`, `audio`, `watermark` |
+| Referensi-ke-video | 1                    | tidak berlaku        | 4                   | 10 dtk       | `size`, `aspectRatio`, `resolution`, `audio`, `watermark` |
 
-Saat permintaan menghilangkan `durationSeconds`, penyedia mengirim default yang diterima DashScope sebesar **5 detik**. Tetapkan `durationSeconds` secara eksplisit pada [alat pembuatan video](/id/tools/video-generation) untuk memperpanjang hingga 10 dtk.
+Permintaan yang tidak menyertakan `durationSeconds` akan menggunakan nilai default yang diterima DashScope, yaitu **5 detik**. Tetapkan `durationSeconds` secara eksplisit pada [alat pembuatan video](/id/tools/video-generation) untuk memperpanjangnya hingga 10 dtk.
 
 <Warning>
-  Input gambar dan video referensi harus berupa URL `http(s)` jarak jauh. Jalur file lokal tidak diterima oleh mode referensi DashScope; unggah ke object storage terlebih dahulu atau gunakan alur [alat media](/id/tools/media-overview) yang sudah menghasilkan URL publik.
+  Masukan gambar dan video referensi harus berupa URL `http(s)` jarak jauh; mode referensi DashScope menolak jalur berkas lokal. Unggah terlebih dahulu ke penyimpanan objek, atau gunakan alur [alat media](/id/tools/media-overview) yang sudah menghasilkan URL publik.
 </Warning>
 
 ## Konfigurasi lanjutan
 
 <AccordionGroup>
-  <Accordion title="Timpa URL dasar DashScope">
-    Penyedia menggunakan endpoint DashScope internasional secara default. Untuk menargetkan endpoint region Tiongkok, tetapkan:
+  <Accordion title="Ganti URL dasar DashScope">
+    Secara default, penyedia menggunakan endpoint DashScope internasional. Untuk menggunakan endpoint wilayah Tiongkok:
 
     ```json5
     {
@@ -122,28 +122,28 @@ Saat permintaan menghilangkan `durationSeconds`, penyedia mengirim default yang 
     }
     ```
 
-    Penyedia menghapus garis miring penutup sebelum menyusun URL task AIGC.
+    Penyedia menghapus garis miring di akhir sebelum menyusun URL tugas AIGC.
 
   </Accordion>
 
-  <Accordion title="Prioritas env auth">
-    OpenClaw menyelesaikan API key Alibaba dari variabel lingkungan dalam urutan ini, dengan mengambil nilai pertama yang tidak kosong:
+  <Accordion title="Prioritas env autentikasi">
+    OpenClaw mendapatkan kunci API Alibaba dari variabel lingkungan dalam urutan berikut, dengan mengambil nilai pertama yang tidak kosong:
 
     1. `MODELSTUDIO_API_KEY`
     2. `DASHSCOPE_API_KEY`
     3. `QWEN_API_KEY`
 
-    Entri `auth.profiles` yang dikonfigurasi (ditetapkan melalui `openclaw models auth login`) menimpa resolusi variabel env. Lihat [Profil auth di FAQ model](/id/help/faq-models#what-is-an-auth-profile) untuk rotasi profil, cooldown, dan mekanisme penimpaan.
+    Entri `auth.profiles` yang dikonfigurasi (ditetapkan melalui `openclaw models auth login`) menggantikan pencarian variabel env. Lihat [Profil autentikasi dalam Tanya Jawab Umum model](/id/help/faq-models#auth-profiles-what-they-are-and-how-to-manage-them) untuk mekanisme rotasi profil, masa tunggu, dan penggantian.
 
   </Accordion>
 
   <Accordion title="Hubungan dengan Plugin Qwen">
-    Kedua Plugin bawaan berkomunikasi dengan DashScope dan menerima API key yang saling tumpang tindih. Gunakan:
+    Kedua Plugin bawaan berkomunikasi dengan DashScope dan menerima kunci API yang tumpang tindih. Gunakan:
 
-    - ID `alibaba/wan*.*` untuk menjalankan penyedia video Wan khusus yang didokumentasikan di halaman ini.
-    - ID `qwen/*` untuk chat, embedding, dan pemahaman media Qwen (lihat [Qwen](/id/providers/qwen)).
+    - ID `alibaba/wan*.*` untuk penyedia video Wan khusus yang didokumentasikan pada halaman ini.
+    - ID `qwen/*` untuk percakapan, penyematan, dan pemahaman media Qwen (lihat [Qwen](/id/providers/qwen)).
 
-    Menetapkan `MODELSTUDIO_API_KEY` sekali akan mengautentikasi kedua Plugin karena daftar variabel env auth sengaja saling tumpang tindih; Anda tidak perlu melakukan onboarding tiap Plugin secara terpisah.
+    Menetapkan `MODELSTUDIO_API_KEY` satu kali akan mengautentikasi kedua Plugin karena daftar variabel env autentikasinya sengaja tumpang tindih; orientasi awal untuk setiap Plugin secara terpisah tidak diperlukan.
 
   </Accordion>
 </AccordionGroup>
@@ -155,12 +155,12 @@ Saat permintaan menghilangkan `durationSeconds`, penyedia mengirim default yang 
     Parameter alat video bersama dan pemilihan penyedia.
   </Card>
   <Card title="Qwen" href="/id/providers/qwen" icon="microchip">
-    Penyiapan chat, embedding, dan pemahaman media Qwen pada auth DashScope yang sama.
+    Penyiapan percakapan, penyematan, dan pemahaman media Qwen dengan autentikasi DashScope yang sama.
   </Card>
   <Card title="Referensi konfigurasi" href="/id/gateway/config-agents#agent-defaults" icon="gear">
-    Default agent dan konfigurasi model.
+    Nilai default agen dan konfigurasi model.
   </Card>
-  <Card title="FAQ model" href="/id/help/faq-models" icon="circle-question">
-    Profil auth, mengganti model, dan menyelesaikan error "no profile".
+  <Card title="Tanya Jawab Umum model" href="/id/help/faq-models" icon="circle-question">
+    Profil autentikasi, pergantian model, dan penyelesaian kesalahan "tidak ada profil".
   </Card>
 </CardGroup>

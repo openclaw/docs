@@ -1,11 +1,11 @@
 ---
 read_when:
-    - در حال نصب، پیکربندی یا ممیزی افزونهٔ zalo هستید
-summary: Plugin کانال Zalo در OpenClaw برای گفت‌وگوهای ربات و Webhook.
-title: Plugin Zalo
+    - شما در حال نصب، پیکربندی یا ممیزی Plugin زالو هستید
+summary: Plugin کانال Zalo برای OpenClaw جهت گفتگوهای ربات و Webhook.
+title: Plugin زالو
 x-i18n:
-    generated_at: "2026-06-27T18:30:35Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:39:13Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: ff9da1e1591eaad36db74a27f817dd9dac8791af2d5030fcd3419ee50d2ed4aa
@@ -13,19 +13,19 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin Zalo
+# Plugin زالو
 
-Plugin کانال Zalo برای OpenClaw جهت چت‌های ربات و Webhook.
+Plugin کانال زالوی OpenClaw برای گفت‌وگوهای ربات و Webhook.
 
 ## توزیع
 
 - بسته: `@openclaw/zalo`
-- مسیر نصب: npm؛ ClawHub
+- روش نصب: npm؛ ClawHub
 
 ## سطح
 
-channels: zalo
+کانال‌ها: zalo
 
 ## مستندات مرتبط
 
-- [zalo](/fa/channels/zalo)
+- [زالو](/fa/channels/zalo)

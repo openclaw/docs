@@ -1,14 +1,13 @@
 ---
 read_when:
     - Sie möchten Cloudflare AI Gateway mit OpenClaw verwenden
-    - Sie benötigen die Konto-ID, die Gateway-ID oder die Umgebungsvariable für den API-Schlüssel.
+    - Sie benötigen die Konto-ID, Gateway-ID oder die Umgebungsvariable für den API-Schlüssel.
 summary: Einrichtung des Cloudflare AI Gateway (Authentifizierung + Modellauswahl)
 title: Cloudflare AI-Gateway
 x-i18n:
-    generated_at: "2026-07-12T15:42:23Z"
+    generated_at: "2026-07-12T02:02:57Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 02c7785616e7aee645bb3fc41ef6a3585e1f2f9d886fab1a06231e497effd045
     source_path: providers/cloudflare-ai-gateway.md
@@ -26,13 +25,13 @@ x-i18n:
 | API-Schlüssel | `CLOUDFLARE_AI_GATEWAY_API_KEY` (Ihr Provider-API-Schlüssel für Anfragen über das Gateway) |
 
 <Note>
-Verwenden Sie für Anthropic-Modelle, die über Cloudflare AI Gateway weitergeleitet werden, Ihren **Anthropic-API-Schlüssel** als Provider-Schlüssel.
+Verwenden Sie für Anthropic-Modelle, die über Cloudflare AI Gateway geleitet werden, Ihren **Anthropic-API-Schlüssel** als Provider-Schlüssel.
 </Note>
 
-Wenn Thinking für Anthropic-Messages-Modelle aktiviert ist, entfernt OpenClaw abschließende
+Wenn das Denken für Anthropic-Messages-Modelle aktiviert ist, entfernt OpenClaw abschließende
 Assistant-Prefill-Turns, bevor die Nutzlast über Cloudflare AI Gateway gesendet wird.
-Anthropic lehnt das Vorbefüllen von Antworten bei erweitertem Thinking ab, während gewöhnliches
-Prefill ohne Thinking weiterhin verfügbar ist.
+Anthropic lehnt das Vorbefüllen von Antworten bei erweitertem Denken ab, während gewöhnliches
+Vorbefüllen ohne Denken weiterhin verfügbar ist.
 
 ## Plugin installieren
 
@@ -53,7 +52,7 @@ openclaw gateway restart
     openclaw onboard --auth-choice cloudflare-ai-gateway-api-key
     ```
 
-    Sie werden dabei zur Eingabe Ihrer Konto-ID, Gateway-ID und Ihres API-Schlüssels aufgefordert.
+    Sie werden dabei nach Ihrer Konto-ID, Gateway-ID und Ihrem API-Schlüssel gefragt.
 
   </Step>
   <Step title="Ein Standardmodell festlegen">
@@ -94,7 +93,7 @@ openclaw onboard --non-interactive \
 
 <AccordionGroup>
   <Accordion title="Authentifizierte Gateways">
-    Wenn Sie die Gateway-Authentifizierung in Cloudflare aktiviert haben, fügen Sie den Header `cf-aig-authorization` hinzu. Dieser ist **zusätzlich zu** Ihrem Provider-API-Schlüssel erforderlich.
+    Wenn Sie die Gateway-Authentifizierung in Cloudflare aktiviert haben, fügen Sie den Header `cf-aig-authorization` hinzu. Dieser wird **zusätzlich zu** Ihrem Provider-API-Schlüssel benötigt.
 
     ```json5
     {
@@ -111,7 +110,7 @@ openclaw onboard --non-interactive \
     ```
 
     <Tip>
-    Der Header `cf-aig-authorization` authentifiziert gegenüber dem Cloudflare Gateway selbst, während der Provider-API-Schlüssel (zum Beispiel Ihr Anthropic-Schlüssel) gegenüber dem vorgeschalteten Provider authentifiziert.
+    Der Header `cf-aig-authorization` authentifiziert gegenüber dem Cloudflare Gateway selbst, während der Provider-API-Schlüssel (beispielsweise Ihr Anthropic-Schlüssel) gegenüber dem vorgelagerten Provider authentifiziert.
     </Tip>
 
   </Accordion>
@@ -120,7 +119,7 @@ openclaw onboard --non-interactive \
     Wenn das Gateway als Daemon (launchd/systemd) ausgeführt wird, stellen Sie sicher, dass `CLOUDFLARE_AI_GATEWAY_API_KEY` für diesen Prozess verfügbar ist.
 
     <Warning>
-    Ein Schlüssel, der nur in einer interaktiven Shell exportiert wurde, steht einem launchd-/systemd-Daemon nicht zur Verfügung, sofern diese Umgebung dort nicht ebenfalls importiert wird. Legen Sie den Schlüssel in `~/.openclaw/.env` oder über `env.shellEnv` fest, damit der Gateway-Prozess ihn lesen kann.
+    Ein Schlüssel, der nur in einer interaktiven Shell exportiert wurde, steht einem launchd-/systemd-Daemon nicht zur Verfügung, sofern diese Umgebung dort nicht ebenfalls importiert wird. Legen Sie den Schlüssel in `~/.openclaw/.env` oder über `env.shellEnv` fest, damit der Gateway-Prozess darauf zugreifen kann.
     </Warning>
 
   </Accordion>

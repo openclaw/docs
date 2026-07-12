@@ -2,93 +2,92 @@
 read_when:
     - Anda ingin menggunakan langganan Claude Max dengan alat yang kompatibel dengan OpenAI
     - Anda menginginkan server API lokal yang membungkus Claude Code CLI
-    - Anda ingin mengevaluasi akses Anthropic berbasis langganan dibandingkan berbasis kunci API
+    - Anda ingin mengevaluasi akses Anthropic berbasis langganan dibandingkan dengan yang berbasis kunci API
 summary: Proxy komunitas untuk mengekspos kredensial langganan Claude sebagai endpoint yang kompatibel dengan OpenAI
 title: Proksi API Claude Max
 x-i18n:
-    generated_at: "2026-06-28T20:44:32Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:35:49Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5d8800f7d5bd7adf9bff4825a45878a1bbde73b4d54afe4b5b4aa2b1b5523bee
+    source_hash: 5d0d9a70e14d7d444e57e9bcf169816fec4013a2680dfc9b1761e6ab32109e9f
     source_path: providers/claude-max-api-proxy.md
     workflow: 16
 ---
 
-**claude-max-api-proxy** adalah alat komunitas yang mengekspos langganan Claude Max/Pro Anda sebagai endpoint API yang kompatibel dengan OpenAI. Ini memungkinkan Anda menggunakan langganan Anda dengan alat apa pun yang mendukung format OpenAI API.
+**claude-max-api-proxy** adalah paket npm komunitas (bukan plugin OpenClaw) yang
+menyediakan langganan Claude Max/Pro sebagai titik akhir API yang kompatibel
+dengan OpenAI, sehingga Anda dapat mengarahkan alat apa pun yang kompatibel
+dengan OpenAI ke langganan Anda alih-alih menggunakan kunci API Anthropic.
 
 <Warning>
-Jalur ini hanya untuk kompatibilitas teknis. Anthropic pernah memblokir sebagian
-penggunaan langganan di luar Claude Code sebelumnya. Anda harus memutuskan sendiri apakah akan
-menggunakannya dan memverifikasi aturan penagihan Anthropic saat ini sebelum mengandalkannya.
+Hanya kompatibilitas teknis, bukan jalur yang disetujui secara resmi. Anthropic
+pernah memblokir sebagian penggunaan langganan di luar Claude Code; periksa
+aturan penagihan Anthropic saat ini sebelum mengandalkan metode ini.
 
-Dokumentasi dukungan Anthropic saat ini menyebutkan bahwa `claude -p` adalah penggunaan Agent SDK/programatik.
-Pembaruan dukungan Anthropic pada 15 Juni 2026 menunda rencana kredit Agent SDK
-terpisah yang sebelumnya diumumkan. Untuk saat ini, Claude Agent SDK, `claude -p`, dan penggunaan aplikasi pihak ketiga
-masih mengambil dari batas penggunaan langganan yang sedang masuk.
-
-Sebelum mengandalkan jalur ini, periksa [artikel paket Agent SDK
-Anthropic](https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan),
-serta artikel dukungan Claude Code untuk akun
+Dokumentasi Claude Code dari Anthropic menjelaskan `claude -p` sebagai
+penggunaan Agent SDK/terprogram. Berdasarkan pembaruan dukungan Anthropic pada
+15 Juni 2026, penggunaan Claude Agent SDK, `claude -p`, dan aplikasi pihak
+ketiga mengambil kuota dari batas penggunaan langganan yang digunakan untuk
+masuk (rencana kredit Agent SDK terpisah yang sebelumnya diumumkan sedang
+ditangguhkan). Lihat [artikel paket Agent
+SDK](https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan)
+dari Anthropic, artikel paket
 [Pro/Max](https://support.claude.com/en/articles/11145838-use-claude-code-with-your-pro-or-max-plan)
-atau
-[Team/Enterprise](https://support.claude.com/en/articles/11845131-use-claude-code-with-your-team-or-enterprise-plan).
+dan [Team/Enterprise](https://support.claude.com/en/articles/11845131-use-claude-code-with-your-team-or-enterprise-plan),
+serta [penyedia Anthropic](/id/providers/anthropic) untuk catatan penagihan Claude
+CLI milik OpenClaw.
 </Warning>
 
-## Mengapa menggunakan ini?
+## Mengapa menggunakannya
 
-| Pendekatan                | Rute biaya                                      | Paling cocok untuk                          |
-| ------------------------- | ----------------------------------------------- | ------------------------------------------ |
-| API Anthropic             | Bayar per token melalui Claude Console atau cloud | Aplikasi produksi, otomatisasi bersama, volume |
-| Proksi langganan Claude   | Aturan paket dan kredit Claude Code / `claude -p` | Eksperimen pribadi dengan alat yang kompatibel |
+| Pendekatan                | Jalur biaya                                      | Paling sesuai untuk                              |
+| ------------------------- | ------------------------------------------------ | ------------------------------------------------ |
+| Kunci API Anthropic       | Bayar per token melalui Claude Console           | Aplikasi produksi, otomatisasi bersama, volume   |
+| Proksi langganan Claude   | Paket dan aturan kredit Claude Code / `claude -p` | Eksperimen pribadi dengan alat yang kompatibel   |
 
-Jika Anda memiliki langganan Claude Max atau Pro dan ingin menggunakannya dengan
-alat yang kompatibel dengan OpenAI, proksi ini mungkin cocok untuk sebagian alur kerja pribadi. Ini bukan
-jalur tarif tetap tanpa batas. API key tetap menjadi jalur kebijakan dan penagihan yang lebih jelas untuk
-penggunaan produksi.
+Proksi ini memungkinkan langganan Claude Max atau Pro digunakan dengan alat
+yang kompatibel dengan OpenAI. Ini bukan jalur tarif tetap tanpa batas — proksi
+ini mewarisi batas penggunaan Claude Code. Kunci API tetap menjadi jalur
+penagihan yang lebih jelas untuk penggunaan produksi.
 
 ## Cara kerjanya
 
-```
-Your App → claude-max-api-proxy → Claude Code CLI / claude -p → Anthropic
-     (OpenAI format)              (converts format)          (uses your login)
+```text
+Aplikasi Anda -> claude-max-api-proxy -> Claude Code CLI / claude -p -> Anthropic
+     (format OpenAI)                    (mengonversi format)          (menggunakan proses masuk Anda)
 ```
 
-Proksi:
-
-1. Menerima permintaan berformat OpenAI di `http://localhost:3456/v1/chat/completions`
-2. Mengonversinya menjadi perintah Claude Code CLI
-3. Mengembalikan respons dalam format OpenAI (streaming didukung)
+Proksi menjalankan Claude Code CLI sebagai subproses untuk setiap permintaan,
+mengonversi permintaan percakapan berformat OpenAI menjadi perintah CLI, lalu
+mengalirkan (atau mengembalikan) respons dalam format OpenAI.
 
 ## Memulai
 
 <Steps>
-  <Step title="Pasang proksi">
-    Memerlukan Node.js 22+ dan Claude Code CLI.
+  <Step title="Instal proksi">
+    Memerlukan Node.js 20+ dan Claude Code CLI yang telah diautentikasi.
 
     ```bash
     npm install -g claude-max-api-proxy
 
-    # Verify Claude CLI is authenticated
+    # Pastikan Claude CLI telah diautentikasi
     claude --version
+    claude auth login   # jika belum diautentikasi
     ```
 
   </Step>
-  <Step title="Mulai server">
+  <Step title="Jalankan server">
     ```bash
     claude-max-api
-    # Server runs at http://localhost:3456
+    # Server berjalan di http://localhost:3456
     ```
   </Step>
   <Step title="Uji proksi">
     ```bash
-    # Health check
     curl http://localhost:3456/health
-
-    # List models
     curl http://localhost:3456/v1/models
 
-    # Chat completion
     curl http://localhost:3456/v1/chat/completions \
       -H "Content-Type: application/json" \
       -d '{
@@ -99,7 +98,7 @@ Proksi:
 
   </Step>
   <Step title="Konfigurasikan OpenClaw">
-    Arahkan OpenClaw ke proksi sebagai endpoint khusus yang kompatibel dengan OpenAI:
+    Arahkan OpenClaw ke proksi sebagai titik akhir khusus yang kompatibel dengan OpenAI:
 
     ```json5
     {
@@ -118,32 +117,42 @@ Proksi:
   </Step>
 </Steps>
 
-## Katalog bawaan
+<Note>
+ID model di bawah merupakan katalog milik proksi, bukan referensi model
+Anthropic milik OpenClaw. Setiap ID dipetakan ke alias model Claude Code CLI
+(`opus`, `sonnet`, `haiku`), sehingga model yang mendasarinya berubah setiap
+kali Anthropic memperbarui alias tersebut di CLI. Periksa README proksi saat
+ini sebelum mengandalkan pemetaan tertentu.
+</Note>
 
-| ID Model         | Dipetakan Ke     |
-| ---------------- | ---------------- |
-| `claude-opus-4`  | Claude Opus 4    |
-| `claude-sonnet-4` | Claude Sonnet 4 |
-| `claude-haiku-4` | Claude Haiku 4   |
+| ID model            | Alias CLI | Pemetaan saat ini  |
+| ------------------- | --------- | ------------------ |
+| `claude-opus-4`     | `opus`    | Claude Opus 4.5    |
+| `claude-sonnet-4`   | `sonnet`  | Claude Sonnet 4    |
+| `claude-haiku-4`    | `haiku`   | Claude Haiku 4     |
 
 ## Konfigurasi lanjutan
 
 <AccordionGroup>
-  <Accordion title="Catatan kompatibel OpenAI bergaya proksi">
-    Jalur ini menggunakan rute kompatibel OpenAI bergaya proksi yang sama seperti backend khusus
-    `/v1` lainnya:
+  <Accordion title="Catatan kompatibilitas OpenAI bergaya proksi">
+    Ini menggunakan rute generik khusus `/v1` milik OpenClaw yang kompatibel
+    dengan OpenAI, yaitu jalur yang sama seperti backend lain yang kompatibel
+    dengan OpenAI dan dihos sendiri:
 
-    - Pembentukan permintaan khusus OpenAI native tidak berlaku
-    - Tidak ada `service_tier`, tidak ada Responses `store`, tidak ada petunjuk prompt-cache, dan tidak ada
-      pembentukan payload kompatibel reasoning OpenAI
-    - Header atribusi OpenClaw tersembunyi (`originator`, `version`, `User-Agent`)
-      tidak disuntikkan pada URL proksi
+    - Penyesuaian permintaan khusus OpenAI native tidak berlaku.
+    - `/fast` dan `service_tier` hanya berlaku untuk lalu lintas langsung ke
+      `api.anthropic.com`; rute proksi membiarkan `service_tier` tidak berubah
+      (lihat [mode cepat penyedia Anthropic](/id/providers/anthropic#advanced-configuration)).
+    - Tidak ada pembentukan payload Responses `store`, petunjuk cache perintah,
+      atau kompatibilitas penalaran OpenAI.
+    - Header atribusi OpenAI/Codex milik OpenClaw (`originator`, `version`,
+      `User-Agent`) hanya dikirim pada lalu lintas OAuth native ke
+      `api.openai.com`, bukan ke target khusus `OPENAI_BASE_URL` seperti proksi
+      ini.
 
   </Accordion>
 
-  <Accordion title="Mulai otomatis di macOS dengan LaunchAgent">
-    Buat LaunchAgent untuk menjalankan proksi secara otomatis:
-
+  <Accordion title="Jalankan otomatis di macOS dengan LaunchAgent">
     ```bash
     cat > ~/Library/LaunchAgents/com.claude-max-api.plist << 'EOF'
     <?xml version="1.0" encoding="UTF-8"?>
@@ -178,27 +187,26 @@ Proksi:
 
 ## Catatan
 
-- Ini adalah **alat komunitas**, tidak didukung secara resmi oleh Anthropic atau OpenClaw
-- Memerlukan langganan Claude Max/Pro aktif dengan Claude Code CLI yang sudah terautentikasi
-- Mewarisi perilaku penagihan, kredit penggunaan, dan batas laju Claude Code `claude -p`
-- Proksi berjalan secara lokal dan tidak mengirim data ke server pihak ketiga mana pun
-- Respons streaming didukung sepenuhnya
+- Mewarisi perilaku penagihan, kredit penggunaan, dan batas laju `claude -p` milik Claude Code.
+- Hanya terikat ke `127.0.0.1`; tidak mengirim data ke server pihak ketiga mana pun selain panggilan CLI itu sendiri ke Anthropic.
+- Respons streaming didukung.
+- Kegagalan autentikasi tidak diperiksa saat dimulai dan baru muncul setelah permintaan percakapan benar-benar dijalankan; jika CLI belum diautentikasi, permintaan pertama akan gagal, bukan server yang menolak untuk dimulai.
 
 <Note>
-Untuk integrasi Anthropic native dengan Claude CLI atau API key, lihat [penyedia Anthropic](/id/providers/anthropic). Untuk langganan OpenAI/Codex, lihat [penyedia OpenAI](/id/providers/openai).
+Untuk integrasi Anthropic native dengan Claude CLI atau kunci API, lihat [penyedia Anthropic](/id/providers/anthropic). Untuk langganan OpenAI/Codex, lihat [penyedia OpenAI](/id/providers/openai).
 </Note>
 
 ## Terkait
 
 <CardGroup cols={2}>
   <Card title="Penyedia Anthropic" href="/id/providers/anthropic" icon="bolt">
-    Integrasi OpenClaw native dengan Claude CLI atau API key.
+    Integrasi native OpenClaw dengan Claude CLI atau kunci API.
   </Card>
   <Card title="Penyedia OpenAI" href="/id/providers/openai" icon="robot">
     Untuk langganan OpenAI/Codex.
   </Card>
   <Card title="Pemilihan model" href="/id/concepts/model-providers" icon="layers">
-    Ikhtisar semua penyedia, ref model, dan perilaku failover.
+    Ikhtisar semua penyedia, referensi model, dan perilaku failover.
   </Card>
   <Card title="Konfigurasi" href="/id/gateway/configuration" icon="gear">
     Referensi konfigurasi lengkap.

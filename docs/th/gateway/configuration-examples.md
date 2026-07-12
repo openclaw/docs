@@ -3,23 +3,23 @@ read_when:
     - เรียนรู้วิธีกำหนดค่า OpenClaw
     - กำลังมองหาตัวอย่างการกำหนดค่า
     - การตั้งค่า OpenClaw เป็นครั้งแรก
-summary: ตัวอย่างการกำหนดค่าที่ถูกต้องตามสคีมาสำหรับการตั้งค่า OpenClaw ที่พบบ่อย
+summary: ตัวอย่างการกำหนดค่าที่ตรงตามสคีมาสำหรับการตั้งค่า OpenClaw ที่ใช้ทั่วไป
 title: ตัวอย่างการกำหนดค่า
 x-i18n:
-    generated_at: "2026-06-27T17:32:21Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:03:19Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 945f4cd8571814597ec0188853e91c6483a0d8b09bd0ca7dcfb79eb877607ce2
+    source_hash: c3ad82ccce62e0c8dbb72f81b0de62d60d8a6282f0a327ed1cbda7ffa3e47969
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-ตัวอย่างด้านล่างสอดคล้องกับสคีมาการกำหนดค่าปัจจุบัน สำหรับข้อมูลอ้างอิงทั้งหมดและหมายเหตุรายฟิลด์ โปรดดู [การกำหนดค่า](/th/gateway/configuration)
+ตัวอย่างด้านล่างสอดคล้องกับสคีมาการกำหนดค่าปัจจุบัน สำหรับข้อมูลอ้างอิงฉบับสมบูรณ์และหมายเหตุของแต่ละฟิลด์ โปรดดู[การกำหนดค่า](/th/gateway/configuration)
 
 ## เริ่มต้นอย่างรวดเร็ว
 
-### ขั้นต่ำสุด
+### ขั้นต่ำที่สุด
 
 ```json5
 {
@@ -28,9 +28,9 @@ x-i18n:
 }
 ```
 
-บันทึกไปยัง `~/.openclaw/openclaw.json` แล้วคุณสามารถส่งข้อความส่วนตัวถึงบอตจากหมายเลขนั้นได้
+บันทึกไว้ที่ `~/.openclaw/openclaw.json` แล้วคุณจะสามารถส่งข้อความส่วนตัวถึงบอตจากหมายเลขดังกล่าวได้
 
-### ค่าเริ่มต้นที่แนะนำ
+### การตั้งค่าเริ่มต้นที่แนะนำ
 
 ```json5
 {
@@ -59,7 +59,7 @@ x-i18n:
   messages: {
     visibleReplies: "automatic",
     groupChat: {
-      visibleReplies: "message_tool", // opt-in; visible output requires message(action=send)
+      visibleReplies: "message_tool", // เลือกเปิดใช้; เอาต์พุตที่มองเห็นได้ต้องใช้ message(action=send)
       unmentionedInbound: "room_event",
     },
   },
@@ -68,11 +68,11 @@ x-i18n:
 
 ## ตัวอย่างแบบขยาย (ตัวเลือกหลัก)
 
-> JSON5 ช่วยให้คุณใช้ความคิดเห็นและจุลภาคต่อท้ายได้ JSON ปกติก็ใช้ได้เช่นกัน
+> JSON5 ช่วยให้คุณใช้ความคิดเห็นและเครื่องหมายจุลภาคต่อท้ายได้ และยังใช้ JSON ปกติได้เช่นกัน
 
 ```json5
 {
-  // Environment + shell
+  // สภาพแวดล้อม + เชลล์
   env: {
     OPENROUTER_API_KEY: "sk-or-...",
     vars: {
@@ -84,7 +84,7 @@ x-i18n:
     },
   },
 
-  // Auth profile metadata (secrets live in auth-profiles.json)
+  // ข้อมูลเมตาของโปรไฟล์การยืนยันตัวตน (ข้อมูลลับอยู่ใน auth-profiles.json)
   auth: {
     profiles: {
       "anthropic:default": { provider: "anthropic", mode: "api_key" },
@@ -98,9 +98,9 @@ x-i18n:
     },
   },
 
-  // Identity is per agent — set it on agents.list[].identity below.
+  // ข้อมูลประจำตัวกำหนดแยกตามเอเจนต์ — ตั้งค่าไว้ที่ agents.list[].identity ด้านล่าง
 
-  // Logging
+  // การบันทึกล็อก
   logging: {
     level: "info",
     file: "/tmp/openclaw/openclaw.log",
@@ -109,7 +109,7 @@ x-i18n:
     redactSensitive: "tools",
   },
 
-  // Message formatting
+  // การจัดรูปแบบข้อความ
   messages: {
     messagePrefix: "[openclaw]",
     visibleReplies: "automatic",
@@ -118,7 +118,7 @@ x-i18n:
     ackReactionScope: "group-mentions",
     groupChat: {
       historyLimit: 50,
-      visibleReplies: "message_tool", // opt in for shared rooms with tool-reliable models
+      visibleReplies: "message_tool", // เลือกเปิดใช้สำหรับห้องที่ใช้ร่วมกันกับโมเดลที่เรียกใช้เครื่องมือได้อย่างเชื่อถือได้
       unmentionedInbound: "room_event",
     },
     queue: {
@@ -138,15 +138,15 @@ x-i18n:
     },
   },
 
-  // Tooling
+  // เครื่องมือ
   tools: {
     media: {
       audio: {
         enabled: true,
         maxBytes: 20971520,
         models: [
-          { provider: "openai", model: "gpt-4o-mini-transcribe" },
-          // Optional CLI fallback (Whisper binary):
+          { provider: "openai", model: "gpt-4o-transcribe" },
+          // CLI สำรองที่เลือกใช้ได้ (ไบนารี Whisper):
           // { type: "cli", command: "whisper", args: ["--model", "base", "{{MediaPath}}"] }
         ],
         timeoutSeconds: 120,
@@ -159,10 +159,10 @@ x-i18n:
     },
   },
 
-  // Session behavior
+  // ลักษณะการทำงานของเซสชัน
   session: {
     scope: "per-sender",
-    dmScope: "per-channel-peer", // recommended for multi-user inboxes
+    dmScope: "per-channel-peer", // แนะนำสำหรับกล่องข้อความที่มีผู้ใช้หลายคน
     reset: {
       mode: "daily",
       atHour: 4,
@@ -172,14 +172,14 @@ x-i18n:
       discord: { mode: "idle", idleMinutes: 10080 },
     },
     resetTriggers: ["/new", "/reset"],
-    store: "~/.openclaw/agents/default/sessions/sessions.json",
+    store: "~/.openclaw/agents/main/sessions/sessions.json",
     maintenance: {
       mode: "warn",
       pruneAfter: "30d",
       maxEntries: 500,
-      resetArchiveRetention: "30d", // duration or false
-      maxDiskBytes: "500mb", // optional
-      highWaterBytes: "400mb", // optional (defaults to 80% of maxDiskBytes)
+      resetArchiveRetention: "30d", // ระยะเวลาหรือ false
+      maxDiskBytes: "500mb", // ไม่บังคับ
+      highWaterBytes: "400mb", // ไม่บังคับ (ค่าเริ่มต้นคือ 80% ของ maxDiskBytes)
     },
     typingIntervalSeconds: 5,
     sendPolicy: {
@@ -188,7 +188,7 @@ x-i18n:
     },
   },
 
-  // Channels
+  // ช่องทาง
   channels: {
     whatsapp: {
       dmPolicy: "pairing",
@@ -216,8 +216,8 @@ x-i18n:
           slug: "friends-of-openclaw",
           requireMention: false,
           channels: {
-            general: { allow: true },
-            help: { allow: true, requireMention: true },
+            general: { enabled: true },
+            help: { enabled: true, requireMention: true },
           },
         },
       },
@@ -228,7 +228,7 @@ x-i18n:
       botToken: "xoxb-REPLACE_ME",
       appToken: "xapp-REPLACE_ME",
       channels: {
-        "#general": { allow: true, requireMention: true },
+        "#general": { enabled: true, requireMention: true },
       },
       dm: { enabled: true, allowFrom: ["U123"] },
       slashCommand: {
@@ -240,7 +240,7 @@ x-i18n:
     },
   },
 
-  // Agent runtime
+  // รันไทม์ของเอเจนต์
   agents: {
     defaults: {
       workspace: "~/.openclaw/workspace",
@@ -257,7 +257,7 @@ x-i18n:
         "anthropic/claude-sonnet-4-6": { alias: "sonnet" },
         "openai/gpt-5.4": { alias: "gpt" },
       },
-      skills: ["github", "weather"], // inherited by agents that omit list[].skills
+      skills: ["github", "weather"], // เอเจนต์ที่ไม่ได้ระบุ list[].skills จะสืบทอดค่านี้
       thinkingDefault: "low",
       verboseDefault: "off",
       toolProgressDetail: "explain",
@@ -284,7 +284,7 @@ x-i18n:
         every: "30m",
         model: "anthropic/claude-sonnet-4-6",
         target: "last",
-        directPolicy: "allow", // allow (default) | block
+        directPolicy: "allow", // allow (ค่าเริ่มต้น) | block
         to: "+15555550123",
         prompt: "HEARTBEAT",
         ackMaxChars: 300,
@@ -299,7 +299,7 @@ x-i18n:
       },
       sandbox: {
         mode: "non-main",
-        scope: "session", // preferred over legacy perSession: true
+        scope: "session", // แนะนำให้ใช้แทน perSession: true แบบเดิม
         workspaceRoot: "~/.openclaw/sandboxes",
         docker: {
           image: "openclaw-sandbox:bookworm-slim",
@@ -320,21 +320,21 @@ x-i18n:
         default: true,
         identity: {
           name: "Samantha",
-          theme: "helpful sloth",
+          theme: "สลอธที่คอยช่วยเหลือ",
           emoji: "🦥",
         },
-        // inherits defaults.skills -> github, weather
+        // สืบทอด defaults.skills -> github, weather
         groupChat: {
           mentionPatterns: ["@openclaw", "openclaw"],
         },
-        thinkingDefault: "high", // per-agent thinking override
-        reasoningDefault: "on", // per-agent reasoning visibility
-        fastModeDefault: false, // per-agent fast mode
+        thinkingDefault: "high", // เขียนทับการคิดแยกตามเอเจนต์
+        reasoningDefault: "on", // การแสดงเหตุผลแยกตามเอเจนต์
+        fastModeDefault: false, // โหมดเร็วแยกตามเอเจนต์
       },
       {
         id: "quick",
-        skills: [], // no skills for this agent
-        fastModeDefault: true, // this agent always runs fast
+        skills: [], // เอเจนต์นี้ไม่มี Skills
+        fastModeDefault: true, // เอเจนต์นี้ทำงานในโหมดเร็วเสมอ
         thinkingDefault: "off",
       },
     ],
@@ -362,7 +362,7 @@ x-i18n:
     },
   },
 
-  // Custom model providers
+  // ผู้ให้บริการโมเดลแบบกำหนดเอง
   models: {
     mode: "merge",
     providers: {
@@ -388,11 +388,11 @@ x-i18n:
     },
   },
 
-  // Cron jobs
+  // งาน Cron
   cron: {
     enabled: true,
-    store: "~/.openclaw/cron/cron.json",
-    maxConcurrentRuns: 8, // default; cron dispatch + isolated cron agent-turn execution
+    store: "~/.openclaw/cron/jobs.json",
+    maxConcurrentRuns: 8, // ค่าเริ่มต้น; การส่งงาน Cron + การดำเนินการรอบเอเจนต์ Cron แบบแยกส่วน
     sessionRetention: "24h",
     runLog: {
       maxBytes: "2mb",
@@ -400,7 +400,7 @@ x-i18n:
     },
   },
 
-  // Webhooks
+  // Webhook
   hooks: {
     enabled: true,
     path: "/hooks",
@@ -415,7 +415,7 @@ x-i18n:
         wakeMode: "now",
         name: "Gmail",
         sessionKey: "hook:gmail:{{messages[0].id}}",
-        messageTemplate: "From: {{messages[0].from}}\nSubject: {{messages[0].subject}}",
+        messageTemplate: "จาก: {{messages[0].from}}\nหัวเรื่อง: {{messages[0].subject}}",
         textTemplate: "{{messages[0].snippet}}",
         deliver: true,
         channel: "last",
@@ -443,7 +443,7 @@ x-i18n:
     },
   },
 
-  // Gateway + networking
+  // Gateway + เครือข่าย
   gateway: {
     mode: "local",
     port: 18789,
@@ -455,7 +455,7 @@ x-i18n:
       allowTailscale: true,
     },
     tailscale: { mode: "serve", resetOnExit: false },
-    remote: { url: "ws://gateway.tailnet:18789", token: "remote-token" },
+    remote: { url: "ws://gateway-host.ts.net:18789", token: "remote-token" },
     reload: { mode: "hybrid", debounceMs: 300 },
   },
 
@@ -482,9 +482,9 @@ x-i18n:
 }
 ```
 
-### คลัง Skill พี่น้องที่เชื่อมด้วย symlink
+### ที่เก็บ Skills ข้างเคียงที่เชื่อมด้วยลิงก์สัญลักษณ์
 
-ใช้สิ่งนี้เมื่อรูท Skill ในตัวมี symlink ไปยังคลังพี่น้อง เช่น
+ใช้วิธีนี้เมื่อรากของ Skill ที่มีมาให้มีลิงก์สัญลักษณ์ชี้ไปยังที่เก็บข้างเคียง เช่น
 `~/.agents/skills/manager -> ~/Projects/manager/skills`
 
 ```json5
@@ -498,15 +498,15 @@ x-i18n:
 }
 ```
 
-- `extraDirs` สแกนคลังพี่น้องเป็นรูท Skill ที่ระบุอย่างชัดเจน
-- `allowSymlinkTargets` ทำให้โฟลเดอร์ Skill ที่เชื่อมด้วย symlink resolve ไปยังรูทเป้าหมายจริงที่เชื่อถือได้
-  โดยไม่อนุญาตให้ symlink หลุดออกไปยังตำแหน่งอื่นโดยพลการ
-- หากต้องการให้ Skill Workshop เขียนผ่านเป้าหมาย symlink ที่เชื่อถือได้นั้นได้เช่นกัน
+- `extraDirs` สแกนที่เก็บข้างเคียงเป็นรากของ Skill ที่ระบุไว้อย่างชัดเจน
+- `allowSymlinkTargets` อนุญาตให้โฟลเดอร์ Skill ที่เชื่อมด้วยลิงก์สัญลักษณ์
+  แก้ไขเส้นทางไปยังรากเป้าหมายจริงที่เชื่อถือได้ โดยไม่อนุญาตให้ลิงก์สัญลักษณ์หลุดไปยังตำแหน่งอื่นโดยพลการ
+- หากต้องการให้ Skill Workshop เขียนข้อมูลผ่านเป้าหมายลิงก์สัญลักษณ์ที่เชื่อถือได้เดียวกัน
   ให้ตั้งค่า `skills.workshop.allowSymlinkTargetWrites: true`
 
-## รูปแบบทั่วไป
+## รูปแบบที่ใช้ทั่วไป
 
-### baseline ของ Skill ที่ใช้ร่วมกันพร้อม override หนึ่งรายการ
+### ค่าพื้นฐานของ Skills ที่ใช้ร่วมกันโดยมีการเขียนทับหนึ่งรายการ
 
 ```json5
 {
@@ -525,7 +525,7 @@ x-i18n:
 
 - `agents.defaults.skills` คือค่าพื้นฐานที่ใช้ร่วมกัน
 - `agents.list[].skills` จะแทนที่ค่าพื้นฐานนั้นสำหรับเอเจนต์หนึ่งตัว
-- ใช้ `skills: []` เมื่อเอเจนต์ไม่ควรเห็น Skills ใด ๆ
+- ใช้ `skills: []` เมื่อไม่ต้องการให้เอเจนต์เห็น Skills ใด ๆ
 
 ### การตั้งค่าหลายแพลตฟอร์ม
 
@@ -548,11 +548,9 @@ x-i18n:
 }
 ```
 
-### การอนุมัติอัตโนมัติสำหรับเครือข่ายโหนดที่เชื่อถือได้
+### การอนุมัติอัตโนมัติสำหรับเครือข่าย Node ที่เชื่อถือได้
 
-ให้การจับคู่อุปกรณ์เป็นแบบทำด้วยตนเองไว้ เว้นแต่คุณจะควบคุมเส้นทางเครือข่ายได้ สำหรับแล็บเฉพาะ
-หรือซับเน็ต tailnet คุณสามารถเลือกเปิดใช้การอนุมัติอัตโนมัติสำหรับอุปกรณ์โหนดครั้งแรก
-ด้วย CIDR หรือ IP ที่ระบุแน่นอนได้:
+ให้การจับคู่อุปกรณ์เป็นแบบดำเนินการด้วยตนเอง เว้นแต่คุณจะควบคุมเส้นทางเครือข่าย สำหรับเครือข่ายย่อยของห้องปฏิบัติการเฉพาะหรือ tailnet คุณสามารถเลือกใช้การอนุมัติอุปกรณ์ Node โดยอัตโนมัติในการจับคู่ครั้งแรกด้วย CIDR หรือ IP ที่ระบุอย่างชัดเจน:
 
 ```json5
 {
@@ -566,13 +564,11 @@ x-i18n:
 }
 ```
 
-ค่านี้ยังคงปิดอยู่เมื่อไม่ได้ตั้งค่า ใช้กับการจับคู่ `role: node` ใหม่เท่านั้นที่
-ไม่ได้ขอขอบเขตสิทธิ์ใด ๆ ไคลเอนต์ของผู้ปฏิบัติงาน/เบราว์เซอร์ รวมถึงการอัปเกรดบทบาท ขอบเขตสิทธิ์ เมตาดาต้า หรือ
-คีย์สาธารณะยังคงต้องได้รับการอนุมัติด้วยตนเอง
+ความสามารถนี้จะยังคงปิดอยู่หากไม่ได้ตั้งค่า โดยใช้เฉพาะกับการจับคู่ `role: node` ใหม่ที่ไม่ได้ร้องขอขอบเขตสิทธิ์เท่านั้น ไคลเอนต์ของผู้ปฏิบัติงาน/เบราว์เซอร์ รวมถึงการอัปเกรดบทบาท ขอบเขตสิทธิ์ เมทาดาทา หรือกุญแจสาธารณะ ยังคงต้องได้รับการอนุมัติด้วยตนเอง
 
-### โหมด DM ที่ปลอดภัย (กล่องข้อความร่วม / DM หลายผู้ใช้)
+### โหมด DM ที่ปลอดภัย (กล่องข้อความเข้าที่ใช้ร่วมกัน / DM แบบหลายผู้ใช้)
 
-หากมีมากกว่าหนึ่งคนที่สามารถ DM บอตของคุณได้ (มีหลายรายการใน `allowFrom`, มีการอนุมัติการจับคู่สำหรับหลายคน หรือ `dmPolicy: "open"`), ให้เปิดใช้ **โหมด DM ที่ปลอดภัย** เพื่อให้ DM จากผู้ส่งต่างกันไม่ใช้บริบทร่วมกันโดยค่าเริ่มต้น:
+หากมีบุคคลมากกว่าหนึ่งคนที่สามารถส่ง DM ถึงบอตของคุณได้ (มีหลายรายการใน `allowFrom` มีการอนุมัติการจับคู่สำหรับหลายคน หรือใช้ `dmPolicy: "open"`) ให้เปิดใช้ **โหมด DM ที่ปลอดภัย** เพื่อไม่ให้ DM จากผู้ส่งต่างกันใช้บริบทเดียวกันโดยค่าเริ่มต้น:
 
 ```json5
 {
@@ -596,10 +592,10 @@ x-i18n:
 }
 ```
 
-สำหรับ Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC การอนุญาตผู้ส่งจะยึด ID เป็นหลักโดยค่าเริ่มต้น
-เปิดใช้การจับคู่ชื่อ/อีเมล/ชื่อเล่นที่เปลี่ยนแปลงได้โดยตรงด้วย `dangerouslyAllowNameMatching: true` ของแต่ละช่องทางเฉพาะเมื่อคุณยอมรับความเสี่ยงนั้นอย่างชัดเจนเท่านั้น
+สำหรับ Discord/Google Chat/IRC/Mattermost/Microsoft Teams/Slack การอนุญาตผู้ส่งจะอิง ID เป็นหลักโดยค่าเริ่มต้น
+ให้เปิดใช้การจับคู่ชื่อ/อีเมล/ชื่อเล่นที่เปลี่ยนแปลงได้โดยตรงผ่าน `dangerouslyAllowNameMatching: true` ของแต่ละช่องทาง เฉพาะเมื่อคุณยอมรับความเสี่ยงนั้นอย่างชัดเจนเท่านั้น
 
-### คีย์ Anthropic API + MiniMax สำรอง
+### คีย์ API ของ Anthropic และ MiniMax สำรอง
 
 ```json5
 {
@@ -635,7 +631,7 @@ x-i18n:
 }
 ```
 
-### บอตสำหรับงาน (การเข้าถึงแบบจำกัด)
+### บอตสำหรับงาน (จำกัดการเข้าถึง)
 
 ```json5
 {
@@ -659,15 +655,15 @@ x-i18n:
       enabled: true,
       botToken: "xoxb-...",
       channels: {
-        "#engineering": { allow: true, requireMention: true },
-        "#general": { allow: true, requireMention: true },
+        "#engineering": { enabled: true, requireMention: true },
+        "#general": { enabled: true, requireMention: true },
       },
     },
   },
 }
 ```
 
-### ใช้เฉพาะโมเดลในเครื่อง
+### ใช้เฉพาะโมเดลภายในเครื่อง
 
 ```json5
 {
@@ -704,11 +700,11 @@ x-i18n:
 ## เคล็ดลับ
 
 - หากคุณตั้งค่า `dmPolicy: "open"` รายการ `allowFrom` ที่ตรงกันต้องมี `"*"`
-- ID ของผู้ให้บริการแตกต่างกัน (หมายเลขโทรศัพท์, ID ผู้ใช้, ID ช่องทาง) ใช้เอกสารของผู้ให้บริการเพื่อยืนยันรูปแบบ
-- ส่วนที่เลือกเพิ่มภายหลังได้: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`
-- ดู [ผู้ให้บริการ](/th/providers) และ [การแก้ไขปัญหา](/th/gateway/troubleshooting) สำหรับบันทึกการตั้งค่าเชิงลึกเพิ่มเติม
+- ID ของผู้ให้บริการมีรูปแบบแตกต่างกัน (หมายเลขโทรศัพท์, ID ผู้ใช้, ID ช่องทาง) โปรดดูเอกสารของผู้ให้บริการเพื่อยืนยันรูปแบบ
+- ส่วนที่เลือกเพิ่มได้ในภายหลัง: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`
+- ดู [ผู้ให้บริการ](/th/providers) และ [การแก้ไขปัญหา](/th/gateway/troubleshooting) สำหรับหมายเหตุการตั้งค่าเชิงลึกเพิ่มเติม
 
-## ที่เกี่ยวข้อง
+## เนื้อหาที่เกี่ยวข้อง
 
-- [ข้อมูลอ้างอิงการกำหนดค่า](/th/gateway/configuration-reference)
+- [เอกสารอ้างอิงการกำหนดค่า](/th/gateway/configuration-reference)
 - [การกำหนดค่า](/th/gateway/configuration)

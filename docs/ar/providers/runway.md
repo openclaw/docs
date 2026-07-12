@@ -1,76 +1,76 @@
 ---
 read_when:
-    - تريد استخدام توليد الفيديو عبر Runway في OpenClaw
-    - تحتاج إلى إعداد مفتاح API ومتغيرات البيئة لـ Runway
-    - تريد جعل Runway موفّر الفيديو الافتراضي
-summary: إعداد توليد الفيديو باستخدام Runway في OpenClaw
-title: مدرج
+    - تريد استخدام إنشاء الفيديو عبر Runway في OpenClaw
+    - تحتاج إلى إعداد مفتاح Runway API ومتغيرات البيئة الخاصة به
+    - تريد جعل Runway مزوّد الفيديو الافتراضي
+summary: إعداد إنشاء الفيديو باستخدام Runway في OpenClaw
+title: المدرج
 x-i18n:
-    generated_at: "2026-05-06T08:11:15Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:31:18Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 51980217868c6d2f168f897106f81ea38dfcfde5265b14e394d4e232324a46b7
+    source_hash: 7aa2a802323857bf7c839ebfab56853dc79d656a25bbc194a431959a48bbd64b
     source_path: providers/runway.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-يأتي OpenClaw مع مزوّد `runway` مضمّن لإنشاء الفيديو المستضاف. يكون Plugin ممكّنًا افتراضيًا ويسجّل مزوّد `runway` مقابل عقد `videoGenerationProviders`.
+يوفّر OpenClaw موفّر `runway` مضمّنًا لإنشاء مقاطع الفيديو المستضافة، وهو مفعّل افتراضيًا ومسجّل وفق عقد `videoGenerationProviders`.
 
 | الخاصية        | القيمة                                                             |
 | --------------- | ----------------------------------------------------------------- |
-| معرّف المزوّد     | `runway`                                                          |
+| معرّف الموفّر     | `runway`                                                          |
 | Plugin          | مضمّن، `enabledByDefault: true`                                 |
 | متغيرات بيئة المصادقة   | `RUNWAYML_API_SECRET` (الأساسي) أو `RUNWAY_API_KEY`             |
-| علم الإعداد الأولي | `--auth-choice runway-api-key`                                    |
-| علم CLI المباشر | `--runway-api-key <key>`                                          |
-| API             | إنشاء الفيديو القائم على مهام Runway (استطلاع `GET /v1/tasks/{id}`) |
+| علامة الإعداد الأولي | `--auth-choice runway-api-key`                                    |
+| علامة CLI المباشرة | `--runway-api-key <key>`                                          |
+| API             | إنشاء فيديو قائم على المهام في Runway (استقصاء `GET /v1/tasks/{id}`) |
 | النموذج الافتراضي   | `runway/gen4.5`                                                   |
 
-## البدء
+## بدء الاستخدام
 
 <Steps>
-  <Step title="اضبط مفتاح API">
+  <Step title="تعيين مفتاح API">
     ```bash
     openclaw onboard --auth-choice runway-api-key
     ```
   </Step>
-  <Step title="عيّن Runway كمزوّد الفيديو الافتراضي">
+  <Step title="تعيين Runway موفّر الفيديو الافتراضي">
     ```bash
     openclaw config set agents.defaults.videoGenerationModel.primary "runway/gen4.5"
     ```
   </Step>
-  <Step title="أنشئ فيديو">
+  <Step title="إنشاء فيديو">
     اطلب من الوكيل إنشاء فيديو. سيُستخدم Runway تلقائيًا.
   </Step>
 </Steps>
 
 ## الأوضاع والنماذج المدعومة
 
-يوفّر المزوّد سبعة نماذج من Runway موزّعة على ثلاثة أوضاع. يمكن لمعرّف النموذج نفسه أن يخدم أكثر من وضع واحد (على سبيل المثال يعمل `gen4.5` لكل من تحويل النص إلى فيديو وتحويل الصورة إلى فيديو).
+يتيح الموفّر سبعة نماذج من Runway موزّعة على ثلاثة أوضاع. يمكن لمعرّف النموذج نفسه دعم أكثر من وضع واحد (على سبيل المثال، يعمل `gen4.5` لكل من تحويل النص إلى فيديو وتحويل الصورة إلى فيديو).
 
-| الوضع           | النماذج                                                                 | إدخال مرجعي         |
+| الوضع           | النماذج                                                                 | مُدخل المرجع         |
 | -------------- | ---------------------------------------------------------------------- | ----------------------- |
-| تحويل النص إلى فيديو  | `gen4.5` (الافتراضي)، `veo3.1`، `veo3.1_fast`، `veo3`                    | لا يوجد                    |
+| تحويل النص إلى فيديو  | `gen4.5` (الافتراضي)، `veo3.1`، `veo3.1_fast`، `veo3`                    | لا شيء                    |
 | تحويل الصورة إلى فيديو | `gen4.5`، `gen4_turbo`، `gen3a_turbo`، `veo3.1`، `veo3.1_fast`، `veo3` | صورة محلية أو بعيدة واحدة |
 | تحويل الفيديو إلى فيديو | `gen4_aleph`                                                           | فيديو محلي أو بعيد واحد |
 
-تُدعم مراجع الصور والفيديو المحلية عبر عناوين URI للبيانات.
+تُدعم مراجع الصور ومقاطع الفيديو المحلية عبر عناوين URI للبيانات.
 
 | نسب العرض إلى الارتفاع         | القيم المسموح بها                              |
 | --------------------- | ------------------------------------------- |
 | تحويل النص إلى فيديو         | `16:9`، `9:16`                              |
-| تعديلات الصور والفيديو | `1:1`، `16:9`، `9:16`، `3:4`، `4:3`، `21:9` |
+| تعديلات الصور ومقاطع الفيديو | `1:1`، `16:9`، `9:16`، `3:4`، `4:3`، `21:9` |
 
 <Warning>
-  يتطلب تحويل الفيديو إلى فيديو حاليًا `runway/gen4_aleph`. ترفض معرّفات نماذج Runway الأخرى إدخالات مراجع الفيديو.
+  يتطلب تحويل الفيديو إلى فيديو حاليًا `runway/gen4_aleph`. ترفض معرّفات نماذج Runway الأخرى مُدخلات مراجع الفيديو.
 </Warning>
 
 <Note>
-  يؤدي اختيار معرّف نموذج Runway من العمود الخطأ إلى ظهور خطأ صريح قبل أن يغادر طلب API من OpenClaw. يتحقق المزوّد من `model` مقابل قائمة السماح الخاصة بالوضع (`TEXT_ONLY_MODELS`، `IMAGE_MODELS`، `VIDEO_MODELS`) في `extensions/runway/video-generation-provider.ts`.
+  يؤدي اختيار معرّف نموذج Runway من العمود الخطأ إلى ظهور خطأ صريح قبل مغادرة طلب API لـ OpenClaw. يتحقق الموفّر من `model` بمقارنته بقائمة السماح الخاصة بالوضع (`TEXT_ONLY_MODELS`، و`IMAGE_MODELS`، و`VIDEO_MODELS`) في `extensions/runway/video-generation-provider.ts`.
 </Note>
 
-## الإعدادات
+## الإعداد
 
 ```json5
 {
@@ -84,18 +84,18 @@ x-i18n:
 }
 ```
 
-## الإعدادات المتقدمة
+## الإعداد المتقدم
 
 <AccordionGroup>
   <Accordion title="الأسماء البديلة لمتغيرات البيئة">
-    يتعرف OpenClaw على كل من `RUNWAYML_API_SECRET` (الأساسي) و`RUNWAY_API_KEY`.
-    سيصادق أي من المتغيرين مزوّد Runway.
+    يتعرّف OpenClaw على كل من `RUNWAYML_API_SECRET` (الأساسي) و`RUNWAY_API_KEY`.
+    يتيح أي من المتغيرين مصادقة موفّر Runway.
   </Accordion>
 
-  <Accordion title="استطلاع المهام">
-    يستخدم Runway واجهة API قائمة على المهام. بعد إرسال طلب إنشاء، يستطلع OpenClaw
-    `GET /v1/tasks/{id}` إلى أن يصبح الفيديو جاهزًا. لا يلزم أي
-    إعداد إضافي لسلوك الاستطلاع.
+  <Accordion title="استقصاء المهام">
+    يستخدم Runway واجهة API قائمة على المهام. بعد إرسال طلب إنشاء، يستقصي OpenClaw
+    المسار `GET /v1/tasks/{id}` حتى يصبح الفيديو جاهزًا. لا يلزم أي
+    إعداد إضافي لسلوك الاستقصاء.
   </Accordion>
 </AccordionGroup>
 
@@ -103,9 +103,9 @@ x-i18n:
 
 <CardGroup cols={2}>
   <Card title="إنشاء الفيديو" href="/ar/tools/video-generation" icon="video">
-    معلمات الأداة المشتركة، واختيار المزوّد، والسلوك غير المتزامن.
+    معلمات الأداة المشتركة، واختيار الموفّر، والسلوك غير المتزامن.
   </Card>
-  <Card title="مرجع الإعدادات" href="/ar/gateway/config-agents#agent-defaults" icon="gear">
-    إعدادات الوكيل الافتراضية، بما في ذلك نموذج إنشاء الفيديو.
+  <Card title="مرجع الإعداد" href="/ar/gateway/config-agents#agent-defaults" icon="gear">
+    الإعدادات الافتراضية للوكيل، بما في ذلك نموذج إنشاء الفيديو.
   </Card>
 </CardGroup>

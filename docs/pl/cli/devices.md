@@ -1,22 +1,34 @@
 ---
 read_when:
     - Zatwierdzasz żądania parowania urządzeń
-    - Musisz rotować lub unieważnić tokeny urządzeń
-summary: Dokumentacja CLI dla `openclaw devices` (parowanie urządzeń + rotacja/unieważnianie tokenów)
+    - Musisz rotować lub unieważniać tokeny urządzeń
+summary: Dokumentacja CLI dla `openclaw devices` (parowanie urządzeń oraz rotacja/unieważnianie tokenów)
 title: Urządzenia
 x-i18n:
-    generated_at: "2026-06-27T17:20:19Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:54:07Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 08d6945af4fa2403a97dfec94af7bbd0dc746efe90d3e5b4c9f5c5d6d27d70a4
+    source_hash: 83fb10f7a484fec06bfa5e53ae50181b12a9724746176bbace330ec468235494
     source_path: cli/devices.md
     workflow: 16
 ---
 
 # `openclaw devices`
 
-Zarządzaj żądaniami parowania urządzeń i tokenami o zakresie urządzenia.
+Zarządzaj żądaniami parowania urządzeń i tokenami przypisanymi do urządzeń.
+
+## Typowe opcje
+
+- `--url <url>`: adres URL WebSocket Gateway (domyślnie `gateway.remote.url`, jeśli skonfigurowano)
+- `--token <token>`: token Gateway (jeśli wymagany)
+- `--password <password>`: hasło Gateway (uwierzytelnianie hasłem)
+- `--timeout <ms>`: limit czasu RPC
+- `--json`: dane wyjściowe JSON (zalecane w skryptach)
+
+<Warning>
+Po ustawieniu `--url` CLI nie korzysta awaryjnie z danych uwierzytelniających z konfiguracji ani zmiennych środowiskowych. Jawnie przekaż `--token` lub `--password`; w przeciwnym razie polecenie zakończy się błędem.
+</Warning>
 
 ## Polecenia
 
@@ -24,90 +36,170 @@ Zarządzaj żądaniami parowania urządzeń i tokenami o zakresie urządzenia.
 
 Wyświetl oczekujące żądania parowania i sparowane urządzenia.
 
-```
+```bash
 openclaw devices list
 openclaw devices list --json
 ```
 
-Dane wyjściowe oczekującego żądania pokazują żądany dostęp obok bieżącego
-zatwierdzonego dostępu urządzenia, gdy urządzenie jest już sparowane. Dzięki temu rozszerzenia zakresu/roli są jawne, a nie wyglądają tak, jakby parowanie zostało utracone.
+W przypadku oczekującego żądania dotyczącego już sparowanego urządzenia dane wyjściowe pokazują żądany dostęp obok obecnie zatwierdzonego dostępu urządzenia, dzięki czemu rozszerzenia zakresu lub roli są widoczne i nie wyglądają jak utracone parowanie.
 
-### `openclaw devices remove <deviceId>`
-
-Usuń jeden wpis sparowanego urządzenia.
-
-Gdy jesteś uwierzytelniony tokenem sparowanego urządzenia, wywołujący bez uprawnień administratora mogą
-usunąć tylko wpis **własnego** urządzenia. Usunięcie innego urządzenia wymaga
-`operator.admin`.
-
-```
-openclaw devices remove <deviceId>
-openclaw devices remove <deviceId> --json
-```
-
-### `openclaw devices clear --yes [--pending]`
-
-Wyczyść sparowane urządzenia zbiorczo.
-
-```
-openclaw devices clear --yes
-openclaw devices clear --yes --pending
-openclaw devices clear --yes --pending --json
-```
+Nazwy wyświetlane sparowanych urządzeń są wybierane według następującej kolejności: etykieta operatora (`operatorLabel` z `devices rename`), następnie `displayName` klienta, potem `clientId`, a na końcu `deviceId`.
 
 ### `openclaw devices approve [requestId] [--latest]`
 
-Zatwierdź oczekujące żądanie parowania urządzenia według dokładnego `requestId`. Jeśli `requestId`
-zostanie pominięty lub przekazano `--latest`, OpenClaw tylko wypisuje wybrane oczekujące
-żądanie i kończy działanie; uruchom zatwierdzanie ponownie z dokładnym identyfikatorem żądania po zweryfikowaniu
-szczegółów.
+Zatwierdź oczekujące żądanie parowania na podstawie dokładnego `requestId`. Pominięcie `requestId` lub przekazanie `--latest` powoduje tylko wyświetlenie podglądu najnowszego oczekującego żądania i zakończenie działania (kod 1); aby zatwierdzić żądanie, uruchom polecenie ponownie z dokładnym identyfikatorem żądania.
 
-<Note>
-Jeśli urządzenie ponawia parowanie ze zmienionymi szczegółami uwierzytelniania (rola, zakresy lub klucz publiczny), OpenClaw zastępuje poprzedni oczekujący wpis i wystawia nowe `requestId`. Uruchom `openclaw devices list` tuż przed zatwierdzeniem, aby użyć bieżącego identyfikatora.
-</Note>
-
-Jeśli urządzenie jest już sparowane i prosi o szersze zakresy lub szerszą rolę,
-OpenClaw zachowuje istniejące zatwierdzenie i tworzy nowe oczekujące żądanie rozszerzenia
-uprawnień. Przejrzyj kolumny `Requested` i `Approved` w `openclaw devices list`
-albo użyj `openclaw devices approve --latest`, aby podejrzeć dokładne rozszerzenie przed
-jego zatwierdzeniem.
-
-Jeśli Gateway jest jawnie skonfigurowany z
-`gateway.nodes.pairing.autoApproveCidrs`, pierwsze żądania `role: node` z
-pasujących adresów IP klientów mogą zostać zatwierdzone, zanim pojawią się na tej liście. Ta zasada
-jest domyślnie wyłączona i nigdy nie dotyczy klientów operatora/przeglądarki ani żądań rozszerzenia
-uprawnień.
-
-Zatwierdzanie ról urządzeń typu node lub innych ról nieoperatorskich wymaga `operator.admin`.
-`operator.pairing` wystarcza do zatwierdzania urządzeń operatora tylko wtedy, gdy
-żądane zakresy operatora pozostają w zakresach samego wywołującego. Zobacz
-[Zakresy operatora](/pl/gateway/operator-scopes), aby poznać kontrole wykonywane przy zatwierdzaniu.
-
-```
+```bash
 openclaw devices approve
 openclaw devices approve <requestId>
 openclaw devices approve --latest
 ```
 
-## Zatwierdzanie pierwszego uruchomienia Paperclip / `openclaw_gateway`
+<Note>
+Jeśli urządzenie ponowi próbę parowania ze zmienionymi szczegółami uwierzytelniania (rolą, zakresami lub kluczem publicznym), OpenClaw zastąpi poprzedni oczekujący wpis nowym `requestId`. Uruchom `openclaw devices list` bezpośrednio przed zatwierdzeniem, aby uzyskać bieżący identyfikator.
+</Note>
 
-Gdy nowy agent Paperclip łączy się po raz pierwszy przez adapter `openclaw_gateway`, Gateway może wymagać jednorazowego zatwierdzenia parowania urządzenia, zanim uruchomienia będą mogły się powieść. Jeśli Paperclip zgłasza `openclaw_gateway_pairing_required`, zatwierdź oczekujące urządzenie i spróbuj ponownie.
+Zasady zatwierdzania:
 
-W przypadku lokalnych bram podejrzyj najnowsze oczekujące żądanie:
+- Jeśli urządzenie jest już sparowane i żąda szerszych zakresów lub innej roli, OpenClaw zachowuje dotychczasowe zatwierdzenie i tworzy nowe oczekujące żądanie rozszerzenia uprawnień. Przed zatwierdzeniem porównaj `Requested` z `Approved` w `openclaw devices list` lub wyświetl podgląd za pomocą `--latest`.
+- Zatwierdzenie roli `node` lub innej roli niebędącej operatorem wymaga `operator.admin`. `operator.pairing` wystarcza do zatwierdzania urządzeń operatora, ale tylko wtedy, gdy żądane zakresy operatora mieszczą się w zakresach własnych wywołującego. Zobacz [Zakresy operatora](/pl/gateway/operator-scopes).
+- Jeśli skonfigurowano `gateway.nodes.pairing.autoApproveCidrs`, pierwsze żądania z `role: node` pochodzące z pasujących adresów IP klientów mogą zostać automatycznie zatwierdzone, zanim pojawią się na tej liście. Funkcja jest domyślnie wyłączona; nigdy nie dotyczy klientów operatora/przeglądarki ani żądań rozszerzenia uprawnień.
+- `gateway.nodes.pairing.sshVerify` (domyślnie włączone) automatycznie zatwierdza pierwsze żądania z `role: node`, gdy Gateway zweryfikuje klucz urządzenia przez SSH na hoście węzła. Dlatego żądania mogą zostać zatwierdzone krótko po pojawieniu się. Ustaw `sshVerify: false`, aby wyłączyć weryfikację SSH; jest ona niezależna od `autoApproveCidrs`, więc wyłącz również tę opcję, jeśli parowanie ma odbywać się wyłącznie ręcznie.
+
+### `openclaw devices reject <requestId>`
+
+Odrzuć oczekujące żądanie parowania urządzenia.
+
+```bash
+openclaw devices reject <requestId>
+```
+
+### `openclaw devices remove <deviceId>`
+
+Usuń jeden wpis sparowanego urządzenia.
+
+```bash
+openclaw devices remove <deviceId>
+openclaw devices remove <deviceId> --json
+```
+
+Wywołujący uwierzytelniony tokenem sparowanego urządzenia może usunąć tylko wpis **własnego** urządzenia. Usunięcie innego urządzenia wymaga `operator.admin`.
+
+### `openclaw devices rename --device <id> --name <label>`
+
+Przypisz etykietę operatora do sparowanego urządzenia. Etykiety są stanem po stronie właściciela: pozostają zachowane po naprawie parowania i ponownym zatwierdzeniu ról oraz nie zmieniają stabilnego `deviceId`.
+
+```bash
+openclaw devices rename --device <deviceId> --name "Kitchen Mac"
+openclaw devices rename --device <deviceId> --name "Kitchen Mac" --json
+```
+
+- `--name` jest wymagane, przycinane z otaczających białych znaków, nie może być puste i może mieć najwyżej 64 znaki.
+- Interfejsy wyświetlające dane (lista CLI, wykaz w interfejsie Control UI) preferują etykietę operatora zamiast nazwy wyświetlanej zgłoszonej przez klienta.
+- Wywołujący korzystający ze sparowanego urządzenia bez uprawnień administratora może zmienić nazwę tylko **własnego** urządzenia. Zmiana nazwy innego urządzenia wymaga `operator.admin`.
+
+### `openclaw devices clear --yes [--pending]`
+
+Zbiorczo usuń sparowane urządzenia. Wymaga `--yes`.
+
+```bash
+openclaw devices clear --yes
+openclaw devices clear --yes --pending
+openclaw devices clear --yes --pending --json
+```
+
+Opcja `--pending` odrzuca również wszystkie oczekujące żądania parowania.
+
+### `openclaw devices rotate --device <id> --role <role> [--scope <scope...>]`
+
+Zmień token urządzenia dla roli, opcjonalnie aktualizując jego zakresy.
+
+```bash
+openclaw devices rotate --device <deviceId> --role operator --scope operator.read --scope operator.write
+```
+
+- Rola docelowa musi już istnieć w zatwierdzonym kontrakcie parowania tego urządzenia; zmiana tokenu nie może utworzyć nowej, niezatwierdzonej roli.
+- Pominięcie `--scope` powoduje ponowne użycie zapisanych w pamięci podręcznej zatwierdzonych zakresów przechowywanego tokenu podczas kolejnych ponownych połączeń. Przekazanie jawnych wartości `--scope` zastępuje zapisany zestaw zakresów używany przy przyszłych ponownych połączeniach z tokenem z pamięci podręcznej.
+- Wywołujący korzystający ze sparowanego urządzenia bez uprawnień administratora może zmienić tylko token **własnego** urządzenia, a docelowy zestaw zakresów musi mieścić się w jego własnych zakresach operatora; zmiana tokenu nie może utworzyć ani zachować tokenu o szerszych uprawnieniach niż już posiadane przez wywołującego.
+
+Zwraca metadane zmiany tokenu w formacie JSON. Jeśli wywołujący zmienia własny token podczas uwierzytelnienia tym tokenem urządzenia, odpowiedź zawiera token zastępczy, aby klient mógł go zapisać przed ponownym połączeniem. Zmiany wykonywane współdzielonymi poświadczeniami lub przez administratora nigdy nie zwracają tokenu okaziciela.
+
+### `openclaw devices revoke --device <id> --role <role>`
+
+Unieważnij token urządzenia dla roli.
+
+```bash
+openclaw devices revoke --device <deviceId> --role node
+```
+
+Wywołujący korzystający ze sparowanego urządzenia bez uprawnień administratora może unieważnić tylko token **własnego** urządzenia. Unieważnienie tokenu innego urządzenia wymaga `operator.admin`. Docelowy zestaw zakresów musi również mieścić się w zakresach operatora wywołującego; wywołujący mający wyłącznie uprawnienia do parowania nie może unieważniać tokenów operatora z uprawnieniami administratora lub zapisu.
+
+## Uwagi
+
+- Te polecenia wymagają zakresu `operator.pairing` (lub `operator.admin`). Role urządzeń niebędące operatorem zawsze wymagają `operator.admin`; zobacz [Zakresy operatora](/pl/gateway/operator-scopes).
+- Zmiana i unieważnianie tokenów pozostają w zatwierdzonym zestawie ról parowania urządzenia oraz w bazowym zestawie zakresów. Przypadkowy wpis tokenu w pamięci podręcznej nie tworzy celu zarządzania tokenami.
+- W sesjach tokenów sparowanych urządzeń zarządzanie innymi urządzeniami (`remove`, `rename`, `rotate`, `revoke`) jest ograniczone do własnego urządzenia, chyba że wywołujący ma `operator.admin`.
+- Zmiana tokenu zwraca nowy token (dane wrażliwe) — traktuj go jak sekret.
+- Jeśli zakres parowania jest niedostępny przez local loopback i nie przekazano jawnie `--url`, polecenia `list`/`approve` mogą skorzystać awaryjnie z lokalnego stanu parowania.
+
+## Lista kontrolna odzyskiwania po rozbieżności tokenów
+
+Użyj tej procedury, gdy interfejs Control UI lub inni klienci nadal zgłaszają błędy `AUTH_TOKEN_MISMATCH`, `AUTH_DEVICE_TOKEN_MISMATCH` albo `AUTH_SCOPE_MISMATCH`.
+
+1. Potwierdź bieżące źródło tokenu Gateway:
+
+   ```bash
+   openclaw config get gateway.auth.token
+   ```
+
+2. Wyświetl sparowane urządzenia i znajdź identyfikator urządzenia, którego dotyczy problem:
+
+   ```bash
+   openclaw devices list
+   ```
+
+3. Zmień token operatora dla tego urządzenia:
+
+   ```bash
+   openclaw devices rotate --device <deviceId> --role operator
+   ```
+
+4. Jeśli zmiana tokenu nie wystarczy, usuń nieaktualne parowanie i zatwierdź je ponownie:
+
+   ```bash
+   openclaw devices remove <deviceId>
+   openclaw devices list
+   openclaw devices approve <requestId>
+   ```
+
+5. Ponów próbę połączenia klienta przy użyciu bieżącego współdzielonego tokenu lub hasła.
+
+Uwagi:
+
+- Standardowa kolejność uwierzytelniania przy ponownym połączeniu: najpierw jawny współdzielony token lub hasło, następnie jawny `deviceToken`, potem zapisany token urządzenia, a na końcu token inicjalizacyjny.
+- Zaufany mechanizm odzyskiwania po błędzie `AUTH_TOKEN_MISMATCH` może tymczasowo wysłać razem współdzielony token i zapisany token urządzenia w ramach jednej ograniczonej próby ponowienia.
+- `AUTH_SCOPE_MISMATCH` oznacza, że token urządzenia został rozpoznany, ale nie obejmuje żądanego zestawu zakresów; przed zmianą współdzielonego uwierzytelniania Gateway popraw kontrakt zatwierdzania parowania i zakresów.
+
+Powiązane:
+
+- [Rozwiązywanie problemów z uwierzytelnianiem panelu](/pl/web/dashboard#if-you-see-unauthorized-1008)
+- [Rozwiązywanie problemów z Gateway](/pl/gateway/troubleshooting#dashboard-control-ui-connectivity)
+
+## Zatwierdzanie przy pierwszym uruchomieniu Paperclip / `openclaw_gateway`
+
+Agenci Paperclip łączący się przez adapter `openclaw_gateway` przechodzą ten sam proces zatwierdzania parowania urządzenia przy pierwszym uruchomieniu co każdy inny nowy klient. Jeśli Paperclip zgłosi `openclaw_gateway_pairing_required`, zatwierdź oczekujące urządzenie i ponów próbę.
 
 ```bash
 openclaw devices approve --latest
 ```
 
-Podgląd wypisuje dokładne polecenie `openclaw devices approve <requestId>`. Zweryfikuj szczegóły żądania, a następnie uruchom to polecenie ponownie z identyfikatorem żądania, aby je zatwierdzić.
-
-W przypadku zdalnych bram lub jawnych poświadczeń przekaż te same opcje podczas podglądu i zatwierdzania:
+Podgląd wyświetla dokładne polecenie `openclaw devices approve <requestId>`; zweryfikuj szczegóły, a następnie uruchom to polecenie ponownie z identyfikatorem żądania, aby je zatwierdzić. W przypadku zdalnego Gateway lub jawnych danych uwierzytelniających przekaż te same opcje podczas podglądu i zatwierdzania:
 
 ```bash
 openclaw devices approve --latest --url <gateway-ws-url> --token <gateway-token>
 ```
 
-Aby uniknąć ponownego zatwierdzania po restartach, przechowuj trwały klucz urządzenia w konfiguracji adaptera Paperclip zamiast generować nową efemeryczną tożsamość przy każdym uruchomieniu:
+Aby uniknąć ponownego zatwierdzania po każdym restarcie, skonfiguruj trwałe `adapterConfig.devicePrivateKeyPem` w Paperclip, zamiast pozwalać mu generować nową tymczasową tożsamość urządzenia przy każdym uruchomieniu:
 
 ```json
 {
@@ -117,128 +209,7 @@ Aby uniknąć ponownego zatwierdzania po restartach, przechowuj trwały klucz ur
 }
 ```
 
-Jeśli zatwierdzanie nadal się nie udaje, najpierw uruchom `openclaw devices list`, aby potwierdzić, że istnieje oczekujące żądanie.
-
-### `openclaw devices reject <requestId>`
-
-Odrzuć oczekujące żądanie parowania urządzenia.
-
-```
-openclaw devices reject <requestId>
-```
-
-### `openclaw devices rotate --device <id> --role <role> [--scope <scope...>]`
-
-Rotuj token urządzenia dla określonej roli (opcjonalnie aktualizując zakresy).
-Rola docelowa musi już istnieć w zatwierdzonej umowie parowania tego urządzenia;
-rotacja nie może wystawić nowej, niezatwierdzonej roli.
-Jeśli pominiesz `--scope`, późniejsze ponowne połączenia z zapisanym rotowanym tokenem ponownie użyją
-zatwierdzonych zakresów zapisanych w pamięci podręcznej tego tokena. Jeśli przekażesz jawne wartości `--scope`, staną się one zapisanym zestawem zakresów dla przyszłych ponownych połączeń z tokenem z pamięci podręcznej.
-Wywołujący bez uprawnień administratora używający sparowanego urządzenia mogą rotować tylko token **własnego** urządzenia.
-Docelowy zestaw zakresów tokena musi pozostać w zakresach operatora własnej sesji wywołującego;
-rotacja nie może wystawić ani zachować szerszego tokena operatora niż ten, który
-wywołujący już ma.
-
-```
-openclaw devices rotate --device <deviceId> --role operator --scope operator.read --scope operator.write
-```
-
-Zwraca metadane rotacji jako JSON. Jeśli wywołujący rotuje własny token, będąc
-uwierzytelnionym tym tokenem urządzenia, odpowiedź zawiera również token zastępczy,
-aby klient mógł go utrwalić przed ponownym połączeniem. Rotacje współdzielone/administracyjne
-nie zwracają tokena okaziciela.
-
-### `openclaw devices revoke --device <id> --role <role>`
-
-Unieważnij token urządzenia dla określonej roli.
-
-Wywołujący bez uprawnień administratora używający sparowanego urządzenia mogą unieważnić tylko token **własnego** urządzenia.
-Unieważnienie tokena innego urządzenia wymaga `operator.admin`.
-Docelowy zestaw zakresów tokena musi również mieścić się w zakresach operatora własnej
-sesji wywołującego; wywołujący mający tylko parowanie nie mogą unieważniać tokenów operatora z uprawnieniami administratora/zapisu.
-
-```
-openclaw devices revoke --device <deviceId> --role node
-```
-
-Zwraca wynik unieważnienia jako JSON.
-
-## Typowe opcje
-
-- `--url <url>`: adres URL WebSocket Gateway (domyślnie `gateway.remote.url`, gdy jest skonfigurowany).
-- `--token <token>`: token Gateway (jeśli wymagany).
-- `--password <password>`: hasło Gateway (uwierzytelnianie hasłem).
-- `--timeout <ms>`: limit czasu RPC.
-- `--json`: dane wyjściowe JSON (zalecane do skryptów).
-
-<Warning>
-Gdy ustawisz `--url`, CLI nie wraca do konfiguracji ani poświadczeń ze środowiska. Przekaż jawnie `--token` lub `--password`. Brak jawnych poświadczeń jest błędem.
-</Warning>
-
-## Uwagi
-
-- Rotacja tokena zwraca nowy token (wrażliwy). Traktuj go jak sekret.
-- Te polecenia wymagają zakresu `operator.pairing` (lub `operator.admin`). Niektóre
-  zatwierdzenia wymagają również, aby wywołujący miał zakresy operatora, które urządzenie docelowe
-  wystawiłoby lub odziedziczyło. Nieoperatorskie role urządzeń wymagają
-  `operator.admin`; zobacz [Zakresy operatora](/pl/gateway/operator-scopes).
-- `gateway.nodes.pairing.autoApproveCidrs` to opcjonalna zasada Gateway tylko dla
-  świeżego parowania urządzeń node; nie zmienia uprawnień zatwierdzania w CLI.
-- Rotacja i unieważnianie tokenów pozostają w obrębie zatwierdzonego zestawu ról parowania i
-  zatwierdzonego bazowego zakresu dla tego urządzenia. Zabłąkany wpis tokena w pamięci podręcznej nie
-  przyznaje celu zarządzania tokenami.
-- W przypadku sesji tokenów sparowanego urządzenia zarządzanie między urządzeniami jest tylko dla administratora:
-  `remove`, `rotate` i `revoke` dotyczą tylko własnego urządzenia, chyba że wywołujący ma
-  `operator.admin`.
-- Mutacja tokena jest również ograniczona zakresem wywołującego: sesja tylko z parowaniem nie może
-  rotować ani unieważnić tokena, który obecnie przenosi `operator.admin` lub
-  `operator.write`.
-- `devices clear` jest celowo bramkowane przez `--yes`.
-- Jeśli zakres parowania jest niedostępny w local loopback (i nie przekazano jawnego `--url`), list/approve może użyć lokalnej rezerwy parowania.
-- `devices approve` wymaga jawnego identyfikatora żądania przed wystawieniem tokenów; pominięcie `requestId` lub przekazanie `--latest` tylko podgląda najnowsze oczekujące żądanie.
-
-## Lista kontrolna odzyskiwania po rozjechaniu tokenów
-
-Użyj tego, gdy Control UI lub inni klienci nadal kończą się niepowodzeniem z `AUTH_TOKEN_MISMATCH`, `AUTH_DEVICE_TOKEN_MISMATCH` lub `AUTH_SCOPE_MISMATCH`.
-
-1. Potwierdź bieżące źródło tokena gateway:
-
-```bash
-openclaw config get gateway.auth.token
-```
-
-2. Wyświetl sparowane urządzenia i zidentyfikuj identyfikator urządzenia, którego dotyczy problem:
-
-```bash
-openclaw devices list
-```
-
-3. Rotuj token operatora dla urządzenia, którego dotyczy problem:
-
-```bash
-openclaw devices rotate --device <deviceId> --role operator
-```
-
-4. Jeśli rotacja nie wystarczy, usuń nieaktualne parowanie i zatwierdź ponownie:
-
-```bash
-openclaw devices remove <deviceId>
-openclaw devices list
-openclaw devices approve <requestId>
-```
-
-5. Ponów połączenie klienta z bieżącym współdzielonym tokenem/hasłem.
-
-Uwagi:
-
-- Normalny priorytet uwierzytelniania przy ponownym połączeniu to najpierw jawny współdzielony token/hasło, potem jawny `deviceToken`, potem zapisany token urządzenia, a na końcu token bootstrap.
-- Zaufane odzyskiwanie po `AUTH_TOKEN_MISMATCH` może tymczasowo wysłać razem token współdzielony i zapisany token urządzenia dla jednej ograniczonej ponownej próby.
-- `AUTH_SCOPE_MISMATCH` oznacza, że token urządzenia został rozpoznany, ale nie przenosi żądanego zestawu zakresów; napraw umowę zatwierdzenia parowania/zakresu przed zmianą współdzielonego uwierzytelniania gateway.
-
-Powiązane:
-
-- [Rozwiązywanie problemów z uwierzytelnianiem dashboardu](/pl/web/dashboard#if-you-see-unauthorized-1008)
-- [Rozwiązywanie problemów z Gateway](/pl/gateway/troubleshooting#dashboard-control-ui-connectivity)
+Jeśli zatwierdzanie nadal kończy się niepowodzeniem, najpierw uruchom `openclaw devices list`, aby potwierdzić istnienie oczekującego żądania.
 
 ## Powiązane
 

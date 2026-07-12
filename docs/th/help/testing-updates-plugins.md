@@ -1,52 +1,49 @@
 ---
 read_when:
-    - การเปลี่ยนลักษณะการทำงานของการอัปเดต, doctor, package acceptance หรือการติดตั้ง Plugin ของ OpenClaw
-    - กำลังเตรียมหรืออนุมัติ release candidate
-    - การดีบักการอัปเดตแพ็กเกจ การล้าง dependency ของ Plugin หรือ regression ในการติดตั้ง Plugin
+    - การเปลี่ยนแปลงลักษณะการทำงานของการอัปเดต OpenClaw, doctor, การตรวจรับแพ็กเกจ หรือการติดตั้ง Plugin
+    - การเตรียมหรืออนุมัติเวอร์ชันตัวเลือกสำหรับเผยแพร่
+    - การดีบักการอัปเดตแพ็กเกจ การล้างข้อมูลการขึ้นต่อกันของ Plugin หรือการถดถอยของการติดตั้ง Plugin
 sidebarTitle: Update and plugin tests
-summary: OpenClaw ตรวจสอบเส้นทางการอัปเดต การย้ายแพ็กเกจ และพฤติกรรมการติดตั้ง/อัปเดต Plugin อย่างไร
+summary: วิธีที่ OpenClaw ตรวจสอบเส้นทางการอัปเดต การย้ายแพ็กเกจ และพฤติกรรมการติดตั้ง/อัปเดต Plugin
 title: 'การทดสอบ: การอัปเดตและ Plugin'
 x-i18n:
-    generated_at: "2026-06-27T17:41:50Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:17:06Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 9be94eab4be97c53022bdac3110da74a61cfa23db989964c803497305e5415db
+    source_hash: 4e930960b5819d2144467476cb473e62f236eca63e1d9941a6bc793b484e731c
     source_path: help/testing-updates-plugins.md
     workflow: 16
 ---
 
-นี่คือเช็กลิสต์เฉพาะสำหรับการตรวจสอบความถูกต้องของการอัปเดตและ Plugin เป้าหมาย
-เรียบง่าย: พิสูจน์ว่าแพ็กเกจที่ติดตั้งได้สามารถอัปเดตสถานะผู้ใช้จริง ซ่อมแซมสถานะ
-ดั้งเดิมเก่าผ่าน `doctor` และยังคงติดตั้ง โหลด อัปเดต และถอนการติดตั้ง
-Plugin จากแหล่งที่รองรับได้
+รายการตรวจสอบสำหรับการตรวจสอบความถูกต้องของการอัปเดตและ Plugin: พิสูจน์ว่าแพ็กเกจที่ติดตั้งได้สามารถ
+อัปเดตสถานะจริงของผู้ใช้ ซ่อมแซมสถานะเก่าที่ค้างอยู่ผ่าน `doctor` และยังคง
+ติดตั้ง โหลด อัปเดต และถอนการติดตั้ง Plugin จากทุกแหล่งที่รองรับได้
 
-สำหรับแผนผังตัวรันการทดสอบที่กว้างขึ้น โปรดดู [การทดสอบ](/th/help/testing) สำหรับ
-คีย์ผู้ให้บริการแบบสดและชุดทดสอบที่แตะเครือข่าย โปรดดู [การทดสอบแบบสด](/th/help/testing-live)
+สำหรับภาพรวมชุดรันทดสอบที่กว้างขึ้น โปรดดู [การทดสอบ](/th/help/testing) สำหรับคีย์ของผู้ให้บริการแบบใช้งานจริง
+และชุดทดสอบที่เชื่อมต่อเครือข่าย โปรดดู [การทดสอบแบบใช้งานจริง](/th/help/testing-live)
 
 ## สิ่งที่เราปกป้อง
 
-การทดสอบอัปเดตและ Plugin ปกป้องสัญญาเหล่านี้:
+- tarball ของแพ็กเกจมีเนื้อหาครบถ้วน มี `dist/postinstall-inventory.json` ที่ถูกต้อง
+  และไม่พึ่งพาไฟล์ในรีโพที่ไม่ได้บรรจุมา
+- ผู้ใช้สามารถย้ายจากแพ็กเกจรุ่นเก่าที่เผยแพร่แล้วไปยังแพ็กเกจตัวเลือก
+  โดยไม่สูญเสียการกำหนดค่า เอเจนต์ เซสชัน เวิร์กสเปซ รายการอนุญาตของ Plugin หรือ
+  การกำหนดค่าช่องทาง
+- `openclaw doctor --fix --non-interactive` เป็นเจ้าของเส้นทางการล้างและซ่อมแซม
+  ข้อมูลเก่า การเริ่มต้นระบบไม่ควรเพิ่มการย้ายข้อมูลเพื่อความเข้ากันได้แบบซ่อนสำหรับสถานะ
+  Plugin ที่ค้างอยู่
+- การติดตั้ง Plugin ทำงานได้จากไดเรกทอรีภายในเครื่อง รีโพ git แพ็กเกจ npm และ
+  เส้นทางรีจิสทรี ClawHub
+- การติดตั้งการขึ้นต่อกันของ npm สำหรับ Plugin แต่ละรายการเกิดขึ้นในโปรเจกต์ npm ที่มีการจัดการหนึ่งโปรเจกต์ต่อ Plugin
+  ถูกสแกนก่อนให้ความเชื่อถือ และถูกนำออกผ่าน `npm uninstall` ระหว่าง
+  การถอนการติดตั้ง Plugin เพื่อไม่ให้การขึ้นต่อกันที่ถูกยกระดับขึ้นไปยังระดับบนค้างอยู่
+- การอัปเดต Plugin จะไม่ดำเนินการใดเมื่อไม่มีสิ่งเปลี่ยนแปลง: ระเบียนการติดตั้ง แหล่งที่มา
+  ที่แก้ไขแล้ว โครงสร้างการขึ้นต่อกันที่ติดตั้ง และสถานะการเปิดใช้งานยังคงเดิม
 
-- tarball ของแพ็กเกจสมบูรณ์ มี `dist/postinstall-inventory.json` ที่ถูกต้อง
-  และไม่ขึ้นกับไฟล์ repo ที่ยังไม่ได้แพ็ก
-- ผู้ใช้สามารถย้ายจากแพ็กเกจที่เผยแพร่เก่ากว่าไปยังแพ็กเกจตัวเลือกได้
-  โดยไม่สูญเสีย config, agent, session, workspace, allowlist ของ Plugin หรือ
-  channel config
-- `openclaw doctor --fix --non-interactive` เป็นเจ้าของเส้นทางล้างและซ่อมแซม
-  ดั้งเดิมเก่า Startup ไม่ควรเพิ่ม migration ความเข้ากันได้ที่ซ่อนอยู่สำหรับ
-  สถานะ Plugin ที่ค้างเก่า
-- การติดตั้ง Plugin ทำงานจากไดเรกทอรีในเครื่อง, git repo, แพ็กเกจ npm และเส้นทาง
-  registry ของ ClawHub
-- dependency ของ npm สำหรับ Plugin ถูกติดตั้งในโปรเจกต์ npm ที่จัดการหนึ่งรายการต่อ
-  Plugin สแกนก่อนเชื่อถือ และถูกลบผ่าน npm ระหว่างถอนการติดตั้ง เพื่อไม่ให้
-  dependency ที่ถูก hoist ค้างอยู่
-- การอัปเดต Plugin เสถียรเมื่อไม่มีอะไรเปลี่ยน: install record, source ที่ resolve แล้ว,
-  layout ของ dependency ที่ติดตั้ง และสถานะ enabled ยังคงอยู่ครบถ้วน
+## การพิสูจน์ภายในเครื่องระหว่างการพัฒนา
 
-## หลักฐานในเครื่องระหว่างการพัฒนา
-
-เริ่มแบบแคบ:
+เริ่มจากขอบเขตแคบ:
 
 ```bash
 pnpm changed:lanes --json
@@ -54,30 +51,32 @@ pnpm check:changed
 pnpm test:changed
 ```
 
-สำหรับการเปลี่ยนแปลงด้านการติดตั้ง Plugin, การถอนการติดตั้ง, dependency หรือ
-package-inventory ให้รันการทดสอบแบบเจาะจงที่ครอบคลุม seam ที่แก้ไขด้วย:
+สำหรับการเปลี่ยนแปลงที่เกี่ยวกับการติดตั้ง การถอนการติดตั้ง การขึ้นต่อกันของ Plugin หรือคลังรายการแพ็กเกจ ให้
+รันการทดสอบเฉพาะจุดที่ครอบคลุมรอยต่อที่แก้ไขด้วย:
 
 ```bash
 pnpm test src/plugins/uninstall.test.ts src/infra/package-dist-inventory.test.ts test/scripts/package-acceptance-workflow.test.ts
 ```
 
-ก่อนที่ Docker lane ของแพ็กเกจใดจะใช้ tarball ให้พิสูจน์ artifact ของแพ็กเกจก่อน:
+ก่อนที่เลน Docker ของแพ็กเกจใดจะใช้ tarball ให้พิสูจน์อาร์ติแฟกต์แพ็กเกจก่อน:
 
 ```bash
 pnpm release:check
 ```
 
-`release:check` รันการตรวจสอบ drift ของ config/docs/API, เขียน inventory ของ package dist,
-รัน `npm pack --dry-run`, ปฏิเสธไฟล์ที่ห้ามถูกแพ็ก, ติดตั้ง tarball ลงใน temp prefix,
-รัน postinstall และ smoke entrypoint ของ channel ที่ bundle มา
+`release:check` รันการตรวจสอบความคลาดเคลื่อนของการกำหนดค่า/เอกสาร/API (สคีมาการกำหนดค่า เส้นฐานเอกสาร
+การกำหนดค่า เส้นฐานและการส่งออก API ของ Plugin SDK รุ่น/คลังรายการ Plugin)
+เขียนคลังรายการ dist ของแพ็กเกจ รัน `npm pack --dry-run` ปฏิเสธไฟล์ต้องห้าม
+ที่ถูกบรรจุ ติดตั้ง tarball ลงในคำนำหน้าชั่วคราว รัน postinstall และ
+ทดสอบเบื้องต้นกับจุดเข้าของช่องทางที่รวมมา
 
-## Docker lane
+## เลน Docker
 
-Docker lane คือหลักฐานระดับผลิตภัณฑ์ โดยจะติดตั้งหรืออัปเดตแพ็กเกจจริง
-ภายในคอนเทนเนอร์ Linux และยืนยันพฤติกรรมผ่านคำสั่ง CLI, การเริ่มต้น Gateway,
-HTTP probe, สถานะ RPC และสถานะ filesystem
+เลน Docker คือหลักฐานระดับผลิตภัณฑ์ โดยติดตั้งหรืออัปเดตแพ็กเกจจริง
+ภายในคอนเทนเนอร์ Linux และยืนยันพฤติกรรมผ่านคำสั่ง CLI
+การเริ่มต้น Gateway การตรวจสอบ HTTP สถานะ RPC และสถานะระบบไฟล์
 
-ใช้ lane แบบเจาะจงระหว่างทำซ้ำ:
+ใช้เลนเฉพาะจุดระหว่างการปรับแก้:
 
 ```bash
 pnpm test:docker:plugins
@@ -89,35 +88,40 @@ pnpm test:docker:update-restart-auth
 pnpm test:docker:update-migration
 ```
 
-Lane สำคัญ:
+เลนสำคัญ:
 
-- `test:docker:plugins` ตรวจสอบ smoke การติดตั้ง Plugin, การติดตั้งจากโฟลเดอร์ในเครื่อง,
-  พฤติกรรมข้ามการอัปเดตโฟลเดอร์ในเครื่อง, โฟลเดอร์ในเครื่องที่มี dependency ติดตั้งไว้ล่วงหน้า,
-  การติดตั้งแพ็กเกจ `file:`, การติดตั้งจาก git พร้อมการเรียกใช้ CLI, การอัปเดต moving-ref ของ git,
-  การติดตั้งจาก npm registry พร้อม transitive dependency ที่ถูก hoist, no-op ของการอัปเดต npm,
-  การปฏิเสธ metadata แพ็กเกจ npm ที่ผิดรูป, การติดตั้งจาก fixture ClawHub ในเครื่องและ no-op ของการอัปเดต,
-  พฤติกรรมการอัปเดต marketplace และการ enable/inspect ของ Claude-bundle ตั้งค่า `OPENCLAW_PLUGINS_E2E_CLAWHUB=0` เพื่อให้บล็อก ClawHub เป็นแบบ hermetic/offline
-- `test:docker:plugin-lifecycle-matrix` ติดตั้งแพ็กเกจตัวเลือกในคอนเทนเนอร์เปล่า,
-  รัน Plugin npm ผ่าน install, inspect, disable, enable, explicit upgrade, explicit downgrade
-  และ uninstall หลังลบโค้ด Plugin โดยจะบันทึก metric RSS และ CPU สำหรับแต่ละเฟส
-- `test:docker:plugin-update` ตรวจสอบว่า Plugin ที่ติดตั้งแล้วและไม่เปลี่ยนแปลง
-  จะไม่ติดตั้งซ้ำหรือสูญเสีย metadata การติดตั้งระหว่าง `openclaw plugins update`
-- `test:docker:upgrade-survivor` ติดตั้ง tarball ตัวเลือกทับ fixture ผู้ใช้เก่าที่มีสถานะสกปรก,
-  รันการอัปเดตแพ็กเกจพร้อม doctor แบบ non-interactive จากนั้นเริ่ม Gateway แบบ loopback
-  และตรวจสอบการรักษาสถานะ
-- `test:docker:published-upgrade-survivor` ติดตั้ง baseline ที่เผยแพร่ก่อน,
-  config ผ่านสูตร `openclaw config set` ที่อบไว้, อัปเดตเป็น tarball ตัวเลือก,
-  รัน doctor, ตรวจสอบการล้างของเก่า, เริ่ม Gateway และ probe `/healthz`, `/readyz`
-  รวมถึงสถานะ RPC
-- `test:docker:update-restart-auth` ติดตั้งแพ็กเกจตัวเลือก, เริ่ม Gateway แบบ token-auth ที่จัดการอยู่,
-  unset env auth ของ gateway ฝั่ง caller สำหรับ `openclaw update --yes --json` และกำหนดให้คำสั่งอัปเดตตัวเลือก
-  restart Gateway ก่อน probe ปกติ
-- `test:docker:update-migration` คือ lane published-update ที่เน้นการล้างมากเป็นพิเศษ โดยเริ่มจาก
-  สถานะผู้ใช้สไตล์ Discord/Telegram ที่ config แล้ว, รัน doctor baseline เพื่อให้ dependency ของ Plugin
-  ที่ config แล้วมีโอกาส materialize, seed เศษซาก dependency ดั้งเดิมเก่าของ Plugin สำหรับ Plugin แบบแพ็กเกจที่ config แล้ว,
-  อัปเดตเป็น tarball ตัวเลือก และกำหนดให้ doctor หลังอัปเดตลบ root ของ dependency ดั้งเดิมเก่าออก
+- `test:docker:plugins` ครอบคลุมการทดสอบเบื้องต้นของการติดตั้ง Plugin การติดตั้งจากโฟลเดอร์ภายในเครื่อง
+  พฤติกรรมข้ามการอัปเดตโฟลเดอร์ภายในเครื่อง โฟลเดอร์ภายในเครื่องที่มี
+  การขึ้นต่อกันติดตั้งไว้ล่วงหน้า การติดตั้งแพ็กเกจ `file:` การติดตั้งจาก git พร้อมการเรียกใช้ CLI การอัปเดต
+  ref ของ git ที่เคลื่อนที่ได้ การติดตั้งจากรีจิสทรี npm ที่มีการขึ้นต่อกันทางอ้อม
+  ซึ่งถูกยกระดับขึ้นไปยังระดับบน การไม่ดำเนินการเมื่ออัปเดต npm การปฏิเสธเมทาดาทาของแพ็กเกจ npm ที่ผิดรูปแบบ
+  การติดตั้งจากฟิกซ์เจอร์ ClawHub ภายในเครื่องและการไม่ดำเนินการเมื่ออัปเดต พฤติกรรมการอัปเดตมาร์เก็ตเพลส
+  และการเปิดใช้งาน/ตรวจสอบบันเดิล Claude ตั้งค่า `OPENCLAW_PLUGINS_E2E_CLAWHUB=0` เพื่อ
+  ให้บล็อก ClawHub ทำงานแบบปิดและออฟไลน์
+- `test:docker:plugin-lifecycle-matrix` ติดตั้งแพ็กเกจตัวเลือกในคอนเทนเนอร์เปล่า
+  รัน Plugin npm ผ่านการติดตั้ง ตรวจสอบ ปิดใช้งาน เปิดใช้งาน
+  อัปเกรดแบบระบุชัด ดาวน์เกรดแบบระบุชัด และถอนการติดตั้งหลังจากลบโค้ด Plugin
+  โดยบันทึกเมตริก RSS และ CPU ในแต่ละระยะ
+- `test:docker:plugin-update` ตรวจสอบว่า Plugin ที่ติดตั้งแล้วและไม่มีการเปลี่ยนแปลง
+  จะไม่ถูกติดตั้งซ้ำหรือสูญเสียเมทาดาทาการติดตั้งระหว่าง `openclaw plugins update`
+- `test:docker:upgrade-survivor` ติดตั้ง tarball ตัวเลือกทับฟิกซ์เจอร์ผู้ใช้เก่า
+  ที่มีข้อมูลค้าง รันการอัปเดตแพ็กเกจพร้อม doctor แบบไม่โต้ตอบ จากนั้นเริ่ม
+  Gateway แบบ local loopback และตรวจสอบการรักษาสถานะ
+- `test:docker:published-upgrade-survivor` ติดตั้งเส้นฐานที่เผยแพร่แล้วก่อน
+  กำหนดค่าผ่านสูตร `openclaw config set` ที่ฝังไว้ อัปเดตเป็น
+  tarball ตัวเลือก รัน doctor ตรวจสอบการล้างข้อมูลเก่า เริ่ม Gateway และ
+  ตรวจสอบ `/healthz`, `/readyz` และสถานะ RPC
+- `test:docker:update-restart-auth` ติดตั้งแพ็กเกจตัวเลือก เริ่ม
+  Gateway ที่จัดการด้วยการตรวจสอบสิทธิ์แบบโทเค็น ยกเลิกการตั้งค่า env การตรวจสอบสิทธิ์ Gateway ของผู้เรียกสำหรับ
+  `openclaw update --yes --json` และกำหนดให้คำสั่งอัปเดตตัวเลือก
+  รีสตาร์ต Gateway ก่อนการตรวจสอบตามปกติ
+- `test:docker:update-migration` คือเลนอัปเดตจากรุ่นเผยแพร่ที่เน้นการล้างข้อมูล
+  โดยเริ่มจากสถานะผู้ใช้ที่กำหนดค่าในรูปแบบ Discord/Telegram รัน
+  doctor เส้นฐานเพื่อให้การขึ้นต่อกันของ Plugin ที่กำหนดค่ามีโอกาสถูกสร้างขึ้น เติม
+  เศษการขึ้นต่อกันเก่าของ Plugin สำหรับ Plugin แบบแพ็กเกจที่กำหนดค่าไว้ อัปเดตเป็น
+  tarball ตัวเลือก และกำหนดให้ doctor หลังอัปเดตนำรากการขึ้นต่อกันเก่าออก
 
-Variant ที่มีประโยชน์ของ published-upgrade survivor:
+รูปแบบทางเลือกที่มีประโยชน์ของการทดสอบการอัปเกรดจากรุ่นเผยแพร่:
 
 ```bash
 OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPEC=openclaw@2026.4.23 \
@@ -129,15 +133,17 @@ OPENCLAW_UPGRADE_SURVIVOR_SCENARIO=bootstrap-persona \
 pnpm test:docker:published-upgrade-survivor
 ```
 
-scenario ที่มีคือ `base`, `feishu-channel`, `bootstrap-persona`,
-`plugin-deps-cleanup`, `configured-plugin-installs`,
-`stale-source-plugin-shadow`, `tilde-log-path` และ `versioned-runtime-deps` ในการรันแบบรวม,
-`OPENCLAW_UPGRADE_SURVIVOR_SCENARIOS=reported-issues` จะขยายเป็น scenario ที่มีรูปทรงเหมือน issue ที่ถูกรายงานทั้งหมด
-รวมถึง migration การติดตั้ง Plugin ที่ config แล้ว
+สถานการณ์ที่ใช้ได้: `base`, `acpx-openclaw-tools-bridge`, `feishu-channel`,
+`bootstrap-persona`, `channel-post-core-restore`, `plugin-deps-cleanup`,
+`configured-plugin-installs`, `stale-source-plugin-shadow`, `tilde-log-path`
+และ `versioned-runtime-deps` ในการรันแบบรวม `OPENCLAW_UPGRADE_SURVIVOR_SCENARIOS=reported-issues`
+(นามแฝง `far-reaching`) จะขยายเป็นทุกสถานการณ์ รวมถึง
+การย้ายข้อมูลการติดตั้ง Plugin ที่กำหนดค่าไว้
 
-Full update migration แยกออกจาก Full Release CI โดยตั้งใจ ใช้ workflow แบบ manual
-`Update Migration` เมื่อคำถามของ release คือ "ทุก stable release ที่เผยแพร่ตั้งแต่ 2026.4.23 เป็นต้นไป
-สามารถอัปเดตเป็นตัวเลือกนี้และล้างเศษซาก dependency ของ Plugin ได้หรือไม่":
+การย้ายข้อมูลการอัปเดตแบบเต็มถูกแยกออกจาก CI การเผยแพร่แบบเต็มโดยตั้งใจ ใช้
+เวิร์กโฟลว์ `Update Migration` แบบเรียกเองเมื่อคำถามสำหรับการเผยแพร่คือ "รุ่นเสถียร
+ที่เผยแพร่ทุกรุ่นตั้งแต่ 2026.4.23 เป็นต้นมาสามารถอัปเดตเป็นตัวเลือกนี้และ
+ล้างเศษการขึ้นต่อกันของ Plugin ได้หรือไม่":
 
 ```bash
 gh workflow run update-migration.yml \
@@ -150,36 +156,42 @@ gh workflow run update-migration.yml \
 
 ## การยอมรับแพ็กเกจ
 
-Package Acceptance คือ gate แพ็กเกจแบบ GitHub-native โดย resolve แพ็กเกจตัวเลือกหนึ่งรายการ
-เป็น tarball `package-under-test`, บันทึก version และ SHA-256 จากนั้นรัน Docker E2E lane ที่ reusable
-กับ tarball เดียวกันนั้น ref ของ workflow harness แยกจาก ref ของ source แพ็กเกจ
-ดังนั้น logic การทดสอบปัจจุบันจึงตรวจสอบ release เก่าที่เชื่อถือได้ได้
+การยอมรับแพ็กเกจคือเกตแพ็กเกจที่ทำงานบน GitHub โดยจะแก้ไขแพ็กเกจตัวเลือกหนึ่งรายการ
+เป็น tarball `package-under-test` บันทึกรุ่นและ SHA-256 จากนั้น
+รันเลน Docker E2E ที่ใช้ซ้ำได้กับ tarball เดียวกันนั้น ref ของชุดควบคุมเวิร์กโฟลว์
+แยกจาก ref แหล่งที่มาของแพ็กเกจ เพื่อให้ตรรกะการทดสอบปัจจุบันสามารถตรวจสอบ
+รุ่นที่เชื่อถือได้ซึ่งเก่ากว่า
 
-แหล่งตัวเลือก:
+แหล่งที่มาของตัวเลือก:
 
-- `source=npm`: ตรวจสอบ `openclaw@beta`, `openclaw@latest` หรือ version ที่เผยแพร่แบบเจาะจง
-- `source=ref`: แพ็ก branch, tag หรือ commit ที่เชื่อถือได้ด้วย harness ปัจจุบันที่เลือก
-- `source=url`: ตรวจสอบ tarball HTTPS สาธารณะพร้อม `package_sha256` ที่จำเป็น
-  เส้นทางนี้ปฏิเสธ credential ใน URL, พอร์ต HTTPS ที่ไม่ใช่ค่า default, hostname หรือผลลัพธ์ DNS/IP แบบ private/internal,
-  พื้นที่ IP สำหรับการใช้งานพิเศษ และ redirect ที่ไม่ปลอดภัย
-- `source=trusted-url`: ตรวจสอบ tarball HTTPS พร้อม `package_sha256` และ `trusted_source_id` ที่จำเป็น
-  เทียบกับ policy ที่ maintainer เป็นเจ้าของใน `.github/package-trusted-sources.json` ใช้เส้นทางนี้สำหรับ mirror
-  enterprise/private แทนการทำให้ `source=url` อ่อนลงด้วยสวิตช์ allow-private ระดับ input
-  Bearer auth เมื่อ config โดย policy จะใช้ secret คงที่ `OPENCLAW_TRUSTED_PACKAGE_TOKEN`
-- `source=artifact`: ใช้ tarball ที่อัปโหลดโดย Actions run อื่นซ้ำ
+- `source=npm`: ตรวจสอบ `openclaw@extended-stable`, `openclaw@beta`,
+  `openclaw@latest` หรือรุ่นที่เผยแพร่แบบระบุชัด
+- `source=ref`: บรรจุสาขา แท็ก หรือคอมมิตที่เชื่อถือได้ด้วยชุดควบคุมปัจจุบัน
+  ที่เลือก
+- `source=url`: ตรวจสอบ tarball HTTPS สาธารณะที่ต้องมี `package_sha256`
+  เส้นทางนี้ปฏิเสธข้อมูลรับรองใน URL พอร์ต HTTPS ที่ไม่ใช่ค่าเริ่มต้น ชื่อโฮสต์หรือ
+  ผลลัพธ์ DNS/IP แบบส่วนตัว/ภายใน พื้นที่ IP สำหรับการใช้งานพิเศษ และการเปลี่ยนเส้นทางที่ไม่ปลอดภัย
+- `source=trusted-url`: ตรวจสอบ tarball HTTPS ที่ต้องมี
+  `package_sha256` และ `trusted_source_id` ตามนโยบายที่ผู้ดูแลเป็นเจ้าของ
+  ใน `.github/package-trusted-sources.json` ใช้ตัวเลือกนี้สำหรับมิเรอร์ระดับองค์กร/ส่วนตัว
+  แทนการทำให้ `source=url` อ่อนแอลงด้วยสวิตช์อนุญาตเครือข่ายส่วนตัวระดับอินพุต
+  การตรวจสอบสิทธิ์แบบ Bearer เมื่อกำหนดค่าโดยนโยบาย จะใช้ซีเคร็ต
+  `OPENCLAW_TRUSTED_PACKAGE_TOKEN` แบบคงที่
+- `source=artifact`: ใช้ tarball ที่อัปโหลดโดยการรัน Actions อื่นซ้ำ
 
-Full Release Validation ใช้ `source=artifact` เป็นค่า default ซึ่ง build จาก SHA ของ release ที่ resolve แล้ว
-สำหรับหลักฐานหลังเผยแพร่ ให้ส่ง
-`package_acceptance_package_spec=openclaw@YYYY.M.PATCH` เพื่อให้ upgrade matrix เดียวกัน
-target แพ็กเกจ npm ที่ส่งมอบแล้วแทน
+การตรวจสอบความถูกต้องของการเผยแพร่แบบเต็มใช้ `source=artifact` เป็นค่าเริ่มต้น โดยสร้างจาก
+SHA ของรุ่นเผยแพร่ที่แก้ไขแล้ว สำหรับการพิสูจน์หลังเผยแพร่ ให้ส่ง
+`package_acceptance_package_spec=openclaw@YYYY.M.PATCH` เพื่อให้เมทริกซ์การอัปเกรดเดียวกัน
+มุ่งไปที่แพ็กเกจ npm ที่เผยแพร่แล้วแทน
 
-Release check เรียก Package Acceptance ด้วยชุด package/update/restart/plugin:
+การตรวจสอบรุ่นเผยแพร่เรียกการยอมรับแพ็กเกจด้วยชุดแพ็กเกจ/อัปเดต/รีสตาร์ต/Plugin:
 
 ```text
-doctor-switch update-channel-switch update-corrupt-plugin upgrade-survivor published-upgrade-survivor update-restart-auth plugins-offline plugin-update
+doctor-switch update-channel-switch skill-install update-corrupt-plugin upgrade-survivor published-upgrade-survivor root-managed-vps-upgrade update-restart-auth plugins-offline plugin-update plugin-binding-command-escape
 ```
 
-เมื่อเปิดใช้งาน release soak จะส่งค่าต่อไปนี้ด้วย:
+เมื่อเปิดใช้การแช่ทดสอบรุ่นเผยแพร่ (บังคับเปิดสำหรับ `release_profile=stable` และ
+`full`) ระบบจะส่งค่าเหล่านี้เพิ่มเติม:
 
 ```text
 published_upgrade_survivor_baselines=last-stable-4 2026.4.23 2026.5.2 2026.4.15
@@ -187,25 +199,27 @@ published_upgrade_survivor_scenarios=reported-issues
 telegram_mode=mock-openai
 ```
 
-สิ่งนี้ทำให้ package migration, การสลับ update channel, tolerance ต่อ managed-plugin ที่เสียหาย,
-การล้าง dependency ของ Plugin ที่ค้างเก่า, coverage ของ Plugin แบบ offline, พฤติกรรมการอัปเดต Plugin
-และ QA แพ็กเกจ Telegram อยู่บน artifact ที่ resolve เดียวกัน โดยไม่ทำให้ gate แพ็กเกจ release แบบ default
-ต้องเดินผ่านทุก release ที่เผยแพร่แล้ว
+วิธีนี้ทำให้การย้ายข้อมูลแพ็กเกจ การสลับช่องทางอัปเดต ความทนทานต่อ Plugin ที่จัดการ
+ซึ่งเสียหาย การล้างการขึ้นต่อกันของ Plugin ที่ค้างอยู่ ความครอบคลุม Plugin แบบออฟไลน์ พฤติกรรม
+การอัปเดต Plugin และ QA แพ็กเกจ Telegram อยู่บนอาร์ติแฟกต์ที่แก้ไขแล้วเดียวกัน โดยไม่
+บังคับให้เกตแพ็กเกจรุ่นเผยแพร่เริ่มต้นไล่ทดสอบทุกรุ่นที่เผยแพร่
 
-`last-stable-4` resolve เป็น release OpenClaw แบบ stable สี่รายการล่าสุดที่เผยแพร่บน npm
-Release package acceptance pin `2026.4.23` เป็นขอบเขตความเข้ากันได้แรกของ plugin-update,
-`2026.5.2` เป็นขอบเขต churn ของสถาปัตยกรรม Plugin และ `2026.4.15` เป็น baseline published-update
-เก่ากว่าจาก 2026.4.1x; resolver จะ dedupe pin ที่อยู่ในสี่รายการล่าสุดอยู่แล้ว สำหรับ coverage migration
-published update แบบ exhaustive ให้ใช้ `all-since-2026.4.23` ใน workflow Update Migration แยก
-แทน Full Release CI `release-history` ยังคงพร้อมใช้สำหรับการสุ่มตัวอย่างที่กว้างขึ้นแบบ manual
-เมื่อคุณต้องการ anchor pre-date ดั้งเดิมเก่าด้วย
+`last-stable-4` จะแก้ไขเป็น OpenClaw รุ่นเสถียรสี่รุ่นล่าสุด
+ที่เผยแพร่บน npm การยอมรับแพ็กเกจรุ่นเผยแพร่ปักหมุด `2026.4.23` เป็นขอบเขตความเข้ากันได้
+แรกสำหรับการอัปเดต Plugin, `2026.5.2` เป็นขอบเขตที่สถาปัตยกรรม Plugin เปลี่ยนแปลงมาก และ
+`2026.4.15` เป็นเส้นฐานการอัปเดตจากรุ่นเผยแพร่ 2026.4.1x ที่เก่ากว่า ตัวแก้ไข
+จะตัดหมุดที่มีอยู่แล้วในสี่รุ่นล่าสุดออก สำหรับความครอบคลุมการย้ายข้อมูล
+การอัปเดตจากรุ่นเผยแพร่แบบครบถ้วน ให้ใช้ `all-since-2026.4.23` ในเวิร์กโฟลว์ Update
+Migration ที่แยกต่างหากแทน CI การเผยแพร่แบบเต็ม `release-history` ยังคง
+ใช้ได้สำหรับการสุ่มตัวอย่างที่กว้างขึ้นแบบเรียกเอง เมื่อคุณต้องการจุดยึดเก่าก่อนวันที่กำหนดด้วย
 
-เมื่อเลือก baseline ของ published-upgrade survivor หลายรายการ workflow Docker ที่ reusable
-จะแบ่ง shard baseline แต่ละรายการเป็น runner job เป้าหมายของตัวเอง แต่ละ baseline shard
-ยังคงรันชุด scenario ที่เลือก แต่ log และ artifact จะอยู่แยกตาม baseline และ wall time
-ถูกจำกัดด้วย shard ที่ช้าที่สุดแทน job serial ขนาดใหญ่หนึ่งรายการ
+เมื่อเลือกเส้นฐานการทดสอบการอัปเกรดจากรุ่นเผยแพร่หลายรายการ เวิร์กโฟลว์
+Docker ที่ใช้ซ้ำได้จะแบ่งแต่ละเส้นฐานไปยังงานตัวรันเป้าหมายแยกกัน แต่ละ
+ชาร์ดเส้นฐานยังคงรันชุดสถานการณ์ที่เลือก แต่ล็อกและอาร์ติแฟกต์จะอยู่
+แยกตามเส้นฐาน และเวลารวมถูกจำกัดด้วยชาร์ดที่ช้าที่สุด แทนที่จะเป็นงานอนุกรม
+ขนาดใหญ่หนึ่งงาน
 
-รัน package profile แบบ manual เมื่อตรวจสอบตัวเลือกก่อน release:
+รันโปรไฟล์แพ็กเกจด้วยตนเองเมื่อตรวจสอบตัวเลือกก่อนเผยแพร่:
 
 ```bash
 gh workflow run package-acceptance.yml \
@@ -219,69 +233,66 @@ gh workflow run package-acceptance.yml \
   -f telegram_mode=mock-openai
 ```
 
-ใช้ `suite_profile=product` เมื่อคำถามของ release รวมถึง MCP channel,
-การล้าง cron/subagent, OpenAI web search หรือ OpenWebUI ใช้ `suite_profile=full`
-เฉพาะเมื่อคุณต้องการ coverage เส้นทาง release ของ Docker แบบเต็ม
+สำหรับคานารี extended-stable ที่เผยแพร่แล้ว ให้ตั้งค่า
+`package_spec=openclaw@extended-stable` การยอมรับแพ็กเกจจะแก้ไข
+ตัวเลือกนั้นเป็น tarball ที่ระบุชัดก่อนที่เลน Docker จะรัน
 
-## ค่า default ของ release
+ใช้ `suite_profile=product` เมื่อคำถามสำหรับการเผยแพร่ครอบคลุมช่องทาง MCP
+การล้าง Cron/เอเจนต์ย่อย การค้นหาเว็บของ OpenAI หรือ OpenWebUI ใช้ `suite_profile=full`
+เฉพาะเมื่อต้องการความครอบคลุมเส้นทางการเผยแพร่ Docker แบบเต็ม
 
-สำหรับ release candidate ชุดหลักฐาน default คือ:
+## ค่าเริ่มต้นสำหรับการเผยแพร่
 
-1. `pnpm check:changed` และ `pnpm test:changed` สำหรับ regression ระดับ source
-2. `pnpm release:check` สำหรับความสมบูรณ์ของ artifact แพ็กเกจ
-3. Package Acceptance profile `package` หรือ lane แพ็กเกจแบบ custom ของ release-check
-   สำหรับสัญญา install/update/restart/plugin
-4. release check ข้าม OS สำหรับ installer, onboarding และพฤติกรรม platform เฉพาะ OS
-5. ชุดทดสอบแบบสดเฉพาะเมื่อ surface ที่เปลี่ยนแตะพฤติกรรมผู้ให้บริการหรือ hosted-service
+สำหรับตัวเลือกรุ่นเผยแพร่ สแต็กการพิสูจน์เริ่มต้นคือ:
 
-บนเครื่อง maintainer, gate กว้างและหลักฐานผลิตภัณฑ์ Docker/package ควรรันใน Testbox
-เว้นแต่ตั้งใจทำหลักฐานในเครื่องอย่างชัดเจน
+1. `pnpm check:changed` และ `pnpm test:changed` สำหรับการถดถอยระดับซอร์ส
+2. `pnpm release:check` สำหรับความสมบูรณ์ของอาร์ติแฟกต์แพ็กเกจ
+3. โปรไฟล์ `package` ของการยอมรับแพ็กเกจ หรือเลนแพ็กเกจแบบกำหนดเองของการตรวจสอบ
+   รุ่นเผยแพร่ สำหรับสัญญาการติดตั้ง/อัปเดต/รีสตาร์ต/Plugin
+4. การตรวจสอบรุ่นเผยแพร่ข้ามระบบปฏิบัติการสำหรับตัวติดตั้ง การเริ่มต้นใช้งาน และพฤติกรรม
+   เฉพาะแพลตฟอร์ม
+5. ชุดทดสอบแบบใช้งานจริงเฉพาะเมื่อพื้นผิวที่เปลี่ยนแปลงเกี่ยวข้องกับพฤติกรรมของผู้ให้บริการหรือ
+   บริการที่โฮสต์
 
-## ความเข้ากันได้ดั้งเดิมเก่า
+บนเครื่องของผู้ดูแล เกตกว้างและการพิสูจน์ผลิตภัณฑ์ Docker/แพ็กเกจควรรัน
+ใน Testbox เว้นแต่กำลังทำการพิสูจน์ภายในเครื่องอย่างชัดเจน
 
-การผ่อนปรนด้านความเข้ากันได้แคบและมีกำหนดเวลา:
+## ความเข้ากันได้กับรุ่นเก่า
 
-- แพ็กเกจจนถึง `2026.4.25` รวมถึง `2026.4.25-beta.*` อาจยอมรับช่องว่าง metadata
-  ของแพ็กเกจที่ส่งมอบไปแล้วใน Package Acceptance
-- แพ็กเกจ `2026.4.26` ที่เผยแพร่แล้วอาจเตือนสำหรับไฟล์ stamp metadata ของ build ในเครื่อง
-  ที่ส่งมอบไปแล้ว
-- แพ็กเกจหลังจากนั้นต้องผ่านสัญญาสมัยใหม่ ช่องว่างเดียวกันจะ fail แทนการเตือนหรือข้าม
+การผ่อนปรนด้านความเข้ากันได้มีขอบเขตแคบและจำกัดเวลา:
 
-อย่าเพิ่ม startup migration ใหม่สำหรับ shape เก่าเหล่านี้ เพิ่มหรือขยายการซ่อมแซมของ doctor
-แล้วพิสูจน์ด้วย `upgrade-survivor`, `published-upgrade-survivor` หรือ
-`update-restart-auth` เมื่อคำสั่งอัปเดตเป็นเจ้าของการ restart
+- แพ็กเกจจนถึง `2026.4.25` รวมถึง `2026.4.25-beta.*` อาจยอมรับ
+  ช่องว่างของเมทาดาทาแพ็กเกจที่เผยแพร่ไปแล้วในการยอมรับแพ็กเกจ
+- แพ็กเกจ `2026.4.26` ที่เผยแพร่แล้วอาจแสดงคำเตือนสำหรับไฟล์ตราประทับเมทาดาทา
+  การบิลด์ภายในเครื่องที่เผยแพร่ไปแล้ว
+- แพ็กเกจที่ใหม่กว่าต้องเป็นไปตามสัญญาสมัยใหม่ ช่องว่างเดียวกันจะทำให้ล้มเหลวแทนที่จะ
+  เตือนหรือข้าม
 
-## การเพิ่ม coverage
+อย่าเพิ่มการย้ายข้อมูลใหม่ระหว่างการเริ่มต้นสำหรับรูปแบบเก่าเหล่านี้ ให้เพิ่มหรือขยายการซ่อมแซมของ doctor
+จากนั้นพิสูจน์ด้วย `upgrade-survivor`, `published-upgrade-survivor` หรือ
+`update-restart-auth` เมื่อคำสั่งอัปเดตเป็นเจ้าของการรีสตาร์ต
 
-เมื่อเปลี่ยนพฤติกรรมการอัปเดตหรือ Plugin ให้เพิ่ม coverage ที่ layer ต่ำที่สุดที่
-สามารถ fail ด้วยเหตุผลที่ถูกต้อง:
+## การเพิ่มความครอบคลุม
 
-- ตรรกะเกี่ยวกับพาธหรือเมทาดาทาล้วน ๆ: ทดสอบแบบ unit ไว้ข้างซอร์ส
-- ลักษณะการทำงานของ inventory ของแพ็กเกจหรือไฟล์ที่ถูกแพ็ก: ทดสอบด้วย `package-dist-inventory` หรือ tarball
-  checker
-- ลักษณะการทำงานของการติดตั้ง/อัปเดตผ่าน CLI: assertion ใน Docker lane หรือ fixture
-- ลักษณะการทำงานของการย้ายข้อมูลจากรีลีสที่เผยแพร่แล้ว: สถานการณ์ `published-upgrade-survivor`
-- ลักษณะการทำงานของการรีสตาร์ทที่การอัปเดตเป็นเจ้าของ: `update-restart-auth`
-- ลักษณะการทำงานของซอร์ส registry/แพ็กเกจ: fixture ของ `test:docker:plugins` หรือเซิร์ฟเวอร์ fixture ของ ClawHub
-- ลักษณะการทำงานของเลย์เอาต์ dependency หรือการล้างข้อมูล: assert ทั้งการทำงานตอนรันไทม์และขอบเขตของ
-  ระบบไฟล์ dependency ของ npm อาจถูก hoist ไว้ภายในโปรเจกต์ npm ที่ Plugin
-  จัดการอยู่ ดังนั้นการทดสอบควรพิสูจน์ว่าโปรเจกต์นั้นถูกสแกน/ล้างข้อมูล
-  แทนที่จะสมมติว่ามีเพียงแผนผัง `node_modules` ภายในแพ็กเกจ Plugin เท่านั้น
+เมื่อเปลี่ยนพฤติกรรมการอัปเดตหรือ Plugin ให้เพิ่มความครอบคลุมที่ชั้นต่ำที่สุดซึ่ง
+สามารถล้มเหลวด้วยเหตุผลที่ถูกต้อง:
 
-ให้ Docker fixture ใหม่เป็นแบบ hermetic โดยค่าเริ่มต้น ใช้ registry fixture ในเครื่องและ
-แพ็กเกจปลอม เว้นแต่ว่าจุดประสงค์ของการทดสอบคือพฤติกรรมของ registry จริง
+- ตรรกะเกี่ยวกับพาธหรือเมทาดาทาล้วน ๆ: ทดสอบหน่วยไว้ข้างซอร์ส
+- พฤติกรรมของรายการไฟล์ในแพ็กเกจหรือไฟล์ที่ถูกแพ็ก: การทดสอบ `package-dist-inventory` หรือตัวตรวจสอบ tarball
+- พฤติกรรมการติดตั้ง/อัปเดตผ่าน CLI: การยืนยันผลในเลน Docker หรือฟิกซ์เจอร์
+- พฤติกรรมการย้ายข้อมูลของรุ่นที่เผยแพร่แล้ว: สถานการณ์ `published-upgrade-survivor`
+- พฤติกรรมการรีสตาร์ตที่การอัปเดตเป็นผู้รับผิดชอบ: `update-restart-auth`
+- พฤติกรรมของรีจิสทรี/แหล่งแพ็กเกจ: ฟิกซ์เจอร์ `test:docker:plugins` หรือเซิร์ฟเวอร์ฟิกซ์เจอร์ ClawHub
+- พฤติกรรมของโครงสร้างการจัดวางหรือการล้างข้อมูลของการขึ้นต่อกัน: ยืนยันทั้งการทำงานขณะรันไทม์และขอบเขตระบบไฟล์ การขึ้นต่อกันของ npm อาจถูกยกระดับไว้ภายในโปรเจกต์ npm ที่ Plugin จัดการ ดังนั้นการทดสอบควรพิสูจน์ว่าโปรเจกต์ดังกล่าวได้รับการสแกน/ล้างข้อมูล แทนที่จะสมมติว่ามีเพียงโครงสร้าง `node_modules` ภายในแพ็กเกจของ Plugin
+
+กำหนดให้ฟิกซ์เจอร์ Docker ใหม่แยกตัวโดยสมบูรณ์เป็นค่าเริ่มต้น ใช้รีจิสทรีฟิกซ์เจอร์ภายในเครื่องและแพ็กเกจจำลอง เว้นแต่จุดประสงค์ของการทดสอบคือพฤติกรรมของรีจิสทรีจริง
 
 ## การคัดแยกความล้มเหลว
 
-เริ่มจากตัวตนของ artifact:
+เริ่มจากข้อมูลระบุอาร์ติแฟกต์:
 
-- สรุป `resolve_package` ของ Package Acceptance: ซอร์ส, เวอร์ชัน, SHA-256 และ
-  ชื่อ artifact
-- Docker artifacts: `.artifacts/docker-tests/**/summary.json`,
-  `failures.json`, บันทึก lane และคำสั่ง rerun
-- สรุป upgrade survivor: `.artifacts/upgrade-survivor/summary.json`,
-  รวมถึงเวอร์ชัน baseline, เวอร์ชัน candidate, สถานการณ์, เวลาในแต่ละ phase และ
-  ขั้นตอน recipe
+- สรุป `resolve_package` ของการตรวจรับแพ็กเกจ: แหล่งที่มา เวอร์ชัน SHA-256 และชื่ออาร์ติแฟกต์
+- อาร์ติแฟกต์ Docker: `.artifacts/docker-tests/**/summary.json`, `failures.json`, บันทึกของเลน และคำสั่งสำหรับรันซ้ำ
+- สรุปการคงอยู่หลังอัปเกรด: `.artifacts/upgrade-survivor/summary.json` ซึ่งรวมถึงเวอร์ชันฐาน เวอร์ชันที่เสนอ สถานการณ์ ระยะเวลาของแต่ละเฟส และความครอบคลุมของสูตรการกำหนดค่า
 
-ควร rerun lane ที่ล้มเหลวเดิมแบบเจาะจงด้วย artifact แพ็กเกจเดิม มากกว่า
-rerun release umbrella ทั้งหมด
+ควรรันซ้ำเฉพาะเลนที่ล้มเหลวโดยใช้อาร์ติแฟกต์แพ็กเกจเดิม แทนการรันชุดการทดสอบรุ่นทั้งหมดซ้ำ

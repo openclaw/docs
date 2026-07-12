@@ -1,169 +1,191 @@
 ---
 read_when:
-    - OpenClaw'ın medya yeteneklerine genel bakış aranıyor
+    - OpenClaw'ın medya yeteneklerine genel bir bakış mı arıyorsunuz?
     - Hangi medya sağlayıcısının yapılandırılacağına karar verme
-    - Eşzamansız medya üretiminin nasıl çalıştığını anlama
+    - Eşzamansız medya oluşturmanın nasıl çalıştığını anlama
 sidebarTitle: Media overview
 summary: Görüntü, video, müzik, konuşma ve medya anlama yeteneklerine genel bakış
 title: Medya genel bakışı
 x-i18n:
-    generated_at: "2026-06-28T01:23:56Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:49:26Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c04beb60abbd06d1503302be144e633b526ae55435f061fbb94f6fef85ca9d66
+    source_hash: f7d7bf8bd2052cdba088d7a612bb89b0fc3a95b3635c7fcd2138eb731121b85f
     source_path: tools/media-overview.md
     workflow: 16
 ---
 
-OpenClaw görüntüler, videolar ve müzik üretir, gelen medyayı
-(görüntüler, ses, video) anlar ve yanıtları metinden sese ile sesli olarak söyler. Tüm
-medya yetenekleri araç güdümlüdür: agent, konuşmaya bağlı olarak bunları ne zaman
-kullanacağına karar verir ve her araç yalnızca en az bir destekleyen sağlayıcı
-yapılandırıldığında görünür.
+OpenClaw görseller, videolar ve müzik üretir; gelen medyayı
+(görseller, ses ve video) anlar ve metinden sese dönüştürmeyle yanıtları sesli
+olarak okur. Tüm medya yetenekleri araçlarla çalışır: aracı ne zaman
+kullanacağına konuşmaya göre aracı karar verir ve her araç yalnızca en az bir
+destek sağlayıcısı yapılandırıldığında görünür.
 
 Canlı konuşma, tek seferlik medya aracı yolu yerine Talk oturumu sözleşmesini
-kullanır. Talk üç moda sahiptir: sağlayıcıya özgü `realtime`, yerel veya akışlı
-`stt-tts` ve yalnızca gözlem amaçlı konuşma yakalama için `transcription`. Bu modlar,
-sağlayıcı kataloglarını, olay zarflarını ve iptal semantiklerini telefon, toplantılar,
-tarayıcı gerçek zamanlı, ve yerel bas-konuş istemcileriyle paylaşır.
+kullanır. Talk'un üç modu vardır: sağlayıcıya özgü `realtime`, yerel veya akışlı
+`stt-tts` ve yalnızca gözlem amaçlı konuşma yakalama için `transcription`. Bu
+modlar; telefon, toplantı, tarayıcıda gerçek zamanlı iletişim ve yerel
+bas-konuş istemcileriyle sağlayıcı kataloglarını, olay zarflarını ve iptal
+anlamlarını paylaşır.
 
 ## Yetenekler
 
 <CardGroup cols={2}>
-  <Card title="Image generation" href="/tr/tools/image-generation" icon="image">
-    Metin istemlerinden veya referans görüntülerden `image_generate` aracılığıyla
-    görüntüler oluşturun ve düzenleyin. Sohbet oturumlarında eşzamansızdır — arka planda
-    çalışır ve hazır olduğunda sonucu gönderir.
+  <Card title="Görsel üretimi" href="/tr/tools/image-generation" icon="image">
+    `image_generate` aracılığıyla metin istemlerinden veya referans
+    görsellerden görseller oluşturun ve düzenleyin. Sohbet oturumlarında
+    eşzamansızdır; arka planda çalışır ve hazır olduğunda sonucu gönderir.
   </Card>
-  <Card title="Video generation" href="/tr/tools/video-generation" icon="video">
-    `video_generate` aracılığıyla metinden videoya, görüntüden videoya ve videodan videoya.
-    Eşzamansızdır — arka planda çalışır ve hazır olduğunda sonucu gönderir.
+  <Card title="Video üretimi" href="/tr/tools/video-generation" icon="video">
+    `video_generate` aracılığıyla metinden videoya, görselden videoya ve
+    videodan videoya üretim. Eşzamansızdır; arka planda çalışır ve hazır
+    olduğunda sonucu gönderir.
   </Card>
-  <Card title="Music generation" href="/tr/tools/music-generation" icon="music">
+  <Card title="Müzik üretimi" href="/tr/tools/music-generation" icon="music">
     `music_generate` aracılığıyla müzik veya ses parçaları üretin. Sohbet
-    oturumlarında, paylaşılan medya üretimi görev yaşam döngüsünde eşzamansızdır.
+    oturumlarında, paylaşılan medya üretimi görev yaşam döngüsünde eşzamansız
+    çalışır.
   </Card>
-  <Card title="Text-to-speech" href="/tr/tools/tts" icon="microphone">
-    Giden yanıtları `tts` aracı ve `messages.tts` yapılandırmasıyla konuşulan sese
-    dönüştürün. Eşzamanlıdır.
+  <Card title="Metinden sese" href="/tr/tools/tts" icon="microphone">
+    `tts` aracı ve `messages.tts` yapılandırması aracılığıyla giden yanıtları
+    sesli içeriğe dönüştürün. Eşzamanlıdır.
   </Card>
-  <Card title="Media understanding" href="/tr/nodes/media-understanding" icon="eye">
-    Görü yetenekli model sağlayıcıları ve ayrılmış medya anlama Plugin'leri kullanarak
-    gelen görüntüleri, sesleri ve videoları özetleyin.
+  <Card title="Medya anlama" href="/tr/nodes/media-understanding" icon="eye">
+    Görme yeteneğine sahip model sağlayıcıları ve özel medya anlama
+    plugin'lerini kullanarak gelen görselleri, sesleri ve videoları özetleyin.
   </Card>
-  <Card title="Speech-to-text" href="/tr/nodes/audio" icon="ear-listen">
-    Gelen sesli mesajları toplu STT veya Sesli Arama akışlı STT sağlayıcılarıyla
-    metne dönüştürün.
+  <Card title="Konuşmadan metne" href="/tr/nodes/audio" icon="ear-listen">
+    Gelen sesli mesajları toplu STT veya Voice Call akışlı STT sağlayıcıları
+    üzerinden yazıya dökün.
   </Card>
 </CardGroup>
 
 ## Sağlayıcı yetenek matrisi
 
-| Sağlayıcı         | Görüntü | Video | Müzik | TTS | STT | Gerçek zamanlı ses | Medya anlama |
-| ----------------- | :-----: | :---: | :---: | :-: | :-: | :----------------: | :----------: |
-| Alibaba           |         |   ✓   |       |     |     |                    |              |
-| BytePlus          |         |   ✓   |       |     |     |                    |              |
-| ComfyUI           |    ✓    |   ✓   |   ✓   |     |     |                    |              |
-| DeepInfra         |    ✓    |   ✓   |       |  ✓  |  ✓  |                    |      ✓       |
-| Deepgram          |         |       |       |     |  ✓  |         ✓          |              |
-| ElevenLabs        |         |       |       |  ✓  |  ✓  |                    |              |
-| fal               |    ✓    |   ✓   |   ✓   |     |     |                    |              |
-| Google            |    ✓    |   ✓   |   ✓   |  ✓  |     |         ✓          |      ✓       |
-| Gradium           |         |       |       |  ✓  |     |                    |              |
-| Local CLI         |         |       |       |  ✓  |     |                    |              |
-| Microsoft         |         |       |       |  ✓  |     |                    |              |
-| Microsoft Foundry |    ✓    |       |       |     |     |                    |              |
-| MiniMax           |    ✓    |   ✓   |   ✓   |  ✓  |     |                    |              |
-| Mistral           |         |       |       |     |  ✓  |                    |              |
-| OpenAI            |    ✓    |   ✓   |       |  ✓  |  ✓  |         ✓          |      ✓       |
-| OpenRouter        |    ✓    |   ✓   |   ✓   |  ✓  |  ✓  |                    |      ✓       |
-| Qwen              |         |   ✓   |       |     |     |                    |              |
-| Runway            |         |   ✓   |       |     |     |                    |              |
-| SenseAudio        |         |       |       |     |  ✓  |                    |              |
-| Together          |         |   ✓   |       |     |     |                    |              |
-| Vydra             |    ✓    |   ✓   |       |  ✓  |     |                    |              |
-| xAI               |    ✓    |   ✓   |       |  ✓  |  ✓  |                    |      ✓       |
-| Xiaomi MiMo       |    ✓    |       |       |  ✓  |     |                    |      ✓       |
+<Note>
+Bu tablo, özel medya üretimi, TTS ve STT plugin'lerini kapsar. Birçok sohbet
+modeli sağlayıcısı da (Anthropic, Google, OpenAI ve diğerleri) yanıt modeli
+aracılığıyla gelen medyayı anlayabilir; tam sağlayıcı listesi için
+[Medya anlama](/tr/nodes/media-understanding#provider-support-matrix) bölümüne
+bakın.
+</Note>
+
+| Sağlayıcı         | Görsel | Video | Müzik | TTS | STT | Gerçek zamanlı ses | Medya anlama |
+| ----------------- | :----: | :---: | :---: | :-: | :-: | :----------------: | :----------: |
+| Alibaba           |        |   ✓   |       |     |     |                    |              |
+| Azure Speech      |        |       |       |  ✓  |     |                    |              |
+| BytePlus          |        |   ✓   |       |     |     |                    |              |
+| ComfyUI           |   ✓    |   ✓   |   ✓   |     |     |                    |              |
+| Deepgram          |        |       |       |     |  ✓  |                    |              |
+| DeepInfra         |   ✓    |   ✓   |       |  ✓  |  ✓  |                    |      ✓       |
+| ElevenLabs        |        |       |       |  ✓  |  ✓  |                    |              |
+| fal               |   ✓    |   ✓   |   ✓   |     |     |                    |              |
+| Google            |   ✓    |   ✓   |   ✓   |  ✓  |  ✓  |         ✓          |      ✓       |
+| Gradium           |        |       |       |  ✓  |     |                    |              |
+| Inworld           |        |       |       |  ✓  |     |                    |              |
+| LiteLLM           |   ✓    |       |       |     |     |                    |              |
+| Yerel CLI         |        |       |       |  ✓  |     |                    |              |
+| Microsoft         |        |       |       |  ✓  |     |                    |              |
+| Microsoft Foundry |   ✓    |       |       |     |     |                    |              |
+| MiniMax           |   ✓    |   ✓   |   ✓   |  ✓  |     |                    |              |
+| Mistral           |        |       |       |     |  ✓  |                    |              |
+| OpenAI            |   ✓    |   ✓   |       |  ✓  |  ✓  |         ✓          |      ✓       |
+| OpenRouter        |   ✓    |   ✓   |   ✓   |  ✓  |  ✓  |                    |      ✓       |
+| PixVerse          |        |   ✓   |       |     |     |                    |              |
+| Qwen              |        |   ✓   |       |     |     |                    |      ✓       |
+| Runway            |        |   ✓   |       |     |     |                    |              |
+| SenseAudio        |        |       |       |     |  ✓  |                    |              |
+| Together          |        |   ✓   |       |     |     |                    |              |
+| Volcengine        |        |       |       |  ✓  |     |                    |              |
+| Vydra             |   ✓    |   ✓   |       |  ✓  |     |                    |              |
+| xAI               |   ✓    |   ✓   |       |  ✓  |  ✓  |                    |      ✓       |
+| Xiaomi MiMo       |        |       |       |  ✓  |     |                    |              |
 
 <Note>
-Medya anlama, sağlayıcı yapılandırmanızda kayıtlı herhangi bir görü yetenekli
-veya ses yetenekli modeli kullanır. Yukarıdaki matris, ayrılmış medya anlama
-desteğine sahip sağlayıcıları listeler; çoğu çok modlu LLM sağlayıcısı
-(Anthropic, Google, OpenAI vb.) etkin yanıt modeli olarak yapılandırıldığında
-gelen medyayı da anlayabilir.
+Buradaki **gerçek zamanlı ses**, sağlayıcıya özgü çift yönlü gerçek zamanlı
+iletişim (Talk `realtime` modu; örneğin Gemini Live veya OpenAI Realtime API)
+anlamına gelir. Şu anda bunu yalnızca Google ve OpenAI kaydeder. Deepgram,
+ElevenLabs, Mistral, OpenAI ve xAI ayrıca Voice Call akışlı STT'yi (tek yönlü
+sesten metne) kaydeder; aşağıdaki
+[Konuşmadan metne ve Voice Call](#speech-to-text-and-voice-call) bölümüne bakın.
+xAI gerçek zamanlı ses desteği üst kaynakta bulunan bir yetenektir ancak
+paylaşılan gerçek zamanlı ses sözleşmesi bunu temsil edebilene kadar
+OpenClaw'da kaydedilmez.
 </Note>
 
 ## Eşzamansız ve eşzamanlı
 
-| Yetenek        | Mod          | Neden                                                                                                |
-| -------------- | ------------ | ---------------------------------------------------------------------------------------------------- |
-| Görüntü        | Eşzamansız   | Sağlayıcı işlemesi bir sohbet turundan uzun sürebilir; üretilen ekler paylaşılan tamamlama yolunu kullanır. |
-| Metinden sese  | Eşzamanlı    | Sağlayıcı yanıtları saniyeler içinde döner; yanıt sesine eklenir.                                     |
-| Video          | Eşzamansız   | Sağlayıcı işlemesi 30 sn ile birkaç dakika sürer; yavaş kuyruklar yapılandırılan zaman aşımına kadar çalışabilir. |
-| Müzik          | Eşzamansız   | Video ile aynı sağlayıcı işleme özelliğine sahiptir.                                                  |
+| Yetenek       | Mod         | Nedeni                                                                                                          |
+| ------------- | ----------- | --------------------------------------------------------------------------------------------------------------- |
+| Görsel        | Eşzamansız  | Sağlayıcı işlemesi bir sohbet turundan uzun sürebilir; üretilen ekler paylaşılan tamamlama yolunu kullanır.      |
+| Metinden sese | Eşzamanlı   | Sağlayıcı yanıtları saniyeler içinde döner ve yanıt sesine eklenir.                                             |
+| Video         | Eşzamansız  | Sağlayıcı işlemesi 30 saniyeden birkaç dakikaya kadar sürer; yavaş kuyruklar yapılandırılmış zaman aşımına kadar çalışabilir. |
+| Müzik         | Eşzamansız  | Videoyla aynı sağlayıcı işleme özelliklerine sahiptir.                                                          |
 
-Eşzamansız araçlar için OpenClaw isteği sağlayıcıya gönderir, hemen bir görev
-kimliği döndürür ve işi görev defterinde izler. Agent, iş çalışırken diğer
-mesajlara yanıt vermeye devam eder. Sağlayıcı tamamladığında OpenClaw, üretilen
-medya yollarıyla agent'ı uyandırır; böylece agent, oturumun normal görünür yanıt
-modu üzerinden kullanıcıya bildirebilir: yapılandırıldığında otomatik son yanıt
-teslimi veya oturum mesaj aracını gerektiriyorsa `message(action="send")`.
-İstekte bulunan oturum etkin değilse veya etkin uyanışı başarısız olursa ve
-üretilen medyanın bir kısmı hâlâ tamamlama yanıtında eksikse, OpenClaw yalnızca
-eksik medyayı içeren idempotent bir doğrudan geri dönüş gönderir. Tamamlama
-yanıtıyla zaten teslim edilmiş medya tekrar gönderilmez.
+Eşzamansız araçlarda OpenClaw isteği sağlayıcıya gönderir, hemen bir görev
+kimliği döndürür ve işi görev defterinde izler. İş çalışırken aracı diğer
+mesajlara yanıt vermeyi sürdürür. Sağlayıcı işlemi tamamladığında OpenClaw,
+üretilen medya yollarıyla aracıyı uyandırır; böylece aracı, oturumun normal
+görünür yanıt modu üzerinden kullanıcıyı bilgilendirebilir: yapılandırıldığında
+otomatik nihai yanıt teslimi veya oturum mesaj aracını gerektirdiğinde
+`message(action="send")`. İstekte bulunan oturum etkin değilse ya da etkin
+uyandırma işlemi başarısız olursa ve üretilen medyanın bir kısmı hâlâ tamamlama
+yanıtında eksikse OpenClaw, yalnızca eksik medyayı içeren idempotent bir
+doğrudan yedek gönderim yapar. Tamamlama yanıtıyla zaten teslim edilen medya
+yeniden gönderilmez.
 
-## Konuşmadan metne ve Sesli Arama
+## Konuşmadan metne ve Voice Call
 
-Deepgram, DeepInfra, ElevenLabs, Mistral, OpenAI, OpenRouter, SenseAudio ve xAI, yapılandırıldığında
-toplu `tools.media.audio` yolu üzerinden gelen sesin tamamını metne dönüştürebilir.
-Bahsetme geçidi veya komut ayrıştırma için bir sesli notu ön kontrolden geçiren
-kanal Plugin'leri, metne dönüştürülen eki gelen bağlam üzerinde işaretler; böylece
-paylaşılan medya anlama geçişi, aynı ses için ikinci bir STT çağrısı yapmak yerine
-bu transkripti yeniden kullanır.
+Deepgram, DeepInfra, ElevenLabs, Google, Groq, Mistral, OpenAI, OpenRouter,
+SenseAudio ve xAI; yapılandırıldıklarında gelen sesleri toplu
+`tools.media.audio` yolu üzerinden yazıya dökebilir. Bahsetme denetimi veya
+komut ayrıştırma için bir sesli notu önceden kontrol eden kanal plugin'leri,
+yazıya dökülen eki gelen bağlamda işaretler. Böylece paylaşılan medya anlama
+geçişi, aynı ses için ikinci bir STT çağrısı yapmak yerine bu dökümü yeniden
+kullanır.
 
-Deepgram, ElevenLabs, Mistral, OpenAI ve xAI ayrıca Sesli Arama akışlı STT
-sağlayıcılarını kaydeder; böylece canlı telefon sesi, tamamlanmış bir kayıt
-beklenmeden seçilen tedarikçiye iletilebilir.
+Deepgram, ElevenLabs, Mistral, OpenAI ve xAI ayrıca Voice Call akışlı STT
+sağlayıcılarını kaydeder. Böylece canlı telefon sesi, tamamlanmış bir kaydı
+beklemeden seçilen sağlayıcıya iletilebilir.
 
-Canlı kullanıcı konuşmaları için [Talk modu](/tr/nodes/talk) tercih edin. Toplu ses
-ekleri medya yolunda kalır; tarayıcı gerçek zamanlı, yerel bas-konuş, telefon ve
-toplantı sesi Talk olaylarını ve Gateway tarafından döndürülen oturum kapsamlı
-katalogları kullanmalıdır.
+Canlı kullanıcı konuşmaları için [Talk modunu](/tr/nodes/talk) tercih edin. Toplu
+ses ekleri medya yolunda kalır; tarayıcıdaki gerçek zamanlı ses, yerel
+bas-konuş, telefon ve toplantı sesleri Talk olaylarını ve Gateway tarafından
+döndürülen oturum kapsamlı katalogları kullanmalıdır.
 
-## Sağlayıcı eşlemeleri (tedarikçilerin yüzeylere nasıl ayrıldığı)
+## Sağlayıcı eşlemeleri (sağlayıcıların yüzeylere dağılımı)
 
 <AccordionGroup>
   <Accordion title="Google">
-    Görüntü, video, müzik, toplu TTS, arka uç gerçek zamanlı ses ve
+    Görsel, video, müzik, toplu TTS, toplu STT, arka uç gerçek zamanlı ses ve
     medya anlama yüzeyleri.
   </Accordion>
   <Accordion title="OpenAI">
-    Görüntü, video, toplu TTS, toplu STT, Sesli Arama akışlı STT, arka uç
-    gerçek zamanlı ses ve bellek gömme yüzeyleri.
+    Görsel, video, toplu TTS, toplu STT, Voice Call akışlı STT, arka uç gerçek
+    zamanlı ses ve bellek gömme yüzeyleri.
   </Accordion>
   <Accordion title="DeepInfra">
-    Sohbet/model yönlendirme, görüntü oluşturma/düzenleme, metinden videoya, toplu TTS,
-    toplu STT, görüntü medyası anlama ve bellek gömme yüzeyleri.
-    DeepInfra'ya özgü yeniden sıralama/sınıflandırma/nesne algılama modelleri,
-    OpenClaw bu kategoriler için ayrılmış sağlayıcı sözleşmelerine sahip olana kadar
-    kaydedilmez.
+    Sohbet/model yönlendirme, görsel üretme/düzenleme, metinden videoya, toplu
+    TTS, toplu STT, görsel medya anlama ve bellek gömme yüzeyleri. DeepInfra
+    ayrıca yeniden sıralama, sınıflandırma, nesne algılama ve diğer yerel model
+    türlerini sunar; OpenClaw'ın bu kategoriler için henüz bir sağlayıcı
+    sözleşmesi olmadığından bu plugin bunları kaydetmez.
   </Accordion>
   <Accordion title="xAI">
-    Görüntü, video, arama, kod yürütme, toplu TTS, toplu STT ve Sesli
-    Arama akışlı STT. xAI Realtime ses, upstream bir yetenektir ancak
-    paylaşılan gerçek zamanlı ses sözleşmesi bunu temsil edebilene kadar
-    OpenClaw'da kaydedilmez.
+    Görsel, video, arama, kod yürütme, toplu TTS, toplu STT ve Voice Call
+    akışlı STT. xAI gerçek zamanlı ses desteği üst kaynakta bulunan bir
+    yetenektir ancak paylaşılan gerçek zamanlı ses sözleşmesi bunu temsil
+    edebilene kadar OpenClaw'da kaydedilmez.
   </Accordion>
 </AccordionGroup>
 
-## İlgili
+## İlgili konular
 
-- [Görüntü oluşturma](/tr/tools/image-generation)
-- [Video oluşturma](/tr/tools/video-generation)
-- [Müzik oluşturma](/tr/tools/music-generation)
+- [Görsel üretimi](/tr/tools/image-generation)
+- [Video üretimi](/tr/tools/video-generation)
+- [Müzik üretimi](/tr/tools/music-generation)
 - [Metinden sese](/tr/tools/tts)
 - [Medya anlama](/tr/nodes/media-understanding)
-- [Ses düğümleri](/tr/nodes/audio)
+- [Ses Node'ları](/tr/nodes/audio)
 - [Talk modu](/tr/nodes/talk)

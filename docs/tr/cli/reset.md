@@ -1,34 +1,24 @@
 ---
 read_when:
-    - CLI kurulu kalırken yerel durumu silmek istiyorsunuz
-    - Nelerin kaldırılacağının bir dry-run çıktısını istiyorsunuz
-summary: '`openclaw reset` için CLI başvurusu (yerel durum/yapılandırmayı sıfırlama)'
+    - CLI yüklü kalırken yerel durumu temizlemek istiyorsunuz
+    - Nelerin kaldırılacağını deneme çalıştırmasıyla görmek istiyorsunuz
+summary: '`openclaw reset` için CLI başvurusu (yerel durumu/yapılandırmayı sıfırlama)'
 title: Sıfırla
 x-i18n:
-    generated_at: "2026-04-24T09:03:37Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: e4a4aba32fb44905d079bf2a22e582a3affbe9809eac9af237ce3e48da72b42c
-    source_path: cli/reset.md
-    workflow: 15
+    generated_at: "2026-07-12T12:12:25Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: f18af9c5e187217de4c02f4b55de9a1c94f7246b74056dc660aa172168edcef9
+    source_path: cli/reset.md
+    workflow: 16
 ---
 
 # `openclaw reset`
 
-Yerel config/durumu sıfırlayın (CLI kurulu kalır).
-
-Seçenekler:
-
-- `--scope <scope>`: `config`, `config+creds+sessions` veya `full`
-- `--yes`: onay istemlerini atla
-- `--non-interactive`: istemleri devre dışı bırak; `--scope` ve `--yes` gerektirir
-- `--dry-run`: dosyaları kaldırmadan eylemleri yazdır
-
-Örnekler:
+Yerel yapılandırmayı/durumu sıfırlar (CLI kurulu kalır).
 
 ```bash
-openclaw backup create
 openclaw reset
 openclaw reset --dry-run
 openclaw reset --scope config --yes --non-interactive
@@ -36,12 +26,30 @@ openclaw reset --scope config+creds+sessions --yes --non-interactive
 openclaw reset --scope full --yes --non-interactive
 ```
 
-Notlar:
+## Seçenekler
 
-- Yerel durumu kaldırmadan önce geri yüklenebilir bir anlık görüntü istiyorsanız önce `openclaw backup create` çalıştırın.
-- `--scope` değerini atlayırsanız, `openclaw reset` neyin kaldırılacağını seçmek için etkileşimli bir istem kullanır.
-- `--non-interactive` yalnızca hem `--scope` hem de `--yes` ayarlı olduğunda geçerlidir.
+- `--scope <scope>`: `config`, `config+creds+sessions` veya `full`
+- `--yes`: onay istemlerini atlar
+- `--non-interactive`: istemleri devre dışı bırakır; `--scope` ve `--yes` gerektirir
+- `--dry-run`: dosyaları kaldırmadan gerçekleştirilecek işlemleri yazdırır
+
+## Kapsamlar
+
+| Kapsam                  | Kaldırılanlar                                                                                                           | Önce Gateway'i durdurur |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------- | ----------------------- |
+| `config`                | yalnızca yapılandırma dosyası                                                                                           | hayır                   |
+| `config+creds+sessions` | yapılandırma dosyası, OAuth/kimlik bilgileri dizini ve her aracıya ait oturum dizinleri                                  | evet                    |
+| `full`                  | durum dizini (içinde yer alıyorsa yapılandırma/kimlik bilgileri dâhil), çalışma alanı dizinleri ve çalışma alanı tasdikleri | evet                    |
+
+`config+creds+sessions` ve `full`, durumu silmeden önce çalışmakta olan yönetilen Gateway hizmetini durdurur.
+
+## Notlar
+
+- Yerel durumu kaldırmadan önce geri yüklenebilir bir anlık görüntü oluşturmak için ilk olarak `openclaw backup create` komutunu çalıştırın.
+- `--scope` olmadan çalıştırıldığında `openclaw reset`, kaldırılacak kapsamı etkileşimli olarak sorar.
+- `--non-interactive` yalnızca hem `--scope` hem de `--yes` ayarlandığında geçerlidir.
+- `config+creds+sessions` ve `full`, tamamlandığında `Next: openclaw onboard --install-daemon` çıktısını yazdırır.
 
 ## İlgili
 
-- [CLI reference](/tr/cli)
+- [CLI başvurusu](/tr/cli)

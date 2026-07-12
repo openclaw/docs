@@ -1,43 +1,41 @@
 ---
 read_when:
-    - Bạn đang xây dựng một plugin nhà cung cấp mô hình mới
+    - Bạn đang xây dựng một Plugin nhà cung cấp mô hình mới
     - Bạn muốn thêm proxy tương thích với OpenAI hoặc LLM tùy chỉnh vào OpenClaw
-    - Bạn cần hiểu xác thực nhà cung cấp, catalog và các hook runtime
+    - Bạn cần hiểu cơ chế xác thực của nhà cung cấp, các danh mục và các hook thời gian chạy
 sidebarTitle: Provider plugins
-summary: Hướng dẫn từng bước để xây dựng Plugin nhà cung cấp mô hình cho OpenClaw
+summary: Hướng dẫn từng bước xây dựng plugin nhà cung cấp mô hình cho OpenClaw
 title: Xây dựng Plugin nhà cung cấp
 x-i18n:
-    generated_at: "2026-06-27T17:57:57Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:14:18Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 05ac4d08eae00e7e0fcf03edea691dc9ced7309421dd19a31edf69cee1e01f0b
+    source_hash: ebbe59b4487a93c6fec3624251eff7394197e249bb8fc7899f1fc88162510d1c
     source_path: plugins/sdk-provider-plugins.md
     workflow: 16
 ---
 
-Hướng dẫn này trình bày cách xây dựng một plugin nhà cung cấp để thêm một nhà cung cấp mô hình
-(LLM) vào OpenClaw. Khi hoàn tất, bạn sẽ có một nhà cung cấp với danh mục mô hình,
-xác thực bằng khóa API và phân giải mô hình động.
+Xây dựng Plugin nhà cung cấp để bổ sung một nhà cung cấp mô hình (LLM) vào OpenClaw: danh mục mô hình, xác thực bằng khóa API và phân giải mô hình động.
 
 <Info>
-  Nếu bạn chưa từng xây dựng plugin OpenClaw nào trước đây, hãy đọc
-  [Bắt đầu](/vi/plugins/building-plugins) trước để nắm cấu trúc gói
-  và thiết lập manifest cơ bản.
+  Bạn mới làm quen với các Plugin OpenClaw? Trước tiên, hãy đọc [Bắt đầu](/vi/plugins/building-plugins)
+  để tìm hiểu cấu trúc gói và cách thiết lập tệp kê khai.
 </Info>
 
 <Tip>
-  Plugin nhà cung cấp thêm mô hình vào vòng lặp suy luận thông thường của OpenClaw. Nếu mô hình
-  phải chạy qua một daemon agent gốc sở hữu luồng, compaction hoặc sự kiện công cụ,
-  hãy ghép nhà cung cấp với một [agent harness](/vi/plugins/sdk-agent-harness)
-  thay vì đưa chi tiết giao thức daemon vào core.
+  Các Plugin nhà cung cấp bổ sung mô hình vào vòng lặp suy luận thông thường của OpenClaw. Nếu
+  mô hình phải chạy thông qua một tiến trình nền tác tử gốc quản lý luồng, Compaction
+  hoặc sự kiện công cụ, hãy ghép nhà cung cấp với một [khung chạy
+  tác tử](/vi/plugins/sdk-agent-harness) thay vì đưa chi tiết giao thức
+  của tiến trình nền vào lõi.
 </Tip>
 
 ## Hướng dẫn từng bước
 
 <Steps>
-  <Step title="Gói và manifest">
-    ### Bước 1: Gói và manifest
+  <Step title="Gói và tệp kê khai">
+    ### Bước 1: Gói và tệp kê khai
 
     <CodeGroup>
     ```json package.json
@@ -101,20 +99,22 @@ xác thực bằng khóa API và phân giải mô hình động.
     ```
     </CodeGroup>
 
-    Manifest khai báo `setup.providers[].envVars` để OpenClaw có thể phát hiện
-    thông tin xác thực mà không cần tải runtime plugin của bạn. Thêm `providerAuthAliases`
-    khi một biến thể nhà cung cấp nên dùng lại xác thực của id nhà cung cấp khác. `modelSupport`
-    là tùy chọn và cho phép OpenClaw tự động tải plugin nhà cung cấp của bạn từ
-    các id mô hình viết tắt như `acme-large` trước khi các hook runtime tồn tại. Nếu bạn phát hành
-    nhà cung cấp trên ClawHub, các trường `openclaw.compat` và `openclaw.build` đó
-    là bắt buộc trong `package.json`.
+    `setup.providers[].envVars` cho phép OpenClaw phát hiện thông tin xác thực mà không cần
+    tải môi trường chạy Plugin của bạn. Thêm `providerAuthAliases` khi một biến thể
+    nhà cung cấp cần tái sử dụng thông tin xác thực của một mã định danh nhà cung cấp khác. `modelSupport` là
+    tùy chọn và cho phép OpenClaw tự động tải Plugin nhà cung cấp của bạn từ các mã định danh
+    mô hình dạng rút gọn như `acme-large` trước khi có các móc môi trường chạy. `openclaw.compat`
+    và `openclaw.build` trong `package.json` là bắt buộc để phát hành lên ClawHub
+    (`openclaw.compat.pluginApi` và `openclaw.build.openclawVersion`
+    là hai trường bắt buộc; `minGatewayVersion` sẽ dùng
+    `openclaw.install.minHostVersion` làm giá trị dự phòng nếu bị bỏ qua).
 
   </Step>
 
   <Step title="Đăng ký nhà cung cấp">
     Một nhà cung cấp văn bản tối thiểu cần có `id`, `label`, `auth` và `catalog`.
-    `catalog` là hook runtime/cấu hình do nhà cung cấp sở hữu; nó có thể gọi các API
-    live của nhà cung cấp và trả về các mục `models.providers`.
+    `catalog` là móc cấu hình/môi trường chạy do nhà cung cấp sở hữu; móc này có thể gọi các
+    API trực tiếp của nhà cung cấp và trả về các mục `models.providers`.
 
     ```typescript index.ts
     import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
@@ -203,27 +203,27 @@ xác thực bằng khóa API và phân giải mô hình động.
     });
     ```
 
-    `registerModelCatalogProvider` là bề mặt danh mục control-plane mới hơn
-    cho giao diện list/help/picker. Dùng nó cho các hàng văn bản, tạo hình ảnh,
-    tạo video và tạo nhạc. Giữ các lệnh gọi endpoint của nhà cung cấp và
-    ánh xạ phản hồi trong plugin; OpenClaw sở hữu hình dạng hàng dùng chung, nhãn
-    nguồn và việc render trợ giúp.
+    `registerModelCatalogProvider` là bề mặt danh mục mới hơn của lớp điều khiển
+    dành cho giao diện danh sách/trợ giúp/bộ chọn, bao gồm các hàng `text`, `voice`, `image_generation`,
+    `video_generation` và `music_generation`. Hãy giữ các lệnh gọi điểm cuối
+    của nhà cung cấp và việc ánh xạ phản hồi trong Plugin; OpenClaw quản lý cấu trúc hàng
+    dùng chung, nhãn nguồn và cách hiển thị trợ giúp.
 
-    Đó là một nhà cung cấp hoạt động được. Người dùng giờ có thể
+    Như vậy là đã có một nhà cung cấp hoạt động được. Giờ đây, người dùng có thể chạy
     `openclaw onboard --acme-ai-api-key <key>` và chọn
-    `acme-ai/acme-large` làm mô hình của họ.
+    `acme-ai/acme-large` làm mô hình của mình.
 
-    ### Khám phá mô hình live
+    ### Khám phá mô hình trực tiếp
 
-    Nếu nhà cung cấp của bạn cung cấp một API kiểu `/models`, hãy giữ endpoint
-    dành riêng cho nhà cung cấp và phép chiếu hàng trong plugin của bạn, rồi dùng
-    `openclaw/plugin-sdk/provider-catalog-live-runtime` cho vòng đời fetch dùng chung.
-    Helper này cung cấp các HTTP fetch được bảo vệ, header xác thực nhà cung cấp,
-    lỗi HTTP có cấu trúc, bộ nhớ đệm TTL và hành vi fallback tĩnh mà không
-    đưa chính sách nhà cung cấp vào core OpenClaw.
+    Nếu nhà cung cấp của bạn cung cấp một API kiểu `/models`, hãy giữ điểm cuối dành riêng
+    cho nhà cung cấp và phép chiếu hàng trong Plugin của bạn, đồng thời sử dụng
+    `openclaw/plugin-sdk/provider-catalog-live-runtime` cho vòng đời tìm nạp
+    dùng chung. Trình trợ giúp cung cấp các yêu cầu tìm nạp HTTP được bảo vệ, tiêu đề xác thực nhà cung cấp,
+    lỗi HTTP có cấu trúc, bộ nhớ đệm TTL và hành vi dự phòng tĩnh mà không
+    đưa chính sách nhà cung cấp vào lõi OpenClaw.
 
-    Dùng `buildLiveModelProviderConfig` khi API live chỉ cho bạn biết các hàng
-    danh mục tĩnh do nhà cung cấp sở hữu nào hiện đang khả dụng:
+    Sử dụng `buildLiveModelProviderConfig` khi API trực tiếp chỉ cho bạn biết những
+    hàng danh mục tĩnh do nhà cung cấp sở hữu nào hiện đang khả dụng:
 
     ```typescript index.ts
     import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
@@ -311,9 +311,9 @@ xác thực bằng khóa API và phân giải mô hình động.
     });
     ```
 
-    Dùng `getCachedLiveProviderModelRows` khi API nhà cung cấp trả về metadata
-    phong phú hơn và plugin cần tự chiếu các hàng thành định nghĩa mô hình
-    OpenClaw:
+    Sử dụng `getCachedLiveProviderModelRows` khi API của nhà cung cấp trả về siêu dữ liệu
+    phong phú hơn và Plugin cần tự chiếu các hàng thành định nghĩa mô hình
+    của OpenClaw:
 
     ```typescript index.ts
     import {
@@ -342,15 +342,15 @@ xác thực bằng khóa API và phân giải mô hình động.
     }
     ```
 
-    `run` nên luôn được chặn bằng xác thực và trả về `null` khi không có thông tin xác thực
-    dùng được. Giữ một `staticRun` ngoại tuyến hoặc fallback tĩnh để các bề mặt thiết lập,
-    tài liệu, kiểm thử và picker không phụ thuộc vào truy cập mạng live. Dùng TTL
-    phù hợp với độ mới của danh sách mô hình, tránh thăm dò hệ thống tệp tại thời điểm yêu cầu,
+    `run` phải tiếp tục được kiểm soát bằng xác thực và trả về `null` khi không có thông tin xác thực
+    khả dụng. Duy trì một `staticRun` ngoại tuyến hoặc phương án dự phòng tĩnh để quá trình thiết lập, tài liệu,
+    kiểm thử và các bề mặt bộ chọn không phụ thuộc vào quyền truy cập mạng trực tiếp. Sử dụng TTL
+    phù hợp với độ mới của danh sách mô hình, tránh thăm dò hệ thống tệp tại thời điểm yêu cầu
     và chỉ truyền `readRows` / `readModelId` dành riêng cho nhà cung cấp khi
-    phản hồi upstream không có hình dạng tương thích OpenAI `{ data: [{ id, object }] }`.
+    phản hồi từ thượng nguồn không có cấu trúc tương thích với OpenAI `{ data: [{ id, object }] }`.
 
-    Nếu nhà cung cấp upstream dùng các token điều khiển khác OpenClaw, hãy thêm một
-    phép biến đổi văn bản hai chiều nhỏ thay vì thay thế đường dẫn stream:
+    Nếu nhà cung cấp thượng nguồn sử dụng các mã điều khiển khác với OpenClaw, hãy thêm một
+    phép biến đổi văn bản hai chiều nhỏ thay vì thay thế đường dẫn luồng:
 
     ```typescript
     api.registerTextTransforms({
@@ -367,13 +367,13 @@ xác thực bằng khóa API và phân giải mô hình động.
     });
     ```
 
-    `input` viết lại system prompt cuối cùng và nội dung tin nhắn văn bản trước
-    transport. `output` viết lại các delta văn bản của assistant và văn bản cuối cùng trước khi
-    OpenClaw phân tích các marker điều khiển của chính nó hoặc gửi qua kênh.
+    `input` ghi lại lời nhắc hệ thống cuối cùng và nội dung tin nhắn văn bản trước khi
+    truyền tải. `output` ghi lại các phần thay đổi văn bản của trợ lý và văn bản cuối cùng trước khi
+    OpenClaw phân tích các dấu điều khiển của chính nó hoặc phân phối tới kênh.
 
-    Với các nhà cung cấp bundled chỉ đăng ký một nhà cung cấp văn bản với xác thực bằng khóa API
-    cùng một runtime duy nhất dựa trên danh mục, hãy ưu tiên helper hẹp hơn
-    `defineSingleProviderPluginEntry(...)`:
+    Đối với các nhà cung cấp đi kèm chỉ đăng ký một nhà cung cấp văn bản với xác thực
+    bằng khóa API cùng một môi trường chạy duy nhất dựa trên danh mục, hãy ưu tiên trình trợ giúp
+    `defineSingleProviderPluginEntry(...)` có phạm vi hẹp hơn:
 
     ```typescript
     import { defineSingleProviderPluginEntry } from "openclaw/plugin-sdk/provider-entry";
@@ -413,18 +413,38 @@ xác thực bằng khóa API và phân giải mô hình động.
     });
     ```
 
-    `buildProvider` là đường dẫn catalog trực tiếp được dùng khi OpenClaw có thể phân giải xác thực nhà cung cấp thực tế. Nó có thể thực hiện khám phá riêng theo nhà cung cấp. Chỉ dùng `buildStaticProvider` cho các hàng ngoại tuyến an toàn để hiển thị trước khi cấu hình xác thực; nó không được yêu cầu thông tin xác thực hoặc thực hiện yêu cầu mạng. Màn hình `models list --all` của OpenClaw hiện chỉ thực thi catalog tĩnh cho các Plugin nhà cung cấp được đóng gói sẵn, với cấu hình rỗng, env rỗng và không có đường dẫn agent/workspace.
+    `buildProvider` là đường dẫn danh mục trực tiếp được sử dụng khi OpenClaw có thể phân giải thông tin xác thực thực tế
+    của nhà cung cấp. Hàm này có thể thực hiện việc khám phá dành riêng cho nhà cung cấp. Chỉ sử dụng
+    `buildStaticProvider` cho các hàng ngoại tuyến có thể hiển thị an toàn trước khi cấu hình
+    xác thực; hàm này không được yêu cầu thông tin xác thực hoặc thực hiện yêu cầu mạng.
+    Hiện tại, phần hiển thị `models list --all` của OpenClaw chỉ thực thi các danh mục tĩnh
+    cho các Plugin nhà cung cấp được đóng gói, với cấu hình trống, môi trường trống và không có
+    đường dẫn tác nhân/không gian làm việc.
 
-    Nếu luồng xác thực của bạn cũng cần vá `models.providers.*`, bí danh và mô hình mặc định của agent trong quá trình onboarding, hãy dùng các helper preset từ `openclaw/plugin-sdk/provider-onboard`. Các helper hẹp nhất là `createDefaultModelPresetAppliers(...)`, `createDefaultModelsPresetAppliers(...)` và `createModelCatalogPresetAppliers(...)`.
+    Nếu luồng xác thực của bạn cũng cần vá `models.providers.*`, bí danh và
+    mô hình mặc định của tác nhân trong quá trình thiết lập ban đầu, hãy sử dụng các trình trợ giúp cài đặt sẵn từ
+    `openclaw/plugin-sdk/provider-onboard`. Các trình trợ giúp có phạm vi hẹp nhất là
+    `createDefaultModelPresetAppliers(...)`,
+    `createDefaultModelsPresetAppliers(...)` và
+    `createModelCatalogPresetAppliers(...)`.
 
-    Khi endpoint gốc của nhà cung cấp hỗ trợ các khối usage được stream trên transport `openai-completions` thông thường, hãy ưu tiên các helper catalog dùng chung trong `openclaw/plugin-sdk/provider-catalog-shared` thay vì hardcode kiểm tra provider-id. `supportsNativeStreamingUsageCompat(...)` và `applyProviderNativeStreamingUsageCompat(...)` phát hiện hỗ trợ từ bản đồ capability của endpoint, vì vậy các endpoint gốc kiểu Moonshot/DashScope vẫn opt in ngay cả khi một Plugin đang dùng id nhà cung cấp tùy chỉnh.
+    Khi điểm cuối gốc của nhà cung cấp hỗ trợ các khối mức sử dụng được truyền phát trên
+    cơ chế truyền tải `openai-completions` thông thường, hãy ưu tiên các trình trợ giúp danh mục dùng chung trong
+    `openclaw/plugin-sdk/provider-catalog-shared` thay vì mã hóa cứng
+    các phép kiểm tra mã định danh nhà cung cấp. `supportsNativeStreamingUsageCompat(...)` và
+    `applyProviderNativeStreamingUsageCompat(...)` phát hiện khả năng hỗ trợ từ
+    bản đồ khả năng của điểm cuối, nhờ đó các điểm cuối gốc kiểu Moonshot/DashScope vẫn
+    có thể chủ động bật tính năng này ngay cả khi Plugin đang sử dụng mã định danh nhà cung cấp tùy chỉnh.
 
-    Các ví dụ khám phá trực tiếp ở trên bao quát API nhà cung cấp kiểu `/models`. Giữ phần khám phá đó bên trong `catalog.run`, được chặn bởi xác thực có thể dùng được, và giữ `staticRun` không dùng mạng cho việc tạo catalog ngoại tuyến.
+    Các ví dụ khám phá trực tiếp ở trên áp dụng cho API nhà cung cấp kiểu `/models`. Hãy giữ
+    logic khám phá đó bên trong `catalog.run`, chỉ cho phép chạy khi có xác thực khả dụng, đồng thời giữ
+    `staticRun` không sử dụng mạng để tạo danh mục ngoại tuyến.
 
   </Step>
 
-  <Step title="Thêm phân giải mô hình động">
-    Nếu nhà cung cấp của bạn chấp nhận ID mô hình tùy ý (như proxy hoặc router), hãy thêm `resolveDynamicModel`:
+  <Step title="Add dynamic model resolution">
+    Nếu nhà cung cấp của bạn chấp nhận mã định danh mô hình tùy ý (chẳng hạn như proxy hoặc bộ định tuyến),
+    hãy thêm `resolveDynamicModel`:
 
     ```typescript
     api.registerProvider({
@@ -445,14 +465,17 @@ xác thực bằng khóa API và phân giải mô hình động.
     });
     ```
 
-    Nếu việc phân giải yêu cầu một lệnh gọi mạng, hãy dùng `prepareDynamicModel` để khởi động bất đồng bộ - `resolveDynamicModel` sẽ chạy lại sau khi hoàn tất.
+    Nếu việc phân giải yêu cầu gọi mạng, hãy sử dụng `prepareDynamicModel` để khởi động bất đồng bộ
+    — `resolveDynamicModel` sẽ chạy lại sau khi quá trình đó hoàn tất.
 
   </Step>
 
-  <Step title="Thêm hook runtime (khi cần)">
-    Hầu hết nhà cung cấp chỉ cần `catalog` + `resolveDynamicModel`. Thêm hook dần dần khi nhà cung cấp của bạn yêu cầu.
+  <Step title="Add runtime hooks (as needed)">
+    Hầu hết nhà cung cấp chỉ cần `catalog` + `resolveDynamicModel`. Hãy thêm các hook
+    từng bước khi nhà cung cấp của bạn yêu cầu.
 
-    Các builder helper dùng chung hiện đã bao quát các nhóm replay/tool-compat phổ biến nhất, vì vậy Plugin thường không cần nối tay từng hook một:
+    Các trình dựng trợ giúp dùng chung hiện hỗ trợ những nhóm tương thích phát lại/công cụ phổ biến nhất,
+    vì vậy các Plugin thường không cần tự nối từng hook một:
 
     ```typescript
     import { buildProviderReplayFamilyHooks } from "openclaw/plugin-sdk/provider-model-shared";
@@ -472,46 +495,52 @@ xác thực bằng khóa API và phân giải mô hình động.
     });
     ```
 
-    Các nhóm replay hiện có:
+    Các nhóm phát lại hiện có:
 
-    | Nhóm | Nội dung được nối vào | Ví dụ được đóng gói sẵn |
+    | Nhóm | Thành phần được nối vào | Ví dụ được đóng gói |
     | --- | --- | --- |
-    | `openai-compatible` | Chính sách replay kiểu OpenAI dùng chung cho các transport tương thích OpenAI, bao gồm làm sạch tool-call-id, sửa thứ tự assistant-first và xác thực lượt Gemini chung khi transport cần | `moonshot`, `ollama`, `xai`, `zai` |
-    | `anthropic-by-model` | Chính sách replay nhận biết Claude được chọn theo `modelId`, để transport Anthropic-message chỉ nhận cleanup thinking-block riêng cho Claude khi mô hình đã phân giải thực sự là id Claude | `amazon-bedrock`, `anthropic-vertex` |
-    | `google-gemini` | Chính sách replay Gemini gốc cộng với làm sạch bootstrap replay. Nhóm dùng chung giữ Gemini CLI xuất văn bản trên tagged reasoning; nhà cung cấp `google` trực tiếp ghi đè `resolveReasoningOutputMode` thành `native` vì thinking của Gemini API đến dưới dạng native thought parts. | `google`, `google-gemini-cli` |
-    | `passthrough-gemini` | Làm sạch thought-signature Gemini cho các mô hình Gemini chạy qua transport proxy tương thích OpenAI; không bật xác thực replay Gemini gốc hoặc ghi lại bootstrap | `openrouter`, `kilocode`, `opencode`, `opencode-go` |
-    | `hybrid-anthropic-openai` | Chính sách lai cho nhà cung cấp trộn bề mặt mô hình Anthropic-message và tương thích OpenAI trong một Plugin; việc bỏ thinking-block chỉ dành cho Claude tùy chọn vẫn được giới hạn ở phía Anthropic | `minimax` |
+    | `openai-compatible` | Chính sách phát lại kiểu OpenAI dùng chung dành cho các cơ chế truyền tải tương thích với OpenAI, bao gồm làm sạch mã định danh lệnh gọi công cụ, sửa thứ tự ưu tiên trợ lý và xác thực lượt Gemini chung khi cơ chế truyền tải yêu cầu | `moonshot`, `ollama`, `xai`, `zai` |
+    | `anthropic-by-model` | Chính sách phát lại có nhận biết Claude được chọn theo `modelId`, nhờ đó các cơ chế truyền tải tin nhắn Anthropic chỉ thực hiện dọn dẹp khối suy luận dành riêng cho Claude khi mô hình đã phân giải thực sự là mã định danh Claude | `amazon-bedrock` |
+    | `native-anthropic-by-model` | Cùng chính sách Claude theo mô hình như `anthropic-by-model`, cộng thêm làm sạch mã định danh lệnh gọi công cụ và giữ nguyên mã định danh sử dụng công cụ gốc của Anthropic cho các cơ chế truyền tải phải bảo toàn mã định danh gốc của nhà cung cấp | `anthropic-vertex`, `clawrouter` |
+    | `google-gemini` | Chính sách phát lại gốc của Gemini cùng với việc làm sạch phát lại khởi động. Nhóm dùng chung giữ Gemini CLI đầu ra văn bản ở chế độ suy luận có thẻ; nhà cung cấp trực tiếp `google` ghi đè `resolveReasoningOutputMode` thành `native` vì suy luận của Gemini API được trả về dưới dạng các phần suy nghĩ gốc. | `google`, `google-gemini-cli` |
+    | `passthrough-gemini` | Làm sạch chữ ký suy nghĩ Gemini cho các mô hình Gemini chạy qua cơ chế truyền tải proxy tương thích với OpenAI; không bật xác thực phát lại Gemini gốc hoặc ghi lại dữ liệu khởi động | `openrouter`, `kilocode`, `opencode`, `opencode-go` |
+    | `hybrid-anthropic-openai` | Chính sách kết hợp dành cho các nhà cung cấp trộn lẫn bề mặt mô hình tin nhắn Anthropic và tương thích với OpenAI trong một Plugin; việc loại bỏ khối suy luận tùy chọn chỉ dành cho Claude vẫn được giới hạn ở phía Anthropic | `minimax` |
 
-    Các nhóm stream hiện có:
+    Các nhóm luồng hiện có:
 
-    | Nhóm | Nội dung được nối vào | Ví dụ được đóng gói sẵn |
+    | Nhóm | Thành phần được nối vào | Ví dụ được đóng gói |
     | --- | --- | --- |
-    | `google-thinking` | Chuẩn hóa payload thinking của Gemini trên đường dẫn stream dùng chung | `google`, `google-gemini-cli` |
-    | `kilocode-thinking` | Wrapper reasoning Kilo trên đường dẫn stream proxy dùng chung, với `kilo/auto` và các id proxy reasoning không được hỗ trợ bỏ qua thinking được chèn | `kilocode` |
-    | `moonshot-thinking` | Ánh xạ payload native-thinking nhị phân của Moonshot từ cấu hình + mức `/think` | `moonshot` |
-    | `minimax-fast-mode` | Ghi lại mô hình fast-mode của MiniMax trên đường dẫn stream dùng chung | `minimax`, `minimax-portal` |
-    | `openai-responses-defaults` | Các wrapper Responses OpenAI/Codex gốc dùng chung: header attribution, `/fast`/`serviceTier`, độ dài chi tiết văn bản, tìm kiếm web Codex gốc, tạo hình payload reasoning-compat và quản lý ngữ cảnh Responses | `openai` |
-    | `openrouter-thinking` | Wrapper reasoning OpenRouter cho các route proxy, với việc bỏ qua unsupported-model/`auto` được xử lý tập trung | `openrouter` |
-    | `tool-stream-default-on` | Wrapper `tool_stream` bật mặc định cho các nhà cung cấp như Z.AI muốn stream công cụ trừ khi bị tắt rõ ràng | `zai` |
+    | `google-thinking` | Chuẩn hóa tải trọng suy luận Gemini trên đường dẫn luồng dùng chung | `google`, `google-gemini-cli` |
+    | `kilocode-thinking` | Trình bao bọc suy luận Kilo trên đường dẫn luồng proxy dùng chung, trong đó `kilo/auto` và các mã định danh suy luận proxy không được hỗ trợ sẽ bỏ qua suy luận được chèn | `kilocode` |
+    | `moonshot-thinking` | Ánh xạ tải trọng suy luận gốc nhị phân của Moonshot từ cấu hình + cấp độ `/think` | `moonshot` |
+    | `minimax-fast-mode` | Ghi lại mô hình ở chế độ nhanh MiniMax trên đường dẫn luồng dùng chung | `minimax`, `minimax-portal` |
+    | `openai-responses-defaults` | Các trình bao bọc Responses gốc dùng chung của OpenAI/Codex: tiêu đề ghi nguồn, `/fast`/`serviceTier`, mức độ chi tiết văn bản, tìm kiếm web gốc của Codex, định hình tải trọng tương thích suy luận và quản lý ngữ cảnh Responses | `openai` |
+    | `openrouter-thinking` | Trình bao bọc suy luận OpenRouter cho các tuyến proxy, với việc bỏ qua mô hình không được hỗ trợ/`auto` được xử lý tập trung | `openrouter` |
+    | `tool-stream-default-on` | Trình bao bọc `tool_stream` mặc định bật dành cho các nhà cung cấp như Z.AI muốn truyền phát công cụ trừ khi bị tắt rõ ràng | `zai` |
 
-    <Accordion title="Các seam SDK cung cấp năng lực cho family builder">
-      Mỗi family builder được cấu thành từ các helper công khai cấp thấp hơn được export từ cùng package, bạn có thể dùng khi nhà cung cấp cần đi lệch khỏi mẫu chung:
+    <Accordion title="SDK seams powering the family builders">
+      Mỗi trình dựng nhóm được cấu thành từ các trình trợ giúp công khai cấp thấp hơn được xuất từ cùng một gói, bạn có thể sử dụng chúng khi nhà cung cấp cần đi lệch khỏi mẫu chung:
 
-      - `openclaw/plugin-sdk/provider-model-shared` - `ProviderReplayFamily`, `buildProviderReplayFamilyHooks(...)` và các builder replay thô (`buildOpenAICompatibleReplayPolicy`, `buildAnthropicReplayPolicyForModel`, `buildGoogleGeminiReplayPolicy`, `buildHybridAnthropicOrOpenAIReplayPolicy`). Cũng export các helper replay Gemini (`sanitizeGoogleGeminiReplayHistory`, `resolveTaggedReasoningOutputMode`) và helper endpoint/mô hình (`resolveProviderEndpoint`, `normalizeProviderId`, `normalizeGooglePreviewModelId`).
-      - `openclaw/plugin-sdk/provider-stream` - `ProviderStreamFamily`, `buildProviderStreamFamilyHooks(...)`, `composeProviderStreamWrappers(...)`, cộng với các wrapper OpenAI/Codex dùng chung (`createOpenAIAttributionHeadersWrapper`, `createOpenAIFastModeWrapper`, `createOpenAIServiceTierWrapper`, `createOpenAIResponsesContextManagementWrapper`, `createCodexNativeWebSearchWrapper`), wrapper DeepSeek V4 tương thích OpenAI (`createDeepSeekV4OpenAICompatibleThinkingWrapper`), cleanup prefill thinking Anthropic Messages (`createAnthropicThinkingPrefillPayloadWrapper`), compat tool-call văn bản thuần (`createPlainTextToolCallCompatWrapper`) và các wrapper proxy/nhà cung cấp dùng chung (`createOpenRouterWrapper`, `createToolStreamWrapper`, `createMinimaxFastModeWrapper`).
-      - `openclaw/plugin-sdk/provider-stream-shared` - các wrapper payload và event nhẹ cho đường dẫn nhà cung cấp nóng, bao gồm `createOpenAICompatibleCompletionsThinkingOffWrapper`, `createPayloadPatchStreamWrapper`, `createPlainTextToolCallCompatWrapper`, `normalizeOpenAICompatibleReasoningPayload(...)` và `setQwenChatTemplateThinking(...)`.
-      - `openclaw/plugin-sdk/provider-tools` - `ProviderToolCompatFamily`, `buildProviderToolCompatFamilyHooks("deepseek" | "gemini" | "openai")` và các helper schema nhà cung cấp nền tảng.
+      - `openclaw/plugin-sdk/provider-model-shared` — `ProviderReplayFamily`, `buildProviderReplayFamilyHooks(...)` và các trình dựng phát lại thô (`buildOpenAICompatibleReplayPolicy`, `buildAnthropicReplayPolicyForModel`, `buildGoogleGeminiReplayPolicy`, `buildHybridAnthropicOrOpenAIReplayPolicy`). Đồng thời xuất các trình trợ giúp phát lại Gemini (`sanitizeGoogleGeminiReplayHistory`, `resolveTaggedReasoningOutputMode`) và các trình trợ giúp điểm cuối/mô hình (`resolveProviderEndpoint`, `normalizeProviderId`, `normalizeGooglePreviewModelId`).
+      - `openclaw/plugin-sdk/provider-stream` — `ProviderStreamFamily`, `buildProviderStreamFamilyHooks(...)`, `composeProviderStreamWrappers(...)`, cùng các trình bao bọc OpenAI/Codex dùng chung (`createOpenAIAttributionHeadersWrapper`, `createOpenAIFastModeWrapper`, `createOpenAIServiceTierWrapper`, `createOpenAIResponsesContextManagementWrapper`, `createCodexNativeWebSearchWrapper`), trình bao bọc tương thích với OpenAI của DeepSeek V4 (`createDeepSeekV4OpenAICompatibleThinkingWrapper`), dọn dẹp phần điền trước suy luận Anthropic Messages (`createAnthropicThinkingPrefillPayloadWrapper`), tương thích lệnh gọi công cụ văn bản thuần túy (`createPlainTextToolCallCompatWrapper`) và các trình bao bọc proxy/nhà cung cấp dùng chung (`createOpenRouterWrapper`, `createToolStreamWrapper`, `createMinimaxFastModeWrapper`).
+      - `openclaw/plugin-sdk/provider-stream-shared` — các trình bao bọc tải trọng và sự kiện gọn nhẹ dành cho đường dẫn nóng của nhà cung cấp, bao gồm `createOpenAICompatibleCompletionsThinkingOffWrapper`, `createPayloadPatchStreamWrapper`, `createPlainTextToolCallCompatWrapper`, `normalizeOpenAICompatibleReasoningPayload(...)` và `setQwenChatTemplateThinking(...)`.
+      - `openclaw/plugin-sdk/provider-tools` — `ProviderToolCompatFamily`, `buildProviderToolCompatFamilyHooks("deepseek" | "gemini" | "openai")` và các trình trợ giúp lược đồ nhà cung cấp nền tảng.
 
-      Với các nhà cung cấp thuộc nhóm Gemini, hãy giữ chế độ reasoning-output khớp với transport. Nhà cung cấp Google Gemini API trực tiếp nên dùng output reasoning `native` để OpenClaw tiêu thụ native thought parts mà không thêm chỉ thị prompt `<think>` / `<final>`. Các backend kiểu Gemini CLI chỉ có văn bản, phân tích phản hồi JSON/văn bản cuối cùng, có thể giữ hợp đồng tagged `google-gemini` dùng chung.
+      Đối với các nhà cung cấp thuộc nhóm Gemini, hãy giữ chế độ đầu ra suy luận phù hợp với
+      cơ chế truyền tải. Các nhà cung cấp Google Gemini API trực tiếp nên sử dụng đầu ra suy luận
+      `native` để OpenClaw sử dụng các phần suy nghĩ gốc mà không thêm
+      chỉ thị lời nhắc `<think>` / `<final>`. Các phần phụ trợ kiểu Gemini CLI chỉ có văn bản,
+      phân tích phản hồi JSON/văn bản cuối cùng, có thể tiếp tục sử dụng hợp đồng có thẻ
+      `google-gemini` dùng chung.
 
-      Một số helper stream cố ý ở lại cục bộ theo nhà cung cấp. `@openclaw/anthropic-provider` giữ `wrapAnthropicProviderStream`, `resolveAnthropicBetas`, `resolveAnthropicFastMode`, `resolveAnthropicServiceTier` và các builder wrapper Anthropic cấp thấp hơn trong seam `api.ts` / `contract-api.ts` công khai riêng vì chúng mã hóa xử lý beta Claude OAuth và gating `context1m`. Plugin xAI tương tự giữ tạo hình Responses xAI gốc trong `wrapStreamFn` riêng của nó (bí danh `/fast`, `tool_stream` mặc định, cleanup strict-tool không được hỗ trợ, loại bỏ payload reasoning riêng cho xAI).
+      Một số trình trợ giúp luồng được giữ cục bộ trong nhà cung cấp có chủ đích. `@openclaw/anthropic-provider` giữ `wrapAnthropicProviderStream`, `resolveAnthropicBetas`, `resolveAnthropicFastMode`, `resolveAnthropicServiceTier` và các trình dựng trình bao bọc Anthropic cấp thấp hơn trong bề mặt công khai `api.ts` / `contract-api.ts` riêng vì chúng mã hóa việc xử lý OAuth beta của Claude và điều kiện bật `context1m`. Tương tự, Plugin xAI giữ việc định hình Responses gốc của xAI trong `wrapStreamFn` riêng (`/fast` aliases, `tool_stream` mặc định, dọn dẹp công cụ nghiêm ngặt không được hỗ trợ, loại bỏ tải trọng suy luận dành riêng cho xAI).
 
-      Mẫu package-root tương tự cũng hỗ trợ `@openclaw/openai-provider` (builder nhà cung cấp, helper mô hình mặc định, builder nhà cung cấp realtime) và `@openclaw/openrouter-provider` (builder nhà cung cấp cộng với helper onboarding/cấu hình).
+      Mẫu gốc gói tương tự cũng hỗ trợ `@openclaw/openai-provider` (các trình dựng nhà cung cấp, trình trợ giúp mô hình mặc định, trình dựng nhà cung cấp thời gian thực) và `@openclaw/openrouter-provider` (trình dựng nhà cung cấp cùng các trình trợ giúp thiết lập ban đầu/cấu hình).
     </Accordion>
 
     <Tabs>
-      <Tab title="Trao đổi token">
-        Với các nhà cung cấp cần trao đổi token trước mỗi lệnh gọi inference:
+      <Tab title="Token exchange">
+        Đối với các nhà cung cấp cần trao đổi mã thông báo trước mỗi lệnh gọi suy luận:
 
         ```typescript
         prepareRuntimeAuth: async (ctx) => {
@@ -524,8 +553,8 @@ xác thực bằng khóa API và phân giải mô hình động.
         },
         ```
       </Tab>
-      <Tab title="Header tùy chỉnh">
-        Với các nhà cung cấp cần header yêu cầu tùy chỉnh hoặc sửa đổi body:
+      <Tab title="Custom headers">
+        Đối với các nhà cung cấp cần tiêu đề yêu cầu tùy chỉnh hoặc sửa đổi phần thân:
 
         ```typescript
         // wrapStreamFn returns a StreamFn derived from ctx.streamFn
@@ -542,8 +571,9 @@ xác thực bằng khóa API và phân giải mô hình động.
         },
         ```
       </Tab>
-      <Tab title="Định danh transport gốc">
-        Với các nhà cung cấp cần header yêu cầu/phiên gốc hoặc metadata trên các transport HTTP hoặc WebSocket chung:
+      <Tab title="Native transport identity">
+        Đối với các nhà cung cấp cần tiêu đề hoặc siêu dữ liệu yêu cầu/phiên gốc trên
+        các cơ chế truyền tải HTTP hoặc WebSocket chung:
 
         ```typescript
         resolveTransportTurnState: (ctx) => ({
@@ -564,7 +594,7 @@ xác thực bằng khóa API và phân giải mô hình động.
         ```
       </Tab>
       <Tab title="Mức sử dụng và thanh toán">
-        Đối với các provider công bố dữ liệu mức sử dụng/thanh toán:
+        Đối với các nhà cung cấp cung cấp dữ liệu về mức sử dụng/thanh toán:
 
         ```typescript
         resolveUsageAuth: async (ctx) => {
@@ -576,92 +606,117 @@ xác thực bằng khóa API và phân giải mô hình động.
         },
         ```
 
-        `resolveUsageAuth` có ba kết quả. Trả về `{ token, accountId? }`
-        khi provider có thông tin xác thực mức sử dụng/thanh toán. Chỉ trả về
-        `{ handled: true }` khi provider đã xử lý chắc chắn xác thực mức sử dụng
-        nhưng không có token mức sử dụng khả dụng, và OpenClaw phải bỏ qua phương án dự phòng
-        API-key/OAuth chung. Trả về `null` hoặc `undefined` khi provider
-        chưa xử lý yêu cầu và OpenClaw nên tiếp tục với phương án dự phòng chung.
+        `resolveUsageAuth` có ba kết quả. Trả về
+        `{ token, accountId?, subscriptionType?, rateLimitTier? }` khi nhà
+        cung cấp có thông tin xác thực cho mức sử dụng/thanh toán (các trường tùy chọn
+        chuyển siêu dữ liệu gói không bí mật từ hồ sơ đã phân giải vào
+        `fetchUsageSnapshot`). Chỉ trả về
+        `{ handled: true }` khi nhà cung cấp đã xử lý dứt khoát việc xác thực mức sử dụng
+        nhưng không có token mức sử dụng khả dụng, và OpenClaw phải bỏ qua cơ chế dự phòng
+        khóa API/OAuth chung. Trả về `null` hoặc `undefined` khi nhà cung cấp không
+        xử lý yêu cầu và OpenClaw nên tiếp tục với cơ chế dự phòng chung.
+
+        Khai báo mã định danh nhà cung cấp trong `contracts.usageProviders`. Khi hợp đồng
+        manifest đó và **cả hai** hook đều hiện diện, OpenClaw tự động đưa
+        nhà cung cấp vào quá trình thu thập mức sử dụng mà không tải các
+        plugin nhà cung cấp không liên quan. Không cần cập nhật danh sách cho phép trong lõi.
+        `fetchUsageSnapshot` trả về cấu trúc dùng chung, trung lập với nhà cung cấp:
+
+        - `plan`: nhãn gói đăng ký hoặc khóa do nhà cung cấp báo cáo
+        - `windows`: các khoảng hạn ngạch có thể đặt lại dưới dạng tỷ lệ phần trăm đã sử dụng
+        - `billing`: các mục `balance`, `spend` hoặc `budget` có kiểu; `unit` có thể là
+          một loại tiền tệ ISO hoặc đơn vị của nhà cung cấp như `credits`
+        - `summary`: ngữ cảnh ngắn gọn dành riêng cho nhà cung cấp không phù hợp với các
+          trường có cấu trúc đó
+
+        Giữ chính xác ngữ nghĩa tiền tệ. Tín dụng của nhà cung cấp không phải là USD trừ khi
+        hợp đồng thượng nguồn quy định như vậy. Một plugin chỉ triển khai
+        `fetchUsageSnapshot` vẫn khả dụng cho các bên gọi tường minh/tổng hợp nhưng
+        không được tự động phát hiện, vì OpenClaw không thể phân giải thông tin xác thực mức sử dụng của nó.
       </Tab>
     </Tabs>
 
-    <Accordion title="Tất cả hook provider có sẵn">
-      OpenClaw gọi các hook theo thứ tự này. Hầu hết provider chỉ dùng 2-3:
-      Các trường provider chỉ dành cho tương thích mà OpenClaw không còn gọi, chẳng hạn như
-      `ProviderPlugin.capabilities` và `suppressBuiltInModel`, không được liệt kê
-      ở đây.
+    <Accordion title="Các hook nhà cung cấp phổ biến">
+      OpenClaw gọi các hook gần như theo thứ tự này đối với các plugin mô hình/nhà cung cấp.
+      Hầu hết nhà cung cấp chỉ sử dụng 2-3 hook. Đây không phải là toàn bộ hợp đồng
+      `ProviderPlugin` - xem [Nội bộ: Các hook thời gian chạy của nhà cung cấp
+      ](/vi/plugins/architecture-internals#provider-runtime-hooks) để biết danh sách hook
+      đầy đủ, chính xác ở thời điểm hiện tại và các ghi chú về cơ chế dự phòng.
+      Các trường nhà cung cấp chỉ dành cho khả năng tương thích mà OpenClaw không còn gọi,
+      chẳng hạn như `ProviderPlugin.capabilities` và `suppressBuiltInModel`, không được
+      liệt kê ở đây.
 
-      | # | Hook | Khi nào sử dụng |
-      | --- | --- | --- |
-      | 1 | `catalog` | Catalog model hoặc mặc định URL cơ sở |
-      | 2 | `applyConfigDefaults` | Các mặc định toàn cục do provider sở hữu trong quá trình vật chất hóa cấu hình |
-      | 3 | `normalizeModelId` | Dọn dẹp alias model-id cũ/bản xem trước trước khi tra cứu |
-      | 4 | `normalizeTransport` | Dọn dẹp `api` / `baseUrl` theo họ provider trước khi lắp ráp model chung |
-      | 5 | `normalizeConfig` | Chuẩn hóa cấu hình `models.providers.<id>` |
-      | 6 | `applyNativeStreamingUsageCompat` | Ghi lại tương thích streaming-usage gốc cho các provider cấu hình |
-      | 7 | `resolveConfigApiKey` | Phân giải xác thực env-marker do provider sở hữu |
-      | 8 | `resolveSyntheticAuth` | Xác thực tổng hợp local/tự host hoặc dựa trên cấu hình |
-      | 9 | `shouldDeferSyntheticProfileAuth` | Hạ mức placeholder profile đã lưu tổng hợp xuống sau xác thực env/cấu hình |
-      | 10 | `resolveDynamicModel` | Chấp nhận ID model upstream tùy ý |
-      | 11 | `prepareDynamicModel` | Lấy metadata bất đồng bộ trước khi phân giải |
-      | 12 | `normalizeResolvedModel` | Ghi lại transport trước runner |
-      | 13 | `normalizeToolSchemas` | Dọn dẹp tool-schema do provider sở hữu trước khi đăng ký |
-      | 14 | `inspectToolSchemas` | Chẩn đoán tool-schema do provider sở hữu |
-      | 15 | `resolveReasoningOutputMode` | Hợp đồng reasoning-output được gắn thẻ so với gốc |
-      | 16 | `prepareExtraParams` | Tham số yêu cầu mặc định |
-      | 17 | `createStreamFn` | Transport StreamFn tùy chỉnh hoàn toàn |
-      | 19 | `wrapStreamFn` | Wrapper header/body tùy chỉnh trên đường dẫn stream bình thường |
-      | 20 | `resolveTransportTurnState` | Header/metadata gốc theo từng lượt |
-      | 21 | `resolveWebSocketSessionPolicy` | Header/cool-down phiên WS gốc |
-      | 22 | `formatApiKey` | Hình dạng token runtime tùy chỉnh |
-      | 23 | `refreshOAuth` | Làm mới OAuth tùy chỉnh |
-      | 24 | `buildAuthDoctorHint` | Hướng dẫn sửa xác thực |
-      | 25 | `matchesContextOverflowError` | Phát hiện tràn do provider sở hữu |
-      | 26 | `classifyFailoverReason` | Phân loại rate-limit/quá tải do provider sở hữu |
-      | 27 | `isCacheTtlEligible` | Chặn TTL cache prompt |
-      | 28 | `buildMissingAuthMessage` | Gợi ý thiếu xác thực tùy chỉnh |
-      | 29 | `augmentModelCatalog` | Hàng tổng hợp tương thích tiến về sau |
-      | 30 | `resolveThinkingProfile` | Bộ tùy chọn `/think` theo model |
-      | 31 | `isBinaryThinking` | Tương thích bật/tắt suy nghĩ nhị phân |
-      | 32 | `supportsXHighThinking` | Tương thích hỗ trợ reasoning `xhigh` |
-      | 33 | `resolveDefaultThinkingLevel` | Tương thích chính sách `/think` mặc định |
-      | 34 | `isModernModelRef` | Khớp model live/smoke |
-      | 35 | `prepareRuntimeAuth` | Trao đổi token trước suy luận |
-      | 36 | `resolveUsageAuth` | Phân tích thông tin xác thực mức sử dụng tùy chỉnh |
-      | 37 | `fetchUsageSnapshot` | Endpoint mức sử dụng tùy chỉnh |
-      | 38 | `createEmbeddingProvider` | Adapter embedding do provider sở hữu cho bộ nhớ/tìm kiếm |
-      | 39 | `buildReplayPolicy` | Chính sách phát lại transcript/compaction tùy chỉnh |
-      | 40 | `sanitizeReplayHistory` | Ghi lại phát lại theo provider sau bước dọn dẹp chung |
-      | 41 | `validateReplayTurns` | Xác thực nghiêm ngặt lượt phát lại trước runner nhúng |
-      | 42 | `onModelSelected` | Callback sau khi chọn (ví dụ: telemetry) |
+      | Hook | Khi nào nên sử dụng |
+      | --- | --- |
+      | `catalog` | Danh mục mô hình hoặc giá trị mặc định của URL cơ sở |
+      | `applyConfigDefaults` | Các giá trị mặc định toàn cục do nhà cung cấp sở hữu trong quá trình hiện thực hóa cấu hình |
+      | `normalizeModelId` | Dọn dẹp bí danh mã định danh mô hình cũ/xem trước trước khi tra cứu |
+      | `normalizeTransport` | Dọn dẹp `api` / `baseUrl` của họ nhà cung cấp trước khi lắp ráp mô hình chung |
+      | `normalizeConfig` | Chuẩn hóa cấu hình `models.providers.<id>` |
+      | `applyNativeStreamingUsageCompat` | Chuyển đổi tương thích mức sử dụng truyền phát gốc cho các nhà cung cấp cấu hình |
+      | `resolveConfigApiKey` | Phân giải xác thực bằng dấu hiệu biến môi trường do nhà cung cấp sở hữu |
+      | `resolveSyntheticAuth` | Xác thực tổng hợp cục bộ/tự lưu trữ hoặc dựa trên cấu hình |
+      | `resolveExternalAuthProfiles` | Phủ các hồ sơ xác thực bên ngoài do nhà cung cấp sở hữu cho thông tin xác thực được CLI/ứng dụng quản lý |
+      | `shouldDeferSyntheticProfileAuth` | Hạ mức ưu tiên các phần giữ chỗ hồ sơ tổng hợp đã lưu xuống sau xác thực bằng biến môi trường/cấu hình |
+      | `resolveDynamicModel` | Chấp nhận mã định danh mô hình thượng nguồn tùy ý |
+      | `prepareDynamicModel` | Tìm nạp siêu dữ liệu bất đồng bộ trước khi phân giải |
+      | `normalizeResolvedModel` | Chuyển đổi lớp truyền tải trước trình chạy |
+      | `normalizeToolSchemas` | Dọn dẹp lược đồ công cụ do nhà cung cấp sở hữu trước khi đăng ký |
+      | `inspectToolSchemas` | Chẩn đoán lược đồ công cụ do nhà cung cấp sở hữu |
+      | `resolveReasoningOutputMode` | Hợp đồng đầu ra suy luận được gắn thẻ so với gốc |
+      | `prepareExtraParams` | Các tham số yêu cầu mặc định |
+      | `createStreamFn` | Lớp truyền tải StreamFn tùy chỉnh hoàn toàn |
+      | `wrapStreamFn` | Trình bao bọc tiêu đề/nội dung tùy chỉnh trên đường truyền phát thông thường |
+      | `resolveTransportTurnState` | Tiêu đề/siêu dữ liệu gốc cho mỗi lượt |
+      | `resolveWebSocketSessionPolicy` | Tiêu đề/thời gian chờ phiên WS gốc |
+      | `formatApiKey` | Cấu trúc token thời gian chạy tùy chỉnh |
+      | `refreshOAuth` | Làm mới OAuth tùy chỉnh |
+      | `buildAuthDoctorHint` | Hướng dẫn sửa chữa xác thực |
+      | `matchesContextOverflowError` | Phát hiện tràn do nhà cung cấp sở hữu |
+      | `classifyFailoverReason` | Phân loại giới hạn tốc độ/quá tải do nhà cung cấp sở hữu |
+      | `isCacheTtlEligible` | Kiểm soát TTL của bộ nhớ đệm lời nhắc |
+      | `buildMissingAuthMessage` | Gợi ý tùy chỉnh khi thiếu xác thực |
+      | `augmentModelCatalog` | Các hàng tương thích xuôi tổng hợp (đã ngừng khuyến nghị - ưu tiên `registerModelCatalogProvider`) |
+      | `resolveThinkingProfile` | Tập tùy chọn `/think` dành riêng cho mô hình |
+      | `isBinaryThinking` | Khả năng tương thích bật/tắt tư duy nhị phân (đã ngừng khuyến nghị - ưu tiên `resolveThinkingProfile`) |
+      | `supportsXHighThinking` | Khả năng tương thích hỗ trợ suy luận `xhigh` (đã ngừng khuyến nghị - ưu tiên `resolveThinkingProfile`) |
+      | `resolveDefaultThinkingLevel` | Khả năng tương thích chính sách `/think` mặc định (đã ngừng khuyến nghị - ưu tiên `resolveThinkingProfile`) |
+      | `isModernModelRef` | Khớp mô hình trực tiếp/kiểm tra nhanh |
+      | `prepareRuntimeAuth` | Trao đổi token trước khi suy luận |
+      | `resolveUsageAuth` | Phân tích thông tin xác thực mức sử dụng tùy chỉnh |
+      | `fetchUsageSnapshot` | Điểm cuối mức sử dụng tùy chỉnh |
+      | `createEmbeddingProvider` | Bộ điều hợp embedding do nhà cung cấp sở hữu cho bộ nhớ/tìm kiếm |
+      | `buildReplayPolicy` | Chính sách phát lại/Compaction bản ghi tùy chỉnh |
+      | `sanitizeReplayHistory` | Chuyển đổi phát lại dành riêng cho nhà cung cấp sau khi dọn dẹp chung |
+      | `validateReplayTurns` | Xác thực nghiêm ngặt các lượt phát lại trước trình chạy nhúng |
+      | `onModelSelected` | Lệnh gọi lại sau khi chọn (ví dụ: phép đo từ xa) |
 
-      Ghi chú về phương án dự phòng runtime:
+      Ghi chú về cơ chế dự phòng thời gian chạy:
 
-      - `normalizeConfig` kiểm tra provider khớp trước, rồi đến các provider plugin khác có hỗ trợ hook cho đến khi có một provider thật sự thay đổi cấu hình. Nếu không hook provider nào ghi lại một mục cấu hình họ Google được hỗ trợ, bộ chuẩn hóa cấu hình Google đi kèm vẫn được áp dụng.
-      - `resolveConfigApiKey` dùng hook provider khi được công bố. Amazon Bedrock giữ phân giải env-marker AWS trong provider plugin của nó; bản thân xác thực runtime vẫn dùng chuỗi mặc định AWS SDK khi được cấu hình với `auth: "aws-sdk"`.
-      - `resolveThinkingProfile(ctx)` nhận `provider`, `modelId` đã chọn, gợi ý catalog `reasoning` đã hợp nhất tùy chọn, và các dữ kiện `compat` model đã hợp nhất tùy chọn. Chỉ dùng `compat` để chọn UI/profile thinking của provider.
-      - `resolveSystemPromptContribution` cho phép provider chèn hướng dẫn system-prompt có nhận biết cache cho một họ model. Ưu tiên nó hơn `before_prompt_build` khi hành vi thuộc về một provider/họ model và cần giữ nguyên phần tách cache ổn định/động.
+      - `normalizeConfig` phân giải một plugin sở hữu cho mỗi mã định danh nhà cung cấp (các nhà cung cấp đi kèm trước, sau đó là plugin thời gian chạy khớp) và chỉ gọi hook đó - không quét qua các nhà cung cấp khác. Hook `normalizeConfig` riêng của Google là thành phần chuẩn hóa các mục cấu hình `google` / `google-vertex` / `google-antigravity`; đây không phải là một cơ chế dự phòng lõi riêng biệt.
+      - `resolveConfigApiKey` sử dụng hook của nhà cung cấp khi được cung cấp. Amazon Bedrock giữ việc phân giải dấu hiệu biến môi trường AWS trong plugin nhà cung cấp của mình; bản thân xác thực thời gian chạy vẫn sử dụng chuỗi mặc định của AWS SDK khi được cấu hình với `auth: "aws-sdk"`.
+      - `resolveThinkingProfile(ctx)` nhận `provider`, `modelId` đã chọn, gợi ý danh mục `reasoning` đã hợp nhất tùy chọn và các thông tin `compat` của mô hình đã hợp nhất tùy chọn. Chỉ sử dụng `compat` để chọn giao diện/hồ sơ tư duy của nhà cung cấp.
+      - `resolveSystemPromptContribution` cho phép nhà cung cấp chèn hướng dẫn lời nhắc hệ thống nhận biết bộ nhớ đệm cho một họ mô hình. Ưu tiên nó thay cho hook `before_prompt_build` cũ áp dụng cho toàn plugin khi hành vi thuộc về một họ nhà cung cấp/mô hình và cần duy trì sự phân tách bộ nhớ đệm ổn định/động.
 
-      Để xem mô tả chi tiết và ví dụ thực tế, hãy xem [Nội bộ: Hook Runtime Provider](/vi/plugins/architecture-internals#provider-runtime-hooks).
     </Accordion>
 
   </Step>
 
-  <Step title="Thêm khả năng bổ sung (tùy chọn)">
-    ### Bước 5: Thêm khả năng bổ sung
+  <Step title="Thêm các khả năng bổ sung (tùy chọn)">
+    ### Bước 5: Thêm các khả năng bổ sung
 
-    Một provider plugin có thể đăng ký embedding, speech, phiên âm realtime,
-    giọng nói realtime, hiểu media, tạo ảnh, tạo video,
-    web fetch và web search cùng với suy luận văn bản. OpenClaw phân loại đây là
-    plugin **hybrid-capability** - mẫu được khuyến nghị cho plugin công ty
-    (mỗi vendor một plugin). Xem
-    [Nội bộ: Quyền sở hữu Capability](/vi/plugins/architecture#capability-ownership-model).
+    Plugin nhà cung cấp có thể đăng ký embedding, giọng nói, phiên âm thời gian thực,
+    thoại thời gian thực, hiểu phương tiện, tạo hình ảnh, tạo video,
+    tìm nạp web và tìm kiếm web bên cạnh suy luận văn bản. OpenClaw phân loại đây là một
+    plugin **khả năng kết hợp** - mẫu được khuyến nghị cho plugin của công ty
+    (mỗi nhà cung cấp một plugin). Xem
+    [Nội bộ: Quyền sở hữu khả năng](/vi/plugins/architecture#capability-ownership-model).
 
-    Đăng ký từng capability bên trong `register(api)` cùng với lệnh gọi
-    `api.registerProvider(...)` hiện có của bạn. Chỉ chọn các tab bạn cần:
+    Đăng ký từng khả năng bên trong `register(api)` cùng với lệnh gọi
+    `api.registerProvider(...)` hiện có. Chỉ chọn các thẻ bạn cần:
 
     <Tabs>
-      <Tab title="Speech (TTS)">
+      <Tab title="Giọng nói (TTS)">
         ```typescript
         import {
           assertOkOrThrowProviderError,
@@ -697,15 +752,15 @@ xác thực bằng khóa API và phân giải mô hình động.
         });
         ```
 
-        Dùng `assertOkOrThrowProviderError(...)` cho lỗi HTTP provider để
-        các plugin chia sẻ việc đọc phần thân lỗi có giới hạn, phân tích lỗi JSON và
-        hậu tố request-id.
+        Sử dụng `assertOkOrThrowProviderError(...)` cho các lỗi HTTP của nhà cung cấp để
+        các plugin dùng chung cơ chế đọc nội dung lỗi có giới hạn, phân tích lỗi JSON và
+        hậu tố mã định danh yêu cầu.
       </Tab>
-      <Tab title="Phiên âm realtime">
-        Ưu tiên `createRealtimeTranscriptionWebSocketSession(...)` - helper dùng chung
-        xử lý ghi nhận proxy, backoff kết nối lại, xả khi đóng, bắt tay sẵn sàng,
-        xếp hàng audio và chẩn đoán sự kiện đóng. Plugin của bạn
-        chỉ ánh xạ các sự kiện upstream.
+      <Tab title="Phiên âm thời gian thực">
+        Ưu tiên `createRealtimeTranscriptionWebSocketSession(...)` - trình trợ giúp dùng chung
+        xử lý việc ghi nhận proxy, thời gian chờ kết nối lại, đẩy dữ liệu khi đóng, bắt tay
+        sẵn sàng, xếp hàng âm thanh và chẩn đoán sự kiện đóng. Plugin của bạn
+        chỉ ánh xạ các sự kiện thượng nguồn.
 
         ```typescript
         api.registerRealtimeTranscriptionProvider({
@@ -743,13 +798,13 @@ xác thực bằng khóa API và phân giải mô hình động.
         });
         ```
 
-        Các provider STT theo batch POST audio multipart nên dùng
+        Các nhà cung cấp STT theo lô gửi âm thanh multipart bằng POST nên sử dụng
         `buildAudioTranscriptionFormData(...)` từ
-        `openclaw/plugin-sdk/provider-http`. Helper chuẩn hóa tên tệp tải lên,
-        bao gồm các bản tải lên AAC cần tên tệp kiểu M4A cho
-        API phiên âm tương thích.
+        `openclaw/plugin-sdk/provider-http`. Hàm hỗ trợ này chuẩn hóa tên tệp
+        tải lên, bao gồm các bản tải lên AAC cần tên tệp kiểu M4A để tương thích
+        với các API phiên âm.
       </Tab>
-      <Tab title="Giọng nói realtime">
+      <Tab title="Giọng nói thời gian thực">
         ```typescript
         api.registerRealtimeVoiceProvider({
           id: "acme-ai",
@@ -759,12 +814,13 @@ xác thực bằng khóa API và phân giải mô hình động.
             inputAudioFormats: [{ encoding: "pcm16", sampleRateHz: 24000, channels: 1 }],
             outputAudioFormats: [{ encoding: "pcm16", sampleRateHz: 24000, channels: 1 }],
             supportsBargeIn: true,
+            handlesInputAudioBargeIn: true,
             supportsToolCalls: true,
           },
           isConfigured: ({ providerConfig }) => Boolean(providerConfig.apiKey),
           createBridge: (req) => ({
-            // Chỉ đặt tùy chọn này nếu provider chấp nhận nhiều phản hồi tool cho
-            // một lệnh gọi, ví dụ phản hồi "đang xử lý" ngay lập tức theo sau là
+            // Chỉ đặt giá trị này nếu nhà cung cấp chấp nhận nhiều phản hồi công cụ cho
+            // một lệnh gọi, ví dụ phản hồi "đang xử lý" ngay lập tức, sau đó là
             // kết quả cuối cùng.
             supportsToolResultContinuation: false,
             connect: async () => {},
@@ -779,13 +835,31 @@ xác thực bằng khóa API và phân giải mô hình động.
         });
         ```
 
-        Khai báo `capabilities` để `talk.catalog` có thể hiển thị các chế độ,
+        Khai báo `capabilities` để `talk.catalog` có thể cung cấp các chế độ,
         phương thức truyền tải, định dạng âm thanh và cờ tính năng hợp lệ cho
-        các máy khách Talk trên trình duyệt và native. Triển khai `handleBargeIn` khi một phương thức truyền tải có thể phát hiện rằng
-        con người đang ngắt phần phát lại của trợ lý và nhà cung cấp hỗ trợ
-        cắt ngắn hoặc xóa phản hồi âm thanh đang hoạt động.
+        các ứng dụng Talk trên trình duyệt và ứng dụng gốc. Triển khai
+        `handleBargeIn` khi phương thức truyền tải có thể phát hiện người dùng
+        đang ngắt phần phát lại của trợ lý và nhà cung cấp hỗ trợ cắt ngắn hoặc
+        xóa phản hồi âm thanh đang hoạt động.
+        `submitToolResult` có thể trả về `void` để gửi đồng bộ hoặc
+        `Promise<void>` làm ranh giới hoàn tất bất đồng bộ mà cầu nối nhà cung
+        cấp có thể cung cấp. Các phiên chuyển tiếp Gateway chờ promise đó trước
+        khi xác nhận kết quả cuối cùng hoặc xóa lượt chạy được liên kết; hãy từ
+        chối promise khi việc gửi thất bại.
+        Đặt `supportsToolResultSuppression: false` khi nhà cung cấp không thể
+        tuân thủ `options.suppressResponse`. Khi đó, OpenClaw tránh việc chặn
+        phản hồi đối với các kết quả tham vấn bắt buộc nội bộ và kết quả hủy,
+        đồng thời từ chối các yêu cầu kết quả bị chặn trực tiếp thay vì âm thầm
+        bắt đầu một phản hồi.
+        Tương tự, bên sử dụng `createRealtimeVoiceBridgeSession` có thể trả về
+        một promise từ `onToolCall`; các ngoại lệ đồng bộ và promise bị từ chối
+        được chuyển đến callback `onError` của phiên.
+        Chỉ đặt `handlesInputAudioBargeIn` khi VAD của nhà cung cấp xác nhận một
+        lần ngắt bằng cách gọi `onClearAudio("barge-in")`. Các nhà cung cấp bỏ
+        qua cờ này sẽ sử dụng cơ chế phát hiện dự phòng cục bộ của OpenClaw cho
+        âm thanh đầu vào.
       </Tab>
-      <Tab title="Media understanding">
+      <Tab title="Hiểu nội dung đa phương tiện">
         ```typescript
         api.registerMediaUnderstandingProvider({
           id: "acme-ai",
@@ -795,11 +869,12 @@ xác thực bằng khóa API và phân giải mô hình động.
         });
         ```
 
-        Các nhà cung cấp phương tiện cục bộ hoặc tự lưu trữ cố ý không yêu cầu
-        thông tin xác thực có thể hiển thị `resolveAuth` và trả về `kind: "none"`.
-        OpenClaw vẫn giữ cổng xác thực thông thường cho các nhà cung cấp không
-        chọn tham gia một cách rõ ràng. Các nhà cung cấp hiện có có thể tiếp tục đọc `req.apiKey`;
-        nhà cung cấp mới nên ưu tiên `req.auth`.
+        Các nhà cung cấp đa phương tiện cục bộ hoặc tự lưu trữ được thiết kế
+        để không yêu cầu thông tin xác thực có thể cung cấp `resolveAuth` và
+        trả về `kind: "none"`.
+        OpenClaw vẫn duy trì cổng xác thực thông thường đối với các nhà cung cấp
+        không chủ động chọn tham gia. Các nhà cung cấp hiện có có thể tiếp tục
+        đọc `req.apiKey`; các nhà cung cấp mới nên ưu tiên `req.auth`.
 
         ```typescript
         api.registerMediaUnderstandingProvider({
@@ -813,7 +888,7 @@ xác thực bằng khóa API và phân giải mô hình động.
         });
         ```
       </Tab>
-      <Tab title="Embeddings">
+      <Tab title="Nhúng">
         ```typescript
         api.registerEmbeddingProvider({
           id: "acme-ai",
@@ -840,30 +915,37 @@ xác thực bằng khóa API và phân giải mô hình động.
         });
         ```
 
-        Khai báo cùng id trong `contracts.embeddingProviders`. Đây là
-        hợp đồng nhúng tổng quát để tạo vector có thể tái sử dụng, bao gồm
-        tìm kiếm bộ nhớ. `registerMemoryEmbeddingProvider(...)` là lớp tương thích đã ngừng khuyến nghị
-        cho các bộ điều hợp hiện có chuyên cho bộ nhớ.
+        Khai báo cùng một mã định danh trong `contracts.embeddingProviders`.
+        Đây là hợp đồng nhúng tổng quát để tạo vectơ có thể tái sử dụng, bao gồm
+        cả tìm kiếm bộ nhớ. `registerMemoryEmbeddingProvider(...)` là khả năng
+        tương thích đã ngừng khuyến nghị dành cho các bộ điều hợp chuyên biệt
+        cho bộ nhớ hiện có.
       </Tab>
-      <Tab title="Image and video generation">
-        Các năng lực video dùng một dạng **nhận biết theo chế độ**: `generate`,
-        `imageToVideo` và `videoToVideo`. Các trường tổng hợp phẳng như
-        `maxInputImages` / `maxInputVideos` / `maxDurationSeconds` không
-        đủ để quảng bá hỗ trợ chế độ biến đổi hoặc các chế độ bị tắt một cách rõ ràng.
-        Tạo nhạc tuân theo cùng mẫu với các khối `generate` /
-        `edit` tường minh.
+      <Tab title="Tạo hình ảnh và video">
+        Các khả năng hình ảnh và video sử dụng cấu trúc **nhận biết chế độ**.
+        Nhà cung cấp hình ảnh khai báo các khối khả năng `generate` và `edit`
+        bắt buộc; nhà cung cấp video khai báo `generate`, `imageToVideo` và
+        `videoToVideo`. Các trường tổng hợp phẳng như `maxInputImages` /
+        `maxInputVideos` / `maxDurationSeconds` không đủ để công bố rõ ràng
+        khả năng hỗ trợ chế độ chuyển đổi hoặc các chế độ bị vô hiệu hóa. Tính
+        năng tạo nhạc tuân theo cùng mẫu `generate` / `edit`.
 
         ```typescript
         api.registerImageGenerationProvider({
           id: "acme-ai",
           label: "Acme Images",
-          generate: async (req) => ({ /* image result */ }),
+          capabilities: {
+            generate: { maxCount: 4, supportsSize: true },
+            edit: { enabled: false },
+          },
+          generateImage: async (req) => ({ images: [] }),
         });
 
         api.registerVideoGenerationProvider({
           id: "acme-ai",
           label: "Acme Video",
           defaultTimeoutMs: 600_000,
+          models: ["acme-video", "acme-image-video"],
           capabilities: {
             generate: { maxVideos: 1, maxDurationSeconds: 10, supportsResolution: true },
             imageToVideo: {
@@ -875,11 +957,38 @@ xác thực bằng khóa API và phân giải mô hình động.
             },
             videoToVideo: { enabled: false },
           },
+          catalogByModel: {
+            "acme-image-video": {
+              modes: ["imageToVideo"],
+              capabilities: {
+                imageToVideo: {
+                  enabled: true,
+                  maxVideos: 1,
+                  maxInputImages: 1,
+                  resolutions: ["480P", "720P", "1080P"],
+                  supportsResolution: true,
+                },
+                videoToVideo: { enabled: false },
+              },
+            },
+          },
           generateVideo: async (req) => ({ videos: [] }),
         });
         ```
+
+        `capabilities` là bắt buộc đối với cả hai loại nhà cung cấp; `edit` và
+        các khối chuyển đổi video (`imageToVideo`, `videoToVideo`) luôn cần cờ
+        `enabled` tường minh.
+
+        Sử dụng `catalogByModel` khi các chế độ hoặc khả năng tĩnh của một mô
+        hình được liệt kê khác với giá trị mặc định của nhà cung cấp. Siêu dữ
+        liệu này giúp `video_generate action=list` và danh mục mô hình luôn
+        chính xác mà không cần gọi mã của nhà cung cấp. Việc tra cứu và thực
+        thi khả năng tại thời điểm yêu cầu vẫn thuộc về
+        `resolveModelCapabilities` và `generateVideo`; khi có thể, hãy tái sử
+        dụng cùng một hằng số khả năng cho cả hai đường dẫn.
       </Tab>
-      <Tab title="Web fetch and search">
+      <Tab title="Tìm nạp và tìm kiếm trên web">
         ```typescript
         api.registerWebFetchProvider({
           id: "acme-ai-fetch",
@@ -904,20 +1013,39 @@ xác thực bằng khóa API và phân giải mô hình động.
         api.registerWebSearchProvider({
           id: "acme-ai-search",
           label: "Acme Search",
-          search: async (req) => ({ content: [] }),
+          hint: "Search the web through Acme's search backend.",
+          envVars: ["ACME_SEARCH_API_KEY"],
+          placeholder: "acme-...",
+          signupUrl: "https://acme.example.com/search",
+          credentialPath: "plugins.entries.acme.config.webSearch.apiKey",
+          getCredentialValue: (searchConfig) => searchConfig?.acme?.apiKey,
+          setCredentialValue: (searchConfigTarget, value) => {
+            const acme = (searchConfigTarget.acme ??= {});
+            acme.apiKey = value;
+          },
+          createTool: () => ({
+            description: "Search the web through Acme Search.",
+            parameters: {},
+            execute: async (args) => ({ content: [] }),
+          }),
         });
         ```
+
+        Cả hai loại nhà cung cấp dùng chung cấu trúc kết nối thông tin xác thực:
+        `hint`, `envVars`, `placeholder`, `signupUrl`, `credentialPath`,
+        `getCredentialValue`, `setCredentialValue` và `createTool` đều là bắt
+        buộc.
       </Tab>
     </Tabs>
 
   </Step>
 
-  <Step title="Test">
+  <Step title="Kiểm thử">
     ### Bước 6: Kiểm thử
 
     ```typescript src/provider.test.ts
     import { describe, it, expect } from "vitest";
-    // Export your provider config object from index.ts or a dedicated file
+    // Xuất đối tượng cấu hình nhà cung cấp từ index.ts hoặc một tệp riêng
     import { acmeProvider } from "./provider.js";
 
     describe("acme-ai provider", () => {
@@ -950,49 +1078,49 @@ xác thực bằng khóa API và phân giải mô hình động.
 
 ## Xuất bản lên ClawHub
 
-Các plugin nhà cung cấp được xuất bản giống như mọi plugin mã bên ngoài khác:
+Plugin nhà cung cấp được xuất bản giống như mọi Plugin mã bên ngoài khác:
 
 ```bash
 clawhub package publish your-org/your-plugin --dry-run
 clawhub package publish your-org/your-plugin
 ```
 
-Không dùng bí danh xuất bản cũ chỉ dành cho skill ở đây; các gói plugin nên dùng
-`clawhub package publish`.
+`clawhub skill publish <path>` là một lệnh khác dùng để xuất bản thư mục skill,
+không phải gói Plugin — không sử dụng lệnh đó ở đây.
 
 ## Cấu trúc tệp
 
 ```
 <bundled-plugin-root>/acme-ai/
-├── package.json              # openclaw.providers metadata
-├── openclaw.plugin.json      # Manifest with provider auth metadata
+├── package.json              # siêu dữ liệu openclaw.providers
+├── openclaw.plugin.json      # Tệp kê khai có siêu dữ liệu xác thực nhà cung cấp
 ├── index.ts                  # definePluginEntry + registerProvider
 └── src/
-    ├── provider.test.ts      # Tests
-    └── usage.ts              # Usage endpoint (optional)
+    ├── provider.test.ts      # Kiểm thử
+    └── usage.ts              # Điểm cuối sử dụng (tùy chọn)
 ```
 
 ## Tham chiếu thứ tự danh mục
 
-`catalog.order` kiểm soát thời điểm danh mục của bạn được hợp nhất so với
-các nhà cung cấp tích hợp sẵn:
+`catalog.order` kiểm soát thời điểm danh mục của bạn được hợp nhất tương đối
+với các nhà cung cấp tích hợp sẵn:
 
-| Thứ tự    | Khi nào       | Trường hợp sử dụng                            |
-| --------- | ------------- | --------------------------------------------- |
-| `simple`  | Lượt đầu tiên | Nhà cung cấp API-key đơn giản                 |
-| `profile` | Sau simple    | Nhà cung cấp được kiểm soát bằng hồ sơ xác thực |
-| `paired`  | Sau profile   | Tổng hợp nhiều mục liên quan                  |
-| `late`    | Lượt cuối     | Ghi đè nhà cung cấp hiện có (thắng khi xung đột) |
+| Thứ tự    | Thời điểm       | Trường hợp sử dụng                                      |
+| --------- | ---------------- | ------------------------------------------------------- |
+| `simple`  | Lượt đầu tiên    | Các nhà cung cấp dùng khóa API thông thường             |
+| `profile` | Sau simple       | Các nhà cung cấp yêu cầu hồ sơ xác thực                  |
+| `paired`  | Sau profile      | Tổng hợp nhiều mục nhập có liên quan                     |
+| `late`    | Lượt cuối cùng   | Ghi đè các nhà cung cấp hiện có (ưu tiên khi xung đột)   |
 
-## Bước tiếp theo
+## Các bước tiếp theo
 
 - [Plugin kênh](/vi/plugins/sdk-channel-plugins) - nếu plugin của bạn cũng cung cấp một kênh
-- [SDK Runtime](/vi/plugins/sdk-runtime) - trình trợ giúp `api.runtime` (TTS, tìm kiếm, subagent)
-- [Tổng quan SDK](/vi/plugins/sdk-overview) - tham chiếu nhập subpath đầy đủ
-- [Nội bộ Plugin](/vi/plugins/architecture-internals#provider-runtime-hooks) - chi tiết hook và ví dụ tích hợp sẵn
+- [Môi trường chạy SDK](/vi/plugins/sdk-runtime) - các trình trợ giúp `api.runtime` (TTS, tìm kiếm, tác tử con)
+- [Tổng quan về SDK](/vi/plugins/sdk-overview) - tài liệu tham chiếu đầy đủ về nhập đường dẫn con
+- [Cơ chế nội bộ của Plugin](/vi/plugins/architecture-internals#provider-runtime-hooks) - chi tiết về hook và các ví dụ được đóng gói
 
-## Liên quan
+## Nội dung liên quan
 
-- [Thiết lập Plugin SDK](/vi/plugins/sdk-setup)
+- [Thiết lập SDK Plugin](/vi/plugins/sdk-setup)
 - [Xây dựng plugin](/vi/plugins/building-plugins)
 - [Xây dựng plugin kênh](/vi/plugins/sdk-channel-plugins)

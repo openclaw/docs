@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Vous installez, configurez ou auditez le plugin perplexity
-summary: Ajoute la prise en charge du fournisseur de recherche web.
+    - Vous installez, configurez ou auditez le plugin Perplexity
+summary: Ajoute la prise en charge des fournisseurs de recherche Web.
 title: Plugin Perplexity
 x-i18n:
-    generated_at: "2026-06-27T17:56:18Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T03:09:35Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: c649c4dc4df04ca668e924e2644af970d75eab404b8f57579e509aa061994ffe
@@ -15,17 +15,17 @@ x-i18n:
 
 # Plugin Perplexity
 
-Ajoute la prise en charge du fournisseur de recherche web.
+Ajoute la prise en charge d’un fournisseur de recherche sur le Web.
 
 ## Distribution
 
-- Package : `@openclaw/perplexity-plugin`
-- Voie d’installation : npm ; ClawHub : `clawhub:@openclaw/perplexity-plugin`
+- Paquet : `@openclaw/perplexity-plugin`
+- Méthode d’installation : npm ; ClawHub : `clawhub:@openclaw/perplexity-plugin`
 
 ## Surface
 
-contrats : webSearchProviders
+contrats : webSearchProviders
 
-## Docs associées
+## Documentation associée
 
-- [perplexity](/fr/tools/perplexity-search)
+- [Perplexity](/fr/tools/perplexity-search)

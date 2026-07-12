@@ -1,32 +1,31 @@
 ---
 read_when:
-    - Configuration initiale à partir de zéro
-    - Vous recherchez le moyen le plus rapide d’obtenir un chat fonctionnel
+    - Première configuration à partir de zéro
+    - Vous souhaitez la méthode la plus rapide pour disposer d’un chat fonctionnel
 summary: Installez OpenClaw et lancez votre première conversation en quelques minutes.
 title: Prise en main
 x-i18n:
-    generated_at: "2026-07-12T15:50:41Z"
+    generated_at: "2026-07-12T03:20:29Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 308ca58b8a11832b5a4c0d4634d1c88ef44681ef755a18d675bcff60b5aba929
     source_path: start/getting-started.md
     workflow: 16
 ---
 
-Installez OpenClaw, effectuez l’intégration et discutez avec votre assistant IA en environ 5
+Installez OpenClaw, effectuez l’intégration et échangez avec votre assistant IA en environ 5
 minutes. À la fin, vous disposerez d’un Gateway opérationnel, d’une authentification configurée et d’une
 session de discussion fonctionnelle.
 
 ## Prérequis
 
-- **Node.js 22.19+, 23.11+ ou 24+** (24 est la version recommandée par défaut)
-- **Une clé API** d’un fournisseur de modèles (Anthropic, OpenAI, Google, etc.) — l’intégration vous invitera à la saisir
+- **Node.js 22.19+, 23.11+ ou 24+** (la version 24 est recommandée par défaut)
+- **Une clé API** fournie par un fournisseur de modèles (Anthropic, OpenAI, Google, etc.) — l’assistant d’intégration vous la demandera
 
 <Tip>
 Vérifiez votre version de Node avec `node --version`.
-**Utilisateurs de Windows :** l’application Hub native pour Windows constitue la solution la plus simple sur ordinateur. Le
+**Utilisateurs de Windows :** l’application Windows Hub native constitue la solution la plus simple sur ordinateur. Le
 programme d’installation PowerShell et les configurations du Gateway sous WSL2 sont également pris en charge. Consultez [Windows](/fr/platforms/windows).
 Vous devez installer Node ? Consultez [Configuration de Node](/fr/install/node).
 </Tip>
@@ -67,17 +66,17 @@ Vous devez installer Node ? Consultez [Configuration de Node](/fr/install/node).
     et la configuration du Gateway. Le démarrage rapide ne prend généralement que quelques minutes, mais
     la connexion au fournisseur, l’association d’un canal, l’installation du démon, les téléchargements réseau, les Skills
     ou les plugins facultatifs peuvent prolonger l’intégration complète. Ignorez les
-    étapes facultatives et reprenez-les ultérieurement avec `openclaw configure`.
+    étapes facultatives et revenez-y plus tard avec `openclaw configure`.
 
-    Consultez [Intégration (CLI)](/fr/start/wizard) pour la référence complète.
+    Consultez [Intégration (CLI)](/fr/start/wizard) pour la documentation de référence complète.
 
   </Step>
-  <Step title="Vérifier que le Gateway est en cours d’exécution">
+  <Step title="Vérifier que le Gateway fonctionne">
     ```bash
     openclaw gateway status
     ```
 
-    Vous devriez voir le Gateway à l’écoute sur le port 18789.
+    Le Gateway devrait être à l’écoute sur le port 18789.
 
   </Step>
   <Step title="Ouvrir le tableau de bord">
@@ -85,14 +84,14 @@ Vous devez installer Node ? Consultez [Configuration de Node](/fr/install/node).
     openclaw dashboard
     ```
 
-    Cette commande ouvre l’interface de contrôle dans votre navigateur. Si elle se charge, tout fonctionne.
+    Cette commande ouvre l’interface de contrôle dans votre navigateur. Si elle se charge, tout fonctionne correctement.
 
   </Step>
   <Step title="Envoyer votre premier message">
     Saisissez un message dans la discussion de l’interface de contrôle ; vous devriez recevoir une réponse de l’IA.
 
     Vous préférez discuter depuis votre téléphone ? Le canal le plus rapide à configurer est
-    [Telegram](/fr/channels/telegram) (un simple jeton de bot). Consultez [Canaux](/fr/channels)
+    [Telegram](/fr/channels/telegram) (un simple jeton de bot suffit). Consultez [Canaux](/fr/channels)
     pour découvrir toutes les options.
 
   </Step>
@@ -154,11 +153,11 @@ openclaw dashboard
 - `OPENCLAW_STATE_DIR` — remplace le répertoire d’état
 - `OPENCLAW_CONFIG_PATH` — remplace le chemin du fichier de configuration
 
-Référence complète : [Variables d’environnement](/fr/help/environment).
+Documentation de référence complète : [Variables d’environnement](/fr/help/environment).
 </Accordion>
 
-## Voir aussi
+## Ressources associées
 
-- [Présentation de l’installation](/fr/install)
-- [Présentation des canaux](/fr/channels)
+- [Vue d’ensemble de l’installation](/fr/install)
+- [Vue d’ensemble des canaux](/fr/channels)
 - [Configuration](/fr/start/setup)

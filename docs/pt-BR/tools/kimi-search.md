@@ -1,14 +1,13 @@
 ---
 read_when:
-    - Você quer usar o Kimi para web_search
+    - Você quer usar o Kimi para `web_search`
     - Você precisa de uma KIMI_API_KEY ou MOONSHOT_API_KEY
-summary: Pesquisa na web do Kimi por meio da pesquisa na web da Moonshot
-title: Pesquisa do Kimi
+summary: Pesquisa na web do Kimi por meio da pesquisa na web do Moonshot
+title: Pesquisa Kimi
 x-i18n:
-    generated_at: "2026-07-12T15:44:47Z"
+    generated_at: "2026-07-12T00:28:24Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 42ee67c14c979298c296b20cc3f10e8c1d0f93defadc1ce2aa25ac9411aba036
     source_path: tools/kimi-search.md
@@ -16,8 +15,8 @@ x-i18n:
 ---
 
 Kimi é um provedor de `web_search` baseado na pesquisa nativa na web da Moonshot. A Moonshot
-sintetiza uma única resposta com citações inline, de modo semelhante aos provedores
-de respostas fundamentadas do Gemini e do Grok, em vez de retornar uma lista de resultados classificados.
+sintetiza uma única resposta com citações em linha, de forma semelhante aos provedores de
+respostas fundamentadas do Gemini e do Grok, em vez de retornar uma lista de resultados classificados.
 
 ## Configuração
 
@@ -70,37 +69,37 @@ também solicita:
 ```
 
 `tools.web.search.provider` é detectado automaticamente com base nas chaves de API disponíveis quando omitido;
-defina-o explicitamente como `kimi` se várias credenciais de pesquisa estiverem configuradas.
+defina-o explicitamente como `kimi` se houver várias credenciais de pesquisa configuradas.
 
 A forma equivalente com escopo em `tools.web.search.kimi` (`apiKey`, `baseUrl`, `model`)
 também funciona; ambas as estruturas são mescladas na mesma configuração resolvida.
 
-Padrões: `baseUrl` usa `https://api.moonshot.ai/v1` por padrão quando omitido, e `model`
+Padrões: quando omitido, `baseUrl` usa `https://api.moonshot.ai/v1` por padrão e `model`
 usa `kimi-k2.6` por padrão.
 
 Se o tráfego de chat usar o host da China (`models.providers.moonshot.baseUrl`:
-`https://api.moonshot.cn/v1`), o `web_search` do Kimi reutilizará automaticamente esse host
-quando seu próprio `baseUrl` não estiver definido, para que as chaves `.cn` não acessem acidentalmente o
+`https://api.moonshot.cn/v1`), o `web_search` do Kimi reutilizará esse host automaticamente
+quando seu próprio `baseUrl` não estiver definido, para que chaves `.cn` não acessem acidentalmente o
 endpoint internacional (que retorna HTTP 401 para essas chaves). Defina um
-`baseUrl` explícito para o Kimi para substituir essa herança.
+`baseUrl` explícito para o Kimi a fim de substituir essa herança.
 
 ## Requisito de fundamentação
 
 O OpenClaw só retorna um resultado de `web_search` do Kimi depois que a resposta da Moonshot
-inclui evidências nativas de fundamentação em pesquisa na web, como uma repetição de chamada da ferramenta
-`$web_search`, `search_results` ou URLs de citações. Se o Kimi responder diretamente sem
-fundamentação (por exemplo, "Não consigo navegar na internet"), o OpenClaw retornará um
-erro `kimi_web_search_ungrounded` em vez de tratar esse texto como um resultado de pesquisa.
+inclui evidências nativas de fundamentação em pesquisa na web, como a reprodução de uma chamada
+à ferramenta `$web_search`, `search_results` ou URLs de citações. Se o Kimi responder diretamente sem
+fundamentação (por exemplo, "Não consigo navegar na internet"), o OpenClaw retornará um erro
+`kimi_web_search_ungrounded` em vez de tratar esse texto como resultado de pesquisa.
 Tente a consulta novamente, mude para um provedor estruturado, como o Brave, ou use
 `web_fetch` / a ferramenta de navegador quando você já tiver uma URL de destino.
 
 ## Parâmetros da ferramenta
 
-| Parâmetro                                                       | Compatível                                                                                                                  |
-| --------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `query`                                                         | Sim                                                                                                                         |
+| Parâmetro                                                       | Compatível                                                                                                                       |
+| --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `query`                                                         | Sim                                                                                                                              |
 | `count`                                                         | Aceito para compatibilidade entre provedores, mas ignorado: o Kimi sempre retorna uma resposta sintetizada, não uma lista com N resultados |
-| `country`, `language`, `freshness`, `date_after`, `date_before` | Não                                                                                                                         |
+| `country`, `language`, `freshness`, `date_after`, `date_before` | Não                                                                                                                              |
 
 ## Relacionados
 

@@ -2,34 +2,34 @@
 read_when:
     - OpenClaw'u bir Kubernetes kümesinde çalıştırmak istiyorsunuz
     - OpenClaw'u bir Kubernetes ortamında test etmek istiyorsunuz
-summary: OpenClaw Gateway'i Kustomize ile bir Kubernetes kümesine dağıt
+summary: OpenClaw Gateway'i Kustomize ile bir Kubernetes kümesine dağıtın
 title: Kubernetes
 x-i18n:
-    generated_at: "2026-06-28T20:44:10Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:22:33Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5a38c2754b4a5267e79854958a252b2e4bc9811da191d8ccf3ac597534cc8e7a
+    source_hash: c05eb0eb923fa1f515aca1f6dcb6073aba69af0bdf30233243027edfedd45a39
     source_path: install/kubernetes.md
     workflow: 16
 ---
 
-OpenClaw'ı Kubernetes üzerinde çalıştırmak için minimal bir başlangıç noktası; üretime hazır bir dağıtım değildir. Temel kaynakları kapsar ve ortamınıza uyarlanmak üzere tasarlanmıştır.
+Kubernetes üzerinde OpenClaw çalıştırmak için asgari bir başlangıç noktasıdır; üretime hazır bir dağıtım değildir. Temel kaynakları kapsar ve ortamınıza uyarlanması amaçlanır.
 
 ## Neden Helm değil?
 
-OpenClaw, bazı yapılandırma dosyalarına sahip tek bir container'dır. Asıl özelleştirme altyapı şablonlamasında değil, agent içeriğindedir (markdown dosyaları, Skills, yapılandırma geçersiz kılmaları). Kustomize, Helm chart ek yükü olmadan overlay'leri yönetir. Dağıtımınız daha karmaşık hale gelirse, bu manifestlerin üzerine bir Helm chart katman olarak eklenebilir.
+OpenClaw, bazı yapılandırma dosyaları içeren tek bir konteynerdir. Önemli özelleştirmeler altyapı şablonlamasında değil, ajan içeriğindedir (Markdown dosyaları, beceriler, yapılandırma geçersiz kılmaları). Kustomize, bir Helm chart'ının ek yükü olmadan katmanları yönetir. Dağıtımınız daha karmaşık hâle gelirse bu manifestlerin üzerine bir Helm chart'ı ekleyin.
 
-## Gerekenler
+## Gereksinimler
 
 - Çalışan bir Kubernetes kümesi (AKS, EKS, GKE, k3s, kind, OpenShift vb.)
 - Kümenize bağlı `kubectl`
-- En az bir model sağlayıcısı için API anahtarı
+- En az bir model sağlayıcısına ait API anahtarı
 
 ## Hızlı başlangıç
 
 ```bash
-# Replace with your provider: ANTHROPIC, GEMINI, OPENAI, or OPENROUTER
+# Sağlayıcınızla değiştirin: ANTHROPIC, GEMINI, OPENAI veya OPENROUTER
 export <PROVIDER>_API_KEY="..."
 ./scripts/k8s/deploy.sh
 
@@ -37,41 +37,40 @@ kubectl port-forward svc/openclaw 18789:18789 -n openclaw
 open http://localhost:18789
 ```
 
-Control UI için yapılandırılmış paylaşılan secret'ı alın. Bu dağıtım betiği
-varsayılan olarak token kimlik doğrulaması oluşturur:
+`deploy.sh`, varsayılan olarak belirteç tabanlı kimlik doğrulaması oluşturur. Denetim Arayüzü için oluşturulan gateway belirtecini alın:
 
 ```bash
 kubectl get secret openclaw-secrets -n openclaw -o jsonpath='{.data.OPENCLAW_GATEWAY_TOKEN}' | base64 -d
 ```
 
-Yerel hata ayıklama için `./scripts/k8s/deploy.sh --show-token`, dağıtımdan sonra token'ı yazdırır.
+Yerel hata ayıklama için `./scripts/k8s/deploy.sh --show-token`, dağıtımdan sonra belirteci yazdırır.
 
 ## Kind ile yerel test
 
-Bir kümeniz yoksa, [Kind](https://kind.sigs.k8s.io/) ile yerel olarak bir tane oluşturun:
+Bir kümeniz yoksa [Kind](https://kind.sigs.k8s.io/) ile yerel olarak oluşturun:
 
 ```bash
-./scripts/k8s/create-kind.sh           # auto-detects docker or podman
-./scripts/k8s/create-kind.sh --delete  # tear down
+./scripts/k8s/create-kind.sh           # docker veya podman'ı otomatik algılar
+./scripts/k8s/create-kind.sh --delete  # kaldırır
 ```
 
 Ardından her zamanki gibi `./scripts/k8s/deploy.sh` ile dağıtın.
 
 ## Adım adım
 
-### 1) Dağıt
+### 1) Dağıtın
 
-**Seçenek A** — Ortamda API anahtarı (tek adım):
+**Seçenek A: Ortam değişkeninde API anahtarı (tek adım)**
 
 ```bash
-# Replace with your provider: ANTHROPIC, GEMINI, OPENAI, or OPENROUTER
+# Sağlayıcınızla değiştirin: ANTHROPIC, GEMINI, OPENAI veya OPENROUTER
 export <PROVIDER>_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-Betik, API anahtarı ve otomatik oluşturulmuş bir Gateway token'ı içeren bir Kubernetes Secret oluşturur, ardından dağıtımı yapar. Secret zaten varsa, mevcut Gateway token'ını ve değiştirilmeyen sağlayıcı anahtarlarını korur.
+Betik, API anahtarını ve otomatik oluşturulan gateway belirtecini içeren bir Kubernetes Secret oluşturur, ardından dağıtımı gerçekleştirir. Secret zaten mevcutsa geçerli gateway belirtecini ve değiştirilmeyen sağlayıcı anahtarlarını korur.
 
-**Seçenek B** — Secret'ı ayrı oluştur:
+**Seçenek B: Secret'ı ayrı olarak oluşturun**
 
 ```bash
 export <PROVIDER>_API_KEY="..."
@@ -79,31 +78,31 @@ export <PROVIDER>_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-Yerel test için token'ın stdout'a yazdırılmasını istiyorsanız iki komuttan biriyle `--show-token` kullanın.
+Yerel test amacıyla belirteci standart çıktıya yazdırmak için komutlardan birine `--show-token` ekleyin.
 
-### 2) Gateway'e eriş
+### 2) Gateway'e erişin
 
 ```bash
 kubectl port-forward svc/openclaw 18789:18789 -n openclaw
 open http://localhost:18789
 ```
 
-## Neler dağıtılır?
+## Dağıtılan bileşenler
 
-```
-Namespace: openclaw (configurable via OPENCLAW_NAMESPACE)
-├── Deployment/openclaw        # Single pod, init container + gateway
-├── Service/openclaw           # ClusterIP on port 18789
-├── PersistentVolumeClaim      # 10Gi for agent state and config
+```text
+Ad alanı: openclaw (OPENCLAW_NAMESPACE ile yapılandırılabilir)
+├── Deployment/openclaw        # Tek pod, başlatma konteyneri + gateway
+├── Service/openclaw           # 18789 numaralı bağlantı noktasında ClusterIP
+├── PersistentVolumeClaim      # Ajan durumu ve yapılandırması için 10 Gi
 ├── ConfigMap/openclaw-config  # openclaw.json + AGENTS.md
-└── Secret/openclaw-secrets    # Gateway token + API keys
+└── Secret/openclaw-secrets    # Gateway belirteci + API anahtarları
 ```
 
 ## Özelleştirme
 
-### Agent talimatları
+### Ajan talimatları
 
-`scripts/k8s/manifests/configmap.yaml` içindeki `AGENTS.md` dosyasını düzenleyin ve yeniden dağıtın:
+`scripts/k8s/manifests/configmap.yaml` içindeki `AGENTS.md` dosyasını düzenleyip yeniden dağıtın:
 
 ```bash
 ./scripts/k8s/deploy.sh
@@ -115,7 +114,7 @@ Namespace: openclaw (configurable via OPENCLAW_NAMESPACE)
 
 ### Sağlayıcı ekleme
 
-Ek anahtarlar dışa aktarılmış şekilde yeniden çalıştırın:
+Ek anahtarları dışa aktardıktan sonra yeniden çalıştırın:
 
 ```bash
 export ANTHROPIC_API_KEY="..."
@@ -124,9 +123,9 @@ export OPENAI_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-Mevcut sağlayıcı anahtarları, siz üzerine yazmadıkça Secret içinde kalır.
+Üzerine yazmadığınız sürece mevcut sağlayıcı anahtarları Secret içinde kalır.
 
-Veya Secret'ı doğrudan patch edin:
+Alternatif olarak Secret'a doğrudan yama uygulayın:
 
 ```bash
 kubectl patch secret openclaw-secrets -n openclaw \
@@ -134,29 +133,29 @@ kubectl patch secret openclaw-secrets -n openclaw \
 kubectl rollout restart deployment/openclaw -n openclaw
 ```
 
-### Özel namespace
+### Özel ad alanı
 
 ```bash
 OPENCLAW_NAMESPACE=my-namespace ./scripts/k8s/deploy.sh
 ```
 
-### Özel image
+### Özel imaj
 
 `scripts/k8s/manifests/deployment.yaml` içindeki `image` alanını düzenleyin:
 
 ```yaml
-image: ghcr.io/openclaw/openclaw:latest # primary; official Docker Hub mirror: openclaw/openclaw:latest
+image: ghcr.io/openclaw/openclaw:slim # birincil; resmî Docker Hub aynası: openclaw/openclaw
 ```
 
-### Port-forward ötesine açma
+### Bağlantı noktası yönlendirmenin ötesinde erişime açma
 
-Varsayılan manifestler, Gateway'i pod içinde loopback'e bağlar. Bu, `kubectl port-forward` ile çalışır, ancak pod IP'sine ulaşması gereken bir Kubernetes `Service` veya Ingress yolu ile çalışmaz.
+Varsayılan manifestler, gateway'i pod içindeki geri döngü arabirimine bağlar. Bu, `kubectl port-forward` ile çalışır ancak pod IP'sine doğrudan ulaşması gereken bir Kubernetes `Service` veya Ingress yolu ile çalışmaz.
 
-Gateway'i bir Ingress veya yük dengeleyici üzerinden açmak istiyorsanız:
+Gateway'i bir Ingress veya yük dengeleyici üzerinden erişime açmak için:
 
-- `scripts/k8s/manifests/configmap.yaml` içindeki Gateway bind değerini `loopback` yerine dağıtım modelinizle eşleşen loopback olmayan bir bind olarak değiştirin
-- Gateway kimlik doğrulamasını etkin tutun ve doğru TLS sonlandırmalı bir giriş noktası kullanın
-- Desteklenen web güvenliği modelini kullanarak Control UI'ı uzak erişim için yapılandırın (örneğin gerektiğinde HTTPS/Tailscale Serve ve açıkça izin verilen origin'ler)
+- `scripts/k8s/manifests/configmap.yaml` içindeki gateway bağlama ayarını `loopback` değerinden, dağıtım modelinize uyan geri döngü dışı bir bağlama ayarına değiştirin.
+- Gateway kimlik doğrulamasını etkin tutun ve TLS sonlandırması düzgün yapılandırılmış bir giriş noktası kullanın.
+- Denetim Arayüzünü, desteklenen web güvenliği modelini kullanarak uzaktan erişim için yapılandırın (örneğin HTTPS/Tailscale Serve ve gerektiğinde açıkça belirtilmiş izin verilen kaynaklar).
 
 ## Yeniden dağıtma
 
@@ -164,7 +163,7 @@ Gateway'i bir Ingress veya yük dengeleyici üzerinden açmak istiyorsanız:
 ./scripts/k8s/deploy.sh
 ```
 
-Bu, tüm manifestleri uygular ve yapılandırma veya secret değişikliklerini almak için pod'u yeniden başlatır.
+Bu komut tüm manifestleri uygular ve yapılandırma veya Secret değişikliklerinin etkinleşmesi için pod'u yeniden başlatır.
 
 ## Kaldırma
 
@@ -172,33 +171,33 @@ Bu, tüm manifestleri uygular ve yapılandırma veya secret değişikliklerini a
 ./scripts/k8s/deploy.sh --delete
 ```
 
-Bu, namespace'i ve içindeki PVC dahil tüm kaynakları siler.
+Bu komut, PVC dâhil olmak üzere ad alanını ve içindeki tüm kaynakları siler.
 
 ## Mimari notları
 
-- Gateway varsayılan olarak pod içinde loopback'e bağlanır, bu nedenle dahil edilen kurulum `kubectl port-forward` içindir
-- Küme kapsamlı kaynak yoktur; her şey tek bir namespace içinde bulunur
-- Güvenlik: `readOnlyRootFilesystem`, `drop: ALL` yetenekleri, root olmayan kullanıcı (UID 1000)
-- Varsayılan yapılandırma, Control UI'ı daha güvenli yerel erişim yolunda tutar: loopback bind artı `http://127.0.0.1:18789` adresine `kubectl port-forward`
-- localhost erişiminin ötesine geçerseniz, desteklenen uzak modeli kullanın: HTTPS/Tailscale artı uygun Gateway bind ve Control UI origin ayarları
-- Secret'lar geçici bir dizinde oluşturulur ve doğrudan kümeye uygulanır; repo checkout'a hiçbir secret materyali yazılmaz
+- Gateway, varsayılan olarak pod içindeki geri döngü arabirimine bağlanır; bu nedenle sağlanan kurulum `kubectl port-forward` içindir.
+- Küme kapsamlı kaynak yoktur; her şey tek bir ad alanında bulunur.
+- Güvenlik sağlamlaştırması: `readOnlyRootFilesystem`, `drop: ALL` yetenekleri, root olmayan kullanıcı (UID 1000).
+- Varsayılan yapılandırma, Denetim Arayüzünü daha güvenli yerel erişim yolunda tutar: geri döngü bağlaması ve `http://127.0.0.1:18789` adresine `kubectl port-forward`.
+- localhost erişiminin ötesine geçerseniz desteklenen uzak erişim modelini kullanın: HTTPS/Tailscale ile uygun gateway bağlama ve Denetim Arayüzü kaynak ayarları.
+- Gizli bilgiler geçici bir dizinde oluşturulur ve doğrudan kümeye uygulanır; depo çalışma kopyasına hiçbir gizli bilgi yazılmaz.
 
 ## Dosya yapısı
 
-```
+```text
 scripts/k8s/
-├── deploy.sh                   # Creates namespace + secret, deploys via kustomize
-├── create-kind.sh              # Local Kind cluster (auto-detects docker/podman)
+├── deploy.sh                   # Ad alanı + Secret oluşturur, kustomize aracılığıyla dağıtır
+├── create-kind.sh              # Yerel Kind kümesi (docker/podman'ı otomatik algılar)
 └── manifests/
-    ├── kustomization.yaml      # Kustomize base
+    ├── kustomization.yaml      # Kustomize tabanı
     ├── configmap.yaml          # openclaw.json + AGENTS.md
-    ├── deployment.yaml         # Pod spec with security hardening
-    ├── pvc.yaml                # 10Gi persistent storage
-    └── service.yaml            # ClusterIP on 18789
+    ├── deployment.yaml         # Güvenlik sağlamlaştırması içeren pod belirtimi
+    ├── pvc.yaml                # 10 Gi kalıcı depolama
+    └── service.yaml            # 18789 üzerinde ClusterIP
 ```
 
-## İlgili
+## İlgili bölümler
 
 - [Docker](/tr/install/docker)
-- [Docker VM runtime](/tr/install/docker-vm-runtime)
-- [Kurulum genel bakışı](/tr/install)
+- [Docker VM çalışma zamanı](/tr/install/docker-vm-runtime)
+- [Kuruluma genel bakış](/tr/install)

@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Slack Plugin'ini yüklüyor, yapılandırıyor veya denetliyorsunuz
-summary: Kanallar, DM'ler, komutlar ve uygulama olayları için OpenClaw Slack kanal Plugin'i.
-title: Slack Plugin
+    - Slack pluginini yüklüyor, yapılandırıyor veya denetliyorsunuz
+summary: Kanallar, doğrudan mesajlar, komutlar ve uygulama etkinlikleri için OpenClaw Slack kanal plugini.
+title: Slack plugini
 x-i18n:
-    generated_at: "2026-06-28T01:02:50Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:34:59Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 602ccb21ce084219d922860d186664bbb098fd034117893dc7359d79495bedd6
@@ -13,9 +13,9 @@ x-i18n:
     workflow: 16
 ---
 
-# Slack Plugin'i
+# Slack plugin’i
 
-Kanallar, doğrudan mesajlar, komutlar ve uygulama olayları için OpenClaw Slack kanal Plugin'i.
+Kanallar, doğrudan mesajlar, komutlar ve uygulama etkinlikleri için OpenClaw Slack kanal plugin’i.
 
 ## Dağıtım
 
@@ -24,8 +24,8 @@ Kanallar, doğrudan mesajlar, komutlar ve uygulama olayları için OpenClaw Slac
 
 ## Yüzey
 
-kanallar: Slack; Skills
+kanallar: slack; Skills
 
-## İlgili dokümanlar
+## İlgili belgeler
 
-- [Slack](/tr/channels/slack)
+- [slack](/tr/channels/slack)

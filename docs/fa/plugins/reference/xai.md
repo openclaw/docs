@@ -1,31 +1,31 @@
 ---
 read_when:
-    - در حال نصب، پیکربندی یا ممیزی Plugin xai هستید
+    - شما در حال نصب، پیکربندی یا ممیزی Plugin ‏xai هستید
 summary: پشتیبانی از ارائه‌دهندهٔ مدل xAI را به OpenClaw اضافه می‌کند.
-title: Plugin xAI
+title: Plugin ‏xAI
 x-i18n:
-    generated_at: "2026-05-02T20:58:42Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:39:12Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: 2ec2ac3af258ae6876b2c0957e4ffc5db2d780fc9f33458204c8089fd47238bc
     source_path: plugins/reference/xai.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# xAI Plugin
+# Plugin xAI
 
 پشتیبانی از ارائه‌دهندهٔ مدل xAI را به OpenClaw اضافه می‌کند.
 
 ## توزیع
 
 - بسته: `@openclaw/xai-plugin`
-- مسیر نصب: همراه با OpenClaw ارائه می‌شود
+- روش نصب: در OpenClaw گنجانده شده است
 
-## سطح
+## سطوح
 
 ارائه‌دهندگان: xai؛ قراردادها: imageGenerationProviders، mediaUnderstandingProviders، realtimeTranscriptionProviders، speechProviders، tools، videoGenerationProviders، webSearchProviders
 
 ## مستندات مرتبط
 
-- [xai](/fa/providers/xai)
+- [xAI](/fa/providers/xai)

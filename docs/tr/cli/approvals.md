@@ -1,42 +1,30 @@
 ---
 read_when:
-    - Exec onaylarını CLI'dan düzenlemek istiyorsunuz
-    - Gateway veya node ana makinelerinde allowlist'leri yönetmeniz gerekir
-summary: '`openclaw approvals` ve `openclaw exec-policy` için CLI referansı'
+    - Yürütme onaylarını CLI üzerinden düzenlemek istiyorsunuz
+    - Gateway veya Node ana makinelerindeki izin listelerini yönetmeniz gerekir
+summary: '`openclaw approvals` ve `openclaw exec-policy` için CLI başvurusu'
 title: Onaylar
 x-i18n:
-    generated_at: "2026-06-28T00:20:47Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:33:27Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e5521622ee48237d3cc9feaa54906d026dfb15da4c9b9b17655cd59b35cae19d
+    source_hash: f5b045a4dee3726a7df2368b704a00464dc9e575bf77747103e34ebdfe0aa2df
     source_path: cli/approvals.md
     workflow: 16
 ---
 
 # `openclaw approvals`
 
-**Yerel ana makine**, **Gateway ana makinesi** veya bir **düğüm ana makinesi** için exec onaylarını yönetin.
-Varsayılan olarak komutlar diskteki yerel onaylar dosyasını hedefler. Gateway'i hedeflemek için `--gateway` kullanın veya belirli bir düğümü hedeflemek için `--node` kullanın.
+**Yerel ana makine**, **Gateway ana makinesi** veya bir **Node ana makinesi** için çalıştırma onaylarını yönetin. Hedef bayrağı belirtilmediğinde komutlar, diskteki yerel onay dosyasını okur/yazar. Gateway'i hedeflemek için `--gateway`, belirli bir Node'u hedeflemek için `--node <id|name|ip>` kullanın.
 
 Takma ad: `openclaw exec-approvals`
 
-İlgili:
-
-- Exec onayları: [Exec onayları](/tr/tools/exec-approvals)
-- Node'lar: [Node'lar](/tr/nodes)
+İlgili: [Çalıştırma onayları](/tr/tools/exec-approvals), [Node'lar](/tr/nodes)
 
 ## `openclaw exec-policy`
 
-`openclaw exec-policy`, istenen `tools.exec.*` yapılandırmasını ve yerel ana makine onayları dosyasını tek adımda uyumlu tutmak için yerel kolaylık komutudur.
-
-Şunları yapmak istediğinizde kullanın:
-
-- yerel istenen ilkeyi, ana makine onayları dosyasını ve etkili birleştirmeyi incelemek
-- YOLO veya tümünü reddet gibi yerel bir ön ayar uygulamak
-- yerel `tools.exec.*` ile yerel ana makine onayları dosyasını eşitlemek
-
-Örnekler:
+`openclaw exec-policy`, istenen `tools.exec.*` yapılandırmasıyla yerel ana makine onay dosyasını tek adımda eşitlenmiş durumda tutan, **yalnızca yerelde** çalışan kolaylık komutudur:
 
 ```bash
 openclaw exec-policy show
@@ -48,21 +36,15 @@ openclaw exec-policy preset cautious --json
 openclaw exec-policy set --host gateway --security full --ask off --ask-fallback full
 ```
 
-Çıktı modları:
+Ön ayarlar (`yolo`, `cautious`, `deny-all`) `host`, `security`, `ask` ve `askFallback` ayarlarını birlikte uygular. `set` yalnızca ilettiğiniz bayrakları uygular; kabul edilen her değer doğrulanır (`--host auto|sandbox|gateway|node`, `--security deny|allowlist|full`, `--ask off|on-miss|always`, `--ask-fallback deny|allowlist|full`).
 
-- `--json` yok: insan tarafından okunabilir tablo görünümünü yazdırır
-- `--json`: makine tarafından okunabilir yapılandırılmış çıktı yazdırır
+Kapsam:
 
-Geçerli kapsam:
+- Yerel yapılandırma dosyasını ve yerel onay dosyasını birlikte günceller; politikayı Gateway'e veya bir Node ana makinesine göndermez.
+- `--host node` reddedilir: Node çalıştırma onayları çalışma zamanında Node'dan alınır; bu nedenle yerel `exec-policy` bunları eşitleyemez. Bunun yerine `openclaw approvals set --node <id|name|ip>` kullanın.
+- `exec-policy show`, yerel onay dosyasından etkin bir politika türetmek yerine `host=node` kapsamlarını çalışma zamanında Node tarafından yönetiliyor olarak işaretler.
 
-- `exec-policy` **yalnızca yereldir**
-- yerel yapılandırma dosyasını ve yerel onaylar dosyasını birlikte günceller
-- ilkeyi Gateway ana makinesine veya bir düğüm ana makinesine göndermez
-- düğüm exec onayları çalışma zamanında düğümden alındığı ve bunun yerine düğüm hedefli onay komutları üzerinden yönetilmesi gerektiği için bu komutta `--host node` reddedilir
-- `openclaw exec-policy show`, `host=node` kapsamlarını yerel onaylar dosyasından etkili bir ilke türetmek yerine çalışma zamanında düğüm tarafından yönetilen kapsamlar olarak işaretler
-
-Uzak ana makine onaylarını doğrudan düzenlemeniz gerekiyorsa `openclaw approvals set --gateway`
-veya `openclaw approvals set --node <id|name|ip>` kullanmaya devam edin.
+Uzak ana makine onayları için doğrudan `openclaw approvals set --gateway` veya `openclaw approvals set --node <id|name|ip>` kullanın.
 
 ## Yaygın komutlar
 
@@ -72,20 +54,22 @@ openclaw approvals get --node <id|name|ip>
 openclaw approvals get --gateway
 ```
 
-`openclaw approvals get` artık yerel, Gateway ve düğüm hedefleri için etkili exec ilkesini gösterir:
+`get`, hedefin etkin çalıştırma politikasını gösterir: istenen `tools.exec` politikası, ana makinenin onay dosyası politikası ve birleştirilmiş etkin sonuç. Windows yardımcı uygulaması gibi ana makineye özgü bir politikası olan Node'lar, OpenClaw onay dosyası politika hesaplamasını uygulamak yerine bu politikayı doğrudan gösterir.
 
-- istenen `tools.exec` ilkesi
-- ana makine onaylar dosyası ilkesi
-- öncelik kuralları uygulandıktan sonraki etkili sonuç
+Dosya destekli Node'larda birleştirilmiş görünüm, ana makine tarafından çözümlenmiş bir politika anlık görüntüsü gerektirir. Eski Node'lar, Gateway'in istenen politikasının ana makinede de geçerli olduğunu varsaymak yerine etkin politikayı kullanılamıyor olarak gösterir.
 
-Öncelik kasıtlıdır:
+<Note>
+Oturum başına `/exec` geçersiz kılmaları dahil edilmez. Geçerli varsayılanlarını incelemek için ilgili oturumda `/exec` çalıştırın.
+</Note>
 
-- ana makine onayları dosyası uygulanabilir doğruluk kaynağıdır
-- istenen `tools.exec` ilkesi amacı daraltabilir veya genişletebilir, ancak etkili sonuç yine de ana makine kurallarından türetilir
-- `--node`, düğüm ana makinesi onayları dosyasını Gateway `tools.exec` ilkesiyle birleştirir, çünkü çalışma zamanında ikisi de hâlâ geçerlidir
-- Gateway yapılandırması kullanılamıyorsa CLI, düğüm onayları anlık görüntüsüne geri döner ve nihai çalışma zamanı ilkesinin hesaplanamadığını belirtir
+Öncelik sırası:
 
-## Onayları bir dosyadan değiştir
+- Ana makine onay dosyası, uygulanabilir tek doğruluk kaynağıdır.
+- İstenen `tools.exec` politikası amacı daraltabilir veya genişletebilir; ancak etkin sonuç ana makine kurallarından türetilir.
+- `--node`, Node ana makinesinin onay dosyasını Gateway `tools.exec` politikasıyla birleştirir (çalışma zamanında ikisi de uygulanır).
+- Gateway yapılandırması kullanılamıyorsa CLI, Node onayları anlık görüntüsüne geri döner ve nihai çalışma zamanı politikasının hesaplanamadığını belirtir.
+
+## Onayları bir dosyadan değiştirme
 
 ```bash
 openclaw approvals set --file ./exec-approvals.json
@@ -96,11 +80,24 @@ openclaw approvals set --node <id|name|ip> --file ./exec-approvals.json
 openclaw approvals set --gateway --file ./exec-approvals.json
 ```
 
-`set` yalnızca katı JSON değil, JSON5 kabul eder. İkisini birden değil, `--file` veya `--stdin` seçeneklerinden birini kullanın.
+`set`, yalnızca katı JSON'u değil JSON5'i de kabul eder. `--file` veya `--stdin` seçeneklerinden birini kullanın; ikisini birlikte kullanmayın.
+
+Ana makineye özgü Windows Node'ları kendi politika biçimlerini kullanır:
+
+```bash
+openclaw approvals set --node <id|name|ip> --stdin <<'EOF'
+{
+  defaultAction: "deny",
+  rules: [{ pattern: "hostname", action: "allow" }]
+}
+EOF
+```
+
+CLI önce Node'un geçerli karmasını okur ve güncellemeyle birlikte gönderir; böylece eş zamanlı yerel düzenlemelerin üzerine yazılmak yerine güncelleme reddedilir. Bu işlem Node'un tüm kural listesini değiştirdiği için `rules` zorunludur; `defaultAction` isteğe bağlıdır. Yerel politikasının devre dışı olduğunu bildiren bir Node uzaktan yapılandırılamaz; önce o ana makinedeki politikayı etkinleştirin veya yapılandırın. Ana makineye özgü politikalar `allowlist add|remove` yardımcılarını desteklemez.
 
 ## "Asla sorma" / YOLO örneği
 
-Exec onaylarında asla durmaması gereken bir ana makine için ana makine onayları varsayılanlarını `full` + `off` olarak ayarlayın:
+Çalıştırma onaylarında hiçbir zaman durmaması gereken bir ana makine için ana makine onaylarının varsayılanlarını `full` + `off` olarak ayarlayın:
 
 ```bash
 openclaw approvals set --stdin <<'EOF'
@@ -115,22 +112,9 @@ openclaw approvals set --stdin <<'EOF'
 EOF
 ```
 
-Düğüm varyantı:
+OpenClaw onay dosyası sunan Node'lar için aynı gövdeyi `openclaw approvals set --node <id|name|ip> --stdin` ile kullanın. Ana makineye özgü Node'lar, yukarıda gösterilen sahiplerine özgü biçimi gerektirir.
 
-```bash
-openclaw approvals set --node <id|name|ip> --stdin <<'EOF'
-{
-  version: 1,
-  defaults: {
-    security: "full",
-    ask: "off",
-    askFallback: "full"
-  }
-}
-EOF
-```
-
-Bu yalnızca **ana makine onayları dosyasını** değiştirir. İstenen OpenClaw ilkesini de uyumlu tutmak için ayrıca şunları ayarlayın:
+Bu yalnızca **ana makine onay dosyasını** değiştirir. İstenen OpenClaw politikasını uyumlu tutmak için ayrıca şunları ayarlayın:
 
 ```bash
 openclaw config set tools.exec.host gateway
@@ -138,21 +122,15 @@ openclaw config set tools.exec.security full
 openclaw config set tools.exec.ask off
 ```
 
-Bu örnekte neden `tools.exec.host=gateway`:
+`tools.exec.host=gateway` burada açıkça belirtilmiştir; çünkü `host=auto` hâlâ "varsa sandbox, aksi takdirde Gateway" anlamına gelir: YOLO yönlendirmeyle değil, onaylarla ilgilidir. Yapılandırılmış bir sandbox olsa bile ana makinede çalıştırma istediğinizde `gateway` (veya `/exec host=gateway`) kullanın.
 
-- `host=auto` hâlâ "kullanılabiliyorsa sandbox, aksi halde Gateway" anlamına gelir.
-- YOLO yönlendirmeyle değil, onaylarla ilgilidir.
-- Bir sandbox yapılandırılmış olsa bile ana makine exec istiyorsanız ana makine seçimini `gateway` veya `/exec host=gateway` ile açık hâle getirin.
+Belirtilmeyen `askFallback` varsayılan olarak `deny` değerini alır. Asla sormama davranışını koruması gereken, kullanıcı arayüzü olmayan bir ana makineyi yükseltirken `askFallback: "full"` değerini açıkça ayarlayın.
 
-Atlanan `askFallback` varsayılan olarak `deny` olur. Asla sormama davranışını koruması gereken kullanıcı arayüzü olmayan bir ana makineyi yükseltirken `askFallback: "full"` değerini açıkça ayarlayın.
-
-Yerel kısayol:
+Yalnızca yerel makinede aynı amaç için yerel kısayol:
 
 ```bash
 openclaw exec-policy preset yolo
 ```
-
-Bu yerel kısayol, hem istenen yerel `tools.exec.*` yapılandırmasını hem de yerel onay varsayılanlarını birlikte günceller. Amaç olarak yukarıdaki manuel iki adımlı kuruluma eşdeğerdir, ancak yalnızca yerel makine içindir.
 
 ## İzin listesi yardımcıları
 
@@ -166,32 +144,22 @@ openclaw approvals allowlist remove "~/Projects/**/bin/rg"
 
 ## Yaygın seçenekler
 
-`get`, `set` ve `allowlist add|remove` şunların tümünü destekler:
+`get`, `set` ve `allowlist add|remove` seçeneklerinin tümü şunları destekler:
 
-- `--node <id|name|ip>`
+- `--node <id|name|ip>` (kimliği, adı, IP'yi veya kimlik önekini çözümler; `openclaw nodes` ile aynı çözümleyiciyi kullanır)
 - `--gateway`
-- paylaşılan düğüm RPC seçenekleri: `--url`, `--token`, `--timeout`, `--json`
+- paylaşılan Node RPC seçenekleri: `--url`, `--token`, `--timeout`, `--json`
 
-Hedefleme notları:
+Hedef bayrağının belirtilmemesi, diskteki yerel onay dosyasının kullanılacağı anlamına gelir.
 
-- hedef bayrağı yoksa diskteki yerel onaylar dosyası kullanılır
-- `--gateway`, Gateway ana makinesi onayları dosyasını hedefler
-- `--node`, kimlik, ad, IP veya kimlik öneki çözümlendikten sonra bir düğüm ana makinesini hedefler
-
-`allowlist add|remove` ayrıca şunu destekler:
-
-- `--agent <id>` (varsayılanı `*`)
+`allowlist add|remove` ayrıca `--agent <id>` seçeneğini destekler (varsayılanı `"*"` değeridir ve tüm aracılara uygulanır).
 
 ## Notlar
 
-- `--node`, `openclaw nodes` ile aynı çözümleyiciyi kullanır (kimlik, ad, IP veya kimlik öneki).
-- `--agent` varsayılan olarak `"*"` olur; bu, tüm aracılara uygulanır.
-- Düğüm ana makinesi `system.execApprovals.get/set` özelliğini duyurmalıdır (macOS uygulaması veya başsız düğüm ana makinesi).
-- Onay dosyaları OpenClaw durum dizininde her ana makine için ayrı depolanır
-  (`$OPENCLAW_STATE_DIR/exec-approvals.json`, veya
-  değişken ayarlı olmadığında `~/.openclaw/exec-approvals.json`).
+- Node ana makinesi `system.execApprovals.get/set` desteğini duyurmalıdır (macOS uygulaması, başsız Node ana makinesi veya Windows yardımcı uygulaması).
+- Onay dosyaları, OpenClaw durum dizininde her ana makine için ayrı saklanır: `$OPENCLAW_STATE_DIR/exec-approvals.json`; değişken ayarlanmamışsa `~/.openclaw/exec-approvals.json`.
 
 ## İlgili
 
 - [CLI başvurusu](/tr/cli)
-- [Exec onayları](/tr/tools/exec-approvals)
+- [Çalıştırma onayları](/tr/tools/exec-approvals)

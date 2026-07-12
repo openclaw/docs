@@ -3,10 +3,9 @@ read_when: Connecting the macOS app to a remote gateway over SSH
 summary: Configuração de túnel SSH para o OpenClaw.app se conectar a um Gateway remoto
 title: Configuração do Gateway remoto
 x-i18n:
-    generated_at: "2026-07-12T15:17:33Z"
+    generated_at: "2026-07-11T23:59:16Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 842578eb74e99d115b04abff5e9673a6454fa6d2cf7905d056999469e1c6b66d
     source_path: gateway/remote-gateway-readme.md
@@ -50,16 +49,16 @@ flowchart TB
 4. Inicie o túnel: `ssh -N remote-gateway &`.
 5. Encerre e reabra o OpenClaw.app.
 
-Para ter um túnel que continue funcionando após reinicializações e se reconecte automaticamente, use a configuração do LaunchAgent na página [Acesso remoto](/pt-BR/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent) em vez de executar `ssh -N` manualmente.
+Para usar um túnel que persista após reinicializações e se reconecte automaticamente, use a configuração do LaunchAgent na página [Acesso remoto](/pt-BR/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent), em vez de executar `ssh -N` manualmente.
 
 ## Como funciona
 
-| Componente                           | O que faz                                                                   |
-| ------------------------------------ | --------------------------------------------------------------------------- |
-| `LocalForward 18789 127.0.0.1:18789` | Encaminha a porta local 18789 para a porta remota 18789                     |
-| `ssh -N`                             | Executa o SSH sem comandos remotos (somente encaminhamento de portas)       |
-| `KeepAlive`                          | Reinicia o túnel automaticamente em caso de falha (LaunchAgent)             |
-| `RunAtLoad`                          | Inicia o túnel quando o LaunchAgent é carregado (LaunchAgent)                |
+| Componente                           | O que faz                                                                  |
+| ------------------------------------ | -------------------------------------------------------------------------- |
+| `LocalForward 18789 127.0.0.1:18789` | Encaminha a porta local 18789 para a porta remota 18789                    |
+| `ssh -N`                             | Usa SSH sem executar comandos remotos (apenas encaminhamento de portas)    |
+| `KeepAlive`                          | Reinicia o túnel automaticamente em caso de falha (LaunchAgent)            |
+| `RunAtLoad`                          | Inicia o túnel quando o LaunchAgent é carregado (LaunchAgent)              |
 
 O OpenClaw.app se conecta a `ws://127.0.0.1:18789` no cliente. O túnel encaminha essa conexão para a porta 18789 no host remoto que executa o Gateway.
 

@@ -1,13 +1,13 @@
 ---
 read_when:
     - Verificación de la cobertura de credenciales SecretRef
-    - Auditando si una credencial es elegible para `secrets configure` o `secrets apply`
-    - Verificando por qué una credencial está fuera de la superficie compatible
-summary: Superficie canónica de credenciales SecretRef admitida frente a no admitida
+    - Auditoría de si una credencial cumple los requisitos para `secrets configure` o `secrets apply`
+    - Verificación de por qué una credencial está fuera del ámbito admitido
+summary: Superficie canónica admitida y no admitida de credenciales SecretRef
 title: Superficie de credenciales SecretRef
 x-i18n:
-    generated_at: "2026-07-05T11:40:39Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T23:30:09Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 435fc25ea9268be40abc367d96def70e8d367cb0ab640a4f2d271a0e9db19147
@@ -15,18 +15,18 @@ x-i18n:
     workflow: 16
 ---
 
-Esta página define la superficie canónica de credenciales SecretRef: qué campos de credenciales aceptan un `SecretRef` (referencia respaldada por env/file/exec) en lugar de un valor de secreto sin procesar.
+Esta página define la superficie canónica de credenciales SecretRef: qué campos de credenciales aceptan una `SecretRef` (una referencia respaldada por env/archivo/exec) en lugar de un valor secreto sin procesar.
 
 Alcance:
 
-- Dentro del alcance: credenciales estrictamente proporcionadas por el usuario que OpenClaw no emite ni rota.
-- Fuera del alcance: credenciales emitidas por el runtime o rotativas, material de actualización de OAuth y artefactos similares a sesiones.
+- Incluido: estrictamente las credenciales proporcionadas por el usuario que OpenClaw no emite ni rota.
+- Excluido: credenciales emitidas o rotadas en tiempo de ejecución, material de actualización de OAuth y artefactos similares a sesiones.
 
-Las listas siguientes se generan desde el registro de objetivos de origen y se comprueban contra `docs/reference/secretref-user-supplied-credentials-matrix.json` en CI; no edites las entradas manualmente.
+Las listas siguientes se generan a partir del registro de destinos de origen y se comprueban con `docs/reference/secretref-user-supplied-credentials-matrix.json` en CI; no edite manualmente las entradas.
 
 ## Credenciales compatibles
 
-### Objetivos de `openclaw.json` (`secrets configure` + `secrets apply` + `secrets audit`)
+### Destinos de `openclaw.json` (`secrets configure` + `secrets apply` + `secrets audit`)
 
 [//]: # "secretref-supported-list-start"
 
@@ -125,10 +125,10 @@ Las listas siguientes se generan desde el registro de objetivos de origen y se c
 - `channels.zalo.webhookSecret`
 - `channels.zalo.accounts.*.botToken`
 - `channels.zalo.accounts.*.webhookSecret`
-- `channels.googlechat.serviceAccount` mediante el hermano `serviceAccountRef` (excepción de compatibilidad)
-- `channels.googlechat.accounts.*.serviceAccount` mediante el hermano `serviceAccountRef` (excepción de compatibilidad)
+- `channels.googlechat.serviceAccount` mediante el campo hermano `serviceAccountRef` (excepción de compatibilidad)
+- `channels.googlechat.accounts.*.serviceAccount` mediante el campo hermano `serviceAccountRef` (excepción de compatibilidad)
 
-### Objetivos de `auth-profiles.json` (`secrets configure` + `secrets apply` + `secrets audit`)
+### Destinos de `auth-profiles.json` (`secrets configure` + `secrets apply` + `secrets audit`)
 
 - `profiles.*.keyRef` (`type: "api_key"`; no compatible cuando `auth.profiles.<id>.mode = "oauth"`)
 - `profiles.*.tokenRef` (`type: "token"`; no compatible cuando `auth.profiles.<id>.mode = "oauth"`)
@@ -137,15 +137,15 @@ Las listas siguientes se generan desde el registro de objetivos de origen y se c
 
 Notas:
 
-- Los objetivos de plan de perfiles de autenticación requieren `agentId`; las entradas de plan apuntan a `profiles.*.key` / `profiles.*.token` y escriben refs hermanas (`keyRef` / `tokenRef`). Las refs de perfiles de autenticación se incluyen en la resolución del runtime y en la cobertura de auditoría.
-- En `openclaw.json`, SecretRefs debe usar objetos estructurados como `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}`. Las cadenas de marcador heredadas `secretref-env:<ENV_VAR>` se rechazan en rutas de credenciales SecretRef; ejecuta `openclaw doctor --fix` para migrar marcadores válidos.
-- Guardia de política de OAuth: `auth.profiles.<id>.mode = "oauth"` no puede combinarse con entradas SecretRef para ese perfil. El inicio/recarga y la resolución de perfiles de autenticación fallan de inmediato cuando se infringe esta política.
-- Para proveedores de modelos gestionados por SecretRef, las entradas generadas de `agents/*/agent/models.json` persisten marcadores no secretos (no valores secretos resueltos) para las superficies de `apiKey`/encabezados. La persistencia de marcadores tiene como autoridad el origen: OpenClaw escribe marcadores desde la instantánea activa de configuración de origen (antes de la resolución), no desde valores secretos resueltos del runtime.
-- Para búsqueda web: en modo de proveedor explícito (`tools.web.search.provider` establecido), solo está activa la clave del proveedor seleccionado. En modo automático (`tools.web.search.provider` sin establecer), solo está activa la primera clave de proveedor que se resuelva por precedencia, y las refs de proveedores no seleccionados se tratan como inactivas hasta que se seleccionen. Las rutas heredadas de proveedor `tools.web.search.*` aún se resuelven durante la ventana de compatibilidad, pero la superficie SecretRef canónica es `plugins.entries.<plugin>.config.webSearch.*`.
+- Los destinos de planes de perfiles de autenticación requieren `agentId`; las entradas del plan apuntan a `profiles.*.key` / `profiles.*.token` y escriben las referencias hermanas (`keyRef` / `tokenRef`). Las referencias de perfiles de autenticación están incluidas en la resolución en tiempo de ejecución y en la cobertura de auditoría.
+- En `openclaw.json`, las SecretRefs deben usar objetos estructurados como `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}`. Las cadenas de marcador heredadas `secretref-env:<ENV_VAR>` se rechazan en las rutas de credenciales SecretRef; ejecute `openclaw doctor --fix` para migrar los marcadores válidos.
+- Protección de la política de OAuth: `auth.profiles.<id>.mode = "oauth"` no puede combinarse con entradas SecretRef para ese perfil. El inicio, la recarga y la resolución de perfiles de autenticación fallan de inmediato cuando se infringe esta política.
+- Para los proveedores de modelos gestionados mediante SecretRef, las entradas generadas en `agents/*/agent/models.json` conservan marcadores no secretos —no valores secretos resueltos— para las superficies `apiKey` y de encabezados. La persistencia de marcadores se rige por la fuente: OpenClaw escribe los marcadores a partir de la instantánea de configuración de origen activa —antes de la resolución—, no a partir de los valores secretos resueltos en tiempo de ejecución.
+- Para la búsqueda web: en el modo de proveedor explícito (cuando se establece `tools.web.search.provider`), solo está activa la clave del proveedor seleccionado. En el modo automático (cuando no se establece `tools.web.search.provider`), solo está activa la primera clave de proveedor que se resuelve según el orden de precedencia, y las referencias de proveedores no seleccionados se consideran inactivas hasta que se seleccionen. Las rutas heredadas de proveedores `tools.web.search.*` continúan resolviéndose durante el periodo de compatibilidad, pero la superficie SecretRef canónica es `plugins.entries.<plugin>.config.webSearch.*`.
 
 ## Credenciales no compatibles
 
-Estas credenciales son clases emitidas, rotativas, portadoras de sesión o duraderas de OAuth que no encajan con la resolución externa de SecretRef de solo lectura:
+Estas credenciales pertenecen a clases emitidas, rotadas, asociadas a sesiones o persistentes de OAuth que no se ajustan a la resolución externa de solo lectura mediante SecretRef:
 
 [//]: # "secretref-unsupported-list-start"
 
@@ -164,4 +164,4 @@ Estas credenciales son clases emitidas, rotativas, portadoras de sesión o durad
 ## Relacionado
 
 - [Gestión de secretos](/es/gateway/secrets)
-- [Semántica de credenciales de autenticación](/es/auth-credential-semantics)
+- [Semántica de las credenciales de autenticación](/es/auth-credential-semantics)

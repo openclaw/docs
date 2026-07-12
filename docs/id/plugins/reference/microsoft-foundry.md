@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Anda sedang memasang, mengonfigurasi, atau mengaudit Plugin microsoft-foundry
+    - Anda sedang menginstal, mengonfigurasi, atau mengaudit plugin microsoft-foundry
 summary: Menambahkan dukungan penyedia model Microsoft Foundry ke OpenClaw.
 title: Plugin Microsoft Foundry
 x-i18n:
-    generated_at: "2026-06-27T17:55:18Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:27:23Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: c120a68393626e5ff9f24cd80bce4612a3772faf3722b93f2ff4677f743d0252
@@ -20,7 +20,7 @@ Menambahkan dukungan penyedia model Microsoft Foundry ke OpenClaw.
 ## Distribusi
 
 - Paket: `@openclaw/microsoft-foundry`
-- Rute instalasi: disertakan dalam OpenClaw
+- Jalur instalasi: disertakan dalam OpenClaw
 
 ## Permukaan
 
@@ -32,51 +32,51 @@ penyedia: microsoft-foundry; kontrak: imageGenerationProviders
 
 ## Persyaratan
 
-- Sumber daya Microsoft Foundry atau Azure AI Foundry dengan deployment.
-- Autentikasi kunci API melalui `AZURE_OPENAI_API_KEY` atau kunci API penyedia yang dikonfigurasi.
+- Sumber daya Microsoft Foundry atau Azure AI Foundry yang memiliki deployment.
+- Autentikasi kunci API melalui `AZURE_OPENAI_API_KEY` atau kunci API penyedia yang telah dikonfigurasi.
 - Untuk autentikasi Entra ID, instal Azure CLI dan jalankan `az login` sebelum
-  penyiapan awal. OpenClaw menyegarkan token runtime Microsoft Foundry melalui
+  orientasi awal. OpenClaw menyegarkan token runtime Microsoft Foundry melalui
   `az account get-access-token`.
 
-## Model chat
+## Model percakapan
 
-Deployment chat Microsoft Foundry menggunakan referensi model penyedia
-`microsoft-foundry/<deployment-name>`. Penyiapan awal menemukan sumber daya
-dan deployment Foundry dengan Azure CLI, lalu menulis nama deployment yang dipilih ke
-konfigurasi model.
+Deployment percakapan Microsoft Foundry menggunakan referensi model penyedia
+`microsoft-foundry/<deployment-name>`. Orientasi awal menemukan sumber daya
+dan deployment Foundry dengan Azure CLI, lalu menulis nama deployment yang dipilih
+ke konfigurasi model.
 
-OpenClaw menggunakan endpoint `/openai/v1` Foundry untuk API chat kompatibel OpenAI
-yang didukung:
+OpenClaw menggunakan endpoint Foundry `/openai/v1` untuk API percakapan kompatibel
+OpenAI yang didukung:
 
-- Keluarga model GPT, `o*`, `computer-use-preview`, dan DeepSeek-V4 secara default menggunakan
+- Kelompok model GPT, `o*`, `computer-use-preview`, dan DeepSeek-V4 secara default menggunakan
   `openai-responses`.
-- Deployment MAI-DS-R1 dan chat-completion lainnya menggunakan `openai-completions`
-  kecuali API yang didukung dikonfigurasi secara eksplisit.
-- MAI-DS-R1 dicatat sebagai mampu melakukan penalaran melalui konten penalaran, bukan
-  melalui `reasoning_effort`. Metadata token konteks dan outputnya adalah
+- MAI-DS-R1 dan deployment penyelesaian percakapan lainnya menggunakan `openai-completions`,
+  kecuali API yang didukung telah dikonfigurasi secara eksplisit.
+- MAI-DS-R1 dicatat sebagai model yang mendukung penalaran melalui konten penalaran, bukan
+  melalui `reasoning_effort`. Metadata token konteks dan keluarannya adalah
   163.840 token.
 
-Deployment Anthropic Claude di Microsoft Foundry menggunakan bentuk API Anthropic Messages,
-bukan bentuk `/openai/v1` yang kompatibel OpenAI. Konfigurasikan ini sebagai
-penyedia `anthropic-messages` kustom hingga Plugin Microsoft Foundry menambahkan
-runtime Anthropic native. Ketika nama deployment Foundry berbeda dari ID model
-Claude, atur `params.canonicalModelId` pada entri model agar OpenClaw
-dapat menerapkan kontrak protokol khusus model, memetakan `/think off` dengan benar, dan
+Deployment Anthropic Claude di Microsoft Foundry menggunakan format API Anthropic Messages,
+bukan format kompatibel OpenAI `/openai/v1`. Konfigurasikan deployment tersebut sebagai
+penyedia `anthropic-messages` khusus hingga Plugin Microsoft Foundry memiliki
+runtime Anthropic native. Jika nama deployment Foundry berbeda dari ID model
+Claude, tetapkan `params.canonicalModelId` pada entri model agar OpenClaw
+dapat menerapkan kontrak komunikasi khusus model, memetakan `/think off` dengan benar, dan
 mempertahankan pemikiran bertanda tangan dengan aman.
 
 ## Pembuatan gambar MAI
 
-Plugin mendaftarkan `microsoft-foundry` untuk `image_generate` dengan model gambar
-Microsoft AI saat ini:
+Plugin mendaftarkan `microsoft-foundry` untuk `image_generate` dengan model
+gambar Microsoft AI saat ini:
 
 - `MAI-Image-2.5-Flash`
 - `MAI-Image-2.5`
 - `MAI-Image-2e`
 - `MAI-Image-2`
 
-Gunakan nama deployment gambar MAI yang sudah di-deploy sebagai referensi model. Penyedia tidak
-mendeklarasikan model gambar default karena API MAI memerlukan nama deployment Anda
-di bidang `model` permintaan:
+Gunakan nama deployment gambar MAI yang telah di-deploy sebagai referensi model. Penyedia
+tidak mendeklarasikan model gambar default karena API MAI memerlukan nama deployment Anda
+dalam bidang permintaan `model`:
 
 ```json5
 {
@@ -91,22 +91,22 @@ di bidang `model` permintaan:
 }
 ```
 
-Panggilan pembuatan hanya dengan prompt menggunakan endpoint pembuatan MAI Microsoft Foundry:
-`/mai/v1/images/generations`. Edit gambar referensi memanggil
-`/mai/v1/images/edits` dan dibatasi untuk deployment `MAI-Image-2.5-Flash` dan
+Pembuatan hanya dengan perintah teks memanggil endpoint pembuatan MAI Microsoft Foundry:
+`/mai/v1/images/generations`. Pengeditan gambar referensi memanggil
+`/mai/v1/images/edits` dan terbatas pada deployment `MAI-Image-2.5-Flash` dan
 `MAI-Image-2.5`.
 
-Pembuatan hanya dengan prompt dapat menggunakan nama deployment kustom hanya dengan endpoint Foundry
-yang dikonfigurasi. Untuk edit gambar dengan nama deployment kustom, pilih
-deployment melalui penyiapan awal atau sertakan metadata model agar OpenClaw dapat memverifikasi
+Pembuatan hanya dengan perintah teks dapat menggunakan nama deployment khusus hanya dengan endpoint
+Foundry yang dikonfigurasi. Untuk pengeditan gambar dengan nama deployment khusus, pilih
+deployment melalui orientasi awal atau sertakan metadata model agar OpenClaw dapat memverifikasi
 bahwa deployment didukung oleh `MAI-Image-2.5-Flash` atau `MAI-Image-2.5`.
 
 Batasan gambar MAI:
 
-- Output: satu gambar PNG per permintaan.
-- Ukuran: default `1024x1024`; lebar dan tinggi masing-masing harus minimal 768 px.
-- Total piksel: lebar × tinggi maksimal 1.048.576.
-- Edit: satu gambar input PNG atau JPEG.
+- Keluaran: satu gambar PNG per permintaan.
+- Ukuran: default `1024x1024`; lebar dan tinggi masing-masing harus setidaknya 768 px.
+- Total piksel: lebar × tinggi harus paling banyak 1.048.576.
+- Pengeditan: satu gambar masukan PNG atau JPEG.
 - Petunjuk bersama yang tidak didukung seperti `aspectRatio`, `resolution`, `quality`,
   `background`, dan `outputFormat` non-PNG tidak dikirim ke Microsoft Foundry.
 
@@ -114,8 +114,8 @@ Batasan gambar MAI:
 
 - `az: command not found`: instal Azure CLI atau gunakan autentikasi kunci API.
 - `Microsoft Foundry endpoint missing for MAI image generation`: pilih
-  deployment Foundry melalui penyiapan awal atau tambahkan `models.providers.microsoft-foundry.baseUrl`.
+  deployment Foundry melalui orientasi awal atau tambahkan `models.providers.microsoft-foundry.baseUrl`.
 - `supports MAI image deployments only`: model gambar yang dipilih mengarah ke
-  deployment non-MAI. Gunakan model gambar MAI yang sudah di-deploy untuk `image_generate`.
+  deployment non-MAI. Gunakan model gambar MAI yang telah di-deploy untuk `image_generate`.
 
 <!-- openclaw-plugin-reference:manual-end -->

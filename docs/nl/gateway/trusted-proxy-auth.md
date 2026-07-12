@@ -1,90 +1,66 @@
 ---
 read_when:
-    - OpenClaw uitvoeren achter een identity-aware proxy
-    - Pomerium, Caddy of nginx met OAuth voor OpenClaw instellen
-    - WebSocket 1008-fouten voor niet-geautoriseerde toegang oplossen bij reverse-proxyconfiguraties
-    - Bepalen waar HSTS en andere HTTP-hardeningheaders moeten worden ingesteld
+    - OpenClaw uitvoeren achter een identiteitsbewuste proxy
+    - Pomerium, Caddy of nginx met OAuth vóór OpenClaw instellen
+    - WebSocket 1008-fouten wegens ontbrekende autorisatie oplossen bij reverse-proxyconfiguraties
+    - Bepalen waar HSTS en andere HTTP-beveiligingsheaders moeten worden ingesteld
 sidebarTitle: Trusted proxy auth
 summary: Delegeer Gateway-authenticatie aan een vertrouwde reverse proxy (Pomerium, Caddy, nginx + OAuth)
-title: Vertrouwde proxy-authenticatie
+title: Verificatie via vertrouwde proxy
 x-i18n:
-    generated_at: "2026-06-27T17:38:57Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:57:24Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 498a8aca666f88201302af3895b11ba43ab9c0b1bff00a262145fc9e21e80fa7
+    source_hash: 612070e4872af23c2ac41b529c8b2fa8513bf18fccc053783f55ad00b44e1a5f
     source_path: gateway/trusted-proxy-auth.md
     workflow: 16
 ---
 
 <Warning>
-**Beveiligingsgevoelige functie.** Deze modus delegeert authenticatie volledig aan je reverse proxy. Een verkeerde configuratie kan je Gateway blootstellen aan onbevoegde toegang. Lees deze pagina zorgvuldig voordat je dit inschakelt.
+**Beveiligingsgevoelige functie.** In deze modus wordt de authenticatie volledig aan je reverse proxy gedelegeerd. Een onjuiste configuratie kan je Gateway blootstellen aan ongeautoriseerde toegang. Lees deze pagina zorgvuldig voordat je deze modus inschakelt.
 </Warning>
 
-## Wanneer gebruiken
+## Wanneer te gebruiken
 
-Gebruik de authenticatiemodus `trusted-proxy` wanneer:
+- Je voert OpenClaw uit achter een **identiteitsbewuste proxy** (Pomerium, Caddy + OAuth, nginx + oauth2-proxy, Traefik + forward auth).
+- Je proxy handelt alle authenticatie af en geeft de gebruikersidentiteit door via headers.
+- Je bevindt je in een Kubernetes- of containeromgeving waarin de proxy het enige pad naar de Gateway is.
+- Je krijgt WebSocket-fouten met `1008 unauthorized` omdat browsers geen tokens in WS-payloads kunnen doorgeven.
 
-- Je OpenClaw achter een **identiteitsbewuste proxy** draait (Pomerium, Caddy + OAuth, nginx + oauth2-proxy, Traefik + forward auth).
-- Je proxy alle authenticatie afhandelt en gebruikersidentiteit via headers doorgeeft.
-- Je in een Kubernetes- of containeromgeving zit waar de proxy het enige pad naar de Gateway is.
-- Je WebSocket-fouten `1008 unauthorized` krijgt omdat browsers geen tokens in WS-payloads kunnen doorgeven.
+## Wanneer NIET te gebruiken
 
-## Wanneer NIET gebruiken
-
-- Als je proxy gebruikers niet authenticeert (alleen een TLS-terminator of load balancer).
-- Als er een pad naar de Gateway is dat de proxy omzeilt (firewallgaten, interne netwerktoegang).
-- Als je niet zeker weet of je proxy doorgestuurde headers correct verwijdert/overschrijft.
-- Als je alleen persoonlijke toegang voor één gebruiker nodig hebt (overweeg Tailscale Serve + loopback voor een eenvoudigere setup).
+- Je proxy authenticeert geen gebruikers (en is slechts een TLS-terminator of loadbalancer).
+- Er bestaat een pad naar de Gateway dat de proxy omzeilt (gaten in de firewall, toegang via het interne netwerk).
+- Je weet niet zeker of je proxy doorgestuurde headers correct verwijdert of overschrijft.
+- Je hebt alleen persoonlijke toegang voor één gebruiker nodig (overweeg in plaats daarvan Tailscale Serve + local loopback).
 
 ## Hoe het werkt
 
 <Steps>
-  <Step title="Proxy authenticates the user">
-    Je reverse proxy authenticeert gebruikers (OAuth, OIDC, SAML, enz.).
+  <Step title="Proxy authenticeert de gebruiker">
+    Je reverse proxy authenticeert gebruikers (OAuth, OIDC, SAML enzovoort).
   </Step>
-  <Step title="Proxy adds an identity header">
-    De proxy voegt een header toe met de geauthenticeerde gebruikersidentiteit (bijv. `x-forwarded-user: nick@example.com`).
+  <Step title="Proxy voegt een identiteitsheader toe">
+    De proxy voegt een header toe met de geauthenticeerde gebruikersidentiteit (bijvoorbeeld `x-forwarded-user: nick@example.com`).
   </Step>
-  <Step title="Gateway verifies trusted source">
-    OpenClaw controleert of de aanvraag afkomstig is van een **vertrouwd proxy-IP** (geconfigureerd in `gateway.trustedProxies`).
+  <Step title="Gateway verifieert de vertrouwde bron">
+    OpenClaw controleert of het verzoek afkomstig is van een **vertrouwd proxy-IP-adres** (`gateway.trustedProxies`) en niet van het eigen local loopback- of lokale interfaceadres van de Gateway.
   </Step>
-  <Step title="Gateway extracts identity">
-    OpenClaw haalt de gebruikersidentiteit uit de geconfigureerde header.
+  <Step title="Gateway extraheert de identiteit">
+    OpenClaw leest de vereiste headers en vervolgens de gebruikersidentiteit uit de geconfigureerde header.
   </Step>
-  <Step title="Authorize">
-    Als alles klopt, wordt de aanvraag geautoriseerd.
+  <Step title="Autoriseren">
+    Als alle controles slagen en de gebruiker voldoet aan `allowUsers` (indien ingesteld), wordt het verzoek geautoriseerd.
   </Step>
 </Steps>
-
-## Koppelingsgedrag van Control UI
-
-Wanneer `gateway.auth.mode = "trusted-proxy"` actief is en de aanvraag door de trusted-proxy-controles komt, kunnen Control UI-WebSocket-sessies verbinding maken zonder identiteit voor apparaatkoppeling.
-
-Implicaties voor scopes:
-
-- Control UI-WebSocket-sessies zonder apparaat maken verbinding, maar krijgen standaard geen operatorscopes. OpenClaw wist de gevraagde scopelijst naar `[]`, zodat een sessie die niet aan een goedgekeurd gekoppeld apparaat/token is gebonden geen rechten zelf kan declareren.
-- Als methoden na een geslaagde WebSocket-verbinding mislukken met `missing scope`, gebruik dan HTTPS zodat de browser apparaatidentiteit kan genereren en koppeling kan voltooien. Zie [onveilige HTTP voor Control UI](/nl/web/control-ui#insecure-http).
-- Alleen voor noodsituaties: `gateway.controlUi.dangerouslyDisableDeviceAuth=true` behoudt gevraagde scopes zelfs zonder apparaatidentiteit. Dit is een ernstige beveiligingsverlaging; draai dit snel terug. Zie [onveilige HTTP voor Control UI](/nl/web/control-ui#insecure-http).
-
-Scopebeperking via reverse proxy:
-
-- Als je proxy `x-openclaw-scopes` verzendt op de Control UI-WebSocket-upgradeaanvraag, beperkt OpenClaw de sessiescopes tot de doorsnede van de gevraagde scopes en de gedeclareerde scopes. Deze header verleent geen scopes; hij beperkt alleen wat de sessie kan hebben.
-
-Implicaties:
-
-- Koppeling is in deze modus niet langer de primaire poort voor toegang tot Control UI.
-- Je authenticatiebeleid van de reverse proxy en `allowUsers` worden de effectieve toegangscontrole.
-- Houd Gateway-ingress beperkt tot alleen vertrouwde proxy-IP's (`gateway.trustedProxies` + firewall).
-
-Aangepaste WebSocket-clients zijn geen Control UI-sessies. `gateway.controlUi.dangerouslyDisableDeviceAuth` verleent geen scopes aan willekeurige `client.mode: "backend"`- of CLI-vormige clients. Aangepaste automatisering moet apparaatidentiteit/koppeling gebruiken, het gereserveerde direct-lokale `client.id: "gateway-client"`-backendhulppad, of de [admin HTTP RPC-Plugin](/nl/plugins/admin-http-rpc) wanneer een HTTP-aanvraag/antwoordoppervlak beter past.
 
 ## Configuratie
 
 ```json5
 {
   gateway: {
-    // Trusted-proxy auth expects requests from a non-loopback trusted proxy source by default
+    // Trusted-proxy auth expects the proxy's source IP to be non-loopback by default
     bind: "lan",
 
     // CRITICAL: Only add your proxy's IP(s) here
@@ -111,63 +87,109 @@ Aangepaste WebSocket-clients zijn geen Control UI-sessies. `gateway.controlUi.da
 ```
 
 <Warning>
-**Belangrijke runtimeregels**
+**Runtime-regels, in volgorde van evaluatie**
 
-- Trusted-proxy-authenticatie weigert standaard aanvragen vanaf loopback-bronnen (`127.0.0.1`, `::1`, loopback-CIDR's).
-- Same-host loopback-reverse proxies voldoen **niet** aan trusted-proxy-authenticatie, tenzij je expliciet `gateway.auth.trustedProxy.allowLoopback = true` instelt en het loopback-adres opneemt in `gateway.trustedProxies`.
-- `allowLoopback` vertrouwt lokale processen op de Gateway-host in dezelfde mate als de reverse proxy. Schakel dit alleen in wanneer de Gateway nog steeds via de firewall is afgeschermd van directe externe toegang en de lokale proxy door clients aangeleverde identiteitsheaders verwijdert of overschrijft.
-- Interne Gateway-clients die niet via de reverse proxy lopen, moeten `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD` gebruiken, niet trusted-proxy-identiteitsheaders.
-- Niet-loopback-Control UI-implementaties hebben nog steeds expliciet `gateway.controlUi.allowedOrigins` nodig.
-- **Bewijs uit doorgestuurde headers overschrijft loopback-localiteit voor lokale directe fallback.** Als een aanvraag op loopback binnenkomt maar `Forwarded`, bewijs uit een `X-Forwarded-*`-header of een `X-Real-IP`-header bevat, diskwalificeert dat bewijs lokale directe wachtwoordfallback en apparaatidentiteitsgating. Met `allowLoopback: true` kan trusted-proxy-authenticatie de aanvraag nog steeds accepteren als een same-host proxy-aanvraag, terwijl `requiredHeaders` en `allowUsers` blijven gelden.
+1. Het bron-IP-adres van het verzoek moet overeenkomen met `gateway.trustedProxies` (met ondersteuning voor CIDR), anders wordt het afgewezen (`trusted_proxy_untrusted_source`).
+2. Verzoeken van een local loopback-bron (`127.0.0.1`, `::1`) worden afgewezen, tenzij `gateway.auth.trustedProxy.allowLoopback = true` en het local loopback-adres ook in `trustedProxies` staat (`trusted_proxy_loopback_source`). Deze controle wordt vóór de headercontroles uitgevoerd, waardoor een local loopback-bron op deze manier faalt, zelfs als vereiste headers eveneens ontbreken.
+3. Niet-local loopback-bronnen die overeenkomen met een van de eigen lokale netwerkinterfaceadressen van de Gateway, worden ter bescherming tegen spoofing afgewezen (`trusted_proxy_local_interface_source`). Als het detecteren van interfaces zelf mislukt, wordt het verzoek eveneens afgewezen (`trusted_proxy_local_interface_check_failed`).
+4. `requiredHeaders` en `userHeader` moeten aanwezig en niet leeg zijn.
+5. Als `allowUsers` niet leeg is, moet deze lijst de geëxtraheerde gebruiker bevatten.
 
+**Bewijs uit doorgestuurde headers heeft voor lokale directe terugval voorrang op de local loopback-lokaliteit.** Als een verzoek via local loopback binnenkomt maar een `Forwarded`-, een `X-Forwarded-*`- of een `X-Real-IP`-header bevat, wordt het door dat bewijs uitgesloten van lokale directe wachtwoordterugval en controle op apparaatidentiteit, ook al slaagt trusted-proxy-authenticatie vanwege local loopback nog steeds niet.
+
+`allowLoopback` vertrouwt lokale processen op de Gateway-host in dezelfde mate als de reverse proxy. Schakel dit alleen in wanneer de Gateway nog steeds door een firewall tegen directe externe toegang is afgeschermd en de lokale proxy door clients aangeleverde identiteitsheaders verwijdert of overschrijft.
+
+Interne Gateway-clients die niet via de reverse proxy lopen, moeten `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD` gebruiken, niet trusted-proxy-identiteitsheaders. Control UI-implementaties buiten local loopback vereisen nog steeds een expliciete `gateway.controlUi.allowedOrigins`.
 </Warning>
 
 ### Configuratiereferentie
 
 <ParamField path="gateway.trustedProxies" type="string[]" required>
-  Array met te vertrouwen proxy-IP-adressen. Aanvragen vanaf andere IP's worden geweigerd.
+  Lijst met te vertrouwen proxy-IP-adressen (of CIDR's). Verzoeken van andere IP-adressen worden afgewezen.
 </ParamField>
 <ParamField path="gateway.auth.mode" type="string" required>
   Moet `"trusted-proxy"` zijn.
 </ParamField>
 <ParamField path="gateway.auth.trustedProxy.userHeader" type="string" required>
-  Headernaam met de geauthenticeerde gebruikersidentiteit.
+  Naam van de header die de geauthenticeerde gebruikersidentiteit bevat.
 </ParamField>
 <ParamField path="gateway.auth.trustedProxy.requiredHeaders" type="string[]">
-  Aanvullende headers die aanwezig moeten zijn voordat de aanvraag wordt vertrouwd.
+  Aanvullende headers die aanwezig moeten zijn om het verzoek te vertrouwen.
 </ParamField>
 <ParamField path="gateway.auth.trustedProxy.allowUsers" type="string[]">
-  Toelatingslijst van gebruikersidentiteiten. Leeg betekent dat alle geauthenticeerde gebruikers zijn toegestaan.
+  Toegestane lijst met gebruikersidentiteiten. Leeg betekent dat alle geauthenticeerde gebruikers worden toegestaan.
 </ParamField>
-<ParamField path="gateway.auth.trustedProxy.allowLoopback" type="boolean">
-  Opt-in-ondersteuning voor same-host loopback-reverse proxies. Staat standaard op `false`.
+<ParamField path="gateway.auth.trustedProxy.allowLoopback" type="boolean" default="false">
+  Expliciet in te schakelen ondersteuning voor reverse proxy's op dezelfde host via local loopback.
 </ParamField>
 
 <Warning>
-Schakel `allowLoopback` alleen in wanneer de lokale reverse proxy de beoogde vertrouwensgrens is. Elk lokaal proces dat verbinding kan maken met de Gateway kan proberen proxy-identiteitsheaders te verzenden, dus houd directe Gateway-toegang privé voor de host en vereis proxy-eigen headers zoals `x-forwarded-proto` of een ondertekende assertion-header waar je proxy die ondersteunt.
+Schakel `allowLoopback` alleen in wanneer de lokale reverse proxy de beoogde vertrouwensgrens is. Elk lokaal proces dat verbinding kan maken met de Gateway, kan proberen proxy-identiteitsheaders te verzenden. Houd directe toegang tot de Gateway daarom privé voor de host en vereis headers die door de proxy worden beheerd, zoals `x-forwarded-proto`, of een ondertekende bevestigingsheader als je proxy die ondersteunt.
 </Warning>
 
-## TLS-terminatie en HSTS
+## Koppelingsgedrag van de Control UI
 
-Gebruik één TLS-terminatiepunt en pas HSTS daar toe.
+Wanneer `gateway.auth.mode = "trusted-proxy"` actief is en het verzoek de trusted-proxy-controles doorstaat, kunnen WebSocket-sessies van de Control UI verbinding maken zonder identiteit voor apparaatkoppeling.
+
+Gevolgen voor het bereik:
+
+- WebSocket-sessies van de Control UI zonder apparaat maken verbinding, maar ontvangen standaard geen operatorbereiken. OpenClaw wist de aangevraagde bereiklijst naar `[]`, zodat een sessie die niet aan een goedgekeurd gekoppeld apparaat/token is gebonden, niet zelf machtigingen kan declareren.
+- Als methoden na een geslaagde WebSocket-verbinding mislukken met `missing scope`, gebruik dan HTTPS zodat de browser een apparaatidentiteit kan genereren en de koppeling kan voltooien. Zie [onveilige HTTP voor de Control UI](/nl/web/control-ui#insecure-http).
+- Alleen voor noodgevallen: `gateway.controlUi.dangerouslyDisableDeviceAuth=true` behoudt aangevraagde bereiken, zelfs zonder apparaatidentiteit. Dit is een ernstige verlaging van de beveiliging; draai dit snel terug. Zie [onveilige HTTP voor de Control UI](/nl/web/control-ui#insecure-http).
+
+Beperking van bereiken door de reverse proxy: als je proxy `x-openclaw-scopes` meestuurt bij het WebSocket-upgradeverzoek van de Control UI, beperkt OpenClaw de sessiebereiken tot de doorsnede van de aangevraagde en gedeclareerde bereiken. Deze header verleent geen bereiken; deze beperkt alleen wat de sessie kan bevatten.
+
+Gevolgen:
+
+- Koppeling is in deze modus niet langer de primaire toegangspoort voor de Control UI.
+- Het authenticatiebeleid van je reverse proxy en `allowUsers` vormen de effectieve toegangscontrole.
+- Beperk inkomend Gateway-verkeer uitsluitend tot vertrouwde proxy-IP-adressen (`gateway.trustedProxies` + firewall).
+
+Aangepaste WebSocket-clients zijn geen Control UI-sessies. `gateway.controlUi.dangerouslyDisableDeviceAuth` verleent geen bereiken aan willekeurige clients met `client.mode: "backend"` of clients met een CLI-vorm. Aangepaste automatisering moet apparaatidentiteit/koppeling gebruiken, het gereserveerde directe lokale backend-hulppad `client.id: "gateway-client"`, of de [Plugin voor HTTP-RPC voor beheerders](/nl/plugins/admin-http-rpc) wanneer een HTTP-verzoek/antwoord-interface beter past.
+
+## Header voor operatorbereiken
+
+Trusted-proxy-authenticatie is een HTTP-modus die **een identiteit bevat**, zodat aanroepers bij HTTP-API-verzoeken optioneel operatorbereiken kunnen declareren met `x-openclaw-scopes`.
+
+Opmerking: WebSocket-bereiken worden bepaald door de Gateway-protocolhandshake en de binding aan de apparaatidentiteit. Bij WebSocket-upgradeverzoeken van de Control UI vormt `x-openclaw-scopes` alleen een bovengrens voor de onderhandelde sessiebereiken en verleent deze geen bereiken. Zie [Koppelingsgedrag van de Control UI](#control-ui-pairing-behavior).
+
+Voorbeelden:
+
+- `x-openclaw-scopes: operator.read`
+- `x-openclaw-scopes: operator.read,operator.write`
+- `x-openclaw-scopes: operator.admin,operator.write`
+
+Gedrag:
+
+- Wanneer de header aanwezig is, respecteert OpenClaw de gedeclareerde verzameling bereiken.
+- Wanneer de header aanwezig maar leeg is, declareert het verzoek **geen** operatorbereiken.
+- Wanneer de header ontbreekt, vallen normale HTTP-API's die een identiteit bevatten terug op de standaardverzameling operatorbereiken (`operator.admin`, `operator.read`, `operator.write`, `operator.approvals`, `operator.pairing`, `operator.talk.secrets`).
+- Met Gateway-authenticatie beveiligde **HTTP-routes van Plugins** zijn standaard beperkter: wanneer `x-openclaw-scopes` ontbreekt, valt hun runtime-bereik alleen terug op `operator.write`.
+- HTTP-verzoeken vanuit een browserorigin moeten nog steeds voldoen aan `gateway.controlUi.allowedOrigins` (of de bewust gekozen terugvalmodus voor de Host-header), zelfs nadat trusted-proxy-authenticatie is geslaagd.
+
+Praktische regel: stuur `x-openclaw-scopes` expliciet wanneer je een trusted-proxy-verzoek beperkter wilt maken dan de standaardwaarden, of wanneer een met Gateway-authenticatie beveiligde Plugin-route iets krachtigers nodig heeft dan het schrijfbereik.
+
+## TLS-beëindiging en HSTS
+
+Gebruik één TLS-beëindigingspunt en pas HSTS daar toe.
 
 <Tabs>
-  <Tab title="Proxy TLS termination (recommended)">
-    Wanneer je reverse proxy HTTPS afhandelt voor `https://control.example.com`, stel je `Strict-Transport-Security` op de proxy in voor dat domein.
+  <Tab title="TLS-beëindiging bij de proxy (aanbevolen)">
+    Wanneer je reverse proxy HTTPS afhandelt voor `https://control.example.com`, stel je `Strict-Transport-Security` bij de proxy in voor dat domein.
 
-    - Goede keuze voor internetgerichte implementaties.
-    - Houdt certificaat- en HTTP-hardeningbeleid op één plek.
-    - OpenClaw kan achter de proxy op loopback-HTTP blijven.
+    - Geschikt voor implementaties die vanaf internet toegankelijk zijn.
+    - Houdt het certificaat en het beleid voor HTTP-versterking op één plek.
+    - OpenClaw kan achter de proxy op HTTP via local loopback blijven.
 
-    Voorbeeldheaderwaarde:
+    Voorbeeldwaarde voor de header:
 
     ```text
     Strict-Transport-Security: max-age=31536000; includeSubDomains
     ```
 
   </Tab>
-  <Tab title="Gateway TLS termination">
-    Als OpenClaw zelf rechtstreeks HTTPS serveert (geen TLS-terminerende proxy), stel dan in:
+  <Tab title="TLS-beëindiging bij de Gateway">
+    Als OpenClaw zelf rechtstreeks HTTPS aanbiedt (zonder proxy die TLS beëindigt), stel je het volgende in:
 
     ```json5
     {
@@ -182,24 +204,24 @@ Gebruik één TLS-terminatiepunt en pas HSTS daar toe.
     }
     ```
 
-    `strictTransportSecurity` accepteert een stringheaderwaarde, of `false` om expliciet uit te schakelen.
+    `strictTransportSecurity` accepteert een tekenreeks als headerwaarde, of `false` om dit expliciet uit te schakelen.
 
   </Tab>
 </Tabs>
 
 ### Richtlijnen voor uitrol
 
-- Begin eerst met een korte maximale leeftijd (bijvoorbeeld `max-age=300`) terwijl je verkeer valideert.
-- Verhoog pas naar langlevende waarden (bijvoorbeeld `max-age=31536000`) nadat het vertrouwen hoog is.
-- Voeg `includeSubDomains` alleen toe als elk subdomein klaar is voor HTTPS.
-- Gebruik preload alleen als je bewust voldoet aan de preload-vereisten voor je volledige domeinset.
-- Alleen-loopback lokale ontwikkeling heeft geen voordeel van HSTS.
+- Begin met een korte maximale leeftijd (bijvoorbeeld `max-age=300`) terwijl je het verkeer valideert.
+- Verhoog deze pas naar waarden met een lange levensduur (bijvoorbeeld `max-age=31536000`) wanneer het vertrouwen groot is.
+- Voeg `includeSubDomains` alleen toe als elk subdomein gereed is voor HTTPS.
+- Gebruik preload alleen als je bewust voldoet aan de preloadvereisten voor je volledige verzameling domeinen.
+- Lokale ontwikkeling uitsluitend via local loopback heeft geen voordeel van HSTS.
 
-## Voorbeelden voor proxysetup
+## Voorbeelden van proxyconfiguraties
 
 <AccordionGroup>
   <Accordion title="Pomerium">
-    Pomerium geeft identiteit door in `x-pomerium-claim-email` (of andere claimheaders) en een JWT in `x-pomerium-jwt-assertion`.
+    Pomerium geeft de identiteit door in `x-pomerium-claim-email` (of andere claimheaders) en een JWT in `x-pomerium-jwt-assertion`.
 
     ```json5
     {
@@ -217,7 +239,7 @@ Gebruik één TLS-terminatiepunt en pas HSTS daar toe.
     }
     ```
 
-    Pomerium-configuratiefragment:
+    Configuratiefragment voor Pomerium:
 
     ```yaml
     routes:
@@ -232,14 +254,14 @@ Gebruik één TLS-terminatiepunt en pas HSTS daar toe.
     ```
 
   </Accordion>
-  <Accordion title="Caddy with OAuth">
-    Caddy met de `caddy-security`-Plugin kan gebruikers authenticeren en identiteitsheaders doorgeven.
+  <Accordion title="Caddy met OAuth">
+    Caddy kan met de Plugin `caddy-security` gebruikers authenticeren en identiteitsheaders doorgeven.
 
     ```json5
     {
       gateway: {
         bind: "lan",
-        trustedProxies: ["10.0.0.1"], // Caddy/sidecar proxy IP
+        trustedProxies: ["10.0.0.1"], // IP-adres van Caddy/sidecar-proxy
         auth: {
           mode: "trusted-proxy",
           trustedProxy: {
@@ -252,7 +274,7 @@ Gebruik één TLS-terminatiepunt en pas HSTS daar toe.
 
     Caddyfile-fragment:
 
-    ```
+    ```caddy
     openclaw.example.com {
         authenticate with oauth2_provider
         authorize with policy1
@@ -265,13 +287,13 @@ Gebruik één TLS-terminatiepunt en pas HSTS daar toe.
 
   </Accordion>
   <Accordion title="nginx + oauth2-proxy">
-    oauth2-proxy authenticeert gebruikers en geeft identiteit door in `x-auth-request-email`.
+    oauth2-proxy verifieert gebruikers en geeft de identiteit door in `x-auth-request-email`.
 
     ```json5
     {
       gateway: {
         bind: "lan",
-        trustedProxies: ["10.0.0.1"], // nginx/oauth2-proxy IP
+        trustedProxies: ["10.0.0.1"], // IP-adres van nginx/oauth2-proxy
         auth: {
           mode: "trusted-proxy",
           trustedProxy: {
@@ -298,12 +320,12 @@ Gebruik één TLS-terminatiepunt en pas HSTS daar toe.
     ```
 
   </Accordion>
-  <Accordion title="Traefik with forward auth">
+  <Accordion title="Traefik met doorgestuurde authenticatie">
     ```json5
     {
       gateway: {
         bind: "lan",
-        trustedProxies: ["172.17.0.1"], // Traefik container IP
+        trustedProxies: ["172.17.0.1"], // IP-adres van Traefik-container
         auth: {
           mode: "trusted-proxy",
           trustedProxy: {
@@ -318,174 +340,165 @@ Gebruik één TLS-terminatiepunt en pas HSTS daar toe.
 
 ## Gemengde tokenconfiguratie
 
-OpenClaw weigert dubbelzinnige configuraties waarbij zowel een `gateway.auth.token` (of `OPENCLAW_GATEWAY_TOKEN`) als de modus `trusted-proxy` tegelijk actief zijn. Gemengde tokenconfiguraties kunnen ertoe leiden dat loopback-aanvragen stilzwijgend via het verkeerde authenticatiepad worden geauthenticeerd.
+Het starten van de Gateway wordt bij authenticatie via een vertrouwde proxy geweigerd als er ook een gedeeld token is geconfigureerd (`gateway.auth.token` of `OPENCLAW_GATEWAY_TOKEN`). Deze twee sluiten elkaar uit, omdat een gedeeld token aan aanroepers op dezelfde host de mogelijkheid zou geven zich via een volledig ander pad te verifiëren dan met de door de proxy geverifieerde identiteit die deze modus moet afdwingen.
 
-Als je bij het starten een fout `mixed_trusted_proxy_token` ziet:
+Als het starten mislukt met een fout zoals `gateway auth mode is trusted-proxy, but a shared token is also configured`:
 
-- Verwijder het gedeelde token wanneer je de trusted-proxy-modus gebruikt, of
-- Zet `gateway.auth.mode` op `"token"` als je tokengebaseerde authenticatie bedoelt.
+- Verwijder het gedeelde token wanneer u de modus met een vertrouwde proxy gebruikt, of
+- Stel `gateway.auth.mode` in op `"token"` als u authenticatie op basis van tokens wilt gebruiken.
 
-Loopback trusted-proxy-identiteitsheaders blijven fail-closed: aanroepers vanaf dezelfde host worden niet stilzwijgend geauthenticeerd als proxygebruikers. Interne OpenClaw-aanroepers die de proxy omzeilen, kunnen in plaats daarvan authenticeren met `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD`. Tokenfallback blijft bewust niet ondersteund in trusted-proxy-modus.
+Identiteitsheaders van vertrouwde proxy's via local loopback worden nog steeds standaard geweigerd: aanroepers op dezelfde host worden niet stilzwijgend geverifieerd als proxygebruikers. Interne aanroepers van OpenClaw die de proxy omzeilen, kunnen zich in plaats daarvan verifiëren met `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD`. Terugvallen op tokens wordt in de modus met een vertrouwde proxy bewust niet ondersteund.
 
-## Header voor operator-scopes
+## Beveiligingscontrolelijst
 
-Trusted-proxy-authenticatie is een **identiteitsdragende** HTTP-modus, dus aanroepers kunnen optioneel operator-scopes declareren met `x-openclaw-scopes` op HTTP-API-aanvragen.
+Controleer het volgende voordat u authenticatie via een vertrouwde proxy inschakelt:
 
-Opmerking: WebSocket-scopes worden bepaald door de Gateway-protocolhandshake en binding van apparaatidentiteit. Op Control UI WebSocket-upgradeaanvragen is `x-openclaw-scopes` alleen een bovengrens voor de onderhandelde sessiescopes, geen toekenning. Zie [koppelingsgedrag van Control UI](#control-ui-pairing-behavior) voor WebSocket-scopegedrag met trusted-proxy.
-
-Voorbeelden:
-
-- `x-openclaw-scopes: operator.read`
-- `x-openclaw-scopes: operator.read,operator.write`
-- `x-openclaw-scopes: operator.admin,operator.write`
-
-Gedrag:
-
-- Wanneer de header aanwezig is, respecteert OpenClaw de gedeclareerde scopeset.
-- Wanneer de header aanwezig maar leeg is, declareert de aanvraag **geen** operator-scopes.
-- Wanneer de header afwezig is, vallen normale identiteitsdragende HTTP-API's terug op de standaard operatorscopeset.
-- Gateway-auth **Plugin HTTP-routes** zijn standaard beperkter: wanneer `x-openclaw-scopes` afwezig is, valt hun runtime-scope terug op `operator.write`.
-- HTTP-aanvragen met browser-origin moeten nog steeds slagen voor `gateway.controlUi.allowedOrigins` (of de bewuste Host-header-fallbackmodus), zelfs nadat trusted-proxy-authenticatie slaagt.
-- Voor Control UI WebSocket-sessies is `x-openclaw-scopes` een scopebovengrens wanneer deze aanwezig is op de upgradeaanvraag. Een lege waarde levert geen scopes op.
-
-Praktische regel: verstuur `x-openclaw-scopes` expliciet wanneer je wilt dat een trusted-proxy-aanvraag beperkter is dan de standaardwaarden, of wanneer een gateway-auth Plugin-route iets sterkers nodig heeft dan write-scope.
-
-## Beveiligingschecklist
-
-Controleer voordat je trusted-proxy-authenticatie inschakelt:
-
-- [ ] **Proxy is het enige pad**: De Gateway-poort is met een firewall afgeschermd van alles behalve je proxy.
-- [ ] **trustedProxies is minimaal**: Alleen je echte proxy-IP's, geen volledige subnetten.
-- [ ] **Loopback-proxybron is bewust gekozen**: trusted-proxy-authenticatie faalt gesloten voor aanvragen met loopback-bron, tenzij `gateway.auth.trustedProxy.allowLoopback` expliciet is ingeschakeld voor een proxy op dezelfde host.
-- [ ] **Proxy stript headers**: Je proxy overschrijft (voegt niet toe aan) `x-forwarded-*`-headers van clients.
-- [ ] **TLS-beëindiging**: Je proxy handelt TLS af; gebruikers verbinden via HTTPS.
-- [ ] **allowedOrigins is expliciet**: Niet-loopback Control UI gebruikt expliciete `gateway.controlUi.allowedOrigins`.
-- [ ] **allowUsers is ingesteld** (aanbevolen): Beperk tot bekende gebruikers in plaats van iedereen toe te staan die is geauthenticeerd.
+- [ ] **De proxy is het enige pad**: De Gateway-poort is met een firewall afgeschermd van alles behalve uw proxy.
+- [ ] **trustedProxies is minimaal**: Alleen de daadwerkelijke IP-adressen van uw proxy's, geen volledige subnetten.
+- [ ] **Een proxybron via local loopback is een bewuste keuze**: Authenticatie via een vertrouwde proxy wordt standaard geweigerd voor aanvragen uit local loopback, tenzij `gateway.auth.trustedProxy.allowLoopback` expliciet is ingeschakeld voor een proxy op dezelfde host.
+- [ ] **De proxy verwijdert headers**: Uw proxy overschrijft `x-forwarded-*`-headers van clients in plaats van ze aan te vullen.
+- [ ] **TLS-beëindiging**: Uw proxy handelt TLS af; gebruikers maken verbinding via HTTPS.
+- [ ] **allowedOrigins is expliciet**: Een Control UI buiten local loopback gebruikt expliciete `gateway.controlUi.allowedOrigins`.
+- [ ] **allowUsers is ingesteld** (aanbevolen): Beperk de toegang tot bekende gebruikers in plaats van elke geverifieerde gebruiker toe te laten.
 - [ ] **Geen gemengde tokenconfiguratie**: Stel niet zowel `gateway.auth.token` als `gateway.auth.mode: "trusted-proxy"` in.
-- [ ] **Lokale wachtwoordfallback is privé**: Als je `gateway.auth.password` configureert voor interne directe aanroepers, houd de Gateway-poort dan met een firewall afgeschermd zodat externe niet-proxyclients deze niet rechtstreeks kunnen bereiken.
+- [ ] **Lokale terugval via wachtwoord is afgeschermd**: Als u `gateway.auth.password` configureert voor interne rechtstreekse aanroepers, schermt u de Gateway-poort met een firewall af zodat externe clients die de proxy omzeilen deze niet rechtstreeks kunnen bereiken.
 
 ## Beveiligingsaudit
 
-`openclaw security audit` markeert trusted-proxy-authenticatie met een bevinding van **kritieke** ernst. Dit is bewust: het is een herinnering dat je beveiliging delegeert aan je proxyconfiguratie.
+`openclaw security audit` markeert authenticatie via een vertrouwde proxy met de ernst **kritiek**. Dit is opzettelijk; het herinnert u eraan dat u de beveiliging delegeert aan uw proxyconfiguratie.
 
 De audit controleert op:
 
-- Basiswaarschuwing/kritieke herinnering `gateway.trusted_proxy_auth`
-- Ontbrekende `trustedProxies`-configuratie
-- Ontbrekende `userHeader`-configuratie
-- Lege `allowUsers` (staat elke geauthenticeerde gebruiker toe)
-- Ingeschakelde `allowLoopback` voor proxybronnen op dezelfde host
-- Wildcard- of ontbrekend browser-originbeleid op blootgestelde Control UI-oppervlakken
+- Algemene waarschuwing/kritieke herinnering `gateway.trusted_proxy_auth`.
+- Ontbrekende configuratie van `trustedProxies`.
+- Ontbrekende configuratie van `userHeader`.
+- Lege `allowUsers` (staat elke geverifieerde gebruiker toe).
+- Ingeschakelde `allowLoopback` voor proxybronnen op dezelfde host.
 
-## Probleemoplossing
+Afzonderlijke bevindingen die niet specifiek zijn voor vertrouwde proxy's gelden ook wanneer de Control UI toegankelijk is: ontbrekende `gateway.controlUi.allowedOrigins` of jokertekens daarin, en terugval op de oorsprong uit de Host-header.
+
+## Problemen oplossen
 
 <AccordionGroup>
   <Accordion title="trusted_proxy_untrusted_source">
-    De aanvraag kwam niet van een IP in `gateway.trustedProxies`. Controleer:
+    De aanvraag kwam niet van een IP-adres in `gateway.trustedProxies`. Controleer:
 
-    - Is het proxy-IP correct? (Docker-container-IP's kunnen veranderen.)
-    - Staat er een loadbalancer voor je proxy?
-    - Gebruik `docker inspect` of `kubectl get pods -o wide` om de werkelijke IP's te vinden.
+    - Is het IP-adres van de proxy correct? (IP-adressen van Docker-containers kunnen veranderen.)
+    - Staat er een loadbalancer vóór uw proxy?
+    - Gebruik `docker inspect` of `kubectl get pods -o wide` om de daadwerkelijke IP-adressen te vinden.
 
   </Accordion>
   <Accordion title="trusted_proxy_loopback_source">
-    OpenClaw heeft een trusted-proxy-aanvraag met loopback-bron geweigerd.
+    OpenClaw heeft een aanvraag via een vertrouwde proxy uit local loopback geweigerd.
 
     Controleer:
 
     - Maakt de proxy verbinding vanaf `127.0.0.1` / `::1`?
-    - Probeer je trusted-proxy-authenticatie te gebruiken met een loopback-reverseproxy op dezelfde host?
+    - Probeert u authenticatie via een vertrouwde proxy te gebruiken met een reverse proxy via local loopback op dezelfde host?
 
     Oplossing:
 
-    - Geef de voorkeur aan token-/wachtwoordauthenticatie voor interne clients op dezelfde host die niet via de proxy gaan, of
-    - Routeer via een niet-loopback trusted-proxy-adres en houd dat IP in `gateway.trustedProxies`, of
-    - Stel voor een bewuste reverseproxy op dezelfde host `gateway.auth.trustedProxy.allowLoopback = true` in, houd het loopback-adres in `gateway.trustedProxies`, en zorg dat de proxy identiteitsheaders stript of overschrijft.
+    - Gebruik bij voorkeur authenticatie met een token/wachtwoord voor interne clients op dezelfde host die niet via de proxy gaan, of
+    - Leid het verkeer via een vertrouwd proxyadres buiten local loopback en houd dat IP-adres opgenomen in `gateway.trustedProxies`, of
+    - Stel voor een bewust gebruikte reverse proxy op dezelfde host `gateway.auth.trustedProxy.allowLoopback = true` in, houd het local loopback-adres opgenomen in `gateway.trustedProxies` en zorg ervoor dat de proxy identiteitsheaders verwijdert of overschrijft.
+
+  </Accordion>
+  <Accordion title="trusted_proxy_local_interface_source / trusted_proxy_local_interface_check_failed">
+    Het bron-IP-adres van de aanvraag kwam overeen met een van de eigen netwerkinterfaceadressen buiten local loopback van de Gateway-host (niet met de proxy), als bescherming tegen vervalst verkeer vanaf dezelfde host op tailnets of Docker-bridgenetwerken. `..._check_failed` betekent dat het detecteren van interfaces zelf een fout opleverde, zodat OpenClaw de aanvraag standaard weigert.
+
+    Controleer:
+
+    - Verstuurt een proces op de Gateway-host zelf rechtstreeks identiteitsheaders en omzeilt het daarmee de proxy?
+    - Draait de proxy in dezelfde netwerknaamruimte als de Gateway, met een IP-adres dat ook als lokale interface wordt weergegeven?
+
+    Oplossing: leid proxyverkeer via een adres dat niet ook lokaal aan de Gateway-host is gebonden, of gebruik `allowLoopback` alleen voor een echte proxyconfiguratie op dezelfde host.
 
   </Accordion>
   <Accordion title="trusted_proxy_user_missing">
     De gebruikersheader was leeg of ontbrak. Controleer:
 
-    - Is je proxy geconfigureerd om identiteitsheaders door te geven?
-    - Is de headernaam correct? (hoofdletterongevoelig, maar spelling telt)
-    - Is de gebruiker daadwerkelijk geauthenticeerd bij de proxy?
+    - Is uw proxy geconfigureerd om identiteitsheaders door te geven?
+    - Is de headernaam correct? (hoofdletterongevoelig, maar de spelling moet kloppen)
+    - Is de gebruiker daadwerkelijk bij de proxy geverifieerd?
 
   </Accordion>
   <Accordion title="trusted_proxy_missing_header_*">
-    Een vereiste header was niet aanwezig. Controleer:
+    Een vereiste header ontbrak. Controleer:
 
-    - Je proxyconfiguratie voor die specifieke headers.
-    - Of headers ergens in de keten worden gestript.
+    - Uw proxyconfiguratie voor die specifieke headers.
+    - Of headers ergens in de keten worden verwijderd.
 
   </Accordion>
   <Accordion title="trusted_proxy_user_not_allowed">
-    De gebruiker is geauthenticeerd, maar staat niet in `allowUsers`. Voeg de gebruiker toe of verwijder de allowlist.
+    De gebruiker is geverifieerd, maar staat niet in `allowUsers`. Voeg de gebruiker toe of verwijder de toestemmingslijst.
+  </Accordion>
+  <Accordion title="trusted_proxy_no_proxies_configured / trusted_proxy_config_missing">
+    `gateway.auth.mode` is `"trusted-proxy"`, maar `gateway.trustedProxies` is leeg, of `gateway.auth.trustedProxy` zelf ontbreekt. Elke aanvraag wordt geweigerd totdat beide zijn ingesteld.
   </Accordion>
   <Accordion title="trusted_proxy_origin_not_allowed">
-    Trusted-proxy-authenticatie is geslaagd, maar de browserheader `Origin` kwam niet door de Control UI-origincontroles.
+    Authenticatie via een vertrouwde proxy is geslaagd, maar de browserheader `Origin` voldeed niet aan de oorsprongscontroles van de Control UI.
 
     Controleer:
 
-    - `gateway.controlUi.allowedOrigins` bevat de exacte browser-origin.
-    - Je vertrouwt niet op wildcard-origins, tenzij je bewust allow-all-gedrag wilt.
-    - Als je bewust Host-header-fallbackmodus gebruikt, is `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true` bewust ingesteld.
+    - `gateway.controlUi.allowedOrigins` bevat de exacte oorsprong van de browser.
+    - U vertrouwt niet op jokertekenoorsprongen, tenzij u bewust alles wilt toestaan.
+    - Als u bewust de terugvalmodus via de Host-header gebruikt, is `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true` doelbewust ingesteld.
 
   </Accordion>
-  <Accordion title="Connection succeeds but methods report missing scope">
+  <Accordion title="Verbinding slaagt, maar methoden melden ontbrekend bereik">
     De WebSocket maakt verbinding, maar `chat.history`, `sessions.list` of
-    `models.list` faalt met `missing scope: operator.read`.
+    `models.list` mislukt met `missing scope: operator.read`.
 
     Veelvoorkomende oorzaken:
 
-    - Control UI-sessie zonder apparaat: trusted-proxy-authenticatie kan de WebSocket-verbinding toelaten zonder apparaatidentiteit, maar OpenClaw wist scopes op sessies zonder apparaat volgens ontwerp.
-    - Aangepaste backendclient: `gateway.controlUi.dangerouslyDisableDeviceAuth` is beperkt tot Control UI en kent geen scopes toe aan willekeurige backend- of CLI-vormige WebSocket-clients.
-    - Te beperkte `x-openclaw-scopes`: als je proxy deze header injecteert op de Control UI WebSocket-upgradeaanvraag, worden de sessiescopes begrensd tot die set. Een lege headerwaarde levert geen scopes op.
+    - Control UI-sessie zonder apparaat: authenticatie via een vertrouwde proxy kan de WebSocket-verbinding zonder apparaatidentiteit toelaten, maar OpenClaw verwijdert bewust de bereiken van sessies zonder apparaat.
+    - Aangepaste backendclient: `gateway.controlUi.dangerouslyDisableDeviceAuth` is beperkt tot de Control UI en kent geen bereiken toe aan willekeurige WebSocket-clients voor backends of met een CLI-vorm.
+    - Te beperkte `x-openclaw-scopes`: als uw proxy deze header injecteert bij de WebSocket-upgradeaanvraag van de Control UI, worden de sessiebereiken beperkt tot die verzameling. Een lege headerwaarde resulteert in geen bereiken.
 
     Oplossing:
 
-    - Gebruik voor Control UI HTTPS, zodat de browser apparaatidentiteit kan genereren en de koppeling kan voltooien.
-    - Gebruik voor aangepaste automatisering apparaatidentiteit/koppeling, het gereserveerde directe lokale `gateway-client`-backendhulppad, of [admin HTTP RPC](/nl/plugins/admin-http-rpc).
-    - Gebruik `gateway.controlUi.dangerouslyDisableDeviceAuth: true` alleen als tijdelijk break-glass-pad voor Control UI.
+    - Gebruik voor de Control UI HTTPS, zodat de browser een apparaatidentiteit kan genereren en de koppeling kan voltooien.
+    - Gebruik voor aangepaste automatisering apparaatidentiteit/koppeling, het gereserveerde rechtstreekse lokale backendhelperpad `gateway-client`, of [HTTP-RPC voor beheerders](/nl/plugins/admin-http-rpc).
+    - Gebruik `gateway.controlUi.dangerouslyDisableDeviceAuth: true` alleen als tijdelijke noodoplossing voor de Control UI.
 
   </Accordion>
-  <Accordion title="WebSocket still failing">
-    Zorg dat je proxy:
+  <Accordion title="WebSocket mislukt nog steeds">
+    Zorg ervoor dat uw proxy:
 
     - WebSocket-upgrades ondersteunt (`Upgrade: websocket`, `Connection: upgrade`).
-    - De identiteitsheaders doorgeeft op WebSocket-upgradeaanvragen (niet alleen HTTP).
-    - Geen apart authenticatiepad heeft voor WebSocket-verbindingen.
+    - De identiteitsheaders doorgeeft bij WebSocket-upgradeaanvragen (niet alleen bij HTTP).
+    - Geen afzonderlijk authenticatiepad voor WebSocket-verbindingen heeft.
 
   </Accordion>
 </AccordionGroup>
 
 ## Migratie vanaf tokenauthenticatie
 
-Als je overstapt van tokenauthenticatie naar trusted-proxy:
-
 <Steps>
-  <Step title="Configure the proxy">
-    Configureer je proxy om gebruikers te authenticeren en headers door te geven.
+  <Step title="De proxy configureren">
+    Configureer uw proxy om gebruikers te verifiëren en headers door te geven.
   </Step>
-  <Step title="Test the proxy independently">
-    Test de proxyconfiguratie onafhankelijk (curl met headers).
+  <Step title="De proxy afzonderlijk testen">
+    Test de proxyconfiguratie afzonderlijk (curl met headers).
   </Step>
-  <Step title="Update OpenClaw config">
-    Werk de OpenClaw-configuratie bij met trusted-proxy-authenticatie.
+  <Step title="De OpenClaw-configuratie bijwerken">
+    Werk de OpenClaw-configuratie bij met authenticatie via een vertrouwde proxy.
   </Step>
-  <Step title="Restart the Gateway">
+  <Step title="De Gateway opnieuw starten">
     Start de Gateway opnieuw.
   </Step>
-  <Step title="Test WebSocket">
+  <Step title="WebSocket testen">
     Test WebSocket-verbindingen vanuit de Control UI.
   </Step>
   <Step title="Audit">
-    Voer `openclaw security audit` uit en bekijk de bevindingen.
+    Voer `openclaw security audit` uit en beoordeel de bevindingen.
   </Step>
 </Steps>
 
 ## Gerelateerd
 
 - [Configuratie](/nl/gateway/configuration) — configuratiereferentie
+- [Operatorbereiken](/nl/gateway/operator-scopes) — rollen, bereiken en goedkeuringscontroles
 - [Externe toegang](/nl/gateway/remote) — andere patronen voor externe toegang
 - [Beveiliging](/nl/gateway/security) — volledige beveiligingsgids
-- [Tailscale](/nl/gateway/tailscale) — eenvoudiger alternatief voor toegang uitsluitend via tailnet
+- [Tailscale](/nl/gateway/tailscale) — eenvoudiger alternatief voor toegang die beperkt is tot het tailnet

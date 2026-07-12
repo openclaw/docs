@@ -1,30 +1,30 @@
 ---
 read_when:
-    - Stai installando, configurando o eseguendo l'audit del Plugin sintetico
-summary: Aggiunge il supporto per il provider di modelli Synthetic a OpenClaw.
+    - Stai installando, configurando o sottoponendo a verifica il plugin sintetico
+summary: Aggiunge a OpenClaw il supporto per il provider di modelli Synthetic.
 title: Plugin sintetico
 x-i18n:
-    generated_at: "2026-05-02T20:57:31Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:20:11Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: 4d899363b3dac4128f3e2a1e30ad11cd5ae0c11cc5229d3f03e15429e2741f8d
     source_path: plugins/reference/synthetic.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Plugin Synthetic
 
-Aggiunge il supporto al provider di modelli Synthetic a OpenClaw.
+Aggiunge a OpenClaw il supporto per il provider di modelli Synthetic.
 
 ## Distribuzione
 
 - Pacchetto: `@openclaw/synthetic-provider`
-- Percorso di installazione: incluso in OpenClaw
+- Modalità di installazione: incluso in OpenClaw
 
 ## Superficie
 
-providers: synthetic
+provider: synthetic
 
 ## Documentazione correlata
 

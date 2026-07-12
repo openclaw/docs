@@ -1,15 +1,14 @@
 ---
 read_when:
     - Vous développez ou refactorisez le chemin de réception d’un plugin de canal de messagerie
-    - Vous avez besoin de la construction d’un contexte entrant partagé, de l’enregistrement des sessions ou de l’envoi de réponses préparées
+    - Vous avez besoin d’une construction partagée du contexte entrant, de l’enregistrement des sessions ou de l’envoi de réponses préparées.
     - Vous migrez les anciens assistants de tour de canal vers les API inbound/message
-summary: 'Assistants d’événements entrants pour les plugins de canal : création du contexte, orchestration de l’exécuteur partagé, enregistrement de session et distribution des réponses préparées'
+summary: 'Fonctions auxiliaires pour les événements entrants des plugins de canal : création du contexte, orchestration du programme d’exécution partagé, enregistrement de session et envoi des réponses préparées'
 title: API entrante du canal
 x-i18n:
-    generated_at: "2026-07-12T15:37:41Z"
+    generated_at: "2026-07-12T03:11:09Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: a85ffaf9501af00e1493b5fbb0454a070626ed6ca41977323b55e84b92075ed1
     source_path: plugins/sdk-channel-inbound.md
@@ -38,16 +37,17 @@ import {
 ```
 
 - `buildChannelInboundEventContext(...)` : projette les faits normalisés du canal
-  dans le contexte de l’invite et de la session. Transmettez les métadonnées d’expéditeur et de conversation
-  appartenant au canal via `channelContext`, que les hooks de Plugin voient sous la forme `ctx.channelContext`.
+  dans le contexte de l’invite et de la session. Transmettez les métadonnées
+  d’expéditeur et de discussion détenues par le canal via `channelContext`, que les hooks du Plugin
+  voient sous la forme `ctx.channelContext`.
   Étendez `PluginHookChannelSenderContext` ou `PluginHookChannelChatContext`
   depuis ce sous-chemin pour les champs propres au canal.
-- `runChannelInboundEvent(...)` : exécute l’ingestion, la classification, les vérifications préalables, la résolution,
-  l’enregistrement, la distribution et la finalisation pour un événement entrant de la plateforme.
-- `dispatchChannelInboundReply(...)` : enregistre et distribue une réponse entrante déjà
-  assemblée à l’aide d’un adaptateur de livraison.
+- `runChannelInboundEvent(...)` : exécute l’ingestion, la classification, les contrôles préalables, la résolution,
+  l’enregistrement, l’envoi et la finalisation pour un événement entrant de la plateforme.
+- `dispatchChannelInboundReply(...)` : enregistre et envoie une réponse entrante
+  déjà assemblée au moyen d’un adaptateur de livraison.
 
-Les canaux intégrés/natifs qui reçoivent déjà l’objet d’exécution du Plugin injecté
+Les canaux intégrés ou natifs qui reçoivent déjà l’objet d’exécution du Plugin injecté
 peuvent appeler les mêmes fonctions d’assistance sous `runtime.channel.inbound.*` au lieu
 d’importer directement ce sous-chemin :
 
@@ -63,8 +63,8 @@ await runtime.channel.inbound.run({
 });
 ```
 
-Assemblez les entrées de `dispatchChannelInboundReply(...)` pour les distributeurs
-de compatibilité qui conservent la livraison propre à la plateforme dans l’adaptateur de livraison. Les nouveaux chemins
+Assemblez les entrées de `dispatchChannelInboundReply(...)` pour les répartiteurs
+de compatibilité qui conservent la livraison vers la plateforme dans l’adaptateur de livraison. Les nouveaux chemins
 d’envoi doivent plutôt utiliser les adaptateurs de messages et les fonctions d’assistance de messages durables de
 `channel-outbound`.
 
@@ -76,9 +76,9 @@ Les alias d’exécution `runtime.channel.turn.*` ont été supprimés. Utilisez
 - `runtime.channel.inbound.dispatchReply(...)` pour les contextes de réponse assemblés.
 - `runtime.channel.inbound.buildContext(...)` pour les charges utiles de contexte entrant.
 - `runtime.channel.inbound.runPreparedReply(...)`, obsolète, uniquement pour
-  les chemins de distribution préparés appartenant au canal qui assemblent déjà leur propre
-  fermeture de distribution.
+  les chemins d’envoi préparés détenus par le canal qui assemblent déjà leur propre
+  fermeture d’envoi.
 
-Le nouveau code de Plugin ne doit pas introduire d’API de canal nommées `turn`. Conservez le vocabulaire
-des tours de modèle ou d’agent dans le code de l’agent ou du fournisseur ; les Plugins de canal utilisent les termes
-entrant, message, livraison et réponse.
+Le nouveau code de Plugin ne doit pas introduire d’API de canal nommées `turn`. Réservez le
+vocabulaire des tours de modèle ou d’agent au code de l’agent ou du fournisseur ; les Plugins
+de canal emploient les termes « entrant », « message », « livraison » et « réponse ».

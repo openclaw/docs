@@ -1,13 +1,12 @@
 ---
 read_when:
-    - Depuración de la vista de WebChat en Mac o del puerto de bucle invertido
-summary: Cómo la app para Mac integra el WebChat del Gateway y cómo depurarlo
+    - Depuración de la vista de WebChat en Mac o del puerto local loopback
+summary: Cómo la aplicación para Mac integra el WebChat del Gateway y cómo depurarlo
 title: WebChat (macOS)
 x-i18n:
-    generated_at: "2026-07-12T14:36:41Z"
+    generated_at: "2026-07-11T23:15:53Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 7139ada530e4d5c3833500c36364d742dff301608a8a1a7902003b5f5384512c
     source_path: platforms/mac/webchat.md
@@ -19,13 +18,13 @@ La aplicación de la barra de menús de macOS integra la interfaz de WebChat com
 La ventana de chat completa es una vista dividida nativa:
 
 - **Barra lateral de sesiones**: lista de sesiones con búsqueda, secciones de sesiones fijadas y recientes, indicadores de mensajes no leídos y menús contextuales para fijar o desfijar, copiar la clave de sesión y eliminar. Un botón de la barra de herramientas (o Cmd-N) crea una sesión nueva real mediante `sessions.create`.
-- **Barra de herramientas de la ventana**: indicador circular de uso del contexto (tokens y coste de la sesión, con una acción compacta), selector del nivel de razonamiento, selector de modelo y menú de acciones de la sesión (nueva sesión, actualizar, copiar la clave de sesión, exportar la transcripción, compactar y borrar el historial).
-- **Transcripción y editor de mensajes**: los mensajes del asistente se muestran como texto sin formato con un avatar y los mensajes del usuario como burbujas con el color de énfasis. Al escribir `/`, se abre el autocompletado de comandos con barra diagonal proporcionado por `commands.list`, con navegación mediante las teclas de flecha, Tab, Return y Escape. Haga clic con el botón derecho en un mensaje para copiarlo.
+- **Barra de herramientas de la ventana**: anillo de uso del contexto (tokens y coste de la sesión, con una acción compacta), selector del nivel de razonamiento, selector de modelo y menú de acciones de sesión (nueva sesión, actualizar, copiar la clave de sesión, exportar la transcripción, compactar y borrar el historial).
+- **Transcripción y editor**: los mensajes del asistente se muestran como texto sin formato con un avatar y los mensajes del usuario, como burbujas con el color de énfasis. Al escribir `/`, se abre el autocompletado de comandos con barra diagonal proporcionado por `commands.list`, con navegación mediante las teclas de flecha, Tab, Return y Escape. Haz clic con el botón derecho en un mensaje para copiarlo.
 
-El panel de chat rápido anclado a la barra de menús mantiene el diseño compacto de una sola columna con selectores integrados.
+El panel de chat rápido anclado a la barra de menús conserva el diseño compacto de una sola columna con selectores en línea.
 
 - **Modo local**: se conecta directamente al WebSocket del Gateway local.
-- **Modo remoto**: reenvía el puerto de control del Gateway a través de SSH y utiliza ese túnel como plano de datos.
+- **Modo remoto**: reenvía el puerto de control del Gateway mediante SSH y utiliza ese túnel como plano de datos.
 
 ## Inicio y depuración
 
@@ -43,18 +42,18 @@ El panel de chat rápido anclado a la barra de menús mantiene el diseño compac
 ## Cómo está conectado
 
 - Plano de datos: métodos WS del Gateway `chat.history`, `chat.send`, `chat.abort`, `chat.inject` y eventos `chat`, `agent`, `presence`, `tick`, `health`.
-- `chat.history` devuelve una transcripción normalizada para su visualización: las etiquetas de directivas integradas se eliminan del texto visible; se eliminan las cargas XML de llamadas a herramientas en texto sin formato (`<tool_call>`, `<function_call>`, `<tool_calls>`, `<function_calls>`, incluidos los bloques truncados) y los tokens de control del modelo filtrados; se omiten las filas del asistente que solo contienen tokens silenciosos, como los valores exactos `NO_REPLY`/`no_reply`; y las filas demasiado grandes pueden sustituirse por un marcador de posición truncado.
+- `chat.history` devuelve una transcripción normalizada para su visualización: las etiquetas de directivas en línea se eliminan del texto visible; se eliminan las cargas útiles XML de llamadas a herramientas en texto sin formato (`<tool_call>`, `<function_call>`, `<tool_calls>`, `<function_calls>`, incluidos los bloques truncados) y los tokens de control del modelo filtrados; se omiten las filas del asistente que contienen únicamente tokens de silencio, como exactamente `NO_REPLY`/`no_reply`; y las filas demasiado grandes pueden sustituirse por un marcador de posición truncado.
 - Sesión: utiliza de forma predeterminada la sesión principal indicada anteriormente; la interfaz puede cambiar entre sesiones.
 - La incorporación utiliza una sesión específica para mantener separada la configuración de la primera ejecución.
-- Caché sin conexión: la aplicación mantiene una pequeña caché de solo lectura de las sesiones de chat y transcripciones recientes de cada Gateway (`~/Library/Application Support/OpenClaw/chat-cache.sqlite`): al abrirse en frío, muestra inmediatamente la última transcripción conocida y se actualiza cuando responde el Gateway; además, los chats recientes siguen disponibles para consulta mientras no hay conexión (el envío permanece deshabilitado hasta que se restablece la conexión).
+- Caché sin conexión: la aplicación mantiene una pequeña caché de solo lectura de las sesiones de chat y transcripciones recientes de cada Gateway (`~/Library/Application Support/OpenClaw/chat-cache.sqlite`): al abrirse desde cero, muestra inmediatamente la última transcripción conocida y se actualiza cuando responde el Gateway; además, los chats recientes siguen disponibles para su consulta mientras no haya conexión (el envío permanece deshabilitado hasta que se restablece la conexión).
 
 ## Superficie de seguridad
 
-- El modo remoto reenvía únicamente el puerto de control WebSocket del Gateway a través de SSH.
+- El modo remoto solo reenvía el puerto de control WebSocket del Gateway mediante SSH.
 
 ## Limitaciones conocidas
 
-- La interfaz está optimizada para sesiones de chat, no como entorno aislado completo de navegador.
+- La interfaz está optimizada para sesiones de chat, no como un entorno aislado completo de navegador.
 
 ## Contenido relacionado
 

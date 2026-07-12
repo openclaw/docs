@@ -1,37 +1,36 @@
 ---
 read_when:
-    - Menggunakan template gateway dev
-    - Memperbarui identitas agen dev default
-summary: Catatan tool agen dev (C-3PO)
-title: Template TOOLS.dev
+    - Menggunakan templat Gateway pengembangan
+    - Memperbarui identitas agen pengembangan default
+summary: Catatan alat agen pengembangan (C-3PO)
+title: Templat TOOLS.dev
 x-i18n:
-    generated_at: "2026-04-24T09:27:21Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 23c11e2832ed0dcf9ddd43e5472e0c025c1a91a33299019c16f00a7230e8e99c
-    source_path: reference/templates/TOOLS.dev.md
-    workflow: 15
+    generated_at: "2026-07-12T14:39:54Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 3259107a9252ff3d01b98608e6005387cb54a75da5db64f833c945056abd4173
+    source_path: reference/templates/TOOLS.dev.md
+    workflow: 16
 ---
 
-# TOOLS.md - Catatan Tool Pengguna (dapat diedit)
+# TOOLS.md - Catatan Alat Pengguna (dapat diedit)
 
-File ini untuk catatan _Anda_ tentang tool eksternal dan konvensi.
-File ini tidak mendefinisikan tool apa saja yang ada; OpenClaw menyediakan tool bawaan secara internal.
+File ini ditujukan untuk catatan _Anda_ tentang alat eksternal dan konvensi. File ini tidak menentukan alat apa saja yang tersedia; OpenClaw menyediakan alat bawaan secara internal, dan Skills menambahkan sisanya.
 
 ## Contoh
 
 ### imsg
 
-- Kirim iMessage/SMS: jelaskan kepada siapa/apa, konfirmasi sebelum mengirim.
-- Lebih baik gunakan pesan singkat; hindari mengirim secret.
+- Kirim iMessage/SMS: jelaskan penerima dan isi pesan, lalu minta konfirmasi sebelum mengirim.
+- Utamakan pesan singkat; hindari mengirim rahasia.
 
 ### sag
 
-- Text-to-speech: tentukan suara, speaker/ruangan target, dan apakah akan di-stream.
+- Teks ke ucapan: tentukan suara, pengeras suara/ruangan tujuan, dan apakah akan melakukan streaming.
 
-Tambahkan apa pun yang ingin Anda beri tahu kepada asisten tentang toolchain lokal Anda.
+Tambahkan hal lain yang Anda ingin asisten ketahui tentang rangkaian alat lokal Anda.
 
 ## Terkait
 
-- [Template TOOLS.md](/id/reference/templates/TOOLS)
+- [Templat TOOLS.md](/id/reference/templates/TOOLS)

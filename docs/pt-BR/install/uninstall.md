@@ -1,14 +1,13 @@
 ---
 read_when:
     - Você quer remover o OpenClaw de uma máquina
-    - O serviço do Gateway continua em execução após a desinstalação
+    - O serviço do Gateway ainda está em execução após a desinstalação
 summary: Desinstalar o OpenClaw completamente (CLI, serviço, estado, espaço de trabalho)
 title: Desinstalar
 x-i18n:
-    generated_at: "2026-07-12T15:22:27Z"
+    generated_at: "2026-07-12T00:05:58Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 84f01dc11defe6f19c89232375e48bad383b2e71379f47f43e759d3d7bb908b5
     source_path: install/uninstall.md
@@ -36,14 +35,14 @@ Visualize o que será removido (seguro):
 openclaw uninstall --dry-run --all
 ```
 
-Não interativo (automação / npx). Use com cautela e somente após confirmar os escopos:
+Não interativo (automação / npx). Use com cuidado e somente após confirmar os escopos:
 
 ```bash
 openclaw uninstall --all --yes --non-interactive
 npx -y openclaw uninstall --all --yes --non-interactive
 ```
 
-Flags: `--service`, `--state`, `--workspace` e `--app` selecionam escopos individuais; `--all` seleciona os quatro.
+Opções: `--service`, `--state`, `--workspace` e `--app` selecionam escopos individuais; `--all` seleciona os quatro.
 
 Etapas manuais (mesmo resultado):
 
@@ -91,11 +90,11 @@ rm -rf /Applications/OpenClaw.app
 Observações:
 
 - Se você usou perfis (`--profile` / `OPENCLAW_PROFILE`), repita a etapa 3 para cada diretório de estado (os padrões são `~/.openclaw-<profile>`).
-- No modo remoto, o diretório de estado fica no **host do Gateway**, portanto execute também as etapas 1 a 4 nesse host.
+- No modo remoto, o diretório de estado fica no **host do Gateway**, portanto execute as etapas 1 a 4 nele também.
 
 ## Remoção manual do serviço (CLI não instalada)
 
-Use esta opção se o serviço do Gateway continuar em execução, mas o `openclaw` não estiver disponível.
+Use este procedimento se o serviço do Gateway continuar em execução, mas o `openclaw` não estiver disponível.
 
 ### macOS (launchd)
 
@@ -106,11 +105,11 @@ launchctl bootout gui/$UID/ai.openclaw.gateway
 rm -f ~/Library/LaunchAgents/ai.openclaw.gateway.plist
 ```
 
-Se você usou um perfil, substitua o rótulo e o nome do arquivo plist por `ai.openclaw.<profile>`.
+Se você usou um perfil, substitua o rótulo e o nome do plist por `ai.openclaw.<profile>`.
 
 ### Linux (unidade de usuário do systemd)
 
-O nome padrão da unidade é `openclaw-gateway.service` (ou `openclaw-gateway-<profile>.service`). Uma unidade anterior à renomeação, `clawdbot-gateway.service`, ainda pode existir em máquinas atualizadas a partir de instalações muito antigas; `openclaw uninstall` / `openclaw gateway uninstall` a detecta e remove automaticamente.
+O nome padrão da unidade é `openclaw-gateway.service` (ou `openclaw-gateway-<profile>.service`). Uma unidade `clawdbot-gateway.service` anterior à renomeação ainda pode existir em máquinas atualizadas a partir de instalações muito antigas; `openclaw uninstall` / `openclaw gateway uninstall` a detecta e remove automaticamente.
 
 ```bash
 systemctl --user disable --now openclaw-gateway.service
@@ -121,7 +120,7 @@ systemctl --user daemon-reload
 ### Windows (Tarefa Agendada)
 
 O nome padrão da tarefa é `OpenClaw Gateway` (ou `OpenClaw Gateway (<profile>)`).
-A tarefa inicia um script `gateway.vbs` sem janela no seu diretório de estado, que, por sua vez,
+A tarefa inicia um script `gateway.vbs` sem janela no diretório de estado, que, por sua vez,
 executa `gateway.cmd`; remova ambos.
 
 ```powershell
@@ -130,7 +129,7 @@ Remove-Item -Force "$env:USERPROFILE\.openclaw\gateway.cmd" -ErrorAction Silentl
 Remove-Item -Force "$env:USERPROFILE\.openclaw\gateway.vbs" -ErrorAction SilentlyContinue
 ```
 
-Se você usou um perfil, exclua o nome de tarefa correspondente e os arquivos `gateway.cmd` /
+Se você usou um perfil, exclua a tarefa com o nome correspondente e os arquivos `gateway.cmd` /
 `gateway.vbs` em `~\.openclaw-<profile>`.
 
 ## Instalação normal versus checkout do código-fonte
@@ -138,7 +137,7 @@ Se você usou um perfil, exclua o nome de tarefa correspondente e os arquivos `g
 ### Instalação normal (install.sh / npm / pnpm / bun)
 
 Se você usou `https://openclaw.ai/install.sh` ou `install.ps1`, a CLI foi instalada com `npm install -g openclaw@latest`.
-Remova-a com `npm rm -g openclaw` (ou `pnpm remove -g` / `bun remove -g` se você a instalou dessa forma).
+Remova-a com `npm rm -g openclaw` (ou `pnpm remove -g` / `bun remove -g` se você usou um desses métodos).
 
 ### Checkout do código-fonte (git clone)
 

@@ -1,11 +1,11 @@
 ---
 read_when:
     - 你正在安装、配置或审计 acpx 插件
-summary: OpenClaw ACP 运行时后端，具备由插件拥有的会话和传输管理。
+summary: 由插件管理会话和传输的 OpenClaw ACP 运行时后端。
 title: ACPx 插件
 x-i18n:
-    generated_at: "2026-06-27T02:45:46Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T20:43:39Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 71e6762b6049c5eca3fa560f2d8d13a2538c2e913f9dbd9f0e2bb6b5aef160e4
@@ -15,14 +15,14 @@ x-i18n:
 
 # ACPx 插件
 
-OpenClaw ACP 运行时后端，包含由插件拥有的会话和传输管理。
+OpenClaw ACP 运行时后端，由插件管理会话和传输。
 
 ## 分发
 
-- 包：`@openclaw/acpx`
-- 安装路径：npm；ClawHub
+- 软件包：`@openclaw/acpx`
+- 安装方式：npm；ClawHub
 
-## Surface
+## 接口
 
 技能
 

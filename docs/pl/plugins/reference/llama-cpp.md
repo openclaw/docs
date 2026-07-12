@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz Plugin llama-cpp
-summary: Lokalne osadzenia GGUF przez node-llama-cpp.
+    - Instalujesz, konfigurujesz lub przeprowadzasz audyt pluginu llama-cpp
+summary: Lokalne osadzenia GGUF za pośrednictwem node-llama-cpp.
 title: Plugin Llama Cpp
 x-i18n:
-    generated_at: "2026-06-27T18:01:38Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:23:26Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: be9fd199e252fd3f905e8064316e45b9b2816945a2e5e16a56a6a88fdd55ef8e
@@ -15,14 +15,14 @@ x-i18n:
 
 # Plugin Llama Cpp
 
-Lokalne embeddingi GGUF przez node-llama-cpp.
+Lokalne osadzenia GGUF za pośrednictwem node-llama-cpp.
 
 ## Dystrybucja
 
 - Pakiet: `@openclaw/llama-cpp-provider`
-- Ścieżka instalacji: npm; ClawHub
+- Sposób instalacji: npm; ClawHub
 
-## Powierzchnia
+## Interfejs
 
 kontrakty: embeddingProviders
 

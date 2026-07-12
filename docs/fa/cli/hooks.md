@@ -2,352 +2,131 @@
 read_when:
     - می‌خواهید هوک‌های عامل را مدیریت کنید
     - می‌خواهید در دسترس بودن هوک‌ها را بررسی کنید یا هوک‌های فضای کاری را فعال کنید
-summary: مرجع CLI برای `openclaw hooks` (هوک‌های عامل)
+summary: مرجع CLI برای `openclaw hooks` (قلاب‌های عامل)
 title: هوک‌ها
 x-i18n:
-    generated_at: "2026-05-06T17:53:45Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:44:57Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 56dd1ef82458dde3280e2cdfb4f3835211726517416e90625d3272d128eb9e0e
+    source_hash: f33d1e343771971bdc17dcafdabc6c4fc893b3080897862475a148e5f3957796
     source_path: cli/hooks.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw hooks`
 
-هوک‌های عامل را مدیریت کنید (اتوماسیون‌های رویدادمحور برای فرمان‌هایی مانند `/new`، `/reset`، و راه‌اندازی Gateway).
+قلاب‌های عامل را مدیریت کنید (خودکارسازی‌های رویدادمحور برای فرمان‌هایی مانند `/new`، `/reset` و راه‌اندازی Gateway). اجرای سادهٔ `openclaw hooks` معادل `openclaw hooks list` است.
 
-اجرای `openclaw hooks` بدون زیرفرمان، معادل `openclaw hooks list` است.
+مرتبط: [قلاب‌ها](/fa/automation/hooks) - [قلاب‌های Plugin](/fa/plugins/hooks)
 
-مرتبط:
-
-- هوک‌ها: [هوک‌ها](/fa/automation/hooks)
-- هوک‌های Plugin: [هوک‌های Plugin](/fa/plugins/hooks)
-
-## فهرست همه هوک‌ها
+## فهرست قلاب‌ها
 
 ```bash
-openclaw hooks list
+openclaw hooks list [--eligible] [--json] [-v|--verbose]
 ```
 
-همه هوک‌های کشف‌شده از مسیرهای workspace، managed، extra و bundled را فهرست می‌کند.
-راه‌اندازی Gateway تا زمانی که دست‌کم یک هوک داخلی پیکربندی نشده باشد، handlerهای هوک داخلی را بارگذاری نمی‌کند.
+قلاب‌های شناسایی‌شده در فضای کاری و دایرکتوری‌های مدیریت‌شده، اضافی و همراه را فهرست می‌کند.
 
-**گزینه‌ها:**
-
-- `--eligible`: فقط هوک‌های واجد شرایط را نشان بده (نیازمندی‌ها برآورده شده‌اند)
-- `--json`: خروجی به‌صورت JSON
-- `-v, --verbose`: نمایش اطلاعات تفصیلی، شامل نیازمندی‌های مفقود
-
-**نمونه خروجی:**
+- `--eligible`: فقط قلاب‌هایی که الزاماتشان برآورده شده است.
+- `--json`: خروجی ساختاریافته.
+- `-v, --verbose`: افزودن ستون Missing شامل الزامات برآورده‌نشده.
 
 ```
-Hooks (4/4 ready)
+قلاب‌ها (۴/۵ آماده)
 
-Ready:
-  🚀 boot-md ✓ - Run BOOT.md on gateway startup
-  📎 bootstrap-extra-files ✓ - Inject extra workspace bootstrap files during agent bootstrap
-  📝 command-logger ✓ - Log all command events to a centralized audit file
-  💾 session-memory ✓ - Save session context to memory when /new or /reset command is issued
+آماده:
+  🚀 boot-md ✓ - اجرای BOOT.md هنگام راه‌اندازی Gateway
+  📎 bootstrap-extra-files ✓ - تزریق فایل‌های راه‌اندازی اولیهٔ اضافی فضای کاری هنگام راه‌اندازی اولیهٔ عامل
+  📝 command-logger ✓ - ثبت همهٔ رویدادهای فرمان در یک فایل متمرکز ممیزی
+  💾 session-memory ✓ - ذخیرهٔ زمینهٔ نشست در حافظه هنگام صدور فرمان /new یا /reset
 ```
 
-**نمونه (verbose):**
+## دریافت اطلاعات قلاب
 
 ```bash
-openclaw hooks list --verbose
+openclaw hooks info <name> [--json]
 ```
 
-نیازمندی‌های مفقود برای هوک‌های فاقد شرایط را نشان می‌دهد.
+`<name>` نام یا کلید قلاب است (برای مثال `session-memory`). منبع، مسیرهای فایل/رسیدگی‌کننده، صفحهٔ اصلی، رویدادها و وضعیت هر الزام (فایل‌های اجرایی، متغیرهای محیطی، پیکربندی و سیستم‌عامل) را نمایش می‌دهد.
 
-**نمونه (JSON):**
+## بررسی واجد شرایط بودن
 
 ```bash
-openclaw hooks list --json
+openclaw hooks check [--json]
 ```
 
-JSON ساختاریافته را برای استفاده برنامه‌نویسی برمی‌گرداند.
+خلاصه‌ای از تعداد آماده/ناآماده را چاپ می‌کند؛ اگر قلاب‌هایی آماده نباشند، هرکدام را همراه با دلیل مسدودکننده فهرست می‌کند.
 
-## دریافت اطلاعات هوک
-
-```bash
-openclaw hooks info <name>
-```
-
-اطلاعات تفصیلی درباره یک هوک مشخص را نشان می‌دهد.
-
-**آرگومان‌ها:**
-
-- `<name>`: نام هوک یا کلید هوک (مثلاً `session-memory`)
-
-**گزینه‌ها:**
-
-- `--json`: خروجی به‌صورت JSON
-
-**نمونه:**
-
-```bash
-openclaw hooks info session-memory
-```
-
-**خروجی:**
-
-```
-💾 session-memory ✓ Ready
-
-Save session context to memory when /new or /reset command is issued
-
-Details:
-  Source: openclaw-bundled
-  Path: /path/to/openclaw/hooks/bundled/session-memory/HOOK.md
-  Handler: /path/to/openclaw/hooks/bundled/session-memory/handler.ts
-  Homepage: https://docs.openclaw.ai/automation/hooks#session-memory
-  Events: command:new, command:reset
-
-Requirements:
-  Config: ✓ workspace.dir
-```
-
-## بررسی واجد شرایط بودن هوک‌ها
-
-```bash
-openclaw hooks check
-```
-
-خلاصه‌ای از وضعیت واجد شرایط بودن هوک‌ها را نشان می‌دهد (چند مورد آماده‌اند و چند مورد آماده نیستند).
-
-**گزینه‌ها:**
-
-- `--json`: خروجی به‌صورت JSON
-
-**نمونه خروجی:**
-
-```
-Hooks Status
-
-Total hooks: 4
-Ready: 4
-Not ready: 0
-```
-
-## فعال‌سازی یک هوک
+## فعال‌کردن یک قلاب
 
 ```bash
 openclaw hooks enable <name>
 ```
 
-یک هوک مشخص را با افزودن آن به پیکربندی شما فعال می‌کند (`~/.openclaw/openclaw.json` به‌صورت پیش‌فرض).
+مقدار `hooks.internal.entries.<name>.enabled = true` را در پیکربندی اضافه یا به‌روزرسانی می‌کند و کلید اصلی `hooks.internal.enabled` را نیز روشن می‌کند (Gateway تا زمانی که دست‌کم یک قلاب پیکربندی نشده باشد، هیچ رسیدگی‌کنندهٔ قلاب داخلی را بارگذاری نمی‌کند). اگر قلاب وجود نداشته باشد، تحت مدیریت Plugin باشد یا واجد شرایط نباشد (الزامات آن برآورده نشده باشد)، فرمان ناموفق خواهد بود.
 
-**نکته:** هوک‌های workspace به‌صورت پیش‌فرض غیرفعال‌اند تا زمانی که اینجا یا در پیکربندی فعال شوند. هوک‌های مدیریت‌شده توسط Pluginها در `openclaw hooks list` مقدار `plugin:<id>` را نشان می‌دهند و اینجا قابل فعال/غیرفعال شدن نیستند. به‌جای آن خود Plugin را فعال/غیرفعال کنید.
+قلاب‌های تحت مدیریت Plugin در `hooks list` به‌صورت `plugin:<id>` نمایش داده می‌شوند و در اینجا نمی‌توان آن‌ها را فعال یا غیرفعال کرد؛ در عوض، Plugin مالک را فعال یا غیرفعال کنید.
 
-**آرگومان‌ها:**
+پس از فعال‌کردن، Gateway را راه‌اندازی مجدد کنید (راه‌اندازی مجدد برنامهٔ نوار منوی macOS یا فرایند Gateway در محیط توسعه) تا قلاب‌ها دوباره بارگذاری شوند.
 
-- `<name>`: نام هوک (مثلاً `session-memory`)
-
-**نمونه:**
-
-```bash
-openclaw hooks enable session-memory
-```
-
-**خروجی:**
-
-```
-✓ Enabled hook: 💾 session-memory
-```
-
-**کاری که انجام می‌دهد:**
-
-- بررسی می‌کند هوک وجود دارد و واجد شرایط است
-- مقدار `hooks.internal.entries.<name>.enabled = true` را در پیکربندی شما به‌روزرسانی می‌کند
-- پیکربندی را روی دیسک ذخیره می‌کند
-
-اگر هوک از `<workspace>/hooks/` آمده باشد، این مرحله opt-in پیش از آن‌که
-Gateway آن را بارگذاری کند الزامی است.
-
-**پس از فعال‌سازی:**
-
-- Gateway را بازراه‌اندازی کنید تا هوک‌ها دوباره بارگذاری شوند (بازراه‌اندازی برنامه menu bar در macOS، یا بازراه‌اندازی فرایند Gateway در dev).
-
-## غیرفعال‌سازی یک هوک
+## غیرفعال‌کردن یک قلاب
 
 ```bash
 openclaw hooks disable <name>
 ```
 
-یک هوک مشخص را با به‌روزرسانی پیکربندی شما غیرفعال می‌کند.
+مقدار `hooks.internal.entries.<name>.enabled = false` را تنظیم می‌کند. سپس Gateway را راه‌اندازی مجدد کنید.
 
-**آرگومان‌ها:**
-
-- `<name>`: نام هوک (مثلاً `command-logger`)
-
-**نمونه:**
+## نصب و به‌روزرسانی بسته‌های قلاب
 
 ```bash
-openclaw hooks disable command-logger
+openclaw plugins install <package>        # npm به‌طور پیش‌فرض
+openclaw plugins install npm:<package>    # فقط npm
+openclaw plugins install <package> --pin  # تثبیت نسخهٔ حل‌شده
+openclaw plugins install <path>           # دایرکتوری یا بایگانی محلی
+openclaw plugins install -l <path>        # پیوند دادن دایرکتوری محلی به‌جای کپی‌کردن
+
+openclaw plugins update <id>
+openclaw plugins update --all
+openclaw plugins update --dry-run
 ```
 
-**خروجی:**
+بسته‌های قلاب از طریق نصب‌کننده/به‌روزرسان یکپارچهٔ Pluginها نصب می‌شوند؛ `openclaw hooks install` / `openclaw hooks update` همچنان به‌عنوان نام‌های مستعار منسوخ‌شده کار می‌کنند، هشداری چاپ می‌کنند و درخواست را به فرمان‌های `plugins` هدایت می‌کنند.
 
+- مشخصات Npm فقط می‌توانند از رجیستری باشند: نام بسته به‌همراه یک نسخهٔ دقیق یا برچسب توزیع اختیاری. مشخصات Git/نشانی وب/فایل و بازه‌های semver پذیرفته نمی‌شوند. وابستگی‌ها به‌صورت محلی در پروژه و با `--ignore-scripts` نصب می‌شوند.
+- مشخصات ساده و `@latest` در مسیر پایدار باقی می‌مانند؛ اگر npm یک نسخهٔ پیش‌انتشار را برگرداند، OpenClaw متوقف می‌شود و از شما می‌خواهد صریحاً آن را بپذیرید (`@beta`، `@rc` یا یک نسخهٔ دقیق پیش‌انتشار).
+- بایگانی‌های پشتیبانی‌شده: `.zip`، `.tgz`، `.tar.gz`، `.tar`.
+- گزینهٔ `-l, --link` به‌جای کپی‌کردن، یک دایرکتوری محلی را پیوند می‌دهد (آن را به `hooks.internal.load.extraDirs` اضافه می‌کند)؛ بسته‌های قلاب پیوندشده، قلاب‌های مدیریت‌شده از یک دایرکتوری پیکربندی‌شده توسط گرداننده هستند، نه قلاب‌های فضای کاری.
+- گزینهٔ `--pin` نصب‌های npm را به‌صورت `name@version` دقیق و حل‌شده در `hooks.internal.installs` ثبت می‌کند.
+- نصب، بسته را در `~/.openclaw/hooks/<id>` کپی می‌کند، قلاب‌های آن را زیر `hooks.internal.entries.*` فعال می‌کند و نصب را زیر `hooks.internal.installs` ثبت می‌کند.
+- اگر هش یکپارچگی ذخیره‌شده دیگر با دست‌ساختهٔ دریافت‌شده مطابقت نداشته باشد، OpenClaw پیش از ادامه هشدار می‌دهد و تأیید می‌خواهد؛ برای ردکردن این درخواست، گزینهٔ سراسری `--yes` را ارسال کنید (برای مثال در CI).
+
+## قلاب‌های همراه
+
+| قلاب                  | رویدادها                                          | کاری که انجام می‌دهد                                                                                     |
+| --------------------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| boot-md               | `gateway:startup`                                 | برای هر محدودهٔ عامل پیکربندی‌شده، `BOOT.md` را هنگام راه‌اندازی Gateway اجرا می‌کند                    |
+| bootstrap-extra-files | `agent:bootstrap`                                 | هنگام راه‌اندازی اولیهٔ عامل، فایل‌های راه‌اندازی اولیهٔ اضافی (برای مثال `AGENTS.md`/`TOOLS.md` در مخزن یکپارچه) را تزریق می‌کند |
+| command-logger        | `command`                                         | رویدادهای فرمان را در `~/.openclaw/logs/commands.log` ثبت می‌کند                                        |
+| compaction-notifier   | `session:compact:before`, `session:compact:after` | هنگام آغاز و پایان Compaction نشست، اعلان‌های قابل‌مشاهده‌ای در گفتگو ارسال می‌کند                      |
+| session-memory        | `command:new`, `command:reset`                    | زمینهٔ نشست را هنگام `/new` یا `/reset` در حافظه ذخیره می‌کند                                           |
+
+هر قلاب همراه را با `openclaw hooks enable <hook-name>` فعال کنید. جزئیات کامل، کلیدهای پیکربندی و مقادیر پیش‌فرض: [قلاب‌های همراه](/fa/automation/hooks#bundled-hooks).
+
+### فایل گزارش command-logger
+
+```bash
+tail -n 20 ~/.openclaw/logs/commands.log        # فرمان‌های اخیر
+cat ~/.openclaw/logs/commands.log | jq .          # چاپ خوانا
+grep '"action":"new"' ~/.openclaw/logs/commands.log | jq .   # پالایش بر اساس کنش
 ```
-⏸ Disabled hook: 📝 command-logger
-```
-
-**پس از غیرفعال‌سازی:**
-
-- Gateway را بازراه‌اندازی کنید تا هوک‌ها دوباره بارگذاری شوند
 
 ## نکته‌ها
 
-- `openclaw hooks list --json`، `info --json`، و `check --json`، JSON ساختاریافته را مستقیم در stdout می‌نویسند.
-- هوک‌های مدیریت‌شده توسط Pluginها اینجا قابل فعال یا غیرفعال شدن نیستند؛ به‌جای آن Plugin مالک را فعال یا غیرفعال کنید.
-
-## نصب بسته‌های هوک
-
-```bash
-openclaw plugins install <package>        # npm by default
-openclaw plugins install npm:<package>    # npm only
-openclaw plugins install <package> --pin  # pin version
-openclaw plugins install <path>           # local path
-```
-
-بسته‌های هوک را از طریق نصب‌کننده یکپارچه Pluginها نصب کنید.
-
-`openclaw hooks install` همچنان به‌عنوان alias سازگاری کار می‌کند، اما یک
-هشدار deprecation چاپ می‌کند و به `openclaw plugins install` ارسال می‌شود.
-
-مشخصات Npm **فقط registry** هستند (نام بسته + **نسخه دقیق** اختیاری یا
-**dist-tag**). مشخصات Git/URL/file و بازه‌های semver رد می‌شوند. نصب
-وابستگی‌ها برای ایمنی به‌صورت project-local و با `--ignore-scripts` اجرا می‌شود، حتی وقتی
-shell شما تنظیمات نصب npm سراسری داشته باشد.
-
-مشخصات بدون پیشوند و `@latest` روی مسیر stable باقی می‌مانند. اگر npm هرکدام از
-آن‌ها را به prerelease resolve کند، OpenClaw متوقف می‌شود و از شما می‌خواهد با یک
-برچسب prerelease مانند `@beta`/`@rc` یا یک نسخه prerelease دقیق، صریحاً opt in کنید.
-
-**کاری که انجام می‌دهد:**
-
-- بسته هوک را در `~/.openclaw/hooks/<id>` کپی می‌کند
-- هوک‌های نصب‌شده را در `hooks.internal.entries.*` فعال می‌کند
-- نصب را زیر `hooks.internal.installs` ثبت می‌کند
-
-**گزینه‌ها:**
-
-- `-l, --link`: به‌جای کپی کردن، یک دایرکتوری محلی را link می‌کند (آن را به `hooks.internal.load.extraDirs` اضافه می‌کند)
-- `--pin`: نصب‌های npm را به‌صورت `name@version` دقیق resolve‌شده در `hooks.internal.installs` ثبت می‌کند
-
-**آرشیوهای پشتیبانی‌شده:** `.zip`، `.tgz`، `.tar.gz`، `.tar`
-
-**نمونه‌ها:**
-
-```bash
-# Local directory
-openclaw plugins install ./my-hook-pack
-
-# Local archive
-openclaw plugins install ./my-hook-pack.zip
-
-# NPM package
-openclaw plugins install @openclaw/my-hook-pack
-
-# Link a local directory without copying
-openclaw plugins install -l ./my-hook-pack
-```
-
-بسته‌های هوک link‌شده به‌عنوان هوک‌های managed از یک دایرکتوری پیکربندی‌شده توسط operator
-در نظر گرفته می‌شوند، نه به‌عنوان هوک‌های workspace.
-
-## به‌روزرسانی بسته‌های هوک
-
-```bash
-openclaw plugins update <id>
-openclaw plugins update --all
-```
-
-بسته‌های هوک مبتنی بر npm و ردیابی‌شده را از طریق به‌روزرسان یکپارچه Pluginها به‌روزرسانی کنید.
-
-`openclaw hooks update` همچنان به‌عنوان alias سازگاری کار می‌کند، اما یک
-هشدار deprecation چاپ می‌کند و به `openclaw plugins update` ارسال می‌شود.
-
-**گزینه‌ها:**
-
-- `--all`: همه بسته‌های هوک ردیابی‌شده را به‌روزرسانی کن
-- `--dry-run`: بدون نوشتن، نشان بده چه چیزی تغییر می‌کند
-
-وقتی hash یکپارچگی ذخیره‌شده وجود داشته باشد و hash artifact دریافت‌شده تغییر کند،
-OpenClaw یک هشدار چاپ می‌کند و پیش از ادامه تأیید می‌خواهد. برای دور زدن promptها در اجراهای CI/غیرتعاملی از
-`--yes` سراسری استفاده کنید.
-
-## هوک‌های bundled
-
-### session-memory
-
-وقتی `/new` یا `/reset` را صادر می‌کنید، زمینه session را در memory ذخیره می‌کند.
-
-**فعال‌سازی:**
-
-```bash
-openclaw hooks enable session-memory
-```
-
-**خروجی:** به‌صورت پیش‌فرض `~/.openclaw/workspace/memory/YYYY-MM-DD-HHMM.md`. برای slugهای نام فایل تولیدشده توسط مدل، `hooks.internal.entries.session-memory.llmSlug: true` را تنظیم کنید.
-
-**ببینید:** [مستندات session-memory](/fa/automation/hooks#session-memory)
-
-### bootstrap-extra-files
-
-فایل‌های bootstrap اضافی (برای مثال `AGENTS.md` / `TOOLS.md` محلیِ monorepo) را هنگام `agent:bootstrap` تزریق می‌کند.
-
-**فعال‌سازی:**
-
-```bash
-openclaw hooks enable bootstrap-extra-files
-```
-
-**ببینید:** [مستندات bootstrap-extra-files](/fa/automation/hooks#bootstrap-extra-files)
-
-### command-logger
-
-همه رویدادهای فرمان را در یک فایل audit متمرکز ثبت می‌کند.
-
-**فعال‌سازی:**
-
-```bash
-openclaw hooks enable command-logger
-```
-
-**خروجی:** `~/.openclaw/logs/commands.log`
-
-**مشاهده logها:**
-
-```bash
-# Recent commands
-tail -n 20 ~/.openclaw/logs/commands.log
-
-# Pretty-print
-cat ~/.openclaw/logs/commands.log | jq .
-
-# Filter by action
-grep '"action":"new"' ~/.openclaw/logs/commands.log | jq .
-```
-
-**ببینید:** [مستندات command-logger](/fa/automation/hooks#command-logger)
-
-### boot-md
-
-وقتی Gateway شروع به کار می‌کند، `BOOT.md` را اجرا می‌کند (پس از شروع channels).
-
-**رویدادها**: `gateway:startup`
-
-**فعال‌سازی**:
-
-```bash
-openclaw hooks enable boot-md
-```
-
-**ببینید:** [مستندات boot-md](/fa/automation/hooks#boot-md)
+- فرمان‌های `hooks list --json`، `info --json` و `check --json`، JSON ساختاریافته را مستقیماً در خروجی استاندارد می‌نویسند.
 
 ## مرتبط
 
 - [مرجع CLI](/fa/cli)
-- [هوک‌های اتوماسیون](/fa/automation/hooks)
+- [قلاب‌های خودکارسازی](/fa/automation/hooks)

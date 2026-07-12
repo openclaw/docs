@@ -5,10 +5,9 @@ read_when:
 summary: Fournisseurs de modèles (LLM) pris en charge par OpenClaw
 title: Répertoire des fournisseurs
 x-i18n:
-    generated_at: "2026-07-12T15:53:10Z"
+    generated_at: "2026-07-12T03:15:21Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: b59843b53265500866e87ee8d888892dacd6045bdb9401a1e7ec08ad4f364090
     source_path: providers/index.md
@@ -18,7 +17,7 @@ x-i18n:
 OpenClaw peut utiliser de nombreux fournisseurs de LLM. Choisissez un fournisseur, authentifiez-vous, puis définissez le
 modèle par défaut au format `provider/model`.
 
-Vous recherchez la documentation des canaux de discussion (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/etc.) ? Consultez [Canaux](/fr/channels).
+Vous recherchez la documentation des canaux de discussion (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/etc.) ? Consultez [Canaux](/fr/channels).
 
 ## Démarrage rapide
 
@@ -60,7 +59,7 @@ Vous recherchez la documentation des canaux de discussion (WhatsApp/Telegram/Dis
 - [Hugging Face (inférence)](/fr/providers/huggingface)
 - [inferrs (modèles locaux)](/fr/providers/inferrs)
 - [Kilocode](/fr/providers/kilocode)
-- [LiteLLM (Gateway unifiée)](/fr/providers/litellm)
+- [LiteLLM (Gateway unifié)](/fr/providers/litellm)
 - [LM Studio (modèles locaux)](/fr/providers/lmstudio)
 - [LongCat](/fr/providers/longcat)
 - [MiniMax](/fr/providers/minimax)
@@ -68,13 +67,13 @@ Vous recherchez la documentation des canaux de discussion (WhatsApp/Telegram/Dis
 - [Moonshot AI (Kimi + Kimi Coding)](/fr/providers/moonshot)
 - [NovitaAI](/fr/providers/novita)
 - [NVIDIA](/fr/providers/nvidia)
-- [Ollama (modèles cloud + locaux)](/fr/providers/ollama)
+- [Ollama (modèles dans le cloud et locaux)](/fr/providers/ollama)
 - [Ollama Cloud](/fr/providers/ollama-cloud)
 - [OpenAI (API + Codex)](/fr/providers/openai)
 - [OpenCode](/fr/providers/opencode)
 - [OpenCode Go](/fr/providers/opencode-go)
 - [OpenRouter](/fr/providers/openrouter)
-- [Perplexity (recherche Web)](/fr/providers/perplexity-provider)
+- [Perplexity (recherche sur le Web)](/fr/providers/perplexity-provider)
 - [Qianfan](/fr/providers/qianfan)
 - [Qwen Cloud](/fr/providers/qwen)
 - [Qwen OAuth / Portal](/fr/providers/qwen-oauth)
@@ -96,9 +95,9 @@ Vous recherchez la documentation des canaux de discussion (WhatsApp/Telegram/Dis
 
 ## Pages de présentation communes
 
-- [Variantes supplémentaires de fournisseurs](/fr/providers/models#additional-provider-variants) - Anthropic Vertex, Copilot Proxy et OAuth de la CLI Gemini
+- [Variantes supplémentaires des fournisseurs](/fr/providers/models#additional-provider-variants) - Anthropic Vertex, Copilot Proxy et OAuth de la CLI Gemini
 - [Génération d’images](/fr/tools/image-generation) - Outil `image_generate` partagé, sélection du fournisseur et basculement
-- [Génération de musique](/fr/tools/music-generation) - Outil `music_generate` partagé, sélection du fournisseur et basculement
+- [Génération musicale](/fr/tools/music-generation) - Outil `music_generate` partagé, sélection du fournisseur et basculement
 - [Génération de vidéos](/fr/tools/video-generation) - Outil `video_generate` partagé, sélection du fournisseur et basculement
 
 ## Fournisseurs de transcription
@@ -112,7 +111,7 @@ Vous recherchez la documentation des canaux de discussion (WhatsApp/Telegram/Dis
 
 ## Outils communautaires
 
-- [Claude Max API Proxy](/fr/providers/claude-max-api-proxy) - Proxy communautaire pour les identifiants d’abonnement Claude (vérifiez la politique et les conditions d’Anthropic avant toute utilisation)
+- [Claude Max API Proxy](/fr/providers/claude-max-api-proxy) - Proxy communautaire pour les identifiants d’abonnement Claude (vérifiez la politique et les conditions d’Anthropic avant utilisation)
 
-Pour consulter le catalogue complet des fournisseurs (xAI, Groq, Mistral, etc.) et la configuration avancée,
+Pour consulter le catalogue complet des fournisseurs (xAI, Groq, Mistral, etc.) et les options de configuration avancées,
 consultez [Fournisseurs de modèles](/fr/concepts/model-providers).

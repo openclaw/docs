@@ -1,89 +1,41 @@
 ---
 read_when:
-    - Configurazione dei gruppi di broadcast
-    - Risoluzione dei problemi delle risposte multi-agente in WhatsApp
+    - Configurazione dei gruppi di trasmissione
+    - Debug delle risposte multi-agente in WhatsApp
 sidebarTitle: Broadcast groups
 status: experimental
 summary: Trasmettere un messaggio WhatsApp a più agenti
-title: Gruppi di broadcast
+title: Gruppi di trasmissione
 x-i18n:
-    generated_at: "2026-07-01T08:07:53Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:48:43Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 97e8c2ade5d12a437864e6aca0d475e586289f71155188afed216881ebf89f88
+    source_hash: 2771c15b31592f11293385498b9c89decf84747a9172caafb994a5dca4bbdc06
     source_path: channels/broadcast-groups.md
     workflow: 16
 ---
 
 <Note>
-**Stato:** Sperimentale. Aggiunto in 2026.1.9.
+**Stato:** Sperimentale. Aggiunto nella versione 2026.1.9. Solo WhatsApp (canale web).
 </Note>
 
 ## Panoramica
 
-I gruppi di broadcast consentono a più agenti di elaborare e rispondere allo stesso messaggio simultaneamente. Questo permette di creare team di agenti specializzati che lavorano insieme in un singolo gruppo WhatsApp o DM — tutti usando un solo numero di telefono.
+I gruppi broadcast eseguono **più agenti** sullo stesso messaggio in arrivo. Ogni agente elabora il messaggio nella propria sessione isolata e pubblica la propria risposta, quindi un singolo numero WhatsApp può ospitare un team di agenti specializzati in un'unica chat di gruppo o in un messaggio diretto.
 
-Ambito attuale: **solo WhatsApp** (canale web).
+I gruppi broadcast vengono valutati dopo le liste di elementi consentiti del canale e le regole di attivazione dei gruppi. Nei gruppi WhatsApp, il broadcast avviene quando OpenClaw risponderebbe normalmente (ad esempio, in caso di menzione, a seconda delle impostazioni del gruppo). Modificano solo **quali agenti vengono eseguiti**, mai l'idoneità di un messaggio all'elaborazione.
 
-I gruppi di broadcast vengono valutati dopo gli elenchi di consentiti del canale e le regole di attivazione dei gruppi. Nei gruppi WhatsApp, questo significa che i broadcast avvengono quando OpenClaw risponderebbe normalmente (per esempio: su menzione, a seconda delle impostazioni del gruppo).
-
-La lane QA live di WhatsApp include `whatsapp-broadcast-group-fanout`, che verifica che un singolo messaggio di gruppo con menzione possa produrre risposte visibili distinte da due agenti configurati.
-
-## Casi d'uso
-
-<AccordionGroup>
-  <Accordion title="1. Specialized agent teams">
-    Distribuisci più agenti con responsabilità atomiche e mirate:
-
-    ```
-    Group: "Development Team"
-    Agents:
-      - CodeReviewer (reviews code snippets)
-      - DocumentationBot (generates docs)
-      - SecurityAuditor (checks for vulnerabilities)
-      - TestGenerator (suggests test cases)
-    ```
-
-    Ogni agente elabora lo stesso messaggio e fornisce la propria prospettiva specializzata.
-
-  </Accordion>
-  <Accordion title="2. Multi-language support">
-    ```
-    Group: "International Support"
-    Agents:
-      - Agent_EN (responds in English)
-      - Agent_DE (responds in German)
-      - Agent_ES (responds in Spanish)
-    ```
-  </Accordion>
-  <Accordion title="3. Quality assurance workflows">
-    ```
-    Group: "Customer Support"
-    Agents:
-      - SupportAgent (provides answer)
-      - QAAgent (reviews quality, only responds if issues found)
-    ```
-  </Accordion>
-  <Accordion title="4. Task automation">
-    ```
-    Group: "Project Management"
-    Agents:
-      - TaskTracker (updates task database)
-      - TimeLogger (logs time spent)
-      - ReportGenerator (creates summaries)
-    ```
-  </Accordion>
-</AccordionGroup>
+Il flusso QA WhatsApp live include `whatsapp-broadcast-group-fanout`, che verifica che un singolo messaggio di gruppo con menzione possa produrre risposte visibili distinte da due agenti configurati.
 
 ## Configurazione
 
 ### Configurazione di base
 
-Aggiungi una sezione `broadcast` di primo livello (accanto a `bindings`). Le chiavi sono ID peer di WhatsApp:
+Aggiungi una sezione `broadcast` di primo livello (accanto a `bindings`). Le chiavi sono gli ID dei peer WhatsApp, mentre i valori sono array di ID agente:
 
 - chat di gruppo: JID del gruppo (ad es. `120363403215116621@g.us`)
-- DM: numero di telefono E.164 (ad es. `+15551234567`)
+- messaggi diretti: numero di telefono E.164 del mittente (ad es. `+15551234567`)
 
 ```json
 {
@@ -93,40 +45,27 @@ Aggiungi una sezione `broadcast` di primo livello (accanto a `bindings`). Le chi
 }
 ```
 
-**Risultato:** Quando OpenClaw risponderebbe in questa chat, eseguirà tutti e tre gli agenti.
+**Risultato:** quando OpenClaw risponderebbe in questa chat, esegue tutti e tre gli agenti.
+
+Ogni ID agente elencato deve esistere in `agents.list`: la convalida della configurazione segnala gli ID sconosciuti e il runtime li ignora con un avviso `Broadcast agent <id> not found in agents.list; skipping`.
 
 ### Strategia di elaborazione
 
-Controlla come gli agenti elaborano i messaggi:
+`broadcast.strategy` stabilisce come gli agenti elaborano il messaggio:
 
-<Tabs>
-  <Tab title="parallel (default)">
-    Tutti gli agenti elaborano simultaneamente:
+| Strategia                | Comportamento                                                                    |
+| ------------------------ | -------------------------------------------------------------------------------- |
+| `parallel` (predefinita) | Tutti gli agenti elaborano simultaneamente; le risposte arrivano in qualsiasi ordine. |
+| `sequential`             | Gli agenti elaborano nell'ordine dell'array; ciascuno attende il completamento del precedente. |
 
-    ```json
-    {
-      "broadcast": {
-        "strategy": "parallel",
-        "120363403215116621@g.us": ["alfred", "baerbel"]
-      }
-    }
-    ```
-
-  </Tab>
-  <Tab title="sequential">
-    Gli agenti elaborano in ordine (uno attende che il precedente finisca):
-
-    ```json
-    {
-      "broadcast": {
-        "strategy": "sequential",
-        "120363403215116621@g.us": ["alfred", "baerbel"]
-      }
-    }
-    ```
-
-  </Tab>
-</Tabs>
+```json
+{
+  "broadcast": {
+    "strategy": "sequential",
+    "120363403215116621@g.us": ["alfred", "baerbel"]
+  }
+}
+```
 
 ### Esempio completo
 
@@ -163,142 +102,119 @@ Controlla come gli agenti elaborano i messaggi:
 }
 ```
 
-## Come funziona
+## Funzionamento
 
 ### Flusso dei messaggi
 
 <Steps>
-  <Step title="Incoming message arrives">
-    Arriva un messaggio di gruppo WhatsApp o un DM.
+  <Step title="Arriva un messaggio in ingresso">
+    Arriva un messaggio da un gruppo WhatsApp o da un messaggio diretto.
   </Step>
-  <Step title="Route and admission">
-    OpenClaw applica gli elenchi di consentiti del canale, le regole di attivazione dei gruppi e la proprietà dei binding ACP configurati.
+  <Step title="Instradamento e ammissione">
+    OpenClaw applica le liste di elementi consentiti del canale, le regole di attivazione dei gruppi e la proprietà dei binding ACP configurati.
   </Step>
-  <Step title="Broadcast check">
-    Se nessun binding ACP configurato possiede la route, OpenClaw controlla se l'ID peer è in `broadcast`.
+  <Step title="Verifica del broadcast">
+    Se nessun binding ACP configurato è proprietario della route, OpenClaw verifica se l'ID del peer è presente in `broadcast`.
   </Step>
-  <Step title="If broadcast applies">
+  <Step title="Se si applica il broadcast">
     - Tutti gli agenti elencati elaborano il messaggio.
-    - Ogni agente ha la propria chiave di sessione e un contesto isolato.
+    - Ogni agente dispone della propria chiave di sessione e di un contesto isolato.
     - Gli agenti elaborano in parallelo (impostazione predefinita) o in sequenza.
+    - Gli allegati audio vengono trascritti una sola volta prima della distribuzione, così gli agenti condividono un'unica trascrizione anziché effettuare chiamate STT separate.
 
   </Step>
-  <Step title="If broadcast does not apply">
-    OpenClaw invia la route ordinaria o la route della sessione ACP configurata selezionata durante il routing.
+  <Step title="Se il broadcast non si applica">
+    OpenClaw inoltra alla route ordinaria o alla route della sessione ACP configurata selezionata durante l'instradamento.
   </Step>
 </Steps>
 
 <Note>
-I gruppi di broadcast non bypassano gli elenchi di consentiti del canale o le regole di attivazione dei gruppi (menzioni/comandi/ecc.). Cambiano solo _quali agenti vengono eseguiti_ quando un messaggio è idoneo all'elaborazione.
+I gruppi broadcast non ignorano le liste di elementi consentiti del canale né le regole di attivazione dei gruppi (menzioni/comandi/ecc.). Modificano solo _quali agenti vengono eseguiti_ quando un messaggio è idoneo all'elaborazione.
 </Note>
 
-### Isolamento della sessione
+### Isolamento delle sessioni
 
-Ogni agente in un gruppo di broadcast mantiene completamente separati:
+Ogni agente in un gruppo broadcast mantiene completamente separati:
 
-- **Chiavi di sessione** (`agent:alfred:whatsapp:group:120363...` vs `agent:baerbel:whatsapp:group:120363...`)
-- **Cronologia della conversazione** (l'agente non vede i messaggi degli altri agenti)
-- **Workspace** (sandbox separati, se configurati)
-- **Accesso agli strumenti** (elenchi di consentiti/negati diversi)
-- **Memoria/contesto** (IDENTITY.md, SOUL.md, ecc. separati)
-- **Buffer del contesto di gruppo** (messaggi recenti del gruppo usati per il contesto) è condiviso per peer, quindi tutti gli agenti di broadcast vedono lo stesso contesto quando vengono attivati
+- **Chiavi di sessione** (`agent:alfred:whatsapp:group:120363...` rispetto a `agent:baerbel:whatsapp:group:120363...`)
+- **Cronologia della conversazione** (un agente non vede le risposte degli altri agenti)
+- **Area di lavoro** (sandbox separate, se configurate)
+- **Accesso agli strumenti** (elenchi di autorizzazioni/divieti differenti)
+- **Memoria/contesto** (`IDENTITY.md`, `SOUL.md` e così via separati)
 
-Questo consente a ogni agente di avere:
+Un'eccezione è intenzionalmente condivisa: il **buffer del contesto di gruppo** (i messaggi recenti del gruppo utilizzati come contesto) è condiviso per peer, quindi tutti gli agenti broadcast vedono lo stesso contesto quando vengono attivati. Viene svuotato una volta al termine della distribuzione.
 
-- Personalità diverse
-- Accesso agli strumenti diverso (ad es. sola lettura vs. lettura-scrittura)
-- Modelli diversi (ad es. opus vs. sonnet)
-- Skills diverse installate
+Ciò consente a ogni agente di avere personalità, modelli, Skills e accesso agli strumenti differenti (ad esempio, sola lettura rispetto a lettura e scrittura).
 
 ### Esempio: sessioni isolate
 
 Nel gruppo `120363403215116621@g.us` con gli agenti `["alfred", "baerbel"]`:
 
 <Tabs>
-  <Tab title="Alfred's context">
-    ```
+  <Tab title="Contesto di Alfred">
+    ```text
     Session: agent:alfred:whatsapp:group:120363403215116621@g.us
     History: [user message, alfred's previous responses]
-    Workspace: /Users/user/openclaw-alfred/
+    Workspace: ~/openclaw-alfred/
     Tools: read, write, exec
     ```
   </Tab>
-  <Tab title="Bärbel's context">
-    ```
+  <Tab title="Contesto di Baerbel">
+    ```text
     Session: agent:baerbel:whatsapp:group:120363403215116621@g.us
     History: [user message, baerbel's previous responses]
-    Workspace: /Users/user/openclaw-baerbel/
+    Workspace: ~/openclaw-baerbel/
     Tools: read only
     ```
   </Tab>
 </Tabs>
 
-## Buone pratiche
+## Casi d'uso
+
+- **Team di agenti specializzati**: un gruppo di sviluppo in cui `code-reviewer`, `security-auditor`, `test-generator` e `docs-checker` rispondono ciascuno allo stesso messaggio dalla propria prospettiva.
+- **Supporto multilingue**: un'unica chat di supporto con `support-en`, `support-de` e `support-es` che rispondono nelle rispettive lingue.
+- **Garanzia della qualità**: `support-agent` risponde mentre `qa-agent` esamina la risposta e interviene solo quando rileva problemi.
+- **Automazione delle attività**: `task-tracker`, `time-logger` e `report-generator` elaborano tutti lo stesso aggiornamento di stato.
+
+## Procedure consigliate
 
 <AccordionGroup>
-  <Accordion title="1. Keep agents focused">
-    Progetta ogni agente con una responsabilità singola e chiara:
-
-    ```json
-    {
-      "broadcast": {
-        "DEV_GROUP": ["formatter", "linter", "tester"]
-      }
-    }
-    ```
-
-    ✅ **Bene:** Ogni agente ha un solo compito. ❌ **Male:** Un agente generico "dev-helper".
-
+  <Accordion title="1. Mantieni gli agenti focalizzati">
+    Assegna a ciascun agente un'unica responsabilità chiara (`formatter`, `linter`, `tester`) anziché utilizzare un agente generico "dev-helper".
   </Accordion>
-  <Accordion title="2. Use descriptive names">
-    Rendi chiaro cosa fa ogni agente:
-
+  <Accordion title="2. Usa ID e nomi descrittivi">
     ```json
     {
       "agents": {
-        "security-scanner": { "name": "Security Scanner" },
-        "code-formatter": { "name": "Code Formatter" },
-        "test-generator": { "name": "Test Generator" }
+        "list": [
+          { "id": "security-scanner", "name": "Security Scanner" },
+          { "id": "code-formatter", "name": "Code Formatter" },
+          { "id": "test-generator", "name": "Test Generator" }
+        ]
       }
     }
     ```
-
   </Accordion>
-  <Accordion title="3. Configure different tool access">
-    Concedi agli agenti solo gli strumenti di cui hanno bisogno:
-
+  <Accordion title="3. Configura accessi agli strumenti differenti">
     ```json
     {
       "agents": {
-        "reviewer": {
-          "tools": { "allow": ["read", "exec"] }
-        },
-        "fixer": {
-          "tools": { "allow": ["read", "write", "edit", "exec"] }
-        }
+        "list": [
+          { "id": "reviewer", "tools": { "allow": ["read", "exec"] } },
+          { "id": "fixer", "tools": { "allow": ["read", "write", "edit", "exec"] } }
+        ]
       }
     }
     ```
 
-    `reviewer` è in sola lettura. `fixer` può leggere e scrivere.
+    `reviewer` dispone dell'accesso in sola lettura. `fixer` può leggere e scrivere.
 
   </Accordion>
-  <Accordion title="4. Monitor performance">
-    Con molti agenti, considera:
-
-    - Usare `"strategy": "parallel"` (predefinita) per la velocità
-    - Limitare i gruppi di broadcast a 5-10 agenti
-    - Usare modelli più veloci per agenti più semplici
-
+  <Accordion title="4. Monitora le prestazioni">
+    Con molti agenti, preferisci `"strategy": "parallel"` (impostazione predefinita), limita i gruppi broadcast a pochi agenti e usa modelli più veloci per gli agenti più semplici.
   </Accordion>
-  <Accordion title="5. Handle failures gracefully">
-    Gli agenti falliscono in modo indipendente. L'errore di un agente non blocca gli altri:
-
-    ```
-    Message → [Agent A ✓, Agent B ✗ error, Agent C ✓]
-    Result: Agent A and C respond, Agent B logs error
-    ```
-
+  <Accordion title="5. Gli errori restano isolati">
+    Gli agenti possono generare errori in modo indipendente. L'errore di un agente viene registrato (`Broadcast agent <id> failed: ...`) e non blocca gli altri.
   </Accordion>
 </AccordionGroup>
 
@@ -306,16 +222,11 @@ Nel gruppo `120363403215116621@g.us` con gli agenti `["alfred", "baerbel"]`:
 
 ### Provider
 
-I gruppi di broadcast attualmente funzionano con:
+I gruppi broadcast sono attualmente implementati solo per WhatsApp (canale web). Gli altri canali ignorano la configurazione `broadcast`.
 
-- ✅ WhatsApp (implementato)
-- 🚧 Telegram (pianificato)
-- 🚧 Discord (pianificato)
-- 🚧 Slack (pianificato)
+### Instradamento
 
-### Routing
-
-I gruppi di broadcast funzionano insieme al routing esistente:
+I gruppi broadcast funzionano insieme all'instradamento esistente:
 
 ```json
 {
@@ -331,50 +242,47 @@ I gruppi di broadcast funzionano insieme al routing esistente:
 }
 ```
 
-- `GROUP_A`: Risponde solo alfred (routing normale).
-- `GROUP_B`: agent1 E agent2 rispondono (broadcast).
+- `GROUP_A`: risponde solo alfred (instradamento normale).
+- `GROUP_B`: rispondono agent1 E agent2 (broadcast).
 
 <Note>
-**Precedenza:** `broadcast` ha priorità sui binding di route ordinari. I binding ACP configurati (`bindings[].type="acp"`) sono esclusivi: quando uno corrisponde, OpenClaw invia alla sessione ACP configurata invece che al broadcast fan-out.
+**Precedenza:** `broadcast` ha priorità sui binding di route ordinari. I binding ACP configurati (`bindings[].type="acp"`) sono esclusivi: quando uno corrisponde, OpenClaw inoltra alla sessione ACP configurata anziché eseguire la distribuzione broadcast.
 </Note>
 
 ## Risoluzione dei problemi
 
 <AccordionGroup>
-  <Accordion title="Agents not responding">
-    **Controlla:**
+  <Accordion title="Gli agenti non rispondono">
+    **Verifica:**
 
-    1. Gli ID agente esistono in `agents.list`.
-    2. Il formato dell'ID peer è corretto (ad es. `120363403215116621@g.us`).
-    3. Gli agenti non sono negli elenchi di negati.
+    1. Gli ID agente esistono in `agents.list` (la convalida della configurazione rifiuta gli ID sconosciuti).
+    2. Il formato dell'ID peer è corretto (un JID di gruppo come `120363403215116621@g.us` oppure un numero E.164 come `+15551234567` per i messaggi diretti).
+    3. Il messaggio ha superato i normali controlli di ammissione (le regole di menzione/attivazione continuano ad applicarsi).
 
     **Debug:**
 
     ```bash
-    tail -f ~/.openclaw/logs/gateway.log | grep broadcast
+    openclaw logs --follow | grep -i broadcast
     ```
 
-  </Accordion>
-  <Accordion title="Only one agent responding">
-    **Causa:** L'ID peer potrebbe essere nei binding di route ordinari ma non in `broadcast`, oppure potrebbe corrispondere a un binding ACP configurato esclusivo.
-
-    **Correzione:** Aggiungi i peer associati a route ordinarie alla configurazione di broadcast, oppure rimuovi/modifica il binding ACP configurato se si desidera il broadcast fan-out.
+    Una distribuzione riuscita registra `Broadcasting message to <n> agents (<strategy>)`.
 
   </Accordion>
-  <Accordion title="Performance issues">
-    Se è lento con molti agenti:
+  <Accordion title="Risponde un solo agente">
+    **Causa:** l'ID peer potrebbe essere presente nei binding di route ordinari ma non in `broadcast`, oppure potrebbe corrispondere a un binding ACP configurato esclusivo.
 
-    - Riduci il numero di agenti per gruppo.
-    - Usa modelli più leggeri (sonnet invece di opus).
-    - Controlla il tempo di avvio del sandbox.
+    **Soluzione:** aggiungi alla configurazione broadcast i peer associati a route ordinarie oppure rimuovi/modifica il binding ACP configurato se desideri la distribuzione broadcast.
 
+  </Accordion>
+  <Accordion title="Problemi di prestazioni">
+    Se le prestazioni sono lente con molti agenti: riduci il numero di agenti per gruppo, usa modelli più leggeri e controlla il tempo di avvio della sandbox.
   </Accordion>
 </AccordionGroup>
 
 ## Esempi
 
 <AccordionGroup>
-  <Accordion title="Example 1: Code review team">
+  <Accordion title="Esempio 1: Team di revisione del codice">
     ```json
     {
       "broadcast": {
@@ -409,17 +317,10 @@ I gruppi di broadcast funzionano insieme al routing esistente:
     }
     ```
 
-    **L'utente invia:** Frammento di codice.
-
-    **Risposte:**
-
-    - code-formatter: "Fixed indentation and added type hints"
-    - security-scanner: "⚠️ SQL injection vulnerability in line 12"
-    - test-coverage: "Coverage is 45%, missing tests for error cases"
-    - docs-checker: "Missing docstring for function `process_data`"
+    Un singolo frammento di codice nel gruppo produce quattro risposte: correzioni di formattazione, un problema di sicurezza, una lacuna nella copertura e un'osservazione minore sulla documentazione.
 
   </Accordion>
-  <Accordion title="Example 2: Multi-language support">
+  <Accordion title="Esempio 2: Pipeline multilingue">
     ```json
     {
       "broadcast": {
@@ -454,32 +355,23 @@ interface OpenClawConfig {
 ### Campi
 
 <ParamField path="strategy" type='"parallel" | "sequential"' default='"parallel"'>
-  Come elaborare gli agenti. `parallel` esegue tutti gli agenti simultaneamente; `sequential` li esegue nell'ordine dell'array.
+  Modalità di elaborazione degli agenti. `parallel` esegue tutti gli agenti simultaneamente; `sequential` li esegue nell'ordine dell'array.
 </ParamField>
 <ParamField path="[peerId]" type="string[]">
-  JID del gruppo WhatsApp, numero E.164 o altro ID peer. Il valore è l'array degli ID degli agenti che devono elaborare i messaggi.
+  JID del gruppo WhatsApp o numero di telefono E.164. Il valore è l'array degli ID degli agenti che devono elaborare tutti i messaggi provenienti da quel peer.
 </ParamField>
 
 ## Limitazioni
 
-1. **Numero massimo di agenti:** Nessun limite rigido, ma 10 o più agenti possono essere lenti.
-2. **Contesto condiviso:** Gli agenti non vedono le risposte degli altri agenti (per progettazione).
-3. **Ordinamento dei messaggi:** Le risposte parallele possono arrivare in qualsiasi ordine.
-4. **Limiti di frequenza:** Tutti gli agenti contano ai fini dei limiti di frequenza di WhatsApp.
+1. **Numero massimo di agenti:** non esiste un limite rigido, ma molti agenti (10 o più) possono rallentare l'elaborazione.
+2. **Contesto condiviso:** gli agenti non vedono le risposte reciproche (per progettazione).
+3. **Ordine dei messaggi:** le risposte parallele possono arrivare in qualsiasi ordine.
+4. **Limiti di frequenza:** tutte le risposte provengono da un unico account WhatsApp, quindi la risposta di ogni agente contribuisce agli stessi limiti di frequenza di WhatsApp.
 
-## Miglioramenti futuri
+## Argomenti correlati
 
-Funzionalità pianificate:
-
-- [ ] Modalità contesto condiviso (gli agenti vedono le risposte degli altri agenti)
-- [ ] Coordinamento degli agenti (gli agenti possono segnalarsi a vicenda)
-- [ ] Selezione dinamica degli agenti (scegli gli agenti in base al contenuto del messaggio)
-- [ ] Priorità degli agenti (alcuni agenti rispondono prima di altri)
-
-## Correlati
-
-- [Routing dei canali](/it/channels/channel-routing)
+- [Instradamento dei canali](/it/channels/channel-routing)
 - [Gruppi](/it/channels/groups)
 - [Strumenti sandbox multi-agente](/it/tools/multi-agent-sandbox-tools)
-- [Abbinamento](/it/channels/pairing)
+- [Associazione](/it/channels/pairing)
 - [Gestione delle sessioni](/it/concepts/session)

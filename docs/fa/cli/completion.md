@@ -1,46 +1,58 @@
 ---
 read_when:
-    - تکمیل‌های پوسته را برای zsh/bash/fish/PowerShell می‌خواهید
-    - باید اسکریپت‌های تکمیل را در زیر مسیر وضعیت OpenClaw در حافظهٔ پنهان ذخیره کنید
-summary: مرجع CLI برای `openclaw completion` (تولید/نصب اسکریپت‌های تکمیل پوسته)
+    - برای zsh/bash/fish/PowerShell تکمیل خودکار پوسته می‌خواهید
+    - باید اسکریپت‌های تکمیل خودکار را در وضعیت OpenClaw ذخیره‌سازی موقت کنید
+summary: مرجع CLI برای `openclaw completion` (تولید/نصب اسکریپت‌های تکمیل خودکار پوسته)
 title: تکمیل
 x-i18n:
-    generated_at: "2026-04-29T22:34:04Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:44:37Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 9d064723b97f09105154197e4ef35b98ccb61e4b775f3fd990b18958f751f713
+    source_hash: 67cb52a47036745150887c752d18e2dfa84fab2722c27c696142d23080bb2efd
     source_path: cli/completion.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw completion`
 
-اسکریپت‌های تکمیل پوسته را تولید کنید و در صورت تمایل آن‌ها را در نمایه پوسته خود نصب کنید.
+اسکریپت‌های تکمیل پوسته را ایجاد می‌کند، آن‌ها را در وضعیت OpenClaw ذخیره می‌کند و در صورت تمایل، آن‌ها را در پروفایل پوسته شما نصب می‌کند.
 
 ## نحوه استفاده
 
 ```bash
-openclaw completion
-openclaw completion --shell zsh
-openclaw completion --install
-openclaw completion --shell fish --install
-openclaw completion --write-state
+openclaw completion                          # چاپ اسکریپت zsh در خروجی استاندارد
+openclaw completion --shell fish             # چاپ اسکریپت fish
+openclaw completion --write-state            # ذخیره اسکریپت‌ها برای همه پوسته‌ها
+openclaw completion --write-state --install  # ذخیره و سپس نصب در یک مرحله
 openclaw completion --shell bash --write-state
 ```
 
 ## گزینه‌ها
 
 - `-s, --shell <shell>`: پوسته هدف (`zsh`، `bash`، `powershell`، `fish`؛ پیش‌فرض: `zsh`)
-- `-i, --install`: نصب تکمیل با افزودن یک خط منبع به نمایه پوسته شما
-- `--write-state`: نوشتن اسکریپت(های) تکمیل در `$OPENCLAW_STATE_DIR/completions` بدون چاپ در خروجی استاندارد
-- `-y, --yes`: رد کردن اعلان‌های تأیید نصب
+- `-i, --install`: نصب تکمیل با افزودن یک خط `source` برای اسکریپت ذخیره‌شده به پروفایل پوسته
+- `--write-state`: نوشتن اسکریپت یا اسکریپت‌های تکمیل در `$OPENCLAW_STATE_DIR/completions` (پیش‌فرض: `~/.openclaw/completions`) بدون چاپ در خروجی استاندارد؛ همراه با `--shell` فقط اسکریپت همان پوسته و در غیر این صورت اسکریپت هر چهار پوسته را می‌نویسد
+- `-y, --yes`: رد کردن درخواست‌های تأیید نصب (غیرتعاملی)
 
-## یادداشت‌ها
+## فرایند نصب
 
-- `--install` یک بلوک کوچک «OpenClaw Completion» را در نمایه پوسته شما می‌نویسد و آن را به اسکریپت کش‌شده اشاره می‌دهد.
+گزینه `--install` پروفایل شما را به اسکریپت ذخیره‌شده ارجاع می‌دهد؛ بنابراین ابتدا باید کش موجود باشد: اگر کش وجود نداشته باشد، فرمان با خطا متوقف می‌شود و از شما می‌خواهد `openclaw completion --write-state` را اجرا کنید. برای انجام هر دو کار در یک مرحله، `--write-state --install` را با هم استفاده کنید. بدون `--shell`، گزینه `--install` پوسته را از `$SHELL` تشخیص می‌دهد (و در صورت ناموفق بودن، از zsh استفاده می‌کند).
+
+نصب، یک بلوک کوچک `# OpenClaw Completion` را در پروفایل پوسته شما می‌نویسد و هر خط قدیمی و کند `source <(openclaw completion ...)` را با خط `source` مربوط به اسکریپت ذخیره‌شده جایگزین می‌کند:
+
+| پوسته      | پروفایل                                                                                                                                                                                    |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| bash       | `~/.bashrc` (اگر `~/.bashrc` موجود نباشد، از `~/.bash_profile` استفاده می‌شود)                                                                                                             |
+| fish       | `~/.config/fish/config.fish`                                                                                                                                                               |
+| powershell | `~/.config/powershell/Microsoft.PowerShell_profile.ps1` (در Windows:‏ `Documents/PowerShell/Microsoft.PowerShell_profile.ps1`، یا برای Windows PowerShell مسیر `Documents/WindowsPowerShell/...`) |
+| zsh        | `~/.zshrc`                                                                                                                                                                                 |
+
+## نکته‌ها
+
 - بدون `--install` یا `--write-state`، فرمان اسکریپت را در خروجی استاندارد چاپ می‌کند.
-- تولید تکمیل، درخت‌های فرمان را پیشاپیش بارگذاری می‌کند تا زیرفرمان‌های تودرتو نیز شامل شوند.
+- ایجاد تکمیل، کل درخت فرمان را از ابتدا بارگیری می‌کند؛ از جمله فرمان‌های CLI مربوط به Plugin، بنابراین زیرفرمان‌های تو‌در‌تو نیز گنجانده می‌شوند.
+- `openclaw update` پس از به‌روزرسانی موفق، کش تکمیل را به‌طور خودکار تازه‌سازی می‌کند؛ `openclaw doctor` می‌تواند پیکربندی‌های تکمیل مفقود یا منسوخ را ترمیم کند.
 
 ## مرتبط
 

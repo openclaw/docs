@@ -1,27 +1,27 @@
 ---
 read_when:
-    - open-prose Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
-summary: /prose eğik çizgi komutu içeren OpenProse VM beceri paketi.
-title: Open Prose Plugin
+    - open-prose Pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
+summary: /prose eğik çizgi komutuna sahip OpenProse VM Skills paketi.
+title: Open Prose Plugin'i
 x-i18n:
-    generated_at: "2026-05-02T20:55:38Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:34:18Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: a17a753e5a79871deebeac745abb93efe784055f0159cad9540b68cf7784e75b
     source_path: plugins/reference/open-prose.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# Open Prose Plugin
+# Open Prose Plugin'i
 
-OpenProse VM beceri paketi ve bir /prose slash komutu.
+/prose eğik çizgi komutuna sahip OpenProse VM Skills paketi.
 
 ## Dağıtım
 
 - Paket: `@openclaw/open-prose`
-- Kurulum yolu: OpenClaw içinde dahildir
+- Kurulum yolu: OpenClaw'a dahildir
 
 ## Yüzey
 
-beceriler
+Skills

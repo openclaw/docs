@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz Plugin admin-http-rpc
-summary: Administracyjny punkt końcowy HTTP RPC OpenClaw.
-title: Plugin administracyjnego HTTP RPC
+    - Instalujesz, konfigurujesz lub audytujesz plugin admin-http-rpc
+summary: Punkt końcowy HTTP RPC do administrowania OpenClaw.
+title: Plugin administracyjnego RPC HTTP
 x-i18n:
-    generated_at: "2026-06-27T17:58:01Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:21:48Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 58909f4c97bfacc22d3a597939ff8724ec111995841822962c66305140aef4ba
@@ -13,14 +13,14 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin administracyjny HTTP RPC
+# Plugin administracyjnego RPC przez HTTP
 
-Punkt końcowy administracyjnego HTTP RPC OpenClaw.
+Administracyjny punkt końcowy RPC OpenClaw przez HTTP.
 
 ## Dystrybucja
 
 - Pakiet: `@openclaw/admin-http-rpc`
-- Ścieżka instalacji: dołączone do OpenClaw
+- Sposób instalacji: dołączony do OpenClaw
 
 ## Interfejs
 

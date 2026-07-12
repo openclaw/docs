@@ -1,69 +1,53 @@
 ---
 read_when:
-    - Anda ingin memeriksa pengaturan OpenClaw terhadap policy.jsonc yang ditulis.
-    - Anda menginginkan temuan kebijakan dalam lint doctor
-    - Anda memerlukan hash pengesahan kebijakan untuk bukti audit
-summary: Referensi CLI untuk pemeriksaan kesesuaian `openclaw policy`
+    - Anda ingin memeriksa pengaturan OpenClaw berdasarkan policy.jsonc yang telah disusun
+    - Anda ingin temuan kebijakan dalam lint doctor
+    - Anda memerlukan hash pengesahan kebijakan sebagai bukti audit
+summary: Referensi CLI untuk pemeriksaan kepatuhan `openclaw policy`
 title: Kebijakan
 x-i18n:
-    generated_at: "2026-06-27T17:20:30Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:02:40Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5af65bb34aeed72bbb348a56195d65152dce1e8d0e7236da8d8681e56c9b32f4
+    source_hash: 280f9ed1e741786f85dfed978690eb18a03c8fbde20e0d01e31a9d215ae0a128
     source_path: cli/policy.md
     workflow: 16
 ---
 
 # `openclaw policy`
 
-`openclaw policy` disediakan oleh Plugin Policy bawaan. Policy adalah lapisan
-kesesuaian enterprise di atas pengaturan OpenClaw yang sudah ada. Ini tidak
-menambahkan sistem konfigurasi kedua. `policy.jsonc` mendefinisikan persyaratan
-yang ditulis, OpenClaw mengamati workspace aktif sebagai bukti, dan pemeriksaan
-kesehatan policy melaporkan drift melalui `doctor --lint`. Sinyal kesesuaian
-akhir adalah eksekusi `doctor --lint` yang bersih; policy menyumbangkan temuan
-ke permukaan lint bersama tersebut alih-alih membuat gerbang kesehatan terpisah.
+`openclaw policy` disediakan oleh Plugin Policy bawaan. Ini adalah lapisan
+kesesuaian perusahaan di atas pengaturan OpenClaw yang sudah ada, bukan sistem
+konfigurasi kedua. Anda menulis persyaratan dalam `policy.jsonc`; OpenClaw
+mengamati ruang kerja aktif sebagai bukti; policy melaporkan penyimpangan melalui
+`doctor --lint`. Policy tidak memberlakukan pemanggilan alat atau menulis ulang
+perilaku waktu proses pada saat permintaan, dan tidak mengesahkan penyimpanan
+kredensial per agen seperti `auth-profiles.json`.
 
-Policy saat ini mengelola channel yang dikonfigurasi, server MCP, penyedia
-model, postur SSRF jaringan, postur akses ingress/channel, postur eksposur Gateway, postur workspace agent,
-postur penanganan data, postur penyedia rahasia/profil auth konfigurasi OpenClaw, dan deklarasi tool
-yang diatur. Misalnya, IT atau operator workspace dapat mencatat bahwa Telegram
-bukan penyedia channel yang disetujui, membatasi server MCP dan ref model ke
-entri yang disetujui, mewajibkan akses fetch/browser jaringan privat tetap
-dinonaktifkan, mewajibkan isolasi sesi pesan langsung dan postur ingress channel
-tetap dalam batas yang telah ditinjau, mewajibkan bind/auth/eksposur HTTP Gateway tetap dalam batas yang telah ditinjau,
-mewajibkan akses workspace agent dan penolakan tool tetap dalam postur yang telah ditinjau,
-mewajibkan SecretRef konfigurasi OpenClaw menggunakan penyedia terkelola, mewajibkan
-profil auth konfigurasi membawa metadata penyedia/mode, mewajibkan tool yang diatur
-membawa metadata risiko dan sensitivitas, mewajibkan redaksi logging sensitif, menolak
-pengambilan konten telemetri, mewajibkan pemeliharaan retensi sesi, menolak pengindeksan memori
-transkrip sesi, lalu menggunakan `doctor --lint` sebagai gerbang kesesuaian
-bersama.
-
-Gunakan policy ketika workspace membutuhkan pernyataan tahan lama seperti "channel ini
-tidak boleh diaktifkan" atau "tool yang diatur harus mendeklarasikan metadata persetujuan" dan
-cara berulang untuk membuktikan bahwa OpenClaw masih sesuai dengan pernyataan tersebut. Gunakan
-konfigurasi biasa dan dokumen workspace saja ketika Anda hanya membutuhkan perilaku lokal dan
-tidak membutuhkan temuan policy atau output atestasi.
+Policy memeriksa kanal yang dikonfigurasi, server MCP, penyedia model, postur
+SSRF jaringan, akses masuk/kanal, paparan Gateway dan postur perintah node,
+akses ruang kerja agen, postur sandbox, postur penanganan data, postur penyedia
+rahasia/profil autentikasi, serta metadata alat yang diatur (`TOOLS.md`). Gunakan
+ini saat ruang kerja memerlukan pernyataan yang bertahan lama dan dapat diperiksa,
+seperti "Telegram tidak boleh diaktifkan" atau "alat yang diatur harus menyatakan
+metadata risiko dan pemilik." Jika Anda hanya memerlukan perilaku lokal tanpa
+pengesahan atau deteksi penyimpangan, konfigurasi biasa sudah cukup.
 
 ## Mulai cepat
-
-Aktifkan Plugin Policy bawaan sebelum penggunaan pertama:
 
 ```bash
 openclaw plugins enable policy
 ```
 
-Ketika policy diaktifkan, doctor dapat memuat pemeriksaan kesehatan policy tanpa mengaktifkan
-Plugin arbitrer. Plugin tetap aktif jika `policy.jsonc` hilang, sehingga
-doctor dapat melaporkan artefak yang hilang.
+Plugin tetap aktif meskipun `policy.jsonc` tidak ada, sehingga doctor dapat
+melaporkan artefak yang hilang alih-alih melewatkan pemeriksaan secara diam-diam.
 
-Policy ditulis, bukan dibuat dari pengaturan pengguna saat ini. Policy minimal
-untuk channel, server MCP, penyedia model, postur jaringan, akses ingress/channel, eksposur Gateway,
-postur workspace agent, postur runtime sandbox yang dikonfigurasi, postur penanganan data
-OpenClaw, postur penyedia rahasia/profil auth konfigurasi, postur file persetujuan exec,
-dan metadata tool terlihat seperti ini:
+Tulis `policy.jsonc` secara manual; berkas ini tidak dihasilkan dari pengaturan
+saat ini. Setiap bagian tingkat teratas adalah ruang nama aturan: pemeriksaan
+hanya berjalan jika terdapat aturan konkret di bawahnya (bagian atau kunci yang
+tidak didukung gagal sebagai `policy/policy-jsonc-invalid`, bukan diabaikan
+secara diam-diam). Contoh minimal yang mencakup setiap bagian yang didukung:
 
 ```jsonc
 {
@@ -121,6 +105,9 @@ dan metadata tool terlihat seperti ini:
     "http": {
       "denyEndpoints": ["chatCompletions", "responses"],
       "requireUrlAllowlists": true,
+    },
+    "nodes": {
+      "denyCommands": ["system.run"],
     },
   },
   "agents": {
@@ -184,66 +171,51 @@ dan metadata tool terlihat seperti ini:
 }
 ```
 
-Aturan adalah otoritasnya. Blok kategori hanyalah namespace; pemeriksaan berjalan
-ketika aturan konkret ada. OpenClaw membaca pengaturan `channels.*` saat ini,
-`mcp.servers.*`, `models.providers.*`, ref model agent yang dipilih, pengaturan SSRF jaringan,
-cakupan sesi pesan langsung, policy DM channel, policy grup channel,
-gerbang mention channel/grup, postur bind/auth/Control UI/Tailscale/remote/HTTP Gateway,
-postur akses workspace sandbox agent konfigurasi OpenClaw dan penolakan tool,
-postur konfigurasi penanganan data, asal-usul penyedia rahasia
-konfigurasi dan SecretRef, metadata profil auth konfigurasi, postur tool
-global/per-agent yang dikonfigurasi, dan deklarasi `TOOLS.md` sebagai bukti, lalu
-melaporkan status teramati yang tidak sesuai. Jika policy menolak bind Gateway
-non-loopback, hilangkan `gateway.bind` hanya ketika Anda
-bersedia meninjau default runtime; atur `gateway.bind=loopback` untuk
-kesesuaian konfigurasi yang ketat. Untuk postur agent read-only, konfigurasikan mode sandbox
-pada default atau agent yang berlaku dan atur `workspaceAccess` ke `none` atau
-`ro`; mode sandbox yang dihilangkan atau `off` tidak memenuhi policy read-only/no-write.
-`agents.workspace.denyTools` mendukung `exec`, `process`, `write`,
-`edit`, dan `apply_patch`; konfigurasi OpenClaw `group:fs` mencakup tool mutasi file
-dan `group:runtime` mencakup tool shell/proses. Policy postur tool mengamati
-`tools.profile`, `tools.allow`, `tools.alsoAllow`, `tools.deny`,
-`tools.fs.workspaceOnly`, `tools.exec.security`, `tools.exec.ask`,
-`tools.exec.host`, `tools.elevated.enabled`, dan override per-agent yang sama
-`agents.list[].tools.*`. Policy persetujuan exec membaca artefak produk
-`exec-approvals.json` bernama hanya ketika aturan `execApprovals` ada;
-bukti mencatat default, postur per-agent, dan pola allowlist
-tanpa token soket atau teks perintah yang terakhir digunakan. Policy tidak menerapkan panggilan tool
-saat runtime. Bukti rahasia mencatat
-postur penyedia/sumber dan metadata SecretRef, tidak pernah nilai rahasia mentah. Policy
-tidak membaca atau mengatestasi store kredensial per-agent seperti `auth-profiles.json`;
-store tersebut tetap dimiliki oleh alur auth dan kredensial yang sudah ada.
-Bukti penanganan data hanya berupa postur tingkat konfigurasi: ini memeriksa
-mode redaksi yang dikonfigurasi, toggle pengambilan konten telemetri, mode pemeliharaan sesi, dan
-pengaturan pengindeksan memori transkrip sesi. Ini tidak memeriksa log mentah,
-ekspor telemetri, isi transkrip, file memori, atau membuktikan bahwa tidak ada data pribadi
-atau rahasia.
+Catatan lintas bagian yang tidak terlihat jelas dari tabel aturan di bawah:
+
+- Menghilangkan `gateway.bind` saat melarang pengikatan selain loopback berarti
+  Anda menerima nilai baku waktu proses; tetapkan `gateway.bind: "loopback"`
+  untuk kesesuaian yang ketat.
+- Untuk agen hanya-baca, tetapkan `mode` sandbox ke `all` atau `non-main` pada
+  nilai baku/agen yang berlaku dan `workspaceAccess` ke `none` atau `ro`. Mode
+  sandbox yang hilang atau bernilai `off` tidak memenuhi policy hanya-baca.
+- `agents.workspace.denyTools` menerima `exec`, `process`, `write`, `edit`,
+  `apply_patch`. Grup penolakan alat konfigurasi `group:fs` (mutasi berkas) dan
+  `group:runtime` (shell/proses) memenuhi postur yang setara.
+- Pemeriksaan persetujuan eksekusi membaca artefak `exec-approvals.json` aktif
+  hanya jika aturan `execApprovals` tersedia; artefak yang hilang atau tidak
+  valid merupakan bukti yang tidak dapat diamati, bukan kelulusan sintetis.
+- Bukti rahasia dan profil autentikasi hanya mencatat postur penyedia/sumber dan
+  metadata SecretRef, tidak pernah nilai mentah. Policy tidak membaca atau
+  mengesahkan penyimpanan kredensial per agen seperti `auth-profiles.json`.
+- Bukti penanganan data hanya merupakan postur tingkat konfigurasi (mode
+  redaksi, pengalih pengambilan telemetri, mode pemeliharaan sesi, pengaturan
+  pengindeksan transkrip). Ini tidak memeriksa log, ekspor telemetri, transkrip,
+  atau berkas memori, dan hasil yang bersih tidak membuktikan bahwa tidak ada
+  data pribadi atau rahasia di dalamnya.
 
 ### Referensi aturan policy
 
-Setiap field policy di bawah ini opsional. Pemeriksaan berjalan hanya ketika aturan yang cocok
-ada di `policy.jsonc`. Status teramati adalah konfigurasi OpenClaw yang sudah ada atau
-metadata workspace; policy melaporkan drift tetapi tidak menulis ulang perilaku runtime
-kecuali jalur perbaikan tersedia secara eksplisit dan diaktifkan.
-File policy bersifat ketat: section atau key aturan yang tidak didukung dilaporkan sebagai
-`policy/policy-jsonc-invalid` alih-alih diabaikan.
+Setiap aturan di bawah bersifat opsional; pemeriksaan hanya berjalan jika aturan
+tersebut tersedia. Keadaan yang diamati adalah konfigurasi OpenClaw atau metadata
+ruang kerja yang sudah ada.
 
-Overlay policy menjaga aturan tingkat atas yang luas tetap global, lalu memungkinkan blok scope bernama
-menambahkan section policy normal yang lebih ketat untuk selector eksplisit. Nama scope hanyalah
-bucket deskriptif; pencocokan menggunakan nilai selector di dalam scope.
-Overlay bersifat aditif: klaim global tetap berjalan, dan klaim scoped dapat memancarkan
-temuannya sendiri terhadap konfigurasi teramati yang sama.
+#### Lapisan cakupan
 
-#### Overlay scoped
+Gunakan `scopes.<scopeName>` ketika agen atau kanal tertentu memerlukan policy
+yang lebih ketat daripada garis dasar tingkat teratas. Nama cakupan hanyalah
+label; pencocokan menggunakan pemilih di dalam cakupan. Lapisan bersifat aditif:
+aturan global tetap berjalan, dan aturan bercakupan dapat menambahkan temuannya
+sendiri terhadap bukti yang sama.
 
-Gunakan `scopes.<scopeName>` ketika satu set agent atau channel membutuhkan
-policy yang lebih ketat daripada baseline tingkat atas. Section scoped agent menggunakan `agentIds`, yang
-mendukung `tools.*`, `agents.workspace.*`, `sandbox.*`, `dataHandling.memory.*`,
-dan `execApprovals.*`. Ingress scoped channel
-menggunakan `channelIds`, yang mendukung `ingress.channels.*`. Section yang tidak didukung
-ditolak alih-alih diabaikan. Jika entri `agentIds` tidak
-ada di `agents.list[]`, OpenClaw mengevaluasi aturan scoped terhadap postur global/default
-yang diwarisi untuk id agent runtime tersebut.
+| Pemilih      | Bagian yang didukung                                                             | Gunakan ketika                                         |
+| ------------ | -------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| `agentIds`   | `tools`, `agents.workspace`, `sandbox`, `dataHandling.memory`, `execApprovals`   | Satu atau beberapa agen waktu proses memerlukan aturan yang lebih ketat. |
+| `channelIds` | `ingress.channels`                                                               | Satu atau beberapa kanal memerlukan aturan akses masuk yang lebih ketat. |
+
+Jika entri `agentIds` tidak tersedia di `agents.list[]`, OpenClaw mengevaluasi
+aturan bercakupan terhadap postur global/nilai baku yang diwarisi untuk ID agen
+waktu proses tersebut, alih-alih melewatinya.
 
 ```jsonc
 {
@@ -307,145 +279,147 @@ yang diwarisi untuk id agent runtime tersebut.
 }
 ```
 
-Agent yang sama dapat muncul di beberapa scope ketika setiap scope mengatur field yang berbeda,
-seperti ditunjukkan di atas. Field scoped berulang untuk agent yang sama harus
-sama ketatnya atau lebih ketat menurut metadata policy; klaim duplikat yang lebih lemah
-ditolak. Metadata strictness memperlakukan allow-list sebagai subset,
-deny-list sebagai superset, dan boolean wajib sebagai persyaratan tetap.
+Agen yang sama dapat muncul dalam beberapa cakupan jika setiap cakupan mengatur
+bidang yang berbeda, seperti di atas. Bidang bercakupan yang berulang untuk agen
+yang sama harus sama ketat atau lebih ketat; klaim duplikat yang lebih lemah
+ditolak (daftar izin adalah himpunan bagian, daftar larangan adalah himpunan
+bagian super, dan boolean wajib bersifat tetap).
 
-Policy postur container dievaluasi hanya terhadap bukti yang dapat
-diamati OpenClaw untuk agent yang cocok. Jika aturan `sandbox.containers.*` yang aktif berlaku
-untuk agent yang backend sandbox-nya tidak dapat mengekspos field tersebut, policy melaporkan
-`policy/sandbox-container-posture-unobservable` alih-alih memperlakukan klaim sebagai
-lulus. Gunakan scope `agentIds` terpisah untuk grup agent yang menggunakan backend
-sandbox berbeda, dan biarkan aturan container yang tidak didukung tidak diatur atau false untuk
-grup tempat field tersebut tidak dapat diamati.
+Aturan postur kontainer (`sandbox.containers.*`) hanya diperiksa terhadap bukti
+yang dapat diekspos oleh backend sandbox agen yang cocok. Jika backend tidak
+dapat mengamati aturan yang Anda aktifkan untuknya, policy melaporkan
+`policy/sandbox-container-posture-unobservable` alih-alih meluluskannya;
+batasi cakupan aturan kontainer ke grup agen yang menggunakan backend yang dapat
+mengeksposnya.
 
-`ingress.session.requireDmScope` tingkat atas tetap global karena
-`session.dmScope` bukan bukti yang dapat diatribusikan ke channel.
+`ingress.session.requireDmScope` tingkat teratas tetap bersifat global;
+`session.dmScope` bukan bukti yang dapat diatribusikan ke kanal, sehingga tidak
+dapat dibatasi cakupannya oleh `channelIds`.
 
-| Pemilih     | Bagian yang didukung                                                               | Gunakan saat                                          |
-| ------------ | ---------------------------------------------------------------------------------- | ------------------------------------------------- |
-| `agentIds`   | `tools`, `agents.workspace`, `sandbox`, `dataHandling.memory`, dan `execApprovals` | Satu atau beberapa agen runtime memerlukan aturan yang lebih ketat.   |
-| `channelIds` | `ingress.channels`                                                                 | Satu atau beberapa saluran memerlukan aturan ingress yang lebih ketat. |
+Setiap cakupan yang tersedia dalam `policy.jsonc` harus valid dan dapat
+diberlakukan.
 
-Setiap cakupan yang ada di `policy.jsonc` harus valid dan dapat diberlakukan.
+#### Kanal
 
-#### Saluran
-
-| Kolom kebijakan                         | Status yang diamati                          | Gunakan saat                                                     |
-| ------------------------------------ | --------------------------------------- | ------------------------------------------------------------ |
-| `channels.denyRules[].when.provider` | Provider `channels.*` dan status aktif | Menolak saluran yang dikonfigurasi dari provider seperti `telegram`. |
-| `channels.denyRules[].reason`        | Konteks pesan temuan dan petunjuk perbaikan | Menjelaskan mengapa provider ditolak.                          |
+| Bidang policy                         | Keadaan yang diamati                       | Gunakan ketika                                                   |
+| ------------------------------------- | ------------------------------------------ | ---------------------------------------------------------------- |
+| `channels.denyRules[].when.provider`  | Penyedia dan status aktif `channels.*`     | Melarang kanal yang dikonfigurasi dari penyedia seperti `telegram`. |
+| `channels.denyRules[].reason`         | Pesan temuan dan konteks petunjuk perbaikan | Menjelaskan alasan penyedia tersebut dilarang.                    |
 
 #### Server MCP
 
-| Kolom kebijakan        | Status yang diamati      | Gunakan saat                                                   |
-| ------------------- | ------------------- | ---------------------------------------------------------- |
-| `mcp.servers.allow` | id `mcp.servers.*` | Mengharuskan setiap server MCP yang dikonfigurasi ada dalam allowlist. |
-| `mcp.servers.deny`  | id `mcp.servers.*` | Menolak id server MCP tertentu yang dikonfigurasi.                   |
+| Bidang policy       | Keadaan yang diamati | Gunakan ketika                                                    |
+| ------------------- | --------------------- | ----------------------------------------------------------------- |
+| `mcp.servers.allow` | ID `mcp.servers.*`    | Mewajibkan setiap server MCP yang dikonfigurasi berada dalam daftar izin. |
+| `mcp.servers.deny`  | ID `mcp.servers.*`    | Melarang ID server MCP tertentu yang dikonfigurasi.               |
 
-#### Provider model
+#### Penyedia model
 
-| Kolom kebijakan             | Status yang diamati                                   | Gunakan saat                                                                        |
-| ------------------------ | ------------------------------------------------ | ------------------------------------------------------------------------------- |
-| `models.providers.allow` | id `models.providers.*` dan referensi model yang dipilih | Mengharuskan provider yang dikonfigurasi dan referensi model yang dipilih menggunakan provider yang disetujui. |
-| `models.providers.deny`  | id `models.providers.*` dan referensi model yang dipilih | Menolak provider yang dikonfigurasi dan referensi model yang dipilih berdasarkan id provider.               |
+| Bidang policy             | Keadaan yang diamati                                  | Gunakan ketika                                                                         |
+| ------------------------- | ----------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `models.providers.allow`  | ID `models.providers.*` dan referensi model terpilih  | Mewajibkan penyedia yang dikonfigurasi dan referensi model terpilih menggunakan penyedia yang disetujui. |
+| `models.providers.deny`   | ID `models.providers.*` dan referensi model terpilih  | Melarang penyedia yang dikonfigurasi dan referensi model terpilih berdasarkan ID penyedia. |
 
 #### Jaringan
 
-| Kolom kebijakan                   | Status yang diamati                      | Gunakan saat                                                           |
-| ------------------------------ | ----------------------------------- | ------------------------------------------------------------------ |
-| `network.privateNetwork.allow` | Jalur pengecualian SSRF jaringan privat | Atur ke `false` untuk mengharuskan akses jaringan privat tetap dinonaktifkan. |
+| Bidang policy                   | Keadaan yang diamati                  | Gunakan ketika                                                         |
+| ------------------------------- | ------------------------------------- | ---------------------------------------------------------------------- |
+| `network.privateNetwork.allow`  | Jalur lolos SSRF jaringan privat      | Tetapkan ke `false` untuk mewajibkan akses jaringan privat tetap dinonaktifkan. |
 
-#### Ingress dan akses saluran
+#### Akses masuk dan kanal
 
-| Kolom kebijakan                              | Status yang diamati                                                 | Gunakan saat                                                           |
-| ----------------------------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------ |
-| `ingress.session.requireDmScope`          | `session.dmScope`                                              | Mengharuskan cakupan isolasi pesan langsung yang telah ditinjau.                 |
-| `ingress.channels.allowDmPolicies`        | `channels.*.dmPolicy` dan kolom kebijakan DM saluran lama      | Hanya mengizinkan kebijakan saluran pesan langsung yang telah ditinjau.               |
-| `ingress.channels.denyOpenGroups`         | Kebijakan ingress saluran, akun, dan grup                     | Menolak ingress grup terbuka untuk saluran dan akun yang dikonfigurasi.      |
-| `ingress.channels.requireMentionInGroups` | Konfigurasi gerbang mention saluran, akun, grup, guild, dan bertingkat | Mengharuskan gerbang mention saat ingress grup terbuka atau dibatasi mention. |
+| Bidang kebijakan                           | Status yang diamati                                             | Gunakan ketika                                                                  |
+| ------------------------------------------ | --------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `ingress.session.requireDmScope`           | `session.dmScope`                                               | Memerlukan cakupan isolasi pesan langsung yang telah ditinjau.                  |
+| `ingress.channels.allowDmPolicies`         | `channels.*.dmPolicy` dan bidang kebijakan DM kanal lama         | Hanya mengizinkan kebijakan kanal pesan langsung yang telah ditinjau.           |
+| `ingress.channels.denyOpenGroups`          | Kebijakan ingress kanal, akun, dan grup                          | Menolak ingress grup terbuka untuk kanal dan akun yang dikonfigurasi.           |
+| `ingress.channels.requireMentionInGroups`  | Konfigurasi gerbang penyebutan kanal, akun, grup, guild, dan bertingkat | Memerlukan gerbang penyebutan ketika ingress grup terbuka atau dibatasi penyebutan. |
 
 #### Gateway
 
-| Kolom kebijakan                            | Status yang diamati                                 | Gunakan saat                                                     |
-| --------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------ |
-| `gateway.exposure.allowNonLoopbackBind` | `gateway.bind`                                 | Atur ke `false` untuk mengharuskan pengikatan Gateway loopback.          |
-| `gateway.exposure.allowTailscaleFunnel` | Postur Gateway Tailscale serve/funnel         | Atur ke `false` untuk menolak eksposur Tailscale Funnel.            |
-| `gateway.auth.requireAuth`              | `gateway.auth.mode`                            | Atur ke `true` untuk menolak auth Gateway yang dinonaktifkan.               |
-| `gateway.auth.requireExplicitRateLimit` | `gateway.auth.rateLimit`                       | Atur ke `true` untuk mengharuskan konfigurasi rate-limit auth yang eksplisit.    |
-| `gateway.controlUi.allowInsecure`       | Toggle auth/perangkat/origin Control UI yang tidak aman | Atur ke `false` untuk menolak toggle eksposur Control UI yang tidak aman. |
-| `gateway.remote.allow`                  | Mode/konfigurasi Gateway jarak jauh                     | Atur ke `false` untuk menolak mode Gateway jarak jauh.                  |
-| `gateway.http.denyEndpoints`            | Endpoint API HTTP Gateway                     | Menolak id endpoint seperti `chatCompletions` atau `responses`.  |
-| `gateway.http.requireUrlAllowlists`     | Input pengambilan URL HTTP Gateway                  | Atur ke `true` untuk mengharuskan allowlist URL pada input pengambilan URL. |
+| Bidang kebijakan                         | Status yang diamati                             | Gunakan ketika                                                                                  |
+| ---------------------------------------- | ----------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `gateway.exposure.allowNonLoopbackBind`  | `gateway.bind`                                  | Atur ke `false` untuk mewajibkan pengikatan Gateway ke loopback.                                |
+| `gateway.exposure.allowTailscaleFunnel`  | Postur serve/funnel Gateway Tailscale           | Atur ke `false` untuk menolak eksposur Tailscale Funnel.                                        |
+| `gateway.auth.requireAuth`               | `gateway.auth.mode`                             | Atur ke `true` untuk menolak autentikasi Gateway yang dinonaktifkan.                            |
+| `gateway.auth.requireExplicitRateLimit`  | `gateway.auth.rateLimit`                        | Atur ke `true` untuk mewajibkan konfigurasi batas laju autentikasi yang eksplisit.              |
+| `gateway.controlUi.allowInsecure`        | Opsi autentikasi/perangkat/origin tidak aman pada UI Kontrol | Atur ke `false` untuk menolak opsi eksposur UI Kontrol yang tidak aman.                         |
+| `gateway.remote.allow`                   | Mode/konfigurasi Gateway jarak jauh             | Atur ke `false` untuk menolak mode Gateway jarak jauh.                                          |
+| `gateway.http.denyEndpoints`             | Titik akhir API HTTP Gateway                    | Tolak ID titik akhir seperti `chatCompletions` atau `responses`.                                |
+| `gateway.http.requireUrlAllowlists`      | Input pengambilan URL HTTP Gateway              | Atur ke `true` untuk mewajibkan daftar izin URL pada input pengambilan URL.                     |
+| `gateway.nodes.denyCommands`             | `gateway.nodes.denyCommands`                    | Memerlukan ID perintah node yang tepat, seperti `system.run`, agar ditolak dalam konfigurasi OpenClaw. |
+
+`gateway.nodes.denyCommands` adalah aturan superset penolakan yang tepat dan peka huruf besar-kecil.
+Gunakan ketika kebijakan harus membuktikan bahwa perintah node berhak istimewa secara eksplisit
+ditolak oleh konfigurasi OpenClaw. Deployment yang sengaja mengizinkan perintah node berhak istimewa
+harus memperbarui `policy.jsonc` setelah peninjauan, alih-alih hanya mengandalkan
+`gateway.nodes.allowCommands`.
 
 #### Ruang kerja agen
 
-| Kolom kebijakan                     | Status yang diamati                                                                        | Gunakan saat                                                                                                            |
-| -------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `agents.workspace.allowedAccess` | `agents.defaults.sandbox.workspaceAccess` dan `agents.list[].sandbox.workspaceAccess` | Hanya mengizinkan nilai akses ruang kerja sandbox seperti `none` atau `ro`.                                                  |
-| `agents.workspace.denyTools`     | Konfigurasi penolakan alat global dan per agen                                                 | Mengharuskan alat mutasi ruang kerja/runtime seperti `exec`, `process`, `write`, `edit`, atau `apply_patch` ditolak. |
+| Bidang kebijakan                  | Status yang diamati                                                                    | Gunakan ketika                                                                                  |
+| --------------------------------- | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `agents.workspace.allowedAccess`  | `agents.defaults.sandbox.workspaceAccess` dan `agents.list[].sandbox.workspaceAccess` | Hanya mengizinkan nilai akses ruang kerja sandbox seperti `none` atau `ro`.                    |
+| `agents.workspace.denyTools`      | Konfigurasi penolakan alat global dan per agen                                         | Memerlukan alat mutasi (`exec`, `process`, `write`, `edit`, `apply_patch`) agar ditolak.       |
 
 #### Postur sandbox
 
-| Kolom kebijakan                                          | Status yang diamati                                          | Gunakan saat                                                       |
-| ----------------------------------------------------- | ------------------------------------------------------- | -------------------------------------------------------------- |
-| `sandbox.requireMode`                                 | `agents.defaults.sandbox.mode` dan mode per agen       | Hanya mengizinkan mode sandbox yang telah ditinjau seperti `all` atau `non-main`. |
-| `sandbox.allowBackends`                               | `agents.defaults.sandbox.backend` dan backend per agen | Hanya mengizinkan backend sandbox yang telah ditinjau seperti `docker`.         |
-| `sandbox.containers.denyHostNetwork`                  | Mode jaringan sandbox/browser berbasis kontainer           | Menolak mode jaringan host.                                        |
-| `sandbox.containers.denyContainerNamespaceJoin`       | Mode jaringan sandbox/browser berbasis kontainer           | Menolak bergabung ke namespace jaringan kontainer lain.              |
-| `sandbox.containers.requireReadOnlyMounts`            | Mode mount sandbox/browser berbasis kontainer             | Mengharuskan mount bersifat hanya baca.                                |
-| `sandbox.containers.denyContainerRuntimeSocketMounts` | Target mount sandbox/browser berbasis kontainer          | Menolak mount socket runtime kontainer.                          |
-| `sandbox.containers.denyUnconfinedProfiles`           | Postur profil keamanan kontainer                      | Menolak profil keamanan kontainer tanpa pembatasan.                   |
-| `sandbox.browser.requireCdpSourceRange`               | Rentang sumber CDP browser sandbox                        | Mengharuskan eksposur CDP browser mendeklarasikan rentang sumber.        |
+| Bidang kebijakan                                      | Status yang diamati                                      | Gunakan ketika                                                          |
+| ----------------------------------------------------- | ------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `sandbox.requireMode`                                 | `agents.defaults.sandbox.mode` dan mode per agen        | Hanya mengizinkan mode sandbox yang telah ditinjau seperti `all` atau `non-main`. |
+| `sandbox.allowBackends`                               | `agents.defaults.sandbox.backend` dan backend per agen  | Hanya mengizinkan backend sandbox yang telah ditinjau seperti `docker`. |
+| `sandbox.containers.denyHostNetwork`                  | Mode jaringan sandbox/peramban berbasis kontainer      | Menolak mode jaringan hos.                                              |
+| `sandbox.containers.denyContainerNamespaceJoin`       | Mode jaringan sandbox/peramban berbasis kontainer      | Menolak bergabung dengan namespace jaringan kontainer lain.             |
+| `sandbox.containers.requireReadOnlyMounts`            | Mode mount sandbox/peramban berbasis kontainer         | Memerlukan mount hanya-baca.                                            |
+| `sandbox.containers.denyContainerRuntimeSocketMounts` | Target mount sandbox/peramban berbasis kontainer       | Menolak mount soket runtime kontainer.                                  |
+| `sandbox.containers.denyUnconfinedProfiles`           | Postur profil keamanan kontainer                       | Menolak profil keamanan kontainer tanpa pembatasan.                     |
+| `sandbox.browser.requireCdpSourceRange`               | Rentang sumber CDP peramban sandbox                    | Memerlukan eksposur CDP peramban untuk mendeklarasikan rentang sumber.  |
 
-Kebijakan memperlakukan `sandbox.mode` yang hilang sebagai default implisit `off`, sehingga
-`sandbox.requireMode` melaporkan sandbox baru atau belum dikonfigurasi sebagai berada di luar
-allowlist seperti `["all"]`.
+Kebijakan memperlakukan `sandbox.mode` yang tidak ada sebagai nilai baku implisitnya, yaitu `off`, sehingga
+`sandbox.requireMode` melaporkan sandbox baru atau yang belum dikonfigurasi sebagai berada di luar
+daftar izin seperti `["all"]`.
 
 #### Penanganan Data
 
-| Kolom kebijakan                                        | Status yang diamati                                                                       | Gunakan saat                                                               |
-| --------------------------------------------------- | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------- |
-| `dataHandling.sensitiveLogging.requireRedaction`    | `logging.redactSensitive`                                                            | Atur ke `true` untuk menolak `logging.redactSensitive: "off"`.              |
-| `dataHandling.telemetry.denyContentCapture`         | `diagnostics.otel.captureContent`                                                    | Atur ke `true` untuk menolak penangkapan konten telemetri.                     |
-| `dataHandling.retention.requireSessionMaintenance`  | `session.maintenance.mode`                                                           | Atur ke `true` untuk mengharuskan mode pemeliharaan sesi efektif `enforce`. |
-| `dataHandling.memory.denySessionTranscriptIndexing` | `memory.qmd.sessions.enabled` dan `agents.*.memorySearch.experimental.sessionMemory` | Atur ke `true` untuk menolak pengindeksan transkrip sesi ke memori.       |
+| Bidang kebijakan                                    | Status yang diamati                                                                   | Gunakan ketika                                                                 |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
+| `dataHandling.sensitiveLogging.requireRedaction`    | `logging.redactSensitive`                                                            | Atur ke `true` untuk menolak `logging.redactSensitive: "off"`.                 |
+| `dataHandling.telemetry.denyContentCapture`         | `diagnostics.otel.captureContent`                                                    | Atur ke `true` untuk menolak pengambilan konten telemetri.                     |
+| `dataHandling.retention.requireSessionMaintenance`  | `session.maintenance.mode`                                                           | Atur ke `true` untuk mewajibkan mode pemeliharaan sesi efektif `enforce`.      |
+| `dataHandling.memory.denySessionTranscriptIndexing` | `memory.qmd.sessions.enabled` dan `agents.*.memorySearch.experimental.sessionMemory` | Atur ke `true` untuk menolak pengindeksan transkrip sesi ke dalam memori.      |
 
 #### Rahasia
 
-| Kolom kebijakan                      | Status yang diamati                                           | Gunakan saat                                                                |
-| --------------------------------- | -------------------------------------------------------- | ----------------------------------------------------------------------- |
-| `secrets.requireManagedProviders` | SecretRef konfigurasi dan deklarasi `secrets.providers.*` | Atur ke `true` untuk mengharuskan SecretRef menunjuk ke provider yang dideklarasikan.     |
-| `secrets.denySources`             | Sumber provider rahasia dan sumber SecretRef            | Menolak sumber seperti `exec`, `file`, atau nama sumber lain yang dikonfigurasi. |
-| `secrets.allowInsecureProviders`  | Flag postur provider rahasia yang tidak aman                   | Atur ke `false` untuk menolak provider yang memilih postur tidak aman.      |
+| Bidang kebijakan                   | Status yang diamati                                          | Gunakan ketika                                                                |
+| ---------------------------------- | ------------------------------------------------------------ | ----------------------------------------------------------------------------- |
+| `secrets.requireManagedProviders`  | SecretRef konfigurasi dan deklarasi `secrets.providers.*`    | Atur ke `true` untuk mewajibkan SecretRef menunjuk ke penyedia yang dideklarasikan. |
+| `secrets.denySources`              | Sumber penyedia rahasia dan sumber SecretRef                  | Tolak sumber seperti `exec`, `file`, atau nama sumber lain yang dikonfigurasi. |
+| `secrets.allowInsecureProviders`   | Penanda postur penyedia rahasia yang tidak aman               | Atur ke `false` untuk menolak penyedia yang memilih postur tidak aman.        |
 
 #### Persetujuan exec
 
-Kebijakan persetujuan exec mengamati artefak runtime aktif `exec-approvals.json`.
-Secara default ini adalah `~/.openclaw/exec-approvals.json`; saat
-`OPENCLAW_STATE_DIR` ditetapkan, Kebijakan membaca
-`$OPENCLAW_STATE_DIR/exec-approvals.json`. Aturan postur aktual seperti
-`execApprovals.defaults.*` atau `execApprovals.agents.*` memerlukan bukti artefak
-yang dapat dibaca; artefak yang hilang atau tidak valid dilaporkan sebagai bukti
-yang tidak dapat diamati, bukan menjadi kelulusan best-effort terhadap default runtime sintetis. Setelah
-artefak dapat dibaca, kolom persetujuan yang dihilangkan mewarisi default runtime: `defaults.security` yang hilang
-adalah `full`, dan keamanan agen yang hilang mewarisi default tersebut. Bukti mencakup
-`defaults`, `agents.*`, dan `agents.*.allowlist[].pattern` ditambah `argPattern` opsional, postur
-`autoAllowSkills` efektif, dan sumber entri. Bukti tidak mencakup path/token
-socket, `commandText`, `lastUsedCommand`, path yang di-resolve, atau timestamp.
+Pemeriksaan persetujuan exec membaca artefak runtime `exec-approvals.json`:
+`~/.openclaw/exec-approvals.json` secara baku, atau
+`$OPENCLAW_STATE_DIR/exec-approvals.json` ketika `OPENCLAW_STATE_DIR` ditetapkan.
+Aturan postur di bawah `execApprovals.defaults.*` atau `execApprovals.agents.*`
+memerlukan bukti artefak yang dapat dibaca; artefak yang tidak ada atau tidak valid dilaporkan sebagai
+bukti yang tidak dapat diamati, bukan kelulusan berdasarkan upaya terbaik. Setelah dapat dibaca, bidang
+yang dihilangkan mewarisi nilai baku runtime: `defaults.security` yang tidak ada bernilai `full`, dan
+keamanan agen yang tidak ada mewarisi nilai baku tersebut. Bukti mencakup `defaults`,
+`agents.*`, `agents.*.allowlist[].pattern`, `argPattern` opsional, postur efektif
+`autoAllowSkills`, dan sumber entri — tidak pernah mencakup jalur/token soket,
+`commandText`, `lastUsedCommand`, jalur yang telah diresolusi, atau stempel waktu.
 
-| Bidang kebijakan                         | Status yang diamati                                                                  | Gunakan saat                                                                            |
-| ---------------------------------------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------- |
-| `execApprovals.requireFile`              | Path `exec-approvals.json` runtime aktif                                             | Atur ke `true` untuk mewajibkan artefak persetujuan ada dan dapat diurai.               |
-| `execApprovals.defaults.allowSecurity`   | `defaults.security`, dengan default `full`                                           | Izinkan hanya mode keamanan persetujuan default yang disetujui.                         |
-| `execApprovals.agents.allowSecurity`     | `agents.*.security`, mewarisi default                                                | Izinkan hanya mode keamanan persetujuan efektif per agen yang disetujui.                |
-| `execApprovals.agents.allowAutoAllowSkills` | `defaults.autoAllowSkills` dan `agents.*.autoAllowSkills`, mewarisi default runtime | Atur ke `false` untuk mewajibkan allowlist manual ketat tanpa persetujuan CLI skill implisit. |
-| `execApprovals.agents.allowlist.expected` | Pola agregat `agents.*.allowlist[]` dan entri argPattern opsional                   | Wajibkan allowlist persetujuan cocok dengan kumpulan pola yang telah ditinjau.           |
+| Bidang kebijakan                              | Status yang diamati                                                                     | Gunakan ketika                                                                                       |
+| --------------------------------------------- | --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `execApprovals.requireFile`                   | Jalur `exec-approvals.json` runtime yang aktif                                          | Atur ke `true` untuk mewajibkan artefak persetujuan ada dan dapat diurai.                            |
+| `execApprovals.defaults.allowSecurity`        | `defaults.security`, dengan nilai baku `full`                                           | Hanya mengizinkan mode keamanan persetujuan baku yang disetujui.                                     |
+| `execApprovals.agents.allowSecurity`          | `agents.*.security`, yang mewarisi nilai baku                                           | Hanya mengizinkan mode keamanan persetujuan efektif per agen yang disetujui.                          |
+| `execApprovals.agents.allowAutoAllowSkills`   | `defaults.autoAllowSkills` dan `agents.*.autoAllowSkills`, yang mewarisi nilai baku runtime | Atur ke `false` untuk mewajibkan daftar izin manual yang ketat tanpa persetujuan CLI skill implisit. |
+| `execApprovals.agents.allowlist.expected`     | Gabungan pola `agents.*.allowlist[]` dan entri argPattern opsional                      | Memerlukan daftar izin persetujuan agar cocok dengan kumpulan pola yang telah ditinjau.              |
 
-Misalnya, wajibkan artefak persetujuan, tolak default yang permisif, dan
-izinkan hanya postur persetujuan exec yang telah ditinjau untuk agen terpilih:
+Contoh: wajibkan artefak persetujuan, tolak nilai baku yang permisif, dan izinkan
+hanya postur persetujuan exec yang telah ditinjau untuk agen yang dipilih.
 
 ```jsonc
 {
@@ -485,31 +459,33 @@ izinkan hanya postur persetujuan exec yang telah ditinjau untuk agen terpilih:
 
 #### Profil autentikasi
 
-| Bidang kebijakan               | Status yang diamati                       | Gunakan saat                                                                              |
-| ------------------------------ | ----------------------------------------- | ----------------------------------------------------------------------------------------- |
-| `auth.profiles.requireMetadata` | Metadata penyedia dan mode `auth.profiles.*` | Wajibkan kunci metadata seperti `provider` dan `mode` pada profil autentikasi config.      |
-| `auth.profiles.allowModes`     | `auth.profiles.*.mode`                    | Izinkan hanya mode profil autentikasi yang didukung seperti `api_key`, `aws-sdk`, `oauth`, atau `token`. |
+| Bidang kebijakan               | Status yang diamati                           | Gunakan ketika                                                                                              |
+| ------------------------------ | --------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `auth.profiles.requireMetadata` | Metadata penyedia dan mode `auth.profiles.*`  | Mewajibkan kunci metadata seperti `provider` dan `mode` pada profil autentikasi konfigurasi.                 |
+| `auth.profiles.allowModes`      | `auth.profiles.*.mode`                        | Hanya mengizinkan mode profil autentikasi yang didukung seperti `api_key`, `aws-sdk`, `oauth`, atau `token`. |
 
 #### Metadata alat
 
-| Bidang kebijakan       | Status yang diamati              | Gunakan saat                                                                                |
-| ---------------------- | -------------------------------- | ------------------------------------------------------------------------------------------ |
-| `tools.requireMetadata` | Deklarasi `TOOLS.md` yang diatur | Wajibkan alat yang diatur mendeklarasikan kunci metadata seperti `risk`, `sensitivity`, atau `owner`. |
+| Bidang kebijakan        | Status yang diamati              | Gunakan ketika                                                                                         |
+| ----------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `tools.requireMetadata` | Deklarasi `TOOLS.md` yang diatur | Mewajibkan alat yang diatur untuk mendeklarasikan kunci metadata seperti `risk`, `sensitivity`, atau `owner`. |
 
 #### Postur alat
 
-| Bidang kebijakan               | Status yang diamati                                      | Gunakan saat                                                                                              |
-| ------------------------------ | -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `tools.profiles.allow`         | `tools.profile` dan `agents.list[].tools.profile`        | Izinkan hanya id profil alat seperti `minimal`, `messaging`, atau `coding`.                               |
-| `tools.fs.requireWorkspaceOnly` | `tools.fs.workspaceOnly` dan override `tools.fs` per agen | Atur ke `true` untuk mewajibkan postur alat filesystem khusus workspace.                                  |
-| `tools.exec.allowSecurity`     | `tools.exec.security` dan keamanan exec per agen         | Izinkan hanya mode keamanan exec seperti `deny` atau `allowlist`.                                         |
-| `tools.exec.requireAsk`        | `tools.exec.ask` dan mode ask exec per agen              | Wajibkan postur persetujuan seperti `always`.                                                            |
-| `tools.exec.allowHosts`        | `tools.exec.host` dan routing host exec per agen         | Izinkan hanya mode routing host exec seperti `sandbox`.                                                   |
-| `tools.elevated.allow`         | `tools.elevated.enabled` dan postur elevated per agen    | Atur ke `false` untuk mewajibkan mode alat elevated tetap nonaktif.                                       |
-| `tools.alsoAllow.expected`     | `tools.alsoAllow` dan `tools.alsoAllow` per agen         | Wajibkan entri `alsoAllow` persis dan laporkan pemberian alat tambahan yang hilang atau tidak diharapkan. |
-| `tools.denyTools`              | `tools.deny` dan `agents.list[].tools.deny`              | Wajibkan daftar penolakan alat yang dikonfigurasi menyertakan id atau grup alat seperti `group:runtime` dan `group:fs`. |
+| Bidang kebijakan                | Status yang diamati                                         | Gunakan ketika                                                                                                          |
+| ------------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `tools.profiles.allow`          | `tools.profile` dan `agents.list[].tools.profile`           | Hanya mengizinkan ID profil alat seperti `minimal`, `messaging`, atau `coding`.                                          |
+| `tools.fs.requireWorkspaceOnly` | `tools.fs.workspaceOnly` dan penggantian `tools.fs` per agen | Atur ke `true` untuk mewajibkan postur alat sistem berkas yang terbatas hanya pada ruang kerja.                         |
+| `tools.exec.allowSecurity`      | `tools.exec.security` dan keamanan eksekusi per agen        | Hanya mengizinkan mode keamanan eksekusi seperti `deny` atau `allowlist`.                                                |
+| `tools.exec.requireAsk`         | `tools.exec.ask` dan mode permintaan eksekusi per agen      | Mewajibkan postur persetujuan seperti `always`.                                                                          |
+| `tools.exec.allowHosts`         | `tools.exec.host` dan perutean host eksekusi per agen       | Hanya mengizinkan mode perutean host eksekusi seperti `sandbox`.                                                         |
+| `tools.elevated.allow`          | `tools.elevated.enabled` dan postur hak tinggi per agen     | Atur ke `false` untuk mewajibkan mode alat dengan hak tinggi tetap dinonaktifkan.                                        |
+| `tools.alsoAllow.expected`      | `tools.alsoAllow` dan `tools.alsoAllow` per agen            | Mewajibkan entri `alsoAllow` yang sama persis dan melaporkan pemberian alat tambahan yang hilang atau tidak diharapkan. |
+| `tools.denyTools`               | `tools.deny` dan `agents.list[].tools.deny`                 | Mewajibkan daftar penolakan alat yang dikonfigurasi menyertakan ID atau grup alat seperti `group:runtime` dan `group:fs`. |
 
-Jalankan pemeriksaan khusus kebijakan selama penulisan:
+## Menjalankan pemeriksaan
+
+Jalankan pemeriksaan khusus kebijakan selama penyusunan:
 
 ```bash
 openclaw policy check
@@ -517,32 +493,29 @@ openclaw policy check --json
 openclaw policy check --severity-min error
 ```
 
-`policy check` hanya menjalankan kumpulan pemeriksaan kebijakan dan menghasilkan bukti, temuan, serta
-hash atestasi. Temuan yang sama juga muncul di `openclaw doctor --lint`
-saat Plugin Policy diaktifkan.
+`policy check` hanya menjalankan kumpulan pemeriksaan kebijakan serta menghasilkan bukti, temuan,
+dan hash pengesahan. Temuan yang sama juga muncul dalam
+`openclaw doctor --lint` saat Plugin Policy diaktifkan.
 
-Bandingkan file kebijakan operator dengan file kebijakan baseline yang ditulis:
+Bandingkan berkas kebijakan operator dengan tolok ukur yang telah disusun:
 
 ```bash
 openclaw policy compare --baseline official.policy.jsonc
 openclaw policy compare --baseline official.policy.jsonc --policy policy.jsonc --json
 ```
 
-`policy compare` membandingkan sintaks file kebijakan dengan sintaks file kebijakan. Perintah ini tidak
-memeriksa status runtime OpenClaw, bukti, kredensial, atau rahasia. Perintah ini
-menggunakan metadata aturan kebijakan yang sama yang mengatur overlay berscope: allowlist harus
-tetap sama atau lebih sempit, denylist harus tetap sama atau lebih luas, boolean wajib
-harus mempertahankan nilai wajibnya, string berurutan hanya boleh bergerak ke ujung yang lebih
-restriktif dari urutan yang dikonfigurasi, dan daftar persis harus cocok.
+`policy compare` memeriksa sintaks berkas kebijakan terhadap sintaks berkas kebijakan; perintah ini
+tidak memeriksa status runtime, bukti, kredensial, atau rahasia. Perintah ini menggunakan
+metadata aturan yang sama dengan yang mengatur lapisan cakupan: daftar izin harus tetap sama atau
+lebih sempit, daftar penolakan harus tetap sama atau lebih luas, nilai boolean wajib harus
+mempertahankan nilainya, string berurutan hanya boleh bergerak menuju ujung yang lebih ketat dari
+urutan yang dikonfigurasi, dan daftar eksak harus cocok. Tolok ukur dapat berupa
+kebijakan yang disusun organisasi; kebijakan yang diperiksa dapat menambahkan nilai yang lebih ketat atau
+aturan tambahan. Aturan tingkat atas yang diperiksa dapat memenuhi aturan tolok ukur bercakupan jika
+sama ketat atau lebih ketat. Nama cakupan tidak harus sama antarberkas;
+perbandingan dikunci berdasarkan pemilih (`agentIds`/`channelIds`) dan bidang.
 
-File baseline dapat berupa kebijakan yang ditulis organisasi. Kebijakan yang diperiksa dapat
-menggunakan nilai yang lebih ketat atau menambahkan aturan kebijakan ekstra. Aturan terperiksa tingkat atas juga dapat
-memenuhi aturan baseline berscope saat sama atau lebih restriktif karena
-kebijakan tingkat atas berlaku luas. Nama scope tidak perlu cocok; perbandingan
-berscope dikunci oleh nilai selector seperti `agentIds` atau `channelIds` dan oleh
-bidang kebijakan yang diperiksa.
-
-Contoh output JSON perbandingan bersih hanya melaporkan status perbandingan file kebijakan:
+Hasil perbandingan bersih (`--json`):
 
 ```json
 {
@@ -554,8 +527,8 @@ Contoh output JSON perbandingan bersih hanya melaporkan status perbandingan file
 }
 ```
 
-Contoh output bersih `policy check --json` menyertakan hash stabil yang dapat
-dicatat oleh operator atau supervisor:
+Keluaran bersih `policy check --json` menyertakan hash stabil yang dapat dicatat oleh operator atau
+pengawas:
 
 ```json
 {
@@ -578,9 +551,9 @@ dicatat oleh operator atau supervisor:
 }
 ```
 
-## Konfigurasikan kebijakan
+## Mengonfigurasi kebijakan
 
-Config kebijakan berada di bawah `plugins.entries.policy.config`.
+Konfigurasi kebijakan berada di bawah `plugins.entries.policy.config`.
 
 ```jsonc
 {
@@ -601,23 +574,20 @@ Config kebijakan berada di bawah `plugins.entries.policy.config`.
 }
 ```
 
-| Pengaturan                | Tujuan                                                          |
-| ------------------------- | --------------------------------------------------------------- |
-| `enabled`                 | Aktifkan pemeriksaan kebijakan bahkan sebelum `policy.jsonc` ada. |
-| `workspaceRepairs`        | Izinkan `doctor --fix` mengedit pengaturan workspace yang dikelola kebijakan. |
-| `expectedHash`            | Kunci hash opsional untuk artefak kebijakan yang disetujui.      |
-| `expectedAttestationHash` | Kunci hash opsional untuk pemeriksaan kebijakan bersih terakhir yang diterima. |
-| `path`                    | Lokasi artefak kebijakan relatif terhadap workspace.             |
+| Pengaturan                | Tujuan                                                                    |
+| ------------------------- | ------------------------------------------------------------------------- |
+| `enabled`                 | Mengaktifkan pemeriksaan kebijakan bahkan sebelum `policy.jsonc` tersedia. |
+| `workspaceRepairs`        | Mengizinkan `doctor --fix` mengedit pengaturan ruang kerja yang dikelola kebijakan. |
+| `expectedHash`            | Penguncian hash opsional untuk artefak kebijakan yang disetujui.          |
+| `expectedAttestationHash` | Penguncian hash opsional untuk pemeriksaan kebijakan bersih terakhir yang diterima. |
+| `path`                    | Lokasi artefak kebijakan yang relatif terhadap ruang kerja.               |
 
-Atur `plugins.entries.policy.config.enabled` ke `false` untuk menonaktifkan pemeriksaan kebijakan
-untuk sebuah workspace sambil membiarkan plugin tetap terpasang.
+Atur `plugins.entries.policy.config.enabled` ke `false` untuk menonaktifkan pemeriksaan
+kebijakan bagi suatu ruang kerja tanpa menghapus Plugin.
 
-Persyaratan metadata alat ditulis di `policy.jsonc` dengan
-`tools.requireMetadata`, misalnya `["risk", "sensitivity", "owner"]`.
+## Menerima status kebijakan
 
-## Terima status kebijakan
-
-Contoh output JSON:
+Contoh keluaran JSON:
 
 ```json
 {
@@ -660,9 +630,9 @@ Contoh output JSON:
     ],
     "modelRefs": [
       {
-        "ref": "openai/gpt-5.5",
+        "ref": "openai/gpt-5.6-sol",
         "provider": "openai",
-        "model": "gpt-5.5",
+        "model": "gpt-5.6-sol",
         "source": "oc://openclaw.config/agents/defaults/model"
       }
     ],
@@ -747,133 +717,126 @@ Contoh output JSON:
 }
 ```
 
-Hash kebijakan mengidentifikasi artefak aturan yang ditulis. Blok bukti
-mencatat status OpenClaw yang diamati dan digunakan oleh pemeriksaan kebijakan.
-Nilai `workspace.hash` mengidentifikasi payload bukti tersebut untuk cakupan
-yang diperiksa. Hash temuan mengidentifikasi set temuan persis yang dikembalikan
-oleh pemeriksaan. `checkedAt` mencatat waktu evaluasi dijalankan. Hash atestasi
-mengidentifikasi klaim yang stabil: hash kebijakan, hash bukti, hash temuan, dan
-apakah hasilnya bersih. Hash ini sengaja tidak menyertakan `checkedAt`, sehingga
-status kebijakan yang sama menghasilkan atestasi yang sama di berbagai
-pemeriksaan berulang. Bersama-sama, semua ini membentuk tuple audit untuk
-pemeriksaan kebijakan ini.
+`attestation.policy.hash` mengidentifikasi artefak aturan yang disusun. `evidence`
+mencatat status OpenClaw yang diamati dan digunakan oleh pemeriksaan, sedangkan
+`workspace.hash` mengidentifikasi muatan bukti tersebut. `findingsHash` mengidentifikasi
+kumpulan temuan yang tepat. `checkedAt` mencatat waktu pemeriksaan dijalankan.
+`attestationHash` mengidentifikasi klaim stabil (hash kebijakan, hash bukti,
+hash temuan, dan status bersih/kotor) serta secara sengaja mengecualikan `checkedAt`,
+sehingga status kebijakan yang sama selalu menghasilkan hash pengesahan yang sama. Bersama-sama,
+keempat nilai ini membentuk tupel audit untuk satu pemeriksaan kebijakan.
 
-Jika gateway atau supervisor berikutnya menggunakan kebijakan untuk memblokir,
-menyetujui, atau memberi anotasi pada tindakan runtime, ia harus mencatat hash
-atestasi dari pemeriksaan kebijakan bersih terakhir. `checkedAt` tetap ada dalam
-keluaran JSON untuk log audit, tetapi bukan bagian dari hash atestasi yang
-stabil.
+Jika Gateway atau pengawas menggunakan kebijakan untuk memblokir, menyetujui, atau memberi anotasi pada
+tindakan runtime, komponen tersebut harus mencatat hash pengesahan dari pemeriksaan bersih
+terakhir. `checkedAt` tetap berada dalam keluaran JSON untuk log audit, tetapi bukan bagian dari
+hash stabil.
 
-Gunakan siklus hidup ini saat menerima status kebijakan:
+Siklus hidup penerimaan status kebijakan:
 
-1. Tulis atau tinjau `policy.jsonc`.
+1. Susun atau tinjau `policy.jsonc`.
 2. Jalankan `openclaw policy check --json`.
-3. Jika hasilnya bersih, catat `attestation.policy.hash` sebagai `expectedHash`.
+3. Jika bersih, catat `attestation.policy.hash` sebagai `expectedHash`.
 4. Catat `attestation.attestationHash` sebagai `expectedAttestationHash`.
-5. Jalankan ulang `openclaw doctor --lint` di CI atau gerbang rilis.
+5. Jalankan kembali `openclaw doctor --lint` dalam CI atau gerbang rilis.
 
-Jika aturan kebijakan berubah secara sengaja, perbarui kedua hash yang diterima
-dari pemeriksaan bersih. Jika pengaturan workspace berubah secara sengaja tetapi
-kebijakan tetap sama, biasanya hanya `expectedAttestationHash` yang berubah.
+Jika aturan kebijakan diubah secara sengaja, perbarui kedua hash yang diterima dari
+pemeriksaan bersih. Jika hanya pengaturan ruang kerja yang berubah (kebijakan tetap sama),
+biasanya hanya `expectedAttestationHash` yang berubah.
 
-Mengaktifkan atau memutakhirkan aturan `agents.workspace` menambahkan bukti
-`agentWorkspace` ke hash workspace dan hash atestasi. Operator harus meninjau
-bukti baru tersebut dan memperbarui hash atestasi yang diterima setelah
-mengaktifkan aturan ini. Mengaktifkan atau memutakhirkan aturan postur alat
-menambahkan bukti `toolPosture` dengan cara yang sama.
+Mengaktifkan atau meningkatkan aturan `agents.workspace` menambahkan bukti `agentWorkspace`
+ke hash ruang kerja dan hash atestasi; tinjau bukti baru dan
+perbarui hash atestasi yang diterima setelah mengaktifkannya. Mengaktifkan atau meningkatkan
+aturan postur alat menambahkan bukti `toolPosture` dengan cara yang sama.
 
-`openclaw policy watch` menjalankan pemeriksaan yang sama berulang kali dan
-melaporkan ketika bukti saat ini tidak lagi cocok dengan
-`expectedAttestationHash`:
+`openclaw policy watch` menjalankan ulang pemeriksaan dan melaporkan ketika bukti saat ini
+tidak lagi cocok dengan `expectedAttestationHash`:
 
 ```bash
 openclaw policy watch --json
 ```
 
-Gunakan `--once` di CI atau skrip yang hanya memerlukan satu evaluasi drift.
-Tanpa `--once`, perintah melakukan polling setiap dua detik secara default;
-gunakan `--interval-ms` untuk memilih interval yang berbeda.
+Gunakan `--once` dalam CI atau skrip yang memerlukan satu evaluasi penyimpangan. Tanpa
+`--once`, perintah ini melakukan polling setiap dua detik secara default; gunakan `--interval-ms` untuk mengubah
+interval.
 
 ## Temuan
 
-Kebijakan saat ini memverifikasi:
+| ID pemeriksaan                                           | Temuan                                                                                                  |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `policy/policy-jsonc-missing`                            | Kebijakan diaktifkan tetapi `policy.jsonc` tidak ada.                                                   |
+| `policy/policy-jsonc-invalid`                            | Kebijakan tidak dapat diurai atau berisi entri aturan yang tidak valid.                                 |
+| `policy/policy-hash-mismatch`                            | Kebijakan tidak cocok dengan `expectedHash` yang dikonfigurasi.                                         |
+| `policy/attestation-hash-mismatch`                       | Bukti kebijakan saat ini tidak lagi cocok dengan atestasi yang diterima.                                |
+| `policy/policy-conformance-invalid`                      | Berkas kebijakan dasar atau yang diperiksa memiliki sintaks perbandingan yang tidak valid.              |
+| `policy/policy-conformance-missing`                      | Berkas kebijakan yang diperiksa tidak memiliki aturan yang diwajibkan oleh berkas kebijakan dasar.      |
+| `policy/policy-conformance-weaker`                       | Berkas kebijakan yang diperiksa memiliki nilai yang lebih lemah daripada berkas kebijakan dasar.        |
+| `policy/channels-denied-provider`                        | Kanal yang diaktifkan cocok dengan aturan penolakan kanal.                                              |
+| `policy/mcp-denied-server`                               | Server MCP yang dikonfigurasi ditolak oleh kebijakan.                                                   |
+| `policy/mcp-unapproved-server`                           | Server MCP yang dikonfigurasi berada di luar daftar izin.                                               |
+| `policy/models-denied-provider`                          | Penyedia model atau referensi model yang dikonfigurasi menggunakan penyedia yang ditolak.               |
+| `policy/models-unapproved-provider`                      | Penyedia model atau referensi model yang dikonfigurasi berada di luar daftar izin.                      |
+| `policy/network-private-access-enabled`                  | Jalur keluar SSRF jaringan privat diaktifkan ketika kebijakan menolaknya.                               |
+| `policy/ingress-dm-policy-unapproved`                    | Kebijakan DM kanal berada di luar daftar izin kebijakan.                                                |
+| `policy/ingress-dm-scope-unapproved`                     | `session.dmScope` tidak cocok dengan cakupan isolasi DM yang diwajibkan kebijakan.                       |
+| `policy/ingress-open-groups-denied`                      | Kebijakan grup kanal adalah `open` sementara kebijakan menolak ingress grup terbuka.                    |
+| `policy/ingress-group-mention-required`                  | Entri kanal atau grup menonaktifkan gerbang penyebutan sementara kebijakan mewajibkannya.               |
+| `policy/gateway-non-loopback-bind`                       | Postur pengikatan Gateway mengizinkan eksposur non-loopback ketika kebijakan menolaknya.                 |
+| `policy/gateway-auth-disabled`                           | Autentikasi Gateway dinonaktifkan ketika kebijakan mewajibkan autentikasi.                               |
+| `policy/gateway-rate-limit-missing`                      | Postur pembatasan laju autentikasi Gateway tidak dinyatakan secara eksplisit ketika diwajibkan kebijakan. |
+| `policy/gateway-control-ui-insecure`                     | Opsi eksposur tidak aman UI Kontrol Gateway diaktifkan.                                                 |
+| `policy/gateway-tailscale-funnel`                        | Eksposur Funnel Tailscale Gateway diaktifkan ketika kebijakan menolaknya.                               |
+| `policy/gateway-remote-enabled`                          | Mode jarak jauh Gateway aktif ketika kebijakan menolaknya.                                              |
+| `policy/gateway-http-endpoint-enabled`                   | Titik akhir API HTTP Gateway diaktifkan meskipun ditolak oleh kebijakan.                                |
+| `policy/gateway-http-url-fetch-unrestricted`             | Masukan pengambilan URL HTTP Gateway tidak memiliki daftar izin URL yang diwajibkan.                    |
+| `policy/gateway-node-command-denied`                     | Perintah Node yang ditolak kebijakan tidak ditolak oleh konfigurasi OpenClaw.                           |
+| `policy/agents-workspace-access-denied`                  | Mode sandbox agen atau akses ruang kerja berada di luar daftar izin kebijakan.                          |
+| `policy/agents-tool-not-denied`                          | Konfigurasi agen atau default tidak menolak alat yang diwajibkan untuk ditolak oleh kebijakan.          |
+| `policy/tools-profile-unapproved`                        | Profil alat global atau per agen yang dikonfigurasi berada di luar daftar izin.                         |
+| `policy/tools-fs-workspace-only-required`                | Alat sistem berkas tidak dikonfigurasi dengan postur jalur khusus ruang kerja.                          |
+| `policy/tools-exec-security-unapproved`                  | Mode keamanan eksekusi berada di luar daftar izin kebijakan.                                            |
+| `policy/tools-exec-ask-unapproved`                       | Mode permintaan eksekusi berada di luar daftar izin kebijakan.                                          |
+| `policy/tools-exec-host-unapproved`                      | Perutean host eksekusi berada di luar daftar izin kebijakan.                                            |
+| `policy/tools-elevated-enabled`                          | Mode alat dengan hak istimewa diaktifkan ketika kebijakan menolaknya.                                  |
+| `policy/tools-also-allow-missing`                        | Daftar `alsoAllow` yang dikonfigurasi tidak memiliki entri yang diwajibkan kebijakan.                   |
+| `policy/tools-also-allow-unexpected`                     | Daftar `alsoAllow` yang dikonfigurasi menyertakan entri yang tidak diharapkan oleh kebijakan.           |
+| `policy/tools-required-deny-missing`                     | Daftar penolakan alat global atau per agen tidak menyertakan alat yang wajib ditolak.                   |
+| `policy/sandbox-mode-unapproved`                         | Mode sandbox berada di luar daftar izin kebijakan.                                                      |
+| `policy/sandbox-backend-unapproved`                      | Backend sandbox berada di luar daftar izin kebijakan.                                                   |
+| `policy/sandbox-container-posture-unobservable`          | Aturan postur kontainer diaktifkan untuk backend yang tidak dapat mengamatinya.                         |
+| `policy/sandbox-container-host-network-denied`           | Sandbox atau peramban berbasis kontainer menggunakan mode jaringan host.                               |
+| `policy/sandbox-container-namespace-join-denied`         | Sandbox atau peramban berbasis kontainer bergabung dengan namespace kontainer lain.                    |
+| `policy/sandbox-container-mount-mode-required`           | Mount sandbox atau peramban berbasis kontainer tidak bersifat hanya-baca.                              |
+| `policy/sandbox-container-runtime-socket-mount`          | Mount sandbox atau peramban berbasis kontainer mengekspos soket runtime kontainer.                     |
+| `policy/sandbox-container-unconfined-profile`            | Profil sandbox kontainer tidak dibatasi ketika kebijakan menolaknya.                                   |
+| `policy/sandbox-browser-cdp-source-range-missing`        | Rentang sumber CDP peramban sandbox tidak ada ketika kebijakan mewajibkannya.                           |
+| `policy/data-handling-redaction-disabled`                | Redaksi pencatatan sensitif dinonaktifkan ketika kebijakan mewajibkannya.                               |
+| `policy/data-handling-telemetry-content-capture`         | Pengambilan konten telemetri diaktifkan ketika kebijakan menolaknya.                                    |
+| `policy/data-handling-session-retention-not-enforced`    | Pemeliharaan retensi sesi tidak diberlakukan ketika kebijakan mewajibkannya.                            |
+| `policy/data-handling-session-transcript-memory-enabled` | Pengindeksan memori transkrip sesi diaktifkan ketika kebijakan menolaknya.                              |
+| `policy/secrets-unmanaged-provider`                      | SecretRef konfigurasi merujuk ke penyedia yang tidak dideklarasikan di bawah `secrets.providers`.      |
+| `policy/secrets-denied-provider-source`                  | Penyedia rahasia konfigurasi atau SecretRef menggunakan sumber yang ditolak oleh kebijakan.             |
+| `policy/secrets-insecure-provider`                       | Penyedia rahasia memilih postur tidak aman ketika kebijakan menolaknya.                                |
+| `policy/auth-profile-invalid-metadata`                   | Profil autentikasi konfigurasi tidak memiliki metadata penyedia atau mode yang valid.                   |
+| `policy/auth-profile-unapproved-mode`                    | Mode profil autentikasi konfigurasi berada di luar daftar izin kebijakan.                              |
+| `policy/exec-approvals-missing`                          | Kebijakan mewajibkan `exec-approvals.json`, tetapi artefak tersebut tidak ada.                          |
+| `policy/exec-approvals-invalid`                          | Artefak persetujuan eksekusi yang dikonfigurasi tidak dapat diurai.                                    |
+| `policy/exec-approvals-default-security-unapproved`      | Default persetujuan eksekusi menggunakan mode keamanan di luar daftar izin kebijakan.                  |
+| `policy/exec-approvals-agent-security-unapproved`        | Mode keamanan persetujuan eksekusi efektif per agen berada di luar daftar izin.                        |
+| `policy/exec-approvals-auto-allow-skills-enabled`        | Agen persetujuan eksekusi secara implisit mengizinkan otomatis CLI Skills ketika kebijakan menolaknya. |
+| `policy/exec-approvals-allowlist-missing`                | Daftar izin persetujuan tidak memiliki pola yang diwajibkan kebijakan.                                 |
+| `policy/exec-approvals-allowlist-unexpected`             | Daftar izin persetujuan menyertakan pola yang tidak diharapkan oleh kebijakan.                          |
+| `policy/tools-missing-risk-level`                        | Deklarasi alat yang diatur tidak memiliki metadata risiko.                                             |
+| `policy/tools-unknown-risk-level`                        | Deklarasi alat yang diatur menggunakan nilai risiko yang tidak dikenal.                                |
+| `policy/tools-missing-sensitivity-token`                 | Deklarasi alat yang diatur tidak memiliki metadata sensitivitas.                                       |
+| `policy/tools-missing-owner`                             | Deklarasi alat yang diatur tidak memiliki metadata pemilik.                                            |
+| `policy/tools-unknown-sensitivity-token`                 | Deklarasi alat yang diatur menggunakan nilai sensitivitas yang tidak dikenal.                          |
 
-| Id pemeriksaan                                           | Temuan                                                                            |
-| -------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| `policy/policy-jsonc-missing`                            | Kebijakan diaktifkan tetapi `policy.jsonc` tidak ada.                             |
-| `policy/policy-jsonc-invalid`                            | Kebijakan tidak dapat diurai atau berisi entri aturan yang salah format.          |
-| `policy/policy-hash-mismatch`                            | Kebijakan tidak cocok dengan `expectedHash` yang dikonfigurasi.                   |
-| `policy/attestation-hash-mismatch`                       | Bukti kebijakan saat ini tidak lagi cocok dengan atestasi yang diterima.          |
-| `policy/policy-conformance-invalid`                      | File kebijakan dasar atau yang diperiksa memiliki sintaks perbandingan tidak valid. |
-| `policy/policy-conformance-missing`                      | File kebijakan yang diperiksa tidak memiliki aturan yang diwajibkan oleh file kebijakan dasar. |
-| `policy/policy-conformance-weaker`                       | File kebijakan yang diperiksa memiliki nilai yang lebih lemah daripada file kebijakan dasar. |
-| `policy/channels-denied-provider`                        | Channel yang diaktifkan cocok dengan aturan penolakan channel.                    |
-| `policy/mcp-denied-server`                               | Server MCP yang dikonfigurasi ditolak oleh kebijakan.                             |
-| `policy/mcp-unapproved-server`                           | Server MCP yang dikonfigurasi berada di luar daftar izin.                         |
-| `policy/models-denied-provider`                          | Penyedia model atau referensi model yang dikonfigurasi menggunakan penyedia yang ditolak. |
-| `policy/models-unapproved-provider`                      | Penyedia model atau referensi model yang dikonfigurasi berada di luar daftar izin. |
-| `policy/network-private-access-enabled`                  | Celah pelolosan SSRF jaringan privat diaktifkan ketika kebijakan menolaknya.      |
-| `policy/ingress-dm-policy-unapproved`                    | Kebijakan DM channel berada di luar daftar izin kebijakan.                        |
-| `policy/ingress-dm-scope-unapproved`                     | `session.dmScope` tidak cocok dengan cakupan isolasi DM yang diwajibkan kebijakan. |
-| `policy/ingress-open-groups-denied`                      | Kebijakan grup channel adalah `open` sementara kebijakan menolak ingress grup terbuka. |
-| `policy/ingress-group-mention-required`                  | Entri channel atau grup menonaktifkan gerbang mention sementara kebijakan mewajibkannya. |
-| `policy/gateway-non-loopback-bind`                       | Postur bind Gateway mengizinkan eksposur non-loopback ketika kebijakan menolaknya. |
-| `policy/gateway-auth-disabled`                           | Autentikasi Gateway dinonaktifkan ketika kebijakan mewajibkan auth.               |
-| `policy/gateway-rate-limit-missing`                      | Postur pembatasan laju auth Gateway tidak eksplisit ketika kebijakan mewajibkannya. |
-| `policy/gateway-control-ui-insecure`                     | Toggle eksposur tidak aman Gateway Control UI diaktifkan.                         |
-| `policy/gateway-tailscale-funnel`                        | Eksposur Gateway Tailscale Funnel diaktifkan ketika kebijakan menolaknya.         |
-| `policy/gateway-remote-enabled`                          | Mode jarak jauh Gateway aktif ketika kebijakan menolaknya.                        |
-| `policy/gateway-http-endpoint-enabled`                   | Endpoint HTTP API Gateway diaktifkan sementara ditolak oleh kebijakan.            |
-| `policy/gateway-http-url-fetch-unrestricted`             | Input pengambilan URL HTTP Gateway tidak memiliki daftar izin URL yang diwajibkan. |
-| `policy/agents-workspace-access-denied`                  | Mode sandbox agen atau akses ruang kerja berada di luar daftar izin kebijakan.    |
-| `policy/agents-tool-not-denied`                          | Agen atau konfigurasi default tidak menolak alat yang diwajibkan oleh kebijakan.  |
-| `policy/tools-profile-unapproved`                        | Profil alat global atau per agen yang dikonfigurasi berada di luar daftar izin.   |
-| `policy/tools-fs-workspace-only-required`                | Alat sistem file tidak dikonfigurasi dengan postur jalur khusus ruang kerja.      |
-| `policy/tools-exec-security-unapproved`                  | Mode keamanan exec berada di luar daftar izin kebijakan.                          |
-| `policy/tools-exec-ask-unapproved`                       | Mode tanya exec berada di luar daftar izin kebijakan.                             |
-| `policy/tools-exec-host-unapproved`                      | Routing host exec berada di luar daftar izin kebijakan.                           |
-| `policy/tools-elevated-enabled`                          | Mode alat elevated diaktifkan ketika kebijakan menolaknya.                        |
-| `policy/tools-also-allow-missing`                        | Daftar `alsoAllow` yang dikonfigurasi tidak memiliki entri yang diwajibkan oleh kebijakan. |
-| `policy/tools-also-allow-unexpected`                     | Daftar `alsoAllow` yang dikonfigurasi menyertakan entri yang tidak diharapkan oleh kebijakan. |
-| `policy/tools-required-deny-missing`                     | Daftar penolakan alat global atau per agen tidak menyertakan alat ditolak yang diwajibkan. |
-| `policy/sandbox-mode-unapproved`                         | Mode sandbox berada di luar daftar izin kebijakan.                                |
-| `policy/sandbox-backend-unapproved`                      | Backend sandbox berada di luar daftar izin kebijakan.                             |
-| `policy/sandbox-container-posture-unobservable`          | Aturan postur container diaktifkan untuk backend yang tidak dapat mengamatinya.   |
-| `policy/sandbox-container-host-network-denied`           | Sandbox atau browser berbasis container menggunakan mode jaringan host.           |
-| `policy/sandbox-container-namespace-join-denied`         | Sandbox atau browser berbasis container bergabung dengan namespace container lain. |
-| `policy/sandbox-container-mount-mode-required`           | Mount sandbox atau browser berbasis container tidak read-only.                    |
-| `policy/sandbox-container-runtime-socket-mount`          | Mount sandbox atau browser berbasis container mengekspos socket runtime container. |
-| `policy/sandbox-container-unconfined-profile`            | Profil sandbox container tidak dibatasi ketika kebijakan menolaknya.              |
-| `policy/sandbox-browser-cdp-source-range-missing`        | Rentang sumber CDP browser sandbox tidak ada ketika kebijakan mewajibkannya.      |
-| `policy/data-handling-redaction-disabled`                | Redaksi logging sensitif dinonaktifkan ketika kebijakan mewajibkannya.            |
-| `policy/data-handling-telemetry-content-capture`         | Pengambilan konten telemetri diaktifkan ketika kebijakan menolaknya.              |
-| `policy/data-handling-session-retention-not-enforced`    | Pemeliharaan retensi sesi tidak ditegakkan ketika kebijakan mewajibkannya.        |
-| `policy/data-handling-session-transcript-memory-enabled` | Pengindeksan memori transkrip sesi diaktifkan ketika kebijakan menolaknya.        |
-| `policy/secrets-unmanaged-provider`                      | SecretRef konfigurasi mereferensikan penyedia yang tidak dideklarasikan di bawah `secrets.providers`. |
-| `policy/secrets-denied-provider-source`                  | Penyedia secret konfigurasi atau SecretRef menggunakan sumber yang ditolak oleh kebijakan. |
-| `policy/secrets-insecure-provider`                       | Penyedia secret memilih postur tidak aman ketika kebijakan menolaknya.            |
-| `policy/auth-profile-invalid-metadata`                   | Profil auth konfigurasi tidak memiliki metadata penyedia atau mode yang valid.    |
-| `policy/auth-profile-unapproved-mode`                    | Mode profil auth konfigurasi berada di luar daftar izin kebijakan.                |
-| `policy/exec-approvals-missing`                          | Kebijakan mewajibkan `exec-approvals.json`, tetapi artefaknya tidak ada.          |
-| `policy/exec-approvals-invalid`                          | Artefak persetujuan exec yang dikonfigurasi tidak dapat diurai.                   |
-| `policy/exec-approvals-default-security-unapproved`      | Default persetujuan exec menggunakan mode keamanan di luar daftar izin kebijakan. |
-| `policy/exec-approvals-agent-security-unapproved`        | Mode keamanan persetujuan exec efektif per agen berada di luar daftar izin.       |
-| `policy/exec-approvals-auto-allow-skills-enabled`        | Agen persetujuan exec secara implisit mengizinkan otomatis CLI skill ketika kebijakan menolaknya. |
-| `policy/exec-approvals-allowlist-missing`                | Daftar izin persetujuan tidak memiliki pola yang diwajibkan oleh kebijakan.       |
-| `policy/exec-approvals-allowlist-unexpected`             | Daftar izin persetujuan menyertakan pola yang tidak diharapkan oleh kebijakan.    |
-| `policy/tools-missing-risk-level`                        | Deklarasi alat yang diatur tidak memiliki metadata risiko.                        |
-| `policy/tools-unknown-risk-level`                        | Deklarasi alat yang diatur menggunakan nilai risiko yang tidak dikenal.           |
-| `policy/tools-missing-sensitivity-token`                 | Deklarasi alat yang diatur tidak memiliki metadata sensitivitas.                  |
-| `policy/tools-missing-owner`                             | Deklarasi alat yang diatur tidak memiliki metadata pemilik.                       |
-| `policy/tools-unknown-sensitivity-token`                 | Deklarasi alat yang diatur menggunakan nilai sensitivitas yang tidak dikenal.     |
+Sebuah temuan dapat menyertakan `target` (hal di ruang kerja yang diamati dan
+tidak sesuai) serta `requirement` (aturan yang ditulis yang menyebabkannya menjadi temuan).
+Saat ini keduanya merupakan string alamat `oc://`, tetapi nama bidang menggambarkan peran
+kebijakan, bukan format alamat.
 
-Temuan kebijakan dapat menyertakan `target` dan `requirement`. `target` adalah
-hal ruang kerja yang diamati yang tidak sesuai. `requirement` adalah aturan
-kebijakan yang ditulis yang menjadikannya temuan. Kedua nilai saat ini adalah
-alamat, biasanya jalur `oc://`, tetapi nama field menjelaskan peran kebijakannya
-alih-alih format alamatnya.
-
-Contoh temuan JSON:
+Contoh temuan:
 
 ```json
 {
@@ -889,8 +852,6 @@ Contoh temuan JSON:
 }
 ```
 
-Contoh temuan alat:
-
 ```json
 {
   "checkId": "policy/tools-missing-risk-level",
@@ -905,13 +866,11 @@ Contoh temuan alat:
 }
 ```
 
-Contoh temuan MCP:
-
 ```json
 {
   "checkId": "policy/mcp-unapproved-server",
   "severity": "error",
-  "message": "MCP server 'remote' is not in the policy allowlist.",
+  "message": "Server MCP 'remote' tidak tercantum dalam daftar izin kebijakan.",
   "source": "policy",
   "path": "openclaw config",
   "ocPath": "oc://openclaw.config/mcp/servers/remote",
@@ -920,13 +879,11 @@ Contoh temuan MCP:
 }
 ```
 
-Contoh temuan penyedia model:
-
 ```json
 {
   "checkId": "policy/models-unapproved-provider",
   "severity": "error",
-  "message": "Model ref 'anthropic/claude-sonnet-4.7' uses unapproved provider 'anthropic'.",
+  "message": "Referensi model 'anthropic/claude-sonnet-4.7' menggunakan penyedia 'anthropic' yang tidak disetujui.",
   "source": "policy",
   "path": "openclaw config",
   "ocPath": "oc://openclaw.config/agents/defaults/model/fallbacks/#0",
@@ -935,13 +892,11 @@ Contoh temuan penyedia model:
 }
 ```
 
-Contoh temuan jaringan:
-
 ```json
 {
   "checkId": "policy/network-private-access-enabled",
   "severity": "error",
-  "message": "Network setting 'browser-private-network' allows private-network access.",
+  "message": "Pengaturan jaringan 'browser-private-network' mengizinkan akses ke jaringan privat.",
   "source": "policy",
   "path": "openclaw config",
   "ocPath": "oc://openclaw.config/browser/ssrfPolicy/dangerouslyAllowPrivateNetwork",
@@ -950,13 +905,11 @@ Contoh temuan jaringan:
 }
 ```
 
-Contoh temuan eksposur Gateway:
-
 ```json
 {
   "checkId": "policy/gateway-non-loopback-bind",
   "severity": "error",
-  "message": "Gateway bind setting 'gateway-bind' permits non-loopback exposure.",
+  "message": "Pengaturan pengikatan Gateway 'gateway-bind' mengizinkan paparan non-loopback.",
   "source": "policy",
   "path": "openclaw config",
   "ocPath": "oc://openclaw.config/gateway/bind",
@@ -965,13 +918,25 @@ Contoh temuan eksposur Gateway:
 }
 ```
 
-Contoh temuan ruang kerja agen:
+```json
+{
+  "checkId": "policy/gateway-node-command-denied",
+  "severity": "error",
+  "message": "Perintah node Gateway 'system.run' ditolak oleh kebijakan, tetapi tidak ditolak oleh konfigurasi OpenClaw.",
+  "source": "policy",
+  "path": "openclaw config",
+  "ocPath": "oc://openclaw.config/gateway/nodes/denyCommands",
+  "target": "oc://openclaw.config/gateway/nodes/denyCommands",
+  "requirement": "oc://policy.jsonc/gateway/nodes/denyCommands",
+  "fixHint": "Tambahkan 'system.run' ke gateway.nodes.denyCommands atau perbarui kebijakan setelah ditinjau."
+}
+```
 
 ```json
 {
   "checkId": "policy/agents-workspace-access-denied",
   "severity": "error",
-  "message": "agents.defaults sandbox workspaceAccess 'rw' is not allowed by policy.",
+  "message": "Akses ruang kerja sandbox agents.defaults 'rw' tidak diizinkan oleh kebijakan.",
   "source": "policy",
   "path": "openclaw config",
   "ocPath": "oc://openclaw.config/agents/defaults/sandbox/workspaceAccess",
@@ -984,14 +949,56 @@ Contoh temuan ruang kerja agen:
 
 `doctor --lint` dan `policy check` bersifat hanya-baca.
 
-`doctor --fix` hanya mengedit pengaturan ruang kerja yang dikelola kebijakan saat
-`workspaceRepairs` diaktifkan secara eksplisit. Tanpa opt-in tersebut, pemeriksaan kebijakan
-melaporkan apa yang akan diperbaiki dan membiarkan pengaturan tidak berubah.
+`doctor --fix` hanya mengedit pengaturan ruang kerja yang dikelola kebijakan jika
+`workspaceRepairs` diaktifkan secara eksplisit; jika tidak, pemeriksaan melaporkan
+hal yang akan diperbaiki dan membiarkan pengaturan tetap tidak berubah.
 
-Dalam versi ini, perbaikan dapat menonaktifkan channel yang diaktifkan dalam konfigurasi OpenClaw
-tetapi ditolak oleh `channels.denyRules`. Aktifkan `workspaceRepairs` hanya setelah
-file kebijakan ditinjau, karena aturan penolakan yang valid dapat mematikan
-channel yang sudah dikonfigurasi:
+Dalam versi ini, perbaikan dapat menonaktifkan kanal yang ditolak oleh
+`channels.denyRules` dan menerapkan perbaikan pembatasan otomatis yang tercantum
+di bawah ini. Aktifkan `workspaceRepairs` hanya setelah berkas kebijakan ditinjau,
+karena aturan yang valid dapat mengubah konfigurasi ruang kerja:
+
+- atur `tools.elevated.enabled=false` ketika kebijakan global melarang alat dengan hak akses tinggi
+- tambahkan id alat wajib-tolak yang belum ada ke `tools.deny` atau
+  `agents.list[].tools.deny` ketika kebijakan mengharuskan alat tersebut ditolak
+- atur sakelar `gateway.controlUi.*` yang tidak aman menjadi `false`
+- atur `gateway.mode=local` ketika kebijakan menolak mode Gateway jarak jauh
+- atur jalur `gateway.http.endpoints.*.enabled` yang dilaporkan menjadi `false`
+  ketika kebijakan menolak titik akhir API HTTP Gateway
+- atur jalur `groupPolicy` masuk kanal yang dilaporkan menjadi `allowlist` ketika
+  kebijakan menolak masuknya grup terbuka
+- atur jalur `requireMention` masuk kanal yang dilaporkan menjadi `true` ketika
+  kebijakan mewajibkan penyebutan dalam grup
+- atur `logging.redactSensitive=tools` ketika kebijakan mewajibkan penyamaran
+  pencatatan sensitif
+- atur `diagnostics.otel.captureContent=false`, atau
+  `diagnostics.otel.captureContent.enabled=false` untuk pengaturan pengambilan
+  telemetri berbentuk objek, ketika kebijakan menolak pengambilan konten telemetri
+
+Perbaikan alat dengan hak akses tinggi yang tercakup hanya dideteksi. Perbaikan
+penanganan data yang tercakup juga dilewati ketika temuan melaporkan konfigurasi
+pencatatan atau telemetri bersama, karena mengubah pengaturan bersama akan
+memengaruhi lebih dari target kebijakan yang tercakup.
+
+Perbaikan wajib-tolak yang tercakup dilewati ketika temuan melaporkan
+`tools.deny` akar yang diwarisi, karena menambahkan alat wajib tersebut ke
+konfigurasi akar akan memengaruhi lebih dari target kebijakan yang tercakup.
+Perbaikan wajib-tolak lokal agen dapat memperbarui jalur
+`agents.list[].tools.deny` yang dilaporkan.
+
+Perbaikan masuk kanal yang tercakup dilewati ketika temuan melaporkan
+`channels.defaults.*` yang diwarisi, karena mengubah nilai default kanal bersama
+akan memengaruhi lebih dari target kebijakan yang tercakup. Temuan daftar izin
+pengambilan URL HTTP Gateway tetap harus ditangani secara manual karena perbaikan
+otomatis tidak dapat memilih nilai daftar izin URL titik akhir yang benar.
+
+Temuan pengikatan dan perintah node Gateway tetap memerlukan peninjauan. Ketika
+`policy/gateway-non-loopback-bind` atau `policy/gateway-node-command-denied`
+dapat dipetakan ke jalur konfigurasi, `doctor --fix` melaporkan perubahan
+`gateway.bind` atau `gateway.nodes.denyCommands` yang diusulkan sebagai panduan
+pratinjau yang dilewati. Perintah tersebut tidak menerapkan perubahan, dan temuan
+tidak dianggap telah diperbaiki hingga operator meninjau dan memperbarui
+konfigurasi atau kebijakan.
 
 ```jsonc
 {
@@ -1009,13 +1016,13 @@ channel yang sudah dikonfigurasi:
 
 ## Kode keluar
 
-| Perintah         | `0`                                                            | `1`                                                                       | `2`                                |
-| ---------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------- | ---------------------------------- |
-| `policy check`   | Tidak ada temuan pada ambang batas.                            | Satu atau beberapa temuan memenuhi ambang batas.                          | Kegagalan argumen atau runtime.    |
-| `policy compare` | File kebijakan setidaknya seketat baseline.                    | File kebijakan tidak valid, hilang, atau lebih lemah dari aturan baseline. | Kegagalan argumen atau runtime.    |
-| `policy watch`   | Tidak ada temuan dan hash yang diterima masih terkini.         | Temuan ada atau attestasi yang diterima sudah usang.                      | Kegagalan argumen atau runtime.    |
+| Perintah         | `0`                                                        | `1`                                                                      | `2`                               |
+| ---------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------ | --------------------------------- |
+| `policy check`   | Tidak ada temuan pada ambang batas.                         | Satu atau beberapa temuan memenuhi ambang batas.                         | Kegagalan argumen atau waktu proses. |
+| `policy compare` | Berkas kebijakan setidaknya seketat garis dasar.            | Berkas kebijakan tidak valid, tidak ada, atau lebih lemah dari aturan garis dasar. | Kegagalan argumen atau waktu proses. |
+| `policy watch`   | Tidak ada temuan dan hash yang diterima masih berlaku.      | Terdapat temuan atau pengesahan yang diterima sudah kedaluwarsa.         | Kegagalan argumen atau waktu proses. |
 
 ## Terkait
 
 - [Mode lint Doctor](/id/cli/doctor#lint-mode)
-- [CLI Path](/id/cli/path)
+- [CLI jalur](/id/cli/path)

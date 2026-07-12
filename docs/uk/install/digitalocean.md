@@ -1,48 +1,48 @@
 ---
 read_when:
-    - Налаштування OpenClaw на DigitalOcean
+    - Налаштування OpenClaw у DigitalOcean
     - Шукаєте простий платний VPS для OpenClaw
-summary: Розмістіть OpenClaw на DigitalOcean Droplet
+summary: Розміщення OpenClaw на Droplet від DigitalOcean
 title: DigitalOcean
 x-i18n:
-    generated_at: "2026-05-11T20:42:29Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:22:43Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2ddfe3e6df5e48616584e912e12eede30a62f869fc307f586c9604c9c06c9e5b
+    source_hash: e124a59c079efda0c8e880018f2657fad784af1489ca3f98ed8ab609249e35bd
     source_path: install/digitalocean.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Запустіть постійний OpenClaw Gateway на DigitalOcean Droplet (~$6/місяць за план Basic на 1 GB).
+Запустіть постійний Gateway OpenClaw на Droplet від DigitalOcean (приблизно $6/місяць за тариф Basic із 1 ГБ пам’яті).
 
-DigitalOcean — найпростіший платний шлях із VPS. Якщо ви віддаєте перевагу дешевшим або безкоштовним варіантам:
+DigitalOcean — простий платний варіант VPS. Дешевші або безкоштовні варіанти:
 
-- [Hetzner](/uk/install/hetzner) — €3.79/міс., більше ядер/RAM за ті самі гроші.
-- [Oracle Cloud](/uk/install/oracle) — Always Free ARM (до 4 OCPU, 24 GB RAM), але реєстрація може бути примхливою, і доступний лише ARM.
+- [Hetzner](/uk/install/hetzner) — більше ядер і оперативної пам’яті за ту саму ціну.
+- [Oracle Cloud](/uk/install/oracle) — безкоштовний тариф Always Free для ARM (до 4 OCPU та 24 ГБ оперативної пам’яті), але реєстрація може бути проблемною, а архітектура обмежена ARM.
 
 ## Передумови
 
 - Обліковий запис DigitalOcean ([реєстрація](https://cloud.digitalocean.com/registrations/new))
-- Пара SSH-ключів (або готовність використовувати автентифікацію паролем)
-- Близько 20 хвилин
+- Пара ключів SSH (або готовність використовувати автентифікацію за паролем)
+- Приблизно 20 хвилин
 
 ## Налаштування
 
 <Steps>
   <Step title="Створіть Droplet">
     <Warning>
-    Використовуйте чистий базовий образ (Ubuntu 24.04 LTS). Уникайте сторонніх образів Marketplace з інсталяцією в один клік, якщо ви не перевірили їхні сценарії запуску та типові налаштування брандмауера.
+    Використовуйте чистий базовий образ (Ubuntu 24.04 LTS). Уникайте сторонніх образів Marketplace для встановлення одним натисканням, якщо ви не перевірили їхні сценарії запуску та типові налаштування брандмауера.
     </Warning>
 
     1. Увійдіть у [DigitalOcean](https://cloud.digitalocean.com/).
     2. Натисніть **Create > Droplets**.
     3. Виберіть:
-       - **Регіон:** найближчий до вас
-       - **Образ:** Ubuntu 24.04 LTS
-       - **Розмір:** Basic, Regular, 1 vCPU / 1 GB RAM / 25 GB SSD
-       - **Автентифікація:** SSH-ключ (рекомендовано) або пароль
-    4. Натисніть **Create Droplet** і запишіть IP-адресу.
+       - **Region:** найближчий до вас
+       - **Image:** Ubuntu 24.04 LTS
+       - **Size:** Basic, Regular, 1 vCPU / 1 ГБ RAM / 25 ГБ SSD
+       - **Authentication:** ключ SSH (рекомендовано) або пароль
+    4. Натисніть **Create Droplet** і занотуйте IP-адресу.
 
   </Step>
 
@@ -68,20 +68,20 @@ DigitalOcean — найпростіший платний шлях із VPS. Як
     openclaw --version
     ```
 
-    Використовуйте root-оболонку лише для системного початкового налаштування. Запускайте команди OpenClaw від імені користувача `openclaw` без прав root, щоб стан зберігався в `/home/openclaw/.openclaw/`, а Gateway встановлювався як systemd-сервіс цього користувача.
+    Використовуйте оболонку root лише для початкового налаштування системи. Запускайте команди OpenClaw від імені непривілейованого користувача `openclaw`, щоб стан зберігався в `/home/openclaw/.openclaw/`, а Gateway установлювався як служба systemd `--user` цього користувача.
 
   </Step>
 
-  <Step title="Запустіть onboarding">
+  <Step title="Запустіть початкове налаштування">
     ```bash
     openclaw onboard --install-daemon
     ```
 
-    Майстер проведе вас через автентифікацію моделі, налаштування каналу, генерацію токена Gateway і встановлення демона (systemd).
+    Майстер проведе вас через автентифікацію моделі, налаштування каналів, створення токена Gateway та встановлення фонової служби (користувацької служби systemd).
 
   </Step>
 
-  <Step title="Додайте swap (рекомендовано для Droplet на 1 GB)">
+  <Step title="Додайте простір підкачки (рекомендовано для Droplet із 1 ГБ пам’яті)">
     ```bash
     fallocate -l 2G /swapfile
     chmod 600 /swapfile
@@ -99,10 +99,10 @@ DigitalOcean — найпростіший платний шлях із VPS. Як
     ```
   </Step>
 
-  <Step title="Отримайте доступ до Control UI">
-    Gateway типово прив’язується до loopback. Виберіть один із цих варіантів.
+  <Step title="Отримайте доступ до інтерфейсу керування">
+    За замовчуванням Gateway прив’язується до local loopback. Виберіть один із наведених варіантів.
 
-    **Варіант A: SSH-тунель (найпростіший)**
+    **Варіант A: тунель SSH (найпростіший)**
 
     ```bash
     # From your local machine
@@ -120,11 +120,11 @@ DigitalOcean — найпростіший платний шлях із VPS. Як
     openclaw gateway restart
     ```
 
-    Потім відкрийте `https://<magicdns>/` з будь-якого пристрою у вашому tailnet.
+    Потім відкрийте `https://<magicdns>/` на будь-якому пристрої у вашій мережі tailnet.
 
-    Tailscale Serve автентифікує трафік Control UI та WebSocket через заголовки ідентичності tailnet, що передбачає довіру до самого хоста Gateway. Кінцеві точки HTTP API все одно дотримуються звичайного режиму автентифікації Gateway (токен/пароль). Щоб вимагати явні облікові дані зі спільним секретом через Serve, задайте `gateway.auth.allowTailscale: false` і використовуйте `gateway.auth.mode: "token"` або `"password"`.
+    Tailscale Serve автентифікує трафік інтерфейсу керування та WebSocket за допомогою заголовків ідентичності tailnet, що передбачає довіру до самого хоста Gateway. Кінцеві точки HTTP API незалежно від цього й надалі використовують звичайний режим автентифікації Gateway (токен або пароль). Щоб вимагати явні облікові дані зі спільним секретом під час використання Serve, установіть `gateway.auth.allowTailscale: false` і використовуйте `gateway.auth.mode: "token"` або `"password"`.
 
-    **Варіант C: прив’язка tailnet (без Serve)**
+    **Варіант C: прив’язка до tailnet (без Serve)**
 
     ```bash
     openclaw config set gateway.bind tailnet
@@ -136,47 +136,47 @@ DigitalOcean — найпростіший платний шлях із VPS. Як
   </Step>
 </Steps>
 
-## Постійність і резервні копії
+## Збереження стану та резервні копії
 
-Стан OpenClaw зберігається в:
+Стан OpenClaw зберігається в таких каталогах:
 
-- `~/.openclaw/` — `openclaw.json`, окремі для агентів `auth-profiles.json`, стан каналів/провайдерів і дані сесій.
-- `~/.openclaw/workspace/` — робоча область агента (SOUL.md, пам’ять, артефакти).
+- `~/.openclaw/` — `openclaw.json`, облікові дані каналів і постачальників, окремі для кожного агента файли `auth-profiles.json` та дані сеансів.
+- `~/.openclaw/workspace/` — робочий простір агента (SOUL.md, пам’ять, артефакти).
 
-Вони зберігаються після перезавантажень Droplet. Щоб створити переносний знімок:
+Ці дані зберігаються після перезавантаження Droplet. Щоб створити переносний знімок:
 
 ```bash
 openclaw backup create
 ```
 
-Знімки DigitalOcean створюють резервну копію всього Droplet; `openclaw backup create` переноситься між хостами.
+Знімки DigitalOcean створюють резервну копію всього Droplet; резервна копія, створена командою `openclaw backup create`, є переносною між хостами.
 
-## Поради для 1 GB RAM
+## Поради для 1 ГБ оперативної пам’яті
 
-Droplet за $6 має лише 1 GB RAM. Щоб усе працювало плавно:
+Droplet за $6 має лише 1 ГБ оперативної пам’яті. Щоб забезпечити стабільну роботу:
 
-- Переконайтеся, що крок зі swap вище є в `/etc/fstab`, щоб він зберігався після перезавантажень.
-- Віддавайте перевагу моделям на основі API (Claude, GPT), а не локальним — локальний LLM inference не поміщається в 1 GB.
-- Задайте `agents.defaults.model.primary` на меншу модель, якщо натрапляєте на OOM на великих промптах.
-- Моніторте через `free -h` і `htop`.
+- Переконайтеся, що налаштування простору підкачки з попереднього кроку додано до `/etc/fstab`, щоб воно зберігалося після перезавантажень.
+- Надавайте перевагу моделям із доступом через API (Claude, GPT), а не локальним моделям — для локального виконання LLM недостатньо 1 ГБ пам’яті.
+- Якщо під час обробки великих запитів виникають помилки нестачі пам’яті, задайте для `agents.defaults.model.primary` меншу модель.
+- Стежте за використанням ресурсів за допомогою `free -h` і `htop`.
 
 ## Усунення несправностей
 
-**Gateway не запускається** -- Запустіть `openclaw doctor --non-interactive` і перевірте журнали через `journalctl --user -u openclaw-gateway.service -n 50`.
+**Gateway не запускається** — виконайте `openclaw doctor --non-interactive` і перевірте журнали командою `journalctl --user -u openclaw-gateway.service -n 50`.
 
-**Порт уже використовується** -- Запустіть `lsof -i :18789`, щоб знайти процес, а потім зупиніть його.
+**Порт уже використовується** — виконайте `lsof -i :18789`, щоб знайти процес, а потім зупиніть його.
 
-**Бракує пам’яті** -- Перевірте, що swap активний, через `free -h`. Якщо OOM все ще трапляється, використовуйте моделі на основі API (Claude, GPT), а не локальні моделі, або перейдіть на Droplet із 2 GB.
+**Недостатньо пам’яті** — перевірте, чи активний простір підкачки, командою `free -h`. Якщо помилки нестачі пам’яті не зникають, перейдіть із локальних моделей на моделі з доступом через API (Claude, GPT) або оновіть Droplet до конфігурації з 2 ГБ пам’яті.
 
 ## Наступні кроки
 
-- [Канали](/uk/channels) -- підключіть Telegram, WhatsApp, Discord та інші
-- [Конфігурація Gateway](/uk/gateway/configuration) -- усі параметри конфігурації
-- [Оновлення](/uk/install/updating) -- підтримуйте OpenClaw в актуальному стані
+- [Канали](/uk/channels) — підключіть Telegram, WhatsApp, Discord тощо
+- [Налаштування Gateway](/uk/gateway/configuration) — усі параметри конфігурації
+- [Оновлення](/uk/install/updating) — підтримуйте OpenClaw в актуальному стані
 
-## Пов’язане
+## Пов’язані матеріали
 
 - [Огляд встановлення](/uk/install)
 - [Fly.io](/uk/install/fly)
 - [Hetzner](/uk/install/hetzner)
-- [Хостинг VPS](/uk/vps)
+- [Розміщення на VPS](/uk/vps)

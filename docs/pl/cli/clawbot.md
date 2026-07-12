@@ -1,33 +1,29 @@
 ---
 read_when:
-    - Utrzymujesz starsze skrypty używające `openclaw clawbot ...`
-    - Potrzebujesz wskazówek migracji do bieżących poleceń
-summary: Odwołanie CLI dla `openclaw clawbot` (starsza przestrzeń nazw aliasów)
+    - Utrzymujesz starsze skrypty korzystające z `openclaw clawbot ...`
+    - Potrzebujesz wskazówek dotyczących migracji do aktualnych poleceń
+summary: Dokumentacja CLI dla `openclaw clawbot` (przestrzeń nazw starszego aliasu)
 title: Clawbot
 x-i18n:
-    generated_at: "2026-04-24T09:02:08Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 4ca7f189071d170a94ec3eda276a3ba1202ccdee43c610f214b65bda8375d300
-    source_path: cli/clawbot.md
-    workflow: 15
+    generated_at: "2026-07-12T14:53:51Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 6baf9b4e9bbe8bb31cdc4923c38cd45a883b6e5be921a403335e257dacdc2cd5
+    source_path: cli/clawbot.md
+    workflow: 16
 ---
 
 # `openclaw clawbot`
 
-Starsza przestrzeń nazw aliasów zachowana dla zgodności wstecznej.
-
-Obecnie obsługiwany alias:
-
-- `openclaw clawbot qr` (to samo zachowanie co [`openclaw qr`](/pl/cli/qr))
+Przestrzeń nazw starszego aliasu zachowana w celu zapewnienia zgodności wstecznej. Rejestruje to samo polecenie QR co CLI najwyższego poziomu, dlatego `openclaw clawbot qr` akceptuje wszystkie flagi polecenia [`openclaw qr`](/pl/cli/qr).
 
 ## Migracja
 
-Preferuj bezpośrednio nowoczesne polecenia najwyższego poziomu:
+Zalecane jest nowoczesne polecenie najwyższego poziomu:
 
 - `openclaw clawbot qr` -> `openclaw qr`
 
 ## Powiązane
 
-- [Odwołanie CLI](/pl/cli)
+- [Dokumentacja CLI](/pl/cli)

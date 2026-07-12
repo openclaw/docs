@@ -2,76 +2,76 @@
 read_when:
     - تريد استخدام Fireworks مع OpenClaw
     - تحتاج إلى متغير البيئة لمفتاح Fireworks API أو معرّف النموذج الافتراضي
-    - أنت تصحّح سلوك Kimi عند إيقاف التفكير على Fireworks
+    - أنت تصحّح سلوك تعطيل التفكير في Kimi على Fireworks
 summary: إعداد Fireworks (المصادقة + اختيار النموذج)
 title: الألعاب النارية
 x-i18n:
-    generated_at: "2026-06-27T18:24:38Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:27:10Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7413ec9ea192921ce9b9ec51da5b0b9ff1030feeef192afbefc938ed200e192e
+    source_hash: 15feed0730ec65d943f103824468490be6616478ece80bedfeb9ad8137506180
     source_path: providers/fireworks.md
     workflow: 16
 ---
 
-[Fireworks](https://fireworks.ai) يتيح نماذج ذات أوزان مفتوحة ونماذج موجّهة عبر API متوافقة مع OpenAI. ثبّت Plugin موفّر Fireworks الرسمي لاستخدام نموذجي Kimi مفهرسين مسبقًا وأي نموذج Fireworks أو معرّف موجّه أثناء وقت التشغيل.
+تتيح [Fireworks](https://fireworks.ai) نماذج مفتوحة الأوزان ونماذج موجّهة عبر واجهة API متوافقة مع OpenAI. ثبّت Plugin المزوّد الرسمي لـ Fireworks لاستخدام نموذجي Kimi مُدرجين مسبقًا في الكتالوج، وأي معرّف نموذج أو موجّه من Fireworks في وقت التشغيل.
 
-| الخاصية        | القيمة                                                  |
-| --------------- | ------------------------------------------------------ |
-| معرّف الموفّر     | `fireworks` (الاسم المستعار: `fireworks-ai`)                    |
-| الحزمة         | `@openclaw/fireworks-provider`                         |
-| متغير بيئة المصادقة    | `FIREWORKS_API_KEY`                                    |
-| علم الإعداد الأولي | `--auth-choice fireworks-api-key`                      |
-| علم CLI المباشر | `--fireworks-api-key <key>`                            |
-| API             | متوافقة مع OpenAI (`openai-completions`)               |
-| عنوان URL الأساسي        | `https://api.fireworks.ai/inference/v1`                |
+| الخاصية             | القيمة                                                 |
+| ------------------- | ------------------------------------------------------ |
+| معرّف المزوّد       | `fireworks` (الاسم البديل: `fireworks-ai`)             |
+| الحزمة               | `@openclaw/fireworks-provider`                         |
+| متغير بيئة المصادقة | `FIREWORKS_API_KEY`                                    |
+| علم الإعداد الأولي  | `--auth-choice fireworks-api-key`                      |
+| علم CLI المباشر     | `--fireworks-api-key <key>`                            |
+| واجهة API           | متوافقة مع OpenAI (`openai-completions`)               |
+| عنوان URL الأساسي   | `https://api.fireworks.ai/inference/v1`                |
 | النموذج الافتراضي   | `fireworks/accounts/fireworks/routers/kimi-k2p5-turbo` |
-| الاسم المستعار الافتراضي   | `Kimi K2.5 Turbo`                                      |
+| الاسم البديل الافتراضي | `Kimi K2.5 Turbo`                                   |
 
-## البدء
+## بدء الاستخدام
 
 <Steps>
-  <Step title="ثبّت Plugin">
+  <Step title="تثبيت Plugin">
     ```bash
     openclaw plugins install @openclaw/fireworks-provider
     ```
   </Step>
-  <Step title="اضبط مفتاح Fireworks API">
+  <Step title="تعيين مفتاح Fireworks API">
     <CodeGroup>
 
-```bash الإعداد الأولي
+```bash Onboarding
 openclaw onboard --auth-choice fireworks-api-key
 ```
 
-```bash العلم المباشر
+```bash Direct flag
 openclaw onboard --non-interactive \
   --auth-choice fireworks-api-key \
   --fireworks-api-key "$FIREWORKS_API_KEY"
 ```
 
-```bash البيئة فقط
+```bash Env only
 export FIREWORKS_API_KEY=fw-...
 ```
 
     </CodeGroup>
 
-    يخزّن الإعداد الأولي المفتاح مقابل موفّر `fireworks` في ملفات تعريف المصادقة لديك، ويعيّن موجّه **Fire Pass** Kimi K2.5 Turbo كنموذج افتراضي.
+    يحفظ الإعداد الأولي المفتاح للمزوّد `fireworks` في ملفات تعريف المصادقة لديك، ويعيّن موجّه Kimi K2.5 Turbo المسمى **Fire Pass** بوصفه النموذج الافتراضي.
 
   </Step>
-  <Step title="تحقّق من أن النموذج متاح">
+  <Step title="التحقق من توفر النموذج">
     ```bash
     openclaw models list --provider fireworks
     ```
 
-    يجب أن تتضمن القائمة `Kimi K2.6` و`Kimi K2.5 Turbo (Fire Pass)`. إذا لم يتم حل `FIREWORKS_API_KEY`، فسيُبلغ `openclaw models status --json` عن بيانات الاعتماد المفقودة ضمن `auth.unusableProfiles`.
+    ينبغي أن تتضمن القائمة `Kimi K2.6` و`Kimi K2.5 Turbo (Fire Pass)`. إذا تعذّر حل `FIREWORKS_API_KEY`، فسيُبلغ `openclaw models status --json` عن بيانات الاعتماد المفقودة ضمن `auth.unusableProfiles`.
 
   </Step>
 </Steps>
 
-## إعداد غير تفاعلي
+## الإعداد غير التفاعلي
 
-للتثبيتات النصية أو تثبيتات CI، مرّر كل شيء عبر سطر الأوامر:
+لعمليات التثبيت البرمجية أو عبر CI، مرّر كل شيء في سطر الأوامر:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -82,20 +82,20 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-## الفهرس المضمّن
+## الكتالوج المدمج
 
-| مرجع النموذج                                              | الاسم                        | الإدخال        | السياق | الحد الأقصى للإخراج | التفكير             |
-| ------------------------------------------------------ | --------------------------- | ------------ | ------- | ---------- | -------------------- |
-| `fireworks/accounts/fireworks/models/kimi-k2p6`        | Kimi K2.6                   | نص + صورة | 262,144 | 262,144    | متوقف إجباريًا           |
-| `fireworks/accounts/fireworks/routers/kimi-k2p5-turbo` | Kimi K2.5 Turbo (Fire Pass) | نص + صورة | 256,000 | 256,000    | متوقف إجباريًا (افتراضي) |
+| مرجع النموذج                                          | الاسم                        | الإدخال      | السياق   | الحد الأقصى للإخراج | التفكير                    |
+| ------------------------------------------------------ | --------------------------- | ------------ | -------- | ------------------- | -------------------------- |
+| `fireworks/accounts/fireworks/models/kimi-k2p6`        | Kimi K2.6                   | نص + صورة    | 262,144  | 262,144             | معطّل إجباريًا             |
+| `fireworks/accounts/fireworks/routers/kimi-k2p5-turbo` | Kimi K2.5 Turbo (Fire Pass) | نص + صورة    | 256,000  | 256,000             | معطّل إجباريًا (افتراضيًا) |
 
 <Note>
-  يثبّت OpenClaw جميع نماذج Fireworks Kimi على `thinking: off` لأن Fireworks يرفض معاملات تفكير Kimi في الإنتاج. يتيح توجيه النموذج نفسه عبر [Moonshot](/ar/providers/moonshot) مباشرةً الحفاظ على مخرجات استدلال Kimi. راجع [أوضاع التفكير](/ar/tools/thinking) للتبديل بين الموفّرين.
+  يثبّت OpenClaw إعداد جميع نماذج Kimi على Fireworks على `thinking: off` لأن Kimi على Fireworks قد يسرّب تسلسل الأفكار إلى الرد الظاهر ما لم يعطّل الطلب التفكير صراحةً. يؤدي توجيه النموذج نفسه مباشرةً عبر [Moonshot](/ar/providers/moonshot) إلى الحفاظ على مخرجات الاستدلال من Kimi. راجع [أوضاع التفكير](/ar/tools/thinking) للتبديل بين المزوّدين.
 </Note>
 
 ## معرّفات نماذج Fireworks المخصصة
 
-يقبل OpenClaw أي نموذج Fireworks أو معرّف موجّه أثناء وقت التشغيل. استخدم المعرّف الدقيق الذي تعرضه Fireworks وأضف إليه البادئة `fireworks/`. ينسخ الحل الديناميكي قالب Fire Pass (إدخال نص + صورة، وAPI متوافقة مع OpenAI، وتكلفة افتراضية صفر)، ويعطّل التفكير تلقائيًا عندما يطابق المعرّف نمط Kimi. تُعلَّم معرّفات GLM الديناميكية كنص فقط ما لم تكوّن إدخال نموذج مخصصًا مع إدخال صور.
+يقبل OpenClaw أي معرّف نموذج أو موجّه من Fireworks في وقت التشغيل. استخدم المعرّف الدقيق الذي تعرضه Fireworks وأضف إليه البادئة `fireworks/`. ينسخ الحل الديناميكي قالب Fire Pass (إدخال نص + صورة، وواجهة API متوافقة مع OpenAI، وتكلفة افتراضية قدرها صفر)، ويعطّل التفكير تلقائيًا عندما يطابق المعرّف نمط Kimi. تُعلَّم معرّفات GLM الديناميكية بأنها للنص فقط ما لم تضبط إدخال نموذج مخصص يدعم إدخال الصور.
 
 ```json5
 {
@@ -110,48 +110,48 @@ openclaw onboard --non-interactive \
 ```
 
 <AccordionGroup>
-  <Accordion title="كيف تعمل بادئة معرّف النموذج">
-    يبدأ كل مرجع نموذج Fireworks في OpenClaw بـ `fireworks/` متبوعًا بالمعرّف الدقيق أو مسار الموجّه من منصة Fireworks. على سبيل المثال:
+  <Accordion title="كيفية عمل إضافة بادئة إلى معرّف النموذج">
+    يبدأ كل مرجع لنموذج Fireworks في OpenClaw بالبادئة `fireworks/` متبوعة بالمعرّف الدقيق أو مسار الموجّه من منصة Fireworks. على سبيل المثال:
 
     - نموذج موجّه: `fireworks/accounts/fireworks/routers/kimi-k2p5-turbo`
     - نموذج مباشر: `fireworks/accounts/fireworks/models/<model-name>`
 
-    يزيل OpenClaw البادئة `fireworks/` عند إنشاء طلب API ويرسل المسار المتبقي إلى نقطة نهاية Fireworks كحقل `model` المتوافق مع OpenAI.
+    يزيل OpenClaw البادئة `fireworks/` عند إنشاء طلب API، ويرسل المسار المتبقي إلى نقطة نهاية Fireworks بوصفه حقل `model` المتوافق مع OpenAI.
 
   </Accordion>
 
-  <Accordion title="لماذا يُفرض إيقاف التفكير لـ Kimi">
-    يعيد Fireworks K2.6 رمز 400 إذا حمل الطلب معاملات `reasoning_*` رغم أن Kimi يدعم التفكير عبر API الخاصة بـ Moonshot. تعلن سياسة الموفّر (`extensions/fireworks/thinking-policy.ts`) مستوى التفكير `off` فقط لمعرّفات نماذج Kimi، لذلك تبقى مفاتيح `/think` اليدوية وأسطح سياسة الموفّر متوافقة مع عقد وقت التشغيل.
+  <Accordion title="سبب تعطيل التفكير إجباريًا لنماذج Kimi">
+    تقدّم Fireworks نموذج Kimi من دون قناة استدلال منفصلة، لذلك قد يظهر تسلسل الأفكار في تدفق `content` المرئي. يرسل OpenClaw في كل طلب Kimi عبر Fireworks القيمة `thinking: { type: "disabled" }`، ويزيل `reasoning` و`reasoning_effort` و`reasoningEffort` من الحمولة (`extensions/fireworks/stream.ts`). لا تعلن سياسة المزوّد (`extensions/fireworks/thinking-policy.ts`) سوى مستوى التفكير `off` لمعرّفات نماذج Kimi، كي تظل مفاتيح التبديل اليدوية `/think` وواجهات سياسة المزوّد متوافقة مع عقد وقت التشغيل.
 
-    لاستخدام استدلال Kimi من البداية إلى النهاية، كوّن [موفّر Moonshot](/ar/providers/moonshot) ووجّه النموذج نفسه عبره.
+    لاستخدام استدلال Kimi من البداية إلى النهاية، اضبط [مزوّد Moonshot](/ar/providers/moonshot) ووجّه النموذج نفسه عبره.
 
   </Accordion>
 
-  <Accordion title="توفر البيئة للبرنامج الخفي">
-    إذا كان Gateway يعمل كخدمة مُدارة (launchd أو systemd أو Docker)، فيجب أن يكون مفتاح Fireworks مرئيًا لتلك العملية، وليس فقط للصدفة التفاعلية لديك.
+  <Accordion title="توفر البيئة للعملية الخفية">
+    إذا كان Gateway يعمل بوصفه خدمة مُدارة (launchd أو systemd أو Docker)، فيجب أن يكون مفتاح Fireworks مرئيًا لتلك العملية، وليس فقط لصدفة الأوامر التفاعلية لديك.
 
     <Warning>
-      لن يساعد مفتاح مُصدَّر في صدفة تفاعلية فقط برنامجًا خفيًا يعمل عبر launchd أو systemd ما لم تُستورد تلك البيئة هناك أيضًا. اضبط المفتاح في `~/.openclaw/.env` أو عبر `env.shellEnv` لجعله قابلاً للقراءة من عملية Gateway.
+      لن يفيد المفتاح الذي جرى تصديره في صدفة أوامر تفاعلية فقط عمليةً خفيةً تابعة لـ launchd أو systemd ما لم تُستورد تلك البيئة فيها أيضًا. عيّن المفتاح في `~/.openclaw/.env` أو عبر `env.shellEnv` لجعله قابلًا للقراءة من عملية Gateway.
     </Warning>
 
-    على macOS، يقوم `openclaw gateway install` بالفعل بتوصيل `~/.openclaw/.env` بملف بيئة LaunchAgent. أعد تشغيل التثبيت (أو `openclaw doctor --fix`) بعد تدوير المفتاح.
+    يحمّل OpenClaw الملف `~/.openclaw/.env` عند تحميل الإعداد، ولذلك تصل المفاتيح المخزّنة فيه إلى خدمات Gateway المُدارة على كل منصة. أعد تشغيل Gateway (أو شغّل `openclaw doctor --fix` مجددًا) بعد تدوير المفتاح.
 
   </Accordion>
 </AccordionGroup>
 
-## ذات صلة
+## ذو صلة
 
 <CardGroup cols={2}>
-  <Card title="موفّرو النماذج" href="/ar/concepts/model-providers" icon="layers">
-    اختيار الموفّرين، ومراجع النماذج، وسلوك تجاوز الفشل.
+  <Card title="مزوّدو النماذج" href="/ar/concepts/model-providers" icon="layers">
+    اختيار المزوّدين ومراجع النماذج وسلوك تجاوز الفشل.
   </Card>
   <Card title="أوضاع التفكير" href="/ar/tools/thinking" icon="brain">
-    مستويات `/think`، وسياسات الموفّر، وتوجيه النماذج القادرة على الاستدلال.
+    مستويات `/think` وسياسات المزوّدين وتوجيه النماذج القادرة على الاستدلال.
   </Card>
   <Card title="Moonshot" href="/ar/providers/moonshot" icon="moon">
-    شغّل Kimi مع مخرجات التفكير الأصلية عبر API الخاصة بـ Moonshot.
+    شغّل Kimi مع مخرجات التفكير الأصلية عبر واجهة API الخاصة بـ Moonshot.
   </Card>
   <Card title="استكشاف الأخطاء وإصلاحها" href="/ar/help/troubleshooting" icon="wrench">
-    استكشاف الأخطاء وإصلاحها بشكل عام والأسئلة الشائعة.
+    استكشاف الأخطاء وإصلاحها عمومًا والأسئلة الشائعة.
   </Card>
 </CardGroup>

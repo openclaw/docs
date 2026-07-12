@@ -1,27 +1,27 @@
 ---
 read_when:
-    - أنت تثبّت Plugin bonjour أو تهيّئه أو تدقّق فيه
-summary: أعلِن عن Gateway المحلي لـ OpenClaw عبر Bonjour/mDNS.
-title: Plugin Bonjour
+    - أنت تثبّت مكوّن bonjour الإضافي أو تهيّئه أو تدقّق فيه
+summary: أعلن عن Gateway المحلي لـ OpenClaw عبر Bonjour/mDNS.
+title: Plugin بونجور
 x-i18n:
-    generated_at: "2026-05-02T20:53:57Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:13:41Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: fcd64530e5eabfe7b49ef4a297fffb9790cc9ccd698457b34cbf629ecd0c2db0
     source_path: plugins/reference/bonjour.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# Bonjour Plugin
+# Plugin Bonjour
 
-أعلِن عن Gateway OpenClaw المحلي عبر Bonjour/mDNS.
+أعلِن عن Gateway المحلي لـ OpenClaw عبر Bonjour/mDNS.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/bonjour`
-- مسار التثبيت: مضمن في OpenClaw
+- طريقة التثبيت: مضمّن في OpenClaw
 
-## الواجهة
+## السطح
 
 Plugin

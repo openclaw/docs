@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Вы устанавливаете, настраиваете или проводите аудит плагина deepseek
-summary: Добавляет поддержку поставщика моделей DeepSeek в OpenClaw.
+    - Вы устанавливаете, настраиваете или проверяете Plugin deepseek
+summary: Добавляет в OpenClaw поддержку провайдера моделей DeepSeek.
 title: Plugin DeepSeek
 x-i18n:
-    generated_at: "2026-06-28T23:23:01Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:38:50Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c391a9d87d4de66f279f0b851868857b1a57e328feede3f5833e5e323ea5e281
+    source_hash: e2e7de36581db36818f63f754da829d91163c0ae3eaab9a087da087d3c681538
     source_path: plugins/reference/deepseek.md
     workflow: 16
 ---
@@ -24,7 +24,7 @@ x-i18n:
 
 ## Интерфейс
 
-providers: deepseek
+поставщики: deepseek; контракты: usageProviders
 
 ## Связанная документация
 

@@ -1,40 +1,38 @@
 ---
 read_when:
-    - Chcesz piaskownic zarządzanych w chmurze zamiast lokalnego Dockera
-    - Konfigurujesz Plugin OpenShell
-    - Musisz wybrać między trybem lustrzanej przestrzeni roboczej a trybem zdalnej przestrzeni roboczej
+    - Chcesz korzystać z zarządzanych w chmurze środowisk izolowanych zamiast lokalnego Dockera
+    - Konfigurujesz plugin OpenShell
+    - Musisz wybrać między trybem kopii lustrzanej a trybem zdalnego obszaru roboczego
 summary: Używaj OpenShell jako zarządzanego backendu piaskownicy dla agentów OpenClaw
 title: OpenShell
 x-i18n:
-    generated_at: "2026-06-27T17:35:59Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:10:58Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d278f7550a3178c30a1b42f80495c55bb9827f7785ce9c4d1ee4a57adb3a5e4b
+    source_hash: bf5c33912bd0db759a01cf58ea26712a8ada68c0804bf16f69f1f7cdd496828c
     source_path: gateway/openshell.md
     workflow: 16
 ---
 
-OpenShell to zarządzany backend piaskownicy dla OpenClaw. Zamiast uruchamiać
-kontenery Docker lokalnie, OpenClaw deleguje cykl życia piaskownicy do CLI `openshell`,
-które udostępnia zdalne środowiska z wykonywaniem poleceń przez SSH.
+OpenShell to zarządzany backend piaskownicy: zamiast uruchamiać kontenery Docker
+lokalnie, OpenClaw deleguje cykl życia piaskownicy do CLI `openshell`, które
+udostępnia zdalne środowiska i wykonuje polecenia przez SSH.
 
-Plugin OpenShell ponownie wykorzystuje ten sam podstawowy transport SSH i most
-zdalnego systemu plików co ogólny [backend SSH](/pl/gateway/sandboxing#ssh-backend). Dodaje
-cykl życia specyficzny dla OpenShell (`sandbox create/get/delete`, `sandbox ssh-config`)
-oraz opcjonalny tryb przestrzeni roboczej `mirror`.
+Plugin ponownie wykorzystuje ten sam transport SSH i most zdalnego systemu plików co
+ogólny [backend SSH](/pl/gateway/sandboxing#ssh-backend), a także dodaje obsługę cyklu życia OpenShell
+(`sandbox create/get/delete/ssh-config`) oraz opcjonalny tryb synchronizacji
+przestrzeni roboczej `mirror`.
 
 ## Wymagania wstępne
 
-- Zainstalowany Plugin OpenShell (`openclaw plugins install @openclaw/openshell-sandbox`)
-- Zainstalowane CLI `openshell` dostępne w `PATH` (albo ustawiona niestandardowa ścieżka przez
+- Zainstalowany plugin OpenShell (`openclaw plugins install @openclaw/openshell-sandbox`)
+- CLI `openshell` dostępne w `PATH` (lub niestandardowa ścieżka ustawiona przez
   `plugins.entries.openshell.config.command`)
 - Konto OpenShell z dostępem do piaskownic
-- OpenClaw Gateway uruchomiony na hoście
+- Gateway OpenClaw uruchomiony na hoście
 
 ## Szybki start
-
-1. Zainstaluj i włącz plugin, a następnie ustaw backend piaskownicy:
 
 ```bash
 openclaw plugins install @openclaw/openshell-sandbox
@@ -66,10 +64,8 @@ openclaw plugins install @openclaw/openshell-sandbox
 }
 ```
 
-2. Uruchom ponownie Gateway. Przy następnym ruchu agenta OpenClaw tworzy piaskownicę
-   OpenShell i kieruje przez nią wykonywanie narzędzi.
-
-3. Zweryfikuj:
+Uruchom ponownie Gateway. Przy następnym cyklu agenta OpenClaw utworzy piaskownicę
+OpenShell i skieruje przez nią wykonywanie narzędzi. Sprawdź to za pomocą:
 
 ```bash
 openclaw sandbox list
@@ -78,86 +74,78 @@ openclaw sandbox explain
 
 ## Tryby przestrzeni roboczej
 
-To najważniejsza decyzja przy używaniu OpenShell.
+To najważniejsza decyzja dotycząca OpenShell.
 
-### `mirror`
+### mirror (domyślny)
 
-Użyj `plugins.entries.openshell.config.mode: "mirror"`, gdy chcesz, aby **lokalna
-przestrzeń robocza pozostała kanoniczna**.
+`plugins.entries.openshell.config.mode: "mirror"` sprawia, że **lokalna przestrzeń robocza
+jest kanoniczna**:
 
-Zachowanie:
-
-- Przed `exec` OpenClaw synchronizuje lokalną przestrzeń roboczą do piaskownicy OpenShell.
+- Przed `exec` OpenClaw synchronizuje lokalną przestrzeń roboczą z piaskownicą.
 - Po `exec` OpenClaw synchronizuje zdalną przestrzeń roboczą z powrotem do lokalnej.
-- Narzędzia plikowe nadal działają przez most piaskownicy, ale lokalna przestrzeń robocza
-  pozostaje źródłem prawdy między turami.
+- Narzędzia plikowe korzystają z mostu piaskownicy, ale między cyklami
+  źródłem prawdy pozostaje lokalna przestrzeń robocza.
 
-Najlepsze do:
+Najlepszy wybór dla przepływów pracy programistycznej: lokalne zmiany wprowadzone poza OpenClaw
+pojawią się przy następnym `exec`, a piaskownica zachowuje się podobnie do backendu Docker.
 
-- Edytujesz pliki lokalnie poza OpenClaw i chcesz, aby te zmiany były automatycznie widoczne w
-  piaskownicy.
-- Chcesz, aby piaskownica OpenShell zachowywała się możliwie najbardziej podobnie do backendu Docker.
-- Chcesz, aby przestrzeń robocza hosta odzwierciedlała zapisy w piaskownicy po każdej turze exec.
+Kompromis: koszt wysyłania i pobierania przy każdym cyklu `exec`.
 
-Kompromis: dodatkowy koszt synchronizacji przed każdym exec i po nim.
+### remote
 
-### `remote`
+`mode: "remote"` sprawia, że **przestrzeń robocza OpenShell jest kanoniczna**:
 
-Użyj `plugins.entries.openshell.config.mode: "remote"`, gdy chcesz, aby
-**przestrzeń robocza OpenShell stała się kanoniczna**.
-
-Zachowanie:
-
-- Gdy piaskownica jest tworzona po raz pierwszy, OpenClaw jednorazowo zasila zdalną przestrzeń roboczą z
-  lokalnej przestrzeni roboczej.
+- Przy pierwszym utworzeniu piaskownicy OpenClaw jednorazowo inicjalizuje zdalną przestrzeń roboczą
+  na podstawie lokalnej.
 - Następnie `exec`, `read`, `write`, `edit` i `apply_patch` działają
-  bezpośrednio na zdalnej przestrzeni roboczej OpenShell.
-- OpenClaw **nie** synchronizuje zdalnych zmian z powrotem do lokalnej przestrzeni roboczej.
-- Odczyty multimediów w czasie promptu nadal działają, ponieważ narzędzia plikowe i multimedialne czytają przez
-  most piaskownicy.
+  bezpośrednio na zdalnej przestrzeni roboczej. OpenClaw **nie** synchronizuje zdalnych zmian
+  z powrotem do lokalnej przestrzeni roboczej.
+- Odczyty multimediów podczas tworzenia promptu nadal działają (narzędzia plikowe i multimedialne
+  odczytują dane przez most piaskownicy).
 
-Najlepsze do:
-
-- Piaskownica powinna działać głównie po stronie zdalnej.
-- Chcesz niższego narzutu synchronizacji na turę.
-- Nie chcesz, aby lokalne edycje na hoście po cichu nadpisywały stan zdalnej piaskownicy.
+Najlepszy wybór dla długotrwale działających agentów i CI: mniejszy narzut na cykl, a lokalne
+zmiany na hoście nie mogą po cichu nadpisać stanu zdalnego.
 
 <Warning>
-Jeśli po początkowym zasileniu edytujesz pliki na hoście poza OpenClaw, zdalna piaskownica **nie** zobaczy tych zmian. Użyj `openclaw sandbox recreate`, aby ponownie zasilić.
+Edycja plików na hoście poza OpenClaw po początkowej inicjalizacji nie jest widoczna dla zdalnej piaskownicy. Uruchom `openclaw sandbox recreate`, aby zainicjalizować ją ponownie.
 </Warning>
 
 ### Wybór trybu
 
-|                          | `mirror`                   | `remote`                  |
-| ------------------------ | -------------------------- | ------------------------- |
-| **Kanoniczna przestrzeń robocza** | Lokalny host               | Zdalny OpenShell          |
-| **Kierunek synchronizacji** | Dwukierunkowy (każdy exec) | Jednorazowe zasilenie     |
-| **Narzut na turę**       | Wyższy (wysyłanie + pobieranie) | Niższy (bezpośrednie operacje zdalne) |
-| **Czy lokalne edycje są widoczne?** | Tak, przy następnym exec | Nie, dopóki nie odtworzysz |
-| **Najlepsze do**         | Przepływy pracy developerskiej | Długo działający agenci, CI |
+|                              | `mirror`                              | `remote`                                |
+| ---------------------------- | ------------------------------------- | --------------------------------------- |
+| **Kanoniczna przestrzeń robocza** | Host lokalny                          | Zdalny OpenShell                        |
+| **Kierunek synchronizacji**  | Dwukierunkowy (przy każdym `exec`)    | Jednorazowa inicjalizacja               |
+| **Narzut na cykl**           | Wyższy (wysyłanie i pobieranie)       | Niższy (bezpośrednie operacje zdalne)   |
+| **Czy lokalne zmiany są widoczne?** | Tak, przy następnym `exec`            | Nie, do czasu ponownego utworzenia      |
+| **Najlepsze zastosowanie**   | Przepływy pracy programistycznej      | Długotrwale działający agenci, CI       |
 
 ## Dokumentacja konfiguracji
 
-Cała konfiguracja OpenShell znajduje się pod `plugins.entries.openshell.config`:
+Cała konfiguracja OpenShell znajduje się w `plugins.entries.openshell.config`:
 
-| Klucz                     | Typ                      | Domyślne      | Opis                                                  |
-| ------------------------- | ------------------------ | ------------- | ----------------------------------------------------- |
-| `mode`                    | `"mirror"` lub `"remote"` | `"mirror"`   | Tryb synchronizacji przestrzeni roboczej              |
-| `command`                 | `string`                 | `"openshell"` | Ścieżka lub nazwa CLI `openshell`                     |
-| `from`                    | `string`                 | `"openclaw"`  | Źródło piaskownicy przy pierwszym tworzeniu           |
-| `gateway`                 | `string`                 | —             | Nazwa Gateway OpenShell (`--gateway`)                 |
-| `gatewayEndpoint`         | `string`                 | —             | URL punktu końcowego Gateway OpenShell (`--gateway-endpoint`) |
-| `policy`                  | `string`                 | —             | ID polityki OpenShell do tworzenia piaskownicy        |
-| `providers`               | `string[]`               | `[]`          | Nazwy dostawców do dołączenia podczas tworzenia piaskownicy |
-| `gpu`                     | `boolean`                | `false`       | Żądaj zasobów GPU                                     |
-| `autoProviders`           | `boolean`                | `true`        | Przekaż `--auto-providers` podczas tworzenia piaskownicy |
-| `remoteWorkspaceDir`      | `string`                 | `"/sandbox"`  | Główna zapisywalna przestrzeń robocza wewnątrz piaskownicy |
-| `remoteAgentWorkspaceDir` | `string`                 | `"/agent"`    | Ścieżka montowania przestrzeni roboczej agenta (do dostępu tylko do odczytu) |
-| `timeoutSeconds`          | `number`                 | `120`         | Limit czasu dla operacji CLI `openshell`              |
+| Klucz                     | Typ                      | Wartość domyślna | Opis                                                                                                      |
+| ------------------------- | ------------------------ | ---------------- | --------------------------------------------------------------------------------------------------------- |
+| `mode`                    | `"mirror"` lub `"remote"` | `"mirror"`       | Tryb synchronizacji przestrzeni roboczej                                                                 |
+| `command`                 | `string`                 | `"openshell"`    | Ścieżka lub nazwa CLI `openshell`                                                                         |
+| `from`                    | `string`                 | `"openclaw"`     | Źródło piaskownicy przy pierwszym utworzeniu                                                              |
+| `gateway`                 | `string`                 | nieustawiona     | Nazwa Gateway OpenShell (`--gateway` najwyższego poziomu)                                                 |
+| `gatewayEndpoint`         | `string`                 | nieustawiona     | Punkt końcowy Gateway OpenShell (`--gateway-endpoint` najwyższego poziomu)                                |
+| `policy`                  | `string`                 | nieustawiona     | Identyfikator zasad OpenShell używany podczas tworzenia piaskownicy                                       |
+| `providers`               | `string[]`               | `[]`             | Nazwy dostawców dołączanych podczas tworzenia piaskownicy (bez duplikatów, jedna flaga `--provider` na wpis) |
+| `gpu`                     | `boolean`                | `false`          | Żądanie zasobów GPU (`--gpu`)                                                                             |
+| `autoProviders`           | `boolean`                | `true`           | Przekazuje `--auto-providers` (lub `--no-auto-providers`, gdy wartość to `false`) podczas tworzenia       |
+| `remoteWorkspaceDir`      | `string`                 | `"/sandbox"`     | Główna zapisywalna przestrzeń robocza wewnątrz piaskownicy                                                |
+| `remoteAgentWorkspaceDir` | `string`                 | `"/agent"`       | Ścieżka montowania przestrzeni roboczej agenta (tylko do odczytu, gdy dostęp do przestrzeni roboczej nie ma wartości `rw`) |
+| `timeoutSeconds`          | `number`                 | `120`            | Limit czasu operacji CLI `openshell`                                                                      |
 
-Ustawienia na poziomie piaskownicy (`mode`, `scope`, `workspaceAccess`) konfiguruje się pod
-`agents.defaults.sandbox`, tak jak w przypadku każdego backendu. Zobacz
-[Piaskownice](/pl/gateway/sandboxing), aby poznać pełną macierz.
+`remoteWorkspaceDir` i `remoteAgentWorkspaceDir` muszą być ścieżkami bezwzględnymi i
+pozostawać w zarządzanych katalogach głównych `/sandbox` lub `/agent`; inne ścieżki bezwzględne są
+odrzucane.
+
+Ustawienia na poziomie piaskownicy (`mode`, `scope`, `workspaceAccess`) znajdują się w
+`agents.defaults.sandbox`, tak jak w przypadku każdego backendu. Pełną macierz opisano w
+sekcji [Piaskownice](/pl/gateway/sandboxing).
 
 ## Przykłady
 
@@ -218,7 +206,7 @@ Ustawienia na poziomie piaskownicy (`mode`, `scope`, `workspaceAccess`) konfigur
 }
 ```
 
-### OpenShell na agenta z niestandardowym Gateway
+### OpenShell dla poszczególnych agentów z niestandardowym Gateway
 
 ```json5
 {
@@ -257,66 +245,62 @@ Ustawienia na poziomie piaskownicy (`mode`, `scope`, `workspaceAccess`) konfigur
 
 ## Zarządzanie cyklem życia
 
-Piaskownice OpenShell są zarządzane przez standardowe CLI piaskownicy:
-
 ```bash
-# List all sandbox runtimes (Docker + OpenShell)
+# Wyświetl wszystkie środowiska wykonawcze piaskownic (Docker + OpenShell)
 openclaw sandbox list
 
-# Inspect effective policy
+# Sprawdź obowiązujące zasady
 openclaw sandbox explain
 
-# Recreate (deletes remote workspace, re-seeds on next use)
+# Utwórz ponownie (usuwa zdalną przestrzeń roboczą i inicjalizuje ją ponownie przy następnym użyciu)
 openclaw sandbox recreate --all
 ```
 
-W trybie `remote` **odtworzenie jest szczególnie ważne**: usuwa kanoniczną
-zdalną przestrzeń roboczą dla danego zakresu. Następne użycie zasila świeżą zdalną przestrzeń roboczą z
-lokalnej przestrzeni roboczej.
+W trybie `remote` ponowne utworzenie jest szczególnie ważne: usuwa kanoniczną
+zdalną przestrzeń roboczą dla danego zakresu, a przy następnym użyciu inicjalizuje nową na podstawie
+lokalnej przestrzeni roboczej. W trybie `mirror` ponowne utworzenie głównie resetuje zdalne środowisko
+wykonawcze, ponieważ lokalna przestrzeń robocza pozostaje kanoniczna.
 
-W trybie `mirror` odtworzenie głównie resetuje zdalne środowisko wykonywania, ponieważ
-lokalna przestrzeń robocza pozostaje kanoniczna.
-
-### Kiedy odtwarzać
-
-Odtwórz po zmianie dowolnego z poniższych:
+Utwórz piaskownicę ponownie po zmianie któregokolwiek z następujących ustawień:
 
 - `agents.defaults.sandbox.backend`
 - `plugins.entries.openshell.config.from`
 - `plugins.entries.openshell.config.mode`
 - `plugins.entries.openshell.config.policy`
 
-```bash
-openclaw sandbox recreate --all
-```
-
 ## Wzmocnienie zabezpieczeń
 
-OpenShell przypina fd katalogu głównego przestrzeni roboczej i ponownie sprawdza tożsamość piaskownicy przed każdym
-odczytem, dzięki czemu podmiany dowiązań symbolicznych ani ponownie zamontowana przestrzeń robocza nie mogą przekierować odczytów poza
-zamierzoną zdalną przestrzeń roboczą.
+Most systemu plików w trybie mirror przypina katalog główny lokalnej przestrzeni roboczej i ponownie sprawdza
+ścieżki kanoniczne (za pomocą realpath) przed każdym odczytem, zapisem, utworzeniem katalogu, usunięciem i
+zmianą nazwy, odrzucając dowiązania symboliczne w środkowych segmentach ścieżki. Podmiana dowiązania symbolicznego lub ponowne zamontowanie przestrzeni roboczej
+nie może przekierować dostępu do plików poza replikowane drzewo.
 
 ## Obecne ograniczenia
 
-- Przeglądarka piaskownicy nie jest obsługiwana w backendzie OpenShell.
-- `sandbox.docker.binds` nie ma zastosowania do OpenShell.
-- Pokrętła środowiska uruchomieniowego specyficzne dla Docker pod `sandbox.docker.*` mają zastosowanie tylko do backendu Docker.
+- Przeglądarka piaskownicy nie jest obsługiwana przez backend OpenShell.
+- `sandbox.docker.binds` nie ma zastosowania do OpenShell; tworzenie piaskownicy kończy się niepowodzeniem,
+  jeśli skonfigurowano powiązania.
+- Ustawienia środowiska wykonawczego specyficzne dla Docker w `sandbox.docker.*` (poza `env`)
+  dotyczą wyłącznie backendu Docker.
 
 ## Jak to działa
 
-1. OpenClaw wywołuje `openshell sandbox create` (z flagami `--from`, `--gateway`,
-   `--policy`, `--providers`, `--gpu` zgodnie z konfiguracją).
-2. OpenClaw wywołuje `openshell sandbox ssh-config <name>`, aby uzyskać szczegóły połączenia SSH
-   dla piaskownicy.
-3. Core zapisuje konfigurację SSH do pliku tymczasowego i otwiera sesję SSH przy użyciu
-   tego samego mostu zdalnego systemu plików co ogólny backend SSH.
-4. W trybie `mirror`: synchronizacja lokalnie do zdalnie przed exec, uruchomienie, synchronizacja z powrotem po exec.
-5. W trybie `remote`: jednorazowe zasilenie przy tworzeniu, a następnie bezpośrednie działanie na zdalnej
+1. OpenClaw uruchamia `sandbox get` dla nazwy piaskownicy (z każdym skonfigurowanym
+   `--gateway`/`--gateway-endpoint`); jeśli to polecenie zakończy się niepowodzeniem, tworzy piaskownicę za pomocą
+   `sandbox create`, przekazując `--name`, `--from`, `--policy`, jeśli ustawiono, `--gpu`,
+   jeśli włączono, `--auto-providers`/`--no-auto-providers` oraz po jednej fladze
+   `--provider` dla każdego skonfigurowanego dostawcy.
+2. OpenClaw uruchamia `sandbox ssh-config` dla nazwy piaskownicy, aby pobrać
+   szczegóły połączenia SSH.
+3. Rdzeń zapisuje konfigurację SSH w pliku tymczasowym i otwiera sesję SSH przez
+   ten sam most zdalnego systemu plików co ogólny backend SSH.
+4. W trybie `mirror`: synchronizuje dane lokalne ze zdalnymi przed `exec`, wykonuje polecenie, a następnie synchronizuje dane z powrotem.
+5. W trybie `remote`: inicjalizuje przestrzeń roboczą raz podczas tworzenia, a następnie działa bezpośrednio na zdalnej
    przestrzeni roboczej.
 
-## Powiązane
+## Powiązane materiały
 
-- [Piaskownice](/pl/gateway/sandboxing) -- tryby, zakresy i porównanie backendów
-- [Piaskownica vs polityka narzędzi vs podniesione uprawnienia](/pl/gateway/sandbox-vs-tool-policy-vs-elevated) -- debugowanie zablokowanych narzędzi
-- [Piaskownica i narzędzia wielu agentów](/pl/tools/multi-agent-sandbox-tools) -- nadpisania na agenta
-- [CLI piaskownicy](/pl/cli/sandbox) -- polecenia `openclaw sandbox`
+- [Piaskownice](/pl/gateway/sandboxing) — tryby, zakresy i porównanie backendów
+- [Piaskownica a zasady narzędzi a tryb podwyższonych uprawnień](/pl/gateway/sandbox-vs-tool-policy-vs-elevated) — debugowanie zablokowanych narzędzi
+- [Piaskownica i narzędzia dla wielu agentów](/pl/tools/multi-agent-sandbox-tools) — ustawienia zastępcze dla poszczególnych agentów
+- [CLI piaskownicy](/pl/cli/sandbox) — polecenia `openclaw sandbox`

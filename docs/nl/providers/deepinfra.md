@@ -1,25 +1,24 @@
 ---
 read_when:
-    - Je wilt één API-sleutel voor de toonaangevende open source-LLM's
+    - Je wilt één API-sleutel voor de beste opensource-LLM's
     - Je wilt modellen uitvoeren via de API van DeepInfra in OpenClaw
-summary: Gebruik de uniforme API van DeepInfra om toegang te krijgen tot de populairste open source- en frontier-modellen in OpenClaw
+summary: Gebruik de uniforme API van DeepInfra om toegang te krijgen tot de populairste opensource- en grensverleggende modellen in OpenClaw
 title: DeepInfra
 x-i18n:
-    generated_at: "2026-06-27T18:11:17Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:18:09Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 059a556c24d2de2c8c5290b54c78fbc7451dc534238bfc4c725dcfbbd9a2d17f
+    source_hash: 7f68bac84311d20348007c715803a34451ba8ab0c09beba63366ba5b1b29de05
     source_path: providers/deepinfra.md
     workflow: 16
 ---
 
-DeepInfra biedt een **uniforme API** die aanvragen naar de populairste open source- en frontiermodellen achter één
-endpoint en API-sleutel routeert. Deze is OpenAI-compatibel, waardoor de meeste OpenAI-SDK's werken door de basis-URL te wijzigen.
+DeepInfra routeert aanvragen naar populaire opensource- en frontiermodellen achter één
+OpenAI-compatibel eindpunt en één API-sleutel. De meeste OpenAI-SDK's werken
+ermee door de basis-URL te wijzigen.
 
 ## Plugin installeren
-
-Installeer de officiële plugin en herstart daarna Gateway:
 
 ```bash
 openclaw plugins install @openclaw/deepinfra-provider
@@ -28,9 +27,8 @@ openclaw gateway restart
 
 ## Een API-sleutel verkrijgen
 
-1. Ga naar [https://deepinfra.com/](https://deepinfra.com/)
-2. Meld je aan of maak een account aan
-3. Ga naar Dashboard / Keys en genereer een nieuwe API-sleutel of gebruik de automatisch aangemaakte sleutel
+1. Meld u aan bij [deepinfra.com](https://deepinfra.com/)
+2. Ga naar Dashboard / Keys en genereer een sleutel, of gebruik de automatisch aangemaakte sleutel
 
 ## CLI-configuratie
 
@@ -57,36 +55,37 @@ export DEEPINFRA_API_KEY="<your-deepinfra-api-key>" # pragma: allowlist secret
 }
 ```
 
-## Ondersteunde OpenClaw-oppervlakken
+## Ondersteunde oppervlakken
 
-De plugin registreert alle DeepInfra-oppervlakken die overeenkomen met de huidige
-OpenClaw-providercontracten. Chat, afbeeldingsgeneratie en videogeneratie
-verversen hun modelcatalogi live vanuit `/v1/openai/models?sort_by=openclaw&filter=with_meta`
-wanneer `DEEPINFRA_API_KEY` is geconfigureerd; de andere oppervlakken gebruiken de beheerde
-statische standaarden hieronder.
+Chat, afbeeldingsgeneratie en videogeneratie vernieuwen hun modelcatalogi
+live via `https://api.deepinfra.com/v1/openai/models?sort_by=openclaw&filter=with_meta`
+zodra `DEEPINFRA_API_KEY` is geconfigureerd. Andere oppervlakken gebruiken de statische
+standaardwaarden hieronder totdat ze naar dezelfde livecatalogus zijn overgezet.
 
-| Oppervlak                | Standaardmodel                                                                                       | OpenClaw-configuratie/-tool                              |
-| ------------------------ | ----------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| Chat / modelprovider     | eerste chat-gelabelde vermelding uit de livecatalogus (manifest-fallback `deepseek-ai/DeepSeek-V4-Flash`) | `agents.defaults.model`                                  |
-| Afbeeldingsgeneratie/-bewerking | eerste met `image-gen` gelabelde vermelding uit de livecatalogus (statische fallback `black-forest-labs/FLUX-1-schnell`) | `image_generate`, `agents.defaults.imageGenerationModel` |
-| Mediabegrip              | `moonshotai/Kimi-K2.5` voor afbeeldingen                                                             | begrip van inkomende afbeeldingen                        |
-| Spraak-naar-tekst        | `openai/whisper-large-v3-turbo`                                                                       | transcriptie van inkomende audio                         |
-| Tekst-naar-spraak        | `hexgrad/Kokoro-82M`                                                                                  | `messages.tts.provider: "deepinfra"`                     |
-| Videogeneratie           | eerste met `video-gen` gelabelde vermelding uit de livecatalogus (statische fallback `Pixverse/Pixverse-T2V`) | `video_generate`, `agents.defaults.videoGenerationModel` |
-| Memory-embeddings        | `BAAI/bge-m3`                                                                                         | `agents.defaults.memorySearch.provider: "deepinfra"`     |
+| Oppervlak                  | Standaardmodel                                                                                               | OpenClaw-configuratie/-tool                              |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------- |
+| Chat/modelprovider         | eerste als chat gemarkeerde vermelding uit de livecatalogus (statische terugvaloptie `deepseek-ai/DeepSeek-V4-Flash`) | `agents.defaults.model`                                  |
+| Afbeeldingen genereren/bewerken | eerste met `image-gen` gemarkeerde vermelding uit de livecatalogus (statische terugvaloptie `black-forest-labs/FLUX-1-schnell`) | `image_generate`, `agents.defaults.imageGenerationModel` |
+| Mediabegrip                | `moonshotai/Kimi-K2.5` voor afbeeldingen                                                                     | begrip van inkomende afbeeldingen                        |
+| Spraak-naar-tekst          | `openai/whisper-large-v3-turbo`                                                                               | transcriptie van inkomende audio                         |
+| Tekst-naar-spraak          | `hexgrad/Kokoro-82M`                                                                                          | `messages.tts.provider: "deepinfra"`                     |
+| Videogeneratie             | statische terugvaloptie `Pixverse/Pixverse-T2V` (DeepInfra heeft momenteel geen live `video-gen`-vermeldingen) | `video_generate`, `agents.defaults.videoGenerationModel` |
+| Geheugenembeddings         | `BAAI/bge-m3`                                                                                                 | `agents.defaults.memorySearch.provider: "deepinfra"`     |
 
-DeepInfra biedt ook reranking, classificatie, objectdetectie en andere
-native modeltypen. OpenClaw heeft momenteel geen eersteklas providercontracten
-voor die categorieën, dus deze plugin registreert ze nog niet.
+DeepInfra biedt ook herrangschikking, classificatie, objectdetectie en andere
+eigen modeltypen. OpenClaw heeft nog geen providercontract voor die categorieën,
+dus deze Plugin registreert ze niet.
 
 ## Beschikbare modellen
 
-OpenClaw ontdekt beschikbare DeepInfra-modellen dynamisch bij het opstarten. Gebruik
-`/models deepinfra` om de volledige lijst met beschikbare modellen te bekijken.
+OpenClaw detecteert DeepInfra-modellen dynamisch zodra een sleutel is geconfigureerd. Gebruik
+`/models deepinfra` of `openclaw models list --provider deepinfra` om de
+huidige lijst te bekijken.
 
-Elk model dat beschikbaar is op [DeepInfra.com](https://deepinfra.com/) kan worden gebruikt met het voorvoegsel `deepinfra/`:
+Elk model op [deepinfra.com](https://deepinfra.com/) werkt met het
+voorvoegsel `deepinfra/`:
 
-```
+```text
 deepinfra/deepseek-ai/DeepSeek-V4-Flash
 deepinfra/deepseek-ai/DeepSeek-V3.2
 deepinfra/MiniMaxAI/MiniMax-M2.5
@@ -98,10 +97,10 @@ deepinfra/zai-org/GLM-5.1
 
 ## Opmerkingen
 
-- Modelverwijzingen zijn `deepinfra/<provider>/<model>` (bijv. `deepinfra/Qwen/Qwen3-Max`).
-- Standaardmodel: `deepinfra/deepseek-ai/DeepSeek-V4-Flash`
+- Modelverwijzingen hebben de vorm `deepinfra/<provider>/<model>` (bijvoorbeeld `deepinfra/Qwen/Qwen3-Max`).
+- Standaardchatmodel: `deepinfra/deepseek-ai/DeepSeek-V4-Flash`
 - Basis-URL: `https://api.deepinfra.com/v1/openai`
-- Native videogeneratie gebruikt `https://api.deepinfra.com/v1/inference/<model>`.
+- Eigen videogeneratie gebruikt `https://api.deepinfra.com/v1/inference/<model>`.
 
 ## Gerelateerd
 

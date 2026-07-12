@@ -1,57 +1,58 @@
 ---
 read_when:
-    - Aggiunta del supporto per il nodo di posizione o dell'interfaccia utente delle autorizzazioni
-    - Progettazione delle autorizzazioni di Android per la posizione o del comportamento in primo piano
-summary: Comando di localizzazione per i nodi (location.get), modalità di autorizzazione e comportamento in primo piano su Android
-title: Comando di posizione
+    - Aggiunta del supporto per i nodi di localizzazione o dell'interfaccia utente per le autorizzazioni
+    - Progettazione delle autorizzazioni di localizzazione o del comportamento in primo piano su Android
+summary: Comando di localizzazione per i Node (location.get), modalità di autorizzazione e comportamento in primo piano su Android
+title: Comando di localizzazione
 x-i18n:
-    generated_at: "2026-05-06T08:58:43Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:13:03Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 63ed754bfdda1cf379dcb7ac40817c0b93cc1efe4526512d70258072da4bc8a7
+    source_hash: fae9f7707620f3f743d40c07618a431a6baa7a357dda6d74021bc986cd4974b1
     source_path: nodes/location-command.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 ## In breve
 
-- `location.get` è un comando del nodo (tramite `node.invoke`).
+- `location.get` è un comando del Node, richiamato tramite `node.invoke` o `openclaw nodes location get`.
 - Disattivato per impostazione predefinita.
-- Le impostazioni dell'app Android usano un selettore: Disattivato / Durante l'uso.
-- Interruttore separato: Posizione precisa.
+- Le build Android di terze parti usano un selettore: Disattivato / Durante l'uso / Sempre. Le build Play mantengono le opzioni Disattivato / Durante l'uso.
+- La posizione precisa dispone di un interruttore separato.
 
-## Perché un selettore (non solo un interruttore)
+## Perché un selettore (e non un semplice interruttore)
 
-Le autorizzazioni del sistema operativo hanno più livelli. Possiamo esporre un selettore nell'app, ma il sistema operativo decide comunque l'autorizzazione effettiva.
-
-- iOS/macOS possono mostrare **Durante l'uso** o **Sempre** nei prompt di sistema/nelle Impostazioni.
-- L'app Android attualmente supporta solo la posizione in primo piano.
-- La posizione precisa è un'autorizzazione separata (iOS 14+ "Precise", Android "fine" vs "coarse").
-
-Il selettore nell'UI determina la modalità richiesta; l'autorizzazione effettiva risiede nelle impostazioni del sistema operativo.
+Le autorizzazioni del sistema operativo per la posizione prevedono più livelli. Anche la posizione precisa è un'autorizzazione separata del sistema operativo («Precise» su iOS 14+, «fine» rispetto a «coarse» su Android). Il selettore nell'app determina la modalità richiesta, ma è comunque il sistema operativo a decidere l'autorizzazione effettivamente concessa.
 
 ## Modello delle impostazioni
 
-Per dispositivo nodo:
+Per ogni dispositivo Node:
 
-- `location.enabledMode`: `off | whileUsing`
+- `location.enabledMode`: `off | whileUsing | always`
 - `location.preciseEnabled`: bool
 
-Comportamento dell'UI:
+Comportamento dell'interfaccia utente:
 
-- Selezionare `whileUsing` richiede l'autorizzazione in primo piano.
-- Se il sistema operativo nega il livello richiesto, ripristina il livello più alto concesso e mostra lo stato.
+- Selezionando `whileUsing` viene richiesta l'autorizzazione in primo piano.
+- Selezionando `always` nella build Android di terze parti, viene prima richiesta l'autorizzazione in primo piano, poi viene spiegato l'accesso in background e infine vengono aperte le impostazioni Android dell'app per concedere separatamente **Allow all the time**.
+- Le build Android Play non dichiarano l'autorizzazione alla posizione in background e non mostrano `always`.
+- Se il sistema operativo nega il livello richiesto, l'app ripristina il livello più elevato concesso e ne mostra lo stato.
 
 ## Mappatura delle autorizzazioni (node.permissions)
 
-Facoltativa. Il nodo macOS segnala `location` tramite la mappa delle autorizzazioni; iOS/Android possono ometterla.
+Facoltativa. Il Node macOS segnala `location` tramite la mappa `permissions` in `node.list`/`node.describe`; iOS/Android potrebbero ometterla.
 
 ## Comando: `location.get`
 
-Chiamato tramite `node.invoke`.
+Richiamato tramite `node.invoke` o mediante l'utilità CLI:
 
-Parametri (suggeriti):
+```bash
+openclaw nodes location get --node <idOrNameOrIp>
+openclaw nodes location get --node <idOrNameOrIp> --accuracy precise --max-age 15000 --location-timeout 10000
+```
+
+Parametri:
 
 ```json
 {
@@ -61,7 +62,9 @@ Parametri (suggeriti):
 }
 ```
 
-Payload di risposta:
+I flag della CLI vengono mappati direttamente: `--location-timeout` -> `timeoutMs`, `--max-age` -> `maxAgeMs`, `--accuracy` -> `desiredAccuracy`.
+
+Payload della risposta:
 
 ```json
 {
@@ -80,31 +83,33 @@ Payload di risposta:
 Errori (codici stabili):
 
 - `LOCATION_DISABLED`: il selettore è disattivato.
-- `LOCATION_PERMISSION_REQUIRED`: autorizzazione mancante per la modalità richiesta.
-- `LOCATION_BACKGROUND_UNAVAILABLE`: l'app è in background ma è consentito solo Durante l'uso.
-- `LOCATION_TIMEOUT`: nessun fix in tempo.
-- `LOCATION_UNAVAILABLE`: errore di sistema / nessun provider.
+- `LOCATION_PERMISSION_REQUIRED`: manca l'autorizzazione per la modalità richiesta.
+- `LOCATION_BACKGROUND_UNAVAILABLE`: l'app è in background, ma è stata concessa solo l'autorizzazione Durante l'uso.
+- `LOCATION_TIMEOUT`: posizione non acquisita in tempo.
+- `LOCATION_UNAVAILABLE`: errore di sistema o nessun fornitore disponibile.
 
 ## Comportamento in background
 
-- L'app Android nega `location.get` quando è in background.
-- Tieni OpenClaw aperto quando richiedi la posizione su Android.
-- Altre piattaforme nodo possono comportarsi diversamente.
+- Le build Android di terze parti accettano `location.get` in background solo quando l'utente ha selezionato `Always` e Android ha concesso l'accesso alla posizione in background. Il servizio Node persistente esistente aggiunge il tipo di servizio `location` e mostra `Location: Always` mentre è attivo.
+- Le build Android Play e la modalità `While Using` negano `location.get` quando l'app è in background.
+- Le altre piattaforme Node potrebbero comportarsi diversamente.
 
-## Integrazione con modello/strumenti
+## Integrazione con modelli e strumenti
 
-- Superficie dello strumento: lo strumento `nodes` aggiunge l'azione `location_get` (nodo obbligatorio).
+- Strumento dell'agente: l'azione `location_get` dello strumento `nodes` (Node obbligatorio).
 - CLI: `openclaw nodes location get --node <id>`.
-- Linee guida per gli agenti: chiamare solo quando l'utente ha abilitato la posizione e comprende l'ambito.
+- Linee guida per l'agente: richiamare solo quando l'utente ha abilitato la posizione e ne comprende l'ambito.
 
-## Testo UX (suggerito)
+## Testi per l'esperienza utente (suggeriti)
 
-- Disattivato: "La condivisione della posizione è disabilitata."
-- Durante l'uso: "Solo quando OpenClaw è aperto."
-- Precisa: "Usa la posizione GPS precisa. Disattiva l'opzione per condividere la posizione approssimativa."
+- Disattivato: «La condivisione della posizione è disabilitata».
+- Durante l'uso: «Solo quando OpenClaw è aperto».
+- Sempre: «Consenti i controlli della posizione richiesti mentre OpenClaw è in background».
+- Precisa: «Usa la posizione GPS precisa. Disattiva per condividere una posizione approssimativa».
 
-## Correlati
+## Argomenti correlati
 
-- [Analisi della posizione del canale](/it/channels/location)
-- [Acquisizione fotocamera](/it/nodes/camera)
+- [Panoramica dei Node](/it/nodes)
+- [Analisi della posizione nei canali](/it/channels/location)
+- [Acquisizione dalla fotocamera](/it/nodes/camera)
 - [Modalità conversazione](/it/nodes/talk)

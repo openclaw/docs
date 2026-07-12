@@ -1,35 +1,35 @@
 ---
 read_when:
     - Вы хотите использовать Gemini для web_search
-    - Вам нужен GEMINI_API_KEY или models.providers.google.apiKey
-    - Вам нужно обоснование через Google Search
-summary: Веб-поиск Gemini с привязкой к Google Search
+    - Вам потребуется `GEMINI_API_KEY` или `models.providers.google.apiKey`
+    - Вам нужно обоснование с помощью Google Search
+summary: Веб-поиск Gemini с подтверждением результатов через Google Search
 title: Поиск Gemini
 x-i18n:
-    generated_at: "2026-06-28T23:52:05Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:55:25Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8bbebd5689daaa63c817ff17eac70e197999a3e1ecbb198249eb567e5ba0fc5f
+    source_hash: 4c7cb55fb185adfda01ab6b3c6434ab6e3ee31162733c752d4c81328bce9a6cd
     source_path: tools/gemini-search.md
     workflow: 16
 ---
 
-OpenClaw поддерживает модели Gemini со встроенным
-[grounding Google Search](https://ai.google.dev/gemini-api/docs/grounding),
-который возвращает синтезированные ИИ ответы на основе актуальных результатов Google Search с
-цитатами.
+OpenClaw поддерживает модели Gemini со встроенной
+[привязкой к Google Поиску](https://ai.google.dev/gemini-api/docs/grounding),
+которая возвращает синтезированные ИИ ответы на основе актуальных результатов Google Поиска
+со ссылками на источники.
 
 ## Получение API-ключа
 
 <Steps>
-  <Step title="Создайте ключ">
+  <Step title="Создание ключа">
     Перейдите в [Google AI Studio](https://aistudio.google.com/apikey) и создайте
     API-ключ.
   </Step>
-  <Step title="Сохраните ключ">
+  <Step title="Сохранение ключа">
     Задайте `GEMINI_API_KEY` в окружении Gateway, повторно используйте
-    `models.providers.google.apiKey` или настройте отдельный ключ веб-поиска с помощью:
+    `models.providers.google.apiKey` либо настройте отдельный ключ для веб-поиска:
 
     ```bash
     openclaw configure --section web
@@ -47,9 +47,9 @@ OpenClaw поддерживает модели Gemini со встроенным
       google: {
         config: {
           webSearch: {
-            apiKey: "AIza...", // optional if GEMINI_API_KEY or models.providers.google.apiKey is set
-            baseUrl: "https://generativelanguage.googleapis.com/v1beta", // optional; falls back to models.providers.google.baseUrl
-            model: "gemini-2.5-flash", // default
+            apiKey: "AIza...", // необязательно, если задан GEMINI_API_KEY или models.providers.google.apiKey
+            baseUrl: "https://generativelanguage.googleapis.com/v1beta", // необязательно; при отсутствии используется models.providers.google.baseUrl
+            model: "gemini-2.5-flash", // значение по умолчанию
           },
         },
       },
@@ -65,59 +65,61 @@ OpenClaw поддерживает модели Gemini со встроенным
 }
 ```
 
-**Приоритет учетных данных:** веб-поиск Gemini сначала использует
+**Приоритет учётных данных:** веб-поиск Gemini сначала использует
 `plugins.entries.google.config.webSearch.apiKey`, затем `GEMINI_API_KEY`,
-затем `models.providers.google.apiKey`. Для базовых URL отдельный
-`plugins.entries.google.config.webSearch.baseUrl` имеет приоритет перед
-`models.providers.google.baseUrl`.
+а после — `models.providers.google.apiKey`. Для базовых URL приоритет имеет
+отдельный параметр `plugins.entries.google.config.webSearch.baseUrl`,
+а затем — `models.providers.google.baseUrl`.
 
-Для установки Gateway поместите ключи окружения в `~/.openclaw/.env`.
+При установке Gateway поместите ключи окружения в `~/.openclaw/.env`.
 
-## Как это работает
+## Принцип работы
 
-В отличие от традиционных поисковых провайдеров, которые возвращают список ссылок и фрагментов,
-Gemini использует grounding Google Search, чтобы создавать синтезированные ИИ ответы со
-встроенными цитатами. Результаты включают как синтезированный ответ, так и исходные
-URL.
+В отличие от традиционных поисковых провайдеров, возвращающих список ссылок и фрагментов,
+Gemini использует привязку к Google Поиску для создания синтезированных ИИ ответов
+со встроенными ссылками на источники. Результаты содержат как синтезированный ответ,
+так и URL-адреса источников.
 
-- URL цитат из grounding Gemini автоматически преобразуются из
-  URL перенаправления Google в прямые URL.
-- Разрешение перенаправлений использует путь защиты от SSRF (HEAD + проверки перенаправлений +
-  валидация http/https) перед возвратом итогового URL цитаты.
-- Разрешение перенаправлений использует строгие значения SSRF по умолчанию, поэтому перенаправления на
-  частные/внутренние цели блокируются.
+- URL-адреса источников из привязки Gemini автоматически преобразуются из URL-адресов
+  переадресации Google в прямые URL-адреса с помощью HEAD-запроса через защищённый
+  от SSRF механизм получения данных OpenClaw (с переходом по перенаправлениям
+  и проверкой http/https).
+- При разрешении перенаправлений используются строгие настройки SSRF по умолчанию,
+  поэтому перенаправления на частные или внутренние ресурсы блокируются.
 
 ## Поддерживаемые параметры
 
 Поиск Gemini поддерживает `query`, `freshness`, `date_after` и `date_before`.
 
-`count` принимается для совместимости с общим `web_search`, но grounding Gemini
-все равно возвращает один синтезированный ответ с цитатами, а не список из N
-результатов.
+Параметр `count` принимается для совместимости с общим интерфейсом `web_search`,
+но привязка Gemini всё равно возвращает один синтезированный ответ со ссылками
+на источники, а не список из N результатов.
 
-`freshness` принимает `day`, `week`, `month`, `year` и общие сокращения
-`pd`, `pw`, `pm` и `py`. `day`/`pd` добавляет в запрос Gemini инструкцию о недавности
-вместо жесткого 24-часового диапазона. `week`, `month`, `year` и явные
-диапазоны `date_after`/`date_before` задают `timeRangeFilter` для grounding Google Search
-Gemini. `country`, `language` и `domain_filter` не поддерживаются.
+Параметр `freshness` принимает значения `day`, `week`, `month`, `year`, а также
+общие сокращения `pd`, `pw`, `pm` и `py`. Значения `day`/`pd` добавляют к запросу
+Gemini указание учитывать актуальность вместо жёсткого диапазона в 24 часа.
+Значения `week`, `month`, `year` и явно заданные диапазоны
+`date_after`/`date_before` устанавливают `timeRangeFilter` для привязки Gemini
+к Google Поиску. Параметры `country`, `language` и `domain_filter` не поддерживаются.
 
 ## Выбор модели
 
-Модель по умолчанию — `gemini-2.5-flash` (быстрая и экономичная). Любую модель Gemini,
-которая поддерживает grounding, можно использовать через
-`plugins.entries.google.config.webSearch.model`.
+Модель по умолчанию — `gemini-2.5-flash` (быстрая и экономичная). Через
+`plugins.entries.google.config.webSearch.model` можно использовать любую модель
+Gemini, поддерживающую привязку к поиску.
 
-## Переопределения базового URL
+## Переопределение базового URL
 
-Задайте `plugins.entries.google.config.webSearch.baseUrl`, когда веб-поиск Gemini
-должен маршрутизироваться через операторский прокси или пользовательскую Gemini-совместимую конечную точку. Если
-это значение не задано, веб-поиск Gemini повторно использует `models.providers.google.baseUrl`. Обычное
-значение `https://generativelanguage.googleapis.com` нормализуется в
-`https://generativelanguage.googleapis.com/v1beta`; пути пользовательских прокси сохраняются
-как переданы после удаления завершающих косых черт.
+Задайте `plugins.entries.google.config.webSearch.baseUrl`, если веб-поиск Gemini
+должен направлять запросы через операторский прокси-сервер или пользовательскую
+конечную точку, совместимую с Gemini. Если этот параметр не задан, веб-поиск Gemini
+повторно использует `models.providers.google.baseUrl`. Значение
+`https://generativelanguage.googleapis.com` без пути нормализуется до
+`https://generativelanguage.googleapis.com/v1beta`; пути пользовательских
+прокси-серверов сохраняются в заданном виде после удаления завершающих косых черт.
 
-## См. также
+## Связанные материалы
 
-- [Обзор веб-поиска](/ru/tools/web) -- все провайдеры и автоопределение
+- [Обзор веб-поиска](/ru/tools/web) -- все провайдеры и автоматическое определение
 - [Brave Search](/ru/tools/brave-search) -- структурированные результаты с фрагментами
-- [Perplexity Search](/ru/tools/perplexity-search) -- структурированные результаты + извлечение содержимого
+- [Perplexity Search](/ru/tools/perplexity-search) -- структурированные результаты и извлечение содержимого

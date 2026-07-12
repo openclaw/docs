@@ -1,34 +1,37 @@
 ---
 read_when:
-    - OpenClaw ile Vercel AI Gateway kullanmak istiyorsunuz
-    - API anahtarı ortam değişkeni veya CLI kimlik doğrulama seçimi gerekir
-summary: OpenClaw Gateway kurulumu (kimlik doğrulama + model seçimi)
+    - Vercel AI Gateway'i OpenClaw ile kullanmak istiyorsunuz
+    - API anahtarı ortam değişkenine veya CLI kimlik doğrulama seçeneğine ihtiyacınız var
+summary: Vercel AI Gateway kurulumu (kimlik doğrulama + model seçimi)
 title: Vercel AI Gateway
 x-i18n:
-    generated_at: "2026-06-28T01:13:32Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:42:02Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 27aeeeff28661839f3be55c60bf1b383b95af78e17abb77441ae4e81f58688ed
+    source_hash: c1e4776604491900a914e75caebfd7e27a81e9f859213f5bd5b25582a923d92a
     source_path: providers/vercel-ai-gateway.md
     workflow: 16
 ---
 
-[Vercel AI Gateway](https://vercel.com/ai-gateway), tek bir uç nokta üzerinden
-yüzlerce modele erişmek için birleşik bir API sağlar.
+[Vercel AI Gateway](https://vercel.com/ai-gateway), yüzlerce modele tek bir uç nokta üzerinden erişmek için birleşik bir API sağlar.
 
-| Özellik      | Değer                                  |
+| Özellik       | Değer                                  |
 | ------------- | -------------------------------------- |
-| Sağlayıcı      | `vercel-ai-gateway`                    |
-| Paket       | `@openclaw/vercel-ai-gateway-provider` |
-| Kimlik doğrulama          | `AI_GATEWAY_API_KEY`                   |
-| API           | Anthropic Messages uyumlu          |
-| Model kataloğu | `/v1/models` üzerinden otomatik keşfedilir       |
+| Sağlayıcı     | `vercel-ai-gateway`                    |
+| Paket         | `@openclaw/vercel-ai-gateway-provider` |
+| Kimlik doğrulama | `AI_GATEWAY_API_KEY`                |
+| API           | Anthropic Messages uyumlu              |
+| Temel URL     | `https://ai-gateway.vercel.sh`         |
+| Model kataloğu | `/v1/models` aracılığıyla otomatik keşfedilir |
 
 <Tip>
-OpenClaw, Gateway `/v1/models` kataloğunu otomatik keşfeder, bu nedenle
-`/models vercel-ai-gateway`, `vercel-ai-gateway/openai/gpt-5.5` ve
-`vercel-ai-gateway/moonshotai/kimi-k2.6` gibi güncel model referanslarını içerir.
+OpenClaw, Gateway `/v1/models` kataloğunu otomatik olarak keşfeder; bu nedenle hem
+`/models vercel-ai-gateway` sohbet komutu hem de
+`openclaw models list --provider vercel-ai-gateway`, 
+`vercel-ai-gateway/openai/gpt-5.5` ve
+`vercel-ai-gateway/moonshotai/kimi-k2.6` gibi güncel model
+referanslarını içerir.
 </Tip>
 
 ## Başlarken
@@ -40,16 +43,11 @@ OpenClaw, Gateway `/v1/models` kataloğunu otomatik keşfeder, bu nedenle
     ```
   </Step>
   <Step title="API anahtarını ayarlayın">
-    Başlatma akışını çalıştırın ve AI Gateway kimlik doğrulama seçeneğini seçin:
-
     ```bash
     openclaw onboard --auth-choice ai-gateway-api-key
     ```
-
   </Step>
-  <Step title="Varsayılan model ayarlayın">
-    Modeli OpenClaw yapılandırmanıza ekleyin:
-
+  <Step title="Varsayılan bir model ayarlayın">
     ```json5
     {
       agents: {
@@ -59,7 +57,6 @@ OpenClaw, Gateway `/v1/models` kataloğunu otomatik keşfeder, bu nedenle
       },
     }
     ```
-
   </Step>
   <Step title="Modelin kullanılabilir olduğunu doğrulayın">
     ```bash
@@ -70,8 +67,6 @@ OpenClaw, Gateway `/v1/models` kataloğunu otomatik keşfeder, bu nedenle
 
 ## Etkileşimsiz örnek
 
-Betikli veya CI kurulumları için tüm değerleri komut satırında iletin:
-
 ```bash
 openclaw onboard --non-interactive \
   --mode local \
@@ -79,54 +74,51 @@ openclaw onboard --non-interactive \
   --ai-gateway-api-key "$AI_GATEWAY_API_KEY"
 ```
 
-## Model ID kısaltması
+## Model kimliği kısaltması
 
-OpenClaw, Vercel Claude kısaltma model referanslarını kabul eder ve çalışma zamanında
-normalleştirir:
+OpenClaw, Claude kısaltmalı model referanslarını çalışma zamanında normalleştirir:
 
-| Kısaltma girdisi                     | Normalleştirilmiş model referansı                          |
-| ----------------------------------- | --------------------------------------------- |
-| `vercel-ai-gateway/claude-opus-4.6` | `vercel-ai-gateway/anthropic/claude-opus-4.6` |
-| `vercel-ai-gateway/opus-4.6`        | `vercel-ai-gateway/anthropic/claude-opus-4-6` |
+| Kısaltmalı girdi                    | Normalleştirilmiş model referansı              |
+| ----------------------------------- | ---------------------------------------------- |
+| `vercel-ai-gateway/claude-opus-4.6` | `vercel-ai-gateway/anthropic/claude-opus-4.6`  |
+| `vercel-ai-gateway/opus-4.6`        | `vercel-ai-gateway/anthropic/claude-opus-4-6`  |
 
 <Tip>
-Yapılandırmanızda kısaltmayı veya tam nitelikli model referansını
-kullanabilirsiniz. OpenClaw kurallı biçimi otomatik olarak çözer.
+Yapılandırmanızda iki biçimden birini kullanabilirsiniz; OpenClaw standart
+`anthropic/...` referansını otomatik olarak çözümler.
 </Tip>
 
 ## Gelişmiş yapılandırma
 
 <AccordionGroup>
-  <Accordion title="Daemon süreçleri için ortam değişkeni">
-    OpenClaw Gateway bir daemon (launchd/systemd) olarak çalışıyorsa,
-    `AI_GATEWAY_API_KEY` değişkeninin bu süreç için kullanılabilir olduğundan emin olun.
+  <Accordion title="Arka plan programı işlemleri için ortam değişkeni">
+    OpenClaw Gateway bir arka plan programı (launchd/systemd) olarak çalışıyorsa
+    `AI_GATEWAY_API_KEY` değişkeninin bu işlem tarafından erişilebilir olduğundan emin olun.
 
     <Warning>
-    Yalnızca etkileşimli bir kabukta dışa aktarılan bir anahtar, bu ortam açıkça
-    içe aktarılmadıkça launchd/systemd daemon tarafından görülemez. Gateway
-    sürecinin okuyabilmesini sağlamak için anahtarı `~/.openclaw/.env` içinde
-    veya `env.shellEnv` aracılığıyla ayarlayın.
+    Yalnızca etkileşimli bir kabukta dışa aktarılan anahtar, ilgili ortam açıkça
+    içe aktarılmadığı sürece launchd/systemd arka plan programı tarafından görülemez.
+    Gateway işleminin anahtarı okuyabilmesini sağlamak için anahtarı
+    `~/.openclaw/.env` içinde veya `env.shellEnv` aracılığıyla ayarlayın.
     </Warning>
 
   </Accordion>
 
   <Accordion title="Sağlayıcı yönlendirmesi">
-    Vercel AI Gateway, istekleri model referansı önekine göre yukarı akış
-    sağlayıcısına yönlendirir. Örneğin, `vercel-ai-gateway/anthropic/claude-opus-4.6`
-    Anthropic üzerinden yönlendirilirken, `vercel-ai-gateway/openai/gpt-5.5` OpenAI
-    üzerinden ve `vercel-ai-gateway/moonshotai/kimi-k2.6` MoonshotAI üzerinden
-    yönlendirilir. Tek `AI_GATEWAY_API_KEY` anahtarınız tüm yukarı akış
-    sağlayıcıları için kimlik doğrulamayı yönetir.
+    Vercel AI Gateway, her isteği model referansı önekinde belirtilen üst
+    sağlayıcıya yönlendirir. Örneğin, `vercel-ai-gateway/anthropic/claude-opus-4.6`
+    Anthropic üzerinden, `vercel-ai-gateway/openai/gpt-5.5` OpenAI üzerinden ve
+    `vercel-ai-gateway/moonshotai/kimi-k2.6` MoonshotAI üzerinden yönlendirilir.
+    Tek bir `AI_GATEWAY_API_KEY`, tüm üst sağlayıcılarda kimlik doğrulaması sağlar.
   </Accordion>
   <Accordion title="Düşünme düzeyleri">
-    `/think` seçenekleri, OpenClaw yukarı akış sağlayıcı sözleşmesini bildiğinde
-    güvenilir yukarı akış model öneklerini izler. `vercel-ai-gateway/anthropic/...`,
-    Claude 4.6 modelleri için uyarlanabilir varsayılanlar dahil olmak üzere Claude
-    düşünme profilini kullanır. `vercel-ai-gateway/openai/gpt-5.4`, `gpt-5.5` ve
-    Codex tarzı referanslar, doğrudan OpenAI/OpenAI Codex sağlayıcıları gibi
-    `/think xhigh` özelliğini sunar. Diğer ad alanlı referanslar, katalog
-    meta verileri daha fazlasını belirtmediği sürece normal akıl yürütme
-    düzeylerini korur.
+    OpenClaw öneki tanıdığında `/think` seçenekleri üst model önekini izler.
+    `vercel-ai-gateway/anthropic/...`, Claude 4.6 modellerinin uyarlanabilir
+    varsayılanı da dahil olmak üzere Claude düşünme profilini kullanır. Güvenilir
+    `vercel-ai-gateway/openai/...` referansları (`gpt-5.2` ve daha yenileri ile
+    `gpt-5.1-codex` sürümüne kadar olan Codex varyantları) `/think xhigh`
+    seçeneğini sunar. Diğer ad alanlı referanslar, katalog meta verileri daha
+    fazlasını bildirmediği sürece standart akıl yürütme düzeylerini korur.
   </Accordion>
 </AccordionGroup>
 
@@ -137,6 +129,6 @@ kullanabilirsiniz. OpenClaw kurallı biçimi otomatik olarak çözer.
     Sağlayıcıları, model referanslarını ve yük devretme davranışını seçme.
   </Card>
   <Card title="Sorun giderme" href="/tr/help/troubleshooting" icon="wrench">
-    Genel sorun giderme ve SSS.
+    Genel sorun giderme ve sık sorulan sorular.
   </Card>
 </CardGroup>

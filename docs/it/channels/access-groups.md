@@ -1,29 +1,29 @@
 ---
 read_when:
-    - Configurazione della stessa lista consentita su più canali di messaggistica
-    - Regole di accesso dei mittenti per la condivisione di DM e gruppi
-    - Revisione del controllo di accesso ai canali di messaggistica
-summary: Liste di mittenti consentiti riutilizzabili per i canali di messaggistica
+    - Configurazione dello stesso elenco di autorizzazioni su più canali di messaggistica
+    - Condivisione delle regole di accesso per i mittenti di messaggi diretti e gruppi
+    - Revisione del controllo degli accessi ai canali di messaggistica
+summary: Elenchi di mittenti consentiti riutilizzabili per i canali di messaggistica
 title: Gruppi di accesso
 x-i18n:
-    generated_at: "2026-05-10T19:21:08Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:48:38Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1dba4fc84deb6e0c8c7b17ebc10182aa6e4bc2c821070e33df44f384e285266f
+    source_hash: 099abc95e90d9a7b7006d19062c46b4ffdb2aecb1e8e714454a3182131a786d0
     source_path: channels/access-groups.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-I gruppi di accesso sono elenchi di mittenti con nome che definisci una volta e a cui fai riferimento dagli allowlist dei canali con `accessGroup:<name>`.
+I gruppi di accesso sono elenchi denominati di mittenti che definisci una sola volta in `accessGroups` e richiami dalle liste consentite dei canali con `accessGroup:<name>`.
 
-Usali quando le stesse persone devono essere autorizzate su più canali di messaggistica, oppure quando un unico insieme attendibile deve applicarsi sia all'autorizzazione dei mittenti nei DM sia nei gruppi.
+Usali quando le stesse persone devono essere autorizzate su più canali di messaggistica oppure quando un unico insieme attendibile deve essere applicato sia ai messaggi diretti sia all'autorizzazione dei mittenti nei gruppi.
 
-I gruppi di accesso non concedono accesso da soli. Un gruppo ha effetto solo quando un campo allowlist vi fa riferimento.
+Un gruppo, da solo, non concede nulla. Ha effetto solo quando un campo di una lista consentita vi fa riferimento.
 
-## Gruppi statici di mittenti di messaggi
+## Gruppi statici di mittenti dei messaggi
 
-I gruppi statici di mittenti usano `type: "message.senders"`.
+I gruppi statici di mittenti usano `type: "message.senders"`. `members` è indicizzato per ID del canale di messaggistica, più `"*"` per le voci condivise da tutti i canali:
 
 ```json5
 {
@@ -41,22 +41,18 @@ I gruppi statici di mittenti usano `type: "message.senders"`.
 }
 ```
 
-Gli elenchi dei membri sono indicizzati per id del canale di messaggistica:
+| Chiave                     | Significato                                                                        |
+| -------------------------- | ---------------------------------------------------------------------------------- |
+| `"*"`                      | Voci condivise verificate per ogni canale di messaggistica che fa riferimento al gruppo. |
+| `discord`, `telegram`, ... | Voci verificate solo durante la corrispondenza con la lista consentita di quel canale. |
 
-| Chiave     | Significato                                                                 |
-| ---------- | --------------------------------------------------------------------------- |
-| `"*"`      | Voci condivise controllate per ogni canale di messaggistica che fa riferimento al gruppo. |
-| `discord`  | Voci controllate solo per la corrispondenza dell'allowlist di Discord.      |
-| `telegram` | Voci controllate solo per la corrispondenza dell'allowlist di Telegram.     |
-| `whatsapp` | Voci controllate solo per la corrispondenza dell'allowlist di WhatsApp.     |
+Le voci vengono confrontate usando le normali regole `allowFrom` del canale di destinazione. OpenClaw non converte gli ID dei mittenti tra i canali: se Alice ha un ID Telegram e un ID Discord, elenca entrambi gli ID sotto le chiavi dei canali corrispondenti.
 
-Le voci vengono confrontate con le normali regole `allowFrom` del canale di destinazione. OpenClaw non traduce gli id dei mittenti tra canali. Se Alice ha un id Telegram e un id Discord, elenca entrambi gli id sotto le chiavi appropriate.
+## Riferimento ai gruppi dalle liste consentite
 
-## Fare riferimento ai gruppi dagli allowlist
+Fai riferimento a un gruppo con `accessGroup:<name>` ovunque il percorso del canale di messaggistica supporti liste consentite di mittenti.
 
-Fai riferimento a un gruppo con `accessGroup:<name>` ovunque il percorso del canale di messaggistica supporti gli allowlist dei mittenti.
-
-Esempio di allowlist per DM:
+Esempio di lista consentita per i messaggi diretti:
 
 ```json5
 {
@@ -82,7 +78,7 @@ Esempio di allowlist per DM:
 }
 ```
 
-Esempio di allowlist dei mittenti di gruppo:
+Esempio di lista consentita dei mittenti nei gruppi:
 
 ```json5
 {
@@ -101,7 +97,7 @@ Esempio di allowlist dei mittenti di gruppo:
       groupAllowFrom: ["accessGroup:oncall"],
     },
     googlechat: {
-      spaces: {
+      groups: {
         "spaces/AAA": {
           users: ["accessGroup:oncall"],
         },
@@ -124,39 +120,20 @@ Puoi combinare gruppi e voci dirette:
 }
 ```
 
-## Percorsi dei canali di messaggistica supportati
+## Percorsi supportati dei canali di messaggistica
 
-I gruppi di accesso sono disponibili nei percorsi condivisi di autorizzazione dei canali di messaggistica, inclusi:
+I gruppi di accesso funzionano nei percorsi condivisi di autorizzazione dei canali di messaggistica:
 
-- allowlist dei mittenti DM come `channels.<channel>.allowFrom`
-- allowlist dei mittenti di gruppo come `channels.<channel>.groupAllowFrom`
-- allowlist dei mittenti per stanza specifici del canale che usano le stesse regole di corrispondenza dei mittenti
-- percorsi di autorizzazione dei comandi che riutilizzano gli allowlist dei mittenti dei canali di messaggistica
+- liste consentite dei mittenti dei messaggi diretti, come `channels.<channel>.allowFrom`
+- liste consentite dei mittenti nei gruppi, come `channels.<channel>.groupAllowFrom`
+- liste consentite di mittenti specifiche per singola stanza del canale che usano le stesse regole di corrispondenza dei mittenti (ad esempio `groups.<space>.users` di Google Chat)
+- percorsi di autorizzazione dei comandi che riutilizzano le liste consentite dei mittenti dei canali di messaggistica
 
-Il supporto del canale dipende dal fatto che quel canale sia collegato agli helper condivisi di OpenClaw per l'autorizzazione dei mittenti. Il supporto integrato attuale include Discord, Feishu, Google Chat, iMessage, LINE, Mattermost, Microsoft Teams, Nextcloud Talk, Nostr, QQBot, Signal, WhatsApp, Zalo e Zalo Personal. I gruppi statici `message.senders` sono progettati per essere indipendenti dal canale, quindi i nuovi canali di messaggistica dovrebbero supportarli usando gli helper condivisi dell'SDK Plugin invece di un'espansione allowlist personalizzata.
+Il supporto di un canale dipende dal suo collegamento agli helper condivisi di OpenClaw per l'autorizzazione dei mittenti. Il supporto incluso attualmente comprende ClickClack, Discord, Feishu, Google Chat, iMessage, IRC, LINE, Mattermost, Microsoft Teams, Nextcloud Talk, Nostr, QQ Bot, Signal, Slack, SMS, Telegram, WhatsApp, Zalo e Zalo Personal. I gruppi statici `message.senders` sono indipendenti dal canale, quindi i nuovi canali di messaggistica possono usarli tramite gli helper di ingresso condivisi dell'SDK dei Plugin, anziché implementare un'espansione personalizzata delle liste consentite.
 
-## Diagnostica dei Plugin
+## Destinatari dei canali Discord
 
-Gli autori di Plugin possono ispezionare lo stato strutturato dei gruppi di accesso senza riespanderlo in un allowlist piatto:
-
-```typescript
-import { resolveAccessGroupAllowFromState } from "openclaw/plugin-sdk/security-runtime";
-
-const state = await resolveAccessGroupAllowFromState({
-  accessGroups: cfg.accessGroups,
-  allowFrom: channelConfig.allowFrom,
-  channel: "my-channel",
-  accountId: "default",
-  senderId,
-  isSenderAllowed,
-});
-```
-
-Il risultato riporta i gruppi referenziati, corrispondenti, mancanti, non supportati e non riusciti. Usalo quando hai bisogno di diagnostica o test di conformità. Usa `expandAllowFromWithAccessGroups(...)` solo per i percorsi di compatibilità che si aspettano ancora un array `allowFrom` piatto.
-
-## Pubblico dei canali Discord
-
-Discord supporta anche un tipo di gruppo di accesso dinamico:
+Discord supporta anche un tipo dinamico di gruppo di accesso:
 
 ```json5
 {
@@ -177,33 +154,52 @@ Discord supporta anche un tipo di gruppo di accesso dinamico:
 }
 ```
 
-`discord.channelAudience` significa "consenti i mittenti DM Discord che possono attualmente visualizzare questo canale della guild." OpenClaw risolve il mittente tramite Discord al momento dell'autorizzazione e applica le regole di autorizzazione Discord `ViewChannel`.
+`discord.channelAudience` significa «consenti i mittenti di messaggi diretti Discord che possono attualmente visualizzare questo canale del server». OpenClaw verifica il mittente tramite Discord al momento dell'autorizzazione e applica le regole dell'autorizzazione Discord `ViewChannel`. `membership` è facoltativo e il valore predefinito è `canViewChannel`.
 
-Usalo quando un canale Discord è già la fonte di verità per un team, come `#maintainers` o `#on-call`.
+Usalo quando un canale Discord è già la fonte attendibile per un team, come `#maintainers` o `#on-call`.
 
 Requisiti e comportamento in caso di errore:
 
-- Il bot ha bisogno di accesso alla guild e al canale.
-- Il bot ha bisogno del **Server Members Intent** del Discord Developer Portal.
-- Il gruppo di accesso fallisce in modo chiuso quando Discord restituisce `Missing Access`, il mittente non può essere risolto come membro della guild, oppure il canale appartiene a un'altra guild.
+- Il bot deve avere accesso al server e al canale.
+- Il bot deve disporre di **Server Members Intent** nel Discord Developer Portal.
+- Il gruppo di accesso nega l'accesso in caso di errore quando Discord restituisce `Missing Access`, quando il mittente non può essere identificato come membro del server o quando il canale appartiene a un altro server.
 
-Altri esempi specifici per Discord: [controllo degli accessi Discord](/it/channels/discord#access-control-and-routing)
+Altri esempi specifici per Discord: [Controllo degli accessi di Discord](/it/channels/discord#access-control-and-routing)
 
-## Note di sicurezza
+## Diagnostica dei Plugin
 
-- I gruppi di accesso sono alias di allowlist, non ruoli. Non creano proprietari, non approvano richieste di associazione e non concedono permessi per gli strumenti da soli.
-- `dmPolicy: "open"` richiede comunque `"*"` nell'allowlist DM effettivo. Fare riferimento a un gruppo di accesso non equivale ad accesso pubblico.
-- I nomi di gruppo mancanti falliscono in modo chiuso. Se `allowFrom` contiene `accessGroup:operators` e `accessGroups.operators` è assente, quella voce non autorizza nessuno.
-- Mantieni stabili gli id dei canali. Preferisci id numerici/utente ai nomi visualizzati quando il canale supporta entrambi.
+Gli autori di Plugin possono esaminare lo stato strutturato dei gruppi di accesso senza espanderlo nuovamente in una lista consentita piatta:
+
+```typescript
+import { resolveAccessGroupAllowFromState } from "openclaw/plugin-sdk/access-groups";
+
+const state = await resolveAccessGroupAllowFromState({
+  accessGroups: cfg.accessGroups,
+  allowFrom: channelConfig.allowFrom,
+  channel: "my-channel",
+  accountId: "default",
+  senderId,
+  isSenderAllowed,
+});
+```
+
+Il risultato indica i gruppi referenziati, corrispondenti, mancanti, non supportati e non riusciti. Usalo per la diagnostica o per i test di conformità. Usa `expandAllowFromWithAccessGroups(...)` solo per i percorsi di compatibilità che richiedono ancora un array `allowFrom` piatto.
+
+## Note sulla sicurezza
+
+- I gruppi di accesso sono alias di liste consentite, non ruoli. Da soli non creano proprietari, non approvano richieste di associazione e non concedono autorizzazioni agli strumenti.
+- `dmPolicy: "open"` richiede comunque `"*"` nella lista consentita effettiva dei messaggi diretti. Fare riferimento a un gruppo di accesso non equivale a concedere l'accesso pubblico.
+- I nomi di gruppo mancanti negano l'accesso in caso di errore. Se `allowFrom` contiene `accessGroup:operators` e `accessGroups.operators` è assente, quella voce non autorizza nessuno.
+- Mantieni stabili gli ID dei canali. Quando il canale supporta sia gli ID numerici/utente sia i nomi visualizzati, preferisci gli ID.
 
 ## Risoluzione dei problemi
 
 Se un mittente dovrebbe corrispondere ma viene bloccato:
 
-1. Conferma che il campo allowlist contenga il riferimento esatto `accessGroup:<name>`.
-2. Conferma che `accessGroups.<name>.type` sia corretto.
-3. Conferma che l'id del mittente sia elencato sotto la chiave del canale corrispondente, oppure sotto `"*"`.
-4. Conferma che la voce usi la normale sintassi allowlist di quel canale.
-5. Per il pubblico dei canali Discord, conferma che il bot possa vedere il canale della guild e che Server Members Intent sia abilitato.
+1. Verifica che il campo della lista consentita contenga il riferimento esatto `accessGroup:<name>`.
+2. Verifica che `accessGroups.<name>.type` sia corretto.
+3. Verifica che l'ID del mittente sia elencato sotto la chiave del canale corrispondente oppure sotto `"*"`.
+4. Verifica che la voce usi la normale sintassi della lista consentita di quel canale.
+5. Per i destinatari dei canali Discord, verifica che il bot possa vedere il canale del server e che **Server Members Intent** sia abilitato.
 
-Esegui `openclaw doctor` dopo aver modificato la configurazione del controllo degli accessi. Rileva molte combinazioni non valide di allowlist e criteri prima del runtime.
+Esegui `openclaw doctor` dopo aver modificato la configurazione del controllo degli accessi. Rileva molte combinazioni non valide di liste consentite e criteri prima dell'esecuzione.

@@ -4,40 +4,36 @@ read_when:
 summary: Status dukungan, kemampuan, dan konfigurasi Tlon/Urbit
 title: Tlon
 x-i18n:
-    generated_at: "2026-05-04T02:22:14Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:00:51Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1718044541b431ff2437508e7e6659c14206f4aa84ab8b207e0d791dea2a48c5
+    source_hash: d53ea7d97a7445910c5692a247758b652e1fce82793e65950e1e21a10fa16813
     source_path: channels/tlon.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Tlon adalah messenger terdesentralisasi yang dibangun di atas Urbit. OpenClaw terhubung ke ship Urbit Anda dan dapat
-menanggapi DM dan pesan obrolan grup. Balasan grup memerlukan sebutan @ secara default dan dapat
-dibatasi lebih lanjut melalui daftar izin.
+Tlon adalah perpesanan terdesentralisasi yang dibangun di atas Urbit. OpenClaw terhubung ke kapal Urbit Anda dan
+merespons pesan langsung serta pesan obrolan grup. Secara default, balasan grup memerlukan penyebutan @, dengan
+aturan otorisasi dan alur persetujuan pemilik yang diterapkan di atasnya.
 
-Status: Plugin terbundel. DM, sebutan grup, balasan utas, pemformatan teks kaya, dan
-unggahan gambar didukung. Reaksi dan jajak pendapat belum didukung.
+Status: plugin bawaan. Pesan langsung, penyebutan grup, utas, teks kaya, pengunggahan/pengunduhan gambar, dan
+sistem persetujuan pemilik didukung. Reaksi dan jajak pendapat tidak didukung.
 
-## Plugin terbundel
+## Plugin bawaan
 
-Tlon dikirim sebagai Plugin terbundel dalam rilis OpenClaw saat ini, sehingga build paket
-normal tidak memerlukan instalasi terpisah.
+Tlon disertakan dalam rilis OpenClaw saat ini; build terpaket tidak memerlukan instalasi terpisah.
 
-Jika Anda menggunakan build lama atau instalasi kustom yang mengecualikan Tlon, instal
-paket npm saat ini:
-
-Instal melalui CLI (registri npm):
+Pada build lama atau instalasi khusus yang tidak menyertakannya, instal dari npm:
 
 ```bash
 openclaw plugins install @openclaw/tlon
 ```
 
-Gunakan paket polos untuk mengikuti tag rilis resmi saat ini. Sematkan versi
-persis hanya ketika Anda membutuhkan instalasi yang dapat direproduksi.
+Gunakan nama paket tanpa versi untuk mengikuti tag rilis saat ini. Sematkan versi (`@openclaw/tlon@x.y.z`)
+hanya untuk instalasi yang dapat direproduksi.
 
-Checkout lokal (saat menjalankan dari repo git):
+Dari checkout lokal:
 
 ```bash
 openclaw plugins install ./path/to/local/tlon-plugin
@@ -47,15 +43,11 @@ Detail: [Plugin](/id/tools/plugin)
 
 ## Penyiapan
 
-1. Pastikan Plugin Tlon tersedia.
-   - Rilis paket OpenClaw saat ini sudah membundelnya.
-   - Instalasi lama/kustom dapat menambahkannya secara manual dengan perintah di atas.
-2. Kumpulkan URL ship dan kode login Anda.
-3. Konfigurasikan `channels.tlon`.
-4. Mulai ulang Gateway.
-5. Kirim DM ke bot atau sebut bot di channel grup.
+```bash
+openclaw channels add --channel tlon --ship ~sampel-palnet --url https://your-ship-host --code lidlut-tabwed-pillex-ridrup
+```
 
-Konfigurasi minimal (satu akun):
+Atau edit konfigurasi secara langsung:
 
 ```json5
 {
@@ -65,67 +57,64 @@ Konfigurasi minimal (satu akun):
       ship: "~sampel-palnet",
       url: "https://your-ship-host",
       code: "lidlut-tabwed-pillex-ridrup",
-      ownerShip: "~your-main-ship", // recommended: your ship, always allowed
+      ownerShip: "~your-main-ship", // disarankan: kapal Anda, selalu diotorisasi
     },
   },
 }
 ```
 
-## Ship privat/LAN
+Mulai ulang Gateway setelah mengedit konfigurasi secara langsung. Kemudian kirim pesan langsung ke bot atau sebut
+bot dengan @ di saluran grup.
 
-Secara default, OpenClaw memblokir hostname dan rentang IP privat/internal untuk perlindungan SSRF.
-Jika ship Anda berjalan di jaringan privat (localhost, IP LAN, atau hostname internal),
-Anda harus memilih ikut serta secara eksplisit:
+## Kapal privat/LAN
+
+Secara default, OpenClaw memblokir nama host dan rentang IP privat/internal untuk perlindungan SSRF. Jika
+kapal Anda berjalan di jaringan privat (localhost, IP LAN, nama host internal), aktifkan secara eksplisit:
 
 ```json5
 {
   channels: {
     tlon: {
       url: "http://localhost:8080",
-      allowPrivateNetwork: true,
+      network: {
+        dangerouslyAllowPrivateNetwork: true,
+      },
     },
   },
 }
 ```
 
-Ini berlaku untuk URL seperti:
+Berlaku untuk target seperti `http://localhost:8080`, `http://192.168.x.x:8080`, dan
+`http://my-ship.local:8080`. Aktifkan ini hanya untuk URL kapal yang Anda percayai; tindakan ini menonaktifkan
+perlindungan SSRF untuk permintaan HTTP akun tersebut.
 
-- `http://localhost:8080`
-- `http://192.168.x.x:8080`
-- `http://my-ship.local:8080`
+<Note>
+`channels.tlon.allowPrivateNetwork` (kunci datar) telah dihentikan. `openclaw doctor --fix` memindahkannya ke
+`channels.tlon.network.dangerouslyAllowPrivateNetwork` secara otomatis.
+</Note>
 
-⚠️ Aktifkan ini hanya jika Anda memercayai jaringan lokal Anda. Pengaturan ini menonaktifkan perlindungan SSRF
-untuk permintaan ke URL ship Anda.
+## Saluran grup
 
-## Channel grup
-
-Penemuan otomatis diaktifkan secara default. Anda juga dapat menyematkan channel secara manual:
+Sematkan saluran secara manual, atau aktifkan penemuan otomatis:
 
 ```json5
 {
   channels: {
     tlon: {
       groupChannels: ["chat/~host-ship/general", "chat/~host-ship/support"],
+      autoDiscoverChannels: true,
     },
   },
 }
 ```
 
-Nonaktifkan penemuan otomatis:
-
-```json5
-{
-  channels: {
-    tlon: {
-      autoDiscoverChannels: false,
-    },
-  },
-}
-```
+`autoDiscoverChannels` secara default bernilai `false` jika tidak ditetapkan dalam konfigurasi; wisaya penyiapan
+secara default memilih ya pada perintah dan menulis `true` secara eksplisit. Saat diaktifkan, OpenClaw melakukan scry
+pada grup yang telah diikuti saat dimulai, memantau saluran baru ketika undangan grup diterima, dan memeriksa ulang setiap 2 menit.
 
 ## Kontrol akses
 
-Daftar izin DM (kosong = tidak ada DM yang diizinkan, gunakan `ownerShip` untuk alur persetujuan):
+Daftar izin pesan langsung (kosong = pesan langsung tidak diizinkan kecuali pengirim adalah `ownerShip`):
 
 ```json5
 {
@@ -137,7 +126,8 @@ Daftar izin DM (kosong = tidak ada DM yang diizinkan, gunakan `ownerShip` untuk 
 }
 ```
 
-Otorisasi grup (dibatasi secara default):
+Otorisasi grup secara default adalah `restricted` untuk setiap saluran. Tetapkan `defaultAuthorizedShips` sebagai
+dasar, lalu timpa untuk setiap sarang saluran:
 
 ```json5
 {
@@ -160,9 +150,10 @@ Otorisasi grup (dibatasi secara default):
 }
 ```
 
-## Pemilik dan sistem persetujuan
+Setelah bot membalas di dalam sebuah utas, bot akan terus merespons pesan berikutnya dalam utas tersebut
+tanpa memerlukan penyebutan lagi.
 
-Atur ship pemilik untuk menerima permintaan persetujuan ketika pengguna yang tidak berwenang mencoba berinteraksi:
+## Sistem pemilik dan persetujuan
 
 ```json5
 {
@@ -174,19 +165,36 @@ Atur ship pemilik untuk menerima permintaan persetujuan ketika pengguna yang tid
 }
 ```
 
-Ship pemilik **secara otomatis diotorisasi di mana saja** — undangan DM diterima otomatis dan
-pesan channel selalu diizinkan. Anda tidak perlu menambahkan pemilik ke `dmAllowlist` atau
-`defaultAuthorizedShips`.
+Kapal pemilik diotorisasi di mana saja: undangan pesan langsung selalu diterima otomatis, undangan grup
+selalu diterima otomatis, dan pesan saluran selalu lolos otorisasi. Pemilik tidak perlu
+tercantum dalam `dmAllowlist`, `defaultAuthorizedShips`, atau `groupInviteAllowlist`.
 
-Ketika diatur, pemilik menerima notifikasi DM untuk:
+Saat `ownerShip` ditetapkan, permintaan yang tidak diotorisasi tidak sekadar dibuang — permintaan tersebut
+dimasukkan ke antrean persetujuan tertunda dan pesan langsung dikirimkan kepada pemilik:
 
-- Permintaan DM dari ship yang tidak ada dalam daftar izin
-- Sebutan di channel tanpa otorisasi
-- Permintaan undangan grup
+- Permintaan pesan langsung dari kapal yang tidak ada di `dmAllowlist`
+- Penyebutan di saluran ketika pengirim gagal melewati otorisasi
+- Undangan grup dari kapal yang tidak ada di `groupInviteAllowlist` (saat penerimaan otomatis dinonaktifkan,
+  atau diaktifkan tetapi pengundang tidak ada dalam daftar izin)
 
-## Pengaturan terima otomatis
+Pemilik membalas melalui pesan langsung untuk menindaklanjuti permintaan:
 
-Terima otomatis undangan DM (untuk ship dalam dmAllowlist):
+| Balasan pemilik              | Efek                                                         |
+| ---------------------------- | ------------------------------------------------------------ |
+| `approve` / `deny` / `block` | Menindaklanjuti persetujuan tertunda terbaru                  |
+| `approve <id>` / `deny <id>` | Menindaklanjuti persetujuan tertentu berdasarkan id           |
+| `block`                      | Juga memblokir kapal secara bawaan agar tidak dapat terhubung kembali |
+| `unblock ~ship`              | Membatalkan pemblokiran bawaan                               |
+| `blocked`                    | Menampilkan kapal yang saat ini diblokir                     |
+| `pending`                    | Menampilkan permintaan persetujuan yang tertunda             |
+
+Tanpa `ownerShip` yang dikonfigurasi, pesan langsung dan penyebutan saluran yang tidak diotorisasi hanya dibuang dan dicatat;
+tidak ada permintaan persetujuan.
+
+## Pengaturan penerimaan otomatis
+
+Terima otomatis undangan pesan langsung dari kapal yang sudah ada di `dmAllowlist` (pemilik selalu diterima otomatis
+terlepas dari tanda ini):
 
 ```json5
 {
@@ -198,7 +206,8 @@ Terima otomatis undangan DM (untuk ship dalam dmAllowlist):
 }
 ```
 
-Terima otomatis undangan grup dari ship tepercaya:
+Terima otomatis undangan grup dari daftar izin (gagal secara tertutup: dengan `autoAcceptGroupInvites: true` dan
+`groupInviteAllowlist` kosong, tidak ada undangan selain dari pemilik yang diterima):
 
 ```json5
 {
@@ -211,46 +220,53 @@ Terima otomatis undangan grup dari ship tepercaya:
 }
 ```
 
-`autoAcceptGroupInvites` gagal tertutup ketika `groupInviteAllowlist` kosong. Atur
-daftar izin ke ship yang undangan grupnya harus diterima secara otomatis.
+## Muat ulang langsung melalui penyimpanan pengaturan Urbit
+
+Sebagian besar pengaturan di atas (`dmAllowlist`, `groupInviteAllowlist`, `groupChannels`,
+`defaultAuthorizedShips`, `autoDiscoverChannels`, `autoAcceptDmInvites`,
+`autoAcceptGroupInvites`, `ownerShip`, `showModelSignature`) dicerminkan ke agen
+`%settings` milik kapal (desk `moltbot`, bucket `tlon`) pada proses pertama dan kemudian dibaca secara langsung dari sana,
+sehingga perubahan yang dibuat melalui klien Landscape atau perintah pengaturan keterampilan bawaan diterapkan tanpa
+memulai ulang Gateway. `channelRules` dan persetujuan tertunda juga disimpan di sana sebagai JSON. Konfigurasi
+berkas tetap menjadi sumber kebenaran untuk nilai yang tidak pernah ditulis ke penyimpanan pengaturan.
 
 ## Target pengiriman (CLI/Cron)
 
-Gunakan ini dengan `openclaw message send` atau pengiriman Cron:
+Gunakan dengan `openclaw message send` atau pengiriman Cron:
 
-- DM: `~sampel-palnet` atau `dm/~sampel-palnet`
+- Pesan langsung: `~sampel-palnet` atau `dm/~sampel-palnet`
 - Grup: `chat/~host-ship/channel` atau `group:~host-ship/channel`
 
-## Skill terbundel
+## Keterampilan bawaan
 
-Plugin Tlon menyertakan skill terbundel ([`@tloncorp/tlon-skill`](https://github.com/tloncorp/tlon-skill))
-yang menyediakan akses CLI ke operasi Tlon:
+Plugin menyertakan [`@tloncorp/tlon-skill`](https://github.com/tloncorp/tlon-skill), sebuah CLI untuk
+operasi Urbit langsung, yang tersedia secara otomatis setelah plugin diinstal:
 
-- **Kontak**: dapatkan/perbarui profil, cantumkan kontak
-- **Channel**: cantumkan, buat, kirim pesan, ambil riwayat
-- **Grup**: cantumkan, buat, kelola anggota
-- **DM**: kirim pesan, beri reaksi ke pesan
-- **Reaksi**: tambah/hapus reaksi emoji ke postingan dan DM
-- **Pengaturan**: kelola izin Plugin melalui perintah slash
+- **Aktivitas**: penyebutan, balasan, pesan belum dibaca
+- **Saluran**: tampilkan, buat, ganti nama
+- **Kontak**: tampilkan/ambil/perbarui profil
+- **Grup**: buat, gabung, alur undangan/permintaan, peran
+- **Kait**: kelola kait saluran
+- **Pesan**: riwayat, pencarian
+- **Pesan langsung**: kirim, beri reaksi, terima/tolak
+- **Kiriman**: beri reaksi, hapus
+- **Buku catatan**: kirim ke saluran buku harian
+- **Pengaturan**: muat ulang langsung konfigurasi plugin melalui penyimpanan pengaturan di atas
 
-Skill tersedia secara otomatis ketika Plugin diinstal.
+## Kemampuan
 
-## Kapabilitas
-
-| Fitur           | Status                                     |
-| --------------- | ------------------------------------------ |
-| Pesan langsung  | ✅ Didukung                                |
-| Grup/channel    | ✅ Didukung (dibatasi sebutan secara default) |
-| Utas            | ✅ Didukung (balasan otomatis dalam utas)  |
-| Teks kaya       | ✅ Markdown dikonversi ke format Tlon      |
-| Gambar          | ✅ Diunggah ke penyimpanan Tlon            |
-| Reaksi          | ✅ Melalui [skill terbundel](#bundled-skill) |
-| Jajak pendapat  | ❌ Belum didukung                          |
-| Perintah native | ✅ Didukung (hanya pemilik secara default) |
+| Fitur           | Status                                                   |
+| --------------- | -------------------------------------------------------- |
+| Pesan langsung  | Didukung                                                 |
+| Grup/saluran    | Didukung (secara default memerlukan penyebutan)          |
+| Utas            | Didukung (terus membalas setelah bergabung)              |
+| Teks kaya       | Markdown dikonversi ke format bawaan Tlon                |
+| Gambar          | Masuk diunduh, keluar diunggah                            |
+| Reaksi          | Hanya melalui [keterampilan bawaan](#bundled-skill)      |
+| Jajak pendapat  | Tidak didukung                                           |
+| Perintah bawaan | Secara default hanya untuk pemilik                       |
 
 ## Pemecahan masalah
-
-Jalankan tangga ini terlebih dahulu:
 
 ```bash
 openclaw status
@@ -261,44 +277,50 @@ openclaw doctor
 
 Kegagalan umum:
 
-- **DM diabaikan**: pengirim tidak ada di `dmAllowlist` dan tidak ada `ownerShip` yang dikonfigurasi untuk alur persetujuan.
-- **Pesan grup diabaikan**: channel tidak ditemukan atau pengirim tidak diotorisasi.
-- **Kesalahan koneksi**: periksa URL ship dapat dijangkau; aktifkan `allowPrivateNetwork` untuk ship lokal.
-- **Kesalahan auth**: verifikasi kode login masih berlaku (kode berotasi).
+- **Pesan langsung diabaikan**: pengirim tidak ada di `dmAllowlist` dan tidak ada `ownerShip` yang dikonfigurasi untuk alur persetujuan.
+- **Pesan grup diabaikan**: saluran tidak ditemukan/disematkan, atau pengirim gagal melewati otorisasi tanpa
+  `ownerShip` untuk mengantrekan persetujuan.
+- **Kesalahan koneksi**: periksa apakah URL kapal dapat dijangkau; tetapkan
+  `network.dangerouslyAllowPrivateNetwork` untuk kapal lokal.
+- **Kesalahan autentikasi**: kode masuk berganti secara berkala — salin kode saat ini dari kapal Anda.
 
 ## Referensi konfigurasi
 
 Konfigurasi lengkap: [Konfigurasi](/id/gateway/configuration)
 
-Opsi penyedia:
-
-- `channels.tlon.enabled`: aktifkan/nonaktifkan startup channel.
-- `channels.tlon.ship`: nama ship Urbit bot (mis. `~sampel-palnet`).
-- `channels.tlon.url`: URL ship (mis. `https://sampel-palnet.tlon.network`).
-- `channels.tlon.code`: kode login ship.
-- `channels.tlon.allowPrivateNetwork`: izinkan URL localhost/LAN (bypass SSRF).
-- `channels.tlon.ownerShip`: ship pemilik untuk sistem persetujuan (selalu diotorisasi).
-- `channels.tlon.dmAllowlist`: ship yang diizinkan mengirim DM (kosong = tidak ada).
-- `channels.tlon.autoAcceptDmInvites`: terima otomatis DM dari ship yang ada di daftar izin.
-- `channels.tlon.autoAcceptGroupInvites`: terima otomatis undangan grup dari ship yang ada di daftar izin.
-- `channels.tlon.groupInviteAllowlist`: ship yang undangan grupnya boleh diterima otomatis.
-- `channels.tlon.autoDiscoverChannels`: temukan channel grup secara otomatis (default: true).
-- `channels.tlon.groupChannels`: nest channel yang disematkan secara manual.
-- `channels.tlon.defaultAuthorizedShips`: ship yang diotorisasi untuk semua channel.
-- `channels.tlon.authorization.channelRules`: aturan auth per channel.
-- `channels.tlon.showModelSignature`: tambahkan nama model ke pesan.
+| Kunci                                                  | Arti                                                           |
+| ------------------------------------------------------ | -------------------------------------------------------------- |
+| `channels.tlon.enabled`                                | Aktifkan/nonaktifkan permulaan saluran.                        |
+| `channels.tlon.ship`                                   | Nama kapal Urbit milik bot (mis. `~sampel-palnet`).            |
+| `channels.tlon.url`                                    | URL kapal (mis. `https://sampel-palnet.tlon.network`).         |
+| `channels.tlon.code`                                   | Kode masuk kapal.                                              |
+| `channels.tlon.network.dangerouslyAllowPrivateNetwork` | Izinkan URL kapal localhost/LAN (persetujuan eksplisit SSRF).  |
+| `channels.tlon.ownerShip`                              | Kapal pemilik: selalu diotorisasi, menerima permintaan persetujuan. |
+| `channels.tlon.dmAllowlist`                            | Kapal yang diizinkan mengirim pesan langsung (kosong = hanya pemilik). |
+| `channels.tlon.autoAcceptDmInvites`                    | Terima otomatis pesan langsung dari kapal dalam `dmAllowlist`. |
+| `channels.tlon.autoAcceptGroupInvites`                 | Terima otomatis undangan grup dari `groupInviteAllowlist`.     |
+| `channels.tlon.groupInviteAllowlist`                   | Kapal yang undangan grupnya diterima otomatis.                 |
+| `channels.tlon.autoDiscoverChannels`                   | Temukan otomatis saluran grup yang diikuti (default: `false`). |
+| `channels.tlon.groupChannels`                          | Sarang saluran yang disematkan secara manual.                  |
+| `channels.tlon.defaultAuthorizedShips`                 | Kapal yang diotorisasi untuk semua saluran (digunakan saat tidak ada aturan yang cocok). |
+| `channels.tlon.authorization.channelRules`             | Mode autentikasi + daftar izin untuk setiap sarang saluran.    |
+| `channels.tlon.showModelSignature`                     | Tambahkan `_[Generated by <model>]_` ke balasan.               |
+| `channels.tlon.responsePrefix`                         | Awalan statis yang ditambahkan di depan balasan keluar.        |
+| `channels.tlon.accounts.<id>`                          | Akun bernama tambahan (penyiapan beberapa kapal).              |
 
 ## Catatan
 
-- Balasan grup memerlukan sebutan (mis. `~your-bot-ship`) untuk menanggapi.
-- Balasan utas: jika pesan masuk berada dalam utas, OpenClaw membalas di dalam utas.
-- Teks kaya: pemformatan Markdown (tebal, miring, kode, header, daftar) dikonversi ke format native Tlon.
-- Gambar: URL diunggah ke penyimpanan Tlon dan disematkan sebagai blok gambar.
+- Balasan grup memerlukan penyebutan @ (mis. `~your-bot-ship`) kecuali bot sudah bergabung dengan utas tersebut.
+- Balasan utas masuk ke dalam utas; bot juga menerima 10 pesan terakhir dari konteks utas yang ditambahkan
+  di depan untuk agen.
+- Teks kaya (tebal, miring, kode, judul, daftar) dikonversi ke format bawaan Tlon.
+- Mengirim pesan masuk yang meminta ringkasan saluran (misalnya "rangkum saluran ini")
+  memicu perangkuman riwayat bawaan sebagai pengganti alur balasan normal.
 
 ## Terkait
 
-- [Ikhtisar Channel](/id/channels) — semua channel yang didukung
-- [Pemasangan](/id/channels/pairing) — autentikasi DM dan alur pemasangan
-- [Grup](/id/channels/groups) — perilaku obrolan grup dan pembatasan sebutan
-- [Perutean Channel](/id/channels/channel-routing) — perutean sesi untuk pesan
-- [Keamanan](/id/gateway/security) — model akses dan pengerasan
+- [Ikhtisar Saluran](/id/channels) — semua saluran yang didukung
+- [Pemasangan](/id/channels/pairing) — autentikasi pesan langsung dan alur pemasangan
+- [Grup](/id/channels/groups) — perilaku obrolan grup dan persyaratan penyebutan
+- [Perutean Saluran](/id/channels/channel-routing) — perutean sesi untuk pesan
+- [Keamanan](/id/gateway/security) — model akses dan penguatan

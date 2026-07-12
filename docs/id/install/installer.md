@@ -1,27 +1,29 @@
 ---
 read_when:
     - Anda ingin memahami `openclaw.ai/install.sh`
-    - Anda ingin mengotomatiskan instalasi (CI / headless)
+    - Anda ingin mengotomatiskan instalasi (CI / tanpa antarmuka)
     - Anda ingin menginstal dari checkout GitHub
 summary: Cara kerja skrip penginstal (install.sh, install-cli.sh, install.ps1), flag, dan otomatisasi
 title: Internal penginstal
 x-i18n:
-    generated_at: "2026-06-27T17:38:10Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:19:19Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 72182472f423e64b33afa071feda76c2c9abdf896bffa269f2148124c49a451c
+    source_hash: 59b38a2eecbf15cc966beada81acf1824229a3825c73ae33ea0f8e89612bdf5b
     source_path: install/installer.md
     workflow: 16
 ---
 
-OpenClaw menyediakan tiga skrip penginstal, disajikan dari `openclaw.ai`.
+OpenClaw menyediakan tiga skrip penginstal yang disajikan dari `openclaw.ai`.
 
-| Skrip                              | Platform             | Yang dilakukan                                                                                                |
-| ---------------------------------- | -------------------- | -------------------------------------------------------------------------------------------------------------- |
-| [`install.sh`](#installsh)         | macOS / Linux / WSL  | Menginstal Node jika diperlukan, menginstal OpenClaw melalui npm (default) atau git, dan dapat menjalankan onboarding. |
-| [`install-cli.sh`](#install-clish) | macOS / Linux / WSL  | Menginstal Node + OpenClaw ke prefiks lokal (`~/.openclaw`) dengan mode npm atau git checkout. Tidak memerlukan root. |
-| [`install.ps1`](#installps1)       | Windows (PowerShell) | Menginstal Node jika diperlukan, menginstal OpenClaw melalui npm (default) atau git, dan dapat menjalankan onboarding. |
+| Skrip                              | Platform             | Fungsinya                                                                                              |
+| ---------------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------ |
+| [`install.sh`](#installsh)         | macOS / Linux / WSL  | Menginstal Node jika diperlukan, menginstal OpenClaw melalui npm (bawaan) atau git, dan dapat menjalankan orientasi awal. |
+| [`install-cli.sh`](#install-clish) | macOS / Linux / WSL  | Menginstal Node + OpenClaw ke prefiks lokal (`~/.openclaw`) melalui npm atau git. Tidak memerlukan root. |
+| [`install.ps1`](#installps1)       | Windows (PowerShell) | Menginstal Node jika diperlukan, menginstal OpenClaw melalui npm (bawaan) atau git, dan dapat menjalankan orientasi awal. |
+
+Ketiganya mendukung Node **22.19+, 23.11+, atau 24+**; Node 24 adalah target bawaan untuk instalasi baru.
 
 ## Perintah cepat
 
@@ -59,7 +61,7 @@ OpenClaw menyediakan tiga skrip penginstal, disajikan dari `openclaw.ai`.
 </Tabs>
 
 <Note>
-Jika penginstalan berhasil tetapi `openclaw` tidak ditemukan di terminal baru, lihat [pemecahan masalah Node.js](/id/install/node#troubleshooting).
+Jika instalasi berhasil tetapi `openclaw` tidak ditemukan di terminal baru, lihat [pemecahan masalah Node.js](/id/install/node#troubleshooting).
 </Note>
 
 ---
@@ -69,31 +71,32 @@ Jika penginstalan berhasil tetapi `openclaw` tidak ditemukan di terminal baru, l
 ## install.sh
 
 <Tip>
-Direkomendasikan untuk sebagian besar penginstalan interaktif di macOS/Linux/WSL.
+Direkomendasikan untuk sebagian besar instalasi interaktif di macOS/Linux/WSL.
 </Tip>
 
 ### Alur (install.sh)
 
 <Steps>
-  <Step title="Mendeteksi OS">
+  <Step title="Deteksi sistem operasi">
     Mendukung macOS dan Linux (termasuk WSL).
   </Step>
-  <Step title="Memastikan Node.js 24 secara default">
-    Memeriksa versi Node dan menginstal Node 24 jika diperlukan (Homebrew di macOS, skrip penyiapan NodeSource di Linux apt/dnf/yum). Di macOS, Homebrew hanya diinstal saat penginstal memerlukannya untuk Node atau Git. OpenClaw tetap mendukung Node 22 LTS, saat ini `22.19+`, untuk kompatibilitas.
-    Di Alpine/musl Linux, penginstal menggunakan paket apk alih-alih NodeSource; repositori Alpine yang dikonfigurasi harus menyediakan Node `22.19+` (Alpine 3.21 atau lebih baru pada saat penulisan).
+  <Step title="Pastikan Node.js 24 tersedia secara bawaan">
+    Memeriksa versi Node dan menginstal Node 24 jika diperlukan (Homebrew di macOS, skrip penyiapan NodeSource di Linux apt/dnf/yum). Di macOS, Homebrew hanya diinstal jika penginstal memerlukannya untuk Node atau Git. Node 22.19+ dan 23.11+ tetap didukung untuk kompatibilitas.
+    Di Alpine/Linux musl, penginstal menggunakan paket apk sebagai pengganti NodeSource; repositori Alpine yang dikonfigurasi harus menyediakan versi Node yang didukung (Alpine 3.21 atau lebih baru pada saat penulisan).
   </Step>
-  <Step title="Memastikan Git">
-    Menginstal Git jika belum ada menggunakan manajer paket yang terdeteksi, termasuk Homebrew di macOS dan apk di Alpine.
+  <Step title="Pastikan Git tersedia">
+    Menginstal Git jika belum tersedia menggunakan pengelola paket yang terdeteksi, termasuk Homebrew di macOS dan apk di Alpine.
   </Step>
-  <Step title="Menginstal OpenClaw">
-    - Metode `npm` (default): penginstalan npm global
-    - Metode `git`: clone/update repo, instal dependensi dengan pnpm, build, lalu instal wrapper di `~/.local/bin/openclaw`
+  <Step title="Instal OpenClaw">
+    - Metode `npm` (bawaan): instalasi npm global
+    - Metode `git`: mengkloning/memperbarui repositori, menginstal dependensi dengan pnpm, membangun, lalu menginstal pembungkus di `~/.local/bin/openclaw`
 
   </Step>
-  <Step title="Tugas pasca-instalasi">
-    - Menyegarkan layanan Gateway yang dimuat secara upaya terbaik (`openclaw gateway install --force`, lalu mulai ulang)
-    - Menjalankan `openclaw doctor --non-interactive` pada upgrade dan penginstalan git (upaya terbaik)
-    - Mencoba onboarding saat sesuai (TTY tersedia, onboarding tidak dinonaktifkan, dan pemeriksaan bootstrap/konfigurasi lulus)
+  <Step title="Tugas pascainstalasi">
+    - Menentukan biner `openclaw` yang baru saja diinstal untuk perintah lanjutan
+    - Untuk instalasi yang belum dikonfigurasi, memulai orientasi awal sebelum pemeriksaan doctor atau Gateway. Dengan `--no-onboard` atau tanpa TTY, skrip mencetak perintah untuk menyelesaikan penyiapan nanti.
+    - Untuk instalasi yang sudah dikonfigurasi, menyegarkan dan memulai ulang layanan Gateway yang dimuat sebisa mungkin, lalu menjalankan doctor. Pemutakhiran memperbarui Plugin jika memungkinkan, atau mencetak perintah manual dalam proses tanpa antarmuka yang mengaktifkan perintah interaktif.
+    - Saat `--verify` dijalankan, skrip memeriksa versi yang terinstal dan memeriksa kesehatan Gateway hanya setelah konfigurasi tersedia.
 
   </Step>
 </Steps>
@@ -102,27 +105,27 @@ Direkomendasikan untuk sebagian besar penginstalan interaktif di macOS/Linux/WSL
 
 Jika dijalankan di dalam checkout OpenClaw (`package.json` + `pnpm-workspace.yaml`), skrip menawarkan:
 
-- gunakan checkout (`git`), atau
-- gunakan penginstalan global (`npm`)
+- menggunakan checkout (`git`), atau
+- menggunakan instalasi global (`npm`)
 
-Jika tidak ada TTY yang tersedia dan tidak ada metode instalasi yang ditetapkan, default-nya adalah `npm` dan memberi peringatan.
+Jika TTY tidak tersedia dan metode instalasi tidak ditetapkan, metode bawaan adalah `npm` dan skrip menampilkan peringatan.
 
 Skrip keluar dengan kode `2` untuk pemilihan metode yang tidak valid atau nilai `--install-method` yang tidak valid.
 
 ### Contoh (install.sh)
 
 <Tabs>
-  <Tab title="Default">
+  <Tab title="Bawaan">
     ```bash
     curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash
     ```
   </Tab>
-  <Tab title="Lewati onboarding">
+  <Tab title="Lewati orientasi awal">
     ```bash
     curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --no-onboard
     ```
   </Tab>
-  <Tab title="Penginstalan Git">
+  <Tab title="Instalasi Git">
     ```bash
     curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --install-method git
     ```
@@ -132,9 +135,14 @@ Skrip keluar dengan kode `2` untuk pemilihan metode yang tidak valid atau nilai 
     curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --install-method git --version main
     ```
   </Tab>
-  <Tab title="Dry run">
+  <Tab title="Simulasi">
     ```bash
     curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --dry-run
+    ```
+  </Tab>
+  <Tab title="Verifikasi setelah instalasi">
+    ```bash
+    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --no-onboard --verify
     ```
   </Tab>
 </Tabs>
@@ -142,39 +150,41 @@ Skrip keluar dengan kode `2` untuk pemilihan metode yang tidak valid atau nilai 
 <AccordionGroup>
   <Accordion title="Referensi flag">
 
-| Flag                                  | Deskripsi                                                  |
-| ------------------------------------- | ---------------------------------------------------------- |
-| `--install-method npm\|git`           | Pilih metode instalasi (default: `npm`). Alias: `--method` |
-| `--npm`                               | Pintasan untuk metode npm                                  |
-| `--git`                               | Pintasan untuk metode git. Alias: `--github`               |
-| `--version <version\|dist-tag\|spec>` | Versi npm, dist-tag, atau spesifikasi paket (default: `latest`) |
-| `--beta`                              | Gunakan dist-tag beta jika tersedia, jika tidak fallback ke `latest` |
-| `--git-dir <path>`                    | Direktori checkout (default: `~/openclaw`). Alias: `--dir` |
-| `--no-git-update`                     | Lewati `git pull` untuk checkout yang sudah ada            |
-| `--no-prompt`                         | Nonaktifkan prompt                                         |
-| `--no-onboard`                        | Lewati onboarding                                          |
-| `--onboard`                           | Aktifkan onboarding                                        |
-| `--dry-run`                           | Cetak tindakan tanpa menerapkan perubahan                  |
-| `--verbose`                           | Aktifkan output debug (`set -x`, log tingkat notice npm)   |
-| `--help`                              | Tampilkan penggunaan (`-h`)                                |
+| Flag                                    | Deskripsi                                                               |
+| --------------------------------------- | ----------------------------------------------------------------------- |
+| `--install-method \| --method npm\|git` | Pilih metode instalasi (bawaan: `npm`)                                  |
+| `--npm`                                 | Pintasan untuk metode npm                                               |
+| `--git \| --github`                     | Pintasan untuk metode git                                               |
+| `--version <version\|dist-tag\|spec>`   | Versi npm, dist-tag, atau spesifikasi paket (bawaan: `latest`)          |
+| `--beta`                                | Gunakan dist-tag beta jika tersedia; jika tidak, kembali ke `latest`    |
+| `--git-dir \| --dir <path>`             | Direktori checkout (bawaan: `~/openclaw`)                               |
+| `--no-git-update`                       | Lewati `git pull` untuk checkout yang sudah ada                         |
+| `--no-prompt`                           | Nonaktifkan perintah interaktif                                         |
+| `--no-onboard`                          | Lewati orientasi awal                                                   |
+| `--onboard`                             | Aktifkan orientasi awal                                                 |
+| `--verify`                              | Jalankan verifikasi cepat pascainstalasi (`--version`, kesehatan Gateway jika dimuat) |
+| `--dry-run`                             | Cetak tindakan tanpa menerapkan perubahan                               |
+| `--verbose`                             | Aktifkan keluaran debug (`set -x`, log npm tingkat notice)              |
+| `--help \| -h`                          | Tampilkan petunjuk penggunaan                                           |
 
   </Accordion>
 
   <Accordion title="Referensi variabel lingkungan">
 
-| Variabel                                          | Deskripsi                                                        |
-| ------------------------------------------------- | ------------------------------------------------------------------ |
-| `OPENCLAW_INSTALL_METHOD=git\|npm`                | Metode instalasi                                                   |
-| `OPENCLAW_VERSION=latest\|next\|<semver>\|<spec>` | Versi npm, dist-tag, atau spesifikasi paket                        |
-| `OPENCLAW_BETA=0\|1`                              | Gunakan beta jika tersedia                                         |
-| `OPENCLAW_HOME=<path>`                            | Direktori dasar untuk state OpenClaw dan path git/onboarding default |
-| `OPENCLAW_GIT_DIR=<path>`                         | Direktori checkout                                                 |
-| `OPENCLAW_GIT_UPDATE=0\|1`                        | Aktifkan/nonaktifkan update git                                    |
-| `OPENCLAW_NO_PROMPT=1`                            | Nonaktifkan prompt                                                 |
-| `OPENCLAW_NO_ONBOARD=1`                           | Lewati onboarding                                                  |
-| `OPENCLAW_DRY_RUN=1`                              | Mode dry run                                                       |
-| `OPENCLAW_VERBOSE=1`                              | Mode debug                                                         |
-| `OPENCLAW_NPM_LOGLEVEL=error\|warn\|notice`       | Tingkat log npm                                                    |
+| Variabel                                          | Deskripsi                                                                 |
+| ------------------------------------------------- | ------------------------------------------------------------------------- |
+| `OPENCLAW_INSTALL_METHOD=git\|npm`                | Metode instalasi                                                          |
+| `OPENCLAW_VERSION=latest\|next\|<semver>\|<spec>` | Versi npm, dist-tag, atau spesifikasi paket                               |
+| `OPENCLAW_BETA=0\|1`                              | Gunakan beta jika tersedia                                                |
+| `OPENCLAW_HOME=<path>`                            | Direktori dasar untuk status OpenClaw serta jalur git/orientasi awal bawaan |
+| `OPENCLAW_GIT_DIR=<path>`                         | Direktori checkout                                                        |
+| `OPENCLAW_GIT_UPDATE=0\|1`                        | Aktifkan atau nonaktifkan pemutakhiran git                                |
+| `OPENCLAW_NO_PROMPT=1`                            | Nonaktifkan perintah interaktif                                           |
+| `OPENCLAW_VERIFY_INSTALL=1`                       | Jalankan verifikasi cepat pascainstalasi                                  |
+| `OPENCLAW_NO_ONBOARD=1`                           | Lewati orientasi awal                                                     |
+| `OPENCLAW_DRY_RUN=1`                              | Mode simulasi                                                             |
+| `OPENCLAW_VERBOSE=1`                              | Mode debug                                                                |
+| `OPENCLAW_NPM_LOGLEVEL=error\|warn\|notice`       | Tingkat log npm (bawaan: `error`, menyembunyikan gangguan pesan deprekasi npm) |
 
   </Accordion>
 </AccordionGroup>
@@ -187,56 +197,56 @@ Skrip keluar dengan kode `2` untuk pemilihan metode yang tidak valid atau nilai 
 
 <Info>
 Dirancang untuk lingkungan tempat Anda menginginkan semuanya berada di bawah prefiks lokal
-(default `~/.openclaw`) dan tanpa dependensi Node sistem. Mendukung penginstalan npm
-secara default, plus penginstalan git-checkout di bawah alur prefiks yang sama.
+(bawaan `~/.openclaw`) dan tanpa dependensi Node sistem. Mendukung instalasi npm
+secara bawaan, serta instalasi checkout git dalam alur prefiks yang sama.
 </Info>
 
 ### Alur (install-cli.sh)
 
 <Steps>
-  <Step title="Menginstal runtime Node lokal">
-    Mengunduh tarball Node LTS yang didukung dan dipin (versinya disematkan di skrip dan diperbarui secara independen) ke `<prefix>/tools/node-v<version>` dan memverifikasi SHA-256.
-    Di Alpine/musl Linux, tempat Node tidak menerbitkan tarball yang kompatibel untuk runtime yang dipin, menginstal `nodejs` dan `npm` dengan `apk` dan menautkan runtime tersebut ke path wrapper prefiks. Repositori Alpine harus menyediakan Node `22.19+`; gunakan Alpine 3.21 atau lebih baru jika repositori lama hanya menyediakan Node 20 atau 21.
+  <Step title="Instal runtime Node lokal">
+    Mengunduh tarball Node LTS yang didukung dan dipatok (versinya disematkan dalam skrip serta diperbarui secara independen, bawaan `22.22.2`) ke `<prefix>/tools/node-v<version>` dan memverifikasi SHA-256.
+    Di Alpine/Linux musl, tempat Node tidak menerbitkan tarball yang kompatibel untuk runtime yang dipatok, skrip menginstal `nodejs` dan `npm` dengan `apk`, lalu menautkan runtime tersebut ke jalur pembungkus prefiks. Repositori Alpine harus menyediakan versi Node yang didukung (22.19+, 23.11+, atau 24+); gunakan Alpine 3.21 atau lebih baru jika repositori lama hanya menyediakan Node 20 atau 21.
   </Step>
-  <Step title="Memastikan Git">
-    Jika Git belum ada, mencoba instalasi melalui apt/dnf/yum/apk di Linux atau Homebrew di macOS.
+  <Step title="Pastikan Git tersedia">
+    Jika Git belum tersedia, skrip mencoba menginstalnya melalui apt/dnf/yum/apk di Linux atau Homebrew di macOS.
   </Step>
-  <Step title="Menginstal OpenClaw di bawah prefiks">
-    - Metode `npm` (default): menginstal di bawah prefiks dengan npm, lalu menulis wrapper ke `<prefix>/bin/openclaw`
-    - Metode `git`: clone/update checkout (default `~/openclaw`) dan tetap menulis wrapper ke `<prefix>/bin/openclaw`
+  <Step title="Instal OpenClaw di bawah prefiks">
+    - Metode `npm` (bawaan): menginstal di bawah prefiks dengan npm, lalu menulis pembungkus ke `<prefix>/bin/openclaw`
+    - Metode `git`: mengkloning/memperbarui checkout (bawaan `~/openclaw`) dan tetap menulis pembungkus ke `<prefix>/bin/openclaw`
 
   </Step>
-  <Step title="Menyegarkan layanan Gateway yang dimuat">
+  <Step title="Segarkan layanan Gateway yang dimuat">
     Jika layanan Gateway sudah dimuat dari prefiks yang sama, skrip menjalankan
     `openclaw gateway install --force`, lalu `openclaw gateway restart`, dan
-    memeriksa kesehatan Gateway secara upaya terbaik.
+    memeriksa kesehatan Gateway sebisa mungkin.
   </Step>
 </Steps>
 
 ### Contoh (install-cli.sh)
 
 <Tabs>
-  <Tab title="Default">
+  <Tab title="Bawaan">
     ```bash
     curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install-cli.sh | bash
     ```
   </Tab>
-  <Tab title="Prefiks + versi kustom">
+  <Tab title="Prefiks + versi khusus">
     ```bash
     curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install-cli.sh | bash -s -- --prefix /opt/openclaw --version latest
     ```
   </Tab>
-  <Tab title="Penginstalan Git">
+  <Tab title="Instalasi Git">
     ```bash
     curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install-cli.sh | bash -s -- --install-method git --git-dir ~/openclaw
     ```
   </Tab>
-  <Tab title="Output JSON otomatisasi">
+  <Tab title="Keluaran JSON otomatisasi">
     ```bash
     curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install-cli.sh | bash -s -- --json --prefix /opt/openclaw
     ```
   </Tab>
-  <Tab title="Jalankan onboarding">
+  <Tab title="Jalankan orientasi awal">
     ```bash
     curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install-cli.sh | bash -s -- --onboard
     ```
@@ -246,39 +256,43 @@ secara default, plus penginstalan git-checkout di bawah alur prefiks yang sama.
 <AccordionGroup>
   <Accordion title="Referensi flag">
 
-| Flag                        | Deskripsi                                                                      |
-| --------------------------- | ------------------------------------------------------------------------------- |
-| `--prefix <path>`           | Prefiks instalasi (default: `~/.openclaw`)                                      |
-| `--install-method npm\|git` | Pilih metode instalasi (default: `npm`). Alias: `--method`                      |
-| `--npm`                     | Pintasan untuk metode npm                                                       |
-| `--git`, `--github`         | Pintasan untuk metode git                                                       |
-| `--git-dir <path>`          | Direktori checkout Git (default: `~/openclaw`). Alias: `--dir`                  |
-| `--version <ver>`           | Versi OpenClaw atau dist-tag (default: `latest`)                                |
-| `--node-version <ver>`      | Versi Node (default: `22.22.0`)                                                 |
-| `--json`                    | Keluarkan peristiwa NDJSON                                                      |
-| `--onboard`                 | Jalankan `openclaw onboard` setelah instalasi                                   |
-| `--no-onboard`              | Lewati orientasi awal (default)                                                 |
-| `--set-npm-prefix`          | Di Linux, paksa prefiks npm ke `~/.npm-global` jika prefiks saat ini tidak dapat ditulis |
-| `--help`                    | Tampilkan penggunaan (`-h`)                                                     |
+| Flag                                    | Deskripsi                                                                                  |
+| --------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `--prefix <path>`                       | Prefiks instalasi (bawaan: `~/.openclaw`)                                                  |
+| `--install-method \| --method npm\|git` | Pilih metode instalasi (bawaan: `npm`)                                                      |
+| `--npm`                                 | Pintasan untuk metode npm                                                                  |
+| `--git \| --github`                     | Pintasan untuk metode git                                                                  |
+| `--git-dir \| --dir <path>`             | Direktori checkout Git (bawaan: `~/openclaw`)                                              |
+| `--version <ver>`                       | Versi atau dist-tag OpenClaw (bawaan: `latest`)                                             |
+| `--node-version <ver>`                  | Versi Node (bawaan: `22.22.2`)                                                             |
+| `--json`                                | Keluarkan peristiwa NDJSON                                                                 |
+| `--onboard`                             | Jalankan `openclaw onboard` setelah instalasi                                               |
+| `--no-onboard`                          | Lewati orientasi awal (bawaan)                                                             |
+| `--set-npm-prefix`                      | Di Linux, paksa prefiks npm menjadi `~/.npm-global` jika prefiks saat ini tidak dapat ditulisi |
+| `--help \| -h`                          | Tampilkan cara penggunaan                                                                  |
 
   </Accordion>
 
-  <Accordion title="Environment variables reference">
+  <Accordion title="Referensi variabel lingkungan">
 
-| Variabel                                    | Deskripsi                                                          |
-| ------------------------------------------- | ------------------------------------------------------------------ |
-| `OPENCLAW_PREFIX=<path>`                    | Prefiks instalasi                                                  |
-| `OPENCLAW_INSTALL_METHOD=git\|npm`          | Metode instalasi                                                   |
-| `OPENCLAW_VERSION=<ver>`                    | Versi OpenClaw atau dist-tag                                       |
-| `OPENCLAW_NODE_VERSION=<ver>`               | Versi Node                                                         |
-| `OPENCLAW_HOME=<path>`                      | Direktori dasar untuk status OpenClaw dan jalur git/orientasi awal default |
-| `OPENCLAW_GIT_DIR=<path>`                   | Direktori checkout Git untuk instalasi git                         |
-| `OPENCLAW_GIT_UPDATE=0\|1`                  | Alihkan pembaruan git untuk checkout yang sudah ada                |
-| `OPENCLAW_NO_ONBOARD=1`                     | Lewati orientasi awal                                              |
-| `OPENCLAW_NPM_LOGLEVEL=error\|warn\|notice` | Level log npm                                                      |
+| Variabel                                    | Deskripsi                                                                      |
+| ------------------------------------------- | ------------------------------------------------------------------------------ |
+| `OPENCLAW_PREFIX=<path>`                    | Prefiks instalasi                                                              |
+| `OPENCLAW_INSTALL_METHOD=git\|npm`          | Metode instalasi                                                               |
+| `OPENCLAW_VERSION=<ver>`                    | Versi atau dist-tag OpenClaw                                                   |
+| `OPENCLAW_NODE_VERSION=<ver>`               | Versi Node                                                                     |
+| `OPENCLAW_HOME=<path>`                      | Direktori dasar untuk status OpenClaw serta jalur git/orientasi awal bawaan    |
+| `OPENCLAW_GIT_DIR=<path>`                   | Direktori checkout Git untuk instalasi git                                     |
+| `OPENCLAW_GIT_UPDATE=0\|1`                  | Aktifkan atau nonaktifkan pembaruan git untuk checkout yang sudah ada          |
+| `OPENCLAW_NO_ONBOARD=1`                     | Lewati orientasi awal                                                          |
+| `OPENCLAW_NPM_LOGLEVEL=error\|warn\|notice` | Tingkat log npm (bawaan: `error`)                                              |
 
   </Accordion>
 </AccordionGroup>
+
+<Note>
+`openclaw@main` dan spesifikasi sumber GitHub lainnya bukan target `--version` yang valid untuk instalasi npm. Gunakan `--install-method git --version main` sebagai gantinya.
+</Note>
 
 ---
 
@@ -289,110 +303,102 @@ secara default, plus penginstalan git-checkout di bawah alur prefiks yang sama.
 ### Alur (install.ps1)
 
 <Steps>
-  <Step title="Ensure PowerShell + Windows environment">
+  <Step title="Pastikan lingkungan PowerShell + Windows tersedia">
     Memerlukan PowerShell 5+.
   </Step>
-  <Step title="Ensure Node.js 24 by default">
-    Jika tidak ada, mencoba instalasi melalui winget, lalu Chocolatey, lalu Scoop. Jika tidak ada manajer paket yang tersedia, skrip mengunduh zip resmi Node.js Windows ke `%LOCALAPPDATA%\OpenClaw\deps\portable-node` dan menambahkannya ke proses saat ini serta PATH pengguna. Node 22 LTS, saat ini `22.19+`, tetap didukung untuk kompatibilitas.
+  <Step title="Pastikan Node.js 24 tersedia secara bawaan">
+    Jika tidak tersedia, skrip mencoba menginstalnya melalui winget, kemudian Chocolatey, lalu Scoop. Jika tidak ada pengelola paket yang tersedia, skrip mengunduh zip resmi Node.js 24 untuk Windows ke `%LOCALAPPDATA%\OpenClaw\deps\portable-node` dan menambahkannya ke PATH proses saat ini dan pengguna. Node 22.19+ dan 23.11+ tetap didukung untuk kompatibilitas.
   </Step>
-  <Step title="Install OpenClaw">
-    - Metode `npm` (default): instalasi npm global menggunakan `-Tag` yang dipilih, dijalankan dari direktori sementara penginstal yang dapat ditulis sehingga shell yang dibuka di folder terlindungi seperti `C:\` tetap berfungsi
-    - Metode `git`: clone/perbarui repo, instal/build dengan pnpm, dan instal wrapper di `%USERPROFILE%\.local\bin\openclaw.cmd`. Jika Git tidak ada, skrip melakukan bootstrap MinGit lokal pengguna di `%LOCALAPPDATA%\OpenClaw\deps\portable-git` dan menambahkannya ke proses saat ini serta PATH pengguna.
+  <Step title="Instal OpenClaw">
+    - Metode `npm` (bawaan): instalasi npm global menggunakan `-Tag` yang dipilih, dijalankan dari direktori sementara penginstal yang dapat ditulisi agar shell yang dibuka di folder terlindungi seperti `C:\` tetap berfungsi
+    - Metode `git`: klon/perbarui repositori, instal/bangun dengan pnpm, dan instal pembungkus di `%USERPROFILE%\.local\bin\openclaw.cmd`. Jika Git tidak tersedia, skrip menyiapkan MinGit lokal pengguna di `%LOCALAPPDATA%\OpenClaw\deps\portable-git` dan menambahkannya ke PATH proses saat ini dan pengguna.
 
   </Step>
-  <Step title="Post-install tasks">
+  <Step title="Tugas pascainstalasi">
     - Menambahkan direktori bin yang diperlukan ke PATH pengguna jika memungkinkan
-    - Menyegarkan layanan Gateway yang dimuat dengan upaya terbaik (`openclaw gateway install --force`, lalu mulai ulang)
-    - Menjalankan `openclaw doctor --non-interactive` pada upgrade dan instalasi git (upaya terbaik)
+    - Menyegarkan layanan Gateway yang dimuat dengan upaya terbaik (`openclaw gateway install --force`, lalu memulai ulang)
+    - Menjalankan `openclaw doctor --non-interactive` saat peningkatan versi dan instalasi git (upaya terbaik)
 
   </Step>
-  <Step title="Handle failures">
-    Instalasi `iwr ... | iex` dan scriptblock melaporkan error penghentian tanpa menutup sesi PowerShell saat ini. Instalasi langsung `powershell -File` / `pwsh -File` tetap keluar dengan kode non-nol untuk otomatisasi.
+  <Step title="Tangani kegagalan">
+    Instalasi `iwr ... | iex` dan scriptblock melaporkan galat yang menghentikan proses tanpa menutup sesi PowerShell saat ini. Instalasi langsung `powershell -File` / `pwsh -File` tetap keluar dengan kode bukan nol untuk otomatisasi.
   </Step>
 </Steps>
 
 ### Contoh (install.ps1)
 
 <Tabs>
-  <Tab title="Default">
+  <Tab title="Bawaan">
     ```powershell
     iwr -useb https://openclaw.ai/install.ps1 | iex
     ```
   </Tab>
-  <Tab title="Git install">
+  <Tab title="Instalasi Git">
     ```powershell
     & ([scriptblock]::Create((iwr -useb https://openclaw.ai/install.ps1))) -InstallMethod git
     ```
   </Tab>
-  <Tab title="GitHub main checkout">
+  <Tab title="Checkout main GitHub">
     ```powershell
     & ([scriptblock]::Create((iwr -useb https://openclaw.ai/install.ps1))) -InstallMethod git -Tag main
     ```
   </Tab>
-  <Tab title="Custom git directory">
+  <Tab title="Direktori git khusus">
     ```powershell
     & ([scriptblock]::Create((iwr -useb https://openclaw.ai/install.ps1))) -InstallMethod git -GitDir "C:\openclaw"
     ```
   </Tab>
-  <Tab title="Dry run">
+  <Tab title="Simulasi">
     ```powershell
     & ([scriptblock]::Create((iwr -useb https://openclaw.ai/install.ps1))) -DryRun
-    ```
-  </Tab>
-  <Tab title="Debug trace">
-    ```powershell
-    # install.ps1 has no dedicated -Verbose flag yet.
-    Set-PSDebug -Trace 1
-    & ([scriptblock]::Create((iwr -useb https://openclaw.ai/install.ps1))) -NoOnboard
-    Set-PSDebug -Trace 0
     ```
   </Tab>
 </Tabs>
 
 <AccordionGroup>
-  <Accordion title="Flags reference">
+  <Accordion title="Referensi flag">
 
-| Flag                        | Deskripsi                                                  |
-| --------------------------- | ---------------------------------------------------------- |
-| `-InstallMethod npm\|git`   | Metode instalasi (default: `npm`)                          |
-| `-Tag <tag\|version\|spec>` | dist-tag, versi, atau spesifikasi paket npm (default: `latest`) |
-| `-GitDir <path>`            | Direktori checkout (default: `%USERPROFILE%\openclaw`)     |
-| `-NoOnboard`                | Lewati orientasi awal                                      |
-| `-NoGitUpdate`              | Lewati `git pull`                                          |
-| `-DryRun`                   | Cetak tindakan saja                                        |
+| Flag                        | Deskripsi                                                         |
+| --------------------------- | ----------------------------------------------------------------- |
+| `-InstallMethod npm\|git`   | Metode instalasi (bawaan: `npm`)                                  |
+| `-Tag <tag\|version\|spec>` | Dist-tag, versi, atau spesifikasi paket npm (bawaan: `latest`)     |
+| `-GitDir <path>`            | Direktori checkout (bawaan: `%USERPROFILE%\openclaw`)              |
+| `-NoOnboard`                | Lewati orientasi awal                                              |
+| `-NoGitUpdate`              | Lewati `git pull`                                                  |
+| `-DryRun`                   | Hanya cetak tindakan                                               |
 
   </Accordion>
 
-  <Accordion title="Environment variables reference">
+  <Accordion title="Referensi variabel lingkungan">
 
-| Variabel                           | Deskripsi          |
-| ---------------------------------- | ------------------ |
-| `OPENCLAW_INSTALL_METHOD=git\|npm` | Metode instalasi   |
-| `OPENCLAW_GIT_DIR=<path>`          | Direktori checkout |
+| Variabel                           | Deskripsi           |
+| ---------------------------------- | ------------------- |
+| `OPENCLAW_INSTALL_METHOD=git\|npm` | Metode instalasi    |
+| `OPENCLAW_GIT_DIR=<path>`          | Direktori checkout  |
 | `OPENCLAW_NO_ONBOARD=1`            | Lewati orientasi awal |
 | `OPENCLAW_GIT_UPDATE=0`            | Nonaktifkan git pull |
-| `OPENCLAW_DRY_RUN=1`               | Mode uji coba      |
+| `OPENCLAW_DRY_RUN=1`               | Mode simulasi       |
 
   </Accordion>
 </AccordionGroup>
 
 <Note>
-Jika `-InstallMethod git` digunakan dan Git tidak ada, skrip mencoba bootstrap MinGit lokal pengguna sebelum mencetak tautan Git for Windows.
+Jika `-InstallMethod git` digunakan dan Git tidak tersedia, skrip mencoba menyiapkan MinGit lokal pengguna sebelum mencetak tautan Git for Windows.
 </Note>
 
 ---
 
 ## CI dan otomatisasi
 
-Gunakan flag/variabel env non-interaktif untuk eksekusi yang dapat diprediksi.
+Gunakan flag/variabel lingkungan noninteraktif agar eksekusi dapat diprediksi.
 
 <Tabs>
-  <Tab title="install.sh (non-interactive npm)">
+  <Tab title="install.sh (npm noninteraktif)">
     ```bash
     curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --no-prompt --no-onboard
     ```
   </Tab>
-  <Tab title="install.sh (non-interactive git)">
+  <Tab title="install.sh (git noninteraktif)">
     ```bash
     OPENCLAW_INSTALL_METHOD=git OPENCLAW_NO_PROMPT=1 \
       curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash
@@ -403,7 +409,7 @@ Gunakan flag/variabel env non-interaktif untuk eksekusi yang dapat diprediksi.
     curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install-cli.sh | bash -s -- --json --prefix /opt/openclaw
     ```
   </Tab>
-  <Tab title="install.ps1 (skip onboarding)">
+  <Tab title="install.ps1 (lewati orientasi awal)">
     ```powershell
     & ([scriptblock]::Create((iwr -useb https://openclaw.ai/install.ps1))) -NoOnboard
     ```
@@ -415,24 +421,24 @@ Gunakan flag/variabel env non-interaktif untuk eksekusi yang dapat diprediksi.
 ## Pemecahan masalah
 
 <AccordionGroup>
-  <Accordion title="Why is Git required?">
-    Git diperlukan untuk metode instalasi `git`. Untuk instalasi `npm`, Git tetap diperiksa/diinstal untuk menghindari kegagalan `spawn git ENOENT` ketika dependensi menggunakan URL git.
+  <Accordion title="Mengapa Git diperlukan?">
+    Git diperlukan untuk metode instalasi `git`. Untuk instalasi `npm`, Git tetap diperiksa/diinstal guna menghindari kegagalan `spawn git ENOENT` ketika dependensi menggunakan URL git.
   </Accordion>
 
-  <Accordion title="Why does npm hit EACCES on Linux?">
-    Beberapa pengaturan Linux mengarahkan prefiks global npm ke jalur milik root. `install.sh` dapat mengalihkan prefiks ke `~/.npm-global` dan menambahkan ekspor PATH ke file rc shell (ketika file tersebut ada).
+  <Accordion title="Mengapa npm mengalami EACCES di Linux?">
+    Beberapa konfigurasi Linux mengarahkan prefiks global npm ke jalur yang dimiliki root. `install.sh` dapat mengubah prefiks menjadi `~/.npm-global` dan menambahkan ekspor PATH ke berkas rc shell (jika berkas tersebut tersedia).
   </Accordion>
 
   <Accordion title='Windows: "npm error spawn git / ENOENT"'>
-    Jalankan ulang penginstal agar dapat melakukan bootstrap MinGit lokal pengguna, atau instal Git for Windows dan buka ulang PowerShell.
+    Jalankan ulang penginstal agar dapat menyiapkan MinGit lokal pengguna, atau instal Git for Windows dan buka kembali PowerShell.
   </Accordion>
 
   <Accordion title='Windows: "openclaw is not recognized"'>
-    Jalankan `npm config get prefix` dan tambahkan direktori tersebut ke PATH pengguna Anda (sufiks `\bin` tidak diperlukan di Windows), lalu buka ulang PowerShell.
+    Jalankan `npm config get prefix` dan tambahkan direktori tersebut ke PATH pengguna Anda (akhiran `\bin` tidak diperlukan di Windows), lalu buka kembali PowerShell.
   </Accordion>
 
-  <Accordion title="Windows: how to get verbose installer output">
-    `install.ps1` saat ini tidak menyediakan switch `-Verbose`.
+  <Accordion title="Windows: cara mendapatkan keluaran penginstal terperinci">
+    `install.ps1` tidak menyediakan opsi `-Verbose`.
     Gunakan pelacakan PowerShell untuk diagnostik tingkat skrip:
 
     ```powershell
@@ -443,13 +449,13 @@ Gunakan flag/variabel env non-interaktif untuk eksekusi yang dapat diprediksi.
 
   </Accordion>
 
-  <Accordion title="openclaw not found after install">
-    Biasanya ini masalah PATH. Lihat [pemecahan masalah Node.js](/id/install/node#troubleshooting).
+  <Accordion title="openclaw tidak ditemukan setelah instalasi">
+    Biasanya ini merupakan masalah PATH. Lihat [pemecahan masalah Node.js](/id/install/node#troubleshooting).
   </Accordion>
 </AccordionGroup>
 
 ## Terkait
 
 - [Ikhtisar instalasi](/id/install)
-- [Memperbarui](/id/install/updating)
-- [Uninstal](/id/install/uninstall)
+- [Pembaruan](/id/install/updating)
+- [Penghapusan instalasi](/id/install/uninstall)

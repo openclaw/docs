@@ -1,12 +1,12 @@
 ---
 read_when:
-    - Bir beceriyi veya Plugin'i yayımlama
+    - Bir skill veya plugin yayımlama
     - Sahip veya paket kapsamı hatalarında hata ayıklama
     - Yayımlama kullanıcı arayüzü, CLI veya arka uç davranışı ekleme
-summary: ClawHub yayınlamasının Skills, Plugin'ler, sahipler, kapsamlar, sürümler ve inceleme için nasıl çalıştığı.
+summary: Skills, Plugin'ler, sahipler, kapsamlar, sürümler ve inceleme için ClawHub'da yayımlamanın işleyişi.
 x-i18n:
-    generated_at: "2026-06-28T00:19:42Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:07:00Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 5c0270c0bc3316d970feddfc689c1125e1c90a62beeb40d8098dc6a6752cfa70
@@ -14,15 +14,15 @@ x-i18n:
     workflow: 16
 ---
 
-# Yayınlama
+# Yayımlama
 
-Yayınlama, seçtiğiniz sahip altında ClawHub'a bir skill klasörü veya Plugin paketi gönderir. ClawHub, token'ınızın o sahip için yayınlama yapabildiğini kontrol eder; meta verileri, adı, sürümü, dosyaları ve kaynak bilgilerini doğrular, ardından sürümü depolar ve otomatik güvenlik kontrollerini başlatır.
+Yayımlama, bir skill klasörünü veya Plugin paketini seçtiğiniz sahibin altında ClawHub'a gönderir. ClawHub, token'ınızın bu sahip adına yayımlama yapabildiğini denetler; meta verileri, adı, sürümü, dosyaları ve kaynak bilgilerini doğrular; ardından sürümü depolar ve otomatik güvenlik denetimlerini başlatır.
 
-Doğrulama başarısız olursa hiçbir şey yayınlanmaz. Yeni sürümler ayrıca inceleme bitene kadar normal kurulum ve indirme yüzeylerinin dışında kalabilir.
+Doğrulama başarısız olursa hiçbir şey yayımlanmaz. Yeni sürümler, inceleme tamamlanana kadar normal kurulum ve indirme yüzeylerinde de yer almayabilir.
 
 ## Skills
 
-En basit yayınlama yolu CLI'dir. Oturum açın, ardından yerel bir skill klasörü yayınlayın:
+En basit yayımlama yolu CLI'dır. Oturum açın, ardından yerel bir skill klasörünü yayımlayın:
 
 ```bash
 clawhub login
@@ -32,12 +32,9 @@ clawhub skill publish ./my-skill \
   --owner <owner>
 ```
 
-Bir kuruluş sahibi adına yayınlarken `--owner <handle>` kullanın. Kimliği doğrulanmış kullanıcı olarak yayınlamak için bunu atlayın. Yayınlama, değişmemiş içeriği atlar. Yeni bir skill `1.0.0` sürümünden başlar ve sonraki değişiklikler bir sonraki yama sürümünü otomatik olarak yayınlar. `--version` seçeneğini yalnızca açık bir sürüme ihtiyacınız olduğunda geçirin.
+Bir kuruluş sahibi adına yayımlarken `--owner <handle>` kullanın. Kimliği doğrulanmış kullanıcı olarak yayımlamak için bunu atlayın. Yayımlama, değişmemiş içeriği atlar. Yeni bir skill `1.0.0` sürümüyle başlar ve sonraki değişiklikler bir sonraki yama sürümünü otomatik olarak yayımlar. Yalnızca açıkça belirli bir sürüme ihtiyacınız olduğunda `--version` iletin.
 
-Katalog depoları için ClawHub'ın yeniden kullanılabilir
-[`skill-publish.yml` workflow](https://github.com/openclaw/clawhub/blob/main/.github/workflows/skill-publish.yml)
-dosyasını kullanın. Bu, `root` altındaki her doğrudan skill klasörü için (varsayılan:
-`skills`) veya yalnızca `skill_path` olarak sağlanan klasör için `skill publish` çağırır.
+Katalog depoları için ClawHub'ın yeniden kullanılabilir [`skill-publish.yml` iş akışını](https://github.com/openclaw/clawhub/blob/main/.github/workflows/skill-publish.yml) kullanın. Bu iş akışı, `root` altındaki (varsayılan: `skills`) her bir doğrudan skill klasörü veya yalnızca `skill_path` olarak sağlanan klasör için `skill publish` komutunu çağırır.
 
 ```yaml
 jobs:
@@ -50,43 +47,38 @@ jobs:
       clawhub_token: ${{ secrets.CLAWHUB_TOKEN }}
 ```
 
-Yayınlamadan yeni ve değişen Skills önizlemesi için `dry_run: true` kullanın.
+Yeni ve değiştirilmiş skill'leri yayımlamadan önizlemek için `dry_run: true` kullanın.
 
-## Plugins
+## Pluginler
 
-Plugins npm tarzı paket adları kullanır. Kapsamlı paket adları, adın ilk bölümünde sahibi içerir:
+Pluginler npm tarzı paket adları kullanır. Kapsamlı paket adları, adın ilk bölümünde sahibi içerir:
 
 ```text
 @owner/package-name
 ```
 
-Kapsam, seçilen yayınlama sahibiyle eşleşmelidir. Paketinizin adı
-`@openclaw/dronzer` ise yalnızca `@openclaw` olarak yayınlanabilir. `@vintageayu` olarak yayınlıyorsanız paketi `@vintageayu/dronzer` olarak yeniden adlandırın.
+Kapsam, seçilen yayımlama sahibiyle eşleşmelidir. Paketinizin adı `@openclaw/dronzer` ise yalnızca `@openclaw` olarak yayımlanabilir. `@vintageayu` olarak yayımlıyorsanız paketi `@vintageayu/dronzer` olarak yeniden adlandırın.
 
-Bu, bir paketin yayıncının kontrol etmediği bir kuruluş ad alanını sahiplenmesini engeller.
+Bu, bir paketin yayımlayıcının denetlemediği bir kuruluş ad alanı üzerinde hak iddia etmesini önler.
 
-ClawHub üzerinde zaten sahiplenilmiş veya ayrılmış bir kuruluşun, markanın, paket kapsamının, sahip tanıtıcısının ya da ad alanının hak sahibi sizseniz, herkese açık ve hassas olmayan kanıtlarla bir
-[Kuruluş / Ad Alanı Talebi issue](https://github.com/openclaw/clawhub/issues/new?template=org-namespace-claim.yml)
-açın. Nelerin dahil edileceği ve nelerin herkese açık issue'ların dışında tutulacağı için
-[Kuruluş ve Ad Alanı Talepleri](/tr/clawhub/namespace-claims) bölümüne bakın.
+ClawHub'da zaten sahiplenilmiş veya ayrılmış bir kuruluşun, markanın, paket kapsamının, sahip tanıtıcısının ya da ad alanının hak sahibiyseniz, herkese açık ve hassas olmayan kanıtlarla bir [Kuruluş / Ad Alanı Hak Talebi sorunu](https://github.com/openclaw/clawhub/issues/new?template=org-namespace-claim.yml) açın. Nelerin ekleneceği ve herkese açık sorunların dışında tutulması gerekenler için [Kuruluş ve Ad Alanı Hak Talepleri](/clawhub/namespace-claims) bölümüne bakın.
 
-### Bir Plugin Yayınlamadan Önce
+### Bir Plugin Yayımlamadan Önce
 
 - Paket kapsamıyla eşleşen bir sahip seçin.
-- `openclaw.plugin.json` dosyasını ekleyin. Kod Plugins için ayrıca `openclaw.compat.pluginApi` ve `openclaw.build.openclawVersion` içeren `package.json` gerekir.
-- Özel bir Plugin kartı simgesi göstermek için herhangi bir HTTPS görsel URL'siyle birlikte `openclaw.plugin.json` dosyasına `icon` ekleyin.
-- Kaynak depo ve tam commit meta verilerini ekleyin veya bunları algılayabilmesi için CLI'yi GitHub destekli bir checkout'tan kullanın.
-- Yayınlamadan önce `clawhub package validate <source>` çalıştırın. Paket, manifest, SDK import'u veya artifact bulguları için
-  [Plugin doğrulama düzeltmeleri](/tr/clawhub/plugin-validation-fixes) bölümüne bakın.
-- Sürüm oluşturmadan önce `clawhub package publish <source> --dry-run` çalıştırın.
-- Yeni sürümlerin, otomatik güvenlik kontrolleri ve doğrulama tamamlanana kadar herkese açık kurulum yüzeylerinin dışında kalmasını bekleyin.
+- `openclaw.plugin.json` dosyasını ekleyin. Kod Pluginleri ayrıca `openclaw.compat.pluginApi` ve `openclaw.build.openclawVersion` alanlarını içeren bir `package.json` dosyasına ihtiyaç duyar.
+- Özel bir Plugin kartı simgesi göstermek için `openclaw.plugin.json` dosyasına herhangi bir HTTPS görsel URL'sini içeren `icon` alanını ekleyin.
+- Kaynak deposunu ve tam commit meta verilerini ekleyin ya da CLI'ın bunları algılayabilmesi için CLI'ı GitHub destekli bir çalışma kopyasından kullanın.
+- Yayımlamadan önce `clawhub package validate <source>` komutunu çalıştırın. Paket, manifest, SDK içe aktarımı veya yapıt bulguları için [Plugin doğrulama düzeltmeleri](/clawhub/plugin-validation-fixes) bölümüne bakın.
+- Bir sürüm oluşturmadan önce `clawhub package publish <source> --dry-run` komutunu çalıştırın.
+- Otomatik güvenlik denetimleri ve doğrulama tamamlanana kadar yeni sürümlerin herkese açık kurulum yüzeylerinde yer almamasını bekleyin.
 
-### Paketler için Güvenilir Yayınlama
+### Paketler İçin Güvenilir Yayımlama
 
-Paket güvenilir yayınlama iki adımlı bir kurulumdur:
+Paketler için güvenilir yayımlama iki adımlı bir kurulumdur:
 
-1. Paketi normal manuel veya token ile kimliği doğrulanmış `clawhub package publish` üzerinden bir kez yayınlayın. Bu, paket satırını oluşturur ve güvenilir yayıncı yapılandırmasını değiştirebilecek paket yöneticilerini belirler.
-2. Bir paket yöneticisi GitHub Actions güvenilir yayıncı yapılandırmasını ayarlar:
+1. Paketi normal, manuel veya token ile kimliği doğrulanmış `clawhub package publish` komutuyla bir kez yayımlayın. Bu işlem paket kaydını oluşturur ve güvenilir yayımlayıcı yapılandırmasını değiştirebilecek paket yöneticilerini belirler.
+2. Bir paket yöneticisi, GitHub Actions güvenilir yayımlayıcı yapılandırmasını ayarlar:
 
 ```bash
 clawhub package trusted-publisher set @owner/package-name \
@@ -94,45 +86,42 @@ clawhub package trusted-publisher set @owner/package-name \
   --workflow-filename package-publish.yml
 ```
 
-Yapılandırma ayarlandıktan sonra, gelecekte desteklenen GitHub Actions yayınları depoda uzun ömürlü bir ClawHub token'ı saklamadan OIDC/güvenilir yayınlama kullanabilir. Yapılandırılan depo ve workflow dosya adı, GitHub Actions OIDC claim'iyle eşleşmelidir. Ayrıca `--environment <name>` geçirirseniz GitHub Actions environment claim'i bu adla tam olarak eşleşmelidir.
+Yapılandırma ayarlandıktan sonra, gelecekte desteklenen GitHub Actions yayımlamaları, depoda uzun ömürlü bir ClawHub token'ı saklamadan OIDC/güvenilir yayımlama kullanabilir. Yapılandırılan depo ve iş akışı dosya adı, GitHub Actions OIDC talebiyle eşleşmelidir. Ayrıca `--environment <name>` iletirseniz GitHub Actions ortam talebi bu adla tam olarak eşleşmelidir.
 
-ClawHub, güvenilir yayıncı yapılandırması ayarlandığında yapılandırılan GitHub deposunu doğrular. Herkese açık depolar, herkese açık GitHub meta verileri aracılığıyla doğrulanabilir. Özel depolar için ClawHub'ın o depoya GitHub erişimine sahip olması gerekir; örneğin gelecekteki bir ClawHub GitHub App kurulumu veya başka bir yetkili GitHub entegrasyonu aracılığıyla.
+ClawHub, güvenilir yayımlayıcı yapılandırması ayarlanırken yapılandırılan GitHub deposunu doğrular. Herkese açık depolar, herkese açık GitHub meta verileri üzerinden doğrulanabilir. Özel depolar, örneğin gelecekteki bir ClawHub GitHub App kurulumu veya başka bir yetkilendirilmiş GitHub entegrasyonu aracılığıyla ClawHub'ın söz konusu depoya GitHub erişimine sahip olmasını gerektirir.
 
-Geçerli yeniden kullanılabilir paket yayınlama workflow'u, `id-token: write` kullanılabilir olduğunda `workflow_dispatch` yayınları için gizli anahtarsız güvenilir yayınlamayı destekler. Tag-push gerçek yayınları hâlâ `clawhub_token` gerektirir; bu nedenle tag sürümleri, ilk yayınlar, güvenilir olmayan paketler veya acil durum yayınları için `CLAWHUB_TOKEN` kullanılabilir tutun.
+Mevcut yeniden kullanılabilir paket yayımlama iş akışı, `id-token: write` kullanılabildiğinde `workflow_dispatch` yayımlamaları için secretsız güvenilir yayımlamayı destekler. Etiket gönderimiyle yapılan gerçek yayımlamalar hâlâ `clawhub_token` gerektirir; bu nedenle etiket sürümleri, ilk yayımlamalar, güvenilmeyen paketler veya acil durum yayımlamaları için `CLAWHUB_TOKEN` değerini kullanılabilir durumda tutun.
 
-Yapılandırmayı inceleyin veya kaldırın:
+Yapılandırmayı incelemek veya kaldırmak için:
 
 ```bash
 clawhub package trusted-publisher get @owner/package-name
 clawhub package trusted-publisher delete @owner/package-name
 ```
 
-Güvenilir yayıncı yapılandırmasını silmek geri alma yoludur. Bir paket yöneticisi yapılandırmayı yeniden ayarlayana kadar gelecekteki güvenilir yayın token üretimini devre dışı bırakır.
+Güvenilir yayımlayıcı yapılandırmasını silmek geri alma yoludur. Bir paket yöneticisi yapılandırmayı yeniden ayarlayana kadar gelecekteki güvenilir yayımlama token'larının oluşturulmasını devre dışı bırakır.
 
 ## SSS
 
 ### Paket kapsamı seçilen sahiple eşleşmelidir
 
-Paket kapsamı ve seçilen sahip eşleşmezse ClawHub yayını reddeder:
+Paket kapsamı ile seçilen sahip eşleşmezse ClawHub yayımlamayı reddeder:
 
 ```text
 Package scope "@openclaw" must match selected owner "@vintageayu".
 Publish as "@openclaw" or rename this package to "@vintageayu/dronzer".
 ```
 
-Bunu düzeltmek için ya paket kapsamının adlandırdığı sahibi seçin ya da kapsam, yayınlama yapabildiğiniz sahiple eşleşecek şekilde paketi yeniden adlandırın.
+Bunu düzeltmek için paket kapsamının belirttiği sahibi seçin veya paketi, kapsam yayımlama yapabildiğiniz sahiple eşleşecek şekilde yeniden adlandırın.
 
-Paket adı zaten doğru kapsama sahipse ancak paket yanlış yayıncıya aitse bunun yerine sahipliği aktarın:
+Paket adı zaten doğru kapsama sahipse ancak paket yanlış yayımlayıcıya aitse bunun yerine sahipliği aktarın:
 
 ```sh
 clawhub package transfer @opik/opik-openclaw --to opik
 ```
 
-Paket veya skill aktarımını yalnızca hem geçerli sahibi hem de hedef yayıncı üzerinde yönetici erişiminiz olduğunda kullanın. Paket aktarımı, yönetemediğiniz bir kapsamda yayınlama yapmanıza izin vermez.
+Paket veya skill aktarımını yalnızca hem mevcut sahibe hem de hedef yayımlayıcıya yönetici erişiminiz olduğunda kullanın. Paket aktarımı, yönetemediğiniz bir kapsamda yayımlama yapmanıza izin vermez.
 
-Geçerli sahibe erişiminiz yoksa ancak kuruluşunuzun, projenizin veya markanızın ad alanının hak sahibi olduğuna inanıyorsanız, personel incelemesi için herkese açık ve hassas olmayan kanıtlarla bir
-[Kuruluş / Ad Alanı Talebi issue](https://github.com/openclaw/clawhub/issues/new?template=org-namespace-claim.yml)
-açın. Başvurmadan önce
-[Kuruluş ve Ad Alanı Talepleri](/tr/clawhub/namespace-claims) bölümüne bakın.
+Mevcut sahibe erişiminiz yoksa ancak kuruluşunuzun, projenizin veya markanızın ad alanının hak sahibi olduğuna inanıyorsanız personel incelemesi için herkese açık ve hassas olmayan kanıtlarla bir [Kuruluş / Ad Alanı Hak Talebi sorunu](https://github.com/openclaw/clawhub/issues/new?template=org-namespace-claim.yml) açın. Başvurmadan önce [Kuruluş ve Ad Alanı Hak Talepleri](/clawhub/namespace-claims) bölümüne bakın.
 
-Bu, kuruluş ad alanlarını korur. `@openclaw/dronzer` adlı bir paket `@openclaw` ad alanını sahiplenir, bu nedenle yalnızca `@openclaw` sahibine erişimi olan yayıncılar bunu yayınlayabilir.
+Bu, kuruluş ad alanlarını korur. `@openclaw/dronzer` adlı bir paket `@openclaw` ad alanı üzerinde hak iddia eder; bu nedenle paketi yalnızca `@openclaw` sahibine erişimi olan yayımlayıcılar yayımlayabilir.

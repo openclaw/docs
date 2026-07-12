@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz plugin fal
-summary: Dodaje obsługę dostawcy modeli fal w OpenClaw.
-title: fal Plugin
+    - Instalujesz, konfigurujesz lub przeprowadzasz audyt pluginu fal
+summary: Dodaje obsługę dostawcy modeli fal do OpenClaw.
+title: plugin fal
 x-i18n:
-    generated_at: "2026-06-27T18:00:24Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:22:56Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: f62d6a642a6edaa581fb23fa27dade77486c827d460f19aa23750959f5aa6f1c
@@ -15,14 +15,14 @@ x-i18n:
 
 # Plugin fal
 
-Dodaje obsługę dostawcy modeli fal w OpenClaw.
+Dodaje do OpenClaw obsługę dostawcy modeli fal.
 
 ## Dystrybucja
 
 - Pakiet: `@openclaw/fal-provider`
-- Ścieżka instalacji: dołączony do OpenClaw
+- Sposób instalacji: dołączony do OpenClaw
 
-## Zakres
+## Interfejs
 
 dostawcy: fal; kontrakty: imageGenerationProviders, musicGenerationProviders, videoGenerationProviders
 

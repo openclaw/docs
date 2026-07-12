@@ -1,62 +1,68 @@
 ---
 doc-schema-version: 1
 read_when:
-    - می‌خواهید یک Plugin جدید OpenClaw بسازید
-    - به یک راه‌اندازی سریع برای توسعه Plugin نیاز دارید
-    - شما در حال انتخاب بین مستندات کانال، ارائه‌دهنده، بک‌اند CLI، ابزار یا هوک هستید
+    - می‌خواهید یک Plugin جدید برای OpenClaw ایجاد کنید
+    - برای توسعهٔ Plugin به یک راهنمای شروع سریع نیاز دارید
+    - شما در حال انتخاب میان مستندات کانال، ارائه‌دهنده، بک‌اند CLI، ابزار یا هوک هستید
 sidebarTitle: Getting Started
-summary: اولین Plugin OpenClaw خود را در چند دقیقه بسازید
-title: ساخت Pluginها
+summary: نخستین Plugin خود برای OpenClaw را در چند دقیقه ایجاد کنید
+title: ساخت Plugin‌ها
 x-i18n:
-    generated_at: "2026-07-04T15:27:35Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:23:15Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e4bceff518e0b2b3b06573a96edb2af65bbe8662d049323045cd1c80fc6f328f
+    source_hash: 99ef2f22f8ae55614d835bc4309881ce264ab1a2287ac08af328e0b311d8fd9a
     source_path: plugins/building-plugins.md
     workflow: 16
 ---
 
-Pluginها OpenClaw را بدون تغییر core گسترش می‌دهند. یک Plugin می‌تواند یک کانال پیام‌رسانی، ارائه‌دهنده مدل، بک‌اند CLI محلی، ابزار agent، hook، ارائه‌دهنده رسانه، یا قابلیت دیگری که مالکیت آن با Plugin است اضافه کند.
+Pluginها OpenClaw را بدون تغییر هسته گسترش می‌دهند. یک Plugin می‌تواند یک کانال
+پیام‌رسانی، ارائه‌دهنده مدل، پشتیبان محلی CLI، ابزار عامل، هوک، ارائه‌دهنده رسانه
+یا قابلیت دیگری تحت مالکیت Plugin اضافه کند.
 
-لازم نیست یک Plugin خارجی را به مخزن OpenClaw اضافه کنید. package را در [ClawHub](/fa/clawhub) منتشر کنید و کاربران آن را با این دستور نصب می‌کنند:
+لازم نیست یک Plugin خارجی را به مخزن OpenClaw اضافه کنید. بسته را در
+[ClawHub](/clawhub) منتشر کنید تا کاربران آن را با دستور زیر نصب کنند:
 
 ```bash
 openclaw plugins install clawhub:<package-name>
 ```
 
-مشخصات package بدون پیشوند همچنان در دوره گذار راه‌اندازی از npm نصب می‌شوند. وقتی می‌خواهید resolve شدن از ClawHub انجام شود، از پیشوند `clawhub:` استفاده کنید.
+در دوره گذار راه‌اندازی، مشخصات بسته بدون پیشوند همچنان از npm نصب می‌شوند. وقتی
+می‌خواهید تفکیک نام از طریق ClawHub انجام شود، از پیشوند `clawhub:` استفاده کنید.
 
-## نیازمندی‌ها
+## الزامات
 
-- از Node 22.19+، Node 23.11+ یا Node 24+ و یک package manager مانند `npm` یا `pnpm` استفاده کنید.
-- با ماژول‌های TypeScript ESM آشنا باشید.
-- برای کار روی Pluginهای bundled داخل مخزن، مخزن را clone کنید و `pnpm install` را اجرا کنید.
-  توسعه Plugin در source checkout فقط با pnpm انجام می‌شود، چون OpenClaw Pluginهای bundled را از packageهای workspace در `extensions/*` بارگذاری می‌کند.
+- Node 22.19+، Node 23.11+ یا Node 24+، و `npm` یا `pnpm`.
+- ماژول‌های ESM در TypeScript.
+- برای کار روی Plugin همراه‌شده درون مخزن، مخزن را کلون و `pnpm install` را اجرا کنید.
+  توسعه Plugin در نسخه منبع فقط با pnpm انجام می‌شود، زیرا OpenClaw،
+  Pluginهای همراه‌شده را از بسته‌های فضای کاری `extensions/*` شناسایی می‌کند.
 
-## شکل Plugin را انتخاب کنید
+## ساختار Plugin را انتخاب کنید
 
 <CardGroup cols={2}>
-  <Card title="Channel plugin" icon="messages-square" href="/fa/plugins/sdk-channel-plugins">
-    OpenClaw را به یک پلتفرم پیام‌رسانی وصل کنید.
+  <Card title="Plugin کانال" icon="messages-square" href="/fa/plugins/sdk-channel-plugins">
+    OpenClaw را به یک پلتفرم پیام‌رسانی متصل کنید.
   </Card>
-  <Card title="Provider plugin" icon="cpu" href="/fa/plugins/sdk-provider-plugins">
-    یک ارائه‌دهنده مدل، رسانه، جست‌وجو، fetch، گفتار یا realtime اضافه کنید.
+  <Card title="Plugin ارائه‌دهنده" icon="cpu" href="/fa/plugins/sdk-provider-plugins">
+    یک ارائه‌دهنده مدل، رسانه، جست‌وجو، واکشی، گفتار یا بلادرنگ اضافه کنید.
   </Card>
-  <Card title="CLI backend plugin" icon="terminal" href="/fa/plugins/cli-backend-plugins">
-    یک CLI هوش مصنوعی محلی را از طریق fallback مدل OpenClaw اجرا کنید.
+  <Card title="Plugin پشتیبان CLI" icon="terminal" href="/fa/plugins/cli-backend-plugins">
+    یک CLI محلی هوش مصنوعی را از طریق سازوکار جایگزینی مدل OpenClaw اجرا کنید.
   </Card>
-  <Card title="Tool plugin" icon="wrench" href="/fa/plugins/tool-plugins">
-    ابزارهای agent را ثبت کنید.
+  <Card title="Plugin ابزار" icon="wrench" href="/fa/plugins/tool-plugins">
+    ابزارهای عامل را ثبت کنید.
   </Card>
 </CardGroup>
 
 ## شروع سریع
 
-با ثبت یک ابزار agent الزامی، یک Plugin ابزار حداقلی بسازید. این کوتاه‌ترین شکل مفید Plugin است و package، manifest، نقطه ورود و اثبات محلی را نشان می‌دهد.
+با ثبت یک ابزار عامل الزامی، یک Plugin ابزار حداقلی بسازید. این کوتاه‌ترین
+ساختار مفید Plugin است و بسته، مانیفست، نقطه ورود و اثبات محلی را پوشش می‌دهد.
 
 <Steps>
-  <Step title="Create package metadata">
+  <Step title="فراداده بسته را ایجاد کنید">
     <CodeGroup>
 
 ```json package.json
@@ -104,17 +110,28 @@ openclaw plugins install clawhub:<package-name>
 
     </CodeGroup>
 
-    Pluginهای خارجی منتشرشده باید entryهای runtime را به فایل‌های JavaScript ساخته‌شده اشاره دهند. برای قرارداد کامل نقطه ورود، [نقاط ورود SDK](/fa/plugins/sdk-entrypoints) را ببینید.
+    Pluginهای خارجی منتشرشده باید ورودی‌های زمان اجرا را به فایل‌های JavaScript
+    ساخته‌شده ارجاع دهند. برای قرارداد کامل نقطه ورود، به
+    [نقاط ورود SDK](/fa/plugins/sdk-entrypoints) مراجعه کنید.
 
-    هر Plugin به یک manifest نیاز دارد، حتی وقتی config ندارد. ابزارهای runtime باید در `contracts.tools` ظاهر شوند تا OpenClaw بتواند مالکیت را بدون بارگذاری eager همه runtimeهای Plugin کشف کند. `activation.onStartup` را آگاهانه تنظیم کنید. این مثال هنگام startup شدن Gateway شروع می‌شود.
+    هر Plugin، حتی بدون پیکربندی، به مانیفست نیاز دارد. ابزارهای زمان اجرا باید
+    در `contracts.tools` درج شوند تا OpenClaw بتواند مالکیت را بدون بارگذاری
+    پیش‌دستانه زمان اجرای همه Pluginها شناسایی کند. مقدار `activation.onStartup`
+    را آگاهانه تنظیم کنید؛ این نمونه هنگام راه‌اندازی Gateway بارگذاری می‌شود.
 
-    سطح‌های Plugin مورد اعتماد host نیز با manifest کنترل می‌شوند و برای Pluginهای نصب‌شده به فعال‌سازی صریح نیاز دارند. اگر یک Plugin نصب‌شده `api.registerAgentToolResultMiddleware(...)` را ثبت می‌کند، هر runtime هدف را در `contracts.agentToolResultMiddleware` اعلام کنید. اگر `api.registerTrustedToolPolicy(...)` را ثبت می‌کند، هر policy id را در `contracts.trustedToolPolicies` اعلام کنید. این اعلام‌ها inspection زمان نصب و ثبت runtime را هم‌راستا نگه می‌دارند.
+    سطوح Plugin مورداعتماد میزبان نیز با مانیفست کنترل می‌شوند و برای Pluginهای
+    نصب‌شده به اعلان صریح نیاز دارند: برای
+    `api.registerAgentToolResultMiddleware(...)` باید هر زمان اجرای هدف در
+    `contracts.agentToolResultMiddleware` فهرست شود و برای
+    `api.registerTrustedToolPolicy(...)` باید شناسه هر سیاست در
+    `contracts.trustedToolPolicies` درج شود. این اعلان‌ها بازرسی هنگام نصب و
+    ثبت زمان اجرا را هم‌راستا نگه می‌دارند.
 
-    برای همه فیلدهای manifest، [مانیفست Plugin](/fa/plugins/manifest) را ببینید.
+    برای همه فیلدهای مانیفست، به [مانیفست Plugin](/fa/plugins/manifest) مراجعه کنید.
 
   </Step>
 
-  <Step title="Register the tool">
+  <Step title="ابزار را ثبت کنید">
     ```typescript index.ts
     import { Type } from "typebox";
     import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
@@ -138,33 +155,42 @@ openclaw plugins install clawhub:<package-name>
     });
     ```
 
-    برای Pluginهای غیرکانالی از `definePluginEntry` استفاده کنید. Pluginهای کانال از `defineChannelPluginEntry` استفاده می‌کنند.
+    برای Pluginهای غیرکانالی از `definePluginEntry` استفاده کنید. در عوض،
+    Pluginهای کانال از `defineChannelPluginEntry` در
+    `openclaw/plugin-sdk/core` استفاده می‌کنند.
 
   </Step>
 
-  <Step title="Test the runtime">
-    برای یک Plugin نصب‌شده یا خارجی، runtime بارگذاری‌شده را inspect کنید:
+  <Step title="زمان اجرا را آزمایش کنید">
+    برای یک Plugin نصب‌شده یا خارجی، زمان اجرای بارگذاری‌شده را بررسی کنید:
 
     ```bash
     openclaw plugins inspect my-plugin --runtime --json
     ```
 
-    اگر Plugin یک دستور CLI ثبت می‌کند، آن دستور را هم اجرا کنید. برای مثال، یک دستور demo باید اثبات اجرا مانند
-    `openclaw demo-plugin ping` داشته باشد.
+    اگر Plugin یک فرمان CLI ثبت می‌کند، آن فرمان را نیز اجرا و خروجی را تأیید
+    کنید؛ برای نمونه `openclaw demo-plugin ping`.
 
-    برای یک Plugin bundled در این مخزن، OpenClaw packageهای Plugin در source checkout را از workspace `extensions/*` کشف می‌کند. نزدیک‌ترین تست هدفمند را اجرا کنید:
+    برای یک Plugin همراه‌شده در این مخزن، OpenClaw بسته‌های Plugin نسخه منبع را
+    از فضای کاری `extensions/*` شناسایی می‌کند. نزدیک‌ترین آزمون هدفمند را اجرا
+    کنید:
 
     ```bash
-    pnpm test -- extensions/my-plugin/
+    pnpm test extensions/my-plugin/
     pnpm check
     ```
 
   </Step>
 
-  <Step title="Test the package install">
-    پیش از انتشار یک Plugin آماده package، همان شکل نصبی را تست کنید که کاربران دریافت خواهند کرد. ابتدا یک مرحله build اضافه کنید، entryهای runtime مانند `openclaw.extensions` را به JavaScript ساخته‌شده مثل `./dist/index.js` اشاره دهید، و مطمئن شوید `npm pack` خروجی `dist/` را شامل می‌شود. entryهای source TypeScript فقط برای source checkoutها و مسیرهای توسعه محلی هستند.
+  <Step title="نصب بسته را آزمایش کنید">
+    پیش از انتشار یک Plugin آماده بسته‌بندی، همان ساختار نصبی را آزمایش کنید که
+    کاربران دریافت خواهند کرد. ابتدا یک مرحله ساخت اضافه کنید، ورودی‌های زمان
+    اجرا مانند `openclaw.extensions` را به JavaScript ساخته‌شده‌ای مانند
+    `./dist/index.js` ارجاع دهید و مطمئن شوید `npm pack` خروجی `dist/` را شامل
+    می‌شود. ورودی‌های منبع TypeScript فقط برای نسخه‌های منبع و مسیرهای توسعه
+    محلی هستند.
 
-    سپس Plugin را pack کنید و tarball را با `npm-pack:` نصب کنید:
+    سپس Plugin را بسته‌بندی کنید و فایل tar را با `npm-pack:` نصب کنید:
 
     ```bash
     npm pack --pack-destination /tmp
@@ -172,26 +198,37 @@ openclaw plugins install clawhub:<package-name>
     openclaw plugins inspect my-plugin --runtime --json
     ```
 
-    `npm-pack:` از project npm مدیریت‌شده OpenClaw برای هر Plugin استفاده می‌کند، بنابراین خطاهای وابستگی runtime را که تست source checkout می‌تواند پنهان کند پیدا می‌کند. این package و شکل وابستگی را اثبات می‌کند، نه اعتماد رسمی متصل به catalog را. importهای runtime باید در `dependencies` یا `optionalDependencies` باشند؛ وابستگی‌هایی که فقط در `devDependencies` باقی بمانند برای project runtime مدیریت‌شده نصب نمی‌شوند.
+    `npm-pack:` از پروژه npm مدیریت‌شده OpenClaw برای هر Plugin استفاده می‌کند،
+    بنابراین اشتباهات وابستگی زمان اجرا را که آزمایش نسخه منبع ممکن است پنهان
+    کند، آشکار می‌سازد. این روش ساختار بسته و وابستگی را اثبات می‌کند، نه اعتماد
+    رسمی متصل به کاتالوگ را. واردسازی‌های زمان اجرا باید در `dependencies` یا
+    `optionalDependencies` باشند؛ وابستگی‌هایی که فقط در `devDependencies`
+    باقی بمانند، برای پروژه زمان اجرای مدیریت‌شده نصب نخواهند شد.
 
-    از نصب archive/path خام به عنوان اثبات نهایی برای رفتار رسمی یا privileged Plugin استفاده نکنید. sourceهای خام برای debugging محلی مفیدند، اما همان مسیر وابستگی نصب‌های npm یا ClawHub را اثبات نمی‌کنند. اگر Plugin شما به وضعیت Plugin رسمی مورد اعتماد وابسته است، یک اثبات دوم از طریق نصب رسمی پشتوانه‌دار با catalog یا یک مسیر package منتشرشده که اعتماد رسمی را ثبت می‌کند اضافه کنید. برای جزئیات install-root و مالکیت وابستگی، [حل وابستگی Plugin](/fa/plugins/dependency-resolution) را ببینید.
+    از نصب مستقیم بایگانی یا مسیر به‌عنوان اثبات نهایی رفتار رسمی یا دارای
+    امتیاز ویژه Plugin استفاده نکنید. منابع خام برای اشکال‌زدایی محلی مفیدند،
+    اما همان مسیر وابستگی نصب‌های npm یا ClawHub را اثبات نمی‌کنند. اگر Plugin
+    شما به وضعیت مورداعتماد Plugin رسمی وابسته است، یک اثبات دوم از طریق نصب
+    رسمی مبتنی بر کاتالوگ یا مسیر بسته منتشرشده‌ای اضافه کنید که اعتماد رسمی
+    را ثبت می‌کند. برای جزئیات ریشه نصب و مالکیت وابستگی، به
+    [تفکیک وابستگی Plugin](/fa/plugins/dependency-resolution) مراجعه کنید.
 
   </Step>
 
-  <Step title="Publish">
-    پیش از انتشار، package را validate کنید:
+  <Step title="منتشر کنید">
+    بسته را پیش از انتشار اعتبارسنجی کنید:
 
     ```bash
     clawhub package publish your-org/your-plugin --dry-run
     clawhub package publish your-org/your-plugin
     ```
 
-    snippetهای canonical ClawHub در `docs/snippets/plugin-publish/` قرار دارند.
+    قطعه‌کدهای مرجع بسته ClawHub در `docs/snippets/plugin-publish/` قرار دارند.
 
   </Step>
 
-  <Step title="Install">
-    package منتشرشده را از طریق ClawHub نصب کنید:
+  <Step title="نصب کنید">
+    بسته منتشرشده را از طریق ClawHub نصب کنید:
 
     ```bash
     openclaw plugins install clawhub:your-org/your-plugin
@@ -204,7 +241,13 @@ openclaw plugins install clawhub:<package-name>
 
 ## ثبت ابزارها
 
-ابزارها می‌توانند الزامی یا اختیاری باشند. ابزارهای الزامی همیشه وقتی Plugin فعال است در دسترس‌اند. ابزارهای اختیاری به opt-in کاربر نیاز دارند.
+ابزارها می‌توانند الزامی یا اختیاری باشند. وقتی Plugin فعال است، ابزارهای
+الزامی همیشه در دسترس‌اند. پیش از آنکه OpenClaw زمان اجرای Plugin مالک را
+بارگذاری کند، ابزارهای اختیاری به پذیرش صریح کاربر نیاز دارند.
+
+کارخانه‌های ابزار، زمینه مورداعتماد زمان اجرا را دریافت می‌کنند؛ از جمله
+`deliveryContext`، مقدار `nativeChannelId` برای گفت‌وگوی پلتفرم فعال در صورت
+وجود، و `requesterSenderId`.
 
 ```typescript
 register(api) {
@@ -222,7 +265,8 @@ register(api) {
 }
 ```
 
-هر ابزاری که با `api.registerTool(...)` ثبت می‌شود باید در manifest Plugin نیز اعلام شود:
+هر ابزاری که با `api.registerTool(...)` ثبت می‌شود، باید در مانیفست Plugin نیز
+اعلان شود:
 
 ```json
 {
@@ -237,92 +281,118 @@ register(api) {
 }
 ```
 
-کاربران با `tools.allow` opt in می‌کنند:
+کاربران با `tools.allow` آن را فعال می‌کنند:
 
 ```json5
 {
-  tools: { allow: ["workflow_tool"] }, // or ["my-plugin"] for all tools from one plugin
+  tools: { allow: ["workflow_tool"] }, // or ["my-plugin"] for every tool from one plugin
 }
 ```
 
-ابزارهای اختیاری کنترل می‌کنند که آیا یک ابزار در معرض مدل قرار بگیرد یا نه. وقتی یک ابزار یا hook باید پس از انتخاب شدن توسط مدل و پیش از اجرای action درخواست تأیید کند، از [درخواست‌های مجوز Plugin](/fa/plugins/plugin-permission-requests) استفاده کنید.
+ابزارهای اختیاری تعیین می‌کنند که آیا یک ابزار در معرض مدل قرار می‌گیرد یا نه.
+وقتی یک ابزار یا هوک باید پس از انتخاب‌شدن توسط مدل و پیش از اجرای عمل، درخواست
+تأیید کند، از [درخواست‌های مجوز Plugin](/fa/plugins/plugin-permission-requests)
+استفاده کنید.
 
-از ابزارهای اختیاری برای side effectها، binaryهای غیرمعمول، یا قابلیت‌هایی استفاده کنید که نباید به‌صورت پیش‌فرض در معرض قرار بگیرند. نام ابزارها نباید با ابزارهای core تداخل داشته باشد؛ تداخل‌ها رد می‌شوند و در diagnosticsهای Plugin گزارش می‌شوند. registrationهای malformed، از جمله descriptorهای ابزار بدون `parameters`، رد می‌شوند و به همان شکل گزارش می‌شوند. ابزارهای ثبت‌شده functionهای typed هستند که مدل می‌تواند پس از عبور policy و allowlist checkها آن‌ها را فراخوانی کند.
+از ابزارهای اختیاری برای اثرات جانبی، فایل‌های اجرایی غیرمعمول یا قابلیت‌هایی
+استفاده کنید که نباید به‌طور پیش‌فرض در معرض مدل قرار گیرند. نام ابزارها نباید
+با نام ابزارهای هسته تداخل داشته باشد؛ موارد متداخل نادیده گرفته می‌شوند و در
+تشخیص‌های Plugin گزارش می‌شوند. ثبت‌های بدساخت نیز به همین روش نادیده گرفته و
+گزارش می‌شوند: نبود یک `name` غیرخالی، تابع نبودن `execute`، یا توصیف‌گر ابزاری
+که شیء `parameters` ندارد.
 
-factoryهای ابزار یک context object فراهم‌شده توسط runtime دریافت می‌کنند. وقتی یک ابزار باید مدل فعال turn فعلی را log کند، نمایش دهد یا با آن سازگار شود، از `ctx.activeModel` استفاده کنید. این object می‌تواند شامل `provider`، `modelId` و `modelRef` باشد. آن را metadata اطلاعاتی runtime در نظر بگیرید، نه مرز امنیتی در برابر operator محلی، کد Plugin نصب‌شده، یا runtime تغییر‌یافته OpenClaw. ابزارهای محلی حساس همچنان باید به opt-in صریح Plugin یا operator نیاز داشته باشند و وقتی metadata مدل فعال وجود ندارد یا مناسب نیست fail closed شوند.
+کارخانه‌های ابزار یک شیء زمینه تأمین‌شده توسط زمان اجرا دریافت می‌کنند. وقتی
+ابزاری برای ثبت گزارش، نمایش یا سازگاری با مدل فعال در نوبت جاری به آن نیاز
+دارد، از `ctx.activeModel` استفاده کنید؛ این مقدار می‌تواند شامل `provider`،
+`modelId` و `modelRef` باشد. با آن به‌عنوان فراداده اطلاعاتی زمان اجرا رفتار
+کنید، نه یک مرز امنیتی در برابر اپراتور محلی، کد Plugin نصب‌شده یا زمان اجرای
+تغییریافته OpenClaw. ابزارهای محلی حساس همچنان باید به پذیرش صریح Plugin یا
+اپراتور نیاز داشته باشند و وقتی فراداده مدل فعال وجود ندارد یا مناسب نیست،
+به‌صورت بسته و امن شکست بخورند.
 
-manifest مالکیت و discovery را اعلام می‌کند؛ اجرا همچنان implementation ابزار ثبت‌شده live را فراخوانی می‌کند. `toolMetadata.<tool>.optional: true` را با `api.registerTool(..., { optional: true })` هم‌راستا نگه دارید تا OpenClaw بتواند تا زمانی که ابزار صراحتاً allowlist نشده، از بارگذاری runtime آن Plugin اجتناب کند.
+مانیفست، مالکیت و شناسایی را اعلان می‌کند؛ اجرا همچنان پیاده‌سازی زنده ابزار
+ثبت‌شده را فراخوانی می‌کند. `toolMetadata.<tool>.optional: true` را با
+`api.registerTool(..., { optional: true })` هم‌راستا نگه دارید تا OpenClaw
+بتواند تا زمانی که ابزار صریحاً در فهرست مجاز قرار نگرفته است، از بارگذاری زمان
+اجرای آن Plugin خودداری کند.
 
-## قراردادهای import
+## قراردادهای واردسازی
 
-از subpathهای متمرکز SDK import کنید:
+از زیرمسیرهای متمرکز SDK وارد کنید:
 
 ```typescript
 import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
 import { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
 ```
 
-از root barrel منسوخ‌شده import نکنید:
+از ورودی تجمیعی ریشه منسوخ‌شده وارد نکنید:
 
 ```typescript
 import { definePluginEntry } from "openclaw/plugin-sdk";
 ```
 
-درون package Plugin خود، برای importهای داخلی از فایل‌های barrel محلی مانند `api.ts` و
-`runtime-api.ts` استفاده کنید. Plugin خودتان را از طریق یک مسیر SDK import نکنید. helperهای مخصوص provider باید در package provider بمانند، مگر اینکه مرز واقعاً generic باشد.
+درون بسته Plugin خود، برای واردسازی‌های داخلی از فایل‌های تجمیعی محلی مانند
+`api.ts` و `runtime-api.ts` استفاده کنید. Plugin خود را از طریق یک مسیر SDK
+وارد نکنید. یاریگرهای مختص ارائه‌دهنده باید در بسته ارائه‌دهنده باقی بمانند،
+مگر اینکه این مرز واقعاً عمومی باشد.
 
-methodهای RPC سفارشی Gateway یک نقطه ورود پیشرفته هستند. آن‌ها را روی یک prefix مخصوص Plugin نگه دارید؛ namespaceهای admin core مانند `config.*`،
-`exec.approvals.*`، `operator.admin.*`، `wizard.*` و `update.*` رزرو می‌مانند و به `operator.admin` resolve می‌شوند. bridge
-`openclaw/plugin-sdk/gateway-method-runtime` برای routeهای HTTP Plugin رزرو شده است که `contracts.gatewayMethodDispatch: ["authenticated-request"]` را اعلام می‌کنند.
+متدهای سفارشی RPC در Gateway یک نقطه ورود پیشرفته‌اند. آن‌ها را در یک پیشوند
+مختص Plugin نگه دارید؛ فضاهای نام مدیریتی هسته مانند `config.*`،
+`exec.approvals.*`، `operator.admin.*`، `wizard.*` و `update.*` رزروشده باقی
+می‌مانند و به `operator.admin` تفکیک می‌شوند. پل
+`openclaw/plugin-sdk/gateway-method-runtime` برای مسیرهای HTTP مربوط به Plugin
+رزرو شده است که
+`contracts.gatewayMethodDispatch: ["authenticated-request"]` را اعلان می‌کنند.
 
-برای نقشه کامل import، [نمای کلی SDK Plugin](/fa/plugins/sdk-overview) را ببینید.
+برای نقشه کامل واردسازی، به [مرور کلی SDK مربوط به Plugin](/fa/plugins/sdk-overview)
+مراجعه کنید.
 
-## چک‌لیست پیش از ارسال
+## فهرست بررسی پیش از ارسال
 
-<Check>**package.json** metadata درست `openclaw` را دارد</Check>
-<Check>manifest **openclaw.plugin.json** وجود دارد و معتبر است</Check>
+<Check>**package.json** دارای فراداده صحیح `openclaw` است</Check>
+<Check>مانیفست **openclaw.plugin.json** وجود دارد و معتبر است</Check>
 <Check>نقطه ورود از `defineChannelPluginEntry` یا `definePluginEntry` استفاده می‌کند</Check>
-<Check>همه importها از مسیرهای متمرکز `plugin-sdk/<subpath>` استفاده می‌کنند</Check>
-<Check>importهای داخلی از ماژول‌های محلی استفاده می‌کنند، نه self-importهای SDK</Check>
-<Check>تست‌ها pass می‌شوند (`pnpm test -- <bundled-plugin-root>/my-plugin/`)</Check>
-<Check>`pnpm check` pass می‌شود (Pluginهای داخل مخزن)</Check>
+<Check>همه واردسازی‌ها از مسیرهای متمرکز `plugin-sdk/<subpath>` استفاده می‌کنند</Check>
+<Check>واردسازی‌های داخلی از ماژول‌های محلی استفاده می‌کنند، نه واردسازی خودارجاعی SDK</Check>
+<Check>آزمون‌ها موفق‌اند (`pnpm test <bundled-plugin-root>/my-plugin/`)</Check>
+<Check>`pnpm check` موفق است (برای Pluginهای درون مخزن)</Check>
 
-## تست در برابر releaseهای beta
+## آزمایش در برابر نسخه‌های بتا
 
-1. برچسب‌های انتشار GitHub را در [openclaw/openclaw](https://github.com/openclaw/openclaw/releases) دنبال کنید و از مسیر `Watch` > `Releases` مشترک شوید. برچسب‌های بتا شبیه `v2026.3.N-beta.1` هستند. همچنین می‌توانید اعلان‌های حساب رسمی OpenClaw در X، یعنی [@openclaw](https://x.com/openclaw)، را برای اطلاعیه‌های انتشار فعال کنید.
-2. به‌محض ظاهر شدن برچسب بتا، Plugin خود را در برابر آن آزمایش کنید. بازه‌ی قبل از انتشار پایدار معمولاً فقط چند ساعت است.
-3. پس از آزمایش، در رشته‌ی مربوط به Plugin خود در کانال Discord با نام `plugin-forum`، یا `all good` را ارسال کنید یا توضیح دهید چه چیزی خراب شده است. اگر هنوز رشته‌ای ندارید، یکی ایجاد کنید.
-4. اگر چیزی خراب شد، یک issue با عنوان `Beta blocker: <plugin-name> - <summary>` باز یا به‌روزرسانی کنید و برچسب `beta-blocker` را اعمال کنید. پیوند issue را در رشته‌ی خود قرار دهید.
-5. یک PR به `main` با عنوان `fix(<plugin-id>): beta blocker - <summary>` باز کنید و issue را هم در PR و هم در رشته‌ی Discord خود پیوند دهید. مشارکت‌کنندگان نمی‌توانند به PRها برچسب بزنند، بنابراین عنوان، سیگنال سمت PR برای نگه‌دارندگان و خودکارسازی است. مسدودکننده‌هایی که PR دارند ادغام می‌شوند؛ مسدودکننده‌های بدون PR ممکن است با این حال منتشر شوند. نگه‌دارندگان در طول آزمایش بتا این رشته‌ها را دنبال می‌کنند.
-6. سکوت به‌معنای سبز بودن وضعیت است. اگر این بازه را از دست بدهید، اصلاح شما احتمالاً در چرخه‌ی بعدی وارد می‌شود.
+1. انتشارهای [openclaw/openclaw](https://github.com/openclaw/openclaw/releases) را دنبال کنید (`Watch` > `Releases`). برچسب‌های بتا به‌شکل `v2026.3.N-beta.1` هستند. همچنین می‌توانید برای اطلاعیه‌های انتشار، [@openclaw](https://x.com/openclaw) را در X دنبال کنید.
+2. به‌محض ظاهرشدن برچسب بتا، Plugin خود را با آن آزمایش کنید. بازه زمانی پیش از انتشار پایدار معمولاً فقط چند ساعت است.
+3. پس از آزمایش، در رشته مربوط به Plugin خود در کانال Discord با نام `plugin-forum` ([discord.gg/clawd](https://discord.gg/clawd))، عبارت `all good` یا شرح موردی را که خراب شده است ارسال کنید. اگر هنوز رشته‌ای ندارید، یکی ایجاد کنید.
+4. اگر چیزی خراب شد، یک مشکل با عنوان `Beta blocker: <plugin-name> - <summary>` باز یا به‌روزرسانی کنید و برچسب `beta-blocker` را اعمال کنید. پیوند مشکل را در رشته خود قرار دهید.
+5. یک PR برای `main` با عنوان `fix(<plugin-id>): beta blocker - <summary>` باز کنید و پیوند مشکل را هم در PR و هم در رشته Discord خود قرار دهید. مشارکت‌کنندگان نمی‌توانند به PRها برچسب بزنند، بنابراین عنوان، نشانه سمت PR برای نگه‌دارندگان و خودکارسازی است. مسدودکننده‌هایی که PR دارند ادغام می‌شوند؛ موارد بدون PR ممکن است بااین‌حال منتشر شوند.
+6. سکوت به‌معنای سبزبودن وضعیت است. ازدست‌دادن این بازه معمولاً به این معناست که اصلاح شما در چرخه بعدی وارد می‌شود.
 
 ## گام‌های بعدی
 
 <CardGroup cols={2}>
-  <Card title="Channel Plugins" icon="messages-square" href="/fa/plugins/sdk-channel-plugins">
+  <Card title="Pluginهای کانال" icon="messages-square" href="/fa/plugins/sdk-channel-plugins">
     یک Plugin کانال پیام‌رسانی بسازید
   </Card>
-  <Card title="Provider Plugins" icon="cpu" href="/fa/plugins/sdk-provider-plugins">
-    یک Plugin ارائه‌دهنده‌ی مدل بسازید
+  <Card title="Pluginهای ارائه‌دهنده" icon="cpu" href="/fa/plugins/sdk-provider-plugins">
+    یک Plugin ارائه‌دهنده مدل بسازید
   </Card>
-  <Card title="CLI Backend Plugins" icon="terminal" href="/fa/plugins/cli-backend-plugins">
-    یک پس‌زمینه‌ی CLI محلی برای هوش مصنوعی ثبت کنید
+  <Card title="Pluginهای بک‌اند CLI" icon="terminal" href="/fa/plugins/cli-backend-plugins">
+    یک بک‌اند محلی CLI هوش مصنوعی ثبت کنید
   </Card>
-  <Card title="SDK Overview" icon="book-open" href="/fa/plugins/sdk-overview">
-    مرجع نگاشت import و API ثبت
+  <Card title="نمای کلی SDK" icon="book-open" href="/fa/plugins/sdk-overview">
+    مرجع نگاشت واردسازی و API ثبت
   </Card>
-  <Card title="Runtime Helpers" icon="settings" href="/fa/plugins/sdk-runtime">
-    TTS، جست‌وجو، subagent از طریق api.runtime
+  <Card title="ابزارهای کمکی زمان اجرا" icon="settings" href="/fa/plugins/sdk-runtime">
+    تبدیل متن به گفتار، جست‌وجو و عامل فرعی از طریق api.runtime
   </Card>
-  <Card title="Testing" icon="test-tubes" href="/fa/plugins/sdk-testing">
+  <Card title="آزمایش" icon="test-tubes" href="/fa/plugins/sdk-testing">
     ابزارها و الگوهای آزمایش
   </Card>
-  <Card title="Plugin Manifest" icon="file-json" href="/fa/plugins/manifest">
-    مرجع کامل شمای manifest
+  <Card title="مانیفست Plugin" icon="file-json" href="/fa/plugins/manifest">
+    مرجع کامل طرح‌واره مانیفست
   </Card>
 </CardGroup>
 
 ## مرتبط
 
-- [hookهای Plugin](/fa/plugins/hooks)
+- [هوک‌های Plugin](/fa/plugins/hooks)
 - [معماری Plugin](/fa/plugins/architecture)

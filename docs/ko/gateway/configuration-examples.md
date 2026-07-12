@@ -2,21 +2,20 @@
 read_when:
     - OpenClaw 구성 방법 알아보기
     - 구성 예시 찾기
-    - OpenClaw 최초 설정하기
+    - OpenClaw을 처음 설정하기
 summary: 일반적인 OpenClaw 설정을 위한 스키마에 정확히 부합하는 구성 예시
-title: 구성 예시
+title: 구성 예제
 x-i18n:
-    generated_at: "2026-07-12T15:14:06Z"
+    generated_at: "2026-07-12T00:44:43Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: c3ad82ccce62e0c8dbb72f81b0de62d60d8a6282f0a327ed1cbda7ffa3e47969
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-아래 예시는 현재 구성 스키마에 맞춰져 있습니다. 전체 참조와 필드별 참고 사항은 [구성](/ko/gateway/configuration)을 참조하십시오.
+아래 예시는 현재 구성 스키마에 맞춰져 있습니다. 전체 참조 문서와 필드별 참고 사항은 [구성](/ko/gateway/configuration)을 참조하세요.
 
 ## 빠른 시작
 
@@ -29,7 +28,7 @@ x-i18n:
 }
 ```
 
-`~/.openclaw/openclaw.json`에 저장하면 해당 번호에서 봇으로 DM을 보낼 수 있습니다.
+`~/.openclaw/openclaw.json`에 저장하면 해당 번호로 봇에게 DM을 보낼 수 있습니다.
 
 ### 권장 시작 구성
 
@@ -60,7 +59,7 @@ x-i18n:
   messages: {
     visibleReplies: "automatic",
     groupChat: {
-      visibleReplies: "message_tool", // 선택 사항이며, 표시되는 출력을 생성하려면 message(action=send)가 필요합니다.
+      visibleReplies: "message_tool", // 명시적으로 활성화해야 하며, 표시되는 출력을 생성하려면 message(action=send)가 필요합니다
       unmentionedInbound: "room_event",
     },
   },
@@ -85,7 +84,7 @@ x-i18n:
     },
   },
 
-  // 인증 프로필 메타데이터(비밀 정보는 auth-profiles.json에 저장됨)
+  // 인증 프로필 메타데이터(보안 비밀은 auth-profiles.json에 저장됨)
   auth: {
     profiles: {
       "anthropic:default": { provider: "anthropic", mode: "api_key" },
@@ -99,7 +98,7 @@ x-i18n:
     },
   },
 
-  // ID는 에이전트별로 설정합니다. 아래 agents.list[].identity에서 설정하십시오.
+  // ID는 에이전트별로 설정됩니다. 아래 agents.list[].identity에서 설정하세요.
 
   // 로깅
   logging: {
@@ -110,7 +109,7 @@ x-i18n:
     redactSensitive: "tools",
   },
 
-  // 메시지 서식
+  // 메시지 형식
   messages: {
     messagePrefix: "[openclaw]",
     visibleReplies: "automatic",
@@ -119,7 +118,7 @@ x-i18n:
     ackReactionScope: "group-mentions",
     groupChat: {
       historyLimit: 50,
-      visibleReplies: "message_tool", // 도구를 안정적으로 사용하는 모델이 있는 공유 대화방에서 사용하도록 설정
+      visibleReplies: "message_tool", // 도구를 안정적으로 사용하는 모델이 있는 공유 대화방에서 명시적으로 사용
       unmentionedInbound: "room_event",
     },
     queue: {
@@ -163,7 +162,7 @@ x-i18n:
   // 세션 동작
   session: {
     scope: "per-sender",
-    dmScope: "per-channel-peer", // 여러 사용자가 이용하는 받은편지함에 권장
+    dmScope: "per-channel-peer", // 여러 사용자가 사용하는 받은 편지함에 권장
     reset: {
       mode: "daily",
       atHour: 4,
@@ -285,7 +284,7 @@ x-i18n:
         every: "30m",
         model: "anthropic/claude-sonnet-4-6",
         target: "last",
-        directPolicy: "allow", // allow(기본값) | block
+        directPolicy: "allow", // 허용(기본값) | 차단
         to: "+15555550123",
         prompt: "HEARTBEAT",
         ackMaxChars: 300,
@@ -300,7 +299,7 @@ x-i18n:
       },
       sandbox: {
         mode: "non-main",
-        scope: "session", // 레거시 perSession: true보다 권장
+        scope: "session", // 기존 perSession: true보다 권장
         workspaceRoot: "~/.openclaw/sandboxes",
         docker: {
           image: "openclaw-sandbox:bookworm-slim",
@@ -321,21 +320,21 @@ x-i18n:
         default: true,
         identity: {
           name: "Samantha",
-          theme: "도움을 주는 나무늘보",
+          theme: "helpful sloth",
           emoji: "🦥",
         },
-        // defaults.skills -> github, weather를 상속함
+        // defaults.skills를 상속함 -> github, weather
         groupChat: {
           mentionPatterns: ["@openclaw", "openclaw"],
         },
         thinkingDefault: "high", // 에이전트별 사고 설정 재정의
         reasoningDefault: "on", // 에이전트별 추론 표시 여부
-        fastModeDefault: false, // 에이전트별 고속 모드
+        fastModeDefault: false, // 에이전트별 빠른 모드
       },
       {
         id: "quick",
         skills: [], // 이 에이전트에는 Skills가 없음
-        fastModeDefault: true, // 이 에이전트는 항상 고속으로 실행됨
+        fastModeDefault: true, // 이 에이전트는 항상 빠르게 실행됨
         thinkingDefault: "off",
       },
     ],
@@ -485,8 +484,8 @@ x-i18n:
 
 ### 심볼릭 링크로 연결된 형제 Skills 저장소
 
-기본 제공 Skills 루트에 형제 저장소로 연결되는 심볼릭 링크가 포함된 경우 사용하십시오. 예를
-들어 `~/.agents/skills/manager -> ~/Projects/manager/skills`와 같습니다.
+기본 제공 Skills 루트에 형제 저장소를 가리키는 심볼릭 링크가 포함된 경우 사용합니다. 예를 들면
+`~/.agents/skills/manager -> ~/Projects/manager/skills`입니다.
 
 ```json5
 {
@@ -500,14 +499,12 @@ x-i18n:
 ```
 
 - `extraDirs`는 형제 저장소를 명시적인 Skills 루트로 스캔합니다.
-- `allowSymlinkTargets`를 사용하면 임의의 심볼릭 링크 이탈은 허용하지 않으면서, 심볼릭 링크로 연결된 Skills 폴더가 신뢰할 수 있는
-  실제 대상 루트로 해석될 수 있습니다.
-- Skill Workshop이 신뢰할 수 있는 동일한 심볼릭 링크 대상에 쓰기를 적용하도록 하려면
-  `skills.workshop.allowSymlinkTargetWrites: true`로 설정하십시오.
+- `allowSymlinkTargets`를 사용하면 임의의 심볼릭 링크 이탈을 허용하지 않으면서 심볼릭 링크로 연결된 Skills 폴더를 신뢰할 수 있는 실제 대상 루트로 해석할 수 있습니다.
+- Skill Workshop이 동일한 신뢰할 수 있는 심볼릭 링크 대상을 통해 쓰기를 수행하도록 하려면 `skills.workshop.allowSymlinkTargetWrites: true`를 설정하세요.
 
 ## 일반적인 패턴
 
-### 하나의 재정의가 있는 공유 Skills 기준선
+### 하나의 재정의가 있는 공유 Skills 기준 구성
 
 ```json5
 {
@@ -526,7 +523,7 @@ x-i18n:
 
 - `agents.defaults.skills`는 공유 기준선입니다.
 - `agents.list[].skills`는 한 에이전트에 대해 해당 기준선을 대체합니다.
-- 에이전트에 Skills를 전혀 표시하지 않으려면 `skills: []`를 사용하십시오.
+- 에이전트에 어떤 Skills도 표시하지 않으려면 `skills: []`를 사용하세요.
 
 ### 다중 플랫폼 설정
 
@@ -551,8 +548,8 @@ x-i18n:
 
 ### 신뢰할 수 있는 Node 네트워크 자동 승인
 
-네트워크 경로를 직접 제어하지 않는 한 기기 페어링은 수동으로 유지하십시오. 전용
-실험실 또는 tailnet 서브넷에서는 정확한 CIDR 또는 IP를 지정하여 최초 Node 기기
+네트워크 경로를 직접 제어하지 않는 한 기기 페어링은 수동으로 유지하세요. 전용
+실험실 또는 tailnet 서브넷에서는 정확한 CIDR이나 IP를 지정하여 최초 Node 기기
 자동 승인을 사용하도록 설정할 수 있습니다.
 
 ```json5
@@ -567,13 +564,13 @@ x-i18n:
 }
 ```
 
-설정하지 않으면 이 기능은 비활성화 상태로 유지됩니다. 요청된 범위가 없는 새로운
-`role: node` 페어링에만 적용됩니다. 운영자/브라우저 클라이언트와 역할, 범위, 메타데이터
-또는 공개 키 업그레이드는 여전히 수동 승인이 필요합니다.
+설정하지 않으면 이 기능은 계속 꺼져 있습니다. 요청된 범위가 없는 새로운
+`role: node` 페어링에만 적용됩니다. 운영자/브라우저 클라이언트와 역할, 범위,
+메타데이터 또는 공개 키 업그레이드는 여전히 수동 승인이 필요합니다.
 
-### 안전한 DM 모드(공유 받은편지함/다중 사용자 DM)
+### 안전한 DM 모드(공유 수신함/다중 사용자 DM)
 
-두 명 이상이 봇에 DM을 보낼 수 있다면(`allowFrom`에 여러 항목이 있거나, 여러 사람의 페어링을 승인했거나, `dmPolicy: "open"`인 경우) **안전한 DM 모드**를 활성화하여 서로 다른 발신자의 DM이 기본적으로 하나의 컨텍스트를 공유하지 않도록 하십시오.
+두 명 이상이 봇에 DM을 보낼 수 있는 경우(`allowFrom`에 여러 항목이 있거나, 여러 사람의 페어링이 승인되었거나, `dmPolicy: "open"`인 경우)에는 서로 다른 발신자의 DM이 기본적으로 하나의 컨텍스트를 공유하지 않도록 **안전한 DM 모드**를 활성화하세요.
 
 ```json5
 {
@@ -581,13 +578,13 @@ x-i18n:
   session: { dmScope: "per-channel-peer" },
 
   channels: {
-    // 예: WhatsApp 다중 사용자 받은편지함
+    // 예: WhatsApp 다중 사용자 수신함
     whatsapp: {
       dmPolicy: "allowlist",
       allowFrom: ["+15555550123", "+15555550124"],
     },
 
-    // 예: Discord 다중 사용자 받은편지함
+    // 예: Discord 다중 사용자 수신함
     discord: {
       enabled: true,
       token: "YOUR_DISCORD_BOT_TOKEN",
@@ -597,8 +594,8 @@ x-i18n:
 }
 ```
 
-Discord/Google Chat/IRC/Mattermost/Microsoft Teams/Slack에서 발신자 권한 부여는 기본적으로 ID를 우선합니다.
-위험을 명시적으로 수용하는 경우에만 각 채널의 `dangerouslyAllowNameMatching: true`를 사용하여 직접 변경 가능한 이름/이메일/닉네임 일치를 활성화하십시오.
+Discord/Google Chat/IRC/Mattermost/Microsoft Teams/Slack에서는 기본적으로 발신자 권한 부여 시 ID를 우선합니다.
+그 위험을 명시적으로 수용하는 경우에만 각 채널의 `dangerouslyAllowNameMatching: true`를 설정하여 직접 변경 가능한 이름/이메일/닉네임 일치를 활성화하세요.
 
 ### Anthropic API 키 + MiniMax 대체 모델
 
@@ -636,7 +633,7 @@ Discord/Google Chat/IRC/Mattermost/Microsoft Teams/Slack에서 발신자 권한 
 }
 ```
 
-### 업무용 봇(제한된 액세스)
+### 업무용 봇(접근 제한)
 
 ```json5
 {
@@ -705,9 +702,9 @@ Discord/Google Chat/IRC/Mattermost/Microsoft Teams/Slack에서 발신자 권한 
 ## 팁
 
 - `dmPolicy: "open"`을 설정하면 해당 `allowFrom` 목록에 `"*"`가 포함되어야 합니다.
-- 제공자 ID의 형식은 서로 다릅니다(전화번호, 사용자 ID, 채널 ID). 제공자 문서에서 형식을 확인하십시오.
+- 제공자 ID 형식은 서로 다릅니다(전화번호, 사용자 ID, 채널 ID). 제공자 문서에서 형식을 확인하세요.
 - 나중에 추가할 수 있는 선택적 섹션: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
-- 더 자세한 설정 참고 사항은 [제공자](/ko/providers) 및 [문제 해결](/ko/gateway/troubleshooting)을 참조하십시오.
+- 자세한 설정 참고 사항은 [제공자](/ko/providers) 및 [문제 해결](/ko/gateway/troubleshooting)을 참조하세요.
 
 ## 관련 문서
 

@@ -4,8 +4,8 @@ read_when:
 summary: Thêm hỗ trợ nhà cung cấp mô hình Groq cho OpenClaw.
 title: Plugin Groq
 x-i18n:
-    generated_at: "2026-06-27T17:52:51Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:10:07Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 41bae84645b09b5185d62530788a17be0338e93e6f29b9cca11438b69932bbc5
@@ -15,16 +15,16 @@ x-i18n:
 
 # Plugin Groq
 
-Thêm hỗ trợ nhà cung cấp mô hình Groq cho OpenClaw.
+Bổ sung hỗ trợ nhà cung cấp mô hình Groq cho OpenClaw.
 
 ## Phân phối
 
 - Gói: `@openclaw/groq-provider`
-- Cách cài đặt: npm; ClawHub: `clawhub:@openclaw/groq-provider`
+- Phương thức cài đặt: npm; ClawHub: `clawhub:@openclaw/groq-provider`
 
-## Bề mặt
+## Phạm vi
 
-providers: groq; contracts: mediaUnderstandingProviders
+nhà cung cấp: groq; hợp đồng: mediaUnderstandingProviders
 
 ## Tài liệu liên quan
 

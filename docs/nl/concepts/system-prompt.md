@@ -1,179 +1,101 @@
 ---
 read_when:
-    - Systeemprompttekst, toolslijst of tijd-/Heartbeat-secties bewerken
-    - Workspace-bootstrap of gedrag voor Skills-injectie wijzigen
-summary: Wat de OpenClaw-systeemprompt bevat en hoe deze wordt samengesteld
+    - Tekst van de systeemprompt, lijst met tools of tijd-/Heartbeat-secties bewerken
+    - Gedrag voor workspace-bootstrap of injectie van Skills wijzigen
+summary: Wat de systeemprompt van OpenClaw bevat en hoe deze wordt samengesteld
 title: Systeemprompt
 x-i18n:
-    generated_at: "2026-06-27T17:30:11Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:51:33Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 31321b4df7494317b73c2a5609b1dc275463168ed5fe20ecb173e9bec76717cc
+    source_hash: 1aabd41b5d4b51ed139d47b506017322c240bb1002bae901886d5f7991c0dc5e
     source_path: concepts/system-prompt.md
     workflow: 16
 ---
 
-OpenClaw bouwt een aangepaste systeemprompt voor elke agent-run. De prompt is **eigendom van OpenClaw** en gebruikt geen standaardprompt van de runtime.
+OpenClaw bouwt voor elke agentuitvoering een eigen systeemprompt; er is geen standaardprompt tijdens runtime.
 
-De prompt wordt samengesteld door OpenClaw en geïnjecteerd in elke agent-run.
+De samenstelling bestaat uit drie lagen:
 
-Promptassemblage heeft drie lagen:
+- `buildAgentSystemPrompt` genereert de prompt op basis van expliciete invoer. Deze blijft een pure renderer en leest de globale configuratie niet rechtstreeks.
+- `resolveAgentSystemPromptConfig` bepaalt voor een specifieke agent de configuratiegestuurde promptinstellingen (weergave van de eigenaar, TTS-hints, modelaliassen, modus voor geheugenverwijzingen en delegatiemodus voor subagents).
+- Runtime-adapters (ingebed, CLI, opdracht-/exportvoorbeelden, compaction) verzamelen actuele gegevens (tools, sandboxstatus, kanaalmogelijkheden, contextbestanden en promptbijdragen van providers) en roepen de geconfigureerde promptfacade aan.
 
-- `buildAgentSystemPrompt` rendert de prompt vanuit expliciete invoer. Deze moet
-  een pure renderer blijven en mag globale configuratie niet rechtstreeks lezen.
-- `resolveAgentSystemPromptConfig` lost door configuratie gesteunde promptknoppen op, zoals
-  eigenaarsweergave, TTS-hints, modelaliassen, geheugencitatiemodus en sub-agent-
-  delegatiemodus voor een specifieke agent.
-- Runtime-adapters (embedded, CLI, opdracht-/exportvoorbeelden, Compaction) verzamelen
-  live feiten zoals tools, sandboxstatus, kanaalmogelijkheden, contextbestanden
-  en providerpromptbijdragen, en roepen daarna de geconfigureerde promptfacade aan.
+Zo blijven geëxporteerde prompts en foutopsporingsprompts afgestemd op live-uitvoeringen, zonder elk runtimedetail in één monolithische builder onder te brengen.
 
-Dit houdt geexporteerde/debug-promptoppervlakken afgestemd op live runs zonder
-elk runtime-specifiek detail in een monolithische bouwer te veranderen.
+Providerplugins kunnen cachebewuste richtlijnen toevoegen zonder de prompt van OpenClaw te vervangen. Een providerruntime kan:
 
-Provider-plugins kunnen cachebewuste promptrichtlijnen bijdragen zonder de
-volledige prompt van OpenClaw te vervangen. De provider-runtime kan:
+- een van drie benoemde kernsecties vervangen: `interaction_style`, `tool_call_style`, `execution_bias`
+- een **stabiel voorvoegsel** boven de promptcachegrens invoegen
+- een **dynamisch achtervoegsel** onder de promptcachegrens invoegen
 
-- een kleine set benoemde kernsecties vervangen (`interaction_style`,
-  `tool_call_style`, `execution_bias`)
-- een **stabiel prefix** boven de promptcachegrens injecteren
-- een **dynamisch suffix** onder de promptcachegrens injecteren
+Gebruik bijdragen van providers voor modelspecifieke afstemming per modelfamilie. Reserveer de verouderde hook `before_prompt_build` voor compatibiliteit of werkelijk globale promptwijzigingen.
 
-Gebruik bijdragen die eigendom zijn van providers voor model-familiespecifieke afstemming. Behoud verouderde
-`before_prompt_build`-promptmutatie voor compatibiliteit of echt globale promptwijzigingen,
-niet voor normaal providergedrag.
-
-De overlay voor de OpenAI GPT-5-familie houdt de kernuitvoeringsregel klein en voegt
-modelspecifieke richtlijnen toe voor persona-vergrendeling, beknopte output, tooldiscipline,
-parallelle opzoeking, dekking van deliverables, verificatie, ontbrekende context en
-hygiene rond terminaltools.
+De gebundelde overlay voor de OpenAI/Codex GPT-5-familie (`resolveGpt5SystemPromptContribution`) gebruikt dit mechanisme: een gedragscontract in `stablePrefix` (uitvoeringsbeleid, tooldiscipline, uitvoercontract en voltooiingscontract), plus een optionele overschrijving van `interaction_style` voor een vriendelijkere toon. Deze wordt toegepast op elke model-id `gpt-5*` die via de OpenAI- of Codex-plugins wordt gerouteerd en wordt beheerd met `agents.defaults.promptOverlays.gpt5.personality` (`"friendly"`/`"on"` of `"off"`).
 
 ## Structuur
 
-De prompt is opzettelijk compact en gebruikt vaste secties:
+De prompt is compact en bevat vaste secties:
 
-- **Tooling**: herinnering aan structured-tools als bron van waarheid plus richtlijnen voor runtime-toolgebruik.
-- **Uitvoeringsbias**: compacte richtlijnen voor doorpakken: handel binnen dezelfde beurt op
-  uitvoerbare verzoeken, ga door tot het klaar is of geblokkeerd raakt, herstel van zwakke toolresultaten,
-  controleer veranderlijke status live en verifieer voordat je afrondt.
-- **Veiligheid**: korte herinnering aan randvoorwaarden om machtszoekend gedrag of het omzeilen van toezicht te vermijden.
-- **Skills** (wanneer beschikbaar): vertelt het model hoe skill-instructies op aanvraag worden geladen.
-- **OpenClaw Control**: vertelt het model de voorkeur te geven aan de `gateway`-tool voor
-  configuratie-/herstartwerk en geen CLI-opdrachten te verzinnen.
-- **OpenClaw Self-Update**: hoe configuratie veilig te inspecteren met
-  `config.schema.lookup`, configuratie te patchen met `config.patch`, de volledige
-  configuratie te vervangen met `config.apply` en `update.run` alleen uit te voeren op expliciet
-  gebruikersverzoek. De agentgerichte `gateway`-tool weigert ook
-  `tools.exec.ask` / `tools.exec.security` te herschrijven, inclusief verouderde `tools.bash.*`-
-  aliassen die naar die beschermde exec-paden normaliseren.
-- **Werkruimte**: werkdirectory (`agents.defaults.workspace`).
-- **Documentatie**: lokaal pad naar OpenClaw-documentatie/bron en wanneer die te lezen.
-- **Werkruimtebestanden (geinjecteerd)**: geeft aan dat bootstrapbestanden hieronder zijn opgenomen.
-- **Sandbox** (wanneer ingeschakeld): geeft sandbox-runtime, sandboxpaden en of verhoogde exec beschikbaar is aan.
-- **Huidige datum en tijd**: alleen tijdzone (cachestabiel; de live klok komt uit `session_status`).
-- **Richtlijnen voor assistentoutput**: compacte syntaxis voor bijlagen, spraaknotities en antwoordtags.
-- **Heartbeats**: Heartbeat-prompt en ack-gedrag, wanneer Heartbeats zijn ingeschakeld voor de standaardagent.
-- **Runtime**: host, OS, Node, model, repo-root (wanneer gedetecteerd), denkniveau (een regel).
-- **Redeneren**: huidig zichtbaarheidsniveau + hint voor /reasoning-schakelaar.
+- **Tooling**: herinnering dat gestructureerde tools de gezaghebbende bron zijn, plus runtimerichtlijnen voor toolgebruik. Wanneer de experimentele tool `update_plan` is ingeschakeld (`tools.experimental.planTool`), voegt de eigen toolbeschrijving het volgende toe: gebruik deze alleen voor niet-triviaal werk met meerdere stappen, houd maximaal één stap op `in_progress` en sla de tool over voor eenvoudig werk met één stap.
+- **Uitvoeringsgerichtheid**: handel binnen de huidige beurt naar aanleiding van uitvoerbare verzoeken, ga door totdat het werk voltooid of geblokkeerd is, herstel van zwakke toolresultaten, controleer veranderlijke status live en verifieer voordat je afrondt.
+- **Veiligheid**: korte herinnering aan de veiligheidsgrenzen tegen machtsgericht gedrag of het omzeilen van toezicht.
+- **Skills** (indien beschikbaar): vertelt het model hoe het instructies voor Skills naar behoefte laadt.
+- **OpenClaw-beheer**: geef de voorkeur aan de tool `gateway` voor configuratie- en herstartwerk; verzin geen CLI-opdrachten.
+- **Zelfupdate van OpenClaw**: inspecteer de configuratie veilig met `config.schema.lookup`, wijzig deze met `config.patch`, vervang de volledige configuratie met `config.apply` en voer `update.run` alleen uit op expliciet verzoek van de gebruiker. De agentgerichte tool `gateway` weigert `tools.exec.ask` / `tools.exec.security` te herschrijven, inclusief verouderde aliassen van `tools.bash.*` die naar deze beschermde paden worden genormaliseerd.
+- **Werkruimte**: werkmap (`agents.defaults.workspace`).
+- **Documentatie**: pad naar lokale documentatie/broncode en wanneer die moet worden gelezen.
+- **Werkruimtebestanden (ingevoegd)**: vermeldt dat bootstrapbestanden hieronder zijn opgenomen.
+- **Sandbox** (wanneer ingeschakeld): gesandboxte runtime, sandboxpaden en beschikbaarheid van uitvoering met verhoogde rechten.
+- **Huidige datum en tijd**: alleen de tijdzone (cachestabiel; de actuele klok komt van `session_status`).
+- **Richtlijnen voor assistentuitvoer**: compacte syntaxis voor bijlagen, spraaknotities en antwoordtags.
+- **Heartbeats**: Heartbeat-prompt en bevestigingsgedrag wanneer Heartbeats voor de standaardagent zijn ingeschakeld.
+- **Runtime**: host, besturingssysteem, Node, model, hoofdmap van de repository (wanneer gedetecteerd) en denkniveau (één regel).
+- **Redenering**: huidig zichtbaarheidsniveau plus de hint voor de schakeloptie `/reasoning`.
 
-OpenClaw houdt grote stabiele inhoud, inclusief **Projectcontext**, boven de
-interne promptcachegrens. Vluchtige kanaal-/sessiesecties zoals
-Control UI-insluitrichtlijnen, **Berichten**, **Spraak**, **Groepschatcontext**,
-**Reacties**, **Heartbeats** en **Runtime** worden onder die grens toegevoegd
-zodat lokale backends met prefixcaches het stabiele werkruimteprefix kunnen hergebruiken
-over kanaalbeurten heen. Toolbeschrijvingen moeten eveneens vermijden om huidige
-kanaalnamen in te sluiten wanneer het geaccepteerde schema dat runtime-detail al bevat.
+Grote stabiele inhoud (waaronder **Projectcontext**) blijft boven de interne promptcachegrens. Vluchtige secties per beurt (richtlijnen voor insluiting in de beheerinterface, **Berichten**, **Spraak**, **Groepschatcontext**, **Reacties**, **Heartbeats**, **Runtime**) worden onder die grens toegevoegd, zodat lokale backends met prefixcaches het stabiele werkruimtevoorvoegsel tussen kanaalbeurten kunnen hergebruiken. Toolbeschrijvingen moeten vermijden de huidige kanaalnamen op te nemen wanneer het geaccepteerde schema dat runtimedetail al bevat.
 
-De sectie Tooling bevat ook runtimerichtlijnen voor langlopend werk:
+Tooling bevat ook richtlijnen voor langdurig werk:
 
-- gebruik Cron voor toekomstige opvolging (`check back later`, herinneringen, terugkerend werk)
-  in plaats van `exec`-slaaplussen, `yieldMs`-vertragingstrucs of herhaalde `process`-
-  polling
-- gebruik `exec` / `process` alleen voor opdrachten die nu starten en op de achtergrond
-  blijven draaien
-- wanneer automatisch wakker worden bij voltooiing is ingeschakeld, start de opdracht eenmaal en vertrouw op
-  het push-gebaseerde wake-pad wanneer deze output uitzendt of faalt
-- gebruik `process` voor logs, status, invoer of interventie wanneer je een lopende
-  opdracht moet inspecteren
-- als de taak groter is, geef dan de voorkeur aan `sessions_spawn`; voltooiing van sub-agents is
-  push-gebaseerd en kondigt automatisch terug aan de aanvrager aan
-- poll `subagents list` / `sessions_list` niet in een lus alleen om op
-  voltooiing te wachten
+- gebruik Cron voor toekomstige opvolging (`check back later`, herinneringen, terugkerend werk) in plaats van slaaplussen met `exec`, vertragingstrucs met `yieldMs` of herhaald pollen met `process`
+- gebruik `exec` / `process` alleen voor opdrachten die nu starten en op de achtergrond doorgaan
+- wanneer automatisch ontwaken bij voltooiing is ingeschakeld, start je de opdracht eenmaal en vertrouw je op het pushgebaseerde ontwaakpad
+- gebruik `process` voor logboeken, status, invoer of ingrijpen bij een actieve opdracht
+- geef bij grotere taken de voorkeur aan `sessions_spawn`; de voltooiing van subagents is pushgebaseerd en wordt automatisch aan de aanvrager gemeld
+- pol `subagents list` / `sessions_list` niet in een lus alleen om op voltooiing te wachten
 
-`agents.defaults.subagents.delegationMode` kan deze richtlijnen versterken. De
-standaardmodus `suggest` behoudt de basisnudge. `prefer` voegt een toegewezen
-sectie **Sub-agentdelegatie** toe die de hoofdagent vertelt op te treden als een responsieve
-coordinator en alles wat meer omvat dan een direct antwoord via
-`sessions_spawn` te pushen. Dit is alleen prompt; toolbeleid bepaalt nog steeds of
-`sessions_spawn` beschikbaar is.
+`agents.defaults.subagents.delegationMode` (standaard `"suggest"`) kan dit versterken. `"prefer"` voegt een speciale sectie **Delegatie aan subagents** toe, die de hoofdagent opdraagt als responsieve coördinator op te treden en alles wat ingewikkelder is dan een rechtstreeks antwoord via `sessions_spawn` uit te voeren. Dit gebeurt alleen via de prompt; het toolbeleid bepaalt nog steeds of `sessions_spawn` beschikbaar is.
 
-Wanneer de experimentele tool `update_plan` is ingeschakeld, vertelt Tooling het
-model ook deze alleen te gebruiken voor niet-triviaal meerstapswerk, precies een
-`in_progress`-stap te behouden en te vermijden het hele plan na elke update te herhalen.
+Veiligheidsgrenzen in de systeemprompt zijn adviserend en worden niet afgedwongen. Gebruik toolbeleid, uitvoeringsgoedkeuringen, sandboxing en kanaaltoelatingslijsten voor harde handhaving; beheerders kunnen promptveiligheidsgrenzen bewust uitschakelen.
 
-Veiligheidsrandvoorwaarden in de systeemprompt zijn adviserend. Ze sturen modelgedrag maar dwingen geen beleid af. Gebruik toolbeleid, exec-goedkeuringen, sandboxing en kanaalallowlists voor harde handhaving; operators kunnen deze opzettelijk uitschakelen.
-
-Op kanalen met native goedkeuringskaarten/-knoppen vertelt de runtimeprompt de
-agent nu eerst op die native goedkeurings-UI te vertrouwen. Deze moet alleen een handmatige
-`/approve`-opdracht opnemen wanneer het toolresultaat zegt dat chatgoedkeuringen niet beschikbaar zijn of
-handmatige goedkeuring het enige pad is.
+Op kanalen met ingebouwde goedkeuringskaarten/-knoppen vertelt de prompt de agent eerst op die interface te vertrouwen en alleen een handmatige opdracht `/approve` op te nemen wanneer het toolresultaat aangeeft dat chatgoedkeuringen niet beschikbaar zijn of handmatige goedkeuring de enige mogelijkheid is.
 
 ## Promptmodi
 
-OpenClaw kan kleinere systeemprompts renderen voor sub-agents. De runtime stelt een
-`promptMode` in voor elke run (geen gebruikersgerichte configuratie):
+OpenClaw genereert kleinere systeemprompts voor subagents. De runtime stelt per uitvoering een `promptMode` in (geen gebruikersgerichte configuratie):
 
-- `full` (standaard): bevat alle bovenstaande secties.
-- `minimal`: gebruikt voor sub-agents; laat **Geheugenherinnering**, **OpenClaw
-  Self-Update**, **Modelaliassen**, **Gebruikersidentiteit**, **Richtlijnen voor assistentoutput**,
-  **Berichten**, **Stille antwoorden** en **Heartbeats** weg. Tooling, **Veiligheid**,
-  **Skills** wanneer meegegeven, Werkruimte, Sandbox, Huidige datum en tijd (wanneer
-  bekend), Runtime en geinjecteerde context blijven beschikbaar.
+- `full` (standaard): alle bovenstaande secties.
+- `minimal`: gebruikt voor subagents; laat de geheugenpromptsectie (gebundeld als **Geheugenoproep**), **Zelfupdate van OpenClaw**, **Modelaliassen**, **Gebruikersidentiteit**, **Richtlijnen voor assistentuitvoer**, **Berichten**, **Stille antwoorden** en **Heartbeats** weg. Tooling, **Veiligheid**, **Skills** (indien meegeleverd), Werkruimte, Sandbox, Huidige datum en tijd (indien bekend), Runtime en ingevoegde context blijven beschikbaar.
 - `none`: retourneert alleen de basisidentiteitsregel.
 
-Wanneer `promptMode=minimal` is, krijgen extra geinjecteerde prompts het label **Subagent-
-context** in plaats van **Groepschatcontext**.
+Onder `promptMode=minimal` krijgen extra ingevoegde prompts het label **Subagentcontext** in plaats van **Groepschatcontext**.
 
-Voor automatische kanaalantwoordruns laat OpenClaw de generieke sectie **Stille antwoorden**
-weg wanneer directe, groeps- of alleen-message-toolcontext eigenaar is van het zichtbare-antwoord-
-contract. Alleen oude automatische groeps-/kanaalmodus moet `NO_REPLY` tonen; directe
-chats en alleen-message-toolantwoorden krijgen geen richtlijnen voor stille tokens.
+Voor automatische kanaalantwoorden laat OpenClaw de algemene sectie **Stille antwoorden** weg wanneer de context voor rechtstreekse chats, groepen of uitsluitend berichtentools al het contract voor zichtbare antwoorden bepaalt. Alleen de verouderde automatische groeps-/kanaalmodus toont `NO_REPLY`; rechtstreekse chats en antwoorden die uitsluitend berichtentools gebruiken, slaan richtlijnen voor stille tokens over.
 
-## Promptsnapshots
+## Promptmomentopnamen
 
-OpenClaw bewaart gecommitte promptsnapshots voor het happy path van de Codex-runtime onder
-`test/fixtures/agents/prompt-snapshots/codex-runtime-happy-path/`. Ze renderen
-geselecteerde app-server thread-/turn-parameters plus een gereconstrueerde modelgebonden prompt-
-lagenstack voor directe Telegram-, Discord-groeps- en Heartbeat-beurten. Die stack
-bevat een vastgezette Codex `gpt-5.5`-modelpromptfixture die is gegenereerd vanuit de
-modelcatalogus-/cachevorm van Codex, de Codex happy-path permissie-developertekst,
-OpenClaw-developerinstructies, beurtgebonden instructies voor samenwerkingsmodus
-wanneer OpenClaw die levert, gebruikersinvoer voor de beurt en verwijzingen naar de dynamische tool-
-specificaties.
+OpenClaw bewaart vastgelegde promptmomentopnamen voor het standaardpad van de Codex-runtime onder `test/fixtures/agents/prompt-snapshots/codex-runtime-happy-path/`. Ze genereren geselecteerde app-serverparameters voor threads/beurten plus een gereconstrueerde stapel promptlagen die aan het model is gekoppeld voor rechtstreekse Telegram-beurten, Discord-groepsbeurten en Heartbeat-beurten: een vastgezette Codex-modelpromptfixture voor `gpt-5.5`, de ontwikkelaarstekst voor machtigingen van het standaardpad van Codex, OpenClaw-ontwikkelaarsinstructies, beurtgebonden instructies voor de samenwerkingsmodus wanneer OpenClaw die levert, gebruikersinvoer voor de beurt en verwijzingen naar dynamische toolspecificaties.
 
-Ververs de vastgezette Codex-modelpromptfixture met
-`pnpm prompt:snapshots:sync-codex-model`. Standaard zoekt het script naar
-de runtimecache van Codex op `$CODEX_HOME/models_cache.json`, daarna
-`~/.codex/models_cache.json`, en valt pas daarna terug op de conventie voor de Codex-
-checkout van maintainers op `~/code/codex/codex-rs/models-manager/models.json`. Als
-geen van die bronnen bestaat, sluit de opdracht af zonder de gecommitte fixture te wijzigen.
-Geef `--catalog <path>` door om te verversen vanuit een specifiek `models_cache.json`-
-of `models.json`-bestand.
+Vernieuw de vastgezette Codex-modelpromptfixture met `pnpm prompt:snapshots:sync-codex-model`. Standaard zoekt deze eerst naar `$CODEX_HOME/models_cache.json`, vervolgens naar `~/.codex/models_cache.json` en daarna naar de gebruikelijke onderhouderscheckout `~/code/codex/codex-rs/models-manager/models.json`; als geen van deze bestanden bestaat, wordt het proces afgesloten zonder de vastgelegde fixture te wijzigen. Geef `--catalog <path>` door om te vernieuwen vanuit een specifiek bestand `models_cache.json` of `models.json`.
 
-Deze snapshots zijn nog steeds geen byte-voor-byte ruwe OpenAI-requestcapture. Codex
-kan runtime-eigen werkruimtecontext toevoegen, zoals `AGENTS.md`, omgevingscontext,
-herinneringen, app-/plugininstructies en ingebouwde standaardinstructies voor
-samenwerkingsmodus binnen de Codex-runtime nadat OpenClaw thread- en turn-parameters verzendt.
+Deze momentopnamen zijn geen byte-voor-byte onbewerkte vastlegging van OpenAI-verzoeken. Codex kan runtimecontext van de werkruimte (`AGENTS.md`, omgevingscontext, herinneringen, app-/plugininstructies en ingebouwde instructies voor de samenwerkingsmodus Default) toevoegen nadat OpenClaw thread- en beurtparameters heeft verzonden.
 
-Genereer ze opnieuw met `pnpm prompt:snapshots:gen` en verifieer drift met
-`pnpm prompt:snapshots:check`. CI voert de driftcontrole uit in de aanvullende
-boundary-shard zodat promptwijzigingen en snapshotupdates aan dezelfde PR gekoppeld blijven.
+Genereer ze opnieuw met `pnpm prompt:snapshots:gen`; controleer afwijkingen met `pnpm prompt:snapshots:check`. CI voert de afwijkingscontrole uit naast de shards voor aanvullende grenzen, zodat promptwijzigingen en momentopname-updates in dezelfde PR terechtkomen.
 
 ## Injectie van werkruimtebootstrap
 
-Bootstrapbestanden worden opgelost vanuit de actieve werkruimte en daarna gerouteerd naar het
-promptoppervlak dat overeenkomt met hun levensduur:
+Bootstrapbestanden worden vanuit de actieve werkruimte bepaald en naar het promptoppervlak geleid dat bij hun levensduur past:
 
 - `AGENTS.md`
 - `SOUL.md`
@@ -181,109 +103,61 @@ promptoppervlak dat overeenkomt met hun levensduur:
 - `IDENTITY.md`
 - `USER.md`
 - `HEARTBEAT.md`
-- `BOOTSTRAP.md` (alleen op gloednieuwe werkruimten)
-- `MEMORY.md` wanneer aanwezig
+- `BOOTSTRAP.md` (alleen in geheel nieuwe werkruimten)
+- `MEMORY.md` indien aanwezig
 
-Op de native Codex-harness vermijdt OpenClaw het herhalen van stabiele werkruimtebestanden
-in elke gebruikersbeurt. Codex laadt `AGENTS.md` via zijn eigen projectdocument-
-ontdekking. `SOUL.md`, `IDENTITY.md`, `TOOLS.md` en `USER.md` worden doorgestuurd als
-Codex-developerinstructies. De compacte OpenClaw Skills-lijst wordt ook doorgestuurd
-als beurtgebonden samenwerking-developerinstructies. `HEARTBEAT.md`-inhoud wordt
-niet geinjecteerd; Heartbeat-beurten krijgen een notitie voor samenwerkingsmodus die naar het bestand verwijst
-wanneer het bestaat en niet leeg is. `MEMORY.md`-inhoud uit de geconfigureerde agent-
-werkruimte wordt niet in elke native Codex-beurt geplakt; wanneer geheugentools
-beschikbaar zijn voor die werkruimte, krijgen Codex-beurten een kleine werkruimtegeheugen-notitie in
-beurtgebonden samenwerking-developerinstructies en moeten ze `memory_search`
-of `memory_get` gebruiken wanneer duurzaam geheugen relevant is. Als tools zijn uitgeschakeld, geheugen-
-zoekopdracht niet beschikbaar is of de actieve werkruimte verschilt van de agentgeheugen-
-werkruimte, valt `MEMORY.md` terug op het normale begrensde turn-contextpad. Actieve
-`BOOTSTRAP.md`-inhoud behoudt voorlopig de normale turn-contextrol.
+In de systeemeigen Codex-harness voorkomt OpenClaw dat stabiele werkruimtebestanden in elke gebruikersbeurt worden herhaald. Codex laadt `AGENTS.md` via de eigen detectie van projectdocumentatie. `TOOLS.md` wordt doorgestuurd als overgenomen Codex-ontwikkelaarsinstructies. `SOUL.md`, `IDENTITY.md` en `USER.md` worden doorgestuurd als beurtgebonden ontwikkelaarsinstructies voor samenwerking, zodat systeemeigen Codex-subagents ze niet overnemen. De inhoud van `HEARTBEAT.md` wordt niet rechtstreeks ingevoegd; Heartbeat-beurten krijgen een notitie voor de samenwerkingsmodus die naar het bestand verwijst wanneer het bestaat en niet leeg is. De inhoud van `MEMORY.md` wordt evenmin in elke systeemeigen Codex-beurt geplakt: wanneer geheugentools voor de werkruimte beschikbaar zijn, krijgen Codex-beurten een korte notitie over werkruimtegeheugen die het model naar `memory_search` of `memory_get` verwijst. Als tools zijn uitgeschakeld, zoeken in het geheugen niet beschikbaar is of de actieve werkruimte afwijkt van de agentgeheugenwerkruimte, valt `MEMORY.md` terug op het normale begrensde pad voor beurtcontext. `BOOTSTRAP.md` behoudt de normale rol van beurtcontext.
 
-Op niet-Codex-harnassen blijven bootstrapbestanden in de
-OpenClaw-prompt worden samengesteld volgens hun bestaande gates. `HEARTBEAT.md` wordt weggelaten bij
-normale runs wanneer Heartbeats zijn uitgeschakeld voor de standaardagent of
-`agents.defaults.heartbeat.includeSystemPromptSection` false is. Houd geinjecteerde
-bestanden beknopt, vooral niet-Codex `MEMORY.md`. `MEMORY.md` is bedoeld om een
-gecureerde langetermijnsamenvatting te blijven; gedetailleerde dagelijkse notities horen thuis in
-`memory/*.md`, waar `memory_search` en `memory_get` ze op aanvraag kunnen ophalen. Te grote
-niet-Codex `MEMORY.md`-bestanden verhogen promptgebruik en kunnen gedeeltelijk worden geinjecteerd
-vanwege de onderstaande limieten voor bootstrapbestanden.
+In niet-Codex-harnesses worden bootstrapbestanden volgens hun bestaande voorwaarden in de OpenClaw-prompt samengesteld. `HEARTBEAT.md` wordt bij normale uitvoeringen weggelaten wanneer Heartbeats voor de standaardagent zijn uitgeschakeld of `agents.defaults.heartbeat.includeSystemPromptSection` onwaar is. Houd ingevoegde bestanden beknopt, vooral `MEMORY.md` buiten Codex: dit moet een zorgvuldig samengestelde langetermijnsamenvatting blijven, met gedetailleerde dagelijkse notities in `memory/*.md` die naar behoefte via `memory_search` / `memory_get` kunnen worden opgehaald. Te grote `MEMORY.md`-bestanden buiten Codex verhogen het promptgebruik en kunnen binnen de onderstaande limieten voor bootstrapbestanden gedeeltelijk worden ingevoegd.
 
 <Note>
-Dagelijkse `memory/*.md`-bestanden zijn **geen** onderdeel van de normale Projectcontext voor bootstrap. Bij gewone beurten worden ze op aanvraag benaderd via de tools `memory_search` en `memory_get`, zodat ze niet meetellen voor het contextvenster tenzij het model ze expliciet leest. Kale `/new`- en `/reset`-beurten vormen de uitzondering: de runtime kan recent dagelijks geheugen vooraf toevoegen als een eenmalig startup-contextblok voor die eerste beurt.
+Dagelijkse bestanden in `memory/*.md` maken **geen** deel uit van de normale bootstrapprojectcontext. Tijdens gewone beurten worden ze naar behoefte via `memory_search` / `memory_get` geraadpleegd, zodat ze niet meetellen voor het contextvenster tenzij het model ze expliciet leest. Kale beurten met `/new` en `/reset` vormen de uitzondering: de runtime kan recent dagelijks geheugen als een eenmalig opstartcontextblok vóór die eerste beurt plaatsen.
 </Note>
 
-Grote bestanden worden afgekapt met een markering. De maximale grootte per bestand wordt bepaald door
-`agents.defaults.bootstrapMaxChars` (standaard: 20000). De totale geïnjecteerde bootstrap-
-inhoud over bestanden heen is begrensd door `agents.defaults.bootstrapTotalMaxChars`
-(standaard: 60000). Ontbrekende bestanden injecteren een korte markering voor een ontbrekend bestand. Wanneer afkapping
-plaatsvindt, kan OpenClaw een beknopte waarschuwing in de systeemprompt injecteren; beheer dit met
-`agents.defaults.bootstrapPromptTruncationWarning` (`off`, `once`, `always`;
-standaard: `always`). Gedetailleerde ruwe/geïnjecteerde aantallen blijven beschikbaar in diagnostiek zoals
-`/context`, `/status`, doctor en logs.
+Grote bestanden worden afgekapt met een markering:
 
-Voor geheugenbestanden is afkapping geen gegevensverlies: het bestand blijft intact op schijf.
-In native Codex wordt `MEMORY.md` op aanvraag gelezen via geheugentools wanneer
-beschikbaar, met een begrensde prompt-fallback wanneer tools niet kunnen worden uitgevoerd. In andere
-harnassen ziet het model alleen de verkorte geïnjecteerde kopie totdat het geheugen rechtstreeks leest of
-doorzoekt. Als `MEMORY.md` daar herhaaldelijk wordt afgekapt, destilleer
-het dan tot een kortere duurzame samenvatting en verplaats gedetailleerde geschiedenis naar `memory/*.md`,
-of verhoog bewust de bootstraplimieten.
+| Limiet                                      | Configuratiesleutel                                 | Standaard |
+| ------------------------------------------- | --------------------------------------------------- | --------- |
+| Maximumaantal tekens per bestand            | `agents.defaults.bootstrapMaxChars`                 | 20000     |
+| Totaal voor alle bestanden                  | `agents.defaults.bootstrapTotalMaxChars`            | 60000     |
+| Waarschuwing bij afkapping (`off`\|`once`\|`always`) | `agents.defaults.bootstrapPromptTruncationWarning` | `always`  |
 
-Sub-agentsessies injecteren alleen `AGENTS.md` en `TOOLS.md` (andere bootstrapbestanden
-worden eruit gefilterd om de context van de sub-agent klein te houden).
+Voor ontbrekende bestanden wordt een korte markering voor een ontbrekend bestand ingevoegd. Gedetailleerde aantallen voor onbewerkte en ingevoegde inhoud blijven beschikbaar in diagnostiek zoals `/context`, `/status`, doctor en logboeken.
 
-Interne hooks kunnen deze stap onderscheppen via `agent:bootstrap` om de
-geïnjecteerde bootstrapbestanden te wijzigen of te vervangen (bijvoorbeeld `SOUL.md` omwisselen voor een alternatieve persona).
+Voor geheugenbestanden betekent afkapping geen gegevensverlies: het bestand blijft intact op schijf. In systeemeigen Codex wordt `MEMORY.md` naar behoefte via geheugentools gelezen wanneer die beschikbaar zijn, met anders een begrensde promptterugval. In andere harnesses ziet het model alleen de verkorte ingevoegde kopie totdat het geheugen rechtstreeks wordt gelezen of doorzocht. Als `MEMORY.md` herhaaldelijk wordt afgekapt, distilleer je het tot een kortere duurzame samenvatting, verplaats je gedetailleerde geschiedenis naar `memory/*.md` of verhoog je bewust de bootstraplimieten.
 
-Als je de agent minder generiek wilt laten klinken, begin dan met
-[SOUL.md persoonlijkheidsgids](/nl/concepts/soul).
+Sub-agentsessies injecteren alleen `AGENTS.md` en `TOOLS.md` (andere bootstrapbestanden worden uitgefilterd om de context van sub-agents klein te houden).
 
-Gebruik `/context list` of `/context detail` om te inspecteren hoeveel elk geïnjecteerd bestand bijdraagt (ruw versus geïnjecteerd, afkapping, plus overhead van toolschema's). Zie [Context](/nl/concepts/context).
+Interne hooks kunnen deze stap onderscheppen via de gebeurtenis `agent:bootstrap` om de geïnjecteerde bootstrapbestanden te wijzigen of te vervangen (bijvoorbeeld door `SOUL.md` te vervangen voor een alternatieve persona).
 
-## Tijdafhandeling
+Begin met [persoonlijkheidsgids voor SOUL.md](/nl/concepts/soul) om minder generiek over te komen.
 
-De systeemprompt bevat een speciale sectie **Huidige datum en tijd** wanneer de
-tijdzone van de gebruiker bekend is. Om de prompt cache-stabiel te houden, bevat deze nu alleen
-de **tijdzone** (geen dynamische klok of tijdnotatie).
+Gebruik `/context list` of `/context detail` om te bekijken hoeveel elk geïnjecteerd bestand bijdraagt (onbewerkt versus geïnjecteerd, afkapping en overhead van toolschema's). Zie [Context](/nl/concepts/context).
 
-Gebruik `session_status` wanneer de agent de huidige tijd nodig heeft; de statuskaart
-bevat een regel met een tijdstempel. Dezelfde tool kan optioneel een modelspecifieke override per sessie instellen
-(`model=default` wist deze).
+## Tijdverwerking
 
-Configureer met:
+De sectie **Huidige datum en tijd** verschijnt alleen wanneer de tijdzone van de gebruiker bekend is en bevat alleen de **tijdzone** (geen dynamische klok of tijdnotatie), zodat de promptcache stabiel blijft.
+
+Gebruik `session_status` wanneer de agent de huidige tijd nodig heeft; de statuskaart bevat een regel met een tijdstempel. Met dezelfde tool kan optioneel een modeloverschrijving per sessie worden ingesteld (`model=default` wist deze).
+
+Configureer dit met:
 
 - `agents.defaults.userTimezone`
 - `agents.defaults.timeFormat` (`auto` | `12` | `24`)
 
-Zie [Datum en tijd](/nl/date-time) voor volledige gedragsdetails.
+Zie [Tijdzones](/nl/concepts/timezone) en [Datum en tijd](/nl/date-time) voor alle details over het gedrag.
 
 ## Skills
 
-Wanneer geschikte Skills bestaan, injecteert OpenClaw een compacte **lijst met beschikbare Skills**
-(`formatSkillsForPrompt`) die het **bestandspad** en de uit inhoud afgeleide
-`<version>`-markering voor elke Skill bevat. De prompt instrueert het model om `read`
-te gebruiken om de SKILL.md op de vermelde locatie te laden (werkruimte, beheerd of gebundeld),
-en om een Skill opnieuw te lezen wanneer de `<version>` verschilt van een vorige beurt. Als er geen
-Skills geschikt zijn, wordt de sectie Skills weggelaten.
+Wanneer geschikte Skills beschikbaar zijn, injecteert OpenClaw een compacte lijst `<available_skills>` (`formatSkillsForPrompt`) met voor elke Skill het **bestandspad** en een van de inhoud afgeleide markering `<version>sha256:...</version>`. De prompt instrueert het model om `read` te gebruiken om het bestand SKILL.md op de vermelde locatie (werkruimte, beheerd of meegeleverd) te laden en om een Skill opnieuw te lezen wanneer de `<version>` ervan afwijkt van een vorige beurt. Als er geen geschikte Skills zijn, wordt de sectie Skills weggelaten.
 
-Native Codex-beurten ontvangen deze lijst als beurtafgebakende ontwikkelaarsinstructies voor samenwerking
-in plaats van gebruikersinvoer per beurt, behalve lichte Cron-beurten die
-de exacte geplande prompt behouden. Andere harnassen behouden de normale promptsectie.
+Native Codex-beurten ontvangen deze lijst als samenwerkingsinstructies voor ontwikkelaars die alleen voor die beurt gelden, in plaats van als gebruikersinvoer per beurt, met uitzondering van lichte Cron-beurten die de exacte geplande prompt behouden. Andere harnesses behouden de normale promptsectie.
 
-De locatie kan verwijzen naar een geneste Skill, zoals
-`skills/personal/foo/SKILL.md`. Nesten is alleen organisatorisch; de prompt gebruikt nog steeds
-de platte Skill-naam uit de frontmatter van `SKILL.md`.
+De locatie kan verwijzen naar een geneste Skill, zoals `skills/personal/foo/SKILL.md`. Nesten dient alleen voor de organisatie; de prompt gebruikt de platte Skillnaam uit de frontmatter van `SKILL.md`.
 
-Geschiktheid omvat gates voor Skill-metadata, controles van runtimeomgeving/configuratie,
-en de effectieve allowlist voor agent-Skills wanneer `agents.defaults.skills` of
-`agents.list[].skills` is geconfigureerd.
+Geschiktheid omvat poorten voor Skillmetadata, controles van de runtimeomgeving en -configuratie, en de effectieve toelatingslijst voor agent-Skills wanneer `agents.defaults.skills` of `agents.list[].skills` is geconfigureerd. Met Plugins meegeleverde Skills zijn alleen geschikt wanneer de Plugin waarvan ze deel uitmaken is ingeschakeld. Zo kunnen tool-Plugins uitgebreidere gebruikshandleidingen aanbieden zonder al die richtlijnen in elke toolbeschrijving op te nemen.
 
-Door Plugins gebundelde Skills zijn alleen geschikt wanneer hun eigenaar-Plugin is ingeschakeld.
-Zo kunnen tool-Plugins diepere bedieningsgidsen aanbieden zonder al die
-richtlijnen rechtstreeks in elke toolbeschrijving in te bedden.
-
-```
+```xml
 <available_skills>
   <skill>
     <name>...</name>
@@ -294,48 +168,25 @@ richtlijnen rechtstreeks in elke toolbeschrijving in te bedden.
 </available_skills>
 ```
 
-Dit houdt de basisprompt klein terwijl gericht gebruik van Skills nog steeds mogelijk blijft.
+Hierdoor blijft de basisprompt klein, terwijl gericht gebruik van Skills mogelijk blijft. De maximale omvang wordt beheerd door het Skillssubsysteem, los van de algemene limieten voor lezen en injecteren tijdens runtime:
 
-Het budget voor de Skills-lijst is eigendom van het Skills-subsysteem:
+| Bereik       | Promptbudget voor Skills                           | Budget voor runtimefragmenten     |
+| ------------ | ------------------------------------------------- | --------------------------------- |
+| Globaal      | `skills.limits.maxSkillsPromptChars`              | `agents.defaults.contextLimits.*` |
+| Per agent    | `agents.list[].skillsLimits.maxSkillsPromptChars` | `agents.list[].contextLimits.*`   |
 
-- Globale standaard: `skills.limits.maxSkillsPromptChars`
-- Override per agent: `agents.list[].skillsLimits.maxSkillsPromptChars`
-
-Generieke begrensde runtimefragmenten gebruiken een ander oppervlak:
-
-- `agents.defaults.contextLimits.*`
-- `agents.list[].contextLimits.*`
-
-Die scheiding houdt de dimensionering van Skills gescheiden van de dimensionering voor runtime-lezen/injectie, zoals
-`memory_get`, live toolresultaten en AGENTS.md-vernieuwingen na Compaction.
+Het budget voor runtimefragmenten omvat `memory_get`, live toolresultaten en vernieuwingen van `AGENTS.md` na Compaction.
 
 ## Documentatie
 
-De systeemprompt bevat een sectie **Documentatie**. Wanneer lokale docs beschikbaar zijn, wijst deze
-naar de lokale OpenClaw-docsmap (`docs/` in een Git-checkout of de gebundelde npm-
-pakketdocs). Als lokale docs niet beschikbaar zijn, valt deze terug op
-[https://docs.openclaw.ai](https://docs.openclaw.ai).
+De sectie **Documentatie** verwijst naar lokale documentatie wanneer die beschikbaar is (`docs/` in een Git-check-out of de documentatie in het meegeleverde npm-pakket) en valt anders terug op [https://docs.openclaw.ai](https://docs.openclaw.ai). De sectie vermeldt ook de locatie van de OpenClaw-broncode: Git-check-outs tonen de lokale hoofdmap van de broncode, terwijl pakketinstallaties de GitHub-URL van de broncode tonen met instructies om de broncode daar te raadplegen wanneer de documentatie onvolledig of verouderd is.
 
-Dezelfde sectie bevat ook de bronlocatie van OpenClaw. Git-checkouts stellen de lokale
-bronroot beschikbaar zodat de agent code rechtstreeks kan inspecteren. Pakketinstallaties bevatten de GitHub-
-bron-URL en vertellen de agent de bron daar te beoordelen wanneer de docs onvolledig of
-verouderd zijn. De prompt vermeldt ook de openbare docs-mirror, community-Discord en ClawHub
-([https://clawhub.ai](https://clawhub.ai)) voor het ontdekken van Skills. Deze positioneert docs als de
-autoriteit voor OpenClaw-zelfkennis voordat het model begrijpt hoe OpenClaw werkt,
-inclusief geheugen/dagelijkse notities, sessies, tools, Gateway, configuratie, opdrachten of project-
-context. De prompt vertelt het model eerst lokale docs te gebruiken (of de docs-mirror wanneer lokale docs
-niet beschikbaar zijn), en AGENTS.md, projectcontext, werkruimte-/profiel-/geheugennotities
-en `memory_search` te behandelen als instructiecontext of gebruikersgeheugen in plaats van OpenClaw-
-ontwerp- of implementatiekennis. Als docs zwijgen of verouderd zijn, moet het model dat zeggen
-en de bron inspecteren. De prompt vertelt het model ook om waar mogelijk zelf `openclaw status` uit te voeren,
-en de gebruiker alleen te vragen wanneer het geen toegang heeft.
-Specifiek voor configuratie wijst deze agents naar de `gateway`-toolactie
-`config.schema.lookup` voor exacte docs en beperkingen op veldniveau, en daarna naar
-`docs/gateway/configuration.md` en `docs/gateway/configuration-reference.md`
-voor bredere richtlijnen.
+De prompt presenteert de documentatie als de gezaghebbende bron voor zelfkennis over OpenClaw voordat het model begrijpt hoe OpenClaw werkt (geheugen/dagelijkse notities, sessies, tools, Gateway, configuratie, opdrachten en projectcontext), en instrueert het model om `AGENTS.md`, de projectcontext, werkruimte-/profiel-/geheugennotities en `memory_search` te behandelen als instructiecontext of gebruikersgeheugen, en niet als kennis over het ontwerp of de implementatie van OpenClaw. Als de documentatie geen informatie bevat of verouderd is, moet het model dit aangeven en de broncode inspecteren. De prompt instrueert het model ook om indien mogelijk zelf `openclaw status` uit te voeren en dit alleen aan de gebruiker te vragen wanneer het geen toegang heeft.
+
+Specifiek voor configuratie verwijst de prompt agents eerst naar de actie `config.schema.lookup` van de tool `gateway` voor exacte documentatie en beperkingen op veldniveau, en vervolgens naar `docs/gateway/configuration.md` en `docs/gateway/configuration-reference.md` voor bredere richtlijnen.
 
 ## Gerelateerd
 
-- [Agentruntime](/nl/concepts/agent)
-- [Agentwerkruimte](/nl/concepts/agent-workspace)
+- [Agent-runtime](/nl/concepts/agent)
+- [Agent-werkruimte](/nl/concepts/agent-workspace)
 - [Contextengine](/nl/concepts/context-engine)

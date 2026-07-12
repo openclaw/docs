@@ -1,52 +1,47 @@
 ---
 read_when:
-    - Wdrażanie OpenClaw na Northflank
-    - Chcesz wdrożenia w chmurze jednym kliknięciem z opartym na przeglądarce Control UI
-summary: Wdróż OpenClaw na Northflank za pomocą szablonu one-click
+    - Wdrażanie OpenClaw w Northflank
+    - Chcesz wdrożyć usługę w chmurze jednym kliknięciem, korzystając z interfejsu Control UI w przeglądarce
+summary: Wdróż OpenClaw na Northflank za pomocą szablonu jednym kliknięciem
 title: Northflank
 x-i18n:
-    generated_at: "2026-04-23T10:02:42Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 5610e076b09d50c23186f1f8db16c039c99d287c34ef6fd71d4272bc527b0388
-    source_path: install/northflank.mdx
-    workflow: 15
+    generated_at: "2026-07-12T15:15:35Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 16bb96fdf470999e15e163b6227d228ce8b60b9a172eb74cadc87bddd3955957
+    source_path: install/northflank.mdx
+    workflow: 16
 ---
 
-# Northflank
+Wdróż OpenClaw na Northflank za pomocą szablonu uruchamianego jednym kliknięciem i uzyskaj do niego dostęp przez internetowy interfejs sterowania. Jest to najłatwiejsza metoda „bez terminala na serwerze”: Northflank uruchamia Gateway za Ciebie.
 
-Wdróż OpenClaw na Northflank za pomocą szablonu one-click i uzyskaj dostęp przez webowe Control UI.
-To najprostsza ścieżka „bez terminala na serwerze”: Northflank uruchamia Gateway za Ciebie.
+## Jak rozpocząć
 
-## Jak zacząć
-
-1. Kliknij [Deploy OpenClaw](https://northflank.com/stacks/deploy-openclaw), aby otworzyć szablon.
-2. Utwórz [konto w Northflank](https://app.northflank.com/signup), jeśli jeszcze go nie masz.
+1. Kliknij [Wdróż OpenClaw](https://northflank.com/stacks/deploy-openclaw), aby otworzyć szablon.
+2. Utwórz [konto na Northflank](https://app.northflank.com/signup), jeśli jeszcze go nie masz.
 3. Kliknij **Deploy OpenClaw now**.
-4. Ustaw wymaganą zmienną środowiskową: `OPENCLAW_GATEWAY_TOKEN` (użyj silnej losowej wartości).
+4. Ustaw wymaganą zmienną środowiskową: `OPENCLAW_GATEWAY_TOKEN` (użyj silnej wartości losowej).
 5. Kliknij **Deploy stack**, aby zbudować i uruchomić szablon OpenClaw.
-6. Poczekaj na zakończenie wdrożenia, a następnie kliknij **View resources**.
+6. Poczekaj na zakończenie wdrażania, a następnie kliknij **View resources**.
 7. Otwórz usługę OpenClaw.
-8. Otwórz publiczny adres URL OpenClaw pod `/openclaw` i połącz się przy użyciu skonfigurowanego współdzielonego sekretu. Ten szablon domyślnie używa `OPENCLAW_GATEWAY_TOKEN`; jeśli zastąpisz go uwierzytelnianiem hasłem, użyj zamiast tego tego hasła.
+8. Otwórz publiczny adres URL OpenClaw pod ścieżką `/openclaw` i połącz się przy użyciu skonfigurowanego wspólnego sekretu. Ten szablon domyślnie używa `OPENCLAW_GATEWAY_TOKEN`; jeśli zastąpisz go uwierzytelnianiem za pomocą hasła, użyj zamiast niego tego hasła.
 
 ## Co otrzymujesz
 
-- Hostowany Gateway OpenClaw + Control UI
-- Trwałą pamięć przez Northflank Volume (`/data`), dzięki czemu `openclaw.json`,
-  `auth-profiles.json` dla poszczególnych agentów, stan kanałów/dostawców, sesje i
-  workspace przetrwają ponowne wdrożenia
+- Hostowany Gateway OpenClaw oraz interfejs sterowania
+- Trwałą pamięć masową za pośrednictwem woluminu Northflank (`/data`), dzięki czemu pliki `openclaw.json`, pliki `auth-profiles.json` poszczególnych agentów, stan kanałów i dostawców, sesje oraz obszar roboczy są zachowywane po ponownych wdrożeniach
 
-## Połącz kanał
+## Podłącz kanał
 
-Użyj Control UI pod `/openclaw` albo uruchom `openclaw onboard` przez SSH, aby uzyskać instrukcje konfiguracji kanałów:
+Skorzystaj z interfejsu sterowania pod ścieżką `/openclaw` lub uruchom `openclaw onboard` przez SSH, aby uzyskać instrukcje konfiguracji kanału:
 
-- [Telegram](/pl/channels/telegram) (najszybciej — wystarczy token bota)
+- [Telegram](/pl/channels/telegram) (najszybsza opcja, wymaga tylko tokenu bota)
 - [Discord](/pl/channels/discord)
 - [Wszystkie kanały](/pl/channels)
 
 ## Następne kroki
 
-- Skonfiguruj kanały wiadomości: [Kanały](/pl/channels)
+- Skonfiguruj kanały komunikacji: [Kanały](/pl/channels)
 - Skonfiguruj Gateway: [Konfiguracja Gateway](/pl/gateway/configuration)
-- Aktualizuj OpenClaw na bieżąco: [Aktualizowanie](/pl/install/updating)
+- Dbaj o aktualność OpenClaw: [Aktualizowanie](/pl/install/updating)

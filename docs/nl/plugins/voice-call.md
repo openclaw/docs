@@ -1,46 +1,46 @@
 ---
 read_when:
     - Je wilt vanuit OpenClaw een uitgaand spraakgesprek voeren
-    - Je configureert of ontwikkelt de voice-call-plugin
-    - Je hebt realtime spraak of streamingtranscriptie via telefonie nodig
+    - U configureert of ontwikkelt de spraakoproepplugin
+    - Je hebt realtime spraak of streamingtranscriptie voor telefonie nodig
 sidebarTitle: Voice call
-summary: Plaats uitgaande en accepteer inkomende spraakoproepen via Twilio, Telnyx of Plivo, met optionele realtime spraak en streaming transcriptie
+summary: Plaats uitgaande en accepteer inkomende spraakoproepen via Twilio, Telnyx of Plivo, met optionele realtime spraak en streamingtranscriptie
 title: Plugin voor spraakoproepen
 x-i18n:
-    generated_at: "2026-06-27T18:08:55Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:16:47Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6eff6fe188644d6ac2f4868b28727783bd1859025e8745b1901e20637d68611c
+    source_hash: ed6fb5c7e08666e14a0280115eb8f501543ec0bb48cbe5169278b273791ebc8b
     source_path: plugins/voice-call.md
     workflow: 16
 ---
 
-Spraakoproepen voor OpenClaw via een plugin. Ondersteunt uitgaande meldingen,
-gesprekken met meerdere beurten, full-duplex realtime spraak, streaming
-transcriptie en inkomende oproepen met allowlist-beleid.
+Spraakoproepen voor OpenClaw via een Plugin: uitgaande meldingen, gesprekken
+met meerdere beurten, full-duplex realtime spraak, streaming transcriptie en
+inkomende oproepen met beleid op basis van een toelatingslijst.
 
-**Huidige providers:** `twilio` (Programmable Voice + Media Streams),
-`telnyx` (Call Control v2), `plivo` (Voice API + XML-overdracht + GetInput
-spraak), `mock` (dev/geen netwerk).
+**Providers:** `mock` (ontwikkeling, geen netwerk), `plivo` (Voice API + XML-overdracht +
+GetInput-spraak), `telnyx` (Call Control v2), `twilio` (Programmable Voice +
+Media Streams).
 
 <Note>
-De Voice Call-plugin draait **binnen het Gateway-proces**. Als je een
-externe Gateway gebruikt, installeer en configureer je de plugin op de machine
-waarop de Gateway draait en herstart je daarna de Gateway om deze te laden.
+De Voice Call-Plugin draait **binnen het Gateway-proces**. Als u een externe
+Gateway gebruikt, installeert en configureert u de Plugin op de machine waarop de
+Gateway draait en start u vervolgens de Gateway opnieuw om de Plugin te laden.
 </Note>
 
-## Snelstart
+## Snel aan de slag
 
 <Steps>
-  <Step title="Install the plugin">
+  <Step title="De Plugin installeren">
     <Tabs>
-      <Tab title="From npm">
+      <Tab title="Van npm">
         ```bash
         openclaw plugins install @openclaw/voice-call
         ```
       </Tab>
-      <Tab title="From a local folder (dev)">
+      <Tab title="Uit een lokale map (ontwikkeling)">
         ```bash
         PLUGIN_SRC=./path/to/local/voice-call-plugin
         openclaw plugins install "$PLUGIN_SRC"
@@ -49,37 +49,34 @@ waarop de Gateway draait en herstart je daarna de Gateway om deze te laden.
       </Tab>
     </Tabs>
 
-    Gebruik het kale pakket om de huidige officiële releasetag te volgen. Pin
-    alleen een exacte versie wanneer je een reproduceerbare installatie nodig hebt.
-
-    Herstart daarna de Gateway zodat de plugin wordt geladen.
+    Gebruik het pakket zonder versienummer om de huidige releasetag te volgen. Zet alleen
+    een exacte versie vast wanneer u een reproduceerbare installatie nodig hebt. Start de Gateway
+    daarna opnieuw zodat de Plugin wordt geladen.
 
   </Step>
-  <Step title="Configure provider and webhook">
+  <Step title="Provider en Webhook configureren">
     Stel de configuratie in onder `plugins.entries.voice-call.config` (zie
-    [Configuratie](#configuration) hieronder voor de volledige vorm). Minimaal:
-    `provider`, providerreferenties, `fromNumber` en een publiek
-    bereikbare webhook-URL.
+    [Configuratie](#configuration) hieronder). Minimaal vereist: `provider`, de
+    aanmeldgegevens van de provider, `fromNumber` en een openbaar bereikbare Webhook-URL.
   </Step>
-  <Step title="Verify setup">
+  <Step title="Configuratie verifiëren">
     ```bash
     openclaw voicecall setup
+    openclaw voicecall setup --json
     ```
 
-    De standaarduitvoer is leesbaar in chatlogs en terminals. Deze controleert
-    of de plugin is ingeschakeld, providerreferenties, webhook-blootstelling en dat
-    slechts één audiomodus (`streaming` of `realtime`) actief is. Gebruik
-    `--json` voor scripts.
+    Controleert of de Plugin is ingeschakeld, de aanmeldgegevens van de provider, de
+    bereikbaarheid van de Webhook en of slechts één audiomodus (`streaming` of `realtime`) actief is.
 
   </Step>
-  <Step title="Smoke test">
+  <Step title="Rooktest">
     ```bash
     openclaw voicecall smoke
     openclaw voicecall smoke --to "+15555550123"
     ```
 
-    Beide zijn standaard dry runs. Voeg `--yes` toe om daadwerkelijk een korte
-    uitgaande meldingsoproep te plaatsen:
+    Beide zijn standaard proefuitvoeringen. Voeg `--yes` toe om een korte uitgaande
+    meldingsoproep te plaatsen:
 
     ```bash
     openclaw voicecall smoke --to "+15555550123" --yes
@@ -89,21 +86,21 @@ waarop de Gateway draait en herstart je daarna de Gateway om deze te laden.
 </Steps>
 
 <Warning>
-Voor Twilio, Telnyx en Plivo moet setup uitkomen op een **publieke webhook-URL**.
-Als `publicUrl`, de tunnel-URL, de Tailscale-URL of de serve-fallback
-uitkomt op loopback- of privénetwerkruimte, mislukt setup in plaats van
-een provider te starten die geen carrier-webhooks kan ontvangen.
+Voor Twilio, Telnyx en Plivo moet de configuratie resulteren in een **openbare Webhook-URL**.
+Als `publicUrl`, de tunnel-URL, de Tailscale-URL of het terugvaladres van `serve`
+naar local loopback of privé-netwerkruimte verwijst, mislukt de configuratie in plaats van
+een provider te starten die geen Webhooks van de telecomprovider kan ontvangen.
 </Warning>
 
 ## Configuratie
 
-Als `enabled: true` is ingesteld maar de geselecteerde provider referenties mist,
-logt Gateway-opstarten een waarschuwing dat setup onvolledig is met de ontbrekende sleutels en
-wordt het starten van de runtime overgeslagen. Opdrachten, RPC-aanroepen en agenttools
-retourneren nog steeds de exacte ontbrekende providerconfiguratie wanneer ze worden gebruikt.
+Als `enabled: true` is ingesteld maar de geselecteerde provider geen aanmeldgegevens heeft, registreert
+het opstarten van de Gateway een waarschuwing dat de configuratie onvolledig is, met de ontbrekende sleutels,
+en wordt de runtime niet gestart. Opdrachten, RPC-aanroepen en agenthulpmiddelen geven bij gebruik
+nog steeds exact aan welke configuratie ontbreekt.
 
 <Note>
-Voice-call-referenties accepteren SecretRefs. `plugins.entries.voice-call.config.twilio.authToken`, `plugins.entries.voice-call.config.realtime.providers.*.apiKey`, `plugins.entries.voice-call.config.streaming.providers.*.apiKey` en `plugins.entries.voice-call.config.tts.providers.*.apiKey` worden via het standaard SecretRef-oppervlak opgelost; zie [SecretRef-referentieoppervlak](/nl/reference/secretref-credential-surface).
+Aanmeldgegevens voor spraakoproepen ondersteunen SecretRefs. `plugins.entries.voice-call.config.twilio.authToken`, `plugins.entries.voice-call.config.realtime.providers.*.apiKey`, `plugins.entries.voice-call.config.streaming.providers.*.apiKey` en `plugins.entries.voice-call.config.tts.providers.*.apiKey` worden opgelost via het standaard SecretRef-oppervlak; zie [SecretRef-oppervlak voor aanmeldgegevens](/nl/reference/secretref-credential-surface).
 </Note>
 
 ```json5
@@ -113,14 +110,14 @@ Voice-call-referenties accepteren SecretRefs. `plugins.entries.voice-call.config
       "voice-call": {
         enabled: true,
         config: {
-          provider: "twilio", // or "telnyx" | "plivo" | "mock"
-          fromNumber: "+15550001234", // or TWILIO_FROM_NUMBER for Twilio
+          provider: "twilio", // of "telnyx" | "plivo" | "mock"
+          fromNumber: "+15550001234", // of TWILIO_FROM_NUMBER voor Twilio
           toNumber: "+15550005678",
           sessionScope: "per-phone", // per-phone | per-call
           numbers: {
             "+15550009999": {
-              inboundGreeting: "Silver Fox Cards, how can I help?",
-              responseSystemPrompt: "You are a concise baseball card specialist.",
+              inboundGreeting: "Silver Fox Cards, waarmee kan ik u helpen?",
+              responseSystemPrompt: "U bent een beknopte specialist in honkbalkaarten.",
               tts: {
                 providers: {
                   openai: { speakerVoice: "alloy" },
@@ -132,12 +129,13 @@ Voice-call-referenties accepteren SecretRefs. `plugins.entries.voice-call.config
           twilio: {
             accountSid: "ACxxxxxxxx",
             authToken: "...",
+            // region: "ie1", // optioneel: us1 | ie1 | au1; standaard us1
           },
           telnyx: {
             apiKey: "...",
             connectionId: "...",
-            // Telnyx webhook public key from the Mission Control Portal
-            // (Base64; can also be set via TELNYX_PUBLIC_KEY).
+            // Openbare sleutel voor de Telnyx-Webhook uit het Mission Control Portal
+            // (Base64; kan ook worden ingesteld via TELNYX_PUBLIC_KEY).
             publicKey: "...",
           },
           plivo: {
@@ -145,19 +143,19 @@ Voice-call-referenties accepteren SecretRefs. `plugins.entries.voice-call.config
             authToken: "...",
           },
 
-          // Webhook server
+          // Webhookserver
           serve: {
             port: 3334,
             path: "/voice/webhook",
           },
 
-          // Webhook security (recommended for tunnels/proxies)
+          // Webhookbeveiliging (aanbevolen voor tunnels/proxy's)
           webhookSecurity: {
             allowedHosts: ["voice.example.com"],
             trustedProxyIPs: ["100.64.0.1"],
           },
 
-          // Public exposure (pick one)
+          // Openbare bereikbaarheid (kies er één)
           // publicUrl: "https://example.ngrok.app/voice/webhook",
           // tunnel: { provider: "ngrok" },
           // tailscale: { mode: "funnel", path: "/voice/webhook" },
@@ -166,8 +164,8 @@ Voice-call-referenties accepteren SecretRefs. `plugins.entries.voice-call.config
             defaultMode: "notify", // notify | conversation
           },
 
-          streaming: { enabled: true /* see Streaming transcription */ },
-          realtime: { enabled: false /* see Realtime voice */ },
+          streaming: { enabled: true /* zie Streaming transcriptie */ },
+          realtime: { enabled: false /* zie Realtime spraakgesprekken */ },
         },
       },
     },
@@ -175,67 +173,90 @@ Voice-call-referenties accepteren SecretRefs. `plugins.entries.voice-call.config
 }
 ```
 
+### Configuratiereferentie
+
+Sleutels op het hoogste niveau onder `plugins.entries.voice-call.config` die hierboven niet worden weergegeven:
+
+| Sleutel                         | Standaard    | Opmerkingen                                                                            |
+| ------------------------------- | ------------ | -------------------------------------------------------------------------------------- |
+| `enabled`                       | `false`      | Hoofdschakelaar voor aan/uit.                                                          |
+| `inboundPolicy`                 | `"disabled"` | `disabled` \| `allowlist` \| `pairing` \| `open`. Zie [Inkomende oproepen](#inbound-calls). |
+| `allowFrom`                     | `[]`         | E.164-toelatingslijst voor `inboundPolicy: "allowlist"`.                               |
+| `maxDurationSeconds`            | `300`        | Harde maximale duur per oproep, ongeacht of de oproep is beantwoord.                   |
+| `staleCallReaperSeconds`        | `120`        | Zie [Opschoner voor verouderde oproepen](#stale-call-reaper). `0` schakelt deze uit.    |
+| `silenceTimeoutMs`              | `800`        | Stiltedetectie aan het einde van spraak voor de klassieke (niet-realtime) stroom.      |
+| `transcriptTimeoutMs`           | `180000`     | Maximale wachttijd op een transcript van de beller voordat een beurt wordt opgegeven.  |
+| `ringTimeoutMs`                 | `30000`      | Beltime-out voor uitgaande oproepen.                                                    |
+| `maxConcurrentCalls`            | `1`          | Uitgaande oproepen boven deze limiet worden geweigerd.                                 |
+| `outbound.notifyHangupDelaySec` | `3`          | Aantal seconden wachten na TTS voordat automatisch wordt opgehangen in meldingsmodus.  |
+| `skipSignatureVerification`     | `false`      | Alleen voor lokaal testen; nooit inschakelen in productie.                             |
+| `store`                         | niet ingesteld | Overschrijft het standaardpad `~/.openclaw/voice-calls` voor oproeplogboeken.         |
+| `agentId`                       | `"main"`     | Agent die wordt gebruikt voor het genereren van antwoorden en de opslag van sessies.   |
+| `responseModel`                 | niet ingesteld | Overschrijft het standaardmodel voor klassieke (niet-realtime) antwoorden.           |
+| `responseSystemPrompt`          | gegenereerd  | Aangepaste systeemprompt voor klassieke antwoorden.                                    |
+| `responseTimeoutMs`             | `30000`      | Time-out voor het genereren van klassieke antwoorden (ms).                             |
+
+Twilio gebruikt standaard het US1 REST-eindpunt. Om oproepen in een ondersteunde
+regio buiten de VS te verwerken, stelt u `twilio.region` in op `ie1` of `au1` en gebruikt u aanmeldgegevens uit
+die regio. Zie
+[Twilio's handleiding voor de REST API in een regio buiten de VS](https://www.twilio.com/docs/global-infrastructure/using-the-twilio-rest-api-in-a-non-us-region).
+
 <AccordionGroup>
-  <Accordion title="Provider exposure and security notes">
-    - Twilio, Telnyx en Plivo vereisen allemaal een **publiek bereikbare** webhook-URL.
-    - `mock` is een lokale dev-provider (geen netwerkoproepen).
-    - Telnyx vereist `telnyx.publicKey` (of `TELNYX_PUBLIC_KEY`) tenzij `skipSignatureVerification` true is.
-    - `skipSignatureVerification` is alleen voor lokaal testen.
-    - Stel op de gratis ngrok-laag `publicUrl` in op de exacte ngrok-URL; handtekeningverificatie wordt altijd afgedwongen.
-    - `tunnel.allowNgrokFreeTierLoopbackBypass: true` staat Twilio-webhooks met ongeldige handtekeningen **alleen** toe wanneer `tunnel.provider="ngrok"` en `serve.bind` loopback is (lokale ngrok-agent). Alleen lokale dev.
-    - Gratis ngrok-URL's kunnen veranderen of interstitial-gedrag toevoegen; als `publicUrl` afwijkt, mislukken Twilio-handtekeningen. Productie: geef de voorkeur aan een stabiel domein of een Tailscale-funnel.
+  <Accordion title="Opmerkingen over bereikbaarheid en beveiliging van providers">
+    - Twilio, Telnyx en Plivo vereisen allemaal een **openbaar bereikbare** Webhook-URL.
+    - `mock` is een lokale ontwikkelprovider (geen netwerkaanroepen).
+    - Telnyx vereist `telnyx.publicKey` (of `TELNYX_PUBLIC_KEY`), tenzij `skipSignatureVerification` waar is.
+    - `skipSignatureVerification` is alleen bedoeld voor lokaal testen.
+    - Stel bij het gratis ngrok-abonnement `publicUrl` in op de exacte ngrok-URL; handtekeningverificatie wordt altijd afgedwongen.
+    - `tunnel.allowNgrokFreeTierLoopbackBypass: true` staat Twilio-Webhooks met ongeldige handtekeningen **alleen** toe wanneer `tunnel.provider="ngrok"` en `serve.bind` local loopback is (lokale ngrok-agent). Alleen voor lokale ontwikkeling.
+    - URL's van het gratis ngrok-abonnement kunnen veranderen of tussenschermen toevoegen; als `publicUrl` afwijkt, mislukt de Twilio-handtekeningverificatie. Voor productie: geef de voorkeur aan een stabiel domein of een Tailscale-funnel.
 
   </Accordion>
-  <Accordion title="Streaming connection caps">
-    - `streaming.preStartTimeoutMs` sluit sockets die nooit een geldig `start`-frame verzenden.
-    - `streaming.maxPendingConnections` begrenst het totale aantal niet-geverifieerde pre-start-sockets.
-    - `streaming.maxPendingConnectionsPerIp` begrenst niet-geverifieerde pre-start-sockets per bron-IP.
-    - `streaming.maxConnections` begrenst het totale aantal open mediastream-sockets (pending + actief).
+  <Accordion title="Limieten voor streamingverbindingen">
+    - `streaming.preStartTimeoutMs` (standaard `5000`) sluit sockets die nooit een geldig `start`-frame verzenden.
+    - `streaming.maxPendingConnections` (standaard `32`) begrenst het totale aantal niet-geverifieerde sockets vóór de start.
+    - `streaming.maxPendingConnectionsPerIp` (standaard `4`) begrenst niet-geverifieerde sockets vóór de start per bron-IP.
+    - `streaming.maxConnections` (standaard `128`) begrenst alle open sockets voor mediastreams (in afwachting + actief).
 
   </Accordion>
-  <Accordion title="Legacy config migrations">
-    Oudere configuraties die `provider: "log"`, `twilio.from` of legacy
-    `streaming.*` OpenAI-sleutels gebruiken, worden herschreven door `openclaw doctor --fix`.
-    Runtime-fallback accepteert voorlopig nog de oude voice-call-sleutels, maar
-    het herschrijfpad is `openclaw doctor --fix` en de compat-shim is
-    tijdelijk.
+  <Accordion title="Migraties van verouderde configuratie">
+    Bij het parseren van de configuratie worden deze verouderde sleutels automatisch genormaliseerd en wordt een
+    waarschuwing geregistreerd waarin het vervangende pad wordt genoemd; de compatibiliteitslaag wordt in een toekomstige
+    release (`2026.6.0`) verwijderd. Voer daarom `openclaw doctor --fix` uit om vastgelegde
+    configuratie naar de canonieke vorm te herschrijven:
 
-    Automatisch gemigreerde streaming-sleutels:
-
+    - `provider: "log"` → `provider: "mock"`
+    - `twilio.from` → `fromNumber`
     - `streaming.sttProvider` → `streaming.provider`
     - `streaming.openaiApiKey` → `streaming.providers.openai.apiKey`
     - `streaming.sttModel` → `streaming.providers.openai.model`
     - `streaming.silenceDurationMs` → `streaming.providers.openai.silenceDurationMs`
     - `streaming.vadThreshold` → `streaming.providers.openai.vadThreshold`
+    - `realtime.agentContext.includeSystemPrompt` is verwijderd (realtime-context gebruikt nu de gegenereerde agentprompt)
 
   </Accordion>
 </AccordionGroup>
 
 ## Sessiebereik
 
-Standaard gebruikt Voice Call `sessionScope: "per-phone"`, zodat herhaalde oproepen van
-dezelfde beller gespreksgeheugen behouden. Stel `sessionScope: "per-call"` in wanneer
-elke carrier-oproep met nieuwe context moet starten, bijvoorbeeld receptie-,
-boekings-, IVR- of Google Meet-bridge-flows waarbij hetzelfde telefoonnummer
+Voice Call gebruikt standaard `sessionScope: "per-phone"`, zodat herhaalde oproepen van
+dezelfde beller het gespreksgeheugen behouden. Stel `sessionScope: "per-call"` in wanneer
+elke oproep via de telecomprovider met nieuwe context moet beginnen, bijvoorbeeld voor receptie-,
+boekings-, IVR- of Google Meet-bridge-stromen waarbij hetzelfde telefoonnummer
 verschillende vergaderingen kan vertegenwoordigen.
 
-Voice Call slaat gegenereerde sessiesleutels op onder de geconfigureerde agent-namespace
-(`agent:<agentId>:voice:*`), zodat oproepgeheugen Gateway-sessiesleutel-
-canonicalisatie na herstarts overleeft. Ruwe expliciete integratiesleutels gebruiken dezelfde
-agent-namespace. Een canonieke `agent:<configuredAgentId>:*`-sleutel behoudt die eigenaar,
-en de hoofdaliases ervan respecteren core `session.mainKey` en globale scope. Vreemde of
-misvormde `agent:*`-invoer wordt gescoped als een opaque sleutel onder de geconfigureerde agent;
-`global` en `unknown` blijven globale sentinels. Gateway-opstarten promoveert oudere
-ruwe sleutels in standaard of `{agentId}`-getemplate stores waar het pad één
-eigenaar bewijst. In vaste custom stores blijven dubbelzinnige legacy-rijen onaangeroerd omdat
-ze niet genoeg informatie bevatten om een eigenaar te kiezen; nieuwe oproepen gebruiken
-canonieke agent-gescopete geschiedenis.
+Voice Call slaat gegenereerde sessiesleutels op onder de geconfigureerde agentnaamruimte
+(`agent:<agentId>:voice:*`). Expliciete onbewerkte integratiesleutels worden naar dezelfde
+naamruimte omgezet: een canonieke sleutel `agent:<configuredAgentId>:*` behoudt die
+eigenaar en respecteert aliasing via `session.mainKey`/globaal bereik in de kern; invoer van
+vreemde of onjuist gevormde `agent:*` wordt als een ondoorzichtige sleutel onder de geconfigureerde
+agent geplaatst; `global` en `unknown` blijven globale sentinelwaarden.
 
 ## Realtime spraakgesprekken
 
 `realtime` selecteert een full-duplex realtime spraakprovider voor live oproepaudio.
-Dit staat los van `streaming`, dat audio alleen doorstuurt naar
-realtime transcriptieproviders.
+Dit staat los van `streaming`, dat audio alleen doorstuurt naar providers voor realtime
+transcriptie.
 
 <Warning>
 `realtime.enabled` kan niet worden gecombineerd met `streaming.enabled`. Kies één
@@ -244,43 +265,46 @@ audiomodus per oproep.
 
 Huidig runtimegedrag:
 
-- `realtime.enabled` wordt ondersteund voor Twilio Media Streams.
-- `realtime.provider` is optioneel. Als dit niet is ingesteld, gebruikt Voice Call de eerste geregistreerde realtime spraakprovider.
-- Gebundelde realtime spraakproviders: Google Gemini Live (`google`) en OpenAI (`openai`), geregistreerd door hun providerplugins.
-- Raw configuratie die eigendom is van providers staat onder `realtime.providers.<providerId>`.
-- Voice Call stelt standaard de gedeelde realtime tool `openclaw_agent_consult` beschikbaar. Het realtime model kan deze aanroepen wanneer de beller om diepere redenering, actuele informatie of normale OpenClaw-tools vraagt.
-- `realtime.consultPolicy` voegt optioneel richtlijnen toe voor wanneer het realtime model `openclaw_agent_consult` moet aanroepen.
-- `realtime.agentContext.enabled` staat standaard uit. Wanneer ingeschakeld, injecteert Voice Call bij sessie-setup een begrensde agentidentiteit en geselecteerde workspace-bestandscapsule in de instructies voor de realtime provider.
-- `realtime.fastContext.enabled` staat standaard uit. Wanneer ingeschakeld, zoekt Voice Call eerst in geïndexeerd geheugen/sessiecontext naar de consultvraag en retourneert die snippets aan het realtime model binnen `realtime.fastContext.timeoutMs` voordat alleen wordt teruggevallen op de volledige consultagent als `realtime.fastContext.fallbackToConsult` true is.
-- Als `realtime.provider` naar een niet-geregistreerde provider wijst, of als er helemaal geen realtime spraakprovider is geregistreerd, logt Voice Call een waarschuwing en slaat realtime media over in plaats van de hele plugin te laten mislukken.
-- Consult-sessiesleutels hergebruiken de opgeslagen oproepsessie wanneer beschikbaar en vallen daarna terug op de geconfigureerde `sessionScope` (standaard `per-phone`, of `per-call` voor geïsoleerde oproepen).
+- `realtime.enabled` wordt ondersteund voor Twilio en Telnyx.
+- `realtime.provider` is optioneel. Als deze niet is ingesteld, gebruikt Voice Call de eerste geregistreerde realtime-spraakprovider.
+- Meegeleverde realtime-spraakproviders: Google Gemini Live (`google`) en OpenAI (`openai`), geregistreerd door hun providerplugins.
+- De onbewerkte configuratie die eigendom is van de provider, bevindt zich onder `realtime.providers.<providerId>`.
+- Voice Call stelt standaard de gedeelde realtime-tool `openclaw_agent_consult` beschikbaar. Het realtimemodel kan deze aanroepen wanneer de beller om diepgaandere redenering, actuele informatie of normale OpenClaw-tools vraagt.
+- `realtime.consultPolicy` voegt optioneel richtlijnen toe voor wanneer het realtimemodel `openclaw_agent_consult` moet aanroepen.
+- `realtime.agentContext.enabled` is standaard uitgeschakeld. Wanneer deze optie is ingeschakeld, voegt Voice Call bij het instellen van de sessie een begrensde agentidentiteit en een capsule met geselecteerde werkruimtebestanden toe aan de instructies voor de realtimeprovider.
+- `realtime.fastContext.enabled` is standaard uitgeschakeld. Wanneer deze optie is ingeschakeld, doorzoekt Voice Call eerst de geïndexeerde geheugen-/sessiecontext voor de consultatievraag en retourneert het die fragmenten binnen `realtime.fastContext.timeoutMs` aan het realtimemodel, voordat het alleen op de volledige consultatieagent terugvalt als `realtime.fastContext.fallbackToConsult` waar is.
+- Als `realtime.provider` naar een niet-geregistreerde provider verwijst, of als er helemaal geen realtime-spraakprovider is geregistreerd, registreert Voice Call een waarschuwing en slaat het realtime-media over in plaats van de volledige plugin te laten mislukken.
+- `inboundPolicy` mag niet `"disabled"` zijn wanneer `realtime.enabled` waar is; `validateProviderConfig` wijst die combinatie af.
+- Consultatiesessiesleutels hergebruiken de opgeslagen oproepsessie wanneer die beschikbaar is en vallen vervolgens terug op het geconfigureerde `sessionScope` (standaard `per-phone`, of `per-call` voor geïsoleerde oproepen).
 
 ### Toolbeleid
 
-`realtime.toolPolicy` beheert de consult-run:
+`realtime.toolPolicy` beheert de consultatie-uitvoering:
 
-| Beleid           | Gedrag                                                                                                                                 |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `safe-read-only` | Stelt de consulttool beschikbaar en beperkt de reguliere agent tot `read`, `web_search`, `web_fetch`, `x_search`, `memory_search` en `memory_get`. |
-| `owner`          | Stelt de consulttool beschikbaar en laat de reguliere agent het normale agenttoolbeleid gebruiken.                                                      |
-| `none`           | Stelt de consulttool niet beschikbaar. Custom `realtime.tools` worden nog steeds doorgegeven aan de realtime provider.                               |
+| Beleid           | Gedrag                                                                                                                                                               |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `safe-read-only` | Stelt de consultatietool beschikbaar en beperkt de normale agent tot `read`, `web_search`, `web_fetch`, `x_search`, `memory_search` en `memory_get`.                  |
+| `owner`          | Stelt de consultatietool beschikbaar en laat de normale agent het normale agenttoolbeleid gebruiken.                                                                 |
+| `none`           | Stelt de consultatietool niet beschikbaar. Aangepaste `realtime.tools` worden nog steeds doorgegeven aan de realtimeprovider.                                         |
 
-`realtime.consultPolicy` beheert alleen de instructies voor het realtime model:
+`realtime.consultPolicy` beheert alleen de instructies voor het realtimemodel:
 
-| Beleid        | Richtlijn                                                                                        |
-| ------------- | ----------------------------------------------------------------------------------------------- |
-| `auto`        | Behoud de standaardprompt en laat de provider beslissen wanneer de consulttool moet worden aangeroepen.              |
-| `substantive` | Beantwoord eenvoudige gesprekslijm direct en consulteer vóór feiten, geheugen, tools of context. |
-| `always`      | Consulteer vóór elk inhoudelijk antwoord.                                                        |
+| Beleid        | Richtlijn                                                                                                      |
+| ------------- | -------------------------------------------------------------------------------------------------------------- |
+| `auto`        | Behoud de standaardprompt en laat de provider bepalen wanneer de consultatietool wordt aangeroepen.            |
+| `substantive` | Beantwoord eenvoudige verbindende gesprekszinnen rechtstreeks en consulteer vóór feiten, geheugen, tools of context. |
+| `always`      | Consulteer vóór elk inhoudelijk antwoord.                                                                      |
 
-### Agent-spraakcontext
+### Spraakcontext van de agent
 
-Schakel `realtime.agentContext` in wanneer de voice bridge moet klinken als de
-geconfigureerde OpenClaw-agent zonder een volledige agent-consult-roundtrip te
-betalen voor gewone beurten. De contextcapsule wordt eenmalig toegevoegd wanneer
-de realtime sessie wordt aangemaakt, zodat er geen latentie per beurt bijkomt.
-Aanroepen naar `openclaw_agent_consult` voeren nog steeds de volledige OpenClaw-agent uit en moeten worden gebruikt
-voor toolwerk, actuele informatie, geheugenzoekopdrachten of werkruimtestatus.
+Schakel `realtime.agentContext` in wanneer de spraakbrug moet klinken als de
+geconfigureerde OpenClaw-agent zonder voor gewone beurten de volledige
+heen-en-terugreis van een agentconsultatie te doorlopen. De contextcapsule
+wordt eenmaal toegevoegd wanneer de realtimesessie wordt aangemaakt en voegt
+dus geen latentie per beurt toe. Aanroepen van `openclaw_agent_consult` voeren
+nog steeds de volledige OpenClaw-agent uit en moeten worden gebruikt voor
+toolwerk, actuele informatie, geheugenzoekacties of de toestand van de
+werkruimte.
 
 ```json5
 {
@@ -309,16 +333,17 @@ voor toolwerk, actuele informatie, geheugenzoekopdrachten of werkruimtestatus.
 }
 ```
 
-### Voorbeelden van realtime providers
+### Voorbeelden van realtimeproviders
 
 <Tabs>
   <Tab title="Google Gemini Live">
-    Standaarden: API-sleutel uit `realtime.providers.google.apiKey`,
-    `GEMINI_API_KEY` of `GOOGLE_GENERATIVE_AI_API_KEY`; model
-    `gemini-2.5-flash-native-audio-preview-12-2025`; stem `Kore`.
-    `sessionResumption` en `contextWindowCompression` staan standaard aan voor langere,
-    opnieuw te verbinden gesprekken. Gebruik `silenceDurationMs`, `startSensitivity` en
-    `endSensitivity` om snellere beurtwisseling op telefonie-audio af te stemmen.
+    Standaardwaarden: API-sleutel uit `realtime.providers.google.apiKey`,
+    `GEMINI_API_KEY` of `GOOGLE_API_KEY`; model
+    `gemini-3.1-flash-live-preview`; stem `Kore`. `sessionResumption` en
+    `contextWindowCompression` zijn standaard ingeschakeld voor langere
+    oproepen waarbij opnieuw verbinding kan worden gemaakt. Gebruik
+    `silenceDurationMs`, `startSensitivity` en `endSensitivity` om snellere
+    beurtwisseling voor telefonieaudio af te stellen.
 
     ```json5
     {
@@ -332,7 +357,7 @@ voor toolwerk, actuele informatie, geheugenzoekopdrachten of werkruimtestatus.
               realtime: {
                 enabled: true,
                 provider: "google",
-                instructions: "Speak briefly. Call openclaw_agent_consult before using deeper tools.",
+                instructions: "Spreek beknopt. Roep openclaw_agent_consult aan voordat je diepgaandere tools gebruikt.",
                 toolPolicy: "safe-read-only",
                 consultPolicy: "substantive",
                 consultThinkingLevel: "low",
@@ -341,7 +366,7 @@ voor toolwerk, actuele informatie, geheugenzoekopdrachten of werkruimtestatus.
                 providers: {
                   google: {
                     apiKey: "${GEMINI_API_KEY}",
-                    model: "gemini-2.5-flash-native-audio-preview-12-2025",
+                    model: "gemini-3.1-flash-live-preview",
                     speakerVoice: "Kore",
                     silenceDurationMs: 500,
                     startSensitivity: "high",
@@ -380,25 +405,26 @@ voor toolwerk, actuele informatie, geheugenzoekopdrachten of werkruimtestatus.
 </Tabs>
 
 Zie [Google-provider](/nl/providers/google) en
-[OpenAI-provider](/nl/providers/openai) voor provider-specifieke realtime spraakopties.
+[OpenAI-provider](/nl/providers/openai) voor providerspecifieke opties voor
+realtime-spraak.
 
-## Streaming-transcriptie
+## Streamingtranscriptie
 
-`streaming` selecteert een realtime transcriptieprovider voor live gespreksaudio.
+`streaming` selecteert een realtime-transcriptieprovider voor live-oproepaudio.
 
 Huidig runtimegedrag:
 
-- `streaming.provider` is optioneel. Indien niet ingesteld, gebruikt Voice Call de eerste geregistreerde realtime transcriptieprovider.
-- Gebundelde realtime transcriptieproviders: Deepgram (`deepgram`), ElevenLabs (`elevenlabs`), Mistral (`mistral`), OpenAI (`openai`) en xAI (`xai`), geregistreerd door hun provider-plugins.
-- Provider-eigen ruwe configuratie staat onder `streaming.providers.<providerId>`.
-- Nadat Twilio een geaccepteerd stream-`start`-bericht verzendt, registreert Voice Call de stream onmiddellijk, zet inkomende media in de wachtrij via de transcriptieprovider terwijl de provider verbinding maakt, en start de eerste begroeting pas nadat realtime transcriptie gereed is.
-- Als `streaming.provider` naar een niet-geregistreerde provider wijst, of als er geen is geregistreerd, logt Voice Call een waarschuwing en slaat mediasteaming over in plaats van de hele Plugin te laten mislukken.
+- `streaming.provider` is optioneel. Als deze niet is ingesteld, gebruikt Voice Call de eerste geregistreerde realtime-transcriptieprovider.
+- Meegeleverde realtime-transcriptieproviders: Deepgram (`deepgram`), ElevenLabs (`elevenlabs`), Mistral (`mistral`), OpenAI (`openai`) en xAI (`xai`), geregistreerd door hun providerplugins.
+- De onbewerkte configuratie die eigendom is van de provider, bevindt zich onder `streaming.providers.<providerId>`.
+- Nadat Twilio een geaccepteerd `start`-bericht voor een stream heeft verzonden, registreert Voice Call de stream onmiddellijk, plaatst het binnenkomende media via de transcriptieprovider in de wachtrij terwijl de provider verbinding maakt en start het de eerste begroeting pas wanneer realtime-transcriptie gereed is.
+- Als `streaming.provider` naar een niet-geregistreerde provider verwijst, of als er geen provider is geregistreerd, registreert Voice Call een waarschuwing en slaat het mediastreaming over in plaats van de volledige plugin te laten mislukken.
 
 ### Voorbeelden van streamingproviders
 
 <Tabs>
   <Tab title="OpenAI">
-    Standaarden: API-sleutel `streaming.providers.openai.apiKey` of
+    Standaardwaarden: API-sleutel `streaming.providers.openai.apiKey` of
     `OPENAI_API_KEY`; model `gpt-4o-transcribe`; `silenceDurationMs: 800`;
     `vadThreshold: 0.5`.
 
@@ -414,7 +440,7 @@ Huidig runtimegedrag:
                 streamPath: "/voice/stream",
                 providers: {
                   openai: {
-                    apiKey: "sk-...", // optional if OPENAI_API_KEY is set
+                    apiKey: "sk-...", // optioneel als OPENAI_API_KEY is ingesteld
                     model: "gpt-4o-transcribe",
                     silenceDurationMs: 800,
                     vadThreshold: 0.5,
@@ -430,9 +456,11 @@ Huidig runtimegedrag:
 
   </Tab>
   <Tab title="xAI">
-    Standaarden: API-sleutel `streaming.providers.xai.apiKey` of `XAI_API_KEY`;
-    endpoint `wss://api.x.ai/v1/stt`; codering `mulaw`; samplefrequentie `8000`;
-    `endpointingMs: 800`; `interimResults: true`.
+    Standaardwaarden: API-sleutel `streaming.providers.xai.apiKey` of
+    `XAI_API_KEY` (valt terug op een xAI OAuth-authenticatieprofiel als geen
+    van beide is ingesteld); eindpunt `wss://api.x.ai/v1/stt`; codering
+    `mulaw`; samplefrequentie `8000`; `endpointingMs: 800`;
+    `interimResults: true`.
 
     ```json5
     {
@@ -446,7 +474,7 @@ Huidig runtimegedrag:
                 streamPath: "/voice/stream",
                 providers: {
                   xai: {
-                    apiKey: "${XAI_API_KEY}", // optional if XAI_API_KEY is set
+                    apiKey: "${XAI_API_KEY}", // optioneel als XAI_API_KEY is ingesteld
                     endpointingMs: 800,
                     language: "en",
                   },
@@ -462,11 +490,11 @@ Huidig runtimegedrag:
   </Tab>
 </Tabs>
 
-## TTS voor gesprekken
+## TTS voor oproepen
 
-Voice Call gebruikt de kernconfiguratie `messages.tts` voor streaming
-spraak tijdens gesprekken. Je kunt deze overschrijven onder de Plugin-configuratie met
-**dezelfde vorm** — deze wordt diep samengevoegd met `messages.tts`.
+Voice Call gebruikt de kernconfiguratie `messages.tts` voor gestreamde spraak
+tijdens oproepen. Je kunt deze onder de pluginconfiguratie overschrijven met
+**dezelfde structuur** — deze wordt diep samengevoegd met `messages.tts`.
 
 ```json5
 {
@@ -483,17 +511,20 @@ spraak tijdens gesprekken. Je kunt deze overschrijven onder de Plugin-configurat
 ```
 
 <Warning>
-**Microsoft-spraak wordt genegeerd voor spraakgesprekken.** Telefonie-audio vereist PCM;
-het huidige Microsoft-transport stelt geen telefonie-PCM-uitvoer beschikbaar.
+**Microsoft-spraak wordt genegeerd voor spraakoproepen.** Telefoniesynthese
+vereist een provider die uitvoer voor telefoniedoelen implementeert; de
+Microsoft-spraakprovider doet dat niet. Daarom wordt deze voor oproepen
+overgeslagen en worden in plaats daarvan andere providers in de
+terugvalketen geprobeerd.
 </Warning>
 
 Gedragsnotities:
 
-- Verouderde sleutels `tts.<provider>` binnen Plugin-configuratie (`openai`, `elevenlabs`, `microsoft`, `edge`) worden gerepareerd door `openclaw doctor --fix`; gecommitte configuratie moet `tts.providers.<provider>` gebruiken.
-- Kern-TTS wordt gebruikt wanneer Twilio-mediastreaming is ingeschakeld; anders vallen gesprekken terug op provider-native stemmen.
-- Als een Twilio-mediastream al actief is, valt Voice Call niet terug op TwiML `<Say>`. Als telefonie-TTS in die staat niet beschikbaar is, mislukt het afspeelverzoek in plaats van twee afspeelpaden te mengen.
-- Wanneer telefonie-TTS terugvalt op een secundaire provider, logt Voice Call een waarschuwing met de providerketen (`from`, `to`, `attempts`) voor foutopsporing.
-- Wanneer Twilio barge-in of het afbreken van de stream de wachtende TTS-wachtrij leegt, worden afspeelverzoeken in de wachtrij afgehandeld in plaats van bellers te laten hangen terwijl ze wachten tot het afspelen is voltooid.
+- Verouderde sleutels `tts.<provider>` binnen de pluginconfiguratie (`openai`, `elevenlabs`, `microsoft`, `edge`) worden door `openclaw doctor --fix` hersteld; vastgelegde configuratie moet `tts.providers.<provider>` gebruiken.
+- Kern-TTS wordt gebruikt wanneer Twilio-mediastreaming is ingeschakeld; anders vallen oproepen terug op de ingebouwde stemmen van de provider.
+- Als een Twilio-mediastream al actief is, valt Voice Call niet terug op TwiML `<Say>`. Als telefonie-TTS in die toestand niet beschikbaar is, mislukt het afspeelverzoek in plaats van twee afspeelpaden te combineren.
+- Wanneer telefonie-TTS terugvalt op een secundaire provider, registreert Voice Call voor foutopsporing een waarschuwing met de providerketen (`from`, `to`, `attempts`).
+- Wanneer Twilio-onderbreking door de beller of het beëindigen van de stream de wachtende TTS-wachtrij wist, worden afspeelverzoeken in de wachtrij afgehandeld in plaats van bellers die op voltooiing van het afspelen wachten te laten vastlopen.
 
 ### TTS-voorbeelden
 
@@ -512,7 +543,7 @@ Gedragsnotities:
 }
 ```
   </Tab>
-  <Tab title="Overschrijven naar ElevenLabs (alleen gesprekken)">
+  <Tab title="Overschrijven met ElevenLabs (alleen oproepen)">
 ```json5
 {
   plugins: {
@@ -560,43 +591,44 @@ Gedragsnotities:
   </Tab>
 </Tabs>
 
-## Inkomende gesprekken
+## Inkomende oproepen
 
-Inkomend beleid staat standaard op `disabled`. Stel het volgende in om inkomende gesprekken in te schakelen:
+Het beleid voor inkomende oproepen is standaard `disabled`. Stel het volgende
+in om inkomende oproepen in te schakelen:
 
 ```json5
 {
   inboundPolicy: "allowlist",
   allowFrom: ["+15550001234"],
-  inboundGreeting: "Hello! How can I help?",
+  inboundGreeting: "Hallo! Hoe kan ik helpen?",
 }
 ```
 
 <Warning>
-`inboundPolicy: "allowlist"` is een beller-ID-scherm met lage zekerheid. De
-Plugin normaliseert de door de provider geleverde waarde `From` en vergelijkt deze met
-`allowFrom`. Webhook-verificatie authenticeert providerlevering en
-payloadintegriteit, maar bewijst **niet** het eigendom van PSTN/VoIP-bellernummers.
-Behandel `allowFrom` als filtering op beller-ID, niet als sterke belleridentiteit.
+`inboundPolicy: "allowlist"` is een controle met lage zekerheid op basis van de beller-ID. De plugin
+normaliseert de door de provider aangeleverde waarde `From` en vergelijkt deze met `allowFrom`.
+Webhookverificatie verifieert de levering door de provider en de integriteit van de payload,
+maar bewijst **niet** wie eigenaar is van het PSTN-/VoIP-nummer van de beller. Beschouw
+`allowFrom` als filtering op beller-ID, niet als sterke verificatie van de identiteit van de beller.
 </Warning>
 
-Automatische antwoorden gebruiken het agentsysteem. Stem af met `responseModel`,
+Automatische antwoorden gebruiken het agentsysteem. Stem dit af met `responseModel`,
 `responseSystemPrompt` en `responseTimeoutMs`.
 
-### Routing per nummer
+### Routering per nummer
 
-Gebruik `numbers` wanneer één Voice Call-Plugin gesprekken voor meerdere telefoonnummers ontvangt
-en elk nummer zich als een andere lijn moet gedragen. Zo kan één
-nummer een informele persoonlijke assistent gebruiken terwijl een ander een zakelijke
+Gebruik `numbers` wanneer één Voice Call-plugin oproepen voor meerdere telefoon-
+nummers ontvangt en elk nummer zich als een afzonderlijke lijn moet gedragen. Zo kan
+het ene nummer bijvoorbeeld een informele persoonlijke assistent gebruiken, terwijl een ander een zakelijke
 persona, een andere antwoordagent en een andere TTS-stem gebruikt.
 
-Routes worden geselecteerd op basis van het door de provider geleverde gekozen `To`-nummer. Sleutels moeten
-E.164-nummers zijn. Wanneer een gesprek binnenkomt, lost Voice Call de overeenkomende route eenmaal op,
-slaat de overeenkomende route op in het gespreksrecord en hergebruikt die effectieve configuratie
-voor de begroeting, het klassieke pad voor automatische antwoorden, het realtime consultpad en TTS-
-afspelen. Als geen route overeenkomt, wordt de globale Voice Call-configuratie gebruikt.
-Uitgaande gesprekken gebruiken `numbers` niet; geef het uitgaande doel, bericht en
-sessie expliciet door wanneer je het gesprek start.
+Routes worden geselecteerd op basis van het door de provider aangeleverde gebelde `To`-nummer. Sleutels moeten
+E.164-nummers zijn. Wanneer een oproep binnenkomt, bepaalt Voice Call eenmaal de overeenkomende
+route, slaat de gevonden route op in de oproeprecord en hergebruikt die
+effectieve configuratie voor de begroeting, het klassieke pad voor automatische antwoorden, het realtime
+consultatiepad en TTS-weergave. Als geen route overeenkomt, wordt de algemene Voice Call-
+configuratie gebruikt. Uitgaande oproepen gebruiken `numbers` niet; geef bij het starten
+van de oproep expliciet het uitgaande doel, het bericht en de sessie door.
 
 Route-overschrijvingen ondersteunen momenteel:
 
@@ -607,8 +639,8 @@ Route-overschrijvingen ondersteunen momenteel:
 - `responseSystemPrompt`
 - `responseTimeoutMs`
 
-De routewaarde `tts` wordt diep samengevoegd over de globale Voice Call-`tts`-configuratie, zodat
-je meestal alleen de providerstem hoeft te overschrijven:
+De routewaarde `tts` wordt diep samengevoegd met de algemene `tts`-configuratie van Voice Call, zodat
+je doorgaans alleen de providerstem hoeft te overschrijven:
 
 ```json5
 {
@@ -637,50 +669,52 @@ je meestal alleen de providerstem hoeft te overschrijven:
 ### Contract voor gesproken uitvoer
 
 Voor automatische antwoorden voegt Voice Call een strikt contract voor gesproken uitvoer toe aan
-de systeemprompt:
+de systeemprompt, dat een JSON-antwoord in de vorm `{"spoken":"..."}` vereist. Voice Call
+extraheert de spraaktekst defensief:
 
-```text
-{"spoken":"..."}
-```
+- Negeert payloads die als redeneer- of foutinhoud zijn gemarkeerd.
+- Parseert rechtstreekse JSON, JSON in een codeblok of inline `"spoken"`-sleutels.
+- Valt terug op platte tekst en verwijdert vermoedelijke inleidende alinea's met planning of metatekst.
 
-Voice Call extraheert spraaktekst defensief:
+Hierdoor blijft de gesproken weergave gericht op tekst voor de beller en wordt voorkomen dat
+planningstekst in de audio terechtkomt.
 
-- Negeert payloads die zijn gemarkeerd als redeneer-/foutinhoud.
-- Parseert directe JSON, omheinde JSON of inline `"spoken"`-sleutels.
-- Valt terug op platte tekst en verwijdert vermoedelijke plannings-/meta-inleidende alinea's.
+### Gedrag bij het starten van een gesprek
 
-Dit houdt gesproken afspelen gericht op tekst voor de beller en voorkomt
-dat planningstekst in audio lekt.
+Voor uitgaande `conversation`-oproepen is de verwerking van het eerste bericht gekoppeld aan de actieve
+weergavestatus:
 
-### Opstartgedrag van gesprekken
+- Het wissen van de wachtrij bij onderbreking en automatische antwoorden worden alleen onderdrukt zolang de eerste begroeting actief wordt uitgesproken.
+- Als de eerste weergave mislukt, keert de oproep terug naar `listening` en blijft het eerste bericht in de wachtrij staan voor een nieuwe poging.
+- De eerste weergave voor Twilio-streaming begint bij het verbinden van de stream, zonder extra vertraging.
+- Een onderbreking breekt de actieve weergave af en wist Twilio TTS-items die in de wachtrij staan maar nog niet worden afgespeeld. Gewiste items worden als overgeslagen afgehandeld, zodat de vervolglogica voor antwoorden kan doorgaan zonder te wachten op audio die nooit zal worden afgespeeld.
+- Realtime spraakgesprekken gebruiken de eigen openingsbeurt van de realtime stream. Voice Call plaatst voor dat eerste bericht **geen** verouderde `<Say>`-TwiML-update, zodat uitgaande `<Connect><Stream>`-sessies verbonden blijven.
 
-Voor uitgaande `conversation`-gesprekken is de afhandeling van het eerste bericht gekoppeld aan de live
-afspeelstatus:
+### Respijtperiode bij verbreking van een Twilio-stream
 
-- Het legen van de barge-in-wachtrij en automatische antwoorden worden alleen onderdrukt terwijl de eerste begroeting actief wordt uitgesproken.
-- Als het eerste afspelen mislukt, keert het gesprek terug naar `listening` en blijft het eerste bericht in de wachtrij voor een nieuwe poging.
-- Eerste afspelen voor Twilio-streaming start bij streamverbinding zonder extra vertraging.
-- Barge-in breekt actief afspelen af en wist Twilio TTS-items die in de wachtrij staan maar nog niet worden afgespeeld. Gewiste items worden als overgeslagen afgehandeld, zodat vervolgresponslogica kan doorgaan zonder te wachten op audio die nooit zal worden afgespeeld.
-- Realtime spraakgesprekken gebruiken de eigen openingsturn van de realtime stream. Voice Call plaatst **geen** verouderde `<Say>` TwiML-update voor dat eerste bericht, zodat uitgaande `<Connect><Stream>`-sessies gekoppeld blijven.
-
-### Respijt bij verbreken van Twilio-stream
-
-Wanneer een Twilio-mediastream de verbinding verbreekt, wacht Voice Call **2000 ms** voordat
+Wanneer een Twilio-mediastream wordt verbroken, wacht Voice Call **2000 ms** voordat
 de oproep automatisch wordt beëindigd:
 
-- Als de stream binnen dat venster opnieuw verbinding maakt, wordt automatisch beëindigen geannuleerd.
-- Als er na de respijtperiode geen stream opnieuw wordt geregistreerd, wordt de oproep beëindigd om vastgelopen actieve oproepen te voorkomen.
+- Als de stream binnen dat tijdsvenster opnieuw verbinding maakt, wordt de automatische beëindiging geannuleerd.
+- Als na de respijtperiode geen stream opnieuw wordt geregistreerd, wordt de oproep beëindigd om vastgelopen actieve oproepen te voorkomen.
 
-## Reaper voor verouderde oproepen
+## Opruimer voor verouderde oproepen
 
-Gebruik `staleCallReaperSeconds` om oproepen te beëindigen die nooit een terminal
-Webhook ontvangen (bijvoorbeeld oproepen in notify-modus die nooit worden voltooid). De standaardwaarde
-is `0` (uitgeschakeld).
+Gebruik `staleCallReaperSeconds` (standaard **120**) om oproepen te beëindigen die nooit
+worden beantwoord en nooit een actieve gespreksstatus bereiken, bijvoorbeeld oproepen in de
+meldingsmodus waarbij de provider nooit een afsluitende Webhook levert. Stel dit in op `0` om
+de functie uit te schakelen.
 
-Aanbevolen bereiken:
+De opruimer wordt elke 30 seconden uitgevoerd en beëindigt alleen oproepen zonder
+`answeredAt`-tijdstempel die nog niet in een afsluitende of actieve
+status (`speaking`/`listening`) verkeren. Beantwoorde gesprekken worden dus nooit door
+deze timer opgeruimd; `maxDurationSeconds` (standaard 300) is de afzonderlijke limiet die
+beantwoorde oproepen beëindigt wanneer ze te lang duren.
 
-- **Productie:** `120`–`300` seconden voor notify-achtige flows.
-- Houd deze waarde **hoger dan `maxDurationSeconds`** zodat normale oproepen kunnen worden afgerond. Een goed startpunt is `maxDurationSeconds + 30–60` seconden.
+Verhoog voor meldingsstromen waarbij providers bel-/antwoord-
+webhooks mogelijk langzaam leveren `staleCallReaperSeconds` tot boven de standaardwaarde, zodat trage maar normale
+oproepen niet voortijdig worden opgeruimd; `120`-`300` seconden is een redelijk bereik voor
+productieomgevingen.
 
 ```json5
 {
@@ -689,7 +723,7 @@ Aanbevolen bereiken:
       "voice-call": {
         config: {
           maxDurationSeconds: 300,
-          staleCallReaperSeconds: 360,
+          staleCallReaperSeconds: 120,
         },
       },
     },
@@ -697,28 +731,28 @@ Aanbevolen bereiken:
 }
 ```
 
-## Webhook-beveiliging
+## Webhookbeveiliging
 
-Wanneer er een proxy of tunnel vóór de Gateway staat, reconstrueert de Plugin
+Wanneer er een proxy of tunnel vóór de Gateway staat, reconstrueert de plugin
 de openbare URL voor handtekeningverificatie. Deze opties bepalen welke
 doorgestuurde headers worden vertrouwd:
 
 <ParamField path="webhookSecurity.allowedHosts" type="string[]">
-  Hosts uit forwarding-headers toestaan via een allowlist.
+  Hosts uit doorgestuurde headers die zijn toegestaan.
 </ParamField>
 <ParamField path="webhookSecurity.trustForwardingHeaders" type="boolean">
-  Doorgestuurde headers vertrouwen zonder allowlist.
+  Vertrouw doorgestuurde headers zonder een lijst met toegestane waarden.
 </ParamField>
 <ParamField path="webhookSecurity.trustedProxyIPs" type="string[]">
-  Doorgestuurde headers alleen vertrouwen wanneer het externe IP-adres van de aanvraag overeenkomt met de lijst.
+  Vertrouw doorgestuurde headers alleen wanneer het externe IP-adres van het verzoek in de lijst voorkomt.
 </ParamField>
 
 Aanvullende beveiligingen:
 
-- Webhook-**replaybeveiliging** is ingeschakeld voor Twilio en Plivo. Herhaalde geldige Webhook-aanvragen worden bevestigd maar overgeslagen voor bijwerkingen.
-- Twilio-gespreksbeurten bevatten een token per beurt in `<Gather>`-callbacks, zodat verouderde/herhaalde spraakcallbacks geen nieuwere wachtende transcriptiebeurt kunnen voldoen.
-- Niet-geverifieerde Webhook-aanvragen worden geweigerd vóór body-reads wanneer de vereiste handtekeningheaders van de provider ontbreken.
-- De voice-call-Webhook gebruikt het gedeelde pre-auth-bodyprofiel (64 KB / 5 seconden) plus een per-IP-limiet voor gelijktijdige aanvragen vóór handtekeningverificatie.
+- Webhook-**beveiliging tegen herhaling** is ingeschakeld voor Twilio, Telnyx en Plivo. Herhaalde geldige Webhookverzoeken worden bevestigd, maar de neveneffecten worden overgeslagen.
+- Twilio-gespreksbeurten bevatten een token per beurt in `<Gather>`-callbacks, zodat verouderde of herhaalde spraakcallbacks niet kunnen voldoen aan een nieuwere openstaande transcriptiebeurt.
+- Niet-geverifieerde Webhookverzoeken worden afgewezen voordat de body wordt gelezen wanneer de vereiste handtekeningheaders van de provider ontbreken.
+- De Webhook van voice-call gebruikt het gedeelde profiel voor het lezen van de body vóór verificatie (maximale bodygrootte van 64 KB en een leestime-out van 5 seconden), plus een limiet per sleutel voor gelijktijdige lopende verzoeken (standaard 8 gelijktijdige verzoeken per sleutel) vóór handtekeningverificatie.
 
 Voorbeeld met een stabiele openbare host:
 
@@ -754,17 +788,17 @@ openclaw voicecall latency                      # summarize turn latency from lo
 openclaw voicecall expose --mode funnel
 ```
 
-Wanneer de Gateway al draait, delegeren operationele `voicecall`-commando's
-naar de voice-call-runtime die eigendom is van de Gateway, zodat de CLI geen tweede
-Webhook-server bindt. Als er geen Gateway bereikbaar is, vallen de commando's terug op een
-zelfstandige CLI-runtime.
+Wanneer de Gateway al actief is, delegeren operationele `voicecall`-opdrachten
+naar de door de Gateway beheerde voice-call-runtime, zodat de CLI geen tweede
+Webhookserver bindt. Als geen Gateway bereikbaar is, vallen de opdrachten terug op
+een zelfstandige CLI-runtime.
 
-`latency` leest `calls.jsonl` uit het standaardopslagpad voor voice-call.
-Gebruik `--file <path>` om naar een ander logboek te verwijzen en `--last <n>` om de
-analyse te beperken tot de laatste N records (standaard 200). Uitvoer bevat p50/p90/p99
-voor beurtlatentie en luister-wachttijden.
+`latency` leest `calls.jsonl` uit het standaardopslagpad voor voice-call. Gebruik
+`--file <path>` om een ander logbestand aan te wijzen en `--last <n>` om
+de analyse te beperken tot de laatste N records (standaard 200). De uitvoer bevat minimum/maximum/gemiddelde,
+p50 en p95 voor de latentie per beurt en de wachttijden voor luisteren.
 
-## Agent-tool
+## Agenttool
 
 Toolnaam: `voice_call`.
 
@@ -777,28 +811,31 @@ Toolnaam: `voice_call`.
 | `end_call`      | `callId`                                   |
 | `get_status`    | `callId`                                   |
 
-De voice-call-Plugin levert een bijbehorende agent-Skill mee.
+De voice-call-plugin wordt geleverd met een bijbehorende agentskill.
 
 ## Gateway-RPC
 
-| Methode              | Argumenten                                 |
-| -------------------- | ------------------------------------------ |
-| `voicecall.initiate` | `to?`, `message`, `mode?`, `dtmfSequence?` |
-| `voicecall.continue` | `callId`, `message`                        |
-| `voicecall.speak`    | `callId`, `message`                        |
-| `voicecall.dtmf`     | `callId`, `digits`                         |
-| `voicecall.end`      | `callId`                                   |
-| `voicecall.status`   | `callId`                                   |
+| Methode                     | Argumenten                                                        | Opmerkingen                                                                 |
+| --------------------------- | ----------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `voicecall.initiate`        | `to?`, `message`, `mode?`, `sessionKey?`, `requesterSessionKey?`  | Valt terug op de configuratie `toNumber` wanneer `to` is weggelaten.        |
+| `voicecall.start`           | `to`, `message?`, `mode?`, `dtmfSequence?`, `sessionKey?`         | Hetzelfde als `initiate`, maar accepteert ook `dtmfSequence` vóór verbinding. |
+| `voicecall.continue`        | `callId`, `message`                                               | Blokkeert totdat de beurt is afgerond en retourneert het transcript.         |
+| `voicecall.continue.start`  | `callId`, `message`                                               | Asynchrone variant: retourneert onmiddellijk een `operationId`.              |
+| `voicecall.continue.result` | `operationId`                                                     | Vraagt het resultaat van een openstaande `voicecall.continue.start`-bewerking op. |
+| `voicecall.speak`           | `callId`, `message`                                               | Spreekt zonder te wachten; gebruikt de realtimebrug wanneer `realtime.enabled`. |
+| `voicecall.dtmf`            | `callId`, `digits`                                                |                                                                             |
+| `voicecall.end`             | `callId`                                                          |                                                                             |
+| `voicecall.status`          | `callId?`                                                         | Laat `callId` weg om alle actieve oproepen weer te geven.                    |
 
-`dtmfSequence` is alleen geldig met `mode: "conversation"`. Oproepen in notify-modus
-moeten `voicecall.dtmf` gebruiken nadat de oproep bestaat als ze cijfers na het verbinden
+`dtmfSequence` is alleen geldig met `mode: "conversation"`; oproepen in de
+meldingsmodus moeten nadat de oproep bestaat `voicecall.dtmf` gebruiken als ze cijfers na de verbinding
 nodig hebben.
 
 ## Probleemoplossing
 
-### Setup kan Webhook-blootstelling niet instellen
+### Instellen van Webhooktoegang mislukt
 
-Voer setup uit vanuit dezelfde omgeving waarin de Gateway draait:
+Voer de configuratie uit vanuit dezelfde omgeving waarin de Gateway draait:
 
 ```bash
 openclaw voicecall setup
@@ -806,17 +843,19 @@ openclaw voicecall setup --json
 ```
 
 Voor `twilio`, `telnyx` en `plivo` moet `webhook-exposure` groen zijn. Een
-geconfigureerde `publicUrl` faalt nog steeds wanneer deze naar lokale of privé-netwerkruimte
-wijst, omdat de carrier niet naar die adressen kan terugbellen. Gebruik geen
-`localhost`, `127.0.0.1`, `0.0.0.0`, `10.x`, `172.16.x`-`172.31.x`,
-`192.168.x`, `169.254.x`, `fc00::/7` of `fd00::/8` als `publicUrl`.
+geconfigureerde `publicUrl` mislukt nog steeds wanneer deze naar lokale of particuliere
+netwerkruimte verwijst, omdat de provider die adressen niet kan terugbellen.
+Gebruik `localhost`, `127.0.0.1`, `0.0.0.0`, `10.x`, `172.16.x`-`172.31.x`,
+`192.168.x`, `169.254.x`, `fc00::/7`, `fd00::/8` of andere NAT-
+bereiken voor providers niet als `publicUrl`.
 
-Uitgaande Twilio-oproepen in notify-modus verzenden hun initiële `<Say>`-TwiML rechtstreeks in
-de create-call-aanvraag, dus het eerste uitgesproken bericht is niet afhankelijk van Twilio
-die Webhook-TwiML ophaalt. Een openbare Webhook blijft vereist voor statuscallbacks,
-gespreksoproepen, DTMF vóór verbinden, realtime streams en oproepbeheer na verbinden.
+Uitgaande Twilio-oproepen in de meldingsmodus sturen hun eerste `<Say>`-TwiML rechtstreeks
+mee in het verzoek om de oproep aan te maken, zodat het eerste gesproken bericht niet afhankelijk is van
+het ophalen van Webhook-TwiML door Twilio. Een openbare Webhook blijft vereist voor status-
+callbacks, gespreksoproepen, DTMF vóór verbinding, realtime streams en
+oproepbesturing na verbinding.
 
-Gebruik één openbaar blootstellingspad:
+Gebruik één openbaar toegangspad:
 
 ```json5
 {
@@ -836,30 +875,32 @@ Gebruik één openbaar blootstellingspad:
 }
 ```
 
-Herstart of herlaad de Gateway na het wijzigen van de configuratie en voer daarna uit:
+Start of herlaad de Gateway na het wijzigen van de configuratie en voer vervolgens uit:
 
 ```bash
 openclaw voicecall setup
 openclaw voicecall smoke
 ```
 
-`voicecall smoke` is een dry run tenzij u `--yes` meegeeft.
+`voicecall smoke` is een proefuitvoering, tenzij je `--yes` meegeeft.
 
-### Providerreferenties falen
+### Providerreferenties mislukken
 
 Controleer de geselecteerde provider en de vereiste referentievelden:
 
 - Twilio: `twilio.accountSid`, `twilio.authToken` en `fromNumber`, of
   `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN` en `TWILIO_FROM_NUMBER`.
 - Telnyx: `telnyx.apiKey`, `telnyx.connectionId`, `telnyx.publicKey` en
-  `fromNumber`.
-- Plivo: `plivo.authId`, `plivo.authToken` en `fromNumber`.
+  `fromNumber`, of `TELNYX_API_KEY`, `TELNYX_CONNECTION_ID` en
+  `TELNYX_PUBLIC_KEY`.
+- Plivo: `plivo.authId`, `plivo.authToken` en `fromNumber`, of
+  `PLIVO_AUTH_ID` en `PLIVO_AUTH_TOKEN`.
 
-Referenties moeten bestaan op de Gateway-host. Het bewerken van een lokaal shellprofiel heeft
-geen invloed op een al draaiende Gateway totdat deze herstart of zijn
-omgeving herlaadt.
+De aanmeldgegevens moeten op de Gateway-host aanwezig zijn. Het bewerken van een lokaal shellprofiel
+heeft geen invloed op een Gateway die al actief is, totdat deze opnieuw wordt gestart of zijn
+omgeving opnieuw laadt.
 
-### Oproepen starten maar provider-Webhooks komen niet aan
+### Gesprekken starten, maar Webhooks van de provider komen niet aan
 
 Controleer of de providerconsole naar de exacte openbare Webhook-URL verwijst:
 
@@ -867,7 +908,7 @@ Controleer of de providerconsole naar de exacte openbare Webhook-URL verwijst:
 https://voice.example.com/voice/webhook
 ```
 
-Inspecteer daarna de runtimestatus:
+Inspecteer vervolgens de runtimestatus:
 
 ```bash
 openclaw voicecall status --call-id <id>
@@ -877,83 +918,81 @@ openclaw logs --follow
 
 Veelvoorkomende oorzaken:
 
-- `publicUrl` wijst naar een ander pad dan `serve.path`.
+- `publicUrl` verwijst naar een ander pad dan `serve.path`.
 - De tunnel-URL is gewijzigd nadat de Gateway is gestart.
-- Een proxy stuurt de aanvraag door maar verwijdert of herschrijft host/proto-headers.
-- Firewall of DNS routeert de openbare hostnaam naar een andere locatie dan de Gateway.
+- Een proxy stuurt het verzoek door, maar verwijdert of herschrijft de host-/protoheaders.
+- De firewall of DNS routeert de openbare hostnaam naar een andere locatie dan de Gateway.
 - De Gateway is opnieuw gestart zonder dat de Voice Call-Plugin is ingeschakeld.
 
-Wanneer er een reverse proxy of tunnel vóór de Gateway staat, stelt u
+Wanneer een reverse proxy of tunnel vóór de Gateway staat, stelt u
 `webhookSecurity.allowedHosts` in op de openbare hostnaam, of gebruikt u
 `webhookSecurity.trustedProxyIPs` voor een bekend proxyadres. Gebruik
-`webhookSecurity.trustForwardingHeaders` alleen wanneer de proxygrens onder
-uw controle staat.
+`webhookSecurity.trustForwardingHeaders` alleen wanneer u de
+proxygrens beheert.
 
-### Handtekeningverificatie faalt
+### Handtekeningverificatie mislukt
 
-Providerhandtekeningen worden gecontroleerd tegen de openbare URL die OpenClaw reconstrueert
-op basis van de inkomende aanvraag. Als handtekeningen falen:
+Providerhandtekeningen worden gecontroleerd aan de hand van de openbare URL die OpenClaw
+reconstrueert uit het inkomende verzoek. Als handtekeningen niet kunnen worden geverifieerd:
 
-- Controleer of de provider-Webhook-URL exact overeenkomt met `publicUrl`, inclusief
-  schema, host en pad.
-- Werk voor gratis ngrok-URL's `publicUrl` bij wanneer de tunnelhostnaam verandert.
-- Zorg dat de proxy de oorspronkelijke host- en proto-headers behoudt, of configureer
-  `webhookSecurity.allowedHosts`.
+- Controleer of de Webhook-URL van de provider exact overeenkomt met `publicUrl`, inclusief schema, host en pad.
+- Werk bij gratis ngrok-URL's `publicUrl` bij wanneer de hostnaam van de tunnel verandert.
+- Zorg dat de proxy de oorspronkelijke host- en protoheaders behoudt, of configureer `webhookSecurity.allowedHosts`.
 - Schakel `skipSignatureVerification` niet in buiten lokale tests.
 
-### Google Meet Twilio-deelnames falen
+### Twilio-deelnames aan Google Meet mislukken
 
-Google Meet gebruikt deze Plugin voor Twilio-inbeldeelnames. Verifieer eerst Voice Call:
+Google Meet gebruikt deze Plugin voor deelname via inbellen met Twilio. Controleer eerst Voice
+Call:
 
 ```bash
 openclaw voicecall setup
 openclaw voicecall smoke --to "+15555550123"
 ```
 
-Verifieer daarna expliciet het Google Meet-transport:
+Controleer vervolgens expliciet het Google Meet-transport:
 
 ```bash
 openclaw googlemeet setup --transport twilio
 ```
 
-Als Voice Call groen is maar de Meet-deelnemer nooit deelneemt, controleer dan het Meet-
-inbelnummer, de PIN en `--dtmf-sequence`. De telefoongesprek kan gezond zijn terwijl
-de vergadering een onjuiste DTMF-reeks weigert of negeert.
+Als Voice Call correct werkt, maar de Meet-deelnemer nooit deelneemt, controleert u het
+inbelnummer en de pincode van Meet, en `--dtmf-sequence`. Het telefoongesprek kan correct werken
+terwijl de vergadering een onjuiste DTMF-reeks weigert of negeert.
 
-Google Meet start de Twilio-telefoonleg via `voicecall.start` met een
-DTMF-reeks vóór verbinden. Uit PIN afgeleide reeksen bevatten de
-`voiceCall.dtmfDelayMs` van de Google Meet-Plugin als voorafgaande Twilio-wachtcijfers. De standaardwaarde is 12 seconden
-omdat Meet-inbelprompts laat kunnen arriveren. Voice Call leidt daarna terug naar
-realtime afhandeling voordat de introductiegroet wordt aangevraagd.
+Google Meet start via `voicecall.start` het Twilio-telefoongedeelte met een
+DTMF-reeks vóór de verbinding. Reeksen die van een pincode zijn afgeleid, bevatten de
+`voiceCall.dtmfDelayMs` van de Google Meet-Plugin (standaard **12000 ms**) als voorafgaande
+Twilio-wachttekens, omdat de inbelprompts van Meet vertraagd kunnen binnenkomen. Voice Call
+leidt vervolgens terug naar realtimeverwerking voordat om de introductiebegroeting wordt verzocht.
 
-Gebruik `openclaw logs --follow` voor de live fasetrace. Een gezonde Twilio Meet-
-deelname logt deze volgorde:
+Gebruik `openclaw logs --follow` voor het live faseverloop. Bij een correct werkende Twilio-deelname aan Meet
+wordt deze volgorde vastgelegd:
 
 - Google Meet delegeert de Twilio-deelname aan Voice Call.
-- Voice Call slaat DTMF-TwiML vóór verbinden op.
-- Initiële Twilio-TwiML wordt geconsumeerd en geserveerd vóór realtime afhandeling.
-- Voice Call serveert realtime TwiML voor de Twilio-oproep.
-- Google Meet vraagt introductiespraak aan met `voicecall.speak` na de post-DTMF-vertraging.
+- Voice Call slaat DTMF-TwiML voor de verbinding op.
+- De initiële TwiML van Twilio wordt verwerkt en aangeboden vóór de realtimeverwerking.
+- Voice Call biedt realtime-TwiML aan voor het Twilio-gesprek.
+- Google Meet vraagt na de vertraging na DTMF introductiespraak aan met `voicecall.speak`.
 
-`openclaw voicecall tail` toont nog steeds opgeslagen oproeprecords; het is nuttig voor
-oproepstatus en transcripties, maar niet elke Webhook-/realtime-overgang verschijnt
-daar.
+`openclaw voicecall tail` toont nog steeds opgeslagen gespreksrecords; dit is nuttig voor
+de gespreksstatus en transcripties, maar niet elke Webhook-/realtimeovergang
+verschijnt daar.
 
-### Realtime oproep heeft geen spraak
+### Realtimegesprek heeft geen spraak
 
-Controleer of slechts één audiomodus is ingeschakeld. `realtime.enabled` en
-`streaming.enabled` kunnen niet allebei waar zijn.
+Controleer of slechts één audiomodus is ingeschakeld: `realtime.enabled` en
+`streaming.enabled` kunnen niet beide `true` zijn.
 
-Controleer voor realtime Twilio-oproepen ook:
+Controleer voor realtime Twilio-/Telnyx-gesprekken ook het volgende:
 
-- Er is een realtime provider-Plugin geladen en geregistreerd.
-- `realtime.provider` is niet ingesteld of noemt een geregistreerde provider.
-- De provider-API-sleutel is beschikbaar voor het Gateway-proces.
-- `openclaw logs --follow` toont dat realtime TwiML is geserveerd, de realtime bridge
-  is gestart en de initiële begroeting in de wachtrij is geplaatst.
+- Een realtimeprovider-Plugin is geladen en geregistreerd.
+- `realtime.provider` is niet ingesteld of bevat de naam van een geregistreerde provider.
+- De API-sleutel van de provider is beschikbaar voor het Gateway-proces.
+- `openclaw logs --follow` toont dat realtime-TwiML is aangeboden, de realtimebridge is gestart en de initiële begroeting in de wachtrij is geplaatst.
 
 ## Gerelateerd
 
-- [Praatmodus](/nl/nodes/talk)
+- [Gespreksmodus](/nl/nodes/talk)
 - [Tekst-naar-spraak](/nl/tools/tts)
-- [Voice wake](/nl/nodes/voicewake)
+- [Spraakactivering](/nl/nodes/voicewake)

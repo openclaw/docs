@@ -1,11 +1,11 @@
 ---
 read_when:
-    - nextcloud-talk plugin'ini yüklüyor, yapılandırıyor veya denetliyorsunuz
-summary: Konuşmalar için OpenClaw Nextcloud Talk kanal plugin'i.
-title: Nextcloud Talk Plugin'i
+    - nextcloud-talk pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
+summary: Sohbetler için OpenClaw Nextcloud Talk kanal eklentisi.
+title: Nextcloud Talk plugini
 x-i18n:
-    generated_at: "2026-06-28T01:01:30Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:34:06Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: ce8dd648fcc2226e6b365f092eb3dc54062d2c9d8d5c613cb0c2d5e9f237c720
@@ -13,7 +13,7 @@ x-i18n:
     workflow: 16
 ---
 
-# Nextcloud Talk Plugin
+# Nextcloud Talk Plugin'i
 
 Sohbetler için OpenClaw Nextcloud Talk kanal Plugin'i.
 
@@ -24,7 +24,7 @@ Sohbetler için OpenClaw Nextcloud Talk kanal Plugin'i.
 
 ## Yüzey
 
-channels: nextcloud-talk
+kanallar: nextcloud-talk
 
 ## İlgili belgeler
 

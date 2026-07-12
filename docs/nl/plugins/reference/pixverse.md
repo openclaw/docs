@@ -1,11 +1,11 @@
 ---
 read_when:
     - Je installeert, configureert of controleert de pixverse-plugin
-summary: OpenClaw PixVerse-provider-Plugin voor videogeneratie.
-title: PixVerse Plugin
+summary: OpenClaw-providerplugin voor PixVerse-videogeneratie.
+title: PixVerse-Plugin
 x-i18n:
-    generated_at: "2026-06-27T18:03:23Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:13:33Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 99ebe964ed48bcb8cc00a34fdde9269cdb02cb2c7a13f7ed2ab48b784d168b41
@@ -13,9 +13,9 @@ x-i18n:
     workflow: 16
 ---
 
-# PixVerse-Plugin
+# PixVerse-plugin
 
-OpenClaw PixVerse-Plugin voor videogeneratieproviders.
+OpenClaw PixVerse-providerplugin voor het genereren van video's.
 
 ## Distributie
 
@@ -24,7 +24,7 @@ OpenClaw PixVerse-Plugin voor videogeneratieproviders.
 
 ## Interface
 
-contracts: videoGenerationProviders
+contracten: videoGenerationProviders
 
 ## Gerelateerde documentatie
 

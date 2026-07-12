@@ -1,11 +1,11 @@
 ---
 read_when:
-    - U installeert, configureert of controleert de raft-plugin
-summary: OpenClaw Raft-kanaalplugin voor veilige wekbruggen voor de CLI.
-title: Raft Plugin
+    - Je installeert, configureert of controleert de raft-plugin.
+summary: OpenClaw Raft-kanaalplugin voor veilige CLI-wakebridges.
+title: Raft-Plugin
 x-i18n:
-    generated_at: "2026-06-27T18:03:49Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:08:34Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: fea04ec6a2f3e08d69fd95c8a8e368fdbc8e179b243b8f6b41b5f8ef70039efc
@@ -13,9 +13,9 @@ x-i18n:
     workflow: 16
 ---
 
-# Raft Plugin
+# Raft-Plugin
 
-OpenClaw Raft-kanaal-Plugin voor veilige CLI-wake-bridges.
+OpenClaw Raft-kanaalplugin voor beveiligde CLI-activeringsbruggen.
 
 ## Distributie
 
@@ -24,7 +24,7 @@ OpenClaw Raft-kanaal-Plugin voor veilige CLI-wake-bridges.
 
 ## Oppervlak
 
-channels: raft
+kanalen: raft
 
 ## Gerelateerde documentatie
 

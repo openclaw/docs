@@ -1,11 +1,11 @@
 ---
 read_when:
-    - أنت تثبّت أو تهيّئ أو تدقّق Plugin الخاص بـ groq
+    - أنت تثبّت Plugin ‏groq أو تضبطه أو تدقّق فيه
 summary: يضيف دعم موفّر نماذج Groq إلى OpenClaw.
-title: Plugin Groq
+title: Plugin ‏Groq
 x-i18n:
-    generated_at: "2026-06-27T18:12:58Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:20:41Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 41bae84645b09b5185d62530788a17be0338e93e6f29b9cca11438b69932bbc5
@@ -13,18 +13,18 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin Groq
+# Plugin ‏Groq
 
-يضيف دعم مزوّد نماذج Groq إلى OpenClaw.
+يضيف دعم موفّر نماذج Groq إلى OpenClaw.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/groq-provider`
 - مسار التثبيت: npm؛ ClawHub: `clawhub:@openclaw/groq-provider`
 
-## السطح
+## الواجهة
 
-providers: groq; contracts: mediaUnderstandingProviders
+الموفّرون: groq؛ العقود: mediaUnderstandingProviders
 
 ## الوثائق ذات الصلة
 

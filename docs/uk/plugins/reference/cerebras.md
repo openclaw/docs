@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або перевіряєте плагін cerebras
+    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin Cerebras
 summary: Додає підтримку постачальника моделей Cerebras до OpenClaw.
-title: Плагін Cerebras
+title: Plugin Cerebras
 x-i18n:
-    generated_at: "2026-06-27T17:57:05Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:35:39Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 272a592b6099b7dc30c48e40e004ca01c1113a1fcf65917ac6266987a63ec01f
@@ -15,17 +15,17 @@ x-i18n:
 
 # Plugin Cerebras
 
-Додає підтримку провайдера моделей Cerebras до OpenClaw.
+Додає підтримку постачальника моделей Cerebras до OpenClaw.
 
-## Поширення
+## Розповсюдження
 
-- Пакет: `@openclaw/cerebras-provider`
-- Шлях встановлення: npm; ClawHub: `clawhub:@openclaw/cerebras-provider`
+- Пакунок: `@openclaw/cerebras-provider`
+- Спосіб установлення: npm; ClawHub: `clawhub:@openclaw/cerebras-provider`
 
-## Поверхня
+## Інтерфейс
 
-провайдери: cerebras
+постачальники: cerebras
 
-## Пов’язані документи
+## Пов’язана документація
 
 - [cerebras](/uk/providers/cerebras)

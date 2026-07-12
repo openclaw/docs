@@ -4,8 +4,8 @@ read_when:
 summary: Voegt door agents aanroepbare tools toe.
 title: Memory Core-plugin
 x-i18n:
-    generated_at: "2026-06-27T18:02:05Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:07:44Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: cda6ebb02b0e4c1616f68c3c9636b269248b4c63ca5f778d7f8c48152b27f303
@@ -15,13 +15,13 @@ x-i18n:
 
 # Memory Core-Plugin
 
-Voegt hulpmiddelen toe die door agents kunnen worden aangeroepen.
+Voegt tools toe die door agents kunnen worden aangeroepen.
 
 ## Distributie
 
 - Pakket: `@openclaw/memory-core`
-- Installatieroute: inbegrepen in OpenClaw
+- Installatieroute: inbegrepen bij OpenClaw
 
 ## Oppervlak
 
-contracts: tools
+contracten: tools

@@ -1,49 +1,40 @@
 ---
 read_when:
-    - Botgeschreven kanaalberichten configureren
-    - Bot-naar-bot-lusbeveiliging afstemmen
+    - Door bots opgestelde kanaalberichten configureren
+    - Bescherming tegen bot-naar-bot-lussen afstemmen
 sidebarTitle: Bot loop protection
-summary: Bot-naar-bot-lusbeveiligingsstandaarden en kanaaloverschrijvingen
-title: Bescherming tegen botlussen
+summary: Standaardinstellingen voor bescherming tegen bot-naar-bot-lussen en kanaaloverschrijvingen
+title: Botlusbeveiliging
 x-i18n:
-    generated_at: "2026-06-27T17:09:11Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:35:13Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7a36794332e89dc7a9cf558e1687beabf4a6d10fb8e73c39794b0f0fd01c65b7
+    source_hash: 08637267cd3422d3154315e709c85c85fa57641f1adb0e8ef10c32e8a7b73312
     source_path: channels/bot-loop-protection.md
     workflow: 16
 ---
 
-# Bot-lusbescherming
+OpenClaw kan berichten accepteren die door andere bots zijn geschreven op kanalen die `allowBots` ondersteunen. Wanneer dat pad is ingeschakeld, voorkomt lusbeveiliging voor botparen dat twee botidentiteiten elkaar onbeperkt blijven antwoorden.
 
-OpenClaw kan berichten accepteren die door andere bots zijn geschreven op kanalen die `allowBots` ondersteunen.
-Wanneer dat pad is ingeschakeld, voorkomt paarlusbescherming dat twee botidentiteiten
-oneindig op elkaar blijven antwoorden.
+De beveiliging wordt afgedwongen door de centrale runner voor inkomende antwoorden. Elk ondersteund kanaal zet de inkomende gebeurtenis om in generieke gegevens: account of bereik, gespreks-id, bot-id van de afzender en bot-id van de ontvanger. De kern houdt het deelnemerspaar in beide richtingen bij (A naar B en B naar A gelden als hetzelfde paar), past een budget met een verschuivend tijdvenster toe en onderdrukt het paar gedurende een afkoelperiode nadat het budget is overschreden.
 
-De beveiliging wordt afgedwongen door de kernrunner voor inkomende antwoorden. Elk ondersteunend kanaal
-zet zijn eigen inkomende gebeurtenis om naar generieke feiten: account of scope, gespreks-id,
-bot-id van de afzender en bot-id van de ontvanger. De kern volgt vervolgens het deelnemerspaar in beide
-richtingen, past een budget met schuivend venster toe en onderdrukt het paar tijdens een
-afkoelperiode nadat het budget is overschreden.
+## Standaardwaarden
 
-## Standaardinstellingen
+Lusbeveiliging voor botparen is actief wanneer een kanaal door bots geschreven berichten naar de verwerking laat doorgaan. Ingebouwde standaardwaarden:
 
-Paarlusbescherming is actief wanneer een kanaal toestaat dat door bots geschreven berichten de
-dispatch bereiken. Ingebouwde standaardinstellingen zijn:
+| Sleutel              | Standaardwaarde | Betekenis                                                    |
+| -------------------- | --------------- | ------------------------------------------------------------ |
+| `enabled`            | `true`          | Beveiliging actief voor kanalen die deze ondersteunen.        |
+| `maxEventsPerWindow` | `20`            | Gebeurtenissen die een botpaar binnen het venster kan uitwisselen. |
+| `windowSeconds`      | `60`            | Lengte van het verschuivende tijdvenster.                     |
+| `cooldownSeconds`    | `60`            | Onderdrukkingstijd nadat het paar het budget overschrijdt.     |
 
-- `maxEventsPerWindow: 20` - een botpaar kan binnen het venster 20 gebeurtenissen uitwisselen
-- `windowSeconds: 60` - lengte van het schuivende venster
-- `cooldownSeconds: 60` - onderdrukkingstijd nadat het paar het budget overschrijdt
+De beveiliging heeft geen invloed op door mensen geschreven berichten, implementaties met één bot, filtering van berichten van de bot zelf of botantwoorden die onder het budget blijven.
 
-De beveiliging heeft geen invloed op normale berichten van mensen, implementaties met één bot,
-filtering van eigen berichten of eenmalige botantwoorden die onder het budget blijven.
+## Gedeelde standaardwaarden configureren
 
-## Gedeelde standaardinstellingen configureren
-
-Stel `channels.defaults.botLoopProtection` één keer in om elk ondersteunend kanaal
-dezelfde basislijn te geven. Kanaal- en accountoverschrijvingen kunnen afzonderlijke
-oppervlakken nog steeds afstemmen.
+Stel `channels.defaults.botLoopProtection` eenmaal in om elk ondersteund kanaal dezelfde basisinstellingen te geven. Overschrijvingen per kanaal, account en ruimte kunnen afzonderlijke oppervlakken nog steeds aanpassen.
 
 ```json5
 {
@@ -59,18 +50,17 @@ oppervlakken nog steeds afstemmen.
 }
 ```
 
-Stel `enabled: false` alleen in wanneer je kanaalbeleid bewust
-bot-naar-botgesprekken zonder automatische onderdrukking toestaat.
+Stel `enabled: false` alleen in wanneer uw kanaalbeleid bewust gesprekken tussen bots toestaat zonder automatische onderdrukking.
 
-## Per kanaal of account overschrijven
+## Overschrijven per kanaal, account of ruimte
 
-Ondersteunende kanalen leggen hun eigen configuratie over de gedeelde standaardinstelling heen. De prioriteit is:
+Ondersteunde kanalen leggen hun eigen configuratie sleutel voor sleutel over de gedeelde standaardwaarde heen. Volgorde van voorrang, van specifiek naar algemeen:
 
-- `channels.<channel>.<room-or-space>.botLoopProtection`, wanneer het kanaal overschrijvingen per gesprek ondersteunt
-- `channels.<channel>.accounts.<account>.botLoopProtection`, wanneer het kanaal accounts ondersteunt
-- `channels.<channel>.botLoopProtection`, wanneer het kanaal standaardinstellingen op hoogste niveau ondersteunt
-- `channels.defaults.botLoopProtection`
-- ingebouwde standaardinstellingen
+1. `channels.<channel>.<room-or-space>.botLoopProtection`, wanneer het kanaal overschrijvingen per gesprek ondersteunt
+2. `channels.<channel>.accounts.<account>.botLoopProtection`, wanneer het kanaal accounts ondersteunt
+3. `channels.<channel>.botLoopProtection`, wanneer het kanaal standaardwaarden op het hoogste niveau ondersteunt
+4. `channels.defaults.botLoopProtection`
+5. ingebouwde standaardwaarden
 
 ```json5
 {
@@ -85,27 +75,11 @@ Ondersteunende kanalen leggen hun eigen configuratie over de gedeelde standaardi
         maxEventsPerWindow: 8,
       },
       accounts: {
-        molty: {
+        secondary: {
           allowBots: "mentions",
           botLoopProtection: {
             maxEventsPerWindow: 5,
             cooldownSeconds: 90,
-          },
-        },
-      },
-    },
-    slack: {
-      allowBots: "mentions",
-      botLoopProtection: {
-        maxEventsPerWindow: 8,
-      },
-    },
-    matrix: {
-      allowBots: "mentions",
-      groups: {
-        "!roomid:example.org": {
-          botLoopProtection: {
-            maxEventsPerWindow: 5,
           },
         },
       },
@@ -120,20 +94,33 @@ Ondersteunende kanalen leggen hun eigen configuratie over de gedeelde standaardi
         },
       },
     },
+    matrix: {
+      allowBots: "mentions",
+      groups: {
+        "!roomid:example.org": {
+          botLoopProtection: {
+            maxEventsPerWindow: 5,
+          },
+        },
+      },
+    },
+    slack: {
+      allowBots: "mentions",
+      botLoopProtection: {
+        maxEventsPerWindow: 8,
+      },
+    },
   },
 }
 ```
 
 ## Kanaalondersteuning
 
-- Discord: native `author.bot`-feiten, gesleuteld op Discord-account, kanaal en botpaar.
-- Slack: native `bot_id`-feiten voor geaccepteerde door bots geschreven berichten, gesleuteld op Slack-account, kanaal en botpaar.
-- Matrix: geconfigureerde Matrix-botaccounts, gesleuteld op Matrix-account, ruimte en geconfigureerd botpaar.
-- Google Chat: native `sender.type=BOT`-feiten voor geaccepteerde door bots geschreven berichten, gesleuteld op account, space en botpaar.
+- Discord: systeemeigen `author.bot`-gegevens, geïndexeerd op Discord-account, kanaal en botpaar.
+- Google Chat: systeemeigen `sender.type=BOT`-gegevens voor geaccepteerde, door bots geschreven berichten, geïndexeerd op account, space en botpaar.
+- Matrix: geconfigureerde Matrix-botaccounts, geïndexeerd op Matrix-account, ruimte en geconfigureerd botpaar.
+- Slack: systeemeigen `bot_id`-gegevens voor geaccepteerde, door bots geschreven berichten, geïndexeerd op Slack-account, kanaal en botpaar.
 
-Kanalen die geen betrouwbare inkomende botidentiteit blootstellen, blijven hun
-normale filters voor eigen berichten en toegangsbeleid gebruiken. Ze moeten zich niet aanmelden voor deze
-beveiliging totdat ze beide deelnemers in het botpaar kunnen identificeren.
+Kanalen die geen betrouwbare inkomende botidentiteit beschikbaar stellen, blijven hun gebruikelijke filters voor berichten van de bot zelf en toegangsbeleid gebruiken. Ze moeten deze beveiliging pas inschakelen wanneer ze beide deelnemers van het botpaar kunnen identificeren.
 
-Zie [SDK-runtime](/nl/plugins/sdk-runtime#reusable-runtime-utilities) voor Plugin-
-implementatiedetails.
+Zie [SDK-runtime](/nl/plugins/sdk-runtime#reusable-runtime-utilities) voor implementatiedetails voor plugins.

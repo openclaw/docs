@@ -6,22 +6,20 @@ read_when:
 summary: Pencarian Exa AI -- pencarian neural dan kata kunci dengan ekstraksi konten
 title: Pencarian Exa
 x-i18n:
-    generated_at: "2026-06-27T18:17:27Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:41:13Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ffbf61b6cb7768898842e27805acc34334544b327d010246da12513218aa465f
+    source_hash: 3ddfd6fb471f92e705facf5a2d02361c1a343b9032fa8e0a7b135af634df65b7
     source_path: tools/exa-search.md
     workflow: 16
 ---
 
-OpenClaw mendukung [Exa AI](https://exa.ai/) sebagai penyedia `web_search`. Exa
-menawarkan mode pencarian neural, kata kunci, dan hibrida dengan ekstraksi
-konten bawaan (sorotan, teks, ringkasan).
+[Exa AI](https://exa.ai/) adalah penyedia `web_search` dengan mode pencarian neural, kata kunci, dan
+hibrida serta ekstraksi konten bawaan (sorotan, teks,
+ringkasan).
 
 ## Instal Plugin
-
-Instal Plugin resmi, lalu mulai ulang Gateway:
 
 ```bash
 openclaw plugins install @openclaw/exa-plugin
@@ -36,7 +34,7 @@ openclaw gateway restart
     dasbor Anda.
   </Step>
   <Step title="Simpan kunci">
-    Tetapkan `EXA_API_KEY` di lingkungan Gateway, atau konfigurasikan melalui:
+    Atur `EXA_API_KEY` di lingkungan Gateway, atau konfigurasikan melalui:
 
     ```bash
     openclaw configure --section web
@@ -71,16 +69,17 @@ openclaw gateway restart
 }
 ```
 
-**Alternatif lingkungan:** tetapkan `EXA_API_KEY` di lingkungan Gateway.
-Untuk instalasi gateway, letakkan di `~/.openclaw/.env`.
+**Alternatif lingkungan:** atur `EXA_API_KEY` di lingkungan Gateway. Untuk
+instalasi Gateway, letakkan di `~/.openclaw/.env`. Lihat
+[Variabel lingkungan](/id/help/faq#env-vars-and-env-loading).
 
 ## Penggantian URL dasar
 
-Tetapkan `plugins.entries.exa.config.webSearch.baseUrl` ketika permintaan pencarian Exa
-harus melewati proksi yang kompatibel atau endpoint Exa alternatif. OpenClaw
-menormalkan host polos dengan menambahkan `https://` di depan dan menambahkan `/search` kecuali
-jalurnya sudah berakhir di sana. Endpoint yang dihasilkan disertakan dalam kunci cache
-pencarian, sehingga hasil dari endpoint Exa yang berbeda tidak dibagikan.
+Atur `plugins.entries.exa.config.webSearch.baseUrl` untuk merutekan permintaan
+pencarian Exa melalui proksi yang kompatibel atau endpoint alternatif. OpenClaw
+menormalkan host polos dengan menambahkan `https://` di awal dan menambahkan `/search`, kecuali
+jalurnya sudah diakhiri dengan itu. Endpoint yang telah ditentukan menjadi bagian dari kunci
+cache pencarian, sehingga hasil dari endpoint yang berbeda tidak pernah dibagikan.
 
 ## Parameter alat
 
@@ -88,8 +87,8 @@ pencarian, sehingga hasil dari endpoint Exa yang berbeda tidak dibagikan.
 Kueri pencarian.
 </ParamField>
 
-<ParamField path="count" type="number">
-Hasil yang akan dikembalikan (1–100).
+<ParamField path="count" type="number" default="5">
+Jumlah hasil yang dikembalikan (1–100, mengikuti batas jenis pencarian Exa).
 </ParamField>
 
 <ParamField path="type" type="'auto' | 'neural' | 'fast' | 'deep' | 'deep-reasoning' | 'instant'">
@@ -97,7 +96,7 @@ Mode pencarian.
 </ParamField>
 
 <ParamField path="freshness" type="'day' | 'week' | 'month' | 'year'">
-Filter waktu.
+Filter waktu. Tidak dapat digabungkan dengan `date_after`/`date_before`.
 </ParamField>
 
 <ParamField path="date_after" type="string">
@@ -114,8 +113,7 @@ Opsi ekstraksi konten (lihat di bawah).
 
 ### Ekstraksi konten
 
-Exa dapat mengembalikan konten yang diekstrak bersama hasil pencarian. Berikan objek `contents`
-untuk mengaktifkan:
+Berikan objek `contents` untuk mengatur konten yang diekstrak dalam hasil:
 
 ```javascript
 await web_search({
@@ -129,41 +127,39 @@ await web_search({
 });
 ```
 
-| Opsi contents | Tipe                                                                  | Deskripsi                  |
-| -------------- | --------------------------------------------------------------------- | -------------------------- |
-| `text`         | `boolean \| { maxCharacters }`                                        | Ekstrak teks halaman penuh |
-| `highlights`   | `boolean \| { maxCharacters, query, numSentences, highlightsPerUrl }` | Ekstrak kalimat kunci      |
-| `summary`      | `boolean \| { query }`                                                | Ringkasan buatan AI        |
+| Opsi konten     | Jenis                                                                 | Deskripsi                  |
+| --------------- | --------------------------------------------------------------------- | -------------------------- |
+| `text`          | `boolean \| { maxCharacters }`                                        | Ekstrak teks halaman penuh |
+| `highlights`    | `boolean \| { maxCharacters, query, numSentences, highlightsPerUrl }` | Ekstrak kalimat utama      |
+| `summary`       | `boolean \| { query }`                                                | Ringkasan buatan AI        |
+
+Jika `contents` dihilangkan, Exa menetapkan `{ highlights: true }` secara default sehingga hasil
+menyertakan cuplikan kalimat utama. Deskripsi hasil diambil terlebih dahulu dari sorotan,
+lalu ringkasan, kemudian teks lengkap—mana pun yang tersedia lebih dahulu. Hasil
+juga mempertahankan kolom mentah `highlightScores` dan `summary` dari respons API Exa
+jika tersedia.
 
 ### Mode pencarian
 
-| Mode             | Deskripsi                             |
-| ---------------- | ------------------------------------- |
-| `auto`           | Exa memilih mode terbaik (default)    |
-| `neural`         | Pencarian semantik/berbasis makna     |
-| `fast`           | Pencarian kata kunci cepat            |
-| `deep`           | Pencarian mendalam yang menyeluruh    |
-| `deep-reasoning` | Pencarian mendalam dengan penalaran   |
-| `instant`        | Hasil tercepat                        |
+| Mode             | Deskripsi                                    |
+| ---------------- | -------------------------------------------- |
+| `auto`           | Exa memilih mode terbaik (default)           |
+| `neural`         | Pencarian semantik/berdasarkan makna         |
+| `fast`           | Pencarian kata kunci cepat                   |
+| `deep`           | Pencarian mendalam yang menyeluruh           |
+| `deep-reasoning` | Pencarian mendalam dengan penalaran          |
+| `instant`        | Hasil tercepat                               |
 
 ## Catatan
 
-- Jika tidak ada opsi `contents` yang diberikan, Exa secara default menggunakan `{ highlights: true }`
-  sehingga hasil menyertakan cuplikan kalimat kunci
-- Hasil mempertahankan bidang `highlightScores` dan `summary` dari respons API Exa
-  saat tersedia
-- Deskripsi hasil diambil dari sorotan terlebih dahulu, lalu ringkasan, lalu
-  teks lengkap — mana pun yang tersedia
-- `freshness` dan `date_after`/`date_before` tidak dapat digabungkan — gunakan satu
-  mode filter waktu
-- Hingga 100 hasil dapat dikembalikan per kueri (bergantung pada batas tipe pencarian
-  Exa)
-- Hasil disimpan dalam cache selama 15 menit secara default (dapat dikonfigurasi melalui
-  `cacheTtlMinutes`)
-- Exa adalah integrasi API resmi dengan respons JSON terstruktur
+- `count` menerima hingga 100, mengikuti batas jenis pencarian Exa.
+- Hasil disimpan dalam cache selama 15 menit secara default. Konfigurasikan
+  `tools.web.search.cacheTtlMinutes` bersama (dalam menit) dan
+  `tools.web.search.timeoutSeconds` (default 30 detik) untuk mengubah cache dan
+  batas waktu permintaan bagi semua penyedia `web_search`, termasuk Exa.
 
 ## Terkait
 
-- [Ikhtisar Web Search](/id/tools/web) -- semua penyedia dan deteksi otomatis
+- [Ikhtisar Pencarian Web](/id/tools/web) -- semua penyedia dan deteksi otomatis
 - [Brave Search](/id/tools/brave-search) -- hasil terstruktur dengan filter negara/bahasa
 - [Perplexity Search](/id/tools/perplexity-search) -- hasil terstruktur dengan pemfilteran domain

@@ -1,30 +1,30 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або аудіюєте Plugin minimax
+    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin minimax
 summary: Додає до OpenClaw підтримку постачальників моделей MiniMax і MiniMax Portal.
-title: MiniMax Plugin
+title: Plugin MiniMax
 x-i18n:
-    generated_at: "2026-05-02T15:19:55Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:37:19Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 358fcff312f71779c671c54f35ca1cbc2df3c399d787886f0201d00eb09628f9
+    source_hash: a3c5d999505a27b9ffbe2927c5ae7e67bfe3a53be7477490fee79e2a420f72da
     source_path: plugins/reference/minimax.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# MiniMax Plugin
+# Plugin MiniMax
 
 Додає до OpenClaw підтримку постачальників моделей MiniMax і MiniMax Portal.
 
-## Поширення
+## Розповсюдження
 
 - Пакет: `@openclaw/minimax-provider`
-- Маршрут встановлення: входить до OpenClaw
+- Спосіб установлення: входить до складу OpenClaw
 
 ## Інтерфейс
 
-постачальники: minimax, minimax-portal; контракти: imageGenerationProviders, mediaUnderstandingProviders, musicGenerationProviders, speechProviders, videoGenerationProviders, webSearchProviders
+постачальники: minimax, minimax-portal; контракти: imageGenerationProviders, mediaUnderstandingProviders, musicGenerationProviders, speechProviders, usageProviders, videoGenerationProviders, webSearchProviders
 
 ## Пов’язана документація
 

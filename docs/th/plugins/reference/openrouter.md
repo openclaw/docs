@@ -4,11 +4,11 @@ read_when:
 summary: เพิ่มการรองรับผู้ให้บริการโมเดล OpenRouter ให้กับ OpenClaw
 title: Plugin OpenRouter
 x-i18n:
-    generated_at: "2026-06-27T18:04:07Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:28:33Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3d23878973853230ff2621d9ea75b6fd3536366fa8520139d5424a4d261bc44a
+    source_hash: 67d69a5b9ea397b276596bd69023ae6ccc0b35051d6de0d843a68b98b641b843
     source_path: plugins/reference/openrouter.md
     workflow: 16
 ---
@@ -17,14 +17,14 @@ x-i18n:
 
 เพิ่มการรองรับผู้ให้บริการโมเดล OpenRouter ให้กับ OpenClaw
 
-## การจัดจำหน่าย
+## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/openrouter-provider`
-- เส้นทางการติดตั้ง: รวมอยู่ใน OpenClaw
+- ช่องทางการติดตั้ง: รวมอยู่ใน OpenClaw
 
-## พื้นผิว
+## ส่วนเชื่อมต่อ
 
-providers: openrouter; contracts: imageGenerationProviders, mediaUnderstandingProviders, musicGenerationProviders, speechProviders, videoGenerationProviders
+ผู้ให้บริการ: openrouter; สัญญา: imageGenerationProviders, mediaUnderstandingProviders, musicGenerationProviders, speechProviders, usageProviders, videoGenerationProviders
 
 ## เอกสารที่เกี่ยวข้อง
 

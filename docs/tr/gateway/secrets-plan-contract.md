@@ -1,25 +1,23 @@
 ---
 read_when:
-    - '`openclaw secrets apply` planlarını oluşturma veya inceleme'
+    - '`openclaw secrets apply` planları oluşturma veya inceleme'
     - '`Invalid plan target path` hatalarında hata ayıklama'
-    - Hedef türü ve yol doğrulama davranışını anlama
-summary: '`secrets apply` planları için sözleşme: hedef doğrulaması, yol eşleştirme ve `auth-profiles.json` hedef kapsamı'
-title: Gizli bilgiler uygulama planı sözleşmesi
+    - Hedef türünü ve yol doğrulama davranışını anlama
+summary: '`secrets apply` planları için sözleşme: hedef doğrulama, yol eşleştirme ve `auth-profiles.json` hedef kapsamı'
+title: Gizli bilgileri uygulama planı sözleşmesi
 x-i18n:
-    generated_at: "2026-06-28T00:38:30Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:47:44Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 03f0ca9b433553a2f6d86d01b8c227a24b6f53ef7034a94bd648fbf04c81f13e
+    source_hash: ddaf3df7f0be326fa1c8dc8c360b03697fb58329d03c4eb8106a8740ddf6c47a
     source_path: gateway/secrets-plan-contract.md
     workflow: 16
 ---
 
-Bu sayfa, `openclaw secrets apply` tarafından zorlanan katı sözleşmeyi tanımlar.
+Bu sayfa, `openclaw secrets apply` tarafından uygulanan katı sözleşmeyi tanımlar. Bir hedef bu kurallara uymuyorsa apply, herhangi bir dosyada değişiklik yapmadan önce başarısız olur.
 
-Bir hedef bu kurallarla eşleşmezse, apply yapılandırmayı değiştirmeden önce başarısız olur.
-
-## Plan dosyası şekli
+## Plan dosyasının yapısı
 
 `openclaw secrets apply --from <plan.json>`, plan hedeflerinden oluşan bir `targets` dizisi bekler:
 
@@ -46,14 +44,16 @@ Bir hedef bu kurallarla eşleşmezse, apply yapılandırmayı değiştirmeden ö
 }
 ```
 
-## Sağlayıcı upsert'leri ve silmeleri
+`openclaw secrets configure` bu yapıda planlar oluşturur. Ayrıca bir planı elle yazabilir veya düzenleyebilirsiniz.
 
-Planlar ayrıca hedef başına yazmalarla birlikte `secrets.providers` eşlemini değiştiren iki isteğe bağlı üst düzey alan içerebilir:
+## Sağlayıcı ekleme/güncelleme ve silme işlemleri
 
-- `providerUpserts` — sağlayıcı takma adına göre anahtarlanmış bir nesne. Her değer bir sağlayıcı tanımıdır (`openclaw.json` içinde `secrets.providers.<alias>` altında kabul edilenle aynı şekil; örneğin bir `exec` veya `file` sağlayıcısı).
-- `providerDeletes` — kaldırılacak sağlayıcı takma adlarından oluşan bir dizi.
+Planlar, hedef başına yazma işlemleriyle birlikte `secrets.providers` eşlemesini değiştiren iki isteğe bağlı üst düzey alan da içerebilir:
 
-`providerUpserts`, `targets` öncesinde çalışır; bu nedenle bir `target.ref.provider`, aynı planın `providerUpserts` içinde tanıttığı bir sağlayıcı takma adına başvurabilir. Bu olmadan, `openclaw.json` içinde henüz yapılandırılmamış bir takma ada başvuran planlar `provider "<alias>" is not configured` hatasıyla başarısız olur.
+- `providerUpserts` -- anahtarları sağlayıcı takma adları olan bir nesne. Her değer bir sağlayıcı tanımıdır (`openclaw.json` içinde `secrets.providers.<alias>` altında kabul edilen yapıyla aynıdır; örneğin bir `exec` veya `file` sağlayıcısı).
+- `providerDeletes` -- kaldırılacak sağlayıcı takma adlarından oluşan bir dizi.
+
+`providerUpserts`, `targets` öğesinden önce çalışır; dolayısıyla bir `target.ref.provider`, aynı planın `providerUpserts` içinde eklediği bir sağlayıcı takma adına başvurabilir. Bu sıralama olmadan, `openclaw.json` içinde henüz yapılandırılmamış bir takma ada başvuran planlar `provider "<alias>" is not configured` hatasıyla başarısız olur.
 
 ```json5
 {
@@ -79,79 +79,77 @@ Planlar ayrıca hedef başına yazmalarla birlikte `secrets.providers` eşlemini
 }
 ```
 
-`providerUpserts` aracılığıyla tanıtılan exec sağlayıcıları, [Exec sağlayıcısı onay davranışı](#exec-provider-consent-behavior) bölümündeki exec onayı kurallarına yine tabidir: exec sağlayıcıları içeren planlar yazma modunda `--allow-exec` gerektirir.
+`providerUpserts` aracılığıyla eklenen exec sağlayıcıları yine de [Exec sağlayıcısı onay davranışı](#exec-provider-consent-behavior) bölümündeki exec onayı kurallarına tabidir: exec sağlayıcıları içeren planlar, yazma modunda `--allow-exec` gerektirir.
 
 ## Desteklenen hedef kapsamı
 
-Plan hedefleri, şu bölümdeki desteklenen kimlik bilgisi yolları için kabul edilir:
-
-- [SecretRef Kimlik Bilgisi Yüzeyi](/tr/reference/secretref-credential-surface)
+Plan hedefleri, [SecretRef Kimlik Bilgisi Yüzeyi](/tr/reference/secretref-credential-surface) bölümündeki desteklenen kimlik bilgisi yolları için kabul edilir.
 
 ## Hedef türü davranışı
 
-Genel kural:
+`target.type`, tanınan bir hedef türü olmalı ve normalleştirilmiş `target.path`, bu türün kayıtlı yol yapısıyla eşleşmelidir.
 
-- `target.type` tanınmalı ve normalleştirilmiş `target.path` şekliyle eşleşmelidir.
+Bazı hedef türleri, standart tür adlarına ek olarak mevcut planlar için uyumluluk takma adını `target.type` olarak kabul eder:
 
-Mevcut planlar için uyumluluk takma adları kabul edilmeye devam eder:
-
-- `models.providers.apiKey`
-- `skills.entries.apiKey`
-- `channels.googlechat.serviceAccount`
+| Standart tür                          | Kabul edilen takma ad                           |
+| ------------------------------------- | ----------------------------------------------- |
+| `models.providers.apiKey`             | `models.providers.*.apiKey`                     |
+| `skills.entries.apiKey`               | `skills.entries.*.apiKey`                       |
+| `channels.googlechat.serviceAccount`  | `channels.googlechat.accounts.*.serviceAccount` |
 
 ## Yol doğrulama kuralları
 
-Her hedef aşağıdakilerin tümüyle doğrulanır:
+Her hedef aşağıdaki kuralların tümüyle doğrulanır:
 
 - `type`, tanınan bir hedef türü olmalıdır.
-- `path`, boş olmayan bir noktalı yol olmalıdır.
-- `pathSegments` atlanabilir. Sağlanırsa, tam olarak `path` ile aynı yola normalleşmelidir.
+- `path`, boş olmayan, noktalarla ayrılmış bir yol olmalıdır.
+- `pathSegments` atlanabilir. Sağlanırsa tam olarak `path` ile aynı yola normalleştirilmelidir.
 - Yasaklı segmentler reddedilir: `__proto__`, `prototype`, `constructor`.
-- Normalleştirilmiş yol, hedef türü için kayıtlı yol şekliyle eşleşmelidir.
-- `providerId` veya `accountId` ayarlanmışsa, yolda kodlanmış kimlikle eşleşmelidir.
+- Normalleştirilmiş yol, hedef türü için kayıtlı yol yapısıyla eşleşmelidir.
+- `providerId` veya `accountId` ayarlanmışsa yolda kodlanmış kimlikle eşleşmelidir.
 - `auth-profiles.json` hedefleri `agentId` gerektirir.
 - Yeni bir `auth-profiles.json` eşlemesi oluştururken `authProfileProvider` ekleyin.
 
-## Başarısızlık davranışı
+## Hata davranışı
 
-Bir hedef doğrulamadan geçemezse, apply şuna benzer bir hatayla çıkar:
+Bir hedef doğrulamadan geçemezse apply aşağıdakine benzer bir hatayla çıkar:
 
 ```text
 Invalid plan target path for models.providers.apiKey: models.providers.openai.baseUrl
 ```
 
-Geçersiz bir plan için hiçbir yazma işlemi kaydedilmez.
+Geçersiz bir plan için hiçbir yazma işlemi kalıcı hâle getirilmez: hedef çözümleme ve yol doğrulama, herhangi bir dosyaya dokunulmadan önce çalışır. Ayrıca geçerli bir plan yazmaya başladığında apply, önce dokunulan her dosyanın anlık görüntüsünü alır ve aynı çalıştırmadaki sonraki bir yazma işlemi başarısız olursa bu anlık görüntüleri geri yükler. Böylece kısmi bir yazma işlemi yapılandırma, kimlik doğrulama profili veya ortam durumunun hiçbir zaman birbiriyle uyumsuz kalmasına neden olmaz.
 
 ## Exec sağlayıcısı onay davranışı
 
 - `--dry-run`, varsayılan olarak exec SecretRef denetimlerini atlar.
 - Exec SecretRef'leri/sağlayıcıları içeren planlar, `--allow-exec` ayarlanmadığı sürece yazma modunda reddedilir.
-- Exec içeren planları doğrularken/uygularken, hem dry-run hem de yazma komutlarında `--allow-exec` geçirin.
+- Exec içeren planları doğrularken/uygularken hem deneme çalıştırması hem de yazma komutlarında `--allow-exec` kullanın.
 
-## Çalışma zamanı ve denetim kapsamı notları
+## Çalışma zamanı ve denetim kapsamına ilişkin notlar
 
-- Yalnızca ref içeren `auth-profiles.json` girdileri (`keyRef`/`tokenRef`), çalışma zamanı çözümlemesine ve denetim kapsamına dahildir.
-- `secrets apply`, desteklenen `openclaw.json` hedeflerini, desteklenen `auth-profiles.json` hedeflerini ve isteğe bağlı temizleme hedeflerini yazar.
+- Yalnızca başvuru içeren `auth-profiles.json` girdileri (`keyRef`/`tokenRef`), çalışma zamanındaki kimlik bilgisi çözümlemesine ve denetim kapsamına dahildir.
+- `secrets apply`, desteklenen `openclaw.json` hedeflerini, desteklenen `auth-profiles.json` hedeflerini ve her biri varsayılan olarak etkin olan üç isteğe bağlı temizleme geçişini yazar: `scrubEnv` (`.env` içindeki taşınmış düz metin değerlerini kaldırır), `scrubAuthProfilesForProviderTargets` (bir planın yeni taşıdığı sağlayıcılar için `auth-profiles.json` içindeki düz metin/kullanılmayan başvuru kalıntılarını temizler) ve `scrubLegacyAuthJson` (eski `auth.json` depolarındaki taşınmış `api_key` girdilerini kaldırır). Bir geçişi atlamak için plandaki `options.scrubEnv`, `options.scrubAuthProfilesForProviderTargets` veya `options.scrubLegacyAuthJson` seçeneklerinden ilgili olanı `false` olarak ayarlayın.
 
 ## Operatör denetimleri
 
 ```bash
-# Validate plan without writes
+# Yazma işlemi yapmadan planı doğrulayın
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run
 
-# Then apply for real
+# Ardından gerçekten uygulayın
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json
 
-# For exec-containing plans, opt in explicitly in both modes
+# Exec içeren planlarda her iki mod için de açıkça onay verin
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run --allow-exec
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --allow-exec
 ```
 
-Apply geçersiz hedef yolu iletisiyle başarısız olursa, planı `openclaw secrets configure` ile yeniden oluşturun veya hedef yolunu yukarıdaki desteklenen şekillerden birine düzeltin.
+Apply, geçersiz hedef yolu mesajıyla başarısız olursa planı `openclaw secrets configure` ile yeniden oluşturun veya hedef yolunu yukarıda belirtilen desteklenen yapılardan birine uyacak şekilde düzeltin.
 
 ## İlgili belgeler
 
-- [Sırlar Yönetimi](/tr/gateway/secrets)
+- [Gizli Bilgi Yönetimi](/tr/gateway/secrets)
 - [CLI `secrets`](/tr/cli/secrets)
 - [SecretRef Kimlik Bilgisi Yüzeyi](/tr/reference/secretref-credential-surface)
 - [Yapılandırma Başvurusu](/tr/gateway/configuration-reference)

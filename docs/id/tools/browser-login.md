@@ -2,58 +2,66 @@
 read_when:
     - Anda perlu masuk ke situs untuk otomatisasi peramban
     - Anda ingin memposting pembaruan ke X/Twitter
-summary: Login manual untuk otomasi browser + pemostingan X/Twitter
-title: Masuk melalui peramban
+summary: Login manual untuk otomatisasi browser + posting di X/Twitter
+title: Login browser
 x-i18n:
-    generated_at: "2026-05-11T20:35:54Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:40:30Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 89501b47611a39df5a658ed7e144b7c16a07188dfa52544b56cbfc6e296e2ecc
+    source_hash: bccd363cf7c9611f4687d50a92f7fb3e2fd1c1d67bb27a80c892f7ac58ae1f8f
     source_path: tools/browser-login.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-## Login manual (direkomendasikan)
+## Login manual (disarankan)
 
-Ketika sebuah situs memerlukan login, **masuk secara manual** di profil browser **host** (browser openclaw).
+Saat suatu situs mengharuskan login, lakukan login secara manual di profil
+`openclaw` pada browser host. Jangan berikan kredensial Anda kepada model:
+login otomatis sering kali memicu pertahanan anti-bot dan dapat mengunci akun.
 
-Jangan **pernah** memberikan kredensial Anda kepada model. Login otomatis sering memicu pertahanan anti-bot dan dapat mengunci akun.
+Gunakan browser host (login manual) untuk membaca (pencarian/utas) maupun
+memposting di X/Twitter dan situs lain yang sensitif terhadap bot. Sesi browser
+dalam sandbox lebih mungkin memicu deteksi bot.
 
 Kembali ke dokumentasi browser utama: [Browser](/id/tools/browser).
 
 ## Profil Chrome mana yang digunakan?
 
-OpenClaw mengendalikan **profil Chrome khusus** (bernama `openclaw`, UI berwarna jingga). Ini terpisah dari profil browser harian Anda.
+OpenClaw mengendalikan profil Chrome khusus bernama `openclaw` (antarmuka
+bernuansa oranye), yang terpisah dari profil browser harian Anda.
 
-Untuk panggilan tool browser agen:
+Untuk pemanggilan alat browser oleh agen:
 
-- Pilihan default: agen harus menggunakan browser `openclaw` terisolasinya.
-- Gunakan `profile="user"` hanya ketika sesi login yang sudah ada penting dan pengguna berada di depan komputer untuk mengklik/menyetujui prompt lampiran apa pun.
-- Jika Anda memiliki beberapa profil browser pengguna, tentukan profil secara eksplisit alih-alih menebak.
+- Pilihan default: agen menggunakan browser `openclaw` yang terisolasi.
+- Gunakan `profile="user"` hanya jika sesi login yang sudah ada diperlukan dan
+  Anda berada di depan komputer untuk mengeklik/menyetujui setiap permintaan
+  penyambungan.
+- Jika Anda memiliki beberapa profil browser pengguna, tentukan profil secara
+  eksplisit alih-alih menebak.
 
-Dua cara mudah untuk mengaksesnya:
+Dua cara untuk mengakses profil `openclaw`:
 
-1. **Minta agen membuka browser** lalu login sendiri.
-2. **Buka melalui CLI**:
+1. Minta agen membuka browser, lalu lakukan login sendiri.
+2. Buka melalui CLI:
 
 ```bash
 openclaw browser start
 openclaw browser open https://x.com
 ```
 
-Jika Anda memiliki beberapa profil, berikan `--browser-profile <name>` (default-nya adalah `openclaw`).
+Untuk profil nondefault, letakkan `--browser-profile <name>` sebelum
+subperintah (defaultnya adalah `openclaw`):
 
-## X/Twitter: alur yang direkomendasikan
+```bash
+openclaw browser --browser-profile <name> open https://x.com
+```
 
-- **Baca/cari/thread:** gunakan browser **host** (login manual).
-- **Posting pembaruan:** gunakan browser **host** (login manual).
+## Sandbox: izinkan akses ke browser host
 
-## Sandboxing + akses browser host
-
-Sesi browser tersandbox **lebih mungkin** memicu deteksi bot. Untuk X/Twitter (dan situs ketat lainnya), pilih browser **host**.
-
-Jika agen tersandbox, tool browser default ke sandbox. Untuk mengizinkan kontrol host:
+Jika agen berada dalam sandbox, pemanggilan alat `browser` secara default
+ditujukan ke browser sandbox, bukan host. Agar agen dapat menargetkan browser
+host:
 
 ```json5
 {
@@ -70,16 +78,19 @@ Jika agen tersandbox, tool browser default ke sandbox. Untuk mengizinkan kontrol
 }
 ```
 
-Lalu buka browser host sendiri (pemanggilan CLI selalu berjalan terhadap browser host):
+Pemanggilan CLI selalu menargetkan browser host, bukan sandbox, sehingga Anda
+dapat membuka browser host sendiri terlepas dari pengaturan ini:
 
 ```bash
-openclaw browser open https://x.com --browser-profile openclaw
+openclaw browser --browser-profile openclaw open https://x.com
 ```
 
-Panggilan tool `browser` agen kemudian dapat menargetkan host setelah `sandbox.browser.allowHostControl: true` ditetapkan. Sebagai alternatif, nonaktifkan sandboxing untuk agen yang memposting pembaruan.
+Setelah `sandbox.browser.allowHostControl: true` diatur, pemanggilan alat
+`browser` oleh agen juga dapat menargetkan host. Sebagai alternatif,
+nonaktifkan sandbox untuk agen yang memposting pembaruan.
 
 ## Terkait
 
 - [Browser](/id/tools/browser)
-- [Pemecahan masalah Browser Linux](/id/tools/browser-linux-troubleshooting)
+- [Pemecahan masalah Browser di Linux](/id/tools/browser-linux-troubleshooting)
 - [Pemecahan masalah Browser WSL2](/id/tools/browser-wsl2-windows-remote-cdp-troubleshooting)

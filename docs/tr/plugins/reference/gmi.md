@@ -1,11 +1,11 @@
 ---
 read_when:
-    - gmi Plugin'ini yüklüyor, yapılandırıyor veya denetliyorsunuz
-summary: OpenClaw GMI Cloud sağlayıcı Plugin’i.
-title: Gmi Plugin
+    - gmi pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
+summary: OpenClaw GMI Cloud sağlayıcı plugini.
+title: Gmi Plugin'i
 x-i18n:
-    generated_at: "2026-06-28T00:59:49Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:37:20Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 19b0adb711875e2b7a1bbded01df13b8bec6c043b04acfd634b8acd897c3fa0f
@@ -22,9 +22,9 @@ OpenClaw GMI Cloud sağlayıcı Plugin'i.
 - Paket: `@openclaw/gmi-provider`
 - Kurulum yolu: npm; ClawHub: `clawhub:@openclaw/gmi-provider`
 
-## Yüzey
+## Kapsam
 
-providers: gmi, gmi-cloud, gmicloud
+sağlayıcılar: gmi, gmi-cloud, gmicloud
 
 ## İlgili belgeler
 

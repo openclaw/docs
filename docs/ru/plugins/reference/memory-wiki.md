@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Вы устанавливаете, настраиваете или проверяете plugin memory-wiki
-summary: Постоянный компилятор вики и удобное для Obsidian хранилище знаний для OpenClaw.
-title: Plugin Memory Wiki
+    - Вы устанавливаете, настраиваете или проверяете Plugin memory-wiki.
+summary: Постоянно работающий компилятор вики и хранилище знаний для OpenClaw, совместимое с Obsidian.
+title: Plugin вики-памяти
 x-i18n:
-    generated_at: "2026-06-28T23:26:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:42:44Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 461c9e3e52db968fc98b058c70070585f272ad27024392a6af0ce3d2f0237635
@@ -15,17 +15,17 @@ x-i18n:
 
 # Plugin Memory Wiki
 
-Постоянный компилятор wiki и совместимое с Obsidian хранилище знаний для OpenClaw.
+Постоянный компилятор вики и совместимое с Obsidian хранилище знаний для OpenClaw.
 
 ## Распространение
 
 - Пакет: `@openclaw/memory-wiki`
-- Способ установки: включен в OpenClaw
+- Способ установки: входит в состав OpenClaw
 
-## Поверхность
+## Интерфейс
 
-контракты: инструменты; навыки
+контракты: инструменты; Skills
 
-## Связанные документы
+## Связанная документация
 
 - [memory-wiki](/ru/plugins/memory-wiki)

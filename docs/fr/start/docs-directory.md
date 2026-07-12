@@ -4,10 +4,9 @@ read_when:
 summary: Liens sélectionnés vers les pages de documentation OpenClaw les plus consultées.
 title: Répertoire de documentation
 x-i18n:
-    generated_at: "2026-07-12T15:55:06Z"
+    generated_at: "2026-07-12T03:08:52Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 48859dc0b31139f1f5acaa403e506cd6d9767ee32e502a4ef74340dbbc21918f
     source_path: start/docs-directory.md
@@ -16,12 +15,12 @@ x-i18n:
 
 <Note>
 Cette page est un index organisé. Si vous débutez, commencez par [Bien démarrer](/fr/start/getting-started).
-Pour consulter la structure complète de la documentation, voir [Pôles de documentation](/fr/start/hubs).
+Pour consulter le plan complet de la documentation, voir [Pôles de documentation](/fr/start/hubs).
 </Note>
 
 ## Commencez ici
 
-- [Pôles de documentation (toutes les pages sont liées)](/fr/start/hubs)
+- [Pôles de documentation (liens vers toutes les pages)](/fr/start/hubs)
 - [Aide](/fr/help)
 - [Configuration](/fr/gateway/configuration)
 - [Exemples de configuration](/fr/gateway/configuration-examples)
@@ -48,9 +47,9 @@ Pour consulter la structure complète de la documentation, voir [Pôles de docum
 - [Groupes](/fr/channels/groups)
 - [iMessage](/fr/channels/imessage)
 - [Mattermost](/fr/channels/mattermost)
-- [Contenu multimédia audio](/fr/nodes/audio)
-- [Images multimédias](/fr/nodes/images)
-- [QQ Bot](/fr/channels/qqbot)
+- [Contenu audio](/fr/nodes/audio)
+- [Images](/fr/nodes/images)
+- [Bot QQ](/fr/channels/qqbot)
 - [Telegram](/fr/channels/telegram)
 - [WebChat](/fr/web/webchat)
 - [Messages de groupe WhatsApp](/fr/channels/group-messages)
@@ -72,7 +71,7 @@ Pour consulter la structure complète de la documentation, voir [Pôles de docum
 - [Sécurité](/fr/gateway/security)
 - [Dépannage](/fr/gateway/troubleshooting)
 
-## Pages connexes
+## Contenu associé
 
 - [Bien démarrer](/fr/start/getting-started)
 - [Pôles de documentation](/fr/start/hubs)

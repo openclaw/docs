@@ -1,26 +1,26 @@
 ---
 read_when:
-    - Dosya aktarımı Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
-summary: Eşleştirilmiş düğümlerde özel düğüm komutlarıyla dosya getirir, listeler ve yazar. 16 MB'a kadar ikili dosyalar için node.invoke üzerinden base64 kullanarak bash stdout kesilmesini aşar.
-title: Dosya Aktarımı Plugin'i
+    - Dosya aktarım Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
+summary: Eşleştirilmiş Node’larda özel Node komutları aracılığıyla dosyaları getirir, listeler ve yazar. 16 MB’a kadar ikili dosyalar için `node.invoke` üzerinden base64 kullanarak bash standart çıktı kesilmesini atlar.
+title: Dosya Aktarımı plugini
 x-i18n:
-    generated_at: "2026-05-02T20:52:54Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:01:55Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: 63f931b4bac0d212ae503a3816a527b94b3ca113677a6f52416293a2e381b24b
     source_path: plugins/reference/file-transfer.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# Dosya Aktarımı Plugin'i
+# Dosya Aktarımı Plugin’i
 
-Eşleştirilmiş Node'larda özel Node komutlarıyla dosyaları getirir, listeler ve yazar. 16 MB'a kadar ikili dosyalar için node.invoke üzerinden base64 kullanarak bash stdout kısaltmasını atlar.
+Özel Node komutları aracılığıyla eşleştirilmiş Node’larda dosyaları getirin, listeleyin ve yazın. 16 MB’a kadar ikili dosyalar için `node.invoke` üzerinden base64 kullanarak bash stdout kesilmesini atlar.
 
 ## Dağıtım
 
 - Paket: `@openclaw/file-transfer`
-- Kurulum yolu: OpenClaw'a dahildir
+- Kurulum yolu: OpenClaw’a dahildir
 
 ## Yüzey
 

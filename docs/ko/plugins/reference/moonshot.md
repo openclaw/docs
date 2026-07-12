@@ -4,8 +4,8 @@ read_when:
 summary: OpenClaw에 Moonshot 모델 제공자 지원을 추가합니다.
 title: Moonshot Plugin
 x-i18n:
-    generated_at: "2026-06-27T17:52:40Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T01:02:22Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 477307769a710ac8d430a837d7b5ffda012a942f3b44f367bf4ea0770b87f48e
@@ -22,7 +22,7 @@ OpenClaw에 Moonshot 모델 제공자 지원을 추가합니다.
 - 패키지: `@openclaw/moonshot-provider`
 - 설치 경로: npm; ClawHub: `clawhub:@openclaw/moonshot-provider`
 
-## 노출 범위
+## 제공 기능
 
 제공자: moonshot; 계약: mediaUnderstandingProviders, webSearchProviders
 

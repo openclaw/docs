@@ -1,35 +1,34 @@
 ---
 read_when:
-    - Je automatiseert het introductieproces in scripts of CI
-    - Je hebt niet-interactieve voorbeelden nodig voor specifieke providers
+    - U automatiseert onboarding in scripts of CI
+    - U hebt niet-interactieve voorbeelden nodig voor specifieke providers
 sidebarTitle: CLI automation
 summary: Gescripte onboarding en agentconfiguratie voor de OpenClaw CLI
 title: CLI-automatisering
 x-i18n:
-    generated_at: "2026-04-29T23:20:09Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:19:46Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6a169abafa682e99d2cd89dbcc9a738790d7fdfa7ba204f415baac35d6df4a2f
+    source_hash: de3115fd0c675b92f22cf9c44ddd307a854e499c6f163235f991368429b2c152
     source_path: start/wizard-cli-automation.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Gebruik `--non-interactive` om `openclaw onboard` te automatiseren.
+Gebruik `openclaw onboard --non-interactive` om de configuratie te scripten. Hiervoor is `--accept-risk` vereist: niet-interactieve configuratie kan aanmeldgegevens en daemonconfiguratie wegschrijven zonder bevestigingsprompt, dus deze vlag is de expliciete erkenning van het risico.
 
 <Note>
-`--json` impliceert geen niet-interactieve modus. Gebruik `--non-interactive` (en `--workspace`) voor scripts.
+`--json` activeert niet automatisch de niet-interactieve modus. Geef voor scripts expliciet `--non-interactive --accept-risk` door.
 </Note>
 
-## Basisvoorbeeld voor niet-interactief gebruik
+## Niet-interactief basisvoorbeeld
 
 ```bash
-openclaw onboard --non-interactive \
+openclaw onboard --non-interactive --accept-risk \
   --mode local \
   --auth-choice apiKey \
   --anthropic-api-key "$ANTHROPIC_API_KEY" \
   --secret-input-mode plaintext \
-  --gateway-port 18789 \
   --gateway-bind loopback \
   --install-daemon \
   --daemon-runtime node \
@@ -39,134 +38,116 @@ openclaw onboard --non-interactive \
 
 Voeg `--json` toe voor een machineleesbare samenvatting.
 
-Gebruik `--skip-bootstrap` wanneer je automatisering workspace-bestanden vooraf aanmaakt en je niet wilt dat onboarding de standaard bootstrap-bestanden maakt.
-
-Gebruik `--secret-input-mode ref` om door env ondersteunde refs in auth-profielen op te slaan in plaats van platte tekstwaarden.
-Interactieve selectie tussen env-refs en geconfigureerde provider-refs (`file` of `exec`) is beschikbaar in de onboarding-flow.
-
-In niet-interactieve `ref`-modus moeten provider-env-vars zijn ingesteld in de procesomgeving.
-Het doorgeven van inline sleutelvlaggen zonder de bijbehorende env-var faalt nu direct.
-
-Voorbeeld:
+- `--gateway-port` is standaard `18789`; geef deze optie alleen door om de standaardwaarde te overschrijven.
+- `--skip-bootstrap` slaat het aanmaken van standaardwerkruimtebestanden over, voor automatisering die vooraf een eigen werkruimte vult.
+- `--secret-input-mode ref` slaat in het authenticatieprofiel een door een omgevingsvariabele ondersteunde verwijzing (`{ source: "env", provider: "default", id: "<ENV_VAR>" }`) op in plaats van de sleutel als platte tekst. In de niet-interactieve `ref`-modus moet de omgevingsvariabele van de provider al in de procesomgeving zijn ingesteld: het doorgeven van een inline sleutelvlag zonder de bijbehorende omgevingsvariabele mislukt onmiddellijk.
 
 ```bash
-openclaw onboard --non-interactive \
+openclaw onboard --non-interactive --accept-risk \
   --mode local \
   --auth-choice openai-api-key \
-  --secret-input-mode ref \
-  --accept-risk
+  --secret-input-mode ref
 ```
 
 ## Providerspecifieke voorbeelden
 
 <AccordionGroup>
-  <Accordion title="Voorbeeld met Anthropic API-sleutel">
+  <Accordion title="Voorbeeld met een Anthropic API-sleutel">
     ```bash
-    openclaw onboard --non-interactive \
+    openclaw onboard --non-interactive --accept-risk \
       --mode local \
       --auth-choice apiKey \
       --anthropic-api-key "$ANTHROPIC_API_KEY" \
-      --gateway-port 18789 \
-      --gateway-bind loopback
-    ```
-  </Accordion>
-  <Accordion title="Gemini-voorbeeld">
-    ```bash
-    openclaw onboard --non-interactive \
-      --mode local \
-      --auth-choice gemini-api-key \
-      --gemini-api-key "$GEMINI_API_KEY" \
-      --gateway-port 18789 \
-      --gateway-bind loopback
-    ```
-  </Accordion>
-  <Accordion title="Z.AI-voorbeeld">
-    ```bash
-    openclaw onboard --non-interactive \
-      --mode local \
-      --auth-choice zai-api-key \
-      --zai-api-key "$ZAI_API_KEY" \
-      --gateway-port 18789 \
-      --gateway-bind loopback
-    ```
-  </Accordion>
-  <Accordion title="Voorbeeld met Vercel AI Gateway">
-    ```bash
-    openclaw onboard --non-interactive \
-      --mode local \
-      --auth-choice ai-gateway-api-key \
-      --ai-gateway-api-key "$AI_GATEWAY_API_KEY" \
-      --gateway-port 18789 \
       --gateway-bind loopback
     ```
   </Accordion>
   <Accordion title="Voorbeeld met Cloudflare AI Gateway">
     ```bash
-    openclaw onboard --non-interactive \
+    openclaw onboard --non-interactive --accept-risk \
       --mode local \
       --auth-choice cloudflare-ai-gateway-api-key \
       --cloudflare-ai-gateway-account-id "your-account-id" \
       --cloudflare-ai-gateway-gateway-id "your-gateway-id" \
       --cloudflare-ai-gateway-api-key "$CLOUDFLARE_AI_GATEWAY_API_KEY" \
-      --gateway-port 18789 \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Moonshot-voorbeeld">
+  <Accordion title="Voorbeeld met Gemini">
     ```bash
-    openclaw onboard --non-interactive \
+    openclaw onboard --non-interactive --accept-risk \
       --mode local \
-      --auth-choice moonshot-api-key \
-      --moonshot-api-key "$MOONSHOT_API_KEY" \
-      --gateway-port 18789 \
+      --auth-choice gemini-api-key \
+      --gemini-api-key "$GEMINI_API_KEY" \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Mistral-voorbeeld">
+  <Accordion title="Voorbeeld met Mistral">
     ```bash
-    openclaw onboard --non-interactive \
+    openclaw onboard --non-interactive --accept-risk \
       --mode local \
       --auth-choice mistral-api-key \
       --mistral-api-key "$MISTRAL_API_KEY" \
-      --gateway-port 18789 \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Synthetic-voorbeeld">
+  <Accordion title="Voorbeeld met Moonshot">
     ```bash
-    openclaw onboard --non-interactive \
+    openclaw onboard --non-interactive --accept-risk \
       --mode local \
-      --auth-choice synthetic-api-key \
-      --synthetic-api-key "$SYNTHETIC_API_KEY" \
-      --gateway-port 18789 \
+      --auth-choice moonshot-api-key \
+      --moonshot-api-key "$MOONSHOT_API_KEY" \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="OpenCode-voorbeeld">
+  <Accordion title="Voorbeeld met Ollama">
     ```bash
-    openclaw onboard --non-interactive \
-      --mode local \
-      --auth-choice opencode-zen \
-      --opencode-zen-api-key "$OPENCODE_API_KEY" \
-      --gateway-port 18789 \
-      --gateway-bind loopback
-    ```
-    Wissel naar `--auth-choice opencode-go --opencode-go-api-key "$OPENCODE_API_KEY"` voor de Go-catalogus.
-  </Accordion>
-  <Accordion title="Ollama-voorbeeld">
-    ```bash
-    openclaw onboard --non-interactive \
+    openclaw onboard --non-interactive --accept-risk \
       --mode local \
       --auth-choice ollama \
       --custom-model-id "qwen3.5:27b" \
-      --accept-risk \
-      --gateway-port 18789 \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Voorbeeld met aangepaste provider">
+  <Accordion title="Voorbeeld met OpenCode">
     ```bash
-    openclaw onboard --non-interactive \
+    openclaw onboard --non-interactive --accept-risk \
+      --mode local \
+      --auth-choice opencode-zen \
+      --opencode-zen-api-key "$OPENCODE_API_KEY" \
+      --gateway-bind loopback
+    ```
+    Gebruik `--auth-choice opencode-go --opencode-go-api-key "$OPENCODE_API_KEY"` voor de Go-catalogus.
+  </Accordion>
+  <Accordion title="Voorbeeld met Synthetic">
+    ```bash
+    openclaw onboard --non-interactive --accept-risk \
+      --mode local \
+      --auth-choice synthetic-api-key \
+      --synthetic-api-key "$SYNTHETIC_API_KEY" \
+      --gateway-bind loopback
+    ```
+  </Accordion>
+  <Accordion title="Voorbeeld met Vercel AI Gateway">
+    ```bash
+    openclaw onboard --non-interactive --accept-risk \
+      --mode local \
+      --auth-choice ai-gateway-api-key \
+      --ai-gateway-api-key "$AI_GATEWAY_API_KEY" \
+      --gateway-bind loopback
+    ```
+  </Accordion>
+  <Accordion title="Voorbeeld met Z.AI">
+    ```bash
+    openclaw onboard --non-interactive --accept-risk \
+      --mode local \
+      --auth-choice zai-api-key \
+      --zai-api-key "$ZAI_API_KEY" \
+      --gateway-bind loopback
+    ```
+  </Accordion>
+  <Accordion title="Voorbeeld met een aangepaste provider">
+    ```bash
+    openclaw onboard --non-interactive --accept-risk \
       --mode local \
       --auth-choice custom-api-key \
       --custom-base-url "https://llm.example.com/v1" \
@@ -175,18 +156,18 @@ openclaw onboard --non-interactive \
       --custom-provider-id "my-custom" \
       --custom-compatibility anthropic \
       --custom-image-input \
-      --gateway-port 18789 \
       --gateway-bind loopback
     ```
 
-    `--custom-api-key` is optioneel. Als deze wordt weggelaten, controleert onboarding `CUSTOM_API_KEY`.
-    OpenClaw markeert algemene vision-model-ID's automatisch als geschikt voor afbeeldingsinvoer. Voeg `--custom-image-input` toe voor onbekende aangepaste vision-ID's, of `--custom-text-input` om metadata voor alleen tekst af te dwingen.
+    `--custom-api-key` is optioneel; sommige eindpunten vereisen geen authenticatie. Wanneer deze optie wordt weggelaten, controleert het onboardingproces de omgevingsvariabele `CUSTOM_API_KEY`. `--custom-provider-id` is optioneel en wordt bij weglating automatisch afgeleid van de basis-URL. `--custom-compatibility` is standaard `openai` (andere waarden: `openai-responses`, `anthropic`).
 
-    Variant voor ref-modus:
+    OpenClaw leidt ondersteuning voor beeldinvoer af uit bekende patronen voor model-ID's van beeldmodellen (`gpt-4o`, `claude-3/4`, `gemini`, de achtervoegsels `-vl`/`vision` en vergelijkbare patronen). Voeg `--custom-image-input` toe om deze ondersteuning af te dwingen voor een niet-herkend beeldmodel, of `--custom-text-input` om alleen tekst af te dwingen.
+
+    Variant voor de verwijzingsmodus, waarbij `apiKey` wordt opgeslagen als `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`:
 
     ```bash
     export CUSTOM_API_KEY="your-key"
-    openclaw onboard --non-interactive \
+    openclaw onboard --non-interactive --accept-risk \
       --mode local \
       --auth-choice custom-api-key \
       --custom-base-url "https://llm.example.com/v1" \
@@ -195,46 +176,42 @@ openclaw onboard --non-interactive \
       --custom-provider-id "my-custom" \
       --custom-compatibility anthropic \
       --custom-image-input \
-      --gateway-port 18789 \
       --gateway-bind loopback
     ```
-
-    In deze modus slaat onboarding `apiKey` op als `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`.
 
   </Accordion>
 </AccordionGroup>
 
-Anthropic setup-token blijft beschikbaar als ondersteund onboarding-tokenpad, maar OpenClaw geeft nu de voorkeur aan hergebruik van Claude CLI wanneer beschikbaar.
-Geef voor productie de voorkeur aan een Anthropic API-sleutel.
+Authenticatie met een Anthropic-configuratietoken blijft ondersteund, maar OpenClaw geeft de voorkeur aan hergebruik van de Claude CLI wanneer lokaal een Claude CLI-aanmelding beschikbaar is. Gebruik voor productie bij voorkeur een Anthropic API-sleutel.
 
 ## Nog een agent toevoegen
 
-Gebruik `openclaw agents add <name>` om een aparte agent te maken met een eigen workspace,
-sessies en auth-profielen. Uitvoeren zonder `--workspace` start de wizard.
+`openclaw agents add <name>` maakt een afzonderlijke agent met een eigen werkruimte, sessies en authenticatieprofielen. Als u deze opdracht zonder `--workspace` (en zonder andere vlaggen) uitvoert, wordt de interactieve wizard gestart; als u `--workspace`, `--model`, `--agent-dir`, `--bind` of `--non-interactive` doorgeeft, wordt de opdracht niet-interactief uitgevoerd en is `--workspace` vereist.
 
 ```bash
 openclaw agents add work \
   --workspace ~/.openclaw/workspace-work \
-  --model openai/gpt-5.5 \
+  --model openai/gpt-5.6-sol \
   --bind whatsapp:biz \
   --non-interactive \
   --json
 ```
 
-Wat dit instelt:
+Configuratiesleutels die worden geschreven (`agents.list[]`-vermelding voor het ID van de nieuwe agent):
 
-- `agents.list[].name`
-- `agents.list[].workspace`
-- `agents.list[].agentDir`
+- `name`
+- `workspace`
+- `agentDir`
+- `model` (alleen wanneer `--model` wordt doorgegeven)
 
 Opmerkingen:
 
-- Standaard-workspaces volgen `~/.openclaw/workspace-<agentId>`.
-- Voeg `bindings` toe om inkomende berichten te routeren (de wizard kan dit doen).
-- Niet-interactieve vlaggen: `--model`, `--agent-dir`, `--bind`, `--non-interactive`.
+- Standaardwerkruimte (wanneer `--workspace` in de interactieve wizard wordt weggelaten): `~/.openclaw/workspace-<agentId>`.
+- `--bind <channel[:accountId]>` kan meerdere keren worden gebruikt; voeg bindingen toe om inkomende berichten naar de nieuwe agent te routeren (dit kan ook interactief in de wizard).
+- De naam van de agent wordt genormaliseerd naar een geldig agent-ID; `main` is gereserveerd.
 
-## Gerelateerde docs
+## Gerelateerde documentatie
 
-- Onboarding-hub: [Onboarding (CLI)](/nl/start/wizard)
-- Volledige referentie: [CLI-installatiereferentie](/nl/start/wizard-cli-reference)
-- Commandoreferentie: [`openclaw onboard`](/nl/cli/onboard)
+- Onboardingcentrum: [Onboarding (CLI)](/nl/start/wizard)
+- Volledige naslag: [Naslag voor CLI-configuratie](/nl/start/wizard-cli-reference)
+- Opdrachtnaslag: [`openclaw onboard`](/nl/cli/onboard)

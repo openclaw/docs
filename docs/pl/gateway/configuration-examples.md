@@ -3,19 +3,19 @@ read_when:
     - Nauka konfigurowania OpenClaw
     - Szukanie przykładów konfiguracji
     - Konfigurowanie OpenClaw po raz pierwszy
-summary: Przykłady konfiguracji zgodne ze schematem dla typowych konfiguracji OpenClaw
+summary: Przykłady konfiguracji zgodne ze schematem dla typowych wdrożeń OpenClaw
 title: Przykłady konfiguracji
 x-i18n:
-    generated_at: "2026-06-27T17:31:57Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:02:55Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 945f4cd8571814597ec0188853e91c6483a0d8b09bd0ca7dcfb79eb877607ce2
+    source_hash: c3ad82ccce62e0c8dbb72f81b0de62d60d8a6282f0a327ed1cbda7ffa3e47969
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-Przykłady poniżej są zgodne z bieżącym schematem konfiguracji. Pełną dokumentację i uwagi dla poszczególnych pól znajdziesz w [Konfiguracji](/pl/gateway/configuration).
+Poniższe przykłady są zgodne z bieżącym schematem konfiguracji. Pełną dokumentację oraz uwagi dotyczące poszczególnych pól znajdziesz w sekcji [Konfiguracja](/pl/gateway/configuration).
 
 ## Szybki start
 
@@ -28,9 +28,9 @@ Przykłady poniżej są zgodne z bieżącym schematem konfiguracji. Pełną doku
 }
 ```
 
-Zapisz w `~/.openclaw/openclaw.json`, a będziesz móc wysyłać prywatne wiadomości do bota z tego numeru.
+Zapisz plik jako `~/.openclaw/openclaw.json`, aby móc wysyłać bezpośrednie wiadomości do bota z tego numeru.
 
-### Zalecany punkt startowy
+### Zalecana konfiguracja początkowa
 
 ```json5
 {
@@ -59,16 +59,16 @@ Zapisz w `~/.openclaw/openclaw.json`, a będziesz móc wysyłać prywatne wiadom
   messages: {
     visibleReplies: "automatic",
     groupChat: {
-      visibleReplies: "message_tool", // opt-in; visible output requires message(action=send)
+      visibleReplies: "message_tool", // opcja wymagająca włączenia; widoczne dane wyjściowe wymagają message(action=send)
       unmentionedInbound: "room_event",
     },
   },
 }
 ```
 
-## Rozszerzony przykład (główne opcje)
+## Rozszerzony przykład (najważniejsze opcje)
 
-> JSON5 pozwala używać komentarzy i końcowych przecinków. Zwykły JSON też działa.
+> JSON5 umożliwia stosowanie komentarzy i końcowych przecinków. Zwykły JSON również działa.
 
 ```json5
 {
@@ -145,7 +145,7 @@ Zapisz w `~/.openclaw/openclaw.json`, a będziesz móc wysyłać prywatne wiadom
         enabled: true,
         maxBytes: 20971520,
         models: [
-          { provider: "openai", model: "gpt-4o-mini-transcribe" },
+          { provider: "openai", model: "gpt-4o-transcribe" },
           // Optional CLI fallback (Whisper binary):
           // { type: "cli", command: "whisper", args: ["--model", "base", "{{MediaPath}}"] }
         ],
@@ -172,7 +172,7 @@ Zapisz w `~/.openclaw/openclaw.json`, a będziesz móc wysyłać prywatne wiadom
       discord: { mode: "idle", idleMinutes: 10080 },
     },
     resetTriggers: ["/new", "/reset"],
-    store: "~/.openclaw/agents/default/sessions/sessions.json",
+    store: "~/.openclaw/agents/main/sessions/sessions.json",
     maintenance: {
       mode: "warn",
       pruneAfter: "30d",
@@ -216,8 +216,8 @@ Zapisz w `~/.openclaw/openclaw.json`, a będziesz móc wysyłać prywatne wiadom
           slug: "friends-of-openclaw",
           requireMention: false,
           channels: {
-            general: { allow: true },
-            help: { allow: true, requireMention: true },
+            general: { enabled: true },
+            help: { enabled: true, requireMention: true },
           },
         },
       },
@@ -228,7 +228,7 @@ Zapisz w `~/.openclaw/openclaw.json`, a będziesz móc wysyłać prywatne wiadom
       botToken: "xoxb-REPLACE_ME",
       appToken: "xapp-REPLACE_ME",
       channels: {
-        "#general": { allow: true, requireMention: true },
+        "#general": { enabled: true, requireMention: true },
       },
       dm: { enabled: true, allowFrom: ["U123"] },
       slashCommand: {
@@ -391,7 +391,7 @@ Zapisz w `~/.openclaw/openclaw.json`, a będziesz móc wysyłać prywatne wiadom
   // Cron jobs
   cron: {
     enabled: true,
-    store: "~/.openclaw/cron/cron.json",
+    store: "~/.openclaw/cron/jobs.json",
     maxConcurrentRuns: 8, // default; cron dispatch + isolated cron agent-turn execution
     sessionRetention: "24h",
     runLog: {
@@ -455,7 +455,7 @@ Zapisz w `~/.openclaw/openclaw.json`, a będziesz móc wysyłać prywatne wiadom
       allowTailscale: true,
     },
     tailscale: { mode: "serve", resetOnExit: false },
-    remote: { url: "ws://gateway.tailnet:18789", token: "remote-token" },
+    remote: { url: "ws://gateway-host.ts.net:18789", token: "remote-token" },
     reload: { mode: "hybrid", debounceMs: 300 },
   },
 
@@ -482,9 +482,9 @@ Zapisz w `~/.openclaw/openclaw.json`, a będziesz móc wysyłać prywatne wiadom
 }
 ```
 
-### Siostrzane repozytorium Skills połączone dowiązaniem symbolicznym
+### Repozytorium Skills połączone dowiązaniem symbolicznym
 
-Użyj tego, gdy wbudowany katalog główny Skills zawiera dowiązanie symboliczne do siostrzanego repozytorium, na przykład `~/.agents/skills/manager -> ~/Projects/manager/skills`.
+Użyj tej konfiguracji, gdy wbudowany katalog główny Skills zawiera dowiązanie symboliczne do sąsiedniego repozytorium, na przykład `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 
 ```json5
 {
@@ -497,13 +497,13 @@ Użyj tego, gdy wbudowany katalog główny Skills zawiera dowiązanie symboliczn
 }
 ```
 
-- `extraDirs` skanuje siostrzane repozytorium jako jawny katalog główny Skills.
-- `allowSymlinkTargets` pozwala folderom Skills z dowiązań symbolicznych rozwiązywać się do tego zaufanego rzeczywistego katalogu docelowego bez zezwalania na dowolne wyjścia przez dowiązania symboliczne.
-- Aby pozwolić Skill Workshop stosować zapisy przez ten sam zaufany cel dowiązania symbolicznego, ustaw `skills.workshop.allowSymlinkTargetWrites: true`.
+- `extraDirs` skanuje sąsiednie repozytorium jako jawnie wskazany katalog główny Skills.
+- `allowSymlinkTargets` umożliwia rozwiązywanie folderów Skills połączonych dowiązaniami symbolicznymi do tego zaufanego, rzeczywistego katalogu głównego bez zezwalania na dowolne wyjścia przez dowiązania symboliczne.
+- Aby umożliwić Skill Workshop zapisywanie za pośrednictwem tego samego zaufanego celu dowiązania symbolicznego, ustaw `skills.workshop.allowSymlinkTargetWrites: true`.
 
 ## Typowe wzorce
 
-### Wspólna podstawa Skills z jednym nadpisaniem
+### Wspólna konfiguracja bazowa Skills z jednym nadpisaniem
 
 ```json5
 {
@@ -520,8 +520,8 @@ Użyj tego, gdy wbudowany katalog główny Skills zawiera dowiązanie symboliczn
 }
 ```
 
-- `agents.defaults.skills` to wspólna baza domyślna.
-- `agents.list[].skills` zastępuje tę bazę dla jednego agenta.
+- `agents.defaults.skills` stanowi wspólną wartość bazową.
+- `agents.list[].skills` zastępuje tę wartość bazową dla jednego agenta.
 - Użyj `skills: []`, gdy agent nie powinien widzieć żadnych Skills.
 
 ### Konfiguracja wieloplatformowa
@@ -545,11 +545,11 @@ Użyj tego, gdy wbudowany katalog główny Skills zawiera dowiązanie symboliczn
 }
 ```
 
-### Automatyczne zatwierdzanie zaufanej sieci węzłów
+### Automatyczne zatwierdzanie w zaufanej sieci węzłów
 
-Pozostaw parowanie urządzeń jako ręczne, chyba że kontrolujesz ścieżkę sieciową. W przypadku dedykowanego
+Pozostaw ręczne parowanie urządzeń, chyba że kontrolujesz ścieżkę sieciową. W dedykowanym
 laboratorium lub podsieci tailnet możesz włączyć automatyczne zatwierdzanie urządzeń Node
-przy pierwszym parowaniu, używając dokładnych zakresów CIDR lub adresów IP:
+podczas pierwszego parowania, podając dokładne zakresy CIDR lub adresy IP:
 
 ```json5
 {
@@ -563,27 +563,27 @@ przy pierwszym parowaniu, używając dokładnych zakresów CIDR lub adresów IP:
 }
 ```
 
-Gdy nie jest ustawione, pozostaje wyłączone. Dotyczy tylko świeżego parowania `role: node` bez
-żądanych zakresów uprawnień. Klienci operatora/przeglądarki oraz zmiany roli, zakresu, metadanych lub
-klucza publicznego nadal wymagają ręcznego zatwierdzenia.
+Jeśli opcja nie jest ustawiona, pozostaje wyłączona. Dotyczy tylko pierwszego parowania z `role: node`
+bez żądanych zakresów uprawnień. Klienci operatora/przeglądarki oraz zmiany roli, zakresu uprawnień,
+metadanych lub klucza publicznego nadal wymagają ręcznego zatwierdzenia.
 
-### Bezpieczny tryb DM (wspólna skrzynka odbiorcza / DM wielu użytkowników)
+### Bezpieczny tryb wiadomości prywatnych (wspólna skrzynka odbiorcza / wiadomości prywatne wielu użytkowników)
 
-Jeśli więcej niż jedna osoba może wysyłać DM do Twojego bota (wiele wpisów w `allowFrom`, zatwierdzenia parowania dla wielu osób albo `dmPolicy: "open"`), włącz **bezpieczny tryb DM**, aby DM od różnych nadawców domyślnie nie współdzieliły jednego kontekstu:
+Jeśli więcej niż jedna osoba może wysyłać wiadomości prywatne do Twojego bota (wiele wpisów w `allowFrom`, zatwierdzenia parowania dla wielu osób lub `dmPolicy: "open"`), włącz **bezpieczny tryb wiadomości prywatnych**, aby wiadomości od różnych nadawców domyślnie nie współdzieliły jednego kontekstu:
 
 ```json5
 {
-  // Secure DM mode (recommended for multi-user or sensitive DM agents)
+  // Bezpieczny tryb wiadomości prywatnych (zalecany dla agentów obsługujących wielu użytkowników lub poufne wiadomości prywatne)
   session: { dmScope: "per-channel-peer" },
 
   channels: {
-    // Example: WhatsApp multi-user inbox
+    // Przykład: skrzynka odbiorcza WhatsApp dla wielu użytkowników
     whatsapp: {
       dmPolicy: "allowlist",
       allowFrom: ["+15555550123", "+15555550124"],
     },
 
-    // Example: Discord multi-user inbox
+    // Przykład: skrzynka odbiorcza Discord dla wielu użytkowników
     discord: {
       enabled: true,
       token: "YOUR_DISCORD_BOT_TOKEN",
@@ -593,10 +593,10 @@ Jeśli więcej niż jedna osoba może wysyłać DM do Twojego bota (wiele wpisó
 }
 ```
 
-W przypadku Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC autoryzacja nadawcy domyślnie opiera się przede wszystkim na identyfikatorze.
-Włącz bezpośrednie dopasowywanie zmiennej nazwy/adresu e-mail/pseudonimu za pomocą `dangerouslyAllowNameMatching: true` danego kanału tylko wtedy, gdy wyraźnie akceptujesz to ryzyko.
+W przypadku Discord/Google Chat/IRC/Mattermost/Microsoft Teams/Slack autoryzacja nadawcy domyślnie opiera się przede wszystkim na identyfikatorze.
+Włączaj bezpośrednie dopasowywanie zmiennych nazw/adresów e-mail/pseudonimów za pomocą ustawienia `dangerouslyAllowNameMatching: true` dla danego kanału tylko wtedy, gdy świadomie akceptujesz to ryzyko.
 
-### Klucz API Anthropic + fallback MiniMax
+### Klucz API Anthropic i rezerwowy MiniMax
 
 ```json5
 {
@@ -632,7 +632,7 @@ Włącz bezpośrednie dopasowywanie zmiennej nazwy/adresu e-mail/pseudonimu za p
 }
 ```
 
-### Bot roboczy (ograniczony dostęp)
+### Bot służbowy (ograniczony dostęp)
 
 ```json5
 {
@@ -656,8 +656,8 @@ Włącz bezpośrednie dopasowywanie zmiennej nazwy/adresu e-mail/pseudonimu za p
       enabled: true,
       botToken: "xoxb-...",
       channels: {
-        "#engineering": { allow: true, requireMention: true },
-        "#general": { allow: true, requireMention: true },
+        "#engineering": { enabled: true, requireMention: true },
+        "#general": { enabled: true, requireMention: true },
       },
     },
   },
@@ -700,12 +700,12 @@ Włącz bezpośrednie dopasowywanie zmiennej nazwy/adresu e-mail/pseudonimu za p
 
 ## Wskazówki
 
-- Jeśli ustawisz `dmPolicy: "open"`, odpowiadająca lista `allowFrom` musi zawierać `"*"`.
-- Identyfikatory dostawców różnią się (numery telefonów, identyfikatory użytkowników, identyfikatory kanałów). Skorzystaj z dokumentacji dostawcy, aby potwierdzić format.
-- Opcjonalne sekcje do dodania później: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
-- Zobacz [Dostawcy](/pl/providers) i [Rozwiązywanie problemów](/pl/gateway/troubleshooting), aby uzyskać bardziej szczegółowe informacje o konfiguracji.
+- Jeśli ustawisz `dmPolicy: "open"`, odpowiadająca mu lista `allowFrom` musi zawierać `"*"`.
+- Identyfikatory dostawców mają różne formaty (numery telefonów, identyfikatory użytkowników, identyfikatory kanałów). Sprawdź format w dokumentacji dostawcy.
+- Opcjonalne sekcje, które można dodać później: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
+- Więcej informacji o konfiguracji znajdziesz w sekcjach [Dostawcy](/pl/providers) i [Rozwiązywanie problemów](/pl/gateway/troubleshooting).
 
-## Powiązane
+## Powiązane materiały
 
-- [Informacje o konfiguracji](/pl/gateway/configuration-reference)
+- [Dokumentacja referencyjna konfiguracji](/pl/gateway/configuration-reference)
 - [Konfiguracja](/pl/gateway/configuration)

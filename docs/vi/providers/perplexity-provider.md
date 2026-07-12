@@ -1,35 +1,34 @@
 ---
 read_when:
-    - Bạn muốn cấu hình Perplexity làm nhà cung cấp tìm kiếm web
+    - Bạn muốn cấu hình Perplexity làm nhà cung cấp tìm kiếm trên web
     - Bạn cần khóa API Perplexity hoặc thiết lập proxy OpenRouter
-summary: Thiết lập nhà cung cấp tìm kiếm web Perplexity (khóa API, chế độ tìm kiếm, lọc)
+summary: Thiết lập nhà cung cấp tìm kiếm web Perplexity (khóa API, chế độ tìm kiếm, bộ lọc)
 title: Perplexity
 x-i18n:
-    generated_at: "2026-06-27T18:05:29Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:22:05Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3be6f5066ba180a63ea8b374f641613c815be0f84ee1d3577feea04e31ab4694
+    source_hash: ea76a5cb7befce95756e9bcc8f9c1637fac87711d02d8a486ec2a1b9f51b73dc
     source_path: providers/perplexity-provider.md
     workflow: 16
 ---
 
-Plugin Perplexity cung cấp khả năng tìm kiếm web thông qua Perplexity
-Search API hoặc Perplexity Sonar qua OpenRouter.
+Plugin Perplexity đăng ký một nhà cung cấp `web_search` với hai phương thức truyền tải: API Tìm kiếm Perplexity gốc (kết quả có cấu trúc kèm bộ lọc) và tính năng hoàn tất trò chuyện Perplexity Sonar, trực tiếp hoặc qua OpenRouter (câu trả lời do AI tổng hợp kèm trích dẫn).
 
 <Note>
-Trang này là phần thiết lập **provider** Perplexity. Đối với **tool** Perplexity (cách agent sử dụng nó), hãy xem [tool Perplexity](/vi/tools/perplexity-search).
+Trang này trình bày cách thiết lập **nhà cung cấp** Perplexity. Đối với **công cụ** Perplexity (cách tác nhân sử dụng công cụ này), hãy xem [Tìm kiếm Perplexity](/vi/tools/perplexity-search).
 </Note>
 
-| Thuộc tính    | Giá trị                                                                  |
-| ----------- | ---------------------------------------------------------------------- |
-| Loại        | Provider tìm kiếm web (không phải provider mô hình)                             |
-| Xác thực        | `PERPLEXITY_API_KEY` (trực tiếp) hoặc `OPENROUTER_API_KEY` (qua OpenRouter) |
+| Thuộc tính       | Giá trị                                                                  |
+| ---------------- | ------------------------------------------------------------------------ |
+| Loại             | Nhà cung cấp tìm kiếm web (không phải nhà cung cấp mô hình)              |
+| Xác thực         | `PERPLEXITY_API_KEY` (gốc) hoặc `OPENROUTER_API_KEY` (qua OpenRouter)    |
 | Đường dẫn cấu hình | `plugins.entries.perplexity.config.webSearch.apiKey`                   |
+| Ghi đè           | `plugins.entries.perplexity.config.webSearch.baseUrl` / `.model`         |
+| Lấy khóa         | [perplexity.ai/settings/api](https://www.perplexity.ai/settings/api)     |
 
-## Cài đặt plugin
-
-Cài đặt plugin chính thức, rồi khởi động lại Gateway:
+## Cài đặt Plugin
 
 ```bash
 openclaw plugins install @openclaw/perplexity-plugin
@@ -39,101 +38,91 @@ openclaw gateway restart
 ## Bắt đầu
 
 <Steps>
-  <Step title="Thiết lập API key">
-    Chạy luồng cấu hình tìm kiếm web tương tác:
-
+  <Step title="Đặt khóa API">
     ```bash
     openclaw configure --section web
     ```
 
-    Hoặc thiết lập khóa trực tiếp:
+    Hoặc đặt khóa trực tiếp:
 
     ```bash
     openclaw config set plugins.entries.perplexity.config.webSearch.apiKey "pplx-xxxxxxxxxxxx"
     ```
 
+    Khóa được xuất dưới dạng `PERPLEXITY_API_KEY` hoặc `OPENROUTER_API_KEY` trong
+    môi trường Gateway cũng hoạt động.
+
   </Step>
   <Step title="Bắt đầu tìm kiếm">
-    Agent sẽ tự động sử dụng Perplexity cho các lượt tìm kiếm web sau khi khóa được
-    cấu hình. Không cần bước bổ sung nào.
+    `web_search` tự động phát hiện Perplexity khi khóa của dịch vụ này là thông
+    tin xác thực tìm kiếm khả dụng; không cần thiết lập thêm. Để chỉ định rõ nhà cung cấp:
+
+    ```bash
+    openclaw config set tools.web.search.provider perplexity
+    ```
+
   </Step>
 </Steps>
 
 ## Chế độ tìm kiếm
 
-Plugin tự động chọn transport dựa trên tiền tố API key:
+Plugin xác định phương thức truyền tải theo thứ tự sau:
 
-<Tabs>
-  <Tab title="Native Perplexity API (pplx-)">
-    Khi khóa của bạn bắt đầu bằng `pplx-`, OpenClaw sử dụng Perplexity Search
-    API gốc. Transport này trả về kết quả có cấu trúc và hỗ trợ bộ lọc miền, ngôn ngữ,
-    và ngày (xem các tùy chọn lọc bên dưới).
-  </Tab>
-  <Tab title="OpenRouter / Sonar (sk-or-)">
-    Khi khóa của bạn bắt đầu bằng `sk-or-`, OpenClaw định tuyến qua OpenRouter bằng
-    mô hình Perplexity Sonar. Transport này trả về câu trả lời do AI tổng hợp kèm
-    trích dẫn.
-  </Tab>
-</Tabs>
+1. Đã đặt `webSearch.baseUrl` hoặc `webSearch.model`: luôn định tuyến qua tính năng hoàn tất trò chuyện Sonar đến điểm cuối đó, bất kể loại khóa.
+2. Nếu không, nguồn khóa quyết định điểm cuối: tiền tố của khóa đã cấu hình chọn phương thức truyền tải (cấu hình được ưu tiên hơn biến môi trường); khóa môi trường sử dụng trực tiếp điểm cuối tương ứng.
 
-| Tiền tố khóa | Transport                    | Tính năng                                         |
-| ---------- | ---------------------------- | ------------------------------------------------ |
-| `pplx-`    | Native Perplexity Search API | Kết quả có cấu trúc, bộ lọc miền/ngôn ngữ/ngày |
-| `sk-or-`   | OpenRouter (Sonar)           | Câu trả lời do AI tổng hợp kèm trích dẫn            |
+| Tiền tố khóa | Phương thức truyền tải                                      | Tính năng                                           |
+| ------------ | ----------------------------------------------------------- | --------------------------------------------------- |
+| `pplx-`      | API Tìm kiếm Perplexity gốc (`https://api.perplexity.ai`)   | Kết quả có cấu trúc, bộ lọc miền/ngôn ngữ/ngày      |
+| `sk-or-`     | OpenRouter (`https://openrouter.ai/api/v1`), mô hình Sonar  | Câu trả lời do AI tổng hợp kèm trích dẫn            |
 
-## Lọc Native API
+Khóa đã cấu hình có bất kỳ tiền tố nào khác cũng sử dụng API Tìm kiếm gốc. Đường
+dẫn hoàn tất trò chuyện mặc định sử dụng mô hình `perplexity/sonar-pro`; ghi đè
+bằng `plugins.entries.perplexity.config.webSearch.model`.
 
-<Note>
-Các tùy chọn lọc chỉ khả dụng khi dùng native Perplexity API
-(khóa `pplx-`). Tìm kiếm OpenRouter/Sonar không hỗ trợ các tham số này.
-</Note>
+## Lọc bằng API gốc
 
-Khi dùng native Perplexity API, tìm kiếm hỗ trợ các bộ lọc sau:
+| Bộ lọc                              | Mô tả                                                                 | Phương thức truyền tải |
+| ----------------------------------- | --------------------------------------------------------------------- | ---------------------- |
+| `count`                             | Số kết quả mỗi lần tìm kiếm, 1–10 (mặc định là 5)                     | Chỉ API gốc            |
+| `freshness`                         | Khoảng thời gian gần đây: `day`, `week`, `month`, `year`              | Cả hai                 |
+| `country`                           | Mã quốc gia gồm 2 chữ cái (`us`, `de`, `jp`)                          | Chỉ API gốc            |
+| `language`                          | Mã ngôn ngữ ISO 639-1 (`en`, `fr`, `zh`)                              | Chỉ API gốc            |
+| `date_after` / `date_before`        | Khoảng ngày xuất bản theo định dạng `YYYY-MM-DD`                       | Chỉ API gốc            |
+| `domain_filter`                     | Tối đa 20 miền; danh sách cho phép hoặc danh sách từ chối có tiền tố `-`, không bao giờ kết hợp | Chỉ API gốc |
+| `max_tokens` / `max_tokens_per_page` | Ngân sách nội dung cho tất cả kết quả / mỗi trang                     | Chỉ API gốc            |
 
-| Bộ lọc         | Mô tả                            | Ví dụ                             |
-| -------------- | -------------------------------------- | ----------------------------------- |
-| Quốc gia        | Mã quốc gia 2 chữ cái                  | `us`, `de`, `jp`                    |
-| Ngôn ngữ       | Mã ngôn ngữ ISO 639-1                | `en`, `fr`, `zh`                    |
-| Khoảng ngày     | Cửa sổ độ mới                         | `day`, `week`, `month`, `year`      |
-| Bộ lọc miền | Danh sách cho phép hoặc danh sách chặn (tối đa 20 miền) | `example.com`                       |
-| Ngân sách nội dung | Giới hạn token trên mỗi phản hồi / mỗi trang   | `max_tokens`, `max_tokens_per_page` |
+Các bộ lọc chỉ dành cho API gốc trả về lỗi mô tả rõ ràng trên đường dẫn hoàn tất
+trò chuyện. Không thể kết hợp `freshness` với `date_after`/`date_before`.
 
 ## Cấu hình nâng cao
 
 <AccordionGroup>
   <Accordion title="Biến môi trường cho tiến trình daemon">
-    Nếu OpenClaw Gateway chạy dưới dạng daemon (launchd/systemd), hãy đảm bảo
-    `PERPLEXITY_API_KEY` khả dụng cho tiến trình đó.
-
     <Warning>
-    Khóa chỉ được export trong shell tương tác sẽ không hiển thị với daemon
-    launchd/systemd trừ khi môi trường đó được nhập rõ ràng. Thiết lập
-    khóa trong `~/.openclaw/.env` hoặc qua `env.shellEnv` để đảm bảo tiến trình gateway
-    có thể đọc được.
+    Khóa chỉ được xuất trong shell tương tác sẽ không hiển thị với daemon Gateway
+    của launchd/systemd, trừ khi môi trường đó được nhập rõ ràng. Đặt khóa trong
+    `~/.openclaw/.env` hoặc qua `env.shellEnv` để tiến trình Gateway có thể đọc
+    khóa. Xem [Biến môi trường](/vi/help/environment) để biết đầy đủ thứ tự ưu tiên.
     </Warning>
-
   </Accordion>
 
   <Accordion title="Thiết lập proxy OpenRouter">
-    Nếu bạn muốn định tuyến tìm kiếm Perplexity qua OpenRouter, hãy thiết lập
-    `OPENROUTER_API_KEY` (tiền tố `sk-or-`) thay vì khóa Perplexity gốc.
-    OpenClaw sẽ phát hiện tiền tố và tự động chuyển sang transport Sonar.
-
-    <Tip>
-    Transport OpenRouter hữu ích nếu bạn đã có tài khoản OpenRouter
-    và muốn hợp nhất việc thanh toán giữa nhiều provider.
-    </Tip>
-
+    Để định tuyến các lượt tìm kiếm Perplexity qua OpenRouter, hãy đặt
+    `OPENROUTER_API_KEY` (tiền tố `sk-or-`) thay cho khóa Perplexity gốc.
+    OpenClaw phát hiện khóa và tự động chuyển sang phương thức truyền tải Sonar.
+    Cách này hữu ích nếu bạn đã thiết lập thanh toán OpenRouter và muốn hợp nhất
+    các nhà cung cấp tại đó.
   </Accordion>
 </AccordionGroup>
 
 ## Liên quan
 
 <CardGroup cols={2}>
-  <Card title="Tool tìm kiếm Perplexity" href="/vi/tools/perplexity-search" icon="magnifying-glass">
-    Cách agent gọi tìm kiếm Perplexity và diễn giải kết quả.
+  <Card title="Công cụ tìm kiếm Perplexity" href="/vi/tools/perplexity-search" icon="magnifying-glass">
+    Cách tác nhân gọi tìm kiếm Perplexity và diễn giải kết quả.
   </Card>
   <Card title="Tham chiếu cấu hình" href="/vi/gateway/configuration-reference" icon="gear">
-    Tài liệu tham chiếu cấu hình đầy đủ, bao gồm các mục plugin.
+    Tham chiếu cấu hình đầy đủ, bao gồm các mục Plugin.
   </Card>
 </CardGroup>

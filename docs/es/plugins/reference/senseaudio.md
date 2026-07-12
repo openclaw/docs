@@ -1,26 +1,26 @@
 ---
 read_when:
-    - Está instalando, configurando o auditando el Plugin senseaudio
-summary: Agrega compatibilidad con proveedores de comprensión de contenido multimedia.
-title: Plugin de Senseaudio
+    - Estás instalando, configurando o auditando el plugin senseaudio
+summary: Añade compatibilidad con proveedores de comprensión multimedia.
+title: Plugin Senseaudio
 x-i18n:
-    generated_at: "2026-05-02T21:00:50Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T23:22:08Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: b1566a7e33b2f3d367c0fafc364b701aff60587204bb585af1cf15786e5ed330
     source_path: plugins/reference/senseaudio.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# Plugin de Senseaudio
+# Plugin Senseaudio
 
-Añade compatibilidad con proveedores de comprensión de medios.
+Añade compatibilidad con proveedores de comprensión multimedia.
 
 ## Distribución
 
 - Paquete: `@openclaw/senseaudio-provider`
-- Ruta de instalación: incluido en OpenClaw
+- Método de instalación: incluido en OpenClaw
 
 ## Superficie
 

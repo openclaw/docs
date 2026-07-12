@@ -1,12 +1,12 @@
 ---
 read_when:
-    - Configuración de streaming silencioso de Matrix para Synapse o Tuwunel autohospedados
-    - Los usuarios quieren notificaciones solo en bloques terminados, no en cada edición de vista previa
-summary: Reglas push de Matrix por destinatario para ediciones silenciosas de vistas previas finalizadas
-title: Reglas de envío de Matrix para vistas previas silenciosas
+    - Configuración de la transmisión silenciosa de Matrix para Synapse o Tuwunel autoalojados
+    - Los usuarios quieren recibir notificaciones solo cuando se completen los bloques, no con cada edición de la vista previa.
+summary: Reglas de notificaciones push de Matrix por destinatario para ediciones silenciosas de vistas previas finalizadas
+title: Reglas de inserción de Matrix para vistas previas silenciosas
 x-i18n:
-    generated_at: "2026-07-05T11:03:16Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:55:14Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 3f2260b4cc68f82cbe1aef86b8963b6b40e93f089b31991964fc9282b2c121fb
@@ -14,24 +14,24 @@ x-i18n:
     workflow: 16
 ---
 
-Cuando `channels.matrix.streaming` es `"quiet"`, OpenClaw transmite la respuesta editando un único evento de vista previa en el lugar. Las vistas previas se envían como eventos `m.notice` que no notifican, y la edición finalizada se marca con `content["com.openclaw.finalized_preview"] = true`. Los clientes Matrix notifican sobre esa edición final solo si una regla push por usuario coincide con el marcador. Esta página es para operadores que autohospedan Matrix y quieren instalar esa regla para cada cuenta destinataria.
+Cuando `channels.matrix.streaming` es `"quiet"`, OpenClaw transmite la respuesta editando en el mismo lugar un único evento de vista previa. Las vistas previas se envían como eventos `m.notice` que no generan notificaciones, y la edición finalizada se marca con `content["com.openclaw.finalized_preview"] = true`. Los clientes de Matrix notifican esa edición final solo si una regla push por usuario coincide con el marcador. Esta página está dirigida a los operadores que alojan Matrix por cuenta propia y desean instalar esa regla para cada cuenta destinataria.
 
 `streaming: "progress"` finaliza sus borradores mediante la misma ruta, por lo que la misma regla también se activa para las ediciones finalizadas del modo de progreso.
 
-Si solo quieres el comportamiento de notificación estándar de Matrix, usa `streaming: "partial"` o deja la transmisión desactivada. Consulta [Configuración del canal Matrix](/es/channels/matrix#streaming-previews).
+Si solo desea el comportamiento de notificación estándar de Matrix, use `streaming: "partial"` o deje desactivada la transmisión. Consulte [Configuración del canal de Matrix](/es/channels/matrix#streaming-previews).
 
 ## Requisitos previos
 
 - usuario destinatario = la persona que debe recibir la notificación
-- usuario bot = la cuenta Matrix de OpenClaw que envía la respuesta
-- usa el token de acceso del usuario destinatario para las llamadas API siguientes
-- haz coincidir `sender` en la regla push con el MXID completo del usuario bot
-- la cuenta destinataria ya debe tener pushers funcionales; las reglas de vista previa silenciosa solo funcionan cuando la entrega push normal de Matrix está en buen estado
+- usuario bot = la cuenta de Matrix de OpenClaw que envía la respuesta
+- use el token de acceso del usuario destinatario para las llamadas a la API que aparecen a continuación
+- haga coincidir `sender` en la regla push con el MXID completo del usuario bot
+- la cuenta destinataria ya debe tener notificadores push funcionales; las reglas de vista previa silenciosa solo funcionan cuando la entrega push normal de Matrix está operativa
 
 ## Pasos
 
 <Steps>
-  <Step title="Configurar vistas previas silenciosas">
+  <Step title="Configurar las vistas previas silenciosas">
 
 ```json5
 {
@@ -46,7 +46,7 @@ Si solo quieres el comportamiento de notificación estándar de Matrix, usa `str
   </Step>
 
   <Step title="Obtener el token de acceso del destinatario">
-    Reutiliza un token de sesión de cliente existente cuando sea posible. Para emitir uno nuevo:
+    Reutilice un token de sesión de cliente existente cuando sea posible. Para generar uno nuevo:
 
 ```bash
 curl -sS -X POST \
@@ -61,7 +61,7 @@ curl -sS -X POST \
 
   </Step>
 
-  <Step title="Verificar que existan pushers">
+  <Step title="Verificar que existan notificadores push">
 
 ```bash
 curl -sS \
@@ -69,12 +69,12 @@ curl -sS \
   "https://matrix.example.org/_matrix/client/v3/pushers"
 ```
 
-Si no vuelve ningún pusher, corrige la entrega push normal de Matrix para esta cuenta antes de continuar.
+Si no se devuelve ningún notificador push, corrija la entrega push normal de Matrix para esta cuenta antes de continuar.
 
   </Step>
 
-  <Step title="Instalar la regla push de override">
-    Instala una regla que coincida con el marcador de vista previa finalizada y con el MXID del bot como remitente:
+  <Step title="Instalar la regla push de anulación">
+    Instale una regla que coincida con el marcador de vista previa finalizada y con el MXID del bot como remitente:
 
 ```bash
 curl -sS -X PUT \
@@ -104,12 +104,12 @@ curl -sS -X PUT \
   }'
 ```
 
-    Reemplaza antes de ejecutar:
+    Sustituya lo siguiente antes de ejecutarlo:
 
-    - `https://matrix.example.org`: la URL base de tu homeserver
+    - `https://matrix.example.org`: la URL base de su servidor doméstico
     - `$USER_ACCESS_TOKEN`: el token de acceso del usuario destinatario
-    - `openclaw-finalized-preview-botname`: un ID de regla único por bot y por destinatario (patrón: `openclaw-finalized-preview-<botname>`)
-    - `@bot:example.org`: el MXID de tu bot de OpenClaw, no el del destinatario
+    - `openclaw-finalized-preview-botname`: un ID de regla único por bot y destinatario (patrón: `openclaw-finalized-preview-<botname>`)
+    - `@bot:example.org`: el MXID de su bot de OpenClaw, no el del destinatario
 
   </Step>
 
@@ -121,40 +121,40 @@ curl -sS \
   "https://matrix.example.org/_matrix/client/v3/pushrules/global/override/openclaw-finalized-preview-botname"
 ```
 
-Luego prueba una respuesta transmitida en streaming. En el modo `quiet`, la sala muestra una vista previa silenciosa del borrador y notifica una vez que el bloque o el turno termina.
+A continuación, pruebe una respuesta transmitida. En el modo silencioso, la sala muestra una vista previa silenciosa del borrador y envía una notificación cuando finaliza el bloque o el turno.
 
   </Step>
 </Steps>
 
-Para eliminar la regla más adelante, haz `DELETE` en la misma URL de regla con el token del destinatario.
+Para eliminar la regla más adelante, envíe una solicitud `DELETE` a la misma URL de la regla con el token del destinatario.
 
-## Notas para varios bots
+## Notas sobre varios bots
 
-Las reglas push se indexan por `ruleId`: volver a ejecutar `PUT` contra el mismo ID actualiza una sola regla. Para varios bots de OpenClaw que notifiquen al mismo destinatario, crea una regla por bot con una coincidencia de remitente distinta.
+Las reglas push se identifican mediante `ruleId`: volver a ejecutar `PUT` con el mismo ID actualiza una única regla. Si varios bots de OpenClaw notifican al mismo destinatario, cree una regla por bot con una coincidencia de remitente distinta.
 
-Las nuevas reglas `override` definidas por el usuario se insertan antes de las reglas de supresión predeterminadas del servidor, por lo que no se necesita ningún parámetro de orden adicional. La regla solo afecta a ediciones de vista previa de solo texto que pueden finalizarse en el lugar; las respuestas multimedia, las alternativas para vistas previas obsoletas y los textos finales que activarían menciones de Matrix se entregan en su lugar como mensajes normales con notificación.
+Las nuevas reglas `override` definidas por el usuario se insertan antes que las reglas de supresión predeterminadas del servidor, por lo que no se necesita ningún parámetro de orden adicional. La regla solo afecta a las ediciones de vistas previas que contienen únicamente texto y que pueden finalizarse en el mismo lugar; en cambio, las respuestas multimedia, los mecanismos alternativos para vistas previas obsoletas y los textos finales que activarían menciones de Matrix se entregan como mensajes normales que generan notificaciones.
 
-## Notas del homeserver
+## Notas sobre el servidor doméstico
 
 <AccordionGroup>
   <Accordion title="Synapse">
-    No se requiere ningún cambio especial en `homeserver.yaml`. Si las notificaciones normales de Matrix ya llegan a este usuario, el token del destinatario y la llamada a `pushrules` anterior son el paso principal de configuración.
+    No se requiere ningún cambio especial en `homeserver.yaml`. Si las notificaciones normales de Matrix ya llegan a este usuario, el token del destinatario y la llamada a `pushrules` anterior constituyen el paso principal de configuración.
 
-    Si ejecutas Synapse detrás de un proxy inverso o workers, asegúrate de que `/_matrix/client/.../pushrules/` llegue correctamente a Synapse. La entrega push la gestiona el proceso principal o `synapse.app.pusher` / los workers pusher configurados; asegúrate de que estén en buen estado.
+    Si ejecuta Synapse detrás de un proxy inverso o con procesos de trabajo, asegúrese de que `/_matrix/client/.../pushrules/` llegue correctamente a Synapse. La entrega push la gestiona el proceso principal o `synapse.app.pusher` / los procesos de trabajo de notificación configurados; asegúrese de que estén operativos.
 
-    La regla usa la condición de regla push `event_property_is` (MSC3758, regla push v1.10), que se agregó a Synapse en 2023. Las versiones anteriores de Synapse aceptan la llamada `PUT pushrules/...`, pero en silencio nunca hacen coincidir la condición; actualiza Synapse si no llega ninguna notificación en una edición de vista previa finalizada.
+    La regla utiliza la condición de regla push `event_property_is` (MSC3758, regla push v1.10), que se añadió a Synapse en 2023. Las versiones anteriores de Synapse aceptan la llamada `PUT pushrules/...`, pero la condición nunca coincide y no se informa del problema; actualice Synapse si no llega ninguna notificación al finalizar una edición de vista previa.
 
   </Accordion>
 
   <Accordion title="Tuwunel">
-    El mismo flujo que Synapse; no se necesita configuración específica de Tuwunel para el marcador de vista previa finalizada.
+    El procedimiento es el mismo que para Synapse; no se necesita ninguna configuración específica de Tuwunel para el marcador de vista previa finalizada.
 
-    Si las notificaciones desaparecen mientras el usuario está activo en otro dispositivo, comprueba si `suppress_push_when_active` está habilitado. Tuwunel agregó esta opción en 1.4.2 (septiembre de 2025) y puede suprimir intencionadamente los pushes a otros dispositivos mientras un dispositivo está activo.
+    Si las notificaciones desaparecen mientras el usuario está activo en otro dispositivo, compruebe si `suppress_push_when_active` está habilitado. Tuwunel añadió esta opción en la versión 1.4.2 (septiembre de 2025), y puede suprimir intencionadamente las notificaciones push a otros dispositivos mientras uno de ellos está activo.
 
   </Accordion>
 </AccordionGroup>
 
-## Relacionado
+## Contenido relacionado
 
-- [Configuración del canal Matrix](/es/channels/matrix)
-- [Conceptos de streaming](/es/concepts/streaming)
+- [Configuración del canal de Matrix](/es/channels/matrix)
+- [Conceptos de transmisión](/es/concepts/streaming)

@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz Plugin zalouser
-summary: Plugin OpenClaw Zalo Personal Account przez natywną integrację zca-js.
+    - Instalujesz, konfigurujesz lub przeprowadzasz audyt pluginu zalouser
+summary: Plugin konta osobistego Zalo dla OpenClaw z natywną integracją zca-js.
 title: Plugin Zalo Personal
 x-i18n:
-    generated_at: "2026-06-27T18:05:05Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:28:10Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: c03db694c940cb1fb20f4a2f73512c9d3cf3c79e910cc6a0dd4aa38bd4465ed5
@@ -13,16 +13,16 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin Zalo Personal
+# Plugin konta osobistego Zalo
 
-Plugin konta osobistego Zalo dla OpenClaw przez natywną integrację zca-js.
+Plugin konta osobistego Zalo dla OpenClaw wykorzystujący natywną integrację z zca-js.
 
 ## Dystrybucja
 
 - Pakiet: `@openclaw/zalouser`
-- Ścieżka instalacji: npm; ClawHub
+- Sposób instalacji: npm; ClawHub
 
-## Powierzchnia
+## Zakres
 
 kanały: zalouser; kontrakty: narzędzia
 

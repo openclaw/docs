@@ -1,15 +1,15 @@
 ---
 read_when:
-    - Anda menginginkan panduan langkah demi langkah TUI yang ramah untuk pemula
+    - Anda menginginkan panduan langkah demi langkah tentang TUI yang mudah dipahami pemula
     - Anda memerlukan daftar lengkap fitur, perintah, dan pintasan TUI
-summary: 'Antarmuka Terminal (TUI): terhubung ke Gateway atau berjalan secara lokal dalam mode tertanam'
+summary: 'Antarmuka pengguna terminal (TUI): hubungkan ke Gateway atau jalankan secara lokal dalam mode tertanam'
 title: TUI
 x-i18n:
-    generated_at: "2026-06-27T18:23:31Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:44:53Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ed02875ea5dcb8cef987d16fe11701eba11160525caf9791f74c610b1b6bec6e
+    source_hash: d7181ea88643a129532f698908fd3dd3d93078b7e33b0ab1166dcfca2ecc2abd
     source_path: web/tui.md
     workflow: 16
 ---
@@ -18,7 +18,7 @@ x-i18n:
 
 ### Mode Gateway
 
-1. Mulai Gateway.
+1. Jalankan Gateway.
 
 ```bash
 openclaw gateway
@@ -46,131 +46,139 @@ Jalankan TUI tanpa Gateway:
 
 ```bash
 openclaw chat
-# or
+# atau
 openclaw tui --local
 ```
 
-Catatan:
-
 - `openclaw chat` dan `openclaw terminal` adalah alias untuk `openclaw tui --local`.
 - `--local` tidak dapat digabungkan dengan `--url`, `--token`, atau `--password`.
-- Mode lokal menggunakan runtime agen tertanam secara langsung. Sebagian besar alat lokal berfungsi, tetapi fitur khusus Gateway tidak tersedia.
-- Setelah file konfigurasi memiliki pengaturan yang dibuat, `openclaw` dan `openclaw crestodian` juga menggunakan shell TUI ini, dengan Crestodian sebagai backend chat penyiapan dan perbaikan lokal.
+- Mode lokal menggunakan runtime agen tertanam secara langsung. Sebagian besar alat lokal berfungsi, tetapi fitur yang hanya tersedia di Gateway tidak tersedia.
+- `openclaw` saja (tanpa subperintah) memilih target secara otomatis: instalasi yang belum dikonfigurasi menjalankan orientasi inferensi; konfigurasi yang tidak valid membuka panduan Doctor klasik; Gateway terkonfigurasi yang dapat dijangkau membuka shell TUI ini dalam mode Gateway; jika tidak, model lokal yang terkonfigurasi membukanya dalam mode lokal.
 
 ## Yang Anda lihat
 
 - Header: URL koneksi, agen saat ini, sesi saat ini.
-- Log chat: pesan pengguna, balasan asisten, pemberitahuan sistem, kartu alat.
-- Baris status: status koneksi/jalankan (menghubungkan, berjalan, streaming, diam, error).
-- Footer: agen + sesi + model + status tujuan + think/fast/verbose/trace/reasoning + jumlah token + deliver. Saat `tui.footer.showRemoteHost` diaktifkan, koneksi Gateway jarak jauh juga menampilkan host koneksi.
+- Log obrolan: pesan pengguna, balasan asisten, pemberitahuan sistem, kartu alat.
+- Baris status: status koneksi/proses (menghubungkan, berjalan, streaming, menganggur, galat).
+- Footer: agen + sesi + model + status sasaran + pikir/cepat/terperinci/jejak/penalaran + jumlah token + pengiriman. Saat `tui.footer.showRemoteHost` diaktifkan, koneksi Gateway jarak jauh juga menampilkan host koneksi.
 - Input: editor teks dengan pelengkapan otomatis.
 
 ## Model mental: agen + sesi
 
-- Agen adalah slug unik (mis. `main`, `research`). Gateway mengekspos daftarnya.
-- Sesi milik agen saat ini.
+- Agen adalah slug unik (misalnya `main`, `research`). Gateway menyediakan daftarnya.
+- Sesi dimiliki oleh agen saat ini.
 - Kunci sesi disimpan sebagai `agent:<agentId>:<sessionKey>`.
-  - Jika Anda mengetik `/session main`, TUI memperluasnya menjadi `agent:<currentAgent>:main`.
-  - Jika Anda mengetik `/session agent:other:main`, Anda beralih ke sesi agen tersebut secara eksplisit.
+  - Jika Anda mengetik `/session main`, TUI mengembangkannya menjadi `agent:<currentAgent>:main`.
+  - Jika Anda mengetik `/session agent:other:main`, Anda beralih secara eksplisit ke sesi agen tersebut.
 - Cakupan sesi:
-  - `per-sender` (default): setiap agen memiliki banyak sesi.
+  - `per-sender` (bawaan): setiap agen memiliki banyak sesi.
   - `global`: TUI selalu menggunakan sesi `global` (pemilih mungkin kosong).
 - Agen + sesi saat ini selalu terlihat di footer.
-- Untuk menampilkan host Gateway untuk koneksi berbasis URL non-lokal, aktifkan dengan:
+- Untuk menampilkan host Gateway bagi koneksi berbasis URL nonlokal, aktifkan dengan:
 
   ```bash
   openclaw config set tui.footer.showRemoteHost true
   ```
 
-  Koneksi loopback dan lokal tertanam tidak pernah menampilkan label host.
+  Nilai bawaannya adalah `false`. Koneksi local loopback dan koneksi lokal tertanam tidak pernah menampilkan label host.
 
-- Jika sesi memiliki [tujuan](/id/tools/goal), footer menampilkan status ringkasnya
-  seperti `Pursuing goal`, `Goal paused (/goal resume)`, atau
-  `Goal achieved`.
-- Saat dimulai tanpa `--session`, TUI mode Gateway melanjutkan sesi terakhir yang dipilih untuk gateway, agen, dan cakupan sesi yang sama jika sesi itu masih ada. Meneruskan `--session`, `/session`, `/new`, atau `/reset` tetap eksplisit.
+- Jika sesi memiliki [sasaran](/id/tools/goal), footer menampilkan status ringkasnya:
+  `Mengejar sasaran`, `Sasaran dijeda (/goal resume)`, `Sasaran terblokir (/goal resume)`, atau `Sasaran tercapai`.
+- Saat dimulai tanpa `--session`, TUI mode Gateway melanjutkan sesi yang terakhir dipilih untuk Gateway, agen, dan cakupan sesi yang sama jika sesi tersebut masih ada. Penggunaan `--session`, `/session`, `/new`, atau `/reset` tetap bersifat eksplisit.
 
-## Pengiriman + delivery
+## Pengiriman pesan + penyampaian
 
-- Pesan dikirim ke Gateway; delivery ke penyedia nonaktif secara default.
-- TUI adalah permukaan sumber internal seperti WebChat, bukan kanal keluar generik. Harness yang memerlukan `tools.message` untuk balasan terlihat dapat memenuhi giliran TUI aktif dengan `message.send` tanpa target; delivery penyedia eksplisit tetap menggunakan kanal terkonfigurasi normal dan tidak pernah fallback ke `lastChannel`.
-- Aktifkan delivery:
-  - `/deliver on`
-  - atau panel Settings
-  - atau mulai dengan `openclaw tui --deliver`
+- Pesan selalu dikirim ke Gateway (atau runtime tertanam dalam mode lokal); menyampaikan balasan asisten kembali ke penyedia obrolan merupakan langkah terpisah yang secara bawaan dinonaktifkan.
+- TUI adalah permukaan sumber internal seperti WebChat, bukan saluran keluar generik. Harness yang mengharuskan `tools.message` untuk balasan yang terlihat dapat memenuhi giliran TUI aktif dengan `message.send` tanpa target; penyampaian eksplisit ke penyedia tetap menggunakan saluran terkonfigurasi biasa dan tidak pernah beralih ke `lastChannel`.
+- Penyampaian ditetapkan untuk seluruh sesi TUI saat peluncuran: mulai dengan `openclaw tui --deliver` untuk mengaktifkannya. Tidak ada perintah garis miring `/deliver` atau sakelar Pengaturan untuk mengubahnya di tengah sesi; mulai ulang TUI untuk mengubahnya.
 
-## Pemilih + overlay
+## Pemilih + hamparan
 
-- Pemilih model: daftar model yang tersedia dan tetapkan override sesi.
-- Pemilih agen: pilih agen yang berbeda.
-- Pemilih sesi: menampilkan hingga 50 sesi untuk agen saat ini yang diperbarui dalam 7 hari terakhir. Gunakan `/session <key>` untuk melompat ke sesi lama yang diketahui.
-- Settings: ubah delivery, perluasan output alat, dan visibilitas berpikir.
+- Pemilih model: menampilkan model yang tersedia dan menetapkan penggantian untuk sesi.
+- Pemilih agen: memilih agen lain.
+- Pemilih sesi: menampilkan hingga 50 sesi untuk agen saat ini yang diperbarui dalam 7 hari terakhir. Gunakan `/session <key>` untuk beralih ke sesi lama yang kuncinya diketahui.
+- Pengaturan (`/settings`): mengaktifkan atau menonaktifkan perluasan keluaran alat dan visibilitas pemikiran. Panel ini tidak mengontrol penyampaian.
 
-## Pintasan keyboard
+## Pintasan papan ketik
 
 - Enter: kirim pesan
 - Esc: batalkan proses aktif
-- Ctrl+C: bersihkan input (tekan dua kali untuk keluar)
+- Ctrl+C: hapus input (tekan dua kali untuk keluar)
 - Ctrl+D: keluar
 - Ctrl+L: pemilih model
 - Ctrl+G: pemilih agen
 - Ctrl+P: pemilih sesi
-- Ctrl+O: ubah perluasan output alat
-- Ctrl+T: ubah visibilitas berpikir (memuat ulang riwayat)
+- Ctrl+O: aktifkan/nonaktifkan perluasan keluaran alat
+- Ctrl+T: aktifkan/nonaktifkan visibilitas pemikiran (memuat ulang riwayat)
 
-## Perintah slash
+## Perintah garis miring
 
 Inti:
 
 - `/help`
-- `/status`
+- `/status` (diteruskan ke Gateway; menampilkan ringkasan sesi/model)
+- `/gateway-status` (alias `/gwstatus`; menampilkan status koneksi Gateway secara langsung)
 - `/agent <id>` (atau `/agents`)
 - `/session <key>` (atau `/sessions`)
 - `/model <provider/model>` (atau `/models`)
 
 Kontrol sesi:
 
-- `/think <off|minimal|low|medium|high>`
-- `/fast <status|on|off>`
+- `/think <off|minimal|low|medium|high>` (tingkatan yang lebih tinggi dapat menambahkan level seperti `xhigh`/`max`, bergantung pada model)
+- `/fast <status|auto|on|off>`
 - `/verbose <on|full|off>`
 - `/trace <on|off>`
 - `/reasoning <on|off|stream>`
-- `/usage <off|tokens|full|reset>` (`reset`/`inherit`/`clear`/`default` menghapus override sesi)
-- `/goal [status] | /goal start <objective> | /goal pause|resume|complete|block|clear`
+- `/usage <off|tokens|full|reset>` (`reset`/`inherit`/`clear`/`default` menghapus penggantian sesi)
+- `/goal [status] | /goal start <objective> | /goal edit <objective> | /goal pause|resume|complete|block|clear`
 - `/elevated <on|off|ask|full>` (alias: `/elev`)
 - `/activation <mention|always>`
-- `/deliver <on|off>`
 
 Siklus hidup sesi:
 
-- `/new` atau `/reset` (reset sesi)
-- `/abort` (batalkan proses aktif)
+- `/new` (membuat sesi baru yang terisolasi dengan kunci baru; tidak memengaruhi klien TUI lain pada sesi lama)
+- `/reset` (mengatur ulang kunci sesi saat ini di tempat)
+- `/abort` (membatalkan proses aktif)
 - `/settings`
-- `/exit`
+- `/exit` (atau `/quit`)
 
 Hanya mode lokal:
 
 - `/auth [provider]` membuka alur autentikasi/login penyedia di dalam TUI.
 
-Perintah slash Gateway lainnya (misalnya, `/context`) diteruskan ke Gateway dan ditampilkan sebagai output sistem. Lihat [Perintah slash](/id/tools/slash-commands).
+Crestodian:
+
+- `/crestodian [request]` kembali dari TUI agen normal ke obrolan penyiapan/perbaikan [Crestodian](#crestodian-setup-and-repair-helper), dengan opsi meneruskan satu permintaan.
+
+Perintah garis miring Gateway lainnya (misalnya `/context`) diteruskan ke Gateway dan ditampilkan sebagai keluaran sistem. Lihat [Perintah garis miring](/id/tools/slash-commands).
 
 ## Perintah shell lokal
 
 - Awali baris dengan `!` untuk menjalankan perintah shell lokal pada host TUI.
-- TUI meminta izin sekali per sesi untuk mengizinkan eksekusi lokal; menolak membuat `!` tetap dinonaktifkan untuk sesi.
-- Perintah berjalan dalam shell baru non-interaktif di direktori kerja TUI (tanpa `cd`/env persisten).
+- TUI meminta izin sekali per sesi untuk mengizinkan eksekusi lokal; menolaknya membuat `!` tetap dinonaktifkan selama sesi.
+- Perintah dijalankan dalam shell baru dan noninteraktif di direktori kerja TUI (tanpa `cd`/lingkungan yang persisten).
 - Perintah shell lokal menerima `OPENCLAW_SHELL=tui-local` di lingkungannya.
-- `!` tunggal dikirim sebagai pesan normal; spasi di awal tidak memicu eksekusi lokal.
+- `!` tunggal dikirim sebagai pesan biasa; spasi di awal tidak memicu eksekusi lokal.
 
-## Perbaiki konfigurasi dari TUI lokal
+## Pembantu penyiapan dan perbaikan Crestodian
 
-Gunakan mode lokal saat konfigurasi saat ini sudah valid dan Anda ingin
-agen tertanam memeriksanya di mesin yang sama, membandingkannya dengan dokumentasi,
-dan membantu memperbaiki drift tanpa bergantung pada Gateway yang berjalan.
+Crestodian adalah asisten penyiapan/perbaikan ring-zero, yang tersedia sebagai `openclaw crestodian` setelah model bawaan yang dikonfigurasi lolos pemeriksaan inferensi langsung. Jika inferensi tidak tersedia, pemanggilan interaktif kembali ke orientasi inferensi dan otomatisasi gagal dengan panduan perbaikan. Crestodian berjalan di dalam shell TUI lokal yang sama dengan `openclaw tui --local`, didukung oleh agen AI yang dibatasi pada operasi Crestodian bertipe dan bergated persetujuan:
 
-Jika `openclaw config validate` sudah gagal, mulai dengan `openclaw configure`
-atau `openclaw doctor --fix` terlebih dahulu. `openclaw chat` tidak melewati penjaga konfigurasi tidak valid.
+```bash
+openclaw crestodian                       # mulai secara interaktif
+openclaw crestodian -m "status"           # jalankan satu permintaan lalu keluar
+openclaw crestodian -m "set default model openai/gpt-5.2" --yes   # terapkan penulisan konfigurasi
+```
 
-Loop umum:
+- Penulisan konfigurasi persisten memerlukan persetujuan: konfirmasikan secara interaktif atau berikan `--yes`.
+- `--json` mencetak ringkasan awal sebagai JSON alih-alih memulai obrolan.
+- Dari dalam Crestodian, permintaan `open-tui` (misalnya meminta berbicara dengan agen normal) keluar dari Crestodian dan membuka TUI agen reguler; gunakan `/crestodian` di sana untuk kembali.
+
+Gunakan mode lokal saat konfigurasi saat ini sudah valid dan Anda ingin agen tertanam memeriksanya pada mesin yang sama, membandingkannya dengan dokumentasi, serta membantu memperbaiki penyimpangan tanpa bergantung pada Gateway yang sedang berjalan.
+
+Jika `openclaw config validate` sudah gagal, mulai dengan `openclaw configure` atau `openclaw doctor --fix` terlebih dahulu; `openclaw chat` tetap memerlukan konfigurasi yang dapat dimuat agar dapat dimulai.
+
+Siklus umum:
 
 1. Mulai mode lokal:
 
@@ -178,10 +186,10 @@ Loop umum:
 openclaw chat
 ```
 
-2. Minta agen memeriksa yang Anda inginkan, misalnya:
+2. Tanyakan kepada agen apa yang ingin Anda periksa, misalnya:
 
 ```text
-Compare my gateway auth config with the docs and suggest the smallest fix.
+Bandingkan konfigurasi autentikasi gateway saya dengan dokumentasi dan sarankan perbaikan terkecil.
 ```
 
 3. Gunakan perintah shell lokal untuk bukti dan validasi yang tepat:
@@ -193,73 +201,74 @@ Compare my gateway auth config with the docs and suggest the smallest fix.
 !openclaw doctor
 ```
 
-4. Terapkan perubahan sempit dengan `openclaw config set` atau `openclaw configure`, lalu jalankan ulang `!openclaw config validate`.
-5. Jika Doctor merekomendasikan migrasi atau perbaikan otomatis, tinjau dan jalankan `!openclaw doctor --fix`.
+4. Terapkan perubahan terbatas dengan `openclaw config set` atau `openclaw configure`, lalu jalankan kembali `!openclaw config validate`.
+5. Jika Doctor merekomendasikan migrasi atau perbaikan otomatis, tinjau lalu jalankan `!openclaw doctor --fix`.
 
-Tips:
+Kiat:
 
-- Lebih pilih `openclaw config set` atau `openclaw configure` daripada mengedit `openclaw.json` secara manual.
-- `openclaw docs "<query>"` mencari indeks dokumentasi live dari mesin yang sama.
-- `openclaw config validate --json` berguna saat Anda menginginkan skema terstruktur dan error SecretRef/keterpecahan resolusi.
+- Utamakan `openclaw config set` atau `openclaw configure` daripada mengedit `openclaw.json` secara manual.
+- `openclaw docs "<query>"` mencari indeks dokumentasi langsung dari mesin yang sama.
+- `openclaw config validate --json` berguna saat Anda menginginkan skema terstruktur serta galat SecretRef/keterpecahan.
 
-## Output alat
+## Keluaran alat
 
-- Panggilan alat ditampilkan sebagai kartu dengan argumen + hasil.
-- Ctrl+O beralih antara tampilan diciutkan/diperluas.
-- Saat alat berjalan, pembaruan parsial mengalir ke kartu yang sama.
+- Pemanggilan alat ditampilkan sebagai kartu berisi argumen + hasil.
+- Ctrl+O beralih antara tampilan yang diciutkan/diperluas.
+- Saat alat berjalan, pembaruan parsial dialirkan ke kartu yang sama.
 
 ## Warna terminal
 
-- TUI mempertahankan teks isi asisten dalam warna latar depan default terminal Anda agar terminal gelap dan terang tetap mudah dibaca.
-- Jika terminal Anda menggunakan latar belakang terang dan deteksi otomatis salah, tetapkan `OPENCLAW_THEME=light` sebelum meluncurkan `openclaw tui`.
-- Untuk memaksa palet gelap asli sebagai gantinya, tetapkan `OPENCLAW_THEME=dark`.
+- TUI mempertahankan teks isi asisten dalam warna latar depan bawaan terminal Anda agar terminal gelap maupun terang tetap mudah dibaca.
+- Jika terminal Anda menggunakan latar belakang terang dan deteksi otomatis keliru, atur `OPENCLAW_THEME=light` sebelum menjalankan `openclaw tui`.
+- Untuk memaksakan palet gelap asli, atur `OPENCLAW_THEME=dark`.
 
 ## Riwayat + streaming
 
-- Saat tersambung, TUI memuat riwayat terbaru (default 200 pesan).
-- Respons streaming diperbarui di tempat hingga difinalisasi.
-- TUI juga mendengarkan event alat agen untuk kartu alat yang lebih kaya.
+- Saat terhubung, TUI memuat riwayat terbaru (bawaan 200 pesan).
+- Respons streaming diperbarui di tempat hingga selesai.
+- TUI juga mendengarkan peristiwa alat agen untuk kartu alat yang lebih kaya.
 
 ## Detail koneksi
 
-- TUI mendaftar ke Gateway sebagai `mode: "tui"`.
-- Koneksi ulang menampilkan pesan sistem; celah event ditampilkan di log.
+- TUI terhubung dengan ID klien `openclaw-tui` dalam mode klien umum `ui` (mode yang sama yang digunakan Control UI dan WebChat untuk kebijakan Gateway).
+- Koneksi ulang menampilkan pesan sistem; celah peristiwa ditampilkan dalam log.
 
 ## Opsi
 
 - `--local`: Jalankan terhadap runtime agen tertanam lokal
-- `--url <url>`: URL WebSocket Gateway (default ke konfigurasi atau `ws://127.0.0.1:<port>`)
+- `--url <url>`: URL WebSocket Gateway (bawaan ke `gateway.remote.url` dari konfigurasi, atau `ws://127.0.0.1:<port>` pada local loopback)
 - `--token <token>`: Token Gateway (jika diperlukan)
 - `--password <password>`: Kata sandi Gateway (jika diperlukan)
-- `--session <key>`: Kunci sesi (default: `main`, atau `global` saat cakupan global)
-- `--deliver`: Kirim balasan asisten ke penyedia (default nonaktif)
-- `--thinking <level>`: Override tingkat berpikir untuk pengiriman
-- `--message <text>`: Kirim pesan awal setelah tersambung
-- `--timeout-ms <ms>`: Timeout agen dalam ms (default ke `agents.defaults.timeoutSeconds`)
-- `--history-limit <n>`: Entri riwayat yang akan dimuat (default `200`)
+- `--tls-fingerprint <sha256>`: Sidik jari sertifikat TLS yang diharapkan untuk Gateway `wss://` yang dipasangi pin
+- `--session <key>`: Kunci sesi (bawaan: `main`, atau `global` saat cakupan bersifat global)
+- `--deliver`: Sampaikan balasan asisten ke penyedia (bawaan dinonaktifkan)
+- `--thinking <level>`: Ganti level pemikiran untuk pengiriman
+- `--message <text>`: Kirim pesan awal setelah terhubung
+- `--timeout-ms <ms>`: Batas waktu agen dalam milidetik (bawaan ke `agents.defaults.timeoutSeconds`)
+- `--history-limit <n>`: Entri riwayat yang akan dimuat (bawaan `200`)
 
 <Warning>
-Saat Anda menetapkan `--url`, TUI tidak fallback ke kredensial konfigurasi atau lingkungan. Teruskan `--token` atau `--password` secara eksplisit. Kredensial eksplisit yang hilang adalah error. Dalam mode lokal, jangan teruskan `--url`, `--token`, atau `--password`.
+Saat Anda menetapkan `--url`, TUI tidak beralih ke kredensial dari konfigurasi atau lingkungan. Berikan `--token` atau `--password` secara eksplisit, serta `--tls-fingerprint` jika target menggunakan sertifikat yang dipasangi pin. Tidak adanya kredensial eksplisit merupakan galat. Dalam mode lokal, jangan berikan `--url`, `--token`, `--password`, atau `--tls-fingerprint`.
 </Warning>
 
 ## Pemecahan masalah
 
-Tidak ada output setelah mengirim pesan:
+Tidak ada keluaran setelah mengirim pesan:
 
-- Jalankan `/status` di TUI untuk memastikan Gateway tersambung dan diam/sibuk.
+- Jalankan `/status` di TUI untuk memastikan Gateway terhubung dan menganggur/sibuk.
 - Periksa log Gateway: `openclaw logs --follow`.
 - Pastikan agen dapat berjalan: `openclaw status` dan `openclaw models status`.
-- Jika Anda mengharapkan pesan di kanal chat, aktifkan delivery (`/deliver on` atau `--deliver`).
+- Jika Anda mengharapkan pesan di saluran obrolan, pastikan TUI dimulai dengan `--deliver` (opsi ini tidak dapat diaktifkan kemudian tanpa memulai ulang).
 
 ## Pemecahan masalah koneksi
 
-- `disconnected`: pastikan Gateway berjalan dan `--url/--token/--password` Anda benar.
+- `disconnected`: pastikan Gateway sedang berjalan dan `--url/--token/--password` Anda benar.
 - Tidak ada agen di pemilih: periksa `openclaw agents list` dan konfigurasi perutean Anda.
 - Pemilih sesi kosong: Anda mungkin berada dalam cakupan global atau belum memiliki sesi.
 
 ## Terkait
 
 - [Control UI](/id/web/control-ui) — antarmuka kontrol berbasis web
-- [Config](/id/cli/config) — periksa, validasi, dan edit `openclaw.json`
-- [Doctor](/id/cli/doctor) — pemeriksaan perbaikan terpandu dan migrasi
-- [Referensi CLI](/id/cli) — referensi perintah CLI lengkap
+- [Konfigurasi](/id/cli/config) — periksa, validasi, dan edit `openclaw.json`
+- [Doctor](/id/cli/doctor) — pemeriksaan perbaikan dan migrasi terpandu
+- [Referensi CLI](/id/cli) — referensi lengkap perintah CLI

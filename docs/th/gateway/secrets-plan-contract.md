@@ -1,27 +1,25 @@
 ---
 read_when:
-    - การสร้างหรือการตรวจสอบแผน `openclaw secrets apply`
-    - การดีบักข้อผิดพลาด `Invalid plan target path`
-    - การทำความเข้าใจประเภทเป้าหมายและพฤติกรรมการตรวจสอบความถูกต้องของพาธ
-summary: 'ข้อตกลงสำหรับแผน `secrets apply`: การตรวจสอบเป้าหมาย การจับคู่เส้นทาง และขอบเขตเป้าหมาย `auth-profiles.json`'
-title: สัญญาแผนการปรับใช้ข้อมูลลับ
+    - การสร้างหรือตรวจสอบแผน `openclaw secrets apply`
+    - การแก้ไขข้อผิดพลาด `Invalid plan target path`
+    - ทำความเข้าใจลักษณะการทำงานของการตรวจสอบชนิดและพาธเป้าหมาย
+summary: 'สัญญาสำหรับแผน `secrets apply`: การตรวจสอบความถูกต้องของเป้าหมาย การจับคู่พาธ และขอบเขตเป้าหมาย `auth-profiles.json`'
+title: สัญญาของแผนการนำข้อมูลลับไปใช้
 x-i18n:
-    generated_at: "2026-06-27T17:38:13Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:09:31Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 03f0ca9b433553a2f6d86d01b8c227a24b6f53ef7034a94bd648fbf04c81f13e
+    source_hash: ddaf3df7f0be326fa1c8dc8c360b03697fb58329d03c4eb8106a8740ddf6c47a
     source_path: gateway/secrets-plan-contract.md
     workflow: 16
 ---
 
-หน้านี้กำหนดสัญญาที่เข้มงวดซึ่ง `openclaw secrets apply` บังคับใช้
-
-หาก target ไม่ตรงตามกฎเหล่านี้ apply จะล้มเหลวก่อนแก้ไข configuration
+หน้านี้กำหนดสัญญาที่เข้มงวดซึ่งบังคับใช้โดย `openclaw secrets apply` หากเป้าหมายไม่ตรงตามกฎเหล่านี้ การนำไปใช้จะล้มเหลวก่อนแก้ไขไฟล์ใด ๆ
 
 ## รูปแบบไฟล์แผน
 
-`openclaw secrets apply --from <plan.json>` คาดหวังอาร์เรย์ `targets` ของ plan targets:
+`openclaw secrets apply --from <plan.json>` ต้องการอาร์เรย์ `targets` ที่ประกอบด้วยเป้าหมายของแผน:
 
 ```json5
 {
@@ -46,21 +44,16 @@ x-i18n:
 }
 ```
 
-## การ upsert และการลบผู้ให้บริการ
+`openclaw secrets configure` สร้างแผนในรูปแบบนี้ คุณสามารถเขียนหรือแก้ไขแผนด้วยตนเองได้เช่นกัน
 
-แผนอาจมีฟิลด์ระดับบนสุดแบบไม่บังคับอีกสองฟิลด์ที่แก้ไขแมป
-`secrets.providers` ควบคู่กับการเขียนราย target:
+## การเพิ่มหรืออัปเดตและการลบผู้ให้บริการ
 
-- `providerUpserts` — อ็อบเจ็กต์ที่ใช้ alias ของผู้ให้บริการเป็นคีย์ แต่ละค่าคือ
-  นิยามผู้ให้บริการ (รูปแบบเดียวกับที่ยอมรับภายใต้
-  `secrets.providers.<alias>` ใน `openclaw.json` เช่น ผู้ให้บริการ `exec` หรือ `file`)
-- `providerDeletes` — อาร์เรย์ของ alias ผู้ให้บริการที่จะลบ
+แผนอาจมีฟิลด์ระดับบนสุดที่ไม่บังคับสองฟิลด์ ซึ่งแก้ไขแมป `secrets.providers` ควบคู่กับการเขียนแต่ละเป้าหมาย:
 
-`providerUpserts` ทำงานก่อน `targets` ดังนั้น `target.ref.provider` อาจ
-อ้างอิง alias ผู้ให้บริการที่แผนเดียวกันเพิ่มเข้ามาใน
-`providerUpserts` ได้ หากไม่มีสิ่งนี้ แผนที่อ้างอิง alias ที่ยังไม่ได้
-กำหนดค่าใน `openclaw.json` จะล้มเหลวด้วย `provider "<alias>" is not
-configured`
+- `providerUpserts` -- ออบเจ็กต์ที่ใช้ชื่อแฝงของผู้ให้บริการเป็นคีย์ แต่ละค่าคือคำจำกัดความของผู้ให้บริการ (มีรูปแบบเดียวกับที่ยอมรับภายใต้ `secrets.providers.<alias>` ใน `openclaw.json` เช่น ผู้ให้บริการ `exec` หรือ `file`)
+- `providerDeletes` -- อาร์เรย์ของชื่อแฝงผู้ให้บริการที่จะลบ
+
+`providerUpserts` ทำงานก่อน `targets` ดังนั้น `target.ref.provider` จึงสามารถอ้างอิงชื่อแฝงผู้ให้บริการที่แผนเดียวกันเพิ่มผ่าน `providerUpserts` ได้ หากไม่มีลำดับนี้ แผนที่อ้างอิงชื่อแฝงซึ่งยังไม่ได้กำหนดค่าใน `openclaw.json` จะล้มเหลวพร้อมข้อความ `provider "<alias>" is not configured`
 
 ```json5
 {
@@ -86,81 +79,77 @@ configured`
 }
 ```
 
-ผู้ให้บริการ exec ที่เพิ่มผ่าน `providerUpserts` ยังอยู่ภายใต้กฎการยินยอม exec
-ใน [พฤติกรรมการยินยอมของผู้ให้บริการ Exec](#exec-provider-consent-behavior):
-แผนที่มีผู้ให้บริการ exec ต้องใช้ `--allow-exec` ในโหมดเขียน
+ผู้ให้บริการ Exec ที่เพิ่มผ่าน `providerUpserts` ยังคงอยู่ภายใต้กฎการยินยอมให้ใช้ exec ใน [พฤติกรรมการยินยอมสำหรับผู้ให้บริการ Exec](#exec-provider-consent-behavior): แผนที่มีผู้ให้บริการ exec ต้องระบุ `--allow-exec` ในโหมดเขียน
 
-## ขอบเขต target ที่รองรับ
+## ขอบเขตเป้าหมายที่รองรับ
 
-ยอมรับ plan targets สำหรับเส้นทางข้อมูลรับรองที่รองรับใน:
+เป้าหมายของแผนได้รับการยอมรับสำหรับพาธข้อมูลรับรองที่รองรับใน [พื้นผิวข้อมูลรับรอง SecretRef](/th/reference/secretref-credential-surface)
 
-- [พื้นผิวข้อมูลรับรอง SecretRef](/th/reference/secretref-credential-surface)
+## พฤติกรรมของชนิดเป้าหมาย
 
-## พฤติกรรมประเภท target
+`target.type` ต้องเป็นชนิดเป้าหมายที่รู้จัก และ `target.path` ที่ปรับให้อยู่ในรูปแบบมาตรฐานต้องตรงกับรูปแบบพาธที่ลงทะเบียนไว้สำหรับชนิดนั้น
 
-กฎทั่วไป:
+ชนิดเป้าหมายบางชนิดยอมรับชื่อแฝงเพื่อความเข้ากันได้เป็น `target.type` สำหรับแผนที่มีอยู่ นอกเหนือจากชื่อชนิดมาตรฐาน:
 
-- `target.type` ต้องเป็นที่รู้จักและต้องตรงกับรูปแบบ `target.path` ที่ normalize แล้ว
+| ชนิดมาตรฐาน                         | ชื่อแฝงที่ยอมรับ                                |
+| ------------------------------------ | ----------------------------------------------- |
+| `models.providers.apiKey`            | `models.providers.*.apiKey`                     |
+| `skills.entries.apiKey`              | `skills.entries.*.apiKey`                       |
+| `channels.googlechat.serviceAccount` | `channels.googlechat.accounts.*.serviceAccount` |
 
-ยังคงยอมรับ alias เพื่อความเข้ากันได้สำหรับแผนที่มีอยู่:
+## กฎการตรวจสอบพาธ
 
-- `models.providers.apiKey`
-- `skills.entries.apiKey`
-- `channels.googlechat.serviceAccount`
+แต่ละเป้าหมายจะได้รับการตรวจสอบตามเงื่อนไขทั้งหมดต่อไปนี้:
 
-## กฎการตรวจสอบ path
+- `type` ต้องเป็นชนิดเป้าหมายที่รู้จัก
+- `path` ต้องเป็นพาธแบบจุดที่ไม่ว่างเปล่า
+- สามารถละ `pathSegments` ได้ หากระบุไว้ เมื่อปรับให้อยู่ในรูปแบบมาตรฐานแล้วต้องได้พาธเดียวกับ `path` ทุกประการ
+- เซกเมนต์ต้องห้ามจะถูกปฏิเสธ ได้แก่ `__proto__`, `prototype`, `constructor`
+- พาธที่ปรับให้อยู่ในรูปแบบมาตรฐานต้องตรงกับรูปแบบพาธที่ลงทะเบียนไว้สำหรับชนิดเป้าหมาย
+- หากกำหนด `providerId` หรือ `accountId` ค่าดังกล่าวต้องตรงกับรหัสที่เข้ารหัสอยู่ในพาธ
+- เป้าหมายใน `auth-profiles.json` ต้องมี `agentId`
+- เมื่อสร้างการแมปใหม่ใน `auth-profiles.json` ให้ระบุ `authProfileProvider`
 
-แต่ละ target จะถูกตรวจสอบด้วยกฎทั้งหมดต่อไปนี้:
+## พฤติกรรมเมื่อล้มเหลว
 
-- `type` ต้องเป็นประเภท target ที่รู้จัก
-- `path` ต้องเป็น dot path ที่ไม่ว่าง
-- `pathSegments` สามารถละได้ หากระบุ ต้อง normalize เป็น path เดียวกันทุกประการกับ `path`
-- segment ต้องห้ามจะถูกปฏิเสธ: `__proto__`, `prototype`, `constructor`
-- path ที่ normalize แล้วต้องตรงกับรูปแบบ path ที่ลงทะเบียนไว้สำหรับประเภท target
-- หากตั้งค่า `providerId` หรือ `accountId` ไว้ ค่านั้นต้องตรงกับ id ที่เข้ารหัสใน path
-- target ของ `auth-profiles.json` ต้องมี `agentId`
-- เมื่อสร้าง mapping ใหม่ของ `auth-profiles.json` ให้รวม `authProfileProvider`
-
-## พฤติกรรมเมื่อเกิดความล้มเหลว
-
-หาก target ไม่ผ่านการตรวจสอบ apply จะออกด้วยข้อผิดพลาดเช่น:
+หากเป้าหมายไม่ผ่านการตรวจสอบ การนำไปใช้จะจบการทำงานพร้อมข้อผิดพลาดลักษณะนี้:
 
 ```text
 Invalid plan target path for models.providers.apiKey: models.providers.openai.baseUrl
 ```
 
-จะไม่มีการ commit การเขียนใดๆ สำหรับแผนที่ไม่ถูกต้อง
+แผนที่ไม่ถูกต้องจะไม่มีการยืนยันการเขียนใด ๆ โดยการแก้ไขเป้าหมายและการตรวจสอบพาธจะทำงานก่อนแตะต้องไฟล์ใด ๆ นอกจากนี้ เมื่อแผนที่ถูกต้องเริ่มเขียน การนำไปใช้จะสร้างสแนปช็อตของทุกไฟล์ที่จะแก้ไขไว้ก่อน และกู้คืนสแนปช็อตเหล่านั้นหากการเขียนในภายหลังระหว่างการทำงานครั้งเดียวกันล้มเหลว ดังนั้นการเขียนเพียงบางส่วนจะไม่ทำให้สถานะการกำหนดค่า โปรไฟล์การยืนยันตัวตน หรือสภาพแวดล้อมไม่สอดคล้องกัน
 
-## พฤติกรรมการยินยอมของผู้ให้บริการ Exec
+## พฤติกรรมการยินยอมสำหรับผู้ให้บริการ Exec
 
-- `--dry-run` ข้ามการตรวจ SecretRef แบบ exec โดยค่าเริ่มต้น
-- แผนที่มี exec SecretRefs/providers จะถูกปฏิเสธในโหมดเขียน เว้นแต่จะตั้งค่า `--allow-exec`
-- เมื่อตรวจสอบ/ใช้แผนที่มี exec ให้ส่ง `--allow-exec` ทั้งในคำสั่ง dry-run และคำสั่งเขียน
+- โดยค่าเริ่มต้น `--dry-run` จะข้ามการตรวจสอบ SecretRef แบบ exec
+- แผนที่มี SecretRef/ผู้ให้บริการแบบ exec จะถูกปฏิเสธในโหมดเขียน เว้นแต่จะกำหนด `--allow-exec`
+- เมื่อตรวจสอบหรือนำแผนที่มี exec ไปใช้ ให้ส่ง `--allow-exec` ทั้งในคำสั่งทดลองทำงานและคำสั่งเขียน
 
-## หมายเหตุขอบเขต runtime และ audit
+## หมายเหตุเกี่ยวกับขอบเขตการทำงานขณะรันและการตรวจสอบ
 
-- รายการ `auth-profiles.json` แบบอ้างอิงเท่านั้น (`keyRef`/`tokenRef`) รวมอยู่ในการ resolve runtime และการครอบคลุม audit
-- `secrets apply` เขียน target ของ `openclaw.json` ที่รองรับ, target ของ `auth-profiles.json` ที่รองรับ และ scrub targets แบบไม่บังคับ
+- รายการใน `auth-profiles.json` ที่มีเฉพาะการอ้างอิง (`keyRef`/`tokenRef`) จะรวมอยู่ในการแก้ไขข้อมูลรับรองขณะรันและความครอบคลุมของการตรวจสอบ
+- `secrets apply` เขียนเป้าหมาย `openclaw.json` ที่รองรับ เป้าหมาย `auth-profiles.json` ที่รองรับ และขั้นตอนล้างข้อมูลที่ไม่บังคับสามขั้นตอนซึ่งเปิดใช้ทั้งหมดโดยค่าเริ่มต้น ได้แก่ `scrubEnv` (ลบค่าข้อความธรรมดาที่โยกย้ายแล้วออกจาก `.env`), `scrubAuthProfilesForProviderTargets` (ล้างข้อความธรรมดาและข้อมูลอ้างอิงที่ไม่ได้ใช้ซึ่งตกค้างใน `auth-profiles.json` สำหรับผู้ให้บริการที่แผนเพิ่งโยกย้าย) และ `scrubLegacyAuthJson` (ลบรายการ `api_key` ที่โยกย้ายแล้วออกจากแหล่งจัดเก็บ `auth.json` แบบเดิม) กำหนด `options.scrubEnv`, `options.scrubAuthProfilesForProviderTargets` หรือ `options.scrubLegacyAuthJson` เป็น `false` ในแผนเพื่อข้ามขั้นตอนนั้น
 
-## การตรวจสอบสำหรับผู้ปฏิบัติการ
+## การตรวจสอบสำหรับผู้ปฏิบัติงาน
 
 ```bash
-# Validate plan without writes
+# ตรวจสอบแผนโดยไม่เขียนข้อมูล
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run
 
-# Then apply for real
+# จากนั้นนำไปใช้จริง
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json
 
-# For exec-containing plans, opt in explicitly in both modes
+# สำหรับแผนที่มี exec ให้เลือกอนุญาตอย่างชัดเจนในทั้งสองโหมด
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run --allow-exec
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --allow-exec
 ```
 
-หาก apply ล้มเหลวพร้อมข้อความ path target ไม่ถูกต้อง ให้สร้างแผนใหม่ด้วย `openclaw secrets configure` หรือแก้ path target ให้เป็นรูปแบบที่รองรับข้างต้น
+หากการนำไปใช้ล้มเหลวพร้อมข้อความพาธเป้าหมายไม่ถูกต้อง ให้สร้างแผนใหม่ด้วย `openclaw secrets configure` หรือแก้ไขพาธเป้าหมายให้เป็นรูปแบบที่รองรับข้างต้น
 
 ## เอกสารที่เกี่ยวข้อง
 
-- [การจัดการ Secrets](/th/gateway/secrets)
+- [การจัดการข้อมูลลับ](/th/gateway/secrets)
 - [CLI `secrets`](/th/cli/secrets)
 - [พื้นผิวข้อมูลรับรอง SecretRef](/th/reference/secretref-credential-surface)
-- [อ้างอิง Configuration](/th/gateway/configuration-reference)
+- [ข้อมูลอ้างอิงการกำหนดค่า](/th/gateway/configuration-reference)

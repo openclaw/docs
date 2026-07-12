@@ -1,26 +1,23 @@
 ---
 read_when:
-    - Je wilt Workboard-kaarten vanuit de terminal bekijken of maken
-    - U wilt Workboard-worker-runs vanuit de CLI dispatchen
-    - Je debugt gedrag van de Workboard-CLI of slash-command
-summary: CLI-referentie voor `openclaw workboard`-kaarten, dispatch en worker-uitvoeringen
+    - Je wilt Workboard-kaarten bekijken of maken vanuit de terminal
+    - Je wilt Workboard-workeruitvoeringen starten vanuit de CLI
+    - Je debugt het gedrag van de Workboard-CLI of slashopdrachten
+summary: CLI-referentie voor `openclaw workboard`-kaarten, taaktoewijzing en workeruitvoeringen
 title: Workboard-CLI
 x-i18n:
-    generated_at: "2026-06-27T17:24:32Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:45:19Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: bb6f5ab36b3f1f4d0eb06e5dfa9adbbe9bb14bf2ac389630da7725811ac6f47f
+    source_hash: 3c62dd10aff146cae9f7475423148cf61fedb39983b065a9815c629349b4e233
     source_path: cli/workboard.md
     workflow: 16
 ---
 
-`openclaw workboard` is het terminaloppervlak voor de gebundelde
-[Workboard Plugin](/nl/plugins/workboard). Hiermee kan een operator kaarten weergeven, een
-kaart maken, één kaart inspecteren en de draaiende Gateway vragen om klaarstaand werk naar
-subagent-worker-runs te sturen.
+`openclaw workboard` is de terminalinterface voor de meegeleverde [Workboard-Plugin](/nl/plugins/workboard). Hiermee kan een operator kaarten weergeven, een kaart maken, één kaart bekijken en de actieve Gateway vragen gereed werk toe te wijzen aan subagent-workerruns.
 
-Schakel de Plugin in voordat je de opdracht gebruikt:
+Schakel de Plugin in voordat u de opdracht gebruikt:
 
 ```bash
 openclaw plugins enable workboard
@@ -36,9 +33,9 @@ openclaw workboard show <id> [--json]
 openclaw workboard dispatch [--url <url>] [--token <token>] [--timeout <ms>] [--json]
 ```
 
-De opdracht leest en schrijft dezelfde Plugin-beheerde SQLite-database die door het
-dashboard en de Workboard-agenttools wordt gebruikt. Kaart-id's kunnen worden doorgegeven als volledige id of als
-eenduidig voorvoegsel wanneer een opdracht een kaart-id accepteert.
+De opdracht leest en schrijft dezelfde SQLite-database die eigendom is van de Plugin en die door het dashboard en de Workboard-agenttools wordt gebruikt. Kaart-id's zijn UUID's; opdrachten die een kaart-id accepteren, accepteren ook een ondubbelzinnig id-voorvoegsel (de compacte tekstuitvoer toont de eerste 8 tekens).
+
+Geldige waarden voor `status`: `triage`, `backlog`, `todo`, `scheduled`, `ready`, `running`, `review`, `blocked`, `done`. Geldige waarden voor `priority`: `low`, `normal`, `high`, `urgent`.
 
 ## `list`
 
@@ -48,26 +45,22 @@ openclaw workboard list --board default --status ready
 openclaw workboard list --json
 ```
 
-Tekstuitvoer is compact:
+De tekstuitvoer is compact:
 
 ```text
 7f4a2c10  ready     high    default agent-a  Fix stale worker heartbeat
 ```
 
-Kolommen zijn id-voorvoegsel, status, prioriteit, board-id, optionele agent-id en titel.
+De kolommen zijn het id-voorvoegsel, de status, de prioriteit, het bord-id, het optionele agent-id en de titel.
 
-Vlaggen:
+| Vlag                 | Doel                                                        |
+| -------------------- | ----------------------------------------------------------- |
+| `--board <id>`       | Resultaten beperken tot één bordnaamruimte                  |
+| `--status <status>`  | Resultaten beperken tot één Workboard-status                |
+| `--include-archived` | Gearchiveerde kaarten opnemen in de compacte tekstuitvoer   |
+| `--json`             | De volledige kaartenlijst als machineleesbare JSON afdrukken |
 
-| Vlag                 | Doel                                          |
-| -------------------- | --------------------------------------------- |
-| `--board <id>`       | Beperk resultaten tot één board-naamruimte    |
-| `--status <status>`  | Beperk resultaten tot één Workboard-status    |
-| `--include-archived` | Neem gearchiveerde kaarten op in compacte tekstuitvoer |
-| `--json`             | Druk de volledige kaartenlijst af als machine-JSON |
-
-Compacte tekstuitvoer verbergt gearchiveerde kaarten standaard, zodat de CLI overeenkomt met de
-opdracht `/workboard list`. Geef `--include-archived` mee om ze weer te geven. JSON-uitvoer
-behoudt de volledige kaartenlijst, inclusief gearchiveerde kaarten, voor bestaande automatisering.
+De compacte tekstuitvoer verbergt gearchiveerde kaarten standaard, zodat de CLI overeenkomt met `/workboard list`. Geef `--include-archived` door om ze weer te geven. JSON-uitvoer behoudt altijd de volledige kaartenlijst, inclusief gearchiveerde kaarten, voor bestaande automatisering.
 
 ## `create`
 
@@ -76,20 +69,17 @@ openclaw workboard create "Fix stale worker heartbeat" --priority high --labels 
 openclaw workboard create "Write Workboard docs" --status ready --agent docs-agent --board docs --notes "Cover CLI, slash command, dispatch, and SQLite state."
 ```
 
-Vlaggen:
+| Vlag                    | Doel                                           |
+| ----------------------- | ---------------------------------------------- |
+| `--notes <text>`        | Aanvankelijke kaartnotities                    |
+| `--status <status>`     | Aanvankelijke status, standaard `todo`         |
+| `--priority <priority>` | Prioriteit, standaard `normal`                 |
+| `--agent <id>`          | De kaart aan een agent- of eigenaar-id toewijzen |
+| `--board <id>`          | De kaart in een bordnaamruimte opslaan         |
+| `--labels <items>`      | Door komma's gescheiden labels                 |
+| `--json`                | De gemaakte kaart als machineleesbare JSON afdrukken |
 
-| Vlag                    | Doel                                      |
-| ----------------------- | ----------------------------------------- |
-| `--notes <text>`        | Initiële kaartnotities                    |
-| `--status <status>`     | Initiële status, standaard `todo`         |
-| `--priority <priority>` | Prioriteit, standaard `normal`            |
-| `--agent <id>`          | Wijs de kaart toe aan een agent- of eigenaar-id |
-| `--board <id>`          | Sla de kaart op in een board-naamruimte   |
-| `--labels <items>`      | Door komma's gescheiden labels            |
-| `--json`                | Druk de gemaakte kaart af als machine-JSON |
-
-`create` schrijft rechtstreeks naar de Workboard SQLite-status. De kaart is direct
-zichtbaar in het Workboard-tabblad van de Control UI en voor Workboard-tools.
+`create` schrijft rechtstreeks naar de SQLite-status van Workboard. De kaart is onmiddellijk zichtbaar op het Workboard-tabblad in de Control UI en voor Workboard-tools.
 
 ## `show`
 
@@ -98,9 +88,7 @@ openclaw workboard show 7f4a2c10
 openclaw workboard show 7f4a2c10 --json
 ```
 
-Tekstuitvoer drukt de compacte kaartregel en notities af. JSON-uitvoer retourneert de volledige
-kaartrecord, inclusief uitvoeringsmetadata, pogingen, opmerkingen, links, bewijs,
-artefacten, worker-logs, protocolstatus, diagnostiek en automatiseringsmetadata.
+De tekstuitvoer toont de compacte kaartregel en notities. JSON-uitvoer retourneert de volledige kaartrecord, inclusief uitvoeringsmetadata, pogingen, opmerkingen, koppelingen, bewijs, artefacten, workerlogboeken, protocolstatus, diagnostiek en automatiseringsmetadata.
 
 ## `dispatch`
 
@@ -110,65 +98,43 @@ openclaw workboard dispatch --json
 openclaw workboard dispatch --url http://127.0.0.1:18789 --token "$OPENCLAW_GATEWAY_TOKEN"
 ```
 
-`dispatch` roept eerst de RPC-methode
-`workboard.cards.dispatch` van de draaiende Gateway aan. Dat pad gebruikt dezelfde subagent-runtime als de
-dispatch-actie in het dashboard, zodat ready-kaarten taakgevolgde worker-runs worden met
-gekoppelde sessiesleutels. Kaarten met een toegewezen agent gebruiken agent-gebonden subagent-
-sessiesleutels; niet-toegewezen kaarten behouden een niet-gebonden subagent-sleutel zodat de
-geconfigureerde standaardagent van de Gateway behouden blijft.
+`dispatch` roept eerst de RPC-methode `workboard.cards.dispatch` van de actieve Gateway aan. Deze gebruikt dezelfde subagent-runtime als de dispatchactie van het dashboard, zodat gereedstaande kaarten workerruns met taakregistratie en gekoppelde sessiesleutels worden. Kaarten met een toegewezen agent gebruiken agentspecifieke subagent-sessiesleutels; niet-toegewezen kaarten behouden een niet-gescopeerde subagent-sleutel, zodat de geconfigureerde standaardagent van de Gateway behouden blijft.
 
 De dispatchlus:
 
-1. Promoveert dependency-ready kinderen naar `ready`.
-2. Blokkeert verlopen claims of worker-runs met timeout.
-3. Registreert dispatchmetadata op ready-kaarten.
-4. Selecteert een kleine batch niet-geclaimde ready-kaarten.
+1. Bevordert kinderen waarvan de afhankelijkheden gereed zijn naar `ready`.
+2. Blokkeert verlopen claims of workerruns waarvan de time-out is verstreken.
+3. Registreert dispatchmetadata op gereedstaande kaarten.
+4. Selecteert een kleine groep niet-geclaimde gereedstaande kaarten.
 5. Claimt elke geselecteerde kaart voor de dispatcher of toegewezen agent.
-6. Start een subagent-worker-run met begrensde kaartcontext en het kaartclaim-
-   token.
-7. Slaat de worker-run-id, sessiesleutel, taakkoppeling wanneer het Gateway-taakregister
-   die rapporteert, uitvoeringsstatus en worker-log op de kaart op.
+6. Start een subagent-workerrun met begrensde kaartcontext en het claimtoken van de kaart.
+7. Slaat het workerrun-id, de sessiesleutel, de taakkoppeling wanneer het taaktboek van de Gateway deze meldt, de uitvoeringsstatus en het workerlogboek op de kaart op.
 
-Selectie is bewust conservatief. Eén dispatch start standaard maximaal drie
-workers, slaat gearchiveerde of al geclaimde kaarten over en start slechts één
-kaart per eigenaar of agent in één ronde. Kaarten die al eigendom zijn van actief lopend
-of reviewwerk worden bewaard voor een latere dispatch.
+De selectie is behoudend: één dispatch start standaard maximaal drie workers, slaat gearchiveerde of reeds geclaimde kaarten over en start in één doorgang slechts één kaart per eigenaar of agent. Kaarten die al eigendom zijn van actief uitgevoerd of beoordeeld werk, blijven staan voor een latere dispatch.
 
-Als het starten van een worker mislukt nadat een kaart is geclaimd, blokkeert Workboard die kaart,
-wist de claim en registreert de fout in de uitvoerings- en worker-logmetadata
-van de kaart. Zo blijven mislukte starts zichtbaar in plaats van de
-kaart stilzwijgend terug te zetten in de wachtrij.
+Als het starten van een worker mislukt nadat een kaart is geclaimd, blokkeert Workboard die kaart, wist het de claim en registreert het de fout in de uitvoerings- en workerlogmetadata van de kaart. Zo blijven mislukte starts zichtbaar in plaats van dat de kaart ongemerkt naar de wachtrij terugkeert.
 
-Als er geen expliciet Gateway-doel is opgegeven en de lokale Gateway niet beschikbaar is
-of de Workboard-dispatchmethode nog niet blootstelt, valt de CLI terug op
-data-only dispatch tegen lokale Workboard-status. Data-only dispatch kan nog steeds
-dependencies promoveren, verouderde claims opschonen en runs met timeout blokkeren, maar start geen
-workers. Authenticatie-, machtigings- en validatiefouten, en fouten voor een
-expliciet `--url`- of `--token`-doel, worden rechtstreeks gerapporteerd.
+Als geen expliciet Gateway-doel is opgegeven en de lokale Gateway niet beschikbaar is of de Workboard-dispatchmethode nog niet aanbiedt, valt de CLI terug op dispatch van uitsluitend gegevens voor de lokale Workboard-status. Dispatch van uitsluitend gegevens kan nog steeds afhankelijkheden bevorderen, verouderde claims opschonen en workerruns met een verlopen time-out blokkeren, maar start geen workers. Authenticatie-, machtigings- en validatiefouten, en fouten voor een expliciet `--url`- of `--token`-doel, worden rechtstreeks gemeld in plaats van de terugval te activeren.
 
-Tekstuitvoer rapporteert worker-starts:
+De tekstuitvoer meldt gestarte workers:
 
 ```text
 dispatch complete: started=2 failures=0
 ```
 
-Fallback-uitvoer is expliciet:
+De terugvaluitvoer is expliciet:
 
 ```text
 gateway unavailable; data dispatch only: promoted=1 blocked=0
 ```
 
-JSON-uitvoer bevat het dispatchresultaat. Gateway-ondersteunde dispatch kan
-`started` en `startFailures` bevatten; data-only fallback bevat
-`gatewayUnavailable: true`. Claimtokens worden geredigeerd uit kaart-JSON-uitvoer.
+JSON-uitvoer bevat het dispatchresultaat. Door de Gateway ondersteunde dispatch kan `started` en `startFailures` bevatten; de terugval naar uitsluitend gegevens bevat `gatewayUnavailable: true`. Claimtokens worden uit de JSON-uitvoer van kaarten verwijderd.
 
-In het dashboard wordt hetzelfde dispatchresultaat getoond als een korte samenvatting, zodat een
-operator kan zien hoeveel kaarten zijn gestart, gepromoveerd, geblokkeerd, teruggeclaimd of
-mislukt zonder kaartdetails te openen.
+In het dashboard wordt hetzelfde dispatchresultaat als een korte samenvatting weergegeven, zodat een operator kan zien hoeveel kaarten zijn gestart, bevorderd, geblokkeerd, opnieuw geclaimd of mislukt zonder de kaartdetails te openen.
 
-## Pariteit van slash-commando's
+## Gelijkwaardigheid van slash-opdrachten
 
-Kanalen met opdrachtondersteuning kunnen het bijbehorende slash-commando gebruiken:
+Kanalen die opdrachten ondersteunen, kunnen de overeenkomstige slash-opdracht gebruiken:
 
 ```text
 /workboard list
@@ -177,38 +143,29 @@ Kanalen met opdrachtondersteuning kunnen het bijbehorende slash-commando gebruik
 /workboard dispatch
 ```
 
-Slash-command dispatch gebruikt ook de Gateway-subagent-runtime, dus het volgt hetzelfde
-claim-, worker-start- en foutgedrag als het dashboard en het Gateway-pad van de CLI.
+Dispatch via slash-opdrachten gebruikt ook de subagent-runtime van de Gateway en volgt daarom hetzelfde gedrag voor claims, het starten van workers en fouten als het dashboard en het Gateway-pad van de CLI.
 
-`/workboard list` en `/workboard show` zijn leesopdrachten voor geautoriseerde opdrachtzenders.
-`/workboard create` en `/workboard dispatch` wijzigen boardstatus en
-vereisen eigenaarstatus op chatoppervlakken of een Gateway-client met `operator.write`
-of `operator.admin`.
+`/workboard list` en `/workboard show` zijn leesopdrachten voor geautoriseerde afzenders van opdrachten. `/workboard create` en `/workboard dispatch` wijzigen de bordstatus en vereisen de eigenaarstatus op chatinterfaces of een Gateway-client met `operator.write` of `operator.admin`.
 
 ## Machtigingen
 
-Het CLI-dispatchpad roept Gateway RPC aan met scopes `operator.read` en
-`operator.write`. Een alleen-lezen Gateway-token kan Workboard-gegevens inspecteren
-via leesmethoden, maar kan geen kaarten maken of workers dispatchen.
+Het CLI-dispatchpad roept Gateway-RPC aan met de bereiken `operator.read` en `operator.write`. Een alleen-lezen Gateway-token kan Workboard-gegevens via leesmethoden bekijken, maar kan geen kaarten maken of workers dispatchen.
 
-Lokale opdrachten `list`, `create` en `show` werken op de lokale OpenClaw-statusmap
-die door het huidige profiel wordt gebruikt. Gebruik `--dev` of `--profile <name>` op de
-top-level opdracht `openclaw` wanneer je een andere statusroot nodig hebt.
+Lokale opdrachten `list`, `create` en `show` werken op de lokale OpenClaw-statusmap die door het huidige profiel wordt gebruikt. Gebruik `--dev` of `--profile <name>` bij de `openclaw`-opdracht op het hoogste niveau wanneer u een andere statush hoofdmap nodig hebt.
 
 ## Problemen oplossen
 
 ### Er verschijnen geen kaarten
 
-Controleer of de Plugin is ingeschakeld voor hetzelfde profiel en dezelfde statusroot:
+Controleer of de Plugin is ingeschakeld voor hetzelfde profiel en dezelfde statushoofdmap:
 
 ```bash
 openclaw plugins inspect workboard --runtime --json
 ```
 
-Als het dashboard kaarten toont maar de CLI niet, controleer dan of beide opdrachten
-dezelfde instelling voor `--dev` of `--profile` gebruiken.
+Als het dashboard kaarten toont maar de CLI niet, controleer dan of beide opdrachten dezelfde instelling voor `--dev` of `--profile` gebruiken.
 
-### Dispatch meldt Data-Only
+### Dispatch meldt uitsluitend gegevens
 
 Start of herstart de Gateway:
 
@@ -217,8 +174,7 @@ openclaw gateway restart
 openclaw gateway status --deep
 ```
 
-Probeer daarna `openclaw workboard dispatch` opnieuw. Data-only fallback is nuttig voor lokaal
-opschonen van status, maar worker-runs hebben een live Gateway nodig.
+Probeer daarna `openclaw workboard dispatch` opnieuw. De terugval naar uitsluitend gegevens is nuttig voor het opschonen van lokale status, maar voor workerruns is een actieve Gateway nodig.
 
 ### Dispatch start niets
 
@@ -228,13 +184,11 @@ Controleer of er minstens één `ready`-kaart zonder actieve claim is:
 openclaw workboard list --status ready
 ```
 
-Kaarten kunnen ook worden overgeslagen wanneer dezelfde eigenaar al lopend of review-
-werk heeft. Verplaats voltooid werk naar `done`, geef verouderde claims vrij via de Workboard-
-tools, of voer dispatch opnieuw uit nadat de actieve worker klaar is.
+Kaarten kunnen ook worden overgeslagen wanneer dezelfde eigenaar al uitgevoerd of beoordeeld werk heeft. Verplaats voltooid werk naar `done`, geef verouderde claims vrij via de Workboard-tools of voer dispatch opnieuw uit nadat de actieve worker is voltooid.
 
 ## Gerelateerd
 
-- [Workboard Plugin](/nl/plugins/workboard)
+- [Workboard-Plugin](/nl/plugins/workboard)
 - [CLI-referentie](/nl/cli)
-- [Slash-commando's](/nl/tools/slash-commands)
+- [Slash-opdrachten](/nl/tools/slash-commands)
 - [Control UI](/nl/web/control-ui)

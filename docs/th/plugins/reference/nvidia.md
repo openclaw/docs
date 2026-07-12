@@ -4,27 +4,27 @@ read_when:
 summary: เพิ่มการรองรับผู้ให้บริการโมเดล NVIDIA ให้กับ OpenClaw
 title: Plugin NVIDIA
 x-i18n:
-    generated_at: "2026-05-02T20:54:57Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:31:05Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: 4d2ea102071e09fc60385a3f2bcbb4e1a636e7b87d9a3e541bac551bea7d9dbd
     source_path: plugins/reference/nvidia.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# NVIDIA Plugin
+# Plugin NVIDIA
 
-เพิ่มการรองรับผู้ให้บริการโมเดล NVIDIA ให้กับ OpenClaw.
+เพิ่มการรองรับผู้ให้บริการโมเดล NVIDIA ให้กับ OpenClaw
 
 ## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/nvidia-provider`
-- เส้นทางการติดตั้ง: รวมอยู่ใน OpenClaw
+- ช่องทางการติดตั้ง: รวมอยู่ใน OpenClaw
 
-## พื้นผิว
+## ส่วนเชื่อมต่อ
 
-providers: nvidia
+ผู้ให้บริการ: nvidia
 
 ## เอกสารที่เกี่ยวข้อง
 

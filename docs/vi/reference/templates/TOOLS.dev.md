@@ -1,37 +1,36 @@
 ---
 read_when:
-    - Sử dụng các mẫu Gateway dành cho phát triển
-    - Cập nhật danh tính tác tử phát triển mặc định
-summary: Ghi chú về công cụ của tác tử phát triển (C-3PO)
+    - Sử dụng các mẫu Gateway phát triển
+    - Cập nhật danh tính mặc định của tác nhân phát triển
+summary: Ghi chú về các công cụ dành cho tác nhân phát triển (C-3PO)
 title: Mẫu TOOLS.dev
 x-i18n:
-    generated_at: "2026-04-29T23:13:18Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:22:12Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 23c11e2832ed0dcf9ddd43e5472e0c025c1a91a33299019c16f00a7230e8e99c
+    source_hash: 3259107a9252ff3d01b98608e6005387cb54a75da5db64f833c945056abd4173
     source_path: reference/templates/TOOLS.dev.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# TOOLS.md - Ghi chú công cụ người dùng (có thể chỉnh sửa)
+# TOOLS.md - Ghi chú công cụ của người dùng (có thể chỉnh sửa)
 
-Tệp này dành cho ghi chú _của bạn_ về các công cụ và quy ước bên ngoài.
-Tệp này không định nghĩa những công cụ nào tồn tại; OpenClaw cung cấp các công cụ tích hợp sẵn ở bên trong.
+Tệp này dành cho các ghi chú _của bạn_ về các công cụ bên ngoài và quy ước. Tệp này không xác định những công cụ nào tồn tại; OpenClaw cung cấp sẵn các công cụ tích hợp nội bộ, còn Skills bổ sung phần còn lại.
 
 ## Ví dụ
 
 ### imsg
 
-- Gửi iMessage/SMS: mô tả ai/cái gì, xác nhận trước khi gửi.
+- Gửi iMessage/SMS: mô tả người nhận/nội dung, xác nhận trước khi gửi.
 - Ưu tiên tin nhắn ngắn; tránh gửi thông tin bí mật.
 
 ### sag
 
-- Chuyển văn bản thành giọng nói: chỉ định giọng, loa/phòng đích và có phát trực tuyến hay không.
+- Chuyển văn bản thành giọng nói: chỉ định giọng đọc, loa/phòng đích và có phát trực tiếp hay không.
 
-Thêm bất kỳ nội dung nào khác mà bạn muốn trợ lý biết về chuỗi công cụ cục bộ của bạn.
+Hãy thêm bất kỳ thông tin nào khác mà bạn muốn trợ lý biết về chuỗi công cụ cục bộ của mình.
 
 ## Liên quan
 
-- [mẫu TOOLS.md](/vi/reference/templates/TOOLS)
+- [Mẫu TOOLS.md](/vi/reference/templates/TOOLS)

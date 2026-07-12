@@ -1,11 +1,11 @@
 ---
 read_when:
-    - أنت تثبّت المكوّن الإضافي kimi أو تهيئه أو تدقّقه
-summary: يضيف دعم موفّر نماذج Kimi وKimi Coding إلى OpenClaw.
-title: Plugin Kimi
+    - أنت تقوم بتثبيت Plugin ‏kimi أو تهيئته أو تدقيقه
+summary: يضيف دعم مزوّد نماذج Kimi وKimi Coding إلى OpenClaw.
+title: Plugin ‏Kimi
 x-i18n:
-    generated_at: "2026-06-27T18:13:19Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:20:55Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 6f609f6e21b493ea83e5cc34a28921be2fed3334b531194050257857a06ef259
@@ -13,19 +13,19 @@ x-i18n:
     workflow: 16
 ---
 
-# Kimi Plugin
+# Plugin ‏Kimi
 
-يضيف دعم موفر نماذج Kimi وKimi Coding إلى OpenClaw.
+يضيف دعم Kimi وموفّر نماذج Kimi Coding إلى OpenClaw.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/kimi-provider`
 - مسار التثبيت: npm؛ ClawHub: `clawhub:@openclaw/kimi-provider`
 
-## السطح
+## الواجهة
 
-الموفرون: kimi، kimi-coding
+الموفّرون: kimi، kimi-coding
 
-## المستندات ذات الصلة
+## الوثائق ذات الصلة
 
-- [kimi](/ar/providers/moonshot)
+- [Kimi](/ar/providers/moonshot)

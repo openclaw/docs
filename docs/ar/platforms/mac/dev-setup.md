@@ -1,116 +1,114 @@
 ---
 read_when:
-    - إعداد بيئة تطوير macOS
+    - إعداد بيئة التطوير على macOS
 summary: دليل الإعداد للمطورين العاملين على تطبيق OpenClaw لنظام macOS
 title: إعداد بيئة التطوير على macOS
 x-i18n:
-    generated_at: "2026-07-04T06:35:19Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:12:31Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5438de16d6d796f4c3df5d896f288ee3dfaba16471a4abb932d277cd8e8b84f8
+    source_hash: bd7d556af92892d3deea3f5d8238a33cd413e10b0b377468396221e174ace8fe
     source_path: platforms/mac/dev-setup.md
     workflow: 16
 ---
 
-# إعداد مطور macOS
+# إعداد بيئة التطوير على macOS
 
-ابنِ وشغّل تطبيق OpenClaw لنظام macOS من المصدر.
+أنشئ تطبيق OpenClaw لنظام macOS وشغّله من الشيفرة المصدرية.
 
 ## المتطلبات الأساسية
 
-قبل بناء التطبيق، تأكد من تثبيت ما يلي لديك:
-
-1. **Xcode 26.2+**: مطلوب لتطوير Swift.
-2. **Node.js 24 و pnpm**: موصى بهما من أجل Gateway وCLI وسكربتات التحزيم. يظل Node 22 LTS، حاليًا `22.19+`، مدعومًا للتوافق.
+- **Xcode 26.2+** (سلسلة أدوات Swift 6.2)، على أحدث إصدار متاح من macOS في
+  Software Update.
+- **Node.js 24 وpnpm** من أجل Gateway وCLI ونصوص الحزم. يعمل Node
+  22.19+ أيضًا.
 
 ## 1. تثبيت الاعتماديات
-
-ثبّت الاعتماديات على مستوى المشروع:
 
 ```bash
 pnpm install
 ```
 
-## 2. بناء التطبيق وتحزيمه
-
-لبناء تطبيق macOS وتحزيمه في `dist/OpenClaw.app`، شغّل:
+## 2. إنشاء التطبيق وتحزيمه
 
 ```bash
 ./scripts/package-mac-app.sh
 ```
 
-إذا لم تكن لديك شهادة Apple Developer ID، فسيستخدم السكربت تلقائيًا **التوقيع المخصص** (`-`).
+ينتج `dist/OpenClaw.app`. في حال عدم وجود شهادة Apple Developer ID، يعود
+النص البرمجي إلى التوقيع المخصص.
 
-لأوضاع التشغيل التطويرية، وأعلام التوقيع، واستكشاف مشكلات معرّف الفريق وإصلاحها، راجع ملف README لتطبيق macOS:
-[https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md](https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md)
+للاطلاع على أوضاع التشغيل للتطوير، وخيارات التوقيع، واستكشاف أخطاء Team ID وإصلاحها، راجع
+[apps/macos/README.md](https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md).
+حلقة تطوير سريعة من جذر المستودع: `scripts/restart-mac.sh` (أضف `--no-sign`
+للتوقيع المخصص؛ لا تستمر أذونات TCC عند استخدام `--no-sign`).
 
-> **ملاحظة**: قد تؤدي التطبيقات الموقعة توقيعًا مخصصًا إلى ظهور مطالبات أمان. إذا تعطل التطبيق فورًا مع "إحباط المصيدة 6"، فراجع قسم [استكشاف الأخطاء وإصلاحها](#troubleshooting).
+<Note>
+قد تؤدي التطبيقات ذات التوقيع المخصص إلى ظهور مطالبات أمنية. إذا تعطل التطبيق
+فورًا مع ظهور "Abort trap 6"، فراجع [استكشاف الأخطاء وإصلاحها](#troubleshooting).
+</Note>
 
 ## 3. تثبيت CLI وGateway
 
-يتضمن التطبيق المحزّم مثبّت `scripts/install-cli.sh` المعتمد. على ملف
-تعريف جديد، اختر **هذا الـ Mac** أثناء الإعداد الأولي؛ يثبّت التطبيق
-CLI ومسار التشغيل المطابقين في مساحة المستخدم قبل بدء معالج Gateway.
+يتضمن التطبيق المحزّم مثبّت `scripts/install-cli.sh` القياسي. في ملف تعريف
+جديد، اختر **This Mac** أثناء الإعداد الأولي؛ يثبّت التطبيق CLI المتوافق
+وبيئة التشغيل ضمن مساحة المستخدم قبل بدء معالج Gateway.
 
-للاسترداد اليدوي أثناء التطوير، ثبّت CLI المطابق بنفسك:
+للاسترداد اليدوي في بيئة التطوير، ثبّت CLI المتوافق بنفسك:
 
 ```bash
 npm install -g openclaw@<version>
 ```
 
-يعمل أيضًا `pnpm add -g openclaw@<version>` و`bun add -g openclaw@<version>`.
-بالنسبة إلى مسار تشغيل Gateway، يظل Node هو المسار الموصى به.
+يعمل أيضًا كل من `pnpm add -g openclaw@<version>` و`bun add -g openclaw@<version>`.
+يظل Node بيئة التشغيل الموصى بها لـGateway نفسه.
 
 ## استكشاف الأخطاء وإصلاحها
 
-### فشل البناء: عدم تطابق سلسلة الأدوات أو SDK
+### فشل الإنشاء: عدم تطابق سلسلة الأدوات أو SDK
 
-يتوقع بناء تطبيق macOS أحدث SDK لنظام macOS وسلسلة أدوات Swift 6.2.
-
-**اعتماديات النظام (مطلوبة):**
-
-- **أحدث إصدار macOS متاح في تحديث البرامج** (مطلوب بواسطة SDKs الخاصة بـ Xcode 26.2)
-- **Xcode 26.2** (سلسلة أدوات Swift 6.2)
-
-**الفحوصات:**
+يتطلب إنشاء تطبيق macOS أحدث إصدار من macOS SDK وسلسلة أدوات Swift 6.2
+(Xcode 26.2+).
 
 ```bash
 xcodebuild -version
 xcrun swift --version
 ```
 
-إذا لم تتطابق الإصدارات، فحدّث macOS/Xcode وأعد تشغيل البناء.
+إذا لم تتطابق الإصدارات، فحدّث macOS وXcode ثم أعد تشغيل عملية الإنشاء.
 
-### تعطل التطبيق عند منح الأذونات
+### تعطل التطبيق عند منح الإذن
 
-إذا تعطل التطبيق عندما تحاول السماح بالوصول إلى **التعرّف على الكلام** أو **الميكروفون**، فقد يكون السبب ذاكرة TCC مؤقتة تالفة أو عدم تطابق في التوقيع.
+إذا تعطل التطبيق عند محاولة السماح بالوصول إلى **Speech Recognition** أو
+**Microphone**، فقد يرجع ذلك إلى تلف ذاكرة التخزين المؤقت لـTCC أو عدم تطابق التوقيع.
 
-**الإصلاح:**
-
-1. أعد ضبط أذونات TCC:
+1. أعد تعيين أذونات TCC لمعرّف الحزمة الخاص بتصحيح الأخطاء:
 
    ```bash
    tccutil reset All ai.openclaw.mac.debug
    ```
 
-2. إذا فشل ذلك، فغيّر `BUNDLE_ID` مؤقتًا في [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) لفرض "بداية نظيفة" من macOS.
+2. إذا فشل ذلك، فغيّر `BUNDLE_ID` مؤقتًا في
+   [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh)
+   لإجبار macOS على البدء من حالة نظيفة.
 
-### بقاء Gateway على "جارٍ البدء..." إلى أجل غير مسمى
+### بقاء Gateway في حالة "Starting..." إلى أجل غير مسمى
 
-إذا ظلت حالة Gateway على "جارٍ البدء..."، فتحقق مما إذا كانت عملية خاملة تحتفظ بالمنفذ:
+تحقق مما إذا كانت عملية معلّقة تشغل المنفذ:
 
 ```bash
 openclaw gateway status
 openclaw gateway stop
 
-# If you're not using a LaunchAgent (dev mode / manual runs), find the listener:
+# إذا لم تكن تستخدم LaunchAgent (وضع التطوير / التشغيل اليدوي)، فابحث عن العملية المستمعة:
 lsof -nP -iTCP:18789 -sTCP:LISTEN
 ```
 
-إذا كان تشغيل يدوي يحتفظ بالمنفذ، فأوقف تلك العملية (Ctrl+C). كحل أخير، أنهِ PID الذي وجدته أعلاه.
+إذا كان تشغيل يدوي يشغل المنفذ، فأوقفه (Ctrl+C)، أو أنهِ PID الذي عُثر عليه أعلاه
+كحل أخير.
 
-## ذات صلة
+## ذو صلة
 
 - [تطبيق macOS](/ar/platforms/macos)
 - [نظرة عامة على التثبيت](/ar/install)

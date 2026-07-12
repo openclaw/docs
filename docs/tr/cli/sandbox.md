@@ -1,41 +1,61 @@
 ---
 read_when: You are managing sandbox runtimes or debugging sandbox/tool-policy behavior.
 status: active
-summary: Korumalı alan çalışma zamanlarını yönetin ve geçerli korumalı alan ilkesini inceleyin
-title: Korumalı Alan CLI
+summary: Korumalı alan çalışma zamanlarını yönetin ve geçerli korumalı alan politikasını inceleyin
+title: Sandbox CLI
 x-i18n:
-    generated_at: "2026-06-28T00:24:20Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:10:56Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: eeba1a5530bb946b334cfe399b7a0c862694ae47c55b2341d7146333e112602a
+    source_hash: d41d81971b673d814697a4bf800d6973180c58e4cc5e69748614501dca3a6b6d
     source_path: cli/sandbox.md
     workflow: 16
 ---
 
-Yalıtılmış agent yürütmesi için sandbox çalışma zamanlarını yönetin.
-
-## Genel Bakış
-
-OpenClaw, güvenlik için agent'ları yalıtılmış sandbox çalışma zamanlarında çalıştırabilir. `sandbox` komutları, güncellemelerden veya yapılandırma değişikliklerinden sonra bu çalışma zamanlarını incelemenize ve yeniden oluşturmanıza yardımcı olur.
-
-Bugün bu genellikle şu anlama gelir:
-
-- Docker sandbox container'ları
-- `agents.defaults.sandbox.backend = "ssh"` olduğunda SSH sandbox çalışma zamanları
-- `agents.defaults.sandbox.backend = "openshell"` olduğunda OpenShell sandbox çalışma zamanları
-
-`ssh` ve OpenShell `remote` için yeniden oluşturma Docker'a göre daha önemlidir:
-
-- ilk tohumlamadan sonra uzak çalışma alanı kanoniktir
-- `openclaw sandbox recreate`, seçilen kapsam için bu kanonik uzak çalışma alanını siler
-- sonraki kullanım, geçerli yerel çalışma alanından tekrar tohumlar
+Yalıtılmış ajan yürütmesi için sandbox çalışma ortamlarını yönetin: Docker kapsayıcıları, SSH hedefleri veya OpenShell arka uçları.
 
 ## Komutlar
 
+### `openclaw sandbox list`
+
+Sandbox çalışma ortamlarını durum, arka uç, yapılandırma eşleşmesi, yaş, boşta kalma süresi ve ilişkili oturum/ajan bilgileriyle listeleyin.
+
+```bash
+openclaw sandbox list
+openclaw sandbox list --browser  # yalnızca tarayıcı kapsayıcıları
+openclaw sandbox list --json
+```
+
+### `openclaw sandbox recreate`
+
+Geçerli yapılandırmayla yeniden oluşturulmalarını zorlamak için sandbox çalışma ortamlarını kaldırın. Çalışma ortamları, ajan bir sonraki kez kullanıldığında otomatik olarak yeniden oluşturulur.
+
+```bash
+openclaw sandbox recreate --all
+openclaw sandbox recreate --agent mybot        # agent:mybot:* alt oturumlarını içerir
+openclaw sandbox recreate --session "agent:main:main"
+openclaw sandbox recreate --browser --all      # yalnızca tarayıcı kapsayıcıları
+openclaw sandbox recreate --all --force        # onayı atla
+```
+
+Seçenekler:
+
+- `--all`: tüm sandbox kapsayıcılarını yeniden oluşturur
+- `--session <key>`: çalışma ortamını bu tam kapsam anahtarıyla (`sandbox list` tarafından gösterildiği şekilde) yeniden oluşturur; kısa ad genişletmesi yapılmaz
+- `--agent <id>`: bir ajan için çalışma ortamlarını yeniden oluşturur (`agent:<id>` ve `agent:<id>:*` ile eşleşir)
+- `--browser`: yalnızca tarayıcı kapsayıcılarını etkiler
+- `--force`: onay istemini atlar
+
+`--all`, `--session` veya `--agent` seçeneklerinden tam olarak birini iletin.
+
+`ssh` ve OpenShell `remote` için yeniden oluşturma, Docker'a kıyasla daha önemlidir: ilk başlangıç verilerinin aktarılmasından sonra uzak çalışma alanı asıl kaynaktır; `recreate`, seçilen kapsamın bu asıl uzak çalışma alanını siler ve sonraki çalıştırma, geçerli yerel çalışma alanından yeniden başlangıç verilerini aktarır.
+
 ### `openclaw sandbox explain`
 
-**Etkin** sandbox modu/kapsamı/çalışma alanı erişimini, sandbox araç ilkesini ve yükseltilmiş geçitleri inceleyin (düzeltme yapılandırma anahtarı yollarıyla).
+Etkin sandbox modunu/kapsamını/çalışma alanı erişimini, sandbox araç politikasını ve yükseltilmiş araç geçitlerini (düzeltme yapılandırma anahtarı yollarıyla birlikte) inceleyin.
+
+Rapor, `workspaceRoot` değerini yapılandırılmış sandbox kökü olarak korur ve etkin ana makine çalışma alanını, arka uç çalışma ortamı çalışma dizinini ve Docker bağlama tablosunu ayrı olarak gösterir. `workspaceAccess: "rw"` için etkin ana makine çalışma alanı, `workspaceRoot` altındaki bir dizin yerine ajan çalışma alanıdır.
 
 ```bash
 openclaw sandbox explain
@@ -44,144 +64,43 @@ openclaw sandbox explain --agent work
 openclaw sandbox explain --json
 ```
 
-### `openclaw sandbox list`
+`recreate --session` seçeneğinden farklı olarak bu komut, kısa oturum adlarını (örneğin `main`) kabul eder ve bunları çözümlenmiş ajana göre genişletir.
 
-Tüm sandbox çalışma zamanlarını durumları ve yapılandırmalarıyla listeleyin.
+## Yeniden oluşturma neden gereklidir?
 
-```bash
-openclaw sandbox list
-openclaw sandbox list --browser  # List only browser containers
-openclaw sandbox list --json     # JSON output
-```
-
-**Çıktı şunları içerir:**
-
-- Çalışma zamanı adı ve durumu
-- Backend (`docker`, `openshell` vb.)
-- Yapılandırma etiketi ve geçerli yapılandırmayla eşleşip eşleşmediği
-- Yaş (oluşturulmasından bu yana geçen süre)
-- Boşta kalma süresi (son kullanımdan bu yana geçen süre)
-- İlişkili oturum/agent
-
-### `openclaw sandbox recreate`
-
-Güncellenmiş yapılandırmayla yeniden oluşturmayı zorlamak için sandbox çalışma zamanlarını kaldırın.
-
-```bash
-openclaw sandbox recreate --all                # Recreate all containers
-openclaw sandbox recreate --session main       # Specific session
-openclaw sandbox recreate --agent mybot        # Specific agent
-openclaw sandbox recreate --browser            # Only browser containers
-openclaw sandbox recreate --all --force        # Skip confirmation
-```
-
-**Seçenekler:**
-
-- `--all`: Tüm sandbox container'larını yeniden oluştur
-- `--session <key>`: Belirli oturum için container'ı yeniden oluştur
-- `--agent <id>`: Belirli agent için container'ları yeniden oluştur
-- `--browser`: Yalnızca tarayıcı container'larını yeniden oluştur
-- `--force`: Onay istemini atla
-
-<Note>
-Çalışma zamanları, agent bir sonraki kez kullanıldığında otomatik olarak yeniden oluşturulur.
-</Note>
-
-## Kullanım örnekleri
-
-### Bir Docker imajını güncelledikten sonra
-
-```bash
-# Pull new image
-docker pull openclaw-sandbox:latest
-docker tag openclaw-sandbox:latest openclaw-sandbox:bookworm-slim
-
-# Update config to use new image
-# Edit config: agents.defaults.sandbox.docker.image (or agents.list[].sandbox.docker.image)
-
-# Recreate containers
-openclaw sandbox recreate --all
-```
-
-### Sandbox yapılandırmasını değiştirdikten sonra
-
-```bash
-# Edit config: agents.defaults.sandbox.* (or agents.list[].sandbox.*)
-
-# Recreate to apply new config
-openclaw sandbox recreate --all
-```
-
-### SSH hedefini veya SSH kimlik doğrulama malzemesini değiştirdikten sonra
-
-```bash
-# Edit config:
-# - agents.defaults.sandbox.backend
-# - agents.defaults.sandbox.ssh.target
-# - agents.defaults.sandbox.ssh.workspaceRoot
-# - agents.defaults.sandbox.ssh.identityFile / certificateFile / knownHostsFile
-# - agents.defaults.sandbox.ssh.identityData / certificateData / knownHostsData
-
-openclaw sandbox recreate --all
-```
-
-Çekirdek `ssh` backend'i için yeniden oluşturma, SSH hedefindeki kapsam başına uzak çalışma alanı kökünü siler. Sonraki çalıştırma, yerel çalışma alanından tekrar tohumlar.
-
-### OpenShell kaynağını, ilkesini veya modunu değiştirdikten sonra
-
-```bash
-# Edit config:
-# - agents.defaults.sandbox.backend
-# - plugins.entries.openshell.config.from
-# - plugins.entries.openshell.config.mode
-# - plugins.entries.openshell.config.policy
-
-openclaw sandbox recreate --all
-```
-
-OpenShell `remote` modu için yeniden oluşturma, o kapsamın kanonik uzak çalışma alanını siler. Sonraki çalıştırma, yerel çalışma alanından tekrar tohumlar.
-
-### setupCommand'ı değiştirdikten sonra
-
-```bash
-openclaw sandbox recreate --all
-# or just one agent:
-openclaw sandbox recreate --agent family
-```
-
-### Yalnızca belirli bir agent için
-
-```bash
-# Update only one agent's containers
-openclaw sandbox recreate --agent alfred
-```
-
-## Buna neden ihtiyaç duyulur?
-
-Sandbox yapılandırmasını güncellediğinizde:
-
-- Mevcut çalışma zamanları eski ayarlarla çalışmaya devam eder.
-- Çalışma zamanları yalnızca 24 saatlik hareketsizlikten sonra budanır.
-- Düzenli kullanılan agent'lar eski çalışma zamanlarını süresiz olarak canlı tutar.
-
-Eski çalışma zamanlarının kaldırılmasını zorlamak için `openclaw sandbox recreate` kullanın. Gerektiğinde, geçerli ayarlarla otomatik olarak yeniden oluşturulurlar.
+Sandbox yapılandırmasını güncellemek çalışan kapsayıcıları etkilemez: mevcut çalışma ortamları eski ayarlarını korur ve boşta olan çalışma ortamları yalnızca `prune.idleHours` sonrasında (varsayılan 24 saat) temizlenir. Düzenli kullanılan ajanlar, güncelliğini yitirmiş çalışma ortamlarını süresiz olarak etkin tutabilir. `openclaw sandbox recreate`, eski çalışma ortamını kaldırır; böylece sonraki kullanımda geçerli yapılandırmadan yeniden oluşturulur.
 
 <Tip>
-Manuel backend'e özgü temizlik yerine `openclaw sandbox recreate` kullanmayı tercih edin. Gateway'in çalışma zamanı kayıt defterini kullanır ve kapsam veya oturum anahtarları değiştiğinde uyumsuzlukları önler.
+Arka uca özgü elle temizleme yerine `openclaw sandbox recreate` komutunu tercih edin. Bu komut Gateway'in çalışma ortamı kayıt defterini kullanır ve kapsam ya da oturum anahtarları değiştiğinde oluşabilecek uyumsuzlukları önler.
 </Tip>
+
+## Yaygın tetikleyiciler
+
+| Değişiklik                                                                                                                                                     | Komut                                                               |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| Docker imajı güncellemesi (`agents.defaults.sandbox.docker.image`)                                                                                             | `openclaw sandbox recreate --all`                                   |
+| Sandbox yapılandırması (`agents.defaults.sandbox.*`)                                                                                                           | `openclaw sandbox recreate --all`                                   |
+| SSH hedefi/kimlik doğrulaması (`agents.defaults.sandbox.ssh.{target,workspaceRoot,identityFile,certificateFile,knownHostsFile,identityData,certificateData,knownHostsData}`) | `openclaw sandbox recreate --all`                                   |
+| OpenShell kaynağı/politikası/modu (`plugins.entries.openshell.config.{from,mode,policy}`)                                                                       | `openclaw sandbox recreate --all`                                   |
+| `setupCommand`                                                                                                                                                 | `openclaw sandbox recreate --all` (veya tek bir ajan için `--agent <id>`) |
+
+<Note>
+Çalışma ortamları, ajan bir sonraki kez kullanıldığında otomatik olarak yeniden oluşturulur.
+</Note>
 
 ## Kayıt defteri geçişi
 
-OpenClaw, sandbox çalışma zamanı meta verilerini paylaşılan SQLite durum veritabanında saklar. Eski kurulumlarda hâlâ eski sandbox kayıt defteri dosyaları bulunabilir:
+Sandbox çalışma ortamı meta verileri, paylaşılan SQLite durum veritabanında bulunur. Eski kurulumlarda, normal okumaların artık yeniden yazmadığı eski kayıt defteri dosyaları bulunabilir:
 
 - `~/.openclaw/sandbox/containers.json`
 - `~/.openclaw/sandbox/browsers.json`
+- `~/.openclaw/sandbox/containers/` veya `~/.openclaw/sandbox/browsers/` altında kapsayıcı/tarayıcı başına bir JSON parçası
 
-Bazı yükseltmelerde `~/.openclaw/sandbox/containers/` veya `~/.openclaw/sandbox/browsers/` altında container/tarayıcı başına bir JSON parçası da bulunabilir. Normal sandbox çalışma zamanı okumaları bu eski kaynakları yeniden yazmaz. Geçerli eski girdileri SQLite'a taşımak için `openclaw doctor --fix` çalıştırın. Geçersiz eski dosyalar karantinaya alınır, böylece tek bir bozuk eski kayıt defteri geçerli çalışma zamanı girdilerini gizleyemez.
+Geçerli eski girdileri SQLite'a taşımak için `openclaw doctor --fix` komutunu çalıştırın. Bozuk eski bir kayıt defterinin geçerli çalışma ortamı girdilerini gizleyememesi için geçersiz eski dosyalar karantinaya alınır.
 
 ## Yapılandırma
 
-Sandbox ayarları `~/.openclaw/openclaw.json` içinde `agents.defaults.sandbox` altında bulunur (agent başına geçersiz kılmalar `agents.list[].sandbox` içine gider):
+Sandbox ayarları, `~/.openclaw/openclaw.json` dosyasında `agents.defaults.sandbox` altında bulunur (ajan başına geçersiz kılmalar `agents.list[].sandbox` içine yazılır):
 
 ```jsonc
 {
@@ -189,16 +108,16 @@ Sandbox ayarları `~/.openclaw/openclaw.json` içinde `agents.defaults.sandbox` 
     "defaults": {
       "sandbox": {
         "mode": "all", // off, non-main, all
-        "backend": "docker", // docker, ssh, openshell
+        "backend": "docker", // docker, ssh, openshell (plugin tarafından sağlanır)
         "scope": "agent", // session, agent, shared
         "docker": {
           "image": "openclaw-sandbox:bookworm-slim",
           "containerPrefix": "openclaw-sbx-",
-          // ... more Docker options
+          // ... diğer Docker seçenekleri
         },
         "prune": {
-          "idleHours": 24, // Auto-prune after 24h idle
-          "maxAgeDays": 7, // Auto-prune after 7 days
+          "idleHours": 24, // 24 saat boşta kaldıktan sonra otomatik temizle
+          "maxAgeDays": 7, // 7 gün sonra otomatik temizle
         },
       },
     },
@@ -208,7 +127,7 @@ Sandbox ayarları `~/.openclaw/openclaw.json` içinde `agents.defaults.sandbox` 
 
 ## İlgili
 
-- [CLI referansı](/tr/cli)
-- [Sandboxing](/tr/gateway/sandboxing)
-- [Agent çalışma alanı](/tr/concepts/agent-workspace)
+- [CLI başvurusu](/tr/cli)
+- [Sandbox kullanımı](/tr/gateway/sandboxing)
+- [Ajan çalışma alanı](/tr/concepts/agent-workspace)
 - [Doctor](/tr/gateway/doctor): sandbox kurulumunu denetler.

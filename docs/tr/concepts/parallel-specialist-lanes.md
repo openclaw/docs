@@ -1,63 +1,51 @@
 ---
 read_when:
     - Grup sohbetlerini özel ajanlara yönlendirirsiniz
-    - Tek bir uzun görevin her sohbeti engellemediği paralel çalışma istiyorsunuz
-    - Çok ajanlı bir operasyon kurulumu tasarlıyorsunuz
+    - Tek bir uzun görevin tüm sohbetleri engellemediği paralel çalışma istiyorsunuz
+    - Çok ajanlı bir operasyon düzeni tasarlıyorsunuz
 sidebarTitle: Specialist lanes
 status: active
-summary: Uzman ajanları, paylaşılan model ve araç kapasitesini tıkamadan paralel çalıştırın
-title: Paralel uzman kulvarları
+summary: Paylaşılan model ve araç kapasitesini tıkamadan uzmanlaşmış ajanları paralel olarak çalıştırın
+title: Paralel uzmanlık hatları
 x-i18n:
-    generated_at: "2026-05-10T19:33:58Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:14:11Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8721056fbe08822ac92d4bc14c8c2b0977e93eaa58c2849f83b3c0f310992f93
+    source_hash: 09852b6cf5a790e98fb5e0805b0df57b2f3719b1387ecfacfb4973bb6841abb4
     source_path: concepts/parallel-specialist-lanes.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Paralel uzman hatları, bir Gateway'in farklı sohbetleri veya odaları
-farklı ajanlara yönlendirmesini sağlar ve kullanıcı deneyimini hızlı tutar.
-İşin püf noktası, paralelliği yalnızca "daha fazla ajan" olarak değil,
-kıt kaynak tasarımı problemi olarak ele almaktır.
+Paralel uzman hatları, kullanıcı deneyimini hızlı tutarken tek bir Gateway'in farklı sohbetleri veya odaları farklı aracılara yönlendirmesine olanak tanır. Paralelliği yalnızca "daha fazla aracı" olarak değil, kıt kaynaklara yönelik bir tasarım problemi olarak ele alın.
 
-## İlk ilkeler
+## Temel ilkeler
 
-Bir uzman hattı, yalnızca gerçek darboğazlar üzerindeki çekişmeyi azalttığında
-iş hacmini iyileştirir:
+Bir uzman hattı, yalnızca gerçek darboğazlardaki çekişmeyi azalttığında iş hacmini artırır:
 
-- **Oturum kilitleri**: belirli bir oturumu aynı anda yalnızca bir çalıştırma değiştirmelidir.
-- **Küresel model kapasitesi**: tüm görünür sohbet çalıştırmaları yine de sağlayıcı sınırlarını paylaşır.
-- **Araç kapasitesi**: kabuk, tarayıcı, ağ ve depo işleri model turunun kendisinden
-  daha yavaş olabilir.
-- **Bağlam bütçesi**: uzun konuşma dökümleri gelecekteki her turu daha yavaş ve daha az
-  odaklı hale getirir.
-- **Sahiplik belirsizliği**: aynı işi yapan yinelenen ajanlar kapasiteyi boşa harcar.
+- **Oturum kilitleri**: Belirli bir oturumu aynı anda yalnızca bir çalıştırma değiştirmelidir.
+- **Genel model kapasitesi**: Görünür tüm sohbet çalıştırmaları sağlayıcı sınırlarını paylaşmaya devam eder.
+- **Araç kapasitesi**: Kabuk, tarayıcı, ağ ve depo çalışmaları model turunun kendisinden daha yavaş olabilir.
+- **Bağlam bütçesi**: Uzun dökümler, gelecekteki her turu daha yavaş ve daha az odaklı hâle getirir.
+- **Sahiplik belirsizliği**: Aynı işi yapan yinelenen aracılar kapasiteyi boşa harcar.
 
-OpenClaw zaten çalıştırmaları oturum başına serileştirir ve küresel paralelliği
-[komut kuyruğu](/tr/concepts/queue) üzerinden sınırlar. Uzman hatları bunun üzerine politika ekler:
-hangi ajanın hangi işin sahibi olduğu, sohbette neyin kalacağı ve neyin arka plan
-işine dönüşeceği.
+OpenClaw, çalıştırmaları zaten oturum başına seri hâle getirir ve genel paralelliği [komut kuyruğu](/tr/concepts/queue) üzerinden sınırlar. Uzman hatları bunun üzerine politika ekler: Hangi işin hangi aracıya ait olduğu, nelerin sohbette kaldığı ve nelerin arka plan çalışmasına dönüştüğü.
 
-## Önerilen dağıtım
+## Önerilen devreye alma planı
 
-### Aşama 1: hat sözleşmeleri + arka planda ağır iş
+### Aşama 1: Hat sözleşmeleri + ağır işleri arka planda yürütme
 
 Her hatta, çalışma alanında ve sistem isteminde yazılı bir sözleşme verin:
 
-- **Amaç**: bu hattın sahibi olduğu iş.
-- **Hedef dışı olanlar**: denemek yerine devretmesi gereken işler.
-- **Sohbet bütçesi**: hızlı yanıtlar sohbette kalır; uzun görevler kısaca onaylanmalı,
-  ardından arka planda bir alt ajan veya görev olarak çalıştırılmalıdır.
-- **Devir kuralı**: başka bir hat işin sahibiyse, nereye gitmesi gerektiğini söyleyin ve
-  kısa bir devir özeti sağlayın.
-- **Araç riski kuralı**: işi yapabilecek en küçük araç yüzeyini tercih edin.
+- **Amaç**: Bu hattın sahip olduğu iş.
+- **Hedef dışı işler**: Denemek yerine devretmesi gereken işler.
+- **Sohbet bütçesi**: Hızlı yanıtlar sohbette kalır; uzun görevler kısaca alındıktan sonra bir arka plan alt aracısında veya görevinde çalıştırılır.
+- **Devir kuralı**: İş başka bir hatta ait olduğunda, nereye gitmesi gerektiğini belirtin ve kısa bir devir özeti sağlayın.
+- **Araç riski kuralı**: İşi yapabilecek en küçük araç yüzeyini tercih edin.
 
-Bu en ucuz aşamadır ve çoğu tıkanmayı düzeltir: bir kodlama işi artık araştırma
-hattını ağırlaştırmaz ve her sohbet kendi bağlamını temiz tutar.
+Bu, en düşük maliyetli aşamadır ve tıkanmaların çoğunu giderir: Tek bir kodlama işi artık araştırma hattını aşırı yavaşlatmaz ve her sohbet kendi bağlamını temiz tutar.
 
-### Aşama 2: öncelik ve eşzamanlılık kontrolleri
+### Aşama 2: Öncelik ve eşzamanlılık denetimleri
 
 Kuyruk ve model kapasitesini her hattın iş değerine göre ayarlayın:
 
@@ -80,56 +68,56 @@ Kuyruk ve model kapasitesini her hattın iş değerine göre ayarlayın:
 }
 ```
 
-Yüksek öncelikli işler için doğrudan/kişisel sohbetleri ve üretim operasyonları ajanlarını kullanın. Sistem
-meşgulken araştırma, taslak hazırlama ve toplu kodlamanın arka plan görevlerine taşınmasına izin verin.
+Yüksek öncelikli işler için doğrudan/kişisel sohbetleri ve üretim operasyonları aracılarını kullanın. Sistem meşgul olduğunda araştırma, taslak hazırlama ve toplu kodlama işlerinin arka plan görevlerine taşınmasına izin verin.
 
-### Aşama 3: koordinatör / trafik denetleyicisi
+### Aşama 3: Koordinatör / trafik denetleyicisi
 
-Birden fazla hat etkin olduğunda küçük bir koordinatör deseni ekleyin:
+Birden fazla hat etkinleştirildikten sonra küçük bir koordinatör düzeni ekleyin:
 
 - Etkin hat görevlerini ve sahiplerini izleyin.
-- Gruplar arasında yinelenen istekleri tespit edin.
-- Hatlar arasında devir özetlerini yönlendirin.
-- Yalnızca engelleyicileri, tamamlanan sonuçları ve insanın vermesi gereken kararları yüzeye çıkarın.
+- Gruplar arasındaki yinelenen istekleri tespit edin.
+- Devir özetlerini hatlar arasında yönlendirin.
+- Yalnızca engelleri, tamamlanan sonuçları ve insanın vermesi gereken kararları gösterin.
 
 Buradan başlamayın. Hat sözleşmeleri olmayan bir koordinatör yalnızca kaosu koordine eder.
 
-## En küçük hat sözleşmesi şablonu
+## Asgari hat sözleşmesi şablonu
 
 ```md
 # Hat sözleşmesi
 
-## Sahibi olduğu işler
+## Sorumlulukları
 
 - <bu hattın sorumlu olduğu iş>
 
-## Sahibi olmadığı işler
+## Sorumlulukları dışında kalanlar
 
 - <devredilecek iş>
 
 ## Sohbet bütçesi
 
 - Hızlı soruları doğrudan yanıtlayın.
-- Çok adımlı, yavaş veya araç ağırlıklı işler için: kısaca onaylayın, işi başlatın/arka plana alın,
-  ardından tamamlandığında sonucu döndürün.
+- Çok adımlı, yavaş veya yoğun araç kullanımı gerektiren işler için: kısaca
+  alındığını bildirin, işi başlatın/arka plana alın, ardından tamamlandığında
+  sonucu döndürün.
 
 ## Devir
 
-İsteğin sahibi başka bir hatsa, şunlarla yanıt verin:
+İstek başka bir hatta aitse şu bilgilerle yanıt verin:
 
 - hedef hat
 - amaç
 - ilgili bağlam
-- tam sonraki eylem
+- bir sonraki kesin eylem
 
-## Araç tutumu
+## Araç yaklaşımı
 
-Görevi tamamlayabilecek en küçük araç yüzeyini kullanın. Bu hat açıkça sahibi olmadığı sürece geniş kabuk veya
-ağ işlerinden kaçının.
+Görevi tamamlayabilecek en küçük araç yüzeyini kullanın. Bu hat açıkça sorumlu
+olmadıkça kapsamlı kabuk veya ağ çalışmalarından kaçının.
 ```
 
-## İlgili
+## İlgili konular
 
-- [Çok ajanlı yönlendirme](/tr/concepts/multi-agent)
+- [Çok aracılı yönlendirme](/tr/concepts/multi-agent)
 - [Komut kuyruğu](/tr/concepts/queue)
-- [Alt ajanlar](/tr/tools/subagents)
+- [Alt aracılar](/tr/tools/subagents)

@@ -1,29 +1,31 @@
 ---
 read_when:
-    - کشف گسترده‌محدوده (DNS-SD) از طریق Tailscale + CoreDNS را می‌خواهید
+    - شما خواهان کشف در شبکه گسترده (DNS-SD) از طریق Tailscale و CoreDNS هستید
     - You're setting up split DNS for a custom discovery domain (example: openclaw.internal)
-summary: مرجع CLI برای `openclaw dns` (کمک‌ابزارهای کشف در ناحیهٔ گسترده)
+summary: مرجع CLI برای `openclaw dns` (ابزارهای کمکی کشف در شبکهٔ گسترده)
 title: DNS
 x-i18n:
-    generated_at: "2026-05-06T09:06:13Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:45:37Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 460bdcbaa2c0c0fc1a4f5bdd76b904d8ac35195a25324c66421abfdc2044bb07
+    source_hash: bb07353df03f9d169e1aede2da0b711ffb68e8c9d21d51359e93e92cc0818ca2
     source_path: cli/dns.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw dns`
 
-ابزارهای کمکی DNS برای کشف گستره‌وسیع (Tailscale + CoreDNS). در حال حاضر بر macOS + Homebrew CoreDNS متمرکز است.
+ابزارهای کمکی DNS برای کشف در شبکه گسترده (Tailscale + CoreDNS). در حال حاضر فقط macOS + CoreDNS نصب‌شده با Homebrew پشتیبانی می‌شود.
 
 مرتبط:
 
 - کشف Gateway: [کشف](/fa/gateway/discovery)
-- پیکربندی کشف گستره‌وسیع: [پیکربندی](/fa/gateway/configuration)
+- پیکربندی کشف در شبکه گسترده: [پیکربندی](/fa/gateway/configuration)
 
-## راه‌اندازی
+## `dns setup`
+
+برنامه‌ریزی یا اعمال راه‌اندازی CoreDNS برای کشف DNS-SD تک‌پخشی.
 
 ```bash
 openclaw dns setup
@@ -31,29 +33,25 @@ openclaw dns setup --domain openclaw.internal
 openclaw dns setup --apply
 ```
 
-## `dns setup`
+| گزینه               | تأثیر                                                                                          |
+| ------------------- | ---------------------------------------------------------------------------------------------- |
+| `--domain <domain>` | دامنه کشف در شبکه گسترده (برای مثال `openclaw.internal`).                                      |
+| `--apply`           | نصب/به‌روزرسانی پیکربندی CoreDNS و راه‌اندازی (مجدد) سرویس. نیازمند sudo و فقط برای macOS است. |
 
-برنامه‌ریزی یا اعمال راه‌اندازی CoreDNS برای کشف DNS-SD تک‌پخشی.
+بدون `--domain`، OpenClaw از `discovery.wideArea.domain` در پیکربندی استفاده می‌کند.
 
-گزینه‌ها:
+بدون `--apply`، فرمان فقط موارد زیر را چاپ می‌کند:
 
-- `--domain <domain>`: دامنه کشف گستره‌وسیع (برای مثال `openclaw.internal`)
-- `--apply`: نصب یا به‌روزرسانی پیکربندی CoreDNS و راه‌اندازی دوباره سرویس (به sudo نیاز دارد؛ فقط macOS)
-
-آنچه نمایش می‌دهد:
-
-- دامنه کشف حل‌شده
-- مسیر فایل zone
-- IPهای tailnet فعلی
+- دامنه کشف تفکیک‌شده و مسیر فایل ناحیه
+- نشانی‌های IP فعلی tailnet
 - پیکربندی پیشنهادی کشف در `openclaw.json`
-- مقادیر نام‌سرور/دامنه Split DNS در Tailscale که باید تنظیم شوند
+- مقادیر کارساز نام/دامنه Split DNS در Tailscale که باید در کنسول مدیریت Tailscale تنظیم شوند
 
-نکات:
+با `--apply` (فقط macOS، نیازمند CoreDNS نصب‌شده با Homebrew):
 
-- بدون `--apply`، این دستور فقط یک ابزار کمکی برای برنامه‌ریزی است و راه‌اندازی پیشنهادی را چاپ می‌کند.
-- اگر `--domain` حذف شود، OpenClaw از `discovery.wideArea.domain` در پیکربندی استفاده می‌کند.
-- `--apply` در حال حاضر فقط از macOS پشتیبانی می‌کند و Homebrew CoreDNS را انتظار دارد.
-- `--apply` در صورت نیاز فایل zone را راه‌اندازی اولیه می‌کند، از وجود قطعه import در CoreDNS اطمینان می‌دهد و سرویس brew مربوط به `coredns` را دوباره راه‌اندازی می‌کند.
+- در صورت نبود فایل ناحیه، آن را راه‌اندازی اولیه می‌کند
+- در صورت نبود بند import در CoreDNS، آن را اضافه می‌کند
+- سرویس brew با نام `coredns` را مجدداً راه‌اندازی می‌کند
 
 ## مرتبط
 

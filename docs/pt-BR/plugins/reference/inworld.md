@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Você está instalando, configurando ou auditando o Plugin inworld
-summary: Síntese de texto para fala em streaming da Inworld (MP3, OGG_OPUS, PCM de telefonia).
+    - Você está instalando, configurando ou auditando o plugin inworld
+summary: Síntese de fala em streaming da Inworld (MP3, OGG_OPUS, PCM para telefonia).
 title: Plugin Inworld
 x-i18n:
-    generated_at: "2026-06-27T17:53:47Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T00:12:27Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 02d912c51460e181e100bc227575cafd1ab3c49494057d2df1e26571000020a8
@@ -13,19 +13,19 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin da Inworld
+# Plugin Inworld
 
-Texto para fala por streaming da Inworld (MP3, OGG_OPUS, PCM de telefonia).
+Conversão de texto em fala por streaming do Inworld (MP3, OGG_OPUS, PCM para telefonia).
 
 ## Distribuição
 
 - Pacote: `@openclaw/inworld-speech`
-- Rota de instalação: npm; ClawHub: `clawhub:@openclaw/inworld-speech`
+- Método de instalação: npm; ClawHub: `clawhub:@openclaw/inworld-speech`
 
-## Superfície
+## Interface
 
 contratos: speechProviders
 
 ## Documentação relacionada
 
-- [inworld](/pt-BR/providers/inworld)
+- [Inworld](/pt-BR/providers/inworld)

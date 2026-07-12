@@ -1,20 +1,20 @@
 ---
 read_when:
-    - Gateway ağ modeline kısa ve öz bir bakış istiyorsunuz
+    - Gateway ağ modelinin özlü bir görünümünü istiyorsunuz
 redirect: /network#core-model
-summary: /network#core-model adresine yönlendir
+summary: /network#core-model adresine yönlendir.
 title: Ağ modeli
 x-i18n:
-    generated_at: "2026-05-06T09:13:45Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:19:58Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: a0ef2806cfb539157d827fe9c2ffddc914aa680e3ef318c211b2ec1f374cfed2
     source_path: gateway/network-model.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Bu içerik [Ağ — Çekirdek model](/tr/network#core-model) ile birleştirildi.
+Bu içerik [Ağ — Temel model](/tr/network#core-model) sayfasına birleştirildi.
 
 ## İlgili
 

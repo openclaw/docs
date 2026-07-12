@@ -1,11 +1,11 @@
 ---
 read_when:
     - Você está instalando, configurando ou auditando o plugin openshell
-summary: Backend de sandbox do OpenClaw para a CLI NVIDIA OpenShell com workspaces locais espelhados e execução de comandos SSH.
+summary: Backend de sandbox do OpenClaw para a CLI NVIDIA OpenShell, com espaços de trabalho locais espelhados e execução de comandos via SSH.
 title: Plugin Openshell
 x-i18n:
-    generated_at: "2026-06-27T17:55:14Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T00:15:13Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: f97a099c465df22c0dfd7a68907c1a75c99ca301ad016ceb1be46c81376793f8
@@ -15,13 +15,13 @@ x-i18n:
 
 # Plugin Openshell
 
-Backend de sandbox do OpenClaw para a CLI NVIDIA OpenShell com workspaces locais espelhados e execução de comandos via SSH.
+Backend de sandbox do OpenClaw para a CLI NVIDIA OpenShell, com espaços de trabalho locais espelhados e execução de comandos via SSH.
 
 ## Distribuição
 
 - Pacote: `@openclaw/openshell-sandbox`
-- Rota de instalação: npm; ClawHub
+- Forma de instalação: npm; ClawHub
 
 ## Superfície
 
-plugin
+Plugin

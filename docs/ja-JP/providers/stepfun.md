@@ -1,14 +1,13 @@
 ---
 read_when:
-    - OpenClawでStepFunモデルを使用する場合
-    - StepFun のセットアップガイダンスが必要です
-summary: OpenClawでStepFunモデルを使用する
+    - OpenClaw で StepFun モデルを使用したい場合
+    - StepFun のセットアップ手順が必要です
+summary: OpenClaw で StepFun モデルを使用する
 title: StepFun
 x-i18n:
-    generated_at: "2026-07-12T14:52:13Z"
+    generated_at: "2026-07-11T22:37:23Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: c65e6d395f4ea890efc0e4847ec21dc1c2796fa240d20ca3e6d40eea480ed9f4
     source_path: providers/stepfun.md
@@ -24,7 +23,7 @@ StepFun は、2 つのプロバイダー ID を持つ外部公式 Plugin（`@ope
 標準と Step Plan は、エンドポイントとモデル参照プレフィックス（`stepfun/...` と `stepfun-plan/...`）が異なる**別々のプロバイダー**です。`.com` エンドポイントには中国向けキーを、`.ai` エンドポイントにはグローバル向けキーを使用してください。
 </Warning>
 
-## Plugin をインストールする
+## Plugin のインストール
 
 ```bash
 openclaw plugins install @openclaw/stepfun-provider
@@ -33,10 +32,10 @@ openclaw gateway restart
 
 ## リージョンとエンドポイントの概要
 
-| エンドポイント | 中国（`.com`）                           | グローバル（`.ai`）                    |
-| --------- | -------------------------------------- | ------------------------------------- |
-| 標準      | `https://api.stepfun.com/v1`           | `https://api.stepfun.ai/v1`           |
-| Step Plan | `https://api.stepfun.com/step_plan/v1` | `https://api.stepfun.ai/step_plan/v1` |
+| エンドポイント | 中国（`.com`）                         | グローバル（`.ai`）                  |
+| -------------- | -------------------------------------- | ------------------------------------- |
+| 標準           | `https://api.stepfun.com/v1`           | `https://api.stepfun.ai/v1`           |
+| Step Plan      | `https://api.stepfun.com/step_plan/v1` | `https://api.stepfun.ai/step_plan/v1` |
 
 認証環境変数: `STEPFUN_API_KEY`
 
@@ -45,32 +44,32 @@ openclaw gateway restart
 標準（`stepfun`）:
 
 | モデル参照               | コンテキスト | 最大出力 | 備考                           |
-| ------------------------ | ------- | ---------- | ------------------------------ |
-| `stepfun/step-3.5-flash` | 262,144 | 65,536     | デフォルトの標準モデル         |
-| `stepfun/step-3.7-flash` | 262,144 | 262,144    | マルチモーダル画像入力をサポート |
+| ------------------------ | ------------ | -------- | ------------------------------ |
+| `stepfun/step-3.5-flash` | 262,144      | 65,536   | デフォルトの標準モデル         |
+| `stepfun/step-3.7-flash` | 262,144      | 262,144  | マルチモーダル画像入力に対応   |
 
 Step Plan（`stepfun-plan`）:
 
-| モデル参照                         | コンテキスト | 最大出力 | 備考                           |
-| ---------------------------------- | ------- | ---------- | ------------------------------ |
-| `stepfun-plan/step-3.5-flash`      | 262,144 | 65,536     | デフォルトの Step Plan モデル  |
-| `stepfun-plan/step-3.7-flash`      | 262,144 | 262,144    | マルチモーダル画像入力をサポート |
-| `stepfun-plan/step-3.5-flash-2603` | 262,144 | 65,536     | 追加の Step Plan モデル        |
+| モデル参照                         | コンテキスト | 最大出力 | 備考                             |
+| ---------------------------------- | ------------ | -------- | -------------------------------- |
+| `stepfun-plan/step-3.5-flash`      | 262,144      | 65,536   | デフォルトの Step Plan モデル    |
+| `stepfun-plan/step-3.7-flash`      | 262,144      | 262,144  | マルチモーダル画像入力に対応     |
+| `stepfun-plan/step-3.5-flash-2603` | 262,144      | 65,536   | 追加の Step Plan モデル          |
 
 ## はじめに
 
 <Tabs>
   <Tab title="標準">
-    標準の StepFun エンドポイントを介した汎用用途に最適です。
+    標準の StepFun エンドポイントを介した汎用的な利用に最適です。
 
     <Steps>
-      <Step title="エンドポイントのリージョンを選択する">
-        | 認証方法                       | エンドポイント                | リージョン     |
-        | -------------------------------- | ----------------------------- | -------------- |
-        | `stepfun-standard-api-key-intl` | `https://api.stepfun.ai/v1`  | 国際           |
-        | `stepfun-standard-api-key-cn`   | `https://api.stepfun.com/v1` | 中国           |
+      <Step title="エンドポイントのリージョンを選択">
+        | 認証の選択                     | エンドポイント                | リージョン |
+        | ------------------------------ | ----------------------------- | ---------- |
+        | `stepfun-standard-api-key-intl` | `https://api.stepfun.ai/v1`  | 国際       |
+        | `stepfun-standard-api-key-cn`   | `https://api.stepfun.com/v1` | 中国       |
       </Step>
-      <Step title="オンボーディングを実行する">
+      <Step title="オンボーディングを実行">
         ```bash
         openclaw onboard --auth-choice stepfun-standard-api-key-intl
         ```
@@ -81,13 +80,13 @@ Step Plan（`stepfun-plan`）:
         openclaw onboard --auth-choice stepfun-standard-api-key-cn
         ```
       </Step>
-      <Step title="非対話式の代替手順">
+      <Step title="非対話型の代替手順">
         ```bash
         openclaw onboard --auth-choice stepfun-standard-api-key-intl \
           --stepfun-api-key "$STEPFUN_API_KEY"
         ```
       </Step>
-      <Step title="モデルが利用可能であることを確認する">
+      <Step title="モデルが利用可能であることを確認">
         ```bash
         openclaw models list --provider stepfun
         ```
@@ -103,13 +102,13 @@ Step Plan（`stepfun-plan`）:
     Step Plan 推論エンドポイントに最適です。
 
     <Steps>
-      <Step title="エンドポイントのリージョンを選択する">
-        | 認証方法                    | エンドポイント                           | リージョン     |
-        | ------------------------------ | ------------------------------------------ | -------------- |
-        | `stepfun-plan-api-key-intl` | `https://api.stepfun.ai/step_plan/v1`  | 国際           |
-        | `stepfun-plan-api-key-cn`   | `https://api.stepfun.com/step_plan/v1` | 中国           |
+      <Step title="エンドポイントのリージョンを選択">
+        | 認証の選択                  | エンドポイント                           | リージョン |
+        | --------------------------- | ---------------------------------------- | ---------- |
+        | `stepfun-plan-api-key-intl` | `https://api.stepfun.ai/step_plan/v1`  | 国際       |
+        | `stepfun-plan-api-key-cn`   | `https://api.stepfun.com/step_plan/v1` | 中国       |
       </Step>
-      <Step title="オンボーディングを実行する">
+      <Step title="オンボーディングを実行">
         ```bash
         openclaw onboard --auth-choice stepfun-plan-api-key-intl
         ```
@@ -120,13 +119,13 @@ Step Plan（`stepfun-plan`）:
         openclaw onboard --auth-choice stepfun-plan-api-key-cn
         ```
       </Step>
-      <Step title="非対話式の代替手順">
+      <Step title="非対話型の代替手順">
         ```bash
         openclaw onboard --auth-choice stepfun-plan-api-key-intl \
           --stepfun-api-key "$STEPFUN_API_KEY"
         ```
       </Step>
-      <Step title="モデルが利用可能であることを確認する">
+      <Step title="モデルが利用可能であることを確認">
         ```bash
         openclaw models list --provider stepfun-plan
         ```
@@ -139,7 +138,7 @@ Step Plan（`stepfun-plan`）:
   </Tab>
 </Tabs>
 
-1 回の認証フローで、`stepfun` と `stepfun-plan` の両方に対してリージョンが一致するプロファイルが書き込まれるため、1 回のオンボーディング実行後に両方の機能がまとめて検出されます。
+1 回の認証フローで `stepfun` と `stepfun-plan` の両方にリージョンが一致するプロファイルが書き込まれるため、オンボーディングを 1 回実行すると、両方のインターフェースがまとめて検出されます。
 
 ## 高度な設定
 
@@ -273,9 +272,9 @@ Step Plan（`stepfun-plan`）:
     ```
   </Accordion>
 
-  <Accordion title="注意事項">
-    - `step-3.7-flash` は OpenClaw を介してテキストと画像の入力を受け付けます。StepFun の API は動画もサポートしていますが、OpenClaw ではまだモデル入力モダリティとして利用できません。
-    - Step 3.7 は `low`、`medium`、`high` の推論強度をサポートします。このモデルには推論なしのモードがないため、`/think off` は `low` にマッピングされます。
+  <Accordion title="注記">
+    - `step-3.7-flash` は OpenClaw を介したテキスト入力と画像入力を受け付けます。StepFun の API は動画にも対応していますが、OpenClaw ではまだモデル入力モダリティとして対応していません。
+    - Step 3.7 は `low`、`medium`、`high` の推論強度に対応しています。このモデルには推論を行わないモードがないため、`/think off` は `low` にマッピングされます。
     - `step-3.5-flash-2603` は現在 `stepfun-plan` でのみ公開されています。
     - モデルを確認または切り替えるには、`openclaw models list` と `openclaw models set <provider/model>` を使用します。
 

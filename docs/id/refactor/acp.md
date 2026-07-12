@@ -1,70 +1,76 @@
 ---
 read_when:
-    - Refaktorisasi siklus hidup sesi ACP atau pembersihan proses ACPX
-    - Melakukan debug pada proses yatim ACPX, penggunaan ulang PID, atau keamanan pembersihan multi-Gateway
-    - Mengubah visibilitas sessions_list untuk sesi ACP atau subagen yang dibuat
-    - Merancang metadata kepemilikan untuk tugas latar belakang, sesi ACP, atau lease proses
+    - Pemfaktoran ulang siklus hidup sesi ACP atau pembersihan proses ACPX
+    - Men-debug proses yatim ACPX, penggunaan ulang PID, atau keamanan pembersihan multi-Gateway
+    - Mengubah visibilitas sessions_list untuk sesi ACP atau subagen yang dibuat secara dinamis
+    - Merancang metadata kepemilikan untuk tugas latar belakang, sesi ACP, atau sewa proses
 sidebarTitle: ACP lifecycle refactor
-summary: Rencana migrasi untuk membuat kepemilikan sesi ACP dan proses ACPX menjadi eksplisit
-title: Refaktorisasi siklus hidup ACP
+summary: Rencana migrasi untuk memperjelas kepemilikan sesi ACP dan proses ACPX
+title: Refaktor siklus hidup ACP
 x-i18n:
-    generated_at: "2026-05-07T13:25:12Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:35:54Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: b7f4ee447e0b436601c68251c26c1b897a642f6a8b1886d18647b62817996792
     source_path: refactor/acp.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-ACP lifecycle saat ini berfungsi, tetapi terlalu banyak hal disimpulkan setelah kejadian.
+Siklus hidup ACP saat ini berfungsi, tetapi terlalu banyak bagiannya disimpulkan setelah kejadian.
 Pembersihan proses merekonstruksi kepemilikan dari PID, string perintah, jalur
-pembungkus, dan tabel proses langsung. Visibilitas sesi merekonstruksi kepemilikan
+pembungkus, dan tabel proses aktif. Visibilitas sesi merekonstruksi kepemilikan
 dari string kunci sesi ditambah pencarian sekunder `sessions.list({ spawnedBy })`.
-Itu memungkinkan perbaikan sempit, tetapi juga membuat kasus tepi mudah terlewat:
-penggunaan ulang PID, perintah yang dikutip, cucu adaptor, akar status multi-Gateway,
-`cancel` versus `close`, dan visibilitas `tree` versus `all` semuanya menjadi tempat
-terpisah untuk menemukan ulang aturan kepemilikan yang sama.
+Hal itu memungkinkan perbaikan yang terfokus, tetapi juga membuat kasus khusus
+mudah terlewat: penggunaan ulang PID, perintah yang diberi tanda kutip, proses
+turunan tingkat lanjut dari adaptor, akar status multi-Gateway, `cancel` versus
+`close`, serta visibilitas `tree` versus `all` menjadi tempat-tempat terpisah
+untuk menemukan kembali aturan kepemilikan yang sama.
 
-Refaktor ini menjadikan kepemilikan sebagai konsep kelas satu. Tujuannya bukan
-permukaan produk ACP baru; tujuannya adalah kontrak internal yang lebih aman untuk
+Refaktor ini menjadikan kepemilikan sebagai konsep utama. Tujuannya bukan
+permukaan produk ACP baru, melainkan kontrak internal yang lebih aman untuk
 perilaku ACP dan ACPX yang sudah ada.
 
 ## Tujuan
 
-- Pembersihan tidak pernah mengirim sinyal ke proses kecuali bukti langsung saat ini cocok dengan
-  sewa milik OpenClaw.
-- `cancel`, `close`, dan pembersihan saat startup memiliki maksud siklus hidup yang berbeda.
-- `sessions_list`, `sessions_history`, `sessions_send`, dan pemeriksaan status menggunakan
-  model sesi milik peminta yang sama.
-- Instalasi multi-Gateway tidak dapat membersihkan pembungkus ACPX milik satu sama lain.
-- Rekaman sesi ACPX lama tetap berfungsi selama migrasi.
-- Runtime tetap dimiliki Plugin; core tidak mempelajari detail paket ACPX.
+- Pembersihan tidak pernah mengirim sinyal ke proses kecuali bukti aktif saat
+  ini cocok dengan sewa yang dimiliki OpenClaw.
+- `cancel`, `close`, dan pembersihan saat mulai memiliki maksud siklus hidup
+  yang berbeda.
+- `sessions_list`, `sessions_history`, `sessions_send`, dan pemeriksaan status
+  menggunakan model sesi milik peminta yang sama.
+- Instalasi multi-Gateway tidak dapat membersihkan pembungkus ACPX milik satu
+  sama lain.
+- Catatan sesi ACPX lama tetap berfungsi selama migrasi.
+- Runtime tetap dimiliki Plugin; inti tidak mempelajari detail paket ACPX.
 
 ## Bukan tujuan
 
 - Mengganti ACPX atau mengubah permukaan perintah publik `/acp`.
-- Memindahkan perilaku adaptor ACP khusus vendor ke core.
-- Mengharuskan pengguna membersihkan status secara manual sebelum meningkatkan versi.
-- Membuat `cancel` menutup sesi ACP yang dapat digunakan ulang.
+- Memindahkan perilaku adaptor ACP khusus vendor ke inti.
+- Mengharuskan pengguna membersihkan status secara manual sebelum meningkatkan
+  versi.
+- Membuat `cancel` menutup sesi ACP yang dapat digunakan kembali.
 
-## Model Target
+## Model Sasaran
 
 ### Identitas Instans Gateway
 
-Setiap proses Gateway harus memiliki id instans runtime yang stabil:
+Setiap proses Gateway harus memiliki ID instans runtime yang stabil:
 
 ```ts
 type GatewayInstanceId = string;
 ```
 
-Id ini dapat dihasilkan saat startup Gateway dan dipertahankan dalam status selama masa hidup
-instalasi tersebut. Ini bukan rahasia keamanan; ini adalah pembeda kepemilikan yang digunakan
-untuk menghindari kekeliruan antara proses ACP milik satu Gateway dan proses milik Gateway lain.
+ID ini dapat dibuat saat Gateway dimulai dan dipertahankan dalam status selama
+masa hidup instalasi tersebut. Ini bukan rahasia keamanan; ini adalah pembeda
+kepemilikan yang digunakan untuk menghindari kekeliruan antara proses ACP milik
+satu Gateway dan proses milik Gateway lain.
 
 ### Kepemilikan Sesi ACP
 
-Setiap sesi ACP yang dimunculkan harus memiliki metadata kepemilikan yang dinormalisasi:
+Setiap sesi ACP yang dibuat harus memiliki metadata kepemilikan yang
+dinormalisasi:
 
 ```ts
 type AcpSessionOwner = {
@@ -91,13 +97,14 @@ canSeeSessionRow({
 });
 ```
 
-Itu menghapus panggilan sekunder tersembunyi `sessions.list({ spawnedBy })` dari
-pemeriksaan visibilitas. Anak ACP lintas agen yang dimunculkan dimiliki oleh peminta karena
-barisnya menyatakan demikian, bukan karena kueri kedua kebetulan menemukannya.
+Hal ini menghapus pemanggilan sekunder tersembunyi
+`sessions.list({ spawnedBy })` dari pemeriksaan visibilitas. Sesi anak ACP lintas
+agen yang dibuat dianggap milik peminta karena baris tersebut menyatakannya,
+bukan karena kueri kedua kebetulan menemukannya.
 
 ### Sewa Proses ACPX
 
-Setiap peluncuran pembungkus yang dihasilkan harus membuat rekaman sewa:
+Setiap peluncuran pembungkus yang dibuat harus menghasilkan catatan sewa:
 
 ```ts
 type AcpxProcessLease = {
@@ -114,28 +121,30 @@ type AcpxProcessLease = {
 };
 ```
 
-Proses pembungkus harus menerima id sewa dan id instans Gateway di lingkungannya:
+Proses pembungkus harus menerima ID sewa dan ID instans Gateway melalui
+lingkungannya:
 
 ```sh
 OPENCLAW_ACPX_LEASE_ID=...
 OPENCLAW_GATEWAY_INSTANCE_ID=...
 ```
 
-Jika platform memungkinkan, verifikasi harus mengutamakan metadata proses langsung
-yang tidak dapat dikacaukan oleh kutipan perintah:
+Jika platform mendukungnya, verifikasi harus mengutamakan metadata proses aktif
+yang tidak dapat disalahartikan akibat pengutipan perintah:
 
 - PID akar masih ada
-- jalur pembungkus langsung berada di bawah `wrapperRoot`
+- jalur pembungkus aktif berada di bawah `wrapperRoot`
 - grup proses cocok dengan sewa jika tersedia
-- lingkungan berisi id sewa yang diharapkan jika dapat dibaca
-- hash perintah atau jalur executable cocok dengan sewa
+- lingkungan berisi ID sewa yang diharapkan jika dapat dibaca
+- hash perintah atau jalur berkas yang dapat dieksekusi cocok dengan sewa
 
-Jika proses langsung tidak dapat diverifikasi, pembersihan gagal secara tertutup.
+Jika proses aktif tidak dapat diverifikasi, pembersihan harus gagal secara
+tertutup.
 
-## Pengendali Siklus Hidup
+## Pengontrol Siklus Hidup
 
-Perkenalkan satu pengendali siklus hidup ACPX yang memiliki sewa proses dan kebijakan
-pembersihan:
+Perkenalkan satu pengontrol siklus hidup ACPX yang memiliki sewa proses dan
+kebijakan pembersihan:
 
 ```ts
 interface AcpxLifecycleController {
@@ -151,31 +160,32 @@ interface AcpxLifecycleController {
 }
 ```
 
-`cancelTurn` hanya meminta pembatalan giliran. Ini tidak boleh membersihkan proses
-pembungkus atau adaptor yang dapat digunakan ulang.
+`cancelTurn` hanya meminta pembatalan giliran. Operasi ini tidak boleh
+membersihkan proses pembungkus atau adaptor yang dapat digunakan kembali.
 
-`closeSession` boleh membersihkan, tetapi hanya setelah memuat rekaman sesi,
-memuat sewa, dan memverifikasi bahwa pohon proses langsung masih menjadi milik
-sewa tersebut.
+`closeSession` boleh melakukan pembersihan, tetapi hanya setelah memuat catatan
+sesi, memuat sewa, dan memverifikasi bahwa pohon proses aktif masih menjadi
+milik sewa tersebut.
 
-`reapStartupOrphans` dimulai dari sewa terbuka dalam status. Ini boleh menggunakan tabel
-proses untuk menemukan turunan, tetapi tidak boleh memindai perintah sembarang yang tampak
-seperti ACP terlebih dahulu lalu memutuskan bahwa perintah itu mungkin milik kita.
+`reapStartupOrphans` dimulai dari sewa terbuka dalam status. Operasi ini dapat
+menggunakan tabel proses untuk menemukan turunan, tetapi tidak boleh terlebih
+dahulu memindai perintah sembarang yang tampak seperti ACP lalu memutuskan bahwa
+perintah tersebut mungkin milik kita.
 
 ## Kontrak Pembungkus
 
-Pembungkus yang dihasilkan harus tetap kecil. Pembungkus harus:
+Pembungkus yang dibuat harus tetap ringkas. Pembungkus harus:
 
 - memulai adaptor dalam grup proses jika didukung
-- meneruskan sinyal terminasi normal ke grup proses
+- meneruskan sinyal penghentian normal ke grup proses
 - mendeteksi kematian induk
-- saat induk mati, mengirim SIGTERM, lalu menjaga pembungkus tetap hidup sampai fallback SIGKILL
-  berjalan
-- melaporkan PID akar dan id grup proses kembali ke pengendali siklus hidup jika
+- saat induk mati, mengirim SIGTERM, lalu menjaga pembungkus tetap hidup hingga
+  mekanisme cadangan SIGKILL dijalankan
+- melaporkan PID akar dan ID grup proses kembali ke pengontrol siklus hidup jika
   tersedia
 
-Pembungkus tidak boleh menentukan kebijakan sesi. Pembungkus hanya menegakkan pembersihan
-pohon proses lokal untuk grup adaptornya sendiri.
+Pembungkus tidak boleh menentukan kebijakan sesi. Pembungkus hanya menerapkan
+pembersihan pohon proses lokal untuk grup adaptornya sendiri.
 
 ## Kontrak Visibilitas Sesi
 
@@ -199,73 +209,83 @@ type SessionVisibilityInput = {
 Aturan:
 
 - `self`: hanya sesi peminta.
-- `tree`: sesi peminta ditambah baris yang dimiliki oleh atau dimunculkan dari peminta.
-- `all`: semua baris agen yang sama, baris lintas agen yang diizinkan a2a, dan baris lintas agen
-  yang dimunculkan dan dimiliki peminta bahkan ketika a2a umum dinonaktifkan.
-- `agent`: hanya agen yang sama, kecuali hubungan pemilik eksplisit menyatakan bahwa baris
-  tersebut milik peminta.
+- `tree`: sesi peminta ditambah baris yang dimiliki oleh atau dibuat dari
+  peminta.
+- `all`: semua baris agen yang sama, baris lintas agen yang diizinkan a2a, dan
+  baris lintas agen yang dibuat serta dimiliki peminta meskipun a2a umum
+  dinonaktifkan.
+- `agent`: hanya agen yang sama, kecuali hubungan pemilik eksplisit menyatakan
+  bahwa baris tersebut milik peminta.
 
-Ini membuat `tree` dan `all` monotonik: `all` tidak boleh menyembunyikan anak milik peminta yang
-akan ditampilkan oleh `tree`.
+Hal ini membuat `tree` dan `all` monoton: `all` tidak boleh menyembunyikan sesi
+anak milik peminta yang akan ditampilkan oleh `tree`.
 
 ## Rencana Migrasi
 
-### Fase 1: Tambahkan Identitas Dan Sewa
+### Fase 1: Tambahkan Identitas dan Sewa
 
 - Tambahkan `gatewayInstanceId` ke status Gateway.
 - Tambahkan penyimpanan sewa ACPX di bawah direktori status ACPX.
-- Tulis sewa sebelum memunculkan pembungkus yang dihasilkan.
-- Simpan `leaseId` pada rekaman sesi ACPX baru.
-- Pertahankan bidang PID dan perintah yang ada untuk rekaman lama.
+- Tulis sewa sebelum membuat pembungkus yang dihasilkan.
+- Simpan `leaseId` pada catatan sesi ACPX baru.
+- Pertahankan bidang PID dan perintah yang ada untuk catatan lama.
 
-### Fase 2: Pembersihan Mengutamakan Sewa
+### Fase 2: Pembersihan yang Mengutamakan Sewa
 
 - Ubah pembersihan penutupan agar memuat `leaseId` terlebih dahulu.
-- Verifikasi kepemilikan proses langsung terhadap sewa sebelum mengirim sinyal.
-- Pertahankan fallback PID akar dan akar pembungkus saat ini hanya untuk rekaman lama.
+- Verifikasi kepemilikan proses aktif terhadap sewa sebelum mengirim sinyal.
+- Pertahankan mekanisme cadangan PID akar dan akar pembungkus saat ini hanya
+  untuk catatan lama.
 - Tandai sewa sebagai `closed` setelah pembersihan terverifikasi.
-- Tandai sewa sebagai `lost` ketika proses sudah hilang sebelum pembersihan.
+- Tandai sewa sebagai `lost` jika proses sudah tidak ada sebelum pembersihan.
 
-### Fase 3: Pembersihan Startup Mengutamakan Sewa
+### Fase 3: Pembersihan Saat Mulai yang Mengutamakan Sewa
 
-- Pembersihan startup memindai sewa terbuka.
-- Untuk setiap sewa, verifikasi proses akar dan kumpulkan turunan.
-- Bersihkan pohon terverifikasi dari anak terlebih dahulu.
-- Kedaluwarsakan sewa lama `closed` dan `lost` dengan jendela retensi terbatas.
-- Pertahankan pemindaian penanda perintah hanya sebagai fallback lama sementara, dijaga oleh
-  akar pembungkus dan instans Gateway jika memungkinkan.
+- Pembersihan saat mulai memindai sewa terbuka.
+- Untuk setiap sewa, verifikasi proses akar dan kumpulkan turunannya.
+- Bersihkan pohon terverifikasi dengan mendahulukan proses anak.
+- Kedaluwarsakan sewa `closed` dan `lost` lama dengan jangka retensi terbatas.
+- Pertahankan pemindaian penanda perintah hanya sebagai mekanisme cadangan lama
+  sementara, yang dibatasi oleh akar pembungkus dan instans Gateway jika
+  memungkinkan.
 
 ### Fase 4: Baris Kepemilikan Sesi
 
 - Tambahkan metadata kepemilikan ke baris sesi Gateway.
-- Ajarkan penulis ACPX, subagen, tugas latar belakang, dan penyimpanan sesi untuk mengisi
-  `ownerSessionKey` atau `spawnedBy`.
-- Ubah pemeriksaan visibilitas sesi agar menggunakan metadata baris.
-- Hapus pencarian sekunder `sessions.list({ spawnedBy })` pada waktu visibilitas.
+- Ajarkan penulis ACPX, subagen, tugas latar belakang, dan penyimpanan sesi
+  untuk mengisi `ownerSessionKey` atau `spawnedBy`.
+- Konversikan pemeriksaan visibilitas sesi agar menggunakan metadata baris.
+- Hapus pencarian sekunder `sessions.list({ spawnedBy })` pada saat pemeriksaan
+  visibilitas.
 
 ### Fase 5: Hapus Heuristik Lama
 
-Setelah satu jendela rilis:
+Setelah satu periode rilis:
 
-- berhenti mengandalkan string perintah akar yang disimpan untuk pembersihan ACPX non-lama
-- hapus pemindaian startup penanda perintah
-- hapus pencarian daftar fallback visibilitas
-- pertahankan perilaku defensif gagal-tertutup untuk sewa yang hilang atau tidak dapat diverifikasi
+- berhenti mengandalkan string perintah akar yang disimpan untuk pembersihan
+  ACPX nonlama
+- hapus pemindaian penanda perintah saat mulai
+- hapus pencarian daftar cadangan untuk visibilitas
+- pertahankan perilaku defensif gagal-tertutup untuk sewa yang hilang atau
+  tidak dapat diverifikasi
 
 ## Pengujian
 
-Tambahkan dua suite berbasis tabel.
+Tambahkan dua rangkaian pengujian berbasis tabel.
 
 Simulator siklus hidup proses:
 
-- PID digunakan ulang oleh proses yang tidak terkait
-- PID digunakan ulang oleh akar pembungkus milik Gateway lain
-- perintah pembungkus yang disimpan dikutip shell, perintah `ps` langsung tidak
-- anak adaptor keluar, cucu tetap berada dalam grup proses
-- fallback SIGTERM saat kematian induk mencapai SIGKILL
+- PID digunakan kembali oleh proses yang tidak terkait
+- PID digunakan kembali oleh akar pembungkus milik Gateway lain
+- perintah pembungkus tersimpan diberi tanda kutip shell, sedangkan perintah
+  `ps` aktif tidak
+- proses anak adaptor berhenti, tetapi proses turunannya tetap berada dalam grup
+  proses
+- mekanisme cadangan SIGTERM saat induk mati mencapai SIGKILL
 - daftar proses tidak tersedia
-- sewa basi dengan proses yang hilang
-- yatim startup dengan pembungkus, anak adaptor, dan cucu
+- sewa usang dengan proses yang hilang
+- proses yatim saat mulai dengan pembungkus, proses anak adaptor, dan proses
+  turunannya
 
 Matriks visibilitas sesi:
 
@@ -273,33 +293,41 @@ Matriks visibilitas sesi:
 - a2a diaktifkan dan dinonaktifkan
 - baris agen yang sama
 - baris lintas agen
-- baris ACP lintas agen yang dimunculkan dan dimiliki peminta
-- peminta sandbox dibatasi ke `tree`
+- baris ACP lintas agen yang dibuat dan dimiliki peminta
+- peminta dalam sandbox dibatasi ke `tree`
 - tindakan daftar, riwayat, kirim, dan status
 
-Invarian penting: anak yang dimunculkan dan dimiliki peminta terlihat di mana pun
-visibilitas terkonfigurasi menyertakan pohon sesi peminta, dan `all` tidak kurang
-mampu daripada `tree`.
+Invarian penting: sesi anak yang dibuat dan dimiliki peminta terlihat di mana
+pun visibilitas yang dikonfigurasi mencakup pohon sesi peminta, dan `all` tidak
+kurang mampu dibandingkan `tree`.
 
 ## Catatan Kompatibilitas
 
-Rekaman sesi lama mungkin tidak memiliki `leaseId`. Rekaman tersebut harus menggunakan jalur
-pembersihan lama yang gagal-tertutup:
+Catatan sesi lama mungkin tidak memiliki `leaseId`. Catatan tersebut harus
+menggunakan jalur pembersihan lama yang gagal secara tertutup:
 
-- mewajibkan proses akar langsung
-- mewajibkan kepemilikan akar pembungkus saat pembungkus yang dihasilkan diharapkan
-- mewajibkan kesesuaian perintah untuk akar non-pembungkus
-- jangan pernah mengirim sinyal hanya berdasarkan metadata PID tersimpan yang basi
+- mewajibkan proses akar aktif
+- mewajibkan kepemilikan akar pembungkus jika pembungkus yang dihasilkan
+  diharapkan
+- mewajibkan kecocokan perintah untuk akar nonpembungkus
+- tidak pernah mengirim sinyal hanya berdasarkan metadata PID tersimpan yang
+  usang
 
-Jika rekaman lama tidak dapat diverifikasi, biarkan saja. Pembersihan sewa startup dan
-jendela rilis berikutnya pada akhirnya harus menghentikan fallback tersebut.
+Jika catatan lama tidak dapat diverifikasi, biarkan tetap berjalan. Pembersihan
+sewa saat mulai dan periode rilis berikutnya pada akhirnya harus menghentikan
+penggunaan mekanisme cadangan tersebut.
 
 ## Kriteria Keberhasilan
 
-- Menutup sesi ACPX lama atau basi tidak dapat mematikan proses milik Gateway lain.
-- Kematian induk tidak meninggalkan cucu adaptor yang bandel tetap berjalan.
-- `cancel` membatalkan giliran aktif tanpa menutup sesi yang dapat digunakan ulang.
-- `sessions_list` dapat menampilkan anak ACP lintas agen milik peminta di bawah `tree` dan `all`.
-- Pembersihan startup digerakkan oleh sewa, bukan pemindaian string perintah yang luas.
-- Pengujian matriks proses dan visibilitas terfokus mencakup setiap kasus tepi yang
-  sebelumnya memerlukan perbaikan tinjauan satu per satu.
+- Menutup sesi ACPX lama atau usang tidak dapat menghentikan proses milik
+  Gateway lain.
+- Kematian induk tidak meninggalkan proses turunan adaptor yang membandel tetap
+  berjalan.
+- `cancel` membatalkan giliran aktif tanpa menutup sesi yang dapat digunakan
+  kembali.
+- `sessions_list` dapat menampilkan sesi anak ACP lintas agen milik peminta
+  dalam `tree` maupun `all`.
+- Pembersihan saat mulai digerakkan oleh sewa, bukan pemindaian string perintah
+  secara luas.
+- Pengujian matriks proses dan visibilitas yang terfokus mencakup setiap kasus
+  khusus yang sebelumnya memerlukan perbaikan tinjauan satu per satu.

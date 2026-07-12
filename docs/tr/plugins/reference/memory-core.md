@@ -1,11 +1,11 @@
 ---
 read_when:
-    - memory-core Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
-summary: Ajan tarafından çağrılabilir araçlar ekler.
-title: Memory Core plugin
+    - memory-core Pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
+summary: Ajan tarafından çağrılabilen araçlar ekler.
+title: Bellek Çekirdeği plugini
 x-i18n:
-    generated_at: "2026-06-28T01:01:05Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:33:44Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: cda6ebb02b0e4c1616f68c3c9636b269248b4c63ca5f778d7f8c48152b27f303
@@ -15,7 +15,7 @@ x-i18n:
 
 # Memory Core Plugin'i
 
-Ajan tarafından çağrılabilir araçlar ekler.
+Aracı tarafından çağrılabilen araçlar ekler.
 
 ## Dağıtım
 
@@ -24,4 +24,4 @@ Ajan tarafından çağrılabilir araçlar ekler.
 
 ## Yüzey
 
-contracts: tools
+sözleşmeler: araçlar

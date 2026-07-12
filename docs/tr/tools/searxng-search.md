@@ -1,32 +1,32 @@
 ---
 read_when:
     - Kendi barındırdığınız bir web arama sağlayıcısı istiyorsunuz
-    - Web_search için SearXNG kullanmak istiyorsunuz
-    - Gizlilik odaklı veya hava boşluklu bir arama seçeneğine ihtiyacınız var
-summary: SearXNG web araması -- kendi barındırılan, anahtarsız meta arama sağlayıcısı
+    - web_search için SearXNG kullanmak istiyorsunuz
+    - Gizlilik odaklı veya ağ bağlantısı olmayan bir arama seçeneğine ihtiyacınız var
+summary: SearXNG web araması -- kendi sunucunuzda barındırılan, anahtar gerektirmeyen meta arama sağlayıcısı
 title: SearXNG araması
 x-i18n:
-    generated_at: "2026-06-28T01:25:11Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:54:11Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4bd00a20e45f71b7bd855a6588d5c829a0202839fc93ddcec1e255b7858ff183
+    source_hash: cae8de9f8e2c8dd9cec615adb48da5c1fd7654bffe96c7afc1acea3effbcf1fc
     source_path: tools/searxng-search.md
     workflow: 16
 ---
 
-OpenClaw, **kendi barındırdığınız, anahtarsız** bir `web_search` sağlayıcısı olarak [SearXNG](https://docs.searxng.org/) desteği sunar. SearXNG, Google, Bing, DuckDuckGo ve diğer kaynaklardan sonuçları birleştiren açık kaynaklı bir meta arama motorudur.
+OpenClaw, **kendi barındırdığınız ve anahtar gerektirmeyen** bir `web_search` sağlayıcısı olarak [SearXNG](https://docs.searxng.org/) desteği sunar. SearXNG; Google, Bing, DuckDuckGo ve diğer kaynaklardan gelen sonuçları bir araya getiren açık kaynaklı bir meta arama motorudur.
 
 Avantajlar:
 
 - **Ücretsiz ve sınırsız** -- API anahtarı veya ticari abonelik gerekmez
-- **Gizlilik / izole ağ** -- sorgular ağınızdan dışarı çıkmaz
-- **Her yerde çalışır** -- ticari arama API'lerinde bölge kısıtlaması yoktur
+- **Gizlilik / ağdan yalıtım** -- sorgular ağınızdan asla çıkmaz
+- **Her yerde çalışır** -- ticari arama API'lerinin bölge kısıtlamaları yoktur
 
 ## Kurulum
 
 <Steps>
-  <Step title="Plugin'i yükleyin">
+  <Step title="Plugini yükleyin">
     ```bash
     openclaw plugins install @openclaw/searxng-plugin
     ```
@@ -36,17 +36,17 @@ Avantajlar:
     docker run -d -p 8888:8080 searxng/searxng
     ```
 
-    Ya da erişiminiz olan mevcut bir SearXNG dağıtımını kullanın. Üretim kurulumu için
+    Alternatif olarak erişiminiz olan mevcut herhangi bir SearXNG dağıtımını kullanın. Üretim ortamı kurulumu için
     [SearXNG belgelerine](https://docs.searxng.org/) bakın.
 
   </Step>
   <Step title="Yapılandırın">
     ```bash
     openclaw configure --section web
-    # Select "searxng" as the provider
+    # Sağlayıcı olarak "searxng" seçin
     ```
 
-    Ya da ortam değişkenini ayarlayın ve otomatik algılamanın onu bulmasına izin verin:
+    Alternatif olarak ortam değişkenini ayarlayın ve otomatik algılamanın bunu bulmasını sağlayın:
 
     ```bash
     export SEARXNG_BASE_URL="http://localhost:8888"
@@ -69,7 +69,7 @@ Avantajlar:
 }
 ```
 
-SearXNG örneği için Plugin düzeyindeki ayarlar:
+SearXNG örneğine ilişkin Plugin düzeyi ayarlar:
 
 ```json5
 {
@@ -79,8 +79,8 @@ SearXNG örneği için Plugin düzeyindeki ayarlar:
         config: {
           webSearch: {
             baseUrl: "http://localhost:8888",
-            categories: "general,news", // optional
-            language: "en", // optional
+            categories: "general,news", // isteğe bağlı
+            language: "en", // isteğe bağlı
           },
         },
       },
@@ -89,15 +89,7 @@ SearXNG örneği için Plugin düzeyindeki ayarlar:
 }
 ```
 
-`baseUrl` alanı SecretRef nesnelerini de kabul eder.
-
-Aktarım kuralları:
-
-- `https://`, herkese açık veya özel SearXNG ana makineleri için çalışır
-- `http://` yalnızca güvenilir özel ağ veya loopback ana makineleri için kabul edilir
-- herkese açık SearXNG ana makineleri `https://` kullanmalıdır
-- özel/dahili ana makineler kendi barındırılan ağ korumasını kullanır; herkese açık `https://`
-  ana makineler katı web araması korumasında kalır ve özel adreslere yönlendirme yapamaz
+`baseUrl` ayrıca bir SecretRef nesnesini de kabul eder (örneğin `{ source: "env", id: "SEARXNG_BASE_URL" }`).
 
 ## Ortam değişkeni
 
@@ -107,45 +99,38 @@ Yapılandırmaya alternatif olarak `SEARXNG_BASE_URL` değerini ayarlayın:
 export SEARXNG_BASE_URL="http://localhost:8888"
 ```
 
-`SEARXNG_BASE_URL` ayarlandığında ve açık bir sağlayıcı yapılandırılmadığında, otomatik algılama
-SearXNG'yi otomatik olarak seçer (en düşük öncelikte -- anahtarı olan API destekli herhangi bir
-sağlayıcı önce kazanır).
+Çözümleme sırası: yapılandırılmış `baseUrl` dizesi, ardından `baseUrl` üzerindeki satır içi bir ortam SecretRef'i ve son olarak `SEARXNG_BASE_URL`. Yapılandırma yollarından hiçbiri ayarlanmamışsa, `SEARXNG_BASE_URL` mevcutsa ve açıkça bir sağlayıcı seçilmemişse otomatik algılama SearXNG'yi seçer.
 
 ## Plugin yapılandırma referansı
 
-| Alan         | Açıklama                                                              |
-| ------------ | --------------------------------------------------------------------- |
-| `baseUrl`    | SearXNG örneğinizin temel URL'si (zorunlu)                            |
-| `categories` | `general`, `news` veya `science` gibi virgülle ayrılmış kategoriler   |
-| `language`   | Sonuçlar için `en`, `de` veya `fr` gibi dil kodu                      |
+| Alan         | Açıklama                                                                |
+| ------------ | ----------------------------------------------------------------------- |
+| `baseUrl`    | SearXNG örneğinizin temel URL'si (zorunlu)                               |
+| `categories` | `general`, `news` veya `science` gibi virgülle ayrılmış kategoriler     |
+| `language`   | Sonuçlar için `en`, `de` veya `fr` gibi dil kodu                         |
+
+`web_search` araç çağrısı ayrıca her çağrıya özel geçersiz kılmalar olarak `count` (1-10 sonuç), `categories` ve `language` değerlerini kabul eder.
 
 ## Notlar
 
-- **JSON API** -- HTML kazıma değil, SearXNG'nin yerel `format=json` uç noktasını kullanır
-- **Görsel sonuç URL'leri** -- görsel kategorisi sonuçları, SearXNG doğrudan görsel URL'si
-  döndürdüğünde `img_src` içerir
-- **API anahtarı yok** -- kutudan çıktığı gibi herhangi bir SearXNG örneğiyle çalışır
-- **Temel URL doğrulaması** -- `baseUrl` geçerli bir `http://` veya `https://`
-  URL'si olmalıdır; herkese açık ana makineler `https://` kullanmalıdır
-- **Ağ koruması** -- özel/dahili SearXNG uç noktaları özel ağ erişimine
-  dahil olur; herkese açık `https://` SearXNG uç noktaları katı SSRF
-  korumasını sürdürür
-- **Otomatik algılama sırası** -- SearXNG, yapılandırılmış anahtarları olan API destekli sağlayıcılardan
-  sonra denetlenir (sıra 200). DuckDuckGo veya Ollama Web Search gibi anahtarsız sağlayıcılar,
-  açık bir sağlayıcı seçimi olmadan otomatik olarak seçilmez
-- **Kendi barındırma** -- örneği, sorguları ve yukarı akış arama motorlarını siz kontrol edersiniz
-- **Kategoriler**, yapılandırılmadığında varsayılan olarak `general` değerini alır
-- **Kategori geri dönüşü** -- `general` dışı bir kategori isteği başarılı olur ancak
-  sıfır sonuç döndürürse OpenClaw, boş sonuç kümesi döndürmeden önce aynı sorguyu bir kez `general`
-  ile yeniden dener
+- **JSON API** -- HTML kazıma yerine SearXNG'nin yerel `format=json` uç noktasını kullanır
+- **Görsel sonucu URL'leri** -- SearXNG doğrudan görsel URL'si döndürdüğünde görsel kategorisi sonuçları `img_src` içerir
+- **API anahtarı yok** -- herhangi bir SearXNG örneğiyle doğrudan çalışır
+- **Temel URL doğrulaması** -- `baseUrl`, geçerli bir `http://` veya `https://` URL'si olmalıdır
+- **Ağ koruması** -- `http://` temel URL'leri güvenilir bir özel veya local loopback ana bilgisayarını hedeflemelidir (herkese açık ana bilgisayarlar `https://` kullanmalıdır); özel/dahili bir adrese çözümlenen `https://` temel URL'leri aynı kendi kendine barındırma iznini alırken, herkese açık bir adrese çözümlenen `https://` temel URL'leri katı SSRF korumasını sürdürür
+- **Otomatik algılama sırası** -- SearXNG yapılandırılmış bir `baseUrl` gerektirir (gerekli kimlik bilgilerine zaten sahip sağlayıcılar arasında sıra 200). DuckDuckGo veya Ollama Web Search gibi anahtar gerektirmeyen sağlayıcılar otomatik algılamada hiçbir zaman örtük olarak seçilmez; yalnızca açık bir `provider` seçimiyle etkinleşirler
+- **Kendi kendine barındırma** -- örneği, sorguları ve yukarı akış arama motorlarını siz denetlersiniz
+- **Kategoriler**, yapılandırılmadığında varsayılan olarak `general` değerini kullanır
+- **Kategori geri dönüşü** -- `general` dışındaki bir kategori isteği başarılı olur ancak sıfır sonuç döndürürse OpenClaw, boş bir sonuç kümesi döndürmeden önce aynı sorguyu `general` ile bir kez daha dener
+- **Sonuç önbelleğe alma** -- özdeş sorgular (aynı sorgu, sayı, kategoriler, dil ve temel URL) kısa bir TTL süresince işlem içinde önbelleğe alınır
+- **Sürüm gereksinimi** -- Plugin, `minHostVersion: >=2026.6.9` bildiriminde bulunur
 
 <Tip>
-  SearXNG JSON API'nin çalışması için SearXNG örneğinizde `settings.yml` içindeki
-  `search.formats` altında `json` biçiminin etkin olduğundan emin olun.
+  SearXNG JSON API'nin çalışması için SearXNG örneğinizin `settings.yml` dosyasında `search.formats` altında `json` biçiminin etkinleştirildiğinden emin olun.
 </Tip>
 
 ## İlgili
 
 - [Web Araması genel bakışı](/tr/tools/web) -- tüm sağlayıcılar ve otomatik algılama
-- [DuckDuckGo Araması](/tr/tools/duckduckgo-search) -- başka bir anahtarsız sağlayıcı
-- [Brave Araması](/tr/tools/brave-search) -- ücretsiz katmanla yapılandırılmış sonuçlar
+- [DuckDuckGo Araması](/tr/tools/duckduckgo-search) -- anahtar gerektirmeyen başka bir sağlayıcı
+- [Brave Araması](/tr/tools/brave-search) -- ücretsiz katmanlı yapılandırılmış sonuçlar

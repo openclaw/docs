@@ -2,23 +2,22 @@
 read_when:
     - Vous souhaitez une étape LLM produisant uniquement du JSON dans les workflows
     - Vous avez besoin d’une sortie de LLM validée par un schéma pour l’automatisation
-summary: Tâches LLM avec sortie JSON uniquement pour les workflows (outil de Plugin facultatif)
+summary: Tâches LLM en JSON uniquement pour les workflows (outil de plugin facultatif)
 title: Tâche du LLM
 x-i18n:
-    generated_at: "2026-07-12T15:54:14Z"
+    generated_at: "2026-07-12T03:24:15Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 78ea533f43546fbdd66c7f7138b8dea0b12b02d38925689324b390a12d0c4c5a
     source_path: tools/llm-task.md
     workflow: 16
 ---
 
-`llm-task` est un **outil de Plugin facultatif** fourni qui exécute un unique
-appel LLM produisant uniquement du JSON et renvoie une sortie structurée,
+`llm-task` est un **outil de Plugin facultatif** intégré qui exécute un unique
+appel LLM produisant exclusivement du JSON et renvoie une sortie structurée,
 éventuellement validée par rapport à un schéma JSON. Il fournit aux moteurs de
-workflow tels que Lobster une étape LLM sans nécessiter de code OpenClaw
+workflow comme Lobster une étape LLM sans nécessiter de code OpenClaw
 personnalisé pour chaque workflow.
 
 ## Activation
@@ -78,26 +77,26 @@ correspondant.
 
 ## Paramètres de l’outil
 
-| Paramètre       | Type   | Remarques                                                                                                                                                           |
-| --------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `prompt`        | string | Obligatoire. Instruction de tâche destinée au LLM.                                                                                                                  |
-| `input`         | any    | Charge utile facultative ; sérialisée en JSON et ajoutée à l’invite.                                                                                                |
-| `schema`        | object | Schéma JSON facultatif que la sortie analysée doit respecter.                                                                                                       |
-| `provider`      | string | Remplace `defaultProvider` / le fournisseur par défaut de l’agent.                                                                                                  |
+| Paramètre       | Type   | Remarques                                                                                                                                                                         |
+| --------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `prompt`        | string | Obligatoire. Instruction de tâche destinée au LLM.                                                                                                                               |
+| `input`         | any    | Charge utile facultative ; sérialisée en JSON et ajoutée au prompt.                                                                                                              |
+| `schema`        | object | Schéma JSON facultatif par rapport auquel la sortie analysée doit être validée.                                                                                                  |
+| `provider`      | string | Remplace `defaultProvider` / le fournisseur par défaut de l’agent.                                                                                                               |
 | `model`         | string | Remplace `defaultModel` ; accepte les identifiants de modèle seuls, les alias ou une référence `provider/model` (un préfixe de fournisseur dupliqué est automatiquement supprimé). |
-| `thinking`      | string | Niveau de raisonnement (par ex. `low`, `medium`) ; doit être pris en charge par le modèle résolu.                                                                    |
-| `authProfileId` | string | Remplace `defaultAuthProfileId`.                                                                                                                                    |
-| `temperature`   | number | Appliqué au mieux ; tous les fournisseurs ne le prennent pas en charge.                                                                                             |
-| `maxTokens`     | number | Limite appliquée au mieux au nombre de jetons de sortie.                                                                                                            |
-| `timeoutMs`     | number | Délai d’expiration de l’exécution ; valeur par défaut : `30000`.                                                                                                    |
+| `thinking`      | string | Niveau de raisonnement (par ex. `low`, `medium`) ; doit être pris en charge par le modèle résolu.                                                                                 |
+| `authProfileId` | string | Remplace `defaultAuthProfileId`.                                                                                                                                                  |
+| `temperature`   | number | Appliqué dans la mesure du possible ; tous les fournisseurs ne le prennent pas en charge.                                                                                        |
+| `maxTokens`     | number | Limite indicative du nombre de jetons de sortie.                                                                                                                                 |
+| `timeoutMs`     | number | Délai d’expiration de l’exécution ; valeur par défaut : `30000`.                                                                                                                 |
 
 ## Sortie
 
 Renvoie `details.json` (le JSON analysé et validé par rapport au schéma), ainsi
 que `details.provider` et `details.model`, qui indiquent respectivement le
-fournisseur et le modèle réellement utilisés.
+fournisseur et le modèle effectivement utilisés.
 
-## Exemple : étape de workflow Lobster
+## Exemple : étape d’un workflow Lobster
 
 ### Limitation importante
 
@@ -105,8 +104,8 @@ L’exemple ci-dessous suppose que la **CLI Lobster autonome** s’exécute dans
 environnement où `openclaw.invoke` dispose déjà de l’URL du Gateway et du
 contexte d’authentification appropriés.
 
-Pour l’exécuteur Lobster **intégré** fourni dans OpenClaw, ce modèle d’appel de
-CLI imbriqué n’est **actuellement pas fiable** :
+Pour l’exécuteur Lobster **intégré** fourni avec OpenClaw, ce modèle d’appel
+imbriqué de la CLI n’est **pas fiable actuellement** :
 
 ```lobster
 openclaw.invoke --tool llm-task --action json --args-json '{ ... }'
@@ -115,7 +114,7 @@ openclaw.invoke --tool llm-task --action json --args-json '{ ... }'
 Tant que Lobster intégré ne dispose pas d’une passerelle prise en charge pour ce
 flux, privilégiez l’une des options suivantes :
 
-- des appels directs à l’outil `llm-task` en dehors de Lobster ; ou
+- des appels directs à l’outil `llm-task` en dehors de Lobster, ou
 - des étapes Lobster qui ne reposent pas sur des appels imbriqués à
   `openclaw.invoke`.
 
@@ -123,11 +122,11 @@ Exemple avec la CLI Lobster autonome :
 
 ```lobster
 openclaw.invoke --tool llm-task --action json --args-json '{
-  "prompt": "À partir de l’e-mail fourni en entrée, renvoyez l’intention et une proposition de réponse.",
+  "prompt": "Given the input email, return intent and draft.",
   "thinking": "low",
   "input": {
-    "subject": "Bonjour",
-    "body": "Pouvez-vous m’aider ?"
+    "subject": "Hello",
+    "body": "Can you help?"
   },
   "schema": {
     "type": "object",
@@ -144,14 +143,14 @@ openclaw.invoke --tool llm-task --action json --args-json '{
 ## Remarques de sécurité
 
 - **JSON uniquement** : le modèle reçoit l’instruction de renvoyer uniquement
-  une valeur JSON, sans blocs de code ni commentaires.
-- **Aucun outil** : les outils sont désactivés pour l’exécution sous-jacente, le
-  modèle ne peut donc pas effectuer d’appels externes pendant la tâche.
-- Considérez la sortie comme non fiable sauf si vous la validez avec `schema`.
-- Placez les approbations avant toute étape produisant des effets de bord
-  (envoi, publication, exécution) qui consomme cette sortie.
+  une valeur JSON, sans bloc de code ni commentaire.
+- **Aucun outil** : les outils sont désactivés pour l’exécution sous-jacente ;
+  le modèle ne peut donc pas effectuer d’appel externe pendant la tâche.
+- Considérez la sortie comme non fiable, sauf si vous la validez avec `schema`.
+- Placez les demandes d’approbation avant toute étape produisant des effets de
+  bord (envoi, publication, exécution) qui consomme cette sortie.
 
-## Pages connexes
+## Voir aussi
 
 - [Niveaux de raisonnement](/fr/tools/thinking)
 - [Sous-agents](/fr/tools/subagents)

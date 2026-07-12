@@ -1,24 +1,24 @@
 ---
 read_when:
-    - Bạn sử dụng Plugin voice-call và muốn mọi điểm vào CLI
-    - Cần có các bảng cờ lệnh và giá trị mặc định cho setup, smoke, call, continue, speak, dtmf, end, status, tail, latency, expose và start
-summary: Tham chiếu CLI cho `openclaw voicecall` (giao diện lệnh Plugin gọi thoại)
+    - Bạn sử dụng plugin cuộc gọi thoại và muốn mọi điểm vào CLI
+    - Bạn cần các bảng cờ và giá trị mặc định cho `setup`, `smoke`, `call`, `continue`, `speak`, `dtmf`, `end`, `status`, `tail`, `latency`, `expose` và `start`
+summary: Tài liệu tham khảo CLI cho `openclaw voicecall` (bề mặt lệnh của Plugin gọi thoại)
 title: Cuộc gọi thoại
 x-i18n:
-    generated_at: "2026-05-10T19:29:49Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:47:01Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 24013c06bf3e688bd86caa407bf20dddabe0dff60a400ed4f23478de62308634
+    source_hash: aec445886cccb79c9212dd9f1f448ff9634274deb380632be786478c9bb29670
     source_path: cli/voicecall.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw voicecall`
 
-`voicecall` là lệnh do Plugin cung cấp. Lệnh này chỉ xuất hiện khi Plugin cuộc gọi thoại được cài đặt và bật.
+`voicecall` là lệnh do plugin cung cấp. Lệnh này chỉ xuất hiện khi plugin cuộc gọi thoại được cài đặt và bật.
 
-Khi Gateway đang chạy, các lệnh vận hành (`call`, `start`, `continue`, `speak`, `dtmf`, `end`, `status`) được định tuyến đến runtime cuộc gọi thoại của Gateway đó. Nếu không thể kết nối đến Gateway nào, chúng sẽ chuyển sang runtime CLI độc lập.
+Khi Gateway đang chạy, các lệnh vận hành (`call`, `start`, `continue`, `speak`, `dtmf`, `end`, `status`) được định tuyến đến môi trường chạy cuộc gọi thoại của Gateway đó. Nếu không thể kết nối đến Gateway nào, chúng sẽ chuyển sang môi trường chạy CLI độc lập.
 
 ## Lệnh con
 
@@ -37,26 +37,26 @@ openclaw voicecall latency  [--file <path>] [--last <n>]
 openclaw voicecall expose   [--mode <m>] [--path <p>] [--port <port>] [--serve-path <p>]
 ```
 
-| Lệnh con   | Mô tả                                                            |
-| ---------- | ---------------------------------------------------------------- |
-| `setup`    | Hiển thị các bước kiểm tra mức sẵn sàng của nhà cung cấp và Webhook. |
-| `smoke`    | Chạy kiểm tra mức sẵn sàng; chỉ thực hiện cuộc gọi thử nghiệm trực tiếp với `--yes`. |
-| `call`     | Khởi tạo cuộc gọi thoại đi.                                      |
-| `start`    | Bí danh cho `call` với `--to` bắt buộc và `--message` tùy chọn.  |
-| `continue` | Phát một thông điệp và chờ phản hồi tiếp theo.                   |
-| `speak`    | Phát một thông điệp mà không chờ phản hồi.                       |
-| `dtmf`     | Gửi chữ số DTMF đến một cuộc gọi đang hoạt động.                 |
-| `end`      | Gác máy một cuộc gọi đang hoạt động.                             |
+| Lệnh con   | Mô tả                                                                     |
+| ---------- | ------------------------------------------------------------------------- |
+| `setup`    | Hiển thị các bước kiểm tra mức độ sẵn sàng của nhà cung cấp và webhook.   |
+| `smoke`    | Chạy các bước kiểm tra mức độ sẵn sàng; chỉ thực hiện cuộc gọi thử trực tiếp khi có `--yes`. |
+| `call`     | Khởi tạo cuộc gọi thoại đi.                                               |
+| `start`    | Bí danh của `call`, trong đó bắt buộc có `--to` và `--message` là tùy chọn. |
+| `continue` | Phát một tin nhắn và chờ phản hồi tiếp theo.                              |
+| `speak`    | Phát một tin nhắn mà không chờ phản hồi.                                  |
+| `dtmf`     | Gửi các chữ số DTMF đến cuộc gọi đang hoạt động.                          |
+| `end`      | Ngắt cuộc gọi đang hoạt động.                                             |
 | `status`   | Kiểm tra các cuộc gọi đang hoạt động (hoặc một cuộc gọi theo `--call-id`). |
-| `tail`     | Theo dõi `calls.jsonl` (hữu ích trong khi kiểm thử nhà cung cấp). |
-| `latency`  | Tóm tắt chỉ số độ trễ lượt từ `calls.jsonl`.                     |
-| `expose`   | Bật/tắt Tailscale serve/funnel cho điểm cuối Webhook.            |
+| `tail`     | Theo dõi phần cuối của `calls.jsonl` (hữu ích khi kiểm thử nhà cung cấp). |
+| `latency`  | Tóm tắt các chỉ số độ trễ lượt từ `calls.jsonl`.                          |
+| `expose`   | Bật/tắt Tailscale Serve/Funnel cho điểm cuối webhook.                     |
 
-## Thiết lập và smoke
+## Thiết lập và kiểm thử nhanh
 
 ### `setup`
 
-Mặc định in các bước kiểm tra mức sẵn sàng ở dạng người đọc được. Truyền `--json` cho script.
+Theo mặc định, in các bước kiểm tra mức độ sẵn sàng ở định dạng con người có thể đọc được. Truyền `--json` để dùng trong tập lệnh.
 
 ```bash
 openclaw voicecall setup
@@ -65,24 +65,24 @@ openclaw voicecall setup --json
 
 ### `smoke`
 
-Chạy cùng các bước kiểm tra mức sẵn sàng. Lệnh này sẽ không thực hiện cuộc gọi điện thoại thật trừ khi có cả `--to` và `--yes`.
+Chạy cùng các bước kiểm tra mức độ sẵn sàng. Chỉ thực hiện cuộc gọi điện thoại thực khi có cả `--to` và `--yes`.
 
-| Cờ                 | Mặc định                          | Mô tả                                      |
-| ------------------ | --------------------------------- | ------------------------------------------ |
-| `-t, --to <phone>` | (không có)                        | Số điện thoại để gọi cho smoke trực tiếp. |
-| `--message <text>` | `OpenClaw voice call smoke test.` | Thông điệp sẽ phát trong cuộc gọi smoke.  |
-| `--mode <mode>`    | `notify`                          | Chế độ gọi: `notify` hoặc `conversation`. |
-| `--yes`            | `false`                           | Thực sự thực hiện cuộc gọi đi trực tiếp.  |
-| `--json`           | `false`                           | In JSON cho máy đọc.                       |
+| Cờ                 | Mặc định                          | Mô tả                                              |
+| ------------------ | --------------------------------- | -------------------------------------------------- |
+| `-t, --to <phone>` | (không có)                        | Số điện thoại cần gọi để kiểm thử nhanh trực tiếp. |
+| `--message <text>` | `OpenClaw voice call smoke test.` | Tin nhắn sẽ phát trong cuộc gọi kiểm thử nhanh.    |
+| `--mode <mode>`    | `notify`                          | Chế độ gọi: `notify` hoặc `conversation`.          |
+| `--yes`            | `false`                           | Thực sự thực hiện cuộc gọi đi trực tiếp.           |
+| `--json`           | `false`                           | In JSON mà máy có thể đọc được.                    |
 
 ```bash
 openclaw voicecall smoke
-openclaw voicecall smoke --to "+15555550123"        # dry run
-openclaw voicecall smoke --to "+15555550123" --yes  # live notify call
+openclaw voicecall smoke --to "+15555550123"        # chạy thử
+openclaw voicecall smoke --to "+15555550123" --yes  # cuộc gọi thông báo trực tiếp
 ```
 
 <Note>
-Đối với nhà cung cấp bên ngoài (`twilio`, `telnyx`, `plivo`), `setup` và `smoke` yêu cầu URL Webhook công khai từ `publicUrl`, tunnel, hoặc phơi bày qua Tailscale. Phương án dự phòng loopback hoặc serve riêng tư bị từ chối vì nhà mạng không thể truy cập.
+Đối với các nhà cung cấp bên ngoài (`plivo`, `telnyx`, `twilio`), `setup` và `smoke` yêu cầu URL webhook công khai từ `publicUrl`, đường hầm hoặc khả năng truy cập qua Tailscale. Phương án dự phòng dùng local loopback hoặc dịch vụ riêng tư sẽ bị từ chối vì nhà mạng không thể truy cập.
 </Note>
 
 ## Vòng đời cuộc gọi
@@ -91,11 +91,11 @@ openclaw voicecall smoke --to "+15555550123" --yes  # live notify call
 
 Khởi tạo cuộc gọi thoại đi.
 
-| Cờ                     | Bắt buộc | Mặc định          | Mô tả                                                                      |
-| ---------------------- | -------- | ----------------- | -------------------------------------------------------------------------- |
-| `-m, --message <text>` | có       | (không có)        | Thông điệp sẽ phát khi cuộc gọi kết nối.                                   |
-| `-t, --to <phone>`     | không    | config `toNumber` | Số điện thoại E.164 để gọi.                                                |
-| `--mode <mode>`        | không    | `conversation`    | Chế độ gọi: `notify` (gác máy sau thông điệp) hoặc `conversation` (giữ mở). |
+| Cờ                     | Bắt buộc | Mặc định          | Mô tả                                                                                              |
+| ---------------------- | -------- | ----------------- | -------------------------------------------------------------------------------------------------- |
+| `-m, --message <text>` | có       | (không có)        | Tin nhắn sẽ phát khi cuộc gọi kết nối.                                                             |
+| `-t, --to <phone>`     | không    | cấu hình `toNumber` | Số điện thoại E.164 cần gọi.                                                                     |
+| `--mode <mode>`        | không    | `conversation`    | Chế độ gọi: `notify` (ngắt máy sau tin nhắn) hoặc `conversation` (duy trì kết nối).                |
 
 ```bash
 openclaw voicecall call --to "+15555550123" --message "Hello"
@@ -104,44 +104,44 @@ openclaw voicecall call -m "Heads up" --mode notify
 
 ### `start`
 
-Bí danh cho `call` với dạng cờ mặc định khác.
+Bí danh của `call` với dạng cờ mặc định khác.
 
-| Cờ                 | Bắt buộc | Mặc định       | Mô tả                                      |
-| ------------------ | -------- | -------------- | ------------------------------------------ |
-| `--to <phone>`     | có       | (không có)     | Số điện thoại để gọi.                      |
-| `--message <text>` | không    | (không có)     | Thông điệp sẽ phát khi cuộc gọi kết nối.   |
-| `--mode <mode>`    | không    | `conversation` | Chế độ gọi: `notify` hoặc `conversation`.  |
+| Cờ                 | Bắt buộc | Mặc định       | Mô tả                                  |
+| ------------------ | -------- | -------------- | -------------------------------------- |
+| `--to <phone>`     | có       | (không có)     | Số điện thoại cần gọi.                 |
+| `--message <text>` | không    | (không có)     | Tin nhắn sẽ phát khi cuộc gọi kết nối. |
+| `--mode <mode>`    | không    | `conversation` | Chế độ gọi: `notify` hoặc `conversation`. |
 
 ### `continue`
 
-Phát một thông điệp và chờ phản hồi.
+Phát một tin nhắn và chờ phản hồi.
 
-| Cờ                 | Bắt buộc | Mô tả                  |
-| ------------------ | -------- | ---------------------- |
-| `--call-id <id>`   | có       | ID cuộc gọi.           |
-| `--message <text>` | có       | Thông điệp sẽ phát.    |
+| Cờ                 | Bắt buộc | Mô tả             |
+| ------------------ | -------- | ----------------- |
+| `--call-id <id>`   | có       | ID cuộc gọi.      |
+| `--message <text>` | có       | Tin nhắn cần phát. |
 
 ### `speak`
 
-Phát một thông điệp mà không chờ phản hồi.
+Phát một tin nhắn mà không chờ phản hồi.
 
-| Cờ                 | Bắt buộc | Mô tả                  |
-| ------------------ | -------- | ---------------------- |
-| `--call-id <id>`   | có       | ID cuộc gọi.           |
-| `--message <text>` | có       | Thông điệp sẽ phát.    |
+| Cờ                 | Bắt buộc | Mô tả             |
+| ------------------ | -------- | ----------------- |
+| `--call-id <id>`   | có       | ID cuộc gọi.      |
+| `--message <text>` | có       | Tin nhắn cần phát. |
 
 ### `dtmf`
 
-Gửi chữ số DTMF đến một cuộc gọi đang hoạt động.
+Gửi các chữ số DTMF đến cuộc gọi đang hoạt động.
 
-| Cờ                  | Bắt buộc | Mô tả                                             |
-| ------------------- | -------- | ------------------------------------------------- |
-| `--call-id <id>`    | có       | ID cuộc gọi.                                      |
-| `--digits <digits>` | có       | Chữ số DTMF (ví dụ `ww123456#` cho thời gian chờ). |
+| Cờ                  | Bắt buộc | Mô tả                                                      |
+| ------------------- | -------- | ---------------------------------------------------------- |
+| `--call-id <id>`    | có       | ID cuộc gọi.                                               |
+| `--digits <digits>` | có       | Các chữ số DTMF (ví dụ: `ww123456#` để chèn khoảng chờ).   |
 
 ### `end`
 
-Gác máy một cuộc gọi đang hoạt động.
+Ngắt cuộc gọi đang hoạt động.
 
 | Cờ               | Bắt buộc | Mô tả        |
 | ---------------- | -------- | ------------ |
@@ -151,10 +151,10 @@ Gác máy một cuộc gọi đang hoạt động.
 
 Kiểm tra các cuộc gọi đang hoạt động.
 
-| Cờ               | Mặc định   | Mô tả                                  |
-| ---------------- | ---------- | -------------------------------------- |
-| `--call-id <id>` | (không có) | Giới hạn đầu ra ở một cuộc gọi.        |
-| `--json`         | `false`    | In JSON cho máy đọc.                   |
+| Cờ               | Mặc định   | Mô tả                                      |
+| ---------------- | ---------- | ------------------------------------------ |
+| `--call-id <id>` | (không có) | Giới hạn đầu ra ở một cuộc gọi.            |
+| `--json`         | `false`    | In JSON mà máy có thể đọc được.            |
 
 ```bash
 openclaw voicecall status
@@ -166,35 +166,35 @@ openclaw voicecall status --call-id <id>
 
 ### `tail`
 
-Theo dõi nhật ký JSONL cuộc gọi thoại. In `--since` dòng cuối cùng khi bắt đầu, sau đó stream các dòng mới khi chúng được ghi.
+Theo dõi phần cuối của nhật ký JSONL cuộc gọi thoại. Khi bắt đầu, in `--since` dòng cuối cùng, sau đó truyền phát các dòng mới khi chúng được ghi.
 
-| Cờ              | Mặc định                    | Mô tả                              |
-| --------------- | -------------------------- | ---------------------------------- |
-| `--file <path>` | được phân giải từ kho Plugin | Đường dẫn đến `calls.jsonl`.       |
-| `--since <n>`   | `25`                       | Số dòng cần in trước khi theo dõi. |
-| `--poll <ms>`   | `250` (tối thiểu 50)       | Khoảng thời gian poll tính bằng mili giây. |
+| Cờ              | Mặc định                       | Mô tả                                      |
+| --------------- | ------------------------------ | ------------------------------------------ |
+| `--file <path>` | được phân giải từ kho plugin   | Đường dẫn đến `calls.jsonl`.               |
+| `--since <n>`   | `25`                           | Số dòng cần in trước khi bắt đầu theo dõi. |
+| `--poll <ms>`   | `250` (tối thiểu 50)           | Khoảng thời gian thăm dò tính bằng mili giây. |
 
 ### `latency`
 
-Tóm tắt chỉ số độ trễ lượt và thời gian chờ lắng nghe từ `calls.jsonl`. Đầu ra là JSON với các bản tóm tắt `recordsScanned`, `turnLatency`, và `listenWait`.
+Tóm tắt các chỉ số độ trễ lượt và thời gian chờ nghe từ `calls.jsonl`. Đầu ra là JSON với các bản tóm tắt `recordsScanned`, `turnLatency` và `listenWait`.
 
-| Cờ              | Mặc định                    | Mô tả                                |
-| --------------- | -------------------------- | ------------------------------------ |
-| `--file <path>` | được phân giải từ kho Plugin | Đường dẫn đến `calls.jsonl`.         |
-| `--last <n>`    | `200` (tối thiểu 1)        | Số bản ghi gần đây cần phân tích.    |
+| Cờ              | Mặc định                     | Mô tả                                  |
+| --------------- | ---------------------------- | -------------------------------------- |
+| `--file <path>` | được phân giải từ kho plugin | Đường dẫn đến `calls.jsonl`.           |
+| `--last <n>`    | `200` (tối thiểu 1)          | Số bản ghi gần đây cần phân tích.      |
 
-## Phơi bày Webhook
+## Công khai webhook
 
 ### `expose`
 
-Bật, tắt, hoặc thay đổi cấu hình Tailscale serve/funnel cho Webhook thoại.
+Bật, tắt hoặc thay đổi cấu hình Tailscale Serve/Funnel cho webhook thoại.
 
-| Cờ                    | Mặc định                                  | Mô tả                                         |
-| --------------------- | ----------------------------------------- | --------------------------------------------- |
-| `--mode <mode>`       | `funnel`                                  | `off`, `serve` (tailnet), hoặc `funnel` (công khai). |
-| `--path <path>`       | config `tailscale.path` hoặc `--serve-path` | Đường dẫn Tailscale cần phơi bày.           |
-| `--port <port>`       | config `serve.port` hoặc `3334`           | Cổng Webhook cục bộ.                          |
-| `--serve-path <path>` | config `serve.path` hoặc `/voice/webhook` | Đường dẫn Webhook cục bộ.                     |
+| Cờ                    | Mặc định                                      | Mô tả                                               |
+| --------------------- | --------------------------------------------- | --------------------------------------------------- |
+| `--mode <mode>`       | `funnel`                                      | `off`, `serve` (tailnet) hoặc `funnel` (công khai). |
+| `--path <path>`       | cấu hình `tailscale.path` hoặc `--serve-path` | Đường dẫn Tailscale cần công khai.                   |
+| `--port <port>`       | cấu hình `serve.port` hoặc `3334`             | Cổng webhook cục bộ.                                |
+| `--serve-path <path>` | cấu hình `serve.path` hoặc `/voice/webhook`   | Đường dẫn webhook cục bộ.                           |
 
 ```bash
 openclaw voicecall expose --mode serve
@@ -203,10 +203,10 @@ openclaw voicecall expose --mode off
 ```
 
 <Warning>
-Chỉ phơi bày điểm cuối Webhook cho các mạng bạn tin cậy. Ưu tiên Tailscale Serve hơn Funnel khi có thể.
+Chỉ công khai điểm cuối webhook cho các mạng mà bạn tin cậy. Ưu tiên Tailscale Serve hơn Funnel khi có thể.
 </Warning>
 
 ## Liên quan
 
-- [Tham chiếu CLI](/vi/cli)
+- [Tài liệu tham khảo CLI](/vi/cli)
 - [Plugin cuộc gọi thoại](/vi/plugins/voice-call)

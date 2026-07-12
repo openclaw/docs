@@ -5,18 +5,16 @@ read_when:
 summary: OpenClaw 支持的模型提供商（LLM）
 title: 提供商目录
 x-i18n:
-    generated_at: "2026-07-12T14:43:43Z"
+    generated_at: "2026-07-11T20:52:11Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: b59843b53265500866e87ee8d888892dacd6045bdb9401a1e7ec08ad4f364090
     source_path: providers/index.md
     workflow: 16
 ---
 
-OpenClaw 可以使用许多 LLM 提供商。选择一个提供商，完成身份验证，然后将
-默认模型设置为 `provider/model`。
+OpenClaw 可以使用多种 LLM 提供商。选择一个提供商，完成身份验证，然后将默认模型设置为 `provider/model`。
 
 在查找聊天渠道文档（WhatsApp/Telegram/Discord/Slack/Mattermost（插件）等）？请参阅[渠道](/zh-CN/channels)。
 
@@ -60,7 +58,7 @@ OpenClaw 可以使用许多 LLM 提供商。选择一个提供商，完成身份
 - [Hugging Face（推理）](/zh-CN/providers/huggingface)
 - [inferrs（本地模型）](/zh-CN/providers/inferrs)
 - [Kilocode](/zh-CN/providers/kilocode)
-- [LiteLLM（统一 Gateway 网关）](/zh-CN/providers/litellm)
+- [LiteLLM（统一网关）](/zh-CN/providers/litellm)
 - [LM Studio（本地模型）](/zh-CN/providers/lmstudio)
 - [LongCat](/zh-CN/providers/longcat)
 - [MiniMax](/zh-CN/providers/minimax)
@@ -114,5 +112,4 @@ OpenClaw 可以使用许多 LLM 提供商。选择一个提供商，完成身份
 
 - [Claude Max API Proxy](/zh-CN/providers/claude-max-api-proxy) - 用于 Claude 订阅凭据的社区代理（使用前请核实 Anthropic 的政策/条款）
 
-如需查看完整的提供商目录（xAI、Groq、Mistral 等）和高级配置，
-请参阅[模型提供商](/zh-CN/concepts/model-providers)。
+如需查看完整的提供商目录（xAI、Groq、Mistral 等）和高级配置，请参阅[模型提供商](/zh-CN/concepts/model-providers)。

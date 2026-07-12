@@ -1,21 +1,21 @@
 ---
 read_when:
-    - OpenClaw’ı IRC kanallarına veya DM’lere bağlamak istiyorsunuz
-    - IRC izin listelerini, grup politikasını veya bahsetme denetimini yapılandırıyorsunuz
-summary: IRC Plugin kurulumu, erişim denetimleri ve sorun giderme
+    - OpenClaw'ı IRC kanallarına veya özel mesajlara bağlamak istiyorsunuz
+    - IRC izin listelerini, grup politikasını veya bahsetme kısıtlamasını yapılandırıyorsunuz
+summary: IRC plugin kurulumu, erişim denetimleri ve sorun giderme
 title: IRC
 x-i18n:
-    generated_at: "2026-06-28T00:12:46Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:28:59Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7182796ff92f98bd1e6c24cbd456dd1037fa304e3fca4eee13f62eea8cd946f6
+    source_hash: 23e288f18a57a3ee74a433feb1ffb7dda0480f998cf74d4ec825bd7f3c0745c5
     source_path: channels/irc.md
     workflow: 16
 ---
 
-Classic kanallarda (`#room`) ve doğrudan iletilerde OpenClaw kullanmak istediğinizde IRC kullanın.
-Resmi IRC Plugin'ini yükleyin, ardından `channels.irc` altında yapılandırın.
+Klasik kanallarda (`#oda`) ve doğrudan mesajlarda OpenClaw kullanmak istediğinizde IRC'yi kullanın.
+Resmî IRC Plugin'ini yükleyin, ardından `channels.irc` altında yapılandırın.
 
 ## Hızlı başlangıç
 
@@ -25,8 +25,7 @@ Resmi IRC Plugin'ini yükleyin, ardından `channels.irc` altında yapılandırı
 openclaw plugins install @openclaw/irc
 ```
 
-2. `~/.openclaw/openclaw.json` içinde IRC yapılandırmasını etkinleştirin.
-3. En azından şunları ayarlayın:
+2. `~/.openclaw/openclaw.json` içinde en az sunucuyu, takma adı ve katılınacak kanalları ayarlayın:
 
 ```json5
 {
@@ -43,51 +42,65 @@ openclaw plugins install @openclaw/irc
 }
 ```
 
-Bot koordinasyonu için özel bir IRC sunucusu tercih edin. Bilerek genel bir IRC ağı kullanıyorsanız yaygın seçenekler arasında Libera.Chat, OFTC ve Snoonet bulunur. Bot veya sürü arka kanal trafiği için tahmin edilebilir genel kanallardan kaçının.
-
-4. Gateway'i başlatın/yeniden başlatın:
+3. Gateway'i başlatın/yeniden başlatın:
 
 ```bash
 openclaw gateway run
 ```
 
+Bot koordinasyonu için özel bir IRC sunucusunu tercih edin. Bilerek herkese açık bir IRC ağı kullanıyorsanız yaygın seçenekler arasında Libera.Chat, OFTC ve Snoonet bulunur. Bot veya sürü arka kanal trafiği için tahmin edilebilir herkese açık kanallardan kaçının.
+
+## Bağlantı ayarları
+
+| Anahtar                       | Varsayılan                    | Notlar                                                                |
+| ----------------------------- | ----------------------------- | --------------------------------------------------------------------- |
+| `host`                        | yok (zorunlu)                 | IRC sunucusunun ana bilgisayar adı                                    |
+| `port`                        | TLS ile `6697`, düz `6667`    | 1-65535                                                               |
+| `tls`                         | `true`                        | Yalnızca düz metni bilerek kullanıyorsanız `false` olarak ayarlayın   |
+| `nick`                        | yok (zorunlu)                 | Bot takma adı                                                          |
+| `username`                    | takma ad, yoksa `openclaw`    | IRC kullanıcı adı                                                     |
+| `realname`                    | `OpenClaw`                    | Gerçek ad/GECOS alanı                                                  |
+| `password` / `passwordFile`   | yok                           | Sunucu parolası; dosya normal bir dosya olmalıdır                     |
+| `channels`                    | yok                           | Katılınacak kanallar (`["#openclaw"]`)                                |
+| `accounts` / `defaultAccount` | yok                           | Çoklu hesap kurulumu; ortam değişkenleri yalnızca varsayılan hesabı doldurur |
+
 ## Güvenlik varsayılanları
 
-- IRC, OpenClaw operatörü tarafından yönetilen ileri proxy yönlendirmesi dışında ham TCP/TLS soketleri kullanır. Tüm çıkış trafiğinin bu ileri proxy üzerinden geçmesini gerektiren dağıtımlarda, doğrudan IRC çıkışı açıkça onaylanmadıkça `channels.irc.enabled=false` ayarlayın.
-- `channels.irc.dmPolicy` varsayılanı `"pairing"` değeridir.
-- `channels.irc.groupPolicy` varsayılanı `"allowlist"` değeridir.
+- IRC, OpenClaw operatörü tarafından yönetilen ileri proxy yönlendirmesinin dışında ham TCP/TLS soketleri kullanır. Tüm çıkış trafiğinin bu ileri proxy üzerinden geçmesini gerektiren dağıtımlarda, doğrudan IRC çıkışına açıkça izin verilmediği sürece `channels.irc.enabled=false` ayarlayın.
+- `channels.irc.dmPolicy` varsayılan olarak `"pairing"` değerini kullanır: bilinmeyen doğrudan mesaj gönderenler, `openclaw pairing approve irc <code>` komutuyla onaylayacağınız bir eşleştirme kodu alır.
+- `channels.irc.groupPolicy` varsayılan olarak `"allowlist"` değerini kullanır.
 - `groupPolicy="allowlist"` ile izin verilen kanalları tanımlamak için `channels.irc.groups` ayarlayın.
-- Düz metin aktarımı bilerek kabul etmiyorsanız TLS (`channels.irc.tls=true`) kullanın.
+- Düz metin aktarımını bilerek kabul etmediğiniz sürece TLS (`channels.irc.tls=true`) kullanın.
 
 ## Erişim denetimi
 
-IRC kanalları için iki ayrı "geçit" vardır:
+IRC kanalları için iki ayrı "kapı" vardır:
 
-1. **Kanal erişimi** (`groupPolicy` + `groups`): botun bir kanaldan gelen iletileri hiç kabul edip etmeyeceği.
-2. **Gönderen erişimi** (`groupAllowFrom` / kanal başına `groups["#channel"].allowFrom`): o kanalda botu tetiklemesine kimin izin verildiği.
+1. **Kanal erişimi** (`groupPolicy` + `groups`): botun bir kanaldan gelen mesajları kabul edip etmeyeceği.
+2. **Gönderen erişimi** (`groupAllowFrom` / kanal başına `groups["#channel"].allowFrom`): o kanal içinde botu kimlerin tetiklemesine izin verildiği.
 
 Yapılandırma anahtarları:
 
-- DM izin listesi (DM gönderen erişimi): `channels.irc.allowFrom`
+- Doğrudan mesaj izin listesi (doğrudan mesaj gönderen erişimi): `channels.irc.allowFrom`
 - Grup gönderen izin listesi (kanal gönderen erişimi): `channels.irc.groupAllowFrom`
-- Kanal başına denetimler (kanal + gönderen + bahsetme kuralları): `channels.irc.groups["#channel"]`
-- `channels.irc.groupPolicy="open"` yapılandırılmamış kanallara izin verir (**varsayılan olarak yine de bahsetme koşulludur**)
+- Kanal başına denetimler (kanal + gönderen + bahsetme kuralları): `requireMention`, `allowFrom`, `enabled`, `tools`, `toolsBySender`, `skills` ve `systemPrompt` ile `channels.irc.groups["#channel"]`
+- `channels.irc.groupPolicy="open"` yapılandırılmamış kanallara izin verir (**yine de varsayılan olarak bahsetme gerektirir**)
 
-İzin listesi girdileri kararlı gönderen kimlikleri (`nick!user@host`) kullanmalıdır.
-Yalın nick eşleştirmesi değiştirilebilir durumdadır ve yalnızca `channels.irc.dangerouslyAllowNameMatching: true` olduğunda etkinleştirilir.
+İzin listesi girdileri kararlı gönderen kimliklerini (`nick!user@host`) kullanmalıdır.
+Yalnızca takma adla eşleştirme değişkendir ve ancak `channels.irc.dangerouslyAllowNameMatching: true` olduğunda etkinleştirilir.
 
-### Yaygın tuzak: `allowFrom` kanallar için değil, DM'ler içindir
+### Yaygın sorun: `allowFrom` kanallar için değil, doğrudan mesajlar içindir
 
-Şuna benzer günlükler görürseniz:
+Şuna benzer günlükler görüyorsanız:
 
 - `irc: drop group sender alice!ident@host (policy=allowlist)`
 
-...bu, gönderenin **grup/kanal** iletileri için izinli olmadığı anlamına gelir. Şunlardan birini yaparak düzeltin:
+...bu, gönderenin **grup/kanal** mesajları için izinli olmadığı anlamına gelir. Şunlardan birini yaparak düzeltin:
 
-- `channels.irc.groupAllowFrom` ayarlayın (tüm kanallar için global), veya
-- kanal başına gönderen izin listelerini ayarlayın: `channels.irc.groups["#channel"].allowFrom`
+- `channels.irc.groupAllowFrom` ayarlayın (tüm kanallar için genel) veya
+- kanal başına gönderen izin listeleri ayarlayın: `channels.irc.groups["#channel"].allowFrom`
 
-Örnek (`#tuirc-dev` içindeki herkesin botla konuşmasına izin ver):
+Örnek (`#openclaw` içindeki herkesin botla konuşmasına izin verin):
 
 ```json5
 {
@@ -95,7 +108,7 @@ Yalın nick eşleştirmesi değiştirilebilir durumdadır ve yalnızca `channels
     irc: {
       groupPolicy: "allowlist",
       groups: {
-        "#tuirc-dev": { allowFrom: ["*"] },
+        "#openclaw": { allowFrom: ["*"] },
       },
     },
   },
@@ -104,11 +117,11 @@ Yalın nick eşleştirmesi değiştirilebilir durumdadır ve yalnızca `channels
 
 ## Yanıt tetikleme (bahsetmeler)
 
-Bir kanala izin verilmiş olsa (`groupPolicy` + `groups` aracılığıyla) ve gönderen izinli olsa bile OpenClaw grup bağlamlarında varsayılan olarak **bahsetme koşulu** uygular.
+Bir kanala (`groupPolicy` + `groups` aracılığıyla) ve gönderene izin verilmiş olsa bile OpenClaw, grup bağlamlarında varsayılan olarak **bahsetme koşulu** uygular. Mesaj, bağlı botun takma adını içerdiğinde veya yapılandırılmış bahsetme kalıplarınızla eşleştiğinde bottan bahsedilmiş sayılır.
 
-Bu, ileti botla eşleşen bir bahsetme kalıbı içermedikçe `drop channel … (missing-mention)` gibi günlükler görebileceğiniz anlamına gelir.
+Bu, mesaj botla eşleşen bir bahsetme kalıbı içermedikçe `drop channel … (missing-mention)` gibi günlükler görebileceğiniz anlamına gelir.
 
-Botun bir IRC kanalında **bahsetme gerekmeksizin** yanıt vermesini sağlamak için o kanalda bahsetme koşulunu devre dışı bırakın:
+Botun bir IRC kanalında **bahsetme gerektirmeden** yanıt vermesini sağlamak için o kanalda bahsetme koşulunu devre dışı bırakın:
 
 ```json5
 {
@@ -116,7 +129,7 @@ Botun bir IRC kanalında **bahsetme gerekmeksizin** yanıt vermesini sağlamak i
     irc: {
       groupPolicy: "allowlist",
       groups: {
-        "#tuirc-dev": {
+        "#openclaw": {
           requireMention: false,
           allowFrom: ["*"],
         },
@@ -126,7 +139,7 @@ Botun bir IRC kanalında **bahsetme gerekmeksizin** yanıt vermesini sağlamak i
 }
 ```
 
-Ya da **tüm** IRC kanallarına izin vermek (kanal başına izin listesi olmadan) ve yine de bahsetme olmadan yanıt vermek için:
+Alternatif olarak, kanal başına izin listesi olmadan **tüm** IRC kanallarına izin vermek ve yine de bahsetme olmadan yanıtlamak için:
 
 ```json5
 {
@@ -141,10 +154,10 @@ Ya da **tüm** IRC kanallarına izin vermek (kanal başına izin listesi olmadan
 }
 ```
 
-## Güvenlik notu (genel kanallar için önerilir)
+## Güvenlik notu (herkese açık kanallar için önerilir)
 
-Genel bir kanalda `allowFrom: ["*"]` izni verirseniz herkes bota istem gönderebilir.
-Riski azaltmak için o kanaldaki araçları kısıtlayın.
+Herkese açık bir kanalda `allowFrom: ["*"]` kullanımına izin verirseniz herkes bota istem gönderebilir.
+Riski azaltmak için o kanala yönelik araçları kısıtlayın.
 
 ### Kanaldaki herkes için aynı araçlar
 
@@ -153,7 +166,7 @@ Riski azaltmak için o kanaldaki araçları kısıtlayın.
   channels: {
     irc: {
       groups: {
-        "#tuirc-dev": {
+        "#openclaw": {
           allowFrom: ["*"],
           tools: {
             deny: ["group:runtime", "group:fs", "gateway", "nodes", "cron", "browser"],
@@ -165,22 +178,22 @@ Riski azaltmak için o kanaldaki araçları kısıtlayın.
 }
 ```
 
-### Gönderene göre farklı araçlar (sahip daha fazla yetki alır)
+### Gönderen başına farklı araçlar (sahip daha fazla yetkiye sahip olur)
 
-`"*"` için daha sıkı, nick'iniz için daha gevşek bir politika uygulamak üzere `toolsBySender` kullanın:
+`"*"` için daha katı, kendi takma adınız için daha esnek bir politika uygulamak üzere `toolsBySender` kullanın:
 
 ```json5
 {
   channels: {
     irc: {
       groups: {
-        "#tuirc-dev": {
+        "#openclaw": {
           allowFrom: ["*"],
           toolsBySender: {
             "*": {
               deny: ["group:runtime", "group:fs", "gateway", "nodes", "cron", "browser"],
             },
-            "id:eigen": {
+            "id:alice": {
               deny: ["gateway", "nodes", "cron"],
             },
           },
@@ -193,16 +206,15 @@ Riski azaltmak için o kanaldaki araçları kısıtlayın.
 
 Notlar:
 
-- `toolsBySender` anahtarları IRC gönderen kimliği değerleri için `id:` kullanmalıdır:
-  daha güçlü eşleştirme için `id:eigen` veya `id:eigen!~eigen@174.127.248.171`.
-- Eski ön eksiz anahtarlar hâlâ kabul edilir ve yalnızca `id:` olarak eşleştirilir.
-- İlk eşleşen gönderen politikası kazanır; `"*"` joker yedektir.
+- `toolsBySender` anahtarları açık önekler (`channel:`, `id:`, `e164:`, `username:`, `name:`) kullanmalıdır. IRC için gönderen kimliği değeriyle `id:` kullanın: daha güçlü eşleştirme için `id:alice` veya `id:alice!~alice@203.0.113.7`.
+- Öneksiz eski anahtarlar hâlâ kabul edilir, yalnızca `id:` olarak eşleştirilir ve kullanımdan kaldırma uyarısı oluşturur.
+- Eşleşen ilk gönderen politikası geçerli olur; `"*"` joker geri dönüşüdür.
 
-Grup erişimi ile bahsetme koşulu (ve nasıl etkileştikleri) hakkında daha fazla bilgi için bkz.: [/channels/groups](/tr/channels/groups).
+Grup erişimi ile bahsetme koşulu (ve bunların nasıl etkileştiği) hakkında daha fazla bilgi için bkz.: [/channels/groups](/tr/channels/groups).
 
 ## NickServ
 
-Bağlandıktan sonra NickServ ile kimlik doğrulamak için:
+Bağlandıktan sonra NickServ ile kimliğinizi doğrulamak için:
 
 ```json5
 {
@@ -218,7 +230,9 @@ Bağlandıktan sonra NickServ ile kimlik doğrulamak için:
 }
 ```
 
-Bağlanırken isteğe bağlı tek seferlik kayıt:
+Bir parola ayarlandığında NickServ kimlik doğrulaması varsayılan olarak her zaman çalışır (devre dışı bırakmak için yalnızca `enabled` değerinin `false` olması gerekir). `service` varsayılan olarak `NickServ` değerini kullanır; `passwordFile`, satır içi `password` için bir alternatiftir.
+
+Bağlantıda isteğe bağlı tek seferlik kayıt (`register: true`, `registerEmail` gerektirir):
 
 ```json5
 {
@@ -233,7 +247,7 @@ Bağlanırken isteğe bağlı tek seferlik kayıt:
 }
 ```
 
-Tekrarlanan REGISTER denemelerini önlemek için nick kaydedildikten sonra `register` ayarını devre dışı bırakın.
+Yinelenen REGISTER girişimlerini önlemek için takma ad kaydedildikten sonra `register` seçeneğini devre dışı bırakın.
 
 ## Ortam değişkenleri
 
@@ -250,18 +264,18 @@ Varsayılan hesap şunları destekler:
 - `IRC_NICKSERV_PASSWORD`
 - `IRC_NICKSERV_REGISTER_EMAIL`
 
-`IRC_HOST` bir çalışma alanı `.env` dosyasından ayarlanamaz; bkz. [Çalışma alanı `.env` dosyaları](/tr/gateway/security).
+`IRC_HOST`, çalışma alanı `.env` dosyasından ayarlanamaz; bkz. [Çalışma alanı `.env` dosyaları](/tr/gateway/security).
 
 ## Sorun giderme
 
-- Bot bağlanıyor ancak kanallarda hiç yanıt vermiyorsa `channels.irc.groups` ayarını **ve** bahsetme koşulunun iletileri düşürüp düşürmediğini (`missing-mention`) doğrulayın. Ping olmadan yanıt vermesini istiyorsanız kanal için `requireMention:false` ayarlayın.
-- Oturum açma başarısız olursa nick kullanılabilirliğini ve sunucu parolasını doğrulayın.
-- Özel bir ağda TLS başarısız olursa host/port ve sertifika kurulumunu doğrulayın.
+- Bot bağlanıyor ancak kanallarda hiç yanıt vermiyorsa `channels.irc.groups` ayarını **ve** bahsetme koşulunun mesajları düşürüp düşürmediğini (`missing-mention`) doğrulayın. Botun bahsetme olmadan yanıt vermesini istiyorsanız kanal için `requireMention:false` ayarlayın.
+- Oturum açma başarısız olursa takma adın kullanılabilirliğini ve sunucu parolasını doğrulayın.
+- Özel bir ağda TLS başarısız olursa ana bilgisayar/port ve sertifika kurulumunu doğrulayın.
 
 ## İlgili
 
 - [Kanallara Genel Bakış](/tr/channels) — desteklenen tüm kanallar
-- [Eşleştirme](/tr/channels/pairing) — DM kimlik doğrulaması ve eşleştirme akışı
+- [Eşleştirme](/tr/channels/pairing) — doğrudan mesaj kimlik doğrulaması ve eşleştirme akışı
 - [Gruplar](/tr/channels/groups) — grup sohbeti davranışı ve bahsetme koşulu
-- [Kanal Yönlendirme](/tr/channels/channel-routing) — iletiler için oturum yönlendirmesi
+- [Kanal Yönlendirme](/tr/channels/channel-routing) — mesajlar için oturum yönlendirmesi
 - [Güvenlik](/tr/gateway/security) — erişim modeli ve sıkılaştırma

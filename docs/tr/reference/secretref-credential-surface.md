@@ -2,25 +2,27 @@
 read_when:
     - SecretRef kimlik bilgisi kapsamını doğrulama
     - Bir kimlik bilgisinin `secrets configure` veya `secrets apply` için uygun olup olmadığını denetleme
-    - Desteklenen yüzeyin dışında bir kimlik bilgisinin neden bulunduğunu doğrulama
-summary: Desteklenen ve desteklenmeyen SecretRef kimlik bilgisi yüzeyinin kanonik durumu
+    - Bir kimlik bilgisinin neden desteklenen kapsamın dışında olduğunu doğrulama
+summary: Kanonik olarak desteklenen ve desteklenmeyen SecretRef kimlik bilgisi yüzeyi
 title: SecretRef kimlik bilgisi yüzeyi
 x-i18n:
-    generated_at: "2026-06-28T01:17:03Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:43:31Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 668ee7e72565194bfe53a397767d060e5fe7743c9bf8bde2597ec3dad2a32431
+    source_hash: 435fc25ea9268be40abc367d96def70e8d367cb0ab640a4f2d271a0e9db19147
     source_path: reference/secretref-credential-surface.md
     workflow: 16
 ---
 
-Bu sayfa, kanonik SecretRef kimlik bilgisi yüzeyini tanımlar.
+Bu sayfa, kurallı SecretRef kimlik bilgisi yüzeyini tanımlar: hangi kimlik bilgisi alanlarının ham bir gizli değer yerine bir `SecretRef` (env/file/exec destekli başvuru) kabul ettiğini belirtir.
 
-Kapsam amacı:
+Kapsam:
 
-- Kapsam dahilinde: yalnızca OpenClaw tarafından oluşturulmayan veya rotasyona tabi tutulmayan, kullanıcı tarafından sağlanan kimlik bilgileri.
-- Kapsam dışında: çalışma zamanında oluşturulan veya rotasyona tabi tutulan kimlik bilgileri, OAuth yenileme materyali ve oturum benzeri yapıtlar.
+- Kapsam dahilinde: OpenClaw'ın oluşturmadığı veya döndürmediği, yalnızca kullanıcı tarafından sağlanan kimlik bilgileri.
+- Kapsam dışında: çalışma zamanında oluşturulan veya döndürülen kimlik bilgileri, OAuth yenileme materyali ve oturum benzeri yapılar.
+
+Aşağıdaki listeler kaynak hedef kayıt defterinden oluşturulur ve CI'da `docs/reference/secretref-user-supplied-credentials-matrix.json` ile karşılaştırılarak denetlenir; girdileri elle düzenlemeyin.
 
 ## Desteklenen kimlik bilgileri
 
@@ -123,8 +125,8 @@ Kapsam amacı:
 - `channels.zalo.webhookSecret`
 - `channels.zalo.accounts.*.botToken`
 - `channels.zalo.accounts.*.webhookSecret`
-- `channels.googlechat.serviceAccount` kardeş `serviceAccountRef` üzerinden (uyumluluk istisnası)
-- `channels.googlechat.accounts.*.serviceAccount` kardeş `serviceAccountRef` üzerinden (uyumluluk istisnası)
+- kardeş `serviceAccountRef` aracılığıyla `channels.googlechat.serviceAccount` (uyumluluk istisnası)
+- kardeş `serviceAccountRef` aracılığıyla `channels.googlechat.accounts.*.serviceAccount` (uyumluluk istisnası)
 
 ### `auth-profiles.json` hedefleri (`secrets configure` + `secrets apply` + `secrets audit`)
 
@@ -135,22 +137,15 @@ Kapsam amacı:
 
 Notlar:
 
-- Auth-profile plan hedefleri `agentId` gerektirir.
-- Plan girdileri `profiles.*.key` / `profiles.*.token` hedefler ve kardeş ref'leri (`keyRef` / `tokenRef`) yazar.
-- Auth-profile ref'leri çalışma zamanı çözümlemesine ve denetim kapsamına dahildir.
-- `openclaw.json` içinde SecretRefs, `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}` gibi yapılandırılmış nesneler kullanmalıdır. Eski `secretref-env:<ENV_VAR>` işaretçi dizeleri SecretRef kimlik bilgisi yollarında reddedilir; geçerli işaretçileri geçirmek için `openclaw doctor --fix` çalıştırın.
-- OAuth ilke koruması: `auth.profiles.<id>.mode = "oauth"`, o profil için SecretRef girdileriyle birleştirilemez. Bu ilke ihlal edildiğinde başlatma/yeniden yükleme ve auth-profile çözümlemesi hızlıca başarısız olur.
-- SecretRef ile yönetilen model sağlayıcıları için oluşturulan `agents/*/agent/models.json` girdileri, `apiKey`/başlık yüzeyleri için gizli olmayan işaretçileri (çözümlenmiş gizli değerleri değil) kalıcı hale getirir.
-- İşaretçi kalıcılığında kaynak otoritedir: OpenClaw işaretçileri, çözümlenmiş çalışma zamanı gizli değerlerinden değil, etkin kaynak yapılandırma anlık görüntüsünden (çözümleme öncesi) yazar.
-- Web araması için:
-  - Açık sağlayıcı modunda (`tools.web.search.provider` ayarlanmış), yalnızca seçili sağlayıcı anahtarı etkindir.
-  - Otomatik modda (`tools.web.search.provider` ayarlanmamış), yalnızca önceliğe göre çözümlenen ilk sağlayıcı anahtarı etkindir.
-  - Otomatik modda, seçilmeyen sağlayıcı ref'leri seçilene kadar etkin değil kabul edilir.
-  - Eski `tools.web.search.*` sağlayıcı yolları uyumluluk penceresi boyunca çözülmeye devam eder, ancak kanonik SecretRef yüzeyi `plugins.entries.<plugin>.config.webSearch.*` şeklindedir.
+- Kimlik doğrulama profili plan hedefleri `agentId` gerektirir; plan girdileri `profiles.*.key` / `profiles.*.token` alanlarını hedefler ve kardeş başvuruları (`keyRef` / `tokenRef`) yazar. Kimlik doğrulama profili başvuruları, çalışma zamanı çözümlemesine ve denetim kapsamına dahildir.
+- `openclaw.json` içinde SecretRef'ler `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}` gibi yapılandırılmış nesneler kullanmalıdır. Eski `secretref-env:<ENV_VAR>` işaretleyici dizeleri SecretRef kimlik bilgisi yollarında reddedilir; geçerli işaretleyicileri taşımak için `openclaw doctor --fix` komutunu çalıştırın.
+- OAuth ilke koruması: `auth.profiles.<id>.mode = "oauth"`, bu profil için SecretRef girdileriyle birlikte kullanılamaz. Bu ilke ihlal edildiğinde başlatma/yeniden yükleme ve kimlik doğrulama profili çözümlemesi gecikmeden başarısız olur.
+- SecretRef tarafından yönetilen model sağlayıcılarında, oluşturulan `agents/*/agent/models.json` girdileri `apiKey`/üstbilgi yüzeyleri için gizli olmayan işaretleyicileri (çözümlenmiş gizli değerleri değil) kalıcı olarak saklar. İşaretleyici kalıcılığı kaynak tarafından belirlenir: OpenClaw, işaretleyicileri çözümlenmiş çalışma zamanı gizli değerlerinden değil, etkin kaynak yapılandırma anlık görüntüsünden (çözümleme öncesinde) yazar.
+- Web araması için: açık sağlayıcı modunda (`tools.web.search.provider` ayarlandığında) yalnızca seçilen sağlayıcı anahtarı etkindir. Otomatik modda (`tools.web.search.provider` ayarlanmadığında) yalnızca önceliğe göre çözümlenen ilk sağlayıcı anahtarı etkindir ve seçilmeyen sağlayıcı başvuruları, seçilene kadar etkin değil olarak değerlendirilir. Eski `tools.web.search.*` sağlayıcı yolları uyumluluk süresi boyunca çözümlenmeye devam eder, ancak kurallı SecretRef yüzeyi `plugins.entries.<plugin>.config.webSearch.*` biçimindedir.
 
 ## Desteklenmeyen kimlik bilgileri
 
-Kapsam dışı kimlik bilgileri şunları içerir:
+Bu kimlik bilgileri oluşturulan, döndürülen, oturum taşıyan veya kalıcı OAuth sınıflarındandır ve salt okunur harici SecretRef çözümlemesine uygun değildir:
 
 [//]: # "secretref-unsupported-list-start"
 
@@ -166,11 +161,7 @@ Kapsam dışı kimlik bilgileri şunları içerir:
 
 [//]: # "secretref-unsupported-list-end"
 
-Gerekçe:
-
-- Bu kimlik bilgileri, salt okunur harici SecretRef çözümlemesine uymayan oluşturulmuş, rotasyona tabi tutulan, oturum taşıyan veya OAuth ile kalıcı sınıflardır.
-
 ## İlgili
 
-- [Gizli dizi yönetimi](/tr/gateway/secrets)
-- [Auth kimlik bilgisi semantiği](/tr/auth-credential-semantics)
+- [Gizli değer yönetimi](/tr/gateway/secrets)
+- [Kimlik doğrulama bilgilerinin anlamları](/tr/auth-credential-semantics)

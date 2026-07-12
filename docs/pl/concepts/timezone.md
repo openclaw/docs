@@ -1,30 +1,30 @@
 ---
 read_when:
-    - Chcesz szybko zrozumieć model obsługi stref czasowych
+    - Potrzebujesz prostego modelu mentalnego obsługi stref czasowych
     - Decydujesz, gdzie ustawić lub nadpisać strefę czasową
-summary: Gdzie strefy czasowe pojawiają się w OpenClaw — koperty, ładunki narzędzi, prompt systemowy
+summary: Gdzie strefy czasowe pojawiają się w OpenClaw — w kopertach, danych narzędzi i monicie systemowym
 title: Strefy czasowe
 x-i18n:
-    generated_at: "2026-06-27T17:30:03Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:05:49Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cc5bfe595c81b9c6ffaceac4c86b6f82b82917a506cdd7227e3e8cb1c0eb99a3
+    source_hash: 9d1620b4b2cedba89bd6ab4392018cd48d0ef92a6abc1744011d482557e2c4fc
     source_path: concepts/timezone.md
     workflow: 16
 ---
 
-OpenClaw standaryzuje znaczniki czasu, aby model widział **jeden czas referencyjny** zamiast mieszanki zegarów lokalnych dla dostawców. Istnieją trzy powierzchnie, na których pojawiają się strefy czasowe, każda z własnym celem:
+OpenClaw standaryzuje znaczniki czasu, dzięki czemu model widzi **jeden czas odniesienia**, zamiast mieszanki zegarów lokalnych dostawców. Strefy czasowe są wyświetlane w trzech miejscach, z których każde ma własne przeznaczenie:
 
-## Trzy powierzchnie stref czasowych
+## Trzy miejsca wyświetlania stref czasowych
 
-| Powierzchnia       | Co pokazuje                                                                                                     | Domyślnie                                      | Konfigurowane przez                                      |
-| ------------------ | --------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- | -------------------------------------------------------- |
-| Koperty wiadomości | Owijają przychodzące wiadomości z kanałów: `[Signal +1555 Sun 2026-01-18 00:19:42 PST] hello`                   | Lokalna strefa hosta                           | `agents.defaults.envelopeTimezone`                       |
-| Ładunki narzędzi   | Narzędzia kanału w stylu `readMessages` zwracają surowy czas dostawcy + znormalizowane `timestampMs` / `timestampUtc` | Pola UTC są zawsze obecne                      | Nie można konfigurować — zachowuje znaczniki czasu natywne dla dostawcy |
-| Prompt systemowy   | Mały blok `Current Date & Time` z **samą strefą czasową** (bez wartości zegara, dla stabilności cache)           | Strefa czasowa hosta, jeśli `userTimezone` nie jest ustawione | `agents.defaults.userTimezone`                           |
+| Miejsce              | Co pokazuje                                                                                                             | Domyślne                                      | Konfiguracja za pomocą                                  |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- | ------------------------------------------------------- |
+| Obwiednie wiadomości | Obejmują przychodzące wiadomości z kanałów: `[Signal +1555 Sun 2026-01-18 00:19:42 PST] hello`                           | Lokalna strefa hosta                          | `agents.defaults.envelopeTimezone`                      |
+| Dane narzędzi        | Narzędzia kanałów typu `readMessages` zwracają nieprzetworzony czas dostawcy oraz znormalizowane `timestampMs` / `timestampUtc` | Pola UTC są zawsze obecne                     | Brak konfiguracji; zachowuje natywne znaczniki dostawcy |
+| Monit systemowy      | Mały blok `Current Date & Time` zawierający **tylko strefę czasową** (bez wartości czasu, aby zapewnić stabilność pamięci podręcznej) | Strefa hosta, jeśli nie ustawiono `userTimezone` | `agents.defaults.userTimezone`                          |
 
-Prompt systemowy celowo pomija aktualny zegar, aby cache promptów pozostawał stabilny między turami. Gdy agent potrzebuje bieżącego czasu, wywołuje `session_status`.
+Monit systemowy celowo pomija bieżący czas, aby zachować stabilność buforowania monitu między turami. Gdy agent potrzebuje bieżącego czasu, wywołuje `session_status`.
 
 ## Ustawianie strefy czasowej użytkownika
 
@@ -38,18 +38,28 @@ Prompt systemowy celowo pomija aktualny zegar, aby cache promptów pozostawał s
 }
 ```
 
-Jeśli `userTimezone` nie jest ustawione, OpenClaw ustala strefę czasową hosta w czasie działania (bez zapisu konfiguracji). `agents.defaults.timeFormat` (`auto` | `12` | `24`) kontroluje formatowanie 12h/24h w kopertach i powierzchniach niższego poziomu, ale nie w sekcji promptu systemowego.
+Jeśli `userTimezone` nie jest ustawione, OpenClaw określa strefę czasową hosta w czasie działania za pomocą `Intl.DateTimeFormat().resolvedOptions().timeZone` (bez zapisywania konfiguracji). `agents.defaults.timeFormat` (`auto` | `12` | `24`) steruje formatem 12-/24-godzinnym w obwiedniach i dalszych miejscach, ale nie w sekcji monitu systemowego.
 
-## Kiedy nadpisywać
+## Wartości strefy czasowej obwiedni
 
-- **Używaj kopert UTC** (`envelopeTimezone: "utc"`), gdy chcesz mieć stabilne znaczniki czasu między hostami w różnych regionach albo gdy chcesz, aby logi wyrównane do UTC pasowały do danych wyjściowych diagnostyki.
-- **Używaj stałej strefy IANA** (np. `"Europe/Vienna"`), gdy host Gateway znajduje się w jednej strefie, ale użytkownik w innej, i chcesz, aby koperty były odczytywane w strefie użytkownika niezależnie od migracji hosta.
-- **Ustaw `envelopeTimestamp: "off"`**, gdy kontekst znacznika czasu nie jest przydatny w rozmowie. Usuwa to bezwzględne znaczniki czasu z kopert, bezpośrednich prefiksów promptów agenta i osadzonych prefiksów wejścia modelu.
+`agents.defaults.envelopeTimezone` przyjmuje:
 
-Pełny opis zachowania, przykłady dla poszczególnych dostawców oraz formatowanie czasu, który upłynął, znajdziesz w [Data i godzina](/pl/date-time).
+- `"local"` (domyślnie) lub `"host"` — strefa czasowa komputera hosta.
+- `"utc"` lub `"gmt"` — UTC.
+- `"user"` — określona wartość `agents.defaults.userTimezone` (jeśli nie jest ustawiona, używana jest strefa czasowa hosta).
+- Dowolny jawny identyfikator strefy IANA, np. `"Europe/Vienna"`.
+
+## Kiedy nadpisać ustawienie
+
+- **Użyj `"utc"`**, aby zachować spójne znaczniki czasu na hostach w różnych regionach lub dopasować je do danych diagnostycznych albo dzienników wyrównanych do UTC.
+- **Użyj `"user"`**, aby zachować zgodność obwiedni ze skonfigurowaną strefą czasową użytkownika niezależnie od strefy, w której działa host Gateway.
+- **Użyj stałej strefy IANA**, gdy host Gateway znajduje się w jednej strefie, ale obwiednia powinna zawsze wskazywać inną strefę niezależnie od migracji hosta.
+- **Ustaw `envelopeTimestamp: "off"`**, gdy kontekst znacznika czasu nie jest przydatny w rozmowie. Spowoduje to usunięcie bezwzględnych znaczników czasu z obwiedni, prefiksów bezpośrednich monitów agenta oraz osadzonych prefiksów danych wejściowych modelu.
+
+Pełny opis działania, przykłady dla poszczególnych dostawców oraz formatowanie czasu, który upłynął, znajdziesz w sekcji [Data i czas](/pl/date-time).
 
 ## Powiązane
 
-- [Data i godzina](/pl/date-time) — pełne zachowanie kopert/narzędzi/promptów oraz przykłady.
-- [Heartbeat](/pl/gateway/heartbeat) — aktywne godziny używają strefy czasowej do planowania.
-- [Zadania Cron](/pl/automation/cron-jobs) — wyrażenia Cron używają strefy czasowej do planowania.
+- [Data i czas](/pl/date-time) — pełny opis działania obwiedni, narzędzi i monitów oraz przykłady.
+- [Heartbeat](/pl/gateway/heartbeat) — godziny aktywności wykorzystują strefę czasową do planowania.
+- [Zadania Cron](/pl/automation/cron-jobs) — wyrażenia Cron wykorzystują strefę czasową do planowania.

@@ -1,98 +1,88 @@
 ---
 read_when:
-    - OpenClaw’ı Ollama aracılığıyla bulut veya yerel modellerle çalıştırmak istiyorsunuz
-    - Ollama kurulumu ve yapılandırma rehberliğine ihtiyacınız var
-    - Görsel anlama için Ollama vision modelleri istiyorsunuz
+    - OpenClaw'u Ollama üzerinden bulut veya yerel modellerle çalıştırmak istiyorsunuz
+    - Ollama kurulum ve yapılandırma rehberine ihtiyacınız var
+    - Görüntüleri anlamak için Ollama görsel modellerini kullanmak istiyorsunuz
 summary: OpenClaw'u Ollama ile çalıştırın (bulut ve yerel modeller)
 title: Ollama
 x-i18n:
-    generated_at: "2026-07-03T09:55:09Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:40:47Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 9d91871ef96c3bdc027fe7cfceecae7e1d050913d859e3c6840725002fdf57af
+    source_hash: aaa2ab1cf22b318499ef2a040c9e356bfb1c24be811ae0749cce0090f5978c13
     source_path: providers/ollama.md
     workflow: 16
 ---
 
-OpenClaw, barındırılan bulut modelleri ve yerel/kendi kendine barındırılan Ollama sunucuları için Ollama'nın yerel API'siyle (`/api/chat`) entegre olur. Ollama'yı üç modda kullanabilirsiniz: erişilebilir bir Ollama ana makinesi üzerinden `Cloud + Local`, `https://ollama.com` karşısında `Cloud only` veya erişilebilir bir Ollama ana makinesi karşısında `Local only`.
+OpenClaw, Ollama'nın OpenAI uyumlu `/v1` uç noktasıyla değil, yerel API'siyle (`/api/chat`) iletişim kurar. Üç mod desteklenir:
 
-OpenClaw ayrıca doğrudan Ollama Cloud kullanımı için `ollama-cloud` değerini birinci sınıf barındırılan sağlayıcı kimliği olarak kaydeder. Yerel `ollama` sağlayıcı kimliğini paylaşmadan yalnızca bulut yönlendirmesi istediğinizde `ollama-cloud/kimi-k2.5:cloud` gibi başvurular kullanın.
+| Mod             | Kullandığı                                                                      |
+| --------------- | ------------------------------------------------------------------------------- |
+| Bulut + Yerel   | Yerel modelleri ve (oturum açılmışsa) `:cloud` modellerini sunan, erişilebilir bir Ollama ana makinesi |
+| Yalnızca bulut  | Doğrudan `https://ollama.com`; yerel arka plan programı yok                     |
+| Yalnızca yerel  | Erişilebilir bir Ollama ana makinesi; yalnızca yerel modeller                   |
 
-Ayrılmış yalnızca bulut kurulum sayfası için bkz. [Ollama Cloud](/tr/providers/ollama-cloud).
+Özel `ollama-cloud` sağlayıcı kimliğiyle yalnızca bulut kurulumu için
+[Ollama Cloud](/tr/providers/ollama-cloud) bölümüne bakın. Bulut yönlendirmesini
+yerel bir `ollama` sağlayıcısından ayrı tutmak istediğinizde
+`ollama-cloud/<model>` başvurularını kullanın.
 
 <Warning>
-**Uzak Ollama kullanıcıları**: OpenClaw ile `/v1` OpenAI uyumlu URL'sini (`http://host:11434/v1`) kullanmayın. Bu, araç çağırmayı bozar ve modeller ham araç JSON'unu düz metin olarak çıktılayabilir. Bunun yerine yerel Ollama API URL'sini kullanın: `baseUrl: "http://host:11434"` (`/v1` yok).
+OpenAI uyumlu `/v1` URL'sini (`http://host:11434/v1`) kullanmayın. Bu, araç çağırmayı bozar ve modellerin ham araç çağrısı JSON'unu düz metin olarak üretmesine neden olabilir. Yerel URL'yi kullanın: `baseUrl: "http://host:11434"` (`/v1` olmadan).
 </Warning>
 
-Ollama sağlayıcı yapılandırması, kanonik anahtar olarak `baseUrl` kullanır. OpenClaw, OpenAI SDK tarzı örneklerle uyumluluk için `baseURL` değerini de kabul eder, ancak yeni yapılandırma `baseUrl` değerini tercih etmelidir.
+Standart yapılandırma anahtarı `baseUrl`'dir. OpenAI SDK tarzı örnekler için
+`baseURL` de kabul edilir ancak yeni yapılandırmalarda `baseUrl` kullanılmalıdır.
 
 ## Kimlik doğrulama kuralları
 
 <AccordionGroup>
-  <Accordion title="Local and LAN hosts">
-    Yerel ve LAN Ollama ana makineleri gerçek bir bearer token gerektirmez. OpenClaw, yerel `ollama-local` işaretleyicisini yalnızca loopback, özel ağ, `.local` ve çıplak ana makine adlı Ollama temel URL'leri için kullanır.
+  <Accordion title="Yerel ve LAN ana makineleri">
+    local loopback, özel ağ, `.local` ve yalnızca ana makine adından oluşan Ollama URL'leri gerçek bir taşıyıcı belirteci gerektirmez. OpenClaw bunlar için `ollama-local` işaretçisini kullanır.
   </Accordion>
-  <Accordion title="Remote and Ollama Cloud hosts">
-    Uzak herkese açık ana makineler ve Ollama Cloud (`https://ollama.com`), `OLLAMA_API_KEY`, bir kimlik doğrulama profili veya sağlayıcının `apiKey` değeri üzerinden gerçek bir kimlik bilgisi gerektirir. Doğrudan barındırılan kullanım için `ollama-cloud` sağlayıcısını tercih edin.
+  <Accordion title="Uzak ve Ollama Cloud ana makineleri">
+    Genel uzak ana makineler ve `https://ollama.com` gerçek bir kimlik bilgisi gerektirir: `OLLAMA_API_KEY`, bir kimlik doğrulama profili veya sağlayıcının `apiKey` değeri. Doğrudan barındırılan kullanım için `ollama-cloud` sağlayıcısını tercih edin.
   </Accordion>
-  <Accordion title="Custom provider ids">
-    `api: "ollama"` ayarlayan özel sağlayıcı kimlikleri aynı kuralları izler. Örneğin, özel bir LAN Ollama ana makinesini işaret eden bir `ollama-remote` sağlayıcısı `apiKey: "ollama-local"` kullanabilir ve alt ajanlar bu işaretleyiciyi eksik kimlik bilgisi olarak ele almak yerine Ollama sağlayıcı kancası üzerinden çözümler. Bellek araması ayrıca gömmelerin eşleşen Ollama uç noktasını kullanması için `agents.defaults.memorySearch.provider` değerini bu özel sağlayıcı kimliğine ayarlayabilir.
+  <Accordion title="Özel sağlayıcı kimlikleri">
+    `api: "ollama"` kullanan özel bir sağlayıcı aynı kurallara uyar. Örneğin, özel bir LAN ana makinesine yönlendirilmiş `ollama-remote` sağlayıcısı `apiKey: "ollama-local"` kullanabilir; alt aracılar bu işaretçiyi eksik kimlik bilgisi olarak değerlendirmek yerine Ollama sağlayıcı kancası üzerinden çözümler. `agents.defaults.memorySearch.provider` da gömmelerin bu Ollama uç noktasını kullanması için özel bir sağlayıcı kimliğine işaret edebilir.
   </Accordion>
-  <Accordion title="Auth profiles">
-    `auth-profiles.json`, bir sağlayıcı kimliği için kimlik bilgisini saklar. Uç nokta ayarlarını (`baseUrl`, `api`, model kimlikleri, üstbilgiler, zaman aşımları) `models.providers.<id>` içine koyun. `{ "ollama-windows": { "apiKey": "ollama-local" } }` gibi eski düz kimlik doğrulama profili dosyaları çalışma zamanı biçimi değildir; bunları bir yedekle kanonik `ollama-windows:default` API anahtarı profiline yeniden yazmak için `openclaw doctor --fix` çalıştırın. Bu dosyadaki `baseUrl` uyumluluk gürültüsüdür ve sağlayıcı yapılandırmasına taşınmalıdır.
+  <Accordion title="Kimlik doğrulama profilleri">
+    `auth-profiles.json`, bir sağlayıcı kimliğinin kimlik bilgisini depolar; uç nokta ayarlarını (`baseUrl`, `api`, modeller, üstbilgiler, zaman aşımları) `models.providers.<id>` içine koyun. `{ "ollama-windows": { "apiKey": "ollama-local" } }` gibi eski düz dosyalar bir çalışma zamanı biçimi değildir; `openclaw doctor --fix`, bunları yedek oluşturarak standart bir `ollama-windows:default` API anahtarı profiline dönüştürür. Bu eski dosyadaki bir `baseUrl` değeri gereksizdir ve sağlayıcı yapılandırmasına taşınmalıdır.
   </Accordion>
-  <Accordion title="Memory embedding scope">
-    Ollama bellek gömmeleri için kullanıldığında, bearer kimlik doğrulaması bildirildiği ana makineyle sınırlandırılır:
+  <Accordion title="Bellek gömme kapsamı">
+    Ollama bellek gömmeleri için taşıyıcı kimlik doğrulaması, bildirildiği ana makineyle sınırlıdır:
 
-    - Sağlayıcı düzeyindeki anahtar yalnızca o sağlayıcının Ollama ana makinesine gönderilir.
+    - Sağlayıcı düzeyindeki bir anahtar yalnızca o sağlayıcının ana makinesine gönderilir.
     - `agents.*.memorySearch.remote.apiKey` yalnızca kendi uzak gömme ana makinesine gönderilir.
-    - Saf bir `OLLAMA_API_KEY` ortam değeri, Ollama Cloud geleneği olarak ele alınır ve varsayılan olarak yerel veya kendi kendine barındırılan ana makinelere gönderilmez.
+    - Tek başına kullanılan bir `OLLAMA_API_KEY` ortam değişkeni Ollama Cloud kuralı olarak değerlendirilir ve varsayılan olarak yerel/kendi barındırdığınız ana makinelere gönderilmez.
 
   </Accordion>
 </AccordionGroup>
 
 ## Başlarken
 
-Tercih ettiğiniz kurulum yöntemini ve modu seçin.
-
 <Tabs>
-  <Tab title="Onboarding (recommended)">
-    **En uygun olduğu durum:** çalışan bir Ollama bulut veya yerel kurulumuna giden en hızlı yol.
-
+  <Tab title="İlk kurulum (önerilen)">
     <Steps>
-      <Step title="Run onboarding">
+      <Step title="İlk kurulumu çalıştırın">
         ```bash
         openclaw onboard
         ```
 
-        Sağlayıcı listesinden **Ollama** seçin.
+        **Ollama** seçeneğini belirleyin, ardından bir mod seçin: **Bulut + Yerel**, **Yalnızca bulut** veya **Yalnızca yerel**.
       </Step>
-      <Step title="Choose your mode">
-        - **Cloud + Local** — yerel Ollama ana makinesi ve bu ana makine üzerinden yönlendirilen bulut modelleri
-        - **Cloud only** — `https://ollama.com` üzerinden barındırılan Ollama modelleri
-        - **Local only** — yalnızca yerel modeller
-
+      <Step title="Bir model seçin">
+        `Yalnızca bulut`, `OLLAMA_API_KEY` değerini ister ve barındırılan bulut varsayılanlarını önerir. `Bulut + Yerel` ve `Yalnızca yerel`, bir Ollama temel URL'si ister, kullanılabilir modelleri keşfeder ve seçilen yerel model eksikse otomatik olarak indirir. `gemma4:latest` gibi kurulu bir `:latest` etiketi, `gemma4` yinelenmeden bir kez gösterilir. `Bulut + Yerel` ayrıca ana makinede bulut erişimi için oturum açılıp açılmadığını denetler.
       </Step>
-      <Step title="Select a model">
-        `Cloud only`, `OLLAMA_API_KEY` ister ve barındırılan bulut varsayılanlarını önerir. `Cloud + Local` ve `Local only`, bir Ollama temel URL'si ister, kullanılabilir modelleri keşfeder ve seçili yerel model henüz kullanılabilir değilse otomatik olarak çeker. Ollama, `gemma4:latest` gibi kurulu bir `:latest` etiketi bildirdiğinde kurulum, hem `gemma4` hem de `gemma4:latest` göstermek veya çıplak takma adı yeniden çekmek yerine bu kurulu modeli bir kez gösterir. `Cloud + Local` ayrıca bu Ollama ana makinesinin bulut erişimi için oturum açıp açmadığını denetler.
-      </Step>
-      <Step title="Verify the model is available">
+      <Step title="Doğrulayın">
         ```bash
         openclaw models list --provider ollama
         ```
       </Step>
     </Steps>
 
-    ### Etkileşimsiz mod
-
-    ```bash
-    openclaw onboard --non-interactive \
-      --auth-choice ollama \
-      --accept-risk
-    ```
-
-    İsteğe bağlı olarak özel bir temel URL veya model belirtin:
+    Etkileşimsiz:
 
     ```bash
     openclaw onboard --non-interactive \
@@ -102,48 +92,36 @@ Tercih ettiğiniz kurulum yöntemini ve modu seçin.
       --accept-risk
     ```
 
+    `--custom-base-url` ve `--custom-model-id` isteğe bağlıdır; bunların belirtilmemesi, varsayılan yerel ana makineyi ve önerilen `gemma4` modelini kullanır.
+
   </Tab>
 
-  <Tab title="Manual setup">
-    **En uygun olduğu durum:** bulut veya yerel kurulum üzerinde tam denetim.
-
+  <Tab title="Elle kurulum">
     <Steps>
-      <Step title="Choose cloud or local">
-        - **Cloud + Local**: Ollama'yı kurun, `ollama signin` ile oturum açın ve bulut isteklerini bu ana makine üzerinden yönlendirin
-        - **Cloud only**: `OLLAMA_API_KEY` ile `https://ollama.com` kullanın
-        - **Local only**: Ollama'yı [ollama.com/download](https://ollama.com/download) adresinden kurun
+      <Step title="Ollama'yı kurun ve başlatın">
+        [ollama.com/download](https://ollama.com/download) adresinden edinin, ardından bir model indirin:
 
-      </Step>
-      <Step title="Pull a local model (local only)">
         ```bash
         ollama pull gemma4
-        # or
-        ollama pull gpt-oss:20b
-        # or
-        ollama pull llama3.3
         ```
-      </Step>
-      <Step title="Enable Ollama for OpenClaw">
-        `Cloud only` için gerçek `OLLAMA_API_KEY` değerinizi kullanın. Ana makine destekli kurulumlar için herhangi bir yer tutucu değer çalışır:
 
+        Karma bulut erişimi için aynı ana makinede `ollama signin` komutunu çalıştırın.
+      </Step>
+      <Step title="Bir kimlik bilgisi ayarlayın">
         ```bash
-        # Cloud
-        export OLLAMA_API_KEY="your-ollama-api-key"
-
-        # Local-only
-        export OLLAMA_API_KEY="ollama-local"
-
-        # Or configure in your config file
-        openclaw config set models.providers.ollama.apiKey "OLLAMA_API_KEY"
+        export OLLAMA_API_KEY="ollama-local"    # yerel/LAN ana makinesi, herhangi bir değer çalışır
+        export OLLAMA_API_KEY="your-real-key"   # yalnızca https://ollama.com
         ```
+
+        Ya da yapılandırmada: `openclaw config set models.providers.ollama.apiKey "OLLAMA_API_KEY"`.
       </Step>
-      <Step title="Inspect and set your model">
+      <Step title="Modeli seçin">
         ```bash
         openclaw models list
         openclaw models set ollama/gemma4
         ```
 
-        Ya da yapılandırmada varsayılanı ayarlayın:
+        Ya da yapılandırmada:
 
         ```json5
         {
@@ -160,66 +138,72 @@ Tercih ettiğiniz kurulum yöntemini ve modu seçin.
   </Tab>
 </Tabs>
 
-## Bulut modelleri
+## Yerel bir ana makine üzerinden bulut modelleri
 
-<Tabs>
-  <Tab title="Cloud + Local">
-    `Cloud + Local`, hem yerel hem de bulut modelleri için denetim noktası olarak erişilebilir bir Ollama ana makinesi kullanır. Bu, Ollama'nın tercih ettiği hibrit akıştır.
+`Bulut + Yerel`, hem yerel hem de `:cloud` modellerini erişilebilir tek bir
+Ollama ana makinesi üzerinden yönlendirir. Bu, Ollama'nın karma akışıdır ve
+her ikisini de istediğinizde kurulum sırasında seçmeniz gereken moddur.
 
-    Kurulum sırasında **Cloud + Local** kullanın. OpenClaw, Ollama temel URL'sini ister, bu ana makinedeki yerel modelleri keşfeder ve ana makinenin `ollama signin` ile bulut erişimi için oturum açıp açmadığını denetler. Ana makinede oturum açılmışsa OpenClaw ayrıca `kimi-k2.5:cloud`, `minimax-m2.7:cloud` ve `glm-5.1:cloud` gibi barındırılan bulut varsayılanlarını önerir.
+OpenClaw temel URL'yi ister, yerel modelleri keşfeder ve `ollama signin`
+durumunu denetler. Oturum açıldığında barındırılan varsayılanları
+(`kimi-k2.5:cloud`, `minimax-m2.7:cloud`, `glm-5.1:cloud`, `glm-5.2:cloud`)
+önerir. Oturum açılmamışsa `ollama signin` komutunu çalıştırana kadar kurulum
+yalnızca yerel olarak kalır.
 
-    Ana makinede henüz oturum açılmamışsa OpenClaw, siz `ollama signin` çalıştırana kadar kurulumu yalnızca yerel tutar.
+Yerel bir arka plan programı olmadan yalnızca bulut erişimi için `openclaw onboard --auth-choice ollama-cloud` komutunu kullanın ve [Ollama Cloud](/tr/providers/ollama-cloud) bölümüne bakın. Bu yol `ollama signin` veya çalışan bir sunucu gerektirmez:
 
-  </Tab>
+```bash
+openclaw onboard --auth-choice ollama-cloud
+openclaw models set ollama-cloud/kimi-k2.5:cloud
+```
 
-  <Tab title="Cloud only">
-    `Cloud only`, `https://ollama.com` adresindeki Ollama'nın barındırılan API'sine karşı çalışır.
-
-    Kurulum sırasında **Cloud only** kullanın. OpenClaw `OLLAMA_API_KEY` ister, `baseUrl: "https://ollama.com"` ayarlar ve barındırılan bulut model listesini başlatır. Bu yol yerel bir Ollama sunucusu veya `ollama signin` gerektirmez.
-
-    `openclaw onboard` sırasında gösterilen bulut model listesi `https://ollama.com/api/tags` üzerinden canlı olarak doldurulur ve 500 girişle sınırlandırılır; böylece seçici statik bir başlangıç listesi yerine mevcut barındırılan kataloğu yansıtır. Kurulum sırasında `ollama.com` erişilemezse veya hiç model döndürmezse OpenClaw, onboarding'in yine de tamamlanması için önceki sabit kodlanmış önerilere geri döner.
-
-    Birinci sınıf bulut sağlayıcısını doğrudan da yapılandırabilirsiniz:
-
-    ```bash
-    openclaw onboard --auth-choice ollama-cloud
-    openclaw models set ollama-cloud/kimi-k2.5:cloud
-    ```
-
-  </Tab>
-
-  <Tab title="Local only">
-    Yalnızca yerel modda OpenClaw, yapılandırılmış Ollama örneğinden modelleri keşfeder. Bu yol yerel veya kendi kendine barındırılan Ollama sunucuları içindir.
-
-    OpenClaw şu anda yerel varsayılan olarak `gemma4` önerir.
-
-  </Tab>
-</Tabs>
+`openclaw onboard` sırasında gösterilen bulut model listesi,
+`https://ollama.com/api/tags` adresinden canlı olarak doldurulur ve 500
+girdiyle sınırlandırılır; böylece seçici güncel barındırılan kataloğu
+yansıtır. Kurulum sırasında `ollama.com` erişilemez durumdaysa veya hiç model
+döndürmezse OpenClaw, ilk kurulumun yine tamamlanabilmesi için sabit kodlanmış
+öneri listesine geri döner.
 
 ## Model keşfi (örtük sağlayıcı)
 
-`OLLAMA_API_KEY` (veya bir kimlik doğrulama profili) ayarladığınızda ve `models.providers.ollama` ya da `api: "ollama"` değerine sahip başka bir özel uzak sağlayıcı tanımlamadığınızda OpenClaw, `http://127.0.0.1:11434` adresindeki yerel Ollama örneğinden modelleri keşfeder.
+`OLLAMA_API_KEY` (veya bir kimlik doğrulama profili) ayarlandığında ve ne
+`models.providers.ollama` ne de `api: "ollama"` kullanan başka bir özel
+sağlayıcı tanımlandığında, OpenClaw modelleri `http://127.0.0.1:11434`
+adresinden keşfeder:
 
-| Davranış            | Ayrıntı                                                                                                                                                              |
-| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Katalog sorgusu     | `/api/tags` sorgular                                                                                                                                                 |
-| Yetenek algılama    | `contextWindow`, genişletilmiş `num_ctx` Modelfile parametreleri ve vision/tools dahil yetenekleri okumak için en iyi çaba `/api/show` aramalarını kullanır          |
-| Görüntü modelleri   | `/api/show` tarafından bildirilen `vision` yeteneğine sahip modeller görüntü destekli (`input: ["text", "image"]`) olarak işaretlenir; böylece OpenClaw görüntüleri isteme otomatik olarak enjekte eder |
-| Akıl yürütme algılama | Mevcut olduğunda `thinking` dahil `/api/show` yeteneklerini kullanır; Ollama yetenekleri atladığında model adı sezgisine (`r1`, `reasoning`, `think`) geri döner     |
-| Token sınırları     | `maxTokens` değerini OpenClaw tarafından kullanılan varsayılan Ollama maksimum token üst sınırına ayarlar                                                            |
-| Maliyetler          | Tüm maliyetleri `0` olarak ayarlar                                                                                                                                   |
-
-Bu, kataloğu yerel Ollama örneğiyle hizalı tutarken elle model girişleri yazma ihtiyacını ortadan kaldırır. Yerel `infer model run` içinde `ollama/<pulled-model>:latest` gibi tam bir başvuru kullanabilirsiniz; OpenClaw bu kurulu modeli, elle yazılmış bir `models.json` girişi gerektirmeden Ollama'nın canlı kataloğundan çözümler.
-
-Oturum açılmış Ollama ana makineleri için bazı `:cloud` modelleri `/api/tags` içinde görünmeden önce `/api/chat` ve `/api/show` üzerinden kullanılabilir olabilir. Tam bir `ollama/<model>:cloud` başvurusunu açıkça seçtiğinizde OpenClaw, bu eksik modeli `/api/show` ile doğrular ve yalnızca Ollama model meta verilerini onaylarsa çalışma zamanı kataloğuna ekler. Yazım hataları otomatik oluşturulmak yerine bilinmeyen model olarak başarısız olur.
+| Davranış             | Ayrıntı                                                                                                                                                                                                                                                                                                                                 |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Katalog sorgusu      | `/api/tags`                                                                                                                                                                                                                                                                                                                             |
+| Yetenek algılama     | En iyi çabayla yapılan `/api/show` çağrısı; `contextWindow`, `num_ctx` Modelfile parametrelerini ve yetenekleri (görüntü/araçlar/düşünme) okur                                                                                                                                                                                             |
+| Görüntü modelleri    | `/api/show` yanıtındaki `vision` yeteneği, modeli görüntü destekli (`input: ["text", "image"]`) olarak işaretler                                                                                                                                                                                                                          |
+| Akıl yürütme algılama | Kullanılabildiğinde `/api/show` yanıtındaki `thinking` yeteneğini kullanır; Ollama yetenekleri sağlamadığında ad sezgisine (`r1`, `reason`, `reasoning`, `think`) geri döner. `glm-5.2:cloud` ve `deepseek-v4-flash\|pro:cloud`, bildirilen yeteneklerden bağımsız olarak her zaman akıl yürütme modeli kabul edilir. |
+| Belirteç sınırları   | `maxTokens`, varsayılan olarak OpenClaw'ın Ollama azami belirteç sınırını kullanır                                                                                                                                                                                                                                                       |
+| Maliyetler           | Tüm maliyetler `0`'dır                                                                                                                                                                                                                                                                                                                  |
 
 ```bash
-# See what models are available
 ollama list
 openclaw models list
 ```
 
-Tam ajan araç yüzeyinden kaçınan dar bir metin üretimi smoke testi için, tam bir Ollama model başvurusuyla yerel `infer model run` kullanın:
+Açık bir `models` dizisiyle `models.providers.ollama` ayarlamak veya
+`api: "ollama"` ve local loopback olmayan bir `baseUrl` kullanan özel bir
+sağlayıcı tanımlamak otomatik keşfi devre dışı bırakır; bu durumda modeller
+elle tanımlanmalıdır ([Yapılandırma](#configuration) bölümüne bakın).
+Barındırılan `https://ollama.com` adresine yönlendirilmiş bir
+`models.providers.ollama` girdisi de keşfi atlar çünkü Ollama Cloud modelleri
+sağlayıcı tarafından yönetilir. `http://127.0.0.2:11434` gibi local loopback
+özel sağlayıcılar yine yerel kabul edilir ve otomatik keşfi sürdürür.
+
+Elle yazılmış bir `models.json` girdisi olmadan `ollama/<pulled-model>:latest`
+gibi tam bir başvuru kullanabilirsiniz; OpenClaw bunu canlı olarak çözümler.
+Oturum açılmış ana makinelerde, listede olmayan bir `ollama/<model>:cloud`
+başvurusu seçildiğinde söz konusu model `/api/show` ile doğrulanır ve yalnızca
+Ollama meta verileri onaylarsa çalışma zamanı kataloğuna eklenir; yazım
+hataları yine bilinmeyen model hatası verir.
+
+### Hızlı kontroller
+
+Tam aracı araç yüzeyini atlayan dar kapsamlı bir metin yoklaması için:
 
 ```bash
 OLLAMA_API_KEY=ollama-local \
@@ -230,9 +214,9 @@ OLLAMA_API_KEY=ollama-local \
     --json
 ```
 
-Bu yol yine de OpenClaw'ın yapılandırılmış sağlayıcısını, kimlik doğrulamasını ve yerel Ollama taşımasını kullanır; ancak bir sohbet ajanı turu başlatmaz veya MCP/araç bağlamını yüklemez. Bu başarılı olurken normal ajan yanıtları başarısız oluyorsa, bir sonraki adımda modelin ajan istemi/araç kapasitesini sorun giderin.
-
-Aynı yalın yolda dar bir görüntü modeli smoke testi için `infer model run` komutuna bir veya daha fazla görüntü dosyası ekleyin. Bu, istemi ve görüntüyü sohbet araçları, bellek veya önceki oturum bağlamı yüklemeden doğrudan seçili Ollama görüntü modeline gönderir:
+Hafif bir görüntü modeli yoklaması için görüntü içeren `--file` seçeneğini
+ekleyin (PNG/JPEG/WebP kabul edilir; görüntü olmayan dosyalar Ollama çağrılmadan
+önce reddedilir; ses için `openclaw infer audio transcribe` kullanın):
 
 ```bash
 OLLAMA_API_KEY=ollama-local \
@@ -244,63 +228,63 @@ OLLAMA_API_KEY=ollama-local \
     --json
 ```
 
-`model run --file`, yaygın PNG, JPEG ve WebP girdileri dahil `image/*` olarak algılanan dosyaları kabul eder. Görüntü olmayan dosyalar Ollama çağrılmadan önce reddedilir. Konuşma tanıma için bunun yerine `openclaw infer audio transcribe` kullanın.
+Her iki yol da sohbet araçlarını, belleği veya oturum bağlamını yüklemez.
+Normal aracı yanıtları başarısız olurken bu işlem başarılı olursa sorun büyük
+olasılıkla uç noktada değil, modelin araç/aracı kapasitesindedir.
 
-Bir konuşmayı `/model ollama/<model>` ile değiştirdiğinizde, OpenClaw bunu kesin bir kullanıcı seçimi olarak değerlendirir. Yapılandırılmış Ollama `baseUrl` adresine ulaşılamıyorsa, sonraki yanıt başka bir yapılandırılmış yedek modelden sessizce yanıtlamak yerine sağlayıcı hatasıyla başarısız olur.
+`/model ollama/<model>` ile bir model seçmek kesin bir kullanıcı seçimidir:
+yapılandırılmış `baseUrl` erişilemez durumdaysa sonraki yanıt, yapılandırılmış
+başka bir modele sessizce geri dönmek yerine sağlayıcı hatasıyla başarısız olur.
 
-Yalıtılmış cron işleri, ajan turunu başlatmadan önce ek bir yerel güvenlik denetimi yapar. Seçilen model yerel, özel ağ ya da `.local` Ollama sağlayıcısına çözümlenirse ve `/api/tags` erişilemezse, OpenClaw bu cron çalıştırmasını hata metninde seçili `ollama/<model>` ile `skipped` olarak kaydeder. Uç nokta ön denetimi 5 dakika önbelleğe alınır, bu nedenle aynı durdurulmuş Ollama daemon'una yönlendirilmiş birden çok cron işinin tamamı başarısız model istekleri başlatmaz.
+Yalıtılmış Cron işleri, aracı turunu başlatmadan önce bir yerel güvenlik
+denetimi ekler: seçilen model bir yerel/özel ağ/`.local` Ollama sağlayıcısına
+çözümleniyorsa ve `/api/tags` erişilemez durumdaysa OpenClaw, hata metninde
+modelle birlikte bu çalıştırmayı `skipped` olarak kaydeder. Bu uç nokta
+denetimi ana makine başına 5 dakika önbelleğe alınır; böylece durdurulmuş bir
+arka plan programına yönelik tekrarlanan Cron işleri başarısız isteklerin
+tümünü başlatmaz.
 
-Yerel metin yolunu, yerel akış yolunu ve embeddings'i yerel Ollama'ya karşı canlı doğrulayın:
+Canlı doğrulama:
 
 ```bash
 OPENCLAW_LIVE_TEST=1 OPENCLAW_LIVE_OLLAMA=1 OPENCLAW_LIVE_OLLAMA_WEB_SEARCH=0 \
   pnpm test:live -- extensions/ollama/ollama.live.test.ts
 ```
 
-Ollama Cloud API anahtarı smoke testleri için canlı testi `https://ollama.com` adresine yönlendirin ve mevcut katalogdan barındırılan bir model seçin:
+Ollama Cloud için aynı canlı testi barındırılan uç noktaya yönlendirin (varsayılan olarak
+gömmeleri atlar; bir bulut anahtarı `/api/embed` için yetki sağlamayabileceğinden
+`OPENCLAW_LIVE_OLLAMA_EMBEDDINGS=1` ile zorlayın):
 
 ```bash
 export OLLAMA_API_KEY='<your-ollama-cloud-api-key>'
-
-OPENCLAW_LIVE_TEST=1 \
-OPENCLAW_LIVE_OLLAMA=1 \
+OPENCLAW_LIVE_TEST=1 OPENCLAW_LIVE_OLLAMA=1 \
 OPENCLAW_LIVE_OLLAMA_BASE_URL=https://ollama.com \
 OPENCLAW_LIVE_OLLAMA_MODEL=glm-5.1:cloud \
 OPENCLAW_LIVE_OLLAMA_WEB_SEARCH=1 \
 pnpm test:live -- extensions/ollama/ollama.live.test.ts
 ```
 
-Bulut smoke testi metin, yerel akış ve web aramasını çalıştırır. Ollama Cloud API anahtarları `/api/embed` için yetki vermeyebileceğinden, `https://ollama.com` için embeddings varsayılan olarak atlanır. Yapılandırılmış bulut anahtarı embed uç noktasını kullanamıyorsa canlı testin açıkça başarısız olmasını istediğinizde `OPENCLAW_LIVE_OLLAMA_EMBEDDINGS=1` ayarlayın.
-
-Yeni bir model eklemek için onu Ollama ile çekmeniz yeterlidir:
+Bir model eklemek için modeli çekin; model otomatik olarak keşfedilir:
 
 ```bash
 ollama pull mistral
 ```
 
-Yeni model otomatik olarak keşfedilir ve kullanıma hazır olur.
+## Node üzerinde yerel çıkarım
 
-<Note>
-`models.providers.ollama` değerini açıkça ayarlarsanız veya `api: "ollama"` ile `models.providers.ollama-cloud` gibi özel bir uzak sağlayıcı yapılandırırsanız, otomatik keşif atlanır ve modelleri elle tanımlamanız gerekir. `http://127.0.0.2:11434` gibi loopback özel sağlayıcılar yine de yerel olarak değerlendirilir. Aşağıdaki açık yapılandırma bölümüne bakın.
-</Note>
-
-## Node yerel çıkarım
-
-Ajanlar kısa bir görevi eşleştirilmiş bir masaüstü veya sunucu düğümünde kurulu bir Ollama modeline devredebilir. İstem ve yanıt mevcut kimlik doğrulamalı Gateway/düğüm bağlantısından geçer; model isteği seçilen düğümde standart loopback Ollama uç noktasına (`http://127.0.0.1:11434`) karşı çalışır.
+Aracılar, eşleştirilmiş bir masaüstü veya sunucu Node'undaki bir Ollama modeline
+kısa bir görev devredebilir. İstem ve yanıt, mevcut kimliği doğrulanmış
+Gateway/Node bağlantısından geçer; istek, Node'un kendi loopback Ollama
+uç noktasında (`http://127.0.0.1:11434`) çalışır.
 
 <Steps>
-  <Step title="Start Ollama on the node">
-    En az bir sohbet modeli çekin ve Ollama'yı çalışır durumda tutun:
-
+  <Step title="Node üzerinde Ollama'yı başlatın">
     ```bash
     ollama pull qwen3:0.6b
     ollama list
     ```
-
   </Step>
-  <Step title="Connect the node host">
-    Ollama ile aynı makinede, bir düğüm konağını Gateway'e bağlayın:
-
+  <Step title="Node ana makinesini bağlayın">
     ```bash
     openclaw node run \
       --host <gateway-host> \
@@ -308,7 +292,7 @@ Ajanlar kısa bir görevi eşleştirilmiş bir masaüstü veya sunucu düğümü
       --display-name "Local inference"
     ```
 
-    Gateway konağında yeni cihazı ve bildirdiği düğüm komutlarını onaylayın, ardından düğümü doğrulayın:
+    Gateway ana makinesinde cihazı ve Node komutlarını onaylayın, ardından doğrulayın:
 
     ```bash
     openclaw devices list
@@ -318,30 +302,44 @@ Ajanlar kısa bir görevi eşleştirilmiş bir masaüstü veya sunucu düğümü
     openclaw nodes status --connected
     ```
 
-    İlk bağlantı ve Ollama komutlarını ekleyen bir yükseltme ikisi de düğüm komutu onayını tetikleyebilir. Düğüm `ollama.models` ve `ollama.chat` duyurmadan bağlanırsa, `openclaw nodes pending` komutunu tekrar denetleyin.
+    İlk bağlantı veya Ollama komutlarını ekleyen bir yükseltme, Node komutu
+    onayını tetikleyebilir. Node, `ollama.models` ve `ollama.chat` özelliklerini
+    duyurmadan bağlanırsa `openclaw nodes pending` komutunu yeniden kontrol edin.
 
   </Step>
-  <Step title="Ask an agent to use local inference">
-    Paketlenmiş Ollama plugin'i `node_inference` aracını sunar. Ajanlar önce `action: "discover"` kullanır, ardından döndürülen bir düğüm ve modelle `action: "run"` kullanır. Tam olarak bir yetenekli düğüm bağlıysa, `run` düğümü atlayabilir.
-
-    Örneğin: "Düğümlerimdeki Ollama modellerini keşfet, ardından bu metni özetlemek için en hızlı yüklü modeli kullan."
-
+  <Step title="Bir aracıdan kullanın">
+    Birlikte gelen Ollama Plugin'i, `node_inference` aracını kullanıma sunar. Aracılar
+    önce `action: "discover"` çağrısını, ardından bu sonuçtaki bir Node ve modelle
+    `action: "run"` çağrısını yapar (tam olarak bir uygun Node bağlıysa `run`, Node'u
+    atlayabilir). Örneğin: "Node'larımdaki Ollama modellerini keşfet, ardından bu
+    metni özetlemek için yüklü en hızlı modeli kullan."
   </Step>
 </Steps>
 
-Keşif `/api/tags` okur, `/api/show` yeteneklerini denetler ve mevcut olduğunda zaten yüklü modelleri ilk sıraya koymak için `/api/ps` kullanır. Yalnızca yerel sohbet yetenekli modelleri döndürür: Ollama Cloud satırları ve yalnızca embedding modelleri hariç tutulur. Her çalıştırma Ollama'dan model thinking'i devre dışı bırakmasını ister ve araç çağrısı farklı bir `maxTokens` değeri istemedikçe çıktıyı 512 token ile sınırlar. GPT-OSS gibi bazı modeller thinking'i devre dışı bırakmayı desteklemez ve yine de reasoning token'ları kullanabilir.
+Keşif, `/api/tags` verilerini okur, `/api/show` yeteneklerini denetler ve mümkün
+olduğunda önceden yüklenmiş modelleri ilk sıraya koymak için `/api/ps` kullanır.
+Yalnızca Ollama'nın sohbet özelliğine sahip (`completion` yeteneği) olarak
+bildirdiği yerel modelleri döndürür; Ollama Cloud satırları ve yalnızca gömme
+modelleri hariç tutulur. Araç çağrısı farklı bir `maxTokens` istemediği sürece
+her çalıştırma model düşünmesini devre dışı bırakır ve çıktıyı varsayılan olarak
+512 token ile sınırlar (kesin üst sınır 8192); bazı modeller (örneğin GPT-OSS)
+düşünmenin devre dışı bırakılmasını desteklemez ve yine de akıl yürütme token'ları
+üretebilir.
 
-Ollama'yı ajanlara sunmadan bir düğümde çalışır durumda tutmak için, o düğüm konağının kullandığı yapılandırmada şunu ayarlayın:
+Ollama'yı aracılara açmadan bir Node üzerinde çalışır durumda tutmak için:
 
 ```bash
 openclaw config set plugins.entries.ollama.config.nodeInference.enabled false
 ```
 
-Düğüm yukarıdaki kurulumdan ön plandaki `openclaw node run` komutunu kullanıyorsa, o süreci durdurun ve komutu yeniden çalıştırın. Kurulu bir düğüm servisi kullanıyorsa, `openclaw node restart` çalıştırın.
+Node'u yeniden başlatın (ön plandaki bir oturum için `openclaw node restart`
+komutunu kullanın veya `openclaw node run` işlemini durdurup yeniden çalıştırın).
+Node, `ollama.models` ve `ollama.chat` özelliklerini duyurmayı durdurur; Ollama'nın
+kendisi ve Gateway'in Ollama sağlayıcısı bundan etkilenmez. Yeniden etkinleştirmek
+için değeri tekrar `true` olarak ayarlayıp yeniden başlatın; değişen komut yüzeyi,
+yeniden bağlantının ardından tekrar `openclaw nodes pending` onayı gerektirebilir.
 
-Düğüm `ollama.models` ve `ollama.chat` duyurmayı durdurur; Ollama'nın kendisi ve Gateway'in Ollama sağlayıcısı değişmeden kalır. Yerel çıkarımı yeniden duyurmak için değeri `true` olarak ayarlayın ve düğümü yeniden başlatın. Değişen komut yüzeyi yeniden bağlanmadan sonra `openclaw nodes pending` üzerinden onay gerektirebilir.
-
-Aynı düğüm komutlarını ajan turu olmadan doğrulayabilirsiniz:
+Aracı turu olmadan Node komutlarını doğrudan doğrulayın:
 
 ```bash
 openclaw nodes invoke \
@@ -359,33 +357,37 @@ openclaw nodes invoke \
   --timeout 140000
 ```
 
-Node yerel çıkarım, uzak veya bulut `models.providers.ollama.baseUrl` değerini bilerek yeniden kullanmaz. Ollama'yı düğümün standart loopback uç noktasında başlatın. Düğüm komutları macOS, Linux ve Windows düğüm konaklarında varsayılan olarak kullanılabilir ve normal düğüm eşleştirme ile komut politikasına tabi kalır.
+`--invoke-timeout`, Node'un komutu çalıştırmak için sahip olduğu süreyi sınırlar;
+`--timeout` ise genel Gateway çağrısını sınırlar ve daha büyük olmalıdır.
 
-## Görü ve görüntü açıklaması
+Node üzerindeki yerel çıkarım her zaman Node'un kendi loopback uç noktasını
+kullanır; yapılandırılmış bir uzak/bulut `models.providers.ollama.baseUrl`
+değerini yeniden kullanmaz. Node komutları macOS, Linux ve Windows Node ana
+makinelerinde varsayılan olarak kullanılabilir ve normal Node eşleştirme/komut
+politikasına tabi olmaya devam eder.
 
-Paketlenmiş Ollama plugin'i, Ollama'yı görüntü yetenekli bir medya anlama sağlayıcısı olarak kaydeder. Bu, OpenClaw'ın açık görüntü açıklama isteklerini ve yapılandırılmış görüntü modeli varsayılanlarını yerel veya barındırılan Ollama görü modelleri üzerinden yönlendirmesini sağlar.
+## Görsel algılama ve görüntü açıklaması
 
-Yerel görü için görüntüleri destekleyen bir model çekin:
+Birlikte gelen Ollama Plugin'i, Ollama'yı görüntü destekli bir medya anlama
+sağlayıcısı olarak kaydeder; böylece OpenClaw, açık görüntü açıklama isteklerini
+ve yapılandırılmış görüntü modeli varsayılanlarını yerel veya barındırılan Ollama
+görsel algılama modelleri üzerinden yönlendirebilir.
 
 ```bash
 ollama pull qwen2.5vl:7b
 export OLLAMA_API_KEY="ollama-local"
+openclaw infer image describe --file ./photo.jpg --model ollama/qwen2.5vl:7b --json
 ```
 
-Ardından infer CLI ile doğrulayın:
+`--model`, tam bir `<provider/model>` başvurusu olmalıdır; ayarlandığında `infer image
+describe`, yerel görsel algılamayı zaten destekleyen modellerde açıklamayı atlamak
+yerine önce bu modeli dener. Çağrı başarısız olursa OpenClaw,
+`agents.defaults.imageModel.fallbacks` üzerinden devam edebilir; dosya/URL hazırlama
+hataları, geri dönüş denenmeden önce başarısız olur. OpenClaw'ın görüntü anlama akışı
+ve yapılandırılmış `imageModel` için `infer image describe` komutunu; özel istemli
+ham bir çok kipli yoklama için `infer model run --file` komutunu kullanın.
 
-```bash
-openclaw infer image describe \
-  --file ./photo.jpg \
-  --model ollama/qwen2.5vl:7b \
-  --json
-```
-
-`--model` tam bir `<provider/model>` başvurusu olmalıdır. Ayarlandığında, `openclaw infer image describe` model yerel görü desteklediği için açıklamayı atlamak yerine önce o modeli dener. Model çağrısı başarısız olursa, OpenClaw yapılandırılmış `agents.defaults.imageModel.fallbacks` üzerinden devam edebilir; dosya veya URL hazırlama hataları yedek denemelerden önce yine de başarısız olur.
-
-OpenClaw'ın görüntü anlama sağlayıcı akışını, yapılandırılmış `agents.defaults.imageModel` değerini ve görüntü açıklaması çıktı şeklini istediğinizde `infer image describe` kullanın. Özel istem ve bir veya daha fazla görüntüyle ham çok kipli model yoklaması istediğinizde `infer model run --file` kullanın.
-
-Ollama'yı gelen medya için varsayılan görüntü anlama modeli yapmak üzere `agents.defaults.imageModel` yapılandırın:
+Ollama'yı gelen medya için varsayılan görüntü anlama sağlayıcısı yapmak üzere:
 
 ```json5
 {
@@ -399,9 +401,17 @@ Ollama'yı gelen medya için varsayılan görüntü anlama modeli yapmak üzere 
 }
 ```
 
-Tam `ollama/<model>` başvurusunu tercih edin. Aynı model `models.providers.ollama.models` altında `input: ["text", "image"]` ile listelenmişse ve başka hiçbir yapılandırılmış görüntü sağlayıcısı bu yalın model kimliğini sunmuyorsa, OpenClaw `qwen2.5vl:7b` gibi yalın bir `imageModel` başvurusunu da `ollama/qwen2.5vl:7b` olarak normalleştirir. Birden fazla yapılandırılmış görüntü sağlayıcısı aynı yalın kimliğe sahipse, sağlayıcı önekini açıkça kullanın.
+Tam `ollama/<model>` başvurusunu tercih edin. `qwen2.5vl:7b` gibi sağlayıcı
+belirtilmemiş bir `imageModel` başvurusu, yalnızca bu model
+`models.providers.ollama.models` altında `input: ["text", "image"]` ile listelenmişse
+ve yapılandırılmış başka hiçbir görüntü sağlayıcısı aynı sağlayıcısız kimliği
+sunmuyorsa `ollama/qwen2.5vl:7b` olarak normalleştirilir; aksi takdirde sağlayıcı
+önekini açıkça kullanın.
 
-Yavaş yerel görü modelleri, bulut modellerinden daha uzun bir görüntü anlama zaman aşımına ihtiyaç duyabilir. Ollama kısıtlı donanımda ilan edilen tam görü bağlamını ayırmaya çalıştığında bunlar çökebilir veya durabilir. Yalnızca normal bir görüntü açıklama turuna ihtiyaç duyduğunuzda bir yetenek zaman aşımı ayarlayın ve model girdisinde `num_ctx` değerini sınırlayın:
+Yavaş yerel görsel algılama modelleri, bulut modellerinden daha uzun bir görüntü
+anlama zaman aşımına ihtiyaç duyabilir ve Ollama, modelin duyurulan tam görsel
+bağlamını ayırmaya çalışırsa kısıtlı donanımlarda çökebilir. Bir yetenek zaman
+aşımı ayarlayın ve `num_ctx` değerini sınırlayın:
 
 ```json5
 {
@@ -430,16 +440,19 @@ Yavaş yerel görü modelleri, bulut modellerinden daha uzun bir görüntü anla
 }
 ```
 
-Bu zaman aşımı, gelen görüntü anlamaya ve ajanın bir tur sırasında çağırabileceği açık `image` aracına uygulanır. Sağlayıcı düzeyindeki `models.providers.ollama.timeoutSeconds`, normal model çağrıları için alttaki Ollama HTTP isteği korumasını denetlemeye devam eder.
+Bu zaman aşımı, gelen görüntülerin anlaşılmasına ve açık `image` aracına uygulanır.
+`models.providers.ollama.timeoutSeconds`, normal model çağrılarında temel Ollama
+HTTP isteği korumasını yönetmeye devam eder.
 
-Açık görüntü aracını yerel Ollama'ya karşı canlı doğrulayın:
+Canlı doğrulama:
 
 ```bash
 OPENCLAW_LIVE_TEST=1 OPENCLAW_LIVE_OLLAMA_IMAGE=1 \
   pnpm test:live -- src/agents/tools/image-tool.ollama.live.test.ts
 ```
 
-`models.providers.ollama.models` değerini elle tanımlarsanız, görü modellerini görüntü girdi desteğiyle işaretleyin:
+`models.providers.ollama.models` değerini elle tanımlarsanız görsel algılama
+modellerini açıkça işaretleyin:
 
 ```json5
 {
@@ -451,26 +464,28 @@ OPENCLAW_LIVE_TEST=1 OPENCLAW_LIVE_OLLAMA_IMAGE=1 \
 }
 ```
 
-OpenClaw, görüntü yetenekli olarak işaretlenmemiş modeller için görüntü açıklama isteklerini reddeder. Örtük keşifle, `/api/show` bir görü yeteneği bildirdiğinde OpenClaw bunu Ollama'dan okur.
+OpenClaw, görüntü destekli olarak işaretlenmemiş modellere yönelik görüntü açıklama
+isteklerini reddeder. Örtük keşifte bu bilgi, `/api/show` uç noktasının görsel algılama
+yeteneğinden gelir.
 
 ## Yapılandırma
 
 <Tabs>
-  <Tab title="Basic (implicit discovery)">
-    En basit yalnızca yerel etkinleştirme yolu ortam değişkeni üzerindendir:
-
+  <Tab title="Temel (örtük keşif)">
     ```bash
     export OLLAMA_API_KEY="ollama-local"
     ```
 
     <Tip>
-    `OLLAMA_API_KEY` ayarlanmışsa, sağlayıcı girdisinde `apiKey` değerini atlayabilirsiniz; OpenClaw bunu kullanılabilirlik denetimleri için doldurur.
+    `OLLAMA_API_KEY` ayarlanmışsa sağlayıcı girdisindeki `apiKey` değerini atlayabilirsiniz; OpenClaw kullanılabilirlik kontrolleri için bu değeri doldurur.
     </Tip>
 
   </Tab>
 
-  <Tab title="Explicit (manual models)">
-    Barındırılan bulut kurulumu istediğinizde, Ollama başka bir konakta/portta çalıştığında, belirli bağlam pencerelerini veya model listelerini zorlamak istediğinizde ya da tamamen elle model tanımları istediğinizde açık yapılandırma kullanın.
+  <Tab title="Açık (elle belirtilen modeller)">
+    Barındırılan bulut kurulumu, varsayılan olmayan bir ana makine/bağlantı noktası,
+    zorunlu bağlam pencereleri veya tamamen elle oluşturulan model listeleri için
+    açık yapılandırma kullanın:
 
     ```json5
     {
@@ -499,8 +514,9 @@ OpenClaw, görüntü yetenekli olarak işaretlenmemiş modeller için görüntü
 
   </Tab>
 
-  <Tab title="Custom base URL">
-    Ollama farklı bir konakta veya portta çalışıyorsa (açık yapılandırma otomatik keşfi devre dışı bırakır, bu nedenle modelleri elle tanımlayın):
+  <Tab title="Özel temel URL">
+    Açık yapılandırma otomatik keşfi devre dışı bırakır; bu nedenle modeller
+    listelenmelidir:
 
     ```json5
     {
@@ -508,15 +524,15 @@ OpenClaw, görüntü yetenekli olarak işaretlenmemiş modeller için görüntü
         providers: {
           ollama: {
             apiKey: "ollama-local",
-            baseUrl: "http://ollama-host:11434", // No /v1 - use native Ollama API URL
-            api: "ollama", // Set explicitly to guarantee native tool-calling behavior
-            timeoutSeconds: 300, // Optional: give cold local models longer to connect and stream
+            baseUrl: "http://ollama-host:11434", // /v1 yok - yerel Ollama API URL'si
+            api: "ollama", // Açık: yerel araç çağırma davranışını garanti eder
+            timeoutSeconds: 300, // İsteğe bağlı: soğuk yerel modeller için daha uzun bağlantı/akış bütçesi
             models: [
               {
                 id: "qwen3:32b",
                 name: "qwen3:32b",
                 params: {
-                  keep_alive: "15m", // Optional: keep the model loaded between turns
+                  keep_alive: "15m", // İsteğe bağlı: modeli turlar arasında yüklü tutar
                 },
               },
             ],
@@ -527,7 +543,7 @@ OpenClaw, görüntü yetenekli olarak işaretlenmemiş modeller için görüntü
     ```
 
     <Warning>
-    URL'ye `/v1` eklemeyin. `/v1` yolu OpenAI uyumlu modu kullanır ve bu modda araç çağırma güvenilir değildir. Yol soneki olmadan temel Ollama URL'sini kullanın.
+    `/v1` eklemeyin. Bu yol, araç çağrısının güvenilir olmadığı OpenAI uyumlu modu seçer.
     </Warning>
 
   </Tab>
@@ -535,11 +551,12 @@ OpenClaw, görüntü yetenekli olarak işaretlenmemiş modeller için görüntü
 
 ## Yaygın tarifler
 
-Bunları başlangıç noktası olarak kullanın ve model kimliklerini `ollama list` veya `openclaw models list --provider ollama` çıktısındaki tam adlarla değiştirin.
+Model kimliklerini `ollama list` veya
+`openclaw models list --provider ollama` komutundaki tam adlarla değiştirin.
 
 <AccordionGroup>
   <Accordion title="Otomatik keşifli yerel model">
-    Ollama, Gateway ile aynı makinede çalıştığında ve OpenClaw'ın kurulu modelleri otomatik olarak keşfetmesini istediğinizde bunu kullanın.
+    Gateway ile aynı makinedeki Ollama otomatik olarak keşfedilir:
 
     ```bash
     ollama serve
@@ -549,13 +566,11 @@ Bunları başlangıç noktası olarak kullanın ve model kimliklerini `ollama li
     openclaw models set ollama/gemma4
     ```
 
-    Bu yol yapılandırmayı minimumda tutar. Modelleri elle tanımlamak istemediğiniz sürece `models.providers.ollama` bloğu eklemeyin.
+    Elle model belirtmeniz gerekmiyorsa bir `models.providers.ollama` bloğu eklemeyin.
 
   </Accordion>
 
-  <Accordion title="Elle tanımlı modellerle LAN Ollama konağı">
-    LAN konakları için yerel Ollama URL'lerini kullanın. `/v1` eklemeyin.
-
+  <Accordion title="Elle belirtilen modellere sahip LAN Ollama ana makinesi">
     ```json5
     {
       models: {
@@ -591,12 +606,14 @@ Bunları başlangıç noktası olarak kullanın ve model kimliklerini `ollama li
     }
     ```
 
-    `contextWindow`, OpenClaw tarafındaki bağlam bütçesidir. `params.num_ctx` istek için Ollama'ya gönderilir. Donanımınız modelin ilan edilen tam bağlamını çalıştıramadığında bunları hizalı tutun.
+    `contextWindow`, OpenClaw'ın bağlam bütçesidir; `params.num_ctx` Ollama'ya
+    gönderilir. Donanım, modelin duyurulan tam bağlamını çalıştıramıyorsa bunları
+    uyumlu tutun.
 
   </Accordion>
 
   <Accordion title="Yalnızca Ollama Cloud">
-    Yerel daemon çalıştırmadığınızda ve barındırılan Ollama modellerini doğrudan kullanmak istediğinizde bunu kullanın.
+    Yerel arka plan programı olmadan doğrudan barındırılan modeller:
 
     ```bash
     export OLLAMA_API_KEY="your-ollama-api-key"
@@ -631,11 +648,12 @@ Bunları başlangıç noktası olarak kullanın ve model kimliklerini `ollama li
     }
     ```
 
+    Bu yapı yerine özel `ollama-cloud` sağlayıcı kimliğini kullanmak için
+    [Ollama Cloud](/tr/providers/ollama-cloud) sayfasına bakın.
+
   </Accordion>
 
-  <Accordion title="Oturum açılmış daemon üzerinden bulut artı yerel">
-    Yerel veya LAN Ollama daemon'ı `ollama signin` ile oturum açmışsa ve hem yerel modelleri hem de `:cloud` modellerini sunması gerekiyorsa bunu kullanın.
-
+  <Accordion title="Oturum açılmış bir arka plan programı üzerinden bulut ve yerel kullanım">
     ```bash
     ollama signin
     ollama pull gemma4
@@ -670,8 +688,9 @@ Bunları başlangıç noktası olarak kullanın ve model kimliklerini `ollama li
 
   </Accordion>
 
-  <Accordion title="Birden çok Ollama konağı">
-    Birden fazla Ollama sunucunuz olduğunda özel sağlayıcı kimlikleri kullanın. Her sağlayıcının kendi konağı, modelleri, kimlik doğrulaması, zaman aşımı ve model referansları olur.
+  <Accordion title="Birden fazla Ollama sunucusu">
+    Birden fazla Ollama sunucusu çalıştırırken özel sağlayıcı kimlikleri kullanılır; her birinin
+    kendi sunucusu, modelleri, kimlik doğrulaması ve zaman aşımı vardır.
 
     ```json5
     {
@@ -706,12 +725,16 @@ Bunları başlangıç noktası olarak kullanın ve model kimliklerini `ollama li
     }
     ```
 
-    OpenClaw isteği gönderdiğinde etkin sağlayıcı ön eki kaldırılır, böylece `ollama-large/qwen3.5:27b` Ollama'ya `qwen3.5:27b` olarak ulaşır.
+    OpenClaw, Ollama'yı çağırmadan önce etkin sağlayıcı önekini kaldırır (önek yoksa
+    düz `ollama/` önekine geri döner); böylece `ollama-large/qwen3.5:27b`,
+    Ollama'ya `qwen3.5:27b` olarak ulaşır.
 
   </Accordion>
 
-  <Accordion title="Yalın yerel model profili">
-    Bazı yerel modeller basit istemleri yanıtlayabilir, ancak tam agent araç yüzeyinde zorlanabilir. Genel runtime ayarlarını değiştirmeden önce araçları ve bağlamı sınırlayarak başlayın.
+  <Accordion title="Hafif yerel model profili">
+    Bazı yerel modeller basit istemleri işleyebilir ancak aracın tüm
+    özellikleriyle çalışmakta zorlanır. Genel çalışma zamanı ayarlarına dokunmadan önce
+    araçları ve bağlamı sınırlandırın:
 
     ```json5
     {
@@ -748,15 +771,19 @@ Bunları başlangıç noktası olarak kullanın ve model kimliklerini `ollama li
     }
     ```
 
-    `compat.supportsTools: false` yalnızca model veya sunucu araç şemalarında güvenilir biçimde başarısız olduğunda kullanın. Bu, kararlılık karşılığında agent yeteneğinden ödün verir.
-    `localModelLean`, doğrudan agent yüzeyinden tarayıcı, Cron ve mesaj araçlarını kaldırır ve bir çalıştırmanın doğrudan mesaj teslim semantiğini koruması gerekmediği durumlar dışında daha büyük katalogları varsayılan olarak yapılandırılmış Tool Search denetimlerinin arkasına alır; ancak Ollama'nın runtime bağlamını veya düşünme modunu değiştirmez. Döngüye giren ya da yanıt bütçesini gizli akıl yürütmeye harcayan küçük Qwen tarzı düşünme modelleri için bunu açık `params.num_ctx` ve `params.thinking: false` ile eşleştirin.
+    `compat.supportsTools: false` seçeneğini yalnızca model veya sunucu, araç
+    şemalarında güvenilir biçimde başarısız olduğunda kullanın; bu seçenek kararlılık karşılığında
+    ajan yeteneğinden ödün verir. `localModelLean`, açıkça gerekmedikleri sürece
+    ağır tarayıcı, Cron, mesaj, medya oluşturma, ses ve PDF araçlarını doğrudan
+    ajan yüzeyinden kaldırır ve daha büyük katalogları Araç Araması'nın arkasına yerleştirir.
+    Ollama'nın çalışma zamanı bağlamını veya düşünme modunu değiştirmez. Döngüye giren ya da
+    bütçesini gizli akıl yürütmeye harcayan küçük Qwen tarzı düşünme modellerinde bunu
+    `params.num_ctx` ve `params.thinking: false` ile birlikte kullanın.
 
   </Accordion>
 </AccordionGroup>
 
 ### Model seçimi
-
-Yapılandırıldıktan sonra tüm Ollama modelleriniz kullanılabilir:
 
 ```json5
 {
@@ -771,12 +798,12 @@ Yapılandırıldıktan sonra tüm Ollama modelleriniz kullanılabilir:
 }
 ```
 
-Özel Ollama sağlayıcı kimlikleri de desteklenir. Bir model referansı `ollama-spark/qwen3:32b` gibi etkin
-sağlayıcı ön ekini kullandığında, OpenClaw Ollama'yı çağırmadan önce yalnızca bu
-ön eki kaldırır; böylece sunucu `qwen3:32b` alır.
+Özel sağlayıcı kimlikleri de aynı şekilde çalışır: `ollama-spark/qwen3:32b`
+gibi etkin sağlayıcı önekini kullanan bir başvuru için OpenClaw, Ollama'yı
+çağırmadan önce bu öneki kaldırır ve `qwen3:32b` gönderir.
 
-Yavaş yerel modeller için, tüm agent runtime zaman aşımını artırmadan önce
-sağlayıcı kapsamlı istek ayarlamasını tercih edin:
+Yavaş yerel modellerde, tüm ajan çalışma zamanı zaman aşımını artırmadan önce
+sağlayıcı kapsamlı ayarlamayı tercih edin:
 
 ```json5
 {
@@ -797,9 +824,10 @@ sağlayıcı kapsamlı istek ayarlamasını tercih edin:
 }
 ```
 
-`timeoutSeconds`, bağlantı kurulumu, başlıklar, gövde akışı ve toplam korumalı getirme iptali dahil olmak üzere model HTTP isteğine uygulanır. `params.keep_alive`,
-yerel `/api/chat` isteklerinde üst düzey `keep_alive` olarak Ollama'ya iletilir;
-ilk tur yükleme süresi darboğaz olduğunda bunu model başına ayarlayın.
+`timeoutSeconds`, model HTTP isteğinin bağlantı kurulumunu, üstbilgilerini,
+gövde akışını ve korumalı getirme işleminin toplam iptal süresini kapsar.
+`params.keep_alive`, yerel `/api/chat` isteklerinde üst düzey `keep_alive`
+olarak iletilir; ilk tur yükleme süresi darboğaz olduğunda bunu model başına ayarlayın.
 
 ### Hızlı doğrulama
 
@@ -817,19 +845,21 @@ openclaw infer model run \
   --prompt "Reply with exactly: ok"
 ```
 
-Uzak konaklar için `127.0.0.1` değerini `baseUrl` içinde kullanılan konakla değiştirin. `curl` çalışıyor ama OpenClaw çalışmıyorsa Gateway'in farklı bir makinede, container'da veya hizmet hesabında çalışıp çalışmadığını kontrol edin.
+Uzak sunucular için `127.0.0.1` yerine `baseUrl` sunucusunu kullanın. `curl`
+çalışıyor ancak OpenClaw çalışmıyorsa Gateway'in farklı bir makinede,
+kapsayıcıda veya hizmet hesabıyla çalışıp çalışmadığını kontrol edin.
 
-## Ollama Web Search
+## Ollama Web Araması
 
-OpenClaw, **Ollama Web Search** özelliğini paketli bir `web_search` sağlayıcısı olarak destekler.
+OpenClaw, **Ollama Web Araması** özelliğini bir `web_search` sağlayıcısı olarak paketler.
 
-| Özellik     | Ayrıntı                                                                                                                                                              |
-| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Konak       | Yapılandırılmış Ollama konağınızı kullanır (`models.providers.ollama.baseUrl` ayarlanmışsa o, aksi halde `http://127.0.0.1:11434`); `https://ollama.com` barındırılan API'yi doğrudan kullanır |
-| Kimlik doğrulama | Oturum açılmış yerel Ollama konakları için anahtarsız; doğrudan `https://ollama.com` araması veya kimlik doğrulama korumalı konaklar için `OLLAMA_API_KEY` ya da yapılandırılmış sağlayıcı kimlik doğrulaması |
-| Gereksinim  | Yerel/kendi barındırdığınız konaklar çalışıyor ve `ollama signin` ile oturum açmış olmalıdır; doğrudan barındırılan arama için `baseUrl: "https://ollama.com"` artı gerçek bir Ollama API anahtarı gerekir |
+| Özellik       | Ayrıntı                                                                                                                                                                                                 |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Sunucu        | Ayarlandığında `models.providers.ollama.baseUrl`, aksi hâlde `http://127.0.0.1:11434`; `https://ollama.com`, barındırılan API'yi doğrudan kullanır                                                     |
+| Kimlik doğrulama | Oturum açılmış yerel sunucu için anahtar gerekmez; doğrudan `https://ollama.com` araması veya kimlik doğrulama korumalı sunucular için `OLLAMA_API_KEY` ya da yapılandırılmış sağlayıcı kimlik doğrulaması |
+| Gereksinim    | Yerel/kendi sunucunuzda barındırılan sunucular çalışıyor olmalı ve `ollama signin` ile oturum açılmalıdır; doğrudan barındırılan arama için `baseUrl: "https://ollama.com"` ve gerçek bir API anahtarı gerekir |
 
-`openclaw onboard` veya `openclaw configure --section web` sırasında **Ollama Web Search** seçin ya da şunu ayarlayın:
+Bunu `openclaw onboard` veya `openclaw configure --section web` sırasında seçin ya da şunu ayarlayın:
 
 ```json5
 {
@@ -865,21 +895,26 @@ Ollama Cloud üzerinden doğrudan barındırılan arama için:
 }
 ```
 
-Oturum açılmış yerel daemon için OpenClaw, daemon'ın `/api/experimental/web_search` proxy'sini kullanır. `https://ollama.com` için barındırılan `/api/web_search` uç noktasını doğrudan çağırır.
+Kendi sunucunuzda barındırılan bir sunucuda OpenClaw önce yerel
+`/api/experimental/web_search` vekilini dener, ardından aynı sunucudaki
+barındırılan `/api/web_search` yoluna geri döner; oturum açılmış yerel daemon
+normalde yerel vekil üzerinden yanıt verir. Doğrudan `https://ollama.com`
+çağrıları her zaman barındırılan `/api/web_search` uç noktasını kullanır.
 
 <Note>
-Tam kurulum ve davranış ayrıntıları için bkz. [Ollama Web Search](/tr/tools/ollama-search).
+Eksiksiz kurulum ve davranış bilgileri için [Ollama Web Araması](/tr/tools/ollama-search) sayfasına bakın.
 </Note>
 
 ## Gelişmiş yapılandırma
 
 <AccordionGroup>
-  <Accordion title="Eski OpenAI uyumlu mod">
+  <Accordion title="Eski OpenAI uyumlu modu">
     <Warning>
-    **OpenAI uyumlu modda araç çağırma güvenilir değildir.** Bu modu yalnızca bir proxy için OpenAI biçimine ihtiyacınız varsa ve yerel araç çağırma davranışına bağlı değilseniz kullanın.
+    **Bu modda araç çağırma güvenilir değildir.** Yalnızca bir vekilin OpenAI biçimine ihtiyaç duyduğu ve yerel araç çağırmaya bağımlı olmadığınız durumlarda kullanın.
     </Warning>
 
-    Bunun yerine OpenAI uyumlu uç noktayı kullanmanız gerekiyorsa (örneğin, yalnızca OpenAI biçimini destekleyen bir proxy arkasında), `api: "openai-completions"` değerini açıkça ayarlayın:
+    `/v1/chat/completions` arkasındaki bir vekil için
+    `api: "openai-completions"` değerini açıkça ayarlayın:
 
     ```json5
     {
@@ -897,9 +932,12 @@ Tam kurulum ve davranış ayrıntıları için bkz. [Ollama Web Search](/tr/tool
     }
     ```
 
-    Bu mod, akışı ve araç çağırmayı aynı anda desteklemeyebilir. Model yapılandırmasında `params: { streaming: false }` ile akışı devre dışı bırakmanız gerekebilir.
+    Bu mod, akış ve araç çağırmayı aynı anda desteklemeyebilir; modelde
+    `params: { streaming: false }` ayarını kullanmanız gerekebilir.
 
-    Ollama ile `api: "openai-completions"` kullanıldığında OpenClaw varsayılan olarak `options.num_ctx` enjekte eder; böylece Ollama sessizce 4096 bağlam penceresine geri dönmez. Proxy'niz/yukarı akışınız bilinmeyen `options` alanlarını reddediyorsa bu davranışı devre dışı bırakın:
+    OpenClaw bu modda varsayılan olarak `options.num_ctx` ekler; böylece Ollama
+    sessizce 4096 belirteçli bağlama geri dönmez. Vekiliniz bilinmeyen
+    `options` alanlarını reddediyorsa bunu devre dışı bırakın:
 
     ```json5
     {
@@ -920,11 +958,38 @@ Tam kurulum ve davranış ayrıntıları için bkz. [Ollama Web Search](/tr/tool
   </Accordion>
 
   <Accordion title="Bağlam pencereleri">
-    Otomatik keşfedilen modeller için OpenClaw, özel Modelfile'lardan gelen daha büyük `PARAMETER num_ctx` değerleri dahil olmak üzere, mevcut olduğunda Ollama tarafından bildirilen bağlam penceresini kullanır. Aksi halde OpenClaw tarafından kullanılan varsayılan Ollama bağlam penceresine geri döner.
+    Otomatik keşfedilen modellerde OpenClaw, özel Modelfile dosyalarındaki daha
+    büyük `PARAMETER num_ctx` değerleri dâhil olmak üzere `/api/show` tarafından
+    bildirilen bağlam penceresini kullanır; aksi hâlde OpenClaw'ın varsayılan
+    Ollama bağlam penceresine geri döner.
 
-    Bu Ollama sağlayıcısı altındaki her model için sağlayıcı düzeyinde `contextWindow`, `contextTokens` ve `maxTokens` varsayılanları ayarlayabilir, sonra gerektiğinde bunları model başına geçersiz kılabilirsiniz. `contextWindow`, OpenClaw'ın istem ve compaction bütçesidir. Yerel Ollama istekleri, `params.num_ctx` değerini açıkça yapılandırmadığınız sürece `options.num_ctx` değerini ayarlanmamış bırakır; böylece Ollama kendi modelini, `OLLAMA_CONTEXT_LENGTH` değerini veya VRAM tabanlı varsayılanını uygulayabilir. Bir Modelfile'ı yeniden oluşturmadan Ollama'nın istek başına çalışma zamanı bağlamını sınırlamak veya zorlamak için `params.num_ctx` değerini ayarlayın; geçersiz, sıfır, negatif ve sonlu olmayan değerler yok sayılır. Yerel Ollama istek bağlamını zorlamak için yalnızca `contextWindow` veya `maxTokens` kullanan eski bir yapılandırmadan yükselttiyseniz, bu açık sağlayıcı veya model bütçelerini `params.num_ctx` içine kopyalamak için `openclaw doctor --fix` çalıştırın. OpenAI uyumlu Ollama bağdaştırıcısı, yapılandırılmış `params.num_ctx` veya `contextWindow` değerinden varsayılan olarak hâlâ `options.num_ctx` enjekte eder; üst sisteminiz `options` değerini reddediyorsa bunu `injectNumCtxForOpenAICompat: false` ile devre dışı bırakın.
+    Sağlayıcı düzeyindeki `contextWindow`, `contextTokens` ve `maxTokens`, bu
+    sağlayıcı altındaki her model için varsayılanları belirler ve model bazında
+    geçersiz kılınabilir. `contextWindow`, OpenClaw'ın kendi istem/Compaction
+    bütçesidir. `params.num_ctx` değerini açıkça ayarlamadığınız sürece yerel
+    `/api/chat` istekleri `options.num_ctx` değerini ayarlanmamış bırakır; böylece
+    Ollama kendi model, `OLLAMA_CONTEXT_LENGTH` veya VRAM tabanlı varsayılanını
+    uygular. Geçersiz, sıfır, negatif veya sonlu olmayan `params.num_ctx`
+    değerleri yok sayılır. Eski bir yapılandırma, yerel istek bağlamını zorlamak
+    için yalnızca `contextWindow`/`maxTokens` kullandıysa bunları `params.num_ctx`
+    alanına kopyalamak üzere `openclaw doctor --fix` komutunu çalıştırın.
+    OpenAI uyumlu bağdaştırıcı, yapılandırılan `params.num_ctx` veya
+    `contextWindow` değerinden varsayılan olarak yine `options.num_ctx` ekler;
+    üst sistem `options` alanını reddediyorsa
+    `injectNumCtxForOpenAICompat: false` ile devre dışı bırakın.
 
-    Yerel Ollama model girdileri ayrıca `temperature`, `top_p`, `top_k`, `min_p`, `num_predict`, `stop`, `repeat_penalty`, `num_batch`, `num_thread` ve `use_mmap` dahil olmak üzere `params` altında yaygın Ollama çalışma zamanı seçeneklerini kabul eder. OpenClaw yalnızca Ollama istek anahtarlarını iletir, bu yüzden `streaming` gibi OpenClaw çalışma zamanı parametreleri Ollama'ya sızdırılmaz. Üst düzey Ollama `think` göndermek için `params.think` veya `params.thinking` kullanın; `false`, Qwen tarzı düşünen modeller için API düzeyinde düşünmeyi devre dışı bırakır.
+    Yerel model girdileri ayrıca `params` altında yaygın Ollama çalışma zamanı
+    seçeneklerini kabul eder ve bunları yerel `/api/chat` `options` alanı olarak
+    iletir: `num_keep`, `seed`, `num_predict`, `top_k`, `top_p`, `min_p`,
+    `typical_p`, `repeat_last_n`, `temperature`, `repeat_penalty`,
+    `presence_penalty`, `frequency_penalty`, `stop`, `num_batch`, `num_gpu`,
+    `main_gpu`, `use_mmap` ve `num_thread`. Birkaç anahtar (`format`,
+    `keep_alive`, `truncate`, `shift`), iç içe `options` yerine üst düzey istek
+    alanları olarak iletilir. OpenClaw yalnızca bu Ollama istek anahtarlarını
+    ilettiğinden `streaming` gibi yalnızca çalışma zamanına özgü parametreler
+    hiçbir zaman Ollama'ya gönderilmez. Üst düzey `think` değerini ayarlamak için
+    `params.think` (veya `params.thinking`) kullanın; `false`, Qwen tarzı düşünme
+    modellerinde API düzeyindeki düşünmeyi devre dışı bırakır.
 
     ```json5
     {
@@ -951,19 +1016,24 @@ Tam kurulum ve davranış ayrıntıları için bkz. [Ollama Web Search](/tr/tool
     }
     ```
 
-    Model başına `agents.defaults.models["ollama/<model>"].params.num_ctx` da çalışır. İkisi de yapılandırılmışsa, açık sağlayıcı model girdisi ajan varsayılanına üstün gelir.
+    Model başına `agents.defaults.models["ollama/<model>"].params.num_ctx` da
+    çalışır; ikisi de ayarlanmışsa açık sağlayıcı model girdisi önceliklidir.
 
   </Accordion>
 
   <Accordion title="Düşünme denetimi">
-    Yerel Ollama modelleri için OpenClaw düşünme denetimini Ollama'nın beklediği şekilde iletir: `options.think` değil, üst düzey `think`. `/api/show` yanıtı `thinking` yeteneğini içeren otomatik keşfedilmiş modeller `/think low`, `/think medium`, `/think high` ve `/think max` sunar; düşünmeyen modeller yalnızca `/think off` sunar.
+    OpenClaw, düşünme ayarını Ollama'nın beklediği şekilde iletir: `options.think`
+    değil, üst düzey `think`. `/api/show` yanıtı `thinking` yeteneği bildiren
+    otomatik keşfedilmiş modeller `/think low`, `/think medium`, `/think high`
+    ve `/think max` seçeneklerini sunar; düşünme özelliği olmayan modeller
+    yalnızca `/think off` seçeneğini sunar.
 
     ```bash
     openclaw agent --model ollama/gemma4 --thinking off
     openclaw agent --model ollama/gemma4 --thinking low
     ```
 
-    Bir model varsayılanı da ayarlayabilirsiniz:
+    Ya da bir model varsayılanı ayarlayın:
 
     ```json5
     {
@@ -979,38 +1049,59 @@ Tam kurulum ve davranış ayrıntıları için bkz. [Ollama Web Search](/tr/tool
     }
     ```
 
-    Model başına `params.think` veya `params.thinking`, belirli bir yapılandırılmış model için Ollama API düşünmesini devre dışı bırakabilir veya zorlayabilir. OpenClaw, etkin çalıştırmada yalnızca örtük varsayılan `off` olduğunda bu açık model parametrelerini korur; `/think medium` gibi off dışı çalışma zamanı komutları etkin çalıştırmayı yine geçersiz kılar.
+    Model bazında `params.think`/`params.thinking`, belirli bir model için API
+    düşünmesini devre dışı bırakabilir veya zorunlu kılabilir. Etkin çalıştırmada
+    yalnızca örtük `off` varsayılanı bulunduğunda OpenClaw bu açık yapılandırmayı
+    korur; `/think medium` gibi kapalı olmayan bir çalışma zamanı komutu yine de
+    bunu geçersiz kılar. Doğru değerli bir düşünme isteği, açıkça
+    `reasoning: false` olarak işaretlenmiş bir modele asla gönderilmez;
+    `think: false` isteği ise her durumda gönderilir.
 
   </Accordion>
 
   <Accordion title="Akıl yürütme modelleri">
-    OpenClaw, `deepseek-r1`, `reasoning` veya `think` gibi adlara sahip modelleri varsayılan olarak akıl yürütme yetenekli kabul eder.
+    `deepseek-r1`, `reasoning`, `reason` veya `think` adlı modeller varsayılan
+    olarak akıl yürütme yeteneğine sahip kabul edilir — ek yapılandırma gerekmez:
 
     ```bash
     ollama pull deepseek-r1:32b
     ```
 
-    Ek yapılandırma gerekmez. OpenClaw bunları otomatik olarak işaretler.
-
   </Accordion>
 
   <Accordion title="Model maliyetleri">
-    Ollama ücretsizdir ve yerel olarak çalışır, bu yüzden tüm model maliyetleri $0 olarak ayarlanır. Bu, hem otomatik keşfedilen hem de elle tanımlanan modeller için geçerlidir.
+    Ollama yerel olarak çalışır ve ücretsizdir; bu nedenle hem otomatik keşfedilen
+    hem de elle tanımlanan modeller için tüm model maliyetleri `0` değerindedir.
   </Accordion>
 
-  <Accordion title="Bellek embedding'leri">
-    Birlikte gelen Ollama Plugin'i, [bellek araması](/tr/concepts/memory) için bir bellek embedding sağlayıcısı kaydeder. Yapılandırılmış Ollama temel URL'sini ve API anahtarını kullanır, Ollama'nın mevcut `/api/embed` uç noktasını çağırır ve mümkün olduğunda birden fazla bellek parçasını tek bir `input` isteği halinde toplu işler.
+  <Accordion title="Bellek gömmeleri">
+    Paketle gelen Ollama Plugin'i, [bellek araması](/tr/concepts/memory) için bir
+    bellek gömme sağlayıcısı kaydeder. Yapılandırılmış Ollama temel URL'sini ve
+    API anahtarını kullanır, `/api/embed` çağrısı yapar ve mümkün olduğunda birden
+    fazla bellek parçasını tek bir `input` isteğinde toplar.
 
-    `proxy.enabled=true` olduğunda, yapılandırılmış `baseUrl` değerinden türetilen tam host-local loopback kökenine giden Ollama bellek embedding istekleri, yönetilen iletme proxy'si yerine OpenClaw'ın korumalı doğrudan yolunu kullanır. Yapılandırılmış ana makine adının kendisi `localhost` veya bir loopback IP sabiti olmalıdır; yalnızca loopback'e çözümlenen DNS adları yine yönetilen proxy yolunu kullanır. LAN, tailnet, özel ağ ve genel Ollama ana makineleri de yönetilen proxy yolunda kalır. Başka bir ana makineye veya porta yönlendirmeler güveni devralmaz. Operatörler, loopback trafiğini proxy üzerinden göndermek için genel `proxy.loopbackMode: "proxy"` ayarını veya bağlantı açmadan önce loopback bağlantılarını reddetmek için `proxy.loopbackMode: "block"` ayarını yine de belirleyebilir; bu ayarın süreç genelindeki etkisi için [Yönetilen proxy](/tr/security/network-proxy#gateway-loopback-mode) bölümüne bakın.
+    `proxy.enabled=true` olduğunda, yapılandırılmış `baseUrl` değerinden türetilen
+    tam ana makineye ait local loopback kaynağına yönelik gömme istekleri, yönetilen
+    iletme proxy'si yerine OpenClaw'ın korumalı doğrudan yolunu kullanır.
+    Yapılandırılmış ana makine adının kendisi `localhost` veya bir loopback IP
+    değişmezi olmalıdır — yalnızca loopback'e çözümlenen DNS adları yine yönetilen
+    proxy yolunu kullanır. LAN, tailnet, özel ağ ve genel Ollama ana makineleri her
+    zaman yönetilen proxy yolunda kalır; başka bir ana makineye/bağlantı noktasına
+    yapılan yönlendirmeler güveni devralmaz. `proxy.loopbackMode: "proxy"` yine de
+    loopback trafiğini proxy üzerinden yönlendirir; `proxy.loopbackMode: "block"`
+    ise bağlantı kurulmadan önce bunu reddeder — bkz.
+    [Yönetilen proxy](/tr/security/network-proxy#gateway-loopback-mode).
 
-    | Özellik      | Değer               |
-    | ------------- | ------------------- |
-    | Varsayılan model | `nomic-embed-text`  |
-    | Otomatik çekme     | Evet — embedding modeli yerel olarak yoksa otomatik olarak çekilir |
+    | Özellik | Değer |
+    | --- | --- |
+    | Varsayılan model | `nomic-embed-text` |
+    | Otomatik indirme | Evet, yerel olarak mevcut değilse |
+    | Varsayılan satır içi eşzamanlılık | 1 (diğer sağlayıcılarda varsayılan değer daha yüksektir; ana makine kaldırabiliyorsa `nonBatchConcurrency` ile artırın) |
 
-    Sorgu zamanı embedding'leri, `nomic-embed-text`, `qwen3-embedding` ve `mxbai-embed-large` dahil olmak üzere bunları gerektiren veya öneren modeller için alma önekleri kullanır. Mevcut dizinlerin biçim geçişine ihtiyaç duymaması için bellek belgesi toplu işleri ham kalır.
-
-    Bellek araması embedding sağlayıcısı olarak Ollama'yı seçmek için:
+    Sorgu zamanı gömmeleri, bunları gerektiren veya öneren modeller için getirme
+    öneklerini kullanır: `nomic-embed-text`, `qwen3-embedding` ve
+    `mxbai-embed-large`. Belge grupları ham biçimde kalır; dolayısıyla mevcut
+    dizinler için biçim geçişi gerekmez.
 
     ```json5
     {
@@ -1028,7 +1119,8 @@ Tam kurulum ve davranış ayrıntıları için bkz. [Ollama Web Search](/tr/tool
     }
     ```
 
-    Uzak bir embedding ana makinesi için kimlik doğrulamayı o ana makineyle sınırlı tutun:
+    Uzak bir gömme ana makinesi için kimlik doğrulamayı o ana makineyle sınırlı
+    tutun:
 
     ```json5
     {
@@ -1051,12 +1143,17 @@ Tam kurulum ve davranış ayrıntıları için bkz. [Ollama Web Search](/tr/tool
   </Accordion>
 
   <Accordion title="Akış yapılandırması">
-    OpenClaw'ın Ollama entegrasyonu varsayılan olarak **yerel Ollama API'sini** (`/api/chat`) kullanır; bu API akışı ve araç çağırmayı aynı anda tam olarak destekler. Özel yapılandırma gerekmez.
+    Ollama varsayılan olarak akış ile araç çağırmayı birlikte destekleyen
+    **yerel API'yi** (`/api/chat`) kullanır — özel bir yapılandırma gerekmez.
 
-    Yerel `/api/chat` istekleri için OpenClaw düşünme denetimini de doğrudan Ollama'ya iletir: açık bir model `params.think`/`params.thinking` değeri yapılandırılmadığı sürece `/think off` ve `openclaw agent --thinking off` üst düzey `think: false` gönderir; `/think low|medium|high` ise eşleşen üst düzey `think` efor dizesini gönderir. `/think max`, Ollama'nın en yüksek yerel eforu olan `think: "high"` değerine eşlenir.
+    Yerel isteklerde düşünme denetimi doğrudan iletilir: açık bir
+    `params.think`/`params.thinking` yapılandırılmamışsa `/think off` ve
+    `openclaw agent --thinking off`, üst düzey `think: false` gönderir;
+    `/think low|medium|high` eşleşen efor dizesini gönderir; `/think max`,
+    Ollama'nın en yüksek eforu olan `think: "high"` değerine eşlenir.
 
     <Tip>
-    OpenAI uyumlu uç noktayı kullanmanız gerekiyorsa yukarıdaki "Eski OpenAI uyumlu mod" bölümüne bakın. Bu modda akış ve araç çağırma aynı anda çalışmayabilir.
+    Bunun yerine OpenAI uyumlu uç nokta için yukarıdaki "Eski OpenAI uyumlu mod" bölümüne bakın — burada akış ve araç çağırma birlikte çalışmayabilir.
     </Tip>
 
   </Accordion>
@@ -1065,31 +1162,39 @@ Tam kurulum ve davranış ayrıntıları için bkz. [Ollama Web Search](/tr/tool
 ## Sorun giderme
 
 <AccordionGroup>
-  <Accordion title="WSL2 çökme döngüsü (tekrarlanan yeniden başlatmalar)">
-    NVIDIA/CUDA ile WSL2 üzerinde resmi Ollama Linux yükleyicisi, `Restart=always` içeren bir `ollama.service` systemd birimi oluşturur. Bu hizmet otomatik başlar ve WSL2 açılışı sırasında GPU destekli bir model yüklerse, model yüklenirken Ollama ana makine belleğini sabitleyebilir. Hyper-V bellek geri kazanımı bu sabitlenmiş sayfaları her zaman geri alamaz; bu nedenle Windows WSL2 VM'yi sonlandırabilir, systemd Ollama'yı yeniden başlatır ve döngü tekrarlanır.
+  <Accordion title="WSL2 kilitlenme döngüsü (tekrarlanan yeniden başlatmalar)">
+    NVIDIA/CUDA kullanılan WSL2'de resmi Ollama Linux yükleyicisi,
+    `Restart=always` ayarlı bir `ollama.service` systemd birimi oluşturur. Bu
+    hizmet otomatik olarak başlar ve WSL2 önyüklemesi sırasında GPU destekli bir
+    model yüklerse Ollama yükleme sırasında ana makine belleğini sabitleyebilir;
+    Hyper-V bellek geri kazanımı bu sayfaları her zaman geri alamaz. Bunun
+    sonucunda Windows, WSL2 sanal makinesini sonlandırabilir, systemd Ollama'yı
+    yeniden başlatır ve döngü tekrarlanır.
 
-    Yaygın kanıtlar:
+    Kanıtlar: tekrarlanan WSL2 yeniden başlatmaları/sonlandırmaları, WSL2
+    başlatıldıktan hemen sonra `app.slice` veya `ollama.service` içinde yüksek
+    CPU kullanımı ve Linux OOM sonlandırıcısı yerine systemd kaynaklı SIGTERM.
 
-    - Windows tarafında tekrarlanan WSL2 yeniden başlatmaları veya sonlandırmaları
-    - WSL2 başlangıcından kısa süre sonra `app.slice` veya `ollama.service` içinde yüksek CPU
-    - Linux OOM-killer olayı yerine systemd kaynaklı SIGTERM
+    OpenClaw; WSL2'yi, `Restart=always` ile etkinleştirilmiş `ollama.service`
+    hizmetini ve görünür CUDA işaretlerini algıladığında başlangıçta bir uyarı
+    kaydeder.
 
-    OpenClaw, WSL2, `Restart=always` ile etkinleştirilmiş `ollama.service` ve görünür CUDA işaretçileri algıladığında başlangıçta bir uyarı günlüğe yazar.
-
-    Azaltma:
+    Geçici çözüm:
 
     ```bash
     sudo systemctl disable ollama
     ```
 
-    Bunu Windows tarafında `%USERPROFILE%\.wslconfig` dosyasına ekleyin, sonra `wsl --shutdown` çalıştırın:
+    Windows tarafında `%USERPROFILE%\.wslconfig` dosyasına şunu ekleyin,
+    ardından `wsl --shutdown` komutunu çalıştırın:
 
     ```ini
     [experimental]
     autoMemoryReclaim=disabled
     ```
 
-    Ollama hizmet ortamında daha kısa bir keep-alive ayarlayın veya Ollama'yı yalnızca ihtiyacınız olduğunda elle başlatın:
+    Alternatif olarak canlı tutma süresini kısaltın veya Ollama'yı yalnızca
+    gerektiğinde elle başlatın:
 
     ```bash
     export OLLAMA_KEEP_ALIVE=5m
@@ -1101,22 +1206,20 @@ Tam kurulum ve davranış ayrıntıları için bkz. [Ollama Web Search](/tr/tool
   </Accordion>
 
   <Accordion title="Ollama algılanmıyor">
-    Ollama'nın çalıştığından, `OLLAMA_API_KEY` değerini (veya bir kimlik doğrulama profilini) ayarladığınızdan ve açık bir `models.providers.ollama` girdisi tanımlamadığınızdan emin olun:
+    Ollama'nın çalıştığını, `OLLAMA_API_KEY` değerinin (veya bir kimlik doğrulama
+    profilinin) ayarlandığını ve `models.providers.ollama` değerinin açıkça
+    tanımlanmadığını doğrulayın:
 
     ```bash
     ollama serve
-    ```
-
-    API'nin erişilebilir olduğunu doğrulayın:
-
-    ```bash
     curl http://localhost:11434/api/tags
     ```
 
   </Accordion>
 
   <Accordion title="Kullanılabilir model yok">
-    Modeliniz listelenmiyorsa modeli yerel olarak çekin veya `models.providers.ollama` içinde açıkça tanımlayın.
+    Modeli yerel olarak indirin veya `models.providers.ollama` içinde açıkça
+    tanımlayın:
 
     ```bash
     ollama list  # See what's installed
@@ -1128,8 +1231,6 @@ Tam kurulum ve davranış ayrıntıları için bkz. [Ollama Web Search](/tr/tool
   </Accordion>
 
   <Accordion title="Bağlantı reddedildi">
-    Ollama'nın doğru portta çalıştığını kontrol edin:
-
     ```bash
     # Check if Ollama is running
     ps aux | grep ollama
@@ -1140,7 +1241,7 @@ Tam kurulum ve davranış ayrıntıları için bkz. [Ollama Web Search](/tr/tool
 
   </Accordion>
 
-  <Accordion title="Uzak ana makine curl ile çalışıyor ama OpenClaw ile çalışmıyor">
+  <Accordion title="Uzak ana makine curl ile çalışıyor ancak OpenClaw ile çalışmıyor">
     Gateway'i çalıştıran aynı makine ve çalışma zamanından doğrulayın:
 
     ```bash
@@ -1150,17 +1251,16 @@ Tam kurulum ve davranış ayrıntıları için bkz. [Ollama Web Search](/tr/tool
 
     Yaygın nedenler:
 
-    - `baseUrl`, `localhost` değerini gösteriyor, ancak Gateway Docker içinde veya başka bir ana makinede çalışıyor.
-    - URL `/v1` kullanıyor; bu, yerel Ollama yerine OpenAI uyumlu davranışı seçer.
-    - Uzak ana makinede Ollama tarafında güvenlik duvarı veya LAN bağlama değişiklikleri gerekiyor.
-    - Model dizüstü bilgisayarınızdaki daemon'da mevcut, ancak uzak daemon'da yok.
+    - `baseUrl`, `localhost` değerini gösteriyor ancak Gateway Docker içinde veya başka bir ana makinede çalışıyor.
+    - URL, yerel Ollama davranışı yerine OpenAI uyumlu davranışı seçen `/v1` yolunu kullanıyor.
+    - Uzak ana makinede güvenlik duvarı veya LAN bağlama değişiklikleri gerekiyor.
+    - Model dizüstü bilgisayarınızdaki arka plan programında bulunuyor ancak uzak arka plan programında bulunmuyor.
 
   </Accordion>
 
-  <Accordion title="Model araç JSON'unu metin olarak çıktı veriyor">
-    Bu genellikle sağlayıcının OpenAI uyumlu modu kullandığı veya modelin araç şemalarını işleyemediği anlamına gelir.
-
-    Yerel Ollama modunu tercih edin:
+  <Accordion title="Model, araç JSON'unu metin olarak çıkarıyor">
+    Genellikle sağlayıcı OpenAI uyumlu moddadır veya model araç şemalarını
+    işleyemiyordur. Yerel modu tercih edin:
 
     ```json5
     {
@@ -1175,14 +1275,20 @@ Tam kurulum ve davranış ayrıntıları için bkz. [Ollama Web Search](/tr/tool
     }
     ```
 
-    Küçük bir yerel model araç şemalarında hâlâ başarısız oluyorsa, o model girdisinde `compat.supportsTools: false` ayarlayın ve yeniden test edin.
+    Küçük bir yerel model araç şemalarında hâlâ başarısız oluyorsa o model
+    girdisinde `compat.supportsTools: false` ayarlayın ve yeniden test edin.
 
   </Accordion>
 
   <Accordion title="Kimi veya GLM bozuk semboller döndürüyor">
-    Uzun, dilsel olmayan sembol dizilerinden oluşan barındırılan Kimi/GLM yanıtları, başarılı bir asistan yanıtı yerine başarısız sağlayıcı çıktısı olarak ele alınır. Bu, bozuk metni oturuma kalıcı olarak yazmadan normal yeniden deneme, fallback veya hata işlemenin devreye girmesini sağlar.
+    Uzun ve dilsel olmayan sembol dizilerinden oluşan barındırılan Kimi/GLM
+    yanıtları başarılı yanıt olarak değil, başarısız sağlayıcı çağrısı olarak
+    değerlendirilir. Böylece bozuk metin oturuma kalıcı olarak yazılmak yerine
+    normal yeniden deneme/geri dönüş/hata işleme devreye girer.
 
-    Bu tekrar tekrar olursa ham model adını, geçerli oturum dosyasını ve çalıştırmanın `Cloud + Local` mı yoksa `Cloud only` mi kullandığını yakalayın; ardından yeni bir oturum ve bir fallback modeli deneyin:
+    Sorun tekrarlanırsa model adını, geçerli oturum dosyasını ve çalıştırmada
+    `Cloud + Local` mı yoksa `Cloud only` mı kullanıldığını kaydedin; ardından
+    yeni bir oturum ve geri dönüş modeli deneyin:
 
     ```bash
     openclaw infer model run --model ollama/kimi-k2.5:cloud --prompt "Reply with exactly: ok" --json
@@ -1192,7 +1298,9 @@ Tam kurulum ve davranış ayrıntıları için bkz. [Ollama Web Search](/tr/tool
   </Accordion>
 
   <Accordion title="Soğuk yerel model zaman aşımına uğruyor">
-    Büyük yerel modeller, akış başlamadan önce uzun bir ilk yükleme gerektirebilir. Zaman aşımını Ollama sağlayıcısıyla sınırlı tutun ve isteğe bağlı olarak Ollama'dan modeli dönüşler arasında yüklü tutmasını isteyin:
+    Büyük yerel modellerin ilk yüklemesi uzun sürebilir. Zaman aşımını Ollama
+    sağlayıcısıyla sınırlayın ve isteğe bağlı olarak modeli etkileşimler arasında
+    yüklü tutun:
 
     ```json5
     {
@@ -1213,12 +1321,17 @@ Tam kurulum ve davranış ayrıntıları için bkz. [Ollama Web Search](/tr/tool
     }
     ```
 
-    Ana makinenin kendisi bağlantıları kabul etmekte yavaşsa, `timeoutSeconds` bu sağlayıcı için korumalı Undici bağlantı zaman aşımını da uzatır.
+    Ana makinenin bağlantıları kabul etmesi de yavaşsa `timeoutSeconds`, bu
+    sağlayıcının korumalı bağlantı zaman aşımını da uzatır.
 
   </Accordion>
 
-  <Accordion title="Büyük bağlamlı model çok yavaş veya belleği tükeniyor">
-    Birçok Ollama modeli, donanımınızın rahatça çalıştırabileceğinden daha büyük bağlamlar duyurur. Yerel Ollama, `params.num_ctx` ayarlamadığınız sürece Ollama'nın kendi çalışma zamanı bağlamı varsayılanını kullanır. Öngörülebilir ilk token gecikmesi istediğinizde hem OpenClaw bütçesini hem de Ollama'nın istek bağlamını sınırlayın:
+  <Accordion title="Geniş bağlamlı model çok yavaş veya belleği tükeniyor">
+    Birçok model, donanımınızın rahatça çalıştırabileceğinden daha büyük
+    bağlamların desteklendiğini belirtir. `params.num_ctx` ayarlanmadığı sürece
+    yerel Ollama kendi çalışma zamanı varsayılanını kullanır. Öngörülebilir ilk
+    token gecikmesi için hem OpenClaw bütçesini hem de Ollama istek bağlamını
+    sınırlayın:
 
     ```json5
     {
@@ -1240,7 +1353,9 @@ Tam kurulum ve davranış ayrıntıları için bkz. [Ollama Web Search](/tr/tool
     }
     ```
 
-    OpenClaw çok fazla istem gönderiyorsa önce `contextWindow` değerini düşürün. Ollama makine için çok büyük bir çalışma zamanı bağlamı yüklüyorsa `params.num_ctx` değerini düşürün. Üretim çok uzun sürüyorsa `maxTokens` değerini düşürün.
+    OpenClaw çok fazla istem gönderiyorsa `contextWindow` değerini düşürün.
+    Ollama'nın çalışma zamanı bağlamı makine için çok büyükse `params.num_ctx`
+    değerini düşürün. Üretim çok uzun sürüyorsa `maxTokens` değerini düşürün.
 
   </Accordion>
 </AccordionGroup>
@@ -1252,16 +1367,19 @@ Daha fazla yardım: [Sorun giderme](/tr/help/troubleshooting) ve [SSS](/tr/help/
 ## İlgili
 
 <CardGroup cols={2}>
+  <Card title="Ollama Cloud" href="/tr/providers/ollama-cloud" icon="cloud">
+    Özel `ollama-cloud` sağlayıcısıyla yalnızca buluta yönelik kurulum.
+  </Card>
   <Card title="Model sağlayıcıları" href="/tr/concepts/model-providers" icon="layers">
-    Tüm sağlayıcılar, model referansları ve yük devretme davranışına genel bakış.
+    Tüm sağlayıcılara, model referanslarına ve yük devretme davranışına genel bakış.
   </Card>
   <Card title="Model seçimi" href="/tr/concepts/models" icon="brain">
     Modellerin nasıl seçileceği ve yapılandırılacağı.
   </Card>
   <Card title="Ollama Web Araması" href="/tr/tools/ollama-search" icon="magnifying-glass">
-    Ollama destekli web araması için tam kurulum ve davranış ayrıntıları.
+    Ollama destekli web araması için eksiksiz kurulum ve davranış ayrıntıları.
   </Card>
   <Card title="Yapılandırma" href="/tr/gateway/configuration" icon="gear">
-    Tam yapılandırma referansı.
+    Eksiksiz yapılandırma referansı.
   </Card>
 </CardGroup>

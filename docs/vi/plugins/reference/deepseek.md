@@ -4,27 +4,27 @@ read_when:
 summary: Bổ sung hỗ trợ nhà cung cấp mô hình DeepSeek cho OpenClaw.
 title: Plugin DeepSeek
 x-i18n:
-    generated_at: "2026-06-27T17:51:30Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:10:17Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c391a9d87d4de66f279f0b851868857b1a57e328feede3f5833e5e323ea5e281
+    source_hash: e2e7de36581db36818f63f754da829d91163c0ae3eaab9a087da087d3c681538
     source_path: plugins/reference/deepseek.md
     workflow: 16
 ---
 
 # Plugin DeepSeek
 
-Thêm hỗ trợ nhà cung cấp mô hình DeepSeek cho OpenClaw.
+Bổ sung hỗ trợ nhà cung cấp mô hình DeepSeek cho OpenClaw.
 
 ## Phân phối
 
 - Gói: `@openclaw/deepseek-provider`
-- Tuyến cài đặt: npm; ClawHub: `clawhub:@openclaw/deepseek-provider`
+- Phương thức cài đặt: npm; ClawHub: `clawhub:@openclaw/deepseek-provider`
 
 ## Bề mặt
 
-providers: deepseek
+nhà cung cấp: deepseek; hợp đồng: usageProviders
 
 ## Tài liệu liên quan
 

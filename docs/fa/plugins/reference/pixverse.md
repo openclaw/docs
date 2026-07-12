@@ -1,11 +1,11 @@
 ---
 read_when:
-    - در حال نصب، پیکربندی یا حسابرسی Plugin pixverse هستید.
+    - شما در حال نصب، پیکربندی یا ممیزی Plugin پیکس‌ورس هستید
 summary: Plugin ارائه‌دهندهٔ تولید ویدئوی PixVerse برای OpenClaw.
-title: Plugin PixVerse
+title: Plugin پیکس‌ورس
 x-i18n:
-    generated_at: "2026-06-27T18:28:24Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:31:57Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 99ebe964ed48bcb8cc00a34fdde9269cdb02cb2c7a13f7ed2ab48b784d168b41
@@ -13,9 +13,9 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin PixVerse
+# Plugin پیکس‌ورس
 
-Plugin ارائه‌دهنده تولید ویدئوی PixVerse برای OpenClaw.
+Plugin ارائه‌دهندهٔ تولید ویدئوی پیکس‌ورس برای OpenClaw.
 
 ## توزیع
 
@@ -24,8 +24,8 @@ Plugin ارائه‌دهنده تولید ویدئوی PixVerse برای OpenCla
 
 ## سطح
 
-contracts: videoGenerationProviders
+قراردادها: videoGenerationProviders
 
-## اسناد مرتبط
+## مستندات مرتبط
 
-- [pixverse](/fa/providers/pixverse)
+- [پیکس‌ورس](/fa/providers/pixverse)

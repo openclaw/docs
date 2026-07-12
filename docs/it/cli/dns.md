@@ -1,29 +1,31 @@
 ---
 read_when:
-    - Vuoi il rilevamento su vasta area (DNS-SD) tramite Tailscale + CoreDNS
+    - Vuoi il rilevamento su rete geografica (DNS-SD) tramite Tailscale + CoreDNS
     - You're setting up split DNS for a custom discovery domain (example: openclaw.internal)
-summary: Riferimento CLI per `openclaw dns` (helper per il rilevamento su ampia area)
+summary: Riferimento della CLI per `openclaw dns` (strumenti di supporto per il rilevamento su rete geografica)
 title: DNS
 x-i18n:
-    generated_at: "2026-05-06T08:42:29Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:54:43Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 460bdcbaa2c0c0fc1a4f5bdd76b904d8ac35195a25324c66421abfdc2044bb07
+    source_hash: bb07353df03f9d169e1aede2da0b711ffb68e8c9d21d51359e93e92cc0818ca2
     source_path: cli/dns.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw dns`
 
-Strumenti di supporto DNS per il rilevamento su rete geografica (Tailscale + CoreDNS). Attualmente incentrati su macOS + Homebrew CoreDNS.
+Strumenti DNS per il rilevamento su rete geografica (Tailscale + CoreDNS). Attualmente supporta solo macOS + CoreDNS installato tramite Homebrew.
 
-Correlati:
+Argomenti correlati:
 
-- Rilevamento Gateway: [Rilevamento](/it/gateway/discovery)
+- Rilevamento del Gateway: [Rilevamento](/it/gateway/discovery)
 - Configurazione del rilevamento su rete geografica: [Configurazione](/it/gateway/configuration)
 
-## Configurazione
+## `dns setup`
+
+Pianifica o applica la configurazione di CoreDNS per il rilevamento DNS-SD unicast.
 
 ```bash
 openclaw dns setup
@@ -31,31 +33,27 @@ openclaw dns setup --domain openclaw.internal
 openclaw dns setup --apply
 ```
 
-## `dns setup`
+| Opzione             | Effetto                                                                                                         |
+| ------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `--domain <domain>` | Dominio di rilevamento su rete geografica (ad esempio `openclaw.internal`).                                     |
+| `--apply`           | Installa/aggiorna la configurazione di CoreDNS e (ri)avvia il servizio. Richiede sudo, solo su macOS.           |
 
-Pianifica o applica la configurazione di CoreDNS per il rilevamento DNS-SD unicast.
+Senza `--domain`, OpenClaw usa `discovery.wideArea.domain` dalla configurazione.
 
-Opzioni:
+Senza `--apply`, il comando mostra soltanto:
 
-- `--domain <domain>`: dominio di rilevamento su rete geografica (per esempio `openclaw.internal`)
-- `--apply`: installa o aggiorna la configurazione di CoreDNS e riavvia il servizio (richiede sudo; solo macOS)
+- Il dominio di rilevamento risolto e il percorso del file di zona
+- Gli indirizzi IP attuali della tailnet
+- La configurazione di rilevamento consigliata per `openclaw.json`
+- I valori di server dei nomi/dominio per Split DNS di Tailscale da impostare nella console di amministrazione di Tailscale
 
-Cosa mostra:
+Con `--apply` (solo macOS, richiede CoreDNS installato tramite Homebrew):
 
-- dominio di rilevamento risolto
-- percorso del file di zona
-- IP tailnet correnti
-- configurazione di rilevamento consigliata per `openclaw.json`
-- valori di nameserver/dominio Split DNS di Tailscale da impostare
-
-Note:
-
-- Senza `--apply`, il comando è solo uno strumento di pianificazione e stampa la configurazione consigliata.
-- Se `--domain` è omesso, OpenClaw usa `discovery.wideArea.domain` dalla configurazione.
-- `--apply` attualmente supporta solo macOS e richiede Homebrew CoreDNS.
-- `--apply` inizializza il file di zona se necessario, assicura che la stanza di importazione di CoreDNS esista e riavvia il servizio brew `coredns`.
+- Inizializza il file di zona se assente
+- Aggiunge la direttiva di importazione di CoreDNS se assente
+- Riavvia il servizio brew `coredns`
 
 ## Correlati
 
-- [Riferimento CLI](/it/cli)
+- [Riferimento della CLI](/it/cli)
 - [Rilevamento](/it/gateway/discovery)

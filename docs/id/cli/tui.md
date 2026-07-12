@@ -1,58 +1,68 @@
 ---
 read_when:
-    - Anda menginginkan UI terminal untuk Gateway (ramah untuk penggunaan jarak jauh)
+    - Anda menginginkan antarmuka terminal untuk Gateway (cocok untuk akses jarak jauh)
     - Anda ingin meneruskan url/token/session dari skrip
     - Anda ingin menjalankan TUI dalam mode tertanam lokal tanpa Gateway
-    - Anda ingin menggunakan openclaw chat atau openclaw tui --local
-summary: Referensi CLI untuk `openclaw tui` (UI terminal tertanam lokal atau yang didukung Gateway)
+    - Anda ingin menggunakan `openclaw chat` atau `openclaw tui --local`
+summary: Referensi CLI untuk `openclaw tui` (antarmuka pengguna terminal tertanam lokal atau berbasis Gateway)
 title: TUI
 x-i18n:
-    generated_at: "2026-06-27T17:22:11Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:03:29Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 514bbbcd0b695e8d4ccc87d1e242d816e264ac1f8b137f2bd891803ef7f48d5a
+    source_hash: 3e7b4a067e957c72836b22688f7446861b64fb7078b43e206bbe765ea0d62e57
     source_path: cli/tui.md
     workflow: 16
 ---
 
 # `openclaw tui`
 
-Buka UI terminal yang terhubung ke Gateway, atau jalankan dalam mode tertanam
-lokal.
+Buka antarmuka terminal yang terhubung ke Gateway, atau jalankan dalam mode
+tertanam lokal.
 
-Terkait:
-
-- Panduan TUI: [TUI](/id/web/tui)
+Panduan terkait: [TUI](/id/web/tui)
 
 ## Opsi
 
-| Flag                  | Default                                   | Deskripsi                                                                          |
-| --------------------- | ----------------------------------------- | ---------------------------------------------------------------------------------- |
-| `--local`             | `false`                                   | Jalankan terhadap runtime agen tertanam lokal, bukan Gateway.                      |
-| `--url <url>`         | `gateway.remote.url` from config          | URL WebSocket Gateway.                                                             |
-| `--token <token>`     | (tidak ada)                               | Token Gateway jika diperlukan.                                                     |
-| `--password <pass>`   | (tidak ada)                               | Kata sandi Gateway jika diperlukan.                                                |
-| `--session <key>`     | `main` (atau `global` saat cakupan global) | Kunci sesi. Di dalam workspace agen, ini otomatis memilih agen tersebut kecuali diberi prefiks. |
-| `--deliver`           | `false`                                   | Kirim balasan asisten melalui channel yang dikonfigurasi.                          |
-| `--thinking <level>`  | (default model)                           | Override tingkat thinking.                                                         |
-| `--message <text>`    | (tidak ada)                               | Kirim pesan awal setelah terhubung.                                                |
-| `--timeout-ms <ms>`   | `agents.defaults.timeoutSeconds`          | Timeout agen. Nilai tidak valid mencatat peringatan dan diabaikan.                 |
-| `--history-limit <n>` | `200`                                     | Entri riwayat yang dimuat saat attach.                                             |
+| Flag                         | Bawaan                                    | Deskripsi                                                                                   |
+| ---------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `--local`                    | `false`                                   | Jalankan dengan runtime agen tertanam lokal, bukan Gateway.                                  |
+| `--url <url>`                | `gateway.remote.url` dari konfigurasi     | URL WebSocket Gateway.                                                                      |
+| `--token <token>`            | (tidak ada)                               | Token Gateway jika diperlukan.                                                              |
+| `--password <pass>`          | (tidak ada)                               | Kata sandi Gateway jika diperlukan.                                                         |
+| `--tls-fingerprint <sha256>` | `gateway.remote.tlsFingerprint`           | Sidik jari sertifikat TLS yang diharapkan untuk Gateway `wss://` yang disematkan.             |
+| `--session <key>`            | `main` (atau `global` saat cakupan global) | Kunci sesi. Di dalam ruang kerja agen, agen tersebut dipilih otomatis kecuali diberi prefiks. |
+| `--deliver`                  | `false`                                   | Kirim balasan asisten melalui kanal yang dikonfigurasi.                                      |
+| `--thinking <level>`         | (bawaan model)                            | Penggantian tingkat pemikiran.                                                              |
+| `--message <text>`           | (tidak ada)                               | Kirim pesan awal setelah terhubung.                                                         |
+| `--timeout-ms <ms>`          | `agents.defaults.timeoutSeconds`          | Batas waktu agen. Nilai yang tidak valid mencatat peringatan dan diabaikan.                  |
+| `--history-limit <n>`        | `200`                                     | Entri riwayat yang dimuat saat dilampirkan.                                                 |
 
-Alias: `openclaw chat` dan `openclaw terminal` menjalankan perintah yang sama dengan `--local` tersirat.
+Alias: `openclaw chat` dan `openclaw terminal` menjalankan perintah ini dengan
+`--local` tersirat.
 
-Catatan:
+## Catatan
 
-- `chat` dan `terminal` adalah alias untuk `openclaw tui --local`.
-- `--local` tidak dapat digabungkan dengan `--url`, `--token`, atau `--password`.
-- `tui` menyelesaikan SecretRefs autentikasi gateway yang dikonfigurasi untuk autentikasi token/kata sandi jika memungkinkan (provider `env`/`file`/`exec`).
-- Saat diluncurkan dari dalam direktori workspace agen yang dikonfigurasi, TUI otomatis memilih agen tersebut sebagai default kunci sesi (kecuali `--session` secara eksplisit berupa `agent:<id>:...`).
-- Untuk menampilkan hostname Gateway di footer untuk koneksi non-lokal yang didukung URL, jalankan `openclaw config set tui.footer.showRemoteHost true`. Label host nonaktif secara default dan tidak pernah muncul untuk koneksi local loopback atau lokal tertanam.
-- Mode lokal menggunakan runtime agen tertanam secara langsung. Sebagian besar alat lokal berfungsi, tetapi fitur khusus Gateway tidak tersedia.
-- Mode lokal menambahkan `/auth [provider]` di dalam permukaan perintah TUI.
-- Gate persetujuan Plugin tetap berlaku dalam mode lokal. Alat yang memerlukan persetujuan meminta keputusan di terminal; tidak ada yang disetujui otomatis secara diam-diam hanya karena Gateway tidak dilibatkan.
-- [Sasaran](/id/tools/goal) sesi muncul di footer dan dapat dikelola dengan `/goal`.
+- `--local` tidak dapat digabungkan dengan `--url`, `--token`, `--password`, atau `--tls-fingerprint`.
+- `tui` menyelesaikan SecretRef autentikasi Gateway yang dikonfigurasi untuk autentikasi token/kata sandi
+  jika memungkinkan (penyedia `env`/`file`/`exec`).
+- Tanpa URL atau port eksplisit, `tui` mengikuti port Gateway lokal aktif
+  yang dicatat oleh Gateway yang sedang berjalan. `--url`, `OPENCLAW_GATEWAY_URL`,
+  `OPENCLAW_GATEWAY_PORT`, dan konfigurasi Gateway jarak jauh yang eksplisit tetap didahulukan.
+- Saat dijalankan dari dalam direktori ruang kerja agen yang dikonfigurasi, TUI secara otomatis memilih
+  agen tersebut sebagai bawaan kunci sesi (kecuali `--session` secara eksplisit berupa
+  `agent:<id>:...`).
+- Untuk menampilkan nama host Gateway di footer bagi koneksi berbasis URL
+  nonlokal, jalankan `openclaw config set tui.footer.showRemoteHost true`. Dinonaktifkan secara
+  bawaan; tidak pernah ditampilkan untuk koneksi local loopback atau koneksi lokal tertanam.
+- Mode lokal menggunakan runtime agen tertanam secara langsung. Sebagian besar alat lokal berfungsi,
+  tetapi fitur khusus Gateway tidak tersedia.
+- Mode lokal menambahkan `/auth [provider]` ke antarmuka perintah TUI.
+- Gerbang persetujuan Plugin tetap berlaku dalam mode lokal: alat yang memerlukan persetujuan
+  meminta keputusan di terminal, tidak ada yang disetujui otomatis secara diam-diam.
+- [Tujuan](/id/tools/goal) sesi muncul di footer dan dapat dikelola dengan
+  `/goal`.
 
 ## Contoh
 
@@ -63,25 +73,24 @@ openclaw tui
 openclaw tui --url ws://127.0.0.1:18789 --token <token>
 openclaw tui --session main --deliver
 openclaw chat --message "Compare my config to the docs and tell me what to fix"
-# when run inside an agent workspace, infers that agent automatically
+# saat dijalankan di dalam ruang kerja agen, menyimpulkan agen tersebut secara otomatis
 openclaw tui --session bugfix
 ```
 
-## Loop perbaikan konfigurasi
+## Siklus perbaikan konfigurasi
 
-Gunakan mode lokal saat konfigurasi saat ini sudah tervalidasi dan Anda ingin
-agen tertanam memeriksanya, membandingkannya dengan dokumentasi, dan membantu memperbaikinya
-dari terminal yang sama:
+Gunakan mode lokal agar agen tertanam memeriksa konfigurasi saat ini, membandingkannya
+dengan dokumentasi, dan membantu memperbaikinya dari terminal yang sama.
 
-Jika `openclaw config validate` sudah gagal, gunakan `openclaw configure` atau
-`openclaw doctor --fix` terlebih dahulu. `openclaw chat` tidak melewati guard
-konfigurasi tidak valid.
+Jika `openclaw config validate` sudah gagal, jalankan `openclaw configure` atau
+`openclaw doctor --fix` terlebih dahulu; `openclaw chat` tidak melewati
+pengaman konfigurasi tidak valid.
 
 ```bash
 openclaw chat
 ```
 
-Lalu di dalam TUI:
+Kemudian di dalam TUI:
 
 ```text
 !openclaw config file
@@ -90,11 +99,12 @@ Lalu di dalam TUI:
 !openclaw doctor
 ```
 
-Terapkan perbaikan terarah dengan `openclaw config set` atau `openclaw configure`, lalu
-jalankan ulang `openclaw config validate`. Lihat [TUI](/id/web/tui) dan [Konfigurasi](/id/cli/config).
+Terapkan perbaikan yang ditargetkan dengan `openclaw config set` atau `openclaw configure`, lalu
+jalankan kembali `openclaw config validate`. Lihat [TUI](/id/web/tui) dan
+[Konfigurasi](/id/cli/config).
 
 ## Terkait
 
 - [Referensi CLI](/id/cli)
 - [TUI](/id/web/tui)
-- [Sasaran](/id/tools/goal)
+- [Tujuan](/id/tools/goal)

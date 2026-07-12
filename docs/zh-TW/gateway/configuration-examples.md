@@ -1,13 +1,13 @@
 ---
 read_when:
-    - 學習如何設定 OpenClaw
-    - 正在尋找設定範例
-    - 第一次設定 OpenClaw
-summary: 常見 OpenClaw 設定的結構描述精確設定範例
+    - 瞭解如何設定 OpenClaw
+    - 尋找設定範例
+    - 首次設定 OpenClaw
+summary: 常見 OpenClaw 設定的結構描述準確範例
 title: 設定範例
 x-i18n:
-    generated_at: "2026-07-05T11:18:26Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T21:18:47Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: c3ad82ccce62e0c8dbb72f81b0de62d60d8a6282f0a327ed1cbda7ffa3e47969
@@ -15,11 +15,11 @@ x-i18n:
     workflow: 16
 ---
 
-以下範例與目前的設定結構描述一致。如需完整參考與各欄位說明，請參閱[設定](/zh-TW/gateway/configuration)。
+以下範例與目前的設定結構一致。如需完整參考資料及各欄位的說明，請參閱[設定](/zh-TW/gateway/configuration)。
 
 ## 快速開始
 
-### 絕對最小值
+### 最低必要設定
 
 ```json5
 {
@@ -28,9 +28,9 @@ x-i18n:
 }
 ```
 
-儲存至 `~/.openclaw/openclaw.json`，即可從該號碼私訊機器人。
+儲存至 `~/.openclaw/openclaw.json`，之後便可從該號碼私訊機器人。
 
-### 建議入門設定
+### 建議的初始設定
 
 ```json5
 {
@@ -66,13 +66,13 @@ x-i18n:
 }
 ```
 
-## 展開範例（主要選項）
+## 完整範例（主要選項）
 
-> JSON5 可讓你使用註解與尾隨逗號。一般 JSON 也可以。
+> JSON5 可使用註解及尾隨逗號。一般 JSON 也可以使用。
 
 ```json5
 {
-  // 環境 + shell
+  // Environment + shell
   env: {
     OPENROUTER_API_KEY: "sk-or-...",
     vars: {
@@ -84,7 +84,7 @@ x-i18n:
     },
   },
 
-  // 驗證設定檔中繼資料（密鑰存放於 auth-profiles.json）
+  // Auth profile metadata (secrets live in auth-profiles.json)
   auth: {
     profiles: {
       "anthropic:default": { provider: "anthropic", mode: "api_key" },
@@ -98,9 +98,9 @@ x-i18n:
     },
   },
 
-  // 身分是依代理設定的 — 請在下方 agents.list[].identity 設定。
+  // Identity is per agent — set it on agents.list[].identity below.
 
-  // 記錄
+  // Logging
   logging: {
     level: "info",
     file: "/tmp/openclaw/openclaw.log",
@@ -109,7 +109,7 @@ x-i18n:
     redactSensitive: "tools",
   },
 
-  // 訊息格式化
+  // Message formatting
   messages: {
     messagePrefix: "[openclaw]",
     visibleReplies: "automatic",
@@ -118,7 +118,7 @@ x-i18n:
     ackReactionScope: "group-mentions",
     groupChat: {
       historyLimit: 50,
-      visibleReplies: "message_tool", // 為具備可靠工具能力模型的共享聊天室選擇啟用
+      visibleReplies: "message_tool", // opt in for shared rooms with tool-reliable models
       unmentionedInbound: "room_event",
     },
     queue: {
@@ -138,7 +138,7 @@ x-i18n:
     },
   },
 
-  // 工具
+  // Tooling
   tools: {
     media: {
       audio: {
@@ -146,7 +146,7 @@ x-i18n:
         maxBytes: 20971520,
         models: [
           { provider: "openai", model: "gpt-4o-transcribe" },
-          // 選用的命令列介面後援（Whisper 二進位檔）：
+          // Optional CLI fallback (Whisper binary):
           // { type: "cli", command: "whisper", args: ["--model", "base", "{{MediaPath}}"] }
         ],
         timeoutSeconds: 120,
@@ -159,10 +159,10 @@ x-i18n:
     },
   },
 
-  // 工作階段行為
+  // Session behavior
   session: {
     scope: "per-sender",
-    dmScope: "per-channel-peer", // 建議用於多使用者收件匣
+    dmScope: "per-channel-peer", // recommended for multi-user inboxes
     reset: {
       mode: "daily",
       atHour: 4,
@@ -177,9 +177,9 @@ x-i18n:
       mode: "warn",
       pruneAfter: "30d",
       maxEntries: 500,
-      resetArchiveRetention: "30d", // 持續時間或 false
-      maxDiskBytes: "500mb", // 選用
-      highWaterBytes: "400mb", // 選用（預設為 maxDiskBytes 的 80%）
+      resetArchiveRetention: "30d", // duration or false
+      maxDiskBytes: "500mb", // optional
+      highWaterBytes: "400mb", // optional (defaults to 80% of maxDiskBytes)
     },
     typingIntervalSeconds: 5,
     sendPolicy: {
@@ -188,7 +188,7 @@ x-i18n:
     },
   },
 
-  // 頻道
+  // Channels
   channels: {
     whatsapp: {
       dmPolicy: "pairing",
@@ -240,7 +240,7 @@ x-i18n:
     },
   },
 
-  // 代理執行階段
+  // Agent runtime
   agents: {
     defaults: {
       workspace: "~/.openclaw/workspace",
@@ -257,7 +257,7 @@ x-i18n:
         "anthropic/claude-sonnet-4-6": { alias: "sonnet" },
         "openai/gpt-5.4": { alias: "gpt" },
       },
-      skills: ["github", "weather"], // 由省略 list[].skills 的代理繼承
+      skills: ["github", "weather"], // inherited by agents that omit list[].skills
       thinkingDefault: "low",
       verboseDefault: "off",
       toolProgressDetail: "explain",
@@ -284,7 +284,7 @@ x-i18n:
         every: "30m",
         model: "anthropic/claude-sonnet-4-6",
         target: "last",
-        directPolicy: "allow", // allow（預設）| block
+        directPolicy: "allow", // allow (default) | block
         to: "+15555550123",
         prompt: "HEARTBEAT",
         ackMaxChars: 300,
@@ -299,7 +299,7 @@ x-i18n:
       },
       sandbox: {
         mode: "non-main",
-        scope: "session", // 優先於舊版 perSession: true
+        scope: "session", // preferred over legacy perSession: true
         workspaceRoot: "~/.openclaw/sandboxes",
         docker: {
           image: "openclaw-sandbox:bookworm-slim",
@@ -323,18 +323,18 @@ x-i18n:
           theme: "helpful sloth",
           emoji: "🦥",
         },
-        // 繼承 defaults.skills -> github, weather
+        // inherits defaults.skills -> github, weather
         groupChat: {
           mentionPatterns: ["@openclaw", "openclaw"],
         },
-        thinkingDefault: "high", // 個別代理的 thinking 覆寫
-        reasoningDefault: "on", // 個別代理的 reasoning 可見性
-        fastModeDefault: false, // 個別代理的快速模式
+        thinkingDefault: "high", // per-agent thinking override
+        reasoningDefault: "on", // per-agent reasoning visibility
+        fastModeDefault: false, // per-agent fast mode
       },
       {
         id: "quick",
-        skills: [], // 此代理沒有 Skills
-        fastModeDefault: true, // 此代理一律快速執行
+        skills: [], // no skills for this agent
+        fastModeDefault: true, // this agent always runs fast
         thinkingDefault: "off",
       },
     ],
@@ -362,7 +362,7 @@ x-i18n:
     },
   },
 
-  // 自訂模型提供者
+  // Custom model providers
   models: {
     mode: "merge",
     providers: {
@@ -388,11 +388,11 @@ x-i18n:
     },
   },
 
-  // 排程工作
+  // Cron jobs
   cron: {
     enabled: true,
     store: "~/.openclaw/cron/jobs.json",
-    maxConcurrentRuns: 8, // 預設；排程分派 + 隔離的排程代理回合執行
+    maxConcurrentRuns: 8, // default; cron dispatch + isolated cron agent-turn execution
     sessionRetention: "24h",
     runLog: {
       maxBytes: "2mb",
@@ -400,7 +400,7 @@ x-i18n:
     },
   },
 
-  // 網路鉤子
+  // Webhooks
   hooks: {
     enabled: true,
     path: "/hooks",
@@ -443,7 +443,7 @@ x-i18n:
     },
   },
 
-  // 閘道 + 網路
+  // Gateway + networking
   gateway: {
     mode: "local",
     port: 18789,
@@ -482,9 +482,9 @@ x-i18n:
 }
 ```
 
-### 符號連結的同層 Skills 儲存庫
+### 以符號連結連接的同層 Skills 儲存庫
 
-當內建 Skills 根目錄包含指向同層儲存庫的符號連結時使用此設定，例如 `~/.agents/skills/manager -> ~/Projects/manager/skills`。
+當內建 Skills 根目錄包含指向同層儲存庫的符號連結時，請使用此設定，例如 `~/.agents/skills/manager -> ~/Projects/manager/skills`。
 
 ```json5
 {
@@ -497,13 +497,13 @@ x-i18n:
 }
 ```
 
-- `extraDirs` 會將同層儲存庫掃描為明確的 Skills 根目錄。
-- `allowSymlinkTargets` 允許符號連結的 Skills 資料夾解析到該受信任的真實目標根目錄，而不允許任意符號連結逃逸。
-- 若要讓 Skill Workshop 透過相同受信任的符號連結目標套用寫入，請設定 `skills.workshop.allowSymlinkTargetWrites: true`。
+- `extraDirs` 會將同層儲存庫作為明確的 Skills 根目錄進行掃描。
+- `allowSymlinkTargets` 可讓以符號連結連接的 Skills 資料夾解析至該受信任的實際目標根目錄，同時不允許任意的符號連結逸出。
+- 若要允許 Skill Workshop 透過同一個受信任的符號連結目標進行寫入，請設定 `skills.workshop.allowSymlinkTargetWrites: true`。
 
 ## 常見模式
 
-### 具有單一覆寫的共享 Skills 基準
+### 共用 Skills 基準設定並覆寫其中一個代理程式
 
 ```json5
 {
@@ -521,8 +521,8 @@ x-i18n:
 ```
 
 - `agents.defaults.skills` 是共用基準。
-- `agents.list[].skills` 會為單一代理取代該基準。
-- 當某個代理不應看到任何 Skills 時，請使用 `skills: []`。
+- `agents.list[].skills` 會取代單一代理程式的該基準。
+- 當代理程式不應看見任何 Skills 時，請使用 `skills: []`。
 
 ### 多平台設定
 
@@ -547,7 +547,8 @@ x-i18n:
 
 ### 受信任節點網路自動核准
 
-除非你控制網路路徑，否則請保持裝置配對為手動。對於專用實驗室或 tailnet 子網路，你可以選擇使用精確的 CIDR 或 IP，啟用首次節點裝置自動核准：
+除非您能控制網路路徑，否則請維持手動裝置配對。對於專用的
+實驗室或 tailnet 子網路，您可以使用精確的 CIDR 或 IP，選擇啟用首次節點裝置自動核准：
 
 ```json5
 {
@@ -561,11 +562,12 @@ x-i18n:
 }
 ```
 
-未設定時，此功能會維持關閉。它只適用於沒有請求 scopes 的全新 `role: node` 配對。Operator/瀏覽器用戶端，以及角色、scope、中繼資料或公開金鑰升級，仍然需要手動核准。
+未設定時，此功能維持關閉。它僅適用於未要求任何作用域的全新 `role: node` 配對。
+操作者／瀏覽器用戶端，以及角色、作用域、中繼資料或公開金鑰升級，仍需手動核准。
 
-### 安全 DM 模式（共用收件匣 / 多使用者 DM）
+### 安全私訊模式（共用收件匣／多使用者私訊）
 
-如果有超過一個人可以傳 DM 給你的 bot（`allowFrom` 中有多個項目、已核准多人的配對，或 `dmPolicy: "open"`），請啟用**安全 DM 模式**，讓不同寄件者的 DM 預設不會共用同一個情境：
+如果有多個人可以私訊您的機器人（`allowFrom` 中有多個項目、核准多人的配對，或使用 `dmPolicy: "open"`），請啟用**安全私訊模式**，讓不同傳送者的私訊預設不會共用同一個情境：
 
 ```json5
 {
@@ -589,10 +591,10 @@ x-i18n:
 }
 ```
 
-對於 Discord/Google Chat/IRC/Mattermost/Microsoft Teams/Slack，寄件者授權預設會優先使用 ID。
-只有在你明確接受該風險時，才使用各頻道的 `dangerouslyAllowNameMatching: true` 啟用可變更的直接名稱/電子郵件/nick 比對。
+對於 Discord／Google Chat／IRC／Mattermost／Microsoft Teams／Slack，傳送者授權預設會優先使用 ID。
+只有在您明確接受相關風險時，才應透過各頻道的 `dangerouslyAllowNameMatching: true`，啟用直接比對可變動的名稱／電子郵件／暱稱。
 
-### Anthropic API 金鑰 + MiniMax 後援
+### Anthropic API 金鑰與 MiniMax 備援
 
 ```json5
 {
@@ -628,7 +630,7 @@ x-i18n:
 }
 ```
 
-### 工作 bot（受限存取）
+### 工作機器人（限制存取）
 
 ```json5
 {
@@ -660,7 +662,7 @@ x-i18n:
 }
 ```
 
-### 僅限本機模型
+### 僅使用本機模型
 
 ```json5
 {
@@ -696,12 +698,12 @@ x-i18n:
 
 ## 提示
 
-- 如果你設定 `dmPolicy: "open"`，對應的 `allowFrom` 清單必須包含 `"*"`。
-- 供應商 ID 會有所不同（電話號碼、使用者 ID、頻道 ID）。請使用供應商文件確認格式。
-- 之後可新增的選用區段：`web`、`browser`、`ui`、`discovery`、`plugins`、`talk`、`signal`、`imessage`。
-- 請參閱[供應商](/zh-TW/providers)和[疑難排解](/zh-TW/gateway/troubleshooting)，了解更深入的設定說明。
+- 如果您設定 `dmPolicy: "open"`，對應的 `allowFrom` 清單必須包含 `"*"`。
+- 提供者 ID 的格式各不相同（電話號碼、使用者 ID、頻道 ID）。請參閱提供者文件以確認格式。
+- 稍後可新增的選用區段：`web`、`browser`、`ui`、`discovery`、`plugins`、`talk`、`signal`、`imessage`。
+- 如需更深入的設定說明，請參閱[提供者](/zh-TW/providers)和[疑難排解](/zh-TW/gateway/troubleshooting)。
 
-## 相關
+## 相關內容
 
 - [設定參考](/zh-TW/gateway/configuration-reference)
 - [設定](/zh-TW/gateway/configuration)

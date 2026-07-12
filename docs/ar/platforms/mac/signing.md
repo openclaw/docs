@@ -1,60 +1,50 @@
 ---
 read_when:
-    - إنشاء إصدارات تصحيح أخطاء mac أو توقيعها
-summary: خطوات التوقيع لبُنى تصحيح أخطاء macOS التي تُنشئها سكربتات التحزيم
+    - إنشاء أو توقيع إصدارات تصحيح الأخطاء لنظام macOS
+summary: خطوات التوقيع لإصدارات تصحيح الأخطاء على macOS المُنشأة بواسطة نصوص الحزم البرمجية
 title: توقيع macOS
 x-i18n:
-    generated_at: "2026-06-27T17:58:51Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:06:12Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: df4ee44b6bdf09a24e0d05ed4354e2cb573372d12a667b4fcdfd7d6f88291082
+    source_hash: 663c08c031417d5a9f048581421e4fe9f69480917582f74746af675bcca5cf95
     source_path: platforms/mac/signing.md
     workflow: 16
 ---
 
-# توقيع mac (بُنى التصحيح)
+# توقيع mac (إصدارات تصحيح الأخطاء)
 
-يُبنى هذا التطبيق عادةً من [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh)، والذي أصبح الآن:
+يبني السكربت [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) التطبيق ويُحزّمه في مسار ثابت (`dist/OpenClaw.app`)، ثم يستدعي [`scripts/codesign-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/codesign-mac-app.sh) لتوقيعه. ترتبط أذونات TCC بمعرّف الحزمة وتوقيع الشيفرة؛ ويؤدي الحفاظ على ثبات كليهما (مع إبقاء التطبيق في مسار ثابت) عبر عمليات إعادة البناء إلى منع macOS من نسيان منح أذونات TCC (الإشعارات، وإمكانية الوصول، وتسجيل الشاشة، والميكروفون، والتعرّف على الكلام).
 
-- يعيّن معرّف حزمة تصحيح ثابتًا: `ai.openclaw.mac.debug`
-- يكتب Info.plist باستخدام معرّف الحزمة هذا (يمكن تجاوزه عبر `BUNDLE_ID=...`)
-- يستدعي [`scripts/codesign-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/codesign-mac-app.sh) لتوقيع الملف الثنائي الرئيسي وحزمة التطبيق لكي يتعامل macOS مع كل إعادة بناء على أنها الحزمة الموقّعة نفسها ويحافظ على أذونات TCC (الإشعارات، إمكانية الوصول، تسجيل الشاشة، الميكروفون، النطق). للحصول على أذونات مستقرة، استخدم هوية توقيع حقيقية؛ التوقيع المخصص اختياري وهش (راجع [أذونات macOS](/ar/platforms/mac/permissions)).
-- يستخدم `CODESIGN_TIMESTAMP=auto` افتراضيًا؛ إذ يفعّل الطوابع الزمنية الموثوقة لتوقيعات Developer ID. عيّن `CODESIGN_TIMESTAMP=off` لتخطي إضافة الطابع الزمني (بُنى تصحيح دون اتصال).
-- يحقن بيانات تعريف البناء في Info.plist: `OpenClawBuildTimestamp` (UTC) و`OpenClawGitCommit` (تجزئة قصيرة) لكي تتمكن لوحة «حول» من إظهار البناء وgit وقناة التصحيح/الإصدار.
-- **تستخدم الحزمة Node 24 افتراضيًا**: يشغّل السكربت بُنى TS وبناء واجهة Control UI. يظل Node 22 LTS، حاليًا `22.19+`، مدعومًا للتوافق.
-- يقرأ `SIGN_IDENTITY` من البيئة. أضف `export SIGN_IDENTITY="Apple Development: Your Name (TEAMID)"` (أو شهادة Developer ID Application الخاصة بك) إلى ملف إعدادات الصدفة لديك لتوقيع التطبيق دائمًا بشهادتك. يتطلب التوقيع المخصص تفعيلًا صريحًا عبر `ALLOW_ADHOC_SIGNING=1` أو `SIGN_IDENTITY="-"` (غير موصى به لاختبار الأذونات).
-- يشغّل تدقيق Team ID بعد التوقيع ويفشل إذا كان أي Mach-O داخل حزمة التطبيق موقّعًا بواسطة Team ID مختلف. عيّن `SKIP_TEAM_ID_CHECK=1` للتجاوز.
+- معرّف حزمة تصحيح الأخطاء الافتراضي هو `ai.openclaw.mac.debug` (يمكن تجاوزه باستخدام `BUNDLE_ID=...`).
+- Node: الإصدار `>=22.19.0 <23` أو `>=23.11.0` (الحقل `engines` في ملف `package.json` بالمستودع). كما يبني المُحزِّم واجهة التحكم (`pnpm ui:build`).
+- يتطلب هوية توقيع حقيقية افتراضيًا؛ وينهي سكربت التوقيع التنفيذ بخطأ إذا لم يعثر على أي هوية ولم يكن `ALLOW_ADHOC_SIGNING` مضبوطًا. يتطلب التوقيع المخصص (`SIGN_IDENTITY="-"`) اشتراكًا صريحًا، ولا يحافظ على أذونات TCC عبر عمليات إعادة البناء. راجع [أذونات macOS](/ar/platforms/mac/permissions).
+- يقرأ `SIGN_IDENTITY` من البيئة (مثل `export SIGN_IDENTITY="Apple Development: Your Name (TEAMID)"`، أو شهادة Developer ID Application). في حال عدم ضبطه، يختار `codesign-mac-app.sh` هوية تلقائيًا بالترتيب التالي: Developer ID Application، ثم Apple Distribution، ثم Apple Development، ثم أول هوية صالحة لتوقيع الشيفرة يُعثر عليها.
+- يفعّل `CODESIGN_TIMESTAMP=auto` (الافتراضي) الطوابع الزمنية الموثوقة لتوقيعات Developer ID Application فقط. اضبطه على `on` أو `off` لفرض التفعيل أو التعطيل.
+- يضيف إلى Info.plist الحقلين `OpenClawBuildTimestamp` (بتنسيق ISO8601 وبتوقيت UTC) و`OpenClawGitCommit` (تجزئة مختصرة، أو `unknown` إذا لم تكن متاحة)، بحيث يمكن لعلامة تبويب «حول» عرض معلومات البناء وgit وقناة تصحيح الأخطاء/الإصدار.
+- يجري تدقيقًا لمعرّف الفريق بعد التوقيع، ويفشل إذا كان لأي ملف Mach-O داخل الحزمة معرّف فريق مختلف. اضبط `SKIP_TEAM_ID_CHECK=1` للتجاوز.
 
 ## الاستخدام
 
 ```bash
-# from repo root
-scripts/package-mac-app.sh               # auto-selects identity; errors if none found
-SIGN_IDENTITY="Developer ID Application: Your Name" scripts/package-mac-app.sh   # real cert
-ALLOW_ADHOC_SIGNING=1 scripts/package-mac-app.sh    # ad-hoc (permissions will not stick)
-SIGN_IDENTITY="-" scripts/package-mac-app.sh        # explicit ad-hoc (same caveat)
-DISABLE_LIBRARY_VALIDATION=1 scripts/package-mac-app.sh   # dev-only Sparkle Team ID mismatch workaround
+# من جذر المستودع
+scripts/package-mac-app.sh                                                      # يختار الهوية تلقائيًا؛ ويُصدر خطأ إذا لم يعثر على أي هوية
+SIGN_IDENTITY="Developer ID Application: Your Name" scripts/package-mac-app.sh   # شهادة حقيقية
+ALLOW_ADHOC_SIGNING=1 scripts/package-mac-app.sh                                 # مخصص (لن تستمر الأذونات)
+SIGN_IDENTITY="-" scripts/package-mac-app.sh                                     # مخصص صريح (مع التحذير نفسه)
+DISABLE_LIBRARY_VALIDATION=1 scripts/package-mac-app.sh                          # حل بديل مخصص للتطوير فقط لعدم تطابق معرّف فريق Sparkle
 ```
 
-### ملاحظة التوقيع المخصص
+### ملاحظة حول التوقيع المخصص
 
-عند التوقيع باستخدام `SIGN_IDENTITY="-"` (مخصص)، يعطّل السكربت تلقائيًا **Hardened Runtime** (`--options runtime`). وهذا ضروري لمنع الأعطال عندما يحاول التطبيق تحميل أطر عمل مضمّنة (مثل Sparkle) لا تشارك Team ID نفسه. كما تكسر التوقيعات المخصصة استمرارية أذونات TCC؛ راجع [أذونات macOS](/ar/platforms/mac/permissions) للاطلاع على خطوات الاسترداد.
+يعطّل `SIGN_IDENTITY="-"` بيئة التشغيل المعززة (`--options runtime`) لمنع الأعطال عندما يحمّل التطبيق أُطر عمل مضمّنة (مثل Sparkle) لا تشترك في معرّف الفريق نفسه. كما تمنع التوقيعات المخصصة استمرار أذونات TCC؛ راجع [أذونات macOS](/ar/platforms/mac/permissions) للاطلاع على خطوات الاسترداد.
 
-## بيانات تعريف البناء للوحة «حول»
+## بيانات البناء الوصفية لعلامة تبويب «حول»
 
-يختم `package-mac-app.sh` الحزمة باستخدام:
+تقرأ علامة تبويب «حول» الحقلين `OpenClawBuildTimestamp` و`OpenClawGitCommit` من Info.plist لعرض الإصدار وتاريخ البناء والتزام git وما إذا كان البناء من نوع DEBUG (عبر `#if DEBUG`). أعد تشغيل المُحزِّم بعد تغييرات الشيفرة لتحديث هذه القيم.
 
-- `OpenClawBuildTimestamp`: UTC بصيغة ISO8601 وقت التحزيم
-- `OpenClawGitCommit`: تجزئة git قصيرة (أو `unknown` إذا لم تكن متاحة)
-
-يقرأ تبويب «حول» هذه المفاتيح لإظهار الإصدار، وتاريخ البناء، والتزام git، وما إذا كان بناء تصحيح (عبر `#if DEBUG`). شغّل أداة التحزيم لتحديث هذه القيم بعد تغييرات الكود.
-
-## السبب
-
-ترتبط أذونات TCC بمعرّف الحزمة _و_ توقيع الكود. كانت بُنى التصحيح غير الموقّعة ذات UUIDs المتغيرة تتسبب في أن ينسى macOS المنح بعد كل إعادة بناء. يحافظ توقيع الملفات الثنائية (مخصصًا افتراضيًا) والإبقاء على معرّف/مسار حزمة ثابت (`dist/OpenClaw.app`) على المنح بين البُنى، بما يطابق نهج VibeTunnel.
-
-## ذات صلة
+## ذو صلة
 
 - [تطبيق macOS](/ar/platforms/macos)
 - [أذونات macOS](/ar/platforms/mac/permissions)

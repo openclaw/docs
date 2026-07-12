@@ -1,31 +1,31 @@
 ---
 read_when:
-    - OpenClaw ile DeepSeek kullanmak istiyorsunuz
-    - API anahtarı ortam değişkeni veya CLI kimlik doğrulama seçimi gerekir
+    - DeepSeek'i OpenClaw ile kullanmak istiyorsunuz
+    - API anahtarı ortam değişkenine veya CLI kimlik doğrulama seçeneğine ihtiyacınız var
 summary: DeepSeek kurulumu (kimlik doğrulama + model seçimi)
 title: DeepSeek
 x-i18n:
-    generated_at: "2026-06-28T01:09:46Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:39:18Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 0446f78e1cb6412034ca18b0db49f2f3a1958e91a013661b3056bf3687fc2d09
+    source_hash: 77e074756d593205d7d05f499da93b9bd3c63acdce7092b42fb5562023577925
     source_path: providers/deepseek.md
     workflow: 16
 ---
 
-[DeepSeek](https://www.deepseek.com), OpenAI uyumlu API ile güçlü AI modelleri sağlar.
+[DeepSeek](https://www.deepseek.com), OpenAI uyumlu bir API ile güçlü yapay zekâ modelleri sunar.
 
-| Özellik | Değer                      |
-| -------- | -------------------------- |
-| Sağlayıcı | `deepseek`                 |
-| Kimlik Doğrulama | `DEEPSEEK_API_KEY`         |
-| API      | OpenAI uyumlu          |
-| Temel URL | `https://api.deepseek.com` |
+| Özellik         | Değer                      |
+| --------------- | -------------------------- |
+| Sağlayıcı       | `deepseek`                 |
+| Kimlik doğrulama | `DEEPSEEK_API_KEY`         |
+| API             | OpenAI uyumlu              |
+| Temel URL       | `https://api.deepseek.com` |
 
-## Plugin yükleme
+## Plugin'i yükleme
 
-Resmi Plugin'i yükleyin, ardından Gateway'i yeniden başlatın:
+Resmî Plugin'i yükleyin, ardından Gateway'i yeniden başlatın:
 
 ```bash
 openclaw plugins install @openclaw/deepseek-provider
@@ -38,12 +38,12 @@ openclaw gateway restart
   <Step title="API anahtarınızı alın">
     [platform.deepseek.com](https://platform.deepseek.com/api_keys) adresinde bir API anahtarı oluşturun.
   </Step>
-  <Step title="Onboarding'i çalıştırın">
+  <Step title="İlk kurulumu çalıştırın">
     ```bash
     openclaw onboard --auth-choice deepseek-api-key
     ```
 
-    Bu, API anahtarınızı ister ve varsayılan model olarak `deepseek/deepseek-v4-flash` ayarlar.
+    API anahtarınızı ister ve `deepseek/deepseek-v4-flash` modelini varsayılan model olarak ayarlar.
 
   </Step>
   <Step title="Modellerin kullanılabilir olduğunu doğrulayın">
@@ -51,8 +51,7 @@ openclaw gateway restart
     openclaw models list --provider deepseek
     ```
 
-    Çalışan bir Gateway gerektirmeden Plugin'in statik kataloğunu incelemek için
-    şunu kullanın:
+    Çalışan bir Gateway olmadan Plugin'in statik kataloğunu incelemek için:
 
     ```bash
     openclaw models list --all --provider deepseek
@@ -63,7 +62,7 @@ openclaw gateway restart
 
 <AccordionGroup>
   <Accordion title="Etkileşimsiz kurulum">
-    Betiklenmiş veya başsız kurulumlar için tüm bayrakları doğrudan geçirin:
+    Betikli veya başsız kurulumlarda tüm bayrakları doğrudan iletin:
 
     ```bash
     openclaw onboard --non-interactive \
@@ -78,56 +77,65 @@ openclaw gateway restart
 </AccordionGroup>
 
 <Warning>
-Gateway bir daemon (launchd/systemd) olarak çalışıyorsa `DEEPSEEK_API_KEY`
-değerinin bu süreç tarafından kullanılabildiğinden emin olun (örneğin, `~/.openclaw/.env` içinde veya
-`env.shellEnv` aracılığıyla).
+Gateway bir arka plan hizmeti (launchd/systemd) olarak çalışıyorsa `DEEPSEEK_API_KEY`
+değişkeninin bu işlem tarafından kullanılabildiğinden emin olun (örneğin,
+`~/.openclaw/.env` içinde veya `env.shellEnv` aracılığıyla).
 </Warning>
 
 ## Yerleşik katalog
 
-| Model ref                    | Ad              | Giriş | Bağlam   | Maksimum çıktı | Notlar                                      |
-| ---------------------------- | ----------------- | ----- | --------- | ---------- | ------------------------------------------ |
-| `deepseek/deepseek-v4-flash` | DeepSeek V4 Flash | metin  | 1,000,000 | 384,000    | Varsayılan model; V4 düşünme yetenekli yüzey |
-| `deepseek/deepseek-v4-pro`   | DeepSeek V4 Pro   | metin  | 1,000,000 | 384,000    | V4 düşünme yetenekli yüzey                |
-| `deepseek/deepseek-chat`     | DeepSeek Chat     | metin  | 131,072   | 8,192      | DeepSeek V3.2 düşünmesiz yüzey         |
-| `deepseek/deepseek-reasoner` | DeepSeek Reasoner | metin  | 131,072   | 65,536     | Akıl yürütme etkin V3.2 yüzeyi             |
+| Model referansı               | Ad                | Girdi | Bağlam    | Azami çıktı | Notlar                                                     |
+| ----------------------------- | ----------------- | ----- | --------- | ----------- | ---------------------------------------------------------- |
+| `deepseek/deepseek-v4-flash`  | DeepSeek V4 Flash | metin | 1,000,000 | 384,000     | Varsayılan model; V4 düşünme özellikli yüzey                |
+| `deepseek/deepseek-v4-pro`    | DeepSeek V4 Pro   | metin | 1,000,000 | 384,000     | V4 düşünme özellikli yüzey                                 |
+| `deepseek/deepseek-chat`      | DeepSeek Chat     | metin | 1,000,000 | 384,000     | Kullanımdan kaldırılan V4 Flash düşünmesiz uyumluluk adı    |
+| `deepseek/deepseek-reasoner`  | DeepSeek Reasoner | metin | 1,000,000 | 384,000     | Kullanımdan kaldırılan V4 Flash düşünme uyumluluk adı       |
+
+<Warning>
+DeepSeek, `deepseek-chat` ve `deepseek-reasoner` modellerini 24 Temmuz 2026
+saat 15:59 UTC'de kullanımdan kaldıracaktır. Bunlar şu anda sırasıyla düşünmesiz
+ve düşünme modunda DeepSeek V4 Flash'a yönlendirilir. Son tarihten önce
+yapılandırılmış model referanslarını `deepseek/deepseek-v4-flash` veya
+`deepseek/deepseek-v4-pro` olarak değiştirin.
+</Warning>
+
+OpenClaw'ın yerel maliyet tahminleri, DeepSeek'in yayımladığı önbellek isabeti,
+önbellek ıskalaması ve çıktı ücretlerini temel alır. DeepSeek bu ücretleri
+değiştirebilir; faturalandırma konusunda [Modeller ve Fiyatlandırma](https://api-docs.deepseek.com/quick_start/pricing/)
+sayfası esas kaynaktır.
 
 <Tip>
-V4 modelleri DeepSeek'in `thinking` denetimini destekler. OpenClaw ayrıca araç
-çağrılarıyla düşünme oturumlarının devam edebilmesi için takip turlarında
-DeepSeek `reasoning_content` değerini yeniden oynatır.
-DeepSeek V4 modelleriyle DeepSeek'in maksimum `reasoning_effort` değerini istemek için
-`/think xhigh` veya `/think max` kullanın.
+V4 modelleri, DeepSeek'in `thinking` denetimini destekler. OpenClaw ayrıca araç
+çağrıları içeren düşünme oturumlarının devam edebilmesi için sonraki turlarda
+DeepSeek `reasoning_content` içeriğini yeniden oynatır.
+DeepSeek'in azami `reasoning_effort` düzeyini istemek için DeepSeek V4
+modelleriyle `/think xhigh` veya `/think max` kullanın; her ikisi de `"max"`
+değerine eşlenir.
 </Tip>
 
 ## Düşünme ve araçlar
 
-DeepSeek V4 düşünme oturumlarının yeniden oynatma sözleşmesi çoğu
-OpenAI uyumlu sağlayıcıdan daha katıdır: Düşünme etkin bir tur araçları kullandıktan sonra DeepSeek,
-takip isteklerinde o turdan yeniden oynatılan assistant mesajlarının
-`reasoning_content` içermesini bekler. OpenClaw bunu DeepSeek Plugin'i içinde
-ele alır, bu nedenle normal çok turlu araç kullanımı
-`deepseek/deepseek-v4-flash` ve `deepseek/deepseek-v4-pro` ile çalışır.
+DeepSeek V4 düşünme oturumlarında, düşünmenin etkin olduğu bir turdan yeniden
+oynatılan asistan mesajlarının sonraki isteklerde `reasoning_content` içermesi
+gerekir. OpenClaw'ın DeepSeek Plugin'i bu alanı otomatik olarak tamamlar; böylece
+geçmiş başka bir OpenAI uyumlu sağlayıcıdan (yerel `reasoning_content` olmadan)
+veya düz bir asistan mesajından gelmiş olsa bile `deepseek/deepseek-v4-flash` ve
+`deepseek/deepseek-v4-pro` üzerinde normal çok turlu araç kullanımı çalışır.
+Oturumun ortasında sağlayıcı değiştirildikten sonra `/new` kullanılması gerekmez.
 
-Mevcut bir oturumu başka bir OpenAI uyumlu sağlayıcıdan bir
-DeepSeek V4 modeline geçirirseniz eski assistant araç çağrısı turlarında yerel
-DeepSeek `reasoning_content` bulunmayabilir. OpenClaw, DeepSeek V4 düşünme
-istekleri için yeniden oynatılan assistant mesajlarında eksik olan bu alanı doldurur; böylece sağlayıcı
-`/new` gerektirmeden geçmişi kabul edebilir.
+Düşünme devre dışı bırakıldığında (kullanıcı arayüzündeki **None** seçimi dâhil),
+OpenClaw `thinking: { type: "disabled" }` gönderir ve yeniden oynatılan
+`reasoning_content` içeriğini giden geçmişten kaldırarak oturumu DeepSeek'in
+düşünmesiz yolunda tutar.
 
-OpenClaw'da düşünme devre dışı bırakıldığında (UI **Yok** seçimi dahil),
-OpenClaw DeepSeek'e `thinking: { type: "disabled" }` gönderir ve giden geçmişten yeniden oynatılan
-`reasoning_content` değerini çıkarır. Bu, düşünmesi devre dışı oturumları
-düşünmesiz DeepSeek yolunda tutar.
-
-Varsayılan hızlı yol için `deepseek/deepseek-v4-flash` kullanın. Daha güçlü V4 modelini istediğinizde ve
-daha yüksek maliyet ya da gecikmeyi kabul edebildiğinizde
+Varsayılan hızlı yol için `deepseek/deepseek-v4-flash` kullanın. Daha yüksek
+maliyeti veya gecikmeyi kabul edebiliyorsanız daha güçlü model olarak
 `deepseek/deepseek-v4-pro` kullanın.
 
 ## Canlı test
 
-Doğrudan canlı model paketi, modern model kümesinde DeepSeek V4'ü içerir. Yalnızca
-DeepSeek V4 doğrudan model kontrollerini çalıştırmak için:
+Modern model canlı test paketinden yalnızca DeepSeek V4 doğrudan model
+denetimlerini çalıştırmak için:
 
 ```bash
 OPENCLAW_LIVE_PROVIDERS=deepseek \
@@ -135,8 +143,8 @@ OPENCLAW_LIVE_MODELS="deepseek/deepseek-v4-flash,deepseek/deepseek-v4-pro" \
 pnpm test:live src/agents/models.profiles.live.test.ts
 ```
 
-Bu canlı kontrol, her iki V4 modelinin de tamamlayabildiğini ve düşünme/araç
-takip turlarının DeepSeek'in gerektirdiği yeniden oynatma yükünü koruduğunu doğrular.
+Her iki V4 modelinin de tamamlandığını ve düşünme/araç sonraki turlarının
+DeepSeek'in gerektirdiği yeniden oynatma yükünü koruduğunu doğrular.
 
 ## Yapılandırma örneği
 
@@ -151,13 +159,13 @@ takip turlarının DeepSeek'in gerektirdiği yeniden oynatma yükünü koruduğu
 }
 ```
 
-## İlgili
+## İlgili içerikler
 
 <CardGroup cols={2}>
   <Card title="Model seçimi" href="/tr/concepts/model-providers" icon="layers">
-    Sağlayıcıları, model ref değerlerini ve failover davranışını seçme.
+    Sağlayıcıları, model referanslarını ve yük devretme davranışını seçme.
   </Card>
-  <Card title="Yapılandırma referansı" href="/tr/gateway/configuration-reference" icon="gear">
-    Agent'lar, modeller ve sağlayıcılar için tam yapılandırma referansı.
+  <Card title="Yapılandırma başvurusu" href="/tr/gateway/configuration-reference" icon="gear">
+    Aracılar, modeller ve sağlayıcılar için eksiksiz yapılandırma başvurusu.
   </Card>
 </CardGroup>

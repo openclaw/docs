@@ -1,11 +1,11 @@
 ---
 read_when:
-    - 调查提到缺少 __name 辅助函数的 tsx/esbuild 加载器崩溃
-summary: 历史 Node + tsx "__name is not a function" 崩溃及其原因
+    - 调查提及缺少 __name 辅助函数的 tsx/esbuild 加载器崩溃问题
+summary: 历史 Node + tsx“__name 不是函数”崩溃及其原因
 title: Node + tsx 崩溃
 x-i18n:
-    generated_at: "2026-07-05T11:16:35Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T20:31:23Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 97d2f62d24860cee65753027ba84c14c8d4ffb910ee17bb0032cf0409c427589
@@ -13,15 +13,15 @@ x-i18n:
     workflow: 16
 ---
 
-# Node + tsx “\_\_name is not a function” 崩溃
+# Node + tsx “\_\_name 不是函数”崩溃
 
 ## 状态
 
-已解决。此崩溃无法在 `package.json` 中当前固定的 `tsx` 版本（`4.22.3`）或当前 Node 版本上复现。保留在此，以防未来 `tsx`/esbuild 升级再次引入它。
+已解决。使用 `package.json` 中当前锁定的 `tsx` 版本（`4.22.3`）或当前 Node 版本时，无法复现此崩溃。保留本文档，以备将来升级 `tsx`/esbuild 后再次出现此问题。
 
 ## 原始症状
 
-通过 `tsx` 运行 OpenClaw 开发脚本时，启动阶段失败并显示：
+通过 `tsx` 运行 OpenClaw 开发脚本时，启动失败并显示：
 
 ```text
 [openclaw] Failed to start CLI: TypeError: __name is not a function
@@ -29,13 +29,13 @@ x-i18n:
     at <caller> (src/agents/auth-profiles/constants.ts)
 ```
 
-行号已省略；自原始崩溃以来，这两个文件都已更改，具体行号不再匹配。
+此处省略了行号；自最初发生崩溃以来，这两个文件都已发生变化，具体行号已不再对应。
 
-这出现在开发脚本从 Bun 切换到 `tsx`（`2871657e`，2026-01-06）以使 Bun 变为可选之后。等效的基于 Bun 的路径没有崩溃。它最初是在 macOS 上的 Node v25.3.0 中观察到的；其他运行 Node 25 的平台也被认为可能会受影响。
+为了让 Bun 成为可选依赖，开发脚本从 Bun 切换到 `tsx`（`2871657e`，2026-01-06）后出现了此问题。使用 Bun 的等效路径不会崩溃。此问题最初在 macOS 上的 Node v25.3.0 中观察到；当时认为运行 Node 25 的其他平台也可能受到影响。
 
 ## 原因
 
-`tsx` 通过 esbuild 转换 TS/ESM，并在其转换选项中硬编码 `keepNames: true`。该设置会让 esbuild 将命名函数/类声明包装到对 `__name` 辅助函数的调用中，从而让 `fn.name` 在压缩和打包后仍然保留。此崩溃意味着在受影响的 `tsx`/Node 组合中，该模块调用点处辅助函数缺失或被遮蔽，因此 `__name(...)` 抛出异常，而不是返回包装后的值。
+`tsx` 通过 esbuild 转换 TS/ESM，并在其转换选项中硬编码了 `keepNames: true`。此设置会让 esbuild 将具名函数/类声明包装在对 `__name` 辅助函数的调用中，以便 `fn.name` 在代码压缩和打包后仍然保留。此崩溃意味着，在受影响的 `tsx`/Node 组合中，该模块调用位置的辅助函数缺失或被遮蔽，因此 `__name(...)` 抛出异常，而不是返回包装后的值。
 
 ## 当前复现检查
 
@@ -45,17 +45,17 @@ pnpm install
 node --import tsx src/entry.ts status
 ```
 
-最小隔离复现（仅加载原始堆栈跟踪中的模块）：
+最小化独立复现（仅加载原始堆栈跟踪中的模块）：
 
 ```bash
 node --import tsx scripts/repro/tsx-name-repro.ts
 ```
 
-这两个命令当前都能正常退出。如果任一命令再次抛出 `__name is not a function`，请在提交到上游前捕获准确的 Node 版本、`tsx` 版本（`node_modules/tsx/package.json`）以及完整堆栈跟踪。
+这两个命令目前都能正常退出。如果其中任一命令再次抛出 `__name is not a function`，请在向上游提交问题前，记录确切的 Node 版本、`tsx` 版本（`node_modules/tsx/package.json`）以及完整的堆栈跟踪。
 
-## 变通方法（如果崩溃再次出现）
+## 临时解决方法（如果崩溃再次出现）
 
-- 使用 Bun 运行开发脚本，而不是 `node --import tsx`。
+- 使用 Bun 运行开发脚本，而不是使用 `node --import tsx`。
 - 运行 `pnpm tsgo` 进行类型检查，然后运行构建后的输出，而不是通过 `tsx` 运行源代码：
 
   ```bash
@@ -63,10 +63,10 @@ node --import tsx scripts/repro/tsx-name-repro.ts
   node openclaw.mjs status
   ```
 
-- 尝试不同的 `tsx` 版本（`pnpm add -D tsx@<version>` 属于依赖变更，根据仓库策略需要批准），以二分判断它捆绑的 esbuild 版本是否重新引入了该 bug。
-- 在不同的 Node 主版本/次版本上测试，以确认该失败是否特定于某个版本。
+- 尝试其他 `tsx` 版本（`pnpm add -D tsx@<version>` 属于依赖项变更，根据仓库策略需要获得批准），以通过二分排查其内置的 esbuild 版本是否重新引入了此错误。
+- 在不同的 Node 主版本/次版本上进行测试，以确认该故障是否仅发生于特定版本。
 
-## 参考
+## 参考资料
 
 - [https://esbuild.github.io/api/#keep-names](https://esbuild.github.io/api/#keep-names)
 - [https://github.com/evanw/esbuild/issues/1031](https://github.com/evanw/esbuild/issues/1031)

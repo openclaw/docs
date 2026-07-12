@@ -1,11 +1,11 @@
 ---
 read_when:
-    - fireworks Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
+    - Fireworks Pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
 summary: OpenClaw'a Fireworks model sağlayıcısı desteği ekler.
-title: Fireworks Plugin
+title: Fireworks Plugin'i
 x-i18n:
-    generated_at: "2026-06-28T00:59:52Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:33:05Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 1750e345f485fa7d8735a16278422188ad761b0c682cd5f09227f4407d502203
@@ -13,7 +13,7 @@ x-i18n:
     workflow: 16
 ---
 
-# Fireworks Plugin
+# Fireworks Plugin'i
 
 OpenClaw'a Fireworks model sağlayıcısı desteği ekler.
 
@@ -22,9 +22,9 @@ OpenClaw'a Fireworks model sağlayıcısı desteği ekler.
 - Paket: `@openclaw/fireworks-provider`
 - Kurulum yolu: npm; ClawHub: `clawhub:@openclaw/fireworks-provider`
 
-## Yüzey
+## Arayüz
 
-providers: fireworks
+sağlayıcılar: fireworks
 
 ## İlgili belgeler
 

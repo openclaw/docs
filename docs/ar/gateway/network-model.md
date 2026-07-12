@@ -1,22 +1,22 @@
 ---
 read_when:
-    - تريد نظرة موجزة على نموذج الشبكات في Gateway
+    - تريد عرضًا موجزًا لنموذج شبكة Gateway
 redirect: /network#core-model
 summary: إعادة التوجيه إلى /network#core-model
 title: نموذج الشبكة
 x-i18n:
-    generated_at: "2026-05-06T07:55:00Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T05:57:37Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: a0ef2806cfb539157d827fe9c2ffddc914aa680e3ef318c211b2ec1f374cfed2
     source_path: gateway/network-model.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-دُمج هذا المحتوى في [الشبكة — النموذج الأساسي](/ar/network#core-model).
+تم دمج هذا المحتوى في [الشبكة — النموذج الأساسي](/ar/network#core-model).
 
-## ذات صلة
+## ذو صلة
 
 - [الوصول عن بُعد](/ar/gateway/remote)
 - [مصادقة الوكيل الموثوق](/ar/gateway/trusted-proxy-auth)

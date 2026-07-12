@@ -1,70 +1,71 @@
 ---
 read_when:
     - Anda ingin akses cepat ke halaman dokumentasi utama
-summary: Tautan terkurasi ke dokumentasi OpenClaw yang paling sering digunakan.
+summary: Tautan pilihan ke dokumentasi OpenClaw yang paling sering digunakan.
 title: Direktori dokumentasi
 x-i18n:
-    generated_at: "2026-06-27T18:13:45Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:43:07Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f7d45effe4df50fb544e9f6fd2fcd87f4ed674eba0042eace757dbfcad93d07a
+    source_hash: 48859dc0b31139f1f5acaa403e506cd6d9767ee32e502a4ef74340dbbc21918f
     source_path: start/docs-directory.md
     workflow: 16
 ---
 
 <Note>
-Halaman ini adalah indeks terkurasi. Jika Anda baru mulai, mulai dengan [Memulai](/id/start/getting-started).
-Untuk peta dokumentasi yang lengkap, lihat [Hub dokumentasi](/id/start/hubs).
+Halaman ini adalah indeks terkurasi. Jika Anda pengguna baru, mulailah dengan [Memulai](/id/start/getting-started).
+Untuk peta dokumentasi yang lengkap, lihat [Pusat dokumentasi](/id/start/hubs).
 </Note>
 
 ## Mulai di sini
 
-- [Hub dokumentasi (semua halaman ditautkan)](/id/start/hubs)
+- [Pusat dokumentasi (semua halaman tertaut)](/id/start/hubs)
 - [Bantuan](/id/help)
 - [Konfigurasi](/id/gateway/configuration)
 - [Contoh konfigurasi](/id/gateway/configuration-examples)
-- [Perintah slash](/id/tools/slash-commands)
-- [Perutean multi-agen](/id/concepts/multi-agent)
-- [Pembaruan dan rollback](/id/install/updating)
-- [Penyandingan (DM dan node)](/id/channels/pairing)
+- [Perintah garis miring](/id/tools/slash-commands)
+- [Perutean multiagen](/id/concepts/multi-agent)
+- [Pembaruan dan pemulihan versi](/id/install/updating)
+- [Pemasangan (DM dan Node)](/id/channels/pairing)
 - [Mode Nix](/id/install/nix)
 - [Penyiapan asisten OpenClaw](/id/start/openclaw)
 - [Skills](/id/tools/skills)
 - [Konfigurasi Skills](/id/tools/skills-config)
 - [Templat ruang kerja](/id/reference/templates/AGENTS)
 - [Adaptor RPC](/id/reference/rpc)
-- [Runbook Gateway](/id/gateway)
+- [Panduan operasional Gateway](/id/gateway)
 - [Node (iOS dan Android)](/id/nodes)
-- [Permukaan web (UI Kontrol)](/id/web)
-- [Penemuan dan transport](/id/gateway/discovery)
+- [Antarmuka web (UI Kontrol)](/id/web)
+- [Penemuan dan transportasi](/id/gateway/discovery)
 - [Akses jarak jauh](/id/gateway/remote)
 
-## Penyedia dan UX
+## Kanal dan pengalaman pengguna
 
-- [WebChat](/id/web/webchat)
-- [UI Kontrol (browser)](/id/web/control-ui)
-- [Telegram](/id/channels/telegram)
+- [UI Kontrol (peramban)](/id/web/control-ui)
 - [Discord](/id/channels/discord)
-- [Mattermost](/id/channels/mattermost)
-- [QQ Bot](/id/channels/qqbot)
-- [iMessage](/id/channels/imessage)
 - [Grup](/id/channels/groups)
-- [Pesan grup WhatsApp](/id/channels/group-messages)
-- [Gambar media](/id/nodes/images)
+- [iMessage](/id/channels/imessage)
+- [Mattermost](/id/channels/mattermost)
 - [Audio media](/id/nodes/audio)
+- [Gambar media](/id/nodes/images)
+- [Bot QQ](/id/channels/qqbot)
+- [Telegram](/id/channels/telegram)
+- [WebChat](/id/web/webchat)
+- [Pesan grup WhatsApp](/id/channels/group-messages)
 
 ## Aplikasi pendamping
 
-- [Aplikasi macOS](/id/platforms/macos)
+- [Aplikasi Android](/id/platforms/android)
 - [Aplikasi iOS](/id/platforms/ios)
-- [Hub Windows](/id/platforms/windows)
 - [Aplikasi Linux](/id/platforms/linux)
+- [Aplikasi macOS](/id/platforms/macos)
+- [Hub Windows](/id/platforms/windows)
 
-## Operasi dan keselamatan
+## Operasi dan keamanan
 
 - [Sesi](/id/concepts/session)
-- [Pekerjaan Cron](/id/automation/cron-jobs)
+- [Tugas Cron](/id/automation/cron-jobs)
 - [Webhook](/id/automation/cron-jobs#webhooks)
 - [Hook Gmail (Pub/Sub)](/id/automation/cron-jobs#gmail-pubsub-integration)
 - [Keamanan](/id/gateway/security)
@@ -73,4 +74,4 @@ Untuk peta dokumentasi yang lengkap, lihat [Hub dokumentasi](/id/start/hubs).
 ## Terkait
 
 - [Memulai](/id/start/getting-started)
-- [Hub dokumentasi](/id/start/hubs)
+- [Pusat dokumentasi](/id/start/hubs)

@@ -1,16 +1,16 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin github-copilot
-summary: เพิ่มการรองรับผู้ให้บริการโมเดล GitHub Copilot ให้กับ OpenClaw.
+summary: เพิ่มการรองรับผู้ให้บริการโมเดล GitHub Copilot ให้กับ OpenClaw
 title: Plugin GitHub Copilot
 x-i18n:
-    generated_at: "2026-05-02T20:52:10Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:27:23Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2845e2575d30865b06f318873da6da8085f4928d059176b514c3195a29a87e36
+    source_hash: 01b8a15fe2da9848cef18e0e24b1fdb1493e8f17046a7f82f1331f29c80f0660
     source_path: plugins/reference/github-copilot.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Plugin GitHub Copilot
@@ -22,9 +22,9 @@ x-i18n:
 - แพ็กเกจ: `@openclaw/github-copilot-provider`
 - ช่องทางการติดตั้ง: รวมอยู่ใน OpenClaw
 
-## ส่วนที่เปิดให้ใช้งาน
+## ส่วนเชื่อมต่อ
 
-providers: github-copilot; contracts: memoryEmbeddingProviders
+ผู้ให้บริการ: github-copilot; สัญญา: memoryEmbeddingProviders, usageProviders
 
 ## เอกสารที่เกี่ยวข้อง
 

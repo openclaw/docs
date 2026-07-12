@@ -1,42 +1,43 @@
 ---
 read_when:
-    - Memperbarui pemetaan identifier model perangkat atau file NOTICE/lisensi
-    - Mengubah cara UI Instances menampilkan nama perangkat
-summary: Bagaimana OpenClaw memvendor identifier model perangkat Apple untuk nama yang mudah dikenali di aplikasi macOS.
-title: Database model perangkat
+    - Memperbarui pemetaan pengidentifikasi model perangkat atau berkas NOTICE/lisensi
+    - Mengubah cara UI Instans menampilkan nama perangkat
+summary: Cara OpenClaw menyertakan pengidentifikasi model perangkat Apple untuk nama yang mudah dipahami di aplikasi macOS.
+title: Basis data model perangkat
 x-i18n:
-    generated_at: "2026-04-25T13:55:57Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: f20e035f787ba7d9bb48d2a18263679d20b295e12ffb263a63c3a0ef72312d34
-    source_path: reference/device-models.md
-    workflow: 15
+    generated_at: "2026-07-12T14:38:38Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 930cd330594072d9c986b8c85c5a68e02dd096e5f0c015e3ee86b767073b93e6
+    source_path: reference/device-models.md
+    workflow: 16
 ---
 
-Aplikasi pendamping macOS menampilkan nama model perangkat Apple yang mudah dikenali di UI **Instances** dengan memetakan identifier model Apple (misalnya `iPad16,6`, `Mac16,6`) ke nama yang dapat dibaca manusia.
+UI **Instances** pada aplikasi pendamping macOS memetakan pengidentifikasi model Apple ke nama yang mudah dikenali (`iPad16,6` -> "iPad Pro 13 inci (M4)", `Mac16,6` -> "MacBook Pro (14 inci, 2024)"). `DeviceModelCatalog` juga menggunakan prefiks pengidentifikasi (dengan keluarga perangkat sebagai fallback) untuk memilih SF Symbol bagi setiap perangkat.
 
-Pemetaan tersebut divendor sebagai JSON di bawah:
+Berkas di `apps/macos/Sources/OpenClaw/Resources/DeviceModels/`:
 
-- `apps/macos/Sources/OpenClaw/Resources/DeviceModels/`
+| Berkas                                 | Tujuan                                         |
+| -------------------------------------- | ---------------------------------------------- |
+| `ios-device-identifiers.json`          | Pemetaan pengidentifikasi iOS/iPadOS -> nama   |
+| `mac-device-identifiers.json`          | Pemetaan pengidentifikasi Mac -> nama          |
+| `NOTICE.md`                            | SHA commit upstream yang disematkan             |
+| `LICENSE.apple-device-identifiers.txt` | Lisensi MIT upstream                           |
 
 ## Sumber data
 
-Saat ini kami memvendor pemetaan dari repositori berlisensi MIT:
+Disertakan dari repositori GitHub `kyle-seongwoo-jun/apple-device-identifiers` yang berlisensi MIT. Berkas JSON disematkan ke SHA commit yang dicatat dalam `NOTICE.md` agar build tetap deterministik.
 
-- `kyle-seongwoo-jun/apple-device-identifiers`
+## Memperbarui basis data
 
-Agar build tetap deterministik, file JSON dipin ke commit upstream tertentu (dicatat di `apps/macos/Sources/OpenClaw/Resources/DeviceModels/NOTICE.md`).
-
-## Memperbarui database
-
-1. Pilih commit upstream yang ingin Anda pin (satu untuk iOS, satu untuk macOS).
-2. Perbarui hash commit di `apps/macos/Sources/OpenClaw/Resources/DeviceModels/NOTICE.md`.
-3. Unduh ulang file JSON, dipin ke commit tersebut:
+1. Pilih SHA commit upstream yang akan disematkan (satu untuk iOS dan satu untuk macOS).
+2. Perbarui `apps/macos/Sources/OpenClaw/Resources/DeviceModels/NOTICE.md` dengan SHA baru.
+3. Unduh ulang berkas JSON yang disematkan ke commit tersebut:
 
 ```bash
-IOS_COMMIT="<commit sha untuk ios-device-identifiers.json>"
-MAC_COMMIT="<commit sha untuk mac-device-identifiers.json>"
+IOS_COMMIT="<commit sha for ios-device-identifiers.json>"
+MAC_COMMIT="<commit sha for mac-device-identifiers.json>"
 
 curl -fsSL "https://raw.githubusercontent.com/kyle-seongwoo-jun/apple-device-identifiers/${IOS_COMMIT}/ios-device-identifiers.json" \
   -o apps/macos/Sources/OpenClaw/Resources/DeviceModels/ios-device-identifiers.json
@@ -45,8 +46,8 @@ curl -fsSL "https://raw.githubusercontent.com/kyle-seongwoo-jun/apple-device-ide
   -o apps/macos/Sources/OpenClaw/Resources/DeviceModels/mac-device-identifiers.json
 ```
 
-4. Pastikan `apps/macos/Sources/OpenClaw/Resources/DeviceModels/LICENSE.apple-device-identifiers.txt` masih cocok dengan upstream (ganti jika lisensi upstream berubah).
-5. Verifikasi bahwa aplikasi macOS berhasil dibangun dengan bersih (tanpa peringatan):
+4. Pastikan `LICENSE.apple-device-identifiers.txt` masih sesuai dengan upstream; ganti jika lisensi upstream berubah.
+5. Verifikasi bahwa aplikasi macOS berhasil di-build tanpa masalah:
 
 ```bash
 swift build --package-path apps/macos

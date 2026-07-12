@@ -1,35 +1,42 @@
 ---
 read_when:
-    - Vuoi rimuovere il servizio gateway e/o lo stato locale
+    - Vuoi rimuovere il servizio Gateway e/o lo stato locale
     - Vuoi prima un'esecuzione di prova
-summary: Riferimento CLI per `openclaw uninstall` (rimuovi il servizio Gateway + i dati locali)
+summary: Riferimento della CLI per `openclaw uninstall` (rimuove il servizio Gateway e i dati locali)
 title: Disinstallazione
 x-i18n:
-    generated_at: "2026-06-27T17:22:50Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:58:51Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f90fa8cf513e2e8cd422c3b8a880e7fd20fb71131a3ec88260e765daa2ace543
+    source_hash: 1e2e3996cf6d5c0fd11e5054c8fe60f7f8d25047193bb13944ca170bf77b581a
     source_path: cli/uninstall.md
     workflow: 16
 ---
 
 # `openclaw uninstall`
 
-Disinstalla il servizio Gateway + i dati locali (la CLI rimane).
+Disinstalla il servizio Gateway e/o i dati locali. La CLI stessa non viene
+rimossa; disinstallala separatamente tramite npm/pnpm.
 
-Opzioni:
+## Opzioni
 
-- `--service`: rimuove il servizio Gateway
-- `--state`: rimuove stato e configurazione
-- `--workspace`: rimuove le directory di workspace
-- `--app`: rimuove l'app macOS
-- `--all`: rimuove servizio, stato, workspace e app
-- `--yes`: salta le richieste di conferma
-- `--non-interactive`: disabilita le richieste; richiede `--yes`
-- `--dry-run`: stampa le azioni senza rimuovere file
+| Flag                | Valore predefinito | Descrizione                                                   |
+| ------------------- | ------------------ | ------------------------------------------------------------- |
+| `--service`         | `false`            | Rimuove il servizio Gateway.                                  |
+| `--state`           | `false`            | Rimuove lo stato e la configurazione.                          |
+| `--workspace`       | `false`            | Rimuove le directory degli spazi di lavoro.                    |
+| `--app`             | `false`            | Rimuove l'app per macOS.                                      |
+| `--all`             | `false`            | Abbreviazione di `--service --state --workspace --app`.        |
+| `--yes`             | `false`            | Ignora le richieste di conferma.                               |
+| `--non-interactive` | `false`            | Disabilita le richieste interattive; richiede `--yes`.         |
+| `--dry-run`         | `false`            | Mostra le azioni pianificate senza rimuovere alcun file.       |
 
-Esempi:
+Se non viene specificato alcun flag di ambito, una selezione multipla interattiva
+richiede quali componenti rimuovere (per impostazione predefinita sono preselezionati
+servizio, stato e spazio di lavoro).
+
+## Esempi
 
 ```bash
 openclaw backup create
@@ -40,14 +47,14 @@ openclaw uninstall --all --yes
 openclaw uninstall --dry-run
 ```
 
-Note:
+## Note
 
-- Esegui prima `openclaw backup create` se vuoi uno snapshot ripristinabile prima di rimuovere stato o workspace.
-- `--state` preserva le directory di workspace configurate, a meno che non sia selezionato anche `--workspace`.
-- `--all` è un'abbreviazione per rimuovere insieme servizio, stato, workspace e app.
-- `--non-interactive` richiede `--yes`.
+- Esegui prima `openclaw backup create` per creare un'istantanea ripristinabile
+  prima di rimuovere lo stato o gli spazi di lavoro.
+- `--state` mantiene le directory degli spazi di lavoro configurate, a meno che
+  non venga selezionato anche `--workspace`.
 
-## Correlati
+## Contenuti correlati
 
-- [Riferimento CLI](/it/cli)
+- [Riferimento della CLI](/it/cli)
 - [Disinstallazione](/it/install/uninstall)

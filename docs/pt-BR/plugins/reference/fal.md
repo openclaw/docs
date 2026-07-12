@@ -1,11 +1,11 @@
 ---
 read_when:
     - Você está instalando, configurando ou auditando o plugin fal
-summary: Adiciona suporte ao provedor de modelo fal ao OpenClaw.
+summary: Adiciona suporte ao provedor de modelos fal no OpenClaw.
 title: Plugin fal
 x-i18n:
-    generated_at: "2026-06-27T17:53:01Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T00:12:03Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: f62d6a642a6edaa581fb23fa27dade77486c827d460f19aa23750959f5aa6f1c
@@ -15,12 +15,12 @@ x-i18n:
 
 # Plugin fal
 
-Adiciona suporte ao provedor de modelo fal ao OpenClaw.
+Adiciona ao OpenClaw suporte ao provedor de modelos fal.
 
 ## Distribuição
 
 - Pacote: `@openclaw/fal-provider`
-- Rota de instalação: incluído no OpenClaw
+- Forma de instalação: incluído no OpenClaw
 
 ## Superfície
 

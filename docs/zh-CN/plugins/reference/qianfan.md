@@ -1,11 +1,11 @@
 ---
 read_when:
     - 你正在安装、配置或审计 qianfan 插件
-summary: 为 OpenClaw 添加 Qianfan 模型提供商支持。
-title: Qianfan 插件
+summary: 为 OpenClaw 添加千帆模型提供商支持。
+title: 千帆插件
 x-i18n:
-    generated_at: "2026-06-27T02:51:10Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T20:46:43Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 49d639836cefb6c96502e614e1b5d06615fbef31a50ea186e1a02c060882019a
@@ -19,12 +19,12 @@ x-i18n:
 
 ## 分发
 
-- Package: `@openclaw/qianfan-provider`
-- 安装方式：npm；ClawHub：`clawhub:@openclaw/qianfan-provider`
+- 软件包：`@openclaw/qianfan-provider`
+- 安装途径：npm；ClawHub：`clawhub:@openclaw/qianfan-provider`
 
-## 表面
+## 接口范围
 
-providers: qianfan
+提供商：qianfan
 
 ## 相关文档
 

@@ -1,30 +1,30 @@
 ---
 read_when:
-    - تريد تشغيل OpenClaw على عنقود Kubernetes
+    - تريد تشغيل OpenClaw على مجموعة Kubernetes
     - تريد اختبار OpenClaw في بيئة Kubernetes
-summary: انشر OpenClaw Gateway إلى مجموعة Kubernetes باستخدام Kustomize
+summary: انشر OpenClaw Gateway في مجموعة Kubernetes باستخدام Kustomize
 title: Kubernetes
 x-i18n:
-    generated_at: "2026-06-28T20:44:55Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T05:59:55Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5a38c2754b4a5267e79854958a252b2e4bc9811da191d8ccf3ac597534cc8e7a
+    source_hash: c05eb0eb923fa1f515aca1f6dcb6073aba69af0bdf30233243027edfedd45a39
     source_path: install/kubernetes.md
     workflow: 16
 ---
 
-نقطة انطلاق بسيطة لتشغيل OpenClaw على Kubernetes، وليست نشرًا جاهزًا للإنتاج. تغطي الموارد الأساسية، والمقصود منها أن تُكيَّف مع بيئتك.
+نقطة بداية مبسطة لتشغيل OpenClaw على Kubernetes، وليست عملية نشر جاهزة للإنتاج. تغطي الموارد الأساسية، والمقصود تكييفها مع بيئتك.
 
-## لماذا ليس Helm؟
+## لماذا لا نستخدم Helm
 
-OpenClaw حاوية واحدة مع بعض ملفات الإعداد. التخصيص المهم يكون في محتوى الوكلاء (ملفات Markdown وSkills وتجاوزات الإعداد)، وليس في قوالب البنية التحتية. يتعامل Kustomize مع الطبقات دون عبء مخطط Helm. إذا أصبح النشر لديك أكثر تعقيدًا، يمكن وضع مخطط Helm فوق هذه البيانات التعريفية.
+OpenClaw عبارة عن حاوية واحدة مع بعض ملفات الإعداد. يكمن التخصيص المهم في محتوى الوكيل (ملفات Markdown وSkills وتجاوزات الإعداد)، وليس في قوالب البنية التحتية. يدير Kustomize التراكبات دون الأعباء الإضافية لمخطط Helm. أضف مخطط Helm فوق هذه البيانات التعريفية إذا أصبحت عملية النشر لديك أكثر تعقيدًا.
 
-## ما تحتاجه
+## ما تحتاج إليه
 
-- عنقود Kubernetes قيد التشغيل (AKS أو EKS أو GKE أو k3s أو kind أو OpenShift، وغير ذلك)
-- `kubectl` متصل بعنقودك
-- مفتاح API لمزود نماذج واحد على الأقل
+- مجموعة Kubernetes قيد التشغيل (AKS أو EKS أو GKE أو k3s أو kind أو OpenShift، وما إلى ذلك)
+- أداة `kubectl` متصلة بمجموعتك
+- مفتاح API لموفر نموذج واحد على الأقل
 
 ## البدء السريع
 
@@ -37,31 +37,30 @@ kubectl port-forward svc/openclaw 18789:18789 -n openclaw
 open http://localhost:18789
 ```
 
-استرد السر المشترك المكوَّن لواجهة التحكم. ينشئ هذا النص البرمجي للنشر
-مصادقة رمزية افتراضيًا:
+ينشئ `deploy.sh` مصادقة بالرمز المميز افتراضيًا. استرجع رمز Gateway المميز المُنشأ لواجهة التحكم:
 
 ```bash
 kubectl get secret openclaw-secrets -n openclaw -o jsonpath='{.data.OPENCLAW_GATEWAY_TOKEN}' | base64 -d
 ```
 
-للتنقيح المحلي، يطبع `./scripts/k8s/deploy.sh --show-token` الرمز بعد النشر.
+لأغراض تصحيح الأخطاء محليًا، يطبع `./scripts/k8s/deploy.sh --show-token` الرمز المميز بعد النشر.
 
 ## الاختبار المحلي باستخدام Kind
 
-إذا لم يكن لديك عنقود، فأنشئ واحدًا محليًا باستخدام [Kind](https://kind.sigs.k8s.io/):
+إذا لم تكن لديك مجموعة، فأنشئ واحدة محليًا باستخدام [Kind](https://kind.sigs.k8s.io/):
 
 ```bash
 ./scripts/k8s/create-kind.sh           # auto-detects docker or podman
 ./scripts/k8s/create-kind.sh --delete  # tear down
 ```
 
-ثم انشر كالمعتاد باستخدام `./scripts/k8s/deploy.sh`.
+ثم نفّذ النشر كالمعتاد باستخدام `./scripts/k8s/deploy.sh`.
 
 ## خطوة بخطوة
 
 ### 1) النشر
 
-**الخيار أ** — مفتاح API في البيئة (خطوة واحدة):
+**الخيار أ: مفتاح API في البيئة (خطوة واحدة)**
 
 ```bash
 # Replace with your provider: ANTHROPIC, GEMINI, OPENAI, or OPENROUTER
@@ -69,9 +68,9 @@ export <PROVIDER>_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-ينشئ النص البرمجي Kubernetes Secret يحتوي على مفتاح API ورمز Gateway مولَّد تلقائيًا، ثم ينشر. إذا كان Secret موجودًا بالفعل، فإنه يحافظ على رمز Gateway الحالي وأي مفاتيح مزودين لا يجري تغييرها.
+ينشئ السكربت Kubernetes Secret يحتوي على مفتاح API ورمز Gateway مميز مُنشأ تلقائيًا، ثم ينفّذ النشر. إذا كان Secret موجودًا بالفعل، فإنه يحتفظ برمز Gateway المميز الحالي وأي مفاتيح لموفري النماذج لا يجري تغييرها.
 
-**الخيار ب** — إنشاء السر بشكل منفصل:
+**الخيار ب: إنشاء السر بشكل منفصل**
 
 ```bash
 export <PROVIDER>_API_KEY="..."
@@ -79,7 +78,7 @@ export <PROVIDER>_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-استخدم `--show-token` مع أي من الأمرين إذا أردت طباعة الرمز إلى stdout للاختبار المحلي.
+أضف `--show-token` إلى أي من الأمرين لطباعة الرمز المميز إلى stdout للاختبار المحلي.
 
 ### 2) الوصول إلى Gateway
 
@@ -88,9 +87,9 @@ kubectl port-forward svc/openclaw 18789:18789 -n openclaw
 open http://localhost:18789
 ```
 
-## ما الذي يُنشر
+## ما يتم نشره
 
-```
+```text
 Namespace: openclaw (configurable via OPENCLAW_NAMESPACE)
 ├── Deployment/openclaw        # Single pod, init container + gateway
 ├── Service/openclaw           # ClusterIP on port 18789
@@ -103,7 +102,7 @@ Namespace: openclaw (configurable via OPENCLAW_NAMESPACE)
 
 ### تعليمات الوكيل
 
-حرر `AGENTS.md` في `scripts/k8s/manifests/configmap.yaml` ثم أعد النشر:
+عدّل ملف `AGENTS.md` في `scripts/k8s/manifests/configmap.yaml` وأعد النشر:
 
 ```bash
 ./scripts/k8s/deploy.sh
@@ -111,11 +110,11 @@ Namespace: openclaw (configurable via OPENCLAW_NAMESPACE)
 
 ### إعداد Gateway
 
-حرر `openclaw.json` في `scripts/k8s/manifests/configmap.yaml`. راجع [إعداد Gateway](/ar/gateway/configuration) للمرجع الكامل.
+عدّل `openclaw.json` في `scripts/k8s/manifests/configmap.yaml`. راجع [إعداد Gateway](/ar/gateway/configuration) للاطلاع على المرجع الكامل.
 
-### إضافة مزودين
+### إضافة موفري نماذج
 
-أعد التشغيل مع تصدير مفاتيح إضافية:
+أعد التشغيل بعد تصدير مفاتيح إضافية:
 
 ```bash
 export ANTHROPIC_API_KEY="..."
@@ -124,9 +123,9 @@ export OPENAI_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-تبقى مفاتيح المزودين الحالية في Secret ما لم تستبدلها.
+تبقى مفاتيح موفري النماذج الحالية في Secret ما لم تستبدلها.
 
-أو حدّث Secret مباشرة:
+أو حدّث Secret مباشرةً:
 
 ```bash
 kubectl patch secret openclaw-secrets -n openclaw \
@@ -142,21 +141,21 @@ OPENCLAW_NAMESPACE=my-namespace ./scripts/k8s/deploy.sh
 
 ### صورة مخصصة
 
-حرر حقل `image` في `scripts/k8s/manifests/deployment.yaml`:
+عدّل حقل `image` في `scripts/k8s/manifests/deployment.yaml`:
 
 ```yaml
-image: ghcr.io/openclaw/openclaw:latest # primary; official Docker Hub mirror: openclaw/openclaw:latest
+image: ghcr.io/openclaw/openclaw:slim # primary; official Docker Hub mirror: openclaw/openclaw
 ```
 
-### الإتاحة إلى ما بعد port-forward
+### الإتاحة خارج إعادة توجيه المنفذ
 
-تربط البيانات التعريفية الافتراضية Gateway بعنوان loopback داخل الحجرة. يعمل ذلك مع `kubectl port-forward`، لكنه لا يعمل مع Kubernetes `Service` أو مسار Ingress يحتاج إلى الوصول إلى عنوان IP الخاص بالحجرة.
+تربط البيانات التعريفية الافتراضية Gateway بعنوان local loopback داخل الحاوية. يعمل ذلك مع `kubectl port-forward`، لكنه لا يعمل مع Kubernetes `Service` أو مسار Ingress يحتاج إلى الوصول إلى عنوان IP الخاص بالحاوية مباشرةً.
 
-إذا أردت إتاحة Gateway عبر Ingress أو موازن تحميل:
+لإتاحة Gateway عبر Ingress أو موازن تحميل:
 
-- غيّر ربط Gateway في `scripts/k8s/manifests/configmap.yaml` من `loopback` إلى ربط غير loopback يطابق نموذج النشر لديك
-- أبقِ مصادقة Gateway مفعّلة واستخدم نقطة دخول مناسبة تنهي TLS
-- اضبط واجهة التحكم للوصول البعيد باستخدام نموذج أمان الويب المدعوم (مثل HTTPS/Tailscale Serve والأصول المسموح بها صراحة عند الحاجة)
+- غيّر ربط Gateway في `scripts/k8s/manifests/configmap.yaml` من `loopback` إلى ربط لا يستخدم local loopback ويتوافق مع نموذج النشر لديك.
+- أبقِ مصادقة Gateway مفعّلة واستخدم نقطة دخول مناسبة تنهي اتصال TLS.
+- اضبط واجهة التحكم للوصول عن بُعد باستخدام نموذج أمان الويب المدعوم (مثل HTTPS/Tailscale Serve وتحديد الأصول المسموح بها صراحةً عند الحاجة).
 
 ## إعادة النشر
 
@@ -164,7 +163,7 @@ image: ghcr.io/openclaw/openclaw:latest # primary; official Docker Hub mirror: o
 ./scripts/k8s/deploy.sh
 ```
 
-يطبق هذا كل البيانات التعريفية ويعيد تشغيل الحجرة لالتقاط أي تغييرات في الإعداد أو الأسرار.
+يطبّق هذا جميع البيانات التعريفية ويعيد تشغيل الحاوية لالتقاط أي تغييرات في الإعدادات أو الأسرار.
 
 ## الإزالة
 
@@ -172,20 +171,20 @@ image: ghcr.io/openclaw/openclaw:latest # primary; official Docker Hub mirror: o
 ./scripts/k8s/deploy.sh --delete
 ```
 
-يحذف هذا مساحة الأسماء وكل الموارد الموجودة فيها، بما في ذلك PVC.
+يحذف هذا مساحة الأسماء وجميع الموارد الموجودة فيها، بما في ذلك PVC.
 
 ## ملاحظات معمارية
 
-- يرتبط Gateway بعنوان loopback داخل الحجرة افتراضيًا، لذلك فإن الإعداد المضمّن مخصص لـ `kubectl port-forward`
-- لا توجد موارد على مستوى العنقود؛ كل شيء موجود في مساحة أسماء واحدة
-- الأمان: إمكانات `readOnlyRootFilesystem` و`drop: ALL` ومستخدم غير root (UID 1000)
-- يحافظ الإعداد الافتراضي على واجهة التحكم في مسار الوصول المحلي الأكثر أمانًا: ربط loopback بالإضافة إلى `kubectl port-forward` إلى `http://127.0.0.1:18789`
-- إذا تجاوزت الوصول عبر localhost، فاستخدم النموذج البعيد المدعوم: HTTPS/Tailscale مع ربط Gateway المناسب وإعدادات أصل واجهة التحكم
-- تُنشأ الأسرار في دليل مؤقت وتُطبق مباشرة على العنقود؛ لا تُكتب أي مواد سرية إلى نسخة المستودع المحلية
+- يرتبط Gateway بعنوان local loopback داخل الحاوية افتراضيًا، لذا فإن الإعداد المضمّن مخصص لاستخدام `kubectl port-forward`.
+- لا توجد موارد على نطاق المجموعة؛ يوجد كل شيء ضمن مساحة أسماء واحدة.
+- تعزيز الأمان: `readOnlyRootFilesystem`، وإمكانات `drop: ALL`، ومستخدم غير جذر (UID 1000).
+- يحافظ الإعداد الافتراضي على واجهة التحكم ضمن مسار الوصول المحلي الأكثر أمانًا: ربط local loopback مع `kubectl port-forward` إلى `http://127.0.0.1:18789`.
+- إذا انتقلت إلى الوصول من خارج المضيف المحلي، فاستخدم النموذج البعيد المدعوم: HTTPS/Tailscale مع ربط Gateway المناسب وإعدادات أصل واجهة التحكم.
+- تُنشأ الأسرار في دليل مؤقت وتُطبّق مباشرةً على المجموعة؛ ولا تُكتب أي مواد سرية في نسخة المستودع المحلية.
 
 ## بنية الملفات
 
-```
+```text
 scripts/k8s/
 ├── deploy.sh                   # Creates namespace + secret, deploys via kustomize
 ├── create-kind.sh              # Local Kind cluster (auto-detects docker/podman)
@@ -200,5 +199,5 @@ scripts/k8s/
 ## ذو صلة
 
 - [Docker](/ar/install/docker)
-- [وقت تشغيل Docker VM](/ar/install/docker-vm-runtime)
+- [بيئة تشغيل Docker VM](/ar/install/docker-vm-runtime)
 - [نظرة عامة على التثبيت](/ar/install)

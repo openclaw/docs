@@ -2,102 +2,102 @@
 read_when:
     - Menyiapkan OpenClaw di Hostinger
     - Mencari VPS terkelola untuk OpenClaw
-    - Menggunakan OpenClaw 1-Click Hostinger
-summary: Host OpenClaw di Hostinger
+    - Menggunakan OpenClaw 1-Klik Hostinger
+summary: Hosting OpenClaw di Hostinger
 title: Hostinger
 x-i18n:
-    generated_at: "2026-04-24T09:14:01Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: d9d221f54d6cd1697a48615c09616ad86968937941899ea7018622302e6ceb53
-    source_path: install/hostinger.md
-    workflow: 15
+    generated_at: "2026-07-12T14:17:18Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 7dc49e741f8581928553e2426ed91f92df6e7b0c31dd8780c0d6e891a07be263
+    source_path: install/hostinger.md
+    workflow: 16
 ---
 
-Jalankan Gateway OpenClaw persisten di [Hostinger](https://www.hostinger.com/openclaw) melalui deployment terkelola **1-Click** atau pemasangan **VPS**.
+Jalankan Gateway OpenClaw persisten di [Hostinger](https://www.hostinger.com/openclaw), baik sebagai penerapan terkelola **1-Click** maupun sebagai instalasi **VPS** yang Anda kelola sendiri.
 
 ## Prasyarat
 
 - Akun Hostinger ([daftar](https://www.hostinger.com/openclaw))
-- Sekitar 5-10 menit
+- Sekitar 5–10 menit
 
 ## Opsi A: OpenClaw 1-Click
 
-Cara tercepat untuk memulai. Hostinger menangani infrastruktur, Docker, dan pembaruan otomatis.
+Hostinger menangani infrastruktur, Docker, dan pembaruan otomatis. Cara tercepat untuk mendapatkan instans yang berjalan.
 
 <Steps>
   <Step title="Beli dan luncurkan">
-    1. Dari [halaman OpenClaw Hostinger](https://www.hostinger.com/openclaw), pilih paket Managed OpenClaw dan selesaikan checkout.
+    1. Dari [halaman OpenClaw Hostinger](https://www.hostinger.com/openclaw), pilih paket OpenClaw Terkelola dan selesaikan pembayaran.
 
     <Note>
-    Selama checkout Anda dapat memilih kredit **Ready-to-Use AI** yang dibeli di muka dan langsung terintegrasi di dalam OpenClaw -- tidak perlu akun eksternal atau API key dari provider lain. Anda bisa langsung mulai chat. Alternatifnya, berikan kunci Anda sendiri dari Anthropic, OpenAI, Google Gemini, atau xAI selama penyiapan.
+    Saat pembayaran, Anda dapat memilih kredit **Ready-to-Use AI** yang dibeli di muka dan langsung terintegrasi di dalam OpenClaw—tanpa memerlukan akun eksternal atau kunci API dari penyedia lain. Anda dapat langsung mulai mengobrol. Sebagai alternatif, masukkan kunci Anda sendiri dari Anthropic, OpenAI, Google Gemini, atau xAI saat penyiapan.
     </Note>
 
   </Step>
 
-  <Step title="Pilih channel pesan">
-    Pilih satu atau lebih channel yang akan dihubungkan:
+  <Step title="Pilih saluran perpesanan">
+    Pilih satu atau beberapa saluran untuk dihubungkan:
 
-    - **WhatsApp** -- pindai kode QR yang ditampilkan di wizard penyiapan.
-    - **Telegram** -- tempel token bot dari [BotFather](https://t.me/BotFather).
+    - **WhatsApp**—pindai kode QR yang ditampilkan dalam wizard penyiapan.
+    - **Telegram**—tempel token bot dari [BotFather](https://t.me/BotFather).
 
   </Step>
 
   <Step title="Selesaikan instalasi">
-    Klik **Finish** untuk men-deploy instans. Setelah siap, akses dashboard OpenClaw dari **OpenClaw Overview** di hPanel.
+    Klik **Finish** untuk menerapkan instans. Setelah siap, akses dasbor OpenClaw dari **OpenClaw Overview** di hPanel.
   </Step>
 
 </Steps>
 
 ## Opsi B: OpenClaw di VPS
 
-Kontrol lebih besar atas server Anda. Hostinger men-deploy OpenClaw melalui Docker di VPS Anda dan Anda mengelolanya melalui **Docker Manager** di hPanel.
+Memberikan kontrol lebih besar atas server. Hostinger menerapkan OpenClaw melalui Docker di VPS Anda; Anda mengelolanya melalui **Docker Manager** di hPanel.
 
 <Steps>
   <Step title="Beli VPS">
-    1. Dari [halaman OpenClaw Hostinger](https://www.hostinger.com/openclaw), pilih paket OpenClaw on VPS dan selesaikan checkout.
+    1. Dari [halaman OpenClaw Hostinger](https://www.hostinger.com/openclaw), pilih paket OpenClaw di VPS dan selesaikan pembayaran.
 
     <Note>
-    Anda dapat memilih kredit **Ready-to-Use AI** selama checkout -- kredit ini dibeli di muka dan langsung terintegrasi di dalam OpenClaw, sehingga Anda dapat mulai chat tanpa akun eksternal atau API key dari provider lain.
+    Anda dapat memilih kredit **Ready-to-Use AI** saat pembayaran—kredit ini dibeli di muka dan langsung terintegrasi di dalam OpenClaw, sehingga Anda dapat mulai mengobrol tanpa akun eksternal atau kunci API dari penyedia lain.
     </Note>
 
   </Step>
 
   <Step title="Konfigurasikan OpenClaw">
-    Setelah VPS diprovisikan, isi bidang konfigurasi:
+    Setelah VPS disediakan, isi kolom konfigurasi:
 
-    - **Gateway token** -- dibuat otomatis; simpan untuk digunakan nanti.
-    - **Nomor WhatsApp** -- nomor Anda dengan kode negara (opsional).
-    - **Token bot Telegram** -- dari [BotFather](https://t.me/BotFather) (opsional).
-    - **API key** -- hanya diperlukan jika Anda tidak memilih kredit Ready-to-Use AI selama checkout.
+    - **Token Gateway**—dibuat secara otomatis; simpan untuk digunakan nanti.
+    - **Nomor WhatsApp**—nomor Anda beserta kode negara (opsional).
+    - **Token bot Telegram**—dari [BotFather](https://t.me/BotFather) (opsional).
+    - **Kunci API**—hanya diperlukan jika Anda tidak memilih kredit Ready-to-Use AI saat pembayaran.
 
   </Step>
 
   <Step title="Mulai OpenClaw">
-    Klik **Deploy**. Setelah berjalan, buka dashboard OpenClaw dari hPanel dengan mengklik **Open**.
+    Klik **Deploy**. Setelah berjalan, buka dasbor OpenClaw dari hPanel dengan mengeklik **Open**.
   </Step>
 
 </Steps>
 
-Log, restart, dan pembaruan dikelola langsung dari antarmuka Docker Manager di hPanel. Untuk memperbarui, tekan **Update** di Docker Manager dan itu akan menarik image terbaru.
+Log, mulai ulang, dan pembaruan dijalankan dari antarmuka Docker Manager di hPanel. Untuk memperbarui, tekan **Update** di Docker Manager guna mengambil image terbaru.
 
 ## Verifikasi penyiapan Anda
 
-Kirim "Hi" ke asisten Anda di channel yang Anda hubungkan. OpenClaw akan membalas dan memandu Anda melalui preferensi awal.
+Kirim "Hai" kepada asisten Anda di saluran yang telah dihubungkan. OpenClaw akan membalas dan memandu Anda mengatur preferensi awal.
 
 ## Pemecahan masalah
 
-**Dashboard tidak memuat** -- Tunggu beberapa menit sampai container selesai diprovisikan. Periksa log Docker Manager di hPanel.
+**Dasbor tidak dapat dimuat**—Tunggu beberapa menit hingga kontainer selesai disediakan, lalu periksa log Docker Manager di hPanel.
 
-**Container Docker terus restart** -- Buka log Docker Manager dan cari error konfigurasi (token hilang, API key tidak valid).
+**Kontainer Docker terus dimulai ulang**—Buka log Docker Manager dan cari kesalahan konfigurasi (token yang tidak ada, kunci API tidak valid).
 
-**Bot Telegram tidak merespons** -- Kirim pesan kode pairing Anda dari Telegram langsung sebagai pesan di dalam chat OpenClaw Anda untuk menyelesaikan koneksi.
+**Bot Telegram tidak merespons**—Jika pemasangan DM diperlukan, pengirim yang tidak dikenal akan menerima kode pemasangan singkat, bukan balasan. Setujui dari obrolan dasbor OpenClaw, atau dengan `openclaw pairing approve telegram <CODE>` jika Anda memiliki akses shell ke kontainer. Lihat [Pemasangan](/id/channels/pairing).
 
-## Langkah selanjutnya
+## Langkah berikutnya
 
-- [Channels](/id/channels) -- hubungkan Telegram, WhatsApp, Discord, dan lainnya
-- [Konfigurasi Gateway](/id/gateway/configuration) -- semua opsi config
+- [Saluran](/id/channels)—hubungkan Telegram, WhatsApp, Discord, dan lainnya
+- [Konfigurasi Gateway](/id/gateway/configuration)—semua opsi konfigurasi
 
 ## Terkait
 

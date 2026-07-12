@@ -2,34 +2,34 @@
 read_when: You want per-agent sandboxing or per-agent tool allow/deny policies in a multi-agent gateway.
 sidebarTitle: Multi-agent sandbox and tools
 status: active
-summary: Пісочниця та обмеження інструментів для кожного агента, пріоритетність і приклади
-title: Багатоагентна пісочниця та інструменти
+summary: Пісочниця для кожного агента, обмеження інструментів, пріоритети та приклади
+title: Пісочниця та інструменти для кількох агентів
 x-i18n:
-    generated_at: "2026-05-11T21:01:35Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:53:46Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8d11af55e30996a89e665b258604108a93f4c4271fbe4edfd1caf54864e40f01
+    source_hash: fada3672a0a7ce6eac2a8bffee8329afcd893d97e33d8e9842cb12079397efa6
     source_path: tools/multi-agent-sandbox-tools.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Кожен агент у багатоагентному налаштуванні може перевизначати глобальні політики пісочниці та інструментів. На цій сторінці описано конфігурацію для окремих агентів, правила пріоритету та приклади.
+Кожен агент у багатоагентній конфігурації може перевизначати глобальну політику пісочниці та інструментів. На цій сторінці описано конфігурацію для окремих агентів, правила пріоритетності та приклади.
 
 <CardGroup cols={3}>
-  <Card title="Пісочниця" href="/uk/gateway/sandboxing">
-    Бекенди та режими — повна довідка з пісочниці.
+  <Card title="Sandboxing" href="/uk/gateway/sandboxing">
+    Бекенди та режими — повний довідник із пісочниці.
   </Card>
-  <Card title="Пісочниця, політика інструментів і підвищений режим" href="/uk/gateway/sandbox-vs-tool-policy-vs-elevated">
-    Налагодження: «чому це заблоковано?»
+  <Card title="Sandbox vs tool policy vs elevated" href="/uk/gateway/sandbox-vs-tool-policy-vs-elevated">
+    Налагодження проблеми «чому це заблоковано?»
   </Card>
-  <Card title="Підвищений режим" href="/uk/tools/elevated">
-    Підвищений exec для довірених відправників.
+  <Card title="Elevated mode" href="/uk/tools/elevated">
+    Виконання з підвищеними привілеями для довірених відправників.
   </Card>
 </CardGroup>
 
 <Warning>
-Автентифікація має область дії агента: кожен агент має власне сховище автентифікації `agentDir` за адресою `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`. Ніколи не використовуйте `agentDir` повторно для різних агентів. Агенти можуть читати профілі автентифікації типового/основного агента, коли не мають локального профілю, але токени оновлення OAuth не клонуються до сховищ другорядних агентів. Якщо копіюєте облікові дані вручну, копіюйте лише переносні статичні профілі `api_key` або `token`.
+Автентифікація обмежена областю агента: кожен агент має власне сховище автентифікації `agentDir` у `~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite`. Ніколи не використовуйте один `agentDir` для кількох агентів. Якщо агенти не мають локального профілю, вони можуть читати профілі автентифікації типового/основного агента, але токени оновлення OAuth не клонуються до сховищ другорядних агентів. Якщо ви копіюєте облікові дані вручну, копіюйте лише переносні статичні профілі `api_key` або `token`.
 </Warning>
 
 ---
@@ -37,7 +37,7 @@ x-i18n:
 ## Приклади конфігурації
 
 <AccordionGroup>
-  <Accordion title="Приклад 1: особистий агент + обмежений сімейний агент">
+  <Accordion title="Example 1: Personal + restricted family agent">
     ```json
     {
       "agents": {
@@ -88,11 +88,11 @@ x-i18n:
 
     **Результат:**
 
-    - агент `main`: працює на хості, повний доступ до інструментів.
-    - агент `family`: працює в Docker (один контейнер на агента), лише `read` і надсилання повідомлень у поточній розмові.
+    - Агент `main`: працює на хості та має повний доступ до інструментів.
+    - Агент `family`: працює в Docker (один контейнер на агента), може лише читати за допомогою `read` і надсилати повідомлення в поточній розмові.
 
   </Accordion>
-  <Accordion title="Приклад 2: робочий агент зі спільною пісочницею">
+  <Accordion title="Example 2: Work agent with shared sandbox">
     ```json
     {
       "agents": {
@@ -120,7 +120,7 @@ x-i18n:
     }
     ```
   </Accordion>
-  <Accordion title="Приклад 2b: глобальний профіль кодування + агент лише для повідомлень">
+  <Accordion title="Example 2b: Global coding profile + messaging-only agent">
     ```json
     {
       "tools": { "profile": "coding" },
@@ -137,11 +137,11 @@ x-i18n:
 
     **Результат:**
 
-    - типові агенти отримують інструменти для кодування.
-    - агент `support` призначений лише для повідомлень (+ інструмент Slack).
+    - типові агенти отримують інструменти для програмування.
+    - агент `support` може лише обмінюватися повідомленнями (+ інструмент Slack).
 
   </Accordion>
-  <Accordion title="Приклад 3: різні режими пісочниці для кожного агента">
+  <Accordion title="Example 3: Different sandbox modes per agent">
     ```json
     {
       "agents": {
@@ -180,15 +180,15 @@ x-i18n:
 
 ---
 
-## Пріоритет конфігурації
+## Пріоритетність конфігурації
 
-Коли існують і глобальні (`agents.defaults.*`), і специфічні для агента (`agents.list[].*`) конфігурації:
+Коли одночасно існують глобальні (`agents.defaults.*`) і специфічні для агента (`agents.list[].*`) конфігурації:
 
 ### Конфігурація пісочниці
 
-Параметри конкретного агента перевизначають глобальні:
+Специфічні для агента налаштування перевизначають глобальні:
 
-```
+```text
 agents.list[].sandbox.mode > agents.defaults.sandbox.mode
 agents.list[].sandbox.scope > agents.defaults.sandbox.scope
 agents.list[].sandbox.workspaceRoot > agents.defaults.sandbox.workspaceRoot
@@ -199,63 +199,63 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 ```
 
 <Note>
-`agents.list[].sandbox.{docker,browser,prune}.*` перевизначає `agents.defaults.sandbox.{docker,browser,prune}.*` для цього агента (ігнорується, коли область дії пісочниці розв’язується як `"shared"`).
+`agents.list[].sandbox.{docker,browser,prune}.*` перевизначає `agents.defaults.sandbox.{docker,browser,prune}.*` для цього агента (ігнорується, якщо область пісочниці визначається як `"shared"`).
 </Note>
 
 ### Обмеження інструментів
 
-Порядок фільтрації такий:
+Порядок фільтрації:
 
 <Steps>
-  <Step title="Профіль інструментів">
+  <Step title="Tool profile">
     `tools.profile` або `agents.list[].tools.profile`.
   </Step>
-  <Step title="Профіль інструментів провайдера">
+  <Step title="Provider tool profile">
     `tools.byProvider[provider].profile` або `agents.list[].tools.byProvider[provider].profile`.
   </Step>
-  <Step title="Глобальна політика інструментів">
+  <Step title="Global tool policy">
     `tools.allow` / `tools.deny`.
   </Step>
-  <Step title="Політика інструментів провайдера">
+  <Step title="Provider tool policy">
     `tools.byProvider[provider].allow/deny`.
   </Step>
-  <Step title="Політика інструментів конкретного агента">
+  <Step title="Agent-specific tool policy">
     `agents.list[].tools.allow/deny`.
   </Step>
-  <Step title="Політика провайдера агента">
+  <Step title="Agent provider policy">
     `agents.list[].tools.byProvider[provider].allow/deny`.
   </Step>
-  <Step title="Політика інструментів пісочниці">
+  <Step title="Sandbox tool policy">
     `tools.sandbox.tools` або `agents.list[].tools.sandbox.tools`.
   </Step>
-  <Step title="Політика інструментів субагента">
+  <Step title="Subagent tool policy">
     `tools.subagents.tools`, якщо застосовно.
   </Step>
 </Steps>
 
 <AccordionGroup>
-  <Accordion title="Правила пріоритету">
-    - Кожен рівень може додатково обмежувати інструменти, але не може знову дозволити інструменти, заборонені на попередніх рівнях.
+  <Accordion title="Precedence rules">
+    - Кожен рівень може додатково обмежувати інструменти, але не може повторно дозволяти інструменти, заборонені на попередніх рівнях.
     - Якщо задано `agents.list[].tools.sandbox.tools`, воно замінює `tools.sandbox.tools` для цього агента.
     - Якщо задано `agents.list[].tools.profile`, воно перевизначає `tools.profile` для цього агента.
-    - Ключі інструментів провайдера приймають або `provider` (наприклад, `google-antigravity`), або `provider/model` (наприклад, `openai/gpt-5.4`).
+    - Ключі інструментів провайдера приймають як `provider` (наприклад, `google-antigravity`), так і `provider/model` (наприклад, `openai/gpt-5.4`).
 
   </Accordion>
-  <Accordion title="Поведінка порожнього allowlist">
-    Якщо будь-який явний allowlist у цьому ланцюжку залишає запуск без доступних для виклику інструментів, OpenClaw зупиняється до надсилання prompt до моделі. Це навмисно: агент, налаштований із відсутнім інструментом, як-от `agents.list[].tools.allow: ["query_db"]`, має явно завершитися помилкою, доки не буде ввімкнено Plugin, що реєструє `query_db`, а не продовжувати як агент лише для тексту.
+  <Accordion title="Empty allowlist behavior">
+    Якщо будь-який явний список дозволених інструментів у цьому ланцюжку залишає запуск без доступних для виклику інструментів, OpenClaw зупиняється до надсилання запиту моделі. Це навмисна поведінка: агент, налаштований із відсутнім інструментом, наприклад `agents.list[].tools.allow: ["query_db"]`, має завершуватися з явною помилкою, доки не буде ввімкнено Plugin, який реєструє `query_db`, а не продовжувати роботу як агент, що підтримує лише текст.
   </Accordion>
 </AccordionGroup>
 
-Політики інструментів підтримують скорочення `group:*`, які розгортаються в кілька інструментів. Повний список див. у [Групи інструментів](/uk/gateway/sandbox-vs-tool-policy-vs-elevated#tool-groups-shorthands).
+Політики інструментів підтримують скорочення `group:*`, які розгортаються в кілька інструментів. Повний список наведено в розділі [Групи інструментів](/uk/gateway/sandbox-vs-tool-policy-vs-elevated#tool-groups-shorthands).
 
-Перевизначення підвищеного режиму для окремих агентів (`agents.list[].tools.elevated`) можуть додатково обмежувати підвищений exec для конкретних агентів. Докладніше див. у [Підвищений режим](/uk/tools/elevated).
+Перевизначення підвищених привілеїв для окремих агентів (`agents.list[].tools.elevated`) можуть додатково обмежувати виконання з підвищеними привілеями для певних агентів. Докладніше див. у розділі [Режим підвищених привілеїв](/uk/tools/elevated).
 
 ---
 
 ## Міграція з одного агента
 
 <Tabs>
-  <Tab title="До (один агент)">
+  <Tab title="Before (single agent)">
     ```json
     {
       "agents": {
@@ -277,7 +277,7 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
     }
     ```
   </Tab>
-  <Tab title="Після (multi-agent)">
+  <Tab title="After (multi-agent)">
     ```json
     {
       "agents": {
@@ -296,7 +296,7 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 </Tabs>
 
 <Note>
-Застарілі конфігурації `agent.*` мігруються за допомогою `openclaw doctor`; надалі надавайте перевагу `agents.defaults` + `agents.list`.
+Застарілі ключі конфігурації `agents.defaults.*`/`agents.list[].*` (наприклад, `sandbox.perSession`, `agentRuntime`, `embeddedPi`) мігруються командою `openclaw doctor`; надалі використовуйте `agents.defaults` + `agents.list`.
 </Note>
 
 ---
@@ -304,7 +304,7 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 ## Приклади обмеження інструментів
 
 <Tabs>
-  <Tab title="Агент лише для читання">
+  <Tab title="Read-only agent">
     ```json
     {
       "tools": {
@@ -314,7 +314,7 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
     }
     ```
   </Tab>
-  <Tab title="Виконання оболонки з вимкненими інструментами файлової системи">
+  <Tab title="Shell execution with filesystem tools disabled">
     ```json
     {
       "tools": {
@@ -325,11 +325,11 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
     ```
 
     <Warning>
-    Ця політика вимикає інструменти файлової системи OpenClaw, але `exec` все ще є оболонкою і може записувати файли всюди, де це дозволяє вибраний хост або файлова система пісочниці. Для агента лише для читання забороніть `exec` і `process` або поєднайте доступ до оболонки з контролями файлової системи пісочниці, такими як `agents.defaults.sandbox.workspaceAccess: "ro"` або `"none"`.
+    Ця політика вимикає інструменти файлової системи OpenClaw, але `exec` усе одно є оболонкою та може записувати файли всюди, де це дозволяє файлова система вибраного хоста або пісочниці. Для агента лише для читання забороніть `exec` і `process` або поєднайте доступ до оболонки з елементами керування файловою системою пісочниці, наприклад `agents.defaults.sandbox.workspaceAccess: "ro"` або `"none"`.
     </Warning>
 
   </Tab>
-  <Tab title="Лише комунікація">
+  <Tab title="Communication-only">
     ```json
     {
       "tools": {
@@ -340,7 +340,7 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
     }
     ```
 
-    `sessions_history` у цьому профілі все одно повертає обмежений, очищений вигляд пригадування, а не необроблений дамп транскрипту. Пригадування асистента видаляє теги мислення, каркас `<relevant-memories>`, XML-навантаження викликів інструментів у звичайному тексті (зокрема `<tool_call>...</tool_call>`, `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>` і обрізані блоки викликів інструментів), понижений каркас викликів інструментів, витеклі ASCII/повноширинні керівні токени моделі та некоректний XML викликів інструментів MiniMax перед редагуванням/обрізанням.
+    `sessions_history` у цьому профілі все одно повертає обмежене й очищене подання відновленого контексту, а не необроблений дамп стенограми. Під час відновлення контексту асистента видаляються теги міркувань, службова структура `<relevant-memories>`, XML-навантаження викликів інструментів у вигляді звичайного тексту (зокрема `<tool_call>...</tool_call>`, `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>` і обрізані блоки викликів інструментів), службова структура викликів інструментів зі зниженим рівнем, витіклі керівні токени моделі у форматі ASCII або повноширинному форматі та некоректний XML викликів інструментів MiniMax — усе це відбувається до редагування й обрізання.
 
   </Tab>
 </Tabs>
@@ -350,34 +350,34 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 ## Поширена помилка: "non-main"
 
 <Warning>
-`agents.defaults.sandbox.mode: "non-main"` базується на `session.mainKey` (типово `"main"`), а не на ідентифікаторі агента. Сесії груп/каналів завжди отримують власні ключі, тому вони вважаються non-main і будуть виконуватися в пісочниці. Якщо ви хочете, щоб агент ніколи не використовував пісочницю, задайте `agents.list[].sandbox.mode: "off"`.
+`agents.defaults.sandbox.mode: "non-main"` перевіряє ключ сеансу відносно ключа основного сеансу (завжди `"main"`; `session.mainKey` не налаштовується користувачем, а OpenClaw попереджає та ігнорує будь-яке інше значення), а не ідентифікатор агента. Сеанси груп і каналів завжди отримують власні ключі, тому вважаються неосновними та запускаються в пісочниці. Якщо агент ніколи не повинен запускатися в пісочниці, задайте `agents.list[].sandbox.mode: "off"`.
 </Warning>
 
 ---
 
 ## Тестування
 
-Після налаштування пісочниці та інструментів для multi-agent:
+Після налаштування багатоагентної пісочниці та інструментів:
 
 <Steps>
-  <Step title="Перевірте визначення агента">
+  <Step title="Check agent resolution">
     ```bash
     openclaw agents list --bindings
     ```
   </Step>
-  <Step title="Перевірте контейнери пісочниці">
+  <Step title="Verify sandbox containers">
     ```bash
     docker ps --filter "name=openclaw-sbx-"
     ```
   </Step>
-  <Step title="Протестуйте обмеження інструментів">
+  <Step title="Test tool restrictions">
     - Надішліть повідомлення, яке потребує обмежених інструментів.
     - Переконайтеся, що агент не може використовувати заборонені інструменти.
 
   </Step>
-  <Step title="Відстежуйте журнали">
+  <Step title="Monitor logs">
     ```bash
-    tail -f "${OPENCLAW_STATE_DIR:-$HOME/.openclaw}/logs/gateway.log" | grep -E "routing|sandbox|tools"
+    openclaw logs --follow | grep -E "routing|sandbox|tools"
     ```
   </Step>
 </Steps>
@@ -387,31 +387,31 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 ## Усунення несправностей
 
 <AccordionGroup>
-  <Accordion title="Агент не ізольований у пісочниці попри `mode: 'all'`">
-    - Перевірте, чи немає глобального `agents.defaults.sandbox.mode`, який його перевизначає.
-    - Конфігурація конкретного агента має пріоритет, тому задайте `agents.list[].sandbox.mode: "all"`.
+  <Accordion title="Agent not sandboxed despite `mode: 'all'`">
+    - Перевірте, чи немає глобального `agents.defaults.sandbox.mode`, яке його перевизначає.
+    - Конфігурація конкретного агента має вищий пріоритет, тому задайте `agents.list[].sandbox.mode: "all"`.
 
   </Accordion>
   <Accordion title="Інструменти все ще доступні попри список заборон">
-    - Перевірте порядок фільтрації інструментів: глобальний → агент → пісочниця → підагент.
-    - Кожен рівень може лише додатково обмежувати, а не повертати дозволи.
-    - Перевірте за журналами: `[tools] filtering tools for agent:${agentId}`.
+    - Перевірте [повний порядок фільтрації](#tool-restrictions): профіль → профіль провайдера → глобальна політика → політика провайдера → політика агента → політика провайдера агента → пісочниця → підагенти.
+    - Кожен рівень може лише додатково обмежувати, але не відновлювати доступ.
+    - Покрокові вказівки з налагодження див. у розділі [Пісочниця, політика інструментів і підвищений режим](/uk/gateway/sandbox-vs-tool-policy-vs-elevated).
 
   </Accordion>
-  <Accordion title="Контейнер не ізольований для кожного агента">
-    - Задайте `scope: "agent"` у конфігурації пісочниці конкретного агента.
-    - Типове значення — `"session"`, що створює один контейнер на сесію.
+  <Accordion title="Контейнер не ізольовано для кожного агента">
+    - Стандартне значення `scope` — `"agent"` (один контейнер на ідентифікатор агента).
+    - Установіть `scope: "session"`, щоб використовувати один контейнер на сеанс, або `scope: "shared"`, щоб повторно використовувати один контейнер для кількох агентів.
 
   </Accordion>
 </AccordionGroup>
 
 ---
 
-## Пов’язане
+## Пов’язані матеріали
 
-- [Підвищений режим](/uk/tools/elevated)
-- [Маршрутизація між агентами](/uk/concepts/multi-agent)
-- [Конфігурація пісочниці](/uk/gateway/config-agents#agentsdefaultssandbox)
-- [Пісочниця порівняно з політикою інструментів і підвищеним режимом](/uk/gateway/sandbox-vs-tool-policy-vs-elevated) — налагодження «чому це заблоковано?»
-- [Ізоляція в пісочниці](/uk/gateway/sandboxing) — повний довідник пісочниці (режими, області, бекенди, образи)
+- [Режим підвищених привілеїв](/uk/tools/elevated)
+- [Маршрутизація між кількома агентами](/uk/concepts/multi-agent)
+- [Налаштування пісочниці](/uk/gateway/config-agents#agentsdefaultssandbox)
+- [Пісочниця, політика інструментів і підвищений режим](/uk/gateway/sandbox-vs-tool-policy-vs-elevated) — налагодження проблеми «чому це заблоковано?»
+- [Ізоляція в пісочниці](/uk/gateway/sandboxing) — повний довідник із пісочниці (режими, області дії, бекенди, образи)
 - [Керування сеансами](/uk/concepts/session)

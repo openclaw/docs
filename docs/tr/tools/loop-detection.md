@@ -1,38 +1,46 @@
 ---
 read_when:
-    - Bir kullanıcı, ajanların araç çağrılarını tekrarlarken takılı kaldığını bildiriyor
-    - Tekrarlayan çağrı korumasını ayarlamanız gerekiyor
-    - Ajan araç/çalışma zamanı politikalarını düzenliyorsunuz
-    - Bir bağlam taşması yeniden denemesinden sonra `compaction_loop_persisted` iptalleriyle karşılaşıyorsunuz
-summary: Tekrarlayan araç çağrısı döngülerini algılayan koruma mekanizmalarını etkinleştirme ve ayarlama
+    - Bir kullanıcı, ajanların araç çağrılarını tekrarlayarak takılı kaldığını bildiriyor
+    - Yinelenen çağrılara karşı korumayı ayarlamanız gerekir
+    - Ajan aracı/çalışma zamanı politikalarını düzenliyorsunuz
+    - Bağlam taşması nedeniyle yeniden denemeden sonra `compaction_loop_persisted` iptalleriyle karşılaşıyorsunuz
+summary: Tekrarlayan araç çağrısı döngülerini algılayan koruma mekanizmalarını etkinleştirme ve ayarlama yöntemleri
 title: Araç döngüsü algılama
 x-i18n:
-    generated_at: "2026-05-11T20:38:28Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:53:23Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cc261bebc0e3138a98ea8be166edbaf4e133c8f582429c5380fe2954196a6fc5
+    source_hash: fccbb81281b6c6921e6dad50d15295c1be3f59c664f2caed900bf3dce14bc40a
     source_path: tools/loop-detection.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw, tekrarlayan araç çağrısı desenleri için birlikte çalışan iki koruma mekanizmasına sahiptir:
+OpenClaw, yinelenen araç çağrısı örüntülerine karşı birlikte çalışan iki korumaya sahiptir;
+her ikisi de `tools.loopDetection` altında yapılandırılır:
 
-1. **Döngü algılama** (`tools.loopDetection.enabled`) — varsayılan olarak devre dışıdır. Yinelenen desenler ve bilinmeyen araç yeniden denemeleri için kayan araç çağrısı geçmişini izler.
-2. **Compaction sonrası koruma** (`tools.loopDetection.postCompactionGuard`) — `tools.loopDetection.enabled` açıkça `false` olmadığı sürece varsayılan olarak etkindir. Her Compaction yeniden denemesinden sonra devreye girer ve ajan pencere içinde aynı `(tool, args, result)` üçlüsünü yayarsa çalıştırmayı iptal eder.
+1. **Döngü algılama** (`enabled`) - varsayılan olarak devre dışıdır. Yinelenen
+   örüntüleri ve bilinmeyen araç yeniden denemelerini saptamak için kayan
+   araç çağrısı geçmişini izler.
+2. **Compaction sonrası koruma** (`postCompactionGuard`) - `enabled` açıkça
+   `false` olarak ayarlanmadığı sürece etkindir. Her Compaction yeniden denemesinden
+   sonra devreye girer ve ajan aynı `(tool, args, result)` üçlüsünü pencere
+   içinde tekrarlarsa çalışmayı iptal eder.
 
-İkisi de aynı `tools.loopDetection` bloğu altında yapılandırılır, ancak Compaction sonrası koruma ana anahtar açıkça kapalı olmadığı sürece çalışır. Her iki yüzeyi de susturmak için `tools.loopDetection.enabled: false` ayarlayın.
+Her iki korumayı da susturmak için `tools.loopDetection.enabled: false` ayarını kullanın.
 
-## Bunun neden var olduğu
+## Bunun var olma nedeni
 
-- İlerleme sağlamayan tekrarlayan dizileri algılamak.
-- Yüksek frekanslı sonuçsuz döngüleri algılamak (aynı araç, aynı girdiler, tekrarlanan hatalar).
-- Bilinen yoklama araçları için belirli tekrarlanan çağrı desenlerini algılamak.
-- Bağlam taşması, ardından Compaction, ardından aynı döngü çevrimlerinin süresiz çalışmasını önlemek.
+- İlerleme sağlamayan yinelenen dizileri algılamak.
+- Yüksek sıklıklı, sonuç vermeyen döngüleri (aynı araç, aynı girdiler,
+  yinelenen hatalar) algılamak.
+- Bilinen yoklama araçlarına özgü yinelenen çağrı örüntülerini algılamak.
+- Bağlam taşması -> Compaction -> aynı döngü çevrimlerinin süresiz
+  çalışmasına izin vermek yerine bunları sonlandırmak.
 
 ## Yapılandırma bloğu
 
-Belgelenen her alan gösterilmiş şekilde genel varsayılanlar:
+Belgelenen tüm alanların gösterildiği genel varsayılanlar:
 
 ```json5
 {
@@ -57,7 +65,7 @@ Belgelenen her alan gösterilmiş şekilde genel varsayılanlar:
 }
 ```
 
-Ajan başına geçersiz kılma (isteğe bağlı):
+Ajan başına geçersiz kılma (isteğe bağlı, `agents.list[].tools.loopDetection` konumunda):
 
 ```json5
 {
@@ -78,39 +86,68 @@ Ajan başına geçersiz kılma (isteğe bağlı):
 }
 ```
 
+Ajan başına ayarlar, genel bloğun üzerine alan alan uygulanır (`detectors`
+ve `postCompactionGuard` içindeki alanlar dâhil); böylece bir ajanın yalnızca
+değiştirmek istediği alanları ayarlaması yeterlidir.
+
 ### Alan davranışı
 
-| Alan                             | Varsayılan | Etki                                                                                                                          |
-| -------------------------------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `enabled`                        | `false`    | Kayan geçmiş algılayıcıları için ana anahtar. `false` ayarı Compaction sonrası korumayı da devre dışı bırakır.                |
-| `historySize`                    | `30`       | Analiz için tutulan son araç çağrısı sayısı.                                                                                  |
-| `warningThreshold`               | `10`       | Bir desenin yalnızca uyarı olarak sınıflandırılmasından önceki eşik.                                                          |
-| `criticalThreshold`              | `20`       | Tekrarlayan ilerlemesiz döngü desenlerini engelleme eşiği.                                                                    |
-| `unknownToolThreshold`           | `10`       | Aynı kullanılamayan araca yapılan tekrarlı çağrıları bu kadar ıskalamadan sonra engeller.                                     |
-| `globalCircuitBreakerThreshold`  | `30`       | Tüm algılayıcılar genelinde genel ilerlemesizlik kesici eşiği.                                                                |
-| `detectors.genericRepeat`        | `true`     | Tekrarlanan aynı araç + aynı parametre desenlerinde uyarır ve aynı çağrılar özdeş sonuçlar da döndürdüğünde engeller.         |
-| `detectors.knownPollNoProgress`  | `true`     | Durum değişikliği olmayan bilinen yoklama benzeri desenleri algılar.                                                          |
-| `detectors.pingPong`             | `true`     | Dönüşümlü ping-pong desenlerini algılar.                                                                                      |
-| `postCompactionGuard.windowSize` | `3`        | Compaction sonrası korumanın devrede kaldığı araç çağrısı sayısı ve çalıştırmayı iptal eden özdeş üçlü sayısı.                |
+| Alan                             | Varsayılan | Etki                                                                                                                                                    |
+| -------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `enabled`                        | `false`    | Kayan geçmiş algılayıcılarının ana anahtarıdır. `false`, Compaction sonrası korumayı da devre dışı bırakır.                                              |
+| `historySize`                    | `30`       | Analiz için tutulan son araç çağrılarının sayısıdır.                                                                                                    |
+| `warningThreshold`               | `10`       | Bir örüntünün yalnızca uyarı olarak sınıflandırılmasından önceki tekrar sayısıdır.                                                                       |
+| `criticalThreshold`              | `20`       | İlerleme sağlamayan bir döngü örüntüsünü engellemek için gereken tekrar sayısıdır. Yanlış yapılandırılırsa çalışma zamanı bunu `warningThreshold` değerinin üzerine sınırlar. |
+| `unknownToolThreshold`           | `10`       | Aynı kullanılamayan araca yapılan yinelenen çağrıları bu sayıda başarısız denemeden sonra engeller. `detectors` tarafından denetlenmez.                  |
+| `globalCircuitBreakerThreshold`  | `30`       | Tüm algılayıcıları kapsayan genel ilerlememe devre kesicisidir. Yanlış yapılandırılırsa çalışma zamanı bunu `criticalThreshold` değerinin üzerine sınırlar. `detectors` tarafından denetlenmez. |
+| `detectors.genericRepeat`        | `true`     | Aynı araç + aynı bağımsız değişkenlerle yinelenen çağrılarda uyarır; bu çağrılar aynı sonuçları da döndürdüğünde engeller.                                |
+| `detectors.knownPollNoProgress`  | `true`     | Bilinen ilerleme sağlamayan yoklama örüntülerini algılar (`action: "poll"`/`"log"` ile `process`, `command_status`).                                     |
+| `detectors.pingPong`             | `true`     | İki çağrı arasında dönüşümlü olarak gerçekleşen, ilerleme sağlamayan ping-pong örüntülerini algılar.                                                     |
+| `postCompactionGuard.windowSize` | `3`        | Korumanın Compaction sonrasında devrede kaldığı deneme sayısı ve çalışmayı iptal eden aynı üçlülerin sayısıdır.                                          |
 
-`exec` için ilerlemesizlik denetimleri kararlı komut sonuçlarını karşılaştırır ve süre, PID, oturum kimliği ve çalışma dizini gibi değişken çalışma zamanı metaverilerini yok sayar. Bir çalıştırma kimliği kullanılabildiğinde, son araç çağrısı geçmişi yalnızca o çalıştırma içinde değerlendirilir; böylece zamanlanmış Heartbeat çevrimleri ve yeni çalıştırmalar önceki çalıştırmalardan bayat döngü sayılarını devralmaz.
+`exec` için ilerlememe karması, kararlı komut sonuçlarını (durum,
+çıkış kodu, zaman aşımı bayrağı, çıktı) karşılaştırır ve süre, PID, oturum
+kimliği ve çalışma dizini gibi değişken çalışma zamanı meta verilerini yok
+sayar. Giden ileti gönderme sonuçlarının karması alınırken çağrı başına değişen
+kimlikler (ileti kimliği, dosya kimliği, zaman damgası) çıkarılır; böylece bir
+"gönderildi" sonucu, farklı bir "gönderildi" sonucuyla aynı görünmez. Bir çalışma
+kimliği mevcut olduğunda geçmiş yalnızca o çalışma içinde değerlendirilir;
+dolayısıyla zamanlanmış Heartbeat çevrimleri ve yeni çalışmalar, önceki
+çalışmalardan kalan eski döngü sayılarını devralmaz.
 
 ## Önerilen kurulum
 
-- Daha küçük modeller için `enabled: true` ayarlayın ve eşikleri varsayılanlarında bırakın. Üst seviye modeller nadiren kayan geçmiş algılamasına ihtiyaç duyar ve Compaction sonrası korumadan yararlanmaya devam ederken ana anahtarı `false` olarak bırakabilir.
-- Eşikleri `warningThreshold < criticalThreshold < globalCircuitBreakerThreshold` sırasıyla tutun.
+- Daha küçük modeller için `enabled: true` ayarını kullanın ve eşikleri
+  varsayılan değerlerinde bırakın. Amiral gemisi modeller kayan geçmiş
+  algılamasına nadiren ihtiyaç duyar ve Compaction sonrası korumadan
+  yararlanmaya devam ederken ana anahtarı `false` olarak bırakabilir.
+- Eşikleri `warningThreshold < criticalThreshold <
+globalCircuitBreakerThreshold` sırasıyla tutun; `criticalThreshold` ve
+  `globalCircuitBreakerThreshold` değerlerini aşmaları gereken eşiğe eşit
+  veya daha düşük ayarlarsanız çalışma zamanı bu değerleri yukarı doğru ayarlar.
 - Yanlış pozitifler oluşursa:
   - `warningThreshold` ve/veya `criticalThreshold` değerini yükseltin.
   - İsteğe bağlı olarak `globalCircuitBreakerThreshold` değerini yükseltin.
   - Yalnızca soruna neden olan belirli algılayıcıyı devre dışı bırakın (`detectors.<name>: false`).
-  - Daha az katı geçmiş bağlamı için `historySize` değerini azaltın.
-- Her şeyi devre dışı bırakmak için (Compaction sonrası koruma dahil), `tools.loopDetection.enabled: false` değerini açıkça ayarlayın.
+  - Daha kısa bir geçmiş penceresi için `historySize` değerini azaltın.
+- Compaction sonrası koruma dâhil her şeyi devre dışı bırakmak için
+  `tools.loopDetection.enabled: false` ayarını açıkça kullanın.
 
 ## Compaction sonrası koruma
 
-Çalıştırıcı, bağlam taşmasından sonra bir Compaction yeniden denemesini tamamladığında, sonraki birkaç araç çağrısını izleyen kısa pencereli bir korumayı devreye alır. Ajan pencere içinde aynı `(toolName, argsHash, resultHash)` üçlüsünü birden çok kez yayarsa, koruma Compaction'ın döngüyü kırmadığı sonucuna varır ve çalıştırmayı `compaction_loop_persisted` hatasıyla iptal eder.
+Bağlam taşmasını izleyen bir Compaction yeniden denemesinden sonra çalıştırıcı,
+sonraki birkaç araç çağrısı için kısa pencereli bir korumayı devreye alır. Ajan,
+aynı `(toolName, argsHash, resultHash)` üçlüsünü bu pencere içinde
+`postCompactionGuard.windowSize` kez üretirse koruma, Compaction işleminin
+döngüyü sonlandırmadığı sonucuna varır ve çalışmayı `compaction_loop_persisted`
+hatasıyla iptal eder.
 
-Koruma, ana `tools.loopDetection.enabled` bayrağı tarafından bir ayrıntıyla denetlenir: bayrak ayarlanmamış veya `true` olduğunda **etkin kalır** ve yalnızca bayrak açıkça `false` olduğunda devre dışı kalır. Bu bilinçli bir tercihtir. Koruma, aksi halde sınırsız token harcayacak Compaction döngülerinden çıkmak için vardır; bu nedenle yapılandırmasız kullanıcı da korumayı alır.
+Koruma, bir farklılıkla ana `tools.loopDetection.enabled` bayrağı tarafından
+denetlenir: bayrak ayarlanmamışken veya `true` olduğunda **etkin kalır** ve
+yalnızca bayrak açıkça `false` olarak ayarlandığında kapanır. Bu davranış
+kasıtlıdır; koruma, aksi takdirde sınırsız sayıda token tüketecek Compaction
+döngülerinden çıkmak için vardır. Böylece yapılandırma yapmamış bir kullanıcı
+da korumadan yararlanır.
 
 ```json5
 {
@@ -127,36 +164,43 @@ Koruma, ana `tools.loopDetection.enabled` bayrağı tarafından bir ayrıntıyla
 ```
 
 - Daha düşük `windowSize` daha katıdır (iptalden önce daha az deneme).
-- Daha yüksek `windowSize`, ajana daha fazla toparlanma denemesi sağlar.
-- Koruma, sonuçlar değişirken asla iptal etmez; yalnızca sonuçlar pencere boyunca bayt düzeyinde özdeş olduğunda iptal eder.
-- Bilerek dardır: yalnızca bir Compaction yeniden denemesinin hemen sonrasında tetiklenir.
+- Daha yüksek `windowSize`, ajana daha fazla kurtarma denemesi sağlar.
+- Sonuçlar değiştiği sürece koruma çalışmayı hiçbir zaman iptal etmez; yalnızca
+  pencere boyunca bayt düzeyinde aynı olan sonuçlar korumayı tetikler.
+- Yalnızca bir Compaction yeniden denemesinin hemen ardından devreye girer;
+  çalışmanın diğer noktalarında devreye girmez.
 
 <Note>
-  Compaction sonrası koruma, bir `tools.loopDetection` bloğu hiç yazmamış olsanız bile ana bayrak açıkça `false` olmadığı sürece çalışır. Doğrulamak için bir Compaction olayından hemen sonra Gateway günlüğünde `post-compaction guard armed for N attempts` ifadesini arayın.
+  Compaction sonrası koruma, hiç `tools.loopDetection` bloğu yazmamış olsanız bile ana bayrak açıkça `false` olmadığı sürece çalışır. Doğrulamak için bir Compaction olayının hemen ardından Gateway günlüğünde `post-compaction guard armed for N attempts` ifadesini arayın.
 </Note>
 
 ## Günlükler ve beklenen davranış
 
-Bir döngü algılandığında, OpenClaw bir döngü olayı bildirir ve ciddiyete bağlı olarak sonraki araç çevrimini ya yumuşatır ya da engeller. Bu, normal araç erişimini korurken kullanıcıları kontrolden çıkan token harcamasından ve kilitlenmelerden korur.
+Bir döngü algılandığında OpenClaw bir döngü olayı kaydeder ve önem derecesine
+bağlı olarak sonraki araç çevrimini uyarır veya engeller. Böylece normal araç
+erişimini korurken kontrolsüz token tüketimine ve kilitlenmelere karşı koruma
+sağlar.
 
 - Önce uyarılar gelir.
-- Desenler uyarı eşiğini aştıktan sonra bastırma izler.
-- Kritik eşikler sonraki araç çevrimini engeller ve çalıştırma kaydında açık bir döngü algılama nedeni gösterir.
-- Compaction sonrası koruma, sorunlu araç adı ve özdeş çağrı sayısıyla `compaction_loop_persisted` hataları yayar.
+- Bir örüntü uyarı eşiğini aşacak kadar sürerse engelleme uygulanır.
+- Kritik eşikler sonraki araç çevrimini engeller ve çalışma kaydında açık bir
+  döngü algılama nedeni gösterir.
+- Compaction sonrası koruma, soruna neden olan aracı ve aynı çağrı sayısını
+  belirten `compaction_loop_persisted` hataları üretir.
 
-## İlgili
+## İlgili konular
 
 <CardGroup cols={2}>
-  <Card title="Exec onayları" href="/tr/tools/exec-approvals" icon="shield">
-    Kabuk yürütmesi için izin ver/reddet ilkesi.
+  <Card title="Exec approvals" href="/tr/tools/exec-approvals" icon="shield">
+    Kabuk yürütmesi için izin verme/reddetme ilkesi.
   </Card>
-  <Card title="Düşünme düzeyleri" href="/tr/tools/thinking" icon="brain">
-    Akıl yürütme çabası düzeyleri ve sağlayıcı ilkesi etkileşimi.
+  <Card title="Thinking levels" href="/tr/tools/thinking" icon="brain">
+    Akıl yürütme çabası düzeyleri ve sağlayıcı ilkesiyle etkileşim.
   </Card>
-  <Card title="Alt ajanlar" href="/tr/tools/subagents" icon="users">
-    Kontrolden çıkan davranışı sınırlandırmak için yalıtılmış ajanlar başlatma.
+  <Card title="Sub-agents" href="/tr/tools/subagents" icon="users">
+    Kontrolden çıkan davranışı sınırlamak için yalıtılmış ajanlar oluşturma.
   </Card>
-  <Card title="Yapılandırma başvurusu" href="/tr/gateway/configuration-reference" icon="gear">
+  <Card title="Configuration reference" href="/tr/gateway/config-tools#toolsloopdetection" icon="gear">
     Tam `tools.loopDetection` şeması ve birleştirme semantiği.
   </Card>
 </CardGroup>

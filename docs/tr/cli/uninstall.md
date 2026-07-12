@@ -1,35 +1,41 @@
 ---
 read_when:
     - Gateway hizmetini ve/veya yerel durumu kaldırmak istiyorsunuz
-    - Önce bir deneme çalıştırması istiyorsunuz
-summary: '`openclaw uninstall` için CLI başvurusu (gateway hizmetini + yerel verileri kaldır)'
-title: Kaldır
+    - Önce bir deneme çalıştırması yapmak istiyorsunuz
+summary: '`openclaw uninstall` için CLI başvurusu (Gateway hizmetini + yerel verileri kaldırma)'
+title: Kaldırma
 x-i18n:
-    generated_at: "2026-06-28T00:25:30Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:13:12Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f90fa8cf513e2e8cd422c3b8a880e7fd20fb71131a3ec88260e765daa2ace543
+    source_hash: 1e2e3996cf6d5c0fd11e5054c8fe60f7f8d25047193bb13944ca170bf77b581a
     source_path: cli/uninstall.md
     workflow: 16
 ---
 
 # `openclaw uninstall`
 
-Gateway hizmetini + yerel verileri kaldırın (CLI kalır).
+Gateway hizmetini ve/veya yerel verileri kaldırın. CLI'nin kendisi
+kaldırılmaz; onu npm/pnpm aracılığıyla ayrı olarak kaldırın.
 
-Seçenekler:
+## Seçenekler
 
-- `--service`: Gateway hizmetini kaldırır
-- `--state`: durum ve yapılandırmayı kaldırır
-- `--workspace`: çalışma alanı dizinlerini kaldırır
-- `--app`: macOS uygulamasını kaldırır
-- `--all`: hizmeti, durumu, çalışma alanını ve uygulamayı kaldırır
-- `--yes`: onay istemlerini atlar
-- `--non-interactive`: istemleri devre dışı bırakır; `--yes` gerektirir
-- `--dry-run`: dosyaları kaldırmadan eylemleri yazdırır
+| Bayrak              | Varsayılan | Açıklama                                             |
+| ------------------- | ---------- | ---------------------------------------------------- |
+| `--service`         | `false`    | Gateway hizmetini kaldırır.                          |
+| `--state`           | `false`    | Durumu ve yapılandırmayı kaldırır.                    |
+| `--workspace`       | `false`    | Çalışma alanı dizinlerini kaldırır.                   |
+| `--app`             | `false`    | macOS uygulamasını kaldırır.                          |
+| `--all`             | `false`    | `--service --state --workspace --app` için kısayol.  |
+| `--yes`             | `false`    | Onay istemlerini atlar.                               |
+| `--non-interactive` | `false`    | İstemleri devre dışı bırakır; `--yes` gerektirir.     |
+| `--dry-run`         | `false`    | Dosyaları kaldırmadan planlanan işlemleri yazdırır.   |
 
-Örnekler:
+Kapsam bayrağı belirtilmezse etkileşimli bir çoklu seçim istemi, kaldırılacak
+bileşenleri sorar (hizmet, durum ve çalışma alanı varsayılan olarak önceden seçilidir).
+
+## Örnekler
 
 ```bash
 openclaw backup create
@@ -40,12 +46,12 @@ openclaw uninstall --all --yes
 openclaw uninstall --dry-run
 ```
 
-Notlar:
+## Notlar
 
-- Durumu veya çalışma alanlarını kaldırmadan önce geri yüklenebilir bir anlık görüntü istiyorsanız önce `openclaw backup create` çalıştırın.
-- `--state`, `--workspace` de seçilmediği sürece yapılandırılmış çalışma alanı dizinlerini korur.
-- `--all`, hizmeti, durumu, çalışma alanını ve uygulamayı birlikte kaldırmanın kısaltmasıdır.
-- `--non-interactive`, `--yes` gerektirir.
+- Durumu veya çalışma alanlarını kaldırmadan önce geri yüklenebilir bir anlık
+  görüntü oluşturmak için ilk olarak `openclaw backup create` komutunu çalıştırın.
+- `--workspace` seçeneği de seçilmediği sürece `--state`, yapılandırılmış çalışma
+  alanı dizinlerini korur.
 
 ## İlgili
 

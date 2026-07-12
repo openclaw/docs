@@ -1,13 +1,13 @@
 ---
 read_when:
-    - 你希望你的智能体听起来不那么泛泛而谈
+    - 你希望你的智能体听起来不那么千篇一律
     - 你正在编辑 SOUL.md
-    - 你想要更鲜明的个性，同时不破坏安全性或简洁性
-summary: 使用 SOUL.md 让你的 OpenClaw 智能体拥有真正的声音，而不是泛泛的助手式废话
-title: SOUL.md 人格指南
+    - 你希望个性更鲜明，同时不牺牲安全性或简洁性
+summary: 使用 SOUL.md 赋予你的 OpenClaw 智能体真正的个性化表达，而不是千篇一律的助手套话
+title: SOUL.md 个性指南
 x-i18n:
-    generated_at: "2026-07-05T11:16:09Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T20:29:08Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: c53531d687ba7a2340b779a419c282c8ba22193ff52f6e21005f3fd3bde88cb2
@@ -15,33 +15,26 @@ x-i18n:
     workflow: 16
 ---
 
-`SOUL.md` 是你的智能体声音所在的位置。OpenClaw 会把它注入普通会话，
-所以它确实有分量：如果你的智能体听起来乏味、闪烁其词或像公司话术，
-通常就该修这个文件。
+`SOUL.md` 是你的智能体声音所在之处。OpenClaw 会将它注入普通会话，因此它确实举足轻重：如果你的智能体听起来平淡、含糊或官腔十足，通常就该修改这个文件。
 
-## SOUL.md 里应该放什么
+## `SOUL.md` 中应该包含什么
 
-放那些会改变智能体对话感受的内容：语气、观点、简洁程度、幽默感、
-边界、默认直率程度。
+放入那些会改变与智能体交谈感受的内容：语气、观点、简洁程度、幽默感、边界，以及默认的直率程度。
 
-**不要**把它写成人生故事、变更日志、安全政策堆叠，或一整墙没有行为效果的
-氛围描述。短胜过长。锐利胜过含糊。
+**不要**把它写成人生故事、变更日志、安全策略汇总，或一堵对行为毫无影响的氛围文字墙。短胜于长，明确胜于含糊。
 
-## 为什么这有效
+## 为什么这样有效
 
-这与 OpenAI 的提示词指导一致：高层行为、语气、目标和示例应该放在高优先级指令层，
-而不是埋在用户轮次里；提示词也应该迭代、固定版本并评估，而不是写一次就遗忘。
-对于 OpenClaw，`SOUL.md` 就是这一层：写出更强的指令来获得更好的个性，
-保持简洁并做版本化，以获得稳定的个性。
+这与 OpenAI 的提示词指南一致：高层级的行为、语气、目标和示例应放在高优先级指令层中，而不是埋在用户消息里；提示词也应该持续迭代、固定版本并接受评估，而不是写完一次便抛诸脑后。对 OpenClaw 而言，`SOUL.md` 就是这一层：用更有力的指令塑造更鲜明的个性，同时保持简洁并进行版本管理，以维持稳定的个性。
 
-OpenAI 参考：
+OpenAI 参考资料：
 
-- [提示词工程](https://developers.openai.com/api/docs/guides/prompt-engineering)
-- [消息角色和指令遵循](https://developers.openai.com/api/docs/guides/prompt-engineering#message-roles-and-instruction-following)
+- [提示工程](https://developers.openai.com/api/docs/guides/prompt-engineering)
+- [消息角色与指令遵循](https://developers.openai.com/api/docs/guides/prompt-engineering#message-roles-and-instruction-following)
 
 ## Molty 提示词
 
-把下面内容粘贴给你的智能体，让它重写 `SOUL.md`。
+将以下内容粘贴给你的智能体，让它重写 `SOUL.md`。
 
 ```md
 Read your `SOUL.md`. Now rewrite it with these changes:
@@ -58,21 +51,17 @@ Read your `SOUL.md`. Now rewrite it with these changes:
 Save the new `SOUL.md`. Welcome to having a personality.
 ```
 
-## 好的效果是什么样
+## 好的效果是什么样的
 
-好的规则：有立场、跳过废话、合适时幽默、尽早指出坏主意，
-保持简洁，除非深度真的有用。
+好的规则：有明确立场、省去废话、适合时展现幽默、尽早指出糟糕的想法，并且保持简洁，除非深入说明确实有用。
 
-坏的规则：“始终保持专业”、“提供全面且周到的帮助”、“确保积极且支持性的体验”。
-这就是你得到一团糊的方式。
+糟糕的规则：“始终保持专业”“提供全面且周到的帮助”“确保积极且支持性的体验”。这样只会得到一团软绵绵的废话。
 
-## 一个警告
+## 一项警告
 
-个性不是允许马虎。把 `AGENTS.md` 用于操作规则；
-把 `SOUL.md` 用于声音、立场和风格。如果你的智能体在共享频道、公开回复或客户界面工作，
-确保语气仍然适合场合。锐利是好的。惹人烦不是。
+有个性并不意味着可以马虎。将操作规则放在 `AGENTS.md` 中；将声音、立场和风格放在 `SOUL.md` 中。如果你的智能体会在共享渠道、公开回复或面向客户的界面中工作，请确保语气仍然符合场合。犀利很好，惹人厌则不然。
 
-## 相关
+## 相关内容
 
 <CardGroup cols={2}>
   <Card title="Agent workspace" href="/zh-CN/concepts/agent-workspace" icon="folder-open">
@@ -82,6 +71,6 @@ Save the new `SOUL.md`. Welcome to having a personality.
     `SOUL.md` 如何被组合进 OpenClaw 和 Codex 运行时上下文。
   </Card>
   <Card title="SOUL.md template" href="/zh-CN/reference/templates/SOUL" icon="file-lines">
-    个性文件的起始模板。
+    个性文件的入门模板。
   </Card>
 </CardGroup>

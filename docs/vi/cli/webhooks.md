@@ -1,44 +1,48 @@
 ---
 read_when:
-    - Bạn muốn tích hợp các sự kiện Gmail Pub/Sub vào OpenClaw
+    - Bạn muốn kết nối các sự kiện Pub/Sub của Gmail vào OpenClaw
     - Bạn cần danh sách đầy đủ các cờ và giá trị mặc định
-summary: Tài liệu tham chiếu CLI cho `openclaw webhooks` (thiết lập và trình chạy Gmail Pub/Sub)
+summary: Tài liệu tham khảo CLI cho `openclaw webhooks` (thiết lập và trình chạy Pub/Sub của Gmail)
 title: Webhook
 x-i18n:
-    generated_at: "2026-05-10T19:29:55Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:52:34Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b9ce17ca78bbe9836edd4643a262833e52cceb27f441d5922c036777e47a6f74
+    source_hash: 83fff0ac2ce247402f45523eda0b5cdd551bd65212636118698e45cb8740236c
     source_path: cli/webhooks.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw webhooks`
 
-Các trình trợ giúp và tích hợp Webhook. Hiện tại bề mặt này được giới hạn cho các luồng Gmail Pub/Sub tích hợp với trình theo dõi `gog` đi kèm.
+Các trình trợ giúp và tích hợp Webhook. Hiện tại, bề mặt này chỉ dành cho các luồng Gmail Pub/Sub được xây dựng trên trình theo dõi `gog` đi kèm.
 
-## Lệnh con
+## Các lệnh con
 
 ```bash
 openclaw webhooks gmail setup --account <email> [...]
 openclaw webhooks gmail run   [--account <email>] [...]
 ```
 
-| Lệnh con      | Mô tả                                                                                              |
-| ------------- | -------------------------------------------------------------------------------------------------- |
-| `gmail setup` | Cấu hình Gmail watch, chủ đề/gói đăng ký Pub/Sub và đích phân phối Webhook của OpenClaw.           |
-| `gmail run`   | Chạy `gog watch serve` cùng với vòng lặp tự động gia hạn watch.                                    |
+| Lệnh con      | Mô tả                                                                                          |
+| ------------- | ---------------------------------------------------------------------------------------------- |
+| `gmail setup` | Trình hướng dẫn một lần: thiết lập theo dõi Gmail, chủ đề/gói đăng ký Pub/Sub và phân phối hook OpenClaw. |
+| `gmail run`   | Chạy `gog watch serve` cùng vòng lặp tự động gia hạn theo dõi ở nền trước.                      |
+
+<Note>
+Gateway cũng tự động khởi động `gog gmail watch serve` khi khởi động sau khi `hooks.enabled=true` và `hooks.gmail.account` được thiết lập (do `gmail setup` thiết lập). `gmail run` sử dụng cùng logic ở nền trước, hữu ích khi gỡ lỗi hoặc khi trình theo dõi của Gateway bị tắt. Xem [Tích hợp Gmail Pub/Sub](/vi/automation/cron-jobs#gmail-pubsub-integration) để biết chi tiết về việc tự động khởi động và tùy chọn từ chối `OPENCLAW_SKIP_GMAIL_WATCHER`.
+</Note>
 
 ## `webhooks gmail setup`
-
-Cấu hình Gmail watch, Pub/Sub và phân phối Webhook của OpenClaw.
 
 ```bash
 openclaw webhooks gmail setup --account you@example.com
 openclaw webhooks gmail setup --account you@example.com --project my-gcp-project --json
 openclaw webhooks gmail setup --account you@example.com --hook-url https://gateway.example.com/hooks/gmail
 ```
+
+Cài đặt `gcloud` và `gog` nếu còn thiếu, xác thực `gcloud`, tạo chủ đề và gói đăng ký Pub/Sub, bắt đầu theo dõi Gmail, đồng thời ghi cấu hình `hooks.gmail` với `hooks.enabled=true`. In ra `Next: openclaw webhooks gmail run`.
 
 ### Bắt buộc
 
@@ -48,78 +52,74 @@ openclaw webhooks gmail setup --account you@example.com --hook-url https://gatew
 
 ### Tùy chọn Pub/Sub
 
-| Cờ                      | Mặc định               | Mô tả                                                        |
-| ----------------------- | ---------------------- | ------------------------------------------------------------ |
-| `--project <id>`        | (không có)             | id dự án GCP (chủ sở hữu OAuth client).                      |
-| `--topic <name>`        | `gog-gmail-watch`      | Tên chủ đề Pub/Sub.                                          |
-| `--subscription <name>` | `gog-gmail-watch-push` | Tên gói đăng ký Pub/Sub.                                     |
-| `--label <label>`       | `INBOX`                | Nhãn Gmail cần theo dõi.                                     |
-| `--push-endpoint <url>` | (không có)             | Điểm cuối push Pub/Sub tường minh. Ghi đè Tailscale.         |
+| Cờ                      | Mặc định               | Mô tả                                                                                                                                                                      |
+| ----------------------- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--project <id>`        | (không có)             | ID dự án GCP (chủ sở hữu máy khách OAuth). Nếu không có, dùng ID dự án của chính chủ đề, rồi đến dự án được phân giải từ thông tin xác thực `gog`.                           |
+| `--topic <name>`        | `gog-gmail-watch`      | Tên chủ đề Pub/Sub.                                                                                                                                                         |
+| `--subscription <name>` | `gog-gmail-watch-push` | Tên gói đăng ký Pub/Sub.                                                                                                                                                    |
+| `--label <label>`       | `INBOX`                | Nhãn Gmail cần theo dõi.                                                                                                                                                    |
+| `--push-endpoint <url>` | (không có)             | Điểm cuối đẩy Pub/Sub được chỉ định rõ ràng. Ghi đè Tailscale.                                                                                                              |
 
 ### Tùy chọn phân phối OpenClaw
 
-| Cờ                     | Mặc định   | Mô tả                                      |
-| ---------------------- | ---------- | ------------------------------------------ |
-| `--hook-url <url>`     | (không có) | URL Webhook của OpenClaw.                  |
-| `--hook-token <token>` | (không có) | Token Webhook của OpenClaw.                |
-| `--push-token <token>` | (không có) | Token push được chuyển tiếp tới `gog watch serve`. |
+| Cờ                     | Mặc định                                          | Mô tả                        |
+| ---------------------- | ------------------------------------------------- | ---------------------------- |
+| `--hook-url <url>`     | Được tạo từ `hooks.path` và cổng Gateway          | URL Webhook của OpenClaw.    |
+| `--hook-token <token>` | `hooks.token` hoặc một mã thông báo được tạo      | Mã thông báo Webhook OpenClaw. |
+| `--push-token <token>` | Mã thông báo được tạo                             | Mã thông báo đẩy được chuyển tiếp đến `gog watch serve`. |
 
 ### Tùy chọn `gog watch serve`
 
-| Cờ                    | Mặc định        | Mô tả                                                              |
-| --------------------- | --------------- | ------------------------------------------------------------------ |
-| `--bind <host>`       | `127.0.0.1`     | Máy chủ bind của `gog watch serve`.                                |
-| `--port <port>`       | `8788`          | Cổng của `gog watch serve`.                                        |
-| `--path <path>`       | `/gmail-pubsub` | Đường dẫn của `gog watch serve`.                                   |
-| `--include-body`      | `true`          | Bao gồm đoạn trích nội dung email. Truyền `--no-include-body` để tắt. |
-| `--max-bytes <n>`     | `20000`         | Số byte tối đa cho mỗi đoạn trích nội dung.                        |
-| `--renew-minutes <n>` | `720` (12h)     | Gia hạn Gmail watch mỗi N phút.                                    |
+| Cờ                    | Mặc định        | Mô tả                                                                                                                                                                                           |
+| --------------------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--bind <host>`       | `127.0.0.1`     | Máy chủ liên kết của `gog watch serve`.                                                                                                                                                          |
+| `--port <port>`       | `8788`          | Cổng của `gog watch serve`.                                                                                                                                                                     |
+| `--path <path>`       | `/gmail-pubsub` | Đường dẫn của `gog watch serve`. Bị buộc thành `/` khi Tailscale được bật mà không có đích rõ ràng, vì Tailscale loại bỏ đường dẫn trước khi chuyển tiếp qua proxy.                               |
+| `--include-body`      | `true`          | Bao gồm các đoạn trích nội dung email. Không có cờ CLI để tắt tùy chọn này; thay vào đó, hãy đặt `hooks.gmail.includeBody: false` trong cấu hình.                                                |
+| `--max-bytes <n>`     | `20000`         | Số byte tối đa cho mỗi đoạn trích nội dung.                                                                                                                                                      |
+| `--renew-minutes <n>` | `720` (12 giờ)  | Gia hạn theo dõi Gmail sau mỗi N phút.                                                                                                                                                           |
 
-### Phơi bày qua Tailscale
+### Công khai qua Tailscale
 
-| Cờ                        | Mặc định | Mô tả                                                                  |
-| ------------------------- | -------- | ---------------------------------------------------------------------- |
-| `--tailscale <mode>`      | `funnel` | Phơi bày điểm cuối push qua tailscale: `funnel`, `serve` hoặc `off`.   |
-| `--tailscale-path <path>` | (không có) | Đường dẫn cho tailscale serve/funnel.                                |
-| `--tailscale-target <t>`  | (không có) | Đích Tailscale serve/funnel (cổng, `host:port` hoặc URL).            |
+| Cờ                        | Mặc định | Mô tả                                                              |
+| ------------------------- | -------- | ------------------------------------------------------------------ |
+| `--tailscale <mode>`      | `funnel` | Công khai điểm cuối đẩy qua Tailscale: `funnel`, `serve` hoặc `off`. |
+| `--tailscale-path <path>` | (không có) | Đường dẫn cho Tailscale serve/funnel.                              |
+| `--tailscale-target <t>`  | (không có) | Đích Tailscale serve/funnel (cổng, `host:port` hoặc URL).          |
 
 ### Đầu ra
 
-| Cờ       | Mô tả                                                   |
-| -------- | ------------------------------------------------------- |
-| `--json` | In bản tóm tắt máy có thể đọc thay vì văn bản.          |
+| Cờ       | Mô tả                                                    |
+| -------- | -------------------------------------------------------- |
+| `--json` | In bản tóm tắt mà máy có thể đọc thay vì văn bản.        |
 
 ## `webhooks gmail run`
-
-Chạy `gog watch serve` cùng với vòng lặp tự động gia hạn watch ở tiền cảnh.
 
 ```bash
 openclaw webhooks gmail run --account you@example.com
 ```
 
-`run` chấp nhận cùng các cờ `gog watch serve`, phân phối OpenClaw, Pub/Sub và Tailscale như `setup`, ngoại trừ:
+Chạy `gog watch serve` cùng vòng lặp tự động gia hạn theo dõi ở nền trước, khởi động lại `gog watch serve` sau độ trễ 2 giây nếu tiến trình thoát ngoài dự kiến.
 
-- `--account` là **tùy chọn** trên `run` (nó dự phòng về tài khoản đã cấu hình).
+`run` chấp nhận các cờ Pub/Sub, phân phối OpenClaw, `gog watch serve` và Tailscale giống như `setup`, ngoại trừ:
+
+- `--account` là **tùy chọn** trên `run`; nếu không có, dùng `hooks.gmail.account`.
 - `run` **không** chấp nhận `--project`, `--push-endpoint` hoặc `--json`.
-- Các cờ của `run` không có mặc định tích hợp; giá trị bị thiếu sẽ dự phòng về các giá trị do `setup` ghi.
+- Mỗi cờ trước hết dùng giá trị cấu hình `hooks.gmail.*` tương ứng (do `setup` ghi), sau đó dùng cùng giá trị mặc định tích hợp mà `setup` sử dụng, với một ngoại lệ: `--tailscale` mặc định là `off` trên `run` (không phải `funnel`) khi cả cờ lẫn `hooks.gmail.tailscale.mode` đều chưa được thiết lập.
 
-| Danh mục           | Cờ                                                                               |
-| ------------------ | -------------------------------------------------------------------------------- |
-| Pub/Sub            | `--account`, `--topic`, `--subscription`, `--label`                              |
-| Phân phối OpenClaw | `--hook-url`, `--hook-token`, `--push-token`                                     |
-| `gog watch serve`  | `--bind`, `--port`, `--path`, `--include-body`, `--max-bytes`, `--renew-minutes` |
-| Tailscale          | `--tailscale`, `--tailscale-path`, `--tailscale-target`                          |
+| Danh mục             | Cờ                                                                               |
+| -------------------- | -------------------------------------------------------------------------------- |
+| Pub/Sub              | `--account`, `--topic`, `--subscription`, `--label`                              |
+| Phân phối OpenClaw   | `--hook-url`, `--hook-token`, `--push-token`                                     |
+| `gog watch serve`    | `--bind`, `--port`, `--path`, `--include-body`, `--max-bytes`, `--renew-minutes` |
+| Tailscale            | `--tailscale`, `--tailscale-path`, `--tailscale-target`                          |
 
 <Note>
-Đối với `run`, giá trị `--topic` là đường dẫn chủ đề Pub/Sub đầy đủ (`projects/.../topics/...`), không chỉ là tên chủ đề ngắn.
+Đối với `run`, giá trị `--topic` là đường dẫn đầy đủ của chủ đề Pub/Sub (`projects/.../topics/...`), không chỉ là tên ngắn của chủ đề.
 </Note>
-
-## Luồng đầu cuối
-
-Xem [Tích hợp Gmail Pub/Sub](/vi/automation/cron-jobs#gmail-pubsub-integration) để biết thiết lập dự án GCP, OAuth và phía Gateway ghép với các lệnh CLI này.
 
 ## Liên quan
 
-- [Tham chiếu CLI](/vi/cli)
+- [Tài liệu tham khảo CLI](/vi/cli)
 - [Tự động hóa Webhook](/vi/automation/cron-jobs)
-- [Gmail Pub/Sub](/vi/automation/cron-jobs#gmail-pubsub-integration)
+- [Tích hợp Gmail Pub/Sub](/vi/automation/cron-jobs#gmail-pubsub-integration)

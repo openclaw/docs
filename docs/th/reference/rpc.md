@@ -1,51 +1,51 @@
 ---
 read_when:
-    - การเพิ่มหรือเปลี่ยนแปลงการผสานการทำงานกับ CLI ภายนอก
+    - การเพิ่มหรือเปลี่ยนแปลงการผสานรวม CLI ภายนอก
     - การดีบักอะแดปเตอร์ RPC (signal-cli, imsg)
-summary: อะแดปเตอร์ RPC สำหรับ CLI ภายนอก (signal-cli, imsg) และรูปแบบของ Gateway
+summary: อะแดปเตอร์ RPC สำหรับ CLI ภายนอก (signal-cli, imsg) และรูปแบบ Gateway
 title: อะแดปเตอร์ RPC
 x-i18n:
-    generated_at: "2026-05-10T19:56:30Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:40:33Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 63556f140bee55821fa0a09ff9808e163728049f8db4c58f7bb4ceca6e1cac1a
+    source_hash: 6ddb3fb741c90fe7b01ba35376b71865584b1e507cf610705392452790fb76f5
     source_path: reference/rpc.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw ผสานรวม CLI ภายนอกผ่าน JSON-RPC ปัจจุบันใช้สองรูปแบบ
+OpenClaw ผสานรวม CLI ภายนอกผ่าน JSON-RPC ปัจจุบันมีการใช้งานสองรูปแบบ
 
-## รูปแบบ A: HTTP daemon (signal-cli)
+## รูปแบบ A: ดีมอน HTTP (signal-cli)
 
-- `signal-cli` ทำงานเป็น daemon พร้อม JSON-RPC ผ่าน HTTP
-- สตรีมเหตุการณ์คือ SSE (`/api/v1/events`)
-- Health probe: `/api/v1/check`
-- OpenClaw จัดการ lifecycle เมื่อ `channels.signal.autoStart=true`
+- `signal-cli` ทำงานเป็นดีมอนโดยใช้ JSON-RPC ผ่าน HTTP
+- สตรีมเหตุการณ์ใช้ SSE (`/api/v1/events`)
+- จุดตรวจสอบสถานะ: `/api/v1/check`
+- OpenClaw จัดการวงจรชีวิตเมื่อ `channels.signal.autoStart=true`
 
-ดู [Signal](/th/channels/signal) สำหรับการตั้งค่าและ endpoint
+ดูการตั้งค่าและเอนด์พอยต์ได้ที่ [Signal](/th/channels/signal)
 
-## รูปแบบ B: กระบวนการลูก stdio (imsg)
+## รูปแบบ B: โปรเซสลูกแบบ stdio (imsg)
 
-- OpenClaw spawn `imsg rpc` เป็นกระบวนการลูกสำหรับ [iMessage](/th/channels/imessage)
-- JSON-RPC เป็นแบบคั่นบรรทัดผ่าน stdin/stdout (หนึ่ง JSON object ต่อบรรทัด)
-- ไม่มีพอร์ต TCP และไม่ต้องใช้ daemon
+- OpenClaw เรียกใช้ `imsg rpc` เป็นโปรเซสลูกสำหรับ [iMessage](/th/channels/imessage)
+- JSON-RPC แบ่งตามบรรทัดผ่าน stdin/stdout (หนึ่งออบเจ็กต์ JSON ต่อบรรทัด)
+- ไม่ใช้พอร์ต TCP และไม่ต้องมีดีมอน
 
 เมธอดหลักที่ใช้:
 
 - `watch.subscribe` → การแจ้งเตือน (`method: "message"`)
 - `watch.unsubscribe`
 - `send`
-- `chats.list` (probe/diagnostics)
+- `chats.list` (การตรวจสอบ/การวินิจฉัย)
 
-ดู [iMessage](/th/channels/imessage) สำหรับการตั้งค่าแบบเดิมและการระบุที่อยู่ (ควรใช้ `chat_id`)
+ดูการตั้งค่าและการระบุปลายทางได้ที่ [iMessage](/th/channels/imessage) (ควรใช้ `chat_id` แทนสตริงชื่อที่แสดง)
 
-## แนวทางสำหรับ adapter
+## แนวทางสำหรับอะแดปเตอร์
 
-- Gateway เป็นเจ้าของกระบวนการ (start/stop ผูกกับ lifecycle ของ provider)
-- ทำให้ไคลเอนต์ RPC ทนทาน: timeout, รีสตาร์ตเมื่อออกจากกระบวนการ
-- ควรใช้ ID ที่เสถียร (เช่น `chat_id`) แทนสตริงที่ใช้แสดงผล
+- Gateway จัดการโปรเซส (การเริ่ม/หยุดเชื่อมโยงกับวงจรชีวิตของผู้ให้บริการ)
+- ทำให้ไคลเอนต์ RPC ทนทานต่อข้อผิดพลาด: กำหนดเวลาหมดและเริ่มใหม่เมื่อโปรเซสสิ้นสุด
+- ควรใช้ ID ที่คงที่ (เช่น `chat_id`) แทนสตริงชื่อที่แสดง
 
-## ที่เกี่ยวข้อง
+## เนื้อหาที่เกี่ยวข้อง
 
 - [โปรโตคอล Gateway](/th/gateway/protocol)

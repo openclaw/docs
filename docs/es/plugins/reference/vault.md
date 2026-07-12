@@ -1,13 +1,12 @@
 ---
 read_when:
-    - Está instalando, configurando o auditando el plugin de bóveda
-summary: Integración del proveedor SecretRef con HashiCorp Vault.
+    - Estás instalando, configurando o auditando el plugin de bóveda
+summary: Integración del proveedor SecretRef de HashiCorp Vault.
 title: Plugin de bóveda
 x-i18n:
-    generated_at: "2026-07-12T14:41:50Z"
+    generated_at: "2026-07-11T23:21:51Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 687ee6457cbd180f6aa1345cc1285ca69d430f4dbe811db87738dfbc4b03a2d4
     source_path: plugins/reference/vault.md
@@ -16,7 +15,7 @@ x-i18n:
 
 # Plugin de Vault
 
-Integración con el proveedor SecretRef de HashiCorp Vault.
+Integración del proveedor SecretRef de HashiCorp Vault.
 
 ## Distribución
 
@@ -25,7 +24,7 @@ Integración con el proveedor SecretRef de HashiCorp Vault.
 
 ## Superficie
 
-Plugin
+plugin
 
 ## Documentación relacionada
 

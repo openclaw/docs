@@ -1,99 +1,88 @@
 ---
 read_when:
-    - Uitvoeringsgoedkeuringen of allowlists configureren
-    - Exec-goedkeurings-UX implementeren in de macOS-app
-    - Prompts voor sandbox-ontsnapping en hun implicaties beoordelen
+    - Exec-goedkeuringen of toelatingslijsten configureren
+    - Implementatie van de gebruikerservaring voor uitvoeringsgoedkeuring in de macOS-app
+    - Sandbox-escape-prompts en de implicaties ervan beoordelen
 sidebarTitle: Exec approvals
-summary: 'Host-exec-goedkeuringen: beleidsinstellingen, toegestane lijsten en de YOLO/strikte workflow'
-title: Uitvoeringsgoedkeuringen
+summary: 'Goedkeuringen voor uitvoering op de host: beleidsinstellingen, toelatingslijsten en de YOLO/strikte workflow'
+title: Exec-goedkeuringen
 x-i18n:
-    generated_at: "2026-06-27T18:25:44Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:22:28Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 44a4a5c9c56da458fdb25d5fe698df305af17188695d8befc1d4cfd8e8333e96
+    source_hash: b44efdfe5a6c9f3cc978baef91d80d1f75d39627d3a16f5971800809a642a72c
     source_path: tools/exec-approvals.md
     workflow: 16
 ---
 
-Exec-goedkeuringen zijn de **beveiligingsgrens van de companion-app / Node-host** waarmee
-een gesandboxte agent opdrachten op een echte host (`gateway` of `node`) kan uitvoeren. Een
-veiligheidsvergrendeling: opdrachten zijn alleen toegestaan wanneer beleid + allowlist +
-(optionele) gebruikersgoedkeuring allemaal overeenstemmen. Exec-goedkeuringen komen **boven op**
-toolbeleid en verhoogde gating (tenzij elevated is ingesteld op `full`, waardoor
-goedkeuringen worden overgeslagen).
+Uitvoeringsgoedkeuringen vormen de **beveiligingsmaatregel van de begeleidende app / node-host** waarmee een agent in een sandbox opdrachten op een echte host (`gateway` of `node`) kan uitvoeren. Opdrachten worden alleen uitgevoerd wanneer beleid + toelatingslijst + (optionele) gebruikersgoedkeuring allemaal overeenstemmen. Goedkeuringen komen **boven op** het toolbeleid en de verhoogde toegangscontrole (verhoogd `full` slaat ze over).
 
-Zie voor een modusgerichte uitleg van `deny`, `allowlist`, `ask`, `auto`, `full`,
-Codex Guardian-mapping en ACPX-harnessmachtigingen
-[Permission modes](/nl/tools/permission-modes).
+Zie [Machtigingsmodi](/nl/tools/permission-modes) voor een modusgericht overzicht van `deny`, `allowlist`, `ask`, `auto`, `full`, de Codex Guardian-toewijzing en ACPX-harnasmachtigingen.
 
 <Note>
-Effectief beleid is de **strengere** van `tools.exec.*` en de standaardwaarden voor
-goedkeuringen; als een goedkeuringsveld wordt weggelaten, wordt de waarde van
-`tools.exec` gebruikt. Host-exec gebruikt ook lokale goedkeuringsstatus op die machine - een
-host-lokale `ask: "always"` in het goedkeuringsbestand van de uitvoeringshost blijft
-vragen, zelfs als sessie- of configuratiestandaarden `ask: "on-miss"` aanvragen.
+Het effectieve beleid is het **strengste** van `tools.exec.*` en de standaardwaarden voor goedkeuringen: goedkeuringen kunnen de uit configuratie afgeleide beveiliging/vraaginstelling alleen aanscherpen en nooit versoepelen. Als een goedkeuringsveld wordt weggelaten, wordt de waarde van `tools.exec` gebruikt. Hostuitvoering gebruikt ook de lokale goedkeuringsstatus op die machine: een hostlokale `ask: "always"` in het goedkeuringsbestand van de uitvoeringshost blijft om bevestiging vragen, zelfs als de sessie- of configuratiestandaarden om `ask: "on-miss"` vragen.
 </Note>
 
-## Het effectieve beleid inspecteren
+## Waar dit van toepassing is
 
-| Opdracht                                                          | Wat het toont                                                                          |
-| ---------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `openclaw approvals get` / `--gateway` / `--node <id\|name\|ip>` | Aangevraagd beleid, hostbeleidsbronnen en het effectieve resultaat.                    |
-| `openclaw exec-policy show`                                      | Samengevoegde weergave van de lokale machine.                                          |
-| `openclaw exec-policy set` / `preset`                            | Synchroniseer het lokaal aangevraagde beleid in één stap met het lokale hostgoedkeuringsbestand. |
+Uitvoeringsgoedkeuringen worden lokaal afgedwongen op de uitvoeringshost:
 
-Wanneer een lokaal bereik `host=node` aanvraagt, rapporteert `exec-policy show` dat
-bereik tijdens runtime als door de node beheerd, in plaats van te doen alsof het lokale
-goedkeuringsbestand de bron van waarheid is.
-
-Als de UI van de companion-app **niet beschikbaar** is, wordt elk verzoek dat
-normaal om bevestiging zou vragen afgehandeld door de **ask-fallback** (standaard: `deny`).
-
-<Tip>
-Native chatgoedkeuringsclients kunnen kanaalspecifieke mogelijkheden op het
-wachtende goedkeuringsbericht voorbereiden. Matrix bereidt bijvoorbeeld reactiesnelkoppelingen voor
-(`✅` één keer toestaan, `❌` weigeren, `♾️` altijd toestaan) terwijl
-`/approve ...`-opdrachten in het bericht beschikbaar blijven als fallback.
-</Tip>
-
-## Waar het van toepassing is
-
-Exec-goedkeuringen worden lokaal afgedwongen op de uitvoeringshost:
-
-- **Gateway-host** → `openclaw`-proces op de gateway-machine.
-- **Node-host** → node-runner (macOS-companion-app of headless Node-host).
+- **Gateway-host** -> `openclaw`-proces op de Gateway-machine.
+- **Node-host** -> node-runner (begeleidende macOS-app of headless node-host).
 
 ### Vertrouwensmodel
 
-- Door de Gateway geauthenticeerde aanroepers zijn vertrouwde operators voor die Gateway.
-- Gekoppelde nodes breiden die vertrouwde operatorcapaciteit uit naar de Node-host.
-- Exec-goedkeuringen verminderen het risico op onbedoelde uitvoering, maar zijn **geen** auth-grens per gebruiker of alleen-lezenbeleid voor het bestandssysteem.
-- Na goedkeuring kan een opdracht bestanden wijzigen volgens de geselecteerde host- of sandboxbestandssysteemmachtigingen.
-- Goedgekeurde Node-hostruns binden canonieke uitvoeringscontext: canonieke cwd, exacte argv, env-binding indien aanwezig, en vastgezette uitvoerbare pad wanneer van toepassing.
-- Voor shellscripts en directe bestandsaanroepen via interpreter/runtime probeert OpenClaw ook één concreet lokaal bestandsoperand te binden. Als dat gebonden bestand na goedkeuring maar vóór uitvoering verandert, wordt de run geweigerd in plaats van gewijzigde inhoud uit te voeren.
-- Bestandsbinding is bewust best-effort, **geen** volledig semantisch model van elk loaderpad van elke interpreter/runtime. Als de goedkeuringsmodus niet exact één concreet lokaal bestand kan identificeren om te binden, weigert deze een door goedkeuring ondersteunde run te minten in plaats van volledige dekking te veinzen.
+- Door de Gateway geverifieerde aanroepers zijn vertrouwde operators voor die Gateway.
+- Gekoppelde nodes breiden die vertrouwde operatormogelijkheid uit naar de node-host.
+- Goedkeuringen verminderen het risico op onbedoelde uitvoering, maar vormen **geen** verificatiegrens per gebruiker of alleen-lezenbeleid voor het bestandssysteem.
+- Na goedkeuring kan een opdracht bestanden wijzigen volgens de geselecteerde machtigingen van het host- of sandboxbestandssysteem.
+- Goedgekeurde uitvoeringen op een node-host binden een canonieke uitvoeringscontext: werkmap, exacte argv, omgevingsbinding indien aanwezig en een vastgezet pad naar het uitvoerbare bestand indien van toepassing.
+- Voor shellscripts en directe aanroepen van bestanden via een interpreter/runtime probeert OpenClaw ook één concreet lokaal bestandsoperand te binden. Als dat bestand na goedkeuring maar vóór uitvoering verandert, wordt de uitvoering geweigerd in plaats van gewijzigde inhoud uit te voeren.
+- Bestandsbinding is gebaseerd op beste inspanning en vormt geen volledig model van elk laadpad van een interpreter/runtime. Als niet exact één concreet lokaal bestand kan worden geïdentificeerd, weigert OpenClaw een door goedkeuring ondersteunde uitvoering uit te geven in plaats van volledige dekking voor te wenden.
 
-### macOS-splitsing
+### Scheiding op macOS
 
-- De **Node-hostservice** stuurt `system.run` door naar de **macOS-app** via lokale IPC.
-- De **macOS-app** dwingt goedkeuringen af en voert de opdracht uit in UI-context.
+- De **node-hostservice** stuurt `system.run` via lokale IPC door naar de **macOS-app**.
+- De **macOS-app** dwingt goedkeuringen af en voert de opdracht uit binnen de UI-context.
+
+## Het effectieve beleid inspecteren
+
+| Opdracht                                                          | Wat deze toont                                                                         |
+| ---------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `openclaw approvals get` / `--gateway` / `--node <id\|name\|ip>` | Aangevraagd beleid, bronnen van het hostbeleid en het effectieve resultaat.            |
+| `openclaw exec-policy show`                                      | Samengevoegde weergave van de lokale machine.                                          |
+| `openclaw exec-policy set` / `preset`                            | Synchroniseert het lokale aangevraagde beleid in één stap met het lokale hostgoedkeuringsbestand. |
+
+<Note>
+`/exec`-overschrijvingen per sessie zijn niet inbegrepen. Voer `/exec` uit in de betreffende sessie om de huidige standaardwaarden te inspecteren. Zie [sessieoverschrijvingen](/nl/tools/exec#session-overrides-exec).
+</Note>
+
+Volledige CLI-referentie (vlaggen, JSON-uitvoer, toevoegen aan/verwijderen uit de toelatingslijst): [CLI voor goedkeuringen](/nl/cli/approvals).
+
+Wanneer een lokaal bereik om `host=node` vraagt, rapporteert `exec-policy show` dat bereik tijdens runtime als beheerd door de node, in plaats van het lokale goedkeuringsbestand als gezaghebbende bron te behandelen.
+
+Als de UI van de begeleidende app **niet beschikbaar** is, wordt elk verzoek dat normaal om bevestiging zou vragen afgehandeld via de **vraagterugval** (standaard: `deny`).
+
+<Tip>
+Native chatclients voor goedkeuringen kunnen kanaalspecifieke interactiemogelijkheden aan het bericht met de wachtende goedkeuring toevoegen. Matrix voegt reactiesnelkoppelingen toe (`✅` eenmaal toestaan, `♾️` altijd toestaan, `❌` weigeren), terwijl `/approve ...` als terugvaloptie in het bericht blijft staan.
+</Tip>
 
 ## Instellingen en opslag
 
-Goedkeuringen staan in een lokaal JSON-bestand op de uitvoeringshost. Wanneer
-`OPENCLAW_STATE_DIR` is ingesteld, volgt het bestand die statusmap;
-anders gebruikt het de standaard OpenClaw-statusmap:
+Goedkeuringen bevinden zich in een lokaal JSON-bestand op de uitvoeringshost. Wanneer `OPENCLAW_STATE_DIR` is ingesteld, volgt het bestand die statusmap; anders wordt de standaardstatusmap van OpenClaw gebruikt:
 
 ```text
 $OPENCLAW_STATE_DIR/exec-approvals.json
-# otherwise
+# anders
 ~/.openclaw/exec-approvals.json
 ```
 
-De standaard goedkeuringssocket volgt dezelfde root:
+De standaardgoedkeuringssocket volgt dezelfde hoofdmap:
 `$OPENCLAW_STATE_DIR/exec-approvals.sock`, of
 `~/.openclaw/exec-approvals.sock` wanneer de variabele niet is ingesteld.
+
+Releases vóór 2026.6.6 bewaarden het bestand altijd in `~/.openclaw`. Als `OPENCLAW_STATE_DIR` naar een andere locatie verwijst en er nog een goedkeuringsbestand in de standaardmap bestaat, voer dan eenmaal rechtstreeks `openclaw doctor --fix` uit om het naar de statusmap te importeren (het origineel wordt gearchiveerd met het achtervoegsel `.migrated`). De interactieve doctor kan de import ook vooraf tonen en laten bevestigen. Geautomatiseerde hersteluitvoeringen voor updates en Gateway-bewaking importeren nooit tussen statusmappen: een tijdelijke statusmap of statusmap voor voorbereiding mag de goedkeuringen van de standaardinstallatie niet overnemen. Dezelfde grens geldt voor het importeren van verouderde `plugin-binding-approvals.json`-bestanden naar de gedeelde SQLite-status.
 
 Voorbeeldschema:
 
@@ -121,7 +110,6 @@ Voorbeeldschema:
           "id": "B0C8C0B3-2C2D-4F8A-9A3C-5A4B3C2D1E0F",
           "pattern": "~/Projects/**/bin/rg",
           "source": "allow-always",
-          "commandText": "rg -n TODO",
           "lastUsedAt": 1737150000000,
           "lastUsedCommand": "rg -n TODO",
           "lastResolvedPath": "/Users/user/Projects/.../bin/rg"
@@ -132,138 +120,139 @@ Voorbeeldschema:
 }
 ```
 
-## Beleidsknoppen
+## Beleidsinstellingen
 
 ### `tools.exec.mode`
 
-`tools.exec.mode` is het aanbevolen genormaliseerde beleidsoppervlak voor host-exec.
-Waarden zijn:
+`tools.exec.mode` is het aanbevolen genormaliseerde beleidsoppervlak voor hostuitvoering:
 
-- `deny` - blokkeer host-exec.
-- `allowlist` - voer alleen opdrachten op de allowlist uit zonder te vragen.
-- `ask` - gebruik allowlistbeleid en vraag bij misses.
-- `auto` - gebruik allowlistbeleid, voer deterministische matches rechtstreeks uit en stuur goedkeuringsmisses via OpenClaw's native automatische reviewer voordat wordt teruggevallen op een menselijke goedkeuringsroute.
-- `full` - voer host-exec uit zonder goedkeuringsprompts.
+| Waarde      | Gedrag                                                                                                                                                                                            |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `deny`      | Blokkeert hostuitvoering.                                                                                                                                                                         |
+| `allowlist` | Voert alleen opdrachten op de toelatingslijst uit zonder om bevestiging te vragen.                                                                                                                |
+| `ask`       | Gebruikt het toelatingslijstbeleid en vraagt om bevestiging bij ontbrekende overeenkomsten.                                                                                                       |
+| `auto`      | Gebruikt het toelatingslijstbeleid, voert deterministische overeenkomsten rechtstreeks uit en stuurt ontbrekende goedkeuringen via de native automatische beoordelaar van OpenClaw voordat op menselijke goedkeuring wordt teruggevallen. |
+| `full`      | Voert opdrachten op de host uit zonder goedkeuringsvragen.                                                                                                                                        |
 
-Legacy `tools.exec.security` / `tools.exec.ask` blijven ondersteund en hebben nog steeds voorrang
-wanneer ze op het nauwere sessie- of agentbereik zijn ingesteld.
+De verouderde instellingen `tools.exec.security` / `tools.exec.ask` blijven ondersteund en zijn nog steeds van toepassing wanneer `mode` binnen dat bereik niet is ingesteld.
 
 ### `exec.security`
 
 <ParamField path="security" type='"deny" | "allowlist" | "full"'>
-  - `deny` - blokkeer alle host-exec-verzoeken.
-  - `allowlist` - sta alleen opdrachten op de allowlist toe.
-  - `full` - sta alles toe (equivalent aan elevated).
+  - `deny` - blokkeert alle aanvragen voor hostuitvoering.
+  - `allowlist` - staat alleen opdrachten op de toelatingslijst toe.
+  - `full` - staat alles toe (gelijkwaardig aan verhoogde toegang).
 
+De standaardwaarde is `full` voor Gateway-/node-hosts; een `sandbox`-host gebruikt in plaats daarvan standaard `deny`.
 </ParamField>
 
 ### `exec.ask`
 
 <ParamField path="ask" type='"off" | "on-miss" | "always"'>
-  Geconfigureerd ask-beleid voor host-exec. Regelt het basisgedrag van de goedkeuringsprompt
-  vanuit `tools.exec.ask` en hostgoedkeuringsstandaarden. De
-  per-aanroep `ask`-toolparameter (zie [Exec-tool](/nl/tools/exec#parameters))
-  kan die basis alleen verstrengen, en modelaanroepen met kanaaloorsprong negeren deze
-  wanneer de effectieve host-ask `off` is.
+  Geconfigureerd vraagbeleid voor hostuitvoering. Bepaalt het basisgedrag van
+  goedkeuringsvragen vanuit `tools.exec.ask` en de standaardwaarden voor
+  hostgoedkeuringen. De standaardwaarde is `off`. De toolparameter `ask` per
+  aanroep (zie [Uitvoeringstool](/nl/tools/exec#parameters)) kan die basis alleen
+  aanscherpen, en modelaanroepen vanuit kanalen negeren deze wanneer de
+  effectieve hostvraaginstelling `off` is.
 
-- `off` - nooit vragen.
-- `on-miss` - alleen vragen wanneer de allowlist niet overeenkomt.
-- `always` - bij elke opdracht vragen. Duurzaam vertrouwen met `allow-always` onderdrukt prompts **niet** wanneer de effectieve ask-modus `always` is.
+- `off` - vraagt nooit om bevestiging.
+- `on-miss` - vraagt alleen om bevestiging wanneer de toelatingslijst niet overeenkomt.
+- `always` - vraagt bij elke opdracht om bevestiging. Duurzaam vertrouwen via `allow-always` onderdrukt vragen **niet** wanneer de effectieve vraagmodus `always` is.
 
 </ParamField>
 
 ### `askFallback`
 
 <ParamField path="askFallback" type='"deny" | "allowlist" | "full"'>
-  Afhandeling wanneer een prompt vereist is maar geen UI bereikbaar is. Als dit
-  veld wordt weggelaten, gebruikt OpenClaw standaard `deny`.
+  Afhandeling wanneer een vraag vereist is maar geen UI bereikbaar is (of de
+  vraag verloopt). Gebruikt standaard `deny` wanneer deze instelling wordt
+  weggelaten.
 
-- `deny` - blokkeer.
-- `allowlist` - sta alleen toe als de allowlist overeenkomt.
-- `full` - sta toe.
+- `deny` - blokkeert.
+- `allowlist` - staat alleen toe als de toelatingslijst overeenkomt.
+- `full` - staat toe.
 
 </ParamField>
 
 ### `tools.exec.strictInlineEval`
 
 <ParamField path="strictInlineEval" type="boolean">
-  Wanneer `true`, behandelt OpenClaw inline code-eval-vormen als alleen met goedkeuring,
-  zelfs als de interpreter-binary zelf op de allowlist staat. Defense-in-depth
-  voor interpreter-loaders die niet netjes naar één stabiel bestandsoperand
-  mappen.
+  Wanneer `true`, worden vormen voor inline code-evaluatie behandeld als
+  uitsluitend via goedkeuring toegestaan, zelfs als het uitvoerbare bestand
+  van de interpreter zelf op de toelatingslijst staat. Dit biedt gelaagde
+  beveiliging voor interpreterladers die niet eenduidig aan één stabiel
+  bestandsoperand kunnen worden gekoppeld.
 </ParamField>
 
-Voorbeelden die de strikte modus opvangt:
+Voorbeelden die door de strikte modus worden onderschept: `python -c`, `node -e`/`--eval`/`-p`,
+`ruby -e`, `perl -e`/`-E`, `php -r`, `lua -e`, `osascript -e` (evenals inlinevormen van `awk`,
+`sed`, `make`, `find -exec` en `xargs`).
 
-- `python -c`
-- `node -e`, `node --eval`, `node -p`
-- `ruby -e`
-- `perl -e`, `perl -E`
-- `php -r`
-- `lua -e`
-- `osascript -e`
-
-In strikte modus hebben deze opdrachten nog steeds expliciete goedkeuring nodig, en
-`allow-always` bewaart niet automatisch nieuwe allowlist-vermeldingen voor ze.
+In de strikte modus vereisen deze opdrachten beoordeling of expliciete goedkeuring. Met
+`tools.exec.mode: "auto"` kan de beoordelaar één uitvoering met laag risico toestaan wanneer
+de opdracht een afdwingbaar plan heeft; anders vraagt OpenClaw een mens om goedkeuring.
+Opdrachtgoedkeuringen van `Codex app-server` die bij de terugval naar de beoordelaar terechtkomen, vragen
+een mens om goedkeuring omdat hun goedkeuringsverzoeken geen afdwingbaar opgelost
+uitvoerbaar bestand beschikbaar stellen.
+`allow-always` slaat geen nieuwe vermeldingen in de toelatingslijst op voor opdrachten met inline-evaluatie.
 
 ### `tools.exec.commandHighlighting`
 
 <ParamField path="commandHighlighting" type="boolean" default="false">
-  Regelt alleen de presentatie in exec-goedkeuringsprompts. Wanneer ingeschakeld,
-  kan OpenClaw parser-afgeleide opdrachtspans toevoegen zodat webgoedkeuringsprompts
-  opdrachttokens kunnen markeren. Stel dit in op `true` om
-  markering van opdrachttekst in te schakelen.
+  Alleen voor presentatie: wanneer ingeschakeld kan OpenClaw door de parser
+  afgeleide opdrachtbereiken toevoegen, zodat webgoedkeuringsvragen
+  opdrachttokens kunnen markeren. Dit verandert **niet** de werking van
+  `security`, `ask`, overeenkomsten met de toelatingslijst, strikte
+  inline-evaluatie, het doorsturen van goedkeuringen of de uitvoering van
+  opdrachten.
 </ParamField>
 
-Deze instelling wijzigt `security`, `ask`, allowlist-matching,
-strikt inline-eval-gedrag, doorsturen van goedkeuringen of opdrachtuitvoering **niet**.
-Deze kan globaal worden ingesteld onder `tools.exec.commandHighlighting` of per
-agent onder `agents.list[].tools.exec.commandHighlighting`.
+Stel dit globaal in onder `tools.exec.commandHighlighting` of per agent onder
+`agents.list[].tools.exec.commandHighlighting`.
 
-## YOLO-modus (geen goedkeuring)
+## YOLO-modus (zonder goedkeuring)
 
-Als je host-exec zonder goedkeuringsprompts wilt laten uitvoeren, moet je
-**beide** beleidslagen openen - aangevraagd exec-beleid in de OpenClaw-configuratie
-(`tools.exec.*`) **en** host-lokaal goedkeuringsbeleid in
-het goedkeuringsbestand van de uitvoeringshost.
+Om opdrachten op de host uit te voeren zonder goedkeuringsvragen, opent u **beide** beleidslagen:
+het aangevraagde uitvoeringsbeleid in de OpenClaw-configuratie (`tools.exec.*`) **en**
+het hostlokale goedkeuringsbeleid in het goedkeuringsbestand van de uitvoeringshost.
 
-OpenClaw gebruikt standaard `deny` voor weggelaten `askFallback`. Stel host
-`askFallback` expliciet in op `full` wanneer een goedkeuringsprompt zonder UI
-moet terugvallen op toestaan.
+Een weggelaten `askFallback` gebruikt standaard `deny`. Stel `askFallback` op de host
+expliciet in op `full` wanneer een goedkeuringsvraag zonder UI moet terugvallen op toestaan.
 
 | Laag                  | YOLO-instelling            |
 | --------------------- | -------------------------- |
 | `tools.exec.security` | `full` op `gateway`/`node` |
 | `tools.exec.ask`      | `off`                      |
-| Host `askFallback`    | `full`                     |
+| Host-`askFallback`    | `full`                     |
 
 <Warning>
 **Belangrijke verschillen:**
 
-- `tools.exec.host=auto` kiest **waar** exec draait: sandbox wanneer beschikbaar, anders gateway.
-- YOLO kiest **hoe** host-exec wordt goedgekeurd: `security=full` plus `ask=off`.
-- In YOLO-modus voegt OpenClaw **geen** aparte heuristische goedkeuringsgate voor opdrachtobfuscatie of script-preflight-afwijslaag toe boven op het geconfigureerde host-exec-beleid.
-- `auto` maakt gateway-routing geen vrije override vanuit een gesandboxte sessie. Een per-aanroep `host=node`-verzoek is toegestaan vanuit `auto`; `host=gateway` is vanuit `auto` alleen toegestaan wanneer geen sandboxruntime actief is. Stel voor een stabiele niet-auto-standaard `tools.exec.host` in of gebruik expliciet `/exec host=...`.
+- `tools.exec.host=auto` kiest **waar** uitvoering plaatsvindt: in de sandbox wanneer beschikbaar, anders op de Gateway.
+- YOLO kiest **hoe** hostuitvoering wordt goedgekeurd: `security=full` plus `ask=off`.
+- YOLO voegt **geen** afzonderlijke heuristische goedkeuringscontrole voor verhulde opdrachten of afwijzingslaag voor voorafgaande scriptcontrole toe boven op het geconfigureerde beleid voor hostuitvoering.
+- `auto` maakt routering naar de Gateway geen vrije overschrijving vanuit een sessie in een sandbox. Een aanvraag per aanroep met `host=node` is toegestaan vanuit `auto`; `host=gateway` is vanuit `auto` alleen toegestaan wanneer geen sandboxruntime actief is. Stel voor een stabiele niet-automatische standaardwaarde `tools.exec.host` in of gebruik expliciet `/exec host=...`.
 
 </Warning>
 
 CLI-gestuurde providers die hun eigen niet-interactieve machtigingsmodus aanbieden,
 kunnen dit beleid volgen. Claude CLI voegt
-`--permission-mode bypassPermissions` toe wanneer OpenClaw's effectieve exec-beleid
-YOLO is. Voor door OpenClaw beheerde Claude-live-sessies is OpenClaw's
-effectieve exec-beleid gezaghebbend boven Claude's native machtigingsmodus:
-YOLO normaliseert live-starts naar `--permission-mode bypassPermissions`, en
-restrictief effectief exec-beleid normaliseert live-starts naar
-`--permission-mode default`, zelfs als ruwe Claude-backendargs een andere
+`--permission-mode bypassPermissions` toe wanneer het effectieve uitvoeringsbeleid
+van OpenClaw YOLO is. Voor door OpenClaw beheerde live Claude-sessies is het
+effectieve uitvoeringsbeleid van OpenClaw leidend boven de eigen machtigingsmodus van Claude:
+YOLO normaliseert live starts naar `--permission-mode bypassPermissions`, en
+een beperkend effectief uitvoeringsbeleid normaliseert live starts naar
+`--permission-mode default`, zelfs als onbewerkte Claude-backendargumenten een andere
 modus opgeven.
 
-Als je een conservatievere setup wilt, verstreng dan het OpenClaw-exec-beleid terug naar
+Als je een conservatievere configuratie wilt, stel je het uitvoeringsbeleid van OpenClaw weer strenger in op
 `allowlist` / `on-miss` of `deny`.
 
-### Permanente gateway-hostsetup met "nooit vragen"
+### Permanente configuratie op de Gateway-host zonder prompts
 
 <Steps>
-  <Step title="Stel het aangevraagde configuratiebeleid in">
+  <Step title="Stel het gevraagde configuratiebeleid in">
     ```bash
     openclaw config set tools.exec.host gateway
     openclaw config set tools.exec.security full
@@ -271,7 +260,7 @@ Als je een conservatievere setup wilt, verstreng dan het OpenClaw-exec-beleid te
     openclaw gateway restart
     ```
   </Step>
-  <Step title="Laat het hostgoedkeuringsbestand overeenkomen">
+  <Step title="Stem het goedkeuringsbestand van de host af">
     ```bash
     openclaw approvals set --stdin <<'EOF'
     {
@@ -293,18 +282,26 @@ Als je een conservatievere setup wilt, verstreng dan het OpenClaw-exec-beleid te
 openclaw exec-policy preset yolo
 ```
 
-Die lokale snelkoppeling werkt beide bij:
+Werkt zowel de lokale waarden voor `tools.exec.host/security/ask` als de standaardwaarden
+van het lokale goedkeuringsbestand bij (inclusief `askFallback: "full"`). Dit werkt bewust
+alleen lokaal. Gebruik `openclaw approvals set --gateway` of
+`openclaw approvals set --node <id|name|ip>` om goedkeuringen voor de Gateway-host
+of Node-host op afstand te wijzigen.
 
-- Lokale `tools.exec.host/security/ask`.
-- Standaardwaarden van het lokale goedkeuringsbestand, inclusief `askFallback: "full"`.
+Andere ingebouwde voorinstellingen zijn: `cautious` (`host=gateway`, `security=allowlist`,
+`ask=on-miss`, `askFallback=deny`) en `deny-all` (`host=gateway`,
+`security=deny`, `ask=off`, `askFallback=deny`). Pas ze op dezelfde manier toe:
+`openclaw exec-policy preset cautious`.
 
-Deze is bewust alleen lokaal. Gebruik `openclaw approvals set --gateway` of
-`openclaw approvals set --node <id|name|ip>` om gateway-host- of Node-hostgoedkeuringen
-op afstand te wijzigen.
+Gebruik
+`openclaw exec-policy set --host <auto|sandbox|gateway|node> --security
+<deny|allowlist|full> --ask <off|on-miss|always> --ask-fallback
+<deny|allowlist|full>` met een willekeurige combinatie van deze vlaggen om
+afzonderlijke velden in te stellen in plaats van een volledige voorinstelling.
 
 ### Node-host
 
-Pas voor een Node-host hetzelfde goedkeuringsbestand toe op die node:
+Pas in plaats daarvan hetzelfde goedkeuringsbestand toe op de Node:
 
 ```bash
 openclaw approvals set --node <id|name|ip> --stdin <<'EOF'
@@ -320,39 +317,39 @@ EOF
 ```
 
 <Note>
-**Alleen-lokale beperkingen:**
+**Beperkingen van uitsluitend lokaal gebruik:**
 
-- `openclaw exec-policy` synchroniseert geen node-goedkeuringen.
+- `openclaw exec-policy` synchroniseert geen Node-goedkeuringen.
 - `openclaw exec-policy set --host node` wordt geweigerd.
-- Node-exec-goedkeuringen worden tijdens runtime van de node opgehaald, dus node-gerichte updates moeten `openclaw approvals --node ...` gebruiken.
+- Goedkeuringen voor uitvoering op een Node worden tijdens runtime bij de Node opgehaald. Daarom moeten op een Node gerichte updates `openclaw approvals --node ...` gebruiken.
 
 </Note>
 
-### Snelkoppeling alleen voor sessie
+### Snelkoppeling voor alleen de sessie
 
 - `/exec security=full ask=off` wijzigt alleen de huidige sessie.
-- `/elevated full` is een noodsnelkoppeling die exec-goedkeuringen alleen overslaat wanneer
-  zowel het aangevraagde beleid als het hostgoedkeuringsbestand uitkomen op
-  `security: "full"` en `ask: "off"`. Een strenger hostbestand, zoals
-  `ask: "always"`, vraagt nog steeds om bevestiging.
+- `/elevated full` is een noodsnelkoppeling die uitvoeringsgoedkeuringen alleen overslaat
+  wanneer zowel het gevraagde beleid als het goedkeuringsbestand van de host resulteren in
+  `security: "full"` en `ask: "off"`. Een strenger hostbestand, zoals `ask:
+"always"`, toont nog steeds een prompt.
 
-Als het hostgoedkeuringsbestand strenger blijft dan de configuratie, wint het strengere
-hostbeleid nog steeds.
+Als het goedkeuringsbestand van de host strenger blijft dan de configuratie, blijft het
+strengere hostbeleid leidend.
 
-## Allowlist (per agent)
+## Toelatingslijst (per agent)
 
-Allowlists zijn **per agent**. Als er meerdere agents bestaan, wissel dan in de macOS-app welke agent
-je bewerkt. Patronen zijn glob-overeenkomsten.
+Toelatingslijsten gelden **per agent**. Als er meerdere agents bestaan, wissel je in de
+macOS-app van agent om te bepalen welke agent je bewerkt. Patronen worden als glob-patronen vergeleken.
 
-Patronen kunnen opgeloste globs voor binaire paden zijn of kale globs voor opdrachtnamen.
-Kale namen komen alleen overeen met opdrachten die via `PATH` worden aangeroepen, dus `rg` kan overeenkomen met
-`/opt/homebrew/bin/rg` wanneer de opdracht `rg` is, maar **niet** met `./rg` of
-`/tmp/rg`. Gebruik een padglob wanneer je één specifieke binaire
-locatie wilt vertrouwen.
+Patronen kunnen glob-patronen voor opgeloste paden naar uitvoerbare bestanden zijn, of glob-patronen
+met alleen een opdrachtnaam. Losse namen komen alleen overeen met opdrachten die via `PATH`
+worden aangeroepen. Daardoor kan `rg` overeenkomen met `/opt/homebrew/bin/rg` wanneer de
+opdracht `rg` is, maar **niet** met `./rg` of `/tmp/rg`. Gebruik een pad-glob om één
+specifieke locatie van een uitvoerbaar bestand te vertrouwen.
 
-Verouderde `agents.default`-vermeldingen worden bij het laden gemigreerd naar `agents.main`.
-Shell-ketens zoals `echo ok && pwd` moeten nog steeds elk topniveau-segment
-aan de allowlist-regels laten voldoen.
+Verouderde vermeldingen in `agents.default` worden tijdens het laden gemigreerd naar `agents.main`.
+Voor shell-ketens zoals `echo ok && pwd` moet elk segment op het hoogste niveau nog steeds
+aan de regels van de toelatingslijst voldoen.
 
 Voorbeelden:
 
@@ -363,11 +360,12 @@ Voorbeelden:
 
 ### Argumenten beperken met argPattern
 
-Voeg `argPattern` toe wanneer een allowlist-vermelding moet overeenkomen met een binary en een
-specifieke argumentvorm. OpenClaw evalueert de reguliere expressie
-tegen de geparseerde opdrachtargumenten, exclusief het uitvoerbare token
-(`argv[0]`). Voor handmatig geschreven vermeldingen worden argumenten samengevoegd met één
-spatie, dus veranker het patroon wanneer je een exacte overeenkomst nodig hebt.
+Voeg `argPattern` toe wanneer een vermelding in de toelatingslijst overeen moet komen met een
+uitvoerbaar bestand en een specifieke argumentstructuur. OpenClaw gebruikt op elke host de
+semantiek van reguliere ECMAScript-expressies (JavaScript) en evalueert de expressie aan de hand
+van de geparseerde opdrachtargumenten, zonder het token van het uitvoerbare bestand (`argv[0]`).
+Bij handmatig geschreven vermeldingen worden argumenten met één spatie samengevoegd. Veranker
+het patroon daarom wanneer je een exacte overeenkomst nodig hebt.
 
 ```json
 {
@@ -385,141 +383,141 @@ spatie, dus veranker het patroon wanneer je een exacte overeenkomst nodig hebt.
 }
 ```
 
-Die vermelding staat `python3 safe.py` toe; `python3 other.py` mist de allowlist.
-Als er ook een alleen-pad-vermelding voor dezelfde binary aanwezig is, kunnen niet-overeenkomende
-argumenten nog steeds terugvallen op die alleen-pad-vermelding. Laat de alleen-pad-
-vermelding weg wanneer het doel is om de binary te beperken tot de gedeclareerde argumenten.
+Deze vermelding staat `python3 safe.py` toe; `python3 other.py` komt niet voor in de
+toelatingslijst. Als er voor hetzelfde uitvoerbare bestand ook een vermelding met alleen een pad
+aanwezig is, kunnen niet-overeenkomende argumenten alsnog terugvallen op die vermelding met alleen
+een pad. Laat de vermelding met alleen een pad weg wanneer het doel is het uitvoerbare bestand
+te beperken tot de opgegeven argumenten.
 
-Vermeldingen die door goedkeuringsflows zijn opgeslagen, kunnen een interne scheidingstekenindeling gebruiken voor
-exacte argv-overeenkomst. Gebruik bij voorkeur de UI of goedkeuringsflow om die
-vermeldingen opnieuw te genereren in plaats van de gecodeerde waarde handmatig te bewerken. Als OpenClaw
-argv voor een opdrachtsegment niet kan parsen, komen vermeldingen met `argPattern` niet overeen.
+Vermeldingen die via goedkeuringsstromen worden opgeslagen, gebruiken een interne
+scheidingsindeling voor exacte vergelijking van argv. Gebruik bij voorkeur de interface of
+goedkeuringsstroom om deze vermeldingen opnieuw te genereren, in plaats van de gecodeerde waarde
+handmatig te bewerken. Als OpenClaw argv voor een opdrachtsegment niet kan parseren, komen
+vermeldingen met `argPattern` niet overeen.
 
-Elke allowlist-vermelding ondersteunt:
+Elke vermelding in de toelatingslijst ondersteunt:
 
-| Veld               | Betekenis                                                    |
-| ------------------ | ------------------------------------------------------------ |
-| `pattern`          | Opgeloste glob voor binair pad of kale glob voor opdrachtnaam |
-| `argPattern`       | Optionele argv-regex; weggelaten vermeldingen zijn alleen-pad |
-| `id`               | Stabiele UUID die wordt gebruikt voor UI-identiteit           |
-| `source`           | Bron van de vermelding, zoals `allow-always`                 |
-| `commandText`      | Opdrachttekst vastgelegd toen een goedkeuringsflow de vermelding maakte |
-| `lastUsedAt`       | Tijdstempel van laatste gebruik                              |
-| `lastUsedCommand`  | Laatste opdracht die overeenkwam                             |
-| `lastResolvedPath` | Laatst opgeloste binaire pad                                 |
+| Veld               | Betekenis                                                        |
+| ------------------ | ---------------------------------------------------------------- |
+| `pattern`          | Glob voor opgelost pad van uitvoerbaar bestand of losse opdrachtnaam |
+| `argPattern`       | Optionele ECMAScript-reguliere expressie voor argv; weglaten betekent alleen pad |
+| `id`               | Stabiele ondoorzichtige ID; indien afwezig gegenereerd als UUID  |
+| `source`           | Bron van de vermelding, zoals `allow-always`                     |
+| `commandText`      | Verouderde invoer in platte tekst; wordt tijdens laden verwijderd |
+| `lastUsedAt`       | Tijdstempel van laatste gebruik                                  |
+| `lastUsedCommand`  | Laatste opdracht die overeenkwam                                 |
+| `lastResolvedPath` | Laatst opgeloste pad naar uitvoerbaar bestand                    |
 
-## Skill-CLI’s automatisch toestaan
+## CLI's van Skills automatisch toestaan
 
-Wanneer **Skill-CLI’s automatisch toestaan** is ingeschakeld, worden uitvoerbare bestanden waarnaar door
-bekende Skills wordt verwezen behandeld als toegestaan op nodes (macOS-node of headless
-node-host). Dit gebruikt `skills.bins` via de Gateway-RPC om de
-skill-binlijst op te halen. Schakel dit uit als je strikt handmatige allowlists wilt.
+Wanneer **CLI's van Skills automatisch toestaan** (`autoAllowSkills`) is ingeschakeld, worden
+uitvoerbare bestanden waarnaar bekende Skills verwijzen op Nodes behandeld alsof ze op de
+toelatingslijst staan (macOS-Node of headless Node-host). Hiervoor wordt `skills.bins` via
+de Gateway-RPC gebruikt om de lijst met uitvoerbare bestanden van de Skills op te halen.
+Schakel dit uit als je strikt handmatige toelatingslijsten wilt.
 
 <Warning>
-- Dit is een **impliciete gemaks-allowlist**, los van handmatige pad-allowlistvermeldingen.
-- Het is bedoeld voor vertrouwde operatoromgevingen waar Gateway en node binnen dezelfde vertrouwensgrens vallen.
-- Als je strikt expliciet vertrouwen vereist, houd `autoAllowSkills: false` en gebruik alleen handmatige pad-allowlistvermeldingen.
+- Dit is een **impliciete toelatingslijst voor gebruiksgemak**, los van handmatige vermeldingen met paden in de toelatingslijst.
+- Deze is bedoeld voor vertrouwde operatoromgevingen waarin de Gateway en Node zich binnen dezelfde vertrouwensgrens bevinden.
+- Als je strikt expliciet vertrouwen vereist, houd je `autoAllowSkills: false` aan en gebruik je uitsluitend handmatige vermeldingen met paden in de toelatingslijst.
 
 </Warning>
 
-## Veilige bins en goedkeuring doorsturen
+## Veilige programma's en doorsturen van goedkeuringen
 
-Voor veilige bins (het stdin-only snelle pad), details over interpreterbinding en
-hoe je goedkeuringsprompts doorstuurt naar Slack/Discord/Telegram (of ze uitvoert als
-native goedkeuringsclients), zie
-[Exec-goedkeuringen - geavanceerd](/nl/tools/exec-approvals-advanced).
+Zie
+[Uitvoeringsgoedkeuringen - geavanceerd](/nl/tools/exec-approvals-advanced)
+voor veilige programma's (het snelle pad dat alleen stdin gebruikt), details over het koppelen
+van interpreters en informatie over het doorsturen van goedkeuringsprompts naar
+Slack/Discord/Telegram (of het uitvoeren ervan als systeemeigen goedkeuringsclients).
 
-## Bewerken in de Control UI
+## Bewerken via de bedieningsinterface
 
-Gebruik de kaart **Control UI → Nodes → Exec approvals** om standaardwaarden,
-per-agent-overschrijvingen en allowlists te bewerken. Kies een scope (Standaardwaarden of een agent),
-pas het beleid aan, voeg allowlist-patronen toe of verwijder ze, en kies daarna **Opslaan**. De UI
-toont metadata over laatste gebruik per patroon, zodat je de lijst netjes kunt houden.
+Gebruik de kaart **Bedieningsinterface -> Nodes -> Uitvoeringsgoedkeuringen** om standaardwaarden,
+overschrijvingen per agent en toelatingslijsten te bewerken. Kies een bereik (Standaardwaarden of
+een agent), pas het beleid aan, voeg patronen aan de toelatingslijst toe of verwijder ze en klik
+vervolgens op **Opslaan**. De interface toont per patroon metagegevens over het laatste gebruik,
+zodat je de lijst overzichtelijk kunt houden.
 
 De doelselector kiest **Gateway** (lokale goedkeuringen) of een **Node**.
-Nodes moeten `system.execApprovals.get/set` adverteren (macOS-app of
-headless node-host). Als een node exec-goedkeuringen nog niet adverteert,
-bewerk dan rechtstreeks het lokale goedkeuringsbestand.
+Nodes moeten `system.execApprovals.get/set` aankondigen (macOS-app of headless
+Node-host). Als een Node nog geen uitvoeringsgoedkeuringen aankondigt, bewerk je het
+lokale goedkeuringsbestand rechtstreeks.
 
-CLI: `openclaw approvals` ondersteunt bewerken van gateway of node - zie
-[Goedkeurings-CLI](/nl/cli/approvals).
+Sommige Node-hosts, waaronder de Windows-companion, gebruiken een andere indeling
+voor het goedkeuringsbeleid. De bedieningsinterface toont dit systeemeigen hostbeleid
+als alleen-lezen. Gebruik de companion-app of `openclaw approvals set --node
+<id|name|ip>` met de systeemeigen beleidsstructuur om het te bewerken; zie
+[CLI voor goedkeuringen](/nl/cli/approvals).
 
-## Goedkeuringsflow
+CLI: `openclaw approvals` ondersteunt het bewerken van de Gateway of een Node; zie
+[CLI voor goedkeuringen](/nl/cli/approvals).
 
-Wanneer een prompt vereist is, zendt de gateway
-`exec.approval.requested` uit naar operatorclients. De Control UI en macOS-
-app lossen dit op via `exec.approval.resolve`, waarna de gateway het
-goedgekeurde verzoek doorstuurt naar de node-host.
+## Goedkeuringsstroom
 
-Voor `host=node` bevatten goedkeuringsverzoeken een canonieke `systemRunPlan`-
-payload. De gateway gebruikt dat plan als de gezaghebbende
-opdracht/cwd/sessie-context wanneer goedgekeurde `system.run`-
-verzoeken worden doorgestuurd.
+Wanneer een prompt vereist is, zendt de Gateway `exec.approval.requested` uit naar
+operatorclients. De bedieningsinterface en macOS-app handelen deze af via
+`exec.approval.resolve`, waarna de Gateway het goedgekeurde verzoek doorstuurt naar
+de Node-host.
 
-Dat is belangrijk voor latentie bij asynchrone goedkeuring:
+Voor `host=node` bevatten goedkeuringsverzoeken een canonieke `systemRunPlan`-payload.
+De Gateway gebruikt dat plan als de leidende context voor opdracht/cwd/sessie bij het
+doorsturen van goedgekeurde `system.run`-verzoeken:
 
-- Het node-exec-pad bereidt vooraf één canoniek plan voor.
-- Het goedkeuringsrecord slaat dat plan en de bindingsmetadata ervan op.
-- Zodra het is goedgekeurd, hergebruikt de uiteindelijk doorgestuurde `system.run`-aanroep het opgeslagen plan in plaats van latere bewerkingen door de aanroeper te vertrouwen.
-- Als de aanroeper `command`, `rawCommand`, `cwd`, `agentId` of `sessionKey` wijzigt nadat het goedkeuringsverzoek is gemaakt, weigert de gateway de doorgestuurde uitvoering als een goedkeuringsmismatch.
+- Het uitvoeringspad van de Node stelt vooraf één canoniek plan op.
+- De goedkeuringsregistratie slaat dat plan en de bijbehorende koppelingsmetagegevens op.
+- Na goedkeuring hergebruikt de uiteindelijke doorgestuurde `system.run`-aanroep het opgeslagen plan, in plaats van latere wijzigingen door de aanroeper te vertrouwen.
+- Als de aanroeper `command`, `rawCommand`, `cwd`, `agentId` of `sessionKey` wijzigt nadat het goedkeuringsverzoek is aangemaakt, weigert de Gateway de doorgestuurde uitvoering wegens een niet-overeenkomende goedkeuring.
 
-## Systeemgebeurtenissen
+## Systeemgebeurtenissen en weigeringen
 
-De exec-levenscyclus wordt weergegeven als systeemberichten:
+Na melding van voltooiing door de Node plaatst de uitvoeringslevenscyclus een
+systeembericht `Exec finished` in de sessie van de agent. OpenClaw kan ook een melding
+over een lopende uitvoering versturen nadat een goedkeuring is verleend en
+`tools.exec.approvalRunningNoticeMs` is verstreken (standaard `10000`; `0` schakelt
+dit uit). Geweigerde uitvoeringsgoedkeuringen zijn definitief voor de hostopdracht:
+de opdracht wordt niet uitgevoerd.
 
-- `Exec running` (alleen als de opdracht de drempel voor een lopende melding overschrijdt).
-- `Exec finished`.
+- Voor asynchrone goedkeuringen van de hoofd-agent met een oorspronkelijke sessie plaatst
+  OpenClaw de weigering als interne opvolging terug in die sessie, zodat de agent kan stoppen
+  met wachten op de asynchrone opdracht en geen herstel wegens een ontbrekend resultaat nodig is.
+- Als er geen sessie is of de sessie niet kan worden hervat, kan OpenClaw nog steeds een
+  beknopte weigering melden aan de operator of via de directe chatroute.
+- Weigeringen voor subagent- en Cron-sessies worden niet teruggeplaatst in die sessie.
 
-Deze worden in de sessie van de agent geplaatst nadat de node de gebeurtenis rapporteert.
-Geweigerde exec-goedkeuringen zijn terminaal voor de hostopdracht zelf: de opdracht
-wordt niet uitgevoerd. Voor asynchrone goedkeuringen van de hoofdagent met een oorspronkelijke sessie
-plaatst OpenClaw de weigering terug in die sessie als een interne follow-up, zodat de
-agent kan stoppen met wachten op de asynchrone opdracht en een reparatie voor een ontbrekend resultaat kan vermijden.
-Als er geen sessie is of de sessie niet kan worden hervat, kan OpenClaw nog steeds
-een beknopte weigering rapporteren aan de operator of directe chatroute. Weigeringen voor
-subagentsessies worden niet teruggeplaatst in de subagent.
-Exec-goedkeuringen op Gateway-host zenden dezelfde levenscyclusgebeurtenissen uit wanneer de
-opdracht voltooid is (en optioneel wanneer deze langer draait dan de drempel).
-Execs met goedkeuringspoort hergebruiken de goedkeurings-id als de `runId` in deze
-berichten voor eenvoudige correlatie.
+Uitvoeringsgoedkeuringen op de Gateway-host produceren dezelfde gebeurtenis voor de
+voltooiingslevenscyclus. Uitvoeringen waarvoor goedkeuring vereist is, hergebruiken de
+goedkeurings-ID om het openstaande verzoek te koppelen aan het voltooiings- of
+weigeringsbericht (`Exec finished (gateway id=...)` / `Exec denied (gateway id=...)`).
 
-## Gedrag bij geweigerde goedkeuring
+## Gevolgen
 
-Wanneer een asynchrone exec-goedkeuring wordt geweigerd, behandelt OpenClaw de hostopdracht als
-terminaal en fail-closed. Voor hoofdagentsessies wordt de weigering geleverd als een
-interne sessie-follow-up die de agent vertelt dat de asynchrone opdracht niet is uitgevoerd.
-Dat behoudt transcriptcontinuïteit zonder verouderde opdrachtuitvoer bloot te stellen. Als
-sessielevering niet beschikbaar is, valt OpenClaw terug op een beknopte operator- of
-directe-chatweigering wanneer er een veilige route bestaat.
-
-## Implicaties
-
-- **`full`** is krachtig; geef waar mogelijk de voorkeur aan allowlists.
-- **`ask`** houdt je betrokken terwijl snelle goedkeuringen nog steeds mogelijk zijn.
-- Per-agent-allowlists voorkomen dat goedkeuringen van één agent naar andere agents lekken.
-- Goedkeuringen zijn alleen van toepassing op host-exec-verzoeken van **geautoriseerde afzenders**. Ongeautoriseerde afzenders kunnen geen `/exec` uitvoeren.
-- `/exec security=full` is een gemak op sessieniveau voor geautoriseerde operators en slaat goedkeuringen bewust over. Stel goedkeuringsbeveiliging in op `deny` of weiger de `exec`-tool via toolbeleid om host-exec hard te blokkeren.
+- **`full`** is krachtig; geef waar mogelijk de voorkeur aan toelatingslijsten.
+- **`ask`** houdt je op de hoogte en maakt snelle goedkeuringen toch mogelijk.
+- Toelatingslijsten per agent voorkomen dat goedkeuringen van de ene agent doorwerken naar andere agents.
+- Goedkeuringen gelden alleen voor uitvoeringsverzoeken op de host van **geautoriseerde afzenders**. Niet-geautoriseerde afzenders kunnen `/exec` niet uitvoeren.
+- `/exec security=full` is een voorziening op sessieniveau voor geautoriseerde operators en slaat goedkeuringen bewust over. Stel de goedkeuringsbeveiliging in op `deny` of weiger de tool `exec` via het toolbeleid om uitvoering op de host volledig te blokkeren.
 
 ## Gerelateerd
 
 <CardGroup cols={2}>
-  <Card title="Exec approvals - advanced" href="/nl/tools/exec-approvals-advanced" icon="gear">
-    Veilige bins, interpreterbinding en goedkeuring doorsturen naar chat.
+  <Card title="Uitvoeringsgoedkeuringen - geavanceerd" href="/nl/tools/exec-approvals-advanced" icon="gear">
+    Veilige programma's, interpreterkoppeling en het doorsturen van goedkeuringen naar chat.
   </Card>
-  <Card title="Exec tool" href="/nl/tools/exec" icon="terminal">
+  <Card title="Uitvoeringstool" href="/nl/tools/exec" icon="terminal">
     Tool voor het uitvoeren van shell-opdrachten.
   </Card>
-  <Card title="Elevated mode" href="/nl/tools/elevated" icon="shield-exclamation">
+  <Card title="Verhoogde modus" href="/nl/tools/elevated" icon="shield-exclamation">
     Noodpad dat ook goedkeuringen overslaat.
   </Card>
   <Card title="Sandboxing" href="/nl/gateway/sandboxing" icon="box">
-    Sandboxmodi en toegang tot werkruimten.
+    Sandboxmodi en toegang tot de werkruimte.
   </Card>
-  <Card title="Security" href="/nl/gateway/security" icon="lock">
-    Beveiligingsmodel en hardening.
+  <Card title="Beveiliging" href="/nl/gateway/security" icon="lock">
+    Beveiligingsmodel en versterking.
   </Card>
-  <Card title="Sandbox vs tool policy vs elevated" href="/nl/gateway/sandbox-vs-tool-policy-vs-elevated" icon="sliders">
-    Wanneer je welke controle gebruikt.
+  <Card title="Sandbox versus toolbeleid versus verhoogde modus" href="/nl/gateway/sandbox-vs-tool-policy-vs-elevated" icon="sliders">
+    Wanneer je elk bedieningselement gebruikt.
   </Card>
   <Card title="Skills" href="/nl/tools/skills" icon="sparkles">
     Automatisch toestaan op basis van Skills.

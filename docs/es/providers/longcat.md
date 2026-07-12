@@ -5,8 +5,8 @@ read_when:
 summary: Configuración de la API de LongCat para LongCat-2.0
 title: LongCat
 x-i18n:
-    generated_at: "2026-07-06T21:53:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T23:27:18Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 7c447f9c42e6547a69d2124debcb685c32fe59de29bfc551e18e791d9f280584
@@ -15,23 +15,23 @@ x-i18n:
 ---
 
 [LongCat](https://longcat.ai) proporciona una API alojada para LongCat-2.0, un
-modelo de razonamiento creado para cargas de trabajo de programación y agentes. OpenClaw proporciona el
-Plugin oficial `longcat` para el endpoint compatible con OpenAI de LongCat.
+modelo de razonamiento creado para cargas de trabajo de programación y de agentes. OpenClaw proporciona el
+Plugin oficial `longcat` para el endpoint de LongCat compatible con OpenAI.
 
-| Propiedad  | Valor                              |
-| ---------- | ---------------------------------- |
-| Proveedor  | `longcat`                          |
-| Auth       | `LONGCAT_API_KEY`                  |
-| API        | Chat Completions compatible con OpenAI |
-| URL base   | `https://api.longcat.chat/openai`  |
-| Modelo     | `longcat/LongCat-2.0`              |
-| Contexto   | 1,048,576 tokens                   |
-| Salida máxima | 131,072 tokens                  |
-| Entrada    | Texto                              |
+| Propiedad      | Valor                                      |
+| -------------- | ------------------------------------------ |
+| Proveedor      | `longcat`                                  |
+| Autenticación  | `LONGCAT_API_KEY`                          |
+| API            | Chat Completions compatible con OpenAI     |
+| URL base       | `https://api.longcat.chat/openai`          |
+| Modelo         | `longcat/LongCat-2.0`                      |
+| Contexto       | 1,048,576 tokens                           |
+| Salida máxima  | 131,072 tokens                             |
+| Entrada        | Texto                                      |
 
-## Instalar Plugin
+## Instalar el Plugin
 
-Instala el paquete oficial y luego reinicia Gateway:
+Instale el paquete oficial y, después, reinicie el Gateway:
 
 ```bash
 openclaw plugins install @openclaw/longcat-provider
@@ -41,24 +41,24 @@ openclaw gateway restart
 ## Primeros pasos
 
 <Steps>
-  <Step title="Crear una clave de API">
-    Inicia sesión en la [plataforma API de LongCat](https://longcat.chat/platform/) y
-    crea una clave en la página [claves de API](https://longcat.chat/platform/api_keys).
+  <Step title="Create an API key">
+    Inicie sesión en la [plataforma de la API de LongCat](https://longcat.chat/platform/) y
+    cree una clave en la página [Claves de API](https://longcat.chat/platform/api_keys).
   </Step>
-  <Step title="Ejecutar la incorporación">
+  <Step title="Run onboarding">
     ```bash
     openclaw onboard --auth-choice longcat-api-key
     ```
   </Step>
-  <Step title="Verificar el modelo">
+  <Step title="Verify the model">
     ```bash
     openclaw models list --provider longcat
     ```
   </Step>
 </Steps>
 
-La incorporación agrega el catálogo alojado y selecciona `longcat/LongCat-2.0` cuando no
-hay un modelo principal configurado.
+La incorporación añade el catálogo alojado y selecciona `longcat/LongCat-2.0` cuando aún no
+se ha configurado un modelo principal.
 
 ### Configuración no interactiva
 
@@ -69,68 +69,68 @@ openclaw onboard --non-interactive \
   --longcat-api-key "$LONGCAT_API_KEY"
 ```
 
-## Comportamiento de razonamiento
+## Comportamiento del razonamiento
 
-LongCat expone control binario del pensamiento. OpenClaw asigna los niveles de pensamiento habilitados
+LongCat ofrece un control binario del razonamiento. OpenClaw asigna los niveles de razonamiento habilitados
 a `thinking: { type: "enabled" }` y `/think off` a
-`thinking: { type: "disabled" }`. Actualmente LongCat no documenta
+`thinking: { type: "disabled" }`. Actualmente, LongCat no documenta
 `reasoning_effort`, por lo que OpenClaw no lo envía.
 
 LongCat devuelve el razonamiento en `reasoning_content`. OpenClaw conserva ese campo
-al reproducir turnos de llamadas a herramientas del asistente para que las sesiones de agente de varios turnos conserven
-la forma de mensaje esperada por el proveedor.
+al reproducir turnos de llamadas a herramientas del asistente, de modo que las sesiones de agente de varios turnos mantengan
+la estructura de mensajes esperada por el proveedor.
 
 ## Precios
 
-El catálogo integrado usa los precios de lista de pago por uso de LongCat en USD por millón de
-tokens: 0.75 USD por entrada no almacenada en caché, 0.015 USD por entrada almacenada en caché y 2.95 USD por salida. LongCat puede
+El catálogo integrado utiliza los precios de lista de pago por uso de LongCat en USD por millón de
+tokens: 0,75 USD por entrada sin caché, 0,015 USD por entrada en caché y 2,95 USD por salida. LongCat puede
 ofrecer descuentos temporales; la [página de precios](https://longcat.chat/platform/docs/Pricing/LongCat-2.0.html)
-y tus registros de facturación son la fuente autorizada.
+y sus registros de facturación son las fuentes autoritativas.
 
 ## LongCat-2.0 autoalojado
 
-El proveedor `longcat` apunta a la API alojada de LongCat. Para los pesos abiertos en
-[Hugging Face](https://huggingface.co/meituan-longcat/LongCat-2.0), sirve el
-modelo mediante un runtime compatible con OpenAI y usa en su lugar el proveedor
-[vLLM](/es/providers/vllm) o [SGLang](/es/providers/sglang) existente de OpenClaw.
+El proveedor `longcat` está destinado a la API alojada de LongCat. Para usar los pesos abiertos disponibles en
+[Hugging Face](https://huggingface.co/meituan-longcat/LongCat-2.0), sirva el
+modelo mediante un entorno de ejecución compatible con OpenAI y utilice en su lugar el proveedor existente de OpenClaw
+[vLLM](/es/providers/vllm) o [SGLang](/es/providers/sglang).
 
-Mantén el identificador exacto del modelo del runtime en el catálogo del proveedor autoalojado;
-no enrutes un despliegue local a través de `longcat/LongCat-2.0`.
+Conserve el identificador exacto del modelo del entorno de ejecución en el catálogo del proveedor autoalojado;
+no enrute una implementación local mediante `longcat/LongCat-2.0`.
 
 ## Solución de problemas
 
 <AccordionGroup>
-  <Accordion title="La clave funciona en un shell, pero no en Gateway">
-    Los procesos de Gateway administrados por daemon no heredan todas las variables de shell
-    interactivo. Pon `LONGCAT_API_KEY` en `~/.openclaw/.env`, configúrala mediante
-    la incorporación o usa una referencia de secreto aprobada.
+  <Accordion title="The key works in a shell but not in the Gateway">
+    Los procesos del Gateway administrados por un daemon no heredan todas las variables del shell
+    interactivo. Añada `LONGCAT_API_KEY` a `~/.openclaw/.env`, configúrela mediante
+    la incorporación o utilice una referencia de secreto aprobada.
   </Accordion>
 
-  <Accordion title="Las solicitudes fallan con 402 o 429">
-    `402` significa que la cuenta no tiene cuota de tokens suficiente. `429` significa que la clave de API
-    alcanzó un límite de tasa. Consulta el [uso de LongCat](https://longcat.chat/platform/usage)
-    y reintenta las solicitudes limitadas por tasa después de la ventana de espera del proveedor.
+  <Accordion title="Requests fail with 402 or 429">
+    `402` significa que la cuenta no tiene suficiente cuota de tokens. `429` significa que la clave de API
+    alcanzó un límite de solicitudes. Consulte el [uso de LongCat](https://longcat.chat/platform/usage)
+    y vuelva a intentar las solicitudes limitadas después del periodo de espera del proveedor.
   </Accordion>
 
-  <Accordion title="El modelo no aparece">
-    Ejecuta `openclaw plugins list` y confirma que el Plugin `longcat` está
-    habilitado; luego ejecuta `openclaw models list --provider longcat`.
+  <Accordion title="The model does not appear">
+    Ejecute `openclaw plugins list` y confirme que el Plugin `longcat` está
+    habilitado; después, ejecute `openclaw models list --provider longcat`.
   </Accordion>
 </AccordionGroup>
 
-## Relacionado
+## Contenido relacionado
 
 <CardGroup cols={2}>
-  <Card title="Proveedores de modelos" href="/es/concepts/model-providers" icon="layers">
+  <Card title="Model providers" href="/es/concepts/model-providers" icon="layers">
     Configuración de proveedores, referencias de modelos y comportamiento de conmutación por error.
   </Card>
-  <Card title="Documentación de la API de LongCat" href="https://longcat.chat/platform/docs/" icon="arrow-up-right-from-square">
-    Endpoints de API alojada, autenticación, límites y ejemplos.
+  <Card title="LongCat API docs" href="https://longcat.chat/platform/docs/" icon="arrow-up-right-from-square">
+    Endpoints de la API alojada, autenticación, límites y ejemplos.
   </Card>
-  <Card title="Ficha del modelo LongCat-2.0" href="https://huggingface.co/meituan-longcat/LongCat-2.0" icon="arrow-up-right-from-square">
-    Arquitectura, guía de despliegue y detalles del modelo.
+  <Card title="LongCat-2.0 model card" href="https://huggingface.co/meituan-longcat/LongCat-2.0" icon="arrow-up-right-from-square">
+    Arquitectura, orientación para la implementación y detalles del modelo.
   </Card>
-  <Card title="Secretos" href="/es/gateway/secrets" icon="key">
-    Almacena las credenciales del proveedor sin incrustar texto plano en la configuración.
+  <Card title="Secrets" href="/es/gateway/secrets" icon="key">
+    Almacene las credenciales del proveedor sin insertar texto sin formato en la configuración.
   </Card>
 </CardGroup>

@@ -1,11 +1,11 @@
 ---
 read_when:
-    - 您正在安裝、設定或稽核畫布外掛
-summary: 配對節點的實驗性 Canvas 控制與 A2UI 算繪介面。
+    - 你正在安裝、設定或稽核畫布外掛
+summary: 供已配對節點使用的實驗性 Canvas 控制與 A2UI 呈現介面。
 title: Canvas 外掛
 x-i18n:
-    generated_at: "2026-06-27T19:41:11Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T21:35:27Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 623f241907be5c88e7b20139f8a03e9c54e29df4bc7d3411fa90a029bfcb285f
@@ -15,13 +15,13 @@ x-i18n:
 
 # Canvas 外掛
 
-用於成對節點的實驗性 Canvas 控制與 A2UI 算繪介面。
+用於已配對節點的實驗性 Canvas 控制與 A2UI 轉譯介面。
 
-## 發佈
+## 發行方式
 
 - 套件：`@openclaw/canvas-plugin`
-- 安裝路徑：包含於 OpenClaw
+- 安裝方式：隨附於 OpenClaw
 
 ## 介面
 
-合約：工具；Skills
+契約：工具；Skills

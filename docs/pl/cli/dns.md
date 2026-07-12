@@ -1,29 +1,31 @@
 ---
 read_when:
-    - Potrzebujesz wykrywania w sieci rozległej (DNS-SD) za pomocą Tailscale + CoreDNS
+    - Chcesz korzystać z wykrywania w sieci rozległej (DNS-SD) za pośrednictwem Tailscale i CoreDNS
     - You're setting up split DNS for a custom discovery domain (example: openclaw.internal)
-summary: Dokumentacja referencyjna CLI dla `openclaw dns` (pomocniki wykrywania w sieci rozległej)
+summary: Dokumentacja CLI dla `openclaw dns` (narzędzia pomocnicze do wykrywania w sieci rozległej)
 title: DNS
 x-i18n:
-    generated_at: "2026-05-06T09:04:55Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:58:26Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 460bdcbaa2c0c0fc1a4f5bdd76b904d8ac35195a25324c66421abfdc2044bb07
+    source_hash: bb07353df03f9d169e1aede2da0b711ffb68e8c9d21d51359e93e92cc0818ca2
     source_path: cli/dns.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw dns`
 
-Pomocnicze narzędzia DNS do wykrywania szerokoobszarowego (Tailscale + CoreDNS). Obecnie skupione na macOS + Homebrew CoreDNS.
+Narzędzia pomocnicze DNS do wykrywania w sieci rozległej (Tailscale + CoreDNS). Obecnie obsługiwane są tylko macOS i CoreDNS z Homebrew.
 
 Powiązane:
 
 - Wykrywanie Gateway: [Wykrywanie](/pl/gateway/discovery)
-- Konfiguracja wykrywania szerokoobszarowego: [Konfiguracja](/pl/gateway/configuration)
+- Konfiguracja wykrywania w sieci rozległej: [Konfiguracja](/pl/gateway/configuration)
 
-## Konfiguracja
+## `dns setup`
+
+Zaplanuj lub zastosuj konfigurację CoreDNS na potrzeby wykrywania DNS-SD z użyciem transmisji pojedynczej.
 
 ```bash
 openclaw dns setup
@@ -31,29 +33,25 @@ openclaw dns setup --domain openclaw.internal
 openclaw dns setup --apply
 ```
 
-## `dns setup`
+| Opcja               | Działanie                                                                                                        |
+| ------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `--domain <domain>` | Domena wykrywania w sieci rozległej (na przykład `openclaw.internal`).                                          |
+| `--apply`           | Instaluje lub aktualizuje konfigurację CoreDNS oraz uruchamia bądź ponownie uruchamia usługę. Wymaga sudo; tylko macOS. |
 
-Zaplanuj lub zastosuj konfigurację CoreDNS na potrzeby wykrywania unicast DNS-SD.
+Bez opcji `--domain` OpenClaw używa wartości `discovery.wideArea.domain` z konfiguracji.
 
-Opcje:
+Bez opcji `--apply` polecenie wyświetla tylko:
 
-- `--domain <domain>`: domena wykrywania szerokoobszarowego (na przykład `openclaw.internal`)
-- `--apply`: zainstaluj lub zaktualizuj konfigurację CoreDNS i uruchom ponownie usługę (wymaga sudo; tylko macOS)
+- Ustaloną domenę wykrywania i ścieżkę pliku strefy
+- Bieżące adresy IP sieci tailnet
+- Zalecaną konfigurację wykrywania w pliku `openclaw.json`
+- Wartości serwera nazw i domeny Tailscale Split DNS, które należy ustawić w konsoli administracyjnej Tailscale
 
-Co pokazuje:
+Z opcją `--apply` (tylko macOS, wymagany CoreDNS z Homebrew):
 
-- rozpoznana domena wykrywania
-- ścieżka pliku strefy
-- bieżące adresy IP tailnetu
-- zalecana konfiguracja wykrywania `openclaw.json`
-- wartości serwera nazw/domeny Tailscale Split DNS do ustawienia
-
-Uwagi:
-
-- Bez `--apply` polecenie służy tylko do planowania i wypisuje zalecaną konfigurację.
-- Jeśli `--domain` zostanie pominięte, OpenClaw używa `discovery.wideArea.domain` z konfiguracji.
-- `--apply` obecnie obsługuje tylko macOS i oczekuje Homebrew CoreDNS.
-- `--apply` w razie potrzeby inicjuje plik strefy, upewnia się, że istnieje wpis importu CoreDNS, i uruchamia ponownie usługę brew `coredns`.
+- Inicjuje plik strefy, jeśli go brakuje
+- Dodaje sekcję importu CoreDNS, jeśli jej brakuje
+- Ponownie uruchamia usługę Homebrew `coredns`
 
 ## Powiązane
 

@@ -1,55 +1,45 @@
 ---
 read_when:
-    - CLI katılımını çalıştırma veya yapılandırma
+    - CLI başlangıç kurulumunu çalıştırma veya yapılandırma
     - Yeni bir makine kurma
 sidebarTitle: 'Onboarding: CLI'
-summary: 'CLI ilk kurulum: Gateway, çalışma alanı, kanallar ve Skills için rehberli kurulum'
-title: Katılım (CLI)
+summary: 'CLI ilk katılımı: çıkarımı doğrulayın, ardından kalan kurulumu Crestodian’a devredin'
+title: İlk katılım (CLI)
 x-i18n:
-    generated_at: "2026-06-28T20:45:43Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:50:29Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8abf6ac4644e0a49668cbfa1277f6eb3ac5b4fd822cd7805bb647c94ae76895f
+    source_hash: 62dd8fc2780940f738fc99f04ef0c765f5582161c55d11100fae3b4bbbb0ea15
     source_path: start/wizard.md
     workflow: 16
 ---
-
-CLI ile ilk kurulum, macOS, Linux veya Windows üzerinde OpenClaw için **önerilen** terminal kurulum yoludur. Windows masaüstü kullanıcıları ayrıca
-[Windows Hub](/tr/platforms/windows) ile başlayabilir.
-Tek bir yönlendirmeli akışta yerel bir Gateway veya uzak Gateway bağlantısını, ayrıca kanalları, Skills'i
-ve çalışma alanı varsayılanlarını yapılandırır.
 
 ```bash
 openclaw onboard
 ```
 
-QuickStart genellikle yalnızca birkaç dakika sürer, ancak sağlayıcı oturumu açma,
-kanal eşleştirme, daemon kurulumu, ağ indirmeleri, Skills veya isteğe bağlı Plugin'ler
-ek kurulum gerektirdiğinde tam ilk kurulum daha uzun sürebilir. Sihirbaz bu zaman çizelgesini
-baştan gösterir ve isteğe bağlı adımlar atlanıp daha sonra
-`openclaw configure` ile yeniden ele alınabilir.
+CLI ilk katılımı; macOS, Linux ve Windows'ta (yerel veya WSL2) önerilen terminal kurulum yoludur. Varsayılan olarak makinede zaten kullanılabilir olan yapay zekâ erişimini algılar, gerçek bir tamamlama ile doğrular ve çalışma alanını, Gateway'i ve isteğe bağlı özellikleri yapılandırmak için Crestodian'ı başlatır. `openclaw setup` aynı akışı çalıştırır ([Kurulum](/tr/cli/setup), yalnızca yapılandırmaya yönelik `--baseline` çeşidini açıklar). Windows masaüstü kullanıcıları [Windows Hub](/tr/platforms/windows) üzerinden de başlayabilir.
+
+Yönlendirmeli ilk katılım önce çıkarım bağlantısını kurar. Kullanılabilir yapay zekâ erişimini algılar, gerçek bir tamamlama gerektirir ve ancak bundan sonra OpenClaw'ın geri kalanını yapılandırmak üzere [Crestodian](/tr/cli/crestodian) aracını başlatır. Yönlendirmeli akışta çıkarım öncesi Crestodian veya yapay zekâyı atlama yolu yoktur.
+
+Klasik sihirbaz; sağlayıcıda oturum açma, uzak Gateway kurulumu, kanal eşleştirme, arka plan hizmeti denetimleri, Skills ve içe aktarmalar için kullanılabilir olmaya devam eder. `openclaw onboard --classic` ile açıkça çalıştırın; yönlendirmeli çıkarım adayı ekranı işlemi bu sihirbaza devretmez. Çıkarım başarılı olduktan sonra Crestodian, gizli bilgiler gerektiren kanal kurulumunu maskeli bir terminal sihirbazına devretmek için `open channel wizard for <channel>` komutunu kullanabilir. Model sağlayıcısını veya kimlik doğrulamasını değiştirmek için Crestodian'dan çıkın ve `openclaw onboard` komutunu çalıştırın; Crestodian, yönlendirmeli veya klasik sağlayıcı akışlarını açmaz.
+
+<Info>
+İlk sohbete ulaşmanın en hızlı yolu: yönlendirmeli kurulumu tamamlayın, `openclaw dashboard` komutunu çalıştırın ve tarayıcıda Denetim Arayüzü üzerinden sohbet edin. Belgeler: [Gösterge Paneli](/tr/web/dashboard).
+</Info>
 
 ## Yerel ayar
 
-CLI sihirbazı sabit ilk kurulum metinlerini yerelleştirir. Yerel ayarı sırasıyla
-`OPENCLAW_LOCALE`, ardından `LC_ALL`, ardından `LC_MESSAGES`, ardından `LANG` üzerinden çözer
-ve İngilizceye geri döner. Desteklenen sihirbaz yerel ayarları `en`, `zh-CN` ve `zh-TW` değerleridir.
+Sihirbaz, sabit ilk katılım metinlerini yerelleştirir. Çözümleme sırası: `OPENCLAW_LOCALE`, `LC_ALL`, `LC_MESSAGES`, `LANG`, ardından İngilizce. Desteklenen yerel ayarlar: `en`, `zh-CN`, `zh-TW`.
 
 ```bash
 OPENCLAW_LOCALE=zh-CN openclaw onboard
 ```
 
-Adlar ve kararlı tanımlayıcılar olduğu gibi kalır: `OpenClaw`, `Gateway`, `Tailscale`,
-komutlar, yapılandırma anahtarları, URL'ler, sağlayıcı kimlikleri, model kimlikleri ve plugin/kanal etiketleri
-çevrilmez.
+Ürün adları, komutlar, yapılandırma anahtarları, URL'ler, sağlayıcı kimlikleri, model kimlikleri ve plugin/kanal etiketleri yerel ayardan bağımsız olarak İngilizce kalır.
 
-<Info>
-En hızlı ilk sohbet: Control UI'yi açın (kanal kurulumu gerekmez). `openclaw dashboard` komutunu çalıştırın
-ve tarayıcıda sohbet edin. Dokümanlar: [Dashboard](/tr/web/dashboard).
-</Info>
-
-Daha sonra yeniden yapılandırmak için:
+Çıkarımla ilgili olmayan ayarları daha sonra yeniden yapılandırmak için:
 
 ```bash
 openclaw configure
@@ -57,75 +47,75 @@ openclaw agents add <name>
 ```
 
 <Note>
-`--json`, etkileşimsiz mod anlamına gelmez. Betikler için `--non-interactive` kullanın.
+`--json`, etkileşimsiz mod anlamına gelmez. Betikler için `--non-interactive` kullanın (bkz. [CLI otomasyonu](/tr/start/wizard-cli-automation)).
 </Note>
 
 <Tip>
-CLI ile ilk kurulum, Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search,
-Ollama Web Search, Perplexity, SearXNG veya Tavily gibi bir sağlayıcı seçebileceğiniz
-bir web arama adımı içerir. Bazı sağlayıcılar API anahtarı gerektirirken,
-bazıları anahtarsızdır. Bunu daha sonra `openclaw configure --section web` ile de yapılandırabilirsiniz.
-Dokümanlar: [Web araçları](/tr/tools/web).
+Klasik sihirbaz, bir sağlayıcı seçebileceğiniz bir web araması adımı içerir: Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Ollama Web Search, Perplexity, SearXNG veya Tavily. Bazıları API anahtarı gerektirir; diğerleri anahtarsızdır. Bunu daha sonra `openclaw configure --section web` ile yapılandırın. Belgeler: [Web araçları](/tr/tools/web).
 </Tip>
 
-## QuickStart ve Gelişmiş
+## Yönlendirmeli varsayılan
 
-İlk kurulum **QuickStart** (varsayılanlar) ile **Gelişmiş** (tam kontrol) seçenekleriyle başlar.
+Düz `openclaw onboard` şu yolu izler:
+
+1. Güvenlik bildirimini kabul edin.
+2. Yapılandırılmış modelleri, API anahtarı ortam değişkenlerini ve desteklenen yerel yapay zekâ CLI'larını algılayın.
+3. Algılanan ilk adayı gerçek bir tamamlama ile test edin. Başarısız olursa nedeni gösterin ve kullanılabilir sonraki adayla devam edin.
+4. Algılama seçenekleri tükendiğinde, algılanan bir adayı yeniden deneyin veya maskeli istemde bir sağlayıcı API anahtarı girin. Yönlendirmeli ilk katılım, çıkarım çalışmadan önce Crestodian'ı veya yapay zekâyı atlayan bir çıkış seçeneğini sunmaz.
+5. Yalnızca doğrulanmış model yolunu ve bunun gerektirdiği kimlik bilgisi/plugin durumunu kalıcı hâle getirin. Çalışma alanı ve Gateway ayarlarına dokunulmaz.
+6. Çalışma alanını, Gateway'i, kanalları, ajanları, plugin'leri ve kalan isteğe bağlı kurulumu yapılandırabilmesi için Crestodian'ı doğrulanmış modelle başlatın.
+
+Komutun yapılandırılmış bir kurulumda yeniden çalıştırılması önce geçerli varsayılan modeli test eder; böylece yönlendirmeli akış bir doğrulama ve onarım geçişi hâline gelir. Başarısız bir denetim, yapılandırılmış modeli hiçbir zaman otomatik olarak değiştirmez; ilk katılım durur ve nasıl devam edileceğini sorar. Daha sonra çıkarımla ilgili olmayan eklemeler için `openclaw channels add` veya `openclaw configure`, sağlayıcı ya da kimlik doğrulama yolu değişiklikleri için `openclaw onboard` kullanın.
+
+## Klasik sihirbaz: Hızlı Başlangıç ve Gelişmiş
+
+Tam sihirbazı açmak için `openclaw onboard --classic` komutunu çalıştırın. Sihirbaz, **Hızlı Başlangıç** (varsayılanlar) ve **Gelişmiş** (tam denetim) seçenekleriyle başlar. Klasik akışı seçip bu istemi atlamak için `--flow quickstart` veya `--flow advanced` (`manual` diğer adı) geçirin.
 
 <Tabs>
-  <Tab title="QuickStart (defaults)">
-    - Yerel Gateway (loopback)
-    - Çalışma alanı varsayılanı (veya mevcut çalışma alanı)
-    - Gateway portu **18789**
-    - Gateway kimlik doğrulaması **Token** (loopback üzerinde bile otomatik oluşturulur)
-    - Yeni yerel kurulumlar için araç politikası varsayılanı: `tools.profile: "coding"` (mevcut açık profil korunur)
-    - DM yalıtımı varsayılanı: yerel ilk kurulum, ayarlanmamışsa `session.dmScope: "per-channel-peer"` yazar. Ayrıntılar: [CLI Kurulum Başvurusu](/tr/start/wizard-cli-reference#outputs-and-internals)
+  <Tab title="Hızlı Başlangıç (varsayılanlar)">
+    - Yerel Gateway, local loopback bağlaması
+    - Varsayılan çalışma alanı (veya mevcut çalışma alanı)
+    - Gateway bağlantı noktası **18789**
+    - Gateway kimlik doğrulaması **Jeton** (local loopback üzerinde bile otomatik oluşturulur)
+    - Araç politikası: yeni kurulumlar için `tools.profile: "coding"` (açıkça belirtilmiş mevcut bir profil korunur)
+    - DM yalıtımı: yeni kurulumlar için `session.dmScope: "per-channel-peer"`. Ayrıntılar: [CLI kurulum başvurusu](/tr/start/wizard-cli-reference#outputs-and-internals)
     - Tailscale erişimi **Kapalı**
-    - Telegram + WhatsApp DM'leri varsayılan olarak **izin listesi** kullanır (telefon numaranız istenir)
+    - Telegram ve WhatsApp DM'leri varsayılan olarak **izin listesi** kullanır: Telegram sayısal bir Telegram kullanıcı kimliği, WhatsApp ise bir telefon numarası ister
 
   </Tab>
-  <Tab title="Advanced (full control)">
-    - Her adımı açar (mod, çalışma alanı, Gateway, kanallar, daemon, Skills).
+  <Tab title="Gelişmiş (tam denetim)">
+    - Her adımı sunar: mod, çalışma alanı, Gateway, kanallar, arka plan hizmeti, Skills
 
   </Tab>
 </Tabs>
 
-## İlk kurulumun yapılandırdıkları
+Uzak mod (`--mode remote`) her zaman gelişmiş akışı kullanır; yalnızca bu makineyi başka bir yerdeki Gateway'e bağlanacak şekilde yapılandırır ve uzak ana makineye hiçbir şey yüklemez veya orada hiçbir şeyi değiştirmez.
 
-**Yerel mod (varsayılan)** sizi şu adımlardan geçirir:
+## Klasik ilk katılımın yapılandırdıkları
 
-1. **Model/Kimlik doğrulama** — Custom Provider dahil, desteklenen herhangi bir sağlayıcı/kimlik doğrulama akışını (API anahtarı, OAuth veya sağlayıcıya özgü manuel kimlik doğrulama) seçin
-   (OpenAI uyumlu, Anthropic uyumlu veya Unknown otomatik algılama). Varsayılan bir model seçin.
-   Güvenlik notu: Bu agent araç çalıştıracaksa veya Webhook/hooks içeriği işleyecekse, mevcut en güçlü en yeni nesil modeli tercih edin ve araç politikasını sıkı tutun. Daha zayıf/eski katmanlara prompt injection uygulamak daha kolaydır.
-   Etkileşimsiz çalıştırmalarda `--secret-input-mode ref`, düz metin API anahtarı değerleri yerine auth profillerinde ortam destekli başvurular depolar.
-   Etkileşimsiz `ref` modunda sağlayıcı env var ayarlanmış olmalıdır; bu env var olmadan satır içi anahtar bayrakları geçirmek hızlıca başarısız olur.
-   Etkileşimli çalıştırmalarda gizli başvuru modunu seçmek, kaydetmeden önce hızlı bir ön doğrulamayla bir ortam değişkenine veya yapılandırılmış sağlayıcı başvurusuna (`file` veya `exec`) işaret etmenizi sağlar.
-   Anthropic için etkileşimli ilk kurulum/configure, tercih edilen yerel yol olarak **Anthropic Claude CLI**'yi ve önerilen üretim yolu olarak **Anthropic API key**'i sunar. Anthropic setup-token da desteklenen bir token-auth yolu olarak kullanılabilir kalır.
-2. **Çalışma alanı** — Agent dosyaları için konum (varsayılan `~/.openclaw/workspace`). Bootstrap dosyalarını ekler.
-3. **Gateway** — Port, bağlama adresi, kimlik doğrulama modu, Tailscale erişimi.
-   Etkileşimli token modunda varsayılan düz metin token depolamasını seçin veya SecretRef'e geçin.
-   Etkileşimsiz token SecretRef yolu: `--gateway-token-ref-env <ENV_VAR>`.
-4. **Kanallar** — iMessage, Discord, Feishu, Google Chat, Mattermost, Microsoft Teams, QQ Bot, Signal, Slack, Telegram, WhatsApp ve daha fazlası gibi yerleşik ve resmi Plugin sohbet kanalları.
-5. **Daemon** — Bir LaunchAgent (macOS), systemd kullanıcı birimi (Linux/WSL2) veya kullanıcı başına Startup-folder geri dönüşüyle yerel Windows Scheduled Task kurar.
-   Token kimlik doğrulaması bir token gerektiriyorsa ve `gateway.auth.token` SecretRef tarafından yönetiliyorsa, daemon kurulumu bunu doğrular ancak çözümlenen token'ı supervisor servis ortamı meta verilerine kalıcı olarak yazmaz.
-   Token kimlik doğrulaması bir token gerektiriyorsa ve yapılandırılmış token SecretRef çözümlenemiyorsa, daemon kurulumu uygulanabilir yönlendirmeyle engellenir.
-   Hem `gateway.auth.token` hem de `gateway.auth.password` yapılandırılmışsa ve `gateway.auth.mode` ayarlanmamışsa, mod açıkça ayarlanana kadar daemon kurulumu engellenir.
-6. **Sağlık kontrolü** — Gateway'i başlatır ve çalıştığını doğrular.
-7. **Skills** — Önerilen Skills'i ve isteğe bağlı bağımlılıkları kurar.
+Yerel mod (varsayılan) şu adımlardan geçer:
+
+1. **Model/Kimlik Doğrulama** - Özel Sağlayıcı (OpenAI uyumlu, OpenAI Responses uyumlu, Anthropic uyumlu veya Bilinmeyeni otomatik algılama) dâhil olmak üzere bir sağlayıcı kimlik doğrulama akışı (API anahtarı, OAuth veya sağlayıcıya özgü elle kimlik doğrulama) seçin. Varsayılan bir model seçin.
+   Yeni OpenAI API anahtarı kurulumu varsayılan olarak `openai/gpt-5.6` kullanır (yalın doğrudan API kimliği Sol'a çözümlenir); yeni ChatGPT/Codex kurulumu varsayılan olarak `openai/gpt-5.6-sol` kullanır. Kurulumun yeniden çalıştırılması, `openai/gpt-5.5` dâhil olmak üzere açıkça belirtilmiş mevcut bir modeli korur. Hesap GPT-5.6 modelini sunmuyorsa `openai/gpt-5.5` modelini açıkça seçin.
+   Güvenlik notu: Bu ajan araç çalıştıracak veya Webhook/hook içeriği işleyecekse kullanılabilir en güçlü, en yeni nesil modeli tercih edin ve araç politikasını sıkı tutun; daha zayıf veya eski katmanlara istem enjeksiyonu uygulamak daha kolaydır.
+   Etkileşimsiz çalıştırmalarda `--secret-input-mode ref`, düz metin API anahtarı değerleri yerine ortam destekli başvurular depolar; başvurulan ortam değişkeni önceden ayarlanmış olmalıdır, aksi takdirde ilk katılım hızla başarısız olur. Etkileşimli gizli bilgi başvurusu modu, bir ortam değişkenine veya yapılandırılmış bir sağlayıcı başvurusuna (`file` veya `exec`) işaret edebilir ve kaydetmeden önce hızlı bir ön denetim gerçekleştirir. Model/kimlik doğrulama kurulumundan sonra sihirbaz, isteğe bağlı bir canlı tamamlama testi sunar; başarısızlık durumunda model/kimlik doğrulama kurulumuna bir kez dönülebilir veya klasik sihirbazın geri kalanı engellenmeden hata yok sayılabilir. Hatayı yok saymak Crestodian'ın kilidini açmaz; sohbet tabanlı kurulum yine de başarılı bir çıkarım denetimi gerektirir.
+2. **Çalışma Alanı** - Ajan dosyalarının dizini (varsayılan `~/.openclaw/workspace`). Başlangıç dosyalarını oluşturur.
+3. **Gateway** - Bağlantı noktası, bağlama adresi, kimlik doğrulama modu, Tailscale erişimi. Etkileşimli jeton modunda düz metin jeton depolamayı (varsayılan) seçin veya SecretRef kullanmayı tercih edin. Etkileşimsiz SecretRef yolu: `--gateway-token-ref-env <ENV_VAR>`.
+4. **Kanallar** - Discord, Feishu, Google Chat, iMessage, Mattermost, Microsoft Teams, QQ Bot, Signal, Slack, Telegram, WhatsApp ve daha fazlası dâhil olmak üzere yerleşik ve resmî plugin sohbet kanalları.
+5. **Arka Plan Hizmeti** - Bir LaunchAgent (macOS), systemd kullanıcı birimi (Linux/WSL2) veya kullanıcı başına Başlangıç klasörü yedeğine sahip yerel bir Windows Zamanlanmış Görevi yükler.
+   Jeton kimlik doğrulaması gerekliyse ve `gateway.auth.token` SecretRef tarafından yönetiliyorsa arka plan hizmeti kurulumu bunu doğrular ancak çözümlenmiş jetonu gözetmen hizmetinin ortam meta verilerine kaydetmez; çözümlenemeyen bir SecretRef, yönlendirme sunarak kurulumu engeller. `gateway.auth.mode` ayarlanmamışken hem `gateway.auth.token` hem de `gateway.auth.password` ayarlanmışsa mod açıkça ayarlanana kadar kurulum engellenir.
+6. **Durum denetimi** - Gateway'i başlatır ve erişilebilir olduğunu doğrular.
+7. **Skills** - Önerilen Skills öğelerini ve bunların isteğe bağlı bağımlılıklarını yükler.
 
 <Note>
-İlk kurulumu yeniden çalıştırmak, açıkça **Sıfırla** seçmediğiniz (veya `--reset` geçmediğiniz) sürece hiçbir şeyi silmez.
-CLI `--reset` varsayılan olarak yapılandırmayı, kimlik bilgilerini ve oturumları kapsar; çalışma alanını dahil etmek için `--reset-scope full` kullanın.
-Yapılandırma geçersizse veya eski anahtarlar içeriyorsa, ilk kurulum önce `openclaw doctor` çalıştırmanızı ister.
+İlk katılımı yeniden çalıştırmak, açıkça **Sıfırla** seçeneğini belirlemediğiniz (veya `--reset` geçirmediğiniz) sürece hiçbir şeyi silmez. CLI `--reset` varsayılan olarak yapılandırmayı, kimlik bilgilerini ve oturumları sıfırlar; çalışma alanını da kaldırmak için `--reset-scope full` kullanın. Yapılandırma geçersizse veya eski anahtarlar içeriyorsa ilk katılım önce `openclaw doctor` komutunu çalıştırmanızı ister.
 </Note>
 
-**Uzak mod** yalnızca yerel istemciyi başka bir yerdeki Gateway'e bağlanacak şekilde yapılandırır.
-Uzak ana makineye hiçbir şey kurmaz veya orada hiçbir şeyi değiştirmez.
+`--flow import`, yeni kurulum yerine klasik sihirbazda algılanan bir geçiş akışını (örneğin Hermes) çalıştırır; [Geçiş](/tr/cli/migrate) bölümüne ve [Kurulum](/tr/install/migrating-hermes) altındaki geçiş kılavuzlarına bakın. `openclaw onboard --modern`, [Crestodian](/tr/cli/crestodian) için bir uyumluluk diğer adıdır. `openclaw crestodian` ile aynı çıkarım kapısını kullanır: doğrulanmış çıkarım asistanı başlatırken etkileşimli bir başarısızlık yönlendirmeli çıkarım kurulumuna döner.
 
-## Başka bir agent ekleme
+## Başka bir ajan ekleme
 
-Kendi çalışma alanı, oturumları ve auth profilleri olan ayrı bir agent oluşturmak için
-`openclaw agents add <name>` kullanın. `--workspace` olmadan çalıştırmak ilk kurulumu başlatır.
+Kendi çalışma alanına, oturumlarına ve kimlik doğrulama profillerine sahip ayrı bir ajan oluşturmak için `openclaw agents add <name>` kullanın. `--workspace` olmadan çalıştırıldığında ad, çalışma alanı, kimlik doğrulama, kanallar ve bağlamalar için etkileşimli bir akış başlatılır; bu, tam `openclaw onboard` sihirbazı değildir.
 
 Ayarladıkları:
 
@@ -135,21 +125,19 @@ Ayarladıkları:
 
 Notlar:
 
-- Varsayılan çalışma alanları `~/.openclaw/workspace-<agentId>` biçimini izler.
-- Gelen mesajları yönlendirmek için `bindings` ekleyin (ilk kurulum bunu yapabilir).
+- Varsayılan çalışma alanı: `~/.openclaw/workspace-<agentId>` (veya ayarlanmışsa `agents.defaults.workspace` altında).
+- Gelen mesajları bu ajana yönlendirmek için `bindings` ekleyin (ilk katılım bunu sizin için yapabilir).
 - Etkileşimsiz bayraklar: `--model`, `--agent-dir`, `--bind`, `--non-interactive`.
 
 ## Tam başvuru
 
-Ayrıntılı adım adım açıklamalar ve yapılandırma çıktıları için
-[CLI Kurulum Başvurusu](/tr/start/wizard-cli-reference) sayfasına bakın.
-Etkileşimsiz örnekler için [CLI Otomasyonu](/tr/start/wizard-cli-automation) sayfasına bakın.
-RPC ayrıntıları dahil daha derin teknik başvuru için
-[İlk Kurulum Başvurusu](/tr/reference/wizard) sayfasına bakın.
+Ayrıntılı adım adım davranış ve yapılandırma çıktıları için [CLI kurulum başvurusuna](/tr/start/wizard-cli-reference) bakın.
+Etkileşimsiz örnekler için [CLI otomasyonuna](/tr/start/wizard-cli-automation) bakın.
+Tam bayrak başvurusu için [`openclaw onboard`](/tr/cli/onboard) bölümüne bakın.
 
-## İlgili dokümanlar
+## İlgili belgeler
 
 - CLI komut başvurusu: [`openclaw onboard`](/tr/cli/onboard)
-- İlk kurulum genel bakışı: [İlk Kurulum Genel Bakışı](/tr/start/onboarding-overview)
-- macOS uygulaması ilk kurulumu: [İlk Kurulum](/tr/start/onboarding)
-- Agent ilk çalıştırma ritüeli: [Agent Bootstrap](/tr/start/bootstrapping)
+- İlk katılıma genel bakış: [İlk katılıma genel bakış](/tr/start/onboarding-overview)
+- macOS uygulamasında ilk katılım: [İlk katılım](/tr/start/onboarding)
+- Ajanın ilk çalıştırma ritüeli: [Ajan Başlangıç Kurulumu](/tr/start/bootstrapping)

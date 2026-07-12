@@ -1,47 +1,46 @@
 ---
 read_when:
-    - Chạy QA desktop Slack Mantis từ GitHub hoặc cục bộ
-    - Gỡ lỗi các lượt chạy Mantis chậm trên Slack desktop
-    - Chọn chế độ nguồn, tiền nạp sẵn hoặc thuê ấm
-    - Đăng bằng chứng ảnh chụp màn hình và video lên PR
-summary: 'Sổ tay vận hành cho QA desktop Mantis Slack: GitHub dispatch, CLI cục bộ, lease VNC đã làm nóng, chế độ hydrate, diễn giải thời gian, artifact và xử lý lỗi.'
-title: Sổ tay vận hành Slack trên máy tính để bàn cho Mantis
+    - Chạy kiểm thử chất lượng ứng dụng Slack trên máy tính bằng Mantis từ GitHub hoặc cục bộ
+    - Gỡ lỗi các lượt chạy Mantis chậm trên ứng dụng Slack dành cho máy tính để bàn
+    - Lựa chọn chế độ nguồn, tiền nạp hoặc phiên thuê đã khởi động sẵn
+    - Đăng bằng chứng ảnh chụp màn hình và video lên một PR
+summary: 'Cẩm nang vận hành QA ứng dụng Slack trên máy tính cho Mantis: kích hoạt qua GitHub, CLI cục bộ, phiên thuê VNC được khởi động sẵn, chế độ cấp dữ liệu, diễn giải thời gian, hiện vật và xử lý lỗi.'
+title: Sổ tay vận hành Mantis trên Slack dành cho máy tính để bàn
 x-i18n:
-    generated_at: "2026-06-27T17:23:33Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:51:49Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d9310b460a4da84afab72f9e5b5515a94e74b4f4a5030332bd2021d60deb07cc
+    source_hash: b3e956d99fc43a7b6fe65e2e820812b0e0e8b9e32badd25be27c74d302ab30dc
     source_path: concepts/mantis-slack-desktop-runbook.md
     workflow: 16
 ---
 
-QA desktop Mantis Slack là luồng giao diện thật cho các lỗi kiểu Slack cần
-desktop Linux, cứu hộ VNC, Slack Web, Gateway OpenClaw thật, ảnh chụp màn hình,
-video và bình luận bằng chứng trên PR.
-
-Dùng luồng này khi kiểm thử đơn vị hoặc luồng Slack live headless không thể chứng minh lỗi.
+Mantis Slack desktop QA là luồng giao diện người dùng thực dành cho các lỗi thuộc nhóm Slack cần
+môi trường desktop Linux, khả năng khôi phục qua VNC, Slack Web, một Gateway OpenClaw thực, ảnh chụp màn hình,
+video và bình luận bằng chứng trên PR. Hãy sử dụng luồng này khi kiểm thử đơn vị hoặc
+luồng Slack trực tiếp không giao diện không thể chứng minh lỗi.
 
 ## Mô hình lưu trữ
 
-Mantis dùng ba lớp lưu trữ khác nhau:
+Mantis sử dụng ba lớp lưu trữ:
 
-- Ảnh provider: do Crabbox sở hữu và được lưu trong tài khoản nhà cung cấp cloud.
-  Ảnh này chứa các năng lực của máy như Chrome/Chromium, ffmpeg, scrot,
-  Node/corepack/pnpm, công cụ build native và các thư mục cache trống.
-- Trạng thái lease ấm: do phiên operator hiện tại sở hữu. Nó có thể chứa một
-  hồ sơ trình duyệt đã đăng nhập, `/var/cache/crabbox/pnpm` và một checkout
-  nguồn đã chuẩn bị trong khi lease còn sống.
-- Artifact Mantis: do lần chạy OpenClaw sở hữu. Chúng nằm dưới
-  `.artifacts/qa-e2e/mantis/...`, sau đó GitHub Actions tải chúng lên và
-  Mantis GitHub App bình luận bằng chứng inline trên PR.
+- **Ảnh nhà cung cấp** - thuộc quyền quản lý của Crabbox, được lưu trong tài khoản nhà cung cấp đám mây.
+  Chứa các khả năng của máy (Chrome/Chromium, ffmpeg, scrot,
+  Node/corepack/pnpm, công cụ dựng mã gốc) và các thư mục bộ nhớ đệm trống.
+- **Trạng thái phiên thuê đã làm nóng** - thuộc quyền quản lý của phiên vận hành hiện tại. Có thể chứa
+  hồ sơ trình duyệt đã đăng nhập, `/var/cache/crabbox/pnpm` và bản lấy mã nguồn đã chuẩn bị
+  trong thời gian phiên thuê còn hoạt động.
+- **Tạo tác Mantis** - thuộc quyền quản lý của lượt chạy OpenClaw. Nằm trong
+  `.artifacts/qa-e2e/mantis/...`; GitHub Actions tải chúng lên và Ứng dụng GitHub Mantis
+  bình luận bằng chứng nội tuyến trên PR.
 
-Không bao giờ đưa bí mật, cookie trình duyệt, trạng thái đăng nhập Slack, checkout repository,
-`node_modules` hoặc `dist/` vào ảnh provider dựng sẵn.
+Tuyệt đối không đưa bí mật, cookie trình duyệt, trạng thái đăng nhập Slack, bản lấy kho lưu trữ,
+`node_modules` hoặc `dist/` vào ảnh nhà cung cấp.
 
-## Dispatch GitHub
+## Kích hoạt GitHub
 
-Chạy workflow từ `main`:
+Chạy quy trình làm việc từ `main`:
 
 ```bash
 gh workflow run mantis-slack-desktop-smoke.yml \
@@ -54,29 +53,24 @@ gh workflow run mantis-slack-desktop-smoke.yml \
   -f hydrate_mode=source
 ```
 
-Các giá trị `candidate_ref` được phép được cố ý giới hạn hẹp vì workflow
-dùng thông tin xác thực live: tổ tiên của `main` hiện tại, tag phát hành hoặc head của PR đang mở
-từ `openclaw/openclaw`.
+`candidate_ref` bị hạn chế vì quy trình làm việc sử dụng thông tin xác thực trực tiếp: giá trị này
+phải phân giải thành một phần lịch sử của `main` hiện tại, một thẻ phát hành hoặc đầu nhánh của một PR đang mở trong
+`openclaw/openclaw`.
 
-Workflow ghi:
+Quy trình làm việc tạo ra:
 
-- artifact đã tải lên: `mantis-slack-desktop-smoke-<run-id>-<attempt>`;
-- bình luận PR inline từ Mantis GitHub App;
-- `slack-desktop-smoke.png`;
-- `slack-desktop-smoke.mp4`;
-- `slack-desktop-smoke-preview.gif`;
-- `slack-desktop-smoke-change.mp4`;
-- `mantis-slack-desktop-smoke-summary.json`;
-- `mantis-slack-desktop-smoke-report.md`;
-- log từ xa như `slack-desktop-command.log`, `openclaw-gateway.log`,
-  `chrome.log` và `ffmpeg.log`.
+- tạo tác được tải lên `mantis-slack-desktop-smoke-<run-id>-<attempt>`
+- bình luận nội tuyến trên PR từ Ứng dụng GitHub Mantis
+- `slack-desktop-smoke.png`, `slack-desktop-smoke.mp4`
+- `slack-desktop-smoke-preview.gif`, `slack-desktop-smoke-change.mp4`
+- `mantis-slack-desktop-smoke-summary.json`, `mantis-slack-desktop-smoke-report.md`
+- nhật ký từ xa: `slack-desktop-command.log`, `openclaw-gateway.log`, `chrome.log`, `ffmpeg.log`
 
-Bình luận PR được cập nhật tại chỗ bằng marker ẩn
-`<!-- mantis-slack-desktop-smoke -->`.
+Bình luận trên PR được cập nhật tại chỗ thông qua dấu mốc ẩn `<!-- mantis-slack-desktop-smoke -->`.
 
 ## CLI cục bộ
 
-Bằng chứng nguồn lạnh:
+Bằng chứng mã nguồn trên máy lạnh:
 
 ```bash
 pnpm openclaw qa mantis slack-desktop-smoke \
@@ -92,7 +86,7 @@ pnpm openclaw qa mantis slack-desktop-smoke \
   --hydrate-mode source
 ```
 
-Giữ VM để cứu hộ VNC:
+Giữ máy ảo để khôi phục qua VNC:
 
 ```bash
 pnpm openclaw qa mantis slack-desktop-smoke \
@@ -109,7 +103,7 @@ Mở VNC:
 crabbox vnc --provider aws --id <cbx_id> --open
 ```
 
-Tái sử dụng lease ấm:
+Tái sử dụng phiên thuê đã làm nóng:
 
 ```bash
 pnpm openclaw qa mantis slack-desktop-smoke \
@@ -120,10 +114,10 @@ pnpm openclaw qa mantis slack-desktop-smoke \
   --hydrate-mode source
 ```
 
-Chỉ dùng `--hydrate-mode prehydrated` khi workspace từ xa được tái sử dụng đã
-có `node_modules` và `dist/` đã build. Mantis fail-closed nếu thiếu các mục đó.
+Chỉ sử dụng `--hydrate-mode prehydrated` khi không gian làm việc từ xa được tái sử dụng đã có
+`node_modules` và `dist/` đã được dựng; nếu không, Mantis sẽ từ chối thực thi theo hướng an toàn.
 
-Chứng minh UI phê duyệt Slack native:
+Chứng minh giao diện phê duyệt Slack gốc:
 
 ```bash
 pnpm openclaw qa mantis slack-desktop-smoke \
@@ -135,82 +129,81 @@ pnpm openclaw qa mantis slack-desktop-smoke \
   --hydrate-mode source
 ```
 
-Chế độ checkpoint phê duyệt loại trừ lẫn nhau với `--gateway-setup`. Nó chạy
-các kịch bản opt-in `slack-approval-exec-native` và `slack-approval-plugin-native`
-trừ khi bạn truyền các cờ `--scenario` checkpoint phê duyệt rõ ràng; các
-kịch bản Slack khác bị từ chối trước khi VM khởi động. Slack QA runner ghi
-mỗi tệp JSON checkpoint từ thông điệp Slack API thật mà nó quan sát được, sau đó
-watcher từ xa render snapshot thông điệp đó thành
+`--approval-checkpoints` loại trừ lẫn nhau với `--gateway-setup`. Cờ này chạy
+các kịch bản chọn tham gia `slack-approval-exec-native` và `slack-approval-plugin-native`,
+trừ khi bạn truyền một `--scenario` điểm kiểm tra phê duyệt cụ thể; các kịch bản
+Slack khác sẽ bị từ chối trước khi máy ảo khởi động. Trình chạy Slack QA ghi
+từng tệp JSON điểm kiểm tra từ thông báo API Slack thực mà nó quan sát được, sau đó
+trình theo dõi từ xa kết xuất thông báo đó thành
 `approval-checkpoints/<scenario>-pending.png` và
-`approval-checkpoints/<scenario>-resolved.png`. Lần chạy thất bại nếu bất kỳ
-JSON checkpoint, bằng chứng thông điệp, JSON ack hoặc ảnh chụp màn hình đã render nào bị thiếu hoặc trống.
+`approval-checkpoints/<scenario>-resolved.png`. Lượt chạy thất bại nếu thiếu hoặc để trống
+bất kỳ JSON điểm kiểm tra, bằng chứng thông báo, JSON xác nhận hoặc ảnh chụp màn hình đã kết xuất nào.
 
-Lease GitHub Actions lạnh không có cookie Slack Web, nên phần capture trình duyệt
-của chúng có thể dừng ở trang đăng nhập Slack. Với bằng chứng checkpoint phê duyệt, hãy tin
-các ảnh checkpoint đã render và artifact Slack QA thay vì
-`slack-desktop-smoke.png`. Chỉ dùng lease ấm được giữ lại với hồ sơ Slack Web
-đã đăng nhập thủ công khi chính ảnh chụp trình duyệt phải hiển thị Slack Web.
+Các phiên thuê GitHub Actions lạnh không có cookie Slack Web, vì vậy bản chụp trình duyệt
+có thể dừng ở màn hình đăng nhập Slack. Đối với bằng chứng điểm kiểm tra phê duyệt, hãy tin cậy
+các ảnh điểm kiểm tra đã kết xuất và tạo tác Slack QA thay vì
+`slack-desktop-smoke.png`. Chỉ sử dụng phiên thuê đã làm nóng được giữ lại với hồ sơ
+Slack Web đã đăng nhập thủ công khi chính ảnh chụp trình duyệt phải hiển thị
+Slack Web.
 
-## Chế độ hydrate
+## Chế độ chuẩn bị
 
-| Chế độ        | Dùng khi                                   | Hành vi từ xa                                                                           | Đánh đổi                                                 |
-| ------------- | ------------------------------------------ | --------------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| `source`      | Bằng chứng PR thông thường, máy lạnh, CI   | Chạy `pnpm install --frozen-lockfile --prefer-offline` và `pnpm build` trong VM         | Chậm nhất, bằng chứng checkout nguồn mạnh nhất           |
-| `prehydrated` | Bạn cố ý chuẩn bị một lease được tái sử dụng | Yêu cầu `node_modules` và `dist/` có sẵn; bỏ qua install/build                          | Nhanh, nhưng chỉ hợp lệ cho lease ấm do operator kiểm soát |
+| Chế độ        | Sử dụng khi                                      | Hành vi từ xa                                                                          | Đánh đổi                                                          |
+| ------------- | ------------------------------------------------ | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| `source`      | Bằng chứng PR thông thường, máy lạnh, CI         | Chạy `pnpm install --frozen-lockfile --prefer-offline` và `pnpm build` bên trong máy ảo | Chậm nhất, bằng chứng từ bản lấy mã nguồn mạnh nhất                |
+| `prehydrated` | Bạn chủ động chuẩn bị một phiên thuê tái sử dụng | Yêu cầu có sẵn `node_modules` và `dist/`; bỏ qua cài đặt/dựng                           | Nhanh, nhưng chỉ hợp lệ với phiên thuê nóng do người vận hành kiểm soát |
 
-GitHub Actions luôn chuẩn bị checkout candidate trước lần chạy VM. pnpm store của nó
-được cache theo hệ điều hành, phiên bản Node và lockfile. Lần chạy nguồn trong VM cũng
-dùng `/var/cache/crabbox/pnpm` khi có.
+GitHub Actions luôn chuẩn bị bản lấy mã nguồn ứng viên trước khi chạy máy ảo. Kho pnpm của nó
+được lưu đệm theo hệ điều hành, phiên bản Node và tệp khóa. Lượt chạy `source` trên máy ảo
+cũng tái sử dụng `/var/cache/crabbox/pnpm` khi có.
 
 ## Diễn giải thời gian
 
-`mantis-slack-desktop-smoke-report.md` bao gồm thời gian theo pha:
+`mantis-slack-desktop-smoke-report.md` bao gồm thời gian của các giai đoạn:
 
-- `crabbox.warmup`: khởi động nhà cung cấp cloud, mức sẵn sàng desktop/trình duyệt và SSH.
-- `crabbox.inspect`: tra cứu metadata lease.
-- `credentials.prepare`: lấy lease thông tin xác thực Convex.
-- `crabbox.remote_run`: đồng bộ, khởi chạy trình duyệt, install/build OpenClaw hoặc
-  xác thực hydrate, khởi động Gateway, ảnh chụp màn hình và capture video.
-- `artifacts.copy`: rsync trở lại từ VM.
+- `crabbox.warmup` - khởi động nhà cung cấp đám mây, mức sẵn sàng của desktop/trình duyệt, SSH.
+- `crabbox.inspect` - tra cứu siêu dữ liệu phiên thuê.
+- `credentials.prepare` - nhận phiên thuê thông tin xác thực Convex.
+- `crabbox.remote_run` - đồng bộ, khởi chạy trình duyệt, cài đặt/dựng OpenClaw hoặc
+  xác thực trạng thái chuẩn bị, khởi động Gateway, chụp ảnh màn hình và quay video.
+- `artifacts.copy` - đồng bộ ngược từ máy ảo bằng rsync.
 
-`crabbox.remote_run` có thể được đánh dấu `accepted` khi Crabbox trả về trạng thái
-từ xa khác không sau khi Mantis đã sao chép metadata chứng minh rằng thiết lập Gateway
-OpenClaw đã hoàn tất hoặc chính lệnh Slack QA đã thoát thành công.
-Hãy xem `accepted` là đạt kèm giải thích, không phải một kịch bản thất bại.
+`crabbox.remote_run` có thể hiển thị `accepted` khi Crabbox trả về trạng thái từ xa khác 0
+nhưng Mantis đã sao chép siêu dữ liệu chứng minh rằng quá trình thiết lập Gateway OpenClaw
+đã hoàn tất hoặc chính lệnh Slack QA đã thoát thành công. Hãy coi
+`accepted` là đạt kèm giải thích, không phải kịch bản thất bại.
 
-Nếu lần chạy chậm:
+Nếu lượt chạy chậm:
 
-- warmup chiếm ưu thế: prebake hoặc promote ảnh provider Crabbox tốt hơn;
-- remote_run chiếm ưu thế trong `source`: dùng lease ấm, cải thiện tái sử dụng pnpm store
-  hoặc chuyển các điều kiện tiên quyết của máy vào ảnh provider;
-- remote_run chiếm ưu thế trong `prehydrated`: workspace từ xa thực ra chưa
-  sẵn sàng, hoặc thiết lập Gateway/trình duyệt/Slack chậm;
-- sao chép artifact chiếm ưu thế: kiểm tra kích thước video và nội dung thư mục artifact.
+- Giai đoạn làm nóng chiếm phần lớn thời gian: tạo sẵn hoặc nâng cấp lên ảnh nhà cung cấp Crabbox tốt hơn.
+- `remote_run` chiếm phần lớn thời gian ở chế độ `source`: sử dụng phiên thuê đã làm nóng, cải thiện khả năng tái sử dụng
+  kho pnpm hoặc chuyển các điều kiện tiên quyết của máy vào ảnh nhà cung cấp.
+- `remote_run` chiếm phần lớn thời gian ở chế độ `prehydrated`: không gian làm việc từ xa chưa
+  thực sự sẵn sàng hoặc quá trình thiết lập Gateway/trình duyệt/Slack chậm.
+- Sao chép tạo tác chiếm phần lớn thời gian: kiểm tra kích thước video và nội dung thư mục tạo tác.
 
-## Checklist bằng chứng
+## Danh sách kiểm tra bằng chứng
 
-Một bình luận PR tốt nên hiển thị:
+Một bình luận PR tốt hiển thị:
 
-- id kịch bản và SHA candidate;
-- URL lần chạy GitHub Actions;
-- URL artifact;
-- ảnh chụp màn hình checkpoint phê duyệt inline, hoặc ảnh chụp Slack Web từ một
-  lease ấm đã đăng nhập;
-- preview động inline khi có;
-- liên kết MP4 đầy đủ và MP4 đã cắt;
-- trạng thái đạt/thất bại;
-- tóm tắt thời gian trong báo cáo đính kèm.
+- mã kịch bản và SHA của ứng viên
+- URL lượt chạy GitHub Actions và URL tạo tác
+- ảnh chụp màn hình điểm kiểm tra phê duyệt nội tuyến hoặc ảnh chụp Slack Web từ một
+  phiên thuê đã làm nóng và đã đăng nhập
+- bản xem trước động nội tuyến khi có
+- liên kết đến MP4 đầy đủ và MP4 đã cắt gọn
+- trạng thái đạt/không đạt và bản tóm tắt thời gian của báo cáo
 
-Không commit ảnh chụp màn hình hoặc video vào repository. Giữ chúng trong artifact
-GitHub Actions hoặc bình luận PR.
+Không đưa ảnh chụp màn hình hoặc video vào kho lưu trữ. Hãy giữ chúng trong tạo tác
+GitHub Actions hoặc bình luận trên PR.
 
 ## Xử lý lỗi
 
-Nếu workflow thất bại trước lần chạy VM, hãy kiểm tra job Actions trước. Nguyên nhân
-thường gặp là `candidate_ref` không đáng tin cậy, thiếu secret môi trường hoặc candidate
-install/build thất bại.
+Nếu quy trình làm việc thất bại trước khi chạy máy ảo, trước tiên hãy kiểm tra tác vụ Actions.
+Nguyên nhân thường gặp: `candidate_ref` không đáng tin cậy, thiếu bí mật môi trường hoặc
+cài đặt/dựng ứng viên thất bại.
 
-Nếu lần chạy VM thất bại nhưng ảnh chụp màn hình đã được sao chép lại, hãy kiểm tra:
+Nếu lượt chạy máy ảo thất bại nhưng ảnh chụp màn hình đã được sao chép ngược, hãy kiểm tra:
 
 ```bash
 cat mantis-slack-desktop-smoke-report.md
@@ -221,18 +214,18 @@ cat chrome.log
 cat ffmpeg.log
 ```
 
-Nếu lần chạy giữ lease, mở VNC bằng lệnh `crabbox vnc ...` trong báo cáo.
-Dừng lease khi hoàn tất:
+Nếu lượt chạy đã giữ lại phiên thuê, hãy mở VNC bằng lệnh `crabbox vnc ...`
+trong báo cáo, sau đó dừng phiên thuê khi hoàn tất:
 
 ```bash
 crabbox stop --provider aws <cbx_id-or-slug>
 ```
 
-Nếu đăng nhập Slack hết hạn, sửa trong VNC trên một lease được giữ lại và chạy lại với
-`--lease-id`. Không bake hồ sơ trình duyệt đó vào ảnh provider.
+Nếu phiên đăng nhập Slack đã hết hạn, hãy khắc phục trong VNC trên phiên thuê được giữ lại rồi chạy lại với
+`--lease-id`. Không đưa hồ sơ trình duyệt đó vào ảnh nhà cung cấp.
 
 ## Liên quan
 
-- [Tổng quan QA](/vi/concepts/qa-e2e-automation)
+- [Tổng quan về QA](/vi/concepts/qa-e2e-automation)
 - [Kênh Slack](/vi/channels/slack)
 - [Kiểm thử](/vi/help/testing)

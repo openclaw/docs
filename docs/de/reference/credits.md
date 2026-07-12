@@ -1,13 +1,12 @@
 ---
 read_when:
-    - Sie möchten die Hintergrundgeschichte des Projekts oder die Mitwirkendenangaben sehen
+    - Sie möchten die Entstehungsgeschichte des Projekts oder die Mitwirkenden erfahren
 summary: Projektursprung, Mitwirkende und Lizenz.
 title: Danksagungen
 x-i18n:
-    generated_at: "2026-07-12T15:46:48Z"
+    generated_at: "2026-07-12T02:07:49Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: d0030d36d04ce73e4c87f3d973ca3e729485f87c4b4b454e957dd6615d096ec9
     source_path: reference/credits.md
@@ -19,7 +18,7 @@ OpenClaw = CLAW + TARDIS: Jeder Weltraumhummer braucht eine Zeit- und Raummaschi
 ## Danksagungen
 
 - **Peter Steinberger** ([@steipete](https://x.com/steipete)) – Schöpfer, Hummerflüsterer
-- **Mario Zechner** ([@badlogicc](https://x.com/badlogicgames)) – Schöpfer von Pi, Sicherheitspenetrationstester
+- **Mario Zechner** ([@badlogicc](https://x.com/badlogicgames)) – Schöpfer von Pi, Penetrationstester für Sicherheit
 - **Clawd** – Der Weltraumhummer, der einen besseren Namen verlangte
 
 ## Hauptmitwirkende
@@ -30,9 +29,9 @@ OpenClaw = CLAW + TARDIS: Jeder Weltraumhummer braucht eine Zeit- und Raummaschi
 
 ## Lizenz
 
-MIT, Urheberrecht bei der OpenClaw Foundation. Hinweise zu Drittanbietern für eingebundenen oder angepassten Code befinden sich in `THIRD_PARTY_NOTICES.md`.
+MIT, Urheberrecht OpenClaw Foundation. Hinweise zu Drittanbietern für eingebundenen oder angepassten Code befinden sich in `THIRD_PARTY_NOTICES.md`.
 
-> „Wir spielen alle nur mit unseren eigenen Prompts.“ (Eine KI, wahrscheinlich im Token-Rausch)
+> „Wir spielen alle nur mit unseren eigenen Prompts.“ (Eine KI, vermutlich im Tokenrausch)
 
 ## Verwandte Themen
 

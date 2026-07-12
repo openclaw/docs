@@ -1,11 +1,11 @@
 ---
 read_when:
     - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin google-meet
-summary: Plugin người tham gia Google Meet của OpenClaw để tham gia cuộc gọi thông qua các transport Chrome hoặc Twilio.
+summary: Plugin người tham gia Google Meet của OpenClaw để tham gia cuộc gọi qua phương thức truyền tải Chrome hoặc Twilio.
 title: Plugin Google Meet
 x-i18n:
-    generated_at: "2026-06-27T17:52:38Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:10:49Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 2f0086a8b48f6e120ad391a99d60a14d7682910ca3ad176e41a51b341e9bdb49
@@ -15,14 +15,14 @@ x-i18n:
 
 # Plugin Google Meet
 
-Plugin người tham gia Google Meet của OpenClaw để tham gia cuộc gọi qua các phương thức truyền tải Chrome hoặc Twilio.
+Plugin người tham gia Google Meet của OpenClaw để tham gia cuộc gọi thông qua phương thức vận chuyển Chrome hoặc Twilio.
 
 ## Phân phối
 
 - Gói: `@openclaw/google-meet`
-- Tuyến cài đặt: npm; ClawHub
+- Kênh cài đặt: npm; ClawHub
 
-## Bề mặt
+## Giao diện
 
 hợp đồng: công cụ
 

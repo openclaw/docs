@@ -1,78 +1,69 @@
 ---
 read_when:
-    - Araç çıktılarından kaynaklanan bağlam büyümesini azaltmak istiyorsunuz.
-    - Anthropic istem önbelleği optimizasyonunu anlamak istiyorsunuz.
-summary: Bağlamı yalın tutmak ve önbellekleme verimliliğini artırmak için eski araç sonuçlarını budama
+    - Araç çıktılarından kaynaklanan bağlam büyümesini azaltmak istiyorsunuz
+    - Anthropic istem önbelleği optimizasyonunu anlamak istiyorsunuz
+summary: Bağlamı yalın ve önbelleğe almayı verimli tutmak için eski araç sonuçlarını kırpma
 title: Oturum budama
 x-i18n:
-    generated_at: "2026-04-26T11:27:53Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 3ea07f0ae23076906e2ff0246ac75813572f98cffa50afddb6a6b0af8964c4a9
-    source_path: concepts/session-pruning.md
-    workflow: 15
+    generated_at: "2026-07-12T12:14:39Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: dd5cb4582cb8d9d7265213abe1f5b5893634882b9f8b3ce1deef746293dd07db
+    source_path: concepts/session-pruning.md
+    workflow: 16
 ---
 
-Oturum budama, her LLM çağrısından önce bağlamdan **eski araç sonuçlarını** budar. Normal konuşma metnini yeniden yazmadan, birikmiş araç çıktılarından (exec sonuçları, dosya okumaları, arama sonuçları) kaynaklanan bağlam şişmesini azaltır.
+Oturum budama, her LLM çağrısından önce bağlamdaki **eski araç sonuçlarını** kısaltır. Normal konuşma metnini yeniden yazmadan, birikmiş araç çıktılarından (çalıştırma sonuçları, dosya okumaları, arama sonuçları) kaynaklanan bağlam şişmesini azaltır.
 
 <Info>
-Budama yalnızca bellekte yapılır -- diskteki oturum dökümünü değiştirmez.
-Tam geçmişiniz her zaman korunur.
+Budama yalnızca bellekte gerçekleşir -- diskteki oturum dökümünü değiştirmez. Geçmişinizin tamamı her zaman korunur.
 </Info>
 
-## Neden önemlidir
+## Neden önemlidir?
 
-Uzun oturumlar, bağlam penceresini şişiren araç çıktıları biriktirir. Bu,
-maliyeti artırır ve [Compaction](/tr/concepts/compaction) işlemini gerekenden daha erken zorlayabilir.
+Uzun oturumlarda biriken araç çıktıları bağlam penceresini şişirir. Bu, maliyeti artırır ve [Compaction](/tr/concepts/compaction) işleminin gerekenden daha erken yapılmasını zorunlu kılabilir.
 
-Budama özellikle **Anthropic istem önbelleklemesi** için değerlidir. Önbellek
-TTL süresi dolduktan sonra, sonraki istek tüm istemi yeniden önbelleğe alır. Budama
-önbelleğe yazma boyutunu azaltır ve maliyeti doğrudan düşürür.
+Budama özellikle **Anthropic istem önbelleğe alma** için değerlidir. Önbellek TTL süresi dolduktan sonra sonraki istek, istemin tamamını yeniden önbelleğe alır. Budama, önbelleğe yazılan verinin boyutunu azaltarak maliyeti doğrudan düşürür.
 
-## Nasıl çalışır
+## Nasıl çalışır?
 
-1. Önbellek TTL süresinin dolmasını bekler (varsayılan 5 dakika).
-2. Normal budama için eski araç sonuçlarını bulur (konuşma metni olduğu gibi bırakılır).
-3. Aşırı büyük sonuçları **hafifçe budar** -- başı ve sonu tutar, araya `...` ekler.
-4. Kalanları **sert şekilde temizler** -- bir yer tutucuyla değiştirir.
-5. Takip eden isteklerin yeni önbelleği yeniden kullanması için TTL'yi sıfırlar.
+Budama, hem zaman hem de bağlam boyutu denetimine bağlı olarak `cache-ttl` modunda çalışır:
 
-## Eski görsel temizliği
+1. Önbellek TTL süresinin dolmasını bekleyin (elle ayarlandığında varsayılan 5 dakikadır; Anthropic otomatik varsayılanı için [Akıllı varsayılanlar](#smart-defaults) bölümüne bakın). TTL dolmadan önce, yakın zamanlı turlarda istem önbelleğinin yeniden kullanılmasını korumak için budama tamamen atlanır.
+2. TTL dolduktan sonra toplam bağlam boyutunu modelin bağlam penceresine göre tahmin edin. Oran `softTrimRatio` değerinin (varsayılan 0,3) altındaysa budamayı atlayın ve TTL saatini çalışır durumda tutun.
+3. Oranın üzerindeki büyük araç sonuçlarını **yumuşak biçimde kısaltın**: başını ve sonunu koruyun (varsayılan olarak her biri 1500 karakter, toplamda en fazla 4000 karakter) ve araya `...` ekleyin.
+4. Oran hâlâ `hardClearRatio` değerine (varsayılan 0,5) eşit veya bu değerin üzerindeyse ve budanabilir araç içeriğinde en az `minPrunableToolChars` (varsayılan 50.000) karakter kaldıysa bu sonuçları **tamamen temizleyin**: içeriklerini bir yer tutucuyla değiştirin (varsayılan `[Eski araç sonucu içeriği temizlendi]`).
+5. TTL saatini yalnızca budama bağlamı gerçekten değiştirdiğinde sıfırlayın; böylece sonraki istekler yeni önbelleği yeniden kullanır.
 
-OpenClaw ayrıca oturum geçmişinde ham görsel blokları veya istem-hidrasyon medya işaretçileri
-kalıcı olarak saklayan oturumlar için ayrı bir idempotent yeniden oynatma görünümü oluşturur.
+Eşiklerden bağımsız olarak iki güvenlik kuralı uygulanır: en son `keepLastAssistants` asistan turu (varsayılan 3) hiçbir zaman budanmaz ve oturumun ilk kullanıcı mesajından önceki hiçbir şey budanmaz (`SOUL.md`/`USER.md` gibi başlangıç okumalarını korur).
 
-- Son **3 tamamlanmış turu** bayt düzeyinde korur; böylece son takip istekleri için istem
-  önbelleği önekleri sabit kalır.
-- Yeniden oynatma görünümünde, `user` veya
-  `toolResult` geçmişindeki daha eski, zaten işlenmiş görsel blokları
-  `[image data removed - already processed by model]`
-  ile değiştirilebilir.
-- `[media attached: ...]`,
-  `[Image: source: ...]` ve `media://inbound/...` gibi daha eski metinsel medya referansları
-  `[media reference removed - already processed by model]` ile değiştirilebilir. Geçerli turdaki
-  ek işaretçileri bozulmadan kalır; böylece görsel modeller yeni
-  görselleri yine hidrate edebilir.
-- Ham oturum dökümü yeniden yazılmaz; bu nedenle geçmiş görüntüleyicileri özgün mesaj girdilerini ve bunların görsellerini
-  yine işleyebilir.
-- Bu, normal önbellek-TTL budamasından ayrıdır. Sonraki turlarda tekrarlanan
-  görsel yüklerinin veya eski medya referanslarının istem önbelleklerini bozmasını engellemek için vardır.
+Yalnızca `toolResult` mesajları uygundur; normal konuşma metnine dokunulmaz. Hangi araç adlarının budanabileceğini belirlemek için `agents.defaults.contextPruning.tools.{allow,deny}` kullanın.
+
+## Eski görüntüleri temizleme
+
+OpenClaw ayrıca geçmişte ham görüntü bloklarını veya istem doldurma medya işaretleyicilerini kalıcı olarak saklayan oturumlar için ayrı, idempotent bir yeniden oynatma görünümü oluşturur.
+
+- Yakın zamanlı takip isteklerinde istem önbelleği öneklerinin kararlı kalması için **tamamlanmış en son 3 turu** bayt düzeyinde aynen korur. Bu sayı yalnızca görüntü içerenleri değil, tamamlanmış tüm turları kapsar; dolayısıyla yalnızca metin içeren turlar da bu pencereyi tüketir.
+- Yeniden oynatma görünümünde, `user` veya `toolResult` geçmişindeki daha eski ve önceden işlenmiş görüntü blokları `[görüntü verileri kaldırıldı - model tarafından zaten işlendi]` ile değiştirilir.
+- `[media attached: ...]`, `[Image: source: ...]` ve `media://inbound/...` gibi daha eski metinsel medya başvuruları `[medya başvurusu kaldırıldı - model tarafından zaten işlendi]` ile değiştirilir. Görü modellerinin yeni görüntüleri hâlâ doldurabilmesi için geçerli turun ek işaretleyicileri korunur.
+- Ham oturum dökümü yeniden yazılmaz; böylece geçmiş görüntüleyicileri özgün mesaj girdilerini ve görüntülerini göstermeye devam edebilir.
+- Bu işlem, yukarıdaki normal önbellek TTL budamasından ayrıdır. Sonraki turlarda yinelenen görüntü yüklerinin veya eski medya başvurularının istem önbelleklerini bozmasını önlemek için vardır.
 
 ## Akıllı varsayılanlar
 
-OpenClaw, Anthropic profilleri için budamayı otomatik etkinleştirir:
+Paketle birlikte sunulan Anthropic plugin'i, bir Anthropic (veya Claude CLI) kimlik doğrulama profilini ilk kez çözümlediğinde budamayı ve Heartbeat sıklığını otomatik olarak yapılandırır; ancak bunu yalnızca henüz açıkça ayarlamadığınız alanlar için yapar:
 
-| Profil türü                                           | Budama etkin | Heartbeat |
-| ----------------------------------------------------- | ------------ | --------- |
-| Anthropic OAuth/token kimlik doğrulaması (Claude CLI yeniden kullanımı dahil) | Evet         | 1 saat    |
-| API anahtarı                                          | Evet         | 30 dk     |
+| Kimlik doğrulama modu                         | `contextPruning.mode` | `contextPruning.ttl` | `heartbeat.every` |
+| --------------------------------------------- | --------------------- | -------------------- | ----------------- |
+| OAuth/token (Claude CLI yeniden kullanımı dâhil) | `cache-ttl`         | `1h`                 | `1h`              |
+| API anahtarı                                  | `cache-ttl`           | `1h`                 | `30m`             |
 
-Açık değerler ayarlarsanız, OpenClaw bunları geçersiz kılmaz.
+`agents.defaults.contextPruning.mode` veya `agents.defaults.heartbeat.every` değerini kendiniz ayarlarsanız OpenClaw bunları geçersiz kılmaz. Bu otomatik varsayılan yalnızca Anthropic ailesi kimlik doğrulaması için devreye girer; diğer sağlayıcılarda, siz yapılandırmadıkça budama `off` olur.
 
 ## Etkinleştirme veya devre dışı bırakma
 
-Anthropic dışı sağlayıcılar için budama varsayılan olarak kapalıdır. Etkinleştirmek için:
+Budama, Anthropic dışındaki sağlayıcılarda varsayılan olarak kapalıdır. Etkinleştirmek için:
 
 ```json5
 {
@@ -84,26 +75,24 @@ Anthropic dışı sağlayıcılar için budama varsayılan olarak kapalıdır. E
 }
 ```
 
-Devre dışı bırakmak için: `mode: "off"` ayarlayın.
+Devre dışı bırakmak için `mode: "off"` olarak ayarlayın.
 
-## Budama ve Compaction
+## Budama ve Compaction karşılaştırması
 
-|            | Budama              | Compaction             |
-| ---------- | ------------------- | ---------------------- |
-| **Ne**     | Araç sonuçlarını budar | Konuşmayı özetler    |
-| **Kaydedilir mi?** | Hayır (istek başına) | Evet (dökümde)     |
-| **Kapsam** | Yalnızca araç sonuçları | Tüm konuşma         |
+|                | Budama                    | Compaction              |
+| -------------- | ------------------------- | ----------------------- |
+| **Ne yapar?**  | Araç sonuçlarını kısaltır | Konuşmayı özetler       |
+| **Kaydedilir mi?** | Hayır (istek başına)  | Evet (dökümde)          |
+| **Kapsam**     | Yalnızca araç sonuçları   | Konuşmanın tamamı       |
 
-Birbirlerini tamamlarlar -- budama, Compaction döngüleri arasında
-araç çıktısını yalın tutar.
+Birbirlerini tamamlarlar -- budama, Compaction döngüleri arasında araç çıktılarını küçük tutar.
 
-## Daha fazla okuma
+## Ek okumalar
 
-- [Compaction](/tr/concepts/compaction) -- özetleme tabanlı bağlam azaltma
-- [Gateway yapılandırması](/tr/gateway/configuration) -- tüm budama yapılandırma seçenekleri
-  (`contextPruning.*`)
+- [Compaction](/tr/concepts/compaction): özetlemeye dayalı bağlam azaltma
+- [Gateway Yapılandırması](/tr/gateway/configuration): tüm budama yapılandırma ayarları (`contextPruning.*`)
 
-## İlgili
+## İlgili konular
 
 - [Oturum yönetimi](/tr/concepts/session)
 - [Oturum araçları](/tr/concepts/session-tool)

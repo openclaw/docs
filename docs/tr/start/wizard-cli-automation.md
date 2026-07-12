@@ -1,35 +1,34 @@
 ---
 read_when:
-    - Betiklerde veya CI'da başlangıç sürecini otomatikleştiriyorsunuz
+    - Betiklerde veya CI'da ilk katılım sürecini otomatikleştiriyorsunuz
     - Belirli sağlayıcılar için etkileşimsiz örneklere ihtiyacınız var
 sidebarTitle: CLI automation
-summary: OpenClaw CLI için betikli ilk kurulum ve ajan kurulumu
+summary: OpenClaw CLI için betik tabanlı ilk katılım ve ajan kurulumu
 title: CLI otomasyonu
 x-i18n:
-    generated_at: "2026-04-30T09:46:12Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:46:05Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6a169abafa682e99d2cd89dbcc9a738790d7fdfa7ba204f415baac35d6df4a2f
+    source_hash: de3115fd0c675b92f22cf9c44ddd307a854e499c6f163235f991368429b2c152
     source_path: start/wizard-cli-automation.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-`openclaw onboard` işlemini otomatikleştirmek için `--non-interactive` kullanın.
+Kurulumu betiklerle yapmak için `openclaw onboard --non-interactive` kullanın. Bu komut `--accept-risk` gerektirir: etkileşimsiz kurulum, onay istemi olmadan kimlik bilgilerini ve daemon yapılandırmasını yazabilir; bu nedenle bayrak, riskin açıkça kabul edildiğini belirtir.
 
 <Note>
-`--json`, etkileşimsiz modu ima etmez. Betikler için `--non-interactive` (ve `--workspace`) kullanın.
+`--json`, etkileşimsiz modu etkinleştirmez. Betiklerde `--non-interactive --accept-risk` seçeneklerini açıkça iletin.
 </Note>
 
 ## Temel etkileşimsiz örnek
 
 ```bash
-openclaw onboard --non-interactive \
+openclaw onboard --non-interactive --accept-risk \
   --mode local \
   --auth-choice apiKey \
   --anthropic-api-key "$ANTHROPIC_API_KEY" \
   --secret-input-mode plaintext \
-  --gateway-port 18789 \
   --gateway-bind loopback \
   --install-daemon \
   --daemon-runtime node \
@@ -39,134 +38,116 @@ openclaw onboard --non-interactive \
 
 Makine tarafından okunabilir bir özet için `--json` ekleyin.
 
-Otomasyonunuz çalışma alanı dosyalarını önceden hazırlıyorsa ve onboarding'in varsayılan bootstrap dosyalarını oluşturmasını istemiyorsanız `--skip-bootstrap` kullanın.
-
-Düz metin değerleri yerine kimlik doğrulama profillerinde env destekli referanslar depolamak için `--secret-input-mode ref` kullanın.
-Env referansları ile yapılandırılmış sağlayıcı referansları (`file` veya `exec`) arasında etkileşimli seçim onboarding akışında kullanılabilir.
-
-Etkileşimsiz `ref` modunda, sağlayıcı env değişkenleri süreç ortamında ayarlanmış olmalıdır.
-Eşleşen env değişkeni olmadan satır içi anahtar bayrakları geçirmek artık hızlıca başarısız olur.
-
-Örnek:
+- `--gateway-port` varsayılan olarak `18789` değerini kullanır; yalnızca bu değeri geçersiz kılmak için iletin.
+- `--skip-bootstrap`, kendi çalışma alanını önceden hazırlayan otomasyonlar için varsayılan çalışma alanı dosyalarının oluşturulmasını atlar.
+- `--secret-input-mode ref`, düz metin anahtar yerine kimlik doğrulama profilinde ortam değişkeni destekli bir başvuru (`{ source: "env", provider: "default", id: "<ENV_VAR>" }`) saklar. Etkileşimsiz `ref` modunda sağlayıcının ortam değişkeni, işlem ortamında önceden ayarlanmış olmalıdır: eşleşen ortam değişkeni olmadan satır içi anahtar bayrağı iletmek işlemin hemen başarısız olmasına neden olur.
 
 ```bash
-openclaw onboard --non-interactive \
+openclaw onboard --non-interactive --accept-risk \
   --mode local \
   --auth-choice openai-api-key \
-  --secret-input-mode ref \
-  --accept-risk
+  --secret-input-mode ref
 ```
 
-## Sağlayıcıya özel örnekler
+## Sağlayıcıya özgü örnekler
 
 <AccordionGroup>
-  <Accordion title="Anthropic API key example">
+  <Accordion title="Anthropic API anahtarı örneği">
     ```bash
-    openclaw onboard --non-interactive \
+    openclaw onboard --non-interactive --accept-risk \
       --mode local \
       --auth-choice apiKey \
       --anthropic-api-key "$ANTHROPIC_API_KEY" \
-      --gateway-port 18789 \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Gemini example">
+  <Accordion title="Cloudflare AI Gateway örneği">
     ```bash
-    openclaw onboard --non-interactive \
-      --mode local \
-      --auth-choice gemini-api-key \
-      --gemini-api-key "$GEMINI_API_KEY" \
-      --gateway-port 18789 \
-      --gateway-bind loopback
-    ```
-  </Accordion>
-  <Accordion title="Z.AI example">
-    ```bash
-    openclaw onboard --non-interactive \
-      --mode local \
-      --auth-choice zai-api-key \
-      --zai-api-key "$ZAI_API_KEY" \
-      --gateway-port 18789 \
-      --gateway-bind loopback
-    ```
-  </Accordion>
-  <Accordion title="Vercel AI Gateway example">
-    ```bash
-    openclaw onboard --non-interactive \
-      --mode local \
-      --auth-choice ai-gateway-api-key \
-      --ai-gateway-api-key "$AI_GATEWAY_API_KEY" \
-      --gateway-port 18789 \
-      --gateway-bind loopback
-    ```
-  </Accordion>
-  <Accordion title="Cloudflare AI Gateway example">
-    ```bash
-    openclaw onboard --non-interactive \
+    openclaw onboard --non-interactive --accept-risk \
       --mode local \
       --auth-choice cloudflare-ai-gateway-api-key \
       --cloudflare-ai-gateway-account-id "your-account-id" \
       --cloudflare-ai-gateway-gateway-id "your-gateway-id" \
       --cloudflare-ai-gateway-api-key "$CLOUDFLARE_AI_GATEWAY_API_KEY" \
-      --gateway-port 18789 \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Moonshot example">
+  <Accordion title="Gemini örneği">
     ```bash
-    openclaw onboard --non-interactive \
+    openclaw onboard --non-interactive --accept-risk \
       --mode local \
-      --auth-choice moonshot-api-key \
-      --moonshot-api-key "$MOONSHOT_API_KEY" \
-      --gateway-port 18789 \
+      --auth-choice gemini-api-key \
+      --gemini-api-key "$GEMINI_API_KEY" \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Mistral example">
+  <Accordion title="Mistral örneği">
     ```bash
-    openclaw onboard --non-interactive \
+    openclaw onboard --non-interactive --accept-risk \
       --mode local \
       --auth-choice mistral-api-key \
       --mistral-api-key "$MISTRAL_API_KEY" \
-      --gateway-port 18789 \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Synthetic example">
+  <Accordion title="Moonshot örneği">
     ```bash
-    openclaw onboard --non-interactive \
+    openclaw onboard --non-interactive --accept-risk \
       --mode local \
-      --auth-choice synthetic-api-key \
-      --synthetic-api-key "$SYNTHETIC_API_KEY" \
-      --gateway-port 18789 \
+      --auth-choice moonshot-api-key \
+      --moonshot-api-key "$MOONSHOT_API_KEY" \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="OpenCode example">
+  <Accordion title="Ollama örneği">
     ```bash
-    openclaw onboard --non-interactive \
-      --mode local \
-      --auth-choice opencode-zen \
-      --opencode-zen-api-key "$OPENCODE_API_KEY" \
-      --gateway-port 18789 \
-      --gateway-bind loopback
-    ```
-    Go kataloğu için `--auth-choice opencode-go --opencode-go-api-key "$OPENCODE_API_KEY"` seçeneğine geçin.
-  </Accordion>
-  <Accordion title="Ollama example">
-    ```bash
-    openclaw onboard --non-interactive \
+    openclaw onboard --non-interactive --accept-risk \
       --mode local \
       --auth-choice ollama \
       --custom-model-id "qwen3.5:27b" \
-      --accept-risk \
-      --gateway-port 18789 \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Custom provider example">
+  <Accordion title="OpenCode örneği">
     ```bash
-    openclaw onboard --non-interactive \
+    openclaw onboard --non-interactive --accept-risk \
+      --mode local \
+      --auth-choice opencode-zen \
+      --opencode-zen-api-key "$OPENCODE_API_KEY" \
+      --gateway-bind loopback
+    ```
+    Go kataloğu için `--auth-choice opencode-go --opencode-go-api-key "$OPENCODE_API_KEY"` seçeneklerine geçin.
+  </Accordion>
+  <Accordion title="Synthetic örneği">
+    ```bash
+    openclaw onboard --non-interactive --accept-risk \
+      --mode local \
+      --auth-choice synthetic-api-key \
+      --synthetic-api-key "$SYNTHETIC_API_KEY" \
+      --gateway-bind loopback
+    ```
+  </Accordion>
+  <Accordion title="Vercel AI Gateway örneği">
+    ```bash
+    openclaw onboard --non-interactive --accept-risk \
+      --mode local \
+      --auth-choice ai-gateway-api-key \
+      --ai-gateway-api-key "$AI_GATEWAY_API_KEY" \
+      --gateway-bind loopback
+    ```
+  </Accordion>
+  <Accordion title="Z.AI örneği">
+    ```bash
+    openclaw onboard --non-interactive --accept-risk \
+      --mode local \
+      --auth-choice zai-api-key \
+      --zai-api-key "$ZAI_API_KEY" \
+      --gateway-bind loopback
+    ```
+  </Accordion>
+  <Accordion title="Özel sağlayıcı örneği">
+    ```bash
+    openclaw onboard --non-interactive --accept-risk \
       --mode local \
       --auth-choice custom-api-key \
       --custom-base-url "https://llm.example.com/v1" \
@@ -175,18 +156,18 @@ openclaw onboard --non-interactive \
       --custom-provider-id "my-custom" \
       --custom-compatibility anthropic \
       --custom-image-input \
-      --gateway-port 18789 \
       --gateway-bind loopback
     ```
 
-    `--custom-api-key` isteğe bağlıdır. Atlanırsa onboarding `CUSTOM_API_KEY` değerini kontrol eder.
-    OpenClaw, yaygın vision model kimliklerini otomatik olarak görüntü yetenekli olarak işaretler. Bilinmeyen özel vision kimlikleri için `--custom-image-input` ekleyin veya yalnızca metin meta verisini zorlamak için `--custom-text-input` kullanın.
+    `--custom-api-key` isteğe bağlıdır; bazı uç noktalar kimlik doğrulama gerektirmez. Belirtilmezse ilk katılım işlemi, ortamda `CUSTOM_API_KEY` değerini denetler. `--custom-provider-id` isteğe bağlıdır ve belirtilmediğinde temel URL'den otomatik olarak türetilir. `--custom-compatibility` varsayılan olarak `openai` değerini kullanır (diğer değerler: `openai-responses`, `anthropic`).
 
-    Ref modu varyantı:
+    OpenClaw, görüntü girdisi desteğini bilinen görsel model kimliği kalıplarından (`gpt-4o`, `claude-3/4`, `gemini`, `-vl`/`vision` son ekleri ve benzerleri) çıkarır. Tanınmayan bir görsel model için desteği zorunlu olarak etkinleştirmek üzere `--custom-image-input`, yalnızca metin kullanımını zorunlu kılmak üzere `--custom-text-input` ekleyin.
+
+    `apiKey` değerini `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }` olarak saklayan başvuru modu çeşidi:
 
     ```bash
     export CUSTOM_API_KEY="your-key"
-    openclaw onboard --non-interactive \
+    openclaw onboard --non-interactive --accept-risk \
       --mode local \
       --auth-choice custom-api-key \
       --custom-base-url "https://llm.example.com/v1" \
@@ -195,46 +176,42 @@ openclaw onboard --non-interactive \
       --custom-provider-id "my-custom" \
       --custom-compatibility anthropic \
       --custom-image-input \
-      --gateway-port 18789 \
       --gateway-bind loopback
     ```
-
-    Bu modda onboarding, `apiKey` değerini `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }` olarak depolar.
 
   </Accordion>
 </AccordionGroup>
 
-Anthropic setup-token, desteklenen bir onboarding belirteci yolu olarak kullanılmaya devam eder, ancak OpenClaw artık mevcut olduğunda Claude CLI yeniden kullanımını tercih eder.
-Üretim için bir Anthropic API anahtarını tercih edin.
+Anthropic kurulum belirteciyle kimlik doğrulama desteklenmeye devam eder; ancak yerel bir Claude CLI oturumu mevcut olduğunda OpenClaw, Claude CLI oturumunun yeniden kullanılmasını tercih eder. Üretim ortamında Anthropic API anahtarını tercih edin.
 
-## Başka bir ajan ekleme
+## Başka bir aracı ekleme
 
-Kendi çalışma alanına, oturumlarına ve kimlik doğrulama profillerine sahip ayrı bir ajan oluşturmak için `openclaw agents add <name>` kullanın.
-`--workspace` olmadan çalıştırmak sihirbazı başlatır.
+`openclaw agents add <name>`, kendi çalışma alanına, oturumlarına ve kimlik doğrulama profillerine sahip ayrı bir aracı oluşturur. Komutu `--workspace` olmadan (ve başka hiçbir bayrak olmadan) çalıştırmak etkileşimli sihirbazı başlatır; `--workspace`, `--model`, `--agent-dir`, `--bind` veya `--non-interactive` seçeneklerinden herhangi birini iletmek komutu etkileşimsiz olarak çalıştırır ve ardından `--workspace` seçeneğini zorunlu kılar.
 
 ```bash
 openclaw agents add work \
   --workspace ~/.openclaw/workspace-work \
-  --model openai/gpt-5.5 \
+  --model openai/gpt-5.6-sol \
   --bind whatsapp:biz \
   --non-interactive \
   --json
 ```
 
-Ayarladıkları:
+Komutun yazdığı yapılandırma anahtarları (yeni aracı kimliği için `agents.list[]` girdisi):
 
-- `agents.list[].name`
-- `agents.list[].workspace`
-- `agents.list[].agentDir`
+- `name`
+- `workspace`
+- `agentDir`
+- `model` (yalnızca `--model` iletildiğinde)
 
 Notlar:
 
-- Varsayılan çalışma alanları `~/.openclaw/workspace-<agentId>` biçimini izler.
-- Gelen mesajları yönlendirmek için `bindings` ekleyin (sihirbaz bunu yapabilir).
-- Etkileşimsiz bayraklar: `--model`, `--agent-dir`, `--bind`, `--non-interactive`.
+- Varsayılan çalışma alanı (etkileşimli sihirbazda `--workspace` belirtilmediğinde): `~/.openclaw/workspace-<agentId>`.
+- `--bind <channel[:accountId]>` yinelenebilir; gelen mesajları yeni aracıya yönlendirmek için bağlamalar ekleyin (sihirbaz bunu etkileşimli olarak da yapabilir).
+- Aracı adı geçerli bir aracı kimliğine dönüştürülür; `main` ayrılmıştır.
 
 ## İlgili belgeler
 
-- Onboarding merkezi: [Onboarding (CLI)](/tr/start/wizard)
+- İlk katılım merkezi: [İlk katılım (CLI)](/tr/start/wizard)
 - Tam başvuru: [CLI Kurulum Başvurusu](/tr/start/wizard-cli-reference)
 - Komut başvurusu: [`openclaw onboard`](/tr/cli/onboard)

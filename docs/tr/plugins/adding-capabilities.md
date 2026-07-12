@@ -1,96 +1,83 @@
 ---
 read_when:
-    - Yeni bir çekirdek yetenek ve Plugin kayıt yüzeyi ekleme
-    - Kodun çekirdeğe, bir tedarikçi Plugin'ine veya bir özellik Plugin'ine ait olup olmadığına karar verme
-    - Kanallar veya araçlar için yeni bir çalışma zamanı yardımcısı bağlama
+    - Yeni bir çekirdek yeteneği ve Plugin kayıt yüzeyi ekleme
+    - Kodun çekirdeğe, bir sağlayıcı Plugin'ine veya bir özellik Plugin'ine ait olup olmadığına karar verme
+    - Kanallar veya araçlar için yeni bir çalışma zamanı yardımcısını bağlama
 sidebarTitle: Adding capabilities
-summary: OpenClaw Plugin sistemine yeni bir paylaşılan yetenek eklemek için katkıda bulunan rehberi
-title: Yetenek ekleme (katkıda bulunan kılavuzu)
+summary: OpenClaw plugin sistemine yeni bir paylaşılan yetenek eklemeye yönelik katkıda bulunanlar kılavuzu
+title: Yetenek ekleme (katkıda bulunanlar için kılavuz)
 x-i18n:
-    generated_at: "2026-06-28T00:50:02Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:57:12Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b8a25122a7b76ff5bbb7616748d5fad2397502f9accb5428134a75d65e872034
+    source_hash: 3534b7521ab8183d91399cded8a3b397be46bf9bd18f2fdb88a8947bad67ffaa
     source_path: plugins/adding-capabilities.md
     workflow: 16
 ---
 
 <Info>
-  Bu, OpenClaw çekirdek geliştiricileri için bir **katkıda bulunan kılavuzudur**. Harici bir Plugin
-  oluşturuyorsanız, bunun yerine [Plugin oluşturma](/tr/plugins/building-plugins)
-  bölümüne bakın. Derin mimari başvurusu (yetenek modeli, sahiplik,
-  yükleme hattı, çalışma zamanı yardımcıları) için [Plugin iç yapıları](/tr/plugins/architecture) bölümüne bakın.
+  Bu, OpenClaw çekirdek geliştiricileri için bir **katkıda bulunanlar kılavuzudur**. Harici
+  bir plugin geliştiriyorsanız bunun yerine [Plugin geliştirme](/tr/plugins/building-plugins)
+  bölümüne bakın. Ayrıntılı mimari başvurusu (yetenek modeli, sahiplik,
+  yükleme işlem hattı, çalışma zamanı yardımcıları) için [Plugin iç yapısı](/tr/plugins/architecture)
+  bölümüne bakın.
 </Info>
 
-Bunu, OpenClaw embeddings, görüntü üretimi, video üretimi veya gelecekteki
-tedarikçi destekli bir özellik alanı gibi yeni bir paylaşılan alana ihtiyaç duyduğunda kullanın.
+OpenClaw; gömmeler, görüntü oluşturma, video oluşturma veya gelecekte
+tedarikçi destekli başka bir özellik alanı gibi yeni bir paylaşılan etki alanına ihtiyaç duyduğunda bunu kullanın.
 
 Kural:
 
-- **Plugin** = sahiplik sınırı
+- **plugin** = sahiplik sınırı
 - **yetenek** = paylaşılan çekirdek sözleşmesi
 
-Bir tedarikçiyi doğrudan bir kanala veya araca bağlayarak başlamayın. Yeteneği tanımlayarak başlayın.
+Bir tedarikçiyi doğrudan bir kanala veya araca bağlamayın. Önce yeteneği tanımlayın.
 
-## Ne zaman yetenek oluşturulmalı
+## Ne zaman yetenek oluşturulmalı?
 
-Aşağıdakilerin **tümü** doğru olduğunda yeni bir yetenek oluşturun:
+Yalnızca aşağıdakilerin **tümü** doğru olduğunda yeni bir yetenek oluşturun:
 
-1. Birden fazla tedarikçi bunu makul şekilde uygulayabilir.
-2. Kanallar, araçlar veya özellik Pluginleri tedarikçiyi önemsemeden bunu tüketebilmelidir.
-3. Çekirdeğin fallback, ilke, yapılandırma veya teslim davranışını sahiplenmesi gerekir.
+1. Birden fazla tedarikçinin bunu uygulayabilmesi makul olmalıdır.
+2. Kanallar, araçlar veya özellik pluginleri, tedarikçiyi önemsemeden bunu tüketebilmelidir.
+3. Çekirdeğin geri dönüş, politika, yapılandırma veya teslim davranışının sahipliğini üstlenmesi gerekir.
 
-İş yalnızca tedarikçiye özgüyse ve henüz paylaşılan bir sözleşme yoksa durun ve önce sözleşmeyi tanımlayın.
+Çalışma yalnızca tedarikçiye özgüyse ve henüz paylaşılan bir sözleşme yoksa önce sözleşmeyi tanımlayın.
 
 ## Standart sıra
 
-1. Tipli çekirdek sözleşmesini tanımlayın.
-2. Bu sözleşme için Plugin kaydı ekleyin.
+1. Türü belirlenmiş çekirdek sözleşmesini tanımlayın.
+2. Bu sözleşme için plugin kaydını ekleyin.
 3. Paylaşılan bir çalışma zamanı yardımcısı ekleyin.
-4. Kanıt olarak bir gerçek tedarikçi Pluginini bağlayın.
+4. Kanıt olarak gerçek bir tedarikçi plugini bağlayın.
 5. Özellik/kanal tüketicilerini çalışma zamanı yardımcısına taşıyın.
 6. Sözleşme testleri ekleyin.
-7. Operatöre yönelik yapılandırmayı ve sahiplik modelini belgeleyin.
+7. Operatöre yönelik yapılandırmayı ve sahiplik modelini belgelendirin.
 
-## Ne nereye gider
+## Ne nereye yerleştirilir?
 
-**Çekirdek:**
+| Katman                     | Sorumluluk                                                                                                                                                                                                                             |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Çekirdek**               | İstek/yanıt türleri; sağlayıcı kayıt defteri ve çözümleme; geri dönüş davranışı; iç içe nesne, joker karakter, dizi öğesi ve bileşim düğümlerinde yayılan `title`/`description` dokümantasyon meta verilerine sahip yapılandırma şeması; çalışma zamanı yardımcısı yüzeyi. |
+| **Tedarikçi plugini**      | Tedarikçi API çağrıları, tedarikçi kimlik doğrulama işlemleri, tedarikçiye özgü istek normalleştirmesi ve yetenek uygulamasının kaydı.                                                                                                    |
+| **Özellik/kanal plugini**  | `api.runtime.*` veya eşleşen `plugin-sdk/*-runtime` yardımcısını çağırır. Bir tedarikçi uygulamasını hiçbir zaman doğrudan çağırmaz.                                                                                                     |
 
-- İstek/yanıt türleri.
-- Sağlayıcı kaydı + çözümleme.
-- Fallback davranışı.
-- İç içe nesne, joker karakter, dizi öğesi ve bileşim düğümlerinde yayılan `title` / `description` dokümantasyon meta verileriyle yapılandırma şeması.
-- Çalışma zamanı yardımcısı yüzeyi.
+## Sağlayıcı ve yürütme düzeneği bağlantı noktaları
 
-**Tedarikçi Plugini:**
+Davranış genel ajan döngüsü yerine model sağlayıcısı sözleşmesine ait olduğunda **sağlayıcı kancalarını** kullanın. Aktarım seçiminden sonraki sağlayıcıya özgü istek parametreleri, kimlik doğrulama profili tercihi, istem katmanları ve model/profil yük devretmesinden sonraki izleme geri dönüşü yönlendirmesi buna örnektir.
 
-- Tedarikçi API çağrıları.
-- Tedarikçi kimlik doğrulama yönetimi.
-- Tedarikçiye özgü istek normalleştirme.
-- Yetenek uygulamasının kaydı.
+Davranış, bir turu yürüten çalışma zamanına ait olduğunda **ajan yürütme düzeneği kancalarını** kullanın. Yürütme düzenekleri; görünür çıktı olmadan boş çıktı, görünür çıktı olmadan akıl yürütme veya nihai yanıt içermeyen yapılandırılmış plan gibi açık protokol sonuçlarını sınıflandırabilir; böylece dış model geri dönüş politikası yeniden deneme kararını verebilir.
 
-**Özellik/kanal Plugini:**
+Her iki bağlantı noktasını da dar kapsamlı tutun:
 
-- `api.runtime.*` veya eşleşen `plugin-sdk/*-runtime` yardımcısını çağırır.
-- Bir tedarikçi uygulamasını asla doğrudan çağırmaz.
+- Yeniden deneme/geri dönüş politikasının sahipliği çekirdeğe aittir.
+- Sağlayıcı pluginleri, sağlayıcıya özgü istek/kimlik doğrulama/yönlendirme ipuçlarının sahipliğini üstlenir.
+- Yürütme düzeneği pluginleri, çalışma zamanına özgü deneme sınıflandırmasının sahipliğini üstlenir.
+- Üçüncü taraf pluginleri çekirdek durumunu doğrudan değiştirmek yerine ipuçları döndürür.
 
-## Sağlayıcı ve harness bağlantı noktaları
+## Dosya denetim listesi
 
-Davranış genel ajan döngüsünden ziyade model sağlayıcısı sözleşmesine ait olduğunda **sağlayıcı hooklarını** kullanın. Örnekler arasında taşıma seçimi sonrası sağlayıcıya özgü istek parametreleri, kimlik doğrulama profili tercihi, prompt katmanları ve model/profil failover sonrası takip fallback yönlendirmesi bulunur.
-
-Davranış bir turu yürüten çalışma zamanına ait olduğunda **ajan harness hooklarını** kullanın. Harnessler, dış model fallback ilkesinin yeniden deneme kararını verebilmesi için boş çıktı, görünür çıktı olmadan reasoning veya final yanıt olmadan yapılandırılmış plan gibi açık protokol sonuçlarını sınıflandırabilir.
-
-Her iki bağlantı noktasını da dar tutun:
-
-- Çekirdek yeniden deneme/fallback ilkesini sahiplenir.
-- Sağlayıcı Pluginleri sağlayıcıya özgü istek/kimlik doğrulama/yönlendirme ipuçlarını sahiplenir.
-- Harness Pluginleri çalışma zamanına özgü deneme sınıflandırmasını sahiplenir.
-- Üçüncü taraf Pluginler çekirdek durumunu doğrudan değiştirmez, ipuçları döndürür.
-
-## Dosya kontrol listesi
-
-Yeni bir yetenek için şu alanlara dokunmayı bekleyin:
+Yeni bir yetenek için şu alanlara dokunmanız beklenir:
 
 - `src/<capability>/types.ts`
 - `src/<capability>/...registry/runtime.ts`
@@ -102,52 +89,53 @@ Yeni bir yetenek için şu alanlara dokunmayı bekleyin:
 - `src/plugins/runtime/index.ts`
 - `src/plugin-sdk/<capability>.ts`
 - `src/plugin-sdk/<capability>-runtime.ts`
-- Bir veya daha fazla paketlenmiş Plugin paketi.
-- Yapılandırma, dokümanlar, testler.
+- Bir veya daha fazla paketlenmiş plugin paketi.
+- Yapılandırma, dokümantasyon ve testler.
 
-## Çalışılmış örnek: görüntü üretimi
+## Uygulamalı örnek: görüntü oluşturma
 
-Görüntü üretimi standart biçimi izler:
+Görüntü oluşturma standart yapıyı izler:
 
-1. Çekirdek `ImageGenerationProvider` tanımlar.
-2. Çekirdek `registerImageGenerationProvider(...)` dışa açar.
-3. Çekirdek `runtime.imageGeneration.generate(...)` dışa açar.
-4. `openai`, `google`, `fal` ve `minimax` Pluginleri tedarikçi destekli uygulamaları kaydeder.
-5. Gelecekteki tedarikçiler kanalları/araçları değiştirmeden aynı sözleşmeyi kaydeder.
+1. Çekirdek `ImageGenerationProvider` öğesini tanımlar.
+2. Çekirdek `registerImageGenerationProvider(...)` öğesini sunar.
+3. Çekirdek `api.runtime.imageGeneration.generate(...)` ve `.listProviders(...)` öğelerini sunar.
+4. Tedarikçi pluginleri (`comfy`, `deepinfra`, `fal`, `google`, `litellm`, `microsoft-foundry`, `minimax`, `openai`, `openrouter`, `vydra`, `xai`) tedarikçi destekli uygulamaları kaydeder.
+5. Gelecekteki tedarikçiler, kanalları/araçları değiştirmeden aynı sözleşmeyi kaydeder.
 
-Yapılandırma anahtarı, vision-analysis yönlendirmesinden kasıtlı olarak ayrıdır:
+Yapılandırma anahtarı, görsel analiz yönlendirmesinden kasıtlı olarak ayrıdır:
 
 - `agents.defaults.imageModel` görüntüleri analiz eder.
-- `agents.defaults.imageGenerationModel` görüntüler üretir.
+- `agents.defaults.imageGenerationModel` görüntüler oluşturur.
 
-Fallback ve ilke açık kalması için bunları ayrı tutun.
+Geri dönüş ve politikanın açık kalması için bunları ayrı tutun.
 
-## Embedding sağlayıcıları
+## Gömme sağlayıcıları
 
-Yeniden kullanılabilir vektör embedding sağlayıcıları için `embeddingProviders` kullanın. Bu sözleşme
-bilerek bellekten daha geniştir: araçlar, arama, retrieval, içe aktarıcılar veya
-gelecekteki özellik Pluginleri bellek motoruna bağlı olmadan embeddingleri tüketebilir.
+Yeniden kullanılabilir vektör gömme sağlayıcıları için `registerEmbeddingProvider(...)` /
+`embeddingProviders` sözleşmesini kullanın. Bu sözleşme kasıtlı olarak bellekten
+daha geniş kapsamlıdır: araçlar, arama, getirme, içe aktarıcılar veya gelecekteki özellik pluginleri,
+bellek motoruna bağımlı olmadan gömmeleri tüketebilir. Bellek araması
+da genel `embeddingProviders` sağlayıcılarını tüketir.
 
-Bellek araması genel `embeddingProviders` tüketebilir. Eski
-`memoryEmbeddingProviders` sözleşmesi, mevcut belleğe özgü sağlayıcılar geçiş yaparken
-kullanımdan kaldırılmış uyumluluktur; yeni yeniden kullanılabilir embedding sağlayıcıları
-`embeddingProviders` kullanmalıdır.
+Eski belleğe özgü kayıt API'si ve `memoryEmbeddingProviders`
+sözleşmesi kullanımdan kaldırılmıştır. Tüm yeni gömme sağlayıcıları için
+`registerEmbeddingProvider` ve `embeddingProviders` kullanın.
 
-## İnceleme kontrol listesi
+## İnceleme denetim listesi
 
-Yeni bir yetenek yayınlamadan önce şunları doğrulayın:
+Yeni bir yeteneği yayımlamadan önce şunları doğrulayın:
 
 - Hiçbir kanal/araç tedarikçi kodunu doğrudan içe aktarmıyor.
-- Çalışma zamanı yardımcısı paylaşılan yoldur.
-- En az bir sözleşme testi paketlenmiş sahipliği doğrular.
-- Yapılandırma dokümanları yeni model/yapılandırma anahtarını adlandırır.
-- Plugin dokümanları sahiplik sınırını açıklar.
+- Paylaşılan yol, çalışma zamanı yardımcısıdır.
+- En az bir sözleşme testi paketlenmiş sahipliği doğruluyor.
+- Yapılandırma dokümantasyonu yeni model/yapılandırma anahtarını belirtiyor.
+- Plugin dokümantasyonu sahiplik sınırını açıklıyor.
 
-Bir PR yetenek katmanını atlayıp tedarikçi davranışını bir kanala/araca sabit kodluyorsa, geri gönderin ve önce sözleşmeyi tanımlayın.
+Bir PR yetenek katmanını atlayıp tedarikçi davranışını bir kanala/araca sabit kodluyorsa geri gönderin ve önce sözleşmeyi tanımlayın.
 
 ## İlgili
 
-- [Plugin iç yapıları](/tr/plugins/architecture) — yetenek modeli, sahiplik, yükleme hattı, çalışma zamanı yardımcıları.
-- [Plugin oluşturma](/tr/plugins/building-plugins) — ilk Plugin öğreticisi.
-- [SDK genel bakışı](/tr/plugins/sdk-overview) — içe aktarma haritası ve kayıt API başvurusu.
-- [Skills oluşturma](/tr/tools/creating-skills) — eşlik eden katkıda bulunan yüzeyi.
+- [Plugin iç yapısı](/tr/plugins/architecture) — yetenek modeli, sahiplik, yükleme işlem hattı, çalışma zamanı yardımcıları.
+- [Plugin geliştirme](/tr/plugins/building-plugins) — ilk plugin öğreticisi.
+- [SDK'ye genel bakış](/tr/plugins/sdk-overview) — içe aktarma eşlemesi ve kayıt API'si başvurusu.
+- [Skills oluşturma](/tr/tools/creating-skills) — tamamlayıcı katkıda bulunan yüzeyi.

@@ -2,131 +2,100 @@
 read_when: You want a dedicated explanation of sandboxing or need to tune agents.defaults.sandbox.
 sidebarTitle: Sandboxing
 status: active
-summary: 'كيف يعمل عزل OpenClaw: الأوضاع، والنطاقات، والوصول إلى مساحة العمل، والصور'
-title: العزل الأمني
+summary: 'كيفية عمل العزل في OpenClaw: الأوضاع والنطاقات والوصول إلى مساحة العمل والصور'
+title: العزل البرمجي
 x-i18n:
-    generated_at: "2026-06-27T17:42:58Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T05:55:46Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7c9754fbfc71ee5fb48df72eece8ba3b155ce5e0d9c55aae75ce21801dceb07d
+    source_hash: 60d6695c5d8f4e8d3bfb80dd387a50c104dc4e140d5974a66d5a2176594782a4
     source_path: gateway/sandboxing.md
     workflow: 16
 ---
 
-يمكن لـ OpenClaw تشغيل **الأدوات داخل خلفيات بيئات معزولة** لتقليل نطاق التأثير. هذا **اختياري** وتتحكم فيه الإعدادات (`agents.defaults.sandbox` أو `agents.list[].sandbox`). إذا كان العزل متوقفًا، تعمل الأدوات على المضيف. يبقى Gateway على المضيف؛ ويعمل تنفيذ الأدوات في بيئة معزولة عند تفعيله.
+يمكن لـ OpenClaw تنفيذ الأدوات داخل بيئة خلفية معزولة لتقليل نطاق الضرر. يكون العزل معطّلًا افتراضيًا، ويُتحكَّم فيه عبر `agents.defaults.sandbox` (عام) أو `agents.list[].sandbox` (لكل وكيل). تظل عملية Gateway دائمًا على المضيف؛ ولا ينتقل إلى البيئة المعزولة عند تمكينها سوى تنفيذ الأدوات.
 
 <Note>
-هذا ليس حدًا أمنيًا مثاليًا، لكنه يحد بشكل ملموس من الوصول إلى نظام الملفات والعمليات عندما ينفذ النموذج إجراءً غير مناسب.
+لا يشكّل هذا حدًا أمنيًا مثاليًا، لكنه يقيّد بدرجة كبيرة الوصول إلى نظام الملفات والعمليات عندما يقوم النموذج بتصرف غير سليم.
 </Note>
 
-## ما الذي يُعزل
+## ما الذي يخضع للعزل
 
-- تنفيذ الأدوات (`exec`، `read`، `write`، `edit`، `apply_patch`، `process`، إلخ).
-- المتصفح المعزول الاختياري (`agents.defaults.sandbox.browser`).
+- تنفيذ الأدوات: `exec` و`read` و`write` و`edit` و`apply_patch` و`process` وغيرها.
+- متصفح البيئة المعزولة الاختياري (`agents.defaults.sandbox.browser`).
 
-<AccordionGroup>
-  <Accordion title="Sandboxed browser details">
-    - افتراضيًا، يبدأ المتصفح المعزول تلقائيًا (لضمان إمكانية الوصول إلى CDP) عندما تحتاج إليه أداة المتصفح. اضبط ذلك عبر `agents.defaults.sandbox.browser.autoStart` و`agents.defaults.sandbox.browser.autoStartTimeoutMs`.
-    - افتراضيًا، تستخدم حاويات المتصفح المعزول شبكة Docker مخصصة (`openclaw-sandbox-browser`) بدلًا من شبكة `bridge` العامة. اضبط ذلك باستخدام `agents.defaults.sandbox.browser.network`.
-    - يقيد الخيار الاختياري `agents.defaults.sandbox.browser.cdpSourceRange` دخول CDP عند حافة الحاوية باستخدام قائمة سماح CIDR (على سبيل المثال `172.21.0.1/32`).
-    - وصول مراقب noVNC محمي بكلمة مرور افتراضيًا؛ يصدر OpenClaw عنوان URL برمز قصير العمر يقدّم صفحة تمهيد محلية ويفتح noVNC مع كلمة المرور في جزء عنوان URL (وليس في سجلات الاستعلام/الترويسة).
-    - يتيح `agents.defaults.sandbox.browser.allowHostControl` للجلسات المعزولة استهداف متصفح المضيف صراحةً.
-    - قوائم السماح الاختيارية تضبط `target: "custom"`: `allowedControlUrls`، و`allowedControlHosts`، و`allowedControlPorts`.
-
-  </Accordion>
-</AccordionGroup>
-
-غير معزول:
+ما لا يخضع للعزل:
 
 - عملية Gateway نفسها.
-- أي أداة يُسمح لها صراحةً بالعمل خارج البيئة المعزولة (مثل `tools.elevated`).
-  - **يتجاوز التنفيذ المرفوع العزل ويستخدم مسار الخروج المضبوط (`gateway` افتراضيًا، أو `node` عندما يكون هدف التنفيذ هو `node`).**
-  - إذا كان العزل متوقفًا، فإن `tools.elevated` لا يغير التنفيذ (فهو بالفعل على المضيف). راجع [الوضع المرفوع](/ar/tools/elevated).
+- أي أداة يُسمح لها صراحةً بالعمل خارج البيئة المعزولة عبر `tools.elevated`. يتجاوز التنفيذ بصلاحيات مرتفعة العزل ويعمل على مسار الخروج المضبوط (`gateway` افتراضيًا، أو `node` عندما يكون هدف التنفيذ هو `node`). إذا كان العزل معطّلًا، فلن يغيّر `tools.elevated` شيئًا لأن التنفيذ يعمل بالفعل على المضيف. راجع [وضع الصلاحيات المرتفعة](/ar/tools/elevated).
 
-## الأوضاع
+## الأوضاع والنطاق والبيئة الخلفية
 
-يتحكم `agents.defaults.sandbox.mode` في **وقت** استخدام العزل:
+تتحكم ثلاثة إعدادات مستقلة في سلوك العزل:
 
-<Tabs>
-  <Tab title="off">
-    لا يوجد عزل.
-  </Tab>
-  <Tab title="non-main">
-    اعزل فقط الجلسات **غير الرئيسية** (الافتراضي إذا أردت أن تبقى المحادثات العادية على المضيف).
+| الإعداد | المفتاح                           | القيم                        | الافتراضي |
+| ------- | --------------------------------- | ---------------------------- | --------- |
+| الوضع   | `agents.defaults.sandbox.mode`    | `off`, `non-main`, `all`     | `off`     |
+| النطاق  | `agents.defaults.sandbox.scope`   | `agent`, `session`, `shared` | `agent`   |
+| البيئة الخلفية | `agents.defaults.sandbox.backend` | `docker`, `ssh`, `openshell` | `docker`  |
 
-    يستند `"non-main"` إلى `session.mainKey` (الافتراضي `"main"`)، وليس إلى معرف الوكيل. تستخدم جلسات المجموعة/القناة مفاتيحها الخاصة، لذلك تُعد غير رئيسية وستُعزل.
+يتحكم **الوضع** في وقت تطبيق العزل:
 
-  </Tab>
-  <Tab title="all">
-    تعمل كل جلسة داخل بيئة معزولة.
-  </Tab>
-</Tabs>
+- `off`: لا يوجد عزل.
+- `non-main`: اعزل كل جلسة باستثناء الجلسة الرئيسية للوكيل. يكون مفتاح الجلسة الرئيسية دائمًا `agent:<agentId>:main` (أو `global` عندما تكون قيمة `session.scope` هي `"global"`)، ولا يمكن ضبطه. تستخدم جلسات المجموعات/القنوات مفاتيحها الخاصة، لذا تُعد دائمًا غير رئيسية وتخضع للعزل.
+- `all`: تعمل كل جلسة داخل بيئة معزولة.
 
-## النطاق
+يتحكم **النطاق** في عدد الحاويات/البيئات التي تُنشأ:
 
-يتحكم `agents.defaults.sandbox.scope` في **عدد الحاويات** التي تُنشأ:
+- `agent`: حاوية واحدة لكل وكيل.
+- `session`: حاوية واحدة لكل جلسة.
+- `shared`: حاوية واحدة مشتركة بين جميع الجلسات المعزولة (يتم تجاهل تجاوزات `docker` و`ssh` و`browser` الخاصة بكل وكيل ضمن هذا النطاق).
 
-- `"agent"` (الافتراضي): حاوية واحدة لكل وكيل.
-- `"session"`: حاوية واحدة لكل جلسة.
-- `"shared"`: حاوية واحدة مشتركة بين جميع الجلسات المعزولة.
-
-## الخلفية
-
-يتحكم `agents.defaults.sandbox.backend` في **بيئة التشغيل** التي توفر العزل:
-
-- `"docker"` (الافتراضي عند تفعيل العزل): بيئة تشغيل عزل محلية مدعومة بـ Docker.
-- `"ssh"`: بيئة تشغيل عزل بعيدة عامة مدعومة بـ SSH.
-- `"openshell"`: بيئة تشغيل عزل مدعومة بـ OpenShell.
-
-توجد إعدادات SSH الخاصة تحت `agents.defaults.sandbox.ssh`. وتوجد إعدادات OpenShell الخاصة تحت `plugins.entries.openshell.config`.
-
-### اختيار خلفية
+تتحكم **البيئة الخلفية** في بيئة التشغيل التي تنفّذ الأدوات المعزولة. يوجد الضبط الخاص بـ SSH ضمن `agents.defaults.sandbox.ssh`، ويوجد الضبط الخاص بـ OpenShell ضمن `plugins.entries.openshell.config`.
 
 |                     | Docker                           | SSH                            | OpenShell                                           |
 | ------------------- | -------------------------------- | ------------------------------ | --------------------------------------------------- |
-| **مكان التشغيل**   | حاوية محلية                  | أي مضيف يمكن الوصول إليه عبر SSH        | بيئة معزولة مُدارة من OpenShell                           |
-| **الإعداد**           | `scripts/sandbox-setup.sh`       | مفتاح SSH + المضيف الهدف          | Plugin OpenShell مفعّل                            |
-| **نموذج مساحة العمل** | ربط تحميل أو نسخ               | مرجعي بعيد (بذر مرة واحدة)   | `mirror` أو `remote`                                |
-| **التحكم في الشبكة** | `docker.network` (الافتراضي: لا شيء) | يعتمد على المضيف البعيد         | يعتمد على OpenShell                                |
-| **عزل المتصفح** | مدعوم                        | غير مدعوم                  | غير مدعوم بعد                                   |
-| **ربط التحميلات**     | `docker.binds`                   | N/A                            | N/A                                                 |
-| **الأنسب لـ**        | التطوير المحلي، عزل كامل        | نقل الحمل إلى جهاز بعيد | بيئات معزولة بعيدة مُدارة مع مزامنة اختيارية ثنائية الاتجاه |
+| **مكان التشغيل**   | حاوية محلية                      | أي مضيف يمكن الوصول إليه عبر SSH | بيئة معزولة مُدارة بواسطة OpenShell                 |
+| **الإعداد**         | `scripts/sandbox-setup.sh`       | مفتاح SSH + المضيف الهدف       | تمكين Plugin ‏OpenShell                             |
+| **نموذج مساحة العمل** | ربط عبر نقطة تحميل أو نسخ      | النسخة البعيدة هي المرجعية (تهيئة أولية مرة واحدة) | `mirror` أو `remote`                                |
+| **التحكم في الشبكة** | `docker.network` (الافتراضي: بلا شبكة) | يعتمد على المضيف البعيد | يعتمد على OpenShell                                |
+| **عزل المتصفح**     | مدعوم                            | غير مدعوم                      | غير مدعوم بعد                                       |
+| **عمليات الربط**    | `docker.binds`                   | لا ينطبق                       | لا ينطبق                                            |
+| **الأنسب لـ**       | التطوير المحلي والعزل الكامل    | نقل الحمل إلى جهاز بعيد        | بيئات معزولة بعيدة مُدارة مع مزامنة ثنائية الاتجاه اختيارية |
 
-### خلفية Docker
+## البيئة الخلفية Docker
 
-العزل متوقف افتراضيًا. إذا فعّلت العزل ولم تختر خلفية، يستخدم OpenClaw خلفية Docker. ينفذ الأدوات والمتصفحات المعزولة محليًا عبر مقبس عفريت Docker (`/var/run/docker.sock`). يتحدد عزل حاوية البيئة المعزولة بواسطة نطاقات أسماء Docker.
+تكون Docker البيئة الخلفية الافتراضية عند تمكين العزل. وهي تشغّل الأدوات ومتصفحات البيئة المعزولة محليًا عبر مقبس عفريت Docker ‏(`/var/run/docker.sock`)؛ ويأتي العزل من نطاقات أسماء Docker.
 
-لإتاحة وحدات GPU الخاصة بالمضيف لبيئات Docker المعزولة، اضبط `agents.defaults.sandbox.docker.gpus` أو تجاوز كل وكيل `agents.list[].sandbox.docker.gpus`. تُمرر القيمة إلى علامة Docker `--gpus` كوسيط منفصل، مثل `"all"` أو `"device=GPU-uuid"`، وتتطلب بيئة تشغيل مضيف متوافقة مثل NVIDIA Container Toolkit.
+الإعدادات الافتراضية: `network: "none"` (لا اتصال صادر)، و`readOnlyRoot: true`، و`capDrop: ["ALL"]`، والصورة `openclaw-sandbox:bookworm-slim`.
+
+لإتاحة وحدات معالجة الرسومات على المضيف، اضبط `agents.defaults.sandbox.docker.gpus` (أو التجاوز الخاص بكل وكيل) على قيمة مثل `"all"` أو `"device=GPU-uuid"`. تُمرَّر هذه القيمة إلى علامة Docker‏ `--gpus` وتتطلب بيئة تشغيل مضيف متوافقة مثل NVIDIA Container Toolkit.
 
 <Warning>
-**قيود Docker-out-of-Docker (DooD)**
+**قيود Docker خارج Docker ‏(DooD)**
 
-إذا نشرت OpenClaw Gateway نفسه كحاوية Docker، فإنه ينسق حاويات بيئة معزولة شقيقة باستخدام مقبس Docker الخاص بالمضيف (DooD). يفرض ذلك قيدًا محددًا على تعيين المسارات:
+إذا نشرت Gateway الخاص بـ OpenClaw نفسه كحاوية Docker، فإنه ينسّق حاويات العزل الشقيقة باستخدام مقبس Docker الخاص بالمضيف (DooD). يفرض ذلك قيدًا على تعيين المسارات:
 
-- **تتطلب الإعدادات مسارات المضيف**: يجب أن تحتوي إعدادات `workspace` في `openclaw.json` على **المسار المطلق للمضيف** (مثل `/home/user/.openclaw/workspaces`)، وليس المسار الداخلي لحاوية Gateway. عندما يطلب OpenClaw من عفريت Docker إنشاء بيئة معزولة، يقيّم العفريت المسارات نسبةً إلى نطاق أسماء نظام تشغيل المضيف، وليس نطاق أسماء Gateway.
-- **تكافؤ جسر FS (خريطة وحدات تخزين متطابقة)**: تكتب عملية OpenClaw Gateway الأصلية أيضًا ملفات Heartbeat والجسر إلى دليل `workspace`. لأن Gateway يقيّم السلسلة نفسها تمامًا (مسار المضيف) من داخل بيئته المحوّاة، يجب أن يتضمن نشر Gateway خريطة وحدات تخزين متطابقة تربط نطاق أسماء المضيف أصليًا (`-v /home/user/.openclaw:/home/user/.openclaw`).
-- **وضع كود Codex**: عندما تكون بيئة OpenClaw المعزولة نشطة، يعطل OpenClaw وضع الكود الأصلي لخادم تطبيق Codex، وخوادم MCP الخاصة بالمستخدم، وتنفيذ Plugin المدعوم بالتطبيق لذلك الدور لأن هذه الأسطح الأصلية تعمل من عملية خادم تطبيق مضيف Gateway بدلًا من خلفية بيئة OpenClaw المعزولة. يُتاح وصول shell عبر أدوات OpenClaw المدعومة بالبيئة المعزولة مثل `sandbox_exec` و`sandbox_process` عندما تكون أدوات exec/process العادية متاحة. لا تربط مقبس Docker الخاص بالمضيف داخل حاويات بيئة الوكيل المعزولة أو بيئات Codex المعزولة المخصصة.
+- **يتطلب الضبط مسارات المضيف**: يجب أن يحتوي `workspace` في `openclaw.json` على **المسار المطلق للمضيف** (مثل `/home/user/.openclaw/workspaces`)، وليس المسار الداخلي لحاوية Gateway. يقيّم عفريت Docker المسارات بالنسبة إلى نطاق أسماء نظام تشغيل المضيف، وليس نطاق أسماء Gateway نفسه.
+- **يلزم تعيين وحدة تخزين مطابق**: تكتب عملية Gateway أيضًا ملفات Heartbeat والجسر في مسار `workspace` هذا. امنح حاوية Gateway تعيين وحدة تخزين مطابقًا (`-v /home/user/.openclaw:/home/user/.openclaw`) لكي يُحل مسار المضيف نفسه بصورة صحيحة من داخل حاوية Gateway أيضًا. تظهر التعيينات غير المتطابقة كخطأ `EACCES` عندما يحاول Gateway كتابة Heartbeat الخاص به.
+- **وضع شيفرة Codex**: عندما تكون بيئة OpenClaw المعزولة نشطة، يعطّل OpenClaw وضع الشيفرة الأصلي لخادم تطبيق Codex، وخوادم MCP الخاصة بالمستخدم، وتنفيذ Plugin المدعوم بالتطبيق في تلك الجولة (إذ تعمل هذه من عملية خادم التطبيق الموجودة على مضيف Gateway، لا من البيئة الخلفية المعزولة لـ OpenClaw)، ما لم تكشف سياسة أدوات البيئة المعزولة الأدوات المطلوبة وتفعّل مسار خادم التنفيذ التجريبي للبيئة المعزولة. عندئذٍ يُوجَّه الوصول إلى الصدفة عبر أدوات OpenClaw المدعومة بالبيئة المعزولة، مثل `sandbox_exec` و`sandbox_process`. لا تربط مقبس Docker الخاص بالمضيف داخل حاويات عزل الوكلاء أو بيئات Codex المعزولة المخصصة. راجع [حاضنة Codex](/ar/plugins/codex-harness) للاطلاع على السلوك الكامل.
 
-على مضيفات Ubuntu/AppArmor، قد يفشل Codex `workspace-write` قبل بدء shell
-عندما تشغل عمدًا Codex `workspace-write` الأصلي دون عزل OpenClaw نشط
-ولا يُسمح لمستخدم الخدمة بإنشاء نطاقات أسماء مستخدمين غير مميزة.
-عندما يكون خروج شبكة بيئة Docker المعزولة معطلًا (`network: "none"`،
-الافتراضي)، يحتاج Codex أيضًا إلى نطاق أسماء شبكة غير مميز. الأعراض الشائعة هي
-`bwrap: setting up uid map: Permission denied` و
-`bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted`. شغّل
-`openclaw doctor`؛ إذا أبلغ عن فشل فحص نطاق أسماء Codex bwrap، ففضّل
-ملف AppArmor يمنح نطاقات الأسماء المطلوبة لعملية خدمة OpenClaw.
-`kernel.apparmor_restrict_unprivileged_userns=0` هو بديل على مستوى المضيف
-مع مفاضلات أمنية؛ استخدمه فقط عندما يكون وضع ذلك المضيف
-مقبولًا.
-
-إذا عينت المسارات داخليًا دون تكافؤ مطلق مع المضيف، يرمي OpenClaw أصليًا خطأ إذن `EACCES` أثناء محاولة كتابة Heartbeat داخل بيئة الحاوية لأن سلسلة المسار المؤهلة بالكامل غير موجودة أصليًا.
+على مضيفي Ubuntu/AppArmor مع تمكين وضع عزل Docker، يحتاج تنفيذ الصدفة `workspace-write` في خادم تطبيق Codex إلى نطاقات أسماء مستخدمين بلا امتيازات داخل حاوية العزل، وقد يفشل ذلك قبل بدء تشغيل الصدفة عندما يتعذر على مستخدم الخدمة إنشاؤها. ويتطلب ذلك أيضًا نطاق أسماء شبكة بلا امتيازات عندما يكون الاتصال الصادر لعزل Docker معطّلًا (`network: "none"`، وهو الإعداد الافتراضي). تشمل الأعراض الشائعة: `bwrap: setting up uid map: Permission denied` و`bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted`. شغّل `openclaw doctor`؛ وإذا أبلغ عن فشل فحص نطاق أسماء bwrap الخاص بـ Codex، ففضّل ملف تعريف AppArmor يمنح نطاقات الأسماء المطلوبة لعملية خدمة OpenClaw. يُعد `kernel.apparmor_restrict_unprivileged_userns=0` حلًا احتياطيًا على مستوى المضيف كله مع تنازلات أمنية؛ فلا تستخدمه إلا عندما يكون هذا الوضع الأمني للمضيف مقبولًا.
 </Warning>
 
-### خلفية SSH
+### المتصفح المعزول
 
-استخدم `backend: "ssh"` عندما تريد من OpenClaw عزل `exec`، وأدوات الملفات، وقراءات الوسائط على جهاز عشوائي يمكن الوصول إليه عبر SSH.
+- يبدأ متصفح البيئة المعزولة تلقائيًا (لضمان إمكانية الوصول إلى CDP) عندما تحتاج إليه أداة المتصفح. اضبطه عبر `agents.defaults.sandbox.browser.autoStart` (الافتراضي `true`) و`autoStartTimeoutMs` (الافتراضي 12 ثانية).
+- تستخدم حاويات متصفح البيئة المعزولة شبكة Docker مخصصة (`openclaw-sandbox-browser`) بدلًا من شبكة `bridge` العامة. اضبطها عبر `agents.defaults.sandbox.browser.network`.
+- يقيّد `agents.defaults.sandbox.browser.cdpSourceRange` دخول CDP عند حافة الحاوية بواسطة قائمة سماح CIDR (مثل `172.21.0.1/32`).
+- تكون إمكانية وصول المراقب عبر noVNC محمية بكلمة مرور افتراضيًا؛ يصدر OpenClaw عنوان URL برمز قصير العمر يعرض صفحة تمهيد محلية ويفتح noVNC مع كلمة المرور في جزء URL (وليس في سلسلة الاستعلام أو سجلات الترويسات).
+- يسمح `agents.defaults.sandbox.browser.allowHostControl` (الافتراضي `false`) للجلسات المعزولة باستهداف متصفح المضيف صراحةً.
+- تتحكم قوائم السماح الاختيارية في `target: "custom"`:‏ `allowedControlUrls` و`allowedControlHosts` و`allowedControlPorts`.
+
+## البيئة الخلفية SSH
+
+استخدم `backend: "ssh"` لعزل `exec` وأدوات الملفات وقراءة الوسائط على أي جهاز يمكن الوصول إليه عبر SSH.
 
 ```json5
 {
@@ -156,36 +125,15 @@ x-i18n:
 }
 ```
 
-<AccordionGroup>
-  <Accordion title="How it works">
-    - ينشئ OpenClaw جذرًا بعيدًا لكل نطاق تحت `sandbox.ssh.workspaceRoot`.
-    - عند أول استخدام بعد الإنشاء أو إعادة الإنشاء، يبذر OpenClaw مساحة العمل البعيدة تلك من مساحة العمل المحلية مرة واحدة.
-    - بعد ذلك، تعمل `exec`، و`read`، و`write`، و`edit`، و`apply_patch`، وقراءات وسائط الموجه، وتجهيز الوسائط الواردة مباشرةً على مساحة العمل البعيدة عبر SSH.
-    - لا يزامن OpenClaw التغييرات البعيدة تلقائيًا إلى مساحة العمل المحلية.
+الإعدادات الافتراضية: `command: "ssh"` و`workspaceRoot: "/tmp/openclaw-sandboxes"` و`strictHostKeyChecking: true` و`updateHostKeys: true`.
 
-  </Accordion>
-  <Accordion title="Authentication material">
-    - `identityFile`، و`certificateFile`، و`knownHostsFile`: استخدم الملفات المحلية الموجودة ومررها عبر إعدادات OpenSSH.
-    - `identityData`، و`certificateData`، و`knownHostsData`: استخدم سلاسل مضمنة أو SecretRefs. يحلها OpenClaw عبر لقطة بيئة تشغيل الأسرار العادية، ويكتبها إلى ملفات مؤقتة بصلاحيات `0600`، ويحذفها عندما تنتهي جلسة SSH.
-    - إذا ضُبط كل من `*File` و`*Data` للعنصر نفسه، تكون الأولوية لـ `*Data` في جلسة SSH تلك.
+- **دورة الحياة**: ينشئ OpenClaw جذرًا بعيدًا لكل نطاق ضمن `sandbox.ssh.workspaceRoot`. عند أول استخدام بعد الإنشاء أو إعادة الإنشاء، يهيّئ مساحة العمل البعيدة هذه مرة واحدة من مساحة العمل المحلية. بعد ذلك، تعمل `exec` و`read` و`write` و`edit` و`apply_patch` وقراءة وسائط المطالبة وتجهيز الوسائط الواردة مباشرةً على مساحة العمل البعيدة عبر SSH. لا يزامن OpenClaw التغييرات البعيدة تلقائيًا إلى مساحة العمل المحلية.
+- **مواد المصادقة**: تشير `identityFile` و`certificateFile` و`knownHostsFile` إلى ملفات محلية موجودة. تقبل `identityData` و`certificateData` و`knownHostsData` سلاسل مضمنة أو SecretRefs، ويجري حلها عبر لقطة بيئة تشغيل الأسرار العادية، ثم تُكتب في ملفات مؤقتة بالوضع `0600` وتُحذف عند انتهاء جلسة SSH. إذا ضُبط متغير من نوع `*File` وآخر من نوع `*Data` للعنصر نفسه، تكون الأولوية لـ `*Data` في تلك الجلسة.
+- **نتائج اعتبار النسخة البعيدة مرجعية**: تصبح مساحة عمل SSH البعيدة حالة العزل الفعلية بعد التهيئة الأولية. لا تظهر التعديلات المحلية على المضيف التي تتم خارج OpenClaw بعد خطوة التهيئة في البيئة البعيدة حتى تعيد إنشاء البيئة المعزولة. يحذف `openclaw sandbox recreate` الجذر البعيد الخاص بالنطاق ويعيد تهيئته من النسخة المحلية عند الاستخدام التالي. لا يدعم هذا النظام الخلفي عزل المتصفح، ولا تنطبق عليه إعدادات `sandbox.docker.*`.
 
-  </Accordion>
-  <Accordion title="Remote-canonical consequences">
-    هذا نموذج **مرجعي بعيد**. تصبح مساحة عمل SSH البعيدة حالة البيئة المعزولة الحقيقية بعد البذر الأولي.
+## البيئة الخلفية OpenShell
 
-    - التعديلات المحلية على المضيف التي تُجرى خارج OpenClaw بعد خطوة البذر لا تظهر عن بُعد حتى تعيد إنشاء البيئة المعزولة.
-    - يحذف `openclaw sandbox recreate` الجذر البعيد لكل نطاق ويعيد البذر من المحلي عند الاستخدام التالي.
-    - عزل المتصفح غير مدعوم على خلفية SSH.
-    - لا تنطبق إعدادات `sandbox.docker.*` على خلفية SSH.
-
-  </Accordion>
-</AccordionGroup>
-
-### خلفية OpenShell
-
-استخدم `backend: "openshell"` عندما تريد من OpenClaw عزل الأدوات في بيئة بعيدة مُدارة من OpenShell. للحصول على دليل الإعداد الكامل، ومرجع الإعدادات، ومقارنة أوضاع مساحة العمل، راجع [صفحة OpenShell المخصصة](/ar/gateway/openshell).
-
-يعيد OpenShell استخدام نقل SSH الأساسي نفسه وجسر نظام الملفات البعيد نفسه مثل خلفية SSH العامة، ويضيف دورة حياة خاصة بـ OpenShell (`sandbox create/get/delete`، و`sandbox ssh-config`) إضافةً إلى وضع مساحة العمل الاختياري `mirror`.
+استخدم `backend: "openshell"` لعزل الأدوات في بيئة بعيدة يديرها OpenShell. يعيد OpenShell استخدام نقل SSH وجسر نظام الملفات البعيد نفسيهما اللذين تستخدمهما البيئة الخلفية العامة SSH، ويضيف دورة حياة OpenShell ‏(`sandbox create/get/delete/ssh-config`) بالإضافة إلى وضع مزامنة مساحة العمل الاختياري `mirror`.
 
 ```json5
 {
@@ -206,8 +154,6 @@ x-i18n:
         config: {
           from: "openclaw",
           mode: "remote", // mirror | remote
-          remoteWorkspaceDir: "/sandbox",
-          remoteAgentWorkspaceDir: "/agent",
         },
       },
     },
@@ -215,132 +161,37 @@ x-i18n:
 }
 ```
 
-أوضاع OpenShell:
+يبقي `mode: "mirror"` (الافتراضي) مساحة العمل المحلية مرجعية: يزامن OpenClaw النسخة المحلية إلى البيئة المعزولة قبل `exec` ويعيد المزامنة منها بعده. أما `mode: "remote"` فيهيّئ مساحة العمل البعيدة مرة واحدة من النسخة المحلية، ثم يشغّل `exec` و`read` و`write` و`edit` و`apply_patch` مباشرةً على مساحة العمل البعيدة دون مزامنة عكسية؛ ولا تظهر التعديلات المحلية بعد التهيئة حتى تنفّذ `openclaw sandbox recreate`. ضمن `scope: "agent"` أو `scope: "shared"`، تكون مساحة العمل البعيدة هذه مشتركة على النطاق نفسه. القيود الحالية: متصفح البيئة المعزولة غير مدعوم بعد، ولا ينطبق `sandbox.docker.binds` على هذه البيئة الخلفية.
 
-- `mirror` (الافتراضي): تبقى مساحة العمل المحلية هي المرجع. يزامن OpenClaw الملفات المحلية إلى OpenShell قبل exec ويزامن مساحة العمل البعيدة مرة أخرى بعد exec.
-- `remote`: تكون مساحة عمل OpenShell هي المرجع بعد إنشاء البيئة المعزولة. يبذر OpenClaw مساحة العمل البعيدة مرة واحدة من مساحة العمل المحلية، ثم تعمل أدوات الملفات وexec مباشرةً على البيئة المعزولة البعيدة دون مزامنة التغييرات مرة أخرى.
+تتعامل أوامر `openclaw sandbox list` و`recreate` و`prune` جميعها مع بيئات تشغيل OpenShell بالطريقة نفسها التي تتعامل بها مع بيئات تشغيل Docker؛ ويكون منطق التنظيف مدركًا للبيئة الخلفية.
 
-<AccordionGroup>
-  <Accordion title="تفاصيل النقل البعيد">
-    - يطلب OpenClaw من OpenShell إعداد SSH خاصًا ببيئة العزل عبر `openshell sandbox ssh-config <name>`.
-    - يكتب Core إعداد SSH هذا إلى ملف مؤقت، ويفتح جلسة SSH، ويعيد استخدام جسر نظام الملفات البعيد نفسه المستخدم بواسطة `backend: "ssh"`.
-    - في وضع `mirror` يختلف دور الحياة فقط: مزامنة المحلي إلى البعيد قبل exec، ثم المزامنة مرة أخرى بعد exec.
-
-  </Accordion>
-  <Accordion title="قيود OpenShell الحالية">
-    - متصفح بيئة العزل غير مدعوم بعد
-    - `sandbox.docker.binds` غير مدعوم على واجهة OpenShell الخلفية
-    - مفاتيح ضبط وقت التشغيل الخاصة بـ Docker ضمن `sandbox.docker.*` ما زالت تنطبق فقط على واجهة Docker الخلفية
-
-  </Accordion>
-</AccordionGroup>
-
-#### أوضاع مساحة العمل
-
-لدى OpenShell نموذجان لمساحة العمل. هذا هو الجزء الأكثر أهمية في الممارسة.
-
-<Tabs>
-  <Tab title="mirror (المحلي هو المرجعي)">
-    استخدم `plugins.entries.openshell.config.mode: "mirror"` عندما تريد أن **تبقى مساحة العمل المحلية مرجعية**.
-
-    السلوك:
-
-    - قبل `exec`، يزامن OpenClaw مساحة العمل المحلية إلى بيئة عزل OpenShell.
-    - بعد `exec`، يزامن OpenClaw مساحة العمل البعيدة مرة أخرى إلى مساحة العمل المحلية.
-    - تظل أدوات الملفات تعمل عبر جسر بيئة العزل، لكن مساحة العمل المحلية تبقى مصدر الحقيقة بين الأدوار.
-
-    استخدم هذا عندما:
-
-    - تعدل الملفات محليًا خارج OpenClaw وتريد أن تظهر هذه التغييرات في بيئة العزل تلقائيًا
-    - تريد أن تتصرف بيئة عزل OpenShell بأقرب شكل ممكن إلى واجهة Docker الخلفية
-    - تريد أن تعكس مساحة عمل المضيف كتابات بيئة العزل بعد كل دور exec
-
-    المفاضلة: تكلفة مزامنة إضافية قبل exec وبعده.
-
-  </Tab>
-  <Tab title="remote (OpenShell هو المرجعي)">
-    استخدم `plugins.entries.openshell.config.mode: "remote"` عندما تريد أن **تصبح مساحة عمل OpenShell مرجعية**.
-
-    السلوك:
-
-    - عند إنشاء بيئة العزل لأول مرة، يهيئ OpenClaw مساحة العمل البعيدة من مساحة العمل المحلية مرة واحدة.
-    - بعد ذلك، تعمل `exec` و`read` و`write` و`edit` و`apply_patch` مباشرةً على مساحة عمل OpenShell البعيدة.
-    - لا يزامن OpenClaw التغييرات البعيدة مرة أخرى إلى مساحة العمل المحلية بعد exec.
-    - تظل قراءات الوسائط وقت الطلب تعمل لأن أدوات الملفات والوسائط تقرأ عبر جسر بيئة العزل بدلًا من افتراض مسار مضيف محلي.
-    - النقل هو SSH إلى بيئة عزل OpenShell التي يعيدها `openshell sandbox ssh-config`.
-
-    نتائج مهمة:
-
-    - إذا عدلت ملفات على المضيف خارج OpenClaw بعد خطوة التهيئة، فلن ترى بيئة العزل البعيدة تلك التغييرات تلقائيًا.
-    - إذا أُعيد إنشاء بيئة العزل، فستتم تهيئة مساحة العمل البعيدة من مساحة العمل المحلية مرة أخرى.
-    - مع `scope: "agent"` أو `scope: "shared"`، تتم مشاركة مساحة العمل البعيدة هذه ضمن النطاق نفسه.
-
-    استخدم هذا عندما:
-
-    - ينبغي أن تعيش بيئة العزل أساسًا على جانب OpenShell البعيد
-    - تريد تقليل عبء المزامنة لكل دور
-    - لا تريد أن تستبدل تعديلات المضيف المحلية حالة بيئة العزل البعيدة بصمت
-
-  </Tab>
-</Tabs>
-
-اختر `mirror` إذا كنت تعتبر بيئة العزل بيئة تنفيذ مؤقتة. اختر `remote` إذا كنت تعتبر بيئة العزل مساحة العمل الحقيقية.
-
-#### دورة حياة OpenShell
-
-ما زالت بيئات عزل OpenShell تدار عبر دورة حياة بيئة العزل العادية:
-
-- يعرض `openclaw sandbox list` أوقات تشغيل OpenShell وكذلك أوقات تشغيل Docker
-- يحذف `openclaw sandbox recreate` وقت التشغيل الحالي ويتيح لـ OpenClaw إعادة إنشائه عند الاستخدام التالي
-- منطق التنظيف مدرك للواجهة الخلفية أيضًا
-
-بالنسبة إلى وضع `remote`، فإن إعادة الإنشاء مهمة خصوصًا:
-
-- تحذف إعادة الإنشاء مساحة العمل البعيدة المرجعية لذلك النطاق
-- يهيئ الاستخدام التالي مساحة عمل بعيدة جديدة من مساحة العمل المحلية
-
-بالنسبة إلى وضع `mirror`، تعيد إعادة الإنشاء أساسًا ضبط بيئة التنفيذ البعيدة لأن مساحة العمل المحلية تبقى مرجعية على أي حال.
+للاطلاع على المتطلبات الأساسية الكاملة ومرجع الضبط ومقارنة أوضاع مساحة العمل وتفاصيل دورة الحياة، راجع [OpenShell](/ar/gateway/openshell).
 
 ## الوصول إلى مساحة العمل
 
-يتحكم `agents.defaults.sandbox.workspaceAccess` في **ما يمكن لبيئة العزل رؤيته**:
+يتحكم `agents.defaults.sandbox.workspaceAccess` فيما يمكن للبيئة المعزولة رؤيته:
 
-<Tabs>
-  <Tab title="none (الافتراضي)">
-    ترى الأدوات مساحة عمل بيئة عزل ضمن `~/.openclaw/sandboxes`.
-  </Tab>
-  <Tab title="ro">
-    يثبت مساحة عمل الوكيل للقراءة فقط عند `/agent` (يعطل `write`/`edit`/`apply_patch`).
-  </Tab>
-  <Tab title="rw">
-    يثبت مساحة عمل الوكيل للقراءة/الكتابة عند `/workspace`.
-  </Tab>
-</Tabs>
+| القيمة           | السلوك                                                                                                      |
+| ---------------- | ----------------------------------------------------------------------------------------------------------- |
+| `none` (افتراضي) | ترى الأدوات مساحة عمل معزولة لصندوق الحماية ضمن `~/.openclaw/sandboxes`.                                    |
+| `ro`             | تُركّب مساحة عمل الوكيل للقراءة فقط في `/agent` (ما يعطّل `write` و`edit` و`apply_patch`).                   |
+| `rw`             | تُركّب مساحة عمل الوكيل للقراءة والكتابة في `/workspace`.                                                    |
 
-مع واجهة OpenShell الخلفية:
+مع الواجهة الخلفية OpenShell، يظل وضع `mirror` يستخدم مساحة العمل المحلية بوصفها المصدر المعتمد بين أدوار التنفيذ، بينما يستخدم وضع `remote` مساحة عمل OpenShell البعيدة بوصفها المصدر المعتمد بعد التهيئة الأولية، ويظل `workspaceAccess: "ro"` أو `"none"` يقيّد سلوك الكتابة بالطريقة نفسها.
 
-- ما زال وضع `mirror` يستخدم مساحة العمل المحلية كمصدر مرجعي بين أدوار exec
-- يستخدم وضع `remote` مساحة عمل OpenShell البعيدة كمصدر مرجعي بعد التهيئة الأولية
-- يظل `workspaceAccess: "ro"` و`"none"` يقيدان سلوك الكتابة بالطريقة نفسها
-
-تُنسخ الوسائط الواردة إلى مساحة عمل بيئة العزل النشطة (`media/inbound/*`).
+تُنسخ الوسائط الواردة إلى مساحة عمل صندوق الحماية النشط (`media/inbound/*`).
 
 <Note>
-**ملاحظة Skills:** أداة `read` متجذرة في بيئة العزل. مع `workspaceAccess: "none"`، يعكس OpenClaw المهارات المؤهلة إلى مساحة عمل بيئة العزل (`.../skills`) كي يمكن قراءتها. مع `"rw"`، يمكن قراءة Skills مساحة العمل من `/workspace/skills`، وتُجسَّد Skills المؤهلة المدارة أو المضمنة أو التابعة لـ Plugin في مسار القراءة فقط المولد `/workspace/.openclaw/sandbox-skills/skills`.
+**Skills**: تعمل أداة `read` انطلاقًا من جذر صندوق الحماية. عند استخدام `workspaceAccess: "none"`، يعكس OpenClaw المهارات المؤهلة إلى مساحة عمل صندوق الحماية (`.../skills`) لتصبح قابلة للقراءة. وعند استخدام `"rw"`، يمكن قراءة مهارات مساحة العمل من `/workspace/skills`، وتُنشأ المهارات المؤهلة المُدارة أو المضمّنة أو التابعة لإضافة ضمن المسار المُنشأ المخصص للقراءة فقط `/workspace/.openclaw/sandbox-skills/skills`.
 </Note>
 
-## عمليات تثبيت الربط المخصصة
+## عمليات ربط مخصصة
 
-يثبت `agents.defaults.sandbox.docker.binds` أدلة مضيف إضافية داخل الحاوية. الصيغة: `host:container:mode` (مثل `"/home/user/source:/source:rw"`).
+يركّب `agents.defaults.sandbox.docker.binds` أدلة إضافية من المضيف داخل الحاوية. الصيغة: `host:container:mode` (مثل `"/home/user/source:/source:rw"`).
 
-تُدمج عمليات الربط العامة والخاصة بكل وكيل **ولا تُستبدل**. ضمن `scope: "shared"`، يتم تجاهل عمليات الربط الخاصة بكل وكيل.
+تُدمج عمليات الربط العامة والخاصة بكل وكيل (ولا يُستبدل بعضها ببعض). ضمن `scope: "shared"`، تُتجاهل عمليات الربط الخاصة بكل وكيل.
 
-يثبت `agents.defaults.sandbox.browser.binds` أدلة مضيف إضافية داخل حاوية **متصفح بيئة العزل** فقط.
-
-- عند ضبطه (بما في ذلك `[]`)، يستبدل `agents.defaults.sandbox.docker.binds` لحاوية المتصفح.
-- عند حذفه، ترجع حاوية المتصفح إلى `agents.defaults.sandbox.docker.binds` (متوافق مع الإصدارات السابقة).
-
-مثال (مصدر للقراءة فقط + دليل بيانات إضافي):
+يركّب `agents.defaults.sandbox.browser.binds` أدلة إضافية من المضيف داخل حاوية **متصفح صندوق الحماية** فقط. عند تعيينه (بما في ذلك `[]`)، فإنه يستبدل `docker.binds` لحاوية المتصفح؛ وعند حذفه، تعود حاوية المتصفح إلى استخدام `docker.binds`.
 
 ```json5
 {
@@ -367,17 +218,16 @@ x-i18n:
 ```
 
 <Warning>
-**أمان الربط**
+**أمان عمليات الربط**
 
-- تتجاوز عمليات الربط نظام ملفات بيئة العزل: فهي تعرض مسارات المضيف بالوضع الذي تضبطه (`:ro` أو `:rw`).
-- يحظر OpenClaw مصادر الربط الخطرة (على سبيل المثال: `docker.sock` و`/etc` و`/proc` و`/sys` و`/dev` وعمليات تثبيت الأصل التي قد تعرضها).
-- يحظر OpenClaw أيضًا جذور بيانات الاعتماد الشائعة في دليل المنزل مثل `~/.aws` و`~/.cargo` و`~/.config` و`~/.docker` و`~/.gnupg` و`~/.netrc` و`~/.npm` و`~/.ssh`.
-- التحقق من الربط ليس مجرد مطابقة نصية. يطبّع OpenClaw مسار المصدر، ثم يحله مرة أخرى عبر أعمق أصل موجود قبل إعادة فحص المسارات المحظورة والجذور المسموح بها.
-- يعني ذلك أن عمليات الإفلات عبر أصل رابط رمزي تظل تفشل مغلقة حتى عندما لا تكون الورقة النهائية موجودة بعد. مثال: يظل `/workspace/run-link/new-file` يُحل كـ `/var/run/...` إذا كان `run-link` يشير إلى هناك.
-- تُحوَّل جذور المصدر المسموح بها إلى الشكل المرجعي بالطريقة نفسها، لذلك يُرفض المسار الذي يبدو داخل قائمة السماح فقط قبل حل الرابط الرمزي باعتباره `outside allowed roots`.
-- ينبغي أن تكون عمليات تثبيت البيانات الحساسة (الأسرار، مفاتيح SSH، بيانات اعتماد الخدمات) `:ro` ما لم تكن مطلوبة تمامًا.
-- ادمج ذلك مع `workspaceAccess: "ro"` إذا كنت تحتاج فقط إلى وصول قراءة لمساحة العمل؛ تبقى أوضاع الربط مستقلة.
-- راجع [بيئة العزل مقابل سياسة الأدوات مقابل الصلاحيات المرتفعة](/ar/gateway/sandbox-vs-tool-policy-vs-elevated) لمعرفة كيفية تفاعل عمليات الربط مع سياسة الأدوات والتنفيذ المرتفع.
+- تتجاوز عمليات الربط نظام ملفات صندوق الحماية: فهي تكشف مسارات المضيف بالوضع الذي تحدده (`:ro` أو `:rw`).
+- يحظر OpenClaw افتراضيًا مصادر الربط الخطرة: مسارات النظام (`/etc` و`/proc` و`/sys` و`/dev` و`/root` و`/boot`)، وأدلة مقبس Docker (`/run` و`/var/run` ومتغيرات `docker.sock` التابعة لها)، وجذور بيانات الاعتماد الشائعة في الدليل الرئيسي (`~/.aws` و`~/.cargo` و`~/.config` و`~/.docker` و`~/.gnupg` و`~/.netrc` و`~/.npm` و`~/.ssh`).
+- توحّد عملية التحقق مسار المصدر، ثم تحلّه مجددًا عبر أعمق سلف موجود قبل إعادة فحص المسارات المحظورة والجذور المسموح بها، لذلك تُرفض محاولات الهروب عبر أصل رابط رمزي تلقائيًا حتى إذا لم تكن الورقة النهائية موجودة بعد (فمثلًا يظل `/workspace/run-link/new-file` يُحل إلى `/var/run/...` إذا كان `run-link` يشير إليه).
+- تُحظر افتراضيًا أيضًا أهداف الربط التي تحجب نقاط التركيب المحجوزة في الحاوية (`/workspace` و`/agent`)؛ ويمكن تجاوز ذلك باستخدام `agents.defaults.sandbox.docker.dangerouslyAllowReservedContainerTargets: true`.
+- تُحظر افتراضيًا مصادر الربط الواقعة خارج الجذور المدرجة في قائمة السماح لمساحة العمل أو مساحة عمل الوكيل؛ ويمكن تجاوز ذلك باستخدام `agents.defaults.sandbox.docker.dangerouslyAllowExternalBindSources: true`. تُوحّد الجذور المسموح بها بالطريقة نفسها، لذلك يظل المسار الذي يبدو داخل قائمة السماح فقط قبل حل الروابط الرمزية مرفوضًا بوصفه خارج الجذور المسموح بها.
+- ينبغي أن تكون عمليات تركيب البيانات الحساسة (الأسرار ومفاتيح SSH وبيانات اعتماد الخدمات) بالوضع `:ro` ما لم تكن الكتابة مطلوبة حتمًا.
+- ادمج ذلك مع `workspaceAccess: "ro"` إذا كنت تحتاج فقط إلى صلاحية قراءة مساحة العمل؛ تظل أوضاع الربط مستقلة.
+- راجع [صندوق الحماية مقابل سياسة الأدوات مقابل التنفيذ بصلاحيات مرتفعة](/ar/gateway/sandbox-vs-tool-policy-vs-elevated) لمعرفة كيفية تفاعل عمليات الربط مع سياسة الأدوات والتنفيذ بصلاحيات مرتفعة.
 
 </Warning>
 
@@ -386,22 +236,22 @@ x-i18n:
 صورة Docker الافتراضية: `openclaw-sandbox:bookworm-slim`
 
 <Note>
-**نسخة مصدرية مقابل تثبيت npm**
+**نسخة المصدر مقابل تثبيت npm**
 
-لا تتوفر سكربتات المساعدة `scripts/sandbox-setup.sh` و`scripts/sandbox-common-setup.sh` و`scripts/sandbox-browser-setup.sh` إلا عند التشغيل من [نسخة مصدرية](https://github.com/openclaw/openclaw). وهي غير مضمنة في حزمة npm.
+لا تتوفر نصوص المساعدة `scripts/sandbox-setup.sh` و`scripts/sandbox-common-setup.sh` و`scripts/sandbox-browser-setup.sh` إلا عند التشغيل من [نسخة من المصدر](https://github.com/openclaw/openclaw). وهي غير مضمنة في حزمة npm.
 
-إذا ثبت OpenClaw عبر `npm install -g openclaw`، فاستخدم أوامر `docker build` المضمنة المعروضة أدناه بدلًا من ذلك.
+إذا ثبّتَّ OpenClaw عبر `npm install -g openclaw`، فاستخدم أوامر `docker build` المضمنة الموضحة أدناه بدلًا منها.
 </Note>
 
 <Steps>
-  <Step title="بناء الصورة الافتراضية">
-    من نسخة مصدرية:
+  <Step title="إنشاء الصورة الافتراضية">
+    من نسخة من المصدر:
 
     ```bash
     scripts/sandbox-setup.sh
     ```
 
-    من تثبيت npm (لا حاجة إلى نسخة مصدرية):
+    من تثبيت npm (لا حاجة إلى نسخة من المصدر):
 
     ```bash
     docker build -t openclaw-sandbox:bookworm-slim - <<'DOCKERFILE'
@@ -417,119 +267,116 @@ x-i18n:
     DOCKERFILE
     ```
 
-    لا تتضمن الصورة الافتراضية Node. إذا كانت إحدى Skills تحتاج إلى Node (أو أوقات تشغيل أخرى)، فإما أن تخبز صورة مخصصة أو تثبت عبر `sandbox.docker.setupCommand` (يتطلب خروج شبكة + جذرًا قابلًا للكتابة + مستخدم root).
+    لا تتضمن الصورة الافتراضية Node. إذا احتاجت إحدى المهارات إلى Node (أو بيئات تشغيل أخرى)، فأنشئ صورة مخصصة تتضمنها أو ثبّتها عبر `sandbox.docker.setupCommand` (يتطلب خروجًا إلى الشبكة وجذرًا قابلًا للكتابة ومستخدمًا جذرًا).
 
-    لا يستبدل OpenClaw بصمت `debian:bookworm-slim` العادي عند فقدان `openclaw-sandbox:bookworm-slim`. تفشل عمليات تشغيل بيئة العزل التي تستهدف الصورة الافتراضية بسرعة مع تعليمات بناء إلى أن تبنيها، لأن الصورة المضمنة تحمل `python3` لمساعدات الكتابة/التحرير داخل بيئة العزل.
+    لا يستبدل OpenClaw الصورة المفقودة `openclaw-sandbox:bookworm-slim` تلقائيًا بالصورة العادية `debian:bookworm-slim`. تفشل عمليات صندوق الحماية التي تستهدف الصورة الافتراضية سريعًا مع تعليمات للإنشاء إلى أن تنشئها، لأن الصورة المضمّنة تحتوي على `python3` لمساعدات الكتابة والتحرير في صندوق الحماية.
 
   </Step>
-  <Step title="اختياري: بناء الصورة المشتركة">
-    للحصول على صورة بيئة عزل أكثر وظيفية تتضمن أدوات شائعة (على سبيل المثال `curl` و`jq` وNode 24 وpnpm و`python3` و`git`):
+  <Step title="اختياري: إنشاء الصورة المشتركة">
+    للحصول على صورة صندوق حماية أكثر اكتمالًا وتحتوي على أدوات شائعة (مثل `curl` و`jq` وNode 24 وpnpm و`python3` و`git`):
 
-    من نسخة مصدرية:
+    من نسخة من المصدر:
 
     ```bash
     scripts/sandbox-common-setup.sh
     ```
 
-    من تثبيت npm، ابنِ الصورة الافتراضية أولًا (انظر أعلاه)، ثم ابنِ الصورة المشتركة فوقها باستخدام [`scripts/docker/sandbox/Dockerfile.common`](https://github.com/openclaw/openclaw/blob/main/scripts/docker/sandbox/Dockerfile.common) من المستودع.
+    من تثبيت npm، أنشئ الصورة الافتراضية أولًا (راجع ما سبق)، ثم أنشئ الصورة المشتركة فوقها باستخدام [`scripts/docker/sandbox/Dockerfile.common`](https://github.com/openclaw/openclaw/blob/main/scripts/docker/sandbox/Dockerfile.common) من المستودع.
 
-    ثم اضبط `agents.defaults.sandbox.docker.image` على `openclaw-sandbox-common:bookworm-slim`.
+    ثم عيّن `agents.defaults.sandbox.docker.image` إلى `openclaw-sandbox-common:bookworm-slim`.
 
   </Step>
-  <Step title="اختياري: بناء صورة متصفح بيئة العزل">
-    من نسخة مصدرية:
+  <Step title="اختياري: إنشاء صورة متصفح صندوق الحماية">
+    من نسخة من المصدر:
 
     ```bash
     scripts/sandbox-browser-setup.sh
     ```
 
-    من تثبيت npm، ابنِ باستخدام [`scripts/docker/sandbox/Dockerfile.browser`](https://github.com/openclaw/openclaw/blob/main/scripts/docker/sandbox/Dockerfile.browser) من المستودع.
+    من تثبيت npm، أنشئ الصورة باستخدام [`scripts/docker/sandbox/Dockerfile.browser`](https://github.com/openclaw/openclaw/blob/main/scripts/docker/sandbox/Dockerfile.browser) من المستودع.
 
   </Step>
 </Steps>
 
-افتراضيًا، تعمل حاويات بيئة عزل Docker **بلا شبكة**. تجاوز ذلك باستخدام `agents.defaults.sandbox.docker.network`.
+تعمل حاويات صندوق حماية Docker افتراضيًا **من دون شبكة**. ويمكن تجاوز ذلك باستخدام `agents.defaults.sandbox.docker.network`.
 
 <AccordionGroup>
-  <Accordion title="إعدادات Chromium الافتراضية لمتصفح بيئة العزل">
-    تطبق صورة متصفح بيئة العزل المضمنة أيضًا إعدادات بدء تشغيل Chromium محافظة لأحمال العمل داخل الحاويات. تتضمن الإعدادات الافتراضية الحالية للحاوية:
+  <Accordion title="إعدادات Chromium الافتراضية لمتصفح صندوق الحماية">
+    تطبّق صورة متصفح صندوق الحماية المضمّنة علامات تشغيل محافظة لـ Chromium لأحمال العمل داخل الحاويات:
 
     - `--remote-debugging-address=127.0.0.1`
     - `--remote-debugging-port=<derived from OPENCLAW_BROWSER_CDP_PORT>`
     - `--user-data-dir=${HOME}/.chrome`
     - `--no-first-run`
     - `--no-default-browser-check`
-    - `--disable-3d-apis`
-    - `--disable-gpu`
     - `--disable-dev-shm-usage`
     - `--disable-background-networking`
-    - `--disable-extensions`
-    - `--disable-features=TranslateUI`
     - `--disable-breakpad`
     - `--disable-crash-reporter`
-    - `--disable-software-rasterizer`
     - `--no-zygote`
     - `--metrics-recording-only`
-    - `--renderer-process-limit=2`
-    - `--no-sandbox` عندما يكون `noSandbox` ممكّنًا.
-    - أعلام تقوية الرسوميات الثلاثة (`--disable-3d-apis` و`--disable-software-rasterizer` و`--disable-gpu`) اختيارية ومفيدة عندما تفتقر الحاويات إلى دعم GPU. اضبط `OPENCLAW_BROWSER_DISABLE_GRAPHICS_FLAGS=0` إذا كان حمل العمل لديك يتطلب WebGL أو ميزات متصفح/ثلاثية الأبعاد أخرى.
-    - يتم تمكين `--disable-extensions` افتراضيًا ويمكن تعطيله باستخدام `OPENCLAW_BROWSER_DISABLE_EXTENSIONS=0` للتدفقات المعتمدة على الإضافات.
-    - يتحكم `OPENCLAW_BROWSER_RENDERER_PROCESS_LIMIT=<N>` في `--renderer-process-limit=2`، حيث يُبقي `0` إعداد Chromium الافتراضي.
+    - `--password-store=basic`
+    - `--use-mock-keychain`
+    - `--headless=new` عند تمكين `browser.headless`.
+    - `--no-sandbox --disable-setuid-sandbox` عند تمكين `browser.noSandbox`.
+    - `--disable-3d-apis` و`--disable-gpu` و`--disable-software-rasterizer` افتراضيًا؛ تساعد علامات تعزيز أمان الرسومات هذه الحاويات التي لا تدعم وحدة معالجة الرسومات. عيّن `OPENCLAW_BROWSER_DISABLE_GRAPHICS_FLAGS=0` إذا كان حمل العمل يحتاج إلى WebGL أو ميزات ثلاثية الأبعاد أخرى.
+    - `--disable-extensions` افتراضيًا؛ عيّن `OPENCLAW_BROWSER_DISABLE_EXTENSIONS=0` للمسارات التي تعتمد على الامتدادات.
+    - `--renderer-process-limit=2` افتراضيًا؛ يتحكم فيه `OPENCLAW_BROWSER_RENDERER_PROCESS_LIMIT=<N>`، حيث تُبقي القيمة `0` إعداد Chromium الافتراضي.
 
-    إذا كنت تحتاج إلى ملف تعريف وقت تشغيل مختلف، فاستخدم صورة متصفح مخصصة ووفر نقطة دخولك الخاصة. بالنسبة إلى ملفات تعريف Chromium المحلية (غير الحاوية)، استخدم `browser.extraArgs` لإلحاق أعلام بدء تشغيل إضافية.
+    إذا كنت تحتاج إلى ملف تعريف تشغيل مختلف، فاستخدم صورة متصفح مخصصة ووفّر نقطة الدخول الخاصة بك. بالنسبة إلى ملفات تعريف Chromium المحلية (خارج الحاوية)، استخدم `browser.extraArgs` لإلحاق علامات تشغيل إضافية.
 
   </Accordion>
-  <Accordion title="الإعدادات الافتراضية لأمان الشبكة">
-    - يتم حظر `network: "host"`.
-    - يتم حظر `network: "container:<id>"` افتراضياً (خطر تجاوز عبر الانضمام إلى namespace).
-    - تجاوز الطوارئ: `agents.defaults.sandbox.docker.dangerouslyAllowContainerNamespaceJoin: true`.
+  <Accordion title="إعدادات أمان الشبكة الافتراضية">
+    - يُحظر `network: "host"`.
+    - يُحظر `network: "container:<id>"` افتراضيًا (بسبب خطر تجاوز العزل عبر الانضمام إلى نطاق الأسماء).
+    - تجاوز للطوارئ: `agents.defaults.sandbox.docker.dangerouslyAllowContainerNamespaceJoin: true`.
 
   </Accordion>
 </AccordionGroup>
 
-توجد تثبيتات Docker وGateway المعبأ في حاوية هنا: [Docker](/ar/install/docker)
+توجد عمليات تثبيت Docker وGateway العامل داخل الحاوية هنا: [Docker](/ar/install/docker)
 
-بالنسبة إلى عمليات نشر Docker Gateway، يمكن لـ `scripts/docker/setup.sh` تمهيد إعدادات sandbox. عيّن `OPENCLAW_SANDBOX=1` (أو `true`/`yes`/`on`) لتمكين هذا المسار. يمكنك تجاوز موقع المقبس باستخدام `OPENCLAW_DOCKER_SOCKET`. مرجع الإعداد الكامل والبيئة: [Docker](/ar/install/docker#agent-sandbox).
+بالنسبة إلى عمليات نشر Gateway عبر Docker، يمكن لـ `scripts/docker/setup.sh` تهيئة إعدادات صندوق الحماية. عيّن `OPENCLAW_SANDBOX=1` (أو `true` أو `yes` أو `on`) لتمكين هذا المسار. ويمكن تجاوز موقع المقبس باستخدام `OPENCLAW_DOCKER_SOCKET`. مرجع الإعداد الكامل ومتغيرات البيئة: [Docker](/ar/install/docker#agent-sandbox).
 
 ## setupCommand (إعداد الحاوية لمرة واحدة)
 
-يعمل `setupCommand` **مرة واحدة** بعد إنشاء حاوية sandbox (وليس عند كل تشغيل). يتم تنفيذه داخل الحاوية عبر `sh -lc`.
+يعمل `setupCommand` **مرة واحدة** بعد إنشاء حاوية صندوق الحماية (وليس عند كل تشغيل). ويُنفّذ داخل الحاوية عبر `sh -lc`.
 
 المسارات:
 
 - عام: `agents.defaults.sandbox.docker.setupCommand`
-- لكل وكيل: `agents.list[].sandbox.docker.setupCommand`
+- خاص بكل وكيل: `agents.list[].sandbox.docker.setupCommand`
 
 <AccordionGroup>
-  <Accordion title="المشكلات الشائعة">
-    - القيمة الافتراضية لـ `docker.network` هي `"none"` (لا يوجد خروج إلى الشبكة)، لذلك ستفشل تثبيتات الحزم.
-    - يتطلب `docker.network: "container:<id>"` ضبط `dangerouslyAllowContainerNamespaceJoin: true` وهو مخصص للطوارئ فقط.
-    - يمنع `readOnlyRoot: true` عمليات الكتابة؛ اضبط `readOnlyRoot: false` أو ابنِ صورة مخصصة.
-    - يجب أن يكون `user` هو root لتثبيت الحزم (احذف `user` أو اضبط `user: "0:0"`).
-    - لا يرث تنفيذ sandbox متغيرات `process.env` الخاصة بالمضيف. استخدم `agents.defaults.sandbox.docker.env` (أو صورة مخصصة) لمفاتيح API الخاصة بـ Skills.
-    - تُمرَّر القيم في `agents.defaults.sandbox.docker.env` كمتغيرات بيئة صريحة لحاوية Docker. يمكن لأي شخص لديه وصول إلى Docker daemon فحصها باستخدام أوامر بيانات Docker الوصفية مثل `docker inspect`. استخدم صورة مخصصة، أو ملف أسرار مركباً، أو مساراً آخر لتسليم الأسرار إذا كان هذا الكشف عبر البيانات الوصفية غير مقبول.
+  <Accordion title="الأخطاء الشائعة">
+    - القيمة الافتراضية لـ `docker.network` هي `"none"` (من دون اتصال خارجي)، لذلك ستفشل عمليات تثبيت الحزم.
+    - يتطلب `docker.network: "container:<id>"` تعيين `dangerouslyAllowContainerNamespaceJoin: true`، وهو مخصص للطوارئ فقط.
+    - يمنع `readOnlyRoot: true` عمليات الكتابة؛ عيّن `readOnlyRoot: false` أو أنشئ صورة مخصصة.
+    - يجب أن يكون `user` هو المستخدم الجذر لتثبيت الحزم (احذف `user` أو عيّن `user: "0:0"`).
+    - لا يرث تنفيذ صندوق الحماية `process.env` الخاص بالمضيف. استخدم `agents.defaults.sandbox.docker.env` (أو صورة مخصصة) لمفاتيح API الخاصة بالمهارات.
+    - تُمرر القيم الموجودة في `agents.defaults.sandbox.docker.env` بوصفها متغيرات بيئة صريحة لحاوية Docker. ويمكن لأي شخص لديه صلاحية الوصول إلى برنامج Docker الخفي فحصها باستخدام أوامر بيانات Docker الوصفية مثل `docker inspect`. استخدم صورة مخصصة أو ملف أسرار مركّبًا أو مسارًا آخر لتسليم الأسرار إذا كان هذا الكشف عبر البيانات الوصفية غير مقبول.
 
   </Accordion>
 </AccordionGroup>
 
-## سياسة الأدوات ومخارج التجاوز
+## سياسة الأدوات ومنافذ الهروب
 
-تظل سياسات السماح/الرفض للأدوات مطبقة قبل قواعد sandbox. إذا رُفضت أداة عالمياً أو لكل وكيل، فلن يعيدها sandboxing.
+تظل سياسات السماح بالأدوات أو منعها سارية قبل قواعد صندوق الحماية. إذا كانت أداة ممنوعة عمومًا أو لوكيل بعينه، فلن يعيدها صندوق الحماية.
 
-`tools.elevated` هو مخرج تجاوز صريح يشغل `exec` خارج sandbox (`gateway` افتراضياً، أو `node` عندما يكون هدف التنفيذ هو `node`). لا تنطبق توجيهات `/exec` إلا على المرسلين المصرح لهم وتستمر لكل جلسة؛ لتعطيل `exec` بشكل صارم، استخدم رفض سياسة الأدوات (راجع [Sandbox مقابل سياسة الأدوات مقابل Elevated](/ar/gateway/sandbox-vs-tool-policy-vs-elevated)).
+يمثل `tools.elevated` منفذ هروب صريحًا يشغّل `exec` خارج صندوق الحماية (`gateway` افتراضيًا، أو `node` عندما يكون هدف التنفيذ هو `node`). لا تنطبق توجيهات `/exec` إلا على المرسلين المصرح لهم وتستمر لكل جلسة؛ ولتعطيل `exec` نهائيًا، استخدم المنع في سياسة الأدوات (راجع [صندوق الحماية مقابل سياسة الأدوات مقابل التنفيذ بصلاحيات مرتفعة](/ar/gateway/sandbox-vs-tool-policy-vs-elevated)).
 
-تصحيح الأخطاء:
+استكشاف الأخطاء وإصلاحها:
 
-- استخدم `openclaw sandbox explain` لفحص وضع sandbox الفعال، وسياسة الأدوات، ومفاتيح إعداد الإصلاح.
-- راجع [Sandbox مقابل سياسة الأدوات مقابل Elevated](/ar/gateway/sandbox-vs-tool-policy-vs-elevated) للحصول على النموذج الذهني لسؤال "لماذا تم حظر هذا؟".
-
-أبقِه مقفلاً بإحكام.
+- يعرض `openclaw sandbox list` حاويات صندوق الحماية وحالتها ومدى تطابق الصورة وعمرها ومدة خمولها والجلسة أو الوكيل المرتبط بها.
+- يفحص `openclaw sandbox explain [--session <key>] [--agent <id>]` وضع صندوق الحماية الفعلي ومساحة عمل المضيف ودليل عمل وقت التشغيل وعمليات تركيب Docker وسياسة الأدوات ومفاتيح الإعداد اللازمة للإصلاح. يظل الحقل `workspaceRoot` فيه هو جذر صندوق الحماية المُعدّ؛ بينما يوضح `effectiveHostWorkspaceRoot` المكان الفعلي لمساحة العمل النشطة.
+- يزيل `openclaw sandbox recreate [--all | --session <key> | --agent <id>] [--browser] [--force]` الحاويات أو البيئات كي يُعاد إنشاؤها بالإعدادات الحالية عند الاستخدام التالي.
+- راجع [صندوق الحماية مقابل سياسة الأدوات مقابل التنفيذ بصلاحيات مرتفعة](/ar/gateway/sandbox-vs-tool-policy-vs-elevated) للنموذج الذهني الذي يجيب عن سؤال «لماذا هذا محظور؟».
 
 ## تجاوزات الوكلاء المتعددين
 
-يمكن لكل وكيل تجاوز sandbox + الأدوات: `agents.list[].sandbox` و`agents.list[].tools` (بالإضافة إلى `agents.list[].tools.sandbox.tools` لسياسة أدوات sandbox). راجع [Sandbox والأدوات للوكلاء المتعددين](/ar/tools/multi-agent-sandbox-tools) لمعرفة الأسبقية.
+يمكن لكل وكيل تجاوز إعدادات صندوق الحماية والأدوات: `agents.list[].sandbox` و`agents.list[].tools` (بالإضافة إلى `agents.list[].tools.sandbox.tools` لسياسة أدوات صندوق الحماية). راجع [صندوق حماية وأدوات الوكلاء المتعددين](/ar/tools/multi-agent-sandbox-tools) لمعرفة ترتيب الأولوية.
 
-## مثال تمكين بسيط
+## مثال مبسط للتمكين
 
 ```json5
 {
@@ -545,10 +392,10 @@ x-i18n:
 }
 ```
 
-## ذات صلة
+## ذو صلة
 
-- [Sandbox والأدوات للوكلاء المتعددين](/ar/tools/multi-agent-sandbox-tools) — التجاوزات لكل وكيل والأسبقية
-- [OpenShell](/ar/gateway/openshell) — إعداد واجهة sandbox الخلفية المُدارة، وأوضاع مساحة العمل، ومرجع الإعدادات
-- [إعدادات Sandbox](/ar/gateway/config-agents#agentsdefaultssandbox)
-- [Sandbox مقابل سياسة الأدوات مقابل Elevated](/ar/gateway/sandbox-vs-tool-policy-vs-elevated) — تصحيح "لماذا تم حظر هذا؟"
+- [صندوق الحماية متعدد الوكلاء والأدوات](/ar/tools/multi-agent-sandbox-tools) -- التجاوزات لكل وكيل وترتيب الأولوية
+- [OpenShell](/ar/gateway/openshell) -- إعداد الواجهة الخلفية المُدارة لصندوق الحماية، وأوضاع مساحة العمل، ومرجع الإعدادات
+- [إعداد صندوق الحماية](/ar/gateway/config-agents#agentsdefaultssandbox)
+- [صندوق الحماية مقابل سياسة الأدوات مقابل الصلاحيات المرتفعة](/ar/gateway/sandbox-vs-tool-policy-vs-elevated) -- تصحيح مشكلة «لماذا تم حظر هذا؟»
 - [الأمان](/ar/gateway/security)

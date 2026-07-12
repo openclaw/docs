@@ -2,24 +2,24 @@
 read_when:
     - Menyiapkan OpenClaw di DigitalOcean
     - Mencari VPS berbayar sederhana untuk OpenClaw
-summary: Menghosting OpenClaw di DigitalOcean Droplet
+summary: Host OpenClaw di Droplet DigitalOcean
 title: DigitalOcean
 x-i18n:
-    generated_at: "2026-05-10T19:39:53Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:18:54Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2ddfe3e6df5e48616584e912e12eede30a62f869fc307f586c9604c9c06c9e5b
+    source_hash: e124a59c079efda0c8e880018f2657fad784af1489ca3f98ed8ab609249e35bd
     source_path: install/digitalocean.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Jalankan OpenClaw Gateway persisten di DigitalOcean Droplet (~$6/bulan untuk paket Basic 1 GB).
+Jalankan Gateway OpenClaw persisten pada DigitalOcean Droplet (~$6/bulan untuk paket Basic 1 GB).
 
-DigitalOcean adalah jalur VPS berbayar paling sederhana. Jika Anda lebih memilih opsi yang lebih murah atau gratis:
+DigitalOcean merupakan opsi VPS berbayar yang mudah digunakan. Untuk opsi yang lebih murah atau gratis:
 
-- [Hetzner](/id/install/hetzner) — €3,79/bln, lebih banyak core/RAM per dolar.
-- [Oracle Cloud](/id/install/oracle) — ARM Always Free (hingga 4 OCPU, RAM 24 GB), tetapi pendaftarannya bisa rumit dan hanya ARM.
+- [Hetzner](/id/install/hetzner) -- lebih banyak inti/RAM per dolar.
+- [Oracle Cloud](/id/install/oracle) -- tingkat ARM Always Free (hingga 4 OCPU, RAM 24 GB), tetapi proses pendaftarannya terkadang rumit dan hanya mendukung ARM.
 
 ## Prasyarat
 
@@ -30,36 +30,36 @@ DigitalOcean adalah jalur VPS berbayar paling sederhana. Jika Anda lebih memilih
 ## Penyiapan
 
 <Steps>
-  <Step title="Create a Droplet">
+  <Step title="Buat Droplet">
     <Warning>
-    Gunakan image dasar yang bersih (Ubuntu 24.04 LTS). Hindari image 1-klik Marketplace pihak ketiga kecuali Anda telah meninjau skrip startup dan default firewall-nya.
+    Gunakan citra dasar yang bersih (Ubuntu 24.04 LTS). Hindari citra sekali klik dari Marketplace pihak ketiga kecuali Anda telah meninjau skrip startup dan pengaturan bawaan firewall-nya.
     </Warning>
 
     1. Masuk ke [DigitalOcean](https://cloud.digitalocean.com/).
     2. Klik **Create > Droplets**.
     3. Pilih:
-       - **Wilayah:** Yang terdekat dengan Anda
+       - **Region:** Yang paling dekat dengan Anda
        - **Image:** Ubuntu 24.04 LTS
-       - **Ukuran:** Basic, Regular, 1 vCPU / RAM 1 GB / SSD 25 GB
-       - **Autentikasi:** Kunci SSH (direkomendasikan) atau kata sandi
+       - **Size:** Basic, Regular, 1 vCPU / RAM 1 GB / SSD 25 GB
+       - **Authentication:** Kunci SSH (disarankan) atau kata sandi
     4. Klik **Create Droplet** dan catat alamat IP-nya.
 
   </Step>
 
-  <Step title="Connect and install">
+  <Step title="Hubungkan dan instal">
     ```bash
     ssh root@YOUR_DROPLET_IP
 
     apt update && apt upgrade -y
 
-    # Install Node.js 24
+    # Instal Node.js 24
     curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
     apt install -y nodejs
 
-    # Install OpenClaw
+    # Instal OpenClaw
     curl -fsSL https://openclaw.ai/install.sh | bash
 
-    # Create the non-root user that will own OpenClaw state and services.
+    # Buat pengguna non-root yang akan memiliki status dan layanan OpenClaw.
     adduser openclaw
     usermod -aG sudo openclaw
     loginctl enable-linger openclaw
@@ -68,20 +68,20 @@ DigitalOcean adalah jalur VPS berbayar paling sederhana. Jika Anda lebih memilih
     openclaw --version
     ```
 
-    Gunakan shell root hanya untuk bootstrap sistem. Jalankan perintah OpenClaw sebagai pengguna non-root `openclaw` agar state berada di bawah `/home/openclaw/.openclaw/` dan Gateway dipasang sebagai layanan systemd milik pengguna tersebut.
+    Gunakan shell root hanya untuk bootstrap sistem. Jalankan perintah OpenClaw sebagai pengguna non-root `openclaw` agar status disimpan di bawah `/home/openclaw/.openclaw/` dan Gateway diinstal sebagai layanan systemd `--user` milik pengguna tersebut.
 
   </Step>
 
-  <Step title="Run onboarding">
+  <Step title="Jalankan orientasi awal">
     ```bash
     openclaw onboard --install-daemon
     ```
 
-    Wizard memandu Anda melalui autentikasi model, penyiapan channel, pembuatan token gateway, dan pemasangan daemon (systemd).
+    Wisaya akan memandu Anda melalui autentikasi model, penyiapan saluran, pembuatan token gateway, dan instalasi daemon (layanan pengguna systemd).
 
   </Step>
 
-  <Step title="Add swap (recommended for 1 GB Droplets)">
+  <Step title="Tambahkan swap (disarankan untuk Droplet 1 GB)">
     ```bash
     fallocate -l 2G /swapfile
     chmod 600 /swapfile
@@ -91,7 +91,7 @@ DigitalOcean adalah jalur VPS berbayar paling sederhana. Jika Anda lebih memilih
     ```
   </Step>
 
-  <Step title="Verify the gateway">
+  <Step title="Verifikasi gateway">
     ```bash
     openclaw status
     systemctl --user status openclaw-gateway.service
@@ -99,17 +99,17 @@ DigitalOcean adalah jalur VPS berbayar paling sederhana. Jika Anda lebih memilih
     ```
   </Step>
 
-  <Step title="Access the Control UI">
-    Gateway terikat ke loopback secara default. Pilih salah satu opsi ini.
+  <Step title="Akses UI Kontrol">
+    Secara bawaan, gateway terikat ke local loopback. Pilih salah satu opsi berikut.
 
     **Opsi A: Tunnel SSH (paling sederhana)**
 
     ```bash
-    # From your local machine
+    # Dari mesin lokal Anda
     ssh -L 18789:localhost:18789 root@YOUR_DROPLET_IP
     ```
 
-    Lalu buka `http://localhost:18789`.
+    Kemudian buka `http://localhost:18789`.
 
     **Opsi B: Tailscale Serve**
 
@@ -120,59 +120,59 @@ DigitalOcean adalah jalur VPS berbayar paling sederhana. Jika Anda lebih memilih
     openclaw gateway restart
     ```
 
-    Lalu buka `https://<magicdns>/` dari perangkat apa pun di tailnet Anda.
+    Kemudian buka `https://<magicdns>/` dari perangkat mana pun di tailnet Anda.
 
-    Tailscale Serve mengautentikasi lalu lintas UI Kontrol dan WebSocket melalui header identitas tailnet, yang mengasumsikan host gateway itu sendiri tepercaya. Endpoint HTTP API tetap mengikuti mode autentikasi normal gateway (token/kata sandi). Untuk mewajibkan kredensial rahasia bersama eksplisit melalui Serve, setel `gateway.auth.allowTailscale: false` dan gunakan `gateway.auth.mode: "token"` atau `"password"`.
+    Tailscale Serve mengautentikasi lalu lintas UI Kontrol dan WebSocket melalui header identitas tailnet, yang mengasumsikan bahwa host gateway itu sendiri tepercaya. Endpoint API HTTP tetap mengikuti mode autentikasi normal gateway (token/kata sandi). Untuk mewajibkan kredensial rahasia bersama secara eksplisit melalui Serve, tetapkan `gateway.auth.allowTailscale: false` dan gunakan `gateway.auth.mode: "token"` atau `"password"`.
 
-    **Opsi C: Bind tailnet (tanpa Serve)**
+    **Opsi C: Pengikatan tailnet (tanpa Serve)**
 
     ```bash
     openclaw config set gateway.bind tailnet
     openclaw gateway restart
     ```
 
-    Lalu buka `http://<tailscale-ip>:18789` (token diperlukan).
+    Kemudian buka `http://<tailscale-ip>:18789` (token diperlukan).
 
   </Step>
 </Steps>
 
-## Persistensi dan cadangan
+## Persistensi dan pencadangan
 
-State OpenClaw berada di bawah:
+Status OpenClaw disimpan di bawah:
 
-- `~/.openclaw/` — `openclaw.json`, `auth-profiles.json` per agen, state channel/provider, dan data sesi.
-- `~/.openclaw/workspace/` — workspace agen (SOUL.md, memori, artefak).
+- `~/.openclaw/` -- `openclaw.json`, kredensial saluran/penyedia, `auth-profiles.json` per agen, dan data sesi.
+- `~/.openclaw/workspace/` -- ruang kerja agen (SOUL.md, memori, artefak).
 
-Ini bertahan setelah Droplet reboot. Untuk mengambil snapshot portabel:
+Data ini tetap tersedia setelah Droplet dimulai ulang. Untuk membuat snapshot portabel:
 
 ```bash
 openclaw backup create
 ```
 
-Snapshot DigitalOcean mencadangkan seluruh Droplet; `openclaw backup create` portabel lintas host.
+Snapshot DigitalOcean mencadangkan seluruh Droplet; `openclaw backup create` bersifat portabel antarhost.
 
-## Tips RAM 1 GB
+## Kiat untuk RAM 1 GB
 
-Droplet $6 hanya memiliki RAM 1 GB. Agar semuanya tetap lancar:
+Droplet seharga $6 hanya memiliki RAM 1 GB. Agar semuanya tetap berjalan lancar:
 
-- Pastikan langkah swap di atas ada di `/etc/fstab` agar bertahan setelah reboot.
-- Pilih model berbasis API (Claude, GPT) daripada model lokal — inferensi LLM lokal tidak muat di 1 GB.
-- Setel `agents.defaults.model.primary` ke model yang lebih kecil jika Anda mengalami OOM pada prompt besar.
+- Pastikan langkah swap di atas tercantum dalam `/etc/fstab` agar tetap aktif setelah sistem dimulai ulang.
+- Utamakan model berbasis API (Claude, GPT) daripada model lokal -- inferensi LLM lokal tidak dapat berjalan dengan RAM 1 GB.
+- Tetapkan `agents.defaults.model.primary` ke model yang lebih kecil jika Anda mengalami OOM pada prompt besar.
 - Pantau dengan `free -h` dan `htop`.
 
 ## Pemecahan masalah
 
-**Gateway tidak bisa dimulai** -- Jalankan `openclaw doctor --non-interactive` dan periksa log dengan `journalctl --user -u openclaw-gateway.service -n 50`.
+**Gateway tidak dapat dimulai** -- Jalankan `openclaw doctor --non-interactive` dan periksa log dengan `journalctl --user -u openclaw-gateway.service -n 50`.
 
-**Port sudah digunakan** -- Jalankan `lsof -i :18789` untuk menemukan prosesnya, lalu hentikan.
+**Port sudah digunakan** -- Jalankan `lsof -i :18789` untuk menemukan prosesnya, lalu hentikan proses tersebut.
 
-**Kehabisan memori** -- Verifikasi swap aktif dengan `free -h`. Jika masih mengalami OOM, gunakan model berbasis API (Claude, GPT) alih-alih model lokal, atau tingkatkan ke Droplet 2 GB.
+**Kehabisan memori** -- Pastikan swap aktif dengan `free -h`. Jika OOM masih terjadi, beralihlah ke model berbasis API (Claude, GPT), bukan model lokal, atau tingkatkan ke Droplet 2 GB.
 
-## Langkah berikutnya
+## Langkah selanjutnya
 
-- [Channel](/id/channels) -- hubungkan Telegram, WhatsApp, Discord, dan lainnya
+- [Saluran](/id/channels) -- hubungkan Telegram, WhatsApp, Discord, dan lainnya
 - [Konfigurasi Gateway](/id/gateway/configuration) -- semua opsi konfigurasi
-- [Memperbarui](/id/install/updating) -- jaga OpenClaw tetap mutakhir
+- [Pembaruan](/id/install/updating) -- selalu gunakan versi terbaru OpenClaw
 
 ## Terkait
 

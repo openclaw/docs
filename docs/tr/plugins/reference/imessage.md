@@ -1,16 +1,16 @@
 ---
 read_when:
-    - iMessage Plugin öğesini yüklüyor, yapılandırıyor veya denetliyorsunuz
-summary: OpenClaw mesajlarını gönderip almak için iMessage kanal yüzeyini ekler.
-title: iMessage Plugin
+    - iMessage Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
+summary: OpenClaw mesajlarını göndermek ve almak için iMessage kanal arayüzünü ekler.
+title: iMessage Plugin'i
 x-i18n:
-    generated_at: "2026-05-02T20:53:43Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:33:22Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3cf902a898d37329fe52d3b7a26c0ecebd641a88c5e490ad678adccb2d9b0d8d
+    source_hash: 5c48bb24e59d5dea948c5f04f579df48b0ae51f923e5dc8a0fc35888ddbbc1c6
     source_path: plugins/reference/imessage.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # iMessage Plugin
@@ -24,7 +24,7 @@ OpenClaw mesajlarını göndermek ve almak için iMessage kanal yüzeyini ekler.
 
 ## Yüzey
 
-channels: imessage
+kanallar: imessage; Skills
 
 ## İlgili belgeler
 

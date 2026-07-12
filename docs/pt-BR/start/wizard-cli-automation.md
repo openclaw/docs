@@ -1,25 +1,24 @@
 ---
 read_when:
-    - Você está automatizando a integração inicial em scripts ou CI
+    - Você está automatizando a integração em scripts ou CI
     - Você precisa de exemplos não interativos para provedores específicos
 sidebarTitle: CLI automation
-summary: Onboarding com script e configuração de agentes para a CLI do OpenClaw
+summary: Integração guiada por scripts e configuração de agentes para a CLI do OpenClaw
 title: Automação da CLI
 x-i18n:
-    generated_at: "2026-07-12T15:42:10Z"
+    generated_at: "2026-07-12T00:23:18Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: de3115fd0c675b92f22cf9c44ddd307a854e499c6f163235f991368429b2c152
     source_path: start/wizard-cli-automation.md
     workflow: 16
 ---
 
-Use `openclaw onboard --non-interactive` para automatizar a configuração. Ele exige `--accept-risk`: a configuração não interativa pode gravar credenciais e a configuração do daemon sem uma solicitação de confirmação, portanto, a flag representa o reconhecimento explícito do risco.
+Use `openclaw onboard --non-interactive` para automatizar a configuração por script. Ele exige `--accept-risk`: a configuração não interativa pode gravar credenciais e a configuração do daemon sem uma solicitação de confirmação, portanto essa opção representa o reconhecimento explícito do risco.
 
 <Note>
-`--json` não implica o modo não interativo. Passe `--non-interactive --accept-risk` explicitamente em scripts.
+`--json` não implica o modo não interativo. Para scripts, passe explicitamente `--non-interactive --accept-risk`.
 </Note>
 
 ## Exemplo básico não interativo
@@ -39,9 +38,9 @@ openclaw onboard --non-interactive --accept-risk \
 
 Adicione `--json` para obter um resumo legível por máquina.
 
-- O padrão de `--gateway-port` é `18789`; passe essa opção somente para substituí-lo.
-- `--skip-bootstrap` ignora a criação dos arquivos padrão do espaço de trabalho, para automações que preenchem previamente seu próprio espaço de trabalho.
-- `--secret-input-mode ref` armazena no perfil de autenticação uma referência baseada em variável de ambiente (`{ source: "env", provider: "default", id: "<ENV_VAR>" }`) em vez da chave em texto simples. No modo `ref` não interativo, a variável de ambiente do provedor já deve estar definida no ambiente do processo: passar uma flag de chave embutida sem a variável de ambiente correspondente causa uma falha imediata.
+- O valor padrão de `--gateway-port` é `18789`; passe essa opção somente para substituí-lo.
+- `--skip-bootstrap` ignora a criação dos arquivos padrão do espaço de trabalho, para automações que preenchem previamente o próprio espaço de trabalho.
+- `--secret-input-mode ref` armazena no perfil de autenticação uma referência baseada em variável de ambiente (`{ source: "env", provider: "default", id: "<ENV_VAR>" }`), em vez da chave em texto simples. No modo `ref` não interativo, a variável de ambiente do provedor já deve estar definida no ambiente do processo: passar uma opção de chave diretamente sem a variável de ambiente correspondente causa uma falha imediata.
 
 ```bash
 openclaw onboard --non-interactive --accept-risk \
@@ -53,7 +52,7 @@ openclaw onboard --non-interactive --accept-risk \
 ## Exemplos específicos de provedores
 
 <AccordionGroup>
-  <Accordion title="Exemplo de chave de API da Anthropic">
+  <Accordion title="Exemplo com chave de API da Anthropic">
     ```bash
     openclaw onboard --non-interactive --accept-risk \
       --mode local \
@@ -62,7 +61,7 @@ openclaw onboard --non-interactive --accept-risk \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Exemplo do Cloudflare AI Gateway">
+  <Accordion title="Exemplo com o Cloudflare AI Gateway">
     ```bash
     openclaw onboard --non-interactive --accept-risk \
       --mode local \
@@ -73,7 +72,7 @@ openclaw onboard --non-interactive --accept-risk \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Exemplo do Gemini">
+  <Accordion title="Exemplo com o Gemini">
     ```bash
     openclaw onboard --non-interactive --accept-risk \
       --mode local \
@@ -82,7 +81,7 @@ openclaw onboard --non-interactive --accept-risk \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Exemplo do Mistral">
+  <Accordion title="Exemplo com o Mistral">
     ```bash
     openclaw onboard --non-interactive --accept-risk \
       --mode local \
@@ -91,7 +90,7 @@ openclaw onboard --non-interactive --accept-risk \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Exemplo do Moonshot">
+  <Accordion title="Exemplo com o Moonshot">
     ```bash
     openclaw onboard --non-interactive --accept-risk \
       --mode local \
@@ -100,7 +99,7 @@ openclaw onboard --non-interactive --accept-risk \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Exemplo do Ollama">
+  <Accordion title="Exemplo com o Ollama">
     ```bash
     openclaw onboard --non-interactive --accept-risk \
       --mode local \
@@ -109,7 +108,7 @@ openclaw onboard --non-interactive --accept-risk \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Exemplo do OpenCode">
+  <Accordion title="Exemplo com o OpenCode">
     ```bash
     openclaw onboard --non-interactive --accept-risk \
       --mode local \
@@ -119,7 +118,7 @@ openclaw onboard --non-interactive --accept-risk \
     ```
     Substitua por `--auth-choice opencode-go --opencode-go-api-key "$OPENCODE_API_KEY"` para usar o catálogo Go.
   </Accordion>
-  <Accordion title="Exemplo do Synthetic">
+  <Accordion title="Exemplo com o Synthetic">
     ```bash
     openclaw onboard --non-interactive --accept-risk \
       --mode local \
@@ -128,7 +127,7 @@ openclaw onboard --non-interactive --accept-risk \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Exemplo do Vercel AI Gateway">
+  <Accordion title="Exemplo com o Vercel AI Gateway">
     ```bash
     openclaw onboard --non-interactive --accept-risk \
       --mode local \
@@ -137,7 +136,7 @@ openclaw onboard --non-interactive --accept-risk \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Exemplo da Z.AI">
+  <Accordion title="Exemplo com o Z.AI">
     ```bash
     openclaw onboard --non-interactive --accept-risk \
       --mode local \
@@ -146,7 +145,7 @@ openclaw onboard --non-interactive --accept-risk \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="Exemplo de provedor personalizado">
+  <Accordion title="Exemplo com um provedor personalizado">
     ```bash
     openclaw onboard --non-interactive --accept-risk \
       --mode local \
@@ -160,11 +159,11 @@ openclaw onboard --non-interactive --accept-risk \
       --gateway-bind loopback
     ```
 
-    `--custom-api-key` é opcional; alguns endpoints não exigem autenticação. Se for omitida, a integração inicial verifica `CUSTOM_API_KEY` no ambiente. `--custom-provider-id` é opcional e, quando omitida, é derivada automaticamente da URL base. O padrão de `--custom-compatibility` é `openai` (outros valores: `openai-responses`, `anthropic`).
+    `--custom-api-key` é opcional; alguns endpoints não exigem autenticação. Quando omitida, a integração inicial verifica `CUSTOM_API_KEY` no ambiente. `--custom-provider-id` é opcional e, quando omitida, é derivada automaticamente da URL base. O valor padrão de `--custom-compatibility` é `openai` (outros valores: `openai-responses`, `anthropic`).
 
-    O OpenClaw infere o suporte à entrada de imagens com base em padrões conhecidos de IDs de modelos de visão (`gpt-4o`, `claude-3/4`, `gemini`, sufixos `-vl`/`vision` e semelhantes). Adicione `--custom-image-input` para ativá-lo à força em um modelo de visão não reconhecido ou `--custom-text-input` para forçar somente texto.
+    O OpenClaw infere a compatibilidade com entrada de imagens a partir de padrões conhecidos de IDs de modelos de visão (`gpt-4o`, `claude-3/4`, `gemini`, sufixos `-vl`/`vision` e semelhantes). Adicione `--custom-image-input` para ativá-la à força em um modelo de visão não reconhecido ou `--custom-text-input` para forçar o uso exclusivo de texto.
 
-    Variante do modo de referência, que armazena `apiKey` como `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`:
+    Variante do modo `ref`, que armazena `apiKey` como `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`:
 
     ```bash
     export CUSTOM_API_KEY="your-key"
@@ -183,11 +182,11 @@ openclaw onboard --non-interactive --accept-risk \
   </Accordion>
 </AccordionGroup>
 
-A autenticação por token de configuração da Anthropic continua compatível, mas o OpenClaw prefere reutilizar a CLI do Claude quando há um login local disponível nela. Para produção, prefira uma chave de API da Anthropic.
+A autenticação por token de configuração da Anthropic continua compatível, mas o OpenClaw prefere reutilizar a Claude CLI quando há uma sessão local disponível nela. Para produção, prefira uma chave de API da Anthropic.
 
 ## Adicionar outro agente
 
-`openclaw agents add <name>` cria um agente separado, com seu próprio espaço de trabalho, suas próprias sessões e seus próprios perfis de autenticação. Executá-lo sem `--workspace` (e sem outras flags) inicia o assistente interativo; passar qualquer uma das opções `--workspace`, `--model`, `--agent-dir`, `--bind` ou `--non-interactive` o executa de forma não interativa e, nesse caso, exige `--workspace`.
+`openclaw agents add <name>` cria um agente separado com espaço de trabalho, sessões e perfis de autenticação próprios. Executá-lo sem `--workspace` (e sem nenhuma outra opção) inicia o assistente interativo; passar qualquer uma das opções `--workspace`, `--model`, `--agent-dir`, `--bind` ou `--non-interactive` o executa de forma não interativa e, nesse caso, exige `--workspace`.
 
 ```bash
 openclaw agents add work \
@@ -198,7 +197,7 @@ openclaw agents add work \
   --json
 ```
 
-Chaves de configuração que ele grava (entrada em `agents.list[]` para o ID do novo agente):
+Chaves de configuração gravadas pelo comando (entrada em `agents.list[]` para o ID do novo agente):
 
 - `name`
 - `workspace`
@@ -208,11 +207,11 @@ Chaves de configuração que ele grava (entrada em `agents.list[]` para o ID do 
 Observações:
 
 - Espaço de trabalho padrão (quando `--workspace` é omitida no assistente interativo): `~/.openclaw/workspace-<agentId>`.
-- `--bind <channel[:accountId]>` pode ser repetida; adicione vinculações para encaminhar mensagens recebidas ao novo agente (o assistente também pode fazer isso de forma interativa).
+- `--bind <channel[:accountId]>` pode ser repetida; adicione associações para encaminhar mensagens recebidas ao novo agente (o assistente também permite fazer isso de forma interativa).
 - O nome do agente é normalizado para um ID de agente válido; `main` é reservado.
 
 ## Documentação relacionada
 
 - Central de integração inicial: [Integração inicial (CLI)](/pt-BR/start/wizard)
-- Referência completa: [Referência de configuração da CLI](/pt-BR/start/wizard-cli-reference)
+- Referência completa: [Referência de configuração pela CLI](/pt-BR/start/wizard-cli-reference)
 - Referência do comando: [`openclaw onboard`](/pt-BR/cli/onboard)

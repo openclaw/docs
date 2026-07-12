@@ -1,157 +1,124 @@
 ---
 read_when:
     - Thay đổi đầu ra hoặc định dạng ghi nhật ký
-    - Gỡ lỗi đầu ra CLI hoặc gateway
+    - Gỡ lỗi đầu ra của CLI hoặc Gateway
 summary: Các bề mặt ghi nhật ký, nhật ký tệp, kiểu nhật ký WS và định dạng bảng điều khiển
-title: Ghi nhật ký Gateway
+title: Nhật ký Gateway
 x-i18n:
-    generated_at: "2026-06-27T17:30:31Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:58:26Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: dde5e589bb48cd8c41ac6dd0d74780fec1cc1ee79d82d433b4e7c7450dc5c8b6
+    source_hash: 6717be5eac3dfc1acf36b2f21b049d46c7fc3678945295b10ae69781d89d35ad
     source_path: gateway/logging.md
     workflow: 16
 ---
 
 # Ghi nhật ký
 
-Để xem tổng quan dành cho người dùng (CLI + Control UI + cấu hình), xem [/logging](/vi/logging).
+Để xem tổng quan dành cho người dùng (CLI + Giao diện điều khiển + cấu hình), hãy xem [/logging](/vi/logging).
 
-OpenClaw có hai "bề mặt" nhật ký:
+OpenClaw có hai bề mặt nhật ký:
 
-- **Đầu ra bảng điều khiển** (những gì bạn thấy trong terminal / UI gỡ lỗi).
-- **Nhật ký tệp** (các dòng JSON) do trình ghi nhật ký Gateway ghi.
+- **Đầu ra bảng điều khiển** - nội dung bạn thấy trong terminal / Giao diện gỡ lỗi.
+- **Nhật ký tệp** - các dòng JSON do trình ghi nhật ký của Gateway ghi.
 
-Khi khởi động, Gateway ghi nhật ký mô hình tác tử mặc định đã được phân giải cùng với
-các mặc định chế độ ảnh hưởng đến phiên mới, ví dụ:
+Khi khởi động, Gateway ghi lại mô hình tác tử mặc định đã phân giải cùng các giá trị mặc định của chế độ có ảnh hưởng đến phiên mới:
 
 ```text
-agent model: openai/gpt-5.5 (thinking=medium, fast=on)
+agent model: openai/gpt-5.6-sol (thinking=medium, fast=on)
 ```
 
-`thinking` đến từ tác tử mặc định, tham số mô hình, hoặc mặc định tác tử toàn cục;
-khi chưa được đặt, tóm tắt khởi động hiển thị `medium`. `fast` đến từ
-tác tử mặc định hoặc tham số `fastMode` của mô hình.
+`thinking` lấy từ tác tử mặc định, tham số mô hình hoặc giá trị mặc định toàn cục của tác tử; khi chưa đặt, nó hiển thị `medium`. `fast` lấy từ tác tử mặc định hoặc tham số `fastMode` của mô hình.
 
 ## Trình ghi nhật ký dựa trên tệp
 
-- Tệp nhật ký xoay vòng mặc định nằm dưới `/tmp/openclaw/` (mỗi ngày một tệp): `openclaw-YYYY-MM-DD.log`
-  - Ngày dùng múi giờ cục bộ của máy chủ gateway.
-- Các tệp nhật ký đang hoạt động xoay vòng tại `logging.maxFileBytes` (mặc định: 100 MB), giữ
-  tối đa năm bản lưu trữ được đánh số và tiếp tục ghi vào một tệp đang hoạt động mới.
-- Đường dẫn và cấp độ tệp nhật ký có thể được cấu hình qua `~/.openclaw/openclaw.json`:
-  - `logging.file`
-  - `logging.level`
+- Tệp nhật ký luân phiên mặc định nằm trong `/tmp/openclaw/` (mỗi ngày một tệp): `openclaw-YYYY-MM-DD.log`, được xác định ngày theo múi giờ cục bộ của máy chủ Gateway. Nếu thư mục đó không an toàn hoặc không thể ghi (sai chủ sở hữu, mọi người đều có quyền ghi hoặc là liên kết tượng trưng), OpenClaw sẽ dùng đường dẫn `os.tmpdir()/openclaw-<uid>` theo phạm vi người dùng để dự phòng; trên Windows, hệ thống luôn dùng phương án dự phòng trong thư mục tạm của hệ điều hành này.
+- Các tệp nhật ký đang hoạt động được luân phiên khi đạt `logging.maxFileBytes` (mặc định: 100 MB), giữ tối đa năm bản lưu trữ được đánh số (`.1` đến `.5`) và tiếp tục ghi vào một tệp đang hoạt động mới.
+- Cấu hình đường dẫn và cấp độ tệp nhật ký qua `~/.openclaw/openclaw.json`: `logging.file`, `logging.level`.
+- Định dạng tệp gồm một đối tượng JSON trên mỗi dòng.
 
-Định dạng tệp là mỗi dòng một đối tượng JSON.
+Các luồng mã trò chuyện, thoại thời gian thực và phòng được quản lý sử dụng trình ghi nhật ký tệp dùng chung cho các bản ghi vòng đời có giới hạn, phục vụ gỡ lỗi vận hành và xuất nhật ký OTLP. Văn bản bản chép lời, tải trọng âm thanh, mã định danh lượt, mã định danh cuộc gọi và mã định danh mục của nhà cung cấp không bao giờ được sao chép vào bản ghi nhật ký.
 
-Các đường dẫn mã trò chuyện, thoại thời gian thực, và phòng được quản lý dùng trình ghi nhật ký tệp dùng chung cho
-các bản ghi vòng đời có giới hạn. Những bản ghi này dành cho gỡ lỗi vận hành
-và xuất nhật ký OTLP; văn bản bản ghi hội thoại, payload âm thanh, id lượt, id cuộc gọi, và
-id mục của nhà cung cấp không được sao chép vào bản ghi nhật ký.
-
-Tab Nhật ký của Control UI theo dõi tệp này qua gateway (`logs.tail`).
-CLI cũng có thể làm tương tự:
+Thẻ Nhật ký trong Giao diện điều khiển theo dõi tệp này qua Gateway (`logs.tail`). CLI cũng hoạt động tương tự:
 
 ```bash
 openclaw logs --follow
 ```
 
-**Chi tiết so với cấp độ nhật ký**
+### Chi tiết so với cấp độ nhật ký
 
-- **Nhật ký tệp** được kiểm soát hoàn toàn bởi `logging.level`.
-- `--verbose` chỉ ảnh hưởng đến **độ chi tiết bảng điều khiển** (và kiểu nhật ký WS); nó **không**
-  tăng cấp độ nhật ký tệp.
-- Để ghi các chi tiết chỉ có ở chế độ chi tiết vào nhật ký tệp, đặt `logging.level` thành `debug` hoặc
-  `trace`.
-- Ghi nhật ký trace cũng bao gồm các tóm tắt thời gian chẩn đoán cho những đường dẫn nóng được chọn,
-  chẳng hạn như chuẩn bị factory công cụ Plugin. Xem
-  [/tools/plugin#slow-plugin-tool-setup](/vi/tools/plugin#slow-plugin-tool-setup).
+- **Nhật ký tệp** chỉ do `logging.level` kiểm soát.
+- `--verbose` chỉ ảnh hưởng đến **mức độ chi tiết của bảng điều khiển** (và kiểu nhật ký WS) - tùy chọn này **không** nâng cấp độ nhật ký tệp.
+- Để thu thập các chi tiết chỉ có ở chế độ chi tiết trong nhật ký tệp, hãy đặt `logging.level` thành `debug` hoặc `trace`.
+- Nhật ký theo dõi cũng bao gồm các bản tóm tắt thời gian chẩn đoán cho một số đường dẫn nóng được chọn, chẳng hạn như quá trình chuẩn bị bộ tạo công cụ Plugin. Xem [/tools/plugin#slow-plugin-tool-setup](/vi/tools/plugin#slow-plugin-tool-setup).
 
-## Thu thập bảng điều khiển
+## Thu thập đầu ra bảng điều khiển
 
-CLI thu thập `console.log/info/warn/error/debug/trace` và ghi chúng vào nhật ký tệp,
-đồng thời vẫn in ra stdout/stderr.
+CLI thu thập `console.log/info/warn/error/debug/trace`, ghi chúng vào nhật ký tệp và vẫn in ra stdout/stderr.
 
-Bạn có thể tinh chỉnh độ chi tiết bảng điều khiển độc lập qua:
+Điều chỉnh mức độ chi tiết của bảng điều khiển một cách độc lập:
 
 - `logging.consoleLevel` (mặc định `info`)
-- `logging.consoleStyle` (`pretty` | `compact` | `json`)
+- `logging.consoleStyle` (`pretty` | `compact` | `json`; mặc định là `pretty` trên TTY, nếu không thì là `compact`)
 
-## Biên tập dữ liệu nhạy cảm
+## Che giấu dữ liệu
 
-OpenClaw có thể che các token nhạy cảm trước khi đầu ra nhật ký hoặc bản ghi hội thoại rời khỏi
-tiến trình. Chính sách biên tập dữ liệu nhạy cảm trong nhật ký này được áp dụng tại các đích nhận văn bản bảng điều khiển, nhật ký tệp, bản ghi nhật ký OTLP,
-và bản ghi hội thoại phiên, vì vậy các giá trị bí mật khớp mẫu được
-che trước khi các dòng JSONL hoặc thông điệp được ghi ra đĩa.
+OpenClaw che giấu các token nhạy cảm trước khi đầu ra nhật ký hoặc bản chép lời rời khỏi tiến trình. Chính sách che giấu này áp dụng tại các đích văn bản gồm bảng điều khiển, nhật ký tệp, bản ghi nhật ký OTLP và bản chép lời phiên, vì vậy các giá trị bí mật khớp mẫu sẽ được che giấu trước khi các dòng JSONL hoặc thông báo được ghi vào đĩa.
 
 - `logging.redactSensitive`: `off` | `tools` (mặc định: `tools`)
-- `logging.redactPatterns`: mảng chuỗi regex (ghi đè mặc định)
-  - Dùng chuỗi regex thô (tự động `gi`), hoặc `/pattern/flags` nếu bạn cần cờ tùy chỉnh.
-  - Các kết quả khớp được che bằng cách giữ 6 ký tự đầu + 4 ký tự cuối (độ dài >= 18), nếu không thì `***`.
-  - Mặc định bao phủ các phép gán khóa phổ biến, cờ CLI, trường JSON, header bearer, khối PEM, tiền tố token phổ biến, và tên trường thông tin xác thực thanh toán như số thẻ, CVC/CVV, token thanh toán dùng chung, và thông tin xác thực thanh toán.
+- `logging.redactPatterns`: mảng các chuỗi biểu thức chính quy (ghi đè giá trị mặc định)
+  - Dùng chuỗi biểu thức chính quy thô (tự động thêm `gi`) hoặc `/pattern/flags` để tùy chỉnh cờ.
+  - Các kết quả khớp được che giấu nhưng giữ lại 6 ký tự đầu + 4 ký tự cuối (với giá trị dài từ 18 ký tự trở lên); các giá trị ngắn hơn trở thành `***`.
+  - Các giá trị mặc định bao quát phép gán khóa thường gặp, cờ CLI, trường JSON, tiêu đề bearer, khối PEM, tiền tố token của các nhà cung cấp phổ biến và tên trường thông tin xác thực thanh toán (số thẻ, CVC/CVV, token thanh toán dùng chung, thông tin xác thực thanh toán).
 
-Một số ranh giới an toàn luôn biên tập dữ liệu nhạy cảm bất kể `logging.redactSensitive`.
-Điều này bao gồm sự kiện gọi công cụ của Control UI, đầu ra công cụ `sessions_history`,
-bản xuất hỗ trợ chẩn đoán, quan sát lỗi nhà cung cấp, hiển thị lệnh phê duyệt exec,
-và nhật ký giao thức WebSocket của Gateway. Những bề mặt này vẫn có thể dùng
-`logging.redactPatterns` làm mẫu bổ sung, nhưng `redactSensitive: "off"`
-không khiến chúng phát ra bí mật thô.
+Một số ranh giới an toàn luôn che giấu dữ liệu bất kể `logging.redactSensitive`: sự kiện gọi công cụ trong Giao diện điều khiển, đầu ra công cụ `sessions_history`, bản xuất hỗ trợ chẩn đoán, quan sát lỗi nhà cung cấp, nội dung hiển thị lệnh phê duyệt thực thi và nhật ký giao thức WebSocket của Gateway. Các bề mặt này vẫn sử dụng `logging.redactPatterns` làm mẫu bổ sung, nhưng `redactSensitive: "off"` không khiến chúng xuất bí mật thô.
 
 ## Nhật ký WebSocket của Gateway
 
 Gateway in nhật ký giao thức WebSocket ở hai chế độ:
 
-- **Chế độ bình thường (không có `--verbose`)**: chỉ các kết quả RPC "đáng chú ý" được in:
-  - lỗi (`ok=false`)
-  - lệnh gọi chậm (ngưỡng mặc định: `>= 50ms`)
-  - lỗi phân tích cú pháp
+- **Chế độ thường (không có `--verbose`)**: chỉ in các kết quả RPC “đáng chú ý” - lỗi (`ok=false`), lời gọi chậm (ngưỡng mặc định: `>= 50ms`) và lỗi phân tích cú pháp.
 - **Chế độ chi tiết (`--verbose`)**: in toàn bộ lưu lượng yêu cầu/phản hồi WS.
 
 ### Kiểu nhật ký WS
 
-`openclaw gateway` hỗ trợ công tắc kiểu theo từng gateway:
+`openclaw gateway` hỗ trợ tùy chọn chuyển đổi kiểu cho từng Gateway:
 
-- `--ws-log auto` (mặc định): chế độ bình thường được tối ưu hóa; chế độ chi tiết dùng đầu ra gọn
-- `--ws-log compact`: đầu ra gọn (ghép cặp yêu cầu/phản hồi) khi chi tiết
-- `--ws-log full`: đầu ra đầy đủ theo từng frame khi chi tiết
-- `--compact`: bí danh cho `--ws-log compact`
-
-Ví dụ:
+- `--ws-log auto` (mặc định): chế độ thường được tối ưu hóa; chế độ chi tiết sử dụng đầu ra rút gọn.
+- `--ws-log compact`: đầu ra rút gọn (yêu cầu/phản hồi ghép cặp) khi ở chế độ chi tiết.
+- `--ws-log full`: đầu ra đầy đủ cho từng khung khi ở chế độ chi tiết.
+- `--compact`: bí danh của `--ws-log compact`.
 
 ```bash
-# optimized (only errors/slow)
+# được tối ưu hóa (chỉ lỗi/chậm)
 openclaw gateway
 
-# show all WS traffic (paired)
+# hiển thị toàn bộ lưu lượng WS (ghép cặp)
 openclaw gateway --verbose --ws-log compact
 
-# show all WS traffic (full meta)
+# hiển thị toàn bộ lưu lượng WS (siêu dữ liệu đầy đủ)
 openclaw gateway --verbose --ws-log full
 ```
 
-## Định dạng bảng điều khiển (ghi nhật ký hệ con)
+## Định dạng bảng điều khiển (ghi nhật ký hệ thống con)
 
-Trình định dạng bảng điều khiển **nhận biết TTY** và in các dòng nhất quán, có tiền tố.
-Các trình ghi nhật ký hệ con giữ đầu ra được nhóm lại và dễ quét.
+Trình định dạng bảng điều khiển **nhận biết TTY** và in các dòng nhất quán có tiền tố. Trình ghi nhật ký hệ thống con giữ đầu ra được nhóm và dễ xem lướt:
 
-Hành vi:
+- **Tiền tố hệ thống con** trên mỗi dòng (ví dụ: `[gateway]`, `[canvas]`, `[tailscale]`).
+- **Màu hệ thống con** (ổn định theo từng hệ thống con, được băm từ tên) cùng với màu theo cấp độ.
+- **Dùng màu khi đầu ra là TTY** hoặc môi trường có vẻ là terminal giàu khả năng (`TERM`/`COLORTERM`/`TERM_PROGRAM`); tuân thủ `NO_COLOR` và `FORCE_COLOR`.
+- **Tiền tố hệ thống con được rút gọn**: loại bỏ phân đoạn `gateway/`, `channels/` hoặc `providers/` ở đầu, sau đó chỉ giữ tối đa 2 phân đoạn cuối còn lại (ví dụ: `channels/turn/kernel` hiển thị thành `turn/kernel`). Các hệ thống con kênh đã biết (`telegram`, `whatsapp`, `slack`, v.v.) luôn được thu gọn chỉ còn tên kênh.
+- **Trình ghi nhật ký con theo hệ thống con** (tự động thêm tiền tố + trường có cấu trúc `{ subsystem }`).
+- **`logRaw()`** dành cho đầu ra QR/UX (không tiền tố, không định dạng).
+- **Kiểu bảng điều khiển**: `pretty` | `compact` | `json`.
+- **Cấp độ nhật ký bảng điều khiển** tách biệt với cấp độ nhật ký tệp (tệp vẫn giữ đầy đủ chi tiết khi `logging.level` là `debug`/`trace`).
+- **Nội dung tin nhắn WhatsApp** được ghi ở cấp `debug` (dùng `--verbose` để xem).
 
-- **Tiền tố hệ con** trên mọi dòng (ví dụ `[gateway]`, `[canvas]`, `[tailscale]`)
-- **Màu hệ con** (ổn định theo từng hệ con) cùng với tô màu cấp độ
-- **Có màu khi đầu ra là TTY hoặc môi trường trông giống terminal giàu tính năng** (`TERM`/`COLORTERM`/`TERM_PROGRAM`), tôn trọng `NO_COLOR`
-- **Tiền tố hệ con rút gọn**: bỏ `gateway/` + `channels/` ở đầu, giữ 2 phân đoạn cuối (ví dụ `whatsapp/outbound`)
-- **Trình ghi nhật ký con theo hệ con** (tự động thêm tiền tố + trường có cấu trúc `{ subsystem }`)
-- **`logRaw()`** cho đầu ra QR/UX (không tiền tố, không định dạng)
-- **Kiểu bảng điều khiển** (ví dụ `pretty | compact | json`)
-- **Cấp độ nhật ký bảng điều khiển** tách biệt với cấp độ nhật ký tệp (tệp giữ đầy đủ chi tiết khi `logging.level` được đặt thành `debug`/`trace`)
-- **Nội dung thông điệp WhatsApp** được ghi nhật ký ở `debug` (dùng `--verbose` để xem)
-
-Điều này giữ nhật ký tệp hiện có ổn định trong khi làm cho đầu ra tương tác dễ quét.
+Điều này giữ cho nhật ký tệp ổn định, đồng thời giúp đầu ra tương tác dễ xem lướt.
 
 ## Liên quan
 
 - [Ghi nhật ký](/vi/logging)
 - [Xuất OpenTelemetry](/vi/gateway/opentelemetry)
-- [Xuất chẩn đoán](/vi/gateway/diagnostics)
+- [Xuất dữ liệu chẩn đoán](/vi/gateway/diagnostics)

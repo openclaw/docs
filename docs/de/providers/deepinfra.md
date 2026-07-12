@@ -1,14 +1,13 @@
 ---
 read_when:
-    - Sie möchten einen einzigen API-Schlüssel für die besten Open-Source-LLMs
+    - Sie möchten einen einzigen API-Schlüssel für die führenden Open-Source-LLMs.
     - Sie möchten Modelle über die API von DeepInfra in OpenClaw ausführen
-summary: Verwenden Sie die einheitliche API von DeepInfra, um in OpenClaw auf die beliebtesten Open-Source- und Frontier-Modelle zuzugreifen
+summary: Verwenden Sie die einheitliche API von DeepInfra, um in OpenClaw auf die beliebtesten Open-Source- und Frontier-Modelle zuzugreifen.
 title: DeepInfra
 x-i18n:
-    generated_at: "2026-07-12T15:47:34Z"
+    generated_at: "2026-07-12T02:04:17Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 7f68bac84311d20348007c715803a34451ba8ab0c09beba63366ba5b1b29de05
     source_path: providers/deepinfra.md
@@ -17,7 +16,7 @@ x-i18n:
 
 DeepInfra leitet Anfragen an beliebte Open-Source- und Frontier-Modelle über einen
 einzigen OpenAI-kompatiblen Endpunkt und API-Schlüssel weiter. Die meisten OpenAI-SDKs funktionieren
-damit, indem die Basis-URL geändert wird.
+damit, wenn Sie die Basis-URL ändern.
 
 ## Plugin installieren
 
@@ -28,8 +27,8 @@ openclaw gateway restart
 
 ## API-Schlüssel abrufen
 
-1. Melden Sie sich bei [deepinfra.com](https://deepinfra.com/) an
-2. Gehen Sie zu Dashboard / Keys und generieren Sie einen Schlüssel oder verwenden Sie den automatisch erstellten
+1. Melden Sie sich unter [deepinfra.com](https://deepinfra.com/) an.
+2. Gehen Sie zu Dashboard / Keys und generieren Sie einen Schlüssel oder verwenden Sie den automatisch erstellten Schlüssel.
 
 ## CLI-Einrichtung
 
@@ -37,13 +36,13 @@ openclaw gateway restart
 openclaw onboard --deepinfra-api-key <key>
 ```
 
-Oder setzen Sie die Umgebungsvariable:
+Alternativ können Sie die Umgebungsvariable festlegen:
 
 ```bash
 export DEEPINFRA_API_KEY="<your-deepinfra-api-key>" # pragma: allowlist secret
 ```
 
-## Konfigurationsausschnitt
+## Konfigurationsbeispiel
 
 ```json5
 {
@@ -59,23 +58,23 @@ export DEEPINFRA_API_KEY="<your-deepinfra-api-key>" # pragma: allowlist secret
 ## Unterstützte Bereiche
 
 Chat, Bildgenerierung und Videogenerierung aktualisieren ihre Modellkataloge
-live über `https://api.deepinfra.com/v1/openai/models?sort_by=openclaw&filter=with_meta`,
-sobald `DEEPINFRA_API_KEY` konfiguriert ist. Andere Bereiche verwenden die nachstehenden
-statischen Standardwerte, bis sie auf denselben Live-Katalog umgestellt werden.
+direkt über `https://api.deepinfra.com/v1/openai/models?sort_by=openclaw&filter=with_meta`,
+sobald `DEEPINFRA_API_KEY` konfiguriert ist. Andere Bereiche verwenden die unten aufgeführten
+statischen Standardwerte, bis sie denselben Live-Katalog verwenden.
 
-| Bereich                  | Standardmodell                                                                                         | OpenClaw-Konfiguration/-Tool                              |
-| ------------------------ | ------------------------------------------------------------------------------------------------------ | -------------------------------------------------------- |
-| Chat / Modell-Provider   | erster mit Chat gekennzeichneter Eintrag aus dem Live-Katalog (statischer Fallback `deepseek-ai/DeepSeek-V4-Flash`) | `agents.defaults.model`                                  |
-| Bildgenerierung/-bearbeitung | erster mit `image-gen` gekennzeichneter Eintrag aus dem Live-Katalog (statischer Fallback `black-forest-labs/FLUX-1-schnell`) | `image_generate`, `agents.defaults.imageGenerationModel` |
-| Medienverständnis        | `moonshotai/Kimi-K2.5` für Bilder                                                                      | Verständnis eingehender Bilder                           |
-| Sprache-zu-Text          | `openai/whisper-large-v3-turbo`                                                                        | Transkription eingehender Audiodaten                      |
-| Text-zu-Sprache          | `hexgrad/Kokoro-82M`                                                                                   | `messages.tts.provider: "deepinfra"`                     |
-| Videogenerierung         | statischer Fallback `Pixverse/Pixverse-T2V` (derzeit keine Live-Einträge für Videogenerierung von DeepInfra) | `video_generate`, `agents.defaults.videoGenerationModel` |
-| Speicher-Embeddings      | `BAAI/bge-m3`                                                                                          | `agents.defaults.memorySearch.provider: "deepinfra"`     |
+| Bereich                    | Standardmodell                                                                                                    | OpenClaw-Konfiguration/-Tool                              |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| Chat / Modell-Provider     | erster mit `chat` gekennzeichneter Eintrag aus dem Live-Katalog (statischer Fallback: `deepseek-ai/DeepSeek-V4-Flash`) | `agents.defaults.model`                                  |
+| Bildgenerierung/-bearbeitung | erster mit `image-gen` gekennzeichneter Eintrag aus dem Live-Katalog (statischer Fallback: `black-forest-labs/FLUX-1-schnell`) | `image_generate`, `agents.defaults.imageGenerationModel` |
+| Medienverständnis          | `moonshotai/Kimi-K2.5` für Bilder                                                                                | Verständnis eingehender Bilder                           |
+| Sprache-zu-Text            | `openai/whisper-large-v3-turbo`                                                                                  | Transkription eingehender Audiodaten                      |
+| Text-zu-Sprache            | `hexgrad/Kokoro-82M`                                                                                             | `messages.tts.provider: "deepinfra"`                     |
+| Videogenerierung           | statischer Fallback: `Pixverse/Pixverse-T2V` (DeepInfra liefert derzeit keine Live-Einträge mit `video-gen`)      | `video_generate`, `agents.defaults.videoGenerationModel` |
+| Speicher-Embeddings        | `BAAI/bge-m3`                                                                                                    | `agents.defaults.memorySearch.provider: "deepinfra"`     |
 
-DeepInfra stellt außerdem Neusortierung, Klassifizierung, Objekterkennung und weitere
-native Modelltypen bereit. OpenClaw verfügt noch über keinen Provider-Vertrag für diese Kategorien,
-daher registriert dieses Plugin sie nicht.
+DeepInfra stellt außerdem Re-Ranking, Klassifizierung, Objekterkennung und weitere
+native Modelltypen bereit. OpenClaw verfügt für diese Kategorien noch über keinen
+Provider-Vertrag, daher registriert dieses Plugin sie nicht.
 
 ## Verfügbare Modelle
 

@@ -1,13 +1,13 @@
 ---
 read_when:
-    - タスクごとのプロンプトなしで実行される自律エージェントワークフローの設定
-    - エージェントが独立して実行できることと、人間の承認が必要なことを定義する
-    - 明確な境界とエスカレーションルールでマルチプログラムエージェントを構成する
-summary: 自律エージェントプログラムの恒久的な運用権限を定義する
-title: 常時指示
+    - タスクごとのプロンプト入力なしで実行される自律エージェントワークフローの設定
+    - エージェントが独自に実行できることと、人間の承認が必要なことを定義する
+    - 明確な境界とエスカレーションルールによるマルチプログラムエージェントの構成
+summary: 自律型エージェントプログラムの恒久的な運用権限を定義する
+title: 常設指示
 x-i18n:
-    generated_at: "2026-07-05T11:01:16Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T21:59:17Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 9e7ad622efe734facc9dc3716f5ee7f57ed3923499db78730bda234a5c62ad80
@@ -15,69 +15,69 @@ x-i18n:
     workflow: 16
 ---
 
-常設指示は、定義済みプログラムに対する**永続的な運用権限**をエージェントに付与します。タスクごとにエージェントへ指示する代わりに、明確なスコープ、トリガー、エスカレーションルールを持つプログラムを定義し、エージェントはその境界内で自律的に実行します。「週次レポートはあなたの担当です。毎週金曜日に作成して送信し、何か異常に見える場合だけエスカレーションしてください。」
+継続指示は、定義されたプログラムについてエージェントに**恒久的な実行権限**を付与します。タスクごとにエージェントへ指示する代わりに、明確な範囲、トリガー、エスカレーションルールを持つプログラムを定義すると、エージェントはその境界内で自律的に実行します。「週次レポートはあなたの担当です。毎週金曜日に作成して送信し、何か問題がありそうな場合にのみエスカレーションしてください。」
 
-## 常設指示が必要な理由
+## 継続指示が必要な理由
 
-**常設指示がない場合:** すべてのタスクでエージェントに指示する必要があり、定型作業は忘れられたり遅れたりし、あなた自身がボトルネックになります。
+**継続指示がない場合：** タスクごとにエージェントへ指示する必要があり、定型作業が忘れられたり遅延したりして、あなた自身がボトルネックになります。
 
-**常設指示がある場合:** エージェントは定義された境界内で自律的に実行し、定型作業はスケジュール通りに行われ、あなたが関与するのは例外と承認だけになります。
+**継続指示がある場合：** エージェントは定義された境界内で自律的に実行し、定型作業はスケジュールどおりに行われ、例外や承認が必要な場合にのみあなたが関与します。
 
 ## 仕組み
 
-常設指示は、[エージェントワークスペース](/ja-JP/concepts/agent-workspace)ファイルで定義されます。推奨される方法は、エージェントが常にコンテキスト内に保持できるように、`AGENTS.md`（各セッションで自動注入されます）へ直接含めることです。より大規模な設定では、`standing-orders.md` のような専用ファイルに配置し、`AGENTS.md` から参照することもできます。
+継続指示は[エージェントワークスペース](/ja-JP/concepts/agent-workspace)のファイルで定義します。推奨される方法は、エージェントが常にコンテキストとして参照できるよう、セッションごとに自動挿入される `AGENTS.md` に直接記載することです。大規模な設定では、`standing-orders.md` のような専用ファイルに配置し、`AGENTS.md` から参照することもできます。
 
-各プログラムは次を指定します。
+各プログラムでは、以下を指定します。
 
-1. **スコープ** - エージェントに許可されていること
-2. **トリガー** - 実行するタイミング（スケジュール、イベント、または条件）
-3. **承認ゲート** - 実行前に人間の承認が必要なもの
-4. **エスカレーションルール** - 停止して助けを求めるタイミング
+1. **範囲** - エージェントに許可される操作
+2. **トリガー** - 実行するタイミング（スケジュール、イベント、条件）
+3. **承認ゲート** - 実行前に人間の承認が必要な操作
+4. **エスカレーションルール** - 処理を停止して支援を求めるタイミング
 
-エージェントは、ワークスペースのブートストラップファイルを通じて各セッションでこれらの指示を読み込み（自動注入されるファイルの完全なリストは[エージェントワークスペース](/ja-JP/concepts/agent-workspace)を参照）、時間ベースの強制には[Cron ジョブ](/ja-JP/automation/cron-jobs)と組み合わせて実行します。
+エージェントは、ワークスペースのブートストラップファイルを介してセッションごとにこれらの指示を読み込み（自動挿入されるファイルの完全な一覧は[エージェントワークスペース](/ja-JP/concepts/agent-workspace)を参照）、時間ベースの実行を強制する[Cronジョブ](/ja-JP/automation/cron-jobs)と組み合わせて実行します。
 
 <Tip>
-各セッションで確実に読み込まれるように、常設指示は `AGENTS.md` に入れてください。ワークスペースのブートストラップは `AGENTS.md`、`SOUL.md`、`TOOLS.md`、`IDENTITY.md`、`USER.md`、`HEARTBEAT.md`、`BOOTSTRAP.md`、`MEMORY.md` を自動注入しますが、サブディレクトリ内の任意のファイルは対象外です。
+セッションごとに確実に読み込まれるよう、継続指示は `AGENTS.md` に記載してください。ワークスペースのブートストラップでは、`AGENTS.md`、`SOUL.md`、`TOOLS.md`、`IDENTITY.md`、`USER.md`、`HEARTBEAT.md`、`BOOTSTRAP.md`、`MEMORY.md` が自動的に挿入されますが、サブディレクトリ内の任意のファイルは挿入されません。
 </Tip>
 
-## 常設指示の構成
+## 継続指示の構成
 
 ```markdown
-## Program: Weekly Status Report
+## プログラム：週次ステータスレポート
 
-**Authority:** Compile data, generate report, deliver to stakeholders
-**Trigger:** Every Friday at 4 PM (enforced via cron job)
-**Approval gate:** None for standard reports. Flag anomalies for human review.
-**Escalation:** If data source is unavailable or metrics look unusual (>2σ from norm)
+**権限：** データを集計し、レポートを生成して、関係者に配信する
+**トリガー：** 毎週金曜日の午後4時（Cronジョブで強制）
+**承認ゲート：** 標準レポートには不要。異常は人間によるレビュー対象として報告する。
+**エスカレーション：** データソースが利用できない場合、または指標が通常と比べて異常に見える場合（平均との差が2σ超）
 
-### Execution steps
+### 実行手順
 
-1. Pull metrics from configured sources
-2. Compare to prior week and targets
-3. Generate report in Reports/weekly/YYYY-MM-DD.md
-4. Deliver summary via configured channel
-5. Log completion to Agent/Logs/
+1. 設定済みのソースから指標を取得する
+2. 前週および目標値と比較する
+3. Reports/weekly/YYYY-MM-DD.md にレポートを生成する
+4. 設定済みのチャネルで概要を配信する
+5. Agent/Logs/ に完了を記録する
 
-### What NOT to do
+### 実行してはいけないこと
 
-- Do not send reports to external parties
-- Do not modify source data
-- Do not skip delivery if metrics look bad - report accurately
+- 外部関係者にレポートを送信しない
+- ソースデータを変更しない
+- 指標が悪く見えても配信を省略せず、正確に報告する
 ```
 
-## 常設指示と Cron ジョブ
+## 継続指示とCronジョブの組み合わせ
 
-常設指示は、エージェントに許可されている**内容**を定義します。[Cron ジョブ](/ja-JP/automation/cron-jobs)は、それが発生する**タイミング**を定義します。これらは連携して動作します。
+継続指示は、エージェントに**何を**実行する権限があるかを定義します。[Cronジョブ](/ja-JP/automation/cron-jobs)は、それを**いつ**実行するかを定義します。両者は次のように連携します。
 
 ```text
-Standing Order: "You own the daily inbox triage"
+継続指示：「日次の受信トレイ整理はあなたの担当です」
     ↓
-Cron Job (8 AM daily): "Execute inbox triage per standing orders"
+Cronジョブ（毎日午前8時）：「継続指示に従って受信トレイを整理する」
     ↓
-Agent: Reads standing orders → executes steps → reports results
+エージェント：継続指示を読む → 手順を実行する → 結果を報告する
 ```
 
-Cron ジョブのプロンプトは、内容を重複して書くのではなく、常設指示を参照する必要があります。
+Cronジョブのプロンプトでは、継続指示の内容を重複して記載するのではなく、それを参照してください。
 
 ```bash
 openclaw cron add \
@@ -88,159 +88,159 @@ openclaw cron add \
   --announce \
   --channel imessage \
   --to "+1XXXXXXXXXX" \
-  --message "Execute daily inbox triage per standing orders. Check mail for new alerts. Parse, categorize, and persist each item. Report summary to owner. Escalate unknowns."
+  --message "継続指示に従って日次の受信トレイ整理を実行してください。新しいアラートがないかメールを確認してください。各項目を解析、分類し、永続化してください。概要を所有者に報告してください。不明なものはエスカレーションしてください。"
 ```
 
 ## 例
 
-### 例 1: コンテンツとソーシャルメディア（週次サイクル）
+### 例1：コンテンツとソーシャルメディア（週次サイクル）
 
 ```markdown
-## Program: Content & Social Media
+## プログラム：コンテンツとソーシャルメディア
 
-**Authority:** Draft content, schedule posts, compile engagement reports
-**Approval gate:** All posts require owner review for first 30 days, then standing approval
-**Trigger:** Weekly cycle (Monday review → mid-week drafts → Friday brief)
+**権限：** コンテンツの下書き、投稿のスケジュール設定、エンゲージメントレポートの作成
+**承認ゲート：** 最初の30日間はすべての投稿に所有者のレビューが必要で、その後は継続承認とする
+**トリガー：** 週次サイクル（月曜日にレビュー → 週半ばに下書き → 金曜日に概要報告）
 
-### Weekly cycle
+### 週次サイクル
 
-- **Monday:** Review platform metrics and audience engagement
-- **Tuesday-Thursday:** Draft social posts, create blog content
-- **Friday:** Compile weekly marketing brief → deliver to owner
+- **月曜日：** プラットフォームの指標とオーディエンスのエンゲージメントを確認する
+- **火曜日～木曜日：** ソーシャル投稿の下書きを作成し、ブログコンテンツを制作する
+- **金曜日：** 週次マーケティング概要を作成する → 所有者に配信する
 
-### Content rules
+### コンテンツルール
 
-- Voice must match the brand (see SOUL.md or brand voice guide)
-- Never identify as AI in public-facing content
-- Include metrics when available
-- Focus on value to audience, not self-promotion
+- 文体はブランドに合わせる必要がある（SOUL.md またはブランド文体ガイドを参照）
+- 公開コンテンツで自身をAIと明かさない
+- 利用可能な場合は指標を含める
+- 自己宣伝ではなく、オーディエンスへの価値に重点を置く
 ```
 
-### 例 2: 財務オペレーション（イベントトリガー）
+### 例2：財務業務（イベントトリガー型）
 
 ```markdown
-## Program: Financial Processing
+## プログラム：財務処理
 
-**Authority:** Process transaction data, generate reports, send summaries
-**Approval gate:** None for analysis. Recommendations require owner approval.
-**Trigger:** New data file detected OR scheduled monthly cycle
+**権限：** 取引データを処理し、レポートを生成して、概要を送信する
+**承認ゲート：** 分析には不要。提案には所有者の承認が必要。
+**トリガー：** 新しいデータファイルの検出、またはスケジュールされた月次サイクル
 
-### When new data arrives
+### 新しいデータを受信した場合
 
-1. Detect new file in designated input directory
-2. Parse and categorize all transactions
-3. Compare against budget targets
-4. Flag: unusual items, threshold breaches, new recurring charges
-5. Generate report in designated output directory
-6. Deliver summary to owner via configured channel
+1. 指定された入力ディレクトリで新しいファイルを検出する
+2. すべての取引を解析して分類する
+3. 予算目標と比較する
+4. 異常な項目、しきい値の超過、新しい定期請求を報告対象にする
+5. 指定された出力ディレクトリにレポートを生成する
+6. 設定済みのチャネルで所有者に概要を配信する
 
-### Escalation rules
+### エスカレーションルール
 
-- Single item > $500: immediate alert
-- Category > budget by 20%: flag in report
-- Unrecognizable transaction: ask owner for categorization
-- Failed processing after 2 retries: report failure, do not guess
+- 単一項目が500ドル超：即時に警告する
+- カテゴリが予算を20%超過：レポートで報告する
+- 識別できない取引：分類について所有者に確認する
+- 2回再試行しても処理に失敗：失敗を報告し、推測しない
 ```
 
-### 例 3: 監視とアラート（継続）
+### 例3：監視とアラート（継続的）
 
 ```markdown
-## Program: System Monitoring
+## プログラム：システム監視
 
-**Authority:** Check system health, restart services, send alerts
-**Approval gate:** Restart services automatically. Escalate if restart fails twice.
-**Trigger:** Every heartbeat cycle
+**権限：** システムの正常性を確認し、サービスを再起動して、アラートを送信する
+**承認ゲート：** サービスは自動的に再起動する。再起動に2回失敗した場合はエスカレーションする。
+**トリガー：** Heartbeatサイクルごと
 
-### Checks
+### 確認項目
 
-- Service health endpoints responding
-- Disk space above threshold
-- Pending tasks not stale (>24 hours)
-- Delivery channels operational
+- サービスの正常性エンドポイントが応答している
+- ディスク空き容量がしきい値を上回っている
+- 保留中のタスクが古くなっていない（24時間超）
+- 配信チャネルが動作している
 
-### Response matrix
+### 対応マトリクス
 
-| Condition        | Action                   | Escalate?                |
-| ---------------- | ------------------------ | ------------------------ |
-| Service down     | Restart automatically    | Only if restart fails 2x |
-| Disk space < 10% | Alert owner              | Yes                      |
-| Stale task > 24h | Remind owner             | No                       |
-| Channel offline  | Log and retry next cycle | If offline > 2 hours     |
+| 状態                 | 操作                         | エスカレーションするか |
+| -------------------- | ---------------------------- | ---------------------- |
+| サービス停止         | 自動的に再起動する           | 再起動に2回失敗した場合のみ |
+| ディスク空き容量10%未満 | 所有者に警告する           | はい                   |
+| 24時間超の古いタスク | 所有者に通知する             | いいえ                 |
+| チャネルがオフライン | 記録し、次のサイクルで再試行する | 2時間超オフラインの場合 |
 ```
 
 ## 実行・検証・報告パターン
 
-常設指示は、厳密な実行規律と組み合わせると最も効果的です。常設指示内のすべてのタスクは、このループに従う必要があります。
+継続指示は、厳格な実行規律と組み合わせることで最も効果を発揮します。継続指示内のすべてのタスクは、次のループに従う必要があります。
 
-1. **実行** - 実際の作業を行う（指示を認識するだけではない）
+1. **実行** - 実際の作業を行う（指示を確認するだけで済ませない）
 2. **検証** - 結果が正しいことを確認する（ファイルが存在する、メッセージが配信された、データが解析された）
-3. **報告** - 何を行い、何を検証したかをオーナーに伝える
+3. **報告** - 実行した内容と検証した内容を所有者に伝える
 
 ```markdown
-### Execution rules
+### 実行ルール
 
-- Every task follows Execute-Verify-Report. No exceptions.
-- "I'll do that" is not execution. Do it, then report.
-- "Done" without verification is not acceptable. Prove it.
-- If execution fails: retry once with adjusted approach.
-- If still fails: report failure with diagnosis. Never silently fail.
-- Never retry indefinitely - 3 attempts max, then escalate.
+- すべてのタスクは「実行・検証・報告」に従う。例外はない。
+- 「対応します」は実行ではない。実行してから報告する。
+- 検証なしの「完了」は認められない。証明する。
+- 実行に失敗した場合：方法を調整して1回再試行する。
+- それでも失敗する場合：診断結果とともに失敗を報告する。黙って失敗しない。
+- 無期限に再試行しない。最大3回試行し、その後エスカレーションする。
 ```
 
-このパターンは、タスクを完了せずに認識だけするという、エージェントの最も一般的な失敗モードを防ぎます。
+このパターンにより、タスクを完了せずに確認だけを返すという、最も一般的なエージェントの失敗を防ぎます。
 
-## 複数プログラムのアーキテクチャ
+## 複数プログラムの構成
 
-複数の関心事を管理するエージェントでは、明確な境界を持つ個別のプログラムとして常設指示を整理します。
+複数の領域を管理するエージェントでは、明確な境界を持つ個別のプログラムとして継続指示を整理します。
 
 ```markdown
-## Program 1: [Domain A] (Weekly)
+## プログラム1：[領域A]（週次）
 
 ...
 
-## Program 2: [Domain B] (Monthly + On-Demand)
+## プログラム2：[領域B]（月次＋オンデマンド）
 
 ...
 
-## Program 3: [Domain C] (As-Needed)
+## プログラム3：[領域C]（必要時）
 
 ...
 
-## Escalation Rules (All Programs)
+## エスカレーションルール（全プログラム）
 
-- [Common escalation criteria]
-- [Approval gates that apply across programs]
+- [共通のエスカレーション基準]
+- [プログラム全体に適用される承認ゲート]
 ```
 
-各プログラムには次が必要です。
+各プログラムには以下が必要です。
 
-- 独自の**トリガー頻度**（週次、月次、イベント駆動、継続）
-- 独自の**承認ゲート**（より多くの監督を必要とするプログラムもあります）
-- 明確な**境界**（エージェントは、あるプログラムがどこで終わり、別のプログラムがどこから始まるかを把握している必要があります）
+- 固有の**トリガー頻度**（週次、月次、イベント駆動、継続的）
+- 固有の**承認ゲート**（他のプログラムより多くの監督を必要とするものもある）
+- 明確な**境界**（エージェントが、あるプログラムの終了位置と別のプログラムの開始位置を把握できること）
 
 ## ベストプラクティス
 
 ### 推奨事項
 
-- 狭い権限から始め、信頼が築かれるにつれて拡張する
-- 高リスクなアクションには明示的な承認ゲートを定義する
-- 「やってはいけないこと」セクションを含める - 権限と同じくらい境界も重要です
-- 信頼性の高い時間ベースの実行には Cron ジョブと組み合わせる
-- エージェントログを毎週確認し、常設指示が守られていることを検証する
-- ニーズの変化に合わせて常設指示を更新する - それらは生きた文書です
+- 限定的な権限から始め、信頼の構築に応じて拡大する
+- リスクの高い操作には明示的な承認ゲートを定義する
+- 「実行してはいけないこと」セクションを含める。境界は権限と同じくらい重要である
+- 確実な時間ベースの実行のためにCronジョブと組み合わせる
+- 継続指示が守られていることを確認するため、エージェントのログを毎週レビューする
+- ニーズの変化に応じて継続指示を更新する。継続指示は継続的に更新される文書である
 
 ### 避けること
 
-- 初日に広範な権限を付与する（「最善だと思うことを何でもして」）
-- エスカレーションルールを省略する - すべてのプログラムには「停止して尋ねるタイミング」の条項が必要です
-- エージェントが口頭指示を覚えていると想定する - すべてをファイルに入れる
-- 1つのプログラムに関心事を混在させる - 別々のドメインには別々のプログラムを用意する
-- Cron ジョブで強制することを忘れる - トリガーのない常設指示は提案になります
+- 初日から広範な権限を付与する（「最善だと思うことを何でも実行する」）
+- エスカレーションルールを省略する。すべてのプログラムに「いつ停止して確認するか」という条項が必要である
+- エージェントが口頭の指示を覚えていると想定する。すべてファイルに記載する
+- 1つのプログラムに複数の領域を混在させる。領域ごとにプログラムを分ける
+- Cronジョブによる強制を忘れる。トリガーのない継続指示は単なる提案になる
 
-## 関連
+## 関連項目
 
-- [自動化](/ja-JP/automation): すべての自動化メカニズムの概要。
-- [Cron ジョブ](/ja-JP/automation/cron-jobs): 常設指示のスケジュール強制。
-- [フック](/ja-JP/automation/hooks): エージェントライフサイクルイベントのイベント駆動スクリプト。
-- [Webhooks](/ja-JP/automation/cron-jobs#webhooks): 受信 HTTP イベントトリガー。
-- [エージェントワークスペース](/ja-JP/concepts/agent-workspace): 常設指示が置かれる場所。自動注入されるブートストラップファイル（`AGENTS.md`、`SOUL.md` など）の完全なリストを含みます。
+- [自動化](/ja-JP/automation)：すべての自動化メカニズムの概要。
+- [Cronジョブ](/ja-JP/automation/cron-jobs)：継続指示のスケジュールを強制します。
+- [フック](/ja-JP/automation/hooks)：エージェントのライフサイクルイベントに対応するイベント駆動型スクリプト。
+- [Webhook](/ja-JP/automation/cron-jobs#webhooks)：受信HTTPイベントのトリガー。
+- [エージェントワークスペース](/ja-JP/concepts/agent-workspace)：継続指示を配置する場所と、自動挿入されるブートストラップファイル（`AGENTS.md`、`SOUL.md` など）の完全な一覧。

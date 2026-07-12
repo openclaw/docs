@@ -1,41 +1,36 @@
 ---
 read_when:
-    - Xây dựng công cụ phía máy chủ không thể sử dụng máy khách RPC WebSocket của Gateway
-    - Cung cấp tự động hóa quản trị Gateway phía sau một ingress riêng tư đáng tin cậy
-    - Kiểm tra mô hình bảo mật cho quyền truy cập HTTP vào các phương thức Gateway
-summary: Cung cấp các phương thức mặt phẳng điều khiển Gateway đã chọn thông qua plugin admin-http-rpc đi kèm, chọn tham gia
+    - Xây dựng công cụ phía máy chủ không thể sử dụng trình khách RPC WebSocket của Gateway
+    - Cung cấp tính năng tự động hóa quản trị Gateway qua một điểm truy cập đầu vào riêng tư và đáng tin cậy
+    - Kiểm tra mô hình bảo mật cho việc truy cập các phương thức Gateway qua HTTP
+summary: Cung cấp các phương thức mặt phẳng điều khiển Gateway đã chọn thông qua Plugin admin-http-rpc đi kèm, có cơ chế tham gia tùy chọn
 title: Plugin RPC HTTP quản trị
 x-i18n:
-    generated_at: "2026-06-27T17:43:19Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:08:32Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f701ef6be7457cd518ecb80b7ec5dade61bb057d62f4ca90984a4c1aa8fdf700
+    source_hash: 0709081efd0ce65cef7edac54df9a71978cbad17e2b25df83ac9075de938376c
     source_path: plugins/admin-http-rpc.md
     workflow: 16
 ---
 
-Plugin `admin-http-rpc` đi kèm cung cấp các phương thức mặt phẳng điều khiển Gateway được chọn qua HTTP cho tự động hóa máy chủ đáng tin cậy không thể dùng ứng dụng khách RPC WebSocket Gateway thông thường.
+Plugin `admin-http-rpc` đi kèm cung cấp qua HTTP một tập hợp các phương thức mặt phẳng điều khiển của Gateway được đưa vào danh sách cho phép, dành cho hoạt động tự động hóa đáng tin cậy trên máy chủ không thể duy trì kết nối WebSocket với Gateway.
 
-Plugin này được bao gồm trong OpenClaw, nhưng mặc định bị tắt. Khi bị tắt, tuyến không được đăng ký. Khi được bật, nó thêm:
+Plugin này được phân phối cùng OpenClaw nhưng mặc định bị vô hiệu hóa; khi bị vô hiệu hóa, tuyến không được đăng ký. Khi được bật, plugin thêm `POST /api/v1/admin/rpc` trên cùng trình lắng nghe với Gateway (`http://<gateway-host>:<port>/api/v1/admin/rpc`).
 
-- `POST /api/v1/admin/rpc`
-- cùng listener với Gateway: `http://<gateway-host>:<port>/api/v1/admin/rpc`
+Chỉ bật plugin này cho công cụ riêng tư trên máy chủ, hoạt động tự động hóa trong tailnet hoặc một điểm truy cập nội bộ đáng tin cậy. Tuyệt đối không để tuyến này truy cập trực tiếp từ Internet công cộng.
 
-Chỉ bật nó cho công cụ máy chủ riêng tư, tự động hóa tailnet, hoặc một ingress nội bộ đáng tin cậy. Không để lộ trực tiếp tuyến này ra internet công cộng.
+## Trước khi bật
 
-## Trước khi bạn bật nó
+HTTP RPC quản trị là một bề mặt mặt phẳng điều khiển đầy đủ dành cho người vận hành: bất kỳ bên gọi nào vượt qua xác thực HTTP của Gateway đều có thể gọi các phương thức trong danh sách cho phép bên dưới. Chỉ bật khi đáp ứng tất cả các điều kiện sau:
 
-RPC HTTP quản trị là một bề mặt mặt phẳng điều khiển đầy đủ cho người vận hành. Bất kỳ caller nào vượt qua xác thực HTTP của Gateway đều có thể gọi các phương thức trong allowlist trên trang này.
+- Bên gọi được tin cậy để vận hành Gateway.
+- Bên gọi không thể sử dụng máy khách RPC WebSocket.
+- Tuyến chỉ có thể truy cập qua local loopback, tailnet hoặc một điểm truy cập riêng tư có xác thực.
+- Bạn đã xem xét các phương thức được phép và chúng phù hợp với hoạt động tự động hóa dự định chạy.
 
-Hãy dùng nó khi tất cả điều sau đều đúng:
-
-- Caller được tin cậy để vận hành Gateway.
-- Caller không thể dùng ứng dụng khách RPC WebSocket.
-- Tuyến chỉ có thể truy cập trên loopback, tailnet, hoặc một ingress riêng tư đã xác thực.
-- Bạn đã rà soát các phương thức được phép và chúng khớp với tự động hóa bạn định chạy.
-
-Dùng đường dẫn RPC WebSocket cho các ứng dụng khách OpenClaw và công cụ tương tác có thể giữ kết nối WebSocket Gateway mở.
+Đối với các máy khách OpenClaw và công cụ tương tác có thể duy trì kết nối WebSocket với Gateway, hãy sử dụng RPC WebSocket.
 
 ## Bật
 
@@ -48,7 +43,7 @@ Bật Plugin đi kèm:
     openclaw gateway restart
     ```
   </Tab>
-  <Tab title="Config">
+  <Tab title="Cấu hình">
     ```json5
     {
       plugins: {
@@ -61,9 +56,9 @@ Bật Plugin đi kèm:
   </Tab>
 </Tabs>
 
-Tuyến được đăng ký trong lúc Plugin khởi động. Khởi động lại Gateway sau khi thay đổi cấu hình Plugin.
+Tuyến được đăng ký khi Plugin khởi động, vì vậy hãy khởi động lại Gateway sau khi thay đổi cấu hình Plugin.
 
-Tắt nó khi bạn không còn cần bề mặt HTTP:
+Vô hiệu hóa Plugin khi bạn không còn cần bề mặt HTTP:
 
 ```bash
 openclaw plugins disable admin-http-rpc
@@ -72,7 +67,7 @@ openclaw gateway restart
 
 ## Xác minh tuyến
 
-Dùng `health` làm yêu cầu an toàn nhỏ nhất:
+Sử dụng `health` làm yêu cầu an toàn nhỏ nhất:
 
 ```bash
 curl -sS http://<gateway-host>:<port>/api/v1/admin/rpc \
@@ -93,33 +88,30 @@ Phản hồi thành công có `ok: true`:
 }
 ```
 
-Khi Plugin bị tắt, tuyến trả về `404` vì nó không được đăng ký.
+Khi Plugin bị vô hiệu hóa, tuyến trả về `404` vì chưa được đăng ký.
 
 ## Xác thực
 
-Tuyến Plugin dùng xác thực HTTP của Gateway.
+Tuyến của Plugin sử dụng xác thực HTTP của Gateway.
 
-Các đường dẫn xác thực phổ biến:
+Các phương thức xác thực phổ biến:
 
-- xác thực bí mật dùng chung (`gateway.auth.mode="token"` hoặc `"password"`): `Authorization: Bearer <token-or-password>`
-- xác thực HTTP mang danh tính đáng tin cậy (`gateway.auth.mode="trusted-proxy"`): định tuyến qua proxy nhận biết danh tính đã cấu hình và để nó chèn các header danh tính bắt buộc
-- xác thực mở qua ingress riêng tư (`gateway.auth.mode="none"`): không cần header xác thực
+- xác thực bằng bí mật dùng chung (`gateway.auth.mode="token"` hoặc `"password"`): `Authorization: Bearer <token-or-password>`
+- xác thực HTTP mang danh tính đáng tin cậy (`gateway.auth.mode="trusted-proxy"`): định tuyến qua proxy nhận biết danh tính đã cấu hình và để proxy chèn các tiêu đề danh tính bắt buộc
+- xác thực mở qua điểm truy cập riêng tư (`gateway.auth.mode="none"`): không yêu cầu tiêu đề xác thực
 
 ## Mô hình bảo mật
 
-Hãy xem Plugin này như một bề mặt đầy đủ cho người vận hành Gateway.
+Hãy xem Plugin này là một bề mặt vận hành Gateway đầy đủ.
 
-- Bật Plugin là chủ ý cung cấp quyền truy cập vào các phương thức RPC quản trị trong allowlist tại `/api/v1/admin/rpc`.
-- Plugin khai báo hợp đồng manifest dành riêng `contracts.gatewayMethodDispatch: ["authenticated-request"]` để tuyến HTTP đã xác thực bởi Gateway của nó có thể dispatch các phương thức mặt phẳng điều khiển trong tiến trình.
-- Xác thực bearer bằng bí mật dùng chung chứng minh quyền sở hữu bí mật của người vận hành Gateway.
-- Với xác thực `token` và `password`, các header `x-openclaw-scopes` hẹp hơn bị bỏ qua và các mặc định đầy đủ thông thường của người vận hành được khôi phục.
-- Các chế độ HTTP mang danh tính đáng tin cậy tôn trọng `x-openclaw-scopes` khi có mặt.
-- `gateway.auth.mode="none"` nghĩa là tuyến này không được xác thực nếu Plugin được bật. Chỉ dùng chế độ đó phía sau một ingress riêng tư mà bạn hoàn toàn tin cậy.
-- Yêu cầu dispatch qua cùng các handler phương thức Gateway và kiểm tra phạm vi như RPC WebSocket sau khi xác thực tuyến Plugin vượt qua.
-- Giữ tuyến này trên loopback, tailnet, hoặc một ingress riêng tư đáng tin cậy. Không để lộ trực tiếp nó ra internet công cộng.
-- Hợp đồng manifest Plugin không phải là sandbox. Chúng ngăn việc vô tình dùng các helper SDK dành riêng; các Plugin đáng tin cậy vẫn chạy trong tiến trình Gateway.
-
-Dùng các gateway riêng khi caller vượt qua ranh giới tin cậy.
+- Việc bật Plugin sẽ chủ ý cung cấp quyền truy cập vào các phương thức RPC quản trị trong danh sách cho phép tại `/api/v1/admin/rpc`.
+- Plugin khai báo hợp đồng manifest dành riêng `contracts.gatewayMethodDispatch: ["authenticated-request"]`, cho phép tuyến HTTP đã được Gateway xác thực của Plugin điều phối các phương thức mặt phẳng điều khiển trong cùng tiến trình. Đây không phải là hộp cát: hợp đồng này ngăn việc vô tình sử dụng các trình trợ giúp SDK dành riêng, nhưng các Plugin đáng tin cậy vẫn chạy trong tiến trình Gateway.
+- Xác thực bearer bằng bí mật dùng chung (chế độ `token`/`password`) chứng minh việc sở hữu bí mật của người vận hành Gateway; các tiêu đề `x-openclaw-scopes` có phạm vi hẹp hơn bị bỏ qua trên đường dẫn đó và các mặc định đầy đủ thông thường dành cho người vận hành được khôi phục.
+- Xác thực HTTP mang danh tính đáng tin cậy (chế độ `trusted-proxy`) tuân theo `x-openclaw-scopes` khi có.
+- `gateway.auth.mode="none"` có nghĩa là tuyến này không được xác thực nếu Plugin được bật. Chỉ sử dụng chế độ này phía sau một điểm truy cập riêng tư mà bạn hoàn toàn tin cậy.
+- Sau khi xác thực tuyến của Plugin thành công, các yêu cầu được điều phối qua cùng trình xử lý phương thức và kiểm tra phạm vi của Gateway như RPC WebSocket.
+- Tuyến vẫn có thể truy cập trong thời gian thuê tạm dừng đã được chuẩn bị. Việc xác thực yêu cầu có giới hạn và phản hồi khám phá `commands.list` cục bộ vẫn khả dụng. Trong số các phương thức được điều phối vào Gateway, chỉ `gateway.suspend.prepare`, `gateway.suspend.status` và `gateway.suspend.resume` có thể chạy khi việc tiếp nhận bị đóng; các phương thức khác trong danh sách cho phép trả về phản hồi `UNAVAILABLE` có thể thử lại thông thường của Gateway.
+- Giữ tuyến này trên local loopback, tailnet hoặc một điểm truy cập riêng tư đáng tin cậy. Không để tuyến truy cập trực tiếp từ Internet công cộng. Sử dụng các Gateway riêng biệt khi các bên gọi vượt qua ranh giới tin cậy.
 
 ## Yêu cầu
 
@@ -139,15 +131,15 @@ Content-Type: application/json
 
 Các trường:
 
-- `id` (chuỗi, tùy chọn): được sao chép vào phản hồi. Một UUID được tạo khi bỏ qua.
+- `id` (chuỗi, không bắt buộc): được sao chép vào phản hồi. Một UUID được tạo nếu bỏ qua.
 - `method` (chuỗi, bắt buộc): tên phương thức Gateway được phép.
-- `params` (bất kỳ, tùy chọn): tham số riêng cho phương thức.
+- `params` (bất kỳ, không bắt buộc): các tham số dành riêng cho phương thức.
 
-Kích thước thân yêu cầu tối đa mặc định là 1 MB.
+Kích thước nội dung yêu cầu tối đa mặc định là 1 MB.
 
 ## Phản hồi
 
-Phản hồi thành công dùng dạng RPC Gateway:
+Phản hồi thành công sử dụng cấu trúc RPC của Gateway:
 
 ```json
 {
@@ -157,7 +149,7 @@ Phản hồi thành công dùng dạng RPC Gateway:
 }
 ```
 
-Lỗi phương thức Gateway dùng:
+Lỗi phương thức Gateway sử dụng:
 
 ```json
 {
@@ -170,55 +162,72 @@ Lỗi phương thức Gateway dùng:
 }
 ```
 
-Trạng thái HTTP đi theo lỗi Gateway khi có thể. Ví dụ, `INVALID_REQUEST` trả về `400`, và `UNAVAILABLE` trả về `503`.
+Trạng thái HTTP tương ứng với mã lỗi:
 
-## Phương thức được phép
+| Mã lỗi                     | Trạng thái HTTP |
+| -------------------------- | --------------- |
+| `INVALID_REQUEST`          | 400             |
+| `APPROVAL_NOT_FOUND`       | 404             |
+| `NOT_LINKED`, `NOT_PAIRED` | 409             |
+| `UNAVAILABLE`              | 503             |
+| `AGENT_TIMEOUT`            | 504             |
+| bất kỳ mã nào khác         | 500             |
+
+## Các phương thức được phép
 
 - khám phá: `commands.list`
-  Trả về tên các phương thức RPC HTTP được Plugin này cho phép.
-- gateway: `health`, `status`, `logs.tail`, `usage.status`, `usage.cost`, `gateway.restart.request`
+  Trả về tên các phương thức HTTP RPC được Plugin này cho phép.
+- Gateway: `health`, `status`, `logs.tail`, `usage.status`, `usage.cost`, `gateway.restart.request`, `gateway.suspend.prepare`, `gateway.suspend.status`, `gateway.suspend.resume`
 - cấu hình: `config.get`, `config.schema`, `config.schema.lookup`, `config.set`, `config.patch`, `config.apply`
 - kênh: `channels.status`, `channels.start`, `channels.stop`, `channels.logout`
 - web: `web.login.start`, `web.login.wait`
 - mô hình: `models.list`, `models.authStatus`
 - tác nhân: `agents.list`, `agents.create`, `agents.update`, `agents.delete`
 - phê duyệt: `exec.approvals.get`, `exec.approvals.set`, `exec.approvals.node.get`, `exec.approvals.node.set`
-- cron: `cron.status`, `cron.list`, `cron.get`, `cron.runs`, `cron.add`, `cron.update`, `cron.remove`, `cron.run`
+- Cron: `cron.status`, `cron.list`, `cron.get`, `cron.runs`, `cron.add`, `cron.update`, `cron.remove`, `cron.run`
 - thiết bị: `device.pair.list`, `device.pair.approve`, `device.pair.reject`, `device.pair.remove`
-- nút: `node.list`, `node.describe`, `node.pair.list`, `node.pair.approve`, `node.pair.reject`, `node.pair.remove`, `node.rename`
+- Node: `node.list`, `node.describe`, `node.pair.list`, `node.pair.approve`, `node.pair.reject`, `node.pair.remove`, `node.rename`
 - tác vụ: `tasks.list`, `tasks.get`, `tasks.cancel`
 - chẩn đoán: `doctor.memory.status`, `update.status`
 
-Các phương thức Gateway khác bị chặn cho đến khi chúng được chủ ý thêm vào.
+Các phương thức Gateway khác bị chặn cho đến khi được chủ ý thêm vào.
 
-## So sánh WebSocket
+## So sánh với WebSocket
 
-Đường dẫn RPC WebSocket Gateway thông thường vẫn là API mặt phẳng điều khiển được ưu tiên cho các ứng dụng khách OpenClaw. Chỉ dùng RPC HTTP quản trị cho công cụ máy chủ cần bề mặt HTTP yêu cầu/phản hồi.
+Đường dẫn RPC WebSocket thông thường của Gateway vẫn là API mặt phẳng điều khiển được ưu tiên cho các máy khách OpenClaw. Chỉ sử dụng HTTP RPC quản trị cho công cụ trên máy chủ cần bề mặt HTTP theo mô hình yêu cầu/phản hồi.
 
-Ứng dụng khách WebSocket dùng token chung mà không có danh tính thiết bị đáng tin cậy không thể tự khai báo phạm vi quản trị trong lúc kết nối. RPC HTTP quản trị chủ ý đi theo mô hình người vận hành HTTP đáng tin cậy hiện có: khi Plugin được bật, xác thực bearer bằng bí mật dùng chung được xem là quyền truy cập đầy đủ của người vận hành cho bề mặt quản trị này.
+Các máy khách WebSocket dùng token chung nhưng không có danh tính thiết bị đáng tin cậy không thể tự khai báo phạm vi quản trị khi kết nối. HTTP RPC quản trị chủ ý tuân theo mô hình người vận hành HTTP đáng tin cậy hiện có: khi Plugin được bật, xác thực bearer bằng bí mật dùng chung được xem là quyền truy cập đầy đủ của người vận hành đối với bề mặt quản trị này.
 
 ## Khắc phục sự cố
 
 `404 Not Found`
 
-: Plugin bị tắt, Gateway chưa khởi động lại kể từ khi bật nó, hoặc yêu cầu đang đi tới một tiến trình Gateway khác.
+: Plugin bị vô hiệu hóa, Gateway chưa được khởi động lại kể từ khi bật Plugin hoặc yêu cầu đang được gửi đến một tiến trình Gateway khác.
 
 `401 Unauthorized`
 
-: Yêu cầu không đáp ứng xác thực HTTP của Gateway. Kiểm tra bearer token hoặc các header danh tính trusted-proxy.
+: Yêu cầu không đáp ứng xác thực HTTP của Gateway. Kiểm tra bearer token hoặc các tiêu đề danh tính của trusted proxy.
+
+`405 Method Not Allowed`
+
+: Yêu cầu sử dụng phương thức khác `POST`.
+
+`413 Payload Too Large`
+
+: Nội dung yêu cầu vượt quá giới hạn 1 MB.
 
 `400 INVALID_REQUEST`
 
-: Thân yêu cầu không phải JSON hợp lệ, thiếu trường `method`, hoặc phương thức không nằm trong allowlist của Plugin.
+: Nội dung yêu cầu không phải JSON hợp lệ, thiếu trường `method`, phương thức không nằm trong danh sách cho phép của Plugin hoặc ID tiếp tục sau tạm dừng không khớp với thời gian thuê đang hoạt động.
 
 `503 UNAVAILABLE`
 
-: Handler phương thức Gateway không khả dụng. Kiểm tra nhật ký Gateway và thử lại sau khi Gateway hoàn tất khởi động.
+: Phương thức Gateway đang khởi động, bị giới hạn tốc độ, bị tạm dừng hoặc đang chờ một thao tác tạm dừng/tiếp tục cạnh tranh. Kiểm tra `error.details` khi có và tuân theo `error.retryAfterMs` trước khi thử lại.
 
 ## Liên quan
 
-- [Phạm vi người vận hành](/vi/gateway/operator-scopes)
+- [Phạm vi của người vận hành](/vi/gateway/operator-scopes)
 - [Bảo mật Gateway](/vi/gateway/security)
 - [Truy cập từ xa](/vi/gateway/remote)
-- [Manifest Plugin](/vi/plugins/manifest#contracts)
+- [Manifest Plugin](/vi/plugins/manifest#contracts-reference)
 - [Đường dẫn con SDK](/vi/plugins/sdk-subpaths)

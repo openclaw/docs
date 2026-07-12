@@ -1,11 +1,11 @@
 ---
 read_when:
     - Você está instalando, configurando ou auditando o plugin clickclack
-summary: Adiciona a superfície do canal Clickclack para enviar e receber mensagens do OpenClaw.
+summary: Adiciona a interface do canal Clickclack para enviar e receber mensagens do OpenClaw.
 title: Plugin Clickclack
 x-i18n:
-    generated_at: "2026-06-27T17:51:45Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T00:13:19Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: d939f5291de0510eaac361732f93fb79cac94656ac56a653f3c9e97394c6a9ae
@@ -15,17 +15,17 @@ x-i18n:
 
 # Plugin Clickclack
 
-Adiciona a superfície de canal Clickclack para enviar e receber mensagens do OpenClaw.
+Adiciona a interface do canal Clickclack para enviar e receber mensagens do OpenClaw.
 
 ## Distribuição
 
 - Pacote: `@openclaw/clickclack`
-- Rota de instalação: npm; ClawHub: `clawhub:@openclaw/clickclack`
+- Forma de instalação: npm; ClawHub: `clawhub:@openclaw/clickclack`
 
-## Superfície
+## Interface
 
 canais: clickclack
 
-## Docs relacionados
+## Documentação relacionada
 
 - [clickclack](/pt-BR/channels/clickclack)

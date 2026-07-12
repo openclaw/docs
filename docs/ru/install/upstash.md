@@ -2,48 +2,48 @@
 read_when:
     - Развертывание OpenClaw в Upstash Box
     - Вам нужна управляемая среда Linux для OpenClaw с доступом к панели управления через SSH-туннель
-summary: Размещение OpenClaw на Upstash Box с поддержанием активности и доступом через SSH-туннель
-title: Бокс Upstash
+summary: Разместите OpenClaw на Upstash Box с поддержанием активности и доступом через SSH-туннель
+title: Upstash Box
 x-i18n:
-    generated_at: "2026-06-28T23:08:51Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:30:23Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 06d2eb41e1beb0ab3145baa861e0bee7e3efef20324dc4e0e82ba08910937d20
+    source_hash: 29232c43e0e4940b7445ab8896c9ccd3e81d0fdbdd522d7f50cb8c8057ac18f0
     source_path: install/upstash.md
     workflow: 16
 ---
 
-Запустите постоянный OpenClaw Gateway в Upstash Box, управляемой среде Linux
-с поддержкой жизненного цикла keep-alive.
+Запустите постоянный Gateway OpenClaw в Upstash Box — управляемой среде Linux
+с поддержкой непрерывной работы.
 
 Для доступа к панели управления используйте SSH-туннель. Не открывайте порт Gateway напрямую
-в публичный интернет.
+для публичного доступа из интернета.
 
 ## Предварительные требования
 
 - Учетная запись Upstash
-- Upstash Box с keep-alive
-- SSH-клиент на вашем локальном компьютере
+- Upstash Box с поддержкой непрерывной работы
+- SSH-клиент на локальном компьютере
 
 ## Создание Box
 
-Создайте Box с keep-alive в Upstash Console. Запишите Box ID, например
-`right-flamingo-14486`, и API-ключ вашего Box.
+Создайте Box с поддержкой непрерывной работы в консоли Upstash. Запишите идентификатор Box (например,
+`right-flamingo-14486`) и API-ключ Box.
 
-Upstash поддерживает актуальное руководство по OpenClaw Box по адресу
+Актуальное руководство Upstash по настройке OpenClaw Box доступно на странице
 [Настройка OpenClaw](https://upstash.com/docs/box/guides/openclaw-setup).
 
 ## Подключение через SSH-туннель
 
-Пробросьте порт панели управления OpenClaw на свой локальный компьютер. При запросе используйте API-ключ вашего Box
-как пароль SSH:
+Перенаправьте порт панели управления OpenClaw на локальный компьютер. При появлении запроса
+используйте API-ключ Box в качестве пароля SSH:
 
 ```bash
 ssh -o ServerAliveInterval=15 -o ServerAliveCountMax=3 -L 18789:127.0.0.1:18789 <box-id>@us-east-1.box.upstash.com
 ```
 
-Параметры keepalive уменьшают разрывы неактивного туннеля во время онбординга.
+Параметры поддержания соединения уменьшают вероятность разрыва неактивного туннеля во время первоначальной настройки.
 
 ## Установка OpenClaw
 
@@ -53,13 +53,13 @@ ssh -o ServerAliveInterval=15 -o ServerAliveCountMax=3 -L 18789:127.0.0.1:18789 
 sudo npm install -g openclaw
 ```
 
-## Запуск онбординга
+## Первоначальная настройка
 
 ```bash
 openclaw onboard --install-daemon
 ```
 
-Следуйте подсказкам. Скопируйте URL панели управления и токен после завершения онбординга.
+Следуйте подсказкам. После завершения первоначальной настройки скопируйте URL-адрес панели управления и токен.
 
 ## Запуск Gateway
 
@@ -70,15 +70,16 @@ openclaw config set gateway.bind lan
 nohup openclaw gateway > gateway.log 2>&1 &
 ```
 
-При активном SSH-туннеле откройте URL панели управления локально:
+При активном SSH-туннеле откройте URL-адрес панели управления локально:
 
 ```text
 http://127.0.0.1:18789/#token=<your-token>
 ```
 
-## Автоперезапуск
+## Автоматический перезапуск
 
-Задайте эту команду как init-скрипт Box, чтобы Gateway перезапускался при запуске Box:
+Укажите эту команду в качестве сценария инициализации Box, чтобы Gateway перезапускался при запуске
+Box:
 
 ```bash
 nohup openclaw gateway > gateway.log 2>&1 &
@@ -86,17 +87,17 @@ nohup openclaw gateway > gateway.log 2>&1 &
 
 ## Устранение неполадок
 
-Если SSH зависает во время онбординга, переподключитесь с чистой конфигурацией SSH и
-keepalive:
+Если SSH зависает во время первоначальной настройки, повторно подключитесь с чистой конфигурацией SSH и
+параметрами поддержания соединения:
 
 ```bash
 ssh -F /dev/null -o ControlMaster=no -o ServerAliveInterval=15 -o ServerAliveCountMax=3 -L 18789:127.0.0.1:18789 <box-id>@us-east-1.box.upstash.com
 ```
 
-Это обходит устаревшие локальные настройки `~/.ssh/config` и поддерживает туннель активным
-во время периодов простоя сети.
+Это позволяет обойти устаревшие локальные настройки `~/.ssh/config` и поддерживать туннель активным
+в периоды отсутствия сетевой активности.
 
-## См. также
+## Связанные материалы
 
 - [Удаленный доступ](/ru/gateway/remote)
 - [Безопасность Gateway](/ru/gateway/security)

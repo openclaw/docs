@@ -1,64 +1,51 @@
 ---
 read_when:
-    - Weergave van assistentuitvoer wijzigen in de Control UI
-    - Debuggen van `[embed ...]`, gestructureerde media, antwoord- of audiopresentatierichtlijnen
-summary: Protocol voor rijke uitvoer voor gestructureerde media, embeds, audiohints en antwoorden
+    - De weergave van assistentuitvoer in de Control UI wijzigen
+    - Foutopsporing van `[embed ...]`, gestructureerde media-, antwoord- of audiopresentatierichtlijnen
+summary: Rich-outputprotocol voor gestructureerde media, embeds, audio-aanwijzingen en antwoorden
 title: Protocol voor rijke uitvoer
 x-i18n:
-    generated_at: "2026-06-27T18:19:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:17:08Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f5915f0ba29e6b0d27c99b1c7fdc632f1b58a4d96eae26bf6670205bd4fb88b1
+    source_hash: cbfe68f38c871f5f6d2811eb52b18d0143606f30283023ae96db64543eed95a1
     source_path: reference/rich-output-protocol.md
     workflow: 16
 ---
 
-Assistentuitvoer kan een kleine set leverings-/renderinstructies bevatten:
+Assistentuitvoer geeft instructies voor aflevering/weergave door via enkele speciale kanalen:
 
-- gestructureerde `mediaUrl`- / `mediaUrls`-velden voor levering van bijlagen
-- `[[audio_as_voice]]` voor hints voor audiopresentatie
-- `[[reply_to_current]]` / `[[reply_to:<id>]]` voor antwoordmetadata
-- `[embed ...]` voor rijke rendering in de Control UI
+- Gestructureerde velden `mediaUrl` / `mediaUrls` voor het afleveren van bijlagen.
+- `[[audio_as_voice]]` voor aanwijzingen over audioweergave.
+- `[[reply_to_current]]` / `[[reply_to:<id>]]` voor antwoordmetagegevens.
+- `[embed ...]` voor uitgebreide weergave in de Control UI.
 
-Externe mediabijlagen moeten openbare `https:`-URL's zijn. Gewone `http:`,
-loopback-, link-local-, privé- en interne hostnamen worden genegeerd als bijlage-
-instructies; server-side media-fetchers blijven hun eigen netwerkbeveiligingen afdwingen.
+Gestructureerde mediavelden en `[[...]]`-tags zijn afleveringsmetagegevens. `[embed ...]` is het afzonderlijke, uitsluitend voor het web bestemde pad voor uitgebreide weergave; het is geen media-alias.
 
-Lokale mediabijlagen kunnen absolute paden, workspace-relatieve paden of
-home-relatieve `~/`-paden gebruiken. Ze blijven vóór levering door het agent-bestandsleesbeleid en
-mediatypecontroles gaan.
+## Mediabijlagen
+
+Externe bijlagen moeten openbare `https:`-URL's zijn. `http:`, local loopback, link-local, privé- en interne hostnamen worden geweigerd als bijlage-instructies; mediaservers die media ophalen, passen daarnaast hun eigen netwerkbeveiligingen toe.
+
+Lokale bijlagen accepteren absolute paden, werkruimterelatieve paden of thuisdirectoryrelatieve `~/`-paden. Vóór aflevering worden ze nog steeds getoetst aan het bestandsleesbeleid van de agent en aan controles van het mediatype.
 
 <Warning>
-Geef geen tekstcommando's voor bijlagen uit vanuit tools, plugins, streamingblokken,
-browseruitvoer of berichtacties. Gebruik in plaats daarvan gestructureerde mediavelden.
-
-Geldige message-tool-payload:
+Genereer geen tekstopdrachten voor bijlagen vanuit tools, plugins, streamingblokken, browseruitvoer of berichtacties. Gebruik in plaats daarvan gestructureerde mediavelden:
 
 ```json
 { "message": "Here is your image.", "mediaUrl": "/workspace/image.png" }
 ```
 
-Verouderde tekst in het uiteindelijke assistentantwoord kan nog steeds worden genormaliseerd voor compatibiliteit, maar
-het is geen algemeen plugin-/toolprotocol.
+Oudere tekst in het definitieve antwoord kan voor compatibiliteit nog steeds worden genormaliseerd, maar dit is geen algemeen protocol voor plugins/tools.
 </Warning>
 
-Gewone Markdown-afbeeldingssyntaxis blijft standaard tekst. Kanalen die Markdown-afbeeldingsantwoorden bewust
-naar mediabijlagen mappen, kiezen daarvoor in hun uitgaande
-adapter; Telegram doet dit zodat `![alt](url)` nog steeds een mediaantwoord kan worden.
+Gewone Markdown-afbeeldingssyntaxis (`![alt](url)`) blijft standaard tekst. Kanalen die Markdown-afbeeldingen als media-antwoorden willen behandelen, schakelen dit in via hun uitgaande adapter; Telegram doet dit, zodat `![alt](url)` een mediabijlage wordt.
 
-Deze instructies staan los van elkaar. Gestructureerde mediavelden en antwoord-/spraaklabels zijn
-leveringsmetadata; `[embed ...]` is het rijke renderpad dat alleen voor het web geldt.
-
-Wanneer blokstreaming is ingeschakeld, moet media worden meegedragen op gestructureerde payloadvelden. Als dezelfde media-URL in een gestreamd blok wordt verzonden en herhaald in de
-uiteindelijke assistentpayload, levert OpenClaw de bijlage één keer en verwijdert het
-duplicaat uit de uiteindelijke payload.
+Wanneer blokstreaming is ingeschakeld, moeten media via gestructureerde payloadvelden worden verzonden. Als dezelfde media-URL in een gestreamd blok en opnieuw in de uiteindelijke assistentpayload voorkomt, levert OpenClaw deze eenmaal af en verwijdert het duplicaat uit de uiteindelijke payload.
 
 ## `[embed ...]`
 
-`[embed ...]` is de enige agent-gerichte syntaxis voor rijke rendering voor de Control UI.
-
-Zelfsluitend voorbeeld:
+`[embed ...]` is de enige op agents gerichte syntaxis voor uitgebreide weergave in de Control UI. Zelfsluitend voorbeeld:
 
 ```text
 [embed ref="cv_123" title="Status" /]
@@ -67,13 +54,12 @@ Zelfsluitend voorbeeld:
 Regels:
 
 - `[view ...]` is niet langer geldig voor nieuwe uitvoer.
-- Embed-shortcodes worden alleen in het assistentberichtoppervlak gerenderd.
-- Alleen URL-ondersteunde embeds worden gerenderd. Gebruik `ref="..."` of `url="..."`.
-- Inline HTML-embed-shortcodes in blokvorm worden niet gerenderd.
-- De web-UI verwijdert de shortcode uit zichtbare tekst en rendert de embed inline.
-- Gestructureerde media is geen embed-alias en moet niet worden gebruikt voor rijke embed-rendering.
+- Embed-shortcodes worden alleen weergegeven in het assistentberichtvlak.
+- Alleen door URL's ondersteunde embeds worden weergegeven; gebruik `ref="..."` of `url="..."`.
+- Inline HTML-embedshortcodes in blokvorm worden niet weergegeven.
+- De webinterface verwijdert de shortcode uit de zichtbare tekst en geeft de embed inline weer.
 
-## Opgeslagen renderstructuur
+## Opgeslagen weergavestructuur
 
 Het genormaliseerde/opgeslagen inhoudsblok van de assistent is een gestructureerd `canvas`-item:
 
@@ -92,7 +78,7 @@ Het genormaliseerde/opgeslagen inhoudsblok van de assistent is een gestructureer
 }
 ```
 
-Opgeslagen/gerenderde rijke blokken gebruiken deze `canvas`-structuur direct. `present_view` wordt niet herkend.
+`present_view` wordt niet herkend; opgeslagen/weergegeven uitgebreide blokken gebruiken altijd deze `canvas`-structuur.
 
 ## Gerelateerd
 

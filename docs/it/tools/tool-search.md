@@ -1,32 +1,33 @@
 ---
 read_when:
-    - Vuoi che gli agenti OpenClaw usino un ampio catalogo di strumenti senza aggiungere al prompt ogni schema degli strumenti
+    - Vuoi che gli agenti OpenClaw utilizzino un ampio catalogo di strumenti senza aggiungere al prompt lo schema di ogni strumento
     - Vuoi che gli strumenti OpenClaw, gli strumenti MCP e gli strumenti client siano esposti tramite un'unica superficie runtime compatta
     - Stai implementando o eseguendo il debug del rilevamento degli strumenti per le esecuzioni di OpenClaw
-summary: 'Ricerca strumenti: compatta i grandi cataloghi di strumenti OpenClaw dietro ricerca, descrizione e chiamata'
+summary: 'Ricerca degli strumenti: compatta gli ampi cataloghi di strumenti di OpenClaw dietro ricerca, descrizione e chiamata'
 title: Ricerca strumenti
 x-i18n:
-    generated_at: "2026-06-30T14:09:33Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:35:35Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 81036277d763be8040526b42c116b2e503589921a58b3f765ff38670554a751c
+    source_hash: 6608a2de3b8ec03d3bb182d5909bb73429f623af8cebb34bc38856cb9d8b8c32
     source_path: tools/tool-search.md
     workflow: 16
 ---
 
-Ricerca strumenti è una funzionalità sperimentale del runtime agente di OpenClaw. Offre agli agenti un modo
-compatto per scoprire e chiamare cataloghi di strumenti di grandi dimensioni. È utile quando l'esecuzione
-ha molti strumenti disponibili, ma è probabile che il modello ne abbia bisogno solo di pochi.
+Tool Search è una funzionalità sperimentale del runtime degli agenti OpenClaw. Offre agli agenti un unico
+modo compatto per individuare e chiamare ampi cataloghi di strumenti. È utile quando l'esecuzione
+dispone di molti strumenti, ma è probabile che il modello ne utilizzi solo alcuni.
 
-Questa pagina documenta la Ricerca strumenti di OpenClaw. Non è la superficie di
-ricerca strumenti o strumenti dinamici nativa di Codex. La modalità codice nativa di Codex, la ricerca strumenti, gli strumenti
-dinamici differiti e le chiamate a strumenti annidate sono superfici stabili dell'harness Codex e
+Questa pagina documenta Tool Search di OpenClaw. Non riguarda la ricerca degli strumenti
+nativa di Codex né la superficie degli strumenti dinamici. La modalità codice nativa di Codex, la ricerca degli strumenti, gli strumenti dinamici
+differiti e le chiamate annidate agli strumenti sono superfici stabili dell'harness Codex e
 non dipendono da `tools.toolSearch`.
 
-Quando è abilitata per le esecuzioni OpenClaw, il modello riceve per impostazione predefinita uno strumento `tool_search_code`.
-Quello strumento esegue un breve corpo JavaScript in un sottoprocesso Node
-isolato con un bridge `openclaw.tools`:
+Quando è abilitata per le esecuzioni OpenClaw, per impostazione predefinita il modello riceve un unico strumento `tool_search_code`,
+oltre agli eventuali strumenti solo diretti i cui risultati strutturati non possono attraversare
+il bridge compatto. Lo strumento di codice esegue un breve corpo JavaScript in un sottoprocesso
+Node isolato con un bridge `openclaw.tools`:
 
 ```js
 const hits = await openclaw.tools.search("create a GitHub issue");
@@ -37,82 +38,89 @@ return await openclaw.tools.call(tool.id, {
 });
 ```
 
-Il catalogo può includere strumenti OpenClaw, strumenti dei plugin, strumenti MCP e
-strumenti forniti dal client. Il modello non vede in anticipo ogni schema completo.
-Invece, cerca descrittori compatti, descrive uno strumento selezionato quando
-ha bisogno dello schema esatto e chiama quello strumento tramite OpenClaw.
+Il catalogo può includere strumenti OpenClaw idonei per il catalogo, strumenti dei plugin, strumenti MCP
+e strumenti forniti dal client. Il modello non vede anticipatamente tutti gli schemi catalogati.
+Cerca invece descrittori compatti, recupera la descrizione di uno strumento selezionato
+quando necessita dello schema esatto e chiama tale strumento tramite OpenClaw.
+Gli strumenti solo diretti rimangono visibili al modello e non vengono aggiunti al catalogo.
 
-Le esecuzioni dell'harness Codex non ricevono questi controlli sperimentali di Ricerca strumenti di OpenClaw.
-OpenClaw passa le funzionalità del prodotto a Codex come strumenti dinamici, e
-Codex possiede la modalità codice nativa stabile, la ricerca strumenti nativa, gli strumenti
-dinamici differiti e le chiamate a strumenti annidate.
+Le esecuzioni dell'harness Codex non ricevono questi controlli sperimentali di Tool Search
+di OpenClaw. OpenClaw passa le funzionalità del prodotto a Codex come strumenti dinamici e
+Codex gestisce la modalità codice nativa stabile, la ricerca degli strumenti nativa, gli strumenti dinamici
+differiti e le chiamate annidate agli strumenti.
 
-## Come viene eseguito un turno
+## Funzionamento di un turno
 
-Al momento della pianificazione, il runner incorporato di OpenClaw crea il catalogo effettivo per
+Durante la pianificazione, il runner incorporato di OpenClaw crea il catalogo effettivo per
 l'esecuzione:
 
-1. Risolve la policy degli strumenti attiva per agente, profilo, sandbox e sessione.
+1. Risolve la policy degli strumenti attiva per l'agente, il profilo, la sandbox e la sessione.
 2. Elenca gli strumenti OpenClaw e dei plugin idonei.
 3. Elenca gli strumenti MCP idonei tramite il runtime MCP della sessione.
-4. Aggiunge gli strumenti client idonei forniti per l'esecuzione corrente.
-5. Indicizza descrittori compatti per la ricerca.
-6. Espone al modello il bridge codice di OpenClaw, gli strumenti di fallback strutturati o la
-   superficie directory compatta.
+4. Aggiunge gli strumenti idonei forniti dal client per l'esecuzione corrente.
+5. Mantiene visibili al modello gli strumenti solo diretti e indicizza descrittori compatti per i
+   restanti strumenti idonei per il catalogo.
+6. Espone il bridge di codice OpenClaw, gli strumenti strutturati di ripiego o la
+   superficie compatta della directory insieme agli strumenti solo diretti.
 
-Al momento dell'esecuzione, ogni chiamata reale a uno strumento torna a OpenClaw. Il runtime Node
-isolato non contiene implementazioni di plugin, oggetti client MCP o segreti.
-`openclaw.tools.call(...)` attraversa il bridge tornando nel Gateway, dove continuano ad applicarsi
-la normale policy, le approvazioni, gli hook, la registrazione e la gestione dei risultati.
+Durante l'esecuzione, ogni chiamata reale a uno strumento torna a OpenClaw. Il runtime Node
+isolato non contiene implementazioni dei plugin, oggetti client MCP o segreti.
+`openclaw.tools.call(...)` attraversa il bridge e torna nel Gateway, dove continuano ad applicarsi
+la normale policy, l'approvazione, gli hook, la registrazione e la gestione dei risultati.
 
 ## Modalità
 
-`tools.toolSearch` ha tre modalità visibili al modello:
+`tools.toolSearch` dispone di tre modalità rivolte al modello:
 
-- `code`: espone `tool_search_code`, il bridge JavaScript compatto predefinito.
+- `code`: espone `tool_search_code`, il bridge JavaScript compatto predefinito,
+  insieme agli strumenti solo diretti.
 - `tools`: espone `tool_search`, `tool_describe` e `tool_call` come semplici
-  strumenti strutturati per i provider che non dovrebbero ricevere codice.
-- `directory`: espone `tool_search`, `tool_describe` e `tool_call` più una
-  directory di prompt limitata con nomi e descrizioni degli strumenti disponibili per
-  i provider che dovrebbero vedere i nomi degli strumenti senza ogni schema completo. OpenClaw può
-  anche esporre direttamente un piccolo insieme limitato di schemi di strumenti probabili o richiesti
-  per il turno corrente.
+  strumenti strutturati per i provider che non devono ricevere codice, insieme
+  agli strumenti solo diretti.
+- `directory`: espone `tool_search`, `tool_describe` e `tool_call`, oltre a una
+  directory limitata nel prompt contenente i nomi e le descrizioni degli strumenti disponibili per
+  i provider che devono vedere i nomi degli strumenti senza tutti gli schemi completi. OpenClaw può
+  anche esporre direttamente un piccolo insieme limitato di schemi di strumenti probabili o necessari
+  per il turno corrente. Anche in questa modalità gli strumenti solo diretti rimangono visibili.
 
-Tutte le modalità usano lo stesso catalogo filtrato dalla policy e il normale percorso di esecuzione
-OpenClaw. Se il runtime corrente non può avviare il processo figlio Node isolato
-della modalità codice, la modalità predefinita `code` ripiega su `tools` prima della compattazione
-del catalogo. In modalità `directory`, gli strumenti forniti dal client restano direttamente visibili
-per l'esecuzione corrente, mentre gli strumenti OpenClaw, gli strumenti dei plugin e gli strumenti MCP possono essere
-compattati dietro il catalogo directory. Una chiamata diretta a un nome directory nascosto esatto
-viene idratata dallo stesso catalogo autorizzato prima dell'esecuzione.
+Tutte le modalità utilizzano lo stesso catalogo filtrato dalla policy e il normale percorso di esecuzione
+di OpenClaw. Gli strumenti contrassegnati con `catalogMode: "direct-only"` rimangono fuori da tale catalogo e
+restano visibili al modello. Se il runtime corrente non può avviare il processo figlio isolato Node
+della modalità codice, la modalità predefinita `code` ripiega su `tools` prima della
+Compaction del catalogo. In modalità `directory`, gli strumenti forniti dal client rimangono direttamente visibili
+per l'esecuzione corrente, mentre gli strumenti OpenClaw, dei plugin e MCP possono essere
+compattati dietro il catalogo della directory. Una chiamata diretta a un nome esatto nascosto
+della directory viene caricata dallo stesso catalogo autorizzato prima dell'esecuzione.
 
-Tutte le modalità sono sperimentali. Preferisci l'esposizione diretta degli strumenti per cataloghi di strumenti OpenClaw
-piccoli, e preferisci le superfici stabili native di Codex per le esecuzioni dell'harness Codex.
+Tutte le modalità sono sperimentali. Per i piccoli cataloghi di strumenti OpenClaw, preferire
+l'esposizione diretta degli strumenti; per le esecuzioni dell'harness Codex, preferire le superfici stabili
+native di Codex.
 
-Non esiste una configurazione separata per la selezione delle origini. Quando Ricerca strumenti è abilitata, il
-catalogo include strumenti OpenClaw, MCP e client idonei dopo il normale filtraggio
-della policy.
+Non esiste una configurazione separata per la selezione delle sorgenti. Quando Tool Search è abilitata, il
+catalogo include gli strumenti OpenClaw, MCP e del client idonei per il catalogo dopo il normale
+filtro della policy; gli strumenti solo diretti vengono mantenuti separatamente.
 
 ## Perché esiste
 
-I cataloghi grandi sono utili ma costosi. Inviare ogni schema di strumento al modello
-aumenta le dimensioni della richiesta, rallenta la pianificazione e aumenta la selezione accidentale
-degli strumenti.
+I cataloghi di grandi dimensioni sono utili ma costosi. Inviare ogni schema di strumento al modello
+rende la richiesta più grande, rallenta la pianificazione e aumenta la probabilità di selezionare
+accidentalmente uno strumento.
 
-Ricerca strumenti cambia la forma:
+Tool Search modifica la struttura:
 
 - strumenti diretti: il modello vede ogni schema selezionato prima del primo token
-- modalità codice di Ricerca strumenti: il modello vede uno strumento codice compatto e un breve contratto
-  API
-- modalità strumenti di Ricerca strumenti: il modello vede tre strumenti di fallback strutturati
-  compatti
-- modalità directory di Ricerca strumenti: il modello vede una directory limitata più
-  controlli di ricerca/descrizione/chiamata e un piccolo insieme limitato di schemi probabili o richiesti
-- durante il turno: il modello può caricare gli schemi rimanenti secondo necessità
+- modalità codice di Tool Search: il modello vede un unico strumento di codice compatto, un breve contratto
+  API e gli eventuali strumenti solo diretti
+- modalità strumenti di Tool Search: il modello vede tre strumenti strutturati compatti
+  di ripiego, oltre agli eventuali strumenti solo diretti
+- modalità directory di Tool Search: il modello vede una directory limitata, oltre ai
+  controlli di ricerca/descrizione/chiamata e a un piccolo insieme limitato di schemi probabili o necessari,
+  nonché gli eventuali strumenti solo diretti
+- durante il turno: il modello può caricare gli schemi rimanenti quando necessario
 
-L'esposizione diretta degli strumenti resta l'impostazione predefinita corretta per cataloghi piccoli. Ricerca strumenti
-è più adatta quando una singola esecuzione può vedere molti strumenti, soprattutto da server MCP o
-strumenti di app forniti dal client.
+L'esposizione diretta degli strumenti rimane l'impostazione predefinita corretta per i cataloghi di piccole dimensioni. Tool Search
+è particolarmente indicata quando una singola esecuzione può accedere a molti strumenti, soprattutto da server MCP o
+da strumenti dell'app forniti dal client.
 
 ## API
 
@@ -144,7 +152,7 @@ await openclaw.tools.call(calendarCreate.id, {
 });
 ```
 
-La modalità di fallback strutturata espone le stesse operazioni come strumenti:
+La modalità strutturata di ripiego espone le stesse operazioni come strumenti:
 
 - `tool_search`
 - `tool_describe`
@@ -156,41 +164,42 @@ La modalità directory espone:
 - `tool_describe`
 - `tool_call`
 
-Mantiene inoltre gli strumenti forniti dal client direttamente visibili e può esporre direttamente un piccolo
-insieme limitato di schemi di strumenti del catalogo probabili o richiesti per il turno corrente.
-Se la directory limitata omette voci, usa `tool_search` per trovarle. Se
-il modello richiede direttamente il nome esatto di uno strumento directory nascosto, OpenClaw
-lo idrata dal catalogo autorizzato prima della normale esecuzione.
-I nomi degli strumenti client in modalità directory non devono collidere con i nomi degli strumenti OpenClaw, dei plugin o MCP,
-perché il dispatch differito esatto usa quei nomi.
+Mantiene inoltre direttamente visibili gli strumenti forniti dal client e tutti gli strumenti solo diretti
+e può esporre direttamente un piccolo insieme limitato di schemi di strumenti del catalogo probabili o necessari
+per il turno corrente. Se la directory limitata omette alcune voci, utilizzare
+`tool_search` per trovarle. Se il modello richiede direttamente il nome esatto di uno strumento nascosto
+della directory, OpenClaw lo carica dal catalogo autorizzato prima
+della normale esecuzione.
+I nomi degli strumenti del client in modalità directory non devono entrare in conflitto con i nomi degli strumenti OpenClaw,
+dei plugin o MCP, poiché la distribuzione differita esatta utilizza tali nomi.
 
 ## Confine del runtime
 
-Il bridge codice viene eseguito in un sottoprocesso Node di breve durata. Il sottoprocesso parte
-con la modalità permessi di Node abilitata, un ambiente vuoto, nessuna concessione per filesystem o
-rete e nessuna concessione per processi figli o worker. OpenClaw applica un
-timeout wall-clock del processo padre e termina il sottoprocesso al timeout, anche
+Il bridge di codice viene eseguito in un sottoprocesso Node di breve durata. Il sottoprocesso viene avviato
+con la modalità delle autorizzazioni di Node abilitata, un ambiente vuoto, nessuna autorizzazione per il filesystem
+o la rete e nessuna autorizzazione per processi figli o worker. OpenClaw applica un
+timeout basato sul tempo reale nel processo padre e termina il sottoprocesso allo scadere del timeout, anche
 dopo continuazioni asincrone.
 
-Il runtime espone solo:
+Il runtime espone esclusivamente:
 
 - `console.log`, `console.warn` e `console.error`
 - `openclaw.tools.search`
 - `openclaw.tools.describe`
 - `openclaw.tools.call`
 
-Il normale comportamento di OpenClaw si applica comunque alle chiamate finali:
+Il normale comportamento di OpenClaw continua ad applicarsi alle chiamate finali:
 
 - policy di autorizzazione e negazione degli strumenti
 - restrizioni degli strumenti per agente e per sandbox
 - policy degli strumenti del canale/runtime
 - hook di approvazione
 - hook `before_tool_call` dei plugin
-- identità di sessione, log e telemetria
+- identità della sessione, log e telemetria
 
 ## Configurazione
 
-Abilita Ricerca strumenti per le esecuzioni OpenClaw con il bridge codice predefinito:
+Abilitare Tool Search per le esecuzioni OpenClaw con il bridge di codice predefinito:
 
 ```bash
 openclaw config set tools.toolSearch true
@@ -206,7 +215,7 @@ JSON equivalente:
 }
 ```
 
-Usa invece gli strumenti di fallback strutturati per le esecuzioni OpenClaw:
+Per le esecuzioni OpenClaw, utilizzare invece gli strumenti strutturati di ripiego:
 
 ```json5
 {
@@ -218,7 +227,7 @@ Usa invece gli strumenti di fallback strutturati per le esecuzioni OpenClaw:
 }
 ```
 
-Usa invece la superficie directory compatta per le esecuzioni OpenClaw:
+Per le esecuzioni OpenClaw, utilizzare invece la superficie compatta della directory:
 
 ```json5
 {
@@ -230,7 +239,7 @@ Usa invece la superficie directory compatta per le esecuzioni OpenClaw:
 }
 ```
 
-Regola il timeout della modalità codice e i limiti dei risultati di ricerca:
+Regolare il timeout della modalità codice e i limiti dei risultati di ricerca (i valori mostrati sono quelli predefiniti):
 
 ```json5
 {
@@ -245,7 +254,10 @@ Regola il timeout della modalità codice e i limiti dei risultati di ricerca:
 }
 ```
 
-Disabilitala:
+Il runtime limita `codeTimeoutMs` all'intervallo 1000-60000, `maxSearchLimit` all'intervallo 1-50 e
+`searchDefaultLimit` all'intervallo 1..`maxSearchLimit`.
+
+Per disabilitarla:
 
 ```json5
 {
@@ -257,57 +269,57 @@ Disabilitala:
 
 ## Prompt e telemetria
 
-Ricerca strumenti registra telemetria sufficiente per confrontarla con l'esposizione diretta degli strumenti:
+Tool Search registra telemetria sufficiente per confrontarla con l'esposizione diretta degli strumenti:
 
-- byte totali serializzati di strumenti e prompt inviati all'harness
-- dimensione del catalogo e ripartizione delle origini
-- conteggi di ricerca, descrizione e chiamata
+- byte totali serializzati degli strumenti e del prompt inviati all'harness
+- dimensioni del catalogo e suddivisione per sorgente
+- numero di operazioni di ricerca, descrizione e chiamata
 - chiamate finali agli strumenti eseguite tramite OpenClaw
-- ID e origini degli strumenti selezionati
+- ID e sorgenti degli strumenti selezionati
 
-I log di sessione dovrebbero rendere possibile rispondere a:
+I log della sessione dovrebbero consentire di determinare:
 
-- quanti schemi di strumenti il modello ha visto in anticipo
+- quanti schemi di strumenti il modello ha visto anticipatamente
 - quante operazioni di ricerca e descrizione ha eseguito
 - quale strumento finale è stato chiamato
-- se il risultato proviene da OpenClaw, MCP o da uno strumento client
+- se il risultato proveniva da OpenClaw, MCP o da uno strumento del client
 
-## Validazione E2E
+## Convalida E2E
 
-Lo scenario Gateway di QA Lab dimostra entrambi i percorsi con il runtime OpenClaw:
+Lo scenario del Gateway di QA Lab verifica entrambi i percorsi con il runtime OpenClaw:
 
 ```bash
 pnpm openclaw qa suite --provider-mode mock-openai --scenario tool-search-gateway-e2e
 ```
 
-Crea un plugin fittizio temporaneo con un grande catalogo di strumenti, avvia il provider
-OpenAI simulato, avvia un Gateway una volta in modalità diretta e una volta con Ricerca strumenti
-abilitata, quindi confronta i payload delle richieste al provider e i log di sessione.
+Crea un plugin temporaneo fittizio con un ampio catalogo di strumenti, avvia il provider
+OpenAI simulato, avvia una volta un Gateway in modalità diretta e una volta con Tool Search
+abilitata, quindi confronta i payload delle richieste al provider e i log della sessione.
 
 La regressione dimostra che:
 
 1. La modalità diretta può chiamare lo strumento del plugin fittizio.
-2. Ricerca strumenti può chiamare lo stesso strumento del plugin fittizio.
-3. La modalità diretta espone direttamente al provider gli schemi degli strumenti del plugin fittizio.
-4. Ricerca strumenti espone solo il bridge compatto.
-5. Il payload della richiesta di Ricerca strumenti è più piccolo per il grande catalogo fittizio.
-6. I log di sessione mostrano i conteggi attesi delle chiamate agli strumenti e la telemetria delle chiamate bridged.
+2. Tool Search può chiamare lo stesso strumento del plugin fittizio.
+3. La modalità diretta espone gli schemi degli strumenti del plugin fittizio direttamente al provider.
+4. Tool Search espone solo il bridge compatto e gli eventuali strumenti solo diretti.
+5. Il payload della richiesta di Tool Search è più piccolo per l'ampio catalogo fittizio.
+6. I log della sessione mostrano il numero previsto di chiamate agli strumenti e la telemetria delle chiamate tramite bridge.
 
 ## Comportamento in caso di errore
 
-Ricerca strumenti dovrebbe fallire in modo chiuso:
+Tool Search deve interrompersi in modo sicuro:
 
-- se uno strumento non è nella policy effettiva, la ricerca non dovrebbe restituirlo
-- se uno strumento selezionato diventa non disponibile, `tool_call` dovrebbe fallire
-- se la policy o l'approvazione blocca l'esecuzione, il risultato della chiamata dovrebbe segnalare quel
-  blocco invece di aggirarlo
-- se il bridge codice non può creare un runtime isolato, usa `mode: "tools"` o
-  disabilita Ricerca strumenti per quel deployment
+- se uno strumento non rientra nella policy effettiva, la ricerca non deve restituirlo
+- se uno strumento selezionato diventa indisponibile, `tool_call` deve restituire un errore
+- se la policy o l'approvazione blocca l'esecuzione, il risultato della chiamata deve segnalare tale
+  blocco anziché aggirarlo
+- se il bridge di codice non può creare un runtime isolato, utilizzare `mode: "tools"` oppure
+  disabilitare Tool Search per tale distribuzione
 
-## Correlati
+## Contenuti correlati
 
 - [Strumenti e plugin](/it/tools)
 - [Sandbox multi-agente e strumenti](/it/tools/multi-agent-sandbox-tools)
-- [Strumento exec](/it/tools/exec)
-- [Configurazione agenti ACP](/it/tools/acp-agents-setup)
+- [Strumento Exec](/it/tools/exec)
+- [Configurazione degli agenti ACP](/it/tools/acp-agents-setup)
 - [Creazione di plugin](/it/plugins/building-plugins)

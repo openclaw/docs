@@ -1,11 +1,11 @@
 ---
 read_when:
     - Ви встановлюєте, налаштовуєте або перевіряєте Plugin nostr
-summary: Plugin каналу Nostr для OpenClaw для зашифрованих прямих повідомлень NIP-04.
-title: Nostr Plugin
+summary: Плагін каналу Nostr для OpenClaw, що підтримує зашифровані прямі повідомлення NIP-04.
+title: Plugin Nostr
 x-i18n:
-    generated_at: "2026-06-27T18:00:23Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:35:25Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: e56fd9eee17c55bcbba3d7b85d783930c10d2368f36173ac478b254c2bd5ec22
@@ -13,18 +13,18 @@ x-i18n:
     workflow: 16
 ---
 
-# Плагін Nostr
+# Plugin Nostr
 
-Плагін каналу OpenClaw Nostr для зашифрованих прямих повідомлень NIP-04.
+Plugin каналу Nostr для OpenClaw, призначений для зашифрованих прямих повідомлень NIP-04.
 
-## Дистрибуція
+## Розповсюдження
 
-- Пакет: `@openclaw/nostr`
+- Пакунок: `@openclaw/nostr`
 - Спосіб встановлення: npm; ClawHub
 
-## Інтерфейс
+## Поверхня
 
-channels: nostr
+канали: nostr
 
 ## Пов’язана документація
 

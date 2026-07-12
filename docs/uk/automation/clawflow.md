@@ -1,20 +1,20 @@
 ---
-summary: Переспрямувати до потоку завдань
+summary: Переспрямування до TaskFlow
 title: ClawFlow
 x-i18n:
-    generated_at: "2026-04-27T06:22:20Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: dec1ddc0e784b4ad49d0f5e5a8e332032e40281b81fe27de99363178ff8d3272
-    source_path: automation/clawflow.md
-    workflow: 15
+    generated_at: "2026-07-12T12:57:20Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 34f259b25c73d08ab71935307e2736f3f9d57dd579ba0f1842a2bd334f656e47
+    source_path: automation/clawflow.md
+    workflow: 16
 ---
 
-ClawFlow було перейменовано на [Потік завдань](/uk/automation/taskflow).
+ClawFlow перейменовано на [TaskFlow](/uk/automation/taskflow). Використовуйте цю сторінку для надійної оркестрації багатоетапних процесів.
 
-## Пов’язане
+## Пов’язані матеріали
 
-- [Потік завдань](/uk/automation/taskflow)
+- [TaskFlow](/uk/automation/taskflow)
 - [Постійні доручення](/uk/automation/standing-orders)
 - [Хуки](/uk/automation/hooks)

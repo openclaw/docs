@@ -1,40 +1,40 @@
 ---
 read_when:
-    - Yerel kişisel aracı güvenilirlik kontrollerini çalıştırma
-    - Repo destekli QA senaryo kataloğunu genişletme
-    - Hatırlatma, yanıt, bellek, redaksiyon, güvenli araç takibi, görev durumu, paylaşımı güvenli tanılama, kanıt destekli tamamlama iddiaları ve hata kurtarmayı doğrulama
+    - Yerel kişisel ajan güvenilirlik kontrollerini çalıştırma
+    - Depo tabanlı kalite güvencesi senaryo kataloğunu genişletme
+    - Hatırlatmayı, yanıtı, belleği, gizli bilgilerin çıkarılmasını, araçların güvenli biçimde takip edilmesini, görev durumunu, güvenle paylaşılabilir tanılamaları, kanıta dayalı tamamlanma iddialarını ve hata kurtarmayı doğrulama
 summary: Gizliliği koruyan kişisel asistan iş akışı kontrolleri için yerel qa-channel senaryoları.
-title: Kişisel ajan kıyaslama paketi
+title: Kişisel ajan karşılaştırma paketi
 x-i18n:
-    generated_at: "2026-06-28T00:29:57Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:39:44Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a5a6b653abbba0718a6287d4e471435f15ef5823aa62abd238a14d955fdc1e5a
+    source_hash: 35da45e4b22b1044a777fa8d6bce87f9ace377950dd0af3f2419b40cfe4d9be6
     source_path: concepts/personal-agent-benchmark-pack.md
     workflow: 16
 ---
 
-Kişisel Ajan Benchmark Paketi, yerel kişisel asistan iş akışları için küçük, repo destekli bir QA senaryo paketidir. Genel amaçlı bir model benchmark’ı değildir ve yeni bir çalıştırıcı gerektirmez. Paket, [QA genel bakışı](/tr/concepts/qa-e2e-automation) içinde açıklanan özel QA yığınını, sentetik [QA kanalı](/tr/channels/qa-channel) ve mevcut `qa/scenarios` YAML kataloğunu yeniden kullanır.
-
-İlk paket bilinçli olarak dar kapsamlıdır:
-
-- yerel cron teslimi üzerinden sahte kişisel hatırlatıcılar
-- `qa-channel` üzerinden sahte DM ve ileti dizisi yanıt yönlendirmesi
-- geçici QA çalışma alanı bellek dosyalarından sahte tercih hatırlama
-- sahte gizli bilgi yankılamama kontrolleri
-- kısa bir onay tarzı turdan sonra güvenli okuma destekli araç takibi
-- hassas bir yerel okuma isteği için onay reddinde durma davranışı
-- bekleyen, engellenen ve tamamlanan durumları ayrı tutan kanıt destekli görev durumu raporlaması
-- ham kişisel içeriği atlayıp yararlı durumu koruyan paylaşımı güvenli tanılama yapıtları
-- yerel kanıt oluşmadan sahte ilerlemeden kaçınan kanıt destekli tamamlama iddiaları
-- kısmi durumu bildiren ve yeniden deneme sınırlarını net tutan hata kurtarma
+Kişisel Agent Karşılaştırma Paketi, yerel kişisel asistan iş akışlarına yönelik, depo destekli küçük bir QA senaryo paketidir. Genel amaçlı bir model karşılaştırması değildir ve yeni bir çalıştırıcı gerektirmez: özel QA altyapısını ([QA genel bakışı](/tr/concepts/qa-e2e-automation)), sentetik [QA kanalını](/tr/channels/qa-channel) ve mevcut `qa/scenarios` YAML kataloğunu yeniden kullanır.
 
 ## Senaryolar
 
-Makine tarafından okunabilir paket meta verileri
-`extensions/qa-lab/src/scenario-packs.ts` içinde bulunur. Paketi
-`--pack personal-agent` ile çalıştırın:
+`qa/scenarios/personal/*.yaml` içinde tanımlanmış on senaryo:
+
+| Senaryo kimliği                            | Denetimler                                                                                                     |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| `personal-reminder-roundtrip`              | Yerel cron teslimatı üzerinden sahte kişisel anımsatıcılar                                                     |
+| `personal-channel-thread-reply`            | `qa-channel` üzerinden sahte doğrudan mesaj ve ileti dizisi yanıtı yönlendirmesi                               |
+| `personal-memory-preference-recall`        | Geçici QA çalışma alanı bellek dosyalarından sahte tercihlerin hatırlanması                                    |
+| `personal-redaction-no-secret-leak`        | Sahte gizli bilginin yinelenmediğine yönelik denetimler                                                        |
+| `personal-tool-safety-followthrough`       | Kısa bir onay tarzı etkileşimden sonra güvenli, okuma destekli araç işleminin tamamlanması                     |
+| `personal-approval-denial-stop`            | Hassas bir yerel okuma isteği için onay reddedildiğinde durma davranışı                                        |
+| `personal-task-followthrough-status`       | Bekleyen, engellenen ve tamamlanan durumları ayrı tutan, kanıta dayalı görev durumu raporlaması                |
+| `personal-share-safe-diagnostics-artifact` | Ham kişisel içeriği hariç tutarken yararlı durumu koruyan, güvenle paylaşılabilir tanılama yapıtları           |
+| `personal-no-fake-progress`                | Yerel kanıt bulunmadan önce sahte ilerleme bildirmekten kaçınan, kanıta dayalı tamamlanma beyanları            |
+| `personal-failure-recovery`                | Kısmi durumu bildiren ve yeniden deneme sınırlarını açıkça koruyan hata kurtarma                               |
+
+Makine tarafından okunabilir paket meta verileri (kimlik listesi, başlık ve açıklama), `extensions/qa-lab/src/scenario-packs.ts` içinde `QA_PERSONAL_AGENT_SCENARIO_IDS` olarak bulunur. Paketi `--pack personal-agent` ile çalıştırın:
 
 ```bash
 OPENCLAW_ENABLE_PRIVATE_QA_CLI=1 pnpm openclaw qa suite \
@@ -43,23 +43,20 @@ OPENCLAW_ENABLE_PRIVATE_QA_CLI=1 pnpm openclaw qa suite \
   --concurrency 1
 ```
 
-`--pack`, tekrarlanan `--scenario` bayraklarıyla birlikte eklemelidir. Açık senaryolar önce çalışır, ardından paket senaryoları yinelenenler kaldırılarak `QA_PERSONAL_AGENT_SCENARIO_IDS` sırasına göre çalışır.
+`--pack`, yinelenen `--scenario` bayraklarıyla birlikte eklemeli olarak çalışır. Önce açıkça belirtilen senaryolar, ardından yinelenenler kaldırılarak `QA_PERSONAL_AGENT_SCENARIO_IDS` sırasındaki paket senaryoları çalıştırılır.
 
-Paket, `mock-openai` veya başka bir yerel QA sağlayıcı hattıyla `qa-channel` için tasarlanmıştır. Canlı sohbet hizmetlerine veya gerçek kişisel hesaplara yönlendirilmemelidir.
+Paket, `mock-openai` veya başka bir yerel QA sağlayıcı hattıyla `qa-channel` kanalını hedefler. Paketi canlı sohbet hizmetlerine veya gerçek kişisel hesaplara yönlendirmeyin.
 
 ## Gizlilik Modeli
 
-Senaryolar yalnızca sahte kullanıcılar, sahte tercihler, sahte gizli bilgiler ve suite tarafından oluşturulan geçici QA Gateway çalışma alanını kullanır. Gerçek OpenClaw kullanıcı belleğini, oturumlarını, kimlik bilgilerini, başlatma ajanlarını, genel yapılandırmaları veya canlı Gateway durumunu okumamalı ya da yazmamalıdır.
+Senaryolar yalnızca sahte kullanıcıları, sahte tercihleri, sahte gizli bilgileri ve paket tarafından oluşturulan geçici QA Gateway çalışma alanını kullanır. Gerçek OpenClaw kullanıcı belleğini, oturumlarını, kimlik bilgilerini, başlatma agent'larını, genel yapılandırmaları veya canlı Gateway durumunu okumamalı ya da bunlara yazmamalıdır.
 
-Yapıtlar mevcut QA suite yapıt dizininin altında kalır ve test çıktısı gibi ele alınmalıdır. Redaksiyon kontrolleri sahte işaretleyiciler kullanır, böylece hatalar güvenli şekilde incelenebilir ve sorunlara eklenebilir.
+Yapıtlar, mevcut QA paketi yapıt dizini altında kalır ve test çıktısı olarak değerlendirilir. Redaksiyon denetimleri sahte işaretleyiciler kullanır; böylece hatalar güvenli bir şekilde incelenebilir ve sorun kaydı olarak oluşturulabilir.
 
-## Paketi Genişletme
+## Paketi genişletme
 
-`qa/scenarios/personal/` altına yeni `.yaml` vakaları ekleyin, ardından senaryo kimliğini `QA_PERSONAL_AGENT_SCENARIO_IDS` içine ekleyin. Her vakayı küçük, yerel, `mock-openai` içinde deterministik ve tek bir kişisel asistan davranışına odaklı tutun.
+`qa/scenarios/personal/` altına yeni `.yaml` senaryoları ekleyin, ardından senaryo kimliğini `QA_PERSONAL_AGENT_SCENARIO_IDS` listesine ekleyin. Her senaryoyu küçük, yerel, `mock-openai` içinde deterministik ve tek bir kişisel asistan davranışına odaklı tutun.
 
-İyi takip adayları:
+İyi takip adayları: redakte edilmiş işlem yörüngesi dışa aktarma denetimleri, yalnızca yerelde çalışan Plugin iş akışı denetimleri.
 
-- redakte edilmiş izlek dışa aktarma kontrolleri
-- yalnızca yerel Plugin iş akışı kontrolleri
-
-Senaryo kataloğunda bu yüzeyi haklı çıkaracak kadar kararlı vaka oluşana kadar yeni bir çalıştırıcı, Plugin, bağımlılık, canlı taşıma veya model hakemi eklemekten kaçının.
+Senaryo kataloğu bu yüzeyi gerekçelendirecek kadar kararlı senaryo içermeden yeni bir çalıştırıcı, Plugin, bağımlılık, canlı aktarım veya model değerlendiricisi eklemekten kaçının.

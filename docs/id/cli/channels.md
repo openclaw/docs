@@ -1,24 +1,24 @@
 ---
 read_when:
-    - Anda ingin menambahkan/menghapus akun saluran (WhatsApp/Telegram/Discord/Google Chat/Slack/Mattermost (Plugin)/Signal/iMessage/Matrix)
-    - Anda ingin memeriksa status saluran atau memantau log saluran
-summary: Referensi CLI untuk `openclaw channels` (akun, status, masuk/keluar, log)
-title: Saluran
+    - Anda ingin menambahkan atau menghapus akun saluran (Discord, Google Chat, iMessage, Matrix, Signal, Slack, Telegram, WhatsApp, dan lainnya)
+    - Anda ingin memeriksa status kanal atau memantau log kanal secara langsung
+summary: Referensi CLI untuk `openclaw channels` (akun, status, kemampuan, resolusi, log, masuk/keluar)
+title: Kanal
 x-i18n:
-    generated_at: "2026-05-11T20:25:27Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:03:25Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 58a964b4db9526defab6ee47b7a99c11086e345d42c8d20f5262fc134337947f
+    source_hash: 41220535917d645e87dca82bc5c27319eff0035fe14a8cb18f001192b3aad5bd
     source_path: cli/channels.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw channels`
 
-Kelola akun saluran chat dan status runtime-nya di Gateway.
+Kelola akun saluran obrolan dan status runtime-nya di Gateway.
 
-Dokumen terkait:
+Dokumentasi terkait:
 
 - Panduan saluran: [Saluran](/id/channels)
 - Konfigurasi Gateway: [Konfigurasi](/id/gateway/configuration)
@@ -31,25 +31,24 @@ openclaw channels list --all
 openclaw channels status
 openclaw channels capabilities
 openclaw channels capabilities --channel discord --target channel:123
-openclaw channels capabilities --channel discord --target channel:<voice-channel-id>
 openclaw channels resolve --channel slack "#general" "@jane"
 openclaw channels logs --channel all
 ```
 
-`channels list` hanya menampilkan saluran chat: akun yang dikonfigurasi secara default, dengan tag status `installed`, `configured`, dan `enabled` per akun. Berikan `--all` untuk juga menampilkan saluran bawaan yang belum memiliki akun terkonfigurasi dan saluran katalog yang dapat diinstal yang belum ada di disk. Penyedia auth (OAuth + kunci API) dan snapshot penggunaan/kuota penyedia model tidak lagi dicetak di sini; gunakan `openclaw models auth list` untuk profil auth penyedia dan `openclaw status` atau `openclaw models list` untuk penggunaan.
+`channels list` hanya menampilkan saluran obrolan: secara bawaan, akun yang telah dikonfigurasi, dengan tag status `installed`, `configured`, dan `enabled` untuk setiap akun (`--json` untuk keluaran mesin). Gunakan `--all` untuk turut menampilkan saluran bawaan yang belum memiliki akun terkonfigurasi dan saluran katalog yang dapat dipasang tetapi belum tersedia di disk. Autentikasi penyedia dan penggunaan model dikelola di tempat lain: `openclaw models auth list` untuk profil autentikasi penyedia, serta `openclaw status` atau `openclaw models list` untuk penggunaan/kuota.
 
-## Status / kapabilitas / resolve / log
+## Status / kapabilitas / penyelesaian / log
 
-- `channels status`: `--channel <name>`, `--probe`, `--timeout <ms>`, `--json`
-- `channels capabilities`: `--channel <name>`, `--account <id>` (hanya dengan `--channel`), `--target <dest>`, `--timeout <ms>`, `--json`
-- `channels resolve`: `<entries...>`, `--channel <name>`, `--account <id>`, `--kind <auto|user|group>`, `--json`
-- `channels logs`: `--channel <name|all>`, `--lines <n>`, `--json`
+- `channels status`: `--channel <name>`, `--probe`, `--timeout <ms>` (bawaan `10000`), `--json`
+- `channels capabilities`: `--channel <name>`, `--account <id>` (memerlukan `--channel`), `--target <dest>` (memerlukan `--channel`), `--timeout <ms>` (bawaan `10000`, dibatasi maksimum `30000`), `--json`
+- `channels resolve <entries...>`: `--channel <name>`, `--account <id>`, `--kind <auto|user|group>` (bawaan `auto`), `--json`
+- `channels logs`: `--channel <name|all>` (bawaan `all`), `--lines <n>` (bawaan `200`), `--json`
 
-`channels status --probe` adalah jalur live: pada gateway yang dapat dijangkau, perintah ini menjalankan pemeriksaan `probeAccount` per akun dan `auditAccount` opsional, sehingga output dapat menyertakan status transport plus hasil probe seperti `works`, `probe failed`, `audit ok`, atau `audit failed`. Jika gateway tidak dapat dijangkau, `channels status` kembali ke ringkasan khusus konfigurasi alih-alih output probe live.
+`channels status --probe` adalah jalur langsung: pada Gateway yang dapat dijangkau, perintah ini menjalankan pemeriksaan `probeAccount` dan, bila tersedia, `auditAccount` untuk setiap akun, sehingga keluaran dapat mencakup status transportasi beserta hasil pemeriksaan seperti `works`, `probe failed`, `audit ok`, atau `audit failed`. Jika Gateway tidak dapat dijangkau, `channels status` menggunakan ringkasan berbasis konfigurasi saja sebagai pengganti keluaran pemeriksaan langsung.
 
-Jangan gunakan `openclaw sessions`, Gateway `sessions.list`, atau alat agen `sessions_list` sebagai sinyal kesehatan soket saluran. Permukaan tersebut melaporkan baris percakapan tersimpan, bukan status runtime penyedia. Setelah penyedia Discord dimulai ulang, akun yang terhubung tetapi diam mungkin sehat meskipun tidak ada baris sesi Discord yang muncul sampai peristiwa percakapan masuk atau keluar berikutnya.
+Jangan gunakan `openclaw sessions`, `sessions.list` milik Gateway, atau alat `sessions_list` milik agen sebagai sinyal kesehatan soket saluran. Permukaan tersebut melaporkan baris percakapan yang tersimpan, bukan status runtime penyedia. Setelah penyedia Discord dimulai ulang, akun yang terhubung tetapi sedang tidak aktif mungkin tetap sehat meskipun tidak ada baris sesi Discord yang muncul hingga peristiwa percakapan masuk atau keluar berikutnya.
 
-## Menambah / menghapus akun
+## Menambahkan / menghapus akun
 
 ```bash
 openclaw channels add --channel telegram --token <bot-token>
@@ -58,66 +57,68 @@ openclaw channels remove --channel telegram --delete
 ```
 
 <Tip>
-`openclaw channels add --help` menampilkan flag per saluran (token, kunci privat, token aplikasi, path signal-cli, dll).
+`openclaw channels add --help` menampilkan flag khusus setiap saluran (token, kunci privat, token aplikasi, jalur signal-cli, dan sebagainya).
 </Tip>
 
-`channels remove` hanya beroperasi pada plugin saluran yang terinstal/terkonfigurasi. Gunakan `channels add` terlebih dahulu untuk saluran katalog yang dapat diinstal.
-Untuk plugin saluran yang didukung runtime, `channels remove` juga meminta Gateway yang sedang berjalan untuk menghentikan akun yang dipilih sebelum memperbarui konfigurasi, sehingga menonaktifkan atau menghapus akun tidak membiarkan listener lama tetap aktif sampai mulai ulang.
+`channels remove` hanya beroperasi pada Plugin saluran yang telah dipasang/dikonfigurasi. Gunakan `channels add` terlebih dahulu untuk saluran katalog yang dapat dipasang. Tanpa `--delete`, perintah ini meminta konfirmasi untuk menonaktifkan akun dan mempertahankan konfigurasinya; `--delete` menghapus entri konfigurasi tanpa meminta konfirmasi.
+Untuk Plugin saluran yang didukung runtime, `channels remove` juga meminta Gateway yang sedang berjalan untuk menghentikan akun yang dipilih sebelum memperbarui konfigurasi, sehingga penonaktifan atau penghapusan akun tidak membiarkan listener lama tetap aktif hingga dimulai ulang.
 
-Permukaan penambahan non-interaktif yang umum meliputi:
+Flag penambahan noninteraktif yang digunakan bersama oleh semua saluran: `--account <id>`, `--name <name>`, `--token`, `--token-file`, `--bot-token`, `--app-token`, `--secret`, `--secret-file`, `--password`, `--cli-path`, `--url`, `--base-url`, `--http-url`, `--auth-dir`, dan `--use-env` (autentikasi berbasis variabel lingkungan, hanya untuk akun bawaan, jika didukung). Flag khusus saluran meliputi:
 
-- saluran bot-token: `--token`, `--bot-token`, `--app-token`, `--token-file`
-- Kolom transport Signal/iMessage: `--signal-number`, `--cli-path`, `--http-url`, `--http-host`, `--http-port`, `--db-path`, `--service`, `--region`
-- Kolom Google Chat: `--webhook-path`, `--webhook-url`, `--audience-type`, `--audience`
-- Kolom Matrix: `--homeserver`, `--user-id`, `--access-token`, `--password`, `--device-name`, `--initial-sync-limit`
-- Kolom Nostr: `--private-key`, `--relay-urls`
-- Kolom Tlon: `--ship`, `--url`, `--code`, `--group-channels`, `--dm-allowlist`, `--auto-discover-channels`
-- `--use-env` untuk auth akun default yang didukung env jika didukung
+| Saluran     | Flag                                                                                                 |
+| ----------- | ---------------------------------------------------------------------------------------------------- |
+| Google Chat | `--webhook-path`, `--webhook-url`, `--audience-type`, `--audience`                                   |
+| iMessage    | `--cli-path`, `--db-path`, `--service`, `--region`                                                   |
+| Matrix      | `--homeserver`, `--user-id`, `--access-token`, `--password`, `--device-name`, `--initial-sync-limit` |
+| Nostr       | `--private-key`, `--relay-urls`                                                                      |
+| Signal      | `--signal-number`, `--cli-path`, `--http-url`, `--http-host`, `--http-port`                          |
+| Tlon        | `--ship`, `--url`, `--code`, `--group-channels`, `--dm-allowlist`, `--auto-discover-channels`        |
+| WhatsApp    | `--auth-dir`                                                                                         |
 
-Jika plugin saluran perlu diinstal selama perintah penambahan berbasis flag, OpenClaw menggunakan sumber instal default saluran tersebut tanpa membuka prompt instal plugin interaktif.
+Jika Plugin saluran perlu dipasang selama perintah penambahan berbasis flag, OpenClaw menggunakan sumber pemasangan bawaan saluran tanpa membuka permintaan pemasangan Plugin interaktif.
 
-Saat Anda menjalankan `openclaw channels add` tanpa flag, wizard interaktif dapat meminta:
+Saat Anda menjalankan `openclaw channels add` tanpa flag, wisaya interaktif dapat meminta:
 
-- ID akun per saluran yang dipilih
+- ID akun untuk setiap saluran yang dipilih
 - nama tampilan opsional untuk akun tersebut
 - `Route these channel accounts to agents now?`
 
-Jika Anda mengonfirmasi pengikatan sekarang, wizard menanyakan agen mana yang harus memiliki setiap akun saluran terkonfigurasi dan menulis binding routing berskala akun.
+Jika Anda mengonfirmasi pengikatan saat itu juga, wisaya akan menanyakan agen yang harus memiliki setiap akun saluran terkonfigurasi dan menulis pengikatan perutean dengan cakupan akun.
 
-Anda juga dapat mengelola aturan routing yang sama nanti dengan `openclaw agents bindings`, `openclaw agents bind`, dan `openclaw agents unbind` (lihat [agen](/id/cli/agents)).
+Anda juga dapat mengelola aturan perutean yang sama nanti dengan `openclaw agents bindings`, `openclaw agents bind`, dan `openclaw agents unbind` (lihat [agen](/id/cli/agents)).
 
-Saat Anda menambahkan akun non-default ke saluran yang masih menggunakan pengaturan tingkat atas akun tunggal, OpenClaw mempromosikan nilai tingkat atas berskala akun ke dalam peta akun saluran sebelum menulis akun baru. Sebagian besar saluran menempatkan nilai tersebut di `channels.<channel>.accounts.default`, tetapi saluran bawaan dapat mempertahankan akun promosi yang sudah ada dan cocok. Matrix adalah contoh saat ini: jika satu akun bernama sudah ada, atau `defaultAccount` menunjuk ke akun bernama yang sudah ada, promosi mempertahankan akun tersebut alih-alih membuat `accounts.default` baru.
+Saat Anda menambahkan akun nonbawaan ke saluran yang masih menggunakan pengaturan tingkat atas untuk satu akun, OpenClaw memindahkan nilai tingkat atas tersebut ke peta akun saluran sebelum menulis akun baru. Proses ini menggunakan kembali akun bernama yang sudah ada jika saluran hanya memiliki tepat satu akun, atau jika `defaultAccount` menunjuk ke salah satunya; jika tidak, nilai tersebut ditempatkan di `channels.<channel>.accounts.default`.
 
-Perilaku routing tetap konsisten:
+Perilaku perutean tetap konsisten:
 
-- Binding khusus saluran yang sudah ada (tanpa `accountId`) tetap cocok dengan akun default.
-- `channels add` tidak membuat atau menulis ulang binding secara otomatis dalam mode non-interaktif.
-- Penyiapan interaktif dapat secara opsional menambahkan binding berskala akun.
+- Pengikatan khusus saluran yang sudah ada (tanpa `accountId`) tetap cocok dengan akun bawaan.
+- `channels add` tidak secara otomatis membuat atau menulis ulang pengikatan dalam mode noninteraktif.
+- Penyiapan interaktif dapat secara opsional menambahkan pengikatan dengan cakupan akun.
 
-Jika konfigurasi Anda sudah berada dalam status campuran (akun bernama ada dan nilai akun tunggal tingkat atas masih ditetapkan), jalankan `openclaw doctor --fix` untuk memindahkan nilai berskala akun ke akun promosi yang dipilih untuk saluran tersebut. Sebagian besar saluran dipromosikan ke `accounts.default`; Matrix dapat mempertahankan target bernama/default yang sudah ada sebagai gantinya.
+Jika konfigurasi Anda sudah berada dalam keadaan campuran (akun bernama tersedia sementara nilai tingkat atas untuk satu akun masih ditetapkan), jalankan `openclaw doctor --fix` untuk memindahkan nilai dengan cakupan akun ke akun hasil pemindahan yang dipilih untuk saluran tersebut.
 
-## Login dan logout (interaktif)
+## Masuk dan keluar (interaktif)
 
 ```bash
 openclaw channels login --channel whatsapp
 openclaw channels logout --channel whatsapp
 ```
 
-- `channels login` mendukung `--verbose`.
-- `channels login` dan `logout` dapat menyimpulkan saluran saat hanya satu target login yang didukung dikonfigurasi.
-- `channels logout` mengutamakan jalur Gateway live saat dapat dijangkau, sehingga logout menghentikan listener aktif apa pun sebelum membersihkan status auth saluran. Jika Gateway lokal tidak dapat dijangkau, perintah ini kembali ke pembersihan auth lokal.
-- Jalankan `channels login` dari terminal pada host gateway. `exec` agen memblokir alur login interaktif ini; alat login agen bawaan saluran, seperti `whatsapp_login`, harus digunakan dari chat jika tersedia.
+- `channels login` mendukung `--account <id>` dan `--verbose`; `channels logout` mendukung `--account <id>`.
+- `channels login` dan `logout` dapat menyimpulkan saluran jika hanya satu saluran terkonfigurasi yang mendukung tindakan tersebut; jika ada beberapa, gunakan `--channel`.
+- `channels logout` mengutamakan jalur Gateway langsung jika dapat dijangkau, sehingga proses keluar menghentikan listener aktif sebelum menghapus status autentikasi saluran. Jika Gateway lokal tidak dapat dijangkau, perintah ini beralih ke pembersihan autentikasi lokal; dengan `gateway.mode: "remote"`, galat Gateway akan menggagalkan perintah.
+- Setelah berhasil masuk, CLI meminta Gateway lokal yang dapat dijangkau untuk memulai akun; dalam mode jarak jauh, CLI menyimpan autentikasi secara lokal dan memberi tahu bahwa runtime jarak jauh tidak dimulai ulang.
+- Jalankan `channels login` dari terminal pada hos Gateway. `exec` milik agen memblokir alur masuk interaktif ini; alat masuk agen bawaan saluran, seperti `whatsapp_login`, harus digunakan dari obrolan jika tersedia.
 
 ## Pemecahan masalah
 
-- Jalankan `openclaw status --deep` untuk probe luas.
+- Jalankan `openclaw status --deep` untuk pemeriksaan menyeluruh.
 - Gunakan `openclaw doctor` untuk perbaikan terpandu.
-- `openclaw channels list` tidak lagi mencetak snapshot penggunaan/kuota penyedia model. Untuk itu, gunakan `openclaw status` (ringkasan) atau `openclaw models list` (per penyedia).
-- `openclaw channels status` kembali ke ringkasan khusus konfigurasi saat gateway tidak dapat dijangkau. Jika kredensial saluran yang didukung dikonfigurasi melalui SecretRef tetapi tidak tersedia di jalur perintah saat ini, perintah ini melaporkan akun tersebut sebagai terkonfigurasi dengan catatan terdegradasi alih-alih menampilkannya sebagai tidak terkonfigurasi.
+- `openclaw channels status` beralih ke ringkasan berbasis konfigurasi saja jika Gateway tidak dapat dijangkau. Jika kredensial saluran yang didukung dikonfigurasi melalui SecretRef tetapi tidak tersedia di jalur perintah saat ini, perintah ini melaporkan akun tersebut sebagai telah dikonfigurasi dengan catatan penurunan fungsi, alih-alih menampilkannya sebagai belum dikonfigurasi.
 
-## Probe kapabilitas
+## Pemeriksaan kapabilitas
 
-Ambil petunjuk kapabilitas penyedia (intent/scope jika tersedia) plus dukungan fitur statis:
+Ambil petunjuk kapabilitas penyedia (intensi/cakupan jika tersedia) beserta dukungan fitur statis:
 
 ```bash
 openclaw channels capabilities
@@ -126,14 +127,14 @@ openclaw channels capabilities --channel discord --target channel:123
 
 Catatan:
 
-- `--channel` bersifat opsional; hilangkan untuk mencantumkan setiap saluran (termasuk ekstensi).
-- `--account` hanya valid dengan `--channel`.
-- `--target` menerima `channel:<id>` atau ID saluran numerik mentah dan hanya berlaku untuk Discord. Untuk saluran suara Discord, pemeriksaan izin menandai `ViewChannel`, `Connect`, `Speak`, `SendMessages`, dan `ReadMessageHistory` yang hilang.
-- Probe bersifat spesifik penyedia: intent Discord + izin saluran opsional; bot Slack + scope pengguna; flag bot Telegram + webhook; versi daemon Signal; token aplikasi Microsoft Teams + peran/scope Graph (diberi anotasi jika diketahui). Saluran tanpa probe melaporkan `Probe: unavailable`.
+- `--channel` bersifat opsional; abaikan untuk mencantumkan setiap saluran (termasuk saluran yang disediakan Plugin).
+- `--account` hanya valid jika digunakan bersama `--channel`.
+- `--target` menerima `channel:<id>` atau ID saluran numerik mentah dan hanya berlaku untuk Discord. Untuk saluran suara Discord, pemeriksaan izin menandai `ViewChannel`, `Connect`, `Speak`, `SendMessages`, dan `ReadMessageHistory` yang tidak tersedia.
+- Pemeriksaan bersifat khusus penyedia: identitas bot + intensi Discord beserta izin saluran opsional; cakupan bot + pengguna Slack; flag bot + Webhook Telegram; versi daemon Signal; token aplikasi Microsoft Teams + peran/cakupan Graph (diberi anotasi jika diketahui). Saluran tanpa pemeriksaan melaporkan `Probe: unavailable`.
 
-## Resolve nama ke ID
+## Menyelesaikan nama menjadi ID
 
-Resolve nama saluran/pengguna ke ID menggunakan direktori penyedia:
+Selesaikan nama saluran/pengguna menjadi ID menggunakan direktori penyedia:
 
 ```bash
 openclaw channels resolve --channel slack "#general" "@jane"
@@ -143,12 +144,12 @@ openclaw channels resolve --channel matrix "Project Room"
 
 Catatan:
 
-- Gunakan `--kind user|group|auto` untuk memaksa jenis target.
-- Resolusi mengutamakan kecocokan aktif saat beberapa entri memiliki nama yang sama.
-- `channels resolve` bersifat hanya baca. Jika akun yang dipilih dikonfigurasi melalui SecretRef tetapi kredensial tersebut tidak tersedia di jalur perintah saat ini, perintah mengembalikan hasil tidak terselesaikan yang terdegradasi dengan catatan alih-alih membatalkan seluruh proses.
-- `channels resolve` tidak menginstal plugin saluran. Gunakan `channels add --channel <name>` sebelum me-resolve nama untuk saluran katalog yang dapat diinstal.
+- Gunakan `--kind user|group|auto` untuk memaksakan jenis target.
+- Penyelesaian mengutamakan kecocokan aktif jika beberapa entri memiliki nama yang sama.
+- `channels resolve` bersifat hanya-baca. Jika akun yang dipilih dikonfigurasi melalui SecretRef tetapi kredensial tersebut tidak tersedia di jalur perintah saat ini, perintah akan mengembalikan hasil yang tidak terselesaikan dengan fungsi terbatas beserta catatan, alih-alih membatalkan seluruh proses.
+- `channels resolve` tidak memasang Plugin saluran. Gunakan `channels add --channel <name>` sebelum menyelesaikan nama untuk saluran katalog yang dapat dipasang.
 
 ## Terkait
 
 - [Referensi CLI](/id/cli)
-- [Gambaran umum saluran](/id/channels)
+- [Ikhtisar saluran](/id/channels)

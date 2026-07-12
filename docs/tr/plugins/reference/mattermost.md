@@ -1,11 +1,11 @@
 ---
 read_when:
-    - mattermost Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
+    - mattermost Pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
 summary: OpenClaw mesajlarını gönderip almak için Mattermost kanal yüzeyini ekler.
 title: Mattermost Plugin'i
 x-i18n:
-    generated_at: "2026-06-28T01:01:04Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:37:55Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 7a05711dbd897c71a19537dc7a2461be3c1c7aa37aa25f3fa0135848644040b4
@@ -15,7 +15,7 @@ x-i18n:
 
 # Mattermost Plugin
 
-OpenClaw mesajlarını gönderip almak için Mattermost kanal yüzeyini ekler.
+OpenClaw mesajlarını göndermek ve almak için Mattermost kanal yüzeyini ekler.
 
 ## Dağıtım
 
@@ -24,7 +24,7 @@ OpenClaw mesajlarını gönderip almak için Mattermost kanal yüzeyini ekler.
 
 ## Yüzey
 
-channels: mattermost
+kanallar: mattermost
 
 ## İlgili belgeler
 

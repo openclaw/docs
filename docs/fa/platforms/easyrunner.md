@@ -1,38 +1,40 @@
 ---
 read_when:
     - استقرار OpenClaw روی EasyRunner
-    - اجرای Gateway پشت پروکسی Caddy متعلق به EasyRunner
-    - انتخاب حجم‌های پایدار و احراز هویت برای یک Gateway میزبانی‌شده
-summary: اجرای Gateway مربوط به OpenClaw روی EasyRunner با Podman و Caddy
-title: EasyRunner
+    - اجرای Gateway پشت پراکسی Caddy متعلق به EasyRunner
+    - انتخاب حجم‌های ذخیره‌سازی پایدار و احراز هویت برای Gateway میزبانی‌شده
+summary: Gatewayِ OpenClaw را در EasyRunner با Podman و Caddy اجرا کنید
+title: ایزی‌رانر
 x-i18n:
-    generated_at: "2026-06-27T18:05:53Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:17:15Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b6d67270e1b47ecbd67361edd018b531598d0365e2dacd594cb73c6b74c10478
+    source_hash: 80cbde016a8bf7662d4b4a056a3d122a423264179daf70b5705e8f10b0dad5cb
     source_path: platforms/easyrunner.md
     workflow: 16
 ---
 
-EasyRunner می‌تواند Gateway متعلق به OpenClaw را به‌صورت یک برنامهٔ کانتینری کوچک پشت پراکسی
-Caddy خود میزبانی کند. این راهنما یک میزبان EasyRunner را فرض می‌کند که برنامه‌های Compose سازگار با Podman را اجرا می‌کند و HTTPS را از طریق Caddy در دسترس می‌گذارد.
+EasyRunner، Gateway متعلق به OpenClaw را به‌صورت یک برنامهٔ کوچک کانتینری پشت پراکسی
+Caddy خود میزبانی می‌کند. این راهنما فرض می‌کند میزبان EasyRunner برنامه‌های Compose
+سازگار با Podman را اجرا می‌کند و HTTPS را از طریق Caddy خاتمه می‌دهد.
 
 ## پیش از شروع
 
-- یک سرور EasyRunner با دامنه‌ای که به آن مسیریابی شده است.
-- یک تصویر کانتینری OpenClaw ساخته‌شده یا منتشرشده.
-- یک volume پیکربندی پایدار برای `/home/node/.openclaw`.
-- یک volume فضای کاری پایدار برای `/workspace`.
+- یک سرور EasyRunner که دامنه‌ای به آن هدایت شده باشد.
+- ایمیج رسمی OpenClaw (`ghcr.io/openclaw/openclaw`) یا بیلد خودتان.
+- یک والیوم پیکربندی پایدار برای `/home/node/.openclaw`.
+- یک والیوم فضای کاری پایدار برای `/home/node/.openclaw/workspace`.
 - یک توکن یا گذرواژهٔ قوی برای Gateway.
 
-در صورت امکان احراز هویت دستگاه را فعال نگه دارید. اگر استقرار reverse proxy شما نمی‌تواند
-هویت دستگاه را درست منتقل کند، ابتدا تنظیمات trusted-proxy را اصلاح کنید؛ از
-دورزدن‌های خطرناک احراز هویت فقط برای یک شبکهٔ کاملاً خصوصی و تحت کنترل اپراتور استفاده کنید.
+در صورت امکان، احراز هویت دستگاه را فعال نگه دارید. اگر پراکسی معکوس شما نمی‌تواند
+هویت دستگاه را به‌درستی منتقل کند، ابتدا تنظیمات پراکسی مورداعتماد را اصلاح کنید (به
+[احراز هویت پراکسی مورداعتماد](/fa/gateway/trusted-proxy-auth) مراجعه کنید)؛ تنها در یک شبکهٔ کاملاً
+خصوصی و تحت کنترل گرداننده از دور زدن‌های خطرناک احراز هویت استفاده کنید.
 
 ## برنامهٔ Compose
 
-یک برنامهٔ EasyRunner با فایل Compose به این شکل ایجاد کنید:
+در EasyRunner برنامه‌ای با یک فایل Compose به شکل زیر ایجاد کنید:
 
 ```yaml
 services:
@@ -44,27 +46,30 @@ services:
       OPENCLAW_HOME: /home/node
       OPENCLAW_STATE_DIR: /home/node/.openclaw
       OPENCLAW_CONFIG_PATH: /home/node/.openclaw/openclaw.json
-      OPENCLAW_WORKSPACE_DIR: /workspace
+      OPENCLAW_WORKSPACE_DIR: /home/node/.openclaw/workspace
     volumes:
       - openclaw-config:/home/node/.openclaw
-      - openclaw-workspace:/workspace
+      - openclaw-workspace:/home/node/.openclaw/workspace
     labels:
       caddy: openclaw.example.com
       caddy.reverse_proxy: "{{upstreams 1455}}"
-    command: ["openclaw", "gateway", "--bind", "lan", "--port", "1455"]
+    command: ["node", "openclaw.mjs", "gateway", "--bind", "lan", "--port", "1455"]
 
 volumes:
   openclaw-config:
   openclaw-workspace:
 ```
 
-`openclaw.example.com` را با نام میزبان Gateway خود جایگزین کنید. به‌جای
-ثبت `OPENCLAW_GATEWAY_TOKEN` در تعریف برنامه، آن را در مدیر secret/environment متعلق به EasyRunner ذخیره کنید.
+`openclaw.example.com` را با نام میزبان Gateway خود جایگزین کنید.
+`OPENCLAW_GATEWAY_TOKEN` را به‌جای ثبت در تعریف برنامه، در مدیر اسرار/محیط
+EasyRunner ذخیره کنید. ایمیج به‌طور پیش‌فرض به local loopback متصل می‌شود،
+بنابراین `--bind lan --port 1455` صریح در `command` لازم است تا Caddy بتواند
+به کانتینر دسترسی پیدا کند.
 
 ## پیکربندی OpenClaw
 
-درون volume پیکربندی پایدار، Gateway را فقط از طریق
-پراکسی در دسترس نگه دارید و احراز هویت را الزامی کنید:
+درون والیوم پیکربندی پایدار، Gateway را فقط از طریق پراکسی قابل دسترس نگه دارید
+و احراز هویت را الزامی کنید:
 
 ```json5
 {
@@ -78,11 +83,11 @@ volumes:
 }
 ```
 
-اگر Caddy خاتمهٔ TLS را برای Gateway انجام می‌دهد، تنظیمات trusted proxy را برای
-مسیر دقیق پراکسی پیکربندی کنید، نه اینکه بررسی‌های احراز هویت را به‌صورت سراسری غیرفعال کنید. ببینید
-[احراز هویت trusted proxy](/fa/gateway/trusted-proxy-auth).
+اگر Caddy اتصال TLS را برای Gateway خاتمه می‌دهد، به‌جای غیرفعال کردن سراسری
+بررسی‌های احراز هویت، تنظیمات پراکسی مورداعتماد را برای مسیر دقیق پراکسی پیکربندی
+کنید. به [احراز هویت پراکسی مورداعتماد](/fa/gateway/trusted-proxy-auth) مراجعه کنید.
 
-## تأیید
+## بررسی
 
 از ایستگاه کاری خود:
 
@@ -91,24 +96,31 @@ openclaw gateway probe --url https://openclaw.example.com --token <token>
 openclaw gateway status --url https://openclaw.example.com --token <token>
 ```
 
-از میزبان EasyRunner، لاگ‌های برنامه را بررسی کنید تا مطمئن شوید Gateway در حال گوش دادن است و
-هیچ خطای راه‌اندازی مربوط به SecretRef، plugin یا احراز هویت کانال وجود ندارد.
+در میزبان EasyRunner، `GET /healthz` (فعال‌بودن) و `GET /readyz`
+(آمادگی) به احراز هویت نیاز ندارند و مبنای بررسی سلامت داخلی کانتینر در ایمیج
+هستند. همچنین گزارش‌های برنامه را بررسی کنید تا Gateway در حال گوش‌دادن باشد و
+هیچ خطای احراز هویت هنگام راه‌اندازی برای SecretRef، Plugin یا کانال وجود نداشته
+باشد.
 
-## به‌روزرسانی‌ها و پشتیبان‌گیری‌ها
+## به‌روزرسانی‌ها و پشتیبان‌گیری
 
-- تصویر جدید OpenClaw را pull یا build کنید، سپس برنامهٔ EasyRunner را دوباره مستقر کنید.
-- پیش از به‌روزرسانی‌ها از volume به نام `openclaw-config` پشتیبان بگیرید.
-- اگر agentها داده‌های پایدار پروژه را در آنجا می‌نویسند، از `openclaw-workspace` پشتیبان بگیرید.
-- پس از به‌روزرسانی‌های بزرگ، `openclaw doctor` را اجرا کنید تا migrationهای پیکربندی و
-  هشدارهای سرویس را پیدا کند.
+- ایمیج جدید OpenClaw را دریافت یا بیلد کنید، سپس برنامهٔ EasyRunner را دوباره مستقر کنید.
+- پیش از به‌روزرسانی‌ها از والیوم `openclaw-config` پشتیبان بگیرید. این والیوم
+  شامل `openclaw.json`،‏ `agents/<agentId>/agent/auth-profiles.json` و وضعیت
+  بسته‌های Plugin نصب‌شده است.
+- اگر عامل‌ها داده‌های پایدار پروژه را در `openclaw-workspace` می‌نویسند، از آن پشتیبان بگیرید.
+- پس از به‌روزرسانی‌های عمده، `openclaw doctor` را اجرا کنید تا مهاجرت‌های
+  پیکربندی و هشدارهای سرویس شناسایی شوند.
 
 ## عیب‌یابی
 
-- `gateway probe` نمی‌تواند متصل شود: تأیید کنید نام میزبان Caddy به برنامه اشاره می‌کند
-  و کانتینر روی `0.0.0.0:1455` گوش می‌دهد.
-- احراز هویت ناموفق است: توکن را در secrets متعلق به EasyRunner و فرمان کلاینت محلی
-  هم‌زمان rotate کنید.
-- فایل‌ها پس از بازیابی متعلق به root هستند: volumeهای mountشده را اصلاح کنید تا
-  کاربر کانتینر بتواند در `/home/node/.openclaw` و `/workspace` بنویسد.
-- Browser یا pluginهای کانال ناموفق می‌شوند: بررسی کنید که binaryهای خارجی موردنیاز،
-  خروجی شبکه و اعتبارنامه‌های mountشده درون کانتینر در دسترس باشند.
+- `gateway probe` نمی‌تواند متصل شود: تأیید کنید نام میزبان Caddy به برنامه
+  اشاره می‌کند و کانتینر روی `0.0.0.0:1455` در حال گوش‌دادن است.
+- احراز هویت ناموفق است: توکن را به‌طور هم‌زمان در اسرار EasyRunner و فرمان
+  کارخواه محلی تعویض کنید.
+- پس از بازیابی، مالک فایل‌ها کاربر ریشه است: ایمیج با کاربر `node` (uid 1000)
+  اجرا می‌شود؛ والیوم‌های متصل‌شده را اصلاح کنید تا آن کاربر بتواند در
+  `/home/node/.openclaw` و `/home/node/.openclaw/workspace` بنویسد.
+- مرورگر یا Pluginهای کانال ناموفق هستند: بررسی کنید فایل‌های اجرایی خارجی
+  موردنیاز، دسترسی خروجی شبکه و اطلاعات اعتبارسنجی متصل‌شده درون کانتینر
+  در دسترس باشند.

@@ -1,249 +1,300 @@
 ---
 read_when:
-    - Anda sedang men-debug penolakan permintaan penyedia yang terkait dengan bentuk transkrip
-    - Anda mengubah sanitasi transkrip atau logika perbaikan pemanggilan tool
-    - Anda sedang menyelidiki ketidakcocokan id pemanggilan alat di berbagai provider
-summary: 'Referensi: aturan sanitasi transkrip dan perbaikan khusus penyedia'
+    - Anda sedang men-debug penolakan permintaan penyedia yang terkait dengan struktur transkrip
+    - Anda sedang mengubah logika sanitasi transkrip atau perbaikan pemanggilan alat
+    - Anda sedang menyelidiki ketidakcocokan ID pemanggilan alat di berbagai penyedia
+summary: 'Referensi: aturan sanitasi dan perbaikan transkrip khusus penyedia'
 title: Kebersihan transkrip
 x-i18n:
-    generated_at: "2026-06-27T18:12:59Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:40:13Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ca1c747b33dc0d6730281d6c91d28a0f8a85bcc5e5cb00dbdebdb55157871a7d
+    source_hash: 4c78d718106498e92c34e3ad6af452a340f230fa88fbf3da36a568e9814ec759
     source_path: reference/transcript-hygiene.md
     workflow: 16
 ---
 
-OpenClaw menerapkan **perbaikan khusus provider** ke transkrip sebelum sebuah run (membangun konteks model). Sebagian besar adalah penyesuaian **dalam memori** yang digunakan untuk memenuhi persyaratan provider yang ketat. Pass perbaikan file sesi terpisah juga dapat menulis ulang JSONL tersimpan sebelum sesi dimuat, tetapi hanya untuk baris yang cacat atau turn tersimpan yang merupakan record tahan lama yang tidak valid. Balasan assistant yang telah dikirim dipertahankan di disk; penghapusan assistant-prefill khusus provider hanya terjadi saat menyusun payload keluar. Ketika perbaikan terjadi, file asli ditulis ke sibling sementara `*.bak-<pid>-<ts>` sebelum penggantian atomik dan dihapus setelah penggantian berhasil; backup hanya dipertahankan jika cleanup itu sendiri gagal (dalam hal ini path dilaporkan kembali).
+OpenClaw menerapkan **perbaikan khusus penyedia** pada transkrip sebelum eksekusi
+(membangun konteks model). Sebagian besar perbaikan ini merupakan penyesuaian
+**dalam memori** yang digunakan untuk memenuhi persyaratan ketat penyedia.
+Proses perbaikan berkas sesi yang terpisah juga dapat menulis ulang JSONL yang
+tersimpan sebelum sesi dimuat, tetapi hanya untuk baris yang rusak atau giliran
+tersimpan yang bukan merupakan rekaman persisten yang valid. Balasan asisten
+yang telah dikirim dipertahankan di disk; penghapusan praisi asisten khusus
+penyedia hanya terjadi saat menyusun muatan keluar.
 
-Cakupan meliputi:
+Ketika perbaikan dilakukan, berkas asli ditulis ke berkas sementara sejajar
+`*.bak-<pid>-<ts>` sebelum penggantian atomik, lalu dihapus setelah penggantian
+berhasil. Cadangan hanya dipertahankan jika pembersihannya sendiri gagal; dalam
+kasus tersebut, jalurnya dilaporkan kembali.
 
-- Konteks prompt khusus runtime yang tetap berada di luar turn transkrip yang terlihat oleh pengguna
-- Sanitasi id tool call
-- Validasi input tool call
-- Perbaikan pemasangan hasil tool
-- Validasi / pengurutan turn
-- Cleanup tanda tangan thought
-- Cleanup tanda tangan thinking
-- Sanitasi payload gambar
-- Cleanup blok teks kosong sebelum replay provider
-- Cleanup turn panjang khusus reasoning yang tidak lengkap sebelum replay provider
-- Penandaan asal input pengguna (untuk prompt yang dirutekan antar-sesi)
-- Perbaikan turn error assistant kosong untuk replay Bedrock Converse
+Cakupannya meliputi:
 
-Jika Anda membutuhkan detail penyimpanan transkrip, lihat:
+- Menjaga konteks prompt khusus runtime agar tidak masuk ke giliran transkrip yang terlihat oleh pengguna
+- Sanitasi id panggilan alat
+- Validasi input panggilan alat
+- Perbaikan pemasangan hasil alat
+- Validasi / pengurutan giliran
+- Pembersihan tanda tangan pemikiran
+- Pembersihan tanda tangan proses berpikir
+- Sanitasi muatan gambar
+- Pembersihan blok teks kosong sebelum pemutaran ulang ke penyedia
+- Pembersihan giliran terputus yang hanya berisi penalaran akibat batas panjang sebelum pemutaran ulang ke penyedia
+- Penandaan asal input pengguna (untuk prompt yang dirutekan antarsesi)
+- Perbaikan giliran kesalahan asisten kosong untuk pemutaran ulang Bedrock Converse
 
-- [Pendalaman manajemen sesi](/id/reference/session-management-compaction)
+Jika Anda memerlukan detail penyimpanan transkrip, lihat
+[Uraian mendalam pengelolaan sesi](/id/reference/session-management-compaction).
 
 ---
 
 ## Aturan global: konteks runtime bukan transkrip pengguna
 
-Konteks runtime/sistem dapat ditambahkan ke prompt model untuk sebuah turn, tetapi itu
-bukan konten yang ditulis oleh pengguna akhir. OpenClaw mempertahankan body prompt
-terpisah yang menghadap transkrip untuk balasan Gateway, followup yang diantrekan, ACP, CLI, dan run OpenClaw
-tertanam. Turn pengguna terlihat yang tersimpan menggunakan body transkrip tersebut, bukan
-prompt yang diperkaya runtime.
+Konteks runtime/sistem dapat ditambahkan ke prompt model untuk suatu giliran,
+tetapi konteks tersebut bukan konten yang ditulis oleh pengguna akhir.
+OpenClaw menyimpan isi prompt terpisah yang ditujukan untuk transkrip bagi
+balasan Gateway, tindak lanjut dalam antrean, ACP, CLI, dan eksekusi OpenClaw
+tertanam. Giliran pengguna terlihat yang tersimpan menggunakan isi transkrip
+tersebut, bukan prompt yang diperkaya dengan konteks runtime.
 
-Untuk sesi lama yang sudah menyimpan wrapper runtime, permukaan riwayat Gateway
-menerapkan proyeksi tampilan sebelum mengembalikan pesan ke klien WebChat,
-TUI, REST, atau SSE.
+Untuk sesi lama yang telah menyimpan pembungkus runtime, permukaan riwayat
+Gateway menerapkan proyeksi tampilan sebelum mengembalikan pesan kepada klien
+WebChat, TUI, REST, atau SSE.
 
 ---
 
-## Tempat ini berjalan
+## Tempat proses ini dijalankan
 
-Semua hygiene transkrip dipusatkan di runner tertanam:
+Seluruh kebersihan transkrip dipusatkan dalam runner tertanam:
 
 - Pemilihan kebijakan: `src/agents/transcript-policy.ts`
-- Penerapan sanitasi/perbaikan: `sanitizeSessionHistory` di `src/agents/embedded-agent-runner/replay-history.ts`
+  (`resolveTranscriptPolicy`, berdasarkan `provider`, `modelApi`, dan `modelId`)
+- Penerapan sanitasi/perbaikan: `sanitizeSessionHistory` dalam
+  `src/agents/embedded-agent-runner/replay-history.ts`
 
-Kebijakan menggunakan `provider`, `modelApi`, dan `modelId` untuk memutuskan apa yang diterapkan.
+Terpisah dari kebersihan transkrip, berkas sesi diperbaiki (jika diperlukan)
+sebelum dimuat:
 
-Terpisah dari hygiene transkrip, file sesi diperbaiki (jika diperlukan) sebelum dimuat:
-
-- `repairSessionFileIfNeeded` di `src/agents/session-file-repair.ts`
-- Dipanggil dari `run/attempt.ts` dan `compact.ts` (runner tertanam)
+- `repairSessionFileIfNeeded` dalam `src/agents/session-file-repair.ts`
+- Dipanggil dari `src/agents/embedded-agent-runner/run/attempt.ts` dan
+  `src/agents/embedded-agent-runner/compact.ts`
 
 ---
 
 ## Aturan global: sanitasi gambar
 
-Payload gambar selalu disanitasi untuk mencegah penolakan di sisi provider karena batas
-ukuran (downscale/recompress gambar base64 yang terlalu besar).
-
-Ini juga membantu mengendalikan tekanan token yang dipicu gambar untuk model yang mendukung vision.
-Dimensi maksimum yang lebih rendah umumnya mengurangi penggunaan token; dimensi yang lebih tinggi mempertahankan detail.
-
-Implementasi:
-
-- `sanitizeSessionMessagesImages` di `src/agents/embedded-agent-helpers/images.ts`
-- `sanitizeContentBlocksImages` di `src/agents/tool-images.ts`
-- Sisi gambar maksimum dapat dikonfigurasi melalui `agents.defaults.imageMaxDimensionPx` (default: `1200`).
-- Blok teks kosong dihapus saat pass ini menelusuri konten replay. Turn assistant
-  yang menjadi kosong dihapus dari salinan replay; turn pengguna dan hasil tool
-  yang menjadi kosong menerima placeholder konten yang dihilangkan yang tidak kosong.
-
----
-
-## Aturan global: tool call cacat
-
-Blok tool-call assistant yang tidak memiliki `input` maupun `arguments` dihapus
-sebelum konteks model dibangun. Ini mencegah penolakan provider dari tool call yang
-tersimpan sebagian (misalnya, setelah kegagalan rate limit).
+Muatan gambar selalu disanitasi untuk mencegah penolakan dari sisi penyedia
+akibat batas ukuran (menurunkan skala/mengompresi ulang gambar base64 yang
+terlalu besar). Hal ini juga membantu mengendalikan tekanan token akibat
+gambar untuk model yang mendukung penglihatan: dimensi maksimum yang lebih
+rendah mengurangi penggunaan token, sedangkan dimensi yang lebih tinggi
+mempertahankan detail.
 
 Implementasi:
 
-- `sanitizeToolCallInputs` di `src/agents/session-transcript-repair.ts`
-- Diterapkan di `sanitizeSessionHistory` di `src/agents/embedded-agent-runner/replay-history.ts`
+- `sanitizeSessionMessagesImages` dalam
+  `src/agents/embedded-agent-helpers/images.ts`
+- `sanitizeContentBlocksImages` dalam `src/agents/tool-images.ts`
+- Sisi maksimum gambar dapat dikonfigurasi melalui `agents.defaults.imageMaxDimensionPx`
+  (bawaan: `1200`)
+- Blok teks kosong dihapus saat proses ini menelusuri konten pemutaran ulang.
+  Giliran asisten yang menjadi kosong dihapus dari salinan pemutaran ulang;
+  giliran pengguna dan hasil alat yang menjadi kosong menerima placeholder
+  konten-dihilangkan yang tidak kosong.
 
 ---
 
-## Aturan global: turn khusus reasoning yang tidak lengkap
+## Aturan global: panggilan alat yang rusak
 
-Turn assistant yang mencapai batas output provider hanya dengan konten thinking atau
-redacted-thinking dihilangkan dari salinan replay dalam memori. Turn seperti itu
-berisi state provider yang tidak lengkap dan dapat membawa tanda tangan thinking parsial.
-
-Turn panjang kosong tetap tidak berubah, begitu pula turn panjang dengan teks terlihat, tool
-call, atau blok konten yang tidak dikenal. Transkrip tersimpan tidak ditulis ulang.
+Blok panggilan alat asisten yang tidak memiliki `input` maupun `arguments`
+dihapus sebelum konteks model dibangun. Hal ini mencegah penolakan penyedia
+akibat panggilan alat yang tersimpan sebagian (misalnya setelah kegagalan
+karena batas laju).
 
 Implementasi:
 
-- `normalizeAssistantReplayContent` di `src/agents/embedded-agent-runner/replay-history.ts`
+- `sanitizeToolCallInputs` dalam `src/agents/session-transcript-repair.ts`
+- Diterapkan dalam `sanitizeSessionHistory`
+  (`src/agents/embedded-agent-runner/replay-history.ts`)
 
 ---
 
-## Aturan global: asal input antar-sesi
+## Aturan global: giliran tidak lengkap yang hanya berisi penalaran
 
-Ketika agent mengirim prompt ke sesi lain melalui `sessions_send` (termasuk
-langkah balas/umumkan agent-ke-agent), OpenClaw menyimpan turn pengguna yang dibuat dengan:
+Giliran asisten yang mencapai batas keluaran penyedia dan hanya berisi konten
+pemikiran atau pemikiran yang disamarkan dihilangkan dari salinan pemutaran
+ulang dalam memori. Giliran tersebut memuat status penyedia yang tidak lengkap
+dan mungkin membawa tanda tangan pemikiran parsial.
 
-- `message.provenance.kind = "inter_session"`
+Giliran kosong akibat batas panjang tetap tidak berubah, begitu pula giliran
+akibat batas panjang yang memiliki teks terlihat, panggilan alat, atau blok
+konten yang tidak dikenal. Transkrip tersimpan tidak ditulis ulang.
 
-OpenClaw juga menambahkan marker `[Inter-session message ... isUser=false]`
-pada turn yang sama sebelum teks prompt yang dirutekan, sehingga pemanggilan model aktif dapat membedakan
-output sesi asing dari instruksi pengguna akhir eksternal. Marker ini menyertakan
-sesi sumber, channel, dan tool jika tersedia. Transkrip tetap menggunakan
-`role: "user"` untuk kompatibilitas provider, tetapi teks terlihat dan metadata
-asal sama-sama menandai turn tersebut sebagai data antar-sesi.
-
-Selama pembangunan ulang konteks, OpenClaw menerapkan marker yang sama ke turn pengguna
-antar-sesi lama yang tersimpan yang hanya memiliki metadata asal.
+Implementasi: `normalizeAssistantReplayContent` dalam
+`src/agents/embedded-agent-runner/replay-history.ts`
 
 ---
 
-## Matriks provider (perilaku saat ini)
+## Aturan global: asal input antarsesi
+
+Ketika agen mengirimkan prompt ke sesi lain melalui `sessions_send`
+(termasuk langkah balasan/pengumuman antaragen), OpenClaw menyimpan giliran
+pengguna yang dibuat dengan `message.provenance.kind = "inter_session"`.
+
+OpenClaw juga menambahkan penanda `[Inter-session message] ... isUser=false`
+pada awal giliran yang sama sebelum teks prompt yang dirutekan agar panggilan
+model aktif dapat membedakan keluaran sesi lain dari instruksi pengguna akhir
+eksternal. Penanda ini menyertakan sesi sumber, kanal, dan alat jika tersedia.
+Transkrip tetap menggunakan `role: "user"` untuk kompatibilitas penyedia,
+tetapi teks yang terlihat dan metadata asal sama-sama menandai giliran tersebut
+sebagai data antarsesi.
+
+Selama pembangunan ulang konteks, OpenClaw menerapkan penanda yang sama pada
+giliran pengguna antarsesi lama yang tersimpan dan hanya memiliki metadata
+asal.
+
+---
+
+## Matriks penyedia (perilaku saat ini)
 
 **OpenAI / OpenAI Codex**
 
 - Hanya sanitasi gambar.
-- Hapus tanda tangan reasoning yatim (item reasoning mandiri tanpa blok konten berikutnya) untuk transkrip OpenAI Responses/Codex, dan hapus reasoning OpenAI yang dapat diputar ulang setelah perpindahan rute model.
-- Pertahankan payload item reasoning OpenAI Responses yang dapat diputar ulang, termasuk item ringkasan kosong terenkripsi, sehingga replay manual/WebSocket mempertahankan state `rs_*` yang diperlukan tetap berpasangan dengan item output assistant.
-- Native ChatGPT Codex Responses mengikuti paritas wire Codex dengan memutar ulang payload reasoning/message/function Responses sebelumnya tanpa ID item sebelumnya sambil mempertahankan `prompt_cache_key` sesi.
-- Replay keluarga OpenAI Responses mempertahankan pasangan reasoning model-sama kanonis `call_*|fc_*`, tetapi secara deterministik menormalkan `call_id` / id item function-call yang cacat atau terlalu panjang sebelum konversi payload pi-ai.
-- Perbaikan pemasangan hasil tool dapat memindahkan output cocok yang sebenarnya dan mensintesis output `aborted` gaya Codex untuk tool call yang hilang.
-- Tidak ada validasi atau pengurutan ulang turn.
-- Output tool keluarga OpenAI Responses yang hilang disintesis sebagai `aborted` agar cocok dengan normalisasi replay Codex.
-- Tidak ada penghapusan tanda tangan thought.
+- Hapus tanda tangan penalaran yatim (item penalaran mandiri tanpa blok konten
+  berikutnya) untuk transkrip OpenAI Responses/Codex, serta hapus penalaran
+  OpenAI yang dapat diputar ulang setelah peralihan rute model.
+- Pertahankan muatan item penalaran OpenAI Responses yang dapat diputar ulang,
+  termasuk item ringkasan kosong terenkripsi, agar pemutaran ulang
+  manual/WebSocket tetap memasangkan status `rs_*` yang diwajibkan dengan item
+  keluaran asisten.
+- Native ChatGPT Codex Responses mengikuti kesetaraan protokol Codex dengan
+  memutar ulang muatan penalaran/pesan/fungsi Responses sebelumnya tanpa id
+  item sebelumnya, sambil mempertahankan `prompt_cache_key` sesi.
+- Pemutaran ulang keluarga OpenAI Responses mempertahankan pasangan penalaran
+  model-yang-sama `call_*|fc_*` yang kanonis, tetapi secara deterministik
+  menormalkan `call_id`/id item panggilan fungsi yang rusak atau terlalu
+  panjang sebelum konversi muatan pi-ai.
+- Perbaikan pemasangan hasil alat dapat memindahkan keluaran nyata yang cocok
+  dan menyintesis keluaran `aborted` bergaya Codex untuk panggilan alat yang
+  tidak memiliki hasil.
+- Tidak ada validasi atau pengurutan ulang giliran; tidak ada penghapusan tanda
+  tangan pemikiran.
 
 **Chat Completions yang kompatibel dengan OpenAI**
 
-- Blok thinking/reasoning assistant historis dihapus sebelum replay sehingga
-  server lokal dan proxy-style yang kompatibel dengan OpenAI tidak menerima field reasoning
-  turn sebelumnya seperti `reasoning` atau `reasoning_content`.
-- Kelanjutan tool-call turn-sama saat ini mempertahankan blok reasoning assistant
-  yang terpasang ke tool call sampai hasil tool telah diputar ulang.
-- Entri model kustom/self-hosted dengan `reasoning: true` mempertahankan
-  metadata reasoning yang diputar ulang.
-- Pengecualian milik provider dapat memilih keluar saat protokol wire mereka membutuhkan
-  metadata reasoning yang diputar ulang.
+- Blok pemikiran/penalaran asisten historis dihapus sebelum pemutaran ulang
+  agar server lokal dan server bergaya proksi yang kompatibel dengan OpenAI
+  tidak menerima bidang penalaran giliran sebelumnya seperti `reasoning` atau
+  `reasoning_content`.
+- Kelanjutan panggilan alat dalam giliran yang sama saat ini mempertahankan
+  blok penalaran asisten yang terlampir pada panggilan alat sampai hasil alat
+  diputar ulang.
+- Entri model khusus/dihosting sendiri dengan `reasoning: true` mempertahankan
+  metadata penalaran yang diputar ulang.
+- Pengecualian milik penyedia dapat memilih untuk tidak menerapkannya ketika
+  protokol mereka memerlukan metadata penalaran yang diputar ulang.
 
 **Google (Generative AI / Gemini CLI / Antigravity)**
 
-- Sanitasi id tool call: alfanumerik ketat.
-- Perbaikan pemasangan hasil tool dan hasil tool sintetis.
-- Validasi turn (alternasi turn gaya Gemini).
-- Fixup pengurutan turn Google (tambahkan bootstrap pengguna kecil jika riwayat dimulai dengan assistant).
-- Antigravity Claude: normalkan tanda tangan thinking; hapus blok thinking tanpa tanda tangan.
+- Sanitasi id panggilan alat: alfanumerik ketat.
+- Perbaikan pemasangan hasil alat dan hasil alat sintetis.
+- Validasi giliran (pergantian giliran bergaya Gemini).
+- Perbaikan pengurutan giliran Google (tambahkan bootstrap pengguna kecil di
+  awal jika riwayat dimulai dengan asisten).
+- Antigravity Claude: normalkan tanda tangan pemikiran; hapus blok pemikiran
+  tanpa tanda tangan.
 
 **Anthropic / Minimax (kompatibel dengan Anthropic)**
 
-- Perbaikan pemasangan hasil tool dan hasil tool sintetis.
-- Validasi turn (gabungkan turn pengguna berurutan untuk memenuhi alternasi ketat).
-- Turn prefill assistant di akhir dihapus dari payload Anthropic Messages
-  keluar ketika thinking diaktifkan, termasuk rute Cloudflare AI Gateway.
-- Tanda tangan thinking assistant pra-Compaction dihapus sebelum replay provider
-  ketika sesi telah di-compact. Tanda tangan thinking terikat secara kriptografis
-  ke prefiks percakapan pada waktu pembuatan; setelah Compaction, prefiks berubah
-  (konten yang diringkas diganti oleh ringkasan Compaction), sehingga memutar ulang
-  tanda tangan asli menyebabkan Anthropic menolak request dengan "Invalid signature in thinking block".
-  Teks thinking dipertahankan sebagai blok tanpa tanda tangan dan kemudian ditangani oleh aturan di bawah.
-- Blok thinking dengan tanda tangan replay yang hilang, kosong, atau blank dihapus
-  sebelum konversi provider. Jika itu mengosongkan turn assistant, OpenClaw mempertahankan
-  bentuk turn dengan teks omitted-reasoning yang tidak kosong.
-- Turn assistant thinking-only lama yang harus dihapus diganti dengan
-  teks omitted-reasoning yang tidak kosong sehingga adapter provider tidak menghapus turn
-  replay.
+- Perbaikan pemasangan hasil alat dan hasil alat sintetis.
+- Validasi giliran (gabungkan giliran pengguna yang berurutan untuk memenuhi
+  pergantian ketat).
+- Giliran praisi asisten di akhir dihapus dari muatan Anthropic Messages yang
+  keluar saat pemikiran diaktifkan, termasuk rute Cloudflare AI Gateway.
+- Tanda tangan pemikiran asisten sebelum Compaction dihapus sebelum pemutaran
+  ulang ke penyedia jika suatu sesi telah mengalami Compaction. Tanda tangan
+  pemikiran terikat secara kriptografis pada awalan percakapan saat dibuat;
+  setelah Compaction, awalan berubah (konten yang diringkas menggantikan
+  konten asli), sehingga memutar ulang tanda tangan asli menyebabkan Anthropic
+  menolak permintaan dengan "Invalid signature in thinking block". Teks
+  pemikiran dipertahankan sebagai blok tanpa tanda tangan, lalu ditangani oleh
+  aturan di bawah.
+- Blok pemikiran dengan tanda tangan pemutaran ulang yang tidak ada, kosong,
+  atau hanya berisi spasi dihapus sebelum konversi penyedia. Jika hal tersebut
+  mengosongkan giliran asisten, OpenClaw mempertahankan bentuk giliran dengan
+  teks penalaran-dihilangkan yang tidak kosong.
+- Giliran asisten lama yang hanya berisi pemikiran dan harus dihapus diganti
+  dengan teks penalaran-dihilangkan yang tidak kosong agar adaptor penyedia
+  tidak menghapus giliran pemutaran ulang.
 
 **Amazon Bedrock (Converse API)**
 
-- Turn stream-error assistant kosong diperbaiki menjadi blok teks fallback yang tidak kosong
-  sebelum replay. Bedrock Converse menolak pesan assistant dengan `content: []`, sehingga
-  turn assistant tersimpan dengan `stopReason: "error"` dan konten kosong juga
-  diperbaiki di disk sebelum dimuat.
-- Turn stream-error assistant yang hanya berisi blok teks blank dihapus
-  dari salinan replay dalam memori alih-alih memutar ulang blok blank yang tidak valid.
-- Tanda tangan thinking assistant pra-Compaction dihapus sebelum replay Converse
-  ketika sesi telah di-compact, karena alasan yang sama seperti Anthropic
-  di atas.
-- Blok thinking Claude dengan tanda tangan replay yang hilang, kosong, atau blank
-  dihapus sebelum replay Converse. Jika itu mengosongkan turn assistant, OpenClaw
-  mempertahankan bentuk turn dengan teks omitted-reasoning yang tidak kosong.
-- Turn assistant thinking-only lama yang harus dihapus diganti dengan
-  teks omitted-reasoning yang tidak kosong sehingga replay Converse mempertahankan bentuk turn yang ketat.
-- Replay memfilter turn assistant delivery-mirror OpenClaw dan yang diinjeksi gateway.
-- Sanitasi gambar berlaku melalui aturan global.
+- Giliran kesalahan aliran asisten yang kosong diperbaiki menjadi blok teks
+  pengganti yang tidak kosong sebelum pemutaran ulang. Bedrock Converse
+  menolak pesan asisten dengan `content: []`, sehingga giliran asisten
+  tersimpan dengan `stopReason: "error"` dan konten kosong juga diperbaiki di
+  disk sebelum dimuat.
+- Giliran kesalahan aliran asisten yang hanya memiliki blok teks kosong
+  dihapus dari salinan pemutaran ulang dalam memori, alih-alih memutar ulang
+  blok kosong yang tidak valid.
+- Tanda tangan pemikiran asisten sebelum Compaction dihapus sebelum pemutaran
+  ulang Converse jika suatu sesi telah mengalami Compaction, dengan alasan
+  yang sama seperti Anthropic di atas.
+- Blok pemikiran Claude dengan tanda tangan pemutaran ulang yang tidak ada,
+  kosong, atau hanya berisi spasi dihapus sebelum pemutaran ulang Converse.
+  Jika hal tersebut mengosongkan giliran asisten, OpenClaw mempertahankan
+  bentuk giliran dengan teks penalaran-dihilangkan yang tidak kosong.
+- Giliran asisten lama yang hanya berisi pemikiran dan harus dihapus diganti
+  dengan teks penalaran-dihilangkan yang tidak kosong agar pemutaran ulang
+  Converse mempertahankan bentuk giliran yang ketat.
+- Pemutaran ulang menyaring giliran asisten cerminan-pengiriman OpenClaw dan
+  giliran asisten yang disisipkan Gateway.
+- Sanitasi gambar diterapkan melalui aturan global.
 
-**Mistral (termasuk deteksi berbasis model-id)**
+**Mistral (termasuk deteksi berdasarkan id model)**
 
-- Sanitasi id tool call: strict9 (alfanumerik panjang 9).
+- Sanitasi id panggilan alat: strict9 (alfanumerik, panjang 9).
 
 **OpenRouter Gemini**
 
-- Cleanup tanda tangan thought: hapus nilai `thought_signature` non-base64 (pertahankan base64).
+- Pembersihan tanda tangan pemikiran: hapus nilai `thought_signature` non-base64
+  (pertahankan base64).
 
 **OpenRouter Anthropic**
 
-- Turn prefill assistant di akhir dihapus dari payload model Anthropic
-  terverifikasi OpenRouter yang kompatibel dengan OpenAI ketika reasoning diaktifkan, mencocokkan
-  perilaku replay Anthropic langsung dan Cloudflare Anthropic.
+- Giliran praisi asisten di akhir dihapus dari muatan model Anthropic yang
+  kompatibel dengan OpenAI dan telah diverifikasi pada OpenRouter saat
+  penalaran diaktifkan, sesuai dengan perilaku pemutaran ulang Anthropic
+  langsung dan Cloudflare Anthropic.
 
-**Lainnya**
+**Semua lainnya**
 
 - Hanya sanitasi gambar.
 
 ---
 
-## Perilaku historis (pra-2026.1.22)
+## Perilaku historis (sebelum 2026.1.22)
 
-Sebelum rilis 2026.1.22, OpenClaw menerapkan beberapa lapisan hygiene transkrip:
+Sebelum rilis 2026.1.22, OpenClaw menerapkan beberapa lapisan kebersihan
+transkrip:
 
-- Sebuah **ekstensi transcript-sanitize** berjalan pada setiap pembangunan konteks dan dapat:
-  - Memperbaiki pemasangan tool use/result.
-  - Menyantitasi id tool call (termasuk mode non-ketat yang mempertahankan `_`/`-`).
-- Runner juga melakukan sanitasi khusus provider, yang menduplikasi pekerjaan.
-- Mutasi tambahan terjadi di luar kebijakan provider, termasuk:
-  - Menghapus tag `<final>` dari teks assistant sebelum persistensi.
-  - Menghapus turn error assistant kosong.
-  - Memangkas konten assistant setelah tool call.
+- Sebuah **ekstensi sanitasi transkrip** dijalankan pada setiap pembangunan
+  konteks dan dapat:
+  - Memperbaiki pemasangan penggunaan/hasil alat.
+  - Menyanitasi id panggilan alat (termasuk mode tidak ketat yang
+    mempertahankan `_`/`-`).
+- Runner juga melakukan sanitasi khusus penyedia, yang menduplikasi pekerjaan.
+- Mutasi tambahan terjadi di luar kebijakan penyedia, termasuk menghapus tag
+  `<final>` dari teks asisten sebelum penyimpanan, menghapus giliran kesalahan
+  asisten kosong, dan memangkas konten asisten setelah panggilan alat.
 
-Kompleksitas ini menyebabkan regresi lintas-provider (terutama pemasangan `call_id|fc_id`
-`openai-responses`). Cleanup 2026.1.22 menghapus ekstensi, memusatkan
-logika di runner, dan membuat OpenAI **tanpa sentuhan** di luar sanitasi gambar.
+Kompleksitas ini menyebabkan regresi lintas penyedia (terutama pemasangan
+`call_id|fc_id` pada `openai-responses`). Pembersihan 2026.1.22 menghapus
+ekstensi tersebut, memusatkan logika dalam runner, dan membuat OpenAI **tidak
+disentuh** selain sanitasi gambar.
 
 ## Terkait
 
-- [Manajemen sesi](/id/concepts/session)
+- [Pengelolaan sesi](/id/concepts/session)
 - [Pemangkasan sesi](/id/concepts/session-pruning)

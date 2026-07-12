@@ -1,62 +1,58 @@
 ---
 read_when:
-    - تريد استخدام Ollama من أجل web_search
-    - تريد موفّر web_search بلا مفتاح
-    - تريد استخدام بحث الويب المستضاف من Ollama مع OLLAMA_API_KEY
-    - تحتاج إلى إرشادات إعداد بحث الويب في Ollama
-summary: بحث الويب عبر مضيف Ollama محلي أو واجهة Ollama API المستضافة
+    - تريد استخدام Ollama لإجراء البحث على الويب
+    - تريد موفّر web_search لا يتطلب مفتاحًا
+    - تريد استخدام Ollama Web Search المستضاف مع OLLAMA_API_KEY
+    - تحتاج إلى إرشادات لإعداد Ollama Web Search
+summary: بحث الويب في Ollama عبر مضيف Ollama محلي أو واجهة Ollama API المستضافة
 title: بحث الويب في Ollama
 x-i18n:
-    generated_at: "2026-06-27T18:43:39Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:44:12Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4a30a6a2ed78d0d5f680ca2894e5e015cf99fbae2bcad4601727bbc9f560c124
+    source_hash: edbbd887841339ab4c0c62ab7682a22fe99434a788957a91989fce6942187e9a
     source_path: tools/ollama-search.md
     workflow: 16
 ---
 
-يدعم OpenClaw **Ollama Web Search** بوصفه مزوّد `web_search` مضمّنًا. يستخدم
-واجهة API للبحث على الويب من Ollama ويعيد نتائج منظمة تتضمن عناوين، وعناوين URL،
-ومقتطفات.
+يدعم OpenClaw **بحث الويب من Ollama** بصفته موفّر `web_search` مضمّنًا،
+ويُرجع العناوين وعناوين URL والمقتطفات من واجهة API لبحث الويب الخاصة بـ Ollama.
 
-بالنسبة إلى Ollama المحلي أو المستضاف ذاتيًا، لا يحتاج هذا الإعداد إلى مفتاح API
-افتراضيًا. لكنه يتطلب:
-
-- مضيف Ollama يمكن الوصول إليه من OpenClaw
-- `ollama signin`
-
-للبحث المستضاف المباشر، اضبط عنوان URL الأساسي لمزوّد Ollama على `https://ollama.com`
-وقدّم `OLLAMA_API_KEY` حقيقيًا.
+لا يحتاج Ollama المحلي/المستضاف ذاتيًا إلى مفتاح API افتراضيًا؛ بل يتطلب
+مضيف Ollama يمكن الوصول إليه، بالإضافة إلى `ollama signin`. أما البحث المستضاف
+المباشر (من دون Ollama محلي) فيتطلب `baseUrl: "https://ollama.com"` ومفتاح
+`OLLAMA_API_KEY` حقيقيًا.
 
 ## الإعداد
 
 <Steps>
-  <Step title="بدء Ollama">
+  <Step title="تشغيل Ollama">
     تأكد من تثبيت Ollama وتشغيله.
   </Step>
   <Step title="تسجيل الدخول">
-    شغّل:
-
     ```bash
     ollama signin
     ```
-
   </Step>
-  <Step title="اختيار Ollama Web Search">
-    شغّل:
-
+  <Step title="اختيار بحث الويب من Ollama">
     ```bash
     openclaw configure --section web
     ```
 
-    ثم اختر **Ollama Web Search** بوصفه المزوّد.
+    حدّد **Ollama Web Search** بصفته الموفّر.
 
   </Step>
 </Steps>
 
-إذا كنت تستخدم Ollama للنماذج بالفعل، فسيعيد Ollama Web Search استخدام المضيف
-نفسه الذي تم تكوينه.
+إذا كنت تستخدم Ollama للنماذج بالفعل، فسيعيد بحث الويب من Ollama استخدام
+المضيف نفسه الذي سبق تكوينه.
+
+<Note>
+  لا يختار OpenClaw بحث الويب من Ollama تلقائيًا بدلًا من موفّر ذي أولوية أعلى
+  ومزوّد ببيانات اعتماد؛ بل يجب اختياره صراحةً باستخدام
+  `tools.web.search.provider: "ollama"`.
+</Note>
 
 ## التكوين
 
@@ -72,7 +68,7 @@ x-i18n:
 }
 ```
 
-تجاوز اختياري لمضيف Ollama:
+تجاوز اختياري للمضيف، يقتصر نطاقه على بحث الويب فقط:
 
 ```json5
 {
@@ -90,8 +86,7 @@ x-i18n:
 }
 ```
 
-إذا كنت تكوّن Ollama بالفعل بوصفه مزوّد نماذج، فيمكن لمزوّد البحث على الويب
-إعادة استخدام ذلك المضيف بدلًا من ذلك:
+أو أعد استخدام المضيف الذي سبق تكوينه لموفّر نماذج Ollama:
 
 ```json5
 {
@@ -105,15 +100,12 @@ x-i18n:
 }
 ```
 
-يستخدم مزوّد نماذج Ollama المفتاح `baseUrl` بوصفه المفتاح الأساسي. كما يحترم مزوّد البحث على الويب `baseURL` في `models.providers.ollama` للتوافق مع أمثلة التكوين بنمط OpenAI SDK.
+المفتاح `models.providers.ollama.baseUrl` هو المفتاح القياسي؛ ويقبل موفّر
+بحث الويب أيضًا `baseURL` في ذلك الموضع للتوافق مع أمثلة التكوين بأسلوب
+OpenAI SDK. وإذا لم يُضبط شيء، يستخدم OpenClaw القيمة الافتراضية
+`http://127.0.0.1:11434`.
 
-إذا لم يتم تعيين عنوان URL أساسي صريح لـ Ollama، يستخدم OpenClaw العنوان `http://127.0.0.1:11434`.
-
-إذا كان مضيف Ollama يتوقع مصادقة حامل الرمز، يعيد OpenClaw استخدام
-`models.providers.ollama.apiKey` (أو مصادقة المزوّد المطابقة والمدعومة بمتغيرات البيئة)
-للطلبات إلى ذلك المضيف المكوّن.
-
-Ollama Web Search المستضاف المباشر:
+بحث الويب المستضاف المباشر من Ollama (من دون Ollama محلي):
 
 ```json5
 {
@@ -135,28 +127,26 @@ Ollama Web Search المستضاف المباشر:
 }
 ```
 
-## ملاحظات
+## المصادقة وتوجيه الطلبات
 
-- لا يلزم حقل مفتاح API خاص بالبحث على الويب لهذا المزوّد.
-- إذا كان مضيف Ollama محميًا بالمصادقة، يعيد OpenClaw استخدام مفتاح API العادي
-  لمزوّد Ollama عند وجوده.
-- إذا كان `baseUrl` هو `https://ollama.com`، يستدعي OpenClaw
-  `https://ollama.com/api/web_search` مباشرة ويرسل مفتاح API المكوّن لـ Ollama
-  بوصفه مصادقة حامل الرمز.
-- إذا لم يكشف المضيف المكوّن عن البحث على الويب وكان `OLLAMA_API_KEY` معيّنًا،
-  يمكن لـ OpenClaw الرجوع إلى `https://ollama.com/api/web_search` دون إرسال
-  مفتاح البيئة هذا إلى المضيف المحلي.
-- يحذر OpenClaw أثناء الإعداد إذا تعذر الوصول إلى Ollama أو لم يتم تسجيل الدخول،
-  لكنه لا يمنع الاختيار.
-- لا يحدد OpenClaw تلقائيًا Ollama Web Search عند عدم تكوين مزوّد أعلى أولوية
-  ذي بيانات اعتماد؛ اختره صراحة باستخدام
-  `tools.web.search.provider: "ollama"`.
-- تستخدم مضيفات خادم Ollama المحلي نقطة نهاية الوكيل المحلية
-  `/api/experimental/web_search`، التي توقع الطلبات وتعيد توجيهها إلى Ollama Cloud.
-- تستخدم مضيفات `https://ollama.com` نقطة النهاية العامة المستضافة
-  `/api/web_search` مباشرة مع مصادقة مفتاح API بصيغة حامل الرمز.
+- لا يوجد حقل مفتاح API خاص ببحث الويب؛ إذ يعيد الموفّر استخدام
+  `models.providers.ollama.apiKey` (أو مصادقة الموفّر المطابقة والمدعومة
+  بمتغيرات البيئة) عندما يكون المضيف المكوّن محميًا بالمصادقة.
+- ترتيب تحديد المضيف: `plugins.entries.ollama.config.webSearch.baseUrl` ←
+  `models.providers.ollama.baseUrl` (أو `baseURL`) ← `http://127.0.0.1:11434`.
+- إذا كان المضيف المحدد هو `https://ollama.com`، يستدعي OpenClaw
+  `https://ollama.com/api/web_search` مباشرةً باستخدام مفتاح API لمصادقة
+  حامل الرمز.
+- بخلاف ذلك، يستدعي OpenClaw أولًا نقطة نهاية الوكيل المحلي
+  `/api/experimental/web_search` (التي توقّع الطلب وتعيد توجيهه إلى سحابة
+  Ollama)، ثم يعود احتياطيًا إلى `/api/web_search` على المضيف نفسه. وإذا فشل
+  كلاهما وكان `OLLAMA_API_KEY` مضبوطًا، فإنه يعيد المحاولة مرة واحدة مع
+  `https://ollama.com/api/web_search` باستخدام ذلك المفتاح، من دون إرساله إلى
+  المضيف المحلي.
+- يحذّر OpenClaw أثناء الإعداد إذا تعذر الوصول إلى Ollama أو لم يُسجّل الدخول
+  إليه، لكنه لا يمنع تحديد الموفّر.
 
-## ذات صلة
+## مواضيع ذات صلة
 
-- [نظرة عامة على Web Search](/ar/tools/web) -- جميع المزوّدين والكشف التلقائي
-- [Ollama](/ar/providers/ollama) -- إعداد نماذج Ollama وأوضاع السحابة/المحلي
+- [نظرة عامة على بحث الويب](/ar/tools/web) -- جميع الموفّرين والاكتشاف التلقائي
+- [Ollama](/ar/providers/ollama) -- إعداد نماذج Ollama والأوضاع السحابية/المحلية

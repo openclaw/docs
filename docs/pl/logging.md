@@ -1,42 +1,45 @@
 ---
 read_when:
-    - Potrzebujesz przystępnego dla początkujących omówienia logowania w OpenClaw
-    - Chcesz skonfigurować poziomy logowania, formaty lub maskowanie danych
+    - Potrzebujesz przystępnego dla początkujących omówienia rejestrowania zdarzeń w OpenClaw
+    - Chcesz skonfigurować poziomy logowania, formaty lub redagowanie danych wrażliwych
     - Rozwiązujesz problem i musisz szybko znaleźć logi
-summary: Logi plikowe, wyjście konsoli, śledzenie w CLI i karta Logi w Control UI
-title: Rejestrowanie
+summary: Logi plikowe, dane wyjściowe konsoli, śledzenie logów w CLI oraz karta Logi w interfejsie sterowania
+title: Rejestrowanie zdarzeń
 x-i18n:
-    generated_at: "2026-06-27T17:44:32Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:16:02Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: caf2780dfeeaf29f4ee94429894a03422b211a4414e63062642d1134f38b6b3f
+    source_hash: add41e125c22ca1b2343a3a1fb1e88e94ef9c81a07c48b9eb67f4d4b2510dd08
     source_path: logging.md
     workflow: 16
 ---
 
-OpenClaw ma dwie główne powierzchnie dzienników:
+OpenClaw ma dwie główne powierzchnie rejestrowania:
 
 - **Dzienniki plikowe** (wiersze JSON) zapisywane przez Gateway.
-- **Dane wyjściowe konsoli** wyświetlane w terminalach i interfejsie Gateway Debug UI.
+- **Dane wyjściowe konsoli** w terminalu, w którym działa Gateway.
 
-Karta **Dzienniki** w Control UI śledzi plik dziennika gateway. Ta strona wyjaśnia, gdzie
-znajdują się dzienniki, jak je czytać oraz jak konfigurować poziomy i formaty dzienników.
+Karta **Dzienniki** interfejsu sterowania śledzi dziennik plikowy Gateway. Na tej stronie wyjaśniono, gdzie
+znajdują się dzienniki, jak je odczytywać oraz jak konfigurować ich poziomy i formaty.
 
 ## Gdzie znajdują się dzienniki
 
-Domyślnie Gateway zapisuje rotacyjny plik dziennika w:
+Domyślnie Gateway zapisuje jeden rotacyjny plik dziennika dziennie:
 
 `/tmp/openclaw/openclaw-YYYY-MM-DD.log`
 
-Data używa lokalnej strefy czasowej hosta Gateway.
+Data używa lokalnej strefy czasowej hosta Gateway. Gdy `/tmp/openclaw` jest niebezpieczny
+lub niedostępny (a w systemie Windows zawsze), OpenClaw używa zamiast niego katalogu
+`openclaw-<uid>` o zakresie użytkownika w katalogu tymczasowym systemu operacyjnego. Pliki dziennika
+z datami są usuwane po 24 godzinach.
 
-Każdy plik jest rotowany, gdy osiągnie `logging.maxFileBytes` (domyślnie: 100 MB).
-OpenClaw przechowuje do pięciu ponumerowanych archiwów obok aktywnego pliku, takich jak
-`openclaw-YYYY-MM-DD.1.log`, i kontynuuje zapis do świeżego aktywnego dziennika zamiast
-wyciszać diagnostykę.
+Każdy plik jest rotowany, gdy kolejny zapis przekroczyłby `logging.maxFileBytes`
+(domyślnie: 100 MB). OpenClaw zachowuje obok aktywnego pliku do pięciu ponumerowanych
+archiwów, takich jak `openclaw-YYYY-MM-DD.1.log`, i kontynuuje zapisywanie do nowego
+aktywnego dziennika zamiast pomijać informacje diagnostyczne.
 
-Możesz to zastąpić w `~/.openclaw/openclaw.json`:
+Ścieżkę można zastąpić w pliku `~/.openclaw/openclaw.json`:
 
 ```json
 {
@@ -46,60 +49,70 @@ Możesz to zastąpić w `~/.openclaw/openclaw.json`:
 }
 ```
 
-## Jak czytać dzienniki
+## Jak odczytywać dzienniki
 
 ### CLI: śledzenie na żywo (zalecane)
 
-Użyj CLI, aby śledzić plik dziennika gateway przez RPC:
+Śledź plik dziennika Gateway przez RPC:
 
 ```bash
 openclaw logs --follow
 ```
 
-Przydatne bieżące opcje:
+Opcje:
 
-- `--local-time`: renderuj znaczniki czasu w swojej lokalnej strefie czasowej
-- `--url <url>` / `--token <token>` / `--timeout <ms>`: standardowe flagi RPC Gateway
-- `--expect-final`: flaga oczekiwania na końcową odpowiedź RPC obsługiwaną przez agenta (akceptowana tutaj przez wspólną warstwę klienta)
+| Flaga               | Domyślnie | Działanie                                                                                  |
+| ------------------- | --------- | ------------------------------------------------------------------------------------------ |
+| `--follow`          | wyłączone | Kontynuuje śledzenie; po rozłączeniu ponawia połączenie z narastającym opóźnieniem          |
+| `--limit <n>`       | `200`     | Maksymalna liczba wierszy na pobranie                                                       |
+| `--max-bytes <n>`   | `250000`  | Maksymalna liczba bajtów odczytywanych na pobranie                                          |
+| `--interval <ms>`   | `1000`    | Interwał odpytywania podczas śledzenia                                                      |
+| `--json`            | wyłączone | JSON rozdzielany wierszami (jedno zdarzenie na wiersz)                                      |
+| `--plain`           | wyłączone | Wymusza zwykły tekst w sesjach TTY                                                          |
+| `--no-color`        | —         | Wyłącza kolory ANSI                                                                         |
+| `--utc`             | wyłączone | Wyświetla znaczniki czasu w UTC (domyślnie używany jest czas lokalny)                       |
+| `--local-time`      | wyłączone | Akceptowany wariant zgodności dla domyślnego czasu lokalnego; poza tym nie ma żadnego efektu |
+| `--url` / `--token` | —         | Standardowe flagi RPC Gateway                                                               |
+| `--timeout <ms>`    | `30000`   | Limit czasu RPC Gateway                                                                     |
+| `--expect-final`    | wyłączone | Flaga oczekiwania na końcową odpowiedź RPC obsługiwanego przez agenta (akceptowana tutaj przez współdzieloną warstwę klienta) |
 
-Tryby wyjścia:
+Tryby danych wyjściowych:
 
-- **Sesje TTY**: czytelne, kolorowane, ustrukturyzowane wiersze dziennika.
+- **Sesje TTY**: czytelne, kolorowe i ustrukturyzowane wiersze dziennika.
 - **Sesje inne niż TTY**: zwykły tekst.
-- `--json`: JSON rozdzielany wierszami (jedno zdarzenie dziennika na wiersz).
-- `--plain`: wymuś zwykły tekst w sesjach TTY.
-- `--no-color`: wyłącz kolory ANSI.
 
-Gdy podasz jawny `--url`, CLI nie stosuje automatycznie poświadczeń z konfiguracji ani
-środowiska; dodaj `--token` samodzielnie, jeśli docelowy Gateway
-wymaga uwierzytelnienia.
+Po przekazaniu jawnej flagi `--url` CLI nie stosuje automatycznie danych uwierzytelniających
+z konfiguracji ani środowiska; należy samodzielnie podać `--token`, w przeciwnym razie wywołanie zakończy się
+błędem `gateway url override requires explicit credentials`.
 
 W trybie JSON CLI emituje obiekty oznaczone polem `type`:
 
-- `meta`: metadane strumienia (plik, kursor, rozmiar)
-- `log`: sparsowany wpis dziennika
-- `notice`: wskazówki o obcięciu / rotacji
-- `raw`: niesparsowany wiersz dziennika
+- `meta`: metadane strumienia (plik, źródło, rodzaj źródła, usługa, kursor, rozmiar)
+- `log`: przeanalizowany wpis dziennika
+- `notice`: wskazówki dotyczące obcięcia lub rotacji
+- `raw`: nieprzeanalizowany wiersz dziennika
+- `error`: błędy połączenia z Gateway (zapisywane do stderr)
 
-Jeśli niejawny Gateway local loopback poprosi o parowanie, zamknie połączenie podczas łączenia
-albo przekroczy limit czasu, zanim `logs.tail` odpowie, `openclaw logs` automatycznie przełącza się na
-skonfigurowany plik dziennika Gateway. Jawne cele `--url` nie używają
-tego mechanizmu awaryjnego. `openclaw logs --follow` jest bardziej rygorystyczne: w Linux używa aktywnego
-dziennika Gateway użytkownika w systemd według PID, gdy jest dostępny, a w przeciwnym razie ponawia próby
-połączenia z żywym Gateway zamiast śledzić potencjalnie nieaktualny plik obok.
+Jeśli niejawny Gateway local loopback zażąda parowania, zamknie połączenie podczas nawiązywania
+albo przekroczy limit czasu przed odpowiedzią `logs.tail`, polecenie `openclaw logs` automatycznie
+przełączy się na skonfigurowany plik dziennika Gateway. Jawne cele `--url` nie korzystają
+z tego mechanizmu awaryjnego. `openclaw logs --follow` jest bardziej rygorystyczne: w systemie Linux używa
+dziennika aktywnej usługi Gateway użytkownika w systemd według PID, jeśli jest dostępny, a w przeciwnym razie ponawia
+połączenie z działającym Gateway z narastającym opóźnieniem zamiast śledzić potencjalnie nieaktualny
+plik znajdujący się obok.
 
-Jeśli Gateway jest nieosiągalny, CLI wypisuje krótką wskazówkę, aby uruchomić:
+Jeśli Gateway jest nieosiągalny, CLI wyświetla krótką wskazówkę, aby uruchomić:
 
 ```bash
 openclaw doctor
 ```
 
-### Control UI (web)
+### Interfejs sterowania (WWW)
 
-Karta **Dzienniki** w Control UI śledzi ten sam plik za pomocą `logs.tail`.
-Zobacz [Control UI](/pl/web/control-ui), aby dowiedzieć się, jak ją otworzyć.
+Karta **Dzienniki** interfejsu sterowania śledzi ten sam plik za pomocą `logs.tail`.
+Informacje o jego otwieraniu zawiera strona [Interfejs sterowania](/pl/web/control-ui).
 
-### Dzienniki tylko kanałów
+### Dzienniki tylko dla kanałów
 
 Aby filtrować aktywność kanałów (WhatsApp/Telegram/itp.), użyj:
 
@@ -107,47 +120,50 @@ Aby filtrować aktywność kanałów (WhatsApp/Telegram/itp.), użyj:
 openclaw channels logs --channel whatsapp
 ```
 
+Domyślną wartością `--channel` jest `all`; dostępne są również `--lines <n>` (domyślnie 200)
+i `--json`.
+
 ## Formaty dzienników
 
 ### Dzienniki plikowe (JSONL)
 
-Każdy wiersz w pliku dziennika jest obiektem JSON. CLI i Control UI parsują te
-wpisy, aby renderować ustrukturyzowane wyjście (czas, poziom, podsystem, komunikat).
+Każdy wiersz pliku dziennika jest obiektem JSON. CLI i interfejs sterowania analizują te
+wpisy, aby wyświetlać ustrukturyzowane dane wyjściowe (czas, poziom, podsystem, komunikat).
 
-Rekordy JSONL dziennika plikowego zawierają też filtrowalne maszynowo pola najwyższego poziomu, gdy
-są dostępne:
+Rekordy JSONL dziennika plikowego zawierają także, gdy są dostępne, pola najwyższego poziomu
+umożliwiające filtrowanie maszynowe:
 
-- `hostname`: nazwa hosta gateway.
+- `hostname`: nazwa hosta Gateway.
 - `message`: spłaszczony tekst komunikatu dziennika do wyszukiwania pełnotekstowego.
-- `agent_id`: identyfikator aktywnego agenta, gdy wywołanie dziennika przenosi kontekst agenta.
-- `session_id`: identyfikator/klucz aktywnej sesji, gdy wywołanie dziennika przenosi kontekst sesji.
-- `channel`: aktywny kanał, gdy wywołanie dziennika przenosi kontekst kanału.
+- `agent_id`: identyfikator aktywnego agenta, gdy wywołanie dziennika zawiera kontekst agenta.
+- `session_id`: identyfikator lub klucz aktywnej sesji, gdy wywołanie dziennika zawiera kontekst sesji.
+- `channel`: aktywny kanał, gdy wywołanie dziennika zawiera kontekst kanału.
 
 OpenClaw zachowuje oryginalne ustrukturyzowane argumenty dziennika obok tych pól,
-dzięki czemu istniejące parsery czytające ponumerowane klucze argumentów tslog nadal działają.
+dzięki czemu istniejące parsery odczytujące numerowane klucze argumentów tslog nadal działają.
 
-Aktywność rozmów, głosu w czasie rzeczywistym i zarządzanych pokojów emituje ograniczone rekordy dziennika cyklu życia
-przez ten sam potok dzienników plikowych. Rekordy te zawierają typ zdarzenia,
-tryb, transport, dostawcę oraz pomiary rozmiaru/czasu, gdy są dostępne, ale pomijają
+Aktywność rozmów, głosu w czasie rzeczywistym i zarządzanych pokojów emituje ograniczone rekordy dziennika
+cyklu życia przez ten sam potok dziennika plikowego. Rekordy te zawierają typ zdarzenia,
+tryb, transport, dostawcę oraz pomiary rozmiaru i czasu, jeśli są dostępne, ale pomijają
 tekst transkrypcji, ładunki audio, identyfikatory tur, identyfikatory połączeń i identyfikatory elementów dostawcy.
 
 ### Dane wyjściowe konsoli
 
-Dzienniki konsoli są **świadome TTY** i formatowane pod kątem czytelności:
+Dzienniki konsoli **uwzględniają TTY** i są formatowane pod kątem czytelności:
 
 - Prefiksy podsystemów (np. `gateway/channels/whatsapp`)
-- Kolorowanie poziomów (info/warn/error)
+- Kolorowanie poziomów (informacje/ostrzeżenia/błędy)
 - Opcjonalny tryb kompaktowy lub JSON
 
-Formatowanie konsoli jest kontrolowane przez `logging.consoleStyle`.
+Formatowaniem konsoli steruje `logging.consoleStyle`.
 
-### Dzienniki Gateway WebSocket
+### Dzienniki WebSocket Gateway
 
-`openclaw gateway` ma również rejestrowanie protokołu WebSocket dla ruchu RPC:
+Polecenie `openclaw gateway` obsługuje również rejestrowanie protokołu WebSocket dla ruchu RPC:
 
-- tryb normalny: tylko interesujące wyniki (błędy, błędy parsowania, wolne wywołania)
-- `--verbose`: cały ruch żądań/odpowiedzi
-- `--ws-log auto|compact|full`: wybierz styl renderowania szczegółowego
+- tryb normalny: tylko istotne wyniki (błędy, błędy analizy, wolne wywołania)
+- `--verbose`: cały ruch żądań i odpowiedzi
+- `--ws-log auto|compact|full`: wybór szczegółowego stylu wyświetlania
 - `--compact`: alias dla `--ws-log compact`
 
 Przykłady:
@@ -160,7 +176,7 @@ openclaw gateway --verbose --ws-log full
 
 ## Konfigurowanie rejestrowania
 
-Cała konfiguracja rejestrowania znajduje się pod `logging` w `~/.openclaw/openclaw.json`.
+Cała konfiguracja rejestrowania znajduje się w sekcji `logging` pliku `~/.openclaw/openclaw.json`.
 
 ```json
 {
@@ -177,18 +193,20 @@ Cała konfiguracja rejestrowania znajduje się pod `logging` w `~/.openclaw/open
 
 ### Poziomy dzienników
 
-- `logging.level`: poziom **dzienników plikowych** (JSONL).
+Poziomy: `silent`, `fatal`, `error`, `warn`, `info`, `debug`, `trace`.
+
+- `logging.level`: poziom **dzienników plikowych** (JSONL) (domyślnie: `info`).
 - `logging.consoleLevel`: poziom szczegółowości **konsoli**.
 
-Możesz zastąpić oba za pomocą zmiennej środowiskowej **`OPENCLAW_LOG_LEVEL`** (np. `OPENCLAW_LOG_LEVEL=debug`). Zmienna środowiskowa ma pierwszeństwo przed plikiem konfiguracyjnym, więc możesz zwiększyć szczegółowość dla pojedynczego uruchomienia bez edytowania `openclaw.json`. Możesz też przekazać globalną opcję CLI **`--log-level <level>`** (na przykład `openclaw --log-level debug gateway run`), która zastępuje zmienną środowiskową dla tego polecenia.
+Obie wartości można zastąpić za pomocą zmiennej środowiskowej **`OPENCLAW_LOG_LEVEL`** (np. `OPENCLAW_LOG_LEVEL=debug`). Zmienna środowiskowa ma pierwszeństwo przed plikiem konfiguracyjnym, dzięki czemu można zwiększyć szczegółowość pojedynczego uruchomienia bez edytowania pliku `openclaw.json`. Można również przekazać globalną opcję CLI **`--log-level <level>`** (na przykład `openclaw --log-level debug gateway run`), która dla danego polecenia zastępuje zmienną środowiskową.
 
-`--verbose` wpływa tylko na dane wyjściowe konsoli i szczegółowość dziennika WS; nie zmienia
-poziomów dziennika plikowego.
+`--verbose` wpływa wyłącznie na dane wyjściowe konsoli i szczegółowość dziennika WS; nie zmienia
+poziomów dzienników plikowych.
 
-### Ukierunkowana diagnostyka transportu modeli
+### Ukierunkowana diagnostyka transportu modelu
 
-Podczas debugowania wywołań dostawcy używaj ukierunkowanych flag środowiskowych zamiast podnosić
-wszystkie dzienniki do `debug`:
+Podczas debugowania wywołań dostawcy należy używać ukierunkowanych flag środowiskowych zamiast zwiększać
+poziom wszystkich dzienników do `debug`:
 
 ```bash
 OPENCLAW_DEBUG_MODEL_TRANSPORT=1 openclaw gateway
@@ -197,142 +215,145 @@ OPENCLAW_DEBUG_MODEL_PAYLOAD=tools OPENCLAW_DEBUG_SSE=events openclaw gateway
 
 Dostępne flagi:
 
-- `OPENCLAW_DEBUG_MODEL_TRANSPORT=1`: emituj rozpoczęcie żądania, odpowiedź fetch, nagłówki SDK,
-  pierwsze zdarzenie strumieniowania, zakończenie strumienia i błędy transportu na
+- `OPENCLAW_DEBUG_MODEL_TRANSPORT=1`: emituje rozpoczęcie żądania, odpowiedź pobierania, nagłówki
+  SDK, pierwsze zdarzenie strumieniowe, zakończenie strumienia i błędy transportu na
   poziomie `info`.
-- `OPENCLAW_DEBUG_MODEL_PAYLOAD=summary`: dołącz ograniczone podsumowanie ładunku żądania
+- `OPENCLAW_DEBUG_MODEL_PAYLOAD=summary`: uwzględnia ograniczone podsumowanie ładunku żądania
   w dziennikach żądań modelu.
-- `OPENCLAW_DEBUG_MODEL_PAYLOAD=tools`: dołącz wszystkie nazwy narzędzi widoczne dla modelu w
-  podsumowaniu ładunku.
-- `OPENCLAW_DEBUG_MODEL_PAYLOAD=full-redacted`: dołącz zredagowaną, ograniczoną migawkę ładunku
-  JSON. Używaj tylko podczas debugowania; sekrety są redagowane, ale prompty
-  i tekst komunikatów mogą nadal być obecne.
-- `OPENCLAW_DEBUG_SSE=events`: emituj czas pierwszego zdarzenia i zakończenia strumienia.
-- `OPENCLAW_DEBUG_SSE=peek`: dodatkowo emituj pierwsze pięć zredagowanych ładunków zdarzeń SSE,
-  ograniczonych na zdarzenie.
-- `OPENCLAW_DEBUG_CODE_MODE=1`: emituj diagnostykę powierzchni modelu w trybie kodu,
-  w tym sytuacje, gdy natywne narzędzia dostawcy są ukryte, ponieważ tryb kodu jest właścicielem
-  powierzchni narzędzi.
+- `OPENCLAW_DEBUG_MODEL_PAYLOAD=tools`: uwzględnia w podsumowaniu ładunku wszystkie nazwy narzędzi
+  widoczne dla modelu.
+- `OPENCLAW_DEBUG_MODEL_PAYLOAD=full-redacted`: uwzględnia zredagowaną, ograniczoną migawkę ładunku
+  JSON. Używaj tylko podczas debugowania; sekrety są redagowane, ale monity
+  i tekst wiadomości mogą nadal być obecne.
+- `OPENCLAW_DEBUG_SSE=events`: emituje pomiary czasu pierwszego zdarzenia i zakończenia strumienia.
+- `OPENCLAW_DEBUG_SSE=peek`: emituje również ładunki pierwszych pięciu zredagowanych zdarzeń
+  SSE, z limitem dla każdego zdarzenia.
+- `OPENCLAW_DEBUG_CODE_MODE=1`: emituje diagnostykę powierzchni modelu w trybie kodu,
+  w tym informacje o ukrywaniu natywnych narzędzi dostawcy, ponieważ powierzchnia narzędzi
+  należy do trybu kodu.
 
-Te flagi zapisują przez normalne rejestrowanie OpenClaw, więc `openclaw logs --follow`
-i karta Dzienniki w Control UI je pokazują. Bez tych flag ta sama diagnostyka
-pozostaje dostępna na poziomie `debug`.
+Te flagi zapisują dane przez standardowy mechanizm rejestrowania OpenClaw, więc `openclaw logs --follow`
+i karta Dzienniki interfejsu sterowania je wyświetlają. Bez tych flag te same informacje diagnostyczne
+pozostają dostępne na poziomie `debug`.
 
-Metadane rozpoczęcia i odpowiedzi `[model-fetch]` (dostawca, API, model, status,
-opóźnienie oraz pola żądania, takie jak metoda, URL, limit czasu, proxy i polityka)
+Metadane rozpoczęcia i odpowiedzi `[model-fetch]` (dostawca, API, model, stan,
+opóźnienie oraz pola żądania, takie jak metoda, adres URL, limit czasu, serwer proxy i zasady)
 są zawsze emitowane na poziomie `info`, niezależnie od
-`OPENCLAW_DEBUG_MODEL_TRANSPORT`, więc podstawowa higiena transportu modelu jest widoczna
+`OPENCLAW_DEBUG_MODEL_TRANSPORT`, dzięki czemu podstawowa poprawność transportu modelu jest widoczna
 bez flag debugowania.
 
 ### Korelacja śladów
 
-Dzienniki plikowe są w formacie JSONL. Gdy wywołanie dziennika przenosi prawidłowy kontekst śladu diagnostycznego,
+Dzienniki plikowe mają format JSONL. Gdy wywołanie dziennika zawiera prawidłowy kontekst śladu diagnostycznego,
 OpenClaw zapisuje pola śladu jako klucze JSON najwyższego poziomu (`traceId`, `spanId`,
-`parentSpanId`, `traceFlags`), aby zewnętrzne procesory dzienników mogły korelować wiersz
+`parentSpanId`, `traceFlags`), aby zewnętrzne procesory dzienników mogły skorelować wiersz
 z zakresami OTEL i propagacją `traceparent` dostawcy.
 
-Żądania HTTP Gateway i ramki Gateway WebSocket ustanawiają wewnętrzny zakres śladu żądania.
-Dzienniki i zdarzenia diagnostyczne emitowane wewnątrz tego zakresu asynchronicznego dziedziczą
-ślad żądania, gdy nie przekazują jawnego kontekstu śladu. Ślady uruchomień agentów i
-wywołań modeli stają się dziećmi aktywnego śladu żądania, dzięki czemu lokalne dzienniki,
-migawki diagnostyczne, zakresy OTEL i zaufane nagłówki `traceparent` dostawcy mogą
-być łączone według `traceId` bez rejestrowania surowej treści żądania lub modelu.
+Żądania HTTP Gateway i ramki WebSocket Gateway ustanawiają wewnętrzny zakres śladu
+żądania. Dzienniki i zdarzenia diagnostyczne emitowane w tym zakresie asynchronicznym dziedziczą
+ślad żądania, jeśli nie przekazują jawnego kontekstu śladu. Ślady uruchomienia agenta i
+wywołań modelu stają się elementami podrzędnymi aktywnego śladu żądania, dzięki czemu lokalne dzienniki,
+migawki diagnostyczne, zakresy OTEL i zaufane nagłówki `traceparent` dostawcy można
+łączyć według `traceId` bez rejestrowania surowej treści żądania lub modelu.
 
-Rekordy dziennika cyklu życia rozmów trafiają też do eksportu dzienników diagnostics-otel, gdy
-włączony jest eksport dzienników OpenTelemetry, używając tych samych ograniczonych atrybutów co dzienniki plikowe.
-Skonfiguruj `diagnostics.otel.logsExporter`, aby wybrać OTLP, stdout JSONL albo
-oba ujścia.
+Rekordy dziennika cyklu życia rozmów są również przekazywane do eksportu dzienników diagnostics-otel, gdy
+eksport dzienników OpenTelemetry jest włączony, z użyciem tych samych ograniczonych atrybutów co dzienniki plikowe.
+Skonfiguruj `diagnostics.otel.logsExporter`, aby wybrać OTLP, standardowe wyjście JSONL lub
+oba miejsca docelowe.
 
-### Rozmiar i czas wywołań modelu
+### Rozmiar i czas wywołania modelu
 
-Diagnostyka wywołań modelu zapisuje ograniczone pomiary żądań/odpowiedzi bez
-przechwytywania surowej treści promptu lub odpowiedzi:
+Diagnostyka wywołań modelu rejestruje ograniczone pomiary żądań i odpowiedzi bez
+przechwytywania surowej treści monitu ani odpowiedzi:
 
-- `requestPayloadBytes`: rozmiar w bajtach UTF-8 końcowego ładunku żądania modelu
-- `responseStreamBytes`: rozmiar w bajtach UTF-8 ładunków fragmentów strumieniowanej odpowiedzi modelu.
-  Zdarzenia częstego tekstu, rozumowania i delt wywołań narzędzi liczą
-  tylko przyrostowe bajty `delta` zamiast pełnych migawek `partial`.
-- `timeToFirstByteMs`: czas, który upłynął przed pierwszym zdarzeniem strumieniowanej odpowiedzi
+- `requestPayloadBytes`: rozmiar końcowego ładunku żądania modelu w bajtach UTF-8
+- `responseStreamBytes`: rozmiar ładunków fragmentów strumieniowej odpowiedzi modelu w bajtach UTF-8.
+  Częste zdarzenia różnicowe tekstu, rozumowania i wywołań narzędzi zliczają
+  wyłącznie przyrostowe bajty `delta`, a nie pełne migawki `partial`.
+- `timeToFirstByteMs`: czas, który upłynął przed pierwszym zdarzeniem odpowiedzi strumieniowej
 - `durationMs`: całkowity czas trwania wywołania modelu
 
-Te pola są dostępne dla migawek diagnostycznych, hooków pluginów wywołań modelu oraz
-zakresów/metryk wywołań modelu OTEL, gdy eksport diagnostyki jest włączony.
+Pola te są dostępne dla migawek diagnostycznych, haków Pluginów wywołań modelu oraz
+zakresów i metryk wywołań modelu OTEL, gdy eksport diagnostyki jest włączony.
 
 ### Style konsoli
 
 `logging.consoleStyle`:
 
-- `pretty`: przyjazny dla człowieka, kolorowy, ze znacznikami czasu.
-- `compact`: bardziej zwięzłe wyjście (najlepsze do długich sesji).
-- `json`: JSON w każdym wierszu (dla procesorów dzienników).
+- `pretty`: czytelny dla człowieka, kolorowy, ze znacznikami czasu.
+- `compact`: bardziej zwięzłe dane wyjściowe (najlepsze dla długich sesji).
+- `json`: jeden obiekt JSON na wiersz (dla procesorów dzienników).
 
 ### Redagowanie
 
 OpenClaw może redagować poufne tokeny, zanim trafią do danych wyjściowych konsoli, dzienników plikowych,
-rekordów dziennika OTLP, utrwalonego tekstu transkrypcji sesji lub ładunków zdarzeń narzędzi
-w Control UI (argumenty uruchomienia narzędzia, częściowe/końcowe ładunki wyników, pochodne
-wyjście exec i podsumowania poprawek):
+rekordów dziennika OTLP, utrwalonego tekstu transkrypcji sesji lub ładunków zdarzeń
+narzędzi interfejsu sterowania (argumenty uruchomienia narzędzia, częściowe i końcowe ładunki wyników, pochodne
+dane wyjściowe wykonania oraz podsumowania poprawek):
 
 - `logging.redactSensitive`: `off` | `tools` (domyślnie: `tools`)
-- `logging.redactPatterns`: lista ciągów regex zastępująca domyślny zestaw. Własne wzorce nakładają się na wbudowane domyślne wzorce dla ładunków narzędzi Control UI, więc dodanie wzorca nigdy nie osłabia redagowania wartości już wychwytywanych przez domyślne ustawienia.
+- `logging.redactPatterns`: lista ciągów wyrażeń regularnych zastępująca domyślny zestaw dla danych wyjściowych dzienników i transkrypcji. W przypadku ładunków narzędzi interfejsu sterowania niestandardowe wzorce są stosowane dodatkowo do wbudowanych wartości domyślnych, więc dodanie wzorca nigdy nie osłabia redagowania wartości już wykrywanych przez ustawienia domyślne.
 
-Dzienniki plikowe i transkrypcje sesji pozostają w JSONL, ale pasujące wartości sekretów są
-maskowane przed zapisaniem wiersza lub komunikatu na dysku. Redagowanie działa w trybie najlepszych starań:
-stosuje się do treści komunikatów zawierających tekst i ciągów dziennika, a nie do każdego
-identyfikatora lub pola ładunku binarnego.
+Dzienniki plikowe i transkrypcje sesji pozostają w formacie JSONL, ale pasujące wartości sekretów są
+maskowane przed zapisaniem wiersza lub wiadomości na dysku. Redagowanie działa na zasadzie najlepszych starań:
+obejmuje treść wiadomości zawierającą tekst i ciągi dziennika, ale nie każde
+pole identyfikatora ani ładunku binarnego.
 
-Wbudowane ustawienia domyślne obejmują typowe poświadczenia API i nazwy pól poświadczeń płatniczych,
-takie jak numer karty, CVC/CVV, współdzielony token płatności i poświadczenie płatnicze,
-gdy pojawiają się jako pola JSON, parametry URL, flagi CLI lub przypisania.
+Wbudowane ustawienia domyślne obejmują typowe dane uwierzytelniające API oraz nazwy
+pól danych uwierzytelniających płatności, takie jak numer karty, CVC/CVV,
+współdzielony token płatniczy i dane uwierzytelniające płatności, gdy występują
+jako pola JSON, parametry URL, flagi CLI lub przypisania.
 
-`logging.redactSensitive: "off"` wyłącza tylko tę ogólną politykę dzienników/transkrypcji.
-OpenClaw nadal redaguje ładunki na granicach bezpieczeństwa, które mogą być pokazywane klientom UI,
-pakietom wsparcia, obserwatorom diagnostyki, promptom zatwierdzeń lub narzędziom agentów.
-Przykłady obejmują zdarzenia wywołań narzędzi Control UI, wyjście `sessions_history`,
-eksporty wsparcia diagnostycznego, obserwacje błędów dostawcy, wyświetlanie polecenia zatwierdzenia exec
-oraz dzienniki protokołu Gateway WebSocket. Własne `logging.redactPatterns`
-mogą nadal dodawać wzorce specyficzne dla projektu na tych powierzchniach.
+`logging.redactSensitive: "off"` wyłącza tylko tę ogólną zasadę dotyczącą
+dzienników i transkrypcji. OpenClaw nadal redaguje ładunki na granicach
+bezpieczeństwa, które mogą być wyświetlane klientom interfejsu użytkownika,
+dołączane do pakietów pomocy technicznej, udostępniane obserwatorom
+diagnostycznym, wyświetlane w monitach o zatwierdzenie lub przekazywane
+narzędziom agenta. Przykłady obejmują zdarzenia wywołań narzędzi w interfejsie
+Control UI, dane wyjściowe `sessions_history`, diagnostyczne eksporty dla pomocy
+technicznej, obserwacje błędów dostawców, wyświetlanie poleceń wymagających
+zatwierdzenia wykonania oraz dzienniki protokołu WebSocket Gateway. Niestandardowe
+wzorce `logging.redactPatterns` mogą nadal dodawać wzorce specyficzne dla
+projektu na tych powierzchniach.
 
 ## Diagnostyka i OpenTelemetry
 
-Diagnostyka to ustrukturyzowane, czytelne maszynowo zdarzenia dla uruchomień modeli i
-telemetrii przepływu komunikatów (webhooki, kolejkowanie, stan sesji). **Nie**
-zastępują dzienników — zasilają metryki, ślady i eksportery. Zdarzenia są emitowane
-w procesie niezależnie od tego, czy je eksportujesz.
+Diagnostyka obejmuje ustrukturyzowane zdarzenia przeznaczone do odczytu
+maszynowego, dotyczące uruchomień modeli oraz telemetrii przepływu wiadomości
+(Webhooki, kolejkowanie, stan sesji). **Nie** zastępuje ona dzienników — zasila
+metryki, ślady i eksportery. Zdarzenia są domyślnie emitowane w obrębie procesu
+(aby je wyłączyć, ustaw `diagnostics.enabled: false`); ich eksportowanie jest
+oddzielną funkcją.
 
-Dwie sąsiadujące powierzchnie:
+Dwie powiązane powierzchnie:
 
-- **Eksport OpenTelemetry** — wysyłaj metryki, ślady i dzienniki przez OTLP/HTTP do
-  dowolnego kolektora lub backendu zgodnego z OpenTelemetry (Grafana, Datadog,
-  Honeycomb, New Relic, Tempo itd.). Pełna konfiguracja, katalog sygnałów,
-  nazwy metryk/zakresów, zmienne środowiskowe i model prywatności znajdują się na dedykowanej stronie:
+- **Eksport OpenTelemetry** — wysyłanie metryk, śladów i dzienników przez
+  OTLP/HTTP do dowolnego kolektora lub zaplecza zgodnego z OpenTelemetry
+  (Datadog, Grafana, Honeycomb, New Relic, Tempo itp.). Pełna konfiguracja,
+  katalog sygnałów, nazwy metryk i segmentów, zmienne środowiskowe oraz model
+  prywatności znajdują się na osobnej stronie:
   [Eksport OpenTelemetry](/pl/gateway/opentelemetry).
-- **Flagi diagnostyczne** — ukierunkowane flagi dzienników debugowania, które kierują dodatkowe dzienniki do
-  `logging.file` bez podnoszenia `logging.level`. Flagi nie rozróżniają wielkości liter
-  i obsługują symbole wieloznaczne (`telegram.*`, `*`). Skonfiguruj je w `diagnostics.flags`
-  albo przez nadpisanie zmienną środowiskową `OPENCLAW_DIAGNOSTICS=...`. Pełny przewodnik:
+- **Flagi diagnostyczne** — ukierunkowane flagi dzienników debugowania, które
+  kierują dodatkowe wpisy do `logging.file` bez podnoszenia poziomu
+  `logging.level`. Wielkość liter we flagach nie ma znaczenia, a flagi obsługują
+  symbole wieloznaczne (`telegram.*`, `*`). Skonfiguruj je w
+  `diagnostics.flags` lub za pomocą nadpisania przez zmienną środowiskową
+  `OPENCLAW_DIAGNOSTICS=...`. Pełny przewodnik:
   [Flagi diagnostyczne](/pl/diagnostics/flags).
 
-Aby włączyć zdarzenia diagnostyczne dla pluginów lub własnych ujść bez eksportu OTLP:
-
-```json5
-{
-  diagnostics: { enabled: true },
-}
-```
-
-Eksport OTLP do kolektora opisuje [eksport OpenTelemetry](/pl/gateway/opentelemetry).
+Informacje o eksporcie OTLP do kolektora zawiera strona [Eksport OpenTelemetry](/pl/gateway/opentelemetry).
 
 ## Wskazówki dotyczące rozwiązywania problemów
 
-- **Gateway nieosiągalny?** Najpierw uruchom `openclaw doctor`.
-- **Logi są puste?** Sprawdź, czy Gateway działa i zapisuje do ścieżki pliku
-  w `logging.file`.
-- **Potrzebujesz więcej szczegółów?** Ustaw `logging.level` na `debug` lub `trace` i spróbuj ponownie.
+- **Brak dostępu do Gateway?** Najpierw uruchom `openclaw doctor`.
+- **Dzienniki są puste?** Sprawdź, czy Gateway działa i zapisuje dane w ścieżce
+  pliku określonej w `logging.file`.
+- **Potrzebujesz więcej szczegółów?** Ustaw `logging.level` na `debug` lub
+  `trace` i spróbuj ponownie.
 
-## Powiązane
+## Powiązane materiały
 
-- [Eksport OpenTelemetry](/pl/gateway/opentelemetry) — eksport OTLP/HTTP, katalog metryk/spanów, model prywatności
-- [Flagi diagnostyczne](/pl/diagnostics/flags) — ukierunkowane flagi logów debugowania
-- [Wewnętrzne mechanizmy rejestrowania Gateway](/pl/gateway/logging) — style logów WS, prefiksy podsystemów i przechwytywanie konsoli
+- [Eksport OpenTelemetry](/pl/gateway/opentelemetry) — eksport OTLP/HTTP, katalog metryk i segmentów, model prywatności
+- [Flagi diagnostyczne](/pl/diagnostics/flags) — ukierunkowane flagi dzienników debugowania
+- [Wewnętrzne mechanizmy rejestrowania Gateway](/pl/gateway/logging) — style dzienników WS, prefiksy podsystemów i przechwytywanie konsoli
 - [Dokumentacja konfiguracji](/pl/gateway/configuration-reference#diagnostics) — pełna dokumentacja pól `diagnostics.*`

@@ -1,45 +1,58 @@
 ---
 read_when:
-    - Je wilt de provider-id `qwen-oauth` configureren
-    - Je hebt eerder OAuth-referenties van Qwen Portal gebruikt
-    - Je hebt het Qwen Portal-eindpunt of migratiehandleiding nodig
-summary: Gebruik de provider-ID van Qwen Portal met OpenClaw
-title: Qwen OAuth / portaal
+    - U wilt de provider-id `qwen-oauth` configureren
+    - U gebruikte eerder Qwen Portal OAuth-referenties
+    - Je hebt het Qwen Portal-eindpunt of migratierichtlijnen nodig
+summary: Gebruik de provider-id van Qwen Portal met OpenClaw
+title: Qwen OAuth / Portal
 x-i18n:
-    generated_at: "2026-06-27T18:14:42Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:20:19Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 46f147e3730024bf63e99827f666e2be791318723eace98941ca067c440dddd0
+    source_hash: b78f6f23e62e38d11e6fe4e2bf515b13b414f276d08f672740ad94747a22c8fb
     source_path: providers/qwen-oauth.md
     workflow: 16
 ---
 
-`qwen-oauth` is de provider-id van Qwen Portal. Deze richt zich op het Qwen Portal-endpoint
-en houdt oudere Qwen OAuth- / portalconfiguraties aanspreekbaar via een afzonderlijke
-provider-id.
+`qwen-oauth` is de provider-id van Qwen Portal, geregistreerd door de Qwen-plugin
+(`@openclaw/qwen-provider`). Deze is gericht op het Qwen Portal-eindpunt op
+`https://portal.qwen.ai/v1` en houdt oudere Qwen OAuth-/portalconfiguraties
+toegankelijk via een afzonderlijke provider-id, los van de canonieke `qwen`-
+provider.
 
-Gebruik deze provider wanneer je specifiek een huidige Qwen Portal-token hebt voor
-`https://portal.qwen.ai/v1`, of wanneer je een oudere Qwen Portal- /
-Qwen CLI-configuratie migreert en die inloggegevens gescheiden wilt houden van de canonieke
-Qwen Cloud-provider. Dit is niet de aanbevolen eerste keuze voor nieuwe Qwen-gebruikers.
-
-Voor nieuwe Qwen Cloud-configuraties geef je de voorkeur aan [Qwen](/nl/providers/qwen) met het Standard
-ModelStudio-endpoint, tenzij je specifiek een huidige Qwen Portal-token hebt.
+Kies `qwen-oauth` als u al een werkend Qwen Portal-token hebt, een verouderde
+Qwen OAuth- of Qwen CLI-workflow migreert, of specifiek het Qwen Portal-eindpunt
+moet testen. Geef voor nieuwe configuraties de voorkeur aan
+[Qwen](/nl/providers/qwen) met het Standard ModelStudio-eindpunt: dit ondersteunt
+nieuwe configuraties met API-sleutels, meer eindpuntopties, Standard-betaling
+naar gebruik, Coding Plan en de volledige catalogus van de Qwen-plugin.
 
 ## Configuratie
 
-Geef je portal-token op via het onboardingproces:
+Installeer de Qwen-plugin als u dat nog niet hebt gedaan:
+
+```bash
+openclaw plugins install @openclaw/qwen-provider
+openclaw gateway restart
+```
+
+Geef uw portaltoken op via de onboarding:
 
 ```bash
 openclaw onboard --auth-choice qwen-oauth
 ```
 
-Of stel in:
+Niet-interactieve uitvoeringen lezen het token uit `--qwen-oauth-token <token>`,
+of stel het volgende in:
 
 ```bash
 export QWEN_API_KEY="<your-qwen-portal-token>" # pragma: allowlist secret
 ```
+
+De onboarding slaat het token op in een `qwen-oauth`-authenticatieprofiel, vult
+de portalmodelcatalogus en stelt `qwen-oauth/qwen3.5-plus` in als standaardmodel
+wanneer er geen model is geconfigureerd.
 
 ## Standaardwaarden
 
@@ -50,39 +63,41 @@ export QWEN_API_KEY="<your-qwen-portal-token>" # pragma: allowlist secret
 - API-stijl: OpenAI-compatibel
 - Standaardmodel: `qwen-oauth/qwen3.5-plus`
 
-## Hoe dit verschilt van Qwen
+## Verschillen met Qwen
 
-OpenClaw heeft twee provider-id's voor Qwen:
+OpenClaw heeft twee op Qwen gerichte provider-id's:
 
-| Provider     | Endpointfamilie                                         | Beste voor                                                                             |
-| ------------ | -------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `qwen`       | Qwen Cloud / Alibaba DashScope- en Coding Plan-endpoints | Nieuwe API-sleutelconfiguraties, Standard pay-as-you-go, Coding Plan, multimodale DashScope-functies |
-| `qwen-oauth` | Qwen Portal-endpoint op `portal.qwen.ai/v1`              | Bestaande Qwen Portal-tokens en legacy Qwen OAuth- / CLI-configuraties                 |
+| Provider     | Eindpuntfamilie                                           | Meest geschikt voor                                                                       |
+| ------------ | --------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `qwen`       | Qwen Cloud-/Alibaba DashScope- en Coding Plan-eindpunten  | Nieuwe configuraties met API-sleutels, Standard-betaling naar gebruik, Coding Plan en multimodale DashScope-functies |
+| `qwen-oauth` | Qwen Portal-eindpunt op `portal.qwen.ai/v1`               | Bestaande Qwen Portal-tokens en verouderde Qwen OAuth-/CLI-configuraties                   |
 
-Beide providers gebruiken OpenAI-compatibele aanvraagvormen, maar het zijn afzonderlijke
-authenticatieoppervlakken. Een token die voor `qwen-oauth` is opgeslagen, mag niet worden behandeld als een DashScope-
-of ModelStudio-sleutel, en een nieuwe DashScope-sleutel moet in plaats daarvan de canonieke `qwen`-
-provider gebruiken.
-
-## Wanneer Qwen OAuth / Portal kiezen
-
-- Je hebt al een werkende Qwen Portal-token.
-- Je behoudt een legacy Qwen OAuth- of Qwen CLI-workflow terwijl je overstapt naar
-  OpenClaw's providermodel.
-- Je moet specifiek compatibiliteit met het Qwen Portal-endpoint testen.
-
-Kies [Qwen](/nl/providers/qwen) voor nieuwe configuratie, bredere endpointkeuzes, Standard
-ModelStudio, Coding Plan en de volledige Qwen Plugin-catalogus.
+Beide providers gebruiken OpenAI-compatibele aanvraagstructuren, maar het zijn
+afzonderlijke authenticatieoppervlakken. Een voor `qwen-oauth` opgeslagen token
+mag niet worden behandeld als een DashScope- of ModelStudio-sleutel, en voor een
+nieuwe DashScope-sleutel moet in plaats daarvan de canonieke `qwen`-provider
+worden gebruikt.
 
 ## Modellen
 
-De Qwen Plugin-catalogus vult de standaardwaarde voor Qwen Portal:
+De Qwen-plugin vult deze statische catalogus voor het Qwen Portal-eindpunt. Alle
+vermeldingen gebruiken een maximale uitvoer van 65.536 tokens; de beschikbaarheid
+is afhankelijk van het huidige Qwen Portal-account en -token.
 
-- `qwen-oauth/qwen3.5-plus`
+| Modelreferentie                    | Invoer         | Context   | Opmerkingen    |
+| ---------------------------------- | -------------- | --------- | -------------- |
+| `qwen-oauth/qwen3.5-plus`          | tekst, afbeelding | 1.000.000 | Standaardmodel |
+| `qwen-oauth/qwen3.6-plus`          | tekst, afbeelding | 1.000.000 |                |
+| `qwen-oauth/qwen3-max-2026-01-23`  | tekst          | 262.144   |                |
+| `qwen-oauth/qwen3-coder-next`      | tekst          | 262.144   |                |
+| `qwen-oauth/qwen3-coder-plus`      | tekst          | 1.000.000 |                |
+| `qwen-oauth/MiniMax-M2.5`          | tekst          | 1.000.000 | Redeneren      |
+| `qwen-oauth/glm-5`                 | tekst          | 202.752   |                |
+| `qwen-oauth/glm-4.7`               | tekst          | 202.752   |                |
+| `qwen-oauth/kimi-k2.5`             | tekst, afbeelding | 262.144 |                |
 
-Beschikbaarheid hangt af van het huidige Qwen Portal-account en de token. Als je
-account in plaats daarvan ModelStudio- / DashScope-API-sleutels gebruikt, configureer dan de canonieke
-`qwen`-provider:
+Als uw account in plaats daarvan ModelStudio-/DashScope-API-sleutels gebruikt,
+configureert u de canonieke `qwen`-provider:
 
 ```bash
 openclaw onboard --auth-choice qwen-standard-api-key
@@ -91,29 +106,33 @@ openclaw models set qwen/qwen3-coder-plus
 
 ## Migratie
 
-Legacy Qwen Portal OAuth-profielen zijn mogelijk niet te vernieuwen. Als een portalprofiel
-niet meer werkt, authenticeer je opnieuw met een huidige token of stap je over naar de Standard
+Verouderde OAuth-profielen van Qwen Portal kunnen niet worden vernieuwd;
+`openclaw doctor` markeert ze. Als een portalprofiel niet meer werkt, voert u de
+onboarding opnieuw uit met een actueel token of schakelt u over naar de Standard
 Qwen-provider:
 
 ```bash
 openclaw onboard --auth-choice qwen-standard-api-key
 ```
 
-Standard global ModelStudio gebruikt:
+De wereldwijde Standard ModelStudio gebruikt:
 
 ```text
 https://dashscope-intl.aliyuncs.com/compatible-mode/v1
 ```
 
-## Problemen oplossen
+## Probleemoplossing
 
-- Vernieuwingsfouten met Portal OAuth: legacy Qwen Portal OAuth-profielen zijn mogelijk niet
-  te vernieuwen. Voer het onboardingproces opnieuw uit met een huidige token.
-- Fouten door verkeerd endpoint: bevestig dat de modelreferentie begint met `qwen-oauth/` wanneer
-  je een portal-token gebruikt. Gebruik `qwen/`-referenties alleen voor de canonieke Qwen-provider.
-- Verwarring rond `QWEN_API_KEY`: beide Qwen-pagina's noemen deze omgevingsvariabele, maar het onboardingproces
-  slaat inloggegevens op onder de geselecteerde provider-id. Geef de voorkeur aan het onboardingproces wanneer je
-  zowel `qwen` als `qwen-oauth` beschikbaar houdt op dezelfde machine.
+- Mislukte vernieuwing van Portal OAuth: verouderde OAuth-profielen van Qwen
+  Portal kunnen niet worden vernieuwd. Voer de onboarding opnieuw uit met een
+  actueel token.
+- Fouten door een verkeerd eindpunt: controleer of de modelreferentie begint met
+  `qwen-oauth/` wanneer u een portaltoken gebruikt. Gebruik `qwen/`-referenties
+  alleen voor de canonieke Qwen-provider.
+- Verwarring over `QWEN_API_KEY`: beide Qwen-pagina's vermelden deze
+  omgevingsvariabele, maar de onboarding slaat referenties op onder de
+  geselecteerde provider-id. Geef de voorkeur aan onboarding wanneer u zowel
+  `qwen` als `qwen-oauth` op dezelfde machine beschikbaar houdt.
 
 ## Gerelateerd
 

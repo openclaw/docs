@@ -1,123 +1,33 @@
 ---
 read_when:
-    - Integracja narzędzi oczekujących OpenAI Chat Completions
-summary: Udostępnij zgodny z OpenAI punkt końcowy HTTP /v1/chat/completions z Gateway
+    - Integracja narzędzi korzystających z interfejsu OpenAI Chat Completions
+summary: Udostępnij z poziomu Gateway zgodny z OpenAI punkt końcowy HTTP `/v1/chat/completions`
 title: Uzupełnienia czatu OpenAI
 x-i18n:
-    generated_at: "2026-06-27T17:35:27Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:09:03Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e8746f4f5964a5d0b948877b64b5d20440dea3aa45b36813c404cd06660792cf
+    source_hash: 9b1fffd2ce3da881ecd91adbb7c5d10b1d7adbd99af9b2ea4544b62ecbaf1f32
     source_path: gateway/openai-http-api.md
     workflow: 16
 ---
 
-Gateway OpenClaw może udostępniać mały punkt końcowy Chat Completions zgodny z OpenAI.
+Gateway może udostępniać niewielki interfejs Chat Completions zgodny z OpenAI. Jest on **domyślnie wyłączony**.
 
-Ten punkt końcowy jest **domyślnie wyłączony**. Najpierw włącz go w konfiguracji.
+Po włączeniu udostępnia wszystkie poniższe punkty końcowe na tym samym porcie co Gateway (multipleksowanie WS + HTTP):
 
-- `POST /v1/chat/completions`
-- Ten sam port co Gateway (multipleksowanie WS + HTTP): `http://<gateway-host>:<port>/v1/chat/completions`
+| Metoda | Ścieżka                |
+| ------ | ---------------------- |
+| POST   | `/v1/chat/completions` |
+| GET    | `/v1/models`           |
+| GET    | `/v1/models/{id}`      |
+| POST   | `/v1/embeddings`       |
+| POST   | `/v1/responses`        |
 
-Gdy zgodna z OpenAI powierzchnia HTTP Gateway jest włączona, udostępnia także:
-
-- `GET /v1/models`
-- `GET /v1/models/{id}`
-- `POST /v1/embeddings`
-- `POST /v1/responses`
-
-Pod spodem żądania są wykonywane jako normalne uruchomienie agenta Gateway (ta sama ścieżka kodu co `openclaw agent`), więc routing/uprawnienia/konfiguracja odpowiadają Twojemu Gateway.
-
-## Uwierzytelnianie
-
-Używa konfiguracji uwierzytelniania Gateway.
-
-Typowe ścieżki uwierzytelniania HTTP:
-
-- uwierzytelnianie współdzielonym sekretem (`gateway.auth.mode="token"` lub `"password"`):
-  `Authorization: Bearer <token-or-password>`
-- zaufane uwierzytelnianie HTTP przenoszące tożsamość (`gateway.auth.mode="trusted-proxy"`):
-  kieruj przez skonfigurowany serwer proxy świadomy tożsamości i pozwól mu wstrzyknąć
-  wymagane nagłówki tożsamości
-- otwarte uwierzytelnianie dla prywatnego ingressu (`gateway.auth.mode="none"`):
-  nagłówek uwierzytelniania nie jest wymagany
-
-Uwagi:
-
-- Gdy `gateway.auth.mode="token"`, użyj `gateway.auth.token` (lub `OPENCLAW_GATEWAY_TOKEN`).
-- Gdy `gateway.auth.mode="password"`, użyj `gateway.auth.password` (lub `OPENCLAW_GATEWAY_PASSWORD`).
-- Gdy `gateway.auth.mode="trusted-proxy"`, żądanie HTTP musi pochodzić ze
-  skonfigurowanego zaufanego źródła proxy; proxy loopback na tym samym hoście wymagają jawnego
-  `gateway.auth.trustedProxy.allowLoopback = true`.
-- Wewnętrzni wywołujący z tego samego hosta, którzy omijają proxy, mogą używać
-  `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD` jako lokalnego bezpośredniego
-  mechanizmu awaryjnego. Dowolny dowód w nagłówku `Forwarded`, `X-Forwarded-*` lub `X-Real-IP`
-  zamiast tego utrzymuje żądanie na ścieżce zaufanego proxy.
-- Jeśli skonfigurowano `gateway.auth.rateLimit` i wystąpi zbyt wiele niepowodzeń uwierzytelniania, punkt końcowy zwraca `429` z `Retry-After`.
-
-## Granica bezpieczeństwa (ważne)
-
-Traktuj ten punkt końcowy jako powierzchnię **pełnego dostępu operatora** dla instancji gateway.
-
-- Uwierzytelnianie HTTP bearer tutaj nie jest wąskim modelem zakresu dla pojedynczego użytkownika.
-- Poprawny token/hasło Gateway dla tego punktu końcowego należy traktować jak dane uwierzytelniające właściciela/operatora.
-- Żądania przechodzą przez tę samą ścieżkę agenta płaszczyzny sterowania co zaufane działania operatora.
-- Dla tego punktu końcowego nie istnieje osobna granica narzędzi dla niewłaściciela/pojedynczego użytkownika; gdy wywołujący przejdzie tutaj uwierzytelnianie Gateway, OpenClaw traktuje go jako zaufanego operatora tego gateway.
-- W trybach uwierzytelniania współdzielonym sekretem (`token` i `password`) punkt końcowy przywraca normalne pełne wartości domyślne operatora, nawet jeśli wywołujący wyśle węższy nagłówek `x-openclaw-scopes`.
-- Tryby HTTP przenoszące zaufaną tożsamość (na przykład uwierzytelnianie zaufanym proxy lub `gateway.auth.mode="none"`) honorują `x-openclaw-scopes`, gdy jest obecny, a w przeciwnym razie wracają do normalnego domyślnego zestawu zakresów operatora.
-- Jeśli polityka agenta docelowego pozwala na wrażliwe narzędzia, ten punkt końcowy może ich używać.
-- Utrzymuj ten punkt końcowy wyłącznie na loopback/tailnet/prywatnym ingressie; nie wystawiaj go bezpośrednio do publicznego internetu.
-
-Macierz uwierzytelniania:
-
-- `gateway.auth.mode="token"` lub `"password"` + `Authorization: Bearer ...`
-  - potwierdza posiadanie współdzielonego sekretu operatora gateway
-  - ignoruje węższe `x-openclaw-scopes`
-  - przywraca pełny domyślny zestaw zakresów operatora:
-    `operator.admin`, `operator.approvals`, `operator.pairing`,
-    `operator.read`, `operator.talk.secrets`, `operator.write`
-  - traktuje tury czatu w tym punkcie końcowym jako tury wysyłane przez właściciela
-- tryby HTTP przenoszące zaufaną tożsamość (na przykład uwierzytelnianie zaufanym proxy albo `gateway.auth.mode="none"` na prywatnym ingressie)
-  - uwierzytelniają zewnętrzną zaufaną tożsamość lub granicę wdrożenia
-  - honorują `x-openclaw-scopes`, gdy nagłówek jest obecny
-  - wracają do normalnego domyślnego zestawu zakresów operatora, gdy nagłówka nie ma
-  - tracą semantykę właściciela tylko wtedy, gdy wywołujący jawnie zawęża zakresy i pomija `operator.admin`
-  - wymagają `operator.admin` dla kontrolek żądania na poziomie właściciela, takich jak `x-openclaw-model`
-
-Zobacz [Bezpieczeństwo](/pl/gateway/security) i [Zdalny dostęp](/pl/gateway/remote).
-
-## Kiedy używać tego punktu końcowego
-
-Używaj `/v1/chat/completions`, gdy integrujesz narzędzia lub zaufany backend po stronie aplikacji z istniejącym gateway i możesz bezpiecznie przechowywać dane uwierzytelniające operatora gateway.
-
-- Preferuj to zamiast dodawania nowego wbudowanego kanału, gdy Twoja integracja jest po prostu kolejną powierzchnią operatora/klienta dla tego samego gateway.
-- W przypadku natywnych klientów mobilnych, które łączą się bezpośrednio ze zdalnym gateway, preferuj [WebChat](/pl/web/webchat) lub [Protokół Gateway](/pl/gateway/protocol) i zaimplementuj przepływ bootstrapu sparowanego urządzenia/tokenu urządzenia, aby urządzenie nie potrzebowało współdzielonego tokenu/hasła HTTP.
-- Zamiast tego zbuduj Plugin kanału, gdy integrujesz zewnętrzną sieć komunikacyjną z własnymi użytkownikami, pokojami, dostarczaniem Webhook lub transportem wychodzącym. Zobacz [Tworzenie pluginów](/pl/plugins/building-plugins).
-
-## Kontrakt modelu z agentem na pierwszym miejscu
-
-OpenClaw traktuje pole OpenAI `model` jako **cel agenta**, a nie surowy identyfikator modelu dostawcy.
-
-- `model: "openclaw"` kieruje do skonfigurowanego agenta domyślnego.
-- `model: "openclaw/default"` także kieruje do skonfigurowanego agenta domyślnego.
-- `model: "openclaw/<agentId>"` kieruje do konkretnego agenta.
-
-Opcjonalne nagłówki żądania:
-
-- `x-openclaw-model: <provider/model-or-bare-id>` nadpisuje model backendu dla wybranego agenta. Wywołujący bearer ze współdzielonym sekretem mogą używać tego nagłówka. Wywołujący przenoszący tożsamość, tacy jak zaufane proxy lub prywatne żądania ingress bez uwierzytelniania z `x-openclaw-scopes`, potrzebują `operator.admin`; wywołujący tylko z uprawnieniami zapisu otrzymują `403 missing scope: operator.admin`.
-- `x-openclaw-agent-id: <agentId>` pozostaje obsługiwane jako nadpisanie zgodności.
-- `x-openclaw-session-key: <sessionKey>` jawnie kontroluje routing sesji. Wartość nie może używać zarezerwowanych wewnętrznych przestrzeni nazw sesji, takich jak `subagent:`, `cron:` lub `acp:`; takie żądania są odrzucane z `400 invalid_request_error`.
-- `x-openclaw-message-channel: <channel>` ustawia syntetyczny kontekst kanału ingress dla promptów i polityk świadomych kanału.
-
-Nadal akceptowane aliasy zgodności:
-
-- `model: "openclaw:<agentId>"`
-- `model: "agent:<agentId>"`
+Żądania są wykonywane jako zwykłe uruchomienia agenta Gateway (tą samą ścieżką kodu co `openclaw agent`), dlatego routing, uprawnienia i konfiguracja odpowiadają ustawieniom Gateway.
 
 ## Włączanie punktu końcowego
-
-Ustaw `gateway.http.endpoints.chatCompletions.enabled` na `true`:
 
 ```json5
 {
@@ -131,183 +41,213 @@ Ustaw `gateway.http.endpoints.chatCompletions.enabled` na `true`:
 }
 ```
 
-## Wyłączanie punktu końcowego
+Aby wyłączyć, ustaw `enabled: false` (lub pomiń tę opcję).
 
-Ustaw `gateway.http.endpoints.chatCompletions.enabled` na `false`:
+## Granica bezpieczeństwa (ważne)
+
+Traktuj ten punkt końcowy jako zapewniający **pełny dostęp operatora** do instancji Gateway:
+
+- Prawidłowy token lub hasło Gateway dla tego punktu końcowego jest równoważne poświadczeniu właściciela/operatora, a nie wąskiemu zakresowi przypisanemu do użytkownika.
+- Żądania przechodzą tą samą ścieżką agenta warstwy sterowania co zaufane działania operatora, więc jeśli zasady agenta docelowego zezwalają na użycie wrażliwych narzędzi, ten punkt końcowy również może z nich korzystać.
+- Udostępniaj go wyłącznie przez local loopback, tailnet lub prywatny punkt wejścia. Nie udostępniaj go w publicznym Internecie.
+
+Macierz uwierzytelniania:
+
+| Ścieżka uwierzytelniania                                                                              | Zachowanie                                                                                                                                                                                                                                                                                                                                 |
+| ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `gateway.auth.mode="token"` lub `"password"` + `Authorization: Bearer ...`                             | Potwierdza posiadanie współdzielonego sekretu Gateway. Ignoruje każdy nagłówek `x-openclaw-scopes` i przywraca pełny domyślny zestaw zakresów operatora: `operator.admin`, `operator.approvals`, `operator.pairing`, `operator.read`, `operator.talk.secrets`, `operator.write`. Traktuje tury czatu jako tury nadawcy będącego właścicielem. |
+| Zaufane żądanie HTTP z tożsamością (uwierzytelnianie przez zaufane proxy lub `gateway.auth.mode="none"` w prywatnym punkcie wejścia) | Uwzględnia `x-openclaw-scopes`, jeśli jest obecny; w przeciwnym razie używa domyślnego zestawu zakresów operatora. Traci semantykę właściciela tylko wtedy, gdy wywołujący jawnie zawęzi zakresy i pominie `operator.admin`. Wymaga `operator.admin` do mechanizmów sterowania na poziomie właściciela, takich jak `x-openclaw-model`. |
+
+Zobacz [Zakresy operatora](/pl/gateway/operator-scopes), [Bezpieczeństwo](/pl/gateway/security) i [Dostęp zdalny](/pl/gateway/remote).
+
+## Uwierzytelnianie
+
+Używa konfiguracji uwierzytelniania Gateway (szczegóły tego trybu znajdziesz w sekcji [Uwierzytelnianie przez zaufane proxy](/pl/gateway/trusted-proxy-auth)):
+
+| Tryb                                | Sposób uwierzytelniania                                                                                                                                                                                   |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `gateway.auth.mode="token"`         | `Authorization: Bearer <token>`. Ustawiane przez `gateway.auth.token` lub `OPENCLAW_GATEWAY_TOKEN`.                                                                                                        |
+| `gateway.auth.mode="password"`      | `Authorization: Bearer <password>`. Ustawiane przez `gateway.auth.password` lub `OPENCLAW_GATEWAY_PASSWORD`.                                                                                              |
+| `gateway.auth.mode="trusted-proxy"` | Kieruj ruch przez skonfigurowane proxy uwzględniające tożsamość, które wstrzykuje wymagane nagłówki tożsamości. Proxy local loopback na tym samym hoście wymaga jawnego ustawienia `gateway.auth.trustedProxy.allowLoopback = true`. |
+| `gateway.auth.mode="none"`          | Nagłówek uwierzytelniania nie jest wymagany (wyłącznie prywatny punkt wejścia).                                                                                                                            |
+
+Uwagi:
+
+- Wywołujący z tego samego hosta, którzy omijają proxy w Gateway działającym w trybie `trusted-proxy`, mogą użyć bezpośrednio `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD`. Obecność w nagłówkach jakichkolwiek danych `Forwarded`, `X-Forwarded-*` lub `X-Real-IP` powoduje jednak, że żądanie pozostaje na ścieżce zaufanego proxy.
+- Jeśli skonfigurowano `gateway.auth.rateLimit` i zbyt wiele prób uwierzytelnienia zakończy się niepowodzeniem, punkt końcowy zwraca `429` z nagłówkiem `Retry-After`.
+
+## Kiedy używać tego punktu końcowego
+
+- Preferuj go zamiast dodawania nowego wbudowanego kanału, jeśli integracja jest tylko kolejnym interfejsem operatora/klienta dla tego samego Gateway.
+- W przypadku natywnych klientów mobilnych łączących się bezpośrednio ze zdalnym Gateway preferuj [WebChat](/pl/web/webchat) lub [protokół Gateway](/pl/gateway/protocol) z przepływem inicjalizacji sparowanego urządzenia i tokenu urządzenia, aby urządzenie nie potrzebowało współdzielonego tokenu ani hasła HTTP.
+- Zamiast tego utwórz Plugin kanału, jeśli integrujesz zewnętrzną sieć komunikacyjną mającą własnych użytkowników, pokoje, dostarczanie przez Webhook lub transport wychodzący. Zobacz [Tworzenie pluginów](/pl/plugins/building-plugins).
+
+## Kontrakt modelu zorientowany na agenta
+
+OpenClaw traktuje pole OpenAI `model` jako **cel agenta**, a nie surowy identyfikator modelu dostawcy.
+
+| Wartość `model`                              | Kieruje do                                                                                                                               |
+| -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `openclaw`                                   | Skonfigurowanego domyślnego agenta                                                                                                       |
+| `openclaw/default`                           | Skonfigurowanego domyślnego agenta (stabilny alias; można go bezpiecznie zapisać na stałe, nawet jeśli rzeczywisty identyfikator domyślnego agenta różni się między środowiskami) |
+| `openclaw/<agentId>` lub `openclaw:<agentId>` | Określonego agenta                                                                                                                       |
+| `agent:<agentId>`                            | Określonego agenta (alias zgodności)                                                                                                     |
+
+Opcjonalne nagłówki żądania:
+
+| Nagłówek                                        | Działanie                                                                                                                                                                                                                                                                                                                                 |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `x-openclaw-model: <provider/model-or-bare-id>` | Zastępuje model zaplecza wybranego agenta. Wywołujący używający współdzielonego sekretu typu bearer mogą korzystać z tego bezpośrednio; wywołujący z tożsamością (`trusted-proxy` lub prywatny punkt wejścia bez uwierzytelniania z `x-openclaw-scopes`) potrzebują `operator.admin`, w przeciwnym razie otrzymają `403 missing scope: operator.admin`. |
+| `x-openclaw-agent-id: <agentId>`                | Zastąpienie wyboru agenta na potrzeby zgodności.                                                                                                                                                                                                                                                                                          |
+| `x-openclaw-session-key: <sessionKey>`          | Jawny routing sesji. Odrzucany z błędem `400 invalid_request_error`, jeśli używa zarezerwowanej wewnętrznej przestrzeni nazw (`subagent:`, `cron:`, `acp:`).                                                                                                                                                                                |
+| `x-openclaw-message-channel: <channel>`         | Ustawia syntetyczny kontekst kanału punktu wejścia dla monitów i zasad uwzględniających kanał.                                                                                                                                                                                                                                            |
+
+`/v1/models` wyświetla cele agentów najwyższego poziomu (`openclaw`, `openclaw/default`, `openclaw/<agentId>`), a nie modele dostawców zaplecza ani podagentów; podagenci pozostają wewnętrzną topologią wykonywania. Jeśli pominiesz `x-openclaw-model`, wybrany agent będzie działać ze swoim zwykłym skonfigurowanym modelem.
+
+`/v1/embeddings` używa tych samych identyfikatorów `model` wskazujących cele agentów. Wyślij `x-openclaw-model` (jako wywołujący używający współdzielonego sekretu lub wywołujący z tożsamością i zakresem `operator.admin`), aby wybrać określony model osadzania; w przeciwnym razie żądanie użyje zwykłej konfiguracji osadzania wybranego agenta.
+
+## Zachowanie sesji
+
+Domyślnie punkt końcowy jest **bezstanowy dla każdego żądania** (przy każdym wywołaniu generowany jest nowy klucz sesji).
+
+Jeśli żądanie zawiera ciąg OpenAI `user`, Gateway wyprowadza z niego stabilny klucz sesji, dzięki czemu kolejne wywołania mogą współdzielić sesję agenta. W aplikacjach niestandardowych używaj ponownie tej samej wartości `user` w ramach jednego wątku konwersacji; unikaj identyfikatorów na poziomie konta, chyba że chcesz, aby wiele konwersacji lub urządzeń współdzieliło jedną sesję OpenClaw. Używaj `x-openclaw-session-key` tylko wtedy, gdy potrzebujesz jawnej kontroli routingu między wieloma klientami lub wątkami, korzystając z kluczy należących do aplikacji i unikających wymienionych powyżej zarezerwowanych przestrzeni nazw.
+
+## Limity żądań (konfiguracja)
+
+Wartości domyślne można dostosować w `gateway.http.endpoints.chatCompletions`:
 
 ```json5
 {
   gateway: {
     http: {
       endpoints: {
-        chatCompletions: { enabled: false },
+        chatCompletions: {
+          enabled: true,
+          maxBodyBytes: 20000000,
+          maxImageParts: 8,
+          maxTotalImageBytes: 20000000,
+          images: {
+            allowUrl: false,
+            urlAllowlist: ["cdn.example.com", "*.assets.example.com"],
+            allowedMimes: [
+              "image/jpeg",
+              "image/png",
+              "image/gif",
+              "image/webp",
+              "image/heic",
+              "image/heif",
+            ],
+            maxBytes: 10485760,
+            maxRedirects: 3,
+            timeoutMs: 10000,
+          },
+        },
       },
     },
   },
 }
 ```
 
-## Zachowanie sesji
+Wartości domyślne w przypadku pominięcia:
 
-Domyślnie punkt końcowy jest **bezstanowy dla każdego żądania** (przy każdym wywołaniu generowany jest nowy klucz sesji).
+| Klucz                 | Wartość domyślna                                                                                     |
+| --------------------- | ---------------------------------------------------------------------------------------------------- |
+| `maxBodyBytes`        | 20 MB                                                                                                |
+| `maxImageParts`       | 8 (maksymalna liczba części `image_url` odczytywanych z najnowszej wiadomości użytkownika)           |
+| `maxTotalImageBytes`  | 20 MB (łączna liczba zdekodowanych bajtów ze wszystkich części `image_url` w jednym żądaniu)         |
+| `images.allowUrl`     | `false` (części `image_url` pochodzące z adresu URL są odrzucane, jeśli ta opcja nie jest włączona)   |
+| `images.maxBytes`     | 10 MB na obraz                                                                                       |
+| `images.maxRedirects` | 3                                                                                                    |
+| `images.timeoutMs`    | 10 s                                                                                                 |
 
-Jeśli żądanie zawiera ciąg OpenAI `user`, Gateway wyprowadza z niego stabilny klucz sesji, dzięki czemu powtarzane wywołania mogą współdzielić sesję agenta.
+Źródła `image_url` w formacie HEIC/HEIF są akceptowane i normalizowane do JPEG przed przekazaniem dostawcy przez współdzielony procesor obrazów OpenClaw (Rastermill), który w przypadku formatów wymagających obsługi zewnętrznego kodeka korzysta awaryjnie z konwertera systemowego (`sips`, ImageMagick, GraphicsMagick lub ffmpeg).
 
-W aplikacjach niestandardowych najbezpieczniejszą wartością domyślną jest ponowne używanie tej samej wartości `user` dla danego wątku konwersacji. Unikaj identyfikatorów na poziomie konta, chyba że jawnie chcesz, aby wiele konwersacji lub urządzeń współdzieliło jedną sesję OpenClaw. Używaj `x-openclaw-session-key` tylko wtedy, gdy potrzebujesz jawnej kontroli routingu między wieloma klientami lub wątkami, i wybieraj klucze należące do aplikacji, które nie zaczynają się od zarezerwowanych wewnętrznych przestrzeni nazw, takich jak `subagent:`, `cron:` lub `acp:`.
-
-## Dlaczego ta powierzchnia ma znaczenie
-
-To zestaw zgodności o największym przełożeniu dla samodzielnie hostowanych frontendów i narzędzi:
-
-- Większość konfiguracji Open WebUI, LobeChat i LibreChat oczekuje `/v1/models`.
-- Wiele systemów RAG oczekuje `/v1/embeddings`.
-- Istniejący klienci czatu OpenAI zwykle mogą zacząć od `/v1/chat/completions`.
-- Bardziej natywne dla agentów klienty coraz częściej preferują `/v1/responses`.
-
-## Lista modeli i routing agentów
-
-<AccordionGroup>
-  <Accordion title="Co zwraca `/v1/models`?">
-    Listę celów agentów OpenClaw.
-
-    Zwrócone identyfikatory to wpisy `openclaw`, `openclaw/default` i `openclaw/<agentId>`.
-    Używaj ich bezpośrednio jako wartości OpenAI `model`.
-
-  </Accordion>
-  <Accordion title="Czy `/v1/models` wyświetla agentów czy subagentów?">
-    Wyświetla cele agentów najwyższego poziomu, a nie modele dostawców backendu ani subagentów.
-
-    Subagenci pozostają wewnętrzną topologią wykonania. Nie pojawiają się jako pseudomodele.
-
-  </Accordion>
-  <Accordion title="Dlaczego uwzględniono `openclaw/default`?">
-    `openclaw/default` to stabilny alias dla skonfigurowanego agenta domyślnego.
-
-    Oznacza to, że klienci mogą nadal używać jednego przewidywalnego identyfikatora, nawet jeśli rzeczywisty identyfikator agenta domyślnego zmienia się między środowiskami.
-
-  </Accordion>
-  <Accordion title="Jak nadpisać model backendu?">
-    Użyj `x-openclaw-model`. To nadpisanie na poziomie właściciela: działa ze ścieżką tokenu/hasła bearer ze współdzielonym sekretem Gateway i wymaga `operator.admin` na ścieżkach HTTP przenoszących tożsamość, takich jak uwierzytelnianie zaufanym proxy.
-
-    Przykłady:
-    `x-openclaw-model: openai/gpt-5.4`
-    `x-openclaw-model: gpt-5.5`
-
-    Jeśli go pominiesz, wybrany agent działa ze swoim normalnie skonfigurowanym wyborem modelu.
-
-  </Accordion>
-  <Accordion title="Jak embeddingi pasują do tego kontraktu?">
-    `/v1/embeddings` używa tych samych identyfikatorów `model` celów agentów.
-
-    Użyj `model: "openclaw/default"` lub `model: "openclaw/<agentId>"`.
-    Gdy potrzebujesz konkretnego modelu embeddingów, wyślij go w `x-openclaw-model` od wywołującego ze współdzielonym sekretem albo wywołującego przenoszącego tożsamość z `operator.admin`.
-    Bez tego nagłówka żądanie przechodzi do normalnej konfiguracji embeddingów wybranego agenta.
-
-  </Accordion>
-</AccordionGroup>
-
-## Strumieniowanie (SSE)
-
-Ustaw `stream: true`, aby otrzymywać Server-Sent Events (SSE):
-
-- `Content-Type: text/event-stream`
-- Każda linia zdarzenia ma postać `data: <json>`
-- Strumień kończy się `data: [DONE]`
+Uwaga dotycząca bezpieczeństwa: dodanie nazwy hosta do listy dozwolonych nie omija blokowania prywatnych/wewnętrznych adresów IP. W przypadku Gateway wystawionych na internet oprócz zabezpieczeń na poziomie aplikacji zastosuj kontrolę wychodzącego ruchu sieciowego. Zobacz [Bezpieczeństwo](/pl/gateway/security).
 
 ## Kontrakt narzędzi czatu
 
-`/v1/chat/completions` obsługuje podzbiór narzędzi funkcyjnych zgodny z typowymi klientami OpenAI Chat.
+`/v1/chat/completions` obsługuje podzbiór narzędzi funkcyjnych zgodny z popularnymi klientami OpenAI Chat.
 
 ### Obsługiwane pola żądania
 
-- `tools`: tablica `{ "type": "function", "function": { ... } }`
-- `tool_choice`: `"auto"`, `"none"`, `"required"` lub `{ "type": "function", "function": { "name": "..." } }`
-- `messages[*].role: "tool"` kolejne tury
-- `messages[*].tool_call_id` do powiązania wyników narzędzi z wcześniejszym wywołaniem narzędzia
-- `max_completion_tokens`: liczba; limit na wywołanie dla łącznej liczby tokenów uzupełnienia (w tym tokenów rozumowania). Aktualna nazwa pola OpenAI Chat Completions; preferowana, gdy wysłano zarówno `max_completion_tokens`, jak i `max_tokens`.
-- `max_tokens`: liczba; starszy alias akceptowany dla zgodności wstecznej. Ignorowany, gdy obecne jest także `max_completion_tokens`.
-- `temperature`: liczba; temperatura próbkowania best-effort przekazywana do dostawcy upstream przez kanał parametrów strumienia agenta.
-- `top_p`: liczba; próbkowanie jądrowe best-effort przekazywane do dostawcy upstream przez kanał parametrów strumienia agenta.
-- `frequency_penalty`: liczba; kara za częstotliwość best-effort przekazywana do dostawcy upstream przez kanał parametrów strumienia agenta. Sprawdzany zakres: od -2.0 do 2.0. Zwraca `400 invalid_request_error` dla wartości spoza zakresu.
-- `presence_penalty`: liczba; kara za obecność best-effort przekazywana do dostawcy upstream przez kanał parametrów strumienia agenta. Sprawdzany zakres: od -2.0 do 2.0. Zwraca `400 invalid_request_error` dla wartości spoza zakresu.
-- `seed`: liczba (całkowita); seed best-effort przekazywany do dostawcy upstream przez kanał parametrów strumienia agenta. Zwraca `400 invalid_request_error` dla wartości niecałkowitych.
-- `stop`: ciąg lub tablica maksymalnie 4 ciągów; sekwencje stop best-effort przekazywane do dostawcy upstream przez kanał parametrów strumienia agenta. Zwraca `400 invalid_request_error` dla więcej niż 4 sekwencji albo wpisów niebędących ciągami/pustych.
+| Pole                       | Uwagi                                                                                                                                                                  |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `tools`                    | Tablica elementów `{ "type": "function", "function": { ... } }`                                                                                                        |
+| `tool_choice`              | `"auto"`, `"none"`, `"required"` lub `{ "type": "function", "function": { "name": "..." } }`                                                                            |
+| `messages[*].role: "tool"` | Kolejne tury                                                                                                                                                            |
+| `messages[*].tool_call_id` | Wiąże wynik narzędzia z wcześniejszym wywołaniem narzędzia                                                                                                              |
+| `max_completion_tokens`    | Liczba; limit łącznej liczby tokenów ukończenia na wywołanie (w tym tokenów rozumowania). Obecna nazwa pola; używana, gdy przesłano zarówno to pole, jak i `max_tokens`. |
+| `max_tokens`               | Liczba; starszy alias, ignorowany, gdy obecne jest również `max_completion_tokens`.                                                                                     |
+| `temperature`              | Liczba 0–2; obsługa w miarę możliwości, przekazywana do dostawcy nadrzędnego. `400 invalid_request_error`, jeśli wartość jest poza zakresem.                            |
+| `top_p`                    | Liczba 0–1; obsługa w miarę możliwości. `400 invalid_request_error`, jeśli wartość jest poza zakresem.                                                                  |
+| `frequency_penalty`        | Liczba od -2.0 do 2.0; obsługa w miarę możliwości. `400 invalid_request_error`, jeśli wartość jest poza zakresem.                                                       |
+| `presence_penalty`         | Liczba od -2.0 do 2.0; obsługa w miarę możliwości. `400 invalid_request_error`, jeśli wartość jest poza zakresem.                                                       |
+| `seed`                     | Liczba całkowita; obsługa w miarę możliwości. `400 invalid_request_error` dla wartości niebędących liczbami całkowitymi.                                               |
+| `stop`                     | Ciąg znaków lub tablica maksymalnie 4 ciągów; obsługa w miarę możliwości. `400 invalid_request_error` dla ponad 4 sekwencji albo elementów niebędących ciągami lub pustych. |
 
-Gdy ustawione jest którekolwiek pole limitu tokenów, wartość jest przekazywana do dostawcy upstream przez kanał stream-param agenta. Rzeczywista nazwa pola wysyłana przewodowo do dostawcy upstream jest wybierana przez transport dostawcy: `max_completion_tokens` dla punktów końcowych z rodziny OpenAI oraz `max_tokens` dla dostawców, którzy akceptują tylko starszą nazwę (takich jak Mistral i Chutes). Pola próbkowania (`temperature`, `top_p`, `frequency_penalty`, `presence_penalty`, `seed`) korzystają z tego samego kanału stream-param; backend Codex Responses oparty na ChatGPT usuwa je po stronie serwera, ponieważ używa stałego próbkowania. `stop` również przechodzi kanałem stream-param i mapuje się na pole zatrzymania transportu (`stop` dla backendów Chat Completions, `stop_sequences` dla Anthropic); API OpenAI Responses nie ma parametru zatrzymania, więc `stop` nie jest stosowane w modelach obsługiwanych przez Responses.
+Wszystkie pola próbkowania i limitów tokenów korzystają z tego samego kanału parametrów strumienia agenta i są przekazywane w miarę możliwości:
+
+- Limit tokenów: nazwę pola przesyłanego protokołem wybiera warstwa transportowa dostawcy: `max_completion_tokens` dla punktów końcowych z rodziny OpenAI, a `max_tokens` dla dostawców akceptujących wyłącznie starszą nazwę (Mistral, Chutes).
+- `stop` jest mapowane na pole zatrzymania warstwy transportowej: `stop` dla backendów Chat Completions, `stop_sequences` dla Anthropic. Interfejs OpenAI Responses API nie ma parametru zatrzymania, więc `stop` nie jest stosowane w modelach opartych na Responses.
+- Backend Codex Responses oparty na ChatGPT używa stałego próbkowania po stronie serwera i usuwa `temperature`/`top_p` (wraz z `max_output_tokens`, `metadata`, `prompt_cache_retention`, `service_tier`), zanim żądanie dotrze do tego backendu.
 
 ### Nieobsługiwane warianty
 
-Punkt końcowy zwraca `400 invalid_request_error` dla nieobsługiwanych wariantów narzędzi, w tym:
+Zwraca `400 invalid_request_error` w przypadku:
 
-- `tools`, które nie jest tablicą
-- wpisów narzędzi innych niż function
-- brakującego `tool.function.name`
+- `tools`, które nie jest tablicą, elementów narzędzi niebędących funkcjami lub braku `tool.function.name`
 - wariantów `tool_choice`, takich jak `allowed_tools` i `custom`
-- wartości `tool_choice.function.name`, które nie pasują do podanych `tools`
+- wartości `tool_choice.function.name`, które nie odpowiadają żadnemu dostarczonemu narzędziu
 
-Dla `tool_choice: "required"` i `tool_choice` przypiętego do funkcji punkt końcowy zawęża ujawniony klientowi zestaw narzędzi funkcyjnych, instruuje środowisko wykonawcze, aby wywołało narzędzie klienta przed odpowiedzią, i zwraca błąd, jeśli odpowiedź agenta nie zawiera pasującego ustrukturyzowanego wywołania narzędzia klienta. Ten kontrakt dotyczy dostarczonej przez wywołującego listy HTTP `tools`, a nie każdego wewnętrznego narzędzia agenta OpenClaw.
+W przypadku `tool_choice: "required"` i `tool_choice` przypiętego do funkcji punkt końcowy zawęża udostępniony zestaw narzędzi funkcyjnych klienta, nakazuje środowisku wykonawczemu wywołać narzędzie klienta przed udzieleniem odpowiedzi i zgłasza błąd, jeśli odpowiedź agenta nie zawiera pasującego ustrukturyzowanego wywołania narzędzia klienta. Dotyczy to dostarczonej przez wywołującego listy HTTP `tools`, a nie wszystkich wewnętrznych narzędzi agenta OpenClaw.
 
-### Kształt odpowiedzi narzędzia bez strumieniowania
+### Format odpowiedzi narzędzia bez strumieniowania
 
-Gdy agent zdecyduje się wywołać narzędzia, odpowiedź używa:
+Gdy agent wywołuje narzędzia, odpowiedź zawiera:
 
-- wpisu `choices[0].finish_reason = "tool_calls"`
-- wpisów `choices[0].message.tool_calls[]` z:
-  - `id`
-  - `type: "function"`
-  - `function.name`
-  - `function.arguments` (ciąg JSON)
+- `choices[0].finish_reason = "tool_calls"`
+- elementy `choices[0].message.tool_calls[]` z polami `id`, `type: "function"`, `function.name`, `function.arguments` (ciąg JSON)
+- Komentarz asystenta przed wywołaniem narzędzia w `choices[0].message.content` (może być pusty)
 
-Komentarz asystenta przed wywołaniem narzędzia jest zwracany w `choices[0].message.content` (potencjalnie pusty).
+### Format strumieniowej odpowiedzi narzędzia
 
-### Kształt odpowiedzi narzędzia ze strumieniowaniem
+Gdy `stream: true`, wywołania narzędzi napływają jako przyrostowe fragmenty SSE: początkowa różnica z rolą asystenta, opcjonalne różnice komentarza asystenta, co najmniej jeden fragment `delta.tool_calls` zawierający identyfikację narzędzia i fragmenty argumentów, a następnie końcowy fragment z `finish_reason: "tool_calls"` i `data: [DONE]`.
 
-Gdy `stream: true`, wywołania narzędzi są emitowane jako przyrostowe fragmenty SSE:
+Jeśli `stream_options.include_usage=true`, przed `[DONE]` emitowany jest końcowy fragment ze statystykami użycia.
 
-- początkowa delta roli asystenta
-- opcjonalne delty komentarza asystenta
-- jeden lub więcej fragmentów `delta.tool_calls` przenoszących tożsamość narzędzia i fragmenty argumentów
-- końcowy fragment z `finish_reason: "tool_calls"`
-- `data: [DONE]`
+### Pętla kontynuacji po wywołaniu narzędzia
 
-Jeśli `stream_options.include_usage=true`, końcowy fragment użycia jest emitowany przed `[DONE]`.
+Po otrzymaniu `tool_calls` wykonaj żądane funkcje i wyślij kolejne żądanie zawierające wcześniejszą wiadomość asystenta z wywołaniem narzędzia oraz co najmniej jedną wiadomość `role: "tool"` z pasującym `tool_call_id`. Kontynuuje to tę samą pętlę rozumowania agenta w celu utworzenia odpowiedzi końcowej.
 
-### Pętla dalszej obsługi narzędzia
+## Strumieniowanie (SSE)
 
-Po otrzymaniu `tool_calls` klient powinien wykonać żądane funkcje i wysłać kolejne żądanie, które zawiera:
+Ustaw `stream: true`, aby otrzymywać zdarzenia wysyłane przez serwer:
 
-- poprzednią wiadomość asystenta z wywołaniem narzędzia
-- jedną lub więcej wiadomości `role: "tool"` z pasującym `tool_call_id`
-
-Pozwala to uruchomieniu agenta Gateway kontynuować tę samą pętlę rozumowania i wygenerować końcową odpowiedź asystenta.
+- `Content-Type: text/event-stream`
+- Każdy wiersz zdarzenia ma postać `data: <json>`
+- Strumień kończy się wpisem `data: [DONE]`
 
 ## Szybka konfiguracja Open WebUI
 
-Dla podstawowego połączenia Open WebUI:
-
-- Bazowy URL: `http://127.0.0.1:18789/v1`
-- Bazowy URL Docker na macOS: `http://host.docker.internal:18789/v1`
-- Klucz API: Twój token bearer Gateway
+- Bazowy adres URL: `http://127.0.0.1:18789/v1`
+- Bazowy adres URL Dockera w systemie macOS: `http://host.docker.internal:18789/v1`
+- Klucz API: token okaziciela Gateway
 - Model: `openclaw/default`
 
-Oczekiwane zachowanie:
+Oczekiwane działanie: `GET /v1/models` wyświetla `openclaw/default`, a Open WebUI używa go jako identyfikatora modelu czatu. Aby użyć konkretnego dostawcy/modelu backendu, ustaw zwykły domyślny model agenta albo wyślij `x-openclaw-model` (wywołujący ze współdzielonym sekretem lub wywołujący z tożsamością i uprawnieniem `operator.admin`).
 
-- `GET /v1/models` powinno wyświetlić `openclaw/default`
-- Open WebUI powinien używać `openclaw/default` jako identyfikatora modelu czatu
-- Jeśli chcesz użyć konkretnego dostawcy/modelu backendu dla tego agenta, ustaw normalny domyślny model agenta albo wyślij `x-openclaw-model` z wywołującego ze współdzielonym sekretem lub wywołującego z tożsamością i `operator.admin`
-
-Szybki test dymny:
+Szybki test podstawowy:
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/models \
   -H 'Authorization: Bearer YOUR_TOKEN'
 ```
 
-Jeśli zwraca to `openclaw/default`, większość konfiguracji Open WebUI może połączyć się z tym samym bazowym URL i tokenem.
+Jeśli odpowiedź zawiera `openclaw/default`, większość konfiguracji Open WebUI może połączyć się przy użyciu tego samego bazowego adresu URL i tokenu.
 
 ## Przykłady
 
-Stabilna sesja dla jednej rozmowy w aplikacji:
+Stabilna sesja dla jednej konwersacji aplikacji:
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/chat/completions \
@@ -320,7 +260,7 @@ curl -sS http://127.0.0.1:18789/v1/chat/completions \
   }'
 ```
 
-Używaj ponownie tej samej wartości `user` w późniejszych wywołaniach dla tej rozmowy, aby kontynuować tę samą sesję agenta.
+W kolejnych wywołaniach dla tej konwersacji używaj ponownie tej samej wartości `user`, aby kontynuować tę samą sesję agenta.
 
 Bez strumieniowania:
 
@@ -348,21 +288,21 @@ curl -N http://127.0.0.1:18789/v1/chat/completions \
   }'
 ```
 
-Lista modeli:
+Wyświetlenie listy modeli:
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/models \
   -H 'Authorization: Bearer YOUR_TOKEN'
 ```
 
-Pobierz jeden model:
+Pobranie jednego modelu:
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/models/openclaw%2Fdefault \
   -H 'Authorization: Bearer YOUR_TOKEN'
 ```
 
-Utwórz embeddings:
+Utworzenie reprezentacji wektorowych:
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/embeddings \
@@ -375,14 +315,10 @@ curl -sS http://127.0.0.1:18789/v1/embeddings \
   }'
 ```
 
-Uwagi:
-
-- `/v1/models` zwraca cele agentów OpenClaw, a nie surowe katalogi dostawców.
-- `openclaw/default` jest zawsze obecny, więc jeden stabilny identyfikator działa w różnych środowiskach.
-- Nadpisania dostawcy/modelu backendu należą do `x-openclaw-model`, a nie do pola OpenAI `model`. Na ścieżkach uwierzytelniania HTTP z tożsamością ten nagłówek wymaga `operator.admin`.
-- `/v1/embeddings` obsługuje `input` jako ciąg lub tablicę ciągów.
+`/v1/embeddings` obsługuje `input` jako ciąg znaków lub tablicę ciągów znaków.
 
 ## Powiązane
 
 - [Dokumentacja konfiguracji](/pl/gateway/configuration-reference)
+- [Zakresy operatora](/pl/gateway/operator-scopes)
 - [OpenAI](/pl/providers/openai)

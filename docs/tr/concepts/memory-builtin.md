@@ -1,35 +1,32 @@
 ---
 read_when:
     - Varsayılan bellek arka ucunu anlamak istiyorsunuz
-    - OpenClaw Docs i18n girdisini çevirmek istiyorsunuz
-summary: Anahtar sözcük, vektör ve hibrit arama özelliklerine sahip varsayılan SQLite tabanlı bellek arka ucu
+    - Gömme sağlayıcılarını veya hibrit aramayı yapılandırmak istiyorsunuz
+summary: Anahtar kelime, vektör ve hibrit arama özelliklerine sahip varsayılan SQLite tabanlı bellek arka ucu
 title: Yerleşik bellek motoru
 x-i18n:
-    generated_at: "2026-06-28T00:28:23Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:13:28Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a867bd295778f81109b258a63a35a1683d652d4564e44335053af4d86f90584e
+    source_hash: e8cbe2bae73b1d393ac158edb67fc442e76d1e5ff93e5201dbb7e7216801aa85
     source_path: concepts/memory-builtin.md
     workflow: 16
 ---
 
-Yerleşik motor varsayılan bellek arka ucudur. Bellek dizininizi ajan başına
-SQLite veritabanında saklar ve başlamak için ek bağımlılık gerektirmez.
+Yerleşik motor, varsayılan bellek arka ucudur. Bellek dizininizi her ajan için ayrı bir SQLite veritabanında saklar ve başlamak için ek bağımlılık gerektirmez.
 
-## Neler sağlar
+## Sağladıkları
 
-- FTS5 tam metin dizinleme (BM25 puanlama) ile **anahtar sözcük araması**.
-- Desteklenen herhangi bir sağlayıcıdan gelen gömmeler ile **vektör araması**.
+- FTS5 tam metin dizinleme (BM25 puanlaması) aracılığıyla **anahtar sözcük araması**.
+- Desteklenen herhangi bir sağlayıcıdan alınan gömmeler aracılığıyla **vektör araması**.
 - En iyi sonuçlar için ikisini birleştiren **hibrit arama**.
-- Çince, Japonca ve Korece için trigram tokenizasyonuyla **CJK desteği**.
+- Çince, Japonca ve Korece için trigram belirteçleştirme aracılığıyla **CJK desteği**.
 - Veritabanı içi vektör sorguları için **sqlite-vec hızlandırması** (isteğe bağlı).
 
 ## Başlarken
 
-Varsayılan olarak yerleşik motor OpenAI gömmelerini kullanır. Zaten
-`OPENAI_API_KEY` veya `models.providers.openai.apiKey` yapılandırdıysanız,
-vektör araması ek bellek yapılandırması olmadan çalışır.
+Yerleşik motor varsayılan olarak OpenAI gömmelerini kullanır. `OPENAI_API_KEY` veya `models.providers.openai.apiKey` zaten yapılandırılmışsa vektör araması ek bellek yapılandırması olmadan çalışır.
 
 Bir sağlayıcıyı açıkça ayarlamak için:
 
@@ -47,8 +44,7 @@ Bir sağlayıcıyı açıkça ayarlamak için:
 
 Bir gömme sağlayıcısı olmadan yalnızca anahtar sözcük araması kullanılabilir.
 
-Yerel GGUF gömmelerini zorunlu kılmak için resmi llama.cpp sağlayıcı Plugin'ini
-kurun, ardından `local.modelPath` değerini bir GGUF dosyasına yönlendirin:
+Yerel GGUF gömmelerini zorunlu kılmak için resmi llama.cpp sağlayıcı Plugin'ini yükleyin, ardından `local.modelPath` değerini bir GGUF dosyasına yönlendirin:
 
 ```bash
 openclaw plugins install @openclaw/llama-cpp-provider
@@ -72,89 +68,70 @@ openclaw plugins install @openclaw/llama-cpp-provider
 
 ## Desteklenen gömme sağlayıcıları
 
-| Sağlayıcı         | ID                  | Notlar                              |
-| ----------------- | ------------------- | ----------------------------------- |
-| Bedrock           | `bedrock`           | AWS kimlik bilgisi zincirini kullanır |
-| DeepInfra         | `deepinfra`         | Varsayılan: `BAAI/bge-m3`           |
-| Gemini            | `gemini`            | Çok modluyu destekler (görüntü + ses) |
-| GitHub Copilot    | `github-copilot`    | Copilot aboneliğini kullanır        |
-| Yerel             | `local`             | `@openclaw/llama-cpp-provider`      |
-| Mistral           | `mistral`           |                                     |
-| Ollama            | `ollama`            | Yerel/kendi barındırmalı            |
-| OpenAI            | `openai`            | Varsayılan: `text-embedding-3-small` |
-| OpenAI uyumlu     | `openai-compatible` | Genel `/v1/embeddings` uç noktası   |
-| Voyage            | `voyage`            |                                     |
+| Sağlayıcı         | Kimlik              | Notlar                                      |
+| ----------------- | ------------------- | ------------------------------------------- |
+| Bedrock           | `bedrock`           | AWS kimlik bilgisi zincirini kullanır       |
+| DeepInfra         | `deepinfra`         | Varsayılan: `BAAI/bge-m3`                   |
+| Gemini            | `gemini`            | Çoklu ortamı destekler (görüntü + ses)      |
+| GitHub Copilot    | `github-copilot`    | Copilot aboneliğinizi kullanır               |
+| LM Studio         | `lmstudio`          | Yerel/kendi sunucunuzda barındırılan         |
+| Yerel             | `local`             | `@openclaw/llama-cpp-provider`              |
+| Mistral           | `mistral`           |                                             |
+| Ollama            | `ollama`            | Yerel/kendi sunucunuzda barındırılan         |
+| OpenAI            | `openai`            | Varsayılan: `text-embedding-3-small`         |
+| OpenAI uyumlu     | `openai-compatible` | Genel `/v1/embeddings` uç noktası            |
+| Voyage            | `voyage`            |                                             |
 
-OpenAI'dan ayrılmak için `memorySearch.provider` değerini ayarlayın.
+OpenAI yerine başka bir sağlayıcı kullanmak için `memorySearch.provider` değerini ayarlayın.
 
-## Dizinleme nasıl çalışır
+## Dizinleme nasıl çalışır?
 
-OpenClaw, `MEMORY.md` ve `memory/*.md` dosyalarını parçalara (~400 token,
-80 token örtüşme ile) dizinler ve ajan başına bir SQLite veritabanında saklar.
+OpenClaw, `MEMORY.md` ve `memory/*.md` dosyalarını parçalara (varsayılan olarak 80 belirteç örtüşmeli 400 belirteç) ayırarak dizinler ve bunları her ajan için ayrı bir SQLite veritabanında saklar.
 
-- **Dizin konumu:** sahip olan ajan veritabanı:
+- **Dizin konumu:** sahibi olan ajan veritabanı:
   `~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite`
-- **Depolama bakımı:** SQLite WAL yan dosyaları periyodik ve kapanış
-  checkpoint'leriyle sınırlandırılır.
-- **Dosya izleme:** bellek dosyalarındaki değişiklikler gecikmeli yeniden
-  dizinlemeyi tetikler (1,5 sn).
-- **Otomatik yeniden dizinleme:** gömme sağlayıcısı, model veya parçalama
-  yapılandırması değiştiğinde tüm dizin otomatik olarak yeniden oluşturulur.
+- **Depolama bakımı:** SQLite WAL yan dosyaları, düzenli aralıklarla ve kapatma sırasında gerçekleştirilen kontrol noktalarıyla sınırlandırılır.
+- **Dosya izleme:** bellek dosyalarındaki değişiklikler, gecikmeli bir yeniden dizinlemeyi tetikler (varsayılan 1,5 sn).
+- **Otomatik yeniden dizinleme:** gömme sağlayıcısı, model, parçalama yapılandırması, yapılandırılmış kaynaklar veya kapsam değiştiğinde dizin otomatik olarak yeniden oluşturulur.
 - **İsteğe bağlı yeniden dizinleme:** `openclaw memory index --force`
 
 <Info>
-`memorySearch.extraPaths` ile çalışma alanı dışındaki Markdown dosyalarını da
-dizinleyebilirsiniz. Bkz.
-[yapılandırma başvurusu](/tr/reference/memory-config#additional-memory-paths).
+Çalışma alanı dışındaki Markdown dosyalarını da `memorySearch.extraPaths` ile dizinleyebilirsiniz. Bkz. [yapılandırma başvurusu](/tr/reference/memory-config#additional-memory-paths).
 </Info>
 
-## Ne zaman kullanılmalı
+## Ne zaman kullanılmalı?
 
 Yerleşik motor çoğu kullanıcı için doğru seçimdir:
 
-- Ek bağımlılık olmadan kutudan çıktığı gibi çalışır.
-- Anahtar sözcük ve vektör aramasını iyi şekilde işler.
+- Ek bağımlılık gerektirmeden doğrudan çalışır.
+- Anahtar sözcük ve vektör aramasını iyi şekilde gerçekleştirir.
 - Tüm gömme sağlayıcılarını destekler.
-- Hibrit arama, iki getirme yaklaşımının en iyi yönlerini birleştirir.
+- Hibrit arama, her iki getirme yaklaşımının en iyi yönlerini birleştirir.
 
-Yeniden sıralama, sorgu genişletme gerekiyorsa veya çalışma alanı dışındaki
-dizinleri dizinlemek istiyorsanız [QMD](/tr/concepts/memory-qmd) seçeneğine geçmeyi
-düşünün.
+Yeniden sıralamaya, sorgu genişletmeye ihtiyacınız varsa veya çalışma alanı dışındaki dizinleri dizinlemek istiyorsanız [QMD](/tr/concepts/memory-qmd) kullanmayı değerlendirin.
 
-Otomatik kullanıcı modelleme ile oturumlar arası bellek istiyorsanız
-[Honcho](/tr/concepts/memory-honcho) seçeneğini düşünün.
+Otomatik kullanıcı modellemeli, oturumlar arası bellek istiyorsanız [Honcho](/tr/concepts/memory-honcho) kullanmayı değerlendirin.
 
 ## Sorun giderme
 
-**Bellek araması devre dışı mı?** `openclaw memory status` komutunu kontrol edin.
-Hiçbir sağlayıcı algılanmazsa, birini açıkça ayarlayın veya bir API anahtarı ekleyin.
+**Bellek araması devre dışı mı?** `openclaw memory status` komutunu kontrol edin. Hiçbir sağlayıcı algılanmazsa açıkça bir sağlayıcı ayarlayın veya bir API anahtarı ekleyin.
 
-**Yerel sağlayıcı algılanmıyor mu?** Yerel yolun var olduğunu doğrulayın ve şunu çalıştırın:
+**Yerel sağlayıcı algılanmıyor mu?** Yerel yolun mevcut olduğunu doğrulayın ve şunları çalıştırın:
 
 ```bash
 openclaw memory status --deep --agent main
 openclaw memory index --force --agent main
 ```
 
-Hem bağımsız CLI komutları hem de Gateway aynı `local` sağlayıcı kimliğini
-kullanır. Yerel gömmeler istediğinizde `memorySearch.provider: "local"` ayarlayın.
+Hem bağımsız CLI komutları hem de Gateway aynı `local` sağlayıcı kimliğini kullanır. Yerel gömmeler istediğinizde `memorySearch.provider: "local"` ayarını kullanın.
 
-**Sonuçlar bayat mı?** Yeniden oluşturmak için `openclaw memory index --force`
-çalıştırın. İzleyici nadir uç durumlarda değişiklikleri kaçırabilir.
+**Sonuçlar güncel değil mi?** Yeniden oluşturmak için `openclaw memory index --force` komutunu çalıştırın. İzleyici, nadir uç durumlarda değişiklikleri kaçırabilir.
 
-**sqlite-vec yüklenmiyor mu?** OpenClaw otomatik olarak süreç içi kosinüs
-benzerliğine geri döner. `openclaw memory status --deep`, yerel vektör deposunu
-gömme sağlayıcısından ayrı bildirir; bu nedenle `Vector store: unavailable`
-sqlite-vec yüklemesine, `Embeddings: unavailable` ise sağlayıcı/kimlik doğrulama
-veya model hazır olma durumuna işaret eder. Belirli yükleme hatası için günlükleri
-kontrol edin.
+**sqlite-vec yüklenmiyor mu?** OpenClaw otomatik olarak süreç içi kosinüs benzerliğine geri döner. `openclaw memory status --deep`, yerel vektör deposunu gömme sağlayıcısından ayrı olarak bildirir; bu nedenle `Vector store: unavailable`, sqlite-vec yüklemesine işaret ederken `Embeddings: unavailable`, sağlayıcı/kimlik doğrulama veya modelin hazır olma durumuna işaret eder. Belirli yükleme hatası için günlükleri kontrol edin.
 
 ## Yapılandırma
 
-Gömme sağlayıcısı kurulumu, hibrit arama ayarı (ağırlıklar, MMR, zamansal
-azalma), toplu dizinleme, çok modlu bellek, sqlite-vec, ek yollar ve diğer tüm
-yapılandırma düğmeleri için
-[Bellek yapılandırması başvurusu](/tr/reference/memory-config) bölümüne bakın.
+Gömme sağlayıcısı kurulumu, hibrit arama ayarlaması (ağırlıklar, MMR, zamansal azalma), toplu dizinleme, çoklu ortam belleği, sqlite-vec, ek yollar ve diğer tüm yapılandırma seçenekleri için [Bellek yapılandırması başvurusuna](/tr/reference/memory-config) bakın.
 
 ## İlgili
 

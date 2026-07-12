@@ -1,11 +1,11 @@
 ---
 read_when:
     - Sie installieren, konfigurieren oder überprüfen das nostr-Plugin
-summary: OpenClaw Nostr-Kanal-Plugin für NIP-04-verschlüsselte Direktnachrichten.
+summary: OpenClaw-Nostr-Kanal-Plugin für verschlüsselte Direktnachrichten gemäß NIP-04.
 title: Nostr-Plugin
 x-i18n:
-    generated_at: "2026-06-27T17:55:28Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T01:57:43Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: e56fd9eee17c55bcbba3d7b85d783930c10d2368f36173ac478b254c2bd5ec22
@@ -15,7 +15,7 @@ x-i18n:
 
 # Nostr-Plugin
 
-OpenClaw-Nostr-Kanal-Plugin für mit NIP-04 verschlüsselte Direktnachrichten.
+OpenClaw-Nostr-Kanal-Plugin für nach NIP-04 verschlüsselte Direktnachrichten.
 
 ## Distribution
 

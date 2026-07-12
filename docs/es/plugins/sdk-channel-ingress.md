@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Crear o migrar un plugin de canal de mensajería
-    - Cambiar listas de permitidos de mensajes directos o grupos, controles de ruta, autenticación de comandos, autenticación de eventos o activación por mención
-    - Revisión de la censura de datos sensibles en el ingreso de canales o de los límites de compatibilidad del SDK
+    - Creación o migración de un plugin de canal de mensajería
+    - Cambio de listas de permitidos de mensajes directos o grupos, restricciones de enrutamiento, autorización de comandos, autorización de eventos o activación mediante menciones
+    - Revisión de los límites de compatibilidad del SDK o de la ocultación de datos en la entrada de canales
 sidebarTitle: Channel Ingress
 summary: API experimental de entrada de canales para la autorización de mensajes entrantes
 title: API de entrada de canales
 x-i18n:
-    generated_at: "2026-07-05T11:32:04Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T23:22:22Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 9e7b7d16bb0d53cec824cb353f691a2e17b37ca648eaefe6c0cbbdcd68a4c155
@@ -16,18 +16,11 @@ x-i18n:
     workflow: 16
 ---
 
-La entrada de canal es el límite experimental de control de acceso para eventos
-entrantes de canales. Los plugins son dueños de los hechos de plataforma y los
-efectos secundarios; el núcleo es dueño de la política genérica: listas de
-permitidos de DM/grupo, entradas de DM del almacén de emparejamiento, puertas de
-ruta, puertas de comando, autenticación de eventos, activación por mención,
-diagnósticos redactados y admisión.
+La entrada de canales es el límite experimental de control de acceso para los eventos entrantes de canales. Los Plugins son responsables de los datos específicos de la plataforma y de los efectos secundarios; el núcleo es responsable de la política genérica: listas de permitidos de mensajes directos y grupos, entradas de mensajes directos del almacén de emparejamiento, controles de rutas, controles de comandos, autorización de eventos, activación por mención, diagnósticos censurados y admisión.
 
-Usa `openclaw/plugin-sdk/channel-ingress-runtime` para las nuevas rutas de recepción. La
-subruta anterior `openclaw/plugin-sdk/channel-ingress` permanece exportada como una
-fachada de compatibilidad obsoleta para plugins de terceros.
+Use `openclaw/plugin-sdk/channel-ingress-runtime` para las nuevas rutas de recepción. La subruta anterior `openclaw/plugin-sdk/channel-ingress` continúa exportándose como una fachada de compatibilidad obsoleta para Plugins de terceros.
 
-## Resolvedor de runtime
+## Resolutor en tiempo de ejecución
 
 ```ts
 import {
@@ -62,54 +55,43 @@ const result = await resolveChannelMessageIngress({
 });
 ```
 
-No precalcules listas de permitidos efectivas, dueños de comandos ni grupos de
-comandos. El resolvedor los deriva de listas de permitidos sin procesar,
-callbacks de almacén, descriptores de ruta, grupos de acceso, política y tipo de
-conversación.
+No calcule previamente las listas de permitidos efectivas, los propietarios de comandos ni los grupos de comandos. El resolutor los deriva de las listas de permitidos sin procesar, las devoluciones de llamada del almacén, los descriptores de rutas, los grupos de acceso, la política y el tipo de conversación.
 
 ## Resultado
 
-Los plugins incluidos deben consumir las proyecciones modernas directamente:
+Los Plugins incluidos deben consumir directamente las proyecciones modernas:
 
-| Campo              | Significado                                                        |
-| ------------------ | ------------------------------------------------------------------ |
-| `ingress`          | decisión de puerta ordenada y admisión                             |
-| `senderAccess`     | solo autorización de remitente/conversación                        |
-| `routeAccess`      | proyección de ruta y remitente de ruta                             |
-| `commandAccess`    | autorización de comando; `requested: false` cuando no se ejecutó ninguna puerta de comando |
-| `activationAccess` | resultado de mención/activación                                    |
+| Campo              | Significado                                                                 |
+| ------------------ | --------------------------------------------------------------------------- |
+| `ingress`          | decisión ordenada de los controles y admisión                               |
+| `senderAccess`     | solo autorización del remitente y de la conversación                        |
+| `routeAccess`      | proyección de la ruta y del remitente de la ruta                            |
+| `commandAccess`    | autorización de comandos; `requested: false` si no se ejecutó ningún control de comandos |
+| `activationAccess` | resultado de mención o activación                                            |
 
-La autorización de eventos sigue disponible en el `ingress.graph` ordenado y el
-`ingress.reasonCode` decisivo; no se emite ninguna proyección de evento separada.
+La autorización de eventos continúa disponible en el `ingress.graph` ordenado y en el `ingress.reasonCode` decisivo; no se emite ninguna proyección de eventos independiente.
 
-Los helpers obsoletos del SDK de terceros pueden reconstruir internamente formas
-anteriores. Las nuevas rutas de recepción incluidas no deben traducir resultados
-modernos de vuelta a DTO locales.
+Los auxiliares obsoletos del SDK para terceros pueden reconstruir internamente las estructuras anteriores. Las nuevas rutas de recepción incluidas no deben volver a convertir los resultados modernos en DTO locales.
 
 ## Grupos de acceso
 
-Las entradas `accessGroup:<name>` permanecen redactadas. El núcleo resuelve por
-sí mismo los grupos estáticos `message.senders` y llama a
-`resolveAccessGroupMembership` solo para grupos dinámicos que requieren una
-búsqueda de plataforma. Los grupos ausentes, no admitidos y fallidos fallan de
-forma cerrada.
+Las entradas `accessGroup:<name>` permanecen censuradas. El núcleo resuelve por sí mismo los grupos estáticos `message.senders` y llama a `resolveAccessGroupMembership` únicamente para los grupos dinámicos que requieren una consulta a la plataforma. Los grupos ausentes, no compatibles o con errores deniegan el acceso de forma predeterminada.
 
-## Modos de evento
+## Modos de eventos
 
-| `authMode`       | Significado                                      |
-| ---------------- | ------------------------------------------------ |
-| `inbound`        | puertas normales de remitente entrante           |
-| `command`        | puertas de comando para callbacks o botones con ámbito |
-| `origin-subject` | el actor debe coincidir con el sujeto del mensaje original |
-| `route-only`     | solo puertas de ruta para eventos confiables con ámbito de ruta |
-| `none`           | eventos internos propiedad del plugin omiten la autenticación compartida |
+| `authMode`       | Significado                                                        |
+| ---------------- | ------------------------------------------------------------------ |
+| `inbound`        | controles normales del remitente entrante                          |
+| `command`        | controles de comandos para devoluciones de llamada o botones con ámbito |
+| `origin-subject` | el actor debe coincidir con el sujeto del mensaje original         |
+| `route-only`     | solo controles de rutas para eventos de confianza con ámbito de ruta |
+| `none`           | los eventos internos gestionados por el Plugin omiten la autorización compartida |
 
-Usa `mayPair: false` para reacciones, botones, callbacks y comandos nativos.
+Use `mayPair: false` para reacciones, botones, devoluciones de llamada y comandos nativos.
 
 ## Rutas y activación
 
-Usa descriptores de ruta para políticas de sala, tema, guild, hilo o ruta
-anidada:
+Use descriptores de rutas para políticas de salas, temas, servidores, hilos o rutas anidadas:
 
 ```ts
 route: {
@@ -122,28 +104,13 @@ route: {
 }
 ```
 
-Usa `channelIngressRoutes(...)` cuando un plugin tenga varios descriptores de
-ruta opcionales; filtra las ramas deshabilitadas mientras mantiene los hechos de
-ruta genéricos y ordenados por la `precedence` de cada descriptor.
+Use `channelIngressRoutes(...)` cuando un Plugin tenga varios descriptores de rutas opcionales; filtra las ramas deshabilitadas mientras mantiene los datos de las rutas genéricos y ordenados según la `precedence` de cada descriptor.
 
-La puerta de mención es una puerta de activación. Un fallo de mención devuelve
-`admission: "skip"` para que el kernel de turnos no procese un turno solo de
-observación. La mayoría de los canales deben dejar la activación después de las
-puertas de remitente y comando. Las superficies de chat públicas que deben
-silenciar el tráfico sin mención antes del ruido de la lista de permitidos del
-remitente pueden optar por `activation.order: "before-sender"` cuando el bypass
-de comandos de texto está deshabilitado. Los canales con activación implícita,
-como respuestas en hilos de bot, pueden pasar
-`activation.allowedImplicitMentionKinds`; la proyección
-`activationAccess.shouldBypassMention` informa entonces cuándo un comando o una
-activación implícita omitió una mención explícita.
+El control de menciones es un control de activación. Una mención no detectada devuelve `admission: "skip"` para que el núcleo de turnos no procese un turno exclusivamente de observación. La mayoría de los canales deben mantener la activación después de los controles de remitente y comandos. Las superficies de chat públicas que deban silenciar el tráfico sin menciones antes del ruido de las listas de permitidos de remitentes pueden optar por `activation.order: "before-sender"` cuando la omisión mediante comandos de texto esté deshabilitada. Los canales con activación implícita, como las respuestas en hilos de bots, pueden pasar `activation.allowedImplicitMentionKinds`; la proyección `activationAccess.shouldBypassMention` indica entonces cuándo un comando o una activación implícita omitieron una mención explícita.
 
-## Redacción
+## Censura
 
-Los valores de remitente sin procesar y las entradas de lista de permitidos sin
-procesar son solo entradas del resolvedor. No deben aparecer en el estado
-resuelto, decisiones, diagnósticos, instantáneas ni hechos de compatibilidad. Usa
-ids opacos de sujeto, ids de entrada, ids de ruta e ids de diagnóstico.
+Los valores sin procesar de los remitentes y las entradas sin procesar de las listas de permitidos son únicamente datos de entrada del resolutor. No deben aparecer en el estado resuelto, las decisiones, los diagnósticos, las instantáneas ni los datos de compatibilidad. Use identificadores opacos de sujetos, entradas, rutas y diagnósticos.
 
 ## Verificación
 

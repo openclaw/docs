@@ -1,83 +1,53 @@
 ---
 read_when:
-    - Chcesz użyć harnessu GitHub Copilot SDK dla agenta
-    - Potrzebujesz przykładów konfiguracji dla środowiska uruchomieniowego `copilot`
-    - Podłączasz agenta do subskrypcji Copilot (github / openclaw / copilot) i chcesz, aby uruchamiał się przez Copilot CLI
-summary: Uruchamiaj tury osadzonego agenta OpenClaw za pomocą zewnętrznego środowiska testowego GitHub Copilot SDK
-title: Środowisko testowe Copilot SDK
+    - Chcesz użyć środowiska GitHub Copilot SDK dla agenta
+    - Potrzebujesz przykładów konfiguracji środowiska uruchomieniowego `copilot`
+    - Łączysz agenta z usługą Copilot w ramach subskrypcji (github / openclaw / copilot) i chcesz, aby działał za pośrednictwem Copilot CLI
+summary: Uruchamiaj przebiegi osadzonego agenta OpenClaw za pośrednictwem zewnętrznego środowiska GitHub Copilot SDK
+title: Środowisko testowe zestawu SDK Copilot
 x-i18n:
-    generated_at: "2026-06-27T17:52:58Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:21:27Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e1a052cc21130b680f6af9ae32bc1dbaeaa15be5092939f0c236515a3233ab9b
+    source_hash: 4270a9b75a038540af6a8306f3e80c87d6085dde29d128adf85b930713209fc5
     source_path: plugins/copilot.md
     workflow: 16
 ---
 
-Zewnętrzny Plugin `@openclaw/copilot` pozwala OpenClaw uruchamiać osadzone tury agenta subskrypcyjnego
-Copilot przez GitHub Copilot CLI (`@github/copilot-sdk`)
-zamiast wbudowanego harnessa PI.
+Zewnętrzny plugin `@openclaw/copilot` uruchamia osadzone tury agenta Copilot w ramach subskrypcji za pośrednictwem GitHub Copilot CLI (`@github/copilot-sdk`) zamiast wbudowanej infrastruktury OpenClaw. Sesja Copilot CLI zarządza niskopoziomową pętlą agenta: natywnym wykonywaniem narzędzi, natywną Compaction (`infiniteSessions`) oraz stanem wątku zarządzanym przez CLI w katalogu `copilotHome`. OpenClaw nadal zarządza kanałami czatu, plikami sesji, wyborem modelu, narzędziami dynamicznymi (połączonymi przez most), zatwierdzeniami, dostarczaniem multimediów, widoczną kopią transkrypcji, pytaniami pobocznymi `/btw` (zobacz [Pytania poboczne (`/btw`)](#side-questions-btw)) oraz `openclaw doctor`.
 
-Użyj harnessa Copilot SDK, gdy chcesz, aby sesja Copilot CLI była właścicielem
-niskopoziomowej pętli agenta: natywnego wykonywania narzędzi, natywnej Compaction
-(`infiniteSessions`) oraz stanu wątku zarządzanego przez CLI w `copilotHome`.
-OpenClaw nadal jest właścicielem kanałów czatu, plików sesji, wyboru modelu, dynamicznych
-narzędzi OpenClaw (mostkowanych), zatwierdzeń, dostarczania multimediów, widocznej kopii
-transkrypcji, pytań pobocznych `/btw` (obsługiwanych przez znajdujący się w drzewie fallback PI — zobacz
-[Pytania poboczne (`/btw`)](#side-questions-btw)) oraz `openclaw doctor`.
-
-Szerszy podział model/dostawca/runtime zacznij od
-[Runtime’y agentów](/pl/concepts/agent-runtimes).
+Szerszy opis podziału na model, dostawcę i środowisko uruchomieniowe znajdziesz w sekcji [Środowiska uruchomieniowe agentów](/pl/concepts/agent-runtimes).
 
 ## Wymagania
 
 - OpenClaw z zainstalowanym pluginem `@openclaw/copilot`.
-- Jeśli Twoja konfiguracja używa `plugins.allow`, uwzględnij `copilot` (identyfikator manifestu
-  zadeklarowany przez plugin). Restrykcyjna
-  lista dozwolonych, która używa nazwy pakietu w stylu npm `@openclaw/copilot`,
-  pozostawi plugin zablokowany, a runtime nie zostanie załadowany
-  nawet przy `agentRuntime.id: "copilot"`.
-- Subskrypcja GitHub Copilot, która może sterować Copilot CLI (albo wpis
-  env / profilu uwierzytelniania `gitHubToken` dla uruchomień bezinterfejsowych / cron).
-- Zapisywalny katalog `copilotHome`. Harness domyślnie używa
-  `<agentDir>/copilot`, gdy OpenClaw podaje katalog agenta, w przeciwnym razie
-  `~/.openclaw/agents/<agentId>/copilot` dla pełnej izolacji per agent.
+- Jeśli konfiguracja używa `plugins.allow`, uwzględnij `copilot` (identyfikator zadeklarowany w manifeście przez plugin). Wpis na liście dozwolonych zawierający nazwę pakietu npm `@openclaw/copilot` nie zostanie dopasowany i plugin pozostanie zablokowany, nawet jeśli ustawiono `agentRuntime.id: "copilot"`.
+- Subskrypcja GitHub Copilot umożliwiająca korzystanie z Copilot CLI albo zmienna środowiskowa `gitHubToken` / wpis profilu uwierzytelniania do uruchomień bezobsługowych lub przez Cron.
+- Katalog `copilotHome` z prawem zapisu. Domyślnie jest to `<agentDir>/copilot`, gdy OpenClaw udostępnia katalog agenta, a w przeciwnym razie `~/.openclaw/agents/<agentId>/copilot`.
 
-`openclaw doctor` uruchamia
-[kontrakt doctor](#doctor) pluginu dla deklaratywnej własności stanu sesji i przyszłych
-migracji zgodności. Nie uruchamia sond środowiska Copilot CLI.
+Polecenie `openclaw doctor` uruchamia [kontrakt diagnostyczny](#doctor) pluginu dotyczący własności stanu sesji i przyszłych migracji konfiguracji. Nie sprawdza środowiska Copilot CLI.
 
-## Instalacja pluginu
+## Instalacja
 
-Runtime Copilot jest zewnętrznym pluginem, więc główny pakiet `openclaw` nie
-zawiera zależności `@github/copilot-sdk` ani jej specyficznego dla platformy
-binarnego CLI `@github/copilot-<platform>-<arch>`. Razem dodają około
-260 MB, więc instaluj je tylko dla agentów, które wybierają ten runtime:
+Środowisko uruchomieniowe Copilot jest dostarczane jako zewnętrzny plugin, dzięki czemu podstawowy pakiet `openclaw` nie zawiera `@github/copilot-sdk` ani właściwego dla platformy pliku binarnego CLI `@github/copilot-<platform>-<arch>` (łącznie około 260 MB). Instaluj je wyłącznie dla agentów, które korzystają z tego środowiska uruchomieniowego:
 
 ```bash
 openclaw plugins install @openclaw/copilot
 ```
 
-Kreator instaluje plugin przy pierwszym wyborze modelu
-`github-copilot/*` **oraz** gdy Twoja konfiguracja kieruje model (albo jego
-dostawcę) do runtime agenta Copilot przez
-`agentRuntime: { id: "copilot" }` (zobacz [Szybki start](#quickstart) poniżej).
-Bez tej zgody openclaw używa wbudowanego dostawcy GitHub Copilot
-i nigdy nie instaluje pluginu runtime.
+Kreator konfiguracji automatycznie instaluje plugin przy pierwszym wyborze modelu `github-copilot/*`, **jeśli** konfiguracja kieruje ten model (lub jego dostawcę) do środowiska uruchomieniowego Copilot przez `agentRuntime: { id: "copilot" }`; zobacz [Szybki start](#quickstart). Bez tego jawnego wyboru OpenClaw używa wbudowanego dostawcy GitHub Copilot i nigdy nie instaluje tego pluginu.
 
-Runtime rozwiązuje SDK w tej kolejności:
+Środowisko uruchomieniowe wyszukuje SDK w następującej kolejności:
 
 1. `import("@github/copilot-sdk")` z zainstalowanego pakietu `@openclaw/copilot`.
-2. Dobrze znany katalog fallbacku `~/.openclaw/npm-runtime/copilot/` (starszy
-   cel instalacji na żądanie).
+2. Katalog zapasowy `~/.openclaw/npm-runtime/copilot/` (starsze miejsce docelowe instalacji na żądanie).
 
-Brakujące SDK ujawnia pojedynczy błąd z kodem `COPILOT_SDK_MISSING`
-oraz powyższe polecenie ponownej instalacji pluginu.
+Brak SDK powoduje pojedynczy błąd o kodzie `COPILOT_SDK_MISSING` wraz z podanym wyżej poleceniem ponownej instalacji.
 
 ## Szybki start
 
-Przypnij jeden model (albo jednego dostawcę) do harnessa:
+Przypisz jeden model (lub jednego dostawcę) do infrastruktury:
 
 ```json5
 {
@@ -94,49 +64,27 @@ Przypnij jeden model (albo jednego dostawcę) do harnessa:
 }
 ```
 
-Obie ścieżki są równoważne. Użyj `agentRuntime.id` w pojedynczym wpisie modelu,
-gdy tylko ten model powinien być kierowany przez harness; ustaw
-`agentRuntime.id` na dostawcy, gdy każdy model pod tym dostawcą powinien
-go używać.
+Ustaw `agentRuntime.id` we wpisie pojedynczego modelu, aby kierować przez infrastrukturę tylko ten model, albo u dostawcy, aby kierować przez nią wszystkie modele tego dostawcy.
 
-`github-copilot/auto` to przenośny punkt startowy. Nazwane modele Copilot zależą
-od zasad konta i organizacji, więc przypinaj je dopiero po potwierdzeniu,
-że uwierzytelnione Copilot CLI je udostępnia.
+`github-copilot/auto` jest przenośnym punktem wyjścia. Dostępność nazwanych modeli Copilot zależy od konta i zasad organizacji; przed przypisaniem modelu upewnij się, że uwierzytelnione Copilot CLI rzeczywiście go udostępnia.
 
 ## Obsługiwani dostawcy
 
-Harness deklaruje obsługę kanonicznego dostawcy `github-copilot`
-(tego samego identyfikatora, którego właścicielem jest `extensions/github-copilot`):
+Infrastruktura obsługuje kanonicznego dostawcę `github-copilot` (należącego do `extensions/github-copilot`) oraz niestandardowe wpisy `models.providers`, jeśli model ma niepusty `baseUrl` i jeden z następujących wariantów `api`:
 
-- `github-copilot`
-
-Obsługuje też niestandardowe wpisy `models.providers`, gdy wybrany model ma
-niepusty `baseUrl` i jeden z tych kształtów API:
-
-- `openai-responses`
-- `openai-completions`
-- `ollama` (uzupełnienia zgodne z OpenAI)
-- `azure-openai-responses`
 - `anthropic-messages`
+- `azure-openai-responses`
+- `ollama` (uzupełnianie zgodne z OpenAI)
+- `openai-completions`
+- `openai-responses`
 
-Natywne identyfikatory dostawców, takie jak `openai`, `anthropic`, `google` i `ollama`, pozostają
-własnością swoich natywnych runtime’ów. Użyj odrębnego niestandardowego identyfikatora dostawcy, gdy kierujesz
-endpoint przez Copilot BYOK.
+Natywne identyfikatory dostawców (`openai`, `anthropic`, `google`, `ollama`) pozostają obsługiwane przez ich natywne środowiska uruchomieniowe. Aby kierować punkt końcowy przez Copilot BYOK, użyj zamiast tego odrębnego identyfikatora niestandardowego dostawcy.
 
-Endpointy Copilot BYOK muszą być publicznymi adresami HTTPS. Harness daje
-Copilot SDK adres URL proxy local loopback na próbę, a następnie przekazuje ruch dostawcy
-przez chronioną ścieżkę fetch OpenClaw, dzięki czemu przypinanie DNS i polityka SSRF pozostają
-własnością OpenClaw. Użyj natywnego runtime OpenClaw dla lokalnego Ollama, LM Studio
-lub serwerów modeli w LAN.
+Punkty końcowe Copilot BYOK muszą być publicznymi adresami URL HTTPS. Infrastruktura udostępnia Copilot SDK serwer proxy local loopback dla każdej próby, a następnie przekazuje ruch dostawcy przez chronioną ścieżkę pobierania OpenClaw, dzięki czemu przypinanie DNS i zasady SSRF pozostają pod kontrolą OpenClaw. W przypadku lokalnych serwerów modeli Ollama, LM Studio lub serwerów w sieci LAN użyj natywnego środowiska uruchomieniowego OpenClaw.
 
 ## BYOK
 
-Copilot BYOK używa kontraktu niestandardowego dostawcy na poziomie sesji w SDK. OpenClaw
-przekazuje rozwiązany endpoint modelu, klucz API, tryb tokena bearer, nagłówki, identyfikator modelu
-oraz limity kontekstu/wyjścia bez przenoszenia logiki transportu dostawcy do
-core.
-
-Na przykład:
+Copilot BYOK używa kontraktu niestandardowego dostawcy na poziomie sesji, udostępnianego przez SDK. OpenClaw przekazuje rozpoznany punkt końcowy modelu, klucz API, tryb tokenu okaziciela, nagłówki, identyfikator modelu oraz limity kontekstu i danych wyjściowych; logika transportu dostawcy pozostaje w SDK, a nie w rdzeniu.
 
 ```json5
 {
@@ -165,258 +113,208 @@ Na przykład:
 }
 ```
 
-Sesje BYOK są kluczowane oddzielnie od sesji subskrypcyjnych oraz od innych
-endpointów lub odcisków poświadczeń. Rotacja klucza, nagłówków, modelu albo
-endpointu tworzy świeżą sesję Copilot SDK zamiast wznawiać niezgodny
-stan.
+Sesje BYOK mają klucze odrębne od sesji subskrypcyjnych oraz od innych punktów końcowych lub danych uwierzytelniających BYOK. Zmiana klucza, nagłówków, modelu lub punktu końcowego rozpoczyna nową sesję Copilot SDK zamiast wznawiać niezgodny stan.
 
 ## Uwierzytelnianie
 
-Pierwszeństwo per agent, stosowane podczas `runCopilotAttempt`:
+Kolejność pierwszeństwa stosowana dla każdego agenta podczas `runCopilotAttempt`:
 
-1. **Jawne `useLoggedInUser: true`** w danych wejściowych próby. Używa zalogowanego użytkownika Copilot
-   CLI rozwiązanego w `copilotHome` agenta.
-2. **Jawne `gitHubToken`** w danych wejściowych próby (z `profileId` +
-   `profileVersion`). Przydatne dla bezpośrednich wywołań CLI i testów, w których
-   wywołujący chce pominąć rozwiązywanie profilu uwierzytelniania.
-3. **Rozwiązane przez kontrakt `resolvedApiKey` + `authProfileId`** z kształtu
-   `EmbeddedRunAttemptParams`. To jest **główna ścieżka produkcyjna**:
-   core rozwiązuje skonfigurowany profil uwierzytelniania `github-copilot` agenta
-   (przez `src/infra/provider-usage.auth.ts:resolveProviderAuths`) przed
-   wywołaniem harnessa, a harness bezpośrednio zużywa oba pola.
-   Dzięki temu profil uwierzytelniania `github-copilot:<profile>` działa od początku do końca
-   dla konfiguracji bezinterfejsowych / cron / wieloprofilowych bez zmiennych env.
-4. **Fallback zmiennej env** dla bezpośrednich uruchomień CLI / dogfood, gdzie nie skonfigurowano
-   profilu uwierzytelniania. Runtime sprawdza następujące zmienne w
-   kolejności pierwszeństwa, odzwierciedlając dostarczanego dostawcę `github-copilot`
-   (`extensions/github-copilot/auth.ts`) oraz udokumentowaną konfigurację Copilot SDK:
-   1. `OPENCLAW_GITHUB_TOKEN` -- override specyficzny dla harnessa; ustaw to,
-      aby przypiąć token dla harnessa OpenClaw bez naruszania
-      systemowej konfiguracji `gh` / Copilot CLI.
-   2. `COPILOT_GITHUB_TOKEN` -- standardowa zmienna env Copilot SDK / CLI.
-   3. `GH_TOKEN` -- standardowa zmienna env CLI `gh` (zgodna z istniejącym
-      pierwszeństwem dostawcy `github-copilot`).
-   4. `GITHUB_TOKEN` -- ogólny fallback tokena GitHub.
+1. **Jawne `useLoggedInUser: true`** w danych wejściowych próby — używa użytkownika zalogowanego w Copilot CLI w katalogu `copilotHome` agenta.
+2. **Jawne `gitHubToken`** w danych wejściowych próby (wymaga `profileId` i `profileVersion`). Do bezpośrednich wywołań CLI i testów, które muszą pominąć rozpoznawanie profilu uwierzytelniania.
+3. **Rozpoznane przez kontrakt `resolvedApiKey` i `authProfileId`** — główna ścieżka produkcyjna. Przed wywołaniem infrastruktury rdzeń rozpoznaje skonfigurowany profil uwierzytelniania `github-copilot` agenta (`src/infra/provider-usage.auth.ts:resolveProviderAuths`), dzięki czemu profil uwierzytelniania `github-copilot:<profile>` działa kompleksowo w konfiguracjach bezobsługowych, uruchamianych przez Cron lub korzystających z wielu profili, bez zmiennych środowiskowych.
+4. **Awaryjne użycie zmiennej środowiskowej**, sprawdzanej w następującej kolejności (wygrywa pierwsza niepusta wartość; puste ciągi są traktowane jako brak wartości; odpowiada to kolejności pierwszeństwa dostawcy `github-copilot` w wydanej wersji, określonej w `extensions/github-copilot/auth.ts`):
+   1. `OPENCLAW_GITHUB_TOKEN` — nadpisanie właściwe dla infrastruktury; umożliwia przypisanie tokenu do infrastruktury OpenClaw bez zmieniania ogólnosystemowej konfiguracji `gh` / Copilot CLI.
+   2. `COPILOT_GITHUB_TOKEN` — standardowa zmienna środowiskowa Copilot SDK / CLI.
+   3. `GH_TOKEN` — standardowa zmienna środowiskowa CLI `gh`.
+   4. `GITHUB_TOKEN` — ogólny token zastępczy GitHub.
 
-   Wygrywa pierwsza niepusta wartość; puste ciągi są traktowane jako
-   nieobecne. Syntetyzowany identyfikator profilu puli to `env:<NAME>`, a
-   profileVersion jest nieodwracalnym odciskiem sha256
-   tokena, więc rotacja wartości env czysto unieważnia pulę klientów.
+   Syntetyzowany identyfikator profilu puli ma postać `env:<NAME>`; wersja profilu jest nieodwracalnym odciskiem sha256 tokenu, więc zmiana wartości zmiennej środowiskowej prawidłowo unieważnia pulę klientów.
 
-5. **Domyślne `useLoggedInUser`**, gdy nie jest dostępny żaden sygnał tokena.
+5. **Domyślne `useLoggedInUser`**, gdy nie jest dostępny żaden sygnał tokenu.
 
-Każdy agent otrzymuje dedykowany `copilotHome`, aby tokeny, sesje i
-konfiguracja Copilot CLI nie przeciekały między agentami na tej samej maszynie. Domyślnie jest to
-`<agentDir>/copilot`, gdy host przekazuje harnessowi katalog agenta
-(izolując stan SDK od `models.json` / `auth-profiles.json` OpenClaw w
-tym samym katalogu), albo `~/.openclaw/agents/<agentId>/copilot` w przeciwnym razie.
-Nadpisz przez `copilotHome: <path>` w danych wejściowych próby, gdy potrzebujesz
-niestandardowej lokalizacji (na przykład współdzielonego montowania do migracji).
+Każdy agent otrzymuje własny katalog `copilotHome`, dzięki czemu tokeny, sesje i konfiguracja Copilot CLI nigdy nie przenikają między agentami na tym samym komputerze. Wartość domyślna to `<agentDir>/copilot` (co utrzymuje stan SDK poza katalogiem zawierającym pliki `models.json` / `auth-profiles.json` OpenClaw) albo `~/.openclaw/agents/<agentId>/copilot`, gdy nie podano katalogu agenta. Aby użyć niestandardowej lokalizacji (na przykład współdzielonego punktu montowania na potrzeby migracji), ustaw `copilotHome: <path>` w danych wejściowych próby.
 
-Testy live harnessa używają `OPENCLAW_COPILOT_AGENT_LIVE_TOKEN`, gdy potrzebny
-jest bezpośredni token. Wspólna konfiguracja testów live celowo czyści
-`COPILOT_GITHUB_TOKEN`, `GH_TOKEN` i `GITHUB_TOKEN` po przygotowaniu prawdziwych profili uwierzytelniania
-w izolowanym katalogu testowym, więc przekazanie wartości `gh auth token`
-przez dedykowaną zmienną testów live pozwala uniknąć fałszywych pominięć bez ujawniania
-tokenu niepowiązanym zestawom testów.
+Testy infrastruktury na żywo używają `OPENCLAW_COPILOT_AGENT_LIVE_TOKEN` jako bezpośredniego tokenu. Wspólna konfiguracja testów na żywo usuwa `COPILOT_GITHUB_TOKEN`, `GH_TOKEN` i `GITHUB_TOKEN` po przygotowaniu rzeczywistych profili uwierzytelniania w odizolowanym katalogu domowym testu, dzięki czemu wartość `gh auth token` przekazana przez dedykowaną zmienną zapobiega fałszywemu pomijaniu testów bez przenikania do niepowiązanych zestawów testów.
 
 ## Powierzchnia konfiguracji
 
-Harness odczytuje konfigurację z danych wejściowych per próba
-(`runCopilotAttempt({...})`) oraz z małego zestawu domyślnych zmiennych env w
-`extensions/copilot/src/`:
+Infrastruktura odczytuje konfigurację z danych wejściowych poszczególnych prób (`runCopilotAttempt({...})`) oraz niewielkiego zestawu domyślnych zmiennych środowiskowych w `extensions/copilot/src/`:
 
-- `copilotHome` — katalog stanu CLI per agent (domyślne wartości udokumentowane powyżej).
-- `model` — ciąg albo `{ provider, id, api?, baseUrl?, headers?, authHeader? }`.
-  Gdy pominięte, OpenClaw używa normalnego wyboru modelu agenta, a
-  harness weryfikuje, że rozwiązany dostawca jest obsługiwany.
-- `reasoningEffort` — `"low" | "medium" | "high" | "xhigh"`. Mapuje z
-  rozwiązania `ThinkLevel` / `ReasoningLevel` OpenClaw w
-  `auto-reply/thinking.ts`.
-- `infiniteSessionConfig` — opcjonalne nadpisanie bloku SDK
-  `infiniteSessions` sterowanego przez `harness.compact`. Wartości domyślne można bezpiecznie
-  zostawić bez zmian.
-- `hooksConfig` — opcjonalna konfiguracja zgodności natywnego Copilot SDK `SessionHooks`
-  dla wywołań zwrotnych narzędzi/MCP, promptu użytkownika, sesji i błędów.
-  Jest oddzielna od przenośnych hooków cyklu życia OpenClaw.
-- `permissionPolicy` — opcjonalne nadpisanie handlera SDK
-  `onPermissionRequest` używanego dla wbudowanych rodzajów narzędzi SDK
-  (`shell`, `write`, `read`, `url`, `mcp`, `memory`, `hook`). Domyślnie
-  używa `rejectAllPolicy` jako siatki bezpieczeństwa; w praktyce SDK nigdy
-  nie wywołuje żadnego z tych rodzajów, ponieważ każde mostkowane narzędzie OpenClaw jest
-  rejestrowane z `overridesBuiltInTool: true` i
-  `skipPermission: true`, więc 100% wywołań narzędzi przepływa przez opakowane
-  `execute()` OpenClaw. Zobacz [Uprawnienia i ask_user](#permissions-and-ask_user).
-- `enableSessionTelemetry` — opcjonalna flaga telemetrii sesji SDK.
+| Pole                     | Przeznaczenie                                                                                                                                                                                                                                                                                                                                                     |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `copilotHome`            | Katalog stanu CLI osobny dla każdego agenta (wartości domyślne podano wyżej).                                                                                                                                                                                                                                                                                     |
+| `model`                  | Ciąg znaków lub `{ provider, id, api?, baseUrl?, headers?, authHeader? }`. Pomiń, aby użyć standardowego wyboru modelu agenta; infrastruktura sprawdza, czy rozpoznany dostawca jest obsługiwany.                                                                                                                                                                    |
+| `reasoningEffort`        | `"low" \| "medium" \| "high" \| "xhigh"`. Mapowane na podstawie rozpoznania `ThinkLevel` / `ReasoningLevel` OpenClaw w `auto-reply/thinking.ts`.                                                                                                                                                                                                                   |
+| `infiniteSessionConfig`  | Opcjonalne nadpisanie bloku `infiniteSessions` SDK sterowanego przez `harness.compact`. Można bezpiecznie pozostawić bez zmian.                                                                                                                                                                                                                                    |
+| `hooksConfig`            | Opcjonalna natywna konfiguracja `SessionHooks` Copilot SDK dla wywołań zwrotnych narzędzi/MCP, komunikatów użytkownika, sesji i błędów. Jest oddzielna od przenośnych haków cyklu życia OpenClaw.                                                                                                                                                                    |
+| `permissionPolicy`       | Opcjonalne nadpisanie procedury obsługi `onPermissionRequest` SDK dla wbudowanych rodzajów narzędzi SDK (`shell`, `write`, `read`, `url`, `mcp`, `memory`, `hook`). Domyślnie używa `rejectAllPolicy` jako zabezpieczenia; wyjaśnienie, dlaczego w praktyce nigdy nie jest wywoływane, znajdziesz w sekcji [Uprawnienia i ask_user](#permissions-and-ask_user). |
+| `enableSessionTelemetry` | Opcjonalna flaga telemetrii sesji SDK.                                                                                                                                                                                                                                                                                                                            |
 
-Hooki pluginu OpenClaw nie potrzebują konfiguracji próby specyficznej dla Copilot. 
-Harness uruchamia `before_prompt_build` (oraz starszy hook zgodności `before_agent_start`),
-`llm_input`, `llm_output` i `agent_end` przez standardowe helpery harnessa. Udane Compaction SDK uruchamiają też
-`before_compaction` i `after_compaction`. Mostkowane narzędzia OpenClaw nadal
-uruchamiają `before_tool_call` i raportują `after_tool_call`; `hooksConfig` pozostaje dla
-natywnych wywołań zwrotnych wyłącznie SDK, które nie mają przenośnego odpowiednika.
+Haki pluginów OpenClaw nie wymagają konfiguracji próby właściwej dla Copilot. Infrastruktura uruchamia `before_prompt_build` (oraz starszy hak zgodności `before_agent_start`), `llm_input`, `llm_output` i `agent_end` za pośrednictwem standardowych pomocników infrastruktury. Pomyślne operacje Compaction SDK uruchamiają także `before_compaction` i `after_compaction`. Połączone przez most narzędzia OpenClaw uruchamiają `before_tool_call` i zgłaszają `after_tool_call`; `hooksConfig` pozostaje przeznaczone dla natywnych wywołań zwrotnych wyłącznie w SDK, które nie mają przenośnego odpowiednika.
 
-Nic w pozostałej części OpenClaw nie musi wiedzieć o tych polach. Inne
-pluginy, kanały i kod core widzą tylko standardowy kształt
-`AgentHarnessAttemptParams` / `AgentHarnessAttemptResult`.
+Żaden inny element OpenClaw nie musi znać tych pól. Pozostałe pluginy, kanały i kod rdzenia widzą wyłącznie standardową strukturę `AgentHarnessAttemptParams` / `AgentHarnessAttemptResult`.
 
 ## Compaction
 
-Gdy uruchamia się `harness.compact`, harness Copilot SDK:
+Po uruchomieniu `harness.compact` infrastruktura Copilot SDK:
 
-1. Wznawia śledzoną sesję SDK bez kontynuowania oczekującej pracy.
-2. Wywołuje RPC Compaction historii o zakresie sesji SDK.
-3. Zwraca wynik Compaction SDK bez zapisywania plików znaczników zgodności
-   pod workspace.
+1. Wznawia śledzoną sesję SDK bez kontynuowania oczekujących zadań.
+2. Wywołuje procedurę RPC Compaction historii o zakresie sesji w SDK.
+3. Zwraca wynik Compaction SDK bez zapisywania plików znaczników zgodności w obszarze roboczym.
 
-Lustrzana transkrypcja po stronie OpenClaw (zobacz niżej) nadal otrzymuje
-wiadomości po Compaction, więc historia czatu widoczna dla użytkownika pozostaje spójna.
+Kopia transkrypcji po stronie OpenClaw (opisana niżej) nadal otrzymuje wiadomości po Compaction, dzięki czemu historia czatu widoczna dla użytkownika pozostaje spójna.
 
-## Lustrzane odbicie transkrypcji
+## Kopiowanie transkrypcji
 
-`runCopilotAttempt` podwójnie zapisuje możliwe do odzwierciedlenia wiadomości każdej tury do
-transkrypcji audytowej OpenClaw przez
-`extensions/copilot/src/dual-write-transcripts.ts`. Lustro ma zakres
-per sesja (`copilot:${sessionId}`) i używa tożsamości per wiadomość
-(`${role}:${sha256_16(role,content)}`), więc ponowne emisje wpisów z poprzednich tur
-kolidują z istniejącymi kluczami na dysku i się nie duplikują.
+Funkcja `runCopilotAttempt` zapisuje równolegle możliwe do skopiowania wiadomości z każdej tury do transkrypcji audytowej OpenClaw za pośrednictwem `extensions/copilot/src/dual-write-transcripts.ts`. Kopia ma zakres pojedynczej sesji (`copilot:${sessionId}`), a klucze są tworzone osobno dla każdej wiadomości (`${role}:${sha256_16(role,content)}`), dzięki czemu ponownie wyemitowane wpisy z wcześniejszych tur kolidują z istniejącymi kluczami na dysku zamiast tworzyć duplikaty.
 
-Lustro jest opakowane dwiema warstwami powstrzymywania awarii, więc awaria
-zapisu transkrypcji nie może spowodować niepowodzenia próby: wewnętrznym wrapperem best-effort oraz
-defense-in-depth `.catch(...)` na poziomie próby. Awarie są logowane, ale
-nie są ujawniane.
+Dwie warstwy izolowania błędów otaczają mechanizm lustrzany, dzięki czemu
+błąd zapisu transkrypcji nigdy nie powoduje niepowodzenia próby: wewnętrzna
+otoczka działająca na zasadzie best-effort oraz dodatkowe zabezpieczenie
+`.catch(...)` na poziomie próby. Błędy są rejestrowane, a nie propagowane.
 
 ## Pytania poboczne (`/btw`)
 
-`/btw` **nie jest** natywne w tym harnessie. `createCopilotAgentHarness()`
-celowo pozostawia `harness.runSideQuestion` jako niezdefiniowane, więc dispatcher `/btw`
-OpenClaw (`src/agents/btw.ts`) przechodzi do tej samej wbudowanej ścieżki awaryjnej PI,
-której używa dla każdego runtime innego niż Codex: skonfigurowany dostawca modelu jest
-wywoływany bezpośrednio z krótkim promptem pytania pobocznego, a odpowiedź jest
-streamowana przez `streamSimple` (bez sesji CLI i bez dodatkowego miejsca w puli).
+`/btw` **nie** jest natywnie obsługiwane przez ten harness.
+`createCopilotAgentHarness()` celowo pozostawia
+`harness.runSideQuestion` jako niezdefiniowane
+(co jest sprawdzane w `extensions/copilot/harness.test.ts`,
+`describe("runSideQuestion")`), dlatego dyspozytor `/btw` OpenClaw
+(`src/agents/btw.ts`) przechodzi do tej samej ścieżki, której używa dla
+każdego środowiska uruchomieniowego innego niż Codex: skonfigurowany dostawca
+modelu jest wywoływany bezpośrednio z krótkim promptem pytania pobocznego, a
+odpowiedź jest strumieniowana przez `streamSimple` (bez sesji CLI i bez
+dodatkowego miejsca w puli).
 
-Dzięki temu sesje Copilot CLI pozostają zarezerwowane dla głównej pętli tury agenta,
-a zachowanie `/btw` jest identyczne jak w innych runtime'ach opartych na PI. Kontrakt jest
-potwierdzony w
-[`extensions/copilot/harness.test.ts`](https://github.com/openclaw/openclaw/blob/main/extensions/copilot/harness.test.ts)
-w sekcji `describe("runSideQuestion")`.
+Dzięki temu sesje Copilot CLI pozostają zarezerwowane dla głównej pętli tur
+agenta, a działanie `/btw` jest identyczne jak w innych środowiskach
+uruchomieniowych innych niż Codex.
 
 ## Doctor
 
 `extensions/copilot/doctor-contract-api.ts` jest automatycznie ładowany przez
-`src/plugins/doctor-contract-registry.ts`. Wnosi:
+`src/plugins/doctor-contract-registry.ts`. Udostępnia:
 
-- Puste `legacyConfigRules` (brak wycofanych pól na etapie MVP).
-- Puste w działaniu `normalizeCompatibilityConfig` (zachowane, aby przyszłe wycofania pól
-  miały stabilne miejsce w drzewie repozytorium).
-- Jeden wpis `sessionRouteStateOwners`, który obejmuje dostawcę `github-copilot`;
-  runtime `copilot`; klucz sesji CLI `copilot`; prefiks profilu uwierzytelniania
-  `github-copilot:`.
+- Puste `legacyConfigRules` (nie ma jeszcze wycofanych pól).
+- `normalizeCompatibilityConfig`, które nie wykonuje żadnych operacji
+  (zachowane, aby przyszłe wycofania pól miały stabilne miejsce w repozytorium).
+- Jeden wpis `sessionRouteStateOwners`: dostawca `github-copilot`, środowisko
+  uruchomieniowe `copilot`, klucz sesji CLI `copilot`, prefiks profilu
+  uwierzytelniania `github-copilot:`.
 
 ## Ograniczenia
 
-- Harness zgłasza `github-copilot` oraz nieposiadane niestandardowe identyfikatory dostawców BYOK.
-  Identyfikatory natywnych dostawców posiadane przez manifest pozostają przy swoim runtime
-  właścicielskim, nawet gdy `agentRuntime.id` jest wymuszone na `copilot`.
-- Harness nie dostarcza TUI; TUI PI pozostaje nienaruszone i nadal jest
-  ścieżką awaryjną dla runtime'ów, które nie mają równorzędnej powierzchni.
+- Harness przejmuje `github-copilot` oraz niestanowiące własności manifestu
+  niestandardowe identyfikatory dostawców BYOK. Natywne identyfikatory
+  dostawców należące do manifestu pozostają w swoich środowiskach
+  uruchomieniowych, nawet gdy `agentRuntime.id` zostanie wymuszone na
+  `copilot`.
+- Brak interfejsu TUI; TUI środowiska PI pozostaje rozwiązaniem zapasowym dla
+  środowisk uruchomieniowych bez równorzędnego interfejsu.
 - Stan sesji PI nie jest migrowany, gdy agent przełącza się na `copilot`.
   Wybór odbywa się dla każdej próby; istniejące sesje PI pozostają ważne.
-- `ask_user` używa tej samej ścieżki promptu i odpowiedzi OpenClaw co harness Codex.
-  Gdy Copilot SDK prosi o dane wejściowe użytkownika, OpenClaw publikuje
-  blokujący prompt w aktywnym kanale/TUI, a następna zakolejkowana wiadomość użytkownika
-  rozwiązuje żądanie SDK.
+- `ask_user` korzysta z tej samej ścieżki promptu i odpowiedzi OpenClaw co
+  harness Codex: gdy Copilot SDK prosi o dane wejściowe użytkownika, OpenClaw
+  publikuje blokujący prompt w aktywnym kanale lub TUI, a następna
+  umieszczona w kolejce wiadomość użytkownika rozstrzyga żądanie SDK.
 
 ## Uprawnienia i ask_user
 
-Egzekwowanie uprawnień dla mostkowanych narzędzi OpenClaw odbywa się **wewnątrz
-wrappera narzędzia**, a nie przez callback SDK `onPermissionRequest`. Ten sam
-`wrapToolWithBeforeToolCallHook`, którego używa PI
-(`src/agents/pi-tools.before-tool-call.ts`), jest stosowany przez
-`createOpenClawCodingTools` do każdego narzędzia programistycznego: wykrywanie pętli,
-zasady zaufanych pluginów, hooki przed wywołaniem narzędzia oraz dwufazowe zatwierdzenia
-pluginów przez Gateway (`plugin.approval.request`) działają dokładnie tą samą ścieżką kodu
-co natywne próby PI.
+Egzekwowanie uprawnień dla mostkowanych narzędzi OpenClaw odbywa się
+**wewnątrz otoczki narzędzia**, a nie za pośrednictwem wywołania zwrotnego
+`onPermissionRequest` zestawu SDK. Ta sama funkcja
+`wrapToolWithBeforeToolCallHook`, której używa PI
+(`src/agents/agent-tools.before-tool-call.ts`), jest stosowana przez
+`createOpenClawCodingTools` do każdego narzędzia programistycznego:
+wykrywanie pętli, zasady zaufanych pluginów, hooki wykonywane przed
+wywołaniem narzędzia oraz dwuetapowe zatwierdzanie pluginów za pośrednictwem
+Gateway (`plugin.approval.request`) korzystają z dokładnie tej samej ścieżki
+kodu co natywne próby PI.
 
-Aby ten wrapper był właścicielem decyzji, SDK Tool zwracany przez
-`convertOpenClawToolToSdkTool` jest oznaczony jako:
+Narzędzie SDK zwracane przez `convertOpenClawToolToSdkTool` jest oznaczone
+następująco:
 
-- `overridesBuiltInTool: true` — zastępuje wbudowane narzędzie Copilot CLI
-  o tej samej nazwie (edit, read, write, bash, …), aby każde wywołanie narzędzia
-  wracało do OpenClaw.
-- `skipPermission: true` — informuje SDK, aby nie wywoływało
+- `overridesBuiltInTool: true` — zastępuje wbudowane narzędzie Copilot CLI o
+  tej samej nazwie (edit, read, write, bash, ...), dzięki czemu każde
+  wywołanie narzędzia jest kierowane z powrotem do OpenClaw.
+- `skipPermission: true` — nakazuje SDK nie wywoływać
   `onPermissionRequest({kind: "custom-tool"})` przed uruchomieniem narzędzia.
-  Opakowane `execute()` wykonuje bogatszą kontrolę zasad OpenClaw
-  wewnętrznie; prompt na poziomie SDK albo obszedłby egzekwowanie OpenClaw
-  (jeśli pozwolimy na wszystko), albo blokowałby każde wywołanie narzędzia
-  (jeśli odrzucimy wszystko) — żadne z tych zachowań nie odpowiada parytetowi PI.
+  Opakowana funkcja `execute()` wykonuje już bogatszą kontrolę zasad
+  OpenClaw; prompt na poziomie SDK albo omijałby egzekwowanie zasad OpenClaw
+  (zezwalając na wszystko), albo blokowałby każde wywołanie narzędzia
+  (odrzucając wszystko) — żadna z tych opcji nie zapewnia zgodności z PI.
 
-Wbudowany harness codex używa tego samego podziału: mostkowane narzędzia OpenClaw
-są opakowywane (`extensions/codex/src/app-server/dynamic-tools.ts`), a własne
-natywne rodzaje zatwierdzeń codex-app-server
-(`item/commandExecution/requestApproval`,
-`item/fileChange/requestApproval`,
+Znajdujący się w repozytorium harness Codex stosuje ten sam podział:
+mostkowane narzędzia OpenClaw są opakowywane
+(`extensions/codex/src/app-server/dynamic-tools.ts`), a własne natywne
+rodzaje zatwierdzeń serwera codex-app-server
+(`item/commandExecution/requestApproval`, `item/fileChange/requestApproval`,
 `item/permissions/requestApproval`) są kierowane przez
 `plugin.approval.request`
-(`extensions/codex/src/app-server/approval-bridge.ts`). Odpowiednik w Copilot SDK
-— domyślnie zamknięte `rejectAllPolicy` dla każdego rodzaju innego niż `custom-tool`,
-który kiedykolwiek dotrze do `onPermissionRequest` — jest tą samą siatką bezpieczeństwa
-i w praktyce się nie uruchamia, ponieważ `overridesBuiltInTool: true`
-wypiera każde narzędzie wbudowane.
+(`extensions/codex/src/app-server/approval-bridge.ts`). Odpowiednik w
+Copilot SDK — domyślnie odrzucająca `rejectAllPolicy` dla każdego rodzaju
+innego niż `custom-tool`, który kiedykolwiek trafi do
+`onPermissionRequest` — stanowi tę samą siatkę bezpieczeństwa i w praktyce
+nigdy nie jest uruchamiany, ponieważ `overridesBuiltInTool: true` zastępuje
+każde wbudowane narzędzie.
 
-Aby warstwa opakowanych narzędzi mogła podejmować decyzje zasad równoważne z PI,
-harness przekazuje pełny kontekst narzędzia próby PI do
-`createOpenClawCodingTools` — tożsamość (`senderIsOwner`,
-`memberRoleIds`, `ownerOnlyToolAllowlist`, …), kanał/routing
-(`groupId`, `currentChannelId`, `replyToMode`, przełączniki narzędzi wiadomości),
-uwierzytelnianie (`authProfileStore`), tożsamość uruchomienia
-(`sessionKey`/`runSessionKey` wyprowadzone z `sandboxSessionKey`,
-`runId`), kontekst modelu (`modelApi`, `modelContextWindowTokens`,
-`modelCompat`, `modelHasVision`) oraz hooki uruchomienia (`onToolOutcome`,
-`onYield`). Bez tych pól allowlisty tylko dla właściciela po cichu
-zachowują się jak deny-by-default, zasady zaufania pluginów nie mogą rozwiązać się do
-właściwego zakresu, a `session_status: "current"` rozwiązuje się do nieaktualnego
-klucza sandboxa. Konstruktor mostu znajduje się w
-`extensions/copilot/src/tool-bridge.ts` i odzwierciedla autorytatywne wywołanie PI w
-`src/agents/pi-embedded-runner/run/attempt.ts:1029-1117`. `runAttempt`
-już rozwiązuje kontekst sandboxa przez współdzielony seam
-`resolveSandboxContext`, przekazuje SDK efektywny katalog roboczy
-oraz przekazuje `sandbox` wraz z obszarem roboczym spawnowanego subagenta do
-mostu narzędzi. Most przekazuje też ograniczone kontrolki konstrukcji narzędzi,
-które może egzekwować na granicy SDK: `includeCoreTools`, allowlistę narzędzi
-runtime oraz `toolConstructionPlan`.
+Aby warstwa opakowanych narzędzi mogła podejmować decyzje dotyczące zasad
+równoważne z PI, harness przekazuje pełny kontekst narzędzi próby PI do
+`createOpenClawCodingTools`: tożsamość (`senderIsOwner`, `memberRoleIds`,
+`ownerOnlyToolAllowlist`, ...), kanał i trasowanie (`groupId`,
+`currentChannelId`, `replyToMode`, przełączniki narzędzi wiadomości),
+uwierzytelnianie (`authProfileStore`), tożsamość uruchomienia (`sessionKey` /
+`runSessionKey` wyprowadzone z `sandboxSessionKey`, `runId`), kontekst modelu
+(`modelApi`, `modelContextWindowTokens`, `modelCompat`, `modelHasVision`) oraz
+hooki uruchomienia (`onToolOutcome`, `onYield`). Bez tych pól listy dozwolonych
+narzędzi przeznaczone wyłącznie dla właściciela domyślnie po cichu odmawiają
+dostępu, zasady zaufania pluginów nie mogą zostać rozstrzygnięte we właściwym
+zakresie, a `session_status: "current"` wskazuje nieaktualny klucz sandboxa.
+Konstruktor mostu znajduje się w `extensions/copilot/src/tool-bridge.ts` i
+odzwierciedla autorytatywne wywołanie PI w
+`src/agents/embedded-agent-runner/run/attempt.ts:1262`. `runAttempt`
+rozstrzyga kontekst sandboxa przez współdzielony punkt integracji
+`resolveSandboxContext`, przekazuje SDK efektywny katalog roboczy oraz
+przekazuje `sandbox` wraz z przestrzenią roboczą uruchamiania podagentów do
+mostu narzędzi. Most przekazuje również ograniczone mechanizmy sterowania
+tworzeniem narzędzi, które może egzekwować na granicy SDK:
+`includeCoreTools`, listę dozwolonych narzędzi środowiska uruchomieniowego
+oraz `toolConstructionPlan`.
 
-Most używa też współdzielonego helpera powierzchni narzędzi harnessa z
-`openclaw/plugin-sdk/agent-harness-tool-runtime` dla parytetu PI. Gdy
-wyszukiwanie narzędzi jest włączone, SDK widzi kompaktowe narzędzia sterujące oraz ukryty
-executor katalogu zamiast każdego schematu narzędzia OpenClaw. Gdy tryb kodu jest
-włączony, helper buduje tę samą powierzchnię sterującą trybu kodu oraz cykl życia katalogu,
-których używają inne harnessy agentów. Odchudzone domyślne ustawienia modeli lokalnych,
-filtrowanie schematów zgodne z runtime, hydratacja katalogów oraz czyszczenie katalogu
-pozostają we współdzielonym helperze, aby harnessy Copilot i sąsiadujące z Codex
-nie rozjeżdżały się.
+Most korzysta również ze współdzielonego helpera powierzchni narzędzi
+harnessu z `openclaw/plugin-sdk/agent-harness-tool-runtime`, aby zachować
+zgodność z PI. Gdy wyszukiwanie narzędzi jest włączone, SDK widzi kompaktowe
+narzędzia sterujące oraz ukryty moduł wykonawczy katalogu zamiast wszystkich
+schematów narzędzi OpenClaw. Gdy tryb kodu jest włączony, helper tworzy tę
+samą powierzchnię sterującą trybu kodu i ten sam cykl życia katalogu, których
+używają inne harnessy agentów. Odchudzone ustawienia domyślne modeli lokalnych,
+filtrowanie schematów zgodne ze środowiskiem uruchomieniowym, hydratacja
+katalogów i czyszczenie katalogu pozostają we współdzielonym helperze, dzięki
+czemu harnessy Copilot i środowiska zbliżone do Codex nie rozchodzą się
+funkcjonalnie.
 
 ### Token GitHub na poziomie sesji
 
-Kontrakt Copilot SDK odróżnia token GitHub na **poziomie klienta**
-(`CopilotClientOptions.gitHubToken`, używany do uwierzytelnienia samego procesu CLI)
-od tokena na **poziomie sesji** (`SessionConfig.gitHubToken`, który określa wykluczenia
-treści, routing modelu i limit dla tej sesji oraz jest respektowany zarówno przy
-`createSession`, jak i `resumeSession`). Harness rozwiązuje uwierzytelnianie raz
-przez `resolveCopilotAuth` i ustawia oba pola, gdy trybem uwierzytelniania jest
-`gitHubToken` (jawne `auth.gitHubToken` albo rozwiązany kontraktem
-`resolvedApiKey` ze skonfigurowanego profilu uwierzytelniania `github-copilot`).
-Gdy rozwiązanym trybem jest `useLoggedInUser`, pole na poziomie sesji
-jest pomijane, aby SDK nadal wyprowadzało tożsamość z zalogowanej
-tożsamości.
+Kontrakt Copilot SDK rozróżnia token GitHub **na poziomie klienta**
+(`CopilotClientOptions.gitHubToken`, uwierzytelniający sam proces CLI) od
+tokenu **na poziomie sesji** (`SessionConfig.gitHubToken`, który określa
+wykluczanie treści, trasowanie modeli i limit dla tej sesji oraz jest
+uwzględniany zarówno przez `createSession`, jak i `resumeSession`). Harness
+jednorazowo rozstrzyga uwierzytelnianie za pomocą `resolveCopilotAuth` i
+ustawia oba pola, gdy trybem uwierzytelniania jest `gitHubToken` (jawne
+`auth.gitHubToken` lub rozstrzygnięty przez kontrakt `resolvedApiKey` ze
+skonfigurowanego profilu uwierzytelniania `github-copilot`). Gdy
+rozstrzygniętym trybem jest `useLoggedInUser`, pole na poziomie sesji jest
+pomijane, aby SDK nadal wyprowadzał tożsamość z tożsamości zalogowanego
+użytkownika.
 
-`ask_user` używa `SessionConfig.onUserInputRequest`. Most akceptuje
-indeksy lub etykiety wyboru dla żądań o stałym wyborze, akceptuje odpowiedzi
-swobodne, gdy żądanie SDK na nie pozwala, oraz anuluje oczekujące żądanie,
-gdy próba OpenClaw zostanie przerwana.
+`ask_user` korzysta z `SessionConfig.onUserInputRequest`. Most akceptuje
+indeksy lub etykiety opcji dla żądań ze stałym wyborem, akceptuje odpowiedzi
+w dowolnej formie, gdy żądanie SDK na to pozwala, oraz anuluje oczekujące
+żądanie, gdy próba OpenClaw zostanie przerwana.
 
-## Powiązane
+## Powiązane materiały
 
-- [Runtime'y agentów](/pl/concepts/agent-runtimes)
+- [Środowiska uruchomieniowe agentów](/pl/concepts/agent-runtimes)
 - [Harness Codex](/pl/plugins/codex-harness)
-- [Pluginy harnessów agentów (referencja SDK)](/pl/plugins/sdk-agent-harness)
+- [Pluginy harnessu agentów (dokumentacja SDK)](/pl/plugins/sdk-agent-harness)

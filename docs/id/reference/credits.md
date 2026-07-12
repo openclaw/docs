@@ -1,39 +1,37 @@
 ---
 read_when:
-    - Anda menginginkan latar belakang proyek atau penghargaan kontributor
-summary: Asal proyek, kontributor, dan lisensi.
+    - Anda ingin mengetahui latar belakang proyek atau penghargaan bagi para kontributor
+summary: Asal-usul proyek, kontributor, dan lisensi.
 title: Kredit
 x-i18n:
-    generated_at: "2026-05-06T09:26:40Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:39:22Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4cda0d96a66d4a6fcf81553d39315ebe01e7ebb4a21bb2994e9a503825bc7fb6
+    source_hash: d0030d36d04ce73e4c87f3d973ca3e729485f87c4b4b454e957dd6615d096ec9
     source_path: reference/credits.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-## Nama
+OpenClaw = CLAW + TARDIS: setiap lobster antariksa membutuhkan mesin ruang dan waktu.
 
-OpenClaw = CLAW + TARDIS, karena setiap lobster luar angkasa membutuhkan mesin waktu dan ruang.
+## Penghargaan
 
-## Kredit
-
-- **Peter Steinberger** ([@steipete](https://x.com/steipete)) - Pembuat, pembisik lobster
-- **Mario Zechner** ([@badlogicc](https://x.com/badlogicgames)) - Pembuat Pi, penguji penetrasi keamanan
-- **Clawd** - Lobster luar angkasa yang menuntut nama yang lebih baik
+- **Peter Steinberger** ([@steipete](https://x.com/steipete)) - Pencipta, pawang lobster
+- **Mario Zechner** ([@badlogicc](https://x.com/badlogicgames)) - Pencipta Pi, penguji penetrasi keamanan
+- **Clawd** - Lobster antariksa yang menuntut nama yang lebih baik
 
 ## Kontributor inti
 
 - **Maxim Vovshin** (@Hyaxia, [36747317+Hyaxia@users.noreply.github.com](mailto:36747317+Hyaxia@users.noreply.github.com)) - Skill Blogwatcher
 - **Nacho Iacovino** (@nachoiacovino, [nacho.iacovino@gmail.com](mailto:nacho.iacovino@gmail.com)) - Penguraian lokasi (Telegram dan WhatsApp)
-- **Vincent Koc** ([@vincentkoc](https://github.com/vincentkoc), [@vincent_koc](https://x.com/vincent_koc)) - Agents, Telemetry, Hooks, Security
+- **Vincent Koc** ([@vincentkoc](https://github.com/vincentkoc), [@vincent_koc](https://x.com/vincent_koc)) - Agen, telemetri, hook, keamanan
 
 ## Lisensi
 
-MIT - Bebas seperti lobster di lautan.
+MIT, hak cipta OpenClaw Foundation. Pemberitahuan pihak ketiga untuk kode yang disertakan atau diadaptasi tersedia di `THIRD_PARTY_NOTICES.md`.
 
-> "Kita semua sebenarnya hanya bermain dengan prompt kita sendiri." (AI, mungkin sedang tinggi karena token)
+> "Kita semua hanya bermain-main dengan prompt kita sendiri." (Sebuah AI, mungkin sedang teler karena token)
 
 ## Terkait
 

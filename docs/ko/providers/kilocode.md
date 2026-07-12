@@ -2,13 +2,12 @@
 read_when:
     - 여러 LLM에 하나의 API 키를 사용하려는 경우
     - OpenClaw에서 Kilo Gateway를 통해 모델을 실행하려고 합니다
-summary: Kilo Gateway의 통합 API를 사용하여 OpenClaw에서 다양한 모델에 액세스합니다
+summary: Kilo Gateway의 통합 API를 사용하여 OpenClaw에서 다양한 모델에 액세스하세요
 title: Kilo Gateway
 x-i18n:
-    generated_at: "2026-07-12T15:40:03Z"
+    generated_at: "2026-07-12T01:07:21Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 2108e1bb5b2430f42bf9e798da1d5e40448f05d396ab1710a0d6708961960756
     source_path: providers/kilocode.md
@@ -35,14 +34,14 @@ openclaw gateway restart
 
 <Steps>
   <Step title="계정 만들기">
-    [app.kilo.ai](https://app.kilo.ai)로 이동하여 로그인하거나 계정을 만든 다음 API 키를 생성하십시오.
+    [app.kilo.ai](https://app.kilo.ai)로 이동하여 로그인하거나 계정을 만든 다음 API 키를 생성합니다.
   </Step>
   <Step title="온보딩 실행">
     ```bash
     openclaw onboard --auth-choice kilocode-api-key
     ```
 
-    또는 환경 변수를 직접 설정하십시오.
+    또는 환경 변수를 직접 설정합니다.
 
     ```bash
     export KILOCODE_API_KEY="<your-kilocode-api-key>" # pragma: allowlist secret
@@ -58,16 +57,16 @@ openclaw gateway restart
 
 ## 기본 모델 및 카탈로그
 
-기본 모델은 제공자가 소유하는 스마트 라우팅 모델인 `kilocode/kilo/auto`입니다. OpenClaw는 이 모델에 대한
-작업과 업스트림 모델 간 매핑을 공개하지 않으며, `kilo/auto` 뒤에서 이루어지는 라우팅은 Kilo Gateway가 소유합니다.
+기본 모델은 제공자가 관리하는 스마트 라우팅 모델인 `kilocode/kilo/auto`입니다. OpenClaw는 이 모델의
+작업별 업스트림 모델 매핑을 공개하지 않으며, `kilo/auto` 내부의 라우팅은 Kilo Gateway가 관리합니다.
 
-OpenClaw는 시작 시 `GET https://api.kilo.ai/api/gateway/models`를 쿼리하고 검색된 모델을
-정적 대체 카탈로그보다 앞에 병합합니다. 정적 대체 카탈로그에는 `kilocode/kilo/auto`(`Kilo Auto`,
+시작 시 OpenClaw는 `GET https://api.kilo.ai/api/gateway/models`를 조회하고 검색된 모델을
+정적 대체 카탈로그보다 우선하여 병합합니다. 정적 대체 카탈로그에는 `kilocode/kilo/auto` (`Kilo Auto`,
 `input: ["text", "image"]`, `reasoning: true`, `contextWindow: 1000000`, `maxTokens: 128000`)만 포함됩니다.
 
 Gateway의 모든 모델은 `kilocode/<upstream-id>` 형식으로 지정할 수 있습니다(예:
-`kilocode/anthropic/claude-sonnet-4`, `kilocode/openai/gpt-5.5`). 검색된 전체 목록을 보려면 `/models kilocode` 또는
-`openclaw models list --provider kilocode`를 실행하십시오.
+`kilocode/anthropic/claude-sonnet-4`, `kilocode/openai/gpt-5.5`). 검색된 전체 목록을 확인하려면
+`/models kilocode` 또는 `openclaw models list --provider kilocode`를 실행합니다.
 
 ## 구성 예시
 
@@ -86,35 +85,36 @@ Gateway의 모든 모델은 `kilocode/<upstream-id>` 형식으로 지정할 수 
 
 <AccordionGroup>
   <Accordion title="전송 및 호환성">
-    Kilo Gateway는 OpenRouter와 호환되므로 네이티브 OpenAI 요청 형식 대신 프록시 방식의 OpenAI 호환 요청
-    경로를 사용합니다(`store` 없음, OpenAI 추론 노력 페이로드 없음).
+    Kilo Gateway는 OpenRouter와 호환되므로 네이티브 OpenAI 요청 형식 대신 프록시 방식의
+    OpenAI 호환 요청 경로를 사용합니다(`store` 없음, OpenAI 추론 노력 수준 페이로드 없음).
 
-    - Gemini 기반 Kilo 참조는 프록시 Gemini 경로를 유지합니다. OpenClaw는 해당 경로에서 Gemini 사고
-      서명을 정리하지만 네이티브 Gemini 재실행 검증이나 부트스트랩 재작성을 활성화하지는 않습니다.
-    - 요청은 API 키로 생성된 Bearer 토큰을 사용합니다.
+    - Gemini 기반 Kilo 참조는 프록시 Gemini 경로를 계속 사용합니다. OpenClaw는 이 경로에서 Gemini 사고
+      서명을 정리하지만 네이티브 Gemini 재실행 검증 또는 부트스트랩 재작성은 활성화하지 않습니다.
+    - 요청은 API 키로 생성한 Bearer 토큰을 사용합니다.
 
   </Accordion>
 
   <Accordion title="스트림 래퍼 및 추론">
     Kilo 스트림 래퍼는 `X-KILOCODE-FEATURE` 요청 헤더를 추가하고(기본값 `openclaw`,
-    `KILOCODE_FEATURE` 환경 변수로 재정의), 이를 지원하는 모델의 추론 노력 페이로드를 정규화합니다.
+    `KILOCODE_FEATURE` 환경 변수로 재정의 가능), 이를 지원하는 모델의 추론 노력 수준 페이로드를
+    정규화합니다.
 
     <Warning>
-    `kilocode/kilo/auto` 및 `x-ai/*` 참조에는 추론 노력 주입을 적용하지 않습니다. 추론 지원이 필요한 경우
-    `kilocode/anthropic/claude-sonnet-4`와 같은 구체적인 모델 참조를 사용하십시오.
+    `kilocode/kilo/auto` 및 `x-ai/*` 참조에는 추론 노력 수준이 삽입되지 않습니다. 추론 지원이
+    필요한 경우 `kilocode/anthropic/claude-sonnet-4`와 같은 구체적인 모델 참조를 사용하세요.
     </Warning>
 
   </Accordion>
 
   <Accordion title="문제 해결">
     - 시작 시 모델 검색에 실패하면 OpenClaw는 `kilocode/kilo/auto`가 포함된 정적 카탈로그를 대신 사용합니다.
-    - API 키가 유효하고 Kilo 계정에서 원하는 모델이 활성화되어 있는지 확인하십시오.
-    - Gateway가 데몬으로 실행되는 경우 해당 프로세스에서 `KILOCODE_API_KEY`를 사용할 수 있는지 확인하십시오(예: `~/.openclaw/.env` 또는 `env.shellEnv`를 통해 설정).
+    - API 키가 유효하며 Kilo 계정에서 원하는 모델이 활성화되어 있는지 확인하세요.
+    - Gateway가 데몬으로 실행되는 경우 해당 프로세스에서 `KILOCODE_API_KEY`를 사용할 수 있는지 확인하세요(예: `~/.openclaw/.env` 또는 `env.shellEnv` 사용).
 
   </Accordion>
 </AccordionGroup>
 
-## 관련 항목
+## 관련 문서
 
 <CardGroup cols={2}>
   <Card title="모델 선택" href="/ko/concepts/model-providers" icon="layers">

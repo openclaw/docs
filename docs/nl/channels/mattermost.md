@@ -3,26 +3,24 @@ read_when:
     - Mattermost instellen
     - Mattermost-routering debuggen
 sidebarTitle: Mattermost
-summary: Mattermost-bot instellen en OpenClaw-configuratie
+summary: Mattermost-botinstellingen en OpenClaw-configuratie
 title: Mattermost
 x-i18n:
-    generated_at: "2026-06-27T17:11:42Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:38:07Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 31ed1c6aaffc4b7a61a06c81a516c2dba6c31ebf31e0e922bbba884f8bf2b661
+    source_hash: 246535ff433a678624d997db640d2531d6ce434ea064a23b98abe8a9e7e6a117
     source_path: channels/mattermost.md
     workflow: 16
 ---
 
-Status: downloadbare plugin (bottoken + WebSocket-gebeurtenissen). Kanalen, groepen en DM's worden ondersteund. Mattermost is een zelf te hosten platform voor teamberichten; zie de officiële site op [mattermost.com](https://mattermost.com) voor productdetails en downloads.
+Status: downloadbare plugin (bottoken + WebSocket-gebeurtenissen). Kanalen, privékanalen, groeps-DM's en DM's worden ondersteund. Mattermost is een zelf te hosten platform voor teamberichten ([mattermost.com](https://mattermost.com)).
 
 ## Installeren
 
-Installeer Mattermost voordat je het kanaal configureert:
-
 <Tabs>
-  <Tab title="npm-registry">
+  <Tab title="npm-register">
     ```bash
     openclaw plugins install @openclaw/mattermost
     ```
@@ -36,19 +34,19 @@ Installeer Mattermost voordat je het kanaal configureert:
 
 Details: [Plugins](/nl/tools/plugin)
 
-## Snelle setup
+## Snelle configuratie
 
 <Steps>
-  <Step title="Zorg dat de plugin beschikbaar is">
-    Installeer `@openclaw/mattermost` met de bovenstaande opdracht en herstart daarna de Gateway als die al draait.
+  <Step title="Controleren of de plugin beschikbaar is">
+    Installeer `@openclaw/mattermost` met de bovenstaande opdracht en start daarna de Gateway opnieuw als deze al actief is.
   </Step>
-  <Step title="Maak een Mattermost-bot">
-    Maak een Mattermost-botaccount en kopieer het **bottoken**.
+  <Step title="Een Mattermost-bot maken">
+    Maak een Mattermost-botaccount, kopieer het **bottoken** en voeg de bot toe aan de teams en kanalen die deze moet lezen.
   </Step>
-  <Step title="Kopieer de basis-URL">
-    Kopieer de Mattermost-**basis-URL** (bijv. `https://chat.example.com`).
+  <Step title="De basis-URL kopiëren">
+    Kopieer de **basis-URL** van Mattermost (bijvoorbeeld `https://chat.example.com`). Een afsluitend `/api/v4` wordt automatisch verwijderd.
   </Step>
-  <Step title="Configureer OpenClaw en start de gateway">
+  <Step title="OpenClaw configureren en de Gateway starten">
     Minimale configuratie:
 
     ```json5
@@ -64,12 +62,22 @@ Details: [Plugins](/nl/tools/plugin)
     }
     ```
 
+    Niet-interactief alternatief:
+
+    ```bash
+    openclaw channels add --channel mattermost --bot-token <token> --http-url https://chat.example.com
+    ```
+
   </Step>
 </Steps>
 
-## Native slash-commands
+<Note>
+Zelf gehoste Mattermost op een privé-/LAN-/tailnet-adres: uitgaande Mattermost-API-aanvragen gaan door een SSRF-beveiliging die privé- en interne IP-adressen standaard blokkeert. Schakel dit in met `channels.mattermost.network.dangerouslyAllowPrivateNetwork: true` (per account: `channels.mattermost.accounts.<id>.network.dangerouslyAllowPrivateNetwork`).
+</Note>
 
-Native slash-commands zijn opt-in. Wanneer ingeschakeld registreert OpenClaw `oc_*` slash-commands via de Mattermost-API en ontvangt callback-POST's op de HTTP-server van de gateway.
+## Systeemeigen slash-opdrachten
+
+Systeemeigen slash-opdrachten zijn optioneel. Wanneer ze zijn ingeschakeld, registreert OpenClaw `oc_*`-slash-opdrachten voor elk team waarvan de bot lid is en ontvangt het callback-POST-aanvragen op de HTTP-server van de Gateway.
 
 ```json5
 {
@@ -79,7 +87,7 @@ Native slash-commands zijn opt-in. Wanneer ingeschakeld registreert OpenClaw `oc
         native: true,
         nativeSkills: true,
         callbackPath: "/api/channels/mattermost/command",
-        // Use when Mattermost cannot reach the gateway directly (reverse proxy/public URL).
+        // Gebruik dit wanneer Mattermost de Gateway niet rechtstreeks kan bereiken (reverse proxy/openbare URL).
         callbackUrl: "https://gateway.example.com/api/channels/mattermost/command",
       },
     },
@@ -87,29 +95,34 @@ Native slash-commands zijn opt-in. Wanneer ingeschakeld registreert OpenClaw `oc
 }
 ```
 
+Geregistreerde opdrachten: `/oc_status`, `/oc_model`, `/oc_models`, `/oc_new`, `/oc_help`, `/oc_think`, `/oc_reasoning`, `/oc_verbose`, `/oc_queue`. Met `nativeSkills: true` worden Skills-opdrachten ook geregistreerd als `/oc_<skill>`.
+
 <AccordionGroup>
-  <Accordion title="Gedragsnotities">
-    - `native: "auto"` is standaard uitgeschakeld voor Mattermost. Stel `native: true` in om dit in te schakelen.
-    - Als `callbackUrl` is weggelaten, leidt OpenClaw er een af uit gateway-host/poort + `callbackPath`.
-    - Voor setups met meerdere accounts kan `commands` op het hoogste niveau worden ingesteld of onder `channels.mattermost.accounts.<id>.commands` (accountwaarden overschrijven velden op het hoogste niveau).
-    - Command-callbacks worden gevalideerd met de per-command tokens die Mattermost retourneert wanneer OpenClaw `oc_*`-commands registreert.
-    - OpenClaw vernieuwt de huidige Mattermost-commandregistratie voordat elke callback wordt geaccepteerd, zodat verouderde tokens van verwijderde of opnieuw gegenereerde slash-commands niet meer worden geaccepteerd zonder herstart van de gateway.
-    - Callbackvalidatie faalt gesloten als de Mattermost-API niet kan bevestigen dat het command nog actueel is; mislukte validaties worden kort gecachet, gelijktijdige lookups worden samengevoegd en het starten van nieuwe lookups wordt per command begrensd in snelheid om replay-druk te beperken.
-    - Slash-callbacks falen gesloten wanneer registratie is mislukt, startup gedeeltelijk was, of het callbacktoken niet overeenkomt met het geregistreerde token van het opgeloste command (een token dat geldig is voor één command kan geen upstreamvalidatie bereiken voor een ander command).
+  <Accordion title="Opmerkingen over gedrag">
+    - `native` en `nativeSkills` zijn standaard ingesteld op `"auto"`, wat voor Mattermost als uitgeschakeld wordt geïnterpreteerd. Stel ze expliciet in op `true`.
+    - `callbackPath` is standaard ingesteld op `/api/channels/mattermost/command`.
+    - Als `callbackUrl` wordt weggelaten, leidt OpenClaw `http://<gateway.customBindHost or localhost>:<gateway.port, default 18789><callbackPath>` af. Jokerteken-bindhosts (`0.0.0.0`, `::`) vallen terug op `localhost`.
+    - Voor configuraties met meerdere accounts kan `commands` op het hoogste niveau of onder `channels.mattermost.accounts.<id>.commands` worden ingesteld (accountwaarden overschrijven velden op het hoogste niveau).
+    - Bestaande slash-opdrachten met dezelfde trigger die door andere integraties zijn gemaakt, blijven ongewijzigd (ze worden bij registratie overgeslagen); opdrachten die door de bot zijn gemaakt, worden bijgewerkt of opnieuw gemaakt wanneer de callback-URL afwijkt.
+    - Opdrachtcallbacks worden gevalideerd met de tokens per opdracht die Mattermost retourneert wanneer OpenClaw `oc_*`-opdrachten registreert.
+    - OpenClaw vernieuwt de huidige registratie van Mattermost-opdrachten voordat elke callback wordt geaccepteerd, zodat verouderde tokens van verwijderde of opnieuw gegenereerde slash-opdrachten niet langer worden geaccepteerd zonder dat de Gateway opnieuw hoeft te worden gestart.
+    - Callbackvalidatie wordt veilig geweigerd als de Mattermost-API niet kan bevestigen dat de opdracht nog actueel is; mislukte validaties worden kort in de cache opgeslagen, gelijktijdige opzoekacties worden samengevoegd en nieuwe opzoekacties worden per opdracht in frequentie beperkt om de druk van herhalingsaanvallen te begrenzen.
+    - Slash-callbacks worden veilig geweigerd wanneer de registratie is mislukt, het opstarten slechts gedeeltelijk is voltooid of het callbacktoken niet overeenkomt met het geregistreerde token van de gevonden opdracht (een token dat geldig is voor één opdracht kan de bovenliggende validatie voor een andere opdracht niet bereiken).
+    - Geaccepteerde callbacks worden bevestigd met een kortstondig antwoord `"Processing..."`; het echte antwoord wordt als een normaal bericht verzonden.
 
   </Accordion>
   <Accordion title="Bereikbaarheidsvereiste">
     Het callback-eindpunt moet bereikbaar zijn vanaf de Mattermost-server.
 
-    - Stel `callbackUrl` niet in op `localhost`, tenzij Mattermost op dezelfde host/netwerknaamruimte draait als OpenClaw.
-    - Stel `callbackUrl` niet in op je Mattermost-basis-URL, tenzij die URL `/api/channels/mattermost/command` reverse-proxyt naar OpenClaw.
-    - Een snelle controle is `curl https://<gateway-host>/api/channels/mattermost/command`; een GET zou `405 Method Not Allowed` van OpenClaw moeten retourneren, niet `404`.
+    - Stel `callbackUrl` niet in op `localhost`, tenzij Mattermost in dezelfde host-/netwerknaamruimte als OpenClaw draait.
+    - Stel `callbackUrl` niet in op de basis-URL van Mattermost, tenzij die URL `/api/channels/mattermost/command` via een reverse proxy naar OpenClaw doorstuurt.
+    - Een snelle controle is `curl https://<gateway-host>/api/channels/mattermost/command`; een GET-aanvraag moet `405 Method Not Allowed` van OpenClaw retourneren, niet `404`.
 
   </Accordion>
-  <Accordion title="Mattermost-egress-allowlist">
-    Als je callbackdoelen privé-/tailnet-/interne adressen zijn, stel dan Mattermost `ServiceSettings.AllowedUntrustedInternalConnections` in zodat de callback-host/het callback-domein is opgenomen.
+  <Accordion title="Mattermost-toegestane lijst voor uitgaand verkeer">
+    Als uw callback op privé-, tailnet- of interne adressen is gericht, stelt u Mattermost `ServiceSettings.AllowedUntrustedInternalConnections` zo in dat de callbackhost of het callbackdomein wordt opgenomen.
 
-    Gebruik host-/domeinitems, geen volledige URL's.
+    Gebruik host-/domeinvermeldingen, geen volledige URL's.
 
     - Goed: `gateway.tailnet-name.ts.net`
     - Fout: `https://gateway.tailnet-name.ts.net`
@@ -119,30 +132,30 @@ Native slash-commands zijn opt-in. Wanneer ingeschakeld registreert OpenClaw `oc
 
 ## Omgevingsvariabelen (standaardaccount)
 
-Stel deze in op de gateway-host als je de voorkeur geeft aan omgevingsvariabelen:
+Stel deze op de Gateway-host in als u de voorkeur geeft aan omgevingsvariabelen:
 
 - `MATTERMOST_BOT_TOKEN=...`
 - `MATTERMOST_URL=https://chat.example.com`
 
 <Note>
-Omgevingsvariabelen gelden alleen voor het **standaardaccount** (`default`). Andere accounts moeten configuratiewaarden gebruiken.
+Omgevingsvariabelen zijn alleen van toepassing op het **standaardaccount** (`default`). Andere accounts moeten configuratiewaarden gebruiken.
 
-`MATTERMOST_URL` kan niet worden ingesteld vanuit een workspace-`.env`; zie [Workspace-`.env`-bestanden](/nl/gateway/security).
+`MATTERMOST_URL` kan niet vanuit een `.env`-bestand in de werkruimte worden ingesteld; zie [`.env`-bestanden in de werkruimte](/nl/gateway/security).
 </Note>
 
 ## Chatmodi
 
-Mattermost reageert automatisch op DM's. Kanaalgedrag wordt bepaald door `chatmode`:
+Mattermost reageert automatisch op DM's. Het gedrag in kanalen wordt geregeld door `chatmode`:
 
 <Tabs>
   <Tab title="oncall (standaard)">
-    Reageer alleen wanneer er in kanalen een @mention is.
+    Reageer in kanalen alleen bij een @vermelding.
   </Tab>
   <Tab title="onmessage">
     Reageer op elk kanaalbericht.
   </Tab>
   <Tab title="onchar">
-    Reageer wanneer een bericht begint met een triggerprefix.
+    Reageer wanneer een bericht met een triggerprefix begint.
   </Tab>
 </Tabs>
 
@@ -153,62 +166,70 @@ Configuratievoorbeeld:
   channels: {
     mattermost: {
       chatmode: "onchar",
-      oncharPrefixes: [">", "!"],
+      oncharPrefixes: [">", "!"], // standaard
     },
   },
 }
 ```
 
-Notities:
+Opmerkingen:
 
-- `onchar` reageert nog steeds op expliciete @mentions.
-- `channels.mattermost.requireMention` wordt gerespecteerd voor legacy-configuraties, maar `chatmode` heeft de voorkeur.
-- Nadat de bot een zichtbaar antwoord in een kanaalthread heeft verzonden, worden latere berichten in diezelfde thread beantwoord zonder nieuwe @mention of `onchar`-prefix, zodat threadgesprekken met meerdere beurten blijven doorlopen. Deelname wordt 7 dagen threadinactiviteit onthouden (ververst bij elk antwoord) en blijft behouden na gateway-herstarts. Threads die de bot alleen heeft geobserveerd, blijven onaangetast; start een nieuw bericht op het hoogste niveau om weer een expliciete vermelding te vereisen.
+- `onchar` reageert nog steeds op expliciete @vermeldingen.
+- `channels.mattermost.requireMention` wordt nog steeds gerespecteerd, maar `chatmode` heeft de voorkeur. Instellingen per kanaal in `groups.<channelId>.requireMention` hebben voorrang op beide.
+- Nadat de bot een zichtbaar antwoord in een kanaalthread heeft verzonden, worden latere berichten in diezelfde thread beantwoord zonder een nieuwe @vermelding of `onchar`-prefix, zodat threadgesprekken met meerdere beurten kunnen doorgaan. Deelname wordt 7 dagen onthouden nadat de bot voor het laatst in die thread heeft geantwoord en blijft behouden wanneer de Gateway opnieuw wordt gestart. Threads die de bot alleen heeft waargenomen, worden niet beïnvloed; begin een nieuw bericht op het hoogste niveau om opnieuw een expliciete vermelding te vereisen.
 
 ## Threads en sessies
 
-Gebruik `channels.mattermost.replyToMode` om te bepalen of antwoorden in kanalen en groepen in het hoofdkanaal blijven of een thread starten onder de activerende post.
+Gebruik `channels.mattermost.replyToMode` om te bepalen of antwoorden in kanalen en groepen in het hoofdkanaal blijven of een thread starten onder het bericht dat de reactie heeft geactiveerd.
 
-- `off` (standaard): antwoord alleen in een thread wanneer de inkomende post er al in zit.
-- `first`: start voor posts op het hoogste niveau in kanalen/groepen een thread onder die post en routeer het gesprek naar een thread-gescopeerde sessie.
-- `all`: hetzelfde gedrag als `first` voor Mattermost vandaag.
-- Directe berichten negeren deze instelling en blijven zonder thread.
+- `off` (standaard): antwoord alleen in een thread wanneer het inkomende bericht zich al in een thread bevindt.
+- `first`: start voor kanaal-/groepsberichten op het hoogste niveau een thread onder dat bericht en leid het gesprek naar een threadgebonden sessie.
+- `all` en `batched`: hebben momenteel hetzelfde gedrag als `first` voor Mattermost, omdat vervolgfragmenten en media in dezelfde thread blijven zodra Mattermost een threadbegin heeft.
+- Directe berichten gebruiken standaard `off`, zelfs wanneer `replyToMode` is ingesteld.
 
-Configuratievoorbeeld:
+Gebruik `channels.mattermost.replyToModeByChatType` om de modus te overschrijven voor chats van het type `direct`, `group` of `channel`. Stel `direct` in om threads voor directe berichten in te schakelen:
+
+- `off` (standaard): directe berichten blijven zonder threads in één doorlopende sessie.
+- `first`, `all` of `batched`: elk direct bericht op het hoogste niveau start een Mattermost-thread die door een nieuwe, onafhankelijke sessie wordt ondersteund.
 
 ```json5
 {
   channels: {
     mattermost: {
       replyToMode: "all",
+      replyToModeByChatType: {
+        direct: "first",
+      },
     },
   },
 }
 ```
 
-Notities:
+Opmerkingen:
 
-- Thread-gescopeerde sessies gebruiken de ID van de activerende post als thread-root.
-- `first` en `all` zijn momenteel equivalent omdat, zodra Mattermost een thread-root heeft, vervolgchunks en media in dezelfde thread doorgaan.
+- Threadgebonden sessies gebruiken de id van het activerende bericht als threadbegin.
+- `first` en `all` zijn momenteel gelijkwaardig, omdat vervolgfragmenten en media in dezelfde thread blijven zodra Mattermost een threadbegin heeft.
+- Overschrijvingen per chattype hebben voorrang op `replyToMode`. Zonder een overschrijving voor `direct` behouden bestaande implementaties vlakke DM's zonder threads.
 
 ## Toegangsbeheer (DM's)
 
-- Standaard: `channels.mattermost.dmPolicy = "pairing"` (onbekende afzenders krijgen een koppelingscode).
+- Standaard: `channels.mattermost.dmPolicy = "pairing"` (onbekende afzenders krijgen een koppelcode). Andere waarden: `allowlist`, `open`, `disabled`.
 - Goedkeuren via:
   - `openclaw pairing list mattermost`
   - `openclaw pairing approve mattermost <CODE>`
-- Openbare DM's: `channels.mattermost.dmPolicy="open"` plus `channels.mattermost.allowFrom=["*"]`.
-- `channels.mattermost.allowFrom` accepteert `accessGroup:<name>`-items. Zie [Toegangsgroepen](/nl/channels/access-groups).
+- Openbare DM's: `channels.mattermost.dmPolicy="open"` plus `channels.mattermost.allowFrom=["*"]` (het configuratieschema dwingt het jokerteken af).
+- `channels.mattermost.allowFrom` accepteert gebruikers-id's (aanbevolen) en vermeldingen van het type `accessGroup:<name>`. Zie [Toegangsgroepen](/nl/channels/access-groups).
 
 ## Kanalen (groepen)
 
-- Standaard: `channels.mattermost.groupPolicy = "allowlist"` (mention-gated).
-- Zet afzenders op de allowlist met `channels.mattermost.groupAllowFrom` (gebruikers-ID's aanbevolen).
-- `channels.mattermost.groupAllowFrom` accepteert `accessGroup:<name>`-items. Zie [Toegangsgroepen](/nl/channels/access-groups).
-- Per-kanaal mention-overschrijvingen staan onder `channels.mattermost.groups.<channelId>.requireMention` of `channels.mattermost.groups["*"].requireMention` voor een standaardwaarde.
-- `@username`-matching is veranderlijk en alleen ingeschakeld wanneer `channels.mattermost.dangerouslyAllowNameMatching: true`.
-- Open kanalen: `channels.mattermost.groupPolicy="open"` (mention-gated).
-- Runtime-notitie: als `channels.mattermost` volledig ontbreekt, valt runtime terug op `groupPolicy="allowlist"` voor groepscontroles (zelfs als `channels.defaults.groupPolicy` is ingesteld).
+- Standaard: `channels.mattermost.groupPolicy = "allowlist"` (vermelding vereist).
+- Sta afzenders toe met `channels.mattermost.groupAllowFrom` (gebruikers-id's aanbevolen).
+- `channels.mattermost.groupAllowFrom` accepteert vermeldingen van het type `accessGroup:<name>`. Zie [Toegangsgroepen](/nl/channels/access-groups).
+- Overschrijvingen per kanaal voor vermeldingen staan onder `channels.mattermost.groups.<channelId>.requireMention` of, voor een standaardwaarde, `channels.mattermost.groups["*"].requireMention`.
+- Overeenkomsten met `@username` kunnen veranderen en worden alleen ingeschakeld wanneer `channels.mattermost.dangerouslyAllowNameMatching: true`.
+- Open kanalen: `channels.mattermost.groupPolicy="open"` (vermelding vereist).
+- Volgorde van bepaling: `channels.mattermost.groupPolicy`, vervolgens `channels.defaults.groupPolicy` en daarna `"allowlist"`.
+- Opmerking over de runtime: als de sectie `channels.mattermost` volledig ontbreekt, weigert de runtime groepscontroles veilig met `groupPolicy="allowlist"` (zelfs als `channels.defaults.groupPolicy` is ingesteld) en registreert deze een eenmalige waarschuwing.
 
 Voorbeeld:
 
@@ -226,30 +247,35 @@ Voorbeeld:
 }
 ```
 
-## Doelen voor uitgaande levering
+## Doelen voor uitgaande bezorging
 
-Gebruik deze doelformaten met `openclaw message send` of cron/webhooks:
+Gebruik deze doelindelingen met `openclaw message send` of Cron/Webhooks:
 
-- `channel:<id>` voor een kanaal
-- `user:<id>` voor een DM
-- `@username` voor een DM (opgelost via de Mattermost-API)
+| Doel                                | Wordt bezorgd bij                                              |
+| ----------------------------------- | -------------------------------------------------------------- |
+| `channel:<id>`                      | Kanaal op id                                                   |
+| `channel:<name>` of `#channel-name` | Kanaal op naam, gezocht in alle teams waarvan de bot lid is    |
+| `user:<id>` of `mattermost:<id>`    | DM met die gebruiker                                           |
+| `@username`                         | DM (gebruikersnaam wordt via de Mattermost-API gevonden)       |
+
+Uitgaande verzendingen ondersteunen maximaal één bijlage per bericht; splits meerdere bestanden op in afzonderlijke verzendingen.
 
 <Warning>
-Kale ondoorzichtige ID's (zoals `64ifufp...`) zijn **ambigu** in Mattermost (gebruikers-ID versus kanaal-ID).
+Losse, nietszeggende id's (zoals `64ifufp...`) zijn **dubbelzinnig** in Mattermost (gebruikers-id tegenover kanaal-id).
 
-OpenClaw lost ze **eerst als gebruiker** op:
+OpenClaw probeert ze **eerst als gebruiker** te vinden:
 
-- Als de ID bestaat als gebruiker (`GET /api/v4/users/<id>` slaagt), verzendt OpenClaw een **DM** door het directe kanaal op te lossen via `/api/v4/channels/direct`.
-- Anders wordt de ID behandeld als een **kanaal-ID**.
+- Als de id als gebruiker bestaat (`GET /api/v4/users/<id>` slaagt), verzendt OpenClaw een **DM** door het directe kanaal via `/api/v4/channels/direct` te vinden.
+- Anders wordt de id als een **kanaal-id** behandeld.
 
-Als je deterministisch gedrag nodig hebt, gebruik dan altijd de expliciete prefixen (`user:<id>` / `channel:<id>`).
+Gebruik altijd de expliciete prefixen (`user:<id>` / `channel:<id>`) als u deterministisch gedrag nodig hebt.
 </Warning>
 
-## Opnieuw proberen voor DM-kanaal
+## Opnieuw proberen voor DM-kanalen
 
-Wanneer OpenClaw naar een Mattermost-DM-doel verzendt en eerst het directe kanaal moet oplossen, probeert het standaard tijdelijke fouten bij het maken van directe kanalen opnieuw.
+Wanneer OpenClaw naar een Mattermost-DM-doel verzendt en eerst het directe kanaal moet vinden, probeert het tijdelijke fouten bij het maken van directe kanalen standaard opnieuw.
 
-Gebruik `channels.mattermost.dmChannelRetry` om dat gedrag globaal voor de Mattermost-plugin af te stemmen, of `channels.mattermost.accounts.<id>.dmChannelRetry` voor één account.
+Gebruik `channels.mattermost.dmChannelRetry` om dat gedrag wereldwijd voor de Mattermost-plugin af te stemmen, of `channels.mattermost.accounts.<id>.dmChannelRetry` voor één account. Standaardwaarden:
 
 ```json5
 {
@@ -266,17 +292,17 @@ Gebruik `channels.mattermost.dmChannelRetry` om dat gedrag globaal voor de Matte
 }
 ```
 
-Notities:
+Opmerkingen:
 
-- Dit geldt alleen voor het maken van DM-kanalen (`/api/v4/channels/direct`), niet voor elke Mattermost-API-aanroep.
-- Nieuwe pogingen gelden voor tijdelijke fouten zoals rate limits, 5xx-responses en netwerk- of timeoutfouten.
-- 4xx-clientfouten anders dan `429` worden als permanent behandeld en niet opnieuw geprobeerd.
+- Dit is alleen van toepassing op het aanmaken van DM-kanalen (`/api/v4/channels/direct`), niet op elke Mattermost-API-aanroep.
+- Nieuwe pogingen gebruiken exponentiële back-off met jitter en worden toegepast op tijdelijke fouten, zoals snelheidslimieten, 5xx-responsen en netwerk- of time-outfouten.
+- 4xx-clientfouten anders dan `429` worden als permanent beschouwd en niet opnieuw geprobeerd.
 
-## Preview-streaming
+## Previewstreaming
 
-Mattermost streamt denkstappen, toolactiviteit en gedeeltelijke antwoordtekst naar één **conceptpreviewpost** die ter plekke wordt afgerond wanneer het definitieve antwoord veilig kan worden verzonden. De preview wordt bijgewerkt op dezelfde post-ID in plaats van het kanaal te spammen met berichten per chunk. Definitieve media-/foutberichten annuleren openstaande previewbewerkingen en gebruiken normale levering in plaats van een wegwerp-previewpost te flushen.
+Mattermost streamt denkactiviteit, toolactiviteit en gedeeltelijke antwoordtekst naar een **concept-previewbericht**, dat ter plaatse wordt voltooid zodra het uiteindelijke antwoord veilig kan worden verzonden. In de modus `partial` wordt de preview bijgewerkt op hetzelfde bericht-ID, in plaats van het kanaal te overspoelen met een bericht per fragment. In de modus `block` wisselt de preview tussen voltooide tekstblokken en blokken met toolactiviteit, zodat eerdere blokken als afzonderlijke berichten zichtbaar blijven in plaats van door het volgende blok te worden overschreven. Definitieve media- en foutberichten annuleren wachtende previewbewerkingen en gebruiken de normale bezorging in plaats van een wegwerp-previewbericht te voltooien.
 
-Schakel in via `channels.mattermost.streaming`:
+Previewstreaming is **standaard ingeschakeld** in de modus `partial`. Configureer dit via `channels.mattermost.streaming` (een modustekenreeks, booleaanse waarde of een object zoals `{ mode: "progress" }`):
 
 ```json5
 {
@@ -290,47 +316,66 @@ Schakel in via `channels.mattermost.streaming`:
 
 <AccordionGroup>
   <Accordion title="Streamingmodi">
-    - `partial` is de gebruikelijke keuze: één previewpost die wordt bewerkt terwijl het antwoord groeit en daarna wordt afgerond met het volledige antwoord.
-    - `block` gebruikt conceptchunks in append-stijl binnen de previewpost.
-    - `progress` toont een statuspreview tijdens het genereren en plaatst alleen het definitieve antwoord bij voltooiing.
-    - `off` schakelt preview-streaming uit.
+    - `partial` (standaard): één previewbericht dat wordt bewerkt naarmate het antwoord groeit en vervolgens wordt voltooid met het volledige antwoord.
+    - `block` wisselt de preview tussen voltooide tekstblokken en blokken met toolactiviteit, zodat elk blok als afzonderlijk bericht zichtbaar blijft in plaats van ter plaatse te worden overschreven. Parallelle en opeenvolgende toolupdates delen het huidige toolactiviteitsbericht.
+    - `progress` toont tijdens het genereren een statuspreview en plaatst het definitieve antwoord pas na voltooiing.
+    - `off` schakelt previewstreaming uit. Met `blockStreaming: true` worden voltooide assistentblokken nog steeds als normale blokantwoorden (afzonderlijke berichten) bezorgd, in plaats van als één samengevoegd definitief bericht.
 
   </Accordion>
-  <Accordion title="Gedragsnotities voor streaming">
-    - Als de stream niet ter plekke kan worden afgerond (bijvoorbeeld omdat de post halverwege de stream is verwijderd), valt OpenClaw terug op het verzenden van een nieuwe definitieve post zodat het antwoord nooit verloren gaat.
-    - Payloads met alleen denken worden onderdrukt in kanaalposts, inclusief tekst die binnenkomt als een `> Thinking`-blockquote. Stel `/reasoning on` in om denken in andere oppervlakken te zien; de definitieve Mattermost-post houdt alleen het antwoord.
-    - Zie [Streaming](/nl/concepts/streaming#preview-streaming-modes) voor de kanaalmappingmatrix.
+  <Accordion title="Opmerkingen over streaminggedrag">
+    - Als de stream niet ter plaatse kan worden voltooid (bijvoorbeeld omdat het bericht tijdens het streamen is verwijderd), valt OpenClaw terug op het verzenden van een nieuw definitief bericht, zodat het antwoord nooit verloren gaat.
+    - Payloads die uitsluitend denkactiviteit bevatten, worden niet in kanaalberichten geplaatst, inclusief tekst die als een `> Thinking`-blokcitaat binnenkomt. Stel `/reasoning on` in om denkactiviteit op andere oppervlakken te zien; het definitieve Mattermost-bericht bevat alleen het antwoord.
+    - Zie [Streaming](/nl/concepts/streaming#preview-streaming-modes) voor de kanaaltoewijzingsmatrix.
 
   </Accordion>
 </AccordionGroup>
 
-## Reacties (message-tool)
+## Reacties (berichttool)
 
 - Gebruik `message action=react` met `channel=mattermost`.
-- `messageId` is de Mattermost-post-ID.
+- `messageId` is het Mattermost-bericht-ID.
 - `emoji` accepteert namen zoals `thumbsup` of `:+1:` (dubbele punten zijn optioneel).
-- Stel `remove=true` (booleaan) in om een reactie te verwijderen.
-- Gebeurtenissen voor toevoegen/verwijderen van reacties worden als systeemgebeurtenissen doorgestuurd naar de gerouteerde agentsessie.
+- Stel `remove=true` (booleaanse waarde) in om een reactie te verwijderen.
+- Gebeurtenissen voor het toevoegen/verwijderen van reacties worden als systeemgebeurtenissen doorgestuurd naar de gerouteerde agentsessie, onder dezelfde DM-/groepsbeleidscontroles als berichten.
 
 Voorbeelden:
 
-```
+```text
 message action=react channel=mattermost target=channel:<channelId> messageId=<postId> emoji=thumbsup
 message action=react channel=mattermost target=channel:<channelId> messageId=<postId> emoji=thumbsup remove=true
 ```
 
 Configuratie:
 
-- `channels.mattermost.actions.reactions`: schakel reactieacties in/uit (standaard true).
-- Per-account overschrijving: `channels.mattermost.accounts.<id>.actions.reactions`.
+- `channels.mattermost.actions.reactions`: reactieacties in-/uitschakelen (standaard true).
+- Overschrijving per account: `channels.mattermost.accounts.<id>.actions.reactions`.
 
-## Interactieve knoppen (message-tool)
+## Interactieve knoppen (berichttool)
 
-Verzend berichten met klikbare knoppen. Wanneer een gebruiker op een knop klikt, ontvangt de agent de selectie en kan reageren.
+Verzend berichten met aanklikbare knoppen. Wanneer een gebruiker op een knop klikt, ontvangt de agent de selectie en kan deze reageren.
 
-Normale agentantwoorden kunnen ook semantische `presentation`-payloads bevatten. OpenClaw rendert waardeknoppen als interactieve Mattermost-knoppen, houdt URL-knoppen zichtbaar in de berichttekst en zet selectiemenu's om naar leesbare tekst.
+Knoppen zijn afkomstig uit de semantische `presentation`-payload (in normale agentantwoorden en in `message action=send`). OpenClaw geeft waardeknoppen weer als interactieve Mattermost-knoppen, houdt URL-knoppen zichtbaar in de berichttekst en zet keuzemenu's om in leesbare tekst.
 
-Schakel knoppen in door `inlineButtons` toe te voegen aan de kanaalmogelijkheden:
+```text
+message action=send channel=mattermost target=channel:<channelId> presentation={"blocks":[{"type":"buttons","buttons":[{"label":"Yes","value":"yes"},{"label":"No","value":"no"}]}]}
+```
+
+Velden voor presentatieknoppen:
+
+<ParamField path="label" type="string" required>
+  Weergavelabel (alias: `text`).
+</ParamField>
+<ParamField path="value" type="string">
+  Waarde die bij een klik wordt teruggestuurd en als actie-ID wordt gebruikt (aliassen: `callback_data`, `callbackData`). Vereist voor een aanklikbare knop, tenzij `url` is ingesteld.
+</ParamField>
+<ParamField path="url" type="string">
+  Koppelingsknop; wordt in de berichttekst weergegeven als `label: url` in plaats van als interactieve knop.
+</ParamField>
+<ParamField path="style" type='"primary" | "secondary" | "success" | "danger"'>
+  Knopstijl. Mattermost past de standaardstijl toe op waarden die het niet ondersteunt.
+</ParamField>
+
+Voeg `inlineButtons` toe aan de kanaalmogelijkheden om knopondersteuning in de systeemprompt van de agent bekend te maken:
 
 ```json5
 {
@@ -342,56 +387,43 @@ Schakel knoppen in door `inlineButtons` toe te voegen aan de kanaalmogelijkheden
 }
 ```
 
-Gebruik `message action=send` met een `buttons`-parameter. Knoppen zijn een 2D-array (rijen met knoppen):
-
-```
-message action=send channel=mattermost target=channel:<channelId> buttons=[[{"text":"Yes","callback_data":"yes"},{"text":"No","callback_data":"no"}]]
-```
-
-Knopvelden:
-
-<ParamField path="text" type="string" required>
-  Weergavelabel.
-</ParamField>
-<ParamField path="callback_data" type="string" required>
-  Waarde die bij klikken wordt teruggestuurd (gebruikt als de actie-ID).
-</ParamField>
-<ParamField path="style" type='"default" | "primary" | "danger"'>
-  Knopstijl.
-</ParamField>
-
 Wanneer een gebruiker op een knop klikt:
 
 <Steps>
+  <Step title="Toegangscontrole">
+    De gebruiker die klikt, moet dezelfde DM-/groepsbeleidscontroles doorstaan als een afzender van een bericht; ongeautoriseerde klikken krijgen een tijdelijke melding en worden genegeerd.
+  </Step>
   <Step title="Knoppen vervangen door bevestiging">
-    Alle knoppen worden vervangen door een bevestigingsregel (bijvoorbeeld "✓ **Yes** geselecteerd door @user").
+    Alle knoppen worden vervangen door een bevestigingsregel (bijvoorbeeld „✓ **Yes** geselecteerd door @user”).
   </Step>
   <Step title="Agent ontvangt de selectie">
-    De agent ontvangt de selectie als een inkomend bericht en reageert.
+    De agent ontvangt de selectie als een inkomend bericht (plus een systeemgebeurtenis) en reageert.
   </Step>
 </Steps>
 
 <AccordionGroup>
-  <Accordion title="Implementatienotities">
-    - Knop-callbacks gebruiken HMAC-SHA256-verificatie (automatisch, geen configuratie nodig).
-    - Mattermost verwijdert callbackgegevens uit zijn API-antwoorden (beveiligingsfunctie), dus alle knoppen worden bij klikken verwijderd - gedeeltelijke verwijdering is niet mogelijk.
-    - Actie-ID's met koppeltekens of underscores worden automatisch opgeschoond (beperking in Mattermost-routering).
+  <Accordion title="Implementatieopmerkingen">
+    - Knopcallbacks gebruiken HMAC-SHA256-verificatie (automatisch, geen configuratie nodig).
+    - Bij een klik wordt het volledige bijlageblok vervangen, zodat alle knoppen tegelijk worden verwijderd; gedeeltelijke verwijdering is niet mogelijk.
+    - Actie-ID's die koppeltekens of onderstrepingstekens bevatten, worden automatisch opgeschoond (beperking van Mattermost-routering).
+    - Klikken waarvan de `action_id` niet overeenkomt met een actie in het oorspronkelijke bericht, worden geweigerd met `403` ("Unknown action").
 
   </Accordion>
   <Accordion title="Configuratie en bereikbaarheid">
-    - `channels.mattermost.capabilities`: array van capability-strings. Voeg `"inlineButtons"` toe om de beschrijving van het knoppentool in de systeemprompt van de agent in te schakelen.
-    - `channels.mattermost.interactions.callbackBaseUrl`: optionele externe basis-URL voor knop-callbacks (bijvoorbeeld `https://gateway.example.com`). Gebruik dit wanneer Mattermost de Gateway niet rechtstreeks op de bind-host kan bereiken.
-    - In setups met meerdere accounts kun je hetzelfde veld ook instellen onder `channels.mattermost.accounts.<id>.interactions.callbackBaseUrl`.
-    - Als `interactions.callbackBaseUrl` is weggelaten, leidt OpenClaw de callback-URL af van `gateway.customBindHost` + `gateway.port` en valt daarna terug op `http://localhost:<port>`.
-    - Bereikbaarheidsregel: de knop-callback-URL moet bereikbaar zijn vanaf de Mattermost-server. `localhost` werkt alleen wanneer Mattermost en OpenClaw op dezelfde host/netwerk-namespace draaien.
-    - Als je callback-doel privé/tailnet/intern is, voeg de host/het domein toe aan Mattermost `ServiceSettings.AllowedUntrustedInternalConnections`.
+    - `channels.mattermost.capabilities`: matrix van mogelijkheden als tekenreeksen. Voeg `"inlineButtons"` toe om de beschrijving van de knoptool in de systeemprompt van de agent in te schakelen.
+    - `channels.mattermost.interactions.callbackBaseUrl`: optionele externe basis-URL voor knopcallbacks (bijvoorbeeld `https://gateway.example.com`). Gebruik dit wanneer Mattermost de Gateway niet rechtstreeks via diens bindingshost kan bereiken.
+    - In configuraties met meerdere accounts kunt u hetzelfde veld ook instellen onder `channels.mattermost.accounts.<id>.interactions.callbackBaseUrl`.
+    - Als `interactions.callbackBaseUrl` is weggelaten, leidt OpenClaw de callback-URL af van `gateway.customBindHost` + `gateway.port` (standaard 18789) en valt vervolgens terug op `http://localhost:<port>`. Het callbackpad is `/mattermost/interactions/<accountId>`.
+    - Bereikbaarheidsregel: de callback-URL van de knop moet bereikbaar zijn vanaf de Mattermost-server. `localhost` werkt alleen wanneer Mattermost en OpenClaw op dezelfde host/netwerknaamruimte draaien.
+    - `channels.mattermost.interactions.allowedSourceIps`: toelatingslijst met bron-IP-adressen voor knopcallbacks. Zonder deze lijst worden alleen loopback-bronnen (`127.0.0.1`, `::1`) geaccepteerd. Een externe Mattermost-server moet hier dus aan de toelatingslijst worden toegevoegd, anders worden klikken geweigerd met `403`. Stel achter een reverse proxy ook `gateway.trustedProxies` in, zodat het echte client-IP-adres wordt afgeleid uit doorgestuurde headers.
+    - Als uw callbackdoel privé, intern of in een tailnet is, voegt u de host/het domein ervan toe aan Mattermost `ServiceSettings.AllowedUntrustedInternalConnections`.
 
   </Accordion>
 </AccordionGroup>
 
-### Directe API-integratie (externe scripts)
+### Rechtstreekse API-integratie (externe scripts)
 
-Externe scripts en Webhooks kunnen knoppen rechtstreeks via de Mattermost REST API plaatsen in plaats van via het `message`-tool van de agent te gaan. Gebruik waar mogelijk `buildButtonAttachments()` uit de Plugin; als je ruwe JSON plaatst, volg dan deze regels:
+Externe scripts en Webhooks kunnen knoppen rechtstreeks via de Mattermost REST-API plaatsen in plaats van de `message`-tool van de agent te gebruiken. Gebruik waar mogelijk `buildButtonAttachments()` uit de Plugin; volg bij het plaatsen van onbewerkte JSON deze regels:
 
 **Payloadstructuur:**
 
@@ -411,7 +443,7 @@ Externe scripts en Webhooks kunnen knoppen rechtstreeks via de Mattermost REST A
             integration: {
               url: "https://gateway.example.com/mattermost/interactions/default",
               context: {
-                action_id: "mybutton01", // must match button id (for name lookup)
+                action_id: "mybutton01", // must match button id
                 action: "approve",
                 // ... any custom fields ...
                 _token: "<hmac>", // see HMAC section below
@@ -428,34 +460,35 @@ Externe scripts en Webhooks kunnen knoppen rechtstreeks via de Mattermost REST A
 <Warning>
 **Kritieke regels**
 
-1. Attachments horen in `props.attachments`, niet in `attachments` op topniveau (wordt stilzwijgend genegeerd).
-2. Elke actie heeft `type: "button"` nodig - zonder dit worden klikken stilzwijgend genegeerd.
-3. Elke actie heeft een `id`-veld nodig - Mattermost negeert acties zonder ID's.
-4. Actie-`id` mag **alleen alfanumeriek** zijn (`[a-zA-Z0-9]`). Koppeltekens en underscores breken de server-side actieroutering van Mattermost (retourneert 404). Verwijder ze vóór gebruik.
-5. `context.action_id` moet overeenkomen met de `id` van de knop, zodat het bevestigingsbericht de knopnaam toont (bijvoorbeeld "Approve") in plaats van een ruwe ID.
-6. `context.action_id` is vereist - de interactiehandler retourneert 400 zonder dit veld.
+1. Bijlagen horen in `props.attachments`, niet in `attachments` op het hoogste niveau (wordt zonder melding genegeerd).
+2. Elke actie heeft `type: "button"` nodig; zonder dit worden klikken zonder melding genegeerd.
+3. Elke actie heeft een `id`-veld nodig; Mattermost negeert acties zonder ID's.
+4. De `id` van een actie mag **alleen alfanumerieke tekens** bevatten (`[a-zA-Z0-9]`). Koppeltekens en onderstrepingstekens verstoren de serverroutering van acties in Mattermost (retourneert 404). Verwijder deze vóór gebruik.
+5. `context.action_id` moet overeenkomen met de `id` van de knop; de Gateway weigert klikken waarvan de `action_id` niet in het bericht bestaat.
+6. `context.action_id` is vereist; zonder deze waarde retourneert de interactiehandler 400.
+7. Het bron-IP-adres van de callback moet zijn toegestaan (zie `interactions.allowedSourceIps` hierboven).
 
 </Warning>
 
 **HMAC-token genereren**
 
-De Gateway verifieert knopklikken met HMAC-SHA256. Externe scripts moeten tokens genereren die overeenkomen met de verificatielogica van de Gateway:
+De Gateway verifieert klikken op knoppen met HMAC-SHA256. Externe scripts moeten tokens genereren die overeenkomen met de verificatielogica van de Gateway:
 
 <Steps>
-  <Step title="Leid het geheim af van het bot-token">
-    `HMAC-SHA256(key="openclaw-mattermost-interactions", data=botToken)`
+  <Step title="Het geheim afleiden van het bottoken">
+    `HMAC-SHA256(key="openclaw-mattermost-interactions", data=botToken)`, hexadecimaal gecodeerd.
   </Step>
-  <Step title="Bouw het contextobject">
-    Bouw het contextobject met alle velden **behalve** `_token`.
+  <Step title="Het contextobject samenstellen">
+    Stel het contextobject samen met alle velden **behalve** `_token`.
   </Step>
-  <Step title="Serialiseer met gesorteerde sleutels">
-    Serialiseer met **gesorteerde sleutels** en **geen spaties** (de Gateway gebruikt `JSON.stringify` met gesorteerde sleutels, wat compacte output oplevert).
+  <Step title="Serialiseren met gesorteerde sleutels">
+    Serialiseer met **recursief gesorteerde sleutels** en **zonder spaties** (de Gateway canonicaliseert ook geneste objecten en produceert compacte JSON).
   </Step>
-  <Step title="Onderteken de payload">
+  <Step title="De payload ondertekenen">
     `HMAC-SHA256(key=secret, data=serializedContext)`
   </Step>
-  <Step title="Voeg het token toe">
-    Voeg de resulterende hex-digest toe als `_token` in de context.
+  <Step title="Het token toevoegen">
+    Voeg de resulterende hexadecimale digest als `_token` aan de context toe.
   </Step>
 </Steps>
 
@@ -478,21 +511,21 @@ context = {**ctx, "_token": token}
 
 <AccordionGroup>
   <Accordion title="Veelvoorkomende HMAC-valkuilen">
-    - Python's `json.dumps` voegt standaard spaties toe (`{"key": "val"}`). Gebruik `separators=(",", ":")` om overeen te komen met JavaScripts compacte output (`{"key":"val"}`).
-    - Onderteken altijd **alle** contextvelden (min `_token`). De Gateway verwijdert `_token` en ondertekent daarna alles wat overblijft. Het ondertekenen van een subset veroorzaakt stilzwijgende verificatiefouten.
-    - Gebruik `sort_keys=True` - de Gateway sorteert sleutels vóór het ondertekenen, en Mattermost kan contextvelden opnieuw ordenen wanneer de payload wordt opgeslagen.
-    - Leid het geheim af van het bot-token (deterministisch), niet van willekeurige bytes. Het geheim moet hetzelfde zijn in het proces dat knoppen maakt en de Gateway die verifieert.
+    - Python-functie `json.dumps` voegt standaard spaties toe (`{"key": "val"}`). Gebruik `separators=(",", ":")` om overeen te komen met de compacte uitvoer van JavaScript (`{"key":"val"}`).
+    - Onderteken altijd **alle** contextvelden (met uitzondering van `_token`). De Gateway verwijdert `_token` en ondertekent vervolgens alles wat overblijft. Het ondertekenen van een deelverzameling veroorzaakt een verificatiefout zonder melding.
+    - Gebruik `sort_keys=True`; de Gateway sorteert sleutels vóór ondertekening en Mattermost kan contextvelden opnieuw ordenen bij het opslaan van de payload.
+    - Leid het geheim af van het bottoken (deterministisch), niet van willekeurige bytes. Het geheim moet hetzelfde zijn in het proces dat knoppen maakt en in de Gateway die ze verifieert.
 
   </Accordion>
 </AccordionGroup>
 
 ## Directory-adapter
 
-De Mattermost-Plugin bevat een directory-adapter die kanaal- en gebruikersnamen via de Mattermost API oplost. Dit maakt `#channel-name`- en `@username`-doelen mogelijk in `openclaw message send` en Cron-/Webhook-leveringen.
+De Mattermost-Plugin bevat een Directory-adapter die kanaal- en gebruikersnamen via de Mattermost-API omzet. Hierdoor kunnen doelen als `#channel-name` en `@username` worden gebruikt in `openclaw message send` en bij leveringen via Cron/Webhooks.
 
-Er is geen configuratie nodig - de adapter gebruikt het bot-token uit de accountconfiguratie.
+Er is geen configuratie nodig; de adapter gebruikt het bottoken uit de accountconfiguratie.
 
-## Multi-account
+## Meerdere accounts
 
 Mattermost ondersteunt meerdere accounts onder `channels.mattermost.accounts`:
 
@@ -501,43 +534,47 @@ Mattermost ondersteunt meerdere accounts onder `channels.mattermost.accounts`:
   channels: {
     mattermost: {
       accounts: {
-        default: { name: "Primary", botToken: "mm-token", baseUrl: "https://chat.example.com" },
-        alerts: { name: "Alerts", botToken: "mm-token-2", baseUrl: "https://alerts.example.com" },
+        default: { name: "Primair", botToken: "mm-token", baseUrl: "https://chat.example.com" },
+        alerts: { name: "Waarschuwingen", botToken: "mm-token-2", baseUrl: "https://alerts.example.com" },
       },
     },
   },
 }
 ```
 
-## Probleemoplossing
+Accountwaarden overschrijven velden op het hoogste niveau; `channels.mattermost.defaultAccount` bepaalt welk account wordt gebruikt wanneer er geen is opgegeven.
+
+## Problemen oplossen
 
 <AccordionGroup>
   <Accordion title="Geen antwoorden in kanalen">
-    Zorg dat de bot in het kanaal zit en vermeld hem (oncall), gebruik een triggerprefix (onchar), of stel `chatmode: "onmessage"` in.
+    Zorg ervoor dat de bot zich in het kanaal bevindt en vermeld de bot (oncall), gebruik een triggerprefix (onchar) of stel `chatmode: "onmessage"` in.
   </Accordion>
-  <Accordion title="Auth- of multi-accountfouten">
-    - Controleer het bot-token, de basis-URL en of het account is ingeschakeld.
-    - Multi-accountproblemen: env vars zijn alleen van toepassing op het `default`-account.
+  <Accordion title="Authenticatie- of multi-accountfouten">
+    - Controleer het bottoken, de basis-URL en of het account is ingeschakeld.
+    - Problemen met meerdere accounts: omgevingsvariabelen zijn alleen van toepassing op het `default`-account.
+    - Privé-/LAN-Mattermost-hosts vereisen `network.dangerouslyAllowPrivateNetwork: true` (de SSRF-beveiliging blokkeert standaard privé-IP-adressen).
 
   </Accordion>
-  <Accordion title="Native slash-commands mislukken">
-    - `Unauthorized: invalid command token.`: OpenClaw heeft het callback-token niet geaccepteerd. Typische oorzaken:
-      - registratie van slash-commands is mislukt of slechts gedeeltelijk voltooid bij het opstarten
-      - de callback raakt de verkeerde Gateway/het verkeerde account
-      - Mattermost heeft nog oude commands die naar een vorig callback-doel wijzen
-      - de Gateway is opnieuw gestart zonder slash-commands opnieuw te activeren
-    - Als native slash-commands niet meer werken, controleer de logs op `mattermost: failed to register slash commands` of `mattermost: native slash commands enabled but no commands could be registered`.
-    - Als `callbackUrl` is weggelaten en logs waarschuwen dat de callback is opgelost naar `http://127.0.0.1:18789/...`, is die URL waarschijnlijk alleen bereikbaar wanneer Mattermost op dezelfde host/netwerk-namespace draait als OpenClaw. Stel in plaats daarvan een expliciete extern bereikbare `commands.callbackUrl` in.
+  <Accordion title="Native slash-opdrachten mislukken">
+    - `Unauthorized: invalid command token.`: OpenClaw heeft het callbacktoken niet geaccepteerd. Gebruikelijke oorzaken:
+      - de registratie van slash-opdrachten is mislukt of bij het opstarten slechts gedeeltelijk voltooid
+      - de callback bereikt de verkeerde Gateway of het verkeerde account
+      - Mattermost heeft nog oude opdrachten die naar een eerder callbackdoel verwijzen
+      - de Gateway is opnieuw gestart zonder de slash-opdrachten opnieuw te activeren
+    - Als native slash-opdrachten niet meer werken, controleer dan de logboeken op `mattermost: failed to register slash commands` of `mattermost: native slash commands enabled but no commands could be registered`.
+    - Als `callbackUrl` is weggelaten en de logboeken waarschuwen dat de callback is omgezet naar een local loopback-URL zoals `http://localhost:18789/...`, is die URL waarschijnlijk alleen bereikbaar wanneer Mattermost in dezelfde host-/netwerknaamruimte als OpenClaw draait. Stel in plaats daarvan expliciet een extern bereikbare `commands.callbackUrl` in.
 
   </Accordion>
   <Accordion title="Problemen met knoppen">
-    - Knoppen verschijnen als witte vakken: de agent verzendt mogelijk verkeerd gevormde knopgegevens. Controleer dat elke knop zowel `text`- als `callback_data`-velden heeft.
-    - Knoppen worden weergegeven maar klikken doen niets: verifieer dat `AllowedUntrustedInternalConnections` in de Mattermost-serverconfiguratie `127.0.0.1 localhost` bevat, en dat `EnablePostActionIntegration` `true` is in ServiceSettings.
-    - Knoppen retourneren 404 bij klikken: de knop-`id` bevat waarschijnlijk koppeltekens of underscores. De actierouter van Mattermost breekt op niet-alfanumerieke ID's. Gebruik alleen `[a-zA-Z0-9]`.
-    - Gateway-logs tonen `invalid _token`: HMAC komt niet overeen. Controleer dat je alle contextvelden ondertekent (niet een subset), gesorteerde sleutels gebruikt en compacte JSON gebruikt (geen spaties). Zie de HMAC-sectie hierboven.
-    - Gateway-logs tonen `missing _token in context`: het `_token`-veld staat niet in de context van de knop. Zorg dat het wordt opgenomen bij het bouwen van de integratiepayload.
-    - Bevestiging toont ruwe ID in plaats van knopnaam: `context.action_id` komt niet overeen met de `id` van de knop. Stel beide in op dezelfde opgeschoonde waarde.
-    - Agent kent knoppen niet: voeg `capabilities: ["inlineButtons"]` toe aan de Mattermost-kanaalconfiguratie.
+    - Knoppen verschijnen als witte vakken of helemaal niet: de knopgegevens zijn ongeldig. Elke presentatieknop heeft een `label` en een `value` nodig (knoppen waarbij een van beide ontbreekt, worden weggelaten).
+    - Knoppen worden weergegeven, maar klikken doet niets: controleer of de Gateway bereikbaar is vanaf de Mattermost-server, of het IP-adres van de Mattermost-server is opgenomen in `channels.mattermost.interactions.allowedSourceIps` (zonder deze instelling wordt alleen local loopback geaccepteerd) en of `ServiceSettings.AllowedUntrustedInternalConnections` de callbackhost bevat voor privédoelen.
+    - Knoppen retourneren bij klikken een 404-fout: de knop-`id` bevat waarschijnlijk koppeltekens of underscores. De actierouter van Mattermost werkt niet met niet-alfanumerieke ID's. Gebruik uitsluitend `[a-zA-Z0-9]`.
+    - De Gateway logt `rejected callback source`: de klik kwam van een IP-adres buiten `interactions.allowedSourceIps`. Voeg de Mattermost-server of uw ingress toe aan de toelatingslijst en stel `gateway.trustedProxies` in bij gebruik van een reverse proxy.
+    - De Gateway logt `invalid _token`: HMAC komt niet overeen. Controleer of u alle contextvelden ondertekent (niet slechts een subset), gesorteerde sleutels gebruikt en compacte JSON gebruikt (zonder spaties). Zie de HMAC-sectie hierboven.
+    - De Gateway logt `missing _token in context`: het veld `_token` staat niet in de context van de knop. Zorg ervoor dat het wordt opgenomen bij het samenstellen van de integratiepayload.
+    - De Gateway weigert de klik met `Unknown action`: `context.action_id` komt niet overeen met een actie-`id` in het bericht. Stel beide in op dezelfde opgeschoonde waarde.
+    - De agent biedt geen knoppen aan: voeg `capabilities: ["inlineButtons"]` toe aan de Mattermost-kanaalconfiguratie.
 
   </Accordion>
 </AccordionGroup>
@@ -545,7 +582,7 @@ Mattermost ondersteunt meerdere accounts onder `channels.mattermost.accounts`:
 ## Gerelateerd
 
 - [Kanaalroutering](/nl/channels/channel-routing) - sessieroutering voor berichten
-- [Kanalenoverzicht](/nl/channels) - alle ondersteunde kanalen
-- [Groepen](/nl/channels/groups) - groepschatgedrag en vermeldingsgate
-- [Koppelen](/nl/channels/pairing) - DM-authenticatie en koppelingsflow
-- [Beveiliging](/nl/gateway/security) - toegangsmodel en hardening
+- [Overzicht van kanalen](/nl/channels) - alle ondersteunde kanalen
+- [Groepen](/nl/channels/groups) - gedrag van groepschats en vermeldingstoegang
+- [Koppelen](/nl/channels/pairing) - DM-authenticatie en koppelingsproces
+- [Beveiliging](/nl/gateway/security) - toegangsmodel en beveiliging

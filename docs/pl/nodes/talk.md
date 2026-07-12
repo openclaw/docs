@@ -1,74 +1,56 @@
 ---
 read_when:
-    - Implementowanie trybu Talk na macOS/iOS/Android
+    - Implementowanie trybu rozmowy w systemach macOS/iOS/Android
     - Zmiana zachowania głosu/TTS/przerywania
-summary: 'Tryb rozmowy: ciągłe konwersacje głosowe przez lokalne STT/TTS i głos w czasie rzeczywistym'
+summary: 'Tryb rozmowy: ciągłe konwersacje głosowe z wykorzystaniem lokalnych funkcji STT/TTS i głosu w czasie rzeczywistym'
 title: Tryb rozmowy
 x-i18n:
-    generated_at: "2026-07-03T10:00:29Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:16:20Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f9c8cdb6ffef7575348e94b36cd73a0613c336d8e811d6ce46d7518ee7c34b14
+    source_hash: 4180dcbf7a62cd03e2d18f2c568ed2182c9cf2f80159154a7d261bcb9b3ebee0
     source_path: nodes/talk.md
     workflow: 16
 ---
 
-Tryb rozmowy ma dwa kształty działania:
+Tryb rozmowy obejmuje pięć wariantów działania:
 
-- Natywna rozmowa w macOS/iOS/Android używa lokalnego rozpoznawania mowy, czatu Gateway i TTS `talk.speak`. Węzły ogłaszają zdolność `talk` i deklarują obsługiwane polecenia `talk.*`.
-- Rozmowa w iOS używa WebRTC zarządzanego przez klienta dla konfiguracji czasu rzeczywistego OpenAI, które wybierają `webrtc` albo pomijają transport. Jawne konfiguracje czasu rzeczywistego `gateway-relay`, `provider-websocket` i inne niż OpenAI pozostają przy przekaźniku zarządzanym przez Gateway; konfiguracje inne niż czasu rzeczywistego używają natywnej pętli mowy.
-- Rozmowa w przeglądarce używa `talk.client.create` dla sesji `webrtc` i `provider-websocket` zarządzanych przez klienta albo `talk.session.create` dla sesji `gateway-relay` zarządzanych przez Gateway. `managed-room` jest zarezerwowane dla przekazania do Gateway i pokojów walkie-talkie.
-- Rozmowa w Androidzie może włączyć sesje przekaźnika czasu rzeczywistego zarządzane przez Gateway za pomocą `talk.realtime.mode: "realtime"` i `talk.realtime.transport: "gateway-relay"`. W przeciwnym razie pozostaje przy natywnym rozpoznawaniu mowy, czacie Gateway i `talk.speak`.
-- Klienci tylko do transkrypcji używają `talk.session.create({ mode: "transcription", transport: "gateway-relay", brain: "none" })`, a następnie `talk.session.appendAudio`, `talk.session.cancelTurn` i `talk.session.close`, gdy potrzebują napisów lub dyktowania bez głosowej odpowiedzi asystenta.
+- **Natywna rozmowa w macOS/iOS/Androidzie**: lokalne rozpoznawanie mowy, czat przez Gateway oraz synteza mowy TTS za pomocą `talk.speak`. Węzły ogłaszają funkcję `talk` i deklarują, które polecenia `talk.*` obsługują.
+- **Rozmowa w iOS (w czasie rzeczywistym)**: WebRTC zarządzane przez klienta dla konfiguracji OpenAI czasu rzeczywistego, które wybierają transport `webrtc` lub go pomijają. Jawne konfiguracje czasu rzeczywistego `gateway-relay`, `provider-websocket` oraz konfiguracje dostawców innych niż OpenAI pozostają na przekaźniku zarządzanym przez Gateway; konfiguracje niedziałające w czasie rzeczywistym używają natywnej pętli obsługi mowy.
+- **Rozmowa w przeglądarce**: `talk.client.create` dla zarządzanych przez klienta sesji `webrtc`/`provider-websocket` albo `talk.session.create` dla zarządzanych przez Gateway sesji `gateway-relay`. Wartość `managed-room` jest zarezerwowana dla przekazywania obsługi przez Gateway i pokojów typu krótkofalówka.
+- **Rozmowa w Androidzie (w czasie rzeczywistym)**: włącz ją za pomocą `talk.realtime.mode: "realtime"` i `talk.realtime.transport: "gateway-relay"`. W przeciwnym razie Android nadal korzysta z natywnego rozpoznawania mowy, czatu przez Gateway oraz `talk.speak`.
+- **Klienci obsługujący wyłącznie transkrypcję**: `talk.session.create({ mode: "transcription", transport: "gateway-relay", brain: "none" })`, a następnie `talk.session.appendAudio`, `talk.session.cancelTurn` i `talk.session.close` do napisów lub dyktowania bez głosowej odpowiedzi asystenta. Jednorazowo przesyłane notatki głosowe nadal korzystają ze ścieżki dźwiękowej [rozumienia multimediów](/pl/nodes/media-understanding).
 
-Natywna rozmowa to ciągła pętla konwersacji głosowej:
+Natywna rozmowa działa jako ciągła pętla: nasłuchuje mowy, wysyła transkrypcję do modelu przez aktywną sesję, czeka na odpowiedź, a następnie odtwarza ją głosowo za pomocą skonfigurowanego dostawcy rozmowy (`talk.speak`).
 
-1. Nasłuchuj mowy
-2. Wyślij transkrypt do modelu przez aktywną sesję
-3. Poczekaj na odpowiedź
-4. Odtwórz ją przez skonfigurowanego dostawcę rozmowy (`talk.speak`)
+Rozmowa w czasie rzeczywistym zarządzana przez klienta przekazuje wywołania narzędzi dostawcy przez `talk.client.toolCall`, zamiast bezpośrednio wywoływać `chat.send`. Gdy aktywna jest konsultacja w czasie rzeczywistym, klienci mogą wywołać `talk.client.steer` lub `talk.session.steer`, aby sklasyfikować wypowiedź jako `status`, `steer`, `cancel` albo `followup`. Zaakceptowane sterowanie zostaje dodane do kolejki aktywnego osadzonego przebiegu; odrzucone sterowanie zwraca przyczynę, taką jak `no_active_run`, `not_streaming` lub `compacting`.
 
-Rozmowa czasu rzeczywistego zarządzana przez klienta przekazuje wywołania narzędzi dostawcy przez `talk.client.toolCall`; ci klienci nie wywołują bezpośrednio `chat.send` dla konsultacji czasu rzeczywistego.
-Gdy konsultacja czasu rzeczywistego jest aktywna, klienci rozmowy mogą używać `talk.client.steer` albo
-`talk.session.steer`, aby klasyfikować wypowiedź jako `status`, `steer`, `cancel` albo
-`followup`. Zaakceptowane sterowanie jest kolejkowane do aktywnego osadzonego uruchomienia; odrzucone
-sterowanie zwraca ustrukturyzowany powód, taki jak `no_active_run`, `not_streaming`
-albo `compacting`.
-
-Rozmowa tylko do transkrypcji emituje tę samą wspólną kopertę zdarzeń rozmowy co sesje czasu rzeczywistego i STT/TTS, ale używa `mode: "transcription"` i `brain: "none"`. Jest przeznaczona do napisów, dyktowania i przechwytywania mowy wyłącznie obserwacyjnie; jednorazowe przesłane notatki głosowe nadal używają ścieżki mediów/audio.
+Rozmowa obsługująca wyłącznie transkrypcję emituje tę samą otoczkę zdarzeń rozmowy co sesje czasu rzeczywistego oraz STT/TTS, ale używa `mode: "transcription"` i `brain: "none"`. Wszystkie sesje rozmowy rozgłaszają zdarzenia w kanale `talk.event`; klienci subskrybują go, aby otrzymywać częściowe i końcowe aktualizacje transkrypcji (`transcript.delta`/`transcript.done`) oraz inne dane telemetryczne sesji.
 
 ## Zachowanie (macOS)
 
-- **Nakładka zawsze włączona**, gdy tryb rozmowy jest włączony.
-- Przejścia faz **Nasłuchiwanie → Myślenie → Mówienie**.
-- Po **krótkiej pauzie** (oknie ciszy) bieżący transkrypt jest wysyłany.
-- Odpowiedzi są **zapisywane w WebChat** (tak samo jak wpisywanie).
-- **Przerywanie przy mowie** (domyślnie włączone): jeśli użytkownik zacznie mówić, gdy asystent mówi, zatrzymujemy odtwarzanie i zapisujemy znacznik czasu przerwania dla następnego promptu.
+- Nakładka jest stale widoczna, gdy tryb rozmowy jest włączony.
+- Przejścia między fazami **Słuchanie &rarr; Myślenie &rarr; Mówienie**.
+- Po krótkiej przerwie (oknie ciszy) bieżąca transkrypcja zostaje wysłana.
+- Odpowiedzi są zapisywane w WebChat (tak samo jak podczas pisania).
+- **Przerywanie mową** (domyślnie włączone): jeśli użytkownik zacznie mówić, gdy asystent odtwarza wypowiedź, odtwarzanie zostaje zatrzymane, a znacznik czasu przerwania jest zapisywany na potrzeby następnego polecenia.
 
 ## Dyrektywy głosowe w odpowiedziach
 
-Asystent może poprzedzić odpowiedź **pojedynczym wierszem JSON**, aby sterować głosem:
+Asystent może poprzedzić odpowiedź pojedynczym wierszem JSON sterującym głosem:
 
 ```json
 { "voice": "<voice-id>", "once": true }
 ```
 
-Zasady:
+Reguły:
 
-- Tylko pierwszy niepusty wiersz.
+- Wyłącznie pierwszy niepusty wiersz; wiersz JSON jest usuwany przed odtworzeniem TTS.
 - Nieznane klucze są ignorowane.
-- `once: true` dotyczy tylko bieżącej odpowiedzi.
-- Bez `once` głos staje się nową wartością domyślną dla trybu rozmowy.
-- Wiersz JSON jest usuwany przed odtwarzaniem TTS.
+- `once: true` ma zastosowanie tylko do bieżącej odpowiedzi; bez tej opcji głos staje się nowym domyślnym głosem trybu rozmowy.
 
-Obsługiwane klucze:
-
-- `voice` / `voice_id` / `voiceId`
-- `model` / `model_id` / `modelId`
-- `speed`, `rate` (WPM), `stability`, `similarity`, `style`, `speakerBoost`
-- `seed`, `normalize`, `lang`, `output_format`, `latency_tier`
-- `once`
+Obsługiwane klucze: `voice` / `voice_id` / `voiceId`, `model` / `model_id` / `modelId`, `speed`, `rate` (słów na minutę), `stability`, `similarity`, `style`, `speakerBoost`, `seed`, `normalize`, `lang`, `output_format`, `latency_tier`, `once`.
 
 ## Konfiguracja (`~/.openclaw/openclaw.json`)
 
@@ -96,8 +78,8 @@ Obsługiwane klucze:
       providers: {
         openai: {
           apiKey: "openai_api_key",
-          model: "gpt-realtime-2",
-          voice: "cedar",
+          model: "gpt-realtime-2.1",
+          speakerVoice: "cedar",
         },
       },
       instructions: "Speak warmly and keep answers brief.",
@@ -109,62 +91,54 @@ Obsługiwane klucze:
 }
 ```
 
-Wartości domyślne:
+| Klucz                                    | Wartość domyślna                           | Uwagi                                                                                                                                                                                                                                                                                                                                       |
+| ---------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `provider`                               | -                                          | Aktywny dostawca TTS trybu rozmowy. Użyj `elevenlabs`, `mlx` lub `system` dla lokalnych ścieżek odtwarzania w macOS.                                                                                                                                                                                                                          |
+| `providers.<id>.voiceId`                 | -                                          | ElevenLabs używa awaryjnie `ELEVENLABS_VOICE_ID` / `SAG_VOICE_ID` albo pierwszego dostępnego głosu, jeśli podano klucz API.                                                                                                                                                                                                                  |
+| `providers.elevenlabs.modelId`           | `eleven_v3`                                |                                                                                                                                                                                                                                                                                                                                             |
+| `providers.mlx.modelId`                  | `mlx-community/Soprano-80M-bf16`           |                                                                                                                                                                                                                                                                                                                                             |
+| `providers.elevenlabs.apiKey`            | -                                          | Używa awaryjnie `ELEVENLABS_API_KEY` (lub profilu powłoki Gateway, jeśli jest dostępny).                                                                                                                                                                                                                                                     |
+| `speechLocale`                           | ustawienie domyślne urządzenia              | Identyfikator ustawień regionalnych BCP 47 używany przez lokalne rozpoznawanie mowy trybu rozmowy w iOS/macOS.                                                                                                                                                                                                                               |
+| `silenceTimeoutMs`                       | `700` ms w macOS/Androidzie, `900` ms w iOS | Okno przerwy, po którym tryb rozmowy wysyła transkrypcję.                                                                                                                                                                                                                                                                                   |
+| `interruptOnSpeech`                      | `true`                                     |                                                                                                                                                                                                                                                                                                                                             |
+| `outputFormat`                           | `pcm_44100` w macOS/iOS, `pcm_24000` w Androidzie | Ustaw `mp3_*`, aby wymusić strumieniowanie MP3.                                                                                                                                                                                                                                                                                      |
+| `consultThinkingLevel`                   | nieustawione                                | Nadpisanie poziomu myślenia dla przebiegu agenta obsługującego wywołania `openclaw_agent_consult` w czasie rzeczywistym.                                                                                                                                                                                                                     |
+| `consultFastMode`                        | nieustawione                                | Nadpisanie trybu szybkiego dla wywołań `openclaw_agent_consult` w czasie rzeczywistym.                                                                                                                                                                                                                                                      |
+| `realtime.provider`                      | -                                          | `openai` dla WebRTC, `google` dla WebSocket dostawcy albo dostawca obsługujący wyłącznie most przez przekaźnik Gateway.                                                                                                                                                                                                                      |
+| `realtime.providers.<id>`                | -                                          | Konfiguracja czasu rzeczywistego zarządzana przez dostawcę. Przeglądarki otrzymują wyłącznie tymczasowe lub ograniczone dane uwierzytelniające sesji, nigdy standardowy klucz API.                                                                                                                                                            |
+| `realtime.providers.openai.speakerVoice` | `alloy`                                    | Identyfikator wbudowanego głosu OpenAI Realtime (starszy klucz `voice` nadal działa, ale jest przestarzały). Obecne głosy `gpt-realtime-2.1`: `alloy`, `ash`, `ballad`, `cedar`, `coral`, `echo`, `marin`, `sage`, `shimmer`, `verse`; dla najlepszej jakości zalecane są `marin` i `cedar`. |
+| `realtime.transport`                     | -                                          | `webrtc`: WebRTC OpenAI zarządzane przez klienta w iOS i przeglądarce. `provider-websocket`: zarządzane przez przeglądarkę, w iOS pozostaje na przekaźniku Gateway. `gateway-relay`: utrzymuje dźwięk dostawcy w Gateway; Android używa trybu czasu rzeczywistego tylko z tym transportem. |
+| `realtime.brain`                         | -                                          | `agent-consult` kieruje wywołania narzędzi czasu rzeczywistego przez zasady Gateway; `direct-tools` zapewnia zgodność ze starszym bezpośrednim użyciem narzędzi; `none` służy do transkrypcji lub zewnętrznej orkiestracji.                                                                                                                        |
+| `realtime.consultRouting`                | -                                          | `provider-direct` zachowuje bezpośrednią odpowiedź dostawcy, gdy pomija on `openclaw_agent_consult`; `force-agent-consult` zamiast tego kieruje ukończone transkrypcje użytkownika przez OpenClaw.                                                                                                                                             |
+| `realtime.instructions`                  | -                                          | Dołącza skierowane do dostawcy instrukcje systemowe do wbudowanego polecenia czasu rzeczywistego OpenClaw (styl i ton głosu); domyślne wskazówki `openclaw_agent_consult` pozostają bez zmian.                                                                                                                                                   |
 
-- `interruptOnSpeech`: true
-- `silenceTimeoutMs`: gdy nieustawione, rozmowa zachowuje domyślne dla platformy okno pauzy przed wysłaniem transkryptu (`700 ms w macOS i Androidzie, 900 ms w iOS`)
-- `provider`: wybiera aktywnego dostawcę rozmowy. Użyj `elevenlabs`, `mlx` albo `system` dla lokalnych ścieżek odtwarzania w macOS.
-- `providers.<provider>.voiceId`: przechodzi awaryjnie na `ELEVENLABS_VOICE_ID` / `SAG_VOICE_ID` dla ElevenLabs (albo pierwszy głos ElevenLabs, gdy klucz API jest dostępny).
-- `providers.elevenlabs.modelId`: domyślnie `eleven_v3`, gdy nieustawione.
-- `providers.mlx.modelId`: domyślnie `mlx-community/Soprano-80M-bf16`, gdy nieustawione.
-- `providers.elevenlabs.apiKey`: przechodzi awaryjnie na `ELEVENLABS_API_KEY` (albo profil powłoki Gateway, jeśli jest dostępny).
-- `consultThinkingLevel`: opcjonalne nadpisanie poziomu myślenia dla pełnego uruchomienia agenta OpenClaw za wywołaniami `openclaw_agent_consult` czasu rzeczywistego.
-- `consultFastMode`: opcjonalne nadpisanie trybu szybkiego dla wywołań `openclaw_agent_consult` czasu rzeczywistego.
-- `realtime.provider`: wybiera aktywnego dostawcę głosu czasu rzeczywistego. Użyj `openai` dla WebRTC, `google` dla WebSocket dostawcy albo dostawcy tylko mostkującego przez przekaźnik Gateway.
-- `realtime.providers.<provider>` przechowuje konfigurację czasu rzeczywistego należącą do dostawcy. Przeglądarka otrzymuje tylko tymczasowe lub ograniczone dane uwierzytelniające sesji, nigdy standardowy klucz API.
-- `realtime.providers.openai.voice`: wbudowany identyfikator głosu OpenAI Realtime. Obecne głosy `gpt-realtime-2` to `alloy`, `ash`, `ballad`, `coral`, `echo`, `sage`, `shimmer`, `verse`, `marin` i `cedar`; `marin` i `cedar` są zalecane dla najlepszej jakości.
-- `realtime.transport`: `webrtc` używa WebRTC OpenAI zarządzanego przez klienta w iOS i w przeglądarce. `provider-websocket` jest zarządzane przez przeglądarkę, ale w iOS pozostaje przy przekaźniku Gateway. `gateway-relay` utrzymuje audio dostawcy w Gateway; Android używa czasu rzeczywistego tylko dla tego transportu, a w pozostałych przypadkach zachowuje natywną pętlę STT/TTS.
-- `realtime.brain`: `agent-consult` kieruje wywołania narzędzi czasu rzeczywistego przez politykę Gateway; `direct-tools` to starsze zachowanie zgodności narzędzi bezpośrednich; `none` służy do transkrypcji lub zewnętrznej orkiestracji.
-- `realtime.consultRouting`: `provider-direct` zachowuje bezpośrednią odpowiedź dostawcy, gdy pomija `openclaw_agent_consult`; `force-agent-consult` sprawia, że przekaźnik Gateway kieruje sfinalizowane transkrypty użytkownika przez OpenClaw.
-- `realtime.instructions`: dołącza instrukcje systemowe widoczne dla dostawcy do wbudowanego promptu czasu rzeczywistego OpenClaw. Użyj tego do stylu i tonu głosu; OpenClaw zachowuje domyślne wskazówki `openclaw_agent_consult`.
-- `talk.catalog` udostępnia kanoniczne identyfikatory dostawców i aliasy rejestru wraz z prawidłowymi trybami, transportami, strategiami mózgu, formatami audio czasu rzeczywistego, flagami zdolności i wynikiem gotowości wybranym przez środowisko uruchomieniowe dla każdego dostawcy. Własne klienty rozmowy powinny używać tego katalogu zamiast lokalnie utrzymywać aliasy dostawców; starszy Gateway, który pomija gotowość grupy, jest niezweryfikowany, a nie definitywnie nieskonfigurowany.
-- Dostawcy transkrypcji strumieniowej są wykrywani przez `talk.catalog.transcription`. Obecny przekaźnik Gateway używa konfiguracji dostawcy strumieniowego Voice Call do czasu dodania dedykowanej powierzchni konfiguracji transkrypcji rozmowy.
-- `speechLocale`: opcjonalny identyfikator lokalizacji BCP 47 dla rozpoznawania mowy rozmowy na urządzeniu w iOS/macOS. Pozostaw nieustawione, aby użyć wartości domyślnej urządzenia.
-- `outputFormat`: domyślnie `pcm_44100` w macOS/iOS i `pcm_24000` w Androidzie (ustaw `mp3_*`, aby wymusić strumieniowanie MP3)
+`talk.catalog` udostępnia kanoniczne identyfikatory dostawców i aliasy rejestru, prawidłowe tryby, transporty, strategie mózgu, formaty dźwięku w czasie rzeczywistym i flagi możliwości każdego dostawcy oraz wybrany w czasie działania wynik gotowości. Klienci Talk dostarczani przez OpenClaw powinni odczytywać ten katalog zamiast lokalnie utrzymywać aliasy dostawców; starszy Gateway, który pomija gotowość grupową, należy traktować jako niezweryfikowany, a nie jednoznacznie nieskonfigurowany. Dostawcy strumieniowej transkrypcji są wykrywani za pośrednictwem `talk.catalog.transcription`; bieżący przekaźnik Gateway korzysta z konfiguracji dostawcy strumieniowego Voice Call, dopóki nie zostanie udostępniona dedykowana konfiguracja transkrypcji Talk.
 
 ## Interfejs macOS
 
-- Przełącznik na pasku menu: **Rozmowa**
-- Karta konfiguracji: grupa **Tryb rozmowy** (identyfikator głosu + przełącznik przerwania)
-- Nakładka:
-  - **Nasłuchiwanie**: chmura pulsuje poziomem mikrofonu
-  - **Myślenie**: animacja opadania
-  - **Mówienie**: promieniujące pierścienie
-  - Kliknij chmurę: zatrzymaj mówienie
-  - Kliknij X: wyjdź z trybu rozmowy
+- Przełącznik na pasku menu: **Talk**
+- Karta konfiguracji: grupa **Talk Mode** (identyfikator głosu i przełącznik przerywania)
+- Nakładka: kula wyświetla uniwersalny przebieg fali rozmowy (współdzielony z systemami iOS, watchOS i Android). W trybie słuchania reaguje na bieżący poziom mikrofonu, w trybie mówienia odzwierciedla rzeczywistą obwiednię odtwarzania TTS, a w trybie myślenia delikatnie pulsuje. Kliknij kulę, aby wstrzymać lub wznowić, kliknij ją dwukrotnie, aby zatrzymać mówienie, albo kliknij X, aby wyjść z trybu Talk.
 
-## Interfejs Android
+## Interfejs Androida
 
-- Przełącznik na karcie głosu: **Rozmowa**
-- Ręczne tryby **Mikrofon** i **Rozmowa** są wzajemnie wykluczającymi się trybami przechwytywania w czasie działania.
-- Ręczny mikrofon i rozmowa czasu rzeczywistego preferują podłączony mikrofon zestawu słuchawkowego Bluetooth Classic lub BLE. Jeśli się rozłączy, aplikacja żąda innego wejścia zestawu słuchawkowego albo pozwala Androidowi użyć domyślnego mikrofonu; zatrzymanie przechwytywania przywraca preferencję domyślnego mikrofonu.
-- Ręczny mikrofon zatrzymuje się, gdy aplikacja opuszcza pierwszy plan albo użytkownik opuszcza kartę Głos.
-- Tryb rozmowy działa, dopóki nie zostanie wyłączony lub węzeł Androida się nie rozłączy, i podczas aktywności używa typu usługi pierwszoplanowej mikrofonu Androida.
+- Przełącznik na karcie głosu: **Talk**
+- Ręczne tryby **Mic** i **Talk** wzajemnie się wykluczają.
+- Ręczny tryb Mic i Talk w czasie rzeczywistym preferują mikrofon podłączonego zestawu słuchawkowego Bluetooth Classic lub BLE; jeśli połączenie zostanie przerwane, aplikacja zażąda innego wejścia zestawu słuchawkowego albo użyje domyślnego mikrofonu, a po zakończeniu przechwytywania przywróci domyślne ustawienie.
+- Ręczny tryb Mic zatrzymuje się, gdy aplikacja przestaje działać na pierwszym planie lub użytkownik opuszcza kartę głosu.
+- Tryb Talk działa do chwili jego wyłączenia lub rozłączenia Node i podczas aktywności korzysta z androidowego typu usługi pierwszoplanowej dla mikrofonu.
+- Android obsługuje formaty wyjściowe `pcm_16000`, `pcm_22050`, `pcm_24000` i `pcm_44100` na potrzeby strumieniowania `AudioTrack` o małym opóźnieniu.
 
 ## Uwagi
 
-- Wymaga uprawnień do mowy i mikrofonu.
-- Natywna rozmowa używa aktywnej sesji Gateway i przechodzi awaryjnie na odpytywanie historii tylko wtedy, gdy zdarzenia odpowiedzi są niedostępne.
-- Rozmowa czasu rzeczywistego zarządzana przez klienta używa `talk.client.toolCall` dla `openclaw_agent_consult` zamiast wystawiać `chat.send` sesjom zarządzanym przez dostawcę.
-- Rozmowa tylko do transkrypcji używa `talk.session.create`, `talk.session.appendAudio`, `talk.session.cancelTurn` i `talk.session.close`; klienci subskrybują `talk.event`, aby otrzymywać częściowe/końcowe aktualizacje transkryptu.
-- Gateway rozwiązuje odtwarzanie rozmowy przez `talk.speak`, używając aktywnego dostawcy rozmowy. Android przechodzi awaryjnie na lokalne systemowe TTS tylko wtedy, gdy ten RPC jest niedostępny.
-- Lokalne odtwarzanie MLX w macOS używa dołączonego pomocnika `openclaw-mlx-tts`, gdy jest obecny, albo pliku wykonywalnego w `PATH`. Ustaw `OPENCLAW_MLX_TTS_BIN`, aby podczas programowania wskazać niestandardowy binarny plik pomocnika.
-- `stability` dla `eleven_v3` jest walidowane do `0.0`, `0.5` albo `1.0`; inne modele akceptują `0..1`.
-- `latency_tier` jest walidowane do `0..4`, gdy jest ustawione.
-- Android obsługuje formaty wyjściowe `pcm_16000`, `pcm_22050`, `pcm_24000` i `pcm_44100` dla strumieniowania AudioTrack o niskim opóźnieniu.
+- Wymaga uprawnień do rozpoznawania mowy i mikrofonu.
+- Natywny tryb Talk korzysta z aktywnej sesji Gateway i przechodzi na odpytywanie historii tylko wtedy, gdy zdarzenia odpowiedzi są niedostępne.
+- Gateway realizuje odtwarzanie Talk za pośrednictwem `talk.speak`, używając aktywnego dostawcy Talk. Android przechodzi na lokalny systemowy TTS tylko wtedy, gdy to wywołanie RPC jest niedostępne.
+- Lokalne odtwarzanie MLX w systemie macOS korzysta z dołączonego narzędzia pomocniczego `openclaw-mlx-tts`, jeśli jest dostępne, albo z pliku wykonywalnego znajdującego się w `PATH`. Podczas programowania ustaw `OPENCLAW_MLX_TTS_BIN`, aby wskazywała niestandardowy plik wykonywalny narzędzia pomocniczego.
+- Zakresy wartości dyrektyw głosowych (ElevenLabs): `stability`, `similarity` i `style` przyjmują `0..1`; `speed` przyjmuje `0.5..2`; `latency_tier` przyjmuje `0..4`.
 
 ## Powiązane
 
-- [Wybudzanie głosem](/pl/nodes/voicewake)
-- [Audio i notatki głosowe](/pl/nodes/audio)
-- [Rozumienie mediów](/pl/nodes/media-understanding)
+- [Aktywacja głosowa](/pl/nodes/voicewake)
+- [Dźwięk i notatki głosowe](/pl/nodes/audio)
+- [Rozumienie multimediów](/pl/nodes/media-understanding)

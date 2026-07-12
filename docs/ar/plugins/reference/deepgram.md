@@ -1,31 +1,31 @@
 ---
 read_when:
-    - أنت تقوم بتثبيت Plugin deepgram أو تهيئته أو تدقيقه
-summary: يضيف دعم موفّر فهم الوسائط. يضيف دعم موفّر النسخ في الوقت الفعلي.
-title: Deepgram Plugin
+    - أنت تثبّت Plugin ‏deepgram أو تهيّئه أو تدقّق فيه
+summary: يضيف دعم موفّري فهم الوسائط. يضيف دعم موفّري النسخ النصي في الوقت الفعلي.
+title: Plugin ‏Deepgram
 x-i18n:
-    generated_at: "2026-05-02T20:54:51Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:20:11Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: 93383c01d5a5e1e1d412d396ec1def12f388fc7c5da102573373dbc8180497a3
     source_path: plugins/reference/deepgram.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Plugin Deepgram
 
-يضيف دعم مزوّدي فهم الوسائط. يضيف دعم مزوّدي النسخ الفوري.
+يضيف دعم موفّر لفهم الوسائط. ويضيف دعم موفّر للنسخ الفوري.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/deepgram-provider`
 - مسار التثبيت: مضمّن في OpenClaw
 
-## الواجهة
+## الواجهات
 
-العقود: mediaUnderstandingProviders, realtimeTranscriptionProviders
+العقود: mediaUnderstandingProviders، realtimeTranscriptionProviders
 
-## المستندات ذات الصلة
+## الوثائق ذات الصلة
 
-- [deepgram](/ar/providers/deepgram)
+- [Deepgram](/ar/providers/deepgram)

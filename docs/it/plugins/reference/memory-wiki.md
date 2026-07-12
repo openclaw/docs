@@ -1,30 +1,30 @@
 ---
 read_when:
-    - Stai installando, configurando o verificando il Plugin memory-wiki
-summary: Compilatore wiki persistente e archivio di conoscenza compatibile con Obsidian per OpenClaw.
-title: Plugin Wiki della memoria
+    - Stai installando, configurando o verificando il plugin memory-wiki
+summary: Compilatore wiki persistente e archivio di conoscenze compatibile con Obsidian per OpenClaw.
+title: Plugin Memory Wiki
 x-i18n:
-    generated_at: "2026-05-02T20:55:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:22:42Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: 461c9e3e52db968fc98b058c70070585f272ad27024392a6af0ce3d2f0237635
     source_path: plugins/reference/memory-wiki.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Plugin Memory Wiki
 
-Compilatore wiki persistente e archivio della conoscenza compatibile con Obsidian per OpenClaw.
+Compilatore wiki persistente e archivio di conoscenze compatibile con Obsidian per OpenClaw.
 
 ## Distribuzione
 
 - Pacchetto: `@openclaw/memory-wiki`
-- Percorso di installazione: incluso in OpenClaw
+- Modalità di installazione: incluso in OpenClaw
 
-## Superficie
+## Interfaccia
 
-contracts: tools; skills
+contratti: strumenti; Skills
 
 ## Documentazione correlata
 

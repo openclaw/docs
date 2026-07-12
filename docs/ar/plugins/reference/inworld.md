@@ -1,11 +1,11 @@
 ---
 read_when:
-    - أنت بصدد تثبيت Plugin inworld أو تهيئته أو تدقيقه
-summary: تحويل النص إلى كلام بالبث من Inworld (MP3، OGG_OPUS، PCM للاتصالات الهاتفية).
-title: Plugin Inworld
+    - أنت تثبّت Plugin ‏inworld أو تهيّئه أو تدقّق فيه
+summary: تحويل النص إلى كلام بالبث من Inworld ‏(MP3 وOGG_OPUS وPCM للاتصالات الهاتفية).
+title: Plugin ‏Inworld
 x-i18n:
-    generated_at: "2026-06-27T18:13:07Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:20:49Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 02d912c51460e181e100bc227575cafd1ab3c49494057d2df1e26571000020a8
@@ -13,19 +13,19 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin الخاص بـ Inworld
+# Plugin ‏Inworld
 
-تحويل النص إلى كلام بالبث من Inworld (MP3، OGG_OPUS، PCM للاتصالات الهاتفية).
+تحويل النص إلى كلام عبر البث من Inworld ‏(MP3 وOGG_OPUS وPCM للاتصالات الهاتفية).
 
 ## التوزيع
 
 - الحزمة: `@openclaw/inworld-speech`
-- مسار التثبيت: npm؛ ClawHub: `clawhub:@openclaw/inworld-speech`
+- مسار التثبيت: npm؛ ‏ClawHub: ‏`clawhub:@openclaw/inworld-speech`
 
-## السطح
+## الواجهة
 
 العقود: speechProviders
 
-## المستندات ذات الصلة
+## الوثائق ذات الصلة
 
-- [inworld](/ar/providers/inworld)
+- [Inworld](/ar/providers/inworld)

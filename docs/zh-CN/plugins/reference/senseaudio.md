@@ -4,13 +4,13 @@ read_when:
 summary: 新增媒体理解提供商支持。
 title: Senseaudio 插件
 x-i18n:
-    generated_at: "2026-05-02T15:17:10Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T20:46:55Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: b1566a7e33b2f3d367c0fafc364b701aff60587204bb585af1cf15786e5ed330
     source_path: plugins/reference/senseaudio.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Senseaudio 插件
@@ -19,12 +19,12 @@ x-i18n:
 
 ## 分发
 
-- 包：`@openclaw/senseaudio-provider`
-- 安装路径：包含在 OpenClaw 中
+- 软件包：`@openclaw/senseaudio-provider`
+- 安装方式：随 OpenClaw 提供
 
-## 接口面
+## 接口
 
-contracts: mediaUnderstandingProviders
+契约：mediaUnderstandingProviders
 
 ## 相关文档
 

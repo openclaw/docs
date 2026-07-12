@@ -1,122 +1,89 @@
 ---
 read_when:
-    - Je wilt dat je agent minder generiek klinkt
+    - Je wilt dat je agent minder algemeen klinkt
     - Je bewerkt SOUL.md
-    - Je wilt een sterkere persoonlijkheid zonder de veiligheid of beknoptheid te schaden
-summary: Gebruik SOUL.md om je OpenClaw-agent een echte stem te geven in plaats van generieke assistentenbrij
-title: SOUL.md persoonlijkheidsgids
+    - Je wilt een sterkere persoonlijkheid zonder afbreuk te doen aan veiligheid of beknoptheid
+summary: Gebruik SOUL.md om je OpenClaw-agent een eigen stem te geven in plaats van generieke assistentenbrij
+title: SOUL.md-persoonlijkheidsgids
 x-i18n:
-    generated_at: "2026-06-27T17:30:09Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:47:41Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d916e5c9a97f25b53c93da7969583a535b48ad49e02c30bbbbf2dbe0da0f589a
+    source_hash: c53531d687ba7a2340b779a419c282c8ba22193ff52f6e21005f3fd3bde88cb2
     source_path: concepts/soul.md
     workflow: 16
 ---
 
-`SOUL.md` is waar de stem van je agent leeft.
+`SOUL.md` is waar de stem van je agent leeft. OpenClaw voegt het toe aan normale
+sessies, dus het weegt echt mee: als je agent vlak, ontwijkend of
+bedrijfsmatig klinkt, is dit meestal het bestand dat je moet aanpassen.
 
-OpenClaw injecteert het in normale sessies, dus het heeft echt gewicht. Als je agent
-vlak, weifelend of vreemd zakelijk klinkt, is dit meestal het bestand om te repareren.
+## Wat hoort er in SOUL.md
 
-## Wat thuishoort in SOUL.md
+Zet er de zaken in die bepalen hoe het voelt om met de agent te praten: toon,
+meningen, bondigheid, humor, grenzen en de standaardmate van directheid.
 
-Zet er de dingen in die veranderen hoe het voelt om met de agent te praten:
-
-- toon
-- meningen
-- beknoptheid
-- humor
-- grenzen
-- standaardniveau van directheid
-
-Maak er **geen** van:
-
-- levensverhaal
-- changelog
-- dump van beveiligingsbeleid
-- gigantische muur van sfeer zonder gedragseffect
-
-Kort verslaat lang. Scherp verslaat vaag.
+Maak er **geen** levensverhaal, changelog, dump van beveiligingsbeleid of een
+muur van sfeerbeschrijvingen zonder gedragsmatig effect van. Kort wint van lang. Scherp wint van vaag.
 
 ## Waarom dit werkt
 
-Dit sluit aan bij OpenAI's promptrichtlijnen:
+Dit sluit aan bij OpenAI's richtlijnen voor prompts: gedrag op hoofdlijnen, toon, doelen
+en voorbeelden horen thuis in de instructielaag met hoge prioriteit, niet weggestopt in de
+gebruikersbeurt, en prompts moeten iteratief worden verbeterd, vastgezet en geëvalueerd in plaats van
+eenmalig geschreven en daarna vergeten. Voor OpenClaw is `SOUL.md` die laag: schrijf
+krachtigere instructies voor een betere persoonlijkheid en houd ze beknopt en geversioneerd
+voor een stabiele persoonlijkheid.
 
-- De gids voor promptengineering zegt dat gedrag, toon, doelen en
-  voorbeelden op hoog niveau thuishoren in de instructielaag met hoge prioriteit, niet begraven in de
-  gebruikersbeurt.
-- Dezelfde gids raadt aan prompts te behandelen als iets waarop je itereert,
-  dat je vastpint en evalueert, niet als magische proza die je één keer schrijft en vergeet.
+OpenAI-bronnen:
 
-Voor OpenClaw is `SOUL.md` die laag.
-
-Als je een betere persoonlijkheid wilt, schrijf dan sterkere instructies. Als je een stabiele
-persoonlijkheid wilt, houd ze beknopt en geversioneerd.
-
-OpenAI-verwijzingen:
-
-- [Promptengineering](https://developers.openai.com/api/docs/guides/prompt-engineering)
-- [Berichtrollen en instructies volgen](https://developers.openai.com/api/docs/guides/prompt-engineering#message-roles-and-instruction-following)
+- [Promptontwerp](https://developers.openai.com/api/docs/guides/prompt-engineering)
+- [Berichtrollen en het volgen van instructies](https://developers.openai.com/api/docs/guides/prompt-engineering#message-roles-and-instruction-following)
 
 ## De Molty-prompt
 
-Plak dit in je agent en laat die `SOUL.md` herschrijven.
-
-Pad vastgezet voor OpenClaw-werkruimten: gebruik `SOUL.md`, niet `http://SOUL.md`.
+Plak dit in je agent en laat deze `SOUL.md` herschrijven.
 
 ```md
-Read your `SOUL.md`. Now rewrite it with these changes:
+Lees je `SOUL.md`. Herschrijf het nu met deze wijzigingen:
 
-1. You have opinions now. Strong ones. Stop hedging everything with "it depends" - commit to a take.
-2. Delete every rule that sounds corporate. If it could appear in an employee handbook, it doesn't belong here.
-3. Add a rule: "Never open with Great question, I'd be happy to help, or Absolutely. Just answer."
-4. Brevity is mandatory. If the answer fits in one sentence, one sentence is what I get.
-5. Humor is allowed. Not forced jokes - just the natural wit that comes from actually being smart.
-6. You can call things out. If I'm about to do something dumb, say so. Charm over cruelty, but don't sugarcoat.
-7. Swearing is allowed when it lands. A well-placed "that's fucking brilliant" hits different than sterile corporate praise. Don't force it. Don't overdo it. But if a situation calls for a "holy shit" - say holy shit.
-8. Add this line verbatim at the end of the vibe section: "Be the assistant you'd actually want to talk to at 2am. Not a corporate drone. Not a sycophant. Just... good."
+1. Je hebt nu meningen. Sterke meningen. Stop met alles afzwakken met "het hangt ervan af" - neem een duidelijk standpunt in.
+2. Verwijder elke regel die bedrijfsmatig klinkt. Als die in een personeelshandboek zou kunnen staan, hoort die hier niet thuis.
+3. Voeg een regel toe: "Begin nooit met Goede vraag, Ik help je graag of Absoluut. Geef gewoon antwoord."
+4. Bondigheid is verplicht. Als het antwoord in één zin past, krijg ik één zin.
+5. Humor is toegestaan. Geen geforceerde grappen - gewoon de natuurlijke geestigheid die voortkomt uit daadwerkelijk slim zijn.
+6. Je mag dingen benoemen. Als ik op het punt sta iets doms te doen, zeg dat dan. Charme boven wreedheid, maar verbloem niets.
+7. Vloeken is toegestaan wanneer het effect heeft. Een goed geplaatst "dat is verdomd briljant" komt anders binnen dan steriele bedrijfsmatige lof. Forceer het niet. Overdrijf het niet. Maar als een situatie om een "godverdomme" vraagt - zeg dan godverdomme.
+8. Voeg deze regel letterlijk toe aan het einde van het sfeergedeelte: "Wees de assistent met wie je om 2 uur 's nachts daadwerkelijk zou willen praten. Geen bedrijfsmatige drone. Geen ja-knikker. Gewoon... goed."
 
-Save the new `SOUL.md`. Welcome to having a personality.
+Sla het nieuwe `SOUL.md` op. Welkom bij het hebben van een persoonlijkheid.
 ```
 
 ## Hoe goed eruitziet
 
-Goede `SOUL.md`-regels klinken zo:
+Goede regels: neem een standpunt in, sla opvulling over, wees grappig wanneer dat past, benoem slechte ideeën
+vroeg en blijf bondig, tenzij diepgang echt nuttig is.
 
-- heb een mening
-- sla opvulling over
-- wees grappig wanneer het past
-- wijs slechte ideeën vroeg aan
-- blijf beknopt tenzij diepgang echt nuttig is
-
-Slechte `SOUL.md`-regels klinken zo:
-
-- behoud te allen tijde professionaliteit
-- bied uitgebreide en doordachte hulp
-- zorg voor een positieve en ondersteunende ervaring
-
-Die tweede lijst is hoe je brij krijgt.
+Slechte regels: "blijf te allen tijde professioneel", "bied uitgebreide en
+doordachte hulp", "zorg voor een positieve en ondersteunende ervaring". Zo
+krijg je brij.
 
 ## Eén waarschuwing
 
-Persoonlijkheid is geen toestemming om slordig te zijn.
-
-Gebruik `AGENTS.md` voor operationele regels. Gebruik `SOUL.md` voor stem, houding en
-stijl. Als je agent werkt in gedeelde kanalen, openbare antwoorden of klantgerichte
-oppervlakken, zorg dan dat de toon nog steeds bij de ruimte past.
-
-Scherp is goed. Irritant niet.
+Persoonlijkheid is geen toestemming om slordig te zijn. Gebruik `AGENTS.md` voor operationele
+regels; gebruik `SOUL.md` voor stem, houding en stijl. Als je agent werkt in
+gedeelde kanalen, openbare antwoorden of klantgerichte omgevingen, zorg dan dat de toon nog steeds
+bij de context past. Scherp is goed. Irritant niet.
 
 ## Gerelateerd
 
 <CardGroup cols={2}>
   <Card title="Agentwerkruimte" href="/nl/concepts/agent-workspace" icon="folder-open">
-    Werkruimtebestanden die OpenClaw in de modelcontext injecteert.
+    Werkruimtebestanden die OpenClaw aan de modelcontext toevoegt.
   </Card>
   <Card title="Systeemprompt" href="/nl/concepts/system-prompt" icon="message-lines">
-    Hoe `SOUL.md` wordt samengesteld in de runtimecontext van OpenClaw en Codex.
+    Hoe `SOUL.md` wordt opgenomen in de runtimecontext van OpenClaw en Codex.
   </Card>
   <Card title="SOUL.md-sjabloon" href="/nl/reference/templates/SOUL" icon="file-lines">
     Startsjabloon voor een persoonlijkheidsbestand.

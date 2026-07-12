@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Estás instalando, configurando o auditando el Plugin kimi
-summary: Añade compatibilidad con el proveedor de modelos Kimi y Kimi Coding a OpenClaw.
+    - Estás instalando, configurando o auditando el plugin kimi
+summary: Añade compatibilidad con Kimi y con el proveedor de modelos Kimi Coding en OpenClaw.
 title: Plugin de Kimi
 x-i18n:
-    generated_at: "2026-06-27T12:21:41Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T23:20:31Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 6f609f6e21b493ea83e5cc34a28921be2fed3334b531194050257857a06ef259
@@ -15,12 +15,12 @@ x-i18n:
 
 # Plugin de Kimi
 
-Añade compatibilidad con el proveedor de modelos Kimi y Kimi Coding a OpenClaw.
+Añade compatibilidad con Kimi y con el proveedor de modelos Kimi Coding en OpenClaw.
 
 ## Distribución
 
 - Paquete: `@openclaw/kimi-provider`
-- Ruta de instalación: npm; ClawHub: `clawhub:@openclaw/kimi-provider`
+- Método de instalación: npm; ClawHub: `clawhub:@openclaw/kimi-provider`
 
 ## Superficie
 

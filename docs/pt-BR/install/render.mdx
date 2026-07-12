@@ -1,14 +1,13 @@
 ---
 read_when:
-    - Implantando o OpenClaw no Render
+    - Implantação do OpenClaw no Render
     - Você quer uma implantação declarativa na nuvem com Render Blueprints
 summary: Implante o OpenClaw no Render com infraestrutura como código
-title: Render
+title: Renderizar
 x-i18n:
-    generated_at: "2026-07-12T15:19:06Z"
+    generated_at: "2026-07-12T00:01:22Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: a5fbb3c6df04e186df958a62a6130da4e3e485acfeecc7e85fee0d5b69a0438f
     source_path: install/render.mdx
@@ -19,8 +18,8 @@ Implante o OpenClaw no [Render](https://render.com) usando o Blueprint `render.y
 
 ## Pré-requisitos
 
-- Uma [conta do Render](https://render.com) (nível gratuito disponível)
-- Uma chave de API do seu [provedor de modelo](/pt-BR/providers) preferido
+- Uma [conta do Render](https://render.com) (plano gratuito disponível)
+- Uma chave de API do seu [provedor de modelos](/pt-BR/providers) preferido
 
 ## Implantação
 
@@ -54,20 +53,20 @@ services:
 
 | Recurso               | Finalidade                                                        |
 | --------------------- | ----------------------------------------------------------------- |
-| `runtime: docker`     | Compila usando o Dockerfile do repositório                        |
-| `healthCheckPath`     | O Render monitora `/health` e reinicia instâncias não íntegras    |
+| `runtime: docker`     | Compila usando o Dockerfile do repositório                         |
+| `healthCheckPath`     | O Render monitora `/health` e reinicia instâncias não íntegras     |
 | `generateValue: true` | Gera automaticamente um valor criptograficamente seguro           |
-| `disk`                | Armazenamento persistente que sobrevive a novas implantações       |
+| `disk`                | Armazenamento persistente que permanece após novas implantações    |
 
 ## Escolha de um plano
 
-| Plano     | Suspensão automática       | Disco         | Mais indicado para                  |
-| --------- | -------------------------- | ------------- | ----------------------------------- |
-| Gratuito  | Após 15 min de inatividade | Não disponível | Testes, demonstrações              |
-| Starter   | Nunca                      | 1GB+          | Uso pessoal, equipes pequenas       |
-| Standard+ | Nunca                      | 1GB+          | Produção, vários canais             |
+| Plano     | Desativação automática       | Disco          | Mais indicado para             |
+| --------- | ---------------------------- | -------------- | ------------------------------ |
+| Free      | Após 15 min de inatividade   | Não disponível | Testes e demonstrações         |
+| Starter   | Nunca                        | 1 GB ou mais   | Uso pessoal e equipes pequenas |
+| Standard+ | Nunca                        | 1 GB ou mais   | Produção e múltiplos canais     |
 
-O Blueprint usa `starter` por padrão. Para usar o nível gratuito, altere `plan: free` no `render.yaml` do seu fork — observe que, sem um disco persistente, o estado do OpenClaw é redefinido a cada implantação.
+O Blueprint usa `starter` por padrão. Para usar o plano gratuito, altere `plan: free` no `render.yaml` do seu fork — observe que, sem um disco persistente, o estado do OpenClaw é redefinido a cada implantação.
 
 ## Após a implantação
 
@@ -77,7 +76,7 @@ O painel web está disponível em `https://<your-service>.onrender.com/`. Conect
 
 ### Logs
 
-**Dashboard → your service → Logs** mostra os logs de compilação (criação da imagem Docker), os logs de implantação (inicialização do serviço) e os logs de execução (saída da aplicação).
+**Dashboard → your service → Logs** exibe os logs de compilação (criação da imagem Docker), os logs de implantação (inicialização do serviço) e os logs de execução (saída do aplicativo).
 
 ### Acesso ao shell
 
@@ -85,11 +84,11 @@ O painel web está disponível em `https://<your-service>.onrender.com/`. Conect
 
 ### Variáveis de ambiente
 
-Edite as variáveis em **Dashboard → your service → Environment**. As alterações acionam uma nova implantação automática.
+Edite as variáveis em **Dashboard → your service → Environment**. As alterações acionam automaticamente uma nova implantação.
 
 ### Implantação automática
 
-O Render implanta novamente de forma automática quando o branch do repositório conectado recebe um novo commit. Se você implantou diretamente de `openclaw/openclaw`, em vez de usar seu próprio fork, não terá acesso de push para acionar esse processo. Nesse caso, atualize executando uma sincronização manual do Blueprint no Dashboard ou aponte o serviço para seu próprio fork.
+O Render realiza uma nova implantação automaticamente quando a ramificação conectada do repositório recebe um novo commit. Se você implantou diretamente de `openclaw/openclaw` em vez de usar seu próprio fork, não terá acesso de envio para acionar esse processo. Nesse caso, atualize executando uma sincronização manual do Blueprint no Dashboard ou aponte o serviço para seu próprio fork.
 
 ## Domínio personalizado
 
@@ -100,8 +99,8 @@ O Render implanta novamente de forma automática quando o branch do repositório
 
 ## Escalonamento
 
-- **Vertical**: mude o plano para obter mais CPU/RAM. Geralmente é suficiente para o OpenClaw.
-- **Horizontal**: aumente o número de instâncias (plano Standard ou superior). Requer sessões persistentes ou gerenciamento externo de estado, pois o OpenClaw mantém o estado de execução no disco local.
+- **Vertical**: altere o plano para obter mais CPU/RAM. Geralmente é suficiente para o OpenClaw.
+- **Horizontal**: aumente a quantidade de instâncias (plano Standard ou superior). Exige sessões persistentes ou gerenciamento externo de estado, pois o OpenClaw mantém o estado de execução no disco local.
 
 ## Backups e migração
 
@@ -120,21 +119,21 @@ Isso cria um arquivo de backup portátil. Consulte [Backup](/pt-BR/cli/backup).
 Verifique os logs de implantação no Dashboard do Render. Problemas comuns:
 
 - `OPENCLAW_GATEWAY_TOKEN` ausente — verifique se ele está definido em **Dashboard → Environment**
-- Incompatibilidade de porta — verifique se `OPENCLAW_GATEWAY_PORT=8080` está definido para que o Gateway seja vinculado à porta esperada pelo Render
+- Incompatibilidade de porta — certifique-se de que `OPENCLAW_GATEWAY_PORT=8080` para que o Gateway seja associado à porta esperada pelo Render
 
-### Inicializações a frio lentas (nível gratuito)
+### Inicializações a frio lentas (plano gratuito)
 
-Os serviços do nível gratuito são suspensos após 15 minutos de inatividade; a primeira solicitação após a suspensão leva alguns segundos enquanto o contêiner é iniciado. Faça upgrade para o plano Starter para manter o serviço sempre ativo.
+Os serviços do plano gratuito são desativados após 15 minutos de inatividade; a primeira solicitação após a desativação leva alguns segundos enquanto o contêiner é iniciado. Mude para o plano Starter para manter o serviço sempre ativo.
 
 ### Perda de dados após uma nova implantação
 
-Isso ocorre no nível gratuito (sem disco persistente). Faça upgrade para um plano pago ou exporte regularmente um backup executando `openclaw backup create` no shell do Render.
+Isso ocorre no plano gratuito (sem disco persistente). Mude para um plano pago ou exporte regularmente um backup com `openclaw backup create` no shell do Render.
 
 ### Falhas na verificação de integridade
 
-Se as compilações forem bem-sucedidas, mas as implantações falharem, o serviço pode estar demorando demais para iniciar ou `/health` pode não estar acessível. Verifique:
+Se as compilações forem concluídas, mas as implantações falharem, o serviço poderá estar demorando demais para iniciar ou `/health` poderá não estar acessível. Verifique:
 
-- Se há erros nos logs de compilação
+- Os logs de compilação em busca de erros
 - Se o contêiner é executado localmente com `docker build && docker run`
 
 ## Próximas etapas

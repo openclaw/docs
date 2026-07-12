@@ -1,67 +1,67 @@
 ---
 read_when:
     - .prose iş akışı dosyalarını çalıştırmak veya yazmak istiyorsunuz
-    - OpenProse eklentisini etkinleştirmek istiyorsunuz
-    - OpenProse'un OpenClaw temel yapılarına nasıl eşlendiğini anlamanız gerekir
+    - OpenProse Pluginini etkinleştirmek istiyorsunuz
+    - OpenProse'un OpenClaw temel bileşenleriyle nasıl eşleştiğini anlamanız gerekir
 sidebarTitle: OpenProse
-summary: OpenProse, çok aracılı AI oturumları için markdown öncelikli bir iş akışı biçimidir. OpenClaw'da /prose slash komutu ve bir skill paketiyle Plugin olarak sunulur.
+summary: OpenProse, çoklu ajanlı yapay zekâ oturumları için Markdown öncelikli bir iş akışı biçimidir. OpenClaw'da `/prose` eğik çizgi komutu ve bir Skills paketi içeren bir Plugin olarak sunulur.
 title: OpenProse
 x-i18n:
-    generated_at: "2026-06-28T01:07:41Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:41:30Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: dde819215f99055c2a83ec32ed6e0700994654ca2d1d9c9dda98b71545f8a012
+    source_hash: 8b04eb23bf827fbec6db11c1e95993e7f6c617451c5f4fda771ad078674c12bc
     source_path: prose.md
     workflow: 16
 ---
 
-OpenProse, AI oturumlarını düzenlemek için taşınabilir, markdown öncelikli bir iş akışı biçimidir. OpenClaw içinde, bir OpenProse beceri paketi ve `/prose` slash komutu kuran bir Plugin olarak sunulur. Programlar `.prose` dosyalarında bulunur ve açık denetim akışıyla birden çok alt ajan başlatabilir.
+OpenProse, yapay zekâ oturumlarını düzenlemek için kullanılan, taşınabilir ve markdown öncelikli bir iş akışı biçimidir. OpenClaw'da, bir OpenProse Skills paketi ve `/prose` eğik çizgi komutu yükleyen bir Plugin olarak sunulur. Programlar `.prose` dosyalarında bulunur ve açık denetim akışıyla birden fazla alt ajan başlatabilir.
 
 <CardGroup cols={3}>
-  <Card title="Install" icon="download" href="#install">
+  <Card title="Yükleme" icon="download" href="#install">
     OpenProse Plugin'ini etkinleştirin ve Gateway'i yeniden başlatın.
   </Card>
-  <Card title="Run a program" icon="play" href="#slash-command">
+  <Card title="Program çalıştırma" icon="play" href="#slash-command">
     Bir `.prose` dosyasını veya uzak programı yürütmek için `/prose run` kullanın.
   </Card>
-  <Card title="Write programs" icon="pencil" href="#example">
-    Paralel ve sıralı adımlarla çok ajanlı iş akışları yazın.
+  <Card title="Program yazma" icon="pencil" href="#example-parallel-research-and-synthesis">
+    Paralel ve sıralı adımlarla çok ajanlı iş akışları oluşturun.
   </Card>
 </CardGroup>
 
-## Kurulum
+## Yükleme
 
 <Steps>
-  <Step title="Enable the plugin">
-    Paketle gelen Plugin'ler varsayılan olarak devre dışıdır. OpenProse'u etkinleştirin:
+  <Step title="Plugin'i etkinleştirin">
+    OpenProse paketle birlikte gelir ancak varsayılan olarak devre dışıdır. Etkinleştirmek için:
 
     ```bash
     openclaw plugins enable open-prose
     ```
 
   </Step>
-  <Step title="Restart the Gateway">
+  <Step title="Gateway'i yeniden başlatın">
     ```bash
     openclaw gateway restart
     ```
   </Step>
-  <Step title="Verify">
+  <Step title="Doğrulayın">
     ```bash
     openclaw plugins list | grep prose
     ```
 
-    `open-prose` öğesini etkin olarak görmelisiniz. `/prose` beceri komutu artık
-    sohbet içinde kullanılabilir.
+    `open-prose` öğesinin etkin olduğunu görmelisiniz. `/prose` Skills komutu artık sohbette kullanılabilir.
 
   </Step>
 </Steps>
 
-Yerel bir checkout için: `openclaw plugins install ./path/to/local/open-prose-plugin`
+Bir depo çalışma kopyasından Plugin'i doğrudan yükleyebilirsiniz:
+`openclaw plugins install ./extensions/open-prose`
 
-## Slash komutu
+## Eğik çizgi komutu
 
-OpenProse, `/prose` komutunu kullanıcının çağırabileceği bir beceri komutu olarak kaydeder:
+OpenProse, `/prose` komutunu kullanıcı tarafından çağrılabilen bir Skills komutu olarak kaydeder:
 
 ```text
 /prose help
@@ -76,15 +76,12 @@ OpenProse, `/prose` komutunu kullanıcının çağırabileceği bir beceri komut
 `/prose run <handle/slug>`, `https://p.prose.md/<handle>/<slug>` adresine çözümlenir.
 Doğrudan URL'ler `web_fetch` aracı kullanılarak olduğu gibi getirilir.
 
-Üst düzey uzak çalıştırmalar açıktır. Bir `.prose` programının içindeki uzak içe aktarmalar
-geçişli kod bağımlılıklarıdır: OpenProse herhangi bir uzak `use` hedefini getirmeden önce,
-çözümlenen içe aktarma listesini gösterir ve operatörün o çalıştırma için tam olarak
-`approve remote prose imports` yanıtını vermesini gerektirir.
+Üst düzey uzak çalıştırmalar açıktır. Bir `.prose` programındaki uzak içe aktarmalar geçişli kod bağımlılıklarıdır: OpenProse herhangi bir uzak `use` hedefini getirmeden önce çözümlenen içe aktarma listesini gösterir ve operatörün bu çalıştırma için tam olarak `approve remote prose imports` yanıtını vermesini gerektirir.
 
-## Neler yapabilir
+## Yapabilecekleri
 
-- Açık paralellikle çok ajanlı araştırma ve sentez.
-- Tekrarlanabilir, onay açısından güvenli iş akışları (kod inceleme, olay triyajı, içerik işlem hatları).
+- Açık paralellik ile çok ajanlı araştırma ve sentez.
+- Tekrarlanabilir ve onay açısından güvenli iş akışları (kod incelemesi, olay sınıflandırması, içerik işlem hatları).
 - Desteklenen ajan çalışma zamanlarında çalıştırabileceğiniz yeniden kullanılabilir `.prose` programları.
 
 ## Örnek: paralel araştırma ve sentez
@@ -109,42 +106,41 @@ parallel:
     prompt: "Summarize {topic}."
 
 session "Merge the findings + draft into a final answer."
-context: { findings, draft }
+  context: { findings, draft }
 ```
 
 ## OpenClaw çalışma zamanı eşlemesi
 
-OpenProse programları OpenClaw temel yapılarına eşlenir:
+OpenProse programları OpenClaw temel bileşenleriyle eşleşir:
 
-| OpenProse kavramı         | OpenClaw aracı    |
-| ------------------------- | ---------------- |
-| Oturum başlatma / Task aracı | `sessions_spawn` |
-| Dosya okuma / yazma         | `read` / `write` |
-| Web getirme                 | `web_fetch`      |
+| OpenProse kavramı             | OpenClaw aracı                                  |
+| ----------------------------- | ----------------------------------------------- |
+| Oturum başlatma / Görev aracı | `sessions_spawn`                                |
+| Dosya okuma / yazma           | `read` / `write`                                |
+| Web'den getirme               | `web_fetch` (POST gerektiğinde `exec` + curl)   |
 
 <Warning>
-  Araç izin listeniz `sessions_spawn`, `read`, `write` veya
-  `web_fetch` öğelerini engelliyorsa OpenProse programları başarısız olur.
-  [araçlar izin listesi yapılandırmanızı](/tr/gateway/config-tools) kontrol edin.
+  Araç izin listeniz `sessions_spawn`, `read`, `write` veya `web_fetch` araçlarını engelliyorsa OpenProse programları başarısız olur. [Araç izin listesi yapılandırmanızı](/tr/gateway/config-tools) kontrol edin.
 </Warning>
 
 ## Dosya konumları
 
-OpenProse, durumu çalışma alanınızda `.prose/` altında tutar:
+OpenProse, çalışma alanınızdaki durumu `.prose/` altında tutar:
 
 ```text
 .prose/
-├── .env
+├── .env                      # config (key=value), e.g. OPENPROSE_POSTGRES_URL
 ├── runs/
 │   └── {YYYYMMDD}-{HHMMSS}-{random}/
-│       ├── program.prose
-│       ├── state.md
+│       ├── program.prose     # copy of the running program
+│       ├── state.md          # execution state
 │       ├── bindings/
+│       ├── imports/          # nested remote program runs
 │       └── agents/
-└── agents/
+└── agents/                   # project-scoped persistent agents
 ```
 
-Kullanıcı düzeyindeki kalıcı ajanlar şurada bulunur:
+Projeler arasında paylaşılan, kullanıcı düzeyindeki kalıcı ajanlar şurada bulunur:
 
 ```text
 ~/.prose/agents/
@@ -153,23 +149,23 @@ Kullanıcı düzeyindeki kalıcı ajanlar şurada bulunur:
 ## Durum arka uçları
 
 <AccordionGroup>
-  <Accordion title="filesystem (default)">
-    Durum, çalışma alanında `.prose/runs/...` konumuna yazılır. Ek bağımlılık
-    gerekmez.
+  <Accordion title="filesystem (varsayılan)">
+    Durum, çalışma alanındaki `.prose/runs/...` konumuna yazılır. Ek bağımlılık gerekmez.
   </Accordion>
   <Accordion title="in-context">
-    Bağlam penceresinde tutulan geçici durum. Küçük, kısa ömürlü
-    programlar için uygundur.
+    Geçici durum bağlam penceresinde tutulur; `--in-context` ile seçin.
+    Küçük ve kısa ömürlü programlar için uygundur.
   </Accordion>
-  <Accordion title="sqlite (experimental)">
-    `PATH` üzerinde `sqlite3` ikilisini gerektirir.
+  <Accordion title="sqlite (deneysel)">
+    `--state=sqlite` ile seçin. `PATH` üzerinde `sqlite3` ikili dosyasını gerektirir
+    (bulunmadığında dosya sistemine geri döner); durum
+    `.prose/runs/{id}/state.db` konumuna yazılır.
   </Accordion>
-  <Accordion title="postgres (experimental)">
-    `psql` ve bir bağlantı dizesi gerektirir.
+  <Accordion title="postgres (deneysel)">
+    `--state=postgres` ile seçin. `psql` ve `OPENPROSE_POSTGRES_URL` içinde bir bağlantı dizesi gerektirir (bunu `.prose/.env` içinde ayarlayın).
 
     <Warning>
-      Postgres kimlik bilgileri alt ajan günlüklerine akar. Ayrılmış,
-      en az ayrıcalıklı bir veritabanı kullanın.
+      Postgres kimlik bilgileri alt ajan günlüklerine aktarılır. Yalnızca gerekli ayrıcalıklara sahip, özel bir veritabanı kullanın.
     </Warning>
 
   </Accordion>
@@ -177,28 +173,23 @@ Kullanıcı düzeyindeki kalıcı ajanlar şurada bulunur:
 
 ## Güvenlik
 
-`.prose` dosyalarını kod gibi ele alın. Uzak `use` içe aktarmaları dahil, çalıştırmadan
-önce inceleyin. Üst düzey `/prose run https://...` istekleri açıktır, ancak
-geçişli uzak içe aktarmalar getirilmeden veya yürütülmeden önce çalıştırma başına
-onay gerektirir. Yan etkileri denetlemek için OpenClaw araç izin listelerini ve
-onay kapılarını kullanın. Belirleyici, onay kapılı iş akışları için
-[Lobster](/tr/tools/lobster) ile karşılaştırın.
+`.prose` dosyalarını kod gibi değerlendirin. Uzak `use` içe aktarmaları dâhil olmak üzere çalıştırmadan önce inceleyin. Üst düzey `/prose run https://...` istekleri açıktır ancak geçişli uzak içe aktarmalar, getirilmeden veya yürütülmeden önce her çalıştırma için onay gerektirir. Yan etkileri denetlemek için OpenClaw araç izin listelerini ve onay geçitlerini kullanın. Belirlenimci ve onay geçitli iş akışları için [Lobster](/tr/tools/lobster) ile karşılaştırın.
 
-## İlgili
+## İlgili içerikler
 
 <CardGroup cols={2}>
-  <Card title="Skills reference" href="/tr/tools/skills" icon="puzzle-piece">
-    OpenProse'un beceri paketinin nasıl yüklendiği ve hangi kapıların uygulandığı.
+  <Card title="Skills referansı" href="/tr/tools/skills" icon="puzzle-piece">
+    OpenProse Skills paketinin nasıl yüklendiği ve hangi geçitlerin uygulandığı.
   </Card>
-  <Card title="Subagents" href="/tr/tools/subagents" icon="users">
-    OpenClaw'un yerel çok ajanlı koordinasyon katmanı.
+  <Card title="Alt ajanlar" href="/tr/tools/subagents" icon="users">
+    OpenClaw'ın yerel çok ajanlı koordinasyon katmanı.
   </Card>
-  <Card title="Text-to-speech" href="/tr/tools/tts" icon="volume-high">
+  <Card title="Metinden konuşmaya" href="/tr/tools/tts" icon="volume-high">
     İş akışlarınıza ses çıktısı ekleyin.
   </Card>
-  <Card title="Slash commands" href="/tr/tools/slash-commands" icon="terminal">
-    /prose dahil tüm kullanılabilir sohbet komutları.
+  <Card title="Eğik çizgi komutları" href="/tr/tools/slash-commands" icon="terminal">
+    `/prose` dâhil kullanılabilir tüm sohbet komutları.
   </Card>
 </CardGroup>
 
-Resmi site: [https://www.prose.md](https://www.prose.md)
+Resmî site: [https://www.prose.md](https://www.prose.md)

@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Anda sedang menginstal, mengonfigurasi, atau mengaudit Plugin diffs
-summary: Plugin penampil diff baca-saja OpenClaw dan perender file untuk agen.
-title: Plugin diff
+    - Anda sedang menginstal, mengonfigurasi, atau mengaudit plugin diff
+summary: Plugin penampil diff hanya-baca OpenClaw dan perender berkas untuk agen.
+title: Plugin perbedaan
 x-i18n:
-    generated_at: "2026-06-27T17:53:25Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:26:35Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 836ed7a32a0868ee24eacf8f72e8c7888ebbd5d07ca62b2b6170d6a1919f7382
@@ -13,15 +13,15 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin Diffs
+# Plugin diff
 
-Plugin penampil diff baca-saja dan perender file OpenClaw untuk agen.
+Plugin penampil diff hanya-baca dan perender berkas OpenClaw untuk agen.
 
 ## Distribusi
 
 - Paket: `@openclaw/diffs`
-- Rute instalasi: npm; ClawHub
+- Jalur instalasi: npm; ClawHub
 
-## Permukaan
+## Antarmuka
 
 kontrak: alat; Skills

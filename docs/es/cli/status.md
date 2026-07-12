@@ -1,12 +1,12 @@
 ---
 read_when:
-    - Quieres un diagnóstico rápido del estado del canal y los destinatarios de sesiones recientes
-    - Quieres un estado "all" que se pueda pegar para depuración
-summary: Referencia de CLI para `openclaw status` (diagnósticos, sondeos, instantáneas de uso)
+    - Quieres un diagnóstico rápido del estado de los canales y de los destinatarios de sesiones recientes
+    - Quieres un estado «all» que puedas pegar para depurar
+summary: Referencia de la CLI para `openclaw status` (diagnósticos, comprobaciones, instantáneas de uso)
 title: openclaw status
 x-i18n:
-    generated_at: "2026-07-05T11:10:12Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T23:01:19Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 37b8a3297adbef855b468466ec1001d0721eef066899eb20d94c18933a8f257e
@@ -14,7 +14,7 @@ x-i18n:
     workflow: 16
 ---
 
-Diagnósticos para canales y sesiones.
+Diagnóstico de canales y sesiones.
 
 ```bash
 openclaw status
@@ -23,89 +23,90 @@ openclaw status --deep
 openclaw status --usage
 ```
 
-| Flag                    | Descripción                                                                                                            |
-| ----------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `--all`                 | Diagnóstico completo (solo lectura, apto para pegar). Incluye auditoría de seguridad, compatibilidad de plugins y comprobaciones de vectores de memoria. |
+| Opción                  | Descripción                                                                                                                    |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `--all`                 | Diagnóstico completo (solo lectura, apto para copiar y pegar). Incluye auditoría de seguridad, compatibilidad de plugins y comprobaciones de vectores de memoria. |
 | `--deep`                | Ejecuta comprobaciones en vivo (WhatsApp Web + Telegram + Discord + Slack + Signal). También habilita la auditoría de seguridad. |
-| `--usage`               | Imprime las ventanas normalizadas de uso del proveedor como `X% left`.                                                  |
-| `--json`                | Salida legible por máquina.                                                                                            |
-| `--verbose` / `--debug` | También imprime la resolución sin procesar del destino de Gateway antes del informe.                                   |
+| `--usage`               | Muestra las ventanas normalizadas de uso del proveedor como `X% restante`.                                                      |
+| `--json`                | Salida legible por máquinas.                                                                                                   |
+| `--verbose` / `--debug` | También muestra la resolución sin procesar del destino del Gateway antes del informe.                                          |
 
-`openclaw status` sin opciones permanece en la ruta rápida de solo lectura y marca la memoria como
-`not checked` en lugar de no disponible cuando omite la inspección de memoria. La auditoría de
-seguridad pesada, la compatibilidad de plugins y las comprobaciones de vectores de memoria quedan para
+La ejecución simple de `openclaw status` permanece en la ruta rápida de solo lectura y marca la memoria como
+`no comprobada` en lugar de no disponible cuando omite su inspección. Las comprobaciones intensivas de
+auditoría de seguridad, compatibilidad de plugins y vectores de memoria quedan a cargo de
 `openclaw status --all`, `openclaw status --deep`, `openclaw security audit`
 y `openclaw memory status --deep`.
 
-## Resolución de sesión y modelo
+## Resolución de sesiones y modelos
 
-- La salida de estado de sesión separa `Execution:` de `Runtime:`. `Execution`
-  es la ruta de sandbox (`direct`, `docker/*`), mientras que `Runtime` indica
-  si la sesión usa `OpenClaw Default`, `OpenAI Codex`, un backend de CLI
-  o un backend ACP como `codex (acp/acpx)`. Consulta
-  [runtimes de agentes](/es/concepts/agent-runtimes) para ver la distinción entre proveedor/modelo/runtime.
-- Cuando la instantánea de la sesión actual es escasa, `/status` puede rellenar los contadores de tokens
-  y caché desde el registro de uso de transcripción más reciente. Los valores en vivo
-  existentes distintos de cero siguen teniendo prioridad sobre los valores de reserva de la transcripción.
-- La reserva de transcripción también puede recuperar la etiqueta del modelo runtime activo cuando
-  falta en la entrada de sesión en vivo. Si ese modelo de transcripción difiere
-  del modelo seleccionado, status resuelve la ventana de contexto contra el
-  modelo runtime recuperado en lugar del seleccionado.
-- Para la contabilidad del tamaño del prompt, la reserva de transcripción prefiere el total mayor
-  orientado al prompt cuando faltan los metadatos de sesión o son menores, de modo que
-  las sesiones de proveedores personalizados no colapsen a visualizaciones de `0` tokens.
-- Cuando una sesión está fijada a un modelo que difiere del primario configurado,
-  status imprime ambos valores, el motivo (`session override`) y
-  la sugerencia `/model default`. El primario configurado se aplica a sesiones nuevas o
-  sin fijar; las sesiones fijadas existentes conservan su selección de sesión
-  hasta que se borra.
-- La salida incluye almacenes de sesión por agente cuando hay varios agentes
+- La salida de estado de la sesión separa `Ejecución:` de `Entorno de ejecución:`. `Ejecución`
+  es la ruta del entorno aislado (`direct`, `docker/*`), mientras que `Entorno de ejecución` indica
+  si la sesión utiliza `OpenClaw predeterminado`, `OpenAI Codex`, un backend de CLI
+  o un backend de ACP como `codex (acp/acpx)`. Consulta
+  [Entornos de ejecución del agente](/es/concepts/agent-runtimes) para conocer la distinción
+  entre proveedor, modelo y entorno de ejecución.
+- Cuando la instantánea de la sesión actual contiene pocos datos, `/status` puede completar los contadores
+  de tokens y caché a partir del registro de uso más reciente de la transcripción. Los valores activos
+  distintos de cero siguen teniendo prioridad sobre los valores de respaldo de la transcripción.
+- El respaldo de la transcripción también puede recuperar la etiqueta del modelo activo del entorno de ejecución cuando
+  falta en la entrada de la sesión en vivo. Si ese modelo de la transcripción difiere
+  del modelo seleccionado, el estado resuelve la ventana de contexto según el
+  modelo recuperado del entorno de ejecución, en lugar del seleccionado.
+- Para contabilizar el tamaño del prompt, el respaldo de la transcripción prefiere el total mayor
+  orientado al prompt cuando faltan los metadatos de la sesión o son menores, de modo que
+  las sesiones de proveedores personalizados no se reduzcan a mostrar `0` tokens.
+- Cuando una sesión está fijada a un modelo distinto del principal configurado,
+  el estado muestra ambos valores, el motivo (`anulación de sesión`) y
+  la sugerencia `/model default`. El modelo principal configurado se aplica a sesiones nuevas o
+  no fijadas; las sesiones fijadas existentes conservan su selección
+  hasta que se borre.
+- La salida incluye los almacenes de sesiones de cada agente cuando hay varios agentes
   configurados.
 
 ## Uso y cuota
 
-- `--usage` imprime las ventanas normalizadas de uso del proveedor como `X% left`.
-- Los campos sin procesar `usage_percent` / `usagePercent` de MiniMax son cuota restante,
-  por lo que OpenClaw los invierte antes de mostrarlos; los campos basados en conteo tienen prioridad cuando
+- `--usage` muestra las ventanas normalizadas de uso del proveedor como `X% restante`.
+- Los campos sin procesar `usage_percent` / `usagePercent` de MiniMax representan la cuota restante,
+  por lo que OpenClaw los invierte antes de mostrarlos; los campos basados en recuentos tienen prioridad cuando
   están presentes. Las respuestas `model_remains` prefieren la entrada del modelo de chat, derivan la
-  etiqueta de ventana a partir de marcas de tiempo cuando es necesario e incluyen el nombre del modelo en
+  etiqueta de la ventana a partir de las marcas de tiempo cuando es necesario e incluyen el nombre del modelo en
   la etiqueta del plan.
-- Los fallos de actualización de precios de modelos se muestran como advertencias de precios opcionales.
-  No significan que Gateway o los canales no estén en buen estado.
+- Los errores de actualización de precios de los modelos se muestran como advertencias opcionales sobre precios.
+  No significan que el Gateway o los canales tengan problemas.
 
-## Estado general y de actualización
+## Resumen y estado de actualización
 
-- El resumen incluye el estado de instalación/runtime del servicio de host Gateway + node cuando
-  está disponible, además del tiempo de actividad compacto del proceso Gateway y del sistema host.
-- El resumen incluye el canal de actualización + SHA de git (para checkouts de código fuente).
-- La información de actualización aparece en el resumen; si hay una actualización disponible, status
-  imprime una sugerencia para ejecutar `openclaw update` (consulta [Actualizar](/es/install/updating)).
+- El resumen incluye el estado de instalación y ejecución del servicio del host del Gateway y del Node cuando
+  está disponible, además de un tiempo de actividad compacto del proceso del Gateway y del sistema host.
+- El resumen incluye el canal de actualización y el SHA de git (para copias de trabajo del código fuente).
+- La información de actualización aparece en el resumen; si hay una actualización disponible, el estado
+  muestra una sugerencia para ejecutar `openclaw update` (consulta [Actualización](/es/install/updating)).
 
 ## Secretos
 
 - Las superficies de estado de solo lectura (`status`, `status --json`, `status --all`)
-  resuelven SecretRefs compatibles para sus rutas de configuración objetivo cuando
+  resuelven las SecretRefs compatibles para sus rutas de configuración de destino cuando
   es posible.
-- Si un SecretRef de canal compatible está configurado pero no disponible en la
-  ruta del comando actual, status permanece en solo lectura e informa una salida degradada
-  en lugar de fallar. La salida humana muestra advertencias como "token configurado
-  no disponible en esta ruta de comando", y la salida JSON incluye
+- Si hay una SecretRef de canal compatible configurada, pero no está disponible en la
+  ruta del comando actual, el estado permanece en modo de solo lectura e informa de una salida
+  degradada en lugar de fallar. La salida para personas muestra advertencias como «token configurado
+  no disponible en esta ruta del comando», y la salida JSON incluye
   `secretDiagnostics`.
-- Cuando la resolución de SecretRef local al comando tiene éxito, status prefiere la
-  instantánea resuelta y borra de la salida final los marcadores transitorios de canal
-  de "secreto no disponible".
+- Cuando la resolución local de SecretRef del comando se realiza correctamente, el estado prefiere la
+  instantánea resuelta y elimina de la salida final los marcadores transitorios
+  de canal de «secreto no disponible».
 - `status --all` incluye una fila de resumen de secretos y una sección de diagnóstico
-  que resume los diagnósticos de secretos (truncados para mejorar la legibilidad) sin
+  que resume los diagnósticos de secretos (truncados para facilitar la lectura) sin
   detener la generación del informe.
 
 ## Memoria
 
-`status --json --all` informa detalles de memoria desde el runtime del plugin de memoria activo
-seleccionado por `plugins.slots.memory`. Los plugins de memoria personalizados pueden dejar
-deshabilitado el `agents.defaults.memorySearch.enabled` integrado y aun así informar
-sus propios archivos, fragmentos, vectores y estado FTS.
+`status --json --all` informa de los detalles de memoria del entorno de ejecución del plugin de memoria activo
+seleccionado mediante `plugins.slots.memory`. Los plugins de memoria personalizados pueden mantener
+deshabilitado `agents.defaults.memorySearch.enabled` y aun así informar
+de sus propios archivos, fragmentos, vectores y estado de FTS.
 
 ## Relacionado
 
-- [Referencia de CLI](/es/cli)
+- [Referencia de la CLI](/es/cli)
 - [Doctor](/es/gateway/doctor)

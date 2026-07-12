@@ -1,216 +1,152 @@
 ---
 read_when:
-    - تريد فهم الميزات التي قد تستدعي واجهات API مدفوعة
-    - تحتاج إلى تدقيق المفاتيح والتكاليف وإمكانية رؤية الاستخدام
-    - أنت تشرح تقارير تكلفة /status أو /usage
-summary: دقّق فيما يمكنه إنفاق الأموال، والمفاتيح المستخدمة، وكيفية عرض الاستخدام
-title: استخدام API والتكاليف
+    - تريد معرفة الميزات التي قد تستدعي واجهات API مدفوعة
+    - تحتاج إلى تدقيق المفاتيح والتكاليف وإمكانية الاطلاع على الاستخدام
+    - أنت تشرح تقارير التكلفة في ‎/status‎ أو ‎/usage‎
+summary: دقّق في ما يمكنه إنفاق الأموال، والمفاتيح المستخدَمة، وكيفية عرض الاستخدام
+title: استخدام واجهة برمجة التطبيقات والتكاليف
 x-i18n:
-    generated_at: "2026-06-27T18:30:20Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:26:37Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 473028747c3e8eab60667106d22616aa185f867d01238b856f4235faad957a9e
+    source_hash: b35ad64f83572eb8c01b59ee57368fd7ba20cb83ccac835281859796f782c1dd
     source_path: reference/api-usage-costs.md
     workflow: 16
 ---
 
-يوثق هذا المستند **الميزات التي يمكنها استدعاء مفاتيح API** وأين تظهر تكاليفها. ويركز على
-ميزات OpenClaw التي يمكنها توليد استخدام للمزوّدين أو استدعاءات API مدفوعة.
+خريطة بميزات OpenClaw التي يمكنها استدعاء واجهات API لموفّري الخدمات المدفوعة، ومكان قراءة كل ميزة لبيانات اعتمادها، ومكان ظهور التكلفة الناتجة.
 
-## أين تظهر التكاليف (الدردشة + CLI)
+## أين تظهر التكاليف
 
-**لقطة تكلفة لكل جلسة**
+**`/status`** (لقطة لكل جلسة)
 
-- يعرض `/status` نموذج الجلسة الحالي، واستخدام السياق، ورموز آخر استجابة.
-- إذا كانت لدى OpenClaw بيانات تعريف للاستخدام وتسعير محلي للنموذج النشط،
-  فسيعرض `/status` أيضًا **التكلفة المقدّرة** لآخر رد. يمكن أن يشمل ذلك
-  مزوّدين غير معتمدين على مفاتيح API ومسعّرين صراحة، مثل نماذج Bedrock `aws-sdk`.
-- إذا كانت بيانات تعريف الجلسة الحية محدودة، يستطيع `/status` استرجاع عدادات
-  الرموز/ذاكرة التخزين المؤقت وتسمية نموذج وقت التشغيل النشط من أحدث إدخال لاستخدام النص المنسوخ.
-  تبقى القيم الحية غير الصفرية الحالية ذات أولوية، ويمكن أن تتغلب إجماليات النص المنسوخ
-  بحجم الموجه عندما تكون الإجماليات المخزنة مفقودة أو أصغر.
+- يعرض نموذج الجلسة الحالية، واستخدام السياق، ورموز الاستجابة الأخيرة.
+- يضيف **تكلفة تقديرية** للرد الأخير عندما تتوفر لدى OpenClaw بيانات وصفية للاستخدام وتسعير محلي للنموذج النشط، بما في ذلك الموفّرون الذين لا يستخدمون مفتاح API والمحددة أسعارهم صراحةً، مثل نماذج Bedrock من نوع `aws-sdk`.
+- إذا كانت لقطة الجلسة المباشرة شحيحة البيانات، يستعيد `/status` عدادات الرموز/ذاكرة التخزين المؤقت وتسمية النموذج النشط من أحدث إدخال استخدام في سجل المحادثة. تكون الأولوية للقيم المباشرة غير الصفرية الموجودة على بيانات السجل؛ ومع ذلك، يمكن لإجمالي السجل بحجم المطالبة أن تكون له الأولوية عندما يكون الإجمالي المخزّن مفقودًا أو أصغر.
 
-**تذييل تكلفة لكل رسالة**
+**`/usage`** (تذييل لكل رسالة)
 
-- يضيف `/usage full` تذييل استخدام إلى كل رد، بما في ذلك **التكلفة المقدّرة**
-  عندما يكون التسعير المحلي مهيأ للنموذج النشط وتكون بيانات تعريف الاستخدام
-  متاحة.
-- يعرض `/usage tokens` الرموز فقط؛ وتظل تدفقات OAuth/الرموز وCLI ذات نمط الاشتراك
-  تعرض الرموز فقط ما لم يوفّر وقت التشغيل ذلك بيانات تعريف استخدام متوافقة
-  وكان سعر محلي صريح مهيأ.
-- ملاحظة Gemini CLI: يقرأ مخرج `stream-json` الافتراضي وتجاوزات JSON القديمة
-  كلاهما الاستخدام من `stats`، ويحوّلان `stats.cached` إلى `cacheRead`،
-  ويشتقان رموز الإدخال من `stats.input_tokens - stats.cached` عند الحاجة.
+- يضيف `/usage full` تذييل استخدام إلى كل رد، بما في ذلك **التكلفة التقديرية** عند إعداد التسعير المحلي وتوفر بيانات الاستخدام الوصفية.
+- يعرض `/usage tokens` الرموز فقط. تعرض بيئات تشغيل OAuth/الرموز وCLI القائمة على الاشتراك الرموز فقط، ما لم توفّر بيانات استخدام وصفية متوافقة بالإضافة إلى سعر محلي صريح.
+- يطبع `/usage cost` ملخصًا محليًا للتكلفة؛ ويعطّل `/usage off` التذييل.
+- ملاحظة حول Gemini CLI: يتضمن كل من إخراج `stream-json` وإخراج `json` القديم بيانات الاستخدام ضمن `stats`. يطبّع OpenClaw القيمة `stats.cached` إلى `cacheRead` ويشتق رموز الإدخال من `stats.input_tokens - stats.cached` عند الحاجة.
 
-ملاحظة Anthropic: أخبرنا موظفو Anthropic أن استخدام Claude CLI بأسلوب OpenClaw
-مسموح به مرة أخرى، لذلك تتعامل OpenClaw مع إعادة استخدام Claude CLI واستخدام
-`claude -p` بوصفهما معتمدين لهذا التكامل ما لم تنشر Anthropic سياسة جديدة.
-لا تزال Anthropic لا تكشف عن تقدير بالدولار لكل رسالة يمكن أن تعرضه OpenClaw
-في `/usage full`.
+**واجهة التحكم → الاستخدام** (تحليل عبر الجلسات)
 
-**نوافذ استخدام CLI (حصص المزوّدين)**
+- تعرض إجماليات الرموز والتكلفة التقديرية المستمدة من سجلات المحادثات للنطاق الزمني المحدد، مع تفصيل حسب الموفّر والنموذج والوكيل والقناة ونوع الرمز.
+- تقارن نوافذ تقويمية أقصر تنتهي في تاريخ نهاية النطاق المحدد. تُحتسب التواريخ المفقودة كأيام تقويمية ذات استخدام صفري؛ ولا يجري تخطيها لإنشاء نافذة أكثر كثافة.
+- تضع تسمية مباشرة لمقياس المخطط اليومي. تعني شارة `√` أن ضغط الجذر التربيعي يحافظ على ظهور الأيام منخفضة الاستخدام.
+- تصف هذه الإجماليات سجل الجلسات المحلي المتاح، وليس فاتورة الموفّر أو سجل فوترة مدى الحياة. تحذّر الواجهة عند فقدان التسعير لبعض الإدخالات.
 
-- يعرض `openclaw status --usage` و`openclaw channels list` **نوافذ استخدام** المزوّدين
-  (لقطات حصص، وليست تكاليف لكل رسالة).
-- يتم توحيد المخرج البشري إلى `X% left` عبر المزوّدين.
-- مزوّدو نوافذ الاستخدام الحاليون: Anthropic، GitHub Copilot، Gemini CLI،
-  OpenAI Codex، MiniMax، Xiaomi، وz.ai.
-- ملاحظة MiniMax: تعني الحقول الخام `usage_percent` / `usagePercent` الحصة المتبقية،
-  لذلك تعكسها OpenClaw قبل العرض. تظل الحقول المعتمدة على العدّ ذات أولوية
-  عند وجودها. إذا أعاد المزوّد `model_remains`، تفضّل OpenClaw إدخال نموذج الدردشة،
-  وتشتق تسمية النافذة من الطوابع الزمنية عند الحاجة، وتدرج اسم النموذج في تسمية الخطة.
-- تأتي مصادقة الاستخدام لتلك النوافذ من خطاطيف خاصة بالمزوّد عند توفرها؛ وإلا
-  تعود OpenClaw إلى مطابقة بيانات اعتماد OAuth/API-key من ملفات تعريف المصادقة،
-  أو البيئة، أو الإعدادات.
+**نوافذ الاستخدام في CLI** (حصص الموفّر، وليست تكلفة لكل رسالة)
 
-راجع [استخدام الرموز والتكاليف](/ar/reference/token-use) للاطلاع على التفاصيل والأمثلة.
+- يعرض `openclaw status --usage` و`openclaw channels list` **نوافذ استخدام** الموفّر بصيغة `X% left`.
+- موفّرو نوافذ الاستخدام الحاليون: Anthropic وClawRouter وDeepSeek وGitHub Copilot وGemini CLI وMiniMax وOpenAI (يشمل مصادقة ChatGPT/Codex عبر OAuth/الرمز) وXiaomi وz.ai. راجع [CLI للنماذج](/ar/cli/models) و[CLI للقنوات](/ar/cli/channels) للاطلاع على القائمة الكاملة للموفّرين/العلامات.
+- تعرض حقول MiniMax الخام `usage_percent` / `usagePercent` الحصة المتبقية، لذلك يعكسها OpenClaw؛ وتكون الأولوية للحقول القائمة على العدد عند وجودها. إذا تضمّنت الاستجابة مصفوفة `model_remains`، يختار OpenClaw إدخال نموذج المحادثة، ويشتق تسمية النافذة من الطوابع الزمنية عند الحاجة، ويضمّن اسم النموذج في تسمية الخطة.
+- تأتي مصادقة الاستخدام من نقاط الربط الخاصة بالموفّر عند توفرها، وإلا يعود OpenClaw إلى مطابقة بيانات اعتماد OAuth/مفتاح API من ملفات تعريف المصادقة أو متغيرات البيئة أو الإعدادات.
 
-## كيف يتم اكتشاف المفاتيح
+راجع [استخدام الرموز والتكاليف](/ar/reference/token-use) للاطلاع على أمثلة مفصلة.
 
-يمكن لـ OpenClaw التقاط بيانات الاعتماد من:
+<Note>
+أكدت Anthropic أن إعادة استخدام Claude CLI (بما في ذلك `claude -p`) نمط تكامل معتمد ما لم تنشر سياسة جديدة. لا تعرض Anthropic تقديرًا بالدولار لكل رسالة، لذلك لا يستطيع `/usage full` عرض تكلفة استخدام Claude CLI.
+</Note>
 
-- **ملفات تعريف المصادقة** (لكل وكيل، مخزنة في `auth-profiles.json`).
-- **متغيرات البيئة** (مثل `OPENAI_API_KEY`، و`BRAVE_API_KEY`، و`FIRECRAWL_API_KEY`).
-- **الإعدادات** (`models.providers.*.apiKey`، و`plugins.entries.*.config.webSearch.apiKey`،
-  و`plugins.entries.firecrawl.config.webFetch.apiKey`، و`memorySearch.*`،
-  و`talk.providers.*.apiKey`).
-- **Skills** (`skills.entries.<name>.apiKey`) التي قد تصدّر المفاتيح إلى بيئة عملية Skills.
+## كيفية اكتشاف المفاتيح
+
+- **ملفات تعريف المصادقة**: خاصة بكل وكيل، ومخزّنة في `auth-profiles.json`.
+- **متغيرات البيئة**: مثل `OPENAI_API_KEY` و`BRAVE_API_KEY` و`FIRECRAWL_API_KEY`.
+- **الإعدادات**: `models.providers.*.apiKey` و`plugins.entries.*.config.webSearch.apiKey` و`plugins.entries.firecrawl.config.webFetch.apiKey` و`agents.defaults.memorySearch.*` و`talk.providers.*.apiKey`.
+- **Skills**:‏ `skills.entries.<name>.apiKey`، وقد تصدّر المفتاح إلى بيئة عملية Skill.
 
 ## الميزات التي يمكنها إنفاق المفاتيح
 
-### 1) استجابات النموذج الأساسية (الدردشة + الأدوات)
+### استجابات النموذج الأساسية (المحادثة + الأدوات)
 
-يستخدم كل رد أو استدعاء أداة **مزوّد النموذج الحالي** (OpenAI، Anthropic، إلخ). هذا هو
-المصدر الأساسي للاستخدام والتكلفة.
-
-يشمل هذا أيضًا المزوّدين المستضافين بأسلوب الاشتراك الذين تظل فوترتهم خارج
-واجهة OpenClaw المحلية، مثل **OpenAI Codex**، و**Alibaba Cloud Model Studio
-Coding Plan**، و**MiniMax Coding Plan**، و**Z.AI / GLM Coding Plan**، ومسار
-تسجيل دخول Claude في OpenClaw الخاص بـ Anthropic مع تمكين **Extra Usage**.
+يعمل كل رد أو استدعاء أداة على موفّر النموذج الحالي. وهذا هو المصدر الأساسي للاستخدام والتكلفة، بما في ذلك الخطط المستضافة القائمة على الاشتراك التي تُفوتر خارج واجهة OpenClaw المحلية: OpenAI Codex وAlibaba Cloud Model Studio Coding Plan وMiniMax Coding Plan وZ.AI/GLM Coding Plan ومسار تسجيل الدخول إلى Claude من Anthropic مع تمكين Extra Usage.
 
 راجع [النماذج](/ar/providers/models) لإعداد التسعير و[استخدام الرموز والتكاليف](/ar/reference/token-use) للعرض.
 
-### 2) فهم الوسائط (الصوت/الصورة/الفيديو)
+### فهم الوسائط (الصوت/الصورة/الفيديو)
 
-يمكن تلخيص/نسخ الوسائط الواردة قبل تشغيل الرد. يستخدم هذا واجهات API للنماذج/المزوّدين.
+يمكن تلخيص الوسائط الواردة أو نسخها نصيًا عبر واجهة API لأحد الموفّرين قبل تشغيل مسار معالجة الرد. يُسجّل دعم الموفّرين لكل Plugin ويتغير عند إضافة Plugins؛ راجع [فهم الوسائط](/ar/nodes/media-understanding) للاطلاع على القائمة والإعدادات الحالية.
 
-- الصوت: OpenAI / Groq / Deepgram / DeepInfra / Google / Mistral.
-- الصورة: OpenAI / OpenRouter / Anthropic / DeepInfra / Google / MiniMax / Moonshot / Qwen / Z.AI.
-- الفيديو: Google / Qwen / Moonshot.
+### إنشاء الصور والفيديو
 
-راجع [فهم الوسائط](/ar/nodes/media-understanding).
+يوجّه `image_generate` و`video_generate` الطلبات إلى أي موفّر مُعدّ ومتاح. يمكن لإنشاء الصور استنتاج موفّر افتراضي مدعوم بالمصادقة عندما لا تكون `agents.defaults.imageGenerationModel` معيّنة؛ بينما يتطلب إنشاء الفيديو تعيين `agents.defaults.videoGenerationModel` صراحةً (مثل `qwen/wan2.6-t2v`).
 
-### 3) توليد الصور والفيديو
+راجع [إنشاء الصور](/ar/tools/image-generation) و[إنشاء الفيديو](/ar/tools/video-generation) للاطلاع على قائمة الموفّرين الحالية.
 
-يمكن لقدرات التوليد المشتركة أن تنفق مفاتيح المزوّدين أيضًا:
+### تضمينات الذاكرة والبحث الدلالي
 
-- توليد الصور: OpenAI / Google / DeepInfra / fal / MiniMax
-- توليد الفيديو: DeepInfra / Qwen
-
-يمكن لتوليد الصور استنتاج مزوّد افتراضي مدعوم بالمصادقة عندما يكون
-`agents.defaults.imageGenerationModel` غير مضبوط. يتطلب توليد الفيديو حاليًا
-`agents.defaults.videoGenerationModel` صريحًا مثل
-`qwen/wan2.6-t2v`.
-
-راجع [توليد الصور](/ar/tools/image-generation)، و[Qwen Cloud](/ar/providers/qwen)،
-و[النماذج](/ar/concepts/models).
-
-### 4) تضمينات الذاكرة + البحث الدلالي
-
-يستخدم بحث الذاكرة الدلالي **واجهات API للتضمين** عند تهيئته لمزوّدين بعيدين:
-
-- `memorySearch.provider = "openai"` → تضمينات OpenAI
-- `memorySearch.provider = "gemini"` → تضمينات Gemini
-- `memorySearch.provider = "voyage"` → تضمينات Voyage
-- `memorySearch.provider = "mistral"` → تضمينات Mistral
-- `memorySearch.provider = "deepinfra"` → تضمينات DeepInfra
-- `memorySearch.provider = "lmstudio"` → تضمينات LM Studio (محلي/مستضاف ذاتيًا)
-- `memorySearch.provider = "ollama"` → تضمينات Ollama (محلي/مستضاف ذاتيًا؛ عادةً بلا فوترة API مستضافة)
-- رجوع اختياري إلى مزوّد بعيد إذا فشلت التضمينات المحلية
-
-يمكنك إبقاؤه محليًا باستخدام `memorySearch.provider = "local"` (بلا استخدام API).
+يستخدم البحث الدلالي في الذاكرة واجهات API للتضمين عندما تسمّي `agents.defaults.memorySearch.provider` محوّلًا بعيدًا (مثل `openai` أو `gemini` أو `voyage` أو `mistral` أو `deepinfra` أو `github-copilot` أو `amazon-bedrock`). تعمل `memorySearch.provider = "lmstudio"` أو `"ollama"` على خادم محلي/ذاتي الاستضافة، ولا تترتب عليها عادةً فوترة استضافة. تُبقي `memorySearch.provider = "local"` كل شيء على الجهاز من دون استخدام API. ويمكن لموفّر `memorySearch.fallback` اختياري معالجة حالات فشل التضمين المحلي.
 
 راجع [الذاكرة](/ar/concepts/memory).
 
-### 5) أداة بحث الويب
+### أداة البحث في الويب
 
-قد يترتب على `web_search` رسوم استخدام حسب مزوّدك:
+قد يترتب على `web_search` رسوم استخدام وفقًا للموفّر المحدد. يقرأ كل موفّر مفتاحه أولًا من متغير بيئة، ثم من `plugins.entries.<id>.config.webSearch.apiKey`:
 
-- **Brave Search API**: `BRAVE_API_KEY` أو `plugins.entries.brave.config.webSearch.apiKey`
-- **Exa**: `EXA_API_KEY` أو `plugins.entries.exa.config.webSearch.apiKey`
-- **Firecrawl**: `FIRECRAWL_API_KEY` أو `plugins.entries.firecrawl.config.webSearch.apiKey`
-- **Gemini (Google Search)**: `GEMINI_API_KEY` أو `plugins.entries.google.config.webSearch.apiKey`
-- **Grok (xAI)**: ملف تعريف xAI OAuth، أو `XAI_API_KEY`، أو `plugins.entries.xai.config.webSearch.apiKey`
-- **Kimi (Moonshot)**: `KIMI_API_KEY`، أو `MOONSHOT_API_KEY`، أو `plugins.entries.moonshot.config.webSearch.apiKey`
-- **MiniMax Search**: `MINIMAX_CODE_PLAN_KEY`، أو `MINIMAX_CODING_API_KEY`، أو `MINIMAX_API_KEY`، أو `plugins.entries.minimax.config.webSearch.apiKey`
-- **Ollama Web Search**: بلا مفتاح لمضيف Ollama محلي قابل للوصول ومسجّل الدخول؛ يستخدم البحث المباشر عبر `https://ollama.com` المفتاح `OLLAMA_API_KEY`، ويمكن للمضيفين المحميين بالمصادقة إعادة استخدام مصادقة حامل Ollama العادية للمزوّد
-- **Perplexity Search API**: `PERPLEXITY_API_KEY`، أو `OPENROUTER_API_KEY`، أو `plugins.entries.perplexity.config.webSearch.apiKey`
-- **Tavily**: `TAVILY_API_KEY` أو `plugins.entries.tavily.config.webSearch.apiKey`
-- **DuckDuckGo**: مزوّد بلا مفتاح عند اختياره صراحة (بلا فوترة API، لكنه غير رسمي ومعتمد على HTML)
-- **SearXNG**: `SEARXNG_BASE_URL` أو `plugins.entries.searxng.config.webSearch.baseUrl` (بلا مفتاح/مستضاف ذاتيًا؛ بلا فوترة API مستضافة)
+| الموفّر                | متغيرات البيئة                                                                                                                                                                  |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Brave Search           | `BRAVE_API_KEY`                                                                                                                                                                 |
+| DuckDuckGo             | بلا مفتاح؛ غير رسمي، وقائم على HTML، ومن دون فوترة                                                                                                                              |
+| Exa                    | `EXA_API_KEY`                                                                                                                                                                   |
+| Firecrawl              | `FIRECRAWL_API_KEY`                                                                                                                                                             |
+| Gemini (Google Search) | `GEMINI_API_KEY`                                                                                                                                                                |
+| Grok (xAI)             | ملف تعريف OAuth لـ xAI أو `XAI_API_KEY`                                                                                                                                         |
+| Kimi (Moonshot)        | `KIMI_API_KEY` أو `MOONSHOT_API_KEY`                                                                                                                                            |
+| MiniMax Search         | `MINIMAX_CODE_PLAN_KEY` أو `MINIMAX_CODING_API_KEY` أو `MINIMAX_OAUTH_TOKEN` أو `MINIMAX_API_KEY`                                                                               |
+| Ollama Web Search      | بلا مفتاح لمضيف محلي يمكن الوصول إليه ومسجّل الدخول؛ يستخدم البحث المباشر عبر `https://ollama.com` المتغير `OLLAMA_API_KEY`؛ وتعيد المضيفات المحمية بالمصادقة استخدام مصادقة حامل Ollama المعتادة |
+| Parallel               | `PARALLEL_API_KEY`                                                                                                                                                              |
+| Perplexity Search API  | `PERPLEXITY_API_KEY` أو `OPENROUTER_API_KEY`                                                                                                                                    |
+| SearXNG                | `SEARXNG_BASE_URL`؛ بلا مفتاح/ذاتي الاستضافة، ومن دون فوترة استضافة                                                                                                             |
+| Tavily                 | `TAVILY_API_KEY`                                                                                                                                                                |
 
-لا تزال مسارات المزوّد القديمة `tools.web.search.*` تُحمّل عبر طبقة التوافق المؤقتة، لكنها لم تعد سطح الإعدادات الموصى به.
+لا تزال مسارات الإعداد القديمة `tools.web.search.*` تُحمّل عبر طبقة توافق، لكنها لم تعد الواجهة الموصى بها.
 
-**رصيد Brave Search المجاني:** تتضمن كل خطة Brave رصيدًا مجانيًا متجددًا قدره \$5/شهر.
-تكلف خطة Search مقدار \$5 لكل 1,000 طلب، لذلك يغطي الرصيد
-1,000 طلب/شهر بلا رسوم. اضبط حد الاستخدام في لوحة تحكم Brave
-لتجنب الرسوم غير المتوقعة.
-
-راجع [أدوات الويب](/ar/tools/web).
-
-### 5) أداة جلب الويب (Firecrawl)
-
-يمكن لـ `web_fetch` استدعاء **Firecrawl** مع وصول ابتدائي بلا مفتاح. أضف مفتاح API
-لحدود أعلى:
-
-- `FIRECRAWL_API_KEY` أو `plugins.entries.firecrawl.config.webFetch.apiKey`
-
-إذا لم يكن Firecrawl مهيأ، فستعود الأداة إلى الجلب المباشر بالإضافة إلى المكوّن الإضافي المضمّن `web-readability` (بلا API مدفوعة). عطّل `plugins.entries.web-readability.enabled` لتخطي استخراج Readability المحلي.
+**الرصيد المجاني لـ Brave Search**: تتضمن كل خطة رصيدًا مجانيًا متجددًا بقيمة 5 دولارات شهريًا. تبلغ تكلفة خطة Search خمسة دولارات لكل 1,000 طلب، لذا يغطي الرصيد 1,000 طلب شهريًا من دون رسوم. عيّن حدًا للاستخدام في لوحة معلومات Brave لتجنب الرسوم غير المتوقعة.
 
 راجع [أدوات الويب](/ar/tools/web).
 
-### 6) لقطات استخدام المزوّد (الحالة/الصحة)
+### أداة جلب الويب (Firecrawl)
 
-تستدعي بعض أوامر الحالة **نقاط نهاية استخدام المزوّد** لعرض نوافذ الحصص أو صحة المصادقة.
-تكون هذه عادةً استدعاءات منخفضة الحجم لكنها لا تزال تصل إلى واجهات API للمزوّدين:
+يمكن لـ`web_fetch` استدعاء Firecrawl بوصول ابتدائي من دون مفتاح؛ أضف `FIRECRAWL_API_KEY` (أو `plugins.entries.firecrawl.config.webFetch.apiKey`) للحصول على حدود أعلى. إذا لم يكن Firecrawl مُعدًّا، تعود الأداة إلى الجلب المباشر بالإضافة إلى Plugin ‏`web-readability` المضمّن (من دون API مدفوعة). عطّل `plugins.entries.web-readability.enabled` لتخطي الاستخراج المحلي باستخدام Readability.
 
-- `openclaw status --usage`
-- `openclaw models status --json`
+راجع [أدوات الويب](/ar/tools/web).
 
-راجع [CLI النماذج](/ar/cli/models).
+### لقطات استخدام الموفّر (الحالة/السلامة)
 
-### 7) تلخيص حماية Compaction
+يستدعي `openclaw status --usage` و`openclaw models status --json` نقاط نهاية استخدام الموفّر لعرض نوافذ الحصص أو سلامة المصادقة. تكون الاستدعاءات منخفضة الحجم، لكنها تصل مع ذلك إلى واجهات API للموفّر.
 
-يمكن لحماية Compaction تلخيص سجل الجلسة باستخدام **النموذج الحالي**، مما
-يستدعي واجهات API للمزوّدين عند تشغيلها.
+راجع [CLI للنماذج](/ar/cli/models).
 
-راجع [إدارة الجلسات + Compaction](/ar/reference/session-management-compaction).
+### تلخيص إجراء الحماية في Compaction
 
-### 8) فحص / اختبار النموذج
+يمكن لإجراء الحماية في Compaction تلخيص سجل الجلسة باستخدام النموذج الحالي، ما يستدعي واجهات API للموفّر عند تشغيله.
 
-يمكن لـ `openclaw models scan` اختبار نماذج OpenRouter ويستخدم `OPENROUTER_API_KEY` عند
-تمكين الاختبار.
+راجع [إدارة الجلسات وCompaction](/ar/reference/session-management-compaction).
 
-راجع [CLI النماذج](/ar/cli/models).
+### فحص النموذج / اختباره
 
-### 9) التحدث (الكلام)
+يمكن لـ`openclaw models scan` اختبار نماذج OpenRouter، ويستخدم `OPENROUTER_API_KEY` عند تمكين الاختبار.
 
-يمكن لوضع التحدث استدعاء **ElevenLabs** عند تهيئته:
+راجع [CLI للنماذج](/ar/cli/models).
 
-- `ELEVENLABS_API_KEY` أو `talk.providers.elevenlabs.apiKey`
+### التحدث (الكلام)
+
+يمكن لوضع التحدث استدعاء ElevenLabs عند إعداده: `ELEVENLABS_API_KEY` أو `talk.providers.elevenlabs.apiKey`.
 
 راجع [وضع التحدث](/ar/nodes/talk).
 
-### 10) Skills (واجهات API لطرف ثالث)
+### Skills (واجهات API خارجية)
 
-يمكن لـ Skills تخزين `apiKey` في `skills.entries.<name>.apiKey`. إذا استخدمت Skill ذلك المفتاح لواجهات
-API خارجية، فقد تترتب عليها تكاليف وفقًا لمزوّد Skill.
+يمكن لـSkills تخزين `apiKey` في `skills.entries.<name>.apiKey`. إذا استخدمت Skill هذا المفتاح مع واجهة API خارجية، فتتبع التكلفة موفّر Skill.
 
 راجع [Skills](/ar/tools/skills).
 
-## ذات صلة
+## ذو صلة
 
 - [استخدام الرموز والتكاليف](/ar/reference/token-use)
-- [تخزين الموجهات مؤقتًا](/ar/reference/prompt-caching)
-- [تتبع الاستخدام](/ar/concepts/usage-tracking)
+- [التخزين المؤقت للمطالبات](/ar/reference/prompt-caching)
+- [تتبّع الاستخدام](/ar/concepts/usage-tracking)

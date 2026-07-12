@@ -1,30 +1,30 @@
 ---
 read_when:
-    - تريد استخدام GitHub Copilot كمزوّد نماذج
-    - تحتاج إلى تدفق `openclaw models auth login-github-copilot`
-    - أنت تختار بين موفر Copilot المدمج، وبيئة Copilot SDK، وCopilot Proxy
-summary: سجّل الدخول إلى GitHub Copilot من OpenClaw باستخدام تدفق الجهاز أو استيراد الرمز غير التفاعلي
+    - تريد استخدام GitHub Copilot كمزوّد للنماذج
+    - أنت بحاجة إلى تدفق `openclaw models auth login-github-copilot`
+    - أنت تختار بين موفّر Copilot المضمّن، وحاضنة Copilot SDK، ووكيل Copilot.
+summary: سجّل الدخول إلى GitHub Copilot من OpenClaw باستخدام تدفق الجهاز أو استيراد الرمز المميز غير التفاعلي
 title: GitHub Copilot
 x-i18n:
-    generated_at: "2026-06-27T18:24:43Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:22:33Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a0cd7103ec880592b1f4506ed844abe788f53040f3751e7034daf9aafedc2f94
+    source_hash: e731d46dd387bbecb0219c4ec3e319fb8d07fd4017da8035561f110501587ad4
     source_path: providers/github-copilot.md
     workflow: 16
 ---
 
-GitHub Copilot هو مساعد البرمجة بالذكاء الاصطناعي من GitHub. يوفّر إمكانية الوصول إلى نماذج Copilot
-لحسابك وخطتك في GitHub. يمكن لـ OpenClaw استخدام Copilot كمزوّد نماذج
-أو كزمن تشغيل وكيل بثلاث طرق مختلفة.
+GitHub Copilot هو مساعد البرمجة بالذكاء الاصطناعي من GitHub. وهو يتيح الوصول إلى نماذج Copilot
+لحسابك وخطتك على GitHub. يمكن لـ OpenClaw استخدام Copilot بوصفه موفّر نماذج
+أو بيئة تشغيل للوكيل بثلاث طرق مختلفة.
 
 ## ثلاث طرق لاستخدام Copilot في OpenClaw
 
 <Tabs>
-  <Tab title="المزوّد المضمّن (github-copilot)">
-    استخدم مسار تسجيل الدخول الأصلي للجهاز للحصول على رمز GitHub، ثم استبدله برموز
-    Copilot API عند تشغيل OpenClaw. هذا هو المسار **الافتراضي** والأبسط
+  <Tab title="الموفّر المضمّن (github-copilot)">
+    استخدم تدفق تسجيل الدخول الأصلي عبر الجهاز للحصول على رمز GitHub، ثم استبدله
+    برموز Copilot API عند تشغيل OpenClaw. هذا هو المسار **الافتراضي** والأبسط
     لأنه لا يتطلب VS Code.
 
     <Steps>
@@ -33,8 +33,8 @@ GitHub Copilot هو مساعد البرمجة بالذكاء الاصطناعي 
         openclaw models auth login-github-copilot
         ```
 
-        سيُطلب منك زيارة عنوان URL وإدخال رمز لمرة واحدة. أبقِ
-        الطرفية مفتوحة حتى يكتمل الأمر.
+        سيُطلب منك زيارة عنوان URL وإدخال رمز يُستخدم مرة واحدة. أبقِ
+        الطرفية مفتوحة حتى يكتمل الإجراء.
       </Step>
       <Step title="تعيين نموذج افتراضي">
         ```bash
@@ -55,16 +55,16 @@ GitHub Copilot هو مساعد البرمجة بالذكاء الاصطناعي 
 
   </Tab>
 
-  <Tab title="Plugin حزمة Copilot SDK (copilot)">
+  <Tab title="Plugin لحاضنة Copilot SDK (copilot)">
     ثبّت Plugin الخارجي `@openclaw/copilot` عندما تريد أن تتولى
     Copilot CLI وSDK من GitHub حلقة الوكيل منخفضة المستوى لنماذج
-    `github-copilot/*` محددة.
+    `github-copilot/*` المحددة.
 
     ```bash
-    openclaw plugins install clawhub:@openclaw/copilot
+    openclaw plugins install @openclaw/copilot
     ```
 
-    ثم اختر إدخال نموذج أو مزوّد في زمن التشغيل:
+    ثم فعّل بيئة التشغيل لنموذج أو موفّر:
 
     ```json5
     {
@@ -81,43 +81,122 @@ GitHub Copilot هو مساعد البرمجة بالذكاء الاصطناعي 
     }
     ```
 
-    اختر هذا عندما تريد جلسات Copilot CLI أصلية، وحالة محادثات يديرها SDK،
-    وCompaction مملوكة لـ Copilot لتلك دورات الوكيل. راجع
-    [حزمة Copilot SDK](/ar/plugins/copilot) للاطلاع على عقد زمن التشغيل الكامل.
+    اختر هذا عندما تريد جلسات Copilot CLI الأصلية، وحالة سلاسل المحادثات
+    التي تديرها SDK، وCompaction الذي يديره Copilot لتلك الأدوار التي ينفذها الوكيل. من دون
+    التفعيل الصريح عبر `agentRuntime`، تستمر نماذج `github-copilot/*` في استخدام
+    الموفّر المضمّن. راجع [حاضنة Copilot SDK](/ar/plugins/copilot) للاطلاع على عقد
+    بيئة التشغيل الكامل.
 
   </Tab>
 
   <Tab title="Plugin وكيل Copilot (copilot-proxy)">
-    استخدم إضافة VS Code المسماة **Copilot Proxy** كجسر محلي. يتصل OpenClaw
-    بنقطة نهاية `/v1` الخاصة بالوكيل ويستخدم قائمة النماذج التي تضبطها هناك.
+    استخدم إضافة VS Code المسماة **Copilot Proxy** بوصفها جسرًا محليًا. يتصل OpenClaw
+    بنقطة النهاية `/v1` للوكيل (الافتراضية `http://localhost:3000/v1`) ويستخدم
+    قائمة النماذج التي تضبطها.
+
+    يأتي Plugin المسمى `copilot-proxy` مع OpenClaw ويكون مفعّلًا افتراضيًا.
+    اضبط عنوان URL الأساسي ومعرّفات النماذج باستخدام:
+
+    ```bash
+    openclaw models auth login --provider copilot-proxy --set-default
+    ```
 
     <Note>
-    اختر هذا عندما تكون تشغّل Copilot Proxy بالفعل في VS Code أو تحتاج إلى التوجيه
-    عبره. يجب تمكين Plugin وإبقاء إضافة VS Code قيد التشغيل.
+    اختر هذا عندما تكون قد شغّلت Copilot Proxy بالفعل في VS Code أو تحتاج إلى التوجيه
+    من خلاله. يجب أن تظل إضافة VS Code قيد التشغيل.
     </Note>
 
   </Tab>
 </Tabs>
 
-## علامات اختيارية
+## GitHub Enterprise (إقامة البيانات)
 
-| العلامة         | الوصف                                                |
-| --------------- | --------------------------------------------------- |
-| `--yes`         | تخطي مطالبة التأكيد                                 |
-| `--set-default` | تطبيق النموذج الافتراضي الموصى به للمزوّد أيضًا     |
+إذا كانت مؤسستك تستخدم مستأجر GitHub Enterprise لإقامة البيانات (مضيفًا
+من نوع `*.ghe.com` مثل `your-org.ghe.com`)، فإن Copilot يعمل على نقاط نهاية
+محلية للمستأجر بدلًا من `github.com` العام. يوفّر OpenClaw هذا بوصفه
+خيار مصادقة أصيلًا، فلا تحتاج إلى تعديل عناوين URL يدويًا.
+
+<Steps>
+  <Step title="اختيار خيار مصادقة Enterprise">
+    في الإعداد الأولي أو `openclaw models auth`، اختر
+    **GitHub Copilot (Enterprise / data residency)**. سيُطلب منك إدخال
+    نطاق Enterprise الخاص بك (مثل `your-org.ghe.com`)، ثم يُنفَّذ تسجيل الدخول
+    عبر الجهاز على ذلك المستأجر.
+
+    أدخل جذر المستأجر فقط (`your-org.ghe.com`). لا تُقبل مضيفات الخدمات المشتقة
+    مثل `api.your-org.ghe.com` أو `copilot-api.your-org.ghe.com`؛
+    يشتق OpenClaw نقاط النهاية هذه تلقائيًا من جذر المستأجر.
+
+    ```bash
+    openclaw models auth login --provider github-copilot --method device-enterprise
+    ```
+
+  </Step>
+  <Step title="حفظ النطاق في الإعدادات">
+    يُخزَّن المضيف المختار ضمن معاملات الموفّر، بحيث تستهدف عمليات تحديث الرمز
+    والإكمال اللاحقة المستأجر تلقائيًا:
+
+    ```json5
+    {
+      models: {
+        providers: {
+          "github-copilot": { params: { githubDomain: "your-org.ghe.com" } },
+        },
+      },
+    }
+    ```
+
+  </Step>
+</Steps>
+
+يتم توجيه تدفق الجهاز، واستبدال الرمز، وعمليات الإكمال على الترتيب إلى
+`https://your-org.ghe.com/login/device/code`،
+و`https://api.your-org.ghe.com/copilot_internal/v2/token`،
+و`https://copilot-api.your-org.ghe.com`. تحمل رموز إقامة البيانات
+وسمًا للمستأجر ولا تتضمن تلميحًا للوكيل، لذا يعود عنوان URL الأساسي للإكمال إلى
+مضيف Copilot الخاص بالمستأجر بدلًا من نقطة النهاية العامة.
+
+<Note>
+يؤدي تبديل النطاقات دائمًا إلى إعادة تشغيل تسجيل الدخول عبر الجهاز. إذا كان لديك بالفعل رمز
+Copilot مخزّن واخترت نطاقًا مختلفًا (`github.com` العام ↔ مستأجر
+`*.ghe.com`، أو من مستأجر إلى آخر)، فلن يعيد OpenClaw استخدام الرمز الحالي —
+بل يفرض تسجيل دخول جديدًا كي يقتصر نطاق الرمز على النطاق المكتوب في
+الإعدادات. ومع ذلك، تتيح إعادة تسجيل الدخول إلى النطاق *نفسه* إعادة استخدام
+الرمز الحالي. يؤدي الرجوع إلى `github.com` العام إلى مسح
+`githubDomain` المحفوظ، لتعود الإعدادات إلى الوضع الافتراضي.
+</Note>
+
+<Note>
+يتجاوز متغير البيئة `COPILOT_GITHUB_DOMAIN` النطاق المحسوم
+لكل مسارات Copilot التي تحسمه — تسجيل دخول Enterprise عبر الجهاز
+(`--method device-enterprise`)، والاختصار المستقل
+`openclaw models auth login-github-copilot`، وتحديث الرمز، والتضمينات،
+وعمليات الإكمال. عيّنه إلى مضيف `*.ghe.com` الخاص بك للإعدادات المؤتمتة بالكامل أو إعدادات CI.
+اتركه دون تعيين (مع غياب معامل الإعدادات) لاستخدام `github.com` العام.
+تحفظ عمليات تسجيل الدخول النطاق الذي أُصدر الرمز له (وتمسحه عند تسجيل الدخول
+إلى `github.com` العام)، لذا يظل التوجيه صحيحًا حتى بعد إلغاء تعيين
+متغير البيئة.
+</Note>
+
+## العلامات الاختيارية
+
+| الأمر                                                                    | العلامة         | الوصف                                                  |
+| ------------------------------------------------------------------------ | --------------- | ------------------------------------------------------ |
+| `openclaw models auth login-github-copilot`                              | `--yes`         | استبدال ملف تعريف مصادقة موجود من دون مطالبة           |
+| `openclaw models auth login --provider github-copilot --method device`   | `--set-default` | تطبيق النموذج الافتراضي الموصى به من الموفّر أيضًا     |
 
 ```bash
-# Skip confirmation
+# تخطي تأكيد إعادة تسجيل الدخول
 openclaw models auth login-github-copilot --yes
 
-# Login and set the default model in one step
+# تسجيل الدخول وتعيين النموذج الافتراضي في خطوة واحدة
 openclaw models auth login --provider github-copilot --method device --set-default
 ```
 
-## التهيئة غير التفاعلية
+## الإعداد الأولي غير التفاعلي
 
-إذا كان لديك بالفعل رمز وصول GitHub OAuth لـ Copilot، فاستورده أثناء
-الإعداد دون واجهة تفاعلية باستخدام `openclaw onboard --non-interactive`:
+يتطلب تدفق تسجيل الدخول عبر الجهاز TTY تفاعليًا. للإعداد دون واجهة تفاعلية، استورد
+رمز وصول GitHub OAuth موجودًا باستخدام `openclaw onboard --non-interactive`:
 
 ```bash
 openclaw onboard --non-interactive --accept-risk \
@@ -126,39 +205,39 @@ openclaw onboard --non-interactive --accept-risk \
   --skip-channels --skip-health
 ```
 
-يمكنك أيضًا حذف `--auth-choice`؛ فتمرير `--github-copilot-token` يستنتج
-اختيار مصادقة مزوّد GitHub Copilot. إذا حُذفت العلامة، تعود التهيئة
+يمكنك أيضًا حذف `--auth-choice`؛ إذ يؤدي تمرير `--github-copilot-token` إلى استنتاج
+خيار مصادقة موفّر GitHub Copilot. إذا حُذفت العلامة، يعود الإعداد الأولي
 إلى `COPILOT_GITHUB_TOKEN`، ثم `GH_TOKEN`، ثم `GITHUB_TOKEN`. استخدم
-`--secret-input-mode ref` مع ضبط `COPILOT_GITHUB_TOKEN` لتخزين
-`tokenRef` مدعوم بمتغير بيئة بدل النص الصريح في `auth-profiles.json`.
+`--secret-input-mode ref` مع تعيين `COPILOT_GITHUB_TOKEN` لتخزين
+`tokenRef` مستند إلى متغير بيئة بدلًا من نص صريح في `auth-profiles.json`.
 
 <AccordionGroup>
   <Accordion title="مطلوب TTY تفاعلي">
-    يتطلب مسار تسجيل الدخول للجهاز TTY تفاعليًا. شغّله مباشرة في
+    يتطلب تدفق تسجيل الدخول عبر الجهاز TTY تفاعليًا. شغّله مباشرة في
     طرفية، وليس في برنامج نصي غير تفاعلي أو مسار CI.
   </Accordion>
 
-  <Accordion title="يعتمد توفر النماذج على خطتك">
-    يعتمد توفر نماذج Copilot على خطة GitHub لديك. إذا رُفض نموذج،
-    جرّب معرفًا آخر (على سبيل المثال `github-copilot/gpt-5.5`). راجع
+  <Accordion title="توفر النماذج يعتمد على خطتك">
+    يعتمد توفر نماذج Copilot على خطة GitHub الخاصة بك. إذا رُفض نموذج،
+    فجرّب معرّفًا آخر (مثل `github-copilot/gpt-5.5`). راجع
     [النماذج المدعومة لكل خطة Copilot من GitHub](https://docs.github.com/en/copilot/reference/ai-models/supported-models#supported-ai-models-per-copilot-plan)
     للاطلاع على قائمة النماذج الحالية.
   </Accordion>
 
-  <Accordion title="تحديث الفهرس المباشر من Copilot API">
-    بمجرد أن يحل مسار مصادقة تسجيل الدخول للجهاز (أو متغير البيئة) رمز GitHub،
-    يحدّث OpenClaw فهرس النماذج عند الطلب من `${baseUrl}/models`
-    (نقطة النهاية نفسها التي يستخدمها VS Code Copilot) بحيث يتتبع زمن التشغيل
-    الاستحقاقات الخاصة بكل حساب ونوافذ السياق الدقيقة دون اضطراب في البيان.
-    تصبح نماذج Copilot المنشورة حديثًا مرئية دون ترقية OpenClaw،
-    وتعكس نوافذ السياق الحدود الحقيقية لكل نموذج
-    (مثل 400k لسلسلة gpt-5.x، و1M للمتغيرات الداخلية
+  <Accordion title="تحديث الكتالوج المباشر من Copilot API">
+    بعد أن يحسم مسار المصادقة عبر تسجيل الدخول بالجهاز (أو متغير البيئة) رمز GitHub،
+    يحدّث OpenClaw كتالوج النماذج عند الطلب من `${baseUrl}/models`
+    (نقطة النهاية نفسها التي يستخدمها VS Code Copilot)، بحيث تتتبّع بيئة التشغيل
+    استحقاقات كل حساب ونوافذ السياق الدقيقة دون تغييرات متكررة في البيان.
+    تصبح نماذج Copilot المنشورة حديثًا مرئية من دون ترقية OpenClaw،
+    وتعكس نوافذ السياق الحدود الفعلية لكل نموذج
+    (مثل 400 ألف لسلسلة gpt-5.x، ومليون للمتغيرات الداخلية
     `claude-opus-*-1m`).
 
-    يبقى الفهرس الثابت المضمّن كخيار احتياطي ظاهر عند تعطيل الاكتشاف،
-    أو عندما لا يملك المستخدم ملف مصادقة GitHub، أو يفشل استبدال الرمز،
-    أو يحدث خطأ في استدعاء HTTPS لـ `/models`. لإلغاء ذلك والاعتماد بالكامل
-    على فهرس البيان الثابت (سيناريوهات دون اتصال / معزولة الشبكة):
+    يظل الكتالوج الثابت المضمّن خيار الرجوع المرئي عند تعطيل الاكتشاف،
+    أو عدم امتلاك المستخدم ملف تعريف مصادقة GitHub، أو فشل استبدال الرمز،
+    أو حدوث خطأ في استدعاء HTTPS إلى `/models`. لإلغاء الاشتراك والاعتماد كليًا
+    على كتالوج البيان الثابت (في سيناريوهات العمل دون اتصال أو الشبكات المعزولة):
 
     ```json5
     {
@@ -174,57 +253,55 @@ openclaw onboard --non-interactive --accept-risk \
 
   </Accordion>
 
-  <Accordion title="اختيار النقل">
-    تستخدم معرفات نماذج Claude نقل Anthropic Messages تلقائيًا. تحتفظ نماذج GPT
-    وسلسلة o ونماذج Gemini بنقل OpenAI Responses. يختار OpenClaw
-    النقل الصحيح بناءً على مرجع النموذج.
+  <Accordion title="اختيار وسيلة النقل">
+    تستخدم معرّفات نماذج Claude وسيلة نقل Anthropic Messages تلقائيًا.
+    تستخدم نماذج Gemini وسيلة نقل OpenAI Chat Completions؛ بينما تحتفظ نماذج GPT
+    وسلسلة o بوسيلة نقل OpenAI Responses. يختار OpenClaw وسيلة
+    النقل الصحيحة استنادًا إلى مرجع النموذج.
   </Accordion>
 
   <Accordion title="توافق الطلبات">
-    يرسل OpenClaw ترويسات طلبات بنمط Copilot IDE على عمليات نقل Copilot،
-    بما في ذلك دورات Compaction المضمّنة، ونتائج الأدوات، والمتابعة بالصور. ولا
-    يفعّل استمرار Responses على مستوى المزوّد لـ Copilot ما لم يتم التحقق من
-    ذلك السلوك مقابل API الخاصة بـ Copilot.
+    يرسل OpenClaw ترويسات طلبات على نمط Copilot IDE عبر وسائل نقل Copilot
+    (إصدارات محرر/Plugin في VS Code ومعرّف تكامل `vscode-chat`)،
+    ويضع علامة على أدوار المتابعة لنتائج الأدوات بوصفها منشأة من الوكيل، ويعيّن ترويسة
+    الرؤية الخاصة بـ Copilot عندما يتضمن الدور إدخال صورة.
   </Accordion>
 
-  <Accordion title="ترتيب حل متغيرات البيئة">
-    يحل OpenClaw مصادقة Copilot من متغيرات البيئة بترتيب الأولوية التالي:
+  <Accordion title="ترتيب حسم متغيرات البيئة">
+    يحسم OpenClaw مصادقة Copilot من متغيرات البيئة وفق ترتيب
+    الأولوية التالي:
 
-    | الأولوية | المتغير               | ملاحظات                         |
-    | -------- | --------------------- | -------------------------------- |
-    | 1        | `COPILOT_GITHUB_TOKEN` | أعلى أولوية، خاص بـ Copilot     |
-    | 2        | `GH_TOKEN`            | رمز GitHub CLI (احتياطي)        |
-    | 3        | `GITHUB_TOKEN`        | رمز GitHub قياسي (الأدنى)       |
+    | الأولوية | المتغير                | الملاحظات                              |
+    | -------- | ----------------------- | -------------------------------------- |
+    | 1        | `COPILOT_GITHUB_TOKEN`  | الأولوية الأعلى، خاص بـ Copilot       |
+    | 2        | `GH_TOKEN`              | رمز GitHub CLI (خيار رجوع)             |
+    | 3        | `GITHUB_TOKEN`          | رمز GitHub القياسي (الأولوية الأدنى)   |
 
-    عند ضبط عدة متغيرات، يستخدم OpenClaw الأعلى أولوية.
-    يخزّن مسار تسجيل الدخول للجهاز (`openclaw models auth login-github-copilot`)
-    رمزه في مخزن ملفات المصادقة وتكون له أسبقية على جميع متغيرات البيئة.
+    عند تعيين عدة متغيرات، يستخدم OpenClaw المتغير الأعلى أولوية.
+    يخزّن تدفق تسجيل الدخول عبر الجهاز (`openclaw models auth login-github-copilot`)
+    رمزه في مخزن ملفات تعريف المصادقة، وتكون له الأولوية على جميع متغيرات
+    البيئة.
 
   </Accordion>
 
   <Accordion title="تخزين الرمز">
-    يخزّن تسجيل الدخول رمز GitHub في مخزن ملفات المصادقة ويستبدله
-    برمز Copilot API عند تشغيل OpenClaw. لست بحاجة إلى إدارة
-    الرمز يدويًا.
+    يخزّن تسجيل الدخول رمز GitHub في مخزن ملفات تعريف المصادقة (معرّف ملف التعريف
+    `github-copilot:github`) ويستبدله برمز Copilot API قصير الأجل
+    عند تشغيل OpenClaw. لا تحتاج إلى إدارة الرمز يدويًا.
   </Accordion>
 </AccordionGroup>
 
-<Warning>
-يتطلب أمر تسجيل الدخول للجهاز TTY تفاعليًا. استخدم التهيئة غير التفاعلية
-عندما تحتاج إلى إعداد دون واجهة تفاعلية.
-</Warning>
+## تضمينات البحث في الذاكرة
 
-## تضمينات بحث الذاكرة
-
-يمكن لـ GitHub Copilot أيضًا أن يعمل كمزوّد تضمينات لـ
-[بحث الذاكرة](/ar/concepts/memory-search). إذا كان لديك اشتراك Copilot
-وسجلت الدخول، فيمكن لـ OpenClaw استخدامه للتضمينات دون مفتاح API منفصل.
+يمكن أن يعمل GitHub Copilot أيضًا بوصفه موفّر تضمينات من أجل
+[البحث في الذاكرة](/ar/concepts/memory-search). إذا كان لديك اشتراك Copilot
+وسجّلت الدخول، فيمكن لـ OpenClaw استخدامه للتضمينات دون مفتاح API منفصل.
 
 ### الإعدادات
 
-اضبط `memorySearch.provider` صراحة لاستخدام تضمينات GitHub Copilot. إذا كان
+عيّن `memorySearch.provider` صراحةً لاستخدام تضمينات GitHub Copilot. إذا كان
 رمز GitHub متاحًا، يكتشف OpenClaw نماذج التضمين المتاحة من
-Copilot API ويختار الأفضل تلقائيًا.
+Copilot API ويختار أفضلها تلقائيًا.
 
 ```json5
 {
@@ -232,7 +309,7 @@ Copilot API ويختار الأفضل تلقائيًا.
     defaults: {
       memorySearch: {
         provider: "github-copilot",
-        // Optional: override the auto-discovered model
+        // اختياري: تجاوز النموذج المكتشف تلقائيًا
         model: "text-embedding-3-small",
       },
     },
@@ -242,20 +319,21 @@ Copilot API ويختار الأفضل تلقائيًا.
 
 ### آلية العمل
 
-1. يحل OpenClaw رمز GitHub الخاص بك (من متغيرات البيئة أو ملف المصادقة).
-2. يستبدله برمز Copilot API قصير العمر.
-3. يستعلم نقطة نهاية Copilot `/models` لاكتشاف نماذج التضمين المتاحة.
-4. يختار أفضل نموذج (يفضّل `text-embedding-3-small`).
-5. يرسل طلبات التضمين إلى نقطة نهاية Copilot `/embeddings`.
+1. يحسم OpenClaw رمز GitHub الخاص بك (من متغيرات البيئة أو ملف تعريف المصادقة).
+2. يستبدله برمز Copilot API قصير الأجل.
+3. يستعلم من نقطة نهاية Copilot المسماة `/models` لاكتشاف نماذج التضمين المتاحة.
+4. يختار أفضل نموذج (ترتيب التفضيل: `text-embedding-3-small`،
+   و`text-embedding-3-large`، و`text-embedding-ada-002`).
+5. يرسل طلبات التضمين إلى نقطة نهاية Copilot المسماة `/embeddings`.
 
-يعتمد توفر النماذج على خطة GitHub لديك. إذا لم تتوفر أي نماذج تضمين،
-يتخطى OpenClaw Copilot ويجرّب المزوّد التالي.
+يعتمد توفر النماذج على خطة GitHub الخاصة بك. إذا لم تتوفر نماذج تضمين،
+يتخطى OpenClaw موفّر Copilot ويجرّب الموفّر التالي.
 
-## ذات صلة
+## ذو صلة
 
 <CardGroup cols={2}>
   <Card title="اختيار النموذج" href="/ar/concepts/model-providers" icon="layers">
-    اختيار المزوّدين ومراجع النماذج وسلوك تجاوز الفشل.
+    اختيار المزوّدين ومراجع النماذج وسلوك التحويل عند الفشل.
   </Card>
   <Card title="OAuth والمصادقة" href="/ar/gateway/authentication" icon="key">
     تفاصيل المصادقة وقواعد إعادة استخدام بيانات الاعتماد.

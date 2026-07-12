@@ -4,23 +4,21 @@ read_when:
     - Anda sedang mengonfigurasi Agen Eksternal Raft
     - Anda sedang men-debug pengiriman wake Raft
 sidebarTitle: Raft
-summary: Dukungan Agen Eksternal Raft melalui jembatan pemicu bangun CLI Raft
+summary: Dukungan Agen Eksternal Raft melalui jembatan pembangkit CLI Raft
 title: Rakit
 x-i18n:
-    generated_at: "2026-06-27T17:12:35Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:00:25Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ef9ebfd27e69575d9a1534b3b31f05036f081c54a2379411d2c7fb6f8165d558
+    source_hash: 454d92d764a4ec3b0ec52467cba254dcad795870e04d1d32d4cf65d8b451a0de
     source_path: channels/raft.md
     workflow: 16
 ---
 
-Dukungan Raft menghubungkan agen OpenClaw ke Raft External Agent melalui CLI
-Raft lokal. Raft mengirimkan petunjuk bangun terautentikasi ke Gateway. Agen kemudian menggunakan
-CLI Raft untuk memeriksa dan mengirim pesan.
+Raft menghubungkan agen OpenClaw ke Agen Eksternal Raft melalui CLI Raft lokal. Raft mengirimkan petunjuk pembangkitan terautentikasi ke Gateway; agen kemudian menggunakan CLI Raft untuk memeriksa dan mengirim pesan. Hanya percakapan langsung (tanpa grup).
 
-## Instal
+## Instalasi
 
 Raft adalah plugin eksternal resmi. Instal di host Gateway:
 
@@ -33,16 +31,15 @@ Detail: [Plugin](/id/tools/plugin)
 
 ## Prasyarat
 
-- Workspace Raft dengan External Agent.
-- CLI Raft terinstal pada host yang sama dengan Gateway OpenClaw.
-- Profil CLI Raft yang sudah masuk dan terkait dengan External Agent tersebut.
+- Ruang kerja Raft dengan Agen Eksternal.
+- CLI Raft terinstal di host yang sama dengan Gateway OpenClaw dan tersedia di `PATH` layanan.
+- Profil CLI Raft yang sudah masuk dan dikaitkan dengan Agen Eksternal tersebut.
 
-Plugin tidak menyimpan kredensial Raft. CLI Raft menyimpan autentikasi tersebut
-di profilnya sendiri.
+Plugin tidak menyimpan kredensial Raft; CLI Raft menyimpan autentikasi tersebut dalam profilnya sendiri.
 
 ## Konfigurasi
 
-Atur profil dalam konfigurasi:
+Tetapkan profil dalam konfigurasi:
 
 ```json5
 {
@@ -55,14 +52,13 @@ Atur profil dalam konfigurasi:
 }
 ```
 
-Untuk akun default, Anda dapat mengatur `RAFT_PROFILE` di lingkungan Gateway
-sebagai gantinya:
+Untuk akun default, Anda dapat menetapkan `RAFT_PROFILE` di lingkungan Gateway sebagai gantinya:
 
 ```bash
 RAFT_PROFILE=openclaw
 ```
 
-Gunakan akun bernama ketika satu Gateway terhubung ke lebih dari satu Raft External Agent:
+Gunakan akun bernama ketika satu Gateway terhubung ke lebih dari satu Agen Eksternal Raft:
 
 ```json5
 {
@@ -81,28 +77,25 @@ Gunakan akun bernama ketika satu Gateway terhubung ke lebih dari satu Raft Exter
 }
 ```
 
-Alur penyiapan interaktif merekam profil yang sama:
+Penyiapan interaktif mencatat profil yang sama:
 
 ```bash
-openclaw channels setup raft
+openclaw channels add --channel raft
 ```
 
-## Cara Kerjanya
+## Cara kerjanya
 
 Saat Gateway dimulai, plugin:
 
-1. Membuka endpoint bangun HTTP hanya-loopback pada port sementara.
-2. Memulai `raft --profile <profile> agent bridge` dengan endpoint tersebut dan
-   token per proses.
-3. Hanya menerima petunjuk bangun terautentikasi tanpa konten dengan identitas replay dari bridge lokal.
-4. Memerlukan salah satu dari `eventId`, `attemptId`, `messageId`, `delivery_id`, `wake_id`, atau `id`.
-5. Mendeduplikasi pengiriman bangun ulang terbaru berdasarkan ID peristiwa bridge, termasuk lintas restart Gateway.
-6. Mengembalikan sesi runtime yang stabil untuk bridge saat ini dan batch pengurasan aktivitas kosong untuk protokol CLI Raft.
-7. Memulai satu giliran agen OpenClaw terserialisasi untuk setiap bangun yang diterima.
+1. Membuka endpoint HTTP pembangkitan khusus loopback pada porta sementara.
+2. Menjalankan `raft --profile <profile> agent bridge` dengan endpoint tersebut dan token per proses.
+3. Hanya menerima petunjuk pembangkitan terautentikasi tanpa konten yang memiliki identitas pemutaran ulang dari jembatan lokal.
+4. Mewajibkan salah satu dari `eventId`, `attemptId`, `messageId`, `delivery_id`, `wake_id`, atau `id` pada setiap muatan pembangkitan.
+5. Mendeduplikasi pengiriman ulang pembangkitan berdasarkan ID peristiwa jembatan selama 24 jam, termasuk setelah Gateway dimulai ulang.
+6. Mengembalikan sesi waktu proses yang stabil untuk jembatan saat ini dan kumpulan pengurasan aktivitas kosong untuk protokol CLI Raft.
+7. Memulai satu giliran agen OpenClaw yang diserialkan untuk setiap pembangkitan yang diterima.
 
-Bridge memiliki percobaan ulang pengiriman Raft dan koneksi ulang. Giliran OpenClaw menerima
-hanya pemberitahuan bangun, bukan salinan isi pesan Raft. Ia menggunakan CLI untuk membaca
-pesan tertunda dan mengirim responsnya:
+Jembatan menangani percobaan ulang pengiriman dan penyambungan kembali Raft. Giliran OpenClaw hanya menerima pemberitahuan pembangkitan, bukan salinan isi pesan Raft. Agen menggunakan CLI untuk membaca pesan tertunda dan mengirim responsnya:
 
 ```bash
 raft --profile openclaw message check
@@ -110,41 +103,32 @@ raft --profile openclaw message send
 ```
 
 <Note>
-Raft bukan transport pesan push normal. OpenClaw tidak secara otomatis
-mengirim teks akhir model kembali melalui bridge, jadi agen harus menggunakan
-CLI Raft setelah memproses bangun.
+Raft bukan transportasi pesan dorong. OpenClaw tidak secara otomatis mengirim teks akhir model kembali melalui jembatan, sehingga agen harus menggunakan CLI Raft setelah memproses pembangkitan.
 </Note>
 
 ## Verifikasi
 
-Periksa bahwa OpenClaw dapat menemukan CLI dan memiliki profil yang dikonfigurasi:
+Periksa apakah OpenClaw dapat menemukan CLI dan memiliki profil yang telah dikonfigurasi:
 
 ```bash
 openclaw channels status --probe
 openclaw plugins inspect raft --runtime --json
 ```
 
-Lalu kirim pesan ke Raft External Agent. Log Gateway seharusnya menampilkan
-bridge Raft dimulai, diikuti bangun masuk. Agen seharusnya menggunakan
-profil Raft yang dikonfigurasi untuk memeriksa pesan tertundanya.
+Kemudian kirim pesan ke Agen Eksternal Raft. Log Gateway seharusnya menunjukkan jembatan Raft dimulai, diikuti oleh pembangkitan masuk. Agen harus menggunakan profil Raft yang dikonfigurasi untuk memeriksa pesan tertundanya.
 
-## Pemecahan Masalah
+## Pemecahan masalah
 
 <AccordionGroup>
   <Accordion title="CLI Raft tidak ditemukan">
-    Instal CLI Raft di host Gateway dan buat `raft` tersedia di
-    `PATH` layanan. Verifikasi dengan `raft --help`, lalu restart Gateway.
+    Instal CLI Raft di host Gateway dan pastikan `raft` tersedia di `PATH` layanan. Verifikasi dengan `raft --help`, lalu mulai ulang Gateway.
   </Accordion>
-  <Accordion title="Bridge langsung keluar">
-    Verifikasi profil yang dikonfigurasi sudah masuk dan milik
-    Raft External Agent yang dimaksud. Jalankan `raft --profile <profile> agent bridge` secara langsung
-    untuk melihat diagnostik CLI.
+  <Accordion title="Jembatan langsung berhenti">
+    Pastikan profil yang dikonfigurasi sudah masuk dan merupakan milik Agen Eksternal Raft yang dituju. Jalankan `raft --profile <profile> agent bridge` secara langsung untuk melihat diagnostik CLI.
   </Accordion>
-  <Accordion title="Bangun tiba tetapi tidak ada respons Raft yang dikirim">
-    Ini diharapkan ketika agen tidak memanggil CLI Raft. Bridge bangun
-    tidak membawa isi pesan atau balasan akhir otomatis. Periksa
-    kebijakan alat agen dan pastikan agen dapat menjalankan `raft --profile <profile> message
-    check` dan `message send`.
+  <Accordion title="Pembangkitan diterima tetapi tidak ada respons Raft yang dikirim">
+    Hal ini wajar jika agen tidak menjalankan CLI Raft. Jembatan pembangkitan tidak membawa isi pesan atau balasan akhir otomatis. Periksa kebijakan alat agen dan pastikan agen dapat menjalankan `raft --profile <profile>
+    message check` dan `message send`.
   </Accordion>
 </AccordionGroup>
 
@@ -152,4 +136,4 @@ profil Raft yang dikonfigurasi untuk memeriksa pesan tertundanya.
 
 - [Raft](https://raft.build/)
 - [Dokumentasi Raft](https://docs.raft.build/welcome/)
-- [Integrasi Hermes Raft](https://hermes-agent.nousresearch.com/docs/user-guide/messaging/raft)
+- [Integrasi Hermes dengan Raft](https://hermes-agent.nousresearch.com/docs/user-guide/messaging/raft)

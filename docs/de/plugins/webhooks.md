@@ -1,14 +1,13 @@
 ---
 read_when:
-    - Sie möchten TaskFlows von einem externen System aus auslösen oder steuern
+    - Sie möchten TaskFlows über ein externes System auslösen oder steuern
     - Sie konfigurieren das mitgelieferte Webhooks-Plugin
 summary: 'Webhooks-Plugin: authentifizierter TaskFlow-Eingang für vertrauenswürdige externe Automatisierung'
 title: Webhooks-Plugin
 x-i18n:
-    generated_at: "2026-07-12T15:46:16Z"
+    generated_at: "2026-07-12T02:03:06Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 081ccbb4ca60234b20f4db7379395bdc51e7203caad4c0a88f292989ca18b28e
     source_path: plugins/webhooks.md
@@ -16,12 +15,13 @@ x-i18n:
 ---
 
 Das Webhooks-Plugin fügt authentifizierte HTTP-Routen hinzu, damit ein vertrauenswürdiges externes
-System (Zapier, n8n, ein CI-Job, ein interner Dienst) verwaltete OpenClaw-TaskFlows
+System (Zapier, n8n, ein CI-Auftrag, ein interner Dienst) verwaltete OpenClaw TaskFlows
 über HTTP erstellen und steuern kann, ohne ein benutzerdefiniertes Plugin zu schreiben.
 
-Das Plugin wird innerhalb des Gateway-Prozesses ausgeführt. Installieren und
-konfigurieren Sie es bei einem entfernten Gateway auf diesem Host und starten Sie anschließend das Gateway neu. Es wird
-ohne konfigurierte Routen ausgeliefert und führt daher keine Aktion aus, bis Sie mindestens eine Route hinzufügen.
+Das Plugin wird innerhalb des Gateway-Prozesses ausgeführt. Bei einem entfernten Gateway
+installieren und konfigurieren Sie es auf diesem Host und starten anschließend das Gateway neu.
+Es wird ohne konfigurierte Routen ausgeliefert und bleibt daher wirkungslos, bis Sie mindestens
+eine Route hinzufügen.
 
 ## Routen konfigurieren
 
@@ -44,7 +44,7 @@ Legen Sie die Konfiguration unter `plugins.entries.webhooks.config` fest:
                 id: "OPENCLAW_WEBHOOK_SECRET",
               },
               controllerId: "webhooks/zapier",
-              description: "Zapier-TaskFlow-Bridge",
+              description: "Zapier TaskFlow bridge",
             },
           },
         },
@@ -56,43 +56,45 @@ Legen Sie die Konfiguration unter `plugins.entries.webhooks.config` fest:
 
 Routenfelder:
 
-| Feld           | Erforderlich | Standardwert                  | Hinweise                                            |
-| -------------- | ------------ | ----------------------------- | --------------------------------------------------- |
-| `enabled`      | nein         | `true`                        |                                                     |
-| `path`         | nein         | `/plugins/webhooks/<routeId>` | Muss routenübergreifend eindeutig sein.             |
-| `sessionKey`   | ja           | -                             | Sitzung, der die gebundenen TaskFlows gehören.      |
-| `secret`       | ja           | -                             | Klartextzeichenfolge oder eine SecretRef (unten).   |
+| Feld           | Erforderlich | Standardwert                  | Hinweise                                             |
+| -------------- | ------------ | ----------------------------- | ---------------------------------------------------- |
+| `enabled`      | nein         | `true`                        |                                                      |
+| `path`         | nein         | `/plugins/webhooks/<routeId>` | Muss über alle Routen hinweg eindeutig sein.         |
+| `sessionKey`   | ja           | -                             | Sitzung, der die gebundenen TaskFlows gehören.       |
+| `secret`       | ja           | -                             | Einfache Zeichenfolge oder eine SecretRef (siehe unten). |
 | `controllerId` | nein         | `webhooks/<routeId>`          | Wird als standardmäßiger `create_flow`-Controller verwendet. |
-| `description`  | nein         | -                             | Nur ein Hinweis für Betreiber.                      |
+| `description`  | nein         | -                             | Nur ein Hinweis für den Betreiber.                   |
 
-`secret` akzeptiert eine Klartextzeichenfolge oder eine SecretRef: `{ source: "env" | "file" | "exec", provider: "default", id: "..." }`.
+`secret` akzeptiert eine einfache Zeichenfolge oder eine SecretRef: `{ source: "env" | "file" | "exec", provider: "default", id: "..." }`.
 
 Jede konfigurierte Route wird beim Start registriert, unabhängig davon, ob ihr Secret
-aktuell aufgelöst werden kann. Ein nicht auflösbares Secret deaktiviert oder überspringt die
-Route nicht – Anfragen an diese Route schlagen bei der Authentifizierung (`401`) fehl, bis das Secret
-aufgelöst werden kann. SecretRef-Werte werden bei jeder Anfrage erneut aufgelöst, sodass eine Rotation des
-zugrunde liegenden Secrets (Umgebungsvariable, Datei oder Exec-Ausgabe) ohne einen
-Neustart des Gateways wirksam wird.
+derzeit aufgelöst werden kann. Ein nicht auflösbares Secret deaktiviert oder überspringt
+die Route nicht – Anfragen an diese Route schlagen bei der Authentifizierung (`401`) fehl,
+bis das Secret aufgelöst werden kann. SecretRef-Werte werden bei jeder Anfrage erneut
+aufgelöst, sodass eine Rotation des zugrunde liegenden Secrets (Umgebungsvariable, Datei
+oder Ausgabe eines Befehls) ohne Neustart des Gateways wirksam wird.
 
 ## Sicherheitsmodell
 
 Jede Route handelt mit der TaskFlow-Berechtigung ihres konfigurierten `sessionKey`: Sie
-kann jeden TaskFlow untersuchen und verändern, der dieser Sitzung gehört. Der TaskFlow-Zugriff
-erfolgt immer über `api.runtime.tasks.managedFlows.bindSession(...)`, sodass eine
-Route niemals außerhalb ihrer gebundenen Sitzung handeln kann. So begrenzen Sie den potenziellen Schadensumfang:
+kann jeden TaskFlow untersuchen und ändern, der dieser Sitzung gehört. Der TaskFlow-Zugriff
+erfolgt immer über `api.runtime.tasks.managedFlows.bindSession(...)`, sodass eine Route
+niemals außerhalb ihrer gebundenen Sitzung handeln kann. So begrenzen Sie den potenziellen
+Schadensumfang:
 
 - Verwenden Sie für jede Route ein starkes, eindeutiges Secret.
-- Bevorzugen Sie eine SecretRef gegenüber einem eingebetteten Klartext-Secret.
-- Binden Sie Routen an die am engsten begrenzte Sitzung, die für den Workflow geeignet ist.
+- Bevorzugen Sie eine SecretRef gegenüber einem direkt eingetragenen Klartext-Secret.
+- Binden Sie Routen an die engstmögliche Sitzung, die für den Workflow geeignet ist.
 - Machen Sie nur den spezifischen Webhook-Pfad zugänglich, den Sie benötigen.
 
-Reihenfolge der Anfrageverarbeitung für jeden Pfad: Prüfungen der HTTP-Methode (nur `POST`) und
-von `Content-Type: application/json`, anschließend Ratenbegrenzung mit festem Zeitfenster (120
-Anfragen pro 60-Sekunden-Fenster je Pfad-und-Client-IP-Schlüssel, bis zu 4.096
-nachverfolgte Schlüssel), dann Begrenzung gleichzeitig verarbeiteter Anfragen (8 gleichzeitige Anfragen pro Schlüssel, bis zu
-4.096 nachverfolgte Schlüssel), dann Authentifizierung mit gemeinsamem Secret und anschließend das Einlesen eines JSON-Texts mit 256 KB /
-15 Sekunden. Anfragen, die bei einer früheren Prüfung fehlschlagen, erreichen
-spätere Prüfungen nicht.
+Verarbeitungsreihenfolge der Anfragen für jeden Pfad: Prüfungen der HTTP-Methode (nur `POST`)
+und von `Content-Type: application/json`, anschließend Ratenbegrenzung mit festem Zeitfenster
+(120 Anfragen pro 60-Sekunden-Zeitfenster je Kombination aus Pfad und Client-IP, mit bis zu
+4.096 verfolgten Schlüsseln), danach Begrenzung gleichzeitig verarbeiteter Anfragen
+(8 gleichzeitige Anfragen pro Schlüssel, mit bis zu 4.096 verfolgten Schlüsseln), anschließend
+Authentifizierung über das gemeinsame Secret und schließlich das Einlesen eines JSON-Anfragetexts
+mit einer Begrenzung auf 256 KB und 15 Sekunden. Anfragen, die bei einer früheren Prüfung
+fehlschlagen, erreichen die nachfolgenden Prüfungen nicht.
 
 ## Anfrageformat
 
@@ -108,21 +110,21 @@ curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
 
 ## Unterstützte Aktionen
 
-| Aktion             | Zweck                                                              |
-| ------------------ | ------------------------------------------------------------------ |
-| `create_flow`      | Erstellt einen verwalteten TaskFlow für die Sitzung der Route.     |
-| `get_flow`         | Ruft einen TaskFlow anhand seiner ID ab.                            |
-| `list_flows`       | Listet TaskFlows für die Sitzung der Route auf.                     |
-| `find_latest_flow` | Ruft den zuletzt aktualisierten TaskFlow ab.                        |
-| `resolve_flow`     | Löst einen TaskFlow anhand eines opaken Tokens auf.                 |
-| `get_task_summary` | Ruft die Aufgabenzusammenfassung für einen TaskFlow ab.             |
+| Aktion             | Zweck                                                               |
+| ------------------ | ------------------------------------------------------------------- |
+| `create_flow`      | Erstellt einen verwalteten TaskFlow für die Sitzung der Route.       |
+| `get_flow`         | Ruft einen TaskFlow anhand seiner ID ab.                             |
+| `list_flows`       | Listet TaskFlows für die Sitzung der Route auf.                      |
+| `find_latest_flow` | Ruft den zuletzt aktualisierten TaskFlow ab.                         |
+| `resolve_flow`     | Löst einen TaskFlow anhand eines opaken Tokens auf.                  |
+| `get_task_summary` | Ruft die Aufgabenzusammenfassung für einen TaskFlow ab.              |
 | `set_waiting`      | Markiert einen TaskFlow als wartend, optional mit Status-/Wartedaten. |
-| `resume_flow`      | Setzt einen wartenden/blockierten TaskFlow fort.                    |
-| `finish_flow`      | Markiert einen TaskFlow als abgeschlossen.                          |
-| `fail_flow`        | Markiert einen TaskFlow als fehlgeschlagen.                         |
-| `request_cancel`   | Fordert eine kooperative Abbrechung an.                             |
+| `resume_flow`      | Setzt einen wartenden/blockierten TaskFlow fort.                     |
+| `finish_flow`      | Markiert einen TaskFlow als abgeschlossen.                           |
+| `fail_flow`        | Markiert einen TaskFlow als fehlgeschlagen.                          |
+| `request_cancel`   | Fordert eine kooperative Abbrechung an.                              |
 | `cancel_flow`      | Bricht einen TaskFlow ab (kann `202` zurückgeben, wenn untergeordnete Aufgaben noch aktiv sind). |
-| `run_task`         | Erstellt eine verwaltete untergeordnete Aufgabe innerhalb eines vorhandenen TaskFlow. |
+| `run_task`         | Erstellt eine verwaltete untergeordnete Aufgabe innerhalb eines vorhandenen TaskFlows. |
 
 Ändernde Aktionen (`set_waiting`, `resume_flow`, `finish_flow`, `fail_flow`,
 `request_cancel`) erfordern `flowId` und `expectedRevision` für optimistische
@@ -142,8 +144,8 @@ Nebenläufigkeitskontrolle; eine veraltete Revision gibt `409 revision_conflict`
 ### `run_task`
 
 Zulässige `runtime`-Werte: `subagent`, `acp`. `startedAt`, `lastEventAt` und
-`progressSummary` sind nur gültig, wenn `status` den Wert `"running"` hat; werden sie
-mit einem anderen Status gesendet, wird `400 invalid_request` zurückgegeben.
+`progressSummary` sind nur gültig, wenn `status` den Wert `"running"` hat; wenn sie
+mit einem anderen Status gesendet werden, wird `400 invalid_request` zurückgegeben.
 
 ```json
 {
@@ -175,17 +177,17 @@ mit einem anderen Status gesendet, wird `400 invalid_request` zurückgegeben.
 }
 ```
 
-Flow- und Aufgabenansichten enthalten niemals Eigentümer-/Sitzungsmetadaten, sodass Antworten
-den gebundenen `sessionKey` der Route nicht offenlegen können. Zu den `code`-Werten gehören `not_found`,
-`not_managed`, `revision_conflict`, `persist_failed`, `cancel_requested`,
-`cancel_pending`, `terminal`, `invalid_request`, `request_rejected` und
-aktionsspezifische Fallback-Codes (`mutation_rejected`, `create_rejected`,
-`task_not_created`, `cancel_rejected`), wenn eine Änderung aus einem Grund
-abgelehnt wird, der nicht durch die oben genannten Codes abgedeckt ist.
+Flow- und Aufgabenansichten enthalten niemals Eigentümer-/Sitzungsmetadaten, sodass
+Antworten den gebundenen `sessionKey` der Route nicht offenlegen können. Zu den `code`-Werten
+gehören `not_found`, `not_managed`, `revision_conflict`, `persist_failed`, `cancel_requested`,
+`cancel_pending`, `terminal`, `invalid_request`, `request_rejected` sowie aktionsspezifische
+Fallback-Codes (`mutation_rejected`, `create_rejected`, `task_not_created`, `cancel_rejected`),
+wenn eine Änderung aus einem Grund abgelehnt wird, der nicht durch die oben genannten Codes
+abgedeckt ist.
 
 ## Verwandte Themen
 
-- [Hooks](/de/automation/hooks) – interne ereignisgesteuerte Hooks im Vergleich zu dieser HTTP-basierten TaskFlow-Bridge
-- [Gateway-Webhooks (`hooks.*`-Konfiguration)](/de/automation/cron-jobs#webhooks) – separate generische HTTP-Endpunktfunktion des Gateway; nicht identisch mit den Routen dieses Plugins
+- [Hooks](/de/automation/hooks) – interne ereignisgesteuerte Hooks im Vergleich zu dieser HTTP-basierten TaskFlow-Brücke
+- [Gateway-Webhooks (`hooks.*`-Konfiguration)](/de/automation/cron-jobs#webhooks) – separate generische HTTP-Endpunktfunktion des Gateways; nicht mit den Routen dieses Plugins identisch
 - [Plugin-Laufzeit-SDK](/de/plugins/sdk-runtime)
 - [CLI-Webhooks](/de/cli/webhooks)

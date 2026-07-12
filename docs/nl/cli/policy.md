@@ -1,69 +1,57 @@
 ---
 read_when:
-    - U wilt OpenClaw-instellingen controleren aan de hand van een geschreven policy.jsonc
-    - Je wilt beleidsbevindingen in doctor-lint
-    - Je hebt een hash voor beleidsattestatie nodig als auditbewijs
+    - Je wilt de OpenClaw-instellingen controleren aan de hand van een opgestelde policy.jsonc
+    - U wilt beleidsbevindingen in de doctor-lintcontrole
+    - U hebt een hash van de beleidsverklaring nodig als auditbewijs
 summary: CLI-referentie voor `openclaw policy`-conformiteitscontroles
 title: Beleid
 x-i18n:
-    generated_at: "2026-06-27T17:22:02Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:44:02Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5af65bb34aeed72bbb348a56195d65152dce1e8d0e7236da8d8681e56c9b32f4
+    source_hash: 280f9ed1e741786f85dfed978690eb18a03c8fbde20e0d01e31a9d215ae0a128
     source_path: cli/policy.md
     workflow: 16
 ---
 
 # `openclaw policy`
 
-`openclaw policy` wordt geleverd door de gebundelde Policy-plugin. Policy is een
-enterprise-conformiteitslaag boven op bestaande OpenClaw-instellingen. Het voegt
-geen tweede configuratiesysteem toe. `policy.jsonc` definieert opgestelde vereisten,
-OpenClaw observeert de actieve workspace als bewijs, en beleidshealthchecks
-rapporteren drift via `doctor --lint`. Het uiteindelijke conformiteitssignaal is een schone
-`doctor --lint`-run; policy draagt bevindingen bij aan dat gedeelde lint-oppervlak
-in plaats van een afzonderlijke health-gate te maken.
+`openclaw policy` wordt geleverd door de gebundelde Policy-plugin. Het is een
+conformiteitslaag voor ondernemingen boven op bestaande OpenClaw-instellingen,
+geen tweede configuratiesysteem. U legt vereisten vast in `policy.jsonc`;
+OpenClaw observeert de actieve werkruimte als bewijs; Policy meldt afwijkingen
+via `doctor --lint`. Policy dwingt geen toolaanroepen af en herschrijft het
+runtimegedrag niet tijdens een aanvraag. Ook attesteert Policy geen
+referentieopslagen per agent, zoals `auth-profiles.json`.
 
-Policy beheert momenteel geconfigureerde kanalen, MCP-servers, modelproviders,
-netwerk-SSRF-houding, ingress-/kanaaltoegangshouding, Gateway-blootstellingshouding, agent-workspacehouding,
-data-afhandelingshouding, OpenClaw-configuratiehouding voor secretprovider/auth-profiel, en beheerde tool-
-declaraties. IT of een workspace-operator kan bijvoorbeeld vastleggen dat Telegram
-geen goedgekeurde kanaalprovider is, MCP-servers en modelrefs beperken tot
-goedgekeurde vermeldingen, vereisen dat fetch-/browsertoegang tot privénetwerken
-uitgeschakeld blijft, vereisen dat directe-berichtsessie-isolatie en kanaalingresshouding
-binnen beoordeelde grenzen blijven, vereisen dat Gateway-bind/auth/HTTP-blootstelling binnen beoordeelde
-grenzen blijft, vereisen dat agent-workspacetoegang en tool-denies in een beoordeelde
-houding blijven, vereisen dat OpenClaw-configuratie-SecretRefs beheerde providers gebruiken, vereisen dat
-configuratie-auth-profielen provider-/modusmetadata bevatten, vereisen dat beheerde tools
-risico- en gevoeligheidsmetadata bevatten, vereisen dat gevoelige logging wordt geredigeerd, vastlegging van
-telemetrie-inhoud weigeren, onderhoud van sessieretentie vereisen, geheugenindexering van sessie-
-transcripten weigeren, en daarna `doctor --lint` gebruiken als de gedeelde
-conformiteitsgate.
+Policy controleert geconfigureerde kanalen, MCP-servers, modelproviders, de
+netwerkhouding voor SSRF, toegang via inkomende verbindingen en kanalen,
+blootstelling van de Gateway en de houding voor Node-opdrachten, toegang tot
+agentwerkruimten, de sandboxhouding, de gegevensverwerkingshouding, de houding
+van geheimenproviders en authenticatieprofielen, en beheerde toolmetagegevens
+(`TOOLS.md`). Gebruik dit wanneer een werkruimte een duurzame, controleerbare
+verklaring nodig heeft, zoals "Telegram mag niet zijn ingeschakeld" of
+"beheerde tools moeten metagegevens over risico en eigenaar declareren". Als u
+alleen lokaal gedrag nodig hebt zonder attestatie of afwijkingsdetectie, is
+gewone configuratie voldoende.
 
-Gebruik policy wanneer een workspace een duurzame verklaring nodig heeft, zoals "deze kanalen
-mogen niet zijn ingeschakeld" of "beheerde tools moeten goedkeuringsmetadata declareren", en een
-herhaalbare manier om te bewijzen dat OpenClaw nog steeds aan die verklaring voldoet. Gebruik
-alleen reguliere configuratie en workspacedocumentatie wanneer u alleen lokaal gedrag nodig hebt en
-geen beleidsbevindingen of attestatie-uitvoer nodig hebt.
-
-## Snelstart
-
-Schakel de gebundelde Policy-plugin in vóór het eerste gebruik:
+## Snel aan de slag
 
 ```bash
 openclaw plugins enable policy
 ```
 
-Wanneer policy is ingeschakeld, kan doctor beleidshealthchecks laden zonder
-willekeurige plugins te activeren. De plugin blijft ingeschakeld als `policy.jsonc` ontbreekt, zodat
-doctor het ontbrekende artefact kan rapporteren.
+De Plugin blijft ingeschakeld, zelfs wanneer `policy.jsonc` ontbreekt, zodat
+doctor het ontbrekende artefact kan melden in plaats van controles stilzwijgend
+over te slaan.
 
-Policy wordt opgesteld, niet gegenereerd uit de huidige instellingen van de gebruiker. Een minimaal
-beleid voor kanalen, MCP-servers, modelproviders, netwerkhouding, ingress-/kanaaltoegang, Gateway-
-blootstelling, agent-workspacehouding, geconfigureerde sandbox-runtimehouding, OpenClaw-
-data-afhandelingshouding, configuratiehouding voor secretprovider/auth-profiel, exec-goedkeurings-
-bestandshouding, en toolmetadata ziet er als volgt uit:
+Stel `policy.jsonc` handmatig op; het wordt niet gegenereerd uit de huidige
+instellingen. Elke sectie op het hoogste niveau is een naamruimte voor regels:
+een controle wordt alleen uitgevoerd wanneer er een concrete regel in staat
+(niet-ondersteunde secties of sleutels mislukken met
+`policy/policy-jsonc-invalid` in plaats van stilzwijgend te worden genegeerd).
+Minimaal voorbeeld dat elke ondersteunde sectie omvat:
 
 ```jsonc
 {
@@ -121,6 +109,9 @@ bestandshouding, en toolmetadata ziet er als volgt uit:
     "http": {
       "denyEndpoints": ["chatCompletions", "responses"],
       "requireUrlAllowlists": true,
+    },
+    "nodes": {
+      "denyCommands": ["system.run"],
     },
   },
   "agents": {
@@ -184,66 +175,57 @@ bestandshouding, en toolmetadata ziet er als volgt uit:
 }
 ```
 
-De regels zijn de autoriteit. Een categorieblok is alleen een namespace; controles worden uitgevoerd
-wanneer er een concrete regel aanwezig is. OpenClaw leest huidige `channels.*`-instellingen,
-`mcp.servers.*`, `models.providers.*`, geselecteerde agent-modelrefs, netwerk-SSRF-
-instellingen, direct-message-sessiescope, kanaal-DM-beleid, kanaalgroepsbeleid,
-kanaal-/groepsvermeldingsgates, Gateway-bind/auth/Control UI/Tailscale/remote/HTTP-
-houding, OpenClaw-configuratie voor agent-sandbox-workspacetoegang en tool-denyhouding,
-data-afhandelingsconfiguratiehouding, configuratie-secret-
-provider en SecretRef-herkomst, configuratie-auth-profielmetadata, geconfigureerde
-globale/per-agent-toolhouding, en `TOOLS.md`-declaraties als bewijs, en
-rapporteert vervolgens geobserveerde staat die niet voldoet. Als een beleid non-loopback
-Gateway-binds weigert, laat `gateway.bind` dan alleen weg wanneer u
-bereid bent de runtime-standaard te beoordelen; stel `gateway.bind=loopback` in voor
-strikte configuratieconformiteit. Voor een read-only agent-houding configureert u de sandboxmodus
-op de toepasselijke defaults of agent en stelt u `workspaceAccess` in op `none` of
-`ro`; een weggelaten of `off`-sandboxmodus voldoet niet aan een read-only/no-write-
-beleid. `agents.workspace.denyTools` ondersteunt `exec`, `process`, `write`,
-`edit`, en `apply_patch`; OpenClaw-configuratie `group:fs` dekt bestandsmutatietools
-en `group:runtime` dekt shell-/procestools. Toolhoudingsbeleid observeert
-`tools.profile`, `tools.allow`, `tools.alsoAllow`, `tools.deny`,
-`tools.fs.workspaceOnly`, `tools.exec.security`, `tools.exec.ask`,
-`tools.exec.host`, `tools.elevated.enabled`, en dezelfde per-agent-
-`agents.list[].tools.*`-overrides. Exec-goedkeuringsbeleid leest het benoemde
-`exec-approvals.json`-productartefact alleen wanneer een `execApprovals`-regel
-aanwezig is; bewijs registreert defaults, per-agent-houding en allowlist-patronen
-zonder sockettokens of laatst gebruikte opdrachttekst. Policy handhaaft tool-
-aanroepen niet tijdens runtime. Secret-bewijs registreert
-provider-/bronhouding en SecretRef-metadata, nooit ruwe secretwaarden. Policy
-leest of attesteert geen per-agent-credentialstores zoals `auth-profiles.json`;
-die stores blijven eigendom van de bestaande auth- en credentialflows.
-Data-afhandelingsbewijs is alleen houding op configuratieniveau: het controleert de geconfigureerde
-redactiemodus, toggles voor vastlegging van telemetrie-inhoud, sessieonderhoudsmodus, en
-instellingen voor geheugenindexering van sessietranscripten. Het inspecteert geen ruwe logs,
-telemetrie-exports, transcriptinhoud of geheugenbestanden, en bewijst niet dat er geen persoonlijke
-gegevens of secrets bestaan.
+Overkoepelende opmerkingen die niet duidelijk blijken uit de onderstaande
+regeltabellen:
 
-### Naslag voor beleidsregels
+- Als u `gateway.bind` weglaat terwijl u niet-loopbackbindingen weigert,
+  accepteert u de standaardwaarde van de runtime; stel
+  `gateway.bind: "loopback"` in voor strikte conformiteit.
+- Stel voor een alleen-lezenagent de sandbox-`mode` in op `all` of `non-main`
+  bij de toepasselijke standaardwaarden of agent en stel `workspaceAccess` in
+  op `none` of `ro`. Een ontbrekende sandboxmodus of de modus `off` voldoet
+  niet aan beleid voor alleen-lezengebruik.
+- `agents.workspace.denyTools` accepteert `exec`, `process`, `write`, `edit`,
+  `apply_patch`. De groepen voor het weigeren van configuratietools `group:fs`
+  (bestandswijziging) en `group:runtime` (shell/proces) voldoen aan de
+  gelijkwaardige houding.
+- Controles voor uitvoeringsgoedkeuringen lezen het actieve artefact
+  `exec-approvals.json` alleen wanneer een `execApprovals`-regel aanwezig is;
+  een ontbrekend of ongeldig artefact is niet-observeerbaar bewijs, geen
+  kunstmatig geslaagde controle.
+- Bewijs voor geheimen en authenticatieprofielen registreert alleen de houding
+  van providers/bronnen en SecretRef-metagegevens, nooit onbewerkte waarden.
+  Policy leest of attesteert geen referentieopslagen per agent, zoals
+  `auth-profiles.json`.
+- Bewijs voor gegevensverwerking betreft alleen de houding op
+  configuratieniveau (redactiemodus, schakelaar voor telemetrieverzameling,
+  modus voor sessieonderhoud en instelling voor transcriptindexering). Het
+  inspecteert geen logboeken, telemetrie-exports, transcripten of
+  geheugenbestanden. Een schoon resultaat bewijst niet dat deze geen
+  persoonsgegevens of geheimen bevatten.
 
-Elk beleidsveld hieronder is optioneel. Een controle wordt alleen uitgevoerd wanneer de overeenkomende regel
-aanwezig is in `policy.jsonc`. De geobserveerde staat is bestaande OpenClaw-configuratie of
-workspacemetadata; policy rapporteert drift maar herschrijft runtimegedrag niet,
-tenzij een herstelpad expliciet beschikbaar en ingeschakeld is.
-Policy-bestanden zijn strikt: niet-ondersteunde secties of regelsleutels worden gerapporteerd als
-`policy/policy-jsonc-invalid` in plaats van genegeerd.
+### Naslag voor Policy-regels
 
-Policy-overlays houden brede top-level regels globaal en laten daarna benoemde scopeblokken
-strengere normale beleidssecties toevoegen voor expliciete selectors. Een scopenaam is alleen een
-beschrijvende bucket; matching gebruikt de selectorwaarden binnen de scope.
-De overlay is additief: globale claims worden nog steeds uitgevoerd, en een gescopete claim kan
-een eigen bevinding tegen dezelfde geobserveerde configuratie emitten.
+Elke onderstaande regel is optioneel; een controle wordt alleen uitgevoerd
+wanneer de regel aanwezig is. De geobserveerde status bestaat uit de bestaande
+OpenClaw-configuratie of werkruimtemetagegevens.
 
-#### Gescopeerde overlays
+#### Bereikgebonden overlays
 
-Gebruik `scopes.<scopeName>` wanneer één set agents of kanalen strenger
-beleid nodig heeft dan de top-level baseline. Agent-gescopeerde secties gebruiken `agentIds`, die
-`tools.*`, `agents.workspace.*`, `sandbox.*`, `dataHandling.memory.*`,
-en `execApprovals.*` ondersteunt. Kanaal-gescopeerde
-ingress gebruikt `channelIds`, die `ingress.channels.*` ondersteunt. Niet-ondersteunde
-secties worden geweigerd in plaats van genegeerd. Als een `agentIds`-vermelding niet
-aanwezig is in `agents.list[]`, evalueert OpenClaw de gescopeerde regel tegen geërfde
-globale/default-houding voor die runtime-agent-id.
+Gebruik `scopes.<scopeName>` wanneer specifieke agents of kanalen strenger
+beleid nodig hebben dan de basislijn op het hoogste niveau. De bereiknaam is
+slechts een label; de overeenkomst gebruikt de selector binnen het bereik.
+Overlays zijn additief: de globale regel blijft actief en de bereikgebonden
+regel kan een eigen bevinding toevoegen voor hetzelfde bewijs.
+
+| Selector     | Ondersteunde secties                                                            | Gebruiken wanneer                                      |
+| ------------ | ------------------------------------------------------------------------------ | ----------------------------------------------------- |
+| `agentIds`   | `tools`, `agents.workspace`, `sandbox`, `dataHandling.memory`, `execApprovals` | Eén of meer runtimeagents strengere regels nodig hebben. |
+| `channelIds` | `ingress.channels`                                                             | Eén of meer kanalen strengere regels voor inkomende toegang nodig hebben. |
+
+Als een `agentIds`-vermelding niet aanwezig is in `agents.list[]`, evalueert
+OpenClaw de bereikgebonden regel aan de hand van de overgenomen globale of
+standaardhouding voor die runtimeagent-id, in plaats van deze over te slaan.
 
 ```jsonc
 {
@@ -307,154 +289,160 @@ globale/default-houding voor die runtime-agent-id.
 }
 ```
 
-Dezelfde agent kan in meerdere scopes voorkomen wanneer elke scope verschillende
-velden beheert, zoals hierboven getoond. Een herhaald gescopet veld voor dezelfde agent moet
-even streng of strenger zijn volgens beleidsmetadata; zwakkere dubbele
-claims worden geweigerd. Striktheidsmetadata behandelt allowlists als subsets,
-denylists als supersets, en vereiste booleans als vaste vereisten.
+Dezelfde agent kan in meerdere bereiken voorkomen als elk bereik een ander
+veld beheert, zoals hierboven. Een herhaald bereikgebonden veld voor dezelfde
+agent moet even streng of strenger zijn; een zwakkere dubbele claim wordt
+afgewezen (toestemmingslijsten zijn deelverzamelingen, weigeringslijsten zijn
+superverzamelingen en vereiste booleaanse waarden staan vast).
 
-Containerhoudingsbeleid wordt alleen geëvalueerd tegen bewijs dat OpenClaw kan
-observeren voor de gematchte agent. Als een ingeschakelde `sandbox.containers.*`-regel van toepassing is
-op een agent waarvan de sandboxbackend dat veld niet kan blootstellen, rapporteert policy
-`policy/sandbox-container-posture-unobservable` in plaats van de claim als geslaagd
-te behandelen. Gebruik afzonderlijke `agentIds`-scopes voor agentgroepen die verschillende
-sandboxbackends gebruiken, en laat niet-ondersteunde containerregels uitgeschakeld of false voor de
-groepen waar die velden niet kunnen worden geobserveerd.
+Regels voor de containerhouding (`sandbox.containers.*`) worden alleen
+gecontroleerd aan de hand van bewijs dat de sandboxbackend van de
+overeenkomende agent beschikbaar kan maken. Als een backend een regel die u
+ervoor hebt ingeschakeld niet kan observeren, meldt Policy
+`policy/sandbox-container-posture-unobservable` in plaats van de controle te
+laten slagen; beperk containerregels tot de agentgroepen die een backend
+gebruiken welke deze beschikbaar kan maken.
 
-Top-level `ingress.session.requireDmScope` blijft globaal omdat
-`session.dmScope` geen kanaal-toewijsbaar bewijs is.
+`ingress.session.requireDmScope` op het hoogste niveau blijft globaal;
+`session.dmScope` is geen bewijs dat aan een kanaal kan worden toegeschreven en
+kan daarom niet via `channelIds` tot een bereik worden beperkt.
 
-| Selector     | Ondersteunde secties                                                               | Gebruik wanneer                                                 |
-| ------------ | ---------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| `agentIds`   | `tools`, `agents.workspace`, `sandbox`, `dataHandling.memory`, and `execApprovals` | Een of meer runtime-agents strengere regels nodig hebben.       |
-| `channelIds` | `ingress.channels`                                                                 | Een of meer kanalen strengere ingress-regels nodig hebben.      |
-
-Elke scope die aanwezig is in `policy.jsonc` moet geldig en afdwingbaar zijn.
+Elk bereik in `policy.jsonc` moet geldig en afdwingbaar zijn.
 
 #### Kanalen
 
-| Beleidsveld                         | Waargenomen status                     | Gebruik wanneer                                                  |
-| ----------------------------------- | -------------------------------------- | ---------------------------------------------------------------- |
-| `channels.denyRules[].when.provider` | `channels.*`-provider en ingeschakelde status | Geconfigureerde kanalen van een provider zoals `telegram` weigeren. |
-| `channels.denyRules[].reason`        | Bericht bij bevinding en context voor reparatietip | Uitleggen waarom de provider wordt geweigerd.                    |
+| Beleidsveld                          | Geobserveerde status                        | Gebruiken wanneer                                                   |
+| ------------------------------------ | ------------------------------------------- | ------------------------------------------------------------------- |
+| `channels.denyRules[].when.provider` | Provider en ingeschakelde status van `channels.*` | Geconfigureerde kanalen van een provider zoals `telegram` weigeren. |
+| `channels.denyRules[].reason`        | Context voor bevindingsbericht en herstelhint | Uitleggen waarom de provider wordt geweigerd.                       |
 
 #### MCP-servers
 
-| Beleidsveld        | Waargenomen status | Gebruik wanneer                                                |
-| ------------------ | ------------------ | -------------------------------------------------------------- |
-| `mcp.servers.allow` | `mcp.servers.*`-ids | Vereisen dat elke geconfigureerde MCP-server in een allowlist staat. |
-| `mcp.servers.deny`  | `mcp.servers.*`-ids | Specifieke geconfigureerde MCP-server-ids weigeren.            |
+| Beleidsveld         | Geobserveerde status | Gebruiken wanneer                                                       |
+| ------------------- | -------------------- | ----------------------------------------------------------------------- |
+| `mcp.servers.allow` | Id's van `mcp.servers.*` | Vereisen dat elke geconfigureerde MCP-server in een toestemmingslijst staat. |
+| `mcp.servers.deny`  | Id's van `mcp.servers.*` | Specifieke geconfigureerde MCP-server-id's weigeren.                    |
 
 #### Modelproviders
 
-| Beleidsveld             | Waargenomen status                                  | Gebruik wanneer                                                                         |
-| ----------------------- | --------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| `models.providers.allow` | `models.providers.*`-ids en geselecteerde modelrefs | Vereisen dat geconfigureerde providers en geselecteerde modelrefs goedgekeurde providers gebruiken. |
-| `models.providers.deny`  | `models.providers.*`-ids en geselecteerde modelrefs | Geconfigureerde providers en geselecteerde modelrefs weigeren op provider-id.           |
+| Beleidsveld              | Geobserveerde status                                      | Gebruiken wanneer                                                                             |
+| ------------------------ | --------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `models.providers.allow` | Id's van `models.providers.*` en geselecteerde modelreferenties | Vereisen dat geconfigureerde providers en geselecteerde modelreferenties goedgekeurde providers gebruiken. |
+| `models.providers.deny`  | Id's van `models.providers.*` en geselecteerde modelreferenties | Geconfigureerde providers en geselecteerde modelreferenties op provider-id weigeren.          |
 
 #### Netwerk
 
-| Beleidsveld                   | Waargenomen status                     | Gebruik wanneer                                                      |
-| ----------------------------- | -------------------------------------- | -------------------------------------------------------------------- |
-| `network.privateNetwork.allow` | Private-network SSRF-uitwijkroutes     | Instellen op `false` om te vereisen dat private-network-toegang uitgeschakeld blijft. |
+| Beleidsveld                    | Geobserveerde status                           | Gebruiken wanneer                                                        |
+| ------------------------------ | ---------------------------------------------- | ------------------------------------------------------------------------ |
+| `network.privateNetwork.allow` | Omwegen voor SSRF naar het privénetwerk        | Instellen op `false` om te vereisen dat toegang tot het privénetwerk uitgeschakeld blijft. |
 
-#### Ingress en kanaaltoegang
+#### Inkomende toegang en kanaaltoegang
 
-| Beleidsveld                              | Waargenomen status                                              | Gebruik wanneer                                                        |
-| ---------------------------------------- | --------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| `ingress.session.requireDmScope`          | `session.dmScope`                                               | Een beoordeelde isolatiescope voor directe berichten vereisen.         |
-| `ingress.channels.allowDmPolicies`        | `channels.*.dmPolicy` en legacy DM-beleidsvelden voor kanalen   | Alleen beoordeelde kanaalbeleidsregels voor directe berichten toestaan. |
-| `ingress.channels.denyOpenGroups`         | Ingress-beleid voor kanaal, account en groep                    | Open groeps-ingress weigeren voor geconfigureerde kanalen en accounts. |
-| `ingress.channels.requireMentionInGroups` | Kanaal-, account-, groep-, guild- en geneste mention-gateconfiguratie | Mention-gates vereisen wanneer groeps-ingress open is of door mentions wordt afgeschermd. |
+| Beleidsveld                              | Waargenomen status                                                 | Gebruiken wanneer                                                           |
+| ----------------------------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------- |
+| `ingress.session.requireDmScope`          | `session.dmScope`                                                  | Een beoordeeld isolatiebereik voor directe berichten vereist is.            |
+| `ingress.channels.allowDmPolicies`        | `channels.*.dmPolicy` en verouderde DM-beleidsvelden voor kanalen  | Alleen beoordeeld kanaalbeleid voor directe berichten is toegestaan.        |
+| `ingress.channels.denyOpenGroups`         | Ingressbeleid voor kanalen, accounts en groepen                    | Open groepsingress voor geconfigureerde kanalen en accounts moet worden geweigerd. |
+| `ingress.channels.requireMentionInGroups` | Configuratie voor vermeldingspoorten op kanaal-, account-, groeps-, server- en genest niveau | Vermeldingspoorten vereist zijn wanneer groepsingress open is of een vermelding vereist. |
 
 #### Gateway
 
-| Beleidsveld                            | Waargenomen status                              | Gebruik wanneer                                                    |
-| -------------------------------------- | ----------------------------------------------- | ------------------------------------------------------------------ |
-| `gateway.exposure.allowNonLoopbackBind` | `gateway.bind`                                  | Instellen op `false` om loopback-Gateway-binding te vereisen.      |
-| `gateway.exposure.allowTailscaleFunnel` | Tailscale serve/funnel-Gateway-houding          | Instellen op `false` om Tailscale Funnel-blootstelling te weigeren. |
-| `gateway.auth.requireAuth`              | `gateway.auth.mode`                             | Instellen op `true` om uitgeschakelde Gateway-auth te weigeren.    |
-| `gateway.auth.requireExplicitRateLimit` | `gateway.auth.rateLimit`                        | Instellen op `true` om expliciete auth-rate-limit-configuratie te vereisen. |
-| `gateway.controlUi.allowInsecure`       | Onveilige auth/device/origin-schakelaars van Control UI | Instellen op `false` om onveilige blootstellingsschakelaars van Control UI te weigeren. |
-| `gateway.remote.allow`                  | Remote Gateway-modus/configuratie               | Instellen op `false` om remote Gateway-modus te weigeren.          |
-| `gateway.http.denyEndpoints`            | Gateway HTTP API-eindpunten                     | Eindpunt-ids zoals `chatCompletions` of `responses` weigeren.      |
-| `gateway.http.requireUrlAllowlists`      | Gateway HTTP URL-fetch-invoer                   | Instellen op `true` om URL-allowlists te vereisen voor URL-fetch-invoer. |
+| Beleidsveld                            | Waargenomen status                                     | Gebruiken wanneer                                                                             |
+| -------------------------------------- | ------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| `gateway.exposure.allowNonLoopbackBind` | `gateway.bind`                                        | Instellen op `false` om binding van de Gateway aan local loopback te vereisen.                 |
+| `gateway.exposure.allowTailscaleFunnel` | Tailscale serve/funnel-houding van de Gateway         | Instellen op `false` om blootstelling via Tailscale Funnel te weigeren.                        |
+| `gateway.auth.requireAuth`              | `gateway.auth.mode`                                   | Instellen op `true` om uitgeschakelde Gateway-authenticatie te weigeren.                       |
+| `gateway.auth.requireExplicitRateLimit` | `gateway.auth.rateLimit`                              | Instellen op `true` om expliciete configuratie voor snelheidsbeperking van authenticatie te vereisen. |
+| `gateway.controlUi.allowInsecure`       | Onveilige schakelaars voor authenticatie, apparaten en oorsprongen in de bedieningsinterface | Instellen op `false` om onveilige schakelaars voor blootstelling van de bedieningsinterface te weigeren. |
+| `gateway.remote.allow`                  | Externe Gateway-modus/-configuratie                   | Instellen op `false` om de externe Gateway-modus te weigeren.                                 |
+| `gateway.http.denyEndpoints`            | HTTP-API-eindpunten van de Gateway                    | Eindpunt-id's zoals `chatCompletions` of `responses` weigeren.                                 |
+| `gateway.http.requireUrlAllowlists`      | URL-ophaalinvoer van de HTTP-API van de Gateway       | Instellen op `true` om URL-toestaanlijsten voor URL-ophaalinvoer te vereisen.                  |
+| `gateway.nodes.denyCommands`            | `gateway.nodes.denyCommands`                          | Vereisen dat exacte Node-opdracht-id's zoals `system.run` in de OpenClaw-configuratie worden geweigerd. |
 
-#### Agent-werkruimte
+`gateway.nodes.denyCommands` is een exacte, hoofdlettergevoelige regel waarbij
+de weigerlijst een bovenverzameling moet zijn. Gebruik deze wanneer het beleid
+moet aantonen dat bevoorrechte Node-opdrachten expliciet door de
+OpenClaw-configuratie worden geweigerd. Voor een implementatie die opzettelijk
+een bevoorrechte Node-opdracht toestaat, moet `policy.jsonc` na beoordeling
+worden bijgewerkt in plaats van uitsluitend op `gateway.nodes.allowCommands`
+te vertrouwen.
 
-| Beleidsveld                     | Waargenomen status                                                                       | Gebruik wanneer                                                                                                            |
-| -------------------------------- | ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `agents.workspace.allowedAccess` | `agents.defaults.sandbox.workspaceAccess` en `agents.list[].sandbox.workspaceAccess`     | Alleen sandbox-werkruimtetoegangswaarden zoals `none` of `ro` toestaan.                                                    |
-| `agents.workspace.denyTools`     | Globale en per-agent tool-weigerconfiguratie                                             | Vereisen dat mutatietools voor werkruimte/runtime zoals `exec`, `process`, `write`, `edit` of `apply_patch` worden geweigerd. |
+#### Agentwerkruimte
 
-#### Sandbox-houding
+| Beleidsveld                     | Waargenomen status                                                                        | Gebruiken wanneer                                                                                 |
+| ------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `agents.workspace.allowedAccess` | `agents.defaults.sandbox.workspaceAccess` en `agents.list[].sandbox.workspaceAccess`     | Alleen waarden voor sandboxwerkruimtetoegang zoals `none` of `ro` zijn toegestaan.                |
+| `agents.workspace.denyTools`     | Algemene en agentspecifieke configuratie voor het weigeren van hulpmiddelen              | Vereisen dat wijzigingshulpmiddelen (`exec`, `process`, `write`, `edit`, `apply_patch`) worden geweigerd. |
 
-| Beleidsveld                                          | Waargenomen status                                         | Gebruik wanneer                                                    |
-| ---------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------ |
-| `sandbox.requireMode`                                 | `agents.defaults.sandbox.mode` en modus per agent          | Alleen beoordeelde sandbox-modi zoals `all` of `non-main` toestaan. |
-| `sandbox.allowBackends`                               | `agents.defaults.sandbox.backend` en backend per agent     | Alleen beoordeelde sandbox-backends zoals `docker` toestaan.       |
-| `sandbox.containers.denyHostNetwork`                  | Netwerkmodus van container-backed sandbox/browser          | Hostnetwerkmodus weigeren.                                        |
-| `sandbox.containers.denyContainerNamespaceJoin`       | Netwerkmodus van container-backed sandbox/browser          | Deelnemen aan de netwerknamespace van een andere container weigeren. |
-| `sandbox.containers.requireReadOnlyMounts`            | Mountmodus van container-backed sandbox/browser            | Vereisen dat mounts alleen-lezen zijn.                            |
-| `sandbox.containers.denyContainerRuntimeSocketMounts` | Mountdoelen van container-backed sandbox/browser           | Mounts van container-runtime-sockets weigeren.                    |
-| `sandbox.containers.denyUnconfinedProfiles`           | Houding van containerbeveiligingsprofielen                 | Unconfined containerbeveiligingsprofielen weigeren.               |
-| `sandbox.browser.requireCdpSourceRange`               | CDP-bronbereik van sandbox-browser                         | Vereisen dat browser-CDP-blootstelling een bronbereik declareert. |
+#### Sandboxhouding
 
-Policy behandelt ontbrekende `sandbox.mode` als de impliciete standaard `off`, waardoor
-`sandbox.requireMode` een nieuwe of niet-geconfigureerde sandbox rapporteert als buiten een
-allowlist zoals `["all"]`.
+| Beleidsveld                                          | Waargenomen status                                          | Gebruiken wanneer                                                       |
+| ---------------------------------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `sandbox.requireMode`                                | `agents.defaults.sandbox.mode` en agentspecifieke modus     | Alleen beoordeelde sandboxmodi zoals `all` of `non-main` zijn toegestaan. |
+| `sandbox.allowBackends`                              | `agents.defaults.sandbox.backend` en agentspecifieke backend | Alleen beoordeelde sandboxbackends zoals `docker` zijn toegestaan.      |
+| `sandbox.containers.denyHostNetwork`                 | Netwerkmodus van containergebaseerde sandbox/browser        | Hostnetwerkmodus moet worden geweigerd.                                  |
+| `sandbox.containers.denyContainerNamespaceJoin`      | Netwerkmodus van containergebaseerde sandbox/browser        | Deelname aan de netwerknaamruimte van een andere container moet worden geweigerd. |
+| `sandbox.containers.requireReadOnlyMounts`           | Koppelmodus van containergebaseerde sandbox/browser         | Koppelingen moeten alleen-lezen zijn.                                    |
+| `sandbox.containers.denyContainerRuntimeSocketMounts` | Koppeldoelen van containergebaseerde sandbox/browser       | Koppelingen van sockets van de containerruntime moeten worden geweigerd. |
+| `sandbox.containers.denyUnconfinedProfiles`          | Houding voor containerbeveiligingsprofielen                 | Onbeperkte containerbeveiligingsprofielen moeten worden geweigerd.       |
+| `sandbox.browser.requireCdpSourceRange`              | CDP-bronbereik van de sandboxbrowser                        | Voor blootstelling van browser-CDP moet een bronbereik worden opgegeven. |
+
+Het beleid behandelt een ontbrekende `sandbox.mode` als de impliciete
+standaardwaarde `off`. Daardoor rapporteert `sandbox.requireMode` een nieuwe of
+niet-geconfigureerde sandbox als buiten een toestaanlijst zoals `["all"]`.
 
 #### Gegevensverwerking
 
-| Beleidsveld                                        | Waargenomen status                                                                      | Gebruik wanneer                                                       |
-| -------------------------------------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| `dataHandling.sensitiveLogging.requireRedaction`    | `logging.redactSensitive`                                                               | Instellen op `true` om `logging.redactSensitive: "off"` te weigeren.  |
-| `dataHandling.telemetry.denyContentCapture`         | `diagnostics.otel.captureContent`                                                       | Instellen op `true` om telemetry-contentcapture te weigeren.          |
-| `dataHandling.retention.requireSessionMaintenance`  | `session.maintenance.mode`                                                              | Instellen op `true` om effectieve sessieonderhoudsmodus `enforce` te vereisen. |
-| `dataHandling.memory.denySessionTranscriptIndexing` | `memory.qmd.sessions.enabled` en `agents.*.memorySearch.experimental.sessionMemory`     | Instellen op `true` om indexering van sessietranscripten naar memory te weigeren. |
+| Beleidsveld                                        | Waargenomen status                                                                       | Gebruiken wanneer                                                               |
+| -------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `dataHandling.sensitiveLogging.requireRedaction`   | `logging.redactSensitive`                                                               | Instellen op `true` om `logging.redactSensitive: "off"` te weigeren.            |
+| `dataHandling.telemetry.denyContentCapture`        | `diagnostics.otel.captureContent`                                                       | Instellen op `true` om het vastleggen van inhoud door telemetrie te weigeren.   |
+| `dataHandling.retention.requireSessionMaintenance` | `session.maintenance.mode`                                                              | Instellen op `true` om de effectieve sessieonderhoudsmodus `enforce` te vereisen. |
+| `dataHandling.memory.denySessionTranscriptIndexing` | `memory.qmd.sessions.enabled` en `agents.*.memorySearch.experimental.sessionMemory`    | Instellen op `true` om indexering van sessietranscripten in het geheugen te weigeren. |
 
 #### Geheimen
 
-| Beleidsveld                      | Waargenomen status                                           | Gebruik wanneer                                                         |
-| -------------------------------- | ------------------------------------------------------------ | ----------------------------------------------------------------------- |
-| `secrets.requireManagedProviders` | Config SecretRefs en `secrets.providers.*`-declaraties       | Instellen op `true` om te vereisen dat SecretRefs naar gedeclareerde providers verwijzen. |
-| `secrets.denySources`             | Bronnen van secret-providers en SecretRef-bronnen             | Bronnen zoals `exec`, `file` of een andere geconfigureerde bronnaam weigeren. |
-| `secrets.allowInsecureProviders`  | Onveilige houdingsvlaggen van secret-providers               | Instellen op `false` om providers te weigeren die kiezen voor een onveilige houding. |
+| Beleidsveld                      | Waargenomen status                                           | Gebruiken wanneer                                                                |
+| -------------------------------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------- |
+| `secrets.requireManagedProviders` | SecretRefs in de configuratie en declaraties van `secrets.providers.*` | Instellen op `true` om te vereisen dat SecretRefs naar gedeclareerde providers verwijzen. |
+| `secrets.denySources`             | Bronnen van geheimproviders en SecretRef-bronnen             | Bronnen zoals `exec`, `file` of een andere geconfigureerde bronnaam weigeren.    |
+| `secrets.allowInsecureProviders`  | Houdingsvlaggen voor onveilige geheimproviders               | Instellen op `false` om providers te weigeren die voor een onveilige houding kiezen. |
 
 #### Exec-goedkeuringen
 
-Het beleid voor exec-goedkeuringen observeert het actieve runtime-artefact
-`exec-approvals.json`. Standaard is dit `~/.openclaw/exec-approvals.json`; wanneer
-`OPENCLAW_STATE_DIR` is ingesteld, leest Policy
-`$OPENCLAW_STATE_DIR/exec-approvals.json`. Feitelijke houdingsregels zoals
-`execApprovals.defaults.*` of `execApprovals.agents.*` vereisen leesbaar
-artefactbewijs; een ontbrekend of ongeldig artefact wordt gerapporteerd als
-niet-observeerbaar bewijs in plaats van een best-effort pass te worden tegen synthetische
-runtime-standaarden. Zodra het artefact leesbaar is, erven weggelaten goedkeuringsvelden
-runtime-standaarden: ontbrekende `defaults.security` is `full`, en ontbrekende
-agentbeveiliging erft die standaard. Bewijs omvat `defaults`, `agents.*` en
-`agents.*.allowlist[].pattern` plus optioneel `argPattern`, effectieve
-`autoAllowSkills`-houding en invoerbron. Het omvat geen socketpad/token,
+Controles voor exec-goedkeuringen lezen het runtime-artefact
+`exec-approvals.json`: standaard `~/.openclaw/exec-approvals.json`, of
+`$OPENCLAW_STATE_DIR/exec-approvals.json` wanneer `OPENCLAW_STATE_DIR` is
+ingesteld. Houdingsregels onder `execApprovals.defaults.*` of
+`execApprovals.agents.*` vereisen leesbaar bewijs uit het artefact; een
+ontbrekend of ongeldig artefact wordt gerapporteerd als niet-waarneembaar
+bewijs en niet als een best-effortgoedkeuring. Zodra het artefact leesbaar is,
+nemen weggelaten velden de runtime-standaardwaarden over: ontbrekende
+`defaults.security` is `full` en ontbrekende agentbeveiliging neemt die
+standaardwaarde over. Het bewijs omvat `defaults`, `agents.*`,
+`agents.*.allowlist[].pattern`, optioneel `argPattern`, de effectieve houding
+voor `autoAllowSkills` en de bron van de vermelding — nooit het socketpad/token,
 `commandText`, `lastUsedCommand`, opgeloste paden of tijdstempels.
 
 | Beleidsveld                                | Waargenomen status                                                                         | Gebruiken wanneer                                                                                |
-| ------------------------------------------- | -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| `execApprovals.requireFile`                 | Pad van actief runtime-`exec-approvals.json`                                              | Stel in op `true` om te vereisen dat het goedkeuringsartefact bestaat en kan worden geparset.                     |
-| `execApprovals.defaults.allowSecurity`      | `defaults.security`, standaard ingesteld op `full`                                              | Sta alleen goedgekeurde standaardbeveiligingsmodi voor goedkeuring toe.                                    |
-| `execApprovals.agents.allowSecurity`        | `agents.*.security`, overgenomen van standaarden                                               | Sta alleen goedgekeurde effectieve beveiligingsmodi voor goedkeuring per agent toe.                        |
-| `execApprovals.agents.allowAutoAllowSkills` | `defaults.autoAllowSkills` en `agents.*.autoAllowSkills`, overgenomen van runtime-standaarden | Stel in op `false` om strikte handmatige allowlists te vereisen zonder impliciete Skills-CLI-goedkeuring. |
-| `execApprovals.agents.allowlist.expected`   | Geaggregeerd `agents.*.allowlist[]`-patroon en optionele argPattern-vermeldingen               | Vereis dat de goedkeurings-allowlist overeenkomt met de beoordeelde patroonset.                      |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| `execApprovals.requireFile`                | Actief runtimepad naar `exec-approvals.json`                                               | Instellen op `true` om te vereisen dat het goedkeuringsartefact bestaat en kan worden geparseerd. |
+| `execApprovals.defaults.allowSecurity`     | `defaults.security`, standaard `full`                                                      | Alleen goedgekeurde standaardbeveiligingsmodi voor goedkeuringen zijn toegestaan.                 |
+| `execApprovals.agents.allowSecurity`       | `agents.*.security`, waarbij standaardwaarden worden overgenomen                           | Alleen goedgekeurde effectieve agentspecifieke beveiligingsmodi voor goedkeuringen zijn toegestaan. |
+| `execApprovals.agents.allowAutoAllowSkills` | `defaults.autoAllowSkills` en `agents.*.autoAllowSkills`, waarbij runtime-standaardwaarden worden overgenomen | Instellen op `false` om strikte handmatige toestaanlijsten zonder impliciete CLI-goedkeuring voor Skills te vereisen. |
+| `execApprovals.agents.allowlist.expected`  | Geaggregeerde `agents.*.allowlist[]`-patronen en optionele argPattern-vermeldingen          | Vereisen dat de toestaanlijst voor goedkeuringen overeenkomt met de beoordeelde patronenset.       |
 
-Vereis bijvoorbeeld het goedkeuringsartefact, weiger permissieve standaarden en
-sta alleen een beoordeelde exec-goedkeuringshouding toe voor geselecteerde agents:
+Voorbeeld: vereis het goedkeuringsartefact, weiger permissieve
+standaardwaarden en sta voor geselecteerde agents alleen een beoordeelde
+houding voor exec-goedkeuringen toe.
 
 ```jsonc
 {
   "execApprovals": {
     "requireFile": true,
     "defaults": {
-      // Security modes: "deny", "allowlist", or "full".
-      // This default permits only the locked-down deny posture.
+      // Beveiligingsmodi: "deny", "allowlist" of "full".
+      // Deze standaardinstelling staat alleen de strikt vergrendelde deny-houding toe.
       "allowSecurity": ["deny"],
     },
   },
@@ -463,16 +451,16 @@ sta alleen een beoordeelde exec-goedkeuringshouding toe voor geselecteerde agent
       "agentIds": ["family-agent", "groups-agent"],
       "execApprovals": {
         "agents": {
-          // Selected agents may use reviewed allowlist posture, but not "full".
+          // Geselecteerde agents mogen een beoordeelde allowlist-houding gebruiken, maar niet "full".
           "allowSecurity": ["allowlist"],
-          // false means skill CLIs must appear in the reviewed allowlist instead of
-          // being implicitly approved by autoAllowSkills.
+          // false betekent dat CLI's van Skills in de beoordeelde allowlist moeten staan in plaats van
+          // impliciet te worden goedgekeurd door autoAllowSkills.
           "allowAutoAllowSkills": false,
           "allowlist": {
             "expected": [
-              // Simple entry: exact reviewed executable pattern with no argPattern.
+              // Eenvoudige vermelding: exact beoordeeld uitvoerbaar patroon zonder argPattern.
               "travel-hub",
-              // Constrained entry: pattern plus reviewed argument regex.
+              // Beperkte vermelding: patroon plus beoordeelde reguliere expressie voor argumenten.
               { "pattern": "calendar-cli", "argPattern": "^sync\\b" },
               "/bin/date",
             ],
@@ -484,33 +472,35 @@ sta alleen een beoordeelde exec-goedkeuringshouding toe voor geselecteerde agent
 }
 ```
 
-#### Auth-profielen
+#### Authenticatieprofielen
 
-| Beleidsveld                    | Waargenomen status                               | Gebruiken wanneer                                                                                   |
-| ------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| `auth.profiles.requireMetadata` | `auth.profiles.*` provider- en modusmetadata | Vereis metadatasleutels zoals `provider` en `mode` op configuratie-auth-profielen.               |
-| `auth.profiles.allowModes`      | `auth.profiles.*.mode`                       | Sta alleen ondersteunde auth-profielmodi toe, zoals `api_key`, `aws-sdk`, `oauth` of `token`. |
+| Beleidsveld                     | Waargenomen status                            | Gebruiken wanneer                                                                                      |
+| ------------------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `auth.profiles.requireMetadata` | provider- en modusmetadata van `auth.profiles.*` | Metadatasleutels zoals `provider` en `mode` verplicht stellen voor authenticatieprofielen in de configuratie. |
+| `auth.profiles.allowModes`      | `auth.profiles.*.mode`                        | Alleen ondersteunde modi voor authenticatieprofielen toestaan, zoals `api_key`, `aws-sdk`, `oauth` of `token`. |
 
 #### Toolmetadata
 
-| Beleidsveld            | Waargenomen status                   | Gebruiken wanneer                                                                                   |
-| ----------------------- | -------------------------------- | ------------------------------------------------------------------------------------------ |
-| `tools.requireMetadata` | Beheerde `TOOLS.md`-declaraties | Vereis dat beheerde tools metadatasleutels declareren, zoals `risk`, `sensitivity` of `owner`. |
+| Beleidsveld             | Waargenomen status                 | Gebruiken wanneer                                                                                      |
+| ----------------------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `tools.requireMetadata` | Beheerde declaraties in `TOOLS.md` | Vereisen dat beheerde tools metadatasleutels declareren, zoals `risk`, `sensitivity` of `owner`.       |
 
 #### Toolhouding
 
-| Beleidsveld                    | Waargenomen status                                              | Gebruiken wanneer                                                                                                 |
-| ------------------------------- | ----------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `tools.profiles.allow`          | `tools.profile` en `agents.list[].tools.profile`           | Sta alleen toolprofiel-id's toe, zoals `minimal`, `messaging` of `coding`.                                 |
-| `tools.fs.requireWorkspaceOnly` | `tools.fs.workspaceOnly` en per-agent `tools.fs`-overrides | Stel in op `true` om een bestandssysteemtoolhouding te vereisen die alleen de workspace gebruikt.                                         |
-| `tools.exec.allowSecurity`      | `tools.exec.security` en exec-beveiliging per agent           | Sta alleen exec-beveiligingsmodi toe, zoals `deny` of `allowlist`.                                            |
-| `tools.exec.requireAsk`         | `tools.exec.ask` en exec-vraagmodus per agent                | Vereis een goedkeuringshouding zoals `always`.                                                               |
-| `tools.exec.allowHosts`         | `tools.exec.host` en exec-hostroutering per agent           | Sta alleen exec-hostrouteringsmodi toe, zoals `sandbox`.                                                    |
-| `tools.elevated.allow`          | `tools.elevated.enabled` en verhoogde houding per agent     | Stel in op `false` om te vereisen dat verhoogde toolmodus uitgeschakeld blijft.                                           |
-| `tools.alsoAllow.expected`      | `tools.alsoAllow` en per-agent `tools.alsoAllow`           | Vereis exacte `alsoAllow`-vermeldingen en rapporteer ontbrekende of onverwachte aanvullende toolrechten.                 |
-| `tools.denyTools`               | `tools.deny` en `agents.list[].tools.deny`                 | Vereis dat geconfigureerde tool-weigerlijsten tool-id's of groepen bevatten, zoals `group:runtime` en `group:fs`. |
+| Beleidsveld                     | Waargenomen status                                         | Gebruiken wanneer                                                                                                      |
+| ------------------------------- | ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `tools.profiles.allow`          | `tools.profile` en `agents.list[].tools.profile`           | Alleen toolprofiel-id's toestaan, zoals `minimal`, `messaging` of `coding`.                                             |
+| `tools.fs.requireWorkspaceOnly` | `tools.fs.workspaceOnly` en `tools.fs`-overschrijvingen per agent | Instellen op `true` om te vereisen dat bestandssysteemtools alleen binnen de werkruimte werken.                        |
+| `tools.exec.allowSecurity`      | `tools.exec.security` en uitvoeringsbeveiliging per agent  | Alleen beveiligingsmodi voor uitvoering toestaan, zoals `deny` of `allowlist`.                                         |
+| `tools.exec.requireAsk`         | `tools.exec.ask` en vraagmodus voor uitvoering per agent   | Een goedkeuringshouding vereisen, zoals `always`.                                                                      |
+| `tools.exec.allowHosts`         | `tools.exec.host` en hostroutering voor uitvoering per agent | Alleen hostrouteringsmodi voor uitvoering toestaan, zoals `sandbox`.                                                   |
+| `tools.elevated.allow`          | `tools.elevated.enabled` en verhoogde houding per agent    | Instellen op `false` om te vereisen dat de verhoogde toolmodus uitgeschakeld blijft.                                   |
+| `tools.alsoAllow.expected`      | `tools.alsoAllow` en `tools.alsoAllow` per agent           | Exacte `alsoAllow`-vermeldingen vereisen en ontbrekende of onverwachte aanvullende tooltoekenningen rapporteren.       |
+| `tools.denyTools`               | `tools.deny` en `agents.list[].tools.deny`                 | Vereisen dat geconfigureerde weigerlijsten voor tools tool-id's of groepen bevatten, zoals `group:runtime` en `group:fs`. |
 
-Voer tijdens het schrijven alleen-beleidscontroles uit:
+## Controles uitvoeren
+
+Voer tijdens het opstellen alleen beleidscontroles uit:
 
 ```bash
 openclaw policy check
@@ -518,32 +508,29 @@ openclaw policy check --json
 openclaw policy check --severity-min error
 ```
 
-`policy check` voert alleen de set beleidscontroles uit en geeft bewijs, bevindingen en
-attestatiehashes uit. Dezelfde bevindingen verschijnen ook in `openclaw doctor --lint`
-wanneer de Policy plugin is ingeschakeld.
+`policy check` voert alleen de verzameling beleidscontroles uit en geeft bewijsmateriaal, bevindingen
+en attestatiehashes weer. Dezelfde bevindingen verschijnen ook in
+`openclaw doctor --lint` wanneer de Policy-plugin is ingeschakeld.
 
-Vergelijk een operatorbeleidsbestand met een geschreven baseline-beleidsbestand:
+Vergelijk een beleidsbestand van een beheerder met een opgestelde basislijn:
 
 ```bash
 openclaw policy compare --baseline official.policy.jsonc
 openclaw policy compare --baseline official.policy.jsonc --policy policy.jsonc --json
 ```
 
-`policy compare` vergelijkt syntaxis van beleidsbestanden met syntaxis van beleidsbestanden. Het
-inspecteert geen OpenClaw-runtime-status, bewijs, referenties of geheimen. De opdracht
-gebruikt dezelfde metadata voor beleidsregels die scoped overlays beheert: allowlists moeten
-gelijk of smaller blijven, denylists moeten gelijk of breder blijven, vereiste booleans
-moeten hun vereiste waarde behouden, geordende strings mogen alleen naar het restrictievere
-uiteinde van de geconfigureerde volgorde bewegen, en exacte lijsten moeten overeenkomen.
+`policy compare` controleert de syntaxis van een beleidsbestand ten opzichte van de syntaxis van een beleidsbestand; het
+inspecteert geen runtimestatus, bewijsmateriaal, aanmeldgegevens of geheimen. Het gebruikt dezelfde
+regelmetadata die beheerde overschrijvingen per bereik regelt: allowlists moeten gelijk of
+beperkter blijven, denylists moeten gelijk of ruimer blijven, verplichte booleaanse waarden moeten
+hun waarde behouden, geordende tekenreeksen mogen alleen naar het strengere einde van de
+geconfigureerde volgorde verschuiven en exacte lijsten moeten overeenkomen. De basislijn kan een
+door een organisatie opgesteld beleid zijn; het gecontroleerde beleid mag strengere waarden of
+extra regels toevoegen. Een gecontroleerde regel op het hoogste niveau kan voldoen aan een regel met bereik in de basislijn wanneer
+deze even restrictief of restrictiever is. Bereiknamen hoeven tussen
+bestanden niet overeen te komen; vergelijking gebeurt op selector (`agentIds`/`channelIds`) en veld.
 
-Het baselinebestand kan een door een organisatie geschreven beleid zijn. Het gecontroleerde beleid kan
-striktere waarden gebruiken of extra beleidsregels toevoegen. Een gecontroleerde regel op topniveau kan ook
-voldoen aan een scoped baseline-regel wanneer deze even restrictief of restrictiever is, omdat
-beleid op topniveau breed van toepassing is. Scopenamen hoeven niet overeen te komen; scoped
-vergelijking wordt bepaald door selectorwaarde zoals `agentIds` of `channelIds` en door
-het beleidsveld dat wordt gecontroleerd.
-
-Voorbeeld van schone vergelijkingsuitvoer in JSON rapporteert alleen de vergelijkingsstatus van beleidsbestanden:
+Schone vergelijking (`--json`):
 
 ```json
 {
@@ -555,8 +542,8 @@ Voorbeeld van schone vergelijkingsuitvoer in JSON rapporteert alleen de vergelij
 }
 ```
 
-Voorbeeld van schone `policy check --json`-uitvoer bevat stabiele hashes die kunnen worden
-vastgelegd door een operator of supervisor:
+Schone uitvoer van `policy check --json` bevat stabiele hashes die een beheerder of
+toezichthouder kan vastleggen:
 
 ```json
 {
@@ -581,7 +568,7 @@ vastgelegd door een operator of supervisor:
 
 ## Beleid configureren
 
-Beleidsconfiguratie bevindt zich onder `plugins.entries.policy.config`.
+De beleidsconfiguratie staat onder `plugins.entries.policy.config`.
 
 ```jsonc
 {
@@ -602,19 +589,16 @@ Beleidsconfiguratie bevindt zich onder `plugins.entries.policy.config`.
 }
 ```
 
-| Instelling                   | Doel                                                         |
-| ------------------------- | --------------------------------------------------------------- |
-| `enabled`                 | Schakel beleidscontroles in, zelfs voordat `policy.jsonc` bestaat.         |
-| `workspaceRepairs`        | Sta toe dat `doctor --fix` door beleid beheerde workspace-instellingen bewerkt. |
-| `expectedHash`            | Optionele hashvergrendeling voor het goedgekeurde beleidsartefact.            |
-| `expectedAttestationHash` | Optionele hashvergrendeling voor de laatst geaccepteerde schone beleidscontrole.    |
-| `path`                    | Workspace-relatieve locatie van het beleidsartefact.             |
+| Instelling                  | Doel                                                                  |
+| -------------------------- | --------------------------------------------------------------------- |
+| `enabled`                  | Beleidscontroles inschakelen, zelfs voordat `policy.jsonc` bestaat.   |
+| `workspaceRepairs`         | Toestaan dat `doctor --fix` door beleid beheerde werkruimte-instellingen bewerkt. |
+| `expectedHash`             | Optionele hashvergrendeling voor het goedgekeurde beleidsartefact.    |
+| `expectedAttestationHash`  | Optionele hashvergrendeling voor de laatst geaccepteerde schone beleidscontrole. |
+| `path`                     | Locatie van het beleidsartefact ten opzichte van de werkruimte.       |
 
 Stel `plugins.entries.policy.config.enabled` in op `false` om beleidscontroles
-voor een workspace uit te schakelen terwijl de plugin geinstalleerd blijft.
-
-Vereisten voor toolmetadata worden geschreven in `policy.jsonc` met
-`tools.requireMetadata`, bijvoorbeeld `["risk", "sensitivity", "owner"]`.
+voor een werkruimte uit te schakelen terwijl de plugin geïnstalleerd blijft.
 
 ## Beleidsstatus accepteren
 
@@ -661,9 +645,9 @@ Voorbeeld van JSON-uitvoer:
     ],
     "modelRefs": [
       {
-        "ref": "openai/gpt-5.5",
+        "ref": "openai/gpt-5.6-sol",
         "provider": "openai",
-        "model": "gpt-5.5",
+        "model": "gpt-5.6-sol",
         "source": "oc://openclaw.config/agents/defaults/model"
       }
     ],
@@ -748,130 +732,126 @@ Voorbeeld van JSON-uitvoer:
 }
 ```
 
-De beleidshash identificeert het opgestelde regelartefact. Het bewijsblok
-registreert de waargenomen OpenClaw-status die door de beleidscontroles is gebruikt. De
-waarde `workspace.hash` identificeert die bewijs-payload voor de gecontroleerde scope.
-De bevindingenhash identificeert de exacte set bevindingen die door de controle is geretourneerd.
-`checkedAt` registreert wanneer de evaluatie is uitgevoerd. De attestatiehash identificeert
-de stabiele claim: beleidshash, bewijshash, bevindingenhash en of het
-resultaat schoon was. Deze bevat bewust geen `checkedAt`, zodat dezelfde
-beleidsstatus dezelfde attestatie oplevert bij herhaalde controles. Samen
-vormen deze de audit-tuple voor deze beleidscontrole.
+`attestation.policy.hash` identificeert het opgestelde regelartefact. `evidence`
+legt de waargenomen OpenClaw-status vast die door de controles is gebruikt, en
+`workspace.hash` identificeert die bewijslast. `findingsHash` identificeert
+de exacte verzameling bevindingen. `checkedAt` legt vast wanneer de controle is uitgevoerd.
+`attestationHash` identificeert de stabiele verklaring (beleidshash, bewijshash,
+bevindingenhash en schone/vervuilde status) en sluit `checkedAt` bewust uit,
+zodat dezelfde beleidsstatus altijd dezelfde attestatiehash oplevert. Samen
+vormen deze vier waarden de audittuple voor één beleidscontrole.
 
-Als een latere Gateway of supervisor beleid gebruikt om een runtime-actie te blokkeren,
-goed te keuren of te annoteren, moet deze de attestatiehash van de laatste schone beleidscontrole
-registreren. `checkedAt` blijft in JSON-uitvoer staan voor auditlogs, maar maakt geen deel uit van de
-stabiele attestatiehash.
+Als een Gateway of toezichthouder beleid gebruikt om een runtimeactie te blokkeren, goed te keuren of van een annotatie te voorzien,
+moet deze de attestatiehash van de laatste schone
+controle vastleggen. `checkedAt` blijft voor auditlogboeken in de JSON-uitvoer staan, maar maakt geen deel uit van de
+stabiele hash.
 
-Gebruik deze levenscyclus bij het accepteren van beleidsstatus:
+Levenscyclus voor het accepteren van de beleidsstatus:
 
-1. Stel `policy.jsonc` op of review het.
+1. Stel `policy.jsonc` op of beoordeel het.
 2. Voer `openclaw policy check --json` uit.
-3. Als het resultaat schoon is, registreer `attestation.policy.hash` als `expectedHash`.
-4. Registreer `attestation.attestationHash` als `expectedAttestationHash`.
+3. Leg bij een schone controle `attestation.policy.hash` vast als `expectedHash`.
+4. Leg `attestation.attestationHash` vast als `expectedAttestationHash`.
 5. Voer `openclaw doctor --lint` opnieuw uit in CI- of releasepoorten.
 
-Als beleidsregels bewust veranderen, werk dan beide geaccepteerde hashes bij op basis van een schone
-controle. Als workspace-instellingen bewust veranderen maar het beleid hetzelfde blijft,
-verandert meestal alleen `expectedAttestationHash`.
+Als beleidsregels bewust worden gewijzigd, werk dan beide geaccepteerde hashes bij op basis van een
+schone controle. Als alleen werkruimte-instellingen worden gewijzigd (het beleid blijft hetzelfde),
+verandert doorgaans alleen `expectedAttestationHash`.
 
-Het inschakelen of upgraden van `agents.workspace`-regels voegt `agentWorkspace`-bewijs toe aan
-de workspace-hash en attestatiehash. Operators moeten het nieuwe
-bewijs reviewen en geaccepteerde attestatiehashes vernieuwen nadat ze deze regels hebben ingeschakeld.
-Het inschakelen of upgraden van regels voor toolhouding voegt op dezelfde
-manier `toolPosture`-bewijs toe.
+Als u regels voor `agents.workspace` inschakelt of bijwerkt, wordt `agentWorkspace`-bewijs
+toegevoegd aan de werkruimtehash en attestatiehash; beoordeel het nieuwe bewijs en
+vernieuw de geaccepteerde attestatiehashes na het inschakelen. Als u regels voor
+de toolpostuur inschakelt of bijwerkt, wordt op dezelfde manier `toolPosture`-bewijs toegevoegd.
 
-`openclaw policy watch` voert dezelfde controle herhaaldelijk uit en rapporteert wanneer het
-huidige bewijs niet langer overeenkomt met `expectedAttestationHash`:
+`openclaw policy watch` voert de controle opnieuw uit en meldt wanneer het huidige bewijs niet
+meer overeenkomt met `expectedAttestationHash`:
 
 ```bash
 openclaw policy watch --json
 ```
 
-Gebruik `--once` in CI of scripts die slechts één driftevaluatie nodig hebben. Zonder
-`--once` pollt de opdracht standaard elke twee seconden; gebruik `--interval-ms` om
-een ander interval te kiezen.
+Gebruik `--once` in CI of scripts die één driftbeoordeling nodig hebben. Zonder
+`--once` wordt standaard elke twee seconden gecontroleerd; gebruik `--interval-ms` om
+het interval te wijzigen.
 
 ## Bevindingen
 
-Beleid verifieert momenteel:
-
-| Controle-id                                             | Bevinding                                                                         |
+| Controle-id                                              | Bevinding                                                                         |
 | -------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| `policy/policy-jsonc-missing`                            | Beleid is ingeschakeld, maar `policy.jsonc` ontbreekt.                            |
-| `policy/policy-jsonc-invalid`                            | Beleid kan niet worden geparseerd of bevat ongeldige regelvermeldingen.           |
-| `policy/policy-hash-mismatch`                            | Beleid komt niet overeen met geconfigureerde `expectedHash`.                      |
-| `policy/attestation-hash-mismatch`                       | Huidig beleidsbewijs komt niet meer overeen met de geaccepteerde attestatie.      |
-| `policy/policy-conformance-invalid`                      | Een basislijn- of gecontroleerd beleidsbestand heeft ongeldige vergelijkingssyntaxis. |
-| `policy/policy-conformance-missing`                      | Een gecontroleerd beleidsbestand mist een regel die vereist is door het basislijnbeleidsbestand. |
+| `policy/policy-jsonc-missing`                            | Beleid is ingeschakeld, maar `policy.jsonc` ontbreekt.                             |
+| `policy/policy-jsonc-invalid`                            | Beleid kan niet worden geparseerd of bevat onjuist gevormde regelvermeldingen.     |
+| `policy/policy-hash-mismatch`                            | Beleid komt niet overeen met de geconfigureerde `expectedHash`.                   |
+| `policy/attestation-hash-mismatch`                       | Huidig beleidsbewijs komt niet meer overeen met de geaccepteerde attestatie.       |
+| `policy/policy-conformance-invalid`                      | Een basislijn of gecontroleerd beleidsbestand bevat ongeldige vergelijkingssyntaxis. |
+| `policy/policy-conformance-missing`                      | Een gecontroleerd beleidsbestand mist een regel die door het basislijnbeleidsbestand wordt vereist. |
 | `policy/policy-conformance-weaker`                       | Een gecontroleerd beleidsbestand heeft een zwakkere waarde dan het basislijnbeleidsbestand. |
-| `policy/channels-denied-provider`                        | Een ingeschakeld kanaal komt overeen met een kanaalweigerregel.                   |
-| `policy/mcp-denied-server`                               | Een geconfigureerde MCP-server wordt door beleid geweigerd.                       |
-| `policy/mcp-unapproved-server`                           | Een geconfigureerde MCP-server staat buiten de toelatingslijst.                   |
+| `policy/channels-denied-provider`                        | Een ingeschakeld kanaal komt overeen met een weigeringsregel voor kanalen.         |
+| `policy/mcp-denied-server`                               | Een geconfigureerde MCP-server wordt door het beleid geweigerd.                    |
+| `policy/mcp-unapproved-server`                           | Een geconfigureerde MCP-server valt buiten de toelatingslijst.                    |
 | `policy/models-denied-provider`                          | Een geconfigureerde modelprovider of modelverwijzing gebruikt een geweigerde provider. |
-| `policy/models-unapproved-provider`                      | Een geconfigureerde modelprovider of modelverwijzing staat buiten de toelatingslijst. |
-| `policy/network-private-access-enabled`                  | Een SSRF-ontsnappingsmechanisme voor privénetwerken is ingeschakeld terwijl beleid dit weigert. |
-| `policy/ingress-dm-policy-unapproved`                    | Een kanaal-DM-beleid staat buiten de beleidstoelatingslijst.                      |
-| `policy/ingress-dm-scope-unapproved`                     | `session.dmScope` komt niet overeen met het door beleid vereiste DM-isolatiebereik. |
-| `policy/ingress-open-groups-denied`                      | Een kanaalgroepsbeleid is `open` terwijl beleid open groepsingang weigert.        |
-| `policy/ingress-group-mention-required`                  | Een kanaal- of groepsvermelding schakelt vermeldingspoorten uit terwijl beleid ze vereist. |
-| `policy/gateway-non-loopback-bind`                       | Gateway-bindhouding staat niet-loopback-blootstelling toe terwijl beleid dit weigert. |
-| `policy/gateway-auth-disabled`                           | Gateway-authenticatie is uitgeschakeld terwijl beleid authenticatie vereist.      |
-| `policy/gateway-rate-limit-missing`                      | Gateway-authenticatie-ratelimit-houding is niet expliciet terwijl beleid dit vereist. |
-| `policy/gateway-control-ui-insecure`                     | Onveilige blootstellingsschakelaars voor de Gateway Control UI zijn ingeschakeld. |
-| `policy/gateway-tailscale-funnel`                        | Gateway Tailscale Funnel-blootstelling is ingeschakeld terwijl beleid dit weigert. |
-| `policy/gateway-remote-enabled`                          | Gateway-externe modus is actief terwijl beleid dit weigert.                       |
-| `policy/gateway-http-endpoint-enabled`                   | Een Gateway HTTP API-eindpunt is ingeschakeld terwijl beleid dit weigert.         |
-| `policy/gateway-http-url-fetch-unrestricted`             | Gateway HTTP URL-fetch-invoer mist een vereiste URL-toelatingslijst.              |
-| `policy/agents-workspace-access-denied`                  | Agent-sandboxmodus of werkruimtetoegang staat buiten de beleidstoelatingslijst.   |
-| `policy/agents-tool-not-denied`                          | Een agent- of standaardconfiguratie weigert geen tool die door beleid vereist wordt. |
-| `policy/tools-profile-unapproved`                        | Een geconfigureerd globaal of per-agent toolprofiel staat buiten de toelatingslijst. |
-| `policy/tools-fs-workspace-only-required`                | Bestandssysteemtools zijn niet geconfigureerd met een padbeleid alleen voor de werkruimte. |
-| `policy/tools-exec-security-unapproved`                  | Exec-beveiligingsmodus staat buiten de beleidstoelatingslijst.                    |
-| `policy/tools-exec-ask-unapproved`                       | Exec-vraagmodus staat buiten de beleidstoelatingslijst.                           |
-| `policy/tools-exec-host-unapproved`                      | Exec-hostroutering staat buiten de beleidstoelatingslijst.                        |
-| `policy/tools-elevated-enabled`                          | Verhoogde toolmodus is ingeschakeld terwijl beleid dit weigert.                   |
-| `policy/tools-also-allow-missing`                        | Een geconfigureerde `alsoAllow`-lijst mist een vermelding die door beleid vereist is. |
-| `policy/tools-also-allow-unexpected`                     | Een geconfigureerde `alsoAllow`-lijst bevat een vermelding die niet door beleid wordt verwacht. |
-| `policy/tools-required-deny-missing`                     | Een globale of per-agent toolweigerlijst bevat geen vereiste geweigerde tool.     |
-| `policy/sandbox-mode-unapproved`                         | Sandboxmodus staat buiten de beleidstoelatingslijst.                              |
-| `policy/sandbox-backend-unapproved`                      | Sandboxbackend staat buiten de beleidstoelatingslijst.                            |
-| `policy/sandbox-container-posture-unobservable`          | Een containerhoudingsregel is ingeschakeld voor een backend die deze niet kan observeren. |
-| `policy/sandbox-container-host-network-denied`           | Een containergebaseerde sandbox of browser gebruikt hostnetwerkmodus.             |
-| `policy/sandbox-container-namespace-join-denied`         | Een containergebaseerde sandbox of browser sluit zich aan bij een andere containernamespace. |
-| `policy/sandbox-container-mount-mode-required`           | Een containergebaseerde sandbox- of browsermount is niet alleen-lezen.            |
-| `policy/sandbox-container-runtime-socket-mount`          | Een containergebaseerde sandbox- of browsermount stelt de containerruntime-socket bloot. |
-| `policy/sandbox-container-unconfined-profile`            | Containersandboxprofiel is onbeperkt terwijl beleid dit weigert.                  |
-| `policy/sandbox-browser-cdp-source-range-missing`        | Sandboxbrowser-CDP-bronbereik ontbreekt terwijl beleid er een vereist.            |
-| `policy/data-handling-redaction-disabled`                | Redactie van gevoelige loggegevens is uitgeschakeld terwijl beleid dit vereist.   |
-| `policy/data-handling-telemetry-content-capture`         | Vastlegging van telemetrie-inhoud is ingeschakeld terwijl beleid dit weigert.     |
-| `policy/data-handling-session-retention-not-enforced`    | Onderhoud van sessiebewaring wordt niet afgedwongen terwijl beleid dit vereist.   |
-| `policy/data-handling-session-transcript-memory-enabled` | Indexering van sessietranscriptgeheugen is ingeschakeld terwijl beleid dit weigert. |
-| `policy/secrets-unmanaged-provider`                      | Een configuratie-SecretRef verwijst naar een provider die niet is gedeclareerd onder `secrets.providers`. |
-| `policy/secrets-denied-provider-source`                  | Een configuratiegeheimprovider of SecretRef gebruikt een bron die door beleid wordt geweigerd. |
-| `policy/secrets-insecure-provider`                       | Een geheimprovider kiest voor een onveilige houding terwijl beleid dit weigert.   |
-| `policy/auth-profile-invalid-metadata`                   | Een configuratie-authenticatieprofiel mist geldige provider- of modusmetadata.    |
-| `policy/auth-profile-unapproved-mode`                    | Een configuratie-authenticatieprofielmodus staat buiten de beleidstoelatingslijst. |
-| `policy/exec-approvals-missing`                          | Beleid vereist `exec-approvals.json`, maar het artefact ontbreekt.                |
-| `policy/exec-approvals-invalid`                          | Het geconfigureerde exec-goedkeuringsartefact kan niet worden geparseerd.         |
-| `policy/exec-approvals-default-security-unapproved`      | Exec-goedkeuringsstandaarden gebruiken een beveiligingsmodus buiten de beleidstoelatingslijst. |
-| `policy/exec-approvals-agent-security-unapproved`        | Een effectieve exec-goedkeuringsbeveiligingsmodus per agent staat buiten de toelatingslijst. |
-| `policy/exec-approvals-auto-allow-skills-enabled`        | Een exec-goedkeuringsagent staat impliciet automatisch skill-CLI's toe terwijl beleid dit weigert. |
-| `policy/exec-approvals-allowlist-missing`                | De goedkeuringstoelatingslijst mist een patroon dat door beleid vereist is.       |
-| `policy/exec-approvals-allowlist-unexpected`             | De goedkeuringstoelatingslijst bevat een patroon dat niet door beleid wordt verwacht. |
-| `policy/tools-missing-risk-level`                        | Een beheerde tooldeclaratie mist risicometadata.                                  |
-| `policy/tools-unknown-risk-level`                        | Een beheerde tooldeclaratie gebruikt een onbekende risicowaarde.                  |
-| `policy/tools-missing-sensitivity-token`                 | Een beheerde tooldeclaratie mist gevoeligheidsmetadata.                           |
-| `policy/tools-missing-owner`                             | Een beheerde tooldeclaratie mist eigenaarsmetadata.                               |
-| `policy/tools-unknown-sensitivity-token`                 | Een beheerde tooldeclaratie gebruikt een onbekende gevoeligheidswaarde.           |
+| `policy/models-unapproved-provider`                      | Een geconfigureerde modelprovider of modelverwijzing valt buiten de toelatingslijst. |
+| `policy/network-private-access-enabled`                  | Een SSRF-uitwijkmogelijkheid voor privénetwerken is ingeschakeld terwijl het beleid deze weigert. |
+| `policy/ingress-dm-policy-unapproved`                    | Het DM-beleid van een kanaal valt buiten de toelatingslijst van het beleid.        |
+| `policy/ingress-dm-scope-unapproved`                     | `session.dmScope` komt niet overeen met het door het beleid vereiste DM-isolatiebereik. |
+| `policy/ingress-open-groups-denied`                      | Het groepsbeleid van een kanaal is `open`, terwijl het beleid open groepsingang weigert. |
+| `policy/ingress-group-mention-required`                  | Een kanaal- of groepsvermelding schakelt vermeldingspoorten uit terwijl het beleid deze vereist. |
+| `policy/gateway-non-loopback-bind`                       | De bindingspostuur van de Gateway staat blootstelling buiten local loopback toe terwijl het beleid deze weigert. |
+| `policy/gateway-auth-disabled`                           | Gateway-authenticatie is uitgeschakeld terwijl het beleid authenticatie vereist.  |
+| `policy/gateway-rate-limit-missing`                      | De snelheidslimietpostuur voor Gateway-authenticatie is niet expliciet terwijl het beleid dit vereist. |
+| `policy/gateway-control-ui-insecure`                     | Schakelaars voor onveilige blootstelling van de Gateway-bedieningsinterface zijn ingeschakeld. |
+| `policy/gateway-tailscale-funnel`                        | Blootstelling via Gateway Tailscale Funnel is ingeschakeld terwijl het beleid deze weigert. |
+| `policy/gateway-remote-enabled`                          | De externe modus van de Gateway is actief terwijl het beleid deze weigert.        |
+| `policy/gateway-http-endpoint-enabled`                   | Een HTTP-API-eindpunt van de Gateway is ingeschakeld terwijl het door het beleid wordt geweigerd. |
+| `policy/gateway-http-url-fetch-unrestricted`             | Invoer voor het ophalen van URL's via Gateway HTTP mist een vereiste URL-toelatingslijst. |
+| `policy/gateway-node-command-denied`                     | Een door het beleid geweigerd Node-commando wordt niet door de OpenClaw-configuratie geweigerd. |
+| `policy/agents-workspace-access-denied`                  | De sandboxmodus of werkruimtetoegang van de agent valt buiten de toelatingslijst van het beleid. |
+| `policy/agents-tool-not-denied`                          | Een agent- of standaardconfiguratie weigert een door het beleid verplicht te weigeren tool niet. |
+| `policy/tools-profile-unapproved`                        | Een geconfigureerd algemeen of agentspecifiek toolprofiel valt buiten de toelatingslijst. |
+| `policy/tools-fs-workspace-only-required`                | Bestandssysteemtools zijn niet geconfigureerd met een padpostuur die uitsluitend de werkruimte toestaat. |
+| `policy/tools-exec-security-unapproved`                  | De beveiligingsmodus voor uitvoering valt buiten de toelatingslijst van het beleid. |
+| `policy/tools-exec-ask-unapproved`                       | De vraagmodus voor uitvoering valt buiten de toelatingslijst van het beleid.      |
+| `policy/tools-exec-host-unapproved`                      | De hostroutering voor uitvoering valt buiten de toelatingslijst van het beleid.   |
+| `policy/tools-elevated-enabled`                          | De toolmodus met verhoogde bevoegdheden is ingeschakeld terwijl het beleid deze weigert. |
+| `policy/tools-also-allow-missing`                        | Een geconfigureerde `alsoAllow`-lijst mist een door het beleid vereiste vermelding. |
+| `policy/tools-also-allow-unexpected`                     | Een geconfigureerde `alsoAllow`-lijst bevat een vermelding die niet door het beleid wordt verwacht. |
+| `policy/tools-required-deny-missing`                     | Een algemene of agentspecifieke weigeringslijst voor tools bevat een verplicht te weigeren tool niet. |
+| `policy/sandbox-mode-unapproved`                         | De sandboxmodus valt buiten de toelatingslijst van het beleid.                    |
+| `policy/sandbox-backend-unapproved`                      | De sandboxbackend valt buiten de toelatingslijst van het beleid.                  |
+| `policy/sandbox-container-posture-unobservable`          | Een containerpostuurregel is ingeschakeld voor een backend die deze niet kan waarnemen. |
+| `policy/sandbox-container-host-network-denied`           | Een containergebaseerde sandbox of browser gebruikt de hostnetwerkmodus.          |
+| `policy/sandbox-container-namespace-join-denied`         | Een containergebaseerde sandbox of browser treedt toe tot de naamruimte van een andere container. |
+| `policy/sandbox-container-mount-mode-required`           | Een koppeling van een containergebaseerde sandbox of browser is niet alleen-lezen. |
+| `policy/sandbox-container-runtime-socket-mount`          | Een koppeling van een containergebaseerde sandbox of browser stelt de socket van de containerruntime bloot. |
+| `policy/sandbox-container-unconfined-profile`            | Het containersandboxprofiel is onbeperkt terwijl het beleid dit weigert.          |
+| `policy/sandbox-browser-cdp-source-range-missing`        | Het CDP-bronbereik van de sandboxbrowser ontbreekt terwijl het beleid er een vereist. |
+| `policy/data-handling-redaction-disabled`                | Redactie van gevoelige loggegevens is uitgeschakeld terwijl het beleid deze vereist. |
+| `policy/data-handling-telemetry-content-capture`         | Vastlegging van telemetrie-inhoud is ingeschakeld terwijl het beleid deze weigert. |
+| `policy/data-handling-session-retention-not-enforced`    | Onderhoud van sessiebewaring wordt niet afgedwongen terwijl het beleid dit vereist. |
+| `policy/data-handling-session-transcript-memory-enabled` | Geheugenindexering van sessietranscripten is ingeschakeld terwijl het beleid deze weigert. |
+| `policy/secrets-unmanaged-provider`                      | Een SecretRef in de configuratie verwijst naar een provider die niet onder `secrets.providers` is gedeclareerd. |
+| `policy/secrets-denied-provider-source`                  | Een geheimprovider of SecretRef in de configuratie gebruikt een door het beleid geweigerde bron. |
+| `policy/secrets-insecure-provider`                       | Een geheimprovider kiest voor een onveilige postuur terwijl het beleid deze weigert. |
+| `policy/auth-profile-invalid-metadata`                   | Een authenticatieprofiel in de configuratie mist geldige metadata voor provider of modus. |
+| `policy/auth-profile-unapproved-mode`                    | De modus van een authenticatieprofiel in de configuratie valt buiten de toelatingslijst van het beleid. |
+| `policy/exec-approvals-missing`                          | Het beleid vereist `exec-approvals.json`, maar het artefact ontbreekt.             |
+| `policy/exec-approvals-invalid`                          | Het geconfigureerde artefact voor uitvoeringsgoedkeuringen kan niet worden geparseerd. |
+| `policy/exec-approvals-default-security-unapproved`      | De standaardwaarden voor uitvoeringsgoedkeuringen gebruiken een beveiligingsmodus buiten de toelatingslijst van het beleid. |
+| `policy/exec-approvals-agent-security-unapproved`        | Een effectieve beveiligingsmodus voor agentspecifieke uitvoeringsgoedkeuringen valt buiten de toelatingslijst. |
+| `policy/exec-approvals-auto-allow-skills-enabled`        | Een agent voor uitvoeringsgoedkeuringen staat Skills-CLI's impliciet automatisch toe terwijl het beleid dit weigert. |
+| `policy/exec-approvals-allowlist-missing`                | De toelatingslijst voor goedkeuringen mist een door het beleid vereist patroon.    |
+| `policy/exec-approvals-allowlist-unexpected`             | De toelatingslijst voor goedkeuringen bevat een patroon dat niet door het beleid wordt verwacht. |
+| `policy/tools-missing-risk-level`                        | Een gereguleerde tooldeclaratie mist risicometadata.                              |
+| `policy/tools-unknown-risk-level`                        | Een gereguleerde tooldeclaratie gebruikt een onbekende risicowaarde.              |
+| `policy/tools-missing-sensitivity-token`                 | Een gereguleerde tooldeclaratie mist gevoeligheidsmetadata.                       |
+| `policy/tools-missing-owner`                             | Een gereguleerde tooldeclaratie mist eigenaarsmetadata.                           |
+| `policy/tools-unknown-sensitivity-token`                 | Een gereguleerde tooldeclaratie gebruikt een onbekende gevoeligheidswaarde.       |
 
-Beleidsbevindingen kunnen zowel `target` als `requirement` bevatten. `target` is het
-waargenomen werkruimteobject dat niet voldoet. `requirement` is de geschreven
-beleidsregel waardoor het een bevinding werd. Beide waarden zijn momenteel adressen,
-meestal `oc://`-paden, maar de veldnamen beschrijven hun beleidsrol in plaats van de
-adresindeling.
+Een bevinding kan zowel `target` (het waargenomen werkruimteonderdeel dat niet
+voldoet) als `requirement` (de opgestelde regel waardoor het een bevinding werd)
+bevatten. Beide zijn momenteel `oc://`-adresreeksen, maar de veldnamen beschrijven de
+beleidsrol en niet de adresindeling.
 
-Voorbeeld-JSON-bevinding:
+Voorbeelden van bevindingen:
 
 ```json
 {
@@ -887,8 +867,6 @@ Voorbeeld-JSON-bevinding:
 }
 ```
 
-Voorbeeld-toolbevinding:
-
 ```json
 {
   "checkId": "policy/tools-missing-risk-level",
@@ -903,75 +881,79 @@ Voorbeeld-toolbevinding:
 }
 ```
 
-Voorbeeld-MCP-bevinding:
-
 ```json
 {
   "checkId": "policy/mcp-unapproved-server",
   "severity": "error",
-  "message": "MCP server 'remote' is not in the policy allowlist.",
+  "message": "MCP-server 'remote' staat niet op de acceptatielijst van het beleid.",
   "source": "policy",
-  "path": "openclaw config",
+  "path": "openclaw-configuratie",
   "ocPath": "oc://openclaw.config/mcp/servers/remote",
   "target": "oc://openclaw.config/mcp/servers/remote",
   "requirement": "oc://policy.jsonc/mcp/servers/allow"
 }
 ```
 
-Voorbeeld-modelproviderbevinding:
-
 ```json
 {
   "checkId": "policy/models-unapproved-provider",
   "severity": "error",
-  "message": "Model ref 'anthropic/claude-sonnet-4.7' uses unapproved provider 'anthropic'.",
+  "message": "Modelverwijzing 'anthropic/claude-sonnet-4.7' gebruikt de niet-goedgekeurde provider 'anthropic'.",
   "source": "policy",
-  "path": "openclaw config",
+  "path": "openclaw-configuratie",
   "ocPath": "oc://openclaw.config/agents/defaults/model/fallbacks/#0",
   "target": "oc://openclaw.config/agents/defaults/model/fallbacks/#0",
   "requirement": "oc://policy.jsonc/models/providers/allow"
 }
 ```
 
-Voorbeeld-netwerkbevinding:
-
 ```json
 {
   "checkId": "policy/network-private-access-enabled",
   "severity": "error",
-  "message": "Network setting 'browser-private-network' allows private-network access.",
+  "message": "Netwerkinstelling 'browser-private-network' staat toegang tot het privénetwerk toe.",
   "source": "policy",
-  "path": "openclaw config",
+  "path": "openclaw-configuratie",
   "ocPath": "oc://openclaw.config/browser/ssrfPolicy/dangerouslyAllowPrivateNetwork",
   "target": "oc://openclaw.config/browser/ssrfPolicy/dangerouslyAllowPrivateNetwork",
   "requirement": "oc://policy.jsonc/network/privateNetwork/allow"
 }
 ```
 
-Voorbeeldbevinding voor Gateway-blootstelling:
-
 ```json
 {
   "checkId": "policy/gateway-non-loopback-bind",
   "severity": "error",
-  "message": "Gateway bind setting 'gateway-bind' permits non-loopback exposure.",
+  "message": "Gateway-bindingsinstelling 'gateway-bind' staat blootstelling buiten local loopback toe.",
   "source": "policy",
-  "path": "openclaw config",
+  "path": "openclaw-configuratie",
   "ocPath": "oc://openclaw.config/gateway/bind",
   "target": "oc://openclaw.config/gateway/bind",
   "requirement": "oc://policy.jsonc/gateway/exposure/allowNonLoopbackBind"
 }
 ```
 
-Voorbeeldbevinding voor agentwerkruimte:
+```json
+{
+  "checkId": "policy/gateway-node-command-denied",
+  "severity": "error",
+  "message": "Gateway-nodeopdracht 'system.run' wordt door het beleid geweigerd, maar niet door de OpenClaw-configuratie.",
+  "source": "policy",
+  "path": "openclaw-configuratie",
+  "ocPath": "oc://openclaw.config/gateway/nodes/denyCommands",
+  "target": "oc://openclaw.config/gateway/nodes/denyCommands",
+  "requirement": "oc://policy.jsonc/gateway/nodes/denyCommands",
+  "fixHint": "Voeg 'system.run' toe aan gateway.nodes.denyCommands of werk het beleid na controle bij."
+}
+```
 
 ```json
 {
   "checkId": "policy/agents-workspace-access-denied",
   "severity": "error",
-  "message": "agents.defaults sandbox workspaceAccess 'rw' is not allowed by policy.",
+  "message": "De sandbox-werkruimtetoegang 'rw' van agents.defaults is volgens het beleid niet toegestaan.",
   "source": "policy",
-  "path": "openclaw config",
+  "path": "openclaw-configuratie",
   "ocPath": "oc://openclaw.config/agents/defaults/sandbox/workspaceAccess",
   "target": "oc://openclaw.config/agents/defaults/sandbox/workspaceAccess",
   "requirement": "oc://policy.jsonc/agents/workspace/allowedAccess"
@@ -983,13 +965,58 @@ Voorbeeldbevinding voor agentwerkruimte:
 `doctor --lint` en `policy check` zijn alleen-lezen.
 
 `doctor --fix` bewerkt alleen door beleid beheerde werkruimte-instellingen wanneer
-`workspaceRepairs` expliciet is ingeschakeld. Zonder die opt-in melden beleidscontroles
-wat ze zouden repareren en laten ze instellingen ongewijzigd.
+`workspaceRepairs` expliciet is ingeschakeld; anders melden controles wat ze
+zouden herstellen en blijven de instellingen ongewijzigd.
 
-In deze versie kan reparatie kanalen uitschakelen die in de OpenClaw-configuratie zijn ingeschakeld
-maar door `channels.denyRules` worden geweigerd. Schakel `workspaceRepairs` pas in nadat het
-beleidsbestand is beoordeeld, omdat een geldige weigerregel een
-geconfigureerd kanaal kan uitschakelen:
+In deze versie kan herstel kanalen uitschakelen die door `channels.denyRules`
+worden geweigerd en de onderstaande automatische beperkingsreparaties toepassen.
+Schakel `workspaceRepairs` pas in nadat het beleidsbestand is gecontroleerd,
+omdat een geldige regel de werkruimteconfiguratie kan wijzigen:
+
+- stel `tools.elevated.enabled=false` in wanneer algemeen beleid verhoogde hulpmiddelen verbiedt
+- voeg ontbrekende, verplicht te weigeren hulpmiddel-id's toe aan `tools.deny` of
+  `agents.list[].tools.deny` wanneer het beleid vereist dat die hulpmiddelen worden geweigerd
+- stel onveilige `gateway.controlUi.*`-schakelaars in op `false`
+- stel `gateway.mode=local` in wanneer het beleid de externe Gateway-modus weigert
+- stel gemelde `gateway.http.endpoints.*.enabled`-paden in op `false` wanneer het beleid
+  Gateway HTTP-API-eindpunten weigert
+- stel gemelde `groupPolicy`-paden voor inkomend kanaalverkeer in op `allowlist` wanneer het beleid
+  open inkomend groepsverkeer weigert
+- stel gemelde `requireMention`-paden voor inkomend kanaalverkeer in op `true` wanneer het beleid
+  vermeldingen in groepen vereist
+- stel `logging.redactSensitive=tools` in wanneer het beleid anonimisering van gevoelige loggegevens
+  vereist
+- stel `diagnostics.otel.captureContent=false` in, of
+  `diagnostics.otel.captureContent.enabled=false` voor telemetrie-
+  opname-instellingen in objectvorm, wanneer het beleid de opname van telemetrie-inhoud weigert
+
+Herstel van verhoogde hulpmiddelen met een beperkt bereik wordt alleen
+gedetecteerd. Herstel van gegevensverwerking met een beperkt bereik wordt
+eveneens overgeslagen wanneer de bevinding gedeelde logboek- of
+telemetrieconfiguratie meldt, omdat het wijzigen van de gedeelde instelling meer
+zou beïnvloeden dan het beleidsdoel met beperkt bereik.
+
+Herstel van verplichte weigeringen met een beperkt bereik wordt overgeslagen
+wanneer de bevinding overgenomen `tools.deny` op hoofdniveau meldt, omdat het
+toevoegen van het vereiste hulpmiddel aan de hoofdconfiguratie meer zou
+beïnvloeden dan het beleidsdoel met beperkt bereik. Herstel van verplichte
+weigeringen op agentniveau kan het gemelde pad `agents.list[].tools.deny`
+bijwerken.
+
+Herstel van inkomend kanaalverkeer met een beperkt bereik wordt overgeslagen
+wanneer de bevinding overgenomen `channels.defaults.*` meldt, omdat het wijzigen
+van de gedeelde kanaalstandaard meer zou beïnvloeden dan het beleidsdoel met
+beperkt bereik. Bevindingen over acceptatielijsten voor het ophalen van URL's
+via Gateway HTTP blijven handmatig, omdat automatisch herstel niet de juiste
+acceptatielijstwaarden voor eindpunt-URL's kan kiezen.
+
+Bevindingen voor Gateway-bindingen en nodeopdrachten blijven een controle
+vereisen. Wanneer `policy/gateway-non-loopback-bind` of
+`policy/gateway-node-command-denied` aan een configuratiepad kan worden
+gekoppeld, meldt `doctor --fix` de voorgestelde wijziging van `gateway.bind` of
+`gateway.nodes.denyCommands` als overgeslagen voorbeeldrichtlijn. De wijziging
+wordt niet toegepast en de bevinding geldt pas als hersteld nadat een beheerder
+de configuratie of het beleid heeft gecontroleerd en bijgewerkt.
 
 ```jsonc
 {
@@ -1005,15 +1032,15 @@ geconfigureerd kanaal kan uitschakelen:
 }
 ```
 
-## Exitcodes
+## Afsluitcodes
 
-| Opdracht         | `0`                                                            | `1`                                                                      | `2`                          |
-| ---------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------ | ---------------------------- |
-| `policy check`   | Geen bevindingen op de drempel.                                | Een of meer bevindingen voldeden aan de drempel.                         | Argument- of runtimefout.    |
-| `policy compare` | Het beleidsbestand is minstens zo strikt als de baseline.      | Het beleidsbestand is ongeldig, ontbreekt of is zwakker dan baseline-regels. | Argument- of runtimefout. |
-| `policy watch`   | Geen bevindingen en geaccepteerde hash is actueel.             | Er bestaan bevindingen of de geaccepteerde attestatie is verouderd.       | Argument- of runtimefout.    |
+| Opdracht          | `0`                                                        | `1`                                                                    | `2`                              |
+| ----------------- | ---------------------------------------------------------- | ---------------------------------------------------------------------- | -------------------------------- |
+| `policy check`    | Geen bevindingen op het drempelniveau.                     | Een of meer bevindingen bereikten het drempelniveau.                   | Argument- of runtimefout.        |
+| `policy compare`  | Het beleidsbestand is minstens zo streng als de basislijn. | Het beleidsbestand is ongeldig, ontbreekt of is zwakker dan de basisregels. | Argument- of runtimefout.    |
+| `policy watch`    | Geen bevindingen en de geaccepteerde hash is actueel.      | Er zijn bevindingen of de geaccepteerde attestatie is verouderd.       | Argument- of runtimefout.        |
 
 ## Gerelateerd
 
-- [Doctor-lintmodus](/nl/cli/doctor#lint-mode)
-- [Path-CLI](/nl/cli/path)
+- [Lintmodus van Doctor](/nl/cli/doctor#lint-mode)
+- [Pad-CLI](/nl/cli/path)

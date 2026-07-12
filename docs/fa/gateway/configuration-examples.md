@@ -3,19 +3,19 @@ read_when:
     - یادگیری نحوه پیکربندی OpenClaw
     - در جست‌وجوی نمونه‌های پیکربندی
     - راه‌اندازی OpenClaw برای نخستین بار
-summary: نمونه‌های پیکربندی دقیق مطابق schema برای راه‌اندازی‌های رایج OpenClaw
+summary: نمونه‌های پیکربندی منطبق با شِما برای راه‌اندازی‌های رایج OpenClaw
 title: نمونه‌های پیکربندی
 x-i18n:
-    generated_at: "2026-06-27T17:40:44Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:58:12Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 945f4cd8571814597ec0188853e91c6483a0d8b09bd0ca7dcfb79eb877607ce2
+    source_hash: c3ad82ccce62e0c8dbb72f81b0de62d60d8a6282f0a327ed1cbda7ffa3e47969
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-نمونه‌های زیر با طرح‌وارهٔ پیکربندی فعلی هم‌راستا هستند. برای مرجع کامل و یادداشت‌های هر فیلد، [پیکربندی](/fa/gateway/configuration) را ببینید.
+نمونه‌های زیر با شِمای پیکربندی فعلی هماهنگ هستند. برای مرجع جامع و توضیحات مربوط به هر فیلد، به [پیکربندی](/fa/gateway/configuration) مراجعه کنید.
 
 ## شروع سریع
 
@@ -28,9 +28,9 @@ x-i18n:
 }
 ```
 
-در `~/.openclaw/openclaw.json` ذخیره کنید و می‌توانید از همان شماره به بات پیام مستقیم بدهید.
+آن را در `~/.openclaw/openclaw.json` ذخیره کنید؛ سپس می‌توانید از آن شماره به ربات پیام خصوصی بفرستید.
 
-### شروع پیشنهادی
+### پیکربندی آغازین پیشنهادی
 
 ```json5
 {
@@ -59,7 +59,7 @@ x-i18n:
   messages: {
     visibleReplies: "automatic",
     groupChat: {
-      visibleReplies: "message_tool", // opt-in; visible output requires message(action=send)
+      visibleReplies: "message_tool", // فعال‌سازی اختیاری؛ خروجی قابل مشاهده به message(action=send) نیاز دارد
       unmentionedInbound: "room_event",
     },
   },
@@ -68,7 +68,7 @@ x-i18n:
 
 ## نمونهٔ گسترش‌یافته (گزینه‌های اصلی)
 
-> JSON5 به شما اجازه می‌دهد از کامنت‌ها و کاماهای پایانی استفاده کنید. JSON معمولی هم کار می‌کند.
+> JSON5 امکان استفاده از توضیحات و ویرگول‌های پایانی را فراهم می‌کند. JSON معمولی نیز قابل استفاده است.
 
 ```json5
 {
@@ -145,7 +145,7 @@ x-i18n:
         enabled: true,
         maxBytes: 20971520,
         models: [
-          { provider: "openai", model: "gpt-4o-mini-transcribe" },
+          { provider: "openai", model: "gpt-4o-transcribe" },
           // Optional CLI fallback (Whisper binary):
           // { type: "cli", command: "whisper", args: ["--model", "base", "{{MediaPath}}"] }
         ],
@@ -172,7 +172,7 @@ x-i18n:
       discord: { mode: "idle", idleMinutes: 10080 },
     },
     resetTriggers: ["/new", "/reset"],
-    store: "~/.openclaw/agents/default/sessions/sessions.json",
+    store: "~/.openclaw/agents/main/sessions/sessions.json",
     maintenance: {
       mode: "warn",
       pruneAfter: "30d",
@@ -216,8 +216,8 @@ x-i18n:
           slug: "friends-of-openclaw",
           requireMention: false,
           channels: {
-            general: { allow: true },
-            help: { allow: true, requireMention: true },
+            general: { enabled: true },
+            help: { enabled: true, requireMention: true },
           },
         },
       },
@@ -228,7 +228,7 @@ x-i18n:
       botToken: "xoxb-REPLACE_ME",
       appToken: "xapp-REPLACE_ME",
       channels: {
-        "#general": { allow: true, requireMention: true },
+        "#general": { enabled: true, requireMention: true },
       },
       dm: { enabled: true, allowFrom: ["U123"] },
       slashCommand: {
@@ -391,7 +391,7 @@ x-i18n:
   // Cron jobs
   cron: {
     enabled: true,
-    store: "~/.openclaw/cron/cron.json",
+    store: "~/.openclaw/cron/jobs.json",
     maxConcurrentRuns: 8, // default; cron dispatch + isolated cron agent-turn execution
     sessionRetention: "24h",
     runLog: {
@@ -455,7 +455,7 @@ x-i18n:
       allowTailscale: true,
     },
     tailscale: { mode: "serve", resetOnExit: false },
-    remote: { url: "ws://gateway.tailnet:18789", token: "remote-token" },
+    remote: { url: "ws://gateway-host.ts.net:18789", token: "remote-token" },
     reload: { mode: "hybrid", debounceMs: 300 },
   },
 
@@ -482,10 +482,10 @@ x-i18n:
 }
 ```
 
-### مخزن skill هم‌رده با پیوند نمادین
+### مخزن هم‌ردهٔ Skills با پیوند نمادین
 
-از این حالت زمانی استفاده کنید که ریشهٔ یک skill داخلی شامل پیوند نمادین به یک مخزن هم‌رده باشد، برای
-نمونه `~/.agents/skills/manager -> ~/Projects/manager/skills`.
+هنگامی از این روش استفاده کنید که ریشهٔ یکی از Skills داخلی شامل پیوندی نمادین به یک مخزن هم‌رده باشد؛ برای
+مثال `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 
 ```json5
 {
@@ -498,15 +498,15 @@ x-i18n:
 }
 ```
 
-- `extraDirs` مخزن هم‌رده را به‌عنوان ریشهٔ صریح skill پویش می‌کند.
-- `allowSymlinkTargets` اجازه می‌دهد پوشه‌های skill دارای پیوند نمادین به آن ریشهٔ واقعیِ
-  مورداعتماد resolve شوند، بدون اینکه خروج‌های دلخواه از طریق پیوند نمادین مجاز شوند.
-- برای اینکه Skill Workshop بتواند از طریق همان هدف پیوند نمادین مورداعتماد اعمال نوشتن انجام دهد،
-  `skills.workshop.allowSymlinkTargetWrites: true` را تنظیم کنید.
+- `extraDirs` مخزن هم‌رده را به‌عنوان یک ریشهٔ صریح Skills پویش می‌کند.
+- `allowSymlinkTargets` به پوشه‌های Skills دارای پیوند نمادین اجازه می‌دهد بدون مجازکردن خروج دلخواه پیوندهای نمادین، به
+  ریشهٔ مقصد واقعی و مورداعتماد وارد شوند.
+- برای اینکه Skill Workshop بتواند از طریق همان مقصد مورداعتماد پیوند نمادین عملیات نوشتن را انجام دهد،
+  مقدار `skills.workshop.allowSymlinkTargetWrites: true` را تنظیم کنید.
 
 ## الگوهای رایج
 
-### خط پایهٔ skill مشترک با یک override
+### خط مبنای مشترک Skills با یک بازنویسی
 
 ```json5
 {
@@ -523,9 +523,9 @@ x-i18n:
 }
 ```
 
-- `agents.defaults.skills` خط پایه‌ی مشترک است.
-- `agents.list[].skills` آن خط پایه را برای یک عامل جایگزین می‌کند.
-- وقتی یک عامل نباید هیچ Skillsی را ببیند، از `skills: []` استفاده کنید.
+- `agents.defaults.skills` خط‌مبنای مشترک است.
+- `agents.list[].skills` این خط‌مبنا را برای یک عامل جایگزین می‌کند.
+- وقتی یک عامل نباید هیچ Skillsی ببیند، از `skills: []` استفاده کنید.
 
 ### راه‌اندازی چندسکویی
 
@@ -548,9 +548,11 @@ x-i18n:
 }
 ```
 
-### تأیید خودکار شبکه‌ی گره‌های معتمد
+### تأیید خودکار در شبکهٔ مورداعتماد Node
 
-جفت‌سازی دستگاه را دستی نگه دارید، مگر اینکه مسیر شبکه را کنترل می‌کنید. برای یک آزمایشگاه اختصاصی یا زیرشبکه‌ی tailnet، می‌توانید با CIDRها یا IPهای دقیق، تأیید خودکار دستگاه گره در اولین بار را فعال کنید:
+جفت‌سازی دستگاه را دستی نگه دارید، مگر اینکه مسیر شبکه را کنترل کنید. برای یک
+آزمایشگاه اختصاصی یا زیرشبکهٔ tailnet، می‌توانید تأیید خودکار نخستین جفت‌سازی دستگاه Node را
+با CIDRها یا نشانی‌های IP دقیق فعال کنید:
 
 ```json5
 {
@@ -564,11 +566,13 @@ x-i18n:
 }
 ```
 
-وقتی تنظیم نشده باشد، غیرفعال می‌ماند. این فقط برای جفت‌سازی تازه‌ی `role: node` بدون دامنه‌های درخواستی اعمال می‌شود. کلاینت‌های اپراتور/مرورگر و ارتقاهای نقش، دامنه، فراداده یا کلید عمومی همچنان به تأیید دستی نیاز دارند.
+اگر تنظیم نشود، همچنان غیرفعال می‌ماند. این قابلیت فقط برای جفت‌سازی جدید `role: node`
+بدون دامنه‌های درخواستی اعمال می‌شود. کلاینت‌های اپراتور/مرورگر و ارتقای نقش، دامنه، فراداده یا
+کلید عمومی همچنان به تأیید دستی نیاز دارند.
 
-### حالت DM امن (صندوق ورودی مشترک / DMهای چندکاربره)
+### حالت امن پیام خصوصی (صندوق ورودی مشترک / پیام‌های خصوصی چندکاربره)
 
-اگر بیش از یک نفر می‌تواند به ربات شما DM بدهد (چندین ورودی در `allowFrom`، تأییدهای جفت‌سازی برای چند نفر، یا `dmPolicy: "open"`)، **حالت DM امن** را فعال کنید تا DMهای فرستنده‌های مختلف به‌طور پیش‌فرض یک زمینه را به اشتراک نگذارند:
+اگر بیش از یک نفر می‌تواند به ربات شما پیام خصوصی بفرستد (چند ورودی در `allowFrom`، تأیید جفت‌سازی برای چند نفر، یا `dmPolicy: "open"`)، **حالت امن پیام خصوصی** را فعال کنید تا پیام‌های خصوصی فرستندگان مختلف به‌طور پیش‌فرض یک زمینهٔ مشترک نداشته باشند:
 
 ```json5
 {
@@ -592,10 +596,10 @@ x-i18n:
 }
 ```
 
-برای Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC، مجوزدهی فرستنده به‌طور پیش‌فرض ابتدا بر پایه‌ی شناسه است.
-فقط در صورتی تطبیق مستقیم نام/ایمیل/نام مستعار قابل تغییر را با `dangerouslyAllowNameMatching: true` هر کانال فعال کنید که صراحتاً آن ریسک را می‌پذیرید.
+برای Discord/Google Chat/IRC/Mattermost/Microsoft Teams/Slack، مجوزدهی فرستنده به‌طور پیش‌فرض ابتدا بر اساس شناسه انجام می‌شود.
+تطبیق مستقیم نام/ایمیل/نام مستعارِ تغییرپذیر را با `dangerouslyAllowNameMatching: true` در هر کانال فقط زمانی فعال کنید که صراحتاً این خطر را می‌پذیرید.
 
-### کلید API انتروپیک + جایگزین MiniMax
+### کلید API ‏Anthropic و جایگزین MiniMax
 
 ```json5
 {
@@ -655,8 +659,8 @@ x-i18n:
       enabled: true,
       botToken: "xoxb-...",
       channels: {
-        "#engineering": { allow: true, requireMention: true },
-        "#general": { allow: true, requireMention: true },
+        "#engineering": { enabled: true, requireMention: true },
+        "#general": { enabled: true, requireMention: true },
       },
     },
   },
@@ -699,10 +703,10 @@ x-i18n:
 
 ## نکته‌ها
 
-- اگر `dmPolicy: "open"` را تنظیم می‌کنید، فهرست متناظر `allowFrom` باید شامل `"*"` باشد.
-- شناسه‌های ارائه‌دهنده متفاوت‌اند (شماره تلفن‌ها، شناسه‌های کاربر، شناسه‌های کانال). برای تأیید قالب، از مستندات ارائه‌دهنده استفاده کنید.
+- اگر `dmPolicy: "open"` را تنظیم کنید، فهرست متناظر `allowFrom` باید شامل `"*"` باشد.
+- شناسه‌های ارائه‌دهندگان متفاوت‌اند (شماره تلفن، شناسهٔ کاربر، شناسهٔ کانال). برای تأیید قالب، مستندات ارائه‌دهنده را بررسی کنید.
 - بخش‌های اختیاری برای افزودن در آینده: `web`، `browser`، `ui`، `discovery`، `plugins`، `talk`، `signal`، `imessage`.
-- برای نکته‌های عمیق‌تر راه‌اندازی، [ارائه‌دهندگان](/fa/providers) و [عیب‌یابی](/fa/gateway/troubleshooting) را ببینید.
+- برای نکات عمیق‌تر دربارهٔ راه‌اندازی، [ارائه‌دهندگان](/fa/providers) و [عیب‌یابی](/fa/gateway/troubleshooting) را ببینید.
 
 ## مرتبط
 

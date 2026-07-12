@@ -1,87 +1,57 @@
 ---
 read_when:
     - Je wilt OpenClaw via een LiteLLM-proxy routeren
-    - Je hebt kostenregistratie, logging of modelroutering via LiteLLM nodig
+    - Je hebt kostentracering, logboekregistratie of modelroutering via LiteLLM nodig
 summary: Voer OpenClaw uit via LiteLLM Proxy voor uniforme modeltoegang en kostenregistratie
 title: LiteLLM
 x-i18n:
-    generated_at: "2026-04-29T23:11:00Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:19:41Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 26b5150cfca92c9cd425c864c711efb3ab62ef94377b9d1e5d6476b07bf4c800
+    source_hash: 797b7d02a80a4cd37b92553665e260532af49e011398202d3504a28c511cee2f
     source_path: providers/litellm.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-[LiteLLM](https://litellm.ai) is een open-source LLM-Gateway die een uniforme API biedt voor meer dan 100 modelproviders. Routeer OpenClaw via LiteLLM voor gecentraliseerde kostenregistratie, logging en de flexibiliteit om backends te wisselen zonder je OpenClaw-configuratie te wijzigen.
+[LiteLLM](https://litellm.ai) is een opensource-LLM-gateway met één uniforme API voor meer dan 100 modelproviders. Leid OpenClaw via LiteLLM voor gecentraliseerde kostentracering, logboekregistratie, virtuele sleutels met bestedingslimieten en failover van backends, zonder de OpenClaw-configuratie te wijzigen.
 
-<Tip>
-**Waarom LiteLLM met OpenClaw gebruiken?**
-
-- **Kostenregistratie** — Zie precies wat OpenClaw uitgeeft aan alle modellen
-- **Modelroutering** — Wissel tussen Claude, GPT-4, Gemini, Bedrock zonder configuratiewijzigingen
-- **Virtuele sleutels** — Maak sleutels met bestedingslimieten voor OpenClaw
-- **Logging** — Volledige aanvraag-/responslogs voor debugging
-- **Fallbacks** — Automatische failover als je primaire provider niet beschikbaar is
-
-</Tip>
-
-## Snelstart
+## Snel aan de slag
 
 <Tabs>
-  <Tab title="Onboarding (recommended)">
-    **Beste voor:** de snelste route naar een werkende LiteLLM-installatie.
+  <Tab title="Onboarding (aanbevolen)">
+    ```bash
+    openclaw onboard --auth-choice litellm-api-key
+    ```
 
-    <Steps>
-      <Step title="Run onboarding">
-        ```bash
-        openclaw onboard --auth-choice litellm-api-key
-        ```
+    Geef voor een niet-interactieve configuratie met een externe proxy de proxy-URL expliciet door:
 
-        Geef voor een niet-interactieve installatie met een externe proxy expliciet de proxy-URL door:
-
-        ```bash
-        openclaw onboard --non-interactive --auth-choice litellm-api-key --litellm-api-key "$LITELLM_API_KEY" --custom-base-url "https://litellm.example/v1"
-        ```
-      </Step>
-    </Steps>
+    ```bash
+    openclaw onboard --non-interactive --accept-risk --auth-choice litellm-api-key \
+      --litellm-api-key "$LITELLM_API_KEY" --custom-base-url "https://litellm.example/v1"
+    ```
 
   </Tab>
 
-  <Tab title="Manual setup">
-    **Beste voor:** volledige controle over installatie en configuratie.
-
+  <Tab title="Handmatige configuratie">
     <Steps>
-      <Step title="Start LiteLLM Proxy">
+      <Step title="LiteLLM Proxy starten">
         ```bash
         pip install 'litellm[proxy]'
         litellm --model claude-opus-4-6
         ```
       </Step>
-      <Step title="Point OpenClaw to LiteLLM">
+      <Step title="OpenClaw naar LiteLLM laten verwijzen">
         ```bash
         export LITELLM_API_KEY="your-litellm-key"
-
         openclaw
         ```
-
-        Dat is alles. OpenClaw routeert nu via LiteLLM.
       </Step>
     </Steps>
-
   </Tab>
 </Tabs>
 
 ## Configuratie
-
-### Omgevingsvariabelen
-
-```bash
-export LITELLM_API_KEY="sk-litellm-key"
-```
-
-### Configuratiebestand
 
 ```json5
 {
@@ -120,13 +90,11 @@ export LITELLM_API_KEY="sk-litellm-key"
 }
 ```
 
-## Geavanceerde configuratie
+Het standaardmodel dat de onboarding schrijft, is `litellm/claude-opus-4-6`.
 
-### Afbeeldingen genereren
+## Afbeeldingen genereren
 
-LiteLLM kan ook de `image_generate`-tool ondersteunen via OpenAI-compatibele
-`/images/generations`- en `/images/edits`-routes. Configureer een LiteLLM-afbeeldingsmodel
-onder `agents.defaults.imageGenerationModel`:
+LiteLLM kan de `image_generate`-tool ondersteunen via OpenAI-compatibele routes voor `/images/generations` en `/images/edits`. Het standaardafbeeldingsmodel is `gpt-image-2`; configureer een ander model onder `agents.defaults.imageGenerationModel`:
 
 ```json5
 {
@@ -149,14 +117,13 @@ onder `agents.defaults.imageGenerationModel`:
 }
 ```
 
-Loopback-LiteLLM-URL's zoals `http://localhost:4000` werken zonder globale
-override voor privénetwerken. Stel voor een proxy die op een LAN wordt gehost
-`models.providers.litellm.request.allowPrivateNetwork: true` in, omdat de API-sleutel
-naar de geconfigureerde proxyhost wordt verzonden.
+LiteLLM-URL's via local loopback (`http://localhost:4000`, `127.0.0.1`, `::1`, `host.docker.internal`) werken zonder een algemene uitzondering voor privénetwerken. Stel voor een proxy die op het LAN wordt gehost `models.providers.litellm.request.allowPrivateNetwork: true` in, omdat de API-sleutel naar die host wordt verzonden.
+
+## Geavanceerd
 
 <AccordionGroup>
-  <Accordion title="Virtual keys">
-    Maak een speciale sleutel voor OpenClaw met bestedingslimieten:
+  <Accordion title="Virtuele sleutels">
+    Maak voor OpenClaw een afzonderlijke sleutel met bestedingslimieten:
 
     ```bash
     curl -X POST "http://localhost:4000/key/generate" \
@@ -173,8 +140,8 @@ naar de geconfigureerde proxyhost wordt verzonden.
 
   </Accordion>
 
-  <Accordion title="Model routing">
-    LiteLLM kan modelaanvragen naar verschillende backends routeren. Configureer dit in je LiteLLM `config.yaml`:
+  <Accordion title="Modelroutering">
+    LiteLLM kan modelaanvragen naar verschillende backends routeren. Configureer dit in uw LiteLLM-`config.yaml`:
 
     ```yaml
     model_list:
@@ -189,34 +156,30 @@ naar de geconfigureerde proxyhost wordt verzonden.
           api_key: os.environ/OPENAI_API_KEY
     ```
 
-    OpenClaw blijft `claude-opus-4-6` aanvragen — LiteLLM handelt de routering af.
+    OpenClaw blijft `claude-opus-4-6` aanvragen; LiteLLM verzorgt de routering.
 
   </Accordion>
 
-  <Accordion title="Viewing usage">
-    Controleer het dashboard of de API van LiteLLM:
-
+  <Accordion title="Gebruik bekijken">
     ```bash
-    # Key info
+    # Sleutelinformatie
     curl "http://localhost:4000/key/info" \
       -H "Authorization: Bearer sk-litellm-key"
 
-    # Spend logs
+    # Bestedingslogboeken
     curl "http://localhost:4000/spend/logs" \
       -H "Authorization: Bearer $LITELLM_MASTER_KEY"
     ```
 
   </Accordion>
 
-  <Accordion title="Proxy behavior notes">
-    - LiteLLM draait standaard op `http://localhost:4000`
-    - OpenClaw maakt verbinding via het proxy-achtige OpenAI-compatibele `/v1`-endpoint
-      van LiteLLM
-    - Aanvraagvorming die alleen voor native OpenAI geldt, is niet van toepassing via LiteLLM:
-      geen `service_tier`, geen Responses `store`, geen prompt-cache-hints en geen
-      OpenAI-reasoning-compat payload-vorming
-    - Verborgen OpenClaw-attributieheaders (`originator`, `version`, `User-Agent`)
-      worden niet geïnjecteerd op aangepaste LiteLLM-basis-URL's
+  <Accordion title="Opmerkingen over proxygedrag">
+    - LiteLLM draait standaard op `http://localhost:4000`.
+    - OpenClaw maakt verbinding via LiteLLM's proxyachtige, OpenAI-compatibele `/v1`-eindpunt.
+    - Aanpassing van aanvragen die uitsluitend voor de native OpenAI-integratie geldt, wordt niet toegepast via een geconfigureerde LiteLLM-basis-URL:
+      geen `service_tier`, geen Responses-`store`, geen aanwijzingen voor promptcaching en geen OpenAI-specifieke aanpassing van de payload voor de redeneerintensiteit.
+    - Verborgen OpenClaw-toeschrijvingsheaders (`originator`, `version`, `User-Agent`) worden alleen naar
+      geverifieerde native OpenAI-eindpunten verzonden en worden daarom niet aan een aangepaste LiteLLM-basis-URL toegevoegd.
   </Accordion>
 </AccordionGroup>
 
@@ -227,16 +190,16 @@ Zie [Modelproviders](/nl/concepts/model-providers) voor algemene providerconfigu
 ## Gerelateerd
 
 <CardGroup cols={2}>
-  <Card title="LiteLLM Docs" href="https://docs.litellm.ai" icon="book">
+  <Card title="LiteLLM-documentatie" href="https://docs.litellm.ai" icon="book">
     Officiële LiteLLM-documentatie en API-referentie.
   </Card>
-  <Card title="Model selection" href="/nl/concepts/model-providers" icon="layers">
-    Overzicht van alle providers, modelverwijzingen en failovergedrag.
+  <Card title="Modelselectie" href="/nl/concepts/model-providers" icon="layers">
+    Overzicht van alle providers, modelreferenties en failovergedrag.
   </Card>
-  <Card title="Configuration" href="/nl/gateway/configuration" icon="gear">
+  <Card title="Configuratie" href="/nl/gateway/configuration" icon="gear">
     Volledige configuratiereferentie.
   </Card>
-  <Card title="Model selection" href="/nl/concepts/models" icon="brain">
-    Hoe je modellen kiest en configureert.
+  <Card title="Modellen" href="/nl/concepts/models" icon="brain">
+    Modellen kiezen en configureren.
   </Card>
 </CardGroup>

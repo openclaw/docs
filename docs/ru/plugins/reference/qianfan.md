@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Вы устанавливаете, настраиваете или проверяете plugin qianfan
-summary: Добавляет поддержку провайдера моделей Qianfan в OpenClaw.
+    - Вы устанавливаете, настраиваете или проверяете Plugin qianfan
+summary: Добавляет в OpenClaw поддержку провайдера моделей Qianfan.
 title: Plugin Qianfan
 x-i18n:
-    generated_at: "2026-06-28T23:28:03Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:41:00Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 49d639836cefb6c96502e614e1b5d06615fbef31a50ea186e1a02c060882019a
@@ -15,16 +15,16 @@ x-i18n:
 
 # Plugin Qianfan
 
-Добавляет поддержку провайдера моделей Qianfan в OpenClaw.
+Добавляет в OpenClaw поддержку поставщика моделей Qianfan.
 
 ## Распространение
 
 - Пакет: `@openclaw/qianfan-provider`
 - Способ установки: npm; ClawHub: `clawhub:@openclaw/qianfan-provider`
 
-## Поверхность
+## Интерфейс
 
-providers: qianfan
+поставщики: qianfan
 
 ## Связанная документация
 

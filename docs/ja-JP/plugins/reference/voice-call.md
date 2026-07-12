@@ -1,11 +1,11 @@
 ---
 read_when:
-    - 音声通話 Plugin をインストール、設定、または監査している
-summary: Twilio、Telnyx、Plivo の電話通話向け OpenClaw 音声通話 Plugin。
-title: Voice Call plugin
+    - 音声通話Pluginをインストール、設定、または監査している場合
+summary: Twilio、Telnyx、Plivoの通話に対応するOpenClaw音声通話Plugin。
+title: 音声通話Plugin
 x-i18n:
-    generated_at: "2026-06-27T12:29:49Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:34:11Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: b0e298a2d8701d6fd531b761f8c14477b8c37a376af43127aa67c2fa6ff1b02d
@@ -13,19 +13,19 @@ x-i18n:
     workflow: 16
 ---
 
-# Voice Call Plugin
+# 音声通話 Plugin
 
-Twilio、Telnyx、Plivo の電話通話向け OpenClaw voice-call Plugin。
+Twilio、Telnyx、Plivo の電話通話に対応する OpenClaw 音声通話 Plugin。
 
 ## 配布
 
 - パッケージ: `@openclaw/voice-call`
-- インストール経路: npm; ClawHub
+- インストール経路: npm、ClawHub
 
-## サーフェス
+## 提供機能
 
-コントラクト: ツール; Skills
+コントラクト: ツール、Skills
 
 ## 関連ドキュメント
 
-- [voice-call](/ja-JP/plugins/voice-call)
+- [音声通話](/ja-JP/plugins/voice-call)

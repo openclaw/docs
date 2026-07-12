@@ -1,35 +1,37 @@
 ---
 read_when:
-    - Thiết lập truyền phát im lặng Matrix cho Synapse hoặc Tuwunel tự lưu trữ
-    - Người dùng muốn nhận thông báo chỉ khi các khối đã hoàn tất, không phải sau mỗi lần chỉnh sửa bản xem trước
-summary: Quy tắc push Matrix theo từng người nhận cho các chỉnh sửa bản xem trước được hoàn tất trong im lặng
-title: Quy tắc thông báo đẩy của Matrix cho bản xem trước yên lặng
+    - Thiết lập chế độ truyền phát yên lặng của Matrix cho Synapse hoặc Tuwunel tự lưu trữ
+    - Người dùng chỉ muốn nhận thông báo khi các khối đã hoàn tất, không phải sau mỗi lần chỉnh sửa bản xem trước
+summary: Quy tắc đẩy Matrix theo từng người nhận cho các chỉnh sửa bản xem trước đã hoàn tất mà không gửi thông báo
+title: Quy tắc đẩy lên Matrix cho bản xem trước không thông báo
 x-i18n:
-    generated_at: "2026-04-29T22:26:32Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:43:26Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e2f037a50a85b350163c74cf6b9cce335ecaaa5cccc762124122ad6d0321a1fa
+    source_hash: 3f2260b4cc68f82cbe1aef86b8963b6b40e93f089b31991964fc9282b2c121fb
     source_path: channels/matrix-push-rules.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Khi `channels.matrix.streaming` là `"quiet"`, OpenClaw chỉnh sửa một sự kiện xem trước duy nhất tại chỗ và đánh dấu bản chỉnh sửa cuối cùng bằng một cờ nội dung tùy chỉnh. Matrix client chỉ thông báo cho bản chỉnh sửa cuối cùng nếu một quy tắc push theo từng người dùng khớp với cờ đó. Trang này dành cho các operator tự host Matrix và muốn cài đặt quy tắc đó cho từng tài khoản người nhận.
+Khi `channels.matrix.streaming` là `"quiet"`, OpenClaw truyền phát câu trả lời bằng cách chỉnh sửa tại chỗ một sự kiện xem trước duy nhất. Các bản xem trước được gửi dưới dạng sự kiện `m.notice` không kích hoạt thông báo, và bản chỉnh sửa hoàn tất được đánh dấu bằng `content["com.openclaw.finalized_preview"] = true`. Các ứng dụng khách Matrix chỉ thông báo về bản chỉnh sửa cuối cùng đó nếu quy tắc đẩy riêng cho từng người dùng khớp với dấu mốc này. Trang này dành cho các đơn vị vận hành tự lưu trữ Matrix và muốn cài đặt quy tắc đó cho từng tài khoản người nhận.
 
-Nếu bạn chỉ muốn hành vi thông báo Matrix mặc định, hãy dùng `streaming: "partial"` hoặc tắt streaming. Xem [thiết lập kênh Matrix](/vi/channels/matrix#streaming-previews).
+`streaming: "progress"` hoàn tất các bản nháp qua cùng một đường dẫn, vì vậy quy tắc này cũng được kích hoạt cho các bản chỉnh sửa đã hoàn tất ở chế độ tiến trình.
+
+Nếu bạn chỉ muốn hành vi thông báo Matrix mặc định, hãy dùng `streaming: "partial"` hoặc tắt tính năng truyền phát. Xem [Thiết lập kênh Matrix](/vi/channels/matrix#streaming-previews).
 
 ## Điều kiện tiên quyết
 
 - người dùng nhận = người cần nhận thông báo
 - người dùng bot = tài khoản Matrix của OpenClaw gửi câu trả lời
-- dùng access token của người dùng nhận cho các lệnh gọi API bên dưới
-- khớp `sender` trong quy tắc push với MXID đầy đủ của người dùng bot
-- tài khoản người nhận phải đã có pusher hoạt động — quy tắc xem trước yên lặng chỉ hoạt động khi việc gửi push Matrix thông thường đang khỏe mạnh
+- dùng mã thông báo truy cập của người dùng nhận cho các lệnh gọi API bên dưới
+- đối chiếu `sender` trong quy tắc đẩy với MXID đầy đủ của người dùng bot
+- tài khoản người nhận phải có các trình đẩy đang hoạt động; quy tắc xem trước im lặng chỉ hoạt động khi cơ chế gửi thông báo đẩy Matrix thông thường đang ổn định
 
 ## Các bước
 
 <Steps>
-  <Step title="Cấu hình bản xem trước yên lặng">
+  <Step title="Cấu hình bản xem trước im lặng">
 
 ```json5
 {
@@ -43,8 +45,8 @@ Nếu bạn chỉ muốn hành vi thông báo Matrix mặc định, hãy dùng `
 
   </Step>
 
-  <Step title="Lấy access token của người nhận">
-    Tái sử dụng token phiên client hiện có khi có thể. Để tạo một token mới:
+  <Step title="Lấy mã thông báo truy cập của người nhận">
+    Tái sử dụng mã thông báo của một phiên ứng dụng khách hiện có nếu có thể. Để tạo mã mới:
 
 ```bash
 curl -sS -X POST \
@@ -59,7 +61,7 @@ curl -sS -X POST \
 
   </Step>
 
-  <Step title="Xác minh pusher tồn tại">
+  <Step title="Xác minh có trình đẩy">
 
 ```bash
 curl -sS \
@@ -67,12 +69,12 @@ curl -sS \
   "https://matrix.example.org/_matrix/client/v3/pushers"
 ```
 
-Nếu không có pusher nào được trả về, hãy sửa việc gửi push Matrix thông thường cho tài khoản này trước khi tiếp tục.
+Nếu không có trình đẩy nào được trả về, hãy khắc phục cơ chế gửi thông báo đẩy Matrix thông thường cho tài khoản này trước khi tiếp tục.
 
   </Step>
 
-  <Step title="Cài đặt quy tắc push override">
-    OpenClaw đánh dấu các bản chỉnh sửa xem trước chỉ có văn bản đã hoàn tất bằng `content["com.openclaw.finalized_preview"] = true`. Cài đặt một quy tắc khớp marker đó cùng với MXID bot làm sender:
+  <Step title="Cài đặt quy tắc đẩy ghi đè">
+    Cài đặt một quy tắc khớp với dấu mốc bản xem trước đã hoàn tất và MXID của bot ở vai trò người gửi:
 
 ```bash
 curl -sS -X PUT \
@@ -102,12 +104,12 @@ curl -sS -X PUT \
   }'
 ```
 
-    Thay thế trước khi chạy:
+    Thay thế các giá trị sau trước khi chạy:
 
-    - `https://matrix.example.org`: URL gốc homeserver của bạn
-    - `$USER_ACCESS_TOKEN`: access token của người dùng nhận
-    - `openclaw-finalized-preview-botname`: ID quy tắc duy nhất cho mỗi bot trên mỗi người nhận (mẫu: `openclaw-finalized-preview-<botname>`)
-    - `@bot:example.org`: MXID bot OpenClaw của bạn, không phải của người nhận
+    - `https://matrix.example.org`: URL cơ sở của máy chủ nhà của bạn
+    - `$USER_ACCESS_TOKEN`: mã thông báo truy cập của người dùng nhận
+    - `openclaw-finalized-preview-botname`: ID quy tắc duy nhất cho mỗi bot và mỗi người nhận (mẫu: `openclaw-finalized-preview-<botname>`)
+    - `@bot:example.org`: MXID của bot OpenClaw, không phải MXID của người nhận
 
   </Step>
 
@@ -119,35 +121,35 @@ curl -sS \
   "https://matrix.example.org/_matrix/client/v3/pushrules/global/override/openclaw-finalized-preview-botname"
 ```
 
-Sau đó kiểm thử một câu trả lời được stream. Ở chế độ yên lặng, phòng hiển thị bản xem trước nháp yên lặng và thông báo một lần khi block hoặc lượt kết thúc.
+Sau đó, hãy kiểm thử một câu trả lời được truyền phát. Ở chế độ im lặng, phòng hiển thị bản xem trước nháp im lặng và gửi thông báo một lần khi khối hoặc lượt hoàn tất.
 
   </Step>
 </Steps>
 
-Để xóa quy tắc sau này, `DELETE` cùng URL quy tắc bằng token của người nhận.
+Để xóa quy tắc sau này, hãy gửi `DELETE` đến cùng URL quy tắc bằng mã thông báo của người nhận.
 
-## Ghi chú nhiều bot
+## Lưu ý khi dùng nhiều bot
 
-Quy tắc push được định danh bằng `ruleId`: chạy lại `PUT` với cùng ID sẽ cập nhật một quy tắc duy nhất. Với nhiều bot OpenClaw thông báo cho cùng một người nhận, hãy tạo một quy tắc cho mỗi bot với điều kiện khớp sender riêng biệt.
+Các quy tắc đẩy được định danh bằng `ruleId`: chạy lại `PUT` với cùng một ID sẽ cập nhật một quy tắc duy nhất. Với nhiều bot OpenClaw gửi thông báo cho cùng một người nhận, hãy tạo một quy tắc cho mỗi bot với điều kiện khớp người gửi riêng biệt.
 
-Các quy tắc `override` do người dùng định nghĩa mới được chèn trước các quy tắc chặn mặc định, nên không cần tham số thứ tự bổ sung. Quy tắc này chỉ ảnh hưởng đến các bản chỉnh sửa xem trước chỉ có văn bản có thể được hoàn tất tại chỗ; fallback media và fallback bản xem trước cũ dùng cách gửi Matrix thông thường.
+Các quy tắc `override` mới do người dùng định nghĩa được chèn trước các quy tắc chặn mặc định của máy chủ, vì vậy không cần tham số thứ tự bổ sung. Quy tắc này chỉ ảnh hưởng đến các bản chỉnh sửa xem trước chỉ chứa văn bản có thể được hoàn tất tại chỗ; câu trả lời chứa nội dung đa phương tiện, phương án dự phòng khi bản xem trước đã cũ và văn bản cuối cùng có thể kích hoạt lượt nhắc đến trong Matrix sẽ được gửi dưới dạng thông báo thông thường.
 
-## Ghi chú homeserver
+## Lưu ý về máy chủ nhà
 
 <AccordionGroup>
   <Accordion title="Synapse">
-    Không cần thay đổi `homeserver.yaml` đặc biệt. Nếu thông báo Matrix thông thường đã đến được người dùng này, token người nhận + lệnh gọi `pushrules` ở trên là bước thiết lập chính.
+    Không cần thay đổi đặc biệt nào trong `homeserver.yaml`. Nếu các thông báo Matrix thông thường đã đến được người dùng này, mã thông báo của người nhận và lệnh gọi `pushrules` ở trên là bước thiết lập chính.
 
-    Nếu bạn chạy Synapse phía sau reverse proxy hoặc worker, hãy bảo đảm `/_matrix/client/.../pushrules/` đến Synapse đúng cách. Việc gửi push do tiến trình chính hoặc `synapse.app.pusher` / các worker pusher đã cấu hình xử lý — hãy bảo đảm chúng đang khỏe mạnh.
+    Nếu bạn chạy Synapse phía sau proxy ngược hoặc các tiến trình worker, hãy bảo đảm `/_matrix/client/.../pushrules/` được chuyển đến Synapse đúng cách. Việc gửi thông báo đẩy được xử lý bởi tiến trình chính hoặc `synapse.app.pusher` / các worker trình đẩy đã cấu hình — hãy bảo đảm chúng hoạt động ổn định.
 
-    Quy tắc này dùng điều kiện quy tắc push `event_property_is` (MSC3758, push rule v1.10), được thêm vào Synapse năm 2023. Các bản phát hành Synapse cũ hơn chấp nhận lệnh gọi `PUT pushrules/...` nhưng âm thầm không bao giờ khớp điều kiện — hãy nâng cấp Synapse nếu không có thông báo nào đến khi có bản chỉnh sửa xem trước đã hoàn tất.
+    Quy tắc sử dụng điều kiện quy tắc đẩy `event_property_is` (MSC3758, quy tắc đẩy v1.10), được thêm vào Synapse năm 2023. Các bản phát hành Synapse cũ hơn chấp nhận lệnh gọi `PUT pushrules/...` nhưng âm thầm không bao giờ khớp điều kiện — hãy nâng cấp Synapse nếu không nhận được thông báo khi bản xem trước được chỉnh sửa thành trạng thái hoàn tất.
 
   </Accordion>
 
   <Accordion title="Tuwunel">
-    Cùng quy trình như Synapse; không cần cấu hình riêng cho Tuwunel đối với marker bản xem trước đã hoàn tất.
+    Quy trình giống như Synapse; không cần cấu hình dành riêng cho Tuwunel đối với dấu mốc bản xem trước đã hoàn tất.
 
-    Nếu thông báo biến mất trong khi người dùng đang hoạt động trên một thiết bị khác, hãy kiểm tra xem `suppress_push_when_active` có được bật không. Tuwunel đã thêm tùy chọn này trong 1.4.2 (tháng 9 năm 2025) và nó có thể chủ động chặn push đến các thiết bị khác khi một thiết bị đang hoạt động.
+    Nếu thông báo biến mất khi người dùng đang hoạt động trên thiết bị khác, hãy kiểm tra xem `suppress_push_when_active` có được bật hay không. Tuwunel đã thêm tùy chọn này trong phiên bản 1.4.2 (tháng 9 năm 2025) và tùy chọn này có thể chủ động chặn thông báo đẩy đến các thiết bị khác khi một thiết bị đang hoạt động.
 
   </Accordion>
 </AccordionGroup>
@@ -155,4 +157,4 @@ Các quy tắc `override` do người dùng định nghĩa mới được chèn 
 ## Liên quan
 
 - [Thiết lập kênh Matrix](/vi/channels/matrix)
-- [Khái niệm streaming](/vi/concepts/streaming)
+- [Các khái niệm về truyền phát](/vi/concepts/streaming)

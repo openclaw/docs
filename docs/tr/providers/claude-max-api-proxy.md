@@ -1,95 +1,72 @@
 ---
 read_when:
     - Claude Max aboneliğini OpenAI uyumlu araçlarla kullanmak istiyorsunuz
-    - Claude Code CLI’yi saran yerel bir API sunucusu istiyorsunuz
-    - Abonelik tabanlı ve API anahtarı tabanlı Anthropic erişimini değerlendirmek istiyorsunuz
-summary: Claude abonelik kimlik bilgilerini OpenAI uyumlu bir uç nokta olarak sunan topluluk proxy’si
+    - Claude Code CLI'yi sarmalayan yerel bir API sunucusu istiyorsunuz
+    - Abonelik tabanlı Anthropic erişimini API anahtarı tabanlı erişimle karşılaştırmak istiyorsunuz
+summary: Claude abonelik kimlik bilgilerini OpenAI uyumlu bir uç nokta olarak sunan topluluk proxy'si
 title: Claude Max API proxy'si
 x-i18n:
-    generated_at: "2026-06-28T20:44:55Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:41:51Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5d8800f7d5bd7adf9bff4825a45878a1bbde73b4d54afe4b5b4aa2b1b5523bee
+    source_hash: 5d0d9a70e14d7d444e57e9bcf169816fec4013a2680dfc9b1761e6ab32109e9f
     source_path: providers/claude-max-api-proxy.md
     workflow: 16
 ---
 
-**claude-max-api-proxy**, Claude Max/Pro aboneliğinizi OpenAI uyumlu bir API uç noktası olarak sunan bir topluluk aracıdır. Bu, aboneliğinizi OpenAI API biçimini destekleyen herhangi bir araçla kullanmanızı sağlar.
+**claude-max-api-proxy**, bir Claude Max/Pro aboneliğini OpenAI uyumlu bir API uç noktası olarak sunan bir topluluk npm paketidir (OpenClaw plugini değildir); böylece OpenAI uyumlu herhangi bir aracı Anthropic API anahtarı yerine aboneliğinize yönlendirebilirsiniz.
 
 <Warning>
-Bu yol yalnızca teknik uyumluluk içindir. Anthropic geçmişte Claude Code dışındaki bazı abonelik
-kullanımlarını engellemiştir. Bunu kullanıp kullanmayacağınıza kendiniz karar vermeli
-ve buna güvenmeden önce Anthropic'in güncel faturalandırma kurallarını doğrulamalısınız.
+Yalnızca teknik uyumluluk sağlar; resmî olarak onaylanmış bir yöntem değildir. Anthropic geçmişte Claude Code dışındaki bazı abonelik kullanımlarını engellemiştir; buna güvenmeden önce Anthropic'in güncel faturalandırma kurallarını doğrulayın.
 
-Anthropic'in güncel destek dokümanları, `claude -p` kullanımının Agent SDK/programatik kullanım
-olduğunu söylüyor. Anthropic'in 15 Haziran 2026 destek güncellemesi, duyurulan ayrı Agent SDK
-kredi planını duraklattı. Şimdilik Claude Agent SDK, `claude -p` ve üçüncü taraf uygulama kullanımı
-hâlâ oturum açılmış aboneliğin kullanım limitlerinden düşülür.
-
-Bu yola güvenmeden önce Anthropic'in [Agent SDK planı
-makalesini](https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan),
-ayrıca
-[Pro/Max](https://support.claude.com/en/articles/11145838-use-claude-code-with-your-pro-or-max-plan)
-veya
-[Team/Enterprise](https://support.claude.com/en/articles/11845131-use-claude-code-with-your-team-or-enterprise-plan)
-hesapları için Claude Code destek makalelerini kontrol edin.
+Anthropic'in Claude Code belgeleri, `claude -p` komutunu Agent SDK/programatik kullanım olarak tanımlar. Anthropic'in 15 Haziran 2026 tarihli destek güncellemesi itibarıyla Claude Agent SDK, `claude -p` ve üçüncü taraf uygulama kullanımları, oturum açılmış aboneliğin kullanım sınırlarından düşülür (daha önce duyurulan ayrı Agent SDK kredi planı duraklatılmıştır). Anthropic'in [Agent SDK planı makalesine](https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan), [Pro/Max](https://support.claude.com/en/articles/11145838-use-claude-code-with-your-pro-or-max-plan) ve [Team/Enterprise](https://support.claude.com/en/articles/11845131-use-claude-code-with-your-team-or-enterprise-plan) planı makalelerine ve OpenClaw'ın kendi Claude CLI faturalandırma notları için [Anthropic sağlayıcısına](/tr/providers/anthropic) bakın.
 </Warning>
 
-## Bunu neden kullanmalısınız?
+## Neden bunu kullanmalısınız?
 
-| Yaklaşım                  | Maliyet yolu                                      | En uygun olduğu kullanım                                   |
-| ------------------------- | ----------------------------------------------- | ------------------------------------------ |
-| Anthropic API             | Claude Console veya bulut üzerinden token başına ödeme   | Üretim uygulamaları, paylaşılan otomasyon, hacim |
-| Claude abonelik proxy'si | Claude Code / `claude -p` planı ve kredi kuralları | Uyumlu araçlarla kişisel deneyler |
+| Yaklaşım                  | Maliyet yöntemi                                        | En uygun olduğu kullanım                       |
+| ------------------------- | ------------------------------------------------------ | ---------------------------------------------- |
+| Anthropic API anahtarı    | Claude Console üzerinden belirteç başına ödeme         | Üretim uygulamaları, paylaşılan otomasyon, hacim |
+| Claude abonelik proxy'si  | Claude Code / `claude -p` planı ve kredi kuralları     | Uyumlu araçlarla kişisel deneyler               |
 
-Claude Max veya Pro aboneliğiniz varsa ve bunu OpenAI uyumlu araçlarla kullanmak
-istiyorsanız, bu proxy bazı kişisel iş akışlarına uyabilir. Bu, sınırsız sabit ücretli
-bir yol değildir. Üretim kullanımı için API anahtarları, politika ve faturalandırma
-açısından daha net yoldur.
+Bu proxy, bir Claude Max veya Pro aboneliğinin OpenAI uyumlu araçlarla çalışmasını sağlar. Sınırsız sabit ücretli bir yöntem değildir; Claude Code'un kullanım sınırlarını devralır. Üretim kullanımı için API anahtarları daha anlaşılır bir faturalandırma yöntemi olmaya devam eder.
 
 ## Nasıl çalışır?
 
-```
-Your App → claude-max-api-proxy → Claude Code CLI / claude -p → Anthropic
-     (OpenAI format)              (converts format)          (uses your login)
+```text
+Uygulamanız -> claude-max-api-proxy -> Claude Code CLI / claude -p -> Anthropic
+     (OpenAI biçimi)                 (biçimi dönüştürür)             (oturumunuzu kullanır)
 ```
 
-Proxy:
-
-1. `http://localhost:3456/v1/chat/completions` adresinde OpenAI biçimindeki istekleri kabul eder
-2. Bunları Claude Code CLI komutlarına dönüştürür
-3. Yanıtları OpenAI biçiminde döndürür (akış desteklenir)
+Proxy, her istek için Claude Code CLI'yi bir alt süreç olarak başlatır, OpenAI biçimindeki sohbet isteklerini CLI istemlerine dönüştürür ve yanıtı OpenAI biçiminde akışla iletir (veya döndürür).
 
 ## Başlarken
 
 <Steps>
   <Step title="Proxy'yi yükleyin">
-    Node.js 22+ ve Claude Code CLI gerektirir.
+    Node.js 20+ ve kimliği doğrulanmış bir Claude Code CLI gerektirir.
 
     ```bash
     npm install -g claude-max-api-proxy
 
-    # Verify Claude CLI is authenticated
+    # Claude CLI kimlik doğrulamasını doğrulayın
     claude --version
+    claude auth login   # henüz kimlik doğrulanmadıysa
     ```
 
   </Step>
   <Step title="Sunucuyu başlatın">
     ```bash
     claude-max-api
-    # Server runs at http://localhost:3456
+    # Sunucu http://localhost:3456 adresinde çalışır
     ```
   </Step>
   <Step title="Proxy'yi test edin">
     ```bash
-    # Health check
     curl http://localhost:3456/health
-
-    # List models
     curl http://localhost:3456/v1/models
 
-    # Chat completion
     curl http://localhost:3456/v1/chat/completions \
       -H "Content-Type: application/json" \
       -d '{
@@ -99,8 +76,8 @@ Proxy:
     ```
 
   </Step>
-  <Step title="OpenClaw'u yapılandırın">
-    OpenClaw'u özel bir OpenAI uyumlu uç nokta olarak proxy'ye yönlendirin:
+  <Step title="OpenClaw'ı yapılandırın">
+    OpenClaw'ı özel bir OpenAI uyumlu uç nokta olarak proxy'ye yönlendirin:
 
     ```json5
     {
@@ -119,32 +96,30 @@ Proxy:
   </Step>
 </Steps>
 
-## Yerleşik katalog
+<Note>
+Aşağıdaki model kimlikleri, OpenClaw'ın Anthropic model referansları değil, proxy'nin kendi kataloğudur. Her kimlik bir Claude Code CLI model diğer adına (`opus`, `sonnet`, `haiku`) eşlenir; dolayısıyla Anthropic bu diğer adı CLI'de her güncellediğinde temel model değişir. Belirli bir eşlemeye güvenmeden önce proxy'nin güncel README dosyasını kontrol edin.
+</Note>
 
-| Model kimliği          | Şuna eşlenir         |
-| ----------------- | --------------- |
-| `claude-opus-4`   | Claude Opus 4   |
-| `claude-sonnet-4` | Claude Sonnet 4 |
-| `claude-haiku-4`  | Claude Haiku 4  |
+| Model kimliği      | CLI diğer adı | Güncel eşleme     |
+| ------------------ | ------------- | ---------------- |
+| `claude-opus-4`    | `opus`        | Claude Opus 4.5  |
+| `claude-sonnet-4`  | `sonnet`      | Claude Sonnet 4  |
+| `claude-haiku-4`   | `haiku`       | Claude Haiku 4   |
 
 ## Gelişmiş yapılandırma
 
 <AccordionGroup>
-  <Accordion title="Proxy tarzı OpenAI uyumlu notlar">
-    Bu yol, diğer özel `/v1` arka uçlarıyla aynı proxy tarzı OpenAI uyumlu rotayı
-    kullanır:
+  <Accordion title="Proxy tarzı OpenAI uyumluluk notları">
+    Bu, kendi barındırdığınız diğer tüm OpenAI uyumlu arka uçlarla aynı yol olan OpenClaw'ın genel özel `/v1` OpenAI uyumlu yolunu kullanır:
 
-    - Yerel yalnızca OpenAI istek şekillendirmesi uygulanmaz
-    - `service_tier` yoktur, Responses `store` yoktur, prompt-cache ipuçları yoktur ve
-      OpenAI reasoning-compat yük şekillendirmesi yoktur
-    - Gizli OpenClaw atıf başlıkları (`originator`, `version`, `User-Agent`)
-      proxy URL'sine eklenmez
+    - Yalnızca yerel OpenAI için geçerli istek biçimlendirmesi uygulanmaz.
+    - `/fast` ve `service_tier` yalnızca doğrudan `api.anthropic.com` trafiğine uygulanır; proxy yolları `service_tier` değerini değiştirmeden bırakır (bkz. [Anthropic sağlayıcısı hızlı modu](/tr/providers/anthropic#advanced-configuration)).
+    - Responses `store`, istem önbelleği ipuçları veya OpenAI akıl yürütme uyumluluğu yük biçimlendirmesi yoktur.
+    - OpenClaw'ın OpenAI/Codex ilişkilendirme başlıkları (`originator`, `version`, `User-Agent`) yalnızca yerel `api.openai.com` OAuth trafiğinde gönderilir; bu proxy gibi özel `OPENAI_BASE_URL` hedeflerine gönderilmez.
 
   </Accordion>
 
-  <Accordion title="macOS'te LaunchAgent ile otomatik başlatma">
-    Proxy'yi otomatik çalıştırmak için bir LaunchAgent oluşturun:
-
+  <Accordion title="LaunchAgent ile macOS'ta otomatik başlatma">
     ```bash
     cat > ~/Library/LaunchAgents/com.claude-max-api.plist << 'EOF'
     <?xml version="1.0" encoding="UTF-8"?>
@@ -179,17 +154,16 @@ Proxy:
 
 ## Notlar
 
-- Bu bir **topluluk aracıdır**; Anthropic veya OpenClaw tarafından resmi olarak desteklenmez
-- Claude Code CLI kimliği doğrulanmış etkin bir Claude Max/Pro aboneliği gerektirir
-- Claude Code `claude -p` faturalandırma, kullanım kredisi ve hız limiti davranışını devralır
-- Proxy yerel olarak çalışır ve herhangi bir üçüncü taraf sunucuya veri göndermez
-- Akış yanıtları tamamen desteklenir
+- Claude Code'un `claude -p` faturalandırma, kullanım kredisi ve hız sınırı davranışını devralır.
+- Yalnızca `127.0.0.1` adresine bağlanır; CLI'nin Anthropic'e yaptığı kendi çağrısı dışında hiçbir üçüncü taraf sunucuya veri göndermez.
+- Akış yanıtları desteklenir.
+- Kimlik doğrulama hataları başlangıçta kontrol edilmez ve yalnızca bir sohbet isteği gerçekten çalıştırıldığında ortaya çıkar; CLI'de kimlik doğrulanmamışsa sunucunun başlatmayı reddetmesi yerine ilk isteğin başarısız olmasını bekleyin.
 
 <Note>
 Claude CLI veya API anahtarlarıyla yerel Anthropic entegrasyonu için [Anthropic sağlayıcısına](/tr/providers/anthropic) bakın. OpenAI/Codex abonelikleri için [OpenAI sağlayıcısına](/tr/providers/openai) bakın.
 </Note>
 
-## İlgili
+## İlgili içerikler
 
 <CardGroup cols={2}>
   <Card title="Anthropic sağlayıcısı" href="/tr/providers/anthropic" icon="bolt">
@@ -199,7 +173,7 @@ Claude CLI veya API anahtarlarıyla yerel Anthropic entegrasyonu için [Anthropi
     OpenAI/Codex abonelikleri için.
   </Card>
   <Card title="Model seçimi" href="/tr/concepts/model-providers" icon="layers">
-    Tüm sağlayıcıların, model başvurularının ve devretme davranışının genel görünümü.
+    Tüm sağlayıcılara, model referanslarına ve yük devretme davranışına genel bakış.
   </Card>
   <Card title="Yapılandırma" href="/tr/gateway/configuration" icon="gear">
     Tam yapılandırma referansı.

@@ -3,40 +3,41 @@ read_when:
     - Anda menginginkan satu kunci API untuk banyak LLM
     - Anda ingin menjalankan model melalui OpenRouter di OpenClaw
     - Anda ingin menggunakan OpenRouter untuk pembuatan gambar
-    - Anda ingin menggunakan OpenRouter untuk pembuatan musik
+    - Anda ingin menggunakan OpenRouter untuk menghasilkan musik
     - Anda ingin menggunakan OpenRouter untuk pembuatan video
 summary: Gunakan API terpadu OpenRouter untuk mengakses banyak model di OpenClaw
 title: OpenRouter
 x-i18n:
-    generated_at: "2026-07-03T10:00:38Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:33:58Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ca36f2a7afd35ea4d276f61ded28524aed7d15715b29eea9aaac0ac6e4abab40
+    source_hash: 3047a4da1727db1463d77fcc566231b528e2c34cc64eccaa36827e2927cc60a7
     source_path: providers/openrouter.md
     workflow: 16
 ---
 
-OpenRouter menyediakan **API terpadu** yang merutekan permintaan ke banyak model di balik satu
-endpoint dan kunci API. API ini kompatibel dengan OpenAI, sehingga sebagian besar SDK OpenAI berfungsi dengan mengganti URL dasar.
+OpenRouter merutekan permintaan ke banyak model di balik satu API dan satu kunci. OpenRouter
+kompatibel dengan OpenAI, sehingga OpenClaw berkomunikasi dengannya melalui transport bergaya
+`openai-completions` yang sama seperti yang digunakan untuk penyedia proksi lainnya.
 
 ## Memulai
 
 <Tabs>
   <Tab title="OAuth">
     <Steps>
-      <Step title="Jalankan onboarding OAuth">
+      <Step title="Jalankan orientasi OAuth">
         ```bash
         openclaw onboard --auth-choice openrouter-oauth
         ```
 
-        OpenClaw membuka alur masuk browser OpenRouter, menukar kode PKCE
-        dengan kunci API OpenRouter, dan menyimpan kunci tersebut di profil autentikasi
-        OpenRouter default. Pada host jarak jauh/headless, OpenClaw mencetak
+        OpenClaw membuka alur masuk melalui peramban OpenRouter (PKCE), menukarkan
+        kode dengan kunci API OpenRouter, dan menyimpannya dalam profil autentikasi
+        OpenRouter bawaan. Pada host jarak jauh/tanpa antarmuka grafis, OpenClaw mencetak
         URL masuk dan meminta Anda menempelkan URL pengalihan setelah masuk.
       </Step>
       <Step title="(Opsional) Beralih ke model tertentu">
-        Onboarding menggunakan `openrouter/auto` secara default. Pilih model konkret nanti:
+        Orientasi menggunakan `openrouter/auto` secara bawaan. Pilih model tertentu nanti:
 
         ```bash
         openclaw models set openrouter/<provider>/<model>
@@ -51,13 +52,13 @@ endpoint dan kunci API. API ini kompatibel dengan OpenAI, sehingga sebagian besa
       <Step title="Dapatkan kunci API Anda">
         Buat kunci API di [openrouter.ai/keys](https://openrouter.ai/keys).
       </Step>
-      <Step title="Jalankan onboarding kunci API">
+      <Step title="Jalankan orientasi dengan kunci API">
         ```bash
         openclaw onboard --auth-choice openrouter-api-key
         ```
       </Step>
       <Step title="(Opsional) Beralih ke model tertentu">
-        Onboarding menggunakan `openrouter/auto` secara default. Pilih model konkret nanti:
+        Orientasi menggunakan `openrouter/auto` secara bawaan. Pilih model tertentu nanti:
 
         ```bash
         openclaw models set openrouter/<provider>/<model>
@@ -85,22 +86,26 @@ endpoint dan kunci API. API ini kompatibel dengan OpenAI, sehingga sebagian besa
 ## Referensi model
 
 <Note>
-Ref model mengikuti pola `openrouter/<provider>/<model>`. Untuk daftar lengkap
+Referensi model mengikuti pola `openrouter/<provider>/<model>`. Untuk daftar lengkap
 penyedia dan model yang tersedia, lihat [/concepts/model-providers](/id/concepts/model-providers).
 </Note>
 
-Contoh fallback bawaan:
+Model fallback bawaan, yang digunakan ketika penemuan katalog langsung tidak tersedia:
 
-| Ref model                         | Catatan                      |
+| Referensi model                   | Catatan                      |
 | --------------------------------- | ---------------------------- |
 | `openrouter/auto`                 | Perutean otomatis OpenRouter |
-| `openrouter/openrouter/fusion`    | Router OpenRouter Fusion     |
 | `openrouter/moonshotai/kimi-k2.6` | Kimi K2.6 melalui MoonshotAI |
 | `openrouter/moonshotai/kimi-k2.5` | Kimi K2.5 melalui MoonshotAI |
 
+Referensi `openrouter/<provider>/<model>` lainnya, termasuk
+`openrouter/openrouter/fusion` (lihat [Perute Fusion](#fusion-router)), diselesaikan
+secara dinamis terhadap katalog model langsung OpenRouter.
+
 ## Pembuatan gambar
 
-OpenRouter juga dapat mendukung alat `image_generate`. Gunakan model gambar OpenRouter di bawah `agents.defaults.imageGenerationModel`:
+OpenRouter dapat mendukung alat `image_generate`. Tetapkan model gambar OpenRouter
+di bawah `agents.defaults.imageGenerationModel`:
 
 ```json5
 {
@@ -116,11 +121,17 @@ OpenRouter juga dapat mendukung alat `image_generate`. Gunakan model gambar Open
 }
 ```
 
-OpenClaw mengirim permintaan gambar ke API gambar chat completions OpenRouter dengan `modalities: ["image", "text"]`. Model gambar Gemini menerima petunjuk `aspectRatio` dan `resolution` yang didukung melalui `image_config` OpenRouter. Gunakan `agents.defaults.imageGenerationModel.timeoutMs` untuk model gambar OpenRouter yang lebih lambat; parameter `timeoutMs` per panggilan alat `image_generate` tetap berlaku lebih dulu.
+OpenClaw mengirim permintaan gambar ke API gambar penyelesaian obrolan OpenRouter dengan
+`modalities: ["image", "text"]`. Model gambar Gemini juga menerima petunjuk
+`aspectRatio` dan `resolution` melalui `image_config` OpenRouter; model
+gambar lainnya tidak. Gunakan `agents.defaults.imageGenerationModel.timeoutMs` untuk
+model yang lebih lambat; `timeoutMs` per panggilan milik alat `image_generate` tetap diutamakan.
 
 ## Pembuatan video
 
-OpenRouter juga dapat mendukung alat `video_generate` melalui API `/videos` asinkronnya. Gunakan model video OpenRouter di bawah `agents.defaults.videoGenerationModel`:
+OpenRouter dapat mendukung alat `video_generate` melalui API asinkron
+`/videos`. Tetapkan model video OpenRouter di bawah
+`agents.defaults.videoGenerationModel`:
 
 ```json5
 {
@@ -135,20 +146,18 @@ OpenRouter juga dapat mendukung alat `video_generate` melalui API `/videos` asin
 }
 ```
 
-OpenClaw mengirim pekerjaan teks-ke-video dan gambar-ke-video ke OpenRouter, melakukan polling pada
-`polling_url` yang dikembalikan, dan mengunduh video yang sudah selesai dari
-`unsigned_urls` OpenRouter atau endpoint konten pekerjaan yang terdokumentasi.
-Gambar referensi dikirim sebagai gambar frame pertama/terakhir secara default; gambar
-yang diberi tag `reference_image` dikirim sebagai referensi input OpenRouter. Default
-bawaan `google/veo-3.1-fast` mengiklankan durasi 4/6/8
-detik yang saat ini didukung, resolusi `720P`/`1080P`, dan rasio aspek
-`16:9`/`9:16`. Video-ke-video tidak didaftarkan untuk OpenRouter karena API
-pembuatan video upstream saat ini menerima referensi teks dan gambar.
+OpenClaw mengirim pekerjaan teks-ke-video dan gambar-ke-video, melakukan polling pada
+`polling_url` yang dikembalikan, dan mengunduh video yang telah selesai dari
+`unsigned_urls` OpenRouter atau titik akhir konten pekerjaan. Gambar referensi secara bawaan
+digunakan sebagai gambar bingkai pertama/terakhir; gambar yang diberi tag `reference_image`
+dikirim sebagai referensi masukan. Model bawaan `google/veo-3.1-fast` mendukung durasi
+4/6/8 detik, resolusi `720P`/`1080P`, dan rasio aspek `16:9`/`9:16`.
+Video-ke-video tidak didukung: API hulu hanya menerima referensi teks dan gambar.
 
 ## Pembuatan musik
 
-OpenRouter juga dapat mendukung alat `music_generate` melalui output audio
-chat completions. Gunakan model audio OpenRouter di bawah
+OpenRouter dapat mendukung alat `music_generate` melalui keluaran audio penyelesaian obrolan.
+Tetapkan model audio OpenRouter di bawah
 `agents.defaults.musicGenerationModel`:
 
 ```json5
@@ -165,16 +174,17 @@ chat completions. Gunakan model audio OpenRouter di bawah
 }
 ```
 
-Penyedia musik OpenRouter bawaan menggunakan
-`google/lyria-3-pro-preview` secara default dan juga mengekspos
-`google/lyria-3-clip-preview`. OpenClaw mengirim `modalities: ["text",
-"audio"]`, mengaktifkan streaming, mengumpulkan potongan audio yang dialirkan, dan menyimpan
-hasilnya sebagai media yang dihasilkan untuk pengiriman channel. Gambar referensi
-diterima untuk model Lyria melalui parameter bersama `music_generate image=...`.
+Penyedia musik OpenRouter bawaan menggunakan `google/lyria-3-pro-preview`
+secara bawaan dan juga menyediakan `google/lyria-3-clip-preview`. OpenClaw mengirim `modalities:
+["text", "audio"]`, mengalirkan respons, mengumpulkan potongan audio, dan menyimpan
+hasilnya sebagai media yang dihasilkan untuk dikirimkan melalui saluran. Model Lyria menerima satu
+gambar referensi melalui parameter bersama `music_generate image=...`.
+Audio streaming, penyimpanan transkrip, dan amplop peristiwa SSE yang dihasilkan
+dibatasi oleh `agents.defaults.mediaMaxMb` (batas audio bawaan adalah 16 MB).
 
 ## Teks-ke-ucapan
 
-OpenRouter juga dapat digunakan sebagai penyedia TTS melalui endpoint
+OpenRouter dapat bertindak sebagai penyedia TTS melalui endpoint
 `/audio/speech` yang kompatibel dengan OpenAI.
 
 ```json5
@@ -195,15 +205,15 @@ OpenRouter juga dapat digunakan sebagai penyedia TTS melalui endpoint
 }
 ```
 
-Jika `messages.tts.providers.openrouter.apiKey` dihilangkan, TTS menggunakan kembali
+Jika `messages.tts.providers.openrouter.apiKey` tidak dicantumkan, TTS akan beralih menggunakan
 `models.providers.openrouter.apiKey`, lalu `OPENROUTER_API_KEY`.
 
-## Ucapan-ke-teks (audio masuk)
+## Ucapan ke teks (audio masuk)
 
-OpenRouter dapat mentranskripsikan lampiran suara/audio yang masuk melalui jalur
-`tools.media.audio` bersama menggunakan endpoint STT-nya (`/audio/transcriptions`).
-Ini berlaku untuk Plugin channel apa pun yang meneruskan suara/audio masuk ke
-prapemeriksaan pemahaman media.
+OpenRouter dapat mentranskripsikan lampiran suara/audio yang masuk melalui jalur bersama
+`tools.media.audio`, menggunakan endpoint STT-nya (`/audio/transcriptions`).
+Hal ini berlaku untuk setiap plugin kanal yang meneruskan suara/audio masuk ke
+pemeriksaan awal pemahaman media.
 
 ```json5
 {
@@ -219,24 +229,25 @@ prapemeriksaan pemahaman media.
 ```
 
 OpenClaw mengirim permintaan STT OpenRouter sebagai JSON dengan audio base64 di bawah
-`input_audio` (kontrak STT OpenRouter), bukan sebagai unggahan formulir OpenAI multipart.
+`input_audio` (kontrak STT OpenRouter), bukan sebagai unggahan formulir OpenAI
+multipart.
 
 ## Router Fusion
 
-Gunakan OpenRouter Fusion saat Anda ingin satu ref model OpenClaw meminta beberapa
-model OpenRouter secara paralel, membuat OpenRouter menilai jawaban mereka, dan mengembalikan
-satu respons akhir melalui endpoint penyedia OpenRouter normal. Karena slug model upstream adalah
-`openrouter/fusion`, ref model OpenClaw menyertakan
-prefiks penyedia OpenClaw dan namespace OpenRouter upstream:
+OpenRouter Fusion mengirim satu referensi model OpenClaw ke beberapa model OpenRouter secara
+paralel, meminta OpenRouter menilai jawaban mereka, dan mengembalikan satu respons akhir
+melalui endpoint OpenRouter biasa. Slug model upstream adalah
+`openrouter/fusion`, sehingga referensi model OpenClaw membawa prefiks penyedia OpenClaw
+dan namespace OpenRouter upstream:
 
 ```bash
 openclaw models set openrouter/openrouter/fusion
 ```
 
-Konfigurasikan panel dan penilai Fusion melalui `params.extraBody` model. Field
-tersebut diteruskan ke body permintaan chat-completions OpenRouter. Fusion
-berfungsi dengan onboarding OAuth OpenRouter atau onboarding kunci API; jika Anda menggunakan
-OAuth, hilangkan baris `env.OPENROUTER_API_KEY` dari contoh di bawah.
+Konfigurasikan panel dan penilai Fusion melalui `params.extraBody` milik model;
+bidang tersebut diteruskan langsung ke isi permintaan penyelesaian percakapan OpenRouter.
+Fusion berfungsi dengan orientasi OAuth maupun kunci API; jika Anda menggunakan OAuth,
+hilangkan baris `env.OPENROUTER_API_KEY` di bawah ini.
 
 ```json5
 {
@@ -268,24 +279,22 @@ OAuth, hilangkan baris `env.OPENROUTER_API_KEY` dari contoh di bawah.
 }
 ```
 
-Daftar `analysis_models` adalah panel paralel, dan `model` di dalam konfigurasi
-Plugin Fusion adalah model penilai. Jangan tetapkan `tool_choice` tingkat atas ke
-`"required"` dalam giliran agen/chat OpenClaw normal untuk mencoba memaksa Fusion;
-giliran OpenClaw dapat menyertakan definisi alat OpenClaw, dan pilihan alat wajib
-tingkat atas dapat mewajibkan salah satu alat tersebut, bukan router Fusion. Saat
-konfigurasi Plugin Fusion ini ada, OpenClaw juga menambahkan catatan
-system-prompt yang disanitasi dengan model analisis dan model penilai yang dikonfigurasi agar
-agen dapat menjawab pertanyaan tentang panel Fusion saat ini. Field `extraBody`
-lainnya tidak disalin ke prompt.
+`analysis_models` adalah panel paralel; `model` di dalam konfigurasi plugin Fusion
+adalah model penilai. Jangan atur `tool_choice` tingkat atas menjadi `"required"`
+dalam giliran agen/percakapan biasa untuk mencoba memaksa Fusion: giliran OpenClaw dapat menyertakan
+definisi alatnya sendiri, dan pilihan alat wajib tingkat atas mungkin memilih salah satu
+alat tersebut alih-alih router Fusion. Saat konfigurasi plugin Fusion ini tersedia,
+OpenClaw menambahkan catatan perintah sistem yang telah disanitasi dan mencantumkan model analisis
+serta model penilai yang dikonfigurasi, sehingga agen dapat menjawab pertanyaan tentang panel Fusion
+miliknya sendiri. Bidang `extraBody` lainnya tidak disalin ke dalam perintah.
 
-Fusion sengaja dirancang lebih lambat. OpenRouter dapat mengirim prompt OpenClaw yang sama ke
-beberapa model analisis lalu menjalankan langkah penilaian/sintesis akhir, sehingga latensi
-biasanya lebih tinggi daripada permintaan langsung ke satu model. Gunakan Fusion untuk jawaban
-yang deliberatif dan berkualitas tinggi atau jalur eskalasi, bukan sebagai default untuk
-chat yang sensitif terhadap latensi. Untuk respons yang lebih cepat, pertahankan panel tetap kecil dan pilih
-model analisis dan penilai yang lebih cepat.
+Fusion sengaja dirancang lebih lambat: OpenRouter menyebarkan perintah ke beberapa
+model analisis, lalu menjalankan langkah penilaian/sintesis, sehingga latensinya lebih tinggi daripada
+permintaan langsung ke satu model. Gunakan untuk jawaban yang dipertimbangkan dengan matang dan berkualitas tinggi atau
+jalur eskalasi, bukan sebagai nilai bawaan yang peka terhadap latensi. Pertahankan ukuran panel tetap kecil dan
+pilih model analisis/penilai yang lebih cepat untuk memperoleh respons lebih cepat.
 
-Uji ref yang dikonfigurasi dengan satu panggilan model lokal sekali jalan:
+Uji referensi yang telah dikonfigurasi dengan satu panggilan lokal:
 
 ```bash
 openclaw infer model run --local \
@@ -296,23 +305,21 @@ openclaw infer model run --local \
 
 ## Autentikasi dan header
 
-OpenRouter menggunakan token Bearer dengan kunci API Anda di balik layar. OAuth OpenRouter
-adalah alur login PKCE yang menerbitkan kunci API OpenRouter, sehingga OpenClaw menyimpan
-hasilnya sebagai profil autentikasi kunci API `openrouter:default` yang sama dengan yang digunakan oleh
-jalur penyiapan kunci API manual.
+OpenRouter menggunakan token Bearer dari kunci API Anda. OAuth OpenRouter adalah alur
+masuk PKCE yang menerbitkan kunci API OpenRouter, sehingga OpenClaw menyimpan hasilnya dalam
+profil autentikasi kunci API `openrouter:default` yang sama dengan yang digunakan oleh penyiapan
+kunci API manual.
 
-Untuk instalasi yang sudah ada, masuk atau rotasi kunci OpenRouter tersimpan tanpa
-menjalankan ulang onboarding penuh:
+Untuk masuk atau merotasi kunci yang tersimpan pada instalasi yang sudah ada tanpa menjalankan ulang
+seluruh orientasi:
 
 ```bash
 openclaw models auth login --provider openrouter --method oauth
+openclaw models auth login --provider openrouter --method api-key
 ```
 
-Gunakan `openclaw models auth login --provider openrouter --method api-key` saat
-Anda ingin menempelkan kunci yang Anda buat secara manual di OpenRouter.
-
-Pada permintaan OpenRouter nyata (`https://openrouter.ai/api/v1`), OpenClaw juga menambahkan
-header atribusi aplikasi yang didokumentasikan OpenRouter:
+Pada permintaan OpenRouter yang terverifikasi (`https://openrouter.ai/api/v1`), OpenClaw menambahkan
+header atribusi aplikasi OpenRouter yang terdokumentasi:
 
 | Header                    | Nilai                                                                                                  |
 | ------------------------- | ------------------------------------------------------------------------------------------------------ |
@@ -321,16 +328,15 @@ header atribusi aplikasi yang didokumentasikan OpenRouter:
 | `X-OpenRouter-Categories` | `cli-agent,cloud-agent,programming-app,creative-writing,writing-assistant,general-chat,personal-agent` |
 
 <Warning>
-Jika Anda mengarahkan ulang penyedia OpenRouter ke proxy atau URL dasar lain, OpenClaw
-**tidak** menyuntikkan header khusus OpenRouter tersebut atau penanda cache Anthropic.
+Jika Anda mengarahkan ulang penyedia OpenRouter ke proksi atau URL dasar lain, OpenClaw
+**tidak** menyisipkan header khusus OpenRouter atau penanda cache Anthropic tersebut.
 </Warning>
 
 ## Konfigurasi lanjutan
 
 <AccordionGroup>
-  <Accordion title="Response caching">
-    Caching respons OpenRouter bersifat opt-in. Aktifkan per model OpenRouter dengan
-    parameter model:
+  <Accordion title="Penyimpanan cache respons">
+    Penyimpanan cache respons OpenRouter bersifat opsional. Aktifkan untuk setiap model:
 
     ```json5
     {
@@ -349,68 +355,65 @@ Jika Anda mengarahkan ulang penyedia OpenRouter ke proxy atau URL dasar lain, Op
     }
     ```
 
-    OpenClaw mengirim `X-OpenRouter-Cache: true` dan, saat dikonfigurasi,
+    OpenClaw mengirim `X-OpenRouter-Cache: true` dan, jika dikonfigurasi,
     `X-OpenRouter-Cache-TTL`. `responseCacheClear: true` memaksa penyegaran untuk
-    permintaan saat ini dan menyimpan respons pengganti. Alias snake_case
-    (`response_cache`, `response_cache_ttl_seconds`, dan
-    `response_cache_clear`) juga diterima.
+    permintaan saat ini dan menyimpan respons penggantinya. Alias snake_case
+    (`response_cache`, `response_cache_ttl_seconds`,
+    `response_cache_clear`) diterima, demikian pula `responseCacheTtl` /
+    `response_cache_ttl` tanpa sufiks `Seconds`.
 
-    Ini terpisah dari caching prompt penyedia dan dari penanda
-    `cache_control` Anthropic milik OpenRouter. Ini hanya diterapkan pada rute
-    `openrouter.ai` yang terverifikasi, bukan URL dasar proxy khusus.
+    Ini terpisah dari penyimpanan cache perintah penyedia dan penanda
+    `cache_control` Anthropic milik OpenRouter. Fitur ini hanya berlaku pada rute
+    `openrouter.ai` yang terverifikasi, bukan URL dasar proksi khusus.
 
   </Accordion>
 
-  <Accordion title="Anthropic cache markers">
-    Pada rute OpenRouter yang terverifikasi, ref model Anthropic mempertahankan
-    penanda `cache_control` Anthropic khusus OpenRouter yang digunakan OpenClaw untuk
-    penggunaan ulang cache prompt yang lebih baik pada blok prompt sistem/pengembang.
+  <Accordion title="Penanda cache Anthropic">
+    Pada rute OpenRouter yang terverifikasi, referensi model Anthropic mempertahankan
+    penanda `cache_control` Anthropic milik OpenRouter agar cache perintah dapat digunakan kembali dengan lebih baik pada
+    blok perintah sistem/pengembang.
   </Accordion>
 
   <Accordion title="Prefill penalaran Anthropic">
-    Pada rute OpenRouter terverifikasi, ref model Anthropic dengan penalaran yang
-    diaktifkan menghapus giliran prefill asisten di bagian akhir sebelum
-    permintaan mencapai OpenRouter, sesuai dengan persyaratan Anthropic bahwa
-    percakapan penalaran harus berakhir dengan giliran pengguna.
+    Pada rute OpenRouter yang terverifikasi, referensi model Anthropic dengan penalaran diaktifkan
+    menghapus giliran prefill asisten di bagian akhir sebelum permintaan mencapai
+    OpenRouter, sesuai dengan persyaratan Anthropic bahwa percakapan penalaran
+    harus diakhiri dengan giliran pengguna.
   </Accordion>
 
-  <Accordion title="Injeksi berpikir / penalaran">
-    Pada rute non-`auto` yang didukung, OpenClaw memetakan tingkat berpikir yang
-    dipilih ke payload penalaran proksi OpenRouter. Hint model yang tidak
-    didukung dan `openrouter/auto` melewati injeksi penalaran tersebut. Hunter
-    Alpha juga melewati penalaran proksi untuk ref model terkonfigurasi yang
-    usang karena OpenRouter dapat mengembalikan teks jawaban akhir di kolom
-    penalaran untuk rute yang sudah dihentikan itu.
+  <Accordion title="Injeksi pemikiran / penalaran">
+    Pada rute non-`auto` yang didukung, OpenClaw memetakan tingkat pemikiran yang dipilih
+    ke payload penalaran proksi OpenRouter. `openrouter/auto` dan petunjuk model
+    yang tidak didukung melewati injeksi tersebut. Referensi `openrouter/hunter-alpha` yang usang juga
+    melewatinya karena OpenRouter dapat mengembalikan teks jawaban akhir dalam kolom
+    penalaran pada rute yang telah dihentikan tersebut.
   </Accordion>
 
   <Accordion title="Pemutaran ulang penalaran DeepSeek V4">
-    Pada rute OpenRouter terverifikasi, `openrouter/deepseek/deepseek-v4-flash`
-    dan `openrouter/deepseek/deepseek-v4-pro` mengisi `reasoning_content` yang
-    hilang pada giliran asisten yang diputar ulang agar percakapan
-    berpikir/tool mempertahankan bentuk tindak lanjut yang diwajibkan DeepSeek
-    V4. OpenClaw mengirim nilai `reasoning.effort` yang didukung OpenRouter
-    untuk rute ini; tingkat non-off yang lebih rendah dipetakan ke `high`, dan
-    override `max` yang usang dipetakan ke `xhigh`.
+    Pada rute OpenRouter yang terverifikasi, `openrouter/deepseek/deepseek-v4-flash` dan
+    `openrouter/deepseek/deepseek-v4-pro` mengisi `reasoning_content` yang tidak ada pada
+    giliran asisten yang diputar ulang, sehingga percakapan pemikiran/alat tetap dalam
+    format tindak lanjut yang diwajibkan DeepSeek V4. OpenClaw mengirim nilai
+    `reasoning.effort` yang didukung OpenRouter untuk rute ini: `xhigh`/`max` dipetakan ke `xhigh`,
+    sedangkan setiap tingkat aktif lainnya dipetakan ke `high`.
   </Accordion>
 
   <Accordion title="Pembentukan permintaan khusus OpenAI">
-    OpenRouter tetap berjalan melalui jalur kompatibel OpenAI bergaya proksi,
-    sehingga pembentukan permintaan khusus OpenAI asli seperti `serviceTier`,
-    Responses `store`, payload kompatibilitas penalaran OpenAI, dan hint
-    prompt-cache tidak diteruskan.
+    OpenRouter berjalan melalui jalur kompatibel OpenAI bergaya proksi, sehingga
+    pembentukan permintaan khusus OpenAI native seperti `serviceTier`, `store` pada Responses,
+    payload kompatibilitas penalaran OpenAI, dan petunjuk cache prompt tidak diteruskan.
   </Accordion>
 
   <Accordion title="Rute berbasis Gemini">
-    Ref OpenRouter berbasis Gemini tetap berada di jalur proksi-Gemini:
-    OpenClaw mempertahankan sanitasi thought-signature Gemini di sana, tetapi
-    tidak mengaktifkan validasi pemutaran ulang Gemini asli atau penulisan ulang
-    bootstrap.
+    Referensi OpenRouter berbasis Gemini tetap berada pada jalur proksi-Gemini: OpenClaw mempertahankan
+    sanitasi tanda tangan pemikiran Gemini di sana, tetapi tidak mengaktifkan validasi
+    pemutaran ulang Gemini native atau penulisan ulang bootstrap.
   </Accordion>
 
   <Accordion title="Metadata perutean penyedia">
     OpenRouter mendukung objek permintaan `provider` untuk perutean penyedia
-    yang mendasarinya. Konfigurasikan kebijakan default untuk semua permintaan
-    model teks OpenRouter dengan `models.providers.openrouter.params.provider`:
+    yang mendasarinya. Konfigurasikan kebijakan bawaan untuk semua permintaan model teks OpenRouter
+    dengan `models.providers.openrouter.params.provider`:
 
     ```json5
     {
@@ -430,14 +433,13 @@ Jika Anda mengarahkan ulang penyedia OpenRouter ke proxy atau URL dasar lain, Op
     }
     ```
 
-    OpenClaw meneruskan objek tersebut ke OpenRouter sebagai payload permintaan
-    `provider`. Gunakan kolom snake_case yang didokumentasikan OpenRouter,
-    termasuk `sort`, `only`, `ignore`, `order`, `allow_fallbacks`,
-    `require_parameters`, `data_collection`, `quantizations`, `max_price`,
-    `preferred_max_latency`, `preferred_min_throughput`, `zdr`, dan
-    `enforce_distillable_text`.
+    OpenClaw meneruskan objek tersebut ke OpenRouter sebagai payload `provider`
+    permintaan. Gunakan kolom snake_case yang didokumentasikan OpenRouter, termasuk `sort`,
+    `only`, `ignore`, `order`, `allow_fallbacks`, `require_parameters`,
+    `data_collection`, `quantizations`, `max_price`, `preferred_max_latency`,
+    `preferred_min_throughput`, `zdr`, dan `enforce_distillable_text`.
 
-    Param per model tetap menimpa objek perutean tingkat penyedia:
+    Parameter per model menggantikan objek perutean tingkat penyedia:
 
     ```json5
     {
@@ -458,9 +460,8 @@ Jika Anda mengarahkan ulang penyedia OpenRouter ke proxy atau URL dasar lain, Op
     }
     ```
 
-    Ini hanya berlaku pada rute chat-completions OpenRouter. Rute Anthropic,
-    Google, OpenAI, atau penyedia kustom langsung mengabaikan param perutean
-    OpenRouter.
+    Ini hanya berlaku pada rute chat-completions OpenRouter. Rute langsung Anthropic,
+    Google, OpenAI, atau penyedia khusus mengabaikan parameter perutean OpenRouter.
 
   </Accordion>
 </AccordionGroup>
@@ -469,7 +470,7 @@ Jika Anda mengarahkan ulang penyedia OpenRouter ke proxy atau URL dasar lain, Op
 
 <CardGroup cols={2}>
   <Card title="Pemilihan model" href="/id/concepts/model-providers" icon="layers">
-    Memilih penyedia, ref model, dan perilaku failover.
+    Memilih penyedia, referensi model, dan perilaku pengalihan kegagalan.
   </Card>
   <Card title="Referensi konfigurasi" href="/id/gateway/configuration-reference" icon="gear">
     Referensi konfigurasi lengkap untuk agen, model, dan penyedia.

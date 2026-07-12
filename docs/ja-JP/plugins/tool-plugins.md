@@ -1,14 +1,14 @@
 ---
 read_when:
-    - シンプルな OpenClaw Plugin を構築して、agent tools だけを追加したい場合
-    - 手書きでPluginマニフェストメタデータを書く代わりにdefineToolPluginを使う必要があります
-    - ツール専用 Plugin をスキャフォールド、生成、検証、テスト、または公開する必要がある
+    - エージェントツールを追加するだけのシンプルな OpenClaw Plugin を構築したい場合
+    - プラグインマニフェストのメタデータを手書きする代わりに、defineToolPlugin を使用したい場合
+    - ツール専用Pluginのスキャフォールド、生成、検証、テスト、または公開が必要です
 sidebarTitle: Tool Plugins
-summary: defineToolPlugin と openclaw plugins init/build/validate でシンプルな型付きエージェントツールを構築する
-title: ツール Plugin
+summary: defineToolPlugin と openclaw plugins init/build/validate を使用して、シンプルな型付きエージェントツールを構築する
+title: ツールPlugin
 x-i18n:
-    generated_at: "2026-07-05T11:42:22Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:35:22Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 231eba96d4927b7411cb17d79b96e6df09ed111fc8a54eac0ca7717e58803d26
@@ -16,21 +16,17 @@ x-i18n:
     workflow: 16
 ---
 
-`defineToolPlugin` は、エージェントから呼び出せるツールだけを追加する Plugin を構築します。チャネル、モデルプロバイダー、フック、サービス、セットアップバックエンドは含みません。Plugin のランタイムコードを読み込まずに OpenClaw がツールを検出するために必要なマニフェストメタデータを生成します。
+`defineToolPlugin` は、エージェントから呼び出せるツールだけを追加する Plugin を構築します。チャネル、モデルプロバイダー、フック、サービス、セットアップバックエンドは追加しません。Plugin のランタイムコードを読み込まずに OpenClaw がツールを検出するために必要なマニフェストメタデータを生成します。
 
-プロバイダー、チャネル、フック、サービス、または複合機能の Plugin では、代わりに
-[Plugin の構築](/ja-JP/plugins/building-plugins)、[チャネル Plugin](/ja-JP/plugins/sdk-channel-plugins)、
-または [プロバイダー Plugin](/ja-JP/plugins/sdk-provider-plugins) から始めてください。
+プロバイダー、チャネル、フック、サービス、または複数の機能を持つ Plugin については、代わりに[Plugin の構築](/ja-JP/plugins/building-plugins)、[チャネル Plugin](/ja-JP/plugins/sdk-channel-plugins)、または[プロバイダー Plugin](/ja-JP/plugins/sdk-provider-plugins)から始めてください。
 
 ## 要件
 
 - Node 22.19+、Node 23.11+、または Node 24+。
 - TypeScript ESM パッケージ出力。
-- `dependencies` に `typebox`（`devDependencies` だけでは不十分です。生成された
-  Plugin はランタイムでこれをインポートします）。
-- `openclaw >=2026.5.17`。`openclaw/plugin-sdk/tool-plugin` をエクスポートする最初のバージョンです。
-- `dist/`、`openclaw.plugin.json`、および
-  `package.json` を同梱するパッケージルート。
+- `dependencies` に `typebox` が必要（`devDependencies` だけでは不十分です。生成された Plugin が実行時にインポートします）。
+- `openclaw/plugin-sdk/tool-plugin` を初めてエクスポートしたバージョンである `openclaw >=2026.5.17`。
+- `dist/`、`openclaw.plugin.json`、`package.json` を配布するパッケージルート。
 
 ## クイックスタート
 
@@ -43,38 +39,35 @@ npm run plugin:validate
 npm test
 ```
 
-`plugins init` は次をスキャフォールドします。
+`plugins init` は以下を生成します。
 
-| ファイル               | 目的                                                              |
-| ---------------------- | ----------------------------------------------------------------- |
-| `src/index.ts`         | 1 つの `echo` ツールを持つ `defineToolPlugin` エントリ            |
-| `src/index.test.ts`    | ツール一覧をアサートするメタデータテスト                          |
-| `tsconfig.json`        | `dist/` への NodeNext TypeScript 出力                             |
-| `vitest.config.ts`     | `src/**/*.test.ts` 用の Vitest 設定                               |
+| ファイル               | 目的                                                               |
+| ---------------------- | ------------------------------------------------------------------ |
+| `src/index.ts`         | 1 つの `echo` ツールを含む `defineToolPlugin` エントリ             |
+| `src/index.test.ts`    | ツール一覧を検証するメタデータテスト                               |
+| `tsconfig.json`        | `dist/` への NodeNext TypeScript 出力                              |
+| `vitest.config.ts`     | `src/**/*.test.ts` 用の Vitest 設定                                |
 | `package.json`         | スクリプト、ランタイム依存関係、`openclaw.extensions: ["./dist/index.js"]` |
-| `openclaw.plugin.json` | 初期ツール用に生成されたマニフェストメタデータ                    |
+| `openclaw.plugin.json` | 初期ツール用に生成されたマニフェストメタデータ                     |
 
-`npm run plugin:build` は `npm run build`（tsc）を実行してから
-`openclaw plugins build --entry ./dist/index.js` を実行します。`npm run plugin:validate`
-は再ビルドして `openclaw plugins validate --entry ./dist/index.js` を実行します。
-検証に成功すると次のように表示されます。
+`npm run plugin:build` は `npm run build`（tsc）を実行してから、`openclaw plugins build --entry ./dist/index.js` を実行します。`npm run plugin:validate` は再ビルドし、`openclaw plugins validate --entry ./dist/index.js` を実行します。検証に成功すると、以下が出力されます。
 
 ```text
 Plugin stock-quotes is valid.
 ```
 
-`openclaw plugins init <id>` のオプション:
+`openclaw plugins init <id>` のオプション：
 
-| フラグ               | デフォルト       | 効果                                   |
-| -------------------- | ---------------- | -------------------------------------- |
-| `--directory <path>` | `<id>`           | 出力ディレクトリ                       |
-| `--name <name>`      | タイトルケース化された `<id>` | 表示名                    |
-| `--type <type>`      | `tool`           | スキャフォールド種別: `tool` または `provider` |
-| `--force`            | オフ             | 既存の出力ディレクトリを上書き         |
+| フラグ                 | デフォルト         | 効果                                   |
+| ---------------------- | ------------------ | -------------------------------------- |
+| `--directory <path>`   | `<id>`             | 出力ディレクトリ                       |
+| `--name <name>`        | タイトルケースの `<id>` | 表示名                             |
+| `--type <type>`        | `tool`             | 生成タイプ：`tool` または `provider`   |
+| `--force`              | オフ               | 既存の出力ディレクトリを上書き         |
 
-## ツールを書く
+## ツールを作成する
 
-`defineToolPlugin` は、Plugin の識別情報、省略可能な設定スキーマ、静的なツール一覧を受け取ります。パラメーター型と設定型は TypeBox スキーマから推論されます。
+`defineToolPlugin` は、Plugin の識別情報、任意の設定スキーマ、および静的なツール一覧を受け取ります。パラメーター型と設定型は TypeBox スキーマから推論されます。
 
 ```typescript
 import { Type } from "typebox";
@@ -109,12 +102,11 @@ export default defineToolPlugin({
 });
 ```
 
-ツール名は安定した API です。コアツールや他の Plugin と衝突しないよう、一意で小文字、かつ十分に具体的な名前を選んでください。
+ツール名は安定した API です。一意で小文字を使用し、コアツールや他の Plugin との衝突を避けられるだけの具体性を持つ名前を選んでください。
 
 ## 任意ツールとファクトリーツール
 
-ツールをモデルに送信する前にユーザーが明示的に許可リストへ追加すべき場合は、`optional: true` を設定します。`openclaw plugins build` は対応する
-`toolMetadata.<tool>.optional` マニフェストエントリを書き込むため、OpenClaw は Plugin のランタイムコードを読み込まずに、そのツールが任意であることを確認できます。
+モデルに送信する前にユーザーがツールを明示的に許可リストへ追加する必要がある場合は、`optional: true` を設定します。`openclaw plugins build` は対応する `toolMetadata.<tool>.optional` マニフェストエントリを書き込むため、OpenClaw は Plugin のランタイムコードを読み込まずにそのツールが任意であることを認識できます。
 
 ```typescript
 tool({
@@ -126,7 +118,7 @@ tool({
 });
 ```
 
-ツールを作成する前にランタイムツールコンテキストが必要な場合は、`factory` を使用します。特定の実行でオプトアウトする、サンドボックス状態を検査する、またはランタイムヘルパーをバインドする場合です。具体的なツールはランタイムで構築されますが、メタデータは静的なままです。
+ツールを作成する前にランタイムツールコンテキストが必要な場合は、`factory` を使用します。たとえば、特定の実行で無効化する、サンドボックス状態を確認する、またはランタイムヘルパーをバインドする場合です。具体的なツールは実行時に構築されますが、メタデータは静的なままです。
 
 ```typescript
 tool({
@@ -147,10 +139,10 @@ tool({
 
 ## 戻り値
 
-`defineToolPlugin` はプレーンな戻り値を OpenClaw のツール結果形式にラップします。
+`defineToolPlugin` は、プレーンな戻り値を OpenClaw のツール結果形式でラップします。
 
-- モデルにその正確なテキストを見せる必要がある場合は文字列を返します。
-- モデルに整形済み JSON を見せ、OpenClaw が元の値を `details` に保持する必要がある場合は JSON 互換の値を返します。
+- モデルにそのままのテキストを表示する場合は、文字列を返します。
+- モデルに整形済み JSON を表示し、OpenClaw が元の値を `details` に保持する場合は、JSON 互換の値を返します。
 
 ```typescript
 tool({
@@ -174,11 +166,11 @@ tool({
 });
 ```
 
-カスタムの `AgentToolResult` が必要な場合や、既存の `api.registerTool` 実装を再利用したい場合は、ファクトリーツールを使用してください。
+カスタム `AgentToolResult` が必要な場合や、既存の `api.registerTool` 実装を再利用する場合は、ファクトリーツールを使用してください。
 
 ## 設定
 
-`configSchema` は省略可能です。省略すると、OpenClaw は厳密な空オブジェクトスキーマを適用します。生成されたマニフェストには引き続き `configSchema` が含まれます。
+`configSchema` は任意です。省略すると、OpenClaw は厳密な空オブジェクトスキーマを適用します。生成されるマニフェストには引き続き `configSchema` が含まれます。
 
 ```typescript
 export default defineToolPlugin({
@@ -212,20 +204,18 @@ export default defineToolPlugin({
 });
 ```
 
-OpenClaw は Gateway 設定内の Plugin のエントリから Plugin 設定を読み取ります。ソースやドキュメント例にシークレットをハードコードしないでください。Plugin のセキュリティモデルに従って、設定、環境変数、または SecretRefs を使用してください。
+OpenClaw は、Gateway 設定内の該当 Plugin のエントリから Plugin 設定を読み取ります。ソースやドキュメントの例にシークレットをハードコードしないでください。Plugin のセキュリティモデルに従い、設定、環境変数、または SecretRef を使用してください。
 
 ## 生成されるメタデータ
 
-OpenClaw は Plugin のランタイムコードをインポートする前に Plugin マニフェストを読み取る必要があります。
-`defineToolPlugin` はそのための静的メタデータを公開し、
-`openclaw plugins build` がそれをパッケージに書き込みます。Plugin の ID、名前、説明、設定スキーマ、アクティベーション、またはツール名を変更した後は、ジェネレーターを再実行してください。
+OpenClaw は、Plugin のランタイムコードをインポートする前に Plugin マニフェストを読み取る必要があります。`defineToolPlugin` はこのための静的メタデータを公開し、`openclaw plugins build` はそれをパッケージに書き込みます。Plugin の ID、名前、説明、設定スキーマ、アクティベーション、またはツール名を変更した後は、ジェネレーターを再実行してください。
 
 ```bash
 npm run build
 openclaw plugins build --entry ./dist/index.js
 ```
 
-1 つのツールを持つ Plugin の生成マニフェスト:
+1 ツールの Plugin 用に生成されるマニフェスト：
 
 ```json
 {
@@ -247,11 +237,11 @@ openclaw plugins build --entry ./dist/index.js
 }
 ```
 
-`contracts.tools` は重要な検出コントラクトです。インストール済みのすべての Plugin のランタイムを読み込まずに、各ツールを所有する Plugin を OpenClaw に伝えます。マニフェストが古いと、ツールが検出から欠落したり、登録エラーが誤った Plugin のせいにされたりする可能性があります。
+`contracts.tools` は重要な検出コントラクトです。インストール済みのすべての Plugin のランタイムを読み込まずに、各ツールをどの Plugin が所有するかを OpenClaw に伝えます。マニフェストが古いと、ツールが検出されなくなったり、登録エラーが誤った Plugin の問題として扱われたりする可能性があります。
 
 ## パッケージメタデータ
 
-`openclaw plugins build` は、選択されたランタイムエントリに合わせて `package.json` も整合させます。
+`openclaw plugins build` は、`package.json` も選択されたランタイムエントリに合わせます。
 
 ```json
 {
@@ -269,8 +259,7 @@ openclaw plugins build --entry ./dist/index.js
 }
 ```
 
-TypeScript ソースエントリではなく、ビルド済み JavaScript（`./dist/index.js`）を同梱してください。
-ソースエントリが機能するのは、ワークスペースローカル開発だけです。
+TypeScript ソースエントリではなく、ビルド済み JavaScript（`./dist/index.js`）を配布してください。ソースエントリはワークスペース内のローカル開発でのみ機能します。
 
 ## CI で検証する
 
@@ -283,15 +272,15 @@ openclaw plugins validate --entry ./dist/index.js
 npm test
 ```
 
-`plugins validate` は次を確認します。
+`plugins validate` は以下を確認します。
 
-- `openclaw.plugin.json` が存在し、通常のマニフェストローダーに合格する。
-- 現在のエントリが `defineToolPlugin` メタデータをエクスポートしている。
-- 生成されたマニフェストフィールドがエントリメタデータと一致する。
-- `contracts.tools` が宣言されたツール名と一致する。
-- `package.json` が `openclaw.extensions` で選択されたランタイムエントリを指している。
+- `openclaw.plugin.json` が存在し、通常のマニフェストローダーを通過すること。
+- 現在のエントリが `defineToolPlugin` メタデータをエクスポートしていること。
+- 生成されたマニフェストフィールドがエントリのメタデータと一致すること。
+- `contracts.tools` が宣言されたツール名と一致すること。
+- `package.json` の `openclaw.extensions` が選択されたランタイムエントリを指していること。
 
-## ローカルでインストールして検査する
+## ローカルでインストールして確認する
 
 別の OpenClaw チェックアウトまたはインストール済み CLI から、パッケージパスをインストールします。
 
@@ -300,7 +289,7 @@ openclaw plugins install ./stock-quotes
 openclaw plugins inspect stock-quotes --runtime
 ```
 
-パッケージ化されたスモークテストでは、先に pack して tarball をインストールします。
+パッケージ化したスモークテストでは、最初にパッケージを作成してから tarball をインストールします。
 
 ```bash
 npm pack
@@ -308,42 +297,38 @@ openclaw plugins install npm-pack:./openclaw-plugin-stock-quotes-0.1.0.tgz
 openclaw plugins inspect stock-quotes --runtime --json
 ```
 
-インストール後、Gateway を再起動またはリロードし、エージェントにツールの使用を依頼します。ツールが表示されない場合は、コードを変更する前に Plugin ランタイムと有効なツールカタログを検査してください（[トラブルシューティング](#troubleshooting) を参照）。
+インストール後、Gateway を再起動または再読み込みし、エージェントにツールを使用するよう依頼します。ツールが表示されない場合は、コードを変更する前に Plugin のランタイムと有効なツールカタログを確認してください（[トラブルシューティング](#troubleshooting)を参照）。
 
 ## 公開
 
-パッケージの準備ができたら ClawHub 経由で公開します。`clawhub package publish`
-はソースを受け取ります。ローカルフォルダー、GitHub リポジトリ（`owner/repo[@ref]`）、または tarball URL です。
+パッケージの準備ができたら、ClawHub を通じて公開します。`clawhub package publish` は、ローカルフォルダー、GitHub リポジトリ（`owner/repo[@ref]`）、または tarball URL をソースとして受け取ります。
 
 ```bash
 clawhub package publish ./stock-quotes --dry-run
 clawhub package publish ./stock-quotes
 ```
 
-明示的な ClawHub ロケーターでインストールします。
+明示的な ClawHub ロケーターを使用してインストールします。
 
 ```bash
 openclaw plugins install clawhub:your-org/stock-quotes
 ```
 
-ベア npm パッケージ仕様はローンチ移行期間中も npm からインストールされますが、ClawHub は OpenClaw
-Plugin に推奨される検出および配布サーフェスです。オーナースコープとリリースレビューについては、[ClawHub 公開](/ja-JP/clawhub/publishing) を参照してください。
+移行期間中は、修飾子のない npm パッケージ指定も引き続き npm からインストールされますが、OpenClaw Plugin の検出と配布には ClawHub が推奨されます。所有者スコープとリリースレビューについては、[ClawHub での公開](/ja-JP/clawhub/publishing)を参照してください。
 
 ## トラブルシューティング
 
 ### `plugin entry not found: ./dist/index.js`
 
-選択されたエントリファイルが存在しません。`npm run build` を実行してから、
-`openclaw plugins build --entry ./dist/index.js` または
-`openclaw plugins validate --entry ./dist/index.js` を再実行してください。
+選択したエントリファイルが存在しません。`npm run build` を実行してから、`openclaw plugins build --entry ./dist/index.js` または `openclaw plugins validate --entry ./dist/index.js` を再実行してください。
 
 ### `plugin entry does not expose defineToolPlugin metadata`
 
-エントリが `defineToolPlugin` によって作成された値をエクスポートしていません。モジュールのデフォルトエクスポートが `defineToolPlugin(...)` の結果であることを確認するか、`--entry` で正しいエントリを渡してください。
+エントリが `defineToolPlugin` によって作成された値をエクスポートしていません。モジュールのデフォルトエクスポートが `defineToolPlugin(...)` の結果であることを確認するか、`--entry` で正しいエントリを指定してください。
 
 ### `openclaw.plugin.json generated metadata is stale`
 
-マニフェストがエントリメタデータと一致しなくなっています。次を実行してください。
+マニフェストがエントリのメタデータと一致しなくなっています。以下を実行してください。
 
 ```bash
 npm run build
@@ -354,28 +339,27 @@ openclaw plugins build --entry ./dist/index.js
 
 ### `package.json openclaw.extensions must include ./dist/index.js`
 
-パッケージメタデータが別のランタイムエントリを指しています。ジェネレーターが出荷予定のエントリにパッケージメタデータを整合させるよう、
-`openclaw plugins build --entry ./dist/index.js` を実行してください。
+パッケージメタデータが別のランタイムエントリを指しています。`openclaw plugins build --entry ./dist/index.js` を実行し、配布する予定のエントリにジェネレーターがパッケージメタデータを合わせるようにしてください。
 
 ### `Cannot find package 'typebox'`
 
-ビルド済み Plugin はランタイムで `typebox` をインポートします。`dependencies` に保持し、再インストール、再ビルド、検証の再実行を行ってください。
+ビルド済み Plugin は実行時に `typebox` をインポートします。`dependencies` に含めたままにし、再インストール、再ビルド、再検証を行ってください。
 
 ### インストール後にツールが表示されない
 
-次の順序で確認してください。
+以下を順に確認してください。
 
 1. `openclaw plugins inspect <plugin-id> --runtime`
 2. `openclaw plugins validate --root <plugin-root> --entry ./dist/index.js`
-3. `openclaw.plugin.json` に、想定されるツール名を含む `contracts.tools` がある。
-4. `package.json` に `openclaw.extensions: ["./dist/index.js"]` がある。
+3. `openclaw.plugin.json` の `contracts.tools` に、想定されるツール名が含まれている。
+4. `package.json` に `openclaw.extensions: ["./dist/index.js"]` が含まれている。
 5. Plugin のインストール後に Gateway が再起動または再読み込みされている。
 
 ## 関連項目
 
-- [Plugin のビルド](/ja-JP/plugins/building-plugins)
-- [Plugin エントリポイント](/ja-JP/plugins/sdk-entrypoints)
-- [Plugin SDK サブパス](/ja-JP/plugins/sdk-subpaths)
+- [Plugin の構築](/ja-JP/plugins/building-plugins)
+- [Plugin のエントリポイント](/ja-JP/plugins/sdk-entrypoints)
+- [Plugin SDK のサブパス](/ja-JP/plugins/sdk-subpaths)
 - [Plugin マニフェスト](/ja-JP/plugins/manifest)
-- [Plugins CLI](/ja-JP/cli/plugins)
-- [ClawHub 公開](/ja-JP/clawhub/publishing)
+- [Plugin CLI](/ja-JP/cli/plugins)
+- [ClawHub への公開](/ja-JP/clawhub/publishing)

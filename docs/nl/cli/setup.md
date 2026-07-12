@@ -1,47 +1,74 @@
 ---
 read_when:
-    - Je voert de eerste installatie uit met de CLI-onboardingwizard
-    - Je wilt het standaardwerkruimtepad instellen
-    - Je hebt de setupvlag voor alleen baseline nodig voor scripts
-summary: CLI-referentie voor `openclaw setup` (alias voor onboarding, met basisconfiguratie beschikbaar via vlag)
-title: Instellen
+    - Je voert de eerste configuratie uit met de CLI-onboardingwizard
+    - U wilt het standaardpad voor de werkruimte instellen
+    - U hebt de installatievlag voor alleen de basisconfiguratie nodig voor scripts
+summary: CLI-referentie voor `openclaw setup` (alias voor onboarding, met basisconfiguratie beschikbaar via een vlag)
+title: Installatie
 x-i18n:
-    generated_at: "2026-06-30T22:25:23Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:44:28Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 797c023d5ba27920fbea9828c9bb12f6c10d25dd3aa6fc68fe9c742f432ebb05
+    source_hash: fe3c631a2ed7328ab7e7d1438adff2d6112514b3fdcfb82923ba6ea04650c385
     source_path: cli/setup.md
     workflow: 16
 ---
 
 # `openclaw setup`
 
-Voer de volledige onboardingflow van de CLI uit. `openclaw setup` is een alias voor `openclaw onboard`; gebruik `--baseline` wanneer je alleen configuratie-/werkruimtemappen hoeft te initialiseren zonder de wizard.
+`openclaw setup` voert dezelfde begeleide onboardingflow uit als `openclaw onboard`:
+eerst wordt inferentie geverifieerd en opgeslagen, waarna Crestodian wordt gestart om
+de werkruimte, Gateway, kanalen, skills en status te configureren. Gebruik `--baseline` wanneer u
+alleen de configuratie-/werkruimtemappen hoeft te initialiseren zonder de wizard.
+
+In de begeleide modus is `--workspace <dir>` de werkruimte die aan Crestodian wordt voorgesteld;
+deze wordt pas opgeslagen nadat u dat voorstel hebt goedgekeurd. Bij baseline-, klassieke en
+niet-interactieve installatie wordt de opgegeven werkruimte via de normale flow opgeslagen.
+
+`setup` accepteert dezelfde onboardingvlaggen als `openclaw onboard`, waaronder
+authenticatie (`--auth-choice`, `--token`, vlaggen voor providersleutels), Gateway
+(`--gateway-port`, `--gateway-bind`, `--gateway-auth`, `--install-daemon`),
+Tailscale (`--tailscale`), opnieuw instellen (`--reset`, `--reset-scope`), flow
+(`--flow quickstart|advanced|manual|import`) en overslavlaggen
+(`--skip-channels`, `--skip-skills`, `--skip-bootstrap`, `--skip-search`,
+`--skip-health`, `--skip-ui`, `--skip-hooks`). Zie [Onboarding](/nl/cli/onboard) en
+[CLI-automatisering](/nl/start/wizard-cli-automation) voor het volledige vlaggenoverzicht en
+niet-interactieve voorbeelden. `openclaw onboard --modern` is de compatibiliteitsalias
+voor de door inferentie afgeschermde Crestodian-assistent en heeft geen equivalent voor `setup`.
 
 <Note>
-`openclaw setup` is bedoeld voor wijzigbare configuratie-installaties. In Nix-modus (`OPENCLAW_NIX_MODE=1`) weigert OpenClaw setup-schrijfbewerkingen omdat het configuratiebestand door Nix wordt beheerd. Gebruik de first-party [nix-openclaw Quick Start](https://github.com/openclaw/nix-openclaw#quick-start) of de equivalente bronconfiguratie voor een ander Nix-pakket.
+`openclaw setup` is bedoeld voor installaties met wijzigbare configuratie. In de Nix-modus (`OPENCLAW_NIX_MODE=1`) weigert OpenClaw tijdens de installatie schrijfbewerkingen omdat het configuratiebestand door Nix wordt beheerd. Gebruik de officiële [snelstart voor nix-openclaw](https://github.com/openclaw/nix-openclaw#quick-start) of de gelijkwaardige bronconfiguratie voor een ander Nix-pakket.
 </Note>
 
 ## Opties
 
-| Vlag                       | Beschrijving                                                                                                  |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `--workspace <dir>`        | Werkruimtemap voor agents (standaard `~/.openclaw/workspace`; opgeslagen als `agents.defaults.workspace`).    |
-| `--baseline`               | Maak basismappen voor configuratie/werkruimte/sessies aan zonder onboarding.                                  |
-| `--wizard`                 | Geaccepteerd voor compatibiliteit; setup voert standaard onboarding uit.                                      |
-| `--non-interactive`        | Voer onboarding uit zonder prompts.                                                                          |
-| `--accept-risk`            | Bevestig het risico van agenttoegang tot het volledige systeem; vereist met `--non-interactive`.              |
-| `--mode <mode>`            | Onboardingmodus: `local` of `remote`.                                                                        |
-| `--import-from <provider>` | Migratieprovider die tijdens onboarding moet worden uitgevoerd.                                               |
-| `--import-source <path>`   | Bron-agenthome voor `--import-from`.                                                                         |
-| `--import-secrets`         | Importeer ondersteunde geheimen tijdens onboardingmigratie.                                                   |
-| `--remote-url <url>`       | WebSocket-URL van externe Gateway.                                                                           |
-| `--remote-token <token>`   | Extern Gateway-token (optioneel).                                                                            |
+| Vlag                       | Beschrijving                                                                                           |
+| -------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `--workspace <dir>`        | Werkruimtevoorstel in begeleide modus; wordt rechtstreeks opgeslagen bij baseline-, klassieke en niet-interactieve installatie. |
+| `--baseline`               | Maak mappen voor de basisconfiguratie, werkruimte en sessies zonder onboarding.                       |
+| `--wizard`                 | Wordt geaccepteerd voor compatibiliteit; de installatie voert standaard onboarding uit.              |
+| `--non-interactive`        | Voer onboarding zonder prompts uit.                                                                   |
+| `--accept-risk`            | Bevestig het risico van agenttoegang tot het volledige systeem; vereist bij `--non-interactive`.      |
+| `--mode <mode>`            | Onboardingmodus: `local` of `remote`.                                                                 |
+| `--flow <flow>`            | Onboardingflow: `quickstart`, `advanced`, `manual` of `import`.                                       |
+| `--reset`                  | Stel configuratie + referenties + sessies opnieuw in vóór onboarding (werkruimte alleen met `--reset-scope full`). |
+| `--reset-scope <scope>`    | Bereik voor opnieuw instellen: `config`, `config+creds+sessions` of `full`.                            |
+| `--import-from <provider>` | Migratieprovider die tijdens onboarding moet worden uitgevoerd.                                      |
+| `--import-source <path>`   | Bronmap van de agent voor `--import-from`.                                                            |
+| `--import-secrets`         | Importeer ondersteunde geheimen tijdens de onboardingmigratie.                                       |
+| `--remote-url <url>`       | WebSocket-URL van de externe Gateway.                                                                 |
+| `--remote-token <token>`   | Token voor de externe Gateway (optioneel).                                                            |
+| `--json`                   | Voer een JSON-samenvatting uit.                                                                       |
+
+`--classic` en `--non-interactive` sluiten elkaar uit: klassiek opent de
+wizard met prompts, terwijl de niet-interactieve installatie het automatiseringspad gebruikt.
 
 ### Baseline-modus
 
-`openclaw setup --baseline` behoudt het oudere gedrag voor alleen baseline: het maakt de configuratie-, werkruimte- en sessiemappen aan en sluit daarna af zonder onboarding uit te voeren.
+`openclaw setup --baseline` behoudt het oudere gedrag dat alleen de basis instelt: het
+maakt de configuratie-, werkruimte- en sessiemappen aan en sluit vervolgens af zonder
+onboarding uit te voeren.
 
 ## Voorbeelden
 
@@ -55,13 +82,13 @@ openclaw setup --non-interactive --accept-risk --mode remote --remote-url wss://
 
 ## Opmerkingen
 
-- Gewoon `openclaw setup` voert dezelfde begeleide journey uit als `openclaw onboard`.
-- Voer na baseline-setup `openclaw setup` of `openclaw onboard` uit voor de volledige begeleide journey, `openclaw configure` voor gerichte wijzigingen, of `openclaw channels add` om kanaalaccounts toe te voegen.
-- Als Hermes-status wordt gedetecteerd, kan interactieve onboarding automatisch migratie aanbieden. Import-onboarding vereist een nieuwe setup; gebruik [Migreren](/nl/cli/migrate) voor dry-run-plannen, back-ups en overschrijfmodus buiten onboarding.
+- Voer na de baseline-installatie `openclaw setup` of `openclaw onboard` uit voor het volledige begeleide traject, `openclaw configure` voor gerichte wijzigingen of `openclaw channels add` om kanaalaccounts toe te voegen.
+- Als een Hermes-status wordt gedetecteerd, kan interactieve onboarding automatisch migratie aanbieden. Importonboarding vereist een nieuwe installatie; gebruik [Migreren](/nl/cli/migrate) voor proefplannen, back-ups en de overschrijfmodus buiten onboarding.
 
 ## Gerelateerd
 
 - [CLI-referentie](/nl/cli)
+- [Onboarding](/nl/cli/onboard)
 - [Onboarding (CLI)](/nl/start/wizard)
 - [Aan de slag](/nl/start/getting-started)
 - [Installatieoverzicht](/nl/install)

@@ -1,30 +1,30 @@
 ---
 read_when:
-    - Bạn đang cài đặt, cấu hình hoặc rà soát Plugin litellm
-summary: Thêm hỗ trợ nhà cung cấp mô hình LiteLLM cho OpenClaw.
+    - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin litellm
+summary: Bổ sung hỗ trợ nhà cung cấp mô hình LiteLLM cho OpenClaw.
 title: Plugin LiteLLM
 x-i18n:
-    generated_at: "2026-05-02T20:51:51Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:11:11Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: 8bbe9b35112012185719c87aa0f027422f574e995cefcfe2bc1f243d9b3b43a9
     source_path: plugins/reference/litellm.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Plugin LiteLLM
 
-Thêm hỗ trợ nhà cung cấp mô hình LiteLLM cho OpenClaw.
+Bổ sung hỗ trợ nhà cung cấp mô hình LiteLLM cho OpenClaw.
 
 ## Phân phối
 
 - Gói: `@openclaw/litellm-provider`
-- Tuyến cài đặt: được bao gồm trong OpenClaw
+- Phương thức cài đặt: được tích hợp trong OpenClaw
 
 ## Bề mặt
 
-providers: litellm; contracts: imageGenerationProviders
+nhà cung cấp: litellm; hợp đồng: imageGenerationProviders
 
 ## Tài liệu liên quan
 

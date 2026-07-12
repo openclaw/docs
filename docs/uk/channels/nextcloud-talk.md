@@ -1,62 +1,53 @@
 ---
 read_when:
     - Робота над функціями каналу Nextcloud Talk
-summary: Стан підтримки Nextcloud Talk, можливості та налаштування
+summary: Стан підтримки, можливості та налаштування Nextcloud Talk
 title: Nextcloud Talk
 x-i18n:
-    generated_at: "2026-05-10T19:22:47Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:59:27Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e4b3b2d074cc8d3c19223dbb0c306c6861717d0f35e638e3aab04b03647fd248
+    source_hash: 234981d21df12eafabfef60822f2a145d37257689511efc6104451a735346d09
     source_path: channels/nextcloud-talk.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Стан: bundled plugin (webhook бот). Direct messages, кімнати, реакції та повідомлення markdown підтримуються.
+Nextcloud Talk — це завантажуваний Plugin каналу (`@openclaw/nextcloud-talk`), який з’єднує OpenClaw із власним екземпляром Nextcloud через Webhook-бота Talk. Підтримуються особисті повідомлення, кімнати, реакції та повідомлення у форматі Markdown; медіафайли надсилаються як URL-адреси.
 
-## Bundled plugin
-
-Nextcloud Talk постачається як bundled plugin у поточних випусках OpenClaw, тому
-звичайні пакетовані збірки не потребують окремого встановлення.
-
-Якщо ви використовуєте старішу збірку або власне встановлення, що виключає Nextcloud Talk,
-встановіть npm-пакет напряму:
-
-Встановлення через CLI (npm registry):
+## Встановлення
 
 ```bash
 openclaw plugins install @openclaw/nextcloud-talk
 ```
 
-Використовуйте bare package, щоб стежити за поточним офіційним release tag. Закріплюйте точну
-версію лише тоді, коли вам потрібне відтворюване встановлення.
+Використовуйте специфікацію пакета без версії, щоб отримувати поточний офіційний тег випуску. Закріплюйте точну версію лише тоді, коли потрібне відтворюване встановлення.
 
-Локальний checkout (під час запуску з git repo):
+З локальної робочої копії (процеси розробки):
 
 ```bash
 openclaw plugins install ./path/to/local/nextcloud-talk-plugin
 ```
 
-Докладніше: [Plugins](/uk/tools/plugin)
+Після встановлення перезапустіть Gateway. Докладніше: [Pluginи](/uk/tools/plugin)
 
 ## Швидке налаштування (для початківців)
 
-1. Переконайтеся, що Plugin Nextcloud Talk доступний.
-   - Поточні пакетовані випуски OpenClaw вже містять його.
-   - Старіші/власні встановлення можуть додати його вручну за допомогою команд вище.
-2. На вашому сервері Nextcloud створіть бота:
+1. Встановіть Plugin (див. вище).
+2. На сервері Nextcloud створіть бота:
 
    ```bash
    ./occ talk:bot:install "OpenClaw" "<shared-secret>" "<webhook-url>" --feature webhook --feature response --feature reaction
    ```
 
+   Залиште `--feature response`: без нього вихідні відповіді завершуються помилкою 401. Виправте наявного бота командою `./occ talk:bot:state --feature webhook --feature response --feature reaction <botId> 1`.
+
 3. Увімкніть бота в налаштуваннях цільової кімнати.
 4. Налаштуйте OpenClaw:
    - Конфігурація: `channels.nextcloud-talk.baseUrl` + `channels.nextcloud-talk.botSecret`
-   - Або env: `NEXTCLOUD_TALK_BOT_SECRET` (лише обліковий запис за замовчуванням)
+   - Або змінна середовища: `NEXTCLOUD_TALK_BOT_SECRET` (лише для облікового запису за замовчуванням)
 
-   Налаштування CLI:
+   Налаштування через CLI (`--url`/`--token` є псевдонімами явних полів; `nc-talk` і `nc` працюють як псевдоніми каналу):
 
    ```bash
    openclaw channels add --channel nextcloud-talk \
@@ -99,24 +90,26 @@ openclaw plugins install ./path/to/local/nextcloud-talk-plugin
 
 ## Примітки
 
-- Боти не можуть ініціювати DMs. Користувач має спочатку надіслати повідомлення боту.
-- URL Webhook має бути доступним для Gateway; установіть `webhookPublicUrl`, якщо він за проксі.
-- Завантаження медіа не підтримуються bot API; медіа надсилаються як URLs.
-- Корисне навантаження webhook не розрізняє DMs і кімнати; установіть `apiUser` + `apiPassword`, щоб увімкнути визначення типу кімнати (інакше DMs обробляються як кімнати).
+- Боти не можуть ініціювати особисті повідомлення. Користувач має спочатку надіслати повідомлення боту.
+- URL-адреса Webhook має бути доступною із сервера Nextcloud; якщо Gateway розташований за проксі-сервером, задайте `webhookPublicUrl`. Запити Webhook підписуються за допомогою HMAC-SHA256 із секретом бота; запити з недійсними підписами відхиляються та підлягають обмеженню частоти.
+- API бота не підтримує завантаження медіафайлів; до вихідних медіафайлів додається рядок `Attachment: <url>`.
+- Корисне навантаження Webhook не розрізняє особисті повідомлення й кімнати; задайте `apiUser` + `apiPassword`, щоб увімкнути визначення типу кімнати (кешується приблизно на 5 хвилин). Без них кожна розмова вважається кімнатою.
+- Вихідні запити проходять через захист від SSRF. Для хоста Nextcloud у довіреній приватній або внутрішній мережі явно увімкніть `channels.nextcloud-talk.network.dangerouslyAllowPrivateNetwork: true`.
+- Якщо задано `apiUser`/`apiPassword` і `webhookPublicUrl`, команда `openclaw channels status` перевіряє бота та попереджає про відсутність можливості `response`.
 
-## Контроль доступу (DMs)
+## Керування доступом (особисті повідомлення)
 
 - За замовчуванням: `channels.nextcloud-talk.dmPolicy = "pairing"`. Невідомі відправники отримують код сполучення.
-- Схваліть через:
+- Підтвердьте за допомогою:
   - `openclaw pairing list nextcloud-talk`
   - `openclaw pairing approve nextcloud-talk <CODE>`
-- Публічні DMs: `channels.nextcloud-talk.dmPolicy="open"` плюс `channels.nextcloud-talk.allowFrom=["*"]`.
-- `allowFrom` зіставляє лише IDs користувачів Nextcloud; відображувані імена ігноруються.
+- Загальнодоступні особисті повідомлення: `channels.nextcloud-talk.dmPolicy="open"` разом із `channels.nextcloud-talk.allowFrom=["*"]`.
+- `allowFrom` зіставляє лише ідентифікатори користувачів Nextcloud (у нижньому регістрі); відображувані імена ігноруються.
 
 ## Кімнати (групи)
 
-- За замовчуванням: `channels.nextcloud-talk.groupPolicy = "allowlist"` (керовано згадками).
-- Додавайте кімнати до allowlist за допомогою `channels.nextcloud-talk.rooms`:
+- За замовчуванням: `channels.nextcloud-talk.groupPolicy = "allowlist"` (потрібна згадка).
+- Додайте кімнати до списку дозволених за допомогою `channels.nextcloud-talk.rooms`, де ключем є токен кімнати; `"*"` задає шаблонне значення за замовчуванням:
 
 ```json5
 {
@@ -130,55 +123,60 @@ openclaw plugins install ./path/to/local/nextcloud-talk-plugin
 }
 ```
 
-- Щоб не дозволяти жодних кімнат, залиште allowlist порожнім або встановіть `channels.nextcloud-talk.groupPolicy="disabled"`.
+- Ключі для окремої кімнати: `requireMention` (за замовчуванням true), `enabled` (false вимикає кімнату), `allowFrom` (список дозволених відправників для кімнати), `tools` (перевизначення дозволу або заборони інструментів), `skills` (обмеження завантажуваних Skills), `systemPrompt`.
+- Щоб не дозволяти жодних кімнат, залиште список дозволених порожнім або задайте `channels.nextcloud-talk.groupPolicy="disabled"`.
 
 ## Можливості
 
-| Функція         | Стан        |
-| --------------- | ------------- |
-| Direct messages | Підтримується     |
-| Кімнати           | Підтримується     |
-| Ланцюжки         | Не підтримується |
-| Медіа           | Лише URL      |
-| Реакції       | Підтримується     |
-| Нативні команди | Не підтримується |
+| Функція             | Стан                |
+| ------------------- | ------------------- |
+| Особисті повідомлення | Підтримується       |
+| Кімнати             | Підтримуються       |
+| Гілки обговорень    | Не підтримуються    |
+| Медіафайли          | Лише URL-адреси     |
+| Реакції             | Підтримуються       |
+| Вбудовані команди   | Не підтримуються    |
 
-## Довідник конфігурації (Nextcloud Talk)
+## Довідник із конфігурації (Nextcloud Talk)
 
 Повна конфігурація: [Конфігурація](/uk/gateway/configuration)
 
-Параметри провайдера:
+Параметри постачальника:
 
-- `channels.nextcloud-talk.enabled`: увімкнути/вимкнути запуск каналу.
-- `channels.nextcloud-talk.baseUrl`: URL інстансу Nextcloud.
-- `channels.nextcloud-talk.botSecret`: спільний секрет бота.
-- `channels.nextcloud-talk.botSecretFile`: шлях до секрету у звичайному файлі. Symlinks відхиляються.
-- `channels.nextcloud-talk.apiUser`: користувач API для пошуку кімнат (визначення DM).
-- `channels.nextcloud-talk.apiPassword`: пароль API/app для пошуку кімнат.
+- `channels.nextcloud-talk.enabled`: увімкнути або вимкнути запуск каналу.
+- `channels.nextcloud-talk.baseUrl`: URL-адреса екземпляра Nextcloud.
+- `channels.nextcloud-talk.botSecret`: спільний секрет бота (рядок або посилання на секрет).
+- `channels.nextcloud-talk.botSecretFile`: шлях до звичайного файлу із секретом. Символічні посилання відхиляються.
+- `channels.nextcloud-talk.apiUser`: користувач API для визначення кімнат (виявлення особистих повідомлень) і перевірки стану.
+- `channels.nextcloud-talk.apiPassword`: пароль API або застосунку для визначення кімнат.
 - `channels.nextcloud-talk.apiPasswordFile`: шлях до файлу пароля API.
-- `channels.nextcloud-talk.webhookPort`: порт слухача webhook (за замовчуванням: 8788).
-- `channels.nextcloud-talk.webhookHost`: хост webhook (за замовчуванням: 0.0.0.0).
-- `channels.nextcloud-talk.webhookPath`: шлях webhook (за замовчуванням: /nextcloud-talk-webhook).
-- `channels.nextcloud-talk.webhookPublicUrl`: зовнішньо доступний URL webhook.
-- `channels.nextcloud-talk.dmPolicy`: `pairing | allowlist | open | disabled`.
-- `channels.nextcloud-talk.allowFrom`: allowlist для DM (IDs користувачів). `open` потребує `"*"`.
-- `channels.nextcloud-talk.groupPolicy`: `allowlist | open | disabled`.
-- `channels.nextcloud-talk.groupAllowFrom`: allowlist для груп (IDs користувачів).
-- `channels.nextcloud-talk.rooms`: налаштування й allowlist для окремих кімнат.
-- Статичні групи доступу відправників можна посилати з `allowFrom` і `groupAllowFrom` через `accessGroup:<name>`.
-- `channels.nextcloud-talk.historyLimit`: ліміт історії групи (0 вимикає).
-- `channels.nextcloud-talk.dmHistoryLimit`: ліміт історії DM (0 вимикає).
-- `channels.nextcloud-talk.dms`: перевизначення для окремих DM (historyLimit).
-- `channels.nextcloud-talk.textChunkLimit`: розмір вихідного текстового фрагмента (символи).
-- `channels.nextcloud-talk.chunkMode`: `length` (за замовчуванням) або `newline` для поділу за порожніми рядками (межами абзаців) перед поділом за довжиною.
-- `channels.nextcloud-talk.blockStreaming`: вимкнути block streaming для цього каналу.
-- `channels.nextcloud-talk.blockStreamingCoalesce`: налаштування об’єднання block streaming.
-- `channels.nextcloud-talk.mediaMaxMb`: ліміт вхідних медіа (MB).
+- `channels.nextcloud-talk.webhookPort`: порт прослуховувача Webhook (за замовчуванням: 8788).
+- `channels.nextcloud-talk.webhookHost`: хост Webhook (за замовчуванням: 0.0.0.0).
+- `channels.nextcloud-talk.webhookPath`: шлях Webhook (за замовчуванням: /nextcloud-talk-webhook).
+- `channels.nextcloud-talk.webhookPublicUrl`: доступна ззовні URL-адреса Webhook.
+- `channels.nextcloud-talk.dmPolicy`: `pairing | allowlist | open | disabled` (за замовчуванням: pairing). Для `open` потрібне `allowFrom=["*"]`.
+- `channels.nextcloud-talk.allowFrom`: список дозволених для особистих повідомлень (ідентифікатори користувачів).
+- `channels.nextcloud-talk.groupPolicy`: `allowlist | open | disabled` (за замовчуванням: allowlist).
+- `channels.nextcloud-talk.groupAllowFrom`: список дозволених відправників у кімнатах (ідентифікатори користувачів); якщо не задано, використовується `allowFrom`.
+- `channels.nextcloud-talk.rooms`: налаштування та список дозволених для окремих кімнат (див. вище).
+- На статичні групи доступу відправників можна посилатися з `allowFrom` і `groupAllowFrom` за допомогою `accessGroup:<name>`.
+- `channels.nextcloud-talk.historyLimit`: обмеження історії групи (0 вимикає).
+- `channels.nextcloud-talk.dmHistoryLimit`: обмеження історії особистих повідомлень (0 вимикає).
+- `channels.nextcloud-talk.dms`: перевизначення для окремих особистих діалогів із ключем-ідентифікатором користувача (`historyLimit`).
+- `channels.nextcloud-talk.textChunkLimit`: розмір частини вихідного тексту в символах (за замовчуванням: 4000).
+- `channels.nextcloud-talk.chunkMode`: `length` (за замовчуванням) або `newline`, щоб розділяти за порожніми рядками (межами абзаців) перед поділом за довжиною.
+- `channels.nextcloud-talk.blockStreaming`: вимкнути блокове потокове передавання для цього каналу.
+- `channels.nextcloud-talk.blockStreamingCoalesce`: налаштування об’єднання блокового потокового передавання.
+- `channels.nextcloud-talk.responsePrefix`: префікс вихідної відповіді.
+- `channels.nextcloud-talk.markdown.tables`: режим відтворення таблиць Markdown (`off | bullets | code | block`).
+- `channels.nextcloud-talk.mediaMaxMb`: обмеження розміру вхідних медіафайлів (МБ).
+- `channels.nextcloud-talk.network.dangerouslyAllowPrivateNetwork`: дозволити приватним або внутрішнім хостам Nextcloud проходити захист від SSRF.
+- `channels.nextcloud-talk.accounts.<id>`: перевизначення для окремих облікових записів (ті самі ключі); `defaultAccount` вибирає обліковий запис за замовчуванням. Змінні середовища `NEXTCLOUD_TALK_BOT_SECRET` / `NEXTCLOUD_TALK_API_PASSWORD` застосовуються лише до облікового запису за замовчуванням.
 
-## Пов’язане
+## Пов’язані матеріали
 
 - [Огляд каналів](/uk/channels) — усі підтримувані канали
-- [Сполучення](/uk/channels/pairing) — автентифікація DM і потік сполучення
-- [Групи](/uk/channels/groups) — поведінка групового чату та керування згадками
-- [Маршрутизація каналів](/uk/channels/channel-routing) — маршрутизація сесій для повідомлень
-- [Безпека](/uk/gateway/security) — модель доступу та зміцнення захисту
+- [Сполучення](/uk/channels/pairing) — автентифікація особистих повідомлень і процес сполучення
+- [Групи](/uk/channels/groups) — поведінка групових чатів і вимога згадки
+- [Маршрутизація каналів](/uk/channels/channel-routing) — маршрутизація сеансів для повідомлень
+- [Безпека](/uk/gateway/security) — модель доступу та посилення захисту

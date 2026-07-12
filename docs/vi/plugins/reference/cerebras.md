@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin cerebras
+    - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin Cerebras
 summary: Thêm hỗ trợ nhà cung cấp mô hình Cerebras cho OpenClaw.
 title: Plugin Cerebras
 x-i18n:
-    generated_at: "2026-06-27T17:50:46Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:14:51Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 272a592b6099b7dc30c48e40e004ca01c1113a1fcf65917ac6266987a63ec01f
@@ -15,12 +15,12 @@ x-i18n:
 
 # Plugin Cerebras
 
-Thêm hỗ trợ nhà cung cấp mô hình Cerebras cho OpenClaw.
+Bổ sung hỗ trợ nhà cung cấp mô hình Cerebras cho OpenClaw.
 
 ## Phân phối
 
 - Gói: `@openclaw/cerebras-provider`
-- Tuyến cài đặt: npm; ClawHub: `clawhub:@openclaw/cerebras-provider`
+- Cách cài đặt: npm; ClawHub: `clawhub:@openclaw/cerebras-provider`
 
 ## Bề mặt
 

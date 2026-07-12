@@ -1,11 +1,11 @@
 ---
 read_when:
-    - أنت تثبّت Plugin tokenjuice أو تهيّئه أو تراجعه
-summary: يضغط نتائج أداتي exec و bash باستخدام مخفّضات tokenjuice.
-title: Tokenjuice Plugin
+    - أنت تثبّت Plugin ‏tokenjuice أو تهيّئه أو تدقّقه
+summary: يضغط نتائج أداتي exec وbash باستخدام مخفِّضات tokenjuice.
+title: Plugin ‏Tokenjuice
 x-i18n:
-    generated_at: "2026-06-27T18:15:54Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:22:25Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: a51416caa94a17799e3a55c1d3b88bf2c026fd003317b86d7926cf11b9b81fab
@@ -13,19 +13,19 @@ x-i18n:
     workflow: 16
 ---
 
-# Tokenjuice Plugin
+# Plugin Tokenjuice
 
-يضغط نتائج أداتي exec و bash باستخدام مخفِّضات tokenjuice.
+يضغط نتائج أداتي exec وbash باستخدام مختزِلات tokenjuice.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/tokenjuice`
 - مسار التثبيت: npm؛ ClawHub: `clawhub:@openclaw/tokenjuice`
 
-## السطح
+## الواجهة
 
 العقود: agentToolResultMiddleware
 
-## المستندات ذات الصلة
+## الوثائق ذات الصلة
 
 - [tokenjuice](/ar/tools/tokenjuice)

@@ -1,17 +1,17 @@
 ---
 read_when:
-    - Mengonfigurasi pemuatan, pemasangan, atau perilaku gating skill
-    - Mengatur visibilitas skill per agen
+    - Mengonfigurasi perilaku pemuatan, penginstalan, atau pembatasan Skills
+    - Mengatur visibilitas Skills per agen
     - Menyesuaikan batas Skill Workshop atau kebijakan persetujuan
 sidebarTitle: Skills config
 summary: Referensi lengkap untuk skema konfigurasi skills.*, daftar izin agen, pengaturan workshop, dan penanganan variabel lingkungan sandbox.
 title: Konfigurasi Skills
 x-i18n:
-    generated_at: "2026-07-01T08:34:20Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:47:52Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 37251cd12162c3083b8b9e1a84c462233eb44656a84ca915705859a352c9557b
+    source_hash: 0ed1ec20aa102b458a9485a1ada1bb7566c97d28b1f43caa28f52b3f5bdc381e
     source_path: tools/skills-config.md
     workflow: 16
 ---
@@ -57,32 +57,32 @@ Sebagian besar konfigurasi Skills berada di bawah `skills` dalam
 
 <Note>
   Untuk pembuatan gambar bawaan, gunakan `agents.defaults.imageGenerationModel`
-  bersama alat inti `image_generate`, bukan `skills.entries`. Entri skill
-  hanya untuk alur kerja skill kustom atau pihak ketiga.
+  bersama alat inti `image_generate`, bukan `skills.entries`. Entri Skills
+  hanya ditujukan untuk alur kerja Skills khusus atau pihak ketiga.
 </Note>
 
 ## Pemuatan (`skills.load`)
 
 <ParamField path="skills.load.extraDirs" type="string[]">
-  Direktori skill tambahan untuk dipindai, dengan prioritas paling rendah
-  (setelah skill bawaan dan Plugin). Path diperluas dengan dukungan `~`.
+  Direktori Skills tambahan yang akan dipindai, dengan prioritas terendah (di bawah
+  Skills bawaan dan Plugin). Path diperluas dengan dukungan `~`.
 </ParamField>
 
 <ParamField path="skills.load.allowSymlinkTargets" type="string[]">
-  Direktori target asli tepercaya tempat folder skill berupa symlink dapat
-  diarahkan, bahkan ketika symlink berada di luar root yang dikonfigurasi.
-  Gunakan ini untuk tata letak sibling-repo yang disengaja seperti
-  `<workspace>/skills/manager -> ~/Projects/manager/skills`. Jaga daftar ini
-  tetap sempit — jangan arahkan ke root yang luas seperti `~` atau `~/Projects`.
+  Direktori target nyata tepercaya yang boleh menjadi tujuan resolusi folder Skills
+  bersymlink, bahkan ketika symlink berada di luar root yang dikonfigurasi. Gunakan ini untuk
+  tata letak repositori sejajar yang disengaja seperti
+  `<workspace>/skills/manager -> ~/Projects/manager/skills`. Jaga agar daftar ini
+  tetap sempit — jangan arahkan ke root luas seperti `~` atau `~/Projects`.
 </ParamField>
 
 <ParamField path="skills.load.watch" type="boolean" default="true">
-  Pantau folder skill dan segarkan snapshot skill ketika file `SKILL.md`
-  berubah. Mencakup file bersarang di bawah root skill yang dikelompokkan.
+  Pantau folder Skills dan perbarui snapshot Skills ketika file `SKILL.md`
+  berubah. Mencakup file bertingkat di bawah root Skills yang dikelompokkan.
 </ParamField>
 
 <ParamField path="skills.load.watchDebounceMs" type="number" default="250">
-  Jendela debounce untuk peristiwa pemantau skill dalam milidetik.
+  Jendela debounce untuk peristiwa pemantau Skills dalam milidetik.
 </ParamField>
 
 ## Instalasi (`skills.install`)
@@ -92,27 +92,26 @@ Sebagian besar konfigurasi Skills berada di bawah `skills` dalam
 </ParamField>
 
 <ParamField path="skills.install.nodeManager" type='"npm" | "pnpm" | "yarn" | "bun"' default='"npm"'>
-  Preferensi pengelola paket Node untuk instalasi skill. Ini hanya memengaruhi
-  instalasi skill — runtime Gateway tetap harus menggunakan Node (Bun tidak
-  direkomendasikan untuk WhatsApp/Telegram). Gunakan `openclaw setup --node-manager`
-  untuk npm, pnpm, atau bun; tetapkan `"yarn"` secara manual untuk instalasi
-  skill berbasis Yarn.
+  Preferensi pengelola paket Node untuk instalasi Skills. Ini hanya memengaruhi instalasi
+  Skills — runtime Gateway harus tetap menggunakan Node (Bun tidak
+  direkomendasikan untuk WhatsApp/Telegram). `openclaw setup --node-manager` dan
+  `openclaw onboard --node-manager` menerima `npm`, `pnpm`, atau `bun`; tetapkan
+  `"yarn"` secara langsung dalam konfigurasi untuk instalasi Skills berbasis Yarn.
 </ParamField>
 
 <ParamField path="skills.install.allowUploadedArchives" type="boolean" default="false">
-  Izinkan klien Gateway `operator.admin` tepercaya memasang arsip zip privat
-  yang disiapkan melalui `skills.upload.*`. Instalasi ClawHub normal tidak
+  Izinkan klien Gateway `operator.admin` tepercaya menginstal arsip zip privat
+  yang disiapkan melalui `skills.upload.*`. Instalasi ClawHub biasa tidak
   memerlukan pengaturan ini.
 </ParamField>
 
 ## Kebijakan Instalasi Operator (`security.installPolicy`)
 
-Gunakan `security.installPolicy` ketika operator memerlukan perintah lokal
-tepercaya untuk menyetujui atau memblokir instalasi skill dan Plugin dengan
-kebijakan khusus host. Kebijakan berjalan setelah OpenClaw menyiapkan material
-sumber dan sebelum instalasi atau pembaruan berlanjut. Ini berlaku untuk skill
-ClawHub, skill yang diunggah, skill Git/lokal, penginstal dependensi skill, dan
-sumber instalasi/pembaruan Plugin.
+Gunakan `security.installPolicy` ketika operator memerlukan perintah lokal tepercaya untuk
+menyetujui atau memblokir instalasi Skills dan Plugin dengan kebijakan khusus host. Kebijakan
+berjalan setelah OpenClaw menyiapkan materi sumber dan sebelum instalasi
+atau pembaruan dilanjutkan. Kebijakan ini berlaku untuk Skills ClawHub, Skills yang diunggah, Skills
+Git/lokal, penginstal dependensi Skills, serta sumber instalasi/pembaruan Plugin.
 
 ```json5
 {
@@ -138,18 +137,18 @@ sumber instalasi/pembaruan Plugin.
 ```
 
 <ParamField path="security.installPolicy.enabled" type="boolean" default="false">
-  Mengaktifkan kebijakan instalasi milik operator. Ketika diaktifkan tanpa
-  perintah `exec` yang valid, instalasi gagal tertutup.
+  Mengaktifkan kebijakan instalasi milik operator. Jika diaktifkan tanpa perintah `exec`
+  yang valid, instalasi gagal secara tertutup.
 </ParamField>
 
 <ParamField path="security.installPolicy.targets" type='("skill" | "plugin")[]'>
-  Filter target opsional. Ketika dihilangkan, kebijakan berlaku untuk setiap
-  target yang didukung sehingga instalasi baru tidak tiba-tiba gagal terbuka.
+  Filter target opsional. Jika dihilangkan, kebijakan berlaku untuk setiap target yang
+  didukung agar instalasi baru tidak tiba-tiba gagal secara terbuka.
 </ParamField>
 
 <ParamField path="security.installPolicy.exec.command" type="string">
-  Path absolut ke executable kebijakan tepercaya. OpenClaw menjalankannya tanpa
-  shell dan memvalidasi path sebelum digunakan.
+  Path absolut ke berkas eksekutabel kebijakan tepercaya. OpenClaw menjalankannya tanpa
+  shell dan memvalidasi path tersebut sebelum digunakan.
 </ParamField>
 
 <ParamField path="security.installPolicy.exec.args" type="string[]">
@@ -157,29 +156,29 @@ sumber instalasi/pembaruan Plugin.
 </ParamField>
 
 <ParamField path="security.installPolicy.exec.timeoutMs" type="number" default="10000">
-  Runtime wall-clock maksimum untuk satu keputusan kebijakan.
+  Durasi waktu nyata maksimum untuk satu keputusan kebijakan.
 </ParamField>
 
 <ParamField path="security.installPolicy.exec.noOutputTimeoutMs" type="number" default="timeoutMs">
   Waktu maksimum tanpa keluaran stdout atau stderr sebelum kebijakan gagal
-  tertutup.
+  secara tertutup.
 </ParamField>
 
 <ParamField path="security.installPolicy.exec.maxOutputBytes" type="number" default="1048576">
-  Byte gabungan stdout dan stderr maksimum yang diterima dari proses kebijakan.
+  Jumlah maksimum gabungan byte stdout dan stderr yang diterima dari proses kebijakan.
 </ParamField>
 
 <ParamField path="security.installPolicy.exec.env" type="Record<string, string>">
-  Variabel lingkungan literal yang diberikan ke proses kebijakan.
+  Variabel lingkungan literal yang diberikan kepada proses kebijakan.
 </ParamField>
 
 <ParamField path="security.installPolicy.exec.passEnv" type="string[]">
-  Nama variabel lingkungan yang disalin dari proses OpenClaw ke proses
-  kebijakan. Hanya variabel bernama yang diteruskan.
+  Nama variabel lingkungan yang disalin dari proses OpenClaw ke
+  proses kebijakan. Hanya variabel yang disebutkan yang diteruskan.
 </ParamField>
 
 <ParamField path="security.installPolicy.exec.trustedDirs" type="string[]">
-  Daftar izin opsional untuk direktori yang boleh berisi executable kebijakan.
+  Daftar izin opsional untuk direktori yang boleh berisi berkas eksekutabel kebijakan.
 </ParamField>
 
 <ParamField path="security.installPolicy.exec.allowInsecurePath" type="boolean" default="false">
@@ -188,27 +187,27 @@ sumber instalasi/pembaruan Plugin.
 </ParamField>
 
 <ParamField path="security.installPolicy.exec.allowSymlinkCommand" type="boolean" default="false">
-  Mengizinkan path perintah yang dikonfigurasi berupa symlink. Target yang
-  diselesaikan tetap harus memenuhi pemeriksaan path lainnya. Argumen skrip
-  interpreter harus berupa file reguler langsung, bukan symlink.
+  Mengizinkan path perintah yang dikonfigurasi berupa symlink. Target hasil resolusi
+  tetap harus memenuhi pemeriksaan path lainnya. Argumen skrip interpreter harus
+  berupa file reguler langsung, bukan symlink.
 </ParamField>
 
 Kebijakan menerima satu objek JSON pada stdin dengan `protocolVersion: 1`,
 `openclawVersion`, `targetType`, `targetName`, `sourcePath`, `sourcePathKind`,
-`source` terstruktur opsional, `origin` terstruktur, dan `request`. Kebijakan
-harus menulis satu objek JSON pada stdout: `{ "protocolVersion": 1, "decision": "allow" }`
-atau `{ "protocolVersion": 1, "decision": "block", "reason": "..." }`. Exit
-bukan nol, timeout, JSON cacat, field hilang, atau versi protokol yang tidak
-didukung akan gagal tertutup.
+`source` terstruktur opsional, `origin` terstruktur, dan `request`. Kebijakan harus
+menulis satu objek JSON pada stdout: `{ "protocolVersion": 1, "decision": "allow" }`
+atau `{ "protocolVersion": 1, "decision": "block", "reason": "..." }`. Kode keluar
+bukan nol, batas waktu terlampaui, JSON salah format, kolom yang hilang, atau versi protokol yang
+tidak didukung akan gagal secara tertutup.
 
 OpenClaw tidak menjalankan kebijakan instalasi selama startup Gateway normal.
-Instalasi dan pembaruan gagal tertutup ketika kebijakan diaktifkan tetapi tidak
-tersedia. `openclaw doctor` melakukan validasi statis, dan `openclaw doctor --deep`
+Instalasi dan pembaruan gagal secara tertutup ketika kebijakan diaktifkan tetapi tidak tersedia.
+`openclaw doctor` melakukan validasi statis; `openclaw doctor --deep`
 menjalankan probe instalasi sintetis terhadap perintah yang dikonfigurasi.
 
-Pembaruan massal menerapkan kebijakan per target: pembaruan skill atau Plugin
-yang diblokir menggagalkan target tersebut tanpa menonaktifkan kebijakan atau
-melewati target berikutnya dalam batch.
+Pembaruan massal menerapkan kebijakan per target: pembaruan Skills atau Plugin yang diblokir akan menggagalkan
+target tersebut tanpa menonaktifkan kebijakan atau melewati target berikutnya dalam
+batch.
 
 Contoh stdin:
 
@@ -269,46 +268,45 @@ process.stdin.on("end", () => {
 });
 ```
 
-## Daftar izin skill bawaan
+## Daftar izin Skills bawaan
 
 <ParamField path="skills.allowBundled" type="string[]">
-  Daftar izin opsional hanya untuk skill **bawaan**. Ketika ditetapkan, hanya
-  skill bawaan dalam daftar yang memenuhi syarat. Skill terkelola, tingkat
-  agen, dan workspace tidak terpengaruh.
+  Daftar izin opsional khusus untuk Skills **bawaan**. Jika ditetapkan, hanya Skills bawaan
+  dalam daftar yang memenuhi syarat. Skills terkelola, tingkat agen, dan ruang kerja
+  tidak terpengaruh.
 </ParamField>
 
-## Entri per skill (`skills.entries`)
+## Entri per Skills (`skills.entries`)
 
-Kunci di bawah `entries` cocok dengan `name` skill secara default. Jika sebuah
-skill mendefinisikan `metadata.openclaw.skillKey`, gunakan kunci tersebut
-sebagai gantinya. Kutip nama yang memakai tanda hubung (JSON5 mengizinkan kunci
-yang dikutip).
+Secara default, kunci di bawah `entries` cocok dengan `name` Skills. Jika Skills mendefinisikan
+`metadata.openclaw.skillKey`, gunakan kunci tersebut sebagai gantinya. Beri tanda kutip pada nama yang mengandung tanda hubung
+(JSON5 mengizinkan kunci yang diberi tanda kutip).
 
 <ParamField path="skills.entries.<key>.enabled" type="boolean">
-  `false` menonaktifkan skill bahkan ketika bawaan atau terpasang. Skill bawaan
-  `coding-agent` bersifat ikut serta — tetapkan ke `true` dan pastikan salah
-  satu dari `claude`, `codex`, `opencode`, atau CLI lain yang didukung sudah
-  terpasang dan terautentikasi.
+  `false` menonaktifkan Skills meskipun bawaan atau terinstal. Skills bawaan
+  `coding-agent` bersifat opsional — tetapkan ke `true` dan pastikan salah satu dari
+  `claude`, `codex`, `opencode`, atau CLI lain yang didukung telah terinstal dan
+  diautentikasi.
 </ParamField>
 
 <ParamField path="skills.entries.<key>.apiKey" type='string | { source, provider, id }'>
-  Field praktis untuk skill yang mendeklarasikan `metadata.openclaw.primaryEnv`.
-  Mendukung string plaintext atau SecretRef: `{ source: "env", provider: "default", id: "VAR_NAME" }`.
+  Kolom praktis untuk Skills yang mendeklarasikan `metadata.openclaw.primaryEnv`.
+  Mendukung string teks biasa atau SecretRef: `{ source: "env", provider: "default", id: "VAR_NAME" }`.
 </ParamField>
 
 <ParamField path="skills.entries.<key>.env" type="Record<string, string>">
-  Variabel lingkungan yang diinjeksi untuk eksekusi agen. Hanya diinjeksi
-  ketika variabel belum ditetapkan dalam proses.
+  Variabel lingkungan yang disuntikkan untuk proses agen. Hanya disuntikkan ketika
+  variabel belum ditetapkan dalam proses.
 </ParamField>
 
 <ParamField path="skills.entries.<key>.config" type="object">
-  Kantong opsional untuk field konfigurasi kustom per skill.
+  Wadah opsional untuk kolom konfigurasi khusus per Skills.
 </ParamField>
 
 ## Daftar izin agen (`agents`)
 
-Gunakan konfigurasi agen ketika Anda menginginkan root skill mesin/workspace
-yang sama tetapi set skill yang terlihat berbeda per agen.
+Gunakan konfigurasi agen ketika Anda menginginkan root Skills mesin/ruang kerja yang sama tetapi
+kumpulan Skills yang terlihat berbeda untuk setiap agen.
 
 ```json5
 {
@@ -326,65 +324,70 @@ yang sama tetapi set skill yang terlihat berbeda per agen.
 ```
 
 <ParamField path="agents.defaults.skills" type="string[]">
-  Daftar izin baseline bersama yang diwarisi oleh agen yang menghilangkan
-  `agents.list[].skills`. Hilangkan seluruhnya agar skill tidak dibatasi secara
+  Daftar izin dasar bersama yang diwarisi oleh agen yang tidak menyertakan
+  `agents.list[].skills`. Hilangkan sepenuhnya agar Skills tidak dibatasi secara
   default.
 </ParamField>
 
 <ParamField path="agents.list[].skills" type="string[]">
-  Set skill final eksplisit untuk agen tersebut. Daftar eksplisit **mengganti**
-  default yang diwarisi — daftar tersebut tidak digabungkan. Tetapkan ke `[]`
-  untuk tidak mengekspos skill apa pun bagi agen tersebut.
+  Kumpulan Skills akhir eksplisit untuk agen tersebut. Daftar eksplisit **menggantikan**
+  nilai default yang diwarisi — daftar tersebut tidak digabungkan. Tetapkan ke `[]` agar tidak mengekspos Skills apa pun kepada
+  agen tersebut.
 </ParamField>
 
 <Warning>
-  Daftar izin skill agen adalah filter visibilitas dan pemuatan untuk penemuan
-  skill OpenClaw, prompt, penemuan perintah slash, sinkronisasi sandbox, dan
-  snapshot skill. Ini bukan batas otorisasi saat shell berjalan. Jika sebuah
-  agen dapat menjalankan host `exec`, shell tersebut tetap dapat menjalankan
-  klien eksternal atau membaca file host yang terlihat oleh pengguna eksekusi,
-  termasuk registri klien MCP seperti `~/.openclaw/skills/config/mcporter.json`.
-  Untuk isolasi MCP per agen, gabungkan daftar izin skill dengan isolasi
-  sandbox/pengguna OS, tolak atau batasi ketat host exec dengan daftar izin, dan
-  utamakan kredensial per agen di server MCP.
+  Daftar izin Skills agen merupakan filter visibilitas dan pemuatan untuk penemuan
+  Skills OpenClaw, prompt, penemuan perintah garis miring, sinkronisasi sandbox, dan snapshot
+  Skills. Daftar ini bukan batas otorisasi pada waktu eksekusi shell. Jika agen
+  dapat menjalankan `exec` host, shell tersebut tetap dapat menjalankan klien eksternal atau membaca
+  file host yang terlihat oleh pengguna eksekusi, termasuk registri klien MCP
+  seperti `~/.openclaw/skills/config/mcporter.json`. Untuk isolasi MCP
+  per agen, gabungkan daftar izin Skills dengan isolasi sandbox/pengguna OS,
+  tolak atau batasi secara ketat `exec` host, dan utamakan kredensial per agen
+  di server MCP.
 </Warning>
 
 ## Workshop (`skills.workshop`)
 
 <ParamField path="skills.workshop.autonomous.enabled" type="boolean" default="false">
-  Ketika `true`, agen dapat membuat proposal tertunda dari sinyal percakapan
-  tahan lama setelah giliran berhasil. Pembuatan skill yang dipicu pengguna
-  selalu melalui Skill Workshop terlepas dari pengaturan ini.
+  Jika `true`, agen dapat membuat proposal tertunda dari sinyal percakapan
+  persisten setelah giliran berhasil. Pembuatan skill yang diminta pengguna selalu
+  melalui Skill Workshop, terlepas dari pengaturan ini.
 </ParamField>
 
 <ParamField path="skills.workshop.approvalPolicy" type='"pending" | "auto"' default='"pending"'>
-  `pending` memerlukan persetujuan operator sebelum apply, reject, atau
-  quarantine yang diinisiasi agen. `auto` mengizinkan tindakan tersebut tanpa persetujuan.
+  `pending` memerlukan persetujuan operator sebelum penerapan, penolakan,
+  atau karantina yang dimulai agen. `auto` mengizinkan tindakan tersebut tanpa persetujuan.
 </ParamField>
 
 <ParamField path="skills.workshop.allowSymlinkTargetWrites" type="boolean" default="false">
-  Izinkan penerapan Skill Workshop untuk menulis melalui symlink skill ruang kerja yang
-  target aslinya sudah dipercaya oleh `skills.load.allowSymlinkTargets`. Biarkan ini
-  dinonaktifkan kecuali penerapan proposal yang dihasilkan harus mengubah root skill bersama
-  tersebut.
+  Izinkan penerapan Skill Workshop menulis melalui symlink skill ruang kerja yang
+  target sebenarnya telah dipercaya oleh `skills.load.allowSymlinkTargets`. Biarkan
+  ini dinonaktifkan kecuali penerapan proposal yang dihasilkan harus mengubah akar
+  skill bersama tersebut.
 </ParamField>
 
 <ParamField path="skills.workshop.maxPending" type="number" default="50">
-  Jumlah maksimum proposal tertunda dan dikarantina yang disimpan per ruang kerja.
+  Jumlah maksimum proposal tertunda dan dikarantina yang disimpan per ruang kerja (rentang yang
+  diizinkan: 1-200).
 </ParamField>
 
 <ParamField path="skills.workshop.maxSkillBytes" type="number" default="40000">
-  Ukuran maksimum isi proposal dalam byte. Deskripsi proposal dibatasi secara ketat pada
-  160 byte karena muncul dalam keluaran penemuan dan daftar.
+  Ukuran maksimum isi proposal dalam byte (rentang yang diizinkan: 1024-200000). Deskripsi
+  proposal dibatasi secara terpisah hingga maksimal 160 byte karena muncul
+  dalam keluaran penemuan dan daftar.
 </ParamField>
 
-## Root skill bersymlink
+Lihat [Skill Workshop](/id/tools/skill-workshop) untuk siklus hidup proposal, perintah
+CLI, parameter alat agen, dan metode Gateway yang dikendalikan konfigurasi ini.
 
-Secara default, root skill ruang kerja, agen proyek, direktori tambahan, dan bawaan adalah
-batas kontainmen. Folder skill bersymlink di bawah `<workspace>/skills`
-yang terselesaikan ke luar root akan dilewati dengan pesan log.
+## Akar skill dengan symlink
 
-Untuk mengizinkan tata letak symlink yang disengaja, deklarasikan target tepercaya:
+Secara default, akar skill ruang kerja, agen proyek, direktori tambahan, dan bawaan merupakan
+batas penahanan. Folder skill dengan symlink di bawah `<workspace>/skills`
+yang mengarah ke luar akar akan dilewati dengan pesan log.
+
+Untuk mengizinkan tata letak symlink yang disengaja, nyatakan target tepercaya:
 
 ```json5
 {
@@ -398,12 +401,13 @@ Untuk mengizinkan tata letak symlink yang disengaja, deklarasikan target teperca
 ```
 
 Dengan konfigurasi ini, `<workspace>/skills/manager -> ~/Projects/manager/skills`
-diterima setelah resolusi realpath. `extraDirs` memindai repo saudara secara langsung;
-`allowSymlinkTargets` mempertahankan jalur bersymlink untuk tata letak yang sudah ada.
+diterima setelah resolusi realpath. `extraDirs` memindai repositori sejawat
+secara langsung; `allowSymlinkTargets` mempertahankan jalur dengan symlink untuk tata letak
+yang sudah ada.
 
-Penerapan Skill Workshop tidak menulis melalui symlink tersebut secara default. Untuk mengizinkan
-Workshop apply mengubah skills di bawah target symlink yang sudah dipercaya, ikut sertakan
-secara terpisah:
+Secara default, penerapan Skill Workshop tidak menulis melalui symlink tersebut. Untuk
+mengizinkan penerapan Workshop mengubah skill di bawah target symlink yang telah dipercaya,
+aktifkan secara terpisah:
 
 ```json5
 {
@@ -418,20 +422,21 @@ secara terpisah:
 }
 ```
 
-Direktori `~/.openclaw/skills` yang dikelola dan direktori personal `~/.agents/skills`
-sudah menerima symlink direktori skill (kontainmen `SKILL.md` per-skill tetap
-berlaku).
+Direktori `~/.openclaw/skills` terkelola dan `~/.agents/skills` pribadi
+telah menerima symlink direktori skill tanpa syarat (penahanan `SKILL.md`
+per skill tetap berlaku) — `allowSymlinkTargets` hanya diperlukan
+untuk akar ruang kerja, direktori tambahan, dan agen proyek (`<workspace>/.agents/skills`).
 
-## Skills tersandbox dan variabel env
+## Skill dalam sandbox dan variabel lingkungan
 
 <Warning>
-  `skills.entries.<skill>.env` dan `apiKey` hanya berlaku untuk eksekusi **host**. Di dalam
-  sandbox keduanya tidak berpengaruh — skill yang bergantung pada `GEMINI_API_KEY` akan
-  gagal dengan `apiKey not configured` kecuali sandbox diberi variabel tersebut
-  secara terpisah.
+  `skills.entries.<skill>.env` dan `apiKey` hanya berlaku untuk eksekusi di **host**.
+  Di dalam sandbox, keduanya tidak berpengaruh — skill yang bergantung pada
+  `GEMINI_API_KEY` akan gagal dengan `apiKey not configured` kecuali variabel tersebut
+  diberikan secara terpisah kepada sandbox.
 </Warning>
 
-Teruskan secret ke sandbox Docker dengan:
+Teruskan rahasia ke sandbox Docker dengan:
 
 ```json5
 {
@@ -448,38 +453,39 @@ Teruskan secret ke sandbox Docker dengan:
 ```
 
 <Note>
-  Pengguna dengan akses daemon Docker dapat memeriksa nilai `sandbox.docker.env`
-  melalui metadata Docker. Gunakan file secret yang di-mount, image khusus, atau
-  jalur pengiriman lain saat paparan tersebut tidak dapat diterima.
+  Pengguna dengan akses ke daemon Docker dapat memeriksa nilai `sandbox.docker.env`
+  melalui metadata Docker. Gunakan berkas rahasia yang dipasang, citra khusus, atau
+  jalur pengiriman lain jika paparan tersebut tidak dapat diterima.
 </Note>
 
 ## Pengingat urutan pemuatan
 
 ```text
-workspace/skills      (highest)
+workspace/skills      (tertinggi)
 workspace/.agents/skills
 ~/.agents/skills
 ~/.openclaw/skills
-bundled skills
-skills.load.extraDirs (lowest)
+skill bawaan
+skills.load.extraDirs (terendah)
 ```
 
-Perubahan pada skills dan konfigurasi berlaku pada sesi baru berikutnya saat
-watcher diaktifkan, atau pada giliran agen berikutnya saat watcher mendeteksi perubahan.
+Perubahan pada skill dan konfigurasi berlaku pada sesi baru berikutnya ketika
+pemantau diaktifkan, atau pada giliran agen berikutnya ketika pemantau mendeteksi
+perubahan.
 
 ## Terkait
 
 <CardGroup cols={2}>
   <Card title="Referensi Skills" href="/id/tools/skills" icon="puzzle-piece">
-    Apa itu skills, urutan pemuatan, gating, dan format SKILL.md.
+    Pengertian skill, urutan pemuatan, pembatasan akses, dan format SKILL.md.
   </Card>
-  <Card title="Membuat skills" href="/id/tools/creating-skills" icon="hammer">
-    Menulis skills ruang kerja khusus.
+  <Card title="Membuat skill" href="/id/tools/creating-skills" icon="hammer">
+    Menulis skill ruang kerja khusus.
   </Card>
   <Card title="Skill Workshop" href="/id/tools/skill-workshop" icon="flask">
-    Antrean proposal untuk skills yang dirancang agen.
+    Antrean proposal untuk skill yang disusun agen.
   </Card>
-  <Card title="Perintah slash" href="/id/tools/slash-commands" icon="terminal">
-    Katalog perintah slash native dan direktif chat.
+  <Card title="Perintah garis miring" href="/id/tools/slash-commands" icon="terminal">
+    Katalog perintah garis miring native dan direktif obrolan.
   </Card>
 </CardGroup>

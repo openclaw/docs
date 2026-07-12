@@ -1,47 +1,56 @@
 ---
 read_when:
-    - Gezondheidsindicatoren van de Mac-app debuggen
-summary: Hoe de macOS-app Gateway-/Baileys-gezondheidsstatussen rapporteert
-title: Gezondheidscontroles (macOS)
+    - Statusindicatoren van de Mac-app debuggen
+summary: Hoe de macOS-app de status van de Gateway en kanalen rapporteert
+title: Statuscontroles (macOS)
 x-i18n:
-    generated_at: "2026-04-29T22:59:26Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:04:15Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a7488b39b0eec013083f52e2798d719bec35780acad743a97f5646a6891810e5
+    source_hash: a086c527796dbe453bdee1cc9cbe1e0fc1157de710c8c6de186411fe9aa3bc7b
     source_path: platforms/mac/health.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# Gezondheidscontroles op macOS
+# Statuscontroles op macOS
 
-Hoe je vanuit de menubalk-app ziet of het gekoppelde kanaal gezond is.
+Zo leest u de status van gekoppelde kanalen af in de menubalk-app.
 
 ## Menubalk
 
-- Statuspunt geeft nu de gezondheid van Baileys weer:
-  - Groen: gekoppeld + socket onlangs geopend.
-  - Oranje: verbinden/opnieuw proberen.
-  - Rood: uitgelogd of controle mislukt.
-- Secundaire regel toont "gekoppeld · verificatie 12m" of toont de reden van de fout.
-- Menu-item "Gezondheidscontrole uitvoeren" start een controle op aanvraag.
+Statusstip:
+
+- Groen: gekoppeld + controle in orde.
+- Oranje: gekoppeld, maar een kanaalcontrole meldt een verminderde werking/geen verbinding.
+- Rood: nog niet gekoppeld.
+
+De tweede regel luidt ‘gekoppeld · authenticatie 12 m’ of toont de reden van de fout.
+‘Statuscontrole nu uitvoeren’ in het menu activeert een controle op aanvraag.
 
 ## Instellingen
 
-- Het tabblad Algemeen krijgt een gezondheidskaart met: leeftijd van gekoppelde verificatie, pad/aantal van de sessieopslag, tijd van laatste controle, laatste fout/statuscode en knoppen voor Gezondheidscontrole uitvoeren / Logs weergeven.
-- Gebruikt een gecachte momentopname zodat de UI direct laadt en netjes terugvalt wanneer offline.
-- **Tabblad Kanalen** toont kanaalstatus + bediening voor WhatsApp/Telegram (inlog-QR, uitloggen, controle, laatste verbroken verbinding/fout).
+- Het tabblad Algemeen toont een statuskaart: statusstip, samenvattingsregel (koppelingsstatus +
+  ouderdom van authenticatie) en een optionele detailregel over de fout, met de knoppen **Nu opnieuw proberen** en
+  **Logboeken openen**.
+- Het **tabblad Kanalen** toont de status en bedieningselementen per kanaal (QR-code voor aanmelden,
+  afmelden, controle, laatste verbrekings- of foutmelding) voor WhatsApp en Telegram.
 
-## Hoe de controle werkt
+## Zo werkt de controle
 
-- App voert elke ~60s en op aanvraag `openclaw health --json` uit via `ShellExecutor`. De controle laadt inloggegevens en rapporteert de status zonder berichten te verzenden.
-- Cache de laatste goede momentopname en de laatste fout apart om flikkering te voorkomen; toon de tijdstempel van elk.
+De app roept ongeveer elke 60 seconden en op aanvraag de `health`-RPC van de Gateway aan via de bestaande WebSocket-
+verbinding (dus niet via een CLI-shellopdracht). De RPC laadt
+aanmeldgegevens en rapporteert de status zonder berichten te verzenden. De app slaat de laatste
+goede momentopname en de laatste fout afzonderlijk op, zodat de gebruikersinterface direct wordt geladen en
+niet flikkert wanneer er geen verbinding is.
 
 ## Bij twijfel
 
-- Je kunt nog steeds de CLI-flow in [Gateway-gezondheid](/nl/gateway/health) (`openclaw status`, `openclaw status --deep`, `openclaw health --json`) gebruiken en `/tmp/openclaw/openclaw-*.log` volgen voor `web-heartbeat` / `web-reconnect`.
+Gebruik de CLI-procedure in [Gateway-status](/nl/gateway/health) (`openclaw status`,
+`openclaw status --deep`, `openclaw health --json`) en volg
+`/tmp/openclaw/openclaw-*.log`, gefilterd op `web-heartbeat` / `web-reconnect`.
 
 ## Gerelateerd
 
-- [Gateway-gezondheid](/nl/gateway/health)
+- [Gateway-status](/nl/gateway/health)
 - [macOS-app](/nl/platforms/macos)

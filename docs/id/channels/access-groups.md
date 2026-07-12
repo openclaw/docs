@@ -3,27 +3,27 @@ read_when:
     - Mengonfigurasi daftar izin yang sama di beberapa saluran pesan
     - Berbagi aturan akses pengirim DM dan grup
     - Meninjau kontrol akses saluran pesan
-summary: Daftar izin pengirim yang dapat digunakan kembali untuk saluran pesan
+summary: Daftar pengirim yang diizinkan dan dapat digunakan kembali untuk saluran pesan
 title: Grup akses
 x-i18n:
-    generated_at: "2026-05-10T19:21:16Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:58:16Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1dba4fc84deb6e0c8c7b17ebc10182aa6e4bc2c821070e33df44f384e285266f
+    source_hash: 099abc95e90d9a7b7006d19062c46b4ffdb2aecb1e8e714454a3182131a786d0
     source_path: channels/access-groups.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Grup akses adalah daftar pengirim bernama yang Anda definisikan sekali dan rujuk dari allowlist saluran dengan `accessGroup:<name>`.
+Grup akses adalah daftar pengirim bernama yang Anda definisikan sekali di bawah `accessGroups` dan rujuk dari daftar izin saluran dengan `accessGroup:<name>`.
 
-Gunakan grup ini ketika orang yang sama harus diizinkan di beberapa saluran pesan, atau ketika satu set tepercaya harus diterapkan untuk otorisasi pengirim DM dan grup.
+Gunakan grup ini ketika orang-orang yang sama harus diizinkan di beberapa saluran pesan, atau ketika satu kelompok tepercaya harus berlaku untuk otorisasi pengirim pesan langsung dan grup.
 
-Grup akses tidak memberikan akses dengan sendirinya. Grup hanya berarti ketika sebuah bidang allowlist merujuknya.
+Sebuah grup tidak memberikan izin apa pun dengan sendirinya. Grup hanya berpengaruh ketika suatu bidang daftar izin merujuknya.
 
 ## Grup pengirim pesan statis
 
-Grup pengirim statis menggunakan `type: "message.senders"`.
+Grup pengirim statis menggunakan `type: "message.senders"`. `members` menggunakan id saluran pesan sebagai kunci, ditambah `"*"` untuk entri yang digunakan bersama oleh setiap saluran:
 
 ```json5
 {
@@ -41,22 +41,18 @@ Grup pengirim statis menggunakan `type: "message.senders"`.
 }
 ```
 
-Daftar anggota menggunakan id saluran pesan sebagai kunci:
+| Kunci                      | Arti                                                                                      |
+| -------------------------- | ----------------------------------------------------------------------------------------- |
+| `"*"`                      | Entri bersama yang diperiksa untuk setiap saluran pesan yang merujuk grup tersebut.       |
+| `discord`, `telegram`, ... | Entri yang diperiksa hanya untuk pencocokan daftar izin saluran tersebut.                  |
 
-| Kunci      | Makna                                                                  |
-| ---------- | ----------------------------------------------------------------------- |
-| `"*"`      | Entri bersama yang diperiksa untuk setiap saluran pesan yang merujuk grup. |
-| `discord`  | Entri yang diperiksa hanya untuk pencocokan allowlist Discord.          |
-| `telegram` | Entri yang diperiksa hanya untuk pencocokan allowlist Telegram.         |
-| `whatsapp` | Entri yang diperiksa hanya untuk pencocokan allowlist WhatsApp.         |
+Entri dicocokkan menggunakan aturan `allowFrom` normal milik saluran tujuan. OpenClaw tidak menerjemahkan id pengirim antar-saluran: jika Alice memiliki id Telegram dan id Discord, cantumkan kedua id tersebut di bawah kunci saluran yang sesuai.
 
-Entri dicocokkan dengan aturan normal `allowFrom` milik saluran tujuan. OpenClaw tidak menerjemahkan id pengirim antar saluran. Jika Alice memiliki id Telegram dan id Discord, cantumkan kedua id di bawah kunci yang sesuai.
+## Merujuk grup dari daftar izin
 
-## Merujuk grup dari allowlist
+Rujuk grup dengan `accessGroup:<name>` di mana pun jalur saluran pesan mendukung daftar izin pengirim.
 
-Rujuk grup dengan `accessGroup:<name>` di mana pun jalur saluran pesan mendukung allowlist pengirim.
-
-Contoh allowlist DM:
+Contoh daftar izin pesan langsung:
 
 ```json5
 {
@@ -82,7 +78,7 @@ Contoh allowlist DM:
 }
 ```
 
-Contoh allowlist pengirim grup:
+Contoh daftar izin pengirim grup:
 
 ```json5
 {
@@ -101,7 +97,7 @@ Contoh allowlist pengirim grup:
       groupAllowFrom: ["accessGroup:oncall"],
     },
     googlechat: {
-      spaces: {
+      groups: {
         "spaces/AAA": {
           users: ["accessGroup:oncall"],
         },
@@ -111,7 +107,7 @@ Contoh allowlist pengirim grup:
 }
 ```
 
-Anda dapat mencampur grup dan entri langsung:
+Anda dapat mencampurkan grup dan entri langsung:
 
 ```json5
 {
@@ -126,33 +122,14 @@ Anda dapat mencampur grup dan entri langsung:
 
 ## Jalur saluran pesan yang didukung
 
-Grup akses tersedia di jalur otorisasi saluran pesan bersama, termasuk:
+Grup akses berfungsi pada jalur otorisasi saluran pesan bersama:
 
-- allowlist pengirim DM seperti `channels.<channel>.allowFrom`
-- allowlist pengirim grup seperti `channels.<channel>.groupAllowFrom`
-- allowlist pengirim per ruang yang spesifik saluran dan menggunakan aturan pencocokan pengirim yang sama
-- jalur otorisasi perintah yang menggunakan kembali allowlist pengirim saluran pesan
+- daftar izin pengirim pesan langsung seperti `channels.<channel>.allowFrom`
+- daftar izin pengirim grup seperti `channels.<channel>.groupAllowFrom`
+- daftar izin pengirim per-ruang khusus saluran yang menggunakan aturan pencocokan pengirim yang sama (misalnya `groups.<space>.users` pada Google Chat)
+- jalur otorisasi perintah yang menggunakan kembali daftar izin pengirim saluran pesan
 
-Dukungan saluran bergantung pada apakah saluran tersebut dirangkai melalui helper otorisasi pengirim bersama OpenClaw. Dukungan bawaan saat ini mencakup Discord, Feishu, Google Chat, iMessage, LINE, Mattermost, Microsoft Teams, Nextcloud Talk, Nostr, QQBot, Signal, WhatsApp, Zalo, dan Zalo Personal. Grup statis `message.senders` dirancang agar agnostik terhadap saluran, sehingga saluran pesan baru sebaiknya mendukungnya dengan menggunakan helper SDK Plugin bersama, bukan ekspansi allowlist kustom.
-
-## Diagnostik Plugin
-
-Penulis Plugin dapat memeriksa status grup akses terstruktur tanpa mengekspansinya kembali menjadi allowlist datar:
-
-```typescript
-import { resolveAccessGroupAllowFromState } from "openclaw/plugin-sdk/security-runtime";
-
-const state = await resolveAccessGroupAllowFromState({
-  accessGroups: cfg.accessGroups,
-  allowFrom: channelConfig.allowFrom,
-  channel: "my-channel",
-  accountId: "default",
-  senderId,
-  isSenderAllowed,
-});
-```
-
-Hasilnya melaporkan grup yang dirujuk, cocok, hilang, tidak didukung, dan gagal. Gunakan ini ketika Anda memerlukan diagnostik atau uji kesesuaian. Gunakan `expandAllowFromWithAccessGroups(...)` hanya untuk jalur kompatibilitas yang masih mengharapkan array `allowFrom` datar.
+Dukungan saluran bergantung pada apakah saluran tersebut terhubung melalui pembantu otorisasi pengirim bersama milik OpenClaw. Dukungan bawaan saat ini mencakup ClickClack, Discord, Feishu, Google Chat, iMessage, IRC, LINE, Mattermost, Microsoft Teams, Nextcloud Talk, Nostr, QQ Bot, Signal, Slack, SMS, Telegram, WhatsApp, Zalo, dan Zalo Personal. Grup `message.senders` statis tidak bergantung pada saluran, sehingga saluran pesan baru dapat menggunakannya dengan memakai pembantu masukan SDK Plugin bersama alih-alih perluasan daftar izin khusus.
 
 ## Audiens saluran Discord
 
@@ -177,33 +154,52 @@ Discord juga mendukung jenis grup akses dinamis:
 }
 ```
 
-`discord.channelAudience` berarti "izinkan pengirim DM Discord yang saat ini dapat melihat saluran guild ini." OpenClaw menyelesaikan pengirim melalui Discord pada waktu otorisasi dan menerapkan aturan izin `ViewChannel` Discord.
+`discord.channelAudience` berarti "izinkan pengirim pesan langsung Discord yang saat ini dapat melihat saluran guild ini." OpenClaw menentukan pengirim melalui Discord pada saat otorisasi dan menerapkan aturan izin `ViewChannel` Discord. `membership` bersifat opsional dan nilai bakunya adalah `canViewChannel`.
 
-Gunakan ini ketika saluran Discord sudah menjadi sumber kebenaran untuk sebuah tim, seperti `#maintainers` atau `#on-call`.
+Gunakan ini ketika suatu saluran Discord telah menjadi sumber kebenaran untuk sebuah tim, seperti `#maintainers` atau `#on-call`.
 
 Persyaratan dan perilaku kegagalan:
 
 - Bot memerlukan akses ke guild dan saluran.
-- Bot memerlukan **Server Members Intent** dari Discord Developer Portal.
-- Grup akses gagal tertutup ketika Discord mengembalikan `Missing Access`, pengirim tidak dapat diselesaikan sebagai anggota guild, atau saluran milik guild lain.
+- Bot memerlukan **Server Members Intent** di Discord Developer Portal.
+- Grup akses menolak akses secara aman ketika Discord mengembalikan `Missing Access`, pengirim tidak dapat ditentukan sebagai anggota guild, atau saluran tersebut merupakan bagian dari guild lain.
 
-Contoh yang lebih spesifik untuk Discord: [Kontrol akses Discord](/id/channels/discord#access-control-and-routing)
+Contoh khusus Discord lainnya: [Kontrol akses Discord](/id/channels/discord#access-control-and-routing)
+
+## Diagnostik Plugin
+
+Pembuat Plugin dapat memeriksa status grup akses terstruktur tanpa memperluasnya kembali menjadi daftar izin datar:
+
+```typescript
+import { resolveAccessGroupAllowFromState } from "openclaw/plugin-sdk/access-groups";
+
+const state = await resolveAccessGroupAllowFromState({
+  accessGroups: cfg.accessGroups,
+  allowFrom: channelConfig.allowFrom,
+  channel: "my-channel",
+  accountId: "default",
+  senderId,
+  isSenderAllowed,
+});
+```
+
+Hasilnya melaporkan grup yang dirujuk, cocok, hilang, tidak didukung, dan gagal. Gunakan hasil tersebut untuk diagnostik atau pengujian kesesuaian. Gunakan `expandAllowFromWithAccessGroups(...)` hanya untuk jalur kompatibilitas yang masih mengharapkan larik `allowFrom` datar.
 
 ## Catatan keamanan
 
-- Grup akses adalah alias allowlist, bukan peran. Grup ini tidak membuat pemilik, menyetujui permintaan pemasangan, atau memberikan izin alat dengan sendirinya.
-- `dmPolicy: "open"` tetap memerlukan `"*"` dalam allowlist DM efektif. Merujuk grup akses tidak sama dengan akses publik.
-- Nama grup yang hilang gagal tertutup. Jika `allowFrom` berisi `accessGroup:operators` dan `accessGroups.operators` tidak ada, entri tersebut tidak mengotorisasi siapa pun.
-- Jaga agar id saluran tetap stabil. Pilih id numerik/pengguna daripada nama tampilan ketika saluran mendukung keduanya.
+- Grup akses adalah alias daftar izin, bukan peran. Grup tersebut tidak membuat pemilik, menyetujui permintaan pemasangan, atau memberikan izin alat dengan sendirinya.
+- `dmPolicy: "open"` tetap memerlukan `"*"` dalam daftar izin pesan langsung efektif. Merujuk grup akses tidak sama dengan memberikan akses publik.
+- Nama grup yang tidak ditemukan akan menolak akses secara aman. Jika `allowFrom` berisi `accessGroup:operators` dan `accessGroups.operators` tidak ada, entri tersebut tidak mengotorisasi siapa pun.
+- Pertahankan kestabilan id saluran. Utamakan id numerik/pengguna daripada nama tampilan jika saluran mendukung keduanya.
 
 ## Pemecahan masalah
 
 Jika pengirim seharusnya cocok tetapi diblokir:
 
-1. Pastikan bidang allowlist berisi referensi `accessGroup:<name>` yang tepat.
-2. Pastikan `accessGroups.<name>.type` benar.
-3. Pastikan id pengirim tercantum di bawah kunci saluran yang cocok, atau di bawah `"*"`.
-4. Pastikan entri menggunakan sintaks allowlist normal untuk saluran tersebut.
+1. Pastikan bidang daftar izin berisi rujukan `accessGroup:<name>` yang tepat.
+2. Pastikan `accessGroups.<name>.type` sudah benar.
+3. Pastikan id pengirim tercantum di bawah kunci saluran yang sesuai, atau di bawah `"*"`.
+4. Pastikan entri menggunakan sintaks daftar izin normal milik saluran tersebut.
 5. Untuk audiens saluran Discord, pastikan bot dapat melihat saluran guild dan Server Members Intent telah diaktifkan.
 
-Jalankan `openclaw doctor` setelah mengedit konfigurasi kontrol akses. Ini menangkap banyak kombinasi allowlist dan kebijakan yang tidak valid sebelum runtime.
+Jalankan `openclaw doctor` setelah menyunting konfigurasi kontrol akses. Perintah tersebut mendeteksi banyak kombinasi daftar izin dan kebijakan yang tidak valid sebelum waktu proses.

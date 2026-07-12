@@ -1,54 +1,56 @@
 ---
 read_when:
     - Anda ingin menghubungkan OpenClaw ke SMS melalui Twilio
-    - Anda memerlukan pengaturan Webhook SMS atau allowlist
-summary: Penyiapan channel SMS Twilio, kontrol akses, dan konfigurasi webhook
+    - Anda memerlukan penyiapan webhook SMS atau daftar izin
+summary: Penyiapan kanal SMS Twilio, kontrol akses, dan konfigurasi webhook
 title: SMS
 x-i18n:
-    generated_at: "2026-06-27T17:12:39Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:00:45Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 0c384fa3374450aa3facc749791b5d59165d9daf0920ea5438ad412522166f52
+    source_hash: 1ae0e0fee978a9837fc75ef7e9122bd06009df0d44de35fe9dff8aab120d5404
     source_path: channels/sms.md
     workflow: 16
 ---
 
-OpenClaw dapat menerima dan mengirim SMS melalui nomor telepon Twilio atau Messaging Service. Gateway mendaftarkan rute webhook masuk, memvalidasi tanda tangan permintaan Twilio secara default, dan mengirim balasan kembali melalui Messages API milik Twilio.
+OpenClaw menerima dan mengirim SMS melalui nomor telepon atau Messaging Service Twilio. Gateway mendaftarkan rute Webhook masuk (bawaan `/webhooks/sms`), memvalidasi tanda tangan permintaan Twilio secara bawaan, dan mengirim balasan kembali melalui Messages API Twilio.
+
+Status: Plugin resmi, dipasang secara terpisah. Hanya teks: tanpa MMS/media, hanya pesan langsung.
 
 <CardGroup cols={3}>
-  <Card title="Pairing" icon="link" href="/id/channels/pairing">
-    Kebijakan DM default untuk SMS adalah pairing.
+  <Card title="Pemasangan" icon="link" href="/id/channels/pairing">
+    Kebijakan DM bawaan untuk SMS adalah pemasangan.
   </Card>
-  <Card title="Gateway security" icon="shield" href="/id/gateway/security">
-    Tinjau paparan webhook dan kontrol akses pengirim.
+  <Card title="Keamanan Gateway" icon="shield" href="/id/gateway/security">
+    Tinjau paparan Webhook dan kontrol akses pengirim.
   </Card>
-  <Card title="Channel troubleshooting" icon="wrench" href="/id/channels/troubleshooting">
-    Diagnostik lintas channel dan panduan perbaikan.
+  <Card title="Pemecahan masalah saluran" icon="wrench" href="/id/channels/troubleshooting">
+    Diagnostik lintas saluran dan panduan perbaikan.
   </Card>
 </CardGroup>
 
-## Sebelum Anda mulai
+## Sebelum memulai
 
 Anda memerlukan:
 
-- Plugin SMS resmi yang diinstal dengan `openclaw plugins install @openclaw/sms`.
+- Plugin SMS resmi yang dipasang dengan `openclaw plugins install @openclaw/sms`.
 - Akun Twilio dengan nomor telepon yang mendukung SMS, atau Twilio Messaging Service.
-- Twilio Account SID dan Auth Token.
-- URL HTTPS publik yang mencapai OpenClaw Gateway Anda.
-- Pilihan kebijakan pengirim: `pairing` untuk penggunaan pribadi, `allowlist` untuk nomor telepon yang sudah disetujui, atau `open` hanya untuk akses SMS yang memang sengaja dibuat publik.
+- Account SID dan Auth Token Twilio.
+- URL HTTPS publik yang dapat menjangkau Gateway OpenClaw Anda.
+- Pilihan kebijakan pengirim: `pairing` (bawaan) untuk penggunaan pribadi, `allowlist` untuk nomor telepon yang telah disetujui sebelumnya, atau `open` hanya untuk akses SMS yang sengaja dibuka untuk publik.
 
-Gunakan satu nomor Twilio untuk SMS dan Voice Call jika nomor tersebut memiliki kedua kapabilitas. Konfigurasikan webhook SMS dan webhook Voice secara terpisah di Twilio; halaman ini hanya membahas webhook SMS.
+Satu nomor Twilio dapat melayani SMS dan [Panggilan Suara](/id/plugins/voice-call) jika memiliki kedua kemampuan tersebut. Webhook SMS dan Webhook suara dikonfigurasi secara terpisah di Twilio dan menggunakan jalur Gateway yang berbeda; halaman ini hanya membahas Webhook SMS.
 
 ## Penyiapan Cepat
 
 <Steps>
-  <Step title="Install the plugin">
+  <Step title="Pasang Plugin">
     ```bash
     openclaw plugins install @openclaw/sms
     ```
   </Step>
-  <Step title="Create or choose a Twilio sender">
+  <Step title="Buat atau pilih pengirim Twilio">
     Di Twilio, buka **Phone Numbers > Manage > Active numbers** dan pilih nomor yang mendukung SMS. Simpan:
 
     - Account SID, misalnya `ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`
@@ -59,9 +61,9 @@ Gunakan satu nomor Twilio untuk SMS dan Voice Call jika nomor tersebut memiliki 
 
   </Step>
 
-  <Step title="Configure the SMS channel">
+  <Step title="Konfigurasikan saluran SMS">
 
-Simpan ini sebagai `sms.patch.json5` dan ubah placeholder-nya:
+Simpan ini sebagai `sms.patch.json5` dan ubah placeholder:
 
 ```json5
 {
@@ -87,52 +89,70 @@ openclaw config patch --file ./sms.patch.json5
 
   </Step>
 
-  <Step title="Point Twilio at the Gateway webhook">
+  <Step title="Arahkan Twilio ke Webhook Gateway">
     Di pengaturan nomor telepon Twilio, buka **Messaging** dan atur **A message comes in** ke:
 
 ```text
 https://gateway.example.com/webhooks/sms
 ```
 
-    Gunakan HTTP `POST`. Path lokal default adalah `/webhooks/sms`; ubah `channels.sms.webhookPath` jika Anda memerlukan rute berbeda.
+    Gunakan HTTP `POST`. Jalur lokal bawaan adalah `/webhooks/sms`; ubah `channels.sms.webhookPath` jika Anda memerlukan rute yang berbeda.
 
   </Step>
 
-  <Step title="Expose the exact SMS webhook path">
-    URL publik Anda harus merutekan path SMS ke proses Gateway. Jika Anda menggunakan Tailscale Funnel untuk pengujian lokal, ekspos `/webhooks/sms` secara eksplisit:
+  <Step title="Publikasikan jalur Webhook SMS yang tepat">
+    URL publik Anda harus merutekan jalur SMS ke proses Gateway (port bawaan `18789`). Jika menggunakan Tailscale Funnel untuk pengujian lokal, publikasikan `/webhooks/sms` secara eksplisit:
 
 ```bash
 tailscale funnel --bg --set-path /webhooks/sms http://127.0.0.1:<gateway-port>/webhooks/sms
 tailscale funnel status
 ```
 
-    Voice Call dan SMS menggunakan path webhook terpisah. Jika nomor Twilio yang sama menangani keduanya, pertahankan kedua rute tetap dikonfigurasi di Twilio dan di tunnel Anda.
+    Panggilan Suara dan SMS menggunakan jalur Webhook yang berbeda. Jika nomor Twilio yang sama menangani keduanya, pertahankan konfigurasi kedua rute di Twilio dan terowongan Anda.
 
   </Step>
 
-  <Step title="Start the Gateway and approve first sender">
+  <Step title="Mulai Gateway dan setujui pengirim pertama">
 
 ```bash
 openclaw gateway
 ```
 
-Kirim pesan teks ke nomor Twilio. Pesan pertama membuat permintaan pairing. Setujui:
+Kirim pesan teks ke nomor Twilio. Pesan pertama membuat permintaan pemasangan. Setujui:
 
 ```bash
 openclaw pairing list sms
 openclaw pairing approve sms <CODE>
 ```
 
-    Kode pairing kedaluwarsa setelah 1 jam.
+    Kode pemasangan kedaluwarsa setelah 1 jam.
 
   </Step>
 </Steps>
 
 ## Contoh Konfigurasi
 
-### File konfigurasi
+Semua kunci berada di bawah `channels.sms` (dan untuk setiap akun di bawah `channels.sms.accounts.<id>`):
 
-Gunakan penyiapan file konfigurasi ketika Anda ingin definisi channel ikut bersama konfigurasi Gateway:
+| Kunci                                   | Bawaan          | Tujuan                                                               |
+| --------------------------------------- | --------------- | -------------------------------------------------------------------- |
+| `enabled`                               | `true`          | Mengaktifkan atau menonaktifkan saluran/akun.                         |
+| `accountSid`                            | —               | Account SID Twilio (`AC...`).                                         |
+| `authToken`                             | —               | Auth Token Twilio; string teks biasa atau SecretRef.                  |
+| `fromNumber`                            | —               | Nomor pengirim E.164.                                                 |
+| `messagingServiceSid`                   | —               | Messaging Service SID (`MG...`) yang digunakan jika tidak ada `fromNumber` yang ditemukan. |
+| `defaultTo`                             | —               | Tujuan bawaan ketika alur pengiriman tidak menyertakan target eksplisit. |
+| `webhookPath`                           | `/webhooks/sms` | Jalur HTTP Gateway untuk Webhook Twilio masuk.                        |
+| `publicWebhookUrl`                      | —               | URL publik yang dikonfigurasi di Twilio; diperlukan untuk validasi tanda tangan. |
+| `dangerouslyDisableSignatureValidation` | `false`         | Melewati pemeriksaan `X-Twilio-Signature`; hanya untuk pengujian terowongan lokal. |
+| `dmPolicy`                              | `"pairing"`     | `pairing`, `allowlist`, `open`, atau `disabled`.                      |
+| `allowFrom`                             | `[]`            | Nomor pengirim yang diizinkan dalam format E.164, atau `"*"` dengan `dmPolicy: "open"`. |
+| `textChunkLimit`                        | `1500`          | Jumlah maksimum karakter per potongan SMS keluar.                     |
+| `accounts`, `defaultAccount`            | —               | Peta multiakun dan id akun bawaan.                                    |
+
+### Berkas konfigurasi
+
+Gunakan penyiapan melalui berkas konfigurasi jika Anda ingin definisi saluran disertakan bersama konfigurasi Gateway:
 
 ```json5
 {
@@ -151,7 +171,19 @@ Gunakan penyiapan file konfigurasi ketika Anda ingin definisi channel ikut bersa
 
 ### Variabel lingkungan
 
-Gunakan penyiapan env untuk deployment akun tunggal saat rahasia berasal dari lingkungan host:
+Variabel lingkungan hanya berlaku untuk akun bawaan; nilai konfigurasi lebih diutamakan daripada nilai variabel lingkungan.
+
+| Variabel                                        | Dipetakan ke                                        |
+| ----------------------------------------------- | --------------------------------------------------- |
+| `TWILIO_ACCOUNT_SID`                            | `accountSid`                                        |
+| `TWILIO_AUTH_TOKEN`                             | `authToken`                                         |
+| `TWILIO_PHONE_NUMBER` (alias `TWILIO_SMS_FROM`) | `fromNumber`                                        |
+| `TWILIO_MESSAGING_SERVICE_SID`                  | `messagingServiceSid`                               |
+| `SMS_PUBLIC_WEBHOOK_URL`                        | `publicWebhookUrl`                                  |
+| `SMS_WEBHOOK_PATH`                              | `webhookPath`                                       |
+| `SMS_ALLOWED_USERS`                             | `allowFrom` (dipisahkan koma)                       |
+| `SMS_TEXT_CHUNK_LIMIT`                          | `textChunkLimit`                                    |
+| `SMS_DANGEROUSLY_DISABLE_SIGNATURE_VALIDATION`  | `dangerouslyDisableSignatureValidation` (`"true"`)  |
 
 ```bash
 export TWILIO_ACCOUNT_SID="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
@@ -160,7 +192,7 @@ export TWILIO_PHONE_NUMBER="+15551234567"
 export SMS_PUBLIC_WEBHOOK_URL="https://gateway.example.com/webhooks/sms"
 ```
 
-Lalu aktifkan channel dalam konfigurasi:
+Kemudian aktifkan saluran dalam konfigurasi:
 
 ```json5
 {
@@ -173,11 +205,9 @@ Lalu aktifkan channel dalam konfigurasi:
 }
 ```
 
-`TWILIO_SMS_FROM` diterima sebagai alias untuk `TWILIO_PHONE_NUMBER`. Gunakan `TWILIO_MESSAGING_SERVICE_SID` alih-alih pengirim nomor telepon saat Twilio harus memilih pengirim dari Messaging Service.
+### Auth Token SecretRef
 
-### Token autentikasi SecretRef
-
-`authToken` dapat berupa SecretRef. Gunakan ini ketika Gateway harus menyelesaikan Twilio Auth Token dari runtime rahasia OpenClaw alih-alih menyimpan konfigurasi plaintext:
+`authToken` dapat berupa SecretRef (`source: "env" | "file" | "exec"`). Gunakan ini jika Gateway harus mengambil Auth Token Twilio dari runtime rahasia OpenClaw alih-alih menyimpan konfigurasi dalam bentuk teks biasa:
 
 ```json5
 {
@@ -194,31 +224,11 @@ Lalu aktifkan channel dalam konfigurasi:
 }
 ```
 
-Variabel lingkungan atau penyedia rahasia yang dirujuk harus terlihat oleh runtime Gateway. Mulai ulang proses Gateway terkelola setelah mengubah variabel lingkungan host.
-
-### Nomor privat khusus allowlist
-
-Gunakan `allowlist` ketika hanya nomor telepon yang dikenal yang boleh berbicara dengan agen:
-
-```json5
-{
-  channels: {
-    sms: {
-      enabled: true,
-      accountSid: "ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-      authToken: "twilio-auth-token",
-      fromNumber: "+15551234567",
-      publicWebhookUrl: "https://gateway.example.com/webhooks/sms",
-      dmPolicy: "allowlist",
-      allowFrom: ["+15557654321"],
-    },
-  },
-}
-```
+Variabel lingkungan atau penyedia rahasia yang dirujuk harus dapat diakses oleh runtime Gateway. Mulai ulang proses Gateway terkelola setelah mengubah variabel lingkungan hos.
 
 ### Pengirim Messaging Service
 
-Gunakan `messagingServiceSid` alih-alih `fromNumber` saat Twilio harus memilih pengirim melalui Messaging Service:
+Gunakan `messagingServiceSid` alih-alih `fromNumber` jika Twilio harus memilih pengirim melalui Messaging Service:
 
 ```json5
 {
@@ -235,11 +245,11 @@ Gunakan `messagingServiceSid` alih-alih `fromNumber` saat Twilio harus memilih p
 }
 ```
 
-Jika `fromNumber` dan `messagingServiceSid` sama-sama ada setelah penyelesaian konfigurasi dan env, `fromNumber` digunakan.
+Jika `fromNumber` dan `messagingServiceSid` sama-sama tersedia setelah resolusi konfigurasi dan variabel lingkungan, `fromNumber` digunakan.
 
-### Target outbound default
+### Target keluar bawaan
 
-Atur `defaultTo` ketika otomasi atau pengiriman yang diinisiasi agen harus memiliki tujuan default jika alur pengiriman tidak mencantumkan target eksplisit:
+Atur `defaultTo` jika otomatisasi atau pengiriman yang dimulai agen harus memiliki tujuan bawaan ketika alur pengiriman tidak menyertakan target eksplisit:
 
 ```json5
 {
@@ -260,59 +270,75 @@ Atur `defaultTo` ketika otomasi atau pengiriman yang diinisiasi agen harus memil
 
 `channels.sms.dmPolicy` mengontrol akses SMS langsung:
 
-- `pairing` (default)
-- `allowlist` (memerlukan setidaknya satu pengirim di `allowFrom`)
-- `open` (memerlukan `allowFrom` menyertakan `"*"`)
-- `disabled`
+- `pairing` (bawaan): pengirim yang tidak dikenal mendapatkan kode pemasangan; setujui dengan `openclaw pairing approve sms <CODE>`.
+- `allowlist`: hanya pengirim dalam `allowFrom` yang diproses. `allowFrom` kosong menolak setiap pengirim (Gateway mencatat peringatan saat dimulai).
+- `open`: validasi konfigurasi mengharuskan `allowFrom` menyertakan `"*"`. Tanpa karakter pengganti tersebut, hanya nomor yang tercantum yang dapat mengobrol.
+- `disabled`: semua DM masuk dibuang.
 
-Entri `allowFrom` harus berupa nomor telepon E.164 seperti `+15551234567`. Prefiks `sms:` diterima dan dinormalisasi. Untuk asisten privat, pilih `dmPolicy: "allowlist"` dengan nomor telepon eksplisit.
+Entri `allowFrom` harus berupa nomor telepon E.164 seperti `+15551234567`. Awalan `sms:` dan `twilio-sms:` diterima dan dinormalisasi. Untuk asisten pribadi, utamakan `dmPolicy: "allowlist"` dengan nomor telepon eksplisit:
+
+```json5
+{
+  channels: {
+    sms: {
+      enabled: true,
+      accountSid: "ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      authToken: "twilio-auth-token",
+      fromNumber: "+15551234567",
+      publicWebhookUrl: "https://gateway.example.com/webhooks/sms",
+      dmPolicy: "allowlist",
+      allowFrom: ["+15557654321"],
+    },
+  },
+}
+```
 
 ## Mengirim SMS
 
-Target SMS outbound menggunakan prefiks layanan `sms:` dengan channel SMS yang dipilih:
+Dengan saluran SMS dipilih, target menerima nomor E.164 tanpa awalan atau dengan awalan `sms:`:
 
 ```bash
 openclaw message send --channel sms --target sms:+15551234567 --message "hello"
 ```
 
-Ketika pemilihan channel bersifat implisit, `twilio-sms:+15551234567` memilih channel ini tanpa mengambil alih prefiks layanan `sms:` milik channel yang sudah ada dan digunakan oleh iMessage.
+Ketika pemilihan saluran bersifat implisit, awalan `twilio-sms:` memilih saluran ini tanpa mengambil alih awalan layanan `sms:`, yang digunakan iMessage untuk memilih pengiriman SMS operator bagi targetnya sendiri:
 
 ```bash
 openclaw message send --target twilio-sms:+15551234567 --message "hello"
 ```
 
-CLI memerlukan `--target` eksplisit. `defaultTo` digunakan untuk jalur otomasi dan pengiriman yang diinisiasi agen ketika target dapat diselesaikan dari konfigurasi channel.
+CLI memerlukan `--target` yang eksplisit. `defaultTo` ditujukan untuk jalur otomatisasi dan pengiriman yang dimulai agen, tempat target dapat ditentukan dari konfigurasi saluran.
 
-Balasan agen dari percakapan SMS masuk otomatis dikirim kembali ke pengirim melalui pengirim Twilio yang dikonfigurasi.
+Balasan agen dari percakapan SMS masuk secara otomatis dikirim kembali kepada pengirim melalui pengirim Twilio yang dikonfigurasi.
 
-Output SMS berupa teks biasa. OpenClaw menghapus markdown, meratakan blok kode berpagar, mempertahankan tautan yang mudah dibaca, dan memecah balasan panjang sebelum mengirimkannya melalui Twilio.
+Keluaran SMS berupa teks biasa. OpenClaw menghapus markdown, meratakan blok kode berpagar, menulis ulang tautan sebagai `label (url)`, dan membagi balasan panjang menjadi potongan paling banyak `textChunkLimit` karakter (bawaan 1500) sebelum mengirimkannya melalui Twilio.
 
 ## Verifikasi Penyiapan
 
 Setelah Gateway dimulai:
 
-1. Pastikan log Gateway menampilkan rute webhook SMS.
-2. Jalankan probe dari sisi Twilio:
+1. Pastikan log Gateway menampilkan rute Webhook SMS.
+2. Jalankan pemeriksaan dari sisi Twilio (memeriksa URL/metode Webhook Twilio yang dikonfigurasi dan kesalahan pesan masuk terbaru):
 
 ```bash
 openclaw channels capabilities --channel sms
 openclaw channels status --channel sms --probe --json
 ```
 
-3. Kirim SMS ke nomor Twilio dari telepon Anda.
+3. Kirim SMS ke nomor Twilio dari ponsel Anda.
 4. Jalankan `openclaw pairing list sms`.
-5. Setujui kode pairing dengan `openclaw pairing approve sms <CODE>`.
-6. Kirim SMS lain dan pastikan agen membalas.
+5. Setujui kode pemasangan dengan `openclaw pairing approve sms <CODE>`.
+6. Kirim SMS lagi dan pastikan agen membalas.
 
-Untuk pengujian khusus outbound, gunakan:
+Untuk pengujian khusus pesan keluar, gunakan:
 
 ```bash
 openclaw message send --channel sms --target sms:+15557654321 --message "OpenClaw SMS test"
 ```
 
-### Pengujian end-to-end dari macOS iMessage/SMS
+### Pengujian menyeluruh dari iMessage/SMS macOS
 
-Di Mac yang dapat mengirim SMS operator melalui Messages, Anda dapat menggunakan `imsg` untuk menjalankan sisi pengirim tanpa menyentuh telepon Anda:
+Pada Mac yang dapat mengirim SMS operator melalui Messages, Anda dapat menggunakan `imsg` untuk mengendalikan sisi pengirim tanpa menyentuh ponsel:
 
 ```bash
 imsg send --to "+15551234567" --service sms --text "OpenClaw SMS E2E $(date -u +%Y%m%dT%H%M%SZ)" --json
@@ -321,13 +347,24 @@ openclaw pairing approve sms <CODE>
 imsg send --to "+15551234567" --service sms --text "reply exactly SMS pong" --json
 ```
 
-Pesan pertama seharusnya membuat permintaan pairing. Pesan kedua seharusnya menerima balasan agen melalui Twilio.
+Pesan pertama seharusnya membuat permintaan pemasangan. Pesan kedua seharusnya menerima balasan agen melalui Twilio.
 
-## Keamanan webhook
+## Keamanan Webhook
 
-Secara default, OpenClaw memvalidasi `X-Twilio-Signature` menggunakan `publicWebhookUrl` dan `authToken`. Pastikan `publicWebhookUrl` selaras byte demi byte dengan URL yang dikonfigurasi di Twilio, termasuk skema, host, path, dan string kueri.
+Secara default, OpenClaw memvalidasi `X-Twilio-Signature` menggunakan `publicWebhookUrl` dan `authToken`. Pastikan bagian titik akhir `publicWebhookUrl` sama persis, byte demi byte, dengan URL yang dikonfigurasi di Twilio, termasuk skema, host, jalur, dan string kueri. OpenClaw mengecualikan fragmen [penggantian koneksi](https://www.twilio.com/docs/usage/webhooks/webhooks-connection-overrides) Twilio (`#...`) dari penghitungan tanda tangan, sebagaimana diwajibkan oleh Twilio.
 
-Hanya untuk pengujian tunnel lokal, Anda dapat mengatur:
+Terlepas dari validasi tanda tangan, rute Webhook juga menerapkan:
+
+- Hanya `POST`.
+- Batas laju 30 permintaan per menit per alamat IP sumber (HTTP 429 jika melebihi batas).
+- `AccountSid` dalam muatan harus cocok dengan `accountSid` yang dikonfigurasi (jika tidak, HTTP 403).
+- Nilai `MessageSid` yang diputar ulang dideduplikasi selama 10 menit.
+- Cache pemutaran ulang setiap akun SMS menyimpan hingga 10.000 SID pesan aktif. Ketika semua slot aktif, Webhook baru untuk akun tersebut ditolak secara tertutup dengan HTTP 429 dan header `Retry-After` hingga slot terlama kedaluwarsa.
+- Isi permintaan yang melebihi 32 KB ditolak.
+
+Secara default, Twilio tidak mencoba ulang HTTP 429 maupun mendokumentasikan dukungan untuk `Retry-After`. Penggantian koneksi `#rp=4xx` dan `#rp=all` mengaktifkan percobaan ulang untuk 4xx, tetapi Twilio membatasi keseluruhan transaksi percobaan ulang hingga 15 detik sehingga percobaan ulang masih dapat selesai sebelum slot cache pemutaran ulang kedaluwarsa. Konfigurasikan URL cadangan jika penangan lain harus menerima pengiriman yang gagal; perlakukan 429 sebagai penolakan tertutup, bukan tekanan balik yang andal.
+
+Khusus untuk pengujian terowongan lokal, Anda dapat menetapkan:
 
 ```json5
 {
@@ -339,11 +376,11 @@ Hanya untuk pengujian tunnel lokal, Anda dapat mengatur:
 }
 ```
 
-Jangan gunakan validasi tanda tangan yang dinonaktifkan pada Gateway publik.
+Jangan menonaktifkan validasi tanda tangan pada Gateway publik.
 
-## Konfigurasi multi-akun
+## Konfigurasi multiakun
 
-Gunakan `accounts` ketika Anda mengoperasikan lebih dari satu nomor Twilio:
+Gunakan `accounts` saat Anda mengoperasikan lebih dari satu nomor Twilio:
 
 ```json5
 {
@@ -366,29 +403,33 @@ Gunakan `accounts` ketika Anda mengoperasikan lebih dari satu nomor Twilio:
 }
 ```
 
-Setiap akun harus menggunakan `webhookPath` yang berbeda.
+Setiap akun harus menggunakan `webhookPath` yang berbeda; Gateway menolak mendaftarkan rute Webhook yang jalurnya sudah dimiliki akun lain. Nilai alternatif lingkungan `TWILIO_*`/`SMS_*` hanya berlaku untuk akun default; tetapkan `defaultAccount` untuk mengubah akun tersebut.
 
 ## Pemecahan masalah
 
-### Twilio mengembalikan 403 atau OpenClaw menolak webhook
+### Twilio mengembalikan 403 atau OpenClaw menolak Webhook
 
-Periksa bahwa `publicWebhookUrl` sama persis dengan URL yang dikonfigurasi di Twilio, termasuk skema, host, path, dan string kueri. Twilio menandatangani string URL publik, jadi penulisan ulang proxy dan nama host alternatif dapat merusak validasi tanda tangan.
+Pastikan `publicWebhookUrl` sama persis dengan URL yang dikonfigurasi di Twilio, termasuk skema, host, jalur, dan string kueri. Twilio menandatangani string URL publik tersebut, sehingga penulisan ulang oleh proksi dan nama host alternatif dapat merusak validasi tanda tangan.
 
-### Tidak ada permintaan pairing yang muncul
+Respons 403 dengan `Invalid account` berarti `AccountSid` pada muatan pesan masuk tidak cocok dengan `accountSid` yang dikonfigurasi; pastikan Webhook mengarah ke akun yang memiliki nomor tersebut.
 
-Periksa URL dan metode webhook **Messaging** milik nomor Twilio. Itu harus mengarah ke URL webhook SMS dan menggunakan `POST`. Pastikan juga Gateway dapat dijangkau dari internet publik atau melalui tunnel Anda.
+### Permintaan pemasangan tidak muncul
 
-Jika log pesan Twilio menampilkan error `11200`, Twilio menerima SMS masuk tetapi tidak dapat mencapai webhook Anda. Periksa:
+Periksa URL dan metode Webhook **Messaging** nomor Twilio. URL tersebut harus mengarah ke URL Webhook SMS dan menggunakan `POST`. Pastikan juga Gateway dapat dijangkau dari internet publik atau melalui terowongan Anda.
 
-- Twilio **Messaging > A message comes in** mengarah ke `publicWebhookUrl`.
+Jika log pesan Twilio menampilkan kesalahan `11200`, Twilio menerima SMS masuk tetapi tidak dapat menjangkau Webhook Anda. Periksa:
+
+- **Messaging > A message comes in** di Twilio mengarah ke `publicWebhookUrl`.
 - Metodenya adalah `POST`.
-- Tunnel atau reverse proxy mengekspos `webhookPath` yang tepat; untuk Tailscale Funnel, jalankan `tailscale funnel status` dan pastikan `/webhooks/sms` tercantum.
-- `publicWebhookUrl` menggunakan skema, host, path, dan string kueri yang sama dengan yang dikirim Twilio, sehingga validasi tanda tangan dapat mereproduksi URL yang ditandatangani.
+- Terowongan atau proksi terbalik mengekspos `webhookPath` yang tepat; untuk Tailscale Funnel, jalankan `tailscale funnel status` dan pastikan `/webhooks/sms` tercantum.
+- `publicWebhookUrl` menggunakan skema, host, jalur, dan string kueri yang sama dengan yang dikirim Twilio agar validasi tanda tangan dapat mereproduksi URL yang ditandatangani.
 
-### Pengiriman outbound gagal
+`openclaw channels status --channel sms --probe` menampilkan ketidakcocokan pengaturan Webhook Twilio dan kesalahan `11200` terbaru.
 
-Pastikan `accountSid`, `authToken`, dan salah satu dari `fromNumber` atau `messagingServiceSid` terselesaikan. Jika Anda menggunakan akun uji coba Twilio, nomor tujuan mungkin perlu diverifikasi di Twilio sebelum SMS outbound dapat dikirim.
+### Pengiriman pesan keluar gagal
 
-### Pesan masuk tetapi agen tidak menjawab
+Pastikan `accountSid`, `authToken`, serta `fromNumber` atau `messagingServiceSid` berhasil ditentukan. Jika Anda menggunakan akun uji coba Twilio, nomor tujuan mungkin harus diverifikasi di Twilio sebelum SMS keluar dapat dikirim.
 
-Periksa `dmPolicy` dan `allowFrom`. Dengan kebijakan `pairing` default, pengirim harus disetujui sebelum giliran agen normal diproses.
+### Pesan tiba tetapi agen tidak menjawab
+
+Periksa `dmPolicy` dan `allowFrom`. Dengan kebijakan default `pairing`, pengirim harus disetujui sebelum giliran agen normal diproses.

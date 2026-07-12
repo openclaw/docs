@@ -2,91 +2,69 @@
 doc-schema-version: 1
 read_when:
     - Anda ingin OpenClaw tetap menampilkan satu tujuan sepanjang sesi yang panjang
-    - Anda perlu menjeda, melanjutkan, memblokir, menyelesaikan, atau menghapus tujuan sesi
-    - Anda ingin memahami alat get_goal, create_goal, dan update_goal
-    - Anda ingin melihat bagaimana tujuan muncul di TUI
+    - Anda perlu menjeda, melanjutkan, memblokir, menyelesaikan, atau menghapus sasaran sesi
+    - Anda ingin memahami alat `get_goal`, `create_goal`, dan `update_goal`
+    - Anda ingin melihat bagaimana sasaran ditampilkan di TUI
 summary: 'Tujuan sesi: sasaran per sesi yang persisten, kontrol /goal, alat tujuan model, anggaran token, dan status TUI'
 title: Tujuan
 x-i18n:
-    generated_at: "2026-06-27T18:19:07Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:41:48Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4313983dff7f37496f6c996303cace75f6863a71c8a9cd5367fdafbcc3f459c4
+    source_hash: 046356770522dc8a5584a59f3322b4502554a4b7f129b074da633861050ee5fd
     source_path: tools/goal.md
     workflow: 16
 ---
 
-# Tujuan
+# Sasaran
 
-**Tujuan** adalah satu sasaran tahan lama yang melekat pada sesi OpenClaw saat ini.
-Ini memberi agen dan operator target bersama untuk pekerjaan jangka panjang,
-tanpa mengubah target tersebut menjadi tugas latar belakang, pengingat, tugas cron, atau
+**Sasaran** adalah satu tujuan tetap yang dilampirkan ke sesi OpenClaw saat ini.
+Sasaran memberi agen dan operator target bersama untuk pekerjaan jangka panjang,
+tanpa mengubah target tersebut menjadi tugas latar belakang, pengingat, tugas Cron, atau
 perintah tetap.
 
-Tujuan adalah status sesi. Tujuan berpindah bersama kunci sesi, bertahan setelah
-proses dimulai ulang, muncul di `/goal`, tersedia bagi model melalui alat tujuan,
-dan muncul di footer TUI saat sesi aktif memilikinya.
+Sasaran merupakan status sesi: sasaran mengikuti kunci sesi, tetap tersedia setelah
+proses dimulai ulang, dan muncul di `/goal`, alat sasaran yang diakses model, serta
+bagian bawah TUI.
 
 ## Mulai cepat
 
-Tetapkan tujuan:
-
 ```text
 /goal start get CI green for PR 87469 and push the fix
-```
-
-Periksa:
-
-```text
 /goal
-```
-
-Jeda saat pekerjaan memang sedang menunggu:
-
-```text
+/goal edit get CI green for PR 87469, push the fix, and update docs
 /goal pause waiting for CI
-```
-
-Lanjutkan:
-
-```text
 /goal resume
-```
-
-Tandai selesai:
-
-```text
 /goal complete pushed and verified
-```
-
-Hapus:
-
-```text
 /goal clear
 ```
 
-## Kegunaan tujuan
+`start` bersifat opsional: `/goal get CI green for PR 87469` juga membuat sasaran,
+karena teks apa pun setelah `/goal` yang bukan kata tindakan yang dikenal akan dianggap sebagai
+tujuan baru.
 
-Gunakan tujuan saat sebuah sesi memiliki hasil konkret yang harus tetap terlihat
-di banyak giliran:
+## Kegunaan sasaran
 
-- Penutupan PR: perbaiki, verifikasi, autoreview, push, dan buka atau perbarui PR.
-- Sesi debug: reproduksi bug, identifikasi surface pemiliknya, tambal, dan buktikan
-  perbaikannya.
-- Pemeriksaan docs: baca docs yang relevan, tulis halaman baru, tautkan silang, dan
-  verifikasi build docs.
+Gunakan sasaran ketika sesi memiliki hasil konkret yang harus tetap terlihat
+selama banyak giliran:
+
+- Penyelesaian PR: perbaiki, verifikasi, lakukan peninjauan otomatis, dorong perubahan, lalu buka atau perbarui PR.
+- Proses pengawakutuan: reproduksi bug, identifikasi permukaan pemiliknya, tambal, lalu
+  buktikan perbaikannya.
+- Peninjauan dokumentasi: baca dokumentasi yang relevan, tulis halaman baru, tambahkan tautan silang, lalu
+  verifikasi pembangunan dokumentasi.
 - Tugas pemeliharaan: periksa status saat ini, buat perubahan terbatas, jalankan
-  pemeriksaan yang tepat, dan laporkan apa yang berubah.
+  pemeriksaan yang tepat, lalu laporkan perubahan yang dibuat.
 
-Tujuan bukan antrean tugas. Gunakan [Task Flow](/id/automation/taskflow),
-[tugas](/id/automation/tasks), [pekerjaan Cron](/id/automation/cron-jobs), atau
-[perintah tetap](/id/automation/standing-orders) saat pekerjaan harus berjalan terlepas,
-berulang sesuai jadwal, bercabang menjadi sub-pekerjaan terkelola, atau bertahan sebagai kebijakan.
+Sasaran bukan antrean tugas. Gunakan [Alur Tugas](/id/automation/taskflow),
+[tugas](/id/automation/tasks), [tugas Cron](/id/automation/cron-jobs), atau
+[perintah tetap](/id/automation/standing-orders) ketika pekerjaan harus berjalan secara terpisah,
+berulang sesuai jadwal, dikembangkan menjadi subpekerjaan terkelola, atau dipertahankan sebagai kebijakan.
 
 ## Referensi perintah
 
-`/goal` tanpa argumen mencetak ringkasan tujuan saat ini:
+`/goal` tanpa argumen menampilkan ringkasan sasaran saat ini:
 
 ```text
 Goal
@@ -95,131 +73,161 @@ Objective: get CI green for PR 87469 and push the fix
 Tokens used: 12k
 Token budget: 12k/50k
 
-Commands: /goal pause, /goal complete, /goal clear
+Commands: /goal edit <objective>, /goal pause, /goal complete, /goal clear
 ```
 
-Perintah:
+| Perintah                                            | Efek                                                                       |
+| --------------------------------------------------- | -------------------------------------------------------------------------- |
+| `/goal` atau `/goal status`                         | Tampilkan sasaran saat ini.                                                |
+| `/goal start <objective>`                           | Buat sasaran baru untuk sesi saat ini.                                     |
+| `/goal set <objective>`, `/goal create <objective>` | Alias untuk `start`.                                                       |
+| `/goal <objective>`                                 | Juga membuat sasaran baru (teks apa pun yang bukan kata tindakan yang dikenal). |
+| `/goal edit <objective>`                            | Ubah redaksi tujuan saat ini; status dan penghitungan token tetap sama.    |
+| `/goal pause [note]`                                | Jeda sasaran aktif.                                                        |
+| `/goal resume [note]`                               | Lanjutkan sasaran yang dijeda, terblokir, dibatasi penggunaan, atau dibatasi anggaran. |
+| `/goal complete [note]`                             | Tandai sasaran sebagai tercapai.                                           |
+| `/goal done [note]`                                 | Alias untuk `complete`.                                                    |
+| `/goal block [note]`                                | Tandai sasaran sebagai terblokir.                                          |
+| `/goal blocked [note]`                              | Alias untuk `block`.                                                       |
+| `/goal clear`                                       | Hapus sasaran dari sesi.                                                   |
 
-- `/goal` atau `/goal status` menampilkan tujuan saat ini.
-- `/goal start <objective>` membuat tujuan baru untuk sesi saat ini.
-- `/goal set <objective>` dan `/goal create <objective>` adalah alias untuk
-  `start`.
-- `/goal pause [note]` menjeda tujuan aktif.
-- `/goal resume [note]` melanjutkan tujuan yang dijeda, terblokir, dibatasi penggunaan, atau
-  dibatasi anggaran.
-- `/goal complete [note]` menandai tujuan telah tercapai.
-- `/goal done [note]` adalah alias untuk `complete`.
-- `/goal block [note]` menandai tujuan terblokir.
-- `/goal blocked [note]` adalah alias untuk `block`.
-- `/goal clear` menghapus tujuan dari sesi.
+Hanya satu sasaran yang dapat ada dalam satu sesi pada suatu waktu. Memulai sasaran kedua akan gagal
+dengan `Goal error: goal already exists` sampai sasaran saat ini dihapus.
 
-Hanya satu tujuan yang dapat ada pada satu sesi dalam satu waktu. Memulai tujuan kedua akan gagal
-hingga tujuan saat ini dihapus.
+`/goal start` tidak menerima flag anggaran token; anggaran hanya dapat ditetapkan
+melalui alat `create_goal` yang diakses model.
 
 ## Status
 
-Tujuan menggunakan kumpulan status kecil:
-
-- `active`: sesi sedang mengejar tujuan.
-- `paused`: operator menjeda tujuan; `/goal resume` membuatnya aktif lagi.
+- `active`: sesi sedang mengupayakan sasaran.
+- `paused`: operator menjeda sasaran; `/goal resume` membuatnya aktif
+  kembali.
 - `blocked`: agen atau operator melaporkan penghambat nyata; `/goal resume`
-  membuatnya aktif lagi saat informasi atau status baru tersedia.
+  membuatnya aktif kembali saat informasi atau status baru tersedia.
 - `budget_limited`: anggaran token yang dikonfigurasi telah tercapai; `/goal resume`
-  memulai ulang pengejaran dari objektif yang sama.
-- `usage_limited`: dicadangkan untuk status berhenti batas penggunaan; `/goal resume`
-  memulai ulang pengejaran saat diizinkan.
-- `complete`: tujuan telah tercapai. Tujuan selesai bersifat terminal; gunakan
-  `/goal clear` sebelum memulai tujuan lain.
+  memulai ulang upaya untuk tujuan yang sama dengan jendela anggaran baru.
+- `usage_limited`: disediakan untuk status penghentian karena batas penggunaan di masa mendatang; `/goal
+resume` memulai ulang upaya dengan cara yang sama.
+- `complete`: sasaran telah tercapai. Sasaran yang selesai bersifat terminal; gunakan `/goal
+clear` sebelum memulai sasaran lain.
 
-`/new` dan `/reset` menghapus tujuan sesi saat ini karena keduanya sengaja
+`/new` dan `/reset` menghapus sasaran sesi saat ini karena keduanya memang
 memulai konteks sesi baru.
 
 ## Anggaran token
 
-Tujuan dapat memiliki anggaran token positif opsional. Anggaran disimpan bersama
-tujuan dan diukur dari hitungan token baru sesi pada waktu pembuatan. Jika
-sesi saat ini hanya memiliki penggunaan token yang usang atau tidak diketahui saat tujuan dimulai,
-OpenClaw menunggu snapshot token sesi baru berikutnya dan menggunakannya sebagai
-baseline, sehingga token yang digunakan sebelum tujuan ada tidak dibebankan ke tujuan.
+Sasaran dapat memiliki anggaran token positif opsional yang ditetapkan melalui
+parameter `token_budget` pada alat `create_goal`. Anggaran diukur dari
+jumlah token baru sesi pada saat sasaran dibuat. Jika sesi hanya memiliki
+rekam cuplikan token yang usang atau tidak diketahui saat sasaran dimulai, OpenClaw menunggu
+rekam cuplikan baru berikutnya dan menggunakannya sebagai nilai dasar, sehingga token yang digunakan sebelum
+sasaran dibuat tidak dibebankan kepadanya.
 
-Saat penggunaan token mencapai anggaran, tujuan berubah menjadi `budget_limited`. Ini
-tidak menghapus tujuan atau menghapus objektif. Ini memberi tahu operator dan
-agen bahwa tujuan tidak lagi dikejar secara aktif hingga dilanjutkan atau
-dihapus.
+Ketika penggunaan mencapai anggaran, sasaran berpindah ke `budget_limited`. Hal ini
+tidak menghapus sasaran atau tujuan; status ini memberi tahu operator dan
+agen bahwa sasaran tidak lagi diupayakan secara aktif sampai dilanjutkan atau
+dihapus. Melanjutkannya akan memulai jendela anggaran baru berdasarkan jumlah token baru
+saat ini.
 
-Anggaran token adalah pembatas untuk tujuan sesi, bukan batas penagihan. Kuota penyedia,
-pelaporan biaya, dan perilaku jendela konteks tetap menggunakan kontrol penggunaan
-dan model OpenClaw normal.
+Anggaran token adalah batas pengaman sasaran sesi, bukan batas penagihan. Kuota
+penyedia, pelaporan biaya, dan perilaku jendela konteks tetap menggunakan
+kontrol penggunaan dan model OpenClaw yang normal.
 
 ## Alat model
 
-OpenClaw mengekspos tiga alat tujuan inti ke harness agen:
+OpenClaw menyediakan tiga alat sasaran untuk kerangka agen:
 
-- `get_goal`: membaca tujuan sesi saat ini, termasuk status, objektif, penggunaan
-  token, dan anggaran token.
-- `create_goal`: membuat tujuan hanya saat instruksi pengguna, sistem, atau developer
-  secara eksplisit memintanya. Ini gagal jika sesi sudah memiliki
-  tujuan.
-- `update_goal`: menandai tujuan `complete` atau `blocked`.
+| Alat          | Tujuan                                                                                                                       |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `get_goal`    | Baca sasaran sesi saat ini: status, tujuan, penggunaan token, dan anggaran token.                                            |
+| `create_goal` | Buat sasaran hanya ketika pengguna atau instruksi sistem memintanya secara eksplisit. Gagal jika sesi sudah memiliki sasaran. |
+| `update_goal` | Tandai sasaran sebagai `complete` atau `blocked`.                                                                            |
 
-Model tidak dapat diam-diam menjeda, melanjutkan, menghapus, atau mengganti tujuan. Itu adalah
-kontrol operator/sesi melalui `/goal` dan perintah reset. Ini mencegah
-agen mengubah target secara diam-diam sambil mempertahankan jalur bersih bagi
-agen untuk melaporkan pencapaian atau penghambat sungguhan.
+Model tidak dapat secara diam-diam menjeda, melanjutkan, menghapus, atau mengganti sasaran. Tindakan tersebut tetap menjadi
+kontrol operator/sesi melalui `/goal` dan perintah pengaturan ulang, sehingga agen
+dapat melaporkan pencapaian atau penghambat nyata tanpa diam-diam mengubah
+target.
 
-Alat `update_goal` harus menandai tujuan `complete` hanya saat objektif
-benar-benar tercapai. Alat ini harus menandai tujuan `blocked` hanya saat kondisi
-penghambat yang sama telah berulang dan agen tidak dapat membuat kemajuan bermakna tanpa
-input pengguna baru atau perubahan status eksternal.
+`update_goal` hanya boleh menandai sasaran sebagai `complete` ketika tujuan
+benar-benar tercapai. Alat ini hanya boleh menandai sasaran sebagai `blocked` setelah kondisi
+penghambat yang sama berulang selama setidaknya tiga giliran sasaran berturut-turut, bukan karena
+kesulitan biasa atau penyempurnaan yang belum selesai.
+
+## Konteks sasaran pada setiap giliran
+
+Setiap giliran pengguna/obrolan dengan sasaran aktif menyertakan baris konteks peran pengguna berikut:
+
+```text
+Active goal: <objective> — advance it or update its status (get_goal/update_goal).
+```
+
+OpenClaw menjaga baris tetap ringkas dengan memotong tujuan yang panjang. Sasaran yang dijeda,
+terblokir, dibatasi anggaran, dibatasi penggunaan, dan selesai tidak disisipkan,
+sehingga penghentian oleh operator tetap berlaku sampai sasaran dilanjutkan.
+
+## UI Kontrol
+
+UI Kontrol web menampilkan sasaran sebagai pil ringkas di atas penyusun obrolan:
+ikon status, label status (misalnya `Pursuing goal`), tujuan yang dipotong,
+dan pengatur waktu berjalan langsung.
+
+Pil tersebut memiliki kontrol sebaris:
+
+- **Pensil** mengisi penyusun terlebih dahulu dengan `/goal edit <objective>` agar
+  tujuan dapat dirumuskan ulang dan dikirim.
+- **Jeda / lanjutkan** beralih antara `/goal pause` dan `/goal resume` berdasarkan
+  status saat ini.
+- **Tempat sampah** mengirim `/goal clear`.
+- **Chevron** memperluas pil untuk menampilkan tujuan lengkap, catatan status
+  terbaru, penggunaan token, dan waktu yang telah berlalu.
+
+Tombol tindakan disembunyikan saat penyusun tidak dapat mengirim (misalnya
+ketika koneksi Gateway terputus); chevron perluasan tetap berfungsi.
 
 ## TUI
 
-TUI menjaga tujuan sesi aktif tetap terlihat di footer di sebelah
-agen, sesi, model, kontrol run, dan hitungan token.
+Bagian bawah TUI menjaga sasaran sesi aktif tetap terlihat di samping bidang agen,
+sesi, dan model, sebelum indikator token/mode.
 
-Contoh footer:
+Contoh bagian bawah:
 
-- `Pursuing goal (12k/50k)` untuk tujuan aktif dengan anggaran token.
-- `Goal paused (/goal resume)` untuk tujuan yang dijeda.
-- `Goal blocked (/goal resume)` untuk tujuan yang terblokir.
-- `Goal hit usage limits (/goal resume)` untuk tujuan yang dibatasi penggunaan.
-- `Goal unmet (50k/50k)` untuk tujuan yang dibatasi anggaran.
-- `Goal achieved (42k)` untuk tujuan yang selesai.
+- `Pursuing goal (12k/50k)` untuk sasaran aktif dengan anggaran token.
+- `Goal paused (/goal resume)` untuk sasaran yang dijeda.
+- `Goal blocked (/goal resume)` untuk sasaran yang terblokir.
+- `Goal hit usage limits (/goal resume)` untuk sasaran yang dibatasi penggunaan.
+- `Goal unmet (50k/50k)` untuk sasaran yang dibatasi anggaran.
+- `Goal achieved (42k)` untuk sasaran yang selesai.
 
-Footer sengaja ringkas. Gunakan `/goal` untuk objektif lengkap, catatan,
-anggaran token, dan perintah yang tersedia.
+Bagian bawah sengaja dibuat ringkas. Gunakan `/goal` untuk melihat tujuan lengkap,
+catatan, anggaran token, dan perintah yang tersedia.
 
-## Perilaku channel
+## Perilaku kanal
 
-Perintah `/goal` berfungsi dalam sesi OpenClaw yang mendukung perintah, termasuk
-TUI dan surface chat yang mengizinkan perintah teks. Status tujuan melekat pada
-kunci sesi, bukan transport. Jika dua surface menggunakan sesi yang sama, keduanya melihat
-tujuan yang sama.
+`/goal` berfungsi dalam sesi OpenClaw yang mendukung perintah, termasuk TUI dan
+permukaan obrolan yang mengizinkan perintah teks. Status sasaran dilampirkan ke
+kunci sesi, bukan transportasi, sehingga dua permukaan yang menggunakan kunci sesi yang sama akan melihat
+sasaran yang sama.
 
-Status tujuan bukan direktif pengiriman. Ini tidak memaksa balasan melalui sebuah
-channel, mengubah perilaku antrean, menyetujui alat, atau menjadwalkan pekerjaan.
+Status sasaran bukan arahan pengiriman: status tersebut tidak memaksa balasan melalui
+kanal, mengubah perilaku antrean, menyetujui alat, atau menjadwalkan pekerjaan.
 
 ## Pemecahan masalah
 
-`Goal error: goal already exists` berarti sesi sudah memiliki tujuan. Gunakan
-`/goal` untuk memeriksanya, `/goal complete` jika sudah selesai, atau `/goal clear` sebelum
-memulai objektif lain.
+| Pesan                                  | Arti                                                                                                                                                  |
+| -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Goal error: goal already exists`      | Sesi sudah memiliki sasaran. Gunakan `/goal` untuk memeriksanya, `/goal complete` jika sudah selesai, atau `/goal clear` sebelum memulai tujuan lain. |
+| `Goal error: goal not found`           | Sesi belum memiliki sasaran. Mulai dengan `/goal start <objective>`.                                                                                  |
+| `Goal error: goal is already complete` | Sasaran bersifat terminal. Hapus sasaran tersebut sebelum memulai atau melanjutkan tujuan lain.                                                        |
 
-`Goal error: goal not found` berarti sesi belum memiliki tujuan. Mulai satu dengan
-`/goal start <objective>`.
-
-`Goal error: goal is already complete` berarti tujuan bersifat terminal. Hapus
-sebelum memulai atau melanjutkan objektif lain.
-
-Jika penggunaan token terlihat seperti `0` atau usang, sesi aktif mungkin belum memiliki
-snapshot token baru. Penggunaan diperbarui saat OpenClaw mencatat penggunaan sesi dan
-total turunan transkrip.
+Jika penggunaan token menampilkan `0` atau terlihat usang, sesi aktif mungkin belum memiliki
+rekam cuplikan token baru. Penggunaan diperbarui saat OpenClaw mencatat penggunaan sesi
+dan total yang berasal dari transkrip.
 
 ## Terkait
 
-- [Perintah slash](/id/tools/slash-commands)
+- [Perintah garis miring](/id/tools/slash-commands)
 - [TUI](/id/web/tui)
 - [Alat sesi](/id/concepts/session-tool)
 - [Compaction](/id/concepts/compaction)
-- [Task Flow](/id/automation/taskflow)
+- [Alur Tugas](/id/automation/taskflow)
 - [Perintah tetap](/id/automation/standing-orders)

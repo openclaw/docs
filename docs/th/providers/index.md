@@ -1,27 +1,27 @@
 ---
 read_when:
     - คุณต้องการเลือกผู้ให้บริการโมเดล
-    - คุณต้องการภาพรวมอย่างรวดเร็วของแบ็กเอนด์ LLM ที่รองรับ
+    - คุณต้องการภาพรวมคร่าว ๆ ของระบบเบื้องหลัง LLM ที่รองรับ
 summary: ผู้ให้บริการโมเดล (LLM) ที่ OpenClaw รองรับ
-title: ไดเรกทอรีของผู้ให้บริการ
+title: ไดเรกทอรีผู้ให้บริการ
 x-i18n:
-    generated_at: "2026-07-04T04:12:10Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:37:42Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3386b41b340048f7ace61077e724a70af36dda83c65d211dde5081b378b1b448
+    source_hash: b59843b53265500866e87ee8d888892dacd6045bdb9401a1e7ec08ad4f364090
     source_path: providers/index.md
     workflow: 16
 ---
 
-OpenClaw สามารถใช้ผู้ให้บริการ LLM ได้หลายราย เลือกผู้ให้บริการ ยืนยันตัวตน จากนั้นตั้งค่า
+OpenClaw สามารถใช้ผู้ให้บริการ LLM ได้หลายราย เลือกผู้ให้บริการ ยืนยันตัวตน แล้วตั้งค่า
 โมเดลเริ่มต้นเป็น `provider/model`
 
-กำลังมองหาเอกสารช่องทางแชต (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/ฯลฯ) อยู่ใช่ไหม ดู [ช่องทาง](/th/channels)
+กำลังมองหาเอกสารช่องทางแชต (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/ฯลฯ) อยู่หรือไม่? ดู[ช่องทาง](/th/channels)
 
 ## เริ่มต้นอย่างรวดเร็ว
 
-1. ยืนยันตัวตนกับผู้ให้บริการ (โดยปกติผ่าน `openclaw onboard`)
+1. ยืนยันตัวตนกับผู้ให้บริการ (โดยทั่วไปผ่าน `openclaw onboard`)
 2. ตั้งค่าโมเดลเริ่มต้น:
 
 ```json5
@@ -41,14 +41,15 @@ OpenClaw สามารถใช้ผู้ให้บริการ LLM ไ
 - [BytePlus (ระหว่างประเทศ)](/th/concepts/model-providers#byteplus-international)
 - [Cerebras](/th/providers/cerebras)
 - [Chutes](/th/providers/chutes)
-- [ClawRouter (การกำหนดเส้นทางหลายผู้ให้บริการแบบมีการจัดการ)](/providers/clawrouter)
-- [Cohere](/th/providers/cohere)
+- [ClawRouter (การกำหนดเส้นทางหลายผู้ให้บริการแบบมีการจัดการ)](/th/providers/clawrouter)
 - [Cloudflare AI Gateway](/th/providers/cloudflare-ai-gateway)
+- [Cohere](/th/providers/cohere)
 - [ComfyUI](/th/providers/comfy)
 - [DeepSeek](/th/providers/deepseek)
-- [ds4 (DeepSeek V4 ในเครื่อง)](/th/providers/ds4)
+- [ds4 (DeepSeek V4 ภายในเครื่อง)](/th/providers/ds4)
 - [ElevenLabs](/th/providers/elevenlabs)
 - [fal](/th/providers/fal)
+- [Featherless AI](/providers/featherless)
 - [Fireworks](/th/providers/fireworks)
 - [GitHub Copilot](/th/providers/github-copilot)
 - [GMI Cloud](/th/providers/gmi)
@@ -56,16 +57,17 @@ OpenClaw สามารถใช้ผู้ให้บริการ LLM ไ
 - [Gradium](/th/providers/gradium)
 - [Groq (การอนุมานด้วย LPU)](/th/providers/groq)
 - [Hugging Face (การอนุมาน)](/th/providers/huggingface)
-- [inferrs (โมเดลในเครื่อง)](/th/providers/inferrs)
+- [inferrs (โมเดลภายในเครื่อง)](/th/providers/inferrs)
 - [Kilocode](/th/providers/kilocode)
-- [LiteLLM (gateway แบบรวมศูนย์)](/th/providers/litellm)
-- [LM Studio (โมเดลในเครื่อง)](/th/providers/lmstudio)
+- [LiteLLM (Gateway แบบรวมศูนย์)](/th/providers/litellm)
+- [LM Studio (โมเดลภายในเครื่อง)](/th/providers/lmstudio)
+- [LongCat](/th/providers/longcat)
 - [MiniMax](/th/providers/minimax)
 - [Mistral](/th/providers/mistral)
 - [Moonshot AI (Kimi + Kimi Coding)](/th/providers/moonshot)
-- [NVIDIA](/th/providers/nvidia)
 - [NovitaAI](/th/providers/novita)
-- [Ollama (โมเดลบนคลาวด์ + ในเครื่อง)](/th/providers/ollama)
+- [NVIDIA](/th/providers/nvidia)
+- [Ollama (โมเดลบนคลาวด์ + ภายในเครื่อง)](/th/providers/ollama)
 - [Ollama Cloud](/th/providers/ollama-cloud)
 - [OpenAI (API + Codex)](/th/providers/openai)
 - [OpenCode](/th/providers/opencode)
@@ -77,14 +79,14 @@ OpenClaw สามารถใช้ผู้ให้บริการ LLM ไ
 - [Qwen OAuth / Portal](/th/providers/qwen-oauth)
 - [Runway](/th/providers/runway)
 - [SenseAudio](/th/providers/senseaudio)
-- [SGLang (โมเดลในเครื่อง)](/th/providers/sglang)
+- [SGLang (โมเดลภายในเครื่อง)](/th/providers/sglang)
 - [StepFun](/th/providers/stepfun)
 - [Synthetic](/th/providers/synthetic)
-- [Tencent Cloud (TokenHub)](/th/providers/tencent)
+- [Tencent Cloud (TokenHub / TokenPlan)](/th/providers/tencent)
 - [Together AI](/th/providers/together)
-- [Venice (Venice AI, เน้นความเป็นส่วนตัว)](/th/providers/venice)
+- [Venice (Venice AI ที่เน้นความเป็นส่วนตัว)](/th/providers/venice)
 - [Vercel AI Gateway](/th/providers/vercel-ai-gateway)
-- [vLLM (โมเดลในเครื่อง)](/th/providers/vllm)
+- [vLLM (โมเดลภายในเครื่อง)](/th/providers/vllm)
 - [Volcengine (Doubao)](/th/providers/volcengine)
 - [Vydra](/th/providers/vydra)
 - [xAI](/th/providers/xai)
@@ -93,23 +95,23 @@ OpenClaw สามารถใช้ผู้ให้บริการ LLM ไ
 
 ## หน้าภาพรวมที่ใช้ร่วมกัน
 
-- [ตัวแปรเพิ่มเติมที่รวมมาให้](/th/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy และ Gemini CLI OAuth
-- [การสร้างรูปภาพ](/th/tools/image-generation) - เครื่องมือ `image_generate` ที่ใช้ร่วมกัน การเลือกผู้ให้บริการ และการสลับไปใช้ตัวสำรอง
-- [การสร้างเพลง](/th/tools/music-generation) - เครื่องมือ `music_generate` ที่ใช้ร่วมกัน การเลือกผู้ให้บริการ และการสลับไปใช้ตัวสำรอง
-- [การสร้างวิดีโอ](/th/tools/video-generation) - เครื่องมือ `video_generate` ที่ใช้ร่วมกัน การเลือกผู้ให้บริการ และการสลับไปใช้ตัวสำรอง
+- [ตัวเลือกเพิ่มเติมของผู้ให้บริการ](/th/providers/models#additional-provider-variants) - Anthropic Vertex, Copilot Proxy และ Gemini CLI OAuth
+- [การสร้างรูปภาพ](/th/tools/image-generation) - เครื่องมือ `image_generate` ที่ใช้ร่วมกัน การเลือกผู้ให้บริการ และการสลับไปใช้ระบบสำรอง
+- [การสร้างเพลง](/th/tools/music-generation) - เครื่องมือ `music_generate` ที่ใช้ร่วมกัน การเลือกผู้ให้บริการ และการสลับไปใช้ระบบสำรอง
+- [การสร้างวิดีโอ](/th/tools/video-generation) - เครื่องมือ `video_generate` ที่ใช้ร่วมกัน การเลือกผู้ให้บริการ และการสลับไปใช้ระบบสำรอง
 
 ## ผู้ให้บริการถอดเสียง
 
 - [Deepgram (การถอดเสียงจากเสียง)](/th/providers/deepgram)
 - [ElevenLabs](/th/providers/elevenlabs#speech-to-text)
 - [Mistral](/th/providers/mistral#audio-transcription-voxtral)
-- [OpenAI](/th/providers/openai#speech-to-text)
+- [OpenAI](/th/providers/openai)
 - [SenseAudio](/th/providers/senseaudio)
-- [xAI](/th/providers/xai#speech-to-text)
+- [xAI](/th/providers/xai)
 
-## เครื่องมือชุมชน
+## เครื่องมือจากชุมชน
 
-- [Claude Max API Proxy](/th/providers/claude-max-api-proxy) - พร็อกซีจากชุมชนสำหรับข้อมูลรับรองการสมัครใช้งาน Claude (ตรวจสอบนโยบาย/ข้อกำหนดของ Anthropic ก่อนใช้งาน)
+- [Claude Max API Proxy](/th/providers/claude-max-api-proxy) - พร็อกซีจากชุมชนสำหรับข้อมูลประจำตัวของการสมัครสมาชิก Claude (ตรวจสอบนโยบาย/ข้อกำหนดของ Anthropic ก่อนใช้งาน)
 
 สำหรับแค็ตตาล็อกผู้ให้บริการทั้งหมด (xAI, Groq, Mistral ฯลฯ) และการกำหนดค่าขั้นสูง
-ดู [ผู้ให้บริการโมเดล](/th/concepts/model-providers)
+โปรดดู[ผู้ให้บริการโมเดล](/th/concepts/model-providers)

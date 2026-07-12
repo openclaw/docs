@@ -1,178 +1,145 @@
 ---
 permalink: /security/formal-verification/
 read_when:
-    - Analizowanie formalnych gwarancji lub ograniczeń modelu bezpieczeństwa
-    - Odtwarzanie lub aktualizowanie weryfikacji modelu bezpieczeństwa TLA+/TLC
-summary: Maszynowo zweryfikowane modele bezpieczeństwa dla ścieżek OpenClaw o najwyższym ryzyku.
+    - Przegląd formalnych gwarancji lub ograniczeń modelu bezpieczeństwa
+    - Odtwarzanie lub aktualizowanie kontroli modeli bezpieczeństwa TLA+/TLC
+summary: Modele bezpieczeństwa weryfikowane maszynowo dla ścieżek OpenClaw o najwyższym poziomie ryzyka.
 title: Weryfikacja formalna (modele bezpieczeństwa)
 x-i18n:
-    generated_at: "2026-05-06T09:29:34Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:37:38Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 298b92f27abb8321be807fe4d95c7cd568a0fb8f543d168863b2adb9b3ddcde4
+    source_hash: 86342f6e2f54c08d5e0f8a08d0d488459650a6ace35e985ff886f847540202c9
     source_path: security/formal-verification.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Ta strona śledzi **formalne modele bezpieczeństwa** OpenClaw (obecnie TLA+/TLC; kolejne w razie potrzeby).
+Formalne modele bezpieczeństwa OpenClaw (obecnie TLA+/TLC) dostarczają zweryfikowanego maszynowo uzasadnienia, że określone ścieżki najwyższego ryzyka — autoryzacja, izolacja sesji, kontrolowanie dostępu do narzędzi i bezpieczeństwo w przypadku błędnej konfiguracji — egzekwują zamierzone zasady przy jawnie określonych założeniach.
 
-> Uwaga: niektóre starsze linki mogą odnosić się do poprzedniej nazwy projektu.
+> Uwaga: niektóre starsze linki mogą odwoływać się do poprzedniej nazwy projektu.
 
-**Cel (gwiazda północna):** dostarczyć sprawdzony maszynowo argument, że OpenClaw egzekwuje swoją
-zamierzoną politykę bezpieczeństwa (autoryzacja, izolacja sesji, bramkowanie narzędzi i
-bezpieczeństwo przy błędnej konfiguracji), przy jawnych założeniach.
+## Czym to jest
 
-**Czym to jest (obecnie):** wykonywalny, sterowany przez atakującego **zestaw regresyjny bezpieczeństwa**:
+Wykonywalny, ukierunkowany na działania atakującego zestaw testów regresji bezpieczeństwa:
 
-- Każde twierdzenie ma uruchamialne sprawdzenie modelu w skończonej przestrzeni stanów.
-- Wiele twierdzeń ma sparowany **model negatywny**, który generuje ślad kontrprzykładu dla realistycznej klasy błędów.
+- Każde twierdzenie ma uruchamialną weryfikację modelu w skończonej przestrzeni stanów.
+- Wiele twierdzeń ma odpowiadający mu model negatywny, który generuje ślad kontrprzykładu dla realistycznej klasy błędów.
 
-**Czym to nie jest (jeszcze):** dowód, że „OpenClaw jest bezpieczny pod każdym względem” albo że pełna implementacja TypeScript jest poprawna.
+To **nie** jest dowód, że OpenClaw jest bezpieczny pod każdym względem, ani weryfikacja pełnej implementacji w TypeScript.
 
 ## Gdzie znajdują się modele
 
 Modele są utrzymywane w osobnym repozytorium: [vignesh07/openclaw-formal-models](https://github.com/vignesh07/openclaw-formal-models).
 
-## Ważne zastrzeżenia
+<Note>
+To repozytorium jest obecnie niedostępne (w chwili pisania tego tekstu GitHub zwraca „Repository not found”). Jeśli nadal jest dla Ciebie niedostępne, zapytaj na kanałach opiekunów OpenClaw o jego aktualną lokalizację, zanim uznasz, że modele zostały usunięte.
+</Note>
 
-- To są **modele**, a nie pełna implementacja TypeScript. Możliwy jest rozdźwięk między modelem a kodem.
-- Wyniki są ograniczone przestrzenią stanów eksplorowaną przez TLC; „zielony” wynik nie oznacza bezpieczeństwa poza modelowanymi założeniami i ograniczeniami.
-- Niektóre twierdzenia opierają się na jawnych założeniach środowiskowych (np. poprawne wdrożenie, poprawne dane wejściowe konfiguracji).
+## Zastrzeżenia
+
+- Są to modele, a nie pełna implementacja w TypeScript — możliwa jest rozbieżność między modelem a kodem.
+- Wyniki są ograniczone przestrzenią stanów przeszukiwaną przez TLC. Wynik pozytywny nie oznacza bezpieczeństwa poza modelowanymi założeniami i granicami.
+- Niektóre twierdzenia opierają się na jawnych założeniach dotyczących środowiska (na przykład poprawnym wdrożeniu i poprawnych danych wejściowych konfiguracji).
 
 ## Odtwarzanie wyników
 
-Obecnie wyniki odtwarza się przez lokalne sklonowanie repozytorium modeli i uruchomienie TLC (zobacz poniżej). Przyszła iteracja mogłaby oferować:
-
-- modele uruchamiane w CI z publicznymi artefaktami (ślady kontrprzykładów, logi uruchomień)
-- hostowany przepływ „uruchom ten model” dla małych, ograniczonych sprawdzeń
-
-Pierwsze kroki:
+Sklonuj repozytorium modeli i uruchom TLC:
 
 ```bash
 git clone https://github.com/vignesh07/openclaw-formal-models
 cd openclaw-formal-models
 
-# Wymagane Java 11+ (TLC działa na JVM).
-# Repozytorium zawiera dostarczony, przypięty `tla2tools.jar` (narzędzia TLA+) oraz udostępnia `bin/tlc` + cele Make.
+# Wymagana jest Java 11+ (TLC działa na JVM).
+# Repozytorium zawiera przypięty plik tla2tools.jar oraz udostępnia bin/tlc i cele Make.
 
 make <target>
 ```
 
+Nie ma jeszcze integracji CI z tym repozytorium; przyszła wersja mogłaby dodać modele uruchamiane w CI z publicznymi artefaktami (śladami kontrprzykładów, dziennikami uruchomień) albo hostowany przepływ pracy „uruchom ten model” dla niewielkich, ograniczonych weryfikacji.
+
+## Twierdzenia i cele
+
 ### Ekspozycja Gateway i błędna konfiguracja otwartego Gateway
 
-**Twierdzenie:** wiązanie poza loopback bez uwierzytelniania może umożliwić zdalne przejęcie / zwiększa ekspozycję; token/hasło blokuje nieuwierzytelnionych atakujących (zgodnie z założeniami modelu).
+**Twierdzenie:** nasłuchiwanie poza interfejsem loopback bez uwierzytelniania może umożliwić zdalne przejęcie i zwiększa ekspozycję; zgodnie z założeniami modelu token lub hasło blokuje nieuwierzytelnionych atakujących.
 
-- Zielone uruchomienia:
-  - `make gateway-exposure-v2`
-  - `make gateway-exposure-v2-protected`
-- Czerwone (oczekiwane):
-  - `make gateway-exposure-v2-negative`
+| Wynik                | Cele                                                             |
+| -------------------- | ---------------------------------------------------------------- |
+| Pozytywny            | `make gateway-exposure-v2`, `make gateway-exposure-v2-protected` |
+| Negatywny (oczekiwany) | `make gateway-exposure-v2-negative`                            |
 
-Zobacz też: `docs/gateway-exposure-matrix.md` w repozytorium modeli.
+Zobacz także `docs/gateway-exposure-matrix.md` w repozytorium modeli.
 
-### Potok exec Node (funkcja najwyższego ryzyka)
+### Potok wykonywania Node (możliwość o najwyższym ryzyku)
 
-**Twierdzenie:** `exec host=node` wymaga (a) listy dozwolonych poleceń Node oraz zadeklarowanych poleceń i (b) zatwierdzenia na żywo, gdy jest skonfigurowane; zatwierdzenia są tokenizowane, aby zapobiec powtórnemu użyciu (w modelu).
+**Twierdzenie:** `exec host=node` wymaga (a) listy dozwolonych poleceń Node wraz z zadeklarowanymi poleceniami oraz (b) zatwierdzenia na żywo, jeśli zostało skonfigurowane; w modelu zatwierdzenia są tokenizowane, aby zapobiec ich ponownemu użyciu.
 
-- Zielone uruchomienia:
-  - `make nodes-pipeline`
-  - `make approvals-token`
-- Czerwone (oczekiwane):
-  - `make nodes-pipeline-negative`
-  - `make approvals-token-negative`
+| Wynik                  | Cele                                                            |
+| ---------------------- | --------------------------------------------------------------- |
+| Pozytywny              | `make nodes-pipeline`, `make approvals-token`                   |
+| Negatywny (oczekiwany) | `make nodes-pipeline-negative`, `make approvals-token-negative` |
 
-### Magazyn parowania (bramkowanie DM)
+### Magazyn parowania (kontrola wiadomości prywatnych)
 
-**Twierdzenie:** żądania parowania respektują TTL i limity oczekujących żądań.
+**Twierdzenie:** żądania parowania przestrzegają TTL i limitów oczekujących żądań.
 
-- Zielone uruchomienia:
-  - `make pairing`
-  - `make pairing-cap`
-- Czerwone (oczekiwane):
-  - `make pairing-negative`
-  - `make pairing-cap-negative`
+| Wynik                  | Cele                                                 |
+| ---------------------- | ---------------------------------------------------- |
+| Pozytywny              | `make pairing`, `make pairing-cap`                   |
+| Negatywny (oczekiwany) | `make pairing-negative`, `make pairing-cap-negative` |
 
-### Bramkowanie wejścia (wzmianki + obejście polecenia kontrolnego)
+### Kontrola ruchu przychodzącego (wzmianki i omijanie za pomocą poleceń sterujących)
 
-**Twierdzenie:** w kontekstach grupowych wymagających wzmianki nieautoryzowane „polecenie kontrolne” nie może ominąć bramkowania wzmianek.
+**Twierdzenie:** w kontekstach grupowych wymagających wzmianki nieautoryzowane polecenie sterujące nie może ominąć kontroli wzmianek.
 
-- Zielone:
-  - `make ingress-gating`
-- Czerwone (oczekiwane):
-  - `make ingress-gating-negative`
+| Wynik                  | Cele                           |
+| ---------------------- | ------------------------------ |
+| Pozytywny              | `make ingress-gating`          |
+| Negatywny (oczekiwany) | `make ingress-gating-negative` |
 
-### Izolacja routingu/klucza sesji
+### Izolacja routingu i kluczy sesji
 
-**Twierdzenie:** DM od różnych nadawców nie są łączone w tę samą sesję, chyba że są jawnie powiązane/skonfigurowane.
+**Twierdzenie:** wiadomości prywatne od różnych rozmówców nie są łączone w tę samą sesję, chyba że zostały jawnie powiązane lub odpowiednio skonfigurowane.
 
-- Zielone:
-  - `make routing-isolation`
-- Czerwone (oczekiwane):
-  - `make routing-isolation-negative`
+| Wynik                  | Cele                              |
+| ---------------------- | --------------------------------- |
+| Pozytywny              | `make routing-isolation`          |
+| Negatywny (oczekiwany) | `make routing-isolation-negative` |
 
-## v1++: dodatkowe modele ograniczone (współbieżność, ponowienia, poprawność śladu)
+## Modele v1++: współbieżność, ponowienia i poprawność śladów
 
-To są modele uzupełniające, które zwiększają wierność wobec rzeczywistych trybów awarii (nieatomowe aktualizacje, ponowienia i rozsyłanie wiadomości).
+Kolejne modele, które zwiększają zgodność z rzeczywistymi trybami awarii: nieatomowymi aktualizacjami, ponowieniami i rozsyłaniem wiadomości.
 
-### Współbieżność / idempotencja magazynu parowania
+### Współbieżność i idempotencja magazynu parowania
 
-**Twierdzenie:** magazyn parowania powinien egzekwować `MaxPending` i idempotencję nawet przy przeplotach (tj. „sprawdź, potem zapisz” musi być atomowe / zablokowane; odświeżenie nie powinno tworzyć duplikatów).
+**Twierdzenie:** magazyn parowania egzekwuje `MaxPending` i idempotencję nawet przy przeplotach operacji — sprawdzenie, a następnie zapis muszą być atomowe lub chronione blokadą, a odświeżenie nie może tworzyć duplikatów. Konkretnie: współbieżne żądania nie mogą przekroczyć `MaxPending` dla kanału, a powtarzające się żądania lub odświeżenia dotyczące tej samej pary `(channel, sender)` nie tworzą zduplikowanych aktywnych oczekujących wierszy.
 
-Co to oznacza:
+| Wynik                  | Cele                                                                                                                                                                        |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Pozytywny              | `make pairing-race` (atomowe lub chronione blokadą sprawdzanie limitu), `make pairing-idempotency`, `make pairing-refresh`, `make pairing-refresh-race`                       |
+| Negatywny (oczekiwany) | `make pairing-race-negative` (nieatomowy wyścig limitu między rozpoczęciem a zatwierdzeniem), `make pairing-idempotency-negative`, `make pairing-refresh-negative`, `make pairing-refresh-race-negative` |
 
-- Przy współbieżnych żądaniach nie można przekroczyć `MaxPending` dla kanału.
-- Powtarzane żądania/odświeżenia dla tego samego `(channel, sender)` nie powinny tworzyć zduplikowanych aktywnych wierszy oczekujących.
+### Korelacja śladów i idempotencja ruchu przychodzącego
 
-- Zielone uruchomienia:
-  - `make pairing-race` (atomowe/zablokowane sprawdzenie limitu)
-  - `make pairing-idempotency`
-  - `make pairing-refresh`
-  - `make pairing-refresh-race`
-- Czerwone (oczekiwane):
-  - `make pairing-race-negative` (nieatomowy wyścig limitu begin/commit)
-  - `make pairing-idempotency-negative`
-  - `make pairing-refresh-negative`
-  - `make pairing-refresh-race-negative`
+**Twierdzenie:** pozyskiwanie wiadomości zachowuje korelację śladów podczas rozsyłania i jest idempotentne przy ponowieniach po stronie dostawcy. Gdy jedno zdarzenie zewnętrzne staje się wieloma wiadomościami wewnętrznymi, każda część zachowuje tę samą tożsamość śladu lub zdarzenia; ponowienia nie powodują podwójnego przetwarzania; jeśli brakuje identyfikatorów zdarzeń dostawcy, deduplikacja korzysta z bezpiecznego klucza zastępczego (na przykład identyfikatora śladu), aby uniknąć odrzucenia odrębnych zdarzeń.
 
-### Korelacja śladu / idempotencja wejścia
+| Wynik                  | Cele                                                                                                                                        |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Pozytywny              | `make ingress-trace`, `make ingress-trace2`, `make ingress-idempotency`, `make ingress-dedupe-fallback`                                     |
+| Negatywny (oczekiwany) | `make ingress-trace-negative`, `make ingress-trace2-negative`, `make ingress-idempotency-negative`, `make ingress-dedupe-fallback-negative` |
 
-**Twierdzenie:** przyjmowanie zdarzeń powinno zachowywać korelację śladu podczas rozsyłania i być idempotentne przy ponowieniach dostawcy.
+### Pierwszeństwo `dmScope` w routingu i `identityLinks`
 
-Co to oznacza:
+**Twierdzenie:** routing domyślnie utrzymuje izolację sesji wiadomości prywatnych i łączy sesje wyłącznie po jawnej konfiguracji, zgodnie z pierwszeństwem kanałów i powiązaniami tożsamości. Wartości `dmScope` właściwe dla kanału mają pierwszeństwo przed globalnymi wartościami domyślnymi; `identityLinks` łączą sesje wyłącznie w ramach jawnie powiązanych grup, a nie między niepowiązanymi rozmówcami.
 
-- Gdy jedno zdarzenie zewnętrzne staje się wieloma wiadomościami wewnętrznymi, każda część zachowuje tę samą tożsamość śladu/zdarzenia.
-- Ponowienia nie skutkują podwójnym przetwarzaniem.
-- Jeśli brakuje identyfikatorów zdarzeń dostawcy, deduplikacja wraca do bezpiecznego klucza (np. identyfikatora śladu), aby uniknąć odrzucania odrębnych zdarzeń.
+| Wynik                  | Cele                                                                      |
+| ---------------------- | ------------------------------------------------------------------------- |
+| Pozytywny              | `make routing-precedence`, `make routing-identitylinks`                   |
+| Negatywny (oczekiwany) | `make routing-precedence-negative`, `make routing-identitylinks-negative` |
 
-- Zielone:
-  - `make ingress-trace`
-  - `make ingress-trace2`
-  - `make ingress-idempotency`
-  - `make ingress-dedupe-fallback`
-- Czerwone (oczekiwane):
-  - `make ingress-trace-negative`
-  - `make ingress-trace2-negative`
-  - `make ingress-idempotency-negative`
-  - `make ingress-dedupe-fallback-negative`
-
-### Pierwszeństwo dmScope routingu + identityLinks
-
-**Twierdzenie:** routing musi domyślnie izolować sesje DM i łączyć sesje tylko wtedy, gdy zostało to jawnie skonfigurowane (pierwszeństwo kanału + linki tożsamości).
-
-Co to oznacza:
-
-- Nadpisania dmScope specyficzne dla kanału muszą mieć pierwszeństwo przed globalnymi wartościami domyślnymi.
-- identityLinks powinny łączyć tylko w ramach jawnie powiązanych grup, a nie między niepowiązanymi nadawcami.
-
-- Zielone:
-  - `make routing-precedence`
-  - `make routing-identitylinks`
-- Czerwone (oczekiwane):
-  - `make routing-precedence-negative`
-  - `make routing-identitylinks-negative`
-
-## Powiązane
+## Powiązane materiały
 
 - [Model zagrożeń](/pl/security/THREAT-MODEL-ATLAS)
 - [Współtworzenie modelu zagrożeń](/pl/security/CONTRIBUTING-THREAT-MODEL)
+- [Reagowanie na incydenty](/pl/security/incident-response)

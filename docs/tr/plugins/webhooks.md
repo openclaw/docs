@@ -1,28 +1,22 @@
 ---
 read_when:
-    - TaskFlows'u harici bir sistemden tetiklemek veya yönetmek istiyorsunuz
-    - Birlikte gelen Webhook Plugin'ını yapılandırıyorsunuz
+    - TaskFlow'ları harici bir sistemden tetiklemek veya yönetmek istiyorsunuz
+    - Paketle birlikte gelen webhook'lar pluginini yapılandırıyorsunuz
 summary: 'Webhooks Plugin''i: güvenilir harici otomasyon için kimliği doğrulanmış TaskFlow girişi'
-title: Webhook Plugin
+title: Webhook'lar Plugin'i
 x-i18n:
-    generated_at: "2026-05-06T17:59:29Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:41:11Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 9d21d96f680fa24d4a53c1ed5759f800d3cfdc3336789c42c15266edd8ce9e80
+    source_hash: 081ccbb4ca60234b20f4db7379395bdc51e7203caad4c0a88f292989ca18b28e
     source_path: plugins/webhooks.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Webhooks Plugin'i, dış otomasyonu OpenClaw TaskFlow'larına bağlayan kimliği doğrulanmış HTTP rotaları ekler.
+Webhooks plugin'i, güvenilir bir harici sistemin (Zapier, n8n, bir CI işi, dahili bir hizmet) özel bir plugin yazmadan HTTP üzerinden yönetilen OpenClaw TaskFlow'ları oluşturabilmesi ve yönlendirebilmesi için kimliği doğrulanmış HTTP rotaları ekler.
 
-Önce özel bir Plugin yazmadan Zapier, n8n, bir CI işi veya dahili bir servis gibi güvenilir bir sistemin yönetilen TaskFlow'lar oluşturmasını ve yürütmesini istediğinizde kullanın.
-
-## Nerede çalışır
-
-Webhooks Plugin'i Gateway işleminin içinde çalışır.
-
-Gateway'iniz başka bir makinede çalışıyorsa Plugin'i o Gateway ana makinesine kurup yapılandırın, ardından Gateway'i yeniden başlatın.
+Plugin, Gateway işlemi içinde çalışır. Uzak bir Gateway için plugin'i söz konusu ana makineye kurup yapılandırın, ardından Gateway'i yeniden başlatın. Yapılandırılmış hiçbir rota olmadan sunulduğundan, en az bir rota ekleyene kadar hiçbir işlem yapmaz.
 
 ## Rotaları yapılandırma
 
@@ -45,7 +39,7 @@ Yapılandırmayı `plugins.entries.webhooks.config` altında ayarlayın:
                 id: "OPENCLAW_WEBHOOK_SECRET",
               },
               controllerId: "webhooks/zapier",
-              description: "Zapier TaskFlow köprüsü",
+              description: "Zapier TaskFlow bridge",
             },
           },
         },
@@ -57,47 +51,33 @@ Yapılandırmayı `plugins.entries.webhooks.config` altında ayarlayın:
 
 Rota alanları:
 
-- `enabled`: isteğe bağlıdır, varsayılanı `true`
-- `path`: isteğe bağlıdır, varsayılanı `/plugins/webhooks/<routeId>`
-- `sessionKey`: bağlı TaskFlow'ların sahibi olan gerekli oturum
-- `secret`: gerekli paylaşılan gizli anahtar veya SecretRef
-- `controllerId`: oluşturulan yönetilen akışlar için isteğe bağlı denetleyici kimliği
-- `description`: isteğe bağlı operatör notu
+| Alan           | Zorunlu | Varsayılan                    | Notlar                                                  |
+| -------------- | ------- | ----------------------------- | ------------------------------------------------------- |
+| `enabled`      | hayır   | `true`                        |                                                         |
+| `path`         | hayır   | `/plugins/webhooks/<routeId>` | Rotalar arasında benzersiz olmalıdır.                   |
+| `sessionKey`   | evet    | -                             | Bağlı TaskFlow'ların sahibi olan oturum.                 |
+| `secret`       | evet    | -                             | Düz metin dizesi veya bir SecretRef (aşağıda).          |
+| `controllerId` | hayır   | `webhooks/<routeId>`          | Varsayılan `create_flow` denetleyicisi olarak kullanılır. |
+| `description`  | hayır   | -                             | Yalnızca operatör notu.                                  |
 
-Desteklenen `secret` girdileri:
+`secret`, düz metin dizesini veya bir SecretRef'i kabul eder: `{ source: "env" | "file" | "exec", provider: "default", id: "..." }`.
 
-- Düz metin dizesi
-- `source: "env" | "file" | "exec"` ile SecretRef
-
-Gizli anahtar destekli bir rota başlangıçta gizli anahtarını çözemezse Plugin, bozuk bir uç noktayı açığa çıkarmak yerine o rotayı atlar ve bir uyarı günlüğe kaydeder.
+Yapılandırılan her rota, gizli değeri o anda çözümlenebiliyor olsun veya olmasın başlangıçta kaydedilir. Çözümlenemeyen bir gizli değer rotayı devre dışı bırakmaz veya atlamaz; gizli değer çözümlenebilene kadar rotaya yapılan isteklerin kimlik doğrulaması başarısız olur (`401`). SecretRef değerleri her istekte yeniden çözümlenir; dolayısıyla temel gizli değerin (ortam değişkeni, dosya veya exec çıktısı) yenilenmesi Gateway'in yeniden başlatılmasına gerek kalmadan etkili olur.
 
 ## Güvenlik modeli
 
-Her rotaya, yapılandırılmış `sessionKey` değerinin TaskFlow yetkisiyle hareket etmesi için güvenilir.
+Her rota, yapılandırılmış `sessionKey` değerinin TaskFlow yetkisiyle hareket eder: söz konusu oturumun sahip olduğu tüm TaskFlow'ları inceleyebilir ve değiştirebilir. TaskFlow erişimi her zaman `api.runtime.tasks.managedFlows.bindSession(...)` üzerinden gerçekleşir; böylece rota hiçbir zaman bağlı olduğu oturumun dışında hareket edemez. Etki alanını sınırlamak için:
 
-Bu, rotanın söz konusu oturumun sahibi olduğu TaskFlow'ları inceleyip değiştirebileceği anlamına gelir; bu nedenle şunları yapmalısınız:
+- Her rota için güçlü ve benzersiz bir gizli değer kullanın.
+- Satır içi düz metin gizli değer yerine SecretRef'i tercih edin.
+- Rotaları iş akışına uyan en dar kapsamlı oturuma bağlayın.
+- Yalnızca ihtiyaç duyduğunuz belirli Webhook yolunu dışarı açın.
 
-- Her rota için güçlü ve benzersiz bir gizli anahtar kullanın
-- Satır içi düz metin gizli anahtarlar yerine gizli anahtar başvurularını tercih edin
-- Rotaları iş akışına uyan en dar oturuma bağlayın
-- Yalnızca ihtiyacınız olan belirli Webhook yolunu açığa çıkarın
-
-Plugin şunları uygular:
-
-- Paylaşılan gizli anahtar kimlik doğrulaması
-- İstek gövdesi boyutu ve zaman aşımı korumaları
-- Sabit pencereli hız sınırlama
-- Devam eden istek sınırlama
-- `api.runtime.tasks.managedFlows.bindSession(...)` üzerinden sahip bağlı TaskFlow erişimi
+Her yol için istek işleme sırası: HTTP yöntemi (yalnızca `POST`) ve `Content-Type: application/json` kontrolleri, ardından sabit pencereli hız sınırlaması (yol+istemci-IP anahtarı başına 60 saniyelik pencerede 120 istek, en fazla 4.096 izlenen anahtar), ardından devam eden istek sınırlaması (anahtar başına eşzamanlı 8 istek, en fazla 4.096 izlenen anahtar), ardından paylaşılan gizli değerle kimlik doğrulama, son olarak 256 KB / 15 saniyelik JSON gövde okuması. Daha önceki bir kontrolde başarısız olan istekler sonraki kontrollere hiçbir zaman ulaşmaz.
 
 ## İstek biçimi
 
-`POST` isteklerini şunlarla gönderin:
-
-- `Content-Type: application/json`
-- `Authorization: Bearer <secret>` veya `x-openclaw-webhook-secret: <secret>`
-
-Örnek:
+`Content-Type: application/json` ve `Authorization: Bearer <secret>` veya `x-openclaw-webhook-secret: <secret>` ile `POST` istekleri gönderin:
 
 ```bash
 curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
@@ -108,27 +88,25 @@ curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
 
 ## Desteklenen eylemler
 
-Plugin şu anda bu JSON `action` değerlerini kabul eder:
+| Eylem              | Amaç                                                                         |
+| ------------------ | ---------------------------------------------------------------------------- |
+| `create_flow`      | Rotanın oturumu için yönetilen bir TaskFlow oluşturur.                       |
+| `get_flow`         | Kimliğine göre bir TaskFlow getirir.                                         |
+| `list_flows`       | Rotanın oturumuna ait TaskFlow'ları listeler.                                |
+| `find_latest_flow` | En son güncellenen TaskFlow'u getirir.                                       |
+| `resolve_flow`     | Opak belirtece göre bir TaskFlow'u çözümler.                                 |
+| `get_task_summary` | Bir TaskFlow'un görev özetini getirir.                                       |
+| `set_waiting`      | İsteğe bağlı durum/bekleme verileriyle bir TaskFlow'u bekliyor olarak işaretler. |
+| `resume_flow`      | Bekleyen/engellenmiş bir TaskFlow'u sürdürür.                                |
+| `finish_flow`      | Bir TaskFlow'u tamamlandı olarak işaretler.                                  |
+| `fail_flow`        | Bir TaskFlow'u başarısız olarak işaretler.                                   |
+| `request_cancel`   | İş birliğine dayalı iptal isteğinde bulunur.                                 |
+| `cancel_flow`      | Bir TaskFlow'u iptal eder (alt öğeler hâlâ etkinse `202` döndürebilir).      |
+| `run_task`         | Mevcut bir TaskFlow içinde yönetilen bir alt görev oluşturur.                |
 
-- `create_flow`
-- `get_flow`
-- `list_flows`
-- `find_latest_flow`
-- `resolve_flow`
-- `get_task_summary`
-- `set_waiting`
-- `resume_flow`
-- `finish_flow`
-- `fail_flow`
-- `request_cancel`
-- `cancel_flow`
-- `run_task`
+Değişiklik yapan eylemler (`set_waiting`, `resume_flow`, `finish_flow`, `fail_flow`, `request_cancel`) iyimser eşzamanlılık için `flowId` ve `expectedRevision` gerektirir; eski bir revizyon `409 revision_conflict` döndürür.
 
 ### `create_flow`
-
-Rotanın bağlı oturumu için yönetilen bir TaskFlow oluşturur.
-
-Örnek:
 
 ```json
 {
@@ -141,14 +119,7 @@ Rotanın bağlı oturumu için yönetilen bir TaskFlow oluşturur.
 
 ### `run_task`
 
-Mevcut bir yönetilen TaskFlow içinde yönetilen bir alt görev oluşturur.
-
-İzin verilen çalışma zamanları şunlardır:
-
-- `subagent`
-- `acp`
-
-Örnek:
+İzin verilen `runtime` değerleri: `subagent`, `acp`. `startedAt`, `lastEventAt` ve `progressSummary` yalnızca `status`, `"running"` olduğunda geçerlidir; bunların başka bir durumla gönderilmesi `400 invalid_request` döndürür.
 
 ```json
 {
@@ -160,9 +131,7 @@ Mevcut bir yönetilen TaskFlow içinde yönetilen bir alt görev oluşturur.
 }
 ```
 
-## Yanıt biçimi
-
-Başarılı yanıtlar şunu döndürür:
+## Yanıt yapısı
 
 ```json
 {
@@ -171,8 +140,6 @@ Başarılı yanıtlar şunu döndürür:
   "result": {}
 }
 ```
-
-Reddedilen istekler şunu döndürür:
 
 ```json
 {
@@ -184,10 +151,11 @@ Reddedilen istekler şunu döndürür:
 }
 ```
 
-Plugin, Webhook yanıtlarından sahip/oturum meta verilerini bilinçli olarak temizler.
+Akış ve görev görünümleri hiçbir zaman sahip/oturum meta verilerini içermez; böylece yanıtlar rotanın bağlı `sessionKey` değerini açığa çıkaramaz. `code` değerleri arasında `not_found`, `not_managed`, `revision_conflict`, `persist_failed`, `cancel_requested`, `cancel_pending`, `terminal`, `invalid_request`, `request_rejected` ve bir değişiklik yukarıdaki adlandırılmış kodların kapsamadığı bir nedenle reddedildiğinde eyleme özgü geri dönüş kodları (`mutation_rejected`, `create_rejected`, `task_not_created`, `cancel_rejected`) bulunur.
 
-## İlgili belgeler
+## İlgili içerikler
 
+- [Hook'lar](/tr/automation/hooks) - dahili olay güdümlü Hook'lar ile bu HTTP tabanlı TaskFlow köprüsünün karşılaştırması
+- [Gateway Webhook'ları (`hooks.*` yapılandırması)](/tr/automation/cron-jobs#webhooks) - ayrı bir genel Gateway HTTP uç noktası özelliğidir; bu plugin'in rotalarıyla aynı değildir
 - [Plugin çalışma zamanı SDK'sı](/tr/plugins/sdk-runtime)
-- [Hook'lar ve Webhook'lara genel bakış](/tr/automation/hooks)
 - [CLI Webhook'ları](/tr/cli/webhooks)

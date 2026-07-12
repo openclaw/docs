@@ -2,8 +2,8 @@
 summary: Redirigir a /automation
 title: Cron frente a Heartbeat
 x-i18n:
-    generated_at: "2026-07-05T11:00:37Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:53:32Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: bd1f5b2ee3b965b5788769d4fe1a9c8f1926bbafbc0abc77f15d59cdc00d3c28
@@ -11,9 +11,9 @@ x-i18n:
     workflow: 16
 ---
 
-Esta página se movió. Consulta [Tareas programadas (Cron) frente a Heartbeat](/es/automation#scheduled-tasks-cron-vs-heartbeat) para ver la tabla de decisiones.
+Esta página se ha trasladado. Consulta [Tareas programadas (Cron) frente a Heartbeat](/es/automation#scheduled-tasks-cron-vs-heartbeat) para ver la tabla de decisiones.
 
-## Relacionado
+## Contenido relacionado
 
 - [Tareas programadas](/es/automation/cron-jobs)
 - [Heartbeat](/es/gateway/heartbeat)

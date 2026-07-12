@@ -4,12 +4,11 @@ read_when:
     - Ajuste da proteção contra loops entre bots
 sidebarTitle: Bot loop protection
 summary: Padrões de proteção contra loops entre bots e substituições por canal
-title: Proteção contra loops de bots
+title: Proteção contra loop de bots
 x-i18n:
-    generated_at: "2026-07-12T14:53:16Z"
+    generated_at: "2026-07-11T23:43:17Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 08637267cd3422d3154315e709c85c85fa57641f1adb0e8ef10c32e8a7b73312
     source_path: channels/bot-loop-protection.md
@@ -18,11 +17,11 @@ x-i18n:
 
 O OpenClaw pode aceitar mensagens escritas por outros bots em canais compatíveis com `allowBots`. Quando esse caminho está habilitado, a proteção contra loops entre pares impede que duas identidades de bot respondam uma à outra indefinidamente.
 
-A proteção é aplicada pelo executor principal de respostas recebidas. Cada canal compatível mapeia seu evento recebido para informações genéricas: conta ou escopo, id da conversa, id do bot remetente e id do bot destinatário. O núcleo rastreia o par de participantes em ambas as direções (A para B e B para A contam como o mesmo par), aplica um limite de janela deslizante e suprime o par durante um período de espera após o limite ser excedido.
+A proteção é aplicada pelo executor principal de respostas recebidas. Cada canal compatível mapeia seu evento recebido para informações genéricas: conta ou escopo, ID da conversa, ID do bot remetente e ID do bot destinatário. O núcleo rastreia o par de participantes nas duas direções (A para B e B para A contam como o mesmo par), aplica um limite em uma janela deslizante e suprime o par durante um período de espera após o limite ser excedido.
 
 ## Padrões
 
-A proteção contra loops entre pares fica ativa sempre que um canal permite que mensagens criadas por bots cheguem ao despacho. Padrões integrados:
+A proteção contra loops entre pares fica ativa sempre que um canal permite que mensagens escritas por bots cheguem ao encaminhamento. Padrões integrados:
 
 | Chave                | Padrão  | Significado                                                   |
 | -------------------- | ------- | ------------------------------------------------------------- |
@@ -31,11 +30,11 @@ A proteção contra loops entre pares fica ativa sempre que um canal permite que
 | `windowSeconds`      | `60`    | Duração da janela deslizante.                                 |
 | `cooldownSeconds`    | `60`    | Tempo de supressão após o par exceder o limite.                |
 
-A proteção não afeta mensagens criadas por humanos, implantações com um único bot, filtragem de mensagens do próprio bot nem respostas de bots que permaneçam abaixo do limite.
+A proteção não afeta mensagens escritas por humanos, implantações com um único bot, filtragem de mensagens do próprio bot nem respostas de bots que permanecem abaixo do limite.
 
 ## Configurar padrões compartilhados
 
-Defina `channels.defaults.botLoopProtection` uma vez para fornecer a todos os canais compatíveis a mesma configuração de referência. Substituições por canal, conta e sala ainda podem ajustar superfícies individuais.
+Defina `channels.defaults.botLoopProtection` uma vez para fornecer a todos os canais compatíveis a mesma configuração de base. Substituições por canal, conta e sala ainda podem ajustar superfícies individuais.
 
 ```json5
 {
@@ -57,9 +56,9 @@ Defina `enabled: false` somente quando a política do seu canal permitir intenci
 
 Os canais compatíveis sobrepõem suas próprias configurações ao padrão compartilhado, chave por chave. Precedência, da mais específica para a menos específica:
 
-1. `channels.<channel>.<room-or-space>.botLoopProtection`, quando o canal é compatível com substituições por conversa
-2. `channels.<channel>.accounts.<account>.botLoopProtection`, quando o canal é compatível com contas
-3. `channels.<channel>.botLoopProtection`, quando o canal é compatível com padrões de nível superior
+1. `channels.<channel>.<room-or-space>.botLoopProtection`, quando o canal oferece substituições por conversa
+2. `channels.<channel>.accounts.<account>.botLoopProtection`, quando o canal oferece suporte a contas
+3. `channels.<channel>.botLoopProtection`, quando o canal oferece padrões de nível superior
 4. `channels.defaults.botLoopProtection`
 5. padrões integrados
 
@@ -117,11 +116,11 @@ Os canais compatíveis sobrepõem suas próprias configurações ao padrão comp
 
 ## Compatibilidade dos canais
 
-- Discord: informações nativas de `author.bot`, indexadas por conta do Discord, canal e par de bots.
-- Google Chat: informações nativas de `sender.type=BOT` para mensagens aceitas criadas por bots, indexadas por conta, espaço e par de bots.
-- Matrix: contas de bot do Matrix configuradas, indexadas por conta do Matrix, sala e par de bots configurado.
-- Slack: informações nativas de `bot_id` para mensagens aceitas criadas por bots, indexadas por conta do Slack, canal e par de bots.
+- Discord: informações nativas de `author.bot`, identificadas por conta do Discord, canal e par de bots.
+- Google Chat: informações nativas de `sender.type=BOT` para mensagens aceitas escritas por bots, identificadas por conta, espaço e par de bots.
+- Matrix: contas de bot do Matrix configuradas, identificadas por conta do Matrix, sala e par de bots configurado.
+- Slack: informações nativas de `bot_id` para mensagens aceitas escritas por bots, identificadas por conta do Slack, canal e par de bots.
 
-Os canais que não expõem uma identidade confiável do bot remetente continuam usando seus filtros normais de mensagens do próprio bot e de política de acesso. Eles não devem aderir a essa proteção até que consigam identificar ambos os participantes do par de bots.
+Os canais que não expõem uma identidade confiável do bot remetente continuam usando seus filtros normais de mensagens do próprio bot e de política de acesso. Eles não devem adotar essa proteção até conseguirem identificar ambos os participantes do par de bots.
 
-Consulte [runtime do SDK](/pt-BR/plugins/sdk-runtime#reusable-runtime-utilities) para obter detalhes sobre a implementação do plugin.
+Consulte [tempo de execução do SDK](/pt-BR/plugins/sdk-runtime#reusable-runtime-utilities) para obter detalhes sobre a implementação de plugins.

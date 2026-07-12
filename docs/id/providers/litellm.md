@@ -1,59 +1,43 @@
 ---
 read_when:
-    - Anda ingin merutekan OpenClaw melalui proxy LiteLLM
+    - Anda ingin merutekan OpenClaw melalui proksi LiteLLM
     - Anda memerlukan pelacakan biaya, pencatatan log, atau perutean model melalui LiteLLM
 summary: Jalankan OpenClaw melalui LiteLLM Proxy untuk akses model terpadu dan pelacakan biaya
 title: LiteLLM
 x-i18n:
-    generated_at: "2026-04-30T10:07:19Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:33:16Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 26b5150cfca92c9cd425c864c711efb3ab62ef94377b9d1e5d6476b07bf4c800
+    source_hash: 797b7d02a80a4cd37b92553665e260532af49e011398202d3504a28c511cee2f
     source_path: providers/litellm.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-[LiteLLM](https://litellm.ai) adalah gateway LLM sumber terbuka yang menyediakan API terpadu untuk 100+ penyedia model. Arahkan OpenClaw melalui LiteLLM untuk mendapatkan pelacakan biaya terpusat, pencatatan log, dan fleksibilitas untuk beralih backend tanpa mengubah konfigurasi OpenClaw Anda.
-
-<Tip>
-**Mengapa menggunakan LiteLLM dengan OpenClaw?**
-
-- **Pelacakan biaya** — Lihat secara tepat berapa yang dibelanjakan OpenClaw di semua model
-- **Perutean model** — Beralih antara Claude, GPT-4, Gemini, Bedrock tanpa perubahan konfigurasi
-- **Kunci virtual** — Buat kunci dengan batas pengeluaran untuk OpenClaw
-- **Pencatatan log** — Log permintaan/respons lengkap untuk debugging
-- **Fallback** — Failover otomatis jika penyedia utama Anda sedang tidak aktif
-
-</Tip>
+[LiteLLM](https://litellm.ai) adalah gateway LLM sumber terbuka dengan API terpadu untuk lebih dari 100 penyedia
+model. Rutekan OpenClaw melalui LiteLLM untuk pelacakan biaya terpusat, pencatatan log, kunci virtual dengan
+batas pengeluaran, dan failover backend tanpa mengubah konfigurasi OpenClaw.
 
 ## Mulai cepat
 
 <Tabs>
-  <Tab title="Onboarding (disarankan)">
-    **Paling cocok untuk:** jalur tercepat menuju penyiapan LiteLLM yang berfungsi.
+  <Tab title="Orientasi awal (disarankan)">
+    ```bash
+    openclaw onboard --auth-choice litellm-api-key
+    ```
 
-    <Steps>
-      <Step title="Jalankan onboarding">
-        ```bash
-        openclaw onboard --auth-choice litellm-api-key
-        ```
+    Untuk penyiapan noninteraktif terhadap proksi jarak jauh, teruskan URL proksi secara eksplisit:
 
-        Untuk penyiapan non-interaktif terhadap proxy jarak jauh, teruskan URL proxy secara eksplisit:
-
-        ```bash
-        openclaw onboard --non-interactive --auth-choice litellm-api-key --litellm-api-key "$LITELLM_API_KEY" --custom-base-url "https://litellm.example/v1"
-        ```
-      </Step>
-    </Steps>
+    ```bash
+    openclaw onboard --non-interactive --accept-risk --auth-choice litellm-api-key \
+      --litellm-api-key "$LITELLM_API_KEY" --custom-base-url "https://litellm.example/v1"
+    ```
 
   </Tab>
 
   <Tab title="Penyiapan manual">
-    **Paling cocok untuk:** kontrol penuh atas instalasi dan konfigurasi.
-
     <Steps>
-      <Step title="Mulai Proxy LiteLLM">
+      <Step title="Jalankan Proksi LiteLLM">
         ```bash
         pip install 'litellm[proxy]'
         litellm --model claude-opus-4-6
@@ -62,26 +46,14 @@ x-i18n:
       <Step title="Arahkan OpenClaw ke LiteLLM">
         ```bash
         export LITELLM_API_KEY="your-litellm-key"
-
         openclaw
         ```
-
-        Selesai. OpenClaw sekarang dirutekan melalui LiteLLM.
       </Step>
     </Steps>
-
   </Tab>
 </Tabs>
 
 ## Konfigurasi
-
-### Variabel lingkungan
-
-```bash
-export LITELLM_API_KEY="sk-litellm-key"
-```
-
-### File konfigurasi
 
 ```json5
 {
@@ -120,13 +92,13 @@ export LITELLM_API_KEY="sk-litellm-key"
 }
 ```
 
-## Konfigurasi lanjutan
+Model default yang ditulis oleh orientasi awal adalah `litellm/claude-opus-4-6`.
 
-### Pembuatan gambar
+## Pembuatan gambar
 
-LiteLLM juga dapat mendukung alat `image_generate` melalui rute yang kompatibel dengan OpenAI
-`/images/generations` dan `/images/edits`. Konfigurasikan model gambar LiteLLM
-di bawah `agents.defaults.imageGenerationModel`:
+LiteLLM dapat mendukung alat `image_generate` melalui rute `/images/generations` dan
+`/images/edits` yang kompatibel dengan OpenAI. Model gambar default adalah `gpt-image-2`; konfigurasikan model lain di
+`agents.defaults.imageGenerationModel`:
 
 ```json5
 {
@@ -149,10 +121,11 @@ di bawah `agents.defaults.imageGenerationModel`:
 }
 ```
 
-URL loopback LiteLLM seperti `http://localhost:4000` berfungsi tanpa penggantian
-jaringan privat global. Untuk proxy yang dihosting di LAN, atur
-`models.providers.litellm.request.allowPrivateNetwork: true` karena kunci API
-akan dikirim ke host proxy yang dikonfigurasi.
+URL local loopback LiteLLM (`http://localhost:4000`, `127.0.0.1`, `::1`, `host.docker.internal`) berfungsi
+tanpa pengesampingan jaringan privat global. Untuk proksi yang dihosting di LAN, tetapkan
+`models.providers.litellm.request.allowPrivateNetwork: true` karena kunci API dikirim ke host tersebut.
+
+## Tingkat lanjut
 
 <AccordionGroup>
   <Accordion title="Kunci virtual">
@@ -169,12 +142,12 @@ akan dikirim ke host proxy yang dikonfigurasi.
       }'
     ```
 
-    Gunakan kunci yang dihasilkan sebagai `LITELLM_API_KEY`.
+    Gunakan kunci yang dibuat sebagai `LITELLM_API_KEY`.
 
   </Accordion>
 
   <Accordion title="Perutean model">
-    LiteLLM dapat merutekan permintaan model ke backend yang berbeda. Konfigurasikan di `config.yaml` LiteLLM Anda:
+    LiteLLM dapat merutekan permintaan model ke backend yang berbeda. Konfigurasikan dalam `config.yaml` LiteLLM Anda:
 
     ```yaml
     model_list:
@@ -189,33 +162,31 @@ akan dikirim ke host proxy yang dikonfigurasi.
           api_key: os.environ/OPENAI_API_KEY
     ```
 
-    OpenClaw tetap meminta `claude-opus-4-6` — LiteLLM menangani peruteannya.
+    OpenClaw tetap meminta `claude-opus-4-6`; LiteLLM menangani peruteannya.
 
   </Accordion>
 
   <Accordion title="Melihat penggunaan">
-    Periksa dasbor atau API LiteLLM:
-
     ```bash
-    # Key info
+    # Informasi kunci
     curl "http://localhost:4000/key/info" \
       -H "Authorization: Bearer sk-litellm-key"
 
-    # Spend logs
+    # Log pengeluaran
     curl "http://localhost:4000/spend/logs" \
       -H "Authorization: Bearer $LITELLM_MASTER_KEY"
     ```
 
   </Accordion>
 
-  <Accordion title="Catatan perilaku proxy">
-    - LiteLLM berjalan di `http://localhost:4000` secara default
-    - OpenClaw terhubung melalui endpoint `/v1` LiteLLM bergaya proxy yang kompatibel dengan OpenAI
-    - Pembentukan permintaan khusus OpenAI native tidak berlaku melalui LiteLLM:
-      tanpa `service_tier`, tanpa Responses `store`, tanpa petunjuk prompt-cache, dan tanpa
-      pembentukan payload kompatibilitas penalaran OpenAI
-    - Header atribusi OpenClaw tersembunyi (`originator`, `version`, `User-Agent`)
-      tidak disuntikkan pada URL dasar LiteLLM kustom
+  <Accordion title="Catatan perilaku proksi">
+    - LiteLLM berjalan di `http://localhost:4000` secara default.
+    - OpenClaw terhubung melalui titik akhir `/v1` kompatibel OpenAI bergaya proksi milik LiteLLM.
+    - Pembentukan permintaan khusus OpenAI asli tidak berlaku melalui URL dasar LiteLLM yang dikonfigurasi:
+      tanpa `service_tier`, tanpa `store` Responses, tanpa petunjuk cache prompt, tanpa pembentukan payload
+      upaya penalaran OpenAI.
+    - Header atribusi OpenClaw tersembunyi (`originator`, `version`, `User-Agent`) hanya dikirim ke
+      titik akhir OpenAI asli yang terverifikasi, sehingga header tersebut tidak disisipkan pada URL dasar LiteLLM khusus.
   </Accordion>
 </AccordionGroup>
 
@@ -230,12 +201,12 @@ Untuk konfigurasi penyedia umum dan perilaku failover, lihat [Penyedia Model](/i
     Dokumentasi resmi LiteLLM dan referensi API.
   </Card>
   <Card title="Pemilihan model" href="/id/concepts/model-providers" icon="layers">
-    Gambaran umum semua penyedia, referensi model, dan perilaku failover.
+    Ringkasan semua penyedia, referensi model, dan perilaku failover.
   </Card>
   <Card title="Konfigurasi" href="/id/gateway/configuration" icon="gear">
     Referensi konfigurasi lengkap.
   </Card>
-  <Card title="Pemilihan model" href="/id/concepts/models" icon="brain">
+  <Card title="Model" href="/id/concepts/models" icon="brain">
     Cara memilih dan mengonfigurasi model.
   </Card>
 </CardGroup>

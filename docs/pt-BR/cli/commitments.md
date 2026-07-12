@@ -1,15 +1,14 @@
 ---
 read_when:
-    - Você quer inspecionar os compromissos de acompanhamento inferidos
-    - Você quer descartar os check-ins pendentes
+    - Você deseja inspecionar os compromissos de acompanhamento inferidos
+    - Você quer dispensar os check-ins pendentes
     - Você está auditando o que o Heartbeat pode entregar
 summary: Referência da CLI para `openclaw commitments` (inspecionar e descartar acompanhamentos inferidos)
 title: '`openclaw commitments`'
 x-i18n:
-    generated_at: "2026-07-12T15:00:09Z"
+    generated_at: "2026-07-11T23:49:57Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 4323273a5d73975532f4728dc5e40c5d59e0c6d2e31a538f96bf3451e3fdf4d9
     source_path: cli/commitments.md
@@ -18,9 +17,7 @@ x-i18n:
 
 Liste e gerencie compromissos de acompanhamento inferidos.
 
-Os compromissos são opcionais (`commitments.enabled`), memórias de acompanhamento de curta duração
-criadas com base no contexto da conversa e entregues pelo Heartbeat. Consulte
-[Compromissos inferidos](/pt-BR/concepts/commitments) para ver o guia conceitual e a configuração.
+Os compromissos são opcionais (`commitments.enabled`) e funcionam como memórias de acompanhamento de curta duração, criadas a partir do contexto da conversa e entregues pelo Heartbeat. Consulte [Compromissos inferidos](/pt-BR/concepts/commitments) para ver o guia conceitual e a configuração.
 
 Sem um subcomando, `openclaw commitments` lista os compromissos pendentes.
 
@@ -36,12 +33,10 @@ openclaw commitments dismiss <id...> [--json]
 
 - `--all`: mostra todos os status em vez de apenas os compromissos pendentes.
 - `--agent <id>`: filtra por um único ID de agente.
-- `--status <status>`: filtra por status. Valores: `pending`, `sent`,
-  `dismissed`, `snoozed` ou `expired`. Valores desconhecidos encerram o comando com um erro.
+- `--status <status>`: filtra por status. Valores: `pending`, `sent`, `dismissed`, `snoozed` ou `expired`. Valores desconhecidos encerram o comando com um erro.
 - `--json`: gera uma saída JSON legível por máquina.
 
-`dismiss` marca os IDs de compromisso fornecidos como `dismissed` para que o Heartbeat não
-os entregue.
+`dismiss` marca os IDs de compromisso fornecidos como `dismissed` para que o Heartbeat não os entregue.
 
 ## Exemplos
 
@@ -63,7 +58,7 @@ Filtre por um agente:
 openclaw commitments --agent main
 ```
 
-Localize compromissos adiados:
+Encontre compromissos adiados:
 
 ```bash
 openclaw commitments --status snoozed
@@ -83,18 +78,16 @@ openclaw commitments --all --json
 
 ## Saída
 
-A saída de texto exibe a quantidade de compromissos, o caminho do armazenamento, todos os filtros ativos
-e uma linha por compromisso:
+A saída de texto exibe a quantidade de compromissos, o caminho do armazenamento, todos os filtros ativos e uma linha por compromisso:
 
 - ID do compromisso
 - status
 - tipo (`event_check_in`, `deadline_check`, `care_check_in` ou `open_loop`)
-- primeiro horário previsto
+- horário previsto mais próximo
 - escopo (agente/canal/destino)
 - texto sugerido para acompanhamento
 
-A saída JSON inclui a quantidade, os filtros ativos de status e agente, o
-caminho do armazenamento de compromissos e os registros armazenados completos.
+A saída JSON inclui a quantidade, os filtros ativos de status e agente, o caminho do armazenamento de compromissos e os registros armazenados completos.
 
 ## Relacionados
 

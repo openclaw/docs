@@ -4,27 +4,27 @@ read_when:
 summary: เพิ่มการรองรับผู้ให้บริการโมเดล xAI ให้กับ OpenClaw
 title: Plugin xAI
 x-i18n:
-    generated_at: "2026-05-02T20:58:09Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:35:23Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: 2ec2ac3af258ae6876b2c0957e4ffc5db2d780fc9f33458204c8089fd47238bc
     source_path: plugins/reference/xai.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# xAI Plugin
+# Plugin xAI
 
 เพิ่มการรองรับผู้ให้บริการโมเดล xAI ให้กับ OpenClaw
 
 ## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/xai-plugin`
-- เส้นทางการติดตั้ง: รวมอยู่ใน OpenClaw
+- ช่องทางการติดตั้ง: รวมอยู่ใน OpenClaw
 
-## พื้นผิว
+## ส่วนติดต่อ
 
-providers: xai; contracts: imageGenerationProviders, mediaUnderstandingProviders, realtimeTranscriptionProviders, speechProviders, tools, videoGenerationProviders, webSearchProviders
+ผู้ให้บริการ: xai; สัญญา: imageGenerationProviders, mediaUnderstandingProviders, realtimeTranscriptionProviders, speechProviders, tools, videoGenerationProviders, webSearchProviders
 
 ## เอกสารที่เกี่ยวข้อง
 

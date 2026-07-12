@@ -1,20 +1,20 @@
 ---
-summary: تغییرمسیر به جریان وظیفه
-title: ClawFlow
+summary: هدایت به TaskFlow
+title: کلافلو
 x-i18n:
-    generated_at: "2026-04-29T22:22:55Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:31:33Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: dec1ddc0e784b4ad49d0f5e5a8e332032e40281b81fe27de99363178ff8d3272
+    source_hash: 34f259b25c73d08ab71935307e2736f3f9d57dd579ba0f1842a2bd334f656e47
     source_path: automation/clawflow.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-ClawFlow به [جریان وظیفه](/fa/automation/taskflow) تغییر نام داد.
+ClawFlow به [TaskFlow](/fa/automation/taskflow) تغییر نام یافت. برای هماهنگ‌سازی پایدار جریان‌های چندمرحله‌ای، از آن صفحه استفاده کنید.
 
 ## مرتبط
 
-- [جریان وظیفه](/fa/automation/taskflow)
-- [دستورهای پایدار](/fa/automation/standing-orders)
-- [هوک‌ها](/fa/automation/hooks)
+- [TaskFlow](/fa/automation/taskflow)
+- [دستورهای دائمی](/fa/automation/standing-orders)
+- [قلاب‌ها](/fa/automation/hooks)

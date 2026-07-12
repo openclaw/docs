@@ -1,11 +1,11 @@
 ---
 read_when:
-    - در حال نصب، پیکربندی، یا ممیزی Plugin canvas هستید
-summary: سطوح آزمایشی کنترل Canvas و رندرینگ A2UI برای گره‌های جفت‌شده.
-title: Plugin بوم
+    - شما در حال نصب، پیکربندی یا ممیزی Plugin بوم هستید
+summary: سطوح آزمایشی کنترل Canvas و رندر A2UI برای Nodeهای جفت‌شده.
+title: Plugin بوم نقاشی
 x-i18n:
-    generated_at: "2026-06-27T18:23:55Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:29:36Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 623f241907be5c88e7b20139f8a03e9c54e29df4bc7d3411fa90a029bfcb285f
@@ -15,12 +15,12 @@ x-i18n:
 
 # Plugin بوم
 
-سطوح آزمایشی کنترل بوم و رندر A2UI برای گره‌های جفت‌شده.
+سطوح آزمایشی کنترل بوم و رندر A2UI برای Nodeهای جفت‌شده.
 
 ## توزیع
 
 - بسته: `@openclaw/canvas-plugin`
-- مسیر نصب: همراه با OpenClaw
+- روش نصب: همراه OpenClaw ارائه می‌شود
 
 ## سطح
 

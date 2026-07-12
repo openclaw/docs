@@ -1,55 +1,49 @@
 ---
 read_when:
     - Lập kế hoạch chuyển từ BlueBubbles sang plugin iMessage đi kèm
-    - Đang dịch các khóa cấu hình BlueBubbles sang các khóa tương đương của iMessage
-    - Xác minh imsg trước khi bật Plugin iMessage
-summary: Di chuyển cấu hình BlueBubbles cũ sang Plugin iMessage được đóng gói sẵn mà không làm mất ghép nối, danh sách cho phép hoặc ràng buộc nhóm.
-title: Đến từ BlueBubbles
+    - Chuyển đổi các khóa cấu hình BlueBubbles sang các khóa tương đương của iMessage
+    - Xác minh imsg trước khi bật plugin iMessage
+summary: 'Chuyển đổi cấu hình BlueBubbles cũ sang plugin iMessage đi kèm: ánh xạ khóa, các cổng kiểm soát danh sách cho phép của nhóm và xác minh quá trình chuyển đổi.'
+title: Chuyển từ BlueBubbles sang
 x-i18n:
-    generated_at: "2026-06-27T17:10:23Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:39:31Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: dae45911686697a064b19265b11acb87d377992f762256c44a22dd3f1b4c4b08
+    source_hash: b9d1533c356d3901358c25f0b90e6850124f66d3c14f056d90d5723242076d22
     source_path: channels/imessage-from-bluebubbles.md
     workflow: 16
 ---
 
-Plugin `imessage` đi kèm hiện truy cập cùng bề mặt API riêng tư như BlueBubbles (`react`, `edit`, `unsend`, `reply`, `sendWithEffect`, quản lý nhóm, tệp đính kèm) bằng cách điều khiển [`steipete/imsg`](https://github.com/steipete/imsg) qua JSON-RPC. Nếu bạn đã chạy một máy Mac có cài `imsg`, bạn có thể bỏ máy chủ BlueBubbles và để Plugin nói chuyện trực tiếp với Messages.app.
+Hỗ trợ BlueBubbles đã bị loại bỏ. OpenClaw chỉ hỗ trợ iMessage thông qua plugin `imessage` đi kèm, plugin này điều khiển [`steipete/imsg`](https://github.com/steipete/imsg) qua JSON-RPC và truy cập cùng bề mặt API riêng tư mà BlueBubbles từng có (`react`, `edit`, `unsend`, `reply`, `sendWithEffect`, cuộc thăm dò ý kiến gốc, quản lý nhóm, tệp đính kèm). Một tệp nhị phân CLI thay thế máy chủ BlueBubbles + ứng dụng máy khách + hệ thống Webhook: không có điểm cuối REST, không có xác thực Webhook.
 
-Hỗ trợ BlueBubbles đã bị loại bỏ. OpenClaw chỉ hỗ trợ iMessage thông qua `imsg`. Hướng dẫn này dành cho việc di chuyển cấu hình `channels.bluebubbles` cũ sang `channels.imessage`; không có đường dẫn di chuyển nào khác được hỗ trợ.
+Hướng dẫn này di chuyển cấu hình `channels.bluebubbles` cũ sang `channels.imessage`. Không có lộ trình di chuyển nào khác được hỗ trợ. Trên OpenClaw hiện tại, khối `channels.bluebubbles` còn sót lại không có tác dụng — không có thành phần thời gian chạy nào đọc khối đó.
 
 <Note>
-Để xem thông báo ngắn và tóm tắt dành cho người vận hành, hãy xem [Việc loại bỏ BlueBubbles và đường dẫn imsg cho iMessage](/vi/announcements/bluebubbles-imessage).
+Để xem thông báo ngắn và bản tóm tắt dành cho người vận hành, hãy xem [Loại bỏ BlueBubbles và lộ trình iMessage qua imsg](/vi/announcements/bluebubbles-imessage).
 </Note>
 
 ## Danh sách kiểm tra di chuyển
 
-Dùng danh sách kiểm tra này khi bạn đã biết cấu hình BlueBubbles cũ của mình và muốn đường dẫn an toàn ngắn nhất:
+Lộ trình an toàn ngắn nhất khi bạn đã biết cấu hình BlueBubbles cũ của mình:
 
-1. Xác minh trực tiếp `imsg` trên máy Mac chạy Messages.app (`imsg chats`, `imsg history`, `imsg send` và `imsg rpc --help`).
+1. Xác minh trực tiếp `imsg` trên máy Mac chạy Messages.app (`imsg chats`, `imsg history`, `imsg send`, `imsg rpc --help`).
 2. Sao chép các khóa hành vi từ `channels.bluebubbles` sang `channels.imessage`: `dmPolicy`, `allowFrom`, `groupPolicy`, `groupAllowFrom`, `groups`, `includeAttachments`, `attachmentRoots`, `mediaMaxMb`, `textChunkLimit`, `coalesceSameSenderDms` và `actions`.
 3. Loại bỏ các khóa truyền tải không còn tồn tại: `serverUrl`, `password`, URL Webhook và thiết lập máy chủ BlueBubbles.
-4. Nếu Gateway không chạy trên máy Mac Messages, hãy đặt `channels.imessage.cliPath` thành một trình bao SSH và đặt `remoteHost` để lấy tệp đính kèm từ xa.
-5. Khi Gateway đã dừng, bật `channels.imessage`, rồi chạy `openclaw channels status --probe --channel imessage`.
-6. Kiểm thử một DM, một nhóm được cho phép, tệp đính kèm nếu được bật, và mọi hành động API riêng tư mà bạn kỳ vọng tác nhân sẽ dùng.
-7. Xóa máy chủ BlueBubbles và cấu hình `channels.bluebubbles` cũ sau khi đường dẫn iMessage đã được xác minh.
+4. Nếu Gateway không chạy trên máy Mac dùng Messages, hãy đặt `channels.imessage.cliPath` thành một trình bao bọc SSH và đặt `remoteHost` để tìm nạp tệp đính kèm từ xa.
+5. Bật `channels.imessage`, khởi động lại Gateway, sau đó chạy `openclaw channels status --probe --channel imessage`.
+6. Kiểm thử một tin nhắn trực tiếp, một nhóm được phép, tệp đính kèm nếu đã bật và mọi thao tác API riêng tư mà bạn dự kiến tác tử sẽ sử dụng.
+7. Xóa máy chủ BlueBubbles và cấu hình `channels.bluebubbles` cũ sau khi đã xác minh lộ trình iMessage.
 
-## Khi nào nên di chuyển theo cách này
+## Chức năng của imsg
 
-- Bạn đã chạy `imsg` trên cùng máy Mac (hoặc một máy có thể truy cập qua SSH) nơi Messages.app đã đăng nhập.
-- Bạn muốn giảm một thành phần vận hành — không có máy chủ BlueBubbles riêng, không có endpoint REST cần xác thực, không có hệ thống Webhook. Một tệp nhị phân CLI duy nhất thay vì máy chủ + ứng dụng khách + trình trợ giúp.
-- Bạn đang dùng một [bản dựng macOS / `imsg` được hỗ trợ](/vi/channels/imessage#requirements-and-permissions-macos), nơi phép dò API riêng tư báo cáo `available: true`.
+`imsg` là một CLI macOS cục bộ dành cho Messages. OpenClaw khởi chạy `imsg rpc` dưới dạng tiến trình con và giao tiếp bằng JSON-RPC qua stdin/stdout. Không có máy chủ HTTP, URL Webhook, trình nền chạy ngầm, tác tử khởi chạy hoặc cổng cần công khai.
 
-## imsg làm gì
-
-`imsg` là một CLI macOS cục bộ cho Messages. OpenClaw khởi động `imsg rpc` như một tiến trình con và giao tiếp JSON-RPC qua stdin/stdout. Không có máy chủ HTTP, URL Webhook, daemon nền, launch agent hay cổng nào cần mở.
-
-- Dữ liệu đọc đến từ `~/Library/Messages/chat.db` bằng một handle SQLite chỉ đọc.
-- Tin nhắn đến trực tiếp đến từ `imsg watch` / `watch.subscribe`, theo dõi các sự kiện hệ thống tệp của `chat.db` với cơ chế polling dự phòng.
-- Gửi tin nhắn sử dụng tự động hóa Messages.app cho văn bản thông thường và gửi tệp.
-- Các hành động nâng cao sử dụng `imsg launch` để chèn trình trợ giúp `imsg` vào Messages.app. Đây là thứ mở khóa biên nhận đã đọc, chỉ báo đang nhập, gửi phong phú, chỉnh sửa, thu hồi, trả lời theo luồng, tapbacks và quản lý nhóm.
-- Các bản dựng Linux có thể kiểm tra một bản sao `chat.db`, nhưng không thể gửi, theo dõi cơ sở dữ liệu Mac trực tiếp, hoặc điều khiển Messages.app. Với OpenClaw iMessage, hãy chạy `imsg` trên máy Mac đã đăng nhập hoặc thông qua một trình bao SSH đến máy Mac đó.
+- Dữ liệu được đọc từ `~/Library/Messages/chat.db` bằng một kết nối SQLite chỉ đọc.
+- Tin nhắn đến theo thời gian thực được nhận từ `imsg watch` / `watch.subscribe`, theo dõi các sự kiện hệ thống tệp của `chat.db` với cơ chế dự phòng thăm dò định kỳ.
+- Thao tác gửi sử dụng tính năng tự động hóa Messages.app để gửi văn bản và tệp thông thường.
+- Các thao tác nâng cao sử dụng `imsg launch` để chèn trình trợ giúp `imsg` vào Messages.app. Đây là cơ chế mở khóa xác nhận đã đọc, chỉ báo đang nhập, thao tác gửi đa phương tiện, chỉnh sửa, thu hồi, trả lời theo luồng, phản ứng tapback, cuộc thăm dò ý kiến và quản lý nhóm.
+- Bản dựng Linux có thể kiểm tra một bản sao của `chat.db`, nhưng không thể gửi, theo dõi cơ sở dữ liệu trực tiếp trên máy Mac hoặc điều khiển Messages.app. Đối với iMessage của OpenClaw, hãy chạy `imsg` trên máy Mac đã đăng nhập hoặc thông qua một trình bao bọc SSH tới máy Mac đó.
 
 ## Trước khi bắt đầu
 
@@ -57,11 +51,12 @@ Dùng danh sách kiểm tra này khi bạn đã biết cấu hình BlueBubbles c
 
    ```bash
    brew install steipete/tap/imsg
+   brew update && brew upgrade imsg
    imsg --version
    imsg chats --limit 3
    ```
 
-   Nếu `imsg chats` thất bại với `unable to open database file`, đầu ra trống, hoặc `authorization denied`, hãy cấp Full Disk Access cho terminal, trình soạn thảo, tiến trình Node, dịch vụ Gateway hoặc tiến trình cha SSH khởi chạy `imsg`, rồi mở lại tiến trình cha đó.
+   Đối với thiết lập cục bộ thông thường, quy trình thiết lập OpenClaw có thể đề xuất cài đặt hoặc cập nhật `imsg` bằng Homebrew sau khi người dùng xác nhận trên máy Mac dùng Messages đã đăng nhập. Các mô hình thiết lập thủ công và trình bao bọc SSH vẫn do người vận hành quản lý: hãy lặp lại thao tác cập nhật Homebrew trong cùng ngữ cảnh người dùng cục bộ hoặc từ xa sẽ chạy `imsg`. Nếu `imsg chats` thất bại với `unable to open database file`, đầu ra trống hoặc `authorization denied`, hãy cấp quyền Full Disk Access cho terminal, trình soạn thảo, tiến trình Node, dịch vụ Gateway hoặc tiến trình cha SSH khởi chạy `imsg`, sau đó mở lại tiến trình cha đó.
 
 2. Xác minh các bề mặt đọc, theo dõi, gửi và RPC trước khi thay đổi cấu hình OpenClaw:
 
@@ -73,79 +68,80 @@ Dùng danh sách kiểm tra này khi bạn đã biết cấu hình BlueBubbles c
    imsg rpc --help
    ```
 
-   Thay `42` bằng một id cuộc trò chuyện thực từ `imsg chats`. Việc gửi yêu cầu quyền Automation cho Messages.app. Nếu OpenClaw sẽ chạy qua SSH, hãy chạy các lệnh này qua cùng trình bao SSH hoặc ngữ cảnh người dùng mà OpenClaw sẽ dùng. Nếu đọc/dò hoạt động nhưng gửi thất bại với AppleEvents `-1743`, hãy kiểm tra xem Automation có rơi vào `/usr/libexec/sshd-keygen-wrapper` hay không; xem [Gửi bằng trình bao SSH thất bại với AppleEvents -1743](/vi/channels/imessage#ssh-wrapper-sends-fail-with-appleevents-1743).
+   Thay `42` bằng mã định danh cuộc trò chuyện thực tế từ `imsg chats`. Thao tác gửi yêu cầu quyền Automation cho Messages.app. Nếu OpenClaw sẽ chạy qua SSH, hãy chạy các lệnh này thông qua cùng trình bao bọc SSH hoặc ngữ cảnh người dùng mà OpenClaw sẽ sử dụng. Nếu thao tác đọc hoạt động nhưng thao tác gửi thất bại với lỗi AppleEvents `-1743`, hãy kiểm tra xem quyền Automation có được cấp cho `/usr/libexec/sshd-keygen-wrapper` hay không; xem [Thao tác gửi qua trình bao bọc SSH thất bại với lỗi AppleEvents -1743](/vi/channels/imessage#requirements-and-permissions-macos).
 
-3. Bật cầu nối API riêng tư khi bạn cần các hành động nâng cao:
+3. Bật cầu nối API riêng tư. Việc này đặc biệt được khuyến nghị cho iMessage của OpenClaw vì thao tác trả lời, tapback, hiệu ứng, cuộc thăm dò ý kiến, trả lời tệp đính kèm và thao tác nhóm phụ thuộc vào cầu nối này:
 
    ```bash
    imsg launch
    imsg status --json
    ```
 
-   `imsg launch` yêu cầu tắt SIP. Gửi cơ bản, lịch sử và theo dõi hoạt động mà không cần `imsg launch`; các hành động nâng cao thì không.
+   `imsg launch` yêu cầu tắt SIP (và trên macOS hiện đại, nới lỏng xác thực thư viện — xem [Bật API riêng tư của imsg](/vi/channels/imessage#enabling-the-imsg-private-api)). Các chức năng gửi cơ bản, lịch sử và theo dõi vẫn hoạt động khi không có `imsg launch`; toàn bộ bề mặt thao tác iMessage của OpenClaw thì không.
 
-4. Sau khi bạn thêm cấu hình `channels.imessage` đã bật, hãy xác minh cầu nối thông qua OpenClaw:
+4. Sau khi bật `channels.imessage` và khởi động Gateway, hãy xác minh cầu nối thông qua OpenClaw:
 
    ```bash
    openclaw channels status --probe
    ```
 
-   Bạn cần `imessage.privateApi.available: true`. Nếu nó báo cáo `false`, hãy sửa việc đó trước — xem [Phát hiện năng lực](/vi/channels/imessage#private-api-actions). `channels status --probe` chỉ dò các tài khoản đã cấu hình và đã bật.
+   Tài khoản iMessage phải báo cáo `works`; với `--json`, tải trọng thăm dò bao gồm `privateApi.available: true`. Nếu báo cáo `false`, hãy khắc phục vấn đề đó trước — xem [Phát hiện khả năng](/vi/channels/imessage#private-api-actions). Việc thăm dò yêu cầu Gateway có thể truy cập được (nếu không, CLI sẽ quay về đầu ra chỉ dựa trên cấu hình) và chỉ thăm dò các tài khoản đã được cấu hình và bật.
 
-5. Chụp nhanh cấu hình của bạn:
+5. Tạo bản chụp cấu hình của bạn:
 
    ```bash
-   cp ~/.openclaw/openclaw.json5 ~/.openclaw/openclaw.json5.bak
+   cp ~/.openclaw/openclaw.json ~/.openclaw/openclaw.json.bak
    ```
 
 ## Chuyển đổi cấu hình
 
-iMessage và BlueBubbles dùng chung nhiều cấu hình cấp kênh. Các khóa thay đổi chủ yếu là phần truyền tải (máy chủ REST so với CLI cục bộ). Các khóa hành vi (`dmPolicy`, `groupPolicy`, `allowFrom`, v.v.) giữ nguyên cùng ý nghĩa.
+iMessage và BlueBubbles dùng chung phần lớn các khóa hành vi cấp kênh. Phần thay đổi là cơ chế truyền tải (máy chủ REST so với CLI cục bộ) và định dạng khóa sổ đăng ký nhóm.
 
-| BlueBubbles                                                | iMessage tích hợp sẵn                     | Ghi chú                                                                                                                                                                                                                                                                                                                                                                             |
-| ---------------------------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `channels.bluebubbles.enabled`                             | `channels.imessage.enabled`               | Cùng ngữ nghĩa.                                                                                                                                                                                                                                                                                                                                                                      |
-| `channels.bluebubbles.serverUrl`                           | _(đã loại bỏ)_                            | Không có máy chủ REST — Plugin sinh `imsg rpc` qua stdio.                                                                                                                                                                                                                                                                                                                            |
-| `channels.bluebubbles.password`                            | _(đã loại bỏ)_                            | Không cần xác thực webhook.                                                                                                                                                                                                                                                                                                                                                          |
-| _(ngầm định)_                                              | `channels.imessage.cliPath`               | Đường dẫn tới `imsg` (mặc định `imsg`); dùng script bao bọc cho SSH.                                                                                                                                                                                                                                                                                                                 |
-| _(ngầm định)_                                              | `channels.imessage.dbPath`                | Ghi đè Messages.app `chat.db` tùy chọn; tự động phát hiện khi bỏ qua.                                                                                                                                                                                                                                                                                                                |
-| _(ngầm định)_                                              | `channels.imessage.remoteHost`            | `host` hoặc `user@host` — chỉ cần khi `cliPath` là script bao bọc SSH và bạn muốn lấy tệp đính kèm bằng SCP.                                                                                                                                                                                                                                                                         |
-| `channels.bluebubbles.dmPolicy`                            | `channels.imessage.dmPolicy`              | Cùng các giá trị (`pairing` / `allowlist` / `open` / `disabled`).                                                                                                                                                                                                                                                                                                                    |
-| `channels.bluebubbles.allowFrom`                           | `channels.imessage.allowFrom`             | Phê duyệt ghép nối được chuyển tiếp theo handle, không theo token.                                                                                                                                                                                                                                                                                                                   |
-| `channels.bluebubbles.groupPolicy`                         | `channels.imessage.groupPolicy`           | Cùng các giá trị (`allowlist` / `open` / `disabled`).                                                                                                                                                                                                                                                                                                                                |
-| `channels.bluebubbles.groupAllowFrom`                      | `channels.imessage.groupAllowFrom`        | Giống nhau.                                                                                                                                                                                                                                                                                                                                                                          |
-| `channels.bluebubbles.groups`                              | `channels.imessage.groups`                | **Sao chép nguyên văn phần này, bao gồm mọi mục ký tự đại diện `groups: { "*": { ... } }`.** `requireMention`, `tools`, `toolsBySender` theo từng nhóm được chuyển tiếp. Với `groupPolicy: "allowlist"`, khối `groups` trống hoặc thiếu sẽ âm thầm loại bỏ mọi tin nhắn nhóm — xem "Bẫy sổ đăng ký nhóm" bên dưới.                                                                  |
-| `channels.bluebubbles.sendReadReceipts`                    | `channels.imessage.sendReadReceipts`      | Mặc định `true`. Với Plugin tích hợp sẵn, mục này chỉ kích hoạt khi phép thăm dò API riêng tư đang hoạt động.                                                                                                                                                                                                                                                                        |
-| `channels.bluebubbles.includeAttachments`                  | `channels.imessage.includeAttachments`    | Cùng hình dạng, **cũng tắt theo mặc định**. Nếu bạn đã cho tệp đính kèm chạy trên BlueBubbles, bạn phải đặt lại rõ ràng mục này trên khối iMessage — nó không được chuyển tiếp ngầm định, và ảnh/phương tiện đến sẽ bị âm thầm loại bỏ mà không có dòng log `Inbound message` cho đến khi bạn làm vậy.                                                                                |
-| `channels.bluebubbles.attachmentRoots`                     | `channels.imessage.attachmentRoots`       | Các gốc cục bộ; cùng quy tắc ký tự đại diện.                                                                                                                                                                                                                                                                                                                                         |
-| _(Không áp dụng)_                                          | `channels.imessage.remoteAttachmentRoots` | Chỉ dùng khi `remoteHost` được đặt để lấy bằng SCP.                                                                                                                                                                                                                                                                                                                                   |
-| `channels.bluebubbles.mediaMaxMb`                          | `channels.imessage.mediaMaxMb`            | Mặc định 16 MB trên iMessage (mặc định của BlueBubbles là 8 MB). Đặt rõ ràng nếu bạn muốn giữ giới hạn thấp hơn.                                                                                                                                                                                                                                                                     |
-| `channels.bluebubbles.textChunkLimit`                      | `channels.imessage.textChunkLimit`        | Mặc định 4000 trên cả hai.                                                                                                                                                                                                                                                                                                                                                            |
-| `channels.bluebubbles.coalesceSameSenderDms`               | `channels.imessage.coalesceSameSenderDms` | Cùng lựa chọn bật thủ công. Chỉ dành cho DM — cuộc trò chuyện nhóm giữ cách điều phối tức thì theo từng tin nhắn trên cả hai kênh. Mở rộng debounce mặc định cho tin nhắn đến thành 7000 ms khi bật mà không có `messages.inbound.byChannel.imessage` rõ ràng hoặc `messages.inbound.debounceMs` toàn cục. Xem [tài liệu iMessage § Gộp các DM gửi tách](/vi/channels/imessage#coalescing-split-send-dms-command--url-in-one-composition). |
-| `channels.bluebubbles.enrichGroupParticipantsFromContacts` | _(Không áp dụng)_                         | iMessage đã đọc tên hiển thị của người gửi từ `chat.db`.                                                                                                                                                                                                                                                                                                                             |
-| `channels.bluebubbles.actions.*`                           | `channels.imessage.actions.*`             | Các công tắc theo từng hành động: `reactions`, `edit`, `unsend`, `reply`, `sendWithEffect`, `renameGroup`, `setGroupIcon`, `addParticipant`, `removeParticipant`, `leaveGroup`, `sendAttachment`.                                                                                                                                                                                    |
+| BlueBubbles                                                | iMessage tích hợp sẵn                     | Ghi chú                                                                                                                                                                                                                                                                                                                        |
+| ---------------------------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `channels.bluebubbles.enabled`                             | `channels.imessage.enabled`               | Cùng ngữ nghĩa (mặc định là `true` sau khi khối này tồn tại).                                                                                                                                                                                                                                                                   |
+| `channels.bluebubbles.serverUrl`                           | _(đã xóa)_                                | Không có máy chủ REST — Plugin khởi chạy `imsg rpc` qua stdio.                                                                                                                                                                                                                                                                 |
+| `channels.bluebubbles.password`                            | _(đã xóa)_                                | Không cần xác thực Webhook.                                                                                                                                                                                                                                                                                                    |
+| _(ngầm định)_                                              | `channels.imessage.cliPath`               | Đường dẫn đến `imsg` (mặc định là `imsg`); sử dụng tập lệnh bọc cho SSH.                                                                                                                                                                                                                                                        |
+| _(ngầm định)_                                              | `channels.imessage.dbPath`                | Ghi đè `chat.db` của Messages.app nếu cần; được tự động phát hiện khi bỏ qua.                                                                                                                                                                                                                                                   |
+| _(ngầm định)_                                              | `channels.imessage.remoteHost`            | `host` hoặc `user@host` — chỉ cần khi `cliPath` là tập lệnh bọc SSH và bạn muốn tải tệp đính kèm qua SCP.                                                                                                                                                                                                                        |
+| `channels.bluebubbles.dmPolicy`                            | `channels.imessage.dmPolicy`              | Cùng các giá trị (`pairing` / `allowlist` / `open` / `disabled`); mặc định là `pairing`.                                                                                                                                                                                                                                        |
+| `channels.bluebubbles.allowFrom`                           | `channels.imessage.allowFrom`             | Cùng định dạng định danh (`+15555550123`, `user@example.com`). Các phê duyệt trong kho ghép nối không được chuyển sang — xem bên dưới.                                                                                                                                                                                           |
+| `channels.bluebubbles.groupPolicy`                         | `channels.imessage.groupPolicy`           | Cùng các giá trị (`allowlist` / `open` / `disabled`); mặc định là `allowlist`.                                                                                                                                                                                                                                                  |
+| `channels.bluebubbles.groupAllowFrom`                      | `channels.imessage.groupAllowFrom`        | Tương tự. Khi chưa đặt, iMessage dùng `allowFrom` làm phương án dự phòng; `groupAllowFrom: []` được đặt rõ ràng sẽ chặn tất cả nhóm khi dùng `groupPolicy: "allowlist"`.                                                                                                                                                          |
+| `channels.bluebubbles.groups`                              | `channels.imessage.groups`                | Sao chép nguyên văn mục ký tự đại diện `"*"`; đổi khóa các mục theo nhóm bằng `chat_id` iMessage dạng số — xem “Cạm bẫy sổ đăng ký nhóm”. `requireMention`, `tools`, `toolsBySender`, `systemPrompt` được giữ nguyên.                                                                                                                |
+| `channels.bluebubbles.sendReadReceipts`                    | `channels.imessage.sendReadReceipts`      | Mặc định là `true`. Với Plugin tích hợp sẵn, tính năng này chỉ kích hoạt khi phép thăm dò API riêng tư đang hoạt động.                                                                                                                                                                                                           |
+| `channels.bluebubbles.includeAttachments`                  | `channels.imessage.includeAttachments`    | Cùng cấu trúc, cùng mặc định tắt. Nếu tệp đính kèm đã được chuyển qua BlueBubbles, hãy đặt mục này rõ ràng — ảnh/phương tiện gửi đến sẽ bị loại bỏ âm thầm (không có dòng nhật ký `Inbound message`) cho đến khi bạn thực hiện việc đó.                                                                                               |
+| `channels.bluebubbles.attachmentRoots`                     | `channels.imessage.attachmentRoots`       | Các thư mục gốc cục bộ; cùng quy tắc ký tự đại diện.                                                                                                                                                                                                                                                                            |
+| _(Không áp dụng)_                                          | `channels.imessage.remoteAttachmentRoots` | Chỉ được dùng khi đã đặt `remoteHost` để tải tệp qua SCP.                                                                                                                                                                                                                                                                       |
+| `channels.bluebubbles.mediaMaxMb`                          | `channels.imessage.mediaMaxMb`            | Mặc định là 16 MB trên iMessage (mặc định của BlueBubbles là 8 MB). Hãy đặt rõ ràng để giữ giới hạn thấp hơn.                                                                                                                                                                                                                    |
+| `channels.bluebubbles.textChunkLimit`                      | `channels.imessage.textChunkLimit`        | Mặc định là 4000 trên cả hai.                                                                                                                                                                                                                                                                                                   |
+| `channels.bluebubbles.coalesceSameSenderDms`               | `channels.imessage.coalesceSameSenderDms` | Cùng cơ chế tự nguyện bật. Chỉ dành cho tin nhắn trực tiếp — nhóm vẫn điều phối theo từng tin nhắn. Mở rộng khoảng chống dội mặc định của tin nhắn gửi đến thành 7000 ms, trừ khi đã đặt `messages.inbound.byChannel.imessage` hoặc `messages.inbound.debounceMs` toàn cục. Xem [Gộp các tin nhắn trực tiếp được gửi tách biệt](/vi/channels/imessage#coalescing-split-send-dms-command--url-in-one-composition). |
+| `channels.bluebubbles.enrichGroupParticipantsFromContacts` | _(Không áp dụng)_                          | `imsg` đã cung cấp tên hiển thị của người gửi từ `chat.db`.                                                                                                                                                                                                                                                                     |
+| `channels.bluebubbles.actions.*`                           | `channels.imessage.actions.*`             | Cùng các nút bật/tắt theo hành động (`reactions`, `edit`, `unsend`, `reply`, `sendWithEffect`, `renameGroup`, `setGroupIcon`, `addParticipant`, `removeParticipant`, `leaveGroup`, `sendAttachment`) và thêm `polls` mới. Tất cả đều được bật theo mặc định; các hành động API riêng tư vẫn yêu cầu cầu nối.                                                                                 |
 
-Cấu hình nhiều tài khoản (`channels.bluebubbles.accounts.*`) chuyển đổi một-một sang `channels.imessage.accounts.*`.
+Cấu hình nhiều tài khoản (`channels.bluebubbles.accounts.*`) được chuyển đổi tương ứng một-một thành `channels.imessage.accounts.*`.
 
-## Bẫy sổ đăng ký nhóm
+## Cạm bẫy sổ đăng ký nhóm
 
-Plugin iMessage tích hợp sẵn chạy **hai** cổng allowlist nhóm riêng biệt nối tiếp nhau. Cả hai đều phải đạt để tin nhắn nhóm đến được agent:
+Plugin iMessage tích hợp sẵn chạy liên tiếp hai cổng kiểm soát nhóm. Một tin nhắn nhóm phải vượt qua cả hai để đến được tác tử:
 
-1. **Allowlist người gửi / đích trò chuyện** (`channels.imessage.groupAllowFrom`) — được kiểm tra bởi `isAllowedIMessageSender`. Khớp tin nhắn đến theo handle người gửi, `chat_guid`, `chat_identifier`, hoặc `chat_id`. Cùng hình dạng với BlueBubbles.
-2. **Sổ đăng ký nhóm** (`channels.imessage.groups`) — được kiểm tra bởi `resolveChannelGroupPolicy` từ `inbound-processing.ts:199`. Với `groupPolicy: "allowlist"`, cổng này yêu cầu một trong hai:
-   - mục ký tự đại diện `groups: { "*": { ... } }` (đặt `allowAll = true`), hoặc
-   - mục rõ ràng theo từng `chat_id` trong `groups`.
+1. **Danh sách cho phép người gửi / đích trò chuyện** (`channels.imessage.groupAllowFrom`) — khớp với định danh người gửi hoặc đích trò chuyện (các mục `chat_id:`, `chat_guid:`, `chat_identifier:`). Khi chưa đặt `groupAllowFrom`, cổng này dùng `allowFrom` làm phương án dự phòng; `groupAllowFrom: []` được đặt rõ ràng sẽ vô hiệu hóa phương án dự phòng đó và loại bỏ mọi tin nhắn nhóm khi dùng `groupPolicy: "allowlist"`.
+2. **Sổ đăng ký nhóm** (`channels.imessage.groups`) — được lập khóa theo `chat_id` iMessage dạng số:
+   - Không có khối `groups` (hoặc khối này trống): các nhóm vượt qua cổng này miễn là cổng 1 có danh sách cho phép người gửi hiệu lực không trống; việc lọc người gửi kiểm soát quyền truy cập và không phát cảnh báo khởi động về việc loại bỏ tất cả.
+   - `groups` có mục nhưng không có `"*"`: chỉ các khóa `chat_id` được liệt kê mới vượt qua. Việc liệt kê bất kỳ nhóm nào cũng biến sổ đăng ký thành danh sách cho phép, ngay cả khi dùng `groupPolicy: "open"`.
+   - `groups: { "*": { ... } }`: mọi nhóm đều vượt qua cổng này.
 
-Nếu cổng 1 đạt nhưng cổng 2 không đạt, tin nhắn sẽ bị loại bỏ. Plugin phát ra hai tín hiệu cấp `warn` để việc này không còn im lặng ở cấp log mặc định:
+Cạm bẫy khi di chuyển: BlueBubbles lập khóa các mục `groups` theo GUID trò chuyện / mã định danh trò chuyện, trong khi sổ đăng ký iMessage lập khóa theo `chat_id` dạng số. Việc sao chép nguyên văn các mục theo nhóm sẽ tạo ra một sổ đăng ký không trống nhưng có các khóa không bao giờ khớp, vì vậy mọi tin nhắn nhóm đều bị loại bỏ tại cổng 2. Hãy sao chép nguyên văn ký tự đại diện `"*"`; đổi khóa các mục nhóm cụ thể bằng các giá trị `chat_id` từ `imsg chats`.
 
-- Một `warn` một lần khi khởi động cho mỗi tài khoản khi `groupPolicy: "allowlist"` được đặt nhưng `channels.imessage.groups` trống (không có ký tự đại diện `"*"`, không có mục theo từng `chat_id`) — kích hoạt trước khi có bất kỳ tin nhắn nào đến.
-- Một `warn` một lần cho mỗi `chat_id` vào lần đầu một nhóm cụ thể bị loại bỏ lúc chạy, nêu tên chat_id và khóa chính xác cần thêm vào `groups` để cho phép nhóm đó.
+Cả hai đường dẫn loại bỏ đều hiển thị ở cấp độ nhật ký mặc định qua các dòng `warn`:
 
-DM tiếp tục hoạt động vì chúng đi theo một đường dẫn mã khác.
+- Một lần cho mỗi tài khoản khi khởi động, nếu đã đặt `groupPolicy: "allowlist"` nhưng danh sách cho phép người gửi nhóm hiệu lực trống: `imessage: groupPolicy="allowlist" for account "<id>" but no group sender allowlist is configured ...`. Hãy đặt `groupAllowFrom` (hoặc `allowFrom`) để cho phép người gửi; chỉ thêm `groups` không đáp ứng cổng kiểm soát người gửi.
+- Một lần cho mỗi `chat_id` trong thời gian chạy, khi sổ đăng ký loại bỏ một nhóm: `imessage: dropping group message from chat_id=<id> ... not in channels.imessage.groups allowlist`, đồng thời nêu chính xác khóa cần thêm.
 
-Đây là chế độ lỗi phổ biến nhất khi di chuyển từ BlueBubbles → iMessage đi kèm: người vận hành sao chép `groupAllowFrom` và `groupPolicy` nhưng bỏ qua khối `groups`, vì `groups: { "*": { "requireMention": true } }` của BlueBubbles trông giống một thiết lập nhắc tên không liên quan. Thực ra nó là phần thiết yếu cho cổng registry.
+Tin nhắn trực tiếp vẫn hoạt động trong cả hai trường hợp — chúng đi theo một đường dẫn mã khác, vì vậy việc tin nhắn trực tiếp hoạt động không chứng minh rằng định tuyến nhóm hoạt động.
 
-Cấu hình tối thiểu để giữ tin nhắn nhóm tiếp tục chạy sau `groupPolicy: "allowlist"`:
+Cấu hình tối thiểu theo phạm vi người gửi với `groupPolicy: "allowlist"`:
 
 ```json5
 {
@@ -153,115 +149,88 @@ Cấu hình tối thiểu để giữ tin nhắn nhóm tiếp tục chạy sau `
     imessage: {
       groupPolicy: "allowlist",
       groupAllowFrom: ["+15555550123", "chat_guid:any;-;..."],
-      groups: {
-        "*": { requireMention: true },
-      },
     },
   },
 }
 ```
 
-`requireMention: true` dưới `*` là vô hại khi không cấu hình mẫu nhắc tên: runtime đặt `canDetectMention = false` và bỏ qua nhánh loại bỏ do nhắc tên tại `inbound-processing.ts:512`. Khi đã cấu hình mẫu nhắc tên (`agents.list[].groupChat.mentionPatterns`), nó hoạt động đúng như mong đợi.
-
-Nếu nhật ký gateway ghi `imessage: dropping group message from chat_id=<id>` hoặc dòng khởi động `imessage: groupPolicy="allowlist" but channels.imessage.groups is empty`, cổng 2 đang loại bỏ tin nhắn — hãy thêm khối `groups`.
+Cấu hình này cho phép những người gửi đã thiết lập trong mọi nhóm. Thêm các mục `groups` để giới hạn các cuộc trò chuyện được phép hoặc đặt các tùy chọn theo từng cuộc trò chuyện như `requireMention`; sao chép nguyên văn mục `"*"` của BlueBubbles, nhưng đổi khóa các mục cụ thể bằng giá trị `chat_id` iMessage dạng số.
 
 ## Từng bước
 
-1. Thêm một khối iMessage bên cạnh khối BlueBubbles hiện có. Giữ nó tắt trong khi Gateway vẫn đang định tuyến lưu lượng BlueBubbles:
+1. Chuyển đổi cấu hình. Giữ khối mới ở trạng thái tắt trong khi chỉnh sửa; khối `channels.bluebubbles` cũ bị OpenClaw hiện tại bỏ qua và có thể được giữ lại bên cạnh để tham khảo:
 
    ```json5
    {
      channels: {
-       bluebubbles: {
-         enabled: true,
-         // ... existing config ...
-       },
        imessage: {
-         enabled: false,
+         enabled: false, // flip to true when ready to cut over
          cliPath: "/opt/homebrew/bin/imsg",
          dmPolicy: "pairing",
          allowFrom: ["+15555550123"], // copy from bluebubbles.allowFrom
          groupPolicy: "allowlist",
          groupAllowFrom: [], // copy from bluebubbles.groupAllowFrom
-         groups: { "*": { requireMention: true } }, // copy from bluebubbles.groups — silently drops groups if missing, see "Group registry footgun" above
-         actions: {
-           reactions: true,
-           edit: true,
-           unsend: true,
-           reply: true,
-           sendWithEffect: true,
-           sendAttachment: true,
-         },
+         groups: { "*": { requireMention: true } }, // wildcard copies verbatim; re-key per-chat entries by chat_id
+         // actions default to enabled; set individual toggles false to disable
        },
      },
    }
    ```
 
-2. **Kiểm tra trước khi lưu lượng trở nên quan trọng** — dừng Gateway, tạm thời bật khối iMessage, và xác nhận iMessage báo trạng thái khỏe mạnh từ CLI:
+2. **Chuyển sang hệ thống mới và thăm dò.** Đặt `channels.imessage.enabled: true`, khởi động lại Gateway và xác nhận kênh báo cáo trạng thái khỏe mạnh:
 
    ```bash
-   openclaw gateway stop
-   # edit config: channels.imessage.enabled = true
-   openclaw channels status --probe --channel imessage   # expect imessage.privateApi.available: true
+   openclaw gateway restart
+   openclaw channels status --probe --channel imessage   # expect "works"; --json shows privateApi.available: true
    ```
 
-   `channels status --probe` chỉ kiểm tra các tài khoản đã cấu hình và đang bật. Không khởi động lại Gateway với cả BlueBubbles và iMessage cùng bật trừ khi bạn cố ý muốn cả hai bộ giám sát kênh cùng chạy. Nếu bạn chưa chuyển đổi ngay, đặt `channels.imessage.enabled` về `false` trước khi khởi động lại Gateway. Dùng các lệnh `imsg` trực tiếp trong [Trước khi bắt đầu](#before-you-start) để xác thực Mac trước khi bật lưu lượng OpenClaw.
+   Thao tác thăm dò yêu cầu Gateway có thể truy cập được và chỉ thăm dò các tài khoản đã cấu hình và bật. Dùng trực tiếp các lệnh `imsg` trong [Trước khi bắt đầu](#before-you-start) để xác thực chính máy Mac.
 
-3. **Chuyển đổi.** Khi tài khoản iMessage đã bật báo trạng thái khỏe mạnh, xóa cấu hình BlueBubbles và giữ iMessage bật:
+3. **Xác minh tin nhắn trực tiếp.** Gửi tin nhắn trực tiếp cho tác nhân; xác nhận phản hồi được gửi đến.
 
-   ```json5
-   {
-     channels: {
-       imessage: { enabled: true /* ... */ },
-     },
-   }
-   ```
+4. **Xác minh riêng các nhóm.** Tin nhắn trực tiếp và nhóm đi qua các đường dẫn mã khác nhau — tin nhắn trực tiếp thành công không chứng minh rằng nhóm đang được định tuyến. Gửi tin nhắn trong một cuộc trò chuyện nhóm được phép và xác nhận phản hồi được gửi đến. Nếu nhóm im lặng (không có phản hồi của tác nhân, không có lỗi), hãy kiểm tra nhật ký Gateway để tìm hai dòng `warn` từ phần "Cạm bẫy của sổ đăng ký nhóm" ở trên. Cảnh báo khi khởi động có nghĩa là danh sách người gửi được phép có hiệu lực đang trống; cảnh báo theo từng `chat_id` có nghĩa là sổ đăng ký `groups` đã có dữ liệu nhưng không chứa cuộc trò chuyện đó.
 
-   Khởi động lại gateway. Lưu lượng iMessage vào giờ sẽ đi qua Plugin đi kèm.
+5. **Xác minh bề mặt thao tác.** Từ một tin nhắn trực tiếp đã ghép nối, yêu cầu tác nhân thả cảm xúc, chỉnh sửa, thu hồi, trả lời, gửi ảnh và (trong một nhóm) đổi tên nhóm hoặc thêm/xóa người tham gia. Mỗi thao tác phải xuất hiện theo cách nguyên bản trong Messages.app. Nếu thao tác nào trả về lỗi `iMessage <action> requires the imsg private API bridge`, hãy chạy lại `imsg launch` rồi làm mới bằng `openclaw channels status --probe`.
 
-4. **Xác minh DM.** Gửi cho agent một tin nhắn trực tiếp; xác nhận phản hồi được gửi đến.
+6. **Xóa máy chủ BlueBubbles và khối `channels.bluebubbles`** sau khi đã xác minh tin nhắn trực tiếp, nhóm và các thao tác của iMessage. OpenClaw không đọc `channels.bluebubbles`.
 
-5. **Xác minh nhóm riêng.** DM và nhóm đi qua các đường dẫn mã khác nhau — DM thành công không chứng minh rằng nhóm đang được định tuyến. Gửi cho agent một tin nhắn trong cuộc trò chuyện nhóm đã ghép đôi và xác nhận phản hồi được gửi đến. Nếu nhóm im lặng (không có phản hồi của agent, không có lỗi), kiểm tra nhật ký gateway để tìm `imessage: dropping group message from chat_id=<id>` hoặc dòng khởi động `imessage: groupPolicy="allowlist" but channels.imessage.groups is empty` — cả hai đều xuất hiện ở cấp nhật ký mặc định. Nếu một trong hai xuất hiện, khối `groups` của bạn bị thiếu hoặc rỗng — xem “Bẫy registry nhóm” ở trên.
+## Tổng quan nhanh về mức độ tương đương của thao tác
 
-6. **Xác minh bề mặt hành động** — từ một DM đã ghép đôi, yêu cầu agent thả phản ứng, chỉnh sửa, thu hồi, trả lời, gửi ảnh, và (trong nhóm) đổi tên nhóm / thêm hoặc xóa người tham gia. Mỗi hành động phải xuất hiện nguyên bản trong Messages.app. Nếu bất kỳ hành động nào ném lỗi "iMessage `<action>` requires the imsg private API bridge", chạy lại `imsg launch` và làm mới `channels status --probe`.
+| Thao tác                                             | BlueBubbles cũ     | iMessage tích hợp sẵn                                                          |
+| --------------------------------------------------- | ------------------ | ----------------------------------------------------------------------------- |
+| Gửi văn bản / dự phòng bằng SMS                     | ✅                 | ✅                                                                            |
+| Gửi nội dung đa phương tiện (ảnh, video, tệp, giọng nói) | ✅             | ✅                                                                            |
+| Trả lời theo luồng (`reply_to_guid`)                 | ✅                 | ✅ (khắc phục [#51892](https://github.com/openclaw/openclaw/issues/51892))     |
+| Phản ứng Tapback (`react`)                           | ✅                 | ✅                                                                            |
+| Chỉnh sửa / thu hồi (người nhận dùng macOS 13+)     | ✅                 | ✅                                                                            |
+| Gửi kèm hiệu ứng màn hình                            | ✅                 | ✅ (khắc phục một phần [#9394](https://github.com/openclaw/openclaw/issues/9394)) |
+| Văn bản có định dạng đậm / nghiêng / gạch chân / gạch ngang | ✅          | ✅ (định dạng theo lượt chạy được định kiểu thông qua attributedBody)          |
+| Cuộc thăm dò nguyên bản của Messages (tạo và bỏ phiếu) | ❌               | ✅ (`actions.polls`; người nhận cần iOS/macOS 26+ để hiển thị nguyên bản)      |
+| Đổi tên nhóm / đặt biểu tượng nhóm                   | ✅                 | ✅                                                                            |
+| Thêm / xóa người tham gia, rời nhóm                  | ✅                 | ✅                                                                            |
+| Xác nhận đã đọc và chỉ báo đang nhập                 | ✅                 | ✅ (phụ thuộc vào kết quả thăm dò API riêng tư)                               |
+| Hợp nhất tin nhắn trực tiếp từ cùng người gửi        | ✅                 | ✅ (chỉ dành cho tin nhắn trực tiếp; phải chủ động bật qua `channels.imessage.coalesceSameSenderDms`) |
+| Khôi phục tin nhắn đến sau khi khởi động lại         | ✅                 | ✅ (tự động: phát lại `since_rowid` + loại bỏ trùng lặp theo GUID; cửa sổ rộng hơn khi chạy cục bộ) |
 
-7. **Xóa máy chủ và cấu hình BlueBubbles** sau khi đã xác minh DM, nhóm và hành động của iMessage. OpenClaw sẽ không dùng `channels.bluebubbles`.
+iMessage khôi phục các tin nhắn bị bỏ lỡ trong thời gian Gateway ngừng hoạt động: khi khởi động, hệ thống phát lại từ rowid cuối cùng đã được chuyển tiếp bằng `since_rowid` của `imsg watch.subscribe`, loại bỏ trùng lặp theo GUID và dùng giới hạn tuổi của lượng tồn đọng cũ để ngăn "bom tồn đọng" khi xả Push. Quá trình này chạy qua kết nối RPC của `imsg`, nên cũng hoạt động với các thiết lập `cliPath` dùng SSH từ xa; thiết lập cục bộ có cửa sổ khôi phục rộng hơn vì có thể đọc `chat.db`. Xem [Khôi phục tin nhắn đến sau khi cầu nối hoặc Gateway khởi động lại](/vi/channels/imessage#inbound-recovery-after-a-bridge-or-gateway-restart).
 
-## Tổng quan tương đương hành động
+## Ghép nối, phiên và liên kết ACP
 
-| Hành động                                            | BlueBubbles cũ                       | iMessage đi kèm                                                               |
-| --------------------------------------------------- | ----------------------------------- | ----------------------------------------------------------------------------- |
-| Gửi văn bản / dự phòng SMS                          | ✅                                  | ✅                                                                            |
-| Gửi phương tiện (ảnh, video, tệp, thoại)            | ✅                                  | ✅                                                                            |
-| Trả lời theo luồng (`reply_to_guid`)                | ✅                                  | ✅ (đóng [#51892](https://github.com/openclaw/openclaw/issues/51892))         |
-| Tapback (`react`)                                   | ✅                                  | ✅                                                                            |
-| Chỉnh sửa / thu hồi (người nhận macOS 13+)          | ✅                                  | ✅                                                                            |
-| Gửi kèm hiệu ứng màn hình                           | ✅                                  | ✅ (đóng một phần [#9394](https://github.com/openclaw/openclaw/issues/9394))  |
-| Văn bản giàu định dạng in đậm / nghiêng / gạch chân / gạch ngang | ✅                                  | ✅ (định dạng typed-run qua attributedBody)                                   |
-| Đổi tên nhóm / đặt biểu tượng nhóm                  | ✅                                  | ✅                                                                            |
-| Thêm / xóa người tham gia, rời nhóm                 | ✅                                  | ✅                                                                            |
-| Biên nhận đã đọc và chỉ báo đang nhập               | ✅                                  | ✅ (được chặn bởi kiểm tra API riêng tư)                                      |
-| Gộp DM cùng người gửi                               | ✅                                  | ✅ (chỉ DM; bật tùy chọn qua `channels.imessage.coalesceSameSenderDms`)       |
-| Khôi phục tin nhắn vào sau khi khởi động lại         | ✅ (phát lại webhook + lấy lịch sử) | ✅ (tự động: phát lại phần bỏ lỡ qua since_rowid + khử trùng lặp; cửa sổ rộng hơn khi cục bộ) |
+- **Danh sách cho phép được chuyển tiếp theo định danh.** `channels.imessage.allowFrom` nhận diện cùng các chuỗi `+15555550123` / `user@example.com` mà BlueBubbles đã dùng — hãy sao chép nguyên văn.
+- **Phê duyệt trong kho ghép nối không được chuyển tiếp.** Kho ghép nối là riêng biệt cho từng kênh và không có cơ chế nào di chuyển kho BlueBubbles cũ. Những người gửi chỉ được phê duyệt thông qua ghép nối phải ghép nối lại một lần trong iMessage, hoặc bạn thêm định danh của họ vào `allowFrom`.
+- **Các phiên** vẫn được phân phạm vi theo từng tác nhân + cuộc trò chuyện. Theo thiết lập mặc định `session.dmScope=main`, tin nhắn trực tiếp được hợp nhất vào phiên chính của tác nhân; phiên nhóm vẫn được cô lập theo từng `chat_id` (`agent:<agentId>:imessage:group:<chat_id>`). Lịch sử trò chuyện cũ dưới các khóa phiên BlueBubbles không được chuyển sang phiên iMessage.
+- **Các liên kết ACP** tham chiếu đến `match.channel: "bluebubbles"` phải được đổi thành `"imessage"`. Các dạng `match.peer.id` (`chat_id:`, `chat_guid:`, `chat_identifier:`, định danh thuần túy) hoàn toàn giống nhau.
 
-iMessage khôi phục các tin nhắn bị bỏ lỡ khi gateway tắt: khi khởi động, nó phát lại từ rowid đã dispatch cuối cùng qua `imsg watch.subscribe` `since_rowid` và khử trùng lặp theo GUID, trong khi hàng rào tuổi backlog cũ ngăn “bom backlog” Push-flush. Việc này chạy qua kết nối RPC `imsg`, nên cũng hoạt động với các thiết lập `cliPath` SSH từ xa; thiết lập cục bộ có cửa sổ khôi phục rộng hơn vì chúng có thể đọc `chat.db`. Xem [Khôi phục tin nhắn vào sau khi bridge hoặc gateway khởi động lại](/vi/channels/imessage#inbound-recovery-after-a-bridge-or-gateway-restart).
+## Không có kênh quay lui
 
-## Ghép đôi, phiên và liên kết ACP
+Không có môi trường chạy BlueBubbles được hỗ trợ để chuyển ngược về. Nếu việc xác minh iMessage thất bại, hãy đặt `channels.imessage.enabled: false`, khởi động lại Gateway, khắc phục yếu tố chặn `imsg` rồi thử chuyển đổi lại.
 
-- **Phê duyệt ghép đôi** được chuyển tiếp theo handle. Bạn không cần phê duyệt lại những người gửi đã biết — `channels.imessage.allowFrom` nhận diện cùng các chuỗi `+15555550123` / `user@example.com` mà BlueBubbles đã dùng.
-- **Phiên** vẫn được giới hạn theo từng agent + cuộc trò chuyện. DM được gộp vào phiên chính của agent dưới mặc định `session.dmScope=main`; phiên nhóm vẫn cô lập theo từng `chat_id`. Khóa phiên khác nhau (`agent:<id>:imessage:group:<chat_id>` so với tương đương của BlueBubbles) — lịch sử hội thoại cũ dưới các khóa phiên BlueBubbles không được chuyển sang phiên iMessage.
-- **Liên kết ACP** tham chiếu `match.channel: "bluebubbles"` cần được cập nhật thành `"imessage"`. Các dạng `match.peer.id` (`chat_id:`, `chat_guid:`, `chat_identifier:`, handle trần) là giống hệt nhau.
-
-## Không có kênh rollback
-
-Không có runtime BlueBubbles được hỗ trợ để chuyển ngược lại. Nếu xác minh iMessage thất bại, đặt `channels.imessage.enabled: false`, khởi động lại Gateway, sửa điểm chặn `imsg`, rồi thử chuyển đổi lại.
-
-Bộ nhớ đệm phản hồi nằm trong trạng thái Plugin SQLite. `openclaw doctor --fix` nhập và lưu trữ sidecar `imessage/reply-cache.jsonl` cũ khi có.
+Bộ nhớ đệm phản hồi nằm trong trạng thái Plugin SQLite. `openclaw doctor --fix` nhập và lưu trữ tệp phụ `imessage/reply-cache.jsonl` cũ nếu có.
 
 ## Liên quan
 
-- [Gỡ bỏ BlueBubbles và đường dẫn iMessage imsg](/vi/announcements/bluebubbles-imessage) — thông báo ngắn và tóm tắt cho người vận hành.
-- [iMessage](/vi/channels/imessage) — tài liệu tham chiếu đầy đủ cho kênh iMessage, bao gồm thiết lập `imsg launch` và phát hiện năng lực.
+- [Loại bỏ BlueBubbles và đường dẫn iMessage dùng imsg](/vi/announcements/bluebubbles-imessage) — thông báo ngắn và phần tóm tắt dành cho người vận hành.
+- [iMessage](/vi/channels/imessage) — tài liệu tham khảo đầy đủ về kênh iMessage, bao gồm thiết lập `imsg launch` và phát hiện khả năng.
 - `/channels/bluebubbles` — URL cũ chuyển hướng đến hướng dẫn di chuyển này.
-- [Ghép đôi](/vi/channels/pairing) — xác thực DM và luồng ghép đôi.
-- [Định tuyến kênh](/vi/channels/channel-routing) — cách gateway chọn kênh cho phản hồi đi.
+- [Ghép nối](/vi/channels/pairing) — quy trình xác thực và ghép nối tin nhắn trực tiếp.
+- [Định tuyến kênh](/vi/channels/channel-routing) — cách Gateway chọn kênh cho các phản hồi gửi đi.

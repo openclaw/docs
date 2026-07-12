@@ -2,34 +2,34 @@
 read_when:
     - Anda ingin menggunakan Gemini untuk web_search
     - Anda memerlukan GEMINI_API_KEY atau models.providers.google.apiKey
-    - Anda menginginkan pelandasan dengan Google Search
+    - Anda ingin grounding Google Search
 summary: Pencarian web Gemini dengan grounding Google Search
 title: Pencarian Gemini
 x-i18n:
-    generated_at: "2026-06-27T18:18:44Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:44:16Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8bbebd5689daaa63c817ff17eac70e197999a3e1ecbb198249eb567e5ba0fc5f
+    source_hash: 4c7cb55fb185adfda01ab6b3c6434ab6e3ee31162733c752d4c81328bce9a6cd
     source_path: tools/gemini-search.md
     workflow: 16
 ---
 
 OpenClaw mendukung model Gemini dengan
-[pembumian Google Search](https://ai.google.dev/gemini-api/docs/grounding)
-bawaan, yang mengembalikan jawaban yang disintesis AI dan didukung oleh hasil
-Google Search langsung dengan sitasi.
+[grounding Google Search](https://ai.google.dev/gemini-api/docs/grounding)
+bawaan, yang menghasilkan jawaban yang disintesis oleh AI berdasarkan hasil
+Google Search langsung beserta kutipan.
 
 ## Dapatkan kunci API
 
 <Steps>
-  <Step title="Create a key">
+  <Step title="Buat kunci">
     Buka [Google AI Studio](https://aistudio.google.com/apikey) dan buat
     kunci API.
   </Step>
-  <Step title="Store the key">
-    Atur `GEMINI_API_KEY` di lingkungan Gateway, gunakan kembali
-    `models.providers.google.apiKey`, atau konfigurasikan kunci pencarian web khusus melalui:
+  <Step title="Simpan kunci">
+    Tetapkan `GEMINI_API_KEY` di lingkungan Gateway, gunakan kembali
+    `models.providers.google.apiKey`, atau konfigurasikan kunci khusus pencarian web melalui:
 
     ```bash
     openclaw configure --section web
@@ -47,9 +47,9 @@ Google Search langsung dengan sitasi.
       google: {
         config: {
           webSearch: {
-            apiKey: "AIza...", // optional if GEMINI_API_KEY or models.providers.google.apiKey is set
-            baseUrl: "https://generativelanguage.googleapis.com/v1beta", // optional; falls back to models.providers.google.baseUrl
-            model: "gemini-2.5-flash", // default
+            apiKey: "AIza...", // opsional jika GEMINI_API_KEY atau models.providers.google.apiKey ditetapkan
+            baseUrl: "https://generativelanguage.googleapis.com/v1beta", // opsional; beralih ke models.providers.google.baseUrl jika tidak tersedia
+            model: "gemini-2.5-flash", // bawaan
           },
         },
       },
@@ -65,55 +65,55 @@ Google Search langsung dengan sitasi.
 }
 ```
 
-**Prioritas kredensial:** Pencarian web Gemini menggunakan
+**Urutan prioritas kredensial:** Pencarian web Gemini menggunakan
 `plugins.entries.google.config.webSearch.apiKey` terlebih dahulu, lalu `GEMINI_API_KEY`,
-lalu `models.providers.google.apiKey`. Untuk URL dasar,
-`plugins.entries.google.config.webSearch.baseUrl` khusus diutamakan sebelum
+kemudian `models.providers.google.apiKey`. Untuk URL dasar,
+`plugins.entries.google.config.webSearch.baseUrl` khusus diprioritaskan sebelum
 `models.providers.google.baseUrl`.
 
-Untuk instalasi gateway, letakkan kunci env di `~/.openclaw/.env`.
+Untuk instalasi Gateway, letakkan kunci lingkungan di `~/.openclaw/.env`.
 
 ## Cara kerjanya
 
-Berbeda dari penyedia pencarian tradisional yang mengembalikan daftar tautan dan cuplikan,
-Gemini menggunakan pembumian Google Search untuk menghasilkan jawaban yang disintesis AI dengan
-sitasi sebaris. Hasilnya mencakup jawaban yang disintesis dan URL sumber.
+Tidak seperti penyedia pencarian tradisional yang mengembalikan daftar tautan dan cuplikan,
+Gemini menggunakan grounding Google Search untuk menghasilkan jawaban yang disintesis oleh AI
+dengan kutipan sebaris. Hasilnya mencakup jawaban yang disintesis dan URL
+sumber.
 
-- URL sitasi dari pembumian Gemini secara otomatis diresolusikan dari URL
-  pengalihan Google menjadi URL langsung.
-- Resolusi pengalihan menggunakan jalur pengaman SSRF (HEAD + pemeriksaan pengalihan +
-  validasi http/https) sebelum mengembalikan URL sitasi akhir.
-- Resolusi pengalihan menggunakan default SSRF yang ketat, sehingga pengalihan ke
+- URL kutipan dari grounding Gemini secara otomatis diubah dari URL pengalihan
+  Google menjadi URL langsung melalui permintaan HEAD lewat jalur pengambilan OpenClaw
+  yang dilindungi dari SSRF (mengikuti pengalihan, validasi http/https).
+- Resolusi pengalihan menggunakan pengaturan bawaan SSRF yang ketat, sehingga pengalihan ke
   target privat/internal diblokir.
 
 ## Parameter yang didukung
 
 Pencarian Gemini mendukung `query`, `freshness`, `date_after`, dan `date_before`.
 
-`count` diterima untuk kompatibilitas bersama `web_search`, tetapi pembumian Gemini
-tetap mengembalikan satu jawaban yang disintesis dengan sitasi, bukan daftar dengan
-N hasil.
+`count` diterima untuk kompatibilitas `web_search` bersama, tetapi grounding Gemini
+tetap mengembalikan satu jawaban yang disintesis dengan kutipan, bukan daftar
+berisi N hasil.
 
-`freshness` menerima `day`, `week`, `month`, `year`, dan pintasan bersama
-`pd`, `pw`, `pm`, dan `py`. `day`/`pd` menambahkan instruksi keterbaruan ke kueri Gemini,
-bukan rentang 24 jam yang kaku. `week`, `month`, `year`, dan rentang eksplisit
-`date_after`/`date_before` mengatur `timeRangeFilter` pembumian Google Search Gemini.
-`country`, `language`, dan `domain_filter` tidak didukung.
+`freshness` menerima `day`, `week`, `month`, `year`, serta pintasan bersama
+`pd`, `pw`, `pm`, dan `py`. `day`/`pd` menambahkan instruksi keterkinian ke kueri Gemini,
+bukan rentang 24 jam yang ketat. `week`, `month`, `year`, serta rentang eksplisit
+`date_after`/`date_before` menetapkan `timeRangeFilter` pada grounding
+Google Search Gemini. `country`, `language`, dan `domain_filter` tidak didukung.
 
 ## Pemilihan model
 
-Model default adalah `gemini-2.5-flash` (cepat dan hemat biaya). Model Gemini apa pun
-yang mendukung pembumian dapat digunakan melalui
+Model bawaan adalah `gemini-2.5-flash` (cepat dan hemat biaya). Model Gemini
+apa pun yang mendukung grounding dapat digunakan melalui
 `plugins.entries.google.config.webSearch.model`.
 
 ## Penggantian URL dasar
 
-Atur `plugins.entries.google.config.webSearch.baseUrl` ketika pencarian web Gemini
-harus dirutekan melalui proksi operator atau endpoint kustom yang kompatibel dengan Gemini. Jika
-tidak diatur, pencarian web Gemini menggunakan kembali `models.providers.google.baseUrl`. Nilai biasa
-`https://generativelanguage.googleapis.com` dinormalisasi menjadi
-`https://generativelanguage.googleapis.com/v1beta`; jalur proksi kustom dipertahankan
-sebagaimana diberikan setelah memangkas garis miring penutup.
+Tetapkan `plugins.entries.google.config.webSearch.baseUrl` ketika pencarian web Gemini
+harus dirutekan melalui proksi operator atau titik akhir khusus yang kompatibel dengan Gemini. Jika
+tidak ditetapkan, pencarian web Gemini menggunakan kembali `models.providers.google.baseUrl`. Nilai
+`https://generativelanguage.googleapis.com` biasa dinormalisasi menjadi
+`https://generativelanguage.googleapis.com/v1beta`; jalur proksi khusus dipertahankan
+sebagaimana diberikan setelah garis miring di akhir dihapus.
 
 ## Terkait
 

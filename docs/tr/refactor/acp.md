@@ -1,67 +1,68 @@
 ---
 read_when:
-    - ACP oturum yaşam döngüsünü veya ACPX işlem temizliğini yeniden düzenleme
-    - ACPX yetim süreçleri, PID yeniden kullanımı veya çoklu Gateway temizleme güvenliği için hata ayıklama
-    - Oluşturulan ACP veya alt aracı oturumları için sessions_list görünürlüğünü değiştirme
-    - Arka plan görevleri, ACP oturumları veya süreç kiraları için sahiplik meta verileri tasarlama
+    - ACP oturumu yaşam döngüsünü veya ACPX işlem temizliğini yeniden düzenleme
+    - ACPX yetim süreçlerinde, PID yeniden kullanımında veya çoklu Gateway temizleme güvenliğinde hata ayıklama
+    - Başlatılan ACP veya alt aracı oturumları için sessions_list görünürlüğünü değiştirme
+    - Arka plan görevleri, ACP oturumları veya süreç kiralamaları için sahiplik meta verileri tasarlama
 sidebarTitle: ACP lifecycle refactor
-summary: ACP oturumu ve ACPX süreç sahipliğini açık hale getirmeye yönelik geçiş planı
+summary: ACP oturumu ve ACPX süreç sahipliğini açık hâle getirme geçiş planı
 title: ACP yaşam döngüsü yeniden düzenlemesi
 x-i18n:
-    generated_at: "2026-05-07T13:26:01Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:11:47Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: b7f4ee447e0b436601c68251c26c1b897a642f6a8b1886d18647b62817996792
     source_path: refactor/acp.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-ACP yaşam döngüsü şu anda çalışıyor, ancak büyük kısmı olaydan sonra çıkarımla belirleniyor.
-Süreç temizliği sahipliği PID'lerden, komut dizelerinden, sarmalayıcı
-yollarından ve canlı süreç tablosundan yeniden oluşturuyor. Oturum görünürlüğü sahipliği
-oturum anahtarı dizelerinden ve ikincil `sessions.list({ spawnedBy })` aramalarından yeniden oluşturuyor.
-Bu, dar kapsamlı düzeltmeleri mümkün kılıyor, ancak uç durumların gözden kaçmasını da kolaylaştırıyor:
-PID'nin yeniden kullanılması, tırnak içine alınmış komutlar, adaptör torun süreçleri, çoklu Gateway durum kökleri,
-`cancel` ile `close` arasındaki fark ve `tree` ile `all` görünürlüğü, aynı sahiplik kurallarını
-yeniden keşfetmek için ayrı ayrı yerlere dönüşüyor.
+ACP yaşam döngüsü şu anda çalışıyor, ancak bunun çok büyük bir bölümü olaydan sonra çıkarımla belirleniyor.
+İşlem temizliği; sahipliği PID'lerden, komut dizelerinden, sarmalayıcı
+yollarından ve canlı işlem tablosundan yeniden oluşturuyor. Oturum görünürlüğü ise sahipliği
+oturum anahtarı dizelerinden ve ikincil `sessions.list({ spawnedBy })` aramalarından
+yeniden oluşturuyor. Bu, dar kapsamlı düzeltmeleri mümkün kılıyor ancak uç durumların gözden kaçmasını da kolaylaştırıyor:
+PID'nin yeniden kullanılması, tırnak içine alınmış komutlar, bağdaştırıcı alt süreçlerinin alt süreçleri, çoklu Gateway durum kökleri,
+`cancel` ile `close` arasındaki fark ve `tree` ile `all` görünürlüğü, aynı sahiplik kurallarının
+yeniden keşfedildiği ayrı noktalar hâline geliyor.
 
-Bu yeniden düzenleme sahipliği birinci sınıf hale getirir. Amaç yeni bir ACP ürün
-yüzeyi değildir; mevcut ACP ve ACPX davranışı için daha güvenli bir iç sözleşmedir.
+Bu yeniden düzenleme, sahipliği birinci sınıf bir kavram hâline getiriyor. Amaç yeni bir ACP ürün
+yüzeyi oluşturmak değil; mevcut ACP ve ACPX davranışı için daha güvenli bir iç sözleşme sağlamaktır.
 
 ## Hedefler
 
-- Temizlik, geçerli canlı kanıt bir OpenClaw sahipli kiralama ile eşleşmedikçe hiçbir sürece sinyal göndermez.
-- `cancel`, `close` ve başlangıçta toplama işlemlerinin ayrı yaşam döngüsü amaçları vardır.
-- `sessions_list`, `sessions_history`, `sessions_send` ve durum kontrolleri aynı istek sahibi oturum modelini kullanır.
-- Çoklu Gateway kurulumları birbirlerinin ACPX sarmalayıcılarını toplayamaz.
-- Eski ACPX oturum kayıtları geçiş sırasında çalışmaya devam eder.
-- Çalışma zamanı Plugin sahipliğinde kalır; çekirdek ACPX paket ayrıntılarını öğrenmez.
+- Temizlik, mevcut canlı kanıt OpenClaw'a ait bir kiralamayla eşleşmedikçe hiçbir işleme sinyal göndermez.
+- `cancel`, `close` ve başlangıç temizliği birbirinden farklı yaşam döngüsü amaçlarına sahiptir.
+- `sessions_list`, `sessions_history`, `sessions_send` ve durum denetimleri aynı
+  istekte bulunanın sahip olduğu oturum modelini kullanır.
+- Çoklu Gateway kurulumları birbirlerinin ACPX sarmalayıcılarını temizleyemez.
+- Eski ACPX oturum kayıtları geçiş sırasında çalışmayı sürdürür.
+- Çalışma zamanı Plugin'e ait kalır; çekirdek ACPX paket ayrıntılarını öğrenmez.
 
-## Kapsam Dışı Hedefler
+## Hedef dışı konular
 
-- ACPX'i değiştirmek veya herkese açık `/acp` komut yüzeyini değiştirmek.
-- Tedarikçiye özgü ACP adaptör davranışını çekirdeğe taşımak.
-- Kullanıcıların yükseltmeden önce durumu elle temizlemesini gerektirmek.
-- `cancel` komutunun yeniden kullanılabilir ACP oturumlarını kapatmasını sağlamak.
+- ACPX'i değiştirmek veya genel `/acp` komut yüzeyini değiştirmek.
+- Tedarikçiye özgü ACP bağdaştırıcı davranışını çekirdeğe taşımak.
+- Kullanıcıların yükseltmeden önce durumu elle temizlemesini zorunlu kılmak.
+- `cancel` işleminin yeniden kullanılabilir ACP oturumlarını kapatmasını sağlamak.
 
 ## Hedef Model
 
-### Gateway Örnek Kimliği
+### Gateway Örneği Kimliği
 
-Her Gateway sürecinin kararlı bir çalışma zamanı örnek kimliği olmalıdır:
+Her Gateway işlemi kararlı bir çalışma zamanı örnek kimliğine sahip olmalıdır:
 
 ```ts
 type GatewayInstanceId = string;
 ```
 
-Bu, Gateway başlangıcında oluşturulabilir ve ilgili kurulumun ömrü boyunca durumda
-kalıcı hale getirilebilir. Bu bir güvenlik sırrı değildir; bir Gateway'in ACP süreçlerini
-başka bir Gateway'in süreçleriyle karıştırmayı önlemek için kullanılan bir sahiplik ayırıcısıdır.
+Bu kimlik Gateway başlatılırken oluşturulabilir ve ilgili kurulumun ömrü boyunca durumda
+kalıcı olarak saklanabilir. Bir güvenlik sırrı değildir; bir Gateway'in ACP işlemlerinin
+başka bir Gateway'in işlemleriyle karıştırılmasını önlemek için kullanılan bir sahiplik ayırt edicisidir.
 
 ### ACP Oturum Sahipliği
 
-Oluşturulan her ACP oturumunda normalleştirilmiş sahiplik meta verileri olmalıdır:
+Başlatılan her ACP oturumu normalleştirilmiş sahiplik meta verilerine sahip olmalıdır:
 
 ```ts
 type AcpSessionOwner = {
@@ -76,8 +77,8 @@ type AcpSessionOwner = {
 };
 ```
 
-Gateway, bilinen yerlerde bu alanları oturum satırlarında döndürmelidir.
-Görünürlük filtreleme, satır meta verileri üzerinde saf bir kontrol olmalıdır:
+Gateway, bilindikleri durumlarda bu alanları oturum satırlarında döndürmelidir.
+Görünürlük filtreleme, satır meta verileri üzerinde yapılan saf bir denetim olmalıdır:
 
 ```ts
 canSeeSessionRow({
@@ -88,11 +89,11 @@ canSeeSessionRow({
 });
 ```
 
-Bu, gizli ikincil `sessions.list({ spawnedBy })` çağrılarını görünürlük
-kontrollerinden kaldırır. Oluşturulmuş çapraz aracı ACP alt oturumu, ikinci bir sorgu
-onu tesadüfen bulduğu için değil, satır bunu söylediği için istek sahibi tarafından sahiplenilir.
+Bu, görünürlük denetimlerindeki gizli ikincil `sessions.list({ spawnedBy })`
+çağrılarını ortadan kaldırır. Başlatılmış, aracılar arası bir ACP alt oturumu, ikinci bir sorgu
+onu tesadüfen bulduğu için değil, satır böyle belirttiği için istekte bulunana aittir.
 
-### ACPX Süreç Kiralamaları
+### ACPX İşlem Kiralamaları
 
 Oluşturulan her sarmalayıcı başlatması bir kiralama kaydı oluşturmalıdır:
 
@@ -111,26 +112,29 @@ type AcpxProcessLease = {
 };
 ```
 
-Sarmalayıcı süreç, kiralama kimliğini ve Gateway örnek kimliğini ortamında almalıdır:
+Sarmalayıcı işlemi, kiralama kimliğini ve Gateway örnek kimliğini kendi
+ortamında almalıdır:
 
 ```sh
 OPENCLAW_ACPX_LEASE_ID=...
 OPENCLAW_GATEWAY_INSTANCE_ID=...
 ```
 
-Platform izin verdiğinde, doğrulama komut tırnaklamasıyla karışmayacak canlı süreç meta verilerini tercih etmelidir:
+Platform izin verdiğinde doğrulama, komutların tırnaklanmasıyla karıştırılamayacak
+canlı işlem meta verilerini tercih etmelidir:
 
 - kök PID hâlâ mevcut
-- canlı sarmalayıcı yolu `wrapperRoot` altında
-- süreç grubu, kullanılabilir olduğunda kiralamayla eşleşir
+- canlı sarmalayıcı yolu `wrapperRoot` altındadır
+- mevcut olduğunda işlem grubu kiralamayla eşleşir
 - okunabildiğinde ortam beklenen kiralama kimliğini içerir
-- komut karması veya çalıştırılabilir yolu kiralamayla eşleşir
+- komut karması veya yürütülebilir dosya yolu kiralamayla eşleşir
 
-Canlı süreç doğrulanamazsa temizlik kapalı biçimde başarısız olur.
+Canlı işlem doğrulanamıyorsa temizlik güvenli biçimde başarısız olur.
 
 ## Yaşam Döngüsü Denetleyicisi
 
-Süreç kiralamalarının ve temizlik politikasının sahibi olan tek bir ACPX yaşam döngüsü denetleyicisi tanıtın:
+İşlem kiralamalarının ve temizlik politikasının sahibi olan tek bir ACPX yaşam döngüsü
+denetleyicisi ekleyin:
 
 ```ts
 interface AcpxLifecycleController {
@@ -146,31 +150,34 @@ interface AcpxLifecycleController {
 }
 ```
 
-`cancelTurn` yalnızca tur iptali ister. Yeniden kullanılabilir sarmalayıcı veya adaptör süreçlerini toplamamalıdır.
+`cancelTurn` yalnızca turun iptal edilmesini ister. Yeniden kullanılabilir sarmalayıcı
+veya bağdaştırıcı işlemlerini temizlememelidir.
 
-`closeSession` toplama yapabilir, ancak yalnızca oturum kaydını yükledikten,
-kiralamayı yükledikten ve canlı süreç ağacının hâlâ o kiralamaya ait olduğunu doğruladıktan sonra.
+`closeSession` temizlik yapabilir, ancak yalnızca oturum kaydını ve kiralamayı
+yükledikten ve canlı işlem ağacının hâlâ bu kiralamaya ait olduğunu doğruladıktan sonra.
 
-`reapStartupOrphans` durumdaki açık kiralamalardan başlar. Alt süreçleri bulmak için süreç
-tablosunu kullanabilir, ancak önce rastgele ACP gibi görünen komutları tarayıp ardından
+`reapStartupOrphans`, durumdaki açık kiralamalardan başlar. Alt süreçleri bulmak için işlem
+tablosunu kullanabilir, ancak önce ACP'ye benzer rastgele komutları tarayıp ardından
 bunların muhtemelen bize ait olduğuna karar vermemelidir.
 
 ## Sarmalayıcı Sözleşmesi
 
 Oluşturulan sarmalayıcılar küçük kalmalıdır. Şunları yapmalıdır:
 
-- desteklenen yerlerde adaptörü bir süreç grubunda başlatmak
-- normal sonlandırma sinyallerini süreç grubuna iletmek
-- üst sürecin öldüğünü algılamak
-- üst süreç öldüğünde SIGTERM göndermek, ardından SIGKILL yedeği çalışana kadar sarmalayıcıyı canlı tutmak
-- kullanılabilir olduğunda kök PID'yi ve süreç grubu kimliğini yaşam döngüsü denetleyicisine bildirmek
+- desteklendiği yerlerde bağdaştırıcıyı bir işlem grubunda başlatmak
+- normal sonlandırma sinyallerini işlem grubuna iletmek
+- üst sürecin ölümünü algılamak
+- üst süreç öldüğünde SIGTERM göndermek, ardından SIGKILL yedek mekanizması
+  çalışana kadar sarmalayıcıyı canlı tutmak
+- kullanılabildiğinde kök PID'yi ve işlem grubu kimliğini yaşam döngüsü denetleyicisine
+  geri bildirmek
 
-Sarmalayıcılar oturum politikasına karar vermemelidir. Yalnızca kendi adaptör grupları için
-yerel süreç ağacı temizliğini uygularlar.
+Sarmalayıcılar oturum politikasına karar vermemelidir. Yalnızca kendi bağdaştırıcı grupları
+için yerel işlem ağacı temizliğini uygularlar.
 
 ## Oturum Görünürlüğü Sözleşmesi
 
-Görünürlük normalleştirilmiş satır sahipliğini kullanmalıdır:
+Görünürlük, normalleştirilmiş satır sahipliğini kullanmalıdır:
 
 ```ts
 type SessionVisibilityInput = {
@@ -189,101 +196,108 @@ type SessionVisibilityInput = {
 
 Kurallar:
 
-- `self`: yalnızca istek sahibi oturumu.
-- `tree`: istek sahibi oturumu ve istek sahibi tarafından sahiplenilen veya ondan oluşturulan satırlar.
-- `all`: tüm aynı aracı satırları, a2a izinli çapraz aracı satırlar ve genel a2a devre dışı olsa bile istek sahibi tarafından sahiplenilen oluşturulmuş çapraz aracı satırlar.
-- `agent`: yalnızca aynı aracı, satırın istek sahibine ait olduğunu belirten açık bir sahip ilişkisi olmadığı sürece.
+- `self`: yalnızca istekte bulunan oturum.
+- `tree`: istekte bulunan oturum ile istekte bulunana ait veya ondan başlatılmış satırlar.
+- `all`: aynı aracıya ait tüm satırlar, a2a tarafından izin verilen aracılar arası satırlar ve genel a2a devre dışı olsa bile istekte bulunana ait
+  başlatılmış aracılar arası satırlar.
+- `agent`: açık bir sahiplik ilişkisi satırın istekte bulunana ait olduğunu belirtmediği sürece yalnızca aynı aracı.
 
-Bu, `tree` ve `all` görünürlüğünü monoton yapar: `all`, `tree` tarafından gösterilecek sahipli bir alt oturumu gizlememelidir.
+Bu, `tree` ve `all` değerlerini monoton hâle getirir: `all`, `tree` tarafından gösterilecek
+sahip olunan bir alt oturumu gizlememelidir.
 
 ## Geçiş Planı
 
-### Aşama 1: Kimlik Ve Kiralamalar Ekle
+### Aşama 1: Kimlik ve Kiralamaları Ekleyin
 
-- Gateway durumuna `gatewayInstanceId` ekle.
-- ACPX durum dizini altında bir ACPX kiralama deposu ekle.
-- Oluşturulan bir sarmalayıcı başlatmadan önce kiralama yaz.
-- Yeni ACPX oturum kayıtlarında `leaseId` sakla.
-- Eski kayıtlar için mevcut PID ve komut alanlarını koru.
+- Gateway durumuna `gatewayInstanceId` ekleyin.
+- ACPX durum dizini altına bir ACPX kiralama deposu ekleyin.
+- Oluşturulan bir sarmalayıcı başlatılmadan önce kiralamayı yazın.
+- Yeni ACPX oturum kayıtlarında `leaseId` saklayın.
+- Eski kayıtlar için mevcut PID ve komut alanlarını koruyun.
 
-### Aşama 2: Kiralama Öncelikli Temizlik
+### Aşama 2: Önce Kiralamaya Dayalı Temizlik
 
-- Kapatma temizliğini önce `leaseId` yükleyecek şekilde değiştir.
-- Sinyal göndermeden önce canlı süreç sahipliğini kiralamaya göre doğrula.
-- Mevcut kök PID ve sarmalayıcı kökü yedeğini yalnızca eski kayıtlar için koru.
-- Doğrulanmış temizlikten sonra kiralamaları `closed` olarak işaretle.
-- Süreç temizlikten önce kaybolmuşsa kiralamaları `lost` olarak işaretle.
+- Kapatma temizliğini önce `leaseId` yükleyecek şekilde değiştirin.
+- Sinyal göndermeden önce canlı işlem sahipliğini kiralamaya göre doğrulayın.
+- Mevcut kök PID ve sarmalayıcı kökü yedek yolunu yalnızca eski kayıtlar için koruyun.
+- Doğrulanmış temizlikten sonra kiralamaları `closed` olarak işaretleyin.
+- İşlem temizlikten önce kaybolduğunda kiralamaları `lost` olarak işaretleyin.
 
-### Aşama 3: Kiralama Öncelikli Başlangıç Toplama
+### Aşama 3: Önce Kiralamaya Dayalı Başlangıç Temizliği
 
-- Başlangıç toplaması açık kiralamaları tarar.
-- Her kiralama için kök süreci doğrula ve alt süreçleri topla.
-- Doğrulanmış ağaçları çocuklardan başlayarak topla.
-- Eski `closed` ve `lost` kiralamalarını sınırlı bir saklama penceresiyle sona erdir.
-- Komut işaretleyici taramasını yalnızca geçici bir eski yedek olarak koru; mümkün olduğunda sarmalayıcı kökü ve Gateway örneğiyle sınırla.
+- Başlangıç temizliği açık kiralamaları tarar.
+- Her kiralama için kök işlemi doğrulayın ve alt süreçleri toplayın.
+- Doğrulanmış ağaçları alt süreçlerden başlayarak temizleyin.
+- Eski `closed` ve `lost` kiralamaları sınırlı bir saklama aralığıyla zaman aşımına uğratın.
+- Komut işaretçisi taramasını yalnızca geçici bir eski sistem yedek yolu olarak tutun ve mümkün olduğunda
+  sarmalayıcı kökü ile Gateway örneği üzerinden koruyun.
 
 ### Aşama 4: Oturum Sahipliği Satırları
 
-- Gateway oturum satırlarına sahiplik meta verileri ekle.
-- ACPX, alt aracı, arka plan görevi ve oturum deposu yazıcılarına `ownerSessionKey` veya `spawnedBy` alanını doldurmayı öğret.
-- Oturum görünürlüğü kontrollerini satır meta verilerini kullanacak şekilde dönüştür.
-- Görünürlük zamanındaki ikincil `sessions.list({ spawnedBy })` aramalarını kaldır.
+- Gateway oturum satırlarına sahiplik meta verileri ekleyin.
+- ACPX, alt aracı, arka plan görevi ve oturum deposu yazıcılarının
+  `ownerSessionKey` veya `spawnedBy` alanını doldurmasını sağlayın.
+- Oturum görünürlüğü denetimlerini satır meta verilerini kullanacak şekilde dönüştürün.
+- Görünürlük sırasında yapılan ikincil `sessions.list({ spawnedBy })` aramalarını kaldırın.
 
-### Aşama 5: Eski Sezgiselleri Kaldır
+### Aşama 5: Eski Sezgisel Yöntemleri Kaldırın
 
-Bir yayın penceresinden sonra:
+Bir sürüm aralığından sonra:
 
-- eski olmayan ACPX temizliği için saklanan kök komut dizelerine güvenmeyi bırak
-- komut işaretleyici başlangıç taramalarını kaldır
-- görünürlük yedek liste aramalarını kaldır
-- eksik veya doğrulanamayan kiralamalar için savunmacı kapalı başarısız davranışı koru
+- eski olmayan ACPX temizliği için saklanan kök komut dizelerine güvenmeyi bırakın
+- komut işaretçisi başlangıç taramalarını kaldırın
+- görünürlük yedek liste aramalarını kaldırın
+- eksik veya doğrulanamayan kiralamalar için koruyucu, güvenli biçimde başarısız olma davranışını sürdürün
 
 ## Testler
 
-İki tablo güdümlü takım ekle.
+Tablo güdümlü iki test paketi ekleyin.
 
-Süreç yaşam döngüsü simülatörü:
+İşlem yaşam döngüsü simülatörü:
 
-- PID ilgisiz süreç tarafından yeniden kullanılır
-- PID başka bir Gateway'in sarmalayıcı kökü tarafından yeniden kullanılır
-- saklanan sarmalayıcı komutu kabuk tırnaklıdır, canlı `ps` komutu değildir
-- adaptör alt süreci çıkar, torun süreç süreç grubunda kalır
-- üst süreç ölümü SIGTERM yedeği SIGKILL'e ulaşır
-- süreç listeleme kullanılamaz
-- eksik süreç içeren bayat kiralama
-- sarmalayıcı, adaptör alt süreci ve torun süreç içeren başlangıç yetimi
+- PID ilgisiz bir işlem tarafından yeniden kullanılmış
+- PID başka bir Gateway'in sarmalayıcı kökü tarafından yeniden kullanılmış
+- saklanan sarmalayıcı komutu kabuk tarafından tırnaklanmış, canlı `ps` komutu tırnaklanmamış
+- bağdaştırıcı alt süreci çıkmış, onun alt süreci işlem grubunda kalmış
+- üst süreç ölümü için SIGTERM yedek mekanizması SIGKILL'e ulaşmış
+- işlem listesi kullanılamıyor
+- işlemi eksik, güncelliğini yitirmiş kiralama
+- sarmalayıcı, bağdaştırıcı alt süreci ve onun alt sürecini içeren başlangıç yetimi
 
 Oturum görünürlüğü matrisi:
 
 - `self`, `tree`, `agent`, `all`
 - a2a etkin ve devre dışı
-- aynı aracı satırı
-- çapraz aracı satırı
-- istek sahibi tarafından sahiplenilen oluşturulmuş çapraz aracı ACP satırı
-- korumalı alandaki istek sahibi `tree` ile sınırlandırılır
-- liste, geçmiş, gönderme ve durum eylemleri
+- aynı aracıya ait satır
+- aracılar arası satır
+- istekte bulunana ait, başlatılmış aracılar arası ACP satırı
+- korumalı alandaki istekte bulunanın görünürlüğü `tree` ile sınırlandırılmış
+- listeleme, geçmiş, gönderme ve durum eylemleri
 
-Önemli değişmez: istek sahibi tarafından sahiplenilen oluşturulmuş bir alt oturum,
-yapılandırılmış görünürlüğün istek sahibi oturum ağacını içerdiği her yerde görünürdür
-ve `all`, `tree` görünürlüğünden daha az yetenekli değildir.
+Önemli değişmez: istekte bulunana ait başlatılmış bir alt oturum, yapılandırılmış görünürlüğün
+istekte bulunanın oturum ağacını kapsadığı her yerde görünürdür ve `all`, `tree` değerinden
+daha az yetenekli değildir.
 
 ## Uyumluluk Notları
 
-Eski oturum kayıtlarında `leaseId` olmayabilir. Eski kapalı başarısız temizlik yolunu kullanmalıdırlar:
+Eski oturum kayıtlarında `leaseId` bulunmayabilir. Bunlar eski, güvenli biçimde başarısız olan
+temizlik yolunu kullanmalıdır:
 
-- canlı bir kök süreç gerektir
-- oluşturulan bir sarmalayıcı bekleniyorsa sarmalayıcı kökü sahipliği gerektir
-- sarmalayıcı olmayan kökler için komut uyuşması gerektir
-- asla yalnızca bayat saklanan PID meta verilerine dayanarak sinyal gönderme
+- canlı bir kök işlem gerektir
+- oluşturulmuş bir sarmalayıcı beklendiğinde sarmalayıcı kökü sahipliğini gerektir
+- sarmalayıcı olmayan kökler için komut uyumunu gerektir
+- yalnızca güncelliğini yitirmiş, saklanan PID meta verilerine dayanarak asla sinyal gönderme
 
-Eski bir kayıt doğrulanamazsa ona dokunma. Başlangıç kiralama temizliği ve
-sonraki yayın penceresi yedeği zamanla kullanımdan kaldırmalıdır.
+Eski bir kayıt doğrulanamıyorsa onu olduğu gibi bırakın. Başlangıç kiralama temizliği ve
+sonraki sürüm aralığı, yedek yolu eninde sonunda kullanımdan kaldırmalıdır.
 
 ## Başarı Ölçütleri
 
-- Eski veya bayat bir ACPX oturumunu kapatmak başka bir Gateway'in sürecini öldüremez.
-- Üst süreç ölümü inatçı adaptör torun süreçlerini çalışır halde bırakmaz.
+- Eski veya güncelliğini yitirmiş bir ACPX oturumunun kapatılması başka bir Gateway'in işlemini sonlandıramaz.
+- Üst sürecin ölümü, dirençli bağdaştırıcı alt süreçlerinin alt süreçlerini çalışır durumda bırakmaz.
 - `cancel`, yeniden kullanılabilir oturumları kapatmadan etkin turu iptal eder.
-- `sessions_list`, istek sahibi tarafından sahiplenilen çapraz aracı ACP alt oturumlarını hem `tree` hem de `all` altında gösterebilir.
-- Başlangıç temizliği geniş komut dizesi taramalarıyla değil, kiralamalarla yürütülür.
-- Odaklanmış süreç ve görünürlük matrisi testleri, daha önce tek seferlik inceleme düzeltmeleri gerektiren her uç durumu kapsar.
+- `sessions_list`, istekte bulunana ait aracılar arası ACP alt oturumlarını hem
+  `tree` hem de `all` altında gösterebilir.
+- Başlangıç temizliği geniş kapsamlı komut dizesi taramalarıyla değil, kiralamalarla yönlendirilir.
+- Odaklanmış işlem ve görünürlük matrisi testleri, daha önce tek seferlik inceleme
+  düzeltmeleri gerektiren tüm uç durumları kapsar.

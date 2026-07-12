@@ -1,131 +1,80 @@
 ---
 read_when:
-    - OpenClaw'ı GCP üzerinde 7/24 çalıştırmak istiyorsunuz
-    - Kendi VM'inizde üretim düzeyinde, her zaman açık bir Gateway istiyorsunuz
+    - OpenClaw'un GCP üzerinde 7/24 çalışmasını istiyorsunuz
+    - Kendi sanal makinenizde üretim kalitesinde, sürekli çalışan bir Gateway istiyorsunuz
     - Kalıcılık, ikili dosyalar ve yeniden başlatma davranışı üzerinde tam denetim istiyorsunuz
-summary: OpenClaw Gateway'i kalıcı durumla bir GCP Compute Engine VM üzerinde (Docker) 7/24 çalıştırın
+summary: Kalıcı durumla bir GCP Compute Engine sanal makinesinde (Docker) OpenClaw Gateway'i 7/24 çalıştırın
 title: GCP
 x-i18n:
-    generated_at: "2026-05-06T17:57:30Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:53:36Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 678253bd90f0694668400ffddba957e442f8aaed3f5308af3c2481940e104733
+    source_hash: 6ca46b2ee78731162261cae6ea5a26b718be6035b998fa92e4ee5c9ea2e7ae07
     source_path: install/gcp.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Dayanıklı durum, yerleşik ikili dosyalar ve güvenli yeniden başlatma davranışıyla Docker kullanarak bir GCP Compute Engine VM üzerinde kalıcı bir OpenClaw Gateway çalıştırın.
+Dayanıklı durum, imaja yerleştirilmiş ikili dosyalar ve güvenli yeniden başlatma davranışıyla Docker kullanarak bir GCP Compute Engine sanal makinesinde kalıcı bir OpenClaw Gateway çalıştırın.
 
-"OpenClaw 24/7 için ~$5-12/ay" istiyorsanız, bu Google Cloud üzerinde güvenilir bir kurulumdur.
-Fiyatlandırma makine türüne ve bölgeye göre değişir; iş yükünüze uyan en küçük VM'i seçin ve OOM yaşarsanız ölçeği büyütün.
+Fiyatlandırma makine türüne ve bölgeye göre değişir; iş yükünüze uygun en küçük sanal makineyi seçin ve bellek yetersizliğiyle karşılaşırsanız ölçeği büyütün.
 
-## Ne yapıyoruz (basitçe)?
+Gateway'e dizüstü bilgisayarınızdan SSH bağlantı noktası yönlendirmesiyle veya güvenlik duvarını ve token'ları kendiniz yönetiyorsanız bağlantı noktasını doğrudan açarak erişebilirsiniz.
 
-- Bir GCP projesi oluşturup faturalandırmayı etkinleştirin
-- Bir Compute Engine VM oluşturun
-- Docker kurun (yalıtılmış uygulama çalışma zamanı)
-- OpenClaw Gateway'i Docker içinde başlatın
-- Ana makinede `~/.openclaw` + `~/.openclaw/workspace` durumunu kalıcı hale getirin (yeniden başlatmalardan/yeniden derlemelerden sonra korunur)
-- Control UI'ye dizüstü bilgisayarınızdan bir SSH tüneliyle erişin
+Bu kılavuzda GCP Compute Engine üzerinde Debian kullanılır. Ubuntu da kullanılabilir; paketleri buna göre eşleştirin. Genel Docker akışı için [Docker](/tr/install/docker) sayfasına bakın.
 
-Bağlanan bu `~/.openclaw` durumu `openclaw.json`, ajan başına
-`agents/<agentId>/agent/auth-profiles.json` ve `.env` dosyasını içerir.
+## Gereksinimler
 
-Gateway şu yollarla erişilebilir:
-
-- Dizüstü bilgisayarınızdan SSH port yönlendirme
-- Güvenlik duvarını ve token'ları kendiniz yönetiyorsanız doğrudan port açma
-
-Bu kılavuz GCP Compute Engine üzerinde Debian kullanır.
-Ubuntu da çalışır; paketleri buna göre eşleştirin.
-Genel Docker akışı için bkz. [Docker](/tr/install/docker).
-
----
-
-## Hızlı yol (deneyimli operatörler)
-
-1. GCP projesi oluşturun + Compute Engine API'yi etkinleştirin
-2. Compute Engine VM oluşturun (e2-small, Debian 12, 20GB)
-3. VM'e SSH ile bağlanın
-4. Docker kurun
-5. OpenClaw deposunu klonlayın
-6. Kalıcı ana makine dizinleri oluşturun
-7. `.env` ve `docker-compose.yml` yapılandırın
-8. Gerekli ikili dosyaları imaja yerleştirin, derleyin ve başlatın
-
----
-
-## Gerekenler
-
-- GCP hesabı (e2-micro için ücretsiz katmana uygun)
-- gcloud CLI kurulu (veya Cloud Console kullanın)
+- GCP hesabı (`e2-micro` ücretsiz katmana uygundur)
+- `gcloud` CLI veya [Cloud Console](https://console.cloud.google.com)
 - Dizüstü bilgisayarınızdan SSH erişimi
-- SSH + kopyala/yapıştır konusunda temel rahatlık
-- ~20-30 dakika
 - Docker ve Docker Compose
 - Model kimlik doğrulama bilgileri
-- İsteğe bağlı sağlayıcı kimlik bilgileri
-  - WhatsApp QR
-  - Telegram bot token
-  - Gmail OAuth
+- İsteğe bağlı sağlayıcı kimlik bilgileri (WhatsApp QR, Telegram bot token'ı, Gmail OAuth)
+- Yaklaşık 20-30 dakika
 
----
+## Hızlı yol
+
+1. Bir GCP projesi oluşturun, faturalandırmayı ve Compute Engine API'yi etkinleştirin
+2. Bir Compute Engine sanal makinesi oluşturun (`e2-small`, Debian 12, 20 GB)
+3. Sanal makineye SSH ile bağlanıp Docker'ı yükleyin
+4. OpenClaw deposunu klonlayın
+5. Kalıcı ana makine dizinlerini oluşturun
+6. `.env` ve `docker-compose.yml` dosyalarını yapılandırın
+7. Gerekli ikili dosyaları imaja yerleştirin, derleyin ve başlatın
 
 <Steps>
-  <Step title="gcloud CLI kurun (veya Console kullanın)">
-    **Seçenek A: gcloud CLI** (otomasyon için önerilir)
-
-    [https://cloud.google.com/sdk/docs/install](https://cloud.google.com/sdk/docs/install) adresinden kurun
-
-    Başlatın ve kimlik doğrulaması yapın:
+  <Step title="gcloud CLI'yi yükleyin (veya Console'u kullanın)">
+    [cloud.google.com/sdk/docs/install](https://cloud.google.com/sdk/docs/install) adresinden yükleyin, ardından:
 
     ```bash
     gcloud init
     gcloud auth login
     ```
 
-    **Seçenek B: Cloud Console**
-
-    Tüm adımlar [https://console.cloud.google.com](https://console.cloud.google.com) adresindeki web UI üzerinden yapılabilir
+    Alternatif olarak aşağıdaki tüm adımları [Cloud Console](https://console.cloud.google.com) web arayüzü üzerinden gerçekleştirin.
 
   </Step>
 
   <Step title="Bir GCP projesi oluşturun">
-    **CLI:**
-
     ```bash
     gcloud projects create my-openclaw-project --name="OpenClaw Gateway"
     gcloud config set project my-openclaw-project
-    ```
-
-    Faturalandırmayı [https://console.cloud.google.com/billing](https://console.cloud.google.com/billing) adresinden etkinleştirin (Compute Engine için gereklidir).
-
-    Compute Engine API'yi etkinleştirin:
-
-    ```bash
     gcloud services enable compute.googleapis.com
     ```
 
-    **Console:**
+    [console.cloud.google.com/billing](https://console.cloud.google.com/billing) adresinden faturalandırmayı etkinleştirin (Compute Engine için gereklidir).
 
-    1. IAM & Admin > Create Project'e gidin
-    2. Adlandırın ve oluşturun
-    3. Proje için faturalandırmayı etkinleştirin
-    4. APIs & Services > Enable APIs'ye gidin > "Compute Engine API" arayın > etkinleştirin
+    Console'daki eşdeğeri: IAM & Admin > Create Project yolunu izleyin, faturalandırmayı etkinleştirin, ardından APIs & Services > Enable APIs > "Compute Engine API" > Enable yolunu izleyin.
 
   </Step>
 
-  <Step title="VM'i oluşturun">
-    **Makine türleri:**
-
-    | Tür       | Özellikler              | Maliyet            | Notlar                                       |
-    | --------- | ------------------------ | ------------------ | -------------------------------------------- |
-    | e2-medium | 2 vCPU, 4GB RAM          | ~$25/ay            | Yerel Docker derlemeleri için en güvenilir   |
-    | e2-small  | 2 vCPU, 2GB RAM          | ~$12/ay            | Docker derlemesi için önerilen minimum       |
-    | e2-micro  | 2 vCPU (paylaşımlı), 1GB RAM | Ücretsiz katmana uygun | Docker derlemesinde sık sık OOM ile başarısız olur (exit 137) |
-
-    **CLI:**
+  <Step title="Sanal makineyi oluşturun">
+    | Tür       | Özellikler               | Maliyet                   | Notlar                                               |
+    | --------- | ------------------------ | ------------------------- | ---------------------------------------------------- |
+    | e2-medium | 2 vCPU, 4 GB RAM         | Aylık yaklaşık 25 ABD doları | Yerel Docker derlemeleri için en güvenilir seçenek |
+    | e2-small  | 2 vCPU, 2 GB RAM         | Aylık yaklaşık 12 ABD doları | Docker derlemesi için önerilen en düşük seçenek    |
+    | e2-micro  | 2 vCPU (paylaşımlı), 1 GB RAM | Ücretsiz katmana uygun | Docker derlemesi sırasında bellek yetersizliği nedeniyle sık sık başarısız olur (çıkış 137) |
 
     ```bash
     gcloud compute instances create openclaw-gateway \
@@ -136,33 +85,20 @@ Genel Docker akışı için bkz. [Docker](/tr/install/docker).
       --image-project=debian-cloud
     ```
 
-    **Console:**
-
-    1. Compute Engine > VM instances > Create instance'a gidin
-    2. Ad: `openclaw-gateway`
-    3. Bölge: `us-central1`, Zon: `us-central1-a`
-    4. Makine türü: `e2-small`
-    5. Önyükleme diski: Debian 12, 20GB
-    6. Oluşturun
-
   </Step>
 
-  <Step title="VM'e SSH ile bağlanın">
-    **CLI:**
-
+  <Step title="Sanal makineye SSH ile bağlanın">
     ```bash
     gcloud compute ssh openclaw-gateway --zone=us-central1-a
     ```
 
-    **Console:**
+    Console: Compute Engine panosunda sanal makinenin yanındaki "SSH" seçeneğine tıklayın.
 
-    Compute Engine panosunda VM'inizin yanındaki "SSH" düğmesine tıklayın.
-
-    Not: SSH anahtarı yayılımı VM oluşturulduktan sonra 1-2 dakika sürebilir. Bağlantı reddedilirse bekleyin ve yeniden deneyin.
+    Sanal makine oluşturulduktan sonra SSH anahtarının yayılması 1-2 dakika sürebilir; bağlantı reddedilirse bekleyip yeniden deneyin.
 
   </Step>
 
-  <Step title="Docker kurun (VM üzerinde)">
+  <Step title="Docker'ı yükleyin (sanal makinede)">
     ```bash
     sudo apt-get update
     sudo apt-get install -y git curl ca-certificates
@@ -170,13 +106,11 @@ Genel Docker akışı için bkz. [Docker](/tr/install/docker).
     sudo usermod -aG docker $USER
     ```
 
-    Grup değişikliğinin etkili olması için çıkış yapıp tekrar giriş yapın:
+    Grup değişikliğinin geçerli olması için oturumu kapatıp yeniden açın, ardından SSH ile tekrar bağlanın:
 
     ```bash
     exit
     ```
-
-    Ardından tekrar SSH ile bağlanın:
 
     ```bash
     gcloud compute ssh openclaw-gateway --zone=us-central1-a
@@ -197,13 +131,12 @@ Genel Docker akışı için bkz. [Docker](/tr/install/docker).
     cd openclaw
     ```
 
-    Bu kılavuz, ikili dosya kalıcılığını garanti etmek için özel bir imaj derleyeceğinizi varsayar.
+    Bu kılavuz, imaja yerleştirdiğiniz ikili dosyaların yeniden başlatmalardan sonra korunması için özel bir imaj derler.
 
   </Step>
 
-  <Step title="Kalıcı ana makine dizinleri oluşturun">
-    Docker kapsayıcıları geçicidir.
-    Tüm uzun ömürlü durum ana makinede yaşamalıdır.
+  <Step title="Kalıcı ana makine dizinlerini oluşturun">
+    Docker konteynerleri geçicidir; uzun ömürlü tüm durum ana makinede bulunmalıdır.
 
     ```bash
     mkdir -p ~/.openclaw
@@ -213,7 +146,7 @@ Genel Docker akışı için bkz. [Docker](/tr/install/docker).
   </Step>
 
   <Step title="Ortam değişkenlerini yapılandırın">
-    Depo kökünde `.env` oluşturun.
+    Depo kökünde `.env` dosyasını oluşturun:
 
     ```bash
     OPENCLAW_IMAGE=openclaw:latest
@@ -228,28 +161,25 @@ Genel Docker akışı için bkz. [Docker](/tr/install/docker).
     XDG_CONFIG_HOME=/home/node/.openclaw
     ```
 
-    Kararlı gateway token'ını `.env` üzerinden yönetmek istediğinizde
-    `OPENCLAW_GATEWAY_TOKEN` ayarlayın; aksi takdirde yeniden başlatmalar
-    arasında istemcilere güvenmeden önce `gateway.auth.token` yapılandırın.
-    İki kaynak da yoksa OpenClaw bu başlatma için yalnızca çalışma zamanına
-    ait bir token kullanır. Bir keyring parolası oluşturun ve
-    `GOG_KEYRING_PASSWORD` içine yapıştırın:
+    Kararlı Gateway token'ını `.env` üzerinden yönetmek için `OPENCLAW_GATEWAY_TOKEN`
+    değerini ayarlayın; aksi takdirde yeniden başlatmalar boyunca istemcilere
+    güvenmeden önce `gateway.auth.token` değerini yapılandırın. İkisi de
+    ayarlanmamışsa OpenClaw bu başlatma için yalnızca çalışma zamanına özgü bir
+    token kullanır. `GOG_KEYRING_PASSWORD` için bir anahtarlık parolası oluşturun:
 
     ```bash
     openssl rand -hex 32
     ```
 
-    **Bu dosyayı commit etmeyin.**
-
-    Bu `.env` dosyası `OPENCLAW_GATEWAY_TOKEN` gibi kapsayıcı/çalışma zamanı
-    env değerleri içindir. Saklanan sağlayıcı OAuth/API anahtarı kimlik
-    doğrulaması, bağlanan
-    `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` içinde yaşar.
+    **Bu dosyayı commit etmeyin.** Dosya, `OPENCLAW_GATEWAY_TOKEN` gibi
+    konteyner/çalışma zamanı ortam değişkenlerini içerir. Saklanan sağlayıcı
+    OAuth/API anahtarı kimlik doğrulama bilgileri, bağlanan
+    `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` dosyasında bulunur.
 
   </Step>
 
   <Step title="Docker Compose yapılandırması">
-    `docker-compose.yml` oluşturun veya güncelleyin.
+    `docker-compose.yml` dosyasını oluşturun veya güncelleyin:
 
     ```yaml
     services:
@@ -273,8 +203,8 @@ Genel Docker akışı için bkz. [Docker](/tr/install/docker).
           - ${OPENCLAW_CONFIG_DIR}:/home/node/.openclaw
           - ${OPENCLAW_WORKSPACE_DIR}:/home/node/.openclaw/workspace
         ports:
-          # Recommended: keep the Gateway loopback-only on the VM; access via SSH tunnel.
-          # To expose it publicly, remove the `127.0.0.1:` prefix and firewall accordingly.
+          # Önerilen: Gateway'i sanal makinede yalnızca loopback üzerinden erişilebilir tutun; SSH tüneliyle erişin.
+          # Herkese açık hâle getirmek için `127.0.0.1:` önekini kaldırın ve güvenlik duvarını buna göre yapılandırın.
           - "127.0.0.1:${OPENCLAW_GATEWAY_PORT}:18789"
         command:
           [
@@ -289,43 +219,41 @@ Genel Docker akışı için bkz. [Docker](/tr/install/docker).
           ]
     ```
 
-    `--allow-unconfigured` yalnızca önyükleme kolaylığı içindir; uygun bir gateway yapılandırmasının yerine geçmez. Yine de dağıtımınız için kimlik doğrulamayı (`gateway.auth.token` veya parola) ayarlayın ve güvenli bind ayarları kullanın.
+    `--allow-unconfigured` yalnızca ilk kurulum kolaylığı içindir; gerçek Gateway yapılandırmasının yerine geçmez. Dağıtımınız için yine de kimlik doğrulamayı (`gateway.auth.token` veya parola) ve güvenli bir bağlama modunu ayarlayın.
 
   </Step>
 
-  <Step title="Paylaşılan Docker VM çalışma zamanı adımları">
-    Ortak Docker ana makine akışı için paylaşılan çalışma zamanı kılavuzunu kullanın:
+  <Step title="Paylaşılan Docker sanal makinesi çalışma zamanı adımları">
+    Genel Docker ana makine akışı için paylaşılan çalışma zamanı kılavuzunu izleyin:
 
     - [Gerekli ikili dosyaları imaja yerleştirin](/tr/install/docker-vm-runtime#bake-required-binaries-into-the-image)
     - [Derleyin ve başlatın](/tr/install/docker-vm-runtime#build-and-launch)
-    - [Nerede ne kalıcı olur](/tr/install/docker-vm-runtime#what-persists-where)
+    - [Nelerin nerede kalıcı olduğu](/tr/install/docker-vm-runtime#what-persists-where)
     - [Güncellemeler](/tr/install/docker-vm-runtime#updates)
 
   </Step>
 
   <Step title="GCP'ye özgü başlatma notları">
-    GCP üzerinde derleme `pnpm install --frozen-lockfile` sırasında `Killed` veya `exit code 137` ile başarısız olursa, VM'in belleği tükenmiştir. En az `e2-small` kullanın; daha güvenilir ilk derlemeler için `e2-medium` kullanın.
+    `pnpm install --frozen-lockfile` sırasında derleme `Killed` veya `exit code 137` hatasıyla başarısız olursa sanal makinenin belleği tükenmiştir. En az `e2-small`, ilk derlemelerin daha güvenilir olması için ise `e2-medium` kullanın.
 
-    LAN'a bind ederken (`OPENCLAW_GATEWAY_BIND=lan`), devam etmeden önce güvenilir bir tarayıcı origin'i yapılandırın:
+    LAN'a bağlanırken (`OPENCLAW_GATEWAY_BIND=lan`) devam etmeden önce güvenilir bir tarayıcı kökeni yapılandırın:
 
     ```bash
     docker compose run --rm openclaw-cli config set gateway.controlUi.allowedOrigins '["http://127.0.0.1:18789"]' --strict-json
     ```
 
-    Gateway portunu değiştirdiyseniz `18789` yerine yapılandırdığınız portu kullanın.
+    Değiştirdiyseniz `18789` değerini yapılandırdığınız bağlantı noktasıyla değiştirin.
 
   </Step>
 
   <Step title="Dizüstü bilgisayarınızdan erişin">
-    Gateway portunu yönlendirmek için bir SSH tüneli oluşturun:
+    Gateway bağlantı noktasını yönlendirmek için bir SSH tüneli oluşturun:
 
     ```bash
     gcloud compute ssh openclaw-gateway --zone=us-central1-a -- -L 18789:127.0.0.1:18789
     ```
 
-    Tarayıcınızda açın:
-
-    `http://127.0.0.1:18789/`
+    Tarayıcınızda `http://127.0.0.1:18789/` adresini açın.
 
     Temiz bir pano bağlantısını yeniden yazdırın:
 
@@ -333,31 +261,28 @@ Genel Docker akışı için bkz. [Docker](/tr/install/docker).
     docker compose run --rm openclaw-cli dashboard --no-open
     ```
 
-    UI paylaşılan gizli anahtar kimlik doğrulaması isterse, yapılandırılmış token'ı
-    veya parolayı Control UI ayarlarına yapıştırın. Bu Docker akışı varsayılan
-    olarak bir token yazar; kapsayıcı yapılandırmasını parola kimlik doğrulamasına
-    geçirirseniz bunun yerine o parolayı kullanın.
+    Kullanıcı arayüzü paylaşılan gizli anahtarla kimlik doğrulaması isterse yapılandırılmış
+    token'ı veya parolayı Control UI ayarlarına yapıştırın (bu Docker akışı
+    varsayılan olarak bir token yazar; parola ile kimlik doğrulamaya geçtiyseniz
+    bunun yerine yapılandırdığınız parolayı kullanın).
 
-    Control UI `unauthorized` veya `disconnected (1008): pairing required` gösterirse, tarayıcı cihazını onaylayın:
+    Control UI `unauthorized` veya `disconnected (1008): pairing required` gösterirse tarayıcı cihazını onaylayın:
 
     ```bash
     docker compose run --rm openclaw-cli devices list
     docker compose run --rm openclaw-cli devices approve <requestId>
     ```
 
-    Paylaşılan kalıcılık ve güncelleme referansına tekrar mı ihtiyacınız var?
-    Bkz. [Docker VM Runtime](/tr/install/docker-vm-runtime#what-persists-where) ve [Docker VM Runtime güncellemeleri](/tr/install/docker-vm-runtime#updates).
+    Paylaşılan kalıcılık eşlemesi için [Docker Sanal Makinesi Çalışma Zamanı](/tr/install/docker-vm-runtime#what-persists-where) ve [güncelleme akışı](/tr/install/docker-vm-runtime#updates) bölümlerine bakın.
 
   </Step>
 </Steps>
-
----
 
 ## Sorun giderme
 
 **SSH bağlantısı reddedildi**
 
-SSH anahtarı yayılımı VM oluşturulduktan sonra 1-2 dakika sürebilir. Bekleyin ve yeniden deneyin.
+Sanal makine oluşturulduktan sonra SSH anahtarının yayılması 1-2 dakika sürebilir. Bekleyip yeniden deneyin.
 
 **OS Login sorunları**
 
@@ -367,62 +292,48 @@ OS Login profilinizi kontrol edin:
 gcloud compute os-login describe-profile
 ```
 
-Hesabınızın gerekli IAM izinlerine sahip olduğundan emin olun (Compute OS Login veya Compute OS Admin Login).
+Hesabınızın gerekli IAM izinlerine (Compute OS Login veya Compute OS Admin Login) sahip olduğundan emin olun.
 
-**Bellek yetersiz (OOM)**
+**Bellek yetersizliği (OOM)**
 
-Docker derlemesi `Killed` ve `exit code 137` ile başarısız olursa, VM OOM nedeniyle sonlandırılmıştır. e2-small (minimum) veya e2-medium'e (güvenilir yerel derlemeler için önerilir) yükseltin:
+Docker derlemesi `Killed` ve `exit code 137` hatasıyla başarısız olursa sanal makine bellek yetersizliği nedeniyle sonlandırılmıştır:
 
 ```bash
-# Stop the VM first
+# Önce sanal makineyi durdurun
 gcloud compute instances stop openclaw-gateway --zone=us-central1-a
 
-# Change machine type
+# Makine türünü değiştirin
 gcloud compute instances set-machine-type openclaw-gateway \
   --zone=us-central1-a \
   --machine-type=e2-small
 
-# Start the VM
+# Sanal makineyi başlatın
 gcloud compute instances start openclaw-gateway --zone=us-central1-a
 ```
 
----
-
 ## Hizmet hesapları (güvenlik için en iyi uygulama)
 
-Kişisel kullanım için varsayılan kullanıcı hesabınız yeterlidir.
+Kişisel kullanım için varsayılan kullanıcı hesabınız yeterlidir. Otomasyon veya CI/CD için en az izinlere sahip özel bir hizmet hesabı oluşturun:
 
-Otomasyon veya CI/CD işlem hatları için en düşük izinlerle ayrılmış bir hizmet hesabı oluşturun:
+```bash
+gcloud iam service-accounts create openclaw-deploy \
+  --display-name="OpenClaw Deployment"
 
-1. Bir hizmet hesabı oluşturun:
+gcloud projects add-iam-policy-binding my-openclaw-project \
+  --member="serviceAccount:openclaw-deploy@my-openclaw-project.iam.gserviceaccount.com" \
+  --role="roles/compute.instanceAdmin.v1"
+```
 
-   ```bash
-   gcloud iam service-accounts create openclaw-deploy \
-     --display-name="OpenClaw Deployment"
-   ```
-
-2. Compute Instance Admin rolünü (veya daha dar bir özel rolü) verin:
-
-   ```bash
-   gcloud projects add-iam-policy-binding my-openclaw-project \
-     --member="serviceAccount:openclaw-deploy@my-openclaw-project.iam.gserviceaccount.com" \
-     --role="roles/compute.instanceAdmin.v1"
-   ```
-
-Otomasyon için Owner rolünü kullanmaktan kaçının. En az ayrıcalık ilkesini kullanın.
-
-IAM rol ayrıntıları için bkz. [https://cloud.google.com/iam/docs/understanding-roles](https://cloud.google.com/iam/docs/understanding-roles).
-
----
+Otomasyon için Owner rolünü kullanmaktan kaçının; çalışan en dar kapsamlı rolü kullanın. [Rolleri anlama](https://cloud.google.com/iam/docs/understanding-roles) sayfasına bakın.
 
 ## Sonraki adımlar
 
 - Mesajlaşma kanallarını ayarlayın: [Kanallar](/tr/channels)
-- Yerel cihazları Node'lar olarak eşleyin: [Node'lar](/tr/nodes)
+- Yerel cihazları Node olarak eşleştirin: [Node'lar](/tr/nodes)
 - Gateway'i yapılandırın: [Gateway yapılandırması](/tr/gateway/configuration)
 
 ## İlgili
 
-- [Kurulum genel bakışı](/tr/install)
+- [Kuruluma genel bakış](/tr/install)
 - [Azure](/tr/install/azure)
 - [VPS barındırma](/tr/vps)

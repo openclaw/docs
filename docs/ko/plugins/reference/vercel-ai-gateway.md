@@ -4,8 +4,8 @@ read_when:
 summary: OpenClaw에 Vercel AI Gateway 모델 제공자 지원을 추가합니다.
 title: Vercel AI Gateway Plugin
 x-i18n:
-    generated_at: "2026-06-27T17:54:51Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T01:02:35Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: d923028f0767ecf6e55c33ad09f769835d5b91fe5285700fc98b1463e9ab7323
@@ -22,9 +22,9 @@ OpenClaw에 Vercel AI Gateway 모델 제공자 지원을 추가합니다.
 - 패키지: `@openclaw/vercel-ai-gateway-provider`
 - 설치 경로: npm; ClawHub: `clawhub:@openclaw/vercel-ai-gateway-provider`
 
-## 표면
+## 제공 항목
 
-providers: vercel-ai-gateway
+제공자: vercel-ai-gateway
 
 ## 관련 문서
 

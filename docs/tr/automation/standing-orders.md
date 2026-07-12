@@ -1,95 +1,83 @@
 ---
 read_when:
-    - Görev başına istem gerektirmeden çalışan otonom ajan iş akışlarını ayarlama
-    - Ajanın bağımsız olarak neler yapabileceğini ve nelerin insan onayı gerektirdiğini tanımlama
-    - Net sınırlar ve eskalasyon kurallarıyla çok programlı ajanları yapılandırma
-summary: Otonom ajan programları için kalıcı çalışma yetkisini tanımlayın
-title: Daimi talimatlar
+    - Her görev için istem gerektirmeden çalışan otonom ajan iş akışlarını ayarlama
+    - Temsilcinin bağımsız olarak neler yapabileceğini ve nelerin insan onayı gerektirdiğini tanımlama
+    - Çok programlı agent'ları net sınırlar ve eskalasyon kurallarıyla yapılandırma
+summary: Otonom ajan programları için kalıcı işletim yetkisini tanımlayın
+title: Daimî emirler
 x-i18n:
-    generated_at: "2026-05-12T00:56:14Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:01:42Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3a51baa7aca31cb34b682983374d4d551ed6ab57ae54a5c63e7d044bffeef756
+    source_hash: 9e7ad622efe734facc9dc3716f5ee7f57ed3923499db78730bda234a5c62ad80
     source_path: automation/standing-orders.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Daimi emirler, tanımlanmış programlar için ajanınıza **kalıcı işletim yetkisi** verir. Her seferinde tek tek görev talimatları vermek yerine, kapsamı, tetikleyicileri ve yükseltme kuralları net olan programlar tanımlarsınız; ajan da bu sınırlar içinde otonom olarak yürütür.
+Sürekli talimatlar, tanımlanmış programlar için agent'ınıza **kalıcı çalışma yetkisi** verir. Agent'ı her görev için yönlendirmek yerine kapsamı, tetikleyicileri ve eskalasyon kuralları açıkça belirlenmiş programlar tanımlarsınız; agent da bu sınırlar içinde özerk olarak çalışır: "Haftalık rapor senin sorumluluğunda. Her cuma hazırla, gönder ve yalnızca bir şeyler yanlış görünüyorsa eskale et."
 
-Bu, yardımcınıza her Cuma "haftalık raporu gönder" demek ile daimi yetki vermek arasındaki farktır: "Haftalık rapor senden sorumlu. Her Cuma derle, gönder ve yalnızca bir şey yanlış görünürse yükselt."
+## Neden sürekli talimatlar kullanılmalı?
 
-## Neden daimi emirler
+**Sürekli talimatlar olmadan:** her görev için agent'ı yönlendirmeniz gerekir, rutin işler unutulur veya gecikir ve darboğaz hâline gelirsiniz.
 
-**Daimi emirler olmadan:**
+**Sürekli talimatlarla:** agent tanımlanmış sınırlar içinde özerk olarak çalışır, rutin işler zamanında yapılır ve yalnızca istisnalar ile onaylar için sürece dahil olursunuz.
 
-- Her görev için ajanı istemlemeniz gerekir
-- Ajan istekler arasında boşta kalır
-- Rutin işler unutulur veya gecikir
-- Darboğaz siz olursunuz
+## Nasıl çalışırlar?
 
-**Daimi emirlerle:**
-
-- Ajan, tanımlı sınırlar içinde otonom olarak yürütür
-- Rutin işler istem gerektirmeden zamanında gerçekleşir
-- Siz yalnızca istisnalar ve onaylar için devreye girersiniz
-- Ajan boş zamanı verimli şekilde değerlendirir
-
-## Nasıl çalışırlar
-
-Daimi emirler, [ajan çalışma alanı](/tr/concepts/agent-workspace) dosyalarınızda tanımlanır. Önerilen yaklaşım, bunları doğrudan `AGENTS.md` içine eklemektir (`AGENTS.md` her oturumda otomatik olarak enjekte edilir); böylece ajan bunları her zaman bağlamında bulundurur. Daha büyük yapılandırmalar için bunları `standing-orders.md` gibi ayrılmış bir dosyaya da koyabilir ve `AGENTS.md` içinden referans verebilirsiniz.
+Sürekli talimatlar, [agent çalışma alanı](/tr/concepts/agent-workspace) dosyalarınızda tanımlanır. Önerilen yaklaşım, agent'ın bunları her zaman bağlamında bulundurması için talimatları doğrudan `AGENTS.md` dosyasına (her oturumda otomatik olarak eklenir) dahil etmektir. Daha büyük yapılandırmalarda bunları `standing-orders.md` gibi özel bir dosyaya yerleştirip `AGENTS.md` dosyasından da referans verebilirsiniz.
 
 Her program şunları belirtir:
 
-1. **Kapsam** - ajanın ne yapmaya yetkili olduğu
-2. **Tetikleyiciler** - ne zaman yürütüleceği (zamanlama, olay veya koşul)
-3. **Onay kapıları** - işlemden önce nelerin insan onayı gerektirdiği
-4. **Yükseltme kuralları** - ne zaman durup yardım isteneceği
+1. **Kapsam** - agent'ın ne yapmaya yetkili olduğu
+2. **Tetikleyiciler** - ne zaman çalıştırılacağı (zamanlama, olay veya koşul)
+3. **Onay noktaları** - harekete geçmeden önce nelerin insan onayı gerektirdiği
+4. **Eskalasyon kuralları** - ne zaman durup yardım isteneceği
 
-Ajan bu talimatları her oturumda çalışma alanı başlatma dosyaları üzerinden yükler (otomatik enjekte edilen dosyaların tam listesi için bkz. [Agent Workspace](/tr/concepts/agent-workspace)) ve zaman temelli uygulama için [cron işleri](/tr/automation/cron-jobs) ile birlikte bunlara göre yürütür.
+Agent, bu talimatları her oturumda çalışma alanı önyükleme dosyaları aracılığıyla yükler (otomatik olarak eklenen dosyaların tam listesi için [Agent Çalışma Alanı](/tr/concepts/agent-workspace) bölümüne bakın) ve zamana dayalı uygulama için [Cron görevleriyle](/tr/automation/cron-jobs) birlikte bunlara göre çalışır.
 
 <Tip>
-Daimi emirleri her oturumda yükleneceklerini garanti etmek için `AGENTS.md` içine koyun. Çalışma alanı başlatması `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md` ve `MEMORY.md` dosyalarını otomatik olarak enjekte eder; ancak alt dizinlerdeki rastgele dosyaları enjekte etmez.
+Her oturumda yüklenmelerini garanti etmek için sürekli talimatları `AGENTS.md` dosyasına koyun. Çalışma alanı önyüklemesi `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md` ve `MEMORY.md` dosyalarını otomatik olarak ekler; ancak alt dizinlerdeki rastgele dosyaları eklemez.
 </Tip>
 
-## Bir daimi emrin anatomisi
+## Bir sürekli talimatın yapısı
 
 ```markdown
-## Program: Weekly Status Report
+## Program: Haftalık Durum Raporu
 
-**Authority:** Compile data, generate report, deliver to stakeholders
-**Trigger:** Every Friday at 4 PM (enforced via cron job)
-**Approval gate:** None for standard reports. Flag anomalies for human review.
-**Escalation:** If data source is unavailable or metrics look unusual (>2σ from norm)
+**Yetki:** Verileri derleme, rapor oluşturma, paydaşlara iletme
+**Tetikleyici:** Her cuma saat 16.00 (cron görevi aracılığıyla uygulanır)
+**Onay noktası:** Standart raporlar için yoktur. Anormallikleri insan incelemesi için işaretle.
+**Eskalasyon:** Veri kaynağı kullanılamıyorsa veya metrikler olağandışı görünüyorsa (normdan >2σ sapma)
 
-### Execution steps
+### Yürütme adımları
 
-1. Pull metrics from configured sources
-2. Compare to prior week and targets
-3. Generate report in Reports/weekly/YYYY-MM-DD.md
-4. Deliver summary via configured channel
-5. Log completion to Agent/Logs/
+1. Yapılandırılmış kaynaklardan metrikleri al
+2. Önceki hafta ve hedeflerle karşılaştır
+3. Reports/weekly/YYYY-MM-DD.md konumunda rapor oluştur
+4. Özeti yapılandırılmış kanal üzerinden ilet
+5. Tamamlanma kaydını Agent/Logs/ konumuna yaz
 
-### What NOT to do
+### YAPILMAMASI gerekenler
 
-- Do not send reports to external parties
-- Do not modify source data
-- Do not skip delivery if metrics look bad - report accurately
+- Raporları harici taraflara gönderme
+- Kaynak verileri değiştirme
+- Metrikler kötü görünüyorsa teslimatı atlama; doğru şekilde raporla
 ```
 
-## Daimi emirler artı cron işleri
+## Sürekli talimatlar ve cron görevleri
 
-Daimi emirler, ajanın **ne** yapmaya yetkili olduğunu tanımlar. [Cron işleri](/tr/automation/cron-jobs) bunun **ne zaman** gerçekleşeceğini tanımlar. Birlikte çalışırlar:
+Sürekli talimatlar, agent'ın **ne** yapmaya yetkili olduğunu tanımlar. [Cron görevleri](/tr/automation/cron-jobs), bunun **ne zaman** gerçekleşeceğini tanımlar. Birlikte çalışırlar:
 
-```
-Standing Order: "You own the daily inbox triage"
+```text
+Sürekli Talimat: "Günlük gelen kutusu sınıflandırması senin sorumluluğunda"
     ↓
-Cron Job (8 AM daily): "Execute inbox triage per standing orders"
+Cron Görevi (her gün saat 08.00): "Sürekli talimatlara göre gelen kutusu sınıflandırmasını yürüt"
     ↓
-Agent: Reads standing orders → executes steps → reports results
+Agent: Sürekli talimatları okur → adımları yürütür → sonuçları raporlar
 ```
 
-Cron işi istemi, daimi emri kopyalamak yerine ona referans vermelidir:
+Cron görevi istemi, sürekli talimatı tekrarlamak yerine ona referans vermelidir:
 
 ```bash
 openclaw cron add \
@@ -100,7 +88,7 @@ openclaw cron add \
   --announce \
   --channel imessage \
   --to "+1XXXXXXXXXX" \
-  --message "Execute daily inbox triage per standing orders. Check mail for new alerts. Parse, categorize, and persist each item. Report summary to owner. Escalate unknowns."
+  --message "Sürekli talimatlara göre günlük gelen kutusu sınıflandırmasını yürüt. Yeni uyarılar için postaları kontrol et. Her öğeyi ayrıştır, kategorilere ayır ve kalıcı olarak kaydet. Özeti sahibine bildir. Bilinmeyenleri eskale et."
 ```
 
 ## Örnekler
@@ -108,151 +96,151 @@ openclaw cron add \
 ### Örnek 1: içerik ve sosyal medya (haftalık döngü)
 
 ```markdown
-## Program: Content & Social Media
+## Program: İçerik ve Sosyal Medya
 
-**Authority:** Draft content, schedule posts, compile engagement reports
-**Approval gate:** All posts require owner review for first 30 days, then standing approval
-**Trigger:** Weekly cycle (Monday review → mid-week drafts → Friday brief)
+**Yetki:** İçerik taslakları hazırlama, gönderileri zamanlama, etkileşim raporlarını derleme
+**Onay noktası:** İlk 30 gün boyunca tüm gönderiler sahibin incelemesini gerektirir, ardından sürekli onay geçerlidir
+**Tetikleyici:** Haftalık döngü (pazartesi inceleme → hafta ortasında taslaklar → cuma özeti)
 
-### Weekly cycle
+### Haftalık döngü
 
-- **Monday:** Review platform metrics and audience engagement
-- **Tuesday-Thursday:** Draft social posts, create blog content
-- **Friday:** Compile weekly marketing brief → deliver to owner
+- **Pazartesi:** Platform metriklerini ve kitle etkileşimini incele
+- **Salı-Perşembe:** Sosyal medya gönderilerinin taslaklarını hazırla, blog içeriği oluştur
+- **Cuma:** Haftalık pazarlama özetini derle → sahibine ilet
 
-### Content rules
+### İçerik kuralları
 
-- Voice must match the brand (see SOUL.md or brand voice guide)
-- Never identify as AI in public-facing content
-- Include metrics when available
-- Focus on value to audience, not self-promotion
+- Üslup markayla uyumlu olmalıdır (SOUL.md veya marka üslubu kılavuzuna bakın)
+- Kamuya açık içeriklerde kendini asla yapay zekâ olarak tanımlama
+- Mevcut olduğunda metrikleri dahil et
+- Kendini tanıtmaya değil, kitleye sağlanan değere odaklan
 ```
 
-### Örnek 2: finans operasyonları (olay tetiklemeli)
+### Örnek 2: finans işlemleri (olayla tetiklenen)
 
 ```markdown
-## Program: Financial Processing
+## Program: Finansal İşlemler
 
-**Authority:** Process transaction data, generate reports, send summaries
-**Approval gate:** None for analysis. Recommendations require owner approval.
-**Trigger:** New data file detected OR scheduled monthly cycle
+**Yetki:** İşlem verilerini işleme, raporlar oluşturma, özetler gönderme
+**Onay noktası:** Analiz için yoktur. Öneriler sahibin onayını gerektirir.
+**Tetikleyici:** Yeni veri dosyası algılandığında VEYA planlanmış aylık döngüde
 
-### When new data arrives
+### Yeni veri geldiğinde
 
-1. Detect new file in designated input directory
-2. Parse and categorize all transactions
-3. Compare against budget targets
-4. Flag: unusual items, threshold breaches, new recurring charges
-5. Generate report in designated output directory
-6. Deliver summary to owner via configured channel
+1. Belirlenmiş girdi dizinindeki yeni dosyayı algıla
+2. Tüm işlemleri ayrıştır ve kategorilere ayır
+3. Bütçe hedefleriyle karşılaştır
+4. Şunları işaretle: olağandışı kalemler, eşik aşımları, yeni yinelenen ücretler
+5. Belirlenmiş çıktı dizininde rapor oluştur
+6. Özeti yapılandırılmış kanal üzerinden sahibine ilet
 
-### Escalation rules
+### Eskalasyon kuralları
 
-- Single item > $500: immediate alert
-- Category > budget by 20%: flag in report
-- Unrecognizable transaction: ask owner for categorization
-- Failed processing after 2 retries: report failure, do not guess
+- Tek kalem > $500: hemen uyar
+- Kategori, bütçeyi %20'den fazla aşıyorsa: raporda işaretle
+- Tanınmayan işlem: kategorilendirme için sahibine sor
+- 2 yeniden denemeden sonra işleme başarısızsa: hatayı raporla, tahminde bulunma
 ```
 
 ### Örnek 3: izleme ve uyarılar (sürekli)
 
 ```markdown
-## Program: System Monitoring
+## Program: Sistem İzleme
 
-**Authority:** Check system health, restart services, send alerts
-**Approval gate:** Restart services automatically. Escalate if restart fails twice.
-**Trigger:** Every heartbeat cycle
+**Yetki:** Sistem durumunu kontrol etme, hizmetleri yeniden başlatma, uyarılar gönderme
+**Onay noktası:** Hizmetleri otomatik olarak yeniden başlat. Yeniden başlatma iki kez başarısız olursa eskale et.
+**Tetikleyici:** Her Heartbeat döngüsünde
 
-### Checks
+### Kontroller
 
-- Service health endpoints responding
-- Disk space above threshold
-- Pending tasks not stale (>24 hours)
-- Delivery channels operational
+- Hizmet durumu uç noktaları yanıt veriyor
+- Disk alanı eşiğin üzerinde
+- Bekleyen görevler bayatlamamış (>24 saat)
+- İletim kanalları çalışıyor
 
-### Response matrix
+### Yanıt matrisi
 
-| Condition        | Action                   | Escalate?                |
-| ---------------- | ------------------------ | ------------------------ |
-| Service down     | Restart automatically    | Only if restart fails 2x |
-| Disk space < 10% | Alert owner              | Yes                      |
-| Stale task > 24h | Remind owner             | No                       |
-| Channel offline  | Log and retry next cycle | If offline > 2 hours     |
+| Koşul              | Eylem                              | Eskale edilsin mi?                    |
+| ------------------ | ---------------------------------- | ------------------------------------- |
+| Hizmet çalışmıyor  | Otomatik olarak yeniden başlat     | Yalnızca yeniden başlatma 2 kez başarısız olursa |
+| Disk alanı < %10   | Sahibini uyar                      | Evet                                  |
+| Bayat görev > 24 sa| Sahibini bilgilendir               | Hayır                                 |
+| Kanal çevrimdışı   | Kaydet ve sonraki döngüde yeniden dene | 2 saatten uzun süre çevrimdışıysa |
 ```
 
-## Yürüt-doğrula-raporla deseni
+## Yürüt-doğrula-raporla kalıbı
 
-Daimi emirler, katı yürütme disipliniyle birleştirildiğinde en iyi şekilde çalışır. Bir daimi emirdeki her görev şu döngüyü izlemelidir:
+Sürekli talimatlar, katı bir yürütme disipliniyle birleştirildiğinde en iyi şekilde çalışır. Sürekli talimattaki her görev şu döngüyü izlemelidir:
 
-1. **Yürüt** - Asıl işi yap (talimatı yalnızca onaylamakla kalma)
-2. **Doğrula** - Sonucun doğru olduğunu onayla (dosya var, mesaj teslim edildi, veri ayrıştırıldı)
-3. **Raporla** - Sahibe ne yapıldığını ve neyin doğrulandığını söyle
+1. **Yürüt** - Gerçek işi yap (yalnızca talimatı aldığını belirtme)
+2. **Doğrula** - Sonucun doğru olduğunu onayla (dosya mevcut, mesaj iletildi, veriler ayrıştırıldı)
+3. **Raporla** - Sahibine ne yapıldığını ve nelerin doğrulandığını bildir
 
 ```markdown
-### Execution rules
+### Yürütme kuralları
 
-- Every task follows Execute-Verify-Report. No exceptions.
-- "I'll do that" is not execution. Do it, then report.
-- "Done" without verification is not acceptable. Prove it.
-- If execution fails: retry once with adjusted approach.
-- If still fails: report failure with diagnosis. Never silently fail.
-- Never retry indefinitely - 3 attempts max, then escalate.
+- Her görev Yürüt-Doğrula-Raporla kalıbını izler. İstisna yoktur.
+- "Bunu yapacağım" yürütme değildir. Yap, ardından raporla.
+- Doğrulama olmadan "Tamamlandı" kabul edilemez. Kanıtla.
+- Yürütme başarısız olursa: ayarlanmış bir yaklaşımla bir kez yeniden dene.
+- Yine başarısız olursa: tanıyla birlikte hatayı raporla. Asla sessizce başarısız olma.
+- Asla süresiz olarak yeniden deneme; en fazla 3 denemeden sonra eskale et.
 ```
 
-Bu desen, en yaygın ajan hata modunu önler: bir görevi tamamlamadan onaylamak.
+Bu kalıp, en yaygın agent başarısızlık biçimini önler: bir görevi tamamlamadan yalnızca alındığını belirtmek.
 
 ## Çok programlı mimari
 
-Birden çok konuyu yöneten ajanlar için daimi emirleri net sınırlara sahip ayrı programlar olarak düzenleyin:
+Birden fazla konuyu yöneten agent'lar için sürekli talimatları, sınırları net ayrı programlar olarak düzenleyin:
 
 ```markdown
-## Program 1: [Domain A] (Weekly)
+## Program 1: [Alan A] (Haftalık)
 
 ...
 
-## Program 2: [Domain B] (Monthly + On-Demand)
+## Program 2: [Alan B] (Aylık + Talep Üzerine)
 
 ...
 
-## Program 3: [Domain C] (As-Needed)
+## Program 3: [Alan C] (Gerektiğinde)
 
 ...
 
-## Escalation Rules (All Programs)
+## Eskalasyon Kuralları (Tüm Programlar)
 
-- [Common escalation criteria]
-- [Approval gates that apply across programs]
+- [Ortak eskalasyon ölçütleri]
+- [Programların tamamında geçerli olan onay noktaları]
 ```
 
-Her programda şunlar olmalıdır:
+Her program şunlara sahip olmalıdır:
 
-- Kendine ait **tetikleme ritmi** (haftalık, aylık, olay odaklı, sürekli)
-- Kendine ait **onay kapıları** (bazı programlar diğerlerinden daha fazla gözetim gerektirir)
-- Net **sınırlar** (ajan bir programın nerede bitip diğerinin nerede başladığını bilmelidir)
+- Kendine ait bir **tetikleme sıklığı** (haftalık, aylık, olay odaklı, sürekli)
+- Kendine ait **onay noktaları** (bazı programlar diğerlerinden daha fazla gözetim gerektirir)
+- Net **sınırlar** (agent, bir programın nerede bitip diğerinin nerede başladığını bilmelidir)
 
 ## En iyi uygulamalar
 
 ### Yapılması gerekenler
 
-- Dar yetkiyle başlayın ve güven arttıkça genişletin
-- Yüksek riskli eylemler için açık onay kapıları tanımlayın
-- "Ne yapılmamalı" bölümleri ekleyin; sınırlar izinler kadar önemlidir
-- Güvenilir zaman temelli yürütme için cron işleriyle birleştirin
-- Daimi emirlere uyulduğunu doğrulamak için ajan günlüklerini haftalık inceleyin
-- İhtiyaçlarınız değiştikçe daimi emirleri güncelleyin; bunlar yaşayan belgelerdir
+- Dar kapsamlı bir yetkiyle başlayın ve güven arttıkça genişletin
+- Yüksek riskli eylemler için açık onay noktaları tanımlayın
+- "YAPILMAMASI gerekenler" bölümleri ekleyin; sınırlar izinler kadar önemlidir
+- Zamana dayalı güvenilir yürütme için cron görevleriyle birleştirin
+- Sürekli talimatlara uyulduğunu doğrulamak için agent günlüklerini haftalık olarak inceleyin
+- İhtiyaçlarınız geliştikçe sürekli talimatları güncelleyin; bunlar yaşayan belgelerdir
 
-### Kaçının
+### Kaçınılması gerekenler
 
-- İlk günden geniş yetki vermek ("en iyi olduğunu düşündüğün şeyi yap")
-- Yükseltme kurallarını atlamak; her programın "ne zaman durup sormalı" maddesine ihtiyacı vardır
-- Ajanın sözlü talimatları hatırlayacağını varsaymak; her şeyi dosyaya koyun
-- Konuları tek bir programda karıştırmak; ayrı alanlar için ayrı programlar kullanın
-- Cron işleriyle uygulamayı unutmak; tetikleyicisiz daimi emirler öneriye dönüşür
+- İlk günden geniş yetki vermek ("en iyi olduğunu düşündüğün her şeyi yap")
+- Eskalasyon kurallarını atlamak; her programın bir "ne zaman durup sorulacağı" maddesine ihtiyacı vardır
+- Agent'ın sözlü talimatları hatırlayacağını varsaymak; her şeyi dosyaya yazın
+- Konuları tek bir programda birleştirmek; farklı alanlar için ayrı programlar kullanın
+- Cron görevleriyle uygulanmasını unutmak; tetikleyicileri olmayan sürekli talimatlar öneriye dönüşür
 
-## İlgili
+## İlgili konular
 
 - [Otomasyon](/tr/automation): tüm otomasyon mekanizmalarına genel bakış.
-- [Cron işleri](/tr/automation/cron-jobs): daimi emirler için zamanlama uygulaması.
-- [Kancalar](/tr/automation/hooks): ajan yaşam döngüsü olayları için olay odaklı betikler.
-- [Webhook’lar](/tr/automation/cron-jobs#webhooks): gelen HTTP olay tetikleyicileri.
-- [Ajan çalışma alanı](/tr/concepts/agent-workspace): otomatik enjekte edilen başlatma dosyalarının tam listesi (`AGENTS.md`, `SOUL.md` vb.) dahil, daimi emirlerin bulunduğu yer.
+- [Cron görevleri](/tr/automation/cron-jobs): sürekli talimatlar için zamanlama uygulaması.
+- [Hook'lar](/tr/automation/hooks): agent yaşam döngüsü olayları için olay odaklı betikler.
+- [Webhook'lar](/tr/automation/cron-jobs#webhooks): gelen HTTP olay tetikleyicileri.
+- [Agent çalışma alanı](/tr/concepts/agent-workspace): otomatik olarak eklenen önyükleme dosyalarının (`AGENTS.md`, `SOUL.md` vb.) tam listesi dahil olmak üzere sürekli talimatların bulunduğu yer.

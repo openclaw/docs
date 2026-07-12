@@ -1,45 +1,44 @@
 ---
 read_when:
-    - Esecuzione della QA desktop di Mantis Slack da GitHub o localmente
-    - Debug delle esecuzioni lente di Mantis su desktop Slack
-    - Scelta della modalità source, preidratata o warm-lease
-    - Pubblicare prove con screenshot e video in una PR
-summary: 'Runbook operativo per la QA desktop di Mantis Slack: dispatch GitHub, CLI locale, lease VNC già pronte, modalità di hydrate, interpretazione dei tempi, artefatti e gestione degli errori.'
-title: Runbook desktop Slack di Mantis
+    - Esecuzione del controllo qualità desktop di Mantis Slack da GitHub o in locale
+    - Debug delle esecuzioni lente di Mantis su Slack desktop
+    - Scelta della modalità sorgente, preidratata o con lease preriscaldato
+    - Pubblicazione di screenshot e video come prove in una PR
+summary: 'Runbook operativo per il QA desktop di Mantis Slack: avvio da GitHub, CLI locale, lease VNC già attive, modalità di idratazione, interpretazione delle tempistiche, artefatti e gestione degli errori.'
+title: Manuale operativo di Mantis per Slack desktop
 x-i18n:
-    generated_at: "2026-06-27T17:25:25Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:59:07Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d9310b460a4da84afab72f9e5b5515a94e74b4f4a5030332bd2021d60deb07cc
+    source_hash: b3e956d99fc43a7b6fe65e2e820812b0e0e8b9e32badd25be27c74d302ab30dc
     source_path: concepts/mantis-slack-desktop-runbook.md
     workflow: 16
 ---
 
-Mantis Slack desktop QA è la corsia con UI reale per i bug di classe Slack che richiedono un
-desktop Linux, recupero VNC, Slack Web, un vero Gateway OpenClaw, screenshot,
-video e un commento di evidenza sulla PR.
-
-Usala quando gli unit test o la corsia live Slack headless non possono dimostrare il bug.
+Mantis Slack desktop QA è il percorso con interfaccia utente reale per i bug di tipo Slack che richiedono un
+desktop Linux, il ripristino tramite VNC, Slack Web, un Gateway OpenClaw reale, schermate,
+video e un commento con le prove nella PR. Usalo quando i test unitari o il percorso live
+headless di Slack non possono dimostrare il bug.
 
 ## Modello di archiviazione
 
-Mantis usa tre diversi livelli di archiviazione:
+Mantis utilizza tre livelli di archiviazione:
 
-- Immagine del provider: di proprietà di Crabbox e archiviata nell'account del provider cloud.
-  Contiene capacità della macchina come Chrome/Chromium, ffmpeg, scrot,
-  Node/corepack/pnpm, strumenti di build nativi e directory di cache vuote.
-- Stato del lease caldo: di proprietà della sessione dell'operatore corrente. Può contenere un
-  profilo browser con accesso effettuato, `/var/cache/crabbox/pnpm` e un checkout sorgente
-  preparato mentre il lease è attivo.
-- Artefatti Mantis: di proprietà dell'esecuzione OpenClaw. Si trovano in
-  `.artifacts/qa-e2e/mantis/...`, poi GitHub Actions li carica e la
-  Mantis GitHub App commenta le evidenze inline sulla PR.
+- **Immagine del provider** - gestita da Crabbox, archiviata nell'account del provider cloud.
+  Contiene le funzionalità della macchina (Chrome/Chromium, ffmpeg, scrot,
+  Node/corepack/pnpm, strumenti di compilazione nativi) e directory della cache vuote.
+- **Stato del lease attivo** - gestito dalla sessione dell'operatore corrente. Può contenere un
+  profilo del browser con accesso effettuato, `/var/cache/crabbox/pnpm` e un checkout del codice
+  sorgente preparato finché il lease è attivo.
+- **Artefatti Mantis** - gestiti dall'esecuzione OpenClaw. Si trovano in
+  `.artifacts/qa-e2e/mantis/...`; GitHub Actions li carica e la GitHub App Mantis
+  inserisce nella PR un commento con le prove incorporate.
 
-Non inserire mai segreti, cookie del browser, stato di accesso Slack, checkout del repository,
-`node_modules` o `dist/` in un'immagine provider preconfezionata.
+Non includere mai segreti, cookie del browser, stato di accesso a Slack, checkout del repository,
+`node_modules` o `dist/` in un'immagine del provider.
 
-## Dispatch GitHub
+## Avvio da GitHub
 
 Esegui il workflow da `main`:
 
@@ -54,29 +53,24 @@ gh workflow run mantis-slack-desktop-smoke.yml \
   -f hydrate_mode=source
 ```
 
-I valori consentiti per `candidate_ref` sono intenzionalmente limitati perché il workflow
-usa credenziali live: ascendenza dell'attuale `main`, tag di release o head di una PR aperta
-da `openclaw/openclaw`.
+`candidate_ref` è soggetto a restrizioni perché il workflow utilizza credenziali reali: deve
+risolversi nell'ascendenza del `main` corrente, in un tag di rilascio o nell'head di una PR aperta in
+`openclaw/openclaw`.
 
-Il workflow scrive:
+Il workflow produce:
 
-- artefatto caricato: `mantis-slack-desktop-smoke-<run-id>-<attempt>`;
-- commento inline sulla PR dalla Mantis GitHub App;
-- `slack-desktop-smoke.png`;
-- `slack-desktop-smoke.mp4`;
-- `slack-desktop-smoke-preview.gif`;
-- `slack-desktop-smoke-change.mp4`;
-- `mantis-slack-desktop-smoke-summary.json`;
-- `mantis-slack-desktop-smoke-report.md`;
-- log remoti come `slack-desktop-command.log`, `openclaw-gateway.log`,
-  `chrome.log` e `ffmpeg.log`.
+- artefatto caricato `mantis-slack-desktop-smoke-<run-id>-<attempt>`
+- commento incorporato nella PR dalla GitHub App Mantis
+- `slack-desktop-smoke.png`, `slack-desktop-smoke.mp4`
+- `slack-desktop-smoke-preview.gif`, `slack-desktop-smoke-change.mp4`
+- `mantis-slack-desktop-smoke-summary.json`, `mantis-slack-desktop-smoke-report.md`
+- log remoti: `slack-desktop-command.log`, `openclaw-gateway.log`, `chrome.log`, `ffmpeg.log`
 
-Il commento sulla PR viene aggiornato sul posto tramite il marker nascosto
-`<!-- mantis-slack-desktop-smoke -->`.
+Il commento della PR viene aggiornato sul posto tramite il marcatore nascosto `<!-- mantis-slack-desktop-smoke -->`.
 
 ## CLI locale
 
-Prova a freddo dai sorgenti:
+Prova a freddo dal codice sorgente:
 
 ```bash
 pnpm openclaw qa mantis slack-desktop-smoke \
@@ -92,7 +86,7 @@ pnpm openclaw qa mantis slack-desktop-smoke \
   --hydrate-mode source
 ```
 
-Mantieni la VM per il recupero VNC:
+Mantieni la VM per il ripristino tramite VNC:
 
 ```bash
 pnpm openclaw qa mantis slack-desktop-smoke \
@@ -109,7 +103,7 @@ Apri VNC:
 crabbox vnc --provider aws --id <cbx_id> --open
 ```
 
-Riusa un lease caldo:
+Riutilizza un lease attivo:
 
 ```bash
 pnpm openclaw qa mantis slack-desktop-smoke \
@@ -120,10 +114,10 @@ pnpm openclaw qa mantis slack-desktop-smoke \
   --hydrate-mode source
 ```
 
-Usa `--hydrate-mode prehydrated` solo quando lo spazio di lavoro remoto riutilizzato ha già
-`node_modules` e un `dist/` compilato. Mantis fallisce in modo restrittivo se mancano.
+Usa `--hydrate-mode prehydrated` solo quando lo spazio di lavoro remoto riutilizzato dispone già
+di `node_modules` e di una directory `dist/` compilata; in caso contrario Mantis interrompe l'esecuzione in modo sicuro.
 
-Dimostra la UI di approvazione Slack nativa:
+Dimostra l'interfaccia utente nativa di approvazione di Slack:
 
 ```bash
 pnpm openclaw qa mantis slack-desktop-smoke \
@@ -135,81 +129,82 @@ pnpm openclaw qa mantis slack-desktop-smoke \
   --hydrate-mode source
 ```
 
-La modalità checkpoint di approvazione è mutuamente esclusiva con `--gateway-setup`. Esegue
-gli scenari opzionali `slack-approval-exec-native` e `slack-approval-plugin-native`
-a meno che tu non passi flag `--scenario` espliciti per i checkpoint di approvazione; gli altri
-scenari Slack vengono rifiutati prima dell'avvio della VM. Il runner QA Slack scrive
-ogni file JSON di checkpoint dal messaggio reale dell'API Slack che ha osservato, poi il
-watcher remoto rende quello snapshot del messaggio in
+`--approval-checkpoints` è incompatibile con `--gateway-setup`. Esegue
+gli scenari facoltativi `slack-approval-exec-native` e `slack-approval-plugin-native`,
+a meno che non venga passato uno `--scenario` esplicito per un punto di controllo dell'approvazione; gli altri
+scenari Slack vengono rifiutati prima dell'avvio della VM. Il runner QA di Slack scrive
+ogni file JSON del punto di controllo dal messaggio reale dell'API Slack osservato, quindi
+il processo di monitoraggio remoto visualizza tale messaggio in
 `approval-checkpoints/<scenario>-pending.png` e
-`approval-checkpoints/<scenario>-resolved.png`. L'esecuzione fallisce se qualsiasi JSON
-di checkpoint, evidenza del messaggio, JSON di ack o screenshot renderizzato manca o è vuoto.
+`approval-checkpoints/<scenario>-resolved.png`. L'esecuzione non riesce se un
+file JSON del punto di controllo, una prova del messaggio, un JSON di conferma o una schermata generata è mancante
+o vuota.
 
-I lease a freddo di GitHub Actions non hanno cookie Slack Web, quindi la loro acquisizione
-browser può finire sulla schermata di accesso Slack. Per la prova dei checkpoint di approvazione, affidati alle
-immagini dei checkpoint renderizzate e agli artefatti QA Slack invece che a
-`slack-desktop-smoke.png`. Usa un lease caldo mantenuto con un profilo Slack Web
-su cui è stato effettuato l'accesso manualmente solo quando lo screenshot del browser deve mostrare Slack Web.
+I lease a freddo di GitHub Actions non dispongono di cookie di Slack Web, quindi l'acquisizione del browser
+può mostrare la schermata di accesso di Slack. Per la prova dei punti di controllo dell'approvazione, considera attendibili le
+immagini generate dei punti di controllo e gli artefatti QA di Slack anziché
+`slack-desktop-smoke.png`. Usa un lease attivo mantenuto con un profilo
+Slack Web su cui l'accesso è stato effettuato manualmente solo quando la schermata del browser deve mostrare
+Slack Web.
 
-## Modalità di idratazione
+## Modalità di preparazione
 
-| Modalità      | Usala quando                              | Comportamento remoto                                                                  | Compromesso                                             |
-| ------------- | ----------------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------- |
-| `source`      | Prova normale di PR, macchine a freddo, CI | Esegue `pnpm install --frozen-lockfile --prefer-offline` e `pnpm build` dentro la VM | Più lenta, prova più solida da checkout sorgente        |
-| `prehydrated` | Hai preparato intenzionalmente un lease riutilizzato | Richiede `node_modules` e `dist/` esistenti; salta install/build                     | Veloce, ma valida solo per lease caldi controllati dall'operatore |
+| Modalità      | Quando usarla                              | Comportamento remoto                                                                   | Compromesso                                                        |
+| ------------- | ------------------------------------------ | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `source`      | Normale prova della PR, macchine a freddo, CI | Esegue `pnpm install --frozen-lockfile --prefer-offline` e `pnpm build` nella VM      | Più lenta, prova più solida basata sul checkout del codice sorgente |
+| `prehydrated` | Hai preparato intenzionalmente un lease riutilizzato | Richiede `node_modules` e `dist/` esistenti; salta installazione e compilazione | Veloce, ma valida solo per lease attivi controllati dall'operatore  |
 
-GitHub Actions prepara sempre il checkout candidato prima dell'esecuzione nella VM. Il suo
-store pnpm viene memorizzato in cache per sistema operativo, versione Node e lockfile. Anche l'esecuzione sorgente nella VM
-usa `/var/cache/crabbox/pnpm` quando presente.
+GitHub Actions prepara sempre il checkout candidato prima dell'esecuzione nella VM. Il relativo
+store pnpm viene memorizzato nella cache in base a sistema operativo, versione di Node e lockfile. L'esecuzione `source` nella VM
+riutilizza inoltre `/var/cache/crabbox/pnpm`, se presente.
 
-## Interpretazione dei tempi
+## Interpretazione delle tempistiche
 
-`mantis-slack-desktop-smoke-report.md` include i tempi delle fasi:
+`mantis-slack-desktop-smoke-report.md` include le tempistiche delle fasi:
 
-- `crabbox.warmup`: avvio del provider cloud, prontezza di desktop/browser e SSH.
-- `crabbox.inspect`: ricerca dei metadati del lease.
-- `credentials.prepare`: acquisizione del lease delle credenziali Convex.
-- `crabbox.remote_run`: sincronizzazione, avvio del browser, install/build OpenClaw o
-  convalida dell'idratazione, avvio del Gateway, screenshot e acquisizione video.
-- `artifacts.copy`: rsync di ritorno dalla VM.
+- `crabbox.warmup` - avvio del provider cloud, preparazione di desktop/browser, SSH.
+- `crabbox.inspect` - recupero dei metadati del lease.
+- `credentials.prepare` - acquisizione del lease delle credenziali Convex.
+- `crabbox.remote_run` - sincronizzazione, avvio del browser, installazione/compilazione di OpenClaw o
+  convalida della preparazione, avvio del Gateway, acquisizione di schermate e video.
+- `artifacts.copy` - copia tramite rsync dalla VM.
 
-`crabbox.remote_run` può essere contrassegnato come `accepted` quando Crabbox restituisce uno stato
-remoto diverso da zero dopo che Mantis ha copiato metadati che dimostrano che la configurazione del Gateway
-OpenClaw è stata completata oppure che il comando QA Slack stesso è uscito correttamente.
-Tratta `accepted` come superato con spiegazione, non come scenario fallito.
+`crabbox.remote_run` può mostrare `accepted` quando Crabbox restituisce uno stato remoto
+diverso da zero, ma Mantis ha copiato metadati che dimostrano che la configurazione del Gateway OpenClaw
+è stata completata oppure che il comando QA di Slack è terminato correttamente. Considera
+`accepted` un esito positivo con spiegazione, non uno scenario non riuscito.
 
-Se l'esecuzione è lenta:
+Se un'esecuzione è lenta:
 
-- domina warmup: preconfeziona o promuovi un'immagine provider Crabbox migliore;
-- domina remote_run in `source`: usa un lease caldo, migliora il riuso dello store pnpm
-  o sposta i prerequisiti della macchina nell'immagine provider;
-- domina remote_run in `prehydrated`: lo spazio di lavoro remoto non era effettivamente
-  pronto, oppure la configurazione di Gateway/browser/Slack è lenta;
-- domina la copia degli artefatti: ispeziona la dimensione del video e il contenuto della directory artefatti.
+- Se prevale la preparazione: precompila o promuovi un'immagine migliore del provider Crabbox.
+- Se `remote_run` prevale in modalità `source`: usa un lease attivo, migliora il riutilizzo dello store
+  pnpm oppure sposta i prerequisiti della macchina nell'immagine del provider.
+- Se `remote_run` prevale in modalità `prehydrated`: lo spazio di lavoro remoto non era
+  effettivamente pronto oppure la configurazione del Gateway, del browser o di Slack è lenta.
+- Se prevale la copia degli artefatti: controlla le dimensioni del video e il contenuto della directory degli artefatti.
 
-## Checklist delle evidenze
+## Elenco di controllo delle prove
 
-Un buon commento sulla PR dovrebbe mostrare:
+Un buon commento nella PR mostra:
 
-- id scenario e SHA candidato;
-- URL dell'esecuzione GitHub Actions;
-- URL dell'artefatto;
-- screenshot inline del checkpoint di approvazione, oppure uno screenshot Slack Web da un
-  lease caldo con accesso effettuato;
-- anteprima animata inline quando disponibile;
-- link all'MP4 completo e all'MP4 ritagliato;
-- stato superato/fallito;
-- riepilogo dei tempi nel report allegato.
+- ID dello scenario e SHA candidato
+- URL dell'esecuzione di GitHub Actions e URL dell'artefatto
+- schermata incorporata del punto di controllo dell'approvazione oppure una schermata di Slack Web proveniente da un
+  lease attivo con accesso effettuato
+- anteprima animata incorporata, quando disponibile
+- collegamenti al video MP4 completo e a quello ritagliato
+- stato di successo/errore e riepilogo delle tempistiche del rapporto
 
-Non committare screenshot o video nel repository. Mantienili negli artefatti GitHub
-Actions o nel commento sulla PR.
+Non eseguire il commit di schermate o video nel repository. Conservali negli
+artefatti di GitHub Actions o nel commento della PR.
 
 ## Gestione degli errori
 
-Se il workflow fallisce prima dell'esecuzione nella VM, ispeziona prima il job Actions. Le cause tipiche
-sono `candidate_ref` non attendibile, segreti di ambiente mancanti o fallimento di install/build del candidato.
+Se il workflow non riesce prima dell'esecuzione nella VM, controlla prima il job di Actions.
+Cause tipiche: `candidate_ref` non attendibile, segreti dell'ambiente mancanti oppure
+errore di installazione/compilazione del candidato.
 
-Se l'esecuzione nella VM fallisce ma gli screenshot sono stati copiati indietro, ispeziona:
+Se l'esecuzione nella VM non riesce ma le schermate sono state copiate, controlla:
 
 ```bash
 cat mantis-slack-desktop-smoke-report.md
@@ -220,18 +215,18 @@ cat chrome.log
 cat ffmpeg.log
 ```
 
-Se l'esecuzione ha mantenuto il lease, apri VNC con il comando `crabbox vnc ...` del report.
-Arresta il lease al termine:
+Se l'esecuzione ha mantenuto il lease, apri VNC con il comando `crabbox vnc ...`
+indicato nel rapporto, quindi arresta il lease al termine:
 
 ```bash
 crabbox stop --provider aws <cbx_id-or-slug>
 ```
 
-Se l'accesso Slack è scaduto, riparalo in VNC su un lease mantenuto e riesegui con
-`--lease-id`. Non incorporare quel profilo browser in un'immagine provider.
+Se l'accesso a Slack è scaduto, ripristinalo tramite VNC su un lease mantenuto ed esegui nuovamente il comando con
+`--lease-id`. Non includere tale profilo del browser in un'immagine del provider.
 
-## Correlati
+## Contenuti correlati
 
-- [Panoramica QA](/it/concepts/qa-e2e-automation)
+- [Panoramica della QA](/it/concepts/qa-e2e-automation)
 - [Canale Slack](/it/channels/slack)
 - [Test](/it/help/testing)

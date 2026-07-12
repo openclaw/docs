@@ -1,32 +1,32 @@
 ---
 read_when:
-    - Budujesz lub refaktoryzujesz ścieżkę odbioru Pluginu kanału komunikacyjnego
-    - Potrzebujesz współdzielonego konstruowania kontekstu przychodzącego, rejestrowania sesji lub wysyłania przygotowanych odpowiedzi
-    - Migrujesz stare funkcje pomocnicze tur kanałów do interfejsów API przychodzących/wiadomości
-summary: 'Pomocnicze funkcje zdarzeń przychodzących dla pluginów kanałów: budowanie kontekstu, orkiestracja współdzielonego runnera, rekord sesji i wysyłka przygotowanych odpowiedzi'
-title: Interfejs API przychodzący kanału
+    - Budujesz lub refaktoryzujesz ścieżkę odbioru wtyczki kanału komunikacyjnego
+    - Potrzebujesz współdzielonego tworzenia kontekstu przychodzącego, rejestrowania sesji lub wysyłania przygotowanych odpowiedzi
+    - Migrujesz stare funkcje pomocnicze tur kanału do interfejsów API wiadomości przychodzących/message
+summary: 'Narzędzia pomocnicze zdarzeń przychodzących dla pluginów kanałów: tworzenie kontekstu, współdzielona orkiestracja modułu uruchamiającego, rekord sesji i wysyłanie przygotowanej odpowiedzi'
+title: Interfejs API wiadomości przychodzących kanału
 x-i18n:
-    generated_at: "2026-06-27T18:05:32Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:28:20Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d3ffb04438412a3e92b976c34ce31c36cc790967503df35fc435f67637f45bf4
+    source_hash: a85ffaf9501af00e1493b5fbb0454a070626ed6ca41977323b55e84b92075ed1
     source_path: plugins/sdk-channel-inbound.md
     workflow: 16
 ---
 
-Wtyczki kanałów powinny modelować ścieżki odbioru rzeczownikami związanymi z przychodzącymi zdarzeniami i wiadomościami:
+Ścieżki odbierania kanałów korzystają z jednego przepływu:
 
 ```text
-platform event -> inbound facts/context -> agent reply -> message delivery
+zdarzenie platformy -> fakty/kontekst wejściowy -> odpowiedź agenta -> dostarczenie wiadomości
 ```
 
-Używaj `openclaw/plugin-sdk/channel-inbound` do normalizacji zdarzeń przychodzących,
-formatowania, korzeni i orkiestracji. Używaj
-`openclaw/plugin-sdk/channel-outbound` do natywnego
-wysyłania, potwierdzeń odbioru, trwałego dostarczania i działania podglądu na żywo.
+Użyj `openclaw/plugin-sdk/channel-inbound` do normalizacji zdarzeń wejściowych,
+formatowania, katalogów głównych i orkiestracji. Użyj
+`openclaw/plugin-sdk/channel-outbound` do natywnego wysyłania, potwierdzeń, trwałego
+dostarczania i działania podglądu na żywo.
 
-## Główne helpery
+## Podstawowe funkcje pomocnicze
 
 ```ts
 import {
@@ -36,19 +36,19 @@ import {
 } from "openclaw/plugin-sdk/channel-inbound";
 ```
 
-- `buildChannelInboundEventContext(...)`: rzutuje znormalizowane fakty kanału na
-  kontekst promptu/sesji. Użyj `channelContext`, aby przekazać należące do kanału
-  metadane nadawcy/czatu do hooka wtyczki `ctx.channelContext`; rozszerz
-  `PluginHookChannelSenderContext` lub `PluginHookChannelChatContext` z tej
-  ścieżki podrzędnej o pola specyficzne dla kanału.
-- `runChannelInboundEvent(...)`: uruchamia pobieranie, klasyfikację, kontrolę wstępną, rozwiązywanie,
-  rejestrowanie, wysyłkę i finalizację dla jednego przychodzącego zdarzenia platformy.
-- `dispatchChannelInboundReply(...)`: rejestruje i wysyła już złożoną
-  odpowiedź przychodzącą za pomocą adaptera dostarczania.
+- `buildChannelInboundEventContext(...)`: odwzorowuje znormalizowane fakty kanału
+  w kontekście promptu/sesji. Przekaż metadane nadawcy/czatu należące do kanału
+  przez `channelContext`, który hooki Pluginu otrzymują jako `ctx.channelContext`.
+  Rozszerz `PluginHookChannelSenderContext` lub `PluginHookChannelChatContext`
+  z tej podścieżki o pola specyficzne dla kanału.
+- `runChannelInboundEvent(...)`: wykonuje przyjęcie, klasyfikację, kontrolę wstępną, rozpoznanie,
+  zapis, wysłanie i finalizację jednego przychodzącego zdarzenia platformy.
+- `dispatchChannelInboundReply(...)`: zapisuje i wysyła już
+  złożoną odpowiedź wejściową za pomocą adaptera dostarczania.
 
-Wstrzyknięte środowisko uruchomieniowe wtyczki udostępnia te same wysokopoziomowe helpery pod
-`runtime.channel.inbound.*` dla kanałów dołączonych/natywnych, które już otrzymują
-obiekt środowiska uruchomieniowego.
+Wbudowane/natywne kanały, które już otrzymują wstrzyknięty obiekt środowiska uruchomieniowego Pluginu,
+mogą wywoływać te same funkcje pomocnicze przez `runtime.channel.inbound.*`, zamiast
+bezpośrednio importować tę podścieżkę:
 
 ```ts
 await runtime.channel.inbound.run({
@@ -62,20 +62,22 @@ await runtime.channel.inbound.run({
 });
 ```
 
-Dispatchery zgodności powinny składać dane wejściowe `dispatchChannelInboundReply(...)`
-i utrzymywać dostarczanie platformowe w adapterze dostarczania. Nowe ścieżki wysyłania powinny
-preferować adaptery wiadomości i trwałe helpery wiadomości.
+Przygotuj dane wejściowe `dispatchChannelInboundReply(...)` dla zgodnych wstecznie
+dyspozytorów, które pozostawiają dostarczanie przez platformę w adapterze dostarczania. Nowe ścieżki
+wysyłania powinny zamiast tego używać adapterów wiadomości i funkcji pomocniczych trwałych wiadomości z
+`channel-outbound`.
 
 ## Migracja
 
-Stare aliasy środowiska uruchomieniowego `runtime.channel.turn.*` zostały usunięte. Używaj:
+Aliasy środowiska uruchomieniowego `runtime.channel.turn.*` zostały usunięte. Użyj:
 
-- `runtime.channel.inbound.run(...)` dla surowych zdarzeń przychodzących.
+- `runtime.channel.inbound.run(...)` dla nieprzetworzonych zdarzeń wejściowych.
 - `runtime.channel.inbound.dispatchReply(...)` dla złożonych kontekstów odpowiedzi.
-- `runtime.channel.inbound.buildContext(...)` dla ładunków kontekstu przychodzącego.
-- `runtime.channel.inbound.runPreparedReply(...)` tylko dla należących do kanału przygotowanych
-  ścieżek wysyłki, które już składają własne domknięcie wysyłki.
+- `runtime.channel.inbound.buildContext(...)` dla ładunków kontekstu wejściowego.
+- `runtime.channel.inbound.runPreparedReply(...)`, przestarzałe, tylko dla
+  należących do kanału ścieżek wysyłania przygotowanych odpowiedzi, które już tworzą własne
+  domknięcie wysyłające.
 
-Nowy kod wtyczki nie powinien wprowadzać interfejsów API kanału nazwanych `turn`. Słownictwo tur modelu lub
-agenta trzymaj w kodzie agenta/dostawcy; wtyczki kanałów używają terminów dotyczących danych przychodzących,
+Nowy kod Pluginu nie powinien wprowadzać interfejsów API kanałów z `turn` w nazwie. Terminologię dotyczącą przebiegu modelu lub
+agenta należy zachować w kodzie agenta/dostawcy; Pluginy kanałów używają terminów dotyczących danych wejściowych,
 wiadomości, dostarczania i odpowiedzi.

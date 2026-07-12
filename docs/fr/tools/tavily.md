@@ -1,16 +1,15 @@
 ---
 read_when:
-    - Vous souhaitez utiliser la recherche Web via Tavily
+    - Vous souhaitez utiliser la recherche web propulsée par Tavily
     - Vous avez besoin d’une clé API Tavily
-    - Vous souhaitez utiliser Tavily comme fournisseur de web_search
+    - Vous souhaitez utiliser Tavily comme fournisseur pour `web_search`
     - Vous souhaitez extraire du contenu à partir d’URL
 summary: Outils de recherche et d’extraction Tavily
 title: Tavily
 x-i18n:
-    generated_at: "2026-07-12T15:56:23Z"
+    generated_at: "2026-07-12T03:11:09Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 9a61351872eb8aecb0b3ada9b573ee8d3db1dcec3d7bd74074446fbe9dc1f274
     source_path: tools/tavily.md
@@ -20,20 +19,20 @@ x-i18n:
 [Tavily](https://tavily.com) est une API de recherche conçue pour les applications d’IA. OpenClaw l’expose de deux manières :
 
 - comme fournisseur `web_search` pour l’outil de recherche générique
-- sous forme d’outils de Plugin explicites : `tavily_search` et `tavily_extract`
+- comme outils explicites du Plugin : `tavily_search` et `tavily_extract`
 
-Tavily renvoie des résultats structurés optimisés pour être exploités par les LLM, avec une profondeur de recherche configurable, un filtrage par sujet, des filtres de domaines, des résumés de réponses générés par l’IA et l’extraction de contenu à partir d’URL, y compris les pages rendues en JavaScript.
+Tavily renvoie des résultats structurés optimisés pour être exploités par les LLM, avec une profondeur de recherche configurable, un filtrage par sujet, des filtres de domaines, des résumés de réponses générés par l’IA et l’extraction de contenu à partir d’URL (y compris les pages rendues en JavaScript).
 
-| Propriété      | Valeur                                                                                                              |
-| -------------- | ------------------------------------------------------------------------------------------------------------------- |
-| Identifiant du Plugin | `tavily`                                                                                                     |
-| Paquet         | `@openclaw/tavily-plugin`                                                                                           |
-| Authentification | variable d’environnement `TAVILY_API_KEY` ou option de configuration `apiKey`                                    |
-| URL de base    | `https://api.tavily.com` (par défaut) ; variable d’environnement `TAVILY_BASE_URL` ou option `baseUrl` pour la remplacer |
-| Délais d’expiration | 30 s pour la recherche, 60 s pour l’extraction (par défaut)                                                    |
-| Outils         | `tavily_search`, `tavily_extract`                                                                                   |
+| Propriété     | Valeur                                                                                                      |
+| ------------- | ----------------------------------------------------------------------------------------------------------- |
+| ID du Plugin  | `tavily`                                                                                                    |
+| Paquet        | `@openclaw/tavily-plugin`                                                                                   |
+| Authentification | variable d’environnement `TAVILY_API_KEY` ou configuration `apiKey`                                     |
+| URL de base   | `https://api.tavily.com` (par défaut) ; variable d’environnement `TAVILY_BASE_URL` ou configuration `baseUrl` pour la remplacer |
+| Délais d’expiration | 30 s pour la recherche, 60 s pour l’extraction (par défaut)                                          |
+| Outils        | `tavily_search`, `tavily_extract`                                                                           |
 
-## Bien démarrer
+## Prise en main
 
 <Steps>
   <Step title="Installer le Plugin">
@@ -70,72 +69,72 @@ Tavily renvoie des résultats structurés optimisés pour être exploités par l
     }
     ```
   </Step>
-  <Step title="Vérifier l’exécution de la recherche">
-    Déclenchez une recherche `web_search` depuis n’importe quel agent ou appelez directement `tavily_search`.
+  <Step title="Vérifier l’exécution des recherches">
+    Déclenchez une recherche `web_search` depuis n’importe quel agent, ou appelez directement `tavily_search`.
   </Step>
 </Steps>
 
 <Tip>
-La sélection de Tavily lors de l’intégration initiale ou avec `openclaw configure --section web` installe et active le Plugin Tavily officiel si nécessaire.
+La sélection de Tavily lors de l’intégration ou dans `openclaw configure --section web` installe et active le Plugin Tavily officiel si nécessaire.
 </Tip>
 
 ## Référence des outils
 
 ### `tavily_search`
 
-Utilisez cet outil lorsque vous souhaitez disposer des paramètres de recherche propres à Tavily plutôt que de l’outil générique `web_search`.
+Utilisez cet outil lorsque vous souhaitez disposer des options de recherche propres à Tavily plutôt que de l’outil générique `web_search`.
 
-| Paramètre         | Type                | Contraintes / valeur par défaut             | Description                                                   |
-| ----------------- | ------------------- | ------------------------------------------- | ------------------------------------------------------------- |
-| `query`           | chaîne de caractères | requis                                      | Chaîne de requête de recherche.                               |
-| `search_depth`    | énumération         | `basic` (par défaut), `advanced`            | `advanced` est plus lent, mais offre une meilleure pertinence. |
-| `topic`           | énumération         | `general` (par défaut), `news`, `finance`   | Filtre selon la catégorie de sujet.                           |
-| `max_results`     | entier              | 1-20, valeur par défaut : `5`               | Nombre de résultats.                                          |
-| `include_answer`  | booléen             | valeur par défaut : `false`                 | Inclut un résumé de réponse généré par l’IA de Tavily.         |
-| `time_range`      | énumération         | `day`, `week`, `month`, `year`              | Filtre les résultats selon leur récence.                      |
-| `include_domains` | tableau de chaînes  | (aucun)                                     | Inclut uniquement les résultats provenant de ces domaines.    |
-| `exclude_domains` | tableau de chaînes  | (aucun)                                     | Exclut les résultats provenant de ces domaines.               |
+| Paramètre         | Type                | Contraintes / valeur par défaut         | Description                                                   |
+| ----------------- | ------------------- | --------------------------------------- | ------------------------------------------------------------- |
+| `query`           | chaîne de caractères | obligatoire                             | Chaîne de la requête de recherche.                            |
+| `search_depth`    | énumération         | `basic` (par défaut), `advanced`        | `advanced` est plus lent, mais offre une meilleure pertinence. |
+| `topic`           | énumération         | `general` (par défaut), `news`, `finance` | Filtre par famille de sujets.                               |
+| `max_results`     | entier              | 1 à 20, `5` par défaut                  | Nombre de résultats.                                          |
+| `include_answer`  | booléen             | `false` par défaut                      | Inclut un résumé de réponse généré par l’IA de Tavily.         |
+| `time_range`      | énumération         | `day`, `week`, `month`, `year`          | Filtre les résultats selon leur récence.                      |
+| `include_domains` | tableau de chaînes  | (aucun)                                 | Inclut uniquement les résultats provenant de ces domaines.    |
+| `exclude_domains` | tableau de chaînes  | (aucun)                                 | Exclut les résultats provenant de ces domaines.               |
 
-Compromis liés à la profondeur de recherche :
+Compromis lié à la profondeur de recherche :
 
-| Profondeur | Vitesse     | Pertinence | Idéal pour                                      |
-| ---------- | ----------- | ---------- | ----------------------------------------------- |
-| `basic`    | Plus rapide | Élevée     | Requêtes générales (par défaut).                |
-| `advanced` | Plus lent   | Maximale   | Recherches précises et vérification de faits.   |
+| Profondeur | Vitesse     | Pertinence | Idéal pour                                       |
+| ---------- | ----------- | ---------- | ------------------------------------------------ |
+| `basic`    | Plus rapide | Élevée     | Requêtes générales (par défaut).                 |
+| `advanced` | Plus lent   | Maximale   | Recherches de précision et vérification de faits. |
 
 ### `tavily_extract`
 
-Utilisez cet outil pour extraire du contenu épuré à partir d’une ou de plusieurs URL. Il prend en charge les pages rendues en JavaScript et le découpage axé sur une requête pour une extraction ciblée.
+Utilisez cet outil pour extraire du contenu épuré à partir d’une ou de plusieurs URL. Il prend en charge les pages rendues en JavaScript et le découpage ciblé selon une requête pour une extraction précise.
 
-| Paramètre           | Type               | Contraintes / valeur par défaut       | Description                                                               |
-| ------------------- | ------------------ | ------------------------------------- | ------------------------------------------------------------------------- |
-| `urls`              | tableau de chaînes | requis, 1-20                          | URL dont extraire le contenu.                                             |
-| `query`             | chaîne de caractères | (facultatif)                        | Reclasse les segments extraits selon leur pertinence par rapport à cette requête. |
-| `extract_depth`     | énumération        | `basic` (par défaut), `advanced`      | Utilisez `advanced` pour les pages riches en JS, les SPA ou les tableaux dynamiques. |
-| `chunks_per_source` | entier             | 1-5 ; **nécessite `query`**           | Nombre de segments renvoyés par URL. Génère une erreur si défini sans `query`. |
-| `include_images`    | booléen            | valeur par défaut : `false`           | Inclut les URL des images dans les résultats.                             |
+| Paramètre           | Type                | Contraintes / valeur par défaut | Description                                                              |
+| ------------------- | ------------------- | ------------------------------- | ------------------------------------------------------------------------ |
+| `urls`              | tableau de chaînes  | obligatoire, 1 à 20             | URL dont le contenu doit être extrait.                                   |
+| `query`             | chaîne de caractères | (facultatif)                     | Reclasse les fragments extraits selon leur pertinence pour cette requête. |
+| `extract_depth`     | énumération         | `basic` (par défaut), `advanced` | Utilisez `advanced` pour les pages riches en JS, les SPA ou les tableaux dynamiques. |
+| `chunks_per_source` | entier              | 1 à 5 ; **nécessite `query`**   | Nombre de fragments renvoyés par URL. Génère une erreur s’il est défini sans `query`. |
+| `include_images`    | booléen             | `false` par défaut              | Inclut les URL des images dans les résultats.                            |
 
-Compromis liés à la profondeur d’extraction :
+Compromis lié à la profondeur d’extraction :
 
 | Profondeur | Quand l’utiliser                                      |
 | ---------- | ----------------------------------------------------- |
 | `basic`    | Pages simples. Essayez d’abord cette option.          |
-| `advanced` | SPA rendues en JS, contenu dynamique, tableaux.       |
+| `advanced` | SPA rendues en JS, contenu dynamique et tableaux.     |
 
 <Tip>
-Répartissez les longues listes d’URL entre plusieurs appels à `tavily_extract` (20 au maximum par requête). Utilisez `query` avec `chunks_per_source` pour obtenir uniquement le contenu pertinent au lieu des pages complètes.
+Répartissez les longues listes d’URL entre plusieurs appels à `tavily_extract` (20 au maximum par requête). Utilisez `query` avec `chunks_per_source` pour obtenir uniquement le contenu pertinent plutôt que des pages complètes.
 </Tip>
 
 ## Choisir le bon outil
 
-| Besoin                                              | Outil             |
-| --------------------------------------------------- | ----------------- |
-| Recherche web rapide, sans option particulière      | `web_search`      |
-| Recherche avec profondeur, sujet et réponses d’IA   | `tavily_search`   |
-| Extraction de contenu à partir d’URL précises       | `tavily_extract`  |
+| Besoin                                               | Outil             |
+| ---------------------------------------------------- | ----------------- |
+| Recherche web rapide, sans option particulière       | `web_search`      |
+| Recherche avec profondeur, sujet et réponses de l’IA | `tavily_search`   |
+| Extraction du contenu d’URL précises                 | `tavily_extract`  |
 
 <Note>
-L’outil générique `web_search`, avec Tavily comme fournisseur, prend en charge `query` et `count` (jusqu’à 20 résultats). Pour utiliser les paramètres propres à Tavily (`search_depth`, `topic`, `include_answer`, filtres de domaines, plage temporelle), utilisez plutôt `tavily_search`.
+L’outil générique `web_search` utilisant Tavily comme fournisseur prend en charge `query` et `count` (jusqu’à 20 résultats). Pour les options propres à Tavily (`search_depth`, `topic`, `include_answer`, filtres de domaines et période), utilisez plutôt `tavily_search`.
 </Note>
 
 ## Configuration avancée
@@ -144,35 +143,35 @@ L’outil générique `web_search`, avec Tavily comme fournisseur, prend en char
   <Accordion title="Ordre de résolution de la clé d’API">
     Le client Tavily recherche sa clé d’API dans l’ordre suivant :
 
-    1. `plugins.entries.tavily.config.webSearch.apiKey` (résolu au moyen des SecretRefs).
-    2. `TAVILY_API_KEY` provenant de l’environnement du Gateway.
+    1. `plugins.entries.tavily.config.webSearch.apiKey` (résolue au moyen de SecretRefs).
+    2. `TAVILY_API_KEY` dans l’environnement du Gateway.
 
-    `tavily_search` et `tavily_extract` génèrent tous deux une erreur de configuration si aucun des deux n’est présent.
+    `tavily_search` et `tavily_extract` génèrent tous deux une erreur de configuration si aucune des deux n’est présente.
 
   </Accordion>
 
   <Accordion title="URL de base personnalisée">
-    Remplacez `plugins.entries.tavily.config.webSearch.baseUrl` ou définissez `TAVILY_BASE_URL` si vous faites passer Tavily par un proxy. La configuration est prioritaire sur la variable d’environnement. La valeur par défaut est `https://api.tavily.com`.
+    Remplacez `plugins.entries.tavily.config.webSearch.baseUrl`, ou définissez `TAVILY_BASE_URL`, si vous faites transiter Tavily par un proxy. La configuration est prioritaire sur la variable d’environnement. La valeur par défaut est `https://api.tavily.com`.
   </Accordion>
 
   <Accordion title="`chunks_per_source` nécessite `query`">
-    `tavily_extract` rejette les appels qui transmettent `chunks_per_source` sans `query`. Tavily classe les segments selon leur pertinence par rapport à la requête ; ce paramètre n’a donc aucun sens sans requête.
+    `tavily_extract` rejette les appels qui transmettent `chunks_per_source` sans `query`. Tavily classe les fragments selon leur pertinence par rapport à la requête ; ce paramètre n’a donc aucun sens sans requête.
   </Accordion>
 </AccordionGroup>
 
-## Pages connexes
+## Rubriques connexes
 
 <CardGroup cols={2}>
   <Card title="Présentation de la recherche web" href="/fr/tools/web" icon="magnifying-glass">
     Tous les fournisseurs et toutes les règles de détection automatique.
   </Card>
   <Card title="Firecrawl" href="/fr/tools/firecrawl" icon="fire">
-    Recherche et extraction web avec extraction de contenu.
+    Recherche et collecte de données avec extraction de contenu.
   </Card>
   <Card title="Recherche Exa" href="/fr/tools/exa-search" icon="binoculars">
     Recherche neuronale avec extraction de contenu.
   </Card>
   <Card title="Configuration" href="/fr/gateway/configuration" icon="gear">
-    Schéma de configuration complet pour les entrées de Plugin et le routage des outils.
+    Schéma de configuration complet des entrées de Plugins et du routage des outils.
   </Card>
 </CardGroup>

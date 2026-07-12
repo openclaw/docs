@@ -1,30 +1,30 @@
 ---
 read_when:
-    - Anda ingin cepat memeriksa kesehatan Gateway yang sedang berjalan
-summary: Referensi CLI untuk `openclaw health` (cuplikan kesehatan Gateway melalui RPC)
+    - Anda ingin memeriksa kondisi Gateway yang sedang berjalan dengan cepat
+summary: Referensi CLI untuk `openclaw health` (snapshot kesehatan Gateway melalui RPC)
 title: Kesehatan
 x-i18n:
-    generated_at: "2026-05-10T19:28:29Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:04:39Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 26be7bbbf75c2eca1213fe145fdeeab6fee96798dff457278ac69a20145bf75d
+    source_hash: a26ce5ade9ab56c9751c3dde814c38a1e01e74d91c2fd57e56d3c44ca529d0d8
     source_path: cli/health.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw health`
 
-Mengambil status kesehatan dari Gateway yang sedang berjalan.
+Ambil cuplikan kesehatan dari Gateway yang sedang berjalan melalui RPC WebSocket (tanpa soket saluran langsung dari CLI).
 
 ## Opsi
 
-| Flag             | Bawaan | Deskripsi                                                        |
-| ---------------- | ------- | ------------------------------------------------------------------ |
-| `--json`         | `false` | Mencetak JSON yang dapat dibaca mesin, bukan teks.                       |
-| `--timeout <ms>` | `10000` | Tenggat waktu koneksi dalam milidetik.                                |
-| `--verbose`      | `false` | Pencatatan log verbose. Memaksa probe langsung dan memperluas output per agen. |
-| `--debug`        | `false` | Alias untuk `--verbose`.                                             |
+| Flag             | Default | Deskripsi                                                                                         |
+| ---------------- | ------- | ------------------------------------------------------------------------------------------------- |
+| `--json`         | `false` | Cetak JSON yang dapat dibaca mesin, bukan teks.                                                    |
+| `--timeout <ms>` | `10000` | Batas waktu koneksi dalam milidetik.                                                               |
+| `--verbose`      | `false` | Memaksa pemeriksaan langsung dan memperluas keluaran untuk semua akun dan agen yang dikonfigurasi. |
+| `--debug`        | `false` | Alias untuk `--verbose`.                                                                           |
 
 Contoh:
 
@@ -36,16 +36,14 @@ openclaw health --verbose
 openclaw health --debug
 ```
 
-Catatan:
+## Perilaku
 
-- `openclaw health` bawaan meminta snapshot kesehatan dari gateway yang sedang berjalan. Ketika
-  gateway sudah memiliki snapshot cache yang masih segar, perintah ini dapat mengembalikan payload cache tersebut dan
-  menyegarkan di latar belakang.
-- `--verbose` memaksa probe langsung, mencetak detail koneksi gateway, dan memperluas
-  output yang dapat dibaca manusia di semua akun dan agen yang dikonfigurasi.
-- Output mencakup penyimpanan sesi per agen ketika beberapa agen dikonfigurasi.
+- Tanpa `--verbose`, Gateway dapat mengembalikan cuplikan yang disimpan dalam cache (tetap baru hingga 60 detik dan tidak berubah dari status runtime saluran langsung), lalu memperbaruinya di latar belakang untuk pemanggil berikutnya.
+- `--verbose` memaksa pemeriksaan langsung (pemeriksaan akun per saluran), mencetak detail koneksi Gateway, dan memperluas keluaran yang dapat dibaca manusia untuk semua akun dan agen yang dikonfigurasi, bukan hanya agen default.
+- `--json` selalu mengembalikan cuplikan lengkap: saluran, pemeriksaan per akun, status pemuatan plugin, status karantina mesin konteks, status cache harga model, kesehatan loop peristiwa, dan penyimpanan sesi per agen.
 
 ## Terkait
 
 - [Referensi CLI](/id/cli)
+- [`openclaw status`](/id/cli/status) — diagnosis lokal dan pemeriksaan saluran tanpa cuplikan kesehatan lengkap
 - [Kesehatan Gateway](/id/gateway/health)

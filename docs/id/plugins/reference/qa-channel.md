@@ -1,30 +1,30 @@
 ---
 read_when:
-    - Anda sedang menginstal, mengonfigurasi, atau mengaudit Plugin qa-channel
-summary: Menambahkan permukaan QA Channel untuk mengirim dan menerima pesan OpenClaw.
+    - Anda sedang memasang, mengonfigurasi, atau mengaudit plugin qa-channel
+summary: Menambahkan antarmuka Kanal QA untuk mengirim dan menerima pesan OpenClaw.
 title: Plugin Saluran QA
 x-i18n:
-    generated_at: "2026-05-02T20:55:54Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:29:54Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: 3c6f0aec62fb014895d11fa46b75626d929c326eb2ded463188e4338f0fdae5d
     source_path: plugins/reference/qa-channel.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# Plugin QA Channel
+# Plugin Saluran QA
 
-Menambahkan antarmuka QA Channel untuk mengirim dan menerima pesan OpenClaw.
+Menambahkan antarmuka Saluran QA untuk mengirim dan menerima pesan OpenClaw.
 
 ## Distribusi
 
 - Paket: `@openclaw/qa-channel`
-- Rute pemasangan: hanya checkout sumber
+- Jalur instalasi: hanya checkout sumber
 
 ## Antarmuka
 
-channels: qa-channel
+saluran: qa-channel
 
 ## Dokumentasi terkait
 

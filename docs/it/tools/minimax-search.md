@@ -1,34 +1,32 @@
 ---
 read_when:
-    - Vuoi usare MiniMax per web_search
+    - Vuoi usare MiniMax per `web_search`
     - È necessaria una chiave MiniMax Token Plan o un token OAuth
-    - Vuoi indicazioni sull'host di ricerca CN/globale MiniMax
-summary: MiniMax Search tramite l'API di ricerca di Token Plan
+    - Vuoi indicazioni sull'host di ricerca MiniMax per la Cina o a livello globale
+summary: Ricerca MiniMax tramite l'API di ricerca del piano Token
 title: Ricerca MiniMax
 x-i18n:
-    generated_at: "2026-05-11T20:38:48Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:34:10Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d0a2dfe4261ab4bc5d234cedf9dff41fbbfbbad8914c6c9c43bc76e8694d99d4
+    source_hash: e96d1a5fe20847c5fd4476fa6aab8366910b81833c1e42e125d231c4ab003e15
     source_path: tools/minimax-search.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw supporta MiniMax come provider `web_search` tramite l'API di ricerca MiniMax
-Token Plan. Restituisce risultati di ricerca strutturati con titoli, URL,
-frammenti e query correlate.
+OpenClaw supporta MiniMax come provider `web_search` tramite l'API di ricerca del Token Plan di MiniMax. Restituisce risultati di ricerca strutturati con titoli, URL, estratti e query correlate.
 
-## Ottieni una credenziale Token Plan
+## Ottenere una credenziale Token Plan
 
 <Steps>
-  <Step title="Crea una chiave">
-    Crea o copia una chiave MiniMax Token Plan da
-    [MiniMax Platform](https://platform.minimax.io/user-center/basic-information/interface-key).
+  <Step title="Creare una chiave">
+    Crea o copia una chiave MiniMax Token Plan dalla
+    [piattaforma MiniMax](https://platform.minimax.io/user-center/basic-information/interface-key).
     Le configurazioni OAuth possono invece riutilizzare `MINIMAX_OAUTH_TOKEN`.
   </Step>
-  <Step title="Archivia la chiave">
-    Imposta `MINIMAX_CODE_PLAN_KEY` nell'ambiente del Gateway oppure configura tramite:
+  <Step title="Archiviare la chiave">
+    Imposta `MINIMAX_CODE_PLAN_KEY` nell'ambiente del Gateway oppure esegui la configurazione tramite:
 
     ```bash
     openclaw configure --section web
@@ -38,9 +36,10 @@ frammenti e query correlate.
 </Steps>
 
 OpenClaw accetta anche `MINIMAX_CODING_API_KEY`, `MINIMAX_OAUTH_TOKEN` e
-`MINIMAX_API_KEY` come alias env. `MINIMAX_API_KEY` deve puntare a una
-credenziale Token Plan abilitata alla ricerca; le normali chiavi API per i modelli MiniMax potrebbero non
-essere accettate dall'endpoint di ricerca Token Plan.
+`MINIMAX_API_KEY` come alias di variabili d'ambiente, verificati in quest'ordine dopo
+`MINIMAX_CODE_PLAN_KEY`. `MINIMAX_API_KEY` deve fare riferimento a una credenziale
+Token Plan abilitata per la ricerca; le normali chiavi API dei modelli MiniMax potrebbero
+non essere accettate dall'endpoint di ricerca del Token Plan.
 
 ## Configurazione
 
@@ -51,8 +50,8 @@ essere accettate dall'endpoint di ricerca Token Plan.
       minimax: {
         config: {
           webSearch: {
-            apiKey: "sk-cp-...", // optional if a MiniMax Token Plan env var is set
-            region: "global", // or "cn"
+            apiKey: "sk-cp-...", // facoltativo se è impostata una variabile d'ambiente MiniMax Token Plan
+            region: "global", // oppure "cn"
           },
         },
       },
@@ -69,42 +68,43 @@ essere accettate dall'endpoint di ricerca Token Plan.
 ```
 
 **Alternativa tramite ambiente:** imposta `MINIMAX_CODE_PLAN_KEY`, `MINIMAX_CODING_API_KEY`,
-`MINIMAX_OAUTH_TOKEN` o `MINIMAX_API_KEY` nell'ambiente del Gateway.
-Per un'installazione gateway, inseriscilo in `~/.openclaw/.env`.
+`MINIMAX_OAUTH_TOKEN` oppure `MINIMAX_API_KEY` nell'ambiente del Gateway.
+Per un'installazione del Gateway, inseriscila in `~/.openclaw/.env`.
 
 ## Selezione della regione
 
-MiniMax Search usa questi endpoint:
+La ricerca MiniMax utilizza questi endpoint:
 
 - Globale: `https://api.minimax.io/v1/coding_plan/search`
-- CN: `https://api.minimaxi.com/v1/coding_plan/search`
+- Cina: `https://api.minimaxi.com/v1/coding_plan/search`
 
-Se `plugins.entries.minimax.config.webSearch.region` non è impostato, OpenClaw risolve
-la regione in questo ordine:
+Se `plugins.entries.minimax.config.webSearch.region` non è impostato, OpenClaw determina
+la regione nel seguente ordine:
 
 1. `tools.web.search.minimax.region` / `webSearch.region` di proprietà del plugin
 2. `MINIMAX_API_HOST`
 3. `models.providers.minimax.baseUrl`
 4. `models.providers.minimax-portal.baseUrl`
 
-Ciò significa che l'onboarding CN o `MINIMAX_API_HOST=https://api.minimaxi.com/...`
-mantiene automaticamente anche MiniMax Search sull'host CN.
+Ciò significa che l'onboarding per la Cina o `MINIMAX_API_HOST=https://api.minimaxi.com/...`
+mantengono automaticamente anche la ricerca MiniMax sull'host cinese.
 
 Anche quando hai autenticato MiniMax tramite il percorso OAuth `minimax-portal`,
-la ricerca web viene comunque registrata con l'ID provider `minimax`; l'URL di base del provider OAuth
-viene usato come indicazione della regione per la selezione dell'host CN/globale e `MINIMAX_OAUTH_TOKEN`
-può soddisfare la credenziale bearer di MiniMax Search.
+la ricerca web viene comunque registrata con l'ID provider `minimax`; l'URL di base
+del provider OAuth viene utilizzato come indicazione della regione per selezionare
+l'host cinese o globale e `MINIMAX_OAUTH_TOKEN` può fornire la credenziale bearer
+per la ricerca MiniMax.
 
 ## Parametri supportati
 
-| Parametro | Tipo    | Vincoli | Descrizione                                                                 |
-| --------- | ------- | ----------- | --------------------------------------------------------------------------- |
-| `query`   | string  | required    | Stringa della query di ricerca.                                                        |
-| `count`   | integer | 1-10        | Numero di risultati da restituire. OpenClaw riduce l'elenco restituito a questa dimensione. |
+| Parametro | Tipo    | Vincoli                    | Descrizione                                                                    |
+| --------- | ------- | -------------------------- | ------------------------------------------------------------------------------ |
+| `query`   | stringa | obbligatorio               | Stringa della query di ricerca.                                                |
+| `count`   | intero  | 1-10, valore predefinito 5 | Numero di risultati da restituire. OpenClaw limita l'elenco restituito a questa dimensione. |
 
 I filtri specifici del provider non sono attualmente supportati.
 
-## Correlati
+## Risorse correlate
 
-- [Panoramica di Web Search](/it/tools/web) -- tutti i provider e il rilevamento automatico
-- [MiniMax](/it/providers/minimax) -- configurazione di modello, immagine, voce e autenticazione
+- [Panoramica della ricerca web](/it/tools/web) -- tutti i provider e il rilevamento automatico
+- [MiniMax](/it/providers/minimax) -- configurazione di modelli, immagini, sintesi vocale e autenticazione

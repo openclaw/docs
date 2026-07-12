@@ -1,20 +1,20 @@
 ---
 summary: إعادة التوجيه إلى /cli/message
-title: الاستطلاعات
+title: استطلاعات الرأي
 x-i18n:
-    generated_at: "2026-04-24T07:29:15Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: a277212ed680b7aeb9153d003bc084d2d0c918dc53f2f469c72f7fe5a881cfae
-    source_path: automation/poll.md
-    workflow: 15
+    generated_at: "2026-07-12T05:32:12Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 071617c5fe910ad8a5d4a03416876ba3092d4fc67d5c206570a0456469ef73a9
+    source_path: automation/poll.md
+    workflow: 16
 ---
 
-انتقلت هذه الصفحة إلى [أداة الرسائل](/ar/cli/message). راجع [أداة الرسائل](/ar/cli/message) للاطلاع على وثائق الاستطلاعات.
+نُقلت هذه الصفحة. توجد وثائق الاستطلاعات، بما فيها خيارات `openclaw message poll` والحدود الخاصة بكل قناة، في [أداة الرسائل](/ar/cli/message).
 
 ## ذو صلة
 
-- [Webhook](/ar/automation/cron-jobs)
+- [Webhooks](/ar/automation/cron-jobs#webhooks)
 - [المهام المجدولة](/ar/automation/cron-jobs)
 - [مهام الخلفية](/ar/automation/tasks)

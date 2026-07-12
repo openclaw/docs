@@ -5,10 +5,9 @@ read_when:
 summary: Configuração do Vercel AI Gateway (autenticação + seleção de modelo)
 title: Gateway de IA da Vercel
 x-i18n:
-    generated_at: "2026-07-12T15:41:57Z"
+    generated_at: "2026-07-12T00:19:31Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: c1e4776604491900a914e75caebfd7e27a81e9f859213f5bd5b25582a923d92a
     source_path: providers/vercel-ai-gateway.md
@@ -18,13 +17,13 @@ x-i18n:
 O [Vercel AI Gateway](https://vercel.com/ai-gateway) fornece uma API unificada para
 acessar centenas de modelos por meio de um único endpoint.
 
-| Propriedade       | Valor                                      |
-| ----------------- | ------------------------------------------ |
-| Provedor          | `vercel-ai-gateway`                        |
-| Pacote            | `@openclaw/vercel-ai-gateway-provider`     |
-| Autenticação      | `AI_GATEWAY_API_KEY`                       |
-| API               | Compatível com Anthropic Messages          |
-| URL base          | `https://ai-gateway.vercel.sh`             |
+| Propriedade       | Valor                                  |
+| ----------------- | -------------------------------------- |
+| Provedor          | `vercel-ai-gateway`                    |
+| Pacote            | `@openclaw/vercel-ai-gateway-provider` |
+| Autenticação      | `AI_GATEWAY_API_KEY`                   |
+| API               | Compatível com Anthropic Messages      |
+| URL base          | `https://ai-gateway.vercel.sh`         |
 | Catálogo de modelos | Descoberto automaticamente via `/v1/models` |
 
 <Tip>
@@ -38,7 +37,7 @@ como `vercel-ai-gateway/openai/gpt-5.5` e
 ## Primeiros passos
 
 <Steps>
-  <Step title="Instalar o Plugin">
+  <Step title="Instalar o plugin">
     ```bash
     openclaw plugins install @openclaw/vercel-ai-gateway-provider
     ```
@@ -79,13 +78,13 @@ openclaw onboard --non-interactive \
 
 O OpenClaw normaliza referências abreviadas de modelos Claude em tempo de execução:
 
-| Entrada abreviada                    | Referência normalizada do modelo              |
-| ------------------------------------ | --------------------------------------------- |
-| `vercel-ai-gateway/claude-opus-4.6`  | `vercel-ai-gateway/anthropic/claude-opus-4.6` |
-| `vercel-ai-gateway/opus-4.6`         | `vercel-ai-gateway/anthropic/claude-opus-4-6` |
+| Entrada abreviada                    | Referência normalizada do modelo               |
+| ------------------------------------ | ---------------------------------------------- |
+| `vercel-ai-gateway/claude-opus-4.6` | `vercel-ai-gateway/anthropic/claude-opus-4.6` |
+| `vercel-ai-gateway/opus-4.6`        | `vercel-ai-gateway/anthropic/claude-opus-4-6` |
 
 <Tip>
-Use qualquer uma das formas na sua configuração; o OpenClaw resolve automaticamente
+Use qualquer uma das formas em sua configuração; o OpenClaw resolve automaticamente
 a referência canônica `anthropic/...`.
 </Tip>
 
@@ -113,17 +112,17 @@ a referência canônica `anthropic/...`.
     MoonshotAI. Uma única `AI_GATEWAY_API_KEY` autentica todos os provedores upstream.
   </Accordion>
   <Accordion title="Níveis de raciocínio">
-    As opções de `/think` seguem o prefixo do modelo upstream quando o OpenClaw o reconhece.
-    `vercel-ai-gateway/anthropic/...` usa o perfil de raciocínio do Claude,
+    As opções de `/think` seguem o prefixo do modelo upstream quando o OpenClaw o
+    reconhece. `vercel-ai-gateway/anthropic/...` usa o perfil de raciocínio do Claude,
     incluindo o padrão adaptativo para modelos Claude 4.6. Referências confiáveis
-    `vercel-ai-gateway/openai/...` (`gpt-5.2` e posteriores, além de variantes
-    Codex até `gpt-5.1-codex`) disponibilizam `/think xhigh`. Outras referências com
-    namespace mantêm os níveis padrão de raciocínio, a menos que os metadados do catálogo
-    declarem níveis adicionais.
+    `vercel-ai-gateway/openai/...` (`gpt-5.2` e posteriores, além de variantes do Codex
+    até `gpt-5.1-codex`) disponibilizam `/think xhigh`. Outras referências com namespace
+    mantêm os níveis de raciocínio padrão, a menos que os metadados do catálogo
+    indiquem níveis adicionais.
   </Accordion>
 </AccordionGroup>
 
-## Relacionado
+## Relacionados
 
 <CardGroup cols={2}>
   <Card title="Seleção de modelos" href="/pt-BR/concepts/model-providers" icon="layers">

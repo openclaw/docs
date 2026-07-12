@@ -1,13 +1,13 @@
 ---
 read_when:
-    - 你需要网络架构 + 安全概览
-    - 你正在调试本地访问与 tailnet 访问或配对
+    - 你需要了解网络架构和安全概览
+    - 你正在调试本地访问与 tailnet 访问或配对问题
     - 你需要网络文档的规范列表
-summary: 网络中心：Gateway 网关界面、配对、设备发现和安全
+summary: 网络枢纽：Gateway 网关界面、配对、设备发现和安全性
 title: 网络
 x-i18n:
-    generated_at: "2026-07-05T11:26:35Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T20:41:29Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 9751bb0fe71009455b243b109ef7ef4eda08d58f940f7dcef305800a5ed89586
@@ -15,66 +15,65 @@ x-i18n:
     workflow: 16
 ---
 
-This hub links the core docs for how OpenClaw connects, pairs, and secures
-devices across localhost, LAN, and tailnet.
+此中心页汇总了 OpenClaw 如何在 localhost、LAN 和 tailnet 中连接、配对设备并确保其安全的核心文档。
 
-## Core model
+## 核心模型
 
-Most operations flow through the Gateway (`openclaw gateway`), a single long-running process that owns channel connections and the WebSocket control plane.
+大多数操作都通过 Gateway 网关（`openclaw gateway`）进行。它是一个长期运行的单一进程，负责管理渠道连接和 WebSocket 控制平面。
 
-- **Loopback first**: the Gateway WS defaults to `ws://127.0.0.1:18789`.
-  Non-loopback binds refuse to start without a valid gateway auth path:
-  shared-secret token/password auth, or a correctly configured non-loopback
-  `trusted-proxy` deployment.
-- **One Gateway per host** is recommended. For isolation, run multiple gateways with isolated profiles and ports ([Multiple Gateways](/zh-CN/gateway/multiple-gateways)).
-- **Canvas host** is served on the same port as the Gateway (`/__openclaw__/canvas/`, `/__openclaw__/a2ui/`), protected by Gateway auth when bound beyond loopback.
-- **Remote access** is typically an SSH tunnel or Tailscale VPN ([Remote Access](/zh-CN/gateway/remote)).
+- **优先使用回环地址**：Gateway 网关的 WS 默认为 `ws://127.0.0.1:18789`。
+  如果没有有效的 Gateway 网关身份验证路径，非回环地址绑定将拒绝启动：
+  共享密钥令牌/密码身份验证，或正确配置的非回环
+  `trusted-proxy` 部署。
+- 建议**每台主机运行一个 Gateway 网关**。如需隔离，请使用相互隔离的配置文件和端口运行多个 Gateway 网关（[多个 Gateway 网关](/zh-CN/gateway/multiple-gateways)）。
+- **Canvas 主机**通过与 Gateway 网关相同的端口提供服务（`/__openclaw__/canvas/`、`/__openclaw__/a2ui/`）；绑定到回环地址以外的地址时，由 Gateway 网关身份验证提供保护。
+- **远程访问**通常使用 SSH 隧道或 Tailscale VPN（[远程访问](/zh-CN/gateway/remote)）。
 
-Key references:
+主要参考资料：
 
-- [Gateway architecture](/zh-CN/concepts/architecture)
-- [Gateway protocol](/zh-CN/gateway/protocol)
-- [Gateway runbook](/zh-CN/gateway)
-- [Web surfaces + bind modes](/zh-CN/web)
+- [Gateway 网关架构](/zh-CN/concepts/architecture)
+- [Gateway 网关协议](/zh-CN/gateway/protocol)
+- [Gateway 网关运行手册](/zh-CN/gateway)
+- [Web 界面 + 绑定模式](/zh-CN/web)
 
-## Pairing + identity
+## 配对 + 身份
 
-- [Pairing overview (DM + nodes)](/zh-CN/channels/pairing)
-- [Gateway-owned node pairing](/zh-CN/gateway/pairing)
-- [Devices CLI (pairing + token rotation)](/zh-CN/cli/devices)
-- [Pairing CLI (DM approvals)](/zh-CN/cli/pairing)
+- [配对概览（私信 + 节点）](/zh-CN/channels/pairing)
+- [由 Gateway 网关管理的节点配对](/zh-CN/gateway/pairing)
+- [设备 CLI（配对 + 令牌轮换）](/zh-CN/cli/devices)
+- [配对 CLI（私信审批）](/zh-CN/cli/pairing)
 
-Local trust:
+本地信任：
 
-- Direct local loopback connects (no forwarded/proxy headers) can be
-  auto-approved for pairing to keep same-host UX smooth.
-- OpenClaw also has a narrow backend/container-local self-connect path for
-  trusted shared-secret helper flows.
-- Tailnet and LAN clients, including same-host tailnet binds, still require
-  explicit pairing approval.
+- 直接通过 local loopback 连接（不含转发/代理标头）时，可自动批准
+  配对，以确保同一主机上的用户体验流畅。
+- OpenClaw 还提供一条范围有限的后端/容器本地自连接路径，用于
+  受信任的共享密钥辅助流程。
+- Tailnet 和 LAN 客户端（包括绑定到同一主机 tailnet 的客户端）仍然需要
+  明确批准配对。
 
-## Discovery + transports
+## 设备发现 + 传输协议
 
-- [Discovery and transports](/zh-CN/gateway/discovery)
+- [设备发现和传输协议](/zh-CN/gateway/discovery)
 - [Bonjour / mDNS](/zh-CN/gateway/bonjour)
-- [Remote access (SSH)](/zh-CN/gateway/remote)
+- [远程访问（SSH）](/zh-CN/gateway/remote)
 - [Tailscale](/zh-CN/gateway/tailscale)
 
-## Nodes + transports
+## 节点 + 传输协议
 
-- [Nodes overview](/zh-CN/nodes)
-- [Bridge protocol (legacy nodes, historical)](/zh-CN/gateway/bridge-protocol)
-- [Node runbook: iOS](/zh-CN/platforms/ios)
-- [Node runbook: Android](/zh-CN/platforms/android)
+- [节点概览](/zh-CN/nodes)
+- [Bridge protocol（旧版节点，历史参考）](/zh-CN/gateway/bridge-protocol)
+- [节点运行手册：iOS](/zh-CN/platforms/ios)
+- [节点运行手册：Android](/zh-CN/platforms/android)
 
-## Security
+## 安全
 
-- [Security overview](/zh-CN/gateway/security)
-- [Gateway config reference](/zh-CN/gateway/configuration)
-- [Troubleshooting](/zh-CN/gateway/troubleshooting)
+- [安全概览](/zh-CN/gateway/security)
+- [Gateway 网关配置参考](/zh-CN/gateway/configuration)
+- [故障排查](/zh-CN/gateway/troubleshooting)
 - [Doctor](/zh-CN/gateway/doctor)
 
-## Related
+## 相关内容
 
-- [Gateway runbook](/zh-CN/gateway)
-- [Remote access](/zh-CN/gateway/remote)
+- [Gateway 网关运行手册](/zh-CN/gateway)
+- [远程访问](/zh-CN/gateway/remote)

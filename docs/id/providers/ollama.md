@@ -1,100 +1,88 @@
 ---
 read_when:
-    - Anda ingin menjalankan OpenClaw dengan model awan atau lokal melalui Ollama
-    - Anda membutuhkan panduan penyiapan dan konfigurasi Ollama
-    - Anda menginginkan model vision Ollama untuk pemahaman gambar
+    - Anda ingin menjalankan OpenClaw dengan model cloud atau lokal melalui Ollama
+    - Anda memerlukan panduan penyiapan dan konfigurasi Ollama
+    - Anda ingin menggunakan model vision Ollama untuk memahami gambar
 summary: Jalankan OpenClaw dengan Ollama (model cloud dan lokal)
 title: Ollama
 x-i18n:
-    generated_at: "2026-07-03T10:00:52Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:36:30Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 9d91871ef96c3bdc027fe7cfceecae7e1d050913d859e3c6840725002fdf57af
+    source_hash: aaa2ab1cf22b318499ef2a040c9e356bfb1c24be811ae0749cce0090f5978c13
     source_path: providers/ollama.md
     workflow: 16
 ---
 
-OpenClaw terintegrasi dengan API native Ollama (`/api/chat`) untuk model cloud yang dihosting dan server Ollama lokal/self-hosted. Anda dapat menggunakan Ollama dalam tiga mode: `Cloud + Local` melalui host Ollama yang dapat dijangkau, `Cloud only` terhadap `https://ollama.com`, atau `Local only` terhadap host Ollama yang dapat dijangkau.
+OpenClaw berkomunikasi dengan API native Ollama (`/api/chat`), bukan endpoint
+`/v1` yang kompatibel dengan OpenAI. Tiga mode didukung:
 
-OpenClaw juga mendaftarkan `ollama-cloud` sebagai id penyedia terhosting kelas utama untuk
-penggunaan Ollama Cloud langsung. Gunakan ref seperti `ollama-cloud/kimi-k2.5:cloud` ketika Anda
-menginginkan perutean khusus cloud tanpa berbagi id penyedia `ollama` lokal.
+| Mode          | Yang digunakan                                                                     |
+| ------------- | ---------------------------------------------------------------------------------- |
+| Cloud + Lokal | Host Ollama yang dapat dijangkau, yang menyajikan model lokal dan (jika sudah masuk) model `:cloud` |
+| Hanya cloud   | `https://ollama.com` secara langsung, tanpa daemon lokal                           |
+| Hanya lokal   | Host Ollama yang dapat dijangkau, hanya model lokal                                |
 
-Untuk halaman penyiapan khusus cloud saja, lihat [Ollama Cloud](/id/providers/ollama-cloud).
+Untuk penyiapan khusus cloud dengan id penyedia khusus `ollama-cloud`, lihat
+[Ollama Cloud](/id/providers/ollama-cloud). Gunakan referensi `ollama-cloud/<model>` saat
+Anda ingin perutean cloud tetap terpisah dari penyedia `ollama` lokal.
 
 <Warning>
-**Pengguna Ollama jarak jauh**: Jangan gunakan URL kompatibel OpenAI `/v1` (`http://host:11434/v1`) dengan OpenClaw. Ini merusak pemanggilan tool dan model dapat mengeluarkan JSON tool mentah sebagai teks biasa. Gunakan URL API native Ollama sebagai gantinya: `baseUrl: "http://host:11434"` (tanpa `/v1`).
+Jangan gunakan URL `/v1` yang kompatibel dengan OpenAI (`http://host:11434/v1`). URL tersebut merusak pemanggilan alat dan model dapat mengeluarkan JSON pemanggilan alat mentah sebagai teks biasa. Gunakan URL native: `baseUrl: "http://host:11434"` (tanpa `/v1`).
 </Warning>
 
-Konfigurasi penyedia Ollama menggunakan `baseUrl` sebagai kunci kanonis. OpenClaw juga menerima `baseURL` untuk kompatibilitas dengan contoh bergaya SDK OpenAI, tetapi konfigurasi baru sebaiknya menggunakan `baseUrl`.
+Kunci konfigurasi kanonis adalah `baseUrl`. `baseURL` juga diterima untuk
+contoh bergaya OpenAI SDK, tetapi konfigurasi baru sebaiknya menggunakan `baseUrl`.
 
-## Aturan auth
+## Aturan autentikasi
 
 <AccordionGroup>
   <Accordion title="Host lokal dan LAN">
-    Host Ollama lokal dan LAN tidak memerlukan token bearer sungguhan. OpenClaw menggunakan penanda lokal `ollama-local` hanya untuk loopback, jaringan privat, `.local`, dan URL dasar Ollama dengan nama host polos.
+    URL Ollama local loopback, jaringan privat, `.local`, dan nama host polos tidak memerlukan token bearer yang sebenarnya. OpenClaw menggunakan penanda `ollama-local` untuk URL tersebut.
   </Accordion>
   <Accordion title="Host jarak jauh dan Ollama Cloud">
-    Host publik jarak jauh dan Ollama Cloud (`https://ollama.com`) memerlukan kredensial sungguhan melalui `OLLAMA_API_KEY`, profil auth, atau `apiKey` milik penyedia. Untuk penggunaan terhosting langsung, utamakan penyedia `ollama-cloud`.
+    Host publik jarak jauh dan `https://ollama.com` memerlukan kredensial yang sebenarnya: `OLLAMA_API_KEY`, profil autentikasi, atau `apiKey` penyedia. Untuk penggunaan langsung yang dihosting, utamakan penyedia `ollama-cloud`.
   </Accordion>
-  <Accordion title="Id penyedia kustom">
-    Id penyedia kustom yang menetapkan `api: "ollama"` mengikuti aturan yang sama. Misalnya, penyedia `ollama-remote` yang mengarah ke host Ollama LAN privat dapat menggunakan `apiKey: "ollama-local"` dan sub-agen akan menyelesaikan penanda itu melalui hook penyedia Ollama alih-alih memperlakukannya sebagai kredensial yang hilang. Pencarian memori juga dapat menetapkan `agents.defaults.memorySearch.provider` ke id penyedia kustom tersebut agar embedding menggunakan endpoint Ollama yang sesuai.
+  <Accordion title="Id penyedia khusus">
+    Penyedia khusus dengan `api: "ollama"` mengikuti aturan yang sama. Misalnya, penyedia `ollama-remote` yang diarahkan ke host LAN privat dapat menggunakan `apiKey: "ollama-local"`; subagen menyelesaikan penanda tersebut melalui hook penyedia Ollama alih-alih menganggapnya sebagai kredensial yang hilang. `agents.defaults.memorySearch.provider` juga dapat diarahkan ke id penyedia khusus agar embedding menggunakan endpoint Ollama tersebut.
   </Accordion>
-  <Accordion title="Profil auth">
-    `auth-profiles.json` menyimpan kredensial untuk id penyedia. Letakkan pengaturan endpoint (`baseUrl`, `api`, id model, header, timeout) di `models.providers.<id>`. File profil auth datar lama seperti `{ "ollama-windows": { "apiKey": "ollama-local" } }` bukan format runtime; jalankan `openclaw doctor --fix` untuk menulis ulangnya menjadi profil kunci API kanonis `ollama-windows:default` dengan cadangan. `baseUrl` dalam file tersebut adalah gangguan kompatibilitas dan harus dipindahkan ke konfigurasi penyedia.
+  <Accordion title="Profil autentikasi">
+    `auth-profiles.json` menyimpan kredensial untuk suatu id penyedia; letakkan pengaturan endpoint (`baseUrl`, `api`, model, header, batas waktu) di `models.providers.<id>`. Berkas datar lama seperti `{ "ollama-windows": { "apiKey": "ollama-local" } }` bukan format runtime; `openclaw doctor --fix` menulis ulang berkas tersebut menjadi profil kunci API kanonis `ollama-windows:default` beserta cadangannya. Nilai `baseUrl` dalam berkas lama tersebut tidak relevan dan harus dipindahkan ke konfigurasi penyedia.
   </Accordion>
   <Accordion title="Cakupan embedding memori">
-    Ketika Ollama digunakan untuk embedding memori, auth bearer dicakupkan ke host tempat ia dideklarasikan:
+    Autentikasi bearer untuk embedding memori Ollama dibatasi pada host tempat autentikasi tersebut dideklarasikan:
 
-    - Kunci tingkat penyedia hanya dikirim ke host Ollama milik penyedia tersebut.
+    - Kunci tingkat penyedia hanya dikirim ke host penyedia tersebut.
     - `agents.*.memorySearch.remote.apiKey` hanya dikirim ke host embedding jarak jauhnya.
-    - Nilai env `OLLAMA_API_KEY` murni diperlakukan sebagai konvensi Ollama Cloud, tidak dikirim ke host lokal atau self-hosted secara default.
+    - Nilai env `OLLAMA_API_KEY` murni dianggap sebagai konvensi Ollama Cloud dan secara default tidak dikirim ke host lokal/yang dihosting sendiri.
 
   </Accordion>
 </AccordionGroup>
 
 ## Memulai
 
-Pilih metode dan mode penyiapan yang Anda inginkan.
-
 <Tabs>
-  <Tab title="Onboarding (direkomendasikan)">
-    **Terbaik untuk:** jalur tercepat ke penyiapan cloud atau lokal Ollama yang berfungsi.
-
+  <Tab title="Orientasi awal (disarankan)">
     <Steps>
-      <Step title="Jalankan onboarding">
+      <Step title="Jalankan orientasi awal">
         ```bash
         openclaw onboard
         ```
 
-        Pilih **Ollama** dari daftar penyedia.
-      </Step>
-      <Step title="Pilih mode Anda">
-        - **Cloud + Lokal** — host Ollama lokal plus model cloud yang dirutekan melalui host tersebut
-        - **Cloud saja** — model Ollama terhosting melalui `https://ollama.com`
-        - **Lokal saja** — hanya model lokal
-
+        Pilih **Ollama**, lalu pilih mode: **Cloud + Lokal**, **Hanya cloud**, atau **Hanya lokal**.
       </Step>
       <Step title="Pilih model">
-        `Cloud only` meminta `OLLAMA_API_KEY` dan menyarankan default cloud terhosting. `Cloud + Local` dan `Local only` meminta URL dasar Ollama, menemukan model yang tersedia, dan menarik otomatis model lokal yang dipilih jika belum tersedia. Ketika Ollama melaporkan tag `:latest` yang terpasang seperti `gemma4:latest`, penyiapan menampilkan model terpasang itu sekali alih-alih menampilkan `gemma4` dan `gemma4:latest` atau menarik alias polos lagi. `Cloud + Local` juga memeriksa apakah host Ollama tersebut sudah masuk untuk akses cloud.
+        `Cloud only` meminta `OLLAMA_API_KEY` dan menyarankan default cloud yang dihosting. `Cloud + Local` dan `Local only` meminta URL dasar Ollama, menemukan model yang tersedia, dan otomatis menarik model lokal yang dipilih jika belum ada. Tag `:latest` yang terpasang seperti `gemma4:latest` ditampilkan satu kali agar tidak menduplikasi `gemma4`. `Cloud + Local` juga memeriksa apakah host sudah masuk untuk akses cloud.
       </Step>
-      <Step title="Verifikasi model tersedia">
+      <Step title="Verifikasi">
         ```bash
         openclaw models list --provider ollama
         ```
       </Step>
     </Steps>
 
-    ### Mode non-interaktif
-
-    ```bash
-    openclaw onboard --non-interactive \
-      --auth-choice ollama \
-      --accept-risk
-    ```
-
-    Secara opsional tentukan URL dasar atau model kustom:
+    Noninteraktif:
 
     ```bash
     openclaw onboard --non-interactive \
@@ -104,48 +92,36 @@ Pilih metode dan mode penyiapan yang Anda inginkan.
       --accept-risk
     ```
 
+    `--custom-base-url` dan `--custom-model-id` bersifat opsional; jika dihilangkan, host lokal default dan model yang disarankan `gemma4` akan digunakan.
+
   </Tab>
 
   <Tab title="Penyiapan manual">
-    **Terbaik untuk:** kontrol penuh atas penyiapan cloud atau lokal.
-
     <Steps>
-      <Step title="Pilih cloud atau lokal">
-        - **Cloud + Lokal**: pasang Ollama, masuk dengan `ollama signin`, dan rutekan permintaan cloud melalui host tersebut
-        - **Cloud saja**: gunakan `https://ollama.com` dengan `OLLAMA_API_KEY`
-        - **Lokal saja**: pasang Ollama dari [ollama.com/download](https://ollama.com/download)
+      <Step title="Instal dan jalankan Ollama">
+        Dapatkan dari [ollama.com/download](https://ollama.com/download), lalu tarik sebuah model:
 
-      </Step>
-      <Step title="Tarik model lokal (lokal saja)">
         ```bash
         ollama pull gemma4
-        # or
-        ollama pull gpt-oss:20b
-        # or
-        ollama pull llama3.3
         ```
-      </Step>
-      <Step title="Aktifkan Ollama untuk OpenClaw">
-        Untuk `Cloud only`, gunakan `OLLAMA_API_KEY` Anda yang sungguhan. Untuk penyiapan berbasis host, nilai placeholder apa pun berfungsi:
 
+        Untuk akses cloud hibrida, jalankan `ollama signin` pada host yang sama.
+      </Step>
+      <Step title="Tetapkan kredensial">
         ```bash
-        # Cloud
-        export OLLAMA_API_KEY="your-ollama-api-key"
-
-        # Local-only
-        export OLLAMA_API_KEY="ollama-local"
-
-        # Or configure in your config file
-        openclaw config set models.providers.ollama.apiKey "OLLAMA_API_KEY"
+        export OLLAMA_API_KEY="ollama-local"    # host lokal/LAN, nilai apa pun dapat digunakan
+        export OLLAMA_API_KEY="your-real-key"   # hanya https://ollama.com
         ```
+
+        Atau dalam konfigurasi: `openclaw config set models.providers.ollama.apiKey "OLLAMA_API_KEY"`.
       </Step>
-      <Step title="Periksa dan tetapkan model Anda">
+      <Step title="Pilih model">
         ```bash
         openclaw models list
         openclaw models set ollama/gemma4
         ```
 
-        Atau tetapkan default di konfigurasi:
+        Atau dalam konfigurasi:
 
         ```json5
         {
@@ -162,71 +138,67 @@ Pilih metode dan mode penyiapan yang Anda inginkan.
   </Tab>
 </Tabs>
 
-## Model cloud
+## Model cloud melalui host lokal
 
-<Tabs>
-  <Tab title="Cloud + Lokal">
-    `Cloud + Local` menggunakan host Ollama yang dapat dijangkau sebagai titik kontrol untuk model lokal dan cloud. Ini adalah alur hibrida pilihan Ollama.
+`Cloud + Local` merutekan model lokal dan model `:cloud` melalui satu
+host Ollama yang dapat dijangkau — ini adalah alur hibrida Ollama dan mode yang dipilih selama penyiapan
+saat Anda menginginkan keduanya.
 
-    Gunakan **Cloud + Lokal** selama penyiapan. OpenClaw meminta URL dasar Ollama, menemukan model lokal dari host tersebut, dan memeriksa apakah host sudah masuk untuk akses cloud dengan `ollama signin`. Ketika host sudah masuk, OpenClaw juga menyarankan default cloud terhosting seperti `kimi-k2.5:cloud`, `minimax-m2.7:cloud`, dan `glm-5.1:cloud`.
+OpenClaw meminta URL dasar, menemukan model lokal, dan memeriksa
+status `ollama signin`. Saat sudah masuk, OpenClaw menyarankan default yang dihosting
+(`kimi-k2.5:cloud`, `minimax-m2.7:cloud`, `glm-5.1:cloud`, `glm-5.2:cloud`). Jika
+belum masuk, penyiapan tetap hanya lokal sampai Anda menjalankan `ollama signin`.
 
-    Jika host belum masuk, OpenClaw mempertahankan penyiapan lokal saja sampai Anda menjalankan `ollama signin`.
+Untuk akses khusus cloud tanpa daemon lokal, gunakan `openclaw onboard --auth-choice ollama-cloud` dan lihat [Ollama Cloud](/id/providers/ollama-cloud) — jalur tersebut tidak memerlukan `ollama signin` atau server yang sedang berjalan:
 
-  </Tab>
+```bash
+openclaw onboard --auth-choice ollama-cloud
+openclaw models set ollama-cloud/kimi-k2.5:cloud
+```
 
-  <Tab title="Cloud saja">
-    `Cloud only` berjalan terhadap API terhosting Ollama di `https://ollama.com`.
-
-    Gunakan **Cloud saja** selama penyiapan. OpenClaw meminta `OLLAMA_API_KEY`, menetapkan `baseUrl: "https://ollama.com"`, dan mengisi daftar model cloud terhosting. Jalur ini **tidak** memerlukan server Ollama lokal atau `ollama signin`.
-
-    Daftar model cloud yang ditampilkan selama `openclaw onboard` diisi secara langsung dari `https://ollama.com/api/tags`, dibatasi hingga 500 entri, sehingga pemilih mencerminkan katalog terhosting saat ini, bukan seed statis. Jika `ollama.com` tidak dapat dijangkau atau tidak mengembalikan model pada waktu penyiapan, OpenClaw kembali ke saran hardcoded sebelumnya sehingga onboarding tetap selesai.
-
-    Anda juga dapat mengonfigurasi penyedia cloud kelas utama secara langsung:
-
-    ```bash
-    openclaw onboard --auth-choice ollama-cloud
-    openclaw models set ollama-cloud/kimi-k2.5:cloud
-    ```
-
-  </Tab>
-
-  <Tab title="Lokal saja">
-    Dalam mode lokal saja, OpenClaw menemukan model dari instans Ollama yang dikonfigurasi. Jalur ini untuk server Ollama lokal atau self-hosted.
-
-    OpenClaw saat ini menyarankan `gemma4` sebagai default lokal.
-
-  </Tab>
-</Tabs>
+Daftar model cloud yang ditampilkan selama `openclaw onboard` diisi secara langsung dari
+`https://ollama.com/api/tags`, dibatasi hingga 500 entri, sehingga pemilih mencerminkan
+katalog yang dihosting saat ini. Jika `ollama.com` tidak dapat dijangkau atau tidak mengembalikan
+model saat penyiapan, OpenClaw beralih ke daftar saran bawaan agar
+orientasi awal tetap selesai.
 
 ## Penemuan model (penyedia implisit)
 
-Ketika Anda menetapkan `OLLAMA_API_KEY` (atau profil auth) dan **tidak** mendefinisikan `models.providers.ollama` atau penyedia jarak jauh kustom lain dengan `api: "ollama"`, OpenClaw menemukan model dari instans Ollama lokal di `http://127.0.0.1:11434`.
+Saat `OLLAMA_API_KEY` (atau profil autentikasi) ditetapkan dan baik
+`models.providers.ollama` maupun penyedia khusus lain dengan `api: "ollama"` tidak
+didefinisikan, OpenClaw menemukan model dari `http://127.0.0.1:11434`:
 
-| Perilaku             | Detail                                                                                                                                                               |
-| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Kueri katalog        | Mengueri `/api/tags`                                                                                                                                                 |
-| Deteksi kapabilitas | Menggunakan lookup best-effort `/api/show` untuk membaca `contextWindow`, parameter Modelfile `num_ctx` yang diperluas, dan kapabilitas termasuk vision/tools        |
-| Model vision         | Model dengan kapabilitas `vision` yang dilaporkan oleh `/api/show` ditandai sebagai mampu gambar (`input: ["text", "image"]`), sehingga OpenClaw menyuntikkan gambar otomatis ke prompt |
-| Deteksi penalaran   | Menggunakan kapabilitas `/api/show` jika tersedia, termasuk `thinking`; fallback ke heuristik nama model (`r1`, `reasoning`, `think`) ketika Ollama menghilangkan kapabilitas |
-| Batas token          | Menetapkan `maxTokens` ke batas token maksimum default Ollama yang digunakan oleh OpenClaw                                                                           |
-| Biaya                | Menetapkan semua biaya ke `0`                                                                                                                                        |
-
-Ini menghindari entri model manual sembari menjaga katalog tetap selaras dengan instans Ollama lokal. Anda dapat menggunakan ref lengkap seperti `ollama/<pulled-model>:latest` di `infer model run` lokal; OpenClaw menyelesaikan model terpasang itu dari katalog langsung Ollama tanpa memerlukan entri `models.json` yang ditulis tangan.
-
-Untuk host Ollama yang sudah masuk, beberapa model `:cloud` dapat digunakan melalui `/api/chat`
-dan `/api/show` sebelum muncul di `/api/tags`. Ketika Anda secara eksplisit memilih ref
-lengkap `ollama/<model>:cloud`, OpenClaw memvalidasi model yang hilang persis itu dengan
-`/api/show` dan menambahkannya ke katalog runtime hanya jika Ollama mengonfirmasi
-metadata model. Salah ketik tetap gagal sebagai model tidak dikenal alih-alih dibuat otomatis.
+| Perilaku             | Detail                                                                                                                                                                                                                                                                                        |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Kueri katalog        | `/api/tags`                                                                                                                                                                                                                                                                                   |
+| Deteksi kemampuan    | Pembacaan upaya terbaik `/api/show` membaca `contextWindow`, parameter Modelfile `num_ctx`, dan kemampuan (visi/alat/penalaran)                                                                                                                                                                |
+| Model visi           | Kemampuan `vision` dari `/api/show` menandai model sebagai mampu memproses gambar (`input: ["text", "image"]`)                                                                                                                                                                                |
+| Deteksi penalaran    | Menggunakan kemampuan `thinking` dari `/api/show` jika tersedia; beralih ke heuristik nama (`r1`, `reason`, `reasoning`, `think`) saat Ollama tidak menyertakan kemampuan. `glm-5.2:cloud` dan `deepseek-v4-flash\|pro:cloud` selalu dianggap sebagai model penalaran, terlepas dari kemampuan yang dilaporkan. |
+| Batas token          | `maxTokens` secara default menggunakan batas maksimum token Ollama milik OpenClaw                                                                                                                                                                                                              |
+| Biaya                | Semua biaya adalah `0`                                                                                                                                                                                                                                                                        |
 
 ```bash
-# See what models are available
 ollama list
 openclaw models list
 ```
 
-Untuk uji smoke pembuatan teks sempit yang menghindari seluruh permukaan tool agen,
-gunakan `infer model run` lokal dengan ref model Ollama lengkap:
+Menetapkan `models.providers.ollama` dengan array `models` eksplisit, atau
+penyedia khusus dengan `api: "ollama"` dan `baseUrl` non-local loopback, menonaktifkan
+penemuan otomatis; model kemudian harus didefinisikan secara manual (lihat
+[Konfigurasi](#configuration)). Entri `models.providers.ollama` yang diarahkan ke
+`https://ollama.com` yang dihosting juga melewati penemuan, karena model Ollama Cloud
+dikelola oleh penyedia. Penyedia local loopback khusus seperti
+`http://127.0.0.2:11434` tetap dianggap lokal dan mempertahankan penemuan otomatis.
+
+Anda dapat menggunakan referensi lengkap seperti `ollama/<pulled-model>:latest` tanpa
+entri `models.json` yang ditulis manual; OpenClaw menyelesaikannya secara langsung. Untuk host
+yang sudah masuk, memilih referensi `ollama/<model>:cloud` yang tidak terdaftar akan memvalidasi model persis tersebut
+dengan `/api/show` dan menambahkannya ke katalog runtime hanya jika Ollama
+mengonfirmasi metadata — salah ketik tetap gagal sebagai model yang tidak dikenal.
+
+### Uji asap
+
+Untuk pemeriksaan teks terbatas yang melewati seluruh permukaan alat agen:
 
 ```bash
 OLLAMA_API_KEY=ollama-local \
@@ -237,15 +209,9 @@ OLLAMA_API_KEY=ollama-local \
     --json
 ```
 
-Jalur itu tetap menggunakan penyedia, auth, dan transport native Ollama
-yang dikonfigurasi OpenClaw, tetapi tidak memulai giliran agen chat atau memuat konteks MCP/tool. Jika
-ini berhasil sementara balasan agen normal gagal, selidiki kapasitas prompt/tool agen
-model berikutnya.
-
-Untuk uji smoke model vision yang sempit pada jalur ramping yang sama, tambahkan satu atau beberapa
-file gambar ke `infer model run`. Ini mengirim prompt dan gambar langsung ke
-model vision Ollama yang dipilih tanpa memuat tool chat, memori, atau konteks
-sesi sebelumnya:
+Tambahkan `--file` dengan gambar untuk pemeriksaan model visi yang ringan (menerima PNG/JPEG/WebP;
+berkas non-gambar ditolak sebelum Ollama dipanggil — gunakan
+`openclaw infer audio transcribe` untuk audio):
 
 ```bash
 OLLAMA_API_KEY=ollama-local \
@@ -257,81 +223,62 @@ OLLAMA_API_KEY=ollama-local \
     --json
 ```
 
-`model run --file` menerima file yang terdeteksi sebagai `image/*`, termasuk input PNG,
-JPEG, dan WebP umum. File non-gambar ditolak sebelum Ollama dipanggil.
-Untuk pengenalan ucapan, gunakan `openclaw infer audio transcribe` sebagai gantinya.
+Kedua jalur tersebut tidak memuat alat obrolan, memori, atau konteks sesi. Jika jalur ini berhasil
+sementara balasan agen normal gagal, masalahnya kemungkinan terletak pada kapasitas alat/agen
+model, bukan endpoint.
 
-Saat Anda mengalihkan percakapan dengan `/model ollama/<model>`, OpenClaw memperlakukannya
-sebagai pilihan pengguna yang persis. Jika `baseUrl` Ollama yang dikonfigurasi tidak dapat
-dijangkau, balasan berikutnya gagal dengan galat penyedia alih-alih diam-diam
-menjawab dari model fallback lain yang dikonfigurasi.
+Memilih model dengan `/model ollama/<model>` merupakan pilihan pengguna yang persis: jika
+`baseUrl` yang dikonfigurasi tidak dapat dijangkau, balasan berikutnya gagal dengan kesalahan penyedia,
+alih-alih diam-diam beralih ke model lain yang dikonfigurasi.
 
-Pekerjaan cron terisolasi menjalankan satu pemeriksaan keamanan lokal tambahan sebelum memulai giliran agen.
-Jika model yang dipilih terselesaikan ke penyedia Ollama lokal, jaringan privat, atau `.local`
-dan `/api/tags` tidak dapat dijangkau, OpenClaw mencatat run cron tersebut
-sebagai `skipped` dengan `ollama/<model>` yang dipilih dalam teks galat. Preflight endpoint
-di-cache selama 5 menit, sehingga beberapa pekerjaan cron yang diarahkan ke daemon Ollama
-yang sama-sama berhenti tidak semuanya meluncurkan permintaan model yang gagal.
+Tugas cron terisolasi menambahkan satu pemeriksaan keamanan lokal sebelum memulai giliran agen:
+jika model yang dipilih diselesaikan ke penyedia Ollama lokal/jaringan privat/`.local`
+dan `/api/tags` tidak dapat dijangkau, OpenClaw mencatat proses tersebut sebagai
+`skipped` dengan model dalam teks kesalahan. Pemeriksaan endpoint ini disimpan dalam cache selama
+5 menit per host, sehingga tugas cron berulang terhadap daemon yang berhenti tidak semuanya
+meluncurkan permintaan yang akan gagal.
 
-Verifikasi langsung jalur teks lokal, jalur stream native, dan embeddings terhadap
-Ollama lokal dengan:
+Verifikasi langsung:
 
 ```bash
 OPENCLAW_LIVE_TEST=1 OPENCLAW_LIVE_OLLAMA=1 OPENCLAW_LIVE_OLLAMA_WEB_SEARCH=0 \
   pnpm test:live -- extensions/ollama/ollama.live.test.ts
 ```
 
-Untuk smoke test kunci API Ollama Cloud, arahkan pengujian langsung ke `https://ollama.com`
-dan pilih model hosted dari katalog saat ini:
+Untuk Ollama Cloud, arahkan pengujian langsung yang sama ke endpoint ter-host (melewati
+embedding secara default; paksa dengan `OPENCLAW_LIVE_OLLAMA_EMBEDDINGS=1` karena
+kunci cloud mungkin tidak mengizinkan `/api/embed`):
 
 ```bash
 export OLLAMA_API_KEY='<your-ollama-cloud-api-key>'
-
-OPENCLAW_LIVE_TEST=1 \
-OPENCLAW_LIVE_OLLAMA=1 \
+OPENCLAW_LIVE_TEST=1 OPENCLAW_LIVE_OLLAMA=1 \
 OPENCLAW_LIVE_OLLAMA_BASE_URL=https://ollama.com \
 OPENCLAW_LIVE_OLLAMA_MODEL=glm-5.1:cloud \
 OPENCLAW_LIVE_OLLAMA_WEB_SEARCH=1 \
 pnpm test:live -- extensions/ollama/ollama.live.test.ts
 ```
 
-Smoke cloud menjalankan teks, stream native, dan pencarian web. Secara default, embeddings
-dilewati untuk `https://ollama.com` karena kunci API Ollama Cloud mungkin tidak mengotorisasi
-`/api/embed`. Atur `OPENCLAW_LIVE_OLLAMA_EMBEDDINGS=1` saat Anda secara eksplisit ingin
-pengujian langsung gagal jika kunci cloud yang dikonfigurasi tidak dapat menggunakan endpoint embed.
-
-Untuk menambahkan model baru, cukup pull model tersebut dengan Ollama:
+Untuk menambahkan model, tarik model tersebut dan model akan ditemukan secara otomatis:
 
 ```bash
 ollama pull mistral
 ```
 
-Model baru akan otomatis ditemukan dan tersedia untuk digunakan.
-
-<Note>
-Jika Anda mengatur `models.providers.ollama` secara eksplisit, atau mengonfigurasi penyedia jarak jauh khusus seperti `models.providers.ollama-cloud` dengan `api: "ollama"`, penemuan otomatis dilewati dan Anda harus mendefinisikan model secara manual. Penyedia khusus loopback seperti `http://127.0.0.2:11434` tetap diperlakukan sebagai lokal. Lihat bagian konfigurasi eksplisit di bawah.
-</Note>
-
 ## Inferensi lokal Node
 
-Agen dapat mendelegasikan tugas singkat ke model Ollama yang terpasang pada node
-desktop atau server yang dipasangkan. Prompt dan respons melintasi koneksi
-Gateway/node terautentikasi yang sudah ada; permintaan model berjalan pada node yang dipilih terhadap
-endpoint Ollama loopback standarnya (`http://127.0.0.1:11434`).
+Agen dapat mendelegasikan tugas singkat ke model Ollama pada desktop atau
+Node server yang dipasangkan. Prompt dan respons melewati koneksi
+Gateway/Node terautentikasi yang sudah ada; permintaan dijalankan pada endpoint
+Ollama local loopback milik Node (`http://127.0.0.1:11434`).
 
 <Steps>
-  <Step title="Start Ollama on the node">
-    Pull setidaknya satu model chat dan biarkan Ollama tetap berjalan:
-
+  <Step title="Mulai Ollama pada Node">
     ```bash
     ollama pull qwen3:0.6b
     ollama list
     ```
-
   </Step>
-  <Step title="Connect the node host">
-    Pada mesin yang sama dengan Ollama, hubungkan host node ke Gateway:
-
+  <Step title="Hubungkan host Node">
     ```bash
     openclaw node run \
       --host <gateway-host> \
@@ -339,8 +286,7 @@ endpoint Ollama loopback standarnya (`http://127.0.0.1:11434`).
       --display-name "Local inference"
     ```
 
-    Setujui perangkat baru dan perintah node yang dideklarasikannya pada host Gateway,
-    lalu verifikasi node:
+    Setujui perangkat dan perintah Node-nya pada host Gateway, lalu verifikasi:
 
     ```bash
     openclaw devices list
@@ -350,46 +296,43 @@ endpoint Ollama loopback standarnya (`http://127.0.0.1:11434`).
     openclaw nodes status --connected
     ```
 
-    Koneksi pertama dan upgrade yang menambahkan perintah Ollama sama-sama dapat
-    memicu persetujuan perintah node. Jika node terhubung tanpa mengiklankan
-    `ollama.models` dan `ollama.chat`, periksa `openclaw nodes pending` lagi.
+    Koneksi pertama, atau peningkatan yang menambahkan perintah Ollama, dapat memicu
+    persetujuan perintah Node. Jika Node terhubung tanpa mengiklankan
+    `ollama.models` dan `ollama.chat`, periksa kembali `openclaw nodes pending`.
 
   </Step>
-  <Step title="Ask an agent to use local inference">
-    Plugin Ollama bawaan mengekspos tool `node_inference`. Agen terlebih dahulu
-    menggunakan `action: "discover"`, lalu `action: "run"` dengan node dan
-    model yang dikembalikan. Jika tepat satu node yang mampu terhubung, `run` dapat menghilangkan node.
-
-    Misalnya: “Temukan model Ollama pada node saya, lalu gunakan model termuat
-    tercepat untuk merangkum teks ini.”
-
+  <Step title="Gunakan dari agen">
+    Plugin Ollama bawaan menyediakan alat `node_inference`. Agen terlebih dahulu
+    memanggil `action: "discover"`, lalu `action: "run"` dengan Node dan model dari
+    hasil tersebut (`run` dapat menghilangkan Node ketika tepat satu Node berkemampuan
+    terhubung). Contoh: "Temukan model Ollama pada Node saya, lalu gunakan
+    model termuat yang paling cepat untuk merangkum teks ini."
   </Step>
 </Steps>
 
-Penemuan membaca `/api/tags`, memeriksa kapabilitas `/api/show`, dan menggunakan `/api/ps`
-saat tersedia untuk memberi peringkat model yang sudah termuat terlebih dahulu. Ini hanya mengembalikan
-model lokal yang mampu chat: baris Ollama Cloud dan model khusus embedding dikecualikan.
-Setiap run meminta Ollama menonaktifkan thinking model dan membatasi output pada 512 token
-kecuali pemanggilan tool meminta nilai `maxTokens` yang berbeda. Beberapa model, seperti
-GPT-OSS, tidak mendukung penonaktifan thinking dan mungkin tetap menggunakan token penalaran.
+Penemuan membaca `/api/tags`, memeriksa kemampuan `/api/show`, dan menggunakan
+`/api/ps` jika tersedia untuk memprioritaskan model yang sudah termuat. Penemuan hanya
+mengembalikan model lokal yang dilaporkan Ollama sebagai berkemampuan percakapan
+(kemampuan `completion`) — baris Ollama Cloud dan model khusus embedding dikecualikan.
+Setiap eksekusi menonaktifkan pemikiran model dan menetapkan keluaran default sebanyak
+512 token (batas mutlak 8192), kecuali pemanggilan alat meminta `maxTokens` yang berbeda;
+beberapa model (misalnya GPT-OSS) tidak mendukung penonaktifan pemikiran dan mungkin
+tetap menghasilkan token penalaran.
 
-Untuk membiarkan Ollama tetap berjalan pada node tanpa membuatnya tersedia bagi agen, atur
-hal berikut dalam konfigurasi yang digunakan oleh host node tersebut:
+Untuk mempertahankan Ollama tetap berjalan pada Node tanpa menyediakannya kepada agen:
 
 ```bash
 openclaw config set plugins.entries.ollama.config.nodeInference.enabled false
 ```
 
-Jika node menggunakan perintah foreground `openclaw node run` dari pengaturan
-di atas, hentikan proses tersebut dan jalankan perintahnya lagi. Jika menggunakan layanan node
-terpasang, jalankan `openclaw node restart`.
+Mulai ulang Node (`openclaw node restart`, atau hentikan/jalankan ulang
+`openclaw node run` untuk sesi latar depan). Node berhenti mengiklankan
+`ollama.models` dan `ollama.chat`; Ollama itu sendiri dan penyedia Ollama milik Gateway
+tidak terpengaruh. Atur kembali nilainya menjadi `true` dan mulai ulang untuk mengaktifkannya
+kembali; permukaan perintah yang berubah mungkin memerlukan persetujuan
+`openclaw nodes pending` lagi setelah tersambung kembali.
 
-Node berhenti mengiklankan `ollama.models` dan `ollama.chat`; Ollama sendiri dan
-penyedia Ollama milik Gateway tetap tidak berubah. Atur nilainya ke `true` dan
-mulai ulang node untuk mengiklankan inferensi lokal lagi. Permukaan perintah yang berubah
-mungkin memerlukan persetujuan melalui `openclaw nodes pending` setelah tersambung ulang.
-
-Anda dapat memverifikasi perintah node yang sama tanpa giliran agen:
+Verifikasi perintah Node secara langsung, tanpa giliran agen:
 
 ```bash
 openclaw nodes invoke \
@@ -407,36 +350,36 @@ openclaw nodes invoke \
   --timeout 140000
 ```
 
-Inferensi lokal node sengaja tidak menggunakan kembali
-`models.providers.ollama.baseUrl` jarak jauh atau cloud. Jalankan Ollama pada endpoint
-loopback standar node. Perintah node tersedia secara default pada host node macOS, Linux, dan
-Windows serta tetap tunduk pada kebijakan pairing node dan perintah normal.
+`--invoke-timeout` membatasi durasi yang dimiliki Node untuk menjalankan perintah;
+`--timeout` membatasi keseluruhan panggilan Gateway dan harus lebih besar.
 
-## Vision dan deskripsi gambar
+Inferensi lokal Node selalu menggunakan endpoint local loopback milik Node — inferensi ini
+tidak menggunakan kembali `models.providers.ollama.baseUrl` jarak jauh/cloud yang
+dikonfigurasi. Perintah Node tersedia secara default pada host Node macOS, Linux, dan
+Windows serta tetap tunduk pada kebijakan pemasangan/perintah Node yang normal.
 
-Plugin Ollama bawaan mendaftarkan Ollama sebagai penyedia pemahaman media yang mampu menangani gambar. Ini memungkinkan OpenClaw merutekan permintaan deskripsi gambar eksplisit dan default model gambar yang dikonfigurasi melalui model vision Ollama lokal atau hosted.
+## Penglihatan dan deskripsi gambar
 
-Untuk vision lokal, pull model yang mendukung gambar:
+Plugin Ollama bawaan mendaftarkan Ollama sebagai penyedia pemahaman media
+berkemampuan gambar, sehingga OpenClaw dapat merutekan permintaan deskripsi gambar
+eksplisit dan default model gambar yang dikonfigurasi melalui model penglihatan Ollama
+lokal atau ter-host.
 
 ```bash
 ollama pull qwen2.5vl:7b
 export OLLAMA_API_KEY="ollama-local"
+openclaw infer image describe --file ./photo.jpg --model ollama/qwen2.5vl:7b --json
 ```
 
-Lalu verifikasi dengan CLI infer:
+`--model` harus berupa referensi `<provider/model>` lengkap; ketika ditetapkan, `infer image
+describe` mencoba model tersebut terlebih dahulu alih-alih melewati deskripsi untuk model
+yang sudah mendukung penglihatan native. Jika panggilan gagal, OpenClaw dapat melanjutkan
+melalui `agents.defaults.imageModel.fallbacks`; kesalahan penyiapan file/URL menyebabkan
+kegagalan sebelum fallback dicoba. Gunakan `infer image describe` untuk alur pemahaman
+gambar OpenClaw dan `imageModel` yang dikonfigurasi; gunakan `infer model run
+--file` untuk pemeriksaan multimodal mentah dengan prompt khusus.
 
-```bash
-openclaw infer image describe \
-  --file ./photo.jpg \
-  --model ollama/qwen2.5vl:7b \
-  --json
-```
-
-`--model` harus berupa ref `<provider/model>` lengkap. Saat diatur, `openclaw infer image describe` mencoba model tersebut terlebih dahulu alih-alih melewati deskripsi karena model mendukung vision native. Jika pemanggilan model gagal, OpenClaw dapat melanjutkan melalui `agents.defaults.imageModel.fallbacks` yang dikonfigurasi; galat persiapan file atau URL tetap gagal sebelum percobaan fallback.
-
-Gunakan `infer image describe` saat Anda menginginkan alur penyedia pemahaman gambar OpenClaw, `agents.defaults.imageModel` yang dikonfigurasi, dan bentuk output deskripsi gambar. Gunakan `infer model run --file` saat Anda menginginkan probe model multimodal mentah dengan prompt khusus dan satu atau beberapa gambar.
-
-Untuk menjadikan Ollama sebagai model pemahaman gambar default untuk media masuk, konfigurasikan `agents.defaults.imageModel`:
+Untuk menjadikan Ollama penyedia pemahaman gambar default bagi media masuk:
 
 ```json5
 {
@@ -450,9 +393,16 @@ Untuk menjadikan Ollama sebagai model pemahaman gambar default untuk media masuk
 }
 ```
 
-Utamakan ref lengkap `ollama/<model>`. Jika model yang sama tercantum di bawah `models.providers.ollama.models` dengan `input: ["text", "image"]` dan tidak ada penyedia gambar lain yang dikonfigurasi mengekspos ID model bare tersebut, OpenClaw juga menormalkan ref `imageModel` bare seperti `qwen2.5vl:7b` menjadi `ollama/qwen2.5vl:7b`. Jika lebih dari satu penyedia gambar yang dikonfigurasi memiliki ID bare yang sama, gunakan prefiks penyedia secara eksplisit.
+Utamakan referensi `ollama/<model>` lengkap. Referensi `imageModel` polos seperti
+`qwen2.5vl:7b` dinormalisasi menjadi `ollama/qwen2.5vl:7b` hanya ketika model persis
+tersebut tercantum di bawah `models.providers.ollama.models` dengan
+`input: ["text", "image"]` dan tidak ada penyedia gambar lain yang dikonfigurasi
+menyediakan id polos yang sama; jika tidak, gunakan prefiks penyedia secara eksplisit.
 
-Model vision lokal yang lambat mungkin memerlukan timeout pemahaman gambar yang lebih panjang daripada model cloud. Model tersebut juga dapat crash atau berhenti saat Ollama mencoba mengalokasikan konteks vision penuh yang diiklankan pada perangkat keras terbatas. Atur timeout kapabilitas, dan batasi `num_ctx` pada entri model saat Anda hanya memerlukan giliran deskripsi gambar normal:
+Model penglihatan lokal yang lambat mungkin memerlukan batas waktu pemahaman gambar
+yang lebih panjang daripada model cloud, dan dapat mogok pada perangkat keras terbatas
+jika Ollama mencoba mengalokasikan seluruh konteks penglihatan yang diiklankan model.
+Tetapkan batas waktu kemampuan dan batasi `num_ctx`:
 
 ```json5
 {
@@ -481,16 +431,19 @@ Model vision lokal yang lambat mungkin memerlukan timeout pemahaman gambar yang 
 }
 ```
 
-Timeout ini berlaku untuk pemahaman gambar masuk dan untuk tool `image` eksplisit yang dapat dipanggil agen selama giliran. `models.providers.ollama.timeoutSeconds` tingkat penyedia tetap mengontrol guard permintaan HTTP Ollama yang mendasarinya untuk pemanggilan model normal.
+Batas waktu ini berlaku untuk pemahaman gambar masuk dan alat `image` eksplisit.
+`models.providers.ollama.timeoutSeconds` tetap mengendalikan pembatas permintaan HTTP
+Ollama yang mendasari untuk panggilan model normal.
 
-Verifikasi langsung tool gambar eksplisit terhadap Ollama lokal dengan:
+Verifikasi langsung:
 
 ```bash
 OPENCLAW_LIVE_TEST=1 OPENCLAW_LIVE_OLLAMA_IMAGE=1 \
   pnpm test:live -- src/agents/tools/image-tool.ollama.live.test.ts
 ```
 
-Jika Anda mendefinisikan `models.providers.ollama.models` secara manual, tandai model vision dengan dukungan input gambar:
+Jika Anda mendefinisikan `models.providers.ollama.models` secara manual, tandai model
+penglihatan secara eksplisit:
 
 ```json5
 {
@@ -502,26 +455,27 @@ Jika Anda mendefinisikan `models.providers.ollama.models` secara manual, tandai 
 }
 ```
 
-OpenClaw menolak permintaan deskripsi gambar untuk model yang tidak ditandai mampu gambar. Dengan penemuan implisit, OpenClaw membaca ini dari Ollama saat `/api/show` melaporkan kapabilitas vision.
+OpenClaw menolak permintaan deskripsi gambar untuk model yang tidak ditandai
+berkemampuan gambar. Dengan penemuan implisit, informasi ini berasal dari kemampuan
+penglihatan `/api/show`.
 
 ## Konfigurasi
 
 <Tabs>
-  <Tab title="Basic (implicit discovery)">
-    Jalur pengaktifan paling sederhana untuk lokal saja adalah melalui variabel lingkungan:
-
+  <Tab title="Dasar (penemuan implisit)">
     ```bash
     export OLLAMA_API_KEY="ollama-local"
     ```
 
     <Tip>
-    Jika `OLLAMA_API_KEY` diatur, Anda dapat menghilangkan `apiKey` dalam entri penyedia dan OpenClaw akan mengisinya untuk pemeriksaan ketersediaan.
+    Jika `OLLAMA_API_KEY` ditetapkan, Anda dapat menghilangkan `apiKey` dalam entri penyedia; OpenClaw mengisinya untuk pemeriksaan ketersediaan.
     </Tip>
 
   </Tab>
 
-  <Tab title="Explicit (manual models)">
-    Gunakan konfigurasi eksplisit saat Anda menginginkan pengaturan cloud hosted, Ollama berjalan pada host/port lain, Anda ingin memaksa jendela konteks atau daftar model tertentu, atau Anda menginginkan definisi model sepenuhnya manual.
+  <Tab title="Eksplisit (model manual)">
+    Gunakan konfigurasi eksplisit untuk penyiapan cloud ter-host, host/port non-default,
+    jendela konteks yang dipaksakan, atau daftar model yang sepenuhnya manual:
 
     ```json5
     {
@@ -550,8 +504,8 @@ OpenClaw menolak permintaan deskripsi gambar untuk model yang tidak ditandai mam
 
   </Tab>
 
-  <Tab title="Custom base URL">
-    Jika Ollama berjalan pada host atau port berbeda (konfigurasi eksplisit menonaktifkan penemuan otomatis, jadi definisikan model secara manual):
+  <Tab title="URL dasar khusus">
+    Konfigurasi eksplisit menonaktifkan penemuan otomatis, sehingga model harus dicantumkan:
 
     ```json5
     {
@@ -559,15 +513,15 @@ OpenClaw menolak permintaan deskripsi gambar untuk model yang tidak ditandai mam
         providers: {
           ollama: {
             apiKey: "ollama-local",
-            baseUrl: "http://ollama-host:11434", // No /v1 - use native Ollama API URL
-            api: "ollama", // Set explicitly to guarantee native tool-calling behavior
-            timeoutSeconds: 300, // Optional: give cold local models longer to connect and stream
+            baseUrl: "http://ollama-host:11434", // Tanpa /v1 - URL API native Ollama
+            api: "ollama", // Eksplisit: menjamin perilaku pemanggilan alat native
+            timeoutSeconds: 300, // Opsional: anggaran koneksi/aliran lebih panjang untuk model lokal yang belum termuat
             models: [
               {
                 id: "qwen3:32b",
                 name: "qwen3:32b",
                 params: {
-                  keep_alive: "15m", // Optional: keep the model loaded between turns
+                  keep_alive: "15m", // Opsional: pertahankan model tetap termuat di antara giliran
                 },
               },
             ],
@@ -578,7 +532,7 @@ OpenClaw menolak permintaan deskripsi gambar untuk model yang tidak ditandai mam
     ```
 
     <Warning>
-    Jangan tambahkan `/v1` ke URL. Jalur `/v1` menggunakan mode kompatibel OpenAI, tempat pemanggilan tool tidak andal. Gunakan URL dasar Ollama tanpa sufiks jalur.
+    Jangan tambahkan `/v1`. Jalur tersebut memilih mode kompatibel OpenAI, yang pemanggilan alatnya tidak andal.
     </Warning>
 
   </Tab>
@@ -586,11 +540,12 @@ OpenClaw menolak permintaan deskripsi gambar untuk model yang tidak ditandai mam
 
 ## Resep umum
 
-Gunakan ini sebagai titik awal dan ganti ID model dengan nama persis dari `ollama list` atau `openclaw models list --provider ollama`.
+Ganti ID model dengan nama persis dari `ollama list` atau
+`openclaw models list --provider ollama`.
 
 <AccordionGroup>
   <Accordion title="Model lokal dengan penemuan otomatis">
-    Gunakan ini ketika Ollama berjalan pada mesin yang sama dengan Gateway dan Anda ingin OpenClaw menemukan model yang terpasang secara otomatis.
+    Ollama pada mesin yang sama dengan Gateway, ditemukan secara otomatis:
 
     ```bash
     ollama serve
@@ -600,13 +555,11 @@ Gunakan ini sebagai titik awal dan ganti ID model dengan nama persis dari `ollam
     openclaw models set ollama/gemma4
     ```
 
-    Jalur ini menjaga konfigurasi tetap minimal. Jangan tambahkan blok `models.providers.ollama` kecuali Anda ingin mendefinisikan model secara manual.
+    Jangan tambahkan blok `models.providers.ollama` kecuali Anda memerlukan model manual.
 
   </Accordion>
 
   <Accordion title="Host Ollama LAN dengan model manual">
-    Gunakan URL Ollama native untuk host LAN. Jangan tambahkan `/v1`.
-
     ```json5
     {
       models: {
@@ -642,12 +595,14 @@ Gunakan ini sebagai titik awal dan ganti ID model dengan nama persis dari `ollam
     }
     ```
 
-    `contextWindow` adalah anggaran konteks di sisi OpenClaw. `params.num_ctx` dikirim ke Ollama untuk permintaan. Jaga keduanya tetap selaras ketika perangkat keras Anda tidak dapat menjalankan konteks penuh yang diiklankan model.
+    `contextWindow` adalah anggaran konteks OpenClaw; `params.num_ctx` dikirim ke
+    Ollama. Selaraskan keduanya ketika perangkat keras tidak dapat menjalankan seluruh
+    konteks yang diiklankan model.
 
   </Accordion>
 
   <Accordion title="Hanya Ollama Cloud">
-    Gunakan ini ketika Anda tidak menjalankan daemon lokal dan ingin model Ollama terhosting secara langsung.
+    Tanpa daemon lokal, langsung menggunakan model ter-host:
 
     ```bash
     export OLLAMA_API_KEY="your-ollama-api-key"
@@ -682,11 +637,12 @@ Gunakan ini sebagai titik awal dan ganti ID model dengan nama persis dari `ollam
     }
     ```
 
+    Untuk id penyedia khusus `ollama-cloud` sebagai pengganti bentuk ini, lihat
+    [Ollama Cloud](/id/providers/ollama-cloud).
+
   </Accordion>
 
-  <Accordion title="Cloud plus lokal melalui daemon yang sudah masuk">
-    Gunakan ini ketika daemon Ollama lokal atau LAN sudah masuk dengan `ollama signin` dan harus melayani model lokal serta model `:cloud`.
-
+  <Accordion title="Cloud dan lokal melalui daemon yang sudah masuk">
     ```bash
     ollama signin
     ollama pull gemma4
@@ -722,7 +678,8 @@ Gunakan ini sebagai titik awal dan ganti ID model dengan nama persis dari `ollam
   </Accordion>
 
   <Accordion title="Beberapa host Ollama">
-    Gunakan ID provider khusus ketika Anda memiliki lebih dari satu server Ollama. Setiap provider mendapatkan host, model, autentikasi, batas waktu, dan referensi modelnya sendiri.
+    Gunakan ID penyedia khusus saat menjalankan lebih dari satu server Ollama; masing-masing memiliki
+    host, model, autentikasi, dan batas waktunya sendiri.
 
     ```json5
     {
@@ -757,12 +714,16 @@ Gunakan ini sebagai titik awal dan ganti ID model dengan nama persis dari `ollam
     }
     ```
 
-    Ketika OpenClaw mengirim permintaan, prefiks provider aktif dihapus sehingga `ollama-large/qwen3.5:27b` sampai ke Ollama sebagai `qwen3.5:27b`.
+    OpenClaw menghapus prefiks penyedia aktif (dengan kembali menggunakan prefiks
+    `ollama/` saja sebagai cadangan) sebelum memanggil Ollama, sehingga `ollama-large/qwen3.5:27b`
+    diterima Ollama sebagai `qwen3.5:27b`.
 
   </Accordion>
 
-  <Accordion title="Profil model lokal ramping">
-    Beberapa model lokal dapat menjawab prompt sederhana tetapi kesulitan dengan seluruh permukaan alat agent. Mulailah dengan membatasi alat dan konteks sebelum mengubah pengaturan runtime global.
+  <Accordion title="Profil model lokal ringan">
+    Beberapa model lokal dapat menangani prompt sederhana, tetapi kesulitan dengan seluruh
+    cakupan alat agen. Batasi alat dan konteks sebelum mengubah pengaturan
+    runtime global:
 
     ```json5
     {
@@ -799,15 +760,19 @@ Gunakan ini sebagai titik awal dan ganti ID model dengan nama persis dari `ollam
     }
     ```
 
-    Gunakan `compat.supportsTools: false` hanya ketika model atau server secara andal gagal pada skema alat. Ini menukar kemampuan agent dengan stabilitas.
-    `localModelLean` menghapus browser, cron, dan alat pesan dari permukaan agent langsung serta secara default menempatkan katalog yang lebih besar di balik kontrol Tool Search terstruktur kecuali ketika sebuah run harus mempertahankan semantik pengiriman pesan langsung, tetapi tidak mengubah konteks runtime atau mode berpikir Ollama. Pasangkan dengan `params.num_ctx` eksplisit dan `params.thinking: false` untuk model berpikir kecil bergaya Qwen yang berulang atau menghabiskan anggaran responsnya pada penalaran tersembunyi.
+    Gunakan `compat.supportsTools: false` hanya ketika model atau server selalu
+    gagal memproses skema alat — pengaturan ini mengorbankan kemampuan agen demi stabilitas.
+    `localModelLean` menghapus alat berat untuk peramban, cron, pesan, pembuatan media,
+    suara, dan PDF dari cakupan langsung agen kecuali diwajibkan secara eksplisit,
+    serta menempatkan katalog yang lebih besar di balik Pencarian Alat. Pengaturan ini tidak mengubah
+    konteks runtime atau mode berpikir Ollama. Padukan dengan `params.num_ctx` dan
+    `params.thinking: false` untuk model berpikir kecil bergaya Qwen yang berulang
+    atau menghabiskan anggarannya untuk penalaran tersembunyi.
 
   </Accordion>
 </AccordionGroup>
 
 ### Pemilihan model
-
-Setelah dikonfigurasi, semua model Ollama Anda tersedia:
 
 ```json5
 {
@@ -822,12 +787,12 @@ Setelah dikonfigurasi, semua model Ollama Anda tersedia:
 }
 ```
 
-ID provider Ollama khusus juga didukung. Ketika referensi model menggunakan prefiks
-provider aktif, seperti `ollama-spark/qwen3:32b`, OpenClaw hanya menghapus
-prefiks tersebut sebelum memanggil Ollama sehingga server menerima `qwen3:32b`.
+ID penyedia khusus bekerja dengan cara yang sama: untuk referensi yang menggunakan prefiks
+penyedia aktif, seperti `ollama-spark/qwen3:32b`, OpenClaw menghapus prefiks tersebut sebelum
+memanggil Ollama dan mengirimkan `qwen3:32b`.
 
-Untuk model lokal yang lambat, utamakan penyetelan permintaan dalam cakupan provider sebelum menaikkan
-batas waktu runtime seluruh agent:
+Untuk model lokal yang lambat, utamakan penyesuaian dalam lingkup penyedia sebelum meningkatkan
+batas waktu seluruh runtime agen:
 
 ```json5
 {
@@ -848,10 +813,10 @@ batas waktu runtime seluruh agent:
 }
 ```
 
-`timeoutSeconds` berlaku untuk permintaan HTTP model, termasuk penyiapan koneksi,
-header, streaming body, dan total pembatalan guarded-fetch. `params.keep_alive`
-diteruskan ke Ollama sebagai `keep_alive` tingkat atas pada permintaan `/api/chat` native;
-tetapkan per model ketika waktu pemuatan giliran pertama menjadi hambatan.
+`timeoutSeconds` mencakup permintaan HTTP model: penyiapan koneksi, header,
+pengaliran isi, dan pembatalan total pengambilan terlindungi. `params.keep_alive`
+diteruskan sebagai `keep_alive` tingkat teratas pada permintaan `/api/chat` native; atur
+per model ketika waktu pemuatan giliran pertama menjadi hambatan utama.
 
 ### Verifikasi cepat
 
@@ -869,19 +834,21 @@ openclaw infer model run \
   --prompt "Reply with exactly: ok"
 ```
 
-Untuk host jarak jauh, ganti `127.0.0.1` dengan host yang digunakan di `baseUrl`. Jika `curl` berfungsi tetapi OpenClaw tidak, periksa apakah Gateway berjalan pada mesin, kontainer, atau akun layanan yang berbeda.
+Untuk host jarak jauh, ganti `127.0.0.1` dengan host `baseUrl`. Jika `curl`
+berfungsi tetapi OpenClaw tidak, periksa apakah Gateway berjalan pada
+mesin, kontainer, atau akun layanan yang berbeda.
 
-## Ollama Web Search
+## Pencarian Web Ollama
 
-OpenClaw mendukung **Ollama Web Search** sebagai provider `web_search` bawaan.
+OpenClaw menyertakan **Pencarian Web Ollama** sebagai penyedia `web_search`.
 
-| Properti    | Detail                                                                                                                                                               |
-| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Host        | Menggunakan host Ollama yang Anda konfigurasi (`models.providers.ollama.baseUrl` jika ditetapkan, jika tidak `http://127.0.0.1:11434`); `https://ollama.com` menggunakan API terhosting secara langsung |
-| Autentikasi | Tanpa kunci untuk host Ollama lokal yang sudah masuk; `OLLAMA_API_KEY` atau autentikasi provider yang dikonfigurasi untuk pencarian langsung `https://ollama.com` atau host yang dilindungi autentikasi |
-| Persyaratan | Host lokal/self-hosted harus berjalan dan masuk dengan `ollama signin`; pencarian terhosting langsung memerlukan `baseUrl: "https://ollama.com"` plus kunci API Ollama nyata |
+| Properti     | Detail                                                                                                                                                                                                    |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Host         | `models.providers.ollama.baseUrl` jika ditetapkan, jika tidak `http://127.0.0.1:11434`; `https://ollama.com` menggunakan API yang dihosting secara langsung                                               |
+| Autentikasi  | Tanpa kunci untuk host lokal yang telah masuk; `OLLAMA_API_KEY` atau autentikasi penyedia yang dikonfigurasi untuk pencarian langsung melalui `https://ollama.com` atau host yang dilindungi autentikasi   |
+| Persyaratan  | Host lokal/yang dihosting sendiri harus berjalan dan telah masuk dengan `ollama signin`; pencarian yang dihosting secara langsung memerlukan `baseUrl: "https://ollama.com"` beserta kunci API yang valid |
 
-Pilih **Ollama Web Search** selama `openclaw onboard` atau `openclaw configure --section web`, atau tetapkan:
+Pilih saat menjalankan `openclaw onboard` atau `openclaw configure --section web`, atau tetapkan:
 
 ```json5
 {
@@ -895,7 +862,7 @@ Pilih **Ollama Web Search** selama `openclaw onboard` atau `openclaw configure -
 }
 ```
 
-Untuk pencarian terhosting langsung melalui Ollama Cloud:
+Untuk pencarian yang dihosting secara langsung melalui Ollama Cloud:
 
 ```json5
 {
@@ -917,10 +884,14 @@ Untuk pencarian terhosting langsung melalui Ollama Cloud:
 }
 ```
 
-Untuk daemon lokal yang sudah masuk, OpenClaw menggunakan proxy `/api/experimental/web_search` milik daemon. Untuk `https://ollama.com`, OpenClaw memanggil endpoint terhosting `/api/web_search` secara langsung.
+Untuk host yang dihosting sendiri, OpenClaw terlebih dahulu mencoba proksi lokal
+`/api/experimental/web_search`, lalu kembali menggunakan jalur `/api/web_search`
+yang dihosting pada host yang sama; daemon lokal yang telah masuk biasanya merespons
+melalui proksi lokal. Panggilan langsung ke `https://ollama.com` selalu menggunakan
+endpoint `/api/web_search` yang dihosting.
 
 <Note>
-Untuk penyiapan lengkap dan detail perilaku, lihat [Ollama Web Search](/id/tools/ollama-search).
+Untuk penyiapan dan perilaku lengkap, lihat [Pencarian Web Ollama](/id/tools/ollama-search).
 </Note>
 
 ## Konfigurasi lanjutan
@@ -928,10 +899,11 @@ Untuk penyiapan lengkap dan detail perilaku, lihat [Ollama Web Search](/id/tools
 <AccordionGroup>
   <Accordion title="Mode kompatibel OpenAI lama">
     <Warning>
-    **Pemanggilan alat tidak andal dalam mode kompatibel OpenAI.** Gunakan mode ini hanya jika Anda memerlukan format OpenAI untuk proxy dan tidak bergantung pada perilaku pemanggilan alat native.
+    **Pemanggilan alat tidak dapat diandalkan dalam mode ini.** Gunakan hanya jika proksi memerlukan format OpenAI dan Anda tidak bergantung pada pemanggilan alat native.
     </Warning>
 
-    Jika Anda perlu menggunakan endpoint kompatibel OpenAI sebagai gantinya (misalnya, di belakang proxy yang hanya mendukung format OpenAI), tetapkan `api: "openai-completions"` secara eksplisit:
+    Tetapkan `api: "openai-completions"` secara eksplisit untuk proksi di belakang
+    `/v1/chat/completions`:
 
     ```json5
     {
@@ -949,9 +921,12 @@ Untuk penyiapan lengkap dan detail perilaku, lihat [Ollama Web Search](/id/tools
     }
     ```
 
-    Mode ini mungkin tidak mendukung streaming dan pemanggilan alat secara bersamaan. Anda mungkin perlu menonaktifkan streaming dengan `params: { streaming: false }` dalam konfigurasi model.
+    Mode ini mungkin tidak mendukung pengaliran dan pemanggilan alat secara bersamaan; Anda
+    mungkin perlu menetapkan `params: { streaming: false }` pada model.
 
-    Ketika `api: "openai-completions"` digunakan dengan Ollama, OpenClaw menyuntikkan `options.num_ctx` secara default sehingga Ollama tidak diam-diam kembali ke jendela konteks 4096. Jika proxy/upstream Anda menolak field `options` yang tidak dikenal, nonaktifkan perilaku ini:
+    OpenClaw menyisipkan `options.num_ctx` secara default dalam mode ini agar Ollama
+    tidak secara diam-diam kembali menggunakan konteks 4096 token. Jika proksi Anda menolak
+    bidang `options` yang tidak dikenal, nonaktifkan:
 
     ```json5
     {
@@ -972,11 +947,35 @@ Untuk penyiapan lengkap dan detail perilaku, lihat [Ollama Web Search](/id/tools
   </Accordion>
 
   <Accordion title="Jendela konteks">
-    Untuk model yang ditemukan otomatis, OpenClaw menggunakan jendela konteks yang dilaporkan oleh Ollama jika tersedia, termasuk nilai `PARAMETER num_ctx` yang lebih besar dari Modelfile khusus. Jika tidak, OpenClaw kembali ke jendela konteks default Ollama yang digunakan oleh OpenClaw.
+    Untuk model yang ditemukan secara otomatis, OpenClaw menggunakan jendela konteks yang dilaporkan
+    oleh `/api/show`, termasuk nilai `PARAMETER num_ctx` yang lebih besar dari
+    Modelfile khusus; jika tidak, OpenClaw kembali menggunakan jendela konteks
+    Ollama default miliknya.
 
-    Anda dapat menetapkan default `contextWindow`, `contextTokens`, dan `maxTokens` tingkat penyedia untuk setiap model di bawah penyedia Ollama tersebut, lalu menimpanya per model saat diperlukan. `contextWindow` adalah anggaran prompt dan Compaction OpenClaw. Permintaan Ollama native membiarkan `options.num_ctx` tidak disetel kecuali Anda secara eksplisit mengonfigurasi `params.num_ctx`, sehingga Ollama dapat menerapkan default model, `OLLAMA_CONTEXT_LENGTH`, atau berbasis VRAM miliknya sendiri. Untuk membatasi atau memaksa konteks runtime per permintaan Ollama tanpa membangun ulang Modelfile, setel `params.num_ctx`; nilai tidak valid, nol, negatif, dan non-finite diabaikan. Jika Anda memutakhirkan konfigurasi lama yang hanya menggunakan `contextWindow` atau `maxTokens` untuk memaksa konteks permintaan Ollama native, jalankan `openclaw doctor --fix` untuk menyalin anggaran penyedia atau model eksplisit tersebut ke `params.num_ctx`. Adapter Ollama kompatibel OpenAI tetap menyuntikkan `options.num_ctx` secara default dari `params.num_ctx` atau `contextWindow` yang dikonfigurasi; nonaktifkan dengan `injectNumCtxForOpenAICompat: false` jika upstream Anda menolak `options`.
+    `contextWindow`, `contextTokens`, dan `maxTokens` tingkat penyedia menetapkan
+    nilai default untuk setiap model di bawah penyedia tersebut dan dapat ditimpa per
+    model. `contextWindow` adalah anggaran prompt/Compaction milik OpenClaw. Permintaan
+    `/api/chat` native membiarkan `options.num_ctx` tidak ditetapkan kecuali Anda menetapkan
+    `params.num_ctx` secara eksplisit, sehingga Ollama menerapkan nilai default modelnya sendiri,
+    `OLLAMA_CONTEXT_LENGTH`, atau nilai berbasis VRAM; nilai `params.num_ctx` yang tidak valid,
+    nol, negatif, atau bukan bilangan terbatas akan diabaikan. Jika konfigurasi lama hanya
+    menggunakan `contextWindow`/`maxTokens` untuk memaksakan konteks permintaan native, jalankan
+    `openclaw doctor --fix` untuk menyalinnya ke `params.num_ctx`. Adaptor yang
+    kompatibel dengan OpenAI tetap menyisipkan `options.num_ctx` secara default dari
+    `params.num_ctx` atau `contextWindow` yang dikonfigurasi; nonaktifkan dengan
+    `injectNumCtxForOpenAICompat: false` jika layanan hulu menolak `options`.
 
-    Entri model Ollama native juga menerima opsi runtime Ollama umum di bawah `params`, termasuk `temperature`, `top_p`, `top_k`, `min_p`, `num_predict`, `stop`, `repeat_penalty`, `num_batch`, `num_thread`, dan `use_mmap`. OpenClaw hanya meneruskan kunci permintaan Ollama, sehingga parameter runtime OpenClaw seperti `streaming` tidak dibocorkan ke Ollama. Gunakan `params.think` atau `params.thinking` untuk mengirim `think` Ollama tingkat atas; `false` menonaktifkan thinking tingkat API untuk model thinking bergaya Qwen.
+    Entri model native juga menerima opsi runtime Ollama umum di bawah
+    `params`, yang diteruskan sebagai `options` native `/api/chat`: `num_keep`, `seed`,
+    `num_predict`, `top_k`, `top_p`, `min_p`, `typical_p`, `repeat_last_n`,
+    `temperature`, `repeat_penalty`, `presence_penalty`, `frequency_penalty`,
+    `stop`, `num_batch`, `num_gpu`, `main_gpu`, `use_mmap`, dan `num_thread`.
+    Beberapa kunci (`format`, `keep_alive`, `truncate`, `shift`) diteruskan sebagai
+    bidang permintaan tingkat teratas, bukan `options` bertingkat. OpenClaw hanya
+    meneruskan kunci permintaan Ollama ini, sehingga parameter khusus runtime seperti
+    `streaming` tidak pernah dikirim ke Ollama. Gunakan `params.think` (atau
+    `params.thinking`) untuk menetapkan `think` tingkat teratas; `false` menonaktifkan
+    pemikiran tingkat API untuk model berpikir bergaya Qwen.
 
     ```json5
     {
@@ -1003,19 +1002,23 @@ Untuk penyiapan lengkap dan detail perilaku, lihat [Ollama Web Search](/id/tools
     }
     ```
 
-    `agents.defaults.models["ollama/<model>"].params.num_ctx` per model juga berfungsi. Jika keduanya dikonfigurasi, entri model penyedia eksplisit menang atas default agent.
+    `agents.defaults.models["ollama/<model>"].params.num_ctx` per model juga
+    berfungsi; entri model penyedia eksplisit diutamakan jika keduanya ditetapkan.
 
   </Accordion>
 
-  <Accordion title="Kontrol thinking">
-    Untuk model Ollama native, OpenClaw meneruskan kontrol thinking sebagaimana diharapkan Ollama: `think` tingkat atas, bukan `options.think`. Model yang ditemukan otomatis dengan respons `/api/show` yang menyertakan kapabilitas `thinking` mengekspos `/think low`, `/think medium`, `/think high`, dan `/think max`; model non-thinking hanya mengekspos `/think off`.
+  <Accordion title="Kontrol pemikiran">
+    OpenClaw meneruskan pemikiran sesuai yang diharapkan Ollama: `think` tingkat teratas,
+    bukan `options.think`. Model yang ditemukan secara otomatis dan kemampuan `thinking`-nya
+    dilaporkan oleh `/api/show` menyediakan `/think low`, `/think medium`, `/think high`,
+    dan `/think max`; model tanpa kemampuan berpikir hanya menyediakan `/think off`.
 
     ```bash
     openclaw agent --model ollama/gemma4 --thinking off
     openclaw agent --model ollama/gemma4 --thinking low
     ```
 
-    Anda juga dapat menetapkan default model:
+    Atau tetapkan nilai default model:
 
     ```json5
     {
@@ -1031,52 +1034,57 @@ Untuk penyiapan lengkap dan detail perilaku, lihat [Ollama Web Search](/id/tools
     }
     ```
 
-    `params.think` atau `params.thinking` per model dapat menonaktifkan atau memaksa thinking API Ollama untuk model terkonfigurasi tertentu. OpenClaw mempertahankan parameter model eksplisit tersebut saat run aktif hanya memiliki default implisit `off`; perintah runtime selain off seperti `/think medium` tetap menimpa run aktif.
+    `params.think`/`params.thinking` per model dapat menonaktifkan atau memaksakan
+    proses berpikir API untuk model tertentu. OpenClaw mempertahankan konfigurasi eksplisit tersebut
+    ketika proses aktif hanya memiliki nilai bawaan implisit `off`; perintah runtime selain off
+    seperti `/think medium` tetap menggantikannya. Permintaan proses berpikir yang bernilai benar
+    tidak pernah dikirim ke model yang secara eksplisit ditandai
+    `reasoning: false`; permintaan `think: false` selalu dikirim dalam kondisi apa pun.
 
   </Accordion>
 
-  <Accordion title="Model reasoning">
-    OpenClaw memperlakukan model dengan nama seperti `deepseek-r1`, `reasoning`, atau `think` sebagai berkapabilitas reasoning secara default.
+  <Accordion title="Model penalaran">
+    Model bernama `deepseek-r1`, `reasoning`, `reason`, atau `think` secara bawaan
+    dianggap mampu melakukan penalaran — tidak memerlukan konfigurasi tambahan:
 
     ```bash
     ollama pull deepseek-r1:32b
     ```
 
-    Tidak diperlukan konfigurasi tambahan. OpenClaw menandainya secara otomatis.
-
   </Accordion>
 
   <Accordion title="Biaya model">
-    Ollama gratis dan berjalan secara lokal, sehingga semua biaya model disetel ke $0. Ini berlaku untuk model yang ditemukan otomatis maupun yang didefinisikan secara manual.
+    Ollama berjalan secara lokal dan gratis, sehingga semua biaya model adalah `0`, baik untuk
+    model yang ditemukan secara otomatis maupun yang ditentukan secara manual.
   </Accordion>
 
   <Accordion title="Embedding memori">
     Plugin Ollama bawaan mendaftarkan penyedia embedding memori untuk
-    [pencarian memori](/id/concepts/memory). Plugin ini menggunakan URL dasar Ollama
-    dan kunci API yang dikonfigurasi, memanggil endpoint `/api/embed` Ollama saat ini, dan melakukan batch
-    beberapa potongan memori ke dalam satu permintaan `input` jika memungkinkan.
+    [pencarian memori](/id/concepts/memory). Penyedia ini menggunakan URL dasar Ollama
+    dan kunci API yang dikonfigurasi, memanggil `/api/embed`, serta mengelompokkan beberapa potongan memori ke dalam
+    satu permintaan `input` jika memungkinkan.
 
-    Saat `proxy.enabled=true`, permintaan embedding memori Ollama ke origin
-    local loopback host yang tepat yang diturunkan dari `baseUrl` yang dikonfigurasi menggunakan
-    jalur langsung terlindungi OpenClaw alih-alih proxy terusan terkelola. Nama host
-    yang dikonfigurasi itu sendiri harus berupa `localhost` atau literal IP loopback;
-    nama DNS yang hanya resolve ke loopback tetap menggunakan jalur proxy terkelola.
-    Host Ollama LAN, tailnet, jaringan privat, dan publik juga tetap berada di
-    jalur proxy terkelola. Redirect ke host atau port lain tidak mewarisi kepercayaan.
-    Operator masih dapat menetapkan pengaturan global `proxy.loopbackMode: "proxy"` untuk
-    mengirim traffic loopback melalui proxy, atau `proxy.loopbackMode: "block"`
-    untuk menolak koneksi loopback sebelum membuka koneksi; lihat
-    [Proxy terkelola](/id/security/network-proxy#gateway-loopback-mode) untuk
-    dampak seluruh proses dari pengaturan ini.
+    Saat `proxy.enabled=true`, permintaan embedding ke origin local loopback host yang sama persis
+    dan diturunkan dari `baseUrl` yang dikonfigurasi menggunakan jalur langsung
+    terlindungi milik OpenClaw, bukan proksi penerusan terkelola. Nama host yang dikonfigurasi
+    harus berupa `localhost` atau literal IP loopback — nama DNS
+    yang sekadar di-resolve ke loopback tetap menggunakan jalur proksi terkelola. Host Ollama di LAN,
+    tailnet, jaringan privat, dan publik selalu tetap menggunakan
+    jalur proksi terkelola, dan pengalihan ke host/port lain tidak mewarisi
+    kepercayaan. `proxy.loopbackMode: "proxy"` tetap merutekan lalu lintas loopback melalui
+    proksi; `proxy.loopbackMode: "block"` menolaknya sebelum tersambung —
+    lihat [Proksi terkelola](/id/security/network-proxy#gateway-loopback-mode).
 
-    | Properti      | Nilai               |
-    | ------------- | ------------------- |
-    | Model default | `nomic-embed-text`  |
-    | Auto-pull     | Ya — model embedding ditarik secara otomatis jika belum ada secara lokal |
+    | Properti | Nilai |
+    | --- | --- |
+    | Model bawaan | `nomic-embed-text` |
+    | Penarikan otomatis | Ya, jika belum tersedia secara lokal |
+    | Konkurensi inline bawaan | 1 (penyedia lain memiliki nilai bawaan yang lebih tinggi; tingkatkan dengan `nonBatchConcurrency` jika host mampu menanganinya) |
 
-    Embedding saat kueri menggunakan prefiks retrieval untuk model yang memerlukan atau merekomendasikannya, termasuk `nomic-embed-text`, `qwen3-embedding`, dan `mxbai-embed-large`. Batch dokumen memori tetap mentah sehingga indeks yang ada tidak memerlukan migrasi format.
-
-    Untuk memilih Ollama sebagai penyedia embedding pencarian memori:
+    Embedding saat kueri menggunakan prefiks pengambilan untuk model yang mewajibkan atau
+    merekomendasikannya: `nomic-embed-text`, `qwen3-embedding`, dan
+    `mxbai-embed-large`. Batch dokumen tetap mentah, sehingga indeks yang sudah ada
+    tidak memerlukan migrasi format.
 
     ```json5
     {
@@ -1094,7 +1102,7 @@ Untuk penyiapan lengkap dan detail perilaku, lihat [Ollama Web Search](/id/tools
     }
     ```
 
-    Untuk host embedding jarak jauh, pertahankan auth terbatas pada host tersebut:
+    Untuk host embedding jarak jauh, batasi cakupan autentikasi hanya pada host tersebut:
 
     ```json5
     {
@@ -1117,12 +1125,17 @@ Untuk penyiapan lengkap dan detail perilaku, lihat [Ollama Web Search](/id/tools
   </Accordion>
 
   <Accordion title="Konfigurasi streaming">
-    Integrasi Ollama OpenClaw menggunakan **API Ollama native** (`/api/chat`) secara default, yang sepenuhnya mendukung streaming dan tool calling secara bersamaan. Tidak diperlukan konfigurasi khusus.
+    Ollama menggunakan **API native** (`/api/chat`) secara bawaan, yang mendukung
+    streaming dan pemanggilan alat secara bersamaan — tidak memerlukan konfigurasi khusus.
 
-    Untuk permintaan `/api/chat` native, OpenClaw juga meneruskan kontrol thinking langsung ke Ollama: `/think off` dan `openclaw agent --thinking off` mengirim `think: false` tingkat atas kecuali nilai model eksplisit `params.think`/`params.thinking` dikonfigurasi, sementara `/think low|medium|high` mengirim string effort `think` tingkat atas yang sesuai. `/think max` dipetakan ke effort native tertinggi Ollama, `think: "high"`.
+    Untuk permintaan native, kontrol proses berpikir diteruskan secara langsung: `/think off`
+    dan `openclaw agent --thinking off` mengirim `think: false` pada tingkat teratas, kecuali
+    `params.think`/`params.thinking` eksplisit telah dikonfigurasi; `/think
+    low|medium|high` mengirim string tingkat upaya yang sesuai; `/think max` dipetakan ke
+    tingkat upaya tertinggi Ollama, yaitu `think: "high"`.
 
     <Tip>
-    Jika Anda perlu menggunakan endpoint kompatibel OpenAI, lihat bagian "Mode kompatibel OpenAI lama" di atas. Streaming dan tool calling mungkin tidak berfungsi secara bersamaan dalam mode tersebut.
+    Untuk menggunakan endpoint kompatibel OpenAI, lihat "Mode kompatibel OpenAI lama" di atas — streaming dan pemanggilan alat mungkin tidak dapat bekerja bersamaan di sana.
     </Tip>
 
   </Accordion>
@@ -1131,16 +1144,20 @@ Untuk penyiapan lengkap dan detail perilaku, lihat [Ollama Web Search](/id/tools
 ## Pemecahan masalah
 
 <AccordionGroup>
-  <Accordion title="Loop crash WSL2 (reboot berulang)">
-    Pada WSL2 dengan NVIDIA/CUDA, installer Linux resmi Ollama membuat unit systemd `ollama.service` dengan `Restart=always`. Jika layanan tersebut autostart dan memuat model berbasis GPU saat boot WSL2, Ollama dapat menahan memori host saat model dimuat. Reklaim memori Hyper-V tidak selalu dapat mereklaim halaman yang tertahan tersebut, sehingga Windows dapat menghentikan VM WSL2, systemd memulai Ollama lagi, dan loop berulang.
+  <Accordion title="Siklus crash WSL2 (boot ulang berulang)">
+    Pada WSL2 dengan NVIDIA/CUDA, penginstal Linux resmi Ollama membuat
+    unit systemd `ollama.service` dengan `Restart=always`. Jika layanan tersebut
+    dimulai otomatis dan memuat model berbasis GPU selama proses boot WSL2, Ollama dapat mengunci
+    memori host selama pemuatan; pengambilan kembali memori Hyper-V tidak selalu dapat mengambil kembali
+    halaman-halaman tersebut, sehingga Windows dapat menghentikan VM WSL2, systemd memulai ulang
+    Ollama, dan siklus tersebut berulang.
 
-    Bukti umum:
+    Indikasi: boot ulang/penghentian WSL2 berulang, penggunaan CPU tinggi di `app.slice` atau
+    `ollama.service` tepat setelah WSL2 dimulai, serta SIGTERM dari systemd, bukan
+    dari penghenti OOM Linux.
 
-    - reboot atau penghentian WSL2 berulang dari sisi Windows
-    - CPU tinggi di `app.slice` atau `ollama.service` sesaat setelah startup WSL2
-    - SIGTERM dari systemd, bukan peristiwa OOM-killer Linux
-
-    OpenClaw mencatat peringatan startup saat mendeteksi WSL2, `ollama.service` diaktifkan dengan `Restart=always`, dan penanda CUDA terlihat.
+    OpenClaw mencatat peringatan saat mulai ketika mendeteksi WSL2, `ollama.service`
+    diaktifkan dengan `Restart=always`, dan penanda CUDA terlihat.
 
     Mitigasi:
 
@@ -1148,14 +1165,15 @@ Untuk penyiapan lengkap dan detail perilaku, lihat [Ollama Web Search](/id/tools
     sudo systemctl disable ollama
     ```
 
-    Tambahkan ini ke `%USERPROFILE%\.wslconfig` di sisi Windows, lalu jalankan `wsl --shutdown`:
+    Di sisi Windows, tambahkan konfigurasi berikut ke `%USERPROFILE%\.wslconfig`, lalu jalankan
+    `wsl --shutdown`:
 
     ```ini
     [experimental]
     autoMemoryReclaim=disabled
     ```
 
-    Setel keep-alive yang lebih pendek di lingkungan layanan Ollama, atau mulai Ollama secara manual hanya saat Anda membutuhkannya:
+    Atau persingkat keep-alive / mulai Ollama secara manual hanya saat diperlukan:
 
     ```bash
     export OLLAMA_KEEP_ALIVE=5m
@@ -1167,22 +1185,19 @@ Untuk penyiapan lengkap dan detail perilaku, lihat [Ollama Web Search](/id/tools
   </Accordion>
 
   <Accordion title="Ollama tidak terdeteksi">
-    Pastikan Ollama berjalan dan Anda menyetel `OLLAMA_API_KEY` (atau profil auth), dan Anda **tidak** mendefinisikan entri eksplisit `models.providers.ollama`:
+    Pastikan Ollama sedang berjalan, `OLLAMA_API_KEY` (atau profil autentikasi) telah diatur,
+    dan `models.providers.ollama` **tidak** ditentukan secara eksplisit:
 
     ```bash
     ollama serve
-    ```
-
-    Verifikasi bahwa API dapat diakses:
-
-    ```bash
     curl http://localhost:11434/api/tags
     ```
 
   </Accordion>
 
   <Accordion title="Tidak ada model yang tersedia">
-    Jika model Anda tidak tercantum, tarik model secara lokal atau definisikan secara eksplisit di `models.providers.ollama`.
+    Tarik model secara lokal atau tentukan secara eksplisit di
+    `models.providers.ollama`:
 
     ```bash
     ollama list  # See what's installed
@@ -1194,8 +1209,6 @@ Untuk penyiapan lengkap dan detail perilaku, lihat [Ollama Web Search](/id/tools
   </Accordion>
 
   <Accordion title="Koneksi ditolak">
-    Periksa bahwa Ollama berjalan pada port yang benar:
-
     ```bash
     # Check if Ollama is running
     ps aux | grep ollama
@@ -1207,7 +1220,7 @@ Untuk penyiapan lengkap dan detail perilaku, lihat [Ollama Web Search](/id/tools
   </Accordion>
 
   <Accordion title="Host jarak jauh berfungsi dengan curl tetapi tidak dengan OpenClaw">
-    Verifikasi dari mesin dan runtime yang sama yang menjalankan Gateway:
+    Verifikasi dari mesin dan runtime yang sama dengan yang menjalankan Gateway:
 
     ```bash
     openclaw gateway status --deep
@@ -1216,17 +1229,16 @@ Untuk penyiapan lengkap dan detail perilaku, lihat [Ollama Web Search](/id/tools
 
     Penyebab umum:
 
-    - `baseUrl` menunjuk ke `localhost`, tetapi Gateway berjalan di Docker atau pada host lain.
-    - URL menggunakan `/v1`, yang memilih perilaku kompatibel OpenAI alih-alih Ollama native.
-    - Host jarak jauh memerlukan perubahan firewall atau binding LAN di sisi Ollama.
-    - Model ada di daemon laptop Anda tetapi tidak di daemon jarak jauh.
+    - `baseUrl` mengarah ke `localhost`, tetapi Gateway berjalan di Docker atau host lain.
+    - URL menggunakan `/v1`, sehingga memilih perilaku kompatibel OpenAI, bukan Ollama native.
+    - Host jarak jauh memerlukan perubahan firewall atau pengikatan LAN.
+    - Model berada di daemon laptop Anda, tetapi tidak di daemon jarak jauh.
 
   </Accordion>
 
-  <Accordion title="Model mengeluarkan JSON tool sebagai teks">
-    Ini biasanya berarti penyedia menggunakan mode kompatibel OpenAI atau model tidak dapat menangani skema tool.
-
-    Lebih disarankan mode Ollama native:
+  <Accordion title="Model menghasilkan JSON alat sebagai teks">
+    Biasanya penyedia berada dalam mode kompatibel OpenAI, atau model tidak dapat
+    menangani skema alat. Utamakan mode native:
 
     ```json5
     {
@@ -1241,14 +1253,20 @@ Untuk penyiapan lengkap dan detail perilaku, lihat [Ollama Web Search](/id/tools
     }
     ```
 
-    Jika model lokal kecil masih gagal pada skema tool, setel `compat.supportsTools: false` pada entri model tersebut dan uji ulang.
+    Jika model lokal kecil masih gagal menangani skema alat, atur
+    `compat.supportsTools: false` pada entri model tersebut dan uji kembali.
 
   </Accordion>
 
-  <Accordion title="Kimi atau GLM mengembalikan simbol kacau">
-    Respons Kimi/GLM hosted yang panjang dan berupa rangkaian simbol non-linguistik diperlakukan sebagai output penyedia yang gagal, bukan jawaban asisten yang berhasil. Ini memungkinkan retry, fallback, atau penanganan error normal mengambil alih tanpa menyimpan teks rusak ke dalam sesi.
+  <Accordion title="Kimi atau GLM menghasilkan simbol yang kacau">
+    Respons Kimi/GLM yang dihosting dan berupa rangkaian simbol panjang nonlinguistik
+    diperlakukan sebagai panggilan penyedia yang gagal, bukan balasan yang berhasil, sehingga
+    penanganan percobaan ulang/fallback/kesalahan normal mengambil alih, alih-alih menyimpan
+    teks rusak ke dalam sesi.
 
-    Jika terjadi berulang kali, tangkap nama model mentah, file sesi saat ini, dan apakah run menggunakan `Cloud + Local` atau `Cloud only`, lalu coba sesi baru dan model fallback:
+    Jika masalah terulang, catat nama model, berkas sesi saat ini, dan
+    apakah proses menggunakan `Cloud + Local` atau `Cloud only`, lalu coba sesi baru
+    dan model fallback:
 
     ```bash
     openclaw infer model run --model ollama/kimi-k2.5:cloud --prompt "Reply with exactly: ok" --json
@@ -1257,8 +1275,9 @@ Untuk penyiapan lengkap dan detail perilaku, lihat [Ollama Web Search](/id/tools
 
   </Accordion>
 
-  <Accordion title="Model lokal dingin mengalami timeout">
-    Model lokal besar dapat membutuhkan pemuatan pertama yang lama sebelum streaming dimulai. Pertahankan timeout terbatas pada penyedia Ollama, dan secara opsional minta Ollama mempertahankan model tetap dimuat antar turn:
+  <Accordion title="Model lokal yang belum dimuat mengalami batas waktu">
+    Model lokal berukuran besar dapat memerlukan waktu lama untuk pemuatan pertama. Batasi cakupan batas waktu ke
+    penyedia Ollama dan, secara opsional, pertahankan model tetap dimuat di antara giliran:
 
     ```json5
     {
@@ -1279,12 +1298,16 @@ Untuk penyiapan lengkap dan detail perilaku, lihat [Ollama Web Search](/id/tools
     }
     ```
 
-    Jika host itu sendiri lambat menerima koneksi, `timeoutSeconds` juga memperpanjang batas waktu koneksi Undici yang dijaga untuk penyedia ini.
+    Jika host itu sendiri lambat menerima koneksi, `timeoutSeconds` juga
+    memperpanjang batas waktu koneksi terlindungi untuk penyedia ini.
 
   </Accordion>
 
-  <Accordion title="Model konteks besar terlalu lambat atau kehabisan memori">
-    Banyak model Ollama mengiklankan konteks yang lebih besar daripada yang dapat dijalankan perangkat keras Anda dengan nyaman. Ollama native menggunakan default konteks runtime Ollama sendiri kecuali Anda mengatur `params.num_ctx`. Batasi anggaran OpenClaw dan konteks permintaan Ollama ketika Anda menginginkan latensi token pertama yang dapat diprediksi:
+  <Accordion title="Model berkonteks besar terlalu lambat atau kehabisan memori">
+    Banyak model menawarkan konteks yang lebih besar daripada yang dapat dijalankan perangkat keras Anda
+    dengan nyaman. Ollama native menggunakan nilai bawaan runtime-nya sendiri, kecuali
+    `params.num_ctx` diatur. Batasi anggaran OpenClaw dan konteks permintaan Ollama
+    agar latensi token pertama dapat diprediksi:
 
     ```json5
     {
@@ -1306,26 +1329,31 @@ Untuk penyiapan lengkap dan detail perilaku, lihat [Ollama Web Search](/id/tools
     }
     ```
 
-    Turunkan `contextWindow` terlebih dahulu jika OpenClaw mengirim prompt terlalu banyak. Turunkan `params.num_ctx` jika Ollama memuat konteks runtime yang terlalu besar untuk mesin. Turunkan `maxTokens` jika pembuatan berjalan terlalu lama.
+    Turunkan `contextWindow` jika OpenClaw mengirim terlalu banyak prompt. Turunkan
+    `params.num_ctx` jika konteks runtime Ollama terlalu besar untuk mesin.
+    Turunkan `maxTokens` jika pembuatan keluaran berlangsung terlalu lama.
 
   </Accordion>
 </AccordionGroup>
 
 <Note>
-Bantuan lebih lanjut: [Pemecahan masalah](/id/help/troubleshooting) dan [FAQ](/id/help/faq).
+Bantuan lainnya: [Pemecahan masalah](/id/help/troubleshooting) dan [Pertanyaan umum](/id/help/faq).
 </Note>
 
 ## Terkait
 
 <CardGroup cols={2}>
+  <Card title="Ollama Cloud" href="/id/providers/ollama-cloud" icon="cloud">
+    Penyiapan khusus cloud dengan penyedia khusus `ollama-cloud`.
+  </Card>
   <Card title="Penyedia model" href="/id/concepts/model-providers" icon="layers">
     Ikhtisar semua penyedia, referensi model, dan perilaku failover.
   </Card>
   <Card title="Pemilihan model" href="/id/concepts/models" icon="brain">
     Cara memilih dan mengonfigurasi model.
   </Card>
-  <Card title="Ollama Web Search" href="/id/tools/ollama-search" icon="magnifying-glass">
-    Penyiapan lengkap dan detail perilaku untuk pencarian web yang didukung Ollama.
+  <Card title="Pencarian Web Ollama" href="/id/tools/ollama-search" icon="magnifying-glass">
+    Detail lengkap penyiapan dan perilaku pencarian web yang didukung Ollama.
   </Card>
   <Card title="Konfigurasi" href="/id/gateway/configuration" icon="gear">
     Referensi konfigurasi lengkap.

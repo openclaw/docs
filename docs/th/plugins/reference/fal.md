@@ -2,10 +2,10 @@
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin fal
 summary: เพิ่มการรองรับผู้ให้บริการโมเดล fal ให้กับ OpenClaw
-title: Plugin fal
+title: fal Plugin
 x-i18n:
-    generated_at: "2026-06-27T18:02:05Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:27:17Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: f62d6a642a6edaa581fb23fa27dade77486c827d460f19aa23750959f5aa6f1c
@@ -20,9 +20,9 @@ x-i18n:
 ## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/fal-provider`
-- เส้นทางการติดตั้ง: รวมอยู่ใน OpenClaw
+- วิธีติดตั้ง: รวมอยู่ใน OpenClaw
 
-## พื้นผิว
+## ส่วนที่รองรับ
 
 ผู้ให้บริการ: fal; สัญญา: imageGenerationProviders, musicGenerationProviders, videoGenerationProviders
 

@@ -1,12 +1,12 @@
 ---
 read_when:
-    - OpenClaw でプライバシー重視の推論を利用したい
-    - Venice AI のセットアップ手順が必要です
+    - OpenClawでプライバシー重視の推論を利用したい場合
+    - Venice AI のセットアップ手順が必要な場合
 summary: OpenClawでVenice AIのプライバシー重視モデルを使用する
 title: Venice AI
 x-i18n:
-    generated_at: "2026-07-05T11:42:22Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:39:06Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: f274922274def2f87fb0e074554f6457b97852dcb509578262a2e2e58425265e
@@ -15,18 +15,18 @@ x-i18n:
 ---
 
 [Venice AI](https://venice.ai) はプライバシー重視の推論を提供します。オープンモデルは
-ログなしで実行され、Claude、GPT、Gemini、Grok への匿名化プロキシアクセスも利用できます。
+ログを記録せずに実行され、さらに Claude、GPT、Gemini、Grok へ匿名化されたプロキシ経由でアクセスできます。
 すべてのエンドポイントは OpenAI 互換です（`/v1`）。
 
 ## プライバシーモード
 
 | モード         | 動作                                                               | モデル                                                        |
 | -------------- | ------------------------------------------------------------------ | ------------------------------------------------------------- |
-| **プライベート** | プロンプト/レスポンスは保存もログ記録もされません。エフェメラルです。 | Llama、Qwen、DeepSeek、Kimi、MiniMax、Venice Uncensored など。 |
-| **匿名化**     | 転送前にメタデータを取り除いて Venice 経由でプロキシされます。      | Claude、GPT、Gemini、Grok                                     |
+| **プライベート** | プロンプトと応答は保存もログ記録もされません。一時的にのみ存在します。 | Llama、Qwen、DeepSeek、Kimi、MiniMax、Venice Uncensored など |
+| **匿名化**       | 転送前にメタデータを除去し、Venice 経由でプロキシされます。          | Claude、GPT、Gemini、Grok                                     |
 
 <Warning>
-匿名化モデルは完全にプライベートではありません。Venice は転送前にメタデータを取り除きますが、基盤プロバイダー（OpenAI、Anthropic、Google、xAI）は引き続きリクエストを処理します。完全なプライバシーが必要な場合はプライベートモデルを使用してください。
+匿名化モデルは完全にプライベートではありません。Venice は転送前にメタデータを除去しますが、基盤となるプロバイダー（OpenAI、Anthropic、Google、xAI）は引き続きリクエストを処理します。完全なプライバシーが必要な場合は、プライベートモデルを使用してください。
 </Warning>
 
 ## はじめに
@@ -38,13 +38,13 @@ x-i18n:
     ```
   </Step>
   <Step title="API キーを取得する">
-    1. [venice.ai](https://venice.ai) でサインアップします
-    2. **Settings > API Keys > Create new key** に移動します
-    3. API キーをコピーします（形式: `vapi_xxxxxxxxxxxx`）
+    1. [venice.ai](https://venice.ai) で登録する
+    2. **Settings > API Keys > Create new key** に移動する
+    3. API キーをコピーする（形式：`vapi_xxxxxxxxxxxx`）
   </Step>
   <Step title="OpenClaw を設定する">
     <Tabs>
-      <Tab title="対話型（推奨）">
+      <Tab title="対話形式（推奨）">
         ```bash
         openclaw onboard --auth-choice venice-api-key
         ```
@@ -56,7 +56,7 @@ x-i18n:
         export VENICE_API_KEY="vapi_xxxxxxxxxxxx"
         ```
       </Tab>
-      <Tab title="非対話型">
+      <Tab title="非対話形式">
         ```bash
         openclaw onboard --non-interactive \
           --auth-choice venice-api-key \
@@ -66,113 +66,110 @@ x-i18n:
     </Tabs>
 
   </Step>
-  <Step title="セットアップを検証する">
+  <Step title="設定を確認する">
     ```bash
     openclaw agent --model venice/kimi-k2-5 --message "Hello, are you working?"
     ```
   </Step>
 </Steps>
 
-## モデル選択
+## モデルの選択
 
-- **デフォルト**: `venice/kimi-k2-5`（プライベート、推論、ビジョン）。
-- **最強の匿名化オプション**: `venice/claude-opus-4-6`。
+- **デフォルト**：`venice/kimi-k2-5`（プライベート、推論、画像認識）。
+- **最も高性能な匿名化オプション**：`venice/claude-opus-4-6`。
 
 ```bash
 openclaw models set venice/kimi-k2-5
 openclaw models list --all --provider venice
 ```
 
-`openclaw configure` を実行して **Model/auth provider > Venice AI** を選ぶこともできます。
+`openclaw configure` を実行し、**モデル／認証プロバイダー > Venice AI** を選択することもできます。
 
 <Tip>
-| ユースケース            | モデル                             | 理由                                         |
-| ------------------------- | ---------------------------------- | -------------------------------------------- |
-| 一般的なチャット（デフォルト） | `kimi-k2-5`                        | 強力なプライベート推論に加えてビジョン       |
-| 総合的に最高の品質        | `claude-opus-4-6`                  | 最強の匿名化 Venice オプション               |
-| プライバシー + コーディング | `qwen3-coder-480b-a35b-instruct`   | 大きなコンテキストを持つプライベートコーディングモデル |
-| 高速 + 低コスト           | `qwen3-4b`                         | 軽量な推論モデル                             |
-| 複雑なプライベートタスク  | `deepseek-v3.2`                    | 強力な推論。ツール呼び出しは無効             |
-| 無検閲                    | `venice-uncensored`                | コンテンツ制限なし                           |
+| ユースケース               | モデル                             | 理由                                       |
+| ------------------------- | ---------------------------------- | ------------------------------------------ |
+| 一般的なチャット（デフォルト） | `kimi-k2-5`                        | 高性能なプライベート推論と画像認識         |
+| 総合的に最高の品質          | `claude-opus-4-6`                  | Venice で最も高性能な匿名化オプション      |
+| プライバシーとコーディング   | `qwen3-coder-480b-a35b-instruct`   | 大きなコンテキストを持つプライベートなコーディングモデル |
+| 高速かつ低コスト            | `qwen3-4b`                         | 軽量な推論モデル                           |
+| 複雑なプライベートタスク     | `deepseek-v3.2`                    | 高性能な推論。ツール呼び出しは無効         |
+| 無検閲                     | `venice-uncensored`                | コンテンツ制限なし                         |
 </Tip>
 
 ## 組み込みカタログ（38 モデル）
 
 <AccordionGroup>
   <Accordion title="プライベートモデル（26）— 完全にプライベート、ログ記録なし">
-    | モデル ID                              | 名前                                  | コンテキスト | 注記                      |
-    | -------------------------------------- | ------------------------------------- | ------- | --------------------------- |
-    | `kimi-k2-5`                            | Kimi K2.5                             | 256k    | デフォルト、推論、ビジョン  |
-    | `kimi-k2-thinking`                     | Kimi K2 Thinking                      | 256k    | 推論                   |
-    | `llama-3.3-70b`                        | Llama 3.3 70B                         | 128k    | 一般                     |
-    | `llama-3.2-3b`                         | Llama 3.2 3B                          | 128k    | 一般                     |
-    | `hermes-3-llama-3.1-405b`              | Hermes 3 Llama 3.1 405B               | 128k    | 一般、ツール無効     |
-    | `qwen3-235b-a22b-thinking-2507`        | Qwen3 235B Thinking                   | 128k    | 推論                   |
-    | `qwen3-235b-a22b-instruct-2507`        | Qwen3 235B Instruct                   | 128k    | 一般                     |
-    | `qwen3-coder-480b-a35b-instruct`       | Qwen3 Coder 480B                      | 256k    | コーディング                      |
-    | `qwen3-coder-480b-a35b-instruct-turbo` | Qwen3 Coder 480B Turbo                | 256k    | コーディング                      |
-    | `qwen3-5-35b-a3b`                      | Qwen3.5 35B A3B                       | 256k    | 推論、ビジョン           |
-    | `qwen3-next-80b`                       | Qwen3 Next 80B                        | 256k    | 一般                     |
-    | `qwen3-vl-235b-a22b`                   | Qwen3 VL 235B（ビジョン）             | 256k    | ビジョン                      |
-    | `qwen3-4b`                             | Venice Small（Qwen3 4B）              | 32k     | 高速、推論              |
-    | `deepseek-v3.2`                        | DeepSeek V3.2                         | 160k    | 推論、ツール無効    |
-    | `venice-uncensored`                    | Venice Uncensored（Dolphin-Mistral）  | 32k     | 無検閲、ツール無効   |
-    | `mistral-31-24b`                       | Venice Medium（Mistral）              | 128k    | ビジョン                       |
-    | `google-gemma-3-27b-it`                | Google Gemma 3 27B Instruct           | 198k    | ビジョン                       |
-    | `openai-gpt-oss-120b`                  | OpenAI GPT OSS 120B                   | 128k    | 一般                      |
-    | `nvidia-nemotron-3-nano-30b-a3b`       | NVIDIA Nemotron 3 Nano 30B            | 128k    | 一般                      |
-    | `olafangensan-glm-4.7-flash-heretic`   | GLM 4.7 Flash Heretic                 | 128k    | 推論                    |
-    | `zai-org-glm-4.6`                      | GLM 4.6                               | 198k    | 一般                      |
-    | `zai-org-glm-4.7`                      | GLM 4.7                               | 198k    | 推論                    |
-    | `zai-org-glm-4.7-flash`                | GLM 4.7 Flash                         | 128k    | 推論                    |
-    | `zai-org-glm-5`                        | GLM 5                                 | 198k    | 推論                    |
-    | `minimax-m21`                          | MiniMax M2.1                          | 198k    | 推論                    |
-    | `minimax-m25`                          | MiniMax M2.5                          | 198k    | 推論                    |
+    | モデル ID                               | 名前                                  | コンテキスト | 備考                        |
+    | -------------------------------------- | ------------------------------------- | ------------ | --------------------------- |
+    | `kimi-k2-5`                            | Kimi K2.5                             | 256k         | デフォルト、推論、画像認識   |
+    | `kimi-k2-thinking`                     | Kimi K2 Thinking                      | 256k         | 推論                        |
+    | `llama-3.3-70b`                        | Llama 3.3 70B                         | 128k         | 汎用                        |
+    | `llama-3.2-3b`                         | Llama 3.2 3B                          | 128k         | 汎用                        |
+    | `hermes-3-llama-3.1-405b`              | Hermes 3 Llama 3.1 405B               | 128k         | 汎用、ツール無効            |
+    | `qwen3-235b-a22b-thinking-2507`        | Qwen3 235B Thinking                   | 128k         | 推論                        |
+    | `qwen3-235b-a22b-instruct-2507`        | Qwen3 235B Instruct                   | 128k         | 汎用                        |
+    | `qwen3-coder-480b-a35b-instruct`       | Qwen3 Coder 480B                      | 256k         | コーディング                |
+    | `qwen3-coder-480b-a35b-instruct-turbo` | Qwen3 Coder 480B Turbo                | 256k         | コーディング                |
+    | `qwen3-5-35b-a3b`                      | Qwen3.5 35B A3B                       | 256k         | 推論、画像認識              |
+    | `qwen3-next-80b`                       | Qwen3 Next 80B                        | 256k         | 汎用                        |
+    | `qwen3-vl-235b-a22b`                   | Qwen3 VL 235B (Vision)                | 256k         | 画像認識                    |
+    | `qwen3-4b`                             | Venice Small (Qwen3 4B)               | 32k          | 高速、推論                  |
+    | `deepseek-v3.2`                        | DeepSeek V3.2                         | 160k         | 推論、ツール無効            |
+    | `venice-uncensored`                    | Venice Uncensored (Dolphin-Mistral)   | 32k          | 無検閲、ツール無効          |
+    | `mistral-31-24b`                       | Venice Medium (Mistral)               | 128k         | 画像認識                    |
+    | `google-gemma-3-27b-it`                | Google Gemma 3 27B Instruct           | 198k         | 画像認識                    |
+    | `openai-gpt-oss-120b`                  | OpenAI GPT OSS 120B                   | 128k         | 汎用                        |
+    | `nvidia-nemotron-3-nano-30b-a3b`       | NVIDIA Nemotron 3 Nano 30B            | 128k         | 汎用                        |
+    | `olafangensan-glm-4.7-flash-heretic`   | GLM 4.7 Flash Heretic                 | 128k         | 推論                        |
+    | `zai-org-glm-4.6`                      | GLM 4.6                               | 198k         | 汎用                        |
+    | `zai-org-glm-4.7`                      | GLM 4.7                               | 198k         | 推論                        |
+    | `zai-org-glm-4.7-flash`                | GLM 4.7 Flash                         | 128k         | 推論                        |
+    | `zai-org-glm-5`                        | GLM 5                                 | 198k         | 推論                        |
+    | `minimax-m21`                          | MiniMax M2.1                          | 198k         | 推論                        |
+    | `minimax-m25`                          | MiniMax M2.5                          | 198k         | 推論                        |
   </Accordion>
 
   <Accordion title="匿名化モデル（12）— Venice プロキシ経由">
-    | モデル ID                       | 名前                            | コンテキスト | 注記                      |
-    | -------------------------------- | -------------------------------- | ------- | ---------------------------- |
-    | `claude-opus-4-6`               | Claude Opus 4.6（Venice 経由）   | 1M      | 推論、ビジョン            |
-    | `claude-sonnet-4-6`             | Claude Sonnet 4.6（Venice 経由） | 1M      | 推論、ビジョン            |
-    | `openai-gpt-54`                 | GPT-5.4（Venice 経由）           | 1M      | 推論、ビジョン            |
-    | `openai-gpt-53-codex`           | GPT-5.3 Codex（Venice 経由）     | 400k    | 推論、ビジョン、コーディング     |
-    | `openai-gpt-52`                 | GPT-5.2（Venice 経由）           | 256k    | 推論                    |
-    | `openai-gpt-52-codex`           | GPT-5.2 Codex（Venice 経由）     | 256k    | 推論、ビジョン、コーディング     |
-    | `openai-gpt-4o-2024-11-20`      | GPT-4o（Venice 経由）            | 128k    | ビジョン                        |
-    | `openai-gpt-4o-mini-2024-07-18` | GPT-4o Mini（Venice 経由）       | 128k    | ビジョン                        |
-    | `gemini-3-1-pro-preview`        | Gemini 3.1 Pro（Venice 経由）    | 1M      | 推論、ビジョン             |
-    | `gemini-3-pro-preview`          | Gemini 3 Pro（Venice 経由）      | 198k    | 推論、ビジョン             |
-    | `gemini-3-flash-preview`        | Gemini 3 Flash（Venice 経由）    | 256k    | 推論、ビジョン             |
-    | `grok-41-fast`                  | Grok 4.1 Fast（Venice 経由）     | 1M      | 推論、ビジョン             |
+    | モデル ID                        | 名前                            | コンテキスト | 備考                         |
+    | -------------------------------- | ------------------------------- | ------------ | ---------------------------- |
+    | `claude-opus-4-6`               | Claude Opus 4.6 (via Venice)    | 1M           | 推論、画像認識               |
+    | `claude-sonnet-4-6`             | Claude Sonnet 4.6 (via Venice)  | 1M           | 推論、画像認識               |
+    | `openai-gpt-54`                 | GPT-5.4 (via Venice)            | 1M           | 推論、画像認識               |
+    | `openai-gpt-53-codex`           | GPT-5.3 Codex (via Venice)      | 400k         | 推論、画像認識、コーディング |
+    | `openai-gpt-52`                 | GPT-5.2 (via Venice)            | 256k         | 推論                         |
+    | `openai-gpt-52-codex`           | GPT-5.2 Codex (via Venice)      | 256k         | 推論、画像認識、コーディング |
+    | `openai-gpt-4o-2024-11-20`      | GPT-4o (via Venice)             | 128k         | 画像認識                     |
+    | `openai-gpt-4o-mini-2024-07-18` | GPT-4o Mini (via Venice)        | 128k         | 画像認識                     |
+    | `gemini-3-1-pro-preview`        | Gemini 3.1 Pro (via Venice)     | 1M           | 推論、画像認識               |
+    | `gemini-3-pro-preview`          | Gemini 3 Pro (via Venice)       | 198k         | 推論、画像認識               |
+    | `gemini-3-flash-preview`        | Gemini 3 Flash (via Venice)     | 256k         | 推論、画像認識               |
+    | `grok-41-fast`                  | Grok 4.1 Fast (via Venice)      | 1M           | 推論、画像認識               |
   </Accordion>
 </AccordionGroup>
 
-Grok ベースの Venice モデル（`grok-41-fast` など）は、ネイティブ xAI プロバイダーと同じツールスキーマ互換パッチを受けます。同じアップストリームのツール呼び出し形式を共有しているためです。
+Grok を基盤とする Venice モデル（`grok-41-fast` など）には、ネイティブ xAI プロバイダーと同じツールスキーマ互換パッチが適用されます。これは、両者が同じ上流のツール呼び出し形式を共有しているためです。
 
-## モデル検出
+## モデルの検出
 
-上記のバンドル済みカタログは、マニフェストに基づくシードリストです。実行時に OpenClaw は Venice `/models` API からこれを更新し、API に到達できない場合はシードリストにフォールバックします。`/models` エンドポイントは公開されています（一覧表示に認証は不要）が、推論には有効な API キーが必要です。
+上記のバンドル済みカタログは、マニフェストに基づく初期リストです。実行時に OpenClaw は Venice の `/models` API からカタログを更新し、API に到達できない場合は初期リストにフォールバックします。`/models` エンドポイントは公開されており（一覧表示に認証は不要）、推論には有効な API キーが必要です。
 
 ## DeepSeek V4 のリプレイ動作
 
-Venice が `deepseek-v4-pro` や
-`deepseek-v4-flash` などの DeepSeek V4 モデルを公開している場合、Venice が省略したときに OpenClaw はアシスタントメッセージの必須 `reasoning_content` リプレイフィールドを埋め、リクエストペイロードから `thinking`/
-`reasoning`/`reasoning_effort` を取り除きます（Venice はこれらのモデルで DeepSeek ネイティブの `thinking` 制御を拒否します）。このリプレイ修正は、ネイティブ DeepSeek プロバイダー固有の thinking 制御とは別です。
+Venice が `deepseek-v4-pro` や `deepseek-v4-flash` などの DeepSeek V4 モデルを公開している場合、Venice によって省略されたアシスタントメッセージの必須 `reasoning_content` リプレイフィールドを OpenClaw が補完し、リクエストペイロードから `thinking`／`reasoning`／`reasoning_effort` を除去します（Venice はこれらのモデルに対する DeepSeek ネイティブの `thinking` 制御を拒否します）。このリプレイ修正は、ネイティブ DeepSeek プロバイダー独自の思考制御とは別のものです。
 
-## ストリーミングとツールサポート
+## ストリーミングとツールのサポート
 
-| 機能             | サポート                                           |
+| 機能             | サポート                                          |
 | ---------------- | ------------------------------------------------- |
-| ストリーミング   | すべてのモデル                                    |
-| 関数呼び出し     | ほとんどのモデル。上記の注記があるモデルではモデル単位で無効 |
-| ビジョン/画像    | 上記で「ビジョン」と記載されたモデル              |
-| JSON モード      | `response_format` 経由                            |
+| ストリーミング    | すべてのモデル                                    |
+| 関数呼び出し      | ほとんどのモデル。上記に記載したモデルでは無効    |
+| 画像認識／画像    | 上記で「画像認識」と記載されたモデル              |
+| JSON モード       | `response_format` 経由                            |
 
 ## 料金
 
-Venice はクレジットベースのシステムを使用します。匿名化モデルのコストは、直接 API 料金に少額の Venice 手数料を加えたものとおおむね同等です。現在の料金については
-[venice.ai/pricing](https://venice.ai/pricing) を参照してください。
+Venice はクレジット制を採用しています。匿名化モデルの料金は、直接 API を利用する場合の料金に Venice の少額の手数料を加えた程度です。現在の料金については、[venice.ai/pricing](https://venice.ai/pricing) を参照してください。
 
 ## 使用例
 
@@ -207,16 +204,16 @@ openclaw agent --model venice/qwen3-coder-480b-a35b-instruct --message "Refactor
   </Accordion>
 
   <Accordion title="モデルを利用できない">
-    現在利用可能なモデルを確認するには `openclaw models list --all --provider venice` を実行してください。Venice がモデルを追加または廃止するにつれて、カタログは変わります。
+    現在利用可能なモデルを確認するには、`openclaw models list --all --provider venice` を実行してください。Venice がモデルを追加または廃止すると、カタログも変更されます。
   </Accordion>
 
   <Accordion title="接続の問題">
-    Venice API は `https://api.venice.ai/api/v1` にあります。そのホストへの HTTPS がネットワークで許可されていることを確認してください。
+    Venice API は `https://api.venice.ai/api/v1` にあります。ネットワークからこのホストへの HTTPS 接続が許可されていることを確認してください。
   </Accordion>
 </AccordionGroup>
 
 <Note>
-詳細ヘルプ: [トラブルシューティング](/ja-JP/help/troubleshooting) と [FAQ](/ja-JP/help/faq)。
+その他のヘルプ：[トラブルシューティング](/ja-JP/help/troubleshooting)および[よくある質問](/ja-JP/help/faq)。
 </Note>
 
 ## 高度な設定
@@ -253,10 +250,10 @@ openclaw agent --model venice/qwen3-coder-480b-a35b-instruct --message "Refactor
   </Accordion>
 </AccordionGroup>
 
-## 関連
+## 関連情報
 
 <CardGroup cols={2}>
-  <Card title="モデル選択" href="/ja-JP/concepts/model-providers" icon="layers">
+  <Card title="モデルの選択" href="/ja-JP/concepts/model-providers" icon="layers">
     プロバイダー、モデル参照、フェイルオーバー動作の選択。
   </Card>
   <Card title="Venice AI" href="https://venice.ai" icon="globe">
@@ -266,6 +263,6 @@ openclaw agent --model venice/qwen3-coder-480b-a35b-instruct --message "Refactor
     Venice API リファレンスと開発者向けドキュメント。
   </Card>
   <Card title="料金" href="https://venice.ai/pricing" icon="credit-card">
-    現在の Venice クレジット料金とプラン。
+    現在の Venice のクレジット単価とプラン。
   </Card>
 </CardGroup>

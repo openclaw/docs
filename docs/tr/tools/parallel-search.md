@@ -1,43 +1,42 @@
 ---
 read_when:
-    - API anahtarı olmadan web araması istiyorsunuz
+    - API anahtarı olmadan web araması yapmak istiyorsunuz
     - Parallel'ın ücretli Arama API'sini istiyorsunuz
-    - LLM bağlam verimliliği için sıralanmış yoğun alıntılar istiyorsunuz
-summary: Paralel Arama -- Web kaynaklarından LLM için optimize edilmiş yoğun alıntılar
+    - LLM bağlam verimliliğine göre sıralanmış yoğun alıntılar istiyorsunuz
+summary: Paralel Arama -- web kaynaklarından LLM için optimize edilmiş yoğun alıntılar
 title: Paralel arama
 x-i18n:
-    generated_at: "2026-06-28T01:24:23Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:53:49Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ef64c2c125d2885385308dd8a57421b696fa1a9a5455b8c3b83854016f6514cb
+    source_hash: eff693f286015b287bbdacf44f11ff6f07f2f7d2605ef6f09259e7402b40515e
     source_path: tools/parallel-search.md
     workflow: 16
 ---
 
-Parallel Plugin'i iki [Parallel](https://parallel.ai/) `web_search` sağlayıcısı sunar:
+Parallel Plugin, yapay zekâ ajanları için oluşturulmuş bir web dizininden sıralanmış, LLM için optimize edilmiş alıntılar döndüren iki [Parallel](https://parallel.ai/) `web_search`
+sağlayıcısı sunar:
 
-- **Parallel Search (Free)** (`parallel-free`) -- Parallel'ın ücretsiz
-  [Search MCP](https://docs.parallel.ai/integrations/mcp/search-mcp) hizmeti. Hesap
-  veya API anahtarı gerektirmez. Parallel'ın barındırılan, anahtarsız arama yolunu
-  istediğinizde bunu açıkça seçin.
-- **Parallel Search** (`parallel`) -- Parallel'ın ücretli Search API'si. Bir
-  `PARALLEL_API_KEY` gerektirir ve daha yüksek hız limitleri ile hedef ayarı sunar.
+| Sağlayıcı              | id              | Kimlik doğrulama                                                                          |
+| ---------------------- | --------------- | ------------------------------------------------------------------------------------------ |
+| Parallel Search (Ücretsiz) | `parallel-free` | Yok -- Parallel'ın ücretsiz [Search MCP](https://docs.parallel.ai/integrations/mcp/search-mcp) hizmeti |
+| Parallel Search        | `parallel`      | `PARALLEL_API_KEY` -- ücretli Search API, daha yüksek hız sınırları ve hedef ayarlama      |
 
-İkisi de AI agent'ları için oluşturulmuş bir web dizininden sıralanmış, LLM için optimize edilmiş alıntılar döndürür.
 Birini açıkça seçmek için `tools.web.search.provider` değerini `parallel-free`
-veya `parallel` olarak ayarlayın.
+veya `parallel` olarak ayarlayın; hiçbiri otomatik olarak algılanmaz.
 
 <Note>
-  OpenAI Responses modelleri, `tools.web.search.provider` ayarlanmamışsa
-  OpenAI'ın yerel web aramasını kullanır, bu nedenle Parallel sağlayıcılarını
-  atlarlar. Onları Parallel üzerinden yönlendirmek için `tools.web.search.provider`
-  değerini `parallel-free` veya `parallel` olarak ayarlayın.
+  Doğrudan OpenAI Responses modelleri (`api: "openai-responses"`, sağlayıcı
+  `openai`, resmî API temel URL'si), `tools.web.search.provider` ayarlanmamış,
+  boş, `"auto"` veya `"openai"` olduğunda OpenAI'ın barındırılan yerel web aramasını
+  otomatik olarak kullanır; bu nedenle varsayılan olarak Parallel'ı atlar. Bunları
+  bunun yerine Parallel üzerinden yönlendirmek için `tools.web.search.provider`
+  değerini `parallel-free` veya `parallel` olarak ayarlayın. Bkz.
+  [Web Aramasına genel bakış](/tr/tools/web).
 </Note>
 
-## Plugin'i yükleyin
-
-Resmi Plugin'i yükleyin, ardından Gateway'i yeniden başlatın:
+## Plugin'i yükleme
 
 ```bash
 openclaw plugins install @openclaw/parallel-plugin
@@ -46,16 +45,16 @@ openclaw gateway restart
 
 ## API anahtarı (ücretli sağlayıcı)
 
-`parallel-free` API anahtarı gerektirmez, ancak yine de yönetilen sağlayıcı
-olarak seçilmelidir. Ücretli `parallel` sağlayıcısı bir API anahtarı gerektirir:
+`parallel-free` anahtar gerektirmez ancak yine de açıkça seçilmelidir. Ücretli
+`parallel` sağlayıcısı bir API anahtarı gerektirir:
 
 <Steps>
   <Step title="Hesap oluşturun">
-    [platform.parallel.ai](https://platform.parallel.ai) adresinden kaydolun ve
-    panonuzdan bir API anahtarı oluşturun.
+    [platform.parallel.ai](https://platform.parallel.ai) adresinde kaydolun ve
+    kontrol panelinizden bir API anahtarı oluşturun.
   </Step>
-  <Step title="Anahtarı depolayın">
-    Gateway ortamında `PARALLEL_API_KEY` ayarlayın veya şu komutla yapılandırın:
+  <Step title="Anahtarı saklayın">
+    Gateway ortamında `PARALLEL_API_KEY` değişkenini ayarlayın veya şununla yapılandırın:
 
     ```bash
     openclaw configure --section web
@@ -73,8 +72,8 @@ olarak seçilmelidir. Ücretli `parallel` sağlayıcısı bir API anahtarı gere
       parallel: {
         config: {
           webSearch: {
-            apiKey: "par-...", // optional if PARALLEL_API_KEY is set
-            baseUrl: "https://api.parallel.ai", // optional; OpenClaw appends /v1/search
+            apiKey: "par-...", // PARALLEL_API_KEY ayarlanmışsa isteğe bağlı
+            baseUrl: "https://api.parallel.ai", // isteğe bağlı; OpenClaw /v1/search ekler
           },
         },
       },
@@ -83,8 +82,8 @@ olarak seçilmelidir. Ücretli `parallel` sağlayıcısı bir API anahtarı gere
   tools: {
     web: {
       search: {
-        // Use "parallel-free" for the free Search MCP, or "parallel" for
-        // the paid API-backed provider shown here.
+        // Ücretsiz Search MCP için "parallel-free" veya burada gösterilen
+        // ücretli API destekli sağlayıcı için "parallel".
         provider: "parallel",
       },
     },
@@ -92,84 +91,88 @@ olarak seçilmelidir. Ücretli `parallel` sağlayıcısı bir API anahtarı gere
 }
 ```
 
-**Ortam alternatifi:** Gateway ortamında `PARALLEL_API_KEY` ayarlayın.
-Bir gateway kurulumu için bunu `~/.openclaw/.env` içine koyun.
+**Ortam alternatifi:** Gateway ortamında `PARALLEL_API_KEY` değişkenini
+ayarlayın. Bir Gateway kurulumu için bunu `~/.openclaw/.env` dosyasına ekleyin.
 
-## Temel URL geçersiz kılma
+## Temel URL'yi geçersiz kılma
 
-Temel URL geçersiz kılması yalnızca ücretli `parallel` sağlayıcısına uygulanır.
-Ücretsiz `parallel-free` sağlayıcısı her zaman `https://search.parallel.ai/mcp`
-kullanır.
+Yalnızca ücretli `parallel` sağlayıcısı için geçerlidir; `parallel-free` her
+zaman `https://search.parallel.ai/mcp` adresini kullanır ve bu ayarı yok sayar.
 
-Parallel isteklerinin uyumlu bir proxy veya alternatif Parallel uç noktası
-(örneğin Cloudflare AI Gateway) üzerinden gitmesi gerektiğinde
-`plugins.entries.parallel.config.webSearch.baseUrl` ayarlayın. OpenClaw, çıplak
-ana makine adlarını başına `https://` ekleyerek normalleştirir ve yol zaten
-orada bitmiyorsa `/v1/search` ekler. Çözümlenen uç nokta arama önbellek
-anahtarına dahil edilir, bu nedenle farklı Parallel uç noktalarından gelen
-sonuçlar paylaşılmaz.
+Ücretli istekleri uyumlu bir proxy veya alternatif uç nokta (örneğin
+Cloudflare AI Gateway) üzerinden yönlendirmek için
+`plugins.entries.parallel.config.webSearch.baseUrl` değerini ayarlayın. OpenClaw,
+yalın ana bilgisayarların başına `https://` ekleyerek bunları normalleştirir ve
+yol zaten bununla bitmiyorsa `/v1/search` ekler. Çözümlenen uç nokta, arama
+önbelleği anahtarının bir parçasıdır; bu nedenle farklı uç noktalardan gelen
+sonuçlar hiçbir zaman paylaşılmaz.
 
 ## Araç parametreleri
 
-OpenClaw, modelin hem doğal dildeki hedefi hem de birkaç kısa anahtar kelime
-sorgusunu doldurabilmesi için Parallel'ın yerel arama şeklini sunar; bu eşleştirme,
-Parallel'ın en iyi sonuçlar için [önerdiği](https://docs.parallel.ai/search/best-practices)
-yaklaşımdır.
+Her iki sağlayıcı da Parallel'ın yerel arama biçimini sunar; böylece model,
+doğal dilde bir hedefin yanı sıra birkaç kısa anahtar sözcük sorgusu girer.
+Parallel, en iyi sonuçlar için bu eşleştirmeyi
+[önerir](https://docs.parallel.ai/search/best-practices).
 
 <ParamField path="objective" type="string" required>
-Alttaki sorunun veya hedefin doğal dilde açıklaması (en fazla 5000 karakter).
+Temel sorunun veya hedefin doğal dilde açıklaması (en fazla 5000 karakter).
 Kendi başına anlaşılır olmalıdır.
 </ParamField>
 
 <ParamField path="search_queries" type="string[]" required>
-Kısa anahtar kelime arama sorguları, her biri 3-6 kelime (1-5 giriş, her biri
-en fazla 200 karakter). En iyi sonuçlar için 2-3 çeşitli sorgu sağlayın.
+Her biri 3-6 sözcükten oluşan kısa anahtar sözcük arama sorguları (1-5 girdi,
+her biri en fazla 200 karakter). En iyi sonuçlar için birbirinden farklı 2-3
+sorgu sağlayın.
 </ParamField>
 
 <ParamField path="count" type="number">
-Döndürülecek sonuç sayısı (1-40).
+Döndürülecek sonuçlar (1-40).
 </ParamField>
 
 <ParamField path="session_id" type="string">
-İsteğe bağlı Parallel oturum kimliği (`parallel` üzerinde en fazla 1000 karakter;
-ücretsiz `parallel-free` Search MCP bunu 100 ile sınırlar). Aynı görevin parçası
-olan takip aramalarında önceki bir Parallel sonucundan gelen `sessionId` değerini
-geçirin; böylece Parallel ilgili çağrıları gruplayabilir ve sonraki sonuçları
-iyileştirebilir. Sınırı aşan bir kimlik atılır ve yeni bir kimlik oluşturulur.
+Önceki bir sonucun `sessionId` değerinden alınan isteğe bağlı Parallel oturum
+kimliği. Parallel'ın ilişkili çağrıları gruplaması ve sonraki sonuçları
+iyileştirmesi için aynı görevdeki takip aramalarında bunu iletin. `parallel`
+için en fazla 1000 karakterdir; ücretsiz `parallel-free` Search MCP bunu 100
+karakterle sınırlar. Sınırı aşan bir kimlik kaldırılır (ücretli) veya yeni bir
+kimlik oluşturulur (ücretsiz).
 </ParamField>
 
 <ParamField path="client_model" type="string">
-Çağrıyı yapan modelin isteğe bağlı tanımlayıcısı (örn. `claude-opus-4-7`,
-`gpt-5.5`). Parallel'ın modelinizin yeteneklerine göre varsayılan ayarları
-uyarlamasını sağlar. Tam etkin model slug'ını geçirin; bir aile takma adına
-kısaltmayın.
+Çağrıyı yapan modelin isteğe bağlı tanımlayıcısı (ör. `claude-opus-4-7`,
+`gpt-5.6-sol`), en fazla 100 karakter. Parallel'ın varsayılan ayarları
+modelinizin yeteneklerine göre uyarlamasını sağlar. Etkin modelin tam kısa
+adını iletin; bunu bir aile takma adına kısaltmayın.
 </ParamField>
 
 ## Notlar
 
-- Parallel, sonuçları insan tıklama oranına göre değil LLM akıl yürütme
-  faydasına göre sıralar ve sıkıştırır; tam sayfa içerik yerine her sonuçta
-  yoğun alıntılar bekleyin
+- Parallel, sonuçları insanların tıklaması için değil, LLM'in akıl yürütme
+  açısından faydası için sıralar ve sıkıştırır; tam sayfa içerik yerine sonuç
+  başına yoğun alıntılar bekleyin.
 - Sonuç alıntıları `excerpts` dizisi olarak döner ve genel `web_search`
-  sözleşmesiyle uyumluluk için `description` alanında da birleştirilir
-- Parallel her yanıtta bir `session_id` döndürür; OpenClaw bunu araç yükünde
-  `sessionId` olarak sunar, böylece çağıranlar takip aramalarını gruplayabilir
-- Parallel'dan gelen `searchId`, `warnings` ve `usage` mevcut olduklarında
-  aynen geçirilir
-- OpenClaw, çözümlenmiş sonuç sayısını her zaman Parallel'a
-  `advanced_settings.max_results` olarak iletir. Önce çağıranın `count`
-  argümanı, sonra üst düzey `tools.web.search.maxResults` ayarı kazanır; aksi
-  halde OpenClaw'ın genel `web_search` varsayılanı (5) kullanılır. Bu, sağlayıcılar
-  arasında geçiş yaparken sonuç hacmini tutarlı tutar; Parallel kendi başına
-  varsayılan olarak 10 kullanır
-- Sonuçlar varsayılan olarak 15 dakika önbelleğe alınır (`cacheTtlMinutes` ile
-  yapılandırılabilir)
-- Ücretsiz `parallel-free` sağlayıcısı aynı parametreleri kabul eder. `count`
-  değerini istemci tarafında uygular ve sağlanmadığında her çağrı için bir
-  `session_id` oluşturur.
+  sözleşmesiyle uyumluluk için `description` alanında da birleştirilir.
+- Her iki sağlayıcı da bir `session_id` döndürür; OpenClaw, çağıranların takip
+  aramalarını gruplandırabilmesi için bunu araç yükünde `sessionId` olarak
+  sunar. Parallel tarafından oluşturulan bir oturum kimliği (çağıranın
+  sağlamadığı bir kimlik), aynı sorgulara sahip ilgisiz görevlerin bunu
+  devralmaması için önbellek girdisinin dışında tutulur.
+- Parallel'dan gelen `searchId`, `warnings` ve `usage`, mevcut olduklarında
+  aynen aktarılır.
+- OpenClaw, çözümlenen sonuç sayısını her zaman Parallel'a
+  `advanced_settings.max_results` (`parallel`) olarak iletir veya Parallel'ın
+  sabit boyutlu yanıtından sonra `count` değerini istemci tarafında uygular
+  (`parallel-free`). Önce çağıranın `count` argümanı, ardından
+  `tools.web.search.maxResults` geçerli olur; aksi durumda OpenClaw'ın genel
+  `web_search` varsayılanı (5) kullanılır. Parallel'ın kendi API'sinin
+  varsayılanı 10'dur.
+- Sonuçlar varsayılan olarak 15 dakika önbelleğe alınır (`cacheTtlMinutes`).
+- Çağıran bir değer sağlamadığında `parallel-free`, MCP el sıkışması
+  aracılığıyla her çağrı için yeni bir `session_id` oluşturur; `parallel` ise
+  bu durumda değeri ayarlanmamış bırakır.
 
-## İlgili
+## İlgili içerikler
 
-- [Web Search genel bakışı](/tr/tools/web) -- tüm sağlayıcılar ve otomatik algılama
-- [Exa arama](/tr/tools/exa-search) -- içerik çıkarma ile nöral arama
-- [Perplexity Search](/tr/tools/perplexity-search) -- alan adı filtreleme ile yapılandırılmış sonuçlar
+- [Web Aramasına genel bakış](/tr/tools/web) -- tüm sağlayıcılar ve otomatik algılama
+- [Exa araması](/tr/tools/exa-search) -- içerik çıkarma özellikli sinir ağı tabanlı arama
+- [Perplexity Search](/tr/tools/perplexity-search) -- alan adı filtrelemeli yapılandırılmış sonuçlar

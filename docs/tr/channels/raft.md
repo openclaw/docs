@@ -1,45 +1,45 @@
 ---
 read_when:
     - OpenClaw'ı bir Raft çalışma alanına bağlamak istiyorsunuz
-    - Bir Raft Harici Ajan yapılandırıyorsunuz
-    - Raft uyandırma teslimatında hata ayıklıyorsunuz
+    - Bir Raft Harici Aracısı yapılandırıyorsunuz
+    - Raft uyandırma iletiminde hata ayıklıyorsunuz
 sidebarTitle: Raft
-summary: Raft CLI uyandırma köprüsü üzerinden Raft External Agent desteği
-title: Raft
+summary: Raft CLI uyandırma köprüsü üzerinden Raft Harici Aracı desteği
+title: Sal Sal
 x-i18n:
-    generated_at: "2026-06-28T00:15:02Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:04:59Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ef9ebfd27e69575d9a1534b3b31f05036f081c54a2379411d2c7fb6f8165d558
+    source_hash: 454d92d764a4ec3b0ec52467cba254dcad795870e04d1d32d4cf65d8b451a0de
     source_path: channels/raft.md
     workflow: 16
 ---
 
-Raft desteği, bir OpenClaw aracısını yerel Raft CLI üzerinden bir Raft Harici Aracısına bağlar. Raft, Gateway'e kimliği doğrulanmış uyandırma ipuçları gönderir. Ardından aracı, iletileri denetlemek ve göndermek için Raft CLI kullanır.
+Raft, yerel Raft CLI aracılığıyla bir OpenClaw ajanını Raft External Agent'a bağlar. Raft, Gateway'e kimliği doğrulanmış uyandırma bildirimleri gönderir; ajan ardından mesajları kontrol etmek ve göndermek için Raft CLI aracını kullanır. Yalnızca doğrudan sohbet desteklenir (gruplar desteklenmez).
 
 ## Kurulum
 
-Raft resmi bir harici plugin'dir. Gateway ana makinesine kurun:
+Raft, resmî bir harici Plugin'dir. Gateway ana makinesine kurun:
 
 ```bash
 openclaw plugins install @openclaw/raft
 openclaw gateway restart
 ```
 
-Ayrıntılar: [Pluginler](/tr/tools/plugin)
+Ayrıntılar: [Plugin'ler](/tr/tools/plugin)
 
-## Ön Koşullar
+## Ön koşullar
 
-- Harici Aracısı olan bir Raft çalışma alanı.
-- OpenClaw Gateway ile aynı ana makineye kurulmuş Raft CLI.
-- Zaten oturum açmış ve o Harici Aracıyla ilişkilendirilmiş bir Raft CLI profili.
+- External Agent içeren bir Raft çalışma alanı.
+- Raft CLI'ın OpenClaw Gateway ile aynı ana makineye ve hizmetin `PATH` ortam değişkeninde bulunacak şekilde kurulmuş olması.
+- Oturum açılmış ve ilgili External Agent ile ilişkilendirilmiş bir Raft CLI profili.
 
-Plugin, Raft kimlik bilgilerini saklamaz. Raft CLI, bu kimlik doğrulamayı kendi profilinde tutar.
+Plugin, Raft kimlik bilgilerini saklamaz; Raft CLI bu kimlik doğrulama bilgilerini kendi profilinde tutar.
 
 ## Yapılandırma
 
-Profili yapılandırmada ayarlayın:
+Yapılandırmada profili ayarlayın:
 
 ```json5
 {
@@ -52,13 +52,13 @@ Profili yapılandırmada ayarlayın:
 }
 ```
 
-Varsayılan hesap için bunun yerine Gateway ortamında `RAFT_PROFILE` ayarlayabilirsiniz:
+Varsayılan hesap için bunun yerine Gateway ortamında `RAFT_PROFILE` değişkenini ayarlayabilirsiniz:
 
 ```bash
 RAFT_PROFILE=openclaw
 ```
 
-Bir Gateway birden fazla Raft Harici Aracısına bağlandığında adlandırılmış bir hesap kullanın:
+Tek bir Gateway birden fazla Raft External Agent'a bağlandığında adlandırılmış hesaplar kullanın:
 
 ```json5
 {
@@ -77,25 +77,25 @@ Bir Gateway birden fazla Raft Harici Aracısına bağlandığında adlandırılm
 }
 ```
 
-Etkileşimli kurulum akışı aynı profili kaydeder:
+Etkileşimli kurulum aynı profili kaydeder:
 
 ```bash
-openclaw channels setup raft
+openclaw channels add --channel raft
 ```
 
-## Nasıl Çalışır
+## Çalışma şekli
 
-Gateway başlatıldığında plugin:
+Gateway başlatıldığında Plugin:
 
-1. Geçici bir bağlantı noktası üzerinde yalnızca loopback HTTP uyandırma uç noktası açar.
-2. Bu uç nokta ve süreç başına bir belirteçle `raft --profile <profile> agent bridge` başlatır.
-3. Yerel köprüden gelen yeniden oynatma kimliğine sahip, yalnızca kimliği doğrulanmış ve içeriksiz uyandırma ipuçlarını kabul eder.
-4. `eventId`, `attemptId`, `messageId`, `delivery_id`, `wake_id` veya `id` alanlarından birini gerektirir.
-5. Gateway yeniden başlatmaları dahil, yakın zamanda yeniden denenmiş uyandırma teslimlerini köprü olay kimliğine göre tekilleştirir.
+1. Geçici bir bağlantı noktasında yalnızca local loopback üzerinden erişilebilen bir HTTP uyandırma uç noktası açar.
+2. Bu uç nokta ve işleme özgü bir belirteçle `raft --profile <profile> agent bridge` komutunu başlatır.
+3. Yerel köprüden gelen yalnızca kimliği doğrulanmış, içeriksiz ve yeniden oynatma kimliğine sahip uyandırma bildirimlerini kabul eder.
+4. Her uyandırma yükünde `eventId`, `attemptId`, `messageId`, `delivery_id`, `wake_id` veya `id` alanlarından birinin bulunmasını zorunlu kılar.
+5. Yeniden denenen uyandırma teslimatlarını, Gateway yeniden başlatmaları da dâhil olmak üzere, köprü olay kimliğine göre 24 saat boyunca tekilleştirir.
 6. Geçerli köprü için kararlı bir çalışma zamanı oturumu ve Raft CLI protokolü için boş bir etkinlik boşaltma grubu döndürür.
-7. Kabul edilen her uyandırma için serileştirilmiş bir OpenClaw aracı turu başlatır.
+7. Kabul edilen her uyandırma için seri hâle getirilmiş bir OpenClaw ajan turu başlatır.
 
-Köprü, Raft teslim yeniden denemelerini ve yeniden bağlanmaları yönetir. OpenClaw turu, kopyalanmış bir Raft ileti gövdesi değil, yalnızca bir uyandırma bildirimi alır. Bekleyen iletileri okumak ve yanıtını göndermek için CLI kullanır:
+Raft teslimat yeniden denemelerinin ve yeniden bağlantıların yönetimi köprüye aittir. OpenClaw turu, kopyalanmış bir Raft mesaj gövdesi değil, yalnızca bir uyandırma bildirimi alır. Bekleyen mesajları okumak ve yanıtını göndermek için CLI'ı kullanır:
 
 ```bash
 raft --profile openclaw message check
@@ -103,36 +103,42 @@ raft --profile openclaw message send
 ```
 
 <Note>
-Raft normal bir anlık ileti taşıması değildir. OpenClaw, modelin son metnini köprü üzerinden otomatik olarak geri göndermez; bu nedenle aracı, bir uyandırmayı işledikten sonra Raft CLI kullanmalıdır.
+Raft, anlık ileti iletimi değildir. OpenClaw, modelin nihai metnini köprü üzerinden otomatik olarak geri göndermez; bu nedenle ajan, bir uyandırmayı işledikten sonra Raft CLI'ı kullanmalıdır.
 </Note>
 
 ## Doğrulama
 
-OpenClaw'ın CLI'yi bulabildiğini ve yapılandırılmış bir profili olduğunu denetleyin:
+OpenClaw'ın CLI'ı bulabildiğini ve yapılandırılmış bir profile sahip olduğunu doğrulayın:
 
 ```bash
 openclaw channels status --probe
 openclaw plugins inspect raft --runtime --json
 ```
 
-Ardından Raft Harici Aracısına bir ileti gönderin. Gateway günlüğü, Raft köprüsünün başlatıldığını ve ardından gelen bir uyandırmayı göstermelidir. Aracı, bekleyen iletilerini denetlemek için yapılandırılmış Raft profilini kullanmalıdır.
+Ardından Raft External Agent'a bir mesaj gönderin. Gateway günlüğünde önce Raft köprüsünün başlatıldığı, ardından gelen bir uyandırmanın alındığı görülmelidir. Ajan, bekleyen mesajlarını kontrol etmek için yapılandırılmış Raft profilini kullanmalıdır.
 
-## Sorun Giderme
+## Sorun giderme
 
 <AccordionGroup>
   <Accordion title="Raft CLI eksik">
-    Raft CLI'yi Gateway ana makinesine kurun ve `raft` komutunu hizmetin `PATH` içinde kullanılabilir yapın. `raft --help` ile doğrulayın, ardından Gateway'i yeniden başlatın.
+    Raft CLI'ı Gateway ana makinesine kurun ve `raft` komutunu hizmetin `PATH`
+    ortam değişkeninde kullanılabilir hâle getirin. `raft --help` ile doğrulayın,
+    ardından Gateway'i yeniden başlatın.
   </Accordion>
-  <Accordion title="Köprü hemen çıkıyor">
-    Yapılandırılmış profilin oturum açmış olduğunu ve amaçlanan Raft Harici Aracısına ait olduğunu doğrulayın. CLI tanılamasını görmek için `raft --profile <profile> agent bridge` komutunu doğrudan çalıştırın.
+  <Accordion title="Köprü hemen kapanıyor">
+    Yapılandırılmış profilde oturum açıldığını ve profilin amaçlanan Raft
+    External Agent'a ait olduğunu doğrulayın. CLI tanılama çıktısını görmek için
+    doğrudan `raft --profile <profile> agent bridge` komutunu çalıştırın.
   </Accordion>
   <Accordion title="Bir uyandırma geliyor ancak Raft yanıtı gönderilmiyor">
-    Aracı Raft CLI'yi çağırmadığında bu beklenen bir durumdur. Uyandırma köprüsü ileti gövdelerini veya otomatik son yanıtları taşımaz. Aracının araç ilkesini denetleyin ve `raft --profile <profile> message
-    check` ile `message send` komutlarını çalıştırabildiğinden emin olun.
+    Ajan Raft CLI'ı çağırmadığında bu beklenen bir durumdur. Uyandırma köprüsü,
+    mesaj gövdelerini veya otomatik nihai yanıtları taşımaz. Ajanın araç
+    politikasını kontrol edin ve `raft --profile <profile> message check` ile
+    `message send` komutlarını çalıştırabildiğinden emin olun.
   </Accordion>
 </AccordionGroup>
 
-## Referanslar
+## Kaynaklar
 
 - [Raft](https://raft.build/)
 - [Raft belgeleri](https://docs.raft.build/welcome/)

@@ -1,11 +1,11 @@
 ---
 read_when:
     - Estás instalando, configurando o auditando el plugin brave
-summary: Plugin proveedor de Brave Search de OpenClaw para búsqueda web.
+summary: Plugin del proveedor Brave Search de OpenClaw para búsquedas web.
 title: Plugin de Brave
 x-i18n:
-    generated_at: "2026-06-27T12:18:52Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T23:19:28Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 265b0efa840eb3ebc7bfc1cc47b703737bbd76050ac95e79825728030a166d37
@@ -15,17 +15,17 @@ x-i18n:
 
 # Plugin de Brave
 
-Plugin de proveedor de OpenClaw Brave Search para búsquedas web.
+Plugin del proveedor Brave Search de OpenClaw para búsquedas web.
 
 ## Distribución
 
 - Paquete: `@openclaw/brave-plugin`
-- Ruta de instalación: npm; ClawHub
+- Vía de instalación: npm; ClawHub
 
-## Superficie
+## Interfaz
 
-contracts: webSearchProviders
+contratos: webSearchProviders
 
-## Documentos relacionados
+## Documentación relacionada
 
 - [brave](/es/tools/brave-search)

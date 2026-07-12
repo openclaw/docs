@@ -1,52 +1,44 @@
 ---
 read_when:
-    - Anda ingin menjalankan satu giliran agen dari skrip (opsional mengirimkan balasan)
+    - Anda ingin menjalankan satu giliran agen dari skrip (dengan opsi mengirimkan balasan)
 summary: Referensi CLI untuk `openclaw agent` (kirim satu giliran agen melalui Gateway)
 title: Agen
 x-i18n:
-    generated_at: "2026-06-27T17:17:03Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:04:27Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: be2aad94ba288d14b4b18086dae54eb10c1cd0a6c7b27a836d07f39200e651d8
+    source_hash: 2e137c037a2fa58ac6534adbf1603218fc695e4c61e6c3118ce2c4ec6f1f2143
     source_path: cli/agent.md
     workflow: 16
 ---
 
 # `openclaw agent`
 
-Jalankan giliran agen melalui Gateway (gunakan `--local` untuk tertanam).
-Gunakan `--agent <id>` untuk menargetkan agen terkonfigurasi secara langsung.
+Jalankan satu giliran agen melalui Gateway. Beralih ke agen tertanam jika permintaan Gateway gagal; berikan `--local` untuk memaksa eksekusi tertanam sejak awal.
 
-Berikan setidaknya satu pemilih sesi:
+Berikan setidaknya satu pemilih sesi: `--to`, `--session-key`, `--session-id`, atau `--agent`.
 
-- `--to <dest>`
-- `--session-key <key>`
-- `--session-id <id>`
-- `--agent <id>`
-
-Terkait:
-
-- Alat kirim agen: [Kirim agen](/id/tools/agent-send)
+Terkait: [Alat pengiriman agen](/id/tools/agent-send)
 
 ## Opsi
 
 - `-m, --message <text>`: isi pesan
-- `--message-file <path>`: baca isi pesan dari file UTF-8
-- `-t, --to <dest>`: penerima yang digunakan untuk menurunkan kunci sesi
+- `--message-file <path>`: baca isi pesan dari berkas UTF-8
+- `-t, --to <dest>`: penerima yang digunakan untuk memperoleh kunci sesi
 - `--session-key <key>`: kunci sesi eksplisit yang digunakan untuk perutean
 - `--session-id <id>`: id sesi eksplisit
-- `--agent <id>`: id agen; mengesampingkan ikatan perutean
-- `--model <id>`: pengesampingan model untuk proses ini (`provider/model` atau id model)
-- `--thinking <level>`: tingkat berpikir agen (`off`, `minimal`, `low`, `medium`, `high`, ditambah tingkat khusus yang didukung penyedia seperti `xhigh`, `adaptive`, atau `max`)
-- `--verbose <on|off>`: simpan tingkat verbose untuk sesi
-- `--channel <channel>`: kanal pengiriman; hilangkan untuk menggunakan kanal sesi utama
-- `--reply-to <target>`: pengesampingan target pengiriman
-- `--reply-channel <channel>`: pengesampingan kanal pengiriman
-- `--reply-account <id>`: pengesampingan akun pengiriman
-- `--local`: jalankan agen tertanam secara langsung (setelah pramuat registri Plugin)
-- `--deliver`: kirim balasan kembali ke kanal/target yang dipilih
-- `--timeout <seconds>`: kesampingkan batas waktu agen (default 600 atau nilai konfigurasi)
+- `--agent <id>`: id agen; menggantikan pengikatan perutean
+- `--model <id>`: penggantian model untuk eksekusi ini (`provider/model` atau id model)
+- `--thinking <level>`: tingkat pemikiran agen (`off`, `minimal`, `low`, `medium`, `high`, serta tingkat khusus yang didukung penyedia seperti `xhigh`, `adaptive`, atau `max`)
+- `--verbose <on|off>`: pertahankan tingkat verbositas untuk sesi
+- `--channel <channel>`: saluran pengiriman; hilangkan untuk menggunakan saluran sesi utama
+- `--reply-to <target>`: penggantian target pengiriman
+- `--reply-channel <channel>`: penggantian saluran pengiriman
+- `--reply-account <id>`: penggantian akun pengiriman
+- `--local`: jalankan agen tertanam secara langsung (setelah pramuat registri plugin)
+- `--deliver`: kirim balasan kembali ke saluran/target yang dipilih
+- `--timeout <seconds>`: ganti batas waktu agen (bawaan 600, atau `agents.defaults.timeoutSeconds`); `0` menonaktifkan batas waktu
 - `--json`: keluarkan JSON
 
 ## Contoh
@@ -66,23 +58,20 @@ openclaw agent --agent ops --message "Run locally" --local
 
 ## Catatan
 
-- Berikan tepat salah satu dari `--message` atau `--message-file`. `--message-file` mempertahankan konten file multi-baris setelah menghapus BOM UTF-8 opsional, dan menolak file yang bukan UTF-8 valid.
-- Mode Gateway kembali ke agen tertanam ketika permintaan Gateway gagal. Gunakan `--local` untuk memaksa eksekusi tertanam sejak awal.
-- `--local` tetap memuat registri Plugin terlebih dahulu, sehingga penyedia, alat, dan kanal yang disediakan Plugin tetap tersedia selama proses tertanam.
-- `--local` dan proses fallback tertanam diperlakukan sebagai proses sekali jalan. Resource loopback MCP bawaan dan sesi stdio Claude hangat yang dibuka untuk proses lokal itu dihentikan setelah balasan, sehingga pemanggilan berskrip tidak membiarkan proses anak lokal tetap hidup.
-- Proses yang didukung Gateway meninggalkan resource loopback MCP milik Gateway di bawah proses Gateway yang berjalan; klien lama mungkin masih mengirim tanda pembersihan historis, tetapi Gateway menerimanya sebagai no-op kompatibilitas.
-- `--channel`, `--reply-channel`, dan `--reply-account` memengaruhi pengiriman balasan, bukan perutean sesi.
-- `--session-key` memilih kunci sesi eksplisit. Kunci berprefiks agen harus menggunakan `agent:<agent-id>:<session-key>`, dan `--agent` harus cocok dengan id agen milik kunci ketika keduanya diberikan. Kunci non-sentinel polos dicakupkan ke `--agent` ketika disediakan, atau ke agen default terkonfigurasi jika tidak; misalnya, `--agent ops --session-key incident-42` dirutekan ke `agent:ops:incident-42`. Literal `global` dan `unknown` tetap tidak dicakupkan hanya ketika tidak ada `--agent` yang disediakan; dalam kasus itu, fallback tertanam dan kepemilikan penyimpanan menggunakan agen default terkonfigurasi.
-- `--json` menjaga stdout khusus untuk respons JSON. Diagnostik Gateway, Plugin, dan fallback tertanam dirutekan ke stderr sehingga skrip dapat mengurai stdout secara langsung.
-- JSON fallback tertanam menyertakan `meta.transport: "embedded"` dan `meta.fallbackFrom: "gateway"` sehingga skrip dapat membedakan proses fallback dari proses Gateway.
-- Jika Gateway menerima proses agen tetapi CLI kehabisan waktu saat menunggu balasan akhir, fallback tertanam menggunakan id sesi/proses eksplisit `gateway-fallback-*` yang baru dan melaporkan `meta.fallbackReason: "gateway_timeout"` ditambah bidang sesi fallback. Ini menghindari perebutan kunci transkrip milik Gateway atau penggantian diam-diam sesi percakapan terute asli.
-- Untuk proses yang didukung Gateway, `SIGTERM` dan `SIGINT` menginterupsi permintaan CLI yang sedang menunggu. Jika Gateway sudah menerima proses, CLI juga mengirim `chat.abort` untuk id proses yang diterima itu sebelum keluar. Proses `--local` lokal dan proses fallback tertanam menerima sinyal abort yang sama, tetapi tidak mengirim `chat.abort`. Jika duplikat `--run-id` mencapai Gateway saat proses agen asli masih aktif, respons duplikat melaporkan `status: "in_flight"` dan CLI non-JSON mencetak diagnostik stderr alih-alih balasan kosong. Untuk pembungkus cron/systemd eksternal, pertahankan penahan hard-kill luar seperti `timeout -k 60 600 openclaw agent ...` agar supervisor tetap dapat menuai proses jika penghentian tidak dapat selesai.
-- Ketika perintah ini memicu regenerasi `models.json`, kredensial penyedia yang dikelola SecretRef disimpan sebagai penanda non-rahasia (misalnya nama variabel env, `secretref-env:ENV_VAR_NAME`, atau `secretref-managed`), bukan plaintext rahasia yang terselesaikan.
-- Penulisan penanda bersifat otoritatif sumber: OpenClaw menyimpan penanda dari snapshot konfigurasi sumber aktif, bukan dari nilai rahasia runtime yang terselesaikan.
+- Berikan tepat salah satu dari `--message` atau `--message-file`. `--message-file` menghapus BOM UTF-8 di awal dan mempertahankan konten multibaris; opsi ini menolak berkas yang bukan UTF-8 valid.
+- Perintah garis miring (misalnya `/compact`) tidak dapat dijalankan melalui `--message`. CLI menolaknya dan mengarahkan Anda ke perintah khusus sebagai gantinya (`openclaw sessions compact <key>` untuk Compaction).
+- Eksekusi `--local` dan peralihan tertanam bersifat sekali jalan: sumber daya loopback MCP bawaan dan sesi stdio Claude siap pakai yang dibuka untuk eksekusi dihentikan setelah balasan, sehingga pemanggilan berskrip tidak membiarkan proses turunan lokal tetap berjalan. Sebaliknya, eksekusi yang didukung Gateway mempertahankan sumber daya loopback MCP milik Gateway di bawah proses Gateway yang sedang berjalan.
+- Dengan `--agent`, `--channel`, dan `--to` secara bersamaan, perutean sesi mengikuti penerima kanonis saluran dan `session.dmScope`. Saluran dengan identitas penerima stabil yang hanya untuk pengiriman keluar menggunakan sesi milik penyedia yang terisolasi dari sesi utama agen. `--reply-channel` dan `--reply-account` hanya memengaruhi pengiriman.
+- `--session-key` memilih kunci sesi eksplisit. Kunci berawalan agen harus menggunakan `agent:<agent-id>:<session-key>`, dan `--agent` harus cocok dengan id agen pada kunci ketika keduanya diberikan. Kunci biasa yang bukan sentinel dicakup ke `--agent` jika diberikan, atau ke agen bawaan yang dikonfigurasi jika tidak; misalnya, `--agent ops --session-key incident-42` dirutekan ke `agent:ops:incident-42`. Kunci literal `global` dan `unknown` tetap tidak tercakup hanya ketika `--agent` tidak diberikan.
+- `--json` mencadangkan stdout untuk respons JSON; diagnostik Gateway, Plugin, dan peralihan tertanam dikirim ke stderr agar skrip dapat mengurai stdout secara langsung.
+- JSON peralihan tertanam menyertakan `meta.transport: "embedded"` dan `meta.fallbackFrom: "gateway"` agar skrip dapat mendeteksi eksekusi peralihan.
+- Jika Gateway menerima eksekusi tetapi CLI kehabisan waktu saat menunggu balasan akhir, peralihan tertanam menggunakan id sesi/eksekusi `gateway-fallback-*` baru dan melaporkan `meta.fallbackReason: "gateway_timeout"` beserta kolom sesi peralihan, alih-alih berlomba dengan transkrip milik Gateway atau secara diam-diam mengganti sesi asli.
+- `SIGTERM`/`SIGINT` menginterupsi permintaan yang didukung Gateway dan sedang menunggu; jika Gateway telah menerima eksekusi, CLI juga mengirim `chat.abort` untuk id eksekusi tersebut sebelum keluar. Eksekusi `--local` dan peralihan tertanam menerima sinyal yang sama tetapi tidak mengirim `chat.abort`. Jika kunci deduplikasi eksekusi internal sudah memiliki eksekusi aktif untuk sesi ini, respons melaporkan `status: "in_flight"` dan CLI non-JSON mencetak diagnostik stderr alih-alih balasan kosong. Untuk pembungkus cron/systemd eksternal, pertahankan penghentian paksa cadangan seperti `timeout -k 60 600 openclaw agent ...` agar pengawas dapat membersihkan proses jika penghentian tidak dapat diselesaikan.
+- Ketika perintah ini memicu pembuatan ulang `models.json`, kredensial penyedia yang dikelola SecretRef disimpan sebagai penanda nonrahasia (misalnya nama variabel lingkungan, `secretref-env:ENV_VAR_NAME`, atau `secretref-managed`), bukan teks biasa rahasia yang telah diuraikan. Penulisan penanda berasal dari snapshot konfigurasi sumber aktif, bukan dari nilai rahasia waktu proses yang telah diuraikan.
 
 ## Status pengiriman JSON
 
-Ketika `--json --deliver` digunakan, respons JSON CLI dapat menyertakan `deliveryStatus` tingkat atas sehingga skrip dapat membedakan pengiriman yang terkirim, ditekan, sebagian, dan gagal:
+Dengan `--json --deliver`, respons JSON CLI menyertakan `deliveryStatus` tingkat teratas agar skrip dapat membedakan pengiriman yang terkirim, dibatalkan, gagal sebagian, dan gagal:
 
 ```json
 {
@@ -98,23 +87,30 @@ Ketika `--json --deliver` digunakan, respons JSON CLI dapat menyertakan `deliver
 }
 ```
 
-`deliveryStatus.status` adalah salah satu dari `sent`, `suppressed`, `partial_failed`, atau `failed`. `suppressed` berarti pengiriman sengaja tidak dikirim, misalnya hook pengiriman pesan membatalkannya atau tidak ada hasil yang terlihat; ini tetap merupakan hasil terminal tanpa coba ulang. `partial_failed` berarti setidaknya satu payload dikirim sebelum payload berikutnya gagal. `failed` berarti tidak ada pengiriman tahan lama yang selesai atau preflight pengiriman gagal.
+Respons CLI yang didukung Gateway juga mempertahankan bentuk hasil mentah Gateway di `result.deliveryStatus`.
 
-Respons CLI yang didukung Gateway juga mempertahankan bentuk hasil mentah Gateway, tempat objek yang sama tersedia di `result.deliveryStatus`.
+`deliveryStatus.status` adalah salah satu dari:
 
-Bidang umum:
+| Status           | Arti                                                                                                                                                                       |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sent`           | Pengiriman selesai.                                                                                                                                                        |
+| `suppressed`     | Pengiriman sengaja tidak dilakukan (misalnya hook pengiriman pesan membatalkannya, atau tidak ada hasil yang terlihat). Bersifat terminal, tanpa percobaan ulang.           |
+| `partial_failed` | Setidaknya satu muatan terkirim sebelum muatan berikutnya gagal.                                                                                                           |
+| `failed`         | Tidak ada pengiriman persisten yang selesai, atau pemeriksaan awal pengiriman gagal.                                                                                       |
 
-- `requested`: selalu `true` ketika objek ada.
-- `attempted`: `true` setelah jalur pengiriman tahan lama berjalan; `false` untuk kegagalan preflight atau tidak ada payload yang terlihat.
+Kolom umum:
+
+- `requested`: selalu `true` ketika objek tersedia.
+- `attempted`: `true` setelah jalur pengiriman persisten dijalankan; `false` untuk kegagalan pemeriksaan awal atau ketika tidak ada muatan yang terlihat.
 - `succeeded`: `true`, `false`, atau `"partial"`; `"partial"` berpasangan dengan `status: "partial_failed"`.
-- `reason`: alasan snake-case huruf kecil dari pengiriman tahan lama atau validasi preflight. Alasan yang diketahui mencakup `cancelled_by_message_sending_hook`, `no_visible_payload`, `no_visible_result`, `channel_resolved_to_internal`, `unknown_channel`, `invalid_delivery_target`, dan `no_delivery_target`; pengiriman tahan lama yang gagal juga dapat melaporkan tahap yang gagal. Perlakukan nilai tidak dikenal sebagai opaque karena himpunannya dapat bertambah.
-- `resultCount`: jumlah hasil pengiriman kanal jika tersedia.
-- `sentBeforeError`: `true` ketika kegagalan sebagian mengirim setidaknya satu payload sebelum kesalahan.
-- `error`: boolean `true` untuk pengiriman yang gagal atau sebagian gagal.
-- `errorMessage`: disertakan hanya ketika pesan kesalahan pengiriman yang mendasari tertangkap. Kegagalan preflight membawa `error` dan `reason` tetapi tanpa `errorMessage`.
-- `payloadOutcomes`: hasil opsional per-payload dengan `index`, `status`, `reason`, `resultCount`, `error`, `stage`, `sentBeforeError`, atau metadata hook jika tersedia.
+- `reason`: alasan berformat snake-case huruf kecil dari pengiriman persisten atau validasi pemeriksaan awal. Nilai yang diketahui mencakup `cancelled_by_message_sending_hook`, `no_visible_payload`, `no_visible_result`, `channel_resolved_to_internal`, `unknown_channel`, `invalid_delivery_target`, dan `no_delivery_target`; pengiriman persisten yang gagal juga dapat melaporkan tahap yang gagal. Perlakukan nilai yang tidak dikenal sebagai data buram karena kumpulannya dapat bertambah.
+- `resultCount`: jumlah hasil pengiriman saluran, jika tersedia.
+- `sentBeforeError`: `true` ketika kegagalan sebagian telah mengirim setidaknya satu muatan sebelum terjadi galat.
+- `error`: `true` untuk pengiriman yang gagal atau gagal sebagian.
+- `errorMessage`: hanya tersedia ketika pesan galat pengiriman yang mendasarinya berhasil direkam. Kegagalan pemeriksaan awal menyertakan `error`/`reason`, tetapi tidak menyertakan `errorMessage`.
+- `payloadOutcomes`: hasil opsional per muatan dengan `index`, `status`, `reason`, `resultCount`, `error`, `stage`, `sentBeforeError`, atau metadata hook jika tersedia.
 
 ## Terkait
 
 - [Referensi CLI](/id/cli)
-- [Runtime agen](/id/concepts/agent)
+- [Waktu proses agen](/id/concepts/agent)

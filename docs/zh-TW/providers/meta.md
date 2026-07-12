@@ -1,21 +1,22 @@
 ---
 read_when:
-    - 你想要搭配 OpenClaw 使用 Meta
+    - 你想搭配 OpenClaw 使用 Meta
     - 你需要設定 `MODEL_API_KEY` 環境變數，或選擇命令列介面驗證方式
-summary: Meta 設定（驗證 + 選擇 muse-spark-1.1 模型）
-title: Meta
+summary: Meta 設定（驗證 + muse-spark-1.1 模型選擇）
+title: 中繼資料
 x-i18n:
-    generated_at: "2026-07-12T14:45:40Z"
+    generated_at: "2026-07-11T21:42:39Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: f2ce7616d9abc14a2d15ee53ea7725d3e70059af1a38bb61dbfe5b3969106432
     source_path: providers/meta.md
     workflow: 16
 ---
 
-**Meta API** 對 `muse-spark-1.1` 推理模型使用與 OpenAI 相容的 **Responses API**（`POST /v1/responses`）。此供應商以 OpenClaw 內建外掛的形式提供。
+**Meta API** 使用與 OpenAI 相容的 **Responses API**（`POST /v1/responses`）
+來支援 `muse-spark-1.1` 推理模型。此供應商隨附為 OpenClaw
+內建外掛。
 
 | 屬性              | 值                                 |
 | ----------------- | ---------------------------------- |
@@ -25,7 +26,7 @@ x-i18n:
 | 初始設定旗標      | `--auth-choice meta-api-key`       |
 | 直接命令列介面旗標 | `--meta-api-key <key>`             |
 | API               | Responses API (`openai-responses`) |
-| 基礎 URL          | `https://api.meta.ai/v1`           |
+| 基底 URL          | `https://api.meta.ai/v1`           |
 | 預設模型          | `meta/muse-spark-1.1`              |
 | 預設推理強度      | `high` (`reasoning.effort`)        |
 
@@ -35,17 +36,17 @@ x-i18n:
   <Step title="設定 API 金鑰">
     <CodeGroup>
 
-```bash Onboarding
+```bash 初始設定
 openclaw onboard --auth-choice meta-api-key
 ```
 
-```bash Direct flag
+```bash 直接旗標
 openclaw onboard --non-interactive --accept-risk \
   --auth-choice meta-api-key \
   --meta-api-key "$MODEL_API_KEY"
 ```
 
-```bash Env only
+```bash 僅使用環境變數
 export MODEL_API_KEY=<key>
 ```
 
@@ -58,7 +59,8 @@ export MODEL_API_KEY=<key>
     ```
 
     列出靜態的 `muse-spark-1.1` 目錄項目。如果無法解析 `MODEL_API_KEY`，
-    `openclaw models status --json` 會在 `auth.unusableProfiles` 下回報缺少的認證資訊。
+    `openclaw models status --json` 會在 `auth.unusableProfiles`
+    下回報缺少的憑證。
 
   </Step>
 </Steps>
@@ -74,9 +76,9 @@ openclaw onboard --non-interactive --accept-risk \
 
 ## 內建目錄
 
-| 模型參照              | 名稱           | 推理能力 | 上下文視窗 | 最大輸出 |
-| --------------------- | -------------- | -------- | ---------- | -------- |
-| `meta/muse-spark-1.1` | Muse Spark 1.1 | 是       | 1,048,576  | 131,072  |
+| 模型參照              | 名稱           | 推理 | 上下文視窗 | 最大輸出 |
+| --------------------- | -------------- | ---- | ---------- | -------- |
+| `meta/muse-spark-1.1` | Muse Spark 1.1 | 是   | 1,048,576  | 131,072  |
 
 功能：
 
@@ -86,8 +88,8 @@ openclaw onboard --non-interactive --accept-risk \
 - 無狀態加密推理重播（`store: false`、`include: ["reasoning.encrypted_content"]`）
 
 <Warning>
-`muse-spark-1.1` 不接受 `reasoning.effort: "none"`。OpenClaw 會針對此供應商將
-`--thinking off` 對應為 `minimal`。
+`muse-spark-1.1` 不接受 `reasoning.effort: "none"`。OpenClaw 會為此供應商將
+`--thinking off` 對應至 `minimal`。
 </Warning>
 
 ## 手動設定
@@ -107,9 +109,10 @@ openclaw onboard --non-interactive --accept-risk \
 ```
 
 <Note>
-如果閘道以常駐程式（launchd、systemd、Docker）執行，請確認該程序可存取
-`MODEL_API_KEY`，例如將其放在 `~/.openclaw/.env` 中，或透過 `env.shellEnv`
-提供。僅在互動式 shell 中匯出的金鑰不會對受管理的服務生效，除非另外匯入該環境變數。
+如果閘道以常駐程式（launchd、systemd、Docker）執行，請確認該程序可使用
+`MODEL_API_KEY`，例如將其放在 `~/.openclaw/.env` 中，或透過
+`env.shellEnv` 提供。除非另行匯入環境變數，否則僅在互動式 shell 中匯出的
+金鑰無法供受管理的服務使用。
 </Note>
 
 ## 冒煙測試
@@ -119,7 +122,7 @@ export MODEL_API_KEY=<key>
 pnpm test:live -- extensions/meta/meta.live.test.ts
 ```
 
-即時測試會使用 `muse-spark-1.1` 呼叫 `POST /v1/responses`。
+即時測試會使用 `muse-spark-1.1` 對 `POST /v1/responses` 執行測試。
 
 ## 相關內容
 

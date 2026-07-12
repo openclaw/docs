@@ -1,43 +1,42 @@
 ---
 read_when:
     - Mantis Slack-desktop-QA uitvoeren vanuit GitHub of lokaal
-    - Trage Mantis Slack-desktopruns debuggen
-    - Kiezen tussen bronmodus, voorgehydrateerde modus of warme-lease-modus
-    - Screenshot- en videobewijs in een PR plaatsen
-summary: 'Operator-runbook voor Mantis Slack-desktop-QA: GitHub-dispatch, lokale CLI, warme VNC-leases, hydrate-modi, timinginterpretatie, artefacten en foutafhandeling.'
-title: Mantis Slack-desktop-runbook
+    - Trage Mantis-runs in de Slack-desktopapp debuggen
+    - Kiezen tussen bronmodus, vooraf gehydrateerde modus of warme-lease-modus
+    - Screenshot- en videobewijs bij een PR plaatsen
+summary: 'Draaiboek voor operators voor Mantis Slack-desktop-QA: GitHub-dispatch, lokale CLI, warme VNC-leases, hydratatiemodi, interpretatie van timing, artefacten en foutafhandeling.'
+title: Runbook voor Mantis Slack-desktop
 x-i18n:
-    generated_at: "2026-06-27T17:26:36Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:46:01Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d9310b460a4da84afab72f9e5b5515a94e74b4f4a5030332bd2021d60deb07cc
+    source_hash: b3e956d99fc43a7b6fe65e2e820812b0e0e8b9e32badd25be27c74d302ab30dc
     source_path: concepts/mantis-slack-desktop-runbook.md
     workflow: 16
 ---
 
-Mantis Slack desktop-QA is de real-UI-lane voor Slack-klasse bugs die een
-Linux-desktop, VNC-redding, Slack Web, een echte OpenClaw-gateway, screenshots,
-video's en een PR-bewijscommentaar nodig hebben.
-
-Gebruik dit wanneer unittests of de headless Slack live-lane de bug niet kunnen bewijzen.
+Mantis Slack-desktop-QA is het real-UI-traject voor bugs in de Slack-klasse waarvoor een
+Linux-desktop, VNC-herstel, Slack Web, een echte OpenClaw Gateway, schermafbeeldingen,
+video's en een bewijscommentaar bij een PR nodig zijn. Gebruik dit wanneer eenheidstests of het headless
+live-traject voor Slack de bug niet kunnen aantonen.
 
 ## Opslagmodel
 
-Mantis gebruikt drie verschillende opslaglagen:
+Mantis gebruikt drie opslaglagen:
 
-- Providerimage: eigendom van Crabbox en opgeslagen in het cloudprovideraccount.
-  Deze bevat machinecapaciteiten zoals Chrome/Chromium, ffmpeg, scrot,
-  Node/corepack/pnpm, native buildtools en lege cachedirectory's.
-- Warme lease-status: eigendom van de huidige operatorsessie. Deze kan een
-  ingelogd browserprofiel, `/var/cache/crabbox/pnpm` en een voorbereide source
-  checkout bevatten zolang de lease actief is.
-- Mantis-artefacten: eigendom van de OpenClaw-run. Ze staan onder
-  `.artifacts/qa-e2e/mantis/...`, waarna GitHub Actions ze uploadt en de
-  Mantis GitHub App inline bewijs op de PR plaatst.
+- **Provider-image** - beheerd door Crabbox en opgeslagen in het cloudprovideraccount.
+  Bevat machinefunctionaliteit (Chrome/Chromium, ffmpeg, scrot,
+  Node/corepack/pnpm, systeemeigen buildtools) en lege cachemappen.
+- **Status van warme lease** - beheerd door de huidige operatorsessie. Kan een
+  aangemeld browserprofiel, `/var/cache/crabbox/pnpm` en een voorbereide broncodecheckout
+  bevatten zolang de lease actief is.
+- **Mantis-artefacten** - beheerd door de OpenClaw-run. Bevinden zich onder
+  `.artifacts/qa-e2e/mantis/...`; GitHub Actions uploadt ze en de Mantis
+  GitHub App plaatst het bewijs rechtstreeks in een commentaar bij de PR.
 
-Plaats nooit geheimen, browsercookies, Slack-inlogstatus, repositorycheckouts,
-`node_modules` of `dist/` in een voorgebakken providerimage.
+Neem nooit geheimen, browsercookies, Slack-aanmeldstatus, repositorycheckouts,
+`node_modules` of `dist/` op in een provider-image.
 
 ## GitHub-dispatch
 
@@ -54,29 +53,24 @@ gh workflow run mantis-slack-desktop-smoke.yml \
   -f hydrate_mode=source
 ```
 
-Toegestane `candidate_ref`-waarden zijn bewust beperkt omdat de workflow
-live-credentials gebruikt: huidige `main`-afkomst, releasetags of een open PR-head
-van `openclaw/openclaw`.
+`candidate_ref` is beperkt omdat de workflow live-aanmeldgegevens gebruikt: deze
+moet verwijzen naar de huidige afstamming van `main`, een releasetag of de head van een open PR in
+`openclaw/openclaw`.
 
-De workflow schrijft:
+De workflow produceert:
 
-- geüpload artefact: `mantis-slack-desktop-smoke-<run-id>-<attempt>`;
-- inline PR-commentaar van de Mantis GitHub App;
-- `slack-desktop-smoke.png`;
-- `slack-desktop-smoke.mp4`;
-- `slack-desktop-smoke-preview.gif`;
-- `slack-desktop-smoke-change.mp4`;
-- `mantis-slack-desktop-smoke-summary.json`;
-- `mantis-slack-desktop-smoke-report.md`;
-- remote logs zoals `slack-desktop-command.log`, `openclaw-gateway.log`,
-  `chrome.log` en `ffmpeg.log`.
+- geüpload artefact `mantis-slack-desktop-smoke-<run-id>-<attempt>`
+- rechtstreeks PR-commentaar van de Mantis GitHub App
+- `slack-desktop-smoke.png`, `slack-desktop-smoke.mp4`
+- `slack-desktop-smoke-preview.gif`, `slack-desktop-smoke-change.mp4`
+- `mantis-slack-desktop-smoke-summary.json`, `mantis-slack-desktop-smoke-report.md`
+- externe logboeken: `slack-desktop-command.log`, `openclaw-gateway.log`, `chrome.log`, `ffmpeg.log`
 
-Het PR-commentaar wordt ter plaatse bijgewerkt via de verborgen
-`<!-- mantis-slack-desktop-smoke -->`-markering.
+Het PR-commentaar wordt ter plaatse bijgewerkt via de verborgen markering `<!-- mantis-slack-desktop-smoke -->`.
 
 ## Lokale CLI
 
-Koud source-bewijs:
+Koud bewijs vanuit de broncode:
 
 ```bash
 pnpm openclaw qa mantis slack-desktop-smoke \
@@ -92,7 +86,7 @@ pnpm openclaw qa mantis slack-desktop-smoke \
   --hydrate-mode source
 ```
 
-Behoud de VM voor VNC-redding:
+Behoud de VM voor VNC-herstel:
 
 ```bash
 pnpm openclaw qa mantis slack-desktop-smoke \
@@ -120,11 +114,10 @@ pnpm openclaw qa mantis slack-desktop-smoke \
   --hydrate-mode source
 ```
 
-Gebruik `--hydrate-mode prehydrated` alleen wanneer de hergebruikte remote workspace al
-`node_modules` en een gebouwde `dist/` heeft. Mantis faalt gesloten als die
-ontbreken.
+Gebruik `--hydrate-mode prehydrated` alleen wanneer de hergebruikte externe werkruimte al
+`node_modules` en een gebouwde `dist/` bevat; anders stopt Mantis uit veiligheidsoverwegingen.
 
-Bewijs native Slack-goedkeurings-UI:
+Toon de systeemeigen Slack-goedkeuringsinterface aan:
 
 ```bash
 pnpm openclaw qa mantis slack-desktop-smoke \
@@ -136,84 +129,82 @@ pnpm openclaw qa mantis slack-desktop-smoke \
   --hydrate-mode source
 ```
 
-Goedkeuringscheckpointmodus sluit `--gateway-setup` wederzijds uit. Deze voert
-de opt-in `slack-approval-exec-native`- en `slack-approval-plugin-native`-
-scenario's uit, tenzij je expliciete goedkeuringscheckpoint-`--scenario`-flags
-meegeeft; andere Slack-scenario's worden afgewezen voordat de VM start. De
-Slack QA-runner schrijft elk checkpoint-JSON-bestand vanuit het echte Slack API-
-bericht dat deze heeft waargenomen, waarna de remote watcher die berichtsnapshot rendert naar
+`--approval-checkpoints` en `--gateway-setup` sluiten elkaar uit. Deze optie voert
+de expliciet ingeschakelde scenario's `slack-approval-exec-native` en `slack-approval-plugin-native`
+uit, tenzij u expliciet een goedkeuringscontrolepunt als `--scenario` opgeeft; andere
+Slack-scenario's worden geweigerd voordat de VM wordt gestart. De Slack-QA-runner schrijft
+elk JSON-bestand voor een controlepunt op basis van het echte Slack-API-bericht dat deze heeft waargenomen, waarna
+de externe watcher dat bericht rendert naar
 `approval-checkpoints/<scenario>-pending.png` en
-`approval-checkpoints/<scenario>-resolved.png`. De run faalt als een checkpoint-
-JSON, berichtbewijs, ack-JSON of gerenderde screenshot ontbreekt of leeg is.
+`approval-checkpoints/<scenario>-resolved.png`. De run mislukt als een
+JSON-controlepunt, berichtbewijs, bevestigings-JSON of gerenderde schermafbeelding ontbreekt
+of leeg is.
 
-Koude GitHub Actions-leases hebben geen Slack Web-cookies, dus hun browsercapture
-kan op Slack-aanmelding terechtkomen. Vertrouw voor goedkeuringscheckpointbewijs
-op de gerenderde checkpointafbeeldingen en Slack QA-artefacten in plaats van
-`slack-desktop-smoke.png`. Gebruik alleen een behouden warme lease met een
-handmatig ingelogd Slack Web-profiel wanneer de browserscreenshot zelf Slack Web
-moet tonen.
+Koude GitHub Actions-leases bevatten geen Slack Web-cookies, waardoor de browseropname
+op het Slack-aanmeldscherm kan uitkomen. Vertrouw voor bewijs van goedkeuringscontrolepunten op de
+gerenderde controlepuntafbeeldingen en Slack-QA-artefacten in plaats van op
+`slack-desktop-smoke.png`. Gebruik alleen een behouden warme lease met een handmatig
+aangemeld Slack Web-profiel wanneer de browserschermafbeelding zelf
+Slack Web moet tonen.
 
-## Hydrate-modi
+## Hydratatiemodi
 
-| Modus         | Gebruik wanneer                           | Remote gedrag                                                                         | Afweging                                                |
-| ------------- | ----------------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------- |
-| `source`      | Normaal PR-bewijs, koude machines, CI     | Voert `pnpm install --frozen-lockfile --prefer-offline` en `pnpm build` uit binnen de VM | Traagst, sterkste source-checkout-bewijs                |
-| `prehydrated` | Je bewust een hergebruikte lease hebt voorbereid | Vereist bestaande `node_modules` en `dist/`; slaat install/build over                 | Snel, maar alleen geldig voor door operators beheerde warme leases |
+| Modus         | Gebruiken wanneer                              | Extern gedrag                                                                         | Afweging                                                      |
+| ------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| `source`      | Normaal PR-bewijs, koude machines, CI          | Voert `pnpm install --frozen-lockfile --prefer-offline` en `pnpm build` uit in de VM | Langzaamst, sterkste bewijs vanuit de broncodecheckout         |
+| `prehydrated` | U hebt bewust een hergebruikte lease voorbereid | Vereist bestaande `node_modules` en `dist/`; slaat installatie/build over             | Snel, maar alleen geldig voor door de operator beheerde warme leases |
 
-GitHub Actions bereidt de candidate checkout altijd voor vóór de VM-run. De
-pnpm-store wordt gecachet per OS, Node-versie en lockfile. De VM-source-run
-gebruikt ook `/var/cache/crabbox/pnpm` wanneer aanwezig.
+GitHub Actions bereidt de kandidaatcheckout altijd voor voordat de VM-run begint. De
+pnpm-store wordt gecachet op basis van het besturingssysteem, de Node-versie en het lockbestand. De VM-run met `source`
+hergebruikt ook `/var/cache/crabbox/pnpm` wanneer deze aanwezig is.
 
-## Timinginterpretatie
+## Interpretatie van tijdmetingen
 
-`mantis-slack-desktop-smoke-report.md` bevat fasetimings:
+`mantis-slack-desktop-smoke-report.md` bevat tijdmetingen per fase:
 
-- `crabbox.warmup`: cloudproviderboot, desktop-/browsergereedheid en SSH.
-- `crabbox.inspect`: opzoeken van leasemetadata.
-- `credentials.prepare`: verkrijgen van Convex-credentiallease.
-- `crabbox.remote_run`: synchronisatie, browserstart, OpenClaw-install/build of
-  hydrate-validatie, gatewaystart, screenshot en video-opname.
-- `artifacts.copy`: rsync terug vanaf de VM.
+- `crabbox.warmup` - opstarten van de cloudprovider, gereedheid van desktop/browser en SSH.
+- `crabbox.inspect` - opzoeken van leasemetadata.
+- `credentials.prepare` - verkrijgen van een lease voor Convex-aanmeldgegevens.
+- `crabbox.remote_run` - synchronisatie, starten van de browser, installatie/build van OpenClaw of
+  hydratatievalidatie, starten van de Gateway, schermafbeelding en video-opname.
+- `artifacts.copy` - terugsynchroniseren vanuit de VM met rsync.
 
-`crabbox.remote_run` kan als `accepted` worden gemarkeerd wanneer Crabbox een
-niet-nul remote status retourneert nadat Mantis metadata heeft gekopieerd die
-bewijst dat de OpenClaw-gatewaysetup is voltooid of dat de Slack QA-opdracht zelf
-succesvol is afgesloten. Behandel `accepted` als geslaagd-met-uitleg, niet als
-een mislukt scenario.
+`crabbox.remote_run` kan `accepted` tonen wanneer Crabbox een externe status anders dan nul
+retourneert, maar Mantis metadata heeft gekopieerd waaruit blijkt dat de configuratie van de OpenClaw Gateway
+is voltooid of dat de Slack-QA-opdracht zelf met succes is afgesloten. Beschouw
+`accepted` als geslaagd-met-uitleg, niet als een mislukt scenario.
 
-Als de run traag is:
+Als een run traag is:
 
-- warmup domineert: bak een betere Crabbox-providerimage voor of promoot die;
-- remote_run domineert in `source`: gebruik een warme lease, verbeter hergebruik
-  van de pnpm-store of verplaats machinevereisten naar de providerimage;
-- remote_run domineert in `prehydrated`: de remote workspace was niet werkelijk
-  klaar, of de gateway-/browser-/Slack-setup is traag;
-- artefactkopie domineert: inspecteer videogrootte en inhoud van de artefactdirectory.
+- Opwarming domineert: neem vereisten vooraf op of promoveer een betere Crabbox-provider-image.
+- `remote_run` domineert bij `source`: gebruik een warme lease, verbeter het hergebruik van de pnpm-store
+  of verplaats machinevereisten naar de provider-image.
+- `remote_run` domineert bij `prehydrated`: de externe werkruimte was niet
+  daadwerkelijk gereed, of de configuratie van de Gateway/browser/Slack is traag.
+- Het kopiëren van artefacten domineert: controleer de videogrootte en de inhoud van de artefactmap.
 
 ## Bewijschecklist
 
-Een goed PR-commentaar moet tonen:
+Een goed PR-commentaar toont:
 
-- scenario-id en candidate-SHA;
-- GitHub Actions-run-URL;
-- artefact-URL;
-- inline goedkeuringscheckpoint-screenshot, of een Slack Web-screenshot van een
-  ingelogde warme lease;
-- inline geanimeerde preview wanneer beschikbaar;
-- volledige MP4- en ingekorte MP4-links;
-- pass/fail-status;
-- timingsamenvatting in het bijgevoegde rapport.
+- scenario-id en kandidaat-SHA
+- URL van de GitHub Actions-run en artefact-URL
+- rechtstreeks opgenomen schermafbeelding van het goedkeuringscontrolepunt, of een Slack Web-schermafbeelding van een
+  aangemelde warme lease
+- rechtstreeks opgenomen bewegende voorvertoning, indien beschikbaar
+- koppelingen naar de volledige MP4 en de ingekorte MP4
+- status geslaagd/mislukt en het overzicht van de tijdmetingen uit het rapport
 
-Commit geen screenshots of video's naar de repository. Bewaar ze in GitHub
-Actions-artefacten of het PR-commentaar.
+Commit geen schermafbeeldingen of video's naar de repository. Bewaar ze in GitHub
+Actions-artefacten of in het PR-commentaar.
 
-## Foutafhandeling
+## Afhandeling van fouten
 
-Als de workflow faalt vóór de VM-run, inspecteer dan eerst de Actions-job. Typische
-oorzaken zijn een niet-vertrouwde `candidate_ref`, ontbrekende omgevingsgeheimen
-of een mislukte candidate-install/build.
+Als de workflow vóór de VM-run mislukt, controleer dan eerst de Actions-taak.
+Typische oorzaken: niet-vertrouwde `candidate_ref`, ontbrekende omgevingsgeheimen of een
+mislukte installatie/build van de kandidaat.
 
-Als de VM-run faalt maar screenshots zijn teruggekopieerd, inspecteer:
+Als de VM-run mislukt maar schermafbeeldingen zijn teruggekopieerd, controleer dan:
 
 ```bash
 cat mantis-slack-desktop-smoke-report.md
@@ -224,16 +215,15 @@ cat chrome.log
 cat ffmpeg.log
 ```
 
-Als de run de lease heeft behouden, open VNC met de `crabbox vnc ...`-opdracht
-uit het rapport. Stop de lease wanneer je klaar bent:
+Als de lease door de run is behouden, opent u VNC met de opdracht `crabbox vnc ...`
+uit het rapport en stopt u daarna de lease:
 
 ```bash
 crabbox stop --provider aws <cbx_id-or-slug>
 ```
 
-Als de Slack-login is verlopen, herstel deze dan in VNC op een behouden lease en
-voer opnieuw uit met `--lease-id`. Bak dat browserprofiel niet in een
-providerimage.
+Als de Slack-aanmelding is verlopen, herstelt u deze via VNC op een behouden lease en voert u de run opnieuw uit met
+`--lease-id`. Neem dat browserprofiel niet op in een provider-image.
 
 ## Gerelateerd
 

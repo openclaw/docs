@@ -1,11 +1,11 @@
 ---
 read_when:
-    - شما در حال نصب، پیکربندی یا ممیزی Plugin feishu هستید
-summary: Plugin کانال Feishu/Lark برای OpenClaw جهت چت‌ها و ابزارهای محیط کار (نگهداری‌شده توسط جامعه و @m1heng).
-title: Plugin فیشو
+    - در حال نصب، پیکربندی یا ممیزی Plugin فی‌شو هستید
+summary: Plugin کانال Feishu/Lark برای OpenClaw جهت چت‌ها و ابزارهای محیط کار (با نگه‌داری جامعه توسط @m1heng).
+title: Plugin فی‌شو
 x-i18n:
-    generated_at: "2026-06-27T18:25:48Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:29:24Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: d55792e08be92877a8b86548b725b59aee149b352bba8a5e51ed590a59e0dbc9
@@ -13,9 +13,9 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin فِیشو
+# Plugin فیشو
 
-Plugin کانال Feishu/Lark برای OpenClaw جهت چت‌ها و ابزارهای محیط کار (نگه‌داری‌شده توسط جامعه با @m1heng).
+Plugin کانال فیشو/لارک برای OpenClaw جهت گفت‌وگوها و ابزارهای محیط کار (با نگه‌داری جامعه توسط @m1heng).
 
 ## توزیع
 
@@ -24,8 +24,8 @@ Plugin کانال Feishu/Lark برای OpenClaw جهت چت‌ها و ابزار
 
 ## سطح
 
-کانال‌ها: feishu؛ قراردادها: ابزارها؛ skills
+کانال‌ها: فیشو؛ قراردادها: ابزارها؛ Skills
 
 ## مستندات مرتبط
 
-- [feishu](/fa/channels/feishu)
+- [فیشو](/fa/channels/feishu)

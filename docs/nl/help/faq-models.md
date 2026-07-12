@@ -1,97 +1,94 @@
 ---
 read_when:
     - Modellen kiezen of wisselen, aliassen configureren
-    - Failover van modellen debuggen / "Alle modellen zijn mislukt"
-    - Auth-profielen begrijpen en beheren
+    - Foutopsporing voor model-failover / ‘Alle modellen zijn mislukt’
+    - Inzicht in authenticatieprofielen en hoe u ze beheert
 sidebarTitle: Models FAQ
-summary: 'FAQ: modelstandaarden, selectie, aliassen, wisselen, failover en auth-profielen'
-title: 'FAQ: modellen en authenticatie'
+summary: 'Veelgestelde vragen: standaardmodellen, selectie, aliassen, wisselen, failover en authenticatieprofielen'
+title: 'Veelgestelde vragen: modellen en authenticatie'
 x-i18n:
-    generated_at: "2026-06-28T20:43:11Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:53:54Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3bfff016fc8b5afff5dde2b939b7fa431aa5a0309aa2833e7dd4675b638ca225
+    source_hash: 071e89c01120849179d3bc372153eb2c76a0fa4e93846df42920f0d961d597df
     source_path: help/faq-models.md
     workflow: 16
 ---
 
-  Model- en auth-profiel-vragen en antwoorden. Voor installatie, sessies, Gateway, kanalen en
-  probleemoplossing, zie de hoofd-[FAQ](/nl/help/faq).
+  Vraag en antwoord over modellen en authenticatieprofielen. Zie voor installatie, sessies, Gateway, kanalen en
+  probleemoplossing de algemene [veelgestelde vragen](/nl/help/faq).
 
-  ## Modellen: standaarden, selectie, aliassen, wisselen
+  ## Modellen: standaardwaarden, selectie, aliassen en wisselen
 
   <AccordionGroup>
   <Accordion title='Wat is het "standaardmodel"?'>
-    Het standaardmodel van OpenClaw is wat je instelt als:
+    Stel dit in met:
 
-    ```
+    ```text
     agents.defaults.model.primary
     ```
 
-    Naar modellen wordt verwezen als `provider/model` (voorbeeld: `openai/gpt-5.5` of `anthropic/claude-sonnet-4-6`). Als je de provider weglaat, probeert OpenClaw eerst een alias, daarna een unieke match met een geconfigureerde provider voor die exacte model-id, en valt pas daarna terug op de geconfigureerde standaardprovider als verouderd compatibiliteitspad. Als die provider het geconfigureerde standaardmodel niet meer aanbiedt, valt OpenClaw terug op de eerste geconfigureerde provider/model in plaats van een verouderde standaard van een verwijderde provider te tonen. Je moet `provider/model` nog steeds **expliciet** instellen.
+    Modellen zijn verwijzingen in de vorm `provider/model` (bijvoorbeeld `openai/gpt-5.5`,
+    `anthropic/claude-sonnet-4-6`). Stel `provider/model` altijd expliciet in. Als
+    je de provider weglaat, probeert OpenClaw eerst een overeenkomst met een alias,
+    daarna een unieke overeenkomst met een geconfigureerde provider voor die model-id
+    en valt vervolgens terug op de geconfigureerde standaardprovider (verouderd
+    compatibiliteitspad). Als die provider het geconfigureerde standaardmodel niet
+    meer heeft, valt OpenClaw terug op de eerste geconfigureerde provider/model-combinatie
+    in plaats van op een verouderde standaardwaarde.
 
   </Accordion>
 
   <Accordion title="Welk model raden jullie aan?">
-    **Aanbevolen standaard:** gebruik het sterkste model van de nieuwste generatie dat beschikbaar is in je providerstack.
-    **Voor agents met tools of niet-vertrouwde invoer:** geef modelsterkte prioriteit boven kosten.
-    **Voor routinematige chat met laag risico:** gebruik goedkopere fallbackmodellen en routeer op basis van agentrol.
+    Gebruik het krachtigste model van de nieuwste generatie dat je providerstack
+    aanbiedt, vooral voor agents met toegang tot tools of met niet-vertrouwde invoer —
+    zwakkere of te sterk gekwantiseerde modellen zijn kwetsbaarder voor promptinjectie
+    en onveilig gedrag (zie [Beveiliging](/nl/gateway/security)). Routeer goedkopere
+    modellen op basis van de agentrol naar routinematige chats met een laag risico.
 
-    MiniMax heeft eigen documentatie: [MiniMax](/nl/providers/minimax) en
+    Routeer modellen per agent en gebruik subagents om langdurige taken te
+    parallelliseren (elke subagent verbruikt eigen tokens). Zie [Modellen](/nl/concepts/models),
+    [Subagents](/nl/tools/subagents), [MiniMax](/nl/providers/minimax) en
     [Lokale modellen](/nl/gateway/local-models).
-
-    Vuistregel: gebruik het **beste model dat je je kunt veroorloven** voor werk met hoge inzet, en een goedkoper
-    model voor routinematige chat of samenvattingen. Je kunt modellen per agent routeren en sub-agents gebruiken om
-    lange taken te parallelliseren (elke sub-agent verbruikt tokens). Zie [Modellen](/nl/concepts/models) en
-    [Sub-agents](/nl/tools/subagents).
-
-    Sterke waarschuwing: zwakkere of te sterk gekwantiseerde modellen zijn kwetsbaarder voor prompt-injectie
-    en onveilig gedrag. Zie [Beveiliging](/nl/gateway/security).
-
-    Meer context: [Modellen](/nl/concepts/models).
 
   </Accordion>
 
   <Accordion title="Hoe wissel ik van model zonder mijn configuratie te wissen?">
-    Gebruik **modelcommando's** of bewerk alleen de **model**-velden. Vermijd het volledig vervangen van de configuratie.
+    Wijzig alleen de modelvelden — vervang niet de volledige configuratie.
 
-    Veilige opties:
-
-    - `/model` in chat (snel, per sessie)
+    - `/model` in de chat (per sessie, zie [Slash-opdrachten](/nl/tools/slash-commands))
     - `openclaw models set ...` (werkt alleen de modelconfiguratie bij)
     - `openclaw configure --section model` (interactief)
-    - bewerk `agents.defaults.model` in `~/.openclaw/openclaw.json`
+    - bewerk `agents.defaults.model` rechtstreeks in `~/.openclaw/openclaw.json`
 
-    Vermijd `config.apply` met een gedeeltelijk object, tenzij je de volledige configuratie wilt vervangen.
-    Voor RPC-bewerkingen: inspecteer eerst met `config.schema.lookup` en gebruik bij voorkeur `config.patch`. De lookup-payload geeft je het genormaliseerde pad, oppervlakkige schemadocumentatie/beperkingen en directe samenvattingen van onderliggende items.
-    voor gedeeltelijke updates.
-    Als je de configuratie toch hebt overschreven, herstel dan vanuit een back-up of voer `openclaw doctor` opnieuw uit om te repareren.
+    Inspecteer bij RPC-bewerkingen eerst met `config.schema.lookup` (genormaliseerd
+    pad, beknopte schemadocumentatie en samenvattingen van onderliggende elementen)
+    en geef daarna de voorkeur aan `config.patch` boven `config.apply` met een
+    gedeeltelijk object. Als je de configuratie toch hebt overschreven, herstel
+    deze dan vanuit een back-up of voer `openclaw doctor` uit om haar te repareren.
 
-    Documentatie: [Modellen](/nl/concepts/models), [Configureren](/nl/cli/configure), [Configuratie](/nl/cli/config), [Doctor](/nl/gateway/doctor).
+    Documentatie: [Modellen](/nl/concepts/models), [Configureren](/nl/cli/configure),
+    [Configuratie](/nl/cli/config), [Doctor](/nl/gateway/doctor).
 
   </Accordion>
 
-  <Accordion title="Kan ik zelf-gehoste modellen gebruiken (llama.cpp, vLLM, Ollama)?">
-    Ja. Ollama is het gemakkelijkste pad voor lokale modellen.
-
-    Snelste installatie:
+  <Accordion title="Kan ik zelf gehoste modellen gebruiken (llama.cpp, vLLM, Ollama)?">
+    Ja — Ollama is de eenvoudigste optie. Snelle installatie:
 
     1. Installeer Ollama vanaf `https://ollama.com/download`
-    2. Haal een lokaal model op, zoals `ollama pull gemma4`
-    3. Als je ook cloudmodellen wilt, voer dan `ollama signin` uit
-    4. Voer `openclaw onboard` uit en kies `Ollama`
-    5. Kies `Local` of `Cloud + Local`
+    2. Haal een lokaal model op, bijvoorbeeld `ollama pull gemma4`
+    3. Voer voor cloudmodellen ook `ollama signin` uit
+    4. Voer `openclaw onboard` uit, kies `Ollama` en vervolgens `Local` of `Cloud + Local`
 
-    Opmerkingen:
+    `Cloud + Local` biedt zowel cloudmodellen als je lokale Ollama-modellen;
+    voor cloudmodellen zoals `kimi-k2.5:cloud` hoef je niets lokaal op te halen.
+    Handmatig wisselen: `openclaw models list`, gevolgd door
+    `openclaw models set ollama/<model>`.
 
-    - `Cloud + Local` geeft je cloudmodellen plus je lokale Ollama-modellen
-    - cloudmodellen zoals `kimi-k2.5:cloud` vereisen geen lokale pull
-    - gebruik voor handmatig wisselen `openclaw models list` en `openclaw models set ollama/<model>`
-
-    Beveiligingsopmerking: kleinere of sterk gekwantiseerde modellen zijn kwetsbaarder voor prompt-injectie.
-    We raden **grote modellen** sterk aan voor elke bot die tools kan gebruiken.
-    Als je toch kleine modellen wilt, schakel dan sandboxing en strikte tool-allowlists in.
+    Kleinere of sterk gekwantiseerde modellen zijn kwetsbaarder voor promptinjectie.
+    Gebruik grote modellen voor elke bot met toegang tot tools. Als je toch kleine
+    modellen gebruikt, schakel dan sandboxing en strikte toelatingslijsten voor tools in.
 
     Documentatie: [Ollama](/nl/providers/ollama), [Lokale modellen](/nl/gateway/local-models),
     [Modelproviders](/nl/concepts/model-providers), [Beveiliging](/nl/gateway/security),
@@ -99,92 +96,75 @@ x-i18n:
 
   </Accordion>
 
-  <Accordion title="Welke modellen gebruiken OpenClaw, Flawd en Krill?">
-    - Deze implementaties kunnen verschillen en in de loop van de tijd veranderen; er is geen vaste provideraanbeveling.
-    - Controleer de huidige runtime-instelling op elke Gateway met `openclaw models status`.
-    - Gebruik voor beveiligingsgevoelige agents of agents met tools het sterkste model van de nieuwste generatie dat beschikbaar is.
+  <Accordion title="Hoe wissel ik direct van model (zonder opnieuw te starten)?">
+    Stuur `/model <name>` als afzonderlijk bericht. Zie
+    [Slash-opdrachten](/nl/tools/slash-commands) voor de
+    volledige opdrachtenlijst, inclusief de genummerde keuzelijst (`/model`, `/model
+    list`, `/model 3`), `/model default` om een sessieoverschrijving te wissen en
+    `/model status` voor details over het eindpunt en de API-modus.
 
-  </Accordion>
+    Dwing met `@profile` per sessie een specifiek authenticatieprofiel af:
 
-  <Accordion title="Hoe wissel ik direct van model (zonder opnieuw op te starten)?">
-    Gebruik het commando `/model` als zelfstandig bericht:
-
-    ```
-    /model sonnet
-    /model opus
-    /model gpt
-    /model gpt-mini
-    /model gemini
-    /model gemini-flash
-    /model gemini-flash-lite
-    ```
-
-    Dit zijn de ingebouwde aliassen. Aangepaste aliassen kunnen worden toegevoegd via `agents.defaults.models`.
-
-    Je kunt beschikbare modellen weergeven met `/model`, `/model list` of `/model status`.
-
-    `/model` (en `/model list`) toont een compacte, genummerde keuzelijst. Selecteer op nummer:
-
-    ```
-    /model 3
-    ```
-
-    Je kunt ook een specifiek auth-profiel voor de provider afdwingen (per sessie):
-
-    ```
+    ```text
     /model opus@anthropic:default
     /model opus@anthropic:work
     ```
 
-    Tip: `/model status` toont welke agent actief is, welk `auth-profiles.json`-bestand wordt gebruikt en welk auth-profiel als volgende wordt geprobeerd.
-    Het toont ook het geconfigureerde provider-eindpunt (`baseUrl`) en de API-modus (`api`) wanneer beschikbaar.
-
-    **Hoe maak ik een profiel los dat ik met @profile heb vastgezet?**
-
-    Voer `/model` opnieuw uit **zonder** het achtervoegsel `@profile`:
-
-    ```
-    /model anthropic/claude-opus-4-6
-    ```
-
-    Als je wilt terugkeren naar de standaard, kies die dan uit `/model` (of stuur `/model <default provider/model>`).
-    Gebruik `/model status` om te bevestigen welk auth-profiel actief is.
+    Om een met `@profile` vastgezet profiel los te maken, voer je `/model` opnieuw
+    uit zonder het achtervoegsel (bijvoorbeeld `/model anthropic/claude-opus-4-6`)
+    of kies je de standaardwaarde via `/model`. Gebruik `/model status` om het
+    actieve authenticatieprofiel te bevestigen.
 
   </Accordion>
 
   <Accordion title="Als twee providers dezelfde model-id aanbieden, welke gebruikt /model dan?">
-    `/model provider/model` selecteert die exacte providerroute voor de sessie.
+    `/model provider/model` selecteert exact die providerroute. Zo zijn
+    `qianfan/deepseek-v4-flash` en `deepseek/deepseek-v4-flash` verschillende
+    verwijzingen, hoewel de model-id hetzelfde is — OpenClaw wisselt niet
+    ongemerkt van provider op basis van alleen een overeenkomstige id.
 
-    Bijvoorbeeld: `qianfan/deepseek-v4-flash` en `deepseek/deepseek-v4-flash` zijn verschillende modelverwijzingen, ook al bevatten beide `deepseek-v4-flash`. OpenClaw mag niet stilzwijgend van de ene provider naar de andere wisselen alleen omdat de kale model-id overeenkomt.
+    Een door de gebruiker geselecteerde `/model`-verwijzing is strikt wat betreft
+    uitwijking: als die provider/model-combinatie niet meer beschikbaar is, mislukt
+    het antwoord zichtbaar in plaats van terug te vallen op
+    `agents.defaults.model.fallbacks`. Geconfigureerde uitwijkketens blijven van
+    toepassing op geconfigureerde standaardwaarden, primaire modellen voor Cron-taken
+    en automatisch geselecteerde uitwijkstatussen. Wanneer een uitvoering zonder
+    sessieoverschrijving mag uitwijken, probeert OpenClaw eerst de aangevraagde
+    provider/model-combinatie, vervolgens de geconfigureerde uitwijkmodellen en
+    daarna het geconfigureerde primaire model — dubbele losse model-id's springen
+    dus nooit rechtstreeks terug naar de standaardprovider.
 
-    Een door de gebruiker geselecteerde `/model`-verwijzing is ook strikt voor fallbackbeleid. Als die geselecteerde provider/model niet beschikbaar is, faalt het antwoord zichtbaar in plaats van te antwoorden vanuit `agents.defaults.model.fallbacks`. Geconfigureerde fallbackketens blijven van toepassing op geconfigureerde standaarden, primaire Cron-taken en automatisch geselecteerde fallbackstatus.
-
-    Als een run die vanuit een niet-sessie-override is gestart fallback mag gebruiken, probeert OpenClaw eerst de gevraagde provider/model, daarna geconfigureerde fallbacks en pas daarna de geconfigureerde primaire. Dat voorkomt dat dubbele kale model-id's direct terug springen naar de standaardprovider.
-
-    Zie [Modellen](/nl/concepts/models) en [Modelfailover](/nl/concepts/model-failover).
+    Zie [Modellen](/nl/concepts/models) en [Modeluitwijking](/nl/concepts/model-failover).
 
   </Accordion>
 
   <Accordion title="Kan ik GPT 5.5 gebruiken voor dagelijkse taken en Codex 5.5 voor programmeren?">
-    Ja. Behandel modelkeuze en runtimekeuze afzonderlijk:
+    Ja — de modelkeuze en de runtimekeuze staan los van elkaar:
 
-    - **Native Codex-programmeeragent:** stel `agents.defaults.model.primary` in op `openai/gpt-5.5`. Meld je aan met `openclaw models auth login --provider openai` wanneer je ChatGPT/Codex-abonnementsauthenticatie wilt.
-    - **Directe OpenAI API-taken buiten de agentlus:** configureer `OPENAI_API_KEY` voor afbeeldingen, embeddings, spraak, realtime en andere niet-agent OpenAI API-oppervlakken.
-    - **OpenAI-agentauthenticatie met API-sleutel:** gebruik `/model openai/gpt-5.5` met een geordend `openai`-API-sleutelprofiel.
-    - **Sub-agents:** routeer programmeertaken naar een op Codex gerichte agent met een eigen `openai/gpt-5.5`-model.
+    - **Native Codex-programmeeragent:** stel `agents.defaults.model.primary` in op
+      `openai/gpt-5.5`. Meld je aan met `openclaw models auth login --provider
+      openai` voor authenticatie via een ChatGPT-/Codex-abonnement.
+    - **Rechtstreekse OpenAI API-taken buiten de agentlus:** configureer
+      `OPENAI_API_KEY` voor afbeeldingen, embeddings, spraak, realtime en andere
+      OpenAI API-onderdelen die niet voor agents zijn bedoeld.
+    - **Authenticatie met een API-sleutel voor OpenAI-agents:** `/model openai/gpt-5.5`
+      met een geordend `openai`-API-sleutelprofiel.
+    - **Subagents:** routeer programmeertaken naar een op Codex gerichte agent met
+      een eigen `openai/gpt-5.5`-model.
 
-    Zie [Modellen](/nl/concepts/models) en [Slash-commando's](/nl/tools/slash-commands).
+    Zie [Modellen](/nl/concepts/models) en [Slash-opdrachten](/nl/tools/slash-commands).
 
   </Accordion>
 
-  <Accordion title="Hoe configureer ik snelle modus voor GPT 5.5?">
-    Gebruik een sessieschakelaar of een configuratiestandaard:
-
-    - **Per sessie:** stuur `/fast on` terwijl de sessie `openai/gpt-5.5` gebruikt.
-    - **Per modelstandaard:** stel `agents.defaults.models["openai/gpt-5.5"].params.fastMode` in op `true`.
-    - **Automatische grens:** gebruik `/fast auto` of `params.fastMode: "auto"` om nieuwe modelaanroepen snel te starten tot de automatische grens, en latere retry-, fallback-, toolresultaat- of vervolgaanroepen zonder snelle modus te starten. De grens is standaard 60 seconden; stel `params.fastAutoOnSeconds` in op het actieve model om dit te wijzigen.
-
-    Voorbeeld:
+  <Accordion title="Hoe configureer ik de snelle modus voor GPT 5.5?">
+    - **Per sessie:** stuur `/fast on` terwijl je `openai/gpt-5.5` gebruikt.
+    - **Standaardwaarde per model:** stel
+      `agents.defaults.models["openai/gpt-5.5"].params.fastMode` in op `true`.
+    - **Automatische grens:** met `/fast auto` of `params.fastMode: "auto"` worden
+      nieuwe modelaanroepen snel uitgevoerd tot de grens is bereikt; latere
+      nieuwe pogingen, uitwijkingen, toolresultaten of vervolgaanroepen worden
+      vervolgens zonder snelle modus uitgevoerd. De grens is standaard 60 seconden;
+      overschrijf dit met `params.fastAutoOnSeconds` voor het model.
 
     ```json5
     {
@@ -203,59 +183,53 @@ x-i18n:
     }
     ```
 
-    Voor OpenAI wordt snelle modus gekoppeld aan `service_tier = "priority"` op ondersteunde native Responses-verzoeken. Sessies met `/fast` overschrijven configuratiestandaarden. Codex app-server-beurten kunnen de tier alleen ontvangen bij het begin van de beurt, dus `auto` geldt voor de volgende door OpenClaw gestarte modelbeurt in plaats van binnen een al lopende app-server-beurt.
+    De snelle modus komt overeen met `service_tier = "priority"` voor native
+    OpenAI Responses-aanvragen; bestaande `service_tier`-waarden blijven behouden
+    en de snelle modus herschrijft `reasoning` of `text.verbosity` niet.
+    Sessieoverschrijvingen met `/fast` hebben voorrang op configuratiestandaarden.
 
-    Zie [Denken en snelle modus](/nl/tools/thinking) en [OpenAI snelle modus](/nl/providers/openai#fast-mode).
+    Zie [Denken en snelle modus](/nl/tools/thinking) en de sectie over de snelle modus
+    onder Geavanceerde configuratie op de providerpagina van
+    [OpenAI](/nl/providers/openai).
 
   </Accordion>
 
-  <Accordion title='Waarom zie ik "Model ... is not allowed" en daarna geen antwoord?'>
-    Als `agents.defaults.models` is ingesteld, wordt dit de **allowlist** voor `/model` en eventuele
-    sessie-overschrijvingen. Het kiezen van een model dat niet in die lijst staat, retourneert:
+  <Accordion title='Waarom zie ik "Model ... is not allowed" en krijg ik daarna geen antwoord?'>
+    Als `agents.defaults.models` is ingesteld, wordt dit de **toelatingslijst** voor
+    `/model` en sessieoverschrijvingen. Als je een model buiten die lijst kiest,
+    verschijnt dit in plaats van een normaal antwoord:
 
-    ```
+    ```text
     Model "provider/model" is not allowed. Use /models to list providers, or /models <provider> to list models.
     Add it with: openclaw config set agents.defaults.models '{"provider/model":{}}' --strict-json --merge
     ```
 
-    Die fout wordt geretourneerd **in plaats van** een normaal antwoord. Oplossing: voeg het exacte model toe aan
-    `agents.defaults.models`, voeg een provider-wildcard toe zoals `"provider/*": {}` voor dynamische providercatalogi, verwijder de allowlist, of kies een model uit `/model list`.
-    Als het commando ook `--runtime codex` bevatte, werk dan eerst de allowlist bij en probeer daarna
-    hetzelfde commando `/model provider/model --runtime codex` opnieuw.
+    Oplossing: voeg het exacte model toe aan `agents.defaults.models`, voeg voor
+    dynamische catalogi een jokerteken voor de provider toe, zoals `"provider/*": {}`,
+    verwijder de toelatingslijst of kies een model uit `/model list`. Als de
+    opdracht ook `--runtime codex` bevatte, werk dan eerst de toelatingslijst bij
+    en probeer vervolgens dezelfde opdracht
+    `/model provider/model --runtime codex` opnieuw.
 
   </Accordion>
 
   <Accordion title='Waarom zie ik "Unknown model: minimax/MiniMax-M3"?'>
-    Dit betekent dat de **provider niet is geconfigureerd** (er is geen MiniMax-providerconfiguratie of auth-profiel
-    gevonden), waardoor het model niet kan worden opgelost.
-
-    Checklist voor de oplossing:
-
-    1. Upgrade naar een actuele OpenClaw-release (of draai vanaf source `main`) en start daarna de Gateway opnieuw.
-    2. Zorg dat MiniMax is geconfigureerd (wizard of JSON), of dat MiniMax-authenticatie
-       bestaat in env/auth-profielen zodat de overeenkomende provider kan worden geïnjecteerd
-       (`MINIMAX_API_KEY` voor `minimax`, `MINIMAX_OAUTH_TOKEN` of opgeslagen MiniMax
-       OAuth voor `minimax-portal`).
-    3. Gebruik de exacte model-id (hoofdlettergevoelig) voor je auth-pad:
-       `minimax/MiniMax-M3`, `minimax/MiniMax-M2.7` of
-       `minimax/MiniMax-M2.7-highspeed` voor installatie met API-sleutel, of
-       `minimax-portal/MiniMax-M3`, `minimax-portal/MiniMax-M2.7` of
-       `minimax-portal/MiniMax-M2.7-highspeed` voor OAuth-installatie.
-    4. Voer uit:
-
-       ```bash
-       openclaw models list
-       ```
-
-       en kies uit de lijst (of `/model list` in chat).
-
-    Zie [MiniMax](/nl/providers/minimax) en [Modellen](/nl/concepts/models).
+    Als je een oudere OpenClaw-versie gebruikt, voer dan eerst een upgrade uit
+    (of werk vanuit de broncode op `main`) en start de Gateway opnieuw —
+    `MiniMax-M3` staat mogelijk nog niet in de catalogus van je geïnstalleerde
+    versie. Anders is de MiniMax-provider niet geconfigureerd (er is geen
+    providervermelding of authenticatieprofiel gevonden), waardoor het model
+    niet kan worden gevonden. Zie de sectie Probleemoplossing op de providerpagina
+    van [MiniMax](/nl/providers/minimax) voor de volledige controlelijst met
+    oplossingen, de tabel met provider-/model-id's en een voorbeeld van een
+    configuratieblok.
 
   </Accordion>
 
-  <Accordion title="Kan ik MiniMax als standaard gebruiken en OpenAI voor complexe taken?">
-    Ja. Gebruik **MiniMax als standaard** en wissel wanneer nodig **per sessie** van model.
-    Fallbacks zijn voor **fouten**, niet voor "moeilijke taken", dus gebruik `/model` of een aparte agent.
+  <Accordion title="Kan ik MiniMax als standaardmodel gebruiken en OpenAI voor complexe taken?">
+    Ja. Gebruik MiniMax als standaardmodel en wissel per sessie van model —
+    uitwijkmodellen zijn bedoeld voor fouten, niet voor "moeilijke taken". Gebruik
+    daarvoor `/model` of een afzonderlijke agent.
 
     **Optie A: per sessie wisselen**
 
@@ -274,40 +248,37 @@ x-i18n:
     }
     ```
 
-    Daarna:
+    Voer daarna `/model gpt` uit.
 
-    ```
-    /model gpt
-    ```
+    **Optie B: afzonderlijke agents** — Agent A gebruikt standaard MiniMax en Agent B
+    standaard OpenAI; routeer per agent of gebruik `/agent` om te wisselen.
 
-    **Optie B: aparte agents**
-
-    - Agent A standaard: MiniMax
-    - Agent B standaard: OpenAI
-    - Routeer op agent of gebruik `/agent` om te wisselen
-
-    Documentatie: [Models](/nl/concepts/models), [Multi-Agent Routing](/nl/concepts/multi-agent), [MiniMax](/nl/providers/minimax), [OpenAI](/nl/providers/openai).
+    Documentatie: [Modellen](/nl/concepts/models), [Routering met meerdere agents](/nl/concepts/multi-agent),
+    [MiniMax](/nl/providers/minimax), [OpenAI](/nl/providers/openai).
 
   </Accordion>
 
   <Accordion title="Zijn opus / sonnet / gpt ingebouwde snelkoppelingen?">
-    Ja. OpenClaw levert enkele standaardsnelnamen (alleen toegepast wanneer het model bestaat in `agents.defaults.models`):
+    Ja — ingebouwde verkorte namen, die alleen worden toegepast wanneer het
+    doelmodel in `agents.defaults.models` bestaat:
 
-    - `opus` → `anthropic/claude-opus-4-8`
-    - `sonnet` → `anthropic/claude-sonnet-4-6`
-    - `gpt` → `openai/gpt-5.4`
-    - `gpt-mini` → `openai/gpt-5.4-mini`
-    - `gpt-nano` → `openai/gpt-5.4-nano`
-    - `gemini` → `google/gemini-3.1-pro-preview`
-    - `gemini-flash` → `google/gemini-3-flash-preview`
-    - `gemini-flash-lite` → `google/gemini-3.1-flash-lite`
+    | Alias | Wordt omgezet naar |
+    | --- | --- |
+    | `opus` | `anthropic/claude-opus-4-8` |
+    | `sonnet` | `anthropic/claude-sonnet-4-6` |
+    | `gpt` | `openai/gpt-5.4` |
+    | `gpt-mini` | `openai/gpt-5.4-mini` |
+    | `gpt-nano` | `openai/gpt-5.4-nano` |
+    | `gemini` | `google/gemini-3.1-pro-preview` |
+    | `gemini-flash` | `google/gemini-3-flash-preview` |
+    | `gemini-flash-lite` | `google/gemini-3.1-flash-lite` |
 
-    Als je je eigen alias met dezelfde naam instelt, heeft jouw waarde voorrang.
+    Je eigen alias met dezelfde naam overschrijft de ingebouwde alias.
 
   </Accordion>
 
-  <Accordion title="Hoe definieer/overschrijf ik modelsnelkoppelingen (aliassen)?">
-    Aliassen komen uit `agents.defaults.models.<modelId>.alias`. Voorbeeld:
+  <Accordion title="Hoe definieer of overschrijf ik modelsnelkoppelingen (aliassen)?">
+    Aliassen staan in `agents.defaults.models.<modelId>.alias`:
 
     ```json5
     {
@@ -323,7 +294,8 @@ x-i18n:
     }
     ```
 
-    Daarna wordt `/model sonnet` (of `/<alias>` wanneer ondersteund) naar die model-ID omgezet.
+    Vervolgens wordt `/model sonnet` (of `/<alias>` wanneer dit wordt ondersteund)
+    omgezet naar die model-id.
 
   </Accordion>
 
@@ -348,176 +320,183 @@ x-i18n:
     {
       agents: {
         defaults: {
-          model: { primary: "zai/glm-5" },
-          models: { "zai/glm-5": {} },
+          model: { primary: "zai/glm-5.1" },
+          models: { "zai/glm-5.1": {} },
         },
       },
       env: { ZAI_API_KEY: "..." },
     }
     ```
 
-    Als je naar een provider/model verwijst maar de vereiste providersleutel ontbreekt, krijg je een runtime-authenticatiefout (bijv. `No API key found for provider "zai"`).
+    Als de providersleutel voor een provider/model-combinatie waarnaar wordt
+    verwezen ontbreekt, treedt tijdens runtime een authenticatiefout op
+    (bijvoorbeeld `No API key found for provider "zai"`).
 
-    **Geen API-sleutel gevonden voor provider na het toevoegen van een nieuwe agent**
+    **Geen API-sleutel gevonden voor de provider na het toevoegen van een nieuwe agent**
 
-    Dit betekent meestal dat de **nieuwe agent** een lege auth-opslag heeft. Auth is per agent en
-    wordt opgeslagen in:
+    Een nieuwe agent heeft een lege authenticatieopslag — authenticatie wordt
+    per agent opgeslagen in:
 
-    ```
+    ```text
     ~/.openclaw/agents/<agentId>/agent/auth-profiles.json
     ```
 
-    Oplossingsopties:
-
-    - Voer `openclaw agents add <id>` uit en configureer auth tijdens de wizard.
-    - Of kopieer alleen overdraagbare statische `api_key`- / `token`-profielen uit de auth-opslag van de hoofdagent naar de auth-opslag van de nieuwe agent.
-    - Voor OAuth-profielen: meld je aan vanuit de nieuwe agent wanneer die een eigen account nodig heeft; anders kan OpenClaw doorlezen naar de standaard-/hoofdagent zonder refresh-tokens te klonen.
-
-    Hergebruik `agentDir` **niet** tussen agents; dat veroorzaakt botsingen tussen auth en sessies.
+    Oplossing: voer `openclaw agents add <id>` uit en configureer de authenticatie in de wizard, of
+    kopieer alleen overdraagbare statische `api_key`/`token`-profielen uit de opslag van de
+    hoofdagent. Meld u voor OAuth aan vanuit de nieuwe agent wanneer deze een
+    eigen account nodig heeft. Zie [Routering met meerdere agents](/nl/concepts/multi-agent) voor de
+    volledige regels voor hergebruik van `agentDir` en het delen van referenties — hergebruik
+    `agentDir` nooit voor meerdere agents.
 
   </Accordion>
 </AccordionGroup>
 
-## Modelfailover en "Alle modellen zijn mislukt"
+## Model-failover en "Alle modellen zijn mislukt"
 
 <AccordionGroup>
   <Accordion title="Hoe werkt failover?">
-    Failover gebeurt in twee fasen:
+    Twee fasen:
 
-    1. **Rotatie van auth-profielen** binnen dezelfde provider.
-    2. **Modelterugval** naar het volgende model in `agents.defaults.model.fallbacks`.
+    1. **Rotatie van authenticatieprofielen** binnen dezelfde provider.
+    2. **Terugval naar een model** naar het volgende model in `agents.defaults.model.fallbacks`.
 
-    Cooldowns gelden voor falende profielen (exponentiële backoff), zodat OpenClaw kan blijven reageren wanneer een provider rate-limited is of tijdelijk faalt.
+    Voor mislukte profielen gelden afkoelperioden (exponentiële back-off), zodat OpenClaw
+    blijft reageren wanneer een provider snelheidsbeperkingen oplegt of tijdelijk uitvalt.
 
-    De rate-limit-bucket omvat meer dan gewone `429`-reacties. OpenClaw
-    behandelt ook berichten zoals `Too many concurrent requests`,
-    `ThrottlingException`, `concurrency limit reached`,
-    `workers_ai ... quota limit exceeded`, `resource exhausted` en periodieke
-    limieten voor gebruiksvensters (`weekly/monthly limit reached`) als rate limits
-    die failover rechtvaardigen.
+    De bucket voor snelheidsbeperkingen omvat meer dan alleen `429`: `Too many concurrent
+    requests`, `ThrottlingException`, `concurrency limit reached`, `workers_ai
+    ... quota limit exceeded`, `resource exhausted` en periodieke
+    gebruiksvensterlimieten (`weekly/monthly limit reached`) gelden allemaal als
+    snelheidsbeperkingen waarvoor failover van toepassing is.
 
-    Sommige reacties die op facturering lijken zijn geen `402`, en sommige HTTP-`402`-
-    reacties blijven ook in die tijdelijke bucket. Als een provider expliciete
-    factureringstekst retourneert bij `401` of `403`, kan OpenClaw dat nog steeds in
-    de factureringsbaan houden, maar providerspecifieke tekstmatchers blijven beperkt tot de
-    provider die ze bezit (bijvoorbeeld OpenRouter `Key limit exceeded`). Als een `402`-
-    bericht in plaats daarvan lijkt op een opnieuw te proberen gebruiksvenster of
-    bestedingslimiet voor organisatie/werkruimte (`daily limit reached, resets tomorrow`,
-    `organization spending limit exceeded`), behandelt OpenClaw het als
-    `rate_limit`, niet als langdurige uitschakeling wegens facturering.
+    Factureringsreacties zijn niet altijd `402`, en sommige `402`-reacties blijven in de
+    tijdelijke bucket/bucket voor snelheidsbeperkingen in plaats van in het factureringstraject. Expliciete
+    factureringstekst bij `401`/`403` kan nog steeds naar facturering worden gerouteerd; providerspecifieke
+    tekstmatchers (bijvoorbeeld OpenRouter `Key limit exceeded`) blijven beperkt tot hun
+    eigen provider. Een `402` die lijkt op een opnieuw te proberen gebruiksvenster- of
+    bestedingslimiet voor een organisatie/werkruimte (`daily limit reached, resets tomorrow`,
+    `organization spending limit exceeded`) wordt behandeld als `rate_limit`, niet als een
+    langdurige uitschakeling wegens facturering.
 
-    Context-overflowfouten zijn anders: signaturen zoals
-    `request_too_large`, `input exceeds the maximum number of tokens`,
-    `input token count exceeds the maximum number of input tokens`,
-    `input is too long for the model` of `ollama error: context length
-    exceeded` blijven op het Compaction-/opnieuw-proberen-pad in plaats van
-    modelterugval te activeren.
+    Contextoverloopfouten blijven volledig buiten het terugvalpad — signalen
+    zoals `request_too_large`, `input exceeds the maximum number of tokens`,
+    `input token count exceeds the maximum number of input tokens`, `input is
+    too long for the model` of `ollama error: context length exceeded` leiden tot
+    Compaction/opnieuw proberen in plaats van door te gaan met model-failover.
 
-    Algemene serverfouttekst is bewust smaller dan "alles met
-    unknown/error erin". OpenClaw behandelt wel providergebonden tijdelijke vormen
-    zoals Anthropic kaal `An unknown error occurred`, OpenRouter kaal
-    `Provider returned error`, stop-reason-fouten zoals `Unhandled stop reason:
-    error`, JSON-`api_error`-payloads met tijdelijke servertekst
-    (`internal server error`, `unknown error, 520`, `upstream error`, `backend
-    error`) en provider-bezet-fouten zoals `ModelNotReadyException` als
-    timeout-/overbelastingssignalen die failover rechtvaardigen wanneer de providercontext
-    overeenkomt.
-    Algemene interne terugvaltekst zoals `LLM request failed with an unknown
-    error.` blijft conservatief en activeert op zichzelf geen modelterugval.
+    Algemene serverfouttekst is specifieker dan "alles met onbekend/fout
+    erin". Providergebonden tijdelijke vormen die wel als failover-
+    signalen gelden: alleenstaand Anthropic `An unknown error occurred`, alleenstaand OpenRouter
+    `Provider returned error`, fouten met een stopreden zoals `Unhandled stop reason:
+    error`, JSON-`api_error`-payloads met tijdelijke servertekst (`internal
+    server error`, `unknown error, 520`, `upstream error`, `backend error`)
+    en fouten wegens een bezette provider zoals `ModelNotReadyException` wanneer de providercontext
+    overeenkomt. Algemene interne terugvaltekst zoals `LLM request failed
+    with an unknown error.` wordt conservatief behandeld en activeert op zichzelf geen
+    terugval.
 
   </Accordion>
 
   <Accordion title='Wat betekent "Geen referenties gevonden voor profiel anthropic:default"?'>
-    Het betekent dat het systeem probeerde auth-profiel-ID `anthropic:default` te gebruiken, maar er geen referenties voor kon vinden in de verwachte auth-opslag.
+    De authenticatieprofiel-id `anthropic:default` heeft geen referenties in de
+    verwachte authenticatieopslag.
 
-    **Checklist voor oplossen:**
+    **Controlelijst voor de oplossing:**
 
-    - **Bevestig waar auth-profielen staan** (nieuwe versus legacy paden)
-      - Huidig: `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
-      - Legacy: `~/.openclaw/agent/*` (gemigreerd door `openclaw doctor`)
-    - **Bevestig dat je env-var door de Gateway wordt geladen**
-      - Als je `ANTHROPIC_API_KEY` in je shell instelt maar de Gateway via systemd/launchd uitvoert, erft die dit mogelijk niet. Zet het in `~/.openclaw/.env` of schakel `env.shellEnv` in.
-    - **Zorg dat je de juiste agent bewerkt**
-      - Multi-agentconfiguraties betekenen dat er meerdere `auth-profiles.json`-bestanden kunnen zijn.
-    - **Controleer model-/auth-status op hoofdlijnen**
-      - Gebruik `openclaw models status` om geconfigureerde modellen te zien en of providers geauthenticeerd zijn.
+    - Controleer waar profielen zich bevinden — huidig:
+      `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`; verouderd:
+      `~/.openclaw/agent/*` (gemigreerd door `openclaw doctor`).
+    - Controleer of de Gateway uw omgevingsvariabele laadt. `ANTHROPIC_API_KEY` die alleen in
+      uw shell is ingesteld, bereikt geen Gateway-uitvoering via systemd/launchd — plaats deze in
+      `~/.openclaw/.env` of schakel `env.shellEnv` in.
+    - Controleer of u de juiste agent bewerkt — configuraties met meerdere agents hebben
+      meerdere `auth-profiles.json`-bestanden.
+    - Voer `openclaw models status` uit om geconfigureerde modellen en de
+      authenticatiestatus van providers te bekijken.
 
-    **Checklist voor oplossen van "Geen referenties gevonden voor profiel anthropic"**
+    **Voor "Geen referenties gevonden voor profiel anthropic" (zonder e-mailachtervoegsel):**
 
-    Dit betekent dat de run is vastgezet op een Anthropic-auth-profiel, maar dat de Gateway
-    het niet in zijn auth-opslag kan vinden.
+    De uitvoering is vastgezet op een Anthropic-profiel dat de Gateway niet kan vinden.
 
-    - **Gebruik Claude CLI**
-      - Voer `openclaw models auth login --provider anthropic --method cli --set-default` uit op de gatewayhost.
-    - **Als je in plaats daarvan een API-sleutel wilt gebruiken**
-      - Zet `ANTHROPIC_API_KEY` in `~/.openclaw/.env` op de **gatewayhost**.
-      - Wis elke vastgezette volgorde die een ontbrekend profiel afdwingt:
+    - Gebruik de Claude CLI: voer `openclaw models auth login --provider anthropic
+      --method cli --set-default` uit op de Gateway-host.
+    - Gebruik bij voorkeur een API-sleutel: plaats `ANTHROPIC_API_KEY` in
+      `~/.openclaw/.env` op de Gateway-host en wis vervolgens elke vastgezette volgorde
+      die het ontbrekende profiel afdwingt:
 
-        ```bash
-        openclaw models auth order clear --provider anthropic
-        ```
+      ```bash
+      openclaw models auth order clear --provider anthropic
+      ```
 
-    - **Bevestig dat je opdrachten op de gatewayhost uitvoert**
-      - In externe modus staan auth-profielen op de gatewaymachine, niet op je laptop.
+    - Externe modus: authenticatieprofielen bevinden zich op de Gateway-machine, niet op uw
+      laptop — controleer of u de opdrachten daar uitvoert.
 
   </Accordion>
 
-  <Accordion title="Waarom probeerde het ook Google Gemini en faalde dat?">
-    Als je modelconfiguratie Google Gemini als terugval bevat (of je bent overgeschakeld naar een Gemini-snelnaam), probeert OpenClaw dit tijdens modelterugval. Als je Google-referenties niet hebt geconfigureerd, zie je `No API key found for provider "google"`.
-
-    Oplossing: geef Google-auth op, of verwijder/vermijd Google-modellen in `agents.defaults.model.fallbacks` / aliassen zodat terugval daar niet naartoe routeert.
+  <Accordion title="Waarom probeerde het ook Google Gemini en mislukte dat?">
+    Als uw modelconfiguratie Google Gemini als terugvalmodel bevat (of als u
+    bent overgeschakeld naar een Gemini-verkorte naam), probeert OpenClaw dit tijdens de terugval. Als er geen
+    Google-referenties zijn geconfigureerd, verschijnt `No API key found for provider
+    "google"`. Oplossing: voeg Google-authenticatie toe of verwijder Google-modellen uit
+    `agents.defaults.model.fallbacks`/aliassen.
 
     **LLM-verzoek geweigerd: denkhandtekening vereist (Google Antigravity)**
 
-    Oorzaak: de sessiegeschiedenis bevat **denkblokken zonder handtekeningen** (vaak afkomstig uit
-    een afgebroken/gedeeltelijke stream). Google Antigravity vereist handtekeningen voor denkblokken.
-
-    Oplossing: OpenClaw verwijdert nu niet-ondertekende denkblokken voor Google Antigravity Claude. Als het nog steeds verschijnt, start dan een **nieuwe sessie** of stel `/thinking off` in voor die agent.
+    Oorzaak: de sessiegeschiedenis bevat denkblokken zonder handtekeningen (vaak
+    door een afgebroken/gedeeltelijke stream); Google Antigravity vereist handtekeningen
+    voor denkblokken. OpenClaw verwijdert niet-ondertekende denkblokken voor Google
+    Antigravity Claude; als het probleem nog steeds optreedt, start dan een nieuwe sessie of stel
+    `/thinking off` in voor die agent.
 
   </Accordion>
 </AccordionGroup>
 
-## Auth-profielen: wat ze zijn en hoe je ze beheert
+## Authenticatieprofielen: wat ze zijn en hoe u ze beheert
 
-Gerelateerd: [/concepts/oauth](/nl/concepts/oauth) (OAuth-flows, tokenopslag, patronen voor meerdere accounts)
+Gerelateerd: [/concepts/oauth](/nl/concepts/oauth) (OAuth-stromen, tokenopslag, patronen voor meerdere accounts)
 
 <AccordionGroup>
-  <Accordion title="Wat is een auth-profiel?">
-    Een auth-profiel is een benoemde credentialrecord (OAuth of API-sleutel) gekoppeld aan een provider. Profielen staan in:
+  <Accordion title="Wat is een authenticatieprofiel?">
+    Een benoemde referentierecord (OAuth of API-sleutel) die aan een provider is gekoppeld en wordt opgeslagen
+    in:
 
-    ```
+    ```text
     ~/.openclaw/agents/<agentId>/agent/auth-profiles.json
     ```
 
-    Voer `openclaw models auth list` uit om opgeslagen profielen te inspecteren zonder geheimen te dumpen (optioneel `--provider <id>` of `--json`). Zie [Models CLI](/nl/cli/models#auth-profiles) voor details.
+    Inspecteer opgeslagen profielen zonder geheimen weer te geven: `openclaw models auth
+    list` (optioneel `--provider <id>` of `--json`). Zie
+    [Modellen-CLI](/nl/cli/models#auth-profiles).
 
   </Accordion>
 
-  <Accordion title="Wat zijn typische profiel-ID's?">
-    OpenClaw gebruikt providergeprefixte ID's zoals:
-
-    - `anthropic:default` (gebruikelijk wanneer er geen e-mailidentiteit bestaat)
-    - `anthropic:<email>` voor OAuth-identiteiten
-    - aangepaste ID's die je kiest (bijv. `anthropic:work`)
+  <Accordion title="Wat zijn gebruikelijke profiel-id's?">
+    Met providerprefix: `anthropic:default` (gebruikelijk wanneer er geen e-mailidentiteit
+    bestaat), `anthropic:<email>` voor OAuth-identiteiten, of een aangepaste id die u
+    kiest (bijvoorbeeld `anthropic:work`).
 
   </Accordion>
 
-  <Accordion title="Kan ik bepalen welk auth-profiel als eerste wordt geprobeerd?">
-    Ja. Config ondersteunt optionele metadata voor profielen en een volgorde per provider (`auth.order.<provider>`). Dit slaat **geen** geheimen op; het koppelt ID's aan provider/modus en stelt de rotatievolgorde in.
+  <Accordion title="Kan ik bepalen welk authenticatieprofiel als eerste wordt geprobeerd?">
+    Ja. De configuratie `auth.order.<provider>` stelt de rotatievolgorde per provider in
+    (alleen metagegevens — er worden geen geheimen opgeslagen).
 
-    OpenClaw kan een profiel tijdelijk overslaan als het in een korte **cooldown** zit (rate limits/timeouts/auth-fouten) of in een langere **uitgeschakelde** toestand (facturering/onvoldoende tegoed). Voer `openclaw models status --json` uit en controleer `auth.unusableProfiles` om dit te inspecteren. Afstemming: `auth.cooldowns.billingBackoffHours*`.
+    OpenClaw kan een profiel overslaan tijdens een korte **afkoelperiode** (snelheidsbeperkingen,
+    time-outs, authenticatiefouten) of een langere status **uitgeschakeld**
+    (facturering/onvoldoende tegoed). Inspecteer dit met `openclaw models status
+    --json` en controleer `auth.unusableProfiles`. Pas dit aan met
+    `auth.cooldowns.billingBackoffHours*`. Afkoelperioden wegens snelheidsbeperkingen kunnen
+    modelspecifiek zijn — een profiel dat voor één model afkoelt, kan nog steeds een
+    verwant model van dezelfde provider bedienen; factureringsvensters/uitgeschakelde vensters blokkeren het
+    volledige profiel.
 
-    Rate-limit-cooldowns kunnen modelgebonden zijn. Een profiel dat afkoelt
-    voor één model kan nog steeds bruikbaar zijn voor een zustermodel bij dezelfde provider,
-    terwijl facturerings-/uitgeschakelde vensters nog steeds het hele profiel blokkeren.
-
-    Je kunt ook een **per-agent** volgorde-override instellen (opgeslagen in `auth-state.json` van die agent) via de CLI:
+    Stel een volgordeoverschrijving per agent in (opgeslagen in `auth-state.json` van die agent):
 
     ```bash
     # Defaults to the configured default agent (omit --agent)
     openclaw models auth order get --provider anthropic
 
-    # Lock rotation to a single profile (only try this one)
+    # Lock rotation to a single profile
     openclaw models auth order set --provider anthropic anthropic:default
 
     # Or set an explicit order (fallback within provider)
@@ -525,44 +504,35 @@ Gerelateerd: [/concepts/oauth](/nl/concepts/oauth) (OAuth-flows, tokenopslag, pa
 
     # Clear override (fall back to config auth.order / round-robin)
     openclaw models auth order clear --provider anthropic
-    ```
 
-    Om een specifieke agent te targeten:
-
-    ```bash
+    # Target a specific agent
     openclaw models auth order set --provider anthropic --agent main anthropic:default
     ```
 
-    Gebruik dit om te verifiëren wat daadwerkelijk wordt geprobeerd:
-
-    ```bash
-    openclaw models status --probe
-    ```
-
-    Als een opgeslagen profiel uit de expliciete volgorde is weggelaten, meldt probe
-    `excluded_by_auth_order` voor dat profiel in plaats van het stilzwijgend te proberen.
+    Controleer wat daadwerkelijk wordt geprobeerd: `openclaw models status --probe`. Een
+    opgeslagen profiel dat uit een expliciete volgorde is weggelaten, meldt
+    `excluded_by_auth_order` in plaats van stilzwijgend te worden geprobeerd.
 
   </Accordion>
 
   <Accordion title="OAuth versus API-sleutel - wat is het verschil?">
-    OpenClaw ondersteunt beide:
+    - **OAuth-/CLI-aanmelding** gebruikt vaak abonnementstoegang wanneer de
+      provider dit ondersteunt. Voor Anthropic gebruikt de Claude CLI-backend van OpenClaw
+      Claude Code `claude -p`, wat Anthropic momenteel behandelt als
+      gebruik van de Agent SDK/programmatisch gebruik dat meetelt voor de gebruikslimieten van het abonnement —
+      zie [Anthropic](/nl/providers/anthropic) voor de huidige status van de factureringspauze
+      en bronlinks.
+    - **API-sleutels** gebruiken facturering per token.
 
-    - **OAuth / CLI-login** benut vaak abonnements toegang waar de
-      provider dit ondersteunt. Voor Anthropic gebruikt OpenClaw's Claude CLI-backend
-      Claude Code `claude -p`; Anthropic behandelt dat momenteel als Agent
-      SDK-/programmatisch gebruik. Anthropic heeft de afzonderlijke Agent
-      SDK-tegoedwijziging van 15 juni 2026 gepauzeerd, dus voorlopig telt dit nog steeds mee voor de gebruikslimieten van het abonnement. Zie Anthropic's [Agent SDK-planartikel](https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan)
-      voor de huidige pauzemelding.
-    - **API-sleutels** gebruiken betalen-per-token-facturering.
-
-    De wizard ondersteunt expliciet Anthropic Claude CLI, OpenAI Codex OAuth en API-sleutels.
+    De wizard ondersteunt Anthropic Claude CLI, OpenAI Codex OAuth en API-
+    sleutels.
 
   </Accordion>
 </AccordionGroup>
 
 ## Gerelateerd
 
-- [FAQ](/nl/help/faq) — de hoofd-FAQ
-- [FAQ — snelstart en installatie bij eerste start](/nl/help/faq-first-run)
+- [Veelgestelde vragen](/nl/help/faq) — de belangrijkste veelgestelde vragen
+- [Veelgestelde vragen — snel aan de slag en configuratie bij de eerste uitvoering](/nl/help/faq-first-run)
 - [Modelselectie](/nl/concepts/model-providers)
-- [Modelfailover](/nl/concepts/model-failover)
+- [Model-failover](/nl/concepts/model-failover)

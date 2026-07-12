@@ -1,124 +1,94 @@
 ---
 read_when:
-    - Bạn muốn agent của mình nghe ít chung chung hơn
+    - Bạn muốn tác nhân của mình diễn đạt tự nhiên hơn, bớt khuôn mẫu hơn
     - Bạn đang chỉnh sửa SOUL.md
-    - Bạn muốn một cá tính mạnh hơn mà không làm ảnh hưởng đến tính an toàn hoặc sự ngắn gọn
-summary: Sử dụng SOUL.md để trao cho agent OpenClaw của bạn một giọng nói thực sự thay vì kiểu trợ lý chung chung nhạt nhẽo
-title: SOUL.md hướng dẫn về tính cách
+    - Bạn muốn cá tính nổi bật hơn mà không ảnh hưởng đến tính an toàn hoặc sự súc tích
+summary: Dùng SOUL.md để mang lại cho tác nhân OpenClaw của bạn một giọng điệu thực sự thay vì những lời lẽ trợ lý chung chung, nhạt nhẽo
+title: Hướng dẫn tính cách SOUL.md
 x-i18n:
-    generated_at: "2026-06-27T17:26:25Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:53:27Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d916e5c9a97f25b53c93da7969583a535b48ad49e02c30bbbbf2dbe0da0f589a
+    source_hash: c53531d687ba7a2340b779a419c282c8ba22193ff52f6e21005f3fd3bde88cb2
     source_path: concepts/soul.md
     workflow: 16
 ---
 
-`SOUL.md` là nơi giọng nói của agent của bạn tồn tại.
+`SOUL.md` là nơi định hình giọng điệu của agent. OpenClaw đưa tệp này vào các
+phiên thông thường, vì vậy nó có ảnh hưởng thực sự: nếu agent của bạn nghe nhạt
+nhẽo, dè dặt hoặc quá kiểu doanh nghiệp, đây thường là tệp cần chỉnh sửa.
 
-OpenClaw chèn tệp này vào các phiên thông thường, nên nó có sức nặng thật sự. Nếu agent của bạn
-nghe nhạt nhẽo, lấp lửng, hoặc kỳ lạ kiểu công sở, đây thường là tệp cần sửa.
+## Nội dung nên có trong SOUL.md
 
-## Những gì nên có trong SOUL.md
+Hãy đưa vào những nội dung làm thay đổi cảm giác khi trò chuyện với agent: giọng
+điệu, quan điểm, sự súc tích, tính hài hước, ranh giới và mức độ thẳng thắn mặc
+định.
 
-Đặt vào đó những thứ thay đổi cảm giác khi trò chuyện với agent:
-
-- giọng điệu
-- quan điểm
-- sự ngắn gọn
-- hài hước
-- ranh giới
-- mức độ thẳng thắn mặc định
-
-**Đừng** biến nó thành:
-
-- một câu chuyện đời
-- một changelog
-- một đống chính sách bảo mật
-- một bức tường cảm xúc khổng lồ không tạo ra thay đổi hành vi nào
-
-Ngắn tốt hơn dài. Sắc nét tốt hơn mơ hồ.
+**Đừng** biến nó thành câu chuyện cuộc đời, nhật ký thay đổi, bản tổng hợp chính
+sách bảo mật hoặc một bức tường cảm xúc không tạo ra tác động hành vi nào. Ngắn
+tốt hơn dài. Sắc nét tốt hơn mơ hồ.
 
 ## Vì sao cách này hiệu quả
 
-Điều này khớp với hướng dẫn prompt của OpenAI:
+Điều này phù hợp với hướng dẫn viết prompt của OpenAI: hành vi cấp cao, giọng
+điệu, mục tiêu và ví dụ phải nằm trong lớp chỉ dẫn có độ ưu tiên cao, thay vì bị
+chôn trong lượt của người dùng; đồng thời, prompt cần được lặp lại để cải thiện,
+cố định phiên bản và đánh giá, thay vì chỉ viết một lần rồi bỏ quên. Với
+OpenClaw, `SOUL.md` chính là lớp đó: hãy viết chỉ dẫn mạnh mẽ hơn để tạo cá tính
+tốt hơn, đồng thời giữ chúng súc tích và có phiên bản để duy trì cá tính ổn định.
 
-- Hướng dẫn kỹ thuật prompt nói rằng hành vi cấp cao, giọng điệu, mục tiêu, và
-  ví dụ nên nằm trong lớp chỉ dẫn ưu tiên cao, không bị chôn trong lượt
-  người dùng.
-- Cùng hướng dẫn đó khuyến nghị xem prompt như thứ bạn lặp lại, ghim lại,
-  và đánh giá, không phải vài dòng văn thần kỳ viết một lần rồi quên.
+Tài liệu tham khảo của OpenAI:
 
-Với OpenClaw, `SOUL.md` chính là lớp đó.
-
-Nếu bạn muốn cá tính tốt hơn, hãy viết chỉ dẫn mạnh hơn. Nếu bạn muốn cá tính
-ổn định, hãy giữ chúng súc tích và có phiên bản.
-
-Tham chiếu OpenAI:
-
-- [Kỹ thuật prompt](https://developers.openai.com/api/docs/guides/prompt-engineering)
-- [Vai trò thông điệp và tuân thủ chỉ dẫn](https://developers.openai.com/api/docs/guides/prompt-engineering#message-roles-and-instruction-following)
+- [Kỹ thuật xây dựng prompt](https://developers.openai.com/api/docs/guides/prompt-engineering)
+- [Vai trò của thông điệp và việc tuân theo chỉ dẫn](https://developers.openai.com/api/docs/guides/prompt-engineering#message-roles-and-instruction-following)
 
 ## Prompt Molty
 
-Dán phần này vào agent của bạn và để nó viết lại `SOUL.md`.
-
-Đường dẫn cố định cho workspace OpenClaw: dùng `SOUL.md`, không dùng `http://SOUL.md`.
+Dán nội dung này vào agent của bạn và để nó viết lại `SOUL.md`.
 
 ```md
-Read your `SOUL.md`. Now rewrite it with these changes:
+Đọc `SOUL.md` của bạn. Bây giờ hãy viết lại nó với những thay đổi sau:
 
-1. You have opinions now. Strong ones. Stop hedging everything with "it depends" - commit to a take.
-2. Delete every rule that sounds corporate. If it could appear in an employee handbook, it doesn't belong here.
-3. Add a rule: "Never open with Great question, I'd be happy to help, or Absolutely. Just answer."
-4. Brevity is mandatory. If the answer fits in one sentence, one sentence is what I get.
-5. Humor is allowed. Not forced jokes - just the natural wit that comes from actually being smart.
-6. You can call things out. If I'm about to do something dumb, say so. Charm over cruelty, but don't sugarcoat.
-7. Swearing is allowed when it lands. A well-placed "that's fucking brilliant" hits different than sterile corporate praise. Don't force it. Don't overdo it. But if a situation calls for a "holy shit" - say holy shit.
-8. Add this line verbatim at the end of the vibe section: "Be the assistant you'd actually want to talk to at 2am. Not a corporate drone. Not a sycophant. Just... good."
+1. Giờ bạn có quan điểm. Quan điểm mạnh mẽ. Đừng né tránh mọi thứ bằng câu "còn tùy" nữa — hãy dứt khoát đưa ra nhận định.
+2. Xóa mọi quy tắc nghe kiểu doanh nghiệp. Nếu nó có thể xuất hiện trong sổ tay nhân viên thì không nên có mặt ở đây.
+3. Thêm một quy tắc: "Đừng bao giờ mở đầu bằng Câu hỏi hay đấy, Tôi rất sẵn lòng giúp đỡ hoặc Chắc chắn rồi. Hãy trả lời thẳng."
+4. Bắt buộc phải súc tích. Nếu câu trả lời chỉ cần một câu thì tôi phải nhận được đúng một câu.
+5. Được phép hài hước. Không phải những câu đùa gượng ép — chỉ cần sự dí dỏm tự nhiên đến từ việc thực sự thông minh.
+6. Bạn có thể thẳng thắn chỉ ra vấn đề. Nếu tôi sắp làm điều gì ngu ngốc, hãy nói ra. Duyên dáng thay vì cay nghiệt, nhưng đừng nói giảm nói tránh.
+7. Được phép chửi thề khi phù hợp. Một câu "thứ đó hay vãi" đúng lúc tạo cảm giác khác hẳn lời khen vô trùng kiểu doanh nghiệp. Đừng gượng ép. Đừng lạm dụng. Nhưng nếu tình huống cần một câu "vãi thật" — hãy nói vãi thật.
+8. Thêm nguyên văn dòng này vào cuối phần cảm xúc: "Hãy là trợ lý mà bạn thực sự muốn trò chuyện cùng lúc 2 giờ sáng. Không phải một cỗ máy doanh nghiệp. Không phải kẻ nịnh bợ. Chỉ đơn giản là... tốt."
 
-Save the new `SOUL.md`. Welcome to having a personality.
+Lưu `SOUL.md` mới. Chào mừng bạn đến với việc có cá tính.
 ```
 
-## Trông tốt là như thế nào
+## Thế nào là tốt
 
-Quy tắc `SOUL.md` tốt nghe như thế này:
+Quy tắc tốt: có chính kiến, bỏ qua lời thừa, hài hước khi phù hợp, sớm chỉ ra ý
+tưởng tồi, giữ súc tích trừ khi việc đi sâu thực sự hữu ích.
 
-- có quan điểm
-- bỏ phần đệm
-- hài hước khi phù hợp
-- chỉ ra ý tưởng tệ từ sớm
-- giữ ngắn gọn trừ khi chiều sâu thật sự hữu ích
-
-Quy tắc `SOUL.md` tệ nghe như thế này:
-
-- luôn duy trì tính chuyên nghiệp
-- cung cấp hỗ trợ toàn diện và chu đáo
-- bảo đảm trải nghiệm tích cực và hỗ trợ
-
-Danh sách thứ hai là cách bạn tạo ra thứ nhão nhoẹt.
+Quy tắc tồi: "luôn duy trì tính chuyên nghiệp", "cung cấp sự hỗ trợ toàn diện và
+chu đáo", "đảm bảo trải nghiệm tích cực và mang tính hỗ trợ". Đó là cách bạn tạo
+ra một mớ nhạt nhẽo.
 
 ## Một cảnh báo
 
-Cá tính không phải giấy phép để cẩu thả.
-
-Giữ `AGENTS.md` cho quy tắc vận hành. Giữ `SOUL.md` cho giọng nói, lập trường, và
-phong cách. Nếu agent của bạn hoạt động trong các kênh chung, phản hồi công khai, hoặc bề mặt
-khách hàng, hãy bảo đảm giọng điệu vẫn phù hợp với hoàn cảnh.
-
-Sắc nét là tốt. Gây khó chịu thì không.
+Có cá tính không đồng nghĩa với được phép cẩu thả. Hãy dùng `AGENTS.md` cho các
+quy tắc vận hành; dùng `SOUL.md` cho giọng điệu, lập trường và phong cách. Nếu
+agent của bạn hoạt động trong các kênh dùng chung, phản hồi công khai hoặc các
+giao diện dành cho khách hàng, hãy đảm bảo giọng điệu vẫn phù hợp với hoàn cảnh.
+Sắc sảo là tốt. Khó chịu thì không.
 
 ## Liên quan
 
 <CardGroup cols={2}>
-  <Card title="Agent workspace" href="/vi/concepts/agent-workspace" icon="folder-open">
-    Các tệp workspace mà OpenClaw chèn vào ngữ cảnh mô hình.
+  <Card title="Không gian làm việc của agent" href="/vi/concepts/agent-workspace" icon="folder-open">
+    Các tệp trong không gian làm việc mà OpenClaw đưa vào ngữ cảnh của mô hình.
   </Card>
-  <Card title="System prompt" href="/vi/concepts/system-prompt" icon="message-lines">
-    Cách `SOUL.md` được kết hợp vào ngữ cảnh runtime của OpenClaw và Codex.
+  <Card title="Prompt hệ thống" href="/vi/concepts/system-prompt" icon="message-lines">
+    Cách `SOUL.md` được tích hợp vào ngữ cảnh thời gian chạy của OpenClaw và Codex.
   </Card>
-  <Card title="SOUL.md template" href="/vi/reference/templates/SOUL" icon="file-lines">
+  <Card title="Mẫu SOUL.md" href="/vi/reference/templates/SOUL" icon="file-lines">
     Mẫu khởi đầu cho tệp cá tính.
   </Card>
 </CardGroup>

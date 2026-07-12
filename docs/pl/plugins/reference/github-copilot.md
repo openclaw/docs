@@ -1,30 +1,30 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub przeprowadzasz audyt Plugin github-copilot
-summary: Dodaje obsługę dostawcy modeli GitHub Copilot do OpenClaw.
+    - Instalujesz, konfigurujesz lub audytujesz plugin github-copilot
+summary: Dodaje obsługę dostawcy modeli GitHub Copilot w OpenClaw.
 title: Plugin GitHub Copilot
 x-i18n:
-    generated_at: "2026-05-02T20:52:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:23:03Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2845e2575d30865b06f318873da6da8085f4928d059176b514c3195a29a87e36
+    source_hash: 01b8a15fe2da9848cef18e0e24b1fdb1493e8f17046a7f82f1331f29c80f0660
     source_path: plugins/reference/github-copilot.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Plugin GitHub Copilot
 
-Dodaje obsługę dostawcy modeli GitHub Copilot do OpenClaw.
+Dodaje do OpenClaw obsługę dostawcy modeli GitHub Copilot.
 
 ## Dystrybucja
 
 - Pakiet: `@openclaw/github-copilot-provider`
-- Ścieżka instalacji: zawarty w OpenClaw
+- Sposób instalacji: zawarty w OpenClaw
 
-## Powierzchnia
+## Interfejs
 
-providers: github-copilot; contracts: memoryEmbeddingProviders
+dostawcy: github-copilot; kontrakty: memoryEmbeddingProviders, usageProviders
 
 ## Powiązana dokumentacja
 

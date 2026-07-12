@@ -1,41 +1,35 @@
 ---
 read_when:
     - Protocolschema's of codegeneratie bijwerken
-summary: TypeBox-schema's als de enige bron van waarheid voor het gatewayprotocol
+summary: TypeBox-schema's als enige bron van waarheid voor het Gateway-protocol
 title: TypeBox
 x-i18n:
-    generated_at: "2026-06-27T17:30:13Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:49:33Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f2f3da11e9dcf3250fd77e0c43f4ed918551a536d93fa71bce95eaf3d7539f6d
+    source_hash: 24490edf0d73e918f834e9dd53d09ba0e5183b2bc126ee981a94f8099e76283b
     source_path: concepts/typebox.md
     workflow: 16
 ---
 
-TypeBox is een schema-bibliotheek met TypeScript als uitgangspunt. We gebruiken deze om het **Gateway
-WebSocket-protocol** te definiëren (handshake, aanvraag/antwoord, servergebeurtenissen). Die schema's
-sturen **runtimevalidatie**, **JSON Schema-export** en **Swift-codegeneratie** voor
-de macOS-app aan. Eén bron van waarheid; al het andere wordt gegenereerd.
+TypeBox is een schema-bibliotheek die primair voor TypeScript is ontworpen. OpenClaw gebruikt deze om het **Gateway WebSocket-protocol** te definiëren (handshake, verzoek/antwoord, servergebeurtenissen). Deze schema's sturen **runtimevalidatie** (AJV), **JSON Schema-export** en **Swift-codegeneratie** voor de macOS-app aan. Eén bron van waarheid; al het overige wordt gegenereerd.
 
-Als je de protocolcontext op hoger niveau wilt, begin dan met
-[Gateway-architectuur](/nl/concepts/architecture).
+Begin voor de protocolcontext op een hoger niveau bij [Gateway-architectuur](/nl/concepts/architecture).
 
 ## Mentaal model (30 seconden)
 
-Elk Gateway-WS-bericht is een van drie frames:
+Elk Gateway WS-bericht is een van drie frames:
 
-- **Aanvraag**: `{ type: "req", id, method, params }`
+- **Verzoek**: `{ type: "req", id, method, params }`
 - **Antwoord**: `{ type: "res", id, ok, payload | error }`
 - **Gebeurtenis**: `{ type: "event", event, payload, seq?, stateVersion? }`
 
-Het eerste frame **moet** een `connect`-aanvraag zijn. Daarna kunnen clients
-methoden aanroepen (bijv. `health`, `send`, `chat.send`) en zich abonneren op gebeurtenissen (bijv.
-`presence`, `tick`, `agent`).
+Het eerste frame **moet** een `connect`-verzoek zijn. Daarna roepen clients methoden aan (bijvoorbeeld `health`, `send`, `chat.send`) en abonneren ze zich op gebeurtenissen (bijvoorbeeld `presence`, `tick`, `agent`).
 
-Verbindingsstroom (minimaal):
+Verbindingsverloop (minimaal):
 
-```
+```text
 Client                    Gateway
   |---- req:connect -------->|
   |<---- res:hello-ok --------|
@@ -44,57 +38,46 @@ Client                    Gateway
   |<---- res:health ----------|
 ```
 
-Veelgebruikte methoden + gebeurtenissen:
+Veelgebruikte methoden en gebeurtenissen:
 
-| Categorie  | Voorbeelden                                                | Opmerkingen                        |
-| ---------- | ---------------------------------------------------------- | ---------------------------------- |
-| Kern       | `connect`, `health`, `status`                              | `connect` moet eerst komen         |
-| Berichten  | `send`, `agent`, `agent.wait`, `system-event`, `logs.tail` | neveneffecten vereisen `idempotencyKey` |
-| Chat       | `chat.history`, `chat.send`, `chat.abort`                  | WebChat gebruikt deze              |
-| Sessies    | `sessions.list`, `sessions.patch`, `sessions.delete`       | sessiebeheer                       |
-| Automatisering | `wake`, `cron.list`, `cron.run`, `cron.runs`           | wake + cron-beheer                 |
-| Nodes      | `node.list`, `node.invoke`, `node.pair.*`                  | Gateway-WS + node-acties           |
-| Gebeurtenissen | `tick`, `presence`, `agent`, `chat`, `health`, `shutdown` | serverpush                      |
+| Categorie  | Voorbeelden                                                 | Opmerkingen                                              |
+| ---------- | ----------------------------------------------------------- | -------------------------------------------------------- |
+| Kern       | `connect`, `health`, `status`                               | `connect` moet als eerste komen                          |
+| Berichten  | `send`, `agent`, `agent.wait`, `system-event`, `logs.tail`  | methoden met neveneffecten vereisen `idempotencyKey`     |
+| Chat       | `chat.history`, `chat.send`, `chat.abort`                   | WebChat gebruikt deze                                    |
+| Sessies    | `sessions.list`, `sessions.patch`, `sessions.delete`        | sessiebeheer                                              |
+| Automatisering | `wake`, `cron.list`, `cron.run`, `cron.runs`            | beheer van wake en Cron                                  |
+| Nodes      | `node.list`, `node.invoke`, `node.pair.*`                   | Gateway WS plus Node-acties                              |
+| Gebeurtenissen | `tick`, `presence`, `agent`, `chat`, `health`, `shutdown` | pushberichten van de server                           |
 
-De gezaghebbende geadverteerde **discovery**-inventaris staat in
-`src/gateway/server-methods-list.ts` (`listGatewayMethods`, `GATEWAY_EVENTS`).
+De gezaghebbende gepubliceerde **detectie-inventaris** staat in `src/gateway/server-methods-list.ts` (`listGatewayMethods`, `GATEWAY_EVENTS`).
 
 ## Waar de schema's staan
 
-- Bron: `packages/gateway-protocol/src/schema.ts`
+- Bron-barrel: `packages/gateway-protocol/src/schema.ts` exporteert domeinmodules onder `packages/gateway-protocol/src/schema/*.ts` opnieuw (`frames.ts` voor de enveloppen en handshake op het hoogste niveau, `agent.ts`, `sessions.ts`, `cron.ts` enzovoort per functiegebied). `protocol-schemas.ts` is het centrale `ProtocolSchemas`-register dat schemanamen aan hun TypeBox-definities koppelt.
 - Runtimevalidators (AJV): `packages/gateway-protocol/src/index.ts`
-- Geadverteerd feature-/discovery-register: `src/gateway/server-methods-list.ts`
-- Serverhandshake + methode-dispatch: `src/gateway/server.impl.ts`
+- Gepubliceerd functie-/detectieregister: `src/gateway/server-methods-list.ts`
+- Serverhandshake en methodedispatch: `src/gateway/server.impl.ts`
 - Node-client: `src/gateway/client.ts`
-- Gegenereerd JSON Schema: `dist/protocol.schema.json`
-- Gegenereerde Swift-modellen: `apps/macos/Sources/OpenClawProtocol/GatewayModels.swift`
+- Gegenereerd JSON Schema: `dist/protocol.schema.json` (builduitvoer, niet gecommit)
+- Gegenereerde Swift-modellen: `apps/shared/OpenClawKit/Sources/OpenClawProtocol/GatewayModels.swift`
 
 ## Huidige pijplijn
 
-- `pnpm protocol:gen`
-  - schrijft JSON Schema (draft-07) naar `dist/protocol.schema.json`
-- `pnpm protocol:gen:swift`
-  - genereert Swift-gatewaymodellen
-- `pnpm protocol:check`
-  - voert beide generatoren uit en controleert of de uitvoer is gecommit
+- `pnpm protocol:gen` schrijft JSON Schema (draft-07) naar `dist/protocol.schema.json`.
+- `pnpm protocol:gen:swift` genereert de Swift Gateway-modellen.
+- `pnpm protocol:check` voert beide generatoren uit en controleert of de Swift-uitvoer is gecommit (de JSON Schema-uitvoer is een door Git genegeerd buildartefact).
 
 ## Hoe de schema's tijdens runtime worden gebruikt
 
-- **Serverzijde**: elk inkomend frame wordt gevalideerd met AJV. De handshake accepteert alleen
-  een `connect`-aanvraag waarvan de parameters overeenkomen met `ConnectParams`.
-- **Clientzijde**: de JS-client valideert gebeurtenis- en antwoordframes voordat
-  ze worden gebruikt.
-- **Feature discovery**: de Gateway stuurt een conservatieve lijst met `features.methods`
-  en `features.events` in `hello-ok` vanuit `listGatewayMethods()` en
-  `GATEWAY_EVENTS`.
-- Die discovery-lijst is geen gegenereerde dump van elke aanroepbare helper in
-  `coreGatewayHandlers`; sommige helper-RPC's zijn geïmplementeerd in
-  `src/gateway/server-methods/*.ts` zonder te worden opgesomd in de geadverteerde
-  featurelijst.
+- **Serverzijde**: elk inkomend frame wordt met AJV gevalideerd. De handshake accepteert alleen een `connect`-verzoek waarvan de parameters overeenkomen met `ConnectParams`.
+- **Clientzijde**: de JS-client valideert gebeurtenis- en antwoordframes voordat deze worden gebruikt.
+- **Functiedetectie**: de Gateway stuurt in `hello-ok` een conservatieve lijst `features.methods` en `features.events`, afkomstig van `listGatewayMethods()` en `GATEWAY_EVENTS`.
+- Deze detectielijst is geen gegenereerde dump van elke aanroepbare helper in `coreGatewayHandlers`; sommige helper-RPC's zijn geïmplementeerd in `src/gateway/server-methods/*.ts` zonder dat ze in de gepubliceerde functielijst worden vermeld.
 
 ## Voorbeeldframes
 
-Connect (eerste bericht):
+Verbinding maken (eerste bericht):
 
 ```json
 {
@@ -116,7 +99,7 @@ Connect (eerste bericht):
 }
 ```
 
-Hello-ok-antwoord:
+`hello-ok`-antwoord:
 
 ```json
 {
@@ -134,12 +117,13 @@ Hello-ok-antwoord:
       "stateVersion": { "presence": 0, "health": 0 },
       "uptimeMs": 0
     },
+    "auth": { "role": "operator", "scopes": ["operator.read"] },
     "policy": { "maxPayload": 1048576, "maxBufferedBytes": 1048576, "tickIntervalMs": 30000 }
   }
 }
 ```
 
-Aanvraag + antwoord:
+Verzoek en antwoord:
 
 ```json
 { "type": "req", "id": "r1", "method": "health" }
@@ -157,7 +141,7 @@ Gebeurtenis:
 
 ## Minimale client (Node.js)
 
-Kleinste nuttige stroom: verbinden + health.
+Kleinste bruikbare verloop: verbinden + statuscontrole.
 
 ```ts
 import { WebSocket } from "ws";
@@ -197,13 +181,13 @@ ws.on("message", (data) => {
 });
 ```
 
-## Uitgewerkt voorbeeld: voeg een methode end-to-end toe
+## Uitgewerkt voorbeeld: een methode van begin tot eind toevoegen
 
-Voorbeeld: voeg een nieuwe `system.echo`-aanvraag toe die `{ ok: true, text }` retourneert.
+Voorbeeld: voeg een nieuw `system.echo`-verzoek toe dat `{ ok: true, text }` retourneert.
 
 1. **Schema (bron van waarheid)**
 
-Voeg toe aan `packages/gateway-protocol/src/schema.ts`:
+Voeg dit toe aan `packages/gateway-protocol/src/schema/system.ts` (of de functie-module die het beste overeenkomt):
 
 ```ts
 export const SystemEchoParamsSchema = Type.Object(
@@ -217,7 +201,7 @@ export const SystemEchoResultSchema = Type.Object(
 );
 ```
 
-Voeg beide toe aan `ProtocolSchemas` en exporteer typen:
+Importeer beide in `packages/gateway-protocol/src/schema/protocol-schemas.ts`, voeg ze toe aan het `ProtocolSchemas`-register en exporteer de afgeleide typen:
 
 ```ts
   SystemEchoParams: SystemEchoParamsSchema,
@@ -250,13 +234,9 @@ export const systemHandlers: GatewayRequestHandlers = {
 };
 ```
 
-Registreer deze in `src/gateway/server-methods.ts` (voegt `systemHandlers` al samen),
-en voeg daarna `"system.echo"` toe aan de invoer van `listGatewayMethods` in
-`src/gateway/server-methods-list.ts`.
+Registreer deze in `src/gateway/server-methods.ts` (voegt `systemHandlers` al samen) en voeg vervolgens `"system.echo"` toe aan de invoer van `listGatewayMethods` in `src/gateway/server-methods-list.ts`.
 
-Als de methode aanroepbaar is door operator- of node-clients, classificeer deze dan ook in
-`src/gateway/method-scopes.ts` zodat scopehandhaving en `hello-ok`-featureadvertising
-op elkaar afgestemd blijven.
+Als de methode kan worden aangeroepen door operator- of Node-clients, classificeer deze dan ook in `src/gateway/method-scopes.ts`, zodat scopehandhaving en de functiepublicatie in `hello-ok` op elkaar afgestemd blijven.
 
 4. **Opnieuw genereren**
 
@@ -264,54 +244,49 @@ op elkaar afgestemd blijven.
 pnpm protocol:check
 ```
 
-5. **Tests + docs**
+5. **Tests en documentatie**
 
-Voeg een servertest toe in `src/gateway/server.*.test.ts` en vermeld de methode in de docs.
+Voeg een servertest toe in `src/gateway/server.*.test.ts` en vermeld de methode in de documentatie.
 
 ## Gedrag van Swift-codegeneratie
 
-De Swift-generator maakt:
+De Swift-generator produceert:
 
-- `GatewayFrame`-enum met `req`-, `res`-, `event`- en `unknown`-gevallen
-- Sterk getypeerde payload-structs/enums
+- een `GatewayFrame`-enum met de gevallen `req`, `res`, `event` en `unknown`
+- sterk getypeerde payloadstructuren/-enums
 - `ErrorCode`-waarden, `GATEWAY_PROTOCOL_VERSION` en `GATEWAY_MIN_PROTOCOL_VERSION`
 
-Onbekende frametypen worden behouden als ruwe payloads voor voorwaartse compatibiliteit.
+Onbekende frametypen blijven als ruwe payloads behouden voor voorwaartse compatibiliteit.
 
-## Versiebeheer + compatibiliteit
+## Versiebeheer en compatibiliteit
 
-- `PROTOCOL_VERSION` staat in `packages/gateway-protocol/src/version.ts`.
-- Clients sturen `minProtocol` + `maxProtocol`; de server weigert bereiken die
-  het huidige protocol niet bevatten.
-- De Swift-modellen behouden onbekende frametypen om oudere clients niet te breken.
+- `PROTOCOL_VERSION` staat in `packages/gateway-protocol/src/version.ts` (huidige waarde: `4`).
+- Clients sturen `minProtocol` en `maxProtocol`; de server weigert bereiken die het huidige protocol niet bevatten.
+- De Swift-modellen behouden onbekende frametypen om te voorkomen dat oudere clients niet meer werken.
 
 ## Schemapatronen en conventies
 
 - De meeste objecten gebruiken `additionalProperties: false` voor strikte payloads.
-- `NonEmptyString` is de standaard voor ID's en methode-/gebeurtenisnamen.
-- Het hoogste niveau `GatewayFrame` gebruikt een **discriminator** op `type`.
-- Methoden met neveneffecten vereisen meestal een `idempotencyKey` in params
-  (voorbeeld: `send`, `poll`, `agent`, `chat.send`).
-- `agent` accepteert optionele `internalEvents` voor runtimegegenereerde orkestratiecontext
-  (bijvoorbeeld overdracht na voltooiing van subagent-/cron-taken); behandel dit als intern API-oppervlak.
+- `NonEmptyString` (`Type.String({ minLength: 1 })`) is de standaard voor ID's en methode-/gebeurtenisnamen.
+- `GatewayFrame` op het hoogste niveau gebruikt een **discriminator** voor `type`.
+- Methoden met neveneffecten vereisen doorgaans een `idempotencyKey` in de parameters (voorbeeld: `send`, `poll`, `agent`, `chat.send`).
+- `agent` accepteert optioneel `internalEvents` voor tijdens runtime gegenereerde orkestratiecontext (bijvoorbeeld de overdracht bij voltooiing van een subagent-/Cron-taak); behandel dit als een intern API-oppervlak.
 
 ## Live schema-JSON
 
-Gegenereerd JSON Schema staat in de repo op `dist/protocol.schema.json`. Het
-gepubliceerde raw-bestand is doorgaans beschikbaar op:
+Het gegenereerde JSON Schema is een buildartefact en wordt niet in de repository gecommit. Het gepubliceerde onbewerkte bestand is doorgaans beschikbaar op:
 
 - [https://raw.githubusercontent.com/openclaw/openclaw/main/dist/protocol.schema.json](https://raw.githubusercontent.com/openclaw/openclaw/main/dist/protocol.schema.json)
 
-## Wanneer je schema's wijzigt
+## Wanneer u schema's wijzigt
 
-1. Werk de TypeBox-schema's bij.
+1. Werk de TypeBox-schema's bij in de verantwoordelijke module `packages/gateway-protocol/src/schema/*.ts` en registreer ze in `protocol-schemas.ts`.
 2. Registreer de methode/gebeurtenis in `src/gateway/server-methods-list.ts`.
-3. Werk `src/gateway/method-scopes.ts` bij wanneer de nieuwe RPC operator- of
-   node-scopeclassificatie nodig heeft.
+3. Werk `src/gateway/method-scopes.ts` bij wanneer de nieuwe RPC een scopeclassificatie voor operator of Node vereist.
 4. Voer `pnpm protocol:check` uit.
-5. Commit het opnieuw gegenereerde schema + de Swift-modellen.
+5. Commit de opnieuw gegenereerde Swift-modellen.
 
 ## Gerelateerd
 
-- [Rich output-protocol](/nl/reference/rich-output-protocol)
+- [Protocol voor rijke uitvoer](/nl/reference/rich-output-protocol)
 - [RPC-adapters](/nl/reference/rpc)

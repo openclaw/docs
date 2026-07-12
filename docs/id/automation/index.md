@@ -2,131 +2,131 @@
 doc-schema-version: 1
 read_when:
     - Menentukan cara mengotomatiskan pekerjaan dengan OpenClaw
-    - Memilih antara Heartbeat, Cron, komitmen, kait, dan perintah tetap
-    - Mencari titik masuk otomasi yang tepat
-summary: 'Ikhtisar mekanisme otomatisasi: tugas, Cron, hook, perintah tetap, dan Task Flow'
+    - Memilih antara Heartbeat, Cron, komitmen, hook, dan perintah tetap
+    - Mencari titik masuk otomatisasi yang tepat
+summary: 'Ikhtisar mekanisme otomatisasi: tugas, Cron, hook, perintah tetap, dan TaskFlow'
 title: Otomatisasi
 x-i18n:
-    generated_at: "2026-05-12T23:29:05Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:58:22Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 311ebbd557e40e38cd25b2f11b887baa4576657095d5a0841d4cb7f71898927d
+    source_hash: 210f2a33012e854e48aa145c665e16e7ffe861c91a2566507e81d809bb2b955c
     source_path: automation/index.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw menjalankan pekerjaan di latar belakang melalui tugas, pekerjaan terjadwal, komitmen tersirat, hook peristiwa, dan instruksi tetap. Halaman ini membantu Anda memilih mekanisme yang tepat dan memahami bagaimana semuanya saling terhubung.
+OpenClaw menjalankan pekerjaan di latar belakang melalui tugas, pekerjaan terjadwal, komitmen yang disimpulkan, hook peristiwa, dan instruksi tetap. Gunakan halaman ini untuk memilih mekanisme yang tepat.
 
 ## Panduan keputusan cepat
 
 ```mermaid
 flowchart TD
-    START([What do you need?]) --> Q1{Schedule work?}
-    START --> Q2{Track detached work?}
-    START --> Q3{Orchestrate multi-step flows?}
-    START --> Q4{React to lifecycle events?}
-    START --> Q5{Give the agent persistent instructions?}
-    START --> Q6{Remember a natural follow-up?}
+    START([Apa yang Anda perlukan?]) --> Q1{Menjadwalkan pekerjaan?}
+    START --> Q2{Melacak pekerjaan terpisah?}
+    START --> Q3{Mengorkestrasi alur multilangkah?}
+    START --> Q4{Merespons peristiwa siklus hidup?}
+    START --> Q5{Memberikan instruksi persisten kepada agen?}
+    START --> Q6{Mengingat tindak lanjut alami?}
 
-    Q1 -->|Yes| Q1a{Exact timing or flexible?}
-    Q1a -->|Exact| CRON["Scheduled Tasks (Cron)"]
-    Q1a -->|Flexible| HEARTBEAT[Heartbeat]
+    Q1 -->|Ya| Q1a{Waktu tepat atau fleksibel?}
+    Q1a -->|Tepat| CRON["Tugas Terjadwal (Cron)"]
+    Q1a -->|Fleksibel| HEARTBEAT[Heartbeat]
 
-    Q2 -->|Yes| TASKS[Background Tasks]
-    Q3 -->|Yes| FLOW[Task Flow]
-    Q4 -->|Yes| HOOKS[Hooks]
-    Q5 -->|Yes| SO[Standing Orders]
-    Q6 -->|Yes| COMMITMENTS[Inferred Commitments]
+    Q2 -->|Ya| TASKS[Tugas Latar Belakang]
+    Q3 -->|Ya| FLOW[Task Flow]
+    Q4 -->|Ya| HOOKS[Hook]
+    Q5 -->|Ya| SO[Perintah Tetap]
+    Q6 -->|Ya| COMMITMENTS[Komitmen yang Disimpulkan]
 ```
 
-| Kasus penggunaan                                   | Direkomendasikan       | Alasan                                             |
-| -------------------------------------------------- | ---------------------- | -------------------------------------------------- |
-| Kirim laporan harian tepat pukul 09.00             | Tugas Terjadwal (Cron) | Waktu tepat, eksekusi terisolasi                   |
-| Ingatkan saya dalam 20 menit                       | Tugas Terjadwal (Cron) | Sekali jalan dengan waktu presisi (`--at`)         |
-| Jalankan analisis mendalam mingguan                | Tugas Terjadwal (Cron) | Tugas mandiri, dapat menggunakan model berbeda     |
-| Periksa kotak masuk setiap 30 menit                | Heartbeat              | Dikelompokkan dengan pemeriksaan lain, sadar konteks |
-| Pantau kalender untuk acara mendatang              | Heartbeat              | Cocok alami untuk kesadaran berkala                |
-| Tindak lanjuti setelah wawancara yang disebutkan   | Komitmen Tersirat      | Tindak lanjut seperti memori, tanpa permintaan pengingat tepat |
-| Pemeriksaan perhatian ringan setelah konteks pengguna | Komitmen Tersirat    | Dicakup ke agen dan kanal yang sama                |
-| Periksa status subagen atau eksekusi ACP           | Tugas Latar Belakang   | Buku besar tugas melacak semua pekerjaan terlepas  |
-| Audit apa yang berjalan dan kapan                  | Tugas Latar Belakang   | `openclaw tasks list` dan `openclaw tasks audit`   |
-| Riset multi-langkah lalu ringkas                   | Task Flow              | Orkestrasi tahan lama dengan pelacakan revisi      |
-| Jalankan skrip saat sesi direset                   | Hook                   | Berbasis peristiwa, aktif pada peristiwa siklus hidup |
-| Eksekusi kode pada setiap pemanggilan alat         | Hook Plugin            | Hook dalam proses dapat mencegat pemanggilan alat  |
-| Selalu periksa kepatuhan sebelum membalas          | Perintah Tetap         | Disuntikkan otomatis ke setiap sesi                |
+| Kasus penggunaan                                      | Rekomendasi                    | Alasan                                                     |
+| ----------------------------------------------------- | ------------------------------ | ---------------------------------------------------------- |
+| Kirim laporan harian tepat pukul 09.00                | Tugas Terjadwal (Cron)         | Waktu tepat, eksekusi terisolasi                           |
+| Ingatkan saya dalam 20 menit                          | Tugas Terjadwal (Cron)         | Sekali jalan dengan waktu yang presisi (`--at`)            |
+| Jalankan analisis mendalam mingguan                   | Tugas Terjadwal (Cron)         | Tugas mandiri, dapat menggunakan model berbeda             |
+| Periksa kotak masuk setiap 30 menit                   | Heartbeat                      | Digabungkan dengan pemeriksaan lain, sadar konteks         |
+| Pantau kalender untuk acara mendatang                 | Heartbeat                      | Cocok secara alami untuk pemantauan berkala                |
+| Tindak lanjuti setelah wawancara yang disebutkan      | Komitmen yang Disimpulkan      | Tindak lanjut seperti memori, tanpa permintaan pengingat tepat |
+| Tindak lanjut perhatian ringan setelah konteks pengguna | Komitmen yang Disimpulkan    | Dibatasi pada agen dan kanal yang sama                      |
+| Periksa status subagen atau proses ACP                | Tugas Latar Belakang           | Buku besar tugas melacak semua pekerjaan terpisah          |
+| Audit apa yang berjalan dan kapan                     | Tugas Latar Belakang           | `openclaw tasks list` dan `openclaw tasks audit`           |
+| Riset multilangkah lalu rangkum                       | Task Flow                      | Orkestrasi persisten dengan pelacakan revisi               |
+| Jalankan skrip saat sesi diatur ulang                 | Hook                           | Berbasis peristiwa, dipicu pada peristiwa siklus hidup     |
+| Eksekusi kode pada setiap pemanggilan alat            | Hook Plugin                    | Hook dalam proses dapat mencegat pemanggilan alat          |
+| Selalu periksa kepatuhan sebelum membalas             | Perintah Tetap                 | Disuntikkan ke setiap sesi secara otomatis                 |
 
-### Tugas Terjadwal (Cron) vs Heartbeat
+### Tugas Terjadwal (Cron) dibandingkan dengan Heartbeat
 
-| Dimensi         | Tugas Terjadwal (Cron)              | Heartbeat                             |
-| --------------- | ----------------------------------- | ------------------------------------- |
-| Waktu           | Tepat (ekspresi cron, sekali jalan) | Perkiraan (bawaan setiap 30 menit)    |
-| Konteks sesi    | Baru (terisolasi) atau bersama      | Konteks sesi utama penuh              |
-| Catatan tugas   | Selalu dibuat                       | Tidak pernah dibuat                   |
-| Pengiriman      | Kanal, webhook, atau senyap         | Sebaris dalam sesi utama              |
+| Dimensi         | Tugas Terjadwal (Cron)                 | Heartbeat                                  |
+| --------------- | -------------------------------------- | ------------------------------------------ |
+| Waktu           | Tepat (ekspresi cron, sekali jalan)     | Perkiraan (bawaan setiap 30 menit)          |
+| Konteks sesi    | Baru (terisolasi) atau bersama          | Konteks lengkap sesi utama                 |
+| Catatan tugas   | Selalu dibuat                           | Tidak pernah dibuat                        |
+| Pengiriman      | Kanal, webhook, atau tanpa keluaran     | Langsung di sesi utama                     |
 | Paling cocok untuk | Laporan, pengingat, pekerjaan latar belakang | Pemeriksaan kotak masuk, kalender, notifikasi |
 
-Gunakan Tugas Terjadwal (Cron) saat Anda membutuhkan waktu presisi atau eksekusi terisolasi. Gunakan Heartbeat saat pekerjaan diuntungkan oleh konteks sesi penuh dan waktu perkiraan sudah memadai.
+Gunakan Tugas Terjadwal (Cron) saat Anda memerlukan waktu yang presisi atau eksekusi terisolasi. Gunakan Heartbeat saat pekerjaan memperoleh manfaat dari konteks sesi lengkap dan waktu perkiraan sudah memadai.
 
 ## Konsep inti
 
 ### Tugas terjadwal (cron)
 
-Cron adalah penjadwal bawaan Gateway untuk waktu presisi. Cron menyimpan pekerjaan, membangunkan agen pada waktu yang tepat, dan dapat mengirim keluaran ke kanal chat atau endpoint webhook. Mendukung pengingat sekali jalan, ekspresi berulang, dan pemicu webhook masuk.
+Cron adalah penjadwal bawaan Gateway untuk waktu yang presisi. Cron menyimpan pekerjaan, membangunkan agen pada waktu yang tepat, dan dapat mengirimkan keluaran ke kanal percakapan atau endpoint webhook. Mendukung pengingat sekali jalan, ekspresi berulang, dan pemicu webhook masuk.
 
 Lihat [Tugas Terjadwal](/id/automation/cron-jobs).
 
 ### Tugas
 
-Buku besar tugas latar belakang melacak semua pekerjaan terlepas: eksekusi ACP, pemunculan subagen, eksekusi cron terisolasi, dan operasi CLI. Tugas adalah catatan, bukan penjadwal. Gunakan `openclaw tasks list` dan `openclaw tasks audit` untuk memeriksanya.
+Buku besar tugas latar belakang melacak semua pekerjaan terpisah: proses ACP, pembuatan subagen, eksekusi cron terisolasi, dan operasi CLI. Tugas adalah catatan, bukan penjadwal. Gunakan `openclaw tasks list` dan `openclaw tasks audit` untuk memeriksanya.
 
 Lihat [Tugas Latar Belakang](/id/automation/tasks).
 
-### Komitmen tersirat
+### Komitmen yang disimpulkan
 
-Komitmen adalah memori tindak lanjut yang ikut serta dan berumur pendek. OpenClaw menyimpulkannya dari percakapan normal, mencakupnya ke agen dan kanal yang sama, dan mengirim pemeriksaan saat jatuh tempo melalui heartbeat. Pengingat tepat yang diminta pengguna tetap menjadi ranah cron.
+Komitmen adalah memori tindak lanjut jangka pendek yang harus diaktifkan secara eksplisit. OpenClaw menyimpulkannya dari percakapan biasa, membatasinya pada agen dan kanal yang sama, serta menyampaikan tindak lanjut yang jatuh tempo melalui Heartbeat. Pengingat dengan waktu tepat yang diminta pengguna tetap menjadi ranah cron.
 
-Lihat [Komitmen Tersirat](/id/concepts/commitments).
+Lihat [Komitmen yang Disimpulkan](/id/concepts/commitments).
 
 ### Task Flow
 
-Task Flow adalah substrat orkestrasi alur di atas tugas latar belakang. Task Flow mengelola alur multi-langkah yang tahan lama dengan mode sinkronisasi terkelola dan tercermin, pelacakan revisi, serta `openclaw tasks flow list|show|cancel` untuk inspeksi.
+Task Flow adalah landasan orkestrasi alur di atas tugas latar belakang. Task Flow mengelola alur multilangkah persisten dengan mode sinkronisasi terkelola dan tercermin, pelacakan revisi, serta `openclaw tasks flow list|show|cancel` untuk pemeriksaan.
 
 Lihat [Task Flow](/id/automation/taskflow).
 
 ### Perintah tetap
 
-Perintah tetap memberi agen otoritas operasi permanen untuk program yang ditentukan. Perintah ini berada di file workspace (biasanya `AGENTS.md`) dan disuntikkan ke setiap sesi. Gabungkan dengan cron untuk penegakan berbasis waktu.
+Perintah tetap memberikan wewenang operasional permanen kepada agen untuk program yang ditentukan. Perintah tersebut berada dalam berkas ruang kerja (biasanya `AGENTS.md`) dan disuntikkan ke setiap sesi. Gabungkan dengan cron untuk penerapan berbasis waktu.
 
 Lihat [Perintah Tetap](/id/automation/standing-orders).
 
 ### Hook
 
-Hook internal adalah skrip berbasis peristiwa yang dipicu oleh peristiwa siklus hidup agen (`/new`, `/reset`, `/stop`), Compaction sesi, startup gateway, dan alur pesan. Hook ditemukan otomatis dari direktori dan dapat dikelola dengan `openclaw hooks`. Untuk intersepsi pemanggilan alat dalam proses, gunakan [Hook Plugin](/id/plugins/hooks).
+Hook internal adalah skrip berbasis peristiwa yang dipicu oleh peristiwa siklus hidup agen (`/new`, `/reset`, `/stop`), Compaction sesi, startup Gateway, dan alur pesan. Hook ditemukan dari direktori hook dan dikelola dengan `openclaw hooks`. Untuk pencegatan pemanggilan alat dalam proses, gunakan [hook Plugin](/id/plugins/hooks).
 
 Lihat [Hook](/id/automation/hooks).
 
 ### Heartbeat
 
-Heartbeat adalah giliran sesi utama berkala (bawaan setiap 30 menit). Heartbeat mengelompokkan beberapa pemeriksaan (kotak masuk, kalender, notifikasi) dalam satu giliran agen dengan konteks sesi penuh. Giliran heartbeat tidak membuat catatan tugas dan tidak memperpanjang kesegaran reset sesi harian/menganggur. Gunakan `HEARTBEAT.md` untuk checklist kecil, atau blok `tasks:` saat Anda menginginkan pemeriksaan berkala hanya yang jatuh tempo di dalam heartbeat itu sendiri. File heartbeat kosong dilewati sebagai `empty-heartbeat-file`; mode tugas hanya jatuh tempo dilewati sebagai `no-tasks-due`. Heartbeat ditunda saat pekerjaan cron aktif atau mengantre, dan `heartbeat.skipWhenBusy` juga dapat menunda agen saat subagen atau jalur bertingkat berkunci sesi milik agen yang sama sedang sibuk.
+Heartbeat adalah giliran sesi utama berkala (bawaan setiap 30 menit). Heartbeat menggabungkan beberapa pemeriksaan (kotak masuk, kalender, notifikasi) dalam satu giliran agen dengan konteks sesi lengkap. Giliran Heartbeat tidak membuat catatan tugas dan tidak memperpanjang kebaruan pengaturan ulang sesi harian/tidak aktif. Gunakan `HEARTBEAT.md` untuk daftar periksa singkat, atau blok `tasks:` jika Anda menginginkan pemeriksaan berkala yang hanya dijalankan saat jatuh tempo di dalam Heartbeat itu sendiri. Berkas Heartbeat kosong dilewati sebagai `empty-heartbeat-file`; mode tugas khusus jatuh tempo dilewati sebagai `no-tasks-due`. Heartbeat ditunda saat pekerjaan cron aktif atau mengantre, dan `heartbeat.skipWhenBusy` juga dapat menunda agen saat lajur subagen berbasis kunci sesi atau lajur bertingkat milik agen yang sama sedang sibuk.
 
 Lihat [Heartbeat](/id/gateway/heartbeat).
 
 ## Cara semuanya bekerja bersama
 
 - **Cron** menangani jadwal presisi (laporan harian, tinjauan mingguan) dan pengingat sekali jalan. Semua eksekusi cron membuat catatan tugas.
-- **Heartbeat** menangani pemantauan rutin (kotak masuk, kalender, notifikasi) dalam satu giliran berkelompok setiap 30 menit.
-- **Hook** bereaksi terhadap peristiwa tertentu (reset sesi, Compaction, alur pesan) dengan skrip khusus. Hook Plugin mencakup pemanggilan alat.
-- **Perintah tetap** memberi agen konteks persisten dan batas otoritas.
-- **Task Flow** mengoordinasikan alur multi-langkah di atas tugas individual.
-- **Tugas** otomatis melacak semua pekerjaan terlepas agar Anda dapat memeriksa dan mengauditnya.
+- **Heartbeat** menangani pemantauan rutin (kotak masuk, kalender, notifikasi) dalam satu giliran gabungan setiap 30 menit.
+- **Hook** merespons peristiwa tertentu (pengaturan ulang sesi, Compaction, alur pesan) dengan skrip khusus. Hook Plugin mencakup pemanggilan alat.
+- **Perintah tetap** memberikan konteks persisten dan batas wewenang kepada agen.
+- **Task Flow** mengoordinasikan alur multilangkah di atas tugas individual.
+- **Tugas** secara otomatis melacak semua pekerjaan terpisah agar Anda dapat memeriksa dan mengauditnya.
 
 ## Terkait
 
 - [Tugas Terjadwal](/id/automation/cron-jobs) — penjadwalan presisi dan pengingat sekali jalan
-- [Komitmen Tersirat](/id/concepts/commitments) — pemeriksaan tindak lanjut seperti memori
-- [Tugas Latar Belakang](/id/automation/tasks) — buku besar tugas untuk semua pekerjaan terlepas
-- [Task Flow](/id/automation/taskflow) — orkestrasi alur multi-langkah yang tahan lama
+- [Komitmen yang Disimpulkan](/id/concepts/commitments) — tindak lanjut seperti memori
+- [Tugas Latar Belakang](/id/automation/tasks) — buku besar tugas untuk semua pekerjaan terpisah
+- [Task Flow](/id/automation/taskflow) — orkestrasi alur multilangkah persisten
 - [Hook](/id/automation/hooks) — skrip siklus hidup berbasis peristiwa
 - [Hook Plugin](/id/plugins/hooks) — hook alat, prompt, pesan, dan siklus hidup dalam proses
 - [Perintah Tetap](/id/automation/standing-orders) — instruksi agen persisten

@@ -1,45 +1,40 @@
 ---
 read_when:
-    - การสร้างเครื่องมือโฮสต์ที่ไม่สามารถใช้ไคลเอนต์ Gateway WebSocket RPC ได้
-    - เปิดเผยระบบอัตโนมัติสำหรับผู้ดูแล Gateway ไว้หลัง ingress ส่วนตัวที่เชื่อถือได้
-    - การตรวจสอบโมเดลความปลอดภัยสำหรับการเข้าถึง HTTP ไปยังเมธอดของ Gateway
-summary: เปิดเผยเมธอด control-plane ของ Gateway ที่เลือกผ่าน Plugin admin-http-rpc ที่รวมมาให้และเลือกเปิดใช้ได้
-title: Plugin HTTP RPC สำหรับผู้ดูแลระบบ
+    - การสร้างเครื่องมือสำหรับโฮสต์ที่ไม่สามารถใช้ไคลเอนต์ RPC ผ่าน WebSocket ของ Gateway ได้
+    - เปิดให้ใช้งานระบบอัตโนมัติสำหรับการดูแล Gateway ผ่านจุดรับเข้าที่เชื่อถือได้และเป็นส่วนตัว
+    - การตรวจสอบโมเดลความปลอดภัยสำหรับการเข้าถึงเมธอดของ Gateway ผ่าน HTTP
+summary: เปิดให้เรียกใช้เมธอดส่วนควบคุมของ Gateway ที่เลือกไว้ผ่าน Plugin `admin-http-rpc` แบบรวมมาให้และต้องเลือกเปิดใช้งานเอง
+title: Plugin RPC ผ่าน HTTP สำหรับผู้ดูแลระบบ
 x-i18n:
-    generated_at: "2026-06-27T17:50:36Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:25:14Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f701ef6be7457cd518ecb80b7ec5dade61bb057d62f4ca90984a4c1aa8fdf700
+    source_hash: 0709081efd0ce65cef7edac54df9a71978cbad17e2b25df83ac9075de938376c
     source_path: plugins/admin-http-rpc.md
     workflow: 16
 ---
 
-Plugin `admin-http-rpc` ที่มาพร้อมชุดเผยแพร่เปิดเผยเมธอด control-plane ของ Gateway ที่เลือกไว้ผ่าน HTTP สำหรับระบบอัตโนมัติบนโฮสต์ที่เชื่อถือได้ซึ่งไม่สามารถใช้ไคลเอนต์ RPC ผ่าน WebSocket ของ Gateway ตามปกติได้
+Plugin `admin-http-rpc` ที่มาพร้อมระบบเปิดเผยชุดเมธอดในระนาบควบคุมของ Gateway ที่อยู่ในรายการอนุญาตผ่าน HTTP สำหรับระบบอัตโนมัติบนโฮสต์ที่เชื่อถือได้ซึ่งไม่สามารถเปิดการเชื่อมต่อ Gateway WebSocket ค้างไว้ได้
 
-Plugin นี้รวมมากับ OpenClaw แต่ปิดไว้โดยค่าเริ่มต้น เมื่อปิดใช้งาน เส้นทางจะไม่ถูกลงทะเบียน เมื่อเปิดใช้งาน จะเพิ่ม:
+Plugin นี้มาพร้อมกับ OpenClaw แต่ถูกปิดใช้งานโดยค่าเริ่มต้น เมื่อปิดใช้งาน เส้นทางจะไม่ถูกลงทะเบียน เมื่อเปิดใช้งาน ระบบจะเพิ่ม `POST /api/v1/admin/rpc` บนตัวรับฟังเดียวกับ Gateway (`http://<gateway-host>:<port>/api/v1/admin/rpc`)
 
-- `POST /api/v1/admin/rpc`
-- listener เดียวกับ Gateway: `http://<gateway-host>:<port>/api/v1/admin/rpc`
-
-เปิดใช้งานเฉพาะสำหรับเครื่องมือโฮสต์ส่วนตัว ระบบอัตโนมัติบน tailnet หรือ ingress ภายในที่เชื่อถือได้เท่านั้น อย่าเปิดเผยเส้นทางนี้โดยตรงต่ออินเทอร์เน็ตสาธารณะ
+เปิดใช้งานเฉพาะสำหรับเครื่องมือส่วนตัวบนโฮสต์ ระบบอัตโนมัติบน tailnet หรือทางเข้าภายในที่เชื่อถือได้เท่านั้น ห้ามเปิดเผยเส้นทางนี้ต่ออินเทอร์เน็ตสาธารณะโดยตรง
 
 ## ก่อนเปิดใช้งาน
 
-RPC ผู้ดูแลผ่าน HTTP เป็นพื้นผิว control-plane สำหรับผู้ปฏิบัติการแบบเต็มรูปแบบ ผู้เรียกใดก็ตามที่ผ่านการยืนยันตัวตน HTTP ของ Gateway สามารถเรียกเมธอดใน allowlist บนหน้านี้ได้
+Admin HTTP RPC เป็นพื้นผิวระนาบควบคุมเต็มรูปแบบสำหรับผู้ดูแลระบบ ผู้เรียกใดก็ตามที่ผ่านการยืนยันตัวตน HTTP ของ Gateway สามารถเรียกใช้เมธอดในรายการอนุญาตด้านล่างได้ เปิดใช้งานเฉพาะเมื่อเงื่อนไขทั้งหมดต่อไปนี้เป็นจริง:
 
-ใช้เมื่อเงื่อนไขทั้งหมดนี้เป็นจริง:
+- ผู้เรียกได้รับความไว้วางใจให้ควบคุม Gateway
+- ผู้เรียกไม่สามารถใช้ไคลเอนต์ WebSocket RPC ได้
+- เส้นทางเข้าถึงได้เฉพาะบน local loopback, tailnet หรือทางเข้าส่วนตัวที่ผ่านการยืนยันตัวตน
+- คุณได้ตรวจสอบเมธอดที่อนุญาตแล้ว และเมธอดเหล่านั้นตรงกับระบบอัตโนมัติที่คุณวางแผนจะเรียกใช้
 
-- ผู้เรียกได้รับความไว้วางใจให้ปฏิบัติการ Gateway
-- ผู้เรียกไม่สามารถใช้ไคลเอนต์ RPC ผ่าน WebSocket ได้
-- เส้นทางเข้าถึงได้เฉพาะบน loopback, tailnet หรือ ingress ส่วนตัวที่ยืนยันตัวตนแล้ว
-- คุณได้ตรวจสอบเมธอดที่อนุญาตแล้ว และเมธอดเหล่านั้นตรงกับระบบอัตโนมัติที่คุณวางแผนจะรัน
-
-ใช้เส้นทาง RPC ผ่าน WebSocket สำหรับไคลเอนต์ OpenClaw และเครื่องมือแบบโต้ตอบที่สามารถคงการเชื่อมต่อ WebSocket ของ Gateway ไว้ได้
+สำหรับไคลเอนต์ OpenClaw และเครื่องมือแบบโต้ตอบที่สามารถเปิดการเชื่อมต่อ Gateway WebSocket ค้างไว้ได้ ให้ใช้ WebSocket RPC แทน
 
 ## เปิดใช้งาน
 
-เปิดใช้งาน Plugin ที่มาพร้อมชุดเผยแพร่:
+เปิดใช้งาน Plugin ที่มาพร้อมระบบ:
 
 <Tabs>
   <Tab title="CLI">
@@ -48,7 +43,7 @@ RPC ผู้ดูแลผ่าน HTTP เป็นพื้นผิว con
     openclaw gateway restart
     ```
   </Tab>
-  <Tab title="Config">
+  <Tab title="การกำหนดค่า">
     ```json5
     {
       plugins: {
@@ -61,7 +56,7 @@ RPC ผู้ดูแลผ่าน HTTP เป็นพื้นผิว con
   </Tab>
 </Tabs>
 
-เส้นทางจะถูกลงทะเบียนระหว่างการเริ่มต้น Plugin รีสตาร์ท Gateway หลังจากเปลี่ยนการกำหนดค่า Plugin
+เส้นทางจะถูกลงทะเบียนระหว่างการเริ่มต้น Plugin ดังนั้นให้รีสตาร์ต Gateway หลังจากเปลี่ยนการกำหนดค่า Plugin
 
 ปิดใช้งานเมื่อคุณไม่ต้องการพื้นผิว HTTP อีกต่อไป:
 
@@ -72,7 +67,7 @@ openclaw gateway restart
 
 ## ตรวจสอบเส้นทาง
 
-ใช้ `health` เป็นคำขอที่ปลอดภัยที่สุดและเล็กที่สุด:
+ใช้ `health` เป็นคำขอที่ปลอดภัยและมีขนาดเล็กที่สุด:
 
 ```bash
 curl -sS http://<gateway-host>:<port>/api/v1/admin/rpc \
@@ -93,33 +88,30 @@ curl -sS http://<gateway-host>:<port>/api/v1/admin/rpc \
 }
 ```
 
-เมื่อ Plugin ถูกปิดใช้งาน เส้นทางจะส่งคืน `404` เพราะไม่ได้ลงทะเบียนไว้
+เมื่อ Plugin ถูกปิดใช้งาน เส้นทางจะส่งคืน `404` เนื่องจากไม่ได้ลงทะเบียนไว้
 
 ## การยืนยันตัวตน
 
 เส้นทางของ Plugin ใช้การยืนยันตัวตน HTTP ของ Gateway
 
-เส้นทางการยืนยันตัวตนที่พบบ่อย:
+วิธีการยืนยันตัวตนทั่วไป:
 
-- การยืนยันตัวตนด้วย shared-secret (`gateway.auth.mode="token"` หรือ `"password"`): `Authorization: Bearer <token-or-password>`
-- การยืนยันตัวตน HTTP ที่มีตัวตนที่เชื่อถือได้ (`gateway.auth.mode="trusted-proxy"`): ส่งผ่านพร็อกซีที่รับรู้ตัวตนตามที่กำหนดค่าไว้ และให้พร็อกซีนั้นฉีดส่วนหัวตัวตนที่จำเป็น
-- การยืนยันตัวตนแบบเปิดสำหรับ ingress ส่วนตัว (`gateway.auth.mode="none"`): ไม่ต้องมีส่วนหัวการยืนยันตัวตน
+- การยืนยันตัวตนด้วยข้อมูลลับร่วมกัน (`gateway.auth.mode="token"` หรือ `"password"`): `Authorization: Bearer <token-or-password>`
+- การยืนยันตัวตน HTTP ที่มีข้อมูลประจำตัวซึ่งเชื่อถือได้ (`gateway.auth.mode="trusted-proxy"`): กำหนดเส้นทางผ่านพร็อกซีที่รับรู้ข้อมูลประจำตัวซึ่งกำหนดค่าไว้ และให้พร็อกซีแทรกส่วนหัวข้อมูลประจำตัวที่จำเป็น
+- การยืนยันตัวตนแบบเปิดผ่านทางเข้าส่วนตัว (`gateway.auth.mode="none"`): ไม่ต้องใช้ส่วนหัวการยืนยันตัวตน
 
 ## โมเดลความปลอดภัย
 
-ปฏิบัติต่อ Plugin นี้เป็นพื้นผิวผู้ปฏิบัติการ Gateway แบบเต็มรูปแบบ
+ให้ถือว่า Plugin นี้เป็นพื้นผิวเต็มรูปแบบสำหรับผู้ควบคุม Gateway
 
-- การเปิดใช้งาน Plugin จงใจให้เข้าถึงเมธอด RPC ผู้ดูแลใน allowlist ที่ `/api/v1/admin/rpc`
-- Plugin ประกาศสัญญา manifest ที่สงวนไว้ `contracts.gatewayMethodDispatch: ["authenticated-request"]` เพื่อให้เส้นทาง HTTP ที่ยืนยันตัวตนกับ Gateway แล้วสามารถ dispatch เมธอด control-plane ภายในโปรเซสได้
-- การยืนยันตัวตน bearer ด้วย shared-secret พิสูจน์การครอบครองความลับผู้ปฏิบัติการของ gateway
-- สำหรับการยืนยันตัวตนแบบ `token` และ `password` ส่วนหัว `x-openclaw-scopes` ที่แคบกว่าจะถูกละเว้น และค่าเริ่มต้นผู้ปฏิบัติการเต็มรูปแบบตามปกติจะถูกคืนค่า
-- โหมด HTTP ที่มีตัวตนที่เชื่อถือได้จะเคารพ `x-openclaw-scopes` เมื่อมีอยู่
-- `gateway.auth.mode="none"` หมายความว่าเส้นทางนี้ไม่มีการยืนยันตัวตนหาก Plugin เปิดใช้งานอยู่ ใช้เฉพาะหลัง ingress ส่วนตัวที่คุณเชื่อถืออย่างเต็มที่เท่านั้น
-- คำขอ dispatch ผ่านตัวจัดการเมธอด Gateway และการตรวจสอบ scope เดียวกับ RPC ผ่าน WebSocket หลังจากการยืนยันตัวตนของเส้นทาง Plugin ผ่านแล้ว
-- เก็บเส้นทางนี้ไว้บน loopback, tailnet หรือ ingress ส่วนตัวที่เชื่อถือได้ อย่าเปิดเผยโดยตรงต่ออินเทอร์เน็ตสาธารณะ
-- สัญญา manifest ของ Plugin ไม่ใช่ sandbox สัญญาเหล่านี้ป้องกันการใช้ตัวช่วย SDK ที่สงวนไว้โดยไม่ตั้งใจ Plugin ที่เชื่อถือได้ยังคงรันในโปรเซส Gateway
-
-ใช้ gateway แยกกันเมื่อผู้เรียกข้ามขอบเขตความไว้วางใจ
+- การเปิดใช้งาน Plugin เป็นการเปิดให้เข้าถึงเมธอด RPC สำหรับผู้ดูแลระบบที่อยู่ในรายการอนุญาตผ่าน `/api/v1/admin/rpc` โดยเจตนา
+- Plugin ประกาศสัญญาแมนิเฟสต์ที่สงวนไว้ `contracts.gatewayMethodDispatch: ["authenticated-request"]` ซึ่งทำให้เส้นทาง HTTP ที่ผ่านการยืนยันตัวตนของ Gateway สามารถส่งเมธอดระนาบควบคุมภายในโปรเซสได้ นี่ไม่ใช่แซนด์บ็อกซ์ สัญญานี้ป้องกันการใช้ตัวช่วย SDK ที่สงวนไว้โดยไม่ตั้งใจ แต่ Plugin ที่เชื่อถือได้ยังคงทำงานภายในโปรเซส Gateway
+- การยืนยันตัวตนแบบ bearer ด้วยข้อมูลลับร่วมกัน (โหมด `token`/`password`) พิสูจน์การครอบครองข้อมูลลับของผู้ควบคุม Gateway ส่วนหัว `x-openclaw-scopes` ที่มีขอบเขตแคบกว่าจะถูกละเว้นบนเส้นทางนี้ และค่าเริ่มต้นของผู้ควบคุมเต็มรูปแบบตามปกติจะถูกคืนค่า
+- การยืนยันตัวตน HTTP ที่มีข้อมูลประจำตัวซึ่งเชื่อถือได้ (โหมด `trusted-proxy`) จะใช้ `x-openclaw-scopes` เมื่อมี
+- `gateway.auth.mode="none"` หมายความว่าเส้นทางนี้ไม่มีการยืนยันตัวตนหากเปิดใช้งาน Plugin ใช้โหมดนี้เฉพาะหลังทางเข้าส่วนตัวที่คุณเชื่อถืออย่างเต็มที่เท่านั้น
+- หลังจากการยืนยันตัวตนของเส้นทาง Plugin ผ่านแล้ว คำขอจะถูกส่งผ่านตัวจัดการเมธอดและการตรวจสอบขอบเขตเดียวกับ WebSocket RPC ของ Gateway
+- เส้นทางยังคงเข้าถึงได้ระหว่างสัญญาเช่าการระงับที่เตรียมไว้ การตรวจสอบความถูกต้องของคำขอแบบจำกัดขอบเขตและการตอบกลับการค้นพบ `commands.list` ภายในเครื่องยังคงพร้อมใช้งาน สำหรับเมธอดที่ส่งไปยัง Gateway มีเพียง `gateway.suspend.prepare`, `gateway.suspend.status` และ `gateway.suspend.resume` เท่านั้นที่สามารถทำงานได้ขณะปิดรับคำขอ เมธอดอื่นในรายการอนุญาตจะส่งคืนการตอบกลับ `UNAVAILABLE` แบบลองใหม่ได้ตามปกติของ Gateway
+- ให้เส้นทางนี้อยู่บน local loopback, tailnet หรือทางเข้าส่วนตัวที่เชื่อถือได้ ห้ามเปิดเผยต่ออินเทอร์เน็ตสาธารณะโดยตรง ใช้ Gateway แยกกันเมื่อผู้เรียกอยู่คนละขอบเขตความไว้วางใจ
 
 ## คำขอ
 
@@ -139,11 +131,11 @@ Content-Type: application/json
 
 ฟิลด์:
 
-- `id` (สตริง, ไม่บังคับ): คัดลอกเข้าไปในการตอบกลับ UUID จะถูกสร้างเมื่อไม่ระบุ
+- `id` (สตริง, ไม่บังคับ): คัดลอกไปยังการตอบกลับ หากละเว้น ระบบจะสร้าง UUID
 - `method` (สตริง, จำเป็น): ชื่อเมธอด Gateway ที่อนุญาต
-- `params` (ค่าใดก็ได้, ไม่บังคับ): params เฉพาะเมธอด
+- `params` (ค่าใดก็ได้, ไม่บังคับ): พารามิเตอร์เฉพาะของเมธอด
 
-ขนาดเนื้อหาคำขอสูงสุดเริ่มต้นคือ 1 MB
+ขนาดสูงสุดเริ่มต้นของเนื้อหาคำขอคือ 1 MB
 
 ## การตอบกลับ
 
@@ -157,7 +149,7 @@ Content-Type: application/json
 }
 ```
 
-ข้อผิดพลาดของเมธอด Gateway ใช้:
+ข้อผิดพลาดของเมธอด Gateway ใช้รูปแบบต่อไปนี้:
 
 ```json
 {
@@ -170,13 +162,22 @@ Content-Type: application/json
 }
 ```
 
-สถานะ HTTP จะตามข้อผิดพลาดของ Gateway เมื่อเป็นไปได้ ตัวอย่างเช่น `INVALID_REQUEST` ส่งคืน `400` และ `UNAVAILABLE` ส่งคืน `503`
+สถานะ HTTP จะเป็นไปตามรหัสข้อผิดพลาด:
+
+| รหัสข้อผิดพลาด             | สถานะ HTTP |
+| -------------------------- | ----------- |
+| `INVALID_REQUEST`          | 400         |
+| `APPROVAL_NOT_FOUND`       | 404         |
+| `NOT_LINKED`, `NOT_PAIRED` | 409         |
+| `UNAVAILABLE`              | 503         |
+| `AGENT_TIMEOUT`            | 504         |
+| รหัสอื่นใด                 | 500         |
 
 ## เมธอดที่อนุญาต
 
 - การค้นพบ: `commands.list`
-  ส่งคืนชื่อเมธอด RPC ผ่าน HTTP ที่ Plugin นี้อนุญาต
-- gateway: `health`, `status`, `logs.tail`, `usage.status`, `usage.cost`, `gateway.restart.request`
+  ส่งคืนชื่อเมธอด HTTP RPC ที่ Plugin นี้อนุญาต
+- Gateway: `health`, `status`, `logs.tail`, `usage.status`, `usage.cost`, `gateway.restart.request`, `gateway.suspend.prepare`, `gateway.suspend.status`, `gateway.suspend.resume`
 - การกำหนดค่า: `config.get`, `config.schema`, `config.schema.lookup`, `config.set`, `config.patch`, `config.apply`
 - ช่องทาง: `channels.status`, `channels.start`, `channels.stop`, `channels.logout`
 - เว็บ: `web.login.start`, `web.login.wait`
@@ -185,40 +186,48 @@ Content-Type: application/json
 - การอนุมัติ: `exec.approvals.get`, `exec.approvals.set`, `exec.approvals.node.get`, `exec.approvals.node.set`
 - Cron: `cron.status`, `cron.list`, `cron.get`, `cron.runs`, `cron.add`, `cron.update`, `cron.remove`, `cron.run`
 - อุปกรณ์: `device.pair.list`, `device.pair.approve`, `device.pair.reject`, `device.pair.remove`
-- โหนด: `node.list`, `node.describe`, `node.pair.list`, `node.pair.approve`, `node.pair.reject`, `node.pair.remove`, `node.rename`
+- Node: `node.list`, `node.describe`, `node.pair.list`, `node.pair.approve`, `node.pair.reject`, `node.pair.remove`, `node.rename`
 - งาน: `tasks.list`, `tasks.get`, `tasks.cancel`
 - การวินิจฉัย: `doctor.memory.status`, `update.status`
 
-เมธอด Gateway อื่นจะถูกบล็อกจนกว่าจะถูกเพิ่มอย่างตั้งใจ
+เมธอด Gateway อื่นจะถูกบล็อกจนกว่าจะมีการเพิ่มโดยเจตนา
 
 ## การเปรียบเทียบกับ WebSocket
 
-เส้นทาง RPC ผ่าน WebSocket ของ Gateway ตามปกติยังคงเป็น API control-plane ที่แนะนำสำหรับไคลเอนต์ OpenClaw ใช้ RPC ผู้ดูแลผ่าน HTTP เฉพาะสำหรับเครื่องมือโฮสต์ที่ต้องการพื้นผิว HTTP แบบคำขอ/การตอบกลับ
+เส้นทาง RPC ผ่าน WebSocket ของ Gateway ตามปกติยังคงเป็น API ระนาบควบคุมที่แนะนำสำหรับไคลเอนต์ OpenClaw ใช้ Admin HTTP RPC เฉพาะกับเครื่องมือบนโฮสต์ที่ต้องการพื้นผิว HTTP แบบคำขอ/การตอบกลับ
 
-ไคลเอนต์ WebSocket แบบ shared-token ที่ไม่มีตัวตนอุปกรณ์ที่เชื่อถือได้ไม่สามารถประกาศ scope ผู้ดูแลด้วยตนเองระหว่างการเชื่อมต่อได้ RPC ผู้ดูแลผ่าน HTTP ตั้งใจทำตามโมเดลผู้ปฏิบัติการ HTTP ที่เชื่อถือได้ที่มีอยู่: เมื่อ Plugin เปิดใช้งาน การยืนยันตัวตน bearer ด้วย shared-secret จะถือเป็นการเข้าถึงแบบผู้ปฏิบัติการเต็มรูปแบบสำหรับพื้นผิวผู้ดูแลนี้
+ไคลเอนต์ WebSocket ที่ใช้โทเค็นร่วมกันและไม่มีข้อมูลประจำตัวของอุปกรณ์ที่เชื่อถือได้ ไม่สามารถประกาศขอบเขตผู้ดูแลระบบด้วยตนเองระหว่างการเชื่อมต่อ Admin HTTP RPC ปฏิบัติตามโมเดลผู้ควบคุม HTTP ที่เชื่อถือได้ซึ่งมีอยู่แล้วโดยเจตนา เมื่อเปิดใช้งาน Plugin การยืนยันตัวตนแบบ bearer ด้วยข้อมูลลับร่วมกันจะถือว่าเป็นสิทธิ์เข้าถึงแบบผู้ควบคุมเต็มรูปแบบสำหรับพื้นผิวผู้ดูแลระบบนี้
 
 ## การแก้ไขปัญหา
 
 `404 Not Found`
 
-: Plugin ถูกปิดใช้งาน, Gateway ยังไม่ได้รีสตาร์ทหลังเปิดใช้งาน หรือคำขอถูกส่งไปยังโปรเซส Gateway อื่น
+: Plugin ถูกปิดใช้งาน, Gateway ยังไม่ได้รีสตาร์ตหลังจากเปิดใช้งาน หรือคำขอถูกส่งไปยังกระบวนการ Gateway อื่น
 
 `401 Unauthorized`
 
-: คำขอไม่ผ่านการยืนยันตัวตน HTTP ของ Gateway ตรวจสอบ bearer token หรือส่วนหัวตัวตนของ trusted-proxy
+: คำขอไม่ผ่านการยืนยันตัวตน HTTP ของ Gateway ตรวจสอบ bearer token หรือส่วนหัวข้อมูลประจำตัวของ trusted proxy
+
+`405 Method Not Allowed`
+
+: คำขอใช้เมธอดอื่นที่ไม่ใช่ `POST`
+
+`413 Payload Too Large`
+
+: เนื้อหาคำขอมีขนาดเกินขีดจำกัด 1 MB
 
 `400 INVALID_REQUEST`
 
-: เนื้อหาคำขอไม่ใช่ JSON ที่ถูกต้อง, ฟิลด์ `method` หายไป หรือเมธอดไม่ได้อยู่ใน allowlist ของ Plugin
+: เนื้อหาคำขอไม่ใช่ JSON ที่ถูกต้อง, ไม่มีฟิลด์ `method`, เมธอดไม่อยู่ในรายการอนุญาตของ Plugin หรือ ID สำหรับดำเนินการต่อจากการระงับไม่ตรงกับสัญญาเช่าที่ใช้งานอยู่
 
 `503 UNAVAILABLE`
 
-: ตัวจัดการเมธอด Gateway ไม่พร้อมใช้งาน ตรวจสอบบันทึก Gateway แล้วลองใหม่หลัง Gateway เริ่มต้นเสร็จ
+: เมธอด Gateway กำลังเริ่มต้น ถูกจำกัดอัตรา ถูกระงับ หรือกำลังรอการดำเนินการระงับ/ดำเนินการต่ออื่นที่แข่งขันกัน ตรวจสอบ `error.details` เมื่อมี และรอเป็นเวลา `error.retryAfterMs` ก่อนลองใหม่
 
 ## ที่เกี่ยวข้อง
 
-- [Scope ผู้ปฏิบัติการ](/th/gateway/operator-scopes)
+- [ขอบเขตของผู้ควบคุม](/th/gateway/operator-scopes)
 - [ความปลอดภัยของ Gateway](/th/gateway/security)
-- [การเข้าถึงระยะไกล](/th/gateway/remote)
-- [Manifest ของ Plugin](/th/plugins/manifest#contracts)
-- [Subpath ของ SDK](/th/plugins/sdk-subpaths)
+- [การเข้าถึงจากระยะไกล](/th/gateway/remote)
+- [แมนิเฟสต์ของ Plugin](/th/plugins/manifest#contracts-reference)
+- [พาธย่อยของ SDK](/th/plugins/sdk-subpaths)

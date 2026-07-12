@@ -1,151 +1,165 @@
 ---
 read_when:
-    - คุณจำเป็นต้องทราบว่าจะนำเข้าจากพาธย่อยใดของ SDK
-    - คุณต้องการเอกสารอ้างอิงสำหรับเมธอดการลงทะเบียนทั้งหมดบน OpenClawPluginApi
-    - คุณกำลังค้นหา export ของ SDK ที่เฉพาะเจาะจง
+    - คุณจำเป็นต้องทราบว่าควรนำเข้าจากพาธย่อยใดของ SDK
+    - คุณต้องการเอกสารอ้างอิงสำหรับเมธอดการลงทะเบียนทั้งหมดบน `OpenClawPluginApi`
+    - คุณกำลังค้นหารายการส่งออกเฉพาะจาก SDK
 sidebarTitle: Plugin SDK overview
-summary: แผนที่การนำเข้า, เอกสารอ้างอิง API การลงทะเบียน, และสถาปัตยกรรม SDK
-title: ภาพรวม SDK ของ Plugin
+summary: แมปการนำเข้า เอกสารอ้างอิง API การลงทะเบียน และสถาปัตยกรรม SDK
+title: ภาพรวม Plugin SDK
 x-i18n:
-    generated_at: "2026-07-01T20:39:47Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:35:49Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c7df77e34db9b780ee0747a0f2178861624f528d9f7aec8592d6954a96869e96
+    source_hash: 046c6f6996d078f3847dc76b5cc917db614ce85fe66cc5e511793ae9026e1073
     source_path: plugins/sdk-overview.md
     workflow: 16
 ---
 
-Plugin SDK คือสัญญาแบบมีชนิดข้อมูลระหว่าง Plugin กับคอร์ หน้านี้คือ
-เอกสารอ้างอิงสำหรับ **สิ่งที่ต้อง import** และ **สิ่งที่คุณลงทะเบียนได้**
+SDK ของ Plugin คือสัญญาแบบมีชนิดข้อมูลระหว่าง Plugin กับแกนหลัก หน้านี้เป็น
+เอกสารอ้างอิงสำหรับ **สิ่งที่ควรนำเข้า** และ **สิ่งที่คุณสามารถลงทะเบียนได้**
 
 <Note>
-  หน้านี้สำหรับผู้เขียน Plugin ที่ใช้ `openclaw/plugin-sdk/*` ภายใน
+  หน้านี้มีไว้สำหรับผู้เขียน Plugin ที่ใช้ `openclaw/plugin-sdk/*` ภายใน
   OpenClaw สำหรับแอปภายนอก สคริปต์ แดชบอร์ด งาน CI และส่วนขยาย IDE
-  ที่ต้องการรันเอเจนต์ผ่าน Gateway ให้ใช้
+  ที่ต้องการเรียกใช้เอเจนต์ผ่าน Gateway ให้ใช้
   [การผสานรวม Gateway สำหรับแอปภายนอก](/th/gateway/external-apps) แทน
 </Note>
 
 <Tip>
-กำลังมองหาคู่มือวิธีทำอยู่ใช่ไหม เริ่มจาก [การสร้าง Plugin](/th/plugins/building-plugins), ใช้ [Plugin ช่องทาง](/th/plugins/sdk-channel-plugins) สำหรับ Plugin ช่องทาง, [Provider Plugin](/th/plugins/sdk-provider-plugins) สำหรับ Provider Plugin, [Plugin แบ็กเอนด์ CLI](/th/plugins/cli-backend-plugins) สำหรับแบ็กเอนด์ AI CLI แบบโลคัล และ [Plugin hooks](/th/plugins/hooks) สำหรับ Plugin เครื่องมือหรือ hook วงจรชีวิต
+กำลังมองหาคู่มือวิธีใช้อยู่ใช่ไหม เริ่มจาก [การสร้าง Plugin](/th/plugins/building-plugins) ใช้ [Plugin ช่องทาง](/th/plugins/sdk-channel-plugins) สำหรับช่องทาง, [Plugin ผู้ให้บริการ](/th/plugins/sdk-provider-plugins) สำหรับผู้ให้บริการโมเดล, [Plugin แบ็กเอนด์ CLI](/th/plugins/cli-backend-plugins) สำหรับแบ็กเอนด์ CLI ของ AI ภายในเครื่อง, [Plugin ชุดควบคุมเอเจนต์](/th/plugins/sdk-agent-harness) สำหรับตัวดำเนินการเอเจนต์แบบเนทีฟ และ [ฮุกของ Plugin](/th/plugins/hooks) สำหรับฮุกของเครื่องมือหรือวงจรชีวิต
 </Tip>
 
-## ข้อตกลงการ import
+## รูปแบบการนำเข้า
 
-ให้ import จาก subpath ที่เฉพาะเจาะจงเสมอ:
+ให้นำเข้าจากพาธย่อยที่เฉพาะเจาะจงเสมอ:
 
 ```typescript
 import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
 import { defineChannelPluginEntry } from "openclaw/plugin-sdk/channel-core";
 ```
 
-แต่ละ subpath เป็นโมดูลขนาดเล็กที่ครบถ้วนในตัวเอง วิธีนี้ช่วยให้การเริ่มต้นเร็ว
-และป้องกันปัญหา dependency แบบวนรอบ สำหรับ entry/build helper เฉพาะช่องทาง
-ให้เลือกใช้ `openclaw/plugin-sdk/channel-core`; เก็บ `openclaw/plugin-sdk/core` ไว้สำหรับ
-พื้นผิวแบบครอบคลุมที่กว้างกว่าและ helper ที่ใช้ร่วมกัน เช่น
+แต่ละพาธย่อยเป็นโมดูลขนาดเล็กที่สมบูรณ์ในตัวเอง ซึ่งช่วยให้การเริ่มต้นทำงานรวดเร็วและ
+ป้องกันปัญหาการพึ่งพาแบบวนซ้ำ สำหรับตัวช่วยด้านจุดเริ่มต้น/การบิลด์ที่เฉพาะกับช่องทาง
+ให้เลือกใช้ `openclaw/plugin-sdk/channel-core` และเก็บ `openclaw/plugin-sdk/core` ไว้สำหรับ
+พื้นผิวรวมที่กว้างกว่าและตัวช่วยที่ใช้ร่วมกัน เช่น
 `buildChannelConfigSchema`
 
-สำหรับ config ช่องทาง ให้เผยแพร่ JSON Schema ที่ช่องทางเป็นเจ้าของผ่าน
-`openclaw.plugin.json#channelConfigs` subpath `plugin-sdk/channel-config-schema`
-มีไว้สำหรับ primitive ของ schema ที่ใช้ร่วมกันและตัวสร้างแบบทั่วไป Plugin ที่บันเดิลมากับ
-OpenClaw ใช้ `plugin-sdk/bundled-channel-config-schema` สำหรับ schema ช่องทางแบบบันเดิล
-ที่ยังคงไว้ export ความเข้ากันได้ที่เลิกใช้แล้วยังคงอยู่บน
-`plugin-sdk/channel-config-schema-legacy`; subpath schema แบบบันเดิลทั้งสองไม่ใช่
+สำหรับการกำหนดค่าช่องทาง ให้เผยแพร่ JSON Schema ที่ช่องทางเป็นเจ้าของผ่าน
+`openclaw.plugin.json#channelConfigs` พาธย่อย `plugin-sdk/channel-config-schema`
+มีไว้สำหรับองค์ประกอบพื้นฐานของสคีมาที่ใช้ร่วมกันและตัวสร้างทั่วไป Plugin ที่รวมมากับ
+OpenClaw ใช้ `plugin-sdk/bundled-channel-config-schema` สำหรับสคีมาช่องทางแบบรวม
+ที่ยังคงรองรับอยู่ การส่งออกเพื่อความเข้ากันได้ที่เลิกแนะนำแล้วยังคงอยู่ที่
+`plugin-sdk/channel-config-schema-legacy` โดยพาธย่อยของสคีมาแบบรวมทั้งสองแบบไม่ใช่
 รูปแบบสำหรับ Plugin ใหม่
 
 <Warning>
-  อย่า import จุดเชื่อมอำนวยความสะดวกที่มีแบรนด์ provider หรือช่องทาง (เช่น
+  อย่านำเข้าจุดเชื่อมต่ออำนวยความสะดวกที่มีชื่อแบรนด์ของผู้ให้บริการหรือช่องทาง (ตัวอย่างเช่น
   `openclaw/plugin-sdk/slack`, `.../discord`, `.../signal`, `.../whatsapp`)
-  Plugin ที่บันเดิลมาจะประกอบ subpath SDK ทั่วไปภายใน barrel `api.ts` /
-  `runtime-api.ts` ของตัวเอง; ผู้ใช้ฝั่งคอร์ควรใช้ barrel ภายใน Plugin เหล่านั้น
-  หรือเพิ่มสัญญา SDK ทั่วไปแบบแคบเมื่อความต้องการนั้นเป็นแบบข้ามช่องทางจริง ๆ
+  Plugin ที่รวมมาให้จะประกอบพาธย่อย SDK ทั่วไปภายใน barrel `api.ts` /
+  `runtime-api.ts` ของตนเอง ผู้ใช้แกนหลักควรใช้ barrel ภายใน Plugin เหล่านั้น
+  หรือเพิ่มสัญญา SDK ทั่วไปที่มีขอบเขตแคบ เมื่อความต้องการนั้นใช้ข้ามช่องทาง
+  อย่างแท้จริง
 
-จุดเชื่อม helper ของ Plugin แบบบันเดิลจำนวนเล็กน้อยยังคงปรากฏใน export map
-ที่สร้างขึ้นเมื่อมีการติดตามการใช้งานของเจ้าของ จุดเชื่อมเหล่านี้มีไว้สำหรับการดูแลรักษา
-Plugin แบบบันเดิลเท่านั้น และไม่ใช่เส้นทาง import ที่แนะนำสำหรับ Plugin บุคคลที่สามใหม่
+จุดเชื่อมต่อตัวช่วยของ Plugin ที่รวมมาให้จำนวนเล็กน้อยยังคงปรากฏในแผนผังการส่งออก
+ที่สร้างขึ้น เมื่อมีการติดตามการใช้งานโดยเจ้าของ จุดเชื่อมต่อเหล่านี้มีไว้สำหรับ
+การบำรุงรักษา Plugin ที่รวมมาให้เท่านั้น และไม่แนะนำให้ใช้เป็นพาธนำเข้าสำหรับ
+Plugin ภายนอกใหม่
 
-`openclaw/plugin-sdk/discord` และ `openclaw/plugin-sdk/telegram-account` ยังถูกเก็บไว้
-เป็น facade ความเข้ากันได้ที่เลิกใช้แล้วสำหรับการใช้งานของเจ้าของที่ติดตามไว้ อย่าคัดลอก
-เส้นทาง import เหล่านั้นไปยัง Plugin ใหม่; ให้ใช้ runtime helper ที่ฉีดเข้ามาและ
-subpath SDK ช่องทางทั่วไปแทน
+`openclaw/plugin-sdk/discord` และ `openclaw/plugin-sdk/telegram-account`
+ยังคงถูกเก็บไว้เป็น facade เพื่อความเข้ากันได้ที่เลิกแนะนำแล้ว สำหรับการใช้งานที่เจ้าของติดตามอยู่
+อย่าคัดลอกพาธนำเข้าเหล่านั้นไปยัง Plugin ใหม่ ให้ใช้ตัวช่วยรันไทม์ที่ฉีดเข้ามาและ
+พาธย่อย SDK ของช่องทางแบบทั่วไปแทน
 </Warning>
 
-## เอกสารอ้างอิง subpath
+## เอกสารอ้างอิงพาธย่อย
 
-Plugin SDK ถูกเปิดเผยเป็นชุด subpath แบบแคบที่จัดกลุ่มตามพื้นที่ (entry ของ Plugin,
-ช่องทาง, provider, auth, runtime, capability, memory และ helper ของ Plugin แบบบันเดิล
-ที่สงวนไว้) สำหรับแค็ตตาล็อกฉบับเต็มที่จัดกลุ่มและลิงก์ไว้แล้ว ดู
-[subpath ของ Plugin SDK](/th/plugins/sdk-subpaths)
+SDK ของ Plugin เปิดให้ใช้เป็นชุดพาธย่อยที่มีขอบเขตแคบ โดยจัดกลุ่มตามพื้นที่ (จุดเริ่มต้น
+ของ Plugin, ช่องทาง, ผู้ให้บริการ, การยืนยันตัวตน, รันไทม์, ความสามารถ, หน่วยความจำ และ
+ตัวช่วยที่สงวนไว้สำหรับ Plugin ที่รวมมาให้) สำหรับรายการทั้งหมดที่จัดกลุ่มและเชื่อมโยงแล้ว โปรดดู
+[พาธย่อยของ SDK สำหรับ Plugin](/th/plugins/sdk-subpaths)
 
-รายการ entrypoint ของคอมไพเลอร์อยู่ใน
-`scripts/lib/plugin-sdk-entrypoints.json`; package export ถูกสร้างจาก
-ชุดสาธารณะหลังจากหัก subpath สำหรับ test/internal เฉพาะภายใน repo ที่ระบุไว้ใน
-`scripts/lib/plugin-sdk-private-local-only-subpaths.json` ออกแล้ว รัน
-`pnpm plugin-sdk:surface` เพื่อตรวจนับจำนวน export สาธารณะ subpath สาธารณะที่เลิกใช้แล้ว
-ซึ่งเก่าพอและไม่ได้ถูกใช้โดยโค้ด production ของส่วนขยายแบบบันเดิลจะถูกติดตามใน
-`scripts/lib/plugin-sdk-deprecated-public-subpaths.json`; barrel re-export
-ที่เลิกใช้แล้วแบบกว้างจะถูกติดตามใน
+รายการจุดเริ่มต้นของคอมไพเลอร์อยู่ใน
+`scripts/lib/plugin-sdk-entrypoints.json` ส่วนการส่งออกของแพ็กเกจสร้างขึ้นจาก
+ชุดสาธารณะหลังหักพาธย่อยสำหรับการทดสอบ/ภายในที่ใช้เฉพาะในรีโพซิทอรี ซึ่งระบุไว้ใน
+`scripts/lib/plugin-sdk-private-local-only-subpaths.json` เรียกใช้
+`pnpm plugin-sdk:surface` เพื่อตรวจสอบจำนวนการส่งออกสาธารณะ พาธย่อยสาธารณะที่
+เลิกแนะนำแล้วและมีอายุเก่าพอ รวมทั้งไม่ได้ถูกใช้โดยโค้ดโปรดักชันของส่วนขยายที่รวมมาให้
+จะถูกติดตามใน `scripts/lib/plugin-sdk-deprecated-public-subpaths.json` ส่วน barrel
+การส่งออกซ้ำแบบกว้างที่เลิกแนะนำแล้วจะถูกติดตามใน
 `scripts/lib/plugin-sdk-deprecated-barrel-subpaths.json`
 
 ## API การลงทะเบียน
 
-callback `register(api)` จะได้รับออบเจ็กต์ `OpenClawPluginApi` ที่มี
-เมธอดเหล่านี้:
+คอลแบ็ก `register(api)` จะได้รับออบเจ็กต์ `OpenClawPluginApi` ที่มี
+เมธอดต่อไปนี้:
 
-### การลงทะเบียน capability
+### การลงทะเบียนความสามารถ
 
-| เมธอด                                           | สิ่งที่ลงทะเบียน                     |
-| ------------------------------------------------ | ------------------------------------- |
-| `api.registerProvider(...)`                      | การอนุมานข้อความ (LLM)                  |
-| `api.registerAgentHarness(...)`                  | ตัวดำเนินการเอเจนต์ระดับต่ำเชิงทดลอง |
-| `api.registerCliBackend(...)`                    | แบ็กเอนด์การอนุมาน CLI แบบโลคัล           |
-| `api.registerChannel(...)`                       | ช่องทางการส่งข้อความ                     |
-| `api.registerEmbeddingProvider(...)`             | provider embedding เวกเตอร์ที่นำกลับมาใช้ซ้ำได้    |
-| `api.registerSpeechProvider(...)`                | การสังเคราะห์ข้อความเป็นเสียง / STT        |
-| `api.registerRealtimeTranscriptionProvider(...)` | การถอดเสียงแบบเรียลไทม์แบบสตรีม      |
-| `api.registerRealtimeVoiceProvider(...)`         | เซสชันเสียงเรียลไทม์แบบสองทาง        |
-| `api.registerMediaUnderstandingProvider(...)`    | การวิเคราะห์รูปภาพ/เสียง/วิดีโอ            |
-| `api.registerImageGenerationProvider(...)`       | การสร้างรูปภาพ                      |
-| `api.registerMusicGenerationProvider(...)`       | การสร้างเพลง                      |
-| `api.registerVideoGenerationProvider(...)`       | การสร้างวิดีโอ                      |
-| `api.registerWebFetchProvider(...)`              | provider ดึงข้อมูลเว็บ / scrape           |
-| `api.registerWebSearchProvider(...)`             | การค้นหาเว็บ                            |
+| เมธอด                                           | สิ่งที่ลงทะเบียน                                                                 |
+| ------------------------------------------------ | --------------------------------------------------------------------------------- |
+| `api.registerProvider(...)`                      | การอนุมานข้อความ (LLM)                                                              |
+| `api.registerWorkerProvider(...)`                | สิทธิ์เช่าวงจรชีวิตของเวิร์กเกอร์บนคลาวด์                                                     |
+| `api.registerModelCatalogProvider(...)`          | แถวแค็ตตาล็อกโมเดลสำหรับการสร้างข้อความและสื่อ                                  |
+| `api.registerAgentHarness(...)`                  | ตัวดำเนินการเอเจนต์แบบเนทีฟ [ระยะทดลอง](/th/plugins/sdk-agent-harness) (Codex, Copilot) |
+| `api.registerCliBackend(...)`                    | แบ็กเอนด์การอนุมาน CLI ภายในเครื่อง                                                       |
+| `api.registerChannel(...)`                       | ช่องทางการส่งข้อความ                                                                 |
+| `api.registerEmbeddingProvider(...)`             | ผู้ให้บริการเวกเตอร์ฝังตัวที่นำกลับมาใช้ใหม่ได้                                                |
+| `api.registerSpeechProvider(...)`                | การสังเคราะห์ข้อความเป็นเสียงพูด / STT                                                    |
+| `api.registerRealtimeTranscriptionProvider(...)` | การถอดเสียงแบบเรียลไทม์ชนิดสตรีมมิง                                                  |
+| `api.registerRealtimeVoiceProvider(...)`         | เซสชันเสียงเรียลไทม์แบบสองทิศทาง                                                    |
+| `api.registerMediaUnderstandingProvider(...)`    | การวิเคราะห์รูปภาพ/เสียง/วิดีโอ                                                        |
+| `api.registerTranscriptSourceProvider(...)`      | แหล่งข้อความถอดเสียงการประชุมแบบสดหรือนำเข้า                                        |
+| `api.registerImageGenerationProvider(...)`       | การสร้างรูปภาพ                                                                  |
+| `api.registerMusicGenerationProvider(...)`       | การสร้างเพลง                                                                  |
+| `api.registerVideoGenerationProvider(...)`       | การสร้างวิดีโอ                                                                  |
+| `api.registerWebFetchProvider(...)`              | ผู้ให้บริการดึงข้อมูล / เก็บข้อมูลจากเว็บ                                                       |
+| `api.registerWebSearchProvider(...)`             | การค้นหาเว็บ                                                                        |
+| `api.registerCompactionProvider(...)`            | แบ็กเอนด์ Compaction ของข้อความถอดเสียงที่เปลี่ยนแทนกันได้                                           |
 
-Embedding provider ที่ลงทะเบียนด้วย `api.registerEmbeddingProvider(...)` ต้อง
-ถูกระบุใน `contracts.embeddingProviders` ใน manifest ของ Plugin ด้วย นี่คือ
-พื้นผิว embedding ทั่วไปสำหรับการสร้างเวกเตอร์ที่นำกลับมาใช้ซ้ำได้ การค้นหา memory
-สามารถใช้พื้นผิว provider ทั่วไปนี้ได้ จุดเชื่อมรุ่นเก่า
+ผู้ให้บริการเวิร์กเกอร์ต้องประกาศรหัสของตนใน `contracts.workerProviders` ด้วย
+แกนหลักจะบันทึกเจตนาที่คงทนก่อนเรียก `provision(profile, operationId)` ผู้ให้บริการต้องตรวจสอบการตั้งค่าก่อนจัดสรรทรัพยากรภายนอก และส่ง `WorkerProviderError` สำหรับการปฏิเสธโปรไฟล์อย่างถาวร `provision` ต้องรับช่วงสิทธิ์เช่าเดิมเมื่อรหัสการดำเนินการซ้ำ
+แกนหลักจะบันทึกการตั้งค่าโปรไฟล์ที่ตรวจสอบแล้วพร้อมสิทธิ์เช่า และส่งสแนปช็อตนั้นให้ `destroy({ leaseId, profile })` ซึ่งต้องเรียกซ้ำได้โดยให้ผลเหมือนเดิม และ `inspect({ leaseId, profile })` ซึ่งคืนค่า `active`, `destroyed` หรือ `unknown` วิธีนี้ช่วยให้ผู้ให้บริการกำหนดเส้นทางการเรียกวงจรชีวิตหลังจาก Gateway เริ่มใหม่หรือมีการลบโปรไฟล์ที่ตั้งชื่อไว้ ปลายทาง SSH ใช้ `SecretRef` สำหรับ `keyRef` ห้ามใส่เนื้อหาคีย์โดยตรง และต้องมี `hostKey` จากผลลัพธ์การจัดเตรียมที่เชื่อถือได้ในรูปแบบ `algorithm base64` เท่านั้น โดยไม่มีชื่อโฮสต์หรือหมายเหตุ แกนหลักจะตรึง `hostKey` และไม่เชื่อถือคีย์จากการเชื่อมต่อครั้งแรก ผู้ให้บริการที่สร้าง `keyRef` แบบไดนามิกสามารถใช้ `resolveSshIdentity({ leaseId, profile, keyRef })` ได้ เมื่อมีตัวแก้ไขนี้ ตัวแก้ไขดังกล่าวถือเป็นแหล่งอ้างอิงหลัก ส่วนผู้ให้บริการที่ไม่มีตัวแก้ไขนี้จะใช้ตัวแก้ไขข้อมูลลับทั่วไปที่กำหนดค่าไว้
+ผู้ให้บริการที่มีสิทธิ์เช่าซึ่งต่ออายุได้สามารถใช้ `renew(leaseId)` เพิ่มเติมได้
+`inspect` ต้องส่งข้อผิดพลาดเมื่อเกิดความล้มเหลวชั่วคราวหรือไม่สามารถระบุผลได้ และคืนค่า `unknown` เฉพาะเมื่อยืนยันได้ว่าไม่มีอยู่เท่านั้น แกนหลักจะทำเครื่องหมายเรคคอร์ดภายในเครื่องที่ยังทำงานอยู่ว่าไม่มีเจ้าของ หรือถือว่าการไม่มีอยู่หมายถึงการรื้อถอนเสร็จสมบูรณ์แล้วหลังจากมีคำขอทำลายที่บันทึกไว้
+
+ผู้ให้บริการเวกเตอร์ฝังตัวที่ลงทะเบียนด้วย `api.registerEmbeddingProvider(...)` ต้อง
+ระบุไว้ใน `contracts.embeddingProviders` ของไฟล์ manifest ของ Plugin ด้วย นี่คือ
+พื้นผิวการฝังตัวแบบทั่วไปสำหรับการสร้างเวกเตอร์ที่นำกลับมาใช้ใหม่ได้ การค้นหาหน่วยความจำ
+สามารถใช้พื้นผิวผู้ให้บริการทั่วไปนี้ได้ จุดเชื่อมต่อรุ่นเก่า
 `api.registerMemoryEmbeddingProvider(...)` และ
-`contracts.memoryEmbeddingProviders` เป็นความเข้ากันได้ที่เลิกใช้แล้วระหว่างที่
-provider เฉพาะ memory ที่มีอยู่ย้ายออกไป
+`contracts.memoryEmbeddingProviders` เป็นความเข้ากันได้ที่เลิกแนะนำแล้ว ระหว่างที่
+ผู้ให้บริการเฉพาะหน่วยความจำเดิมกำลังย้ายระบบ
 
-provider เฉพาะ memory ที่ยังเปิด runtime `batchEmbed(...)` จะยังอยู่บน
-สัญญาการ batching รายไฟล์เดิม เว้นแต่ runtime ของตัวเองจะตั้งค่า
-`sourceWideBatchEmbed: true` อย่างชัดเจน การ opt-in นี้ทำให้ host ของ memory ส่ง chunk จาก
-ไฟล์ memory ที่ dirty หลายไฟล์และ source ที่เปิดใช้งานแล้วในการเรียก `batchEmbed(...)` ครั้งเดียว
-ได้จนถึงขีดจำกัด batch ของ host adapter แบบ batch ที่อัปโหลดไฟล์คำขอ JSONL ต้อง
-แบ่งงาน provider ก่อนถึงเพดานขนาดอัปโหลดและเพดานจำนวนคำขอด้วย
-provider ต้องคืน embedding หนึ่งรายการต่อ input chunk ในลำดับเดียวกับ
-`batch.chunks`; อย่าใส่ flag นี้เมื่อ provider คาดหวัง batch เฉพาะภายในไฟล์หรือ
-ไม่สามารถรักษาลำดับ input ข้ามงาน source-wide ที่ใหญ่กว่าได้
+ผู้ให้บริการเฉพาะหน่วยความจำที่ยังคงเปิดเผย `batchEmbed(...)` ในรันไทม์ จะยังใช้
+สัญญาการประมวลผลแบบกลุ่มต่อไฟล์ที่มีอยู่ เว้นแต่รันไทม์จะตั้งค่า
+`sourceWideBatchEmbed: true` ไว้อย่างชัดเจน การเลือกใช้นี้ช่วยให้โฮสต์หน่วยความจำ
+ส่งชิ้นข้อมูลจากไฟล์หน่วยความจำที่เปลี่ยนแปลงหลายไฟล์และแหล่งที่เปิดใช้งานหลายแหล่ง
+ในการเรียก `batchEmbed(...)` ครั้งเดียวได้ โดยไม่เกินขีดจำกัดขนาดกลุ่มของโฮสต์
+อะแดปเตอร์แบบกลุ่มที่อัปโหลดไฟล์คำขอ JSONL ต้องแบ่งงานของผู้ให้บริการก่อนถึง
+ขีดจำกัดขนาดการอัปโหลดและขีดจำกัดจำนวนคำขอ ผู้ให้บริการต้องคืนค่าเวกเตอร์ฝังตัว
+หนึ่งรายการต่อชิ้นข้อมูลนำเข้า โดยเรียงลำดับเดียวกับ `batch.chunks` ให้ละเว้นแฟล็กนี้
+เมื่อผู้ให้บริการคาดหวังกลุ่มเฉพาะภายในไฟล์ หรือไม่สามารถรักษาลำดับข้อมูลนำเข้า
+ในงานขนาดใหญ่ที่ครอบคลุมทั้งแหล่งข้อมูลได้
 
 ### เครื่องมือและคำสั่ง
 
 ใช้ [`defineToolPlugin`](/th/plugins/tool-plugins) สำหรับ Plugin ที่มีเฉพาะเครื่องมือแบบง่าย
-พร้อมชื่อเครื่องมือคงที่ ใช้ `api.registerTool(...)` โดยตรงสำหรับ Plugin แบบผสม
+และมีชื่อเครื่องมือคงที่ ใช้ `api.registerTool(...)` โดยตรงสำหรับ Plugin แบบผสม
 หรือการลงทะเบียนเครื่องมือแบบไดนามิกเต็มรูปแบบ
 
-| เมธอด                          | สิ่งที่ลงทะเบียน                             |
-| ------------------------------- | --------------------------------------------- |
-| `api.registerTool(tool, opts?)` | เครื่องมือเอเจนต์ (จำเป็นหรือ `{ optional: true }`) |
-| `api.registerCommand(def)`      | คำสั่งแบบกำหนดเอง (ข้าม LLM)             |
+| เมธอด                                 | สิ่งที่ลงทะเบียน                                                                                                                        |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `api.registerTool(tool, opts?)`        | เครื่องมือของเอเจนต์ (จำเป็น หรือ `{ optional: true }`)                                                                                            |
+| `api.registerCommand(def)`             | คำสั่งแบบกำหนดเอง (ข้าม LLM)                                                                                                        |
+| `api.registerNodeHostCommand(command)` | คำสั่งที่จัดการโดย `openclaw node run`; เมทาดาทา `agentTool` ที่เป็นทางเลือกสามารถเปิดเผยคำสั่งเป็นเครื่องมือที่เอเจนต์มองเห็นได้ขณะที่ Node เชื่อมต่ออยู่ |
 
-คำสั่ง Plugin สามารถตั้งค่า `agentPromptGuidance` เมื่อเอเจนต์ต้องการคำใบ้ routing
-สั้น ๆ ที่คำสั่งเป็นเจ้าของ ให้ข้อความนั้นเกี่ยวกับตัวคำสั่งเอง; อย่าเพิ่ม
-นโยบายเฉพาะ provider หรือ Plugin เข้าไปในตัวสร้าง prompt ของคอร์
+คำสั่งของ Plugin สามารถตั้งค่า `agentPromptGuidance` ได้ เมื่อเอเจนต์ต้องการ
+คำแนะนำการกำหนดเส้นทางสั้น ๆ ที่คำสั่งเป็นเจ้าของ ให้ข้อความนั้นกล่าวถึงตัวคำสั่งเอง
+และอย่าเพิ่มนโยบายเฉพาะผู้ให้บริการหรือ Plugin ลงในตัวสร้างพรอมต์ของแกนหลัก
 
-รายการ guidance อาจเป็นสตริงแบบ legacy ซึ่งใช้กับทุกพื้นผิว prompt หรือ
-รายการแบบมีโครงสร้าง:
+รายการคำแนะนำอาจเป็นสตริงแบบเดิม ซึ่งใช้กับพื้นผิวพรอมต์ทุกแบบ หรือ
+เป็นรายการแบบมีโครงสร้าง:
 
 ```ts
 agentPromptGuidance: [
@@ -154,58 +168,117 @@ agentPromptGuidance: [
 ];
 ```
 
-`surfaces` แบบมีโครงสร้างอาจมี `openclaw_main`, `codex_app_server`,
-`cli_backend`, `acp_backend` หรือ `subagent` `pi_main` ยังคงเป็น alias ที่เลิกใช้แล้ว
-สำหรับ `openclaw_main` ละเว้น `surfaces` เมื่อจงใจให้ guidance ใช้กับทุกพื้นผิว
-อย่าส่งอาร์เรย์ `surfaces` ว่าง; อาร์เรย์นั้นจะถูกปฏิเสธเพื่อไม่ให้การสูญเสีย scope
-โดยไม่ตั้งใจกลายเป็นข้อความ prompt แบบ global
+`surfaces` แบบมีโครงสร้างอาจประกอบด้วย `openclaw_main`, `codex_app_server`,
+`cli_backend`, `acp_backend` หรือ `subagent` โดย `pi_main` ยังคงเป็นนามแฝง
+ที่เลิกแนะนำแล้วสำหรับ `openclaw_main` ให้ละเว้น `surfaces` เมื่อตั้งใจให้คำแนะนำ
+ใช้กับทุกพื้นผิว อย่าส่งอาร์เรย์ `surfaces` ว่าง ระบบจะปฏิเสธเพื่อป้องกันไม่ให้
+การสูญเสียขอบเขตโดยไม่ตั้งใจกลายเป็นข้อความพรอมต์ส่วนกลาง
 
-คำสั่งสำหรับนักพัฒนา app-server ของ Codex แบบ native เข้มงวดกว่าพื้นผิว prompt อื่น:
-เฉพาะ guidance ที่กำหนด scope เป็น `codex_app_server` อย่างชัดเจนเท่านั้นที่จะถูกยกระดับเข้า
-lane ที่มีลำดับความสำคัญสูงกว่านั้น guidance แบบสตริง legacy และ guidance แบบมีโครงสร้าง
-ที่ไม่ได้กำหนด scope ยังคงใช้ได้กับพื้นผิว prompt ที่ไม่ใช่ Codex เพื่อความเข้ากันได้
+คำสั่งสำหรับนักพัฒนาของเซิร์ฟเวอร์แอป Codex แบบเนทีฟมีข้อกำหนดเข้มงวดกว่า
+พื้นผิวพรอมต์อื่น มีเพียงคำแนะนำที่กำหนดขอบเขตเป็น `codex_app_server` อย่างชัดเจน
+เท่านั้นที่จะถูกเลื่อนไปยังช่องทางที่มีลำดับความสำคัญสูงกว่า คำแนะนำแบบสตริงเดิม
+และคำแนะนำแบบมีโครงสร้างที่ไม่ได้กำหนดขอบเขตจะยังคงใช้ได้กับพื้นผิวพรอมต์
+ที่ไม่ใช่ Codex เพื่อความเข้ากันได้
+
+คำสั่งโฮสต์ Node ทำงานบนโฮสต์ Node ที่เชื่อมต่อ ไม่ได้ทำงานภายในโปรเซส Gateway
+หากมี `agentTool` อยู่ Node จะเผยแพร่ตัวอธิบายหลังจากเชื่อมต่อ Gateway
+สำเร็จ โดย Gateway จะเปิดให้การทำงานของเอเจนต์ใช้งานได้เฉพาะขณะที่
+Node นั้นเชื่อมต่ออยู่ และเฉพาะเมื่อ `command` ของตัวอธิบายอยู่ในพื้นผิวคำสั่ง
+ที่ได้รับอนุมัติของ Node เท่านั้น ตั้งค่า `agentTool.defaultPlatforms` เพื่อเพิ่ม
+คำสั่งที่ไม่เป็นอันตรายลงในรายการอนุญาตคำสั่งเริ่มต้นของ Node มิฉะนั้นต้องกำหนด
+`gateway.nodes.allowCommands` อย่างชัดเจนหรือนโยบายการเรียกใช้จาก Node
+`agentTool.name` ต้องปลอดภัยสำหรับผู้ให้บริการ: ขึ้นต้นด้วยตัวอักษร ใช้เฉพาะ
+ตัวอักษร ตัวเลข ขีดล่าง หรือขีดกลาง และมีความยาวไม่เกิน 64 อักขระ เครื่องมือ
+Node ที่มี MCP รองรับสามารถตั้งค่าข้อมูลเมตา `agentTool.mcp` เพื่อให้พื้นผิว
+แค็ตตาล็อกและการค้นหาเครื่องมือแสดงข้อมูลประจำตัวของเซิร์ฟเวอร์/เครื่องมือ MCP
+ระยะไกลได้ แต่การดำเนินการยังคงผ่านคำสั่ง Node ที่ประกาศไว้
 
 ### โครงสร้างพื้นฐาน
 
-| เมธอด                                         | สิ่งที่ลงทะเบียน                       |
-| ---------------------------------------------- | --------------------------------------- |
-| `api.registerHook(events, handler, opts?)`     | Event hook                              |
-| `api.registerHttpRoute(params)`                | endpoint HTTP ของ Gateway                   |
-| `api.registerGatewayMethod(name, handler)`     | เมธอด RPC ของ Gateway                      |
-| `api.registerGatewayDiscoveryService(service)` | ตัวประกาศการค้นพบ Gateway แบบโลคัล      |
-| `api.registerCli(registrar, opts?)`            | คำสั่งย่อย CLI                          |
-| `api.registerNodeCliFeature(registrar, opts?)` | CLI ของฟีเจอร์ Node ใต้ `openclaw nodes` |
-| `api.registerService(service)`                 | บริการเบื้องหลัง                      |
-| `api.registerInteractiveHandler(registration)` | ตัวจัดการแบบ interactive                     |
-| `api.registerAgentToolResultMiddleware(...)`   | middleware ผลลัพธ์เครื่องมือของ runtime          |
-| `api.registerMemoryPromptSupplement(builder)`  | ส่วน prompt เสริมที่อยู่ติดกับ memory |
-| `api.registerMemoryCorpusSupplement(adapter)`  | corpus การค้นหา/อ่าน memory เสริม      |
+| เมธอด                                          | สิ่งที่ลงทะเบียน                                            |
+| ----------------------------------------------- | ------------------------------------------------------------ |
+| `api.registerHook(events, handler, opts?)`      | ฮุกเหตุการณ์                                                   |
+| `api.registerHttpRoute(params)`                 | ปลายทาง HTTP ของ Gateway                                      |
+| `api.registerGatewayMethod(name, handler)`      | เมธอด RPC ของ Gateway                                         |
+| `api.registerGatewayDiscoveryService(service)`  | ตัวประกาศบริการค้นหา Gateway ภายในเครื่อง                       |
+| `api.registerCli(registrar, opts?)`             | คำสั่งย่อย CLI                                                 |
+| `api.registerNodeCliFeature(registrar, opts?)`  | CLI ฟีเจอร์ Node ภายใต้ `openclaw nodes`                       |
+| `api.registerService(service)`                  | บริการเบื้องหลัง                                                |
+| `api.registerInteractiveHandler(registration)`  | ตัวจัดการแบบโต้ตอบ                                               |
+| `api.registerAgentToolResultMiddleware(...)`    | มิดเดิลแวร์ผลลัพธ์เครื่องมือขณะทำงาน                              |
+| `api.registerMemoryPromptSupplement(builder)`   | ส่วนพรอมป์เพิ่มเติมที่อยู่ใกล้เคียงกับหน่วยความจำ                  |
+| `api.registerMemoryCorpusSupplement(adapter)`   | คลังข้อมูลเพิ่มเติมสำหรับค้นหา/อ่านหน่วยความจำ                      |
+| `api.registerHostedMediaResolver(resolver)`     | ตัวแก้ไข URL สื่อที่โฮสต์ในรูปแบบเบราว์เซอร์                        |
+| `api.registerTextTransforms(transforms)`        | การเขียนข้อความพรอมป์/ข้อความใหม่เพื่อความเข้ากันได้ที่ Plugin เป็นเจ้าของ |
+| `api.registerConfigMigration(migrate)`          | การย้ายการกำหนดค่าแบบเบาที่ทำงานก่อนโหลดรันไทม์ของ Plugin            |
+| `api.registerMigrationProvider(provider)`       | ตัวนำเข้าสำหรับ `openclaw migrate`                              |
+| `api.registerAutoEnableProbe(probe)`            | ตัวตรวจสอบการกำหนดค่าที่สามารถเปิดใช้งาน Plugin นี้โดยอัตโนมัติ        |
+| `api.registerReload(registration)`              | นโยบายคำนำหน้าการกำหนดค่าแบบรีสตาร์ต/โหลดซ้ำทันที/ไม่ดำเนินการ สำหรับจัดการการโหลดซ้ำ |
+| `api.registerNodeHostCommand(command)`          | ตัวจัดการคำสั่งที่เปิดให้ Node ที่จับคู่ใช้งาน                        |
+| `api.registerNodeInvokePolicy(policy)`          | นโยบายรายการอนุญาต/การอนุมัติสำหรับคำสั่งที่ Node เรียกใช้             |
+| `api.registerSecurityAuditCollector(collector)` | ตัวรวบรวมข้อค้นพบสำหรับ `openclaw security audit`                  |
 
-### Host hooks สำหรับ workflow Plugin
+ตัวสร้างส่วนเสริมพรอมป์หน่วยความจำจะได้รับบริบท `agentId`,
+`agentSessionKey` และ `sandboxed` ซึ่งเป็นทางเลือก การเรียก `search`
+และ `get` ของส่วนเสริมคลังข้อมูลหน่วยความจำจะได้รับบริบท `agentId` และ
+`sandboxed` ซึ่งเป็นทางเลือก Plugin ที่มีพื้นที่จัดเก็บซึ่งเอเจนต์เป็นเจ้าของ
+ควรแก้ไขตำแหน่งพื้นที่จัดเก็บนั้นสำหรับแต่ละการเรียก แทนการเก็บพาธส่วนกลาง
+เพียงพาธเดียวไว้ระหว่างการลงทะเบียน หากจำเป็นต้องมีรหัสเอเจนต์แต่ไม่มีให้
+ในการดำเนินการแบบหลายเอเจนต์ ให้ปฏิเสธอย่างปลอดภัยแทนการเลือกเอเจนต์
+ใดเอเจนต์หนึ่งโดยพลการ
 
-Host hooks คือจุดเชื่อม SDK สำหรับ Plugin ที่ต้องเข้าร่วมในวงจรชีวิตของ host
-แทนที่จะเพียงเพิ่ม provider, ช่องทาง หรือเครื่องมือ จุดเชื่อมเหล่านี้เป็น
-สัญญาทั่วไป; Plan Mode สามารถใช้ได้ แต่ workflow การอนุมัติ,
-gate นโยบาย workspace, monitor เบื้องหลัง, wizard ตั้งค่า และ Plugin คู่กับ UI
-ก็ใช้ได้เช่นกัน
+ตัวจัดการแบบโต้ตอบของ Telegram สามารถส่งคืน `{ submitText }` เพื่อส่งข้อความ
+ผ่านเส้นทางเอเจนต์ขาเข้าปกติของ Telegram หลังจากตัวจัดการทำงานสำเร็จ OpenClaw
+จะคงปุ่มเรียกกลับไว้เมื่อข้อความถูกข้ามโดยนโยบายขาเข้าหรือการประมวลผลล้มเหลว
+เพื่อให้ผู้ใช้ลองใหม่ได้หลังจากเงื่อนไขที่ขัดขวางเปลี่ยนไป ฟิลด์ผลลัพธ์นี้ใช้เฉพาะ
+Telegram ส่วนช่องทางอื่นจะคงสัญญาผลลัพธ์แบบโต้ตอบของตนเอง
 
-| วิธีการ                                                                               | สัญญาที่รับผิดชอบ                                                                                                                                           |
+### ฮุกโฮสต์สำหรับ Plugin เวิร์กโฟลว์
+
+ฮุกโฮสต์คือรอยต่อ SDK สำหรับ Plugin ที่ต้องมีส่วนร่วมในวงจรชีวิตของโฮสต์
+แทนที่จะเพียงเพิ่มผู้ให้บริการ ช่องทาง หรือเครื่องมือ ฮุกเหล่านี้เป็นสัญญาทั่วไป
+โหมดแผนสามารถใช้งานได้ เช่นเดียวกับเวิร์กโฟลว์การอนุมัติ จุดควบคุมนโยบาย
+พื้นที่ทำงาน ตัวเฝ้าติดตามเบื้องหลัง ตัวช่วยตั้งค่า และ Plugin คู่หูสำหรับ UI
+
+| เมธอด                                                                               | สัญญาที่เป็นเจ้าของ                                                                                                                                           |
 | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `api.session.state.registerSessionExtension(...)`                                    | สถานะเซสชันที่ Plugin เป็นเจ้าของและเข้ากันได้กับ JSON ซึ่งถูกฉายผ่านเซสชันของ Gateway                                                                             |
-| `api.session.workflow.enqueueNextTurnInjection(...)`                                 | บริบทแบบคงทนและรับประกันครั้งเดียวพอดี ซึ่งถูกฉีดเข้าในเทิร์นถัดไปของเอเจนต์สำหรับหนึ่งเซสชัน                                                                             |
-| `api.registerTrustedToolPolicy(...)`                                                 | นโยบายเครื่องมือที่เชื่อถือได้ก่อน Plugin ซึ่งถูกควบคุมด้วย manifest และสามารถบล็อกหรือเขียนพารามิเตอร์เครื่องมือใหม่ได้                                                                        |
-| `api.registerToolMetadata(...)`                                                      | เมทาดาทาการแสดงผลของแค็ตตาล็อกเครื่องมือโดยไม่เปลี่ยนการติดตั้งใช้งานเครื่องมือ                                                                                     |
-| `api.registerCommand(...)`                                                           | คำสั่ง Plugin แบบมีขอบเขต; ผลลัพธ์คำสั่งสามารถตั้งค่า `continueAgent: true` หรือ `suppressReply: true`; คำสั่งเนทีฟของ Discord รองรับ `descriptionLocalizations` |
-| `api.session.controls.registerControlUiDescriptor(...)`                              | ตัวบรรยายการสนับสนุน Control UI สำหรับพื้นผิวเซสชัน เครื่องมือ รัน หรือการตั้งค่า                                                                           |
-| `api.lifecycle.registerRuntimeLifecycle(...)`                                        | คอลแบ็กการล้างข้อมูลสำหรับทรัพยากรรันไทม์ที่ Plugin เป็นเจ้าของในเส้นทางรีเซ็ต/ลบ/โหลดใหม่                                                                          |
-| `api.agent.events.registerAgentEventSubscription(...)`                               | การสมัครรับเหตุการณ์ที่ผ่านการทำให้ปลอดภัยแล้วสำหรับสถานะเวิร์กโฟลว์และมอนิเตอร์                                                                                              |
-| `api.runContext.setRunContext(...)` / `getRunContext(...)` / `clearRunContext(...)`  | สถานะชั่วคราวของ Plugin ต่อการรัน ซึ่งถูกล้างเมื่อวงจรชีวิตการรันสิ้นสุด                                                                                             |
-| `api.session.workflow.registerSessionSchedulerJob(...)`                              | เมทาดาทาการล้างข้อมูลสำหรับงานตัวจัดกำหนดการที่ Plugin เป็นเจ้าของ; ไม่ได้จัดกำหนดการงานหรือสร้างระเบียนงาน                                                            |
-| `api.session.workflow.sendSessionAttachment(...)`                                    | การส่งไฟล์แนบที่โฮสต์เป็นตัวกลาง เฉพาะแบบ bundled-only ไปยังเส้นทางเซสชัน direct-outbound ที่ใช้งานอยู่                                                            |
-| `api.session.workflow.scheduleSessionTurn(...)` / `unscheduleSessionTurnsByTag(...)` | เทิร์นเซสชันตามกำหนดเวลาที่มี Cron หนุนหลัง เฉพาะแบบ bundled-only รวมถึงการล้างข้อมูลตามแท็ก                                                                                    |
-| `api.session.controls.registerSessionAction(...)`                                    | แอ็กชันเซสชันแบบมีชนิดที่ไคลเอนต์สามารถส่งผ่าน Gateway ได้                                                                                             |
+| `api.session.state.registerSessionExtension(...)`                                    | สถานะเซสชันที่ Plugin เป็นเจ้าของและเข้ากันได้กับ JSON ซึ่งฉายผ่านเซสชันของ Gateway                                                                             |
+| `api.session.workflow.enqueueNextTurnInjection(...)`                                 | บริบทคงทนแบบครั้งเดียวพอดีที่แทรกลงในรอบถัดไปของเอเจนต์สำหรับหนึ่งเซสชัน                                                                                         |
+| `api.registerTrustedToolPolicy(...)`                                                 | นโยบายเครื่องมือที่เชื่อถือได้ก่อนถึง Plugin ซึ่งถูกควบคุมโดยไฟล์แมนิเฟสต์ และสามารถบล็อกหรือเขียนพารามิเตอร์เครื่องมือใหม่ได้                                          |
+| `api.registerToolMetadata(...)`                                                      | ข้อมูลเมตาสำหรับแสดงผลในแค็ตตาล็อกเครื่องมือโดยไม่เปลี่ยนการทำงานของเครื่องมือ                                                                                     |
+| `api.registerCommand(...)`                                                           | คำสั่ง Plugin ที่จำกัดขอบเขต ผลลัพธ์คำสั่งสามารถตั้งค่า `continueAgent: true` หรือ `suppressReply: true` ได้ คำสั่งเนทีฟของ Discord รองรับ `descriptionLocalizations` |
+| `api.session.controls.registerControlUiDescriptor(...)`                              | ตัวอธิบายส่วนร่วมใน UI ควบคุมสำหรับพื้นผิวเซสชัน เครื่องมือ การทำงาน การตั้งค่า หรือแท็บ                                                                              |
+| `api.lifecycle.registerRuntimeLifecycle(...)`                                        | คอลแบ็กทำความสะอาดทรัพยากรรันไทม์ที่ Plugin เป็นเจ้าของบนเส้นทางรีเซ็ต/ลบ/โหลดซ้ำ                                                                                     |
+| `api.agent.events.registerAgentEventSubscription(...)`                               | การสมัครรับเหตุการณ์ที่ผ่านการปรับให้ปลอดภัยสำหรับสถานะเวิร์กโฟลว์และตัวเฝ้าติดตาม                                                                                       |
+| `api.runContext.setRunContext(...)` / `getRunContext(...)` / `clearRunContext(...)`  | สถานะชั่วคราวของ Plugin ต่อการทำงาน ซึ่งล้างเมื่อวงจรชีวิตการทำงานสิ้นสุด                                                                                             |
+| `api.session.workflow.registerSessionSchedulerJob(...)`                              | ข้อมูลเมตาสำหรับทำความสะอาดงานตัวกำหนดเวลาที่ Plugin เป็นเจ้าของ ไม่ได้กำหนดเวลางานหรือสร้างระเบียนงาน                                                                  |
+| `api.session.workflow.sendSessionAttachment(...)`                                    | การส่งไฟล์แนบผ่านโฮสต์เฉพาะ Plugin ที่รวมมากับระบบ ไปยังเส้นทางเซสชันขาออกโดยตรงที่ใช้งานอยู่                                                                           |
+| `api.session.workflow.scheduleSessionTurn(...)` / `unscheduleSessionTurnsByTag(...)` | รอบเซสชันตามกำหนดเวลาที่ใช้ Cron รองรับสำหรับ Plugin ที่รวมมากับระบบเท่านั้น พร้อมการทำความสะอาดตามแท็ก                                                                   |
+| `api.session.controls.registerSessionAction(...)`                                    | การดำเนินการเซสชันแบบมีชนิดที่ไคลเอนต์สามารถส่งผ่าน Gateway ได้                                                                                                       |
 
-ใช้เนมสเปซที่จัดกลุ่มไว้สำหรับโค้ด Plugin ใหม่:
+ตัวอธิบาย `surface: "tab"` จะเพิ่มแท็บแถบด้านข้างลงใน UI ควบคุม ตัวอธิบายแท็บ
+ของ Plugin ที่ใช้งานอยู่จะถูกประกาศให้ไคลเอนต์แดชบอร์ดทราบในคำทักทายของ
+Gateway (`controlUiTabs`) ดังนั้นแท็บจะแสดงเฉพาะขณะที่เปิดใช้งาน Plugin อยู่
+Plugin ที่รวมมากับระบบอาจจัดส่งมุมมองแดชบอร์ดระดับเฟิร์สคลาสสำหรับแท็บของตน
+ส่วน Plugin อื่นสามารถตั้งค่า `path` เป็นเส้นทาง HTTP ของ Plugin (ดู
+`api.registerHttpRoute(...)`) ซึ่งแดชบอร์ดจะแสดงในเฟรมแบบแซนด์บ็อกซ์
+`icon` คือคำใบ้ชื่อไอคอนแดชบอร์ด `group` ใช้เลือกส่วนของแถบด้านข้าง
+(`control` หรือ `agent`) `order` ใช้เรียงลำดับระหว่างแท็บของ Plugin และ
+`requiredScopes` จะซ่อนแท็บจากการเชื่อมต่อที่ไม่มีขอบเขตสิทธิ์ของผู้ปฏิบัติงานเหล่านั้น:
+
+```typescript
+api.session.controls.registerControlUiDescriptor({
+  surface: "tab",
+  id: "logbook",
+  label: "Logbook",
+  description: "Your day as a timeline, built from screen snapshots.",
+  icon: "sun",
+  group: "control",
+  requiredScopes: ["operator.write"],
+});
+```
+
+ใช้เนมสเปซแบบจัดกลุ่มสำหรับโค้ด Plugin ใหม่:
 
 - `api.session.state.registerSessionExtension(...)`
 - `api.session.workflow.enqueueNextTurnInjection(...)`
@@ -220,8 +293,8 @@ gate นโยบาย workspace, monitor เบื้องหลัง, wizar
 - `api.runContext.setRunContext(...)` / `getRunContext(...)` / `clearRunContext(...)`
 - `api.lifecycle.registerRuntimeLifecycle(...)`
 
-เมธอดแบบแบนที่เทียบเท่ายังคงพร้อมใช้งานในฐานะนามแฝงความเข้ากันได้ที่เลิกใช้แล้ว
-สำหรับ Plugin ที่มีอยู่ อย่าเพิ่มโค้ด Plugin ใหม่ที่เรียก
+เมธอดแบบแบนที่เทียบเท่ายังคงพร้อมใช้งานในฐานะนามแฝงเพื่อความเข้ากันได้
+ที่เลิกแนะนำแล้วสำหรับ Plugin ที่มีอยู่ อย่าเพิ่มโค้ด Plugin ใหม่ที่เรียก
 `api.registerSessionExtension`, `api.enqueueNextTurnInjection`,
 `api.registerControlUiDescriptor`, `api.registerRuntimeLifecycle`,
 `api.registerAgentEventSubscription`, `api.emitAgentEvent`,
@@ -230,62 +303,67 @@ gate นโยบาย workspace, monitor เบื้องหลัง, wizar
 `api.sendSessionAttachment`, `api.scheduleSessionTurn` หรือ
 `api.unscheduleSessionTurnsByTag` โดยตรง
 
-`scheduleSessionTurn(...)` เป็นตัวช่วยตามขอบเขตเซสชันเหนือกว่าตัวจัดกำหนดการ Cron
-ของ Gateway Cron รับผิดชอบเวลาและสร้างระเบียนงานเบื้องหลังเมื่อ
-เทิร์นทำงาน; Plugin SDK จำกัดเฉพาะเซสชันเป้าหมาย การตั้งชื่อที่ Plugin เป็นเจ้าของ
-และการล้างข้อมูล ใช้ `api.runtime.tasks.managedFlows` ภายในเทิร์นที่จัดกำหนดการไว้
-เมื่องานนั้นต้องการสถานะ Task Flow หลายขั้นตอนแบบคงทน
+`scheduleSessionTurn(...)` เป็นเครื่องมืออำนวยความสะดวกระดับเซสชันที่ครอบ
+ตัวกำหนดเวลา Cron ของ Gateway โดย Cron เป็นเจ้าของการกำหนดเวลาและสร้าง
+ระเบียนงานเบื้องหลังเมื่อรอบทำงาน ส่วน Plugin SDK จำกัดเฉพาะเซสชันเป้าหมาย
+การตั้งชื่อที่ Plugin เป็นเจ้าของ และการทำความสะอาด ใช้
+`api.runtime.tasks.managedFlows` ภายในรอบตามกำหนดเวลาเมื่อตัวงานต้องการ
+สถานะ Task Flow หลายขั้นตอนที่คงทน
 
-สัญญาแยกอำนาจโดยเจตนา:
+สัญญาเหล่านี้จงใจแยกอำนาจออกจากกัน:
 
-- Plugin ภายนอกสามารถเป็นเจ้าของส่วนขยายเซสชัน ตัวบรรยาย UI คำสั่ง เมทาดาทาเครื่องมือ การฉีดเทิร์นถัดไป และฮุกปกติได้
-- นโยบายเครื่องมือที่เชื่อถือได้ทำงานก่อนฮุก `before_tool_call` ทั่วไปและเป็นที่เชื่อถือโดยโฮสต์ นโยบายแบบ bundled ทำงานก่อน; นโยบายของ Plugin ที่ติดตั้งต้องมีการเปิดใช้อย่างชัดเจนพร้อม id ภายในเครื่องใน
-  `contracts.trustedToolPolicies` และทำงานถัดไปตามลำดับการโหลด Plugin id นโยบาย
-  มีขอบเขตอยู่กับ Plugin ที่ลงทะเบียน
-- การเป็นเจ้าของคำสั่งที่สงวนไว้เป็นแบบ bundled-only Plugin ภายนอกควรใช้ชื่อคำสั่งหรือนามแฝงของตนเอง
-- `allowPromptInjection=false` ปิดใช้งานฮุกที่เปลี่ยน prompt รวมถึง
+- Plugin ภายนอกสามารถเป็นเจ้าของส่วนขยายเซสชัน ตัวอธิบาย UI คำสั่ง ข้อมูลเมตา
+  เครื่องมือ การแทรกในรอบถัดไป และฮุกทั่วไป
+- นโยบายเครื่องมือที่เชื่อถือได้ทำงานก่อนฮุก `before_tool_call` ทั่วไป และได้รับ
+  ความเชื่อถือจากโฮสต์ นโยบายที่รวมมากับระบบจะทำงานก่อน ส่วนนโยบายของ Plugin
+  ที่ติดตั้งต้องเปิดใช้งานอย่างชัดเจนพร้อมกับรหัสภายในของนโยบายเหล่านั้นใน
+  `contracts.trustedToolPolicies` และจะทำงานถัดไปตามลำดับการโหลด Plugin
+  รหัสนโยบายถูกจำกัดขอบเขตไว้ที่ Plugin ที่ลงทะเบียน
+- การเป็นเจ้าของคำสั่งที่สงวนไว้จำกัดเฉพาะ Plugin ที่รวมมากับระบบ Plugin ภายนอก
+  ควรใช้ชื่อคำสั่งหรือนามแฝงของตนเอง
+- `allowPromptInjection=false` ปิดใช้งานฮุกที่เปลี่ยนแปลงพรอมป์ รวมถึง
   `agent_turn_prepare`, `before_prompt_build`, `heartbeat_prompt_contribution`,
-  ฟิลด์ prompt จาก `before_agent_start` แบบเดิม และ
+  ฟิลด์พรอมป์จาก `before_agent_start` แบบเดิม และ
   `enqueueNextTurnInjection`
 
-ตัวอย่างผู้บริโภคที่ไม่ใช่ Plan:
+ตัวอย่างผู้ใช้งานที่ไม่ใช่โหมดแผน:
 
-| ต้นแบบ Plugin             | ฮุกที่ใช้                                                                                                                             |
-| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| เวิร์กโฟลว์การอนุมัติ            | ส่วนขยายเซสชัน การดำเนินคำสั่งต่อ การฉีดเทิร์นถัดไป ตัวบรรยาย UI                                                            |
-| ประตูควบคุมนโยบายงบประมาณ/พื้นที่ทำงาน | นโยบายเครื่องมือที่เชื่อถือได้ เมทาดาทาเครื่องมือ การฉายเซสชัน                                                                                 |
-| มอนิเตอร์วงจรชีวิตเบื้องหลัง | การล้างข้อมูลวงจรชีวิตรันไทม์ การสมัครรับเหตุการณ์เอเจนต์ การเป็นเจ้าของ/ล้างข้อมูลงานตัวจัดกำหนดการเซสชัน การสนับสนุน prompt Heartbeat ตัวบรรยาย UI |
-| ตัวช่วยตั้งค่าหรือตัวช่วยเริ่มต้นใช้งาน   | ส่วนขยายเซสชัน คำสั่งแบบมีขอบเขต ตัวบรรยาย Control UI                                                                              |
+| รูปแบบ Plugin                  | Hooks ที่ใช้                                                                                                                                        |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| เวิร์กโฟลว์การอนุมัติ            | ส่วนขยายเซสชัน, การดำเนินคำสั่งต่อ, การแทรกในรอบถัดไป, ตัวอธิบาย UI                                                                                              |
+| ด่านนโยบายงบประมาณ/พื้นที่ทำงาน   | นโยบายเครื่องมือที่เชื่อถือได้, เมทาดาทาเครื่องมือ, การฉายภาพเซสชัน                                                                                                  |
+| ตัวตรวจสอบวงจรชีวิตเบื้องหลัง      | การล้างข้อมูลวงจรชีวิตรันไทม์, การสมัครรับเหตุการณ์เอเจนต์, การเป็นเจ้าของ/ล้างข้อมูลตัวกำหนดเวลาเซสชัน, การสนับสนุนพรอมต์ Heartbeat, ตัวอธิบาย UI |
+| ตัวช่วยตั้งค่าหรือเริ่มต้นใช้งาน     | ส่วนขยายเซสชัน, คำสั่งแบบจำกัดขอบเขต, ตัวอธิบาย Control UI                                                                                                        |
 
 <Note>
-  เนมสเปซผู้ดูแลหลักที่สงวนไว้ (`config.*`, `exec.approvals.*`, `wizard.*`,
-  `update.*`) จะคงเป็น `operator.admin` เสมอ แม้ว่า Plugin จะพยายามกำหนด
-  ขอบเขตเมธอด Gateway ที่แคบกว่า ควรใช้คำนำหน้าเฉพาะ Plugin สำหรับ
-  เมธอดที่ Plugin เป็นเจ้าของ
+  เนมสเปซผู้ดูแลระบบหลักที่สงวนไว้ (`config.*`, `exec.approvals.*`, `wizard.*`,
+  `update.*`) จะคงเป็น `operator.admin` เสมอ แม้ว่า Plugin จะพยายามกำหนดขอบเขต
+  เมธอด Gateway ที่แคบกว่าก็ตาม สำหรับเมธอดที่ Plugin เป็นเจ้าของ ควรใช้คำนำหน้า
+  เฉพาะของ Plugin
 </Note>
 
 <Accordion title="เมื่อใดควรใช้มิดเดิลแวร์ผลลัพธ์เครื่องมือ">
-  Plugin แบบ bundled และ Plugin ที่ติดตั้งซึ่งเปิดใช้อย่างชัดเจนพร้อมสัญญา
-  manifest ที่ตรงกัน สามารถใช้ `api.registerAgentToolResultMiddleware(...)` เมื่อ
-  ต้องเขียนผลลัพธ์เครื่องมือใหม่หลังการดำเนินการและก่อนที่รันไทม์
-  จะป้อนผลลัพธ์นั้นกลับเข้าโมเดล นี่คือจุดเชื่อมต่อที่รันไทม์เป็นกลางและเชื่อถือได้
-  สำหรับตัวลดเอาต์พุตแบบอะซิงก์ เช่น tokenjuice
+  Plugin ที่รวมมาในระบบและ Plugin ที่ติดตั้งซึ่งเปิดใช้งานอย่างชัดเจนและมี
+  สัญญาแมนิเฟสต์ตรงกัน สามารถใช้ `api.registerAgentToolResultMiddleware(...)`
+  เมื่อต้องเขียนผลลัพธ์เครื่องมือใหม่หลังการดำเนินการและก่อนที่รันไทม์จะส่ง
+  ผลลัพธ์นั้นกลับไปยังโมเดล นี่คือจุดเชื่อมต่อที่เชื่อถือได้และเป็นกลางต่อรันไทม์
+  สำหรับตัวลดผลลัพธ์แบบอะซิงโครนัส เช่น tokenjuice
 
-Plugin ต้องประกาศ `contracts.agentToolResultMiddleware` สำหรับแต่ละรันไทม์เป้าหมาย
-เช่น `["openclaw", "codex"]` Plugin ที่ติดตั้งโดยไม่มี
-สัญญานั้น หรือไม่มีการเปิดใช้อย่างชัดเจน จะไม่สามารถลงทะเบียนมิดเดิลแวร์นี้ได้; ให้ใช้
-ฮุก Plugin ปกติของ OpenClaw สำหรับงานที่ไม่ต้องการจังหวะผลลัพธ์เครื่องมือก่อนโมเดล
-เส้นทางการลงทะเบียนโรงงานส่วนขยายแบบเก่า
-ที่มีเฉพาะ embedded-runner-only ถูกนำออกแล้ว
+Plugin ต้องประกาศ `contracts.agentToolResultMiddleware` สำหรับรันไทม์เป้าหมาย
+แต่ละรายการ เช่น `["openclaw", "codex"]` Plugin ที่ติดตั้งซึ่งไม่มีสัญญานั้น
+หรือไม่ได้เปิดใช้งานอย่างชัดเจน จะไม่สามารถลงทะเบียนมิดเดิลแวร์นี้ได้
+สำหรับงานที่ไม่ต้องการจังหวะผลลัพธ์เครื่องมือก่อนส่งเข้าโมเดล ให้ใช้ Hooks
+มาตรฐานของ Plugin OpenClaw ต่อไป เส้นทางการลงทะเบียนแฟกทอรีส่วนขยายแบบเดิม
+ที่ใช้ได้เฉพาะตัวรันแบบฝังถูกนำออกแล้ว
 </Accordion>
 
-### การลงทะเบียนการค้นพบ Gateway
+### การลงทะเบียนการค้นหา Gateway
 
-`api.registerGatewayDiscoveryService(...)` ให้ Plugin ประกาศ Gateway ที่ใช้งานอยู่
-บนทรานสปอร์ตการค้นพบภายในเครื่อง เช่น mDNS/Bonjour OpenClaw เรียก
-บริการนี้ระหว่างเริ่มต้น Gateway เมื่อเปิดใช้การค้นพบภายในเครื่อง ส่ง
-พอร์ต Gateway ปัจจุบันและข้อมูลคำใบ้ TXT ที่ไม่ใช่ความลับ และเรียกตัวจัดการ
-`stop` ที่ส่งคืนระหว่างปิด Gateway
+`api.registerGatewayDiscoveryService(...)` ช่วยให้ Plugin ประกาศ Gateway
+ที่กำลังทำงานอยู่ผ่านการขนส่งเพื่อการค้นหาภายในเครื่อง เช่น mDNS/Bonjour
+OpenClaw จะเรียกใช้บริการระหว่างการเริ่มต้น Gateway เมื่อเปิดใช้งานการค้นหา
+ภายในเครื่อง ส่งพอร์ต Gateway ปัจจุบันและข้อมูลคำใบ้ TXT ที่ไม่เป็นความลับ
+และเรียกตัวจัดการ `stop` ที่ส่งคืนมาระหว่างการปิด Gateway
 
 ```typescript
 api.registerGatewayDiscoveryService({
@@ -301,28 +379,28 @@ api.registerGatewayDiscoveryService({
 });
 ```
 
-Plugin การค้นพบ Gateway ต้องไม่ถือว่าค่า TXT ที่ประกาศเป็นความลับหรือ
-การยืนยันตัวตน การค้นพบเป็นคำใบ้การกำหนดเส้นทาง; การยืนยันตัวตนของ Gateway และการปักหมุด TLS ยังคง
-เป็นเจ้าของความเชื่อถือ
+Plugin การค้นหา Gateway ต้องไม่ถือว่าค่า TXT ที่ประกาศเป็นความลับหรือ
+การยืนยันตัวตน การค้นหาเป็นเพียงคำใบ้สำหรับการกำหนดเส้นทาง ส่วนการยืนยันตัวตน
+ของ Gateway และการปักหมุด TLS ยังคงเป็นกลไกที่กำหนดความเชื่อถือ
 
 ### เมทาดาทาการลงทะเบียน CLI
 
-`api.registerCli(registrar, opts?)` รับเมทาดาทาคำสั่งสองประเภท:
+`api.registerCli(registrar, opts?)` รองรับเมทาดาทาคำสั่งสองประเภท:
 
-- `commands`: ชื่อคำสั่งแบบชัดเจนที่ registrar เป็นเจ้าของ
-- `descriptors`: ตัวบรรยายคำสั่งขณะ parse ที่ใช้สำหรับความช่วยเหลือของ CLI,
-  การกำหนดเส้นทาง และการลงทะเบียน CLI ของ Plugin แบบ lazy
+- `commands`: ชื่อคำสั่งที่ชัดเจนซึ่งรีจิสตราร์เป็นเจ้าของ
+- `descriptors`: ตัวอธิบายคำสั่งขณะวิเคราะห์สำหรับความช่วยเหลือของ CLI,
+  การกำหนดเส้นทาง และการลงทะเบียน CLI ของ Plugin แบบโหลดเมื่อจำเป็น
 - `parentPath`: เส้นทางคำสั่งแม่แบบไม่บังคับสำหรับกลุ่มคำสั่งซ้อน เช่น
   `["nodes"]`
 
-สำหรับฟีเจอร์โหนดแบบจับคู่ ควรใช้
-`api.registerNodeCliFeature(registrar, opts?)` มันเป็น wrapper ขนาดเล็กรอบ
-`api.registerCli(..., { parentPath: ["nodes"] })` และทำให้คำสั่ง เช่น
-`openclaw nodes canvas` เป็นฟีเจอร์โหนดที่ Plugin เป็นเจ้าของอย่างชัดเจน
+สำหรับฟีเจอร์ Node ที่จับคู่แล้ว ควรใช้
+`api.registerNodeCliFeature(registrar, opts?)` ซึ่งเป็นตัวห่อขนาดเล็กรอบ
+`api.registerCli(..., { parentPath: ["nodes"] })` และทำให้คำสั่งอย่าง
+`openclaw nodes canvas` เป็นฟีเจอร์ Node ที่ Plugin เป็นเจ้าของอย่างชัดเจน
 
-หากคุณต้องการให้คำสั่ง Plugin ยังคงโหลดแบบ lazy ในเส้นทาง CLI รากตามปกติ
-ให้ระบุ `descriptors` ที่ครอบคลุมรากคำสั่งระดับบนสุดทุกตัวที่
-registrar นั้นเปิดเผย
+หากต้องการให้คำสั่งของ Plugin ยังคงโหลดเมื่อจำเป็นในเส้นทาง CLI รากมาตรฐาน
+ให้ระบุ `descriptors` ที่ครอบคลุมรากคำสั่งระดับบนสุดทุกคำสั่งที่รีจิสตราร์นั้น
+เปิดเผย
 
 ```typescript
 api.registerCli(
@@ -342,7 +420,7 @@ api.registerCli(
 );
 ```
 
-คำสั่งซ้อนจะได้รับคำสั่งแม่ที่แก้ไขแล้วเป็น `program`:
+คำสั่งซ้อนจะได้รับคำสั่งแม่ที่แปลงค่าแล้วในรูป `program`:
 
 ```typescript
 api.registerCli(
@@ -363,169 +441,196 @@ api.registerCli(
 );
 ```
 
-ใช้ `commands` เพียงอย่างเดียวเฉพาะเมื่อคุณไม่ต้องการการลงทะเบียน CLI รากแบบ lazy
-เส้นทางความเข้ากันได้แบบ eager นั้นยังรองรับอยู่ แต่ไม่ได้ติดตั้ง
-placeholder ที่มี descriptor หนุนหลังสำหรับการโหลดแบบ lazy ในขณะ parse
+ใช้ `commands` เพียงอย่างเดียวเฉพาะเมื่อไม่ต้องการการลงทะเบียน CLI รากแบบ
+โหลดเมื่อจำเป็น เส้นทางความเข้ากันได้แบบโหลดทันทีนี้ยังคงรองรับอยู่
+แต่จะไม่ติดตั้งตัวยึดตำแหน่งที่มี `descriptors` รองรับสำหรับการโหลดเมื่อจำเป็น
+ขณะวิเคราะห์
 
 ### การลงทะเบียนแบ็กเอนด์ CLI
 
-`api.registerCliBackend(...)` ให้ Plugin เป็นเจ้าของ config เริ่มต้นสำหรับแบ็กเอนด์
-AI CLI ภายในเครื่อง เช่น `claude-cli` หรือ `my-cli`
+`api.registerCliBackend(...)` ช่วยให้ Plugin เป็นเจ้าของการกำหนดค่าเริ่มต้น
+สำหรับแบ็กเอนด์ CLI ของ AI ภายในเครื่อง เช่น `claude-cli` หรือ `my-cli`
 
-- `id` ของแบ็กเอนด์จะกลายเป็นคำนำหน้าผู้ให้บริการใน refs ของโมเดล เช่น `my-cli/gpt-5`
-- `config` ของแบ็กเอนด์ใช้รูปแบบเดียวกับ `agents.defaults.cliBackends.<id>`
-- การกำหนดค่าของผู้ใช้ยังคงมีผลเหนือกว่า OpenClaw จะผสาน `agents.defaults.cliBackends.<id>` ทับค่าเริ่มต้นของ
-  plugin ก่อนเรียกใช้ CLI
-- ใช้ `normalizeConfig` เมื่อแบ็กเอนด์ต้องเขียนค่าความเข้ากันได้ใหม่หลังการผสาน
-  (เช่น การทำให้รูปแบบแฟล็กเก่าเป็นมาตรฐาน)
-- ใช้ `resolveExecutionArgs` สำหรับการเขียน argv ใหม่ตามขอบเขตคำขอ ซึ่งเป็นของ
-  ภาษาถิ่นของ CLI เช่น การแมประดับการคิดของ OpenClaw ไปยังแฟล็ก effort
-  แบบเนทีฟ hook จะได้รับ `ctx.executionMode`; ใช้ `"side-question"` เพื่อเพิ่ม
-  แฟล็กการแยกแบบเนทีฟของแบ็กเอนด์สำหรับการเรียก `/btw` ชั่วคราว หากแฟล็กเหล่านั้น
-  ปิดใช้เครื่องมือเนทีฟได้อย่างเชื่อถือได้สำหรับ CLI ที่โดยปกติเปิดใช้อยู่เสมอ ให้ประกาศ
+- `id` ของแบ็กเอนด์จะกลายเป็นคำนำหน้าผู้ให้บริการในการอ้างอิงโมเดล เช่น `my-cli/gpt-5`
+- `config` ของแบ็กเอนด์ใช้โครงสร้างเดียวกับ `agents.defaults.cliBackends.<id>`
+- การกำหนดค่าของผู้ใช้ยังคงมีลำดับความสำคัญสูงกว่า OpenClaw จะผสาน
+  `agents.defaults.cliBackends.<id>` ทับค่าเริ่มต้นของ Plugin ก่อนเรียกใช้ CLI
+- ใช้ `normalizeConfig` เมื่อแบ็กเอนด์ต้องเขียนรูปแบบใหม่เพื่อความเข้ากันได้
+  หลังการผสาน (เช่น การปรับรูปแบบแฟล็กเก่าให้เป็นมาตรฐาน)
+- ใช้ `resolveExecutionArgs` สำหรับการเขียน argv ใหม่ที่จำกัดขอบเขตตามคำขอ
+  และเป็นส่วนหนึ่งของรูปแบบภาษา CLI เช่น การแมประดับการคิดของ OpenClaw
+  ไปเป็นแฟล็กระดับความพยายามแบบเนทีฟ Hook จะได้รับ `ctx.executionMode`;
+  ใช้ `"side-question"` เพื่อเพิ่มแฟล็กการแยกแบบเนทีฟของแบ็กเอนด์สำหรับ
+  การเรียก `/btw` ชั่วคราว หากแฟล็กเหล่านั้นปิดใช้งานเครื่องมือเนทีฟได้
+  อย่างเชื่อถือได้สำหรับ CLI ที่ปกติเปิดเครื่องมือตลอดเวลา ให้ประกาศ
   `sideQuestionToolMode: "disabled"` ด้วย
+- แบ็กเอนด์ที่สามารถปิดใช้งานเครื่องมือเนทีฟทั้งหมดสำหรับการเรียกใช้เฉพาะครั้ง
+  อาจประกาศ `nativeToolMode: "selectable"` การเรียกแบบจำกัดจะส่งทูเพิล
+  `ctx.toolAvailability.native` ที่ว่าง พร้อมรายการอนุญาต MCP ที่แยกจากโฮสต์
+  อย่างเคร่งครัด; `resolveExecutionArgs` ต้องบังคับใช้ทั้งสองอย่างกับ argv
+  สุดท้ายสำหรับการเรียกใหม่หรือเรียกต่อ OpenClaw จะปฏิเสธโดยค่าเริ่มต้น
+  หากแบ็กเอนด์ไม่สามารถดำเนินการดังกล่าวได้
 
-สำหรับคู่มือการเขียนแบบครบวงจร โปรดดู
+สำหรับคู่มือการสร้างแบบครบวงจร โปรดดู
 [Plugin แบ็กเอนด์ CLI](/th/plugins/cli-backend-plugins)
 
-### สล็อตเฉพาะ
+### ช่องเฉพาะ
 
-| เมธอด                                     | สิ่งที่ลงทะเบียน                                                                                                                                                                                  |
-| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `api.registerContextEngine(id, factory)`   | เอนจินบริบท (ใช้งานได้ครั้งละหนึ่งรายการ) lifecycle callbacks จะได้รับ `runtimeSettings` เมื่อโฮสต์สามารถให้การวินิจฉัยโมเดล/ผู้ให้บริการ/โหมดได้; เอนจิน strict รุ่นเก่าจะถูกลองใหม่โดยไม่มีคีย์นั้น |
-| `api.registerMemoryCapability(capability)` | ความสามารถหน่วยความจำแบบรวม                                                                                                                                                                          |
-| `api.registerMemoryPromptSection(builder)` | ตัวสร้างส่วนพรอมป์หน่วยความจำ                                                                                                                                                                      |
-| `api.registerMemoryFlushPlan(resolver)`    | ตัวแก้แผน flush หน่วยความจำ                                                                                                                                                                         |
+| เมธอด                                     | สิ่งที่ลงทะเบียน                                                                                                                                                                                        |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `api.registerContextEngine(id, factory)`   | เอนจินบริบท (เปิดใช้งานได้ครั้งละหนึ่งรายการ) คอลแบ็กวงจรชีวิตจะได้รับ `runtimeSettings` เมื่อโฮสต์สามารถให้ข้อมูลวินิจฉัยโมเดล/ผู้ให้บริการ/โหมดได้ ส่วนเอนจินแบบเข้มงวดรุ่นเก่าจะถูกลองใหม่โดยไม่มีคีย์ดังกล่าว |
+| `api.registerMemoryCapability(capability)` | ความสามารถด้านหน่วยความจำแบบรวม                                                                                                                                                                          |
+| `api.registerMemoryPromptSection(builder)` | ตัวสร้างส่วนพรอมต์หน่วยความจำ                                                                                                                                                                             |
+| `api.registerMemoryFlushPlan(resolver)`    | ตัวแปลงค่าแผนการล้างหน่วยความจำ                                                                                                                                                                           |
 | `api.registerMemoryRuntime(runtime)`       | อะแดปเตอร์รันไทม์หน่วยความจำ                                                                                                                                                                             |
 
-### อะแดปเตอร์ embedding หน่วยความจำที่เลิกใช้แล้ว
+### อะแดปเตอร์การฝังหน่วยความจำที่เลิกใช้แล้ว
 
-| เมธอด                                         | สิ่งที่ลงทะเบียน                              |
-| ---------------------------------------------- | ---------------------------------------------- |
-| `api.registerMemoryEmbeddingProvider(adapter)` | อะแดปเตอร์ embedding หน่วยความจำสำหรับ plugin ที่ใช้งานอยู่ |
+| เมธอด                                         | สิ่งที่ลงทะเบียน                                  |
+| ---------------------------------------------- | ------------------------------------------------ |
+| `api.registerMemoryEmbeddingProvider(adapter)` | อะแดปเตอร์การฝังหน่วยความจำสำหรับ Plugin ที่ใช้งานอยู่ |
 
-- `registerMemoryCapability` คือ API plugin หน่วยความจำเฉพาะที่แนะนำ
-- `registerMemoryCapability` อาจเปิดเผย `publicArtifacts.listArtifacts(...)`
-  ด้วย เพื่อให้ plugin คู่ขนานสามารถใช้ artifact หน่วยความจำที่ส่งออกผ่าน
-  `openclaw/plugin-sdk/memory-host-core` แทนการเข้าถึงเลย์เอาต์ส่วนตัวของ
-  plugin หน่วยความจำเฉพาะ
+- `registerMemoryCapability` เป็น API แบบเฉพาะสำหรับ Plugin หน่วยความจำที่แนะนำ
+- `registerMemoryCapability` ยังอาจเปิดเผย `publicArtifacts.listArtifacts(...)`
+  เพื่อให้ Plugin คู่หูใช้สิ่งประดิษฐ์หน่วยความจำที่ส่งออกผ่าน
+  `openclaw/plugin-sdk/memory-host-core` แทนการเข้าถึงโครงสร้างภายในของ
+  Plugin หน่วยความจำเฉพาะโดยตรง
 - `registerMemoryPromptSection`, `registerMemoryFlushPlan` และ
-  `registerMemoryRuntime` คือ API plugin หน่วยความจำเฉพาะที่เข้ากันได้กับรุ่นเดิม
-- `MemoryFlushPlan.model` สามารถตรึง turn การ flush กับ ref `provider/model`
-  ที่แน่นอนได้ เช่น `ollama/qwen3:8b` โดยไม่สืบทอดเชน fallback ที่ใช้งานอยู่
-- `registerMemoryEmbeddingProvider` เลิกใช้แล้ว ผู้ให้บริการ embedding ใหม่
+  `registerMemoryRuntime` เป็น API แบบเฉพาะสำหรับ Plugin หน่วยความจำ
+  ที่รองรับความเข้ากันได้แบบเดิม
+- `MemoryFlushPlan.model` สามารถปักหมุดรอบการล้างไว้กับการอ้างอิง
+  `provider/model` ที่แน่นอน เช่น `ollama/qwen3:8b` โดยไม่สืบทอดสายโซ่
+  สำรองที่ใช้งานอยู่
+- `registerMemoryEmbeddingProvider` เลิกใช้แล้ว ผู้ให้บริการการฝังรายใหม่
   ควรใช้ `api.registerEmbeddingProvider(...)` และ
   `contracts.embeddingProviders`
-- ผู้ให้บริการเฉพาะหน่วยความจำที่มีอยู่ยังคงทำงานต่อไปในช่วงเวลาการย้ายระบบ
-  แต่รายงานการตรวจสอบ plugin จะรายงานสิ่งนี้เป็นหนี้ความเข้ากันได้สำหรับ
-  plugin ที่ไม่ได้ bundled
+- ผู้ให้บริการเฉพาะหน่วยความจำที่มีอยู่ยังคงทำงานต่อไปในช่วงการย้ายระบบ
+  แต่การตรวจสอบ Plugin จะรายงานสิ่งนี้เป็นภาระด้านความเข้ากันได้สำหรับ
+  Plugin ที่ไม่ได้รวมมาในระบบ
 
-### เหตุการณ์และ lifecycle
+### เหตุการณ์และวงจรชีวิต
 
-| เมธอด                                       | สิ่งที่ทำ                  |
-| -------------------------------------------- | ----------------------------- |
-| `api.on(hookName, handler, opts?)`           | lifecycle hook แบบมีชนิด          |
-| `api.onConversationBindingResolved(handler)` | callback การผูกการสนทนา |
+| เมธอด                                       | สิ่งที่ทำ                         |
+| -------------------------------------------- | -------------------------------- |
+| `api.on(hookName, handler, opts?)`           | Hook วงจรชีวิตแบบมีชนิดข้อมูล      |
+| `api.onConversationBindingResolved(handler)` | คอลแบ็กการแปลงค่าการผูกบทสนทนา      |
 
-ดู [Plugin hooks](/th/plugins/hooks) สำหรับตัวอย่าง ชื่อ hook ทั่วไป และความหมายของ guard
+ดูตัวอย่าง ชื่อ Hook ที่ใช้ทั่วไป และความหมายของตัวควบคุมได้ที่
+[Hooks ของ Plugin](/th/plugins/hooks)
 
-### ความหมายของการตัดสินใจใน hook
+### ความหมายของการตัดสินใจใน Hook
 
-`before_install` เป็น lifecycle hook ของรันไทม์ plugin ไม่ใช่พื้นผิวนโยบายการติดตั้งของผู้ปฏิบัติการ
-ใช้ `security.installPolicy` เมื่อการตัดสินใจอนุญาต/บล็อกต้องครอบคลุมเส้นทางติดตั้งหรืออัปเดตผ่าน CLI และ Gateway
+`before_install` เป็น Hook วงจรชีวิตรันไทม์ของ Plugin ไม่ใช่พื้นผิวนโยบาย
+การติดตั้งของผู้ดำเนินการ ใช้ `security.installPolicy` เมื่อการตัดสินใจ
+อนุญาต/บล็อกต้องครอบคลุมเส้นทางการติดตั้งหรืออัปเดตผ่าน CLI และ Gateway
 
-- `before_tool_call`: การคืนค่า `{ block: true }` ถือเป็นจุดสิ้นสุด เมื่อ handler ใดตั้งค่าแล้ว handler ที่มีลำดับความสำคัญต่ำกว่าจะถูกข้าม
-- `before_tool_call`: การคืนค่า `{ block: false }` ถือว่าไม่มีการตัดสินใจ (เหมือนกับการละ `block`) ไม่ใช่การ override
-- `before_install`: การคืนค่า `{ block: true }` ถือเป็นจุดสิ้นสุด เมื่อ handler ใดตั้งค่าแล้ว handler ที่มีลำดับความสำคัญต่ำกว่าจะถูกข้าม
-- `before_install`: การคืนค่า `{ block: false }` ถือว่าไม่มีการตัดสินใจ (เหมือนกับการละ `block`) ไม่ใช่การ override
-- `reply_dispatch`: การคืนค่า `{ handled: true, ... }` ถือเป็นจุดสิ้นสุด เมื่อ handler ใดอ้างสิทธิ์ dispatch แล้ว handler ที่มีลำดับความสำคัญต่ำกว่าและเส้นทาง dispatch โมเดลเริ่มต้นจะถูกข้าม
-- `message_sending`: การคืนค่า `{ cancel: true }` ถือเป็นจุดสิ้นสุด เมื่อ handler ใดตั้งค่าแล้ว handler ที่มีลำดับความสำคัญต่ำกว่าจะถูกข้าม
-- `message_sending`: การคืนค่า `{ cancel: false }` ถือว่าไม่มีการตัดสินใจ (เหมือนกับการละ `cancel`) ไม่ใช่การ override
-- `message_received`: ใช้ฟิลด์แบบมีชนิด `threadId` เมื่อคุณต้องการกำหนดเส้นทางเธรด/หัวข้อขาเข้า เก็บ `metadata` ไว้สำหรับข้อมูลเสริมเฉพาะช่องทาง
-- `message_sending`: ใช้ฟิลด์กำหนดเส้นทางแบบมีชนิด `replyToId` / `threadId` ก่อน fallback ไปยัง `metadata` เฉพาะช่องทาง
-- `gateway_start`: ใช้ `ctx.config`, `ctx.workspaceDir` และ `ctx.getCron?.()` สำหรับสถานะเริ่มต้นที่ Gateway เป็นเจ้าของ แทนการพึ่งพา hook ภายใน `gateway:startup`
-- `cron_changed`: สังเกตการเปลี่ยนแปลง lifecycle ของ cron ที่ Gateway เป็นเจ้าของ ใช้ `event.job?.state?.nextRunAtMs` และ `ctx.getCron?.()` เมื่อซิงก์ตัวตั้งเวลาปลุกภายนอก และคงให้ OpenClaw เป็นแหล่งข้อมูลจริงสำหรับการตรวจสอบกำหนดเวลาและการดำเนินการ
+- `before_tool_call`: การคืนค่า `{ block: true }` ถือเป็นจุดสิ้นสุด เมื่อแฮนด์เลอร์ใดตั้งค่านี้แล้ว ระบบจะข้ามแฮนด์เลอร์ที่มีลำดับความสำคัญต่ำกว่า
+- `before_tool_call`: การคืนค่า `{ block: false }` ถือว่าไม่มีการตัดสินใจ (เหมือนกับการละเว้น `block`) ไม่ใช่การเขียนทับ
+- `before_install`: การคืนค่า `{ block: true }` ถือเป็นจุดสิ้นสุด เมื่อแฮนด์เลอร์ใดตั้งค่านี้แล้ว ระบบจะข้ามแฮนด์เลอร์ที่มีลำดับความสำคัญต่ำกว่า
+- `before_install`: การคืนค่า `{ block: false }` ถือว่าไม่มีการตัดสินใจ (เหมือนกับการละเว้น `block`) ไม่ใช่การเขียนทับ
+- `reply_dispatch`: การคืนค่า `{ handled: true, ... }` ถือเป็นจุดสิ้นสุด เมื่อแฮนด์เลอร์ใดรับช่วงการส่งต่อแล้ว ระบบจะข้ามแฮนด์เลอร์ที่มีลำดับความสำคัญต่ำกว่าและเส้นทางการส่งต่อไปยังโมเดลเริ่มต้น
+- `message_sending`: การคืนค่า `{ cancel: true }` ถือเป็นจุดสิ้นสุด เมื่อแฮนด์เลอร์ใดตั้งค่านี้แล้ว ระบบจะข้ามแฮนด์เลอร์ที่มีลำดับความสำคัญต่ำกว่า
+- `message_sending`: การคืนค่า `{ cancel: false }` ถือว่าไม่มีการตัดสินใจ (เหมือนกับการละเว้น `cancel`) ไม่ใช่การเขียนทับ
+- `message_received`: ใช้ฟิลด์ `threadId` แบบมีชนิดข้อมูลเมื่อคุณต้องกำหนดเส้นทางเธรด/หัวข้อขาเข้า เก็บ `metadata` ไว้สำหรับข้อมูลเพิ่มเติมเฉพาะช่องทาง
+- `message_sending`: ใช้ฟิลด์กำหนดเส้นทาง `replyToId` / `threadId` แบบมีชนิดข้อมูลก่อนย้อนกลับไปใช้ `metadata` เฉพาะช่องทาง
+- `gateway_start`: ใช้ `ctx.config`, `ctx.workspaceDir` และ `ctx.getCron?.()` สำหรับสถานะเริ่มต้นที่ Gateway เป็นเจ้าของ แทนการพึ่งพาฮุกภายใน `gateway:startup` ณ จุดนี้ Cron อาจยังโหลดไม่เสร็จ
+- `cron_reconciled`: สร้างการฉายภาพ Cron ภายนอกแบบสมบูรณ์ขึ้นใหม่หลังเริ่มต้นหรือโหลดตัวกำหนดตารางเวลาใหม่ โดยมี `reason` และสถานะ `enabled` ที่มีผล รวมถึง `enabled: false` ขณะที่ `ctx.getCron?.()` จะคืนค่าตัวกำหนดตารางเวลาที่ผ่านการกระทบยอดอย่างถูกต้อง ส่ง `ctx.abortSignal` เข้าไปในงานฉายภาพแบบคงทน โดยสัญญาณจะยกเลิกเมื่อสแนปช็อตตัวกำหนดตารางเวลานั้นถูกแทนที่หรือ Gateway ปิด
+- `cron_changed`: เฝ้าสังเกตการเปลี่ยนแปลงวงจรชีวิต Cron ที่ Gateway เป็นเจ้าของ เหตุการณ์ `scheduled` และ `removed` เป็นคำใบ้การกระทบยอดหลังคอมมิต ไม่ใช่บันทึกเดลตาตามลำดับ `event.nextRunAtMs` ของเหตุการณ์ scheduled จะไม่มีอยู่เมื่องานไม่มีเวลาปลุกครั้งถัดไป ส่วนเหตุการณ์ removed ยังคงมีสแนปช็อตของงานที่ถูกลบ
+
+ตัวกำหนดตารางเวลาปลุกภายนอกควรหน่วงหรือรวมเหตุการณ์ `cron_changed`
+จากนั้นอ่านมุมมองแบบคงทนทั้งหมดอีกครั้งจากตัวกำหนดตารางเวลาที่
+`cron_reconciled` บันทึกไว้ล่าสุด อย่านำตัวกำหนดตารางเวลาจากบริบท `cron_changed` มาใช้:
+คำใบ้ที่แยกออกมาจากตัวกำหนดตารางเวลารุ่นเก่าอาจทับซ้อนกับการโหลดใหม่ในภายหลัง
+
+ใช้ `cron_reconciled` เป็นตัวกระตุ้นสแนปช็อตแบบสมบูรณ์สำหรับสถานะแบบคงทนที่โหลดเมื่อ
+Gateway เริ่มต้นหรือเมื่อตัวกำหนดตารางเวลาถูกแทนที่ เหตุการณ์นี้จะไม่ถูกเล่นซ้ำสำหรับการ
+โหลดใหม่แบบร้อนเฉพาะ Plugin แฮนด์เลอร์การสังเกตทำงานแบบขนาน และการส่งแบบ
+เริ่มแล้วไม่รอผลอาจทับซ้อนกันได้ ดังนั้นผู้ใช้งานต้องไม่พึ่งพาลำดับการเสร็จสิ้นของเหตุการณ์
+ให้ OpenClaw เป็นแหล่งข้อมูลจริงสำหรับการตรวจสอบกำหนดเวลาและการดำเนินการ
+
+สำหรับอะแดปเตอร์ที่ทำงานได้ครั้งละหนึ่งรายการ พร้อมการแทนที่แบบคงทน การลองใหม่/หน่วงเวลาแบบถอยหลัง และการ
+ปิดระบบอย่างเรียบร้อย โปรดดู [การฉายภาพ Cron ภายนอกอย่างปลอดภัย](/th/plugins/hooks#safe-external-cron-projection)
 
 ### ฟิลด์อ็อบเจ็กต์ API
 
 | ฟิลด์                    | ชนิด                      | คำอธิบาย                                                                                 |
 | ------------------------ | ------------------------- | ------------------------------------------------------------------------------------------- |
-| `api.id`                 | `string`                  | id ของ Plugin                                                                                   |
+| `api.id`                 | `string`                  | รหัส Plugin                                                                                   |
 | `api.name`               | `string`                  | ชื่อที่แสดง                                                                                |
 | `api.version`            | `string?`                 | เวอร์ชัน Plugin (ไม่บังคับ)                                                                   |
 | `api.description`        | `string?`                 | คำอธิบาย Plugin (ไม่บังคับ)                                                               |
-| `api.source`             | `string`                  | พาธซอร์สของ Plugin                                                                          |
-| `api.rootDir`            | `string?`                 | ไดเรกทอรีรูทของ Plugin (ไม่บังคับ)                                                            |
-| `api.config`             | `OpenClawConfig`          | snapshot การกำหนดค่าปัจจุบัน (snapshot รันไทม์ในหน่วยความจำที่ใช้งานอยู่เมื่อมีให้ใช้)                  |
+| `api.source`             | `string`                  | พาธต้นทางของ Plugin                                                                          |
+| `api.rootDir`            | `string?`                 | ไดเรกทอรีรากของ Plugin (ไม่บังคับ)                                                            |
+| `api.config`             | `OpenClawConfig`          | สแนปช็อตการกำหนดค่าปัจจุบัน (สแนปช็อตรันไทม์ในหน่วยความจำที่ใช้งานอยู่เมื่อมี)                  |
 | `api.pluginConfig`       | `Record<string, unknown>` | การกำหนดค่าเฉพาะ Plugin จาก `plugins.entries.<id>.config`                                   |
 | `api.runtime`            | `PluginRuntime`           | [ตัวช่วยรันไทม์](/th/plugins/sdk-runtime)                                                     |
-| `api.logger`             | `PluginLogger`            | logger ตามขอบเขต (`debug`, `info`, `warn`, `error`)                                            |
-| `api.registrationMode`   | `PluginRegistrationMode`  | โหมดโหลดปัจจุบัน; `"setup-runtime"` คือช่วงเริ่มต้น/ตั้งค่าแบบเบาก่อน entry เต็ม |
-| `api.resolvePath(input)` | `(string) => string`      | แก้พาธที่สัมพันธ์กับรูทของ plugin                                                        |
+| `api.logger`             | `PluginLogger`            | ตัวบันทึกที่จำกัดขอบเขต (`debug`, `info`, `warn`, `error`)                                            |
+| `api.registrationMode`   | `PluginRegistrationMode`  | โหมดการโหลดปัจจุบัน โดย `"setup-runtime"` คือช่วงเริ่มต้น/ตั้งค่าแบบเบาก่อนโหลดรายการเต็ม |
+| `api.resolvePath(input)` | `(string) => string`      | แก้ไขพาธโดยอิงจากรากของ Plugin                                                        |
 
-## ข้อตกลงของโมดูลภายใน
+## ข้อตกลงโมดูลภายใน
 
-ภายใน plugin ของคุณ ให้ใช้ไฟล์ barrel ภายในสำหรับการนำเข้า:
+ภายใน Plugin ของคุณ ให้ใช้ไฟล์รวมการส่งออกภายในเครื่องสำหรับการนำเข้าภายใน:
 
-```
+```text
 my-plugin/
-  api.ts            # Public exports for external consumers
-  runtime-api.ts    # Internal-only runtime exports
-  index.ts          # Plugin entry point
-  setup-entry.ts    # Lightweight setup-only entry (optional)
+  api.ts            # การส่งออกสาธารณะสำหรับผู้ใช้ภายนอก
+  runtime-api.ts    # การส่งออกรันไทม์สำหรับใช้ภายในเท่านั้น
+  index.ts          # จุดเริ่มต้นของ Plugin
+  setup-entry.ts    # จุดเริ่มต้นสำหรับการตั้งค่าเท่านั้นแบบเบา (ไม่บังคับ)
 ```
 
 <Warning>
-  ห้ามนำเข้า plugin ของคุณเองผ่าน `openclaw/plugin-sdk/<your-plugin>`
-  จากโค้ด production ให้กำหนดเส้นทางการนำเข้าภายในผ่าน `./api.ts` หรือ
+  ห้ามนำเข้า Plugin ของคุณเองผ่าน `openclaw/plugin-sdk/<your-plugin>`
+  จากโค้ดที่ใช้งานจริง ให้กำหนดเส้นทางการนำเข้าภายในผ่าน `./api.ts` หรือ
   `./runtime-api.ts` พาธ SDK เป็นสัญญาภายนอกเท่านั้น
 </Warning>
 
-พื้นผิวสาธารณะของ plugin แบบ bundled ที่โหลดผ่าน facade (`api.ts`, `runtime-api.ts`,
-`index.ts`, `setup-entry.ts` และไฟล์ entry สาธารณะที่คล้ายกัน) จะเลือกใช้
-snapshot การกำหนดค่ารันไทม์ที่ใช้งานอยู่เมื่อ OpenClaw กำลังทำงานแล้ว หากยังไม่มี
-snapshot รันไทม์ จะ fallback ไปยังไฟล์การกำหนดค่าที่ resolve แล้วบนดิสก์
-facade ของ plugin bundled ที่แพ็กเกจแล้วควรโหลดผ่าน loader facade ของ plugin
-ของ OpenClaw; การนำเข้าโดยตรงจาก `dist/extensions/...` จะข้าม manifest
-และการตรวจสอบ sidecar ของรันไทม์ที่การติดตั้งแบบแพ็กเกจใช้สำหรับโค้ดที่ plugin เป็นเจ้าของ
+พื้นผิวสาธารณะของ Plugin แบบรวมที่โหลดผ่านฟาซาด (`api.ts`, `runtime-api.ts`,
+`index.ts`, `setup-entry.ts` และไฟล์รายการสาธารณะที่คล้ายกัน) จะเลือกใช้
+สแนปช็อตการกำหนดค่ารันไทม์ที่ทำงานอยู่เมื่อ OpenClaw กำลังทำงานอยู่ หากยังไม่มีสแนปช็อต
+รันไทม์ ระบบจะย้อนกลับไปใช้ไฟล์การกำหนดค่าบนดิสก์ที่แก้ไขแล้ว
+ควรโหลดฟาซาดของ Plugin แบบรวมที่แพ็กเกจแล้วผ่านตัวโหลดฟาซาด Plugin ของ OpenClaw
+การนำเข้าโดยตรงจาก `dist/extensions/...` จะข้ามการตรวจสอบแมนิเฟสต์
+และไซด์คาร์รันไทม์ที่การติดตั้งแบบแพ็กเกจใช้กับโค้ดที่ Plugin เป็นเจ้าของ
 
-Plugin ผู้ให้บริการสามารถเปิดเผย contract barrel ภายใน plugin ที่แคบได้ เมื่อ
-ตัวช่วยนั้นตั้งใจให้เฉพาะผู้ให้บริการและยังไม่ควรอยู่ใน subpath SDK ทั่วไป
-ตัวอย่าง bundled:
+Plugin ผู้ให้บริการสามารถเปิดเผยไฟล์รวมสัญญาภายใน Plugin แบบจำกัดได้ เมื่อ
+ตัวช่วยนั้นเจาะจงกับผู้ให้บริการโดยตั้งใจและยังไม่เหมาะที่จะอยู่ในพาธย่อย SDK ทั่วไป
+ตัวอย่างแบบรวม:
 
-- **Anthropic**: seam สาธารณะ `api.ts` / `contract-api.ts` สำหรับตัวช่วยสตรีม
-  beta-header ของ Claude และ `service_tier`
+- **Anthropic**: จุดเชื่อมต่อสาธารณะ `api.ts` / `contract-api.ts` สำหรับตัวช่วยสตรีม
+  ส่วนหัวเบต้าของ Claude และ `service_tier`
 - **`@openclaw/openai-provider`**: `api.ts` ส่งออกตัวสร้างผู้ให้บริการ
-  ตัวช่วยโมเดลเริ่มต้น และตัวสร้างผู้ให้บริการ realtime
+  ตัวช่วยโมเดลเริ่มต้น และตัวสร้างผู้ให้บริการแบบเรียลไทม์
 - **`@openclaw/openrouter-provider`**: `api.ts` ส่งออกตัวสร้างผู้ให้บริการ
-  พร้อมตัวช่วย onboarding/การกำหนดค่า
+  พร้อมตัวช่วยเริ่มต้นใช้งาน/การกำหนดค่า
 
 <Warning>
-  โค้ด production ของ extension ควรหลีกเลี่ยงการนำเข้า `openclaw/plugin-sdk/<other-plugin>`
-  ด้วย หากตัวช่วยถูกแชร์จริง ให้ยกระดับไปยัง subpath SDK ที่เป็นกลาง
+  โค้ดส่วนขยายที่ใช้งานจริงควรหลีกเลี่ยงการนำเข้า `openclaw/plugin-sdk/<other-plugin>`
+  เช่นกัน หากตัวช่วยใช้ร่วมกันอย่างแท้จริง ให้ยกระดับไปยังพาธย่อย SDK ที่เป็นกลาง
   เช่น `openclaw/plugin-sdk/speech`, `.../provider-model-shared` หรือพื้นผิวอื่น
-  ที่มุ่งตามความสามารถ แทนการผูก plugin สองตัวเข้าด้วยกัน
+  ที่เน้นความสามารถ แทนการผูก Plugin สองตัวเข้าด้วยกัน
 </Warning>
 
 ## ที่เกี่ยวข้อง
 
 <CardGroup cols={2}>
-  <Card title="Entry points" icon="door-open" href="/th/plugins/sdk-entrypoints">
+  <Card title="จุดเริ่มต้น" icon="door-open" href="/th/plugins/sdk-entrypoints">
     ตัวเลือก `definePluginEntry` และ `defineChannelPluginEntry`
   </Card>
-  <Card title="Runtime helpers" icon="gears" href="/th/plugins/sdk-runtime">
-    ข้อมูลอ้างอิง namespace `api.runtime` แบบเต็ม
+  <Card title="ตัวช่วยรันไทม์" icon="gears" href="/th/plugins/sdk-runtime">
+    เอกสารอ้างอิงเนมสเปซ `api.runtime` ฉบับเต็ม
   </Card>
-  <Card title="Setup and config" icon="sliders" href="/th/plugins/sdk-setup">
-    การแพ็กเกจ manifest และ schema การกำหนดค่า
+  <Card title="การตั้งค่าและการกำหนดค่า" icon="sliders" href="/th/plugins/sdk-setup">
+    การแพ็กเกจ แมนิเฟสต์ และสคีมาการกำหนดค่า
   </Card>
-  <Card title="Testing" icon="vial" href="/th/plugins/sdk-testing">
-    ยูทิลิตีทดสอบและกฎ lint
+  <Card title="การทดสอบ" icon="vial" href="/th/plugins/sdk-testing">
+    ยูทิลิตีการทดสอบและกฎลินต์
   </Card>
-  <Card title="SDK migration" icon="arrows-turn-right" href="/th/plugins/sdk-migration">
+  <Card title="การย้าย SDK" icon="arrows-turn-right" href="/th/plugins/sdk-migration">
     การย้ายจากพื้นผิวที่เลิกใช้แล้ว
   </Card>
-  <Card title="Plugin internals" icon="diagram-project" href="/th/plugins/architecture">
+  <Card title="ส่วนภายในของ Plugin" icon="diagram-project" href="/th/plugins/architecture">
     สถาปัตยกรรมเชิงลึกและโมเดลความสามารถ
   </Card>
 </CardGroup>

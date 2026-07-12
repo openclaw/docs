@@ -1,36 +1,36 @@
 ---
 read_when:
-    - Claude Code veya Claude Desktop'tan geçiş yapıyor ve talimatları, MCP sunucularını ve Skills'i korumak istiyorsunuz
-    - OpenClaw’un neleri otomatik olarak içe aktardığını ve nelerin yalnızca arşivde kaldığını anlamanız gerekir
-summary: Claude Code ve Claude Desktop yerel durumunu önizlemeli bir içe aktarmayla OpenClaw'a taşıyın
-title: Claude'dan geçiş
+    - Claude Code veya Claude Desktop'tan geçiş yapıyorsunuz ve talimatları, MCP sunucularını ve Skills'i korumak istiyorsunuz
+    - OpenClaw'un neleri otomatik olarak içe aktardığını ve nelerin yalnızca arşivde kaldığını anlamanız gerekir
+summary: Önizlemeli içe aktarma ile Claude Code ve Claude Desktop yerel durumunu OpenClaw'a taşıyın
+title: Claude'dan Geçiş
 x-i18n:
-    generated_at: "2026-04-30T09:29:59Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:25:07Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1b44eda85f3a3714d7d360d04fdd2c99a692fa6491f12e73847c5f08d702a62c
+    source_hash: f31088b749a1bebe39b16f519b1817ffeb71ca31e8cbf46fd59db6ff603dbe0f
     source_path: install/migrating-claude.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw, yerel Claude durumunu paketle birlikte gelen Claude migration sağlayıcısı aracılığıyla içe aktarır. Sağlayıcı, durumu değiştirmeden önce her öğeyi önizler, planlarda ve raporlarda gizli bilgileri redakte eder ve uygulamadan önce doğrulanmış bir yedek oluşturur.
+OpenClaw, yerel Claude durumunu paketle gelen Claude geçiş sağlayıcısı aracılığıyla içe aktarır. Sağlayıcı, durumu değiştirmeden önce her öğenin önizlemesini gösterir, planlarda ve raporlarda gizli bilgileri maskeler ve uygulamadan önce doğrulanmış bir yedek oluşturur.
 
 <Note>
-Onboarding içe aktarımları yeni bir OpenClaw kurulumu gerektirir. Zaten yerel OpenClaw durumunuz varsa önce yapılandırmayı, kimlik bilgilerini, oturumları ve çalışma alanını sıfırlayın veya planı gözden geçirdikten sonra `--overwrite` ile doğrudan `openclaw migrate` kullanın.
+İlk kurulum sırasında içe aktarma, yeni bir OpenClaw kurulumu gerektirir. Zaten yerel OpenClaw durumunuz varsa önce yapılandırmayı, kimlik bilgilerini, oturumları ve çalışma alanını sıfırlayın ya da planı inceledikten sonra `--overwrite` ile doğrudan `openclaw migrate` kullanın.
 </Note>
 
 ## İçe aktarmanın iki yolu
 
 <Tabs>
-  <Tab title="Onboarding wizard">
-    Sihirbaz, yerel Claude durumunu algıladığında Claude seçeneğini sunar.
+  <Tab title="İlk kurulum sihirbazı">
+    Sihirbaz, yerel Claude durumu algıladığında Claude seçeneğini sunar.
 
     ```bash
     openclaw onboard --flow import
     ```
 
-    Ya da belirli bir kaynağı gösterin:
+    Ya da belirli bir kaynak belirtin:
 
     ```bash
     openclaw onboard --import-from claude --import-source ~/.claude
@@ -38,7 +38,7 @@ Onboarding içe aktarımları yeni bir OpenClaw kurulumu gerektirir. Zaten yerel
 
   </Tab>
   <Tab title="CLI">
-    Betikli veya tekrarlanabilir çalıştırmalar için `openclaw migrate` kullanın. Tam başvuru için [`openclaw migrate`](/tr/cli/migrate) sayfasına bakın.
+    Betikleştirilmiş veya tekrarlanabilir çalıştırmalar için `openclaw migrate` kullanın. Tam başvuru için [`openclaw migrate`](/tr/cli/migrate) sayfasına bakın.
 
     ```bash
     openclaw migrate claude --dry-run
@@ -50,57 +50,57 @@ Onboarding içe aktarımları yeni bir OpenClaw kurulumu gerektirir. Zaten yerel
   </Tab>
 </Tabs>
 
-## Neler içe aktarılır
+## İçe aktarılanlar
 
 <AccordionGroup>
-  <Accordion title="Instructions and memory">
-    - Proje `CLAUDE.md` ve `.claude/CLAUDE.md` içeriği OpenClaw ajan çalışma alanındaki `AGENTS.md` dosyasına kopyalanır veya eklenir.
-    - Kullanıcı `~/.claude/CLAUDE.md` içeriği çalışma alanındaki `USER.md` dosyasına eklenir.
+  <Accordion title="Talimatlar ve bellek">
+    - Projedeki `CLAUDE.md` ve `.claude/CLAUDE.md` içeriği, OpenClaw aracısının çalışma alanındaki `AGENTS.md` dosyasına kopyalanır veya eklenir.
+    - Kullanıcının `~/.claude/CLAUDE.md` içeriği, çalışma alanındaki `USER.md` dosyasına eklenir.
 
   </Accordion>
-  <Accordion title="MCP servers">
-    MCP sunucu tanımları, mevcut olduğunda proje `.mcp.json`, Claude Code `~/.claude.json` ve Claude Desktop `claude_desktop_config.json` dosyalarından içe aktarılır.
+  <Accordion title="MCP sunucuları">
+    MCP sunucu tanımları, mevcut olduklarında projedeki `.mcp.json`, Claude Code `~/.claude.json` ve Claude Desktop `claude_desktop_config.json` dosyalarından içe aktarılır.
   </Accordion>
-  <Accordion title="Skills and commands">
-    - `SKILL.md` dosyası olan Claude skills, OpenClaw çalışma alanı skills dizinine kopyalanır.
-    - `.claude/commands/` veya `~/.claude/commands/` altındaki Claude komut Markdown dosyaları, `disable-model-invocation: true` ile OpenClaw skills öğelerine dönüştürülür.
+  <Accordion title="Skills ve komutlar">
+    - `SKILL.md` dosyası bulunan Claude Skills öğeleri, OpenClaw çalışma alanının Skills dizinine kopyalanır.
+    - `.claude/commands/` veya `~/.claude/commands/` altındaki Claude komut Markdown dosyaları, `disable-model-invocation: true` ayarlı OpenClaw Skills öğelerine dönüştürülür.
 
   </Accordion>
 </AccordionGroup>
 
-## Neler yalnızca arşiv olarak kalır
+## Yalnızca arşivde kalanlar
 
-Sağlayıcı bunları elle gözden geçirmek üzere migration raporuna kopyalar, ancak canlı OpenClaw yapılandırmasına **yüklemez**:
+Sağlayıcı, elle incelenmeleri için bunları geçiş raporuna kopyalar ancak canlı OpenClaw yapılandırmasına **yüklemez**:
 
-- Claude hook'ları
+- Claude kancaları
 - Claude izinleri ve geniş araç izin listeleri
 - Claude ortam varsayılanları
 - `CLAUDE.local.md`
 - `.claude/rules/`
-- `.claude/agents/` veya `~/.claude/agents/` altındaki Claude alt ajanları
+- `.claude/agents/` veya `~/.claude/agents/` altındaki Claude alt aracıları
 - Claude Code önbellekleri, planları ve proje geçmişi dizinleri
 - Claude Desktop uzantıları ve işletim sisteminde saklanan kimlik bilgileri
 
-OpenClaw hook'ları yürütmeyi, izin listelerine güvenmeyi veya opak OAuth ve Desktop kimlik bilgisi durumunu otomatik olarak çözmeyi reddeder. İhtiyacınız olanları arşivi gözden geçirdikten sonra elle taşıyın.
+OpenClaw; kancaları çalıştırmayı, izin listelerine güvenmeyi veya anlaşılmaz OAuth ve Desktop kimlik bilgisi durumunu otomatik olarak çözmeyi reddeder. Arşivi inceledikten sonra ihtiyaç duyduklarınızı elle taşıyın.
 
 ## Kaynak seçimi
 
-`--from` olmadan OpenClaw, `~/.claude` konumundaki varsayılan Claude Code ana dizinini, örneklenen Claude Code `~/.claude.json` durum dosyasını ve macOS üzerindeki Claude Desktop MCP yapılandırmasını inceler.
+OpenClaw, `--from` kullanılmadığında `~/.claude` konumundaki varsayılan Claude Code ana dizinini, örneklenen Claude Code `~/.claude.json` durum dosyasını ve macOS'taki Claude Desktop MCP yapılandırmasını inceler.
 
-`--from` bir proje kökünü gösterdiğinde OpenClaw yalnızca o projenin `CLAUDE.md`, `.claude/settings.json`, `.claude/commands/`, `.claude/skills/` ve `.mcp.json` gibi Claude dosyalarını içe aktarır. Proje kökü içe aktarımı sırasında global Claude ana dizininizi okumaz.
+`--from` bir proje kökünü gösterdiğinde OpenClaw yalnızca o projeye ait `CLAUDE.md`, `.claude/settings.json`, `.claude/commands/`, `.claude/skills/` ve `.mcp.json` gibi Claude dosyalarını içe aktarır. Proje kökü içe aktarımı sırasında genel Claude ana dizininizi okumaz.
 
 ## Önerilen akış
 
 <Steps>
-  <Step title="Preview the plan">
+  <Step title="Planın önizlemesini görüntüleyin">
     ```bash
     openclaw migrate claude --dry-run
     ```
 
-    Plan; çakışmalar, atlanan öğeler ve iç içe MCP `env` veya `headers` alanlarından redakte edilen hassas değerler dahil olmak üzere değişecek her şeyi listeler.
+    Plan; çakışmalar, atlanan öğeler ve iç içe MCP `env` veya `headers` alanlarında maskelenen hassas değerler dâhil olmak üzere değişecek her şeyi listeler.
 
   </Step>
-  <Step title="Apply with backup">
+  <Step title="Yedek alarak uygulayın">
     ```bash
     openclaw migrate apply claude --yes
     ```
@@ -108,34 +108,34 @@ OpenClaw hook'ları yürütmeyi, izin listelerine güvenmeyi veya opak OAuth ve 
     OpenClaw, uygulamadan önce bir yedek oluşturur ve doğrular.
 
   </Step>
-  <Step title="Run doctor">
+  <Step title="Doctor'ı çalıştırın">
     ```bash
     openclaw doctor
     ```
 
-    [Doctor](/tr/gateway/doctor), içe aktarımdan sonra yapılandırma veya durum sorunlarını denetler.
+    [Doctor](/tr/gateway/doctor), içe aktarma sonrasında yapılandırma veya durum sorunlarını denetler.
 
   </Step>
-  <Step title="Restart and verify">
+  <Step title="Yeniden başlatın ve doğrulayın">
     ```bash
     openclaw gateway restart
     openclaw status
     ```
 
-    Gateway'in sağlıklı olduğunu ve içe aktarılan talimatlarınızın, MCP sunucularınızın ve skills öğelerinizin yüklendiğini doğrulayın.
+    Gateway'in sağlıklı olduğunu ve içe aktarılan talimatlarınızın, MCP sunucularınızın ve Skills öğelerinizin yüklendiğini doğrulayın.
 
   </Step>
 </Steps>
 
-## Çakışma yönetimi
+## Çakışmaların işlenmesi
 
-Plan çakışmalar bildirdiğinde uygulama devam etmeyi reddeder (hedefte zaten bir dosya veya yapılandırma değeri vardır).
+Plan çakışma bildirdiğinde (hedefte zaten bir dosya veya yapılandırma değeri bulunduğunda) uygulama devam etmeyi reddeder.
 
 <Warning>
-`--overwrite` ile yalnızca mevcut hedefi değiştirmek bilinçli bir tercihse yeniden çalıştırın. Sağlayıcılar, üzerine yazılan dosyalar için migration raporu dizininde yine de öğe düzeyinde yedekler yazabilir.
+Yalnızca mevcut hedefi değiştirmek istiyorsanız komutu `--overwrite` ile yeniden çalıştırın. Sağlayıcılar, üzerine yazılan dosyalar için geçiş raporu dizinine yine de öğe düzeyinde yedekler yazabilir.
 </Warning>
 
-Yeni bir OpenClaw kurulumu için çakışmalar olağan değildir. Genellikle içe aktarımı, zaten kullanıcı düzenlemeleri olan bir kurulumda yeniden çalıştırdığınızda ortaya çıkarlar.
+Yeni bir OpenClaw kurulumunda çakışmalar olağan değildir. Bunlar genellikle içe aktarmayı, kullanıcı düzenlemeleri bulunan bir kurulumda yeniden çalıştırdığınızda ortaya çıkar.
 
 ## Otomasyon için JSON çıktısı
 
@@ -144,30 +144,30 @@ openclaw migrate claude --dry-run --json
 openclaw migrate apply claude --json --yes
 ```
 
-`--json` ile ve `--yes` olmadan, uygulama planı yazdırır ve durumu değiştirmez. Bu, CI ve paylaşılan betikler için en güvenli moddur.
+Etkileşimli bir terminal dışında `migrate apply` için `--yes` gereklidir; bu seçenek olmadan OpenClaw uygulama yapmak yerine hata verir. Bu nedenle betikler ve CI, `--yes` seçeneğini açıkça iletmelidir. Önce `--dry-run --json` ile önizleme yapın, ardından plan doğru göründüğünde `--json --yes` ile uygulayın.
 
 ## Sorun giderme
 
 <AccordionGroup>
-  <Accordion title="Claude state lives outside ~/.claude">
-    `--from /actual/path` (CLI) veya `--import-source /actual/path` (onboarding) iletin.
+  <Accordion title="Claude durumu ~/.claude dışında bulunuyor">
+    `--from /actual/path` (CLI) veya `--import-source /actual/path` (ilk kurulum) seçeneğini iletin.
   </Accordion>
-  <Accordion title="Onboarding refuses to import on an existing setup">
-    Onboarding içe aktarımları yeni bir kurulum gerektirir. Ya durumu sıfırlayıp onboarding'i yeniden çalıştırın ya da doğrudan `openclaw migrate apply claude` kullanın; bu komut `--overwrite` ve açık yedekleme denetimini destekler.
+  <Accordion title="İlk kurulum mevcut bir kuruluma içe aktarmayı reddediyor">
+    İlk kurulum sırasında içe aktarma, yeni bir kurulum gerektirir. Durumu sıfırlayıp ilk kurulumu yeniden yapın veya `--overwrite` ve açık yedekleme denetimini destekleyen `openclaw migrate apply claude` komutunu doğrudan kullanın.
   </Accordion>
-  <Accordion title="MCP servers from Claude Desktop did not import">
-    Claude Desktop, `claude_desktop_config.json` dosyasını platforma özgü bir yoldan okur. OpenClaw bunu otomatik algılamadıysa `--from` değerini o dosyanın dizinine yönlendirin.
+  <Accordion title="Claude Desktop'taki MCP sunucuları içe aktarılmadı">
+    Claude Desktop, `claude_desktop_config.json` dosyasını platforma özgü bir yoldan okur. OpenClaw dosyayı otomatik olarak algılamadıysa `--from` seçeneğini bu dosyanın dizinine yöneltin.
   </Accordion>
-  <Accordion title="Claude commands became skills with model invocation disabled">
-    Tasarım gereği böyledir. Claude komutları kullanıcı tarafından tetiklenir, bu nedenle OpenClaw bunları `disable-model-invocation: true` ile skills olarak içe aktarır. Ajanın bunları otomatik çağırmasını istiyorsanız her skill'in frontmatter bölümünü düzenleyin.
+  <Accordion title="Claude komutları, model çağrısı devre dışı bırakılmış Skills öğelerine dönüştü">
+    Bu, tasarım gereğidir. Claude komutları kullanıcı tarafından tetiklendiğinden OpenClaw bunları `disable-model-invocation: true` ayarlı Skills öğeleri olarak içe aktarır. Aracının bunları otomatik olarak çağırmasını istiyorsanız her Skill öğesinin ön madde alanını düzenleyin.
   </Accordion>
 </AccordionGroup>
 
-## İlgili
+## İlgili konular
 
-- [`openclaw migrate`](/tr/cli/migrate): tam CLI başvurusu, plugin sözleşmesi ve JSON şekilleri.
-- [Migration kılavuzu](/tr/install/migrating): tüm migration yolları.
-- [Hermes'ten migration](/tr/install/migrating-hermes): diğer sistemler arası içe aktarma yolu.
-- [Onboarding](/tr/cli/onboard): sihirbaz akışı ve etkileşimsiz bayraklar.
-- [Doctor](/tr/gateway/doctor): migration sonrası sağlık denetimi.
-- [Ajan çalışma alanı](/tr/concepts/agent-workspace): `AGENTS.md`, `USER.md` ve skills öğelerinin bulunduğu yer.
+- [`openclaw migrate`](/tr/cli/migrate): tam CLI başvurusu, Plugin sözleşmesi ve JSON yapıları.
+- [Geçiş kılavuzu](/tr/install/migrating): tüm geçiş yolları.
+- [Hermes'ten geçiş](/tr/install/migrating-hermes): diğer sistemler arası içe aktarma yolu.
+- [İlk kurulum](/tr/cli/onboard): sihirbaz akışı ve etkileşimsiz seçenekler.
+- [Doctor](/tr/gateway/doctor): geçiş sonrası sistem durumu denetimi.
+- [Aracı çalışma alanı](/tr/concepts/agent-workspace): `AGENTS.md`, `USER.md` ve Skills öğelerinin bulunduğu yer.

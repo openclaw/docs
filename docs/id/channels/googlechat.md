@@ -1,29 +1,27 @@
 ---
 read_when:
-    - Mengerjakan fitur kanal Google Chat
-summary: Status dukungan aplikasi Google Chat, kapabilitas, dan konfigurasi
+    - Mengerjakan fitur saluran Google Chat
+summary: Status dukungan, kemampuan, dan konfigurasi aplikasi Google Chat
 title: Google Chat
 x-i18n:
-    generated_at: "2026-06-27T17:09:46Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:55:42Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3d506f6e92bfb73940254ca906c7581f24ac49d3f498fcae213eae71c4449442
+    source_hash: 72a08c41f7da019f91265cbf7ae73134a0767c603449ebd8cd9a5354936a3b52
     source_path: channels/googlechat.md
     workflow: 16
 ---
 
-Status: Plugin yang dapat diunduh untuk DM + ruang melalui Webhook Google Chat API (hanya HTTP).
+Google Chat berjalan sebagai plugin resmi `@openclaw/googlechat`: pesan langsung dan ruang melalui Webhook Google Chat API (hanya titik akhir HTTP, tanpa Pub/Sub).
 
-## Instal
-
-Instal Google Chat sebelum mengonfigurasi channel:
+## Instalasi
 
 ```bash
 openclaw plugins install @openclaw/googlechat
 ```
 
-Checkout lokal (saat menjalankan dari repo git):
+Checkout lokal (saat dijalankan dari repositori git):
 
 ```bash
 openclaw plugins install ./path/to/local/googlechat-plugin
@@ -33,113 +31,90 @@ openclaw plugins install ./path/to/local/googlechat-plugin
 
 1. Buat proyek Google Cloud dan aktifkan **Google Chat API**.
    - Buka: [Kredensial Google Chat API](https://console.cloud.google.com/apis/api/chat.googleapis.com/credentials)
-   - Aktifkan API jika belum aktif.
+   - Aktifkan API jika belum diaktifkan.
 2. Buat **Service Account**:
    - Tekan **Create Credentials** > **Service Account**.
-   - Beri nama apa pun yang Anda inginkan (misalnya, `openclaw-chat`).
-   - Biarkan izin kosong (tekan **Continue**).
-   - Biarkan prinsipal dengan akses kosong (tekan **Done**).
-3. Buat dan unduh **JSON Key**:
-   - Dalam daftar service account, klik yang baru Anda buat.
-   - Buka tab **Keys**.
-   - Klik **Add Key** > **Create new key**.
-   - Pilih **JSON** dan tekan **Create**.
-4. Simpan file JSON yang diunduh di host Gateway Anda (misalnya, `~/.openclaw/googlechat-service-account.json`).
+   - Beri nama sesuai keinginan (misalnya, `openclaw-chat`).
+   - Biarkan izin dan prinsipal kosong (**Continue**, lalu **Done**).
+3. Buat dan unduh **kunci JSON**:
+   - Klik akun layanan baru > tab **Keys** > **Add Key** > **Create new key** > **JSON** > **Create**.
+4. Simpan berkas JSON yang diunduh pada hos Gateway Anda (misalnya, `~/.openclaw/googlechat-service-account.json`).
 5. Buat aplikasi Google Chat di [Konfigurasi Chat Google Cloud Console](https://console.cloud.google.com/apis/api/chat.googleapis.com/hangouts-chat):
-   - Isi **Application info**:
-     - **App name**: (misalnya `OpenClaw`)
-     - **Avatar URL**: (misalnya `https://openclaw.ai/logo.png`)
-     - **Description**: (misalnya `Personal AI Assistant`)
+   - Isi **Application info** (nama aplikasi, URL avatar, deskripsi).
    - Aktifkan **Interactive features**.
-   - Di bawah **Functionality**, centang **Join spaces and group conversations**.
-   - Di bawah **Connection settings**, pilih **HTTP endpoint URL**.
-   - Di bawah **Triggers**, pilih **Use a common HTTP endpoint URL for all triggers** dan atur ke URL publik Gateway Anda diikuti dengan `/googlechat`.
-     - _Tips: Jalankan `openclaw status` untuk menemukan URL publik Gateway Anda._
-   - Di bawah **Visibility**, centang **Make this Chat app available to specific people and groups in `<Your Domain>`**.
-   - Masukkan alamat email Anda (misalnya `user@example.com`) di kotak teks.
-   - Klik **Save** di bagian bawah.
-6. **Aktifkan status aplikasi**:
-   - Setelah menyimpan, **segarkan halaman**.
-   - Cari bagian **App status** (biasanya dekat bagian atas atau bawah setelah menyimpan).
-   - Ubah status menjadi **Live - available to users**.
-   - Klik **Save** lagi.
-7. Konfigurasikan OpenClaw dengan jalur service account + audiens Webhook:
-   - Env: `GOOGLE_CHAT_SERVICE_ACCOUNT_FILE=/path/to/service-account.json`
-   - Atau config: `channels.googlechat.serviceAccountFile: "/path/to/service-account.json"`.
-8. Atur jenis + nilai audiens Webhook (cocok dengan konfigurasi aplikasi Chat Anda).
-9. Mulai Gateway. Google Chat akan melakukan POST ke jalur Webhook Anda.
+   - Di bagian **Functionality**, centang **Join spaces and group conversations**.
+   - Di bagian **Connection settings**, pilih **HTTP endpoint URL**.
+   - Di bagian **Triggers**, pilih **Use a common HTTP endpoint URL for all triggers** dan tetapkan ke URL Gateway publik Anda yang diikuti `/googlechat` (lihat [URL publik](#public-url-webhook-only)).
+   - Di bagian **Visibility**, centang **Make this Chat app available to specific people and groups in `<Your Domain>`** dan masukkan alamat email Anda.
+   - Klik **Save**.
+6. Aktifkan status aplikasi: muat ulang halaman, temukan **App status**, tetapkan ke **Live - available to users**, lalu klik **Save** lagi.
+7. Konfigurasikan OpenClaw dengan akun layanan dan audiens Webhook (harus cocok dengan konfigurasi aplikasi Chat):
+   - Variabel lingkungan: `GOOGLE_CHAT_SERVICE_ACCOUNT_FILE=/path/to/service-account.json` (hanya akun default), atau
+   - Konfigurasi: lihat [Sorotan konfigurasi](#config-highlights). `openclaw channels add --channel googlechat` juga menerima `--audience-type`, `--audience`, `--webhook-path`, dan `--webhook-url`.
+8. Mulai Gateway. Google Chat akan mengirim POST ke jalur Webhook Anda (default `/googlechat`).
 
 ## Tambahkan ke Google Chat
 
-Setelah Gateway berjalan dan email Anda ditambahkan ke daftar visibilitas:
+Setelah Gateway berjalan dan email Anda ada dalam daftar visibilitas:
 
 1. Buka [Google Chat](https://chat.google.com/).
-2. Klik ikon **+** (plus) di samping **Direct Messages**.
-3. Di bilah pencarian (tempat Anda biasanya menambahkan orang), ketik **App name** yang Anda konfigurasi di Google Cloud Console.
-   - **Catatan**: Bot _tidak_ akan muncul dalam daftar jelajah "Marketplace" karena ini adalah aplikasi privat. Anda harus mencarinya berdasarkan nama.
-4. Pilih bot Anda dari hasil.
-5. Klik **Add** atau **Chat** untuk memulai percakapan 1:1.
-6. Kirim "Halo" untuk memicu asisten!
+2. Klik ikon **+** (tambah) di samping **Direct Messages**.
+3. Cari **App name** yang Anda konfigurasikan di Google Cloud Console.
+   - Bot _tidak_ muncul dalam daftar penelusuran Marketplace karena merupakan aplikasi privat; cari berdasarkan namanya.
+4. Pilih bot, klik **Add** atau **Chat**, lalu kirim pesan.
 
-## URL publik (hanya Webhook)
+## URL publik (khusus Webhook)
 
-Webhook Google Chat memerlukan endpoint HTTPS publik. Untuk keamanan, **hanya ekspos jalur `/googlechat`** ke internet. Simpan dasbor OpenClaw dan endpoint sensitif lainnya di jaringan privat Anda.
+Webhook Google Chat memerlukan titik akhir HTTPS publik. Demi keamanan, paparkan **hanya jalur `/googlechat`** ke internet dan pertahankan dasbor OpenClaw serta titik akhir lainnya tetap privat.
 
-### Opsi A: Tailscale Funnel (Direkomendasikan)
+### Opsi A: Tailscale Funnel (Disarankan)
 
-Gunakan Tailscale Serve untuk dasbor privat dan Funnel untuk jalur Webhook publik. Ini menjaga `/` tetap privat sambil hanya mengekspos `/googlechat`.
+Gunakan Tailscale Serve untuk dasbor privat dan Funnel untuk jalur Webhook publik.
 
-1. **Periksa alamat apa yang digunakan Gateway Anda untuk bind:**
+1. Periksa alamat yang digunakan Gateway untuk mendengarkan:
 
    ```bash
    ss -tlnp | grep 18789
    ```
 
-   Catat alamat IP (misalnya, `127.0.0.1`, `0.0.0.0`, atau IP Tailscale Anda seperti `100.x.x.x`).
+   Catat IP-nya (misalnya, `127.0.0.1`, `0.0.0.0`, atau alamat Tailscale `100.x.x.x`).
 
-2. **Ekspos dasbor hanya ke tailnet (port 8443):**
+2. Paparkan dasbor hanya ke tailnet (port 8443):
 
    ```bash
-   # If bound to localhost (127.0.0.1 or 0.0.0.0):
+   # Jika terikat ke localhost (127.0.0.1 atau 0.0.0.0):
    tailscale serve --bg --https 8443 http://127.0.0.1:18789
 
-   # If bound to Tailscale IP only (e.g., 100.106.161.80):
-   tailscale serve --bg --https 8443 http://100.106.161.80:18789
+   # Jika hanya terikat ke IP Tailscale:
+   tailscale serve --bg --https 8443 http://100.x.x.x:18789
    ```
 
-3. **Ekspos hanya jalur Webhook secara publik:**
+3. Paparkan hanya jalur Webhook secara publik:
 
    ```bash
-   # If bound to localhost (127.0.0.1 or 0.0.0.0):
+   # Jika terikat ke localhost (127.0.0.1 atau 0.0.0.0):
    tailscale funnel --bg --set-path /googlechat http://127.0.0.1:18789/googlechat
 
-   # If bound to Tailscale IP only (e.g., 100.106.161.80):
-   tailscale funnel --bg --set-path /googlechat http://100.106.161.80:18789/googlechat
+   # Jika hanya terikat ke IP Tailscale:
+   tailscale funnel --bg --set-path /googlechat http://100.x.x.x:18789/googlechat
    ```
 
-4. **Otorisasi node untuk akses Funnel:**
-   Jika diminta, kunjungi URL otorisasi yang ditampilkan dalam output untuk mengaktifkan Funnel untuk node ini dalam kebijakan tailnet Anda.
+4. Jika diminta, kunjungi URL otorisasi yang ditampilkan dalam keluaran untuk mengaktifkan Funnel bagi Node ini.
 
-5. **Verifikasi konfigurasi:**
+5. Verifikasi:
 
    ```bash
    tailscale serve status
    tailscale funnel status
    ```
 
-URL Webhook publik Anda akan menjadi:
-`https://<node-name>.<tailnet>.ts.net/googlechat`
+URL Webhook publik Anda adalah `https://<node-name>.<tailnet>.ts.net/googlechat`; dasbor tetap hanya dapat diakses melalui tailnet di `https://<node-name>.<tailnet>.ts.net:8443/`. Gunakan URL publik (tanpa `:8443`) dalam konfigurasi aplikasi Google Chat.
 
-Dasbor privat Anda tetap hanya tailnet:
-`https://<node-name>.<tailnet>.ts.net:8443/`
+> Catatan: Konfigurasi ini tetap tersimpan setelah dimulai ulang. Hapus nanti dengan `tailscale funnel reset` dan `tailscale serve reset`.
 
-Gunakan URL publik (tanpa `:8443`) dalam konfigurasi aplikasi Google Chat.
+### Opsi B: Proksi Terbalik (Caddy)
 
-> Catatan: Konfigurasi ini bertahan setelah reboot. Untuk menghapusnya nanti, jalankan `tailscale funnel reset` dan `tailscale serve reset`.
-
-### Opsi B: Reverse Proxy (Caddy)
-
-Jika Anda menggunakan reverse proxy seperti Caddy, hanya proxy jalur spesifik:
+Proksikan hanya jalur Webhook:
 
 ```caddy
 your-domain.com {
@@ -147,41 +122,44 @@ your-domain.com {
 }
 ```
 
-Dengan config ini, setiap permintaan ke `your-domain.com/` akan diabaikan atau dikembalikan sebagai 404, sementara `your-domain.com/googlechat` dirutekan dengan aman ke OpenClaw.
+Permintaan ke `your-domain.com/` diabaikan atau menghasilkan 404, sedangkan `your-domain.com/googlechat` dirutekan ke OpenClaw.
 
 ### Opsi C: Cloudflare Tunnel
 
-Konfigurasikan aturan ingress tunnel Anda agar hanya merutekan jalur Webhook:
+Konfigurasikan aturan masuk tunnel agar hanya merutekan jalur Webhook:
 
-- **Jalur**: `/googlechat` -> `http://localhost:18789/googlechat`
-- **Aturan Default**: HTTP 404 (Tidak Ditemukan)
+- **Path**: `/googlechat` -> `http://localhost:18789/googlechat`
+- **Default rule**: HTTP 404 (Not Found)
 
 ## Cara kerjanya
 
-1. Google Chat mengirim POST Webhook ke Gateway. Setiap permintaan menyertakan header `Authorization: Bearer <token>`.
-   - OpenClaw memverifikasi auth bearer sebelum membaca/mengurai body Webhook penuh saat header ada.
-   - Permintaan Google Workspace Add-on yang membawa `authorizationEventObject.systemIdToken` dalam body didukung melalui anggaran body pra-auth yang lebih ketat.
-2. OpenClaw memverifikasi token terhadap `audienceType` + `audience` yang dikonfigurasi:
+1. Google Chat mengirim JSON melalui POST ke jalur Webhook Gateway (hanya POST, jenis konten JSON wajib, dibatasi lajunya per IP).
+2. OpenClaw mengautentikasi setiap permintaan sebelum meneruskannya:
+   - Peristiwa aplikasi Chat membawa `Authorization: Bearer <token>`; token diverifikasi sebelum seluruh isi permintaan diurai.
+   - Peristiwa Add-on Google Workspace membawa token dalam isi permintaan (`authorizationEventObject.systemIdToken`) dan dibaca dengan batas praautentikasi yang lebih ketat (16 KB, 3 detik) sebelum verifikasi.
+3. Token diperiksa terhadap `audienceType` + `audience`:
    - `audienceType: "app-url"` → audiens adalah URL Webhook HTTPS Anda.
    - `audienceType: "project-number"` → audiens adalah nomor proyek Cloud.
-3. Pesan dirutekan berdasarkan ruang:
-   - DM menggunakan kunci sesi `agent:<agentId>:googlechat:direct:<spaceId>`.
-   - Ruang menggunakan kunci sesi `agent:<agentId>:googlechat:group:<spaceId>`.
-4. Akses DM menggunakan pairing secara default. Pengirim tidak dikenal menerima kode pairing; setujui dengan:
+   - Token Add-on dengan `app-url` juga mengharuskan `appPrincipal` ditetapkan ke ID klien OAuth 2.0 numerik aplikasi (21 digit, bukan email); jika tidak, verifikasi gagal dan peringatan dicatat.
+4. Pesan dirutekan berdasarkan ruang:
+   - Ruang mendapatkan sesi per ruang `agent:<agentId>:googlechat:group:<spaceId>`; balasan dikirim ke utas pesan.
+   - Pesan langsung secara default digabungkan ke sesi utama agen; tetapkan `session.dmScope` untuk sesi pesan langsung per rekan (lihat [Sesi](/id/concepts/session)).
+5. Akses pesan langsung menggunakan pemasangan secara default. Pengirim yang tidak dikenal menerima kode pemasangan; setujui dengan:
    - `openclaw pairing approve googlechat <code>`
-5. Ruang grup memerlukan @-mention secara default. Gunakan `botUser` jika deteksi mention membutuhkan nama pengguna aplikasi.
-6. Saat permintaan persetujuan exec atau Plugin dimulai dari Google Chat dan pemberi persetujuan `users/<id>` yang stabil dikonfigurasi, OpenClaw memposting kartu persetujuan Google Chat native di ruang atau thread asal. Tombol kartu menggunakan token callback buram, dan prompt manual `/approve <id> <decision>` hanya ditampilkan saat pengiriman persetujuan native tidak tersedia.
+6. Ruang grup secara default memerlukan penyebutan @. Penyebutan dideteksi dari anotasi `USER_MENTION` Chat yang ditujukan ke aplikasi; tetapkan `botUser` (misalnya, `users/1234567890`) jika pendeteksian memerlukan nama sumber daya pengguna aplikasi.
+7. Saat persetujuan eksekusi atau Plugin dimulai dari Google Chat dan pemberi persetujuan `users/<id>` yang stabil dikonfigurasikan, OpenClaw memposting kartu persetujuan native (`cardsV2`) di ruang atau utas asal. Tombol kartu membawa token panggilan balik buram; perintah manual `/approve <id> <decision>` hanya muncul saat pengiriman native tidak tersedia.
 
-## Target
+## Tujuan
 
-Gunakan identifier ini untuk pengiriman dan allowlist:
+Gunakan pengenal berikut untuk pengiriman dan daftar yang diizinkan:
 
-- Pesan langsung: `users/<userId>` (direkomendasikan).
-- Email mentah `name@example.com` dapat berubah dan hanya digunakan untuk pencocokan allowlist langsung saat `channels.googlechat.dangerouslyAllowNameMatching: true`.
-- Tidak digunakan lagi: `users/<email>` diperlakukan sebagai id pengguna, bukan allowlist email.
+- Pesan langsung: `users/<userId>` (disarankan).
 - Ruang: `spaces/<spaceId>`.
+- Email mentah `name@example.com` dapat berubah dan hanya digunakan untuk pencocokan daftar yang diizinkan saat `channels.googlechat.dangerouslyAllowNameMatching: true`.
+- Tidak digunakan lagi: `users/<email>` diperlakukan sebagai ID pengguna, bukan entri email dalam daftar yang diizinkan.
+- Awalan `googlechat:`, `google-chat:`, dan `gchat:` diterima dan dihapus.
 
-## Sorotan config
+## Sorotan konfigurasi
 
 ```json5
 {
@@ -189,11 +167,12 @@ Gunakan identifier ini untuk pengiriman dan allowlist:
     googlechat: {
       enabled: true,
       serviceAccountFile: "/path/to/service-account.json",
-      // or serviceAccountRef: { source: "file", provider: "filemain", id: "/channels/googlechat/serviceAccount" }
+      // atau serviceAccountRef: { source: "file", provider: "filemain", id: "/channels/googlechat/serviceAccount" }
       audienceType: "app-url",
       audience: "https://gateway.example.com/googlechat",
+      appPrincipal: "123456789012345678901", // hanya verifikasi add-on; ID klien OAuth numerik
       webhookPath: "/googlechat",
-      botUser: "users/1234567890", // optional; helps mention detection
+      botUser: "users/1234567890", // opsional; membantu pendeteksian penyebutan
       allowBots: false,
       dm: {
         policy: "pairing",
@@ -205,10 +184,9 @@ Gunakan identifier ini untuk pengiriman dan allowlist:
           enabled: true,
           requireMention: true,
           users: ["users/1234567890"],
-          systemPrompt: "Short answers only.",
+          systemPrompt: "Hanya jawaban singkat.",
         },
       },
-      actions: { reactions: true },
       typingIndicator: "message",
       mediaMaxMb: 20,
     },
@@ -218,77 +196,72 @@ Gunakan identifier ini untuk pengiriman dan allowlist:
 
 Catatan:
 
-- Kredensial service account juga dapat diteruskan secara inline dengan `serviceAccount` (string JSON).
-- `serviceAccountRef` juga didukung (SecretRef env/file), termasuk ref per akun di bawah `channels.googlechat.accounts.<id>.serviceAccountRef`.
-- Jalur Webhook default adalah `/googlechat` jika `webhookPath` tidak diatur.
-- `dangerouslyAllowNameMatching` mengaktifkan kembali pencocokan prinsipal email yang dapat berubah untuk allowlist (mode kompatibilitas break-glass).
-- Reaksi tersedia melalui tool `reactions` dan `channels action` saat `actions.reactions` diaktifkan.
-- Kartu persetujuan native menggunakan klik tombol Google Chat `cardsV2`, bukan peristiwa reaksi. Pemberi persetujuan berasal dari `dm.allowFrom` atau `defaultTo` dan harus berupa nilai numerik `users/<id>` yang stabil.
-- Tindakan pesan mengekspos `send` untuk teks dan `upload-file` untuk pengiriman lampiran eksplisit. `upload-file` menerima `media` / `filePath` / `path` plus `message`, `filename`, dan penargetan thread opsional.
-- `typingIndicator` mendukung `message` (default), `none`, dan `reaction` (reaksi memerlukan OAuth pengguna).
-- Lampiran diunduh melalui Chat API dan disimpan dalam pipeline media (ukuran dibatasi oleh `mediaMaxMb`).
-- Pesan Google Chat yang dibuat bot diabaikan secara default. Jika Anda sengaja mengatur `allowBots: true`, pesan yang dibuat bot dan diterima menggunakan [perlindungan loop bot](/id/channels/bot-loop-protection) bersama. Konfigurasikan `channels.defaults.botLoopProtection`, lalu override dengan `channels.googlechat.botLoopProtection` atau `channels.googlechat.groups.<space>.botLoopProtection` saat satu ruang membutuhkan anggaran berbeda.
+- Kredensial akun layanan: `serviceAccountFile` (jalur), `serviceAccount` (string atau objek JSON sebaris), atau `serviceAccountRef` (SecretRef variabel lingkungan/berkas). Variabel lingkungan `GOOGLE_CHAT_SERVICE_ACCOUNT` (JSON sebaris) dan `GOOGLE_CHAT_SERVICE_ACCOUNT_FILE` (jalur) hanya berlaku untuk akun default. Penyiapan multiakun menggunakan `channels.googlechat.accounts.<id>` dengan kunci yang sama, termasuk `serviceAccountRef` per akun.
+- Jalur Webhook default adalah `/googlechat` saat `webhookPath` tidak ditetapkan; `webhookUrl` dapat menyediakan jalur sebagai gantinya.
+- Kunci grup harus berupa ID ruang yang stabil (`spaces/<spaceId>`). Kunci nama tampilan tidak digunakan lagi dan dicatat sebagai demikian.
+- `dangerouslyAllowNameMatching` mengaktifkan kembali pencocokan prinsipal email yang dapat berubah untuk daftar yang diizinkan (mode kompatibilitas darurat); doctor memperingatkan tentang entri email.
+- Tindakan reaksi Google Chat tidak diekspos. Plugin menggunakan autentikasi akun layanan, sedangkan titik akhir reaksi Google Chat memerlukan autentikasi pengguna. Konfigurasi `actions.reactions` yang ada diterima untuk kompatibilitas, tetapi tidak berpengaruh.
+- Kartu persetujuan native menggunakan klik tombol `cardsV2` Google Chat, bukan peristiwa reaksi. Pemberi persetujuan berasal dari `dm.allowFrom` atau `defaultTo` dan harus berupa nilai numerik `users/<id>` yang stabil.
+- Tindakan pesan hanya mengekspos `send` teks. Pengunggahan lampiran Google Chat memerlukan autentikasi pengguna, sedangkan Plugin ini menggunakan autentikasi akun layanan, sehingga pengunggahan berkas keluar tidak diekspos.
+- `typingIndicator`: `message` (default) memposting placeholder `_<Bot> sedang mengetik..._` dan mengubahnya menjadi balasan pertama; `none` menonaktifkannya; `reaction` memerlukan OAuth pengguna dan saat ini kembali ke `message` dengan kesalahan yang dicatat ketika menggunakan autentikasi akun layanan.
+- Lampiran masuk (lampiran pertama per pesan) diunduh melalui Chat API ke alur media, dengan batas `mediaMaxMb` (default 20).
+- Pesan yang dibuat bot diabaikan secara default. Dengan `allowBots: true`, pesan bot yang diterima menggunakan [perlindungan perulangan bot](/id/channels/bot-loop-protection) bersama: konfigurasikan `channels.defaults.botLoopProtection`, lalu timpa dengan `channels.googlechat.botLoopProtection` atau `channels.googlechat.groups.<space>.botLoopProtection`.
 
-Detail referensi rahasia: [Manajemen Rahasia](/id/gateway/secrets).
+Detail referensi rahasia: [Pengelolaan Rahasia](/id/gateway/secrets).
 
 ## Pemecahan masalah
 
 ### 405 Metode Tidak Diizinkan
 
-Jika Google Cloud Logs Explorer menampilkan error seperti:
+Jika Google Cloud Logs Explorer menampilkan kesalahan seperti:
 
-```
+```text
 status code: 405, reason phrase: HTTP error response: HTTP/1.1 405 Method Not Allowed
 ```
 
-Ini berarti handler Webhook belum terdaftar. Penyebab umum:
+Penangan Webhook tidak terdaftar. Penyebab umum:
 
-1. **Channel belum dikonfigurasi**: Bagian `channels.googlechat` hilang dari config Anda. Verifikasi dengan:
+1. **Saluran belum dikonfigurasikan**: bagian `channels.googlechat` tidak ada. Verifikasi dengan:
 
    ```bash
    openclaw config get channels.googlechat
    ```
 
-   Jika mengembalikan "Config path not found", tambahkan konfigurasi (lihat [Sorotan config](#config-highlights)).
+   Jika mengembalikan "Config path not found", tambahkan konfigurasi (lihat [Sorotan konfigurasi](#config-highlights)).
 
-2. **Plugin tidak diaktifkan**: Periksa status Plugin:
+2. **Plugin tidak diaktifkan**: periksa status Plugin:
 
    ```bash
    openclaw plugins list | grep googlechat
    ```
 
-   Jika menampilkan "disabled", tambahkan `plugins.entries.googlechat.enabled: true` ke config Anda.
+   Jika menampilkan "disabled", tambahkan `plugins.entries.googlechat.enabled: true` ke konfigurasi Anda.
 
-3. **Gateway belum dimulai ulang**: Setelah menambahkan config, mulai ulang Gateway:
+3. **Gateway belum dimulai ulang** setelah perubahan konfigurasi:
 
    ```bash
    openclaw gateway restart
    ```
 
-Verifikasi channel berjalan:
+Verifikasi bahwa saluran sedang berjalan:
 
 ```bash
 openclaw channels status
-# Should show: Google Chat default: enabled, configured, ...
+# Seharusnya menampilkan: Google Chat default: enabled, configured, ...
 ```
 
-### Masalah lain
+### Masalah lainnya
 
-- Periksa `openclaw channels status --probe` untuk error auth atau config audiens yang hilang.
-- Jika tidak ada pesan yang masuk, konfirmasi URL Webhook aplikasi Chat + langganan peristiwa.
-- Jika gating mention memblokir balasan, atur `botUser` ke nama resource pengguna aplikasi dan verifikasi `requireMention`.
-- Gunakan `openclaw logs --follow` saat mengirim pesan uji untuk melihat apakah permintaan mencapai Gateway.
-
-Dokumen terkait:
-
-- [Konfigurasi Gateway](/id/gateway/configuration)
-- [Keamanan](/id/gateway/security)
-- [Reaksi](/id/tools/reactions)
+- `openclaw channels status --probe` menampilkan kesalahan autentikasi dan konfigurasi audiens yang tidak ada (`audience` dan `audienceType` keduanya wajib).
+- Jika tidak ada pesan yang masuk, konfirmasikan URL Webhook dan konfigurasi pemicu aplikasi Chat.
+- Jika gerbang penyebutan memblokir balasan, tetapkan `botUser` ke nama sumber daya pengguna aplikasi dan periksa `requireMention`.
+- Jalankan `openclaw logs --follow` saat mengirim pesan percobaan untuk melihat apakah permintaan mencapai Gateway.
 
 ## Terkait
 
-- [Ikhtisar Saluran](/id/channels) — semua saluran yang didukung
-- [Pairing](/id/channels/pairing) — autentikasi DM dan alur pairing
-- [Grup](/id/channels/groups) — perilaku obrolan grup dan gating sebutan
-- [Perutean Saluran](/id/channels/channel-routing) — perutean sesi untuk pesan
-- [Keamanan](/id/gateway/security) — model akses dan pengerasan
+- [Ikhtisar Kanal](/id/channels) — semua kanal yang didukung
+- [Perutean Kanal](/id/channels/channel-routing) — perutean sesi untuk pesan
+- [Konfigurasi Gateway](/id/gateway/configuration)
+- [Grup](/id/channels/groups) — perilaku obrolan grup dan pembatasan berdasarkan penyebutan
+- [Pemasangan](/id/channels/pairing) — autentikasi DM dan alur pemasangan
+- [Keamanan](/id/gateway/security) — model akses dan penguatan keamanan

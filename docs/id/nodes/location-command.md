@@ -1,57 +1,58 @@
 ---
 read_when:
-    - Menambahkan dukungan node lokasi atau UI izin
+    - Menambahkan dukungan Node lokasi atau UI izin
     - Merancang izin lokasi Android atau perilaku latar depan
 summary: Perintah lokasi untuk Node (location.get), mode izin, dan perilaku latar depan Android
 title: Perintah lokasi
 x-i18n:
-    generated_at: "2026-05-06T09:19:04Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:20:53Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 63ed754bfdda1cf379dcb7ac40817c0b93cc1efe4526512d70258072da4bc8a7
+    source_hash: fae9f7707620f3f743d40c07618a431a6baa7a357dda6d74021bc986cd4974b1
     source_path: nodes/location-command.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 ## Ringkasan
 
-- `location.get` adalah perintah node (melalui `node.invoke`).
-- Nonaktif secara default.
-- Pengaturan aplikasi Android menggunakan pemilih: Nonaktif / Saat Digunakan.
-- Toggle terpisah: Lokasi Tepat.
+- `location.get` adalah perintah node yang dipanggil melalui `node.invoke` atau `openclaw nodes location get`.
+- Dinonaktifkan secara default.
+- Build Android pihak ketiga menggunakan pemilih: Nonaktif / Saat Digunakan / Selalu. Build Play tetap menggunakan Nonaktif / Saat Digunakan.
+- Lokasi Akurat merupakan pengalih terpisah.
 
-## Mengapa pemilih (bukan sekadar switch)
+## Mengapa menggunakan pemilih (bukan sekadar pengalih)
 
-Izin OS bertingkat. Kita dapat mengekspos pemilih dalam aplikasi, tetapi OS tetap menentukan pemberian izin yang sebenarnya.
-
-- iOS/macOS dapat menampilkan **Saat Digunakan** atau **Selalu** di prompt/Pengaturan sistem.
-- Aplikasi Android saat ini hanya mendukung lokasi foreground.
-- Lokasi tepat adalah izin terpisah (iOS 14+ "Precise", Android "fine" vs "coarse").
-
-Pemilih di UI mengarahkan mode yang kita minta; pemberian izin sebenarnya berada di pengaturan OS.
+Izin lokasi OS memiliki beberapa tingkat. Lokasi akurat juga merupakan izin OS yang terpisah (iOS 14+ "Precise", Android "fine" dibandingkan dengan "coarse"). Pemilih dalam aplikasi menentukan mode yang diminta, tetapi OS tetap menentukan izin yang benar-benar diberikan.
 
 ## Model pengaturan
 
 Per perangkat node:
 
-- `location.enabledMode`: `off | whileUsing`
+- `location.enabledMode`: `off | whileUsing | always`
 - `location.preciseEnabled`: bool
 
 Perilaku UI:
 
-- Memilih `whileUsing` meminta izin foreground.
-- Jika OS menolak tingkat yang diminta, kembalikan ke tingkat tertinggi yang diberikan dan tampilkan status.
+- Memilih `whileUsing` akan meminta izin latar depan.
+- Memilih `always` dalam build Android pihak ketiga akan terlebih dahulu meminta izin latar depan, menjelaskan akses latar belakang, lalu membuka pengaturan aplikasi Android untuk izin **Allow all the time** yang terpisah.
+- Build Android Play tidak mendeklarasikan izin lokasi latar belakang atau menampilkan `always`.
+- Jika OS menolak tingkat yang diminta, aplikasi kembali ke tingkat tertinggi yang diberikan dan menampilkan status.
 
 ## Pemetaan izin (node.permissions)
 
-Opsional. Node macOS melaporkan `location` melalui peta izin; iOS/Android dapat menghilangkannya.
+Opsional. Node macOS melaporkan `location` melalui peta `permissions` pada `node.list`/`node.describe`; iOS/Android dapat menghilangkannya.
 
 ## Perintah: `location.get`
 
-Dipanggil melalui `node.invoke`.
+Dipanggil melalui `node.invoke`, atau pembantu CLI:
 
-Parameter (disarankan):
+```bash
+openclaw nodes location get --node <idOrNameOrIp>
+openclaw nodes location get --node <idOrNameOrIp> --accuracy precise --max-age 15000 --location-timeout 10000
+```
+
+Parameter:
 
 ```json
 {
@@ -60,6 +61,8 @@ Parameter (disarankan):
   "desiredAccuracy": "coarse|balanced|precise"
 }
 ```
+
+Flag CLI dipetakan secara langsung: `--location-timeout` -> `timeoutMs`, `--max-age` -> `maxAgeMs`, `--accuracy` -> `desiredAccuracy`.
 
 Payload respons:
 
@@ -79,32 +82,34 @@ Payload respons:
 
 Kesalahan (kode stabil):
 
-- `LOCATION_DISABLED`: pemilih nonaktif.
-- `LOCATION_PERMISSION_REQUIRED`: izin tidak ada untuk mode yang diminta.
-- `LOCATION_BACKGROUND_UNAVAILABLE`: aplikasi berjalan di latar belakang tetapi hanya Saat Digunakan yang diizinkan.
-- `LOCATION_TIMEOUT`: tidak ada fix tepat waktu.
-- `LOCATION_UNAVAILABLE`: kegagalan sistem / tidak ada penyedia.
+- `LOCATION_DISABLED`: pemilih dinonaktifkan.
+- `LOCATION_PERMISSION_REQUIRED`: izin untuk mode yang diminta belum diberikan.
+- `LOCATION_BACKGROUND_UNAVAILABLE`: aplikasi berada di latar belakang, tetapi hanya izin Saat Digunakan yang diberikan.
+- `LOCATION_TIMEOUT`: lokasi tidak diperoleh tepat waktu.
+- `LOCATION_UNAVAILABLE`: kegagalan sistem atau tidak ada penyedia.
 
 ## Perilaku latar belakang
 
-- Aplikasi Android menolak `location.get` saat berjalan di latar belakang.
-- Biarkan OpenClaw tetap terbuka saat meminta lokasi di Android.
-- Platform node lain mungkin berbeda.
+- Build Android pihak ketiga menerima `location.get` di latar belakang hanya jika pengguna memilih `Always` dan Android memberikan izin lokasi latar belakang. Layanan node persisten yang sudah ada menambahkan jenis layanan `location` dan menampilkan `Location: Always` saat aktif.
+- Build Android Play dan mode `While Using` menolak `location.get` saat berada di latar belakang.
+- Platform node lainnya mungkin berbeda.
 
-## Integrasi model/tooling
+## Integrasi model/peralatan
 
-- Permukaan tool: tool `nodes` menambahkan tindakan `location_get` (node wajib).
+- Alat agen: tindakan `location_get` milik alat `nodes` (node wajib ditentukan).
 - CLI: `openclaw nodes location get --node <id>`.
-- Panduan agen: hanya panggil saat pengguna mengaktifkan lokasi dan memahami cakupannya.
+- Panduan agen: hanya panggil jika pengguna telah mengaktifkan lokasi dan memahami cakupannya.
 
-## Salinan UX (disarankan)
+## Teks UX (disarankan)
 
 - Nonaktif: "Berbagi lokasi dinonaktifkan."
 - Saat Digunakan: "Hanya saat OpenClaw terbuka."
-- Tepat: "Gunakan lokasi GPS yang tepat. Matikan toggle untuk membagikan lokasi perkiraan."
+- Selalu: "Izinkan pemeriksaan lokasi yang diminta saat OpenClaw berada di latar belakang."
+- Akurat: "Gunakan lokasi GPS yang akurat. Nonaktifkan untuk membagikan perkiraan lokasi."
 
 ## Terkait
 
-- [Penguraian lokasi channel](/id/channels/location)
-- [Pengambilan kamera](/id/nodes/camera)
+- [Ikhtisar node](/id/nodes)
+- [Penguraian lokasi saluran](/id/channels/location)
+- [Pengambilan gambar kamera](/id/nodes/camera)
 - [Mode bicara](/id/nodes/talk)

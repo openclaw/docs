@@ -1,11 +1,11 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin cloudflare-ai-gateway
-summary: เพิ่มการรองรับผู้ให้บริการโมเดล Cloudflare AI Gateway ให้กับ OpenClaw.
+summary: เพิ่มการรองรับผู้ให้บริการโมเดล Cloudflare AI Gateway ให้กับ OpenClaw
 title: Plugin Cloudflare AI Gateway
 x-i18n:
-    generated_at: "2026-06-27T18:00:27Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:28:53Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 3b0fc9623f61ca9541402a381521442c30207743fa774923b3340f8af298bfd3
@@ -20,7 +20,7 @@ x-i18n:
 ## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/cloudflare-ai-gateway-provider`
-- เส้นทางการติดตั้ง: npm; ClawHub: `clawhub:@openclaw/cloudflare-ai-gateway-provider`
+- ช่องทางการติดตั้ง: npm; ClawHub: `clawhub:@openclaw/cloudflare-ai-gateway-provider`
 
 ## พื้นผิว
 

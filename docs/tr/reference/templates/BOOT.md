@@ -4,21 +4,28 @@ read_when:
 summary: BOOT.md için çalışma alanı şablonu
 title: BOOT.md şablonu
 x-i18n:
-    generated_at: "2026-04-24T09:30:04Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 78c31ef770af20fee60c5d9998c7b2eefb0e2139076f26707ee4cf84502b59f8
-    source_path: reference/templates/BOOT.md
-    workflow: 15
+    generated_at: "2026-07-12T12:47:15Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 1adfb4d71f1f03716a1ddc4774a4cb6ead4b8be65bd9bb34066a9e1929a36b21
+    source_path: reference/templates/BOOT.md
+    workflow: 16
 ---
 
 # BOOT.md
 
-OpenClaw'ın başlangıçta ne yapması gerektiğine dair kısa, açık yönergeler ekleyin (`hooks.internal.enabled` etkinleştirin).
-Görev bir mesaj gönderiyorsa, message aracını kullanın ve ardından tam olarak
-sessiz belirteç `NO_REPLY` / `no_reply` ile yanıt verin.
+Kısa ve açık başlangıç talimatlarını buraya ekleyin. Birlikte sunulan `boot-md` kancası, dosya mevcutsa ve boşluk dışı içerik barındırıyorsa Gateway her başlatıldığında bu dosyayı her ajan çalışma alanı için bir kez çalıştırır. Aynı çalışma alanını paylaşan birden fazla ajan yalnızca tek bir çalıştırmayı tetikler.
+
+Kanca devre dışı olarak sunulur. Önce etkinleştirin:
+
+```bash
+openclaw hooks enable boot-md
+```
+
+Bir kontrol listesi öğesi mesaj gönderiyorsa mesaj aracını kullanın, ardından tam sessiz belirteç olan `NO_REPLY` ile yanıt verin (büyük/küçük harfe duyarlı değildir).
 
 ## İlgili
 
-- [Aracı çalışma alanı](/tr/concepts/agent-workspace)
+- [Ajan çalışma alanı](/tr/concepts/agent-workspace)
+- [Kancalar](/tr/automation/hooks#boot-md)

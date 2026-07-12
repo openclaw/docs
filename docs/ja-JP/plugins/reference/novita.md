@@ -1,11 +1,11 @@
 ---
 read_when:
-    - novita Pluginをインストール、設定、または監査しています
+    - novita Plugin をインストール、設定、または監査しています
 summary: OpenClaw に Novita、Novita AI、Novitaai モデルプロバイダーのサポートを追加します。
-title: Novitaプラグイン
+title: Novita Plugin
 x-i18n:
-    generated_at: "2026-06-27T12:26:56Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:33:19Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: ac6689ad781f0a0ead936521c1ce90a7347ed930b1e4ccd3d21efe640ac916c2
@@ -15,16 +15,16 @@ x-i18n:
 
 # Novita Plugin
 
-OpenClaw に Novita、Novita AI、Novitaai モデルプロバイダー対応を追加します。
+OpenClaw に Novita、Novita AI、Novitaai モデルプロバイダーのサポートを追加します。
 
 ## 配布
 
 - パッケージ: `@openclaw/novita-provider`
-- インストール経路: OpenClaw に含まれています
+- インストール方法: OpenClaw に同梱
 
-## サーフェス
+## 対象
 
-providers: novita, novita-ai, novitaai
+プロバイダー: novita、novita-ai、novitaai
 
 ## 関連ドキュメント
 

@@ -4,10 +4,9 @@ read_when:
 summary: Fournisseur de workers cloud reposant sur la CLI Crabbox.
 title: Plugin Crabbox
 x-i18n:
-    generated_at: "2026-07-12T15:45:18Z"
+    generated_at: "2026-07-12T03:07:31Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: b52daa026c1a44ae7ca68d3974bc068fc41f6dd18f195d957be9afbd4bfebdea
     source_path: plugins/reference/crabbox.md

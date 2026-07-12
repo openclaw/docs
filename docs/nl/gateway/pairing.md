@@ -1,44 +1,49 @@
 ---
 read_when:
-    - Implementatie van goedkeuringen voor Node-koppeling zonder macOS-gebruikersinterface
-    - CLI-flows toevoegen voor het goedkeuren van externe nodes
-    - Gateway-protocol uitbreiden met nodebeheer
-summary: Gateway-beheerde node-koppeling (Optie B) voor iOS en andere externe nodes
-title: Door Gateway beheerde koppeling
+    - Goedkeuringen voor Node-koppeling implementeren zonder macOS-UI
+    - CLI-stromen toevoegen voor het goedkeuren van externe nodes
+    - Gateway-protocol uitbreiden met Node-beheer
+summary: 'Goedkeuringen voor Node-mogelijkheden: hoe nodes na het koppelen van apparaten toegang krijgen tot opdrachten'
+title: Node-koppeling
 x-i18n:
-    generated_at: "2026-06-27T17:36:23Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:55:02Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: aefddafaef419fc59b04ee17dae8ef21685b4f514f4286530bf07362663a8996
+    source_hash: 753b01681fa9be17df853b63210f54374d054a6dde37746a3b5fda69073af71d
     source_path: gateway/pairing.md
     workflow: 16
 ---
 
-Bij door Gateway beheerde koppeling is de **Gateway** de bron van waarheid voor welke nodes
-mogen deelnemen. UI's (macOS-app, toekomstige clients) zijn alleen frontends die
-wachtende verzoeken goedkeuren of afwijzen.
+Node-koppeling bestaat uit twee lagen, die beide worden opgeslagen in de record van het gekoppelde apparaat in de SQLite-statusdatabase van de Gateway:
 
-**Belangrijk:** WS-nodes gebruiken **apparaatkoppeling** (rol `node`) tijdens `connect`.
-`node.pair.*` is een aparte koppelingsopslag en blokkeert de WS-handshake **niet**.
-Alleen clients die expliciet `node.pair.*` aanroepen gebruiken deze flow.
+- **Apparaatkoppeling** (rol `node`) beveiligt de `connect`-handshake. Zie
+  [Automatische goedkeuring van apparaten via vertrouwde CIDR](#trusted-cidr-device-auto-approval)
+  hieronder en [Kanaalkoppeling](/nl/channels/pairing).
+- **Goedkeuring van Node-mogelijkheden** (`node.pair.*`) bepaalt welke opgegeven
+  mogelijkheden/opdrachten een verbonden Node beschikbaar mag stellen. De Gateway is de
+  gezaghebbende bron; UI's (macOS-app, Control UI) zijn frontends waarmee openstaande verzoeken worden
+  goedgekeurd of afgewezen.
 
-## Concepten
+De voormalige zelfstandige opslag voor Node-koppelingen (`nodes/paired.json` met een token per Node,
+in januari 2026 buiten gebruik gesteld voor het verbindingspad) is verdwenen: gateways voegen
+eventuele resterende rijen bij het opstarten eenmalig samen met de apparaatrecords en archiveren de
+verouderde bestanden met het achtervoegsel `.migrated`. Ondersteuning voor de verouderde TCP-bridge is
+verwijderd.
 
-- **Wachtend verzoek**: een node vroeg om deel te nemen; vereist goedkeuring.
-- **Gekoppelde node**: goedgekeurde node met een uitgegeven auth-token.
-- **Transport**: het Gateway-WS-eindpunt stuurt verzoeken door, maar beslist niet
-  over lidmaatschap. (Ondersteuning voor de legacy TCP-bridge is verwijderd.)
+## Hoe goedkeuring van mogelijkheden werkt
 
-## Hoe koppeling werkt
+1. Een Node maakt verbinding met de Gateway-WS (apparaatkoppeling beveiligt deze stap).
+2. De Gateway vergelijkt de opgegeven mogelijkheden/opdrachten met de
+   goedgekeurde set; nieuwe of uitgebreidere sets worden als een **openstaand verzoek** opgeslagen in de
+   apparaatrecord en `node.pair.requested` wordt uitgezonden.
+3. U keurt het verzoek goed of wijst het af (CLI of UI).
+4. Tot de goedkeuring blijven Node-opdrachten gefilterd; na goedkeuring wordt de opgegeven
+   set beschikbaar, onder voorbehoud van het normale opdrachtbeleid.
 
-1. Een node maakt verbinding met de Gateway-WS en vraagt koppeling aan.
-2. De Gateway slaat een **wachtend verzoek** op en emitteert `node.pair.requested`.
-3. Je keurt het verzoek goed of wijst het af (CLI of UI).
-4. Bij goedkeuring geeft de Gateway een **nieuw token** uit (tokens worden geroteerd bij opnieuw koppelen).
-5. De node maakt opnieuw verbinding met het token en is nu "paired".
-
-Wachtende verzoeken verlopen automatisch na **5 minuten**.
+Openstaande verzoeken verlopen automatisch **5 minuten na de laatste
+nieuwe poging van de Node** — een Node die actief opnieuw verbinding maakt, houdt zijn ene openstaande verzoek actief
+in plaats van bij elke poging een nieuw verzoek (en een nieuwe goedkeuringsvraag) te genereren.
 
 ## CLI-workflow (geschikt voor headless gebruik)
 
@@ -51,97 +56,163 @@ openclaw nodes remove --node <id|name|ip>
 openclaw nodes rename --node <id|name|ip> --name "Living Room iPad"
 ```
 
-`nodes status` toont gekoppelde/verbonden nodes en hun capabilities.
+`nodes status` toont gekoppelde/verbonden Nodes en hun mogelijkheden.
 
-## API-oppervlak (gatewayprotocol)
+## API-oppervlak (Gateway-protocol)
 
-Events:
+Gebeurtenissen:
 
-- `node.pair.requested` - geëmiteerd wanneer een nieuw wachtend verzoek wordt aangemaakt.
-- `node.pair.resolved` - geëmiteerd wanneer een verzoek wordt goedgekeurd/afgewezen/verlopen.
+- `node.pair.requested` - uitgezonden wanneer een nieuw openstaand verzoek wordt aangemaakt.
+- `node.pair.resolved` - uitgezonden wanneer een verzoek wordt goedgekeurd, afgewezen of
+  verloopt.
 
 Methoden:
 
-- `node.pair.request` - maak een wachtend verzoek aan of hergebruik het.
-- `node.pair.list` - lijst wachtende + gekoppelde nodes op (`operator.pairing`).
-- `node.pair.approve` - keur een wachtend verzoek goed (geeft token uit).
-- `node.pair.reject` - wijs een wachtend verzoek af.
-- `node.pair.remove` - verwijder een gekoppelde node. Voor apparaatondersteunde koppelingen
-  trekt dit de `node`-rol van het apparaat in: het muteert `devices/paired.json` en
-  maakt node-rolsessies van dat apparaat ongeldig/verbreekt ze. Een **gemengde-rollen**
-  apparaat (bijvoorbeeld als het ook `operator` heeft) behoudt zijn rij en verliest alleen de `node`
-  rol; een apparaatrij met alleen node wordt verwijderd. Het verwijdert ook elke overeenkomende legacy
-  door gateway beheerde node-koppelingsvermelding. Authz: `operator.pairing` mag
-  niet-operator-node-rijen verwijderen; een apparaat-token-aanroeper die zijn **eigen** node-rol op
-  een gemengde-rollen apparaat intrekt heeft daarnaast `operator.admin` nodig.
-- `node.pair.verify` - verifieer `{ nodeId, token }`.
+- `node.pair.list` - geeft openstaande en gekoppelde Nodes weer (`operator.pairing`).
+- `node.pair.approve` - keurt een openstaand verzoek goed.
+- `node.pair.reject` - wijst een openstaand verzoek af.
+- `node.pair.remove` - verwijdert een gekoppelde Node. Hiermee wordt de rol `node` van het apparaat
+  ingetrokken in de opslag voor gekoppelde apparaten, wordt de goedgekeurde Node-set eveneens verwijderd en
+  worden de Node-rolsessies van dat apparaat ongeldig gemaakt en verbroken. Een apparaat met **gemengde rollen**
+  (bijvoorbeeld een apparaat dat ook `operator` heeft) behoudt zijn rij en verliest alleen
+  de rol `node`; de rij van een apparaat met uitsluitend de Node-rol wordt verwijderd. Autorisatie:
+  `operator.pairing` mag Node-rijen zonder operatorrol verwijderen; een aanroeper met een apparaattoken
+  die zijn **eigen** Node-rol op een apparaat met gemengde rollen intrekt, heeft daarnaast
+  `operator.admin` nodig.
+- `node.rename` - wijzigt de voor operators zichtbare weergavenaam van een gekoppelde Node.
 
-Notities:
+Verwijderd in 2026.7: `node.pair.request` en `node.pair.verify`. Openstaande
+verzoeken worden door de Gateway zelf aangemaakt wanneer Nodes verbinding maken, en het
+zelfstandige token per Node waarvoor deze methoden dienden, bestaat niet meer; Node-authenticatie gebruikt het
+apparaatkoppelingstoken.
 
-- `node.pair.request` is idempotent per node: herhaalde aanroepen retourneren hetzelfde
-  wachtende verzoek.
-- Herhaalde verzoeken voor dezelfde wachtende node verversen ook de opgeslagen node
-  metadata en de nieuwste allowlisted declaratieve opdracht-snapshot voor zichtbaarheid voor de operator.
-- Goedkeuring genereert **altijd** een vers token; er wordt nooit een token geretourneerd door
-  `node.pair.request`.
-- Operator-scope-niveaus en controles tijdens goedkeuring worden samengevat in
-  [Operator-scopes](/nl/gateway/operator-scopes).
-- Verzoeken kunnen `silent: true` bevatten als hint voor automatische-goedkeuringsflows.
-- `node.pair.approve` gebruikt de gedeclareerde opdrachten van het wachtende verzoek om
-  extra goedkeuringsscopes af te dwingen:
-  - verzoek zonder opdracht: `operator.pairing`
-  - verzoek met niet-exec-opdracht: `operator.pairing` + `operator.write`
+Opmerkingen:
+
+- Bij opnieuw verbinden met een ongewijzigde set wordt het openstaande verzoek hergebruikt; herhaalde
+  verzoeken vernieuwen de opgeslagen Node-metadata en de nieuwste momentopname van opgegeven opdrachten
+  op de toelatingslijst, zodat operators deze kunnen inzien.
+- Niveaus van operatorbereiken en controles tijdens de goedkeuring worden samengevat in
+  [Operatorbereiken](/nl/gateway/operator-scopes).
+- `node.pair.approve` gebruikt de opgegeven opdrachten van het openstaande verzoek om
+  aanvullende goedkeuringsbereiken af te dwingen:
+  - verzoek zonder opdrachten: `operator.pairing`
+  - verzoek met opdrachten die niet voor uitvoering dienen: `operator.pairing` + `operator.write`
   - verzoek voor `system.run` / `system.run.prepare` / `system.which`:
     `operator.pairing` + `operator.admin`
 
 <Warning>
-Node-koppeling is een vertrouwens- en identiteitsflow plus tokenuitgifte. Het pint het live node-opdrachtoppervlak per node **niet** vast.
+Goedkeuring van Node-koppeling legt de vertrouwde set mogelijkheden vast. Hiermee wordt de actuele set Node-opdrachten **niet** per Node vastgezet.
 
-- Live node-opdrachten komen voort uit wat de node declareert bij verbinding nadat het globale node-opdrachtbeleid van de gateway (`gateway.nodes.allowCommands` en `denyCommands`) is toegepast.
-- Per-node `system.run` toestaan- en vraagbeleid leeft op de node in `exec.approvals.node.*`, niet in de koppelingsrecord.
+- Actuele Node-opdrachten zijn afkomstig uit wat de Node bij het verbinden opgeeft, gefilterd door
+  het algemene Node-opdrachtbeleid van de Gateway (`gateway.nodes.allowCommands` en
+  `denyCommands`).
+- Het beleid voor toestaan en vragen van `system.run` per Node bevindt zich op de Node in
+  `exec.approvals.node.*`, niet in de koppelingsrecord.
 
 </Warning>
 
-## Node-opdrachtbeperking (2026.3.31+)
+## Beveiliging van Node-opdrachten (2026.3.31+)
 
 <Warning>
-**Incompatibele wijziging:** Vanaf `2026.3.31` zijn node-opdrachten uitgeschakeld totdat node-koppeling is goedgekeurd. Alleen apparaatkoppeling is niet langer genoeg om gedeclareerde node-opdrachten bloot te stellen.
+**Incompatibele wijziging:** vanaf `2026.3.31` zijn Node-opdrachten uitgeschakeld totdat de Node-koppeling is goedgekeurd. Alleen apparaatkoppeling is niet langer voldoende om opgegeven Node-opdrachten beschikbaar te stellen.
 </Warning>
 
-Wanneer een node voor het eerst verbinding maakt, wordt koppeling automatisch aangevraagd. Totdat het koppelingsverzoek is goedgekeurd, worden alle wachtende node-opdrachten van die node gefilterd en niet uitgevoerd. Zodra vertrouwen is vastgesteld via koppelingsgoedkeuring, worden de gedeclareerde opdrachten van de node beschikbaar, onderworpen aan het normale opdrachtbeleid.
+Wanneer een Node voor het eerst verbinding maakt, wordt automatisch om koppeling verzocht.
+Totdat dit verzoek is goedgekeurd, worden alle openstaande Node-opdrachten van die Node
+gefilterd en niet uitgevoerd. Zodra de koppeling is goedgekeurd, worden de door de Node opgegeven
+opdrachten beschikbaar, onder voorbehoud van het normale opdrachtbeleid.
 
 Dit betekent:
 
-- Nodes die eerder alleen op apparaatkoppeling vertrouwden om opdrachten bloot te stellen, moeten nu node-koppeling voltooien.
-- Opdrachten die vóór koppelingsgoedkeuring in de wachtrij stonden, worden gedropt, niet uitgesteld.
+- Nodes die voorheen alleen op apparaatkoppeling vertrouwden om opdrachten beschikbaar te stellen, moeten
+  nu ook de Node-koppeling voltooien.
+- Opdrachten die vóór de goedkeuring van de koppeling in de wachtrij zijn geplaatst, worden verwijderd en niet uitgesteld.
 
-## Vertrouwensgrenzen voor node-events (2026.3.31+)
+## Vertrouwensgrenzen voor Node-gebeurtenissen (2026.3.31+)
 
 <Warning>
-**Incompatibele wijziging:** Door nodes gestarte runs blijven nu op een verkleind vertrouwd oppervlak.
+**Incompatibele wijziging:** door Nodes geïnitieerde uitvoeringen blijven voortaan beperkt tot een kleiner vertrouwd oppervlak.
 </Warning>
 
-Door nodes gestarte samenvattingen en gerelateerde sessie-events zijn beperkt tot het beoogde vertrouwde oppervlak. Door notificaties gedreven of door nodes getriggerde flows die eerder op bredere host- of sessietooltoegang vertrouwden, moeten mogelijk worden aangepast. Deze verharding zorgt ervoor dat node-events niet kunnen escaleren naar hostniveau-tooltoegang buiten wat de vertrouwensgrens van de node toestaat.
+Door Nodes geïnitieerde samenvattingen en gerelateerde sessiegebeurtenissen zijn beperkt tot het
+beoogde vertrouwde oppervlak. Door meldingen of Nodes geactiveerde stromen die
+voorheen afhankelijk waren van ruimere toegang tot host- of sessiehulpmiddelen, moeten mogelijk worden aangepast.
+Deze beveiliging voorkomt dat Node-gebeurtenissen escaleren naar toegang tot hulpmiddelen op hostniveau
+buiten wat de vertrouwensgrens van de Node toestaat.
 
-Duurzame updates van node-aanwezigheid volgen dezelfde identiteitsgrens. Het `node.presence.alive`-event wordt
-alleen geaccepteerd van geauthenticeerde node-apparaatsessies en werkt koppelingsmetadata alleen bij wanneer de
-apparaat-/node-identiteit al gekoppeld is. Zelfgedeclareerde `client.id`-waarden zijn niet genoeg om
-laatst-gezien-status te schrijven.
+Duurzame updates van Node-aanwezigheid volgen dezelfde identiteitsgrens: de gebeurtenis
+`node.presence.alive` wordt alleen geaccepteerd van geauthenticeerde apparaatsessies van Nodes
+en werkt koppelingsmetadata alleen bij wanneer de apparaat-/Node-identiteit
+al is gekoppeld. Een zelf opgegeven waarde voor `client.id` is niet voldoende om de
+status van de laatste waarneming vast te leggen.
+
+## Via SSH geverifieerde automatische apparaatgoedkeuring (standaard)
+
+Apparaatkoppeling bij de eerste aanvraag voor `role: node` vanaf een privé-/CGNAT-adres wordt
+automatisch goedgekeurd wanneer de Gateway **het eigendom van de machine via SSH kan bewijzen**: de Gateway
+maakt een terugverbinding met de koppelingshost (`BatchMode`, `StrictHostKeyChecking=yes`),
+voert daar `openclaw node identity --json` uit en keurt alleen goed wanneer de externe
+apparaat-id en openbare sleutel exact overeenkomen met het openstaande verzoek. De overeenkomst van de sleutel
+maakt dit veilig: alleen bereikbaarheid leidt nooit tot goedkeuring, zodat medehuurders achter dezelfde NAT,
+andere gebruikers op een gedeelde host en spoofing op het LAN allemaal terugvallen op de normale
+vraag om goedkeuring.
+
+Standaard ingeschakeld. Vereisten voor activering:
+
+- De gebruiker van het Gateway-proces (of `sshVerify.user`) kan zonder interactie via SSH verbinding maken met de Node-host
+  (sleutels/agent; Tailscale SSH werkt ook) en de hostsleutel is
+  al vertrouwd.
+- `openclaw` kan via de externe `PATH` worden gevonden voor niet-interactieve `sh -lc`.
+- Het verbindende IP-adres is een rechtstreeks (niet via een proxy, niet via loopback) privé-, ULA-,
+  link-local- of CGNAT-adres, of komt overeen met `sshVerify.cidrs` wanneer dit is ingesteld.
+- Dezelfde minimale geschiktheid als voor goedkeuring via vertrouwde CIDR: uitsluitend nieuwe Node-koppeling
+  zonder bereiken; upgrades, browsers, Control UI en WebChat vragen altijd om goedkeuring.
+
+Terwijl een controle wordt uitgevoerd, krijgt de Node-client de instructie om te blijven proberen
+(`wait_then_retry`) in plaats van te pauzeren voor handmatige goedkeuring; als de controle
+mislukt, valt de volgende poging terug op de normale goedkeuringsstroom. Mislukte doelen
+krijgen een korte afkoelperiode (5 minuten na een niet-overeenkomende sleutel).
+
+Bij goedgekeurde apparaten wordt `approvedVia: "ssh-verified"` vastgelegd en hun eerste opgegeven
+set mogelijkheden wordt in dezelfde stap goedgekeurd — de overeenkomst van de sleutel bewijst al
+dat de Node wordt uitgevoerd onder het account van de operator op een machine waarvan die eigenaar is, wat
+dezelfde bewering is die een handmatige goedkeuring van mogelijkheden bevestigt. Latere uitbreidingen van de set
+vragen nog steeds om goedkeuring.
+
+Aanscherpen of uitschakelen:
+
+```json5
+{
+  gateway: {
+    nodes: {
+      pairing: {
+        // Disable entirely:
+        sshVerify: false,
+        // ...or scope/tune the probe:
+        // sshVerify: { user: "me", identity: "~/.ssh/probe", timeoutMs: 7000, cidrs: ["10.0.0.0/8"] },
+      },
+    },
+  },
+}
+```
 
 ## Automatische goedkeuring (macOS-app)
 
-De macOS-app kan optioneel proberen een **stille goedkeuring** uit te voeren wanneer:
+De macOS-app kan proberen verzoeken om Node-mogelijkheden **stilzwijgend goed te keuren**
+wanneer:
 
-- het verzoek is gemarkeerd als `silent`, en
-- de app een SSH-verbinding met de gatewayhost kan verifiëren met dezelfde gebruiker.
+- het verzoek als `silent` is gemarkeerd (de Gateway markeert de eerste set mogelijkheden
+  als stil wanneer de apparaatkoppeling zonder interactie is goedgekeurd), en
+- de app een SSH-verbinding met de Gateway-host kan verifiëren met dezelfde
+  gebruiker.
 
-Als stille goedkeuring mislukt, valt de app terug op de normale prompt "Approve/Reject".
+Als stilzwijgende goedkeuring mislukt, valt de app terug op de normale vraag met Approve/Reject.
 
-## Automatische goedkeuring voor vertrouwde CIDR-apparaten
+## Automatische apparaatgoedkeuring via vertrouwde CIDR
 
-WS-apparaatkoppeling voor `role: node` blijft standaard handmatig. Voor private
-nodenetwerken waarbij de Gateway het netwerkpad al vertrouwt, kunnen operators
-zich aanmelden met expliciete CIDR's of exacte IP's:
+WS-apparaatkoppeling voor `role: node` blijft standaard handmatig. Voor privé-
+Node-netwerken waarvan de Gateway het netwerkpad al vertrouwt, kunnen operators dit
+inschakelen met expliciete CIDR's of exacte IP-adressen:
 
 ```json5
 {
@@ -158,65 +229,108 @@ zich aanmelden met expliciete CIDR's of exacte IP's:
 Beveiligingsgrens:
 
 - Uitgeschakeld wanneer `gateway.nodes.pairing.autoApproveCidrs` niet is ingesteld.
-- Er bestaat geen algemene LAN- of privatenetwerkmodus voor automatische goedkeuring.
-- Alleen verse `role: node`-apparaatkoppeling zonder gevraagde scopes komt in aanmerking.
-- Operator-, browser-, Control UI- en WebChat-clients blijven handmatig.
-- Rol-, scope-, metadata- en publieke-sleutel-upgrades blijven handmatig.
-- Same-host loopback trusted-proxy-headerpaden komen niet in aanmerking omdat dat
-  pad kan worden gespooft door lokale aanroepers.
+- Er bestaat geen algemene modus voor automatische goedkeuring via LAN of privénetwerk; via SSH geverifieerde
+  automatische goedkeuring (hierboven) vereist een cryptografische overeenkomst met de apparaatsleutel en nooit
+  alleen netwerklokaliteit.
+- Alleen een nieuw apparaatkoppelingsverzoek voor `role: node` zonder aangevraagde bereiken
+  komt in aanmerking.
+- Clients voor operators, browsers, Control UI en WebChat blijven handmatig.
+- Upgrades van rollen, bereiken, metadata en openbare sleutels blijven handmatig.
+- Vertrouwde-proxyheaderpaden via local loopback op dezelfde host komen niet in aanmerking, omdat dit
+  pad door lokale aanroepers kan worden vervalst.
 
-## Automatische goedkeuring voor metadata-upgrade
+## Opschoning bij vervanging van stilzwijgende koppelingen
 
-Wanneer een al gekoppeld apparaat opnieuw verbinding maakt met alleen niet-gevoelige metadata
-wijzigingen (bijvoorbeeld weergavenaam of hints voor clientplatform), behandelt OpenClaw
-dat als een `metadata-upgrade`. Stille automatische goedkeuring is smal: deze geldt alleen
-voor vertrouwde niet-browser lokale herverbindingen die al bezit van lokale
-of gedeelde referenties hebben bewezen, inclusief same-host native app-herverbindingen na OS
-versie-metadatawijzigingen. Browser-/Control UI-clients en externe clients gebruiken nog steeds
-de expliciete hergoedkeuringsflow. Scope-upgrades (lezen naar schrijven/admin) en
-publieke-sleutelwijzigingen komen **niet** in aanmerking voor automatische goedkeuring van metadata-upgrades -
-ze blijven expliciete hergoedkeuringsverzoeken.
+Niet-interactieve goedkeuringen leggen hun herkomst vast in de rij voor het gekoppelde apparaat:
+goedkeuringen volgens lokaal beleid op dezelfde host als `silent`, Node-goedkeuringen via vertrouwde CIDR als
+`trusted-cidr` en via SSH geverifieerde Node-goedkeuringen als `ssh-verified`. Clients met een tijdelijke statusmap (tijdelijke basismappen,
+containers, sandboxes per uitvoering) maken per uitvoering een nieuw apparaatssleutelpaar en elke
+uitvoering wordt stilzwijgend opnieuw gekoppeld als een volledig nieuw apparaat — zonder opschoning groeit de lijst met gekoppelde apparaten
+bij elke uitvoering met één verouderde rij.
 
-## QR-koppelingshelpers
+Wanneer de Gateway een **lokale** apparaatkoppeling stilzwijgend goedkeurt, trekt deze
+oudere met `silent` goedgekeurde records in die tot hetzelfde clientcluster behoren
+(overeenkomstige `clientId`, `clientMode` en weergavenaam) en momenteel niet
+verbonden zijn. Lokale clients worden uitgevoerd op de Gateway-host zelf, zodat de clustersleutel
+niet met een andere machine kan overeenkomen. Tokens van ingetrokken rijen worden onmiddellijk ongeldig;
+overeenkomende verouderde Node-koppelingsvermeldingen worden gewist en een verwijderingsgebeurtenis
+`node.pair.resolved` wordt uitgezonden.
 
-`/pair qr` rendert de koppelingspayload als gestructureerde media zodat mobiele en
-browserclients deze direct kunnen scannen.
+Grenzen:
 
-Het verwijderen van een apparaat ruimt ook alle verouderde wachtende koppelingsverzoeken voor dat
-apparaat-id op, zodat `nodes pending` na een intrekking geen verweesde rijen toont.
+- Alleen records waarvan de nieuwste goedkeuring lokaal op dezelfde host (`silent`) was, komen
+  in aanmerking, zowel als aanleiding als als doel. Koppelingen via vertrouwde CIDR en via SSH geverifieerde koppelingen
+  lopen over hosts heen waar weergavemetadata geen machine-identiteit is, zodat ze
+  nooit automatisch worden verwijderd — gebruik daarvoor de opschoning in Control UI of
+  `openclaw nodes remove`.
+- Door de eigenaar goedgekeurde koppelingen en koppelingen via QR-/installatiecode (bootstrap) worden nooit
+  automatisch verwijderd. Records die zijn goedgekeurd voordat herkomst werd vastgelegd, blijven beschermd,
+  zelfs na een latere stilzwijgende hergoedkeuring van dezelfde apparaat-id.
+- Momenteel verbonden apparaten worden overgeslagen, zodat gelijktijdige lokale sessies met
+  afzonderlijke statusmappen hun tokens behouden zolang ze actief zijn. Records die
+  in de afgelopen minuut zijn goedgekeurd, worden eveneens overgeslagen, zodat gelijktijdige koppelingshandshakes
+  elkaar niet kunnen intrekken voordat hun verbindingen zijn geregistreerd.
+- Betrokken clients zijn per definitie lokaal, zodat ze bij hun volgende verbinding
+  opnieuw stilzwijgend worden gekoppeld.
 
-## Localiteit en doorgestuurde headers
+## Automatische goedkeuring van metadata-upgrades
 
-Gateway-koppeling behandelt een verbinding alleen als loopback wanneer zowel de ruwe socket
-als eventueel upstream-proxybewijs overeenkomen. Als een verzoek op loopback binnenkomt maar
-`Forwarded`, een `X-Forwarded-*`- of `X-Real-IP`-headerbewijs bevat, diskwalificeert dat
-doorgestuurde-headerbewijs de loopback-localiteitsclaim. Het koppelingspad
-vereist dan expliciete goedkeuring in plaats van het verzoek stilzwijgend als een
-same-host-verbinding te behandelen. Zie [Vertrouwde-proxy-auth](/nl/gateway/trusted-proxy-auth) voor
-de equivalente regel voor operator-auth.
+Wanneer een al gekoppeld apparaat opnieuw verbinding maakt met uitsluitend niet-gevoelige wijzigingen in metadata
+(bijvoorbeeld de weergavenaam of aanwijzingen over het clientplatform), behandelt OpenClaw
+dit als een `metadata-upgrade`. Stilzwijgende automatische goedkeuring is beperkt: deze geldt alleen
+voor vertrouwde lokale herverbindingen buiten de browser die al hebben bewezen dat ze over
+lokale of gedeelde aanmeldgegevens beschikken, waaronder herverbindingen van systeemeigen apps op dezelfde host na
+wijzigingen in metadata over de versie van het besturingssysteem. Clients voor browsers/Control UI en externe clients
+gebruiken nog steeds de expliciete stroom voor hergoedkeuring. Upgrades van bereiken (lezen naar
+schrijven/beheer) en wijzigingen in de openbare sleutel komen **niet** in aanmerking voor
+automatische goedkeuring als metadata-upgrade; hiervoor blijven expliciete verzoeken om hergoedkeuring vereist.
+
+## Hulpmiddelen voor QR-koppeling
+
+`/pair qr` geeft de koppelingspayload weer als gestructureerde media, zodat mobiele
+clients en browserclients deze rechtstreeks kunnen scannen.
+
+Als een apparaat wordt verwijderd, worden ook alle verouderde openstaande koppelingsverzoeken voor die
+apparaat-id opgeschoond, zodat `nodes pending` na intrekking geen verweesde rijen toont.
+
+## Lokale herkomst en doorgestuurde headers
+
+Gateway-koppeling beschouwt een verbinding alleen als local loopback wanneer zowel de onbewerkte socket
+als eventueel bewijs van een bovenliggende proxy daarmee overeenstemmen. Als een verzoek via local loopback binnenkomt maar
+bewijs bevat in de vorm van de header `Forwarded`, een `X-Forwarded-*`-header of een `X-Real-IP`-header, sluit dat
+bewijs uit doorgestuurde headers de claim van lokale herkomst via local loopback uit en vereist
+het koppelingspad expliciete goedkeuring, in plaats van het verzoek stilzwijgend als een verbinding
+vanaf dezelfde host te behandelen. Zie
+[Verificatie via vertrouwde proxy](/nl/gateway/trusted-proxy-auth) voor de overeenkomstige regel voor
+operatorverificatie.
 
 ## Opslag (lokaal, privé)
 
-Koppelingsstatus wordt opgeslagen onder de Gateway-statusdirectory (standaard `~/.openclaw`):
+De koppelingsstatus wordt opgeslagen in de records van gekoppelde apparaten in de gedeelde SQLite-statusdatabase
+in de statusmap van de Gateway (standaard `~/.openclaw`):
 
-- `~/.openclaw/nodes/paired.json`
-- `~/.openclaw/nodes/pending.json`
+- `~/.openclaw/state/openclaw.sqlite` (gekoppelde apparaten met apparaatverificatie,
+  goedgekeurde Node-oppervlakken, openstaande oppervlakteverzoeken, openstaande koppelingsverzoeken voor
+  apparaten en bootstrap-tokens)
 
-Als je `OPENCLAW_STATE_DIR` overschrijft, verhuist de map `nodes/` mee.
+Als u `OPENCLAW_STATE_DIR` overschrijft, wordt de database mee verplaatst. Gateways
+die zijn bijgewerkt vanaf releases met JSON-opslag importeren deze bij het opstarten en laten
+de archieven `devices/*.json.migrated` en `nodes/*.json.migrated` achter.
 
-Beveiligingsnotities:
+Beveiligingsopmerkingen:
 
-- Tokens zijn geheimen; behandel `paired.json` als gevoelig.
-- Rotatie van een token vereist hergoedkeuring (of verwijdering van de node-vermelding).
+- Apparaattokens zijn geheimen; behandel de statusdatabase als gevoelige gegevens.
+- U roteert een apparaattoken met `openclaw devices rotate` /
+  `device.token.rotate`.
 
 ## Transportgedrag
 
-- Het transport is **stateless**; het slaat geen lidmaatschap op.
-- Als de Gateway offline is of koppeling is uitgeschakeld, kunnen nodes niet koppelen.
-- Als de Gateway in externe modus staat, gebeurt koppeling nog steeds tegen de opslag van de externe Gateway.
+- Het transport is **staatloos**; het slaat geen lidmaatschap op.
+- Als de Gateway offline is of koppeling is uitgeschakeld, kunnen Nodes niet koppelen.
+- In de externe modus vindt de koppeling plaats met de opslag van de externe Gateway.
 
 ## Gerelateerd
 
 - [Kanaalkoppeling](/nl/channels/pairing)
-- [Nodes](/nl/nodes)
-- [Apparaten-CLI](/nl/cli/devices)
+- [CLI voor Nodes](/nl/cli/nodes)
+- [CLI voor apparaten](/nl/cli/devices)

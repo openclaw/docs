@@ -1,27 +1,27 @@
 ---
 read_when:
-    - Vuoi più agenti isolati (spazi di lavoro + routing + autenticazione)
-summary: Riferimento CLI per `openclaw agents` (list/add/delete/bindings/bind/unbind/set identity)
+    - Vuoi più agenti isolati (spazi di lavoro + instradamento + autenticazione)
+summary: Riferimento CLI per `openclaw agents` (elencare/aggiungere/eliminare/associazioni/associare/dissociare/impostare l'identità)
 title: Agenti
 x-i18n:
-    generated_at: "2026-06-27T17:17:58Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:53:33Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7905bc2465c48b5bfee4ce90fdf96dcd92b304a9fb29de93f8f49afdff0e6672
+    source_hash: 89b6c59a9ce0fd0514343cc3fa66ae5e6d963cdfa5c6f58ffe6b9a6b5e943f09
     source_path: cli/agents.md
     workflow: 16
 ---
 
 # `openclaw agents`
 
-Gestisci agenti isolati (workspace + auth + routing).
+Gestisci agenti isolati (spazi di lavoro + autenticazione + instradamento). L'esecuzione di `openclaw agents` senza sottocomandi equivale a `openclaw agents list`.
 
 Correlati:
 
-- [Routing multi-agente](/it/concepts/multi-agent)
-- [Workspace dell'agente](/it/concepts/agent-workspace)
-- [Configurazione Skills](/it/tools/skills-config): configurazione della visibilità delle skill.
+- [Instradamento multi-agente](/it/concepts/multi-agent)
+- [Spazio di lavoro dell'agente](/it/concepts/agent-workspace)
+- [Configurazione delle Skills](/it/tools/skills-config): configurazione della visibilità delle Skills.
 
 ## Esempi
 
@@ -39,11 +39,52 @@ openclaw agents set-identity --agent main --avatar avatars/openclaw.png
 openclaw agents delete work
 ```
 
-## Associazioni di routing
+## Superficie dei comandi
 
-Usa le associazioni di routing per vincolare il traffico in ingresso del canale a un agente specifico.
+### `agents list`
 
-Se vuoi anche Skills visibili diverse per agente, configura `agents.defaults.skills` e `agents.list[].skills` in `openclaw.json`. Consulta [Configurazione Skills](/it/tools/skills-config) e [Riferimento configurazione](/it/gateway/config-agents#agents-defaults-skills).
+Opzioni: `--json`, `--bindings` (include le regole di instradamento complete, non solo i conteggi o i riepiloghi per agente).
+
+### `agents add [name]`
+
+Opzioni: `--workspace <dir>`, `--model <id>`, `--agent-dir <dir>`, `--bind <channel[:accountId]>` (ripetibile), `--non-interactive`, `--json`.
+
+- Il passaggio di qualsiasi flag esplicito per l'aggiunta sposta il comando sul percorso non interattivo.
+- La modalità non interattiva richiede sia un nome per l'agente sia `--workspace`.
+- `main` è riservato e non può essere utilizzato come ID del nuovo agente.
+- La modalità interattiva inizializza l'autenticazione copiando solo le credenziali statiche trasferibili (profili `api_key` e `token` statici), a meno che una credenziale non disabiliti la copia con `copyToAgents: false`; i profili con token di aggiornamento OAuth non vengono copiati, a meno che un provider non abiliti la copia con `copyToAgents: true`. Senza una copia, OAuth rimane disponibile solo tramite ereditarietà in lettura dall'archivio dell'agente `main` reale. Se l'agente predefinito configurato non è `main`, accedi separatamente ai profili OAuth sul nuovo agente.
+
+### `agents bindings`
+
+Opzioni: `--agent <id>`, `--json`.
+
+### `agents bind`
+
+Opzioni: `--agent <id>` (per impostazione predefinita, l'agente predefinito corrente), `--bind <channel[:accountId]>` (ripetibile), `--json`.
+
+### `agents unbind`
+
+Opzioni: `--agent <id>` (per impostazione predefinita, l'agente predefinito corrente), `--bind <channel[:accountId]>` (ripetibile), `--all`, `--json`. Accetta `--all` oppure uno o più valori `--bind`, ma non entrambi.
+
+### `agents set-identity`
+
+Opzioni: `--agent <id>`, `--workspace <dir>`, `--identity-file <path>`, `--from-identity`, `--name <name>`, `--theme <theme>`, `--emoji <emoji>`, `--avatar <value>`, `--json`. Vedi [Impostare l'identità](#set-identity) di seguito.
+
+### `agents delete <id>`
+
+Opzioni: `--force`, `--json`.
+
+- `main` non può essere eliminato.
+- Senza `--force`, è richiesta una conferma interattiva (l'operazione non riesce in una sessione non TTY; riesegui con `--force`).
+- Le directory dello spazio di lavoro, dello stato dell'agente e delle trascrizioni delle sessioni vengono spostate nel Cestino, non eliminate definitivamente.
+- Quando il Gateway è raggiungibile, l'eliminazione viene instradata attraverso il Gateway, affinché la pulizia della configurazione e dell'archivio delle sessioni utilizzi lo stesso processo di scrittura del traffico in fase di esecuzione. Se il Gateway non è raggiungibile, la CLI ripiega sul percorso locale offline.
+- Se lo spazio di lavoro di un altro agente corrisponde allo stesso percorso, si trova all'interno di questo spazio di lavoro o contiene questo spazio di lavoro, lo spazio di lavoro viene conservato e `--json` restituisce `workspaceRetained`, `workspaceRetainedReason` e `workspaceSharedWith`.
+
+## Associazioni di instradamento
+
+Utilizza le associazioni di instradamento per vincolare il traffico in ingresso da un canale a un agente specifico.
+
+Se desideri anche Skills visibili diverse per ciascun agente, configura `agents.defaults.skills` e `agents.list[].skills` in `openclaw.json`. Vedi [Configurazione delle Skills](/it/tools/skills-config) e [Riferimento per la configurazione](/it/gateway/config-agents#agentsdefaultsskills).
 
 Elenca le associazioni:
 
@@ -59,169 +100,71 @@ Aggiungi associazioni:
 openclaw agents bind --agent work --bind telegram:ops --bind discord:guild-a
 ```
 
-Puoi anche aggiungere associazioni durante la creazione di un agente:
+Puoi aggiungere associazioni anche durante la creazione di un agente:
 
 ```bash
 openclaw agents add work --workspace ~/.openclaw/workspace-work --bind telegram:* --bind discord:*
 ```
 
-Se ometti `accountId` (`--bind <channel>`), OpenClaw lo risolve dagli hook di configurazione del Plugin, dall'associazione forzata dell'account o dal numero di account configurati del canale.
+Se ometti `accountId` (`--bind <channel>`), OpenClaw lo determina dagli hook di configurazione del plugin, dall'associazione forzata dell'account o dal numero di account configurati per il canale.
 
-Se ometti `--agent` per `bind` o `unbind`, OpenClaw usa come destinazione l'agente predefinito corrente.
+Se ometti `--agent` per `bind` o `unbind`, OpenClaw seleziona l'agente predefinito corrente.
 
 ### Formato di `--bind`
 
-| Formato                     | Significato                                                                                     |
-| --------------------------- | ----------------------------------------------------------------------------------------------- |
-| `--bind <channel>:*`         | Corrisponde a tutti gli account sul canale.                                                      |
-| `--bind <channel>:<account>` | Corrisponde a un account.                                                                       |
-| `--bind <channel>`           | Corrisponde solo all'account predefinito, a meno che la CLI possa risolvere in modo sicuro un ambito account specifico del Plugin. |
+| Formato                      | Significato                                                                                                                     |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `--bind <channel>:*`         | Corrisponde a tutti gli account del canale.                                                                                      |
+| `--bind <channel>:<account>` | Corrisponde a un account.                                                                                                       |
+| `--bind <channel>`           | Corrisponde solo all'account predefinito, a meno che la CLI non possa determinare in modo sicuro un ambito account specifico del plugin. |
 
-### Comportamento dell'ambito di associazione
+### Comportamento dell'ambito delle associazioni
 
-- Un'associazione memorizzata senza `accountId` corrisponde solo all'account predefinito del canale.
-- `accountId: "*"` è il fallback a livello di canale (tutti gli account) ed è meno specifico di un'associazione account esplicita.
-- Se lo stesso agente ha già un'associazione di canale corrispondente senza `accountId` e in seguito crei un'associazione con un `accountId` esplicito o risolto, OpenClaw aggiorna tale associazione esistente sul posto invece di aggiungere un duplicato.
+- Un'associazione archiviata senza `accountId` corrisponde solo all'account predefinito del canale.
+- `accountId: "*"` è il ripiego valido per l'intero canale (tutti gli account) ed è meno specifico di un'associazione esplicita a un account.
+- Se lo stesso agente dispone già di un'associazione corrispondente al canale senza `accountId` e successivamente crei un'associazione con un `accountId` esplicito o determinato, OpenClaw aggiorna direttamente l'associazione esistente anziché aggiungerne una duplicata.
 
 Esempi:
 
 ```bash
-# match all accounts on the channel
+# corrisponde a tutti gli account del canale
 openclaw agents bind --agent work --bind telegram:*
 
-# match a specific account
+# corrisponde a un account specifico
 openclaw agents bind --agent work --bind telegram:ops
 
-# initial channel-only binding
+# associazione iniziale al solo canale
 openclaw agents bind --agent work --bind telegram
 
-# later upgrade to account-scoped binding
+# successivo aggiornamento a un'associazione con ambito account
 openclaw agents bind --agent work --bind telegram:alerts
 ```
 
-Dopo l'aggiornamento, il routing per tale associazione è limitato a `telegram:alerts`. Se vuoi anche il routing dell'account predefinito, aggiungilo esplicitamente (ad esempio `--bind telegram:default`).
+Dopo l'aggiornamento, l'instradamento per tale associazione è limitato a `telegram:alerts`. Se desideri anche l'instradamento dell'account predefinito, aggiungilo esplicitamente (ad esempio `--bind telegram:default`).
 
-Rimuovi associazioni:
+Rimuovi le associazioni:
 
 ```bash
 openclaw agents unbind --agent work --bind telegram:ops
 openclaw agents unbind --agent work --all
 ```
 
-`unbind` accetta `--all` oppure uno o più valori `--bind`, non entrambi.
-
-## Superficie dei comandi
-
-### `agents`
-
-Eseguire `openclaw agents` senza sottocomando equivale a `openclaw agents list`.
-
-### `agents list`
-
-Opzioni:
-
-- `--json`
-- `--bindings`: include le regole di routing complete, non solo conteggi/riepiloghi per agente
-
-### `agents add [name]`
-
-Opzioni:
-
-- `--workspace <dir>`
-- `--model <id>`
-- `--agent-dir <dir>`
-- `--bind <channel[:accountId]>` (ripetibile)
-- `--non-interactive`
-- `--json`
-
-Note:
-
-- Passare qualsiasi flag add esplicito porta il comando nel percorso non interattivo.
-- La modalità non interattiva richiede sia un nome agente sia `--workspace`.
-- `main` è riservato e non può essere usato come nuovo ID agente.
-- In modalità interattiva, il seeding dell'auth copia solo profili statici portabili
-  (`api_key` e `token` statico per impostazione predefinita). I profili OAuth con token di refresh rimangono
-  disponibili solo tramite ereditarietà in lettura dallo store reale dell'agente `main`.
-  Se l'agente predefinito configurato non è `main`, accedi separatamente per i profili OAuth
-  sul nuovo agente.
-
-### `agents bindings`
-
-Opzioni:
-
-- `--agent <id>`
-- `--json`
-
-### `agents bind`
-
-Opzioni:
-
-- `--agent <id>` (predefinito: agente predefinito corrente)
-- `--bind <channel[:accountId]>` (ripetibile)
-- `--json`
-
-### `agents unbind`
-
-Opzioni:
-
-- `--agent <id>` (predefinito: agente predefinito corrente)
-- `--bind <channel[:accountId]>` (ripetibile)
-- `--all`
-- `--json`
-
-### `agents delete <id>`
-
-Opzioni:
-
-- `--force`
-- `--json`
-
-Note:
-
-- `main` non può essere eliminato.
-- Senza `--force`, è richiesta una conferma interattiva.
-- Le directory del workspace, dello stato dell'agente e delle trascrizioni delle sessioni vengono spostate nel Cestino, non eliminate definitivamente.
-- Quando il Gateway è raggiungibile, l'eliminazione viene inviata tramite il Gateway, così la pulizia della configurazione e dello store delle sessioni condivide lo stesso writer del traffico runtime. Se il Gateway non è raggiungibile, la CLI ripiega sul percorso locale offline.
-- Se il workspace di un altro agente è lo stesso percorso, si trova all'interno di questo workspace o contiene questo workspace,
-  il workspace viene mantenuto e `--json` riporta `workspaceRetained`,
-  `workspaceRetainedReason` e `workspaceSharedWith`.
-
 ## File di identità
 
-Ogni workspace agente può includere un `IDENTITY.md` nella radice del workspace:
+Ogni spazio di lavoro di un agente può includere un file `IDENTITY.md` nella propria radice:
 
 - Percorso di esempio: `~/.openclaw/workspace/IDENTITY.md`
-- `set-identity --from-identity` legge dalla radice del workspace (o da un `--identity-file` esplicito)
+- `set-identity --from-identity` legge dalla radice dello spazio di lavoro (o da un file `--identity-file` esplicito).
 
-I percorsi avatar vengono risolti relativamente alla radice del workspace.
+I percorsi degli avatar vengono risolti rispetto alla radice dello spazio di lavoro e non possono uscirne, nemmeno tramite un collegamento simbolico.
 
 ## Impostare l'identità
 
-`set-identity` scrive campi in `agents.list[].identity`:
+`set-identity` scrive i campi in `agents.list[].identity`: `name`, `theme`, `emoji`, `avatar` (percorso relativo allo spazio di lavoro, URL http(s) o URI di dati).
 
-- `name`
-- `theme`
-- `emoji`
-- `avatar` (percorso relativo al workspace, URL http(s) o data URI)
-
-Opzioni:
-
-- `--agent <id>`
-- `--workspace <dir>`
-- `--identity-file <path>`
-- `--from-identity`
-- `--name <name>`
-- `--theme <theme>`
-- `--emoji <emoji>`
-- `--avatar <value>`
-- `--json`
-
-Note:
-
-- `--agent` o `--workspace` possono essere usati per selezionare l'agente di destinazione.
-- Se fai affidamento su `--workspace` e più agenti condividono tale workspace, il comando non riesce e chiede di passare `--agent`.
-- I file immagine avatar locali relativi al workspace sono limitati a 2 MB. Gli URL HTTP(S) e gli URI `data:` non vengono controllati con il limite locale di dimensione file.
-- Quando non vengono forniti campi identità espliciti, il comando legge i dati di identità da `IDENTITY.md`.
+- `--agent` o `--workspace` seleziona l'agente di destinazione. Se `--workspace` corrisponde a più agenti, il comando non riesce e richiede di passare `--agent`.
+- I file immagine locali degli avatar con percorso relativo allo spazio di lavoro sono limitati a 2 MB. Gli URL HTTP(S) e gli URI `data:` non vengono verificati rispetto al limite locale delle dimensioni dei file.
+- Se non vengono forniti campi di identità espliciti, il comando legge i dati di identità da `IDENTITY.md`.
 
 Carica da `IDENTITY.md`:
 
@@ -229,7 +172,7 @@ Carica da `IDENTITY.md`:
 openclaw agents set-identity --workspace ~/.openclaw/workspace --from-identity
 ```
 
-Sovrascrivi i campi esplicitamente:
+Sovrascrivi esplicitamente i campi:
 
 ```bash
 openclaw agents set-identity --agent main --name "OpenClaw" --emoji "🦞" --avatar avatars/openclaw.png
@@ -257,6 +200,6 @@ Esempio di configurazione:
 
 ## Correlati
 
-- [Riferimento CLI](/it/cli)
-- [Routing multi-agente](/it/concepts/multi-agent)
-- [Workspace dell'agente](/it/concepts/agent-workspace)
+- [Riferimento della CLI](/it/cli)
+- [Instradamento multi-agente](/it/concepts/multi-agent)
+- [Spazio di lavoro dell'agente](/it/concepts/agent-workspace)

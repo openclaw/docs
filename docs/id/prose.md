@@ -1,32 +1,32 @@
 ---
 read_when:
-    - Anda ingin menjalankan atau menulis file workflow .prose
+    - Anda ingin menjalankan atau menulis file alur kerja .prose
     - Anda ingin mengaktifkan plugin OpenProse
     - Anda perlu memahami bagaimana OpenProse dipetakan ke primitif OpenClaw
 sidebarTitle: OpenProse
-summary: OpenProse adalah format alur kerja yang mengutamakan markdown untuk sesi AI multi-agen. Di OpenClaw, format ini dikirimkan sebagai plugin dengan perintah slash /prose dan paket skill.
+summary: OpenProse adalah format alur kerja yang mengutamakan Markdown untuk sesi AI multiagen. Di OpenClaw, OpenProse disertakan sebagai Plugin dengan perintah garis miring `/prose` dan paket skill.
 title: OpenProse
 x-i18n:
-    generated_at: "2026-06-27T18:01:50Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:35:23Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: dde819215f99055c2a83ec32ed6e0700994654ca2d1d9c9dda98b71545f8a012
+    source_hash: 8b04eb23bf827fbec6db11c1e95993e7f6c617451c5f4fda771ad078674c12bc
     source_path: prose.md
     workflow: 16
 ---
 
-OpenProse adalah format alur kerja portabel yang mengutamakan Markdown untuk mengorkestrasi sesi AI. Di OpenClaw, format ini dikirim sebagai Plugin yang menginstal paket Skills OpenProse dan perintah slash `/prose`. Program berada dalam file `.prose` dan dapat menjalankan beberapa sub-agen dengan alur kontrol eksplisit.
+OpenProse adalah format alur kerja portabel yang mengutamakan Markdown untuk mengorkestrasi sesi AI. Di OpenClaw, format ini disertakan sebagai Plugin yang memasang paket Skills OpenProse dan perintah garis miring `/prose`. Program berada dalam berkas `.prose` dan dapat menjalankan beberapa subagen dengan alur kontrol yang eksplisit.
 
 <CardGroup cols={3}>
   <Card title="Instal" icon="download" href="#install">
     Aktifkan Plugin OpenProse dan mulai ulang Gateway.
   </Card>
   <Card title="Jalankan program" icon="play" href="#slash-command">
-    Gunakan `/prose run` untuk mengeksekusi file `.prose` atau program jarak jauh.
+    Gunakan `/prose run` untuk menjalankan berkas `.prose` atau program jarak jauh.
   </Card>
-  <Card title="Tulis program" icon="pencil" href="#example">
-    Tulis alur kerja multi-agen dengan langkah paralel dan berurutan.
+  <Card title="Tulis program" icon="pencil" href="#example-parallel-research-and-synthesis">
+    Susun alur kerja multiagen dengan langkah paralel dan berurutan.
   </Card>
 </CardGroup>
 
@@ -34,7 +34,7 @@ OpenProse adalah format alur kerja portabel yang mengutamakan Markdown untuk men
 
 <Steps>
   <Step title="Aktifkan Plugin">
-    Plugin bawaan dinonaktifkan secara default. Aktifkan OpenProse:
+    OpenProse disertakan, tetapi dinonaktifkan secara default. Aktifkan:
 
     ```bash
     openclaw plugins enable open-prose
@@ -51,16 +51,17 @@ OpenProse adalah format alur kerja portabel yang mengutamakan Markdown untuk men
     openclaw plugins list | grep prose
     ```
 
-    Anda seharusnya melihat `open-prose` dalam keadaan aktif. Perintah Skills `/prose` kini tersedia di chat.
+    Anda akan melihat `open-prose` telah diaktifkan. Perintah Skills `/prose` kini tersedia di obrolan.
 
   </Step>
 </Steps>
 
-Untuk checkout lokal: `openclaw plugins install ./path/to/local/open-prose-plugin`
+Dari hasil checkout repositori, Anda dapat memasang Plugin secara langsung:
+`openclaw plugins install ./extensions/open-prose`
 
-## Perintah slash
+## Perintah garis miring
 
-OpenProse mendaftarkan `/prose` sebagai perintah Skills yang dapat dipanggil pengguna:
+OpenProse mendaftarkan `/prose` sebagai perintah Skills yang dapat dijalankan oleh pengguna:
 
 ```text
 /prose help
@@ -72,15 +73,16 @@ OpenProse mendaftarkan `/prose` sebagai perintah Skills yang dapat dipanggil pen
 /prose update
 ```
 
-`/prose run <handle/slug>` diselesaikan menjadi `https://p.prose.md/<handle>/<slug>`. URL langsung diambil apa adanya menggunakan alat `web_fetch`.
+`/prose run <handle/slug>` diubah menjadi `https://p.prose.md/<handle>/<slug>`.
+URL langsung diambil apa adanya menggunakan alat `web_fetch`.
 
-Eksekusi jarak jauh tingkat atas bersifat eksplisit. Impor jarak jauh di dalam program `.prose` adalah dependensi kode transitif: sebelum OpenProse mengambil target `use` jarak jauh apa pun, OpenProse menampilkan daftar impor yang telah diselesaikan dan mewajibkan operator membalas persis `approve remote prose imports` untuk eksekusi tersebut.
+Eksekusi jarak jauh tingkat teratas bersifat eksplisit. Impor jarak jauh di dalam program `.prose` merupakan dependensi kode transitif: sebelum OpenProse mengambil target `use` jarak jauh apa pun, OpenProse menampilkan daftar impor yang telah diuraikan dan mengharuskan operator membalas persis `approve remote prose imports` untuk eksekusi tersebut.
 
-## Yang dapat dilakukan
+## Kemampuannya
 
-- Riset dan sintesis multi-agen dengan paralelisme eksplisit.
-- Alur kerja yang dapat diulang dan aman melalui persetujuan (tinjauan kode, triase insiden, pipeline konten).
-- Program `.prose` yang dapat digunakan ulang dan dijalankan di berbagai runtime agen yang didukung.
+- Riset dan sintesis multiagen dengan paralelisme eksplisit.
+- Alur kerja yang dapat diulang dan aman melalui persetujuan (tinjauan kode, triase insiden, alur pemrosesan konten).
+- Program `.prose` yang dapat digunakan kembali dan dijalankan di berbagai runtime agen yang didukung.
 
 ## Contoh: riset dan sintesis paralel
 
@@ -104,40 +106,41 @@ parallel:
     prompt: "Summarize {topic}."
 
 session "Merge the findings + draft into a final answer."
-context: { findings, draft }
+  context: { findings, draft }
 ```
 
 ## Pemetaan runtime OpenClaw
 
 Program OpenProse dipetakan ke primitif OpenClaw:
 
-| Konsep OpenProse         | Alat OpenClaw    |
-| ------------------------- | ---------------- |
-| Spawn session / Task tool | `sessions_spawn` |
-| File read / write         | `read` / `write` |
-| Web fetch                 | `web_fetch`      |
+| Konsep OpenProse           | Alat OpenClaw                                    |
+| ------------------------- | ----------------------------------------------- |
+| Buat sesi / Alat tugas    | `sessions_spawn`                                |
+| Baca / tulis berkas       | `read` / `write`                                |
+| Ambil dari web            | `web_fetch` (`exec` + curl saat POST diperlukan) |
 
 <Warning>
   Jika daftar izin alat Anda memblokir `sessions_spawn`, `read`, `write`, atau `web_fetch`, program OpenProse akan gagal. Periksa [konfigurasi daftar izin alat](/id/gateway/config-tools) Anda.
 </Warning>
 
-## Lokasi file
+## Lokasi berkas
 
-OpenProse menyimpan status di bawah `.prose/` dalam workspace Anda:
+OpenProse menyimpan status di bawah `.prose/` dalam ruang kerja Anda:
 
 ```text
 .prose/
-├── .env
+├── .env                      # config (key=value), e.g. OPENPROSE_POSTGRES_URL
 ├── runs/
 │   └── {YYYYMMDD}-{HHMMSS}-{random}/
-│       ├── program.prose
-│       ├── state.md
+│       ├── program.prose     # copy of the running program
+│       ├── state.md          # execution state
 │       ├── bindings/
+│       ├── imports/          # nested remote program runs
 │       └── agents/
-└── agents/
+└── agents/                   # project-scoped persistent agents
 ```
 
-Agen persisten tingkat pengguna berada di:
+Agen persisten tingkat pengguna (digunakan bersama di berbagai proyek) berada di:
 
 ```text
 ~/.prose/agents/
@@ -146,20 +149,20 @@ Agen persisten tingkat pengguna berada di:
 ## Backend status
 
 <AccordionGroup>
-  <Accordion title="filesystem (default)">
-    Status ditulis ke `.prose/runs/...` di workspace. Tidak memerlukan dependensi tambahan.
+  <Accordion title="sistem berkas (default)">
+    Status ditulis ke `.prose/runs/...` di ruang kerja. Tidak memerlukan dependensi tambahan.
   </Accordion>
-  <Accordion title="in-context">
-    Status sementara disimpan di jendela konteks. Cocok untuk program kecil dan berumur pendek.
+  <Accordion title="dalam konteks">
+    Status sementara disimpan dalam jendela konteks; pilih dengan `--in-context`. Cocok untuk program kecil dan berumur pendek.
   </Accordion>
-  <Accordion title="sqlite (experimental)">
-    Memerlukan biner `sqlite3` di `PATH`.
+  <Accordion title="sqlite (eksperimental)">
+    Pilih dengan `--state=sqlite`. Memerlukan biner `sqlite3` di `PATH` (beralih kembali ke sistem berkas jika tidak tersedia); status disimpan di `.prose/runs/{id}/state.db`.
   </Accordion>
-  <Accordion title="postgres (experimental)">
-    Memerlukan `psql` dan string koneksi.
+  <Accordion title="postgres (eksperimental)">
+    Pilih dengan `--state=postgres`. Memerlukan `psql` dan string koneksi dalam `OPENPROSE_POSTGRES_URL` (tetapkan di `.prose/.env`).
 
     <Warning>
-      Kredensial Postgres mengalir ke log sub-agen. Gunakan basis data khusus dengan hak akses paling rendah.
+      Kredensial Postgres diteruskan ke log subagen. Gunakan basis data khusus dengan hak akses minimum.
     </Warning>
 
   </Accordion>
@@ -167,22 +170,22 @@ Agen persisten tingkat pengguna berada di:
 
 ## Keamanan
 
-Perlakukan file `.prose` seperti kode. Tinjau sebelum dijalankan, termasuk impor `use` jarak jauh. Permintaan tingkat atas `/prose run https://...` bersifat eksplisit, tetapi impor jarak jauh transitif memerlukan persetujuan per eksekusi sebelum diambil atau dieksekusi. Gunakan daftar izin alat dan gerbang persetujuan OpenClaw untuk mengendalikan efek samping. Untuk alur kerja deterministik dengan gerbang persetujuan, bandingkan dengan [Lobster](/id/tools/lobster).
+Perlakukan berkas `.prose` seperti kode. Tinjau sebelum menjalankannya, termasuk impor `use` jarak jauh. Permintaan `/prose run https://...` tingkat teratas bersifat eksplisit, tetapi impor jarak jauh transitif memerlukan persetujuan untuk setiap eksekusi sebelum diambil atau dijalankan. Gunakan daftar izin alat dan gerbang persetujuan OpenClaw untuk mengendalikan efek samping. Untuk alur kerja deterministik dengan gerbang persetujuan, bandingkan dengan [Lobster](/id/tools/lobster).
 
 ## Terkait
 
 <CardGroup cols={2}>
   <Card title="Referensi Skills" href="/id/tools/skills" icon="puzzle-piece">
-    Cara paket Skills OpenProse dimuat dan gerbang apa yang berlaku.
+    Cara paket Skills OpenProse dimuat dan gerbang yang berlaku.
   </Card>
   <Card title="Subagen" href="/id/tools/subagents" icon="users">
-    Lapisan koordinasi multi-agen native OpenClaw.
+    Lapisan koordinasi multiagen bawaan OpenClaw.
   </Card>
-  <Card title="Text-to-speech" href="/id/tools/tts" icon="volume-high">
+  <Card title="Teks ke suara" href="/id/tools/tts" icon="volume-high">
     Tambahkan keluaran audio ke alur kerja Anda.
   </Card>
-  <Card title="Perintah slash" href="/id/tools/slash-commands" icon="terminal">
-    Semua perintah chat yang tersedia, termasuk /prose.
+  <Card title="Perintah garis miring" href="/id/tools/slash-commands" icon="terminal">
+    Semua perintah obrolan yang tersedia, termasuk /prose.
   </Card>
 </CardGroup>
 

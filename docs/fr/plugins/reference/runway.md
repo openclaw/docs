@@ -1,31 +1,31 @@
 ---
 read_when:
-    - Vous installez, configurez ou auditez le Plugin runway
+    - Vous installez, configurez ou auditez le plugin Runway
 summary: Ajoute la prise en charge des fournisseurs de génération vidéo.
 title: Plugin Runway
 x-i18n:
-    generated_at: "2026-05-02T20:58:01Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T02:54:40Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: 52a36a1257fa59b6d159816496158940bdc2c84b1764cc822506b74f22b08465
     source_path: plugins/reference/runway.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Plugin Runway
 
-Ajoute la prise en charge du fournisseur de génération vidéo.
+Ajoute la prise en charge d’un fournisseur de génération de vidéos.
 
 ## Distribution
 
-- Paquet : `@openclaw/runway-provider`
-- Voie d’installation : inclus dans OpenClaw
+- Paquet : `@openclaw/runway-provider`
+- Méthode d’installation : inclus dans OpenClaw
 
 ## Surface
 
-contrats : videoGenerationProviders
+contrats : videoGenerationProviders
 
 ## Documentation associée
 
-- [runway](/fr/providers/runway)
+- [Runway](/fr/providers/runway)

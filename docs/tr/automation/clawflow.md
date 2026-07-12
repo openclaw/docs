@@ -1,20 +1,20 @@
 ---
-summary: Task Flow'a yönlendir
+summary: TaskFlow'a yönlendir
 title: ClawFlow
 x-i18n:
-    generated_at: "2026-04-30T09:04:34Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:27:28Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: dec1ddc0e784b4ad49d0f5e5a8e332032e40281b81fe27de99363178ff8d3272
+    source_hash: 34f259b25c73d08ab71935307e2736f3f9d57dd579ba0f1842a2bd334f656e47
     source_path: automation/clawflow.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-ClawFlow adı [Görev akışı](/tr/automation/taskflow) olarak değiştirildi.
+ClawFlow'un adı [TaskFlow](/tr/automation/taskflow) olarak değiştirildi. Kalıcı çok adımlı akış orkestrasyonu için bu sayfayı kullanın.
 
 ## İlgili
 
-- [Görev akışı](/tr/automation/taskflow)
-- [Kalıcı talimatlar](/tr/automation/standing-orders)
-- [Hook'lar](/tr/automation/hooks)
+- [TaskFlow](/tr/automation/taskflow)
+- [Sürekli talimatlar](/tr/automation/standing-orders)
+- [Kancalar](/tr/automation/hooks)

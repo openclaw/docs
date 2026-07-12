@@ -1,22 +1,21 @@
 ---
 read_when:
     - logbook Plugin을 설치, 구성 또는 감사하고 있습니다
-summary: '자동 작업 일지: 페어링된 Node에서 주기적으로 화면 스냅샷을 캡처하여 하루 일과를 검토 가능한 타임라인으로 구성합니다.'
-title: Logbook Plugin
+summary: '자동 작업 일지: 페어링된 Node에서 주기적으로 화면 스냅샷을 캡처하여 하루를 검토 가능한 타임라인으로 구성합니다.'
+title: 로그북 Plugin
 x-i18n:
-    generated_at: "2026-07-12T15:33:26Z"
+    generated_at: "2026-07-12T01:06:24Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: fada790df69b0a25f7ee1d79ab40341353ad98ada63d863bc0545188d29a8073
     source_path: plugins/reference/logbook.md
     workflow: 16
 ---
 
-# Logbook 플러그인
+# Logbook Plugin
 
-자동 작업 일지: 페어링된 Node에서 주기적으로 화면 스냅샷을 캡처하고, 하루의 활동을 검토 가능한 타임라인으로 변환합니다.
+자동 작업 일지: 페어링된 Node에서 주기적으로 화면 스냅샷을 캡처하여 하루를 검토할 수 있는 타임라인으로 만듭니다.
 
 ## 배포
 
@@ -25,7 +24,7 @@ x-i18n:
 
 ## 제공 영역
 
-플러그인
+Plugin
 
 ## 관련 문서
 

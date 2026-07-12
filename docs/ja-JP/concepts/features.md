@@ -1,11 +1,11 @@
 ---
 read_when:
-    - OpenClaw がサポートする内容の完全な一覧を確認したい場合
-summary: OpenClaw のチャネル、ルーティング、メディア、UX 全体の機能。
+    - OpenClaw がサポートする機能の完全な一覧を確認したい場合
+summary: チャンネル、ルーティング、メディア、UX にわたる OpenClaw の機能。
 title: 機能
 x-i18n:
-    generated_at: "2026-07-05T11:17:20Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:06:00Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 5bc3ebdd87a0f6ea0f3d75d029bf7cae469ecd9db84a165bd47c4896936fe303
@@ -16,88 +16,88 @@ x-i18n:
 ## ハイライト
 
 <Columns>
-  <Card title="チャンネル" icon="message-square" href="/ja-JP/channels">
-    単一の Gateway で Discord、iMessage、Signal、Slack、Telegram、WhatsApp、WebChat などを利用できます。
+  <Card title="チャネル" icon="message-square" href="/ja-JP/channels">
+    1つのGatewayでDiscord、iMessage、Signal、Slack、Telegram、WhatsApp、WebChatなどを利用できます。
   </Card>
-  <Card title="Plugin" icon="plug" href="/ja-JP/tools/plugin">
-    公式プラグインは、1つのインストールコマンドで Matrix、Nextcloud Talk、Nostr、Twitch、Zalo など数十種類を追加します。
+  <Card title="プラグイン" icon="plug" href="/ja-JP/tools/plugin">
+    公式プラグインを1つのインストールコマンドで導入すると、Matrix、Nextcloud Talk、Nostr、Twitch、Zaloなど数十種類を追加できます。
   </Card>
   <Card title="ルーティング" icon="route" href="/ja-JP/concepts/multi-agent">
     分離されたセッションによるマルチエージェントルーティング。
   </Card>
   <Card title="メディア" icon="image" href="/ja-JP/nodes/images">
-    画像、音声、動画、ドキュメント、画像/動画生成。
+    画像、音声、動画、ドキュメント、および画像・動画の生成。
   </Card>
-  <Card title="アプリと UI" icon="monitor" href="/ja-JP/platforms">
-    Windows Hub、ブラウザー Control UI、macOS メニューバーアプリ、モバイルノード。
+  <Card title="アプリとUI" icon="monitor" href="/ja-JP/platforms">
+    Windows Hub、ブラウザ版Control UI、macOSメニューバーアプリ、モバイルNode。
   </Card>
-  <Card title="モバイルノード" icon="smartphone" href="/ja-JP/nodes">
-    ペアリング、音声/チャット、豊富なデバイスコマンドに対応した iOS と Android ノード。
+  <Card title="モバイルNode" icon="smartphone" href="/ja-JP/nodes">
+    ペアリング、音声・チャット、豊富なデバイスコマンドに対応したiOSおよびAndroid Node。
   </Card>
 </Columns>
 
-## 完全な一覧
+## 全機能一覧
 
-**チャンネル:**
+**チャネル：**
 
-- iMessage、Telegram、WebChat はコアインストールに同梱されています。それ以外のすべてのチャンネルは
-  `openclaw plugins install @openclaw/<id>` でインストールされる公式 Plugin です（または `openclaw onboard` /
-  `openclaw channels add` の実行中にオンデマンドでインストールされます）
-- 公式 Plugin チャンネル: Discord、Feishu、Google Chat、IRC、LINE、Matrix、Mattermost、
+- iMessage、Telegram、WebChatはコアインストールに同梱されています。その他のチャネルはすべて、
+  `openclaw plugins install @openclaw/<id>`でインストールする公式プラグインです
+  （または`openclaw onboard` / `openclaw channels add`の実行中に必要に応じてインストールできます）
+- 公式プラグインチャネル：Discord、Feishu、Google Chat、IRC、LINE、Matrix、Mattermost、
   Microsoft Teams、Nextcloud Talk、Nostr、QQ Bot、Raft、Signal、Slack、SMS、Synology Chat、
   Tlon、Twitch、Voice Call、WhatsApp、Zalo、Zalo Personal
-- OpenClaw リポジトリ外で保守されている外部 Plugin チャンネル: WeChat、Yuanbao、Zalo ClawBot
-- メンションベースの有効化によるグループチャット対応
-- allowlist とペアリングによる DM の安全性
+- OpenClawリポジトリ外で管理される外部プラグインチャネル：WeChat、Yuanbao、Zalo ClawBot
+- メンションによる有効化に対応したグループチャット
+- 許可リストとペアリングによるDMの安全対策
 
-**エージェント:**
+**エージェント：**
 
-- ツールストリーミング対応の組み込みエージェントランタイム
+- ツールストリーミングに対応した組み込みエージェントランタイム
 - ワークスペースまたは送信者ごとに分離されたセッションによるマルチエージェントルーティング
-- セッション: ダイレクトチャットは共有 `main` に集約され、グループは分離されます
-- 長い応答のストリーミングと分割
+- セッション：ダイレクトチャットは共有`main`に統合され、グループは分離されます
+- 長い応答のストリーミングとチャンク分割
 
-**認証とプロバイダー:**
+**認証とプロバイダー：**
 
-- 35以上のモデルプロバイダー（Anthropic、OpenAI、Google など）
-- OAuth によるサブスクリプション認証（例: OpenAI Codex）
-- カスタムおよびセルフホストのプロバイダー対応（vLLM、SGLang、Ollama、llama.cpp、LM Studio、および
-  OpenAI 互換または Anthropic 互換の任意のエンドポイント）
+- 35種類以上のモデルプロバイダー（Anthropic、OpenAI、Googleなど）
+- OAuthによるサブスクリプション認証（OpenAI Codexなど）
+- カスタムおよびセルフホスト型プロバイダーをサポート（vLLM、SGLang、Ollama、llama.cpp、LM Studio、および
+  OpenAI互換またはAnthropic互換の任意のエンドポイント）
 
-**メディア:**
+**メディア：**
 
-- 画像、音声、動画、ドキュメントの入出力
-- 共有の画像生成および動画生成ケイパビリティサーフェス
+- 画像、音声、動画、ドキュメントの送受信
+- 共通の画像生成および動画生成機能のサーフェス
 - ボイスメモの文字起こし
-- 複数プロバイダーによるテキスト読み上げ
+- 複数のプロバイダーによる音声合成
 
-**アプリとインターフェイス:**
+**アプリとインターフェース：**
 
-- WebChat とブラウザー Control UI
-- macOS メニューバーのコンパニオンアプリ
-- ペアリング、Canvas、カメラ、画面収録、位置情報、音声に対応した iOS ノード
-- ペアリング、チャット、音声、Canvas、カメラ、デバイスコマンドに対応した Android ノード
+- WebChatとブラウザ版Control UI
+- macOSメニューバー用コンパニオンアプリ
+- ペアリング、Canvas、カメラ、画面収録、位置情報、音声に対応したiOS Node
+- ペアリング、チャット、音声、Canvas、カメラ、デバイスコマンドに対応したAndroid Node
 
-**ツールと自動化:**
+**ツールと自動化：**
 
-- ブラウザー自動化、exec、サンドボックス化
-- Web 検索（Brave、DuckDuckGo、Exa、Firecrawl、Gemini、Grok、Kimi、MiniMax Search、Ollama Web Search、Perplexity、SearXNG、Tavily）
-- Cron ジョブと Heartbeat スケジューリング
-- Skills、Plugin、ワークフローパイプライン（Lobster）
+- ブラウザ自動化、コマンド実行、サンドボックス化
+- Web検索（Brave、DuckDuckGo、Exa、Firecrawl、Gemini、Grok、Kimi、MiniMax Search、Ollama Web Search、Perplexity、SearXNG、Tavily）
+- CronジョブとHeartbeatのスケジュール設定
+- Skills、プラグイン、ワークフローパイプライン（Lobster）
 
-## 関連
+## 関連項目
 
 <CardGroup cols={2}>
   <Card title="実験的機能" href="/ja-JP/concepts/experimental-features" icon="flask">
-    まだデフォルトサーフェスに出荷されていないオプトイン機能。
+    デフォルトのサーフェスにはまだリリースされていない、オプトイン形式の機能。
   </Card>
   <Card title="エージェントランタイム" href="/ja-JP/concepts/agent" icon="robot">
-    エージェントランタイムモデルと、実行がディスパッチされる仕組み。
+    エージェントランタイムモデルと実行の振り分け方法。
   </Card>
-  <Card title="チャンネル" href="/ja-JP/channels" icon="message-square">
-    1つの Gateway から Telegram、WhatsApp、Discord、Slack などに接続します。
+  <Card title="チャネル" href="/ja-JP/channels" icon="message-square">
+    1つのGatewayからTelegram、WhatsApp、Discord、Slackなどに接続できます。
   </Card>
-  <Card title="Plugin" href="/ja-JP/tools/plugin" icon="plug">
-    OpenClaw を拡張する公式および外部 Plugin。
+  <Card title="プラグイン" href="/ja-JP/tools/plugin" icon="plug">
+    OpenClawを拡張する公式および外部プラグイン。
   </Card>
 </CardGroup>

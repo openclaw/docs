@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Anda sedang menginstal, mengonfigurasi, atau mengaudit plugin cloudflare-ai-gateway
+    - Anda sedang memasang, mengonfigurasi, atau mengaudit plugin cloudflare-ai-gateway
 summary: Menambahkan dukungan penyedia model Cloudflare AI Gateway ke OpenClaw.
 title: Plugin Cloudflare AI Gateway
 x-i18n:
-    generated_at: "2026-06-27T17:52:25Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:27:26Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 3b0fc9623f61ca9541402a381521442c30207743fa774923b3340f8af298bfd3
@@ -20,11 +20,11 @@ Menambahkan dukungan penyedia model Cloudflare AI Gateway ke OpenClaw.
 ## Distribusi
 
 - Paket: `@openclaw/cloudflare-ai-gateway-provider`
-- Rute instalasi: npm; ClawHub: `clawhub:@openclaw/cloudflare-ai-gateway-provider`
+- Jalur instalasi: npm; ClawHub: `clawhub:@openclaw/cloudflare-ai-gateway-provider`
 
-## Permukaan
+## Antarmuka
 
-providers: cloudflare-ai-gateway
+penyedia: cloudflare-ai-gateway
 
 ## Dokumentasi terkait
 

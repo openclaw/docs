@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz Plugin memory-core
-summary: Dodaje narzędzia wywoływane przez agenta.
+    - Instalujesz, konfigurujesz lub przeprowadzasz audyt pluginu memory-core
+summary: Dodaje narzędzia dostępne dla agenta.
 title: Plugin Memory Core
 x-i18n:
-    generated_at: "2026-06-27T18:02:02Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:26:12Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: cda6ebb02b0e4c1616f68c3c9636b269248b4c63ca5f778d7f8c48152b27f303
@@ -15,13 +15,13 @@ x-i18n:
 
 # Plugin Memory Core
 
-Dodaje narzędzia wywoływane przez agentów.
+Dodaje narzędzia, które mogą być wywoływane przez agenta.
 
 ## Dystrybucja
 
 - Pakiet: `@openclaw/memory-core`
-- Ścieżka instalacji: dołączony do OpenClaw
+- Sposób instalacji: zawarty w OpenClaw
 
 ## Interfejs
 
-contracts: narzędzia
+kontrakty: narzędzia

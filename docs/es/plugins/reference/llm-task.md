@@ -1,26 +1,26 @@
 ---
 read_when:
-    - Está instalando, configurando o auditando el Plugin llm-task
-summary: Herramienta de LLM genérica de solo JSON para tareas estructuradas que se puede invocar desde flujos de trabajo.
-title: Plugin de tareas LLM
+    - Estás instalando, configurando o auditando el plugin llm-task
+summary: Herramienta LLM genérica que solo usa JSON para tareas estructuradas y que puede invocarse desde flujos de trabajo.
+title: Plugin de tareas de LLM
 x-i18n:
-    generated_at: "2026-05-02T20:58:11Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T23:24:33Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: 527b0c04ff3d4b5342f7505da3a37ee108bf1536dde5469a1948b8dd35fed9ac
     source_path: plugins/reference/llm-task.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# Plugin LLM Task
+# Plugin de tareas LLM
 
-Herramienta LLM genérica solo JSON para tareas estructuradas que se puede invocar desde flujos de trabajo.
+Herramienta LLM genérica que usa exclusivamente JSON para tareas estructuradas y que se puede invocar desde flujos de trabajo.
 
 ## Distribución
 
 - Paquete: `@openclaw/llm-task`
-- Ruta de instalación: incluido en OpenClaw
+- Método de instalación: incluido en OpenClaw
 
 ## Superficie
 

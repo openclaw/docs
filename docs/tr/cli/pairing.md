@@ -1,25 +1,23 @@
 ---
 read_when:
-    - Eşleştirme modu doğrudan mesajlarını kullanıyorsunuz ve göndericileri onaylamanız gerekiyor
-summary: '`openclaw pairing` için CLI referansı (eşleştirme isteklerini onaylama/listeleme)'
+    - Eşleştirme modu özel mesajlarını kullanıyorsunuz ve gönderenleri onaylamanız gerekiyor
+summary: '`openclaw pairing` için CLI başvurusu (eşleştirme isteklerini onaylama/listeleme)'
 title: Eşleştirme
 x-i18n:
-    generated_at: "2026-05-06T17:54:08Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:35:33Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 022018239ab1134b18986be42b8e019f412a1a730a9671f422979909c4a31dc5
+    source_hash: ca83ad9d9e55cfffd49301cb529b28df370c2dcff03484880f7cfc85ec2d6440
     source_path: cli/pairing.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw pairing`
 
-DM eşleştirme isteklerini onaylayın veya inceleyin (eşleştirmeyi destekleyen kanallar için).
+Eşleştirmeyi destekleyen kanallardaki DM eşleştirme isteklerini onaylayın veya inceleyin (yalnızca sohbet DM'leri; Node/cihaz eşleştirmesi için `openclaw devices` kullanılır).
 
-İlgili:
-
-- Eşleştirme akışı: [Eşleştirme](/tr/channels/pairing)
+İlgili: [Eşleştirme akışı](/tr/channels/pairing)
 
 ## Komutlar
 
@@ -37,49 +35,36 @@ openclaw pairing approve --channel telegram --account work <code> --notify
 
 Bir kanal için bekleyen eşleştirme isteklerini listeleyin.
 
-Seçenekler:
+| Seçenek                 | Açıklama                                  |
+| ----------------------- | ----------------------------------------- |
+| `[channel]`             | konumsal kanal kimliği                    |
+| `--channel <channel>`   | açıkça belirtilen kanal kimliği           |
+| `--account <accountId>` | çok hesaplı kanallar için hesap kimliği   |
+| `--json`                | makine tarafından okunabilir çıktı        |
 
-- `[channel]`: konumsal kanal kimliği
-- `--channel <channel>`: açık kanal kimliği
-- `--account <accountId>`: çok hesaplı kanallar için hesap kimliği
-- `--json`: makine tarafından okunabilir çıktı
-
-Notlar:
-
-- Birden fazla eşleştirme destekli kanal yapılandırılmışsa, kanalı konumsal olarak veya `--channel` ile belirtmeniz gerekir.
-- Kanal kimliği geçerli olduğu sürece uzantı kanallarına izin verilir.
+Eşleştirme özelliğine sahip birden fazla kanal yapılandırılmışsa kanalı konumsal olarak veya `--channel` ile belirtin. Kanal kimliği geçerli olduğu sürece eklenti kanalları da çalışır.
 
 ## `pairing approve`
 
-Bekleyen bir eşleştirme kodunu onaylayın ve bu gönderene izin verin.
+Bekleyen bir eşleştirme kodunu onaylayın ve ilgili göndericiye izin verin.
 
 Kullanım:
 
 - `openclaw pairing approve <channel> <code>`
 - `openclaw pairing approve --channel <channel> <code>`
-- Tam olarak bir eşleştirme destekli kanal yapılandırılmışsa `openclaw pairing approve <code>`
+- Yalnızca bir eşleştirme özellikli kanal yapılandırıldığında `openclaw pairing approve <code>`
 
-Seçenekler:
+Seçenekler: `--channel <channel>`, `--account <accountId>`, `--notify` (aynı kanal üzerinden istekte bulunana bir onay gönderir).
 
-- `--channel <channel>`: açık kanal kimliği
-- `--account <accountId>`: çok hesaplı kanallar için hesap kimliği
-- `--notify`: istekte bulunana aynı kanal üzerinden bir onay gönder
+### Sahip önyüklemesi
 
-Sahip önyüklemesi:
+Bir eşleştirme kodunu onayladığınızda `commands.ownerAllowFrom` boşsa OpenClaw, onaylanan göndericiyi `telegram:123456789` gibi kanal kapsamlı bir girdi kullanarak komut sahibi olarak da kaydeder. Bu işlem yalnızca ilk sahibi oluşturur; sonraki eşleştirme onayları `commands.ownerAllowFrom` değerini hiçbir zaman değiştirmez veya genişletmez.
 
-- Bir eşleştirme kodunu onayladığınızda `commands.ownerAllowFrom` boşsa, OpenClaw onaylanan göndereni `telegram:123456789` gibi kanal kapsamlı bir giriş kullanarak komut sahibi olarak da kaydeder.
-- Bu yalnızca ilk sahibi önyükler. Daha sonraki eşleştirme onayları `commands.ownerAllowFrom` değerini değiştirmez veya genişletmez.
-- Komut sahibi, yalnızca sahibin çalıştırmasına izin verilen komutları çalıştırmasına ve `/diagnostics`, `/export-trajectory`, `/config` ve yürütme onayları gibi tehlikeli eylemleri onaylamasına izin verilen insan operatör hesabıdır.
+Komut sahibi; yalnızca sahiplerin kullanabildiği komutları çalıştırmasına ve `/diagnostics`, `/export-trajectory`, `/config` ile çalıştırma onayları gibi tehlikeli eylemleri onaylamasına izin verilen insan operatör hesabıdır. Eşleştirme, yalnızca bir göndericinin ajanla konuşmasına izin verir; bu tek seferlik önyükleme dışında kendiliğinden sahip ayrıcalıkları vermez.
 
-## Notlar
-
-- Kanal girişi: konumsal olarak (`pairing list telegram`) veya `--channel <channel>` ile geçirin.
-- `pairing list`, çok hesaplı kanallar için `--account <accountId>` desteği sunar.
-- `pairing approve`, `--account <accountId>` ve `--notify` desteği sunar.
-- Yalnızca bir eşleştirme destekli kanal yapılandırılmışsa, `pairing approve <code>` kullanımına izin verilir.
-- Bu önyükleme mevcut olmadan önce bir göndereni onayladıysanız, `openclaw doctor` komutunu çalıştırın; komut sahibi yapılandırılmadığında uyarı verir ve bunu düzeltmek için `openclaw config set commands.ownerAllowFrom ...` komutunu gösterir.
+Bu önyükleme özelliği eklenmeden önce bir göndericiyi onayladıysanız `openclaw doctor` komutunu çalıştırın; hiçbir komut sahibi yapılandırılmadığında sizi uyarır ve sorunu düzeltmek için tam olarak çalıştırmanız gereken `openclaw config set commands.ownerAllowFrom ...` komutunu gösterir.
 
 ## İlgili
 
-- [CLI referansı](/tr/cli)
+- [CLI başvurusu](/tr/cli)
 - [Kanal eşleştirmesi](/tr/channels/pairing)

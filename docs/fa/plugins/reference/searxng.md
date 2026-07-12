@@ -1,11 +1,11 @@
 ---
 read_when:
-    - شما در حال نصب، پیکربندی یا ممیزی Plugin searxng هستید.
+    - شما در حال نصب، پیکربندی یا ممیزی Plugin ‏searxng هستید
 summary: پشتیبانی از ارائه‌دهندهٔ جست‌وجوی وب را اضافه می‌کند.
-title: Plugin SearXNG
+title: Plugin ‏SearXNG
 x-i18n:
-    generated_at: "2026-06-27T18:28:55Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:38:22Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 96d320ccd6ec69e380edfcfa33b498569058be6953257b5770cd4eea95cb401a
@@ -13,9 +13,9 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin SearXNG
+# Plugin ‏SearXNG
 
-پشتیبانی از ارائه‌دهنده جست‌وجوی وب را اضافه می‌کند.
+پشتیبانی از ارائه‌دهندهٔ جست‌وجوی وب را اضافه می‌کند.
 
 ## توزیع
 
@@ -24,4 +24,4 @@ x-i18n:
 
 ## سطح
 
-contracts: webSearchProviders
+قراردادها: webSearchProviders

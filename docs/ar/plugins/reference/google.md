@@ -1,31 +1,31 @@
 ---
 read_when:
-    - تقوم بتثبيت Plugin google أو تكوينه أو تدقيقه
+    - أنت تثبّت Plugin ‏google أو تضبط إعداداته أو تدقّق فيه
 summary: يضيف دعم موفّري النماذج Google وGoogle Gemini CLI وGoogle Vertex إلى OpenClaw.
 title: Plugin Google
 x-i18n:
-    generated_at: "2026-05-02T20:56:02Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:20:43Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 24246ba7ebfd5c62a6f02ded8c555a5dbdeec3df128bf5863923d32f6424ea57
+    source_hash: 4228126f246fd09d996c9f76dd10d79ad29f578788a0284abfc7107450a8bf62
     source_path: plugins/reference/google.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# Google Plugin
+# Plugin Google
 
 يضيف دعم موفّري نماذج Google وGoogle Gemini CLI وGoogle Vertex إلى OpenClaw.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/google-plugin`
-- مسار التثبيت: مضمّن في OpenClaw
+- مسار التثبيت: مُضمَّن في OpenClaw
 
-## السطح
+## الواجهات
 
-الموفّرون: google, google-gemini-cli, google-vertex؛ العقود: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, musicGenerationProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders, webSearchProviders
+الموفّرون: google، google-gemini-cli، google-vertex؛ العقود: imageGenerationProviders، mediaUnderstandingProviders، memoryEmbeddingProviders، musicGenerationProviders، realtimeVoiceProviders، speechProviders، usageProviders، videoGenerationProviders، webSearchProviders
 
-## المستندات ذات الصلة
+## الوثائق ذات الصلة
 
-- [google](/ar/providers/google)
+- [Google](/ar/providers/google)

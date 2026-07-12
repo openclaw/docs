@@ -1,212 +1,147 @@
 ---
 read_when:
-    - Je wilt begrijpen welke functies betaalde API's kunnen aanroepen
-    - Je moet sleutels, kosten en zichtbaarheid van gebruik controleren
-    - Je legt kostenrapportage voor /status of /usage uit
+    - U wilt weten welke functies mogelijk betaalde API's aanroepen
+    - Je moet sleutels, kosten en inzicht in het gebruik controleren
+    - Je legt de kostenrapportage van /status of /usage uit
 summary: Controleer wat geld kan kosten, welke sleutels worden gebruikt en hoe je het gebruik kunt bekijken
 title: API-gebruik en kosten
 x-i18n:
-    generated_at: "2026-06-27T18:17:29Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:16:33Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 473028747c3e8eab60667106d22616aa185f867d01238b856f4235faad957a9e
+    source_hash: b35ad64f83572eb8c01b59ee57368fd7ba20cb83ccac835281859796f782c1dd
     source_path: reference/api-usage-costs.md
     workflow: 16
 ---
 
-Dit document vermeldt **functies die API-sleutels kunnen aanroepen** en waar hun kosten zichtbaar worden. Het richt zich op
-OpenClaw-functies die providergebruik of betaalde API-aanroepen kunnen genereren.
+Overzicht van OpenClaw-functies die betaalde provider-API's kunnen aanroepen, waar elke functie de referenties leest en waar de resulterende kosten worden weergegeven.
 
-## Waar kosten zichtbaar worden (chat + CLI)
+## Waar kosten worden weergegeven
 
-**Kostensnapshot per sessie**
+**`/status`** (momentopname per sessie)
 
-- `/status` toont het huidige sessiemodel, contextgebruik en tokens van de laatste reactie.
-- Als OpenClaw gebruiksmetadata en lokale prijzen voor het actieve model heeft,
-  toont `/status` ook **geschatte kosten** voor het laatste antwoord. Dit kan
-  expliciet geprijsde providers zonder API-sleutel omvatten, zoals Bedrock `aws-sdk`-modellen.
-- Als live sessiemetadata beperkt is, kan `/status` token-/cachetellers
-  en het actieve runtime-modellabel herstellen uit de nieuwste transcriptgebruiksvermelding.
-  Bestaande live waarden die niet nul zijn, krijgen nog steeds voorrang, en transcripttotalen
-  ter grootte van prompts kunnen winnen wanneer opgeslagen totalen ontbreken of kleiner zijn.
+- Toont het huidige sessiemodel, contextgebruik en de tokens van het laatste antwoord.
+- Voegt **geschatte kosten** voor het laatste antwoord toe wanneer OpenClaw over gebruiksmetadata en lokale prijsgegevens voor het actieve model beschikt, inclusief expliciet geprijsde providers zonder API-sleutel, zoals Bedrock-`aws-sdk`-modellen.
+- Als de actuele sessiemomentopname weinig gegevens bevat, haalt `/status` de token-/cachetellers en het label van het actieve model op uit de nieuwste gebruiksvermelding in het transcript. Bestaande actuele waarden die niet nul zijn, krijgen voorrang op transcriptgegevens; een transcripttotaal ter grootte van de prompt kan alsnog voorrang krijgen wanneer het opgeslagen totaal ontbreekt of kleiner is.
 
-**Kostenvoet per bericht**
+**`/usage`** (voettekst per bericht)
 
-- `/usage full` voegt een gebruiksvoet toe aan elk antwoord, inclusief **geschatte kosten**
-  wanneer lokale prijzen zijn geconfigureerd voor het actieve model en gebruiksmetadata
-  beschikbaar is.
-- `/usage tokens` toont alleen tokens; OAuth-/token- en CLI-flows in abonnementsstijl
-  tonen nog steeds alleen tokens, tenzij die runtime compatibele gebruiksmetadata levert
-  en een expliciete lokale prijs is geconfigureerd.
-- Gemini CLI-opmerking: de standaard `stream-json`-uitvoer en legacy JSON-overschrijvingen
-  lezen beide gebruik uit `stats`, normaliseren `stats.cached` naar `cacheRead`, en
-  leiden invoertokens af uit `stats.input_tokens - stats.cached` wanneer dat nodig is.
+- `/usage full` voegt aan elk antwoord een gebruiksvoettekst toe, inclusief **geschatte kosten** wanneer lokale prijsgegevens zijn geconfigureerd en gebruiksmetadata beschikbaar zijn.
+- `/usage tokens` toont alleen tokens. OAuth-/token- en CLI-runtimes op abonnementsbasis tonen alleen tokens, tenzij ze compatibele gebruiksmetadata plus een expliciete lokale prijs leveren.
+- `/usage cost` toont een lokaal kostenoverzicht; `/usage off` schakelt de voettekst uit.
+- Opmerking over Gemini CLI: zowel `stream-json`- als verouderde `json`-uitvoer bevat gebruiksgegevens onder `stats`. OpenClaw normaliseert `stats.cached` naar `cacheRead` en leidt indien nodig invoertokens af uit `stats.input_tokens - stats.cached`.
 
-Anthropic-opmerking: Anthropic-medewerkers hebben ons verteld dat Claude CLI-gebruik in OpenClaw-stijl
-weer is toegestaan, dus OpenClaw behandelt Claude CLI-hergebruik en `claude -p`-gebruik als
-goedgekeurd voor deze integratie, tenzij Anthropic een nieuw beleid publiceert.
-Anthropic biedt nog steeds geen dollarschatting per bericht die OpenClaw kan
-tonen in `/usage full`.
+**Control UI → Gebruik** (analyse over meerdere sessies)
 
-**CLI-gebruiksvensters (providerquota)**
+- Toont uit transcripten afgeleide totalen voor tokens en geschatte kosten voor het geselecteerde datumbereik, uitgesplitst naar provider, model, agent, kanaal en tokentype.
+- Vergelijkt kortere kalenderperioden die eindigen op de einddatum van het geselecteerde bereik. Ontbrekende datums tellen als kalenderdagen met nul gebruik; ze worden niet overgeslagen om een compactere periode te maken.
+- Geeft de schaal van de dagelijkse grafiek rechtstreeks aan. Een `√`-badge betekent dat vierkantswortelcompressie dagen met weinig gebruik zichtbaar houdt.
+- Deze totalen beschrijven de beschikbare lokale sessiegeschiedenis, niet een providerfactuur of een levenslang factureringsoverzicht. De UI waarschuwt wanneer prijsgegevens voor sommige vermeldingen ontbreken.
 
-- `openclaw status --usage` en `openclaw channels list` tonen **gebruiksvensters** van providers
-  (quotasnapshots, geen kosten per bericht).
-- Menselijke uitvoer wordt genormaliseerd naar `X% left` voor alle providers.
-- Huidige providers voor gebruiksvensters: Anthropic, GitHub Copilot, Gemini CLI,
-  OpenAI Codex, MiniMax, Xiaomi en z.ai.
-- MiniMax-opmerking: de ruwe velden `usage_percent` / `usagePercent` betekenen resterend
-  quota, dus OpenClaw keert ze om vóór weergave. Op telling gebaseerde velden winnen nog steeds
-  wanneer ze aanwezig zijn. Als de provider `model_remains` retourneert, geeft OpenClaw de voorkeur aan de
-  vermelding voor het chatmodel, leidt het vensterlabel af uit tijdstempels wanneer nodig, en
-  neemt de modelnaam op in het planlabel.
-- Gebruiksauthenticatie voor die quotavensters komt uit providerspecifieke hooks wanneer
-  beschikbaar; anders valt OpenClaw terug op overeenkomende OAuth-/API-sleutelreferenties
-  uit auth-profielen, env of config.
+**CLI-gebruiksperioden** (providerquota, geen kosten per bericht)
 
-Zie [Tokengebruik en kosten](/nl/reference/token-use) voor details en voorbeelden.
+- `openclaw status --usage` en `openclaw channels list` tonen **gebruiksperioden** van providers als `X% left`.
+- Huidige providers met gebruiksperioden: Anthropic, ClawRouter, DeepSeek, GitHub Copilot, Gemini CLI, MiniMax, OpenAI (omvat ChatGPT/Codex OAuth-/tokenverificatie), Xiaomi en z.ai. Zie [Modellen-CLI](/nl/cli/models) en [Kanalen-CLI](/nl/cli/channels) voor de volledige lijst met providers en vlaggen.
+- De onbewerkte velden `usage_percent` / `usagePercent` van MiniMax geven het resterende quotum aan, dus OpenClaw keert deze waarden om; op aantallen gebaseerde velden krijgen voorrang wanneer ze aanwezig zijn. Als het antwoord een `model_remains`-array bevat, kiest OpenClaw de vermelding voor het chatmodel, leidt het indien nodig het label van de periode af uit tijdstempels en neemt het de modelnaam op in het abonnementslabel.
+- Gebruiksverificatie komt uit providerspecifieke hooks wanneer die beschikbaar zijn; anders valt OpenClaw terug op overeenkomende OAuth-/API-sleutelreferenties uit verificatieprofielen, omgevingsvariabelen of configuratie.
 
-## Hoe sleutels worden ontdekt
+Zie [Tokengebruik en kosten](/nl/reference/token-use) voor gedetailleerde voorbeelden.
 
-OpenClaw kan referenties oppikken uit:
+<Note>
+Anthropic heeft bevestigd dat hergebruik van Claude CLI (waaronder `claude -p`) een toegestane integratiemethode is, tenzij het bedrijf een nieuw beleid publiceert. Anthropic biedt geen schatting in dollars per bericht, waardoor `/usage full` geen kosten voor Claude CLI-gebruik kan tonen.
+</Note>
 
-- **Auth-profielen** (per agent, opgeslagen in `auth-profiles.json`).
-- **Omgevingsvariabelen** (bijv. `OPENAI_API_KEY`, `BRAVE_API_KEY`, `FIRECRAWL_API_KEY`).
-- **Config** (`models.providers.*.apiKey`, `plugins.entries.*.config.webSearch.apiKey`,
-  `plugins.entries.firecrawl.config.webFetch.apiKey`, `memorySearch.*`,
-  `talk.providers.*.apiKey`).
-- **Skills** (`skills.entries.<name>.apiKey`) die sleutels kunnen exporteren naar de env van het skillproces.
+## Hoe sleutels worden gevonden
+
+- **Verificatieprofielen**: per agent, opgeslagen in `auth-profiles.json`.
+- **Omgevingsvariabelen**: bijvoorbeeld `OPENAI_API_KEY`, `BRAVE_API_KEY`, `FIRECRAWL_API_KEY`.
+- **Configuratie**: `models.providers.*.apiKey`, `plugins.entries.*.config.webSearch.apiKey`, `plugins.entries.firecrawl.config.webFetch.apiKey`, `agents.defaults.memorySearch.*`, `talk.providers.*.apiKey`.
+- **Skills**: `skills.entries.<name>.apiKey`, waarmee de sleutel naar de procesomgeving van de Skill kan worden geëxporteerd.
 
 ## Functies die sleutels kunnen verbruiken
 
-### 1) Kernmodelreacties (chat + tools)
+### Antwoorden van het kernmodel (chat + tools)
 
-Elk antwoord of elke toolaanroep gebruikt de **huidige modelprovider** (OpenAI, Anthropic, enz.). Dit is de
-primaire bron van gebruik en kosten.
+Elk antwoord en elke toolaanroep wordt uitgevoerd via de huidige modelprovider. Dit is de belangrijkste bron van gebruik en kosten, inclusief gehoste abonnementen die buiten de lokale UI van OpenClaw worden gefactureerd: OpenAI Codex, Alibaba Cloud Model Studio Coding Plan, MiniMax Coding Plan, Z.AI/GLM Coding Plan en het Claude-aanmeldingstraject van Anthropic met Extra Usage ingeschakeld.
 
-Dit omvat ook gehoste providers in abonnementsstijl die nog steeds buiten
-de lokale UI van OpenClaw factureren, zoals **OpenAI Codex**, **Alibaba Cloud Model Studio
-Coding Plan**, **MiniMax Coding Plan**, **Z.AI / GLM Coding Plan**, en
-Anthropic's Claude-loginpad van OpenClaw met **Extra Usage** ingeschakeld.
+Zie [Modellen](/nl/providers/models) voor prijsconfiguratie en [Tokengebruik en kosten](/nl/reference/token-use) voor de weergave.
 
-Zie [Modellen](/nl/providers/models) voor prijsconfiguratie en [Tokengebruik en kosten](/nl/reference/token-use) voor weergave.
+### Mediabegrip (audio/afbeeldingen/video)
 
-### 2) Mediabegrip (audio/afbeelding/video)
+Binnenkomende media kunnen via een provider-API worden samengevat of getranscribeerd voordat de antwoordpijplijn wordt uitgevoerd. Providerondersteuning wordt per Plugin geregistreerd en verandert wanneer Plugins worden toegevoegd; zie [Mediabegrip](/nl/nodes/media-understanding) voor de huidige lijst en configuratie.
 
-Binnenkomende media kunnen worden samengevat/getranscribeerd voordat het antwoord wordt uitgevoerd. Dit gebruikt model-/provider-API's.
+### Afbeeldingen en video's genereren
 
-- Audio: OpenAI / Groq / Deepgram / DeepInfra / Google / Mistral.
-- Afbeelding: OpenAI / OpenRouter / Anthropic / DeepInfra / Google / MiniMax / Moonshot / Qwen / Z.AI.
-- Video: Google / Qwen / Moonshot.
+`image_generate` en `video_generate` worden doorgestuurd naar een beschikbare geconfigureerde provider. Voor het genereren van afbeeldingen kan een standaardprovider met verificatie worden afgeleid wanneer `agents.defaults.imageGenerationModel` niet is ingesteld; voor het genereren van video's is een expliciet `agents.defaults.videoGenerationModel` vereist (bijvoorbeeld `qwen/wan2.6-t2v`).
 
-Zie [Mediabegrip](/nl/nodes/media-understanding).
+Zie [Afbeeldingen genereren](/nl/tools/image-generation) en [Video's genereren](/nl/tools/video-generation) voor de huidige lijst met providers.
 
-### 3) Afbeeldings- en videogeneratie
+### Geheugenembeddings en semantisch zoeken
 
-Gedeelde generatiemogelijkheden kunnen ook providersleutels verbruiken:
-
-- Afbeeldingsgeneratie: OpenAI / Google / DeepInfra / fal / MiniMax
-- Videogeneratie: DeepInfra / Qwen
-
-Afbeeldingsgeneratie kan een standaardprovider op basis van auth afleiden wanneer
-`agents.defaults.imageGenerationModel` niet is ingesteld. Videogeneratie vereist momenteel
-een expliciete `agents.defaults.videoGenerationModel`, zoals
-`qwen/wan2.6-t2v`.
-
-Zie [Afbeeldingsgeneratie](/nl/tools/image-generation), [Qwen Cloud](/nl/providers/qwen),
-en [Modellen](/nl/concepts/models).
-
-### 4) Geheugenembeddings + semantisch zoeken
-
-Semantisch zoeken in geheugen gebruikt **embedding-API's** wanneer dit is geconfigureerd voor externe providers:
-
-- `memorySearch.provider = "openai"` → OpenAI-embeddings
-- `memorySearch.provider = "gemini"` → Gemini-embeddings
-- `memorySearch.provider = "voyage"` → Voyage-embeddings
-- `memorySearch.provider = "mistral"` → Mistral-embeddings
-- `memorySearch.provider = "deepinfra"` → DeepInfra-embeddings
-- `memorySearch.provider = "lmstudio"` → LM Studio-embeddings (lokaal/zelf gehost)
-- `memorySearch.provider = "ollama"` → Ollama-embeddings (lokaal/zelf gehost; doorgaans geen gehoste API-facturering)
-- Optionele fallback naar een externe provider als lokale embeddings mislukken
-
-Je kunt het lokaal houden met `memorySearch.provider = "local"` (geen API-gebruik).
+Semantisch zoeken in het geheugen gebruikt embedding-API's wanneer `agents.defaults.memorySearch.provider` een externe adapter benoemt (bijvoorbeeld `openai`, `gemini`, `voyage`, `mistral`, `deepinfra`, `github-copilot`, `amazon-bedrock`). `memorySearch.provider = "lmstudio"` of `"ollama"` wordt uitgevoerd tegen een lokale/zelfgehoste server en brengt doorgaans geen kosten voor hosting met zich mee. `memorySearch.provider = "local"` houdt alles op het apparaat zonder API-gebruik. Een optionele provider voor `memorySearch.fallback` kan fouten bij lokale embeddings opvangen.
 
 Zie [Geheugen](/nl/concepts/memory).
 
-### 5) Tool voor webzoeken
+### Tool voor zoeken op het web
 
-`web_search` kan gebruikskosten veroorzaken, afhankelijk van je provider:
+`web_search` kan gebruikskosten veroorzaken, afhankelijk van de geselecteerde provider. Elke provider leest de sleutel eerst uit een omgevingsvariabele en daarna uit `plugins.entries.<id>.config.webSearch.apiKey`:
 
-- **Brave Search API**: `BRAVE_API_KEY` of `plugins.entries.brave.config.webSearch.apiKey`
-- **Exa**: `EXA_API_KEY` of `plugins.entries.exa.config.webSearch.apiKey`
-- **Firecrawl**: `FIRECRAWL_API_KEY` of `plugins.entries.firecrawl.config.webSearch.apiKey`
-- **Gemini (Google Search)**: `GEMINI_API_KEY` of `plugins.entries.google.config.webSearch.apiKey`
-- **Grok (xAI)**: xAI OAuth-profiel, `XAI_API_KEY`, of `plugins.entries.xai.config.webSearch.apiKey`
-- **Kimi (Moonshot)**: `KIMI_API_KEY`, `MOONSHOT_API_KEY`, of `plugins.entries.moonshot.config.webSearch.apiKey`
-- **MiniMax Search**: `MINIMAX_CODE_PLAN_KEY`, `MINIMAX_CODING_API_KEY`, `MINIMAX_API_KEY`, of `plugins.entries.minimax.config.webSearch.apiKey`
-- **Ollama Web Search**: zonder sleutel voor een bereikbare aangemelde lokale Ollama-host; directe `https://ollama.com`-zoekopdrachten gebruiken `OLLAMA_API_KEY`, en met auth beschermde hosts kunnen normale Ollama-provider bearer-auth hergebruiken
-- **Perplexity Search API**: `PERPLEXITY_API_KEY`, `OPENROUTER_API_KEY`, of `plugins.entries.perplexity.config.webSearch.apiKey`
-- **Tavily**: `TAVILY_API_KEY` of `plugins.entries.tavily.config.webSearch.apiKey`
-- **DuckDuckGo**: provider zonder sleutel wanneer expliciet geselecteerd (geen API-facturering, maar onofficieel en gebaseerd op HTML)
-- **SearXNG**: `SEARXNG_BASE_URL` of `plugins.entries.searxng.config.webSearch.baseUrl` (zonder sleutel/zelf gehost; geen gehoste API-facturering)
+| Provider               | Omgevingsvariabele(n)                                                                                                                                                        |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Brave Search           | `BRAVE_API_KEY`                                                                                                                                                              |
+| DuckDuckGo             | zonder sleutel; onofficieel, gebaseerd op HTML, geen facturering                                                                                                             |
+| Exa                    | `EXA_API_KEY`                                                                                                                                                                |
+| Firecrawl              | `FIRECRAWL_API_KEY`                                                                                                                                                          |
+| Gemini (Google Search) | `GEMINI_API_KEY`                                                                                                                                                             |
+| Grok (xAI)             | xAI-OAuth-profiel of `XAI_API_KEY`                                                                                                                                           |
+| Kimi (Moonshot)        | `KIMI_API_KEY` of `MOONSHOT_API_KEY`                                                                                                                                         |
+| MiniMax Search         | `MINIMAX_CODE_PLAN_KEY`, `MINIMAX_CODING_API_KEY`, `MINIMAX_OAUTH_TOKEN` of `MINIMAX_API_KEY`                                                                                |
+| Ollama Web Search      | zonder sleutel voor een bereikbare, aangemelde lokale host; rechtstreeks zoeken via `https://ollama.com` gebruikt `OLLAMA_API_KEY`; hosts met verificatie hergebruiken normale bearer-verificatie van de Ollama-provider |
+| Parallel               | `PARALLEL_API_KEY`                                                                                                                                                           |
+| Perplexity Search API  | `PERPLEXITY_API_KEY` of `OPENROUTER_API_KEY`                                                                                                                                 |
+| SearXNG                | `SEARXNG_BASE_URL`; zonder sleutel/zelfgehost, geen facturering voor hosting                                                                                                  |
+| Tavily                 | `TAVILY_API_KEY`                                                                                                                                                             |
 
-Legacy providerpaden `tools.web.search.*` worden nog steeds geladen via de tijdelijke compatibiliteitsshim, maar ze zijn niet langer het aanbevolen configoppervlak.
+Verouderde configuratiepaden onder `tools.web.search.*` worden nog steeds geladen via een compatibiliteitsshim, maar zijn niet langer de aanbevolen interface.
 
-**Gratis Brave Search-tegoed:** Elk Brave-plan bevat \$5/maand aan vernieuwend
-gratis tegoed. Het Search-plan kost \$5 per 1.000 verzoeken, dus het tegoed dekt
-1.000 verzoeken/maand zonder kosten. Stel je gebruikslimiet in het Brave-dashboard in
-om onverwachte kosten te voorkomen.
-
-Zie [Webtools](/nl/tools/web).
-
-### 5) Tool voor web ophalen (Firecrawl)
-
-`web_fetch` kan **Firecrawl** aanroepen met starterslimieten zonder sleutel. Voeg een API-sleutel toe
-voor hogere limieten:
-
-- `FIRECRAWL_API_KEY` of `plugins.entries.firecrawl.config.webFetch.apiKey`
-
-Als Firecrawl niet is geconfigureerd, valt de tool terug op direct ophalen plus de gebundelde `web-readability`-Plugin (geen betaalde API). Schakel `plugins.entries.web-readability.enabled` uit om lokale Readability-extractie over te slaan.
+**Gratis tegoed van Brave Search**: elk abonnement omvat maandelijks $5 aan vernieuwend gratis tegoed. Het Search-abonnement kost $5 per 1.000 aanvragen, waardoor het tegoed 1.000 aanvragen per maand kosteloos dekt. Stel een gebruikslimiet in het Brave-dashboard in om onverwachte kosten te voorkomen.
 
 Zie [Webtools](/nl/tools/web).
 
-### 6) Providergebruikssnapshots (status/gezondheid)
+### Tool voor ophalen van het web (Firecrawl)
 
-Sommige statuscommando's roepen **providergebruikseindpunten** aan om quotavensters of auth-gezondheid weer te geven.
-Dit zijn doorgaans aanroepen met laag volume, maar ze raken nog steeds provider-API's:
+`web_fetch` kan Firecrawl aanroepen met sleutelvrije starterstoegang; voeg `FIRECRAWL_API_KEY` (of `plugins.entries.firecrawl.config.webFetch.apiKey`) toe voor hogere limieten. Als Firecrawl niet is geconfigureerd, valt de tool terug op rechtstreeks ophalen plus de meegeleverde Plugin `web-readability` (geen betaalde API). Schakel `plugins.entries.web-readability.enabled` uit om lokale Readability-extractie over te slaan.
 
-- `openclaw status --usage`
-- `openclaw models status --json`
+Zie [Webtools](/nl/tools/web).
 
-Zie [Modellen-CLI](/nl/cli/models).
+### Momentopnamen van providergebruik (status/gezondheid)
 
-### 7) Compaction-beveiligingssamenvatting
-
-De Compaction-beveiliging kan sessiegeschiedenis samenvatten met het **huidige model**, wat
-provider-API's aanroept wanneer dit wordt uitgevoerd.
-
-Zie [Sessiebeheer + Compaction](/nl/reference/session-management-compaction).
-
-### 8) Modelscan / probe
-
-`openclaw models scan` kan OpenRouter-modellen peilen en gebruikt `OPENROUTER_API_KEY` wanneer
-peilen is ingeschakeld.
+`openclaw status --usage` en `openclaw models status --json` roepen gebruikseindpunten van providers aan om quotaperioden of de status van verificatie te tonen. De aanroepen vinden niet vaak plaats, maar benaderen nog steeds provider-API's.
 
 Zie [Modellen-CLI](/nl/cli/models).
 
-### 9) Talk (spraak)
+### Beveiligde samenvatting bij Compaction
 
-Talk-modus kan **ElevenLabs** aanroepen wanneer geconfigureerd:
+De beveiliging voor Compaction kan de sessiegeschiedenis samenvatten met het huidige model, waardoor provider-API's worden aangeroepen wanneer deze wordt uitgevoerd.
 
-- `ELEVENLABS_API_KEY` of `talk.providers.elevenlabs.apiKey`
+Zie [Sessiebeheer en Compaction](/nl/reference/session-management-compaction).
 
-Zie [Talk-modus](/nl/nodes/talk).
+### Modellen scannen/testen
 
-### 10) Skills (API's van derden)
+`openclaw models scan` kan OpenRouter-modellen testen en gebruikt `OPENROUTER_API_KEY` wanneer testen is ingeschakeld.
 
-Skills kunnen `apiKey` opslaan in `skills.entries.<name>.apiKey`. Als een skill die sleutel gebruikt voor externe
-API's, kan dit kosten veroorzaken volgens de provider van de skill.
+Zie [Modellen-CLI](/nl/cli/models).
+
+### Spraakmodus
+
+De spraakmodus kan ElevenLabs aanroepen wanneer dit is geconfigureerd: `ELEVENLABS_API_KEY` of `talk.providers.elevenlabs.apiKey`.
+
+Zie [Spraakmodus](/nl/nodes/talk).
+
+### Skills (API's van derden)
+
+Skills kunnen `apiKey` opslaan in `skills.entries.<name>.apiKey`. Als een Skill die sleutel gebruikt voor een externe API, volgen de kosten de provider van de Skill.
 
 Zie [Skills](/nl/tools/skills).
 
@@ -214,4 +149,4 @@ Zie [Skills](/nl/tools/skills).
 
 - [Tokengebruik en kosten](/nl/reference/token-use)
 - [Promptcaching](/nl/reference/prompt-caching)
-- [Gebruikstracking](/nl/concepts/usage-tracking)
+- [Gebruiksregistratie](/nl/concepts/usage-tracking)

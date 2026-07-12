@@ -1,35 +1,34 @@
 ---
 read_when:
-    - أنت تعمل على أتمتة الإعداد الأولي في النصوص البرمجية أو CI
-    - تحتاج إلى أمثلة غير تفاعلية لمزوّدين محددين
+    - أنت تؤتمت الإعداد الأولي في البرامج النصية أو بيئة CI
+    - تحتاج إلى أمثلة غير تفاعلية لموفّرين محددين
 sidebarTitle: CLI automation
-summary: التهيئة الأولية المبرمجة وإعداد الوكيل لـ OpenClaw CLI
+summary: الإعداد الموجّه بالبرامج وإعداد الوكيل لواجهة OpenClaw CLI
 title: أتمتة CLI
 x-i18n:
-    generated_at: "2026-04-30T08:27:19Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:30:55Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6a169abafa682e99d2cd89dbcc9a738790d7fdfa7ba204f415baac35d6df4a2f
+    source_hash: de3115fd0c675b92f22cf9c44ddd307a854e499c6f163235f991368429b2c152
     source_path: start/wizard-cli-automation.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-استخدم `--non-interactive` لأتمتة `openclaw onboard`.
+استخدم `openclaw onboard --non-interactive` لبرمجة الإعداد نصيًا. يتطلب هذا الخيار `--accept-risk`: إذ يمكن للإعداد غير التفاعلي كتابة بيانات الاعتماد وتهيئة البرنامج الخفي من دون مطالبة بالتأكيد، ولذلك تمثل هذه العلامة إقرارًا صريحًا بالمخاطر.
 
 <Note>
-لا يعني `--json` وضعًا غير تفاعلي. استخدم `--non-interactive` (و`--workspace`) للسكربتات.
+لا يعني `--json` تفعيل الوضع غير التفاعلي. مرّر `--non-interactive --accept-risk` صراحةً في البرامج النصية.
 </Note>
 
-## مثال أساسي غير تفاعلي
+## مثال أساسي للإعداد غير التفاعلي
 
 ```bash
-openclaw onboard --non-interactive \
+openclaw onboard --non-interactive --accept-risk \
   --mode local \
   --auth-choice apiKey \
   --anthropic-api-key "$ANTHROPIC_API_KEY" \
   --secret-input-mode plaintext \
-  --gateway-port 18789 \
   --gateway-bind loopback \
   --install-daemon \
   --daemon-runtime node \
@@ -39,134 +38,116 @@ openclaw onboard --non-interactive \
 
 أضف `--json` للحصول على ملخص قابل للقراءة آليًا.
 
-استخدم `--skip-bootstrap` عندما تجهّز الأتمتة ملفات مساحة العمل مسبقًا ولا تريد أن ينشئ الإعداد الأولي ملفات bootstrap الافتراضية.
-
-استخدم `--secret-input-mode ref` لتخزين مراجع مدعومة بمتغيرات البيئة في ملفات تعريف المصادقة بدلًا من قيم النص الصريح.
-يتوفر الاختيار التفاعلي بين مراجع البيئة ومراجع المزوّد المكوّنة (`file` أو `exec`) في تدفق الإعداد الأولي.
-
-في وضع `ref` غير التفاعلي، يجب ضبط متغيرات بيئة المزوّد في بيئة العملية.
-يمثل تمرير أعلام المفاتيح المضمنة دون متغير البيئة المطابق فشلًا سريعًا الآن.
-
-مثال:
+- القيمة الافتراضية للخيار `--gateway-port` هي `18789`؛ لا تمرّره إلا لتجاوزها.
+- يتخطى `--skip-bootstrap` إنشاء ملفات مساحة العمل الافتراضية، وذلك للأتمتة التي تجهّز مساحة عملها مسبقًا.
+- يخزّن `--secret-input-mode ref` مرجعًا مدعومًا بمتغير بيئة (`{ source: "env", provider: "default", id: "<ENV_VAR>" }`) في ملف تعريف المصادقة بدلًا من المفتاح بنص صريح. في وضع `ref` غير التفاعلي، يجب أن يكون متغير بيئة المزوّد معيّنًا مسبقًا في بيئة العملية؛ إذ يفشل تمرير علامة مفتاح مضمّن دون متغير البيئة المطابق له فورًا.
 
 ```bash
-openclaw onboard --non-interactive \
+openclaw onboard --non-interactive --accept-risk \
   --mode local \
   --auth-choice openai-api-key \
-  --secret-input-mode ref \
-  --accept-risk
+  --secret-input-mode ref
 ```
 
 ## أمثلة خاصة بالمزوّدين
 
 <AccordionGroup>
-  <Accordion title="مثال مفتاح Anthropic API">
+  <Accordion title="مثال على مفتاح Anthropic API">
     ```bash
-    openclaw onboard --non-interactive \
+    openclaw onboard --non-interactive --accept-risk \
       --mode local \
       --auth-choice apiKey \
       --anthropic-api-key "$ANTHROPIC_API_KEY" \
-      --gateway-port 18789 \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="مثال Gemini">
+  <Accordion title="مثال على Cloudflare AI Gateway">
     ```bash
-    openclaw onboard --non-interactive \
-      --mode local \
-      --auth-choice gemini-api-key \
-      --gemini-api-key "$GEMINI_API_KEY" \
-      --gateway-port 18789 \
-      --gateway-bind loopback
-    ```
-  </Accordion>
-  <Accordion title="مثال Z.AI">
-    ```bash
-    openclaw onboard --non-interactive \
-      --mode local \
-      --auth-choice zai-api-key \
-      --zai-api-key "$ZAI_API_KEY" \
-      --gateway-port 18789 \
-      --gateway-bind loopback
-    ```
-  </Accordion>
-  <Accordion title="مثال Vercel AI Gateway">
-    ```bash
-    openclaw onboard --non-interactive \
-      --mode local \
-      --auth-choice ai-gateway-api-key \
-      --ai-gateway-api-key "$AI_GATEWAY_API_KEY" \
-      --gateway-port 18789 \
-      --gateway-bind loopback
-    ```
-  </Accordion>
-  <Accordion title="مثال Cloudflare AI Gateway">
-    ```bash
-    openclaw onboard --non-interactive \
+    openclaw onboard --non-interactive --accept-risk \
       --mode local \
       --auth-choice cloudflare-ai-gateway-api-key \
       --cloudflare-ai-gateway-account-id "your-account-id" \
       --cloudflare-ai-gateway-gateway-id "your-gateway-id" \
       --cloudflare-ai-gateway-api-key "$CLOUDFLARE_AI_GATEWAY_API_KEY" \
-      --gateway-port 18789 \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="مثال Moonshot">
+  <Accordion title="مثال على Gemini">
     ```bash
-    openclaw onboard --non-interactive \
+    openclaw onboard --non-interactive --accept-risk \
       --mode local \
-      --auth-choice moonshot-api-key \
-      --moonshot-api-key "$MOONSHOT_API_KEY" \
-      --gateway-port 18789 \
+      --auth-choice gemini-api-key \
+      --gemini-api-key "$GEMINI_API_KEY" \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="مثال Mistral">
+  <Accordion title="مثال على Mistral">
     ```bash
-    openclaw onboard --non-interactive \
+    openclaw onboard --non-interactive --accept-risk \
       --mode local \
       --auth-choice mistral-api-key \
       --mistral-api-key "$MISTRAL_API_KEY" \
-      --gateway-port 18789 \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="مثال Synthetic">
+  <Accordion title="مثال على Moonshot">
     ```bash
-    openclaw onboard --non-interactive \
+    openclaw onboard --non-interactive --accept-risk \
       --mode local \
-      --auth-choice synthetic-api-key \
-      --synthetic-api-key "$SYNTHETIC_API_KEY" \
-      --gateway-port 18789 \
+      --auth-choice moonshot-api-key \
+      --moonshot-api-key "$MOONSHOT_API_KEY" \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="مثال OpenCode">
+  <Accordion title="مثال على Ollama">
     ```bash
-    openclaw onboard --non-interactive \
-      --mode local \
-      --auth-choice opencode-zen \
-      --opencode-zen-api-key "$OPENCODE_API_KEY" \
-      --gateway-port 18789 \
-      --gateway-bind loopback
-    ```
-    بدّل إلى `--auth-choice opencode-go --opencode-go-api-key "$OPENCODE_API_KEY"` لاستخدام كتالوج Go.
-  </Accordion>
-  <Accordion title="مثال Ollama">
-    ```bash
-    openclaw onboard --non-interactive \
+    openclaw onboard --non-interactive --accept-risk \
       --mode local \
       --auth-choice ollama \
       --custom-model-id "qwen3.5:27b" \
-      --accept-risk \
-      --gateway-port 18789 \
       --gateway-bind loopback
     ```
   </Accordion>
-  <Accordion title="مثال مزوّد مخصص">
+  <Accordion title="مثال على OpenCode">
     ```bash
-    openclaw onboard --non-interactive \
+    openclaw onboard --non-interactive --accept-risk \
+      --mode local \
+      --auth-choice opencode-zen \
+      --opencode-zen-api-key "$OPENCODE_API_KEY" \
+      --gateway-bind loopback
+    ```
+    استبدله بـ `--auth-choice opencode-go --opencode-go-api-key "$OPENCODE_API_KEY"` لاستخدام كتالوج Go.
+  </Accordion>
+  <Accordion title="مثال على Synthetic">
+    ```bash
+    openclaw onboard --non-interactive --accept-risk \
+      --mode local \
+      --auth-choice synthetic-api-key \
+      --synthetic-api-key "$SYNTHETIC_API_KEY" \
+      --gateway-bind loopback
+    ```
+  </Accordion>
+  <Accordion title="مثال على Vercel AI Gateway">
+    ```bash
+    openclaw onboard --non-interactive --accept-risk \
+      --mode local \
+      --auth-choice ai-gateway-api-key \
+      --ai-gateway-api-key "$AI_GATEWAY_API_KEY" \
+      --gateway-bind loopback
+    ```
+  </Accordion>
+  <Accordion title="مثال على Z.AI">
+    ```bash
+    openclaw onboard --non-interactive --accept-risk \
+      --mode local \
+      --auth-choice zai-api-key \
+      --zai-api-key "$ZAI_API_KEY" \
+      --gateway-bind loopback
+    ```
+  </Accordion>
+  <Accordion title="مثال على مزوّد مخصص">
+    ```bash
+    openclaw onboard --non-interactive --accept-risk \
       --mode local \
       --auth-choice custom-api-key \
       --custom-base-url "https://llm.example.com/v1" \
@@ -175,18 +156,18 @@ openclaw onboard --non-interactive \
       --custom-provider-id "my-custom" \
       --custom-compatibility anthropic \
       --custom-image-input \
-      --gateway-port 18789 \
       --gateway-bind loopback
     ```
 
-    `--custom-api-key` اختياري. إذا حُذف، يتحقق الإعداد الأولي من `CUSTOM_API_KEY`.
-    يعلّم OpenClaw معرفات نماذج الرؤية الشائعة على أنها تدعم الصور تلقائيًا. أضف `--custom-image-input` لمعرفات الرؤية المخصصة غير المعروفة، أو `--custom-text-input` لفرض بيانات وصفية نصية فقط.
+    الخيار `--custom-api-key` اختياري؛ فبعض نقاط النهاية لا تتطلب مصادقة. عند حذفه، يتحقق الإعداد الأولي من `CUSTOM_API_KEY` في متغيرات البيئة. الخيار `--custom-provider-id` اختياري ويُشتق تلقائيًا من عنوان URL الأساسي عند حذفه. القيمة الافتراضية للخيار `--custom-compatibility` هي `openai` (القيم الأخرى: `openai-responses`، و`anthropic`).
 
-    متغير وضع المرجع:
+    يستنتج OpenClaw دعم إدخال الصور من أنماط معرّفات نماذج الرؤية المعروفة (`gpt-4o`، و`claude-3/4`، و`gemini`، واللواحق `-vl`/`vision`، وما شابهها). أضف `--custom-image-input` لفرض تفعيله لنموذج رؤية غير معروف، أو `--custom-text-input` لفرض الإدخال النصي فقط.
+
+    صيغة وضع المرجع، التي تخزّن `apiKey` بالشكل `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`:
 
     ```bash
     export CUSTOM_API_KEY="your-key"
-    openclaw onboard --non-interactive \
+    openclaw onboard --non-interactive --accept-risk \
       --mode local \
       --auth-choice custom-api-key \
       --custom-base-url "https://llm.example.com/v1" \
@@ -195,46 +176,42 @@ openclaw onboard --non-interactive \
       --custom-provider-id "my-custom" \
       --custom-compatibility anthropic \
       --custom-image-input \
-      --gateway-port 18789 \
       --gateway-bind loopback
     ```
-
-    في هذا الوضع، يخزّن الإعداد الأولي `apiKey` على هيئة `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`.
 
   </Accordion>
 </AccordionGroup>
 
-يبقى رمز إعداد Anthropic متاحًا كمسار رمز إعداد أولي مدعوم، لكن OpenClaw يفضّل الآن إعادة استخدام Claude CLI عند توفره.
-للإنتاج، فضّل مفتاح Anthropic API.
+تظل مصادقة رمز إعداد Anthropic مدعومة، لكن OpenClaw يفضّل إعادة استخدام Claude CLI عند توفر تسجيل دخول محلي إلى Claude CLI. للاستخدام الإنتاجي، يُفضّل استخدام مفتاح Anthropic API.
 
 ## إضافة وكيل آخر
 
-استخدم `openclaw agents add <name>` لإنشاء وكيل منفصل له مساحة العمل الخاصة به،
-والجلسات، وملفات تعريف المصادقة. يؤدي التشغيل دون `--workspace` إلى تشغيل المعالج.
+ينشئ `openclaw agents add <name>` وكيلًا منفصلًا له مساحة عمل وجلسات وملفات تعريف مصادقة خاصة به. يؤدي تشغيله دون `--workspace` (ومن دون أي علامات أخرى) إلى بدء المعالج التفاعلي؛ أما تمرير أي من `--workspace` أو `--model` أو `--agent-dir` أو `--bind` أو `--non-interactive` فيشغّله بصورة غير تفاعلية، وعندئذ يصبح `--workspace` مطلوبًا.
 
 ```bash
 openclaw agents add work \
   --workspace ~/.openclaw/workspace-work \
-  --model openai/gpt-5.5 \
+  --model openai/gpt-5.6-sol \
   --bind whatsapp:biz \
   --non-interactive \
   --json
 ```
 
-ما يضبطه:
+مفاتيح التهيئة التي يكتبها (إدخال `agents.list[]` لمعرّف الوكيل الجديد):
 
-- `agents.list[].name`
-- `agents.list[].workspace`
-- `agents.list[].agentDir`
+- `name`
+- `workspace`
+- `agentDir`
+- `model` (فقط عند تمرير `--model`)
 
 ملاحظات:
 
-- تتبع مساحات العمل الافتراضية النمط `~/.openclaw/workspace-<agentId>`.
-- أضف `bindings` لتوجيه الرسائل الواردة (يمكن للمعالج فعل ذلك).
-- أعلام الوضع غير التفاعلي: `--model`، و`--agent-dir`، و`--bind`، و`--non-interactive`.
+- مساحة العمل الافتراضية (عند حذف `--workspace` في المعالج التفاعلي): `~/.openclaw/workspace-<agentId>`.
+- يمكن تكرار `--bind <channel[:accountId]>`؛ أضف ارتباطات لتوجيه الرسائل الواردة إلى الوكيل الجديد (ويمكن للمعالج أيضًا تنفيذ ذلك تفاعليًا).
+- يُطبّع اسم الوكيل إلى معرّف وكيل صالح؛ والاسم `main` محجوز.
 
-## المستندات ذات الصلة
+## مستندات ذات صلة
 
 - مركز الإعداد الأولي: [الإعداد الأولي (CLI)](/ar/start/wizard)
 - المرجع الكامل: [مرجع إعداد CLI](/ar/start/wizard-cli-reference)
-- مرجع الأوامر: [`openclaw onboard`](/ar/cli/onboard)
+- مرجع الأمر: [`openclaw onboard`](/ar/cli/onboard)

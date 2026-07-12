@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Sesle uyandırma veya PTT yolları üzerinde çalışma
-summary: Mac uygulamasında sesle uyandırma ve bas-konuş modları ile yönlendirme ayrıntıları
+    - Sesle uyandırma veya bas-konuş (PTT) yolları üzerinde çalışma
+summary: Mac uygulamasında sesle uyandırma ve bas-konuş modlarının yanı sıra yönlendirme ayrıntıları
 title: Sesle uyandırma (macOS)
 x-i18n:
-    generated_at: "2026-06-28T00:49:19Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:27:02Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 33c6132d03efb837ae06f4810ff87eb981ad742d793657bc607f4ec214bc2afa
+    source_hash: 2a0a5ac44931b578daa4f74b3728a65a1c19ab9742e2d4b9f4c6db49fa5d7b8a
     source_path: platforms/mac/voicewake.md
     workflow: 16
 ---
@@ -17,71 +17,61 @@ x-i18n:
 
 ## Gereksinimler
 
-Sesle Uyandırma ve bas-konuş macOS 26 veya daha yenisini gerektirir. Daha eski macOS sürümlerinde,
-denetimler Voice ayarları sayfasından gizlenir ve bu sayfada macOS 26
-gereksinimi gösterilir.
+Sesle Uyandırma ve bas-konuş için macOS 26 veya daha yeni bir sürüm gerekir. Daha eski macOS sürümlerinde denetimler Ses ayarları sayfasında gizlenir ve bunun yerine macOS 26 gereksinimi gösterilir.
 
 ## Modlar
 
-- **Uyandırma sözcüğü modu** (varsayılan): her zaman açık Speech tanıyıcısı tetikleyici belirteçleri (`swabbleTriggerWords`) bekler. Eşleşme olduğunda yakalamayı başlatır, kısmi metinle bindirmeyi gösterir ve sessizlikten sonra otomatik gönderir.
-- **Bas-konuş (sağ Option basılı tutma)**: hemen yakalamak için sağ Option tuşunu basılı tutun; tetikleyici gerekmez. Basılı tutulurken bindirme görünür; bırakmak, metni ayarlayabilmeniz için kısa bir gecikmeden sonra sonlandırır ve iletir.
+- **Uyandırma sözcüğü modu** (varsayılan): Her zaman açık bir Konuşma tanıyıcı, tetikleyici belirteçleri (`swabbleTriggerWords`) bekler. Eşleşme olduğunda yakalamayı başlatır, kısmi metni içeren katmanı gösterir ve sessizlikten sonra otomatik olarak gönderir.
+- **Bas-konuş (sağ Option tuşunu basılı tutun)**: Tetikleyici gerekmeksizin hemen yakalamak için sağ Option tuşunu basılı tutun. Katman, tuş basılı tutulduğu sürece görünür; tuş bırakıldığında metni düzenleyebilmeniz için kısa bir gecikmenin ardından yakalama sonlandırılır ve iletilir.
 
 ## Çalışma zamanı davranışı (uyandırma sözcüğü)
 
-- Speech tanıyıcısı `VoiceWakeRuntime` içinde yaşar.
-- Tetikleyici yalnızca uyandırma sözcüğü ile sonraki sözcük arasında **anlamlı bir duraklama** olduğunda çalışır (~0,55 sn boşluk). Bindirme/sesli uyarı, komut başlamadan önce bile duraklamada başlayabilir.
-- Sessizlik pencereleri: konuşma akıyorsa 2,0 sn, yalnızca tetikleyici duyulduysa 5,0 sn.
-- Kesin durdurma: kontrolden çıkan oturumları önlemek için 120 sn.
-- Oturumlar arası debounce: 350 ms.
-- Bindirme, kesinleşmiş/geçici renklendirme ile `VoiceWakeOverlayController` üzerinden yönetilir.
-- Gönderimden sonra tanıyıcı, sonraki tetikleyiciyi dinlemek için temiz biçimde yeniden başlar.
+- Tanıyıcı `VoiceWakeRuntime` içinde bulunur.
+- Tetikleyici yalnızca uyandırma sözcüğü ile sonraki sözcük arasında anlamlı bir duraklama olduğunda çalışır (`triggerPauseWindow` = 0,55 sn). Katman/zil sesi, komut başlamadan önce bile duraklama sırasında başlayabilir.
+- Sessizlik aralıkları: konuşma sürerken 2,0 sn (`silenceWindow`), yalnızca tetikleyici duyulduysa 5,0 sn (`triggerOnlySilenceWindow`).
+- Kesin durdurma: kontrolden çıkan oturumları önlemek için 120 sn (`captureHardStop`).
+- Oturumlar arası geri tepme önleme: gönderimden sonra 350 ms (`debounceAfterSend`).
+- Katman, kesinleşmiş/geçici metin renklendirmesiyle `VoiceWakeOverlayController` üzerinden yönetilir.
+- Gönderimden sonra tanıyıcı, sonraki tetikleyiciyi dinlemek üzere temiz biçimde yeniden başlatılır.
 
 ## Yaşam döngüsü değişmezleri
 
-- Sesle Uyandırma etkinse ve izinler verilmişse, uyandırma sözcüğü tanıyıcısı dinliyor olmalıdır (açık bir bas-konuş yakalaması sırası hariç).
-- Bindirme görünürlüğü (X düğmesiyle elle kapatma dahil) tanıyıcının sürdürülmesini asla engellememelidir.
-
-## Yapışkan bindirme hata modu (önceki)
-
-Önceden, bindirme görünür halde takılı kalırsa ve elle kapatırsanız, Voice Wake "ölü" görünebilirdi; çünkü çalışma zamanının yeniden başlatma girişimi bindirme görünürlüğü tarafından engellenebilir ve sonraki yeniden başlatma zamanlanmayabilirdi.
-
-Sağlamlaştırma:
-
-- Uyandırma çalışma zamanı yeniden başlatması artık bindirme görünürlüğü tarafından engellenmez.
-- Bindirme kapatma tamamlanması, `VoiceSessionCoordinator` üzerinden bir `VoiceWakeRuntime.refresh(...)` tetikler; bu nedenle X ile elle kapatma her zaman dinlemeyi sürdürür.
+- Sesle Uyandırma etkinse ve izinler verilmişse uyandırma sözcüğü tanıyıcısı, etkin bir bas-konuş yakalaması dışında dinlemeyi sürdürür.
+- X düğmesiyle elle kapatma dâhil olmak üzere katmanın kapatılması, tanıyıcıyı her zaman devam ettirir: `VoiceSessionCoordinator.overlayDidDismiss`, tüm kapatma yollarında `VoiceWakeRuntime.refresh(state:)` çağrısını yapar. Oturum/belirteç modeli için [Ses katmanı](/tr/platforms/mac/voice-overlay) bölümüne bakın.
 
 ## Bas-konuş ayrıntıları
 
-- Kısayol algılama, **sağ Option** (`keyCode 61` + `.option`) için genel bir `.flagsChanged` izleyicisi kullanır. Yalnızca olayları gözlemleriz (yutma yok).
-- Yakalama hattı `VoicePushToTalk` içindedir: Speech'i hemen başlatır, kısmi sonuçları bindirmeye akıtır ve bırakmada `VoiceWakeForwarder` çağırır.
-- Bas-konuş başladığında, rakip ses tap'lerini önlemek için uyandırma sözcüğü çalışma zamanını duraklatırız; bırakmadan sonra otomatik olarak yeniden başlar.
-- İzinler: Mikrofon + Speech gerektirir; olayları görmek Erişilebilirlik/Giriş İzleme onayı gerektirir.
-- Harici klavyeler: bazıları sağ Option tuşunu beklendiği gibi sunmayabilir; kullanıcılar kaçırılan algılamalar bildirirse bir yedek kısayol sunun.
+- Kısayol tuşu algılama, sağ Option için (`keyCode 61` + `.option`) genel bir `.flagsChanged` izleyicisi kullanır. Yalnızca olayları gözlemler, hiçbir zaman engellemez.
+- Yakalama `VoicePushToTalk` içinde gerçekleşir: Konuşma'yı hemen başlatır, kısmi sonuçları katmana aktarır ve tuş bırakıldığında `VoiceWakeForwarder` çağrısını yapar.
+- Bas-konuşun başlatılması, çakışan ses dinleyicilerini önlemek için uyandırma sözcüğü çalışma zamanını duraklatır; tuş bırakıldıktan sonra otomatik olarak yeniden başlatılır.
+- İzinler: Mikrofon + Konuşma gerekir; tuş olaylarını almak için Erişilebilirlik/Giriş İzleme onayı gerekir.
+- Harici klavyeler: Bazıları sağ Option tuşunu beklendiği gibi sunmaz. Kullanıcılar algılama sorunları bildirirse yedek bir kısayol sunun.
 
-## Kullanıcıya dönük ayarlar
+## Kullanıcıya yönelik ayarlar
 
-- **Voice Wake** anahtarı: uyandırma sözcüğü çalışma zamanını etkinleştirir.
-- **Konuşmak için Sağ Option'ı basılı tut**: bas-konuş izleyicisini etkinleştirir.
-- Dil ve mikrofon seçiciler, canlı seviye ölçer, tetikleyici sözcük tablosu, test aracı (yalnızca yerel; iletmez).
-- Mikrofon seçici, bir aygıtın bağlantısı kesilirse son seçimi korur, bağlantı kesildi ipucu gösterir ve aygıt geri dönene kadar geçici olarak sistem varsayılanına döner.
-- **Sesler**: tetikleyici algılandığında ve gönderimde sesli uyarılar; varsayılan olarak macOS "Glass" sistem sesi kullanılır. Her olay için herhangi bir `NSSound` tarafından yüklenebilir dosya (örn. MP3/WAV/AIFF) seçebilir veya **Ses Yok** seçebilirsiniz.
+- **Sesle Uyandırma** anahtarı: uyandırma sözcüğü çalışma zamanını etkinleştirir.
+- **Konuşmak için sağ Option tuşunu basılı tutun**: bas-konuş izleyicisini etkinleştirir.
+- Dil ve mikrofon seçicileri, canlı seviye ölçer, tetikleyici sözcük tablosu ve sınayıcı (yalnızca yerel, hiçbir zaman iletmez).
+- Mikrofon seçici, bir aygıtın bağlantısı kesilirse son seçimi korur, bağlantının kesildiğine ilişkin bir ipucu gösterir ve aygıt geri dönene kadar geçici olarak sistem varsayılanına geçer.
+- **Sesler**: tetikleyici algılandığında ve gönderimde zil sesi çalar; varsayılan olarak macOS "Glass" sistem sesi kullanılır. Her olay için `NSSound` tarafından yüklenebilen herhangi bir dosyayı (ör. MP3/WAV/AIFF) seçin veya **Ses Yok** seçeneğini belirleyin.
 
 ## İletme davranışı
 
-- Voice Wake etkin olduğunda, dökümler etkin gateway/agent'a iletilir (Mac uygulamasının geri kalanıyla aynı yerel ve uzak mod).
-- Yanıtlar **son kullanılan ana sağlayıcıya** (WhatsApp/Telegram/Discord/WebChat) teslim edilir. Teslimat başarısız olursa hata günlüğe kaydedilir ve çalıştırma WebChat/oturum günlükleri üzerinden hâlâ görünür olur.
+- İletme sırasında `VoiceWakeForwarder.selectedSessionOptions`, ayarlanmışsa etkin WebChat oturum anahtarını, aksi takdirde Gateway'in ana oturum anahtarını seçer.
+- Bu oturumu `sessions.list` aracılığıyla arar ve teslimat kanalını ve hedefi oturumun teslimat bağlamından türetir (önce son kanalına/hedefine, ardından ayrıştırılmış bir oturum anahtarına geri döner); hiçbir şey çözümlenemezse varsayılan olarak WebChat'i kullanır.
+- Teslimat başarısız olursa hata günlüğe kaydedilir (`voicewake.forward` kategorisi) ve çalıştırma WebChat/oturum günlükleri üzerinden yine de görülebilir.
 
 ## İletme yükü
 
-- `VoiceWakeForwarder.prefixedTranscript(_:)`, göndermeden önce makine ipucunu başa ekler. Uyandırma sözcüğü ve bas-konuş yolları arasında paylaşılır.
+- `VoiceWakeForwarder.prefixedTranscript(_:)`, dökümden önce makine ipucu satırı (çözümlenmiş ana makine adı; çözümlenemezse "bu Mac") ekler; bu davranış uyandırma sözcüğü ve bas-konuş yolları arasında ortaktır.
 
 ## Hızlı doğrulama
 
-- Bas-konuşu açın, sağ Option'ı basılı tutun, konuşun, bırakın: bindirme kısmi sonuçları göstermeli ve sonra göndermelidir.
-- Basılı tutarken menü çubuğu kulakları büyümüş kalmalıdır (`triggerVoiceEars(ttl:nil)` kullanır); bırakmadan sonra küçülürler.
+- Bas-konuşu açın, sağ Option tuşunu basılı tutun, konuşun ve bırakın: katman önce kısmi sonuçları göstermeli, ardından göndermelidir.
+- Tuşu basılı tutarken menü çubuğundaki kulaklar büyütülmüş durumda kalmalıdır (`triggerVoiceEars(ttl: nil)`); tuş bırakıldıktan sonra küçülürler.
 
 ## İlgili
 
 - [Sesle uyandırma](/tr/nodes/voicewake)
-- [Ses bindirmesi](/tr/platforms/mac/voice-overlay)
+- [Ses katmanı](/tr/platforms/mac/voice-overlay)
 - [macOS uygulaması](/tr/platforms/macos)

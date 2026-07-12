@@ -1,56 +1,41 @@
 ---
 read_when:
-    - Vuoi analizzare PDF provenienti dagli agenti
-    - Ti servono i parametri e i limiti esatti dello strumento PDF
+    - Vuoi analizzare PDF dagli agenti
+    - Ti servono parametri e limiti esatti dello strumento PDF
     - Stai eseguendo il debug della modalità PDF nativa rispetto al fallback di estrazione
 summary: Analizza uno o più documenti PDF con supporto nativo del provider e fallback di estrazione
 title: Strumento PDF
 x-i18n:
-    generated_at: "2026-06-27T18:22:23Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:34:48Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6cce4328a7457f30b8c64abdcfa94b6a5d5649c2bcdfde3187288b11a0e154b1
+    source_hash: 54bde94a2b70fd209c70c13a1e75dc81c6cbebca7f6d56776bf37fa62cd78254
     source_path: tools/pdf.md
     workflow: 16
 ---
 
-`pdf` analizza uno o più documenti PDF e restituisce testo.
-
-Comportamento rapido:
-
-- Modalità provider nativa per i provider di modelli Anthropic e Google.
-- Modalità di ripiego con estrazione per altri provider (prima estrae il testo, poi le immagini delle pagine quando necessario).
-- Supporta input singolo (`pdf`) o multiplo (`pdfs`), massimo 10 PDF per chiamata.
+`pdf` analizza uno o più documenti PDF e restituisce del testo. Usa l'input nativo dei documenti sui modelli Anthropic e Google e, per tutti gli altri provider, ricorre all'estrazione di testo e immagini.
 
 ## Disponibilità
 
-Lo strumento viene registrato solo quando OpenClaw può risolvere una configurazione di modello compatibile con PDF per l’agente:
+Lo strumento viene registrato solo quando OpenClaw riesce a individuare un modello compatibile con i PDF per l'agente. Ordine di risoluzione:
 
-1. `agents.defaults.pdfModel`
-2. ripiego su `agents.defaults.imageModel`
-3. ripiego sul modello di sessione/predefinito risolto dell’agente
-4. se i provider PDF nativi sono supportati da autenticazione, preferiscili rispetto ai candidati generici di ripiego per immagini
+1. `agents.defaults.pdfModel` (modello primario/fallback espliciti)
+2. `agents.defaults.imageModel` (modello primario/fallback espliciti)
+3. Il modello risolto per la sessione/predefinito dell'agente, se il relativo provider supporta l'input PDF nativo (Anthropic, Google) o dispone già di un modello di visione configurato
+4. Provider compatibili con immagini/visione rilevati automaticamente e dotati di autenticazione utilizzabile, dando priorità ai provider con PDF nativi
 
-Se non è possibile risolvere alcun modello utilizzabile, lo strumento `pdf` non viene esposto.
+L'autenticazione di ogni candidato di fallback viene verificata prima dell'uso, quindi un `provider/model` configurato viene considerato solo se OpenClaw può autenticare tale provider per l'agente. Se non viene individuato alcun modello utilizzabile, lo strumento `pdf` non viene esposto.
 
-Note sulla disponibilità:
-
-- La catena di ripiego è consapevole dell’autenticazione. Un `provider/model` configurato conta solo se
-  OpenClaw può effettivamente autenticare quel provider per l’agente.
-- I provider PDF nativi sono attualmente **Anthropic** e **Google**.
-- Se il provider di sessione/predefinito risolto ha già un modello di visione/PDF
-  configurato, lo strumento PDF lo riutilizza prima di ricorrere ad altri
-  provider supportati da autenticazione.
-
-## Riferimento input
+## Riferimento degli input
 
 <ParamField path="pdf" type="string">
-Un percorso o URL di PDF.
+Un percorso o URL di un PDF.
 </ParamField>
 
 <ParamField path="pdfs" type="string[]">
-Più percorsi o URL di PDF, fino a 10 in totale.
+Più percorsi o URL di PDF, fino a un totale di 10.
 </ParamField>
 
 <ParamField path="prompt" type="string" default="Analyze this PDF document.">
@@ -58,78 +43,60 @@ Prompt di analisi.
 </ParamField>
 
 <ParamField path="pages" type="string">
-Filtro delle pagine come `1-5` o `1,3,7-9`.
+Filtro delle pagine, ad esempio `1-5` o `1,3,7-9`. Non supportato nella modalità nativa del provider.
 </ParamField>
 
 <ParamField path="password" type="string">
-Password per PDF cifrati in modalità di ripiego con estrazione.
+Password per i PDF crittografati. Si applica a ogni PDF nella richiesta; viene usata solo dalla modalità di fallback con estrazione.
 </ParamField>
 
 <ParamField path="model" type="string">
-Override opzionale del modello nel formato `provider/model`.
+Sostituzione facoltativa del modello nel formato `provider/model`.
 </ParamField>
 
 <ParamField path="maxBytesMb" type="number">
-Limite di dimensione per PDF in MB. Il valore predefinito è `agents.defaults.pdfMaxBytesMb` o `10`.
+Limite di dimensione per PDF in MB. Il valore predefinito è `agents.defaults.pdfMaxBytesMb` oppure `10` se non impostato.
 </ParamField>
 
-Note sull’input:
+Note:
 
-- `pdf` e `pdfs` vengono uniti e deduplicati prima del caricamento.
-- Se non viene fornito alcun input PDF, lo strumento restituisce un errore.
-- `pages` viene interpretato come numeri di pagina con base 1, deduplicato, ordinato e limitato al massimo di pagine configurato.
-- `password` si applica a ogni PDF nella richiesta ed è usato solo dalla modalità di ripiego con estrazione.
-- Il valore predefinito di `maxBytesMb` è `agents.defaults.pdfMaxBytesMb` o `10`.
+- `pdf` e `pdfs` vengono uniti e deduplicati prima del caricamento; è necessario specificarne almeno uno.
+- `pages` viene interpretato come numeri di pagina con indice iniziale 1, deduplicati, ordinati e limitati a `agents.defaults.pdfMaxPages` (valore predefinito `20`). Un intervallo che non corrisponde ad alcuna pagina entro i limiti genera un errore prima della chiamata al modello.
 
 ## Riferimenti PDF supportati
 
-- percorso di file locale (inclusa l’espansione di `~`)
+- Percorso di un file locale (inclusa l'espansione di `~`)
 - URL `file://`
 - URL `http://` e `https://`
-- riferimenti in ingresso gestiti da OpenClaw, come `media://inbound/<id>`
+- Riferimenti in ingresso gestiti da OpenClaw, come `media://inbound/<id>`
 
-Note sui riferimenti:
-
-- Altri schemi URI (per esempio `ftp://`) vengono rifiutati con `unsupported_pdf_reference`.
-- In modalità sandbox, gli URL remoti `http(s)` vengono rifiutati.
-- Con la policy file limitata al workspace abilitata, i percorsi di file locali esterni alle radici consentite vengono rifiutati.
-- I riferimenti in ingresso gestiti e i percorsi riprodotti nell’archivio multimediale in ingresso di OpenClaw sono consentiti con la policy file limitata al workspace.
+Gli altri schemi URI, ad esempio `ftp://`, restituiscono `details.error = "unsupported_pdf_reference"`. Gli URL remoti `http(s)` vengono rifiutati quando lo strumento viene eseguito in sandbox. Quando è abilitata la politica che limita i file all'area di lavoro, i percorsi locali esterni alle radici consentite vengono rifiutati; sono comunque permessi i riferimenti in ingresso gestiti e i percorsi riprodotti nell'archivio dei contenuti multimediali in ingresso di OpenClaw.
 
 ## Modalità di esecuzione
 
-### Modalità provider nativa
+### Modalità nativa del provider
 
-La modalità nativa viene usata per i provider `anthropic` e `google`.
-Lo strumento invia i byte PDF grezzi direttamente alle API dei provider.
+Utilizzata per i provider `anthropic` e `google`, gli unici che attualmente dichiarano il supporto nativo dei documenti PDF. I byte PDF non elaborati vengono inviati direttamente all'API del provider come documento nativo/parte PDF incorporata per ciascun file.
 
-Limiti della modalità nativa:
+Limiti:
 
-- `pages` non è supportato. Se impostato, lo strumento restituisce un errore.
-- `password` non è supportato. Usa un modello non nativo per analizzare PDF cifrati.
-- L’input multi-PDF è supportato; ogni PDF viene inviato come blocco documento nativo /
-  parte PDF inline prima del prompt.
+- `pages` non è supportato; se impostato, lo strumento genera `pages is not supported with native PDF providers`.
+- `password` non è supportato; se impostato, lo strumento genera `password is not supported with native PDF providers`. Per i PDF crittografati, usa un modello non nativo.
 
-### Modalità di ripiego con estrazione
+### Modalità di fallback con estrazione
 
-La modalità di ripiego viene usata per provider non nativi.
+Utilizzata per tutti gli altri provider.
 
-Flusso:
+1. Estrae il testo dalle pagine selezionate (fino a `agents.defaults.pdfMaxPages`, valore predefinito `20`) tramite il plugin `document-extract` incluso, che usa il pacchetto `clawpdf` (PDFium WebAssembly) per estrarre testo e immagini.
+2. Se il testo estratto contiene meno di `200` caratteri, converte le stesse pagine in immagini PNG. Il budget di rendering è di `4,000,000` pixel complessivi, condivisi tra tutte le pagine che richiedono immagini (assegnati proporzionalmente per ogni pagina rimanente, non per singola pagina); le pagine che contengono già una quantità sufficiente di testo non vengono quindi convertite.
+3. Invia al modello selezionato il testo estratto, le eventuali immagini convertite e il prompt.
 
-1. Estrai il testo dalle pagine selezionate (fino a `agents.defaults.pdfMaxPages`, valore predefinito `20`).
-2. Se la lunghezza del testo estratto è inferiore a `200` caratteri, renderizza le pagine selezionate in immagini PNG e includile.
-3. Invia il contenuto estratto più il prompt al modello selezionato.
+Dettagli:
 
-Dettagli del ripiego:
-
-- L’estrazione delle immagini delle pagine usa un budget di pixel di `4,000,000`.
-- I PDF cifrati possono essere aperti con il parametro di primo livello `password`.
-- Se il modello di destinazione non supporta input immagine e non c’è testo estraibile, lo strumento restituisce un errore.
-- Se l’estrazione del testo riesce ma l’estrazione delle immagini richiederebbe la visione su un
-  modello solo testo, OpenClaw scarta le immagini renderizzate e continua con il
-  testo estratto.
-- Il ripiego con estrazione usa il Plugin `document-extract` incluso. Il Plugin possiede
-  `clawpdf`, che fornisce estrazione del testo e rendering delle immagini tramite PDFium
-  WebAssembly.
+- I PDF crittografati vengono aperti con il parametro `password` di primo livello.
+- Se il modello non supporta l'input di immagini e non è presente testo estraibile, lo strumento genera un errore.
+- Se il rendering delle immagini non riesce, OpenClaw elimina le immagini e prosegue con il testo estratto.
+- Se il modello di destinazione supporta solo il testo e l'estrazione ha prodotto immagini, OpenClaw elimina le immagini e invia esclusivamente il testo.
 
 ## Configurazione
 
@@ -148,30 +115,39 @@ Dettagli del ripiego:
 }
 ```
 
-Consulta [Riferimento configurazione](/it/gateway/configuration-reference) per i dettagli completi dei campi.
+| Chiave                          | Valore predefinito | Significato                                                                                                                    |
+| ------------------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| `agents.defaults.pdfModel`      | non impostato      | Modelli PDF primario/fallback espliciti; usa come fallback `imageModel`, quindi il modello della sessione.                     |
+| `agents.defaults.pdfMaxBytesMb` | `10`               | Limite di dimensione per PDF in MB.                                                                                            |
+| `agents.defaults.pdfMaxPages`   | `20`               | Numero massimo di pagine elaborate per PDF.                                                                                    |
 
-## Dettagli output
+Consulta il [Riferimento della configurazione](/it/gateway/config-agents#agent-defaults) per i dettagli completi sui campi.
 
-Lo strumento restituisce testo in `content[0].text` e metadati strutturati in `details`.
+## Dettagli dell'output
+
+Lo strumento restituisce il testo in `content[0].text` e i metadati strutturati in `details`.
 
 Campi `details` comuni:
 
 - `model`: riferimento del modello risolto (`provider/model`)
-- `native`: `true` per la modalità provider nativa, `false` per il ripiego
-- `attempts`: tentativi di ripiego non riusciti prima del successo
+- `native`: `true` per la modalità nativa del provider, `false` per il fallback
+- `attempts`: tentativi di fallback non riusciti prima del successo
 
-Campi percorso:
+Campi dei percorsi:
 
-- input PDF singolo: `details.pdf`
-- input PDF multipli: `details.pdfs[]` con voci `pdf`
-- metadati di riscrittura del percorso sandbox (quando applicabile): `rewrittenFrom`
+- Input di un singolo PDF: `details.pdf`
+- Input di più PDF: `details.pdfs[]` con voci `pdf`
+- Metadati di riscrittura del percorso della sandbox (quando applicabile): `rewrittenFrom`
 
-## Comportamento degli errori
+## Comportamento in caso di errore
 
-- Input PDF mancante: genera `pdf required: provide a path or URL to a PDF document`
-- Troppi PDF: restituisce un errore strutturato in `details.error = "too_many_pdfs"`
-- Schema di riferimento non supportato: restituisce `details.error = "unsupported_pdf_reference"`
-- Modalità nativa con `pages`: genera un errore chiaro `pages is not supported with native PDF providers`
+| Condizione                         | Risultato                                                       |
+| ---------------------------------- | --------------------------------------------------------------- |
+| Nessun PDF in input                | Genera `pdf required: provide a path or URL to a PDF document`   |
+| Più di 10 PDF                      | `details.error = "too_many_pdfs"`                               |
+| Schema di riferimento non supportato | `details.error = "unsupported_pdf_reference"`                 |
+| `pages` con un provider nativo     | Genera `pages is not supported with native PDF providers`       |
+| `password` con un provider nativo  | Genera `password is not supported with native PDF providers`    |
 
 ## Esempi
 
@@ -184,7 +160,7 @@ PDF singolo:
 }
 ```
 
-PDF multipli:
+Più PDF:
 
 ```json
 {
@@ -193,7 +169,7 @@ PDF multipli:
 }
 ```
 
-Modello di ripiego con filtro pagine:
+Modello di fallback con filtro delle pagine:
 
 ```json
 {
@@ -204,7 +180,7 @@ Modello di ripiego con filtro pagine:
 }
 ```
 
-PDF cifrato con ripiego tramite estrazione:
+PDF crittografato con fallback di estrazione:
 
 ```json
 {
@@ -217,5 +193,5 @@ PDF cifrato con ripiego tramite estrazione:
 
 ## Correlati
 
-- [Panoramica degli strumenti](/it/tools) - tutti gli strumenti agente disponibili
-- [Riferimento configurazione](/it/gateway/config-agents#agent-defaults) - configurazione di pdfMaxBytesMb e pdfMaxPages
+- [Panoramica degli strumenti](/it/tools) - tutti gli strumenti disponibili per gli agenti
+- [Riferimento della configurazione](/it/gateway/config-agents#agent-defaults) - configurazione di pdfMaxBytesMb e pdfMaxPages

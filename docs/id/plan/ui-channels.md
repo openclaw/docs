@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Memfaktorkan ulang antarmuka pengguna pesan saluran, payload interaktif, atau perender saluran native
+    - Memfaktorkan ulang UI pesan saluran, payload interaktif, atau perender saluran native
     - Mengubah kemampuan alat pesan, petunjuk pengiriman, atau penanda lintas konteks
-    - Men-debug fanout impor Discord Carbon atau kemalasan runtime plugin channel
-summary: Pisahkan presentasi pesan semantik dari perender UI native saluran.
-title: Rencana refaktor presentasi channel
+    - Men-debug fanout impor Discord Carbon atau pemuatan malas runtime plugin kanal
+summary: Pisahkan penyajian pesan semantik dari perender UI native kanal.
+title: Rencana refaktor penyajian kanal
 x-i18n:
-    generated_at: "2026-06-27T17:41:36Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:20:28Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 6b0f0c4f64e0c503209ac0a5b763b1b5483bf8d55a28ceacffbbcd1337d4371e
@@ -17,50 +17,50 @@ x-i18n:
 
 ## Status
 
-Diimplementasikan untuk permukaan agen bersama, CLI, kemampuan Plugin, dan pengiriman keluar:
+Diimplementasikan untuk permukaan agen bersama, CLI, kapabilitas plugin, dan pengiriman keluar:
 
 - `ReplyPayload.presentation` membawa UI pesan semantik.
-- `ReplyPayload.delivery.pin` membawa permintaan penyematan pesan terkirim.
-- Aksi pesan bersama mengekspos `presentation`, `delivery`, dan `pin`, bukan `components`, `blocks`, `buttons`, atau `card` asli penyedia.
-- Core merender atau menurunkan presentasi secara otomatis melalui kemampuan keluar yang dideklarasikan Plugin.
-- Perender Discord, Slack, Telegram, Mattermost, MS Teams, dan Feishu memakai kontrak generik.
-- Kode control-plane kanal Discord tidak lagi mengimpor kontainer UI berbasis Carbon.
+- `ReplyPayload.delivery.pin` membawa permintaan penyematan pesan yang telah dikirim.
+- Tindakan pesan bersama mengekspos `presentation`, `delivery`, dan `pin`, bukan `components`, `blocks`, `buttons`, atau `card` bawaan penyedia.
+- Inti merender atau menurunkan kemampuan presentasi secara otomatis melalui kapabilitas keluar yang dideklarasikan plugin.
+- Perender Discord, Slack, Telegram, Mattermost, MS Teams, dan Feishu menggunakan kontrak generik.
+- Kode bidang kontrol kanal Discord tidak lagi mengimpor kontainer UI berbasis Carbon.
 
-Dokumentasi kanonis sekarang ada di [Presentasi Pesan](/id/plugins/message-presentation).
+Dokumentasi kanonis kini berada di [Presentasi pesan](/id/plugins/message-presentation).
 Pertahankan rencana ini sebagai konteks implementasi historis; perbarui panduan kanonis
-untuk perubahan kontrak, perender, atau perilaku fallback.
+untuk perubahan perilaku kontrak, perender, atau fallback.
 
 ## Masalah
 
-UI kanal saat ini terbagi di beberapa permukaan yang tidak kompatibel:
+UI kanal saat ini terbagi ke dalam beberapa permukaan yang tidak kompatibel:
 
-- Core memiliki hook perender lintas-konteks berbentuk Discord melalui `buildCrossContextComponents`.
-- `channel.ts` Discord dapat mengimpor UI Carbon asli melalui `DiscordUiContainer`, yang menarik dependensi UI runtime ke control plane Plugin kanal.
-- Agen dan CLI mengekspos escape hatch payload asli seperti `components` Discord, `blocks` Slack, `buttons` Telegram atau Mattermost, dan `card` Teams atau Feishu.
-- `ReplyPayload.channelData` membawa hint transport dan envelope UI asli.
-- Model `interactive` generik sudah ada, tetapi lebih sempit daripada tata letak yang lebih kaya yang sudah digunakan oleh Discord, Slack, Teams, Feishu, LINE, Telegram, dan Mattermost.
+- Inti memiliki hook perender lintas konteks berbentuk Discord melalui `buildCrossContextComponents`.
+- `channel.ts` Discord dapat mengimpor UI Carbon bawaan melalui `DiscordUiContainer`, yang menarik dependensi UI runtime ke bidang kontrol plugin kanal.
+- Agen dan CLI mengekspos jalur pintas payload bawaan seperti `components` Discord, `blocks` Slack, `buttons` Telegram atau Mattermost, serta `card` Teams atau Feishu.
+- `ReplyPayload.channelData` membawa petunjuk transportasi sekaligus amplop UI bawaan.
+- Model `interactive` generik tersedia, tetapi lebih terbatas daripada tata letak yang lebih kaya yang sudah digunakan oleh Discord, Slack, Teams, Feishu, LINE, Telegram, dan Mattermost.
 
-Ini membuat core mengetahui bentuk UI asli, melemahkan kelambatan runtime Plugin, dan memberi agen terlalu banyak cara khusus penyedia untuk mengekspresikan maksud pesan yang sama.
+Hal ini membuat inti mengetahui bentuk UI bawaan, melemahkan pemuatan lambat runtime plugin, dan memberi agen terlalu banyak cara khusus penyedia untuk mengekspresikan maksud pesan yang sama.
 
 ## Tujuan
 
-- Core menentukan presentasi semantik terbaik untuk pesan dari kemampuan yang dideklarasikan.
-- Ekstensi mendeklarasikan kemampuan dan merender presentasi semantik ke payload transport asli.
-- Web Control UI tetap terpisah dari UI asli chat.
-- Payload kanal asli tidak diekspos melalui permukaan pesan agen bersama atau CLI.
-- Fitur presentasi yang tidak didukung diturunkan otomatis ke representasi teks terbaik.
-- Perilaku pengiriman seperti menyematkan pesan terkirim adalah metadata pengiriman generik, bukan presentasi.
+- Inti menentukan presentasi semantik terbaik untuk suatu pesan berdasarkan kapabilitas yang dideklarasikan.
+- Ekstensi mendeklarasikan kapabilitas dan merender presentasi semantik menjadi payload transportasi bawaan.
+- UI Kontrol Web tetap terpisah dari UI obrolan bawaan.
+- Payload kanal bawaan tidak diekspos melalui permukaan pesan agen bersama atau CLI.
+- Fitur presentasi yang tidak didukung otomatis diturunkan ke representasi teks terbaik.
+- Perilaku pengiriman seperti menyematkan pesan yang telah dikirim merupakan metadata pengiriman generik, bukan presentasi.
 
 ## Bukan tujuan
 
 - Tidak ada shim kompatibilitas mundur untuk `buildCrossContextComponents`.
-- Tidak ada escape hatch asli publik untuk `components`, `blocks`, `buttons`, atau `card`.
-- Tidak ada impor core untuk pustaka UI asli kanal.
-- Tidak ada seam SDK khusus penyedia untuk kanal bawaan.
+- Tidak ada jalur pintas bawaan publik untuk `components`, `blocks`, `buttons`, atau `card`.
+- Tidak ada impor pustaka UI bawaan kanal oleh inti.
+- Tidak ada celah SDK khusus penyedia untuk kanal yang dibundel.
 
 ## Model target
 
-Tambahkan field `presentation` milik core ke `ReplyPayload`.
+Tambahkan bidang `presentation` milik inti ke `ReplyPayload`.
 
 ```ts
 type MessagePresentationTone = "neutral" | "info" | "success" | "warning" | "danger";
@@ -95,16 +95,16 @@ type MessagePresentationOption = {
 
 - Blok teks `interactive` dipetakan ke `presentation.blocks[].type = "text"`.
 - Blok tombol `interactive` dipetakan ke `presentation.blocks[].type = "buttons"`.
-- Blok select `interactive` dipetakan ke `presentation.blocks[].type = "select"`.
+- Blok pilihan `interactive` dipetakan ke `presentation.blocks[].type = "select"`.
 
-Skema agen eksternal dan CLI sekarang menggunakan `presentation`; `interactive` tetap menjadi helper parser/perenderan lama internal untuk produsen balasan yang sudah ada.
-API publik yang dihadapkan ke produsen memperlakukan `interactive` sebagai usang. Dukungan runtime
-tetap ada agar helper persetujuan yang sudah ada dan Plugin lama terus berfungsi
-sementara kode baru mengeluarkan `presentation`.
+Skema agen eksternal dan CLI kini menggunakan `presentation`; `interactive` tetap menjadi pembantu penguraian/perenderan lama internal untuk produsen balasan yang ada.
+API publik yang ditujukan bagi produsen memperlakukan `interactive` sebagai usang. Dukungan runtime
+tetap tersedia agar pembantu persetujuan yang ada dan plugin lama terus
+berfungsi sementara kode baru menghasilkan `presentation`.
 
 ## Metadata pengiriman
 
-Tambahkan field `delivery` milik core untuk perilaku pengiriman yang bukan UI.
+Tambahkan bidang `delivery` milik inti untuk perilaku pengiriman yang bukan UI.
 
 ```ts
 type ReplyPayloadDelivery = {
@@ -120,16 +120,16 @@ type ReplyPayloadDelivery = {
 
 Semantik:
 
-- `delivery.pin = true` berarti sematkan pesan pertama yang berhasil dikirim.
-- `notify` bernilai default `false`.
-- `required` bernilai default `false`; kanal yang tidak didukung atau penyematan yang gagal diturunkan otomatis dengan melanjutkan pengiriman.
-- Aksi pesan manual `pin`, `unpin`, dan `list-pins` tetap ada untuk pesan yang sudah ada.
+- `delivery.pin = true` berarti menyematkan pesan pertama yang berhasil dikirim.
+- `notify` secara default bernilai `false`.
+- `required` secara default bernilai `false`; kanal yang tidak didukung atau kegagalan penyematan otomatis diturunkan dengan melanjutkan pengiriman.
+- Tindakan pesan manual `pin`, `unpin`, dan `list-pins` tetap tersedia untuk pesan yang sudah ada.
 
-Binding topik ACP Telegram saat ini harus dipindahkan dari `channelData.telegram.pin = true` ke `delivery.pin = true`.
+Pengikatan topik ACP Telegram saat ini harus dipindahkan dari `channelData.telegram.pin = true` ke `delivery.pin = true`.
 
-## Kontrak kemampuan runtime
+## Kontrak kapabilitas runtime
 
-Tambahkan hook perender presentasi dan pengiriman ke adapter keluar runtime, bukan Plugin kanal control-plane.
+Tambahkan hook perenderan presentasi dan pengiriman ke adaptor keluar runtime, bukan ke plugin kanal bidang kontrol.
 
 ```ts
 type ChannelPresentationCapabilities = {
@@ -190,101 +190,101 @@ type ChannelOutboundAdapter = {
 };
 ```
 
-Perilaku core:
+Perilaku inti:
 
-- Selesaikan kanal target dan adapter runtime.
-- Minta kemampuan presentasi.
-- Turunkan blok yang tidak didukung dan terapkan batas kemampuan generik sebelum
+- Menentukan kanal target dan adaptor runtime.
+- Meminta kapabilitas presentasi.
+- Menurunkan blok yang tidak didukung dan menerapkan batas kapabilitas generik sebelum
   perenderan.
-- Panggil `renderPresentation`.
-- Jika tidak ada perender, konversi presentasi ke fallback teks.
-- Setelah pengiriman berhasil, panggil `pinDeliveredMessage` saat `delivery.pin` diminta dan didukung.
+- Memanggil `renderPresentation`.
+- Jika tidak ada perender, mengonversi presentasi menjadi fallback teks.
+- Setelah pengiriman berhasil, memanggil `pinDeliveredMessage` ketika `delivery.pin` diminta dan didukung.
 
 ## Pemetaan kanal
 
 Discord:
 
-- Render `presentation` ke komponen v2 dan kontainer Carbon dalam modul khusus runtime.
-- Pertahankan helper warna aksen dalam modul ringan.
-- Hapus impor `DiscordUiContainer` dari kode control-plane Plugin kanal.
+- Merender `presentation` menjadi komponen v2 dan kontainer Carbon dalam modul khusus runtime.
+- Mempertahankan pembantu warna aksen dalam modul ringan.
+- Menghapus impor `DiscordUiContainer` dari kode bidang kontrol plugin kanal.
 
 Slack:
 
-- Render `presentation` ke Block Kit.
-- Hapus input `blocks` agen dan CLI.
+- Merender `presentation` menjadi Block Kit.
+- Menghapus input `blocks` agen dan CLI.
 
 Telegram:
 
-- Render teks, konteks, dan divider sebagai teks.
-- Render aksi dan select sebagai keyboard inline saat dikonfigurasi dan diizinkan untuk permukaan target.
-- Gunakan fallback teks saat tombol inline dinonaktifkan.
-- Pindahkan penyematan topik ACP ke `delivery.pin`.
+- Merender teks, konteks, dan pemisah sebagai teks.
+- Merender tindakan dan pilihan sebagai papan ketik inline ketika dikonfigurasi dan diizinkan untuk permukaan target.
+- Menggunakan fallback teks ketika tombol inline dinonaktifkan.
+- Memindahkan penyematan topik ACP ke `delivery.pin`.
 
 Mattermost:
 
-- Render aksi sebagai tombol interaktif saat dikonfigurasi.
-- Render blok lain sebagai fallback teks.
+- Merender tindakan sebagai tombol interaktif ketika dikonfigurasi.
+- Merender blok lain sebagai fallback teks.
 
 MS Teams:
 
-- Render `presentation` ke Adaptive Cards.
-- Pertahankan aksi manual pin/unpin/list-pins.
-- Secara opsional implementasikan `pinDeliveredMessage` jika dukungan Graph andal untuk percakapan target.
+- Merender `presentation` menjadi Adaptive Cards.
+- Mempertahankan tindakan manual sematkan/batalkan sematan/daftar sematan.
+- Secara opsional mengimplementasikan `pinDeliveredMessage` jika dukungan Graph dapat diandalkan untuk percakapan target.
 
 Feishu:
 
-- Render `presentation` ke kartu interaktif.
-- Pertahankan aksi manual pin/unpin/list-pins.
-- Secara opsional implementasikan `pinDeliveredMessage` untuk penyematan pesan terkirim jika perilaku API andal.
+- Merender `presentation` menjadi kartu interaktif.
+- Mempertahankan tindakan manual sematkan/batalkan sematan/daftar sematan.
+- Secara opsional mengimplementasikan `pinDeliveredMessage` untuk menyematkan pesan terkirim jika perilaku API dapat diandalkan.
 
 LINE:
 
-- Render `presentation` ke Flex atau pesan template jika memungkinkan.
-- Kembali ke teks untuk blok yang tidak didukung.
-- Hapus payload UI LINE dari `channelData`.
+- Merender `presentation` menjadi pesan Flex atau templat jika memungkinkan.
+- Menggunakan fallback teks untuk blok yang tidak didukung.
+- Menghapus payload UI LINE dari `channelData`.
 
-Kanal polos atau terbatas:
+Kanal sederhana atau terbatas:
 
-- Konversi presentasi ke teks dengan pemformatan konservatif.
+- Mengonversi presentasi menjadi teks dengan pemformatan konservatif.
 
-## Langkah refactor
+## Langkah refaktor
 
 1. Terapkan kembali perbaikan rilis Discord yang memisahkan `ui-colors.ts` dari UI berbasis Carbon dan menghapus `DiscordUiContainer` dari `extensions/discord/src/channel.ts`.
 2. Tambahkan `presentation` dan `delivery` ke `ReplyPayload`, normalisasi payload keluar, ringkasan pengiriman, dan payload hook.
-3. Tambahkan skema `MessagePresentation` dan helper parser di subpath SDK/runtime yang sempit.
-4. Ganti kemampuan pesan `buttons`, `cards`, `components`, dan `blocks` dengan kemampuan presentasi semantik.
-5. Tambahkan hook adapter keluar runtime untuk render presentasi dan penyematan pengiriman.
-6. Ganti konstruksi komponen lintas-konteks dengan `buildCrossContextPresentation`.
-7. Hapus `src/infra/outbound/channel-adapters.ts` dan hapus `buildCrossContextComponents` dari tipe Plugin kanal.
-8. Ubah `maybeApplyCrossContextMarker` agar melampirkan `presentation`, bukan parameter asli.
-9. Perbarui jalur pengiriman plugin-dispatch agar hanya memakai presentasi semantik dan metadata pengiriman.
-10. Hapus parameter payload asli agen dan CLI: `components`, `blocks`, `buttons`, dan `card`.
-11. Hapus helper SDK yang membuat skema message-tool asli, menggantinya dengan helper skema presentasi.
-12. Hapus envelope UI/asli dari `channelData`; pertahankan hanya metadata transport sampai setiap field tersisa ditinjau.
+3. Tambahkan skema `MessagePresentation` dan pembantu pengurai dalam subjalur SDK/runtime yang sempit.
+4. Ganti kapabilitas pesan `buttons`, `cards`, `components`, dan `blocks` dengan kapabilitas presentasi semantik.
+5. Tambahkan hook adaptor keluar runtime untuk perenderan presentasi dan penyematan pengiriman.
+6. Ganti konstruksi komponen lintas konteks dengan `buildCrossContextPresentation`.
+7. Hapus `src/infra/outbound/channel-adapters.ts` dan hapus `buildCrossContextComponents` dari tipe plugin kanal.
+8. Ubah `maybeApplyCrossContextMarker` agar melampirkan `presentation`, bukan parameter bawaan.
+9. Perbarui jalur pengiriman dispatch plugin agar hanya menggunakan presentasi semantik dan metadata pengiriman.
+10. Hapus parameter payload bawaan agen dan CLI: `components`, `blocks`, `buttons`, dan `card`.
+11. Hapus pembantu SDK yang membuat skema alat pesan bawaan, dan ganti dengan pembantu skema presentasi.
+12. Hapus amplop UI/bawaan dari `channelData`; pertahankan hanya metadata transportasi hingga setiap bidang yang tersisa ditinjau.
 13. Migrasikan perender Discord, Slack, Telegram, Mattermost, MS Teams, Feishu, dan LINE.
-14. Perbarui dokumentasi untuk CLI pesan, halaman kanal, SDK Plugin, dan cookbook kemampuan.
-15. Jalankan profiling fanout impor untuk Discord dan entrypoint kanal yang terdampak.
+14. Perbarui dokumentasi untuk CLI pesan, halaman kanal, SDK plugin, dan buku resep kapabilitas.
+15. Jalankan pembuatan profil sebaran impor untuk Discord dan titik masuk kanal yang terdampak.
 
-Langkah 1-11 dan 13-14 diimplementasikan dalam refactor ini untuk kontrak agen bersama, CLI, kemampuan Plugin, dan adapter keluar. Langkah 12 tetap menjadi pass pembersihan internal yang lebih dalam untuk envelope transport `channelData` privat penyedia. Langkah 15 tetap menjadi validasi tindak lanjut jika kita menginginkan angka fanout impor terkuantifikasi di luar gerbang tipe/tes.
+Langkah 1-11 dan 13-14 diimplementasikan dalam refaktor ini untuk kontrak agen bersama, CLI, kapabilitas plugin, dan adaptor keluar. Langkah 12 masih memerlukan tahap pembersihan internal yang lebih mendalam untuk amplop transportasi `channelData` privat penyedia. Langkah 15 tetap menjadi validasi tindak lanjut jika kita menginginkan angka sebaran impor terukur di luar gerbang tipe/pengujian.
 
-## Tes
+## Pengujian
 
 Tambahkan atau perbarui:
 
-- Tes normalisasi presentasi.
-- Tes penurunan otomatis presentasi untuk blok yang tidak didukung.
-- Tes marker lintas-konteks untuk jalur plugin dispatch dan pengiriman core.
-- Tes matriks render kanal untuk Discord, Slack, Telegram, Mattermost, MS Teams, Feishu, LINE, dan fallback teks.
-- Tes skema message tool yang membuktikan field asli sudah hilang.
-- Tes CLI yang membuktikan flag asli sudah hilang.
-- Regresi kelambatan impor entrypoint Discord yang mencakup Carbon.
-- Tes pin pengiriman yang mencakup Telegram dan fallback generik.
+- Pengujian normalisasi presentasi.
+- Pengujian penurunan otomatis presentasi untuk blok yang tidak didukung.
+- Pengujian penanda lintas konteks untuk dispatch plugin dan jalur pengiriman inti.
+- Pengujian matriks perender kanal untuk Discord, Slack, Telegram, Mattermost, MS Teams, Feishu, LINE, dan fallback teks.
+- Pengujian skema alat pesan yang membuktikan bidang bawaan telah dihapus.
+- Pengujian CLI yang membuktikan flag bawaan telah dihapus.
+- Regresi kelambatan impor titik masuk Discord yang mencakup Carbon.
+- Pengujian penyematan pengiriman yang mencakup Telegram dan fallback generik.
 
 ## Pertanyaan terbuka
 
-- Haruskah `delivery.pin` diimplementasikan untuk Discord, Slack, MS Teams, dan Feishu pada pass pertama, atau hanya Telegram lebih dulu?
-- Haruskah `delivery` pada akhirnya menyerap field yang sudah ada seperti `replyToId`, `replyToCurrent`, `silent`, dan `audioAsVoice`, atau tetap berfokus pada perilaku pascakirim?
-- Haruskah presentasi mendukung gambar atau referensi file secara langsung, atau media sebaiknya tetap terpisah dari tata letak UI untuk saat ini?
+- Apakah `delivery.pin` harus diimplementasikan untuk Discord, Slack, MS Teams, dan Feishu pada tahap pertama, atau hanya Telegram terlebih dahulu?
+- Apakah `delivery` pada akhirnya harus mencakup bidang yang ada seperti `replyToId`, `replyToCurrent`, `silent`, dan `audioAsVoice`, atau tetap berfokus pada perilaku setelah pengiriman?
+- Apakah presentasi harus mendukung gambar atau referensi berkas secara langsung, atau media sebaiknya tetap terpisah dari tata letak UI untuk saat ini?
 
 ## Terkait
 

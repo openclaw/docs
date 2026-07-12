@@ -1,62 +1,66 @@
 ---
 read_when:
-    - Chcesz wyszukać identyfikatory kontaktów/grup/własne dla kanału
-    - Opracowujesz adapter katalogu kanałów
-summary: Dokumentacja CLI dla `openclaw directory` (ja, równorzędne instancje, grupy)
+    - Chcesz wyszukać identyfikatory kontaktów, grup lub własny identyfikator dla kanału
+    - Tworzysz adapter katalogu kanałów
+summary: Dokumentacja CLI dla `openclaw directory` (własny, równorzędne, grupy)
 title: Katalog
 x-i18n:
-    generated_at: "2026-07-03T17:44:26Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:00:03Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d17f545ce0bbe23a6c1ba74e4d1b44b103cc985b52affe4b25fbc6a6d1121045
+    source_hash: d9e1a952525f79dcb6eedb87eb433be7cb378fa19de5f252521e287d2c52275c
     source_path: cli/directory.md
     workflow: 16
 ---
 
 # `openclaw directory`
 
-Wyszukiwanie w katalogu dla kanałów, które je obsługują (kontakty/uczestnicy, grupy i „me”).
+Wyszukiwanie w katalogach kanałów, które je obsługują: kontakty/partnerzy, grupy i „ja” (własna tożsamość).
+
+Wyniki są przeznaczone do wklejania w innych poleceniach, zwłaszcza `openclaw message send --target ...`.
 
 ## Wspólne flagi
 
-- `--channel <name>`: identyfikator/alias kanału (wymagany, gdy skonfigurowano wiele kanałów; automatyczny, gdy skonfigurowano tylko jeden)
-- `--account <id>`: identyfikator konta (domyślnie: domyślne konto kanału)
-- `--json`: wyjście JSON
+- `--channel <name>`: identyfikator/alias kanału (wymagany, gdy skonfigurowano wiele kanałów; wybierany automatycznie, gdy skonfigurowano tylko jeden)
+- `--account <id>`: identyfikator konta (domyślnie: konto domyślne kanału)
+- `--json`: wyświetla dane w formacie JSON
+
+Domyślne dane wyjściowe (inne niż JSON) to `id` (a czasami `name`) rozdzielone tabulatorem.
 
 ## Uwagi
 
-- `directory` ma pomóc znaleźć identyfikatory, które można wkleić do innych poleceń (zwłaszcza `openclaw message send --target ...`).
-- Dla wielu kanałów wyniki są oparte na konfiguracji (listy dozwolonych elementów / skonfigurowane grupy), a nie na aktywnym katalogu dostawcy.
-- Zainstalowane pluginy kanałów nadal mogą nie obsługiwać katalogu; w takim przypadku polecenie zgłasza nieobsługiwaną operację katalogu zamiast ponownie instalować plugin.
-- Domyślne wyjście to `id` (a czasem `name`) oddzielone tabulatorem; użyj `--json` do skryptów.
+- W przypadku wielu kanałów wyniki pochodzą z konfiguracji (list dozwolonych elementów / skonfigurowanych grup), a nie z bieżącego katalogu dostawcy.
+- Już zainstalowany Plugin kanału może nie obsługiwać katalogu. W takim przypadku polecenie zgłasza nieobsługiwaną operację; nie próbuje ponownie instalować ani uaktualniać Pluginu w celu dodania obsługi.
 
-## Używanie wyników z `message send`
+## Używanie wyników z poleceniem `message send`
 
 ```bash
 openclaw directory peers list --channel slack --query "U0"
 openclaw message send --channel slack --target user:U012ABCDEF --message "hello"
 ```
 
-## Formaty identyfikatorów (według kanału)
+## Formaty identyfikatorów według kanałów
 
-- WhatsApp: `+15551234567` (DM), `1234567890-1234567890@g.us` (grupa), `120363123456789@newsletter` (docelowy adres wychodzący kanału/newslettera)
-- Signal: skonfigurowane aliasy są rozwiązywane na docelowe DM w formacie E.164/UUID albo docelowe grupy `group:<id>`
-- Telegram: `@username` albo numeryczny identyfikator czatu; grupy mają numeryczne identyfikatory
-- Slack: `user:U…` i `channel:C…`
-- Discord: `user:<id>` i `channel:<id>`
-- Matrix (plugin): `user:@user:server`, `room:!roomId:server` albo `#alias:server`
-- Microsoft Teams (plugin): `user:<id>` i `conversation:<id>`
-- Zalo (plugin): identyfikator użytkownika (Bot API)
-- Zalo Personal / `zalouser` (plugin): identyfikator wątku (DM/grupa) z `zca` (`me`, `friend list`, `group list`)
+| Kanał                               | Format identyfikatora celu                                                                                                  |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| WhatsApp                            | `+15551234567` (wiadomość prywatna), `1234567890-1234567890@g.us` (grupa), `120363123456789@newsletter` (kanał/biuletyn, tylko wiadomości wychodzące) |
+| Signal                              | Skonfigurowane aliasy wskazują cele wiadomości prywatnych w formacie E.164/UUID lub cele grupowe `group:<id>`                |
+| Telegram                            | `@username` lub numeryczny identyfikator czatu; grupy używają identyfikatorów numerycznych                                   |
+| Slack                               | `user:U…` i `channel:C…`                                                                                                    |
+| Discord                             | `user:<id>` i `channel:<id>`                                                                                                |
+| Matrix (Plugin)                     | `user:@user:server`, `room:!roomId:server` lub `#alias:server`                                                               |
+| Microsoft Teams (Plugin)            | `user:<id>` i `conversation:<id>`                                                                                           |
+| Zalo (Plugin)                       | Identyfikator użytkownika (Bot API)                                                                                          |
+| Zalo Personal / `zalouser` (Plugin) | Identyfikator wątku (wiadomość prywatna/grupa) z `zca` (`me`, `friend list`, `group list`)                                   |
 
-## Ja („me”)
+## Własna tożsamość („ja”)
 
 ```bash
 openclaw directory self --channel zalouser
 ```
 
-## Uczestnicy (kontakty/użytkownicy)
+## Kontakty (kontakty/użytkownicy)
 
 ```bash
 openclaw directory peers list --channel zalouser
@@ -72,6 +76,6 @@ openclaw directory groups list --channel zalouser --query "work"
 openclaw directory groups members --channel zalouser --group-id <id>
 ```
 
-## Powiązane
+## Powiązane materiały
 
 - [Dokumentacja CLI](/pl/cli)

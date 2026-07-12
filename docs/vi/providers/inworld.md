@@ -1,43 +1,37 @@
 ---
 read_when:
-    - Bạn muốn tính năng tổng hợp giọng nói của Inworld cho các câu trả lời gửi đi
-    - Bạn cần đầu ra ghi chú thoại ở định dạng PCM telephony hoặc OGG_OPUS từ Inworld
-summary: Chuyển văn bản thành giọng nói dạng phát trực tuyến của Inworld cho các phản hồi OpenClaw
+    - Bạn muốn sử dụng tính năng tổng hợp giọng nói của Inworld cho các phản hồi gửi đi
+    - Bạn cần đầu ra âm thanh thoại PCM hoặc ghi chú thoại OGG_OPUS từ Inworld
+summary: Chuyển văn bản thành giọng nói trực tuyến bằng Inworld cho các phản hồi của OpenClaw
 title: Inworld
 x-i18n:
-    generated_at: "2026-06-27T18:04:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:20:52Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ea65903945586516b51b239f0671b9e59dac92f302442f3cb629f66b68338cfb
+    source_hash: 443797be3eec0f63c52a7b6b697abb85b15db9b878174f6f6b70ddec474e6326
     source_path: providers/inworld.md
     workflow: 16
 ---
 
-Inworld là nhà cung cấp chuyển văn bản thành giọng nói (TTS) phát trực tuyến. Trong OpenClaw, nó
-tổng hợp âm thanh phản hồi gửi đi (mặc định là MP3, OGG_OPUS cho ghi chú thoại)
-và âm thanh PCM cho các kênh điện thoại như Cuộc gọi thoại.
+Inworld là nhà cung cấp chuyển văn bản thành giọng nói (TTS) dạng phát trực tuyến. Trong OpenClaw, Inworld tổng hợp âm thanh cho câu trả lời gửi đi (MP3 theo mặc định, OGG_OPUS cho tin nhắn thoại) và âm thanh PCM thô cho các kênh điện thoại như Voice Call.
 
-OpenClaw gửi yêu cầu đến endpoint TTS phát trực tuyến của Inworld, nối các
-đoạn âm thanh base64 được trả về thành một bộ đệm duy nhất, rồi chuyển kết quả
-vào pipeline âm thanh phản hồi tiêu chuẩn.
+OpenClaw gửi yêu cầu đến điểm cuối TTS phát trực tuyến của Inworld, nối các đoạn âm thanh base64 được trả về thành một bộ đệm duy nhất rồi chuyển kết quả cho quy trình xử lý âm thanh trả lời tiêu chuẩn.
 
-| Thuộc tính       | Giá trị                                                         |
-| --------------- | --------------------------------------------------------------- |
-| ID nhà cung cấp | `inworld`                                                       |
-| Plugin          | gói bên ngoài chính thức                                        |
-| Hợp đồng        | `speechProviders` (chỉ TTS)                                     |
-| Biến env xác thực | `INWORLD_API_KEY` (HTTP Basic, thông tin xác thực dashboard Base64) |
-| URL cơ sở       | `https://api.inworld.ai`                                        |
-| Giọng mặc định  | `Sarah`                                                         |
-| Mô hình mặc định | `inworld-tts-1.5-max`                                           |
-| Đầu ra          | MP3 (mặc định), OGG_OPUS (ghi chú thoại), PCM 22050 Hz (điện thoại) |
-| Website         | [inworld.ai](https://inworld.ai)                                |
-| Tài liệu        | [docs.inworld.ai/tts/tts](https://docs.inworld.ai/tts/tts)      |
+| Thuộc tính          | Giá trị                                                               |
+| ------------------- | --------------------------------------------------------------------- |
+| Mã nhà cung cấp     | `inworld`                                                             |
+| Plugin              | gói bên ngoài chính thức (`@openclaw/inworld-speech`)                 |
+| Hợp đồng            | `speechProviders` (chỉ TTS)                                           |
+| Biến môi trường xác thực | `INWORLD_API_KEY` (HTTP Basic, thông tin xác thực Base64 từ bảng điều khiển) |
+| URL cơ sở           | `https://api.inworld.ai`                                              |
+| Giọng nói mặc định  | `Sarah`                                                               |
+| Mô hình mặc định    | `inworld-tts-1.5-max`                                                 |
+| Đầu ra              | MP3 (mặc định), OGG_OPUS (tin nhắn thoại), PCM 22050 Hz (điện thoại) |
+| Trang web           | [inworld.ai](https://inworld.ai)                                      |
+| Tài liệu            | [docs.inworld.ai/tts/tts](https://docs.inworld.ai/tts/tts)            |
 
-## Cài đặt plugin
-
-Cài đặt plugin chính thức, rồi khởi động lại Gateway:
+## Cài đặt Plugin
 
 ```bash
 openclaw plugins install @openclaw/inworld-speech
@@ -47,18 +41,15 @@ openclaw gateway restart
 ## Bắt đầu
 
 <Steps>
-  <Step title="Set your API key">
-    Sao chép thông tin xác thực từ dashboard Inworld của bạn (Workspace > API Keys)
-    và đặt nó làm biến env. Giá trị được gửi nguyên văn dưới dạng thông tin xác thực
-    HTTP Basic, vì vậy đừng mã hóa Base64 lại hoặc chuyển nó thành bearer
-    token.
+  <Step title="Thiết lập khóa API">
+    Sao chép thông tin xác thực từ bảng điều khiển Inworld (Workspace > API Keys) và đặt làm biến môi trường. Giá trị được gửi nguyên trạng dưới dạng thông tin xác thực HTTP Basic, vì vậy không mã hóa lại bằng Base64 hoặc chuyển đổi thành mã thông báo bearer.
 
-    ```
+    ```bash
     INWORLD_API_KEY=<base64-credential-from-dashboard>
     ```
 
   </Step>
-  <Step title="Select Inworld in messages.tts">
+  <Step title="Chọn Inworld trong messages.tts">
     ```json5
     {
       messages: {
@@ -67,7 +58,7 @@ openclaw gateway restart
           provider: "inworld",
           providers: {
             inworld: {
-              speakerVoiceId: "Sarah",
+              voiceId: "Sarah",
               modelId: "inworld-tts-1.5-max",
             },
           },
@@ -76,62 +67,51 @@ openclaw gateway restart
     }
     ```
   </Step>
-  <Step title="Send a message">
-    Gửi một phản hồi qua bất kỳ kênh nào đã kết nối. OpenClaw tổng hợp
-    âm thanh bằng Inworld và phân phối dưới dạng MP3 (hoặc OGG_OPUS khi kênh
-    mong đợi một ghi chú thoại).
+  <Step title="Gửi tin nhắn">
+    Gửi câu trả lời qua bất kỳ kênh nào đã kết nối. OpenClaw tổng hợp âm thanh bằng Inworld và gửi dưới dạng MP3 (hoặc OGG_OPUS khi kênh yêu cầu tin nhắn thoại).
   </Step>
 </Steps>
 
 ## Tùy chọn cấu hình
 
-| Tùy chọn         | Đường dẫn                                      | Mô tả                                                             |
-| ---------------- | --------------------------------------------- | ----------------------------------------------------------------- |
-| `apiKey`         | `messages.tts.providers.inworld.apiKey`         | Thông tin xác thực dashboard Base64. Dự phòng sang `INWORLD_API_KEY`. |
-| `baseUrl`        | `messages.tts.providers.inworld.baseUrl`        | Ghi đè URL cơ sở API Inworld (mặc định `https://api.inworld.ai`). |
-| `speakerVoiceId` | `messages.tts.providers.inworld.speakerVoiceId` | Mã định danh giọng nói (mặc định `Sarah`).                        |
-| `modelId`        | `messages.tts.providers.inworld.modelId`        | ID mô hình TTS (mặc định `inworld-tts-1.5-max`).                  |
-| `temperature`    | `messages.tts.providers.inworld.temperature`    | Nhiệt độ lấy mẫu `0..2` (tùy chọn).                               |
+| Tùy chọn      | Đường dẫn                                    | Mô tả                                                                  |
+| ------------- | -------------------------------------------- | ---------------------------------------------------------------------- |
+| `apiKey`      | `messages.tts.providers.inworld.apiKey`      | Thông tin xác thực Base64 từ bảng điều khiển. Dự phòng bằng `INWORLD_API_KEY`. |
+| `baseUrl`     | `messages.tts.providers.inworld.baseUrl`     | Ghi đè URL cơ sở của API Inworld (mặc định `https://api.inworld.ai`).  |
+| `voiceId`     | `messages.tts.providers.inworld.voiceId`     | Mã định danh giọng nói (mặc định `Sarah`). Bí danh cũ: `speakerVoiceId`. |
+| `modelId`     | `messages.tts.providers.inworld.modelId`     | Mã mô hình TTS (mặc định `inworld-tts-1.5-max`).                       |
+| `temperature` | `messages.tts.providers.inworld.temperature` | Nhiệt độ lấy mẫu, từ `0` (không bao gồm) đến `2` (tùy chọn).          |
 
 ## Ghi chú
 
 <AccordionGroup>
-  <Accordion title="Authentication">
-    Inworld dùng xác thực HTTP Basic với một chuỗi thông tin xác thực
-    được mã hóa Base64 duy nhất. Sao chép nguyên văn từ dashboard Inworld.
-    Nhà cung cấp gửi nó dưới dạng `Authorization: Basic <apiKey>` mà không
-    mã hóa thêm, vì vậy đừng tự mã hóa Base64 và đừng truyền token kiểu bearer.
-    Xem [ghi chú xác thực TTS](/vi/tools/tts#inworld-primary) để biết lưu ý tương tự.
+  <Accordion title="Xác thực">
+    Inworld sử dụng xác thực HTTP Basic với một chuỗi thông tin xác thực duy nhất được mã hóa Base64. Sao chép nguyên trạng chuỗi này từ bảng điều khiển Inworld. Nhà cung cấp gửi chuỗi dưới dạng `Authorization: Basic <apiKey>` mà không mã hóa thêm, vì vậy không tự mã hóa lại bằng Base64 và không truyền mã thông báo kiểu bearer. Xem [ghi chú xác thực TTS](/vi/tools/tts#inworld-primary) để biết cảnh báo tương tự.
   </Accordion>
-  <Accordion title="Models">
-    Các ID mô hình được hỗ trợ: `inworld-tts-1.5-max` (mặc định),
-    `inworld-tts-1.5-mini`, `inworld-tts-1-max`, `inworld-tts-1`.
+  <Accordion title="Mô hình">
+    Các mã mô hình được hỗ trợ: `inworld-tts-1.5-max` (mặc định), `inworld-tts-1.5-mini`, `inworld-tts-1-max`, `inworld-tts-1`.
   </Accordion>
-  <Accordion title="Audio outputs">
-    Phản hồi mặc định dùng MP3. Khi mục tiêu kênh là `voice-note`,
-    OpenClaw yêu cầu Inworld dùng `OGG_OPUS` để âm thanh phát như một
-    bong bóng thoại gốc. Tổng hợp cho điện thoại dùng `PCM` thô ở 22050 Hz
-    để cấp cho cầu nối điện thoại.
+  <Accordion title="Đầu ra âm thanh">
+    Câu trả lời sử dụng MP3 theo mặc định. Khi đích của kênh là `voice-note`, OpenClaw yêu cầu Inworld cung cấp `OGG_OPUS` để âm thanh phát dưới dạng bong bóng thoại gốc. Việc tổng hợp cho điện thoại sử dụng `PCM` thô ở tần số 22050 Hz để cấp dữ liệu cho cầu nối điện thoại.
   </Accordion>
-  <Accordion title="Custom endpoints">
-    Ghi đè host API bằng `messages.tts.providers.inworld.baseUrl`.
-    Dấu gạch chéo ở cuối sẽ bị loại bỏ trước khi gửi yêu cầu.
+  <Accordion title="Điểm cuối tùy chỉnh">
+    Ghi đè máy chủ API bằng `messages.tts.providers.inworld.baseUrl`. Dấu gạch chéo ở cuối sẽ bị loại bỏ trước khi gửi yêu cầu.
   </Accordion>
 </AccordionGroup>
 
-## Liên quan
+## Nội dung liên quan
 
 <CardGroup cols={2}>
-  <Card title="Text-to-speech" href="/vi/tools/tts" icon="waveform-lines">
-    Tổng quan về TTS, nhà cung cấp và cấu hình `messages.tts`.
+  <Card title="Chuyển văn bản thành giọng nói" href="/vi/tools/tts" icon="waveform-lines">
+    Tổng quan về TTS, các nhà cung cấp và cấu hình `messages.tts`.
   </Card>
-  <Card title="Configuration" href="/vi/gateway/configuration" icon="gear">
-    Tham chiếu cấu hình đầy đủ, bao gồm các thiết lập `messages.tts`.
+  <Card title="Cấu hình" href="/vi/gateway/configuration" icon="gear">
+    Tài liệu tham khảo cấu hình đầy đủ, bao gồm các thiết lập `messages.tts`.
   </Card>
-  <Card title="Providers" href="/vi/providers" icon="grid">
-    Tất cả nhà cung cấp OpenClaw được hỗ trợ.
+  <Card title="Nhà cung cấp" href="/vi/providers" icon="grid">
+    Tất cả các nhà cung cấp được OpenClaw hỗ trợ.
   </Card>
-  <Card title="Troubleshooting" href="/vi/help/troubleshooting" icon="wrench">
-    Các sự cố thường gặp và bước gỡ lỗi.
+  <Card title="Khắc phục sự cố" href="/vi/help/troubleshooting" icon="wrench">
+    Các sự cố thường gặp và các bước gỡ lỗi.
   </Card>
 </CardGroup>

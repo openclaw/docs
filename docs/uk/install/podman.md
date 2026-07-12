@@ -1,151 +1,127 @@
 ---
 read_when:
     - Вам потрібен контейнеризований Gateway із Podman замість Docker
-summary: Запускайте OpenClaw у rootless-контейнері Podman
+summary: Запуск OpenClaw у контейнері Podman без прав root
 title: Podman
 x-i18n:
-    generated_at: "2026-06-27T17:42:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:19:19Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3f6950956551dc3c274db33712cf66632fb5facbca4954bf67c30a8bff740c2f
+    source_hash: 2db1f2b0413d7b9e1b2007aaae2da9d07fa44a1b52901d4a6cbc6274e54567f1
     source_path: install/podman.md
     workflow: 16
 ---
 
-Запускайте OpenClaw Gateway у безrootовому контейнері Podman, керованому вашим поточним некореневим користувачем.
+Запускайте OpenClaw Gateway у безпривілейованому контейнері Podman, яким керує поточний користувач без прав root.
 
-Цільова модель така:
+Модель роботи:
 
-- Podman запускає контейнер gateway.
-- Ваш хостовий CLI `openclaw` є площиною керування.
-- Сталий стан за замовчуванням зберігається на хості в `~/.openclaw`.
-- Повсякденне керування використовує `openclaw --container <name> ...` замість `sudo -u openclaw`, `podman exec` або окремого службового користувача.
+- Podman запускає контейнер Gateway.
+- Встановлений на хості CLI `openclaw` слугує площиною керування.
+- За замовчуванням постійні дані зберігаються на хості в `~/.openclaw`.
+- Для повсякденного керування використовуйте `openclaw --container <name> ...` замість `sudo -u openclaw`, `podman exec` або окремого службового користувача.
 
 ## Передумови
 
-- **Podman** у безrootовому режимі
-- **OpenClaw CLI**, установлений на хості
-- **Необов’язково:** `systemd --user`, якщо вам потрібен автозапуск, керований Quadlet
-- **Необов’язково:** `sudo`, лише якщо вам потрібен `loginctl enable-linger "$(whoami)"` для сталого запуску під час завантаження на безголовому хості
+- **Podman** у безпривілейованому режимі
+- **CLI OpenClaw**, установлений на хості
+- **Необов’язково:** `systemd --user`, якщо потрібен автоматичний запуск під керуванням Quadlet
+- **Необов’язково:** `sudo`, лише якщо потрібно виконати `loginctl enable-linger "$(whoami)"` для збереження автозапуску після завантаження на хості без графічного інтерфейсу
 
-## Швидкий старт
+## Швидкий початок
 
 <Steps>
-  <Step title="One-time setup">
-    З кореня репозиторію виконайте `./scripts/podman/setup.sh`.
+  <Step title="Одноразове налаштування">
+    У корені репозиторію виконайте `./scripts/podman/setup.sh`.
+
+    Ця команда збирає `openclaw:local` у вашому безпривілейованому сховищі Podman (або завантажує `OPENCLAW_IMAGE` / `OPENCLAW_PODMAN_IMAGE`, якщо змінну задано), створює `~/.openclaw/openclaw.json` із `gateway.mode: "local"`, якщо файл відсутній, і створює `~/.openclaw/.env` зі згенерованим `OPENCLAW_GATEWAY_TOKEN`, якщо файл відсутній.
+
+    Необов’язкові змінні середовища для етапу збирання:
+
+    | Змінна | Дія |
+    | --- | --- |
+    | `OPENCLAW_IMAGE` / `OPENCLAW_PODMAN_IMAGE` | Використовувати наявний або завантажений образ замість збирання `openclaw:local` |
+    | `OPENCLAW_IMAGE_APT_PACKAGES` | Установити додаткові пакети apt під час збирання образу (також приймає застарілу змінну `OPENCLAW_DOCKER_APT_PACKAGES`) |
+    | `OPENCLAW_IMAGE_PIP_PACKAGES` | Установити додаткові пакети Python під час збирання образу; фіксуйте версії та використовуйте лише надійні індекси пакетів |
+    | `OPENCLAW_EXTENSIONS` | Скомпілювати й запакувати вибрані підтримувані плагіни та встановити їхні залежності середовища виконання |
+    | `OPENCLAW_INSTALL_BROWSER` | Попередньо встановити Chromium і Xvfb для автоматизації браузера (задайте `1`) |
+
+    Натомість для налаштування під керуванням Quadlet (лише Linux і користувацькі служби systemd):
+
+    ```bash
+    ./scripts/podman/setup.sh --quadlet
+    ```
+
+    Або задайте `OPENCLAW_PODMAN_QUADLET=1`.
+
   </Step>
 
-  <Step title="Start the Gateway container">
-    Запустіть контейнер за допомогою `./scripts/run-openclaw-podman.sh launch`.
+  <Step title="Запуск контейнера Gateway">
+    ```bash
+    ./scripts/run-openclaw-podman.sh launch
+    ```
+
+    Запускає контейнер із поточними uid/gid, параметром `--userns=keep-id` і монтує стан OpenClaw із хоста в контейнер.
+
   </Step>
 
-  <Step title="Run onboarding inside the container">
-    Виконайте `./scripts/run-openclaw-podman.sh launch setup`, а потім відкрийте `http://127.0.0.1:18789/`.
+  <Step title="Початкове налаштування всередині контейнера">
+    ```bash
+    ./scripts/run-openclaw-podman.sh launch setup
+    ```
+
+    Потім відкрийте `http://127.0.0.1:18789/` і скористайтеся токеном із `~/.openclaw/.env`.
+
+    Автентифікація моделі: під час налаштування використовуйте автентифікацію, якою керує OpenClaw (ключі API Anthropic або браузерну OAuth-автентифікацію чи автентифікацію за кодом пристрою OpenAI Codex для OpenAI на базі Codex). Засіб запуску Podman не монтує каталоги облікових даних CLI хоста, як-от `~/.claude` або `~/.codex`, у контейнер налаштування чи Gateway. Наявні входи через CLI хоста — це лише зручні способи роботи на тому самому хості; для встановлень у контейнері зберігайте автентифікаційні дані постачальника в підключеному стані `~/.openclaw`, яким керує налаштування.
+
   </Step>
 
-  <Step title="Manage the running container from the host CLI">
-    Установіть `OPENCLAW_CONTAINER=openclaw`, а потім використовуйте звичайні команди `openclaw` з хоста.
+  <Step title="Керування запущеним контейнером із CLI хоста">
+    ```bash
+    export OPENCLAW_CONTAINER=openclaw
+    ```
+
+    Після цього звичайні команди `openclaw` автоматично виконуватимуться всередині цього контейнера:
+
+    ```bash
+    openclaw dashboard --no-open
+    openclaw gateway status --deep   # включає додаткове сканування служб
+    openclaw doctor
+    openclaw channels login
+    ```
+
+    У macOS віртуальна машина Podman може призвести до того, що браузер виглядатиме для Gateway як нелокальний. Якщо після запуску Control UI повідомляє про помилки автентифікації пристрою, скористайтеся рекомендаціями щодо Tailscale у розділі [Podman і Tailscale](#podman-and-tailscale).
+
   </Step>
 </Steps>
 
-Подробиці налаштування:
+Ручний засіб запуску читає з `~/.openclaw/.env` лише невеликий дозволений список ключів, пов’язаних із Podman, і передає контейнеру явно визначені змінні середовища виконання; він не передає Podman увесь файл середовища.
 
-- `./scripts/podman/setup.sh` за замовчуванням збирає `openclaw:local` у вашому безrootовому сховищі Podman або використовує `OPENCLAW_IMAGE` / `OPENCLAW_PODMAN_IMAGE`, якщо ви задали одне з них.
-- Він створює `~/.openclaw/openclaw.json` з `gateway.mode: "local"`, якщо файл відсутній.
-- Він створює `~/.openclaw/.env` з `OPENCLAW_GATEWAY_TOKEN`, якщо файл відсутній.
-- Для ручних запусків допоміжний скрипт читає лише невеликий дозволений список пов’язаних із Podman ключів з `~/.openclaw/.env` і передає контейнеру явні змінні середовища виконання; він не передає Podman увесь файл середовища.
-
-Налаштування, кероване Quadlet:
-
-```bash
-./scripts/podman/setup.sh --quadlet
-```
-
-Quadlet доступний лише для Linux, бо залежить від користувацьких служб systemd.
-
-Також можна встановити `OPENCLAW_PODMAN_QUADLET=1`.
-
-Необов’язкові змінні середовища для збірки/налаштування:
-
-- `OPENCLAW_IMAGE` або `OPENCLAW_PODMAN_IMAGE` -- використати наявний/завантажений образ замість збірки `openclaw:local`
-- `OPENCLAW_IMAGE_APT_PACKAGES` -- установити додаткові пакети apt під час збірки образу (також приймає застарілий `OPENCLAW_DOCKER_APT_PACKAGES`)
-- `OPENCLAW_IMAGE_PIP_PACKAGES` -- установити додаткові пакети Python під час збірки образу; фіксуйте версії та використовуйте лише індекси пакетів, яким довіряєте
-- `OPENCLAW_EXTENSIONS` -- попередньо встановити залежності plugin під час збірки
-- `OPENCLAW_INSTALL_BROWSER` -- попередньо встановити Chromium і Xvfb для браузерної автоматизації (установіть `1`, щоб увімкнути)
-
-Запуск контейнера:
-
-```bash
-./scripts/run-openclaw-podman.sh launch
-```
-
-Скрипт запускає контейнер від імені вашого поточного uid/gid з `--userns=keep-id` і монтує стан OpenClaw у контейнер через bind mount.
-
-Початкове налаштування:
-
-```bash
-./scripts/run-openclaw-podman.sh launch setup
-```
-
-Потім відкрийте `http://127.0.0.1:18789/` і використайте токен з `~/.openclaw/.env`.
-
-Автентифікація моделей у Podman:
-
-- Використовуйте автентифікацію, керовану OpenClaw, під час налаштування: API-ключі Anthropic для Anthropic або браузерну OAuth/автентифікацію кодом пристрою OpenAI Codex для OpenAI на базі Codex.
-- Запускач Podman не монтує домашні каталоги облікових даних хостового CLI, як-от `~/.claude` або `~/.codex`, у контейнер налаштування чи gateway.
-- Наявні входи хостового CLI є зручними шляхами на тому самому хості. Для контейнерних установок зберігайте автентифікацію провайдерів у змонтованому стані `~/.openclaw`, яким керує налаштування.
-
-Типове значення для хостового CLI:
-
-```bash
-export OPENCLAW_CONTAINER=openclaw
-```
-
-Після цього такі команди автоматично виконуватимуться всередині цього контейнера:
-
-```bash
-openclaw dashboard --no-open
-openclaw gateway status --deep   # includes extra service scan
-openclaw doctor
-openclaw channels login
-```
-
-На macOS машина Podman може змусити браузер виглядати для Gateway нелокальним.
-Якщо Control UI повідомляє про помилки автентифікації пристрою після запуску, скористайтеся настановами щодо Tailscale у
-[Podman і Tailscale](#podman--tailscale).
-
-<a id="podman--tailscale"></a>
+<a id="podman-and-tailscale"></a>
 
 ## Podman і Tailscale
 
-Для HTTPS або віддаленого доступу з браузера дотримуйтеся основної документації Tailscale.
+Для доступу через HTTPS або віддалений браузер дотримуйтеся основної документації Tailscale.
 
-Примітка, специфічна для Podman:
+Примітки щодо Podman:
 
-- Тримайте хост публікації Podman на `127.0.0.1`.
-- Надавайте перевагу керованому хостом `tailscale serve` замість `openclaw gateway --tailscale serve`.
-- На macOS, якщо локальний браузерний контекст автентифікації пристрою ненадійний, використовуйте доступ через Tailscale замість ситуативних обхідних локальних тунелів.
+- Залишайте адресу публікації Podman рівною `127.0.0.1`.
+- Віддавайте перевагу керованій хостом команді `tailscale serve`, а не `openclaw gateway --tailscale serve`.
+- У macOS, якщо контекст автентифікації пристрою в локальному браузері працює ненадійно, використовуйте доступ через Tailscale замість тимчасових обхідних рішень із локальними тунелями.
 
-Дивіться:
-
-- [Tailscale](/uk/gateway/tailscale)
-- [Control UI](/uk/web/control-ui)
+Див. [Tailscale](/uk/gateway/tailscale) і [Control UI](/uk/web/control-ui).
 
 ## Systemd (Quadlet, необов’язково)
 
-Якщо ви виконали `./scripts/podman/setup.sh --quadlet`, налаштування встановлює файл Quadlet за шляхом:
+Якщо ви виконали `./scripts/podman/setup.sh --quadlet`, налаштування встановлює файл Quadlet у `~/.config/containers/systemd/openclaw.container`.
 
-```bash
-~/.config/containers/systemd/openclaw.container
-```
-
-Корисні команди:
-
-- **Запустити:** `systemctl --user start openclaw.service`
-- **Зупинити:** `systemctl --user stop openclaw.service`
-- **Стан:** `systemctl --user status openclaw.service`
-- **Журнали:** `journalctl --user -u openclaw.service -f`
+| Дія    | Команда                                    |
+| ------ | ------------------------------------------ |
+| Запуск | `systemctl --user start openclaw.service`  |
+| Зупинка | `systemctl --user stop openclaw.service`   |
+| Стан   | `systemctl --user status openclaw.service` |
+| Журнали | `journalctl --user -u openclaw.service -f` |
 
 Після редагування файлу Quadlet:
 
@@ -154,70 +130,85 @@ systemctl --user daemon-reload
 systemctl --user restart openclaw.service
 ```
 
-Для сталого запуску під час завантаження на SSH/безголових хостах увімкніть lingering для поточного користувача:
+Щоб автозапуск зберігався після завантаження на хостах із доступом через SSH або без графічного інтерфейсу, увімкніть тривале виконання для поточного користувача:
 
 ```bash
 sudo loginctl enable-linger "$(whoami)"
 ```
+
+Згенерована служба Quadlet зберігає фіксовану, посилену за замовчуванням конфігурацію: порти, опубліковані на `127.0.0.1` (`18789` для Gateway, `18790` для мосту), `--bind lan` усередині контейнера, простір імен користувача `keep-id`, `OPENCLAW_NO_RESPAWN=1`, `Restart=on-failure` і `TimeoutStartSec=300`. Вона читає `~/.openclaw/.env` як `EnvironmentFile` середовища виконання для таких значень, як `OPENCLAW_GATEWAY_TOKEN`, але не використовує дозволений список перевизначень для Podman із ручного засобу запуску. Щоб налаштувати власні опубліковані порти, адресу публікації або інші параметри запуску контейнера, натомість використовуйте ручний засіб запуску або безпосередньо відредагуйте `~/.config/containers/systemd/openclaw.container`, а потім перезавантажте конфігурацію та перезапустіть службу.
 
 ## Конфігурація, середовище та сховище
 
 - **Каталог конфігурації:** `~/.openclaw`
 - **Каталог робочого простору:** `~/.openclaw/workspace`
 - **Файл токена:** `~/.openclaw/.env`
-- **Допоміжний скрипт запуску:** `./scripts/run-openclaw-podman.sh`
+- **Допоміжний засіб запуску:** `./scripts/run-openclaw-podman.sh`
 
-Скрипт запуску та Quadlet монтують хостовий стан у контейнер через bind mount:
+Сценарій запуску та Quadlet монтують стан із хоста в контейнер: `OPENCLAW_CONFIG_DIR` -> `/home/node/.openclaw`, `OPENCLAW_WORKSPACE_DIR` -> `/home/node/.openclaw/workspace`. За замовчуванням це каталоги хоста, а не анонімний стан контейнера, тому `openclaw.json`, файли `auth-profiles.json` окремих агентів, стан каналів і постачальників, сеанси та робочий простір зберігаються після заміни контейнера. Налаштування також додає початкові значення `gateway.controlUi.allowedOrigins` для `127.0.0.1` і `localhost` на опублікованому порту Gateway, щоб локальна панель керування працювала з прив’язкою контейнера не до local loopback.
 
-- `OPENCLAW_CONFIG_DIR` -> `/home/node/.openclaw`
-- `OPENCLAW_WORKSPACE_DIR` -> `/home/node/.openclaw/workspace`
+Корисні змінні середовища для ручного засобу запуску (збережіть їх у `~/.openclaw/.env`; засіб запуску читає цей файл перед остаточним визначенням значень за замовчуванням для контейнера й образу):
 
-За замовчуванням це каталоги хоста, а не анонімний стан контейнера, тому
-`openclaw.json`, агентні `auth-profiles.json`, стан каналів/провайдерів,
-сеанси та робочий простір зберігаються після заміни контейнера.
-Налаштування Podman також початково заповнює `gateway.controlUi.allowedOrigins` для `127.0.0.1` і `localhost` на опублікованому порту Gateway, щоб локальна панель працювала з нелокальним bind контейнера.
+| Змінна                                     | Значення за замовчуванням | Дія                                    |
+| ------------------------------------------ | ------------------------- | -------------------------------------- |
+| `OPENCLAW_PODMAN_CONTAINER`                | `openclaw`                | Ім’я контейнера                        |
+| `OPENCLAW_PODMAN_IMAGE` / `OPENCLAW_IMAGE` | `openclaw:local`          | Образ для запуску                      |
+| `OPENCLAW_PODMAN_GATEWAY_HOST_PORT`        | `18789`                   | Порт хоста, зіставлений із портом контейнера `18789` |
+| `OPENCLAW_PODMAN_BRIDGE_HOST_PORT`         | `18790`                   | Порт хоста, зіставлений із портом контейнера `18790` |
+| `OPENCLAW_PODMAN_PUBLISH_HOST`             | `127.0.0.1`               | Інтерфейс хоста для опублікованих портів |
+| `OPENCLAW_GATEWAY_BIND`                    | `lan`                     | Режим прив’язки Gateway усередині контейнера |
+| `OPENCLAW_PODMAN_USERNS`                   | `keep-id`                 | `keep-id`, `auto` або `host`           |
 
-Корисні змінні середовища для ручного запускача:
+Якщо ви використовуєте нестандартне значення `OPENCLAW_CONFIG_DIR` або `OPENCLAW_WORKSPACE_DIR`, задавайте ті самі змінні як для `./scripts/podman/setup.sh`, так і для подальших команд `./scripts/run-openclaw-podman.sh launch` — засіб запуску з репозиторію не зберігає власні перевизначення шляхів між сеансами оболонки.
 
-- `OPENCLAW_PODMAN_CONTAINER` -- ім’я контейнера (`openclaw` за замовчуванням)
-- `OPENCLAW_PODMAN_IMAGE` / `OPENCLAW_IMAGE` -- образ для запуску
-- `OPENCLAW_PODMAN_GATEWAY_HOST_PORT` -- порт хоста, зіставлений із контейнерним `18789`
-- `OPENCLAW_PODMAN_BRIDGE_HOST_PORT` -- порт хоста, зіставлений із контейнерним `18790`
-- `OPENCLAW_PODMAN_PUBLISH_HOST` -- інтерфейс хоста для опублікованих портів; типово `127.0.0.1`
-- `OPENCLAW_GATEWAY_BIND` -- режим bind Gateway всередині контейнера; типово `lan`
-- `OPENCLAW_PODMAN_USERNS` -- `keep-id` (типово), `auto` або `host`
+## Оновлення образів
 
-Ручний запускач читає `~/.openclaw/.env` перед фіналізацією типових значень контейнера/образу, тому ви можете зберегти їх там.
+Після повторного збирання або завантаження нового образу перезапустіть контейнер чи службу Quadlet.
+Під час першого запуску нової версії OpenClaw Gateway виконує безпечне відновлення стану та
+плагінів, перш ніж повідомити про готовність.
 
-Якщо ви використовуєте нестандартний `OPENCLAW_CONFIG_DIR` або `OPENCLAW_WORKSPACE_DIR`, задайте ті самі змінні і для `./scripts/podman/setup.sh`, і для подальших команд `./scripts/run-openclaw-podman.sh launch`. Локальний для репозиторію запускач не зберігає перевизначення власних шляхів між shell-сеансами.
+Якщо Gateway завершує роботу замість переходу в стан готовності, один раз запустіть той самий образ із
+`openclaw doctor --fix` для того самого підключеного стану й конфігурації, а потім перезапустіть
+Gateway у звичайному режимі:
 
-Примітка щодо Quadlet:
+```bash
+OPENCLAW_CONFIG_DIR="${OPENCLAW_CONFIG_DIR:-$HOME/.openclaw}"
+OPENCLAW_WORKSPACE_DIR="${OPENCLAW_WORKSPACE_DIR:-$OPENCLAW_CONFIG_DIR/workspace}"
+OPENCLAW_PODMAN_IMAGE="${OPENCLAW_PODMAN_IMAGE:-${OPENCLAW_IMAGE:-openclaw:local}}"
 
-- Згенерована служба Quadlet навмисно зберігає фіксовану, посилену типову форму: опубліковані порти `127.0.0.1`, `--bind lan` всередині контейнера та простір імен користувача `keep-id`.
-- Вона фіксує `OPENCLAW_NO_RESPAWN=1`, `Restart=on-failure` і `TimeoutStartSec=300`.
-- Вона публікує і `127.0.0.1:18789:18789` (gateway), і `127.0.0.1:18790:18790` (bridge).
-- Вона читає `~/.openclaw/.env` як runtime `EnvironmentFile` для значень на кшталт `OPENCLAW_GATEWAY_TOKEN`, але не споживає дозволений список специфічних для Podman перевизначень ручного запускача.
-- Якщо вам потрібні власні порти публікації, хост публікації або інші прапорці запуску контейнера, використовуйте ручний запускач або редагуйте `~/.config/containers/systemd/openclaw.container` безпосередньо, а потім перезавантажте й перезапустіть службу.
+podman run --rm -it \
+  --userns=keep-id \
+  --user "$(id -u):$(id -g)" \
+  -e HOME=/home/node \
+  -e NPM_CONFIG_CACHE=/home/node/.openclaw/.npm \
+  -v "$OPENCLAW_CONFIG_DIR:/home/node/.openclaw:rw" \
+  -v "$OPENCLAW_WORKSPACE_DIR:/home/node/.openclaw/workspace:rw" \
+  "$OPENCLAW_PODMAN_IMAGE" \
+  openclaw doctor --fix
+```
+
+На хостах із SELinux додайте `,Z` до обох монтувань, якщо Podman блокує доступ до
+підключеного стану.
 
 ## Корисні команди
 
 - **Журнали контейнера:** `podman logs -f openclaw`
 - **Зупинити контейнер:** `podman stop openclaw`
 - **Видалити контейнер:** `podman rm -f openclaw`
-- **Відкрити URL панелі з хостового CLI:** `openclaw dashboard --no-open`
-- **Стан/здоров’я через хостовий CLI:** `openclaw gateway status --deep` (RPC-зонд + додаткове
-  сканування служб)
+- **Відкрити URL панелі керування з CLI хоста:** `openclaw dashboard --no-open`
+- **Перевірка працездатності та стану через CLI хоста:** `openclaw gateway status --deep` (перевірка RPC + додаткове сканування служб)
 
 ## Усунення несправностей
 
-- **Відмовлено в доступі (EACCES) до конфігурації або робочого простору:** За замовчуванням контейнер запускається з `--userns=keep-id` і `--user <your uid>:<your gid>`. Переконайтеся, що шляхи конфігурації/робочого простору на хості належать вашому поточному користувачу.
-- **Запуск Gateway заблоковано (відсутній `gateway.mode=local`):** Переконайтеся, що `~/.openclaw/openclaw.json` існує і задає `gateway.mode="local"`. `scripts/podman/setup.sh` створює його, якщо він відсутній.
-- **Команди CLI контейнера потрапляють не в ту ціль:** Явно використовуйте `openclaw --container <name> ...` або експортуйте `OPENCLAW_CONTAINER=<name>` у вашій shell.
-- **`openclaw update` завершується помилкою з `--container`:** Очікувано. Перезберіть/завантажте образ, а потім перезапустіть контейнер або службу Quadlet.
-- **Служба Quadlet не запускається:** Виконайте `systemctl --user daemon-reload`, а потім `systemctl --user start openclaw.service`. На безголових системах також може знадобитися `sudo loginctl enable-linger "$(whoami)"`.
-- **SELinux блокує bind mounts:** Залиште типову поведінку монтування без змін; запускач автоматично додає `:Z` у Linux, коли SELinux у режимі enforcing або permissive.
+- **Відмовлено в доступі (EACCES) до конфігурації або робочого простору:** За замовчуванням контейнер працює з `--userns=keep-id` і `--user <ваш uid>:<ваш gid>`. Переконайтеся, що каталоги конфігурації та робочого простору на хості належать поточному користувачеві.
+- **Запуск Gateway заблоковано (відсутнє `gateway.mode=local`):** Переконайтеся, що файл `~/.openclaw/openclaw.json` існує та містить `gateway.mode="local"`. `scripts/podman/setup.sh` створює його, якщо він відсутній.
+- **Контейнер перезапускається після оновлення образу:** Виконайте одноразову команду `openclaw doctor --fix` із розділу [Оновлення образів](#upgrading-images), а потім знову запустіть Gateway.
+- **Команди CLI контейнера спрямовуються не до тієї цілі:** Явно використовуйте `openclaw --container <name> ...` або експортуйте `OPENCLAW_CONTAINER=<name>` у своїй оболонці.
+- **`openclaw update` завершується помилкою з `--container`:** Це очікувана поведінка. Повторно зберіть або завантажте образ, а потім перезапустіть контейнер чи службу Quadlet.
+- **Служба Quadlet не запускається:** Виконайте `systemctl --user daemon-reload`, а потім `systemctl --user start openclaw.service`. У системах без графічного інтерфейсу також може знадобитися `sudo loginctl enable-linger "$(whoami)"`.
+- **SELinux блокує монтування:** Не змінюйте стандартну поведінку монтування; коли SELinux працює в примусовому або дозвільному режимі, засіб запуску автоматично додає `:Z` у Linux.
 
-## Пов’язане
+## Пов’язані матеріали
 
 - [Docker](/uk/install/docker)
 - [Фоновий процес Gateway](/uk/gateway/background-process)

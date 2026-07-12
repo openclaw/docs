@@ -1,32 +1,32 @@
 ---
 read_when:
-    - การ resolve ref ของ secret ใหม่ขณะรันไทม์
-    - การตรวจสอบร่องรอยข้อความล้วนและ ref ที่ยัง resolve ไม่ได้
-    - การกำหนดค่า SecretRef และใช้การเปลี่ยนแปลงการล้างแบบทางเดียว
-summary: เอกสารอ้างอิง CLI สำหรับ `openclaw secrets` (รีโหลด ตรวจสอบ กำหนดค่า ใช้งาน)
-title: Secrets
+    - การแก้ไขการอ้างอิงข้อมูลลับใหม่ขณะรันไทม์
+    - การตรวจสอบข้อความธรรมดาที่ตกค้างและการอ้างอิงที่ยังไม่ได้แก้ไข
+    - การกำหนดค่า SecretRefs และการใช้การเปลี่ยนแปลงการลบข้อมูลแบบทางเดียว
+summary: เอกสารอ้างอิง CLI สำหรับ `openclaw secrets` (โหลดใหม่ ตรวจสอบ กำหนดค่า ใช้งาน)
+title: ข้อมูลลับ
 x-i18n:
-    generated_at: "2026-04-24T09:04:15Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 6fe1933ca6a9f2a24fbbe20fa3b83bf8f6493ea6c94061e135b4e1b48c33d62c
-    source_path: cli/secrets.md
-    workflow: 15
+    generated_at: "2026-07-12T15:55:17Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: d1ac0d0f6e29ae52d9dd03e3333665062ccd961ed22a2b06ca7fa7fde128e177
+    source_path: cli/secrets.md
+    workflow: 16
 ---
 
 # `openclaw secrets`
 
-ใช้ `openclaw secrets` เพื่อจัดการ SecretRef และรักษา snapshot ของ runtime ที่กำลังใช้งานให้อยู่ในสภาพดี
+จัดการ SecretRef และรักษาสแนปช็อตรันไทม์ที่ใช้งานอยู่ให้พร้อมทำงานอย่างถูกต้อง
 
-บทบาทของคำสั่ง:
+| คำสั่ง      | บทบาท                                                                                                                                                                                                 |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `reload`    | Gateway RPC (`secrets.reload`): แก้ไขการอ้างอิงใหม่และสลับสแนปช็อตรันไทม์เฉพาะเมื่อสำเร็จทั้งหมดเท่านั้น (ไม่เขียนการกำหนดค่า)                                                                          |
+| `audit`     | สแกนแบบอ่านอย่างเดียวในพื้นที่จัดเก็บการกำหนดค่า/การยืนยันตัวตน/โมเดลที่สร้างขึ้นและข้อมูลตกค้างแบบเก่า เพื่อตรวจหาข้อความธรรมดา การอ้างอิงที่แก้ไขไม่ได้ และความคลาดเคลื่อนของลำดับความสำคัญ (ข้ามการอ้างอิง exec เว้นแต่ระบุ `--allow-exec`) |
+| `configure` | ตัววางแผนแบบโต้ตอบสำหรับตั้งค่าผู้ให้บริการ จับคู่เป้าหมาย และตรวจสอบล่วงหน้า (ต้องใช้ TTY)                                                                                                             |
+| `apply`     | ดำเนินการตามแผนที่บันทึกไว้ (`--dry-run` ตรวจสอบความถูกต้องเท่านั้นและข้ามการตรวจสอบ exec โดยค่าเริ่มต้น ส่วนโหมดเขียนจะปฏิเสธแผนที่มี exec เว้นแต่ระบุ `--allow-exec`) จากนั้นล้างข้อมูลข้อความธรรมดาที่ตกค้างตามเป้าหมาย |
 
-- `reload`: Gateway RPC (`secrets.reload`) ที่ resolve ref ใหม่และสลับ snapshot ของ runtime เฉพาะเมื่อสำเร็จทั้งหมดเท่านั้น (ไม่มีการเขียน config)
-- `audit`: การสแกนแบบอ่านอย่างเดียวของที่เก็บ configuration/auth/generated-model และร่องรอยแบบ legacy เพื่อหาข้อความล้วน ref ที่ยัง resolve ไม่ได้ และ precedence drift (ref แบบ exec จะถูกข้ามเว้นแต่จะตั้ง `--allow-exec`)
-- `configure`: ตัวช่วยวางแผนแบบโต้ตอบสำหรับการตั้งค่าผู้ให้บริการ การแมปเป้าหมาย และ preflight (ต้องใช้ TTY)
-- `apply`: ดำเนินการตามแผนที่บันทึกไว้ (`--dry-run` สำหรับตรวจสอบอย่างเดียว; dry-run จะข้ามการตรวจสอบ exec โดยค่าเริ่มต้น และโหมดเขียนจะปฏิเสธแผนที่มี exec เว้นแต่จะตั้ง `--allow-exec`) จากนั้นล้างร่องรอยข้อความล้วนตามเป้าหมาย
-
-ลูปการทำงานของผู้ปฏิบัติการที่แนะนำ:
+วงจรการทำงานที่แนะนำสำหรับผู้ปฏิบัติงาน:
 
 ```bash
 openclaw secrets audit --check
@@ -37,22 +37,16 @@ openclaw secrets audit --check
 openclaw secrets reload
 ```
 
-หากแผนของคุณมี `exec` SecretRef/ผู้ให้บริการ ให้ส่ง `--allow-exec` ทั้งในคำสั่ง apply แบบ dry-run และแบบเขียน
+หากแผนของคุณมี SecretRef/ผู้ให้บริการแบบ `exec` ให้ระบุ `--allow-exec` ในคำสั่ง `apply` ทั้งแบบ dry-run และแบบเขียน
 
-หมายเหตุเรื่อง exit code สำหรับ CI/gates:
+รหัสออกสำหรับ CI/เกต:
 
-- `audit --check` จะคืนค่า `1` เมื่อพบรายการ
-- ref ที่ยัง resolve ไม่ได้จะคืนค่า `2`
+- `audit --check` คืนค่า `1` เมื่อพบปัญหา
+- การอ้างอิงที่แก้ไขไม่ได้คืนค่า `2` (ไม่ว่าจะระบุ `--check` หรือไม่)
 
-ที่เกี่ยวข้อง:
+ที่เกี่ยวข้อง: [การจัดการข้อมูลลับ](/th/gateway/secrets) · [พื้นผิวข้อมูลประจำตัว SecretRef](/th/reference/secretref-credential-surface) · [ความปลอดภัย](/th/gateway/security)
 
-- คู่มือ Secrets: [Secrets Management](/th/gateway/secrets)
-- พื้นผิวข้อมูลรับรอง: [SecretRef Credential Surface](/th/reference/secretref-credential-surface)
-- คู่มือ Security: [Security](/th/gateway/security)
-
-## รีโหลด snapshot ของ runtime
-
-resolve ref ของ secret ใหม่และสลับ snapshot ของ runtime แบบอะตอมมิก
+## โหลดสแนปช็อตรันไทม์ใหม่
 
 ```bash
 openclaw secrets reload
@@ -60,32 +54,21 @@ openclaw secrets reload --json
 openclaw secrets reload --url ws://127.0.0.1:18789 --token <token>
 ```
 
-หมายเหตุ:
+ใช้เมธอด Gateway RPC `secrets.reload` หากการแก้ไขการอ้างอิงล้มเหลว Gateway จะเก็บสแนปช็อตล่าสุดที่ทราบว่าทำงานได้และส่งคืนข้อผิดพลาด (ไม่มีการเปิดใช้งานเพียงบางส่วน) การตอบกลับ JSON มี `warningCount`
 
-- ใช้ Gateway RPC method `secrets.reload`
-- หากการ resolve ล้มเหลว Gateway จะเก็บ snapshot ล่าสุดที่ใช้งานได้ไว้และคืนค่าข้อผิดพลาด (ไม่มีการเปิดใช้งานบางส่วน)
-- การตอบกลับแบบ JSON มี `warningCount`
+ตัวเลือก: `--url <url>`, `--token <token>`, `--timeout <ms>`, `--json`
 
-ตัวเลือก:
-
-- `--url <url>`
-- `--token <token>`
-- `--timeout <ms>`
-- `--json`
-
-## Audit
+## ตรวจสอบ
 
 สแกนสถานะของ OpenClaw เพื่อหา:
 
-- การเก็บ secret แบบข้อความล้วน
-- ref ที่ยัง resolve ไม่ได้
-- precedence drift (ข้อมูลรับรองใน `auth-profiles.json` ที่บัง ref ใน `openclaw.json`)
-- ร่องรอยใน `agents/*/agent/models.json` ที่สร้างขึ้น (`apiKey` ของผู้ให้บริการและ header ผู้ให้บริการที่ละเอียดอ่อน)
-- ร่องรอยแบบ legacy (รายการในที่เก็บ auth แบบเก่า การเตือน OAuth)
+- การจัดเก็บข้อมูลลับเป็นข้อความธรรมดา
+- การอ้างอิงที่แก้ไขไม่ได้
+- ความคลาดเคลื่อนของลำดับความสำคัญ (ข้อมูลประจำตัวใน `auth-profiles.json` บดบังการอ้างอิงใน `openclaw.json`)
+- ข้อมูลตกค้างใน `agents/*/agent/models.json` ที่สร้างขึ้น (ค่า `apiKey` ของผู้ให้บริการและส่วนหัวที่ละเอียดอ่อนของผู้ให้บริการ)
+- ข้อมูลตกค้างแบบเก่า (รายการในพื้นที่จัดเก็บการยืนยันตัวตนแบบเก่าและข้อความเตือน OAuth)
 
-หมายเหตุเรื่องร่องรอยใน header:
-
-- การตรวจจับ header ผู้ให้บริการที่ละเอียดอ่อนใช้ heuristic ตามชื่อ (ชื่อ header ทั่วไปที่ใช้ auth/credential และชิ้นส่วนเช่น `authorization`, `x-api-key`, `token`, `secret`, `password` และ `credential`)
+การตรวจหาส่วนหัวที่ละเอียดอ่อนของผู้ให้บริการอาศัยฮิวริสติกจากชื่อ โดยจะแจ้งส่วนหัวที่ชื่อตรงกับส่วนประกอบทั่วไปเกี่ยวกับการยืนยันตัวตน/ข้อมูลประจำตัว (`authorization`, `x-api-key`, `token`, `secret`, `password`, `credential`)
 
 ```bash
 openclaw secrets audit
@@ -94,25 +77,16 @@ openclaw secrets audit --json
 openclaw secrets audit --allow-exec
 ```
 
-พฤติกรรมการออก:
-
-- `--check` จะออกด้วยรหัสที่ไม่เป็นศูนย์เมื่อพบรายการ
-- ref ที่ยัง resolve ไม่ได้จะออกด้วยรหัสที่ไม่เป็นศูนย์ที่มีลำดับความสำคัญสูงกว่า
-
-จุดเด่นของรูปแบบรายงาน:
+รูปแบบรายงาน:
 
 - `status`: `clean | findings | unresolved`
 - `resolution`: `refsChecked`, `skippedExecRefs`, `resolvabilityComplete`
 - `summary`: `plaintextCount`, `unresolvedRefCount`, `shadowedRefCount`, `legacyResidueCount`
-- รหัสการพบ:
-  - `PLAINTEXT_FOUND`
-  - `REF_UNRESOLVED`
-  - `REF_SHADOWED`
-  - `LEGACY_RESIDUE`
+- รหัสผลการตรวจพบ: `PLAINTEXT_FOUND`, `REF_UNRESOLVED`, `REF_SHADOWED`, `LEGACY_RESIDUE`
 
-## Configure (ตัวช่วยแบบโต้ตอบ)
+## กำหนดค่า (ตัวช่วยแบบโต้ตอบ)
 
-สร้างการเปลี่ยนแปลงของผู้ให้บริการและ SecretRef แบบโต้ตอบ รัน preflight และเลือก apply ได้:
+สร้างการเปลี่ยนแปลงสำหรับผู้ให้บริการและ SecretRef แบบโต้ตอบ เรียกใช้การตรวจสอบล่วงหน้า และเลือกใช้การเปลี่ยนแปลง:
 
 ```bash
 openclaw secrets configure
@@ -124,43 +98,33 @@ openclaw secrets configure --agent ops
 openclaw secrets configure --json
 ```
 
-โฟลว์:
-
-- ตั้งค่าผู้ให้บริการก่อน (`add/edit/remove` สำหรับ alias ใน `secrets.providers`)
-- การแมปข้อมูลรับรองทีหลัง (เลือกฟิลด์และกำหนด ref แบบ `{source, provider, id}`)
-- preflight และ apply แบบเลือกได้ในตอนท้าย
+ลำดับการทำงาน: ตั้งค่าผู้ให้บริการก่อน (เพิ่ม/แก้ไข/ลบนามแฝง `secrets.providers`) จากนั้นจับคู่ข้อมูลประจำตัว (เลือกฟิลด์และกำหนดการอ้างอิง `{source, provider, id}`) แล้วจึงตรวจสอบล่วงหน้าและเลือกใช้การเปลี่ยนแปลง
 
 แฟล็ก:
 
-- `--providers-only`: กำหนดค่าเฉพาะ `secrets.providers` เท่านั้น ข้ามการแมปข้อมูลรับรอง
-- `--skip-provider-setup`: ข้ามการตั้งค่าผู้ให้บริการและแมปข้อมูลรับรองไปยังผู้ให้บริการที่มีอยู่
-- `--agent <id>`: จำกัดการค้นหาเป้าหมายและการเขียน `auth-profiles.json` ไปยังที่เก็บของเอเจนต์หนึ่งตัว
-- `--allow-exec`: อนุญาตการตรวจสอบ exec SecretRef ระหว่าง preflight/apply (อาจมีการรันคำสั่งของผู้ให้บริการ)
+- `--providers-only`: กำหนดค่าเฉพาะ `secrets.providers` และข้ามการจับคู่ข้อมูลประจำตัว
+- `--skip-provider-setup`: ข้ามการตั้งค่าผู้ให้บริการและจับคู่ข้อมูลประจำตัวกับผู้ให้บริการที่มีอยู่
+- `--agent <id>`: จำกัดขอบเขตการค้นหาเป้าหมายและการเขียน `auth-profiles.json` ไว้ที่พื้นที่จัดเก็บของเอเจนต์หนึ่งราย
+- `--allow-exec`: อนุญาตการตรวจสอบ exec SecretRef ระหว่างการตรวจสอบล่วงหน้า/การใช้การเปลี่ยนแปลง (อาจเรียกใช้คำสั่งของผู้ให้บริการ)
+
+ไม่สามารถใช้ `--providers-only` ร่วมกับ `--skip-provider-setup` ได้
 
 หมายเหตุ:
 
 - ต้องใช้ TTY แบบโต้ตอบ
-- คุณไม่สามารถใช้ `--providers-only` ร่วมกับ `--skip-provider-setup` ได้
-- `configure` กำหนดเป้าหมายฟิลด์ที่มี secret ใน `openclaw.json` พร้อมทั้ง `auth-profiles.json` สำหรับขอบเขตเอเจนต์ที่เลือก
-- `configure` รองรับการสร้างการแมป `auth-profiles.json` ใหม่โดยตรงในโฟลว์ตัวเลือก
-- พื้นผิวที่รองรับแบบมาตรฐาน: [SecretRef Credential Surface](/th/reference/secretref-credential-surface)
-- มันจะทำ preflight resolution ก่อน apply
-- หาก preflight/apply มี exec ref ให้คง `--allow-exec` ไว้สำหรับทั้งสองขั้นตอน
-- แผนที่สร้างขึ้นจะเปิดตัวเลือก scrub เป็นค่าเริ่มต้น (`scrubEnv`, `scrubAuthProfilesForProviderTargets`, `scrubLegacyAuthJson` เปิดทั้งหมด)
-- เส้นทาง apply เป็นแบบทางเดียวสำหรับค่าข้อความล้วนที่ถูก scrub
-- หากไม่มี `--apply`, CLI จะยังถาม `Apply this plan now?` หลัง preflight
-- เมื่อใช้ `--apply` (และไม่มี `--yes`) CLI จะถามยืนยันเพิ่มเติมแบบย้อนกลับไม่ได้
-- `--json` จะแสดงแผน + รายงาน preflight แต่คำสั่งนี้ยังคงต้องใช้ TTY แบบโต้ตอบ
+- กำหนดเป้าหมายฟิลด์ที่มีข้อมูลลับใน `openclaw.json` รวมถึง `auth-profiles.json` สำหรับขอบเขตเอเจนต์ที่เลือก พื้นผิวมาตรฐานที่รองรับ: [พื้นผิวข้อมูลประจำตัว SecretRef](/th/reference/secretref-credential-surface)
+- รองรับการสร้างการจับคู่ใหม่ใน `auth-profiles.json` โดยตรงผ่านขั้นตอนตัวเลือก
+- เรียกใช้การแก้ไขการอ้างอิงล่วงหน้าก่อนใช้การเปลี่ยนแปลง
+- แผนที่สร้างขึ้นจะเปิดใช้ตัวเลือกการล้างข้อมูลโดยค่าเริ่มต้น (`scrubEnv`, `scrubAuthProfilesForProviderTargets`, `scrubLegacyAuthJson`) การใช้การเปลี่ยนแปลงกับค่าข้อความธรรมดาที่ล้างแล้วไม่สามารถย้อนกลับได้
+- หากไม่ระบุ `--apply` CLI จะยังคงถาม `Apply this plan now?` หลังการตรวจสอบล่วงหน้า
+- เมื่อระบุ `--apply` (แต่ไม่ระบุ `--yes`) CLI จะถามยืนยันเพิ่มเติมสำหรับการย้ายข้อมูลที่ย้อนกลับไม่ได้
+- `--json` แสดงแผนและรายงานการตรวจสอบล่วงหน้า แต่ยังคงต้องใช้ TTY แบบโต้ตอบ
 
-หมายเหตุด้านความปลอดภัยของผู้ให้บริการ exec:
+### ความปลอดภัยของผู้ให้บริการ exec
 
-- การติดตั้งผ่าน Homebrew มักเปิดเผยไบนารีแบบ symlink ภายใต้ `/opt/homebrew/bin/*`
-- ให้ตั้ง `allowSymlinkCommand: true` เฉพาะเมื่อจำเป็นสำหรับพาธของ package manager ที่เชื่อถือได้ และใช้คู่กับ `trustedDirs` (เช่น `["/opt/homebrew"]`)
-- บน Windows หากไม่สามารถตรวจสอบ ACL สำหรับพาธของผู้ให้บริการได้ OpenClaw จะ fail closed สำหรับพาธที่เชื่อถือได้เท่านั้น ให้ตั้ง `allowInsecurePath: true` บนผู้ให้บริการนั้นเพื่อข้ามการตรวจสอบความปลอดภัยของพาธ
+การติดตั้งผ่าน Homebrew มักเปิดเผยไบนารีแบบ symlink ใต้ `/opt/homebrew/bin/*` ให้ตั้งค่า `allowSymlinkCommand: true` เฉพาะเมื่อจำเป็นสำหรับพาธของตัวจัดการแพ็กเกจที่เชื่อถือได้ และใช้ร่วมกับ `trustedDirs` (เช่น `["/opt/homebrew"]`) บน Windows หากไม่สามารถตรวจสอบ ACL สำหรับพาธของผู้ให้บริการได้ OpenClaw จะปฏิเสธการทำงานโดยค่าเริ่มต้น สำหรับพาธที่เชื่อถือได้เท่านั้น ให้ตั้งค่า `allowInsecurePath: true` ในผู้ให้บริการนั้นเพื่อข้ามการตรวจสอบความปลอดภัยของพาธ
 
-## Apply แผนที่บันทึกไว้
-
-apply หรือ preflight แผนที่สร้างไว้ก่อนหน้า:
+## ใช้แผนที่บันทึกไว้
 
 ```bash
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json
@@ -170,29 +134,20 @@ openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run --allow-
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --json
 ```
 
-พฤติกรรมของ exec:
-
-- `--dry-run` จะตรวจสอบ preflight โดยไม่เขียนไฟล์
-- การตรวจสอบ exec SecretRef จะถูกข้ามโดยค่าเริ่มต้นใน dry-run
-- โหมดเขียนจะปฏิเสธแผนที่มี exec SecretRef/ผู้ให้บริการ เว้นแต่จะตั้ง `--allow-exec`
-- ใช้ `--allow-exec` เพื่อเลือกเปิดการตรวจสอบ/ดำเนินการผู้ให้บริการ exec ในทั้งสองโหมด
-
-รายละเอียดสัญญาของแผน (พาธเป้าหมายที่อนุญาต กฎการตรวจสอบ และความหมายของความล้มเหลว):
-
-- [Secrets Apply Plan Contract](/th/gateway/secrets-plan-contract)
+`--dry-run` ตรวจสอบความถูกต้องล่วงหน้าโดยไม่เขียนไฟล์ และข้ามการตรวจสอบ exec SecretRef โดยค่าเริ่มต้นในโหมด dry-run โหมดเขียนจะปฏิเสธแผนที่มี SecretRef/ผู้ให้บริการแบบ exec เว้นแต่ระบุ `--allow-exec` ใช้ `--allow-exec` เพื่อยินยอมให้ตรวจสอบ/เรียกใช้ผู้ให้บริการแบบ exec ในโหมดใดโหมดหนึ่ง
 
 สิ่งที่ `apply` อาจอัปเดต:
 
-- `openclaw.json` (เป้าหมาย SecretRef + upsert/delete ของผู้ให้บริการ)
-- `auth-profiles.json` (scrub เป้าหมายของผู้ให้บริการ)
-- ร่องรอย `auth.json` แบบเก่า
-- คีย์ secret ที่รู้จักใน `~/.openclaw/.env` ซึ่งค่าของมันถูกย้ายแล้ว
+- `openclaw.json` (เป้าหมาย SecretRef และการเพิ่มหรืออัปเดต/ลบผู้ให้บริการ)
+- `auth-profiles.json` (การล้างข้อมูลตามเป้าหมายผู้ให้บริการ)
+- ข้อมูลตกค้างใน `auth.json` แบบเก่า
+- คีย์ข้อมูลลับที่รู้จักใน `~/.openclaw/.env` ซึ่งค่าถูกย้ายแล้ว
 
-## ทำไมจึงไม่มี backup สำหรับ rollback
+รายละเอียดสัญญาของแผน (พาธเป้าหมายที่อนุญาต กฎการตรวจสอบความถูกต้อง และความหมายเมื่อเกิดความล้มเหลว): [สัญญาแผนการใช้ข้อมูลลับ](/th/gateway/secrets-plan-contract)
 
-`secrets apply` ตั้งใจไม่เขียน backup สำหรับ rollback ที่มีค่าข้อความล้วนเดิม
+### เหตุผลที่ไม่มีข้อมูลสำรองสำหรับย้อนกลับ
 
-ความปลอดภัยมาจาก strict preflight + apply แบบกึ่งอะตอมมิกพร้อมการกู้คืนในหน่วยความจำแบบ best-effort เมื่อเกิดความล้มเหลว
+`secrets apply` ตั้งใจไม่เขียนข้อมูลสำรองสำหรับย้อนกลับที่มีค่าข้อความธรรมดาเดิม ความปลอดภัยมาจากการตรวจสอบล่วงหน้าอย่างเข้มงวดร่วมกับการใช้การเปลี่ยนแปลงที่เกือบเป็นอะตอมมิก พร้อมพยายามคืนค่าในหน่วยความจำเมื่อเกิดความล้มเหลว
 
 ## ตัวอย่าง
 
@@ -202,9 +157,10 @@ openclaw secrets configure
 openclaw secrets audit --check
 ```
 
-หาก `audit --check` ยังรายงานการพบข้อความล้วน ให้อัปเดตพาธเป้าหมายที่ยังเหลืออยู่ตามที่รายงาน แล้วรัน audit ใหม่
+หาก `audit --check` ยังคงรายงานการตรวจพบข้อความธรรมดา ให้อัปเดตพาธเป้าหมายที่เหลือตามรายงาน แล้วเรียกใช้การตรวจสอบอีกครั้ง
 
 ## ที่เกี่ยวข้อง
 
 - [เอกสารอ้างอิง CLI](/th/cli)
-- [การจัดการ Secrets](/th/gateway/secrets)
+- [การจัดการข้อมูลลับ](/th/gateway/secrets)
+- [SecretRef ของ Vault](/plugins/vault)

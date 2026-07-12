@@ -1,19 +1,19 @@
 ---
-summary: Przekieruj do /gateway/authentication
+summary: Przekierowanie do /gateway/authentication
 title: Monitorowanie uwierzytelniania
 x-i18n:
-    generated_at: "2026-04-30T09:34:53Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:51:55Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d0bb68c2881911afc634aaba017444a5a8356f4cc519f0a2b5e415ff9ad739f3
+    source_hash: 2d2c52a0082ff90306c61fb33ee2f2dc74b8703c9d8ee7a13581e72d2d564f0a
     source_path: automation/auth-monitoring.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Monitorowanie uwierzytelniania znajduje się w sekcji [Uwierzytelnianie](/pl/gateway/authentication).
+Ta strona została przeniesiona. Uwierzytelnianie dostawców modeli opisano w sekcji [Uwierzytelnianie](/pl/gateway/authentication), a skrypty operacyjne do monitorowania stanu uwierzytelniania znajdują się w sekcji [Skrypty monitorowania uwierzytelniania](/pl/help/scripts#auth-monitoring-scripts).
 
 ## Powiązane
 
-- [Rozwiązywanie problemów z automatyzacją](/pl/automation/cron-jobs)
+- [Rozwiązywanie problemów z automatyzacją](/pl/automation/cron-jobs#troubleshooting)
 - [Hooki](/pl/automation/hooks)

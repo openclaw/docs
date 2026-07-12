@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Je installeert, configureert of licht de voice-call-Plugin door
+    - U installeert, configureert of controleert de spraakoproepplugin
 summary: OpenClaw-spraakoproepplugin voor telefoongesprekken via Twilio, Telnyx en Plivo.
-title: Spraakoproep-Plugin
+title: Spraakoproepplugin
 x-i18n:
-    generated_at: "2026-06-27T18:04:55Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:15:10Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: b0e298a2d8701d6fd531b761f8c14477b8c37a376af43127aa67c2fa6ff1b02d
@@ -13,9 +13,9 @@ x-i18n:
     workflow: 16
 ---
 
-# Voice Call-plugin
+# Voice Call-Plugin
 
-OpenClaw voice-call-plugin voor telefoongesprekken via Twilio, Telnyx en Plivo.
+OpenClaw voice-call-Plugin voor telefoongesprekken via Twilio, Telnyx en Plivo.
 
 ## Distributie
 

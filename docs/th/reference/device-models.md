@@ -1,38 +1,39 @@
 ---
 read_when:
-    - การอัปเดตการแมปตัวระบุรุ่นอุปกรณ์ หรือไฟล์ NOTICE/license
-    - การเปลี่ยนวิธีที่ UI ของ Instances แสดงชื่ออุปกรณ์
-summary: วิธีที่ OpenClaw vend Apple device model identifiers เป็นชื่อที่อ่านเข้าใจง่ายสำหรับใช้งานในแอป macOS
+    - การอัปเดตการแมปตัวระบุรุ่นอุปกรณ์หรือไฟล์ NOTICE/ใบอนุญาต
+    - การเปลี่ยนวิธีที่ UI ของอินสแตนซ์แสดงชื่ออุปกรณ์
+summary: วิธีที่ OpenClaw รวมตัวระบุรุ่นอุปกรณ์ Apple ไว้ในซอร์สเพื่อใช้เป็นชื่อที่อ่านเข้าใจง่ายในแอป macOS
 title: ฐานข้อมูลรุ่นอุปกรณ์
 x-i18n:
-    generated_at: "2026-04-25T13:58:24Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: f20e035f787ba7d9bb48d2a18263679d20b295e12ffb263a63c3a0ef72312d34
-    source_path: reference/device-models.md
-    workflow: 15
+    generated_at: "2026-07-12T16:41:00Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 930cd330594072d9c986b8c85c5a68e02dd096e5f0c015e3ee86b767073b93e6
+    source_path: reference/device-models.md
+    workflow: 16
 ---
 
-แอปคู่หูบน macOS จะแสดงชื่อรุ่นอุปกรณ์ Apple ที่อ่านเข้าใจง่ายใน UI ของ **Instances** โดยแมปตัวระบุรุ่นของ Apple (เช่น `iPad16,6`, `Mac16,6`) ไปเป็นชื่อที่มนุษย์อ่านได้
+UI **อินสแตนซ์** ของแอปคู่หูบน macOS จับคู่ตัวระบุรุ่นของ Apple กับชื่อที่อ่านเข้าใจง่าย (`iPad16,6` -> "iPad Pro 13 นิ้ว (M4)", `Mac16,6` -> "MacBook Pro (14 นิ้ว, 2024)") นอกจากนี้ `DeviceModelCatalog` ยังใช้คำนำหน้าตัวระบุ (และใช้ตระกูลอุปกรณ์เป็นทางเลือกสำรอง) เพื่อเลือก SF Symbol สำหรับอุปกรณ์แต่ละเครื่อง
 
-การแมปนี้ถูก vendor มาเป็น JSON ภายใต้:
+ไฟล์ใน `apps/macos/Sources/OpenClaw/Resources/DeviceModels/`:
 
-- `apps/macos/Sources/OpenClaw/Resources/DeviceModels/`
+| ไฟล์                                   | วัตถุประสงค์                               |
+| -------------------------------------- | ------------------------------------- |
+| `ios-device-identifiers.json`          | การจับคู่ตัวระบุ iOS/iPadOS -> ชื่อ |
+| `mac-device-identifiers.json`          | การจับคู่ตัวระบุ Mac -> ชื่อ        |
+| `NOTICE.md`                            | SHA ของคอมมิตต้นทางที่ตรึงไว้           |
+| `LICENSE.apple-device-identifiers.txt` | ใบอนุญาต MIT ของต้นทาง                  |
 
 ## แหล่งข้อมูล
 
-ปัจจุบันเรา vendor การแมปนี้มาจากรีโพสิตอรีที่ใช้สัญญาอนุญาต MIT:
-
-- `kyle-seongwoo-jun/apple-device-identifiers`
-
-เพื่อให้บิลด์มีความกำหนดแน่นอน ไฟล์ JSON จะถูก pin ไว้กับ upstream commits ที่เฉพาะเจาะจง (บันทึกไว้ใน `apps/macos/Sources/OpenClaw/Resources/DeviceModels/NOTICE.md`)
+นำมาไว้ในโครงการจากรีโพซิทอรี GitHub `kyle-seongwoo-jun/apple-device-identifiers` ซึ่งใช้ใบอนุญาต MIT ไฟล์ JSON ถูกตรึงไว้กับ SHA ของคอมมิตที่บันทึกใน `NOTICE.md` เพื่อให้ผลลัพธ์การบิลด์เป็นแบบกำหนดได้แน่นอน
 
 ## การอัปเดตฐานข้อมูล
 
-1. เลือก upstream commits ที่คุณต้องการ pin ไว้ (หนึ่งรายการสำหรับ iOS และหนึ่งรายการสำหรับ macOS)
-2. อัปเดต commit hashes ใน `apps/macos/Sources/OpenClaw/Resources/DeviceModels/NOTICE.md`
-3. ดาวน์โหลดไฟล์ JSON ใหม่ โดย pin กับ commits เหล่านั้น:
+1. เลือก SHA ของคอมมิตต้นทางที่จะตรึงไว้ (หนึ่งรายการสำหรับ iOS และหนึ่งรายการสำหรับ macOS)
+2. อัปเดต `apps/macos/Sources/OpenClaw/Resources/DeviceModels/NOTICE.md` ด้วย SHA ใหม่
+3. ดาวน์โหลดไฟล์ JSON ที่ตรึงไว้กับคอมมิตเหล่านั้นอีกครั้ง:
 
 ```bash
 IOS_COMMIT="<commit sha for ios-device-identifiers.json>"
@@ -45,14 +46,14 @@ curl -fsSL "https://raw.githubusercontent.com/kyle-seongwoo-jun/apple-device-ide
   -o apps/macos/Sources/OpenClaw/Resources/DeviceModels/mac-device-identifiers.json
 ```
 
-4. ตรวจสอบให้แน่ใจว่า `apps/macos/Sources/OpenClaw/Resources/DeviceModels/LICENSE.apple-device-identifiers.txt` ยังคงตรงกับ upstream (แทนที่ไฟล์นี้หากสัญญาอนุญาตของ upstream เปลี่ยนแปลง)
-5. ตรวจสอบว่าแอป macOS บิลด์ผ่านอย่างสะอาด (ไม่มีคำเตือน):
+4. ยืนยันว่า `LICENSE.apple-device-identifiers.txt` ยังคงตรงกับต้นทาง หากใบอนุญาตต้นทางมีการเปลี่ยนแปลง ให้แทนที่ไฟล์นี้
+5. ตรวจสอบว่าแอป macOS บิลด์ได้สำเร็จโดยไม่มีข้อผิดพลาด:
 
 ```bash
 swift build --package-path apps/macos
 ```
 
-## ที่เกี่ยวข้อง
+## เนื้อหาที่เกี่ยวข้อง
 
-- [Nodes](/th/nodes)
-- [Node troubleshooting](/th/nodes/troubleshooting)
+- [Node](/th/nodes)
+- [การแก้ไขปัญหา Node](/th/nodes/troubleshooting)

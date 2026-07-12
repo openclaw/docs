@@ -1,59 +1,50 @@
 ---
 read_when:
     - Menjalankan Gateway dari CLI (pengembangan atau server)
-    - Men-debug auth Gateway, mode bind, dan konektivitas
-    - Menemukan gateway melalui Bonjour (DNS-SD lokal + area luas)
+    - Men-debug autentikasi Gateway, mode bind, dan konektivitas
+    - Menemukan Gateway melalui Bonjour (lokal + DNS-SD area luas)
 sidebarTitle: Gateway
-summary: OpenClaw Gateway CLI (`openclaw gateway`) — menjalankan, meminta kueri, dan menemukan gateway
+summary: CLI Gateway OpenClaw (`openclaw gateway`) — jalankan, kueri, dan temukan Gateway
 title: Gateway
 x-i18n:
-    generated_at: "2026-07-01T08:31:15Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:05:30Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 80f329ebd154f6fd0e87869c498c58fc6d5276a21934f8a36837653bd68a2d22
+    source_hash: 75f8f4bebe585b213f486f08bf20015aeb89ca4d179f6d96c1008ec9d1cd00ea
     source_path: cli/gateway.md
     workflow: 16
 ---
 
-Gateway adalah server WebSocket OpenClaw (saluran, node, sesi, hook). Subperintah di halaman ini berada di bawah `openclaw gateway …`.
+Gateway adalah server WebSocket OpenClaw (kanal, node, sesi, hook). Semua subperintah di bawah berada di bawah `openclaw gateway ...`.
 
 <CardGroup cols={3}>
   <Card title="Penemuan Bonjour" href="/id/gateway/bonjour">
     Penyiapan mDNS lokal + DNS-SD area luas.
   </Card>
   <Card title="Ikhtisar penemuan" href="/id/gateway/discovery">
-    Cara OpenClaw mengiklankan dan menemukan Gateway.
+    Cara OpenClaw mengiklankan dan menemukan gateway.
   </Card>
   <Card title="Konfigurasi" href="/id/gateway/configuration">
-    Kunci konfigurasi Gateway tingkat atas.
+    Kunci konfigurasi gateway tingkat atas.
   </Card>
 </CardGroup>
 
-## Jalankan Gateway
-
-Jalankan proses Gateway lokal:
+## Menjalankan Gateway
 
 ```bash
 openclaw gateway
-```
-
-Alias foreground:
-
-```bash
-openclaw gateway run
+openclaw gateway run   # bentuk eksplisit yang setara
 ```
 
 <AccordionGroup>
-  <Accordion title="Perilaku startup">
-    - Secara default, Gateway menolak untuk memulai kecuali `gateway.mode=local` ditetapkan di `~/.openclaw/openclaw.json`. Gunakan `--allow-unconfigured` untuk eksekusi ad-hoc/dev.
-    - `openclaw onboard --mode local` dan `openclaw setup` diharapkan menulis `gateway.mode=local`. Jika file ada tetapi `gateway.mode` tidak ada, perlakukan itu sebagai konfigurasi yang rusak atau tertimpa dan perbaiki, bukan mengasumsikan mode lokal secara implisit.
-    - Jika file ada dan `gateway.mode` tidak ada, Gateway memperlakukannya sebagai kerusakan konfigurasi yang mencurigakan dan menolak untuk "menebak lokal" untuk Anda.
-    - Binding di luar loopback tanpa auth diblokir (pagar pengaman keselamatan).
-    - `lan`, `tailnet`, dan `custom` saat ini di-resolve melalui jalur BYOH khusus IPv4.
-    - BYOH khusus IPv6 belum didukung secara native pada jalur ini saat ini. Gunakan sidecar IPv4 atau proxy jika host itu sendiri hanya IPv6.
-    - `SIGUSR1` memicu restart dalam proses saat diotorisasi (`commands.restart` diaktifkan secara default; tetapkan `commands.restart: false` untuk memblokir restart manual, sementara penerapan/pembaruan alat/konfigurasi Gateway tetap diizinkan).
-    - Handler `SIGINT`/`SIGTERM` menghentikan proses Gateway, tetapi tidak memulihkan state terminal kustom apa pun. Jika Anda membungkus CLI dengan TUI atau input raw-mode, pulihkan terminal sebelum keluar.
+  <Accordion title="Perilaku saat memulai">
+    - Menolak dimulai kecuali `gateway.mode=local` ditetapkan dalam `~/.openclaw/openclaw.json`. Gunakan `--allow-unconfigured` untuk menjalankan secara ad hoc/pengembangan; opsi ini melewati pengaman tanpa menulis atau memperbaiki konfigurasi.
+    - `openclaw onboard --mode local` dan `openclaw setup` menulis `gateway.mode=local`. Jika berkas konfigurasi ada tetapi `gateway.mode` tidak tersedia, hal tersebut dianggap sebagai konfigurasi yang rusak/tertimpa dan Gateway menolak menebak `local` untuk Anda — jalankan kembali orientasi awal, tetapkan kunci secara manual, atau berikan `--allow-unconfigured`.
+    - Pengikatan di luar loopback tanpa autentikasi diblokir.
+    - Nilai `--bind` `lan`, `tailnet`, dan `custom` saat ini diresolusikan hanya melalui jalur IPv4; penyiapan host milik sendiri yang hanya menggunakan IPv6 memerlukan sidecar IPv4 atau proksi di depan Gateway.
+    - `SIGUSR1` memicu mulai ulang dalam proses jika diizinkan. `commands.restart` (bawaan: diaktifkan) mengontrol `SIGUSR1` yang dikirim secara eksternal; tetapkan ke `false` untuk memblokir mulai ulang manual melalui sinyal OS sambil tetap mengizinkan mulai ulang melalui perintah `gateway restart`, alat gateway, dan penerapan/pembaruan konfigurasi.
+    - `SIGINT`/`SIGTERM` menghentikan proses tetapi tidak memulihkan keadaan terminal khusus — jika Anda membungkus CLI dalam TUI atau masukan mode mentah, pulihkan sendiri terminal sebelum keluar.
 
   </Accordion>
 </AccordionGroup>
@@ -61,112 +52,118 @@ openclaw gateway run
 ### Opsi
 
 <ParamField path="--port <port>" type="number">
-  Port WebSocket (default berasal dari konfigurasi/env; biasanya `18789`).
+  Porta WebSocket (bawaan dari konfigurasi/variabel lingkungan; biasanya `18789`).
 </ParamField>
-<ParamField path="--bind <loopback|lan|tailnet|auto|custom>" type="string">
-  Mode bind listener. `lan`, `tailnet`, dan `custom` saat ini di-resolve melalui jalur khusus IPv4.
-</ParamField>
-<ParamField path="--auth <token|password>" type="string">
-  Override mode auth.
+<ParamField path="--bind <mode>" type="string">
+  Mode pengikatan: `loopback` (bawaan), `lan`, `tailnet`, `auto`, `custom`.
 </ParamField>
 <ParamField path="--token <token>" type="string">
-  Override token (juga menetapkan `OPENCLAW_GATEWAY_TOKEN` untuk proses).
+  Token bersama untuk `connect.params.auth.token`. Secara bawaan menggunakan `OPENCLAW_GATEWAY_TOKEN` jika ditetapkan.
+</ParamField>
+<ParamField path="--auth <mode>" type="string">
+  Mode autentikasi: `none`, `token`, `password`, `trusted-proxy`.
 </ParamField>
 <ParamField path="--password <password>" type="string">
-  Override kata sandi.
+  Kata sandi untuk `--auth password`.
 </ParamField>
 <ParamField path="--password-file <path>" type="string">
-  Baca kata sandi Gateway dari file.
+  Membaca kata sandi Gateway dari berkas.
 </ParamField>
-<ParamField path="--tailscale <off|serve|funnel>" type="string">
-  Ekspos Gateway melalui Tailscale.
+<ParamField path="--tailscale <mode>" type="string">
+  Eksposur Tailscale: `off`, `serve`, `funnel`.
 </ParamField>
 <ParamField path="--tailscale-reset-on-exit" type="boolean">
-  Reset konfigurasi serve/funnel Tailscale saat shutdown.
-</ParamField>
-<ParamField path="--bind custom + gateway.customBindHost" type="string">
-  Saat ini mengharapkan alamat IPv4. Untuk BYOH khusus IPv6, tempatkan sidecar IPv4 atau proxy di depan Gateway dan arahkan OpenClaw ke endpoint IPv4 tersebut.
+  Mengatur ulang konfigurasi serve/funnel Tailscale saat dimatikan.
 </ParamField>
 <ParamField path="--allow-unconfigured" type="boolean">
-  Izinkan Gateway mulai tanpa `gateway.mode=local` dalam konfigurasi. Hanya melewati penjaga startup untuk bootstrap ad-hoc/dev; tidak menulis atau memperbaiki file konfigurasi.
+  Memulai tanpa mewajibkan `gateway.mode=local`. Hanya untuk bootstrap ad hoc/pengembangan; tidak menyimpan atau memperbaiki konfigurasi.
 </ParamField>
 <ParamField path="--dev" type="boolean">
-  Buat konfigurasi dev + workspace jika belum ada (melewati BOOTSTRAP.md).
+  Membuat konfigurasi + ruang kerja pengembangan jika belum ada (melewati `BOOTSTRAP.md`).
 </ParamField>
 <ParamField path="--reset" type="boolean">
-  Reset konfigurasi dev + kredensial + sesi + workspace (memerlukan `--dev`).
+  Mengatur ulang konfigurasi pengembangan, kredensial, sesi, dan ruang kerja. Memerlukan `--dev`.
 </ParamField>
 <ParamField path="--force" type="boolean">
-  Hentikan listener yang sudah ada pada port yang dipilih sebelum memulai.
+  Menghentikan semua listener yang ada pada porta target sebelum memulai.
 </ParamField>
 <ParamField path="--verbose" type="boolean">
-  Log verbose.
+  Pencatatan log terperinci ke stdout/stderr.
 </ParamField>
 <ParamField path="--cli-backend-logs" type="boolean">
-  Hanya tampilkan log backend CLI di konsol (dan aktifkan stdout/stderr).
+  Hanya menampilkan log backend CLI di konsol (juga mengaktifkan stdout/stderr).
 </ParamField>
-<ParamField path="--ws-log <auto|full|compact>" type="string" default="auto">
-  Gaya log WebSocket.
+<ParamField path="--ws-log <style>" type="string" default="auto">
+  Gaya log WebSocket: `auto`, `full`, `compact`.
 </ParamField>
 <ParamField path="--compact" type="boolean">
   Alias untuk `--ws-log compact`.
 </ParamField>
 <ParamField path="--raw-stream" type="boolean">
-  Catat event stream model mentah ke jsonl.
+  Mencatat peristiwa aliran model mentah ke JSONL.
 </ParamField>
 <ParamField path="--raw-stream-path <path>" type="string">
-  Jalur jsonl stream mentah.
+  Jalur JSONL aliran mentah.
 </ParamField>
 
-## Restart Gateway
+`--claude-cli-logs` adalah alias usang untuk `--cli-backend-logs`.
+
+Untuk `--bind custom`, tetapkan `gateway.customBindHost` ke alamat IPv4. Semua alamat selain `127.0.0.1` atau `0.0.0.0` juga memerlukan `127.0.0.1` pada porta yang sama untuk klien pada host yang sama; proses memulai gagal jika salah satu listener tidak dapat mengikat. Wildcard `0.0.0.0` tidak menambahkan alias wajib yang terpisah. Penyiapan host milik sendiri yang hanya menggunakan IPv6 memerlukan sidecar IPv4 atau proksi di depan Gateway.
+
+## Memulai Ulang Gateway
 
 ```bash
 openclaw gateway restart
 openclaw gateway restart --safe
 openclaw gateway restart --safe --skip-deferral
 openclaw gateway restart --force
+openclaw gateway restart --wait 30s
 ```
 
-`openclaw gateway restart --safe` meminta Gateway yang sedang berjalan untuk melakukan preflight pekerjaan aktif dan menjadwalkan satu restart yang digabungkan setelah pekerjaan aktif selesai. Restart aman default menunggu pekerjaan aktif hingga `gateway.reload.deferralTimeoutMs` yang dikonfigurasi (default 5 menit); ketika anggaran itu habis, restart dipaksa. Tetapkan `gateway.reload.deferralTimeoutMs` ke `0` untuk penantian aman tanpa batas yang tidak pernah memaksa. `restart` biasa mempertahankan perilaku manajer layanan yang ada; `--force` tetap menjadi jalur override langsung.
+`--safe` meminta Gateway yang sedang berjalan untuk memeriksa lebih dahulu pekerjaan aktif dan menjadwalkan satu mulai ulang tergabung setelah pekerjaan tersebut selesai. Waktu tunggu dibatasi oleh `gateway.reload.deferralTimeoutMs` (bawaan: 5 menit / `300000`); saat anggaran waktu habis, mulai ulang dipaksakan. Tetapkan `deferralTimeoutMs: 0` untuk menunggu tanpa batas waktu (dengan peringatan berkala bahwa pekerjaan masih tertunda), alih-alih memaksakan. `--safe` tidak dapat digabungkan dengan `--force` atau `--wait`.
 
-`openclaw gateway restart --safe --skip-deferral` menjalankan restart terkoordinasi yang sadar OpenClaw sama seperti `--safe`, tetapi melewati gerbang penundaan pekerjaan aktif sehingga Gateway memancarkan restart segera bahkan ketika pemblokir dilaporkan. Gunakan ini sebagai escape hatch operator ketika penundaan tertahan oleh task run yang macet dan `--safe` saja mungkin dibatasi oleh `gateway.reload.deferralTimeoutMs`. `--skip-deferral` memerlukan `--safe`.
+`--skip-deferral` melewati pengaman penundaan pekerjaan aktif pada mulai ulang aman, sehingga Gateway segera dimulai ulang meskipun ada pemblokir yang dilaporkan. Opsi ini memerlukan `--safe` — gunakan saat penundaan macet karena tugas yang berjalan tak terkendali.
+
+`--wait <duration>` mengganti anggaran pengurasan untuk mulai ulang biasa (tidak aman). Menerima milidetik tanpa akhiran atau akhiran satuan `ms`, `s`, `m`, `h`, `d` (misalnya `30s`, `5m`, `1h30m`); `--wait 0` menunggu tanpa batas waktu. Tidak kompatibel dengan `--force` atau `--safe`.
+
+`--force` melewati pengurasan pekerjaan aktif dan segera memulai ulang. `restart` biasa (tanpa flag) mempertahankan perilaku mulai ulang pengelola layanan yang ada.
 
 <Warning>
-`--password` inline dapat terekspos dalam daftar proses lokal. Lebih baik gunakan `--password-file`, env, atau `gateway.auth.password` yang didukung SecretRef.
+`--password` sebaris dapat terekspos dalam daftar proses lokal. Utamakan `--password-file`, variabel lingkungan, atau `gateway.auth.password` yang didukung SecretRef.
 </Warning>
 
-### Profiling Gateway
+### Pemrofilan Gateway
 
-- Tetapkan `OPENCLAW_GATEWAY_STARTUP_TRACE=1` untuk mencatat timing fase selama startup Gateway, termasuk delay `eventLoopMax` per fase dan timing tabel pencarian Plugin untuk installed-index, registri manifest, perencanaan startup, dan pekerjaan owner-map.
-- Tetapkan `OPENCLAW_GATEWAY_RESTART_TRACE=1` untuk mencatat baris `restart trace:` berscope restart untuk penanganan sinyal restart, pengurasan pekerjaan aktif, fase shutdown, start berikutnya, timing ready, dan metrik memori.
-- Tetapkan `OPENCLAW_DIAGNOSTICS=timeline` dengan `OPENCLAW_DIAGNOSTICS_TIMELINE_PATH=<path>` untuk menulis timeline diagnostik startup JSONL best-effort bagi harness QA eksternal. Anda juga dapat mengaktifkan flag dengan `diagnostics.flags: ["timeline"]` dalam konfigurasi; jalurnya tetap disediakan melalui env. Tambahkan `OPENCLAW_DIAGNOSTICS_EVENT_LOOP=1` untuk menyertakan sampel event-loop.
-- Jalankan `pnpm build` terlebih dahulu, lalu `pnpm test:startup:gateway -- --runs 5 --warmup 1` untuk membenchmark startup Gateway terhadap entri CLI yang sudah dibangun. Benchmark mencatat output proses pertama, `/healthz`, `/readyz`, timing trace startup, delay event-loop, dan detail timing tabel pencarian Plugin.
-- Jalankan `pnpm build` terlebih dahulu, lalu `pnpm test:restart:gateway -- --case skipChannels --runs 1 --restarts 5` untuk membenchmark restart Gateway dalam proses terhadap entri CLI yang sudah dibangun di macOS atau Linux. Benchmark restart menggunakan SIGUSR1, mengaktifkan trace startup dan restart dalam proses child, serta mencatat `/healthz` berikutnya, `/readyz` berikutnya, downtime, timing ready, CPU, RSS, dan metrik trace restart.
-- Perlakukan `/healthz` sebagai liveness dan `/readyz` sebagai kesiapan yang dapat digunakan. Baris trace dan output benchmark ditujukan untuk atribusi owner; jangan perlakukan satu rentang trace atau satu sampel sebagai kesimpulan performa lengkap.
+- `OPENCLAW_GATEWAY_STARTUP_TRACE=1` mencatat pengaturan waktu fase selama proses memulai, termasuk penundaan `eventLoopMax` per fase dan pengaturan waktu tabel pencarian plugin (indeks terpasang, registri manifes, perencanaan proses memulai, pekerjaan peta pemilik).
+- `OPENCLAW_GATEWAY_RESTART_TRACE=1` mencatat baris `restart trace:` yang cakupannya terbatas pada mulai ulang: penanganan sinyal, pengurasan pekerjaan aktif, fase pematian, proses memulai berikutnya, waktu kesiapan, dan metrik memori.
+- `OPENCLAW_DIAGNOSTICS=timeline` dengan `OPENCLAW_DIAGNOSTICS_TIMELINE_PATH=<path>` menulis linimasa diagnostik proses memulai dalam JSONL secara upaya terbaik untuk harness QA eksternal (setara dengan konfigurasi `diagnostics.flags: ["timeline"]`; jalur tetap hanya dapat ditetapkan melalui variabel lingkungan). Tambahkan `OPENCLAW_DIAGNOSTICS_EVENT_LOOP=1` untuk menyertakan sampel loop peristiwa.
+- `pnpm build` lalu `pnpm test:startup:gateway -- --runs 5 --warmup 1` mengukur kinerja proses memulai Gateway terhadap entri CLI hasil build: keluaran proses pertama, `/healthz`, `/readyz`, pengaturan waktu jejak proses memulai, penundaan loop peristiwa, dan pengaturan waktu tabel pencarian plugin.
+- `pnpm build` lalu `pnpm test:restart:gateway -- --case skipChannels --runs 1 --restarts 5` mengukur kinerja mulai ulang dalam proses pada macOS atau Linux (tidak didukung pada Windows; mulai ulang memerlukan `SIGUSR1`). Menggunakan `SIGUSR1`, mengaktifkan kedua jejak dalam proses anak, dan merekam `/healthz` berikutnya, `/readyz` berikutnya, waktu henti, waktu kesiapan, CPU, RSS, dan metrik jejak mulai ulang.
+- `/healthz` menunjukkan bahwa proses hidup; `/readyz` menunjukkan kesiapan untuk digunakan. Perlakukan baris jejak dan keluaran tolok ukur sebagai sinyal atribusi pemilik, bukan kesimpulan kinerja lengkap dari satu rentang atau sampel.
 
-## Kueri Gateway yang berjalan
+## Mengueri Gateway yang Sedang Berjalan
 
 Semua perintah kueri menggunakan RPC WebSocket.
 
 <Tabs>
-  <Tab title="Mode output">
-    - Default: dapat dibaca manusia (berwarna di TTY).
-    - `--json`: JSON yang dapat dibaca mesin (tanpa styling/spinner).
-    - `--no-color` (atau `NO_COLOR=1`): nonaktifkan ANSI sambil mempertahankan tata letak manusia.
+  <Tab title="Mode keluaran">
+    - Bawaan: mudah dibaca manusia (berwarna dalam TTY).
+    - `--json`: JSON yang dapat dibaca mesin (tanpa gaya/spinner).
+    - `--no-color` (atau `NO_COLOR=1`): menonaktifkan ANSI sambil mempertahankan tata letak yang mudah dibaca manusia.
 
   </Tab>
   <Tab title="Opsi bersama">
     - `--url <url>`: URL WebSocket Gateway.
     - `--token <token>`: token Gateway.
     - `--password <password>`: kata sandi Gateway.
-    - `--timeout <ms>`: timeout/anggaran (bervariasi per perintah).
-    - `--expect-final`: tunggu respons "final" (panggilan agen).
+    - `--timeout <ms>`: batas waktu/anggaran (bawaan berbeda-beda untuk setiap perintah; lihat setiap perintah di bawah).
+    - `--expect-final`: menunggu respons "final" (panggilan agen).
 
   </Tab>
 </Tabs>
 
 <Note>
-Saat Anda menetapkan `--url`, CLI tidak fallback ke kredensial konfigurasi atau lingkungan. Berikan `--token` atau `--password` secara eksplisit. Kredensial eksplisit yang hilang adalah error.
+Saat Anda menetapkan `--url`, CLI tidak menggunakan kredensial dari konfigurasi atau variabel lingkungan sebagai fallback. Berikan `--token` atau `--password` secara eksplisit. Tidak adanya kredensial eksplisit merupakan kesalahan.
 </Note>
 
 ### `gateway health`
@@ -176,15 +173,15 @@ openclaw gateway health --url ws://127.0.0.1:18789
 openclaw gateway health --port 18789
 ```
 
-Endpoint HTTP `/healthz` adalah probe liveness: endpoint ini kembali setelah server dapat menjawab HTTP. Endpoint HTTP `/readyz` lebih ketat dan tetap merah saat sidecar Plugin startup, saluran, atau hook yang dikonfigurasi masih dalam proses stabil. Respons kesiapan terperinci yang lokal atau terautentikasi menyertakan blok diagnostik `eventLoop` dengan delay event-loop, utilisasi event-loop, rasio core CPU, dan flag `degraded`.
+`/healthz` adalah probe keaktifan: probe ini kembali segera setelah server dapat menjawab HTTP. `/readyz` lebih ketat dan tetap merah selama sidecar plugin proses memulai, kanal, atau hook yang dikonfigurasi masih dalam proses stabilisasi. Respons terperinci `/readyz` yang bersifat lokal atau terautentikasi menyertakan blok diagnostik `eventLoop` (penundaan, utilisasi, rasio inti CPU, flag `degraded`).
 
 <ParamField path="--port <port>" type="number">
-  Targetkan Gateway local loopback pada port ini. Ini mengoverride `OPENCLAW_GATEWAY_URL` dan `OPENCLAW_GATEWAY_PORT` untuk panggilan health.
+  Menargetkan Gateway local loopback pada porta ini. Mengganti `OPENCLAW_GATEWAY_URL` dan `OPENCLAW_GATEWAY_PORT` untuk panggilan ini.
 </ParamField>
 
 ### `gateway usage-cost`
 
-Ambil ringkasan usage-cost dari log sesi.
+Mengambil ringkasan biaya penggunaan dari log sesi.
 
 ```bash
 openclaw gateway usage-cost
@@ -195,18 +192,18 @@ openclaw gateway usage-cost --json
 ```
 
 <ParamField path="--days <days>" type="number" default="30">
-  Jumlah hari untuk disertakan.
+  Jumlah hari yang disertakan.
 </ParamField>
 <ParamField path="--agent <id>" type="string">
-  Scope ringkasan biaya ke satu id agen yang dikonfigurasi.
+  Membatasi ringkasan ke satu ID agen yang dikonfigurasi.
 </ParamField>
 <ParamField path="--all-agents" type="boolean">
-  Agregasikan ringkasan biaya di semua agen yang dikonfigurasi. Tidak dapat digabungkan dengan `--agent`.
+  Mengagregasikan semua agen yang dikonfigurasi. Tidak dapat digabungkan dengan `--agent`.
 </ParamField>
 
 ### `gateway stability`
 
-Ambil perekam stabilitas diagnostik terbaru dari Gateway yang berjalan.
+Mengambil perekam stabilitas diagnostik terbaru dari Gateway yang sedang berjalan.
 
 ```bash
 openclaw gateway stability
@@ -217,35 +214,35 @@ openclaw gateway stability --json
 ```
 
 <ParamField path="--limit <limit>" type="number" default="25">
-  Jumlah maksimum event terbaru untuk disertakan (maks `1000`).
+  Jumlah maksimum peristiwa terbaru yang disertakan (maksimum `1000`).
 </ParamField>
 <ParamField path="--type <type>" type="string">
-  Filter berdasarkan tipe event diagnostik, seperti `payload.large` atau `diagnostic.memory.pressure`.
+  Memfilter berdasarkan jenis peristiwa diagnostik, misalnya `payload.large` atau `diagnostic.memory.pressure`.
 </ParamField>
 <ParamField path="--since-seq <seq>" type="number">
-  Sertakan hanya event setelah nomor urut diagnostik.
+  Hanya menyertakan peristiwa setelah nomor urutan diagnostik.
 </ParamField>
 <ParamField path="--bundle [path]" type="string">
-  Baca bundle stabilitas yang dipersist, bukan memanggil Gateway yang berjalan. Gunakan `--bundle latest` (atau cukup `--bundle`) untuk bundle terbaru di bawah direktori state, atau berikan jalur JSON bundle secara langsung.
+  Membaca bundel stabilitas tersimpan alih-alih memanggil Gateway yang sedang berjalan. `--bundle latest` (atau `--bundle` tanpa nilai) memilih bundel terbaru di bawah direktori keadaan; Anda juga dapat memberikan jalur JSON bundel secara langsung.
 </ParamField>
 <ParamField path="--export" type="boolean">
-  Tulis zip diagnostik dukungan yang dapat dibagikan, bukan mencetak detail stabilitas.
+  Menulis zip diagnostik dukungan yang dapat dibagikan alih-alih mencetak detail stabilitas.
 </ParamField>
 <ParamField path="--output <path>" type="string">
-  Jalur output untuk `--export`.
+  Jalur keluaran untuk `--export`.
 </ParamField>
 
 <AccordionGroup>
-  <Accordion title="Privasi dan perilaku bundle">
-    - Catatan menyimpan metadata operasional: nama event, hitungan, ukuran byte, pembacaan memori, state antrean/sesi, id persetujuan, nama saluran/Plugin, dan ringkasan sesi yang disunting. Catatan tidak menyimpan teks chat, body webhook, output alat, body request atau respons mentah, token, cookie, nilai rahasia, hostname, atau id sesi mentah. Tetapkan `diagnostics.enabled: false` untuk menonaktifkan perekam sepenuhnya.
-    - Pada exit fatal Gateway, timeout shutdown, dan kegagalan startup restart, OpenClaw menulis snapshot diagnostik yang sama ke `~/.openclaw/logs/stability/openclaw-stability-*.json` ketika perekam memiliki event. Periksa bundle terbaru dengan `openclaw gateway stability --bundle latest`; `--limit`, `--type`, dan `--since-seq` juga berlaku untuk output bundle.
+  <Accordion title="Perilaku privasi dan bundel">
+    - Rekaman mempertahankan metadata operasional: nama peristiwa, hitungan, ukuran byte, pembacaan memori, keadaan antrean/sesi, ID persetujuan, nama kanal/plugin, dan ringkasan sesi yang disunting. Rekaman tidak menyertakan teks obrolan, isi webhook, keluaran alat, isi permintaan/respons mentah, token, kuki, nilai rahasia, nama host, dan ID sesi mentah. Tetapkan `diagnostics.enabled: false` untuk menonaktifkan perekam sepenuhnya.
+    - Penghentian fatal Gateway, batas waktu pematian, dan kegagalan proses memulai saat mulai ulang menulis snapshot diagnostik yang sama ke `~/.openclaw/logs/stability/openclaw-stability-*.json` jika perekam memiliki peristiwa. Periksa bundel terbaru dengan `openclaw gateway stability --bundle latest`; `--limit`, `--type`, dan `--since-seq` juga berlaku untuk keluaran bundel.
 
   </Accordion>
 </AccordionGroup>
 
 ### `gateway diagnostics export`
 
-Tulis zip diagnostik lokal yang dirancang untuk dilampirkan ke laporan bug. Untuk model privasi dan isi bundle, lihat [Ekspor Diagnostik](/id/gateway/diagnostics).
+Menulis zip diagnostik lokal yang dirancang untuk laporan bug. Untuk model privasi dan isi bundel, lihat [Ekspor Diagnostik](/id/gateway/diagnostics).
 
 ```bash
 openclaw gateway diagnostics export
@@ -254,13 +251,13 @@ openclaw gateway diagnostics export --json
 ```
 
 <ParamField path="--output <path>" type="string">
-  Jalur zip keluaran. Default-nya adalah ekspor dukungan di bawah direktori status.
+  Jalur keluaran zip. Secara default menggunakan ekspor dukungan di bawah direktori status.
 </ParamField>
 <ParamField path="--log-lines <count>" type="number" default="5000">
   Jumlah maksimum baris log yang telah disanitasi untuk disertakan.
 </ParamField>
 <ParamField path="--log-bytes <bytes>" type="number" default="1000000">
-  Jumlah maksimum byte log untuk diperiksa.
+  Jumlah maksimum byte log yang akan diperiksa.
 </ParamField>
 <ParamField path="--url <url>" type="string">
   URL WebSocket Gateway untuk snapshot kesehatan.
@@ -278,16 +275,16 @@ openclaw gateway diagnostics export --json
   Lewati pencarian bundel stabilitas yang dipersistenkan.
 </ParamField>
 <ParamField path="--json" type="boolean">
-  Cetak jalur tertulis, ukuran, dan manifes sebagai JSON.
+  Cetak jalur yang ditulis, ukuran, dan manifes sebagai JSON.
 </ParamField>
 
-Ekspor berisi manifes, ringkasan Markdown, bentuk konfigurasi, detail konfigurasi yang telah disanitasi, ringkasan log yang telah disanitasi, snapshot status/kesehatan Gateway yang telah disanitasi, dan bundel stabilitas terbaru jika ada.
+Ekspor membundel: `manifest.json` (inventaris berkas), `summary.md` (ringkasan Markdown), `diagnostics.json` (ringkasan tingkat teratas untuk konfigurasi/log/penemuan/stabilitas/status/kesehatan), `config/sanitized.json`, `status/gateway-status.json`, `health/gateway-health.json`, `logs/openclaw-sanitized.jsonl`, dan `stability/latest.json` jika terdapat bundel.
 
-Ini dimaksudkan untuk dibagikan. Ekspor ini menyimpan detail operasional yang membantu debugging, seperti bidang log OpenClaw yang aman, nama subsistem, kode status, durasi, mode yang dikonfigurasi, port, id plugin, id penyedia, pengaturan fitur non-rahasia, dan pesan log operasional yang disunting. Ekspor ini menghilangkan atau menyunting teks obrolan, isi webhook, keluaran alat, kredensial, cookie, pengidentifikasi akun/pesan, teks prompt/instruksi, nama host, dan nilai rahasia. Ketika pesan bergaya LogTape terlihat seperti teks payload pengguna/obrolan/alat, ekspor hanya menyimpan bahwa sebuah pesan dihilangkan beserta jumlah byte-nya.
+Ekspor ini dirancang untuk dibagikan. Ekspor mempertahankan detail operasional yang berguna untuk pengawakutuan — kolom log yang aman, nama subsistem, kode status, durasi, mode yang dikonfigurasi, port, ID plugin/penyedia, pengaturan fitur nonrahasia, dan pesan log operasional yang disunting — serta menghilangkan atau menyunting teks percakapan, isi webhook, keluaran alat, kredensial, kuki, pengidentifikasi akun/pesan, teks prompt/instruksi, nama host, dan nilai rahasia. Ketika pesan log tampak seperti teks muatan pengguna/percakapan/alat (misalnya "pengguna berkata", "teks percakapan", "keluaran alat", "isi webhook"), ekspor hanya mempertahankan fakta bahwa sebuah pesan dihilangkan beserta jumlah byte-nya.
 
 ### `gateway status`
 
-`gateway status` menampilkan layanan Gateway (launchd/systemd/schtasks) plus pemeriksaan opsional untuk kemampuan konektivitas/autentikasi.
+Menampilkan layanan Gateway (launchd/systemd/schtasks) beserta pemeriksaan opsional konektivitas/autentikasi.
 
 ```bash
 openclaw gateway status
@@ -308,54 +305,47 @@ openclaw gateway status --require-rpc
   Batas waktu pemeriksaan.
 </ParamField>
 <ParamField path="--no-probe" type="boolean">
-  Lewati pemeriksaan konektivitas (tampilan layanan saja).
+  Lewati pemeriksaan konektivitas (tampilan khusus layanan).
 </ParamField>
 <ParamField path="--deep" type="boolean">
   Pindai juga layanan tingkat sistem.
 </ParamField>
 <ParamField path="--require-rpc" type="boolean">
-  Tingkatkan pemeriksaan konektivitas default menjadi pemeriksaan baca dan keluar dengan nilai non-nol ketika pemeriksaan baca tersebut gagal. Tidak dapat digabungkan dengan `--no-probe`.
+  Tingkatkan pemeriksaan konektivitas menjadi pemeriksaan baca dan keluar dengan kode bukan nol jika gagal. Tidak dapat digabungkan dengan `--no-probe`.
 </ParamField>
 
 <AccordionGroup>
-  <Accordion title="Status semantics">
-    - `gateway status` tetap tersedia untuk diagnostik meskipun konfigurasi CLI lokal hilang atau tidak valid.
-    - `gateway status` default membuktikan status layanan, koneksi WebSocket, dan kemampuan autentikasi yang terlihat saat handshake. Ini tidak membuktikan operasi baca/tulis/admin.
-    - Pemeriksaan diagnostik tidak memutasi autentikasi perangkat pertama kali: pemeriksaan ini menggunakan ulang token perangkat cache yang sudah ada jika tersedia, tetapi tidak membuat identitas perangkat CLI baru atau catatan pemasangan perangkat baca-saja hanya untuk memeriksa status.
-    - `gateway status` menyelesaikan SecretRefs autentikasi yang dikonfigurasi untuk autentikasi pemeriksaan jika memungkinkan.
-    - Jika SecretRef autentikasi yang diperlukan tidak terselesaikan di jalur perintah ini, `gateway status --json` melaporkan `rpc.authWarning` ketika konektivitas/autentikasi pemeriksaan gagal; teruskan `--token`/`--password` secara eksplisit atau selesaikan sumber rahasia terlebih dahulu.
-    - Jika pemeriksaan berhasil, peringatan auth-ref yang tidak terselesaikan ditekan untuk menghindari positif palsu.
-    - Ketika pemeriksaan diaktifkan, keluaran JSON menyertakan `gateway.version` saat Gateway yang berjalan melaporkannya; `--require-rpc` dapat kembali ke payload RPC `status.runtimeVersion` jika pemeriksaan handshake lanjutan tidak dapat menyediakan metadata versi.
-    - Gunakan `--require-rpc` dalam skrip dan otomatisasi ketika layanan yang mendengarkan saja tidak cukup dan Anda juga membutuhkan panggilan RPC cakupan baca dalam keadaan sehat.
-    - `--deep` menambahkan pemindaian upaya terbaik untuk instalasi launchd/systemd/schtasks tambahan. Ketika beberapa layanan mirip gateway terdeteksi, keluaran manusia mencetak petunjuk pembersihan dan memperingatkan bahwa sebagian besar pengaturan sebaiknya menjalankan satu gateway per mesin.
-    - `--deep` juga melaporkan handoff restart supervisor Gateway terbaru ketika proses layanan keluar dengan bersih untuk restart supervisor eksternal.
-    - `--deep` menjalankan validasi konfigurasi dalam mode sadar plugin (`pluginValidation: "full"`) dan menampilkan peringatan manifes plugin yang dikonfigurasi (misalnya metadata konfigurasi kanal yang hilang) sehingga pemeriksaan smoke instalasi dan pembaruan menangkapnya. `gateway status` default mempertahankan jalur baca-saja cepat yang melewati validasi plugin.
-    - Keluaran manusia menyertakan jalur log file yang terselesaikan plus snapshot jalur/validitas konfigurasi CLI-vs-layanan untuk membantu mendiagnosis drift profil atau state-dir.
+  <Accordion title="Semantik status">
+    - Tetap tersedia untuk diagnostik meskipun konfigurasi CLI lokal tidak ada atau tidak valid.
+    - Keluaran default membuktikan status layanan, koneksi WebSocket, dan kapabilitas autentikasi yang terlihat saat proses jabat tangan — bukan operasi baca/tulis/admin.
+    - Pemeriksaan tidak melakukan mutasi untuk autentikasi perangkat pertama kali: pemeriksaan menggunakan kembali token perangkat tersimpan yang sudah ada, tetapi tidak pernah membuat identitas perangkat CLI atau rekaman pemasangan hanya-baca baru sekadar untuk memeriksa status.
+    - Menyelesaikan SecretRef autentikasi yang dikonfigurasi untuk autentikasi pemeriksaan jika memungkinkan. Jika SecretRef yang diperlukan tidak terselesaikan, `--json` melaporkan `rpc.authWarning` ketika konektivitas/autentikasi pemeriksaan gagal; teruskan `--token`/`--password` secara eksplisit atau perbaiki sumber rahasianya. Peringatan autentikasi yang tidak terselesaikan disembunyikan setelah pemeriksaan berhasil.
+    - Keluaran JSON menyertakan `gateway.version` ketika Gateway yang berjalan melaporkannya; `--require-rpc` dapat beralih ke muatan RPC `status.runtimeVersion` jika pemeriksaan jabat tangan tidak dapat menyediakan metadata versi.
+    - Gunakan `--require-rpc` dalam skrip/otomasi ketika layanan yang mendengarkan saja tidak cukup dan RPC cakupan-baca juga harus sehat.
+    - `--deep` memindai pemasangan launchd/systemd/schtasks tambahan; ketika ditemukan beberapa layanan mirip Gateway, keluaran yang mudah dibaca manusia menampilkan petunjuk pembersihan (biasanya jalankan satu Gateway per mesin) dan melaporkan serah-terima mulai ulang supervisor terbaru jika relevan.
+    - `--deep` juga menjalankan validasi konfigurasi dalam mode sadar-plugin (`pluginValidation: "full"`) dan menampilkan peringatan manifes plugin (misalnya metadata konfigurasi kanal yang tidak ada). `gateway status` default mempertahankan jalur hanya-baca cepat yang melewati validasi plugin.
+    - Keluaran yang mudah dibaca manusia menyertakan jalur log berkas yang telah diselesaikan beserta jalur/validitas konfigurasi CLI dibandingkan layanan untuk membantu mendiagnosis penyimpangan profil atau direktori status.
 
   </Accordion>
-  <Accordion title="Linux systemd auth-drift checks">
-    - Pada instalasi systemd Linux, pemeriksaan drift autentikasi layanan membaca nilai `Environment=` dan `EnvironmentFile=` dari unit (termasuk `%h`, jalur yang dikutip, beberapa file, dan file `-` opsional).
-    - Pemeriksaan drift menyelesaikan SecretRefs `gateway.auth.token` menggunakan env runtime gabungan (env perintah layanan terlebih dahulu, lalu fallback env proses).
-    - Jika autentikasi token tidak aktif secara efektif (`gateway.auth.mode` eksplisit berupa `password`/`none`/`trusted-proxy`, atau mode tidak disetel saat kata sandi dapat menang dan tidak ada kandidat token yang dapat menang), pemeriksaan token-drift melewati resolusi token konfigurasi.
+  <Accordion title="Pemeriksaan penyimpangan autentikasi systemd Linux">
+    - Pemeriksaan penyimpangan autentikasi layanan membaca `Environment=` dan `EnvironmentFile=` dari unit (termasuk `%h`, jalur dalam tanda kutip, beberapa berkas, dan berkas opsional `-`).
+    - Menyelesaikan SecretRef `gateway.auth.token` menggunakan lingkungan runtime gabungan (lingkungan perintah layanan terlebih dahulu, lalu lingkungan proses sebagai alternatif).
+    - Pemeriksaan penyimpangan token melewati penyelesaian token konfigurasi ketika autentikasi token tidak aktif secara efektif (`gateway.auth.mode` secara eksplisit bernilai `password`/`none`/`trusted-proxy`, atau mode tidak ditetapkan ketika kata sandi dapat diprioritaskan dan tidak ada kandidat token yang dapat diprioritaskan).
 
   </Accordion>
 </AccordionGroup>
 
 ### `gateway probe`
 
-`gateway probe` adalah perintah "debug semuanya". Perintah ini selalu memeriksa:
+Perintah "awakutu semuanya". Perintah ini selalu memeriksa:
 
-- gateway remote yang Anda konfigurasi (jika disetel), dan
-- localhost (loopback) **meskipun remote dikonfigurasi**.
+- Gateway remote yang Anda konfigurasi (jika ditetapkan), dan
+- localhost (loopback), **meskipun remote dikonfigurasi**.
 
-Jika Anda meneruskan `--url`, target eksplisit tersebut ditambahkan sebelum keduanya. Keluaran manusia memberi label target sebagai:
-
-- `URL (explicit)`
-- `Remote (configured)` atau `Remote (configured, inactive)`
-- `Local loopback`
+Meneruskan `--url` akan menambahkan target eksplisit tersebut sebelum keduanya. Keluaran yang mudah dibaca manusia memberi label target `URL (eksplisit)`, `Remote (dikonfigurasi)` / `Remote (dikonfigurasi, tidak aktif)`, dan `Local loopback`.
 
 <Note>
-Jika beberapa target pemeriksaan dapat dijangkau, perintah ini mencetak semuanya. Tunnel SSH, URL TLS/proxy, dan URL remote yang dikonfigurasi semuanya dapat menunjuk ke gateway yang sama meskipun port transportnya berbeda; `multiple_gateways` disediakan untuk gateway yang dapat dijangkau dan berbeda atau ambigu identitasnya. Beberapa gateway didukung ketika Anda menggunakan profil terisolasi (misalnya bot penyelamat), tetapi sebagian besar instalasi tetap menjalankan satu gateway.
+Jika beberapa target pemeriksaan dapat dijangkau, semuanya dicetak. Terowongan SSH, URL TLS/proksi, dan URL remote yang dikonfigurasi dapat mengarah ke Gateway yang sama meskipun menggunakan port transportasi berbeda; `multiple_gateways` dikhususkan untuk Gateway yang dapat dijangkau tetapi berbeda atau identitasnya ambigu. Menjalankan beberapa Gateway didukung untuk profil yang terisolasi (misalnya bot pemulihan), tetapi sebagian besar pemasangan menjalankan satu Gateway.
 </Note>
 
 ```bash
@@ -365,56 +355,49 @@ openclaw gateway probe --port 18789
 ```
 
 <ParamField path="--port <port>" type="number">
-  Gunakan port ini untuk target pemeriksaan local loopback dan port remote tunnel SSH. Tanpa `--url`, ini memilih target local loopback, bukan URL lingkungan gateway yang dikonfigurasi, port lingkungan, atau target remote.
+  Gunakan port ini untuk target pemeriksaan local loopback dan port remote terowongan SSH. Tanpa `--url`, opsi ini hanya memilih target local loopback, bukan URL lingkungan Gateway yang dikonfigurasi, port lingkungan, atau target remote.
 </ParamField>
 
 <AccordionGroup>
-  <Accordion title="Interpretation">
+  <Accordion title="Interpretasi">
     - `Reachable: yes` berarti setidaknya satu target menerima koneksi WebSocket.
-    - `Capability: read-only|write-capable|admin-capable|pairing-pending|connect-only` melaporkan apa yang dapat dibuktikan pemeriksaan tentang autentikasi. Ini terpisah dari keterjangkauan.
-    - `Read probe: ok` berarti panggilan RPC detail cakupan baca (`health`/`status`/`system-presence`/`config.get`) juga berhasil.
-    - `Read probe: limited - missing scope: operator.read` berarti koneksi berhasil tetapi RPC cakupan baca terbatas. Ini dilaporkan sebagai keterjangkauan **terdegradasi**, bukan kegagalan penuh.
-    - `Read probe: failed` setelah `Connect: ok` berarti Gateway menerima koneksi WebSocket, tetapi diagnostik baca lanjutan kehabisan waktu atau gagal. Ini juga merupakan keterjangkauan **terdegradasi**, bukan Gateway yang tidak dapat dijangkau.
-    - Seperti `gateway status`, pemeriksaan menggunakan ulang autentikasi perangkat cache yang sudah ada tetapi tidak membuat identitas perangkat pertama kali atau status pemasangan.
-    - Kode keluar non-nol hanya ketika tidak ada target yang diperiksa dapat dijangkau.
+    - `Capability: read-only|write-capable|admin-capable|pairing-pending|connect-only` melaporkan hal yang dapat dibuktikan pemeriksaan tentang autentikasi, terpisah dari keterjangkauan.
+    - `Read probe: ok` berarti panggilan RPC detail cakupan-baca (`health`/`status`/`system-presence`/`config.get`) juga berhasil.
+    - `Read probe: limited - missing scope: operator.read` berarti koneksi berhasil tetapi RPC cakupan-baca terbatas. Dilaporkan sebagai keterjangkauan **menurun**, bukan kegagalan penuh.
+    - `Read probe: failed` setelah `Connect: ok` berarti WebSocket terhubung tetapi diagnostik baca lanjutan mencapai batas waktu atau gagal — juga **menurun**, bukan tidak terjangkau.
+    - Seperti `gateway status`, pemeriksaan menggunakan kembali autentikasi perangkat tersimpan yang ada, tetapi tidak membuat identitas perangkat atau status pemasangan pertama kali.
+    - Kode keluar bukan nol hanya ketika tidak ada target yang diperiksa dapat dijangkau.
 
   </Accordion>
-  <Accordion title="JSON output">
-    Tingkat atas:
+  <Accordion title="Keluaran JSON">
+    Tingkat teratas:
 
     - `ok`: setidaknya satu target dapat dijangkau.
-    - `degraded`: setidaknya satu target menerima koneksi tetapi tidak menyelesaikan diagnostik RPC detail penuh.
-    - `capability`: kemampuan terbaik yang terlihat di seluruh target yang dapat dijangkau (`read_only`, `write_capable`, `admin_capable`, `pairing_pending`, `connected_no_operator_scope`, atau `unknown`).
-    - `primaryTargetId`: target terbaik untuk diperlakukan sebagai pemenang aktif dalam urutan ini: URL eksplisit, tunnel SSH, remote yang dikonfigurasi, lalu local loopback.
-    - `warnings[]`: catatan peringatan upaya terbaik dengan `code`, `message`, dan `targetIds` opsional.
+    - `degraded`: setidaknya satu target menerima koneksi tetapi tidak menyelesaikan diagnostik RPC detail sepenuhnya.
+    - `capability`: kapabilitas terbaik yang terlihat di antara target yang dapat dijangkau (`read_only`, `write_capable`, `admin_capable`, `pairing_pending`, `connected_no_operator_scope`, atau `unknown`).
+    - `primaryTargetId`: target terbaik yang dianggap sebagai pemenang aktif, dengan urutan: URL eksplisit, terowongan SSH, remote yang dikonfigurasi, local loopback.
+    - `warnings[]`: rekaman peringatan upaya terbaik dengan `code`, `message`, dan `targetIds` opsional.
     - `network`: petunjuk URL local loopback/tailnet yang diturunkan dari konfigurasi saat ini dan jaringan host.
-    - `discovery.timeoutMs` dan `discovery.count`: anggaran/jumlah hasil discovery aktual yang digunakan untuk pass pemeriksaan ini.
+    - `discovery.timeoutMs` / `discovery.count`: anggaran/jumlah hasil penemuan aktual yang digunakan untuk tahap pemeriksaan ini.
 
-    Per target (`targets[].connect`):
+    Per target (`targets[].connect`): `ok` (klasifikasi keterjangkauan + kondisi menurun), `rpcOk` (keberhasilan RPC detail penuh), `scopeLimited` (RPC detail gagal karena cakupan operator tidak ada).
 
-    - `ok`: keterjangkauan setelah koneksi + klasifikasi terdegradasi.
-    - `rpcOk`: keberhasilan RPC detail penuh.
-    - `scopeLimited`: RPC detail gagal karena cakupan operator hilang.
-
-    Per target (`targets[].auth`):
-
-    - `role`: peran autentikasi yang dilaporkan dalam `hello-ok` jika tersedia.
-    - `scopes`: cakupan yang diberikan yang dilaporkan dalam `hello-ok` jika tersedia.
-    - `capability`: klasifikasi kemampuan autentikasi yang ditampilkan untuk target tersebut.
+    Per target (`targets[].auth`): `role` dan `scopes` yang dilaporkan dalam `hello-ok` jika tersedia, beserta klasifikasi `capability` yang ditampilkan.
 
   </Accordion>
-  <Accordion title="Common warning codes">
-    - `ssh_tunnel_failed`: penyiapan tunnel SSH gagal; perintah kembali ke pemeriksaan langsung.
-    - `multiple_gateways`: identitas gateway yang berbeda dapat dijangkau, atau OpenClaw tidak dapat membuktikan target yang dapat dijangkau adalah gateway yang sama. Tunnel SSH, URL proxy, atau URL remote yang dikonfigurasi ke gateway yang sama tidak memicu peringatan ini.
+  <Accordion title="Kode peringatan umum">
+    - `ssh_tunnel_failed`: Penyiapan terowongan SSH gagal; perintah beralih ke pemeriksaan langsung.
+    - `multiple_gateways`: Identitas Gateway yang berbeda dapat dijangkau, atau OpenClaw tidak dapat membuktikan bahwa target yang dapat dijangkau merupakan Gateway yang sama. Terowongan SSH, URL proksi, atau URL remote yang dikonfigurasi ke Gateway yang sama tidak memicu ini.
     - `auth_secretref_unresolved`: SecretRef autentikasi yang dikonfigurasi tidak dapat diselesaikan untuk target yang gagal.
-    - `probe_scope_limited`: koneksi WebSocket berhasil, tetapi pemeriksaan baca dibatasi oleh `operator.read` yang hilang.
+    - `probe_scope_limited`: Koneksi WebSocket berhasil, tetapi pemeriksaan baca dibatasi karena `operator.read` tidak ada.
+    - `local_tls_runtime_unavailable`: TLS Gateway lokal diaktifkan tetapi OpenClaw tidak dapat memuat sidik jari sertifikat lokal.
 
   </Accordion>
 </AccordionGroup>
 
-#### Remote melalui SSH (paritas aplikasi Mac)
+#### Remote melalui SSH (setara dengan aplikasi Mac)
 
-Mode "Remote over SSH" aplikasi macOS menggunakan penerusan port lokal sehingga gateway remote (yang mungkin hanya diikat ke loopback) menjadi dapat dijangkau di `ws://127.0.0.1:<port>`.
+Mode "Remote over SSH" pada aplikasi macOS menggunakan penerusan port lokal agar Gateway remote khusus-loopback dapat dijangkau di `ws://127.0.0.1:<port>`.
 
 Padanan CLI:
 
@@ -423,19 +406,16 @@ openclaw gateway probe --ssh user@gateway-host
 ```
 
 <ParamField path="--ssh <target>" type="string">
-  `user@host` atau `user@host:port` (port default ke `22`).
+  `user@host` atau `user@host:port` (port secara default adalah `22`).
 </ParamField>
 <ParamField path="--ssh-identity <path>" type="string">
-  File identitas.
+  Berkas identitas.
 </ParamField>
 <ParamField path="--ssh-auto" type="boolean">
-  Pilih host gateway pertama yang ditemukan sebagai target SSH dari endpoint discovery yang terselesaikan (`local.` plus domain area-luas yang dikonfigurasi, jika ada). Petunjuk hanya TXT diabaikan.
+  Pilih host Gateway pertama yang ditemukan sebagai target SSH dari titik akhir penemuan yang telah diselesaikan (`local.` beserta domain area luas yang dikonfigurasi, jika ada). Petunjuk khusus TXT diabaikan.
 </ParamField>
 
-Konfigurasi (opsional, digunakan sebagai default):
-
-- `gateway.remote.sshTarget`
-- `gateway.remote.sshIdentity`
+Default konfigurasi (opsional): `gateway.remote.sshTarget`, `gateway.remote.sshIdentity`.
 
 ### `gateway call <method>`
 
@@ -443,11 +423,11 @@ Pembantu RPC tingkat rendah.
 
 ```bash
 openclaw gateway call status
-openclaw gateway call logs.tail --params '{"sinceMs": 60000}'
+openclaw gateway call logs.tail --params '{"limit": 200}'
 ```
 
 <ParamField path="--params <json>" type="string" default="{}">
-  String objek JSON untuk params.
+  String objek JSON untuk parameter.
 </ParamField>
 <ParamField path="--url <url>" type="string">
   URL WebSocket Gateway.
@@ -458,18 +438,18 @@ openclaw gateway call logs.tail --params '{"sinceMs": 60000}'
 <ParamField path="--password <password>" type="string">
   Kata sandi Gateway.
 </ParamField>
-<ParamField path="--timeout <ms>" type="number">
+<ParamField path="--timeout <ms>" type="number" default="10000">
   Anggaran batas waktu.
 </ParamField>
 <ParamField path="--expect-final" type="boolean">
-  Terutama untuk RPC bergaya agen yang mengalirkan peristiwa perantara sebelum payload final.
+  Terutama untuk RPC bergaya agen yang mengalirkan peristiwa perantara sebelum muatan akhir.
 </ParamField>
 <ParamField path="--json" type="boolean">
   Keluaran JSON yang dapat dibaca mesin.
 </ParamField>
 
 <Note>
-`--params` harus berupa JSON yang valid.
+`--params` harus berupa JSON yang valid, dan setiap metode memvalidasi bentuk parameternya sendiri (kolom tambahan/salah nama ditolak).
 </Note>
 
 ## Kelola layanan Gateway
@@ -482,11 +462,9 @@ openclaw gateway restart
 openclaw gateway uninstall
 ```
 
-### Instal dengan wrapper
+### Pasang dengan pembungkus
 
-Gunakan `--wrapper` saat layanan terkelola harus dimulai melalui executable lain, misalnya shim
-pengelola rahasia atau helper run-as. Wrapper menerima argumen Gateway normal dan
-bertanggung jawab untuk pada akhirnya menjalankan exec `openclaw` atau Node dengan argumen tersebut.
+Gunakan `--wrapper` ketika layanan terkelola harus dimulai melalui program lain yang dapat dieksekusi, misalnya shim pengelola rahasia atau pembantu untuk menjalankan sebagai pengguna tertentu. Pembungkus menerima argumen Gateway normal dan bertanggung jawab untuk pada akhirnya mengeksekusi `openclaw` atau Node dengan argumen tersebut.
 
 ```bash
 cat > ~/.local/bin/openclaw-doppler <<'EOF'
@@ -500,17 +478,14 @@ openclaw gateway install --wrapper ~/.local/bin/openclaw-doppler --force
 openclaw gateway restart
 ```
 
-Anda juga dapat menetapkan wrapper melalui environment. `gateway install` memvalidasi bahwa path tersebut adalah
-file executable, menulis wrapper ke `ProgramArguments` layanan, dan mempertahankan
-`OPENCLAW_WRAPPER` di environment layanan untuk reinstall paksa, pembaruan, dan perbaikan doctor
-di kemudian hari.
+Anda juga dapat mengatur pembungkus melalui lingkungan. `gateway install` memvalidasi bahwa jalur tersebut adalah berkas yang dapat dieksekusi, menulis pembungkus ke dalam `ProgramArguments` layanan, dan mempertahankan `OPENCLAW_WRAPPER` di lingkungan layanan untuk penginstalan ulang paksa, pembaruan, dan perbaikan oleh doctor di kemudian hari.
 
 ```bash
 OPENCLAW_WRAPPER="$HOME/.local/bin/openclaw-doppler" openclaw gateway install --force
 openclaw doctor
 ```
 
-Untuk menghapus wrapper yang tersimpan secara persisten, kosongkan `OPENCLAW_WRAPPER` saat memasang ulang:
+Untuk menghapus pembungkus yang dipertahankan, kosongkan `OPENCLAW_WRAPPER` saat menginstal ulang:
 
 ```bash
 OPENCLAW_WRAPPER= openclaw gateway install --force
@@ -518,52 +493,40 @@ openclaw gateway restart
 ```
 
 <AccordionGroup>
-  <Accordion title="Command options">
+  <Accordion title="Opsi perintah">
     - `gateway status`: `--url`, `--token`, `--password`, `--timeout`, `--no-probe`, `--require-rpc`, `--deep`, `--json`
-    - `gateway install`: `--port`, `--runtime <node|bun>`, `--token`, `--wrapper <path>`, `--force`, `--json`
+    - `gateway install`: `--port`, `--runtime <node|bun>` (bawaan: `node`), `--token`, `--wrapper <path>`, `--force`, `--json`
     - `gateway restart`: `--safe`, `--skip-deferral`, `--force`, `--wait <duration>`, `--json`
     - `gateway uninstall|start`: `--json`
     - `gateway stop`: `--disable`, `--json`
 
   </Accordion>
-  <Accordion title="Lifecycle behavior">
-    - Gunakan `gateway restart` untuk memulai ulang layanan terkelola. Jangan merangkai `gateway stop` dan `gateway start` sebagai pengganti mulai ulang.
-    - Di macOS, `gateway stop` menggunakan `launchctl bootout` secara default, yang menghapus LaunchAgent dari sesi boot saat ini tanpa menyimpan penonaktifan secara persisten — pemulihan otomatis KeepAlive tetap aktif untuk crash mendatang dan `gateway start` mengaktifkan ulang dengan bersih tanpa `launchctl enable` manual. Berikan `--disable` untuk menekan KeepAlive dan RunAtLoad secara persisten agar gateway tidak muncul ulang sampai `gateway start` eksplisit berikutnya; gunakan ini ketika penghentian manual harus bertahan melewati reboot atau mulai ulang sistem.
-    - `gateway restart --safe` meminta Gateway yang sedang berjalan untuk memeriksa awal pekerjaan aktif dan menjadwalkan satu mulai ulang tergabung setelah pekerjaan aktif selesai. Mulai ulang aman default menunggu pekerjaan aktif hingga `gateway.reload.deferralTimeoutMs` yang dikonfigurasi (default 5 menit); ketika batas waktu itu habis, mulai ulang dipaksa. Atur `gateway.reload.deferralTimeoutMs` ke `0` untuk penantian aman tanpa batas yang tidak pernah memaksa. `--safe` tidak dapat digabungkan dengan `--force` atau `--wait`.
-    - `gateway restart --wait 30s` menimpa batas waktu drain mulai ulang yang dikonfigurasi untuk mulai ulang tersebut. Angka tanpa satuan adalah milidetik; satuan seperti `s`, `m`, dan `h` diterima. `--wait 0` menunggu tanpa batas.
-    - `gateway restart --safe --skip-deferral` menjalankan mulai ulang aman yang sadar OpenClaw tetapi melewati gerbang penangguhan sehingga Gateway langsung memancarkan mulai ulang meskipun pemblokir dilaporkan. Jalan keluar operator untuk penangguhan task-run yang macet; memerlukan `--safe`.
-    - `gateway restart --force` melewati drain pekerjaan aktif dan langsung memulai ulang. Gunakan ini ketika operator sudah memeriksa pemblokir tugas yang tercantum dan ingin gateway kembali sekarang.
-    - Perintah siklus hidup menerima `--json` untuk scripting.
+  <Accordion title="Perilaku siklus hidup">
+    - Gunakan `gateway restart` untuk memulai ulang layanan terkelola. Jangan merangkai `gateway stop` dan `gateway start` sebagai pengganti pemulaian ulang.
+    - Di macOS, `gateway stop` menggunakan `launchctl bootout` secara bawaan, yang menghapus LaunchAgent dari sesi boot saat ini tanpa mempertahankan status nonaktif — pemulihan otomatis KeepAlive tetap aktif untuk kerusakan mendatang dan `gateway start` mengaktifkannya kembali dengan benar tanpa `launchctl enable` manual. Berikan `--disable` untuk menonaktifkan KeepAlive dan RunAtLoad secara permanen agar Gateway tidak aktif kembali hingga `gateway start` berikutnya dijalankan secara eksplisit; gunakan ini jika penghentian manual harus tetap berlaku setelah boot ulang.
+    - Perintah siklus hidup menerima `--json` untuk pembuatan skrip.
 
   </Accordion>
-  <Accordion title="Auth and SecretRefs at install time">
-    - Ketika auth token memerlukan token dan `gateway.auth.token` dikelola SecretRef, `gateway install` memvalidasi bahwa SecretRef dapat di-resolve tetapi tidak menyimpan token yang di-resolve ke dalam metadata lingkungan layanan.
-    - Jika auth token memerlukan token dan SecretRef token yang dikonfigurasi tidak terselesaikan, pemasangan gagal tertutup alih-alih menyimpan plaintext fallback.
-    - Untuk auth kata sandi pada `gateway run`, pilih `OPENCLAW_GATEWAY_PASSWORD`, `--password-file`, atau `gateway.auth.password` yang didukung SecretRef daripada `--password` inline.
-    - Dalam mode auth yang diinferensikan, `OPENCLAW_GATEWAY_PASSWORD` yang hanya ada di shell tidak melonggarkan persyaratan token pemasangan; gunakan konfigurasi tahan lama (`gateway.auth.password` atau config `env`) saat memasang layanan terkelola.
-    - Jika `gateway.auth.token` dan `gateway.auth.password` sama-sama dikonfigurasi dan `gateway.auth.mode` belum diatur, pemasangan diblokir sampai mode diatur secara eksplisit.
+  <Accordion title="Autentikasi dan SecretRef saat penginstalan">
+    - Ketika autentikasi token memerlukan token dan `gateway.auth.token` dikelola oleh SecretRef, `gateway install` memvalidasi bahwa SecretRef dapat diuraikan, tetapi tidak mempertahankan token yang telah diuraikan ke dalam metadata lingkungan layanan.
+    - Jika autentikasi token memerlukan token dan SecretRef token yang dikonfigurasi tidak dapat diuraikan, penginstalan gagal secara tertutup alih-alih mempertahankan teks biasa cadangan.
+    - Untuk autentikasi kata sandi pada `gateway run`, utamakan `OPENCLAW_GATEWAY_PASSWORD`, `--password-file`, atau `gateway.auth.password` yang didukung SecretRef daripada `--password` sebaris.
+    - Dalam mode autentikasi yang disimpulkan, `OPENCLAW_GATEWAY_PASSWORD` yang hanya tersedia di shell tidak melonggarkan persyaratan token penginstalan; gunakan konfigurasi persisten (`gateway.auth.password` atau `env` konfigurasi) saat menginstal layanan terkelola.
+    - Jika `gateway.auth.token` dan `gateway.auth.password` keduanya dikonfigurasi dan `gateway.auth.mode` belum diatur, penginstalan diblokir hingga mode diatur secara eksplisit.
 
   </Accordion>
 </AccordionGroup>
 
-## Temukan gateway (Bonjour)
+## Menemukan Gateway (Bonjour)
 
-`gateway discover` memindai beacon Gateway (`_openclaw-gw._tcp`).
+`gateway discover` memindai suar Gateway (`_openclaw-gw._tcp`).
 
 - DNS-SD multicast: `local.`
-- DNS-SD unicast (Wide-Area Bonjour): pilih domain (contoh: `openclaw.internal.`) dan siapkan DNS terpisah + server DNS; lihat [Bonjour](/id/gateway/bonjour).
+- DNS-SD unicast (Bonjour area luas): pilih domain (contoh: `openclaw.internal.`) dan siapkan DNS terpisah + server DNS; lihat [Bonjour](/id/gateway/bonjour).
 
-Hanya Gateway dengan penemuan Bonjour yang diaktifkan (default) yang mengiklankan beacon.
+Hanya Gateway dengan penemuan Bonjour yang diaktifkan (bawaan) yang menyiarkan suar.
 
-Record penemuan area luas dapat menyertakan petunjuk TXT berikut:
-
-- `role` (petunjuk peran Gateway)
-- `transport` (petunjuk transport, mis. `gateway`)
-- `gatewayPort` (port WebSocket, biasanya `18789`)
-- `sshPort` (hanya mode penemuan penuh; klien menetapkan target SSH default ke `22` saat ini tidak ada)
-- `tailnetDns` (nama host MagicDNS, saat tersedia)
-- `gatewayTls` / `gatewayTlsSha256` (TLS diaktifkan + sidik jari sertifikat)
-- `cliPath` (hanya mode penemuan penuh)
+Petunjuk TXT pada setiap suar: `role` (petunjuk peran Gateway), `transport` (petunjuk transportasi, misalnya `gateway`), `gatewayPort` (port WebSocket, biasanya `18789`), `tailnetDns` (nama host MagicDNS, jika tersedia), `gatewayTls` / `gatewayTlsSha256` (TLS diaktifkan + sidik jari sertifikat). `sshPort` dan `cliPath` hanya dipublikasikan dalam mode penemuan penuh (`discovery.mdns.mode: "full"`; bawaannya adalah `"minimal"`, yang tidak menyertakannya — klien kemudian menggunakan port `22` sebagai bawaan target SSH).
 
 ### `gateway discover`
 
@@ -572,10 +535,10 @@ openclaw gateway discover
 ```
 
 <ParamField path="--timeout <ms>" type="number" default="2000">
-  Batas waktu per perintah (telusuri/resolve).
+  Batas waktu per perintah (telusuri/uraikan).
 </ParamField>
 <ParamField path="--json" type="boolean">
-  Keluaran yang dapat dibaca mesin (juga menonaktifkan gaya/spinner).
+  Keluaran yang dapat dibaca mesin (juga menonaktifkan gaya/indikator pemuatan).
 </ParamField>
 
 Contoh:
@@ -586,13 +549,13 @@ openclaw gateway discover --json | jq '.beacons[].wsUrl'
 ```
 
 <Note>
-- CLI memindai `local.` ditambah domain area luas yang dikonfigurasi saat ada yang diaktifkan.
-- `wsUrl` dalam keluaran JSON diturunkan dari endpoint layanan yang di-resolve, bukan dari petunjuk khusus TXT seperti `lanHost` atau `tailnetDns`.
-- Pada mDNS `local.` dan DNS-SD area luas, `sshPort` dan `cliPath` hanya dipublikasikan saat `discovery.mdns.mode` adalah `full`.
+- Memindai `local.` beserta domain area luas yang dikonfigurasi jika diaktifkan.
+- `wsUrl` dalam keluaran JSON berasal dari titik akhir layanan yang telah diuraikan, bukan dari petunjuk khusus TXT seperti `lanHost` atau `tailnetDns`.
+- `discovery.mdns.mode` mengendalikan publikasi `sshPort`/`cliPath` pada mDNS `local.` dan DNS-SD area luas (lihat di atas).
 
 </Note>
 
 ## Terkait
 
 - [Referensi CLI](/id/cli)
-- [Runbook Gateway](/id/gateway)
+- [Panduan operasional Gateway](/id/gateway)

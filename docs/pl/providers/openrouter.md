@@ -1,24 +1,25 @@
 ---
 read_when:
-    - Chcesz jednego klucza API dla wielu LLM-ów
-    - Chcesz uruchamiać modele przez OpenRouter w OpenClaw
+    - Chcesz używać jednego klucza API do wielu modeli LLM
+    - Chcesz uruchamiać modele za pośrednictwem OpenRouter w OpenClaw
     - Chcesz używać OpenRouter do generowania obrazów
-    - Chcesz używać OpenRouter do generowania muzyki
+    - Chcesz użyć OpenRouter do generowania muzyki
     - Chcesz używać OpenRouter do generowania wideo
-summary: Korzystaj z ujednoliconego API OpenRouter, aby uzyskać dostęp do wielu modeli w OpenClaw
+summary: Używaj ujednoliconego API OpenRouter, aby uzyskać dostęp do wielu modeli w OpenClaw
 title: OpenRouter
 x-i18n:
-    generated_at: "2026-07-03T10:02:47Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:30:53Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ca36f2a7afd35ea4d276f61ded28524aed7d15715b29eea9aaac0ac6e4abab40
+    source_hash: 3047a4da1727db1463d77fcc566231b528e2c34cc64eccaa36827e2927cc60a7
     source_path: providers/openrouter.md
     workflow: 16
 ---
 
-OpenRouter udostępnia **ujednolicone API**, które kieruje żądania do wielu modeli za jednym
-endpointem i kluczem API. Jest zgodne z OpenAI, więc większość SDK OpenAI działa po zmianie bazowego URL-a.
+OpenRouter kieruje żądania do wielu modeli za pośrednictwem jednego API i jednego klucza. Jest
+zgodny z OpenAI, dlatego OpenClaw komunikuje się z nim za pomocą tego samego
+transportu w stylu `openai-completions`, który jest używany w przypadku innych dostawców proxy.
 
 ## Pierwsze kroki
 
@@ -30,13 +31,13 @@ endpointem i kluczem API. Jest zgodne z OpenAI, więc większość SDK OpenAI dz
         openclaw onboard --auth-choice openrouter-oauth
         ```
 
-        OpenClaw otwiera przepływ logowania OpenRouter w przeglądarce, wymienia kod
-        PKCE na klucz API OpenRouter i zapisuje ten klucz w domyślnym profilu
-        uwierzytelniania OpenRouter. Na hostach zdalnych/bezgłowych OpenClaw wypisuje
-        URL logowania i prosi o wklejenie URL-a przekierowania po zalogowaniu.
+        OpenClaw otwiera w przeglądarce proces logowania OpenRouter (PKCE), wymienia
+        kod na klucz API OpenRouter i zapisuje go w domyślnym
+        profilu uwierzytelniania OpenRouter. Na hostach zdalnych lub bez interfejsu graficznego OpenClaw wyświetla
+        adres URL logowania i prosi o wklejenie adresu URL przekierowania po zalogowaniu.
       </Step>
       <Step title="(Opcjonalnie) Przełącz na konkretny model">
-        Wdrażanie domyślnie używa `openrouter/auto`. Konkretny model możesz wybrać później:
+        Domyślnym modelem podczas wdrażania jest `openrouter/auto`. Konkretny model możesz wybrać później:
 
         ```bash
         openclaw models set openrouter/<provider>/<model>
@@ -49,7 +50,7 @@ endpointem i kluczem API. Jest zgodne z OpenAI, więc większość SDK OpenAI dz
   <Tab title="Klucz API">
     <Steps>
       <Step title="Uzyskaj klucz API">
-        Utwórz klucz API pod adresem [openrouter.ai/keys](https://openrouter.ai/keys).
+        Utwórz klucz API na stronie [openrouter.ai/keys](https://openrouter.ai/keys).
       </Step>
       <Step title="Uruchom wdrażanie z kluczem API">
         ```bash
@@ -57,7 +58,7 @@ endpointem i kluczem API. Jest zgodne z OpenAI, więc większość SDK OpenAI dz
         ```
       </Step>
       <Step title="(Opcjonalnie) Przełącz na konkretny model">
-        Wdrażanie domyślnie używa `openrouter/auto`. Konkretny model możesz wybrać później:
+        Domyślnym modelem podczas wdrażania jest `openrouter/auto`. Konkretny model możesz wybrać później:
 
         ```bash
         openclaw models set openrouter/<provider>/<model>
@@ -85,22 +86,26 @@ endpointem i kluczem API. Jest zgodne z OpenAI, więc większość SDK OpenAI dz
 ## Odwołania do modeli
 
 <Note>
-Odwołania do modeli mają wzorzec `openrouter/<provider>/<model>`. Pełną listę
-dostępnych dostawców i modeli znajdziesz w [/concepts/model-providers](/pl/concepts/model-providers).
+Odwołania do modeli mają postać `openrouter/<provider>/<model>`. Pełną listę
+dostępnych dostawców i modeli znajdziesz w sekcji [/concepts/model-providers](/pl/concepts/model-providers).
 </Note>
 
-Dołączone przykłady awaryjne:
+Wbudowane modele rezerwowe używane, gdy dynamiczne wykrywanie katalogu jest niedostępne:
 
-| Odwołanie do modelu              | Uwagi                              |
-| --------------------------------- | ---------------------------------- |
-| `openrouter/auto`                 | Automatyczne trasowanie OpenRouter |
-| `openrouter/openrouter/fusion`    | Router OpenRouter Fusion           |
-| `openrouter/moonshotai/kimi-k2.6` | Kimi K2.6 przez MoonshotAI         |
-| `openrouter/moonshotai/kimi-k2.5` | Kimi K2.5 przez MoonshotAI         |
+| Odwołanie do modelu               | Uwagi                          |
+| --------------------------------- | ------------------------------ |
+| `openrouter/auto`                 | Automatyczne kierowanie OpenRouter |
+| `openrouter/moonshotai/kimi-k2.6` | Kimi K2.6 przez MoonshotAI     |
+| `openrouter/moonshotai/kimi-k2.5` | Kimi K2.5 przez MoonshotAI     |
+
+Każde inne odwołanie `openrouter/<provider>/<model>`, w tym
+`openrouter/openrouter/fusion` (zobacz [router Fusion](#fusion-router)), jest rozpoznawane
+dynamicznie na podstawie aktualnego katalogu modeli OpenRouter.
 
 ## Generowanie obrazów
 
-OpenRouter może także obsługiwać narzędzie `image_generate`. Użyj modelu obrazów OpenRouter w `agents.defaults.imageGenerationModel`:
+OpenRouter może obsługiwać narzędzie `image_generate`. Ustaw model obrazów OpenRouter
+w `agents.defaults.imageGenerationModel`:
 
 ```json5
 {
@@ -116,11 +121,18 @@ OpenRouter może także obsługiwać narzędzie `image_generate`. Użyj modelu o
 }
 ```
 
-OpenClaw wysyła żądania obrazów do API obrazów chat completions OpenRouter z `modalities: ["image", "text"]`. Modele obrazów Gemini otrzymują obsługiwane wskazówki `aspectRatio` i `resolution` przez `image_config` OpenRouter. Użyj `agents.defaults.imageGenerationModel.timeoutMs` dla wolniejszych modeli obrazów OpenRouter; parametr `timeoutMs` pojedynczego wywołania narzędzia `image_generate` nadal ma pierwszeństwo.
+OpenClaw wysyła żądania generowania obrazów do API obrazów chat-completions OpenRouter z
+`modalities: ["image", "text"]`. Modele obrazów Gemini otrzymują dodatkowo
+wskazówki `aspectRatio` i `resolution` za pośrednictwem `image_config` OpenRouter;
+inne modele obrazów ich nie otrzymują. W przypadku wolniejszych modeli użyj
+`agents.defaults.imageGenerationModel.timeoutMs`; wartość `timeoutMs` dla pojedynczego wywołania
+narzędzia `image_generate` nadal ma pierwszeństwo.
 
-## Generowanie wideo
+## Generowanie filmów
 
-OpenRouter może także obsługiwać narzędzie `video_generate` przez swoje asynchroniczne API `/videos`. Użyj modelu wideo OpenRouter w `agents.defaults.videoGenerationModel`:
+OpenRouter może obsługiwać narzędzie `video_generate` za pośrednictwem asynchronicznego
+API `/videos`. Ustaw model wideo OpenRouter w
+`agents.defaults.videoGenerationModel`:
 
 ```json5
 {
@@ -135,20 +147,19 @@ OpenRouter może także obsługiwać narzędzie `video_generate` przez swoje asy
 }
 ```
 
-OpenClaw przesyła zadania tekst-na-wideo i obraz-na-wideo do OpenRouter, odpytuje
-zwrócony `polling_url` i pobiera ukończone wideo z
-`unsigned_urls` OpenRouter albo z udokumentowanego endpointu treści zadania.
-Obrazy referencyjne są domyślnie wysyłane jako obrazy pierwszej/ostatniej klatki; obrazy
-oznaczone `reference_image` są wysyłane jako referencje wejściowe OpenRouter. Dołączona
-domyślna wartość `google/veo-3.1-fast` deklaruje obecnie obsługiwane czasy trwania 4/6/8
-sekund, rozdzielczości `720P`/`1080P` oraz proporcje obrazu `16:9`/`9:16`.
-Wideo-na-wideo nie jest zarejestrowane dla OpenRouter, ponieważ nadrzędne
-API generowania wideo obecnie przyjmuje tekst i referencje obrazów.
+OpenClaw przesyła zadania generowania filmu z tekstu i obrazu, odpytuje zwrócony
+`polling_url`, a następnie pobiera gotowy film z `unsigned_urls` OpenRouter
+lub z punktu końcowego zawartości zadania. Obrazy referencyjne są domyślnie używane jako
+pierwsza lub ostatnia klatka; obrazy oznaczone jako `reference_image` są zamiast tego wysyłane
+jako referencje wejściowe. Domyślny, wbudowany model `google/veo-3.1-fast` obsługuje czas trwania
+4/6/8 sekund, rozdzielczości `720P`/`1080P` oraz proporcje obrazu `16:9`/`9:16`.
+Generowanie filmu na podstawie filmu nie jest obsługiwane: nadrzędne API akceptuje wyłącznie tekst
+i obrazy referencyjne.
 
 ## Generowanie muzyki
 
-OpenRouter może także obsługiwać narzędzie `music_generate` przez wyjście audio
-chat completions. Użyj modelu audio OpenRouter w
+OpenRouter może obsługiwać narzędzie `music_generate` za pośrednictwem dźwięku wyjściowego
+chat-completions. Ustaw model audio OpenRouter w
 `agents.defaults.musicGenerationModel`:
 
 ```json5
@@ -165,17 +176,18 @@ chat completions. Użyj modelu audio OpenRouter w
 }
 ```
 
-Dołączony dostawca muzyki OpenRouter domyślnie używa
-`google/lyria-3-pro-preview` i udostępnia także
-`google/lyria-3-clip-preview`. OpenClaw wysyła `modalities: ["text",
-"audio"]`, włącza strumieniowanie, zbiera strumieniowane fragmenty audio i zapisuje
-wynik jako wygenerowane media do dostarczenia w kanale. Obrazy referencyjne są
-akceptowane dla modeli Lyria przez wspólny parametr `music_generate image=...`.
+Wbudowany dostawca muzyki OpenRouter używa domyślnie modelu `google/lyria-3-pro-preview`
+i udostępnia również `google/lyria-3-clip-preview`. OpenClaw wysyła `modalities:
+["text", "audio"]`, przesyła strumieniowo odpowiedź, zbiera fragmenty dźwięku i zapisuje
+wynik jako wygenerowane multimedia do dostarczenia przez kanał. Modele Lyria przyjmują jeden
+obraz referencyjny za pośrednictwem wspólnego parametru `music_generate image=...`.
+Strumieniowy dźwięk, przechowywanie transkrypcji oraz pochodna otoczka zdarzeń SSE są
+ograniczone przez `agents.defaults.mediaMaxMb` (domyślny limit dźwięku wynosi 16 MB).
 
-## Tekst na mowę
+## Zamiana tekstu na mowę
 
-OpenRouter może być także używany jako dostawca TTS przez swój zgodny z OpenAI
-endpoint `/audio/speech`.
+OpenRouter może działać jako dostawca TTS za pośrednictwem zgodnego z OpenAI
+punktu końcowego `/audio/speech`.
 
 ```json5
 {
@@ -195,15 +207,15 @@ endpoint `/audio/speech`.
 }
 ```
 
-Jeśli `messages.tts.providers.openrouter.apiKey` zostanie pominięte, TTS ponownie użyje
+Jeśli pominięto `messages.tts.providers.openrouter.apiKey`, TTS korzysta kolejno z
 `models.providers.openrouter.apiKey`, a następnie `OPENROUTER_API_KEY`.
 
-## Mowa na tekst (przychodzące audio)
+## Zamiana mowy na tekst (przychodzący dźwięk)
 
-OpenRouter może transkrybować przychodzące załączniki głosowe/audio przez wspólną
-ścieżkę `tools.media.audio`, używając swojego endpointu STT (`/audio/transcriptions`).
-Dotyczy to każdego Plugin kanału, który przekazuje przychodzący głos/audio do
-wstępnego sprawdzania rozumienia mediów.
+OpenRouter może transkrybować przychodzące załączniki głosowe/dźwiękowe za pośrednictwem wspólnej
+ścieżki `tools.media.audio`, używając swojego punktu końcowego STT (`/audio/transcriptions`).
+Dotyczy to każdego pluginu kanału, który przekazuje przychodzący głos/dźwięk do
+wstępnego etapu rozpoznawania multimediów.
 
 ```json5
 {
@@ -218,25 +230,26 @@ wstępnego sprawdzania rozumienia mediów.
 }
 ```
 
-OpenClaw wysyła żądania STT OpenRouter jako JSON z audio base64 w
-`input_audio` (kontrakt STT OpenRouter), a nie jako wieloczęściowe przesyłanie formularza OpenAI.
+OpenClaw wysyła żądania STT do OpenRouter jako JSON z dźwiękiem zakodowanym w base64 w polu
+`input_audio` (zgodnie z kontraktem STT OpenRouter), a nie jako wieloczęściowe dane formularza
+OpenAI.
 
 ## Router Fusion
 
-Użyj OpenRouter Fusion, gdy chcesz, aby jedno odwołanie do modelu OpenClaw zapytało równolegle
-kilka modeli OpenRouter, pozwoliło OpenRouter ocenić ich odpowiedzi i zwróciło
-jedną końcową odpowiedź przez zwykły endpoint dostawcy OpenRouter. Ponieważ
-nadrzędny slug modelu to `openrouter/fusion`, odwołanie do modelu OpenClaw zawiera
-zarówno prefiks dostawcy OpenClaw, jak i nadrzędną przestrzeń nazw OpenRouter:
+OpenRouter Fusion wysyła jedno odwołanie do modelu OpenClaw równolegle do kilku modeli OpenRouter,
+zleca OpenRouter ocenę ich odpowiedzi i zwraca jedną ostateczną odpowiedź
+przez standardowy punkt końcowy OpenRouter. Identyfikator modelu po stronie usługi nadrzędnej to
+`openrouter/fusion`, dlatego odwołanie do modelu OpenClaw zawiera zarówno prefiks dostawcy OpenClaw,
+jak i przestrzeń nazw nadrzędnego OpenRouter:
 
 ```bash
 openclaw models set openrouter/openrouter/fusion
 ```
 
-Skonfiguruj panel i model oceniający Fusion przez `params.extraBody` modelu. Te
-pola są przekazywane do treści żądania chat-completions OpenRouter. Fusion
-działa zarówno z wdrażaniem OAuth OpenRouter, jak i wdrażaniem z kluczem API; jeśli używasz
-OAuth, pomiń wiersz `env.OPENROUTER_API_KEY` z poniższego przykładu.
+Skonfiguruj panel i model oceniający Fusion za pomocą `params.extraBody` modelu;
+pola te są przekazywane bezpośrednio do treści żądania uzupełniania czatu OpenRouter.
+Fusion działa zarówno z wdrażaniem przez OAuth, jak i przez klucz API; jeśli używasz OAuth,
+pomiń poniższy wiersz `env.OPENROUTER_API_KEY`.
 
 ```json5
 {
@@ -268,24 +281,22 @@ OAuth, pomiń wiersz `env.OPENROUTER_API_KEY` z poniższego przykładu.
 }
 ```
 
-Lista `analysis_models` jest panelem równoległym, a `model` wewnątrz konfiguracji
-Plugin Fusion jest modelem oceniającym. Nie ustawiaj najwyższego poziomu `tool_choice` na
-`"required"` w normalnych turach agenta/czatu OpenClaw, aby próbować wymusić Fusion;
-tury OpenClaw mogą zawierać definicje narzędzi OpenClaw, a wymagany wybór narzędzia
-na najwyższym poziomie może wymagać jednego z tych narzędzi zamiast routera Fusion. Gdy
-ta konfiguracja Plugin Fusion jest obecna, OpenClaw dodaje także oczyszczoną
-notatkę w prompcie systemowym ze skonfigurowanymi modelami analizy i modelem oceniającym, aby
-agent mógł odpowiadać na pytania o swój bieżący panel Fusion. Inne pola `extraBody`
-nie są kopiowane do promptu.
+`analysis_models` to panel modeli działających równolegle; `model` wewnątrz konfiguracji pluginu Fusion
+to model oceniający. W zwykłych turach agenta/czatu nie ustawiaj `tool_choice` najwyższego poziomu na `"required"`
+w celu wymuszenia Fusion: tury OpenClaw mogą zawierać własne definicje narzędzi,
+a wymagany wybór narzędzia najwyższego poziomu może wskazać jedno z nich
+zamiast routera Fusion. Gdy ta konfiguracja pluginu Fusion jest obecna,
+OpenClaw dodaje do komunikatu systemowego oczyszczoną notatkę z listą skonfigurowanych modeli analitycznych
+i modelu oceniającego, dzięki czemu agent może odpowiadać na pytania dotyczące własnego panelu Fusion.
+Inne pola `extraBody` nie są kopiowane do komunikatu.
 
-Fusion z założenia jest wolniejszy. OpenRouter może wysłać ten sam prompt OpenClaw do
-wielu modeli analizy, a następnie uruchomić końcowy krok oceny/syntezy, więc opóźnienie jest
-zwykle wyższe niż przy bezpośrednim żądaniu do jednego modelu. Używaj Fusion do przemyślanych,
-wysokiej jakości odpowiedzi lub ścieżek eskalacji, a nie jako domyślnego wyboru dla
-czatu wrażliwego na opóźnienia. Aby uzyskać szybsze odpowiedzi, utrzymuj mały panel i wybieraj
-szybsze modele analizy oraz oceny.
+Fusion jest z założenia wolniejszy: OpenRouter rozsyła komunikat do wielu
+modeli analitycznych, a następnie wykonuje etap oceny/syntezy, więc opóźnienie jest większe niż
+w przypadku bezpośredniego żądania do jednego modelu. Używaj go do przemyślanych odpowiedzi wysokiej jakości lub
+ścieżek eskalacji, a nie jako domyślnej opcji wrażliwej na opóźnienia. Utrzymuj niewielki panel i
+wybieraj szybsze modele analityczne/oceniające, aby uzyskać krótszy czas odpowiedzi.
 
-Przetestuj skonfigurowane odwołanie jednorazowym lokalnym wywołaniem modelu:
+Przetestuj skonfigurowane odwołanie za pomocą jednorazowego wywołania lokalnego:
 
 ```bash
 openclaw infer model run --local \
@@ -296,23 +307,21 @@ openclaw infer model run --local \
 
 ## Uwierzytelnianie i nagłówki
 
-OpenRouter używa pod spodem tokena Bearer z Twoim kluczem API. OAuth OpenRouter
-to przepływ logowania PKCE, który wydaje klucz API OpenRouter, więc OpenClaw zapisuje
-wynik jako ten sam profil uwierzytelniania kluczem API `openrouter:default`, którego używa
-ręczna ścieżka konfiguracji klucza API.
+OpenRouter używa tokenu Bearer pochodzącego z Twojego klucza API. OAuth OpenRouter to proces
+logowania PKCE, który wystawia klucz API OpenRouter, dlatego OpenClaw zapisuje wynik w
+tym samym profilu uwierzytelniania kluczem API `openrouter:default`, którego używa ręczna
+konfiguracja klucza API.
 
-W istniejącej instalacji zaloguj się lub obróć zapisany klucz OpenRouter bez
-ponownego uruchamiania pełnego wdrażania:
+Aby zalogować się lub zmienić zapisany klucz w istniejącej instalacji bez ponownego wykonywania
+pełnego wdrażania:
 
 ```bash
 openclaw models auth login --provider openrouter --method oauth
+openclaw models auth login --provider openrouter --method api-key
 ```
 
-Użyj `openclaw models auth login --provider openrouter --method api-key`, gdy
-chcesz wkleić klucz utworzony ręcznie w OpenRouter.
-
-W rzeczywistych żądaniach OpenRouter (`https://openrouter.ai/api/v1`) OpenClaw dodaje także
-udokumentowane nagłówki atrybucji aplikacji OpenRouter:
+Do zweryfikowanych żądań OpenRouter (`https://openrouter.ai/api/v1`) OpenClaw dodaje
+udokumentowane przez OpenRouter nagłówki identyfikujące aplikację:
 
 | Nagłówek                  | Wartość                                                                                                |
 | ------------------------- | ------------------------------------------------------------------------------------------------------ |
@@ -321,16 +330,15 @@ udokumentowane nagłówki atrybucji aplikacji OpenRouter:
 | `X-OpenRouter-Categories` | `cli-agent,cloud-agent,programming-app,creative-writing,writing-assistant,general-chat,personal-agent` |
 
 <Warning>
-Jeśli skierujesz dostawcę OpenRouter na inny proxy lub bazowy URL, OpenClaw
-**nie** wstrzykuje tych nagłówków specyficznych dla OpenRouter ani znaczników pamięci podręcznej Anthropic.
+Jeśli przekierujesz dostawcę OpenRouter do innego serwera proxy lub bazowego adresu URL, OpenClaw
+**nie** dodaje tych nagłówków właściwych dla OpenRouter ani znaczników pamięci podręcznej Anthropic.
 </Warning>
 
 ## Konfiguracja zaawansowana
 
 <AccordionGroup>
   <Accordion title="Buforowanie odpowiedzi">
-    Buforowanie odpowiedzi OpenRouter jest opcjonalne. Włącz je dla każdego modelu OpenRouter za pomocą
-    parametrów modelu:
+    Buforowanie odpowiedzi OpenRouter jest opcjonalne. Włącz je osobno dla każdego modelu:
 
     ```json5
     {
@@ -349,62 +357,63 @@ Jeśli skierujesz dostawcę OpenRouter na inny proxy lub bazowy URL, OpenClaw
     }
     ```
 
-    OpenClaw wysyła `X-OpenRouter-Cache: true` oraz, gdy skonfigurowano,
+    OpenClaw wysyła `X-OpenRouter-Cache: true` oraz, jeśli skonfigurowano,
     `X-OpenRouter-Cache-TTL`. `responseCacheClear: true` wymusza odświeżenie dla
-    bieżącego żądania i zapisuje zastępczą odpowiedź. Aliasy snake_case
-    (`response_cache`, `response_cache_ttl_seconds` i
-    `response_cache_clear`) są również akceptowane.
+    bieżącego żądania i zapisuje odpowiedź zastępczą. Akceptowane są aliasy w notacji snake_case
+    (`response_cache`, `response_cache_ttl_seconds`,
+    `response_cache_clear`), podobnie jak `responseCacheTtl` /
+    `response_cache_ttl` bez przyrostka `Seconds`.
 
-    Jest to oddzielne od buforowania promptów dostawcy oraz od znaczników
-    `cache_control` Anthropic w OpenRouter. Jest stosowane tylko na zweryfikowanych
-    trasach `openrouter.ai`, a nie dla niestandardowych bazowych URL-i proxy.
+    Jest to funkcja odrębna od buforowania komunikatów przez dostawcę oraz od znaczników
+    Anthropic `cache_control` w OpenRouter. Ma zastosowanie wyłącznie do zweryfikowanych
+    tras `openrouter.ai`, a nie do niestandardowych bazowych adresów URL serwerów proxy.
 
   </Accordion>
 
   <Accordion title="Znaczniki pamięci podręcznej Anthropic">
     Na zweryfikowanych trasach OpenRouter odwołania do modeli Anthropic zachowują
-    specyficzne dla OpenRouter znaczniki Anthropic `cache_control`, których OpenClaw używa do
-    lepszego ponownego wykorzystania pamięci podręcznej promptów w blokach promptów systemowych/deweloperskich.
+    znaczniki Anthropic `cache_control` OpenRouter, aby zwiększyć ponowne wykorzystanie pamięci podręcznej komunikatów
+    dla bloków komunikatów systemowych/deweloperskich.
   </Accordion>
 
-  <Accordion title="Prefill reasoning Anthropic">
-    Na zweryfikowanych trasach OpenRouter odwołania do modeli Anthropic z włączonym reasoning
-    usuwają końcowe tury asystenta typu prefill, zanim żądanie dotrze do OpenRouter,
-    zgodnie z wymaganiem Anthropic, aby konwersacje reasoning kończyły się turą
-    użytkownika.
+  <Accordion title="Wstępne wypełnianie rozumowania Anthropic">
+    Na zweryfikowanych trasach OpenRouter odwołania do modeli Anthropic z włączonym rozumowaniem
+    usuwają końcowe tury wstępnie wypełnione przez asystenta, zanim żądanie dotrze do
+    OpenRouter, zgodnie z wymaganiem Anthropic, aby konwersacje z rozumowaniem
+    kończyły się turą użytkownika.
   </Accordion>
 
-  <Accordion title="Wstrzykiwanie thinking / reasoning">
-    Na obsługiwanych trasach innych niż `auto` OpenClaw mapuje wybrany poziom thinking na
-    ładunki reasoning proxy OpenRouter. Nieobsługiwane wskazówki modeli i
-    `openrouter/auto` pomijają to wstrzykiwanie reasoning. Hunter Alpha pomija też
-    reasoning proxy dla nieaktualnych skonfigurowanych odwołań do modeli, ponieważ OpenRouter mógłby
-    zwrócić tekst finalnej odpowiedzi w polach reasoning dla tej wycofanej trasy.
+  <Accordion title="Wstrzykiwanie myślenia / rozumowania">
+    Na obsługiwanych trasach innych niż `auto` OpenClaw mapuje wybrany poziom myślenia
+    na ładunki rozumowania proxy OpenRouter. `openrouter/auto` i nieobsługiwane
+    wskazówki dotyczące modeli pomijają to wstrzykiwanie. Nieaktualne odwołania `openrouter/hunter-alpha` również
+    je pomijają, ponieważ na tej wycofanej trasie OpenRouter mógł zwracać tekst odpowiedzi końcowej
+    w polach rozumowania.
   </Accordion>
 
-  <Accordion title="Odtwarzanie reasoning DeepSeek V4">
-    Na zweryfikowanych trasach OpenRouter `openrouter/deepseek/deepseek-v4-flash` i
+  <Accordion title="Odtwarzanie rozumowania DeepSeek V4">
+    Na zweryfikowanych trasach OpenRouter modele `openrouter/deepseek/deepseek-v4-flash` i
     `openrouter/deepseek/deepseek-v4-pro` uzupełniają brakujące `reasoning_content` w
-    odtwarzanych turach asystenta, aby konwersacje thinking/narzędzi zachowały wymagany
-    przez DeepSeek V4 kształt kontynuacji. OpenClaw wysyła obsługiwane przez OpenRouter
-    wartości `reasoning.effort` dla tych tras; niższe poziomy inne niż off są mapowane na
-    `high`, a nieaktualne nadpisania `max` są mapowane na `xhigh`.
+    odtwarzanych turach asystenta, zachowując konwersacje obejmujące myślenie i narzędzia w wymaganym przez DeepSeek
+    V4 formacie kolejnej tury. OpenClaw wysyła obsługiwane przez OpenRouter
+    wartości `reasoning.effort` dla tych tras: `xhigh`/`max` są mapowane na `xhigh`,
+    a każdy inny poziom poza wyłączeniem jest mapowany na `high`.
   </Accordion>
 
   <Accordion title="Kształtowanie żądań tylko dla OpenAI">
-    OpenRouter nadal działa przez ścieżkę proxy zgodną z OpenAI, więc
-    natywne kształtowanie żądań wyłącznie dla OpenAI, takie jak `serviceTier`, `store` Responses,
-    ładunki zgodności reasoning OpenAI i wskazówki prompt-cache nie są przekazywane dalej.
+    OpenRouter działa przez zgodną z OpenAI ścieżkę w stylu proxy, dlatego natywne
+    kształtowanie żądań przeznaczone wyłącznie dla OpenAI, takie jak `serviceTier`, `store` interfejsu Responses,
+    ładunki zgodności rozumowania OpenAI i wskazówki dotyczące pamięci podręcznej promptów, nie jest przekazywane.
   </Accordion>
 
   <Accordion title="Trasy oparte na Gemini">
-    Odwołania OpenRouter oparte na Gemini pozostają na ścieżce proxy-Gemini: OpenClaw zachowuje
-    tam sanityzację sygnatur myśli Gemini, ale nie włącza natywnej walidacji
-    odtwarzania Gemini ani przepisywania bootstrap.
+    Odwołania OpenRouter oparte na Gemini pozostają na ścieżce proxy Gemini: OpenClaw zachowuje
+    tam oczyszczanie sygnatur myśli Gemini, ale nie włącza natywnej
+    walidacji odtwarzania Gemini ani przepisywania inicjalizacji.
   </Accordion>
 
   <Accordion title="Metadane routingu dostawcy">
-    OpenRouter obsługuje obiekt żądania `provider` dla routingu bazowego dostawcy.
+    OpenRouter obsługuje obiekt żądania `provider` do routingu bazowego dostawcy.
     Skonfiguruj domyślną politykę dla wszystkich żądań modeli tekstowych OpenRouter
     za pomocą `models.providers.openrouter.params.provider`:
 
@@ -427,12 +436,12 @@ Jeśli skierujesz dostawcę OpenRouter na inny proxy lub bazowy URL, OpenClaw
     ```
 
     OpenClaw przekazuje ten obiekt do OpenRouter jako ładunek żądania `provider`.
-    Używaj udokumentowanych przez OpenRouter pól snake_case, w tym `sort`,
+    Użyj udokumentowanych przez OpenRouter pól w formacie snake_case, w tym `sort`,
     `only`, `ignore`, `order`, `allow_fallbacks`, `require_parameters`,
     `data_collection`, `quantizations`, `max_price`, `preferred_max_latency`,
     `preferred_min_throughput`, `zdr` i `enforce_distillable_text`.
 
-    Parametry dla poszczególnych modeli nadal nadpisują obiekt routingu dla całego dostawcy:
+    Parametry poszczególnych modeli zastępują obiekt routingu obowiązujący dla całego dostawcy:
 
     ```json5
     {
@@ -453,7 +462,7 @@ Jeśli skierujesz dostawcę OpenRouter na inny proxy lub bazowy URL, OpenClaw
     }
     ```
 
-    Dotyczy to tylko tras chat-completions OpenRouter. Bezpośrednie trasy Anthropic,
+    Dotyczy to wyłącznie tras uzupełniania czatu OpenRouter. Bezpośrednie trasy Anthropic,
     Google, OpenAI lub niestandardowych dostawców ignorują parametry routingu OpenRouter.
 
   </Accordion>

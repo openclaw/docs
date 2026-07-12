@@ -1,30 +1,30 @@
 ---
 read_when:
-    - Stai installando, configurando o verificando il Plugin sglang
-summary: Aggiunge il supporto per il provider di modelli SGLang a OpenClaw.
+    - Stai installando, configurando o verificando il plugin sglang
+summary: Aggiunge a OpenClaw il supporto per il provider di modelli SGLang.
 title: Plugin SGLang
 x-i18n:
-    generated_at: "2026-05-02T20:57:10Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:20:08Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: e69fda19cbf93e1a1a1a6160419bc7296930a58813b5b443c4018db58df0a611
     source_path: plugins/reference/sglang.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Plugin SGLang
 
-Aggiunge il supporto per il provider di modelli SGLang a OpenClaw.
+Aggiunge a OpenClaw il supporto per il provider di modelli SGLang.
 
 ## Distribuzione
 
 - Pacchetto: `@openclaw/sglang-provider`
-- Percorso di installazione: incluso in OpenClaw
+- Modalità di installazione: incluso in OpenClaw
 
-## Interfaccia
+## Superficie
 
-providers: sglang
+provider: sglang
 
 ## Documentazione correlata
 

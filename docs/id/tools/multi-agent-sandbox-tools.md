@@ -2,34 +2,34 @@
 read_when: You want per-agent sandboxing or per-agent tool allow/deny policies in a multi-agent gateway.
 sidebarTitle: Multi-agent sandbox and tools
 status: active
-summary: Sandbox dan pembatasan alat per agen, presedensi, dan contoh
-title: Sandbox dan alat multi-agent
+summary: Sandbox per agen + pembatasan alat, prioritas, dan contoh
+title: Sandbox dan alat multiagen
 x-i18n:
-    generated_at: "2026-05-11T20:36:58Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:47:04Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8d11af55e30996a89e665b258604108a93f4c4271fbe4edfd1caf54864e40f01
+    source_hash: fada3672a0a7ce6eac2a8bffee8329afcd893d97e33d8e9842cb12079397efa6
     source_path: tools/multi-agent-sandbox-tools.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Setiap agen dalam penyiapan multi-agen dapat menimpa kebijakan sandbox dan alat global. Halaman ini membahas konfigurasi per agen, aturan prioritas, dan contoh.
+Setiap agen dalam penyiapan multiagen dapat mengganti kebijakan sandbox dan alat global. Halaman ini membahas konfigurasi per agen, aturan prioritas, dan contoh.
 
 <CardGroup cols={3}>
-  <Card title="Sandboxing" href="/id/gateway/sandboxing">
-    Backend dan mode — referensi sandbox lengkap.
+  <Card title="Sandbox" href="/id/gateway/sandboxing">
+    Backend dan mode — referensi lengkap sandbox.
   </Card>
-  <Card title="Sandbox vs tool policy vs elevated" href="/id/gateway/sandbox-vs-tool-policy-vs-elevated">
+  <Card title="Sandbox vs kebijakan alat vs elevated" href="/id/gateway/sandbox-vs-tool-policy-vs-elevated">
     Debug "mengapa ini diblokir?"
   </Card>
-  <Card title="Elevated mode" href="/id/tools/elevated">
-    Exec elevated untuk pengirim tepercaya.
+  <Card title="Mode elevated" href="/id/tools/elevated">
+    Eksekusi elevated untuk pengirim tepercaya.
   </Card>
 </CardGroup>
 
 <Warning>
-Autentikasi dicakup berdasarkan agen: setiap agen memiliki penyimpanan autentikasi `agentDir` sendiri di `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`. Jangan pernah menggunakan ulang `agentDir` antar agen. Agen dapat membaca hingga ke profil autentikasi agen default/utama ketika tidak memiliki profil lokal, tetapi token refresh OAuth tidak dikloning ke penyimpanan agen sekunder. Jika Anda menyalin kredensial secara manual, salin hanya profil `api_key` atau `token` statis yang portabel.
+Autentikasi dicakup per agen: setiap agen memiliki penyimpanan autentikasi `agentDir` sendiri di `~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite`. Jangan pernah menggunakan kembali `agentDir` pada agen yang berbeda. Agen dapat membaca profil autentikasi agen default/utama jika tidak memiliki profil lokal, tetapi token penyegaran OAuth tidak dikloning ke penyimpanan agen sekunder. Jika Anda menyalin kredensial secara manual, salin hanya profil statis portabel `api_key` atau `token`.
 </Warning>
 
 ---
@@ -37,7 +37,7 @@ Autentikasi dicakup berdasarkan agen: setiap agen memiliki penyimpanan autentika
 ## Contoh konfigurasi
 
 <AccordionGroup>
-  <Accordion title="Example 1: Personal + restricted family agent">
+  <Accordion title="Contoh 1: Agen pribadi + keluarga terbatas">
     ```json
     {
       "agents": {
@@ -88,11 +88,11 @@ Autentikasi dicakup berdasarkan agen: setiap agen memiliki penyimpanan autentika
 
     **Hasil:**
 
-    - Agen `main`: berjalan di host, akses alat penuh.
-    - Agen `family`: berjalan di Docker (satu kontainer per agen), hanya pengiriman pesan `read` dan percakapan saat ini.
+    - Agen `main`: berjalan di host, dengan akses penuh ke alat.
+    - Agen `family`: berjalan di Docker (satu kontainer per agen), hanya dapat menggunakan `read` dan mengirim pesan dalam percakapan saat ini.
 
   </Accordion>
-  <Accordion title="Example 2: Work agent with shared sandbox">
+  <Accordion title="Contoh 2: Agen kerja dengan sandbox bersama">
     ```json
     {
       "agents": {
@@ -120,7 +120,7 @@ Autentikasi dicakup berdasarkan agen: setiap agen memiliki penyimpanan autentika
     }
     ```
   </Accordion>
-  <Accordion title="Example 2b: Global coding profile + messaging-only agent">
+  <Accordion title="Contoh 2b: Profil pengodean global + agen khusus perpesanan">
     ```json
     {
       "tools": { "profile": "coding" },
@@ -137,11 +137,11 @@ Autentikasi dicakup berdasarkan agen: setiap agen memiliki penyimpanan autentika
 
     **Hasil:**
 
-    - agen default mendapatkan alat coding.
-    - agen `support` hanya untuk perpesanan (+ alat Slack).
+    - agen default mendapatkan alat pengodean.
+    - agen `support` hanya dapat menggunakan perpesanan (+ alat Slack).
 
   </Accordion>
-  <Accordion title="Example 3: Different sandbox modes per agent">
+  <Accordion title="Contoh 3: Mode sandbox berbeda untuk setiap agen">
     ```json
     {
       "agents": {
@@ -182,13 +182,13 @@ Autentikasi dicakup berdasarkan agen: setiap agen memiliki penyimpanan autentika
 
 ## Prioritas konfigurasi
 
-Ketika konfigurasi global (`agents.defaults.*`) dan konfigurasi khusus agen (`agents.list[].*`) sama-sama ada:
+Jika konfigurasi global (`agents.defaults.*`) dan khusus agen (`agents.list[].*`) tersedia:
 
 ### Konfigurasi sandbox
 
-Pengaturan khusus agen menimpa global:
+Pengaturan khusus agen menggantikan pengaturan global:
 
-```
+```text
 agents.list[].sandbox.mode > agents.defaults.sandbox.mode
 agents.list[].sandbox.scope > agents.defaults.sandbox.scope
 agents.list[].sandbox.workspaceRoot > agents.defaults.sandbox.workspaceRoot
@@ -199,7 +199,7 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 ```
 
 <Note>
-`agents.list[].sandbox.{docker,browser,prune}.*` menimpa `agents.defaults.sandbox.{docker,browser,prune}.*` untuk agen tersebut (diabaikan ketika cakupan sandbox diselesaikan menjadi `"shared"`).
+`agents.list[].sandbox.{docker,browser,prune}.*` menggantikan `agents.defaults.sandbox.{docker,browser,prune}.*` untuk agen tersebut (diabaikan jika cakupan sandbox ditetapkan sebagai `"shared"`).
 </Note>
 
 ### Pembatasan alat
@@ -207,48 +207,48 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 Urutan pemfilterannya adalah:
 
 <Steps>
-  <Step title="Tool profile">
+  <Step title="Profil alat">
     `tools.profile` atau `agents.list[].tools.profile`.
   </Step>
-  <Step title="Provider tool profile">
+  <Step title="Profil alat penyedia">
     `tools.byProvider[provider].profile` atau `agents.list[].tools.byProvider[provider].profile`.
   </Step>
-  <Step title="Global tool policy">
+  <Step title="Kebijakan alat global">
     `tools.allow` / `tools.deny`.
   </Step>
-  <Step title="Provider tool policy">
+  <Step title="Kebijakan alat penyedia">
     `tools.byProvider[provider].allow/deny`.
   </Step>
-  <Step title="Agent-specific tool policy">
+  <Step title="Kebijakan alat khusus agen">
     `agents.list[].tools.allow/deny`.
   </Step>
-  <Step title="Agent provider policy">
+  <Step title="Kebijakan penyedia agen">
     `agents.list[].tools.byProvider[provider].allow/deny`.
   </Step>
-  <Step title="Sandbox tool policy">
+  <Step title="Kebijakan alat sandbox">
     `tools.sandbox.tools` atau `agents.list[].tools.sandbox.tools`.
   </Step>
-  <Step title="Subagent tool policy">
+  <Step title="Kebijakan alat subagen">
     `tools.subagents.tools`, jika berlaku.
   </Step>
 </Steps>
 
 <AccordionGroup>
-  <Accordion title="Precedence rules">
-    - Setiap tingkat dapat semakin membatasi alat, tetapi tidak dapat mengaktifkan kembali alat yang telah ditolak dari tingkat sebelumnya.
-    - Jika `agents.list[].tools.sandbox.tools` ditetapkan, nilai itu menggantikan `tools.sandbox.tools` untuk agen tersebut.
-    - Jika `agents.list[].tools.profile` ditetapkan, nilai itu menimpa `tools.profile` untuk agen tersebut.
+  <Accordion title="Aturan prioritas">
+    - Setiap tingkat dapat membatasi alat lebih lanjut, tetapi tidak dapat mengizinkan kembali alat yang ditolak pada tingkat sebelumnya.
+    - Jika `agents.list[].tools.sandbox.tools` ditetapkan, nilai tersebut menggantikan `tools.sandbox.tools` untuk agen tersebut.
+    - Jika `agents.list[].tools.profile` ditetapkan, nilai tersebut menggantikan `tools.profile` untuk agen tersebut.
     - Kunci alat penyedia menerima `provider` (misalnya `google-antigravity`) atau `provider/model` (misalnya `openai/gpt-5.4`).
 
   </Accordion>
-  <Accordion title="Empty allowlist behavior">
-    Jika allowlist eksplisit apa pun dalam rantai tersebut membuat proses berjalan tanpa alat yang dapat dipanggil, OpenClaw berhenti sebelum mengirimkan prompt ke model. Ini disengaja: agen yang dikonfigurasi dengan alat yang hilang seperti `agents.list[].tools.allow: ["query_db"]` harus gagal dengan jelas sampai Plugin yang mendaftarkan `query_db` diaktifkan, bukan berlanjut sebagai agen teks saja.
+  <Accordion title="Perilaku daftar izin kosong">
+    Jika daftar izin eksplisit mana pun dalam rangkaian tersebut membuat proses tidak memiliki alat yang dapat dipanggil, OpenClaw berhenti sebelum mengirimkan prompt ke model. Ini disengaja: agen yang dikonfigurasi dengan alat yang tidak tersedia, seperti `agents.list[].tools.allow: ["query_db"]`, harus gagal secara jelas sampai plugin yang mendaftarkan `query_db` diaktifkan, bukan berlanjut sebagai agen khusus teks.
   </Accordion>
 </AccordionGroup>
 
-Kebijakan alat mendukung singkatan `group:*` yang diperluas menjadi beberapa alat. Lihat [Grup alat](/id/gateway/sandbox-vs-tool-policy-vs-elevated#tool-groups-shorthands) untuk daftar lengkapnya.
+Kebijakan alat mendukung bentuk singkat `group:*` yang diperluas menjadi beberapa alat. Lihat [Grup alat](/id/gateway/sandbox-vs-tool-policy-vs-elevated#tool-groups-shorthands) untuk daftar lengkap.
 
-Timpa elevated per agen (`agents.list[].tools.elevated`) dapat semakin membatasi exec elevated untuk agen tertentu. Lihat [Mode elevated](/id/tools/elevated) untuk detail.
+Penggantian elevated per agen (`agents.list[].tools.elevated`) dapat membatasi lebih lanjut eksekusi elevated untuk agen tertentu. Lihat [Mode elevated](/id/tools/elevated) untuk detailnya.
 
 ---
 
@@ -277,7 +277,7 @@ Timpa elevated per agen (`agents.list[].tools.elevated`) dapat semakin membatasi
     }
     ```
   </Tab>
-  <Tab title="Sesudah (multi-agen)">
+  <Tab title="Sesudah (multiagen)">
     ```json
     {
       "agents": {
@@ -296,7 +296,7 @@ Timpa elevated per agen (`agents.list[].tools.elevated`) dapat semakin membatasi
 </Tabs>
 
 <Note>
-Konfigurasi `agent.*` lama dimigrasikan oleh `openclaw doctor`; selanjutnya, utamakan `agents.defaults` + `agents.list`.
+Kunci konfigurasi lama `agents.defaults.*`/`agents.list[].*` (seperti `sandbox.perSession`, `agentRuntime`, `embeddedPi`) dimigrasikan oleh `openclaw doctor`; selanjutnya, utamakan `agents.defaults` + `agents.list`.
 </Note>
 
 ---
@@ -314,7 +314,7 @@ Konfigurasi `agent.*` lama dimigrasikan oleh `openclaw doctor`; selanjutnya, uta
     }
     ```
   </Tab>
-  <Tab title="Eksekusi shell dengan alat sistem file dinonaktifkan">
+  <Tab title="Eksekusi shell dengan alat sistem berkas dinonaktifkan">
     ```json
     {
       "tools": {
@@ -325,11 +325,11 @@ Konfigurasi `agent.*` lama dimigrasikan oleh `openclaw doctor`; selanjutnya, uta
     ```
 
     <Warning>
-    Kebijakan ini menonaktifkan alat sistem file OpenClaw, tetapi `exec` tetap merupakan shell dan dapat menulis file di mana pun host atau sistem file sandbox yang dipilih mengizinkan. Untuk agen hanya-baca, tolak `exec` dan `process`, atau gabungkan akses shell dengan kontrol sistem file sandbox seperti `agents.defaults.sandbox.workspaceAccess: "ro"` atau `"none"`.
+    Kebijakan ini menonaktifkan alat sistem berkas OpenClaw, tetapi `exec` tetap merupakan shell dan dapat menulis berkas di mana pun sistem berkas host atau sandbox yang dipilih mengizinkannya. Untuk agen hanya-baca, tolak `exec` dan `process`, atau gabungkan akses shell dengan kontrol sistem berkas sandbox seperti `agents.defaults.sandbox.workspaceAccess: "ro"` atau `"none"`.
     </Warning>
 
   </Tab>
-  <Tab title="Hanya komunikasi">
+  <Tab title="Khusus komunikasi">
     ```json
     {
       "tools": {
@@ -340,24 +340,24 @@ Konfigurasi `agent.*` lama dimigrasikan oleh `openclaw doctor`; selanjutnya, uta
     }
     ```
 
-    `sessions_history` dalam profil ini tetap mengembalikan tampilan ingatan yang terbatas dan telah disanitasi, bukan dump transkrip mentah. Ingatan asisten menghapus tag berpikir, scaffolding `<relevant-memories>`, payload XML pemanggilan alat teks biasa (termasuk `<tool_call>...</tool_call>`, `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>`, dan blok pemanggilan alat yang terpotong), scaffolding pemanggilan alat yang diturunkan, token kontrol model ASCII/lebar-penuh yang bocor, dan XML pemanggilan alat MiniMax yang tidak valid sebelum redaksi/pemotongan.
+    `sessions_history` dalam profil ini tetap mengembalikan tampilan ingatan yang dibatasi dan disanitasi, bukan hasil pembuangan transkrip mentah. Ingatan asisten menghapus tag pemikiran, kerangka `<relevant-memories>`, muatan XML pemanggilan alat dalam teks biasa (termasuk `<tool_call>...</tool_call>`, `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>`, dan blok pemanggilan alat yang terpotong), kerangka pemanggilan alat yang diturunkan, token kontrol model ASCII/lebar penuh yang bocor, serta XML pemanggilan alat MiniMax yang tidak valid sebelum penyuntingan/pemotongan.
 
   </Tab>
 </Tabs>
 
 ---
 
-## Kekeliruan umum: "non-main"
+## Kesalahan umum: "non-main"
 
 <Warning>
-`agents.defaults.sandbox.mode: "non-main"` didasarkan pada `session.mainKey` (default `"main"`), bukan id agen. Sesi grup/channel selalu mendapatkan kuncinya sendiri, sehingga diperlakukan sebagai non-main dan akan disandbox. Jika Anda ingin agen tidak pernah disandbox, atur `agents.list[].sandbox.mode: "off"`.
+`agents.defaults.sandbox.mode: "non-main"` memeriksa kunci sesi terhadap kunci sesi utama (selalu `"main"`; `session.mainKey` tidak dapat dikonfigurasi oleh pengguna, dan OpenClaw memperingatkan serta mengabaikan nilai lainnya), bukan ID agen. Sesi grup/saluran selalu mendapatkan kuncinya sendiri, sehingga diperlakukan sebagai nonutama dan akan ditempatkan dalam sandbox. Jika Anda ingin agar suatu agen tidak pernah menggunakan sandbox, tetapkan `agents.list[].sandbox.mode: "off"`.
 </Warning>
 
 ---
 
 ## Pengujian
 
-Setelah mengonfigurasi sandbox dan alat multi-agen:
+Setelah mengonfigurasi sandbox dan alat multiagen:
 
 <Steps>
   <Step title="Periksa resolusi agen">
@@ -377,7 +377,7 @@ Setelah mengonfigurasi sandbox dan alat multi-agen:
   </Step>
   <Step title="Pantau log">
     ```bash
-    tail -f "${OPENCLAW_STATE_DIR:-$HOME/.openclaw}/logs/gateway.log" | grep -E "routing|sandbox|tools"
+    openclaw logs --follow | grep -E "routing|sandbox|tools"
     ```
   </Step>
 </Steps>
@@ -387,20 +387,20 @@ Setelah mengonfigurasi sandbox dan alat multi-agen:
 ## Pemecahan masalah
 
 <AccordionGroup>
-  <Accordion title="Agen tidak disandbox meskipun `mode: 'all'`">
-    - Periksa apakah ada `agents.defaults.sandbox.mode` global yang menimpanya.
-    - Konfigurasi khusus agen memiliki prioritas, jadi atur `agents.list[].sandbox.mode: "all"`.
+  <Accordion title="Agen tidak ditempatkan dalam sandbox meskipun `mode: 'all'`">
+    - Periksa apakah ada `agents.defaults.sandbox.mode` global yang menggantikannya.
+    - Konfigurasi khusus agen memiliki prioritas, jadi tetapkan `agents.list[].sandbox.mode: "all"`.
 
   </Accordion>
-  <Accordion title="Alat masih tersedia meskipun ada daftar penolakan">
-    - Periksa urutan pemfilteran alat: global → agen → sandbox → subagen.
-    - Setiap tingkat hanya dapat membatasi lebih lanjut, bukan memberikan kembali.
-    - Verifikasi dengan log: `[tools] filtering tools for agent:${agentId}`.
+  <Accordion title="Alat tetap tersedia meskipun ada daftar penolakan">
+    - Periksa [urutan pemfilteran lengkap](#tool-restrictions): profil → profil penyedia → kebijakan global → kebijakan penyedia → kebijakan agen → kebijakan penyedia agen → sandbox → subagen.
+    - Setiap tingkat hanya dapat membatasi lebih lanjut, bukan memberikan kembali akses.
+    - Lihat [Sandbox vs kebijakan alat vs elevated](/id/gateway/sandbox-vs-tool-policy-vs-elevated) untuk penelusuran kesalahan langkah demi langkah.
 
   </Accordion>
   <Accordion title="Kontainer tidak diisolasi per agen">
-    - Atur `scope: "agent"` dalam konfigurasi sandbox khusus agen.
-    - Default-nya adalah `"session"` yang membuat satu kontainer per sesi.
+    - `scope` bawaan adalah `"agent"` (satu kontainer per ID agen).
+    - Atur `scope: "session"` untuk satu kontainer per sesi, atau `scope: "shared"` untuk menggunakan kembali satu kontainer bagi beberapa agen.
 
   </Accordion>
 </AccordionGroup>
@@ -410,8 +410,8 @@ Setelah mengonfigurasi sandbox dan alat multi-agen:
 ## Terkait
 
 - [Mode elevated](/id/tools/elevated)
-- [Perutean multi-agent](/id/concepts/multi-agent)
+- [Perutean multiagen](/id/concepts/multi-agent)
 - [Konfigurasi sandbox](/id/gateway/config-agents#agentsdefaultssandbox)
-- [Sandbox vs kebijakan alat vs elevated](/id/gateway/sandbox-vs-tool-policy-vs-elevated) — men-debug "mengapa ini diblokir?"
+- [Sandbox vs kebijakan alat vs elevated](/id/gateway/sandbox-vs-tool-policy-vs-elevated) — menelusuri kesalahan "mengapa ini diblokir?"
 - [Sandboxing](/id/gateway/sandboxing) — referensi sandbox lengkap (mode, cakupan, backend, image)
-- [Manajemen sesi](/id/concepts/session)
+- [Pengelolaan sesi](/id/concepts/session)

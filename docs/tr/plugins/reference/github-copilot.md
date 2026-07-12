@@ -1,19 +1,19 @@
 ---
 read_when:
-    - github-copilot Plugin’ini yüklüyor, yapılandırıyor veya denetliyorsunuz
-summary: OpenClaw'a GitHub Copilot model sağlayıcı desteği ekler.
-title: GitHub Copilot Plugin
+    - github-copilot Pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
+summary: OpenClaw'a GitHub Copilot model sağlayıcısı desteği ekler.
+title: GitHub Copilot eklentisi
 x-i18n:
-    generated_at: "2026-05-02T20:53:03Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:01:55Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2845e2575d30865b06f318873da6da8085f4928d059176b514c3195a29a87e36
+    source_hash: 01b8a15fe2da9848cef18e0e24b1fdb1493e8f17046a7f82f1331f29c80f0660
     source_path: plugins/reference/github-copilot.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# GitHub Copilot Plugin
+# GitHub Copilot plugini
 
 OpenClaw'a GitHub Copilot model sağlayıcısı desteği ekler.
 
@@ -24,7 +24,7 @@ OpenClaw'a GitHub Copilot model sağlayıcısı desteği ekler.
 
 ## Yüzey
 
-providers: github-copilot; contracts: memoryEmbeddingProviders
+sağlayıcılar: github-copilot; sözleşmeler: memoryEmbeddingProviders, usageProviders
 
 ## İlgili belgeler
 

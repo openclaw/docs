@@ -1,28 +1,28 @@
 ---
 read_when:
-    - تريد مفتاح API واحدًا للعديد من نماذج LLM
+    - تريد مفتاح API واحدًا للعديد من نماذج اللغة الكبيرة
     - تحتاج إلى إرشادات إعداد Baidu Qianfan
-summary: استخدم واجهة API الموحدة من Qianfan للوصول إلى العديد من النماذج في OpenClaw
-title: Qianfan
+summary: استخدم واجهة برمجة التطبيقات الموحّدة من Qianfan للوصول إلى العديد من النماذج في OpenClaw
+title: تشيانفان
 x-i18n:
-    generated_at: "2026-06-27T18:27:22Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:30:52Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a8bc31970dc7fbc43819ec6d51f4bd0047b1acc5a03b23b656e617e3abd97475
+    source_hash: 31387a53ee4472e2d20ae939ea75cea0d6f6367501becd56a8654fd97fdf0804
     source_path: providers/qianfan.md
     workflow: 16
 ---
 
-Qianfan هي منصة MaaS من Baidu، وتوفر **API موحدًا** يوجّه الطلبات إلى نماذج عديدة خلف نقطة نهاية واحدة
-ومفتاح API واحد. وهي متوافقة مع OpenAI، لذلك تعمل معظم OpenAI SDKs عند تبديل عنوان URL الأساسي.
+Qianfan هي منصة MaaS من Baidu: واجهة API موحّدة ومتوافقة مع OpenAI توجّه الطلبات إلى نماذج متعددة خلف نقطة نهاية واحدة ومفتاح API واحد. يوفّرها OpenClaw بوصفها Plugin خارجيًا رسميًا باسم `@openclaw/qianfan-provider`.
 
-| الخاصية | القيمة                            |
-| -------- | --------------------------------- |
-| المزوّد | `qianfan`                         |
-| المصادقة | `QIANFAN_API_KEY`                 |
-| API      | متوافق مع OpenAI                 |
-| عنوان URL الأساسي | `https://qianfan.baidubce.com/v2` |
+| الخاصية       | القيمة                                   |
+| ------------- | ---------------------------------------- |
+| المزوّد       | `qianfan`                                |
+| المصادقة      | `QIANFAN_API_KEY`                        |
+| API           | متوافقة مع OpenAI (`openai-completions`) |
+| عنوان URL الأساسي | `https://qianfan.baidubce.com/v2`    |
+| النموذج الافتراضي | `qianfan/deepseek-v3.2`               |
 
 ## تثبيت Plugin
 
@@ -33,19 +33,25 @@ openclaw plugins install @openclaw/qianfan-provider
 openclaw gateway restart
 ```
 
-## البدء
+## بدء الاستخدام
 
 <Steps>
   <Step title="إنشاء حساب Baidu Cloud">
-    سجّل أو ادخل في [وحدة تحكم Qianfan](https://console.bce.baidu.com/qianfan/ais/console/apiKey) وتأكد من تفعيل وصول Qianfan API لديك.
+    سجّل أو ادخل إلى حسابك في [وحدة تحكم Qianfan](https://console.bce.baidu.com/qianfan/ais/console/apiKey)، وتأكد من تمكين الوصول إلى API الخاصة بـ Qianfan.
   </Step>
   <Step title="إنشاء مفتاح API">
-    أنشئ تطبيقًا جديدًا أو اختر تطبيقًا موجودًا، ثم أنشئ مفتاح API. تنسيق المفتاح هو `bce-v3/ALTAK-...`.
+    أنشئ تطبيقًا جديدًا أو حدّد تطبيقًا موجودًا، ثم أنشئ مفتاح API. تستخدم مفاتيح Baidu Cloud التنسيق `bce-v3/ALTAK-...`.
   </Step>
   <Step title="تشغيل الإعداد الأولي">
     ```bash
     openclaw onboard --auth-choice qianfan-api-key
     ```
+
+    تقرأ عمليات التشغيل غير التفاعلية المفتاح من `--qianfan-api-key <key>` أو
+    `QIANFAN_API_KEY`. يكتب الإعداد الأولي إعدادات المزوّد، ويضيف الاسم المستعار
+    `QIANFAN` للنموذج الافتراضي، ويعيّن `qianfan/deepseek-v3.2`
+    نموذجًا افتراضيًا عند عدم إعداد أي نموذج.
+
   </Step>
   <Step title="التحقق من توفر النموذج">
     ```bash
@@ -54,18 +60,20 @@ openclaw gateway restart
   </Step>
 </Steps>
 
-## الكتالوج المدمج
+## الكتالوج المضمّن
 
-| مرجع النموذج                         | الإدخال      | السياق | الحد الأقصى للإخراج | الاستدلال | ملاحظات       |
-| ------------------------------------ | ----------- | ------- | ---------- | --------- | ------------- |
-| `qianfan/deepseek-v3.2`              | نص          | 98,304  | 32,768     | نعم       | النموذج الافتراضي |
-| `qianfan/ernie-5.0-thinking-preview` | نص، صورة | 119,000 | 64,000     | نعم       | متعدد الوسائط |
+| مرجع النموذج                        | الإدخال     | السياق  | الحد الأقصى للإخراج | الاستدلال | ملاحظات          |
+| ----------------------------------- | ----------- | ------- | ------------------ | ---------- | ---------------- |
+| `qianfan/deepseek-v3.2`             | نص          | 98,304  | 32,768             | نعم        | النموذج الافتراضي |
+| `qianfan/ernie-5.0-thinking-preview` | نص، صورة   | 119,000 | 64,000             | نعم        | متعدد الوسائط     |
+
+الكتالوج ثابت؛ ولا توجد آلية مباشرة لاكتشاف النماذج.
 
 <Tip>
-مرجع النموذج الافتراضي هو `qianfan/deepseek-v3.2`. لا تحتاج إلى تجاوز `models.providers.qianfan` إلا عندما تحتاج إلى عنوان URL أساسي مخصص أو بيانات تعريف للنموذج.
+لا تحتاج إلى تجاوز `models.providers.qianfan` إلا عند الحاجة إلى عنوان URL أساسي مخصّص أو بيانات تعريف مخصّصة للنموذج.
 </Tip>
 
-## مثال إعداد
+## مثال على الإعدادات
 
 ```json5
 {
@@ -109,41 +117,36 @@ openclaw gateway restart
 }
 ```
 
+<Note>
+تستخدم مراجع النماذج البادئة `qianfan/` (مثل `qianfan/deepseek-v3.2`).
+</Note>
+
 <AccordionGroup>
   <Accordion title="النقل والتوافق">
-    يعمل Qianfan عبر مسار نقل متوافق مع OpenAI، وليس عبر تشكيل طلبات OpenAI الأصلية. يعني هذا أن ميزات OpenAI SDK القياسية تعمل، لكن قد لا تُمرَّر المعلمات الخاصة بالمزوّد.
-  </Accordion>
-
-  <Accordion title="الكتالوج والتجاوزات">
-    يتضمن الكتالوج الثابت حاليًا `deepseek-v3.2` و`ernie-5.0-thinking-preview`. أضف أو تجاوز `models.providers.qianfan` فقط عندما تحتاج إلى عنوان URL أساسي مخصص أو بيانات تعريف للنموذج.
-
-    <Note>
-    تستخدم مراجع النماذج البادئة `qianfan/` (على سبيل المثال `qianfan/deepseek-v3.2`).
-    </Note>
-
+    تعمل Qianfan عبر مسار النقل المتوافق مع OpenAI، وليس عبر تشكيل طلبات OpenAI الأصلي. تعمل ميزات OpenAI SDK القياسية، لكن قد لا تُمرَّر المعلمات الخاصة بالمزوّد.
   </Accordion>
 
   <Accordion title="استكشاف الأخطاء وإصلاحها">
-    - تأكد من أن مفتاح API لديك يبدأ بـ `bce-v3/ALTAK-` وأن وصول Qianfan API مفعّل في وحدة تحكم Baidu Cloud.
-    - إذا لم تكن النماذج مدرجة، فتأكد من تفعيل خدمة Qianfan في حسابك.
-    - عنوان URL الأساسي الافتراضي هو `https://qianfan.baidubce.com/v2`. لا تغيّره إلا إذا كنت تستخدم نقطة نهاية مخصصة أو وكيلًا.
+    - تأكد من أن مفتاح API يبدأ بـ `bce-v3/ALTAK-` وأن الوصول إلى API الخاصة بـ Qianfan مُمكّن في وحدة تحكم Baidu Cloud.
+    - إذا لم تظهر النماذج في القائمة، فتأكد من تفعيل خدمة Qianfan في حسابك.
+    - لا تغيّر عنوان URL الأساسي إلا إذا كنت تستخدم نقطة نهاية مخصّصة أو خادمًا وسيطًا.
 
   </Accordion>
 </AccordionGroup>
 
-## ذات صلة
+## ذو صلة
 
 <CardGroup cols={2}>
   <Card title="اختيار النموذج" href="/ar/concepts/model-providers" icon="layers">
-    اختيار المزوّدين، ومراجع النماذج، وسلوك تجاوز الفشل.
+    اختيار المزوّدين ومراجع النماذج وسلوك تجاوز الفشل.
   </Card>
-  <Card title="مرجع الإعداد" href="/ar/gateway/configuration-reference" icon="gear">
-    مرجع إعداد OpenClaw الكامل.
+  <Card title="مرجع الإعدادات" href="/ar/gateway/configuration-reference" icon="gear">
+    المرجع الكامل لإعدادات OpenClaw.
   </Card>
   <Card title="إعداد الوكيل" href="/ar/concepts/agent" icon="robot">
-    إعداد الإعدادات الافتراضية للوكلاء وتعيينات النماذج.
+    إعداد القيم الافتراضية للوكيل وتعيينات النماذج.
   </Card>
-  <Card title="مستندات Qianfan API" href="https://cloud.baidu.com/doc/qianfan-api/s/3m7of64lb" icon="arrow-up-right-from-square">
-    وثائق Qianfan API الرسمية.
+  <Card title="وثائق API الخاصة بـ Qianfan" href="https://cloud.baidu.com/doc/qianfan-api/s/3m7of64lb" icon="arrow-up-right-from-square">
+    الوثائق الرسمية لـ API الخاصة بـ Qianfan.
   </Card>
 </CardGroup>

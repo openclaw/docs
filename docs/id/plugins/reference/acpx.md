@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Anda sedang menginstal, mengonfigurasi, atau mengaudit Plugin acpx
-summary: OpenClaw backend runtime ACP dengan manajemen sesi dan transport milik plugin.
+    - Anda sedang menginstal, mengonfigurasi, atau mengaudit plugin acpx
+summary: Backend runtime ACP OpenClaw dengan pengelolaan sesi dan transportasi yang dimiliki oleh plugin.
 title: Plugin ACPx
 x-i18n:
-    generated_at: "2026-06-27T17:50:57Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:26:41Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 71e6762b6049c5eca3fa560f2d8d13a2538c2e913f9dbd9f0e2bb6b5aef160e4
@@ -15,14 +15,14 @@ x-i18n:
 
 # Plugin ACPx
 
-Backend runtime ACP OpenClaw dengan manajemen sesi dan transport milik Plugin.
+Backend runtime ACP OpenClaw dengan pengelolaan sesi dan transportasi yang dimiliki Plugin.
 
 ## Distribusi
 
 - Paket: `@openclaw/acpx`
-- Rute instalasi: npm; ClawHub
+- Jalur instalasi: npm; ClawHub
 
-## Permukaan
+## Antarmuka
 
 Skills
 

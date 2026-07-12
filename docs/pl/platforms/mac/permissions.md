@@ -1,51 +1,51 @@
 ---
 read_when:
-    - Debugowanie brakujących lub zablokowanych monitów o uprawnienia macOS
-    - Decydowanie, czy przyznać Accessibility procesowi node lub środowisku uruchomieniowemu CLI
-    - Pakowanie lub podpisywanie aplikacji macOS
+    - Debugowanie brakujących lub zablokowanych monitów o uprawnienia w macOS
+    - Podejmowanie decyzji o przyznaniu uprawnień Dostępności środowisku uruchomieniowemu Node lub CLI
+    - Pakowanie lub podpisywanie aplikacji dla systemu macOS
     - Zmiana identyfikatorów pakietów lub ścieżek instalacji aplikacji
-summary: Utrzymywanie uprawnień macOS (TCC) i wymagania dotyczące podpisywania
-title: Uprawnienia macOS
+summary: Trwałość uprawnień systemu macOS (TCC) i wymagania dotyczące podpisywania
+title: Uprawnienia systemu macOS
 x-i18n:
-    generated_at: "2026-06-27T17:48:01Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:17:39Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7b7e21c53bff16c3023e2b6509894717c3d0ef96524951b0d0c5975d2fc91019
+    source_hash: c8431a1d5a27aed00c50c5d6c8c36554cf766051dfdccea677d0523bbc4189d4
     source_path: platforms/mac/permissions.md
     workflow: 16
 ---
 
-Uprawnienia macOS są kruche. TCC kojarzy nadane uprawnienie z podpisem kodu aplikacji, identyfikatorem pakietu i ścieżką na dysku. Jeśli którykolwiek z tych elementów się zmieni, macOS traktuje aplikację jako nową i może usunąć lub ukryć monity.
+Uprawnienia przyznawane w macOS są nietrwałe. TCC wiąże przyznane uprawnienie z podpisem kodu aplikacji, identyfikatorem pakietu i ścieżką na dysku. Jeśli którykolwiek z tych elementów ulegnie zmianie, macOS traktuje aplikację jako nową i może usunąć lub ukryć monity.
 
 ## Wymagania dotyczące stabilnych uprawnień
 
 - Ta sama ścieżka: uruchamiaj aplikację ze stałej lokalizacji (w przypadku OpenClaw: `dist/OpenClaw.app`).
-- Ten sam identyfikator pakietu: zmiana identyfikatora pakietu tworzy nową tożsamość uprawnień.
-- Podpisana aplikacja: niepodpisane lub podpisane ad hoc kompilacje nie utrwalają uprawnień.
-- Spójny podpis: użyj prawdziwego certyfikatu Apple Development lub Developer ID, aby podpis pozostawał stabilny między kolejnymi kompilacjami.
+- Ten sam identyfikator pakietu: identyfikator pakietu OpenClaw to `ai.openclaw.mac`; jego zmiana tworzy nową tożsamość uprawnień.
+- Podpisana aplikacja: niepodpisane kompilacje lub kompilacje podpisane doraźnie nie zachowują uprawnień.
+- Spójny podpis: używaj właściwego certyfikatu Apple Development lub Developer ID, aby podpis pozostawał stabilny między kolejnymi kompilacjami.
 
-Podpisy ad hoc generują nową tożsamość przy każdej kompilacji. macOS zapomni poprzednie nadania, a monity mogą całkowicie zniknąć, dopóki nieaktualne wpisy nie zostaną wyczyszczone.
+Podpisy doraźne generują nową tożsamość przy każdej kompilacji. macOS zapomina wcześniej przyznane uprawnienia, a monity mogą całkowicie zniknąć do czasu wyczyszczenia nieaktualnych wpisów.
 
-## Nadania Accessibility dla środowisk uruchomieniowych Node i CLI
+## Uprawnienia dostępności dla środowisk uruchomieniowych Node i CLI
 
-Preferuj nadawanie Accessibility aplikacji OpenClaw.app, Peekaboo.app lub innemu podpisanemu narzędziu pomocniczemu z własnym identyfikatorem pakietu zamiast ogólnemu plikowi binarnemu `node`.
+Zamiast ogólnemu plikowi binarnemu `node` lepiej przyznać uprawnienia dostępności aplikacji OpenClaw.app, Peekaboo.app lub innemu podpisanemu programowi pomocniczemu z własnym identyfikatorem pakietu.
 
-macOS TCC nadaje Accessibility tożsamości kodu procesu, który widzi. Jeśli przepływ pracy Homebrew, nvm, pnpm lub npm spowoduje, że współdzielony plik wykonywalny `node` otrzyma Accessibility, każdy pakiet JavaScript uruchomiony przez ten sam plik wykonywalny może odziedziczyć uprawnienia automatyzacji GUI.
+TCC w macOS przyznaje uprawnienia dostępności tożsamości kodu widocznego procesu. Jeśli przepływ pracy Homebrew, nvm, pnpm lub npm spowoduje przyznanie uprawnień dostępności współdzielonemu plikowi wykonywalnemu `node`, każdy pakiet JavaScript uruchomiony za pomocą tego samego pliku wykonywalnego może odziedziczyć uprawnienia do automatyzacji interfejsu graficznego.
 
-Traktuj wpis `node` w Ustawieniach systemowych jako szerokie uprawnienie dla tego środowiska uruchomieniowego Node, a nie jako uprawnienie dla jednego pakietu npm. Unikaj nadawania Accessibility `node`, chyba że ufasz każdemu skryptowi i pakietowi uruchamianemu przez dokładnie tę instalację Node.
+Traktuj wpis `node` w Ustawieniach systemowych jako szerokie uprawnienie dla danego środowiska uruchomieniowego Node, a nie jako uprawnienie dla pojedynczego pakietu npm. Nie przyznawaj uprawnień dostępności procesowi `node`, chyba że ufasz każdemu skryptowi i pakietowi uruchamianemu za pomocą dokładnie tej instalacji Node.
 
-Jeśli przypadkowo nadano Accessibility `node`, usuń ten wpis z Ustawień systemowych -> Prywatność i bezpieczeństwo -> Accessibility. Następnie nadaj uprawnienie podpisanej aplikacji lub narzędziu pomocniczemu, które powinno odpowiadać za automatyzację UI.
+Jeśli przypadkowo przyznasz procesowi `node` uprawnienia dostępności, usuń ten wpis w System Settings -> Privacy & Security -> Accessibility. Następnie przyznaj je podpisanej aplikacji lub programowi pomocniczemu, który powinien odpowiadać za automatyzację interfejsu użytkownika.
 
 ## Lista kontrolna odzyskiwania, gdy monity znikną
 
 1. Zamknij aplikację.
-2. Usuń wpis aplikacji w Ustawieniach systemowych -> Prywatność i ochrona.
-3. Uruchom aplikację ponownie z tej samej ścieżki i ponownie przyznaj uprawnienia.
+2. Usuń wpis aplikacji w System Settings -> Privacy & Security.
+3. Uruchom ponownie aplikację z tej samej ścieżki i ponownie przyznaj uprawnienia.
 4. Jeśli monit nadal się nie pojawia, zresetuj wpisy TCC za pomocą `tccutil` i spróbuj ponownie.
-5. Niektóre uprawnienia pojawiają się ponownie dopiero po pełnym restarcie macOS.
+5. Niektóre uprawnienia pojawiają się ponownie dopiero po pełnym ponownym uruchomieniu macOS.
 
-Przykładowe resetowanie (w razie potrzeby zastąp identyfikator pakietu):
+Przykładowe polecenia resetowania (z użyciem identyfikatora pakietu OpenClaw, `ai.openclaw.mac`):
 
 ```bash
 sudo tccutil reset Accessibility ai.openclaw.mac
@@ -55,14 +55,13 @@ sudo tccutil reset AppleEvents
 
 ## Uprawnienia do plików i folderów (Biurko/Dokumenty/Pobrane)
 
-macOS może również ograniczać dostęp do Biurka, Dokumentów i Pobranych dla procesów terminalowych/w tle. Jeśli odczyt plików lub wyświetlanie zawartości katalogów się zawiesza, przyznaj dostęp temu samemu kontekstowi procesu, który wykonuje operacje na plikach (na przykład Terminal/iTerm, aplikacja uruchomiona przez LaunchAgent albo proces SSH).
+macOS może również ograniczać procesom terminalowym i działającym w tle dostęp do folderów Biurko, Dokumenty i Pobrane. Jeśli odczytywanie plików lub wyświetlanie zawartości katalogów się zawiesza, przyznaj dostęp temu samemu kontekstowi procesu, który wykonuje operacje na plikach (na przykład Terminalowi/iTermowi, aplikacji uruchamianej przez LaunchAgent lub procesowi SSH).
 
-Obejście: przenieś pliki do przestrzeni roboczej OpenClaw (`~/.openclaw/workspace`), jeśli chcesz uniknąć przyznawania uprawnień dla poszczególnych folderów.
+Obejście: przenieś pliki do przestrzeni roboczej OpenClaw (`~/.openclaw/workspace`), jeśli chcesz uniknąć przyznawania uprawnień osobno dla poszczególnych folderów.
 
-Jeśli testujesz uprawnienia, zawsze podpisuj prawdziwym certyfikatem. Kompilacje ad hoc
-są akceptowalne tylko do szybkich lokalnych uruchomień, w których uprawnienia nie mają znaczenia.
+Podczas testowania uprawnień zawsze podpisuj aplikację właściwym certyfikatem. Kompilacje podpisane doraźnie są dopuszczalne tylko do szybkich uruchomień lokalnych, w których uprawnienia nie mają znaczenia.
 
 ## Powiązane
 
-- [Aplikacja macOS](/pl/platforms/macos)
-- [Podpisywanie macOS](/pl/platforms/mac/signing)
+- [Aplikacja dla macOS](/pl/platforms/macos)
+- [Podpisywanie aplikacji dla macOS](/pl/platforms/mac/signing)

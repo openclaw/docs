@@ -1,38 +1,41 @@
 ---
 read_when:
-    - OpenClaw'da ElevenLabs metinden konuşmaya özelliğini istiyorsunuz
-    - Ses ekleri için ElevenLabs Scribe konuşmayı metne dönüştürmeyi istiyorsunuz
-    - Voice Call veya Google Meet için ElevenLabs gerçek zamanlı transkripsiyon istiyorsunuz
-summary: OpenClaw ile ElevenLabs konuşma, Scribe STT ve gerçek zamanlı transkripsiyon kullanın
+    - OpenClaw'da ElevenLabs metinden konuşmaya özelliğini kullanmak istiyorsunuz
+    - Ses ekleri için ElevenLabs Scribe konuşmayı metne dönüştürme özelliğini istiyorsunuz
+    - Voice Call veya Google Meet için ElevenLabs gerçek zamanlı transkripsiyonunu istiyorsunuz
+summary: OpenClaw ile ElevenLabs konuşma, Scribe konuşmadan metne dönüştürme ve gerçek zamanlı transkripsiyon özelliklerini kullanın
 title: ElevenLabs
 x-i18n:
-    generated_at: "2026-06-28T01:10:00Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:42:23Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 126161d7e378382700f203efa9bce1bdd5fe7267b230e2d3d0e45112407d6a7b
+    source_hash: c11b727bb0b1d645c424821dd1bc54c7109d50bd31e3853d04dfa25916bc66c7
     source_path: providers/elevenlabs.md
     workflow: 16
 ---
 
-OpenClaw, metinden sese, Scribe v2 ile toplu konuşmadan metne ve Scribe v2 Realtime ile akışlı STT için ElevenLabs kullanır.
+OpenClaw; metinden konuşmaya dönüştürme için ElevenLabs'i, Scribe v2 ile toplu
+konuşmadan metne dönüştürmeyi ve Scribe v2 Realtime ile akışlı STT'yi kullanır.
+Plugin paketle birlikte gelir ve varsayılan olarak etkindir; `plugins install`
+adımı gerekmez.
 
-| Yetenek                  | OpenClaw yüzeyi                                                     | Varsayılan               |
-| ------------------------ | -------------------------------------------------------------------- | ------------------------ |
-| Metinden sese            | `messages.tts` / `talk`                                              | `eleven_multilingual_v2` |
-| Toplu konuşmadan metne   | `tools.media.audio`                                                  | `scribe_v2`              |
-| Akışlı konuşmadan metne  | Sesli Arama akışı veya Google Meet `realtime.transcriptionProvider` | `scribe_v2_realtime`     |
+| Yetenek                      | OpenClaw yüzeyi                                                      | Varsayılan               |
+| ---------------------------- | -------------------------------------------------------------------- | ------------------------ |
+| Metinden konuşmaya           | `messages.tts` / `talk`                                              | `eleven_multilingual_v2` |
+| Toplu konuşmadan metne       | `tools.media.audio`                                                  | `scribe_v2`              |
+| Akışlı konuşmadan metne      | Voice Call akışı veya Google Meet `realtime.transcriptionProvider`   | `scribe_v2_realtime`     |
 
-## Kimlik Doğrulama
+## Kimlik doğrulama
 
-Ortamda `ELEVENLABS_API_KEY` ayarlayın. Mevcut ElevenLabs araçlarıyla
+Ortamda `ELEVENLABS_API_KEY` değerini ayarlayın. Mevcut ElevenLabs araçlarıyla
 uyumluluk için `XI_API_KEY` de kabul edilir.
 
 ```bash
 export ELEVENLABS_API_KEY="..."
 ```
 
-## Metinden sese
+## Metinden konuşmaya
 
 ```json5
 {
@@ -41,7 +44,7 @@ export ELEVENLABS_API_KEY="..."
       providers: {
         elevenlabs: {
           apiKey: "${ELEVENLABS_API_KEY}",
-          speakerVoiceId: "pMsXgVXv3BLzUgSXRplE",
+          voiceId: "pMsXgVXv3BLzUgSXRplE",
           modelId: "eleven_multilingual_v2",
         },
       },
@@ -50,19 +53,20 @@ export ELEVENLABS_API_KEY="..."
 }
 ```
 
-ElevenLabs v3 TTS kullanmak için `modelId` değerini `eleven_v3` olarak ayarlayın. OpenClaw,
-mevcut kurulumlar için varsayılan olarak `eleven_multilingual_v2` değerini korur.
+ElevenLabs v3 TTS'yi kullanmak için `modelId` değerini `eleven_v3` olarak
+ayarlayın. OpenClaw, mevcut kurulumlar için `eleven_multilingual_v2` değerini
+varsayılan olarak korur.
 
-Discord ses kanalları, ElevenLabs seçili `voice.tts`/`messages.tts` sağlayıcısı
-olduğunda ElevenLabs'in akışlı TTS uç noktasını kullanır. Oynatma, OpenClaw'ın
-önce tüm ses dosyasını indirip yazmasını beklemek yerine döndürülen ses akışından
-başlar. `latencyTier`, bunu kabul eden modeller için ElevenLabs'in
-`optimize_streaming_latency` sorgu parametresine eşlenir; OpenClaw, bunu reddeden
-`eleven_v3` için bu parametreyi atlar.
+ElevenLabs seçili `voice.tts`/`messages.tts` sağlayıcısı olduğunda Discord ses
+kanalları, ElevenLabs'in akışlı TTS uç noktasını kullanır: oynatma, OpenClaw'ın
+önce ses dosyasının tamamını indirmesini beklemek yerine döndürülen ses
+akışından başlar. `latencyTier`, bunu kabul eden modeller için ElevenLabs'in
+`optimize_streaming_latency` sorgu parametresine eşlenir; OpenClaw bu parametreyi
+reddeden `eleven_v3` için parametreyi göndermez.
 
 ## Konuşmadan metne
 
-Gelen ses ekleri ve kısa kaydedilmiş ses segmentleri için Scribe v2 kullanın:
+Gelen ses ekleri ve kısa kaydedilmiş ses bölümleri için Scribe v2'yi kullanın:
 
 ```json5
 {
@@ -77,22 +81,23 @@ Gelen ses ekleri ve kısa kaydedilmiş ses segmentleri için Scribe v2 kullanın
 }
 ```
 
-OpenClaw, `model_id: "scribe_v2"` ile ElevenLabs `/v1/speech-to-text` adresine
-multipart ses gönderir. Dil ipuçları, varsa `language_code` değerine eşlenir.
+OpenClaw, çok parçalı sesi `model_id: "scribe_v2"` ile ElevenLabs
+`/v1/speech-to-text` uç noktasına gönderir. Dil ipuçları mevcut olduğunda
+`language_code` değerine eşlenir.
 
 ## Akışlı STT
 
-Paketle birlikte gelen `elevenlabs` plugin'i, Sesli Arama ve Google Meet ajan modu
+Paketle birlikte gelen `elevenlabs` Plugin'i, Voice Call ve Google Meet ajan modu
 akışlı transkripsiyonu için Scribe v2 Realtime'ı kaydeder.
 
-| Ayar            | Yapılandırma yolu                                                       | Varsayılan                                        |
-| --------------- | ------------------------------------------------------------------------- | ------------------------------------------------- |
-| API anahtarı    | `plugins.entries.voice-call.config.streaming.providers.elevenlabs.apiKey` | `ELEVENLABS_API_KEY` / `XI_API_KEY` değerine geri döner |
-| Model           | `...elevenlabs.modelId`                                                   | `scribe_v2_realtime`                              |
-| Ses biçimi      | `...elevenlabs.audioFormat`                                               | `ulaw_8000`                                       |
-| Örnekleme hızı  | `...elevenlabs.sampleRate`                                                | `8000`                                            |
-| Commit stratejisi | `...elevenlabs.commitStrategy`                                            | `vad`                                             |
-| Dil             | `...elevenlabs.languageCode`                                              | (ayarlanmamış)                                    |
+| Ayar                  | Yapılandırma yolu                                                         | Varsayılan                                      |
+| --------------------- | ------------------------------------------------------------------------- | ----------------------------------------------- |
+| API anahtarı          | `plugins.entries.voice-call.config.streaming.providers.elevenlabs.apiKey` | `ELEVENLABS_API_KEY` / `XI_API_KEY` değerine geri döner |
+| Model                 | `...elevenlabs.modelId`                                                   | `scribe_v2_realtime`                            |
+| Ses biçimi            | `...elevenlabs.audioFormat`                                               | `ulaw_8000`                                     |
+| Örnekleme hızı        | `...elevenlabs.sampleRate`                                                | `8000`                                          |
+| Gönderim stratejisi   | `...elevenlabs.commitStrategy`                                            | `vad`                                           |
+| Dil                   | `...elevenlabs.languageCode`                                              | (ayarlanmamış)                                  |
 
 ```json5
 {
@@ -120,18 +125,19 @@ akışlı transkripsiyonu için Scribe v2 Realtime'ı kaydeder.
 ```
 
 <Note>
-Sesli Arama, Twilio medyasını 8 kHz G.711 u-law olarak alır. ElevenLabs realtime
-sağlayıcısı varsayılan olarak `ulaw_8000` kullanır, böylece telefon çerçeveleri
-transkodlama olmadan iletilebilir.
+Voice Call, Twilio medyasını 8 kHz G.711 u-law olarak alır. ElevenLabs gerçek
+zamanlı sağlayıcısı varsayılan olarak `ulaw_8000` kullanır; böylece telefon
+çerçeveleri kod dönüştürme yapılmadan iletilebilir.
 </Note>
 
 Google Meet ajan modu için
 `plugins.entries.google-meet.config.realtime.transcriptionProvider` değerini
 `"elevenlabs"` olarak ayarlayın ve aynı sağlayıcı bloğunu
-`plugins.entries.google-meet.config.realtime.providers.elevenlabs` altında yapılandırın.
+`plugins.entries.google-meet.config.realtime.providers.elevenlabs` altında
+yapılandırın.
 
-## İlgili
+## İlgili konular
 
-- [Metinden sese](/tr/tools/tts)
+- [Metinden konuşmaya](/tr/tools/tts)
 - [Google Meet](/tr/plugins/google-meet)
 - [Model seçimi](/tr/concepts/model-providers)

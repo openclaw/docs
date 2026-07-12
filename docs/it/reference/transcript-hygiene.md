@@ -1,136 +1,152 @@
 ---
 read_when:
     - Stai eseguendo il debug dei rifiuti delle richieste del provider legati alla struttura della trascrizione
-    - Stai modificando la sanificazione della trascrizione o la logica di riparazione delle chiamate agli strumenti
-    - Stai esaminando le discrepanze degli ID delle chiamate agli strumenti tra provider
-summary: 'Riferimento: regole di sanificazione e riparazione delle trascrizioni specifiche del provider'
-title: Igiene della trascrizione
+    - Stai modificando la logica di sanificazione delle trascrizioni o di riparazione delle chiamate agli strumenti
+    - Stai esaminando le discrepanze negli ID delle chiamate agli strumenti tra i vari provider
+summary: 'Riferimento: regole specifiche del provider per la sanitizzazione e la riparazione delle trascrizioni'
+title: Igiene delle trascrizioni
 x-i18n:
-    generated_at: "2026-06-27T18:15:48Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:29:14Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ca1c747b33dc0d6730281d6c91d28a0f8a85bcc5e5cb00dbdebdb55157871a7d
+    source_hash: 4c78d718106498e92c34e3ad6af452a340f230fa88fbf3da36a568e9814ec759
     source_path: reference/transcript-hygiene.md
     workflow: 16
 ---
 
-OpenClaw applica **correzioni specifiche per provider** alle trascrizioni prima di un'esecuzione (durante la costruzione del contesto del modello). La maggior parte di queste sono regolazioni **in memoria** usate per soddisfare requisiti rigorosi dei provider. Un passaggio separato di riparazione del file di sessione può anche riscrivere il JSONL archiviato prima che la sessione venga caricata, ma solo per righe malformate o turni persistiti che sono record durevoli non validi. Le risposte dell'assistente consegnate vengono preservate su disco; la rimozione del prefill dell'assistente specifica per provider avviene solo durante la costruzione dei payload in uscita. Quando avviene una riparazione, il file originale viene scritto in un file sibling transitorio `*.bak-<pid>-<ts>` prima della sostituzione atomica e rimosso una volta che la sostituzione riesce; il backup viene conservato solo se la pulizia stessa non riesce (nel qual caso il percorso viene riportato).
+OpenClaw applica **correzioni specifiche per provider** alle trascrizioni prima di un'esecuzione
+(durante la creazione del contesto del modello). La maggior parte consiste in modifiche **in memoria** usate per
+soddisfare i rigidi requisiti dei provider. Un passaggio separato di riparazione del file di sessione può
+anche riscrivere i dati JSONL archiviati prima del caricamento della sessione, ma solo in presenza di
+righe non valide o turni persistenti che non costituiscono record durevoli validi.
+Le risposte dell'assistente recapitate vengono conservate su disco; la rimozione dei
+prefill dell'assistente specifica per provider avviene solo durante la costruzione dei
+payload in uscita.
+
+Quando viene effettuata una riparazione, il file originale viene scritto in un file
+adiacente temporaneo `*.bak-<pid>-<ts>` prima della sostituzione atomica, quindi rimosso quando
+la sostituzione ha esito positivo. Il backup viene conservato solo se la pulizia non riesce,
+nel qual caso viene restituito il percorso.
 
 L'ambito include:
 
-- Contesto del prompt solo runtime che resta fuori dai turni di trascrizione visibili all'utente
-- Sanificazione degli id delle chiamate agli strumenti
-- Validazione dell'input delle chiamate agli strumenti
-- Riparazione dell'abbinamento dei risultati degli strumenti
-- Validazione / ordinamento dei turni
+- Esclusione del contesto del prompt riservato al runtime dai turni della trascrizione visibili all'utente
+- Sanificazione degli ID delle chiamate agli strumenti
+- Convalida dell'input delle chiamate agli strumenti
+- Riparazione dell'associazione dei risultati degli strumenti
+- Convalida/ordinamento dei turni
 - Pulizia delle firme dei pensieri
-- Pulizia delle firme di Thinking
-- Sanificazione dei payload immagine
-- Pulizia dei blocchi di testo vuoti prima della riproduzione del provider
-- Pulizia dei turni di lunghezza incompleti solo di ragionamento prima della riproduzione del provider
-- Marcatura della provenienza dell'input utente (per prompt instradati tra sessioni)
-- Riparazione dei turni di errore dell'assistente vuoti per la riproduzione Bedrock Converse
+- Pulizia delle firme di ragionamento
+- Sanificazione dei payload delle immagini
+- Pulizia dei blocchi di testo vuoti prima della riproduzione per il provider
+- Pulizia dei turni incompleti per limite di lunghezza contenenti solo ragionamento prima della riproduzione per il provider
+- Aggiunta di tag di provenienza all'input dell'utente (per i prompt instradati tra sessioni)
+- Riparazione dei turni di errore vuoti dell'assistente per la riproduzione di Bedrock Converse
 
-Se hai bisogno dei dettagli di archiviazione delle trascrizioni, vedi:
-
-- [Approfondimento sulla gestione delle sessioni](/it/reference/session-management-compaction)
+Per i dettagli sull'archiviazione delle trascrizioni, consulta
+[Approfondimento sulla gestione delle sessioni](/it/reference/session-management-compaction).
 
 ---
 
-## Regola globale: il contesto runtime non è trascrizione utente
+## Regola globale: il contesto di runtime non è la trascrizione dell'utente
 
-Il contesto runtime/di sistema può essere aggiunto al prompt del modello per un turno, ma non è
-contenuto creato dall'utente finale. OpenClaw mantiene un corpo del prompt separato
-rivolto alla trascrizione per risposte Gateway, follow-up in coda, ACP, CLI ed esecuzioni OpenClaw
-incorporate. I turni utente visibili archiviati usano quel corpo della trascrizione invece del
-prompt arricchito dal runtime.
+Il contesto di runtime/sistema può essere aggiunto al prompt del modello per un turno, ma non è
+contenuto creato dall'utente finale. OpenClaw mantiene un corpo del prompt separato destinato alla
+trascrizione per le risposte del Gateway, i follow-up in coda, ACP, CLI e le esecuzioni
+incorporate di OpenClaw. I turni utente visibili archiviati usano tale corpo della trascrizione anziché
+il prompt arricchito con il contesto di runtime.
 
-Per le sessioni legacy che hanno già persistito wrapper runtime, le superfici della cronologia Gateway
-applicano una proiezione di visualizzazione prima di restituire i messaggi a WebChat,
-TUI, client REST o SSE.
+Per le sessioni legacy che hanno già reso persistenti i wrapper di runtime, le superfici della cronologia del Gateway
+applicano una proiezione di visualizzazione prima di restituire i messaggi ai client WebChat,
+TUI, REST o SSE.
 
 ---
 
 ## Dove viene eseguito
 
-Tutta l'igiene delle trascrizioni è centralizzata nel runner incorporato:
+Tutta la gestione dell'integrità delle trascrizioni è centralizzata nell'esecutore incorporato:
 
-- Selezione della policy: `src/agents/transcript-policy.ts`
-- Applicazione della sanificazione/riparazione: `sanitizeSessionHistory` in `src/agents/embedded-agent-runner/replay-history.ts`
+- Selezione dei criteri: `src/agents/transcript-policy.ts`
+  (`resolveTranscriptPolicy`, basata su `provider`, `modelApi` e `modelId`)
+- Applicazione della sanificazione/riparazione: `sanitizeSessionHistory` in
+  `src/agents/embedded-agent-runner/replay-history.ts`
 
-La policy usa `provider`, `modelApi` e `modelId` per decidere cosa applicare.
-
-Separatamente dall'igiene delle trascrizioni, i file di sessione vengono riparati (se necessario) prima del caricamento:
+Separatamente dalla gestione dell'integrità delle trascrizioni, i file di sessione vengono riparati (se necessario)
+prima del caricamento:
 
 - `repairSessionFileIfNeeded` in `src/agents/session-file-repair.ts`
-- Chiamato da `run/attempt.ts` e `compact.ts` (runner incorporato)
+- Chiamata da `src/agents/embedded-agent-runner/run/attempt.ts` e
+  `src/agents/embedded-agent-runner/compact.ts`
 
 ---
 
 ## Regola globale: sanificazione delle immagini
 
-I payload immagine vengono sempre sanificati per prevenire rifiuti lato provider dovuti ai limiti
-di dimensione (ridimensionamento/ricompressione delle immagini base64 sovradimensionate).
-
-Questo aiuta anche a controllare la pressione sui token guidata dalle immagini per i modelli con capacità di visione.
-Dimensioni massime inferiori in genere riducono l'uso di token; dimensioni superiori preservano i dettagli.
+I payload delle immagini vengono sempre sanificati per evitare che il provider li rifiuti a causa dei
+limiti di dimensione (ridimensionamento/ricompressione delle immagini base64 troppo grandi). Ciò contribuisce anche
+a controllare il consumo di token causato dalle immagini per i modelli con capacità visive: dimensioni massime
+inferiori riducono l'utilizzo di token, mentre dimensioni superiori preservano i dettagli.
 
 Implementazione:
 
-- `sanitizeSessionMessagesImages` in `src/agents/embedded-agent-helpers/images.ts`
+- `sanitizeSessionMessagesImages` in
+  `src/agents/embedded-agent-helpers/images.ts`
 - `sanitizeContentBlocksImages` in `src/agents/tool-images.ts`
-- Il lato massimo dell'immagine è configurabile tramite `agents.defaults.imageMaxDimensionPx` (predefinito: `1200`).
-- I blocchi di testo vuoti vengono rimossi mentre questo passaggio attraversa il contenuto di riproduzione. I turni dell'assistente
-  che diventano vuoti vengono eliminati dalla copia di riproduzione; i turni utente e di risultato degli strumenti
-  che diventano vuoti ricevono un segnaposto non vuoto di contenuto omesso.
+- Il lato massimo dell'immagine è configurabile tramite `agents.defaults.imageMaxDimensionPx`
+  (valore predefinito: `1200`)
+- I blocchi di testo vuoti vengono rimossi mentre questo passaggio esamina il contenuto da riprodurre.
+  I turni dell'assistente che diventano vuoti vengono eliminati dalla copia da riprodurre; i turni
+  dell'utente e dei risultati degli strumenti che diventano vuoti ricevono un segnaposto non vuoto
+  per il contenuto omesso.
 
 ---
 
-## Regola globale: chiamate agli strumenti malformate
+## Regola globale: chiamate agli strumenti non valide
 
-I blocchi di chiamata agli strumenti dell'assistente a cui mancano sia `input` sia `arguments` vengono eliminati
-prima che il contesto del modello venga costruito. Questo evita rifiuti dei provider causati da chiamate agli strumenti
-persistite parzialmente (ad esempio dopo un errore di limite di frequenza).
+I blocchi delle chiamate agli strumenti dell'assistente privi sia di `input` sia di `arguments` vengono eliminati
+prima della costruzione del contesto del modello. Ciò evita i rifiuti da parte del provider causati da
+chiamate agli strumenti rese persistenti solo parzialmente (ad esempio, dopo un errore dovuto al limite di frequenza).
 
 Implementazione:
 
 - `sanitizeToolCallInputs` in `src/agents/session-transcript-repair.ts`
-- Applicato in `sanitizeSessionHistory` in `src/agents/embedded-agent-runner/replay-history.ts`
+- Applicata in `sanitizeSessionHistory`
+  (`src/agents/embedded-agent-runner/replay-history.ts`)
 
 ---
 
-## Regola globale: turni incompleti solo di ragionamento
+## Regola globale: turni incompleti contenenti solo ragionamento
 
-I turni dell'assistente che raggiungono il limite di output del provider con solo contenuto Thinking o
-Thinking redatto vengono omessi dalla copia di riproduzione in memoria. Tali turni
-contengono stato provider incompleto e possono includere una firma Thinking parziale.
+I turni dell'assistente che raggiungono il limite di output del provider contenendo solo ragionamento o
+contenuto di ragionamento oscurato vengono omessi dalla copia in memoria da riprodurre. Tali
+turni contengono uno stato incompleto del provider e possono includere una firma di ragionamento
+parziale.
 
-I turni di lunghezza vuoti restano invariati, così come i turni di lunghezza con testo visibile, chiamate agli strumenti
-o blocchi di contenuto sconosciuti. Le trascrizioni archiviate non vengono riscritte.
+I turni vuoti terminati per limite di lunghezza rimangono invariati, così come quelli con testo visibile,
+chiamate agli strumenti o blocchi di contenuto sconosciuti. Le trascrizioni archiviate non vengono riscritte.
 
-Implementazione:
-
-- `normalizeAssistantReplayContent` in `src/agents/embedded-agent-runner/replay-history.ts`
+Implementazione: `normalizeAssistantReplayContent` in
+`src/agents/embedded-agent-runner/replay-history.ts`
 
 ---
 
 ## Regola globale: provenienza dell'input tra sessioni
 
-Quando un agente invia un prompt in un'altra sessione tramite `sessions_send` (inclusi
-i passaggi di risposta/annuncio da agente ad agente), OpenClaw persiste il turno utente creato con:
+Quando un agente invia un prompt a un'altra sessione tramite `sessions_send`
+(inclusi i passaggi di risposta/annuncio da agente ad agente), OpenClaw rende persistente il
+turno utente creato con `message.provenance.kind = "inter_session"`.
 
-- `message.provenance.kind = "inter_session"`
-
-OpenClaw antepone anche un marcatore dello stesso turno `[Inter-session message ... isUser=false]`
-prima del testo del prompt instradato, così la chiamata attiva al modello può distinguere
-l'output di sessioni esterne dalle istruzioni esterne dell'utente finale. Questo marcatore include
-la sessione sorgente, il canale e lo strumento quando disponibili. La trascrizione usa ancora
-`role: "user"` per compatibilità con i provider, ma sia il testo visibile sia i metadati di provenienza
-marcano il turno come dati tra sessioni.
+OpenClaw antepone inoltre, nello stesso turno, un marcatore `[Messaggio tra sessioni] ... isUser=false`
+prima del testo del prompt instradato, in modo che la chiamata attiva al modello possa
+distinguere l'output di una sessione esterna dalle istruzioni dell'utente finale esterno. Questo
+marcatore include la sessione, il canale e lo strumento di origine, quando disponibili. La
+trascrizione continua a usare `role: "user"` per la compatibilità con il provider, ma sia il
+testo visibile sia i metadati di provenienza contrassegnano il turno come dati
+tra sessioni.
 
 Durante la ricostruzione del contesto, OpenClaw applica lo stesso marcatore ai turni utente
-tra sessioni persistiti in precedenza che hanno solo metadati di provenienza.
+tra sessioni persistenti meno recenti che dispongono solo dei metadati di provenienza.
 
 ---
 
@@ -139,86 +155,102 @@ tra sessioni persistiti in precedenza che hanno solo metadati di provenienza.
 **OpenAI / OpenAI Codex**
 
 - Solo sanificazione delle immagini.
-- Elimina le firme di ragionamento orfane (elementi di ragionamento autonomi senza un blocco di contenuto successivo) per le trascrizioni OpenAI Responses/Codex, ed elimina il ragionamento OpenAI riproducibile dopo un cambio di route del modello.
-- Preserva i payload degli elementi di ragionamento OpenAI Responses riproducibili, inclusi gli elementi di riepilogo vuoti cifrati, così la riproduzione manuale/WebSocket mantiene lo stato `rs_*` richiesto abbinato agli elementi di output dell'assistente.
-- Native ChatGPT Codex Responses segue la parità wire di Codex riproducendo i payload precedenti di ragionamento/messaggio/funzione di Responses senza ID degli elementi precedenti, preservando al contempo il `prompt_cache_key` della sessione.
-- La riproduzione della famiglia OpenAI Responses preserva le coppie di ragionamento canoniche `call_*|fc_*` dello stesso modello, ma normalizza deterministicamente gli id `call_id` / elementi di chiamata funzione malformati o troppo lunghi prima della conversione del payload pi-ai.
-- La riparazione dell'abbinamento dei risultati degli strumenti può spostare output reali corrispondenti e sintetizzare output in stile Codex `aborted` per chiamate agli strumenti mancanti.
-- Nessuna validazione o riordinamento dei turni.
-- Gli output degli strumenti mancanti della famiglia OpenAI Responses vengono sintetizzati come `aborted` per corrispondere alla normalizzazione della riproduzione Codex.
-- Nessuna rimozione delle firme dei pensieri.
+- Elimina le firme di ragionamento orfane (elementi di ragionamento autonomi senza un
+  blocco di contenuto successivo) dalle trascrizioni OpenAI Responses/Codex ed elimina il
+  ragionamento OpenAI riproducibile dopo un cambio di instradamento del modello.
+- Mantiene i payload degli elementi di ragionamento riproducibili di OpenAI Responses, inclusi
+  gli elementi cifrati con riepilogo vuoto, affinché la riproduzione manuale/WebSocket mantenga lo stato
+  `rs_*` richiesto associato agli elementi di output dell'assistente.
+- ChatGPT Codex Responses nativo mantiene la parità con il protocollo Codex riproducendo
+  i precedenti payload di ragionamento/messaggio/funzione di Responses senza gli ID degli elementi
+  precedenti, preservando al contempo il `prompt_cache_key` della sessione.
+- La riproduzione della famiglia OpenAI Responses conserva le coppie canoniche
+  `call_*|fc_*` di ragionamento dello stesso modello, ma normalizza in modo deterministico gli ID
+  `call_id`/degli elementi delle chiamate di funzione non validi o troppo lunghi prima della conversione del payload pi-ai.
+- La riparazione dell'associazione dei risultati degli strumenti può spostare output reali corrispondenti e sintetizzare
+  output `aborted` in stile Codex per le chiamate agli strumenti mancanti.
+- Nessuna convalida o riordinamento dei turni; nessuna rimozione delle firme dei pensieri.
 
 **Chat Completions compatibili con OpenAI**
 
-- I blocchi storici di Thinking/ragionamento dell'assistente vengono rimossi prima della riproduzione affinché
-  i server locali e proxy-style compatibili con OpenAI non ricevano campi di ragionamento di turni precedenti
-  come `reasoning` o `reasoning_content`.
-- Le continuazioni di chiamata agli strumenti nello stesso turno corrente mantengono il blocco di ragionamento dell'assistente
-  collegato alla chiamata allo strumento finché il risultato dello strumento non è stato riprodotto.
-- Le voci di modelli personalizzati/self-hosted con `reasoning: true` preservano i metadati di ragionamento
-  riprodotti.
-- Le eccezioni di proprietà del provider possono optare per l'esclusione quando il loro protocollo wire richiede
-  metadati di ragionamento riprodotti.
+- I blocchi storici di pensiero/ragionamento dell'assistente vengono rimossi prima della riproduzione,
+  affinché i server locali e i proxy compatibili con OpenAI non ricevano
+  campi di ragionamento dei turni precedenti come `reasoning` o `reasoning_content`.
+- Le prosecuzioni delle chiamate agli strumenti nello stesso turno corrente mantengono il blocco di ragionamento
+  dell'assistente associato alla chiamata dello strumento finché il risultato dello strumento non è stato riprodotto.
+- Le voci dei modelli personalizzati/self-hosted con `reasoning: true` conservano i metadati
+  di ragionamento riprodotti.
+- Le eccezioni di proprietà del provider possono disattivare questo comportamento quando il relativo protocollo richiede
+  i metadati di ragionamento riprodotti.
 
 **Google (Generative AI / Gemini CLI / Antigravity)**
 
-- Sanificazione degli id delle chiamate agli strumenti: alfanumerico rigoroso.
-- Riparazione dell'abbinamento dei risultati degli strumenti e risultati degli strumenti sintetici.
-- Validazione dei turni (alternanza dei turni in stile Gemini).
-- Correzione dell'ordinamento dei turni Google (anteporre un piccolo bootstrap utente se la cronologia inizia con l'assistente).
-- Antigravity Claude: normalizza le firme Thinking; elimina i blocchi Thinking non firmati.
+- Sanificazione degli ID delle chiamate agli strumenti: solo caratteri alfanumerici.
+- Riparazione dell'associazione dei risultati degli strumenti e risultati sintetici degli strumenti.
+- Convalida dei turni (alternanza dei turni in stile Gemini).
+- Correzione dell'ordinamento dei turni Google (antepone un piccolo messaggio utente di inizializzazione se la cronologia
+  inizia con l'assistente).
+- Antigravity Claude: normalizza le firme di ragionamento; elimina i blocchi di ragionamento
+  senza firma.
 
-**Anthropic / Minimax (compatibile con Anthropic)**
+**Anthropic / Minimax (compatibili con Anthropic)**
 
-- Riparazione dell'abbinamento dei risultati degli strumenti e risultati degli strumenti sintetici.
-- Validazione dei turni (unisce turni utente consecutivi per soddisfare l'alternanza rigorosa).
+- Riparazione dell'associazione dei risultati degli strumenti e risultati sintetici degli strumenti.
+- Convalida dei turni (unisce turni utente consecutivi per rispettare la rigida
+  alternanza).
 - I turni finali di prefill dell'assistente vengono rimossi dai payload Anthropic Messages
-  in uscita quando Thinking è abilitato, incluse le route Cloudflare AI Gateway.
-- Le firme Thinking dell'assistente pre-Compaction vengono rimosse prima della riproduzione del provider
-  quando una sessione è stata compattata. Le firme Thinking sono legate crittograficamente
-  al prefisso della conversazione al momento della generazione; dopo la Compaction il prefisso cambia
-  (il contenuto riepilogato viene sostituito da un riepilogo di Compaction), quindi riprodurre
-  le firme originali fa sì che Anthropic rifiuti la richiesta con "Invalid signature in thinking block".
-  Il testo Thinking viene preservato come blocco non firmato e viene poi gestito dalla regola sotto.
-- I blocchi Thinking con firme di riproduzione mancanti, vuote o blank vengono rimossi
-  prima della conversione del provider. Se questo svuota un turno dell'assistente, OpenClaw mantiene
-  la forma del turno con testo non vuoto di ragionamento omesso.
-- I turni dell'assistente più vecchi solo Thinking che devono essere rimossi vengono sostituiti con
-  testo non vuoto di ragionamento omesso, così gli adattatori dei provider non eliminano il turno
-  di riproduzione.
+  in uscita quando il ragionamento è abilitato, incluse le route Cloudflare AI
+  Gateway.
+- Le firme di ragionamento dell'assistente precedenti alla Compaction vengono rimosse prima della
+  riproduzione per il provider quando una sessione è stata sottoposta a Compaction. Le firme di ragionamento sono
+  vincolate crittograficamente al prefisso della conversazione al momento della generazione;
+  dopo la Compaction il prefisso cambia (il contenuto riepilogato sostituisce
+  l'originale), pertanto la riproduzione delle firme originali induce Anthropic a
+  rifiutare la richiesta con "Invalid signature in thinking block". Il
+  testo del ragionamento viene conservato come blocco senza firma e quindi gestito dalla
+  regola seguente.
+- I blocchi di ragionamento con firme di riproduzione mancanti, vuote o contenenti solo spazi vengono
+  rimossi prima della conversione per il provider. Se ciò rende vuoto un turno dell'assistente,
+  OpenClaw mantiene la struttura del turno con testo non vuoto per il ragionamento omesso.
+- I turni meno recenti dell'assistente contenenti solo ragionamento che devono essere rimossi vengono sostituiti
+  con testo non vuoto per il ragionamento omesso, affinché gli adattatori del provider non eliminino
+  il turno da riprodurre.
 
 **Amazon Bedrock (Converse API)**
 
-- I turni di errore stream dell'assistente vuoti vengono riparati in un blocco di testo fallback non vuoto
-  prima della riproduzione. Bedrock Converse rifiuta i messaggi dell'assistente con `content: []`, quindi
-  anche i turni dell'assistente persistiti con `stopReason: "error"` e contenuto vuoto vengono
-  riparati su disco prima del caricamento.
-- I turni di errore stream dell'assistente che contengono solo blocchi di testo blank vengono eliminati
-  dalla copia di riproduzione in memoria invece di riprodurre un blocco blank non valido.
-- Le firme Thinking dell'assistente pre-Compaction vengono rimosse prima della riproduzione Converse
-  quando una sessione è stata compattata, per lo stesso motivo di Anthropic
-  sopra.
-- I blocchi Thinking di Claude con firme di riproduzione mancanti, vuote o blank vengono
-  rimossi prima della riproduzione Converse. Se questo svuota un turno dell'assistente, OpenClaw
-  mantiene la forma del turno con testo non vuoto di ragionamento omesso.
-- I turni dell'assistente più vecchi solo Thinking che devono essere rimossi vengono sostituiti con
-  testo non vuoto di ragionamento omesso, così la riproduzione Converse mantiene la forma rigorosa dei turni.
-- La riproduzione filtra i turni dell'assistente delivery-mirror di OpenClaw e iniettati dal gateway.
-- La sanificazione delle immagini si applica tramite la regola globale.
+- I turni vuoti dell'assistente con errore di streaming vengono riparati con un blocco di testo di
+  fallback non vuoto prima della riproduzione. Bedrock Converse rifiuta i messaggi dell'assistente
+  con `content: []`, pertanto anche i turni persistenti dell'assistente con `stopReason:
+"error"` e contenuto vuoto vengono riparati su disco prima del caricamento.
+- I turni dell'assistente con errore di streaming contenenti solo blocchi di testo vuoti vengono eliminati dalla
+  copia in memoria da riprodurre anziché riprodurre un blocco vuoto non valido.
+- Le firme di ragionamento dell'assistente precedenti alla Compaction vengono rimosse prima della riproduzione tramite Converse
+  quando una sessione è stata sottoposta a Compaction, per lo stesso motivo indicato sopra per
+  Anthropic.
+- I blocchi di ragionamento di Claude con firme di riproduzione mancanti, vuote o contenenti solo spazi
+  vengono rimossi prima della riproduzione tramite Converse. Se ciò rende vuoto un turno dell'assistente,
+  OpenClaw mantiene la struttura del turno con testo non vuoto per il ragionamento omesso.
+- I turni meno recenti dell'assistente contenenti solo ragionamento che devono essere rimossi vengono sostituiti
+  con testo non vuoto per il ragionamento omesso, affinché la riproduzione tramite Converse mantenga
+  la rigida struttura dei turni.
+- La riproduzione filtra i turni dell'assistente usati come mirror di recapito di OpenClaw e quelli inseriti
+  dal Gateway.
+- La sanificazione delle immagini viene applicata tramite la regola globale.
 
-**Mistral (incluso il rilevamento basato su model-id)**
+**Mistral (incluso il rilevamento basato sull'ID del modello)**
 
-- Sanificazione degli id delle chiamate agli strumenti: strict9 (alfanumerico di lunghezza 9).
+- Sanificazione degli ID delle chiamate agli strumenti: strict9 (alfanumerici, lunghezza 9).
 
 **OpenRouter Gemini**
 
-- Pulizia delle firme dei pensieri: rimuove i valori `thought_signature` non base64 (mantiene base64).
+- Pulizia delle firme dei pensieri: rimuove i valori `thought_signature` non in base64
+  (mantiene quelli in base64).
 
 **OpenRouter Anthropic**
 
-- I turni finali di prefill dell'assistente vengono rimossi dai payload dei modelli Anthropic
-  verificati compatibili con OpenAI di OpenRouter quando il ragionamento è abilitato, in modo coerente
-  con il comportamento di riproduzione diretto Anthropic e Cloudflare Anthropic.
+- I turni finali di prefill dell'assistente vengono rimossi dai payload verificati dei modelli Anthropic
+  compatibili con OpenAI di OpenRouter quando il ragionamento è abilitato,
+  in linea con il comportamento di riproduzione di Anthropic diretto e Cloudflare Anthropic.
 
 **Tutto il resto**
 
@@ -226,24 +258,28 @@ tra sessioni persistiti in precedenza che hanno solo metadati di provenienza.
 
 ---
 
-## Comportamento storico (prima della 2026.1.22)
+## Comportamento storico (precedente alla versione 2026.1.22)
 
-Prima della release 2026.1.22, OpenClaw applicava più livelli di igiene delle trascrizioni:
+Prima della versione 2026.1.22, OpenClaw applicava più livelli di gestione
+dell'integrità delle trascrizioni:
 
-- Un'estensione **transcript-sanitize** veniva eseguita a ogni costruzione del contesto e poteva:
-  - Riparare l'abbinamento uso/risultato degli strumenti.
-  - Sanificare gli id delle chiamate agli strumenti (inclusa una modalità non rigorosa che preservava `_`/`-`).
-- Anche il runner eseguiva sanificazione specifica per provider, duplicando il lavoro.
-- Ulteriori mutazioni avvenivano fuori dalla policy del provider, tra cui:
-  - Rimozione dei tag `<final>` dal testo dell'assistente prima della persistenza.
-  - Eliminazione dei turni di errore dell'assistente vuoti.
-  - Troncamento del contenuto dell'assistente dopo le chiamate agli strumenti.
+- Un'**estensione per la sanificazione delle trascrizioni** veniva eseguita a ogni costruzione del contesto e poteva:
+  - Riparare l'associazione tra utilizzo e risultato degli strumenti.
+  - Sanificare gli ID delle chiamate agli strumenti (inclusa una modalità non rigorosa che conservava
+    `_`/`-`).
+- L'esecutore effettuava inoltre una sanificazione specifica per provider, duplicando
+  il lavoro.
+- Ulteriori modifiche avvenivano al di fuori dei criteri del provider, inclusa
+  la rimozione dei tag `<final>` dal testo dell'assistente prima della persistenza, l'eliminazione
+  dei turni vuoti dell'assistente con errore e il troncamento del contenuto dell'assistente dopo le chiamate
+  agli strumenti.
 
-Questa complessità ha causato regressioni cross-provider (in particolare l'abbinamento `call_id|fc_id` di
-`openai-responses`). La pulizia della 2026.1.22 ha rimosso l'estensione, centralizzato
-la logica nel runner e reso OpenAI **no-touch** oltre alla sanificazione delle immagini.
+Questa complessità causava regressioni tra provider (in particolare
+nell'associazione `call_id|fc_id` di `openai-responses`). La pulizia della versione 2026.1.22 ha rimosso
+l'estensione, centralizzato la logica nell'esecutore e reso OpenAI **non modificabile**
+a eccezione della sanificazione delle immagini.
 
-## Correlati
+## Contenuti correlati
 
 - [Gestione delle sessioni](/it/concepts/session)
 - [Potatura delle sessioni](/it/concepts/session-pruning)

@@ -1,30 +1,30 @@
 ---
 read_when:
     - Вы устанавливаете, настраиваете или проверяете Plugin qwen
-summary: Добавляет в OpenClaw поддержку провайдеров моделей Qwen, Qwen Cloud, Model Studio, DashScope, Qwen Oauth, Qwen Portal и Qwen CLI.
+summary: Добавляет в OpenClaw поддержку поставщиков моделей Qwen, Qwen Cloud, Model Studio, DashScope, Qwen OAuth, Qwen Portal, Qwen CLI, Qwen Token Plan и Bailian Token Plan.
 title: Plugin Qwen
 x-i18n:
-    generated_at: "2026-06-28T23:28:14Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:43:23Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3be7c8f459e2ec3b5c5c13f5c67382cc84b568c3aeedeaedceab9259b29886f1
+    source_hash: 3d3c529b0b98f0c7b2137754264e9acfddd90a245418ee105b9efc9541b1911b
     source_path: plugins/reference/qwen.md
     workflow: 16
 ---
 
 # Plugin Qwen
 
-Добавляет в OpenClaw поддержку провайдеров моделей Qwen, Qwen Cloud, Model Studio, DashScope, Qwen Oauth, Qwen Portal, Qwen CLI.
+Добавляет в OpenClaw поддержку поставщиков моделей Qwen, Qwen Cloud, Model Studio, DashScope, Qwen Oauth, Qwen Portal, Qwen CLI, Qwen Token Plan и Bailian Token Plan.
 
-## Дистрибуция
+## Распространение
 
 - Пакет: `@openclaw/qwen-provider`
-- Маршрут установки: npm; ClawHub: `clawhub:@openclaw/qwen-provider`
+- Способ установки: npm; ClawHub: `clawhub:@openclaw/qwen-provider`
 
-## Поверхность
+## Интерфейс
 
-провайдеры: qwen, qwencloud, modelstudio, dashscope, qwen-oauth, qwen-portal, qwen-cli; контракты: mediaUnderstandingProviders, videoGenerationProviders
+Поставщики: qwen, qwencloud, modelstudio, dashscope, qwen-oauth, qwen-portal, qwen-cli, qwen-token-plan, bailian-token-plan; контракты: mediaUnderstandingProviders, videoGenerationProviders
 
 ## Связанная документация
 

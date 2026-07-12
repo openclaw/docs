@@ -1,28 +1,27 @@
 ---
 read_when:
-    - Vous souhaitez un hôte Linux économique et toujours actif pour le Gateway
+    - Vous recherchez un hôte Linux économique et toujours actif pour le Gateway
     - Vous souhaitez accéder à distance à l’interface de contrôle sans exploiter votre propre VPS
-summary: Exécuter le Gateway OpenClaw sur exe.dev (VM + proxy HTTPS) pour un accès à distance
+summary: Exécutez le Gateway OpenClaw sur exe.dev (VM + proxy HTTPS) pour un accès à distance
 title: exe.dev
 x-i18n:
-    generated_at: "2026-07-12T15:33:38Z"
+    generated_at: "2026-07-12T02:44:21Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: a768511d2d7e4e4ec10bcdae83684417bde05286468b0534200f8dd5ec015f7b
     source_path: install/exe-dev.md
     workflow: 16
 ---
 
-**Objectif :** Gateway OpenClaw exécuté sur une VM [exe.dev](https://exe.dev), accessible à l’adresse `https://<vm-name>.exe.xyz`.
+**Objectif :** faire fonctionner le Gateway OpenClaw sur une VM [exe.dev](https://exe.dev), accessible à l’adresse `https://<vm-name>.exe.xyz`.
 
 Ce guide suppose l’utilisation de l’image **exeuntu** par défaut d’exe.dev. Adaptez les paquets en conséquence sur les autres distributions.
 
-## Ce dont vous avez besoin
+## Prérequis
 
-- un compte exe.dev
-- un accès `ssh exe.dev` aux VM exe.dev (facultatif, pour la configuration manuelle)
+- Un compte exe.dev
+- Un accès `ssh exe.dev` aux VM exe.dev (facultatif, pour une configuration manuelle)
 
 ## Parcours rapide pour débutants
 
@@ -37,13 +36,13 @@ Ce guide suppose l’utilisation de l’image **exeuntu** par défaut d’exe.de
 Shelley, l’agent d’exe.dev, peut installer OpenClaw à partir d’une invite :
 
 ```text
-Configurez OpenClaw (https://docs.openclaw.ai/install) sur cette VM. Utilisez les options non interactives et d’acceptation des risques pour l’intégration d’OpenClaw. Ajoutez l’authentification ou le jeton fourni selon les besoins. Configurez nginx pour transférer le trafic du port par défaut 18789 vers l’emplacement racine de la configuration de site activée par défaut, en veillant à activer la prise en charge de WebSocket. L’association s’effectue avec "openclaw devices list" et "openclaw devices approve <request id>". Vérifiez que le tableau de bord indique que l’état de santé d’OpenClaw est correct. exe.dev gère pour nous le transfert du port 8000 vers les ports 80/443 ainsi que HTTPS ; l’adresse finale « accessible » doit donc être <vm-name>.exe.xyz, sans indication de port.
+Set up OpenClaw (https://docs.openclaw.ai/install) on this VM. Use the non-interactive and accept-risk flags for openclaw onboarding. Add the supplied auth or token as needed. Configure nginx to forward from the default port 18789 to the root location on the default enabled site config, making sure to enable Websocket support. Pairing is done by "openclaw devices list" and "openclaw devices approve <request id>". Make sure the dashboard shows that OpenClaw's health is OK. exe.dev handles forwarding from port 8000 to port 80/443 and HTTPS for us, so the final "reachable" should be <vm-name>.exe.xyz, without port specification.
 ```
 
 ## Installation manuelle
 
 <Steps>
-  <Step title="Créer la VM">
+  <Step title="Create the VM">
     Depuis votre appareil :
 
     ```bash
@@ -57,25 +56,25 @@ Configurez OpenClaw (https://docs.openclaw.ai/install) sur cette VM. Utilisez le
     ```
 
     <Tip>
-    Conservez cette VM **avec état**. OpenClaw stocke `openclaw.json`, les fichiers `auth-profiles.json` propres à chaque agent, les sessions et l’état des canaux et fournisseurs sous `~/.openclaw/`, ainsi que l’espace de travail sous `~/.openclaw/workspace/`.
+    Conservez cette VM avec un état **persistant**. OpenClaw stocke `openclaw.json`, les fichiers `auth-profiles.json` propres à chaque agent, les sessions ainsi que l’état des canaux et fournisseurs sous `~/.openclaw/`, et l’espace de travail sous `~/.openclaw/workspace/`.
     </Tip>
 
   </Step>
 
-  <Step title="Installer les prérequis (sur la VM)">
+  <Step title="Install prerequisites (on the VM)">
     ```bash
     sudo apt-get update
     sudo apt-get install -y git curl jq ca-certificates openssl
     ```
   </Step>
 
-  <Step title="Installer OpenClaw">
+  <Step title="Install OpenClaw">
     ```bash
     curl -fsSL https://openclaw.ai/install.sh | bash
     ```
   </Step>
 
-  <Step title="Configurer nginx comme proxy vers le port 8000">
+  <Step title="Configure nginx to proxy to port 8000">
     Modifiez `/etc/nginx/sites-enabled/default` :
 
     ```nginx
@@ -91,42 +90,42 @@ Configurez OpenClaw (https://docs.openclaw.ai/install) sur cette VM. Utilisez le
             proxy_pass http://127.0.0.1:18789;
             proxy_http_version 1.1;
 
-            # Prise en charge de WebSocket
+            # WebSocket support
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection "upgrade";
 
-            # En-têtes de proxy standard
+            # Standard proxy headers
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $remote_addr;
             proxy_set_header X-Forwarded-Proto $scheme;
 
-            # Paramètres de délai d’expiration pour les connexions de longue durée
+            # Timeout settings for long-lived connections
             proxy_read_timeout 86400s;
             proxy_send_timeout 86400s;
         }
     }
     ```
 
-    Remplacez les en-têtes de transfert au lieu de conserver les chaînes fournies par le client. OpenClaw ne fait confiance aux métadonnées d’adresse IP transférées que lorsqu’elles proviennent de proxys explicitement configurés, et les chaînes `X-Forwarded-For` de type ajout sont considérées comme un risque pour le renforcement de la sécurité.
+    Remplacez les en-têtes de transfert au lieu de conserver les chaînes fournies par le client. OpenClaw n’accorde sa confiance aux métadonnées d’adresse IP transférées que lorsqu’elles proviennent de proxys explicitement configurés, et les chaînes `X-Forwarded-For` construites par ajout successif sont considérées comme un risque pour le durcissement de la sécurité.
 
   </Step>
 
-  <Step title="Accéder à OpenClaw et approuver les appareils">
-    Ouvrez `https://<vm-name>.exe.xyz/` (consultez la sortie de l’interface de contrôle affichée lors de l’intégration). Si une authentification est demandée, collez le secret partagé configuré depuis la VM.
+  <Step title="Access OpenClaw and approve devices">
+    Ouvrez `https://<vm-name>.exe.xyz/` (consultez la sortie de l’interface de contrôle lors de la configuration initiale). Si une authentification est demandée, collez le secret partagé configuré sur la VM.
 
-    Ce guide utilise par défaut l’authentification par jeton. Récupérez donc `gateway.auth.token` avec `openclaw config get gateway.auth.token`, ou générez-en un nouveau avec `openclaw doctor --n`. Si vous avez configuré l’authentification du Gateway par mot de passe, utilisez plutôt `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD`.
+    Ce guide utilise l’authentification par jeton par défaut. Récupérez donc `gateway.auth.token` avec `openclaw config get gateway.auth.token`, ou générez-en un nouveau avec `openclaw doctor --n`. Si vous avez configuré le Gateway pour utiliser l’authentification par mot de passe, utilisez plutôt `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD`.
 
     Approuvez les appareils avec `openclaw devices list` et `openclaw devices approve <requestId>`. En cas de doute, utilisez Shelley depuis votre navigateur.
 
   </Step>
 </Steps>
 
-## Configuration des canaux distants
+## Configuration des canaux à distance
 
 Pour les hôtes distants, privilégiez un seul appel à `config patch` plutôt que de nombreux appels SSH à `config set`. Conservez les véritables jetons dans l’environnement de la VM ou dans `~/.openclaw/.env`, et placez uniquement des SecretRefs dans `openclaw.json`. Consultez [Gestion des secrets](/fr/gateway/secrets) pour connaître le contrat SecretRef complet.
 
-Sur la VM, ajoutez les secrets nécessaires à l’environnement du service :
+Sur la VM, ajoutez au contexte d’exécution du service les secrets dont il a besoin :
 
 ```bash
 cat >> ~/.openclaw/.env <<'EOF'
@@ -137,7 +136,7 @@ OPENAI_API_KEY=sk-...
 EOF
 ```
 
-Depuis votre machine locale, créez un fichier de correctif et transmettez-le à la VM :
+Depuis votre machine locale, créez un fichier de correctif et transmettez-le à la VM par un tube :
 
 ```json5
 // openclaw.remote.patch.json5
@@ -187,7 +186,7 @@ Utilisez `--replace-path` lorsqu’une liste d’autorisation imbriquée doit co
 ssh <vm-name>.exe.xyz 'openclaw config patch --stdin --replace-path "channels.discord.guilds[\"123\"].channels"' < ./discord.patch.json5
 ```
 
-Consultez [Discord](/fr/channels/discord) et [Slack](/fr/channels/slack) pour obtenir la référence complète de configuration des canaux.
+Consultez [Discord](/fr/channels/discord) et [Slack](/fr/channels/slack) pour obtenir la documentation complète de la configuration des canaux.
 
 ## Accès distant
 
@@ -199,9 +198,9 @@ exe.dev gère l’authentification pour l’accès distant. Par défaut, le traf
 openclaw update
 ```
 
-Consultez [Mise à jour](/fr/install/updating) pour les changements de canal et la récupération manuelle.
+Consultez [Mise à jour](/fr/install/updating) pour le changement de canal et la récupération manuelle.
 
-## Pages associées
+## Pages connexes
 
 - [Gateway distant](/fr/gateway/remote)
-- [Vue d’ensemble de l’installation](/fr/install)
+- [Présentation de l’installation](/fr/install)

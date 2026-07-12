@@ -5,41 +5,60 @@ read_when:
 summary: Dukungan Signal melalui signal-cli (daemon native atau kontainer bbernhard), jalur penyiapan, dan model nomor
 title: Signal
 x-i18n:
-    generated_at: "2026-07-03T17:42:07Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:57:18Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 862afe3764e89aa026d245f57134b8e8e157539f24975ca341d67296fb8852d0
+    source_hash: db2497d0d6dcdc61cf9f7388929f9ee107602c9ed97bd248e20e67519e878b8b
     source_path: channels/signal.md
     workflow: 16
 ---
 
-Status: integrasi CLI eksternal. Gateway berkomunikasi dengan `signal-cli` melalui HTTP — baik daemon native (JSON-RPC + SSE) maupun kontainer bbernhard/signal-cli-rest-api (REST + WebSocket).
+Signal adalah plugin saluran yang dapat diunduh (`@openclaw/signal`). Gateway berkomunikasi dengan `signal-cli` melalui HTTP: baik daemon native (JSON-RPC + SSE) maupun kontainer [bbernhard/signal-cli-rest-api](https://github.com/bbernhard/signal-cli-rest-api) (REST + WebSocket). OpenClaw tidak menyematkan libsignal.
 
-## Prasyarat
+## Model nomor (baca ini terlebih dahulu)
 
-- OpenClaw terinstal di server Anda (alur Linux di bawah ini diuji pada Ubuntu 24).
-- Salah satu dari:
-  - `signal-cli` tersedia di host (mode native), **atau**
-  - Kontainer Docker `bbernhard/signal-cli-rest-api` (mode kontainer).
-- Nomor telepon yang dapat menerima satu SMS verifikasi (untuk jalur pendaftaran SMS).
-- Akses browser untuk captcha Signal (`signalcaptchas.org`) selama pendaftaran.
+- Gateway terhubung ke **perangkat Signal**: akun `signal-cli`.
+- Menjalankan bot pada **akun Signal pribadi Anda** membuatnya mengabaikan pesan Anda sendiri (perlindungan perulangan).
+- Agar "saya mengirim pesan ke bot dan bot membalas," gunakan **nomor bot terpisah**.
 
-## Penyiapan cepat (pemula)
-
-1. Gunakan **nomor Signal terpisah** untuk bot (direkomendasikan).
-2. Instal Plugin OpenClaw:
+## Instalasi
 
 ```bash
 openclaw plugins install @openclaw/signal
 ```
 
-3. Instal `signal-cli` (Java diperlukan jika Anda menggunakan build JVM).
-4. Pilih satu jalur penyiapan:
-   - **Jalur A (tautan QR):** `signal-cli link -n "OpenClaw"` dan pindai dengan Signal.
-   - **Jalur B (daftar SMS):** daftarkan nomor khusus dengan captcha + verifikasi SMS.
-5. Konfigurasikan OpenClaw dan mulai ulang gateway.
-6. Kirim DM pertama dan setujui pairing (`openclaw pairing approve signal <CODE>`).
+Spesifikasi plugin tanpa awalan akan mencoba ClawHub terlebih dahulu, lalu beralih ke npm jika gagal. Paksa sumber dengan `openclaw plugins install clawhub:@openclaw/signal` atau `npm:@openclaw/signal`. `plugins install` mendaftarkan dan mengaktifkan plugin; tidak diperlukan langkah `enable` terpisah. Lihat [Plugin](/id/tools/plugin) untuk aturan instalasi umum.
+
+## Penyiapan cepat
+
+<Steps>
+  <Step title="Pilih nomor">
+    Gunakan **nomor Signal terpisah** untuk bot (disarankan).
+  </Step>
+  <Step title="Instal plugin">
+    ```bash
+    openclaw plugins install @openclaw/signal
+    ```
+  </Step>
+  <Step title="Jalankan penyiapan terpandu">
+    ```bash
+    openclaw channels add
+    ```
+    Wisaya mendeteksi apakah `signal-cli` tersedia di `PATH` dan, jika tidak ada, menawarkan untuk menginstalnya: mengunduh build native GraalVM resmi pada Linux x86-64, atau menginstalnya melalui Homebrew pada macOS dan arsitektur lainnya. Setelah itu, wisaya meminta nomor bot dan jalur `signal-cli`.
+  </Step>
+  <Step title="Tautkan atau daftarkan akun">
+    - **Tautan QR (tercepat):** `signal-cli link -n "OpenClaw"`, lalu pindai dengan Signal. Lihat [Jalur A](#setup-path-a-link-existing-signal-account-qr).
+    - **Pendaftaran SMS:** nomor khusus dengan captcha + verifikasi SMS. Lihat [Jalur B](#setup-path-b-register-dedicated-bot-number-sms-linux).
+
+  </Step>
+  <Step title="Verifikasi dan pasangkan">
+    ```bash
+    openclaw gateway call channels.status --params '{"probe":true}'
+    ```
+    Kirim DM pertama dan setujui pemasangan: `openclaw pairing approve signal <CODE>`.
+  </Step>
+</Steps>
 
 Konfigurasi minimal:
 
@@ -57,71 +76,33 @@ Konfigurasi minimal:
 }
 ```
 
-Referensi bidang:
-
-| Bidang       | Deskripsi                                          |
-| ------------ | -------------------------------------------------- |
-| `account`    | Nomor telepon bot dalam format E.164 (`+15551234567`) |
-| `cliPath`    | Jalur ke `signal-cli` (`signal-cli` jika ada di `PATH`) |
+| Bidang       | Deskripsi                                                   |
+| ------------ | ----------------------------------------------------------- |
+| `account`    | Nomor telepon bot dalam format E.164 (`+15551234567`)       |
+| `cliPath`    | Jalur ke `signal-cli` (`signal-cli` jika tersedia di `PATH`) |
 | `configPath` | Direktori konfigurasi signal-cli yang diteruskan sebagai `--config` |
-| `dmPolicy`   | Kebijakan akses DM (`pairing` direkomendasikan)    |
-| `allowFrom`  | Nomor telepon atau nilai `uuid:<id>` yang diizinkan untuk DM |
+| `dmPolicy`   | Kebijakan akses DM (`pairing` disarankan)                   |
+| `allowFrom`  | Nomor telepon atau nilai `uuid:<id>` yang diizinkan mengirim DM |
 
-## Apa ini
+Dukungan multiakun: gunakan `channels.signal.accounts` dengan konfigurasi per akun dan `name` opsional. Lihat [Saluran multiakun](/id/gateway/config-channels#multi-account-all-channels) untuk pola bersama.
 
-- Channel Signal melalui `signal-cli` (bukan libsignal tertanam).
-- Perutean deterministik: balasan selalu kembali ke Signal.
+## Apa itu
+
+- Perutean deterministik: balasan selalu dikirim kembali ke Signal.
 - DM berbagi sesi utama agen; grup diisolasi (`agent:<agentId>:signal:group:<groupId>`).
+- Secara default, Signal dapat menulis pembaruan konfigurasi yang dipicu oleh `/config set|unset` (memerlukan `commands.config: true`). Nonaktifkan dengan `channels.signal.configWrites: false`.
 
-## Penulisan konfigurasi
+## Jalur penyiapan A: tautkan akun Signal yang sudah ada (QR)
 
-Secara default, Signal diizinkan menulis pembaruan konfigurasi yang dipicu oleh `/config set|unset` (memerlukan `commands.config: true`).
-
-Nonaktifkan dengan:
-
-```json5
-{
-  channels: { signal: { configWrites: false } },
-}
-```
-
-## Model nomor (penting)
-
-- Gateway terhubung ke **perangkat Signal** (akun `signal-cli`).
-- Jika Anda menjalankan bot pada **akun Signal pribadi Anda**, bot akan mengabaikan pesan Anda sendiri (perlindungan loop).
-- Untuk "Saya mengirim pesan ke bot dan bot membalas," gunakan **nomor bot terpisah**.
-
-## Jalur penyiapan A: tautkan akun Signal yang ada (QR)
-
-1. Instal `signal-cli` (build JVM atau native).
-2. Tautkan akun bot:
-   - `signal-cli link -n "OpenClaw"` lalu pindai QR di Signal.
+1. Instal `signal-cli` (build JVM atau native), atau biarkan `openclaw channels add` menginstalnya untuk Anda.
+2. Tautkan akun bot: `signal-cli link -n "OpenClaw"`, lalu pindai QR di Signal.
 3. Konfigurasikan Signal dan mulai Gateway.
-
-Contoh:
-
-```json5
-{
-  channels: {
-    signal: {
-      enabled: true,
-      account: "+15551234567",
-      cliPath: "signal-cli",
-      dmPolicy: "pairing",
-      allowFrom: ["+15557654321"],
-    },
-  },
-}
-```
-
-Dukungan multi-akun: gunakan `channels.signal.accounts` dengan konfigurasi per akun dan `name` opsional. Lihat [`gateway/configuration`](/id/gateway/config-channels#multi-account-all-channels) untuk pola bersama.
 
 ## Jalur penyiapan B: daftarkan nomor bot khusus (SMS, Linux)
 
-Gunakan ini saat Anda menginginkan nomor bot khusus alih-alih menautkan akun aplikasi Signal yang sudah ada.
+Gunakan ini untuk nomor bot khusus sebagai pengganti menautkan akun aplikasi Signal yang sudah ada. Alur berikut telah diuji pada Ubuntu 24.
 
-1. Dapatkan nomor yang dapat menerima SMS (atau verifikasi suara untuk telepon rumah).
-   - Gunakan nomor bot khusus untuk menghindari konflik akun/sesi.
+1. Dapatkan nomor yang dapat menerima SMS (atau verifikasi suara untuk telepon kabel). Nomor bot khusus menghindari konflik akun/sesi.
 2. Instal `signal-cli` pada host Gateway:
 
 ```bash
@@ -132,8 +113,7 @@ sudo ln -sf /opt/signal-cli /usr/local/bin/
 signal-cli --version
 ```
 
-Jika Anda menggunakan build JVM (`signal-cli-${VERSION}.tar.gz`), instal JRE 25+ terlebih dahulu.
-Jaga `signal-cli` tetap diperbarui; upstream mencatat bahwa rilis lama dapat rusak saat API server Signal berubah.
+Jika Anda menggunakan build JVM (`signal-cli-${VERSION}.tar.gz`), instal JRE terlebih dahulu. Pastikan `signal-cli` selalu diperbarui; pengembang upstream mencatat bahwa rilis lama dapat berhenti berfungsi ketika API server Signal berubah.
 
 3. Daftarkan dan verifikasi nomor:
 
@@ -141,36 +121,36 @@ Jaga `signal-cli` tetap diperbarui; upstream mencatat bahwa rilis lama dapat rus
 signal-cli -a +<BOT_PHONE_NUMBER> register
 ```
 
-Jika captcha diperlukan:
+Jika captcha diwajibkan (akses peramban diperlukan untuk menyelesaikan langkah ini):
 
 1. Buka `https://signalcaptchas.org/registration/generate.html`.
-2. Selesaikan captcha, salin target tautan `signalcaptcha://...` dari "Open Signal".
-3. Jalankan dari IP eksternal yang sama dengan sesi browser jika memungkinkan.
-4. Jalankan pendaftaran lagi segera (token captcha cepat kedaluwarsa):
+2. Selesaikan captcha, lalu salin target tautan `signalcaptcha://...` dari "Open Signal".
+3. Jalankan dari alamat IP eksternal yang sama dengan sesi peramban jika memungkinkan (token captcha cepat kedaluwarsa).
+4. Segera daftarkan dan verifikasi:
 
 ```bash
 signal-cli -a +<BOT_PHONE_NUMBER> register --captcha '<SIGNALCAPTCHA_URL>'
 signal-cli -a +<BOT_PHONE_NUMBER> verify <VERIFICATION_CODE>
 ```
 
-4. Konfigurasikan OpenClaw, mulai ulang Gateway, verifikasi channel:
+4. Konfigurasikan OpenClaw, mulai ulang Gateway, lalu verifikasi saluran:
 
 ```bash
-# If you run the gateway as a user systemd service:
+# Jika Anda menjalankan Gateway sebagai layanan systemd pengguna:
 systemctl --user restart openclaw-gateway.service
 
-# Then verify:
+# Kemudian verifikasi:
 openclaw doctor
 openclaw channels status --probe
 ```
 
-5. Pair pengirim DM Anda:
+5. Pasangkan pengirim DM Anda:
    - Kirim pesan apa pun ke nomor bot.
-   - Setujui kode di server: `openclaw pairing approve signal <PAIRING_CODE>`.
+   - Setujui di server: `openclaw pairing approve signal <PAIRING_CODE>`.
    - Simpan nomor bot sebagai kontak di ponsel Anda untuk menghindari "Unknown contact".
 
 <Warning>
-Mendaftarkan akun nomor telepon dengan `signal-cli` dapat menonaktifkan otorisasi sesi aplikasi Signal utama untuk nomor tersebut. Lebih baik gunakan nomor bot khusus, atau gunakan mode tautan QR jika Anda perlu mempertahankan penyiapan aplikasi ponsel yang ada.
+Mendaftarkan akun nomor telepon dengan `signal-cli` dapat membatalkan autentikasi sesi aplikasi utama Signal untuk nomor tersebut. Sebaiknya gunakan nomor bot khusus, atau gunakan mode tautan QR agar penyiapan aplikasi ponsel Anda tetap dipertahankan.
 </Warning>
 
 Referensi upstream:
@@ -181,7 +161,7 @@ Referensi upstream:
 
 ## Mode daemon eksternal (httpUrl)
 
-Jika Anda ingin mengelola `signal-cli` sendiri (cold start JVM lambat, inisialisasi kontainer, atau CPU bersama), jalankan daemon secara terpisah dan arahkan OpenClaw ke sana:
+Untuk mengelola `signal-cli` sendiri (waktu mulai dingin JVM yang lambat, inisialisasi kontainer, CPU bersama), jalankan daemon secara terpisah dan arahkan OpenClaw ke daemon tersebut:
 
 ```json5
 {
@@ -194,15 +174,15 @@ Jika Anda ingin mengelola `signal-cli` sendiri (cold start JVM lambat, inisialis
 }
 ```
 
-Ini melewati auto-spawn dan waktu tunggu startup di dalam OpenClaw. Untuk start lambat saat auto-spawn, setel `channels.signal.startupTimeoutMs`.
+Ini melewati pembuatan proses otomatis dan waktu tunggu startup OpenClaw. Untuk startup otomatis yang lambat, atur `channels.signal.startupTimeoutMs`.
 
 ## Mode kontainer (bbernhard/signal-cli-rest-api)
 
-Alih-alih menjalankan `signal-cli` secara native, Anda dapat menggunakan kontainer Docker [bbernhard/signal-cli-rest-api](https://github.com/bbernhard/signal-cli-rest-api). Ini membungkus `signal-cli` di balik API REST dan antarmuka WebSocket.
+Alih-alih menjalankan `signal-cli` secara native, gunakan kontainer Docker [bbernhard/signal-cli-rest-api](https://github.com/bbernhard/signal-cli-rest-api), yang membungkus `signal-cli` di balik antarmuka REST + WebSocket.
 
 Persyaratan:
 
-- Kontainer **harus** berjalan dengan `MODE=json-rpc` untuk menerima pesan real-time.
+- Kontainer **harus** berjalan dengan `MODE=json-rpc` untuk menerima pesan secara waktu nyata.
 - Daftarkan atau tautkan akun Signal Anda di dalam kontainer sebelum menghubungkan OpenClaw.
 
 Contoh layanan `docker-compose.yml`:
@@ -228,103 +208,92 @@ Konfigurasi OpenClaw:
       account: "+15551234567",
       httpUrl: "http://signal-cli:8080",
       autoStart: false,
-      apiMode: "container", // or "auto" to detect automatically
+      apiMode: "container", // atau "auto" untuk mendeteksi secara otomatis
     },
   },
 }
 ```
 
-Bidang `apiMode` mengontrol protokol yang digunakan OpenClaw:
+`apiMode` mengontrol protokol yang digunakan OpenClaw:
 
-| Nilai         | Perilaku                                                                            |
-| ------------- | ----------------------------------------------------------------------------------- |
-| `"auto"`      | (Default) Memeriksa kedua transport; streaming memvalidasi penerimaan WebSocket kontainer |
-| `"native"`    | Paksa signal-cli native (JSON-RPC di `/api/v1/rpc`, SSE di `/api/v1/events`)        |
-| `"container"` | Paksa kontainer bbernhard (REST di `/v2/send`, WebSocket di `/v1/receive/{account}`) |
+| Nilai         | Perilaku                                                                             |
+| ------------- | ------------------------------------------------------------------------------------ |
+| `"auto"`      | (Default) Memeriksa kedua transportasi; streaming memvalidasi penerimaan WebSocket kontainer |
+| `"native"`    | Memaksa signal-cli native (JSON-RPC di `/api/v1/rpc`, SSE di `/api/v1/events`)       |
+| `"container"` | Memaksa kontainer bbernhard (REST di `/v2/send`, WebSocket di `/v1/receive/{account}`) |
 
-Saat `apiMode` adalah `"auto"`, OpenClaw menyimpan mode yang terdeteksi selama 30 detik untuk menghindari pemeriksaan berulang. Penerimaan kontainer hanya dipilih untuk streaming setelah `/v1/receive/{account}` ditingkatkan ke WebSocket, yang memerlukan `MODE=json-rpc`.
+Saat `apiMode` bernilai `"auto"`, OpenClaw menyimpan mode yang terdeteksi dalam cache selama 30 detik untuk setiap URL daemon guna menghindari pemeriksaan berulang (native diprioritaskan saat kedua transportasi berfungsi dengan baik). Penerimaan kontainer hanya dipilih untuk streaming setelah `/v1/receive/{account}` ditingkatkan ke WebSocket, yang memerlukan `MODE=json-rpc`.
 
-Mode kontainer mendukung operasi channel Signal yang sama seperti mode native ketika kontainer mengekspos API yang cocok: pengiriman, penerimaan, lampiran, indikator mengetik, tanda terima dibaca/dilihat, reaksi, grup, dan teks bergaya. OpenClaw menerjemahkan panggilan RPC Signal native-nya menjadi payload REST kontainer, termasuk ID grup `group.{base64(internal_id)}` dan `text_mode: "styled"` untuk teks berformat.
+Mode kontainer mendukung operasi Signal yang sama dengan mode native jika kontainer menyediakan API yang sesuai: pengiriman, penerimaan, lampiran, indikator pengetikan, tanda terima dibaca/dilihat, reaksi, grup, dan teks bergaya. OpenClaw menerjemahkan panggilan RPC Signal native menjadi payload REST kontainer, termasuk ID grup `group.{base64(internal_id)}` dan `text_mode: "styled"` untuk teks berformat.
 
 Catatan operasional:
 
-- Gunakan `autoStart: false` dengan mode kontainer. OpenClaw tidak boleh menjalankan daemon native saat `apiMode: "container"` dipilih.
-- Gunakan `MODE=json-rpc` untuk menerima. `MODE=normal` dapat membuat `/v1/about` terlihat sehat, tetapi `/v1/receive/{account}` tidak melakukan upgrade WebSocket, sehingga OpenClaw tidak akan memilih streaming penerimaan kontainer dalam mode `auto`.
-- Setel `apiMode: "container"` saat Anda tahu `httpUrl` mengarah ke API REST bbernhard. Setel `apiMode: "native"` saat Anda tahu itu mengarah ke JSON-RPC/SSE `signal-cli` native. Gunakan `"auto"` saat deployment dapat bervariasi.
-- Unduhan lampiran kontainer menghormati batas byte media yang sama seperti mode native. Respons yang terlalu besar ditolak sebelum di-buffer penuh saat server mengirim `Content-Length`, dan saat streaming jika tidak.
+- Gunakan `autoStart: false` dengan mode kontainer; OpenClaw tidak boleh membuat daemon native ketika `apiMode: "container"` dipilih.
+- Gunakan `MODE=json-rpc` untuk menerima. `MODE=normal` dapat membuat `/v1/about` tampak berfungsi dengan baik, tetapi `/v1/receive/{account}` tidak akan ditingkatkan ke WebSocket, sehingga OpenClaw tidak akan memilih streaming penerimaan kontainer dalam mode `auto`.
+- Atur `apiMode: "container"` ketika `httpUrl` mengarah ke API REST bbernhard, `"native"` ketika mengarah ke JSON-RPC/SSE `signal-cli` native, dan `"auto"` ketika penerapan dapat bervariasi.
+- Unduhan lampiran kontainer mematuhi batas byte media yang sama dengan mode native. Respons yang terlalu besar ditolak sebelum disangga sepenuhnya ketika server mengirim `Content-Length`, dan ditolak selama streaming jika tidak.
 
 ## Kontrol akses (DM + grup)
 
 DM:
 
 - Default: `channels.signal.dmPolicy = "pairing"`.
-- Pengirim tidak dikenal menerima kode pairing; pesan diabaikan sampai disetujui (kode kedaluwarsa setelah 1 jam).
-- Setujui melalui:
-  - `openclaw pairing list signal`
-  - `openclaw pairing approve signal <CODE>`
-- Pairing adalah pertukaran token default untuk DM Signal. Detail: [Pairing](/id/channels/pairing)
-- Pengirim hanya UUID (dari `sourceUuid`) disimpan sebagai `uuid:<id>` di `channels.signal.allowFrom`.
+- Pengirim yang tidak dikenal menerima kode pemasangan; pesan diabaikan hingga disetujui (kode kedaluwarsa setelah 1 jam).
+- Setujui melalui `openclaw pairing list signal` dan `openclaw pairing approve signal <CODE>`.
+- Pemasangan adalah pertukaran token default untuk DM Signal. Detail: [Pemasangan](/id/channels/pairing)
+- Pengirim yang hanya memiliki UUID (dari `sourceUuid`) disimpan sebagai `uuid:<id>` dalam `channels.signal.allowFrom`.
 
 Grup:
 
 - `channels.signal.groupPolicy = open | allowlist | disabled`.
-- `channels.signal.groupAllowFrom` mengontrol grup atau pengirim mana yang dapat memicu balasan grup saat `allowlist` disetel; entri dapat berupa ID grup Signal (mentah, `group:<id>`, atau `signal:group:<id>`), nomor telepon pengirim, nilai `uuid:<id>`, atau `*`.
+- `channels.signal.groupAllowFrom` mengontrol grup atau pengirim mana yang dapat memicu balasan grup ketika `allowlist` ditetapkan; entri dapat berupa ID grup Signal (mentah, `group:<id>`, atau `signal:group:<id>`), nomor telepon pengirim, nilai `uuid:<id>`, atau `*`.
 - `channels.signal.groups["<group-id>" | "*"]` dapat menimpa perilaku grup dengan `requireMention`, `tools`, dan `toolsBySender`.
-- Gunakan `channels.signal.accounts.<id>.groups` untuk override per akun dalam penyiapan multi-akun.
-- Mengizinkan grup Signal melalui `groupAllowFrom` tidak menonaktifkan gating mention dengan sendirinya. Entri `channels.signal.groups["<group-id>"]` yang dikonfigurasi secara spesifik memproses setiap pesan grup kecuali `requireMention=true` disetel.
-- Catatan runtime: jika `channels.signal` sepenuhnya tidak ada, runtime fallback ke `groupPolicy="allowlist"` untuk pemeriksaan grup (meskipun `channels.defaults.groupPolicy` disetel).
+- Gunakan `channels.signal.accounts.<id>.groups` untuk penimpaan per akun dalam penyiapan multiakun.
+- Memasukkan grup ke daftar yang diizinkan melalui `groupAllowFrom` tidak menonaktifkan persyaratan penyebutan dengan sendirinya. Entri `channels.signal.groups["<group-id>"]` yang dikonfigurasi secara khusus memproses setiap pesan grup kecuali `requireMention: true` ditetapkan secara eksplisit.
+- Catatan runtime: jika `channels.signal` sama sekali tidak ada, runtime beralih ke `groupPolicy="allowlist"` untuk pemeriksaan grup (meskipun `channels.defaults.groupPolicy` ditetapkan).
 
 ## Cara kerjanya (perilaku)
 
-- Mode native: `signal-cli` berjalan sebagai daemon; Gateway membaca event melalui SSE.
+- Mode native: `signal-cli` berjalan sebagai daemon; Gateway membaca peristiwa melalui SSE.
 - Mode kontainer: Gateway mengirim melalui API REST dan menerima melalui WebSocket.
-- Pesan masuk dinormalisasi ke dalam envelope channel bersama.
+- Pesan masuk dinormalisasi ke dalam amplop saluran bersama.
 - Balasan selalu dirutekan kembali ke nomor atau grup yang sama.
+- Balasan terhadap pesan masuk menyertakan metadata kutipan native Signal ketika backend menerima stempel waktu dan penulis pesan masuk; jika metadata kutipan tidak ada atau ditolak, OpenClaw mengirim balasan sebagai pesan biasa.
+- Konfigurasikan penggunaan kutipan native dengan `channels.signal.replyToMode = off | first | all | batched`, atau `channels.signal.replyToModeByChatType.direct/group` untuk penimpaan per jenis percakapan. Nilai tingkat akun di bawah `channels.signal.accounts.<id>` diprioritaskan.
 
-## Media + batas
+## Media + batasan
 
-- Teks keluar dipecah menjadi bagian sesuai `channels.signal.textChunkLimit` (default 4000).
-- Pemecahan opsional berdasarkan baris baru: setel `channels.signal.chunkMode="newline"` untuk membagi pada baris kosong (batas paragraf) sebelum pemecahan berdasarkan panjang.
-- Lampiran didukung (base64 diambil dari `signal-cli`).
-- Lampiran catatan suara menggunakan nama file `signal-cli` sebagai fallback MIME saat `contentType` tidak ada, sehingga transkripsi audio masih dapat mengklasifikasikan memo suara AAC.
-- Batas media default: `channels.signal.mediaMaxMb` (default 8).
+- Teks keluar dipecah menjadi bagian-bagian sesuai `channels.signal.textChunkLimit` (bawaan 4000).
+- Pemecahan berdasarkan baris baru bersifat opsional: atur `channels.signal.chunkMode="newline"` untuk memecah pada baris kosong (batas paragraf) sebelum pemecahan berdasarkan panjang.
+- Lampiran didukung (base64 yang diambil dari `signal-cli`).
+- Lampiran catatan suara menggunakan nama berkas `signal-cli` sebagai cadangan MIME ketika `contentType` tidak tersedia, sehingga transkripsi audio tetap dapat mengklasifikasikan memo suara AAC.
+- Batas media bawaan: `channels.signal.mediaMaxMb` (bawaan 8).
 - Gunakan `channels.signal.ignoreAttachments` untuk melewati pengunduhan media.
-- Konteks riwayat grup menggunakan `channels.signal.historyLimit` (atau `channels.signal.accounts.*.historyLimit`), fallback ke `messages.groupChat.historyLimit`. Setel `0` untuk menonaktifkan (default 50).
+- Konteks riwayat grup menggunakan `channels.signal.historyLimit` (atau `channels.signal.accounts.*.historyLimit`), dengan cadangan ke `messages.groupChat.historyLimit`. Atur ke `0` untuk menonaktifkannya (bawaan 50).
 
-## Mengetik + tanda terima dibaca
+## Indikator pengetikan + tanda terima baca
 
-- **Indikator mengetik**: OpenClaw mengirim sinyal mengetik melalui `signal-cli sendTyping` dan menyegarkannya saat balasan sedang berjalan.
-- **Tanda terima dibaca**: ketika `channels.signal.sendReadReceipts` bernilai true, OpenClaw meneruskan tanda terima dibaca untuk DM yang diizinkan.
-- Signal-cli tidak mengekspos tanda terima dibaca untuk grup.
+- **Indikator pengetikan**: OpenClaw mengirim sinyal pengetikan melalui `signal-cli sendTyping` dan memperbaruinya selama balasan sedang diproses.
+- **Tanda terima baca**: ketika `channels.signal.sendReadReceipts` bernilai true, OpenClaw meneruskan tanda terima baca untuk DM yang diizinkan.
+- `signal-cli` tidak menyediakan tanda terima baca untuk grup.
 
 ## Reaksi status siklus hidup
 
-Atur `messages.statusReactions.enabled: true` agar Signal menampilkan siklus hidup reaksi bersama
-antrean/berpikir/alat/Compaction/selesai/error pada giliran masuk.
-Signal menggunakan timestamp pesan masuk sebagai target reaksi; reaksi
-grup dikirim dengan id grup Signal ditambah pengirim asli sebagai
-penulis target.
+Atur `messages.statusReactions.enabled: true` agar Signal menampilkan siklus hidup reaksi bersama antre/berpikir/alat/compaction/selesai/galat pada giliran masuk. Signal menggunakan stempel waktu pesan masuk sebagai target reaksi; reaksi grup dikirim dengan ID grup Signal dan pengirim asli sebagai penulis target.
 
-Reaksi status juga memerlukan reaksi ack dan
-`messages.ackReactionScope` yang cocok (`direct`, `group-all`, `group-mentions`, atau `all`).
-Atur `channels.signal.reactionLevel: "off"` untuk menonaktifkan reaksi status Signal.
-Aksi `react` alat pesan tetap lebih ketat: aksi ini memerlukan
-`reactionLevel: "minimal"` atau `"extensive"`.
+Reaksi status juga memerlukan reaksi konfirmasi dan `messages.ackReactionScope` yang sesuai (`direct`, `group-all`, `group-mentions`, atau `all`). Atur `channels.signal.reactionLevel: "off"` untuk menonaktifkan reaksi status Signal.
 
-`messages.removeAckAfterReply: true` menghapus reaksi status akhir setelah
-waktu tahan yang dikonfigurasi. Jika tidak, Signal memulihkan reaksi ack awal setelah
-status selesai/error akhir.
+`messages.removeAckAfterReply: true` menghapus reaksi status akhir setelah waktu tunggu yang dikonfigurasi. Jika tidak, Signal memulihkan reaksi konfirmasi awal setelah status akhir selesai/galat.
 
 ## Reaksi (alat pesan)
 
-- Gunakan `message action=react` dengan `channel=signal`.
-- Target: E.164 pengirim atau UUID (gunakan `uuid:<id>` dari output pemasangan; UUID polos juga berfungsi).
-- `messageId` adalah timestamp Signal untuk pesan yang Anda beri reaksi.
+Gunakan `message action=react` dengan `channel=signal`.
+
+- Target: E.164 atau UUID pengirim (gunakan `uuid:<id>` dari keluaran pemasangan; UUID tanpa awalan juga berfungsi).
+- `messageId` adalah stempel waktu Signal untuk pesan yang Anda beri reaksi.
 - Reaksi grup memerlukan `targetAuthor` atau `targetAuthorUuid`.
 
-Contoh:
-
-```
+```text
 message action=react channel=signal target=uuid:123e4567-e89b-12d3-a456-426614174000 messageId=1737630212345 emoji=🔥
 message action=react channel=signal target=+15551234567 messageId=1737630212345 emoji=🔥 remove=true
 message action=react channel=signal target=signal:group:<groupId> targetAuthor=uuid:<sender-uuid> messageId=1737630212345 emoji=✅
@@ -332,38 +301,32 @@ message action=react channel=signal target=signal:group:<groupId> targetAuthor=u
 
 Konfigurasi:
 
-- `channels.signal.actions.reactions`: aktifkan/nonaktifkan aksi reaksi (default true).
-- `channels.signal.reactionLevel`: `off | ack | minimal | extensive`.
-  - `off`/`ack` menonaktifkan reaksi agen (alat pesan `react` akan error).
-  - `minimal`/`extensive` mengaktifkan reaksi agen dan menetapkan level panduan.
-- Override per akun: `channels.signal.accounts.<id>.actions.reactions`, `channels.signal.accounts.<id>.reactionLevel`.
+- `channels.signal.actions.reactions`: aktifkan/nonaktifkan tindakan reaksi (bawaan true).
+- `channels.signal.reactionLevel`: `off | ack | minimal | extensive` (bawaan `minimal`).
+  - `off`/`ack` menonaktifkan reaksi agen (alat pesan `react` menghasilkan galat).
+  - `minimal`/`extensive` mengaktifkan reaksi agen dan mengatur tingkat panduan.
+- Penggantian per akun: `channels.signal.accounts.<id>.actions.reactions`, `channels.signal.accounts.<id>.reactionLevel`.
 
 ## Reaksi persetujuan
 
-Prompt persetujuan exec dan Plugin Signal menggunakan blok perutean tingkat atas
-`approvals.exec` dan `approvals.plugin`. Signal tidak memiliki blok
-`channels.signal.execApprovals`.
+Prompt persetujuan eksekusi dan Plugin Signal menggunakan blok perutean tingkat atas `approvals.exec` dan `approvals.plugin`. Signal tidak memiliki blok `channels.signal.execApprovals`.
 
-- `👍` menyetujui sekali.
+- `👍` menyetujui satu kali.
 - `👎` menolak.
-- Gunakan `/approve <id> allow-always` ketika permintaan menawarkan persetujuan persisten.
+- Gunakan `/approve <id> allow-always` ketika suatu permintaan menawarkan persetujuan permanen.
 
-Resolusi reaksi persetujuan memerlukan pemberi persetujuan Signal eksplisit dari
-`channels.signal.allowFrom`, `channels.signal.defaultTo`, atau field tingkat akun yang cocok.
-Prompt persetujuan exec langsung di chat yang sama masih dapat menekan fallback lokal `/approve` duplikat
-tanpa pemberi persetujuan eksplisit; persetujuan grup tanpa pemberi persetujuan membuat fallback lokal tetap terlihat.
+Penyelesaian reaksi persetujuan memerlukan pemberi persetujuan Signal yang ditentukan secara eksplisit melalui `channels.signal.allowFrom`, `channels.signal.defaultTo`, atau kolom tingkat akun yang sesuai. Prompt persetujuan eksekusi langsung dalam percakapan yang sama tetap dapat menyembunyikan cadangan lokal `/approve` yang duplikat tanpa pemberi persetujuan eksplisit; persetujuan grup tanpa pemberi persetujuan tetap menampilkan cadangan lokal.
 
 ## Target pengiriman (CLI/cron)
 
-- DM: `signal:+15551234567` (atau E.164 polos).
-- DM UUID: `uuid:<id>` (atau UUID polos).
+- DM: `signal:+15551234567` (atau E.164 biasa).
+- DM UUID: `uuid:<id>` (atau UUID biasa).
 - Grup: `signal:group:<groupId>`.
 - Nama pengguna: `username:<name>` (jika didukung oleh akun Signal Anda).
 
 ## Alias
 
-Konfigurasikan alias ketika Anda menginginkan nama stabil untuk target Signal berulang.
-Alias hanya konfigurasi sisi OpenClaw; alias tidak membuat atau mengedit kontak Signal.
+Konfigurasikan alias untuk nama stabil pada target Signal yang berulang. Alias hanya merupakan konfigurasi di sisi OpenClaw; alias tidak membuat atau mengedit kontak Signal.
 
 ```json5
 {
@@ -386,7 +349,7 @@ Gunakan alias di mana pun target pengiriman Signal diterima:
 openclaw message send --channel signal --target signal:ops --message "Deployment is complete"
 ```
 
-Alias per akun mewarisi alias tingkat atas dan dapat menambah atau mengganti nama:
+Alias per akun mewarisi alias tingkat atas serta dapat menambahkan atau mengganti nama:
 
 ```json5
 {
@@ -407,14 +370,11 @@ Alias per akun mewarisi alias tingkat atas dan dapat menambah atau mengganti nam
 }
 ```
 
-`openclaw directory peers list --channel signal` dan
-`openclaw directory groups list --channel signal` mencantumkan alias yang dikonfigurasi. Direktori
-Signal didukung konfigurasi; direktori ini tidak melakukan kueri langsung ke kontak Signal atau
-mengubah akun Signal.
+`openclaw directory peers list --channel signal` dan `openclaw directory groups list --channel signal` mencantumkan alias yang dikonfigurasi. Direktori Signal didukung oleh konfigurasi; direktori ini tidak mengkueri kontak Signal secara langsung atau mengubah akun Signal.
 
 ## Pemecahan masalah
 
-Jalankan urutan ini terlebih dahulu:
+Jalankan rangkaian ini terlebih dahulu:
 
 ```bash
 openclaw status
@@ -424,7 +384,7 @@ openclaw doctor
 openclaw channels status --probe
 ```
 
-Lalu konfirmasi status pemasangan DM jika diperlukan:
+Kemudian konfirmasikan status pemasangan DM jika diperlukan:
 
 ```bash
 openclaw pairing list signal
@@ -433,10 +393,10 @@ openclaw pairing list signal
 Kegagalan umum:
 
 - Daemon dapat dijangkau tetapi tidak ada balasan: verifikasi pengaturan akun/daemon (`httpUrl`, `account`) dan mode penerimaan.
-- DM diabaikan: pengirim menunggu persetujuan pemasangan.
-- Pesan grup diabaikan: gating pengirim/mention grup memblokir pengiriman.
-- Error validasi konfigurasi setelah edit: jalankan `openclaw doctor --fix`.
-- Signal hilang dari diagnostik: konfirmasi `channels.signal.enabled: true`.
+- DM diabaikan: pengirim sedang menunggu persetujuan pemasangan.
+- Pesan grup diabaikan: pembatasan pengirim/penyebutan grup memblokir pengiriman.
+- Galat validasi konfigurasi setelah pengeditan: jalankan `openclaw doctor --fix`.
+- Signal tidak ada dalam diagnostik: pastikan `channels.signal.enabled: true`.
 
 Pemeriksaan tambahan:
 
@@ -446,14 +406,14 @@ pgrep -af signal-cli
 grep -i "signal" "/tmp/openclaw/openclaw-$(date +%Y-%m-%d).log" | tail -20
 ```
 
-Untuk alur triase: [/channels/troubleshooting](/id/channels/troubleshooting).
+Untuk alur triase: [Pemecahan Masalah Saluran](/id/channels/troubleshooting).
 
 ## Catatan keamanan
 
-- `signal-cli` menyimpan kunci akun secara lokal (biasanya `~/.local/share/signal-cli/data/`).
+- `signal-cli` menyimpan kunci akun secara lokal (biasanya di `~/.local/share/signal-cli/data/`).
 - Cadangkan status akun Signal sebelum migrasi atau pembangunan ulang server.
 - Pertahankan `channels.signal.dmPolicy: "pairing"` kecuali Anda secara eksplisit menginginkan akses DM yang lebih luas.
-- Verifikasi SMS hanya diperlukan untuk alur pendaftaran atau pemulihan, tetapi kehilangan kendali atas nomor/akun dapat mempersulit pendaftaran ulang.
+- Verifikasi SMS hanya diperlukan untuk alur pendaftaran atau pemulihan, tetapi hilangnya kendali atas nomor/akun dapat mempersulit pendaftaran ulang.
 
 ## Referensi konfigurasi (Signal)
 
@@ -461,43 +421,50 @@ Konfigurasi lengkap: [Konfigurasi](/id/gateway/configuration)
 
 Opsi penyedia:
 
-- `channels.signal.enabled`: aktifkan/nonaktifkan startup channel.
-- `channels.signal.apiMode`: `auto | native | container` (default: auto). Lihat [Mode kontainer](#container-mode-bbernhardsignal-cli-rest-api).
+- `channels.signal.enabled`: aktifkan/nonaktifkan pemulaian saluran.
+- `channels.signal.apiMode`: `auto | native | container` (bawaan: auto). Lihat [Mode kontainer](#container-mode-bbernhardsignal-cli-rest-api).
 - `channels.signal.account`: E.164 untuk akun bot.
-- `channels.signal.cliPath`: path ke `signal-cli`.
-- `channels.signal.configPath`: direktori opsional `signal-cli --config`.
-- `channels.signal.httpUrl`: URL daemon lengkap (meng-override host/port).
-- `channels.signal.httpHost`, `channels.signal.httpPort`: bind daemon (default 127.0.0.1:8080).
-- `channels.signal.autoStart`: spawn daemon otomatis (default true jika `httpUrl` tidak disetel).
-- `channels.signal.startupTimeoutMs`: timeout tunggu startup dalam md (batas 120000).
+- `channels.signal.cliPath`: jalur ke `signal-cli`.
+- `channels.signal.configPath`: direktori `signal-cli --config` opsional.
+- `channels.signal.httpUrl`: URL daemon lengkap (menggantikan hos/porta).
+- `channels.signal.httpHost`, `channels.signal.httpPort`: alamat pengikatan daemon (bawaan `127.0.0.1:8080`).
+- `channels.signal.autoStart`: jalankan daemon secara otomatis (bawaan true jika `httpUrl` tidak diatur).
+- `channels.signal.startupTimeoutMs`: batas waktu tunggu pemulaian dalam milidetik (min 1000, batas maksimum 120000; bawaan 30000).
 - `channels.signal.receiveMode`: `on-start | manual`.
-- `channels.signal.ignoreAttachments`: lewati unduhan lampiran.
-- `channels.signal.ignoreStories`: abaikan stories dari daemon.
-- `channels.signal.sendReadReceipts`: teruskan tanda terima dibaca.
-- `channels.signal.dmPolicy`: `pairing | allowlist | open | disabled` (default: pairing).
-- `channels.signal.allowFrom`: allowlist DM (E.164 atau `uuid:<id>`). `open` memerlukan `"*"`. Signal tidak memiliki nama pengguna; gunakan id telepon/UUID.
-- `channels.signal.aliases`: alias sisi OpenClaw untuk target pengiriman DM atau grup.
-- `channels.signal.groupPolicy`: `open | allowlist | disabled` (default: allowlist).
-- `channels.signal.groupAllowFrom`: allowlist grup; menerima ID grup Signal (mentah, `group:<id>`, atau `signal:group:<id>`), nomor E.164 pengirim, atau nilai `uuid:<id>`.
-- `channels.signal.groups`: override per grup yang dikunci berdasarkan id grup Signal (atau `"*"`). Field yang didukung: `requireMention`, `tools`, `toolsBySender`.
-- `channels.signal.accounts.<id>.groups`: versi per akun dari `channels.signal.groups` untuk setup multi-akun.
+- `channels.signal.ignoreAttachments`: lewati pengunduhan lampiran.
+- `channels.signal.ignoreStories`: abaikan cerita dari daemon.
+- `channels.signal.sendReadReceipts`: teruskan tanda terima baca.
+- `channels.signal.dmPolicy`: `pairing | allowlist | open | disabled` (bawaan: pairing).
+- `channels.signal.allowFrom`: daftar izin DM (E.164 atau `uuid:<id>`). `open` memerlukan `"*"`. Signal tidak memiliki nama pengguna; gunakan ID telepon/UUID.
+- `channels.signal.aliases`: alias di sisi OpenClaw untuk target pengiriman DM atau grup.
+- `channels.signal.groupPolicy`: `open | allowlist | disabled` (bawaan: allowlist).
+- `channels.signal.groupAllowFrom`: daftar izin grup; menerima ID grup Signal (mentah, `group:<id>`, atau `signal:group:<id>`), nomor E.164 pengirim, atau nilai `uuid:<id>`.
+- `channels.signal.groups`: penggantian per grup dengan kunci ID grup Signal (atau `"*"`). Kolom yang didukung: `requireMention`, `tools`, `toolsBySender`.
+- `channels.signal.accounts.<id>.groups`: versi per akun dari `channels.signal.groups` untuk penyiapan multiakun.
 - `channels.signal.accounts.<id>.aliases`: alias per akun, digabungkan dengan alias tingkat atas.
-- `channels.signal.historyLimit`: jumlah maksimum pesan grup untuk disertakan sebagai konteks (0 menonaktifkan).
-- `channels.signal.dmHistoryLimit`: batas riwayat DM dalam giliran pengguna. Override per pengguna: `channels.signal.dms["<phone_or_uuid>"].historyLimit`.
-- `channels.signal.textChunkLimit`: ukuran chunk keluar (karakter).
-- `channels.signal.chunkMode`: `length` (default) atau `newline` untuk membagi pada baris kosong (batas paragraf) sebelum chunking berdasarkan panjang.
-- `channels.signal.mediaMaxMb`: batas media masuk/keluar (MB).
+- `channels.signal.replyToMode`: mode kutipan balasan native, `off | first | all | batched` (bawaan: `all`).
+- `channels.signal.replyToModeByChatType.direct`, `channels.signal.replyToModeByChatType.group`: penggantian kutipan balasan native per jenis percakapan.
+- `channels.signal.accounts.<id>.replyToMode`, `channels.signal.accounts.<id>.replyToModeByChatType.direct`, `channels.signal.accounts.<id>.replyToModeByChatType.group`: penggantian kutipan balasan per akun.
+- `channels.signal.historyLimit`: jumlah maksimum pesan grup yang disertakan sebagai konteks (0 menonaktifkan).
+- `channels.signal.dmHistoryLimit`: batas riwayat DM dalam giliran pengguna. Penggantian per pengguna: `channels.signal.dms["<phone_or_uuid>"].historyLimit`.
+- `channels.signal.textChunkLimit`: ukuran bagian keluar dalam karakter (bawaan 4000).
+- `channels.signal.chunkMode`: `length` (bawaan) atau `newline` untuk memecah pada baris kosong (batas paragraf) sebelum pemecahan berdasarkan panjang.
+- `channels.signal.mediaMaxMb`: batas media masuk/keluar dalam MB (bawaan 8).
+- `channels.signal.reactionLevel`: `off | ack | minimal | extensive` (bawaan `minimal`). Lihat [Reaksi](#reactions-message-tool).
+- `channels.signal.reactionNotifications`: `off | own | all | allowlist` (bawaan `own`) — menentukan kapan agen diberi tahu tentang reaksi masuk dari pihak lain.
+- `channels.signal.reactionAllowlist`: pengirim yang reaksinya memberi tahu agen ketika `reactionNotifications: "allowlist"`.
+- `channels.signal.blockStreaming`, `channels.signal.blockStreamingCoalesce`: kontrol streaming mode blok yang digunakan bersama di seluruh saluran. Lihat [Streaming](/id/concepts/streaming).
 
 Opsi global terkait:
 
-- `agents.list[].groupChat.mentionPatterns` (Signal tidak mendukung mention native).
-- `messages.groupChat.mentionPatterns` (fallback global).
+- `agents.list[].groupChat.mentionPatterns` (Signal tidak mendukung penyebutan native).
+- `messages.groupChat.mentionPatterns` (cadangan global).
 - `messages.responsePrefix`.
 
 ## Terkait
 
-- [Ikhtisar Channel](/id/channels) — semua channel yang didukung
-- [Pemasangan](/id/channels/pairing) — autentikasi DM dan alur pemasangan
-- [Grup](/id/channels/groups) — perilaku chat grup dan gating mention
-- [Perutean Channel](/id/channels/channel-routing) — perutean sesi untuk pesan
-- [Keamanan](/id/gateway/security) — model akses dan pengerasan
+- [Ikhtisar Saluran](/id/channels) - semua saluran yang didukung
+- [Pemasangan](/id/channels/pairing) - autentikasi DM dan alur pemasangan
+- [Grup](/id/channels/groups) - perilaku percakapan grup dan pembatasan penyebutan
+- [Perutean Saluran](/id/channels/channel-routing) - perutean sesi untuk pesan
+- [Keamanan](/id/gateway/security) - model akses dan penguatan

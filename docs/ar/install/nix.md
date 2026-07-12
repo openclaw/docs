@@ -1,72 +1,72 @@
 ---
 read_when:
-    - تريد عمليات تثبيت قابلة لإعادة الإنتاج وقابلة للتراجع عنها
-    - أنت تستخدم Nix/NixOS/Home Manager بالفعل
-    - تريد أن يكون كل شيء مثبتًا ومدارًا تصريحيًا
-summary: تثبيت OpenClaw تصريحيًا باستخدام Nix
+    - تريد عمليات تثبيت قابلة لإعادة الإنتاج والتراجع عنها
+    - أنت تستخدم بالفعل Nix/NixOS/Home Manager
+    - تريد تثبيت كل شيء وإدارته بأسلوب تصريحي
+summary: ثبّت OpenClaw تصريحيًا باستخدام Nix
 title: Nix
 x-i18n:
-    generated_at: "2026-05-06T17:59:52Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:05:09Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1b4c2eca298ac7ae60baea4d06855edb73c0b8bfe253a3f478d93e934b31253b
+    source_hash: 6f74e259ec3d909c73d9184db24d236135db04c29c2e7fab9be9e6fa7f98ba91
     source_path: install/nix.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-ثبّت OpenClaw تصريحيًا باستخدام **[nix-openclaw](https://github.com/openclaw/nix-openclaw)** - وحدة Home Manager الرسمية الشاملة.
+ثبّت OpenClaw بأسلوب تصريحي باستخدام **[nix-openclaw](https://github.com/openclaw/nix-openclaw)**، وهي وحدة Home Manager رسمية متكاملة وجاهزة للاستخدام.
 
 <Info>
-مستودع [nix-openclaw](https://github.com/openclaw/nix-openclaw) هو مصدر الحقيقة لتثبيت Nix. هذه الصفحة نظرة عامة سريعة.
+يُعد مستودع [nix-openclaw](https://github.com/openclaw/nix-openclaw) المرجع الأساسي لتثبيت Nix. تقدم هذه الصفحة نظرة عامة سريعة.
 </Info>
 
-## ما الذي تحصل عليه
+## ما الذي ستحصل عليه
 
-- Gateway + تطبيق macOS + الأدوات (whisper، spotify، الكاميرات) -- جميعها مثبتة الإصدارات
-- خدمة launchd تصمد بعد إعادة التشغيل
-- نظام Plugin مع إعدادات تصريحية
+- Gateway + تطبيق macOS + أدوات (whisper وspotify والكاميرات)، جميعها مثبّتة على إصدارات محددة
+- خدمة launchd تستمر في العمل بعد إعادة التشغيل
+- نظام Plugin بإعداد تصريحي
 - تراجع فوري: `home-manager switch --rollback`
 
 ## البدء السريع
 
 <Steps>
-  <Step title="ثبّت Determinate Nix">
-    إذا لم يكن Nix مثبتًا بالفعل، فاتبع تعليمات [مثبّت Determinate Nix](https://github.com/DeterminateSystems/nix-installer).
+  <Step title="تثبيت Determinate Nix">
+    إذا لم يكن Nix مثبتًا بالفعل، فاتبع تعليمات [أداة تثبيت Determinate Nix](https://github.com/DeterminateSystems/nix-installer).
   </Step>
-  <Step title="أنشئ flake محليًا">
-    استخدم قالب agent-first من مستودع nix-openclaw:
+  <Step title="إنشاء flake محلي">
+    استخدم القالب المصمم للوكيل أولًا من مستودع nix-openclaw:
     ```bash
     mkdir -p ~/code/openclaw-local
-    # Copy templates/agent-first/flake.nix from the nix-openclaw repo
+    # انسخ templates/agent-first/flake.nix من مستودع nix-openclaw
     ```
   </Step>
-  <Step title="اضبط الأسرار">
-    أعدّ رمز بوت المراسلة ومفتاح API لمزوّد النموذج. الملفات النصية البسيطة في `~/.secrets/` تعمل جيدًا.
+  <Step title="إعداد الأسرار">
+    أعِدّ رمز بوت المراسلة ومفتاح API لموفر النموذج. تعمل الملفات النصية العادية في `~/.secrets/` بشكل مناسب.
   </Step>
-  <Step title="املأ عناصر نائبة القالب وبدّل">
+  <Step title="ملء العناصر النائبة في القالب والتبديل">
     ```bash
     home-manager switch
     ```
   </Step>
-  <Step title="تحقّق">
-    تأكّد من أن خدمة launchd قيد التشغيل وأن بوتك يرد على الرسائل.
+  <Step title="التحقق">
+    تأكد من أن خدمة launchd قيد التشغيل وأن البوت يستجيب للرسائل.
   </Step>
 </Steps>
 
-راجع [README الخاص بـ nix-openclaw](https://github.com/openclaw/nix-openclaw) للاطلاع على جميع خيارات الوحدة والأمثلة.
+راجع [ملف README الخاص بـ nix-openclaw](https://github.com/openclaw/nix-openclaw) للاطلاع على جميع خيارات الوحدة والأمثلة.
 
 ## سلوك وقت التشغيل في وضع Nix
 
-عند تعيين `OPENCLAW_NIX_MODE=1` (تلقائيًا مع nix-openclaw)، يدخل OpenClaw وضعًا حتميًا للتثبيتات المُدارة بواسطة Nix. يمكن لحزم Nix الأخرى تعيين الوضع نفسه؛ ويُعد nix-openclaw المرجع الرسمي.
+عند ضبط `OPENCLAW_NIX_MODE=1` (يتم ذلك تلقائيًا مع nix-openclaw)، يدخل OpenClaw في وضع حتمي لعمليات التثبيت المُدارة بواسطة Nix. يمكن لحزم Nix الأخرى ضبط الوضع نفسه؛ ويُعد nix-openclaw المرجع الرسمي.
 
-يمكنك أيضًا تعيينه يدويًا:
+يمكنك أيضًا ضبطه يدويًا:
 
 ```bash
 export OPENCLAW_NIX_MODE=1
 ```
 
-على macOS، لا يرث تطبيق الواجهة الرسومية متغيرات بيئة الصدفة تلقائيًا. فعّل وضع Nix عبر defaults بدلًا من ذلك:
+على macOS، لا يرث تطبيق الواجهة الرسومية متغيرات بيئة الصدفة. فعّل وضع Nix عبر `defaults` بدلًا من ذلك:
 
 ```bash
 defaults write ai.openclaw.mac openclaw.nixMode -bool true
@@ -74,17 +74,17 @@ defaults write ai.openclaw.mac openclaw.nixMode -bool true
 
 ### ما الذي يتغير في وضع Nix
 
-- تُعطّل تدفقات التثبيت التلقائي والتعديل الذاتي
-- يُعامل `openclaw.json` كملف غير قابل للتغيير. تبقى القيم الافتراضية المشتقة عند بدء التشغيل خاصة بوقت التشغيل فقط، وترفض كاتبات الإعدادات مثل الإعداد الأولي، والتهيئة، و`openclaw update` المُعدِّل، وتثبيت/تحديث/إلغاء تثبيت/تمكين Plugin، و`doctor --fix`، و`doctor --generate-gateway-token`، و`openclaw config set` تعديل الملف.
-- ينبغي للوكلاء تعديل مصدر Nix بدلًا من ذلك. بالنسبة إلى nix-openclaw، استخدم [البدء السريع](https://github.com/openclaw/nix-openclaw#quick-start) الخاص بـ agent-first وعيّن الإعدادات ضمن `programs.openclaw.config` أو `instances.<name>.config`.
-- تعرض الاعتماديات المفقودة رسائل إصلاح خاصة بـ Nix
-- تعرض واجهة المستخدم شريط وضع Nix للقراءة فقط
+- تُعطّل مسارات التثبيت التلقائي والتعديل الذاتي.
+- يُعامل `openclaw.json` على أنه غير قابل للتغيير. تظل القيم الافتراضية المستنتجة عند بدء التشغيل مقتصرة على وقت التشغيل، وترفض أدوات كتابة الإعدادات (الإعداد، والتهيئة الأولية، وأمر `openclaw update` المعدِّل، وتثبيت Plugin أو تحديثه أو إلغاء تثبيته أو تمكينه، و`doctor --fix`، و`doctor --generate-gateway-token`، و`openclaw config set`) تعديل الملف.
+- عدّل مصدر Nix بدلًا من ذلك. بالنسبة إلى nix-openclaw، استخدم [البدء السريع](https://github.com/openclaw/nix-openclaw#quick-start) المصمم للوكيل أولًا، واضبط الإعدادات ضمن `programs.openclaw.config` أو `instances.<name>.config`.
+- تعرض التبعيات المفقودة رسائل معالجة خاصة بـ Nix.
+- تعرض واجهة المستخدم شريطًا لوضع Nix للقراءة فقط.
 
 ### مسارات الإعدادات والحالة
 
-يقرأ OpenClaw إعدادات JSON5 من `OPENCLAW_CONFIG_PATH` ويخزّن البيانات القابلة للتغيير في `OPENCLAW_STATE_DIR`. عند التشغيل تحت Nix، عيّن هذه القيم صراحةً إلى مواقع مُدارة بواسطة Nix حتى تبقى حالة وقت التشغيل والإعدادات خارج المخزن غير القابل للتغيير.
+يقرأ OpenClaw إعدادات JSON5 من `OPENCLAW_CONFIG_PATH` ويخزن البيانات القابلة للتغيير في `OPENCLAW_STATE_DIR`. ضمن Nix، اضبط هذين المسارين صراحةً على مواقع مُدارة بواسطة Nix، بحيث تظل حالة وقت التشغيل والإعدادات خارج المخزن غير القابل للتغيير.
 
-| المتغير                | الافتراضي                              |
+| المتغير                | القيمة الافتراضية                       |
 | ---------------------- | --------------------------------------- |
 | `OPENCLAW_HOME`        | `HOME` / `USERPROFILE` / `os.homedir()` |
 | `OPENCLAW_STATE_DIR`   | `~/.openclaw`                           |
@@ -92,29 +92,26 @@ defaults write ai.openclaw.mac openclaw.nixMode -bool true
 
 ### اكتشاف PATH للخدمة
 
-تكتشف خدمة Gateway في launchd/systemd ثنائيات ملف تعريف Nix تلقائيًا بحيث تعمل
-Plugin والأدوات التي تستدعي ملفات تنفيذية مثبتة عبر `nix` من الصدفة دون
-إعداد PATH يدويًا:
+تكتشف خدمة Gateway في launchd/systemd تلقائيًا الملفات التنفيذية ضمن ملفات تعريف Nix، بحيث تعمل وحدات Plugin والأدوات التي تستدعي ملفات تنفيذية مثبتة عبر `nix` من الصدفة دون إعداد PATH يدويًا:
 
-- عند تعيين `NIX_PROFILES`، تُضاف كل خانة إلى PATH الخاص بالخدمة وفق
-  أسبقية من اليمين إلى اليسار (تطابق أسبقية صدفة Nix - الأيمن يفوز).
-- عند عدم تعيين `NIX_PROFILES`، يُضاف `~/.nix-profile/bin` كبديل احتياطي.
+- عند ضبط `NIX_PROFILES`، تُضاف كل قيمة إلى PATH الخاص بالخدمة وفق أولوية من اليمين إلى اليسار (بما يطابق أولوية صدفة Nix: القيمة الواقعة أقصى اليمين هي السائدة).
+- عند عدم ضبط `NIX_PROFILES`، يُضاف `~/.nix-profile/bin` كمسار احتياطي.
 
-ينطبق هذا على بيئات خدمة macOS launchd وLinux systemd كليهما.
+ينطبق ذلك على بيئتي خدمة launchd في macOS وsystemd في Linux.
 
-## ذات صلة
+## ذو صلة
 
 <CardGroup cols={2}>
   <Card title="nix-openclaw" href="https://github.com/openclaw/nix-openclaw" icon="arrow-up-right-from-square">
-    وحدة Home Manager مصدر الحقيقة ودليل الإعداد الكامل.
+    وحدة Home Manager المرجعية ودليل الإعداد الكامل.
   </Card>
   <Card title="معالج الإعداد" href="/ar/start/wizard" icon="wand-magic-sparkles">
-    شرح تفصيلي لإعداد CLI من دون Nix.
+    شرح تفصيلي للإعداد عبر CLI دون Nix.
   </Card>
   <Card title="Docker" href="/ar/install/docker" icon="docker">
-    إعداد حاويات كبديل غير قائم على Nix.
+    إعداد قائم على الحاويات بوصفه بديلًا لا يستخدم Nix.
   </Card>
   <Card title="التحديث" href="/ar/install/updating" icon="arrow-up-right-from-square">
-    تحديث التثبيتات المُدارة بواسطة Home Manager مع الحزمة.
+    تحديث عمليات التثبيت المُدارة بواسطة Home Manager بالتزامن مع الحزمة.
   </Card>
 </CardGroup>

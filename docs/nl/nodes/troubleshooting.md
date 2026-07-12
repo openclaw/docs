@@ -1,22 +1,22 @@
 ---
 read_when:
-    - Node is verbonden, maar de camera/canvas/screen/exec-tools werken niet
-    - Je hebt het mentale model voor Node-koppeling versus goedkeuringen nodig
-summary: Problemen met Node-koppeling, vereisten voor de voorgrond, machtigingen en fouten in hulpmiddelen oplossen
-title: Problemen met Node oplossen
+    - Node is verbonden, maar camera-/canvas-/scherm-/exec-tools werken niet
+    - Je hebt het mentale model van Node-koppeling versus goedkeuringen nodig
+summary: Problemen met Node-koppeling, vereisten voor uitvoering op de voorgrond, machtigingen en toolfouten oplossen
+title: Probleemoplossing voor Node
 x-i18n:
-    generated_at: "2026-05-11T20:37:01Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:05:39Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d53f06367b63125f04b4b542c322e6e50e1f33153e0fbdd09e7a38772c69a438
+    source_hash: 53d082dcd2f4bb022eb683d72d193dbb6800b5a81a8f5ab9506d82feaa0dbc49
     source_path: nodes/troubleshooting.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Gebruik deze pagina wanneer een Node zichtbaar is in de status, maar Node-tools falen.
+Gebruik deze pagina wanneer een Node zichtbaar is in de status, maar Node-tools niet werken.
 
-## Commandoladder
+## Opdrachtvolgorde
 
 ```bash
 openclaw status
@@ -26,7 +26,7 @@ openclaw doctor
 openclaw channels status --probe
 ```
 
-Voer daarna Node-specifieke controles uit:
+Voer vervolgens Node-specifieke controles uit:
 
 ```bash
 openclaw nodes status
@@ -34,15 +34,15 @@ openclaw nodes describe --node <idOrNameOrIp>
 openclaw approvals get --node <idOrNameOrIp>
 ```
 
-Gezonde signalen:
+Signalen van een goede werking:
 
-- Node is verbonden en gekoppeld voor rol `node`.
-- `nodes describe` bevat de capability die je aanroept.
-- Exec-goedkeuringen tonen de verwachte modus/allowlist.
+- De Node is verbonden en gekoppeld voor de rol `node`.
+- `nodes describe` bevat de mogelijkheid die je aanroept.
+- Uitvoeringsgoedkeuringen tonen de verwachte modus/toestaanlijst.
 
 ## Vereisten voor de voorgrond
 
-`canvas.*`, `camera.*` en `screen.*` werken alleen op de voorgrond op iOS/Android-Nodes.
+`canvas.*`, `camera.*` en `screen.*` werken op iOS-/Android-Nodes alleen op de voorgrond.
 
 Snelle controle en oplossing:
 
@@ -56,20 +56,23 @@ Als je `NODE_BACKGROUND_UNAVAILABLE` ziet, breng je de Node-app naar de voorgron
 
 ## Machtigingenmatrix
 
-| Capability                   | iOS                                           | Android                                             | macOS-Node-app                   | Typische foutcode              |
-| ---------------------------- | --------------------------------------------- | --------------------------------------------------- | -------------------------------- | ------------------------------ |
-| `camera.snap`, `camera.clip` | Camera (+ microfoon voor clipaudio)           | Camera (+ microfoon voor clipaudio)                 | Camera (+ microfoon voor clipaudio) | `*_PERMISSION_REQUIRED`        |
-| `screen.record`              | Schermopname (+ microfoon optioneel)          | Prompt voor schermopname (+ microfoon optioneel)    | Schermopname                     | `*_PERMISSION_REQUIRED`        |
-| `location.get`               | Bij gebruik of Altijd (hangt af van de modus) | Voorgrond-/achtergrondlocatie op basis van de modus | Locatiemachtiging                | `LOCATION_PERMISSION_REQUIRED` |
-| `system.run`                 | n.v.t. (hostpad van Node)                     | n.v.t. (hostpad van Node)                           | Exec-goedkeuringen vereist       | `SYSTEM_RUN_DENIED`            |
+| Mogelijkheid                  | iOS                                             | Android                                              | macOS-Node-app                            | Gebruikelijke foutcode                        |
+| ---------------------------- | ----------------------------------------------- | ---------------------------------------------------- | ----------------------------------------- | --------------------------------------------- |
+| `camera.snap`, `camera.clip` | Camera (+ microfoon voor audio bij een fragment) | Camera (+ microfoon voor audio bij een fragment)      | Camera (+ microfoon voor fragmentaudio)   | `*_PERMISSION_REQUIRED`                       |
+| `screen.record`              | Schermopname (+ microfoon optioneel)             | Prompt voor schermopname (+ microfoon optioneel)      | Schermopname                              | `*_PERMISSION_REQUIRED`                       |
+| `computer.act`               | n.v.t.                                           | n.v.t.                                               | Toegankelijkheid + schermopname           | `COMPUTER_DISABLED`, `ACCESSIBILITY_REQUIRED` |
+| `location.get`               | Tijdens gebruik of altijd (afhankelijk van modus) | Locatie op voor-/achtergrond op basis van de modus    | Locatiemachtiging                         | `LOCATION_PERMISSION_REQUIRED`                |
+| `system.run`                 | n.v.t. (pad op Node-host)                        | n.v.t. (pad op Node-host)                            | Uitvoeringsgoedkeuringen vereist          | `SYSTEM_RUN_DENIED`                           |
 
 ## Koppeling versus goedkeuringen
 
-Dit zijn verschillende poorten:
+Drie afzonderlijke poorten bepalen of een Node-opdracht slaagt:
 
 1. **Apparaatkoppeling**: kan deze Node verbinding maken met de Gateway?
-2. **Gateway-Node-opdrachtbeleid**: is de RPC-opdracht-ID toegestaan door `gateway.nodes.allowCommands` / `denyCommands` en platformstandaarden?
-3. **Exec-goedkeuringen**: kan deze Node lokaal een specifieke shellopdracht uitvoeren?
+2. **Beleid voor Node-opdrachten van de Gateway**: is de RPC-opdracht-ID toegestaan door `gateway.nodes.allowCommands` / `denyCommands` en de platformstandaarden?
+3. **Uitvoeringsgoedkeuringen**: mag deze Node lokaal een specifieke shellopdracht uitvoeren?
+
+Node-koppeling is een identiteits-/vertrouwenspoort, geen goedkeuringsmechanisme per opdracht. Voor `system.run` bevindt het beleid per Node zich in het bestand met uitvoeringsgoedkeuringen van die Node (`openclaw approvals get --node ...`), niet in de koppelingsregistratie van de Gateway.
 
 Snelle controles:
 
@@ -80,31 +83,28 @@ openclaw approvals get --node <idOrNameOrIp>
 openclaw approvals allowlist add --node <idOrNameOrIp> "/usr/bin/uname"
 ```
 
-Als koppeling ontbreekt, keur dan eerst het Node-apparaat goed.
-Als in `nodes describe` een opdracht ontbreekt, controleer dan het Gateway-Node-opdrachtbeleid en of de Node die opdracht daadwerkelijk heeft gedeclareerd bij het verbinden.
-Als koppeling in orde is maar `system.run` faalt, herstel dan de exec-goedkeuringen/allowlist op die Node.
+- Koppeling ontbreekt: keur eerst het Node-apparaat goed.
+- Een opdracht ontbreekt in `nodes describe`: controleer het beleid voor Node-opdrachten van de Gateway en of de Node die opdracht daadwerkelijk heeft gedeclareerd bij het verbinden.
+- De koppeling is in orde, maar `system.run` mislukt: herstel de uitvoeringsgoedkeuringen/toestaanlijst op die Node.
 
-Node-koppeling is een identiteits-/vertrouwenspoort, geen goedkeuringsoppervlak per opdracht. Voor `system.run` bevindt het beleid per Node zich in het exec-goedkeuringsbestand van die Node (`openclaw approvals get --node ...`), niet in de Gateway-koppelingsrecord.
-
-Voor door goedkeuring ondersteunde `host=node`-runs bindt de Gateway de uitvoering ook aan het
-voorbereide canonieke `systemRunPlan`. Als een latere aanroeper opdracht/cwd of
-sessiemetadata wijzigt voordat de goedgekeurde run wordt doorgestuurd, weigert de Gateway de
-run als een goedkeuringsmismatch in plaats van de bewerkte payload te vertrouwen.
+Voor door goedkeuring ondersteunde uitvoeringen met `host=node` koppelt de Gateway de uitvoering ook aan het voorbereide, canonieke `systemRunPlan`. Als een latere aanroeper de opdracht, cwd of sessiemetadata wijzigt voordat de goedgekeurde uitvoering wordt doorgestuurd, wijst de Gateway de uitvoering af vanwege een niet-overeenkomende goedkeuring, in plaats van de bewerkte payload te vertrouwen.
 
 ## Veelvoorkomende Node-foutcodes
 
-- `NODE_BACKGROUND_UNAVAILABLE` → app draait op de achtergrond; breng deze naar de voorgrond.
-- `CAMERA_DISABLED` → cameraschakelaar uitgeschakeld in Node-instellingen.
-- `*_PERMISSION_REQUIRED` → OS-machtiging ontbreekt/geweigerd.
-- `LOCATION_DISABLED` → locatiemodus is uitgeschakeld.
-- `LOCATION_PERMISSION_REQUIRED` → aangevraagde locatiemodus is niet verleend.
-- `LOCATION_BACKGROUND_UNAVAILABLE` → app draait op de achtergrond, maar er bestaat alleen machtiging Bij gebruik.
-- `SYSTEM_RUN_DENIED: approval required` → exec-aanvraag vereist expliciete goedkeuring.
-- `SYSTEM_RUN_DENIED: allowlist miss` → opdracht geblokkeerd door allowlist-modus.
-  Op Windows-Node-hosts worden shell-wrappervormen zoals `cmd.exe /c ...` in allowlist-modus behandeld als allowlist-misses,
-  tenzij ze via de vraagflow zijn goedgekeurd.
+| Code                                   | Betekenis                                                                                                                                                                                                 |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `NODE_BACKGROUND_UNAVAILABLE`          | De app draait op de achtergrond; breng deze naar de voorgrond.                                                                                                                                            |
+| `CAMERA_DISABLED`                      | De cameraschakelaar is uitgeschakeld in de Node-instellingen.                                                                                                                                             |
+| `*_PERMISSION_REQUIRED`                | OS-machtiging ontbreekt of is geweigerd.                                                                                                                                                                  |
+| `LOCATION_DISABLED`                    | De locatiemodus is uitgeschakeld.                                                                                                                                                                         |
+| `LOCATION_PERMISSION_REQUIRED`         | De aangevraagde locatiemodus is niet toegestaan.                                                                                                                                                          |
+| `LOCATION_BACKGROUND_UNAVAILABLE`      | De app draait op de achtergrond, maar alleen machtiging voor gebruik op de voorgrond is verleend.                                                                                                         |
+| `COMPUTER_DISABLED`                    | Schakel **Allow Computer Control** in de macOS-app in en keur vervolgens de koppelingsupdate goed.                                                                                                        |
+| `ACCESSIBILITY_REQUIRED`               | Verleen toegankelijkheid aan de huidige OpenClaw-appbundel in macOS System Settings.                                                                                                                      |
+| `SYSTEM_RUN_DENIED: approval required` | Het uitvoeringsverzoek vereist expliciete goedkeuring.                                                                                                                                                    |
+| `SYSTEM_RUN_DENIED: allowlist miss`    | De opdracht is geblokkeerd door de toestaanlijstmodus. Op Windows-Node-hosts worden shell-wrappervormen zoals `cmd.exe /c ...` in de toestaanlijstmodus beschouwd als niet aanwezig in de toestaanlijst, tenzij ze via de vraagprocedure zijn goedgekeurd. |
 
-## Snelle herstellus
+## Snelle herstelcyclus
 
 ```bash
 openclaw nodes status
@@ -113,19 +113,22 @@ openclaw approvals get --node <idOrNameOrIp>
 openclaw logs --follow
 ```
 
-Als je nog steeds vastzit:
+Als je nog steeds vastloopt:
 
-- Keur apparaatkoppeling opnieuw goed.
-- Open de Node-app opnieuw (voorgrond).
-- Verleen OS-machtigingen opnieuw.
-- Maak het exec-goedkeuringsbeleid opnieuw aan of pas het aan.
+- Keur de apparaatkoppeling opnieuw goed.
+- Open de Node-app opnieuw (op de voorgrond).
+- Verleen de OS-machtigingen opnieuw.
+- Maak het beleid voor uitvoeringsgoedkeuringen opnieuw of pas het aan.
+
+Controleer voor computerbesturing ook of een agent met beeldmogelijkheden de tool `computer` beschikbaar stelt, of `screen.snapshot` slaagt met machtiging voor schermopname en of `/phone status` de bedoelde tijdelijke of permanente autorisatie van de Gateway toont. Een vermelding in `gateway.nodes.denyCommands` heeft altijd voorrang op `allowCommands`.
 
 ## Gerelateerd
 
-- [Nodes-overzicht](/nl/nodes)
+- [Overzicht van Nodes](/nl/nodes)
 - [Camera-Nodes](/nl/nodes/camera)
 - [Locatieopdracht](/nl/nodes/location-command)
-- [Exec-goedkeuringen](/nl/tools/exec-approvals)
+- [Computergebruik](/nl/nodes/computer-use)
+- [Uitvoeringsgoedkeuringen](/nl/tools/exec-approvals)
 - [Gateway-koppeling](/nl/gateway/pairing)
-- [Gateway-probleemoplossing](/nl/gateway/troubleshooting)
-- [Kanaalprobleemoplossing](/nl/channels/troubleshooting)
+- [Problemen met de Gateway oplossen](/nl/gateway/troubleshooting)
+- [Problemen met kanalen oplossen](/nl/channels/troubleshooting)

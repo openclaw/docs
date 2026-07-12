@@ -1,45 +1,43 @@
 ---
 read_when:
-    - Vuoi usare Volcano Engine o i modelli Doubao con OpenClaw
-    - Hai bisogno della configurazione della chiave API di Volcengine
-    - Vuoi usare la sintesi vocale di Volcengine Speech
-summary: Configurazione di Volcano Engine (modelli Doubao, endpoint di coding e TTS Seed Speech)
+    - Vuoi usare i modelli Volcano Engine o Doubao con OpenClaw
+    - È necessario configurare la chiave API di Volcengine
+    - Vuoi utilizzare la sintesi vocale di Volcengine Speech
+summary: Configurazione di Volcano Engine (modelli Doubao, endpoint per la programmazione e sintesi vocale Seed Speech)
 title: Volcengine (Doubao)
 x-i18n:
-    generated_at: "2026-04-26T11:37:29Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: b7948a26cc898e125d445e9ae091704f5cf442266d29e712c0dcedbe0dc0cce7
-    source_path: providers/volcengine.md
-    workflow: 15
+    generated_at: "2026-07-12T07:29:27Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: e853a1c8847704caedf0ec83c38332569f72105c5e34ad973daf614a2e80550b
+    source_path: providers/volcengine.md
+    workflow: 16
 ---
 
-Il provider Volcengine offre accesso ai modelli Doubao e ai modelli di terze parti
-ospitati su Volcano Engine, con endpoint separati per i carichi di lavoro
-generali e di coding. Lo stesso Plugin incluso può anche registrare Volcengine Speech come provider TTS.
+Il provider Volcengine consente di accedere ai modelli Doubao e ai modelli di terze parti ospitati su Volcano Engine, con endpoint distinti per i carichi di lavoro generici e di programmazione. Lo stesso plugin incluso registra anche Volcengine Speech come provider TTS.
 
-| Dettaglio   | Valore                                                     |
-| ---------- | ---------------------------------------------------------- |
-| Provider   | `volcengine` (generale + TTS) + `volcengine-plan` (coding) |
-| Autenticazione modello | `VOLCANO_ENGINE_API_KEY`                        |
-| Autenticazione TTS | `VOLCENGINE_TTS_API_KEY` o `BYTEPLUS_SEED_SPEECH_API_KEY` |
-| API        | Modelli compatibili con OpenAI, TTS BytePlus Seed Speech   |
+| Dettaglio              | Valore                                                     |
+| ---------------------- | ---------------------------------------------------------- |
+| Provider               | `volcengine` (generico + TTS), `volcengine-plan` (codifica) |
+| Autenticazione modelli | `VOLCANO_ENGINE_API_KEY`                                   |
+| Autenticazione TTS     | `VOLCENGINE_TTS_API_KEY` o `BYTEPLUS_SEED_SPEECH_API_KEY`  |
+| API                    | Modelli compatibili con OpenAI, TTS BytePlus Seed Speech   |
 
 ## Per iniziare
 
 <Steps>
-  <Step title="Imposta la chiave API">
-    Esegui l'onboarding interattivo:
+  <Step title="Set the API key">
+    Esegui la configurazione iniziale interattiva:
 
     ```bash
     openclaw onboard --auth-choice volcengine-api-key
     ```
 
-    Questo registra sia il provider generale (`volcengine`) sia quello di coding (`volcengine-plan`) a partire da una singola chiave API.
+    Questo registra sia il provider generico (`volcengine`) sia quello di programmazione (`volcengine-plan`) usando un'unica chiave API.
 
   </Step>
-  <Step title="Imposta un modello predefinito">
+  <Step title="Set a default model">
     ```json5
     {
       agents: {
@@ -50,7 +48,7 @@ generali e di coding. Lo stesso Plugin incluso può anche registrare Volcengine 
     }
     ```
   </Step>
-  <Step title="Verifica che il modello sia disponibile">
+  <Step title="Verify the model is available">
     ```bash
     openclaw models list --provider volcengine
     openclaw models list --provider volcengine-plan
@@ -59,7 +57,7 @@ generali e di coding. Lo stesso Plugin incluso può anche registrare Volcengine 
 </Steps>
 
 <Tip>
-Per una configurazione non interattiva (CI, scripting), passa la chiave direttamente:
+Per la configurazione non interattiva (CI, scripting), passa direttamente la chiave:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -72,51 +70,51 @@ openclaw onboard --non-interactive \
 
 ## Provider ed endpoint
 
-| Provider          | Endpoint                                  | Caso d'uso     |
-| ----------------- | ----------------------------------------- | -------------- |
-| `volcengine`      | `ark.cn-beijing.volces.com/api/v3`        | Modelli generali |
-| `volcengine-plan` | `ark.cn-beijing.volces.com/api/coding/v3` | Modelli di coding |
+| Provider          | Endpoint                                  | Caso d'uso         |
+| ----------------- | ----------------------------------------- | ------------------ |
+| `volcengine`      | `ark.cn-beijing.volces.com/api/v3`        | Modelli generici   |
+| `volcengine-plan` | `ark.cn-beijing.volces.com/api/coding/v3` | Modelli di codifica |
 
 <Note>
-Entrambi i provider sono configurati da una singola chiave API. La configurazione li registra entrambi automaticamente.
+Entrambi i provider vengono configurati con un'unica chiave API. La configurazione li registra entrambi automaticamente e il selettore dei modelli del provider di programmazione riutilizza anche l'autenticazione del provider generico (`volcengine-plan` è un alias di autenticazione di `volcengine`).
 </Note>
 
 ## Catalogo integrato
 
 <Tabs>
-  <Tab title="Generale (volcengine)">
-    | Model ref                                    | Nome                            | Input       | Contesto |
-    | -------------------------------------------- | ------------------------------- | ----------- | ------- |
-    | `volcengine/doubao-seed-1-8-251228`          | Doubao Seed 1.8                 | testo, immagine | 256,000 |
-    | `volcengine/doubao-seed-code-preview-251028` | doubao-seed-code-preview-251028 | testo, immagine | 256,000 |
-    | `volcengine/kimi-k2-5-260127`                | Kimi K2.5                       | testo, immagine | 256,000 |
-    | `volcengine/glm-4-7-251222`                  | GLM 4.7                         | testo, immagine | 200,000 |
-    | `volcengine/deepseek-v3-2-251201`            | DeepSeek V3.2                   | testo, immagine | 128,000 |
+  <Tab title="General (volcengine)">
+    | Riferimento modello                           | Nome                            | Input           | Contesto |
+    | --------------------------------------------- | ------------------------------- | --------------- | -------- |
+    | `volcengine/deepseek-v3-2-251201`             | DeepSeek V3.2                   | testo, immagine | 128.000  |
+    | `volcengine/doubao-seed-1-8-251228`           | Doubao Seed 1.8                 | testo, immagine | 256.000  |
+    | `volcengine/doubao-seed-code-preview-251028`  | doubao-seed-code-preview-251028 | testo, immagine | 256.000  |
+    | `volcengine/glm-4-7-251222`                   | GLM 4.7                         | testo, immagine | 200.000  |
+    | `volcengine/kimi-k2-5-260127`                 | Kimi K2.5                       | testo, immagine | 256.000  |
   </Tab>
   <Tab title="Coding (volcengine-plan)">
-    | Model ref                                         | Nome                     | Input | Contesto |
-    | ------------------------------------------------- | ------------------------ | ----- | ------- |
-    | `volcengine-plan/ark-code-latest`                 | Ark Coding Plan          | testo | 256,000 |
-    | `volcengine-plan/doubao-seed-code`                | Doubao Seed Code         | testo | 256,000 |
-    | `volcengine-plan/glm-4.7`                         | GLM 4.7 Coding           | testo | 200,000 |
-    | `volcengine-plan/kimi-k2-thinking`                | Kimi K2 Thinking         | testo | 256,000 |
-    | `volcengine-plan/kimi-k2.5`                       | Kimi K2.5 Coding         | testo | 256,000 |
-    | `volcengine-plan/doubao-seed-code-preview-251028` | Doubao Seed Code Preview | testo | 256,000 |
+    | Riferimento modello                                | Nome                     | Input | Contesto |
+    | -------------------------------------------------- | ------------------------ | ----- | -------- |
+    | `volcengine-plan/ark-code-latest`                  | Ark Coding Plan          | testo | 256.000  |
+    | `volcengine-plan/doubao-seed-code`                 | Doubao Seed Code         | testo | 256.000  |
+    | `volcengine-plan/doubao-seed-code-preview-251028`  | Doubao Seed Code Preview | testo | 256.000  |
+    | `volcengine-plan/glm-4.7`                          | GLM 4.7 Coding           | testo | 200.000  |
+    | `volcengine-plan/kimi-k2-thinking`                 | Kimi K2 Thinking         | testo | 256.000  |
+    | `volcengine-plan/kimi-k2.5`                        | Kimi K2.5 Coding         | testo | 256.000  |
   </Tab>
 </Tabs>
 
+Entrambi i cataloghi sono statici (non viene effettuata alcuna chiamata di individuazione a `/models`) e supportano la contabilizzazione in streaming dell'utilizzo compatibile con OpenAI. Gli schemi degli strumenti per entrambi i provider eliminano automaticamente le parole chiave `minLength`, `maxLength`, `minItems`, `maxItems`, `minContains` e `maxContains`, poiché l'API per le chiamate agli strumenti di Volcengine le rifiuta.
+
 ## Sintesi vocale
 
-Il TTS di Volcengine usa l'API HTTP BytePlus Seed Speech ed è configurato
-separatamente dalla chiave API dei modelli Doubao compatibili con OpenAI. Nella console BytePlus,
-apri Seed Speech > Settings > API Keys e copia la chiave API, quindi imposta:
+Il TTS di Volcengine utilizza l'API HTTP BytePlus Seed Speech (`voice.ap-southeast-1.bytepluses.com`) e viene configurato separatamente dalla chiave API dei modelli Doubao compatibile con OpenAI. Nella console BytePlus, apri Seed Speech > Settings > API Keys, copia la chiave API, quindi imposta:
 
 ```bash
 export VOLCENGINE_TTS_API_KEY="byteplus_seed_speech_api_key"
 export VOLCENGINE_TTS_RESOURCE_ID="seed-tts-1.0"
 ```
 
-Poi abilitalo in `openclaw.json`:
+Quindi abilitalo in `openclaw.json`:
 
 ```json5
 {
@@ -136,21 +134,17 @@ Poi abilitalo in `openclaw.json`:
 }
 ```
 
-Per le destinazioni con note vocali, OpenClaw richiede a Volcengine il formato nativo del provider
-`ogg_opus`. Per i normali allegati audio, richiede `mp3`. Anche gli alias del provider
-`bytedance` e `doubao` vengono risolti nello stesso provider vocale.
+Campi disponibili in `messages.tts.providers.volcengine`: `apiKey`, `voice`, `speedRatio` (0.2-3.0), `emotion`, `cluster`, `resourceId`, `appKey` e `baseUrl`. Anche `!emotion=<value>` funziona come direttiva vocale incorporata quando sono consentite le sostituzioni delle impostazioni vocali.
 
-L'ID risorsa predefinito è `seed-tts-1.0` perché è quello che BytePlus assegna
-alle chiavi API Seed Speech appena create nel progetto predefinito. Se il tuo progetto
-ha l'abilitazione TTS 2.0, imposta `VOLCENGINE_TTS_RESOURCE_ID=seed-tts-2.0`.
+Per le destinazioni di messaggi vocali, OpenClaw richiede il formato nativo del provider `ogg_opus`. Per i normali allegati audio, richiede `mp3`. Anche gli alias del provider `bytedance` e `doubao` vengono risolti in questo provider vocale.
+
+L'ID risorsa predefinito è `seed-tts-1.0`, l'abilitazione che BytePlus concede per impostazione predefinita alle chiavi API Seed Speech appena create. Se il tuo progetto dispone dell'abilitazione TTS 2.0, imposta `VOLCENGINE_TTS_RESOURCE_ID=seed-tts-2.0`.
 
 <Warning>
-`VOLCANO_ENGINE_API_KEY` è per gli endpoint dei modelli ModelArk/Doubao e non è una
-chiave API Seed Speech. Il TTS richiede una chiave API Seed Speech dalla BytePlus Speech
-Console oppure una coppia AppID/token della Speech Console legacy.
+`VOLCANO_ENGINE_API_KEY` è destinata agli endpoint dei modelli ModelArk/Doubao e non è una chiave API Seed Speech. Il TTS richiede una chiave API Seed Speech dalla BytePlus Speech Console oppure una coppia AppID/token della precedente Speech Console.
 </Warning>
 
-L'autenticazione legacy AppID/token resta supportata per le applicazioni meno recenti della Speech Console:
+L'autenticazione precedente tramite AppID/token rimane supportata per le applicazioni Speech Console meno recenti:
 
 ```bash
 export VOLCENGINE_TTS_APPID="speech_app_id"
@@ -158,47 +152,39 @@ export VOLCENGINE_TTS_TOKEN="speech_access_token"
 export VOLCENGINE_TTS_CLUSTER="volcano_tts"
 ```
 
+Altre variabili di ambiente TTS facoltative: quando impostate, `VOLCENGINE_TTS_VOICE`, `VOLCENGINE_TTS_APP_KEY` e `VOLCENGINE_TTS_BASE_URL` sostituiscono i campi di configurazione corrispondenti in `messages.tts.providers.volcengine`.
+
 ## Configurazione avanzata
 
 <AccordionGroup>
-  <Accordion title="Modello predefinito dopo l'onboarding">
-    `openclaw onboard --auth-choice volcengine-api-key` attualmente imposta
-    `volcengine-plan/ark-code-latest` come modello predefinito registrando anche
-    il catalogo generale `volcengine`.
+  <Accordion title="Default model after onboarding">
+    `openclaw onboard --auth-choice volcengine-api-key` imposta `volcengine-plan/ark-code-latest` come modello predefinito, registrando al contempo il catalogo generico `volcengine`.
   </Accordion>
 
-  <Accordion title="Comportamento di fallback del selettore del modello">
-    Durante l'onboarding/configurazione della selezione del modello, la scelta di autenticazione Volcengine privilegia
-    sia le righe `volcengine/*` sia `volcengine-plan/*`. Se questi modelli non sono
-    ancora caricati, OpenClaw ripiega sul catalogo non filtrato invece di mostrare un
-    selettore limitato al provider vuoto.
+  <Accordion title="Model picker fallback behavior">
+    Durante la selezione del modello nella configurazione iniziale o nella configurazione successiva, la scelta di autenticazione Volcengine privilegia sia le righe `volcengine/*` sia quelle `volcengine-plan/*`. Se questi modelli non sono ancora caricati, OpenClaw utilizza come alternativa il catalogo non filtrato anziché mostrare un selettore vuoto limitato al provider.
   </Accordion>
 
-  <Accordion title="Variabili d'ambiente per i processi daemon">
-    Se il Gateway viene eseguito come daemon (launchd/systemd), assicurati che le variabili d'ambiente
-    del modello e del TTS come `VOLCANO_ENGINE_API_KEY`, `VOLCENGINE_TTS_API_KEY`,
-    `BYTEPLUS_SEED_SPEECH_API_KEY`, `VOLCENGINE_TTS_APPID` e
-    `VOLCENGINE_TTS_TOKEN` siano disponibili per quel processo (per esempio, in
-    `~/.openclaw/.env` o tramite `env.shellEnv`).
+  <Accordion title="Environment variables for daemon processes">
+    Se il Gateway viene eseguito come daemon (launchd/systemd), assicurati che le variabili di ambiente dei modelli e del TTS, come `VOLCANO_ENGINE_API_KEY`, `VOLCENGINE_TTS_API_KEY`, `BYTEPLUS_SEED_SPEECH_API_KEY`, `VOLCENGINE_TTS_APPID` e `VOLCENGINE_TTS_TOKEN`, siano disponibili per tale processo, ad esempio in `~/.openclaw/.env` o tramite `env.shellEnv`.
   </Accordion>
 </AccordionGroup>
 
 <Warning>
-Quando OpenClaw viene eseguito come servizio in background, le variabili d'ambiente impostate nella tua
-shell interattiva non vengono ereditate automaticamente. Vedi la nota precedente sui daemon.
+Quando OpenClaw viene eseguito come servizio in background, le variabili di ambiente impostate nella shell interattiva non vengono ereditate automaticamente. Consulta la nota sui daemon riportata sopra.
 </Warning>
 
-## Correlati
+## Contenuti correlati
 
 <CardGroup cols={2}>
-  <Card title="Selezione del modello" href="/it/concepts/model-providers" icon="layers">
-    Scelta dei provider, dei model ref e del comportamento di failover.
+  <Card title="Model selection" href="/it/concepts/model-providers" icon="layers">
+    Scelta dei provider, dei riferimenti dei modelli e del comportamento di failover.
   </Card>
-  <Card title="Configurazione" href="/it/gateway/configuration" icon="gear">
+  <Card title="Configuration" href="/it/gateway/configuration" icon="gear">
     Riferimento completo della configurazione per agenti, modelli e provider.
   </Card>
-  <Card title="Risoluzione dei problemi" href="/it/help/troubleshooting" icon="wrench">
-    Problemi comuni e passaggi di debug.
+  <Card title="Troubleshooting" href="/it/help/troubleshooting" icon="wrench">
+    Problemi comuni e procedure di debug.
   </Card>
   <Card title="FAQ" href="/it/help/faq" icon="circle-question">
     Domande frequenti sulla configurazione di OpenClaw.

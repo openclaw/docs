@@ -1,13 +1,13 @@
 ---
 read_when:
-    - 你需要一個不需要 API 金鑰的網路搜尋提供者
-    - 您想使用 DuckDuckGo 進行 web_search
-    - 你需要明確選取的無金鑰搜尋提供者
-summary: DuckDuckGo 網頁搜尋 -- 免金鑰提供者（實驗性，基於 HTML）
+    - 你想要一個不需要 API 金鑰的網頁搜尋供應商
+    - 你想要使用 DuckDuckGo 進行 web_search
+    - 你想要明確選擇一個不需要金鑰的搜尋提供者
+summary: DuckDuckGo 網頁搜尋 -- 無需金鑰的提供者（實驗性，基於 HTML）
 title: DuckDuckGo 搜尋
 x-i18n:
-    generated_at: "2026-07-05T11:45:10Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T21:53:43Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 84e90532de276dcb3f73c67015dffe5f5a62be673e44a19053b2b1dfcb0986ac
@@ -18,12 +18,12 @@ x-i18n:
 OpenClaw 支援 DuckDuckGo 作為**免金鑰**的 `web_search` 提供者。不需要 API 金鑰或帳號。
 
 <Warning>
-  DuckDuckGo 是一項**實驗性、非官方**整合，會擷取 DuckDuckGo 的非 JavaScript HTML 搜尋頁面，而不是官方 API。預期偶爾會因機器人驗證頁面或 HTML 變更而故障。
+  DuckDuckGo 是一項**實驗性、非官方**的整合，透過擷取 DuckDuckGo 的非 JavaScript HTML 搜尋頁面運作，而非使用官方 API。機器人驗證頁面或 HTML 變更可能偶爾導致功能中斷。
 </Warning>
 
 ## 設定
 
-DuckDuckGo 絕不會自動選取，因為自動偵測只會考慮具備可用憑證的提供者。請明確設定：
+DuckDuckGo 絕不會被自動選取，因為自動偵測只會考慮具備可用憑證的提供者。請明確設定：
 
 <Steps>
   <Step title="設定">
@@ -34,9 +34,9 @@ DuckDuckGo 絕不會自動選取，因為自動偵測只會考慮具備可用憑
   </Step>
 </Steps>
 
-## 設定檔
+## 組態
 
-直接在設定檔中設定提供者：
+直接在組態中設定提供者：
 
 ```json5
 {
@@ -50,7 +50,7 @@ DuckDuckGo 絕不會自動選取，因為自動偵測只會考慮具備可用憑
 }
 ```
 
-區域與 SafeSearch 的選用外掛層級設定：
+可選的外掛層級區域與 SafeSearch 設定：
 
 ```json5
 {
@@ -76,33 +76,33 @@ DuckDuckGo 絕不會自動選取，因為自動偵測只會考慮具備可用憑
 </ParamField>
 
 <ParamField path="count" type="number" default="5">
-要傳回的結果數量 (1-10)。
+要傳回的結果數量（1-10）。
 </ParamField>
 
 <ParamField path="region" type="string">
-DuckDuckGo 區域代碼 (例如 `us-en`、`uk-en`、`de-de`)。
+DuckDuckGo 區域代碼（例如 `us-en`、`uk-en`、`de-de`）。
 </ParamField>
 
 <ParamField path="safeSearch" type="'strict' | 'moderate' | 'off'" default="moderate">
-SafeSearch 等級。
+SafeSearch 層級。
 </ParamField>
 
-`region` 和 `safeSearch` 工具參數會依每次查詢覆寫上方的外掛設定值。
+`region` 和 `safeSearch` 工具參數會針對每次查詢覆寫上述外掛組態值。
 
 ## 注意事項
 
-- **不需 API 金鑰** -- 選取 DuckDuckGo 作為 `web_search` 提供者後即可運作。
-- **實驗性** -- 擷取 DuckDuckGo 的非 JavaScript HTML 搜尋頁面，而不是官方 API 或 SDK。結果取決於頁面結構，可能在未通知的情況下變更。
-- **機器人驗證風險** -- DuckDuckGo 可能會在大量或自動化使用時提供 CAPTCHA 或封鎖要求。
-- **僅限明確選取** -- OpenClaw 的自動偵測只會考慮具備可用憑證的提供者，因此像 DuckDuckGo 這類免金鑰提供者絕不會自動選擇；你必須設定 `provider: "duckduckgo"`。
+- **不需要 API 金鑰**——選取 DuckDuckGo 作為 `web_search` 提供者後即可使用。
+- **實驗性**——擷取 DuckDuckGo 的非 JavaScript HTML 搜尋頁面，而非使用官方 API 或 SDK。結果取決於頁面結構，而頁面結構可能隨時變更，恕不另行通知。
+- **機器人驗證風險**——在大量或自動化使用時，DuckDuckGo 可能會顯示 CAPTCHA 或封鎖請求。
+- **僅限明確選取**——OpenClaw 的自動偵測只會考慮具備可用憑證的提供者，因此不會自動選取像 DuckDuckGo 這類免金鑰的提供者；你必須設定 `provider: "duckduckgo"`。
 - **未設定時，SafeSearch 預設為 `moderate`**。
 
 <Tip>
-  若用於正式環境，請考慮 [Brave Search](/zh-TW/tools/brave-search)（提供免費方案）或其他 API 支援的提供者。
+  若用於正式環境，請考慮使用 [Brave Search](/zh-TW/tools/brave-search)（提供免費方案）或其他由 API 支援的提供者。
 </Tip>
 
-## 相關
+## 相關內容
 
-- [網頁搜尋概觀](/zh-TW/tools/web) -- 所有提供者與自動偵測
-- [Brave Search](/zh-TW/tools/brave-search) -- 提供免費方案的結構化結果
-- [Exa Search](/zh-TW/tools/exa-search) -- 具內容擷取的神經搜尋
+- [網頁搜尋概覽](/zh-TW/tools/web)——所有提供者與自動偵測
+- [Brave Search](/zh-TW/tools/brave-search)——提供免費方案的結構化結果
+- [Exa Search](/zh-TW/tools/exa-search)——具備內容擷取功能的神經搜尋

@@ -1,28 +1,27 @@
 ---
 read_when:
-    - คุณต้องการเรียกใช้ OpenClaw ด้วยโมเดล NovitaAI
-    - คุณต้องมีรหัสผู้ให้บริการ คีย์ หรือปลายทางของ Novita
-summary: ใช้ API ที่เข้ากันได้กับ OpenAI ของ NovitaAI กับ OpenClaw
+    - คุณต้องการเรียกใช้ OpenClaw ด้วยโมเดลของ NovitaAI
+    - คุณต้องมีรหัสผู้ให้บริการ คีย์ หรือเอ็นด์พอยต์ของ Novita
+summary: ใช้ API ของ NovitaAI ที่เข้ากันได้กับ OpenAI ร่วมกับ OpenClaw
 title: NovitaAI
 x-i18n:
-    generated_at: "2026-06-27T18:14:42Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:38:16Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 602df700662dbf2176acabcad7d23950e8240158f58d115f8e56bf1fb9f43bcb
+    source_hash: 83e0e43e68d85d73e790023858a49f971b683129dbbdf6092fbd8bba4d8da331
     source_path: providers/novita.md
     workflow: 16
 ---
 
-NovitaAI เป็นผู้ให้บริการโครงสร้างพื้นฐาน AI แบบโฮสต์ที่มี API โมเดลที่เข้ากันได้กับ OpenAI ใน OpenClaw ผู้ให้บริการนี้เป็นผู้ให้บริการโมเดลที่บันเดิลมาให้ ดังนั้น provider id คือ `novita` ข้อมูลประจำตัวจะผ่านโฟลว์การยืนยันตัวตนโมเดลตามปกติ และ model refs จะมีรูปแบบเช่น `novita/deepseek/deepseek-v3-0324`
-
-ใช้ Novita เมื่อคุณต้องการเข้าถึงโมเดล open-weight และเส้นทางโมเดลจากบุคคลที่สามแบบโฮสต์ โดยไม่ต้องรัน inference server ของคุณเอง แค็ตตาล็อกที่บันเดิลมาเน้นโมเดลแชตที่เหมาะกับ agent turns รวมถึงเส้นทาง DeepSeek, Moonshot, MiniMax, GLM และ Qwen ที่ Novita เปิดให้ใช้
-
-ผู้ให้บริการนี้ใช้ endpoint ของ Novita ที่เข้ากันได้กับ OpenAI OpenClaw จัดการการลงทะเบียนผู้ให้บริการ การยืนยันตัวตน aliases การทำให้ model ref เป็นมาตรฐาน และการเลือก base URL ส่วน Novita ควบคุมความพร้อมใช้งานของโมเดลจริง สิทธิ์ของบัญชี ราคา และขีดจำกัดอัตราการใช้งาน
+NovitaAI เป็นผู้ให้บริการโครงสร้างพื้นฐาน AI แบบโฮสต์ที่มี API ซึ่งเข้ากันได้กับ OpenAI
+โดยมาพร้อมกับ OpenClaw ในฐานะผู้ให้บริการแบบรวมมาให้แล้ว (ไม่ต้องติดตั้ง Plugin แยกต่างหาก) ดังนั้น
+ข้อมูลรับรองจึงผ่านขั้นตอนการยืนยันตัวตนของโมเดลตามปกติ และการอ้างอิงโมเดลจะมีลักษณะดังนี้
+`novita/deepseek/deepseek-v3-0324`
 
 ## การตั้งค่า
 
-สร้าง API key ที่ [novita.ai/settings/key-management](https://novita.ai/settings/key-management) แล้วรัน:
+สร้างคีย์ API ที่ [novita.ai/settings/key-management](https://novita.ai/settings/key-management) จากนั้นเรียกใช้:
 
 ```bash
 openclaw onboard --auth-choice novita-api-key
@@ -36,24 +35,15 @@ export NOVITA_API_KEY="<your-novita-api-key>" # pragma: allowlist secret
 
 ## ค่าเริ่มต้น
 
-- ผู้ให้บริการ: `novita`
-- Aliases: `novita-ai`, `novitaai`
-- Base URL: `https://api.novita.ai/openai/v1`
-- ตัวแปร env: `NOVITA_API_KEY`
-- โมเดลเริ่มต้น: `novita/deepseek/deepseek-v3-0324`
+| การตั้งค่า       | ค่า                                |
+| ------------- | ---------------------------------- |
+| รหัสผู้ให้บริการ   | `novita`                           |
+| นามแฝง       | `novita-ai`, `novitaai`            |
+| URL ฐาน      | `https://api.novita.ai/openai/v1`  |
+| ตัวแปรสภาพแวดล้อม       | `NOVITA_API_KEY`                   |
+| โมเดลเริ่มต้น | `novita/deepseek/deepseek-v3-0324` |
 
-## ควรเลือก Novita เมื่อใด
-
-- คุณต้องการเข้าถึงโมเดล open-weight แบบโฮสต์ด้วย API ที่เข้ากันได้กับ OpenAI
-- คุณต้องการเส้นทาง DeepSeek, Kimi, MiniMax, GLM หรือโมเดลตระกูล Qwen ผ่านบัญชีผู้ให้บริการเดียว
-- คุณต้องการเส้นทาง fallback แบบโฮสต์อีกเส้นทางหนึ่งนอกเหนือจาก OpenRouter, GMI, DeepInfra หรือ API ของผู้ขายโดยตรง
-- คุณต้องการให้ผู้ให้บริการโฮสต์โมเดลให้ แทนการดูแลโครงสร้างพื้นฐาน vLLM, SGLang, LM Studio หรือ Ollama เอง
-
-เลือกผู้ให้บริการจากผู้ขายโดยตรงเมื่อคุณต้องการพารามิเตอร์คำขอแบบ vendor-native หรือสัญญาการสนับสนุน เลือกผู้ให้บริการภายในเครื่องเมื่อโมเดลต้องรันบนฮาร์ดแวร์ของคุณเองหรืออยู่หลังขอบเขตเครือข่ายของคุณเอง
-
-## โมเดล
-
-แค็ตตาล็อกที่บันเดิลมาจะเติม route ids ของ NovitaAI ที่มักพร้อมใช้งาน รวมถึง:
+## แคตตาล็อกโมเดลที่รวมมาให้แล้ว
 
 - `novita/moonshotai/kimi-k2.5`
 - `novita/minimax/minimax-m2.7`
@@ -62,19 +52,40 @@ export NOVITA_API_KEY="<your-novita-api-key>" # pragma: allowlist secret
 - `novita/deepseek/deepseek-r1-0528`
 - `novita/qwen/qwen3-235b-a22b-fp8`
 
-แค็ตตาล็อกนี้เป็นจุดเริ่มต้นสำหรับการเลือกโมเดลใน OpenClaw บัญชี ภูมิภาค หรือแค็ตตาล็อกปัจจุบันของ Novita อาจเพิ่ม ลบ หรือจำกัดเส้นทางได้ ตรวจสอบผู้ให้บริการจาก CLI ก่อนตั้งค่าเริ่มต้นระยะยาว:
+รายการนี้เป็นเพียงจุดเริ่มต้น ไม่ใช่แคตตาล็อกที่อัปเดตแบบเรียลไทม์ บัญชี ภูมิภาค หรือ
+บริการปัจจุบันของ Novita อาจเพิ่ม ลบ หรือจำกัดเส้นทางได้ โปรดตรวจสอบก่อน
+ตั้งค่าเริ่มต้นที่ต้องใช้งานระยะยาว:
 
 ```bash
 openclaw models list --provider novita
 ```
 
+## ควรเลือก Novita เมื่อใด
+
+- ต้องการเข้าถึงโมเดลแบบน้ำหนักเปิดผ่านบริการโฮสต์ที่มี API ซึ่งเข้ากันได้กับ OpenAI
+- ต้องการใช้เส้นทางของตระกูล DeepSeek, Kimi, MiniMax, GLM หรือ Qwen ผ่านบัญชี
+  ผู้ให้บริการเดียว
+- ต้องการเส้นทางสำรองแบบโฮสต์เพิ่มเติม นอกเหนือจาก DeepInfra, GMI, OpenRouter หรือ API
+  โดยตรงของผู้จำหน่าย
+- ต้องการให้ผู้ให้บริการเป็นผู้โฮสต์โมเดล แทนการดูแลโครงสร้างพื้นฐาน LM Studio, Ollama,
+  SGLang หรือ vLLM ด้วยตนเอง
+
+เลือกผู้ให้บริการโดยตรงจากผู้จำหน่ายเมื่อคุณต้องการพารามิเตอร์คำขอแบบเฉพาะของผู้จำหน่าย
+หรือสัญญาการสนับสนุน เลือกผู้ให้บริการภายในเครื่องเมื่อโมเดลต้อง
+ทำงานบนฮาร์ดแวร์ของคุณเองหรือภายในขอบเขตเครือข่ายของคุณ
+
 ## การแก้ไขปัญหา
 
-- `401` หรือ `403`: ตรวจสอบ key ในหน้าการจัดการ key ของ Novita และรัน `openclaw onboard --auth-choice novita-api-key` อีกครั้งหากโปรไฟล์ที่จัดเก็บไว้เก่า
-- ข้อผิดพลาดโมเดลไม่รู้จัก: ใช้ `novita/<route-id>` ที่ตรงกับค่าที่ส่งคืนโดย `openclaw models list --provider novita`
-- เส้นทางช้าหรือล้มเหลว: ลองเส้นทางโมเดล Novita อื่น หรือตั้ง Novita เป็นผู้ให้บริการ fallback สำหรับงานที่ยอมรับความแปรปรวนเฉพาะผู้ให้บริการได้
+- `401`/`403`: ตรวจสอบคีย์ในหน้าจัดการคีย์ของ Novita และเรียกใช้
+  `openclaw onboard --auth-choice novita-api-key` อีกครั้ง หากโปรไฟล์ที่จัดเก็บไว้
+  ล้าสมัย
+- ข้อผิดพลาดเกี่ยวกับโมเดลที่ไม่รู้จัก: ใช้ `novita/<route-id>` ที่ตรงกับค่าที่
+  `openclaw models list --provider novita` ส่งคืนทุกประการ
+- เส้นทางช้าหรือทำงานล้มเหลว: ลองใช้เส้นทางโมเดลอื่นของ Novita หรือตั้งค่า Novita เป็น
+  ผู้ให้บริการสำรองสำหรับเวิร์กโหลดที่ยอมรับความแปรผันเฉพาะของ
+  ผู้ให้บริการได้
 
-## ที่เกี่ยวข้อง
+## เนื้อหาที่เกี่ยวข้อง
 
 - [ผู้ให้บริการโมเดล](/th/concepts/model-providers)
-- [ผู้ให้บริการทั้งหมด](/th/providers/index)
+- [ไดเรกทอรีผู้ให้บริการ](/th/providers/index)

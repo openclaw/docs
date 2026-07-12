@@ -1,55 +1,56 @@
 ---
 x-i18n:
-    generated_at: "2026-06-28T00:10:16Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:01:02Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a0c67d049eb1d0f1d4e675a71e69b2d34d3ce5c733ca9582bf08ac717c233644
+    source_hash: a8712b1aeb2e605055c22cf308049e5e74fdf33061870026be20bd55cb0c3d1d
     source_path: AGENTS.md
     workflow: 16
 ---
 
 # Dokümantasyon Kılavuzu
 
-Bu dizin dokümantasyon yazımını, Mintlify bağlantı kurallarını ve dokümantasyon i18n ilkesini yönetir.
+Bu dizin; dokümantasyon yazımını, Mintlify bağlantı kurallarını ve dokümantasyon i18n politikasını yönetir.
 
 ## Mintlify Kuralları
 
 - Dokümantasyon Mintlify üzerinde barındırılır (`https://docs.openclaw.ai`).
-- `docs/**/*.md` içindeki dahili dokümantasyon bağlantıları, `.md` veya `.mdx` soneki olmadan köke göreli kalmalıdır (örnek: `[Yapılandırma](/gateway/configuration)`).
-- Bölüm çapraz başvuruları köke göreli yollarda anchor kullanmalıdır (örnek: `[Kancalar](/gateway/configuration-reference#hooks)`).
-- Dokümantasyon başlıkları uzun tirelerden ve kesme işaretlerinden kaçınmalıdır, çünkü Mintlify anchor üretimi bu noktalarda kırılgandır.
-- README ve GitHub tarafından işlenen diğer dokümantasyonlar, bağlantıların Mintlify dışında da çalışması için mutlak dokümantasyon URL'lerini korumalıdır.
-- Dokümantasyon içeriği genel kalmalıdır: kişisel cihaz adları, host adları veya yerel yollar kullanılmamalıdır; `user@gateway-host` gibi yer tutucular kullanın.
+- `docs/**/*.md` içindeki dahili dokümantasyon bağlantıları, `.md` veya `.mdx` uzantısı olmadan köke göreli kalmalıdır (örnek: `[Yapılandırma](/gateway/configuration)`).
+- Bölümler arası başvurularda köke göreli yollardaki bağlantı işaretleri kullanılmalıdır (örnek: `[Kancalar](/gateway/configuration-reference#hooks)`).
+- Mintlify bağlantı işareti oluşturma işlemi bu karakterlerde kırılgan olduğundan, dokümantasyon başlıklarında uzun tire ve kesme işaretinden kaçınılmalıdır.
+- README ve GitHub tarafından işlenen diğer dokümanlar, bağlantıların Mintlify dışında da çalışması için mutlak dokümantasyon URL'lerini korumalıdır.
+- Dokümantasyon içeriği genel kalmalıdır: kişisel cihaz adları, ana makine adları veya yerel yollar kullanılmamalı; `user@gateway-host` gibi yer tutucular kullanılmalıdır.
 
-## Dokümantasyon İçerik Kuralları
+## Dokümantasyon İçeriği Kuralları
 
-- Dokümantasyon, UI metinleri ve seçici listeleri için, bölüm açıkça çalışma zamanı sırasını veya otomatik algılama sırasını açıklamıyorsa hizmetleri/sağlayıcıları alfabetik olarak sıralayın.
-- Paketlenen Plugin adlandırmasını kök `AGENTS.md` içindeki depo genelindeki plugin terminoloji kurallarıyla tutarlı tutun.
+- Dokümantasyonda, kullanıcı arayüzü metinlerinde ve seçici listelerinde hizmetleri/sağlayıcıları alfabetik olarak sıralayın; bölüm açıkça çalışma zamanı sırasını veya otomatik algılama sırasını açıklıyorsa bu kural geçerli değildir.
+- Birlikte gelen Plugin adlandırmasını, kök `AGENTS.md` dosyasındaki depo genelindeki Plugin terminolojisi kurallarıyla tutarlı tutun.
+- Oluşturulan dokümanları asla elle düzenlemeyin: `docs/plugins/reference/**`, `docs/plugins/reference.md` ve `docs/plugins/plugin-inventory.md`, `pnpm plugins:inventory:gen` komutundan; `docs/docs_map.md`, `pnpm docs:map:gen` komutundan; `docs/maturity/**` ise `pnpm maturity:render` komutundan oluşturulur.
 
 ## Dahili Dokümantasyon
 
-- Uzun ömürlü özel operatör dokümantasyonu `~/Projects/manager/docs/` içinde bulunmalıdır.
-- Depoya yerel dahili taslak/yansıtma dokümantasyonu, yok sayılan `docs/internal/` altında bulunabilir.
-- `docs/internal/**` sayfalarını asla `docs/docs.json` navigasyonuna eklemeyin veya herkese açık dokümantasyondan bu sayfalara bağlantı vermeyin.
-- `scripts/docs-sync-publish.mjs`, bir sayfa daha sonra zorla eklenirse `docs/internal/**` öğelerini herkese açık `openclaw/docs` yayın deposundan hariç tutar ve budar.
-- Dahili dokümantasyon depo yollarından, özel uygulama adlarından, 1Password öğe adlarından ve çalışma talimatlarından bahsedebilir, ancak gizli değerleri asla içermemelidir.
+- Uzun ömürlü özel operatör dokümanları `~/Projects/manager/docs/` altında bulunmalıdır.
+- Depoya özgü dahili taslak/yansıtma dokümanları, yok sayılan `docs/internal/` altında bulunabilir.
+- `docs/internal/**` sayfalarını asla `docs/docs.json` gezinmesine eklemeyin veya genel dokümantasyondan bunlara bağlantı vermeyin.
+- Bir sayfa daha sonra zorla eklenirse `scripts/docs-sync-publish.mjs`, `docs/internal/**` içeriğini genel `openclaw/docs` yayımlama deposundan hariç tutar ve temizler.
+- Dahili dokümanlarda depo yolları, özel uygulama adları, 1Password öğe adları ve işletim kılavuzları belirtilebilir; ancak gizli değerler asla dahil edilmemelidir.
 
-## Olgunluk Karnesi Düzenleme
+## Olgunluk Puan Kartını Düzenleme
 
-`taxonomy.yaml` ve `qa/maturity-scores.yaml` kaynak girdilerdir; `docs/maturity/` altındaki oluşturulmuş olgunluk dokümantasyonu projeksiyonlardır ve puan, LTS, taksonomi, QA profili veya kanıt tabloları için elle düzenlenmemelidir.
-`scripts/qa/render-maturity-docs.ts` üretimi yönetir; commit edilmiş dokümantasyonu yenilemek için `pnpm maturity:render`, doğrulamak için `pnpm maturity:check` kullanın.
-`.github/workflows/maturity-scorecard.yml` yapıt önizlemelerini işler ve oluşturulmuş dokümantasyon PR'ları açabilir; `.github/workflows/openclaw-release-checks.yml` bunu sürüm QA için tetikler.
-Bir maintainer açıkça temizlenmiş ve commit edilmiş bir projeksiyon istemedikçe deterministik `qa-evidence.json.scorecard` verilerini GitHub Actions yapıtlarında tutun.
-İnsan geçersiz kılmaları, kaynak durumunu bir PR içinde değiştirmeli ve nedeni, herkese açık veya redakte edilmiş kanıtla birlikte açıklamalıdır.
+`taxonomy.yaml` ve `qa/maturity-scores.yaml` kaynak girdileridir; `docs/maturity/` altındaki oluşturulan olgunluk dokümanları izdüşümlerdir ve puan, LTS, sınıflandırma, kalite güvencesi profili veya kanıt tabloları için elle düzenlenmemelidir.
+Oluşturma işlemini `scripts/qa/render-maturity-docs.ts` yönetir; kaydedilmiş dokümanları yenilemek için `pnpm maturity:render`, doğrulamak için `pnpm maturity:check` kullanın.
+`.github/workflows/maturity-scorecard.yml`, yapıt önizlemelerini oluşturur ve oluşturulan dokümanlar için PR'lar açabilir; `.github/workflows/openclaw-release-checks.yml`, sürüm kalite güvencesi için bunu çalıştırır.
+Bir bakım sorumlusu açıkça arındırılmış ve depoya kaydedilmiş bir izdüşüm istemedikçe belirlenimci `qa-evidence.json.scorecard` verilerini GitHub Actions yapıtlarında tutun.
+İnsan müdahaleleri, kaynak durumunu bir PR içinde değiştirmeli ve gerekçeyi genel veya sansürlenmiş kanıtlarla açıklamalıdır.
 
 ## Dokümantasyon i18n
 
-- Yabancı dil dokümantasyonları bu depoda tutulmaz. Oluşturulan yayın çıktısı ayrı `openclaw/docs` deposunda bulunur (genellikle yerelde `../openclaw-docs` olarak klonlanır).
-- Burada `docs/<locale>/**` altında yerelleştirilmiş dokümantasyon eklemeyin veya düzenlemeyin.
-- Bu depodaki İngilizce dokümantasyonu ve glossary dosyalarını doğruluk kaynağı olarak kabul edin.
-- Pipeline: İngilizce dokümantasyonu burada güncelleyin, gerektiğinde `docs/.i18n/glossary.<locale>.json` dosyasını güncelleyin, ardından yayın deposu senkronizasyonunun ve `scripts/docs-i18n` betiğinin `openclaw/docs` içinde çalışmasına izin verin.
-- `scripts/docs-i18n` yeniden çalıştırılmadan önce, İngilizce kalması veya sabit bir çeviri kullanması gereken yeni teknik terimler, sayfa başlıkları veya kısa nav etiketleri için glossary girdileri ekleyin.
-- `pnpm docs:check-i18n-glossary`, değişen İngilizce dokümantasyon başlıkları ve kısa dahili dokümantasyon etiketleri için korumadır.
-- Çeviri belleği, yayın deposundaki oluşturulmuş `docs/.i18n/*.tm.jsonl` dosyalarında bulunur.
-- Bkz. `docs/.i18n/README.md`.
+- Yabancı dildeki dokümanlar bu depoda yönetilmez. Oluşturulan yayımlama çıktısı ayrı `openclaw/docs` deposunda bulunur (genellikle yerel olarak `../openclaw-docs` konumuna klonlanır).
+- Burada `docs/<locale>/**` altına yerelleştirilmiş doküman eklemeyin veya mevcut olanları düzenlemeyin.
+- Bu depodaki İngilizce dokümanları ve sözlük dosyalarını doğruluğun kaynağı olarak kabul edin.
+- İşlem hattı: Buradaki İngilizce dokümanları güncelleyin, gerektiğinde `docs/.i18n/glossary.<locale>.json` dosyasını güncelleyin, ardından yayımlama deposu eşitlemesinin ve `openclaw/docs` içindeki `scripts/docs-i18n` işleminin çalışmasına izin verin.
+- `scripts/docs-i18n` işlemini yeniden çalıştırmadan önce İngilizce kalması veya sabit bir çeviri kullanması gereken tüm yeni teknik terimler, sayfa başlıkları veya kısa gezinme etiketleri için sözlük girdileri ekleyin.
+- `pnpm docs:check-i18n-glossary`, değiştirilen İngilizce doküman başlıkları ve kısa dahili doküman etiketleri için koruma denetimidir.
+- Çeviri belleği, yayımlama deposunda oluşturulan `docs/.i18n/*.tm.jsonl` dosyalarında bulunur.
+- `docs/.i18n/README.md` dosyasına bakın.

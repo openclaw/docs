@@ -1,11 +1,11 @@
 ---
 read_when:
-    - شما در حال نصب، پیکربندی، یا ممیزی Plugin openshell هستید
-summary: بک‌اند سندباکس OpenClaw برای NVIDIA OpenShell CLI با فضاهای کاری محلی آینه‌شده و اجرای فرمان‌های SSH.
-title: افزونه Openshell
+    - شما در حال نصب، پیکربندی یا ممیزی Plugin ‏openshell هستید
+summary: بک‌اند سندباکس OpenClaw برای CLI ابزار NVIDIA OpenShell، با فضای کاری محلی آینه‌شده و اجرای فرمان از طریق SSH.
+title: Plugin اوپن‌شل
 x-i18n:
-    generated_at: "2026-06-27T18:28:03Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:37:47Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: f97a099c465df22c0dfd7a68907c1a75c99ca301ad016ceb1be46c81376793f8
@@ -13,14 +13,14 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin Openshell
+# Plugin‏ Openshell
 
-بک‌اند سندباکس OpenClaw برای NVIDIA OpenShell CLI با فضاهای کاری محلی آینه‌شده و اجرای فرمان‌های SSH.
+بک‌اند سندباکس OpenClaw برای CLI‏ NVIDIA OpenShell با فضاهای کاری محلی آینه‌شده و اجرای فرمان از طریق SSH.
 
 ## توزیع
 
 - بسته: `@openclaw/openshell-sandbox`
-- مسیر نصب: npm؛ ClawHub
+- روش نصب: npm؛ ClawHub
 
 ## سطح
 

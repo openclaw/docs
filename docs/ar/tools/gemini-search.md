@@ -1,35 +1,35 @@
 ---
 read_when:
-    - تريد استخدام Gemini من أجل web_search
-    - تحتاج إلى GEMINI_API_KEY أو models.providers.google.apiKey
-    - تريد تأسيسًا عبر بحث Google
-summary: بحث الويب من Gemini مع التأسيس عبر Google Search
+    - تريد استخدام Gemini لإجراء البحث على الويب
+    - تحتاج إلى `GEMINI_API_KEY` أو `models.providers.google.apiKey`
+    - تريد الاستناد إلى بحث Google
+summary: بحث Gemini على الويب مع الإسناد إلى بحث Google
 title: بحث Gemini
 x-i18n:
-    generated_at: "2026-06-27T18:42:27Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:35:21Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8bbebd5689daaa63c817ff17eac70e197999a3e1ecbb198249eb567e5ba0fc5f
+    source_hash: 4c7cb55fb185adfda01ab6b3c6434ab6e3ee31162733c752d4c81328bce9a6cd
     source_path: tools/gemini-search.md
     workflow: 16
 ---
 
-يدعم OpenClaw نماذج Gemini مع
-[الإسناد إلى Google Search](https://ai.google.dev/gemini-api/docs/grounding)
-المدمج، الذي يعيد إجابات مركّبة بالذكاء الاصطناعي ومدعومة بنتائج Google Search
-المباشرة مع استشهادات.
+يدعم OpenClaw نماذج Gemini مع ميزة مدمجة
+[للإسناد إلى بحث Google](https://ai.google.dev/gemini-api/docs/grounding)،
+والتي تُرجع إجابات مُولَّدة بالذكاء الاصطناعي ومدعومة بنتائج مباشرة من بحث Google مع
+استشهادات.
 
 ## الحصول على مفتاح API
 
 <Steps>
-  <Step title="Create a key">
+  <Step title="إنشاء مفتاح">
     انتقل إلى [Google AI Studio](https://aistudio.google.com/apikey) وأنشئ
     مفتاح API.
   </Step>
-  <Step title="Store the key">
-    اضبط `GEMINI_API_KEY` في بيئة Gateway، أو أعد استخدام
-    `models.providers.google.apiKey`، أو اضبط مفتاحًا مخصصًا لبحث الويب عبر:
+  <Step title="تخزين المفتاح">
+    عيّن `GEMINI_API_KEY` في بيئة Gateway، أو أعد استخدام
+    `models.providers.google.apiKey`، أو اضبط مفتاحًا مخصصًا للبحث على الويب عبر:
 
     ```bash
     openclaw configure --section web
@@ -47,9 +47,9 @@ x-i18n:
       google: {
         config: {
           webSearch: {
-            apiKey: "AIza...", // optional if GEMINI_API_KEY or models.providers.google.apiKey is set
-            baseUrl: "https://generativelanguage.googleapis.com/v1beta", // optional; falls back to models.providers.google.baseUrl
-            model: "gemini-2.5-flash", // default
+            apiKey: "AIza...", // اختياري إذا كان GEMINI_API_KEY أو models.providers.google.apiKey معيّنًا
+            baseUrl: "https://generativelanguage.googleapis.com/v1beta", // اختياري؛ يعود إلى models.providers.google.baseUrl عند عدم تعيينه
+            model: "gemini-2.5-flash", // القيمة الافتراضية
           },
         },
       },
@@ -65,59 +65,58 @@ x-i18n:
 }
 ```
 
-**أولوية بيانات الاعتماد:** يستخدم بحث الويب في Gemini
+**أسبقية بيانات الاعتماد:** يستخدم بحث Gemini على الويب
 `plugins.entries.google.config.webSearch.apiKey` أولًا، ثم `GEMINI_API_KEY`،
-ثم `models.providers.google.apiKey`. بالنسبة إلى عناوين URL الأساسية، تكون الأولوية
-لـ `plugins.entries.google.config.webSearch.baseUrl` المخصص قبل
+ثم `models.providers.google.apiKey`. وبالنسبة إلى عناوين URL الأساسية، تكون الأولوية لعنوان
+`plugins.entries.google.config.webSearch.baseUrl` المخصص قبل
 `models.providers.google.baseUrl`.
 
-لتثبيت Gateway، ضع مفاتيح البيئة في `~/.openclaw/.env`.
+عند تثبيت Gateway، ضع مفاتيح البيئة في `~/.openclaw/.env`.
 
-## كيف يعمل
+## آلية العمل
 
-بخلاف مزودي البحث التقليديين الذين يعيدون قائمة من الروابط والمقتطفات،
-يستخدم Gemini الإسناد إلى Google Search لإنتاج إجابات مركّبة بالذكاء الاصطناعي مع
-استشهادات مضمنة. تتضمن النتائج كلًا من الإجابة المركّبة وعناوين URL للمصادر.
+بخلاف موفري البحث التقليديين الذين يُرجعون قائمة من الروابط والمقتطفات،
+يستخدم Gemini الإسناد إلى بحث Google لإنتاج إجابات مُولَّدة بالذكاء الاصطناعي مع
+استشهادات مضمنة. تتضمن النتائج كلًا من الإجابة المُولَّدة وعناوين URL
+للمصادر.
 
-- تُحل عناوين URL للاستشهادات من إسناد Gemini تلقائيًا من عناوين URL لإعادة التوجيه من Google
-  إلى عناوين URL مباشرة.
-- يستخدم حل إعادة التوجيه مسار حارس SSRF (HEAD + فحوص إعادة التوجيه +
-  التحقق من http/https) قبل إرجاع عنوان URL النهائي للاستشهاد.
-- يستخدم حل إعادة التوجيه إعدادات SSRF الافتراضية الصارمة، لذلك تُحظر عمليات إعادة التوجيه إلى
-  الأهداف الخاصة/الداخلية.
+- تُحوَّل عناوين URL للاستشهادات الناتجة عن إسناد Gemini تلقائيًا من عناوين URL
+  لإعادة التوجيه في Google إلى عناوين URL مباشرة عبر طلب HEAD من خلال مسار الجلب
+  المحمي من SSRF في OpenClaw (اتباع عمليات إعادة التوجيه والتحقق من http/https).
+- يستخدم حل عمليات إعادة التوجيه إعدادات SSRF الافتراضية الصارمة، ولذلك تُحظر عمليات
+  إعادة التوجيه إلى أهداف خاصة أو داخلية.
 
 ## المعلمات المدعومة
 
-يدعم بحث Gemini `query` و`freshness` و`date_after` و`date_before`.
+يدعم بحث Gemini المعلمات `query` و`freshness` و`date_after` و`date_before`.
 
-يُقبل `count` للتوافق المشترك مع `web_search`، لكن إسناد Gemini
-لا يزال يعيد إجابة مركّبة واحدة مع استشهادات بدلًا من قائمة
-نتائج بعدد N.
+تُقبل `count` للتوافق المشترك مع `web_search`، لكن إسناد Gemini
+يظل يُرجع إجابة مُولَّدة واحدة مع استشهادات بدلًا من قائمة تضم N من
+النتائج.
 
-يقبل `freshness` القيم `day` و`week` و`month` و`year`، والاختصارات المشتركة
+تقبل `freshness` القيم `day` و`week` و`month` و`year`، والاختصارات المشتركة
 `pd` و`pw` و`pm` و`py`. تضيف `day`/`pd` تعليمة حداثة إلى استعلام Gemini
-بدلًا من نطاق صارم مدته 24 ساعة. تضبط `week` و`month` و`year` ونطاقات
-`date_after`/`date_before` الصريحة
-`timeRangeFilter` الخاص بإسناد Gemini إلى Google Search. لا تُدعم
-`country` و`language` و`domain_filter`.
+بدلًا من نطاق صارم مدته 24 ساعة. أما `week` و`month` و`year` والنطاقات الصريحة
+`date_after`/`date_before` فتعيّن `timeRangeFilter` لإسناد بحث Google
+في Gemini. لا تُدعم `country` و`language` و`domain_filter`.
 
 ## اختيار النموذج
 
-النموذج الافتراضي هو `gemini-2.5-flash` (سريع وفعال من حيث التكلفة). يمكن استخدام أي نموذج Gemini
-يدعم الإسناد عبر
+النموذج الافتراضي هو `gemini-2.5-flash` (سريع وفعّال من حيث التكلفة). يمكن استخدام أي نموذج
+Gemini يدعم الإسناد عبر
 `plugins.entries.google.config.webSearch.model`.
 
 ## تجاوزات عنوان URL الأساسي
 
-اضبط `plugins.entries.google.config.webSearch.baseUrl` عندما يجب أن يمر بحث الويب في Gemini
-عبر وكيل للمشغّل أو نقطة نهاية مخصصة متوافقة مع Gemini. إذا
-لم يُضبط ذلك، يعيد بحث الويب في Gemini استخدام `models.providers.google.baseUrl`. تُطبّع قيمة
-`https://generativelanguage.googleapis.com` العادية إلى
+عيّن `plugins.entries.google.config.webSearch.baseUrl` عندما يجب توجيه بحث Gemini
+على الويب عبر وكيل للمشغّل أو نقطة نهاية مخصصة متوافقة مع Gemini. إذا لم يكن
+مُعيّنًا، يعيد بحث Gemini على الويب استخدام `models.providers.google.baseUrl`. تُطبَّع القيمة البسيطة
+`https://generativelanguage.googleapis.com` إلى
 `https://generativelanguage.googleapis.com/v1beta`؛ وتُحفظ مسارات الوكيل المخصصة
-كما قُدمت بعد إزالة الشرطات المائلة اللاحقة.
+كما قُدّمت بعد إزالة الشرطات المائلة اللاحقة.
 
 ## ذو صلة
 
-- [نظرة عامة على بحث الويب](/ar/tools/web) -- كل المزودين والاكتشاف التلقائي
-- [Brave Search](/ar/tools/brave-search) -- نتائج مهيكلة مع مقتطفات
-- [Perplexity Search](/ar/tools/perplexity-search) -- نتائج مهيكلة + استخراج المحتوى
+- [نظرة عامة على البحث على الويب](/ar/tools/web) -- جميع الموفّرين والاكتشاف التلقائي
+- [بحث Brave](/ar/tools/brave-search) -- نتائج منظّمة مع مقتطفات
+- [بحث Perplexity](/ar/tools/perplexity-search) -- نتائج منظّمة + استخراج المحتوى

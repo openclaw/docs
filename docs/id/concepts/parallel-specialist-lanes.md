@@ -1,60 +1,49 @@
 ---
 read_when:
     - Anda merutekan obrolan grup ke agen khusus
-    - Anda menginginkan kerja paralel tanpa satu tugas panjang memblokir setiap percakapan
-    - Anda sedang merancang penyiapan operasi multi-agen
+    - Anda menginginkan pekerjaan paralel tanpa satu tugas panjang memblokir setiap obrolan
+    - Anda sedang merancang penyiapan operasi multiagen
 sidebarTitle: Specialist lanes
 status: active
 summary: Jalankan agen spesialis secara paralel tanpa membebani kapasitas model dan alat bersama
 title: Jalur spesialis paralel
 x-i18n:
-    generated_at: "2026-05-10T19:32:45Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:09:24Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8721056fbe08822ac92d4bc14c8c2b0977e93eaa58c2849f83b3c0f310992f93
+    source_hash: 09852b6cf5a790e98fb5e0805b0df57b2f3719b1387ecfacfb4973bb6841abb4
     source_path: concepts/parallel-specialist-lanes.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Jalur spesialis paralel memungkinkan satu Gateway merutekan chat atau ruang yang berbeda ke
-agen yang berbeda, sambil menjaga pengalaman pengguna tetap cepat. Kuncinya adalah memperlakukan
-paralelisme sebagai masalah desain sumber daya langka, bukan sekadar sebagai "lebih banyak agen".
+Jalur spesialis paralel memungkinkan satu Gateway merutekan percakapan atau ruang yang berbeda ke agen yang berbeda sambil menjaga pengalaman pengguna tetap cepat. Perlakukan paralelisme sebagai masalah desain sumber daya terbatas, bukan sekadar "lebih banyak agen".
 
 ## Prinsip dasar
 
-Jalur spesialis hanya meningkatkan throughput ketika mengurangi perebutan pada
-hambatan nyata:
+Jalur spesialis hanya meningkatkan throughput jika mengurangi perebutan pada hambatan yang sebenarnya:
 
-- **Kunci sesi**: hanya satu run yang boleh mengubah sesi tertentu pada satu waktu.
-- **Kapasitas model global**: semua run chat yang terlihat tetap berbagi batas penyedia.
-- **Kapasitas tool**: shell, browser, jaringan, dan pekerjaan repositori bisa lebih lambat
-  daripada giliran model itu sendiri.
-- **Anggaran konteks**: transkrip panjang membuat setiap giliran berikutnya lebih lambat dan kurang
-  terfokus.
-- **Ambiguitas kepemilikan**: agen duplikat yang melakukan pekerjaan yang sama membuang kapasitas.
+- **Kunci sesi**: hanya satu proses yang boleh mengubah sesi tertentu pada satu waktu.
+- **Kapasitas model global**: semua proses percakapan yang terlihat tetap berbagi batas penyedia.
+- **Kapasitas alat**: pekerjaan shell, peramban, jaringan, dan repositori bisa lebih lambat daripada giliran model itu sendiri.
+- **Anggaran konteks**: transkrip panjang membuat setiap giliran berikutnya lebih lambat dan kurang terfokus.
+- **Ambiguitas kepemilikan**: agen duplikat yang mengerjakan tugas yang sama membuang kapasitas.
 
-OpenClaw sudah menserialkan run per sesi dan membatasi paralelisme global melalui
-[antrean perintah](/id/concepts/queue). Jalur spesialis menambahkan kebijakan di atasnya:
-agen mana yang memiliki pekerjaan mana, apa yang tetap berada di chat, dan apa yang menjadi
-pekerjaan latar belakang.
+OpenClaw sudah menserialkan proses per sesi dan membatasi paralelisme global melalui [antrean perintah](/id/concepts/queue). Jalur spesialis menambahkan kebijakan di atasnya: agen mana yang memiliki pekerjaan tertentu, apa yang tetap berada dalam percakapan, dan apa yang menjadi pekerjaan latar belakang.
 
-## Rollout yang direkomendasikan
+## Peluncuran yang direkomendasikan
 
-### Fase 1: kontrak jalur + pekerjaan berat latar belakang
+### Fase 1: kontrak jalur + pekerjaan berat di latar belakang
 
-Berikan setiap jalur kontrak tertulis di workspace dan prompt sistemnya:
+Berikan setiap jalur kontrak tertulis di ruang kerja dan prompt sistemnya:
 
-- **Tujuan**: pekerjaan yang dimiliki jalur ini.
-- **Bukan tujuan**: pekerjaan yang sebaiknya dialihkan alih-alih dicoba.
-- **Anggaran chat**: jawaban cepat tetap di chat; tugas panjang sebaiknya mengakui
-  secara singkat, lalu berjalan di sub-agen atau tugas latar belakang.
-- **Aturan handoff**: ketika jalur lain memiliki pekerjaan tersebut, katakan ke mana pekerjaan itu harus pergi dan
-  berikan ringkasan handoff yang ringkas.
-- **Aturan risiko tool**: pilih permukaan tool terkecil yang dapat menyelesaikan pekerjaan.
+- **Tujuan**: pekerjaan yang menjadi tanggung jawab jalur ini.
+- **Bukan tujuan**: pekerjaan yang seharusnya dialihkan, bukan dicoba sendiri.
+- **Anggaran percakapan**: jawaban cepat tetap dalam percakapan; tugas panjang ditanggapi secara singkat, lalu dijalankan dalam subagen atau tugas latar belakang.
+- **Aturan pengalihan**: ketika jalur lain memiliki pekerjaan tersebut, sebutkan ke mana pekerjaan itu harus diarahkan dan berikan ringkasan pengalihan yang ringkas.
+- **Aturan risiko alat**: pilih cakupan alat terkecil yang dapat menyelesaikan pekerjaan.
 
-Ini adalah fase termurah dan memperbaiki sebagian besar kemacetan: satu pekerjaan coding tidak lagi
-membuat jalur riset menjadi sangat lambat, dan setiap chat menjaga konteksnya sendiri tetap bersih.
+Ini adalah fase termurah dan mengatasi sebagian besar penyumbatan: satu pekerjaan pengodean tidak lagi membuat jalur riset menjadi sangat lambat, dan konteks setiap percakapan tetap bersih.
 
 ### Fase 2: kontrol prioritas dan konkurensi
 
@@ -79,57 +68,55 @@ Sesuaikan kapasitas antrean dan model berdasarkan nilai bisnis setiap jalur:
 }
 ```
 
-Gunakan chat langsung/pribadi dan agen operasi produksi untuk pekerjaan berprioritas tinggi. Biarkan
-riset, penyusunan draf, dan coding batch berpindah ke tugas latar belakang ketika sistem sedang
-sibuk.
+Gunakan percakapan langsung/pribadi dan agen operasi produksi untuk pekerjaan berprioritas tinggi. Alihkan riset, penyusunan draf, dan pengodean batch ke tugas latar belakang saat sistem sibuk.
 
-### Fase 3: koordinator / pengendali lalu lintas
+### Fase 3: koordinator / pengatur lalu lintas
 
 Tambahkan pola koordinator kecil setelah beberapa jalur aktif:
 
-- Lacak tugas dan pemilik jalur aktif.
-- Deteksi permintaan duplikat lintas grup.
-- Rutekan ringkasan handoff antarjalur.
-- Tampilkan hanya blocker, hasil selesai, dan keputusan yang harus dibuat manusia.
+- Lacak tugas dan pemilik jalur yang aktif.
+- Deteksi permintaan duplikat di berbagai grup.
+- Rutekan ringkasan pengalihan antarlajur.
+- Tampilkan hanya penghambat, hasil yang telah selesai, dan keputusan yang harus dibuat manusia.
 
 Jangan mulai dari sini. Koordinator tanpa kontrak jalur hanya mengoordinasikan kekacauan.
 
-## Template kontrak jalur minimal
+## Templat kontrak jalur minimal
 
 ```md
-# Lane contract
+# Kontrak jalur
 
-## Owns
+## Tanggung jawab
 
-- <job this lane is responsible for>
+- <pekerjaan yang menjadi tanggung jawab jalur ini>
 
-## Does not own
+## Bukan tanggung jawab
 
-- <work to hand off>
+- <pekerjaan yang harus dialihkan>
 
-## Chat budget
+## Anggaran percakapan
 
-- Answer quick questions directly.
-- For multi-step, slow, or tool-heavy work: acknowledge briefly, spawn/background
-  the work, then return the result when complete.
+- Jawab pertanyaan singkat secara langsung.
+- Untuk pekerjaan bertahap, lambat, atau intensif alat: tanggapi secara singkat, jalankan
+  pekerjaan melalui subagen/latar belakang, lalu berikan hasilnya setelah selesai.
 
-## Handoff
+## Pengalihan
 
-If another lane owns the request, reply with:
+Jika jalur lain memiliki permintaan tersebut, balas dengan:
 
-- target lane
-- objective
-- relevant context
-- exact next action
+- jalur tujuan
+- sasaran
+- konteks yang relevan
+- tindakan berikutnya yang tepat
 
-## Tool posture
+## Sikap penggunaan alat
 
-Use the smallest tool surface that can complete the task. Avoid broad shell or
-network work unless this lane explicitly owns it.
+Gunakan cakupan alat terkecil yang dapat menyelesaikan tugas. Hindari pekerjaan shell atau
+jaringan yang luas kecuali jalur ini secara eksplisit bertanggung jawab atasnya.
 ```
 
 ## Terkait
 
-- [Perutean multi-agen](/id/concepts/multi-agent)
+- [Perutean multiagen](/id/concepts/multi-agent)
 - [Antrean perintah](/id/concepts/queue)
-- [Sub-agen](/id/tools/subagents)
+- [Subagen](/id/tools/subagents)

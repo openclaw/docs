@@ -1,26 +1,26 @@
 ---
 read_when:
     - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin azure-speech
-summary: Azure AI Speech chuyển văn bản thành giọng nói (MP3, ghi chú thoại Ogg/Opus gốc, PCM điện thoại).
+summary: Chuyển văn bản thành giọng nói bằng Azure AI Speech (MP3, ghi chú thoại Ogg/Opus nguyên bản, âm thanh PCM cho điện thoại).
 title: Plugin Azure Speech
 x-i18n:
-    generated_at: "2026-05-02T20:48:21Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:14:40Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: fdcf7c9166d90a92362478ebc361a2917b9e29c0a7dfdcfa86d34003647a8034
     source_path: plugins/reference/azure-speech.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Plugin Azure Speech
 
-Azure AI Speech chuyển văn bản thành giọng nói (MP3, ghi chú thoại Ogg/Opus gốc, thoại PCM).
+Chuyển văn bản thành giọng nói bằng Azure AI Speech (MP3, ghi chú thoại Ogg/Opus gốc, âm thanh điện thoại PCM).
 
 ## Phân phối
 
 - Gói: `@openclaw/azure-speech`
-- Phương thức cài đặt: được bao gồm trong OpenClaw
+- Cách cài đặt: được tích hợp trong OpenClaw
 
 ## Bề mặt
 

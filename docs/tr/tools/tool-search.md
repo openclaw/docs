@@ -1,31 +1,25 @@
 ---
 read_when:
-    - OpenClaw ajanlarının her araç şemasını isteme eklemeden büyük bir araç kataloğu kullanmasını istiyorsunuz
+    - OpenClaw ajanlarının her araç şemasını isteme eklemeden geniş bir araç kataloğu kullanmasını istiyorsunuz
     - OpenClaw araçlarının, MCP araçlarının ve istemci araçlarının tek bir kompakt çalışma zamanı yüzeyi üzerinden sunulmasını istiyorsunuz
-    - OpenClaw çalıştırmaları için araç keşfini uyguluyor veya hata ayıklıyorsunuz
-summary: 'Araç Arama: büyük OpenClaw araç kataloglarını arama, açıklama ve çağrı arkasında sıkıştır'
+    - OpenClaw çalıştırmalarında araç keşfini uyguluyor veya hatalarını ayıklıyorsunuz
+summary: 'Araç Arama: büyük OpenClaw araç kataloglarını arama, açıklama ve çağırma işlevlerinin ardında kompakt hâle getirin'
 title: Araç Arama
 x-i18n:
-    generated_at: "2026-06-30T14:24:19Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:20:14Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 81036277d763be8040526b42c116b2e503589921a58b3f765ff38670554a751c
+    source_hash: 6608a2de3b8ec03d3bb182d5909bb73429f623af8cebb34bc38856cb9d8b8c32
     source_path: tools/tool-search.md
     workflow: 16
 ---
 
-Araç Arama, deneysel bir OpenClaw ajan çalışma zamanı özelliğidir. Ajanlara büyük araç kataloglarını keşfetmek ve çağırmak için tek ve
-kompakt bir yol sunar. Çalıştırmada çok sayıda kullanılabilir araç olduğunda, ancak modelin bunlardan yalnızca birkaçına ihtiyaç duyması muhtemel olduğunda kullanışlıdır.
+Tool Search, deneysel bir OpenClaw ajan çalışma zamanı özelliğidir. Ajanlara büyük araç kataloglarını keşfetmek ve çağırmak için tek ve kompakt bir yöntem sunar. Çalıştırmada çok sayıda kullanılabilir araç bulunduğunda ancak modelin bunlardan yalnızca birkaçına ihtiyaç duyması muhtemel olduğunda kullanışlıdır.
 
-Bu sayfa OpenClaw Araç Arama'yı belgeler. Bu, Codex'e özgü araç
-arama veya dinamik araçlar yüzeyi değildir. Codex'e özgü kod modu, araç arama, ertelenmiş
-dinamik araçlar ve iç içe araç çağrıları kararlı Codex harness yüzeyleridir ve
-`tools.toolSearch` değerine bağlı değildir.
+Bu sayfa OpenClaw Tool Search özelliğini belgeler. Bu, Codex'e özgü araç arama veya dinamik araçlar yüzeyi değildir. Codex'e özgü kod modu, araç arama, ertelenmiş dinamik araçlar ve iç içe araç çağrıları kararlı Codex çalıştırma ortamı yüzeyleridir ve `tools.toolSearch` ayarına bağlı değildir.
 
-OpenClaw çalıştırmaları için etkinleştirildiğinde, model varsayılan olarak bir `tool_search_code` aracı
-alır. Bu araç, `openclaw.tools` köprüsü bulunan yalıtılmış bir Node
-alt sürecinde kısa bir JavaScript gövdesi çalıştırır:
+OpenClaw çalıştırmaları için etkinleştirildiğinde model, varsayılan olarak bir `tool_search_code` aracının yanı sıra yapılandırılmış sonuçları kompakt köprüden geçemeyen yalnızca doğrudan kullanımlı araçları alır. Kod aracı, `openclaw.tools` köprüsüne sahip yalıtılmış bir Node alt işleminde kısa bir JavaScript gövdesi çalıştırır:
 
 ```js
 const hits = await openclaw.tools.search("create a GitHub issue");
@@ -36,88 +30,56 @@ return await openclaw.tools.call(tool.id, {
 });
 ```
 
-Katalog OpenClaw araçlarını, Plugin araçlarını, MCP araçlarını ve
-istemci tarafından sağlanan araçları içerebilir. Model her tam şemayı baştan görmez.
-Bunun yerine kompakt tanımlayıcılarda arama yapar, kesin şemaya ihtiyaç duyduğunda
-seçilen bir aracı açıklar ve bu aracı OpenClaw üzerinden çağırır.
+Katalog; kataloğa uygun OpenClaw araçlarını, Plugin araçlarını, MCP araçlarını ve istemci tarafından sağlanan araçları içerebilir. Model, kataloglanan her şemayı başlangıçta görmez. Bunun yerine kompakt tanımlayıcılarda arama yapar, tam şemaya ihtiyaç duyduğunda seçilen bir aracı açıklar ve bu aracı OpenClaw üzerinden çağırır. Yalnızca doğrudan kullanımlı araçlar modele görünür kalır ve kataloğa eklenmez.
 
-Codex harness çalıştırmaları bu deneysel OpenClaw Araç Arama
-kontrollerini almaz. OpenClaw ürün kabiliyetlerini Codex'e dinamik araçlar olarak iletir ve
-kararlı yerel kod modu, yerel araç arama, ertelenmiş dinamik
-araçlar ve iç içe araç çağrıları Codex'e aittir.
+Codex çalıştırma ortamı çalıştırmaları bu deneysel OpenClaw Tool Search denetimlerini almaz. OpenClaw, ürün yeteneklerini Codex'e dinamik araçlar olarak aktarır; kararlı yerel kod modu, yerel araç arama, ertelenmiş dinamik araçlar ve iç içe araç çağrıları Codex tarafından yönetilir.
 
-## Bir dönüş nasıl çalışır
+## Bir tur nasıl çalışır?
 
 Planlama sırasında OpenClaw gömülü çalıştırıcısı, çalıştırma için geçerli kataloğu oluşturur:
 
-1. Ajan, profil, sandbox ve oturum için etkin araç politikasını çözümle.
-2. Uygun OpenClaw ve Plugin araçlarını listele.
-3. Oturum MCP çalışma zamanı üzerinden uygun MCP araçlarını listele.
-4. Geçerli çalıştırma için sağlanan uygun istemci araçlarını ekle.
-5. Arama için kompakt tanımlayıcıları dizine ekle.
-6. OpenClaw kod köprüsünü, yapılandırılmış yedek araçları veya
-   kompakt dizin yüzeyini modele aç.
+1. Ajan, profil, korumalı alan ve oturum için etkin araç politikasını çözümler.
+2. Uygun OpenClaw ve Plugin araçlarını listeler.
+3. Oturumun MCP çalışma zamanı üzerinden uygun MCP araçlarını listeler.
+4. Geçerli çalıştırma için sağlanan uygun istemci araçlarını ekler.
+5. Yalnızca doğrudan kullanımlı araçları modele görünür tutar ve kalan kataloğa uygun araçlar için kompakt tanımlayıcıları dizine ekler.
+6. OpenClaw kod köprüsünü, yapılandırılmış yedek araçları veya kompakt dizin yüzeyini bu yalnızca doğrudan kullanımlı araçlarla birlikte sunar.
 
-Yürütme sırasında her gerçek araç çağrısı OpenClaw'a döner. Yalıtılmış Node
-çalışma zamanı Plugin uygulamalarını, MCP istemci nesnelerini veya gizli değerleri tutmaz.
-`openclaw.tools.call(...)`, köprü üzerinden Gateway'e geri geçer; burada
-normal politika, onay, hook, günlükleme ve sonuç işleme hâlâ uygulanır.
+Yürütme sırasında her gerçek araç çağrısı OpenClaw'a geri döner. Yalıtılmış Node çalışma zamanı Plugin uygulamalarını, MCP istemci nesnelerini veya gizli bilgileri barındırmaz. `openclaw.tools.call(...)`, köprü üzerinden Gateway'e geri geçer; burada normal politika, onay, kanca, günlük kaydı ve sonuç işleme süreçleri uygulanmaya devam eder.
 
 ## Modlar
 
-`tools.toolSearch` modele görünen üç moda sahiptir:
+`tools.toolSearch`, modele yönelik üç moda sahiptir:
 
-- `code`: varsayılan kompakt JavaScript köprüsü olan `tool_search_code` aracını açar.
-- `tools`: kod almaması gereken sağlayıcılar için `tool_search`, `tool_describe` ve `tool_call` değerlerini düz
-  yapılandırılmış araçlar olarak açar.
-- `directory`: her tam şema olmadan araç adlarını görmesi gereken sağlayıcılar için
-  `tool_search`, `tool_describe` ve `tool_call` değerlerinin yanı sıra
-  kullanılabilir araç adları ve açıklamalarından oluşan sınırlı bir istem dizini açar. OpenClaw,
-  geçerli dönüş için muhtemel veya gerekli araç şemalarından oluşan küçük ve sınırlı bir kümeyi de
-  doğrudan açabilir.
+- `code`: yalnızca doğrudan kullanımlı araçlarla birlikte varsayılan kompakt JavaScript köprüsü olan `tool_search_code` aracını sunar.
+- `tools`: kod almaması gereken sağlayıcılar için `tool_search`, `tool_describe` ve `tool_call` araçlarını yalnızca doğrudan kullanımlı araçlarla birlikte düz yapılandırılmış araçlar olarak sunar.
+- `directory`: her tam şema olmadan araç adlarını görmesi gereken sağlayıcılar için `tool_search`, `tool_describe` ve `tool_call` araçlarının yanı sıra kullanılabilir araç adları ile açıklamalarından oluşan sınırlı bir istem dizini sunar. OpenClaw ayrıca geçerli tur için muhtemel veya gerekli araç şemalarından oluşan küçük ve sınırlı bir kümeyi doğrudan sunabilir. Yalnızca doğrudan kullanımlı araçlar bu modda da görünür kalır.
 
-Tüm modlar aynı politika filtreli kataloğu ve normal OpenClaw yürütme
-yolunu kullanır. Geçerli çalışma zamanı yalıtılmış Node kod modu alt
-sürecini başlatamazsa, varsayılan `code` modu katalog
-Compaction öncesinde `tools` moduna geri döner. `directory` modunda, istemci tarafından sağlanan araçlar
-geçerli çalıştırma için doğrudan görünür kalırken OpenClaw araçları, Plugin araçları ve MCP araçları
-dizin kataloğunun arkasında sıkıştırılabilir. Kesin bir gizli
-dizin adına yapılan doğrudan çağrı, yürütme öncesinde aynı yetkilendirilmiş katalogdan doldurulur.
+Tüm modlar, politikaya göre filtrelenmiş aynı kataloğu ve normal OpenClaw yürütme yolunu kullanır. `catalogMode: "direct-only"` olarak işaretlenmiş araçlar bu kataloğun dışında kalır ve modele görünür olmaya devam eder. Geçerli çalışma zamanı yalıtılmış Node kod modu alt işlemini başlatamazsa varsayılan `code` modu, katalog Compaction işleminden önce `tools` moduna geri döner. `directory` modunda, istemci tarafından sağlanan araçlar geçerli çalıştırma için doğrudan görünür kalırken OpenClaw araçları, Plugin araçları ve MCP araçları dizin kataloğunun arkasında sıkıştırılabilir. Tam bir gizli dizin adına yapılan doğrudan çağrı, yürütmeden önce aynı yetkilendirilmiş katalogdan yüklenir.
 
-Tüm modlar deneyseldir. Küçük OpenClaw araç katalogları için doğrudan araç
-açmayı, Codex harness çalıştırmaları için ise Codex'e özgü kararlı yüzeyleri tercih edin.
+Tüm modlar deneyseldir. Küçük OpenClaw araç katalogları için araçların doğrudan sunulmasını, Codex çalıştırma ortamı çalıştırmaları için ise Codex'e özgü kararlı yüzeyleri tercih edin.
 
-Ayrı bir kaynak seçimi yapılandırması yoktur. Araç Arama etkinleştirildiğinde,
-katalog normal politika filtrelemesinden sonra uygun OpenClaw, MCP ve istemci araçlarını içerir.
+Ayrı bir kaynak seçimi yapılandırması yoktur. Tool Search etkinleştirildiğinde katalog, normal politika filtrelemesinden sonra kataloğa uygun OpenClaw, MCP ve istemci araçlarını içerir; yalnızca doğrudan kullanımlı araçlar ayrı tutulur.
 
-## Bu neden var
+## Bu neden var?
 
-Büyük kataloglar kullanışlıdır ama maliyetlidir. Her araç şemasını modele göndermek
-isteği büyütür, planlamayı yavaşlatır ve yanlışlıkla araç
-seçimi olasılığını artırır.
+Büyük kataloglar kullanışlı ancak maliyetlidir. Her araç şemasını modele göndermek isteği büyütür, planlamayı yavaşlatır ve yanlışlıkla araç seçme olasılığını artırır.
 
-Araç Arama biçimi değiştirir:
+Tool Search bu yapıyı değiştirir:
 
-- doğrudan araçlar: model ilk belirteçten önce seçilen her şemayı görür
-- Araç Arama kod modu: model tek bir kompakt kod aracı ve kısa bir API
-  sözleşmesi görür
-- Araç Arama araçlar modu: model üç kompakt yapılandırılmış yedek
-  araç görür
-- Araç Arama dizin modu: model sınırlı bir dizin ile
-  arama/açıklama/çağrı kontrollerini ve muhtemel ya da gerekli
-  şemalardan oluşan küçük ve sınırlı bir kümeyi görür
-- dönüş sırasında: model kalan şemaları gerektiğinde yükleyebilir
+- doğrudan araçlar: model, ilk belirteçten önce seçilen her şemayı görür
+- Tool Search kod modu: model, tek bir kompakt kod aracını, kısa bir API sözleşmesini ve yalnızca doğrudan kullanımlı araçları görür
+- Tool Search araçlar modu: model, üç kompakt yapılandırılmış yedek aracı ve yalnızca doğrudan kullanımlı araçları görür
+- Tool Search dizin modu: model, sınırlı bir dizinin yanı sıra arama/açıklama/çağırma denetimlerini, muhtemel veya gerekli şemalardan oluşan küçük ve sınırlı bir kümeyi ve yalnızca doğrudan kullanımlı araçları görür
+- tur sırasında: model kalan şemaları gerektiğinde yükleyebilir
 
-Küçük kataloglar için doğru varsayılan hâlâ doğrudan araç açmadır. Araç Arama,
-özellikle MCP sunucularından veya istemci tarafından sağlanan uygulama araçlarından gelen birçok aracı
-tek bir çalıştırmanın görebildiği durumlarda en uygundur.
+Küçük kataloglar için araçların doğrudan sunulması hâlâ doğru varsayılandır. Tool Search, özellikle MCP sunucularından veya istemci tarafından sağlanan uygulama araçlarından gelen çok sayıda aracın tek bir çalıştırmada görülebildiği durumlarda en iyi sonucu verir.
 
 ## API
 
 `openclaw.tools.search(query, options?)`
 
-Geçerli çalıştırma için geçerli katalogda arama yapar. Sonuçlar kompakttır ve
-istem bağlamına geri koymak için güvenlidir.
+Geçerli çalıştırmanın etkin kataloğunda arama yapar. Sonuçlar kompakttır ve istem bağlamına güvenle geri eklenebilir.
 
 ```js
 const hits = await openclaw.tools.search("calendar event", { limit: 5 });
@@ -125,7 +87,7 @@ const hits = await openclaw.tools.search("calendar event", { limit: 5 });
 
 `openclaw.tools.describe(id)`
 
-Kesin girdi şeması dahil olmak üzere bir arama sonucu için tam metaveriyi yükler.
+Tam girdi şeması dâhil olmak üzere bir arama sonucunun tüm meta verilerini yükler.
 
 ```js
 const calendarCreate = await openclaw.tools.describe("mcp:calendar:create_event");
@@ -142,53 +104,44 @@ await openclaw.tools.call(calendarCreate.id, {
 });
 ```
 
-Yapılandırılmış yedek mod, aynı işlemleri araçlar olarak açar:
+Yapılandırılmış yedek mod, aynı işlemleri araçlar olarak sunar:
 
 - `tool_search`
 - `tool_describe`
 - `tool_call`
 
-Dizin modu şunları açar:
+Dizin modu şunları sunar:
 
 - `tool_search`
 - `tool_describe`
 - `tool_call`
 
-Ayrıca istemci tarafından sağlanan araçları doğrudan görünür tutar ve geçerli
-dönüş için muhtemel veya gerekli katalog araç şemalarından oluşan küçük ve
-sınırlı bir kümeyi doğrudan açabilir. Sınırlı dizin girdileri atlıyorsa, bunları bulmak için `tool_search` kullanın. Model
-kesin bir gizli dizin araç adını doğrudan isterse OpenClaw,
-normal yürütme öncesinde bunu yetkilendirilmiş katalogdan doldurur.
-Dizin modu istemci araç adları OpenClaw, Plugin veya MCP
-araç adlarıyla çakışmamalıdır; çünkü kesin ertelenmiş dağıtım bu adları kullanır.
+Ayrıca istemci tarafından sağlanan araçları ve yalnızca doğrudan kullanımlı tüm araçları doğrudan görünür tutar ve geçerli tur için muhtemel veya gerekli katalog aracı şemalarından oluşan küçük ve sınırlı bir kümeyi doğrudan sunabilir. Sınırlı dizin bazı girdileri içermiyorsa bunları bulmak için `tool_search` kullanın. Model tam bir gizli dizin aracı adını doğrudan isterse OpenClaw, normal yürütmeden önce aracı yetkilendirilmiş katalogdan yükler.
+Ertelenmiş tam gönderim bu adları kullandığından, dizin modundaki istemci aracı adları OpenClaw, Plugin veya MCP araç adlarıyla çakışmamalıdır.
 
 ## Çalışma zamanı sınırı
 
-Kod köprüsü kısa ömürlü bir Node alt sürecinde çalışır. Alt süreç,
-Node izin modu etkin, boş bir ortam, dosya sistemi veya
-ağ izni olmadan ve alt süreç ya da worker izni olmadan başlar. OpenClaw,
-üst süreç duvar saati zaman aşımını uygular ve zaman aşımında, async devamları sonrasında dahil,
-alt süreci sonlandırır.
+Kod köprüsü kısa ömürlü bir Node alt işleminde çalışır. Alt işlem; Node izin modu etkin, ortamı boş, dosya sistemi veya ağ izinleri olmadan ve alt işlem ya da çalışan izinleri bulunmadan başlatılır. OpenClaw, üst işlemde geçen gerçek süre için bir zaman aşımı uygular ve asenkron devam işlemleri sonrasında da dâhil olmak üzere zaman aşımında alt işlemi sonlandırır.
 
-Çalışma zamanı yalnızca şunları açar:
+Çalışma zamanı yalnızca şunları sunar:
 
 - `console.log`, `console.warn` ve `console.error`
 - `openclaw.tools.search`
 - `openclaw.tools.describe`
 - `openclaw.tools.call`
 
-Son çağrılara normal OpenClaw davranışı hâlâ uygulanır:
+Son çağrılarda normal OpenClaw davranışı uygulanmaya devam eder:
 
-- araç izin verme ve reddetme politikaları
-- ajan başına ve sandbox başına araç kısıtlamaları
+- araç izin ve ret politikaları
+- ajan ve korumalı alan başına araç kısıtlamaları
 - kanal/çalışma zamanı araç politikası
-- onay hook'ları
-- Plugin `before_tool_call` hook'ları
+- onay kancaları
+- Plugin `before_tool_call` kancaları
 - oturum kimliği, günlükler ve telemetri
 
 ## Yapılandırma
 
-OpenClaw çalıştırmaları için varsayılan kod köprüsüyle Araç Arama'yı etkinleştirin:
+OpenClaw çalıştırmalarında Tool Search özelliğini varsayılan kod köprüsüyle etkinleştirin:
 
 ```bash
 openclaw config set tools.toolSearch true
@@ -204,7 +157,7 @@ Eşdeğer JSON:
 }
 ```
 
-OpenClaw çalıştırmaları için bunun yerine yapılandırılmış yedek araçları kullanın:
+OpenClaw çalıştırmalarında bunun yerine yapılandırılmış yedek araçları kullanın:
 
 ```json5
 {
@@ -216,7 +169,7 @@ OpenClaw çalıştırmaları için bunun yerine yapılandırılmış yedek araç
 }
 ```
 
-OpenClaw çalıştırmaları için bunun yerine kompakt dizin yüzeyini kullanın:
+OpenClaw çalıştırmalarında bunun yerine kompakt dizin yüzeyini kullanın:
 
 ```json5
 {
@@ -228,7 +181,7 @@ OpenClaw çalıştırmaları için bunun yerine kompakt dizin yüzeyini kullanı
 }
 ```
 
-Kod modu zaman aşımını ve arama sonucu sınırlarını ayarlayın:
+Kod modu zaman aşımını ve arama sonucu sınırlarını ayarlayın (gösterilen değerler varsayılanlardır):
 
 ```json5
 {
@@ -243,6 +196,8 @@ Kod modu zaman aşımını ve arama sonucu sınırlarını ayarlayın:
 }
 ```
 
+Çalışma zamanı `codeTimeoutMs` değerini 1000-60000, `maxSearchLimit` değerini 1-50 ve `searchDefaultLimit` değerini 1..`maxSearchLimit` aralığıyla sınırlar.
+
 Devre dışı bırakın:
 
 ```json5
@@ -255,57 +210,53 @@ Devre dışı bırakın:
 
 ## İstem ve telemetri
 
-Araç Arama, doğrudan araç açma ile karşılaştırmaya yetecek kadar telemetri kaydeder:
+Tool Search, doğrudan araç sunumuyla karşılaştırma yapmaya yetecek kadar telemetri kaydeder:
 
-- harness'a gönderilen toplam serileştirilmiş araç ve istem baytları
+- çalıştırma ortamına gönderilen serileştirilmiş araç ve istem baytlarının toplamı
 - katalog boyutu ve kaynak dağılımı
 - arama, açıklama ve çağrı sayıları
 - OpenClaw üzerinden yürütülen son araç çağrıları
 - seçilen araç kimlikleri ve kaynakları
 
-Oturum günlükleri şu soruları yanıtlamayı mümkün kılmalıdır:
+Oturum günlükleri şu soruların yanıtlanmasını mümkün kılmalıdır:
 
-- modelin baştan kaç araç şeması gördüğü
-- kaç arama ve açıklama işlemi gerçekleştirdiği
-- hangi son aracın çağrıldığı
-- sonucun OpenClaw, MCP veya istemci aracından gelip gelmediği
+- model başlangıçta kaç araç şeması gördü?
+- kaç arama ve açıklama işlemi gerçekleştirdi?
+- son olarak hangi araç çağrıldı?
+- sonuç OpenClaw, MCP veya bir istemci aracından mı geldi?
 
-## E2E doğrulama
+## Uçtan uca doğrulama
 
-QA Lab Gateway senaryosu, OpenClaw çalışma zamanı ile iki yolu da kanıtlar:
+QA Lab Gateway senaryosu, OpenClaw çalışma zamanı ile her iki yolu da doğrular:
 
 ```bash
 pnpm openclaw qa suite --provider-mode mock-openai --scenario tool-search-gateway-e2e
 ```
 
-Büyük bir araç kataloğu olan geçici bir sahte Plugin oluşturur, sahte
-OpenAI sağlayıcısını başlatır, Gateway'i bir kez doğrudan modda ve bir kez Araç Arama
-etkin olarak başlatır, ardından sağlayıcı istek yüklerini ve oturum günlüklerini karşılaştırır.
+Büyük bir araç kataloğuna sahip geçici bir sahte Plugin oluşturur, sahte OpenAI sağlayıcısını başlatır, Gateway'i bir kez doğrudan modda ve bir kez Tool Search etkin olarak başlatır, ardından sağlayıcı istek yüklerini ve oturum günlüklerini karşılaştırır.
 
-Regresyon şunları kanıtlar:
+Regresyon testi şunları doğrular:
 
 1. Doğrudan mod sahte Plugin aracını çağırabilir.
-2. Araç Arama aynı sahte Plugin aracını çağırabilir.
-3. Doğrudan mod sahte Plugin araç şemalarını sağlayıcıya doğrudan açar.
-4. Araç Arama yalnızca kompakt köprüyü açar.
-5. Büyük sahte katalog için Araç Arama istek yükü daha küçüktür.
+2. Tool Search aynı sahte Plugin aracını çağırabilir.
+3. Doğrudan mod, sahte Plugin araç şemalarını sağlayıcıya doğrudan sunar.
+4. Tool Search yalnızca kompakt köprüyü ve yalnızca doğrudan kullanımlı araçları sunar.
+5. Büyük sahte katalog için Tool Search istek yükü daha küçüktür.
 6. Oturum günlükleri beklenen araç çağrısı sayılarını ve köprülenmiş çağrı telemetrisini gösterir.
 
 ## Hata davranışı
 
-Araç Arama kapalı başarısız olmalıdır:
+Tool Search güvenli biçimde kapalı kalmalıdır:
 
-- bir araç geçerli politikada değilse arama onu döndürmemelidir
+- bir araç etkin politikada değilse arama bu aracı döndürmemelidir
 - seçilen bir araç kullanılamaz hâle gelirse `tool_call` başarısız olmalıdır
-- politika veya onay yürütmeyi engellerse çağrı sonucu, bunu atlatmak yerine
-  bu engeli bildirmelidir
-- kod köprüsü yalıtılmış bir çalışma zamanı oluşturamazsa, bu dağıtım için `mode: "tools"` kullanın veya
-  Araç Arama'yı devre dışı bırakın
+- politika veya onay yürütmeyi engellerse çağrı sonucu engeli atlamak yerine bu engeli bildirmelidir
+- kod köprüsü yalıtılmış bir çalışma zamanı oluşturamıyorsa bu dağıtım için `mode: "tools"` kullanın veya Tool Search özelliğini devre dışı bırakın
 
 ## İlgili
 
 - [Araçlar ve Plugin'ler](/tr/tools)
-- [Çok ajanlı sandbox ve araçlar](/tr/tools/multi-agent-sandbox-tools)
+- [Çok ajanlı korumalı alan ve araçlar](/tr/tools/multi-agent-sandbox-tools)
 - [Exec aracı](/tr/tools/exec)
 - [ACP ajanları kurulumu](/tr/tools/acp-agents-setup)
 - [Plugin oluşturma](/tr/plugins/building-plugins)

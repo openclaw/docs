@@ -1,24 +1,22 @@
 ---
 read_when:
     - Je gebruikt nog steeds `openclaw daemon ...` in scripts
-    - Je hebt opdrachten voor de servicelevenscyclus nodig (installeren/starten/stoppen/herstarten/status)
+    - Je hebt opdrachten voor de levenscyclus van de service nodig (installeren/starten/stoppen/herstarten/status)
 summary: CLI-referentie voor `openclaw daemon` (verouderde alias voor Gateway-servicebeheer)
 title: Daemon
 x-i18n:
-    generated_at: "2026-06-30T14:11:43Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:44:03Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1a3ec72b22907994ecefac84b2b9e5b22bf1d922e5b2822a1c0db80f0362dade
+    source_hash: 4933885078d067ff2e077f25f14483aa5a10e3cd36951d0dc25c625d8b4d78e6
     source_path: cli/daemon.md
     workflow: 16
 ---
 
 # `openclaw daemon`
 
-Verouderde alias voor servicebeheeropdrachten van de Gateway.
-
-`openclaw daemon ...` verwijst naar hetzelfde servicebeheeroppervlak als de serviceopdrachten van `openclaw gateway ...`.
+Verouderde alias voor het beheer van de Gateway-service. `openclaw daemon ...` verwijst naar dezelfde servicebeheeropdrachten als `openclaw gateway ...`. Gebruik bij voorkeur [`openclaw gateway`](/nl/cli/gateway) voor actuele documentatie en voorbeelden.
 
 ## Gebruik
 
@@ -31,45 +29,34 @@ openclaw daemon restart
 openclaw daemon uninstall
 ```
 
-## Subopdrachten
+## Subopdrachten en opties
 
-- `status`: toon de installatiestatus van de service en controleer de gezondheid van de Gateway
-- `install`: installeer service (`launchd`/`systemd`/`schtasks`)
-- `uninstall`: verwijder service
-- `start`: start service
-- `stop`: stop service
-- `restart`: herstart service
+| Subopdracht | Opties                                                                                                                       |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `status`    | `--url`, `--token`, `--password`, `--timeout`, `--no-probe`, `--require-rpc`, `--deep`, `--json`                              |
+| `install`   | `--port`, `--runtime <node\|bun>`, `--token`, `--wrapper <path>`, `--force`, `--json`                                         |
+| `uninstall` | `--json`                                                                                                                      |
+| `start`     | `--json`                                                                                                                      |
+| `stop`      | `--json`, `--disable` (alleen launchd: KeepAlive/RunAtLoad permanent onderdrukken tot de volgende start)                     |
+| `restart`   | `--force`, `--safe`, `--skip-deferral`, `--wait <duration>`, `--json`                                                        |
 
-## Algemene opties
+- `status`: toont de installatiestatus van de service (launchd/systemd/schtasks) en controleert de status van de Gateway.
+- `install`: installeert de service; `--force` installeert opnieuw of overschrijft een bestaande installatie.
+- `restart --safe`: vraagt de actieve Gateway om lopend werk vooraf te controleren en één samengevoegde herstart te plannen nadat het werk is afgehandeld, begrensd door `gateway.reload.deferralTimeoutMs` (standaard 300000 ms/5 minuten; stel dit in op `0` om onbeperkt te wachten). Wanneer die tijdslimiet verloopt, wordt de herstart alsnog geforceerd. Een gewone `restart` gebruikt de servicebeheerder rechtstreeks; `--force` is de onmiddellijke overschrijving.
+- `restart --safe --skip-deferral`: omzeilt het uitstelmechanisme voor actief werk, zodat de Gateway onmiddellijk opnieuw wordt gestart, zelfs wanneer blokkades worden gemeld. Vereist `--safe`.
 
-- `status`: `--url`, `--token`, `--password`, `--timeout`, `--no-probe`, `--require-rpc`, `--deep`, `--json`
-- `install`: `--port`, `--runtime <node|bun>`, `--token`, `--force`, `--json`
-- `restart`: `--safe`, `--skip-deferral`, `--force`, `--wait <duration>`, `--json`
-- levenscyclus (`uninstall|start|stop`): `--json`
+## Opmerkingen
 
-Opmerkingen:
-
-- `status` lost geconfigureerde auth-SecretRefs waar mogelijk op voor probe-authenticatie.
-- Als een vereiste auth-SecretRef in dit opdrachtpad niet kan worden opgelost, meldt `daemon status --json` `rpc.authWarning` wanneer probe-connectiviteit/authenticatie mislukt; geef `--token`/`--password` expliciet door of los eerst de secretbron op.
-- Als de probe slaagt, worden waarschuwingen over niet-opgeloste auth-refs onderdrukt om fout-positieven te voorkomen.
-- `status --deep` voegt een best-effort scan op systeemniveau van services toe. Wanneer deze andere gateway-achtige services vindt, toont uitvoer voor mensen opschoontips en waarschuwt dat één gateway per machine nog steeds de normale aanbeveling is.
-- `status --deep` voert ook configuratievalidatie uit in pluginbewuste modus en toont waarschuwingen uit geconfigureerde pluginmanifests (bijvoorbeeld ontbrekende metagegevens voor kanaalconfiguratie), zodat install- en update-smokechecks ze vinden. Standaard `status` behoudt het snelle alleen-lezenpad dat pluginvalidatie overslaat.
-- Bij Linux-systemd-installaties omvatten token-driftcontroles van `status` zowel `Environment=`- als `EnvironmentFile=`-unitbronnen.
-- Driftcontroles lossen `gateway.auth.token`-SecretRefs op met samengevoegde runtime-omgeving (eerst de omgeving van serviceopdrachten, daarna de procesomgeving als fallback).
-- Als tokenauthenticatie feitelijk niet actief is (expliciete `gateway.auth.mode` van `password`/`none`/`trusted-proxy`, of modus niet ingesteld waarbij wachtwoord kan winnen en geen tokenkandidaat kan winnen), slaan token-driftcontroles het oplossen van configuratietokens over.
-- Wanneer tokenauthenticatie een token vereist en `gateway.auth.token` door SecretRef wordt beheerd, valideert `install` dat de SecretRef kan worden opgelost, maar bewaart het opgeloste token niet in metagegevens van de serviceomgeving.
-- Als tokenauthenticatie een token vereist en de geconfigureerde token-SecretRef niet kan worden opgelost, faalt installatie gesloten.
-- Als zowel `gateway.auth.token` als `gateway.auth.password` zijn geconfigureerd en `gateway.auth.mode` niet is ingesteld, wordt installatie geblokkeerd totdat de modus expliciet is ingesteld.
-- Op macOS houdt `install` LaunchAgent-plists alleen toegankelijk voor de eigenaar en laadt beheerde serviceomgevingswaarden via een alleen-voor-de-eigenaar bestand en wrapper in plaats van API-sleutels of auth-profiel-env-refs te serialiseren naar `EnvironmentVariables`.
-- Als je bewust meerdere gateways op één host uitvoert, isoleer dan poorten, configuratie/status en werkruimten; zie [/gateway#multiple-gateways-same-host](/nl/gateway#multiple-gateways-same-host).
-- `restart --safe` vraagt de draaiende Gateway om actief werk vooraf te controleren en één samengevoegde herstart te plannen nadat actief werk is afgehandeld. De standaard veilige herstart wacht op actief werk tot de geconfigureerde `gateway.reload.deferralTimeoutMs` (standaard 5 minuten); wanneer dat budget verloopt, wordt de herstart geforceerd. Stel `gateway.reload.deferralTimeoutMs` in op `0` voor onbeperkt veilig wachten dat nooit forceert. Gewone `restart` behoudt het bestaande gedrag van de servicemanager; `--force` blijft het directe overridepad.
-- `restart --safe --skip-deferral` voert de OpenClaw-bewuste veilige herstart uit, maar omzeilt de uitstelpoort voor actief werk, zodat de Gateway de herstart onmiddellijk verstuurt, zelfs wanneer blokkades worden gemeld. Operator-nooduitgang wanneer een vastgelopen taakrun de veilige herstart blokkeert; vereist `--safe`.
-
-## Voorkeur
-
-Gebruik [`openclaw gateway`](/nl/cli/gateway) voor actuele documentatie en voorbeelden.
+- `status` lost geconfigureerde SecretRefs voor probe-authenticatie waar mogelijk op. Als een vereiste SecretRef niet kan worden opgelost, meldt `status --json` dit via `rpc.authWarning`; geef `--token`/`--password` expliciet door of los eerst de bron van het geheim op. Waarschuwingen over niet-opgeloste authenticatie worden onderdrukt zodra de probe verder slaagt.
+- `status --deep` voegt een naar beste vermogen uitgevoerde scan op systeemniveau toe voor andere Gateway-achtige services (toont opruimtips; één Gateway per machine blijft de aanbeveling) en voert configuratievalidatie uit in een Plugin-bewuste modus, waardoor waarschuwingen uit Plugin-manifesten zichtbaar worden die het snelle standaardpad overslaat.
+- Bij Linux-installaties met systemd onderzoeken controles op tokenafwijkingen zowel de eenheidsbronnen `Environment=` als `EnvironmentFile=`.
+- Controles op tokenafwijkingen lossen SecretRefs voor `gateway.auth.token` op met behulp van de samengevoegde runtime-omgeving (eerst de omgeving van de serviceopdracht, daarna de procesomgeving). Als tokenauthenticatie feitelijk niet actief is (`gateway.auth.mode` is `password`/`none`/`trusted-proxy`, of is niet ingesteld terwijl het wachtwoord voorrang kan krijgen), wordt het oplossen van het configuratietoken overgeslagen.
+- `install` valideert dat een door SecretRef beheerde `gateway.auth.token` kan worden opgelost, maar slaat de opgeloste waarde nooit op in de omgevingsmetadata van de service; als deze niet kan worden opgelost, wordt de installatie veilig geweigerd.
+- Als zowel `gateway.auth.token` als `gateway.auth.password` zijn geconfigureerd en `gateway.auth.mode` niet is ingesteld, blokkeert `install` totdat u de modus expliciet instelt.
+- Op macOS houdt `install` de LaunchAgent-plists en het gegenereerde omgevingsbestand/de wrapper uitsluitend toegankelijk voor de eigenaar (modus `0600`/`0700`), in plaats van geheimen in `EnvironmentVariables` op te nemen.
+- Meerdere Gateways op één host uitvoeren: isoleer poorten, configuratie/status en werkruimten. Zie [Meerdere Gateways](/nl/gateway#multiple-gateways-same-host).
 
 ## Gerelateerd
 
 - [CLI-referentie](/nl/cli)
-- [Gateway-runbook](/nl/gateway)
+- [Gateway-draaiboek](/nl/gateway)

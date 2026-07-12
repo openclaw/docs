@@ -1,55 +1,54 @@
 ---
 read_when:
-    - Anda ingin menggunakan harness GitHub Copilot SDK untuk sebuah agen
+    - Anda ingin menggunakan harness GitHub Copilot SDK untuk agen
     - Anda memerlukan contoh konfigurasi untuk runtime `copilot`
-    - Anda menghubungkan agen ke langganan Copilot (github / openclaw / copilot) dan ingin menjalankannya melalui CLI Copilot
+    - Anda sedang menghubungkan agen ke langganan Copilot (github / openclaw / copilot) dan ingin menjalankannya melalui CLI Copilot
 summary: Jalankan giliran agen tertanam OpenClaw melalui harness SDK GitHub Copilot eksternal
 title: Harness SDK Copilot
 x-i18n:
-    generated_at: "2026-06-27T17:47:14Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:24:16Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e1a052cc21130b680f6af9ae32bc1dbaeaa15be5092939f0c236515a3233ab9b
+    source_hash: 4270a9b75a038540af6a8306f3e80c87d6085dde29d128adf85b930713209fc5
     source_path: plugins/copilot.md
     workflow: 16
 ---
 
-Plugin eksternal `@openclaw/copilot` memungkinkan OpenClaw menjalankan giliran agen Copilot langganan tertanam melalui GitHub Copilot CLI (`@github/copilot-sdk`) alih-alih harness PI bawaan.
+Plugin eksternal `@openclaw/copilot` menjalankan giliran agen Copilot langganan yang disematkan melalui GitHub Copilot CLI (`@github/copilot-sdk`), bukan melalui harness bawaan OpenClaw. Sesi Copilot CLI memiliki loop agen tingkat rendah: eksekusi alat native, Compaction native (`infiniteSessions`), dan status utas yang dikelola CLI di bawah `copilotHome`. OpenClaw tetap memiliki saluran obrolan, berkas sesi, pemilihan model, alat dinamis (dijembatani), persetujuan, pengiriman media, cerminan transkrip yang terlihat, pertanyaan sampingan `/btw` (lihat [Pertanyaan sampingan (`/btw`)](#side-questions-btw)), dan `openclaw doctor`.
 
-Gunakan harness Copilot SDK saat Anda ingin sesi Copilot CLI memiliki loop agen tingkat rendah: eksekusi alat native, compaction native (`infiniteSessions`), dan status thread yang dikelola CLI di bawah `copilotHome`. OpenClaw tetap memiliki channel chat, file sesi, pemilihan model, alat dinamis OpenClaw (dijembatani), persetujuan, pengiriman media, mirror transkrip yang terlihat, pertanyaan sampingan `/btw` (ditangani oleh fallback PI dalam tree — lihat [Pertanyaan sampingan (`/btw`)](#side-questions-btw)), dan `openclaw doctor`.
-
-Untuk pemisahan model/penyedia/runtime yang lebih luas, mulai dengan [Runtime agen](/id/concepts/agent-runtimes).
+Untuk pembagian model/penyedia/runtime yang lebih luas, mulai dari
+[Runtime agen](/id/concepts/agent-runtimes).
 
 ## Persyaratan
 
 - OpenClaw dengan Plugin `@openclaw/copilot` terpasang.
-- Jika konfigurasi Anda menggunakan `plugins.allow`, sertakan `copilot` (id manifes yang dideklarasikan oleh Plugin). Allowlist restriktif yang menggunakan nama paket bergaya npm `@openclaw/copilot` akan membuat Plugin tetap diblokir dan runtime tidak akan dimuat bahkan dengan `agentRuntime.id: "copilot"`.
-- Langganan GitHub Copilot yang dapat menjalankan Copilot CLI (atau entri env / profil auth `gitHubToken` untuk eksekusi headless / cron).
-- Direktori `copilotHome` yang dapat ditulis. Harness secara default menggunakan `<agentDir>/copilot` saat OpenClaw menyediakan direktori agen, jika tidak `~/.openclaw/agents/<agentId>/copilot` untuk isolasi penuh per agen.
+- Jika konfigurasi Anda menggunakan `plugins.allow`, sertakan `copilot` (id manifes yang dideklarasikan Plugin). Entri daftar izin untuk nama paket npm `@openclaw/copilot` tidak akan cocok dan membuat Plugin tetap diblokir, meskipun `agentRuntime.id: "copilot"` telah ditetapkan.
+- Langganan GitHub Copilot yang dapat menjalankan Copilot CLI, atau variabel lingkungan `gitHubToken` / entri profil autentikasi untuk eksekusi tanpa antarmuka atau Cron.
+- Direktori `copilotHome` yang dapat ditulisi. Nilai bawaannya adalah `<agentDir>/copilot` saat OpenClaw menyediakan direktori agen, atau `~/.openclaw/agents/<agentId>/copilot` jika tidak.
 
-`openclaw doctor` menjalankan [kontrak doctor](#doctor) Plugin untuk kepemilikan status sesi deklaratif dan migrasi kompatibilitas mendatang. Ini tidak menjalankan probe lingkungan Copilot CLI.
+`openclaw doctor` menjalankan [kontrak doctor](#doctor) milik Plugin untuk kepemilikan status sesi dan migrasi konfigurasi mendatang. Perintah ini tidak memeriksa lingkungan Copilot CLI.
 
-## Pemasangan Plugin
+## Instalasi
 
-Runtime Copilot adalah Plugin eksternal sehingga paket inti `openclaw` tidak membawa dependensi `@github/copilot-sdk` atau biner CLI `@github/copilot-<platform>-<arch>` yang spesifik platform. Bersama-sama ukurannya bertambah sekitar 260 MB, jadi pasang hanya untuk agen yang memilih ikut menggunakan runtime ini:
+Runtime Copilot didistribusikan sebagai Plugin eksternal agar paket inti `openclaw` tidak menyertakan `@github/copilot-sdk` atau biner CLI khusus platform `@github/copilot-<platform>-<arch>` (total sekitar 260 MB). Pasang hanya untuk agen yang memilih menggunakan runtime ini:
 
 ```bash
 openclaw plugins install @openclaw/copilot
 ```
 
-Wizard memasang Plugin saat pertama kali Anda memilih model `github-copilot/*` **dan** konfigurasi Anda mengikutsertakan model (atau penyedianya) ke runtime agen Copilot melalui `agentRuntime: { id: "copilot" }` (lihat [Mulai cepat](#quickstart) di bawah). Tanpa opt-in, openclaw menggunakan penyedia GitHub Copilot bawaannya dan tidak pernah memasang Plugin runtime.
+Wizard penyiapan memasang Plugin secara otomatis saat pertama kali Anda memilih model `github-copilot/*` **dan** konfigurasi Anda merutekan model tersebut (atau penyedianya) ke runtime Copilot melalui `agentRuntime: { id: "copilot" }`; lihat [Mulai cepat](#quickstart). Tanpa pilihan tersebut, OpenClaw menggunakan penyedia GitHub Copilot bawaannya dan tidak pernah memasang Plugin ini.
 
-Runtime menyelesaikan SDK dalam urutan ini:
+Runtime menyelesaikan SDK dalam urutan berikut:
 
 1. `import("@github/copilot-sdk")` dari paket `@openclaw/copilot` yang terpasang.
-2. Direktori fallback yang dikenal `~/.openclaw/npm-runtime/copilot/` (target pemasangan on-demand lama).
+2. Direktori fallback `~/.openclaw/npm-runtime/copilot/` (target instalasi sesuai permintaan lama).
 
-SDK yang hilang memunculkan satu error dengan kode `COPILOT_SDK_MISSING` dan perintah pemasangan ulang Plugin di atas.
+SDK yang tidak ditemukan menghasilkan satu kesalahan dengan kode `COPILOT_SDK_MISSING` dan perintah instalasi ulang di atas.
 
 ## Mulai cepat
 
-Pin satu model (atau satu penyedia) ke harness:
+Sematkan satu model (atau satu penyedia) ke harness:
 
 ```json5
 {
@@ -66,33 +65,27 @@ Pin satu model (atau satu penyedia) ke harness:
 }
 ```
 
-Kedua rute setara. Gunakan `agentRuntime.id` pada satu entri model saat hanya model tersebut yang harus dirutekan melalui harness; atur `agentRuntime.id` pada penyedia saat setiap model di bawah penyedia tersebut harus menggunakannya.
+Tetapkan `agentRuntime.id` pada satu entri model untuk merutekan hanya model tersebut melalui harness, atau pada penyedia untuk merutekan setiap model di bawah penyedia tersebut.
 
-`github-copilot/auto` adalah titik awal portabel. Model Copilot bernama bergantung pada akun dan kebijakan organisasi, jadi pin satu model hanya setelah mengonfirmasi bahwa Copilot CLI yang diautentikasi mengeksposnya.
+`github-copilot/auto` adalah titik awal yang portabel. Model Copilot bernama bergantung pada kebijakan akun dan organisasi; pastikan Copilot CLI yang telah diautentikasi benar-benar menyediakan suatu model sebelum menyematkannya.
 
 ## Penyedia yang didukung
 
-Harness mengiklankan dukungan untuk penyedia kanonis `github-copilot` (id yang sama yang dimiliki oleh `extensions/github-copilot`):
+Harness mendukung penyedia kanonis `github-copilot` (dimiliki oleh `extensions/github-copilot`), serta entri `models.providers` khusus saat model memiliki `baseUrl` yang tidak kosong dan salah satu bentuk `api` berikut:
 
-- `github-copilot`
-
-Ini juga mendukung entri `models.providers` kustom saat model yang dipilih memiliki `baseUrl` yang tidak kosong dan salah satu bentuk API ini:
-
-- `openai-responses`
-- `openai-completions`
-- `ollama` (completion yang kompatibel dengan OpenAI)
-- `azure-openai-responses`
 - `anthropic-messages`
+- `azure-openai-responses`
+- `ollama` (penyelesaian yang kompatibel dengan OpenAI)
+- `openai-completions`
+- `openai-responses`
 
-Id penyedia native seperti `openai`, `anthropic`, `google`, dan `ollama` tetap dimiliki oleh runtime native masing-masing. Gunakan id penyedia kustom yang berbeda saat merutekan endpoint melalui Copilot BYOK.
+Id penyedia native (`openai`, `anthropic`, `google`, `ollama`) tetap dimiliki oleh runtime native masing-masing. Gunakan id penyedia khusus yang berbeda untuk merutekan titik akhir melalui BYOK Copilot.
 
-Endpoint Copilot BYOK harus berupa URL HTTPS jaringan publik. Harness memberikan URL proxy loopback per upaya kepada Copilot SDK, lalu meneruskan traffic penyedia melalui jalur fetch terjaga milik OpenClaw sehingga kebijakan pinning DNS dan SSRF tetap dimiliki oleh OpenClaw. Gunakan runtime OpenClaw native untuk Ollama lokal, LM Studio, atau server model LAN.
+Titik akhir BYOK Copilot harus berupa URL HTTPS publik. Harness memberikan proksi local loopback per percobaan kepada SDK Copilot, lalu meneruskan lalu lintas penyedia melalui jalur pengambilan terlindungi milik OpenClaw agar penyematan DNS dan kebijakan SSRF tetap dimiliki oleh OpenClaw. Gunakan runtime native OpenClaw untuk Ollama lokal, LM Studio, atau server model LAN.
 
 ## BYOK
 
-Copilot BYOK menggunakan kontrak penyedia kustom tingkat sesi milik SDK. OpenClaw meneruskan endpoint model yang diselesaikan, kunci API, mode token bearer, header, id model, dan batas konteks/output tanpa memindahkan logika transport penyedia ke inti.
-
-Contoh:
+BYOK Copilot menggunakan kontrak penyedia khusus tingkat sesi milik SDK. OpenClaw meneruskan titik akhir model yang telah diselesaikan, kunci API, mode token bearer, header, id model, serta batas konteks/keluaran; logika transportasi penyedia tetap berada di SDK, bukan di inti.
 
 ```json5
 {
@@ -121,190 +114,185 @@ Contoh:
 }
 ```
 
-Sesi BYOK diberi kunci secara terpisah dari sesi langganan dan dari endpoint atau sidik jari kredensial lain. Memutar kunci, header, model, atau endpoint membuat sesi Copilot SDK baru alih-alih melanjutkan status yang tidak kompatibel.
+Sesi BYOK diberi kunci yang terpisah dari sesi langganan dan dari titik akhir atau kredensial BYOK lainnya. Mengganti kunci, header, model, atau titik akhir akan memulai sesi SDK Copilot baru, bukan melanjutkan status yang tidak kompatibel.
 
-## Auth
+## Autentikasi
 
-Prioritas per agen, diterapkan selama `runCopilotAttempt`:
+Urutan prioritas, diterapkan per agen selama `runCopilotAttempt`:
 
-1. **`useLoggedInUser: true` eksplisit** pada input upaya. Menggunakan pengguna login Copilot CLI yang diselesaikan di bawah `copilotHome` agen.
-2. **`gitHubToken` eksplisit** pada input upaya (dengan `profileId` + `profileVersion`). Berguna untuk invokasi CLI langsung dan pengujian saat pemanggil ingin melewati resolusi profil auth.
-3. **`resolvedApiKey` + `authProfileId` yang diselesaikan kontrak** dari bentuk `EmbeddedRunAttemptParams`. Ini adalah **jalur utama produksi**: inti menyelesaikan profil auth `github-copilot` yang dikonfigurasi agen (melalui `src/infra/provider-usage.auth.ts:resolveProviderAuths`) sebelum memanggil harness, dan harness mengonsumsi kedua field secara langsung. Ini membuat profil auth `github-copilot:<profile>` bekerja end-to-end untuk setup headless / cron / multi-profil tanpa env vars.
-4. **Fallback env-var** untuk eksekusi CLI langsung / dogfood saat tidak ada profil auth yang dikonfigurasi. Runtime memeriksa vars berikut dalam urutan prioritas, mencerminkan penyedia `github-copilot` yang dikirim (`extensions/github-copilot/auth.ts`) dan setup Copilot SDK yang didokumentasikan:
-   1. `OPENCLAW_GITHUB_TOKEN` -- override khusus harness; atur ini untuk mem-pin token bagi harness OpenClaw tanpa mengganggu konfigurasi `gh` / Copilot CLI di seluruh sistem.
-   2. `COPILOT_GITHUB_TOKEN` -- env var standar Copilot SDK / CLI.
-   3. `GH_TOKEN` -- env var standar `gh` CLI (sesuai prioritas penyedia `github-copilot` yang ada).
-   4. `GITHUB_TOKEN` -- fallback token GitHub generik.
+1. **`useLoggedInUser: true` eksplisit** pada masukan percobaan — menggunakan pengguna yang telah masuk di Copilot CLI dalam `copilotHome` milik agen.
+2. **`gitHubToken` eksplisit** pada masukan percobaan (memerlukan `profileId` + `profileVersion`). Untuk pemanggilan CLI langsung dan pengujian yang perlu melewati penyelesaian profil autentikasi.
+3. **`resolvedApiKey` + `authProfileId` yang diselesaikan kontrak** — jalur utama produksi. Inti menyelesaikan profil autentikasi `github-copilot` yang dikonfigurasi untuk agen (`src/infra/provider-usage.auth.ts:resolveProviderAuths`) sebelum memanggil harness, sehingga profil autentikasi `github-copilot:<profile>` berfungsi secara menyeluruh untuk penyiapan tanpa antarmuka, Cron, atau multiprofil tanpa variabel lingkungan.
+4. **Fallback variabel lingkungan**, diperiksa dalam urutan berikut (nilai tidak kosong pertama yang ditemukan digunakan, string kosong dianggap tidak ada; mencerminkan urutan prioritas penyedia `github-copilot` yang didistribusikan dalam `extensions/github-copilot/auth.ts`):
+   1. `OPENCLAW_GITHUB_TOKEN` — penggantian khusus harness; memungkinkan Anda menyematkan token untuk harness OpenClaw tanpa mengganggu konfigurasi `gh` / Copilot CLI di seluruh sistem.
+   2. `COPILOT_GITHUB_TOKEN` — variabel lingkungan standar SDK / CLI Copilot.
+   3. `GH_TOKEN` — variabel lingkungan standar CLI `gh`.
+   4. `GITHUB_TOKEN` — fallback token GitHub generik.
 
-   Nilai tidak kosong pertama menang; string kosong diperlakukan sebagai tidak ada. Id profil pool yang disintesis adalah `env:<NAME>` dan profileVersion adalah sidik jari sha256 token yang tidak dapat dibalik, sehingga memutar nilai env memutus pool klien dengan bersih.
+   Id profil pool yang disintesis adalah `env:<NAME>`; versi profilnya merupakan sidik jari sha256 token yang tidak dapat dibalik, sehingga penggantian nilai lingkungan akan menyegarkan pool klien dengan bersih.
 
-5. **`useLoggedInUser` default** saat tidak ada sinyal token yang tersedia.
+5. **`useLoggedInUser` bawaan** saat tidak ada sinyal token yang tersedia.
 
-Setiap agen mendapatkan `copilotHome` khusus sehingga token, sesi, dan konfigurasi Copilot CLI tidak bocor antaragen di mesin yang sama. Defaultnya adalah `<agentDir>/copilot` saat host menyerahkan direktori agen ke harness (mengisolasi status SDK dari `models.json` / `auth-profiles.json` milik OpenClaw di direktori yang sama), atau `~/.openclaw/agents/<agentId>/copilot` jika tidak. Override dengan `copilotHome: <path>` pada input upaya saat Anda memerlukan lokasi kustom (misalnya, mount bersama untuk migrasi).
+Setiap agen mendapatkan `copilotHome` tersendiri agar token, sesi, dan konfigurasi Copilot CLI tidak pernah bocor ant agen pada mesin yang sama. Nilai bawaan: `<agentDir>/copilot` (menjaga status SDK di luar direktori yang sama dengan `models.json` / `auth-profiles.json` milik OpenClaw), atau `~/.openclaw/agents/<agentId>/copilot` saat tidak ada direktori agen yang diberikan. Ganti dengan `copilotHome: <path>` pada masukan percobaan untuk lokasi khusus (misalnya, mount bersama untuk migrasi).
 
-Pengujian harness live menggunakan `OPENCLAW_COPILOT_AGENT_LIVE_TOKEN` saat token langsung diperlukan. Setup live-test bersama sengaja membersihkan `COPILOT_GITHUB_TOKEN`, `GH_TOKEN`, dan `GITHUB_TOKEN` setelah menyiapkan profil auth nyata ke home pengujian terisolasi, sehingga meneruskan nilai `gh auth token` melalui variabel live-test khusus menghindari skip palsu tanpa mengekspos token ke suite yang tidak terkait.
+Pengujian harness langsung menggunakan `OPENCLAW_COPILOT_AGENT_LIVE_TOKEN` untuk token langsung. Penyiapan pengujian langsung bersama membersihkan `COPILOT_GITHUB_TOKEN`, `GH_TOKEN`, dan `GITHUB_TOKEN` setelah menempatkan profil autentikasi nyata ke dalam direktori home pengujian yang terisolasi, sehingga nilai `gh auth token` yang diteruskan melalui variabel khusus tersebut mencegah pengujian dilewati secara keliru tanpa bocor ke rangkaian pengujian yang tidak terkait.
 
 ## Permukaan konfigurasi
 
-Harness membaca konfigurasinya dari input per upaya (`runCopilotAttempt({...})`) ditambah sekumpulan kecil default env di dalam `extensions/copilot/src/`:
+Harness membaca konfigurasi dari masukan per percobaan (`runCopilotAttempt({...})`) serta sejumlah kecil nilai bawaan lingkungan di dalam `extensions/copilot/src/`:
 
-- `copilotHome` — direktori status CLI per agen (default didokumentasikan di atas).
-- `model` — string atau `{ provider, id, api?, baseUrl?, headers?, authHeader? }`. Saat dihilangkan, OpenClaw menggunakan pemilihan model normal agen dan harness memverifikasi bahwa penyedia yang diselesaikan didukung.
-- `reasoningEffort` — `"low" | "medium" | "high" | "xhigh"`. Dipetakan dari resolusi `ThinkLevel` / `ReasoningLevel` OpenClaw di `auto-reply/thinking.ts`.
-- `infiniteSessionConfig` — override opsional untuk blok SDK `infiniteSessions` yang digerakkan oleh `harness.compact`. Default aman untuk dibiarkan apa adanya.
-- `hooksConfig` — konfigurasi kompatibilitas `SessionHooks` native Copilot SDK opsional untuk callback alat/MCP, prompt pengguna, sesi, dan error. Ini terpisah dari hook lifecycle portabel OpenClaw.
-- `permissionPolicy` — override opsional untuk handler `onPermissionRequest` SDK yang digunakan untuk jenis alat SDK bawaan (`shell`, `write`, `read`, `url`, `mcp`, `memory`, `hook`). Defaultnya adalah `rejectAllPolicy` sebagai jaring pengaman; dalam praktiknya SDK tidak pernah memanggil jenis mana pun itu karena setiap alat OpenClaw yang dijembatani didaftarkan dengan `overridesBuiltInTool: true` dan `skipPermission: true` sehingga 100% panggilan alat mengalir melalui `execute()` terbungkus milik OpenClaw. Lihat [Izin dan ask_user](#permissions-and-ask_user).
-- `enableSessionTelemetry` — flag telemetri sesi SDK opsional.
+| Bidang                   | Tujuan                                                                                                                                                                                                                                                                                                                                                   |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `copilotHome`            | Direktori status CLI per agen (nilai bawaan dijelaskan di atas).                                                                                                                                                                                                                                                                                          |
+| `model`                  | String atau `{ provider, id, api?, baseUrl?, headers?, authHeader? }`. Hilangkan untuk menggunakan pemilihan model normal agen; harness memverifikasi bahwa penyedia yang diselesaikan didukung.                                                                                                                                                          |
+| `reasoningEffort`        | `"low" \| "medium" \| "high" \| "xhigh"`. Dipetakan dari penyelesaian `ThinkLevel` / `ReasoningLevel` OpenClaw di `auto-reply/thinking.ts`.                                                                                                                                                                                                               |
+| `infiniteSessionConfig`  | Penggantian opsional untuk blok `infiniteSessions` SDK yang dikendalikan oleh `harness.compact`. Aman untuk dibiarkan apa adanya.                                                                                                                                                                                                                         |
+| `hooksConfig`            | Konfigurasi `SessionHooks` native SDK Copilot opsional untuk callback alat/MCP, perintah pengguna, sesi, dan kesalahan. Terpisah dari hook siklus hidup portabel milik OpenClaw.                                                                                                                                                                            |
+| `permissionPolicy`       | Penggantian opsional untuk penangan `onPermissionRequest` SDK bagi jenis alat bawaan SDK (`shell`, `write`, `read`, `url`, `mcp`, `memory`, `hook`). Nilai bawaannya adalah `rejectAllPolicy` sebagai jaring pengaman; lihat [Izin dan ask_user](#permissions-and-ask_user) untuk alasan mengapa penangan ini sebenarnya tidak pernah dipicu. |
+| `enableSessionTelemetry` | Flag telemetri sesi SDK opsional.                                                                                                                                                                                                                                                                                                                        |
 
-Hook Plugin OpenClaw tidak memerlukan konfigurasi upaya khusus Copilot. Harness menjalankan `before_prompt_build` (dan hook kompatibilitas lama `before_agent_start`), `llm_input`, `llm_output`, dan `agent_end` melalui helper harness standar. Compaction SDK yang berhasil juga menjalankan `before_compaction` dan `after_compaction`. Alat OpenClaw yang dijembatani tetap menjalankan `before_tool_call` dan melaporkan `after_tool_call`; `hooksConfig` tetap ada untuk callback khusus SDK native yang tidak memiliki padanan portabel.
+Hook Plugin OpenClaw tidak memerlukan konfigurasi percobaan khusus Copilot. Harness menjalankan `before_prompt_build` (dan hook kompatibilitas lama `before_agent_start`), `llm_input`, `llm_output`, serta `agent_end` melalui helper harness standar. Compaction SDK yang berhasil juga menjalankan `before_compaction` dan `after_compaction`. Alat OpenClaw yang dijembatani menjalankan `before_tool_call` dan melaporkan `after_tool_call`; `hooksConfig` tetap digunakan untuk callback khusus SDK native yang tidak memiliki padanan portabel.
 
-Tidak ada di bagian lain OpenClaw yang perlu mengetahui field ini. Plugin, channel, dan kode inti lain hanya melihat bentuk standar `AgentHarnessAttemptParams` / `AgentHarnessAttemptResult`.
+Bagian lain di OpenClaw tidak perlu mengetahui bidang-bidang ini. Plugin, saluran, dan kode inti lainnya hanya melihat bentuk standar `AgentHarnessAttemptParams` / `AgentHarnessAttemptResult`.
 
 ## Compaction
 
-Saat `harness.compact` berjalan, harness Copilot SDK:
+Saat `harness.compact` berjalan, harness SDK Copilot:
 
-1. Melanjutkan sesi SDK yang dilacak tanpa melanjutkan pekerjaan yang tertunda.
-2. Memanggil RPC compaction riwayat bercakup sesi milik SDK.
-3. Mengembalikan hasil compaction SDK tanpa menulis file marker kompatibilitas di bawah workspace.
+1. Melanjutkan sesi SDK yang dilacak tanpa meneruskan pekerjaan tertunda.
+2. Memanggil RPC Compaction riwayat yang tercakup pada sesi milik SDK.
+3. Mengembalikan hasil Compaction SDK tanpa menulis berkas penanda kompatibilitas di dalam ruang kerja.
 
-Mirror transkrip sisi OpenClaw (lihat di bawah) terus menerima pesan pasca-compaction, sehingga riwayat chat yang terlihat pengguna tetap konsisten.
+Cerminan transkrip sisi OpenClaw (di bawah) tetap menerima pesan pasca-Compaction, sehingga riwayat obrolan yang terlihat oleh pengguna tetap konsisten.
 
 ## Pencerminan transkrip
 
-`runCopilotAttempt` melakukan dual-write pesan yang dapat dicerminkan dari setiap giliran ke transkrip audit OpenClaw melalui `extensions/copilot/src/dual-write-transcripts.ts`. Mirror bercakup per sesi (`copilot:${sessionId}`) dan menggunakan identitas per pesan (`${role}:${sha256_16(role,content)}`) sehingga emisi ulang entri giliran sebelumnya bertabrakan dengan kunci yang sudah ada di disk dan tidak menduplikasi.
+`runCopilotAttempt` menulis ganda pesan yang dapat dicerminkan dari setiap giliran ke transkrip audit OpenClaw melalui `extensions/copilot/src/dual-write-transcripts.ts`. Cerminan dicakup per sesi (`copilot:${sessionId}`) dan diberi kunci per pesan (`${role}:${sha256_16(role,content)}`), sehingga entri giliran sebelumnya yang dipancarkan ulang berbenturan dengan kunci pada disk yang sudah ada alih-alih diduplikasi.
 
-Mirror dibungkus dalam dua lapisan penahanan kegagalan sehingga kegagalan penulisan transkrip tidak dapat menggagalkan upaya: wrapper best-effort internal dan `.catch(...)` defense-in-depth di tingkat upaya. Kegagalan dicatat tetapi tidak dimunculkan.
+Dua lapisan pembatasan kegagalan membungkus pencerminan agar kegagalan penulisan transkrip
+tidak pernah menggagalkan upaya: pembungkus upaya-terbaik internal, ditambah
+`.catch(...)` pertahanan berlapis pada tingkat upaya. Kegagalan dicatat, bukan
+dimunculkan.
 
 ## Pertanyaan sampingan (`/btw`)
 
-`/btw` **bukan** native pada harness ini. `createCopilotAgentHarness()`
-dengan sengaja membiarkan `harness.runSideQuestion` tidak terdefinisi, sehingga dispatcher `/btw`
-OpenClaw (`src/agents/btw.ts`) jatuh ke path fallback PI dalam pohon sumber yang sama
-seperti yang digunakan untuk setiap runtime non-Codex: provider model yang dikonfigurasi
-dipanggil langsung dengan prompt pertanyaan sampingan singkat dan dialirkan kembali melalui
-`streamSimple` (tanpa sesi CLI, tanpa slot pool tambahan).
+`/btw` **bukan** fitur native pada harness ini. `createCopilotAgentHarness()`
+sengaja membiarkan `harness.runSideQuestion` tidak terdefinisi
+(ditegaskan dalam `extensions/copilot/harness.test.ts`, `describe("runSideQuestion")`),
+sehingga dispatcher `/btw` OpenClaw (`src/agents/btw.ts`) beralih ke
+jalur yang sama dengan yang digunakannya untuk setiap runtime non-Codex: penyedia model
+yang dikonfigurasi dipanggil langsung dengan prompt pertanyaan sampingan singkat dan hasilnya dialirkan kembali melalui
+`streamSimple` (tanpa sesi CLI, tanpa slot kumpulan tambahan).
 
-Ini menjaga sesi CLI Copilot tetap dicadangkan untuk loop giliran utama agen, dan
-menjaga perilaku `/btw` identik dengan runtime lain yang didukung PI. Kontraknya
-ditegaskan di
-[`extensions/copilot/harness.test.ts`](https://github.com/openclaw/openclaw/blob/main/extensions/copilot/harness.test.ts)
-di bawah `describe("runSideQuestion")`.
+Hal ini mempertahankan sesi Copilot CLI agar dicadangkan untuk perulangan giliran utama agen, dan
+menjaga perilaku `/btw` tetap identik dengan runtime non-Codex lainnya.
 
-## Pemeriksa
+## Doctor
 
-`extensions/copilot/doctor-contract-api.ts` dimuat otomatis oleh
-`src/plugins/doctor-contract-registry.ts`. Berkas ini menyumbangkan:
+`extensions/copilot/doctor-contract-api.ts` dimuat secara otomatis oleh
+`src/plugins/doctor-contract-registry.ts`. Berkas ini menyediakan:
 
-- `legacyConfigRules` kosong (tidak ada field yang dipensiunkan pada MVP).
-- `normalizeCompatibilityConfig` tanpa operasi (dipertahankan agar penghentian field
-  di masa depan memiliki tempat stabil di dalam pohon sumber).
-- Satu entri `sessionRouteStateOwners` yang mengklaim provider `github-copilot`;
-  runtime `copilot`; kunci sesi CLI `copilot`; awalan profil autentikasi
-  `github-copilot:`.
+- `legacyConfigRules` kosong (belum ada bidang yang dihentikan).
+- `normalizeCompatibilityConfig` tanpa operasi (dipertahankan agar penghentian bidang pada masa mendatang
+  memiliki tempat yang stabil di dalam pohon sumber).
+- Satu entri `sessionRouteStateOwners`: penyedia `github-copilot`, runtime
+  `copilot`, kunci sesi CLI `copilot`, prefiks profil autentikasi `github-copilot:`.
 
-## Batasan
+## Keterbatasan
 
-- Harness mengklaim `github-copilot` beserta id provider BYOK kustom yang tidak dimiliki.
-  Id provider native yang dimiliki manifest tetap berada pada runtime pemiliknya bahkan ketika
+- Harness mengklaim `github-copilot` beserta ID penyedia BYOK khusus yang tidak dimiliki.
+  ID penyedia native yang dimiliki manifes tetap berada pada runtime pemiliknya, bahkan ketika
   `agentRuntime.id` dipaksa menjadi `copilot`.
-- Harness tidak mengirimkan TUI; TUI milik PI tidak terpengaruh dan tetap menjadi
-  fallback untuk runtime apa pun yang tidak memiliki surface sejawat.
-- State sesi PI tidak dimigrasikan ketika agen beralih ke `copilot`.
-  Pemilihan berlaku per percobaan; sesi PI yang sudah ada tetap valid.
-- `ask_user` menggunakan path prompt-dan-balasan OpenClaw yang sama seperti harness Codex.
-  Ketika SDK Copilot meminta input pengguna, OpenClaw memposting prompt pemblokir
-  ke channel/TUI aktif dan pesan pengguna berikutnya dalam antrean menyelesaikan
-  permintaan SDK.
+- Tidak ada permukaan TUI; TUI milik PI tetap menjadi fallback untuk runtime tanpa permukaan
+  sepadan.
+- Status sesi PI tidak dimigrasikan ketika agen beralih ke `copilot`.
+  Pemilihan dilakukan per upaya; sesi PI yang ada tetap valid.
+- `ask_user` menggunakan jalur prompt-dan-balasan OpenClaw yang sama seperti harness Codex:
+  ketika Copilot SDK meminta masukan pengguna, OpenClaw mengirimkan
+  prompt pemblokiran ke saluran/TUI aktif, dan pesan pengguna berikutnya yang masuk antrean
+  menyelesaikan permintaan SDK.
 
 ## Izin dan ask_user
 
-Penegakan izin untuk tool OpenClaw yang dijembatani terjadi **di dalam
-pembungkus tool**, bukan melalui callback `onPermissionRequest` milik SDK. 
-`wrapToolWithBeforeToolCallHook` yang sama yang digunakan PI
-(`src/agents/pi-tools.before-tool-call.ts`) diterapkan oleh
-`createOpenClawCodingTools` ke setiap tool coding: deteksi loop,
-kebijakan Plugin tepercaya, hook sebelum pemanggilan tool, dan persetujuan Plugin dua fase
-melalui Gateway (`plugin.approval.request`) semuanya berjalan dengan
-path kode yang persis sama seperti percobaan PI native.
+Penegakan izin untuk alat OpenClaw yang dijembatani berlangsung **di dalam pembungkus alat**,
+bukan melalui callback `onPermissionRequest` milik SDK. Fungsi
+`wrapToolWithBeforeToolCallHook` yang sama dengan yang digunakan PI
+(`src/agents/agent-tools.before-tool-call.ts`) diterapkan oleh
+`createOpenClawCodingTools` pada setiap alat pengodean: deteksi perulangan, kebijakan
+Plugin tepercaya, hook sebelum pemanggilan alat, dan persetujuan Plugin dua tahap melalui
+Gateway (`plugin.approval.request`) semuanya berjalan melalui jalur kode yang sama persis
+seperti upaya PI native.
 
-Agar pembungkus itu memiliki keputusan, SDK Tool yang dikembalikan oleh
-`convertOpenClawToolToSdkTool` ditandai dengan:
+Alat SDK yang dikembalikan oleh `convertOpenClawToolToSdkTool` ditandai dengan:
 
-- `overridesBuiltInTool: true` — menggantikan tool bawaan CLI Copilot
-  dengan nama yang sama (edit, read, write, bash, …) sehingga setiap
-  pemanggilan tool diarahkan kembali ke OpenClaw.
-- `skipPermission: true` — memberi tahu SDK agar tidak memicu
-  `onPermissionRequest({kind: "custom-tool"})` sebelum memanggil tool.
-  `execute()` yang dibungkus menjalankan pemeriksaan kebijakan OpenClaw yang lebih kaya
-  secara internal; prompt tingkat SDK akan memintas penegakan OpenClaw
-  (jika kita mengizinkan semuanya) atau memblokir setiap pemanggilan tool
-  (jika kita menolak semuanya) — keduanya tidak sesuai dengan paritas PI.
+- `overridesBuiltInTool: true` — menggantikan alat bawaan Copilot CLI dengan
+  nama yang sama (edit, read, write, bash, ...) sehingga setiap pemanggilan alat diarahkan kembali
+  ke OpenClaw.
+- `skipPermission: true` — memerintahkan SDK agar tidak memicu
+  `onPermissionRequest({kind: "custom-tool"})` sebelum menjalankan alat. Fungsi
+  `execute()` yang dibungkus sudah menjalankan pemeriksaan kebijakan OpenClaw yang lebih lengkap; prompt
+  tingkat SDK akan melewati penegakan OpenClaw
+  (izinkan-semua) atau memblokir setiap pemanggilan alat (tolak-semua) — keduanya tidak cocok dengan
+  kesetaraan PI.
 
-Harness codex dalam pohon sumber menggunakan pemisahan yang sama: tool OpenClaw yang dijembatani
+Harness Codex di dalam pohon sumber menggunakan pemisahan yang sama: alat OpenClaw yang dijembatani
 dibungkus (`extensions/codex/src/app-server/dynamic-tools.ts`) dan
-jenis persetujuan native milik codex-app-server sendiri
-(`item/commandExecution/requestApproval`,
-`item/fileChange/requestApproval`,
-`item/permissions/requestApproval`) diarahkan melalui
-`plugin.approval.request`
-(`extensions/codex/src/app-server/approval-bridge.ts`). Padanan SDK Copilot
-— `rejectAllPolicy` yang gagal tertutup untuk jenis non-`custom-tool`
-apa pun yang pernah mencapai `onPermissionRequest` — adalah jaring pengaman yang sama,
-dan dalam praktiknya tidak terpanggil karena `overridesBuiltInTool: true`
-menggeser setiap bawaan.
+jenis persetujuan native milik codex-app-server
+(`item/commandExecution/requestApproval`, `item/fileChange/requestApproval`,
+`item/permissions/requestApproval`) diarahkan melalui `plugin.approval.request`
+(`extensions/codex/src/app-server/approval-bridge.ts`). Padanan Copilot SDK
+— `rejectAllPolicy` yang gagal-tertutup untuk setiap jenis non-`custom-tool`
+yang pernah mencapai `onPermissionRequest` — merupakan jaring pengaman yang sama, dan dalam
+praktiknya tidak pernah terpicu karena `overridesBuiltInTool: true` menggantikan setiap
+alat bawaan.
 
-Agar lapisan tool yang dibungkus dapat membuat keputusan kebijakan yang setara dengan PI,
-harness meneruskan konteks tool percobaan PI lengkap ke
-`createOpenClawCodingTools` — identitas (`senderIsOwner`,
-`memberRoleIds`, `ownerOnlyToolAllowlist`, …), channel/routing
-(`groupId`, `currentChannelId`, `replyToMode`, toggle tool pesan),
-autentikasi (`authProfileStore`), identitas run
-(`sessionKey`/`runSessionKey` yang diturunkan dari `sandboxSessionKey`,
-`runId`), konteks model (`modelApi`, `modelContextWindowTokens`,
-`modelCompat`, `modelHasVision`), dan hook run (`onToolOutcome`,
-`onYield`). Tanpa field tersebut, allowlist khusus pemilik secara diam-diam
-berperilaku sebagai tolak-secara-default, kebijakan kepercayaan Plugin tidak dapat
-diresolve ke scope yang tepat, dan `session_status: "current"` diresolve ke
-kunci sandbox yang usang. Builder bridge berada di
-`extensions/copilot/src/tool-bridge.ts` dan mencerminkan panggilan otoritatif PI
-di
-`src/agents/pi-embedded-runner/run/attempt.ts:1029-1117`. `runAttempt`
-sudah meresolve konteks sandbox melalui seam bersama
-`resolveSandboxContext`, meneruskan direktori kerja efektif ke SDK,
-dan meneruskan `sandbox` beserta workspace spawn subagen ke
-bridge tool. Bridge juga meneruskan kontrol konstruksi tool terbatas
-yang dapat ditegakkannya pada batas SDK: `includeCoreTools`, allowlist
-tool runtime, dan `toolConstructionPlan`.
+Agar lapisan alat terbungkus dapat mengambil keputusan kebijakan yang setara dengan PI,
+harness meneruskan konteks alat upaya PI lengkap ke
+`createOpenClawCodingTools`: identitas (`senderIsOwner`, `memberRoleIds`,
+`ownerOnlyToolAllowlist`, ...), saluran/perutean (`groupId`,
+`currentChannelId`, `replyToMode`, pengalih alat pesan), autentikasi
+(`authProfileStore`), identitas eksekusi (`sessionKey` / `runSessionKey` yang diturunkan
+dari `sandboxSessionKey`, `runId`), konteks model (`modelApi`,
+`modelContextWindowTokens`, `modelCompat`, `modelHasVision`), dan hook eksekusi
+(`onToolOutcome`, `onYield`). Tanpa bidang-bidang tersebut, daftar izin khusus pemilik
+secara diam-diam menolak secara default, kebijakan kepercayaan Plugin tidak dapat menentukan cakupan yang tepat,
+dan `session_status: "current"` mengarah ke kunci sandbox yang kedaluwarsa. Pembuat
+jembatan berada di `extensions/copilot/src/tool-bridge.ts`, yang mencerminkan pemanggilan otoritatif PI
+di `src/agents/embedded-agent-runner/run/attempt.ts:1262`.
+`runAttempt` menentukan konteks sandbox melalui lapisan `resolveSandboxContext` bersama,
+meneruskan direktori kerja efektif kepada SDK,
+serta meneruskan `sandbox` beserta ruang kerja pembuatan subagen ke jembatan alat.
+Jembatan juga meneruskan kontrol terbatas untuk konstruksi alat yang dapat ditegakkannya
+pada batas SDK: `includeCoreTools`, daftar izin alat runtime,
+dan `toolConstructionPlan`.
 
-Bridge juga menggunakan helper surface tool harness bersama dari
-`openclaw/plugin-sdk/agent-harness-tool-runtime` untuk paritas PI. Ketika
-pencarian tool diaktifkan, SDK melihat tool kontrol ringkas plus eksekutor katalog tersembunyi,
-bukan setiap skema tool OpenClaw. Ketika mode kode diaktifkan, helper membangun
-surface kontrol mode kode yang sama dan siklus hidup katalog yang digunakan oleh
-harness agen lain. Default ramping model lokal, pemfilteran skema yang kompatibel
-dengan runtime, hidrasi direktori, dan pembersihan katalog semuanya tetap berada di helper bersama
-agar harness Copilot dan harness yang berdekatan dengan Codex tidak menyimpang.
+Jembatan juga menggunakan pembantu permukaan alat harness bersama dari
+`openclaw/plugin-sdk/agent-harness-tool-runtime` untuk kesetaraan PI. Saat
+pencarian alat diaktifkan, SDK melihat alat kontrol ringkas beserta eksekutor katalog tersembunyi,
+alih-alih setiap skema alat OpenClaw. Saat mode kode
+diaktifkan, pembantu membangun permukaan kontrol mode kode dan siklus hidup katalog
+yang sama seperti yang digunakan harness agen lainnya. Nilai default ringkas untuk model lokal,
+pemfilteran skema yang kompatibel dengan runtime, hidrasi direktori, dan
+pembersihan katalog semuanya tetap berada dalam pembantu bersama agar harness Copilot dan
+yang berdekatan dengan Codex tidak menyimpang.
 
 ### Token GitHub tingkat sesi
 
-Kontrak SDK Copilot membedakan token GitHub **tingkat klien**
-(`CopilotClientOptions.gitHubToken`, digunakan untuk mengautentikasi
-proses CLI itu sendiri) dari token **tingkat sesi**
-(`SessionConfig.gitHubToken`, yang menentukan pengecualian konten,
-routing model, dan kuota untuk sesi tersebut serta dihormati pada
-`createSession` dan `resumeSession`). Harness meresolve autentikasi satu kali
-melalui `resolveCopilotAuth` dan menyetel kedua field ketika mode autentikasi adalah
-`gitHubToken` (`auth.gitHubToken` eksplisit atau
-`resolvedApiKey` yang diresolve kontrak dari profil autentikasi `github-copilot`
-yang dikonfigurasi). Ketika mode yang diresolve adalah `useLoggedInUser`, field
-tingkat sesi dihilangkan sehingga SDK tetap menurunkan identitas dari
-identitas yang sedang login.
+Kontrak Copilot SDK membedakan token GitHub **tingkat klien**
+(`CopilotClientOptions.gitHubToken`, mengautentikasi proses CLI itu sendiri)
+dari token **tingkat sesi** (`SessionConfig.gitHubToken`, menentukan
+pengecualian konten, perutean model, dan kuota untuk sesi tersebut; dipatuhi pada
+`createSession` maupun `resumeSession`). Harness menentukan autentikasi satu kali melalui
+`resolveCopilotAuth` dan menetapkan kedua bidang saat mode autentikasi adalah `gitHubToken`
+(`auth.gitHubToken` eksplisit atau `resolvedApiKey` yang ditentukan kontrak dari
+profil autentikasi `github-copilot` yang dikonfigurasi). Saat mode yang ditentukan adalah
+`useLoggedInUser`, bidang tingkat sesi dihilangkan agar SDK tetap
+menurunkan identitas dari identitas pengguna yang masuk.
 
-`ask_user` menggunakan `SessionConfig.onUserInputRequest`. Bridge menerima
-indeks atau label pilihan untuk permintaan dengan pilihan tetap, menerima jawaban
-bentuk bebas ketika permintaan SDK mengizinkannya, dan membatalkan permintaan yang tertunda
-ketika percobaan OpenClaw dibatalkan.
+`ask_user` menggunakan `SessionConfig.onUserInputRequest`. Jembatan menerima indeks
+atau label pilihan untuk permintaan dengan pilihan tetap, menerima jawaban bentuk bebas saat
+permintaan SDK mengizinkannya, dan membatalkan permintaan yang tertunda ketika upaya OpenClaw
+dibatalkan.
 
 ## Terkait
 

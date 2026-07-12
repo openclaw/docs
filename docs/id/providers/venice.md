@@ -1,56 +1,38 @@
 ---
 read_when:
     - Anda menginginkan inferensi yang berfokus pada privasi di OpenClaw
-    - Anda ingin panduan penyiapan Venice AI
+    - Anda memerlukan panduan penyiapan Venice AI
 summary: Gunakan model Venice AI yang berfokus pada privasi di OpenClaw
 title: Venice AI
 x-i18n:
-    generated_at: "2026-06-27T18:07:44Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:38:35Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7f02885dd7d8dc06fb6a923f504ad515c4b9345507d784bff290d3fcc483ed45
+    source_hash: f274922274def2f87fb0e074554f6457b97852dcb509578262a2e2e58425265e
     source_path: providers/venice.md
     workflow: 16
 ---
 
-Venice AI menyediakan **inferensi AI yang berfokus pada privasi** dengan dukungan untuk model tanpa sensor dan akses ke model proprietari utama melalui proxy teranonimisasi mereka. Semua inferensi bersifat privat secara default — tidak ada pelatihan pada data Anda, tidak ada pencatatan log.
-
-## Mengapa Venice di OpenClaw
-
-- **Inferensi privat** untuk model sumber terbuka (tanpa pencatatan log).
-- **Model tanpa sensor** saat Anda membutuhkannya.
-- **Akses teranonimisasi** ke model proprietari (Opus/GPT/Gemini) saat kualitas penting.
-- Endpoint `/v1` yang kompatibel dengan OpenAI.
+[Venice AI](https://venice.ai) menyediakan inferensi yang berfokus pada privasi: model terbuka dijalankan
+tanpa pencatatan, serta akses proksi yang dianonimkan ke Claude, GPT, Gemini, dan Grok.
+Semua titik akhir kompatibel dengan OpenAI (`/v1`).
 
 ## Mode privasi
 
-Venice menawarkan dua tingkat privasi — memahami ini adalah kunci untuk memilih model Anda:
-
-| Mode           | Deskripsi                                                                                                                       | Model                                                        |
-| -------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| **Private**    | Sepenuhnya privat. Prompt/respons **tidak pernah disimpan atau dicatat**. Sementara.                                                       | Llama, Qwen, DeepSeek, Kimi, MiniMax, Venice Uncensored, dll. |
-| **Anonymized** | Diproksi melalui Venice dengan metadata dihapus. Penyedia dasar (OpenAI, Anthropic, Google, xAI) melihat permintaan teranonimisasi. | Claude, GPT, Gemini, Grok                                     |
+| Mode             | Perilaku                                                                  | Model                                                         |
+| ---------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| **Privat**       | Prompt/respons tidak pernah disimpan atau dicatat. Bersifat sementara.    | Llama, Qwen, DeepSeek, Kimi, MiniMax, Venice Uncensored, dll. |
+| **Dianonimkan**  | Diproksikan melalui Venice dengan metadata dihapus sebelum diteruskan.    | Claude, GPT, Gemini, Grok                                     |
 
 <Warning>
-Model teranonimisasi **tidak** sepenuhnya privat. Venice menghapus metadata sebelum meneruskan, tetapi penyedia dasar (OpenAI, Anthropic, Google, xAI) tetap memproses permintaan. Pilih model **Private** saat privasi penuh diperlukan.
+Model yang dianonimkan tidak sepenuhnya privat. Venice menghapus metadata sebelum meneruskan permintaan, tetapi penyedia dasarnya (OpenAI, Anthropic, Google, xAI) tetap memproses permintaan tersebut. Gunakan model Privat saat privasi penuh diwajibkan.
 </Warning>
-
-## Fitur
-
-- **Berfokus pada privasi**: Pilih antara mode "private" (sepenuhnya privat) dan "anonymized" (diproksi)
-- **Model tanpa sensor**: Akses ke model tanpa pembatasan konten
-- **Akses model utama**: Gunakan Claude, GPT, Gemini, dan Grok melalui proxy teranonimisasi Venice
-- **API kompatibel OpenAI**: Endpoint `/v1` standar untuk integrasi mudah
-- **Streaming**: Didukung pada semua model
-- **Pemanggilan fungsi**: Didukung pada model tertentu (periksa kapabilitas model)
-- **Vision**: Didukung pada model dengan kapabilitas vision
-- **Tanpa batas laju keras**: Pembatasan penggunaan wajar mungkin berlaku untuk penggunaan ekstrem
 
 ## Memulai
 
 <Steps>
-  <Step title="Instal plugin">
+  <Step title="Instal Plugin">
     ```bash
     openclaw plugins install @openclaw/venice-provider
     ```
@@ -61,26 +43,20 @@ Model teranonimisasi **tidak** sepenuhnya privat. Venice menghapus metadata sebe
     3. Salin kunci API Anda (format: `vapi_xxxxxxxxxxxx`)
   </Step>
   <Step title="Konfigurasikan OpenClaw">
-    Pilih metode penyiapan yang Anda inginkan:
-
     <Tabs>
-      <Tab title="Interaktif (direkomendasikan)">
+      <Tab title="Interaktif (disarankan)">
         ```bash
         openclaw onboard --auth-choice venice-api-key
         ```
 
-        Ini akan:
-        1. Meminta kunci API Anda (atau menggunakan `VENICE_API_KEY` yang sudah ada)
-        2. Menampilkan semua model Venice yang tersedia
-        3. Memungkinkan Anda memilih model default
-        4. Mengonfigurasi penyedia secara otomatis
+        Meminta kunci API (atau menggunakan kembali `VENICE_API_KEY` yang sudah ada), menampilkan daftar model Venice yang tersedia, dan menetapkan model default Anda.
       </Tab>
       <Tab title="Variabel lingkungan">
         ```bash
         export VENICE_API_KEY="vapi_xxxxxxxxxxxx"
         ```
       </Tab>
-      <Tab title="Non-interaktif">
+      <Tab title="Noninteraktif">
         ```bash
         openclaw onboard --non-interactive \
           --auth-choice venice-api-key \
@@ -92,191 +68,171 @@ Model teranonimisasi **tidak** sepenuhnya privat. Venice menghapus metadata sebe
   </Step>
   <Step title="Verifikasi penyiapan">
     ```bash
-    openclaw agent --model venice/kimi-k2-5 --message "Hello, are you working?"
+    openclaw agent --model venice/kimi-k2-5 --message "Halo, apakah Anda berfungsi?"
     ```
   </Step>
 </Steps>
 
 ## Pemilihan model
 
-Setelah penyiapan, OpenClaw menampilkan semua model Venice yang tersedia. Pilih berdasarkan kebutuhan Anda:
-
-- **Model default**: `venice/kimi-k2-5` untuk penalaran privat yang kuat plus vision.
-- **Opsi kapabilitas tinggi**: `venice/claude-opus-4-6` untuk jalur Venice teranonimisasi terkuat.
-- **Privasi**: Pilih model "private" untuk inferensi yang sepenuhnya privat.
-- **Kapabilitas**: Pilih model "anonymized" untuk mengakses Claude, GPT, Gemini melalui proxy Venice.
-
-Ubah model default Anda kapan saja:
+- **Default**: `venice/kimi-k2-5` (privat, penalaran, visi).
+- **Opsi dianonimkan terkuat**: `venice/claude-opus-4-6`.
 
 ```bash
 openclaw models set venice/kimi-k2-5
-openclaw models set venice/claude-opus-4-6
-```
-
-Cantumkan semua model yang tersedia:
-
-```bash
 openclaw models list --all --provider venice
 ```
 
-Anda juga dapat menjalankan `openclaw configure`, memilih **Model/auth**, dan memilih **Venice AI**.
+Anda juga dapat menjalankan `openclaw configure` dan memilih **Model/auth provider > Venice AI**.
 
 <Tip>
-Gunakan tabel di bawah untuk memilih model yang tepat untuk kasus penggunaan Anda.
-
-| Kasus Penggunaan          | Model yang Direkomendasikan       | Alasan                                        |
-| -------------------------- | -------------------------------- | -------------------------------------------- |
-| **Chat umum (default)** | `kimi-k2-5`                      | Penalaran privat yang kuat plus vision         |
-| **Kualitas keseluruhan terbaik**   | `claude-opus-4-6`                | Opsi Venice teranonimisasi terkuat           |
-| **Privasi + pengodean**       | `qwen3-coder-480b-a35b-instruct` | Model pengodean privat dengan konteks besar      |
-| **Vision privat**         | `kimi-k2-5`                      | Dukungan vision tanpa keluar dari mode privat  |
-| **Cepat + murah**           | `qwen3-4b`                       | Model penalaran ringan                  |
-| **Tugas privat kompleks**  | `deepseek-v3.2`                  | Penalaran kuat, tetapi tanpa dukungan alat Venice |
-| **Tanpa sensor**             | `venice-uncensored`              | Tanpa pembatasan konten                      |
-
+| Kasus penggunaan             | Model                             | Alasan                                           |
+| ---------------------------- | --------------------------------- | ------------------------------------------------ |
+| Percakapan umum (default)    | `kimi-k2-5`                       | Penalaran privat yang kuat serta visi             |
+| Kualitas keseluruhan terbaik | `claude-opus-4-6`                 | Opsi Venice dianonimkan yang paling kuat          |
+| Privasi + pemrograman        | `qwen3-coder-480b-a35b-instruct`  | Model pemrograman privat dengan konteks besar     |
+| Cepat + murah                | `qwen3-4b`                        | Model penalaran ringan                            |
+| Tugas privat yang kompleks   | `deepseek-v3.2`                   | Penalaran kuat; pemanggilan alat dinonaktifkan    |
+| Tanpa sensor                 | `venice-uncensored`               | Tanpa pembatasan konten                           |
 </Tip>
 
-## Perilaku replay DeepSeek V4
-
-Jika Venice mengekspos model DeepSeek V4 seperti `venice/deepseek-v4-pro` atau
-`venice/deepseek-v4-flash`, OpenClaw mengisi placeholder replay
-`reasoning_content` DeepSeek V4 yang diperlukan pada pesan asisten saat proxy
-menghilangkannya. Venice menolak kontrol `thinking` tingkat atas native DeepSeek, sehingga
-OpenClaw menjaga perbaikan replay khusus penyedia itu tetap terpisah dari kontrol thinking
-penyedia DeepSeek native.
-
-## Katalog bawaan (total 41)
+## Katalog bawaan (38 model)
 
 <AccordionGroup>
-  <Accordion title="Model Private (26) — sepenuhnya privat, tanpa pencatatan log">
-    | ID Model                               | Nama                                | Konteks | Fitur                   |
-    | -------------------------------------- | ----------------------------------- | ------- | -------------------------- |
-    | `kimi-k2-5`                            | Kimi K2.5                           | 256k    | Default, penalaran, vision |
-    | `kimi-k2-thinking`                     | Kimi K2 Thinking                    | 256k    | Penalaran                  |
-    | `llama-3.3-70b`                        | Llama 3.3 70B                       | 128k    | Umum                    |
-    | `llama-3.2-3b`                         | Llama 3.2 3B                        | 128k    | Umum                    |
-    | `hermes-3-llama-3.1-405b`              | Hermes 3 Llama 3.1 405B            | 128k    | Umum, alat dinonaktifkan    |
-    | `qwen3-235b-a22b-thinking-2507`        | Qwen3 235B Thinking                | 128k    | Penalaran                  |
-    | `qwen3-235b-a22b-instruct-2507`        | Qwen3 235B Instruct                | 128k    | Umum                    |
-    | `qwen3-coder-480b-a35b-instruct`       | Qwen3 Coder 480B                   | 256k    | Pengodean                     |
-    | `qwen3-coder-480b-a35b-instruct-turbo` | Qwen3 Coder 480B Turbo             | 256k    | Pengodean                     |
-    | `qwen3-5-35b-a3b`                      | Qwen3.5 35B A3B                    | 256k    | Penalaran, vision          |
-    | `qwen3-next-80b`                       | Qwen3 Next 80B                     | 256k    | Umum                    |
-    | `qwen3-vl-235b-a22b`                   | Qwen3 VL 235B (Vision)             | 256k    | Vision                     |
-    | `qwen3-4b`                             | Venice Small (Qwen3 4B)            | 32k     | Cepat, penalaran            |
-    | `deepseek-v3.2`                        | DeepSeek V3.2                      | 160k    | Penalaran, alat dinonaktifkan  |
-    | `venice-uncensored`                    | Venice Uncensored (Dolphin-Mistral) | 32k     | Tanpa sensor, alat dinonaktifkan |
-    | `mistral-31-24b`                       | Venice Medium (Mistral)            | 128k    | Vision                     |
-    | `google-gemma-3-27b-it`                | Google Gemma 3 27B Instruct        | 198k    | Vision                     |
-    | `openai-gpt-oss-120b`                  | OpenAI GPT OSS 120B               | 128k    | Umum                    |
-    | `nvidia-nemotron-3-nano-30b-a3b`       | NVIDIA Nemotron 3 Nano 30B         | 128k    | Umum                    |
-    | `olafangensan-glm-4.7-flash-heretic`   | GLM 4.7 Flash Heretic              | 128k    | Penalaran                  |
-    | `zai-org-glm-4.6`                      | GLM 4.6                            | 198k    | Umum                    |
-    | `zai-org-glm-4.7`                      | GLM 4.7                            | 198k    | Penalaran                  |
-    | `zai-org-glm-4.7-flash`                | GLM 4.7 Flash                      | 128k    | Penalaran                  |
-    | `zai-org-glm-5`                        | GLM 5                              | 198k    | Penalaran                  |
-    | `minimax-m21`                          | MiniMax M2.1                       | 198k    | Penalaran                  |
-    | `minimax-m25`                          | MiniMax M2.5                       | 198k    | Penalaran                  |
+  <Accordion title="Model privat (26) — sepenuhnya privat, tanpa pencatatan">
+    | ID model                               | Nama                                  | Konteks | Catatan                                |
+    | -------------------------------------- | ------------------------------------- | ------- | -------------------------------------- |
+    | `kimi-k2-5`                            | Kimi K2.5                             | 256k    | Default, penalaran, visi               |
+    | `kimi-k2-thinking`                     | Kimi K2 Thinking                      | 256k    | Penalaran                              |
+    | `llama-3.3-70b`                        | Llama 3.3 70B                         | 128k    | Umum                                   |
+    | `llama-3.2-3b`                         | Llama 3.2 3B                          | 128k    | Umum                                   |
+    | `hermes-3-llama-3.1-405b`              | Hermes 3 Llama 3.1 405B               | 128k    | Umum, alat dinonaktifkan               |
+    | `qwen3-235b-a22b-thinking-2507`        | Qwen3 235B Thinking                   | 128k    | Penalaran                              |
+    | `qwen3-235b-a22b-instruct-2507`        | Qwen3 235B Instruct                   | 128k    | Umum                                   |
+    | `qwen3-coder-480b-a35b-instruct`       | Qwen3 Coder 480B                      | 256k    | Pemrograman                            |
+    | `qwen3-coder-480b-a35b-instruct-turbo` | Qwen3 Coder 480B Turbo                | 256k    | Pemrograman                            |
+    | `qwen3-5-35b-a3b`                      | Qwen3.5 35B A3B                       | 256k    | Penalaran, visi                        |
+    | `qwen3-next-80b`                       | Qwen3 Next 80B                        | 256k    | Umum                                   |
+    | `qwen3-vl-235b-a22b`                   | Qwen3 VL 235B (Visi)                  | 256k    | Visi                                   |
+    | `qwen3-4b`                             | Venice Small (Qwen3 4B)               | 32k     | Cepat, penalaran                       |
+    | `deepseek-v3.2`                        | DeepSeek V3.2                         | 160k    | Penalaran, alat dinonaktifkan          |
+    | `venice-uncensored`                    | Venice Uncensored (Dolphin-Mistral)   | 32k     | Tanpa sensor, alat dinonaktifkan       |
+    | `mistral-31-24b`                       | Venice Medium (Mistral)               | 128k    | Visi                                   |
+    | `google-gemma-3-27b-it`                | Google Gemma 3 27B Instruct           | 198k    | Visi                                   |
+    | `openai-gpt-oss-120b`                  | OpenAI GPT OSS 120B                   | 128k    | Umum                                   |
+    | `nvidia-nemotron-3-nano-30b-a3b`       | NVIDIA Nemotron 3 Nano 30B            | 128k    | Umum                                   |
+    | `olafangensan-glm-4.7-flash-heretic`   | GLM 4.7 Flash Heretic                 | 128k    | Penalaran                              |
+    | `zai-org-glm-4.6`                      | GLM 4.6                               | 198k    | Umum                                   |
+    | `zai-org-glm-4.7`                      | GLM 4.7                               | 198k    | Penalaran                              |
+    | `zai-org-glm-4.7-flash`                | GLM 4.7 Flash                         | 128k    | Penalaran                              |
+    | `zai-org-glm-5`                        | GLM 5                                 | 198k    | Penalaran                              |
+    | `minimax-m21`                          | MiniMax M2.1                          | 198k    | Penalaran                              |
+    | `minimax-m25`                          | MiniMax M2.5                          | 198k    | Penalaran                              |
   </Accordion>
 
-  <Accordion title="Model Anonymized (12) — melalui proxy Venice">
-    | ID Model                        | Nama                           | Konteks | Fitur                  |
-    | ------------------------------- | ------------------------------ | ------- | ------------------------- |
-    | `claude-opus-4-6`               | Claude Opus 4.6 (melalui Venice)   | 1M      | Penalaran, vision         |
-    | `claude-sonnet-4-6`             | Claude Sonnet 4.6 (melalui Venice) | 1M      | Penalaran, vision         |
-    | `openai-gpt-54`                 | GPT-5.4 (melalui Venice)           | 1M      | Penalaran, vision         |
-    | `openai-gpt-53-codex`           | GPT-5.3 Codex (melalui Venice)     | 400k    | Penalaran, vision, pengodean |
-    | `openai-gpt-52`                 | GPT-5.2 (melalui Venice)           | 256k    | Penalaran                 |
-    | `openai-gpt-52-codex`           | GPT-5.2 Codex (melalui Venice)     | 256k    | Penalaran, vision, pengodean |
-    | `openai-gpt-4o-2024-11-20`      | GPT-4o (melalui Venice)            | 128k    | Vision                    |
-    | `openai-gpt-4o-mini-2024-07-18` | GPT-4o Mini (melalui Venice)       | 128k    | Vision                    |
-    | `gemini-3-1-pro-preview`        | Gemini 3.1 Pro (melalui Venice)    | 1M      | Penalaran, vision         |
-    | `gemini-3-pro-preview`          | Gemini 3 Pro (melalui Venice)      | 198k    | Penalaran, vision         |
-    | `gemini-3-flash-preview`        | Gemini 3 Flash (melalui Venice)    | 256k    | Penalaran, vision         |
-    | `grok-41-fast`                  | Grok 4.1 Fast (melalui Venice)     | 1M      | Penalaran, vision         |
+  <Accordion title="Model yang dianonimkan (12) — melalui proksi Venice">
+    | ID model                         | Nama                             | Konteks | Catatan                         |
+    | -------------------------------- | -------------------------------- | ------- | ------------------------------- |
+    | `claude-opus-4-6`                | Claude Opus 4.6 (melalui Venice) | 1M      | Penalaran, visi                 |
+    | `claude-sonnet-4-6`              | Claude Sonnet 4.6 (melalui Venice) | 1M    | Penalaran, visi                 |
+    | `openai-gpt-54`                  | GPT-5.4 (melalui Venice)         | 1M      | Penalaran, visi                 |
+    | `openai-gpt-53-codex`            | GPT-5.3 Codex (melalui Venice)   | 400k    | Penalaran, visi, pemrograman    |
+    | `openai-gpt-52`                  | GPT-5.2 (melalui Venice)         | 256k    | Penalaran                       |
+    | `openai-gpt-52-codex`            | GPT-5.2 Codex (melalui Venice)   | 256k    | Penalaran, visi, pemrograman    |
+    | `openai-gpt-4o-2024-11-20`       | GPT-4o (melalui Venice)          | 128k    | Visi                            |
+    | `openai-gpt-4o-mini-2024-07-18`  | GPT-4o Mini (melalui Venice)     | 128k    | Visi                            |
+    | `gemini-3-1-pro-preview`         | Gemini 3.1 Pro (melalui Venice)  | 1M      | Penalaran, visi                 |
+    | `gemini-3-pro-preview`           | Gemini 3 Pro (melalui Venice)    | 198k    | Penalaran, visi                 |
+    | `gemini-3-flash-preview`         | Gemini 3 Flash (melalui Venice)  | 256k    | Penalaran, visi                 |
+    | `grok-41-fast`                   | Grok 4.1 Fast (melalui Venice)   | 1M      | Penalaran, visi                 |
   </Accordion>
 </AccordionGroup>
 
+Model Venice yang didukung Grok (`grok-41-fast` dan yang serupa) mendapatkan patch kompatibilitas
+skema alat yang sama seperti penyedia xAI native, karena keduanya menggunakan format
+pemanggilan alat upstream yang sama.
+
 ## Penemuan model
 
-OpenClaw menyertakan katalog seed Venice berbasis manifes untuk daftar model baca-saja. Penyegaran runtime tetap dapat menemukan model dari API Venice, dan kembali ke katalog manifes jika API tidak dapat dijangkau.
+Katalog bawaan di atas merupakan daftar awal yang didukung manifes. Saat runtime, OpenClaw
+memperbaruinya dari API `/models` Venice dan kembali menggunakan daftar awal jika
+API tidak dapat dijangkau. Titik akhir `/models` bersifat publik (tidak memerlukan autentikasi untuk
+menampilkan daftar), tetapi inferensi memerlukan kunci API yang valid.
 
-Endpoint `/models` bersifat publik (tidak perlu auth untuk daftar), tetapi inferensi memerlukan kunci API yang valid.
+## Perilaku pemutaran ulang DeepSeek V4
 
-## Streaming dan dukungan alat
+Jika Venice menyediakan model DeepSeek V4 seperti `deepseek-v4-pro` atau
+`deepseek-v4-flash`, OpenClaw mengisi bidang pemutaran ulang `reasoning_content`
+yang diwajibkan pada pesan asisten saat Venice tidak menyertakannya, serta menghapus `thinking`/
+`reasoning`/`reasoning_effort` dari muatan permintaan (Venice menolak
+kontrol `thinking` native DeepSeek pada model-model ini). Perbaikan pemutaran ulang ini
+terpisah dari kontrol penalaran milik penyedia DeepSeek native.
 
-| Fitur                | Dukungan                                             |
-| -------------------- | ---------------------------------------------------- |
-| **Streaming**        | Semua model                                          |
-| **Pemanggilan fungsi** | Sebagian besar model (periksa `supportsFunctionCalling` di API) |
-| **Visi/Gambar**      | Model yang ditandai dengan fitur "Vision"            |
-| **Mode JSON**        | Didukung melalui `response_format`                   |
+## Dukungan streaming dan alat
+
+| Fitur              | Dukungan                                                   |
+| ------------------ | ---------------------------------------------------------- |
+| Streaming          | Semua model                                                |
+| Pemanggilan fungsi | Sebagian besar model; dinonaktifkan per model seperti disebutkan di atas |
+| Visi/Gambar        | Model yang ditandai "Visi" di atas                         |
+| Mode JSON          | Melalui `response_format`                                  |
 
 ## Harga
 
-Venice menggunakan sistem berbasis kredit. Periksa [venice.ai/pricing](https://venice.ai/pricing) untuk tarif saat ini:
-
-- **Model privat**: Umumnya berbiaya lebih rendah
-- **Model yang dianonimkan**: Mirip dengan harga API langsung + biaya kecil Venice
-
-### Venice (dianonimkan) vs API langsung
-
-| Aspek        | Venice (Dianonimkan)             | API Langsung              |
-| ------------ | -------------------------------- | ------------------------- |
-| **Privasi**  | Metadata dihapus, dianonimkan    | Akun Anda tertaut         |
-| **Latensi**  | +10-50ms (proxy)                 | Langsung                  |
-| **Fitur**    | Sebagian besar fitur didukung    | Fitur lengkap             |
-| **Penagihan** | Kredit Venice                   | Penagihan penyedia        |
+Venice menggunakan sistem berbasis kredit. Model yang dianonimkan berbiaya kurang lebih sama dengan
+harga API langsung ditambah sedikit biaya Venice. Lihat
+[venice.ai/pricing](https://venice.ai/pricing) untuk tarif terkini.
 
 ## Contoh penggunaan
 
 ```bash
-# Use the default private model
-openclaw agent --model venice/kimi-k2-5 --message "Quick health check"
+# Model privat default
+openclaw agent --model venice/kimi-k2-5 --message "Pemeriksaan kondisi singkat"
 
-# Use Claude Opus via Venice (anonymized)
-openclaw agent --model venice/claude-opus-4-6 --message "Summarize this task"
+# Claude Opus melalui Venice (dianonimkan)
+openclaw agent --model venice/claude-opus-4-6 --message "Rangkum tugas ini"
 
-# Use uncensored model
-openclaw agent --model venice/venice-uncensored --message "Draft options"
+# Model tanpa sensor
+openclaw agent --model venice/venice-uncensored --message "Susun opsi"
 
-# Use vision model with image
-openclaw agent --model venice/qwen3-vl-235b-a22b --message "Review attached image"
+# Model visi dengan gambar
+openclaw agent --model venice/qwen3-vl-235b-a22b --message "Tinjau gambar terlampir"
 
-# Use coding model
-openclaw agent --model venice/qwen3-coder-480b-a35b-instruct --message "Refactor this function"
+# Model pemrograman
+openclaw agent --model venice/qwen3-coder-480b-a35b-instruct --message "Refaktor fungsi ini"
 ```
 
 ## Pemecahan masalah
 
 <AccordionGroup>
-  <Accordion title="API key not recognized">
+  <Accordion title="Kunci API tidak dikenali">
     ```bash
     echo $VENICE_API_KEY
     openclaw models list | grep venice
     ```
 
-    Pastikan kunci dimulai dengan `vapi_`.
+    Pastikan kunci diawali dengan `vapi_`.
 
   </Accordion>
 
-  <Accordion title="Model not available">
-    Katalog model Venice diperbarui secara dinamis. Jalankan `openclaw models list` untuk melihat model yang tersedia saat ini. Beberapa model mungkin sementara offline.
+  <Accordion title="Model tidak tersedia">
+    Jalankan `openclaw models list --all --provider venice` untuk melihat model yang
+    saat ini tersedia; katalog berubah seiring Venice menambahkan atau menghentikan model.
   </Accordion>
 
-  <Accordion title="Connection issues">
-    API Venice berada di `https://api.venice.ai/api/v1`. Pastikan jaringan Anda mengizinkan koneksi HTTPS.
+  <Accordion title="Masalah koneksi">
+    API Venice berada di `https://api.venice.ai/api/v1`. Pastikan jaringan Anda mengizinkan HTTPS ke host tersebut.
   </Accordion>
 </AccordionGroup>
 
 <Note>
-Bantuan lainnya: [Pemecahan masalah](/id/help/troubleshooting) dan [FAQ](/id/help/faq).
+Bantuan selengkapnya: [Pemecahan masalah](/id/help/troubleshooting) dan [Pertanyaan umum](/id/help/faq).
 </Note>
 
 ## Konfigurasi lanjutan
 
 <AccordionGroup>
-  <Accordion title="Config file example">
+  <Accordion title="Contoh file konfigurasi">
     ```json5
     {
       env: { VENICE_API_KEY: "vapi_..." },
@@ -310,16 +266,16 @@ Bantuan lainnya: [Pemecahan masalah](/id/help/troubleshooting) dan [FAQ](/id/hel
 ## Terkait
 
 <CardGroup cols={2}>
-  <Card title="Model selection" href="/id/concepts/model-providers" icon="layers">
+  <Card title="Pemilihan model" href="/id/concepts/model-providers" icon="layers">
     Memilih penyedia, referensi model, dan perilaku failover.
   </Card>
   <Card title="Venice AI" href="https://venice.ai" icon="globe">
     Beranda Venice AI dan pendaftaran akun.
   </Card>
-  <Card title="API documentation" href="https://docs.venice.ai" icon="book">
-    Referensi API Venice dan dokumentasi developer.
+  <Card title="Dokumentasi API" href="https://docs.venice.ai" icon="book">
+    Referensi API Venice dan dokumentasi pengembang.
   </Card>
-  <Card title="Pricing" href="https://venice.ai/pricing" icon="credit-card">
-    Tarif dan paket kredit Venice saat ini.
+  <Card title="Harga" href="https://venice.ai/pricing" icon="credit-card">
+    Tarif kredit dan paket Venice saat ini.
   </Card>
 </CardGroup>

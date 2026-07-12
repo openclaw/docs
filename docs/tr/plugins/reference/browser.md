@@ -1,26 +1,26 @@
 ---
 read_when:
-    - Tarayıcı Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
-summary: Aracının çağırabileceği araçlar ekler.
-title: Tarayıcı Plugin
+    - Tarayıcı Pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
+summary: Ajanın çağırabileceği araçlar ekler.
+title: Tarayıcı plugini
 x-i18n:
-    generated_at: "2026-05-02T20:50:59Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:36:22Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: 2dcf562660fa3d05d22856335a7d2e6e467a432ee6dda5650efd94edde661ba4
     source_path: plugins/reference/browser.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# Browser Plugin
+# Tarayıcı Plugin’i
 
-Ajan tarafından çağrılabilir araçlar ekler.
+Ajan tarafından çağrılabilen araçlar ekler.
 
 ## Dağıtım
 
 - Paket: `@openclaw/browser-plugin`
-- Kurulum yolu: OpenClaw'a dahil
+- Kurulum yolu: OpenClaw’a dahildir
 
 ## Yüzey
 
@@ -28,4 +28,4 @@ sözleşmeler: araçlar; Skills
 
 ## İlgili belgeler
 
-- [browser](/tr/tools/browser)
+- [tarayıcı](/tr/tools/browser)

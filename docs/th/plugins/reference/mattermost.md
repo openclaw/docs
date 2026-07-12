@@ -1,11 +1,11 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin mattermost
-summary: เพิ่มพื้นผิวช่องทาง Mattermost สำหรับการส่งและรับข้อความ OpenClaw
+summary: เพิ่มช่องทาง Mattermost สำหรับส่งและรับข้อความ OpenClaw
 title: Plugin Mattermost
 x-i18n:
-    generated_at: "2026-06-27T18:03:23Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:33:53Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 7a05711dbd897c71a19537dc7a2461be3c1c7aa37aa25f3fa0135848644040b4
@@ -15,17 +15,17 @@ x-i18n:
 
 # Plugin Mattermost
 
-เพิ่มพื้นผิวช่องทาง Mattermost สำหรับการส่งและรับข้อความ OpenClaw
+เพิ่มช่องทาง Mattermost สำหรับส่งและรับข้อความ OpenClaw
 
-## การจัดจำหน่าย
+## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/mattermost`
-- เส้นทางการติดตั้ง: npm; ClawHub: `clawhub:@openclaw/mattermost`
+- ช่องทางการติดตั้ง: npm; ClawHub: `clawhub:@openclaw/mattermost`
 
-## พื้นผิว
+## ส่วนเชื่อมต่อ
 
-channels: mattermost
+ช่องทาง: mattermost
 
 ## เอกสารที่เกี่ยวข้อง
 
-- [mattermost](/th/channels/mattermost)
+- [Mattermost](/th/channels/mattermost)

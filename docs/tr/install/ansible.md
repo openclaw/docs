@@ -1,47 +1,44 @@
 ---
 read_when:
-    - Otomatik sunucu dağıtımını güvenlik sıkılaştırmasıyla istiyorsunuz
-    - VPN erişimli, güvenlik duvarıyla yalıtılmış bir kuruluma ihtiyacınız var
+    - Güvenlik sıkılaştırmasıyla otomatik sunucu dağıtımı istiyorsunuz
+    - VPN erişimine sahip, güvenlik duvarıyla yalıtılmış bir kurulum gereklidir
     - Uzak Debian/Ubuntu sunucularına dağıtım yapıyorsunuz
-summary: Ansible, Tailscale VPN ve güvenlik duvarı yalıtımı ile otomatikleştirilmiş, güvenliği güçlendirilmiş OpenClaw kurulumu
+summary: Ansible, Tailscale VPN ve güvenlik duvarı yalıtımıyla otomatikleştirilmiş, güçlendirilmiş OpenClaw kurulumu
 title: Ansible
 x-i18n:
-    generated_at: "2026-06-28T00:42:52Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:21:25Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 03eb6f40139d7e154eee92a7a1a67471da90b128cc90daf86fbc87e383a5297c
+    source_hash: 8d3626ab364169609f92f636cb6b86cb980dca2b235500e748296128765444ae
     source_path: install/ansible.md
     workflow: 16
 ---
 
-OpenClaw'u güvenlik öncelikli mimariye sahip otomatik bir yükleyici olan **[openclaw-ansible](https://github.com/openclaw/openclaw-ansible)** ile üretim sunucularına dağıtın.
+OpenClaw'u, güvenliği önceliklendiren mimariye sahip otomatik bir yükleyici olan **[openclaw-ansible](https://github.com/openclaw/openclaw-ansible)** ile üretim sunucularına dağıtın.
 
 <Info>
-[openclaw-ansible](https://github.com/openclaw/openclaw-ansible) deposu, Ansible dağıtımı için doğruluk kaynağıdır. Bu sayfa hızlı bir genel bakıştır.
+Ansible dağıtımı için doğruluk kaynağı [openclaw-ansible](https://github.com/openclaw/openclaw-ansible) deposudur. Bu sayfa hızlı bir genel bakış sunar.
 </Info>
 
 ## Ön koşullar
 
-| Gereksinim | Ayrıntılar                                                |
-| ---------- | --------------------------------------------------------- |
-| **OS**     | Debian 11+ veya Ubuntu 20.04+                             |
-| **Erişim** | Root veya sudo ayrıcalıkları                              |
-| **Ağ**     | Paket kurulumu için internet bağlantısı                   |
-| **Ansible** | 2.14+ (hızlı başlangıç betiği tarafından otomatik kurulur) |
+| Gereksinim | Ayrıntılar                                               |
+| ----------- | -------------------------------------------------------- |
+| İşletim sistemi | Debian 11+ veya Ubuntu 20.04+                        |
+| Erişim      | Root veya sudo ayrıcalıkları                             |
+| Ağ          | Paket kurulumu için internet bağlantısı                  |
+| Ansible     | 2.14+ (hızlı başlangıç betiği tarafından otomatik kurulur) |
 
 ## Neler elde edersiniz
 
-- **Güvenlik duvarı öncelikli güvenlik** -- UFW + Docker izolasyonu (yalnızca SSH + Tailscale erişilebilir)
-- **Tailscale VPN** -- hizmetleri herkese açık olarak göstermeden güvenli uzaktan erişim
-- **Docker** -- izole sandbox kapsayıcıları, yalnızca localhost bağlamaları
-- **Derinlemesine savunma** -- 4 katmanlı güvenlik mimarisi
-- **Systemd entegrasyonu** -- sıkılaştırma ile açılışta otomatik başlatma
-- **Tek komutla kurulum** -- dakikalar içinde eksiksiz dağıtım
+- Güvenlik duvarını önceleyen güvenlik: UFW + Docker yalıtımı (yalnızca SSH + Tailscale erişilebilir)
+- Hizmetleri herkese açık hâle getirmeden uzaktan erişim için Tailscale VPN
+- Yalnızca localhost'a bağlanan yalıtılmış korumalı alan konteynerleri için Docker
+- Güvenlik sıkılaştırması ve sistem açılışında otomatik başlatma özellikli systemd entegrasyonu
+- Tek komutla kurulum
 
 ## Hızlı başlangıç
-
-Tek komutla kurulum:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/openclaw/openclaw-ansible/main/install.sh | bash
@@ -49,22 +46,18 @@ curl -fsSL https://raw.githubusercontent.com/openclaw/openclaw-ansible/main/inst
 
 ## Neler kurulur
 
-Ansible playbook şunları kurar ve yapılandırır:
-
-1. **Tailscale** -- güvenli uzaktan erişim için mesh VPN
-2. **UFW güvenlik duvarı** -- yalnızca SSH + Tailscale portları
-3. **Docker CE + Compose V2** -- varsayılan ajan sandbox arka ucu için
-4. **Node.js 24 + pnpm** -- çalışma zamanı bağımlılıkları (Node 22 LTS, şu anda `22.19+`, desteklenmeye devam eder)
-5. **OpenClaw** -- ana makine tabanlı, kapsayıcı içinde değil
-6. **Systemd hizmeti** -- güvenlik sıkılaştırmasıyla otomatik başlatma
+1. Tailscale (güvenli uzaktan erişim için örgü VPN)
+2. UFW güvenlik duvarı (yalnızca SSH + Tailscale portları)
+3. Docker CE + Compose V2 (varsayılan ajan korumalı alan arka ucu)
+4. Node.js ve pnpm (OpenClaw, Node 22.19+ veya 23.11+ gerektirir; Node 24 önerilir)
+5. Konteynerleştirilmeden, ana makine tabanlı olarak kurulan OpenClaw
+6. Güvenlik sıkılaştırmasına sahip bir systemd hizmeti
 
 <Note>
-Gateway doğrudan ana makinede çalışır (Docker içinde değil). Ajan sandbox kullanımı
-isteğe bağlıdır; bu playbook Docker'ı varsayılan sandbox arka ucu olduğu için
-kurar. Ayrıntılar ve diğer arka uçlar için [Sandboxing](/tr/gateway/sandboxing) bölümüne bakın.
+Gateway, Docker içinde değil doğrudan ana makinede çalışır. Ajan korumalı alanı isteğe bağlıdır; bu playbook, varsayılan korumalı alan arka ucu olduğu için Docker'ı kurar. Diğer arka uçlar için [Korumalı Alan](/tr/gateway/sandboxing) bölümüne bakın.
 </Note>
 
-## Kurulum Sonrası Ayarlar
+## Kurulum sonrası yapılandırma
 
 <Steps>
   <Step title="openclaw kullanıcısına geçin">
@@ -72,13 +65,13 @@ kurar. Ayrıntılar ve diğer arka uçlar için [Sandboxing](/tr/gateway/sandbox
     sudo -i -u openclaw
     ```
   </Step>
-  <Step title="İlk kurulum sihirbazını çalıştırın">
-    Kurulum sonrası betiği, OpenClaw ayarlarını yapılandırmanız için size rehberlik eder.
+  <Step title="İlk kullanım sihirbazını çalıştırın">
+    Kurulum sonrası betik, OpenClaw yapılandırması boyunca size rehberlik eder.
   </Step>
-  <Step title="Mesajlaşma sağlayıcılarını bağlayın">
+  <Step title="Mesajlaşma kanallarını bağlayın">
     WhatsApp, Telegram, Discord veya Signal'de oturum açın:
     ```bash
-    openclaw channels login
+    openclaw channels login --channel <name>
     ```
   </Step>
   <Step title="Kurulumu doğrulayın">
@@ -88,49 +81,47 @@ kurar. Ayrıntılar ve diğer arka uçlar için [Sandboxing](/tr/gateway/sandbox
     ```
   </Step>
   <Step title="Tailscale'e bağlanın">
-    Güvenli uzaktan erişim için VPN mesh'inize katılın.
+    Güvenli uzaktan erişim için VPN örgünüze katılın.
   </Step>
 </Steps>
 
 ### Hızlı komutlar
 
 ```bash
-# Hizmet durumunu kontrol et
+# Hizmet durumunu kontrol edin
 sudo systemctl status openclaw
 
-# Canlı günlükleri görüntüle
+# Canlı günlükleri görüntüleyin
 sudo journalctl -u openclaw -f
 
-# Gateway'i yeniden başlat
+# Gateway'i yeniden başlatın
 sudo systemctl restart openclaw
 
-# Sağlayıcı oturumu açma (openclaw kullanıcısı olarak çalıştırın)
+# Kanalda oturum açma (openclaw kullanıcısı olarak çalıştırın)
 sudo -i -u openclaw
-openclaw channels login
+openclaw channels login --channel <name>
 ```
 
 ## Güvenlik mimarisi
 
-Dağıtım 4 katmanlı bir savunma modeli kullanır:
+Dört katmanlı savunma modeli:
 
-1. **Güvenlik duvarı (UFW)** -- yalnızca SSH (22) + Tailscale (41641/udp) herkese açık olarak sunulur
-2. **VPN (Tailscale)** -- gateway'e yalnızca VPN mesh üzerinden erişilebilir
-3. **Docker izolasyonu** -- DOCKER-USER iptables zinciri harici portların açığa çıkmasını engeller
-4. **Systemd sıkılaştırması** -- NoNewPrivileges, PrivateTmp, ayrıcalıksız kullanıcı
+1. Güvenlik duvarı (UFW): yalnızca SSH (22) ve Tailscale (41641/udp) herkese açıktır
+2. VPN (Tailscale): Gateway'e yalnızca VPN örgüsü üzerinden erişilebilir
+3. Docker yalıtımı: `DOCKER-USER` iptables zinciri, portların dışarıya açılmasını önler
+4. Systemd güvenlik sıkılaştırması: `NoNewPrivileges`, `PrivateTmp`, ayrıcalıksız kullanıcı
 
-Harici saldırı yüzeyinizi doğrulamak için:
+Dış saldırı yüzeyinizi doğrulayın:
 
 ```bash
 nmap -p- YOUR_SERVER_IP
 ```
 
-Yalnızca port 22 (SSH) açık olmalıdır. Diğer tüm hizmetler (gateway, Docker) kilitlenmiştir.
+Yalnızca 22 numaralı port (SSH) açık olmalıdır. Gateway ve Docker dış erişime kapalı kalır.
 
-Docker, gateway'in kendisini çalıştırmak için değil, ajan sandbox'ları (izole araç yürütme) için kurulur. Sandbox yapılandırması için [Multi-Agent Sandbox and Tools](/tr/tools/multi-agent-sandbox-tools) bölümüne bakın.
+Docker, Gateway'i çalıştırmak için değil, ajan korumalı alanları (yalıtılmış araç yürütme) için kurulur. Korumalı alan yapılandırması için [Çok Ajanlı Korumalı Alan ve Araçlar](/tr/tools/multi-agent-sandbox-tools) bölümüne bakın.
 
-## Manuel kurulum
-
-Otomasyon yerine manuel kontrolü tercih ediyorsanız:
+## Elle kurulum
 
 <Steps>
   <Step title="Ön koşulları kurun">
@@ -154,7 +145,7 @@ Otomasyon yerine manuel kontrolü tercih ediyorsanız:
     ./run-playbook.sh
     ```
 
-    Alternatif olarak, doğrudan çalıştırın ve ardından kurulum betiğini elle yürütün:
+    Alternatif olarak playbook'u doğrudan çalıştırın ve ardından kurulum betiğini elle çalıştırın:
     ```bash
     ansible-playbook playbook.yml --ask-become-pass
     # Ardından çalıştırın: /tmp/openclaw-setup.sh
@@ -165,77 +156,76 @@ Otomasyon yerine manuel kontrolü tercih ediyorsanız:
 
 ## Güncelleme
 
-Ansible yükleyici, OpenClaw'u manuel güncellemeler için hazırlar. Standart güncelleme akışı için [Güncelleme](/tr/install/updating) bölümüne bakın.
+Ansible yükleyicisi, OpenClaw'u elle güncellemelere uygun şekilde yapılandırır; standart süreç için [Güncelleme](/tr/install/updating) bölümüne bakın.
 
-Ansible playbook'u yeniden çalıştırmak için (örneğin, yapılandırma değişiklikleri için):
+Playbook'u yeniden çalıştırmak için (örneğin yapılandırma değişikliklerinden sonra):
 
 ```bash
 cd openclaw-ansible
 ./run-playbook.sh
 ```
 
-Bu işlem idempotenttir ve birden çok kez güvenle çalıştırılabilir.
+Bu işlem eşgüçlüdür ve birden çok kez güvenle çalıştırılabilir.
 
 ## Sorun giderme
 
 <AccordionGroup>
   <Accordion title="Güvenlik duvarı bağlantımı engelliyor">
-    - Önce Tailscale VPN üzerinden erişebildiğinizden emin olun
-    - SSH erişimine (port 22) her zaman izin verilir
-    - Gateway tasarım gereği yalnızca Tailscale üzerinden erişilebilir
+    - Önce Tailscale VPN üzerinden bağlanın; Gateway'e tasarım gereği yalnızca bu şekilde erişilebilir.
+    - SSH'ye (port 22) her zaman izin verilir.
 
   </Accordion>
-  <Accordion title="Hizmet başlamıyor">
+  <Accordion title="Hizmet başlatılamıyor">
     ```bash
-    # Günlükleri kontrol et
+    # Günlükleri kontrol edin
     sudo journalctl -u openclaw -n 100
 
-    # İzinleri doğrula
+    # İzinleri doğrulayın
     sudo ls -la /opt/openclaw
 
-    # Manuel başlatmayı test et
+    # Elle başlatmayı sınayın
     sudo -i -u openclaw
     cd ~/openclaw
     openclaw gateway run
     ```
 
   </Accordion>
-  <Accordion title="Docker sandbox sorunları">
+  <Accordion title="Docker korumalı alan sorunları">
     ```bash
-    # Docker'ın çalıştığını doğrula
+    # Docker'ın çalıştığını doğrulayın
     sudo systemctl status docker
 
-    # Sandbox imajını kontrol et
+    # Korumalı alan imajını kontrol edin
     sudo docker images | grep openclaw-sandbox
 
-    # Eksikse sandbox imajını derle (kaynak checkout gerektirir)
+    # Eksikse korumalı alan imajını oluşturun (kaynak kod çalışma kopyası gerektirir)
     cd /opt/openclaw/openclaw
     sudo -u openclaw ./scripts/sandbox-setup.sh
-    # Kaynak checkout olmadan npm kurulumları için bkz.
+    # Kaynak kod çalışma kopyası olmadan yapılan npm kurulumları için bkz.
     # https://docs.openclaw.ai/gateway/sandboxing#images-and-setup
     ```
 
   </Accordion>
-  <Accordion title="Sağlayıcı oturumu açma başarısız oluyor">
-    `openclaw` kullanıcısı olarak çalıştığınızdan emin olun:
+  <Accordion title="Kanal oturumu açılamıyor">
+    `openclaw` kullanıcısı olarak çalıştırdığınızdan emin olun:
     ```bash
     sudo -i -u openclaw
-    openclaw channels login
+    openclaw channels login --channel <name>
     ```
   </Accordion>
 </AccordionGroup>
 
 ## Gelişmiş yapılandırma
 
-Ayrıntılı güvenlik mimarisi ve sorun giderme için openclaw-ansible deposuna bakın:
+Ayrıntılı güvenlik mimarisi ve sorun giderme bilgileri için openclaw-ansible deposuna bakın:
 
 - [Güvenlik Mimarisi](https://github.com/openclaw/openclaw-ansible/blob/main/docs/security.md)
 - [Teknik Ayrıntılar](https://github.com/openclaw/openclaw-ansible/blob/main/docs/architecture.md)
 - [Sorun Giderme Kılavuzu](https://github.com/openclaw/openclaw-ansible/blob/main/docs/troubleshooting.md)
 
-## İlgili
+## İlgili kaynaklar
 
-- [openclaw-ansible](https://github.com/openclaw/openclaw-ansible) -- eksiksiz dağıtım kılavuzu
-- [Docker](/tr/install/docker) -- kapsayıcı içinde Gateway kurulumu
-- [Sandboxing](/tr/gateway/sandboxing) -- ajan sandbox yapılandırması
-- [Multi-Agent Sandbox and Tools](/tr/tools/multi-agent-sandbox-tools) -- ajan başına izolasyon
+- [openclaw-ansible](https://github.com/openclaw/openclaw-ansible): tam dağıtım kılavuzu
+- [Docker](/tr/install/docker): konteynerleştirilmiş Gateway kurulumu
+- [Korumalı Alan](/tr/gateway/sandboxing): ajan korumalı alanı yapılandırması
+- [Çok Ajanlı Korumalı Alan ve Araçlar](/tr/tools/multi-agent-sandbox-tools): ajan başına yalıtım

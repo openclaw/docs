@@ -2,46 +2,46 @@
 read_when:
     - การตั้งค่า OpenClaw บน Oracle Cloud
     - กำลังมองหาโฮสติ้ง VPS ฟรีสำหรับ OpenClaw
-    - ต้องการใช้งาน OpenClaw ตลอด 24/7 บนเซิร์ฟเวอร์ขนาดเล็ก
-summary: โฮสต์ OpenClaw บนระดับ Always Free ARM ของ Oracle Cloud
+    - ต้องการใช้งาน OpenClaw ตลอด 24 ชั่วโมงทุกวันบนเซิร์ฟเวอร์ขนาดเล็ก
+summary: โฮสต์ OpenClaw บนแพ็กเกจ ARM แบบ Always Free ของ Oracle Cloud
 title: Oracle Cloud
 x-i18n:
-    generated_at: "2026-05-06T09:20:17Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:19:24Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 9115c83c7a78b78d8b6701b028a2f6e9f08a71f7fff14b7b45f1610b8052c14e
+    source_hash: 5e1eb95b6bc8ad73e1492a03d8ebe32d89c80e58347614e6ae12d2d3d926d577
     source_path: install/oracle.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-เรียกใช้ OpenClaw Gateway แบบทำงานต่อเนื่องบน tier ARM **Always Free** ของ Oracle Cloud (สูงสุด 4 OCPU, RAM 24 GB, พื้นที่จัดเก็บ 200 GB) โดยไม่มีค่าใช้จ่าย
+เรียกใช้ OpenClaw Gateway แบบถาวรบนระดับ ARM แบบ **Always Free** ของ Oracle Cloud (สูงสุด 4 OCPU, RAM 24 GB, พื้นที่จัดเก็บข้อมูล 200 GB) โดยไม่มีค่าใช้จ่าย
 
 ## ข้อกำหนดเบื้องต้น
 
-- บัญชี Oracle Cloud ([สมัครใช้งาน](https://www.oracle.com/cloud/free/)) -- ดู [คู่มือสมัครใช้งานจากชุมชน](https://gist.github.com/rssnyder/51e3cfedd730e7dd5f4a816143b25dbd) หากพบปัญหา
-- บัญชี Tailscale (ฟรีที่ [tailscale.com](https://tailscale.com))
-- คู่คีย์ SSH
+- บัญชี Oracle Cloud ([สมัครใช้งาน](https://www.oracle.com/cloud/free/)) -- หากพบปัญหา โปรดดู[คู่มือการสมัครใช้งานจากชุมชน](https://gist.github.com/rssnyder/51e3cfedd730e7dd5f4a816143b25dbd)
+- บัญชี Tailscale (ใช้งานฟรีที่ [tailscale.com](https://tailscale.com))
+- คู่กุญแจ SSH
 - เวลาประมาณ 30 นาที
 
 ## การตั้งค่า
 
 <Steps>
   <Step title="สร้างอินสแตนซ์ OCI">
-    1. เข้าสู่ระบบที่ [Oracle Cloud Console](https://cloud.oracle.com/)
+    1. เข้าสู่ระบบ [Oracle Cloud Console](https://cloud.oracle.com/)
     2. ไปที่ **Compute > Instances > Create Instance**
     3. กำหนดค่า:
-       - **ชื่อ:** `openclaw`
-       - **อิมเมจ:** Ubuntu 24.04 (aarch64)
+       - **Name:** `openclaw`
+       - **Image:** Ubuntu 24.04 (aarch64)
        - **Shape:** `VM.Standard.A1.Flex` (Ampere ARM)
-       - **OCPU:** 2 (หรือสูงสุด 4)
-       - **หน่วยความจำ:** 12 GB (หรือสูงสุด 24 GB)
+       - **OCPUs:** 2 (หรือสูงสุด 4)
+       - **Memory:** 12 GB (หรือสูงสุด 24 GB)
        - **Boot volume:** 50 GB (ฟรีสูงสุด 200 GB)
-       - **คีย์ SSH:** เพิ่มคีย์สาธารณะของคุณ
+       - **SSH key:** เพิ่มกุญแจสาธารณะของคุณ
     4. คลิก **Create** และจดที่อยู่ IP สาธารณะไว้
 
     <Tip>
-    หากการสร้างอินสแตนซ์ล้มเหลวด้วยข้อความ "Out of capacity" ให้ลองใช้ availability domain อื่น หรือลองใหม่ภายหลัง ความจุของ free tier มีจำกัด
+    หากสร้างอินสแตนซ์ไม่สำเร็จพร้อมข้อความ "Out of capacity" ให้ลองใช้โดเมนความพร้อมใช้งานอื่น หรือลองอีกครั้งในภายหลัง ความจุของระดับฟรีมีจำกัด
     </Tip>
 
   </Step>
@@ -54,18 +54,18 @@ x-i18n:
     sudo apt install -y build-essential
     ```
 
-    ต้องใช้ `build-essential` สำหรับการคอมไพล์ dependency บางรายการบน ARM
+    ต้องใช้ `build-essential` เพื่อคอมไพล์การขึ้นต่อกันบางรายการสำหรับ ARM
 
   </Step>
 
-  <Step title="กำหนดค่าผู้ใช้และ hostname">
+  <Step title="กำหนดค่าผู้ใช้และชื่อโฮสต์">
     ```bash
     sudo hostnamectl set-hostname openclaw
     sudo passwd ubuntu
     sudo loginctl enable-linger ubuntu
     ```
 
-    การเปิดใช้ linger จะทำให้บริการของผู้ใช้ทำงานต่อหลังจาก logout
+    การเปิดใช้งาน linger ช่วยให้บริการของผู้ใช้ทำงานต่อไปหลังจากออกจากระบบ
 
   </Step>
 
@@ -85,12 +85,12 @@ x-i18n:
     source ~/.bashrc
     ```
 
-    เมื่อระบบถามว่า "How do you want to hatch your bot?" ให้เลือก **Do this later**
+    เมื่อระบบถาม "How do you want to hatch your bot?" ให้เลือก **Do this later**
 
   </Step>
 
   <Step title="กำหนดค่า Gateway">
-    ใช้การยืนยันตัวตนด้วย token ร่วมกับ Tailscale Serve เพื่อการเข้าถึงระยะไกลที่ปลอดภัย
+    ใช้การยืนยันตัวตนด้วยโทเค็นร่วมกับ Tailscale Serve เพื่อให้เข้าถึงจากระยะไกลได้อย่างปลอดภัย
 
     ```bash
     openclaw config set gateway.bind loopback
@@ -102,19 +102,19 @@ x-i18n:
     systemctl --user restart openclaw-gateway.service
     ```
 
-    `gateway.trustedProxies=["127.0.0.1"]` ตรงนี้ใช้เฉพาะสำหรับการจัดการ forwarded-IP/local-client ของพร็อกซี Tailscale Serve ภายในเครื่องเท่านั้น และ **ไม่ใช่** `gateway.auth.mode: "trusted-proxy"` เส้นทาง diff viewer จะคงพฤติกรรม fail-closed ในการตั้งค่านี้: คำขอ viewer แบบ raw `127.0.0.1` ที่ไม่มี forwarded proxy headers อาจคืนค่า `Diff not found` ใช้ `mode=file` / `mode=both` สำหรับไฟล์แนบ หรือเปิดใช้ remote viewers โดยตั้งใจแล้วตั้งค่า `plugins.entries.diffs.config.viewerBaseUrl` (หรือส่งพร็อกซี `baseUrl`) หากคุณต้องการลิงก์ viewer ที่แชร์ได้
+    `gateway.trustedProxies=["127.0.0.1"]` ในที่นี้ใช้เฉพาะสำหรับการจัดการ IP ที่ส่งต่อ/ไคลเอนต์ภายในเครื่องของพร็อกซี Tailscale Serve ภายในเครื่องเท่านั้น ซึ่ง **ไม่ใช่** `gateway.auth.mode: "trusted-proxy"` เส้นทางตัวแสดงผลส่วนต่างจะยังคงปฏิเสธโดยค่าเริ่มต้นในการตั้งค่านี้: คำขอตัวแสดงผลจาก `127.0.0.1` โดยตรงที่ไม่มีส่วนหัวพร็อกซีส่งต่อจะส่งคืน `Diff not found` ใช้ `mode=file` / `mode=both` สำหรับไฟล์แนบ หรือเปิดใช้งานตัวแสดงผลระยะไกลโดยตั้งใจและตั้งค่า `plugins.entries.diffs.config.viewerBaseUrl` (หรือส่ง `baseUrl` ของพร็อกซี) หากคุณต้องการลิงก์ตัวแสดงผลที่แชร์ได้
 
   </Step>
 
-  <Step title="ล็อกความปลอดภัยของ VCN">
-    บล็อกทราฟฟิกทั้งหมดที่ขอบเครือข่าย ยกเว้น Tailscale:
+  <Step title="จำกัดความปลอดภัยของ VCN">
+    บล็อกการรับส่งข้อมูลทั้งหมดที่ขอบเขตเครือข่าย ยกเว้น Tailscale:
 
     1. ไปที่ **Networking > Virtual Cloud Networks** ใน OCI Console
     2. คลิก VCN ของคุณ จากนั้นไปที่ **Security Lists > Default Security List**
-    3. **ลบ** ingress rules ทั้งหมด ยกเว้น `0.0.0.0/0 UDP 41641` (Tailscale)
-    4. คง egress rules เริ่มต้นไว้ (อนุญาต outbound ทั้งหมด)
+    3. **Remove** กฎขาเข้าทั้งหมด ยกเว้น `0.0.0.0/0 UDP 41641` (Tailscale)
+    4. คงกฎขาออกเริ่มต้นไว้ (อนุญาตการรับส่งข้อมูลขาออกทั้งหมด)
 
-    การทำเช่นนี้จะบล็อก SSH บนพอร์ต 22, HTTP, HTTPS และสิ่งอื่นทั้งหมดที่ขอบเครือข่าย จากจุดนี้เป็นต้นไป คุณจะเชื่อมต่อได้ผ่าน Tailscale เท่านั้น
+    การดำเนินการนี้จะบล็อก SSH บนพอร์ต 22, HTTP, HTTPS และทุกอย่างอื่นที่ขอบเขตเครือข่าย จากจุดนี้เป็นต้นไป คุณจะเชื่อมต่อได้ผ่าน Tailscale เท่านั้น
 
   </Step>
 
@@ -126,7 +126,7 @@ x-i18n:
     curl http://localhost:18789
     ```
 
-    เข้าถึง Control UI จากอุปกรณ์ใดก็ได้บน tailnet ของคุณ:
+    เข้าถึง UI ควบคุมจากอุปกรณ์ใดก็ได้บน tailnet ของคุณ:
 
     ```
     https://openclaw.<tailnet-name>.ts.net/
@@ -139,63 +139,63 @@ x-i18n:
 
 ## ตรวจสอบสถานะความปลอดภัย
 
-เมื่อล็อก VCN แล้ว (เปิดเฉพาะ UDP 41641) และผูก Gateway กับ local loopback ทราฟฟิกสาธารณะจะถูกบล็อกที่ขอบเครือข่าย และการเข้าถึงของผู้ดูแลระบบจะจำกัดเฉพาะ tailnet เท่านั้น วิธีนี้ตัดความจำเป็นของขั้นตอน hardening VPS แบบดั้งเดิมหลายรายการ:
+เมื่อจำกัด VCN แล้ว (เปิดเฉพาะ UDP 41641) และผูก Gateway กับ local loopback การรับส่งข้อมูลสาธารณะจะถูกบล็อกที่ขอบเขตเครือข่าย และการเข้าถึงสำหรับผู้ดูแลระบบจะทำได้ผ่าน tailnet เท่านั้น จึงไม่จำเป็นต้องดำเนินการเพิ่มความปลอดภัย VPS แบบดั้งเดิมหลายรายการ:
 
-| ขั้นตอนแบบดั้งเดิม   | จำเป็นหรือไม่     | เหตุผล                                                                       |
-| ------------------ | ----------- | ------------------------------------------------------------------------- |
-| ไฟร์วอลล์ UFW       | ไม่          | VCN บล็อกทราฟฟิกก่อนที่จะถึงอินสแตนซ์                    |
-| fail2ban           | ไม่          | พอร์ต 22 ถูกบล็อกที่ VCN จึงไม่มีพื้นผิวสำหรับ brute-force                    |
-| การ hardening sshd     | ไม่          | Tailscale SSH ไม่ได้ใช้ sshd                                          |
-| ปิดการเข้าสู่ระบบ root | ไม่          | Tailscale ยืนยันตัวตนด้วยข้อมูลประจำตัวของ tailnet ไม่ใช่ผู้ใช้ระบบ            |
-| ยืนยันตัวตนด้วยคีย์ SSH เท่านั้น  | ไม่          | เช่นเดียวกัน — ข้อมูลประจำตัวของ tailnet แทนที่คีย์ SSH ของระบบ                         |
-| การ hardening IPv6     | โดยปกติไม่จำเป็น | ขึ้นอยู่กับการตั้งค่า VCN/subnet; ตรวจสอบสิ่งที่ถูกกำหนด/เปิดเผยจริง |
+| ขั้นตอนแบบดั้งเดิม                     | จำเป็นหรือไม่ | เหตุผล                                                                      |
+| -------------------------------------- | ------------- | ---------------------------------------------------------------------------- |
+| ไฟร์วอลล์ UFW                          | ไม่           | VCN บล็อกการรับส่งข้อมูลก่อนที่จะมาถึงอินสแตนซ์                            |
+| fail2ban                               | ไม่           | พอร์ต 22 ถูกบล็อกที่ VCN จึงไม่มีพื้นผิวสำหรับการโจมตีแบบลองรหัสซ้ำ ๆ     |
+| การเพิ่มความปลอดภัยให้ sshd            | ไม่           | Tailscale SSH ไม่ได้ใช้ sshd                                                 |
+| ปิดใช้งานการเข้าสู่ระบบด้วย root       | ไม่           | Tailscale ยืนยันตัวตนด้วยข้อมูลประจำตัวของ tailnet ไม่ใช่ผู้ใช้ระบบ        |
+| ยืนยันตัวตน SSH ด้วยกุญแจเท่านั้น      | ไม่           | เช่นเดียวกัน -- ข้อมูลประจำตัวของ tailnet ใช้แทนกุญแจ SSH ของระบบ          |
+| การเพิ่มความปลอดภัยให้ IPv6            | โดยปกติไม่    | ขึ้นอยู่กับการตั้งค่า VCN/ซับเน็ต โปรดตรวจสอบสิ่งที่ถูกกำหนด/เปิดเผยจริง |
 
-ยังแนะนำให้ทำ:
+ยังคงแนะนำให้ทำดังต่อไปนี้:
 
-- `chmod 700 ~/.openclaw` เพื่อจำกัดสิทธิ์ของไฟล์ข้อมูลรับรอง
-- `openclaw security audit` สำหรับการตรวจสอบสถานะความปลอดภัยเฉพาะของ OpenClaw
-- เรียกใช้ `sudo apt update && sudo apt upgrade` เป็นประจำสำหรับแพตช์ OS
-- ตรวจสอบอุปกรณ์ใน [คอนโซลผู้ดูแลระบบ Tailscale](https://login.tailscale.com/admin) เป็นระยะ
+- ใช้ `chmod 700 ~/.openclaw` เพื่อจำกัดสิทธิ์ของไฟล์ข้อมูลรับรอง
+- ใช้ `openclaw security audit` เพื่อตรวจสอบสถานะความปลอดภัยเฉพาะของ OpenClaw
+- เรียกใช้ `sudo apt update && sudo apt upgrade` เป็นประจำเพื่อติดตั้งแพตช์ระบบปฏิบัติการ
+- ตรวจสอบอุปกรณ์ใน[คอนโซลผู้ดูแลระบบ Tailscale](https://login.tailscale.com/admin) เป็นระยะ
 
 คำสั่งตรวจสอบอย่างรวดเร็ว:
 
 ```bash
-# Confirm no public ports are listening
+# ยืนยันว่าไม่มีพอร์ตสาธารณะกำลังรอรับการเชื่อมต่อ
 sudo ss -tlnp | grep -v '127.0.0.1\|::1'
 
-# Verify Tailscale SSH is active
+# ตรวจสอบว่า Tailscale SSH ทำงานอยู่
 tailscale status | grep -q 'offers: ssh' && echo "Tailscale SSH active"
 
-# Optional: disable sshd entirely once Tailscale SSH is confirmed working
+# ไม่บังคับ: ปิดใช้งาน sshd อย่างสมบูรณ์เมื่อยืนยันแล้วว่า Tailscale SSH ทำงานได้
 sudo systemctl disable --now ssh
 ```
 
 ## หมายเหตุเกี่ยวกับ ARM
 
-tier Always Free เป็น ARM (`aarch64`) ฟีเจอร์ส่วนใหญ่ของ OpenClaw ทำงานได้ดี มี native binaries จำนวนน้อยที่ต้องใช้ build สำหรับ ARM:
+ระดับ Always Free ใช้ ARM (`aarch64`) ฟีเจอร์ส่วนใหญ่ของ OpenClaw ทำงานได้ตามปกติ แต่ไบนารีเนทีฟบางรายการจำเป็นต้องมีรุ่นที่สร้างสำหรับ ARM:
 
-- Node.js, Telegram, WhatsApp (Baileys): เป็น JavaScript ล้วน ไม่มีปัญหา
-- แพ็กเกจ npm ส่วนใหญ่ที่มีโค้ด native: มี artifact `linux-arm64` ที่ build ไว้ล่วงหน้า
-- ตัวช่วย CLI เสริม (เช่น ไบนารี Go/Rust ที่มาพร้อม skills): ตรวจสอบว่ามี release `aarch64` / `linux-arm64` ก่อนติดตั้ง
+- Node.js, Telegram, WhatsApp (Baileys): เป็น JavaScript ล้วน จึงไม่มีปัญหา
+- แพ็กเกจ npm ส่วนใหญ่ที่มีโค้ดเนทีฟ: มีอาร์ติแฟกต์ `linux-arm64` ที่สร้างไว้ล่วงหน้า
+- เครื่องมือช่วย CLI ที่เลือกใช้ได้ (เช่น ไบนารี Go/Rust ที่มาพร้อมกับ Skills): ตรวจสอบว่ามีรุ่น `aarch64` / `linux-arm64` ก่อนติดตั้ง
 
-ตรวจสอบสถาปัตยกรรมด้วย `uname -m` (ควรพิมพ์ `aarch64`) สำหรับไบนารีที่ไม่มี build สำหรับ ARM ให้ติดตั้งจากซอร์สหรือข้ามไป
+ตรวจสอบสถาปัตยกรรมด้วย `uname -m` (ควรแสดง `aarch64`) สำหรับไบนารีที่ไม่มีรุ่น ARM ให้ติดตั้งจากซอร์สหรือข้ามไป
 
-## การคงอยู่และการสำรองข้อมูล
+## การคงอยู่ของข้อมูลและการสำรองข้อมูล
 
 สถานะของ OpenClaw อยู่ภายใต้:
 
-- `~/.openclaw/` — `openclaw.json`, `auth-profiles.json` ราย agent, สถานะของ channel/provider และข้อมูลเซสชัน
-- `~/.openclaw/workspace/` — workspace ของ agent (SOUL.md, memory, artifacts)
+- `~/.openclaw/` -- `openclaw.json`, `auth-profiles.json` ของแต่ละเอเจนต์, สถานะช่องทาง/ผู้ให้บริการ และข้อมูลเซสชัน
+- `~/.openclaw/workspace/` -- พื้นที่ทำงานของเอเจนต์ (SOUL.md, หน่วยความจำ, อาร์ติแฟกต์)
 
-ข้อมูลเหล่านี้จะอยู่รอดหลังการรีบูต หากต้องการสร้าง snapshot แบบพกพา:
+ข้อมูลเหล่านี้จะยังคงอยู่หลังรีบูต หากต้องการสร้างสแนปช็อตแบบพกพา:
 
 ```bash
 openclaw backup create
 ```
 
-## ทางเลือกสำรอง: SSH tunnel
+## วิธีสำรอง: อุโมงค์ SSH
 
-หาก Tailscale Serve ไม่ทำงาน ให้ใช้ SSH tunnel จากเครื่องภายในของคุณ:
+หาก Tailscale Serve ไม่ทำงาน ให้ใช้อุโมงค์ SSH จากเครื่องภายในของคุณ:
 
 ```bash
 ssh -L 18789:127.0.0.1:18789 ubuntu@openclaw
@@ -205,22 +205,22 @@ ssh -L 18789:127.0.0.1:18789 ubuntu@openclaw
 
 ## การแก้ไขปัญหา
 
-**การสร้างอินสแตนซ์ล้มเหลว ("Out of capacity")** -- อินสแตนซ์ ARM ของ free tier เป็นที่นิยม ให้ลองใช้ availability domain อื่น หรือลองใหม่ในช่วงเวลาที่มีการใช้งานน้อย
+**สร้างอินสแตนซ์ไม่สำเร็จ ("Out of capacity")** -- อินสแตนซ์ ARM ระดับฟรีเป็นที่นิยม ให้ลองใช้โดเมนความพร้อมใช้งานอื่น หรือลองอีกครั้งในช่วงเวลาที่มีการใช้งานน้อย
 
-**Tailscale ไม่เชื่อมต่อ** -- เรียกใช้ `sudo tailscale up --ssh --hostname=openclaw --reset` เพื่อยืนยันตัวตนใหม่
+**Tailscale ไม่เชื่อมต่อ** -- เรียกใช้ `sudo tailscale up --ssh --hostname=openclaw --reset` เพื่อยืนยันตัวตนอีกครั้ง
 
-**Gateway ไม่เริ่มทำงาน** -- เรียกใช้ `openclaw doctor --non-interactive` และตรวจสอบ log ด้วย `journalctl --user -u openclaw-gateway.service -n 50`
+**Gateway ไม่เริ่มทำงาน** -- เรียกใช้ `openclaw doctor --non-interactive` และตรวจสอบบันทึกด้วย `journalctl --user -u openclaw-gateway.service -n 50`
 
-**ปัญหาไบนารี ARM** -- แพ็กเกจ npm ส่วนใหญ่ทำงานบน ARM64 ได้ สำหรับ native binaries ให้มองหา release `linux-arm64` หรือ `aarch64` ตรวจสอบสถาปัตยกรรมด้วย `uname -m`
+**ปัญหาไบนารี ARM** -- แพ็กเกจ npm ส่วนใหญ่ทำงานบน ARM64 สำหรับไบนารีเนทีฟ ให้ค้นหารุ่น `linux-arm64` หรือ `aarch64` ตรวจสอบสถาปัตยกรรมด้วย `uname -m`
 
 ## ขั้นตอนถัดไป
 
-- [Channels](/th/channels) -- เชื่อมต่อ Telegram, WhatsApp, Discord และอื่นๆ
+- [ช่องทาง](/th/channels) -- เชื่อมต่อ Telegram, WhatsApp, Discord และอื่น ๆ
 - [การกำหนดค่า Gateway](/th/gateway/configuration) -- ตัวเลือกการกำหนดค่าทั้งหมด
-- [การอัปเดต](/th/install/updating) -- ทำให้ OpenClaw เป็นเวอร์ชันล่าสุดอยู่เสมอ
+- [การอัปเดต](/th/install/updating) -- ดูแล OpenClaw ให้เป็นเวอร์ชันล่าสุดอยู่เสมอ
 
-## ที่เกี่ยวข้อง
+## เนื้อหาที่เกี่ยวข้อง
 
 - [ภาพรวมการติดตั้ง](/th/install)
 - [GCP](/th/install/gcp)
-- [โฮสติ้ง VPS](/th/vps)
+- [การโฮสต์ VPS](/th/vps)

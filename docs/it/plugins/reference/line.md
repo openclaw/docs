@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Stai installando, configurando o verificando il Plugin LINE
+    - Stai installando, configurando o verificando il plugin LINE
 summary: Plugin del canale LINE di OpenClaw per le chat dell'API LINE Bot.
 title: Plugin LINE
 x-i18n:
-    generated_at: "2026-06-27T17:57:00Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:22:29Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: d561055be3fde476a78bf123f4025ca61e670b005d0b2d63e5b54318975c2fd9
@@ -15,16 +15,16 @@ x-i18n:
 
 # Plugin LINE
 
-Plugin del canale LINE di OpenClaw per le chat della LINE Bot API.
+Plugin del canale LINE di OpenClaw per le chat tramite LINE Bot API.
 
 ## Distribuzione
 
 - Pacchetto: `@openclaw/line`
-- Percorso di installazione: npm; ClawHub
+- Metodo di installazione: npm; ClawHub
 
 ## Superficie
 
-channels: line
+canali: line
 
 ## Documentazione correlata
 

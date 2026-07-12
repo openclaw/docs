@@ -1,89 +1,101 @@
 ---
 read_when:
     - Bạn muốn cấu hình mã định danh nhà cung cấp qwen-oauth
-    - Trước đây bạn đã dùng thông tin xác thực OAuth của Qwen Portal
-    - Bạn cần điểm cuối Qwen Portal hoặc hướng dẫn di chuyển
-summary: Sử dụng id nhà cung cấp Qwen Portal với OpenClaw
-title: Qwen OAuth / Cổng thông tin
+    - Trước đây, bạn đã sử dụng thông tin xác thực OAuth của Qwen Portal
+    - Bạn cần endpoint Qwen Portal hoặc hướng dẫn di chuyển
+summary: Sử dụng mã định danh nhà cung cấp Qwen Portal với OpenClaw
+title: OAuth / Cổng thông tin Qwen
 x-i18n:
-    generated_at: "2026-06-27T18:06:01Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:22:10Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 46f147e3730024bf63e99827f666e2be791318723eace98941ca067c440dddd0
+    source_hash: b78f6f23e62e38d11e6fe4e2bf515b13b414f276d08f672740ad94747a22c8fb
     source_path: providers/qwen-oauth.md
     workflow: 16
 ---
 
-`qwen-oauth` là id nhà cung cấp Qwen Portal. Nó nhắm tới endpoint Qwen Portal
-và giữ cho các thiết lập Qwen OAuth / portal cũ hơn vẫn có thể được tham chiếu
-thông qua một id nhà cung cấp riêng biệt.
+`qwen-oauth` là mã định danh nhà cung cấp Qwen Portal, được Plugin Qwen
+(`@openclaw/qwen-provider`) đăng ký. Nhà cung cấp này nhắm đến điểm cuối Qwen Portal tại
+`https://portal.qwen.ai/v1` và duy trì khả năng truy cập các cấu hình Qwen OAuth / portal cũ
+thông qua một mã định danh nhà cung cấp riêng biệt, tách khỏi nhà cung cấp `qwen`
+chuẩn.
 
-Dùng nhà cung cấp này khi bạn có token Qwen Portal hiện tại dành riêng cho
-`https://portal.qwen.ai/v1`, hoặc khi bạn đang di chuyển một thiết lập Qwen Portal /
-Qwen CLI cũ hơn và muốn giữ các thông tin xác thực đó tách biệt với nhà cung cấp
-Qwen Cloud chính tắc. Đây không phải là lựa chọn đầu tiên được khuyến nghị cho
-người dùng Qwen mới.
-
-Với các thiết lập Qwen Cloud mới, hãy ưu tiên [Qwen](/vi/providers/qwen) với endpoint
-Standard ModelStudio, trừ khi bạn có token Qwen Portal hiện tại.
+Chọn `qwen-oauth` nếu bạn đã có token Qwen Portal hoạt động, đang
+di chuyển một quy trình Qwen OAuth hoặc Qwen CLI cũ, hoặc cần kiểm thử riêng
+điểm cuối Qwen Portal. Đối với cấu hình mới, nên dùng
+[Qwen](/vi/providers/qwen) với điểm cuối ModelStudio Tiêu chuẩn: tùy chọn này hỗ trợ
+cấu hình khóa API mới, nhiều lựa chọn điểm cuối hơn, hình thức trả theo mức sử dụng Tiêu chuẩn, Gói Coding
+và toàn bộ danh mục Plugin Qwen.
 
 ## Thiết lập
 
-Cung cấp token portal của bạn thông qua quy trình onboarding:
+Cài đặt Plugin Qwen nếu bạn chưa cài:
+
+```bash
+openclaw plugins install @openclaw/qwen-provider
+openclaw gateway restart
+```
+
+Cung cấp token portal của bạn thông qua quy trình hướng dẫn ban đầu:
 
 ```bash
 openclaw onboard --auth-choice qwen-oauth
 ```
 
-Hoặc đặt:
+Các lần chạy không tương tác đọc token từ `--qwen-oauth-token <token>`, hoặc đặt:
 
 ```bash
 export QWEN_API_KEY="<your-qwen-portal-token>" # pragma: allowlist secret
 ```
 
-## Mặc định
+Quy trình hướng dẫn ban đầu lưu token trong một hồ sơ xác thực `qwen-oauth`, khởi tạo
+danh mục mô hình portal và đặt `qwen-oauth/qwen3.5-plus` làm mô hình mặc định khi
+chưa có mô hình nào được cấu hình.
+
+## Giá trị mặc định
 
 - Nhà cung cấp: `qwen-oauth`
 - Bí danh: `qwen-portal`, `qwen-cli`
 - URL cơ sở: `https://portal.qwen.ai/v1`
 - Biến môi trường: `QWEN_API_KEY`
-- Kiểu API: tương thích OpenAI
+- Kiểu API: tương thích với OpenAI
 - Mô hình mặc định: `qwen-oauth/qwen3.5-plus`
 
 ## Điểm khác biệt so với Qwen
 
-OpenClaw có hai id nhà cung cấp hướng tới Qwen:
+OpenClaw có hai mã định danh nhà cung cấp dành cho Qwen:
 
-| Nhà cung cấp | Nhóm endpoint                                           | Phù hợp nhất cho                                                                       |
-| ------------ | -------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `qwen`       | Các endpoint Qwen Cloud / Alibaba DashScope và Coding Plan | Thiết lập khóa API mới, Standard trả theo mức dùng, Coding Plan, tính năng DashScope đa phương thức |
-| `qwen-oauth` | Endpoint Qwen Portal tại `portal.qwen.ai/v1`             | Token Qwen Portal hiện có và thiết lập Qwen OAuth / CLI kế thừa                        |
+| Nhà cung cấp | Nhóm điểm cuối                                            | Phù hợp nhất cho                                                                          |
+| ------------ | --------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `qwen`       | Các điểm cuối Qwen Cloud / Alibaba DashScope và Gói Coding | Cấu hình khóa API mới, hình thức trả theo mức sử dụng Tiêu chuẩn, Gói Coding, các tính năng DashScope đa phương thức |
+| `qwen-oauth` | Điểm cuối Qwen Portal tại `portal.qwen.ai/v1`             | Token Qwen Portal hiện có và các cấu hình Qwen OAuth / CLI cũ                             |
 
-Cả hai nhà cung cấp đều dùng dạng yêu cầu tương thích OpenAI, nhưng chúng là các
-bề mặt xác thực riêng biệt. Token được lưu cho `qwen-oauth` không nên được xem là
-khóa DashScope hoặc ModelStudio, và khóa DashScope mới nên dùng nhà cung cấp
-`qwen` chính tắc thay vào đó.
-
-## Khi nào nên chọn Qwen OAuth / Portal
-
-- Bạn đã có token Qwen Portal đang hoạt động.
-- Bạn đang bảo toàn quy trình làm việc Qwen OAuth hoặc Qwen CLI kế thừa trong khi chuyển sang
-  mô hình nhà cung cấp của OpenClaw.
-- Bạn cần kiểm tra khả năng tương thích riêng với endpoint Qwen Portal.
-
-Chọn [Qwen](/vi/providers/qwen) cho thiết lập mới, nhiều lựa chọn endpoint hơn, Standard
-ModelStudio, Coding Plan và toàn bộ danh mục Plugin Qwen.
+Cả hai nhà cung cấp đều sử dụng cấu trúc yêu cầu tương thích với OpenAI, nhưng là các bề mặt
+xác thực riêng biệt. Không nên coi token được lưu cho `qwen-oauth` là khóa DashScope
+hoặc ModelStudio; thay vào đó, khóa DashScope mới nên sử dụng nhà cung cấp `qwen`
+chuẩn.
 
 ## Mô hình
 
-Danh mục Plugin Qwen khởi tạo giá trị mặc định cho Qwen Portal:
+Plugin Qwen khởi tạo danh mục tĩnh này cho điểm cuối Qwen Portal. Tất cả
+mục đều có đầu ra tối đa 65.536 token; khả dụng hay không phụ thuộc vào tài khoản
+và token Qwen Portal hiện tại.
 
-- `qwen-oauth/qwen3.5-plus`
+| Tham chiếu mô hình                 | Đầu vào       | Ngữ cảnh  | Ghi chú          |
+| ---------------------------------- | ------------- | ---------- | ---------------- |
+| `qwen-oauth/qwen3.5-plus`          | văn bản, hình ảnh | 1.000.000 | Mô hình mặc định |
+| `qwen-oauth/qwen3.6-plus`          | văn bản, hình ảnh | 1.000.000 |                  |
+| `qwen-oauth/qwen3-max-2026-01-23`  | văn bản       | 262.144    |                  |
+| `qwen-oauth/qwen3-coder-next`      | văn bản       | 262.144    |                  |
+| `qwen-oauth/qwen3-coder-plus`      | văn bản       | 1.000.000  |                  |
+| `qwen-oauth/MiniMax-M2.5`          | văn bản       | 1.000.000  | Suy luận          |
+| `qwen-oauth/glm-5`                 | văn bản       | 202.752    |                  |
+| `qwen-oauth/glm-4.7`               | văn bản       | 202.752    |                  |
+| `qwen-oauth/kimi-k2.5`             | văn bản, hình ảnh | 262.144 |                  |
 
-Tính khả dụng phụ thuộc vào tài khoản và token Qwen Portal hiện tại. Nếu tài khoản
-của bạn dùng khóa API ModelStudio / DashScope thay vào đó, hãy cấu hình nhà cung cấp
-`qwen` chính tắc:
+Nếu tài khoản của bạn sử dụng khóa API ModelStudio / DashScope, hãy cấu hình
+nhà cung cấp `qwen` chuẩn:
 
 ```bash
 openclaw onboard --auth-choice qwen-standard-api-key
@@ -92,15 +104,15 @@ openclaw models set qwen/qwen3-coder-plus
 
 ## Di chuyển
 
-Các hồ sơ Qwen Portal OAuth kế thừa có thể không làm mới được. Nếu một hồ sơ portal
-ngừng hoạt động, hãy xác thực lại bằng token hiện tại hoặc chuyển sang nhà cung cấp
-Qwen Standard:
+Các hồ sơ OAuth Qwen Portal cũ không thể làm mới; `openclaw doctor` sẽ
+gắn cờ chúng. Nếu một hồ sơ portal ngừng hoạt động, hãy chạy lại quy trình hướng dẫn ban đầu với token hiện tại
+hoặc chuyển sang nhà cung cấp Qwen Tiêu chuẩn:
 
 ```bash
 openclaw onboard --auth-choice qwen-standard-api-key
 ```
 
-Standard global ModelStudio dùng:
+ModelStudio toàn cầu Tiêu chuẩn sử dụng:
 
 ```text
 https://dashscope-intl.aliyuncs.com/compatible-mode/v1
@@ -108,13 +120,13 @@ https://dashscope-intl.aliyuncs.com/compatible-mode/v1
 
 ## Khắc phục sự cố
 
-- Lỗi làm mới Portal OAuth: các hồ sơ Qwen Portal OAuth kế thừa có thể không
-  làm mới được. Chạy lại onboarding với token hiện tại.
-- Lỗi endpoint sai: xác nhận tham chiếu mô hình bắt đầu bằng `qwen-oauth/` khi
-  dùng token portal. Chỉ dùng tham chiếu `qwen/` cho nhà cung cấp Qwen chính tắc.
-- Nhầm lẫn `QWEN_API_KEY`: cả hai trang Qwen đều nhắc tới biến môi trường này, nhưng onboarding
-  lưu thông tin xác thực dưới id nhà cung cấp đã chọn. Hãy ưu tiên onboarding khi bạn
-  giữ cả `qwen` và `qwen-oauth` khả dụng trên cùng một máy.
+- Lỗi làm mới OAuth Portal: các hồ sơ OAuth Qwen Portal cũ không thể
+  làm mới. Hãy chạy lại quy trình hướng dẫn ban đầu với token hiện tại.
+- Lỗi sai điểm cuối: xác nhận tham chiếu mô hình bắt đầu bằng `qwen-oauth/` khi
+  sử dụng token portal. Chỉ sử dụng tham chiếu `qwen/` cho nhà cung cấp Qwen chuẩn.
+- Nhầm lẫn về `QWEN_API_KEY`: cả hai trang Qwen đều đề cập đến biến môi trường này, nhưng quy trình hướng dẫn ban đầu
+  lưu thông tin xác thực dưới mã định danh nhà cung cấp đã chọn. Nên sử dụng quy trình hướng dẫn ban đầu khi bạn
+  duy trì cả `qwen` và `qwen-oauth` trên cùng một máy.
 
 ## Liên quan
 

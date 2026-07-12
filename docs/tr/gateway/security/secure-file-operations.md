@@ -1,84 +1,82 @@
 ---
 read_when:
-    - Dosya erişimini, arşiv çıkarmayı, çalışma alanı depolamasını veya Plugin dosya sistemi yardımcılarını değiştirme
-summary: OpenClaw yerel dosya erişimini nasıl güvenli şekilde işler ve isteğe bağlı fs-safe Python yardımcısının neden varsayılan olarak kapalı olduğu
+    - Dosya erişimini, arşiv ayıklamayı, çalışma alanı depolamasını veya Plugin dosya sistemi yardımcılarını değiştirme
+summary: OpenClaw yerel dosya erişimini nasıl güvenli bir şekilde yönetir ve isteğe bağlı fs-safe Python yardımcısı neden varsayılan olarak kapalıdır
 title: Güvenli dosya işlemleri
 x-i18n:
-    generated_at: "2026-05-06T09:15:43Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:19:52Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 19d5b31ec2f2c7ab1033bdb55a701c60468dfac58142f726ecbc9ac933f68e30
+    source_hash: 5c8edf36ddbb8c8bc1edc52ecdf481affe5395d1779c679a40439167dfe70299
     source_path: gateway/security/secure-file-operations.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw, güvenlik açısından hassas yerel dosya işlemleri için [`@openclaw/fs-safe`](https://github.com/openclaw/fs-safe) kullanır: kökle sınırlandırılmış okuma/yazma, atomik değiştirme, arşiv çıkarma, geçici çalışma alanları, JSON durumu ve gizli dosya işleme.
+OpenClaw, güvenlik açısından hassas yerel dosya işlemleri için [`@openclaw/fs-safe`](https://github.com/openclaw/fs-safe) kullanır: kök dizinle sınırlandırılmış okuma/yazma, atomik değiştirme, arşiv çıkarma, geçici çalışma alanları, JSON durumu ve gizli dosyaların işlenmesi.
 
-Amaç, güvenilmeyen yol adları alan güvenilir OpenClaw kodu için tutarlı bir **kütüphane koruma hattı** sağlamaktır. Bu bir sandbox değildir. Ana makine dosya sistemi izinleri, işletim sistemi kullanıcıları, kapsayıcılar ve ajan/araç ilkesi gerçek etki alanını hâlâ belirler.
+Bu, güvenilmeyen yol adlarını alan güvenilir OpenClaw kodu için bir **kütüphane korumasıdır**; sandbox değildir. Gerçek etki alanını yine ana makinenin dosya sistemi izinleri, işletim sistemi kullanıcıları, konteynerler ve ajan/araç politikası belirler.
 
 ## Varsayılan: Python yardımcısı yok
 
-OpenClaw, fs-safe POSIX Python yardımcısını varsayılan olarak **kapalı** tutar.
+OpenClaw, fs-safe POSIX Python yardımcısını varsayılan olarak **kapalı** ayarlar:
 
-Neden:
+- bir operatör etkinleştirmediği sürece Gateway kalıcı bir Python yardımcı işlemi başlatmamalıdır;
+- çoğu kurulum, üst dizin değişikliklerine yönelik ek sağlamlaştırmaya ihtiyaç duymaz;
+- Python'ın devre dışı bırakılması; masaüstü, Docker, CI ve paketlenmiş uygulama ortamlarında çalışma zamanı davranışını öngörülebilir tutar.
 
-- gateway, bir operatör bunu açıkça seçmedikçe kalıcı bir Python yardımcı süreci başlatmamalıdır;
-- birçok kurulum ek üst dizin mutasyon sertleştirmesine ihtiyaç duymaz;
-- Python'ı devre dışı bırakmak, paket/çalışma zamanı davranışını masaüstü, Docker, CI ve paketlenmiş uygulama ortamlarında daha öngörülebilir tutar.
-
-OpenClaw yalnızca varsayılanı değiştirir. Bir modu açıkça ayarlarsanız fs-safe buna uyar:
+OpenClaw yalnızca _varsayılanı_ değiştirir. Açıkça belirtilen bir ayar her zaman önceliklidir:
 
 ```bash
-# Default OpenClaw behavior: Node-only fs-safe fallbacks.
+# Varsayılan OpenClaw davranışı: Yalnızca Node kullanan fs-safe geri dönüşleri.
 OPENCLAW_FS_SAFE_PYTHON_MODE=off
 
-# Opt into the helper when available, falling back if unavailable.
+# Kullanılabiliyorsa yardımcıyı etkinleştir, kullanılamıyorsa geri dönüşü kullan.
 OPENCLAW_FS_SAFE_PYTHON_MODE=auto
 
-# Fail closed if the helper cannot start.
+# Yardımcı başlatılamazsa güvenli biçimde başarısız ol.
 OPENCLAW_FS_SAFE_PYTHON_MODE=require
 
-# Optional explicit interpreter.
+# İsteğe bağlı açık yorumlayıcı yolu.
 OPENCLAW_FS_SAFE_PYTHON=/usr/bin/python3
 ```
 
-Genel fs-safe adları da çalışır: `FS_SAFE_PYTHON_MODE` ve `FS_SAFE_PYTHON`.
+Genel fs-safe ortam değişkeni adları da kullanılabilir: `FS_SAFE_PYTHON_MODE` ve `FS_SAFE_PYTHON`.
+
+Yardımcı güvenlik yaklaşımınızın bir parçasıysa `auto` yerine `require` kullanın; yardımcı başlatılamazsa `auto`, sessizce yalnızca Node kullanan davranışa geri döner.
 
 ## Python olmadan korunanlar
 
-Yardımcı kapalıyken OpenClaw, fs-safe'in Node yollarını hâlâ şunlar için kullanır:
+Yardımcı kapalıyken OpenClaw, fs-safe'in yalnızca Node kullanan korumalarından yararlanmaya devam eder:
 
-- yalnızca adlara izin verilen yerlerde `..` gibi göreli yol kaçışlarını, mutlak yolları ve yol ayırıcılarını reddetme;
-- işlemleri geçici `path.resolve(...).startsWith(...)` denetimleri yerine güvenilir bir kök tanıtıcısı üzerinden çözme;
-- bu ilkeyi gerektiren API'lerde sembolik bağlantı ve sabit bağlantı kalıplarını reddetme;
-- API'nin dosya içerikleri döndürdüğü veya tükettiği yerlerde kimlik denetimleriyle dosya açma;
-- durum/yapılandırma dosyaları için atomik kardeş geçici dosya yazımları;
-- okuma ve arşiv çıkarma için bayt sınırları;
-- API'nin gerektirdiği yerlerde gizli bilgiler ve durum dosyaları için özel kipler.
+- yalnızca yalın adlara izin verilen yerlerde göreli yol kaçışlarını (`..`), mutlak yolları ve yol ayırıcılarını reddeder;
+- işlemleri geçici `path.resolve(...).startsWith(...)` denetimleri yerine güvenilir bir kök tanıtıcısı üzerinden çözümler;
+- ilgili politikayı gerektiren API'lerde sembolik bağlantı ve sabit bağlantı kalıplarını reddeder;
+- API'nin dosya içeriği döndürdüğü veya tükettiği durumlarda dosyaları kimlik denetimleriyle açar;
+- durum/yapılandırma dosyalarını aynı dizinde geçici dosya oluşturup atomik olarak yeniden adlandırarak yazar;
+- okuma ve arşiv çıkarma işlemlerinde bayt sınırlarını uygular;
+- API gerektirdiğinde gizli bilgiler ve durum dosyaları için özel dosya kiplerini uygular.
 
-Bu korumalar normal OpenClaw tehdit modelini kapsar: tek bir güvenilir operatör sınırı içinde güvenilmeyen model/Plugin/kanal yol girdisini işleyen güvenilir gateway kodu.
+Bu, OpenClaw'ın normal tehdit modelini kapsar: tek bir güvenilir operatör sınırı içinde güvenilmeyen model/Plugin/kanal yol girdilerini işleyen güvenilir Gateway kodu.
 
-## Python'ın ekledikleri
+## Python ne ekler?
 
-POSIX üzerinde fs-safe'in isteğe bağlı yardımcısı, kalıcı bir Python sürecini açık tutar ve yeniden adlandırma, kaldırma, mkdir, stat/list ve bazı yazma yolları gibi üst dizin mutasyonları için fd-göreli dosya sistemi işlemleri kullanır.
+POSIX'te isteğe bağlı yardımcı, tek bir kalıcı Python işlemini çalışır durumda tutar ve üst dizin değişiklikleri için dosya tanıtıcısına göreli dosya sistemi işlemleri kullanır: yeniden adlandırma, kaldırma, dizin oluşturma, durum bilgisi alma/listeleme ve bazı yazma yolları.
 
-Bu, başka bir sürecin doğrulama ile mutasyon arasında bir üst dizini değiştirebildiği aynı UID yarış pencerelerini daraltır. Güvenilmeyen yerel süreçlerin OpenClaw'ın üzerinde çalıştığı aynı dizinleri değiştirebildiği ana makineler için derinlemesine savunmadır.
+Bu, başka bir işlemin doğrulama ile değişiklik arasında bir üst dizini değiştirebildiği aynı UID'li yarış koşulu aralıklarını daraltır. Güvenilmeyen yerel işlemlerin OpenClaw'ın üzerinde çalıştığı dizinleri değiştirebildiği ana makinelerde derinlemesine savunma sağlar.
 
-Dağıtımınızda bu risk varsa ve Python'ın mevcut olması garanti ediliyorsa şunu kullanın:
+Dağıtımınızda bu risk varsa ve Python'ın mevcut olacağı garanti ediliyorsa şunu ayarlayın:
 
 ```bash
 OPENCLAW_FS_SAFE_PYTHON_MODE=require
 ```
 
-Yardımcı güvenlik duruşunuzun bir parçasıysa `auto` yerine `require` kullanın; `auto`, yardımcı kullanılamadığında bilinçli olarak yalnızca Node davranışına geri döner.
+## Plugin ve çekirdek yönergeleri
 
-## Plugin ve çekirdek rehberi
+- Bir yol mesajdan, model çıktısından, yapılandırmadan veya Plugin girdisinden geliyorsa Plugin'e yönelik dosya erişimi ham `fs` yerine `openclaw/plugin-sdk/*` yardımcıları üzerinden yapılmalıdır.
+- OpenClaw'ın işlem politikasının tutarlı biçimde uygulanması için çekirdek kod, `src/infra/*` altındaki fs-safe sarmalayıcılarını kullanmalıdır.
+- Arşiv çıkarma işlemleri; açık boyut, girdi sayısı, bağlantı ve hedef sınırlarıyla fs-safe arşiv yardımcılarını kullanmalıdır.
+- Gizli bilgiler için OpenClaw gizli bilgi yardımcılarını veya fs-safe gizli/özel durum yardımcılarını kullanın; `fs.writeFile` çevresinde kendi kip denetimlerinizi oluşturmayın.
+- Güvenilmeyen yerel kullanıcılara karşı yalıtım için yalnızca fs-safe'e güvenmeyin. Ayrı Gateway'leri farklı işletim sistemi kullanıcılarıyla veya ana makinelerde çalıştırın ya da sandbox kullanın.
 
-- Plugin'e dönük dosya erişimi, bir yol mesajdan, model çıktısından, yapılandırmadan veya Plugin girdisinden geldiğinde ham `fs` yerine `openclaw/plugin-sdk/*` yardımcıları üzerinden yapılmalıdır.
-- Çekirdek kod, OpenClaw'ın süreç ilkesinin tutarlı şekilde uygulanması için `src/infra/*` altındaki yerel fs-safe sarmalayıcılarını kullanmalıdır.
-- Arşiv çıkarma, açık boyut, girdi sayısı, bağlantı ve hedef sınırlarıyla fs-safe arşiv yardımcılarını kullanmalıdır.
-- Gizli bilgiler, OpenClaw gizli bilgi yardımcılarını veya fs-safe gizli/özel durum yardımcılarını kullanmalıdır; `fs.writeFile` etrafında kip denetimlerini elle yazmayın.
-- Düşmanca yerel kullanıcı yalıtımına ihtiyacınız varsa yalnızca fs-safe'e güvenmeyin. Ayrı işletim sistemi kullanıcıları/ana makineleri altında ayrı gateway'ler çalıştırın veya sandboxing kullanın.
-
-İlgili: [Güvenlik](/tr/gateway/security), [Sandboxing](/tr/gateway/sandboxing), [Exec onayları](/tr/tools/exec-approvals), [Gizli Bilgiler](/tr/gateway/secrets).
+İlgili: [Güvenlik](/tr/gateway/security), [Sandbox Kullanımı](/tr/gateway/sandboxing), [Çalıştırma onayları](/tr/tools/exec-approvals), [Gizli bilgiler](/tr/gateway/secrets).

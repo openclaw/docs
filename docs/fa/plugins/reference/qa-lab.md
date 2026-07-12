@@ -1,27 +1,27 @@
 ---
 read_when:
-    - شما در حال نصب، پیکربندی، یا ممیزی Plugin qa-lab هستید
-summary: Plugin آزمایشگاه QA OpenClaw با رابط کاربری اشکال‌زدای خصوصی و اجراکننده سناریو.
-title: Plugin آزمایشگاه QA
+    - در حال نصب، پیکربندی یا ممیزی Plugin آزمایشگاه تضمین کیفیت هستید
+summary: Plugin آزمایشگاه تضمین کیفیت OpenClaw با رابط کاربری خصوصی اشکال‌زدا و اجراکننده سناریو.
+title: Plugin آزمایشگاه تضمین کیفیت
 x-i18n:
-    generated_at: "2026-06-27T18:28:35Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:32:07Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 0de3ac126939c822225cfd4bf75af594e6066f7992cacc71b1455638aab3af0b
+    source_hash: d838dbed6758468b159743ccebb904cf2a40c5edf3691c6851e6ae090e3e9eb7
     source_path: plugins/reference/qa-lab.md
     workflow: 16
 ---
 
-# Plugin آزمایشگاه QA
+# Plugin آزمایشگاه تضمین کیفیت
 
-Plugin آزمایشگاه QA در OpenClaw با رابط کاربری دیباگر خصوصی و اجراکننده سناریو.
+Plugin آزمایشگاه تضمین کیفیت OpenClaw با رابط کاربری خصوصی اشکال‌زدایی و اجراکننده سناریو.
 
 ## توزیع
 
 - بسته: `@openclaw/qa-lab`
-- مسیر نصب: فقط source checkout
+- روش نصب: فقط از نسخه دریافت‌شده کد منبع
 
-## سطح
+## سطح ارائه‌شده
 
-قراردادها: webSearchProviders
+قراردادها: webSearchProviders، workerProviders

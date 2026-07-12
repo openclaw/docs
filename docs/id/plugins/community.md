@@ -3,83 +3,87 @@ doc-schema-version: 1
 read_when:
     - Anda ingin menemukan plugin OpenClaw pihak ketiga
     - Anda ingin menerbitkan atau mencantumkan plugin Anda sendiri di ClawHub
-summary: Temukan dan publikasikan Plugin OpenClaw yang dikelola komunitas
+summary: Temukan dan publikasikan plugin OpenClaw yang dikelola komunitas
 title: Plugin komunitas
 x-i18n:
-    generated_at: "2026-06-27T17:46:36Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:23:54Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 0ecf059fa0c32f09d09381b2153a6a63ca522d49719aaa8476209389a6b5b36a
+    source_hash: 6a9eb477f20da8171a35c22ea6b112d77ff4afe0878f60314c052746aef4e0ac
     source_path: plugins/community.md
     workflow: 16
 ---
 
-Plugin komunitas adalah paket pihak ketiga yang memperluas OpenClaw dengan channel,
-alat, penyedia, hook, atau kemampuan lainnya. Gunakan [ClawHub](/id/clawhub) sebagai
-permukaan penemuan utama untuk Plugin komunitas publik.
+Plugin komunitas adalah paket pihak ketiga yang memperluas OpenClaw dengan
+kanal, alat, penyedia, hook, atau kemampuan lainnya. Gunakan
+[ClawHub](/clawhub) sebagai sarana penemuan utama untuk Plugin komunitas
+publik.
 
-## Temukan Plugin
+## Menemukan Plugin
 
-Cari ClawHub dari CLI:
+Cari di ClawHub melalui CLI:
 
 ```bash
 openclaw plugins search "calendar"
 ```
 
-Instal Plugin ClawHub dengan prefiks sumber eksplisit:
+Instal Plugin ClawHub dengan prefiks sumber yang eksplisit:
 
 ```bash
 openclaw plugins install clawhub:<package-name>
 ```
 
-npm tetap menjadi jalur instal langsung yang didukung selama peralihan peluncuran:
+npm tetap menjadi jalur instalasi langsung yang didukung selama transisi
+peluncuran:
 
 ```bash
 openclaw plugins install npm:<package-name>
 ```
 
-Gunakan [Kelola Plugin](/id/plugins/manage-plugins) untuk contoh umum instalasi,
-pembaruan, inspeksi, dan penghapusan. Gunakan [`openclaw plugins`](/id/cli/plugins)
-untuk referensi perintah lengkap dan aturan pemilihan sumber.
+Gunakan [Mengelola Plugin](/id/plugins/manage-plugins) untuk contoh umum
+instalasi, pembaruan, pemeriksaan, dan penghapusan instalasi. Gunakan
+[`openclaw plugins`](/id/cli/plugins) untuk referensi perintah lengkap dan
+aturan pemilihan sumber.
 
-## Publikasikan Plugin
+## Menerbitkan Plugin
 
-Publikasikan Plugin komunitas publik di ClawHub saat Anda ingin pengguna OpenClaw
-menemukan dan menginstalnya. ClawHub memiliki daftar paket live, riwayat rilis,
-status pemindaian, dan petunjuk instalasi; dokumentasi tidak memelihara katalog
-Plugin pihak ketiga statis.
+Terbitkan Plugin komunitas publik di ClawHub agar pengguna OpenClaw dapat
+menemukan dan menginstalnya. ClawHub mengelola daftar paket aktif, riwayat
+rilis, status pemindaian, dan petunjuk instalasi; dokumentasi tidak
+memelihara katalog statis Plugin pihak ketiga.
 
 ```bash
 clawhub package publish your-org/your-plugin --dry-run
 clawhub package publish your-org/your-plugin
 ```
 
-Sebelum memublikasikan, pastikan Plugin memiliki metadata paket, manifes Plugin,
-dokumentasi penyiapan, dan pemilik pemeliharaan yang jelas. ClawHub memvalidasi
-cakupan pemilik, nama paket, versi, batas file, dan metadata sumber sebelum
-membuat rilis, lalu menjaga rilis baru tetap tersembunyi dari permukaan instalasi
-dan unduhan normal hingga peninjauan dan verifikasi selesai.
+Sebelum menerbitkan, pastikan Plugin memiliki metadata paket, manifes
+Plugin, dokumentasi penyiapan, dan penanggung jawab pemeliharaan yang jelas.
+ClawHub memvalidasi cakupan pemilik, nama paket, versi, batas berkas, dan
+metadata sumber sebelum membuat rilis, lalu menyembunyikan rilis baru dari
+sarana instalasi dan pengunduhan normal hingga peninjauan dan verifikasi
+selesai.
 
-Gunakan daftar periksa ini sebelum Anda memublikasikan:
+Daftar periksa sebelum Anda menerbitkan:
 
-| Persyaratan             | Alasan                                                     |
-| ----------------------- | ---------------------------------------------------------- |
-| Dipublikasikan di ClawHub | Pengguna memerlukan petunjuk `openclaw plugins install` agar berfungsi |
-| Repositori GitHub publik | Peninjauan sumber, pelacakan isu, transparansi             |
+| Persyaratan                | Alasan                                                   |
+| -------------------------- | -------------------------------------------------------- |
+| Diterbitkan di ClawHub     | Pengguna memerlukan petunjuk `openclaw plugins install` agar berfungsi |
+| Repositori GitHub publik   | Peninjauan sumber, pelacakan masalah, transparansi        |
 | Dokumentasi penyiapan dan penggunaan | Pengguna perlu mengetahui cara mengonfigurasinya |
-| Pemeliharaan aktif      | Pembaruan terbaru atau penanganan isu yang responsif       |
+| Pemeliharaan aktif         | Pembaruan terkini atau penanganan masalah yang responsif  |
 
-Gunakan halaman-halaman ini untuk kontrak publikasi lengkap:
+Kontrak penerbitan lengkap:
 
-- [Publikasi ClawHub](/id/clawhub/publishing) menjelaskan pemilik, cakupan, rilis,
-  peninjauan, validasi paket, dan transfer paket.
-- [Membangun Plugin](/id/plugins/building-plugins) menunjukkan bentuk paket Plugin
-  dan alur kerja publikasi pertama.
-- [Manifes Plugin](/id/plugins/manifest) mendefinisikan kolom manifes Plugin native.
+- [Penerbitan ClawHub](/id/clawhub/publishing) - pemilik, cakupan, rilis,
+  peninjauan, validasi paket, dan transfer paket
+- [Membangun Plugin](/id/plugins/building-plugins) - struktur paket Plugin
+  dan alur kerja penerbitan pertama
+- [Manifes Plugin](/id/plugins/manifest) - bidang manifes Plugin bawaan
 
 ## Terkait
 
-- [Plugin](/id/tools/plugin) - instal, konfigurasikan, mulai ulang, dan pecahkan masalah
-- [Kelola Plugin](/id/plugins/manage-plugins) - contoh perintah
-- [Publikasi ClawHub](/id/clawhub/publishing) - aturan publikasi dan rilis
+- [Plugin](/id/tools/plugin) - instalasi, konfigurasi, mulai ulang, dan pemecahan masalah
+- [Mengelola Plugin](/id/plugins/manage-plugins) - contoh perintah
+- [Penerbitan ClawHub](/id/clawhub/publishing) - aturan penerbitan dan rilis

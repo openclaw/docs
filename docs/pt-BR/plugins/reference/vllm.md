@@ -1,31 +1,31 @@
 ---
 read_when:
-    - Você está instalando, configurando ou auditando o Plugin vllm
-summary: Adiciona suporte ao provedor de modelos vLLM ao OpenClaw.
-title: Plugin do vLLM
+    - Você está instalando, configurando ou auditando o plugin vllm
+summary: Adiciona suporte ao provedor de modelos vLLM no OpenClaw.
+title: Plugin vLLM
 x-i18n:
-    generated_at: "2026-05-02T21:01:34Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T00:14:08Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: e3220650924c7ce1f5c09127202bd96d08264df60d9e7556cf82e6379fca7dda
     source_path: plugins/reference/vllm.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Plugin vLLM
 
-Adiciona suporte ao provedor de modelos vLLM ao OpenClaw.
+Adiciona ao OpenClaw suporte ao provedor de modelos vLLM.
 
 ## Distribuição
 
 - Pacote: `@openclaw/vllm-provider`
-- Rota de instalação: incluído no OpenClaw
+- Forma de instalação: incluído no OpenClaw
 
 ## Superfície
 
-providers: vllm
+provedores: vllm
 
-## Documentos relacionados
+## Documentação relacionada
 
 - [vllm](/pt-BR/providers/vllm)

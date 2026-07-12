@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Bạn đang cài đặt, cấu hình hoặc kiểm tra plugin zalouser
-summary: Plugin Tài khoản Cá nhân Zalo của OpenClaw thông qua tích hợp zca-js gốc.
-title: Plugin Zalo cá nhân
+    - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin zalouser
+summary: Plugin tài khoản cá nhân Zalo cho OpenClaw thông qua tích hợp zca-js gốc.
+title: Plugin Zalo Personal
 x-i18n:
-    generated_at: "2026-06-27T17:56:52Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:13:34Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: c03db694c940cb1fb20f4a2f73512c9d3cf3c79e910cc6a0dd4aa38bd4465ed5
@@ -13,14 +13,14 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin Zalo Personal
+# Plugin Zalo Cá nhân
 
-Plugin tài khoản cá nhân Zalo của OpenClaw thông qua tích hợp zca-js gốc.
+Plugin Tài khoản Zalo Cá nhân cho OpenClaw thông qua tích hợp zca-js gốc.
 
 ## Phân phối
 
 - Gói: `@openclaw/zalouser`
-- Đường cài đặt: npm; ClawHub
+- Phương thức cài đặt: npm; ClawHub
 
 ## Bề mặt
 

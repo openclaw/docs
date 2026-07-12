@@ -1,9 +1,9 @@
 ---
-summary: /cli/message にリダイレクト
+summary: /cli/message へリダイレクト
 title: 投票
 x-i18n:
-    generated_at: "2026-07-05T11:00:50Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T21:55:49Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 071617c5fe910ad8a5d4a03416876ba3092d4fc67d5c206570a0456469ef73a9
@@ -11,9 +11,9 @@ x-i18n:
     workflow: 16
 ---
 
-このページは移動しました。`openclaw message poll` フラグやチャンネルごとの制限を含むポーリングのドキュメントは、[メッセージツール](/ja-JP/cli/message)にあります。
+このページは移動しました。`openclaw message poll` のフラグやチャンネルごとの制限を含む投票のドキュメントは、[メッセージツール](/ja-JP/cli/message)にあります。
 
-## 関連
+## 関連項目
 
 - [Webhook](/ja-JP/automation/cron-jobs#webhooks)
 - [スケジュールされたタスク](/ja-JP/automation/cron-jobs)

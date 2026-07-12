@@ -1,23 +1,23 @@
 ---
 read_when:
-    - ضبط سلوك تحميل Skills أو تثبيتها أو تقييدها
-    - ضبط إمكانية رؤية Skills لكل وكيل
+    - تهيئة سلوك تحميل Skills أو تثبيتها أو تقييدها
+    - ضبط مستوى ظهور Skills لكل وكيل
     - ضبط حدود ورشة Skills أو سياسة الموافقة
 sidebarTitle: Skills config
-summary: مرجع كامل لمخطط إعدادات `skills.*`، وقوائم السماح للوكلاء، وإعدادات ورشة العمل، ومعالجة متغيرات بيئة sandbox.
-title: إعدادات Skills
+summary: مرجع كامل لمخطط إعدادات skills.*، وقوائم السماح للوكلاء، وإعدادات ورشة العمل، ومعالجة متغيرات بيئة صندوق العزل.
+title: إعداد Skills
 x-i18n:
-    generated_at: "2026-07-01T08:10:07Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:43:23Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 37251cd12162c3083b8b9e1a84c462233eb44656a84ca915705859a352c9557b
+    source_hash: 0ed1ec20aa102b458a9485a1ada1bb7566c97d28b1f43caa28f52b3f5bdc381e
     source_path: tools/skills-config.md
     workflow: 16
 ---
 
-توجد معظم إعدادات skills ضمن `skills` في
-`~/.openclaw/openclaw.json`. وتوجد الرؤية الخاصة بالوكيل ضمن
+توجد معظم إعدادات Skills ضمن `skills` في
+`~/.openclaw/openclaw.json`. أما إمكانية الظهور الخاصة بكل وكيل فتوجد ضمن
 `agents.defaults.skills` و`agents.list[].skills`.
 
 ```json5
@@ -56,61 +56,62 @@ x-i18n:
 ```
 
 <Note>
-  لإنشاء الصور المدمج، استخدم `agents.defaults.imageGenerationModel`
-  مع أداة `image_generate` الأساسية بدلا من `skills.entries`. إدخالات skill
-  مخصصة فقط لسير عمل skills المخصصة أو التابعة لجهات خارجية.
+  لتوليد الصور المدمج، استخدم `agents.defaults.imageGenerationModel`
+  مع أداة `image_generate` الأساسية بدلًا من `skills.entries`. إدخالات Skills
+  مخصصة فقط لسير عمل Skills المخصصة أو التابعة لجهات خارجية.
 </Note>
 
 ## التحميل (`skills.load`)
 
 <ParamField path="skills.load.extraDirs" type="string[]">
-  أدلة skills إضافية لفحصها، بأدنى أسبقية (بعد skills المدمجة
-  وskills الخاصة بـ Plugin). يتم توسيع المسارات مع دعم `~`.
+  أدلة Skills الإضافية المطلوب فحصها، بأدنى أولوية (بعد Skills
+  المضمنة وSkills الخاصة بالـ Plugin). تُوسَّع المسارات مع دعم `~`.
 </ParamField>
 
 <ParamField path="skills.load.allowSymlinkTargets" type="string[]">
-  أدلة أهداف حقيقية موثوقة يمكن أن تُحل إليها مجلدات skills الرمزية،
-  حتى عندما يكون الرابط الرمزي خارج الجذر المكوّن. استخدم هذا
-  لتخطيطات مستودعات شقيقة مقصودة مثل
-  `<workspace>/skills/manager -> ~/Projects/manager/skills`. أبق هذه القائمة
-  ضيقة — لا توجهها إلى جذور واسعة مثل `~` أو `~/Projects`.
+  أدلة الأهداف الحقيقية الموثوقة التي يجوز لمجلدات Skills المرتبطة رمزيًا أن تُحل
+  إليها، حتى عندما يوجد الرابط الرمزي خارج الجذر المُعدّ. استخدم هذا
+  لتخطيطات مستودعات الأشقاء المقصودة مثل
+  `<workspace>/skills/manager -> ~/Projects/manager/skills`. أبقِ هذه القائمة
+  محدودة — لا تُشر إلى جذور واسعة مثل `~` أو `~/Projects`.
 </ParamField>
 
 <ParamField path="skills.load.watch" type="boolean" default="true">
-  راقب مجلدات skills وحدّث لقطة skills عندما تتغير ملفات `SKILL.md`.
-  يغطي ذلك الملفات المتداخلة ضمن جذور skills المجمعة.
+  راقب مجلدات Skills وحدّث لقطة Skills عند تغيّر ملفات `SKILL.md`.
+  يشمل ذلك الملفات المتداخلة ضمن جذور Skills المجمّعة.
 </ParamField>
 
 <ParamField path="skills.load.watchDebounceMs" type="number" default="250">
-  نافذة إزالة الارتداد لأحداث مراقب skills بالميلي ثانية.
+  نافذة إزالة الارتداد لأحداث مراقب Skills بالمللي ثانية.
 </ParamField>
 
 ## التثبيت (`skills.install`)
 
 <ParamField path="skills.install.preferBrew" type="boolean" default="true">
-  فضّل مثبّتات Homebrew عندما يكون `brew` متاحا.
+  فضّل أدوات تثبيت Homebrew عندما يكون `brew` متاحًا.
 </ParamField>
 
 <ParamField path="skills.install.nodeManager" type='"npm" | "pnpm" | "yarn" | "bun"' default='"npm"'>
-  تفضيل مدير حزم Node لتثبيتات skills. يؤثر هذا فقط في تثبيتات skills
-  — يجب أن يظل وقت تشغيل Gateway يستخدم Node (لا يوصى بـ Bun
-  لـ WhatsApp/Telegram). استخدم `openclaw setup --node-manager` لـ npm أو pnpm
-  أو bun؛ عيّن `"yarn"` يدويا لتثبيتات skills المدعومة بـ Yarn.
+  تفضيل مدير حزم Node لتثبيتات Skills. يؤثر هذا فقط في تثبيتات Skills
+  — ينبغي أن يظل وقت تشغيل Gateway يستخدم Node (لا يُنصح باستخدام Bun
+  مع WhatsApp/Telegram). يقبل `openclaw setup --node-manager` و
+  `openclaw onboard --node-manager` القيم `npm` أو `pnpm` أو `bun`؛ اضبط
+  `"yarn"` مباشرةً في الإعداد لتثبيتات Skills المعتمدة على Yarn.
 </ParamField>
 
 <ParamField path="skills.install.allowUploadedArchives" type="boolean" default="false">
   اسمح لعملاء Gateway الموثوقين ذوي `operator.admin` بتثبيت أرشيفات zip
-  خاصة تم تجهيزها عبر `skills.upload.*`. لا تحتاج تثبيتات ClawHub العادية
+  خاصة جرى تجهيزها عبر `skills.upload.*`. لا تحتاج تثبيتات ClawHub العادية
   إلى هذا الإعداد.
 </ParamField>
 
 ## سياسة تثبيت المشغّل (`security.installPolicy`)
 
 استخدم `security.installPolicy` عندما يحتاج المشغّلون إلى أمر محلي موثوق
-للموافقة على تثبيتات skills وPlugin أو حظرها بسياسة خاصة بالمضيف. تعمل السياسة
-بعد أن يجهّز OpenClaw مواد المصدر وقبل متابعة التثبيت أو التحديث.
-تنطبق على skills في ClawHub، وskills المرفوعة، وskills من Git/محلية،
-ومثبّتات اعتماديات skills، ومصادر تثبيت/تحديث Plugin.
+للموافقة على تثبيتات Skills والـ Plugin أو حظرها وفق سياسة خاصة بالمضيف.
+تعمل السياسة بعد أن يجهّز OpenClaw مواد المصدر وقبل متابعة التثبيت
+أو التحديث. وتنطبق على Skills من ClawHub، وSkills المرفوعة، وSkills من Git/المسارات المحلية،
+وأدوات تثبيت تبعيات Skills، ومصادر تثبيت/تحديث الـ Plugin.
 
 ```json5
 {
@@ -136,77 +137,79 @@ x-i18n:
 ```
 
 <ParamField path="security.installPolicy.enabled" type="boolean" default="false">
-  يفعّل سياسة التثبيت المملوكة للمشغّل. عند تفعيلها من دون أمر `exec`
-  صالح، تفشل التثبيتات بإغلاق آمن.
+  يفعّل سياسة التثبيت التي يملكها المشغّل. عند تفعيلها من دون أمر `exec`
+  صالح، تفشل التثبيتات بطريقة مغلقة.
 </ParamField>
 
 <ParamField path="security.installPolicy.targets" type='("skill" | "plugin")[]'>
-  مرشّح هدف اختياري. عند حذفه، تنطبق السياسة على كل هدف مدعوم
-  حتى لا تفشل التثبيتات الجديدة بشكل مفتوح على نحو غير متوقع.
+  مرشح اختياري للأهداف. عند حذفه، تنطبق السياسة على كل هدف مدعوم
+  كي لا تفشل التثبيتات الجديدة بطريقة مفتوحة على نحو غير متوقع.
 </ParamField>
 
 <ParamField path="security.installPolicy.exec.command" type="string">
-  مسار مطلق إلى ملف السياسة التنفيذي الموثوق. يشغّله OpenClaw من دون
-  صدفة ويتحقق من المسار قبل الاستخدام.
+  المسار المطلق إلى الملف التنفيذي الموثوق للسياسة. يشغّله OpenClaw من دون
+  صدفة أوامر ويتحقق من المسار قبل استخدامه.
 </ParamField>
 
 <ParamField path="security.installPolicy.exec.args" type="string[]">
-  وسيطات ثابتة تُمرر بعد `command`.
+  الوسائط الثابتة الممررة بعد `command`.
 </ParamField>
 
 <ParamField path="security.installPolicy.exec.timeoutMs" type="number" default="10000">
-  أقصى زمن تشغيل فعلي لقرار سياسة واحد.
+  أقصى مدة فعلية لتنفيذ قرار سياسة واحد.
 </ParamField>
 
 <ParamField path="security.installPolicy.exec.noOutputTimeoutMs" type="number" default="timeoutMs">
-  أقصى مدة من دون مخرجات stdout أو stderr قبل أن تفشل السياسة بإغلاق آمن.
+  أقصى مدة من دون خرج على stdout أو stderr قبل أن تفشل السياسة
+  بطريقة مغلقة.
 </ParamField>
 
 <ParamField path="security.installPolicy.exec.maxOutputBytes" type="number" default="1048576">
-  أقصى عدد مقبول من بايتات stdout وstderr مجتمعة من عملية السياسة.
+  أقصى عدد مقبول من البايتات المجمعة من stdout وstderr من عملية السياسة.
 </ParamField>
 
 <ParamField path="security.installPolicy.exec.env" type="Record<string, string>">
-  متغيرات بيئة حرفية تُقدم إلى عملية السياسة.
+  متغيرات البيئة الحرفية المقدمة إلى عملية السياسة.
 </ParamField>
 
 <ParamField path="security.installPolicy.exec.passEnv" type="string[]">
-  أسماء متغيرات البيئة المنسوخة من عملية OpenClaw إلى عملية السياسة.
-  تُمرر المتغيرات المسماة فقط.
+  أسماء متغيرات البيئة المنسوخة من عملية OpenClaw إلى
+  عملية السياسة. لا تُمرر سوى المتغيرات المسماة.
 </ParamField>
 
 <ParamField path="security.installPolicy.exec.trustedDirs" type="string[]">
-  قائمة سماح اختيارية بالأدلة التي قد تحتوي ملف السياسة التنفيذي.
+  قائمة سماح اختيارية بالأدلة التي قد تحتوي على الملف التنفيذي للسياسة.
 </ParamField>
 
 <ParamField path="security.installPolicy.exec.allowInsecurePath" type="boolean" default="false">
-  يتجاوز فحوص ملكية مسار الأمر وأذوناته. استخدمه فقط عندما يكون المسار
-  محميا بآلية أخرى.
+  يتجاوز فحوصات ملكية مسار الأمر وأذوناته. استخدمه فقط عندما يكون
+  المسار محميًا بآلية أخرى.
 </ParamField>
 
 <ParamField path="security.installPolicy.exec.allowSymlinkCommand" type="boolean" default="false">
-  يسمح لمسار الأمر المكوّن بأن يكون رابطا رمزيا. يجب أن يظل الهدف المحلول
-  مستوفيا فحوص المسار الأخرى. يجب أن تكون وسيطات سكربت المفسّر
+  يسمح بأن يكون مسار الأمر المُعدّ رابطًا رمزيًا. يجب أن يظل الهدف المحلول
+  مستوفيًا لفحوصات المسار الأخرى. ويجب أن تكون وسائط نصوص المفسّر البرمجية
   ملفات عادية مباشرة، لا روابط رمزية.
 </ParamField>
 
-تتلقى السياسة كائن JSON واحدا على stdin مع `protocolVersion: 1`،
+تتلقى السياسة كائن JSON واحدًا عبر stdin يتضمن `protocolVersion: 1`،
 و`openclawVersion`، و`targetType`، و`targetName`، و`sourcePath`، و`sourcePathKind`،
-و`source` منظّم اختياري، و`origin` منظّم، و`request`. ويجب أن تكتب
-كائن JSON واحدا على stdout: `{ "protocolVersion": 1, "decision": "allow" }` أو
-`{ "protocolVersion": 1, "decision": "block", "reason": "..." }`. تؤدي حالة
-خروج غير صفرية، أو انتهاء مهلة، أو JSON مشوّه، أو حقول مفقودة، أو إصدارات
-بروتوكول غير مدعومة إلى فشل بإغلاق آمن.
+و`source` المنظم الاختياري، و`origin` المنظم، و`request`. ويجب أن
+تكتب كائن JSON واحدًا إلى stdout: `{ "protocolVersion": 1, "decision": "allow" }`
+أو `{ "protocolVersion": 1, "decision": "block", "reason": "..." }`. يؤدي الخروج
+برمز غير صفري، أو انتهاء المهلة، أو JSON غير صالح، أو الحقول المفقودة، أو إصدارات
+البروتوكول غير المدعومة إلى الفشل بطريقة مغلقة.
 
-لا ينفذ OpenClaw سياسة التثبيت أثناء بدء تشغيل Gateway العادي. تفشل
-التثبيتات والتحديثات بإغلاق آمن عندما تكون السياسة مفعّلة ولكن غير متاحة.
-يجري `openclaw doctor` تحققا ثابتا، وينفذ `openclaw doctor --deep` مسبارا
-اصطناعيا للتثبيت مقابل الأمر المكوّن.
+لا ينفّذ OpenClaw سياسة التثبيت أثناء بدء تشغيل Gateway العادي.
+تفشل التثبيتات والتحديثات بطريقة مغلقة عندما تكون السياسة مفعّلة لكنها غير متاحة.
+ينفّذ `openclaw doctor` تحققًا ثابتًا؛ وينفّذ `openclaw doctor --deep`
+اختبار تثبيت اصطناعيًا مقابل الأمر المُعدّ.
 
-تطبق التحديثات المجمعة السياسة لكل هدف: يؤدي حظر تحديث skill أو Plugin
-إلى فشل ذلك الهدف من دون تعطيل السياسة أو تخطي الأهداف اللاحقة في الدفعة.
+تطبّق التحديثات المجمعة السياسة لكل هدف على حدة: يؤدي حظر تحديث Skill أو Plugin
+إلى فشل ذلك الهدف من دون تعطيل السياسة أو تخطي الأهداف اللاحقة في
+الدفعة.
 
-مثال stdin:
+مثال على stdin:
 
 ```json
 {
@@ -265,44 +268,44 @@ process.stdin.on("end", () => {
 });
 ```
 
-## قائمة سماح skills المدمجة
+## قائمة السماح لـ Skills المضمنة
 
 <ParamField path="skills.allowBundled" type="string[]">
-  قائمة سماح اختيارية لـ skills **المدمجة** فقط. عند تعيينها، تكون skills
-  المدمجة في القائمة فقط مؤهلة. لا تتأثر skills المُدارة، وعلى مستوى الوكيل،
-  وعلى مستوى مساحة العمل.
+  قائمة سماح اختيارية لـ Skills **المضمنة** فقط. عند ضبطها، لا تكون مؤهلة
+  سوى Skills المضمنة الواردة في القائمة. لا تتأثر Skills المُدارة، والخاصة بمستوى الوكيل،
+  والخاصة بمساحة العمل.
 </ParamField>
 
-## إدخالات كل skill (`skills.entries`)
+## إدخالات كل Skill (`skills.entries`)
 
-تطابق المفاتيح ضمن `entries` اسم skill `name` افتراضيا. إذا عرّفت skill
-`metadata.openclaw.skillKey`، فاستخدم ذلك المفتاح بدلا منه. ضع الأسماء
-الموصولة بشرطات بين علامتي اقتباس (يسمح JSON5 بالمفاتيح المقتبسة).
+تطابق المفاتيح ضمن `entries` قيمة `name` الخاصة بالـ Skill افتراضيًا. إذا عرّفت Skill
+القيمة `metadata.openclaw.skillKey`، فاستخدم ذلك المفتاح بدلًا منها. ضع الأسماء المحتوية
+على واصلات بين علامتي اقتباس (يسمح JSON5 بالمفاتيح المقتبسة).
 
 <ParamField path="skills.entries.<key>.enabled" type="boolean">
-  يعطّل `false` هذه skill حتى عندما تكون مدمجة أو مثبتة. إن skill المدمجة
-  `coding-agent` اختيارية — عيّنها إلى `true` وتأكد من تثبيت ومصادقة أحد
-  `claude` أو `codex` أو `opencode` أو CLI آخر مدعوم.
+  تؤدي القيمة `false` إلى تعطيل Skill حتى عندما تكون مضمنة أو مثبتة. إن Skill
+  المضمنة `coding-agent` اختيارية التفعيل — اضبطها على `true` وتأكد من تثبيت
+  ومصادقة أحد `claude` أو `codex` أو `opencode` أو أي CLI آخر مدعوم.
 </ParamField>
 
 <ParamField path="skills.entries.<key>.apiKey" type='string | { source, provider, id }'>
-  حقل ملاءمة لـ skills التي تعلن `metadata.openclaw.primaryEnv`.
+  حقل تسهيلي لـ Skills التي تعلن `metadata.openclaw.primaryEnv`.
   يدعم سلسلة نصية صريحة أو SecretRef: `{ source: "env", provider: "default", id: "VAR_NAME" }`.
 </ParamField>
 
 <ParamField path="skills.entries.<key>.env" type="Record<string, string>">
-  متغيرات بيئة تُحقن لتشغيل الوكيل. لا تُحقن إلا عندما لا يكون
-  المتغير مضبوطا بالفعل في العملية.
+  متغيرات البيئة المحقونة لتشغيل الوكيل. لا تُحقن إلا عندما لا يكون
+  المتغير مضبوطًا بالفعل في العملية.
 </ParamField>
 
 <ParamField path="skills.entries.<key>.config" type="object">
-  حاوية اختيارية لحقول إعدادات مخصصة لكل skill.
+  حاوية اختيارية لحقول الإعداد المخصصة لكل Skill.
 </ParamField>
 
 ## قوائم سماح الوكلاء (`agents`)
 
-استخدم إعدادات الوكيل عندما تريد جذور skills نفسها على الجهاز/مساحة العمل
-ولكن مجموعة skills مرئية مختلفة لكل وكيل.
+استخدم إعداد الوكيل عندما تريد جذور Skills نفسها على الجهاز/مساحة العمل، لكن
+مجموعة Skills ظاهرة مختلفة لكل وكيل.
 
 ```json5
 {
@@ -320,63 +323,70 @@ process.stdin.on("end", () => {
 ```
 
 <ParamField path="agents.defaults.skills" type="string[]">
-  قائمة سماح أساسية مشتركة ترثها الوكلاء التي تحذف `agents.list[].skills`.
-  احذفها بالكامل لترك skills غير مقيدة افتراضيا.
+  قائمة السماح الأساسية المشتركة التي ترثها الوكلاء التي تحذف
+  `agents.list[].skills`. احذفها بالكامل لترك Skills بلا قيود
+  افتراضيًا.
 </ParamField>
 
 <ParamField path="agents.list[].skills" type="string[]">
-  مجموعة skills نهائية صريحة لذلك الوكيل. القوائم الصريحة **تستبدل**
-  الافتراضات الموروثة — ولا تدمج معها. عيّنها إلى `[]` لعدم كشف أي skills
+  مجموعة Skills النهائية الصريحة لذلك الوكيل. القوائم الصريحة **تحل محل**
+  الإعدادات الافتراضية الموروثة — ولا تندمج معها. اضبطها على `[]` لعدم إظهار أي Skills
   لذلك الوكيل.
 </ParamField>
 
 <Warning>
-  قوائم سماح skills الخاصة بالوكيل هي مرشح رؤية وتحميل لاكتشاف skills في OpenClaw،
-  والمطالبات، واكتشاف أوامر الشرطة المائلة، ومزامنة sandbox، ولقطات skills.
-  وهي ليست حدّ تفويض وقت الصدفة. إذا كان بإمكان الوكيل تشغيل `exec` على المضيف،
-  فيمكن لتلك الصدفة أن تظل تشغّل عملاء خارجيين أو تقرأ ملفات المضيف المرئية
-  لمستخدم التنفيذ، بما في ذلك سجلات عملاء MCP مثل
-  `~/.openclaw/skills/config/mcporter.json`. لعزل MCP لكل وكيل، ادمج قوائم سماح
-  skills مع عزل sandbox/مستخدم نظام التشغيل، وارفض `exec` المضيف أو ضعه ضمن
-  قائمة سماح ضيقة، وفضّل بيانات اعتماد لكل وكيل على خادم MCP.
+  قوائم سماح Skills الخاصة بالوكلاء هي مرشح للرؤية والتحميل لاكتشاف OpenClaw
+  للـ Skills، والمطالبات، واكتشاف أوامر الشرطة المائلة، ومزامنة بيئة العزل، ولقطات
+  Skills. وهي ليست حدًا للتخويل وقت تشغيل الصدفة. إذا كان بإمكان وكيل
+  تشغيل `exec` على المضيف، فلا يزال بإمكان تلك الصدفة تشغيل عملاء خارجيين أو قراءة
+  ملفات المضيف المرئية لمستخدم التنفيذ، بما في ذلك سجلات عملاء MCP
+  مثل `~/.openclaw/skills/config/mcporter.json`. ولعزل MCP
+  لكل وكيل، ادمج قوائم سماح Skills مع عزل بيئة العزل/مستخدم نظام التشغيل،
+  وارفض تنفيذ `exec` على المضيف أو قيّده بقائمة سماح صارمة، وفضّل بيانات اعتماد
+  خاصة بكل وكيل على خادم MCP.
 </Warning>
 
 ## ورشة العمل (`skills.workshop`)
 
 <ParamField path="skills.workshop.autonomous.enabled" type="boolean" default="false">
-  عندما تكون `true`، يمكن للوكلاء إنشاء مقترحات معلّقة من إشارات محادثة
-  دائمة بعد أدوار ناجحة. يمر إنشاء skills الذي يطلبه المستخدم دائما عبر
-  Skill Workshop بغض النظر عن هذا الإعداد.
+  عندما تكون القيمة `true`، يمكن للوكلاء إنشاء مقترحات معلّقة استنادًا إلى إشارات
+  المحادثة الدائمة بعد المنعطفات الناجحة. يمر إنشاء Skills بطلب من المستخدم دائمًا
+  عبر ورشة Skills بغض النظر عن هذا الإعداد.
 </ParamField>
 
 <ParamField path="skills.workshop.approvalPolicy" type='"pending" | "auto"' default='"pending"'>
-  يتطلب `pending` موافقة المشغّل قبل التطبيق أو الرفض أو العزل بمبادرة من الوكيل.
-  يتيح `auto` هذه الإجراءات دون موافقة.
+  تتطلب `pending` موافقة المشغّل قبل أن ينفّذ الوكيل، من تلقاء نفسه، إجراء التطبيق
+  أو الرفض أو العزل. تسمح `auto` بهذه الإجراءات دون موافقة.
 </ParamField>
 
 <ParamField path="skills.workshop.allowSymlinkTargetWrites" type="boolean" default="false">
-  اسمح لتطبيق Skill Workshop بالكتابة عبر الروابط الرمزية لـ Skills في مساحة العمل التي يكون
-  هدفها الحقيقي موثوقًا به بالفعل بواسطة `skills.load.allowSymlinkTargets`. أبقِ هذا
-  معطّلًا ما لم يكن من المفترض أن تعدّل تطبيقات المقترحات المولّدة جذر Skill المشترك
-  ذاك.
+  اسمح لتطبيق ورشة Skills بالكتابة عبر الروابط الرمزية لـ Skills في مساحة العمل التي
+  تكون وجهتها الفعلية موثوقة بالفعل بواسطة `skills.load.allowSymlinkTargets`. أبقِ
+  هذا الخيار معطّلًا ما لم يكن مطلوبًا أن تؤدي عمليات تطبيق المقترحات المُنشأة إلى
+  تعديل جذر Skills المشترك ذاك.
 </ParamField>
 
 <ParamField path="skills.workshop.maxPending" type="number" default="50">
-  الحد الأقصى للمقترحات المعلّقة والمعزولة المحتفَظ بها لكل مساحة عمل.
+  الحد الأقصى للمقترحات المعلّقة والمعزولة المحتفَظ بها لكل مساحة عمل (النطاق
+  المسموح: 1-200).
 </ParamField>
 
 <ParamField path="skills.workshop.maxSkillBytes" type="number" default="40000">
-  الحد الأقصى لحجم نص المقترح بالبايت. أوصاف المقترحات محددة بحد صارم قدره
-  160 بايت لأنها تظهر في مخرجات الاكتشاف والقوائم.
+  الحد الأقصى لحجم نص المقترح بالبايت (النطاق المسموح: 1024-200000). تُقيَّد
+  أوصاف المقترحات بشكل منفصل بحد صارم قدره 160 بايت، لأنها تظهر في مخرجات
+  الاكتشاف والقوائم.
 </ParamField>
+
+راجع [ورشة Skills](/ar/tools/skill-workshop) لمعرفة دورة حياة المقترح وأوامر CLI
+ومعاملات أدوات الوكيل وطرائق Gateway التي يتحكم فيها هذا الإعداد.
 
 ## جذور Skills المرتبطة رمزيًا
 
-افتراضيًا، تكون جذور Skills الخاصة بمساحة العمل ووكيل المشروع والدليل الإضافي
-والمضمّنة حدود احتواء. يتم تخطي مجلد Skill المرتبط رمزيًا ضمن `<workspace>/skills`
-إذا كان يحل إلى خارج الجذر، مع رسالة سجل.
+افتراضيًا، تُعد جذور Skills الخاصة بمساحة العمل ووكيل المشروع والدليل الإضافي
+والحزمة حدود احتواء. يُتخطى مجلد Skills مرتبط رمزيًا ضمن `<workspace>/skills`
+إذا كانت وجهته خارج الجذر، مع تسجيل رسالة في السجل.
 
-للسماح بتخطيط رابط رمزي مقصود، صرّح بالهدف الموثوق:
+للسماح بتخطيط مقصود للروابط الرمزية، صرّح بالوجهة الموثوقة:
 
 ```json5
 {
@@ -389,12 +399,12 @@ process.stdin.on("end", () => {
 }
 ```
 
-باستخدام هذا التكوين، يتم قبول `<workspace>/skills/manager -> ~/Projects/manager/skills`
-بعد حل المسار الحقيقي. يفحص `extraDirs` المستودع الشقيق مباشرة؛ ويحافظ
+باستخدام هذا الإعداد، يُقبل `<workspace>/skills/manager -> ~/Projects/manager/skills`
+بعد حل المسار الفعلي. يفحص `extraDirs` المستودع الشقيق مباشرةً؛ ويحافظ
 `allowSymlinkTargets` على المسار المرتبط رمزيًا للتخطيطات الحالية.
 
-لا يكتب تطبيق Skill Workshop عبر تلك الروابط الرمزية افتراضيًا. للسماح
-لتطبيق Workshop بتعديل Skills ضمن أهداف روابط رمزية موثوق بها بالفعل، اشترك
+لا يكتب تطبيق ورشة Skills عبر تلك الروابط الرمزية افتراضيًا. للسماح لتطبيق
+الورشة بتعديل Skills ضمن وجهات الروابط الرمزية الموثوقة بالفعل، فعّل ذلك
 بشكل منفصل:
 
 ```json5
@@ -410,20 +420,21 @@ process.stdin.on("end", () => {
 }
 ```
 
-تقبل أدلة `~/.openclaw/skills` المُدارة و`~/.agents/skills` الشخصية
-بالفعل الروابط الرمزية لأدلة Skills (لا يزال احتواء `SKILL.md` لكل Skill
-مطبقًا).
+تقبل أدلة `~/.openclaw/skills` المُدارة وأدلة `~/.agents/skills` الشخصية
+بالفعل الروابط الرمزية لأدلة Skills دون شروط (مع استمرار تطبيق احتواء
+`SKILL.md` لكل Skill) — ولا يلزم `allowSymlinkTargets` إلا لجذور مساحة العمل
+والدليل الإضافي ووكيل المشروع (`<workspace>/.agents/skills`).
 
 ## Skills المعزولة ومتغيرات البيئة
 
 <Warning>
-  ينطبق `skills.entries.<skill>.env` و`apiKey` على تشغيلات **المضيف** فقط. داخل
-  صندوق عزل لا يكون لهما أي تأثير — ستفشل Skill التي تعتمد على `GEMINI_API_KEY`
-  مع `apiKey not configured` ما لم يُعطَ صندوق العزل المتغير
-  بشكل منفصل.
+  ينطبق `skills.entries.<skill>.env` و`apiKey` على عمليات تشغيل **المضيف** فقط.
+  ولا يكون لهما أي تأثير داخل بيئة معزولة — ستفشل Skill تعتمد على
+  `GEMINI_API_KEY` بالرسالة `apiKey not configured` ما لم يُمرَّر المتغير إلى
+  البيئة المعزولة بشكل منفصل.
 </Warning>
 
-مرّر الأسرار إلى صندوق عزل Docker باستخدام:
+مرّر الأسرار إلى بيئة Docker معزولة باستخدام:
 
 ```json5
 {
@@ -440,35 +451,35 @@ process.stdin.on("end", () => {
 ```
 
 <Note>
-  يمكن للمستخدمين الذين لديهم وصول إلى عفريت Docker فحص قيم `sandbox.docker.env`
-  من خلال بيانات Docker الوصفية. استخدم ملف أسرار مركّبًا، أو صورة مخصصة، أو
-  مسار تسليم آخر عندما لا يكون هذا الانكشاف مقبولًا.
+  يمكن للمستخدمين الذين لديهم صلاحية الوصول إلى برنامج Docker الخفي فحص قيم
+  `sandbox.docker.env` من خلال بيانات Docker الوصفية. استخدم ملف أسرار موصولًا،
+  أو صورة مخصصة، أو مسار تسليم آخر عندما لا يكون هذا الكشف مقبولًا.
 </Note>
 
-## تذكير ترتيب التحميل
+## تذكير بترتيب التحميل
 
 ```text
-workspace/skills      (highest)
+workspace/skills      (الأعلى)
 workspace/.agents/skills
 ~/.agents/skills
 ~/.openclaw/skills
-bundled skills
-skills.load.extraDirs (lowest)
+Skills المضمّنة
+skills.load.extraDirs (الأدنى)
 ```
 
-تسري تغييرات Skills والتكوين في الجلسة الجديدة التالية عندما يكون المراقب
-ممكّنًا، أو في دور الوكيل التالي عندما يكتشف المراقب تغييرًا.
+تسري التغييرات على Skills والإعدادات في الجلسة الجديدة التالية عندما تكون
+المراقبة مفعّلة، أو في منعطف الوكيل التالي عندما تكتشف المراقبة تغييرًا.
 
-## ذات صلة
+## ذو صلة
 
 <CardGroup cols={2}>
   <Card title="مرجع Skills" href="/ar/tools/skills" icon="puzzle-piece">
-    ما هي Skills، وترتيب التحميل، والضبط، وتنسيق SKILL.md.
+    ماهية Skills وترتيب التحميل والتقييد وتنسيق SKILL.md.
   </Card>
   <Card title="إنشاء Skills" href="/ar/tools/creating-skills" icon="hammer">
     تأليف Skills مخصصة لمساحة العمل.
   </Card>
-  <Card title="Skill Workshop" href="/ar/tools/skill-workshop" icon="flask">
+  <Card title="ورشة Skills" href="/ar/tools/skill-workshop" icon="flask">
     قائمة انتظار المقترحات لـ Skills التي يصوغها الوكيل.
   </Card>
   <Card title="أوامر الشرطة المائلة" href="/ar/tools/slash-commands" icon="terminal">

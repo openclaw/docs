@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Вы устанавливаете, настраиваете или проводите аудит Plugin litellm
-summary: Добавляет поддержку поставщика моделей LiteLLM в OpenClaw.
+    - Вы устанавливаете, настраиваете или проверяете плагин litellm
+summary: Добавляет в OpenClaw поддержку провайдера моделей LiteLLM.
 title: Plugin LiteLLM
 x-i18n:
-    generated_at: "2026-06-28T23:25:18Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:39:46Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 8bbe9b35112012185719c87aa0f027422f574e995cefcfe2bc1f243d9b3b43a9
@@ -15,17 +15,17 @@ x-i18n:
 
 # Plugin LiteLLM
 
-Добавляет поддержку поставщика моделей LiteLLM в OpenClaw.
+Добавляет в OpenClaw поддержку провайдера моделей LiteLLM.
 
 ## Распространение
 
 - Пакет: `@openclaw/litellm-provider`
-- Способ установки: включен в OpenClaw
+- Способ установки: входит в состав OpenClaw
 
 ## Интерфейс
 
-поставщики: litellm; контракты: imageGenerationProviders
+провайдеры: litellm; контракты: imageGenerationProviders
 
-## Связанные документы
+## Связанная документация
 
 - [litellm](/ru/providers/litellm)

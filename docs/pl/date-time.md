@@ -2,38 +2,38 @@
 read_when:
     - Zmieniasz sposób wyświetlania znaczników czasu modelowi lub użytkownikom
     - Debugujesz formatowanie czasu w wiadomościach lub danych wyjściowych promptu systemowego
-summary: Obsługa daty i czasu w obwiedniach, promptach, narzędziach i konektorach
+summary: Obsługa daty i czasu w kopertach, promptach, narzędziach i konektorach
 title: Data i godzina
 x-i18n:
-    generated_at: "2026-06-27T17:30:48Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:01:34Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d40e8626269d26a14506a178080b353529080b6ee5ce523c3281521f1a34bf90
+    source_hash: e6f923022c021c1cf18ba306cd7b9a4873f5df947bb9a8fae9c737a89f64cbf2
     source_path: date-time.md
     workflow: 16
 ---
 
-OpenClaw domyślnie używa **czasu lokalnego hosta dla znaczników czasu transportu** oraz **strefy czasowej użytkownika tylko w prompcie systemowym**.
-Znaczniki czasu dostawcy są zachowywane, aby narzędzia utrzymywały swoją natywną semantykę (bieżący czas jest dostępny przez `session_status`).
+OpenClaw używa **czasu lokalnego hosta dla znaczników czasu transportu** i umieszcza w prompcie systemowym **tylko strefę czasową**.
+Znaczniki czasu dostawcy są zachowywane, dzięki czemu narzędzia zachowują swoją natywną semantykę. Gdy agent potrzebuje bieżącego
+czasu, uruchamia narzędzie `session_status`.
 
-## Koperty wiadomości (domyślnie lokalne)
+## Obwiednie wiadomości (domyślnie lokalne)
 
-Wiadomości przychodzące są opakowywane znacznikiem czasu (z dokładnością do sekundy):
+Wiadomości przychodzące są opakowywane znacznikiem czasu zawierającym dzień tygodnia i czas z dokładnością do sekundy:
 
 ```
-[Provider ... Mon 2026-01-05 16:26:34 PST] message text
+[WhatsApp +1555 Mon 2026-01-05 16:26:34 PST] treść wiadomości
 ```
 
-Ten znacznik czasu koperty jest **domyślnie lokalny dla hosta**, niezależnie od strefy czasowej dostawcy.
-
-Możesz nadpisać to zachowanie:
+Znacznik czasu obwiedni jest **domyślnie zgodny z czasem lokalnym hosta**, niezależnie od strefy czasowej dostawcy.
+Można to zmienić w `agents.defaults`:
 
 ```json5
 {
   agents: {
     defaults: {
-      envelopeTimezone: "local", // "utc" | "local" | "user" | IANA timezone
+      envelopeTimezone: "local", // "utc" | "local" | "user" | strefa czasowa IANA
       envelopeTimestamp: "on", // "on" | "off"
       envelopeElapsed: "on", // "on" | "off"
     },
@@ -41,56 +41,55 @@ Możesz nadpisać to zachowanie:
 }
 ```
 
-- `envelopeTimezone: "utc"` używa UTC.
-- `envelopeTimezone: "local"` używa strefy czasowej hosta.
-- `envelopeTimezone: "user"` używa `agents.defaults.userTimezone` (z przejściem awaryjnym na strefę czasową hosta).
-- Użyj jawnej strefy czasowej IANA (np. `"America/Chicago"`) dla stałej strefy.
-- `envelopeTimestamp: "off"` usuwa bezwzględne znaczniki czasu z nagłówków kopert, bezpośrednich prefiksów promptów agenta i osadzonych prefiksów danych wejściowych modelu.
-- `envelopeElapsed: "off"` usuwa sufiksy czasu, który upłynął (styl `+2m`).
+| Klucz               | Wartości                                                     | Zachowanie                                                                                                                                                                                                 |
+| ------------------- | ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `envelopeTimezone`  | `local` (domyślnie), `utc`, `user`, jawna nazwa IANA         | `user` używa `agents.defaults.userTimezone` (strefy czasowej hosta, jeśli nie ustawiono). Jawna nazwa IANA (np. `"America/Chicago"`) ustala stałą strefę; nierozpoznane nazwy powodują użycie UTC. |
+| `envelopeTimestamp` | `on` (domyślnie), `off`                                      | `off` usuwa bezwzględne znaczniki czasu z nagłówków obwiedni, bezpośrednich prefiksów promptów agenta oraz osadzonych prefiksów danych wejściowych modelu.                                     |
+| `envelopeElapsed`   | `on` (domyślnie), `off`                                      | `off` usuwa przyrostek czasu, który upłynął od poprzedniej wiadomości w sesji (w formacie takim jak `+30s` / `+2m`).                                                                         |
 
 ### Przykłady
 
-**Lokalnie (domyślnie):**
+**Czas lokalny (domyślnie):**
 
 ```
-[WhatsApp +1555 Sun 2026-01-18 00:19:42 PST] hello
+[WhatsApp +1555 Sun 2026-01-18 00:19:42 PST] cześć
 ```
 
 **Strefa czasowa użytkownika:**
 
 ```
-[WhatsApp +1555 Sun 2026-01-18 00:19:42 CST] hello
+[WhatsApp +1555 Sun 2026-01-18 00:19:42 CST] cześć
 ```
 
-**Włączony czas, który upłynął:**
+**Czas, który upłynął, z `envelopeTimezone: "utc"`:**
 
 ```
-[WhatsApp +1555 +30s Sun 2026-01-18T05:19:00Z] follow-up
+[WhatsApp +1555 +30s Sun 2026-01-18T05:19:00Z] kolejna wiadomość
 ```
 
 ## Prompt systemowy: bieżąca data i godzina
 
-Jeśli strefa czasowa użytkownika jest znana, prompt systemowy zawiera dedykowaną
-sekcję **Bieżąca data i godzina** z **samą strefą czasową** (bez zegara/formatu czasu),
-aby zachować stabilność buforowania promptów:
+Prompt systemowy zawiera sekcję **Bieżąca data i godzina** z **samą strefą czasową**
+(bez zegara ani formatu czasu), dzięki czemu pamięć podręczna promptu pozostaje stabilna:
 
 ```
-Time zone: America/Chicago
+Strefa czasowa: America/Chicago
 ```
 
-Gdy agent potrzebuje bieżącego czasu, użyj narzędzia `session_status`; karta statusu
-zawiera wiersz znacznika czasu.
+Strefą jest `agents.defaults.userTimezone`, jeśli ją skonfigurowano, a w przeciwnym razie strefa czasowa hosta.
+Prompt instruuje również agenta, aby uruchamiał narzędzie `session_status`, gdy potrzebuje
+bieżącej daty, godziny lub dnia tygodnia.
 
 ## Wiersze zdarzeń systemowych (domyślnie lokalne)
 
-Zdarzenia systemowe w kolejce wstawiane do kontekstu agenta są poprzedzane znacznikiem czasu przy użyciu
-tego samego wyboru strefy czasowej co koperty wiadomości (domyślnie: lokalna dla hosta).
+Zdarzenia systemowe umieszczone w kolejce i wstawiane do kontekstu agenta są poprzedzane znacznikiem czasu przy użyciu
+tego samego ustawienia `envelopeTimezone` co obwiednie wiadomości (domyślnie: czas lokalny hosta).
 
 ```
-System: [2026-01-12 12:19:17 PST] Model switched.
+System: [2026-01-12 12:19:17 PST] Model został przełączony.
 ```
 
-### Konfiguracja strefy czasowej użytkownika i formatu
+### Konfigurowanie strefy czasowej użytkownika i formatu
 
 ```json5
 {
@@ -103,31 +102,31 @@ System: [2026-01-12 12:19:17 PST] Model switched.
 }
 ```
 
-- `userTimezone` ustawia **strefę czasową lokalną dla użytkownika** dla kontekstu promptu.
-- `timeFormat` kontroluje **wyświetlanie w formacie 12h/24h** w prompcie. `auto` podąża za preferencjami systemu operacyjnego.
+- `userTimezone` ustawia **lokalną strefę czasową użytkownika** dla kontekstu promptu (oraz dla `envelopeTimezone: "user"`).
+- `timeFormat` steruje **wyświetlaniem w formacie 12- lub 24-godzinnym** dla czasu prezentowanego w prompcie. `auto` korzysta z preferencji systemu operacyjnego.
 
-## Wykrywanie formatu czasu (auto)
+## Wykrywanie formatu czasu (automatyczne)
 
-Gdy `timeFormat: "auto"`, OpenClaw sprawdza preferencję systemu operacyjnego (macOS/Windows)
-i przechodzi awaryjnie na formatowanie ustawień regionalnych. Wykryta wartość jest **buforowana na proces**,
+Gdy ustawiono `timeFormat: "auto"`, OpenClaw sprawdza preferencje systemu operacyjnego (macOS i Windows),
+a jeśli nie jest to możliwe, używa formatowania zgodnego z ustawieniami regionalnymi. Wykryta wartość jest **buforowana dla procesu**,
 aby uniknąć powtarzających się wywołań systemowych.
 
-## Ładunki narzędzi i konektory (surowy czas dostawcy oraz znormalizowane pola)
+## Dane narzędzi i konektory (nieprzetworzony czas dostawcy oraz pola znormalizowane)
 
-Narzędzia kanałów zwracają **natywne znaczniki czasu dostawcy** i dodają znormalizowane pola dla spójności:
+Narzędzia kanałów zwracają **natywne znaczniki czasu dostawcy** i dla spójności dodają znormalizowane pola:
 
-- `timestampMs`: milisekundy epoki (UTC)
-- `timestampUtc`: ciąg ISO 8601 UTC
+- `timestampMs`: liczba milisekund od epoki (UTC)
+- `timestampUtc`: ciąg UTC w formacie ISO 8601
 
-Surowe pola dostawcy są zachowywane, aby nic nie zostało utracone.
+Nieprzetworzone pola dostawcy są zachowywane, aby nie utracić żadnych informacji.
 
-- Slack: ciągi podobne do epoki z API
-- Discord: znaczniki czasu ISO w UTC
-- Telegram/WhatsApp: specyficzne dla dostawcy znaczniki czasu liczbowe/ISO
+- Discord: znaczniki czasu UTC w formacie ISO
+- Slack: ciągi przypominające czas epoki zwracane przez API
+- Telegram/WhatsApp: specyficzne dla dostawcy znaczniki czasu w formacie liczbowym lub ISO
 
-Jeśli potrzebujesz czasu lokalnego, przekonwertuj go dalej przy użyciu znanej strefy czasowej.
+Jeśli potrzebujesz czasu lokalnego, przekształć go na dalszym etapie przy użyciu znanej strefy czasowej.
 
-## Powiązane dokumenty
+## Powiązana dokumentacja
 
 - [Prompt systemowy](/pl/concepts/system-prompt)
 - [Strefy czasowe](/pl/concepts/timezone)

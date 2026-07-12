@@ -1,52 +1,44 @@
 ---
 read_when:
-    - Je wilt één agentbeurt uitvoeren vanuit scripts (eventueel het antwoord afleveren)
+    - Je wilt vanuit scripts één agentbeurt uitvoeren (en eventueel het antwoord afleveren)
 summary: CLI-referentie voor `openclaw agent` (één agentbeurt verzenden via de Gateway)
 title: Agent
 x-i18n:
-    generated_at: "2026-06-27T17:17:58Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:43:24Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: be2aad94ba288d14b4b18086dae54eb10c1cd0a6c7b27a836d07f39200e651d8
+    source_hash: 2e137c037a2fa58ac6534adbf1603218fc695e4c61e6c3118ce2c4ec6f1f2143
     source_path: cli/agent.md
     workflow: 16
 ---
 
 # `openclaw agent`
 
-Voer een agent-turn uit via de Gateway (gebruik `--local` voor ingebed).
-Gebruik `--agent <id>` om direct een geconfigureerde agent te targeten.
+Voer één agentbeurt uit via de Gateway. Valt terug op de ingebedde agent als de Gateway-aanvraag mislukt; geef `--local` door om direct ingebedde uitvoering af te dwingen.
 
-Geef ten minste één sessieselector door:
+Geef ten minste één sessieselector door: `--to`, `--session-key`, `--session-id` of `--agent`.
 
-- `--to <dest>`
-- `--session-key <key>`
-- `--session-id <id>`
-- `--agent <id>`
-
-Gerelateerd:
-
-- Agent-verzendtool: [Agent verzenden](/nl/tools/agent-send)
+Zie ook: [Verzendtool voor agents](/nl/tools/agent-send)
 
 ## Opties
 
-- `-m, --message <text>`: berichttekst
-- `--message-file <path>`: lees de berichttekst uit een UTF-8-bestand
+- `-m, --message <text>`: berichtinhoud
+- `--message-file <path>`: lees de berichtinhoud uit een UTF-8-bestand
 - `-t, --to <dest>`: ontvanger die wordt gebruikt om de sessiesleutel af te leiden
-- `--session-key <key>`: expliciete sessiesleutel om voor routering te gebruiken
+- `--session-key <key>`: expliciete sessiesleutel voor routering
 - `--session-id <id>`: expliciete sessie-id
-- `--agent <id>`: agent-id; overschrijft routeringsbindings
-- `--model <id>`: modeloverschrijving voor deze run (`provider/model` of model-id)
+- `--agent <id>`: agent-id; overschrijft routeringskoppelingen
+- `--model <id>`: modeloverschrijving voor deze uitvoering (`provider/model` of model-id)
 - `--thinking <level>`: denkniveau van de agent (`off`, `minimal`, `low`, `medium`, `high`, plus door de provider ondersteunde aangepaste niveaus zoals `xhigh`, `adaptive` of `max`)
-- `--verbose <on|off>`: behoud het verbose-niveau voor de sessie
-- `--channel <channel>`: bezorgkanaal; laat weg om het hoofdsessiekanaal te gebruiken
-- `--reply-to <target>`: overschrijving van bezorgdoel
-- `--reply-channel <channel>`: overschrijving van bezorgkanaal
-- `--reply-account <id>`: overschrijving van bezorgaccount
-- `--local`: voer de ingebedde agent direct uit (na vooraf laden van het pluginregister)
+- `--verbose <on|off>`: uitgebreidheidsniveau voor de sessie opslaan
+- `--channel <channel>`: afleveringskanaal; laat weg om het hoofdkanaal van de sessie te gebruiken
+- `--reply-to <target>`: overschrijving van het afleveringsdoel
+- `--reply-channel <channel>`: overschrijving van het afleveringskanaal
+- `--reply-account <id>`: overschrijving van het afleveringsaccount
+- `--local`: voer de ingebedde agent rechtstreeks uit (nadat het pluginregister vooraf is geladen)
 - `--deliver`: stuur het antwoord terug naar het geselecteerde kanaal/doel
-- `--timeout <seconds>`: overschrijf de agent-time-out (standaard 600 of configuratiewaarde)
+- `--timeout <seconds>`: overschrijf de time-out van de agent (standaard 600, of `agents.defaults.timeoutSeconds`); `0` schakelt de time-out uit
 - `--json`: voer JSON uit
 
 ## Voorbeelden
@@ -66,23 +58,20 @@ openclaw agent --agent ops --message "Run locally" --local
 
 ## Opmerkingen
 
-- Geef exact één van `--message` of `--message-file` door. `--message-file` behoudt meerregelige bestandsinhoud na het verwijderen van een optionele UTF-8-BOM, en wijst bestanden af die geen geldige UTF-8 zijn.
-- Gateway-modus valt terug op de ingebedde agent wanneer het Gateway-verzoek mislukt. Gebruik `--local` om ingebedde uitvoering vooraf af te dwingen.
-- `--local` laadt nog steeds eerst het pluginregister vooraf, zodat door plugins geleverde providers, tools en kanalen beschikbaar blijven tijdens ingebedde runs.
-- `--local` en ingebedde fallback-runs worden behandeld als eenmalige runs. Gebundelde MCP-loopbackresources en warme Claude-stdio-sessies die voor dat lokale proces zijn geopend, worden na het antwoord beëindigd, zodat scripted aanroepen geen lokale child-processen actief houden.
-- Gateway-ondersteunde runs laten MCP-loopbackresources die eigendom zijn van de Gateway onder het draaiende Gateway-proces staan; oudere clients kunnen nog steeds de historische opschoonvlag verzenden, maar de Gateway accepteert die als een compatibele no-op.
-- `--channel`, `--reply-channel` en `--reply-account` beïnvloeden antwoordbezorging, niet sessieroutering.
-- `--session-key` selecteert een expliciete sessiesleutel. Agent-geprefixt sleutels moeten `agent:<agent-id>:<session-key>` gebruiken, en `--agent` moet overeenkomen met de agent-id van de sleutel wanneer beide worden opgegeven. Kale niet-sentinel-sleutels worden binnen `--agent` gescoped wanneer die is opgegeven, of anders naar de geconfigureerde standaardagent; bijvoorbeeld, `--agent ops --session-key incident-42` routeert naar `agent:ops:incident-42`. Letterlijke `global` en `unknown` blijven alleen ongescoped wanneer geen `--agent` is opgegeven; in dat geval gebruiken ingebedde fallback en store-eigenaarschap de geconfigureerde standaardagent.
-- `--json` houdt stdout gereserveerd voor de JSON-respons. Diagnostiek van Gateway, Plugin en ingebedde fallback wordt naar stderr gerouteerd zodat scripts stdout direct kunnen parsen.
-- JSON van ingebedde fallback bevat `meta.transport: "embedded"` en `meta.fallbackFrom: "gateway"` zodat scripts fallback-runs kunnen onderscheiden van Gateway-runs.
-- Als de Gateway een agent-run accepteert maar de CLI een time-out krijgt tijdens het wachten op het definitieve antwoord, gebruikt ingebedde fallback een nieuwe expliciete `gateway-fallback-*` sessie-/run-id en rapporteert `meta.fallbackReason: "gateway_timeout"` plus de fallback-sessievelden. Dit voorkomt racen met de transcriptlock die eigendom is van de Gateway of het stilzwijgend vervangen van de oorspronkelijke gerouteerde gesprekssessie.
-- Voor Gateway-ondersteunde runs onderbreken `SIGTERM` en `SIGINT` het wachtende CLI-verzoek. Als de Gateway de run al heeft geaccepteerd, verzendt de CLI ook `chat.abort` voor die geaccepteerde run-id voordat deze afsluit. Lokale `--local`-runs en ingebedde fallback-runs ontvangen hetzelfde afbreeksignaal, maar verzenden geen `chat.abort`. Als een dubbele `--run-id` de Gateway bereikt terwijl de oorspronkelijke agent-run nog actief is, rapporteert de dubbele respons `status: "in_flight"` en drukt de niet-JSON-CLI een stderr-diagnose af in plaats van een leeg antwoord. Houd voor externe cron/systemd-wrappers een buitenste harde kill-achtervang aan, zoals `timeout -k 60 600 openclaw agent ...`, zodat de supervisor het proces nog steeds kan opruimen als afsluiten niet kan leegstromen.
-- Wanneer deze opdracht regeneratie van `models.json` triggert, worden door SecretRef beheerde providerreferenties bewaard als niet-geheime markers (bijvoorbeeld env-var-namen, `secretref-env:ENV_VAR_NAME` of `secretref-managed`), niet als opgeloste geheime plaintext.
-- Markerwrites zijn bronautoritair: OpenClaw bewaart markers uit de actieve bronconfiguratiesnapshot, niet uit opgeloste runtimegeheimwaarden.
+- Geef precies één van `--message` of `--message-file` door. `--message-file` verwijdert een voorafgaande UTF-8-BOM en behoudt inhoud met meerdere regels; bestanden die geen geldige UTF-8 bevatten, worden geweigerd.
+- Slash-opdrachten (bijvoorbeeld `/compact`) kunnen niet via `--message` worden uitgevoerd. De CLI weigert ze en verwijst in plaats daarvan naar de specifieke opdracht (`openclaw sessions compact <key>` voor Compaction).
+- Uitvoeringen met `--local` en ingebedde terugval zijn eenmalig: gebundelde MCP-loopbackbronnen en warme Claude-stdio-sessies die voor de uitvoering zijn geopend, worden na het antwoord beëindigd, zodat gescripte aanroepen geen lokale onderliggende processen actief laten. Uitvoeringen via de Gateway houden MCP-loopbackbronnen die eigendom zijn van de Gateway onder het actieve Gateway-proces.
+- Wanneer `--agent`, `--channel` en `--to` samen worden gebruikt, volgt de sessieroutering de canonieke ontvanger van het kanaal en `session.dmScope`. Kanalen met een stabiele ontvangersidentiteit die uitsluitend voor uitgaande berichten wordt gebruikt, gebruiken een providersessie die is geïsoleerd van de hoofdsessie van de agent. `--reply-channel` en `--reply-account` zijn alleen van invloed op de aflevering.
+- `--session-key` selecteert een expliciete sessiesleutel. Sleutels met een agentvoorvoegsel moeten `agent:<agent-id>:<session-key>` gebruiken en `--agent` moet overeenkomen met de agent-id van de sleutel wanneer beide zijn opgegeven. Kale sleutels die geen sentinel zijn, worden gekoppeld aan `--agent` wanneer deze is opgegeven, of anders aan de geconfigureerde standaardagent; `--agent ops --session-key incident-42` routeert bijvoorbeeld naar `agent:ops:incident-42`. De letterlijke sleutels `global` en `unknown` blijven alleen buiten een bereik wanneer geen `--agent` is opgegeven.
+- `--json` reserveert stdout voor het JSON-antwoord; diagnostiek van de Gateway, plugins en ingebedde terugval gaat naar stderr, zodat scripts stdout rechtstreeks kunnen parseren.
+- JSON van ingebedde terugval bevat `meta.transport: "embedded"` en `meta.fallbackFrom: "gateway"`, zodat scripts een terugvaluitvoering kunnen detecteren.
+- Als de Gateway een uitvoering accepteert maar de CLI tijdens het wachten op het definitieve antwoord een time-out bereikt, gebruikt de ingebedde terugval een nieuwe sessie-/uitvoerings-id met `gateway-fallback-*` en rapporteert deze `meta.fallbackReason: "gateway_timeout"` plus de sessievelden van de terugval, in plaats van te concurreren met het transcript dat eigendom is van de Gateway of de oorspronkelijke sessie stilzwijgend te vervangen.
+- `SIGTERM`/`SIGINT` onderbreken een wachtende aanvraag via de Gateway; als de Gateway de uitvoering al heeft geaccepteerd, verzendt de CLI vóór het afsluiten ook `chat.abort` voor die uitvoerings-id. Uitvoeringen met `--local` en ingebedde terugval ontvangen hetzelfde signaal, maar verzenden geen `chat.abort`. Als de interne sleutel voor het ontdubbelen van uitvoeringen al een actieve uitvoering voor deze sessie heeft, rapporteert het antwoord `status: "in_flight"` en drukt de CLI zonder JSON een diagnostisch bericht af naar stderr in plaats van een leeg antwoord. Houd voor externe Cron-/systemd-wrappers een harde beëindigingsoptie aan, zoals `timeout -k 60 600 openclaw agent ...`, zodat het beheerproces het proces kan opruimen als het afsluiten niet kan worden voltooid.
+- Wanneer deze opdracht het opnieuw genereren van `models.json` activeert, worden door SecretRef beheerde providerreferenties opgeslagen als niet-geheime markeringen (bijvoorbeeld namen van omgevingsvariabelen, `secretref-env:ENV_VAR_NAME` of `secretref-managed`), nooit als ontsleutelde geheime platte tekst. Markeringen worden geschreven vanuit de actieve momentopname van de bronconfiguratie, niet vanuit ontsleutelde geheime runtimewaarden.
 
-## JSON-bezorgstatus
+## JSON-afleveringsstatus
 
-Wanneer `--json --deliver` wordt gebruikt, kan de CLI-JSON-respons `deliveryStatus` op topniveau bevatten, zodat scripts onderscheid kunnen maken tussen verzonden, onderdrukte, gedeeltelijke en mislukte verzendingen:
+Met `--json --deliver` bevat het JSON-antwoord van de CLI het veld `deliveryStatus` op het hoogste niveau, zodat scripts onderscheid kunnen maken tussen afgeleverde, onderdrukte, gedeeltelijke en mislukte verzendingen:
 
 ```json
 {
@@ -98,23 +87,30 @@ Wanneer `--json --deliver` wordt gebruikt, kan de CLI-JSON-respons `deliveryStat
 }
 ```
 
-`deliveryStatus.status` is één van `sent`, `suppressed`, `partial_failed` of `failed`. `suppressed` betekent dat bezorging opzettelijk niet is verzonden, bijvoorbeeld omdat een hook voor berichtverzending deze heeft geannuleerd of omdat er geen zichtbaar resultaat was; het is nog steeds een terminale uitkomst zonder nieuwe poging. `partial_failed` betekent dat ten minste één payload is verzonden voordat een latere payload mislukte. `failed` betekent dat geen duurzame verzending is voltooid of dat de bezorgpreflight is mislukt.
+CLI-antwoorden via de Gateway behouden ook de onbewerkte resultaatstructuur van de Gateway in `result.deliveryStatus`.
 
-Gateway-ondersteunde CLI-responsen behouden ook de ruwe Gateway-resultaatvorm, waarbij hetzelfde object beschikbaar is op `result.deliveryStatus`.
+`deliveryStatus.status` is een van de volgende waarden:
+
+| Status           | Betekenis                                                                                                                                                        |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sent`           | De aflevering is voltooid.                                                                                                                                        |
+| `suppressed`     | De aflevering is bewust niet verzonden (bijvoorbeeld omdat een hook voor het verzenden van berichten deze heeft geannuleerd of omdat er geen zichtbaar resultaat was). Definitief, niet opnieuw proberen. |
+| `partial_failed` | Er is ten minste één payload verzonden voordat een latere payload mislukte.                                                                                        |
+| `failed`         | Er is geen duurzame verzending voltooid of de voorafgaande afleveringscontrole is mislukt.                                                                         |
 
 Veelvoorkomende velden:
 
 - `requested`: altijd `true` wanneer het object aanwezig is.
-- `attempted`: `true` nadat het duurzame verzendpad is uitgevoerd; `false` voor preflightfouten of geen zichtbare payloads.
+- `attempted`: `true` zodra het duurzame verzendpad is uitgevoerd; `false` bij fouten in de voorafgaande controle of wanneer er geen zichtbare payloads zijn.
 - `succeeded`: `true`, `false` of `"partial"`; `"partial"` hoort bij `status: "partial_failed"`.
-- `reason`: een snake-case-reden in kleine letters uit duurzame bezorging of preflightvalidatie. Bekende redenen zijn `cancelled_by_message_sending_hook`, `no_visible_payload`, `no_visible_result`, `channel_resolved_to_internal`, `unknown_channel`, `invalid_delivery_target` en `no_delivery_target`; mislukte duurzame verzendingen kunnen ook de mislukte fase rapporteren. Behandel onbekende waarden als opaak omdat de set kan uitbreiden.
-- `resultCount`: aantal kanaalverzendresultaten wanneer beschikbaar.
-- `sentBeforeError`: `true` wanneer een gedeeltelijke fout ten minste één payload vóór de fout heeft verzonden.
-- `error`: boolean `true` voor mislukte of gedeeltelijk mislukte verzendingen.
-- `errorMessage`: alleen opgenomen wanneer een onderliggend bezorgfoutbericht wordt vastgelegd. Preflightfouten bevatten `error` en `reason`, maar geen `errorMessage`.
-- `payloadOutcomes`: optionele resultaten per payload met `index`, `status`, `reason`, `resultCount`, `error`, `stage`, `sentBeforeError` of hookmetadata wanneer beschikbaar.
+- `reason`: reden in kleine letters en snake_case uit de duurzame aflevering of voorafgaande validatie. Bekende waarden zijn onder meer `cancelled_by_message_sending_hook`, `no_visible_payload`, `no_visible_result`, `channel_resolved_to_internal`, `unknown_channel`, `invalid_delivery_target` en `no_delivery_target`; mislukte duurzame verzendingen kunnen ook de mislukte fase rapporteren. Behandel onbekende waarden als ondoorzichtig, omdat de verzameling kan worden uitgebreid.
+- `resultCount`: aantal verzendresultaten van het kanaal, indien beschikbaar.
+- `sentBeforeError`: `true` wanneer bij een gedeeltelijke mislukking ten minste één payload is verzonden voordat de fout optrad.
+- `error`: `true` voor mislukte of gedeeltelijk mislukte verzendingen.
+- `errorMessage`: alleen aanwezig wanneer een onderliggende afleveringsfoutmelding is vastgelegd. Fouten in de voorafgaande controle bevatten `error`/`reason`, maar geen `errorMessage`.
+- `payloadOutcomes`: optionele resultaten per payload met `index`, `status`, `reason`, `resultCount`, `error`, `stage`, `sentBeforeError` of hookmetagegevens indien beschikbaar.
 
 ## Gerelateerd
 
 - [CLI-referentie](/nl/cli)
-- [Agent-runtime](/nl/concepts/agent)
+- [Agentruntime](/nl/concepts/agent)

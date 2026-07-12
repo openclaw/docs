@@ -1,80 +1,62 @@
 ---
 read_when:
     - Tools aanroepen zonder een volledige agentbeurt uit te voeren
-    - Automatiseringen bouwen die handhaving van toolbeleid vereisen
+    - Automatiseringen bouwen waarvoor handhaving van toolbeleid nodig is
 summary: Roep één tool rechtstreeks aan via het Gateway-HTTP-eindpunt
-title: API voor toolaanroepen
+title: Tools roepen API aan
 x-i18n:
-    generated_at: "2026-06-27T17:38:14Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:53:17Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2023505f5a705b62e2fd685d64d3f9bd7788d09adfe89ac99604e6660c78ad8a
+    source_hash: 6d07f765d63255e718d5e558b662589e77b2992538f43288cd83e6e3f2a06dda
     source_path: gateway/tools-invoke-http-api.md
     workflow: 16
 ---
 
-OpenClaw's Gateway biedt een eenvoudig HTTP-eindpunt om één tool direct aan te roepen. Het is altijd ingeschakeld en gebruikt Gateway-authenticatie plus toolbeleid. Net als het OpenAI-compatibele `/v1/*`-oppervlak wordt shared-secret bearer-authenticatie behandeld als vertrouwde operatortoegang voor de hele Gateway.
+De Gateway van OpenClaw biedt een HTTP-eindpunt waarmee één tool rechtstreeks kan worden aangeroepen. Het is altijd ingeschakeld en gebruikt Gateway-authenticatie in combinatie met toolbeleid. Net als bij het OpenAI-compatibele `/v1/*`-oppervlak wordt bearer-authenticatie met een gedeeld geheim beschouwd als vertrouwde operatortoegang tot de volledige Gateway.
 
 - `POST /tools/invoke`
-- Dezelfde poort als de Gateway (WS + HTTP multiplex): `http://<gateway-host>:<port>/tools/invoke`
-
-De standaard maximale payloadgrootte is 2 MB.
+- Dezelfde poort als de Gateway (WS + HTTP-multiplexing): `http://<gateway-host>:<port>/tools/invoke`
+- Standaard maximale grootte van de aanvraagbody: 2 MB
 
 ## Authenticatie
 
-Gebruikt de Gateway-authenticatieconfiguratie.
+Gebruikt de authenticatieconfiguratie van de Gateway.
 
-Veelvoorkomende HTTP-authenticatiepaden:
+Veelgebruikte HTTP-authenticatiepaden:
 
-- shared-secret-authenticatie (`gateway.auth.mode="token"` of `"password"`):
-  `Authorization: Bearer <token-or-password>`
-- vertrouwde HTTP-authenticatie met identiteit (`gateway.auth.mode="trusted-proxy"`):
-  routeer via de geconfigureerde identity-aware proxy en laat die de
-  vereiste identiteitsheaders injecteren
-- open authenticatie via private ingress (`gateway.auth.mode="none"`):
-  geen authenticatieheader vereist
+- authenticatie met een gedeeld geheim (`gateway.auth.mode="token"` of `"password"`): `Authorization: Bearer <token-or-password>`
+- vertrouwde HTTP-authenticatie met identiteit (`gateway.auth.mode="trusted-proxy"`): routeer via de geconfigureerde identiteitsbewuste proxy en laat deze de vereiste identiteitsheaders invoegen
+- open authenticatie via privé-ingang (`gateway.auth.mode="none"`): geen authenticatieheader vereist
 
 Opmerkingen:
 
-- Wanneer `gateway.auth.mode="token"`, gebruik `gateway.auth.token` (of `OPENCLAW_GATEWAY_TOKEN`).
-- Wanneer `gateway.auth.mode="password"`, gebruik `gateway.auth.password` (of `OPENCLAW_GATEWAY_PASSWORD`).
-- Wanneer `gateway.auth.mode="trusted-proxy"`, moet het HTTP-verzoek afkomstig zijn van een
-  geconfigureerde vertrouwde proxybron; same-host loopback-proxy's vereisen expliciet
-  `gateway.auth.trustedProxy.allowLoopback = true`.
-- Interne same-host aanroepers die de proxy omzeilen kunnen
-  `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD` gebruiken als lokale directe
-  fallback. Elk bewijs in een `Forwarded`-, `X-Forwarded-*`- of `X-Real-IP`-header
-  houdt het verzoek in plaats daarvan op het trusted-proxy-pad.
+- `mode="token"` gebruikt `gateway.auth.token` (of `OPENCLAW_GATEWAY_TOKEN`).
+- `mode="password"` gebruikt `gateway.auth.password` (of `OPENCLAW_GATEWAY_PASSWORD`).
+- `mode="trusted-proxy"` vereist dat de HTTP-aanvraag afkomstig is van een geconfigureerde vertrouwde proxybron; local loopback-proxy's op dezelfde host vereisen expliciet `gateway.auth.trustedProxy.allowLoopback = true`.
+- Interne aanroepers op dezelfde host die de proxy omzeilen, kunnen `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD` gebruiken als lokale directe terugvaloptie. Elk bewijs in een `Forwarded`-, `X-Forwarded-*`- of `X-Real-IP`-header zorgt er in plaats daarvan voor dat de aanvraag het pad van de vertrouwde proxy blijft volgen.
 - Als `gateway.auth.rateLimit` is geconfigureerd en er te veel authenticatiefouten optreden, retourneert het eindpunt `429` met `Retry-After`.
 
 ## Beveiligingsgrens (belangrijk)
 
-Behandel dit eindpunt als een oppervlak met **volledige operatortoegang** voor de Gateway-instantie.
+Beschouw dit eindpunt als een oppervlak met **volledige operatortoegang** tot de Gateway-instantie.
 
-- HTTP bearer-authenticatie hier is geen nauw scope-model per gebruiker.
-- Een geldig Gateway-token/wachtwoord voor dit eindpunt moet worden behandeld als een owner/operator-referentie.
-- Voor shared-secret-authenticatiemodi (`token` en `password`) herstelt het eindpunt de normale volledige operatorstandaarden, zelfs als de aanroeper een smallere `x-openclaw-scopes`-header verzendt.
-- Shared-secret-authenticatie behandelt directe toolaanroepen op dit eindpunt ook als owner-sender-beurten.
-- Vertrouwde HTTP-modi met identiteit (bijvoorbeeld trusted-proxy-authenticatie of `gateway.auth.mode="none"` op een private ingress) respecteren `x-openclaw-scopes` wanneer aanwezig en vallen anders terug op de normale standaardset operatorscopes.
-- Houd dit eindpunt alleen op loopback/tailnet/private ingress; stel het niet direct bloot aan het openbare internet.
+- HTTP-bearer-authenticatie is hier geen beperkt scopemodel per gebruiker.
+- Een geldig Gateway-token of -wachtwoord voor dit eindpunt moet worden behandeld als een referentie van een eigenaar/operator.
+- Voor authenticatiemodi met een gedeeld geheim (`token` en `password`) herstelt het eindpunt de normale volledige standaardinstellingen voor operators, zelfs als de aanroeper een beperktere `x-openclaw-scopes`-header verstuurt.
+- Authenticatie met een gedeeld geheim behandelt rechtstreekse toolaanroepen op dit eindpunt ook als beurten van de eigenaar-afzender.
+- Vertrouwde HTTP-modi met identiteit (authenticatie via een vertrouwde proxy, of `gateway.auth.mode="none"` via een privé-ingang) respecteren `x-openclaw-scopes` indien aanwezig en vallen anders terug op de normale standaardset operatorscopes.
+- Houd dit eindpunt uitsluitend op local loopback/tailnet/privé-ingang; stel het niet rechtstreeks bloot aan het openbare internet.
 
 Authenticatiematrix:
 
-- `gateway.auth.mode="token"` of `"password"` + `Authorization: Bearer ...`
-  - bewijst bezit van het gedeelde Gateway-operatorgeheim
-  - negeert smallere `x-openclaw-scopes`
-  - herstelt de volledige standaardset operatorscopes:
-    `operator.admin`, `operator.approvals`, `operator.pairing`,
-    `operator.read`, `operator.talk.secrets`, `operator.write`
-  - behandelt directe toolaanroepen op dit eindpunt als owner-sender-beurten
-- vertrouwde HTTP-modi met identiteit (bijvoorbeeld trusted-proxy-authenticatie, of `gateway.auth.mode="none"` op private ingress)
-  - authenticeren een externe vertrouwde identiteit of deploymentgrens
-  - respecteren `x-openclaw-scopes` wanneer de header aanwezig is
-  - vallen terug op de normale standaardset operatorscopes wanneer de header afwezig is
-  - verliezen owner-semantiek alleen wanneer de aanroeper scopes expliciet vernauwt en `operator.admin` weglaat
+| Authenticatiemodus                                                                       | Gedrag                                                                                                                                                                                                                                                                                                                                                  |
+| ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `token` of `password` + `Authorization: Bearer ...`                                       | Bewijst het bezit van het gedeelde operatorgeheim van de Gateway. Negeert beperktere `x-openclaw-scopes`. Herstelt de volledige standaardset operatorscopes: `operator.admin`, `operator.approvals`, `operator.pairing`, `operator.read`, `operator.talk.secrets`, `operator.write`. Behandelt rechtstreekse toolaanroepen als beurten van de eigenaar-afzender. |
+| Vertrouwde HTTP met identiteit (vertrouwde proxy-authenticatie, of `mode="none"` op privé-ingang) | Authenticeert een externe vertrouwde identiteit of implementatiegrens. Respecteert `x-openclaw-scopes` indien aanwezig. Valt terug op de normale standaardset operatorscopes wanneer de header ontbreekt. Verliest alleen eigenaarsemantiek wanneer de aanroeper scopes expliciet beperkt en `operator.admin` weglaat.                                                        |
 
-## Request-body
+## Aanvraagbody
 
 ```json
 {
@@ -88,47 +70,52 @@ Authenticatiematrix:
 
 Velden:
 
-- `tool` (string, vereist): toolnaam om aan te roepen.
-- `action` (string, optioneel): wordt naar args gemapt als het toolschema `action` ondersteunt en de args-payload dit heeft weggelaten.
+- `tool` / `name` (tekenreeks, vereist): naam van de aan te roepen tool. `name` heeft voorrang als beide worden verstuurd.
+- `action` (tekenreeks, optioneel): wordt samengevoegd in `args.action` als het toolschema een eigenschap `action` ondersteunt en deze nog niet in `args` was ingesteld.
 - `args` (object, optioneel): toolspecifieke argumenten.
-- `sessionKey` (string, optioneel): doelsessiesleutel. Indien weggelaten of `"main"`, gebruikt de Gateway de geconfigureerde hoofdsessiesleutel (respecteert `session.mainKey` en standaardagent, of `global` in globale scope).
-- `dryRun` (boolean, optioneel): gereserveerd voor toekomstig gebruik; momenteel genegeerd.
+- `sessionKey` (tekenreeks, optioneel): sleutel van de doelsessie. Als deze wordt weggelaten of `"main"` is, gebruikt de Gateway de geconfigureerde hoofdsessiesleutel (respecteert `session.mainKey` en de standaardagent, of `global` in het globale sessiebereik).
+- `agentId` (tekenreeks, optioneel): bepaalt de sessiesleutel voor die agent. Geeft een fout met `400` als deze conflicteert met een expliciete `sessionKey` die al naar een andere agent verwijst.
+- `idempotencyKey` (tekenreeks, optioneel): wordt gebruikt om een stabiele toolaanroep-ID voor de aanroep af te leiden.
+- `dryRun` (booleaans, optioneel): gereserveerd voor toekomstig gebruik; wordt momenteel genegeerd.
 
-## Beleid + routinggedrag
+## Gedrag van beleid en routering
 
-Toolbeschikbaarheid wordt gefilterd via dezelfde beleidsketen die door Gateway-agenten wordt gebruikt:
+De beschikbaarheid van tools wordt gefilterd via dezelfde beleidsketen die door Gateway-agenten wordt gebruikt:
 
 - `tools.profile` / `tools.byProvider.profile`
 - `tools.allow` / `tools.byProvider.allow`
 - `agents.<id>.tools.allow` / `agents.<id>.tools.byProvider.allow`
 - groepsbeleid (als de sessiesleutel naar een groep of kanaal verwijst)
-- subagentbeleid (bij aanroepen met een subagent-sessiesleutel)
+- subagentbeleid (bij aanroep met de sessiesleutel van een subagent)
 
-Als een tool niet door beleid is toegestaan, retourneert het eindpunt **404**.
+Als een tool niet door het beleid is toegestaan, retourneert het eindpunt **404**.
 
-Belangrijke grensopmerkingen:
+Belangrijke opmerkingen over de grens:
 
-- Exec-goedkeuringen zijn operatorvangrails, geen aparte autorisatiegrens voor dit HTTP-eindpunt. Als een tool hier bereikbaar is via Gateway-authenticatie + toolbeleid, voegt `/tools/invoke` geen extra goedkeuringsprompt per aanroep toe.
-- Als `exec` hier bereikbaar is, behandel het dan als een muterend shelloppervlak. Het weigeren van `write`, `edit`, `apply_patch` of HTTP-tools voor filesystem-write maakt shelluitvoering niet alleen-lezen.
-- Deel Gateway-bearer-referenties niet met niet-vertrouwde aanroepers. Als je scheiding tussen vertrouwensgrenzen nodig hebt, voer dan aparte gateways uit (en idealiter aparte OS-gebruikers/hosts).
+- Goedkeuringen voor uitvoerbewerkingen zijn operatorbeveiligingen, geen afzonderlijke autorisatiegrens voor dit HTTP-eindpunt. Als een tool hier bereikbaar is via Gateway-authenticatie en toolbeleid, voegt `/tools/invoke` geen extra goedkeuringsprompt per aanroep toe.
+- Als `exec` hier bereikbaar is, beschouw dit dan als een muterend shell-oppervlak. Het weigeren van `write`, `edit`, `apply_patch` of HTTP-tools die naar het bestandssysteem schrijven, maakt shell-uitvoering niet alleen-lezen.
+- Deel bearer-referenties van de Gateway niet met niet-vertrouwde aanroepers. Als u scheiding tussen vertrouwensgrenzen nodig hebt, voert u afzonderlijke Gateways uit (bij voorkeur onder afzonderlijke gebruikers van het besturingssysteem of op afzonderlijke hosts).
 
-Gateway HTTP past standaard ook een harde denylist toe (zelfs als sessiebeleid de tool toestaat):
+Gateway HTTP past standaard ook een harde weigeringslijst toe (zelfs als het sessiebeleid de tool toestaat):
 
-- `exec` - directe opdrachtuitvoering (RCE-oppervlak)
-- `spawn` - willekeurige aanmaak van childprocessen (RCE-oppervlak)
-- `shell` - uitvoering van shellopdrachten (RCE-oppervlak)
-- `fs_write` - willekeurige bestandsmutatie op de host
-- `fs_delete` - willekeurige bestandsverwijdering op de host
-- `fs_move` - willekeurige bestandsverplaatsing/-hernoeming op de host
-- `apply_patch` - patchtoepassing kan willekeurige bestanden herschrijven
-- `sessions_spawn` - sessieorkestratie; agents op afstand starten is RCE
-- `sessions_send` - berichtinjectie tussen sessies
-- `cron` - persistent automatiseringsbesturingsvlak
-- `gateway` - Gateway-besturingsvlak; voorkomt herconfiguratie via HTTP
-- `nodes` - node-opdrachtdoorsturing kan system.run bereiken op gekoppelde hosts
-- `whatsapp_login` - interactieve setup waarvoor een terminal-QR-scan nodig is; blijft hangen via HTTP
+| Tool             | Reden                                                               |
+| ---------------- | ------------------------------------------------------------------- |
+| `exec`           | Rechtstreekse opdrachtuitvoering (RCE-oppervlak)                    |
+| `spawn`          | Willekeurig onderliggend proces maken (RCE-oppervlak)               |
+| `shell`          | Shell-opdracht uitvoeren (RCE-oppervlak)                            |
+| `fs_write`       | Willekeurige bestandswijziging op de host                           |
+| `fs_delete`      | Willekeurige bestandsverwijdering op de host                        |
+| `fs_move`        | Willekeurig bestand verplaatsen/hernoemen op de host                |
+| `apply_patch`    | Het toepassen van patches kan willekeurige bestanden herschrijven   |
+| `sessions_spawn` | Sessieorkestratie; agenten op afstand starten is RCE                |
+| `sessions_send`  | Berichten tussen sessies injecteren                                 |
+| `cron`           | Besturingsvlak voor permanente automatisering                      |
+| `gateway`        | Besturingsvlak van de Gateway; voorkomt herconfiguratie via HTTP    |
+| `nodes`          | Node-opdrachtrelay kan `system.run` bereiken op gekoppelde hosts    |
 
-Je kunt deze denylist aanpassen via `gateway.tools`:
+`cron`, `gateway` en `nodes` zijn ook uitsluitend voor eigenaren: zelfs buiten deze standaardweigeringslijst kunnen niet-eigenaren ze niet via dit oppervlak aanroepen.
+
+Pas de algemene weigeringslijst aan via `gateway.tools`:
 
 ```json5
 {
@@ -143,26 +130,29 @@ Je kunt deze denylist aanpassen via `gateway.tools`:
 }
 ```
 
-`gateway.tools.allow` is een exposure-override, geen scope-upgrade. In
-HTTP-modi met identiteit blijven `cron`, `gateway` en `nodes` niet beschikbaar
-voor aanroepers die geen owner/admin-identiteit (`operator.admin`) hebben, zelfs wanneer
-ze in `gateway.tools.allow` staan. Shared-secret bearer-authenticatie volgt nog steeds
-de volledige trusted-operator-regel hierboven.
+`gateway.tools.allow` is een overschrijving van de blootstelling, geen uitbreiding van scopes. In HTTP-modi met identiteit blijven `cron`, `gateway` en `nodes` niet beschikbaar voor aanroepers zonder eigenaar-/beheerdersidentiteit (`operator.admin`), zelfs wanneer ze in `gateway.tools.allow` staan. Bearer-authenticatie met een gedeeld geheim blijft de regel voor volledig vertrouwde operators hierboven volgen.
 
-Om groepsbeleid context te helpen oplossen, kun je optioneel instellen:
+Om groepsbeleid te helpen de context te bepalen, kunt u optioneel het volgende instellen:
 
 - `x-openclaw-message-channel: <channel>` (voorbeeld: `slack`, `telegram`)
-- `x-openclaw-account-id: <accountId>` (wanneer er meerdere accounts bestaan)
+- `x-openclaw-account-id: <accountId>` (wanneer er meerdere accounts zijn)
+- `x-openclaw-message-to: <target>` (afleverdoel voor beleid van berichttools)
+- `x-openclaw-thread-id: <threadId>` (threadcontext voor beleid van berichttools)
 
-## Responses
+## Antwoorden
 
-- `200` → `{ ok: true, result }`
-- `400` → `{ ok: false, error: { type, message } }` (ongeldig verzoek of fout in toolinvoer)
-- `401` → unauthorized
-- `429` → authenticatie rate-limited (`Retry-After` ingesteld)
-- `404` → tool niet beschikbaar (niet gevonden of niet op allowlist)
-- `405` → method not allowed
-- `500` → `{ ok: false, error: { type, message } }` (onverwachte fout bij tooluitvoering; opgeschoond bericht)
+| Status | Betekenis                                                                                                  |
+| ------ | ---------------------------------------------------------------------------------------------------------- |
+| `200`  | `{ ok: true, result }`                                                                                     |
+| `400`  | `{ ok: false, error: { type, message } }` (ongeldige aanvraag of fout in toolinvoer)                       |
+| `401`  | Niet geautoriseerd                                                                                         |
+| `403`  | `{ ok: false, error: { type, message, requiresApproval? } }` (toolaanroep geblokkeerd door beleid)         |
+| `404`  | Tool niet beschikbaar (niet gevonden of niet op de toestemmingslijst)                                     |
+| `405`  | Methode niet toegestaan                                                                                   |
+| `408`  | Time-out bij het lezen van de aanvraagbody                                                                 |
+| `413`  | Aanvraagbody overschreed de maximale payloadgrootte                                                       |
+| `429`  | Authenticatie beperkt wegens te veel aanvragen (`Retry-After` ingesteld)                                  |
+| `500`  | `{ ok: false, error: { type, message } }` (onverwachte fout bij tooluitvoering; opgeschoond bericht)       |
 
 ## Voorbeeld
 

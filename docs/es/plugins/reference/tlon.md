@@ -4,8 +4,8 @@ read_when:
 summary: Plugin de canal Tlon/Urbit de OpenClaw para flujos de trabajo de chat.
 title: Plugin de Tlon
 x-i18n:
-    generated_at: "2026-06-27T12:24:54Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T23:25:54Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 6fd1dcc934734599c0b671f0a9659dc5cc6e4ff907e3e14f9ff3ba5ec86aa0cc
@@ -15,12 +15,12 @@ x-i18n:
 
 # Plugin de Tlon
 
-Plugin de canal Tlon/Urbit de OpenClaw para flujos de trabajo de chat.
+Plugin del canal Tlon/Urbit de OpenClaw para flujos de trabajo de chat.
 
 ## Distribución
 
 - Paquete: `@openclaw/tlon`
-- Ruta de instalación: npm; ClawHub
+- Método de instalación: npm; ClawHub
 
 ## Superficie
 

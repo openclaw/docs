@@ -2,13 +2,12 @@
 read_when:
     - Den richtigen `openclaw`-Unterbefehl finden
     - Globale Flags oder Regeln für die Ausgabegestaltung nachschlagen
-summary: 'OpenClaw-CLI-Übersicht: Befehlsliste, globale Flags und Links zu den Seiten der einzelnen Befehle'
+summary: 'OpenClaw-CLI-Übersicht: Befehlsliste, globale Optionen und Links zu Seiten für einzelne Befehle'
 title: CLI-Referenz
 x-i18n:
-    generated_at: "2026-07-12T15:09:13Z"
+    generated_at: "2026-07-12T01:31:39Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 91dce0026e177c0f0664f7a3dbe286630dcaec68b1abf2d4640e090f965515f3
     source_path: cli/index.md
@@ -16,22 +15,22 @@ x-i18n:
 ---
 
 `openclaw` ist der zentrale CLI-Einstiegspunkt. Jeder Kernbefehl verfügt über eine eigene
-Referenzseite oder ist bei dem Befehl dokumentiert, für den er als Alias dient. Dieser Index führt
-die Befehle, globalen Flags und Regeln zur Ausgabeformatierung auf, die für die gesamte CLI gelten.
+Referenzseite oder ist zusammen mit dem Befehl dokumentiert, dessen Alias er ist. Dieser Index führt
+die Befehle, globalen Optionen und Regeln für die Ausgabeformatierung auf, die in der gesamten CLI gelten.
 
 Einrichtungsbefehle nach Zweck:
 
-- `openclaw setup` und `openclaw onboard` prüfen zuerst die Inferenz und starten dann Crestodian zur Einrichtung von Gateway, Arbeitsbereich, Kanälen, Skills und Systemzustand.
+- `openclaw setup` und `openclaw onboard` überprüfen zuerst die Inferenz und starten dann Crestodian zur Einrichtung von Gateway, Arbeitsbereich, Kanälen, Skills und Systemzustand.
 - `openclaw setup --baseline` erstellt die Basiskonfiguration und den Arbeitsbereich, ohne den geführten Onboarding-Ablauf zu durchlaufen.
 - `openclaw configure` ändert gezielt Teile einer vorhandenen Einrichtung: Modellauthentifizierung, Gateway, Kanäle, Plugins oder Skills.
-- `openclaw channels add` konfiguriert Kanalkonten, nachdem die Basiskonfiguration vorhanden ist. Führen Sie den Befehl ohne Flags für die geführte Einrichtung oder mit kanalspezifischen Flags für Skripte aus.
+- `openclaw channels add` konfiguriert Kanalkonten, nachdem die Basiskonfiguration vorhanden ist. Führen Sie den Befehl für eine geführte Einrichtung ohne Optionen oder für Skripte mit kanalspezifischen Optionen aus.
 
 ## Befehlsseiten
 
 | Bereich                         | Befehle                                                                                                                                                                                                                                  |
 | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Einrichtung und Onboarding      | [`crestodian`](/de/cli/crestodian) · [`setup`](/de/cli/setup) · [`onboard`](/de/cli/onboard) · [`configure`](/de/cli/configure) · [`config`](/de/cli/config) · [`completion`](/de/cli/completion) · [`doctor`](/de/cli/doctor) · [`dashboard`](/de/cli/dashboard) |
-| Zurücksetzen, Sicherung und Migration | [`backup`](/de/cli/backup) · [`migrate`](/de/cli/migrate) · [`reset`](/de/cli/reset) · [`uninstall`](/de/cli/uninstall) · [`update`](/de/cli/update)                                                                                                |
+| Zurücksetzen, Sicherung und Migration | [`backup`](/de/cli/backup) · [`migrate`](/de/cli/migrate) · [`reset`](/de/cli/reset) · [`uninstall`](/de/cli/uninstall) · [`update`](/de/cli/update)                                                                                               |
 | Nachrichten und Agenten         | [`message`](/de/cli/message) · [`agent`](/de/cli/agent) · [`agents`](/de/cli/agents) · [`attach`](/de/cli/attach) · [`acp`](/de/cli/acp) · [`mcp`](/de/cli/mcp)                                                                                             |
 | Systemzustand und Sitzungen     | [`status`](/de/cli/status) · [`health`](/de/cli/health) · [`sessions`](/de/cli/sessions) · [`audit`](/cli/audit)                                                                                                                                   |
 | Gateway und Protokolle          | [`gateway`](/de/cli/gateway) · [`logs`](/de/cli/logs) · [`system`](/de/cli/system)                                                                                                                                                                 |
@@ -45,50 +44,50 @@ Einrichtungsbefehle nach Zweck:
 | Veraltete Aliasse               | [`daemon`](/de/cli/daemon) (Gateway-Dienst) · [`clawbot`](/de/cli/clawbot) (Namensraum)                                                                                                                                                         |
 | Plugins (optional)              | [`path`](/de/cli/path) · [`policy`](/de/cli/policy) · [`voicecall`](/de/cli/voicecall) · [`workboard`](/de/cli/workboard) (falls installiert)                                                                                                         |
 
-## Globale Flags
+## Globale Optionen
 
-| Flag                    | Zweck                                                                                                                   |
-| ----------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Option                  | Zweck                                                                                                      |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------- |
 | `--dev`                 | Isoliert den Zustand unter `~/.openclaw-dev`, verwendet standardmäßig Gateway-Port 19001 und verschiebt abgeleitete Ports |
-| `--profile <name>`      | Isoliert den Zustand unter `~/.openclaw-<name>` (`OPENCLAW_STATE_DIR`/`OPENCLAW_CONFIG_PATH`)                           |
+| `--profile <name>`      | Isoliert den Zustand unter `~/.openclaw-<name>` (`OPENCLAW_STATE_DIR`/`OPENCLAW_CONFIG_PATH`)              |
 | `--container <name>`    | Führt die CLI in einem laufenden Podman-/Docker-Container namens `<name>` aus (Standard: Umgebungsvariable `OPENCLAW_CONTAINER`) |
-| `--log-level <level>`   | Überschreibt die globale Protokollierungsstufe für Datei- und Konsolenausgabe                                           |
-| `--no-color`            | Deaktiviert ANSI-Farben (`NO_COLOR=1` wird ebenfalls berücksichtigt)                                                    |
+| `--log-level <level>`   | Überschreibt die globale Protokollierungsstufe für Datei- und Konsolenausgabe                              |
+| `--no-color`            | Deaktiviert ANSI-Farben (`NO_COLOR=1` wird ebenfalls berücksichtigt)                                       |
 | `--update`              | Kurzform für [`openclaw update`](/de/cli/update); funktioniert sowohl für Quellcode-Checkouts als auch für Paketinstallationen |
-| `-V`, `--version`, `-v` | Gibt die Version aus und beendet das Programm                                                                           |
+| `-V`, `--version`, `-v` | Gibt die Version aus und beendet das Programm                                                              |
 
 ## Ausgabemodi
 
 - ANSI-Farben und Fortschrittsanzeigen werden nur in TTY-Sitzungen dargestellt.
-- OSC-8-Hyperlinks werden, sofern unterstützt, als anklickbare Links dargestellt; andernfalls greift die
-  CLI auf einfache URLs zurück.
+- OSC-8-Hyperlinks werden, sofern unterstützt, als anklickbare Links dargestellt; andernfalls
+  verwendet die CLI einfache URLs.
 - `--json` (und, sofern unterstützt, `--plain`) deaktiviert die Formatierung für eine bereinigte Ausgabe.
-- Lang laufende Befehle zeigen eine Fortschrittsanzeige (OSC 9;4, sofern unterstützt).
+- Lang laufende Befehle zeigen eine Fortschrittsanzeige an (OSC 9;4, sofern unterstützt).
 
 ## Farbpalette
 
 OpenClaw verwendet für die CLI-Ausgabe eine Hummer-Farbpalette:
 
-| Token          | Hex       | Verwendet für                             |
-| -------------- | --------- | ----------------------------------------- |
+| Token          | Hex       | Verwendet für                               |
+| -------------- | --------- | -------------------------------------------- |
 | `accent`       | `#FF5A2D` | Überschriften, Beschriftungen, primäre Hervorhebungen |
-| `accentBright` | `#FF7A3D` | Befehlsnamen, Betonung                    |
-| `accentDim`    | `#D14A22` | Sekundär hervorgehobener Text             |
-| `info`         | `#FF8A5B` | Informationswerte                         |
-| `success`      | `#2FBF71` | Erfolgszustände                           |
-| `warn`         | `#FFB020` | Warnungen, Options-Flags, Fallbacks        |
-| `error`        | `#E23D2D` | Fehler, Fehlschläge                       |
-| `muted`        | `#8B7F77` | Abschwächung, Metadaten                   |
+| `accentBright` | `#FF7A3D` | Befehlsnamen, Betonungen                     |
+| `accentDim`    | `#D14A22` | Sekundär hervorgehobener Text                |
+| `info`         | `#FF8A5B` | Informationswerte                            |
+| `success`      | `#2FBF71` | Erfolgszustände                              |
+| `warn`         | `#FFB020` | Warnungen, Befehlsoptionen, Ausweichlösungen |
+| `error`        | `#E23D2D` | Fehler, Fehlschläge                          |
+| `muted`        | `#8B7F77` | Zurückgenommene Darstellung, Metadaten       |
 
-Maßgebliche Quelle der Palette: `packages/terminal-core/src/palette.ts`.
+Maßgebliche Quelle für die Farbpalette: `packages/terminal-core/src/palette.ts`.
 
 ## Befehlsbaum
 
 <Accordion title="Vollständiger Befehlsbaum">
 
 Diese Übersicht umfasst die Kernbefehle und ihre wichtigsten Unterbefehle. Durch Plugins hinzugefügte
-Unterbefehle (beispielsweise unter `skills`, `plugins` und `wiki`) entwickeln sich
-unabhängig weiter. Führen Sie `<command> --help` aus, um die maßgebliche aktuelle Liste anzuzeigen.
+Unterbefehle (beispielsweise unter `skills`, `plugins` und `wiki`) werden
+unabhängig weiterentwickelt. Führen Sie `<command> --help` aus, um die maßgebliche aktuelle Liste anzuzeigen.
 
 ```
 openclaw [--dev] [--profile <name>] <command>
@@ -436,17 +435,17 @@ Highlights:
 - `/status` – Schnelldiagnose.
 - `/trace` – sitzungsbezogene Trace-/Debug-Zeilen des Plugins.
 - `/config` – dauerhafte Konfigurationsänderungen.
-- `/debug` – ausschließlich laufzeitbezogene Konfigurationsüberschreibungen (im Arbeitsspeicher, nicht auf dem Datenträger; erfordert `commands.debug: true`).
+- `/debug` – ausschließlich zur Laufzeit wirksame Konfigurationsüberschreibungen (im Arbeitsspeicher, nicht auf dem Datenträger; erfordert `commands.debug: true`).
 
-## Nutzungsverfolgung
+## Nutzungserfassung
 
-`openclaw status --usage` und die Control UI zeigen die Nutzung bzw. das Kontingent des Providers an, wenn
-OAuth-/API-Anmeldedaten verfügbar sind. Die Daten stammen direkt von den Nutzungsendpunkten
-der Provider und werden auf `X% left` normalisiert. Provider mit aktuellen Nutzungszeiträumen:
-Anthropic, Gemini CLI, GitHub Copilot, MiniMax, OpenAI Codex,
+`openclaw status --usage` und die Kontrolloberfläche zeigen die Nutzung und das Kontingent des Providers an, wenn
+OAuth-/API-Anmeldedaten verfügbar sind. Die Daten stammen direkt aus den Nutzungsendpunkten
+der Provider und werden in das Format `X% left` normalisiert. Provider mit aktuellen
+Nutzungszeiträumen: Anthropic, Gemini CLI, GitHub Copilot, MiniMax, OpenAI Codex,
 Xiaomi und z.ai.
 
-Weitere Einzelheiten finden Sie unter [Nutzungsverfolgung](/de/concepts/usage-tracking).
+Weitere Informationen finden Sie unter [Nutzungserfassung](/de/concepts/usage-tracking).
 
 ## Verwandte Themen
 

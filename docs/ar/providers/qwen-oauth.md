@@ -1,87 +1,100 @@
 ---
 read_when:
-    - تريد تكوين معرّف المزوّد qwen-oauth
+    - تريد تهيئة معرّف المزوّد `qwen-oauth`
     - لقد استخدمت سابقًا بيانات اعتماد Qwen Portal OAuth
-    - تحتاج إلى نقطة نهاية Qwen Portal أو إرشادات الترحيل
+    - تحتاج إلى نقطة نهاية بوابة Qwen أو إرشادات الترحيل
 summary: استخدم معرّف موفّر Qwen Portal مع OpenClaw
-title: Qwen OAuth / البوابة
+title: مصادقة Qwen عبر OAuth / البوابة
 x-i18n:
-    generated_at: "2026-06-27T18:27:36Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:29:35Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 46f147e3730024bf63e99827f666e2be791318723eace98941ca067c440dddd0
+    source_hash: b78f6f23e62e38d11e6fe4e2bf515b13b414f276d08f672740ad94747a22c8fb
     source_path: providers/qwen-oauth.md
     workflow: 16
 ---
 
-`qwen-oauth` هو معرّف مزوّد Qwen Portal. يستهدف نقطة نهاية Qwen Portal
-ويُبقي إعدادات Qwen OAuth / البوابة الأقدم قابلة للعنونة عبر معرّف مزوّد
-مميز.
+`qwen-oauth` هو معرّف موفّر Qwen Portal، ويسجّله Plugin ‏Qwen
+(`@openclaw/qwen-provider`). وهو يستهدف نقطة نهاية Qwen Portal على
+`https://portal.qwen.ai/v1`، ويُبقي إعدادات Qwen OAuth / البوابة القديمة
+متاحةً عبر معرّف موفّر مستقل، ومنفصلًا عن موفّر `qwen` القياسي.
 
-استخدم هذا المزوّد عندما يكون لديك تحديدًا رمز Qwen Portal حالي لـ
-`https://portal.qwen.ai/v1`، أو عندما تنقل إعداد Qwen Portal / Qwen CLI أقدم
-وتريد إبقاء بيانات الاعتماد هذه منفصلة عن مزوّد Qwen Cloud القياسي. ليس هذا
-الخيار الأول الموصى به لمستخدمي Qwen الجدد.
-
-لإعدادات Qwen Cloud الجديدة، فضّل [Qwen](/ar/providers/qwen) مع نقطة نهاية Standard
-ModelStudio ما لم يكن لديك تحديدًا رمز Qwen Portal حالي.
+اختر `qwen-oauth` إذا كان لديك بالفعل رمز Qwen Portal صالح، أو كنت
+تنقل سير عمل قديمًا لـ Qwen OAuth أو Qwen CLI، أو تحتاج إلى اختبار نقطة نهاية
+Qwen Portal تحديدًا. بالنسبة إلى الإعدادات الجديدة، يُفضّل استخدام
+[Qwen](/ar/providers/qwen) مع نقطة نهاية ModelStudio القياسية: فهي تغطي إعدادات
+مفاتيح API الجديدة، وخيارات أوسع لنقاط النهاية، وخيار Standard للدفع حسب الاستخدام، وCoding Plan،
+وفهرس Qwen Plugin الكامل.
 
 ## الإعداد
 
-وفّر رمز البوابة عبر الإعداد الأولي:
+ثبّت Qwen Plugin إذا لم تكن قد ثبّتَّه بالفعل:
+
+```bash
+openclaw plugins install @openclaw/qwen-provider
+openclaw gateway restart
+```
+
+قدّم رمز البوابة عبر الإعداد الأولي:
 
 ```bash
 openclaw onboard --auth-choice qwen-oauth
 ```
 
-أو عيّن:
+تقرأ عمليات التشغيل غير التفاعلية الرمز من `--qwen-oauth-token <token>`، أو عيّن:
 
 ```bash
 export QWEN_API_KEY="<your-qwen-portal-token>" # pragma: allowlist secret
 ```
 
+يخزّن الإعداد الأولي الرمز ضمن ملف تعريف مصادقة `qwen-oauth`، ويهيّئ فهرس
+نماذج البوابة، ويعيّن `qwen-oauth/qwen3.5-plus` نموذجًا افتراضيًا عندما
+لا يكون أي نموذج مضبوطًا.
+
 ## الإعدادات الافتراضية
 
-- المزوّد: `qwen-oauth`
-- الأسماء المستعارة: `qwen-portal`, `qwen-cli`
+- الموفّر: `qwen-oauth`
+- الأسماء المستعارة: `qwen-portal`، `qwen-cli`
 - عنوان URL الأساسي: `https://portal.qwen.ai/v1`
 - متغير البيئة: `QWEN_API_KEY`
 - نمط API: متوافق مع OpenAI
 - النموذج الافتراضي: `qwen-oauth/qwen3.5-plus`
 
-## كيف يختلف هذا عن Qwen
+## أوجه الاختلاف عن Qwen
 
-لدى OpenClaw معرّفا مزوّد يواجهان Qwen:
+لدى OpenClaw معرّفا موفّر موجّهان إلى Qwen:
 
-| المزوّد     | عائلة نقاط النهاية                                          | الأنسب لـ                                                                               |
-| ------------ | -------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `qwen`       | نقاط نهاية Qwen Cloud / Alibaba DashScope وCoding Plan | إعدادات مفاتيح API الجديدة، Standard بنظام الدفع حسب الاستخدام، Coding Plan، ميزات DashScope متعددة الوسائط |
-| `qwen-oauth` | نقطة نهاية Qwen Portal عند `portal.qwen.ai/v1`              | رموز Qwen Portal الحالية وإعدادات Qwen OAuth / CLI القديمة                         |
+| الموفّر      | عائلة نقاط النهاية                                         | الأنسب لـ                                                                                |
+| ------------ | ---------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `qwen`       | نقاط نهاية Qwen Cloud / Alibaba DashScope وCoding Plan     | إعدادات مفاتيح API الجديدة، وStandard للدفع حسب الاستخدام، وCoding Plan، وميزات DashScope متعددة الوسائط |
+| `qwen-oauth` | نقطة نهاية Qwen Portal على `portal.qwen.ai/v1`             | رموز Qwen Portal الحالية وإعدادات Qwen OAuth / CLI القديمة                              |
 
-يستخدم كلا المزوّدين أشكال طلبات متوافقة مع OpenAI، لكنهما سطحا مصادقة
-منفصلان. يجب ألا يُعامل الرمز المخزّن لـ `qwen-oauth` كمفتاح DashScope
-أو ModelStudio، ويجب أن يستخدم مفتاح DashScope الجديد مزوّد `qwen`
-القياسي بدلًا من ذلك.
-
-## متى تختار Qwen OAuth / Portal
-
-- لديك بالفعل رمز Qwen Portal عامل.
-- تحافظ على سير عمل Qwen OAuth أو Qwen CLI قديم أثناء الانتقال إلى
-  نموذج المزوّدين في OpenClaw.
-- تحتاج إلى اختبار التوافق مع نقطة نهاية Qwen Portal تحديدًا.
-
-اختر [Qwen](/ar/providers/qwen) للإعداد الجديد، وخيارات نقاط نهاية أوسع، وStandard
-ModelStudio، وCoding Plan، وكتالوج Plugin الكامل لـ Qwen.
+يستخدم كلا الموفّرين بنى طلبات متوافقة مع OpenAI، لكنهما واجهتا مصادقة
+منفصلتان. يجب ألا يُعامل الرمز المخزّن لـ `qwen-oauth` على أنه مفتاح DashScope
+أو ModelStudio، ويجب استخدام موفّر `qwen` القياسي بدلًا منه مع مفتاح DashScope
+الجديد.
 
 ## النماذج
 
-يزرع كتالوج Plugin الخاص بـ Qwen الإعداد الافتراضي لـ Qwen Portal:
+يهيّئ Qwen Plugin هذا الفهرس الثابت لنقطة نهاية Qwen Portal. تستخدم جميع
+الإدخالات حدًا أقصى للإخراج يبلغ 65,536 رمزًا؛ ويعتمد التوفر على حساب Qwen
+Portal الحالي والرمز.
 
-- `qwen-oauth/qwen3.5-plus`
+| مرجع النموذج                      | الإدخال     | السياق     | ملاحظات          |
+| --------------------------------- | ----------- | --------- | ---------------- |
+| `qwen-oauth/qwen3.5-plus`         | نص، صورة    | 1,000,000 | النموذج الافتراضي |
+| `qwen-oauth/qwen3.6-plus`         | نص، صورة    | 1,000,000 |                  |
+| `qwen-oauth/qwen3-max-2026-01-23` | نص          | 262,144   |                  |
+| `qwen-oauth/qwen3-coder-next`     | نص          | 262,144   |                  |
+| `qwen-oauth/qwen3-coder-plus`     | نص          | 1,000,000 |                  |
+| `qwen-oauth/MiniMax-M2.5`         | نص          | 1,000,000 | استدلال           |
+| `qwen-oauth/glm-5`                | نص          | 202,752   |                  |
+| `qwen-oauth/glm-4.7`              | نص          | 202,752   |                  |
+| `qwen-oauth/kimi-k2.5`            | نص، صورة    | 262,144   |                  |
 
-يعتمد التوفر على حساب Qwen Portal والرمز الحاليين. إذا كان حسابك يستخدم مفاتيح
-ModelStudio / DashScope API بدلًا من ذلك، فكوّن مزوّد `qwen` القياسي:
+إذا كان حسابك يستخدم مفاتيح API الخاصة بـ ModelStudio / DashScope بدلًا من ذلك، فاضبط
+موفّر `qwen` القياسي:
 
 ```bash
 openclaw onboard --auth-choice qwen-standard-api-key
@@ -90,15 +103,15 @@ openclaw models set qwen/qwen3-coder-plus
 
 ## الترحيل
 
-قد لا تكون ملفات Qwen Portal OAuth الشخصية القديمة قابلة للتحديث. إذا توقف ملف
-شخصي للبوابة عن العمل، فأعد المصادقة برمز حالي أو انتقل إلى مزوّد Qwen
-Standard:
+ملفات تعريف Qwen Portal OAuth القديمة غير قابلة للتحديث؛ ويضع
+`openclaw doctor` علامة عليها. إذا توقف ملف تعريف البوابة عن العمل، فأعد تشغيل
+الإعداد الأولي باستخدام رمز حالي، أو انتقل إلى موفّر Qwen القياسي:
 
 ```bash
 openclaw onboard --auth-choice qwen-standard-api-key
 ```
 
-يستخدم ModelStudio العالمي Standard:
+يستخدم ModelStudio العالمي القياسي:
 
 ```text
 https://dashscope-intl.aliyuncs.com/compatible-mode/v1
@@ -106,17 +119,17 @@ https://dashscope-intl.aliyuncs.com/compatible-mode/v1
 
 ## استكشاف الأخطاء وإصلاحها
 
-- إخفاقات تحديث Portal OAuth: قد لا تكون ملفات Qwen Portal OAuth الشخصية
-  القديمة قابلة للتحديث. أعد تشغيل الإعداد الأولي برمز حالي.
-- أخطاء نقطة النهاية الخاطئة: تأكد من أن مرجع النموذج يبدأ بـ `qwen-oauth/` عند
-  استخدام رمز بوابة. استخدم مراجع `qwen/` فقط لمزوّد Qwen القياسي.
-- الالتباس حول `QWEN_API_KEY`: تذكر صفحتا Qwen متغير البيئة هذا، لكن الإعداد
-  الأولي يخزّن بيانات الاعتماد تحت معرّف المزوّد المحدد. فضّل الإعداد الأولي عندما
-  تُبقي كلًا من `qwen` و`qwen-oauth` متاحين على الجهاز نفسه.
+- إخفاقات تحديث OAuth للبوابة: ملفات تعريف Qwen Portal OAuth القديمة غير
+  قابلة للتحديث. أعد تشغيل الإعداد الأولي باستخدام رمز حالي.
+- أخطاء نقطة النهاية غير الصحيحة: تأكد من أن مرجع النموذج يبدأ بـ `qwen-oauth/` عند
+  استخدام رمز البوابة. استخدم المراجع التي تبدأ بـ `qwen/` فقط مع موفّر Qwen القياسي.
+- الالتباس بشأن `QWEN_API_KEY`: تذكر صفحتا Qwen متغير البيئة هذا، لكن الإعداد الأولي
+  يخزّن بيانات الاعتماد ضمن معرّف الموفّر المحدد. يُفضّل استخدام الإعداد الأولي عندما
+  تُبقي كلا الموفّرين `qwen` و`qwen-oauth` متاحين على الجهاز نفسه.
 
-## ذات صلة
+## ذو صلة
 
 - [Qwen](/ar/providers/qwen)
 - [Alibaba Model Studio](/ar/providers/alibaba)
-- [مزوّدو النماذج](/ar/concepts/model-providers)
-- [كل المزوّدين](/ar/providers/index)
+- [موفّرو النماذج](/ar/concepts/model-providers)
+- [جميع الموفّرين](/ar/providers/index)

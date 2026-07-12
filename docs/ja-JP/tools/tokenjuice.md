@@ -1,13 +1,13 @@
 ---
 read_when:
-    - OpenClawでより短い`exec`または`bash`ツール結果を求めている
-    - Tokenjuice Plugin をインストールまたは有効化したい
+    - OpenClaw で `exec` または `bash` ツールの結果を短くしたい場合
+    - Tokenjuice Pluginをインストールまたは有効化したい場合
     - tokenjuice が何を変更し、何を未加工のまま残すのかを理解する必要があります
-summary: 任意の Tokenjuice Plugin を使用して、ノイズの多い exec と bash ツールの結果を圧縮する
-title: Tokenjuice
+summary: オプションの Tokenjuice Plugin を使用して、冗長な exec および bash ツールの結果を圧縮する
+title: トークン効率
 x-i18n:
-    generated_at: "2026-07-05T11:56:51Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:48:20Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 96b110563a2600429dd9f0d38997cf7cc5ae4952b7f146a6ab64c96f2f202440
@@ -15,36 +15,37 @@ x-i18n:
     workflow: 16
 ---
 
-`tokenjuice` は、コマンドがすでに実行された後にノイズの多い `exec` と `bash`
-ツール結果を圧縮する、任意の外部プラグインです。
+`tokenjuice` は、コマンドの実行後にノイズの多い `exec` および `bash`
+ツールの結果を圧縮する、オプションの外部 Plugin です。
 
-これは返される `tool_result` を変更するもので、コマンド自体は変更しません。Tokenjuice は
-シェル入力を書き換えたり、コマンドを再実行したり、終了コードを変更したりしません。
+変更するのは返される `tool_result` であり、コマンド自体ではありません。Tokenjuice は
+シェル入力の書き換え、コマンドの再実行、終了コードの変更を行いません。
 
-現在、これは OpenClaw の埋め込み実行と、Codex app-server ハーネス内の OpenClaw 動的ツールに適用されます。Tokenjuice は OpenClaw のツール結果ミドルウェアにフックし、
-出力がアクティブなハーネスセッションに戻る前にトリミングします。
+現在、これは OpenClaw の組み込み実行と、Codex app-server ハーネス内の OpenClaw
+動的ツールに適用されます。Tokenjuice は OpenClaw のツール結果ミドルウェアにフックし、
+出力がアクティブなハーネスセッションに戻される前にトリミングします。
 
-## プラグインを有効化する
+## Plugin を有効にする
 
-一度だけインストールします。
+一度インストールします。
 
 ```bash
 openclaw plugins install clawhub:@openclaw/tokenjuice
 ```
 
-次に有効化します。
+次に有効にします。
 
 ```bash
 openclaw config set plugins.entries.tokenjuice.enabled true
 ```
 
-同等のコマンド:
+同等の操作:
 
 ```bash
 openclaw plugins enable tokenjuice
 ```
 
-設定を直接編集したい場合:
+設定を直接編集する場合:
 
 ```json5
 {
@@ -58,21 +59,21 @@ openclaw plugins enable tokenjuice
 }
 ```
 
-## tokenjuice が変更すること
+## tokenjuice が変更する内容
 
-- ノイズの多い `exec` と `bash` の結果を、セッションに戻す前に圧縮します。
-- 元のコマンド実行は変更せずに保ちます。
-- 安全なインベントリポリシーを適用します。正確なファイル内容の読み取りは未加工のままにし、単独のリポジトリインベントリコマンドは圧縮でき、安全でない混在コマンド列は未加工のままにします。
-- オプトインのままです。すべての場所で逐語的な出力が必要な場合は、プラグインを無効化してください。
+- ノイズの多い `exec` および `bash` の結果を、セッションに戻す前に圧縮します。
+- 元のコマンド実行には一切変更を加えません。
+- 安全なインベントリーポリシーを適用します。ファイル内容を正確に読み取るコマンドの出力はそのまま維持し、単独のリポジトリインベントリーコマンドは圧縮可能とし、安全でない複合コマンドシーケンスの出力はそのまま維持します。
+- オプトインのままです。すべての出力を逐語的に保持する場合は、Plugin を無効にしてください。
 
 ## 動作を確認する
 
-1. プラグインを有効化します。
+1. Plugin を有効にします。
 2. `exec` を呼び出せるセッションを開始します。
-3. `git status` のようなノイズの多いコマンドを実行します。
-4. 返されたツール結果が、生のシェル出力より短く、より構造化されていることを確認します。
+3. `git status` など、ノイズの多いコマンドを実行します。
+4. 返されたツール結果が、生のシェル出力よりも短く、構造化されていることを確認します。
 
-## プラグインを無効化する
+## Plugin を無効にする
 
 ```bash
 openclaw config set plugins.entries.tokenjuice.enabled false

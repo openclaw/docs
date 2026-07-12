@@ -1,31 +1,29 @@
 ---
 read_when:
-    - Tworzenie klientów Matrix, które renderują bogate odpowiedzi OpenClaw
+    - Tworzenie klientów Matrix renderujących rozbudowane odpowiedzi OpenClaw
     - Debugowanie zawartości zdarzenia com.openclaw.presentation
-summary: Metadane MessagePresentation Matrix dla klientów obsługujących OpenClaw
+summary: Metadane Matrix MessagePresentation dla klientów obsługujących OpenClaw
 title: Metadane prezentacji Matrix
 x-i18n:
-    generated_at: "2026-05-10T19:22:50Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:53:51Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c89979b6007faaa6af44c7f2511f354b96f163bcd3d5e7f99c405b51c4950537
+    source_hash: c0de4d13c6cefc6f91dcc7a4b0edeea6bf001f3bd71f52c9f0498ad422783d8a
     source_path: channels/matrix-presentation.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw może dołączać znormalizowane metadane `MessagePresentation` do wychodzących zdarzeń Matrix `m.room.message` w kluczu `com.openclaw.presentation`.
+OpenClaw dołącza znormalizowane metadane `MessagePresentation` do wychodzących zdarzeń Matrix `m.room.message` pod kluczem zawartości `com.openclaw.presentation`.
 
-Standardowe klienty Matrix nadal renderują zwykły tekst `body`. Klienty świadome OpenClaw mogą odczytywać ustrukturyzowane metadane i renderować natywny interfejs użytkownika, taki jak przyciski, listy wyboru, wiersze kontekstu i separatory.
+Standardowe klienty Matrix nadal renderują zwykły tekst z pola `body`. Klienty obsługujące OpenClaw mogą odczytywać metadane strukturalne i renderować natywny interfejs użytkownika, taki jak przyciski, listy wyboru, wiersze kontekstowe i separatory.
 
 ## Zawartość zdarzenia
-
-Metadane są przechowywane w zawartości zdarzenia Matrix:
 
 ```json
 {
   "msgtype": "m.text",
-  "body": "Select model\n\n- DeepSeek: /model deepseek/deepseek-chat",
+  "body": "Select model\n\nChoose model:\n- DeepSeek",
   "com.openclaw.presentation": {
     "version": 1,
     "type": "message.presentation",
@@ -47,39 +45,48 @@ Metadane są przechowywane w zawartości zdarzenia Matrix:
 }
 ```
 
-`version` to wersja schematu metadanych prezentacji Matrix. `type` to stabilny dyskryminator dla klientów świadomych OpenClaw. Klienty powinny ignorować nieznane wartości `type`, nieznane wersje, których nie mogą bezpiecznie zinterpretować, oraz nieznane typy bloków.
+- `version` to wersja schematu metadanych; bieżąca wersja to `1`. `type` jest stabilnym dyskryminatorem, zawsze równym `"message.presentation"`. Adapter Matrix emituje wyłącznie ładunki o dokładnie tej wersji i tym typie; klienty powinny analogicznie ignorować nieznane wersje, których nie mogą bezpiecznie interpretować, nieznane wartości `type` oraz nieznane typy bloków.
+- `title` i `tone` (`info`, `success`, `warning`, `danger`, `neutral`) są opcjonalnymi wskazówkami.
+- Przyciski i opcje wyboru mogą zawierać typowaną właściwość `action` (`{ "type": "command", "command": "/..." }` lub `{ "type": "callback", "value": "..." }`) obok starszej wartości tekstowej `value`. Gdy występują obie, preferuj `action`.
 
-## Zachowanie zastępcze
+## Zachowanie awaryjne
 
-OpenClaw zawsze renderuje czytelny zastępczy zwykły tekst w `body`. Ustrukturyzowane metadane są dodatkiem i nie mogą być wymagane do podstawowej interoperacyjności Matrix.
+OpenClaw zawsze renderuje w polu `body` czytelną reprezentację awaryjną w postaci zwykłego tekstu. Metadane strukturalne są dodatkiem i nie mogą być wymagane do podstawowej interoperacyjności z Matrix.
 
-Nieobsługiwane klienty powinny nadal wyświetlać tekst zastępczy. Klienty świadome OpenClaw mogą preferować ustrukturyzowane metadane do wyświetlania, zachowując jednocześnie tekst zastępczy do kopiowania, wyszukiwania, powiadomień i dostępności.
+Reguły renderowania awaryjnego:
+
+- Zawartość `title`, `text` i `context` jest renderowana jako zwykłe wiersze.
+- Przyciski z akcją `command` są renderowane jako ``etykieta: `/command` ``, aby polecenie można było skopiować. Przyciski z akcją `callback` lub wyłącznie starszą wartością `value` są renderowane tylko jako etykieta, aby niejawne wartości wywołań zwrotnych pozostały prywatne; wyłączone przyciski są zawsze renderowane tylko jako etykieta. Przyciski adresów URL i aplikacji internetowych są renderowane jako `etykieta: URL`.
+- Bloki wyboru renderują tekst zastępczy (lub `Opcje:`) jako nagłówek oraz wiersze opcji zawierające wyłącznie etykiety.
+- Jeśli nic nie zostanie wyrenderowane, na przykład w prezentacji zawierającej wyłącznie separator, treścią awaryjną będzie `---`.
+
+Nieobsługiwane klienty nadal wyświetlają tekst awaryjny. Klienty obsługujące OpenClaw mogą preferować metadane strukturalne do wyświetlania, zachowując tekst awaryjny na potrzeby kopiowania, wyszukiwania, powiadomień i ułatwień dostępu.
 
 ## Obsługiwane bloki
 
-Adapter wychodzący Matrix deklaruje obsługę:
+Adapter wychodzący Matrix deklaruje natywną obsługę następujących typów:
 
 - `buttons`
 - `select`
 - `context`
 - `divider`
 
-Klienty powinny traktować te bloki jako wskazówki prezentacji typu best-effort. Nieznane pola i nieznane typy bloków powinny być ignorowane, zamiast powodować niepowodzenie renderowania całej wiadomości.
+Bloki `text` są zawsze obsługiwane za pośrednictwem treści awaryjnej. Wszystkie bloki należy traktować jako opcjonalne wskazówki dotyczące prezentacji; zamiast odrzucać całą wiadomość, należy ignorować nieznane pola i typy bloków.
 
 ## Interakcje
 
-Te metadane nie dodają semantyki wywołań zwrotnych Matrix. Wartości przycisków i opcji wyboru są zastępczymi ładunkami interakcji, zwykle poleceniami ukośnikowymi lub poleceniami tekstowymi. Klient Matrix, który chce obsługiwać interakcję, może wysłać wybraną wartość z powrotem do pokoju jako normalną wiadomość.
+Te metadane nie dodają semantyki wywołań zwrotnych Matrix. Wartości przycisków i opcji wyboru są awaryjnymi ładunkami interakcji, zazwyczaj poleceniami z ukośnikiem lub poleceniami tekstowymi. Klient Matrix, który chce obsługiwać interakcje, ustala wartość elementu sterującego (`action.command`, następnie `action.value`, a następnie `value`) i wysyła ją z powrotem do pokoju jako zwykłą wiadomość.
 
-Na przykład przycisk o wartości `/model deepseek/deepseek-chat` można obsłużyć przez wysłanie tej wartości jako zaszyfrowanej wiadomości tekstowej Matrix w tym samym pokoju.
+Na przykład przycisk o wartości `/model deepseek/deepseek-chat` można obsłużyć, wysyłając tę wartość jako zaszyfrowaną wiadomość tekstową Matrix w tym samym pokoju.
 
-## Relacja do metadanych zatwierdzania
+## Relacja z metadanymi zatwierdzania
 
-`com.openclaw.presentation` służy do ogólnej prezentacji bogatych wiadomości.
+`com.openclaw.presentation` służy do ogólnej prezentacji rozbudowanych wiadomości.
 
-Monity zatwierdzania używają dedykowanych metadanych `com.openclaw.approval`, ponieważ zatwierdzenia zawierają stan wrażliwy z punktu widzenia bezpieczeństwa, decyzje oraz szczegóły exec/Plugin. Jeśli oba klucze metadanych są obecne w tym samym zdarzeniu, klienty powinny preferować dedykowany renderer zatwierdzania.
+Monity o zatwierdzenie używają dedykowanych metadanych `com.openclaw.approval`, ponieważ zatwierdzenia zawierają stan istotny dla bezpieczeństwa, decyzje oraz szczegóły wykonania i Pluginów. Jeśli oba klucze metadanych występują w tym samym zdarzeniu, klienty powinny preferować dedykowany mechanizm renderowania zatwierdzeń.
 
 ## Wiadomości multimedialne
 
-Gdy odpowiedź zawiera wiele adresów URL multimediów, OpenClaw wysyła jedno zdarzenie Matrix na każdy adres URL multimediów. Metadane prezentacji są dołączane tylko do pierwszego zdarzenia multimedialnego, aby klienty miały jeden stabilny ustrukturyzowany ładunek i aby uniknąć zduplikowanych rendererów.
+Gdy odpowiedź zawiera wiele adresów URL multimediów, OpenClaw wysyła po jednym zdarzeniu Matrix dla każdego adresu URL. Tekst podpisu i metadane prezentacji są dołączane wyłącznie do pierwszego zdarzenia, dzięki czemu klienty otrzymują jeden stabilny ładunek strukturalny bez powielonych mechanizmów renderowania. Ta sama reguła obowiązuje, gdy długi tekst jest dzielony między zdarzenia: metadane są przesyłane wyłącznie w pierwszym zdarzeniu.
 
-Metadane prezentacji powinny pozostać zwięzłe. Duży tekst widoczny dla użytkownika powinien pozostać w `body` i używać normalnej ścieżki dzielenia tekstu Matrix.
+Metadane prezentacji powinny być zwarte. Obszerny tekst widoczny dla użytkownika powinien pozostać w polu `body` i korzystać ze standardowego mechanizmu dzielenia tekstu Matrix.

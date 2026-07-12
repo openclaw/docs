@@ -1,28 +1,25 @@
 ---
 read_when:
-    - Anda ingin balasan untuk satu sesi aktif dialihkan dari Telegram ke Discord, Slack, Mattermost, atau saluran tertaut lainnya
-    - Anda sedang mengonfigurasi session.identityLinks untuk pesan langsung lintas saluran
-    - Perintah /dock menyatakan pengirim tidak tertaut atau tidak ada sesi aktif
-summary: Pindahkan rute balasan satu sesi OpenClaw di antara saluran obrolan tertaut
+    - Anda ingin balasan untuk satu sesi aktif berpindah dari Telegram ke Discord, Slack, Mattermost, atau saluran tertaut lainnya
+    - Anda sedang mengonfigurasi `session.identityLinks` untuk pesan langsung lintas kanal
+    - Perintah /dock menyatakan bahwa pengirim belum ditautkan atau tidak ada sesi aktif
+summary: Pindahkan rute balasan satu sesi OpenClaw antar kanal obrolan yang tertaut
 title: Penambatan saluran
 x-i18n:
-    generated_at: "2026-04-30T09:42:45Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:08:48Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b981cd177ed76194cf18667620a1f9b2f2ba50df42fe203f6f68916971ed6a61
+    source_hash: 6d7af3a59b95b2c73cb74a9529584e51caed055719db2df8aad2ba8e8c9b0593
     source_path: concepts/channel-docking.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Penambatan kanal adalah pengalihan panggilan untuk satu sesi OpenClaw.
-
-Ini mempertahankan konteks percakapan yang sama, tetapi mengubah tempat balasan berikutnya untuk
-sesi tersebut dikirimkan.
+Docking kanal adalah penerusan panggilan untuk satu sesi OpenClaw. Fitur ini mempertahankan konteks percakapan yang sama, tetapi mengubah lokasi pengiriman balasan berikutnya untuk sesi tersebut. Docking hanya berfungsi dari obrolan langsung; fitur ini tidak dapat dijalankan dari obrolan grup.
 
 ## Contoh
 
-Alice dapat mengirim pesan ke OpenClaw di Telegram dan Discord:
+Alice dapat mengirim pesan ke OpenClaw melalui Telegram dan Discord:
 
 ```json5
 {
@@ -34,7 +31,7 @@ Alice dapat mengirim pesan ke OpenClaw di Telegram dan Discord:
 }
 ```
 
-Jika Alice mengirim ini dari Telegram:
+Jika Alice mengirimkan ini dari obrolan langsung Telegram:
 
 ```text
 /dock_discord
@@ -42,29 +39,26 @@ Jika Alice mengirim ini dari Telegram:
 
 OpenClaw mempertahankan konteks sesi saat ini dan mengubah rute balasan:
 
-| Sebelum penambatan             | Setelah `/dock_discord`       |
-| ------------------------------ | ----------------------------- |
-| Balasan masuk ke Telegram `123` | Balasan masuk ke Discord `456` |
+| Sebelum docking                 | Setelah `/dock_discord`         |
+| ------------------------------- | ------------------------------- |
+| Balasan dikirim ke Telegram `123` | Balasan dikirim ke Discord `456` |
 
-Sesi tidak dibuat ulang. Riwayat transkrip tetap melekat pada
-sesi yang sama.
+Sesi tidak dibuat ulang. Riwayat transkrip tetap terhubung ke sesi yang sama.
 
-## Mengapa menggunakannya
+## Alasan menggunakannya
 
-Gunakan penambatan ketika tugas dimulai di satu aplikasi obrolan, tetapi balasan berikutnya harus masuk
-ke tempat lain.
+Gunakan docking ketika suatu tugas dimulai di satu aplikasi obrolan, tetapi balasan berikutnya harus dikirim ke tempat lain.
 
 Alur umum:
 
 1. Mulai tugas agen dari Telegram.
-2. Pindah ke Discord tempat Anda mengoordinasikan pekerjaan.
-3. Kirim `/dock_discord` dari sesi Telegram.
+2. Beralih ke Discord, tempat Anda mengoordinasikan pekerjaan.
+3. Kirim `/dock_discord` dari obrolan langsung Telegram.
 4. Pertahankan sesi OpenClaw yang sama, tetapi terima balasan berikutnya di Discord.
 
-## Konfigurasi yang diperlukan
+## Konfigurasi wajib
 
-Penambatan memerlukan `session.identityLinks`. Pengirim sumber dan peer target
-harus berada dalam grup identitas yang sama:
+Docking memerlukan `session.identityLinks`. Pengirim sumber dan rekan target harus berada dalam grup identitas yang sama:
 
 ```json5
 {
@@ -76,22 +70,19 @@ harus berada dalam grup identitas yang sama:
 }
 ```
 
-Nilainya adalah id peer berprefiks kanal:
+Nilainya adalah ID rekan yang diawali prefiks kanal:
 
-| Nilai          | Arti                         |
-| -------------- | ---------------------------- |
-| `telegram:123` | id pengirim Telegram `123`   |
-| `discord:456`  | id peer langsung Discord `456` |
-| `slack:U123`   | id pengguna Slack `U123`     |
+| Nilai          | Arti                            |
+| -------------- | ------------------------------- |
+| `telegram:123` | ID pengirim Telegram `123`      |
+| `discord:456`  | ID rekan langsung Discord `456` |
+| `slack:U123`   | ID pengguna Slack `U123`        |
 
-Kunci kanonis (`alice` di atas) hanyalah nama grup identitas bersama. Perintah
-penambatan menggunakan nilai berprefiks kanal untuk membuktikan bahwa pengirim sumber dan
-peer target adalah orang yang sama.
+Kunci kanonis (`alice` di atas) hanyalah nama grup identitas bersama. Perintah docking menggunakan nilai yang diawali prefiks kanal untuk membuktikan bahwa pengirim sumber dan rekan target adalah orang yang sama.
 
 ## Perintah
 
-Perintah penambatan dibuat dari Plugin kanal yang dimuat yang mendukung
-perintah asli. Perintah bawaan saat ini:
+OpenClaw menghasilkan satu perintah `/dock-<channel>` untuk setiap Plugin kanal yang dimuat dan mendukung perintah native, sehingga daftarnya bertambah saat Plugin ditambahkan. Plugin bawaan yang saat ini mendukungnya:
 
 | Kanal target | Perintah           | Alias              |
 | ------------ | ------------------ | ------------------ |
@@ -100,24 +91,23 @@ perintah asli. Perintah bawaan saat ini:
 | Slack        | `/dock-slack`      | `/dock_slack`      |
 | Telegram     | `/dock-telegram`   | `/dock_telegram`   |
 
-Alias garis bawah berguna pada permukaan perintah asli seperti Telegram.
+Bentuk dengan garis bawah juga merupakan nama perintah native pada antarmuka seperti Telegram yang menyediakan perintah garis miring secara langsung.
 
 ## Yang berubah
 
-Penambatan memperbarui kolom pengiriman sesi aktif:
+Docking memperbarui kolom pengiriman sesi aktif:
 
-| Kolom sesi     | Contoh setelah `/dock_discord`              |
-| -------------- | ------------------------------------------- |
-| `lastChannel`  | `discord`                                   |
-| `lastTo`       | `456`                                       |
-| `lastAccountId` | akun kanal target, atau `default`         |
+| Kolom sesi      | Contoh setelah `/dock_discord`          |
+| --------------- | --------------------------------------- |
+| `lastChannel`   | `discord`                               |
+| `lastTo`        | `456`                                   |
+| `lastAccountId` | akun kanal target, atau `default`       |
 
-Kolom tersebut dipertahankan di penyimpanan sesi dan digunakan oleh pengiriman
-balasan berikutnya untuk sesi tersebut.
+Kolom tersebut disimpan secara persisten di penyimpanan sesi dan digunakan untuk pengiriman balasan berikutnya bagi sesi tersebut.
 
 ## Yang tidak berubah
 
-Penambatan tidak:
+Docking tidak:
 
 - membuat akun kanal
 - menghubungkan bot Discord, Telegram, Slack, atau Mattermost baru
@@ -126,28 +116,26 @@ Penambatan tidak:
 - memindahkan riwayat transkrip ke sesi lain
 - membuat pengguna yang tidak terkait berbagi sesi
 
-Ini hanya mengubah rute pengiriman untuk sesi saat ini.
+Fitur ini hanya mengubah rute pengiriman untuk sesi saat ini.
 
 ## Pemecahan masalah
 
-**Perintah mengatakan pengirim tidak tertaut.**
+**Perintah menyatakan bahwa pengirim tidak ditautkan.**
 
-Tambahkan pengirim saat ini dan peer target ke grup
-`session.identityLinks` yang sama. Misalnya, jika pengirim Telegram `123` harus ditambatkan
-ke peer Discord `456`, sertakan `telegram:123` dan `discord:456`.
+Tambahkan pengirim saat ini dan rekan target ke grup `session.identityLinks` yang sama. Misalnya, jika pengirim Telegram `123` harus diarahkan melalui docking ke rekan Discord `456`, sertakan `telegram:123` dan `discord:456`.
 
-**Perintah mengatakan tidak ada sesi aktif.**
+**Perintah menyatakan bahwa docking hanya tersedia dari obrolan langsung.**
 
-Tambatkan dari sesi obrolan langsung yang sudah ada. Perintah memerlukan entri sesi aktif
-agar dapat mempertahankan rute baru.
+Kirim perintah docking dari obrolan langsung dengan OpenClaw, bukan dari obrolan grup.
 
-**Balasan masih masuk ke kanal lama.**
+**Perintah menyatakan bahwa tidak ada sesi aktif.**
 
-Periksa bahwa perintah membalas dengan pesan sukses, dan pastikan id peer target
-cocok dengan id yang digunakan oleh kanal tersebut. Penambatan hanya mengubah rute
-sesi aktif; sesi lain mungkin masih diarahkan ke tempat lain.
+Lakukan docking dari sesi obrolan langsung yang sudah ada. Perintah ini memerlukan entri sesi aktif agar dapat menyimpan rute baru secara persisten.
+
+**Balasan masih dikirim ke kanal lama.**
+
+Pastikan perintah memberikan pesan berhasil, dan konfirmasikan bahwa ID rekan target cocok dengan ID yang digunakan oleh kanal tersebut. Docking hanya mengubah rute sesi aktif; sesi lain mungkin masih memiliki rute ke tempat lain.
 
 **Saya perlu beralih kembali.**
 
-Kirim perintah yang sesuai untuk kanal asli, seperti `/dock_telegram` atau
-`/dock-telegram`, dari pengirim yang tertaut.
+Kirim perintah yang sesuai untuk kanal asal, seperti `/dock_telegram` atau `/dock-telegram`, dari pengirim yang ditautkan.

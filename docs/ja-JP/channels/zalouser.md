@@ -1,12 +1,12 @@
 ---
 read_when:
-    - OpenClaw 用の Zalo Personal の設定
+    - OpenClaw 向け Zalo Personal のセットアップ
     - Zalo Personal のログインまたはメッセージフローのデバッグ
-summary: Zalo 個人アカウントのネイティブ zca-js（QR ログイン）経由のサポート、機能、および設定
+summary: ネイティブの zca-js（QR ログイン）による Zalo 個人アカウントのサポート、機能、設定
 title: Zalo 個人用
 x-i18n:
-    generated_at: "2026-07-05T11:08:33Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:04:39Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 962697c4a56dfb733fe4973e23129ccb365506e35c09e673365842f45a837949
@@ -14,31 +14,31 @@ x-i18n:
     workflow: 16
 ---
 
-ステータス: 実験的。この連携は、外部 CLI バイナリなしで、ネイティブの `zca-js` を介してインプロセスで **個人用 Zalo アカウント**を自動化します。
+ステータス: 実験的。この連携はネイティブの `zca-js` を使用し、外部 CLI バイナリを使わずに、プロセス内で**個人用 Zalo アカウント**を自動操作します。
 
 <Warning>
-これは非公式の連携であり、アカウントの停止または禁止につながる可能性があります。自己責任で使用してください。
+これは非公式の連携であり、アカウントの一時停止や禁止につながる可能性があります。自己責任で使用してください。
 </Warning>
 
 ## インストール
 
-Zalo Personal は公式の外部 Plugin であり、core にはバンドルされていません。使用前にインストールしてください。
+Zalo Personal は公式の外部 Plugin であり、コアには同梱されていません。使用前にインストールしてください。
 
 ```bash
 openclaw plugins install @openclaw/zalouser
 ```
 
 - バージョンを固定する: `openclaw plugins install @openclaw/zalouser@<version>`
-- ソース checkout から: `openclaw plugins install ./path/to/local/zalouser-plugin`
+- ソースチェックアウトからインストールする: `openclaw plugins install ./path/to/local/zalouser-plugin`
 - 詳細: [Plugin](/ja-JP/tools/plugin)
 
-## クイック設定
+## クイックセットアップ
 
-1. Plugin をインストールします（上記）。
-2. ログインします（QR、Gateway マシン上）:
+1. Plugin をインストールします（上記参照）。
+2. ログインします（Gateway マシン上で QR を使用）。
    - `openclaw channels login --channel zalouser`
    - Zalo モバイルアプリで QR コードをスキャンします。
-3. channel を有効にします。
+3. チャンネルを有効にします。
 
 ```json5
 {
@@ -51,21 +51,21 @@ openclaw plugins install @openclaw/zalouser
 }
 ```
 
-4. Gateway を再起動します（または設定を完了します）。
-5. DM アクセスはデフォルトで pairing です。初回接触時に pairing コードを承認します。
+4. Gateway を再起動します（またはセットアップを完了します）。
+5. DM アクセスのデフォルトはペアリングです。最初の連絡時にペアリングコードを承認してください。
 
-## これは何か
+## 概要
 
-- `zca-js` ライブラリを介して完全にインプロセスで動作します（外部 `zca`/`openzca` バイナリなし）。
+- `zca-js` ライブラリにより、完全にプロセス内で動作します（外部の `zca`/`openzca` バイナリは使用しません）。
 - ネイティブイベントリスナー（`message`、`error`）を使用して受信メッセージを受け取ります。
-- JS API を通じて直接返信を送信します（テキスト/メディア/リンク）。
-- Zalo Bot API が利用できない「個人アカウント」用途向けに設計されています。
+- JS API を通じて返信（テキスト、メディア、リンク）を直接送信します。
+- Zalo Bot API を利用できない「個人アカウント」のユースケース向けに設計されています。
 
 ## 命名
 
-Channel id は `zalouser` です。これは **個人用 Zalo ユーザーアカウント**（非公式）を自動化することを明示するためです。`zalo` は、将来の公式 Zalo API 連携の可能性のために予約されています。
+チャンネル ID は `zalouser` です。これは、**個人用 Zalo ユーザーアカウント**を自動操作する非公式連携であることを明示するためです。`zalo` は、将来提供される可能性がある公式 Zalo API 連携用に予約されています。
 
-## ID の検索（directory）
+## ID の検索（ディレクトリ）
 
 ```bash
 openclaw directory self --channel zalouser
@@ -75,34 +75,34 @@ openclaw directory groups list --channel zalouser --query "work"
 
 ## 制限
 
-- 送信テキストは 2000 文字に分割されます（Zalo クライアントの制限）。
-- Streaming はサポートされていません。
+- 送信テキストは 2,000 文字単位に分割されます（Zalo クライアントの制限）。
+- ストリーミングには対応していません。
 
 ## アクセス制御（DM）
 
 `channels.zalouser.dmPolicy`: `pairing | allowlist | open | disabled`（デフォルト: `pairing`）。
 
-`channels.zalouser.allowFrom` には安定した Zalo ユーザー ID を使用する必要があります。静的な送信者アクセスグループ（`accessGroup:<name>`）も参照できます。対話型設定では、入力した名前を Plugin のインプロセス連絡先検索を使って ID に解決できます。
+`channels.zalouser.allowFrom` には、安定した Zalo ユーザー ID を使用してください。静的な送信者アクセスグループ（`accessGroup:<name>`）も参照できます。対話型セットアップでは、入力した名前を Plugin のプロセス内連絡先検索によって ID に解決できます。
 
-生の名前が config に残っている場合、startup 時の解決は `channels.zalouser.dangerouslyAllowNameMatching: true` が有効な場合のみ行われます。この opt-in がない場合、runtime の送信者チェックは ID のみで行われ、生の名前は認可では無視されます。
+設定に未加工の名前が残っている場合、`channels.zalouser.dangerouslyAllowNameMatching: true` が有効なときに限り、起動時に解決されます。このオプトインがない場合、実行時の送信者チェックは ID のみを使用し、未加工の名前は認可時に無視されます。
 
-承認方法:
+次のコマンドで承認します。
 
 - `openclaw pairing list zalouser`
 - `openclaw pairing approve zalouser <code>`
 
 ## グループアクセス（任意）
 
-- デフォルト: `channels.zalouser.groupPolicy = "allowlist"`（グループには明示的な allowlist エントリが必要です）。
-- すべてのグループを開放: `channels.zalouser.groupPolicy = "open"`。
-- すべてのグループをブロック: `channels.zalouser.groupPolicy = "disabled"`。
+- デフォルト: `channels.zalouser.groupPolicy = "allowlist"`（グループには明示的な許可リストエントリが必要です）。
+- すべてのグループを開放する: `channels.zalouser.groupPolicy = "open"`。
+- すべてのグループをブロックする: `channels.zalouser.groupPolicy = "disabled"`。
 - `groupPolicy = "allowlist"` の場合:
-  - `channels.zalouser.groups` のキーには安定したグループ ID を使用する必要があります。名前は startup 時に `channels.zalouser.dangerouslyAllowNameMatching: true` が有効な場合のみ ID に解決されます。
-  - `channels.zalouser.groupAllowFrom` は、許可されたグループ内のどの送信者が bot を起動できるかを制御します。静的な送信者アクセスグループは `accessGroup:<name>` で参照できます。
-- configure ウィザードは、グループ allowlist の入力を促すことができます。
-- グループ allowlist の照合はデフォルトで ID のみです。未解決の名前は、`channels.zalouser.dangerouslyAllowNameMatching: true` が有効でない限り auth では無視されます。
-- `channels.zalouser.dangerouslyAllowNameMatching: true` は、可変な startup 時の名前解決と runtime のグループ名照合を再び有効にする break-glass 互換モードです。
-- `groupAllowFrom` は通常のグループメッセージでは `allowFrom` にフォールバック**しません**。allowlist に登録されたグループでこれを空にすると、そのグループは任意の送信者に開放されます。認可済みの制御コマンド（例: `/new`）は例外です。`groupAllowFrom` が空の場合、コマンド送信者チェックは `allowFrom` にフォールバックします。
+  - `channels.zalouser.groups` のキーには安定したグループ ID を使用してください。`channels.zalouser.dangerouslyAllowNameMatching: true` が有効な場合に限り、名前が起動時に ID に解決されます。
+  - `channels.zalouser.groupAllowFrom` は、許可されたグループ内でどの送信者がボットを起動できるかを制御します。静的な送信者アクセスグループは `accessGroup:<name>` で参照できます。
+- 設定ウィザードでは、グループの許可リストを入力するよう求めることができます。
+- グループ許可リストの照合は、デフォルトでは ID のみを使用します。`channels.zalouser.dangerouslyAllowNameMatching: true` が有効でない限り、解決されていない名前は認証時に無視されます。
+- `channels.zalouser.dangerouslyAllowNameMatching: true` は、変更可能な起動時の名前解決と実行時のグループ名照合を再び有効にする、緊急用の互換モードです。
+- 通常のグループメッセージでは、`groupAllowFrom` は `allowFrom` に**フォールバックしません**。許可リストに登録されたグループで空のままにすると、そのグループはすべての送信者に対して開放されます。認可された制御コマンド（例: `/new`）は例外です。`groupAllowFrom` が空の場合、コマンド送信者チェックは `allowFrom` にフォールバックします。
 
 例:
 
@@ -122,18 +122,18 @@ openclaw directory groups list --channel zalouser --query "work"
 ```
 
 <Note>
-`channels.zalouser.groups.<id>.allow` は legacy フィールド名です。現在の config は `enabled` を使用します。`openclaw doctor --fix` は `allow` を `enabled` に自動的に移行します。
+`channels.zalouser.groups.<id>.allow` は以前のフィールド名です。現在の設定では `enabled` を使用します。`openclaw doctor --fix` は `allow` を `enabled` に自動的に移行します。
 </Note>
 
-### グループメンションゲート
+### グループでのメンション制御
 
-- `channels.zalouser.groups.<group>.requireMention` は、グループ返信にメンションが必要かどうかを制御します。
-- 解決順序: group id -> `group:<id>` alias -> group name/slug（名前ベースの候補は `dangerouslyAllowNameMatching: true` の場合のみ適用）-> `*` -> デフォルト（`true`）。
-- allowlist に登録されたグループと open group モードの両方に適用されます。
-- bot メッセージを引用すると、グループ起動の暗黙的なメンションとして扱われます。
-- 認可済みの制御コマンド（例: `/new`）は、メンションゲートをバイパスできます。
-- メンションが必要なためにグループメッセージがスキップされた場合、OpenClaw はそれを pending group history として保存し、次に処理されるグループメッセージに含めます。
-- グループ履歴の上限: `channels.zalouser.historyLimit`、次に `messages.groupChat.historyLimit`、最後に fallback の `50`。
+- `channels.zalouser.groups.<group>.requireMention` は、グループで返信するためにメンションを必須とするかどうかを制御します。
+- 解決順序: グループ ID -> `group:<id>` エイリアス -> グループ名/スラッグ（名前に基づく候補は `dangerouslyAllowNameMatching: true` の場合のみ適用）-> `*` -> デフォルト（`true`）。
+- 許可リストに登録されたグループと、グループ開放モードの両方に適用されます。
+- ボットのメッセージを引用すると、グループを起動するための暗黙的なメンションとして扱われます。
+- 認可された制御コマンド（例: `/new`）は、メンション制御を回避できます。
+- メンションが必須であるためグループメッセージがスキップされた場合、OpenClaw はそのメッセージを保留中のグループ履歴として保存し、次に処理されるグループメッセージに含めます。
+- グループ履歴の上限: `channels.zalouser.historyLimit`、次に `messages.groupChat.historyLimit`、その後フォールバック値の `50`。
 
 例:
 
@@ -151,9 +151,9 @@ openclaw directory groups list --channel zalouser --query "work"
 }
 ```
 
-## マルチアカウント
+## 複数アカウント
 
-アカウントは OpenClaw state 内の `zalouser` profile にマッピングされます。例:
+アカウントは、OpenClaw の状態内にある `zalouser` プロファイルに対応付けられます。例:
 
 ```json5
 {
@@ -171,49 +171,49 @@ openclaw directory groups list --channel zalouser --query "work"
 
 ## 環境変数
 
-Profile 選択は環境変数からも取得できます。
+プロファイルの選択には環境変数も使用できます。
 
-| 変数               | 目的                                                                       |
-| ------------------ | -------------------------------------------------------------------------- |
-| `ZALOUSER_PROFILE` | channel または account config で `profile` が設定されていない場合に使用する profile 名。 |
-| `ZCA_PROFILE`      | legacy fallback。`ZALOUSER_PROFILE` が設定されていない場合のみ使用されます。 |
+| 変数               | 用途                                                                                           |
+| ------------------ | ---------------------------------------------------------------------------------------------- |
+| `ZALOUSER_PROFILE` | チャンネルまたはアカウント設定で `profile` が設定されていない場合に使用するプロファイル名です。 |
+| `ZCA_PROFILE`      | 以前のフォールバックです。`ZALOUSER_PROFILE` が設定されていない場合にのみ使用されます。          |
 
-Profile 名は、OpenClaw state に保存された Zalo ログイン認証情報を選択します。解決順序:
+プロファイル名は、OpenClaw の状態に保存された Zalo ログイン認証情報を選択します。解決順序:
 
-1. config 内の明示的な `profile`。
+1. 設定内の明示的な `profile`。
 2. `ZALOUSER_PROFILE`。
 3. `ZCA_PROFILE`。
-4. 非デフォルトアカウントの場合は account id、デフォルトアカウントの場合は `default`。
+4. デフォルト以外のアカウントではアカウント ID、デフォルトアカウントでは `default`。
 
-マルチアカウント設定では、1 つの環境変数によって複数のアカウントが同じログインセッションを共有しないように、config 内の各アカウントに `profile` を設定することを推奨します。
+複数アカウントを設定する場合、1 つの環境変数によって複数のアカウントが同じログインセッションを共有しないよう、設定内の各アカウントに `profile` を設定することを推奨します。
 
 ## 入力中表示、リアクション、配信確認
 
-- OpenClaw は返信を dispatch する前に typing event を送信します（best-effort）。
-- Message reaction action `react` は、channel actions 内の `zalouser` でサポートされています。
-  - メッセージから特定の reaction emoji を削除するには `remove: true` を使用します。
-  - Reaction のセマンティクス: [Reactions](/ja-JP/tools/reactions)
-- event metadata を含む受信メッセージについて、OpenClaw は delivered + seen acknowledgements を送信します（best-effort）。
+- OpenClaw は返信を送信する前に入力中イベントを送信します（ベストエフォート）。
+- チャンネルアクションでは、メッセージリアクションアクション `react` が `zalouser` でサポートされています。
+  - メッセージから特定のリアクション絵文字を削除するには、`remove: true` を使用します。
+  - リアクションの動作: [リアクション](/ja-JP/tools/reactions)
+- イベントメタデータを含む受信メッセージに対して、OpenClaw は配信済みと既読の確認を送信します（ベストエフォート）。
 
 ## トラブルシューティング
 
-**ログインが保持されない:**
+**ログイン状態が維持されない場合:**
 
 - `openclaw channels status --probe`
 - 再ログイン: `openclaw channels logout --channel zalouser && openclaw channels login --channel zalouser`
 
-**Allowlist/group name が解決されない:**
+**許可リストまたはグループ名を解決できない場合:**
 
-- `allowFrom`/`groupAllowFrom` には数値 ID を使用し、`groups` には安定したグループ ID を使用してください。正確な友人/グループ名が意図的に必要な場合は、`channels.zalouser.dangerouslyAllowNameMatching: true` を有効にしてください。
+- `allowFrom`/`groupAllowFrom` には数値 ID を使用し、`groups` には安定したグループ ID を使用してください。正確な友達名やグループ名を意図的に使用する必要がある場合は、`channels.zalouser.dangerouslyAllowNameMatching: true` を有効にしてください。
 
-**古い外部 `zca`/CLI ベースの設定からアップグレードした場合:**
+**以前の外部 `zca`/CLI ベースのセットアップからアップグレードした場合:**
 
-- 外部 `zca` プロセスに関する前提をすべて取り除いてください。この channel は現在、外部 CLI バイナリなしで `zca-js` を介して完全にインプロセスで動作します。
+- 外部の `zca` プロセスを前提とする設定をすべて削除してください。このチャンネルは現在、外部 CLI バイナリを使わず、`zca-js` により完全にプロセス内で動作します。
 
-## 関連
+## 関連項目
 
-- [Channels Overview](/ja-JP/channels) - サポートされるすべての channel
-- [Pairing](/ja-JP/channels/pairing) - DM 認証と pairing flow
-- [Groups](/ja-JP/channels/groups) - グループチャットの behavior とメンションゲート
-- [Channel Routing](/ja-JP/channels/channel-routing) - メッセージの session routing
-- [Security](/ja-JP/gateway/security) - アクセスモデルと hardening
+- [チャンネルの概要](/ja-JP/channels) - サポートされているすべてのチャンネル
+- [ペアリング](/ja-JP/channels/pairing) - DM の認証とペアリングフロー
+- [グループ](/ja-JP/channels/groups) - グループチャットの動作とメンション制御
+- [チャンネルルーティング](/ja-JP/channels/channel-routing) - メッセージのセッションルーティング
+- [セキュリティ](/ja-JP/gateway/security) - アクセスモデルと堅牢化

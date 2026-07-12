@@ -1,15 +1,14 @@
 ---
 read_when:
     - Vous souhaitez utiliser Chutes avec OpenClaw
-    - Vous avez besoin de la procédure de configuration OAuth ou par clé API
+    - Vous avez besoin du processus de configuration OAuth ou de la clé API
     - Vous souhaitez modifier le modèle par défaut, les alias ou le comportement de découverte
 summary: Configuration de Chutes (OAuth ou clé API, découverte des modèles, alias)
 title: Chutes
 x-i18n:
-    generated_at: "2026-07-12T15:41:41Z"
+    generated_at: "2026-07-12T02:59:16Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: dafa96c4a56b9d38d033b87cc077d359cb71adaf1ca41a0ab6b6cc77b66484a7
     source_path: providers/chutes.md
@@ -17,19 +16,19 @@ x-i18n:
 ---
 
 [Chutes](https://chutes.ai) expose des catalogues de modèles open source via une
-API compatible avec OpenAI. OpenClaw prend en charge l’authentification OAuth par navigateur et par clé API.
+API compatible avec OpenAI. OpenClaw prend en charge l’authentification OAuth dans le navigateur et par clé API.
 
-| Propriété                  | Valeur                                                  |
-| -------------------------- | ------------------------------------------------------- |
-| Fournisseur                | `chutes`                                                |
-| Plugin                     | paquet externe officiel (`@openclaw/chutes-provider`)   |
-| API                        | compatible avec OpenAI                                  |
-| URL de base                | `https://llm.chutes.ai/v1`                              |
-| Authentification           | OAuth ou clé API (voir ci-dessous)                      |
+| Propriété                  | Valeur                                                   |
+| -------------------------- | -------------------------------------------------------- |
+| Fournisseur                | `chutes`                                                 |
+| Plugin                     | paquet externe officiel (`@openclaw/chutes-provider`)    |
+| API                        | compatible avec OpenAI                                   |
+| URL de base                | `https://llm.chutes.ai/v1`                               |
+| Authentification           | OAuth ou clé API (voir ci-dessous)                       |
 | Variables d’environnement d’exécution | `CHUTES_API_KEY`, `CHUTES_OAUTH_TOKEN`       |
 
 `CHUTES_OAUTH_TOKEN` fournit directement un jeton d’accès OAuth déjà obtenu
-(par exemple dans un environnement CI), sans passer par le flux interactif dans le navigateur ci-dessous.
+(par exemple dans un environnement CI), sans passer par le flux interactif dans le navigateur décrit ci-dessous.
 
 ## Installer le Plugin
 
@@ -38,7 +37,7 @@ openclaw plugins install @openclaw/chutes-provider
 openclaw gateway restart
 ```
 
-## Prise en main
+## Bien démarrer
 
 Les deux méthodes définissent `chutes/zai-org/GLM-4.7-TEE` comme modèle par défaut et enregistrent
 le catalogue Chutes.
@@ -50,9 +49,9 @@ le catalogue Chutes.
         ```bash
         openclaw onboard --auth-choice chutes
         ```
-        OpenClaw lance localement le flux dans le navigateur ou, sur les hôtes distants/sans interface graphique,
-        affiche une URL et demande de coller l’URL de redirection. Les jetons OAuth sont automatiquement actualisés par l’intermédiaire
-        des profils d’authentification OpenClaw.
+        OpenClaw lance localement le flux dans le navigateur ou affiche une URL ainsi qu’un flux
+        permettant de coller la redirection sur les hôtes distants ou sans interface graphique. Les jetons OAuth sont automatiquement actualisés par l’intermédiaire des profils
+        d’authentification OpenClaw.
       </Step>
     </Steps>
   </Tab>
@@ -73,12 +72,12 @@ le catalogue Chutes.
 
 ## Comportement de la découverte
 
-Lorsque des identifiants d’authentification Chutes sont disponibles, OpenClaw interroge `GET /v1/models` avec ces
+Lorsque l’authentification Chutes est disponible, OpenClaw interroge `GET /v1/models` avec ces
 identifiants et utilise les modèles découverts, mis en cache pendant 5 minutes pour chaque
 identifiant. Si une clé a expiré ou n’est pas autorisée (HTTP 401), OpenClaw réessaie une fois
 sans identifiants. Si la découverte ne renvoie toujours aucune ligne, échoue ou renvoie tout
-autre statut autre que 2xx, OpenClaw utilise à la place le catalogue statique intégré (la découverte
-par clé API et celle par OAuth suivent ce même chemin). Si la découverte échoue au démarrage, le
+autre statut hors de la plage 2xx, OpenClaw utilise à la place le catalogue statique intégré (la découverte
+par clé API et celle par OAuth suivent le même chemin). Si la découverte échoue au démarrage, le
 catalogue statique est utilisé automatiquement.
 
 ## Alias par défaut
@@ -93,9 +92,9 @@ OpenClaw enregistre trois alias pratiques pour le catalogue Chutes :
 
 ## Catalogue de démarrage intégré
 
-Le catalogue de secours intégré contient 47 modèles. Voici un échantillon représentatif des références actuelles :
+Le catalogue de secours intégré comprend 47 modèles. Voici un échantillon représentatif des références actuelles :
 
-| Référence du modèle                                  |
+| Référence du modèle                                   |
 | ----------------------------------------------------- |
 | `chutes/zai-org/GLM-4.7-TEE`                          |
 | `chutes/zai-org/GLM-5-TEE`                            |
@@ -106,7 +105,7 @@ Le catalogue de secours intégré contient 47 modèles. Voici un échantillon re
 | `chutes/Qwen/Qwen3-Coder-Next-TEE`                    |
 | `chutes/openai/gpt-oss-120b-TEE`                      |
 
-Exécutez `openclaw models list --all --provider chutes` pour obtenir la liste complète.
+Exécutez `openclaw models list --all --provider chutes` pour afficher la liste complète.
 
 ## Exemple de configuration
 
@@ -126,12 +125,12 @@ Exécutez `openclaw models list --all --provider chutes` pour obtenir la liste c
 
 <AccordionGroup>
   <Accordion title="Personnalisation d’OAuth">
-    Personnalisez le flux OAuth avec des variables d’environnement facultatives :
+    Personnalisez le flux OAuth à l’aide de variables d’environnement facultatives :
 
-    | Variable | Rôle |
-    | -------- | ------- |
-    | `CHUTES_CLIENT_ID` | ID du client OAuth (demandé s’il n’est pas défini) |
-    | `CHUTES_CLIENT_SECRET` | Secret du client OAuth |
+    | Variable | Fonction |
+    | -------- | -------- |
+    | `CHUTES_CLIENT_ID` | Identifiant client OAuth (demandé s’il n’est pas défini) |
+    | `CHUTES_CLIENT_SECRET` | Secret client OAuth |
     | `CHUTES_OAUTH_REDIRECT_URI` | URI de redirection (valeur par défaut : `http://127.0.0.1:1456/oauth-callback`) |
     | `CHUTES_OAUTH_SCOPES` | Portées séparées par des espaces (valeur par défaut : `openid profile chutes:invoke`) |
 
@@ -141,7 +140,7 @@ Exécutez `openclaw models list --all --provider chutes` pour obtenir la liste c
   </Accordion>
 
   <Accordion title="Remarques">
-    - Les modèles Chutes sont enregistrés sous la forme `chutes/<model-id>`.
+    - Les modèles Chutes sont enregistrés au format `chutes/<model-id>`.
     - Chutes ne communique pas l’utilisation des jetons pendant la diffusion en continu (`supportsUsageInStreaming: false`) ; les totaux d’utilisation s’affichent néanmoins une fois la diffusion terminée.
 
   </Accordion>

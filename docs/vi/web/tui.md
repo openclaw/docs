@@ -2,14 +2,14 @@
 read_when:
     - Bạn muốn một hướng dẫn từng bước thân thiện với người mới bắt đầu về TUI
     - Bạn cần danh sách đầy đủ các tính năng, lệnh và phím tắt của TUI
-summary: 'Giao diện người dùng trên terminal (TUI): kết nối với Gateway hoặc chạy cục bộ ở chế độ nhúng'
+summary: 'Giao diện người dùng đầu cuối (TUI): kết nối với Gateway hoặc chạy cục bộ ở chế độ nhúng'
 title: TUI
 x-i18n:
-    generated_at: "2026-06-27T18:21:20Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:27:20Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ed02875ea5dcb8cef987d16fe11701eba11160525caf9791f74c610b1b6bec6e
+    source_hash: d7181ea88643a129532f698908fd3dd3d93078b7e33b0ab1166dcfca2ecc2abd
     source_path: web/tui.md
     workflow: 16
 ---
@@ -30,7 +30,7 @@ openclaw gateway
 openclaw tui
 ```
 
-3. Nhập một tin nhắn và nhấn Enter.
+3. Nhập tin nhắn rồi nhấn Enter.
 
 Gateway từ xa:
 
@@ -38,140 +38,147 @@ Gateway từ xa:
 openclaw tui --url ws://<host>:<port> --token <gateway-token>
 ```
 
-Dùng `--password` nếu Gateway của bạn dùng xác thực bằng mật khẩu.
+Dùng `--password` nếu Gateway của bạn sử dụng xác thực bằng mật khẩu.
 
 ### Chế độ cục bộ
 
-Chạy TUI không cần Gateway:
+Chạy TUI mà không cần Gateway:
 
 ```bash
 openclaw chat
-# or
+# hoặc
 openclaw tui --local
 ```
 
-Ghi chú:
+- `openclaw chat` và `openclaw terminal` là bí danh của `openclaw tui --local`.
+- Không thể kết hợp `--local` với `--url`, `--token` hoặc `--password`.
+- Chế độ cục bộ sử dụng trực tiếp môi trường thực thi tác tử nhúng. Hầu hết công cụ cục bộ đều hoạt động, nhưng các tính năng chỉ dành cho Gateway sẽ không khả dụng.
+- Lệnh `openclaw` đơn thuần (không có lệnh con) tự động chọn đích: bản cài đặt chưa được cấu hình sẽ chạy quy trình thiết lập suy luận ban đầu; cấu hình không hợp lệ sẽ mở hướng dẫn Doctor cổ điển; Gateway đã cấu hình và có thể kết nối sẽ mở trình bao TUI này ở chế độ Gateway; nếu không, mô hình cục bộ đã cấu hình sẽ mở trình bao ở chế độ cục bộ.
 
-- `openclaw chat` và `openclaw terminal` là bí danh cho `openclaw tui --local`.
-- Không thể kết hợp `--local` với `--url`, `--token`, hoặc `--password`.
-- Chế độ cục bộ dùng trực tiếp runtime agent nhúng. Hầu hết công cụ cục bộ hoạt động, nhưng các tính năng chỉ dành cho Gateway sẽ không khả dụng.
-- Sau khi một tệp cấu hình đã có các thiết lập được tạo, `openclaw` và `openclaw crestodian` cũng dùng shell TUI này, với Crestodian làm backend chat cài đặt và sửa chữa cục bộ.
+## Nội dung hiển thị
 
-## Bạn sẽ thấy gì
+- Đầu trang: URL kết nối, tác tử hiện tại, phiên hiện tại.
+- Nhật ký trò chuyện: tin nhắn của người dùng, phản hồi của trợ lý, thông báo hệ thống, thẻ công cụ.
+- Dòng trạng thái: trạng thái kết nối/lượt chạy (đang kết nối, đang chạy, đang truyền phát, rảnh, lỗi).
+- Chân trang: tác tử + phiên + mô hình + trạng thái mục tiêu + suy nghĩ/nhanh/chi tiết/truy vết/lập luận + số lượng token + gửi đi. Khi bật `tui.footer.showRemoteHost`, các kết nối Gateway từ xa cũng hiển thị máy chủ kết nối.
+- Vùng nhập: trình soạn thảo văn bản có tính năng tự động hoàn thành.
 
-- Đầu trang: URL kết nối, agent hiện tại, phiên hiện tại.
-- Nhật ký chat: tin nhắn người dùng, phản hồi assistant, thông báo hệ thống, thẻ công cụ.
-- Dòng trạng thái: trạng thái kết nối/lượt chạy (đang kết nối, đang chạy, đang stream, rảnh, lỗi).
-- Chân trang: agent + phiên + mô hình + trạng thái mục tiêu + think/fast/verbose/trace/reasoning + số lượng token + gửi đi. Khi `tui.footer.showRemoteHost` được bật, các kết nối Gateway từ xa cũng hiển thị máy chủ kết nối.
-- Nhập liệu: trình soạn thảo văn bản có tự động hoàn thành.
+## Mô hình tư duy: tác tử + phiên
 
-## Mô hình tư duy: agent + phiên
-
-- Agent là các slug duy nhất (ví dụ `main`, `research`). Gateway cung cấp danh sách này.
-- Phiên thuộc về agent hiện tại.
+- Tác tử là các slug duy nhất (ví dụ: `main`, `research`). Gateway cung cấp danh sách này.
+- Các phiên thuộc về tác tử hiện tại.
 - Khóa phiên được lưu dưới dạng `agent:<agentId>:<sessionKey>`.
-  - Nếu bạn nhập `/session main`, TUI mở rộng thành `agent:<currentAgent>:main`.
-  - Nếu bạn nhập `/session agent:other:main`, bạn chuyển rõ ràng sang phiên agent đó.
+  - Nếu nhập `/session main`, TUI sẽ mở rộng thành `agent:<currentAgent>:main`.
+  - Nếu nhập `/session agent:other:main`, bạn sẽ chuyển rõ ràng sang phiên của tác tử đó.
 - Phạm vi phiên:
-  - `per-sender` (mặc định): mỗi agent có nhiều phiên.
-  - `global`: TUI luôn dùng phiên `global` (bộ chọn có thể trống).
-- Agent + phiên hiện tại luôn hiển thị ở chân trang.
-- Để hiển thị máy chủ Gateway cho các kết nối không cục bộ dựa trên URL, hãy bật tùy chọn bằng:
+  - `per-sender` (mặc định): mỗi tác tử có nhiều phiên.
+  - `global`: TUI luôn sử dụng phiên `global` (trình chọn có thể trống).
+- Tác tử và phiên hiện tại luôn hiển thị ở chân trang.
+- Để hiển thị máy chủ Gateway cho các kết nối dựa trên URL không phải cục bộ, hãy chủ động bật bằng:
 
   ```bash
   openclaw config set tui.footer.showRemoteHost true
   ```
 
-  Các kết nối loopback và cục bộ nhúng không bao giờ hiển thị nhãn máy chủ.
+  Giá trị mặc định là `false`. Các kết nối local loopback và kết nối cục bộ nhúng không bao giờ hiển thị nhãn máy chủ.
 
-- Nếu phiên có một [mục tiêu](/vi/tools/goal), chân trang hiển thị trạng thái rút gọn của nó
-  như `Pursuing goal`, `Goal paused (/goal resume)`, hoặc
-  `Goal achieved`.
-- Khi khởi động không có `--session`, TUI ở chế độ gateway tiếp tục phiên được chọn gần nhất cho cùng gateway, agent và phạm vi phiên nếu phiên đó vẫn tồn tại. Truyền `--session`, `/session`, `/new`, hoặc `/reset` vẫn là thao tác rõ ràng.
+- Nếu phiên có [mục tiêu](/vi/tools/goal), chân trang sẽ hiển thị trạng thái rút gọn:
+  `Đang theo đuổi mục tiêu`, `Mục tiêu đã tạm dừng (/goal resume)`, `Mục tiêu bị chặn (/goal resume)` hoặc `Đã đạt mục tiêu`.
+- Khi khởi động mà không có `--session`, TUI ở chế độ Gateway sẽ tiếp tục phiên được chọn gần nhất cho cùng Gateway, tác tử và phạm vi phiên nếu phiên đó vẫn tồn tại. Việc truyền `--session` hoặc dùng `/session`, `/new` hay `/reset` vẫn là lựa chọn rõ ràng.
 
-## Gửi + phân phối
+## Gửi tin nhắn + chuyển phát
 
-- Tin nhắn được gửi tới Gateway; việc phân phối tới provider mặc định tắt.
-- TUI là một bề mặt nguồn nội bộ như WebChat, không phải một kênh gửi đi chung. Các harness yêu cầu `tools.message` cho phản hồi hiển thị có thể đáp ứng lượt TUI đang hoạt động bằng `message.send` không có đích; việc phân phối rõ ràng tới provider vẫn dùng các kênh đã cấu hình bình thường và không bao giờ quay về `lastChannel`.
-- Bật phân phối lượt:
-  - `/deliver on`
-  - hoặc bảng Settings
-  - hoặc khởi động với `openclaw tui --deliver`
+- Tin nhắn luôn được gửi đến Gateway (hoặc môi trường thực thi nhúng ở chế độ cục bộ); việc chuyển phản hồi của trợ lý ngược ra nhà cung cấp trò chuyện là một bước riêng biệt và mặc định bị tắt.
+- TUI là một bề mặt nguồn nội bộ tương tự WebChat, không phải kênh gửi đi đa dụng. Các bộ khung yêu cầu `tools.message` để hiển thị phản hồi có thể đáp ứng lượt TUI đang hoạt động bằng `message.send` không có đích; việc chuyển phát rõ ràng qua nhà cung cấp vẫn sử dụng các kênh được cấu hình thông thường và không bao giờ dự phòng sang `lastChannel`.
+- Chế độ chuyển phát được cố định cho toàn bộ phiên TUI khi khởi chạy: bắt đầu bằng `openclaw tui --deliver` để bật. Không có lệnh gạch chéo `/deliver` hoặc nút bật/tắt trong Settings để thay đổi giữa phiên; hãy khởi động lại TUI để thay đổi.
 
-## Bộ chọn + lớp phủ
+## Trình chọn + lớp phủ
 
-- Bộ chọn mô hình: liệt kê các mô hình khả dụng và đặt ghi đè cho phiên.
-- Bộ chọn agent: chọn một agent khác.
-- Bộ chọn phiên: hiển thị tối đa 50 phiên cho agent hiện tại được cập nhật trong 7 ngày gần nhất. Dùng `/session <key>` để nhảy tới một phiên cũ đã biết.
-- Settings: bật/tắt phân phối, mở rộng đầu ra công cụ, và hiển thị suy nghĩ.
+- Trình chọn mô hình: liệt kê các mô hình khả dụng và đặt giá trị ghi đè cho phiên.
+- Trình chọn tác tử: chọn một tác tử khác.
+- Trình chọn phiên: hiển thị tối đa 50 phiên của tác tử hiện tại được cập nhật trong 7 ngày qua. Dùng `/session <key>` để chuyển đến một phiên cũ đã biết.
+- Settings (`/settings`): bật/tắt việc mở rộng đầu ra công cụ và khả năng hiển thị quá trình suy nghĩ. Bảng này không kiểm soát việc chuyển phát.
 
 ## Phím tắt
 
 - Enter: gửi tin nhắn
 - Esc: hủy lượt chạy đang hoạt động
-- Ctrl+C: xóa nhập liệu (nhấn hai lần để thoát)
+- Ctrl+C: xóa vùng nhập (nhấn hai lần để thoát)
 - Ctrl+D: thoát
-- Ctrl+L: bộ chọn mô hình
-- Ctrl+G: bộ chọn agent
-- Ctrl+P: bộ chọn phiên
+- Ctrl+L: trình chọn mô hình
+- Ctrl+G: trình chọn tác tử
+- Ctrl+P: trình chọn phiên
 - Ctrl+O: bật/tắt mở rộng đầu ra công cụ
-- Ctrl+T: bật/tắt hiển thị suy nghĩ (tải lại lịch sử)
+- Ctrl+T: bật/tắt hiển thị quá trình suy nghĩ (tải lại lịch sử)
 
-## Lệnh slash
+## Lệnh gạch chéo
 
 Cốt lõi:
 
 - `/help`
-- `/status`
+- `/status` (được chuyển tiếp đến Gateway; hiển thị bản tóm tắt phiên/mô hình)
+- `/gateway-status` (bí danh `/gwstatus`; hiển thị trực tiếp trạng thái kết nối Gateway)
 - `/agent <id>` (hoặc `/agents`)
 - `/session <key>` (hoặc `/sessions`)
 - `/model <provider/model>` (hoặc `/models`)
 
 Điều khiển phiên:
 
-- `/think <off|minimal|low|medium|high>`
-- `/fast <status|on|off>`
+- `/think <off|minimal|low|medium|high>` (các cấp cao hơn có thể thêm những mức như `xhigh`/`max` tùy theo mô hình)
+- `/fast <status|auto|on|off>`
 - `/verbose <on|full|off>`
 - `/trace <on|off>`
 - `/reasoning <on|off|stream>`
-- `/usage <off|tokens|full|reset>` (`reset`/`inherit`/`clear`/`default` xóa ghi đè của phiên)
-- `/goal [status] | /goal start <objective> | /goal pause|resume|complete|block|clear`
+- `/usage <off|tokens|full|reset>` (`reset`/`inherit`/`clear`/`default` xóa giá trị ghi đè của phiên)
+- `/goal [status] | /goal start <objective> | /goal edit <objective> | /goal pause|resume|complete|block|clear`
 - `/elevated <on|off|ask|full>` (bí danh: `/elev`)
 - `/activation <mention|always>`
-- `/deliver <on|off>`
 
 Vòng đời phiên:
 
-- `/new` hoặc `/reset` (đặt lại phiên)
+- `/new` (tạo một phiên mới, biệt lập dưới khóa mới; không ảnh hưởng đến các máy khách TUI khác trong phiên cũ)
+- `/reset` (đặt lại tại chỗ khóa phiên hiện tại)
 - `/abort` (hủy lượt chạy đang hoạt động)
 - `/settings`
-- `/exit`
+- `/exit` (hoặc `/quit`)
 
 Chỉ dành cho chế độ cục bộ:
 
-- `/auth [provider]` mở luồng xác thực/đăng nhập provider bên trong TUI.
+- `/auth [provider]` mở luồng xác thực/đăng nhập của nhà cung cấp bên trong TUI.
 
-Các lệnh slash Gateway khác (ví dụ, `/context`) được chuyển tiếp tới Gateway và hiển thị dưới dạng đầu ra hệ thống. Xem [Lệnh slash](/vi/tools/slash-commands).
+Crestodian:
 
-## Lệnh shell cục bộ
+- `/crestodian [request]` quay lại từ TUI tác tử thông thường về cuộc trò chuyện thiết lập/sửa chữa [Crestodian](#crestodian-setup-and-repair-helper), đồng thời có thể chuyển tiếp một yêu cầu.
 
-- Thêm tiền tố `!` vào một dòng để chạy lệnh shell cục bộ trên máy chủ TUI.
-- TUI hỏi một lần mỗi phiên để cho phép thực thi cục bộ; nếu từ chối, `!` vẫn bị tắt cho phiên đó.
-- Lệnh chạy trong một shell mới, không tương tác, trong thư mục làm việc của TUI (không có `cd`/env duy trì).
-- Lệnh shell cục bộ nhận `OPENCLAW_SHELL=tui-local` trong môi trường của chúng.
-- Một ký tự `!` đơn lẻ được gửi như tin nhắn bình thường; khoảng trắng đầu dòng không kích hoạt thực thi cục bộ.
+Các lệnh gạch chéo Gateway khác (ví dụ: `/context`) được chuyển tiếp đến Gateway và hiển thị dưới dạng đầu ra hệ thống. Xem [Lệnh gạch chéo](/vi/tools/slash-commands).
 
-## Sửa cấu hình từ TUI cục bộ
+## Lệnh trình bao cục bộ
 
-Dùng chế độ cục bộ khi cấu hình hiện tại đã xác thực hợp lệ và bạn muốn
-agent nhúng kiểm tra nó trên cùng máy, so sánh với tài liệu,
-và giúp sửa lệch cấu hình mà không phụ thuộc vào Gateway đang chạy.
+- Thêm tiền tố `!` vào một dòng để chạy lệnh trình bao cục bộ trên máy chủ TUI.
+- TUI sẽ hỏi một lần trong mỗi phiên để cho phép thực thi cục bộ; nếu từ chối, `!` sẽ tiếp tục bị vô hiệu hóa trong phiên đó.
+- Các lệnh chạy trong một trình bao mới, không tương tác, tại thư mục làm việc của TUI (không duy trì `cd`/môi trường).
+- Các lệnh trình bao cục bộ nhận `OPENCLAW_SHELL=tui-local` trong môi trường của chúng.
+- Một ký tự `!` đơn lẻ được gửi dưới dạng tin nhắn thông thường; khoảng trắng ở đầu dòng không kích hoạt thực thi cục bộ.
 
-Nếu `openclaw config validate` đã thất bại, hãy bắt đầu bằng `openclaw configure`
-hoặc `openclaw doctor --fix` trước. `openclaw chat` không bỏ qua chốt chặn cấu hình
-không hợp lệ.
+## Trợ lý thiết lập và sửa chữa Crestodian
 
-Vòng lặp điển hình:
+Crestodian là trợ lý thiết lập/sửa chữa cấp đặc quyền cao nhất, được cung cấp dưới dạng `openclaw crestodian` sau khi mô hình mặc định đã cấu hình vượt qua kiểm tra suy luận trực tiếp. Nếu suy luận không khả dụng, lời gọi tương tác sẽ quay lại quy trình thiết lập suy luận ban đầu và quy trình tự động hóa sẽ thất bại kèm hướng dẫn sửa chữa. Crestodian chạy trong cùng trình bao TUI cục bộ với `openclaw tui --local`, được hỗ trợ bởi một tác tử AI chỉ có quyền thực hiện các thao tác có kiểu của Crestodian và phải qua bước phê duyệt:
+
+```bash
+openclaw crestodian                       # khởi động tương tác
+openclaw crestodian -m "status"           # chạy một yêu cầu rồi thoát
+openclaw crestodian -m "set default model openai/gpt-5.2" --yes   # áp dụng thao tác ghi cấu hình
+```
+
+- Việc ghi cấu hình lâu dài cần được phê duyệt: xác nhận tương tác hoặc truyền `--yes`.
+- `--json` in phần tổng quan khởi động dưới dạng JSON thay vì bắt đầu trò chuyện.
+- Từ bên trong Crestodian, yêu cầu `open-tui` (ví dụ: yêu cầu trò chuyện với tác tử thông thường) sẽ thoát Crestodian và mở TUI tác tử thông thường; dùng `/crestodian` tại đó để quay lại.
+
+Hãy dùng chế độ cục bộ khi cấu hình hiện tại đã hợp lệ và bạn muốn tác tử nhúng kiểm tra cấu hình đó trên cùng máy, so sánh với tài liệu và hỗ trợ sửa sai lệch mà không phụ thuộc vào Gateway đang chạy.
+
+Nếu `openclaw config validate` đã thất bại, trước tiên hãy bắt đầu bằng `openclaw configure` hoặc `openclaw doctor --fix`; `openclaw chat` vẫn cần cấu hình có thể tải được để khởi động.
+
+Quy trình điển hình:
 
 1. Khởi động chế độ cục bộ:
 
@@ -179,13 +186,13 @@ Vòng lặp điển hình:
 openclaw chat
 ```
 
-2. Hỏi agent điều bạn muốn kiểm tra, ví dụ:
+2. Yêu cầu tác tử kiểm tra điều bạn muốn, ví dụ:
 
 ```text
-Compare my gateway auth config with the docs and suggest the smallest fix.
+So sánh cấu hình xác thực Gateway của tôi với tài liệu và đề xuất cách sửa nhỏ nhất.
 ```
 
-3. Dùng lệnh shell cục bộ để lấy bằng chứng và xác thực chính xác:
+3. Dùng các lệnh trình bao cục bộ để thu thập bằng chứng chính xác và xác thực:
 
 ```text
 !openclaw config file
@@ -194,53 +201,54 @@ Compare my gateway auth config with the docs and suggest the smallest fix.
 !openclaw doctor
 ```
 
-4. Áp dụng thay đổi hẹp bằng `openclaw config set` hoặc `openclaw configure`, rồi chạy lại `!openclaw config validate`.
-5. Nếu Doctor đề xuất một migration hoặc sửa chữa tự động, hãy xem lại và chạy `!openclaw doctor --fix`.
+4. Áp dụng các thay đổi giới hạn bằng `openclaw config set` hoặc `openclaw configure`, sau đó chạy lại `!openclaw config validate`.
+5. Nếu Doctor đề xuất di chuyển hoặc sửa chữa tự động, hãy xem xét rồi chạy `!openclaw doctor --fix`.
 
 Mẹo:
 
-- Ưu tiên `openclaw config set` hoặc `openclaw configure` thay vì chỉnh tay `openclaw.json`.
+- Ưu tiên `openclaw config set` hoặc `openclaw configure` thay vì chỉnh sửa thủ công `openclaw.json`.
 - `openclaw docs "<query>"` tìm kiếm chỉ mục tài liệu trực tiếp từ cùng máy.
-- `openclaw config validate --json` hữu ích khi bạn muốn lỗi schema có cấu trúc và lỗi SecretRef/khả năng phân giải.
+- `openclaw config validate --json` hữu ích khi bạn muốn nhận lỗi lược đồ và lỗi SecretRef/khả năng phân giải ở dạng có cấu trúc.
 
 ## Đầu ra công cụ
 
-- Lệnh gọi công cụ hiển thị dưới dạng thẻ với đối số + kết quả.
+- Các lệnh gọi công cụ hiển thị dưới dạng thẻ kèm đối số + kết quả.
 - Ctrl+O chuyển đổi giữa chế độ xem thu gọn/mở rộng.
-- Khi công cụ chạy, các cập nhật một phần được stream vào cùng thẻ.
+- Trong khi công cụ chạy, các bản cập nhật từng phần được truyền phát vào cùng thẻ.
 
-## Màu terminal
+## Màu sắc đầu cuối
 
-- TUI giữ văn bản thân phản hồi của assistant ở màu chữ mặc định của terminal để cả terminal nền tối và nền sáng đều dễ đọc.
-- Nếu terminal của bạn dùng nền sáng và tự phát hiện sai, đặt `OPENCLAW_THEME=light` trước khi khởi chạy `openclaw tui`.
-- Để buộc dùng bảng màu tối ban đầu, đặt `OPENCLAW_THEME=dark`.
+- TUI giữ văn bản nội dung của trợ lý ở màu tiền cảnh mặc định của đầu cuối để cả đầu cuối nền tối và nền sáng đều dễ đọc.
+- Nếu đầu cuối của bạn dùng nền sáng nhưng tính năng tự động phát hiện không chính xác, hãy đặt `OPENCLAW_THEME=light` trước khi khởi chạy `openclaw tui`.
+- Để buộc sử dụng bảng màu tối ban đầu, hãy đặt `OPENCLAW_THEME=dark`.
 
-## Lịch sử + streaming
+## Lịch sử + truyền phát
 
 - Khi kết nối, TUI tải lịch sử mới nhất (mặc định 200 tin nhắn).
-- Phản hồi streaming cập nhật tại chỗ cho đến khi hoàn tất.
-- TUI cũng lắng nghe sự kiện công cụ của agent để tạo thẻ công cụ phong phú hơn.
+- Các phản hồi truyền phát được cập nhật tại chỗ cho đến khi hoàn tất.
+- TUI cũng lắng nghe các sự kiện công cụ của tác tử để hiển thị thẻ công cụ phong phú hơn.
 
 ## Chi tiết kết nối
 
-- TUI đăng ký với Gateway dưới dạng `mode: "tui"`.
-- Kết nối lại hiển thị một thông báo hệ thống; khoảng trống sự kiện được hiển thị trong nhật ký.
+- TUI kết nối bằng mã máy khách `openclaw-tui` trong chế độ máy khách tổng quát `ui` (cùng chế độ mà Control UI và WebChat sử dụng cho chính sách Gateway).
+- Việc kết nối lại hiển thị một thông báo hệ thống; các khoảng trống sự kiện được thể hiện trong nhật ký.
 
 ## Tùy chọn
 
-- `--local`: Chạy với runtime agent nhúng cục bộ
-- `--url <url>`: URL WebSocket của Gateway (mặc định theo cấu hình hoặc `ws://127.0.0.1:<port>`)
+- `--local`: Chạy với môi trường thực thi tác tử nhúng cục bộ
+- `--url <url>`: URL WebSocket của Gateway (mặc định lấy từ `gateway.remote.url` trong cấu hình hoặc `ws://127.0.0.1:<port>` trên local loopback)
 - `--token <token>`: Token Gateway (nếu bắt buộc)
 - `--password <password>`: Mật khẩu Gateway (nếu bắt buộc)
-- `--session <key>`: Khóa phiên (mặc định: `main`, hoặc `global` khi phạm vi là global)
-- `--deliver`: Phân phối phản hồi assistant tới provider (mặc định tắt)
-- `--thinking <level>`: Ghi đè mức suy nghĩ cho các lần gửi
-- `--message <text>`: Gửi một tin nhắn ban đầu sau khi kết nối
-- `--timeout-ms <ms>`: Thời gian chờ agent theo mili giây (mặc định theo `agents.defaults.timeoutSeconds`)
+- `--tls-fingerprint <sha256>`: Dấu vân tay chứng chỉ TLS dự kiến cho Gateway `wss://` được ghim
+- `--session <key>`: Khóa phiên (mặc định: `main`, hoặc `global` khi phạm vi là toàn cục)
+- `--deliver`: Chuyển phản hồi của trợ lý đến nhà cung cấp (mặc định tắt)
+- `--thinking <level>`: Ghi đè mức suy nghĩ khi gửi
+- `--message <text>`: Gửi tin nhắn ban đầu sau khi kết nối
+- `--timeout-ms <ms>`: Thời gian chờ tác tử tính bằng mili giây (mặc định lấy từ `agents.defaults.timeoutSeconds`)
 - `--history-limit <n>`: Số mục lịch sử cần tải (mặc định `200`)
 
 <Warning>
-Khi bạn đặt `--url`, TUI không quay về thông tin xác thực trong cấu hình hoặc môi trường. Hãy truyền rõ ràng `--token` hoặc `--password`. Thiếu thông tin xác thực rõ ràng là lỗi. Trong chế độ cục bộ, đừng truyền `--url`, `--token`, hoặc `--password`.
+Khi đặt `--url`, TUI không dự phòng sang thông tin xác thực trong cấu hình hoặc môi trường. Hãy truyền rõ ràng `--token` hoặc `--password`, cùng với `--tls-fingerprint` khi đích sử dụng chứng chỉ được ghim. Thiếu thông tin xác thực rõ ràng là một lỗi. Trong chế độ cục bộ, không truyền `--url`, `--token`, `--password` hoặc `--tls-fingerprint`.
 </Warning>
 
 ## Khắc phục sự cố
@@ -249,18 +257,18 @@ Không có đầu ra sau khi gửi tin nhắn:
 
 - Chạy `/status` trong TUI để xác nhận Gateway đã kết nối và đang rảnh/bận.
 - Kiểm tra nhật ký Gateway: `openclaw logs --follow`.
-- Xác nhận agent có thể chạy: `openclaw status` và `openclaw models status`.
-- Nếu bạn mong đợi tin nhắn trong một kênh chat, hãy bật phân phối (`/deliver on` hoặc `--deliver`).
+- Xác nhận tác tử có thể chạy: `openclaw status` và `openclaw models status`.
+- Nếu bạn mong đợi tin nhắn xuất hiện trong một kênh trò chuyện, hãy xác nhận TUI được khởi động với `--deliver` (không thể bật tính năng này sau đó nếu không khởi động lại).
 
 ## Khắc phục sự cố kết nối
 
-- `disconnected`: đảm bảo Gateway đang chạy và `--url/--token/--password` của bạn chính xác.
-- Không có agent trong bộ chọn: kiểm tra `openclaw agents list` và cấu hình định tuyến của bạn.
-- Bộ chọn phiên trống: bạn có thể đang ở phạm vi global hoặc chưa có phiên nào.
+- `disconnected`: bảo đảm Gateway đang chạy và `--url/--token/--password` của bạn chính xác.
+- Không có tác tử trong trình chọn: kiểm tra `openclaw agents list` và cấu hình định tuyến của bạn.
+- Trình chọn phiên trống: có thể bạn đang ở phạm vi toàn cục hoặc chưa có phiên nào.
 
 ## Liên quan
 
 - [Control UI](/vi/web/control-ui) — giao diện điều khiển dựa trên web
-- [Config](/vi/cli/config) — kiểm tra, xác thực, và chỉnh sửa `openclaw.json`
-- [Doctor](/vi/cli/doctor) — kiểm tra sửa chữa và migration có hướng dẫn
-- [Tài liệu tham khảo CLI](/vi/cli) — tài liệu tham khảo đầy đủ về lệnh CLI
+- [Cấu hình](/vi/cli/config) — kiểm tra, xác thực và chỉnh sửa `openclaw.json`
+- [Doctor](/vi/cli/doctor) — kiểm tra sửa chữa và di chuyển có hướng dẫn
+- [Tham chiếu CLI](/vi/cli) — tham chiếu đầy đủ về các lệnh CLI

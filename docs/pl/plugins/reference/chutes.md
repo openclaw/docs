@@ -4,8 +4,8 @@ read_when:
 summary: Dodaje obsługę dostawcy modeli Chutes do OpenClaw.
 title: Plugin Chutes
 x-i18n:
-    generated_at: "2026-06-27T17:59:00Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:24:46Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 63f5196b0202e47ea95c3dd226546ff3e09083632e58ca780c608f53c2ba85af
@@ -15,16 +15,16 @@ x-i18n:
 
 # Plugin Chutes
 
-Dodaje obsługę dostawcy modeli Chutes do OpenClaw.
+Dodaje do OpenClaw obsługę dostawcy modeli Chutes.
 
 ## Dystrybucja
 
 - Pakiet: `@openclaw/chutes-provider`
-- Ścieżka instalacji: npm; ClawHub: `clawhub:@openclaw/chutes-provider`
+- Sposób instalacji: npm; ClawHub: `clawhub:@openclaw/chutes-provider`
 
-## Interfejs
+## Zakres
 
-providers: chutes
+dostawcy: chutes
 
 ## Powiązana dokumentacja
 

@@ -1,13 +1,13 @@
 ---
 read_when:
-    - qwen-oauth プロバイダー ID を設定したい
-    - 以前に Qwen Portal OAuth 認証情報を使用しました
-    - Qwen Portal エンドポイントまたは移行ガイダンスが必要です
-summary: OpenClaw で Qwen Portal プロバイダー ID を使用する
+    - qwen-oauth プロバイダー ID を設定する場合
+    - 以前に Qwen Portal OAuth 認証情報を使用していました
+    - Qwen Portal のエンドポイントまたは移行ガイダンスが必要です
+summary: OpenClaw で Qwen Portal のプロバイダー ID を使用する
 title: Qwen OAuth / ポータル
 x-i18n:
-    generated_at: "2026-07-05T11:41:57Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:38:49Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: b78f6f23e62e38d11e6fe4e2bf515b13b414f276d08f672740ad94747a22c8fb
@@ -15,83 +15,70 @@ x-i18n:
     workflow: 16
 ---
 
-`qwen-oauth` は Qwen Portal のプロバイダー id で、Qwen plugin
-（`@openclaw/qwen-provider`）によって登録されます。これは
-`https://portal.qwen.ai/v1` の Qwen Portal エンドポイントを対象とし、古い Qwen OAuth / portal セットアップを、正規の `qwen`
-プロバイダーとは別の個別のプロバイダー id で引き続き参照できるようにします。
+`qwen-oauth` は、Qwen Plugin（`@openclaw/qwen-provider`）によって登録される Qwen Portal のプロバイダー ID です。`https://portal.qwen.ai/v1` の Qwen Portal エンドポイントを対象とし、従来の Qwen OAuth / Portal セットアップを、標準の `qwen` プロバイダーとは別のプロバイダー ID で引き続き参照できるようにします。
 
-すでに動作する Qwen Portal トークンがある場合、レガシーな Qwen OAuth または Qwen CLI ワークフローを移行している場合、または Qwen
-Portal エンドポイントを特にテストする必要がある場合は、`qwen-oauth` を選択してください。新しいセットアップでは、Standard ModelStudio エンドポイントを使う
-[Qwen](/ja-JP/providers/qwen) を優先してください。新しい
-API キーのセットアップ、より広いエンドポイントの選択肢、Standard 従量課金、Coding Plan、
-Qwen plugin カタログ全体を対象にできます。
+すでに有効な Qwen Portal トークンがある場合、従来の Qwen OAuth または Qwen CLI ワークフローから移行する場合、あるいは Qwen Portal エンドポイントを明示的にテストする必要がある場合は、`qwen-oauth` を選択してください。新規セットアップでは、Standard ModelStudio エンドポイントを使用する [Qwen](/ja-JP/providers/qwen) を推奨します。新しい API キーのセットアップ、より幅広いエンドポイントの選択肢、Standard 従量課金、Coding Plan、および Qwen Plugin の全カタログに対応しています。
 
 ## セットアップ
 
-まだインストールしていない場合は、Qwen plugin をインストールします。
+Qwen Plugin をまだインストールしていない場合は、インストールします。
 
 ```bash
 openclaw plugins install @openclaw/qwen-provider
 openclaw gateway restart
 ```
 
-オンボーディングを通じて portal トークンを指定します。
+オンボーディングを通じて Portal トークンを指定します。
 
 ```bash
 openclaw onboard --auth-choice qwen-oauth
 ```
 
-非対話型の実行では、`--qwen-oauth-token <token>` からトークンを読み取るか、次を設定します。
+非対話型実行では `--qwen-oauth-token <token>` からトークンを読み取ります。または、次のように設定します。
 
 ```bash
 export QWEN_API_KEY="<your-qwen-portal-token>" # pragma: allowlist secret
 ```
 
-オンボーディングはトークンを `qwen-oauth` 認証プロファイルの下に保存し、portal
-モデルカタログをシードし、何も設定されていない場合は `qwen-oauth/qwen3.5-plus` をデフォルトモデルとして設定します。
+オンボーディングはトークンを `qwen-oauth` 認証プロファイルに保存し、Portal モデルカタログを初期登録します。モデルが設定されていない場合は、`qwen-oauth/qwen3.5-plus` をデフォルトモデルとして設定します。
 
 ## デフォルト
 
 - プロバイダー: `qwen-oauth`
-- エイリアス: `qwen-portal`, `qwen-cli`
+- エイリアス: `qwen-portal`、`qwen-cli`
 - ベース URL: `https://portal.qwen.ai/v1`
 - 環境変数: `QWEN_API_KEY`
-- API スタイル: OpenAI 互換
+- API 形式: OpenAI 互換
 - デフォルトモデル: `qwen-oauth/qwen3.5-plus`
 
 ## Qwen との違い
 
-OpenClaw には Qwen 向けのプロバイダー id が 2 つあります。
+OpenClaw には、Qwen 向けのプロバイダー ID が 2 つあります。
 
-| プロバイダー | エンドポイントファミリー | 最適な用途 |
-| ------------ | -------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `qwen`       | Qwen Cloud / Alibaba DashScope と Coding Plan エンドポイント | 新しい API キーのセットアップ、Standard 従量課金、Coding Plan、マルチモーダルな DashScope 機能 |
-| `qwen-oauth` | `portal.qwen.ai/v1` の Qwen Portal エンドポイント | 既存の Qwen Portal トークンとレガシーな Qwen OAuth / CLI セットアップ |
+| プロバイダー | エンドポイント系統                                       | 最適な用途                                                                               |
+| ------------ | -------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `qwen`       | Qwen Cloud / Alibaba DashScope および Coding Plan エンドポイント | 新しい API キーのセットアップ、Standard 従量課金、Coding Plan、DashScope のマルチモーダル機能 |
+| `qwen-oauth` | `portal.qwen.ai/v1` の Qwen Portal エンドポイント       | 既存の Qwen Portal トークンおよび従来の Qwen OAuth / CLI セットアップ                    |
 
-どちらのプロバイダーも OpenAI 互換のリクエスト形状を使用しますが、認証サーフェスは別です。`qwen-oauth` 用に保存されたトークンを DashScope
-または ModelStudio キーとして扱うべきではありません。また、新しい DashScope キーでは、代わりに正規の `qwen`
-プロバイダーを使用してください。
+どちらのプロバイダーも OpenAI 互換のリクエスト形式を使用しますが、認証サーフェスは別々です。`qwen-oauth` 用に保存されたトークンを DashScope または ModelStudio のキーとして扱わないでください。また、新しい DashScope キーには、代わりに標準の `qwen` プロバイダーを使用してください。
 
 ## モデル
 
-Qwen plugin は、Qwen Portal エンドポイント用にこの静的カタログをシードします。すべての
-エントリは最大出力 65,536 トークンを使用します。利用可否は現在の Qwen
-Portal アカウントとトークンによって異なります。
+Qwen Plugin は、Qwen Portal エンドポイント用に次の静的カタログを初期登録します。すべてのエントリで最大出力は 65,536 トークンです。利用可否は、現在の Qwen Portal アカウントとトークンによって異なります。
 
-| モデル参照 | 入力 | コンテキスト | 注記 |
-| --------------------------------- | ----------- | --------- | ------------- |
-| `qwen-oauth/qwen3.5-plus`         | テキスト、画像 | 1,000,000 | デフォルトモデル |
-| `qwen-oauth/qwen3.6-plus`         | テキスト、画像 | 1,000,000 |               |
-| `qwen-oauth/qwen3-max-2026-01-23` | テキスト | 262,144   |               |
-| `qwen-oauth/qwen3-coder-next`     | テキスト | 262,144   |               |
-| `qwen-oauth/qwen3-coder-plus`     | テキスト | 1,000,000 |               |
-| `qwen-oauth/MiniMax-M2.5`         | テキスト | 1,000,000 | 推論     |
-| `qwen-oauth/glm-5`                | テキスト | 202,752   |               |
-| `qwen-oauth/glm-4.7`              | テキスト | 202,752   |               |
-| `qwen-oauth/kimi-k2.5`            | テキスト、画像 | 262,144   |               |
+| モデル参照                        | 入力           | コンテキスト | 備考             |
+| --------------------------------- | -------------- | ------------ | ---------------- |
+| `qwen-oauth/qwen3.5-plus`         | テキスト、画像 | 1,000,000    | デフォルトモデル |
+| `qwen-oauth/qwen3.6-plus`         | テキスト、画像 | 1,000,000    |                  |
+| `qwen-oauth/qwen3-max-2026-01-23` | テキスト       | 262,144      |                  |
+| `qwen-oauth/qwen3-coder-next`     | テキスト       | 262,144      |                  |
+| `qwen-oauth/qwen3-coder-plus`     | テキスト       | 1,000,000    |                  |
+| `qwen-oauth/MiniMax-M2.5`         | テキスト       | 1,000,000    | 推論             |
+| `qwen-oauth/glm-5`                | テキスト       | 202,752      |                  |
+| `qwen-oauth/glm-4.7`              | テキスト       | 202,752      |                  |
+| `qwen-oauth/kimi-k2.5`            | テキスト、画像 | 262,144      |                  |
 
-アカウントが代わりに ModelStudio / DashScope API キーを使用している場合は、正規の
-`qwen` プロバイダーを設定します。
+アカウントで代わりに ModelStudio / DashScope API キーを使用する場合は、標準の `qwen` プロバイダーを設定します。
 
 ```bash
 openclaw onboard --auth-choice qwen-standard-api-key
@@ -100,13 +87,13 @@ openclaw models set qwen/qwen3-coder-plus
 
 ## 移行
 
-レガシーな Qwen Portal OAuth プロファイルは更新できません。`openclaw doctor` はそれらにフラグを立てます。portal プロファイルが動作しなくなった場合は、現在のトークンでオンボーディングを再実行するか、Standard Qwen プロバイダーへ切り替えてください。
+従来の Qwen Portal OAuth プロファイルは更新できず、`openclaw doctor` によって警告されます。Portal プロファイルが機能しなくなった場合は、現在有効なトークンを使用してオンボーディングを再実行するか、Standard Qwen プロバイダーに切り替えてください。
 
 ```bash
 openclaw onboard --auth-choice qwen-standard-api-key
 ```
 
-Standard グローバル ModelStudio は次を使用します。
+Standard グローバル ModelStudio では、次を使用します。
 
 ```text
 https://dashscope-intl.aliyuncs.com/compatible-mode/v1
@@ -114,11 +101,11 @@ https://dashscope-intl.aliyuncs.com/compatible-mode/v1
 
 ## トラブルシューティング
 
-- Portal OAuth 更新の失敗: レガシーな Qwen Portal OAuth プロファイルは更新できません。現在のトークンでオンボーディングを再実行してください。
-- エンドポイント誤りのエラー: portal トークンを使用する場合は、モデル参照が `qwen-oauth/` で始まることを確認してください。`qwen/` 参照は正規の Qwen プロバイダーでのみ使用してください。
-- `QWEN_API_KEY` の混同: どちらの Qwen ページもこの環境変数に言及していますが、オンボーディングは選択されたプロバイダー id の下に認証情報を保存します。同じマシンで `qwen` と `qwen-oauth` の両方を利用可能にしておく場合は、オンボーディングを優先してください。
+- Portal OAuth の更新エラー: 従来の Qwen Portal OAuth プロファイルは更新できません。現在有効なトークンを使用してオンボーディングを再実行してください。
+- エンドポイント不一致エラー: Portal トークンを使用する場合は、モデル参照が `qwen-oauth/` で始まることを確認してください。`qwen/` 参照は、標準の Qwen プロバイダーにのみ使用してください。
+- `QWEN_API_KEY` に関する混乱: どちらの Qwen ページでもこの環境変数について言及していますが、オンボーディングでは、選択したプロバイダー ID の下に認証情報が保存されます。同じマシン上で `qwen` と `qwen-oauth` の両方を利用可能にしておく場合は、オンボーディングの使用を推奨します。
 
-## 関連
+## 関連項目
 
 - [Qwen](/ja-JP/providers/qwen)
 - [Alibaba Model Studio](/ja-JP/providers/alibaba)

@@ -1,163 +1,188 @@
 ---
 read_when:
-    - Je wilt semantisch geheugen indexeren of doorzoeken
-    - Je debugt geheugenbeschikbaarheid of indexering
-    - U wilt opgehaalde kortetermijngeheugen promoveren naar `MEMORY.md`
-summary: CLI-referentie voor `openclaw memory` (status/index/search/promote/promote-explain/rem-harness)
+    - U wilt semantisch geheugen indexeren of doorzoeken
+    - Je onderzoekt problemen met de beschikbaarheid of indexering van het geheugen
+    - U wilt teruggehaald kortetermijngeheugen promoveren naar `MEMORY.md`
+summary: CLI-referentie voor `openclaw memory` (status/index/search/promote/promote-explain/rem-harness/rem-backfill)
 title: Geheugen
 x-i18n:
-    generated_at: "2026-06-30T14:10:58Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:42:17Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 74b85d7299cc12e6133a10678f7c8fe17ee704e029993aebea417727ba94e629
+    source_hash: f0002c48044455520f32a5a3e111415a746fbafba2a27a655ded90abdc94623b
     source_path: cli/memory.md
     workflow: 16
 ---
 
 # `openclaw memory`
 
-Beheer semantische geheugenindexering en zoeken.
-Geleverd door de gebundelde `memory-core` plugin. De opdracht is beschikbaar wanneer
-`plugins.slots.memory` `memory-core` selecteert (de standaard); andere geheugenplugins
+Beheer de indexering en doorzoeking van semantisch geheugen en de promotie naar `MEMORY.md`.
+Deze functionaliteit wordt geleverd door de gebundelde Plugin `memory-core` en is beschikbaar wanneer
+`plugins.slots.memory` `memory-core` selecteert (de standaardinstelling). Andere geheugenplugins
 bieden hun eigen CLI-naamruimten.
 
-Gerelateerd:
+Gerelateerd: het concept [Geheugen](/nl/concepts/memory), [Dreaming](/nl/concepts/dreaming),
+[Configuratiereferentie voor geheugen](/nl/reference/memory-config), [Geheugenwiki](/nl/plugins/memory-wiki),
+[wiki](/nl/cli/wiki), [Plugins](/nl/tools/plugin).
 
-- Geheugenconcept: [Geheugen](/nl/concepts/memory)
-- Geheugenwiki: [Geheugenwiki](/nl/plugins/memory-wiki)
-- Wiki-CLI: [wiki](/nl/cli/wiki)
-- Plugins: [Plugins](/nl/tools/plugin)
-
-## Voorbeelden
+## `memory status`
 
 ```bash
-openclaw memory status
-openclaw memory status --deep
-openclaw memory status --fix
-openclaw memory index --force
-openclaw memory search "meeting notes"
-openclaw memory search --query "deployment" --max-results 20
-openclaw memory promote --limit 10 --min-score 0.75
-openclaw memory promote --apply
-openclaw memory promote --json --min-recall-count 0 --min-unique-queries 0
-openclaw memory promote-explain "router vlan"
-openclaw memory promote-explain "router vlan" --json
-openclaw memory rem-harness
-openclaw memory rem-harness --json
-openclaw memory status --json
-openclaw memory status --deep --index
-openclaw memory status --deep --index --verbose
-openclaw memory status --agent main
-openclaw memory index --agent main --verbose
+openclaw memory status [--agent <id>] [--deep] [--index] [--fix] [--json] [--verbose]
 ```
 
-## Opties
+Zonder `--agent` wordt de opdracht uitgevoerd voor elke agent in `agents.list`; als er geen agentlijst is
+geconfigureerd, wordt teruggevallen op de standaardagent.
 
-`memory status` en `memory index`:
+| Vlag        | Effect                                                                                                                                                                                                                                                                                                    |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--deep`    | Controleer of de vectoropslag, embeddingprovider en semantische zoekfunctie gereed zijn (dit brengt extra provideraanroepen met zich mee). Een gewone `memory status` blijft snel en slaat dit over; een onbekende vector-/semantische status betekent dat deze niet is gecontroleerd. De lexicale QMD-zoekmodus `searchMode: "search"` slaat semantische vectorcontroles altijd over, zelfs met `--deep`. |
+| `--index`   | Indexeer opnieuw als de opslag wijzigingen bevat. Impliceert `--deep`.                                                                                                                                                                                                                                     |
+| `--fix`     | Herstel verouderde opzoekvergrendelingen en normaliseer promotiemetagegevens.                                                                                                                                                                                                                              |
+| `--json`    | Geef JSON weer.                                                                                                                                                                                                                                                                                            |
+| `--verbose` | Geef gedetailleerde logboeken per fase weer.                                                                                                                                                                                                                                                              |
 
-- `--agent <id>`: beperk tot één agent. Zonder deze optie worden deze opdrachten uitgevoerd voor elke geconfigureerde agent; als er geen agentlijst is geconfigureerd, vallen ze terug op de standaardagent.
-- `--verbose`: geef gedetailleerde logs tijdens controles en indexering.
+Als de regel `Dreaming` zelfs met `dreaming.enabled: true` op `off` blijft staan, of
+geplande verwerkingsrondes nooit lijken te worden uitgevoerd, is de beheerde Cron voor Dreaming afhankelijk van
+het afgaan van de Heartbeat van de standaardagent om afstemming te activeren. Zie
+[Dreaming](/nl/concepts/dreaming) voor planningsdetails.
 
-`memory status`:
+De status vermeldt ook eventuele extra zoekpaden uit `agents.defaults.memorySearch.extraPaths`.
 
-- `--deep`: controleer of de lokale vectoropslag gereed is, of de embedding-provider gereed is en of semantisch vectorzoeken gereed is. Gewone `memory status` blijft snel en voert geen live embedding- of providerontdekkingswerk uit; een onbekende vectoropslag- of semantische-vectorstatus betekent dat die in die opdracht niet is gecontroleerd. QMD lexicale `searchMode: "search"` slaat semantische vectorcontroles en embedding-onderhoud over, zelfs met `--deep`.
-- `--index`: voer een herindexering uit als de opslag vuil is (impliceert `--deep`).
-- `--fix`: herstel verouderde recall-vergrendelingen en normaliseer promotiemetadata.
-- `--json`: druk JSON-uitvoer af.
-
-Als `memory status` `Dreaming status: blocked` toont, is de beheerde dreaming-cron ingeschakeld, maar vuurt de Heartbeat die deze aandrijft niet voor de standaardagent. Zie [Dreaming wordt nooit uitgevoerd](/nl/concepts/dreaming#dreaming-never-runs-status-shows-blocked) voor de twee veelvoorkomende oorzaken.
-
-`memory index`:
-
-- `--force`: forceer een volledige herindexering.
-
-`memory search`:
-
-- Query-invoer: geef ofwel positioneel `[query]` of `--query <text>` door.
-- Als beide zijn opgegeven, wint `--query`.
-- Als geen van beide is opgegeven, sluit de opdracht af met een fout.
-- `--agent <id>`: beperk tot één agent (standaard: de standaardagent).
-- `--max-results <n>`: beperk het aantal geretourneerde resultaten.
-- `--min-score <n>`: filter overeenkomsten met een lage score weg.
-- `--json`: druk JSON-resultaten af.
-
-`memory promote`:
-
-Bekijk en pas kortetermijngeheugenpromoties toe.
+## `memory index`
 
 ```bash
-openclaw memory promote [--apply] [--limit <n>] [--include-promoted]
+openclaw memory index [--agent <id>] [--force] [--verbose]
 ```
 
-- `--apply` -- schrijf promoties naar `MEMORY.md` (standaard: alleen voorbeeldweergave).
-- `--limit <n>` -- beperk het aantal getoonde kandidaten.
-- `--include-promoted` -- neem vermeldingen op die in eerdere cycli al zijn gepromoveerd.
+Dezelfde afbakening per agent als bij `status`. Met `--force` wordt een volledige herindexering uitgevoerd in plaats van
+een incrementele. `--verbose` geeft per agent de provider, het model, de bronnen en
+details over extra paden weer voordat de voortgang van de indexering wordt getoond.
 
-Volledige opties:
+## `memory search`
 
-- Rangschikt kortetermijnkandidaten uit `memory/YYYY-MM-DD.md` met gewogen promotiesignalen (`frequency`, `relevance`, `query diversity`, `recency`, `consolidation`, `conceptual richness`).
-- Gebruikt kortetermijnsignalen uit zowel geheugenrecalls als dagelijkse ingestiepasses, plus versterkingssignalen uit light/REM-fasen.
-- Wanneer Dreaming is ingeschakeld, beheert `memory-core` automatisch één cronjob die op de achtergrond een volledige sweep uitvoert (`light -> REM -> deep`) (geen handmatige `openclaw cron add` vereist).
-- `--agent <id>`: beperk tot één agent (standaard: de standaardagent).
-- `--limit <n>`: maximaal aantal kandidaten om te retourneren/toe te passen.
-- `--min-score <n>`: minimale gewogen promotiescore.
-- `--min-recall-count <n>`: minimaal aantal recalls dat voor een kandidaat vereist is.
-- `--min-unique-queries <n>`: minimaal aantal verschillende queries dat voor een kandidaat vereist is.
-- `--apply`: voeg geselecteerde kandidaten toe aan `MEMORY.md` en markeer ze als gepromoveerd.
-- `--include-promoted`: neem al gepromoveerde kandidaten op in de uitvoer.
-- `--json`: druk JSON-uitvoer af.
+```bash
+openclaw memory search [query] [--query <text>] [--agent <id>] [--max-results <n>] [--min-score <n>] [--json]
+```
 
-`memory promote-explain`:
+- Zoekopdracht: positionele `[query]` of `--query <text>`. Als beide zijn ingesteld, heeft `--query`
+  voorrang. Als geen van beide is ingesteld, retourneert de opdracht een fout.
+- `--agent <id>`: gebruikt standaard de standaardagent (niet de volledige agentlijst).
+- `--max-results <n>`: beperk het aantal resultaten (positief geheel getal).
+- `--min-score <n>`: filter overeenkomsten onder deze score uit.
 
-Leg een specifieke promotiekandidaat en de score-opbouw ervan uit.
+## `memory promote`
+
+Rangschik kortetermijnkandidaten uit `memory/YYYY-MM-DD.md` en voeg de
+hoogst scorende vermeldingen optioneel toe aan `MEMORY.md`.
+
+```bash
+openclaw memory promote [--agent <id>] [--limit <n>] [--min-score <n>] \
+  [--min-recall-count <n>] [--min-unique-queries <n>] [--apply] [--include-promoted] [--json]
+```
+
+| Vlag                       | Standaard           | Effect                                                                 |
+| -------------------------- | ------------------- | ---------------------------------------------------------------------- |
+| `--limit <n>`              |                     | Maximumaantal kandidaten om te retourneren/toe te passen.              |
+| `--min-score <n>`          | `0.75`              | Minimale gewogen promotiescore.                                        |
+| `--min-recall-count <n>`   | `3`                 | Minimaal vereist aantal opvragingen.                                   |
+| `--min-unique-queries <n>` | `2`                 | Minimaal vereist aantal verschillende zoekopdrachten.                  |
+| `--apply`                  | alleen voorvertoning | Voeg geselecteerde kandidaten toe aan `MEMORY.md` en markeer ze als gepromoveerd. |
+| `--include-promoted`       |                     | Neem kandidaten op die al in eerdere cycli zijn gepromoveerd.          |
+| `--json`                   |                     | Geef JSON weer.                                                        |
+
+Deze CLI-standaardwaarden verschillen van de drempelwaarden voor de diepe fase van de geplande
+Dreaming-verwerkingsronde (zie [Dreaming](#dreaming) hieronder); geef expliciete vlaggen door om
+het gedrag van de verwerkingsronde te evenaren voor een eenmalige handmatige uitvoering.
+
+Rangschikkingssignalen: opvraagfrequentie, relevantie bij het ophalen, diversiteit van zoekopdrachten,
+temporele recentheid, consolidatie over meerdere dagen en rijkdom van afgeleide concepten, verkregen
+uit zowel geheugenopvragingen als dagelijkse verwerkingsrondes, plus een lichte versterkingsbonus
+uit de lichte/REM-fase bij herhaalde bezoeken tijdens Dreaming. Vóór het schrijven leest het
+promotieproces de actuele dagelijkse notitie opnieuw, zodat bewerkingen of verwijderingen van
+kortetermijnfragmenten sinds de rangschikking worden gerespecteerd in plaats van promotie
+op basis van een verouderde momentopname.
+
+## `memory promote-explain`
+
+Leg de opbouw van de score van één promotiekandidaat uit.
 
 ```bash
 openclaw memory promote-explain <selector> [--agent <id>] [--include-promoted] [--json]
 ```
 
-- `<selector>`: kandidaatsleutel, padfragment of snippetfragment om op te zoeken.
-- `--agent <id>`: beperk tot één agent (standaard: de standaardagent).
-- `--include-promoted`: neem al gepromoveerde kandidaten op.
-- `--json`: druk JSON-uitvoer af.
+`<selector>` komt overeen met de sleutel (exact of als deeltekenreeks), het pad of de
+fragmenttekst van een kandidaat.
 
-`memory rem-harness`:
+## `memory rem-harness`
 
-Bekijk REM-reflecties, kandidaatwaarheden en diepe promotie-uitvoer zonder iets te schrijven.
+Bekijk een voorvertoning van REM-reflecties, kandidaatwaarheden en promotie-uitvoer uit de diepe fase
+zonder iets te schrijven.
 
 ```bash
-openclaw memory rem-harness [--agent <id>] [--include-promoted] [--json]
+openclaw memory rem-harness [--agent <id>] [--path <file-or-dir>] [--grounded] [--include-promoted] [--json]
 ```
 
-- `--agent <id>`: beperk tot één agent (standaard: de standaardagent).
-- `--include-promoted`: neem al gepromoveerde diepe kandidaten op.
-- `--json`: druk JSON-uitvoer af.
+- `--path <file-or-dir>`: voorzie de testomgeving van historische dagelijkse
+  `YYYY-MM-DD.md`-bestanden in plaats van de actieve werkruimte.
+- `--grounded`: geef ook een op historische notities gebaseerde voorvertoning weer van `Wat is er gebeurd` / `Reflecties` /
+  `Mogelijke blijvende updates`.
+
+## `memory rem-backfill`
+
+Schrijf op historische gegevens gebaseerde REM-samenvattingen naar `DREAMS.md` voor beoordeling in de gebruikersinterface.
+Omkeerbaar.
+
+```bash
+openclaw memory rem-backfill --path <file-or-dir> [--agent <id>] [--stage-short-term] [--json]
+openclaw memory rem-backfill --rollback [--rollback-short-term] [--json]
+```
+
+- `--path <file-or-dir>`: vereist tenzij `--rollback`/`--rollback-short-term`
+  is ingesteld. Historische dagelijkse geheugenbestanden of map waaruit gegevens moeten worden aangevuld.
+- `--stage-short-term`: plaats ook op historische gegevens gebaseerde duurzame kandidaten in de actieve
+  kortetermijnopslag voor promotie, zodat de normale diepe fase ze kan rangschikken.
+- `--rollback`: verwijder eerder geschreven, op historische gegevens gebaseerde dagboekvermeldingen uit
+  `DREAMS.md`.
+- `--rollback-short-term`: verwijder eerder klaargezette, op historische gegevens gebaseerde
+  kortetermijnkandidaten.
 
 ## Dreaming
 
-Dreaming is het achtergrondssysteem voor geheugenconsolidatie met drie samenwerkende
-fasen: **light** (kortetermijnmateriaal sorteren/stagen), **deep** (duurzame
-feiten naar `MEMORY.md` promoveren) en **REM** (reflecteren en thema's naar boven halen).
+Dreaming is het achtergrondsysteem voor geheugenconsolidatie met drie samenwerkende
+fasen, die op volgorde volgens één planning worden uitgevoerd: **licht** (kortetermijnmateriaal sorteren/klaarzetten),
+**REM** (reflecteren en thema's zichtbaar maken), **diep** (duurzame
+feiten promoveren naar `MEMORY.md`). Alleen de diepe fase schrijft naar `MEMORY.md`.
 
-- Schakel in met `plugins.entries.memory-core.config.dreaming.enabled: true`.
-- Schakel vanuit chat om met `/dreaming on|off` (of inspecteer met `/dreaming status`).
-  Kanaalaanroepers moeten eigenaar zijn om de instelling te wijzigen; Gateway-clients hebben
-  `operator.admin` nodig. Alleen-lezen status en hulp blijven beschikbaar voor geautoriseerde
-  opdrachtverzenders.
-- Dreaming draait volgens één beheerd sweepschema (`dreaming.frequency`) en voert fasen in deze volgorde uit: light, REM, deep.
-- Alleen de deep-fase schrijft duurzaam geheugen naar `MEMORY.md`.
-- Menselijk leesbare fase-uitvoer en dagboekvermeldingen worden geschreven naar `DREAMS.md` (of bestaande `dreams.md`), met optionele rapporten per fase in `memory/dreaming/<phase>/YYYY-MM-DD.md`.
-- Rangschikking gebruikt gewogen signalen: recallfrequentie, retrievalrelevantie, querydiversiteit, temporele recentheid, consolidatie over dagen heen en afgeleide conceptrijkdom.
-- Promotie leest de live dagelijkse notitie opnieuw voordat naar `MEMORY.md` wordt geschreven, zodat bewerkte of verwijderde kortetermijnsnippets niet worden gepromoveerd vanuit verouderde snapshots van de recall-opslag.
-- Geplande en handmatige `memory promote`-runs delen dezelfde standaardinstellingen voor de deep-fase, tenzij je CLI-drempeloverschrijvingen doorgeeft.
-- Automatische runs waaieren uit over geconfigureerde geheugenwerkruimten.
+- Schakel dit in met `plugins.entries.memory-core.config.dreaming.enabled: true`
+  (standaard `false`); `memory-core` beheert de Cron-taak voor de verwerkingsronde automatisch, waardoor handmatig
+  `openclaw cron add` uitvoeren niet nodig is.
+- Schakel dit vanuit de chat in of uit met `/dreaming on|off`; controleer het met `/dreaming status`
+  (of `/dreaming`/`/dreaming help`). `on`/`off` vereist de status van kanaaleigenaar
+  of `operator.admin` voor de Gateway; `status` en help blijven beschikbaar voor iedereen die
+  de opdracht kan aanroepen.
+- Leesbare fase-uitvoer wordt naar `DREAMS.md` geschreven (of naar een bestaand `dreams.md`).
+  Standaard (`dreaming.storage.mode: "separate"`) schrijft elke fase ook een
+  afzonderlijk rapport naar `memory/dreaming/<phase>/YYYY-MM-DD.md`; stel `mode:
+"inline"` in om rapporten in plaats daarvan in het dagelijkse geheugenbestand op te nemen, of `"both"`
+  voor beide.
+- Geplande uitvoeringen en handmatige uitvoeringen van `memory promote` gebruiken dezelfde
+  rangschikkingssignalen voor de diepe fase; alleen de standaarddrempelwaarden verschillen (zie de tabel hierboven tegenover
+  de geplande standaardwaarden hieronder).
+- Geplande uitvoeringen worden verspreid over de geheugenwerkruimten van alle geconfigureerde agenten.
 
-Standaardplanning:
+Geplande standaardwaarden (`plugins.entries.memory-core.config.dreaming`):
 
-- **Sweep-cadans**: `dreaming.frequency = 0 3 * * *`
-- **Deep-drempels**: `minScore=0.8`, `minRecallCount=3`, `minUniqueQueries=3`, `recencyHalfLifeDays=14`, `maxAgeDays=30`
-
-Voorbeeld:
+| Sleutel                                 | Standaard   |
+| --------------------------------------- | ----------- |
+| `frequency`                             | `0 3 * * *` |
+| `phases.deep.minScore`                  | `0.8`       |
+| `phases.deep.minRecallCount`            | `3`         |
+| `phases.deep.minUniqueQueries`          | `3`         |
+| `phases.deep.recencyHalfLifeDays`       | `14`        |
+| `phases.deep.maxAgeDays`                | `30`        |
+| `phases.deep.maxPromotedSnippetTokens`  | `160`       |
 
 ```json
 {
@@ -175,20 +200,17 @@ Voorbeeld:
 }
 ```
 
-Opmerkingen:
+Volledige lijst met sleutels en details per fase: [Dreaming](/nl/concepts/dreaming),
+[Configuratiereferentie voor geheugen](/nl/reference/memory-config#dreaming).
 
-- `memory index --verbose` drukt details per fase af (provider, model, bronnen, batchactiviteit).
-- `memory status` bevat alle extra paden die via `memorySearch.extraPaths` zijn geconfigureerd.
-- Als effectief actieve remote API-sleutelvelden voor geheugen zijn geconfigureerd als SecretRefs, lost de opdracht die waarden op vanuit de actieve Gateway-snapshot. Als Gateway niet beschikbaar is, faalt de opdracht snel.
-- Opmerking over Gateway-versieverschil: dit opdrachtpad vereist een Gateway die `secrets.resolve` ondersteunt; oudere gateways retourneren een fout voor een onbekende methode.
-- Stem de geplande sweep-cadans af met `dreaming.frequency`. Deep-promotiebeleid is verder intern, behalve `dreaming.phases.deep.maxPromotedSnippetTokens`, dat de lengte van gepromoveerde snippets begrenst terwijl herkomst zichtbaar blijft. Gebruik CLI-vlaggen op `memory promote` wanneer je eenmalige handmatige drempeloverschrijvingen nodig hebt.
-- `memory rem-harness --path <file-or-dir> --grounded` toont een voorbeeld van gegronde `What Happened`, `Reflections` en `Possible Lasting Updates` uit historische dagelijkse notities zonder iets te schrijven.
-- `memory rem-backfill --path <file-or-dir>` schrijft omkeerbare gegronde dagboekvermeldingen naar `DREAMS.md` voor UI-beoordeling.
-- `memory rem-backfill --path <file-or-dir> --stage-short-term` zaait ook gegronde duurzame kandidaten in de live kortetermijnpromotieopslag, zodat de normale deep-fase ze kan rangschikken.
-- `memory rem-backfill --rollback` verwijdert eerder geschreven gegronde dagboekvermeldingen, en `memory rem-backfill --rollback-short-term` verwijdert eerder gestagede gegronde kortetermijnkandidaten.
-- Zie [Dreaming](/nl/concepts/dreaming) voor volledige fasebeschrijvingen en configuratiereferentie.
+## Gateway-afhankelijkheid voor SecretRef
+
+Als externe API-sleutelvelden voor Active Memory zijn geconfigureerd als SecretRefs, lossen `memory`-
+opdrachten deze op vanuit de actieve momentopname van de Gateway; als de Gateway
+niet beschikbaar is, mislukt de opdracht onmiddellijk. Hiervoor is een Gateway vereist die de
+methode `secrets.resolve` ondersteunt; oudere Gateways retourneren een fout voor een onbekende methode.
 
 ## Gerelateerd
 
 - [CLI-referentie](/nl/cli)
-- [Geheugenoverzicht](/nl/concepts/memory)
+- [Overzicht van geheugen](/nl/concepts/memory)

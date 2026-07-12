@@ -4,8 +4,8 @@ read_when:
 summary: Plugin kênh Nextcloud Talk của OpenClaw dành cho các cuộc trò chuyện.
 title: Plugin Nextcloud Talk
 x-i18n:
-    generated_at: "2026-06-27T17:54:08Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:11:50Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: ce8dd648fcc2226e6b365f092eb3dc54062d2c9d8d5c613cb0c2d5e9f237c720
@@ -15,12 +15,12 @@ x-i18n:
 
 # Plugin Nextcloud Talk
 
-Plugin kênh Nextcloud Talk của OpenClaw dành cho hội thoại.
+Plugin kênh Nextcloud Talk của OpenClaw dành cho các cuộc trò chuyện.
 
 ## Phân phối
 
 - Gói: `@openclaw/nextcloud-talk`
-- Cách cài đặt: npm; ClawHub
+- Phương thức cài đặt: npm; ClawHub
 
 ## Bề mặt
 

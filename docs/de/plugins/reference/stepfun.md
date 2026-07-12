@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder auditieren das stepfun-Plugin
-summary: Fügt OpenClaw Unterstützung für StepFun- und StepFun Plan-Modell-Provider hinzu.
+    - Sie installieren, konfigurieren oder überprüfen das stepfun-Plugin.
+summary: Fügt Unterstützung für die Modell-Provider StepFun und StepFun Plan zu OpenClaw hinzu.
 title: StepFun-Plugin
 x-i18n:
-    generated_at: "2026-06-27T17:56:54Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T02:00:49Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 02e2b7fbfb03a348a8a5d368e6fd039cf834ab7d2a9bf82f79729f360660b5de
@@ -15,14 +15,14 @@ x-i18n:
 
 # StepFun-Plugin
 
-Fügt OpenClaw Provider-Unterstützung für StepFun- und StepFun-Plan-Modelle hinzu.
+Fügt Unterstützung für die Modell-Provider StepFun und StepFun Plan zu OpenClaw hinzu.
 
 ## Distribution
 
 - Paket: `@openclaw/stepfun-provider`
 - Installationsweg: npm; ClawHub: `clawhub:@openclaw/stepfun-provider`
 
-## Oberfläche
+## Schnittstelle
 
 Provider: stepfun, stepfun-plan
 

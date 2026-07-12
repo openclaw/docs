@@ -5,10 +5,9 @@ read_when:
 summary: 'Plugin Zalo Personal: login por QR + mensagens via zca-js nativo (instalação do plugin + configuração do canal + ferramenta)'
 title: Plugin pessoal do Zalo
 x-i18n:
-    generated_at: "2026-07-12T15:29:27Z"
+    generated_at: "2026-07-12T00:16:55Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: cb0bdaa10340b5d78dc32abf6b0520fda6cf5f65e2e17b551b4e9bd72acfbbf2
     source_path: plugins/zalouser.md
@@ -26,13 +25,13 @@ A automação não oficial pode levar à suspensão ou ao banimento da conta. Us
 ## Nomenclatura
 
 O id do canal é `zalouser` para deixar explícito que ele automatiza uma **conta pessoal
-de usuário do Zalo** (não oficial). O id de canal separado `zalo` corresponde à integração
-oficial e incluída do Bot/webhook do Zalo — consulte [Zalo](/pt-BR/channels/zalo).
+de usuário do Zalo** (não oficial). O id de canal separado `zalo` corresponde à integração oficial
+incluída com o Bot/Webhook do Zalo — consulte [Zalo](/pt-BR/channels/zalo).
 
 ## Onde é executado
 
 Este plugin é executado **dentro do processo do Gateway**. Para um Gateway remoto,
-instale/configure-o nesse host e reinicie o Gateway.
+instale-o/configure-o nesse host e reinicie o Gateway.
 
 ## Instalação
 
@@ -43,9 +42,9 @@ openclaw plugins install @openclaw/zalouser
 ```
 
 Use somente o pacote para acompanhar a tag da versão oficial atual; fixe uma versão
-exata somente quando precisar de uma instalação reproduzível. Depois, reinicie o Gateway.
+exata apenas quando precisar de uma instalação reproduzível. Depois, reinicie o Gateway.
 
-### Por uma pasta local (desenvolvimento)
+### De uma pasta local (desenvolvimento)
 
 ```bash
 PLUGIN_SRC=./path/to/local/zalouser-plugin
@@ -70,8 +69,8 @@ A configuração do canal fica em `channels.zalouser` (não em `plugins.entries.
 }
 ```
 
-Consulte [Configuração do canal pessoal do Zalo](/pt-BR/channels/zalouser) para ver o controle de acesso
-a mensagens diretas/grupos, a configuração de várias contas, as variáveis de ambiente e a solução de problemas.
+Consulte [Configuração do canal pessoal do Zalo](/pt-BR/channels/zalouser) para obter informações sobre controle
+de acesso a mensagens diretas/grupos, configuração de várias contas, variáveis de ambiente e solução de problemas.
 
 ## CLI
 
@@ -93,12 +92,12 @@ Nome da ferramenta: `zalouser`
 
 Ações: `send`, `image`, `link`, `friends`, `groups`, `me`, `status`
 
-As ações de mensagens do canal (não a ferramenta do agente) também oferecem suporte a `react` para
+As ações de mensagens do canal (não a ferramenta do agente) também são compatíveis com `react` para
 reações a mensagens.
 
 ## Relacionados
 
 - [Configuração do canal pessoal do Zalo](/pt-BR/channels/zalouser)
-- [Zalo (canal oficial de Bot/webhook)](/pt-BR/channels/zalo)
+- [Zalo (canal oficial de Bot/Webhook)](/pt-BR/channels/zalo)
 - [Criação de plugins](/pt-BR/plugins/building-plugins)
 - [ClawHub](/clawhub)

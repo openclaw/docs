@@ -1,25 +1,24 @@
 ---
 read_when:
     - 스크립트 또는 CI에서 온보딩을 자동화하고 있습니다
-    - 특정 제공자를 위한 비대화형 예제가 필요합니다
+    - 특정 제공자를 위한 비대화형 예시가 필요합니다
 sidebarTitle: CLI automation
 summary: OpenClaw CLI의 스크립트 기반 온보딩 및 에이전트 설정
 title: CLI 자동화
 x-i18n:
-    generated_at: "2026-07-12T15:47:34Z"
+    generated_at: "2026-07-12T01:12:36Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: de3115fd0c675b92f22cf9c44ddd307a854e499c6f163235f991368429b2c152
     source_path: start/wizard-cli-automation.md
     workflow: 16
 ---
 
-설정을 스크립트로 자동화하려면 `openclaw onboard --non-interactive`를 사용하십시오. 이 명령에는 `--accept-risk`가 필요합니다. 비대화형 설정은 확인 메시지 없이 자격 증명과 데몬 구성을 기록할 수 있으므로, 이 플래그는 위험을 명시적으로 인정한다는 의미입니다.
+스크립트로 설정하려면 `openclaw onboard --non-interactive`를 사용하세요. 이 명령에는 `--accept-risk`가 필요합니다. 비대화형 설정은 확인 메시지 없이 자격 증명과 데몬 구성을 기록할 수 있으므로, 이 플래그는 위험을 명시적으로 인정한다는 의미입니다.
 
 <Note>
-`--json`은 비대화형 모드를 의미하지 않습니다. 스크립트에서는 `--non-interactive --accept-risk`를 명시적으로 전달하십시오.
+`--json`은 비대화형 모드를 의미하지 않습니다. 스크립트에서는 `--non-interactive --accept-risk`를 명시적으로 전달하세요.
 </Note>
 
 ## 기본 비대화형 예시
@@ -37,11 +36,11 @@ openclaw onboard --non-interactive --accept-risk \
   --skip-skills
 ```
 
-머신이 읽을 수 있는 요약을 출력하려면 `--json`을 추가하십시오.
+기계가 읽을 수 있는 요약을 출력하려면 `--json`을 추가하세요.
 
-- `--gateway-port`의 기본값은 `18789`입니다. 재정의할 때만 전달하십시오.
-- `--skip-bootstrap`은 자체 워크스페이스를 미리 구성하는 자동화를 위해 기본 워크스페이스 파일 생성을 건너뜁니다.
-- `--secret-input-mode ref`는 일반 텍스트 키 대신 환경 변수 기반 참조(`{ source: "env", provider: "default", id: "<ENV_VAR>" }`)를 인증 프로필에 저장합니다. 비대화형 `ref` 모드에서는 제공자 환경 변수가 프로세스 환경에 이미 설정되어 있어야 합니다. 일치하는 환경 변수 없이 인라인 키 플래그를 전달하면 즉시 실패합니다.
+- `--gateway-port`의 기본값은 `18789`입니다. 기본값을 재정의할 때만 전달하세요.
+- `--skip-bootstrap`은 기본 작업 공간 파일 생성을 건너뜁니다. 자체 작업 공간을 미리 구성하는 자동화에 사용합니다.
+- `--secret-input-mode ref`는 일반 텍스트 키 대신 환경 변수 기반 참조(`{ source: "env", provider: "default", id: "<ENV_VAR>" }`)를 인증 프로필에 저장합니다. 비대화형 `ref` 모드에서는 제공자 환경 변수가 프로세스 환경에 이미 설정되어 있어야 합니다. 인라인 키 플래그를 전달하면서 이에 대응하는 환경 변수가 없으면 즉시 실패합니다.
 
 ```bash
 openclaw onboard --non-interactive --accept-risk \
@@ -117,7 +116,7 @@ openclaw onboard --non-interactive --accept-risk \
       --opencode-zen-api-key "$OPENCODE_API_KEY" \
       --gateway-bind loopback
     ```
-    Go 카탈로그를 사용하려면 `--auth-choice opencode-go --opencode-go-api-key "$OPENCODE_API_KEY"`로 변경하십시오.
+    Go 카탈로그를 사용하려면 `--auth-choice opencode-go --opencode-go-api-key "$OPENCODE_API_KEY"`로 바꾸세요.
   </Accordion>
   <Accordion title="Synthetic 예시">
     ```bash
@@ -160,11 +159,11 @@ openclaw onboard --non-interactive --accept-risk \
       --gateway-bind loopback
     ```
 
-    `--custom-api-key`는 선택 사항입니다. 일부 엔드포인트에는 인증이 필요하지 않습니다. 생략하면 온보딩에서 환경의 `CUSTOM_API_KEY`를 확인합니다. `--custom-provider-id`는 선택 사항이며, 생략하면 기본 URL에서 자동으로 파생됩니다. `--custom-compatibility`의 기본값은 `openai`입니다(다른 값: `openai-responses`, `anthropic`).
+    `--custom-api-key`는 선택 사항입니다. 일부 엔드포인트에는 인증이 필요하지 않습니다. 생략하면 온보딩 과정에서 환경 변수의 `CUSTOM_API_KEY`를 확인합니다. `--custom-provider-id`는 선택 사항이며, 생략하면 기본 URL에서 자동으로 파생됩니다. `--custom-compatibility`의 기본값은 `openai`입니다(다른 값: `openai-responses`, `anthropic`).
 
-    OpenClaw는 알려진 비전 모델 ID 패턴(`gpt-4o`, `claude-3/4`, `gemini`, `-vl`/`vision` 접미사 등)을 기반으로 이미지 입력 지원 여부를 추론합니다. 인식되지 않는 비전 모델에서 이미지 입력을 강제로 활성화하려면 `--custom-image-input`을 추가하고, 텍스트 전용으로 강제하려면 `--custom-text-input`을 추가하십시오.
+    OpenClaw는 알려진 비전 모델 ID 패턴(`gpt-4o`, `claude-3/4`, `gemini`, `-vl`/`vision` 접미사 등)을 바탕으로 이미지 입력 지원 여부를 추론합니다. 인식되지 않는 비전 모델에서 이미지 입력을 강제로 활성화하려면 `--custom-image-input`을 추가하고, 텍스트 전용으로 강제하려면 `--custom-text-input`을 추가하세요.
 
-    `apiKey`를 `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`로 저장하는 참조 모드 변형은 다음과 같습니다.
+    `apiKey`를 `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`로 저장하는 참조 모드 변형:
 
     ```bash
     export CUSTOM_API_KEY="your-key"
@@ -183,11 +182,11 @@ openclaw onboard --non-interactive --accept-risk \
   </Accordion>
 </AccordionGroup>
 
-Anthropic 설정 토큰 인증은 계속 지원되지만, 로컬 Claude CLI 로그인을 사용할 수 있으면 OpenClaw는 Claude CLI 재사용을 우선합니다. 프로덕션에서는 Anthropic API 키를 사용하는 것이 좋습니다.
+Anthropic 설정 토큰 인증은 계속 지원되지만, 로컬 Claude CLI 로그인을 사용할 수 있으면 OpenClaw는 Claude CLI 재사용을 우선합니다. 프로덕션 환경에서는 Anthropic API 키를 사용하는 것이 좋습니다.
 
 ## 다른 에이전트 추가
 
-`openclaw agents add <name>`은 자체 워크스페이스, 세션, 인증 프로필을 가진 별도의 에이전트를 생성합니다. `--workspace` 없이(그리고 다른 플래그도 없이) 실행하면 대화형 마법사가 시작됩니다. `--workspace`, `--model`, `--agent-dir`, `--bind`, `--non-interactive` 중 하나라도 전달하면 비대화형으로 실행되며, 이 경우 `--workspace`가 필요합니다.
+`openclaw agents add <name>`은 자체 작업 공간, 세션 및 인증 프로필을 사용하는 별도의 에이전트를 생성합니다. `--workspace`와 다른 플래그를 지정하지 않고 실행하면 대화형 마법사가 시작됩니다. `--workspace`, `--model`, `--agent-dir`, `--bind`, `--non-interactive` 중 하나라도 전달하면 비대화형으로 실행되며, 이 경우 `--workspace`가 필요합니다.
 
 ```bash
 openclaw agents add work \
@@ -198,7 +197,7 @@ openclaw agents add work \
   --json
 ```
 
-기록되는 구성 키(새 에이전트 ID에 대한 `agents.list[]` 항목)는 다음과 같습니다.
+기록되는 구성 키(새 에이전트 ID의 `agents.list[]` 항목):
 
 - `name`
 - `workspace`
@@ -207,9 +206,9 @@ openclaw agents add work \
 
 참고:
 
-- 기본 워크스페이스(대화형 마법사에서 `--workspace`를 생략한 경우): `~/.openclaw/workspace-<agentId>`.
-- `--bind <channel[:accountId]>`는 반복해서 지정할 수 있습니다. 수신 메시지를 새 에이전트로 라우팅하려면 바인딩을 추가하십시오(마법사에서도 대화형으로 설정할 수 있습니다).
-- 에이전트 이름은 유효한 에이전트 ID로 정규화되며, `main`은 예약되어 있습니다.
+- 기본 작업 공간(대화형 마법사에서 `--workspace`를 생략한 경우): `~/.openclaw/workspace-<agentId>`.
+- `--bind <channel[:accountId]>`는 반복해서 지정할 수 있습니다. 수신 메시지를 새 에이전트로 라우팅하려면 바인딩을 추가하세요(마법사에서도 대화형으로 설정할 수 있습니다).
+- 에이전트 이름은 유효한 에이전트 ID로 정규화됩니다. `main`은 예약되어 있습니다.
 
 ## 관련 문서
 

@@ -1,53 +1,134 @@
 ---
 read_when:
-    - Bạn muốn các quy trình làm việc nhiều bước có tính tất định với các phê duyệt rõ ràng
+    - Bạn muốn các quy trình làm việc nhiều bước có tính xác định với các bước phê duyệt rõ ràng
     - Bạn cần tiếp tục một quy trình làm việc mà không chạy lại các bước trước đó
-summary: Môi trường chạy quy trình công việc có kiểu cho OpenClaw với các cổng phê duyệt có thể tiếp tục.
+summary: Môi trường thực thi quy trình làm việc có kiểu cho OpenClaw với các cổng phê duyệt có thể tiếp tục.
 title: Tôm hùm
 x-i18n:
-    generated_at: "2026-05-12T01:00:29Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:24:57Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 404b2e47982f7efb9a8bb015ac5d7bd8a06f0a41d966e620c9826735abf7f0e3
+    source_hash: eedb6577133588b726992a882a92d94f1f414e55998d0fc80644dd3a64ffc1ab
     source_path: tools/lobster.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Lobster là một shell quy trình làm việc cho phép OpenClaw chạy các chuỗi công cụ nhiều bước như một thao tác đơn lẻ, xác định được, với các điểm kiểm tra phê duyệt rõ ràng.
+Lobster chạy các pipeline công cụ nhiều bước dưới dạng một lệnh gọi công cụ có tính xác định duy nhất, với
+các điểm kiểm tra phê duyệt rõ ràng và token tiếp tục. Nó nằm cao hơn một lớp so với
+công việc nền tách rời: để điều phối luồng trên nhiều tác vụ tách rời,
+xem [Task Flow](/vi/automation/taskflow) (`openclaw tasks flow`); để xem sổ cái
+hoạt động của tác vụ, xem [Tác vụ nền](/vi/automation/tasks).
 
-Lobster là một lớp soạn thảo nằm trên công việc nền tách rời. Để điều phối luồng ở cấp cao hơn các tác vụ riêng lẻ, hãy xem [Luồng tác vụ](/vi/automation/taskflow) (`openclaw tasks flow`). Để xem sổ cái hoạt động tác vụ, hãy xem [`openclaw tasks`](/vi/automation/tasks).
+## Tại sao
 
-## Móc
+Nếu không có Lobster, một công việc nhiều bước cần nhiều lượt gọi công cụ khứ hồi,
+trong đó mô hình điều phối từng bước. Lobster chuyển việc điều phối đó vào một
+runtime có kiểu:
 
-Trợ lý của bạn có thể xây dựng các công cụ tự quản lý chính nó. Yêu cầu một quy trình làm việc, và 30 phút sau bạn có một CLI cùng các pipeline chạy như một lệnh gọi duy nhất. Lobster là mảnh ghép còn thiếu: pipeline xác định được, phê duyệt rõ ràng, và trạng thái có thể tiếp tục.
+- **Một lệnh gọi thay vì nhiều lệnh gọi**: một lệnh gọi công cụ Lobster duy nhất trả về kết quả
+  có cấu trúc cho toàn bộ pipeline.
+- **Tích hợp sẵn phê duyệt**: các hiệu ứng phụ (gửi, đăng, xóa) tạm dừng quy trình
+  cho đến khi được phê duyệt rõ ràng.
+- **Có thể tiếp tục**: quy trình bị tạm dừng trả về một token; phê duyệt và tiếp tục mà không
+  chạy lại các bước trước đó.
 
-## Lý do
+Lobster là một DSL nhỏ, có giới hạn thay vì một ngôn ngữ tập lệnh đa dụng:
+phê duyệt/tiếp tục là một thành phần nguyên thủy bền vững, tích hợp sẵn; pipeline là dữ liệu (dễ
+ghi nhật ký, so sánh khác biệt, phát lại, đánh giá); ngữ pháp nhỏ gọn hạn chế các đường dẫn mã "sáng tạo" để
+việc xác thực luôn thực tế; thời gian chờ, giới hạn đầu ra, kiểm tra sandbox và
+danh sách cho phép được runtime thực thi, không phải từng tập lệnh. Mỗi bước vẫn có thể
+gọi bất kỳ CLI hoặc tập lệnh nào — hãy tạo các tệp `.lobster` từ công cụ khác nếu bạn
+muốn một ngôn ngữ biên soạn phong phú hơn.
 
-Hiện nay, các quy trình làm việc phức tạp cần nhiều lệnh gọi công cụ qua lại. Mỗi lệnh gọi tốn token, và LLM phải điều phối từng bước. Lobster chuyển việc điều phối đó vào một runtime có kiểu:
+Nếu không có Lobster, việc phân loại email định kỳ sẽ như sau:
 
-- **Một lệnh gọi thay vì nhiều lệnh gọi**: OpenClaw chạy một lệnh gọi công cụ Lobster và nhận kết quả có cấu trúc.
-- **Tích hợp phê duyệt**: Tác dụng phụ (gửi email, đăng bình luận) tạm dừng quy trình làm việc cho đến khi được phê duyệt rõ ràng.
-- **Có thể tiếp tục**: Quy trình làm việc bị tạm dừng trả về một token; phê duyệt và tiếp tục mà không cần chạy lại mọi thứ.
+```text
+Người dùng: "Kiểm tra email của tôi và soạn thư trả lời"
+→ openclaw gọi gmail.list
+→ LLM tóm tắt
+→ Người dùng: "soạn thư trả lời cho #2 và #5"
+→ LLM soạn thảo
+→ Người dùng: "gửi #2"
+→ openclaw gọi gmail.send
+(lặp lại hằng ngày, không ghi nhớ nội dung đã được phân loại)
+```
 
-## Vì sao dùng DSL thay vì chương trình thông thường?
+Với Lobster, cùng một công việc chỉ cần một lệnh gọi, tạm dừng để phê duyệt rồi tiếp tục:
 
-Lobster được thiết kế có chủ ý là nhỏ gọn. Mục tiêu không phải là "một ngôn ngữ mới," mà là một đặc tả pipeline dễ dự đoán, thân thiện với AI, có phê duyệt hạng nhất và token tiếp tục.
+```json
+{ "action": "run", "pipeline": "email.triage --limit 20", "timeoutMs": 30000 }
+```
 
-- **Phê duyệt/tiếp tục được tích hợp sẵn**: Một chương trình bình thường có thể nhắc con người, nhưng không thể _tạm dừng và tiếp tục_ bằng một token bền vững nếu bạn không tự phát minh runtime đó.
-- **Tính xác định + khả năng kiểm tra**: Pipeline là dữ liệu, nên dễ ghi log, diff, phát lại và xem xét.
-- **Bề mặt hạn chế cho AI**: Một ngữ pháp nhỏ + truyền JSON giúp giảm các đường đi mã "sáng tạo" và làm cho việc xác thực thực tế hơn.
-- **Chính sách an toàn tích hợp**: Timeout, giới hạn đầu ra, kiểm tra sandbox và allowlist được runtime thực thi, không phải từng script.
-- **Vẫn có thể lập trình**: Mỗi bước có thể gọi bất kỳ CLI hoặc script nào. Nếu bạn muốn JS/TS, hãy tạo tệp `.lobster` từ mã.
+```json
+{
+  "ok": true,
+  "status": "needs_approval",
+  "output": [{ "summary": "5 need replies, 2 need action" }],
+  "requiresApproval": {
+    "type": "approval_request",
+    "prompt": "Send 2 draft replies?",
+    "items": [],
+    "resumeToken": "..."
+  }
+}
+```
 
 ## Cách hoạt động
 
-OpenClaw chạy quy trình làm việc Lobster **trong cùng tiến trình** bằng một runner nhúng. Không có tiến trình con CLI bên ngoài nào được tạo; công cụ quy trình làm việc thực thi bên trong tiến trình Gateway và trả trực tiếp một phong bì JSON.
-Nếu pipeline tạm dừng để phê duyệt, công cụ trả về `resumeToken` để bạn có thể tiếp tục sau.
+OpenClaw chạy các quy trình Lobster **trong tiến trình** bằng gói
+`@clawdbot/lobster` đi kèm dưới dạng trình chạy nhúng. Không tạo tiến trình con
+`lobster` bên ngoài; lệnh gọi công cụ trả về trực tiếp một lớp bao JSON. Nếu
+pipeline tạm dừng để phê duyệt, lớp bao chứa token tiếp tục (hoặc một ID
+phê duyệt ngắn) để bạn có thể tiếp tục sau.
 
-## Mẫu: CLI nhỏ + pipe JSON + phê duyệt
+## Bật
 
-Xây dựng các lệnh nhỏ nói bằng JSON, rồi nối chúng thành một lệnh gọi Lobster duy nhất. (Tên lệnh ví dụ bên dưới - thay bằng tên của bạn.)
+Lobster là một công cụ Plugin **tùy chọn**, không được bật theo mặc định. Nó được phân phối
+kèm theo, vì vậy không cần bước cài đặt riêng — chỉ cần cho phép công cụ:
+
+```json
+{
+  "tools": {
+    "alsoAllow": ["lobster"]
+  }
+}
+```
+
+Hoặc theo từng tác nhân:
+
+```json
+{
+  "agents": {
+    "list": [
+      {
+        "id": "main",
+        "tools": {
+          "alsoAllow": ["lobster"]
+        }
+      }
+    ]
+  }
+}
+```
+
+<Note>
+`alsoAllow` thêm `lobster` vào hồ sơ công cụ đang hoạt động mà không
+hạn chế các công cụ lõi khác. Chỉ sử dụng `tools.allow` nếu bạn muốn chế độ
+danh sách cho phép hạn chế hơn.
+</Note>
+
+Công cụ bị vô hiệu hóa hoàn toàn trong các ngữ cảnh công cụ có sandbox.
+
+Nếu cần CLI Lobster độc lập để phát triển hoặc dùng cho các pipeline bên ngoài
+(nằm ngoài trình chạy gateway nhúng), hãy cài đặt từ
+[kho lưu trữ Lobster](https://github.com/openclaw/lobster) và thêm `lobster` vào
+`PATH`.
+
+## Mẫu: CLI nhỏ + đường ống JSON + phê duyệt
+
+Xây dựng các lệnh nhỏ giao tiếp bằng JSON, sau đó nối chúng thành một lệnh gọi Lobster.
+(Các tên lệnh ví dụ bên dưới — hãy thay bằng lệnh của bạn.)
 
 ```bash
 inbox list --json
@@ -73,9 +154,7 @@ Nếu pipeline yêu cầu phê duyệt, hãy tiếp tục bằng token:
 }
 ```
 
-AI kích hoạt quy trình làm việc; Lobster thực thi các bước. Cổng phê duyệt giữ cho các tác dụng phụ rõ ràng và có thể kiểm tra.
-
-Ví dụ: ánh xạ các mục đầu vào thành lệnh gọi công cụ:
+Ví dụ: ánh xạ các mục đầu vào thành các lệnh gọi công cụ:
 
 ```bash
 gog.gmail.search --query 'newer_than:1d' \
@@ -84,11 +163,8 @@ gog.gmail.search --query 'newer_than:1d' \
 
 ## Các bước LLM chỉ dùng JSON (llm-task)
 
-Đối với quy trình làm việc cần một **bước LLM có cấu trúc**, hãy bật công cụ plugin tùy chọn
-`llm-task` và gọi nó từ Lobster. Điều này giữ cho quy trình làm việc
-xác định được trong khi vẫn cho phép bạn phân loại/tóm tắt/soạn nháp bằng một mô hình.
-
-Bật công cụ:
+Đối với một **bước LLM có cấu trúc** bên trong quy trình, hãy bật công cụ Plugin
+`llm-task` tùy chọn và gọi nó từ Lobster:
 
 ```json
 {
@@ -110,17 +186,19 @@ Bật công cụ:
 
 ### Giới hạn quan trọng: Lobster nhúng so với `openclaw.invoke`
 
-Plugin Lobster đi kèm chạy quy trình làm việc **trong cùng tiến trình** bên trong Gateway. Ở chế độ nhúng đó, `openclaw.invoke` **không** tự động kế thừa URL Gateway/ngữ cảnh xác thực cho các lệnh gọi công cụ OpenClaw CLI lồng nhau.
+Plugin Lobster đi kèm chạy các quy trình **trong tiến trình** bên trong gateway.
+Trong chế độ nhúng đó, `openclaw.invoke` **không** tự động kế thừa ngữ cảnh
+URL/xác thực của gateway cho các lệnh gọi công cụ CLI OpenClaw lồng nhau.
 
-Điều đó có nghĩa là mẫu này **hiện không đáng tin cậy trong runner nhúng**:
+Điều đó có nghĩa là mẫu này **hiện không đáng tin cậy trong trình chạy nhúng**:
 
 ```lobster
 openclaw.invoke --tool llm-task --action json --args-json '{ ... }'
 ```
 
-Chỉ dùng ví dụ bên dưới khi chạy **Lobster CLI độc lập** trong một môi trường nơi `openclaw.invoke` đã được cấu hình với ngữ cảnh Gateway/xác thực chính xác.
-
-Dùng trong pipeline Lobster CLI độc lập:
+Chỉ sử dụng ví dụ bên dưới khi chạy **CLI Lobster độc lập** trong một
+môi trường mà `openclaw.invoke` đã được cấu hình với ngữ cảnh
+gateway/xác thực chính xác.
 
 ```lobster
 openclaw.invoke --tool llm-task --action json --args-json '{
@@ -139,16 +217,19 @@ openclaw.invoke --tool llm-task --action json --args-json '{
 }'
 ```
 
-Nếu hôm nay bạn đang dùng Plugin Lobster nhúng, hãy ưu tiên một trong hai cách:
+Nếu hiện đang sử dụng Plugin Lobster nhúng, hãy ưu tiên một trong hai cách:
 
-- một lệnh gọi công cụ `llm-task` trực tiếp bên ngoài Lobster, hoặc
-- các bước không dùng `openclaw.invoke` bên trong pipeline Lobster cho đến khi một cầu nối nhúng được hỗ trợ được thêm vào.
+- gọi trực tiếp công cụ `llm-task` bên ngoài Lobster, hoặc
+- sử dụng các bước không phải `openclaw.invoke` bên trong pipeline Lobster cho đến khi có
+  cầu nối nhúng được hỗ trợ.
 
 Xem [Tác vụ LLM](/vi/tools/llm-task) để biết chi tiết và các tùy chọn cấu hình.
 
-## Tệp quy trình làm việc (.lobster)
+## Tệp quy trình (.lobster)
 
-Lobster có thể chạy các tệp quy trình làm việc YAML/JSON với các trường `name`, `args`, `steps`, `env`, `condition` và `approval`. Trong các lệnh gọi công cụ OpenClaw, đặt `pipeline` thành đường dẫn tệp.
+Lobster có thể chạy các tệp quy trình YAML/JSON với các trường `name`, `args`, `steps`, `env`,
+`condition` và `approval`. Đặt `pipeline` thành đường dẫn tệp trong lệnh gọi
+công cụ.
 
 ```yaml
 name: inbox-triage
@@ -174,109 +255,11 @@ steps:
 Ghi chú:
 
 - `stdin: $step.stdout` và `stdin: $step.json` truyền đầu ra của một bước trước đó.
-- `condition` (hoặc `when`) có thể chặn/mở bước dựa trên `$step.approved`.
-
-## Cài đặt Lobster
-
-Quy trình làm việc Lobster đi kèm chạy trong cùng tiến trình; không cần binary `lobster` riêng. Runner nhúng được phát hành cùng Plugin Lobster.
-
-Nếu bạn cần Lobster CLI độc lập cho phát triển hoặc pipeline bên ngoài, hãy cài đặt từ [repo Lobster](https://github.com/openclaw/lobster) và đảm bảo `lobster` nằm trên `PATH`.
-
-## Bật công cụ
-
-Lobster là một công cụ Plugin **tùy chọn** (không được bật mặc định).
-
-Khuyến nghị (bổ sung, an toàn):
-
-```json
-{
-  "tools": {
-    "alsoAllow": ["lobster"]
-  }
-}
-```
-
-Hoặc theo từng agent:
-
-```json
-{
-  "agents": {
-    "list": [
-      {
-        "id": "main",
-        "tools": {
-          "alsoAllow": ["lobster"]
-        }
-      }
-    ]
-  }
-}
-```
-
-Tránh dùng `tools.allow: ["lobster"]` trừ khi bạn định chạy ở chế độ allowlist hạn chế.
-
-<Note>
-Allowlist là tùy chọn bật riêng cho các Plugin tùy chọn. `alsoAllow` chỉ bật các công cụ Plugin tùy chọn được nêu tên trong khi giữ nguyên bộ công cụ lõi bình thường. Để hạn chế công cụ lõi, hãy dùng `tools.allow` với các công cụ hoặc nhóm lõi bạn muốn.
-</Note>
-
-## Ví dụ: Phân loại email
-
-Không có Lobster:
-
-```
-User: "Check my email and draft replies"
-→ openclaw calls gmail.list
-→ LLM summarizes
-→ User: "draft replies to #2 and #5"
-→ LLM drafts
-→ User: "send #2"
-→ openclaw calls gmail.send
-(repeat daily, no memory of what was triaged)
-```
-
-Có Lobster:
-
-```json
-{
-  "action": "run",
-  "pipeline": "email.triage --limit 20",
-  "timeoutMs": 30000
-}
-```
-
-Trả về một phong bì JSON (đã rút gọn):
-
-```json
-{
-  "ok": true,
-  "status": "needs_approval",
-  "output": [{ "summary": "5 need replies, 2 need action" }],
-  "requiresApproval": {
-    "type": "approval_request",
-    "prompt": "Send 2 draft replies?",
-    "items": [],
-    "resumeToken": "..."
-  }
-}
-```
-
-Người dùng phê duyệt → tiếp tục:
-
-```json
-{
-  "action": "resume",
-  "token": "<resumeToken>",
-  "approve": true
-}
-```
-
-Một quy trình làm việc. Xác định được. An toàn.
+- `condition` (hoặc `when`) có thể kiểm soát việc chạy bước dựa trên `$step.approved`.
 
 ## Tham số công cụ
 
 ### `run`
-
-Chạy một pipeline ở chế độ công cụ.
 
 ```json
 {
@@ -288,7 +271,7 @@ Chạy một pipeline ở chế độ công cụ.
 }
 ```
 
-Chạy tệp quy trình làm việc với đối số:
+Chạy một tệp quy trình với các đối số:
 
 ```json
 {
@@ -298,9 +281,15 @@ Chạy tệp quy trình làm việc với đối số:
 }
 ```
 
-### `resume`
+| Trường           | Mặc định    | Ghi chú                                                                                                                   |
+| ---------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `pipeline`       | bắt buộc    | Chuỗi pipeline nội tuyến hoặc đường dẫn kết thúc bằng `.lobster`/`.yaml`/`.yml`/`.json` tới một tệp quy trình.             |
+| `cwd`            | cwd gateway | Thư mục làm việc tương đối; phải phân giải bên trong thư mục làm việc của gateway (đường dẫn tuyệt đối sẽ bị từ chối).     |
+| `timeoutMs`      | `20000`     | Hủy lượt chạy nếu vượt quá thời gian này.                                                                                 |
+| `maxStdoutBytes` | `512000`    | Hủy lượt chạy nếu stdout hoặc stderr được thu thập vượt quá kích thước này.                                                |
+| `argsJson`       | -           | Chuỗi JSON chứa các đối số cho tệp quy trình (bị bỏ qua đối với pipeline nội tuyến).                                       |
 
-Tiếp tục một quy trình làm việc đã tạm dừng sau khi phê duyệt.
+### `resume`
 
 ```json
 {
@@ -310,64 +299,85 @@ Tiếp tục một quy trình làm việc đã tạm dừng sau khi phê duyệt
 }
 ```
 
-### Đầu vào tùy chọn
+`resume` chấp nhận `token` (token tiếp tục đầy đủ từ `requiresApproval`)
+hoặc `approvalId` (ID ngắn từ cùng đối tượng) — hãy sử dụng giá trị mà lượt chạy
+bị tạm dừng đã trả về. `approve` là bắt buộc.
 
-- `cwd`: Thư mục làm việc tương đối cho pipeline (phải nằm trong thư mục làm việc của Gateway).
-- `timeoutMs`: Hủy quy trình làm việc nếu vượt quá khoảng thời gian này (mặc định: 20000).
-- `maxStdoutBytes`: Hủy quy trình làm việc nếu đầu ra vượt quá kích thước này (mặc định: 512000).
-- `argsJson`: Chuỗi JSON truyền cho `lobster run --args-json` (chỉ tệp quy trình làm việc).
+### Chế độ Task Flow được quản lý
 
-## Phong bì đầu ra
+Truyền `flowControllerId` và `flowGoal` khi `run` (hoặc `flowId` và
+`flowExpectedRevision` khi `resume`) sẽ điều hướng lệnh gọi qua API
+[Task Flow](/vi/automation/taskflow) được quản lý của runtime Plugin thay vì trả về
+một lớp bao thuần túy: OpenClaw tạo hoặc tiếp tục một bản ghi luồng bền vững, áp dụng
+lớp bao Lobster cho bản ghi đó (`waiting` khi chờ phê duyệt, `succeeded`/`failed` khi
+hoàn tất) và trả về `{ ok, envelope, flow, mutation }`. Chế độ này yêu cầu
+một runtime Task Flow đã được liên kết và dành cho mã Plugin/bộ điều khiển cần
+trạng thái luồng bền vững qua các lần khởi động lại gateway, không dành cho cách dùng tác nhân
+đột xuất thông thường.
 
-Lobster trả về một phong bì JSON với một trong ba trạng thái:
+## Lớp bao đầu ra
 
-- `ok` → hoàn tất thành công
-- `needs_approval` → đã tạm dừng; cần `requiresApproval.resumeToken` để tiếp tục
-- `cancelled` → bị từ chối rõ ràng hoặc bị hủy
+Lobster trả về một lớp bao JSON với một trong ba trạng thái:
 
-Công cụ hiển thị phong bì trong cả `content` (JSON được định dạng đẹp) và `details` (đối tượng thô).
+- `ok` — hoàn tất thành công
+- `needs_approval` — tạm dừng; `requiresApproval` chứa một `resumeToken` và một
+  `approvalId` ngắn, có thể dùng một trong hai để tiếp tục lượt chạy
+- `cancelled` — bị từ chối hoặc hủy rõ ràng
+
+Công cụ cung cấp lớp bao trong cả `content` (JSON được định dạng đẹp) và `details`
+(đối tượng thô).
 
 ## Phê duyệt
 
 Nếu có `requiresApproval`, hãy kiểm tra lời nhắc và quyết định:
 
-- `approve: true` → tiếp tục và thực hiện các tác dụng phụ
-- `approve: false` → hủy và hoàn tất quy trình làm việc
+- `approve: true` — tiếp tục và thực hiện các hiệu ứng phụ
+- `approve: false` — hủy và kết thúc quy trình
 
-Dùng `approve --preview-from-stdin --limit N` để đính kèm bản xem trước JSON vào yêu cầu phê duyệt mà không cần keo nối jq/heredoc tùy chỉnh. Token tiếp tục hiện đã gọn: Lobster lưu trạng thái tiếp tục quy trình làm việc trong thư mục trạng thái của nó và trả về một khóa token nhỏ.
+Sử dụng `approve --preview-from-stdin --limit N` để đính kèm bản xem trước JSON vào
+yêu cầu phê duyệt mà không cần mã nối jq/heredoc tùy chỉnh. Trạng thái tiếp tục được lưu dưới dạng
+các tệp JSON nhỏ trong thư mục trạng thái Lobster (mặc định là `~/.lobster/state`,
+ghi đè bằng `LOBSTER_STATE_DIR`); bản thân token chỉ mã hóa một con trỏ đến
+trạng thái đó, không phải toàn bộ trạng thái pipeline.
 
 ## OpenProse
 
-OpenProse kết hợp tốt với Lobster: dùng `/prose` để điều phối chuẩn bị đa agent, sau đó chạy pipeline Lobster cho các phê duyệt xác định được. Nếu một chương trình Prose cần Lobster, hãy cho phép công cụ `lobster` cho sub-agent qua `tools.subagents.tools`. Xem [OpenProse](/vi/prose).
+OpenProse kết hợp tốt với Lobster: sử dụng `/prose` để điều phối phần chuẩn bị đa tác nhân,
+sau đó chạy một pipeline Lobster để có các bước phê duyệt mang tính xác định. Nếu một chương trình Prose
+cần Lobster, hãy cho phép công cụ `lobster` cho các tác nhân phụ qua
+`tools.subagents.tools`. Xem [OpenProse](/vi/prose).
 
 ## An toàn
 
-- **Chỉ cục bộ trong cùng tiến trình** - quy trình làm việc thực thi bên trong tiến trình Gateway; bản thân Plugin không thực hiện lệnh gọi mạng.
-- **Không có bí mật** - Lobster không quản lý OAuth; nó gọi các công cụ OpenClaw làm việc đó.
-- **Nhận biết sandbox** - bị tắt khi ngữ cảnh công cụ đang ở trong sandbox.
-- **Được gia cố** - timeout và giới hạn đầu ra được runner nhúng thực thi.
+- **Chỉ chạy cục bộ trong tiến trình** — các quy trình thực thi bên trong tiến trình gateway; bản thân
+  Plugin không thực hiện lệnh gọi mạng.
+- **Không quản lý bí mật** — Lobster không quản lý OAuth; nó gọi các công cụ OpenClaw
+  thực hiện việc đó.
+- **Nhận biết sandbox** — bị vô hiệu hóa khi ngữ cảnh công cụ ở trong sandbox.
+- **Được gia cố** — thời gian chờ và giới hạn đầu ra được trình chạy nhúng thực thi.
 
 ## Khắc phục sự cố
 
-- **`lobster timed out`** → tăng `timeoutMs`, hoặc tách pipeline dài.
-- **`lobster output exceeded maxStdoutBytes`** → tăng `maxStdoutBytes` hoặc giảm kích thước đầu ra.
-- **`lobster returned invalid JSON`** → đảm bảo pipeline chạy ở chế độ công cụ và chỉ in JSON.
-- **`lobster failed`** → kiểm tra log Gateway để biết chi tiết lỗi của runner nhúng.
+| Lỗi                                                           | Nguyên nhân / cách khắc phục                                                          |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `lobster runtime timed out`                                   | Pipeline đã vượt quá `timeoutMs`. Hãy tăng giá trị hoặc chia nhỏ pipeline.             |
+| `lobster stdout exceeded maxStdoutBytes` (hoặc `stderr`)      | Đầu ra được thu thập vượt quá giới hạn. Hãy tăng `maxStdoutBytes` hoặc giảm đầu ra.     |
+| `run --args-json must be valid JSON`                          | Không thể phân tích `argsJson` (khi chạy tệp quy trình). Hãy sửa chuỗi JSON.            |
+| `lobster runtime failed` (hoặc thông báo `runtime_error` khác) | Runtime nhúng đã trả về một lớp bao lỗi. Kiểm tra nhật ký gateway để biết chi tiết.     |
 
 ## Tìm hiểu thêm
 
 - [Plugin](/vi/tools/plugin)
-- [Soạn thảo công cụ Plugin](/vi/plugins/building-plugins#registering-agent-tools)
+- [Biên soạn công cụ Plugin](/vi/plugins/building-plugins#registering-agent-tools)
 
-## Nghiên cứu tình huống: quy trình làm việc cộng đồng
+## Nghiên cứu tình huống: quy trình cộng đồng
 
-Một ví dụ công khai: một CLI "bộ não thứ hai" + các pipeline Lobster quản lý ba kho Markdown (cá nhân, đối tác, dùng chung). CLI phát JSON cho thống kê, danh sách hộp thư đến và quét nội dung cũ; Lobster nối các lệnh đó thành các quy trình làm việc như `weekly-review`, `inbox-triage`, `memory-consolidation` và `shared-task-sync`, mỗi quy trình đều có cổng phê duyệt. AI xử lý phán đoán (phân loại) khi có sẵn và quay về các quy tắc xác định được khi không có.
+Một ví dụ công khai: CLI "bộ não thứ hai" + các pipeline Lobster quản lý ba kho Markdown (cá nhân, đối tác, dùng chung). CLI xuất JSON cho số liệu thống kê, danh sách hộp thư đến và các lượt quét nội dung đã lỗi thời; Lobster nối chuỗi các lệnh đó thành những quy trình làm việc như `weekly-review`, `inbox-triage`, `memory-consolidation` và `shared-task-sync`, mỗi quy trình đều có các cổng phê duyệt. AI đảm nhiệm việc phán đoán (phân loại) khi khả dụng và chuyển sang các quy tắc xác định khi không khả dụng.
 
 - Chủ đề: [https://x.com/plattenschieber/status/2014508656335770033](https://x.com/plattenschieber/status/2014508656335770033)
-- Repo: [https://github.com/bloomedai/brain-cli](https://github.com/bloomedai/brain-cli)
+- Kho mã nguồn: [https://github.com/bloomedai/brain-cli](https://github.com/bloomedai/brain-cli)
 
 ## Liên quan
 
-- [Tự động hóa](/vi/automation) - lập lịch quy trình làm việc Lobster
-- [Tổng quan tự động hóa](/vi/automation) - tất cả cơ chế tự động hóa
-- [Tổng quan công cụ](/vi/tools) - tất cả công cụ agent có sẵn
+- [Tự động hóa](/vi/automation) - tất cả cơ chế tự động hóa
+- [Tổng quan về công cụ](/vi/tools) - tất cả công cụ dành cho tác tử hiện có

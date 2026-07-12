@@ -1,36 +1,36 @@
 ---
 read_when:
-    - Je wilt OpenClaw 24/7 op Azure draaien met verharding van de Network Security Group
-    - Je wilt een productieklare, altijd actieve OpenClaw Gateway op je eigen Azure Linux-VM
+    - Je wilt OpenClaw 24/7 op Azure laten draaien met versterkte beveiliging via een Network Security Group
+    - U wilt een productierijpe, continu actieve OpenClaw Gateway op uw eigen Azure Linux-VM
     - U wilt veilig beheer met Azure Bastion SSH
-summary: Voer OpenClaw Gateway 24/7 uit op een Azure Linux-VM met persistente status
+summary: Voer OpenClaw Gateway 24/7 uit op een virtuele Azure Linux-machine met duurzame status
 title: Azure
 x-i18n:
-    generated_at: "2026-05-06T09:18:21Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:02:18Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7ab1b7d09dd66c495983aebd4766ce760d659cc6f362bbcd999d1c1345ae38f7
+    source_hash: e8598014cdc2786a47039ffb42ddd85354da9c87fd55ea46bb6dad7714171a14
     source_path: install/azure.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Deze gids stelt een Azure Linux-VM in met de Azure CLI, past verharding van Network Security Group (NSG) toe, configureert Azure Bastion voor SSH-toegang en installeert OpenClaw.
+Stel met de Azure CLI een virtuele Azure Linux-machine in, pas beveiliging voor de Network Security Group (NSG) toe, configureer Azure Bastion voor SSH-toegang en installeer OpenClaw.
 
-## Wat je gaat doen
+## Wat u gaat doen
 
-- Azure-netwerken (VNet, subnetten, NSG) en compute-resources maken met de Azure CLI
-- Network Security Group-regels toepassen zodat VM-SSH alleen is toegestaan vanaf Azure Bastion
+- Azure-netwerkvoorzieningen (VNet, subnetten, NSG) en rekenresources maken met de Azure CLI
+- NSG-regels toepassen zodat SSH naar de VM alleen vanaf Azure Bastion is toegestaan
 - Azure Bastion gebruiken voor SSH-toegang (geen openbaar IP-adres op de VM)
 - OpenClaw installeren met het installatiescript
 - De Gateway verifiëren
 
-## Wat je nodig hebt
+## Wat u nodig hebt
 
-- Een Azure-abonnement met toestemming om compute- en netwerkresources te maken
-- Azure CLI geïnstalleerd (zie indien nodig [installatiestappen voor Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli))
-- Een SSH-sleutelpaar (de gids behandelt hoe je er zo nodig een genereert)
-- ~20-30 minuten
+- Een Azure-abonnement met toestemming om reken- en netwerkresources te maken
+- Een geïnstalleerde Azure CLI (zie [Installatiestappen voor Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli))
+- Een SSH-sleutelpaar (deze handleiding behandelt hoe u er zo nodig een genereert)
+- Ongeveer 20-30 minuten
 
 ## Implementatie configureren
 
@@ -41,7 +41,7 @@ Deze gids stelt een Azure Linux-VM in met de Azure CLI, past verharding van Netw
     az extension add -n ssh
     ```
 
-    De `ssh`-extensie is vereist voor native SSH-tunneling via Azure Bastion.
+    De extensie `ssh` is vereist voor systeemeigen SSH-tunneling via Azure Bastion.
 
   </Step>
 
@@ -51,7 +51,7 @@ Deze gids stelt een Azure Linux-VM in met de Azure CLI, past verharding van Netw
     az provider register --namespace Microsoft.Network
     ```
 
-    Controleer de registratie. Wacht tot beide `Registered` tonen.
+    Controleer de registratie en wacht totdat beide `Registered` weergeven.
 
     ```bash
     az provider show --namespace Microsoft.Compute --query registrationState -o tsv
@@ -76,18 +76,18 @@ Deze gids stelt een Azure Linux-VM in met de Azure CLI, past verharding van Netw
     BASTION_PIP_NAME="pip-openclaw-bastion"
     ```
 
-    Pas namen en CIDR-bereiken aan je omgeving aan. Het Bastion-subnet moet minimaal `/26` zijn.
+    Pas de namen en CIDR-bereiken aan uw omgeving aan. Het Bastion-subnet moet ten minste `/26` zijn.
 
   </Step>
 
-  <Step title="SSH-sleutel selecteren">
-    Gebruik je bestaande openbare sleutel als je er een hebt:
+  <Step title="Een SSH-sleutel selecteren">
+    Gebruik uw bestaande openbare sleutel als u die hebt:
 
     ```bash
     SSH_PUB_KEY="$(cat ~/.ssh/id_ed25519.pub)"
     ```
 
-    Als je nog geen SSH-sleutel hebt, genereer er dan een:
+    Genereer anders een nieuwe:
 
     ```bash
     ssh-keygen -t ed25519 -a 100 -f ~/.ssh/id_ed25519 -C "you@example.com"
@@ -96,25 +96,23 @@ Deze gids stelt een Azure Linux-VM in met de Azure CLI, past verharding van Netw
 
   </Step>
 
-  <Step title="VM-grootte en grootte van de OS-schijf selecteren">
+  <Step title="VM-grootte en grootte van de besturingssysteemschijf selecteren">
     ```bash
     VM_SIZE="Standard_B2as_v2"
     OS_DISK_SIZE_GB=64
     ```
 
-    Kies een VM-grootte en OS-schijfgrootte die beschikbaar zijn in je abonnement en regio:
+    - Begin kleiner voor licht gebruik en schaal later op.
+    - Gebruik meer vCPU, RAM en schijfruimte voor zwaardere automatisering, meer kanalen of grotere model- en toolwerklasten.
+    - Als een grootte niet beschikbaar is in uw regio of binnen het quotum van uw abonnement, kiest u de meest vergelijkbare beschikbare SKU.
 
-    - Begin kleiner voor licht gebruik en schaal later op
-    - Gebruik meer vCPU/RAM/schijf voor zwaardere automatisering, meer kanalen of grotere model-/toolworkloads
-    - Als een VM-grootte niet beschikbaar is in je regio of abonnementsquotum, kies dan de dichtstbijzijnde beschikbare SKU
-
-    Toon VM-groottes die beschikbaar zijn in je doelregio:
+    Geef de beschikbare VM-grootten in uw doelregio weer:
 
     ```bash
     az vm list-skus --location "${LOCATION}" --resource-type virtualMachines -o table
     ```
 
-    Controleer je huidige vCPU- en schijfgebruik/quotum:
+    Controleer uw huidige vCPU- en schijfgebruik en -quotum:
 
     ```bash
     az vm list-usage --location "${LOCATION}" -o table
@@ -132,8 +130,8 @@ Deze gids stelt een Azure Linux-VM in met de Azure CLI, past verharding van Netw
     ```
   </Step>
 
-  <Step title="De network security group maken">
-    Maak de NSG en voeg regels toe zodat alleen het Bastion-subnet via SSH verbinding kan maken met de VM.
+  <Step title="De netwerkbeveiligingsgroep maken">
+    Maak de NSG en voeg regels toe zodat alleen het Bastion-subnet via SSH verbinding met de VM kan maken.
 
     ```bash
     az network nsg create \
@@ -164,12 +162,12 @@ Deze gids stelt een Azure Linux-VM in met de Azure CLI, past verharding van Netw
       --destination-port-ranges 22
     ```
 
-    De regels worden geëvalueerd op prioriteit (laagste nummer eerst): Bastion-verkeer wordt toegestaan op 100, daarna wordt alle andere SSH geblokkeerd op 110 en 120.
+    Regels worden op prioriteit geëvalueerd, met het laagste nummer eerst: Bastion-verkeer wordt bij 100 toegestaan, waarna al het overige SSH-verkeer bij 110 en 120 wordt geblokkeerd.
 
   </Step>
 
   <Step title="Het virtuele netwerk en de subnetten maken">
-    Maak het VNet met het VM-subnet (NSG gekoppeld) en voeg daarna het Bastion-subnet toe.
+    Maak het VNet met het VM-subnet (waaraan de NSG is gekoppeld) en voeg vervolgens het Bastion-subnet toe.
 
     ```bash
     az network vnet create \
@@ -183,7 +181,7 @@ Deze gids stelt een Azure Linux-VM in met de Azure CLI, past verharding van Netw
       -g "${RG}" --vnet-name "${VNET_NAME}" \
       -n "${VM_SUBNET_NAME}" --nsg "${NSG_NAME}"
 
-    # AzureBastionSubnet — name is required by Azure
+    # AzureBastionSubnet: this exact name is required by Azure
     az network vnet subnet create \
       -g "${RG}" --vnet-name "${VNET_NAME}" \
       -n AzureBastionSubnet \
@@ -193,7 +191,7 @@ Deze gids stelt een Azure Linux-VM in met de Azure CLI, past verharding van Netw
   </Step>
 
   <Step title="De VM maken">
-    De VM heeft geen openbaar IP-adres. SSH-toegang verloopt uitsluitend via Azure Bastion.
+    De VM krijgt geen openbaar IP-adres. SSH-toegang verloopt uitsluitend via Azure Bastion.
 
     ```bash
     az vm create \
@@ -210,9 +208,9 @@ Deze gids stelt een Azure Linux-VM in met de Azure CLI, past verharding van Netw
       --nsg ""
     ```
 
-    `--public-ip-address ""` voorkomt dat er een openbaar IP-adres wordt toegewezen. `--nsg ""` slaat het maken van een NSG per NIC over (de NSG op subnetniveau regelt de beveiliging).
+    `--public-ip-address ""` voorkomt dat een openbaar IP-adres wordt toegewezen. `--nsg ""` slaat een NSG per NIC over, omdat de NSG op subnetniveau de beveiliging al afhandelt.
 
-    **Reproduceerbaarheid:** De bovenstaande opdracht gebruikt `latest` voor de Ubuntu-image. Om een specifieke versie vast te pinnen, toon je beschikbare versies en vervang je `latest`:
+    Als u een specifieke versie van een Ubuntu-installatiekopie wilt vastzetten in plaats van `latest`, geeft u eerst de beschikbare versies weer:
 
     ```bash
     az vm image list \
@@ -223,7 +221,7 @@ Deze gids stelt een Azure Linux-VM in met de Azure CLI, past verharding van Netw
   </Step>
 
   <Step title="Azure Bastion maken">
-    Azure Bastion biedt beheerde SSH-toegang tot de VM zonder een openbaar IP-adres bloot te stellen. Standard SKU met tunneling is vereist voor CLI-gebaseerde `az network bastion ssh`.
+    Azure Bastion biedt beheerde SSH-toegang zonder een openbaar IP-adres op de VM beschikbaar te stellen. De Standard-SKU met ingeschakelde tunneling is vereist voor het op de CLI gebaseerde `az network bastion ssh`.
 
     ```bash
     az network public-ip create \
@@ -245,7 +243,7 @@ Deze gids stelt een Azure Linux-VM in met de Azure CLI, past verharding van Netw
 ## OpenClaw installeren
 
 <Steps>
-  <Step title="Via Azure Bastion met SSH verbinden met de VM">
+  <Step title="Via Azure Bastion met SSH verbinding maken met de VM">
     ```bash
     VM_ID="$(az vm show -g "${RG}" -n "${VM_NAME}" --query id -o tsv)"
 
@@ -267,54 +265,57 @@ Deze gids stelt een Azure Linux-VM in met de Azure CLI, past verharding van Netw
     rm -f /tmp/install.sh
     ```
 
-    Het installatieprogramma installeert Node LTS en afhankelijkheden als die nog niet aanwezig zijn, installeert OpenClaw en start de onboardingwizard. Zie [Installeren](/nl/install) voor details.
+    Het installatieprogramma installeert Node en afhankelijkheden als die nog niet aanwezig zijn, installeert OpenClaw en start de initiële configuratie. Zie [Installatie](/nl/install) voor details.
 
   </Step>
 
   <Step title="De Gateway verifiëren">
-    Nadat onboarding is voltooid:
+    Nadat de initiële configuratie is voltooid:
 
     ```bash
     openclaw gateway status
     ```
 
-    De meeste Azure-teams in ondernemingen hebben al GitHub Copilot-licenties. Als dat voor jou geldt, raden we aan de GitHub Copilot-provider te kiezen in de OpenClaw-onboardingwizard. Zie [GitHub Copilot-provider](/nl/providers/github-copilot).
+    Als uw organisatie al GitHub Copilot-licenties heeft, kunt u tijdens de initiële configuratie de GitHub Copilot-provider kiezen in plaats van een afzonderlijke API-sleutel voor het model. Zie [GitHub Copilot-provider](/nl/providers/github-copilot).
 
   </Step>
 </Steps>
 
 ## Kostenoverwegingen
 
-Azure Bastion Standard SKU kost ongeveer **\$140/maand** en de VM (Standard_B2as_v2) kost ongeveer **\$55/maand**.
+Geschatte maandelijkse kosten (controleer de actuele prijzen in de Azure-prijscalculator, omdat tarieven per regio verschillen en in de loop van de tijd veranderen):
+
+- Azure Bastion Standard-SKU: ongeveer $140 per maand
+- VM (`Standard_B2as_v2`): ongeveer $55 per maand
 
 Om kosten te verlagen:
 
-- **Deallocate de VM** wanneer die niet in gebruik is (stopt compute-facturering; schijfkosten blijven bestaan). De OpenClaw Gateway is niet bereikbaar terwijl de VM is gedealloceerd — start deze opnieuw wanneer je hem weer live nodig hebt:
+- Maak de toewijzing van de VM ongedaan wanneer deze niet wordt gebruikt. Hierdoor stopt de facturering voor rekenkracht (schijfkosten blijven gelden). De Gateway is niet bereikbaar zolang de toewijzing ongedaan is gemaakt.
 
   ```bash
   az vm deallocate -g "${RG}" -n "${VM_NAME}"
   az vm start -g "${RG}" -n "${VM_NAME}"   # restart later
   ```
 
-- **Verwijder Bastion wanneer dit niet nodig is** en maak het opnieuw wanneer je SSH-toegang nodig hebt. Bastion is de grootste kostencomponent en het inrichten duurt slechts enkele minuten.
-- **Gebruik de Basic Bastion SKU** (~\$38/maand) als je alleen Portal-gebaseerde SSH nodig hebt en geen CLI-tunneling (`az network bastion ssh`) vereist.
+- Verwijder Bastion wanneer u het niet nodig hebt en maak het opnieuw wanneer u weer SSH-toegang nodig hebt; het is de grootste kostenpost en wordt binnen enkele minuten ingericht.
+- Gebruik de Basic-SKU van Bastion (ongeveer $38 per maand) als u alleen SSH via de portal nodig hebt en geen CLI-tunneling (`az network bastion ssh`) nodig hebt.
 
 ## Opschonen
 
-Om alle resources te verwijderen die door deze gids zijn gemaakt:
+Verwijder alle resources die met deze handleiding zijn gemaakt:
 
 ```bash
 az group delete -n "${RG}" --yes --no-wait
 ```
 
-Dit verwijdert de resourcegroep en alles daarin (VM, VNet, NSG, Bastion, openbaar IP-adres).
+Hiermee worden de resourcegroep en alles daarin verwijderd (VM, VNet, NSG, Bastion en openbaar IP-adres).
 
 ## Volgende stappen
 
-- Stel berichtkanalen in: [Kanalen](/nl/channels)
-- Koppel lokale apparaten als Nodes: [Nodes](/nl/nodes)
-- Configureer de Gateway: [Gateway-configuratie](/nl/gateway/configuration)
-- Voor meer details over OpenClaw Azure-implementatie met de GitHub Copilot-modelprovider: [OpenClaw op Azure met GitHub Copilot](https://github.com/johnsonshi/openclaw-azure-github-copilot)
+- Berichtenkanalen instellen: [Kanalen](/nl/channels)
+- Lokale apparaten als Nodes koppelen: [Nodes](/nl/nodes)
+- De Gateway configureren: [Gateway-configuratie](/nl/gateway/configuration)
+- Meer informatie over Azure-implementatie met de GitHub Copilot-modelprovider: [OpenClaw in Azure met GitHub Copilot](https://github.com/johnsonshi/openclaw-azure-github-copilot)
 
 ## Gerelateerd
 

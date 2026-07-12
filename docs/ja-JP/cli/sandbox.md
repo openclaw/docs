@@ -1,11 +1,11 @@
 ---
 read_when: You are managing sandbox runtimes or debugging sandbox/tool-policy behavior.
 status: active
-summary: サンドボックスランタイムを管理し、有効なサンドボックスポリシーを検査する
-title: サンドボックスCLI
+summary: サンドボックスランタイムを管理し、有効なサンドボックスポリシーを確認する
+title: サンドボックス CLI
 x-i18n:
-    generated_at: "2026-07-06T10:48:15Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:08:02Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: d41d81971b673d814697a4bf800d6973180c58e4cc5e69748614501dca3a6b6d
@@ -13,49 +13,49 @@ x-i18n:
     workflow: 16
 ---
 
-分離された agent 実行のためのサンドボックスランタイムを管理します: Docker コンテナ、SSH ターゲット、または OpenShell バックエンド。
+分離されたエージェント実行用のサンドボックスランタイム（Docker コンテナ、SSH ターゲット、OpenShell バックエンド）を管理します。
 
 ## コマンド
 
 ### `openclaw sandbox list`
 
-サンドボックスランタイムを、ステータス、バックエンド、設定の一致、経過時間、アイドル時間、関連付けられたセッション/agent とともに一覧表示します。
+サンドボックスランタイムを、ステータス、バックエンド、設定の一致状況、経過時間、アイドル時間、関連付けられたセッション／エージェントとともに一覧表示します。
 
 ```bash
 openclaw sandbox list
-openclaw sandbox list --browser  # browser containers only
+openclaw sandbox list --browser  # ブラウザーコンテナのみ
 openclaw sandbox list --json
 ```
 
 ### `openclaw sandbox recreate`
 
-サンドボックスランタイムを削除し、現在の設定で再作成を強制します。ランタイムは次に agent が使用されるときに自動的に再作成されます。
+サンドボックスランタイムを削除し、現在の設定で強制的に再作成します。ランタイムは、次にエージェントが使用されたときに自動的に再作成されます。
 
 ```bash
 openclaw sandbox recreate --all
-openclaw sandbox recreate --agent mybot        # includes agent:mybot:* sub-sessions
+openclaw sandbox recreate --agent mybot        # agent:mybot:* サブセッションを含む
 openclaw sandbox recreate --session "agent:main:main"
-openclaw sandbox recreate --browser --all      # only browser containers
-openclaw sandbox recreate --all --force        # skip confirmation
+openclaw sandbox recreate --browser --all      # ブラウザーコンテナのみ
+openclaw sandbox recreate --all --force        # 確認を省略
 ```
 
-オプション:
+オプション：
 
-- `--all`: すべてのサンドボックスコンテナを再作成します
-- `--session <key>`: この正確なスコープキー（`sandbox list` に表示されるもの）を持つランタイムを再作成します。短縮名の展開はありません
-- `--agent <id>`: 1 つの agent のランタイムを再作成します（`agent:<id>` と `agent:<id>:*` に一致）
-- `--browser`: ブラウザコンテナのみに影響します
-- `--force`: 確認プロンプトをスキップします
+- `--all`：すべてのサンドボックスコンテナを再作成
+- `--session <key>`：この完全一致のスコープキー（`sandbox list` に表示されるもの）を持つランタイムを再作成。短縮名の展開は行わない
+- `--agent <id>`：1 つのエージェントのランタイムを再作成（`agent:<id>` および `agent:<id>:*` に一致）
+- `--browser`：ブラウザーコンテナのみに適用
+- `--force`：確認プロンプトを省略
 
-`--all`、`--session`、`--agent` のいずれか 1 つだけを渡してください。
+`--all`、`--session`、`--agent` のいずれか 1 つだけを指定してください。
 
-`ssh` と OpenShell `remote` では、Docker よりも recreate が重要です。リモートワークスペースは初期シード後に正規の状態となり、`recreate` は選択したスコープの正規リモートワークスペースを削除し、次回実行時に現在のローカルワークスペースから再シードします。
+`ssh` および OpenShell の `remote` では、再作成は Docker の場合よりも重要です。初回シード後はリモートワークスペースが正規のワークスペースとなり、`recreate` は選択したスコープの正規リモートワークスペースを削除します。次回の実行時に、現在のローカルワークスペースから再シードされます。
 
 ### `openclaw sandbox explain`
 
-有効なサンドボックスのモード/スコープ/ワークスペースアクセス、サンドボックスツールポリシー、昇格ツールゲート（修正用の設定キーパス付き）を検査します。
+有効なサンドボックスのモード／スコープ／ワークスペースアクセス、サンドボックスのツールポリシー、および昇格ツールのゲートを調査します（修正用の設定キーパスを含む）。
 
-レポートでは、`workspaceRoot` を設定されたサンドボックスルートとして保持し、有効なホストワークスペース、バックエンドランタイムの workdir、Docker マウントテーブルを個別に表示します。`workspaceAccess: "rw"` の場合、有効なホストワークスペースは `workspaceRoot` 配下のディレクトリではなく agent ワークスペースです。
+レポートでは、`workspaceRoot` を設定済みのサンドボックスルートとして維持し、有効なホストワークスペース、バックエンドランタイムの作業ディレクトリ、Docker マウントテーブルを個別に表示します。`workspaceAccess: "rw"` の場合、有効なホストワークスペースは `workspaceRoot` 配下のディレクトリではなく、エージェントワークスペースです。
 
 ```bash
 openclaw sandbox explain
@@ -64,60 +64,60 @@ openclaw sandbox explain --agent work
 openclaw sandbox explain --json
 ```
 
-`recreate --session` とは異なり、これは短いセッション名（例: `main`）を受け付け、解決済みの agent に対して展開します。
+`recreate --session` とは異なり、これは短いセッション名（例：`main`）を受け入れ、解決されたエージェントに対して展開します。
 
-## recreate が必要な理由
+## 再作成が必要な理由
 
-サンドボックス設定を更新しても、実行中のコンテナには影響しません。既存のランタイムは古い設定を保持し、アイドル状態のランタイムは `prune.idleHours`（デフォルト 24h）後にのみ削除されます。定期的に使用される agent では、古いランタイムが無期限に残ることがあります。`openclaw sandbox recreate` は古いランタイムを削除し、次回使用時に現在の設定から再構築されるようにします。
+サンドボックス設定を更新しても、実行中のコンテナには反映されません。既存のランタイムは古い設定を保持し、アイドル状態のランタイムは `prune.idleHours`（デフォルトは 24 時間）を経過した後にのみ削除されます。定期的に使用されるエージェントでは、古いランタイムが無期限に維持される可能性があります。`openclaw sandbox recreate` は古いランタイムを削除し、次回の使用時に現在の設定から再構築されるようにします。
 
 <Tip>
-バックエンド固有の手動クリーンアップよりも `openclaw sandbox recreate` を優先してください。これは Gateway のランタイムレジストリを使用し、スコープやセッションキーが変わったときの不一致を避けます。
+バックエンド固有の手動クリーンアップよりも、`openclaw sandbox recreate` を使用してください。これは Gateway のランタイムレジストリを使用し、スコープまたはセッションキーが変更された場合の不整合を回避します。
 </Tip>
 
-## よくあるトリガー
+## 一般的な実行契機
 
 | 変更                                                                                                                                                           | コマンド                                                            |
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
 | Docker イメージの更新（`agents.defaults.sandbox.docker.image`）                                                                                                | `openclaw sandbox recreate --all`                                   |
-| サンドボックス設定（`agents.defaults.sandbox.*`）                                                                                                              | `openclaw sandbox recreate --all`                                   |
-| SSH ターゲット/認証（`agents.defaults.sandbox.ssh.{target,workspaceRoot,identityFile,certificateFile,knownHostsFile,identityData,certificateData,knownHostsData}`） | `openclaw sandbox recreate --all`                                   |
-| OpenShell のソース/ポリシー/モード（`plugins.entries.openshell.config.{from,mode,policy}`）                                                                    | `openclaw sandbox recreate --all`                                   |
-| `setupCommand`                                                                                                                                                 | `openclaw sandbox recreate --all`（または 1 つの agent には `--agent <id>`） |
+| サンドボックス設定（`agents.defaults.sandbox.*`）                                                                                                             | `openclaw sandbox recreate --all`                                   |
+| SSH ターゲット／認証（`agents.defaults.sandbox.ssh.{target,workspaceRoot,identityFile,certificateFile,knownHostsFile,identityData,certificateData,knownHostsData}`） | `openclaw sandbox recreate --all`                                   |
+| OpenShell のソース／ポリシー／モード（`plugins.entries.openshell.config.{from,mode,policy}`）                                                                  | `openclaw sandbox recreate --all`                                   |
+| `setupCommand`                                                                                                                                                 | `openclaw sandbox recreate --all`（または 1 つのエージェントには `--agent <id>`） |
 
 <Note>
-ランタイムは、次に agent が使用されるときに自動的に再作成されます。
+ランタイムは、次にエージェントが使用されたときに自動的に再作成されます。
 </Note>
 
-## レジストリ移行
+## レジストリの移行
 
-サンドボックスランタイムのメタデータは、共有 SQLite 状態データベースに格納されます。古いインストールには、通常の読み取りでは再書き込みされなくなったレガシーレジストリファイルがある場合があります。
+サンドボックスランタイムのメタデータは、共有 SQLite 状態データベースに保存されます。古いインストールには、通常の読み取りでは書き換えられなくなった従来のレジストリファイルが存在する場合があります。
 
 - `~/.openclaw/sandbox/containers.json`
 - `~/.openclaw/sandbox/browsers.json`
-- `~/.openclaw/sandbox/containers/` または `~/.openclaw/sandbox/browsers/` 配下のコンテナ/ブラウザごとの JSON シャード
+- `~/.openclaw/sandbox/containers/` または `~/.openclaw/sandbox/browsers/` 配下にある、コンテナ／ブラウザーごとの JSON シャード
 
-有効なレガシーエントリを SQLite に移行するには、`openclaw doctor --fix` を実行します。無効なレガシーファイルは隔離されるため、破損した古いレジストリが現在のランタイムエントリを隠すことはありません。
+`openclaw doctor --fix` を実行して、有効な従来のエントリを SQLite に移行してください。無効な従来のファイルは隔離されるため、破損した古いレジストリによって現在のランタイムエントリが隠されることはありません。
 
 ## 設定
 
-サンドボックス設定は `~/.openclaw/openclaw.json` の `agents.defaults.sandbox` 配下にあります（agent ごとの上書きは `agents.list[].sandbox` に入れます）。
+サンドボックス設定は、`~/.openclaw/openclaw.json` の `agents.defaults.sandbox` 配下にあります（エージェントごとのオーバーライドは `agents.list[].sandbox` に設定します）。
 
 ```jsonc
 {
   "agents": {
     "defaults": {
       "sandbox": {
-        "mode": "all", // off, non-main, all
-        "backend": "docker", // docker, ssh, openshell (plugin-provided)
-        "scope": "agent", // session, agent, shared
+        "mode": "all", // オフ、メイン以外、すべて
+        "backend": "docker", // docker、ssh、openshell（Plugin が提供）
+        "scope": "agent", // セッション、エージェント、共有
         "docker": {
           "image": "openclaw-sandbox:bookworm-slim",
           "containerPrefix": "openclaw-sbx-",
-          // ... more Docker options
+          // ... その他の Docker オプション
         },
         "prune": {
-          "idleHours": 24, // auto-prune after 24h idle
-          "maxAgeDays": 7, // auto-prune after 7 days
+          "idleHours": 24, // 24 時間アイドル状態が続いた後に自動削除
+          "maxAgeDays": 7, // 7 日後に自動削除
         },
       },
     },
@@ -125,9 +125,9 @@ openclaw sandbox explain --json
 }
 ```
 
-## 関連
+## 関連項目
 
 - [CLI リファレンス](/ja-JP/cli)
 - [サンドボックス化](/ja-JP/gateway/sandboxing)
-- [Agent ワークスペース](/ja-JP/concepts/agent-workspace)
-- [Doctor](/ja-JP/gateway/doctor): サンドボックスのセットアップをチェックします。
+- [エージェントワークスペース](/ja-JP/concepts/agent-workspace)
+- [Doctor](/ja-JP/gateway/doctor)：サンドボックスのセットアップを確認します。

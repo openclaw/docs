@@ -1,13 +1,12 @@
 ---
 read_when:
-    - Vous souhaitez une cartographie complète de la documentation
-summary: Hubs proposant des liens vers toute la documentation d’OpenClaw
+    - Vous souhaitez une vue d’ensemble complète de la documentation
+summary: Hubs renvoyant vers toute la documentation OpenClaw
 title: Pôles de documentation
 x-i18n:
-    generated_at: "2026-07-12T16:00:27Z"
+    generated_at: "2026-07-12T03:07:06Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 9b51fc77155b2e7ed6cb6e36d375585ebd457c3d89f97c4151877d1aae20717f
     source_path: start/hubs.md
@@ -15,7 +14,7 @@ x-i18n:
 ---
 
 <Note>
-Si vous découvrez OpenClaw, commencez par le [Guide de démarrage](/fr/start/getting-started).
+Si vous découvrez OpenClaw, commencez par [Bien démarrer](/fr/start/getting-started).
 </Note>
 
 Utilisez ces portails pour découvrir toutes les pages, notamment les analyses approfondies et la documentation de référence qui ne figurent pas dans la barre de navigation de gauche.
@@ -23,7 +22,7 @@ Utilisez ces portails pour découvrir toutes les pages, notamment les analyses a
 ## Commencez ici
 
 - [Index](/fr)
-- [Guide de démarrage](/fr/start/getting-started)
+- [Bien démarrer](/fr/start/getting-started)
 - [Intégration](/fr/start/onboarding)
 - [Intégration (CLI)](/fr/start/wizard)
 - [Installation](/fr/start/setup)
@@ -33,14 +32,14 @@ Utilisez ces portails pour découvrir toutes les pages, notamment les analyses a
 - [Configuration](/fr/gateway/configuration)
 - [Exemples de configuration](/fr/gateway/configuration-examples)
 - [Assistant OpenClaw](/fr/start/openclaw)
-- [Démonstrations](/fr/start/showcase)
-- [Univers](/fr/start/lore)
+- [Vitrine](/fr/start/showcase)
+- [Histoire](/fr/start/lore)
 
 ## Installation et mises à jour
 
 - [Docker](/fr/install/docker)
 - [Nix](/fr/install/nix)
-- [Mise à jour / retour à une version antérieure](/fr/install/updating)
+- [Mise à jour et retour à une version antérieure](/fr/install/updating)
 - [Flux de travail Bun (expérimental)](/fr/install/bun)
 
 ## Concepts fondamentaux
@@ -72,7 +71,7 @@ Utilisez ces portails pour découvrir toutes les pages, notamment les analyses a
 - [Basculement de modèle](/fr/concepts/model-failover)
 - [OAuth](/fr/concepts/oauth)
 
-## Fournisseurs et entrée
+## Fournisseurs et entrées
 
 - [Portail des canaux de discussion](/fr/channels)
 - [Portail des fournisseurs de modèles](/fr/providers/models)
@@ -91,7 +90,7 @@ Utilisez ces portails pour découvrir toutes les pages, notamment les analyses a
 
 ## Gateway et exploitation
 
-- [Guide opérationnel du Gateway](/fr/gateway)
+- [Guide d’exploitation du Gateway](/fr/gateway)
 - [Modèle réseau](/fr/network#core-model)
 - [Appairage du Gateway](/fr/gateway/pairing)
 - [Verrouillage du Gateway](/fr/gateway/gateway-lock)
@@ -116,7 +115,7 @@ Utilisez ces portails pour découvrir toutes les pages, notamment les analyses a
 - [Référence de la CLI](/fr/cli)
 - [Outil Exec](/fr/tools/exec)
 - [Outil PDF](/fr/tools/pdf)
-- [Mode avec privilèges élevés](/fr/tools/elevated)
+- [Mode privilégié](/fr/tools/elevated)
 - [Tâches Cron](/fr/automation/cron-jobs)
 - [Automatisation](/fr/automation)
 - [Réflexion et mode détaillé](/fr/tools/thinking)
@@ -148,11 +147,11 @@ Utilisez ces portails pour découvrir toutes les pages, notamment les analyses a
 - [Linux](/fr/platforms/linux)
 - [Interfaces Web](/fr/web)
 
-## Application complémentaire macOS (avancé)
+## Application compagnon macOS (avancé)
 
 - [Configuration du développement macOS](/fr/platforms/mac/dev-setup)
-- [Barre de menus macOS](/fr/platforms/mac/menu-bar)
-- [Activation vocale sous macOS](/fr/platforms/mac/voicewake)
+- [Barre des menus macOS](/fr/platforms/mac/menu-bar)
+- [Activation vocale macOS](/fr/platforms/mac/voicewake)
 - [Superposition vocale macOS](/fr/platforms/mac/voice-overlay)
 - [WebChat macOS](/fr/platforms/mac/webchat)
 - [Canvas macOS](/fr/platforms/mac/canvas)
@@ -172,19 +171,19 @@ Utilisez ces portails pour découvrir toutes les pages, notamment les analyses a
 
 - [Présentation des Plugins](/fr/tools/plugin)
 - [Création de Plugins](/fr/plugins/building-plugins)
-- [Hooks de Plugin](/fr/plugins/hooks)
+- [Points d’accroche des Plugins](/fr/plugins/hooks)
 - [Manifeste de Plugin](/fr/plugins/manifest)
 - [Outils de l’agent](/fr/plugins/building-plugins#registering-agent-tools)
-- [Lots de Plugins](/fr/plugins/bundles)
-- [ClawHub](/fr/clawhub)
-- [Recueil de recettes sur les capacités](/fr/plugins/adding-capabilities)
+- [Ensembles de Plugins](/fr/plugins/bundles)
+- [ClawHub](/clawhub)
+- [Guide pratique des capacités](/fr/plugins/adding-capabilities)
 - [Plugin d’appel vocal](/fr/plugins/voice-call)
 - [Plugin utilisateur Zalo](/fr/plugins/zalouser)
 
 ## Espace de travail et modèles
 
 - [Skills](/fr/tools/skills)
-- [ClawHub](/fr/clawhub)
+- [ClawHub](/clawhub)
 - [Configuration des Skills](/fr/tools/skills-config)
 - [AGENTS par défaut](/fr/reference/AGENTS.default)
 - [Modèles : AGENTS](/fr/reference/templates/AGENTS)
@@ -207,4 +206,4 @@ Utilisez ces portails pour découvrir toutes les pages, notamment les analyses a
 
 ## Contenu associé
 
-- [Guide de démarrage](/fr/start/getting-started)
+- [Bien démarrer](/fr/start/getting-started)

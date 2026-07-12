@@ -1,48 +1,48 @@
 ---
 read_when:
-    - OpenClaw’da “context”in ne anlama geldiğini anlamak istiyorsunuz
-    - Modelin bir şeyi neden "bildiğini" (veya unuttuğunu) ayıklıyorsunuz
-    - Bağlam ek yükünü azaltmak istiyorsunuz (/context, /status, /compact)
-summary: 'Bağlam: modelin ne gördüğü, nasıl oluşturulduğu ve nasıl inceleneceği'
+    - OpenClaw'da "bağlam"ın ne anlama geldiğini anlamak istiyorsunuz
+    - Modelin bir şeyi neden "bildiğini" (veya unuttuğunu) araştırıyorsunuz
+    - Bağlam yükünü azaltmak istiyorsunuz (/context, /status, /compact)
+summary: 'Bağlam: modelin gördükleri, bağlamın nasıl oluşturulduğu ve nasıl inceleneceği'
 title: Bağlam
 x-i18n:
-    generated_at: "2026-06-28T00:27:45Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:12:58Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 900b4a72acf43405a6b7718b93c3b5c8543eb2cc90766298889052c7468e39fb
+    source_hash: 1eb3d342a601a447487640587f746cc80a133ede338a880741f53c3e01f20ed1
     source_path: concepts/context.md
     workflow: 16
 ---
 
-"Bağlam", **OpenClaw'un bir çalıştırma için modele gönderdiği her şeydir**. Modelin **bağlam penceresi** (token sınırı) ile sınırlıdır.
+"Bağlam", **OpenClaw'ın bir çalıştırma için modele gönderdiği her şeydir**. Modelin **bağlam penceresi** (token sınırı) ile sınırlıdır.
 
-Yeni başlayanlar için zihinsel model:
+Başlangıç için zihinsel model:
 
-- **Sistem istemi** (OpenClaw tarafından oluşturulur): kurallar, araçlar, skills listesi, zaman/çalışma zamanı ve enjekte edilen çalışma alanı dosyaları.
+- **Sistem istemi** (OpenClaw tarafından oluşturulur): kurallar, araçlar, Skills listesi, zaman/çalışma zamanı ve eklenen çalışma alanı dosyaları.
 - **Konuşma geçmişi**: bu oturumdaki mesajlarınız + asistanın mesajları.
-- **Araç çağrıları/sonuçları + ekler**: komut çıktısı, dosya okumaları, görüntüler/sesler vb.
+- **Araç çağrıları/sonuçları + ekler**: komut çıktıları, dosya okumaları, görüntüler/sesler vb.
 
-Bağlam, "bellek" ile _aynı şey değildir_: bellek diskte saklanabilir ve daha sonra yeniden yüklenebilir; bağlam ise modelin mevcut penceresinin içindekilerdir.
+Bağlam, "bellek" ile _aynı şey değildir_: bellek diskte saklanıp daha sonra yeniden yüklenebilir; bağlam ise modelin mevcut penceresinin içindekilerdir.
 
 ## Hızlı başlangıç (bağlamı inceleme)
 
 - `/status` → hızlı "pencerem ne kadar dolu?" görünümü + oturum ayarları.
-- `/context list` → nelerin enjekte edildiği + yaklaşık boyutlar (dosya başına + toplamlar).
-- `/context detail` → daha derin döküm: dosya başına, araç şeması boyutları, skill girdisi boyutları, sistem istemi boyutu ve compact edilebilir döküm mesajı sayıları.
-- `/context map` → geçerli oturumun izlenen bağlam katkı sağlayıcılarının WinDirStat tarzı ağaç haritası görüntüsü.
+- `/context list` → nelerin eklendiği + yaklaşık boyutlar (dosya başına + toplamlar).
+- `/context detail` → daha ayrıntılı döküm: dosya başına boyutlar, araç şeması boyutları, Skills girdisi başına boyutlar, sistem istemi boyutu ve sıkıştırılabilir transkript mesajı sayıları.
+- `/context map` → mevcut oturumun izlenen bağlam katkılarını gösteren WinDirStat tarzı ağaç haritası görüntüsü.
 - `/usage tokens` → normal yanıtlara yanıt başına kullanım altbilgisi ekler.
 - `/compact` → pencere alanı açmak için eski geçmişi kompakt bir girdide özetler.
 
-Ayrıca bkz.: [Slash komutları](/tr/tools/slash-commands), [Token kullanımı ve maliyetler](/tr/reference/token-use), [Compaction](/tr/concepts/compaction).
+Ayrıca bkz.: [Eğik çizgi komutları](/tr/tools/slash-commands), [Token kullanımı ve maliyetleri](/tr/reference/token-use), [Compaction](/tr/concepts/compaction).
 
 ## Örnek çıktı
 
-Değerler modele, sağlayıcıya, araç politikasına ve çalışma alanınızdakilere göre değişir.
+Değerler modele, sağlayıcıya, araç politikasına ve çalışma alanınızdaki içeriğe göre değişir.
 
 ### `/context list`
 
-```
+```text
 🧠 Context breakdown
 Workspace: <workspaceDir>
 Bootstrap max/file: 12,000 chars
@@ -69,7 +69,7 @@ Session tokens (cached): 14,250 total / ctx=32,000
 
 ### `/context detail`
 
-```
+```text
 🧠 Context breakdown (detailed)
 …
 Top skills (prompt entry size):
@@ -85,42 +85,45 @@ Top tools (schema size):
 
 ### `/context map`
 
-En son önbelleğe alınmış çalıştırma raporundan oluşturulan bir görüntü gönderir. Oturumda normal bir mesaj bir çalıştırma raporu üretmeden önce, `/context map` bir tahmin oluşturmak yerine kullanılamaz mesajı döndürür. Dikdörtgen alanı, izlenen istem karakterleriyle orantılıdır:
+En son önbelleğe alınmış çalıştırma raporu ile oturum transkriptinden oluşturulan bir görüntü gönderir. Oturumda normal bir mesaj henüz bir çalıştırma raporu üretmediyse `/context map`, tahmini görselleştirmek yerine kullanılamıyor mesajı döndürür. Dikdörtgen alanı, izlenen istem karakterleriyle orantılıdır:
 
-- enjekte edilen çalışma alanı dosyaları
+- konuşma transkripti (kullanıcı mesajları, asistan yanıtları, araç sonuçları, Compaction özetleri) ile yalnızca modele ulaşan tur başına çalışma zamanı bağlamı ve kanca istemi eklemeleri
+- eklenen çalışma alanı dosyaları
 - temel sistem istemi metni
-- skill istem girdileri
+- Skills istem girdileri
 - araç JSON şemaları
 
-`/context list`, `/context detail` ve `/context json`, önbelleğe alınmış çalıştırma raporu olmadığında da isteğe bağlı bir tahmini inceleyebilir.
+Konuşma grubu oturum ilerledikçe büyür; bu nedenle harita her turda değişir. Compaction sonrasında bir özetler kutucuğuna daralır.
 
-## Bağlam penceresine neler dahil edilir
+Önbelleğe alınmış çalıştırma raporu olmadığında `/context list`, `/context detail` ve `/context json` yine de isteğe bağlı bir tahmini inceleyebilir.
 
-Modelin aldığı her şey dahil edilir, örneğin:
+## Bağlam penceresine neler dâhildir?
+
+Modelin aldığı her şey buna dâhildir:
 
 - Sistem istemi (tüm bölümler).
 - Konuşma geçmişi.
 - Araç çağrıları + araç sonuçları.
-- Ekler/dökümler (görüntüler/sesler/dosyalar).
-- Compaction özetleri ve budama artifaktları.
-- Sağlayıcı "sarmalayıcıları" veya gizli başlıkları (görünmez, yine de sayılır).
+- Ekler/transkriptler (görüntüler/sesler/dosyalar).
+- Compaction özetleri ve budama yapıtları.
+- Sağlayıcı "sarmalayıcıları" veya gizli üstbilgiler (görünmezler ancak yine de hesaba katılırlar).
 
-## OpenClaw sistem istemini nasıl oluşturur
+## OpenClaw sistem istemini nasıl oluşturur?
 
-Sistem istemi **OpenClaw'a aittir** ve her çalıştırmada yeniden oluşturulur. Şunları içerir:
+Sistem isteminin **sahibi OpenClaw'dır** ve her çalıştırmada yeniden oluşturulur. Şunları içerir:
 
 - Araç listesi + kısa açıklamalar.
-- Skills listesi (yalnızca meta veri; aşağıya bakın).
+- Skills listesi (yalnızca meta veriler; aşağıya bakın).
 - Çalışma alanı konumu.
 - Zaman (UTC + yapılandırılmışsa dönüştürülmüş kullanıcı zamanı).
-- Çalışma zamanı meta verileri (ana makine/OS/model/düşünme).
-- **Proje Bağlamı** altındaki enjekte edilmiş çalışma alanı başlangıç dosyaları.
+- Çalışma zamanı meta verileri (ana makine/işletim sistemi/model/düşünme).
+- **Proje Bağlamı** altında eklenen çalışma alanı önyükleme dosyaları.
 
 Tam döküm: [Sistem İstemi](/tr/concepts/system-prompt).
 
-## Enjekte edilen çalışma alanı dosyaları (Proje Bağlamı)
+## Eklenen çalışma alanı dosyaları (Proje Bağlamı)
 
-Varsayılan olarak OpenClaw, sabit bir çalışma alanı dosyaları kümesini enjekte eder (varsa):
+OpenClaw, varsayılan olarak sabit bir çalışma alanı dosyası kümesini (mevcutsa) ekler:
 
 - `AGENTS.md`
 - `SOUL.md`
@@ -130,69 +133,69 @@ Varsayılan olarak OpenClaw, sabit bir çalışma alanı dosyaları kümesini en
 - `HEARTBEAT.md`
 - `BOOTSTRAP.md` (yalnızca ilk çalıştırma)
 
-Büyük dosyalar, `agents.defaults.bootstrapMaxChars` kullanılarak dosya başına kesilir (varsayılan `20000` karakter). OpenClaw ayrıca `agents.defaults.bootstrapTotalMaxChars` ile dosyalar genelinde toplam başlangıç enjeksiyonu sınırı uygular (varsayılan `60000` karakter). `/context`, **ham ve enjekte edilen** boyutları ve kesme olup olmadığını gösterir.
+Büyük dosyalar, dosya başına `agents.defaults.bootstrapMaxChars` (varsayılan `20000` karakter) kullanılarak kırpılır. OpenClaw ayrıca `agents.defaults.bootstrapTotalMaxChars` (varsayılan `60000` karakter) ile dosyalar genelinde toplam önyükleme ekleme sınırı uygular. `/context`, **ham ve eklenen** boyutları ve kırpma gerçekleşip gerçekleşmediğini gösterir.
 
-Kesme gerçekleştiğinde, çalışma zamanı Proje Bağlamı altında istem içine bir uyarı bloğu enjekte edebilir. Bunu `agents.defaults.bootstrapPromptTruncationWarning` ile yapılandırın (`off`, `once`, `always`; varsayılan `always`).
+Kırpma gerçekleştiğinde çalışma zamanı, Proje Bağlamı altında istem içine bir uyarı bloğu ekleyebilir. Bunu `agents.defaults.bootstrapPromptTruncationWarning` (`off`, `once`, `always`; varsayılan `always`) ile yapılandırın.
 
-## Skills: enjekte edilen ve isteğe bağlı yüklenen
+## Skills: eklenenler ve isteğe bağlı yüklenenler
 
-Sistem istemi kompakt bir **skills listesi** (ad + açıklama + konum) içerir. Bu listenin gerçek bir ek yükü vardır.
+Sistem istemi, kompakt bir **Skills listesi** (ad + açıklama + konum) içerir. Bu listenin gerçek bir ek yükü vardır.
 
-Skill talimatları varsayılan olarak dahil edilmez. Modelin skill'in `SKILL.md` dosyasını **yalnızca gerektiğinde** `read` etmesi beklenir.
+Skill talimatları varsayılan olarak _dâhil edilmez_. Modelin, Skill'in `SKILL.md` dosyasını **yalnızca gerektiğinde** `read` ile okuması beklenir.
 
-## Araçlar: iki maliyet vardır
+## Araçlar: iki tür maliyet vardır
 
 Araçlar bağlamı iki şekilde etkiler:
 
-1. Sistem istemindeki **araç listesi metni** ("Araç Kullanımı" olarak gördüğünüz).
-2. **Araç şemaları** (JSON). Bunlar, modelin araç çağırabilmesi için modele gönderilir. Düz metin olarak görmeseniz de bağlama dahil edilirler.
+1. Sistem istemindeki **araç listesi metni** ("Araçlar" olarak gördüğünüz bölüm).
+2. **Araç şemaları** (JSON). Bunlar, modelin araçları çağırabilmesi için modele gönderilir. Düz metin olarak görmeseniz de bağlama dâhil edilirler.
 
-`/context detail`, neyin baskın olduğunu görebilmeniz için en büyük araç şemalarını ayrıştırır.
+`/context detail`, en büyük araç şemalarını ayrıntılı olarak göstererek hangilerinin baskın olduğunu görmenizi sağlar.
 
-## Komutlar, direktifler ve "satır içi kısayollar"
+## Komutlar, yönergeler ve "satır içi kısayollar"
 
-Slash komutları Gateway tarafından işlenir. Birkaç farklı davranış vardır:
+Eğik çizgi komutları Gateway tarafından işlenir. Birkaç farklı davranış vardır:
 
-- **Bağımsız komutlar**: yalnızca `/...` olan bir mesaj komut olarak çalışır.
-- **Direktifler**: `/think`, `/verbose`, `/trace`, `/reasoning`, `/elevated`, `/model`, `/queue` model mesajı görmeden önce çıkarılır.
-  - Yalnızca direktif içeren mesajlar oturum ayarlarını kalıcı hale getirir.
-  - Normal bir mesajdaki satır içi direktifler mesaj başına ipucu görevi görür.
-- **Satır içi kısayollar** (yalnızca izin verilen gönderenler): normal bir mesaj içindeki belirli `/...` token'ları hemen çalışabilir (örnek: "hey /status") ve model kalan metni görmeden önce çıkarılır.
+- **Bağımsız komutlar**: yalnızca `/...` içeren bir mesaj komut olarak çalıştırılır.
+- **Yönergeler**: `/think`, `/fast`, `/verbose`, `/trace`, `/reasoning`, `/elevated`, `/exec`, `/model`, `/queue`, model mesajı görmeden önce çıkarılır.
+  - Yalnızca yönerge içeren mesajlar oturum ayarlarını kalıcı hâle getirir.
+  - Normal bir mesajdaki satır içi yönergeler, mesaj başına ipucu işlevi görür.
+- **Satır içi kısayollar** (yalnızca izin verilen gönderenler): normal bir mesajın içindeki belirli `/...` token'ları hemen çalıştırılabilir (örnek: "merhaba /status") ve model kalan metni görmeden önce çıkarılır.
 
-Ayrıntılar: [Slash komutları](/tr/tools/slash-commands).
+Ayrıntılar: [Eğik çizgi komutları](/tr/tools/slash-commands).
 
-## Oturumlar, Compaction ve budama (neler kalıcıdır)
+## Oturumlar, Compaction ve budama (neler kalıcıdır?)
 
-Mesajlar arasında nelerin kalıcı olduğu mekanizmaya bağlıdır:
+Mesajlar arasında nelerin kalıcı olduğu kullanılan mekanizmaya bağlıdır:
 
-- **Normal geçmiş**, politika tarafından compact edilene/budanana kadar oturum dökümünde kalır.
-- **Compaction**, bir özeti döküme kalıcı olarak ekler ve son mesajları olduğu gibi tutar.
-- **Budama**, bağlam penceresi alanı açmak için eski araç sonuçlarını _bellekteki_ istemden düşürür, ancak oturum dökümünü yeniden yazmaz; tam geçmiş diskte hâlâ incelenebilir.
+- **Normal geçmiş**, politika tarafından sıkıştırılana/budanana kadar oturum transkriptinde kalır.
+- **Compaction**, bir özeti transkripte kalıcı olarak ekler ve son mesajları olduğu gibi tutar.
+- **Budama**, bağlam penceresinde alan açmak için eski araç sonuçlarını _bellek içi_ istemden kaldırır ancak oturum transkriptini yeniden yazmaz; tam geçmiş yine de diskte incelenebilir.
 
 Belgeler: [Oturum](/tr/concepts/session), [Compaction](/tr/concepts/compaction), [Oturum budama](/tr/concepts/session-pruning).
 
-Varsayılan olarak OpenClaw, birleştirme ve compaction için yerleşik `legacy` bağlam motorunu kullanır. `kind: "context-engine"` sağlayan bir Plugin kurar ve `plugins.slots.contextEngine` ile seçerseniz OpenClaw bağlam birleştirmesini, `/compact` işlemini ve ilgili alt ajan bağlam yaşam döngüsü hook'larını bunun yerine o motora devreder. `ownsCompaction: false`, legacy motora otomatik geri dönüş yapmaz; etkin motor yine de `compact()` işlevini doğru şekilde uygulamalıdır. Tam takılabilir arayüz, yaşam döngüsü hook'ları ve yapılandırma için [Bağlam Motoru](/tr/concepts/context-engine) bölümüne bakın.
+OpenClaw, varsayılan olarak birleştirme ve Compaction için yerleşik `legacy` bağlam motorunu kullanır. `kind: "context-engine"` sağlayan bir plugin kurup bunu `plugins.slots.contextEngine` ile seçerseniz OpenClaw; bağlam birleştirmeyi, `/compact` işlemini ve ilgili alt ajan bağlam yaşam döngüsü kancalarını bunun yerine o motora devreder. `ownsCompaction: false`, otomatik olarak `legacy` motora geri dönüş sağlamaz; etkin motor yine de `compact()` işlevini doğru şekilde uygulamalıdır. Takılabilir arayüzün tamamı, yaşam döngüsü kancaları ve yapılandırma için [Bağlam Motoru](/tr/concepts/context-engine) bölümüne bakın.
 
-## `/context` gerçekte ne raporlar
+## `/context` gerçekte neyi raporlar?
 
-`/context`, varsa en son **çalıştırmada oluşturulmuş** sistem istemi raporunu tercih eder:
+`/context`, mevcut olduğunda en son **çalıştırmada oluşturulan** sistem istemi raporunu tercih eder:
 
-- `System prompt (run)` = son gömülü (araç kullanabilen) çalıştırmadan yakalanır ve oturum deposunda kalıcı hale getirilir.
-- `System prompt (estimate)` = çalıştırma raporu yoksa (veya raporu oluşturmayan bir CLI arka ucu üzerinden çalışıyorsa) anında hesaplanır.
+- `System prompt (run)` = son gömülü (araç kullanabilen) çalıştırmadan yakalanır ve oturum deposunda kalıcı olarak saklanır.
+- `System prompt (estimate)` = çalıştırma raporu olmadığında (veya rapor oluşturmayan bir CLI arka ucu üzerinden çalıştırılırken) anında hesaplanır.
 
-Her iki durumda da boyutları ve en büyük katkı sağlayıcıları raporlar; tam sistem istemini veya araç şemalarını **dökmez**. Ayrıntılı modda, oturum dökümünü compaction tarafından kullanılan aynı gerçek konuşma mesajı önermesiyle de karşılaştırır; böylece yüksek istem/önbellek kullanımını compact edilebilir konuşma geçmişinden ayırt etmek daha kolay olur.
+Her iki durumda da boyutları ve en büyük katkıları raporlar; sistem isteminin veya araç şemalarının tamamını **dökmez**. Ayrıntılı modda ayrıca oturum transkriptini Compaction tarafından kullanılan gerçek konuşma mesajlarıyla aynı ölçüte göre karşılaştırır; böylece yüksek istem/önbellek kullanımını sıkıştırılabilir konuşma geçmişinden ayırt etmek kolaylaşır.
 
-## İlgili
+## İlgili konular
 
 <CardGroup cols={2}>
   <Card title="Context engine" href="/tr/concepts/context-engine" icon="puzzle-piece">
-    Plugin'ler aracılığıyla özel bağlam enjeksiyonu.
+    Plugin'ler aracılığıyla özel bağlam ekleme.
   </Card>
   <Card title="Compaction" href="/tr/concepts/compaction" icon="compress">
     Uzun konuşmaları model penceresinin içinde tutmak için özetleme.
   </Card>
   <Card title="System prompt" href="/tr/concepts/system-prompt" icon="message-lines">
-    Sistem isteminin nasıl oluşturulduğu ve her turda ne enjekte ettiği.
+    Sistem isteminin nasıl oluşturulduğu ve her turda neleri eklediği.
   </Card>
   <Card title="Agent loop" href="/tr/concepts/agent-loop" icon="arrows-rotate">
     Gelen mesajdan son yanıta kadar tam ajan yürütme döngüsü.

@@ -2,43 +2,44 @@
 read_when:
     - Vuoi risultati degli strumenti `exec` o `bash` più brevi in OpenClaw
     - Vuoi installare o abilitare il plugin Tokenjuice
-    - Devi capire che cosa modifica tokenjuice e che cosa lascia grezzo
-summary: Compatta i risultati rumorosi degli strumenti exec e bash con il Plugin Tokenjuice opzionale
-title: Tokenjuice
+    - Devi capire cosa modifica tokenjuice e cosa lascia invariato.
+summary: Compatta i risultati verbosi degli strumenti exec e bash con il Plugin opzionale Tokenjuice
+title: Succo di token
 x-i18n:
-    generated_at: "2026-06-27T18:24:24Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:35:50Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 183ab08d2a1150b446245514423b893cff9a85581980c15600cc16aec10eeae7
+    source_hash: 96b110563a2600429dd9f0d38997cf7cc5ae4952b7f146a6ab64c96f2f202440
     source_path: tools/tokenjuice.md
     workflow: 16
 ---
 
-`tokenjuice` è un Plugin esterno opzionale che compatta i risultati rumorosi degli strumenti `exec` e `bash`
+`tokenjuice` è un plugin esterno facoltativo che compatta i risultati verbosi degli strumenti `exec` e `bash`
 dopo che il comando è già stato eseguito.
 
 Modifica il `tool_result` restituito, non il comando stesso. Tokenjuice non
 riscrive l'input della shell, non riesegue i comandi e non modifica i codici di uscita.
 
-Oggi questo si applica alle esecuzioni incorporate di OpenClaw e agli strumenti dinamici di OpenClaw nell'harness app-server di Codex. Tokenjuice si aggancia al middleware dei risultati degli strumenti di OpenClaw e
-riduce l'output prima che rientri nella sessione harness attiva.
+Attualmente ciò si applica alle esecuzioni integrate di OpenClaw e agli strumenti dinamici di OpenClaw nell'harness
+app-server di Codex. Tokenjuice si collega al middleware dei risultati degli strumenti di OpenClaw e
+riduce l'output prima che venga reimmesso nella sessione attiva dell'harness.
 
-## Abilitare il Plugin
+## Abilitare il plugin
 
-Installalo una volta:
+Esegui l'installazione una sola volta:
 
 ```bash
 openclaw plugins install clawhub:@openclaw/tokenjuice
 ```
 
-Poi abilitalo:
+Quindi abilitalo:
 
 ```bash
 openclaw config set plugins.entries.tokenjuice.enabled true
 ```
 
-Equivalente:
+Comando equivalente:
 
 ```bash
 openclaw plugins enable tokenjuice
@@ -60,19 +61,19 @@ Se preferisci modificare direttamente la configurazione:
 
 ## Cosa modifica tokenjuice
 
-- Compatta i risultati rumorosi di `exec` e `bash` prima che vengano reimmessi nella sessione.
-- Mantiene intatta l'esecuzione originale del comando.
-- Preserva le letture esatte del contenuto dei file e altri comandi che tokenjuice deve lasciare grezzi.
-- Resta opt-in: disabilita il Plugin se vuoi output letterale ovunque.
+- Compatta i risultati verbosi di `exec` e `bash` prima che vengano reimmessi nella sessione.
+- Mantiene inalterata l'esecuzione del comando originale.
+- Applica una politica sicura per l'inventario: le letture esatte del contenuto dei file rimangono in formato grezzo, i comandi autonomi di inventario del repository possono essere compattati e le sequenze miste di comandi non sicure rimangono in formato grezzo.
+- Rimane facoltativo: disabilita il plugin se desideri sempre un output letterale.
 
 ## Verificare che funzioni
 
-1. Abilita il Plugin.
+1. Abilita il plugin.
 2. Avvia una sessione che possa chiamare `exec`.
-3. Esegui un comando rumoroso come `git status`.
-4. Controlla che il risultato dello strumento restituito sia più breve e più strutturato dell'output grezzo della shell.
+3. Esegui un comando verboso, ad esempio `git status`.
+4. Verifica che il risultato restituito dallo strumento sia più breve e strutturato rispetto all'output grezzo della shell.
 
-## Disabilitare il Plugin
+## Disabilitare il plugin
 
 ```bash
 openclaw config set plugins.entries.tokenjuice.enabled false
@@ -84,8 +85,8 @@ Oppure:
 openclaw plugins disable tokenjuice
 ```
 
-## Correlati
+## Argomenti correlati
 
 - [Strumento Exec](/it/tools/exec)
 - [Livelli di ragionamento](/it/tools/thinking)
-- [Motore di contesto](/it/concepts/context-engine)
+- [Motore del contesto](/it/concepts/context-engine)

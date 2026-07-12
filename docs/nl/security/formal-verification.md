@@ -3,176 +3,143 @@ permalink: /security/formal-verification/
 read_when:
     - Formele garanties of beperkingen van het beveiligingsmodel beoordelen
     - TLA+/TLC-beveiligingsmodelcontroles reproduceren of bijwerken
-summary: Machinaal gecontroleerde beveiligingsmodellen voor de paden met het hoogste risico van OpenClaw.
+summary: Machinaal gecontroleerde beveiligingsmodellen voor de risicovolste paden van OpenClaw.
 title: Formele verificatie (beveiligingsmodellen)
 x-i18n:
-    generated_at: "2026-05-06T09:32:01Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:18:24Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 298b92f27abb8321be807fe4d95c7cd568a0fb8f543d168863b2adb9b3ddcde4
+    source_hash: 86342f6e2f54c08d5e0f8a08d0d488459650a6ace35e985ff886f847540202c9
     source_path: security/formal-verification.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Deze pagina volgt OpenClaw's **formele beveiligingsmodellen** (TLA+/TLC vandaag; meer indien nodig).
+De formele beveiligingsmodellen van OpenClaw (momenteel TLA+/TLC) leveren een machinaal gecontroleerd argument dat specifieke paden met het hoogste risico — autorisatie, sessie-isolatie, toolafscherming en veiligheid bij onjuiste configuratie — hun beoogde beleid afdwingen onder expliciet vermelde aannames.
 
-> Opmerking: sommige oudere links kunnen verwijzen naar de vorige projectnaam.
+> Opmerking: sommige oudere links verwijzen mogelijk naar de vorige projectnaam.
 
-**Doel (leidster):** een machinaal gecontroleerd argument leveren dat OpenClaw zijn
-bedoelde beveiligingsbeleid afdwingt (autorisatie, sessie-isolatie, toolafscherming en
-veiligheid bij misconfiguratie), onder expliciete aannames.
+## Wat dit is
 
-**Wat dit is (vandaag):** een uitvoerbare, door aanvallers gedreven **regressiesuite voor beveiliging**:
+Een uitvoerbare, door aanvallers aangestuurde regressietestsuite voor beveiliging:
 
-- Elke claim heeft een uitvoerbare modelcontrole over een eindige toestandsruimte.
-- Veel claims hebben een gekoppeld **negatief model** dat een tegenvoorbeeldtrace oplevert voor een realistische bugklasse.
+- Elke bewering heeft een uitvoerbare modelcontrole over een eindige toestandsruimte.
+- Veel beweringen hebben een bijbehorend negatief model dat een tegenvoorbeeldtrace oplevert voor een realistische foutcategorie.
 
-**Wat dit niet is (nog):** een bewijs dat "OpenClaw in alle opzichten veilig is" of dat de volledige TypeScript-implementatie correct is.
+Dit is **geen** bewijs dat OpenClaw in alle opzichten veilig is en het verifieert niet de volledige TypeScript-implementatie.
 
-## Waar de modellen staan
+## Waar de modellen zich bevinden
 
-Modellen worden onderhouden in een aparte repo: [vignesh07/openclaw-formal-models](https://github.com/vignesh07/openclaw-formal-models).
+De modellen worden onderhouden in een afzonderlijke repository: [vignesh07/openclaw-formal-models](https://github.com/vignesh07/openclaw-formal-models).
 
-## Belangrijke kanttekeningen
+<Note>
+Die repository is momenteel onbereikbaar (GitHub retourneert op het moment van schrijven "Repository not found"). Als deze voor u nog steeds niet werkt, vraag dan in de onderhoudskanalen van OpenClaw naar de huidige locatie voordat u aanneemt dat de modellen zijn verwijderd.
+</Note>
 
-- Dit zijn **modellen**, niet de volledige TypeScript-implementatie. Afwijkingen tussen model en code zijn mogelijk.
-- Resultaten worden begrensd door de toestandsruimte die door TLC is verkend; "groen" impliceert geen beveiliging buiten de gemodelleerde aannames en grenzen.
-- Sommige claims steunen op expliciete omgevingsaannames (bijv. correcte deployment, correcte configuratie-invoer).
+## Kanttekeningen
+
+- Dit zijn modellen, niet de volledige TypeScript-implementatie — afwijkingen tussen model en code zijn mogelijk.
+- De resultaten worden begrensd door de toestandsruimte die TLC onderzoekt. Groen impliceert geen beveiliging buiten de gemodelleerde aannames en grenzen.
+- Sommige beweringen zijn afhankelijk van expliciete omgevingsaannames (bijvoorbeeld een correcte implementatieomgeving en correcte configuratie-invoer).
 
 ## Resultaten reproduceren
 
-Vandaag worden resultaten gereproduceerd door de modellenrepo lokaal te klonen en TLC uit te voeren (zie hieronder). Een toekomstige iteratie zou kunnen bieden:
-
-- Door CI uitgevoerde modellen met openbare artefacten (tegenvoorbeeldtraces, runlogs)
-- een gehoste workflow "voer dit model uit" voor kleine, begrensde controles
-
-Aan de slag:
+Kloon de modellenrepository en voer TLC uit:
 
 ```bash
 git clone https://github.com/vignesh07/openclaw-formal-models
 cd openclaw-formal-models
 
-# Java 11+ required (TLC runs on the JVM).
-# The repo vendors a pinned `tla2tools.jar` (TLA+ tools) and provides `bin/tlc` + Make targets.
+# Java 11+ vereist (TLC draait op de JVM).
+# De repository levert een vastgezette tla2tools.jar en bevat bin/tlc plus Make-doelen.
 
 make <target>
 ```
 
-### Gateway-blootstelling en open Gateway-misconfiguratie
+Er is nog geen CI-integratie terug naar deze repository; een toekomstige versie zou door CI uitgevoerde modellen met openbare artefacten (tegenvoorbeeldtraces, uitvoeringslogboeken) of een gehoste workflow voor "dit model uitvoeren" voor kleine begrensde controles kunnen toevoegen.
 
-**Claim:** binden buiten loopback zonder auth kan externe compromittering mogelijk maken / vergroot de blootstelling; token/wachtwoord blokkeert niet-geauthenticeerde aanvallers (volgens de modelaannames).
+## Beweringen en doelen
 
-- Groene runs:
-  - `make gateway-exposure-v2`
-  - `make gateway-exposure-v2-protected`
-- Rood (verwacht):
-  - `make gateway-exposure-v2-negative`
+### Blootstelling van de Gateway en onjuiste configuratie van een open Gateway
 
-Zie ook: `docs/gateway-exposure-matrix.md` in de modellenrepo.
+**Bewering:** binden buiten loopback zonder authenticatie kan externe compromittering mogelijk maken en vergroot de blootstelling; volgens de aannames van het model blokkeert een token/wachtwoord niet-geverifieerde aanvallers.
 
-### Node-exec-pijplijn (capaciteit met het hoogste risico)
+| Resultaat        | Doelen                                                           |
+| ---------------- | ---------------------------------------------------------------- |
+| Groen            | `make gateway-exposure-v2`, `make gateway-exposure-v2-protected` |
+| Rood (verwacht)  | `make gateway-exposure-v2-negative`                              |
 
-**Claim:** `exec host=node` vereist (a) een allowlist voor node-opdrachten plus gedeclareerde opdrachten en (b) live goedkeuring wanneer geconfigureerd; goedkeuringen zijn getokeniseerd om replay te voorkomen (in het model).
+Zie ook `docs/gateway-exposure-matrix.md` in de modellenrepository.
 
-- Groene runs:
-  - `make nodes-pipeline`
-  - `make approvals-token`
-- Rood (verwacht):
-  - `make nodes-pipeline-negative`
-  - `make approvals-token-negative`
+### Uitvoerpijplijn van Node (mogelijkheid met het hoogste risico)
 
-### Koppelingsopslag (DM-afscherming)
+**Bewering:** `exec host=node` vereist (a) een toestemmingslijst voor Node-opdrachten plus gedeclareerde opdrachten en (b) livegoedkeuring wanneer dit is geconfigureerd; in het model worden goedkeuringen van tokens voorzien om herhaling te voorkomen.
 
-**Claim:** koppelingsverzoeken respecteren TTL en limieten voor openstaande verzoeken.
+| Resultaat       | Doelen                                                          |
+| --------------- | --------------------------------------------------------------- |
+| Groen           | `make nodes-pipeline`, `make approvals-token`                   |
+| Rood (verwacht) | `make nodes-pipeline-negative`, `make approvals-token-negative` |
 
-- Groene runs:
-  - `make pairing`
-  - `make pairing-cap`
-- Rood (verwacht):
-  - `make pairing-negative`
-  - `make pairing-cap-negative`
+### Koppelingsopslag (afscherming van directe berichten)
 
-### Ingress-afscherming (vermeldingen + omzeiling via besturingsopdracht)
+**Bewering:** koppelingsverzoeken respecteren de TTL en limieten voor openstaande verzoeken.
 
-**Claim:** in groepscontexten die een vermelding vereisen, kan een ongeautoriseerde "besturingsopdracht" de vermeldingsafscherming niet omzeilen.
+| Resultaat       | Doelen                                               |
+| --------------- | ---------------------------------------------------- |
+| Groen           | `make pairing`, `make pairing-cap`                   |
+| Rood (verwacht) | `make pairing-negative`, `make pairing-cap-negative` |
 
-- Groen:
-  - `make ingress-gating`
-- Rood (verwacht):
-  - `make ingress-gating-negative`
+### Afscherming van inkomend verkeer (vermeldingen en omzeiling door besturingsopdrachten)
 
-### Routerings-/sessiesleutelisolatie
+**Bewering:** in groepscontexten waarin een vermelding vereist is, kan een onbevoegde besturingsopdracht de afscherming op basis van vermeldingen niet omzeilen.
 
-**Claim:** DM's van verschillende peers worden niet samengevoegd tot dezelfde sessie, tenzij ze expliciet gekoppeld/geconfigureerd zijn.
+| Resultaat       | Doelen                         |
+| --------------- | ------------------------------ |
+| Groen           | `make ingress-gating`          |
+| Rood (verwacht) | `make ingress-gating-negative` |
 
-- Groen:
-  - `make routing-isolation`
-- Rood (verwacht):
-  - `make routing-isolation-negative`
+### Routering en isolatie van sessiesleutels
 
-## v1++: aanvullende begrensde modellen (concurrency, retries, tracecorrectheid)
+**Bewering:** directe berichten van verschillende gesprekspartners worden niet samengevoegd in dezelfde sessie, tenzij ze expliciet zijn gekoppeld of geconfigureerd.
 
-Dit zijn vervolgmodellen die de getrouwheid aanscherpen rond realistische foutmodi (niet-atomaire updates, retries en message-fan-out).
+| Resultaat       | Doelen                            |
+| --------------- | --------------------------------- |
+| Groen           | `make routing-isolation`          |
+| Rood (verwacht) | `make routing-isolation-negative` |
 
-### Concurrency / idempotentie van koppelingsopslag
+## v1++-modellen: gelijktijdigheid, nieuwe pogingen en correctheid van traces
 
-**Claim:** een koppelingsopslag moet `MaxPending` en idempotentie afdwingen, zelfs bij interleavings (d.w.z. "controleer-dan-schrijf" moet atomair / vergrendeld zijn; vernieuwen mag geen duplicaten maken).
+Vervolgmodellen die de getrouwheid aanscherpen rond praktijkgerichte foutmodi: niet-atomaire updates, nieuwe pogingen en berichtuitwaaiering.
 
-Wat dit betekent:
+### Gelijktijdigheid en idempotentie van de koppelingsopslag
 
-- Bij gelijktijdige verzoeken kun je `MaxPending` voor een kanaal niet overschrijden.
-- Herhaalde verzoeken/vernieuwingen voor dezelfde `(channel, sender)` mogen geen dubbele live openstaande rijen maken.
+**Bewering:** de koppelingsopslag handhaaft `MaxPending` en idempotentie, zelfs bij vervlechtingen — controleren en vervolgens schrijven moet atomair/vergrendeld zijn en vernieuwen mag geen duplicaten creëren. Concreet: gelijktijdige verzoeken kunnen `MaxPending` voor een kanaal niet overschrijden en herhaalde verzoeken/vernieuwingen voor dezelfde `(channel, sender)` creëren geen dubbele actieve openstaande rijen.
 
-- Groene runs:
-  - `make pairing-race` (atomaire/vergrendelde limietcontrole)
-  - `make pairing-idempotency`
-  - `make pairing-refresh`
-  - `make pairing-refresh-race`
-- Rood (verwacht):
-  - `make pairing-race-negative` (niet-atomaire begin/commit-limietrace)
-  - `make pairing-idempotency-negative`
-  - `make pairing-refresh-negative`
-  - `make pairing-refresh-race-negative`
+| Resultaat       | Doelen                                                                                                                                                                      |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Groen           | `make pairing-race` (atomaire/vergrendelde limietcontrole), `make pairing-idempotency`, `make pairing-refresh`, `make pairing-refresh-race`                                 |
+| Rood (verwacht) | `make pairing-race-negative` (niet-atomaire limietrace tussen begin en vastlegging), `make pairing-idempotency-negative`, `make pairing-refresh-negative`, `make pairing-refresh-race-negative` |
 
-### Ingress-tracecorrelatie / idempotentie
+### Tracecorrelatie en idempotentie van inkomend verkeer
 
-**Claim:** ingestion moet tracecorrelatie over fan-out heen behouden en idempotent zijn bij provider-retries.
+**Bewering:** verwerking van inkomend verkeer behoudt tracecorrelatie bij uitwaaiering en is idempotent bij nieuwe pogingen van de provider. Wanneer één externe gebeurtenis meerdere interne berichten wordt, behoudt elk deel dezelfde trace-/gebeurtenisidentiteit; nieuwe pogingen worden niet dubbel verwerkt; als gebeurtenis-ID's van de provider ontbreken, valt deduplicatie terug op een veilige sleutel (bijvoorbeeld een trace-ID) om te voorkomen dat verschillende gebeurtenissen worden verwijderd.
 
-Wat dit betekent:
+| Resultaat       | Doelen                                                                                                                                      |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Groen           | `make ingress-trace`, `make ingress-trace2`, `make ingress-idempotency`, `make ingress-dedupe-fallback`                                     |
+| Rood (verwacht) | `make ingress-trace-negative`, `make ingress-trace2-negative`, `make ingress-idempotency-negative`, `make ingress-dedupe-fallback-negative` |
 
-- Wanneer één externe gebeurtenis meerdere interne berichten wordt, behoudt elk deel dezelfde trace-/gebeurtenisidentiteit.
-- Retries leiden niet tot dubbele verwerking.
-- Als provider-event-ID's ontbreken, valt deduplicatie terug op een veilige sleutel (bijv. trace-ID) om te voorkomen dat verschillende gebeurtenissen worden weggegooid.
+### Voorrang van `dmScope` bij routering en `identityLinks`
 
-- Groen:
-  - `make ingress-trace`
-  - `make ingress-trace2`
-  - `make ingress-idempotency`
-  - `make ingress-dedupe-fallback`
-- Rood (verwacht):
-  - `make ingress-trace-negative`
-  - `make ingress-trace2-negative`
-  - `make ingress-idempotency-negative`
-  - `make ingress-dedupe-fallback-negative`
+**Bewering:** routering houdt sessies voor directe berichten standaard geïsoleerd en voegt sessies alleen samen wanneer dit expliciet is geconfigureerd, via kanaalvoorrang en identiteitskoppelingen. Kanaalspecifieke `dmScope`-overschrijvingen hebben voorrang op globale standaardwaarden; `identityLinks` voegen sessies alleen samen binnen expliciet gekoppelde groepen, niet tussen niet-gerelateerde gesprekspartners.
 
-### Voorrang van routing dmScope + identityLinks
-
-**Claim:** routing moet DM-sessies standaard geïsoleerd houden en sessies alleen samenvoegen wanneer dit expliciet is geconfigureerd (kanaalvoorrang + identity links).
-
-Wat dit betekent:
-
-- Kanaalspecifieke dmScope-overrides moeten winnen van globale defaults.
-- identityLinks mogen alleen samenvoegen binnen expliciet gekoppelde groepen, niet tussen niet-gerelateerde peers.
-
-- Groen:
-  - `make routing-precedence`
-  - `make routing-identitylinks`
-- Rood (verwacht):
-  - `make routing-precedence-negative`
-  - `make routing-identitylinks-negative`
+| Resultaat       | Doelen                                                                    |
+| --------------- | ------------------------------------------------------------------------- |
+| Groen           | `make routing-precedence`, `make routing-identitylinks`                   |
+| Rood (verwacht) | `make routing-precedence-negative`, `make routing-identitylinks-negative` |
 
 ## Gerelateerd
 
 - [Dreigingsmodel](/nl/security/THREAT-MODEL-ATLAS)
 - [Bijdragen aan het dreigingsmodel](/nl/security/CONTRIBUTING-THREAT-MODEL)
+- [Incidentrespons](/nl/security/incident-response)

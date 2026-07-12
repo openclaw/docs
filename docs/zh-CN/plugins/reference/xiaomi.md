@@ -1,13 +1,12 @@
 ---
 read_when:
     - 你正在安装、配置或审计 xiaomi 插件
-summary: 为 OpenClaw 添加 Xiaomi 和 Xiaomi Token Plan 模型提供商支持。
+summary: 为 OpenClaw 添加对小米及小米 Token Plan 模型提供商的支持。
 title: 小米插件
 x-i18n:
-    generated_at: "2026-07-12T14:38:41Z"
+    generated_at: "2026-07-11T20:47:59Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 5999659d0a5abf287b8ce44f573f7f9d2e46b23b5ee21edb613e38a91489a7c7
     source_path: plugins/reference/xiaomi.md
@@ -21,7 +20,7 @@ x-i18n:
 ## 分发
 
 - 软件包：`@openclaw/xiaomi-provider`
-- 安装方式：OpenClaw 已内置
+- 安装方式：已包含在 OpenClaw 中
 
 ## 接口
 

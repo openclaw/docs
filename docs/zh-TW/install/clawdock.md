@@ -1,12 +1,12 @@
 ---
 read_when:
-    - 你經常使用 Docker 執行 OpenClaw，並希望日常命令更短
-    - 你想要一個用於儀表板、日誌、權杖設定和配對流程的輔助層
-summary: ClawDock shell 輔助工具，用於基於 Docker 的 OpenClaw 安裝
+    - 你經常使用 Docker 執行 OpenClaw，並希望縮短日常使用的命令
+    - 你需要一個輔助層，用於儀表板、日誌、權杖設定與配對流程
+summary: 用於 Docker 型 OpenClaw 安裝的 ClawDock Shell 輔助工具
 title: ClawDock
 x-i18n:
-    generated_at: "2026-07-05T11:22:32Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T21:24:57Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 5bb829a3301178503f910931e86a39f7befeaf186044f4088a25dc80ea99130d
@@ -14,11 +14,11 @@ x-i18n:
     workflow: 16
 ---
 
-ClawDock 是用於 Docker 型 OpenClaw 安裝的小型 shell 輔助層。
+ClawDock 是一層小型 Shell 輔助工具，適用於以 Docker 為基礎的 OpenClaw 安裝。
 
-它提供像 `clawdock-start`、`clawdock-dashboard` 和 `clawdock-fix-token` 這樣的短指令，取代較長的 `docker compose ...` 呼叫。
+它提供 `clawdock-start`、`clawdock-dashboard` 和 `clawdock-fix-token` 等簡短命令，取代較長的 `docker compose ...` 呼叫。
 
-如果你尚未設定 Docker，請先從 [Docker](/zh-TW/install/docker) 開始。
+如果尚未設定 Docker，請先參閱 [Docker](/zh-TW/install/docker)。
 
 ## 安裝
 
@@ -27,58 +27,58 @@ mkdir -p ~/.clawdock && curl -sL https://raw.githubusercontent.com/openclaw/open
 echo 'source ~/.clawdock/clawdock-helpers.sh' >> ~/.zshrc && source ~/.zshrc
 ```
 
-如果你先前是從 `scripts/shell-helpers/clawdock-helpers.sh` 安裝 ClawDock，請從目前的 `scripts/clawdock/clawdock-helpers.sh` 路徑重新安裝；舊的 GitHub raw 路徑已移除。
+如果先前是從 `scripts/shell-helpers/clawdock-helpers.sh` 安裝 ClawDock，請改用目前的 `scripts/clawdock/clawdock-helpers.sh` 路徑重新安裝；舊的 GitHub 原始檔案路徑已移除。
 
-這些輔助工具會在首次使用時自動偵測你的 OpenClaw checkout（檢查常見路徑，例如 `~/openclaw`、`~/projects/openclaw`），並將結果快取在 `~/.clawdock/config`。如果你的 checkout 位於其他位置，請自行設定 `CLAWDOCK_DIR`。
+輔助工具會在首次使用時自動偵測 OpenClaw 的簽出目錄（檢查 `~/openclaw`、`~/projects/openclaw` 等常見路徑），並將結果快取於 `~/.clawdock/config`。如果簽出目錄位於其他位置，請自行設定 `CLAWDOCK_DIR`。
 
-## 你會得到什麼
+## 提供的功能
 
 ### 基本操作
 
-| 指令               | 說明             |
+| 命令               | 說明             |
 | ------------------ | ---------------- |
 | `clawdock-start`   | 啟動閘道         |
 | `clawdock-stop`    | 停止閘道         |
 | `clawdock-restart` | 重新啟動閘道     |
 | `clawdock-status`  | 檢查容器狀態     |
-| `clawdock-logs`    | 追蹤閘道日誌     |
+| `clawdock-logs`    | 持續追蹤閘道日誌 |
 
 ### 容器存取
 
-| 指令                      | 說明                              |
-| ------------------------- | --------------------------------- |
-| `clawdock-shell`          | 在閘道容器內開啟 shell            |
-| `clawdock-cli <command>`  | 在 Docker 中執行 OpenClaw 命令列介面指令 |
-| `clawdock-exec <command>` | 在容器中執行任意指令              |
+| 命令                      | 說明                                 |
+| ------------------------- | ------------------------------------ |
+| `clawdock-shell`          | 在閘道容器內開啟 Shell               |
+| `clawdock-cli <command>`  | 在 Docker 中執行 OpenClaw 命令列介面命令 |
+| `clawdock-exec <command>` | 在容器中執行任意命令                 |
 
-### Web 介面與配對
+### 網頁介面與配對
 
-| 指令                    | 說明                   |
-| ----------------------- | ---------------------- |
-| `clawdock-dashboard`    | 開啟 Control UI URL    |
-| `clawdock-devices`      | 列出待處理的裝置配對   |
-| `clawdock-approve <id>` | 核准配對請求           |
+| 命令                    | 說明                 |
+| ----------------------- | -------------------- |
+| `clawdock-dashboard`    | 開啟控制介面網址     |
+| `clawdock-devices`      | 列出待處理的裝置配對 |
+| `clawdock-approve <id>` | 核准配對請求         |
 
 ### 設定與維護
 
-| 指令                 | 說明                         |
+| 命令                 | 說明                         |
 | -------------------- | ---------------------------- |
-| `clawdock-fix-token` | 將閘道 token 寫入容器設定    |
-| `clawdock-update`    | 拉取、重新建置並重新啟動     |
-| `clawdock-rebuild`   | 只重新建置 Docker 映像       |
-| `clawdock-clean`     | 移除容器與 volume            |
+| `clawdock-fix-token` | 將閘道權杖寫入容器設定       |
+| `clawdock-update`    | 提取、重新建置並重新啟動     |
+| `clawdock-rebuild`   | 僅重新建置 Docker 映像       |
+| `clawdock-clean`     | 移除容器與磁碟區             |
 
-### 工具
+### 公用工具
 
-| 指令                   | 說明                         |
-| ---------------------- | ---------------------------- |
-| `clawdock-health`      | 執行閘道健康檢查             |
-| `clawdock-token`       | 印出閘道 token               |
-| `clawdock-cd`          | 跳至 OpenClaw 專案目錄       |
-| `clawdock-config`      | 開啟 `~/.openclaw`           |
-| `clawdock-show-config` | 印出已遮蔽值的設定檔         |
-| `clawdock-workspace`   | 開啟工作區目錄               |
-| `clawdock-help`        | 列出所有 ClawDock 指令       |
+| 命令                   | 說明                               |
+| ---------------------- | ---------------------------------- |
+| `clawdock-health`      | 執行閘道健康狀態檢查               |
+| `clawdock-token`       | 輸出閘道權杖                       |
+| `clawdock-cd`          | 跳至 OpenClaw 專案目錄              |
+| `clawdock-config`      | 開啟 `~/.openclaw`                  |
+| `clawdock-show-config` | 輸出設定檔，並遮蔽其中的值         |
+| `clawdock-workspace`   | 開啟工作區目錄                     |
+| `clawdock-help`        | 列出所有 ClawDock 命令             |
 
 ## 首次使用流程
 
@@ -97,25 +97,25 @@ clawdock-approve <request-id>
 
 ## 設定與密鑰
 
-ClawDock 會讀取兩個獨立的 `.env` 檔案，對應 [Docker](/zh-TW/install/docker) 中描述的分工：
+ClawDock 會讀取兩個獨立的 `.env` 檔案，與 [Docker](/zh-TW/install/docker) 中說明的分離方式一致：
 
-- 專案中位於 `docker-compose.yml` 旁的 `.env`：Docker 專用值，例如映像名稱、連接埠和 `OPENCLAW_GATEWAY_TOKEN`。`clawdock-token` 會從這裡讀取 token。
-- `~/.openclaw/.env`（掛載到容器中）：OpenClaw 自身管理、由環境變數支援的密鑰，與 `openclaw.json` 和 `agents/<agentId>/agent/auth-profiles.json` 並存。
+- 位於 `docker-compose.yml` 旁的專案 `.env`：包含 Docker 專用值，例如映像名稱、連接埠和 `OPENCLAW_GATEWAY_TOKEN`。`clawdock-token` 會從此處讀取權杖。
+- `~/.openclaw/.env`（掛載至容器中）：OpenClaw 本身管理且由環境變數提供的密鑰，與 `openclaw.json` 和 `agents/<agentId>/agent/auth-profiles.json` 放在一起。
 
-`clawdock-fix-token` 會將 token 從專案 `.env` 複製到容器的 `gateway.remote.token` 和 `gateway.auth.token` 設定值，並重新啟動閘道。
+`clawdock-fix-token` 會將權杖從專案 `.env` 複製到容器的 `gateway.remote.token` 與 `gateway.auth.token` 設定值，然後重新啟動閘道。
 
-使用 `clawdock-show-config` 可快速檢查 `openclaw.json` 和兩個 `.env` 檔案；它會在印出的輸出中遮蔽 `.env` 的值。
+使用 `clawdock-show-config` 可快速檢查 `openclaw.json` 和兩個 `.env` 檔案；它會在輸出內容中遮蔽 `.env` 的值。
 
-## 相關
+## 相關內容
 
 <CardGroup cols={2}>
   <Card title="Docker" href="/zh-TW/install/docker" icon="docker">
-    OpenClaw 的標準 Docker 安裝。
+    OpenClaw 的標準 Docker 安裝方式。
   </Card>
-  <Card title="Docker VM runtime" href="/zh-TW/install/docker-vm-runtime" icon="cube">
-    由 Docker 管理的 VM 執行階段，用於強化隔離。
+  <Card title="Docker 虛擬機器執行環境" href="/zh-TW/install/docker-vm-runtime" icon="cube">
+    由 Docker 管理的虛擬機器執行環境，提供強化隔離。
   </Card>
-  <Card title="Updating" href="/zh-TW/install/updating" icon="arrow-up-right-from-square">
-    更新 OpenClaw 套件與受管理服務。
+  <Card title="更新" href="/zh-TW/install/updating" icon="arrow-up-right-from-square">
+    更新 OpenClaw 套件與受管理的服務。
   </Card>
 </CardGroup>

@@ -1,45 +1,46 @@
 ---
 read_when:
-    - Je wilt agentuitvoeringen starten vanuit scripts of de opdrachtregel
-    - Je moet antwoorden van agents programmatisch naar een chatkanaal verzenden
-summary: Voer agentbeurten uit vanaf de CLI en lever antwoorden optioneel af aan kanalen
+    - Je wilt agentruns activeren vanuit scripts of via de opdrachtregel
+    - Je moet antwoorden van de agent programmatisch naar een chatkanaal sturen
+summary: Voer agentbeurten uit vanuit de CLI en lever antwoorden optioneel af bij kanalen
 title: Agent verzenden
 x-i18n:
-    generated_at: "2026-06-27T18:23:25Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:27:32Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 25026258a5a47c87fbf99689de5ea16d827b11af07bc5ce4f6c3e2bda6466b46
+    source_hash: 23ad57735bd43a2bba5add571e9572da0fbe7b516a70515c674e1ababaab081a
     source_path: tools/agent-send.md
     workflow: 16
 ---
 
-`openclaw agent` voert één agentbeurt uit vanaf de opdrachtregel zonder dat er
-een inkomend chatbericht nodig is. Gebruik het voor gescripte workflows, tests en
-programmatische levering.
+`openclaw agent` voert één agentbeurt uit vanaf de opdrachtregel zonder een
+inkomend chatbericht. Gebruik dit voor gescripte workflows, tests en
+programmatische aflevering. Volledige referentie voor vlaggen en gedrag:
+[Agent-CLI-referentie](/nl/cli/agent).
 
-## Snelstart
+## Snel aan de slag
 
 <Steps>
-  <Step title="Run a simple agent turn">
+  <Step title="Een eenvoudige agentbeurt uitvoeren">
     ```bash
     openclaw agent --agent main --message "What is the weather today?"
     ```
 
-    Dit stuurt het bericht via de Gateway en drukt het antwoord af.
+    Verstuurt het bericht via de Gateway en geeft het antwoord weer.
 
   </Step>
 
-  <Step title="Send a multiline prompt from a file">
+  <Step title="Een prompt met meerdere regels vanuit een bestand verzenden">
     ```bash
     openclaw agent --agent ops --message-file ./task.md
     ```
 
-    Dit leest een geldig UTF-8-bestand als berichttekst voor de agent.
+    Leest een geldig UTF-8-bestand als de berichttekst voor de agent.
 
   </Step>
 
-  <Step title="Target a specific agent or session">
+  <Step title="Een specifieke agent of sessie kiezen">
     ```bash
     # Target a specific agent
     openclaw agent --agent ops --message "Summarize logs"
@@ -56,7 +57,7 @@ programmatische levering.
 
   </Step>
 
-  <Step title="Deliver the reply to a channel">
+  <Step title="Het antwoord bij een kanaal afleveren">
     ```bash
     # Deliver to WhatsApp (default channel)
     openclaw agent --to +15555550123 --message "Report ready" --deliver
@@ -69,55 +70,68 @@ programmatische levering.
   </Step>
 </Steps>
 
-## Flags
+## Vlaggen
 
-| Flag                          | Beschrijving                                                |
-| ----------------------------- | ----------------------------------------------------------- |
-| `--message \<text\>`          | Inlinebericht om te verzenden                               |
-| `--message-file \<path\>`     | Lees het bericht uit een geldig UTF-8-bestand               |
-| `--to \<dest\>`               | Leid de sessiesleutel af van een doel (telefoon, chat-id)   |
-| `--session-key \<key\>`       | Gebruik een expliciete sessiesleutel                        |
-| `--agent \<id\>`              | Richt op een geconfigureerde agent (gebruikt de `main`-sessie) |
-| `--session-id \<id\>`         | Hergebruik een bestaande sessie op id                       |
-| `--local`                     | Forceer lokale ingebedde runtime (sla Gateway over)         |
-| `--deliver`                   | Stuur het antwoord naar een chatkanaal                      |
-| `--channel \<name\>`          | Leveringskanaal (whatsapp, telegram, discord, slack, enz.)  |
-| `--reply-to \<target\>`       | Overschrijving van leveringsdoel                            |
-| `--reply-channel \<name\>`    | Overschrijving van leveringskanaal                          |
-| `--reply-account \<id\>`      | Overschrijving van leveringsaccount-id                      |
-| `--thinking \<level\>`        | Stel het denkniveau in voor het geselecteerde modelprofiel  |
-| `--verbose \<on\|full\|off\>` | Stel het verbose-niveau in                                  |
-| `--timeout \<seconds\>`       | Overschrijf de agent-time-out                               |
-| `--json`                      | Geef gestructureerde JSON uit                               |
+| Vlag                        | Beschrijving                                                         |
+| --------------------------- | -------------------------------------------------------------------- |
+| `--message <text>`          | Inlinebericht om te verzenden                                        |
+| `--message-file <path>`     | Lees het bericht uit een geldig UTF-8-bestand                        |
+| `--to <dest>`               | Leid de sessiesleutel af van een doel (telefoon, chat-id)            |
+| `--session-key <key>`       | Gebruik een expliciete sessiesleutel                                 |
+| `--agent <id>`              | Kies een geconfigureerde agent (gebruikt diens `main`-sessie)        |
+| `--session-id <id>`         | Hergebruik een bestaande sessie op basis van id                      |
+| `--model <id>`              | Modeloverschrijving voor deze uitvoering (`provider/model` of model-id) |
+| `--local`                   | Dwing de lokale ingebedde runtime af (sla Gateway over)              |
+| `--deliver`                 | Verzend het antwoord naar een chatkanaal                             |
+| `--channel <name>`          | Afleverkanaal; met `--agent` + `--to` geldt dit ook voor het DM-bereik |
+| `--reply-to <target>`       | Overschrijving van het afleverdoel                                   |
+| `--reply-channel <name>`    | Overschrijving van het afleverkanaal                                 |
+| `--reply-account <id>`      | Overschrijving van de afleveraccount-id                              |
+| `--thinking <level>`        | Stel het denkniveau in voor het geselecteerde modelprofiel           |
+| `--verbose <on\|full\|off>` | Sla het detailniveau voor de sessie op (`full` logt ook tooluitvoer) |
+| `--timeout <seconds>`       | Overschrijf de agenttime-out (standaard 600 of de configuratiewaarde) |
+| `--json`                    | Voer gestructureerde JSON uit                                        |
 
 ## Gedrag
 
-- Standaard gaat de CLI **via de Gateway**. Voeg `--local` toe om de
-  ingebedde runtime op de huidige machine te forceren.
-- Geef precies één van `--message` of `--message-file` door. Bestandsberichten behouden
-  meerregelige inhoud nadat een optionele UTF-8-BOM is verwijderd.
-- Als de Gateway niet bereikbaar is, **valt de CLI terug** op de lokale ingebedde uitvoering.
-- Sessieselectie: `--to` leidt de sessiesleutel af (groep-/kanaaldoelen
-  behouden isolatie; directe chats vallen samen naar `main`).
-- `--session-key` selecteert een expliciete sleutel. Agent-voorvoegde sleutels moeten
-  `agent:<agent-id>:<session-key>` gebruiken, en `--agent` moet met die agent-id overeenkomen wanneer
-  beide zijn opgegeven. Kale niet-sentinel-sleutels worden binnen het bereik van `--agent` geplaatst wanneer
-  opgegeven; bijvoorbeeld `--agent ops --session-key incident-42` routeert naar
-  `agent:ops:incident-42`. Zonder `--agent` worden kale niet-sentinel-sleutels binnen het bereik
-  van de geconfigureerde standaardagent geplaatst. Letterlijke `global` en `unknown` blijven
-  alleen zonder bereik wanneer geen `--agent` is opgegeven; in dat geval gebruiken ingebedde fallback
-  en store-eigenaarschap de geconfigureerde standaardagent.
-- Thinking- en verbose-flags blijven behouden in de sessiestore.
-- Uitvoer: standaard platte tekst, of `--json` voor gestructureerde payload + metadata.
-- Met `--json --deliver` bevat de JSON de leveringsstatus voor verzonden,
+- Standaard gaat de CLI **via de Gateway**. Voeg `--local` toe om de ingebedde
+  runtime op de huidige machine af te dwingen.
+- Geef precies één van `--message` of `--message-file` door. Bestandsberichten
+  behouden inhoud met meerdere regels nadat een optionele UTF-8-BOM is verwijderd.
+- Als het Gateway-verzoek mislukt, **valt de CLI terug** op de lokale ingebedde
+  uitvoering; bij een Gateway-time-out wordt teruggevallen met een nieuwe sessie
+  in plaats van de oorspronkelijke transcriptie gelijktijdig voort te zetten.
+- Sessieselectie: `--to` leidt de sessiesleutel af (groeps-/kanaaldoelen
+  behouden isolatie; directe chats worden samengevoegd tot `main`). Wanneer
+  `--agent`, `--channel` en `--to` samen worden gebruikt, volgt de routering de
+  canonieke ontvanger van het kanaal en `session.dmScope`. Stabiele identiteiten
+  die alleen voor uitgaande berichten worden gebruikt, gebruiken een sessie die
+  eigendom is van de provider en is geïsoleerd van de hoofdsessie van de agent.
+- `--session-key` selecteert een expliciete sleutel. Sleutels met een agentvoorvoegsel
+  moeten `agent:<agent-id>:<session-key>` gebruiken, en `--agent` moet overeenkomen
+  met die agent-id wanneer beide zijn opgegeven. Kale sleutels die geen sentinel zijn,
+  worden, indien opgegeven, beperkt tot `--agent`; `--agent ops --session-key incident-42`
+  routeert bijvoorbeeld naar `agent:ops:incident-42`. Zonder `--agent` worden kale
+  sleutels die geen sentinel zijn, beperkt tot de geconfigureerde standaardagent.
+  De letterlijke waarden `global` en `unknown` blijven alleen buiten een bereik
+  wanneer geen `--agent` is opgegeven; het ingebedde terugvalpad koppelt deze
+  sentinelsessies aan de geconfigureerde standaardagent.
+- `--reply-channel` en `--reply-account` beïnvloeden alleen de aflevering.
+- Vlaggen voor denkniveau en detailniveau worden opgeslagen in de sessieopslag.
+- Uitvoer: standaard platte tekst, of `--json` voor een gestructureerde payload
+  met metagegevens.
+- Met `--json --deliver` bevat de JSON de afleverstatus voor verzonden,
   onderdrukte, gedeeltelijke en mislukte verzendingen. Zie
-  [JSON-leveringsstatus](/nl/cli/agent#json-delivery-status).
+  [JSON-afleverstatus](/nl/cli/agent#json-delivery-status).
 
 ## Voorbeelden
 
 ```bash
 # Simple turn with JSON output
 openclaw agent --to +15555550123 --message "Trace logs" --verbose on --json
+
+# Turn with a model override
+openclaw agent --agent ops --model openai/gpt-5.4 --message "Summarize logs"
 
 # Turn with thinking level
 openclaw agent --session-id 1234 --message "Summarize inbox" --thinking medium
@@ -138,16 +152,16 @@ openclaw agent --agent ops --message "Alert" --deliver --reply-channel telegram 
 ## Gerelateerd
 
 <CardGroup cols={2}>
-  <Card title="Agent CLI reference" href="/nl/cli/agent" icon="terminal">
-    Volledige referentie voor flags en opties van `openclaw agent`.
+  <Card title="Agent-CLI-referentie" href="/nl/cli/agent" icon="terminal">
+    Volledige referentie voor vlaggen en opties van `openclaw agent`.
   </Card>
-  <Card title="Sub-agents" href="/nl/tools/subagents" icon="users">
-    Sub-agents op de achtergrond starten.
+  <Card title="Subagents" href="/nl/tools/subagents" icon="users">
+    Subagents op de achtergrond starten.
   </Card>
-  <Card title="Sessions" href="/nl/concepts/session" icon="comments">
-    Hoe sessiesleutels werken en hoe `--to`, `--agent` en `--session-id` ze oplossen.
+  <Card title="Sessies" href="/nl/concepts/session" icon="comments">
+    Hoe sessiesleutels werken en hoe `--to`, `--agent` en `--session-id` deze omzetten.
   </Card>
-  <Card title="Slash commands" href="/nl/tools/slash-commands" icon="slash">
-    Native opdrachtcatalogus die binnen agentsessies wordt gebruikt.
+  <Card title="Slash-opdrachten" href="/nl/tools/slash-commands" icon="slash">
+    Catalogus met systeemeigen opdrachten die binnen agentsessies wordt gebruikt.
   </Card>
 </CardGroup>

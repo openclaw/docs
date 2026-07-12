@@ -4,23 +4,23 @@ read_when:
 summary: Thêm các công cụ mà tác nhân có thể gọi.
 title: Plugin trình duyệt
 x-i18n:
-    generated_at: "2026-05-02T20:48:55Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:14:41Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: 2dcf562660fa3d05d22856335a7d2e6e467a432ee6dda5650efd94edde661ba4
     source_path: plugins/reference/browser.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Plugin trình duyệt
 
-Thêm các công cụ mà tác nhân có thể gọi.
+Thêm các công cụ mà agent có thể gọi.
 
 ## Phân phối
 
 - Gói: `@openclaw/browser-plugin`
-- Tuyến cài đặt: được bao gồm trong OpenClaw
+- Phương thức cài đặt: được tích hợp trong OpenClaw
 
 ## Bề mặt
 

@@ -1,32 +1,32 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або аудіюєте плагін qwen
-summary: Додає до OpenClaw підтримку провайдерів моделей Qwen, Qwen Cloud, Model Studio, DashScope, Qwen Oauth, Qwen Portal і Qwen CLI.
+    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin qwen
+summary: Додає до OpenClaw підтримку постачальників моделей Qwen, Qwen Cloud, Model Studio, DashScope, Qwen Oauth, Qwen Portal, Qwen CLI, Qwen Token Plan і Bailian Token Plan.
 title: Plugin Qwen
 x-i18n:
-    generated_at: "2026-06-27T18:01:43Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:37:50Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3be7c8f459e2ec3b5c5c13f5c67382cc84b568c3aeedeaedceab9259b29886f1
+    source_hash: 3d3c529b0b98f0c7b2137754264e9acfddd90a245418ee105b9efc9541b1911b
     source_path: plugins/reference/qwen.md
     workflow: 16
 ---
 
 # Plugin Qwen
 
-Додає підтримку провайдерів моделей Qwen, Qwen Cloud, Model Studio, DashScope, Qwen Oauth, Qwen Portal, Qwen CLI до OpenClaw.
+Додає до OpenClaw підтримку постачальників моделей Qwen, Qwen Cloud, Model Studio, DashScope, Qwen Oauth, Qwen Portal, Qwen CLI, Qwen Token Plan і Bailian Token Plan.
 
-## Дистрибуція
+## Розповсюдження
 
 - Пакет: `@openclaw/qwen-provider`
-- Маршрут встановлення: npm; ClawHub: `clawhub:@openclaw/qwen-provider`
+- Спосіб установлення: npm; ClawHub: `clawhub:@openclaw/qwen-provider`
 
-## Поверхня
+## Інтерфейс
 
-providers: qwen, qwencloud, modelstudio, dashscope, qwen-oauth, qwen-portal, qwen-cli; contracts: mediaUnderstandingProviders, videoGenerationProviders
+постачальники: qwen, qwencloud, modelstudio, dashscope, qwen-oauth, qwen-portal, qwen-cli, qwen-token-plan, bailian-token-plan; контракти: mediaUnderstandingProviders, videoGenerationProviders
 
-## Пов’язані документи
+## Пов’язана документація
 
 - [qwen](/uk/providers/qwen)
 - [qwen-oauth](/uk/providers/qwen-oauth)

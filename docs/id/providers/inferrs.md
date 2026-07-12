@@ -6,33 +6,33 @@ read_when:
 summary: Jalankan OpenClaw melalui inferrs (server lokal yang kompatibel dengan OpenAI)
 title: Menyimpulkan
 x-i18n:
-    generated_at: "2026-05-10T19:50:35Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:33:07Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8352da589baaa3a193bb3a56d12ee1a50630346dda186898346e805844d22aa1
+    source_hash: 8b9b6fe337a2ec6536332dd62840052fd802fad0a5f3d885ce137523266ff3c9
     source_path: providers/inferrs.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-[inferrs](https://github.com/ericcurtin/inferrs) dapat menyajikan model lokal di belakang API `/v1` yang kompatibel dengan OpenAI. OpenClaw bekerja dengan `inferrs` melalui jalur generik `openai-completions`.
+[inferrs](https://github.com/ericcurtin/inferrs) menyajikan model lokal melalui API `/v1` yang kompatibel dengan OpenAI. OpenClaw berkomunikasi dengannya melalui adaptor generik `openai-completions`.
 
-| Properti          | Nilai                                                              |
-| ----------------- | ------------------------------------------------------------------ |
-| id Provider       | `inferrs` (kustom; konfigurasikan di bawah `models.providers.inferrs`) |
-| Plugin            | tidak ada — `inferrs` bukan Plugin provider OpenClaw bawaan        |
-| Variabel env auth | Opsional. Nilai apa pun berfungsi jika server inferrs Anda tidak memiliki auth |
-| API               | Kompatibel dengan OpenAI (`openai-completions`)                    |
-| URL dasar yang disarankan | `http://127.0.0.1:8080/v1` (atau di mana pun server inferrs Anda berada) |
+| Properti           | Nilai                                                                |
+| ------------------ | -------------------------------------------------------------------- |
+| ID penyedia        | `inferrs` (khusus; konfigurasikan di `models.providers.inferrs`)     |
+| Plugin             | tidak ada — bukan plugin penyedia bawaan OpenClaw                    |
+| Variabel lingkungan autentikasi | tidak diperlukan; nilai apa pun dapat digunakan jika server inferrs Anda tidak memiliki autentikasi |
+| API                | Kompatibel dengan OpenAI (`openai-completions`)                      |
+| URL dasar yang disarankan | `http://127.0.0.1:8080/v1` (atau lokasi server inferrs Anda mendengarkan) |
 
 <Note>
-  `inferrs` saat ini paling baik diperlakukan sebagai backend kustom yang di-host sendiri dan kompatibel dengan OpenAI, bukan Plugin provider OpenClaw khusus. Anda mengonfigurasinya melalui `models.providers.inferrs`, bukan melalui flag pilihan onboarding. Jika Anda membutuhkan Plugin bawaan sungguhan dengan penemuan otomatis, lihat [SGLang](/id/providers/sglang) atau [vLLM](/id/providers/vllm).
+  `inferrs` adalah backend khusus yang dihosting sendiri dan kompatibel dengan OpenAI, bukan plugin penyedia khusus OpenClaw: Anda mengonfigurasikannya di `models.providers.inferrs`, bukan memilih opsi autentikasi orientasi awal. Untuk plugin bawaan dengan penemuan otomatis, lihat [SGLang](/id/providers/sglang) atau [vLLM](/id/providers/vllm).
 </Note>
 
 ## Memulai
 
 <Steps>
-  <Step title="Jalankan inferrs dengan sebuah model">
+  <Step title="Mulai inferrs dengan sebuah model">
     ```bash
     inferrs serve google/gemma-4-E2B-it \
       --host 127.0.0.1 \
@@ -40,20 +40,20 @@ x-i18n:
       --device metal
     ```
   </Step>
-  <Step title="Verifikasi bahwa server dapat dijangkau">
+  <Step title="Pastikan server dapat dijangkau">
     ```bash
     curl http://127.0.0.1:8080/health
     curl http://127.0.0.1:8080/v1/models
     ```
   </Step>
-  <Step title="Tambahkan entri provider OpenClaw">
-    Tambahkan entri provider eksplisit dan arahkan model default Anda ke entri tersebut. Lihat contoh konfigurasi lengkap di bawah.
+  <Step title="Tambahkan entri penyedia OpenClaw">
+    Tambahkan entri penyedia secara eksplisit dan arahkan model default Anda ke entri tersebut. Lihat contoh konfigurasi di bawah.
   </Step>
 </Steps>
 
 ## Contoh konfigurasi lengkap
 
-Contoh ini menggunakan Gemma 4 pada server `inferrs` lokal.
+Gemma 4 pada server `inferrs` lokal:
 
 ```json5
 {
@@ -94,10 +94,9 @@ Contoh ini menggunakan Gemma 4 pada server `inferrs` lokal.
 }
 ```
 
-## Startup sesuai permintaan
+## Penyalaan sesuai permintaan
 
-Inferrs juga dapat dijalankan oleh OpenClaw hanya saat model `inferrs/...`
-dipilih. Tambahkan `localService` ke entri provider yang sama:
+OpenClaw dapat memulai `inferrs` sendiri hanya ketika model `inferrs/...` dipilih. Tambahkan `localService` ke entri penyedia yang sama:
 
 ```json5
 {
@@ -144,44 +143,28 @@ dipilih. Tambahkan `localService` ke entri provider yang sama:
 }
 ```
 
-`command` harus absolut. Gunakan `which inferrs` pada host Gateway dan masukkan
-path tersebut ke konfigurasi. Untuk referensi field lengkap, lihat
-[Layanan model lokal](/id/gateway/local-model-services).
+`command` harus berupa jalur absolut. Jalankan `which inferrs` pada host Gateway dan gunakan jalur tersebut. Referensi lengkap kolom: [Layanan model lokal](/id/gateway/local-model-services).
 
 ## Konfigurasi lanjutan
 
 <AccordionGroup>
   <Accordion title="Mengapa requiresStringContent penting">
-    Beberapa rute Chat Completions `inferrs` hanya menerima string
-    `messages[].content`, bukan array bagian konten terstruktur.
+    Beberapa rute Penyelesaian Percakapan `inferrs` hanya menerima `messages[].content` berupa string, bukan larik bagian konten terstruktur.
 
     <Warning>
-    Jika proses OpenClaw gagal dengan kesalahan seperti:
+    Jika proses OpenClaw gagal dengan:
 
     ```text
     messages[1].content: invalid type: sequence, expected a string
     ```
 
-    atur `compat.requiresStringContent: true` di entri model Anda.
+    tetapkan `compat.requiresStringContent: true` dalam entri model. OpenClaw kemudian meratakan bagian konten yang hanya berisi teks menjadi string biasa sebelum mengirim permintaan.
     </Warning>
-
-    ```json5
-    compat: {
-      requiresStringContent: true
-    }
-    ```
-
-    OpenClaw akan meratakan bagian konten teks murni menjadi string biasa sebelum mengirim
-    permintaan.
 
   </Accordion>
 
-  <Accordion title="Catatan Gemma dan skema tool">
-    Beberapa kombinasi `inferrs` + Gemma saat ini menerima permintaan langsung
-    `/v1/chat/completions` kecil tetapi masih gagal pada giliran agent-runtime OpenClaw
-    penuh.
-
-    Jika itu terjadi, coba ini terlebih dahulu:
+  <Accordion title="Catatan khusus Gemma dan skema alat">
+    Beberapa kombinasi `inferrs` + Gemma menerima permintaan langsung berukuran kecil ke `/v1/chat/completions`, tetapi gagal pada putaran penuh runtime agen OpenClaw. Coba nonaktifkan permukaan skema alat terlebih dahulu:
 
     ```json5
     compat: {
@@ -190,17 +173,12 @@ path tersebut ke konfigurasi. Untuk referensi field lengkap, lihat
     }
     ```
 
-    Itu menonaktifkan permukaan skema tool OpenClaw untuk model dan dapat mengurangi tekanan prompt
-    pada backend lokal yang lebih ketat.
-
-    Jika permintaan langsung yang sangat kecil masih berfungsi tetapi giliran agen OpenClaw normal terus
-    crash di dalam `inferrs`, masalah yang tersisa biasanya adalah perilaku model/server
-    upstream, bukan lapisan transport OpenClaw.
+    Hal tersebut mengurangi tekanan prompt pada backend lokal yang lebih ketat. Jika permintaan langsung berukuran kecil masih berfungsi, tetapi putaran agen OpenClaw normal terus mengalami kegagalan di dalam `inferrs`, anggap hal itu sebagai keterbatasan model/server hulu, bukan masalah transportasi OpenClaw.
 
   </Accordion>
 
-  <Accordion title="Uji smoke manual">
-    Setelah dikonfigurasi, uji kedua lapisan:
+  <Accordion title="Uji cepat manual">
+    Uji kedua lapisan setelah dikonfigurasi:
 
     ```bash
     curl http://127.0.0.1:8080/v1/chat/completions \
@@ -215,20 +193,12 @@ path tersebut ke konfigurasi. Untuk referensi field lengkap, lihat
       --json
     ```
 
-    Jika perintah pertama berfungsi tetapi yang kedua gagal, periksa bagian pemecahan masalah di bawah.
+    Jika perintah pertama berfungsi tetapi perintah kedua gagal, lihat Pemecahan masalah di bawah.
 
   </Accordion>
 
-  <Accordion title="Perilaku bergaya proxy">
-    `inferrs` diperlakukan sebagai backend `/v1` bergaya proxy yang kompatibel dengan OpenAI, bukan
-    endpoint OpenAI native.
-
-    - Pembentukan permintaan khusus OpenAI native tidak berlaku di sini
-    - Tidak ada `service_tier`, tidak ada Responses `store`, tidak ada petunjuk prompt-cache, dan tidak ada
-      pembentukan payload kompatibilitas reasoning OpenAI
-    - Header atribusi OpenClaw tersembunyi (`originator`, `version`, `User-Agent`)
-      tidak disuntikkan pada URL dasar `inferrs` kustom
-
+  <Accordion title="Perilaku bergaya proksi">
+    Karena `inferrs` menggunakan adaptor generik `openai-completions` (bukan `openai-responses`), pembentukan permintaan yang hanya berlaku untuk OpenAI asli tidak pernah diterapkan: tidak ada `service_tier`, tidak ada `store` Responses, tidak ada petunjuk cache prompt, dan tidak ada pembentukan muatan kompatibilitas penalaran OpenAI yang dikirim.
   </Accordion>
 </AccordionGroup>
 
@@ -236,45 +206,39 @@ path tersebut ke konfigurasi. Untuk referensi field lengkap, lihat
 
 <AccordionGroup>
   <Accordion title="curl /v1/models gagal">
-    `inferrs` tidak berjalan, tidak dapat dijangkau, atau tidak terikat ke
-    host/port yang diharapkan. Pastikan server telah dijalankan dan mendengarkan pada alamat yang Anda
-    konfigurasi.
+    `inferrs` tidak berjalan, tidak dapat dijangkau, atau tidak terikat ke host/port yang Anda konfigurasi. Pastikan server telah dimulai dan mendengarkan pada alamat tersebut.
   </Accordion>
 
   <Accordion title="messages[].content mengharapkan string">
-    Atur `compat.requiresStringContent: true` di entri model. Lihat bagian
-    `requiresStringContent` di atas untuk detail.
+    Tetapkan `compat.requiresStringContent: true` dalam entri model (lihat di atas).
   </Accordion>
 
-  <Accordion title="Panggilan langsung /v1/chat/completions berhasil tetapi openclaw infer model run gagal">
-    Coba atur `compat.supportsTools: false` untuk menonaktifkan permukaan skema tool.
-    Lihat catatan skema tool Gemma di atas.
+  <Accordion title="Panggilan langsung /v1/chat/completions berhasil, tetapi openclaw infer model run gagal">
+    Tetapkan `compat.supportsTools: false` untuk menonaktifkan permukaan skema alat (lihat catatan khusus Gemma di atas).
   </Accordion>
 
-  <Accordion title="inferrs masih crash pada giliran agen yang lebih besar">
-    Jika OpenClaw tidak lagi mendapatkan kesalahan skema tetapi `inferrs` masih crash pada giliran
-    agen yang lebih besar, perlakukan itu sebagai batasan upstream `inferrs` atau model. Kurangi
-    tekanan prompt atau beralih ke backend atau model lokal yang berbeda.
+  <Accordion title="inferrs masih mengalami kegagalan pada putaran agen yang lebih besar">
+    Jika kesalahan skema telah hilang, tetapi `inferrs` masih mengalami kegagalan pada putaran agen yang lebih besar, anggap hal itu sebagai keterbatasan `inferrs` hulu atau model. Kurangi tekanan prompt atau ganti backend/model.
   </Accordion>
 </AccordionGroup>
 
 <Tip>
-Untuk bantuan umum, lihat [Pemecahan masalah](/id/help/troubleshooting) dan [FAQ](/id/help/faq).
+Untuk bantuan umum, lihat [Pemecahan masalah](/id/help/troubleshooting) dan [Pertanyaan umum](/id/help/faq).
 </Tip>
 
 ## Terkait
 
 <CardGroup cols={2}>
   <Card title="Model lokal" href="/id/gateway/local-models" icon="server">
-    Menjalankan OpenClaw terhadap server model lokal.
+    Menjalankan OpenClaw dengan server model lokal.
   </Card>
   <Card title="Layanan model lokal" href="/id/gateway/local-model-services" icon="play">
-    Menjalankan server model lokal sesuai permintaan untuk provider yang dikonfigurasi.
+    Memulai server model lokal sesuai permintaan untuk penyedia yang dikonfigurasi.
   </Card>
   <Card title="Pemecahan masalah Gateway" href="/id/gateway/troubleshooting#local-openai-compatible-backend-passes-direct-probes-but-agent-runs-fail" icon="wrench">
-    Men-debug backend lokal yang kompatibel dengan OpenAI yang lulus probe tetapi gagal pada proses agen.
+    Men-debug backend lokal yang kompatibel dengan OpenAI, yang lolos pemeriksaan tetapi gagal menjalankan agen.
   </Card>
   <Card title="Pemilihan model" href="/id/concepts/model-providers" icon="layers">
-    Ikhtisar semua provider, ref model, dan perilaku failover.
+    Ikhtisar semua penyedia, referensi model, dan perilaku pengalihan kegagalan.
   </Card>
 </CardGroup>

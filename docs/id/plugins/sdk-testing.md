@@ -1,66 +1,36 @@
 ---
 read_when:
     - Anda sedang menulis pengujian untuk sebuah plugin
-    - Anda memerlukan utilitas pengujian dari SDK Plugin
-    - Anda ingin memahami pengujian kontrak untuk Plugin bawaan
+    - Anda memerlukan utilitas pengujian dari SDK plugin
+    - Anda ingin memahami pengujian kontrak untuk plugin bawaan
 sidebarTitle: Testing
 summary: Utilitas dan pola pengujian untuk Plugin OpenClaw
 title: Pengujian Plugin
 x-i18n:
-    generated_at: "2026-06-28T07:42:45Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:30:27Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8e5f77e9c54a56c9af293061e2cff0ee6112f2b9b4bea3f9604d48b0f05049ef
+    source_hash: 666160b6eb0c2f3187e8f8b3efe417537c4c4404fe564c463da4d222bced3b8f
     source_path: plugins/sdk-testing.md
     workflow: 16
 ---
 
-Referensi untuk utilitas pengujian, pola, dan penegakan lint untuk plugin
+Referensi untuk utilitas pengujian, pola, dan penerapan lint bagi Plugin
 OpenClaw.
 
 <Tip>
-  **Mencari contoh pengujian?** Panduan cara kerja menyertakan contoh pengujian yang dikerjakan:
-  [Pengujian plugin kanal](/id/plugins/sdk-channel-plugins#step-6-test) dan
-  [Pengujian plugin penyedia](/id/plugins/sdk-provider-plugins#step-6-test).
+  **Mencari contoh pengujian?** Panduan cara kerja menyertakan contoh pengujian lengkap:
+  [Pengujian Plugin kanal](/id/plugins/sdk-channel-plugins#step-6-test) dan
+  [Pengujian Plugin penyedia](/id/plugins/sdk-provider-plugins#step-6-test).
 </Tip>
 
 ## Utilitas pengujian
 
-Subpath pembantu pengujian ini adalah entrypoint sumber lokal repo untuk pengujian plugin
-bundel milik OpenClaw sendiri. Subpath ini bukan ekspor paket untuk plugin pihak ketiga, dan
-dapat mengimpor Vitest atau dependensi pengujian lain yang hanya ada di repo.
-
-**Impor mock API Plugin:** `openclaw/plugin-sdk/plugin-test-api`
-
-**Impor kontrak runtime agen:** `openclaw/plugin-sdk/agent-runtime-test-contracts`
-
-**Impor kontrak kanal:** `openclaw/plugin-sdk/channel-contract-testing`
-
-**Impor pembantu pengujian kanal:** `openclaw/plugin-sdk/channel-test-helpers`
-
-**Impor pengujian target kanal:** `openclaw/plugin-sdk/channel-target-testing`
-
-**Impor kontrak Plugin:** `openclaw/plugin-sdk/plugin-test-contracts`
-
-**Impor pengujian runtime Plugin:** `openclaw/plugin-sdk/plugin-test-runtime`
-
-**Impor kontrak penyedia:** `openclaw/plugin-sdk/provider-test-contracts`
-
-**Impor mock HTTP penyedia:** `openclaw/plugin-sdk/provider-http-test-mocks`
-
-**Impor pengujian lingkungan/jaringan:** `openclaw/plugin-sdk/test-env`
-
-**Impor fixture generik:** `openclaw/plugin-sdk/test-fixtures`
-
-**Impor mock bawaan Node:** `openclaw/plugin-sdk/test-node-mocks`
-
-Di dalam repo OpenClaw, utamakan subpath terfokus di bawah ini untuk pengujian plugin
-bundel baru. Barrel luas
-`openclaw/plugin-sdk/testing` hanya untuk kompatibilitas lama.
-Guardrail repo menolak impor nyata baru dari `plugin-sdk/testing` dan
-`plugin-sdk/test-utils`; nama-nama tersebut tetap ada hanya sebagai permukaan kompatibilitas
-yang tidak digunakan lagi untuk pengujian catatan kompatibilitas.
+Subjalur ini merupakan titik masuk sumber lokal repositori untuk pengujian
+Plugin bawaan OpenClaw sendiri. Subjalur tersebut bukan ekspor `package.json`
+yang dipublikasikan untuk Plugin pihak ketiga, dan dapat mengimpor Vitest atau
+dependensi pengujian lain yang hanya tersedia di repositori.
 
 ```typescript
 import {
@@ -85,91 +55,91 @@ import {
 import { mockNodeBuiltinModule } from "openclaw/plugin-sdk/test-node-mocks";
 ```
 
+Utamakan subjalur terfokus ini untuk pengujian Plugin bawaan yang baru. Barrel
+umum `openclaw/plugin-sdk/testing` dan alias `openclaw/plugin-sdk/test-utils`
+hanya untuk kompatibilitas lama: `pnpm run lint:plugins:no-extension-test-core-imports`
+(`scripts/check-no-extension-test-core-imports.ts`) menolak impor baru atas
+keduanya dari berkas pengujian ekstensi, dan keduanya tetap tersedia semata-mata
+untuk pengujian catatan kompatibilitas.
+
 ### Ekspor yang tersedia
 
-| Ekspor                                               | Tujuan                                                                                                                                                  |
-| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `createTestPluginApi`                                | Membangun tiruan API Plugin minimal untuk pengujian unit pendaftaran langsung. Impor dari `plugin-sdk/plugin-test-api`                                  |
-| `AUTH_PROFILE_RUNTIME_CONTRACT`                      | Perlengkapan uji kontrak profil autentikasi bersama untuk adapter runtime agen native. Impor dari `plugin-sdk/agent-runtime-test-contracts`              |
-| `DELIVERY_NO_REPLY_RUNTIME_CONTRACT`                 | Perlengkapan uji kontrak penekanan pengiriman bersama untuk adapter runtime agen native. Impor dari `plugin-sdk/agent-runtime-test-contracts`            |
-| `OUTCOME_FALLBACK_RUNTIME_CONTRACT`                  | Perlengkapan uji kontrak klasifikasi fallback bersama untuk adapter runtime agen native. Impor dari `plugin-sdk/agent-runtime-test-contracts`            |
-| `createParameterFreeTool`                            | Membangun perlengkapan uji skema alat dinamis untuk pengujian kontrak runtime native. Impor dari `plugin-sdk/agent-runtime-test-contracts`               |
-| `expectChannelInboundContextContract`                | Menegaskan bentuk konteks masuk saluran. Impor dari `plugin-sdk/channel-contract-testing`                                                                |
-| `installChannelOutboundPayloadContractSuite`         | Memasang kasus kontrak payload keluar saluran. Impor dari `plugin-sdk/channel-contract-testing`                                                          |
-| `createStartAccountContext`                          | Membangun konteks siklus hidup akun saluran. Impor dari `plugin-sdk/channel-test-helpers`                                                               |
-| `installChannelActionsContractSuite`                 | Memasang kasus kontrak tindakan pesan saluran generik. Impor dari `plugin-sdk/channel-test-helpers`                                                     |
-| `installChannelSetupContractSuite`                   | Memasang kasus kontrak penyiapan saluran generik. Impor dari `plugin-sdk/channel-test-helpers`                                                          |
-| `installChannelStatusContractSuite`                  | Memasang kasus kontrak status saluran generik. Impor dari `plugin-sdk/channel-test-helpers`                                                             |
-| `expectDirectoryIds`                                 | Menegaskan id direktori saluran dari fungsi daftar direktori. Impor dari `plugin-sdk/channel-test-helpers`                                              |
-| `assertBundledChannelEntries`                        | Menegaskan titik masuk saluran terbundel mengekspos kontrak publik yang diharapkan. Impor dari `plugin-sdk/channel-test-helpers`                        |
-| `formatEnvelopeTimestamp`                            | Memformat stempel waktu amplop deterministik. Impor dari `plugin-sdk/channel-test-helpers`                                                              |
-| `expectPairingReplyText`                             | Menegaskan teks balasan pemasangan saluran dan mengekstrak kodenya. Impor dari `plugin-sdk/channel-test-helpers`                                        |
-| `describePluginRegistrationContract`                 | Memasang pemeriksaan kontrak pendaftaran Plugin. Impor dari `plugin-sdk/plugin-test-contracts`                                                          |
-| `registerSingleProviderPlugin`                       | Mendaftarkan satu Plugin penyedia dalam uji pemeriksaan cepat pemuat. Impor dari `plugin-sdk/plugin-test-runtime`                                       |
-| `registerProviderPlugin`                             | Menangkap semua jenis penyedia dari satu Plugin. Impor dari `plugin-sdk/plugin-test-runtime`                                                            |
-| `registerProviderPlugins`                            | Menangkap pendaftaran penyedia di beberapa Plugin. Impor dari `plugin-sdk/plugin-test-runtime`                                                          |
-| `requireRegisteredProvider`                          | Menegaskan bahwa koleksi penyedia berisi sebuah id. Impor dari `plugin-sdk/plugin-test-runtime`                                                         |
-| `createRuntimeEnv`                                   | Membangun lingkungan runtime CLI/Plugin tiruan. Impor dari `plugin-sdk/plugin-test-runtime`                                                             |
-| `createPluginRuntimeMock`                            | Membangun permukaan runtime Plugin tiruan. Impor dari `plugin-sdk/plugin-test-runtime`                                                                  |
-| `createPluginSetupWizardStatus`                      | Membangun helper status penyiapan untuk Plugin saluran. Impor dari `plugin-sdk/plugin-test-runtime`                                                     |
-| `describeOpenAIProviderRuntimeContract`              | Memasang pemeriksaan kontrak runtime keluarga penyedia. Impor dari `plugin-sdk/provider-test-contracts`                                                  |
-| `expectPassthroughReplayPolicy`                      | Menegaskan kebijakan pemutaran ulang penyedia meneruskan alat dan metadata milik penyedia. Impor dari `plugin-sdk/provider-test-contracts`               |
-| `runRealtimeSttLiveTest`                             | Menjalankan pengujian langsung penyedia STT waktu nyata dengan perlengkapan uji audio bersama. Impor dari `plugin-sdk/provider-test-contracts`           |
-| `normalizeTranscriptForMatch`                        | Menormalkan keluaran transkrip langsung sebelum asersi fuzzy. Impor dari `plugin-sdk/provider-test-contracts`                                           |
-| `expectExplicitVideoGenerationCapabilities`          | Menegaskan penyedia video mendeklarasikan kapabilitas mode pembuatan eksplisit. Impor dari `plugin-sdk/provider-test-contracts`                         |
-| `expectExplicitMusicGenerationCapabilities`          | Menegaskan penyedia musik mendeklarasikan kapabilitas pembuatan/penyuntingan eksplisit. Impor dari `plugin-sdk/provider-test-contracts`                  |
-| `mockSuccessfulDashscopeVideoTask`                   | Memasang respons tugas video yang berhasil dan kompatibel dengan DashScope. Impor dari `plugin-sdk/provider-test-contracts`                              |
-| `getProviderHttpMocks`                               | Mengakses tiruan Vitest HTTP/autentikasi penyedia yang ikut serta. Impor dari `plugin-sdk/provider-http-test-mocks`                                      |
-| `installProviderHttpMockCleanup`                     | Mengatur ulang tiruan HTTP/autentikasi penyedia setelah setiap pengujian. Impor dari `plugin-sdk/provider-http-test-mocks`                               |
-| `installCommonResolveTargetErrorCases`               | Kasus pengujian bersama untuk penanganan kesalahan resolusi target. Impor dari `plugin-sdk/channel-target-testing`                                      |
-| `shouldAckReaction`                                  | Memeriksa apakah saluran harus menambahkan reaksi ack. Impor dari `plugin-sdk/channel-feedback`                                                         |
-| `removeAckReactionAfterReply`                        | Menghapus reaksi ack setelah pengiriman balasan. Impor dari `plugin-sdk/channel-feedback`                                                               |
-| `createTestRegistry`                                 | Membangun perlengkapan uji registri Plugin saluran. Impor dari `plugin-sdk/plugin-test-runtime` atau `plugin-sdk/channel-test-helpers`                   |
-| `createEmptyPluginRegistry`                          | Membangun perlengkapan uji registri Plugin kosong. Impor dari `plugin-sdk/plugin-test-runtime` atau `plugin-sdk/channel-test-helpers`                    |
-| `setActivePluginRegistry`                            | Memasang perlengkapan uji registri untuk pengujian runtime Plugin. Impor dari `plugin-sdk/plugin-test-runtime` atau `plugin-sdk/channel-test-helpers`    |
-| `createRequestCaptureJsonFetch`                      | Menangkap permintaan fetch JSON dalam pengujian helper media. Impor dari `plugin-sdk/test-env`                                                          |
-| `withServer`                                         | Menjalankan pengujian terhadap server HTTP lokal sekali pakai. Impor dari `plugin-sdk/test-env`                                                         |
-| `createMockIncomingRequest`                          | Membangun objek permintaan HTTP masuk minimal. Impor dari `plugin-sdk/test-env`                                                                          |
-| `withFetchPreconnect`                                | Menjalankan pengujian fetch dengan hook preconnect terpasang. Impor dari `plugin-sdk/test-env`                                                          |
-| `withEnv` / `withEnvAsync`                           | Menambal variabel lingkungan untuk sementara. Impor dari `plugin-sdk/test-env`                                                                          |
-| `createTempHomeEnv` / `withTempHome` / `withTempDir` | Membuat perlengkapan uji sistem berkas yang terisolasi. Impor dari `plugin-sdk/test-env`                                                                |
-| `createMockServerResponse`                           | Membuat tiruan respons server HTTP minimal. Impor dari `plugin-sdk/test-env`                                                                            |
-| `createCliRuntimeCapture`                            | Menangkap keluaran runtime CLI dalam pengujian. Impor dari `plugin-sdk/test-fixtures`                                                                   |
-| `importFreshModule`                                  | Mengimpor modul ESM dengan token kueri baru untuk melewati cache modul. Impor dari `plugin-sdk/test-fixtures`                                           |
-| `bundledPluginRoot` / `bundledPluginFile`            | Menyelesaikan jalur perlengkapan uji sumber atau dist Plugin terbundel. Impor dari `plugin-sdk/test-fixtures`                                          |
-| `mockNodeBuiltinModule`                              | Memasang tiruan Vitest bawaan Node yang sempit. Impor dari `plugin-sdk/test-node-mocks`                                                                 |
-| `createSandboxTestContext`                           | Membangun konteks pengujian sandbox. Impor dari `plugin-sdk/test-fixtures`                                                                              |
-| `writeSkill`                                         | Menulis perlengkapan uji skill. Impor dari `plugin-sdk/test-fixtures`                                                                                  |
-| `makeAgentAssistantMessage`                          | Membangun perlengkapan uji pesan transkrip agen. Impor dari `plugin-sdk/test-fixtures`                                                                  |
-| `peekSystemEvents` / `resetSystemEventsForTest`      | Memeriksa dan mengatur ulang perlengkapan uji peristiwa sistem. Impor dari `plugin-sdk/test-fixtures`                                                  |
-| `sanitizeTerminalText`                               | Membersihkan keluaran terminal untuk asersi. Impor dari `plugin-sdk/test-fixtures`                                                                      |
-| `countLines` / `hasBalancedFences`                   | Menegaskan bentuk keluaran pemotongan bagian. Impor dari `plugin-sdk/test-fixtures`                                                                     |
-| `runProviderCatalog`                                 | Menjalankan hook katalog penyedia dengan dependensi pengujian                                                                                           |
-| `resolveProviderWizardOptions`                       | Menyelesaikan pilihan wizard penyiapan penyedia dalam pengujian kontrak                                                                                 |
-| `resolveProviderModelPickerEntries`                  | Menyelesaikan entri pemilih model penyedia dalam pengujian kontrak                                                                                      |
-| `buildProviderPluginMethodChoice`                    | Membangun id pilihan wizard penyedia untuk asersi                                                                                                       |
-| `setProviderWizardProvidersResolverForTest`          | Menyuntikkan penyedia wizard penyedia untuk pengujian terisolasi                                                                         |
-| `createProviderUsageFetch`                           | Membuat fixture pengambilan penggunaan penyedia                                                                                          |
-| `useFrozenTime` / `useRealTime`                      | Membekukan dan memulihkan timer untuk pengujian yang sensitif terhadap waktu. Impor dari `plugin-sdk/test-env`                           |
-| `createTestWizardPrompter`                           | Membuat prompter wizard penyiapan tiruan                                                                                                 |
-| `createRuntimeTaskFlow`                              | Membuat status task-flow runtime terisolasi                                                                                              |
-| `typedCases`                                         | Mempertahankan tipe literal untuk pengujian berbasis tabel. Impor dari `plugin-sdk/test-fixtures`                                        |
+| Ekspor                                               | Tujuan                                                                                                                                                      |
+| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `createTestPluginApi`                                | Membuat mock API Plugin minimal untuk pengujian unit pendaftaran langsung. Impor dari `plugin-sdk/plugin-test-api`                                           |
+| `AUTH_PROFILE_RUNTIME_CONTRACT`                      | Fixture kontrak profil autentikasi bersama untuk adaptor runtime agen native. Impor dari `plugin-sdk/agent-runtime-test-contracts`                           |
+| `DELIVERY_NO_REPLY_RUNTIME_CONTRACT`                 | Fixture kontrak bersama untuk penekanan pengiriman bagi adaptor runtime agen native. Impor dari `plugin-sdk/agent-runtime-test-contracts`                    |
+| `OUTCOME_FALLBACK_RUNTIME_CONTRACT`                  | Fixture kontrak bersama untuk klasifikasi fallback bagi adaptor runtime agen native. Impor dari `plugin-sdk/agent-runtime-test-contracts`                    |
+| `createParameterFreeTool`                            | Membuat fixture skema alat dinamis untuk pengujian kontrak runtime native. Impor dari `plugin-sdk/agent-runtime-test-contracts`                              |
+| `expectChannelInboundContextContract`                | Memastikan bentuk konteks masuk saluran. Impor dari `plugin-sdk/channel-contract-testing`                                                                    |
+| `installChannelOutboundPayloadContractSuite`         | Memasang kasus kontrak payload keluar saluran. Impor dari `plugin-sdk/channel-contract-testing`                                                              |
+| `createStartAccountContext`                          | Membuat konteks siklus hidup akun saluran. Impor dari `plugin-sdk/channel-test-helpers`                                                                       |
+| `installChannelActionsContractSuite`                 | Memasang kasus kontrak generik tindakan pesan saluran. Impor dari `plugin-sdk/channel-test-helpers`                                                          |
+| `installChannelSetupContractSuite`                   | Memasang kasus kontrak generik penyiapan saluran. Impor dari `plugin-sdk/channel-test-helpers`                                                               |
+| `installChannelStatusContractSuite`                  | Memasang kasus kontrak generik status saluran. Impor dari `plugin-sdk/channel-test-helpers`                                                                  |
+| `expectDirectoryIds`                                 | Memastikan ID direktori saluran dari fungsi daftar direktori. Impor dari `plugin-sdk/channel-test-helpers`                                                   |
+| `assertBundledChannelEntries`                        | Memastikan titik masuk saluran bawaan mengekspos kontrak publik yang diharapkan. Impor dari `plugin-sdk/channel-test-helpers`                                |
+| `formatEnvelopeTimestamp`                            | Memformat stempel waktu amplop yang deterministik. Impor dari `plugin-sdk/channel-test-helpers`                                                              |
+| `expectPairingReplyText`                             | Memastikan teks balasan pemasangan saluran dan mengekstrak kodenya. Impor dari `plugin-sdk/channel-test-helpers`                                             |
+| `describePluginRegistrationContract`                 | Memasang pemeriksaan kontrak pendaftaran Plugin. Impor dari `plugin-sdk/plugin-test-contracts`                                                               |
+| `registerSingleProviderPlugin`                       | Mendaftarkan satu Plugin penyedia dalam pengujian smoke pemuat. Impor dari `plugin-sdk/plugin-test-runtime`                                                  |
+| `registerProviderPlugin`                             | Menangkap semua jenis penyedia dari satu Plugin. Impor dari `plugin-sdk/plugin-test-runtime`                                                                 |
+| `registerProviderPlugins`                            | Menangkap pendaftaran penyedia di beberapa Plugin. Impor dari `plugin-sdk/plugin-test-runtime`                                                               |
+| `requireRegisteredProvider`                          | Memastikan koleksi penyedia berisi suatu ID. Impor dari `plugin-sdk/plugin-test-runtime`                                                                     |
+| `createRuntimeEnv`                                   | Membuat lingkungan runtime CLI/Plugin tiruan. Impor dari `plugin-sdk/plugin-test-runtime`                                                                    |
+| `createPluginRuntimeMock`                            | Membuat permukaan runtime Plugin tiruan. Impor dari `plugin-sdk/plugin-test-runtime`                                                                         |
+| `createPluginSetupWizardStatus`                      | Membuat pembantu status penyiapan untuk Plugin saluran. Impor dari `plugin-sdk/plugin-test-runtime`                                                          |
+| `createTestWizardPrompter`                           | Membuat pemberi perintah wisaya penyiapan tiruan. Impor dari `plugin-sdk/plugin-test-runtime`                                                                |
+| `createRuntimeTaskFlow`                              | Membuat status TaskFlow runtime yang terisolasi. Impor dari `plugin-sdk/plugin-test-runtime`                                                                 |
+| `runProviderCatalog`                                 | Menjalankan hook katalog penyedia dengan dependensi pengujian. Impor dari `plugin-sdk/plugin-test-runtime`                                                   |
+| `resolveProviderWizardOptions`                       | Menyelesaikan pilihan wisaya penyiapan penyedia dalam pengujian kontrak. Impor dari `plugin-sdk/plugin-test-runtime`                                         |
+| `resolveProviderModelPickerEntries`                  | Menyelesaikan entri pemilih model penyedia dalam pengujian kontrak. Impor dari `plugin-sdk/plugin-test-runtime`                                              |
+| `buildProviderPluginMethodChoice`                    | Membuat ID pilihan wisaya penyedia untuk pemeriksaan. Impor dari `plugin-sdk/plugin-test-runtime`                                                            |
+| `setProviderWizardProvidersResolverForTest`          | Menyuntikkan penyedia wisaya penyedia untuk pengujian terisolasi. Impor dari `plugin-sdk/plugin-test-runtime`                                                |
+| `describeOpenAIProviderRuntimeContract`              | Memasang pemeriksaan kontrak runtime keluarga penyedia. Impor dari `plugin-sdk/provider-test-contracts`                                                      |
+| `expectPassthroughReplayPolicy`                      | Memastikan kebijakan pemutaran ulang penyedia meneruskan alat dan metadata milik penyedia tanpa perubahan. Impor dari `plugin-sdk/provider-test-contracts`   |
+| `runRealtimeSttLiveTest`                             | Menjalankan pengujian langsung penyedia STT waktu nyata dengan fixture audio bersama. Impor dari `plugin-sdk/provider-test-contracts`                        |
+| `normalizeTranscriptForMatch`                        | Menormalkan keluaran transkrip langsung sebelum pemeriksaan fuzzy. Impor dari `plugin-sdk/provider-test-contracts`                                           |
+| `expectExplicitVideoGenerationCapabilities`          | Memastikan penyedia video mendeklarasikan kemampuan mode pembuatan secara eksplisit. Impor dari `plugin-sdk/provider-test-contracts`                         |
+| `expectExplicitMusicGenerationCapabilities`          | Memastikan penyedia musik mendeklarasikan kemampuan pembuatan/pengeditan secara eksplisit. Impor dari `plugin-sdk/provider-test-contracts`                   |
+| `mockSuccessfulDashscopeVideoTask`                   | Memasang respons tugas video kompatibel DashScope yang berhasil. Impor dari `plugin-sdk/provider-test-contracts`                                            |
+| `getProviderHttpMocks`                               | Mengakses mock Vitest HTTP/autentikasi penyedia yang harus diaktifkan secara eksplisit. Impor dari `plugin-sdk/provider-http-test-mocks`                     |
+| `installProviderHttpMockCleanup`                     | Mengatur ulang mock HTTP/autentikasi penyedia setelah setiap pengujian. Impor dari `plugin-sdk/provider-http-test-mocks`                                     |
+| `installCommonResolveTargetErrorCases`               | Kasus pengujian bersama untuk penanganan kesalahan resolusi target. Impor dari `plugin-sdk/channel-target-testing`                                           |
+| `shouldAckReaction`                                  | Memeriksa apakah saluran harus menambahkan reaksi tanda terima. Impor dari `plugin-sdk/channel-feedback`                                                     |
+| `removeAckReactionAfterReply`                        | Menghapus reaksi tanda terima setelah pengiriman balasan. Impor dari `plugin-sdk/channel-feedback`                                                           |
+| `createTestRegistry`                                 | Membuat fixture registri Plugin saluran. Impor dari `plugin-sdk/plugin-test-runtime` atau `plugin-sdk/channel-test-helpers`                                  |
+| `createEmptyPluginRegistry`                          | Membuat fixture registri Plugin kosong. Impor dari `plugin-sdk/plugin-test-runtime` atau `plugin-sdk/channel-test-helpers`                                   |
+| `setActivePluginRegistry`                            | Memasang fixture registri untuk pengujian runtime Plugin. Impor dari `plugin-sdk/plugin-test-runtime` atau `plugin-sdk/channel-test-helpers`                 |
+| `createRequestCaptureJsonFetch`                      | Menangkap permintaan fetch JSON dalam pengujian pembantu media. Impor dari `plugin-sdk/test-env`                                                             |
+| `withServer`                                         | Menjalankan pengujian terhadap server HTTP lokal sekali pakai. Impor dari `plugin-sdk/test-env`                                                              |
+| `createMockIncomingRequest`                          | Membuat objek permintaan HTTP masuk minimal. Impor dari `plugin-sdk/test-env`                                                                                |
+| `withFetchPreconnect`                                | Menjalankan pengujian fetch dengan hook prapenyambungan terpasang. Impor dari `plugin-sdk/test-env`                                                          |
+| `withEnv` / `withEnvAsync`                           | Menambal variabel lingkungan untuk sementara. Impor dari `plugin-sdk/test-env`                                                                               |
+| `createTempHomeEnv` / `withTempHome` / `withTempDir` | Membuat fixture pengujian sistem berkas yang terisolasi. Impor dari `plugin-sdk/test-env`                                                                    |
+| `createMockServerResponse`                           | Membuat mock respons server HTTP minimal. Impor dari `plugin-sdk/test-env`                                                                                   |
+| `createProviderUsageFetch`                           | Membuat fixture fetch penggunaan penyedia. Impor dari `plugin-sdk/test-env`                                                                                  |
+| `useFrozenTime` / `useRealTime`                      | Membekukan dan memulihkan pewaktu untuk pengujian yang sensitif terhadap waktu. Impor dari `plugin-sdk/test-env`                                             |
+| `createCliRuntimeCapture`                            | Menangkap keluaran runtime CLI dalam pengujian. Impor dari `plugin-sdk/test-fixtures`                                                                         |
+| `importFreshModule`                                  | Mengimpor modul ESM dengan token kueri baru untuk melewati cache modul. Impor dari `plugin-sdk/test-fixtures`                                                |
+| `bundledPluginRoot` / `bundledPluginFile`            | Menyelesaikan jalur fixture sumber atau distribusi Plugin bawaan. Impor dari `plugin-sdk/test-fixtures`                                                      |
+| `mockNodeBuiltinModule`                              | Memasang mock Vitest yang terbatas untuk modul bawaan Node. Impor dari `plugin-sdk/test-node-mocks`                                                          |
+| `createSandboxTestContext`                           | Membuat konteks pengujian sandbox. Impor dari `plugin-sdk/test-fixtures`                                                                                     |
+| `writeSkill`                                         | Tulis perlengkapan pengujian Skills. Impor dari `plugin-sdk/test-fixtures`                                                               |
+| `makeAgentAssistantMessage`                          | Buat perlengkapan pengujian pesan transkrip agen. Impor dari `plugin-sdk/test-fixtures`                                                  |
+| `peekSystemEvents` / `resetSystemEventsForTest`      | Periksa dan atur ulang perlengkapan pengujian peristiwa sistem. Impor dari `plugin-sdk/test-fixtures`                                    |
+| `sanitizeTerminalText`                               | Sanitasi keluaran terminal untuk asersi. Impor dari `plugin-sdk/test-fixtures`                                                           |
+| `countLines` / `hasBalancedFences`                   | Verifikasi bentuk keluaran pemotongan. Impor dari `plugin-sdk/test-fixtures`                                                             |
+| `typedCases`                                         | Pertahankan tipe literal untuk pengujian berbasis tabel. Impor dari `plugin-sdk/test-fixtures`                                           |
 
-Rangkaian kontrak Plugin bawaan juga menggunakan subjalur pengujian SDK untuk helper
-fixture registry khusus pengujian, manifest, artefak publik, dan runtime. Rangkaian
-khusus core yang bergantung pada inventaris OpenClaw bawaan tetap berada di bawah `src/plugins/contracts`.
-Tempatkan pengujian ekstensi baru pada subjalur SDK terfokus yang terdokumentasi seperti
-`plugin-sdk/plugin-test-api`, `plugin-sdk/channel-contract-testing`,
-`plugin-sdk/agent-runtime-test-contracts`, `plugin-sdk/channel-test-helpers`,
-`plugin-sdk/plugin-test-contracts`, `plugin-sdk/plugin-test-runtime`,
-`plugin-sdk/provider-test-contracts`, `plugin-sdk/provider-http-test-mocks`,
-`plugin-sdk/test-env`, atau `plugin-sdk/test-fixtures`, bukan mengimpor barrel
-kompatibilitas `plugin-sdk/testing` yang luas, file repo `src/**`, atau jembatan
-repo `test/helpers/*` secara langsung.
+Suite kontrak Plugin bawaan juga menggunakan subjalur pengujian SDK ini untuk
+helper fixture registri khusus pengujian, manifes, artefak publik, dan runtime.
+Suite khusus inti yang bergantung pada inventaris OpenClaw bawaan tetap berada di
+`src/plugins/contracts`.
 
 ### Tipe
 
-Subjalur pengujian terfokus juga mengekspor ulang tipe yang berguna di file pengujian:
+Subjalur pengujian terfokus juga mengekspor ulang tipe yang berguna dalam berkas pengujian:
 
 ```typescript
 import type {
@@ -180,10 +150,10 @@ import type { OpenClawConfig } from "openclaw/plugin-sdk/config-contracts";
 import type { MockFn, PluginRuntime, RuntimeEnv } from "openclaw/plugin-sdk/plugin-test-runtime";
 ```
 
-## Resolusi target pengujian
+## Pengujian resolusi target
 
-Gunakan `installCommonResolveTargetErrorCases` untuk menambahkan kasus galat standar untuk
-resolusi target channel:
+Gunakan `installCommonResolveTargetErrorCases` untuk menambahkan kasus galat standar bagi
+resolusi target kanal:
 
 ```typescript
 import { describe } from "vitest";
@@ -207,28 +177,28 @@ describe("my-channel target resolution", () => {
 
 ## Pola pengujian
 
-### Menguji kontrak registrasi
+### Menguji kontrak pendaftaran
 
-Pengujian unit yang meneruskan mock `api` tulis tangan ke `register(api)` tidak menjalankan
-gerbang penerimaan pemuat OpenClaw. Tambahkan setidaknya satu pengujian smoke berbasis pemuat
-untuk setiap permukaan registrasi yang diandalkan Plugin Anda, terutama hook dan
-kapabilitas eksklusif seperti memori.
+Pengujian unit yang meneruskan mock `api` buatan tangan ke `register(api)` tidak
+menjalankan gerbang penerimaan pemuat OpenClaw. Tambahkan setidaknya satu
+uji cepat berbasis pemuat untuk setiap permukaan pendaftaran yang menjadi dependensi Plugin Anda, terutama
+hook dan kapabilitas eksklusif seperti memori.
 
-Pemuat sebenarnya menggagalkan registrasi Plugin ketika metadata wajib hilang atau
-Plugin memanggil API kapabilitas yang bukan miliknya. Misalnya,
+Pemuat sebenarnya menggagalkan pendaftaran Plugin ketika metadata yang diwajibkan tidak ada atau
+sebuah Plugin memanggil API kapabilitas yang bukan miliknya. Sebagai contoh,
 `api.registerHook(...)` memerlukan nama hook, dan
-`api.registerMemoryCapability(...)` mengharuskan manifest Plugin atau entri yang diekspor
-mendeklarasikan `kind: "memory"`.
+`api.registerMemoryCapability(...)` mengharuskan manifes Plugin atau entri yang
+diekspor mendeklarasikan `kind: "memory"`.
 
 ### Menguji akses konfigurasi runtime
 
 Utamakan mock runtime Plugin bersama dari `openclaw/plugin-sdk/plugin-test-runtime`.
 Mock `runtime.config.loadConfig()` dan `runtime.config.writeConfigFile(...)`
-yang sudah usang melempar secara default agar pengujian menangkap penggunaan baru API
-kompatibilitas. Timpa mock tersebut hanya ketika pengujian secara eksplisit mencakup
-perilaku kompatibilitas lama.
+secara bawaan melempar pengecualian agar pengujian mendeteksi penggunaan baru API kompatibilitas yang
+sudah tidak digunakan. Timpa mock tersebut hanya ketika pengujian secara eksplisit mencakup perilaku
+kompatibilitas lama.
 
-### Pengujian unit Plugin channel
+### Menguji unit Plugin kanal
 
 ```typescript
 import { describe, it, expect, vi } from "vitest";
@@ -264,7 +234,7 @@ describe("my-channel plugin", () => {
 });
 ```
 
-### Pengujian unit Plugin penyedia
+### Menguji unit Plugin penyedia
 
 ```typescript
 import { describe, it, expect } from "vitest";
@@ -327,7 +297,7 @@ store.clearRuntime();
 
 ### Menguji dengan stub per instans
 
-Utamakan stub per instans dibanding mutasi prototipe:
+Utamakan stub per instans daripada mutasi prototipe:
 
 ```typescript
 // Preferred: per-instance stub
@@ -338,61 +308,64 @@ client.sendMessage = vi.fn().mockResolvedValue({ id: "msg-1" });
 // MyChannelClient.prototype.sendMessage = vi.fn();
 ```
 
-## Pengujian kontrak (Plugin dalam repo)
+## Pengujian kontrak (Plugin dalam repositori)
 
-Plugin bawaan memiliki pengujian kontrak yang memverifikasi kepemilikan registrasi:
+Plugin bawaan memiliki pengujian kontrak yang memverifikasi kepemilikan pendaftaran:
 
 ```bash
-pnpm test -- src/plugins/contracts/
+pnpm test src/plugins/contracts/
 ```
 
 Pengujian ini memastikan:
 
-- Plugin mana yang mendaftarkan penyedia mana
-- Plugin mana yang mendaftarkan penyedia ucapan mana
-- Kebenaran bentuk registrasi
-- Kepatuhan kontrak runtime
+- Plugin mana yang mendaftarkan penyedia tertentu
+- Plugin mana yang mendaftarkan penyedia ucapan tertentu
+- Ketepatan bentuk pendaftaran
+- Kepatuhan terhadap kontrak runtime
 
-### Menjalankan pengujian terskop
+### Menjalankan pengujian terbatas
 
 Untuk Plugin tertentu:
 
 ```bash
-pnpm test -- <bundled-plugin-root>/my-channel/
+pnpm test <bundled-plugin-root>/my-channel/
 ```
 
 Hanya untuk pengujian kontrak:
 
 ```bash
-pnpm test -- src/plugins/contracts/shape.contract.test.ts
-pnpm test -- src/plugins/contracts/auth-choice.contract.test.ts
-pnpm test -- src/plugins/contracts/runtime-seams.contract.test.ts
+pnpm test src/plugins/contracts/shape.contract.test.ts
+pnpm test src/plugins/contracts/auth-choice.contract.test.ts
+pnpm test src/plugins/contracts/runtime-seams.contract.test.ts
 ```
 
-## Penegakan lint (Plugin dalam repo)
+## Penegakan lint (Plugin dalam repositori)
 
-Tiga aturan ditegakkan oleh `pnpm check` untuk Plugin dalam repo:
+`scripts/run-additional-boundary-checks.mjs` menjalankan sekumpulan pemeriksaan batas impor
+`lint:plugins:*` dalam CI; masing-masing juga dapat dijalankan secara mandiri secara lokal:
 
-1. **Tanpa impor root monolitik** -- barrel root `openclaw/plugin-sdk` ditolak
-2. **Tanpa impor `src/` langsung** -- Plugin tidak dapat mengimpor `../../src/` secara langsung
-3. **Tanpa impor diri sendiri** -- Plugin tidak dapat mengimpor subjalur `plugin-sdk/<name>` miliknya sendiri
+| Perintah                                                        | Aturan yang diterapkan                                                                                                                    |
+| -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm run lint:plugins:no-monolithic-plugin-sdk-entry-imports` | Plugin bawaan tidak boleh mengimpor barrel akar monolitik `openclaw/plugin-sdk`.                                             |
+| `pnpm run lint:plugins:no-extension-src-imports`               | Berkas ekstensi produksi tidak boleh mengimpor pohon `src/**` repositori secara langsung (`../../src/...`).                                 |
+| `pnpm run lint:plugins:no-extension-test-core-imports`         | Berkas pengujian ekstensi tidak boleh mengimpor `openclaw/plugin-sdk/testing`, `plugin-sdk/test-utils`, atau helper pengujian khusus inti lainnya. |
 
-Plugin eksternal tidak tunduk pada aturan lint ini, tetapi mengikuti pola yang sama
-direkomendasikan.
+Plugin eksternal tidak tunduk pada aturan lint ini, tetapi disarankan untuk mengikuti
+pola yang sama.
 
 ## Konfigurasi pengujian
 
-OpenClaw menggunakan Vitest dengan ambang cakupan V8. Untuk pengujian Plugin:
+OpenClaw menggunakan Vitest 4 dengan pelaporan cakupan V8 yang bersifat informatif. Untuk pengujian Plugin:
 
 ```bash
 # Run all tests
 pnpm test
 
 # Run specific plugin tests
-pnpm test -- <bundled-plugin-root>/my-channel/src/channel.test.ts
+pnpm test <bundled-plugin-root>/my-channel/src/channel.test.ts
 
 # Run with a specific test name filter
-pnpm test -- <bundled-plugin-root>/my-channel/ -t "resolves account"
+pnpm test <bundled-plugin-root>/my-channel/ -t "resolves account"
 
 # Run with coverage
 pnpm test:coverage
@@ -406,7 +379,7 @@ OPENCLAW_VITEST_MAX_WORKERS=1 pnpm test
 
 ## Terkait
 
-- [Ringkasan SDK](/id/plugins/sdk-overview) -- konvensi impor
-- [Plugin Channel SDK](/id/plugins/sdk-channel-plugins) -- antarmuka Plugin channel
+- [Ikhtisar SDK](/id/plugins/sdk-overview) -- konvensi impor
+- [Plugin Kanal SDK](/id/plugins/sdk-channel-plugins) -- antarmuka Plugin kanal
 - [Plugin Penyedia SDK](/id/plugins/sdk-provider-plugins) -- hook Plugin penyedia
 - [Membangun Plugin](/id/plugins/building-plugins) -- panduan memulai

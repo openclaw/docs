@@ -1,13 +1,13 @@
 ---
 read_when:
-    - 正在尋找 Linux 配套應用程式狀態
-    - 規劃平台涵蓋範圍或貢獻
-    - 偵錯 VPS 或容器上的 Linux OOM 終止或結束碼 137
-summary: Linux 支援 + 配套應用程式狀態
+    - 尋找 Linux 伴隨應用程式的狀態
+    - 規劃平台支援範圍或貢獻
+    - 偵錯 VPS 或容器上的 Linux OOM 終止或結束代碼 137
+summary: Linux 支援與配套應用程式狀態
 title: Linux 應用程式
 x-i18n:
-    generated_at: "2026-07-05T11:28:50Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T21:29:07Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 3a1b57fc7e37257a05eb06f265a49f165eef429f1c8d93c988853f39eba89627
@@ -15,21 +15,21 @@ x-i18n:
     workflow: 16
 ---
 
-Gateway 在 Linux 上完全受支援。建議使用 節點 作為執行環境；不建議使用 Bun
+Linux 完整支援閘道。建議使用節點作為執行階段；不建議使用 Bun
 （已知有 WhatsApp/Telegram 問題）。
 
-目前還沒有原生 Linux companion app。歡迎貢獻。
+目前尚無原生 Linux 伴隨應用程式。歡迎貢獻。
 
 ## 快速路徑（VPS）
 
-1. 安裝 節點 24（建議）或 節點 22.19+（LTS，仍受支援）。
+1. 安裝節點 24（建議）或節點 22.19+（LTS，仍受支援）。
 2. `npm i -g openclaw@latest`
 3. `openclaw onboard --install-daemon`
-4. 從你的筆電執行：`ssh -N -L 18789:127.0.0.1:18789 <user>@<host>`
+4. 從筆記型電腦執行：`ssh -N -L 18789:127.0.0.1:18789 <user>@<host>`
 5. 開啟 `http://127.0.0.1:18789/`，並使用已設定的共用
    密鑰進行驗證（預設為權杖；若 `gateway.auth.mode` 為 `"password"`，則使用密碼）。
 
-完整伺服器指南：[Linux 伺服器](/zh-TW/vps)。逐步 VPS 範例：
+完整伺服器指南：[Linux 伺服器](/zh-TW/vps)。VPS 逐步範例：
 [exe.dev](/zh-TW/install/exe-dev)。
 
 ## 安裝
@@ -38,14 +38,14 @@ Gateway 在 Linux 上完全受支援。建議使用 節點 作為執行環境；
 - [安裝與更新](/zh-TW/install/updating)
 - 選用：[Bun（實驗性）](/zh-TW/install/bun)、[Nix](/zh-TW/install/nix)、[Docker](/zh-TW/install/docker)
 
-## Gateway 服務（systemd）
+## 閘道服務（systemd）
 
-使用下列其中一種方式安裝：
+使用以下其中一種方式安裝：
 
 ```bash
 openclaw onboard --install-daemon
 openclaw gateway install
-openclaw configure   # select "Gateway service" when prompted
+openclaw configure   # 出現提示時選取 "Gateway service"
 ```
 
 修復或遷移現有安裝：
@@ -54,11 +54,11 @@ openclaw configure   # select "Gateway service" when prompted
 openclaw doctor
 ```
 
-`openclaw gateway install` 預設會產生 systemd **使用者** unit。完整的
-服務指南，包括適用於共用或
-常開主機的 **系統** 層級 unit 變體，位於 [Gateway runbook](/zh-TW/gateway#supervision-and-service-lifecycle)。
+`openclaw gateway install` 預設會產生 systemd **使用者**單元。完整的
+服務指南，包括適用於共用或持續運作主機的**系統**層級單元版本，請參閱
+[閘道操作手冊](/zh-TW/gateway#supervision-and-service-lifecycle)。
 
-只有在自訂設定時才手動撰寫 unit。最小使用者 unit 範例
+僅在自訂設定時才手動編寫單元。最小使用者單元範例
 （`~/.config/systemd/user/openclaw-gateway[-<profile>].service`）：
 
 ```ini
@@ -84,34 +84,34 @@ KillMode=control-group
 WantedBy=default.target
 ```
 
-啟用它：
+啟用此單元：
 
 ```bash
 systemctl --user enable --now openclaw-gateway[-<profile>].service
 ```
 
-## 記憶體壓力與 OOM kill
+## 記憶體壓力與 OOM 終止
 
-在 Linux 上，當主機、VM 或容器 cgroup
-用盡記憶體時，核心會選擇一個 OOM 犧牲者。Gateway 不適合作為犧牲者，因為它持有長期存在的
-工作階段和通道連線，因此 OpenClaw 會在可能時偏向讓暫時性子
-程序先被終止。
+在 Linux 上，當主機、虛擬機器或容器 cgroup
+耗盡記憶體時，核心會選擇一個 OOM 犧牲程序。閘道不適合作為犧牲程序，因為它負責長期存在的
+工作階段與頻道連線，因此 OpenClaw 會盡可能優先終止暫時性的子
+程序。
 
-對於符合條件的 Linux 子程序啟動，OpenClaw 會用一個短的
-`/bin/sh` shim 包裝命令，將子程序自己的 `oom_score_adj` 提高到 `1000`，然後
-`exec` 真正的命令。這不需要特權：程序永遠可以提高
-自己的 OOM 分數。
+對於符合條件的 Linux 子程序啟動，OpenClaw 會使用簡短的
+`/bin/sh` 包裝程式包裝命令，將子程序自身的 `oom_score_adj` 提高至 `1000`，然後
+以 `exec` 執行實際命令。這不需要特殊權限：程序隨時可以提高
+自身的 OOM 分數。
 
 涵蓋的子程序介面：
 
-- Supervisor 管理的命令子程序
+- 由監督程式管理的命令子程序
 - PTY shell 子程序
-- MCP stdio server 子程序
-- OpenClaw 啟動的 browser/Chrome 程序（透過外掛 SDK 程序執行環境）
+- MCP stdio 伺服器子程序
+- 由 OpenClaw 啟動的瀏覽器/Chrome 程序（透過外掛 SDK 程序執行階段）
 
-此包裝器僅限 Linux，且在 `/bin/sh` 不可用時，或
-子程序 env 將 `OPENCLAW_CHILD_OOM_SCORE_ADJ` 設為 `0`、`false`、`no` 或
-`off` 時會略過。
+此包裝程式僅適用於 Linux；當 `/bin/sh` 無法使用，或子程序環境變數
+將 `OPENCLAW_CHILD_OOM_SCORE_ADJ` 設為 `0`、`false`、`no` 或
+`off` 時，會略過包裝。
 
 驗證子程序：
 
@@ -119,22 +119,22 @@ systemctl --user enable --now openclaw-gateway[-<profile>].service
 cat /proc/<child-pid>/oom_score_adj
 ```
 
-涵蓋子程序的預期值為 `1000`；Gateway 程序本身
-會保留其正常分數（通常為 `0`）。
+涵蓋範圍內子程序的預期值為 `1000`；閘道程序本身
+則維持其正常分數（通常為 `0`）。
 
-systemd unit 的 `OOMPolicy=continue` 會在
-暫時性子程序被 OOM killer 選中時讓 Gateway 服務保持運作，而不是將整個
-unit 標記為失敗並重新啟動所有通道；失敗的子程序/工作階段會回報其
+systemd 單元的 `OOMPolicy=continue` 可在 OOM 終止器選中
+暫時性子程序時讓閘道服務繼續運作，而不會將整個
+單元標記為失敗並重新啟動所有頻道；失敗的子程序/工作階段會回報其
 自身錯誤。
 
-這並不能取代一般的記憶體調校。如果 VPS 或容器反覆
-終止子程序，請提高記憶體限制、降低並行度，或新增更強的
+這不能取代正常的記憶體調校。如果 VPS 或容器反覆
+終止子程序，請提高記憶體限制、降低並行數，或新增更嚴格的
 資源控制（systemd `MemoryMax=`、容器記憶體限制）。
 
-## 相關
+## 相關內容
 
-- [安裝總覽](/zh-TW/install)
+- [安裝概覽](/zh-TW/install)
 - [Linux 伺服器](/zh-TW/vps)
 - [Raspberry Pi](/zh-TW/install/raspberry-pi)
-- [Gateway runbook](/zh-TW/gateway)
-- [Gateway 設定](/zh-TW/gateway/configuration)
+- [閘道操作手冊](/zh-TW/gateway)
+- [閘道設定](/zh-TW/gateway/configuration)

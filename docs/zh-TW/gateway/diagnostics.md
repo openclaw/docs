@@ -2,12 +2,12 @@
 read_when:
     - 準備錯誤回報或支援請求
     - 偵錯閘道當機、重新啟動、記憶體壓力或過大的承載資料
-    - 檢視記錄或遮蔽了哪些診斷資料
-summary: 建立可分享的閘道診斷套件以供錯誤回報
-title: 診斷匯出
+    - 檢視哪些診斷資料會被記錄或遮蔽
+summary: 建立可分享的閘道診斷套件，用於錯誤回報
+title: 診斷資料匯出
 x-i18n:
-    generated_at: "2026-07-05T11:19:22Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T21:19:33Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: ee9014da15368971d8257f62707f013b579e607fa0d8413db51253612f0c0957
@@ -15,11 +15,9 @@ x-i18n:
     workflow: 16
 ---
 
-OpenClaw 可以為錯誤回報建立本機診斷 `.zip`：已清理的閘道
-狀態、健康狀態、日誌、設定形狀，以及近期不含承載資料的穩定性事件。
+OpenClaw 可為錯誤回報建立本機診斷 `.zip`：經清理的閘道狀態、健康狀況、日誌、設定結構，以及近期不含承載資料的穩定性事件。
 
-在審閱前，請把診斷套件視為秘密處理。承載資料和認證資料在設計上會被遮蔽，
-但套件仍會摘要本機閘道日誌和主機層級執行階段狀態。
+在審查前，請將診斷套件視同機密資料。依設計，承載資料與憑證都會經過遮蔽，但套件仍會摘要本機閘道日誌與主機層級的執行階段狀態。
 
 ## 快速開始
 
@@ -27,7 +25,7 @@ OpenClaw 可以為錯誤回報建立本機診斷 `.zip`：已清理的閘道
 openclaw gateway diagnostics export
 ```
 
-列印已寫入的 zip 路徑。選擇輸出路徑：
+輸出所寫入的 zip 路徑。若要選擇輸出路徑：
 
 ```bash
 openclaw gateway diagnostics export --output openclaw-diagnostics.zip
@@ -39,83 +37,48 @@ openclaw gateway diagnostics export --output openclaw-diagnostics.zip
 openclaw gateway diagnostics export --json
 ```
 
-## 聊天命令
+## 聊天指令
 
-擁有者可以在任何對話中執行 `/diagnostics [note]`，請求本機
-閘道匯出為一份可複製貼上的支援報告：
+擁有者可在任何對話中執行 `/diagnostics [note]`，請求本機閘道匯出為一份可直接複製貼上的支援報告：
 
-1. 傳送 `/diagnostics`，可選擇附上一段簡短備註（`/diagnostics bad tool choice`）。
-2. OpenClaw 會傳送前言，並要求一次明確的 exec 核准，這會執行
-   `openclaw gateway diagnostics export --json`。不要透過
-   allow-all 規則核准診斷。
-3. 核准後，OpenClaw 會回覆本機套件路徑、資訊清單
-   摘要、隱私說明，以及相關的工作階段 ID。
+1. 傳送 `/diagnostics`，並可選擇附上簡短備註（`/diagnostics bad tool choice`）。
+2. OpenClaw 會傳送前言並要求一次明確的執行核准，以執行
+   `openclaw gateway diagnostics export --json`。請勿透過允許全部的規則核准診斷。
+3. 核准後，OpenClaw 會回覆本機套件路徑、資訊清單摘要、隱私注意事項，以及相關的工作階段 ID。
 
-在群組聊天中，擁有者仍可執行 `/diagnostics`，但 OpenClaw 會將
-匯出結果、核准提示，以及 Codex 工作階段/執行緒明細私下傳送給
-擁有者。群組只會看到一則簡短通知，說明診斷已私下傳送。
-如果沒有私人的擁有者路由，命令會以關閉狀態失敗，並要求
-擁有者從 DM 執行。
+在群組聊天中，擁有者仍可執行 `/diagnostics`，但 OpenClaw 會私下將匯出結果、核准提示，以及 Codex 工作階段／討論串明細傳送給擁有者。群組中只會看到一則簡短通知，表示診斷資料已私下傳送。若沒有可供擁有者使用的私下傳送路徑，該指令會採取安全失敗，並要求擁有者改從私訊中執行。
 
-當作用中的工作階段使用原生 OpenAI Codex harness 時，同一次 exec
-核准也會涵蓋針對 OpenClaw 已知 Codex 執行緒的 OpenAI 意見回饋上傳。
-該上傳與本機閘道 zip 分開，且只會發生於 Codex harness 工作階段。
-核准提示會說明核准也會傳送 Codex 意見回饋，但不會列出 Codex 工作階段或執行緒 ID。
-核准後，回覆會列出已傳送給 OpenAI 之執行緒的通道、OpenClaw 工作階段 ID、Codex 執行緒 ID，
-以及本機續接命令。拒絕或忽略核准會略過匯出、Codex 意見回饋上傳，以及
-Codex ID 清單。
+當作用中的工作階段使用原生 OpenAI Codex 執行框架時，同一次執行核准也會涵蓋針對 OpenClaw 已知 Codex 討論串的 OpenAI 意見回饋上傳。該上傳與本機閘道 zip 分開，且只會在 Codex 執行框架工作階段中進行。核准提示會說明核准後也會傳送 Codex 意見回饋，但不會列出 Codex 工作階段或討論串 ID。核准後，回覆會列出傳送至 OpenAI 的討論串所屬頻道、OpenClaw 工作階段 ID、Codex 討論串 ID，以及可在本機使用的繼續執行指令。拒絕或忽略核准，將略過匯出、Codex 意見回饋上傳與 Codex ID 清單。
 
-這會讓 Codex 偵錯迴圈更短：在通道中注意到不良行為、
-執行 `/diagnostics`、核准一次、分享報告，然後如果你想自行檢查該執行緒，
-就在本機執行列印出的 `codex resume <thread-id>` 命令。
-請參閱 [Codex harness](/zh-TW/plugins/codex-harness#inspect-codex-threads-locally)。
+這能縮短 Codex 的偵錯流程：在頻道中發現不良行為後，執行 `/diagnostics`、核准一次、分享報告；若想自行檢查討論串，再於本機執行輸出的 `codex resume <thread-id>` 指令。請參閱 [Codex 執行框架](/zh-TW/plugins/codex-harness#inspect-codex-threads-locally)。
 
 ## 匯出內容
 
-- `summary.md`：供支援人員閱讀的人類可讀概覽。
-- `diagnostics.json`：設定、日誌、狀態、健康狀態和穩定性資料的機器可讀摘要。
-- `manifest.json`：匯出中繼資料和檔案清單。
-- 已清理的設定形狀和非秘密設定詳細資料。
-- 已清理的日誌摘要和近期已遮蔽的日誌行。
-- 盡力取得的閘道狀態和健康狀態快照。
-- `stability/latest.json`：最新的已持久化穩定性套件（可用時）。
+- `summary.md`：供支援人員閱讀的概覽。
+- `diagnostics.json`：設定、日誌、狀態、健康狀況與穩定性資料的機器可讀摘要。
+- `manifest.json`：匯出中繼資料與檔案清單。
+- 經清理的設定結構與非機密設定詳細資料。
+- 經清理的日誌摘要與近期經遮蔽的日誌行。
+- 盡力取得的閘道狀態與健康狀況快照。
+- `stability/latest.json`：最新的已持久化穩定性套件（若有）。
 
-即使閘道不健康，匯出仍然有用：如果狀態/健康狀態
-請求失敗，仍會在可用時收集本機日誌、設定形狀和最新的穩定性套件。
+即使閘道狀況不佳，匯出內容仍有幫助：若狀態／健康狀況請求失敗，只要可取得，仍會收集本機日誌、設定結構與最新的穩定性套件。
 
 ## 隱私模型
 
-保留：子系統名稱、外掛 ID、提供者 ID、通道 ID、已設定
-模式、狀態碼、持續時間、位元組數、佇列狀態、記憶體讀數、
-已清理的日誌中繼資料、已遮蔽的操作訊息、設定形狀，以及
-非秘密功能設定。
+保留：子系統名稱、外掛 ID、提供者 ID、頻道 ID、已設定模式、狀態碼、持續時間、位元組數、佇列狀態、記憶體讀數、經清理的日誌中繼資料、經遮蔽的操作訊息、設定結構，以及非機密功能設定。
 
-省略或遮蔽：聊天文字、提示、指令、網路鉤子本文、工具
-輸出、認證資料、API 金鑰、權杖、Cookie、秘密值、原始
-請求/回應本文、帳戶 ID、訊息 ID、原始工作階段 ID、
-主機名稱，以及本機使用者名稱。
+省略或遮蔽：聊天文字、提示詞、指示、網路鉤子內文、工具輸出、憑證、API 金鑰、權杖、Cookie、機密值、原始請求／回應內文、帳號 ID、訊息 ID、原始工作階段 ID、主機名稱，以及本機使用者名稱。
 
-當日誌訊息看起來像使用者、聊天、提示或工具承載文字時，
-匯出只會保留訊息已被省略的事實及其位元組數。
+當日誌訊息看似包含使用者、聊天、提示詞或工具承載文字時，匯出內容只會保留「該訊息已省略」的資訊及其位元組數。
 
 ## 穩定性記錄器
 
-啟用診斷時，閘道預設會記錄一條有界、無承載資料的穩定性串流。
-它擷取的是操作事實，而不是內容。
+啟用診斷時，閘道預設會記錄有界且不含承載資料的穩定性事件流。它擷取的是操作事實，而非內容。
 
-同一個心跳偵測也會在事件迴圈或 CPU 看起來飽和時取樣存活狀態，
-發出包含事件迴圈延遲、事件迴圈使用率、CPU 核心比率、作用中/等待中/已佇列工作階段數、
-目前啟動/執行階段階段（已知時）、近期階段跨度，以及
-有界工作標籤的 `diagnostic.liveness.warning` 事件。只有在
-有工作等待或佇列中，或作用中工作與持續的事件迴圈
-延遲重疊時，這些事件才會成為閘道 `warn` 層級日誌行；
-否則會以 `debug` 記錄。閒置存活狀態樣本仍會被記錄
-為診斷事件，但本身絕不會升級為警告。
+當事件迴圈或 CPU 看似飽和時，同一個心跳偵測也會取樣存活狀態，並發出包含事件迴圈延遲、事件迴圈使用率、CPU 核心比率、作用中／等待中／已排入佇列的工作階段數、目前啟動／執行階段（若已知）、近期階段時間跨度，以及有界工作標籤的 `diagnostic.liveness.warning` 事件。只有在工作正在等待或排入佇列，或作用中工作與持續的事件迴圈延遲重疊時，這些事件才會成為閘道 `warn` 層級的日誌行；否則會以 `debug` 層級記錄。閒置時的存活狀態取樣仍會記錄為診斷事件，但絕不會自行升級為警告。
 
-啟動階段會發出包含實際時間和 CPU 計時的 `diagnostic.phase.completed` 事件。
-停滯的嵌入式執行診斷會在最後一次橋接進度看起來已終止
-（例如原始回應項目或回應完成事件），但閘道仍認為
-嵌入式執行處於作用中時，標記 `terminalProgressStale=true`。
+啟動階段會發出含實際經過時間與 CPU 計時的 `diagnostic.phase.completed` 事件。當最後一次橋接進度看似已達終止狀態（例如原始回應項目或回應完成事件），但閘道仍將內嵌執行視為作用中時，停滯的內嵌執行診斷會標記 `terminalProgressStale=true`。
 
 檢查即時記錄器：
 
@@ -125,7 +88,7 @@ openclaw gateway stability --type payload.large
 openclaw gateway stability --json
 ```
 
-在嚴重結束、關機逾時或重新啟動啟動失敗後，檢查最新的已持久化套件：
+在致命結束、關機逾時或重新啟動時的啟動失敗後，檢查最新的已持久化套件：
 
 ```bash
 openclaw gateway stability --bundle latest
@@ -137,7 +100,7 @@ openclaw gateway stability --bundle latest
 openclaw gateway stability --bundle latest --export
 ```
 
-有事件存在時，已持久化套件位於 `~/.openclaw/logs/stability/` 底下。
+有事件時，已持久化套件會儲存在 `~/.openclaw/logs/stability/` 下。
 
 ## 實用選項
 
@@ -150,20 +113,19 @@ openclaw gateway diagnostics export \
 
 | 旗標                    | 預設值                                                                        | 說明                                               |
 | ----------------------- | ----------------------------------------------------------------------------- | -------------------------------------------------- |
-| `--output <path>`       | `$OPENCLAW_STATE_DIR/logs/support/openclaw-diagnostics-<timestamp>-<pid>.zip` | 寫入特定 zip 路徑（或目錄）。                      |
-| `--log-lines <count>`   | `5000`                                                                        | 要包含的已清理日誌行上限。                         |
-| `--log-bytes <bytes>`   | `1000000`                                                                     | 要檢查的日誌位元組上限。                           |
-| `--url <url>`           | -                                                                             | 用於狀態/健康狀態快照的閘道 WebSocket URL。        |
-| `--token <token>`       | -                                                                             | 用於狀態/健康狀態快照的閘道權杖。                  |
-| `--password <password>` | -                                                                             | 用於狀態/健康狀態快照的閘道密碼。                  |
-| `--timeout <ms>`        | `3000`                                                                        | 狀態/健康狀態快照逾時。                            |
+| `--output <path>`       | `$OPENCLAW_STATE_DIR/logs/support/openclaw-diagnostics-<timestamp>-<pid>.zip` | 寫入指定的 zip 路徑（或目錄）。                    |
+| `--log-lines <count>`   | `5000`                                                                        | 要包含的經清理日誌行數上限。                       |
+| `--log-bytes <bytes>`   | `1000000`                                                                     | 要檢查的日誌位元組數上限。                         |
+| `--url <url>`           | -                                                                             | 用於狀態／健康狀況快照的閘道 WebSocket URL。       |
+| `--token <token>`       | -                                                                             | 用於狀態／健康狀況快照的閘道權杖。                 |
+| `--password <password>` | -                                                                             | 用於狀態／健康狀況快照的閘道密碼。                 |
+| `--timeout <ms>`        | `3000`                                                                        | 狀態／健康狀況快照逾時時間。                       |
 | `--no-stability-bundle` | 關閉                                                                          | 略過已持久化穩定性套件查找。                       |
-| `--json`                | 關閉                                                                          | 列印機器可讀的匯出中繼資料。                       |
+| `--json`                | 關閉                                                                          | 輸出機器可讀的匯出中繼資料。                       |
 
 ## 停用診斷
 
-診斷預設為啟用。若要停用穩定性記錄器和
-診斷事件收集：
+診斷預設為啟用。若要停用穩定性記錄器與診斷事件收集：
 
 ```json5
 {
@@ -173,11 +135,9 @@ openclaw gateway diagnostics export \
 }
 ```
 
-停用診斷會減少錯誤回報細節；不會影響一般
-閘道日誌記錄。
+停用診斷會減少錯誤回報的詳細程度；不會影響一般閘道日誌記錄。
 
-重大記憶體壓力快照預設為關閉。若要在一般診斷事件之外，
-也擷取 OOM 前的穩定性快照：
+關鍵記憶體壓力快照預設為關閉。若除了正常診斷事件外，也要擷取 OOM 前的穩定性快照：
 
 ```json5
 {
@@ -187,15 +147,12 @@ openclaw gateway diagnostics export \
 }
 ```
 
-僅在主機可以承受重大記憶體壓力期間額外的檔案系統掃描和
-快照寫入時使用此選項。快照關閉時，一般記憶體壓力事件
-仍會記錄 RSS、heap、threshold 和 growth 事實（`rss_threshold`、
-`heap_threshold`、`rss_growth`）。
+僅應在能夠承受關鍵記憶體壓力期間額外檔案系統掃描與快照寫入的主機上使用。即使快照關閉，一般記憶體壓力事件仍會記錄 RSS、堆積、臨界值與成長資訊（`rss_threshold`、`heap_threshold`、`rss_growth`）。
 
-## 相關
+## 相關內容
 
-- [健康檢查](/zh-TW/gateway/health)
+- [健康狀況檢查](/zh-TW/gateway/health)
 - [閘道命令列介面](/zh-TW/cli/gateway#gateway-diagnostics-export)
-- [閘道協定](/zh-TW/gateway/protocol#rpc-method-families)
+- [閘道通訊協定](/zh-TW/gateway/protocol#rpc-method-families)
 - [日誌記錄](/zh-TW/logging)
-- [OpenTelemetry 匯出](/zh-TW/gateway/opentelemetry) - 將診斷串流至收集器的獨立流程
+- [OpenTelemetry 匯出](/zh-TW/gateway/opentelemetry) - 用於將串流診斷傳送至收集器的獨立流程

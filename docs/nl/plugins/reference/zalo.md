@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Je installeert, configureert of controleert de zalo-Plugin
+    - U installeert, configureert of controleert de zalo-plugin
 summary: OpenClaw Zalo-kanaalplugin voor bot- en webhookchats.
-title: Zalo-plugin
+title: Zalo-Plugin
 x-i18n:
-    generated_at: "2026-06-27T18:05:27Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:15:28Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: ff9da1e1591eaad36db74a27f817dd9dac8791af2d5030fcd3419ee50d2ed4aa
@@ -13,7 +13,7 @@ x-i18n:
     workflow: 16
 ---
 
-# Zalo Plugin
+# Zalo-plugin
 
 OpenClaw Zalo-kanaalplugin voor bot- en webhookchats.
 
@@ -24,7 +24,7 @@ OpenClaw Zalo-kanaalplugin voor bot- en webhookchats.
 
 ## Oppervlak
 
-channels: zalo
+kanalen: zalo
 
 ## Gerelateerde documentatie
 

@@ -1,37 +1,36 @@
 ---
 read_when:
-    - Usare i template del gateway dev
-    - Aggiornare l'identità predefinita dell'agente dev
-summary: Note sugli strumenti dell'agente dev (C-3PO)
-title: Template TOOLS.dev
+    - Utilizzo dei modelli del gateway di sviluppo
+    - Aggiornamento dell'identità predefinita dell'agente di sviluppo
+summary: Note sugli strumenti per agenti di sviluppo (C-3PO)
+title: Modello TOOLS.dev
 x-i18n:
-    generated_at: "2026-04-24T09:01:33Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 23c11e2832ed0dcf9ddd43e5472e0c025c1a91a33299019c16f00a7230e8e99c
-    source_path: reference/templates/TOOLS.dev.md
-    workflow: 15
+    generated_at: "2026-07-12T07:28:58Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 3259107a9252ff3d01b98608e6005387cb54a75da5db64f833c945056abd4173
+    source_path: reference/templates/TOOLS.dev.md
+    workflow: 16
 ---
 
-# TOOLS.md - Note utente sugli strumenti (modificabile)
+# TOOLS.md - Note sugli strumenti dell'utente (modificabili)
 
-Questo file è per le _tue_ note su strumenti esterni e convenzioni.
-Non definisce quali strumenti esistono; OpenClaw fornisce internamente gli strumenti integrati.
+Questo file è destinato alle _tue_ note sugli strumenti esterni e sulle convenzioni. Non definisce quali strumenti esistono; OpenClaw fornisce internamente gli strumenti integrati, mentre le Skills aggiungono gli altri.
 
 ## Esempi
 
 ### imsg
 
-- Invia un iMessage/SMS: descrivi a chi/cosa, conferma prima dell'invio.
-- Preferisci messaggi brevi; evita di inviare segreti.
+- Inviare un iMessage/SMS: descrivi il destinatario e il contenuto, quindi chiedi conferma prima dell'invio.
+- Preferisci messaggi brevi; evita di inviare informazioni segrete.
 
 ### sag
 
-- Sintesi vocale: specifica voce, altoparlante/stanza di destinazione e se usare lo streaming.
+- Sintesi vocale: specifica la voce, l'altoparlante o la stanza di destinazione e se eseguire lo streaming.
 
-Aggiungi qualsiasi altra cosa che vuoi che l'assistente sappia sulla tua toolchain locale.
+Aggiungi qualsiasi altra informazione che desideri far conoscere all'assistente sulla tua toolchain locale.
 
-## Correlati
+## Contenuti correlati
 
-- [Template TOOLS.md](/it/reference/templates/TOOLS)
+- [Modello TOOLS.md](/it/reference/templates/TOOLS)

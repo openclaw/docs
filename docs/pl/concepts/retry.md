@@ -1,64 +1,57 @@
 ---
 read_when:
-    - Aktualizowanie zachowania ponawiania prób lub wartości domyślnych dostawcy
-    - Debugowanie błędów wysyłania u dostawcy lub limitów częstotliwości
-summary: Zasady ponawiania prób dla wychodzących wywołań do dostawcy
+    - Aktualizowanie zachowania ponawiania prób lub ustawień domyślnych dostawcy
+    - Debugowanie błędów wysyłania dostawcy lub limitów szybkości
+summary: Zasady ponawiania wychodzących wywołań dostawcy
 title: Zasady ponawiania prób
 x-i18n:
-    generated_at: "2026-05-02T09:48:43Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:07:03Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7720092499effdfa011fc0a0310adb2ecddca9e94f57f749794eab1c9ab4c922
+    source_hash: 9be2bcb5af829b90042bfcbc5c0e5f5cc5a3cb03dd5472737c80fa0f15803361
     source_path: concepts/retry.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 ## Cele
 
-- Ponawiaj próby dla każdego żądania HTTP, a nie dla całego wieloetapowego przepływu.
+- Ponawiaj każde żądanie HTTP, a nie cały wieloetapowy przepływ.
 - Zachowuj kolejność, ponawiając tylko bieżący krok.
 - Unikaj powielania operacji nieidempotentnych.
 
 ## Wartości domyślne
 
-- Próby: 3
-- Maksymalny limit opóźnienia: 30000 ms
-- Jitter: 0.1 (10 procent)
-- Domyślne ustawienia dostawców:
-  - Minimalne opóźnienie Telegram: 400 ms
-  - Minimalne opóźnienie Discord: 500 ms
+| Ustawienie                  | Wartość domyślna |
+| --------------------------- | ---------------- |
+| Liczba prób                 | 3                |
+| Maksymalny limit opóźnienia | 30000 ms         |
+| Losowe odchylenie           | 0.1 (10%)        |
+| Minimalne opóźnienie Telegram | 400 ms          |
+| Minimalne opóźnienie Discord  | 500 ms          |
 
-## Zachowanie
+## Działanie
 
 ### Dostawcy modeli
 
-- OpenClaw pozwala zestawom SDK dostawców obsługiwać zwykłe krótkie ponowienia.
-- W przypadku zestawów SDK opartych na Stainless, takich jak Anthropic i OpenAI, odpowiedzi kwalifikujące się do ponowienia
-  (`408`, `409`, `429` i `5xx`) mogą zawierać `retry-after-ms` lub
-  `retry-after`. Gdy ten czas oczekiwania jest dłuższy niż 60 sekund, OpenClaw wstrzykuje
-  `x-should-retry: false`, aby SDK natychmiast zwrócił błąd, a przełączanie awaryjne modelu
-  mogło przejść na inny profil uwierzytelniania lub model zapasowy.
-- Zastąp limit za pomocą `OPENCLAW_SDK_RETRY_MAX_WAIT_SECONDS=<seconds>`.
-  Ustaw tę wartość na `0`, `false`, `off`, `none` lub `disabled`, aby SDK samodzielnie honorowały długie
-  oczekiwania `Retry-After`.
+- OpenClaw pozwala pakietom SDK dostawców obsługiwać standardowe krótkie ponowienia.
+- W przypadku pakietów SDK opartych na Stainless, takich jak Anthropic i OpenAI, odpowiedzi umożliwiające ponowienie (`408`, `409`, `429` i `5xx`) mogą zawierać `retry-after-ms` lub `retry-after`. Gdy czas oczekiwania przekracza 60 sekund, OpenClaw wstawia `x-should-retry: false`, aby pakiet SDK natychmiast zgłosił błąd, a mechanizm przełączania awaryjnego modelu mógł wybrać inny profil uwierzytelniania lub model zapasowy.
+- Zmień limit za pomocą `OPENCLAW_SDK_RETRY_MAX_WAIT_SECONDS=<seconds>`. Ustaw wartość `0`, `false`, `off`, `none` lub `disabled`, aby pakiety SDK mogły wewnętrznie respektować długie okresy oczekiwania określone przez `Retry-After`.
 
 ### Discord
 
-- Ponawia próby przy błędach limitu szybkości (HTTP 429), przekroczeniach czasu żądania, odpowiedziach HTTP 5xx
-  oraz przejściowych awariach transportu, takich jak błędy wyszukiwania DNS, resetowanie połączeń,
-  zamykanie gniazd i błędy fetch.
-- Używa `retry_after` Discord, gdy jest dostępne; w przeciwnym razie używa wykładniczego wydłużania opóźnień.
+- Ponawia żądania po błędach limitu częstotliwości (HTTP 429), przekroczeniu limitu czasu żądania, odpowiedziach HTTP 5xx oraz przejściowych awariach transportu, takich jak błędy wyszukiwania DNS, resetowanie połączeń, zamykanie gniazd i błędy pobierania.
+- Używa wartości Discord `retry_after`, gdy jest dostępna, a w przeciwnym razie — wykładniczego wydłużania czasu oczekiwania.
 
 ### Telegram
 
-- Ponawia próby przy błędach przejściowych (429, timeout, connect/reset/closed, temporarily unavailable).
-- Używa `retry_after`, gdy jest dostępne; w przeciwnym razie używa wykładniczego wydłużania opóźnień.
-- Błędy parsowania Markdown nie są ponawiane; następuje powrót do zwykłego tekstu.
+- Ponawia żądania po błędach przejściowych (429, przekroczenie limitu czasu, nawiązanie/resetowanie/zamknięcie połączenia, tymczasowa niedostępność).
+- Używa wartości `retry_after`, gdy jest dostępna, a w przeciwnym razie — wykładniczego wydłużania czasu oczekiwania.
+- Błędy analizy HTML/Markdown nie powodują ponowienia; przy pierwszej próbie następuje przejście na zwykły tekst.
 
 ## Konfiguracja
 
-Ustaw zasady ponawiania dla każdego dostawcy w `~/.openclaw/openclaw.json`:
+Ustaw zasady ponawiania dla każdego dostawcy w pliku `~/.openclaw/openclaw.json`:
 
 ```json5
 {
@@ -85,8 +78,8 @@ Ustaw zasady ponawiania dla każdego dostawcy w `~/.openclaw/openclaw.json`:
 
 ## Uwagi
 
-- Ponowienia dotyczą każdego żądania (wysłanie wiadomości, przesłanie multimediów, reakcja, ankieta, naklejka).
-- Przepływy złożone nie ponawiają ukończonych kroków.
+- Ponowienia dotyczą poszczególnych żądań (wysłanie wiadomości, przesłanie multimediów, reakcja, ankieta, naklejka).
+- W przepływach złożonych ukończone kroki nie są ponawiane.
 
 ## Powiązane
 

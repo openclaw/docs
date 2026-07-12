@@ -1,20 +1,20 @@
 ---
 read_when:
     - Claude Code'un OpenClaw Gateway MCP araçlarını kullanmasını istiyorsunuz
-    - Geçici, oturuma bağlı bir MCP iznine ihtiyacınız var
-summary: '`openclaw attach` için CLI referansı (Claude Code’u kapsamı belirlenmiş bir Gateway MCP izniyle başlatma)'
-title: CLI'yi bağla
+    - Harici bir test düzeneği için oturuma bağlı geçici bir MCP iznine ihtiyacınız var
+summary: '`openclaw attach` için CLI başvurusu (Claude Code''u kapsamı belirlenmiş bir Gateway MCP izniyle başlatma)'
+title: CLI'yi Bağlama
 x-i18n:
-    generated_at: "2026-07-02T01:11:22Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:09:18Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1445c9bbf28e5365d070f69bf8f53e249d70ac6e8690ed68831404d041e41e86
+    source_hash: 0d8ac60724adef1439af09179806af537b8f2925f06b3715850e4dd3b83b080f
     source_path: cli/attach.md
     workflow: 16
 ---
 
-`openclaw attach`, tek bir Gateway oturumuna bağlı katı bir geçici MCP yapılandırmasıyla Claude Code'u başlatır.
+`openclaw attach`, tek bir Gateway oturumuna bağlı, katı bir geçici MCP yapılandırmasıyla Claude Code'u başlatır.
 
 ```sh
 openclaw attach
@@ -24,11 +24,11 @@ openclaw attach --print-config
 
 Seçenekler:
 
-- `--session <key>` izni bir Gateway oturumuna bağlar. Varsayılan olarak ana oturumu kullanır.
-- `--ttl <ms>` milisaniye cinsinden pozitif bir izin TTL'si ister. Gateway kendi üst sınırını uygular.
-- `--bin <path>` Claude Code ikilisini seçer. Varsayılan değer `claude` şeklindedir.
-- `--print-config` geçici `.mcp.json` dosyasını yazar, başlatma komutunu ve env değerlerini yazdırır ve izni TTL süresi dolana kadar etkin bırakır.
+- `--session <key>`, izni bir Gateway oturumuna bağlar. Varsayılan olarak ana oturumu kullanır.
+- `--ttl <ms>`, milisaniye cinsinden pozitif bir izin TTL'si talep eder. Gateway kendi üst sınırını uygular.
+- `--bin <path>`, Claude Code ikili dosyasını seçer. Varsayılan: `claude`.
+- `--print-config`, geçici `.mcp.json` dosyasını yazar, başlatma komutunu ve ortam değişkenlerini görüntüler ve izni TTL süresi dolana kadar etkin bırakır (Claude Code'u başlatmaz veya izni iptal etmez).
 
-Taşıyıcı token, argv üzerinden değil ortam değişkenleri üzerinden aktarılır. OpenClaw, Claude Code'u `--strict-mcp-config --mcp-config <path>` ile başlatır; böylece ortamdaki Claude MCP sunucuları ekli oturuma katılmaz. Normal başlatmalar, Claude Code süreci çıktığında izni iptal eder.
+Bearer token, argv üzerinden değil, ortam değişkenleri aracılığıyla iletilir. OpenClaw, ortamdaki Claude MCP sunucularının eklenen oturuma katılmaması için Claude Code'u `--strict-mcp-config --mcp-config <path>` ile başlatır. Normal başlatmalar (`--print-config` olmadan), Claude Code işlemi sonlandığında izni iptal eder.
 
 Ayrıca bkz.: [Gateway CLI](/tr/cli/gateway), [MCP CLI](/tr/cli/mcp) ve [ACP CLI](/tr/cli/acp).

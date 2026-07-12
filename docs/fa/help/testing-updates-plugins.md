@@ -1,51 +1,52 @@
 ---
 read_when:
-    - تغییر رفتار به‌روزرسانی، doctor، پذیرش بسته، یا نصب Plugin در OpenClaw
+    - تغییر رفتار به‌روزرسانی، doctor، پذیرش بسته یا نصب Plugin در OpenClaw
     - آماده‌سازی یا تأیید یک نامزد انتشار
-    - اشکال‌زدایی رگرسیون‌های به‌روزرسانی بسته، پاک‌سازی وابستگی‌های Plugin، یا نصب Plugin
+    - اشکال‌زدایی به‌روزرسانی بسته، پاک‌سازی وابستگی‌های Plugin یا پس‌رفت‌های نصب Plugin
 sidebarTitle: Update and plugin tests
-summary: OpenClaw چگونه مسیرهای به‌روزرسانی، مهاجرت‌های بسته و رفتار نصب/به‌روزرسانی Plugin را اعتبارسنجی می‌کند
+summary: OpenClaw چگونه مسیرهای به‌روزرسانی، مهاجرت بسته‌ها و رفتار نصب/به‌روزرسانی Plugin را اعتبارسنجی می‌کند
 title: 'آزمایش: به‌روزرسانی‌ها و Pluginها'
 x-i18n:
-    generated_at: "2026-06-27T17:54:20Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:14:04Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 9be94eab4be97c53022bdac3110da74a61cfa23db989964c803497305e5415db
+    source_hash: 4e930960b5819d2144467476cb473e62f236eca63e1d9941a6bc793b484e731c
     source_path: help/testing-updates-plugins.md
     workflow: 16
 ---
 
-این چک‌لیست اختصاصی برای اعتبارسنجی به‌روزرسانی و Plugin است. هدف
-ساده است: ثابت کند بسته‌ی قابل نصب می‌تواند وضعیت واقعی کاربر را به‌روزرسانی کند، وضعیت
-legacy کهنه را از طریق `doctor` ترمیم کند، و همچنان Pluginها را از منابع پشتیبانی‌شده
-نصب، بارگذاری، به‌روزرسانی، و حذف کند.
+چک‌لیست اعتبارسنجی به‌روزرسانی و Plugin: اثبات کنید بسته قابل‌نصب می‌تواند
+وضعیت واقعی کاربر را به‌روزرسانی کند، وضعیت قدیمی و منسوخ را از طریق `doctor`
+ترمیم کند و همچنان Pluginها را از همه منابع پشتیبانی‌شده نصب، بارگذاری،
+به‌روزرسانی و حذف نصب کند.
 
-برای نقشه‌ی گسترده‌تر اجراکننده‌ی تست، [تست‌کردن](/fa/help/testing) را ببینید. برای کلیدهای provider زنده
-و مجموعه‌تست‌هایی که شبکه را لمس می‌کنند، [تست زنده](/fa/help/testing-live) را ببینید.
+برای نقشه جامع‌تر اجراکننده آزمون، به [آزمایش](/fa/help/testing) مراجعه کنید. برای
+کلیدهای ارائه‌دهنده زنده و مجموعه‌آزمون‌هایی که با شبکه تعامل دارند، به
+[آزمایش زنده](/fa/help/testing-live) مراجعه کنید.
 
-## از چه چیزی محافظت می‌کنیم
+## از چه چیزهایی محافظت می‌کنیم
 
-تست‌های به‌روزرسانی و Plugin از این قراردادها محافظت می‌کنند:
-
-- یک tarball بسته کامل است، `dist/postinstall-inventory.json` معتبر دارد،
-  و به فایل‌های بازشده‌ی repo وابسته نیست.
-- کاربر می‌تواند از یک بسته‌ی منتشرشده‌ی قدیمی‌تر به بسته‌ی candidate منتقل شود
-  بدون اینکه config، agentها، sessionها، workspaceها، allowlistهای Plugin، یا
-  config کانال را از دست بدهد.
-- `openclaw doctor --fix --non-interactive` مالک مسیرهای پاک‌سازی و ترمیم legacy است.
-  startup نباید migrationهای compatibility پنهان برای وضعیت کهنه‌ی Plugin ایجاد کند.
-- نصب Plugin از دایرکتوری‌های محلی، repoهای git، بسته‌های npm، و مسیر registry
+- فایل tarball بسته کامل است، یک `dist/postinstall-inventory.json` معتبر دارد
+  و به فایل‌های استخراج‌نشده مخزن وابسته نیست.
+- کاربر می‌تواند بدون از دست دادن پیکربندی، عامل‌ها، نشست‌ها، فضاهای کاری،
+  فهرست‌های مجاز Plugin یا پیکربندی کانال، از یک بسته منتشرشده قدیمی‌تر به
+  بسته نامزد منتقل شود.
+- `openclaw doctor --fix --non-interactive` مالک مسیرهای پاک‌سازی و ترمیم
+  قدیمی است. راه‌اندازی نباید مهاجرت‌های سازگاری پنهانی برای وضعیت منسوخ
+  Plugin ایجاد کند.
+- نصب Plugin از دایرکتوری‌های محلی، مخازن git، بسته‌های npm و مسیر رجیستری
   ClawHub کار می‌کند.
-- وابستگی‌های npm مربوط به Plugin در یک پروژه‌ی npm مدیریت‌شده برای هر Plugin نصب می‌شوند،
-  پیش از trust اسکن می‌شوند، و هنگام uninstall از طریق npm حذف می‌شوند تا
-  وابستگی‌های hoist‌شده باقی نمانند.
-- به‌روزرسانی Plugin وقتی چیزی تغییر نکرده پایدار است: رکوردهای نصب، منبع resolve‌شده،
-  چیدمان وابستگی نصب‌شده، و وضعیت enabled دست‌نخورده می‌مانند.
+- وابستگی‌های npm هر Plugin در یک پروژه npm مدیریت‌شده برای همان Plugin نصب
+  می‌شوند، پیش از اعتماد اسکن می‌شوند و هنگام حذف نصب Plugin از طریق
+  `npm uninstall` حذف می‌شوند تا وابستگی‌های بالاکشیده‌شده باقی نمانند.
+- وقتی چیزی تغییر نکرده است، به‌روزرسانی Plugin هیچ عملی انجام نمی‌دهد:
+  رکوردهای نصب، منبع حل‌شده، چیدمان وابستگی‌های نصب‌شده و وضعیت فعال‌بودن
+  دست‌نخورده باقی می‌مانند.
 
 ## اثبات محلی هنگام توسعه
 
-از محدوده‌ی باریک شروع کنید:
+از محدوده‌ای کوچک آغاز کنید:
 
 ```bash
 pnpm changed:lanes --json
@@ -53,30 +54,35 @@ pnpm check:changed
 pnpm test:changed
 ```
 
-برای تغییرات نصب Plugin، حذف نصب، وابستگی، یا inventory بسته، تست‌های متمرکزی را هم
-اجرا کنید که seam ویرایش‌شده را پوشش می‌دهند:
+برای تغییرات نصب، حذف نصب، وابستگی یا موجودی بسته Plugin، آزمون‌های متمرکزی را
+نیز اجرا کنید که مرز ویرایش‌شده را پوشش می‌دهند:
 
 ```bash
 pnpm test src/plugins/uninstall.test.ts src/infra/package-dist-inventory.test.ts test/scripts/package-acceptance-workflow.test.ts
 ```
 
-پیش از آنکه هر lane Docker بسته‌ای یک tarball را مصرف کند، artifact بسته را اثبات کنید:
+پیش از آنکه هر مسیر Docker مربوط به بسته یک tarball را مصرف کند، مصنوع بسته
+را اثبات کنید:
 
 ```bash
 pnpm release:check
 ```
 
-`release:check` بررسی‌های drift مربوط به config/docs/API را اجرا می‌کند، inventory توزیع بسته را می‌نویسد،
-`npm pack --dry-run` را اجرا می‌کند، فایل‌های بسته‌بندی‌شده‌ی ممنوع را رد می‌کند، tarball را
-در یک prefix موقت نصب می‌کند، postinstall را اجرا می‌کند، و entrypointهای کانال bundled را smoke می‌کند.
+`release:check` بررسی‌های ناهماهنگی پیکربندی/مستندات/API را اجرا می‌کند
+(شِمای پیکربندی، خط مبنای مستندات پیکربندی، خط مبنای API و خروجی‌های SDK
+Plugin، نسخه‌ها/موجودی Plugin)، موجودی توزیع بسته را می‌نویسد،
+`npm pack --dry-run` را اجرا می‌کند، فایل‌های بسته‌بندی‌شده ممنوع را رد
+می‌کند، tarball را در یک پیشوند موقت نصب می‌کند، postinstall را اجرا می‌کند
+و نقاط ورود کانال‌های همراه را به‌صورت دودآزمایی بررسی می‌کند.
 
-## laneهای Docker
+## مسیرهای Docker
 
-laneهای Docker اثبات سطح محصول هستند. آن‌ها یک بسته‌ی واقعی را داخل containerهای Linux
-نصب یا به‌روزرسانی می‌کنند و رفتار را از طریق فرمان‌های CLI،
-startup Gateway، probeهای HTTP، وضعیت RPC، و وضعیت فایل‌سیستم assert می‌کنند.
+مسیرهای Docker اثبات در سطح محصول هستند. آن‌ها یک بسته واقعی را درون
+کانتینرهای Linux نصب یا به‌روزرسانی می‌کنند و رفتار را از طریق فرمان‌های CLI،
+راه‌اندازی Gateway، کاوشگرهای HTTP، وضعیت RPC و وضعیت سامانه فایل بررسی
+می‌کنند.
 
-هنگام تکرار و اصلاح، از laneهای متمرکز استفاده کنید:
+هنگام تکرار و اصلاح، از مسیرهای متمرکز استفاده کنید:
 
 ```bash
 pnpm test:docker:plugins
@@ -88,39 +94,47 @@ pnpm test:docker:update-restart-auth
 pnpm test:docker:update-migration
 ```
 
-laneهای مهم:
+مسیرهای مهم:
 
-- `test:docker:plugins` smoke نصب Plugin، نصب از پوشه‌ی محلی،
-  رفتار skip در به‌روزرسانی پوشه‌ی محلی، پوشه‌های محلی با وابستگی‌های از پیش نصب‌شده،
-  نصب بسته‌های `file:`، نصب‌های git با اجرای CLI، به‌روزرسانی‌های moving-ref در git،
-  نصب‌های registry npm با وابستگی‌های transitive hoist‌شده، no-opهای به‌روزرسانی npm،
-  رد metadata معیوب بسته‌ی npm، نصب fixture محلی ClawHub و no-opهای به‌روزرسانی،
-  رفتار به‌روزرسانی marketplace، و فعال‌سازی/inspect بسته‌ی Claude را اعتبارسنجی می‌کند. برای
-  hermetic/offline نگه‌داشتن بلوک ClawHub، `OPENCLAW_PLUGINS_E2E_CLAWHUB=0` را تنظیم کنید.
-- `test:docker:plugin-lifecycle-matrix` بسته‌ی candidate را در یک container خالی نصب می‌کند،
-  یک Plugin npm را از مسیرهای install، inspect، disable، enable،
-  upgrade صریح، downgrade صریح، و uninstall پس از حذف کد Plugin عبور می‌دهد.
-  برای هر phase، معیارهای RSS و CPU را log می‌کند.
-- `test:docker:plugin-update` اعتبارسنجی می‌کند که یک Plugin نصب‌شده‌ی بدون تغییر
-  هنگام `openclaw plugins update` دوباره نصب نشود یا metadata نصب را از دست ندهد.
-- `test:docker:upgrade-survivor` tarball candidate را روی یک fixture کاربر قدیمی آلوده نصب می‌کند،
-  به‌روزرسانی بسته همراه با doctor غیرتعاملی را اجرا می‌کند، سپس یک Gateway loopback را شروع می‌کند
-  و حفظ وضعیت را بررسی می‌کند.
-- `test:docker:published-upgrade-survivor` ابتدا یک baseline منتشرشده را نصب می‌کند،
-  آن را از طریق recipe پخته‌شده‌ی `openclaw config set` پیکربندی می‌کند، به tarball
-  candidate به‌روزرسانی می‌کند، doctor را اجرا می‌کند، پاک‌سازی legacy را بررسی می‌کند، Gateway را شروع می‌کند، و
-  `/healthz`، `/readyz`، و وضعیت RPC را probe می‌کند.
-- `test:docker:update-restart-auth` بسته‌ی candidate را نصب می‌کند، یک Gateway مدیریت‌شده با token-auth را شروع می‌کند،
-  env مربوط به auth gateway caller را برای
-  `openclaw update --yes --json` unset می‌کند، و الزام می‌کند فرمان به‌روزرسانی candidate
-  پیش از probeهای معمول Gateway را restart کند.
-- `test:docker:update-migration` lane به‌روزرسانی منتشرشده با پاک‌سازی سنگین است. از
-  وضعیت کاربر پیکربندی‌شده به سبک Discord/Telegram شروع می‌کند، doctor baseline را اجرا می‌کند
-  تا وابستگی‌های Plugin پیکربندی‌شده فرصت materialize شدن داشته باشند، debris وابستگی legacy Plugin را برای یک Plugin بسته‌بندی‌شده‌ی پیکربندی‌شده seed می‌کند،
-  به tarball candidate به‌روزرسانی می‌کند، و post-update doctor را ملزم می‌کند
-  rootهای legacy وابستگی را حذف کند.
+- `test:docker:plugins` دودآزمایی نصب Plugin، نصب از پوشه محلی، رفتار ردکردن
+  به‌روزرسانی پوشه محلی، پوشه‌های محلی دارای وابستگی‌های ازپیش‌نصب‌شده،
+  نصب بسته‌های `file:`، نصب از git همراه با اجرای CLI، به‌روزرسانی ارجاع
+  متحرک git، نصب از رجیستری npm با وابستگی‌های انتقالی بالاکشیده‌شده،
+  بی‌عملی به‌روزرسانی npm، رد فراداده ناقص بسته npm، نصب از فیکسچر محلی
+  ClawHub و بی‌عملی به‌روزرسانی، رفتار به‌روزرسانی بازارگاه و
+  فعال‌سازی/بازرسی بسته Claude را پوشش می‌دهد.
+  `OPENCLAW_PLUGINS_E2E_CLAWHUB=0` را تنظیم کنید تا بلوک ClawHub
+  خودبسنده/آفلاین بماند.
+- `test:docker:plugin-lifecycle-matrix` بسته نامزد را در یک کانتینر خام نصب
+  می‌کند و یک Plugin مبتنی بر npm را از مراحل نصب، بازرسی، غیرفعال‌سازی،
+  فعال‌سازی، ارتقای صریح، تنزل صریح و حذف نصب پس از حذف کد Plugin عبور
+  می‌دهد. این مسیر برای هر مرحله معیارهای RSS و CPU را ثبت می‌کند.
+- `test:docker:plugin-update` اعتبارسنجی می‌کند که یک Plugin نصب‌شده بدون
+  تغییر، هنگام `openclaw plugins update` دوباره نصب نشود یا فراداده نصب خود
+  را از دست ندهد.
+- `test:docker:upgrade-survivor` فایل tarball نامزد را روی یک فیکسچر کاربر
+  قدیمی و آلوده نصب می‌کند، به‌روزرسانی بسته به‌همراه doctor غیرتعاملی را
+  اجرا می‌کند، سپس یک Gateway در local loopback راه‌اندازی می‌کند و حفظ
+  وضعیت را بررسی می‌کند.
+- `test:docker:published-upgrade-survivor` ابتدا یک خط مبنای منتشرشده را نصب
+  می‌کند، آن را از طریق دستورالعمل ازپیش‌تعبیه‌شده `openclaw config set`
+  پیکربندی می‌کند، به فایل tarball نامزد به‌روزرسانی می‌کند، doctor را اجرا
+  می‌کند، پاک‌سازی موارد قدیمی را بررسی می‌کند، Gateway را راه‌اندازی می‌کند
+  و `/healthz`، `/readyz` و وضعیت RPC را می‌آزماید.
+- `test:docker:update-restart-auth` بسته نامزد را نصب می‌کند، یک Gateway
+  مدیریت‌شده با احراز هویت توکنی راه‌اندازی می‌کند، متغیر محیطی احراز هویت
+  Gateway فراخوان را برای `openclaw update --yes --json` حذف می‌کند و الزام
+  می‌کند فرمان به‌روزرسانی نامزد پیش از کاوش‌های عادی Gateway را مجدداً
+  راه‌اندازی کند.
+- `test:docker:update-migration` مسیر به‌روزرسانی منتشرشده با تمرکز سنگین بر
+  پاک‌سازی است. این مسیر از وضعیت کاربری پیکربندی‌شده به سبک
+  Discord/Telegram آغاز می‌کند، doctor خط مبنا را اجرا می‌کند تا وابستگی‌های
+  Plugin پیکربندی‌شده فرصت ایجادشدن داشته باشند، بقایای قدیمی وابستگی Plugin
+  را برای یک Plugin بسته‌بندی‌شده پیکربندی‌شده ایجاد می‌کند، به فایل tarball
+  نامزد به‌روزرسانی می‌کند و الزام می‌کند doctor پس از به‌روزرسانی ریشه‌های
+  قدیمی وابستگی را حذف کند.
 
-variantهای مفید published-upgrade survivor:
+گونه‌های مفید برای بازمانده ارتقای منتشرشده:
 
 ```bash
 OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPEC=openclaw@2026.4.23 \
@@ -132,15 +146,18 @@ OPENCLAW_UPGRADE_SURVIVOR_SCENARIO=bootstrap-persona \
 pnpm test:docker:published-upgrade-survivor
 ```
 
-سناریوهای موجود عبارت‌اند از `base`، `feishu-channel`، `bootstrap-persona`،
-`plugin-deps-cleanup`، `configured-plugin-installs`،
-`stale-source-plugin-shadow`، `tilde-log-path`، و `versioned-runtime-deps`. در اجراهای تجمیعی،
-`OPENCLAW_UPGRADE_SURVIVOR_SCENARIOS=reported-issues` به همه‌ی سناریوهای شکل‌گرفته از issueهای گزارش‌شده گسترش می‌یابد،
-از جمله migration نصب Plugin پیکربندی‌شده.
+سناریوهای موجود: `base`، `acpx-openclaw-tools-bridge`، `feishu-channel`،
+`bootstrap-persona`، `channel-post-core-restore`، `plugin-deps-cleanup`،
+`configured-plugin-installs`، `stale-source-plugin-shadow`، `tilde-log-path`
+و `versioned-runtime-deps`. در اجراهای تجمیعی،
+`OPENCLAW_UPGRADE_SURVIVOR_SCENARIOS=reported-issues`
+(نام مستعار `far-reaching`) به همه سناریوها، از جمله مهاجرت نصب Plugin
+پیکربندی‌شده، گسترش می‌یابد.
 
-migration کامل به‌روزرسانی عمدا از Full Release CI جدا است. وقتی پرسش release این است که «آیا هر
-release پایدار منتشرشده از 2026.4.23 به بعد می‌تواند به این candidate به‌روزرسانی شود و
-debris وابستگی Plugin را پاک کند؟»، از workflow دستی `Update Migration` استفاده کنید:
+مهاجرت کامل به‌روزرسانی عمداً از CI انتشار کامل جدا است. وقتی پرسش انتشار این
+است که «آیا همه انتشارهای پایدار منتشرشده از 2026.4.23 به بعد می‌توانند به این
+نامزد به‌روزرسانی شوند و بقایای وابستگی Plugin را پاک کنند؟»، از گردش‌کار
+دستی `Update Migration` استفاده کنید:
 
 ```bash
 gh workflow run update-migration.yml \
@@ -151,42 +168,48 @@ gh workflow run update-migration.yml \
   -f scenarios=plugin-deps-cleanup
 ```
 
-## Package Acceptance
+## پذیرش بسته
 
-Package Acceptance گیت native بسته در GitHub است. یک بسته‌ی candidate را به یک tarball
-`package-under-test` resolve می‌کند، version و SHA-256 را ثبت می‌کند، سپس
-laneهای Docker E2E قابل استفاده‌ی مجدد را علیه همان tarball دقیق اجرا می‌کند. ref harness workflow
-از ref منبع بسته جدا است، بنابراین منطق تست فعلی می‌تواند releaseهای trusted قدیمی‌تر را اعتبارسنجی کند.
+پذیرش بسته، دروازه بسته بومی GitHub است. این فرایند یک بسته نامزد را به فایل
+tarball با نام `package-under-test` تبدیل می‌کند، نسخه و SHA-256 را ثبت می‌کند
+و سپس مسیرهای Docker E2E قابل‌استفاده مجدد را دقیقاً روی همان tarball اجرا
+می‌کند. ارجاع چارچوب گردش‌کار از ارجاع منبع بسته جدا است؛ بنابراین منطق آزمون
+فعلی می‌تواند انتشارهای قابل‌اعتماد قدیمی‌تر را اعتبارسنجی کند.
 
-منابع candidate:
+منابع نامزد:
 
-- `source=npm`: `openclaw@beta`، `openclaw@latest`، یا یک version دقیق
-  منتشرشده را اعتبارسنجی کنید.
-- `source=ref`: یک branch، tag، یا commit trusted را با harness فعلی انتخاب‌شده
-  pack کنید.
-- `source=url`: یک tarball عمومی HTTPS را با `package_sha256` الزامی اعتبارسنجی کنید.
-  این مسیر credentialهای URL، portهای HTTPS غیرپیش‌فرض، hostnameها یا نتایج DNS/IP خصوصی/داخلی،
-  فضای IP با کاربری ویژه، و redirectهای ناامن را رد می‌کند.
-- `source=trusted-url`: یک tarball HTTPS را با
-  `package_sha256` و `trusted_source_id` الزامی علیه policy متعلق به maintainer
-  در `.github/package-trusted-sources.json` اعتبارسنجی کنید. برای mirrorهای enterprise/private
-  به‌جای ضعیف‌کردن `source=url` با یک switch سطح ورودی allow-private، از این استفاده کنید.
-  Bearer auth، وقتی توسط policy پیکربندی شده باشد، از secret ثابت
+- `source=npm`: اعتبارسنجی `openclaw@extended-stable`،
+  `openclaw@beta`، `openclaw@latest` یا یک نسخه دقیق منتشرشده.
+- `source=ref`: بسته‌بندی یک شاخه، برچسب یا commit قابل‌اعتماد با چارچوب
+  فعلی انتخاب‌شده.
+- `source=url`: اعتبارسنجی یک tarball عمومی HTTPS با `package_sha256`
+  الزامی. این مسیر اطلاعات اعتبارسنجی در URL، پورت‌های HTTPS غیراستاندارد،
+  نام میزبان یا نتایج DNS/IP خصوصی/داخلی، فضای IP با کاربرد ویژه و
+  تغییرمسیرهای ناامن را رد می‌کند.
+- `source=trusted-url`: اعتبارسنجی یک tarball از طریق HTTPS با
+  `package_sha256` و `trusted_source_id` الزامی بر پایه سیاست تحت مالکیت
+  نگه‌دارنده در `.github/package-trusted-sources.json`. برای آینه‌های
+  سازمانی/خصوصی از این گزینه استفاده کنید، نه اینکه `source=url` را با یک
+  کلید سطح ورودی برای اجازه‌دادن به منابع خصوصی تضعیف کنید. احراز هویت
+  Bearer، در صورت پیکربندی در سیاست، از secret ثابت
   `OPENCLAW_TRUSTED_PACKAGE_TOKEN` استفاده می‌کند.
-- `source=artifact`: از tarball بارگذاری‌شده توسط یک اجرای دیگر Actions دوباره استفاده کنید.
+- `source=artifact`: استفاده مجدد از یک tarball بارگذاری‌شده توسط اجرای
+  دیگری از Actions.
 
-Full Release Validation به‌صورت پیش‌فرض از `source=artifact` استفاده می‌کند، که از
-SHA release resolve‌شده ساخته شده است. برای اثبات پس از انتشار،
-`package_acceptance_package_spec=openclaw@YYYY.M.PATCH` را پاس دهید تا همان ماتریس upgrade
-به‌جای آن بسته‌ی npm ship‌شده را هدف بگیرد.
+اعتبارسنجی کامل انتشار به‌طور پیش‌فرض از `source=artifact` استفاده می‌کند که
+از SHA حل‌شده انتشار ساخته شده است. برای اثبات پس از انتشار،
+`package_acceptance_package_spec=openclaw@YYYY.M.PATCH` را ارسال کنید تا همان
+ماتریس ارتقا بسته npm عرضه‌شده را هدف قرار دهد.
 
-بررسی‌های release، Package Acceptance را با مجموعه‌ی package/update/restart/plugin فراخوانی می‌کنند:
+بررسی‌های انتشار، پذیرش بسته را با مجموعه بسته/به‌روزرسانی/راه‌اندازی
+مجدد/Plugin فراخوانی می‌کنند:
 
 ```text
-doctor-switch update-channel-switch update-corrupt-plugin upgrade-survivor published-upgrade-survivor update-restart-auth plugins-offline plugin-update
+doctor-switch update-channel-switch skill-install update-corrupt-plugin upgrade-survivor published-upgrade-survivor root-managed-vps-upgrade update-restart-auth plugins-offline plugin-update plugin-binding-command-escape
 ```
 
-وقتی release soak فعال باشد، این‌ها را هم پاس می‌دهند:
+وقتی دوره پایش انتشار فعال باشد (برای `release_profile=stable` و `full`
+اجباری است)، این موارد نیز ارسال می‌شوند:
 
 ```text
 published_upgrade_survivor_baselines=last-stable-4 2026.4.23 2026.5.2 2026.4.15
@@ -194,26 +217,31 @@ published_upgrade_survivor_scenarios=reported-issues
 telegram_mode=mock-openai
 ```
 
-این کار migration بسته، switching کانال به‌روزرسانی، تحمل Plugin مدیریت‌شده‌ی خراب،
-پاک‌سازی وابستگی کهنه‌ی Plugin، پوشش Plugin آفلاین،
-رفتار به‌روزرسانی Plugin، و QA بسته‌ی Telegram را روی همان artifact resolve‌شده نگه می‌دارد بدون اینکه
-گیت پیش‌فرض بسته‌ی release را مجبور کند همه‌ی releaseهای منتشرشده را طی کند.
+این کار مهاجرت بسته، تعویض کانال به‌روزرسانی، تحمل Plugin مدیریت‌شده خراب،
+پاک‌سازی وابستگی‌های منسوخ Plugin، پوشش آفلاین Plugin، رفتار به‌روزرسانی
+Plugin و تضمین کیفیت بسته Telegram را روی همان مصنوع حل‌شده نگه می‌دارد،
+بدون آنکه دروازه پیش‌فرض بسته انتشار را مجبور کند همه انتشارهای منتشرشده را
+پیمایش کند.
 
-`last-stable-4` به چهار release پایدار آخر OpenClaw که در npm منتشر شده‌اند resolve می‌شود.
-release package acceptance مقدار `2026.4.23` را به‌عنوان نخستین مرز compatibility به‌روزرسانی Plugin،
-`2026.5.2` را به‌عنوان مرز churn معماری Plugin، و
-`2026.4.15` را به‌عنوان یک baseline قدیمی‌تر به‌روزرسانی منتشرشده‌ی 2026.4.1x pin می‌کند؛ resolver
-pinهایی را که از قبل در چهار مورد آخر هستند dedupe می‌کند. برای پوشش exhaustive migration
-به‌روزرسانی منتشرشده، به‌جای Full Release CI از `all-since-2026.4.23` در workflow جداگانه‌ی Update
-Migration استفاده کنید. وقتی anchor قدیمی پیش از تاریخ را هم می‌خواهید،
-`release-history` همچنان برای نمونه‌گیری دستی گسترده‌تر در دسترس است.
+`last-stable-4` به چهار انتشار پایدار اخیر OpenClaw که در npm منتشر شده‌اند
+حل می‌شود. پذیرش بسته انتشار، `2026.4.23` را به‌عنوان نخستین مرز سازگاری
+به‌روزرسانی Plugin، `2026.5.2` را به‌عنوان مرز تغییرات گسترده معماری Plugin
+و `2026.4.15` را به‌عنوان خط مبنای قدیمی‌تر به‌روزرسانی منتشرشده از سری
+2026.4.1x تثبیت می‌کند؛ حل‌کننده موارد تثبیت‌شده‌ای را که از قبل در چهار
+نسخه اخیر هستند حذف می‌کند. برای پوشش جامع مهاجرت به‌روزرسانی‌های منتشرشده،
+به‌جای CI انتشار کامل از `all-since-2026.4.23` در گردش‌کار جداگانه
+Update Migration استفاده کنید. وقتی نمونه‌برداری دستی گسترده‌تری را
+می‌خواهید که لنگر قدیمی پیش از تاریخ را نیز شامل شود، `release-history`
+همچنان در دسترس است.
 
-وقتی چند baseline published-upgrade survivor انتخاب شود، workflow قابل استفاده‌ی مجدد
-Docker هر baseline را به job هدفمند runner خودش shard می‌کند. هر
-baseline shard همچنان مجموعه سناریوی انتخاب‌شده را اجرا می‌کند، اما logها و artifactها
-per-baseline می‌مانند و زمان wall به‌جای یک job serial بزرگ با کندترین shard محدود می‌شود.
+وقتی چند خط مبنای بازمانده ارتقای منتشرشده انتخاب شوند، گردش‌کار Docker
+قابل‌استفاده مجدد هر خط مبنا را در یک کار اجراکننده هدفمند مستقل شارد می‌کند.
+هر شارد خط مبنا همچنان مجموعه سناریوهای انتخاب‌شده را اجرا می‌کند، اما
+گزارش‌ها و مصنوعات به تفکیک خط مبنا باقی می‌مانند و زمان کلی به کندترین شارد
+محدود می‌شود، نه یک کار سریالی بزرگ.
 
-هنگام اعتبارسنجی candidate پیش از release، یک profile بسته را دستی اجرا کنید:
+هنگام اعتبارسنجی یک نامزد پیش از انتشار، نمایه بسته را به‌صورت دستی اجرا
+کنید:
 
 ```bash
 gh workflow run package-acceptance.yml \
@@ -227,61 +255,71 @@ gh workflow run package-acceptance.yml \
   -f telegram_mode=mock-openai
 ```
 
-وقتی پرسش release شامل کانال‌های MCP، پاک‌سازی cron/subagent، جست‌وجوی وب OpenAI، یا OpenWebUI است،
-از `suite_profile=product` استفاده کنید. فقط وقتی به پوشش کامل مسیر release در Docker نیاز دارید
-از `suite_profile=full` استفاده کنید.
+برای یک نسخه قناری extended-stable منتشرشده،
+`package_spec=openclaw@extended-stable` را تنظیم کنید. پذیرش بسته پیش از
+اجرای مسیرهای Docker، آن انتخاب‌گر را به یک tarball دقیق حل می‌کند.
 
-## پیش‌فرض release
+وقتی پرسش انتشار شامل کانال‌های MCP، پاک‌سازی cron/زیرعامل، جست‌وجوی وب
+OpenAI یا OpenWebUI است، از `suite_profile=product` استفاده کنید. تنها وقتی
+به پوشش کامل مسیر انتشار Docker نیاز دارید، از `suite_profile=full` استفاده
+کنید.
 
-برای release candidateها، stack اثبات پیش‌فرض چنین است:
+## پیش‌فرض انتشار
 
-1. `pnpm check:changed` و `pnpm test:changed` برای regressionهای سطح source.
-2. `pnpm release:check` برای integrity artifact بسته.
-3. profile `package` مربوط به Package Acceptance یا laneهای package سفارشی release-check
-   برای قراردادهای install/update/restart/plugin.
-4. بررسی‌های release بین سیستم‌عامل‌ها برای installer، onboarding، و رفتار platform
-   وابسته به OS.
-5. مجموعه‌تست‌های زنده فقط وقتی surface تغییرکرده رفتار provider یا hosted-service را لمس می‌کند.
+برای نامزدهای انتشار، پشته اثبات پیش‌فرض چنین است:
 
-روی ماشین‌های maintainer، gateهای گسترده و اثبات product مربوط به Docker/package باید در
-Testbox اجرا شوند مگر اینکه صراحتا اثبات محلی انجام شود.
+1. `pnpm check:changed` و `pnpm test:changed` برای پسرفت‌های سطح منبع.
+2. `pnpm release:check` برای یکپارچگی مصنوع بسته.
+3. نمایه `package` پذیرش بسته یا مسیرهای سفارشی بسته در بررسی انتشار برای
+   قراردادهای نصب/به‌روزرسانی/راه‌اندازی مجدد/Plugin.
+4. بررسی‌های انتشار چندسیستم‌عاملی برای نصب‌کننده، راه‌اندازی اولیه و رفتار
+   مختص پلتفرم.
+5. مجموعه‌آزمون‌های زنده فقط زمانی که سطح تغییرکرده، رفتار ارائه‌دهنده یا
+   سرویس میزبانی‌شده را تحت تأثیر قرار می‌دهد.
 
-## compatibility legacy
+در دستگاه‌های نگه‌دارندگان، دروازه‌های گسترده و اثبات محصول
+Docker/بسته باید در Testbox اجرا شوند، مگر آنکه اثبات محلی صراحتاً مدنظر
+باشد.
 
-leniency مربوط به compatibility باریک و زمان‌دار است:
+## سازگاری قدیمی
 
-- بسته‌ها تا `2026.4.25`، شامل `2026.4.25-beta.*`، ممکن است
-  gapهای metadata بسته که قبلا ship شده‌اند را در Package Acceptance تحمل کنند.
-- بسته‌ی منتشرشده‌ی `2026.4.26` ممکن است برای فایل‌های stamp مربوط به metadata build محلی
-  که قبلا ship شده‌اند warn کند.
-- بسته‌های بعدی باید قراردادهای مدرن را رعایت کنند. همان gapها به‌جای
-  warning یا skipping شکست می‌خورند.
+مدارا برای سازگاری محدود و زمان‌بندی‌شده است:
 
-برای این shapeهای قدیمی، migrationهای startup جدید اضافه نکنید. یک ترمیم doctor اضافه یا گسترش دهید،
-سپس وقتی فرمان update مالک restart است، آن را با `upgrade-survivor`، `published-upgrade-survivor`، یا
-`update-restart-auth` اثبات کنید.
+- بسته‌ها تا نسخه `2026.4.25`، از جمله `2026.4.25-beta.*`، می‌توانند
+  کمبودهای فراداده بسته‌ای را که پیش‌تر عرضه شده‌اند در پذیرش بسته تحمل کنند.
+- بسته منتشرشده `2026.4.26` ممکن است برای فایل‌های مهر فراداده ساخت محلی که
+  قبلاً عرضه شده‌اند هشدار دهد.
+- بسته‌های بعدی باید قراردادهای مدرن را برآورده کنند. همان کمبودها به‌جای
+  هشدار یا ردشدن، باعث شکست می‌شوند.
+
+برای این شکل‌های قدیمی، مهاجرت راه‌اندازی جدید اضافه نکنید. یک ترمیم doctor
+اضافه کنید یا گسترش دهید، سپس آن را با `upgrade-survivor`،
+`published-upgrade-survivor` یا، وقتی فرمان به‌روزرسانی مالک راه‌اندازی مجدد
+است، با `update-restart-auth` اثبات کنید.
 
 ## افزودن پوشش
 
-هنگام تغییر رفتار update یا Plugin، پوشش را در پایین‌ترین لایه‌ای اضافه کنید که
-می‌تواند به دلیل درست fail شود:
+هنگام تغییر رفتار به‌روزرسانی یا Plugin، پوشش را در پایین‌ترین لایه‌ای اضافه
+کنید که بتواند به دلیل درست شکست بخورد:
 
-- منطق صرفاً مربوط به مسیر یا فراداده: تست واحد کنار منبع.
-- رفتار موجودی بسته یا فایل‌های بسته‌بندی‌شده: تست `package-dist-inventory` یا بررسی‌کننده tarball.
-- رفتار نصب/به‌روزرسانی CLI: assertion مسیر Docker یا fixture.
-- رفتار مهاجرت انتشار منتشرشده: سناریوی `published-upgrade-survivor`.
+- منطق صرفاً مربوط به مسیر یا فراداده: آزمون واحد در کنار کد منبع.
+- فهرست محتوای بسته یا رفتار فایل‌های بسته‌بندی‌شده: آزمون بررسی‌کننده‌ی `package-dist-inventory` یا tarball.
+- رفتار نصب/به‌روزرسانی CLI: بررسی در مسیر Docker یا فیکسچر.
+- رفتار مهاجرت نسخه‌ی منتشرشده: سناریوی `published-upgrade-survivor`.
 - رفتار راه‌اندازی مجدد تحت مالکیت به‌روزرسانی: `update-restart-auth`.
-- رفتار منبع registry/بسته: fixture مربوط به `test:docker:plugins` یا سرور fixture مربوط به ClawHub.
-- رفتار چیدمان وابستگی یا پاک‌سازی: هم اجرای runtime و هم مرز فایل‌سیستم را assert کنید. وابستگی‌های npm ممکن است داخل پروژه npm مدیریت‌شده Plugin بالا کشیده شوند، بنابراین تست‌ها باید ثابت کنند که همان پروژه اسکن/پاک‌سازی می‌شود، نه اینکه فرض کنند فقط درخت `node_modules` محلیِ بسته Plugin بررسی می‌شود.
+- رفتار منبع رجیستری/بسته: فیکسچر `test:docker:plugins` یا سرور فیکسچر ClawHub.
+- رفتار چیدمان یا پاک‌سازی وابستگی‌ها: هم اجرای زمان‌اجرا و هم مرز سامانه‌ی فایل را بررسی کنید. وابستگی‌های npm ممکن است درون پروژه‌ی npm مدیریت‌شده‌ی Plugin بالاکشیده شوند؛ بنابراین آزمون‌ها باید ثابت کنند که آن پروژه اسکن/پاک‌سازی می‌شود، نه اینکه فرض کنند فقط درخت `node_modules` محلیِ بسته‌ی Plugin بررسی می‌شود.
 
-fixtureهای جدید Docker را به‌صورت پیش‌فرض hermetic نگه دارید. از registryهای fixture محلی و بسته‌های جعلی استفاده کنید، مگر اینکه هدف تست، رفتار registry زنده باشد.
+فیکسچرهای جدید Docker را به‌طور پیش‌فرض خودبسنده نگه دارید. مگر اینکه هدف آزمون، رفتار زنده‌ی رجیستری باشد، از رجیستری‌های فیکسچر محلی و بسته‌های ساختگی استفاده کنید.
 
-## تریاژ شکست
+## تریاژ خرابی
 
-با هویت artifact شروع کنید:
+از هویت آرتیفکت شروع کنید:
 
-- خلاصه `resolve_package` در Package Acceptance: منبع، نسخه، SHA-256 و نام artifact.
-- artifactهای Docker: `.artifacts/docker-tests/**/summary.json`، `failures.json`، لاگ‌های مسیر و فرمان‌های اجرای مجدد.
-- خلاصه upgrade survivor: `.artifacts/upgrade-survivor/summary.json`، شامل نسخه baseline، نسخه candidate، سناریو، زمان‌بندی‌های phase و گام‌های recipe.
+- خلاصه‌ی `resolve_package` در پذیرش بسته: منبع، نسخه، SHA-256 و نام آرتیفکت.
+- آرتیفکت‌های Docker: `.artifacts/docker-tests/**/summary.json`،
+  `failures.json`، گزارش‌های مسیر و فرمان‌های اجرای مجدد.
+- خلاصه‌ی بازمانده‌ی ارتقا: `.artifacts/upgrade-survivor/summary.json`،
+  شامل نسخه‌ی مبنا، نسخه‌ی نامزد، سناریو، زمان‌بندی مراحل و پوشش دستورالعمل پیکربندی.
 
-اجرای مجدد همان مسیر دقیقِ شکست‌خورده با همان artifact بسته را به اجرای مجدد کل چتر انتشار ترجیح دهید.
+اجرای مجدد دقیق همان مسیر ناموفق با همان آرتیفکت بسته را به اجرای مجدد کل مجموعه‌ی انتشار ترجیح دهید.

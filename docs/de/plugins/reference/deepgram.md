@@ -1,21 +1,21 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder überprüfen das deepgram-Plugin
-summary: Fügt Unterstützung für Provider zum Medienverständnis hinzu. Fügt Unterstützung für Provider zur Echtzeittranskription hinzu.
+    - Sie installieren, konfigurieren oder prüfen das deepgram-Plugin
+summary: Fügt Unterstützung für Provider zur Medienanalyse hinzu. Fügt Unterstützung für Provider zur Echtzeittranskription hinzu.
 title: Deepgram-Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:53:37Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T01:56:21Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: 93383c01d5a5e1e1d412d396ec1def12f388fc7c5da102573373dbc8180497a3
     source_path: plugins/reference/deepgram.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Deepgram-Plugin
 
-Fügt Unterstützung für Provider für Medienverständnis hinzu. Fügt Unterstützung für Provider für Echtzeittranskription hinzu.
+Fügt Unterstützung für Provider zur Medienanalyse hinzu. Fügt Unterstützung für Provider zur Echtzeittranskription hinzu.
 
 ## Distribution
 
@@ -26,6 +26,6 @@ Fügt Unterstützung für Provider für Medienverständnis hinzu. Fügt Unterst�
 
 Verträge: mediaUnderstandingProviders, realtimeTranscriptionProviders
 
-## Verwandte Dokumentation
+## Zugehörige Dokumentation
 
-- [deepgram](/de/providers/deepgram)
+- [Deepgram](/de/providers/deepgram)

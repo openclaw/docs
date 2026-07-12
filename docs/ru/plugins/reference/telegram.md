@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Вы устанавливаете, настраиваете или аудируете Plugin Telegram
-summary: Добавляет поверхность канала Telegram для отправки и получения сообщений OpenClaw.
+    - Вы устанавливаете, настраиваете или проверяете Plugin Telegram
+summary: Добавляет поддержку канала Telegram для отправки и получения сообщений OpenClaw.
 title: Plugin Telegram
 x-i18n:
-    generated_at: "2026-06-28T23:29:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:41:33Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: cada3e82983630e71fa5cc32aa2ef0801eff1cab620f1e7f5c2dfdd3a565924e
@@ -13,19 +13,19 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin Telegram
+# Плагин Telegram
 
-Добавляет поверхность канала Telegram для отправки и получения сообщений OpenClaw.
+Добавляет канал Telegram для отправки и получения сообщений OpenClaw.
 
 ## Распространение
 
 - Пакет: `@openclaw/telegram`
-- Способ установки: включено в OpenClaw
+- Способ установки: входит в состав OpenClaw
 
-## Поверхность
+## Интерфейс
 
-каналы: telegram
+channels: telegram
 
 ## Связанная документация
 
-- [telegram](/ru/channels/telegram)
+- [Telegram](/ru/channels/telegram)

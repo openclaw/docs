@@ -4,8 +4,8 @@ read_when:
 summary: Добавляет в OpenClaw поддержку поставщиков моделей Volcengine и Volcengine Plan.
 title: Plugin Volcengine
 x-i18n:
-    generated_at: "2026-06-28T23:29:54Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:41:56Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 1b2b3e14d69cd0a8629d7c63c907efaba7fc71dbc1453d4bf92830b9b9a8ed7f
@@ -15,17 +15,17 @@ x-i18n:
 
 # Plugin Volcengine
 
-Добавляет поддержку поставщиков моделей Volcengine и Volcengine Plan в OpenClaw.
+Добавляет в OpenClaw поддержку поставщиков моделей Volcengine и Volcengine Plan.
 
 ## Распространение
 
 - Пакет: `@openclaw/volcengine-provider`
-- Способ установки: включен в OpenClaw
+- Способ установки: входит в состав OpenClaw
 
-## Поверхность
+## Интерфейс
 
 поставщики: volcengine, volcengine-plan; контракты: speechProviders
 
-## Связанные документы
+## Связанная документация
 
 - [volcengine](/ru/providers/volcengine)

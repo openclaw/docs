@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Вы устанавливаете, настраиваете или проверяете plugin mattermost
-summary: Добавляет поверхность канала Mattermost для отправки и получения сообщений OpenClaw.
+    - Вы устанавливаете, настраиваете или проверяете Plugin Mattermost
+summary: Добавляет поддержку канала Mattermost для отправки и получения сообщений OpenClaw.
 title: Plugin Mattermost
 x-i18n:
-    generated_at: "2026-06-28T23:25:39Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:42:42Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 7a05711dbd897c71a19537dc7a2461be3c1c7aa37aa25f3fa0135848644040b4
@@ -15,17 +15,17 @@ x-i18n:
 
 # Plugin Mattermost
 
-Добавляет поверхность канала Mattermost для отправки и получения сообщений OpenClaw.
+Добавляет канал Mattermost для отправки и получения сообщений OpenClaw.
 
 ## Распространение
 
 - Пакет: `@openclaw/mattermost`
-- Маршрут установки: npm; ClawHub: `clawhub:@openclaw/mattermost`
+- Способ установки: npm; ClawHub: `clawhub:@openclaw/mattermost`
 
-## Поверхность
+## Интерфейс
 
 каналы: mattermost
 
 ## Связанная документация
 
-- [mattermost](/ru/channels/mattermost)
+- [Mattermost](/ru/channels/mattermost)

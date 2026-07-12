@@ -2,8 +2,8 @@
 summary: Перенаправление на /plugins/sdk-channel-inbound
 title: Ход канала
 x-i18n:
-    generated_at: "2026-06-28T23:31:13Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:44:22Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: b76e69788af094862bbd06769a8029e75a717f02a7ba025f34b210a179844f95
@@ -11,7 +11,7 @@ x-i18n:
     workflow: 16
 ---
 
-Эта страница перемещена в [API входящего канала](/ru/plugins/sdk-channel-inbound).
+Эта страница перенесена в раздел [API входящих сообщений каналов](/ru/plugins/sdk-channel-inbound).
 
-Старые псевдонимы среды выполнения channel-turn были удалены. Код Plugin должен использовать
+Старые псевдонимы среды выполнения для обработки сообщений каналов удалены. Код Plugin должен использовать
 `runtime.channel.inbound.*`, `channel-inbound` и `channel-outbound`.

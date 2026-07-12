@@ -1,57 +1,58 @@
 ---
 read_when:
-    - Dodawanie obsługi węzła lokalizacji lub interfejsu uprawnień
-    - Projektowanie uprawnień do lokalizacji w Androidzie lub działania na pierwszym planie
+    - Dodawanie obsługi lokalizacji węzła lub interfejsu uprawnień
+    - Projektowanie uprawnień do lokalizacji lub działania na pierwszym planie w systemie Android
 summary: Polecenie lokalizacji dla węzłów (location.get), tryby uprawnień i działanie Androida na pierwszym planie
 title: Polecenie lokalizacji
 x-i18n:
-    generated_at: "2026-05-06T09:20:25Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:16:24Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 63ed754bfdda1cf379dcb7ac40817c0b93cc1efe4526512d70258072da4bc8a7
+    source_hash: fae9f7707620f3f743d40c07618a431a6baa7a357dda6d74021bc986cd4974b1
     source_path: nodes/location-command.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 ## W skrócie
 
-- `location.get` jest poleceniem Node (przez `node.invoke`).
+- `location.get` to polecenie Node, wywoływane za pomocą `node.invoke` lub `openclaw nodes location get`.
 - Domyślnie wyłączone.
-- Ustawienia aplikacji Android używają selektora: Wyłączone / Podczas używania.
-- Osobny przełącznik: Dokładna lokalizacja.
+- Zewnętrzne kompilacje dla systemu Android używają selektora: Wyłączone / Podczas używania / Zawsze. Kompilacje z Google Play nadal oferują opcje Wyłączone / Podczas używania.
+- Dokładna lokalizacja ma osobny przełącznik.
 
-## Dlaczego selektor (a nie tylko przełącznik)
+## Dlaczego selektor (a nie zwykły przełącznik)
 
-Uprawnienia systemu operacyjnego mają wiele poziomów. Możemy udostępnić selektor w aplikacji, ale o faktycznym przyznaniu dostępu nadal decyduje system operacyjny.
-
-- iOS/macOS mogą pokazywać **Podczas używania** lub **Zawsze** w monitach systemowych/Ustawieniach.
-- Aplikacja Android obecnie obsługuje tylko lokalizację na pierwszym planie.
-- Dokładna lokalizacja jest osobnym uprawnieniem (iOS 14+ „Dokładna”, Android „fine” kontra „coarse”).
-
-Selektor w UI steruje żądanym przez nas trybem; faktycznie przyznane uprawnienie znajduje się w ustawieniach systemu operacyjnego.
+Uprawnienia systemu operacyjnego do lokalizacji mają wiele poziomów. Dokładna lokalizacja również jest osobnym uprawnieniem systemowym (w systemie iOS 14+ „Dokładna”, w systemie Android „dokładna” i „przybliżona”). Selektor w aplikacji określa żądany tryb, ale ostatecznie to system operacyjny decyduje o faktycznie przyznanym uprawnieniu.
 
 ## Model ustawień
 
 Dla każdego urządzenia Node:
 
-- `location.enabledMode`: `off | whileUsing`
+- `location.enabledMode`: `off | whileUsing | always`
 - `location.preciseEnabled`: bool
 
-Zachowanie UI:
+Zachowanie interfejsu:
 
-- Wybranie `whileUsing` żąda uprawnienia do lokalizacji na pierwszym planie.
-- Jeśli system operacyjny odmówi żądanego poziomu, przywróć najwyższy przyznany poziom i pokaż status.
+- Wybranie opcji `whileUsing` powoduje żądanie uprawnienia do lokalizacji na pierwszym planie.
+- Wybranie opcji `always` w zewnętrznej kompilacji dla systemu Android najpierw powoduje żądanie uprawnienia do lokalizacji na pierwszym planie, następnie wyświetla objaśnienie dostępu w tle i otwiera ustawienia aplikacji w systemie Android, aby można było osobno przyznać uprawnienie **Allow all the time**.
+- Kompilacje z Google Play nie deklarują uprawnienia do lokalizacji w tle ani nie wyświetlają opcji `always`.
+- Jeśli system operacyjny odmówi przyznania żądanego poziomu, aplikacja powraca do najwyższego przyznanego poziomu i wyświetla stan.
 
 ## Mapowanie uprawnień (node.permissions)
 
-Opcjonalne. Node macOS zgłasza `location` przez mapę uprawnień; iOS/Android mogą ją pominąć.
+Opcjonalne. Node systemu macOS zgłasza `location` za pośrednictwem mapy `permissions` w `node.list`/`node.describe`; systemy iOS i Android mogą je pomijać.
 
 ## Polecenie: `location.get`
 
-Wywoływane przez `node.invoke`.
+Wywoływane za pomocą `node.invoke` lub pomocniczego polecenia CLI:
 
-Parametry (sugerowane):
+```bash
+openclaw nodes location get --node <idOrNameOrIp>
+openclaw nodes location get --node <idOrNameOrIp> --accuracy precise --max-age 15000 --location-timeout 10000
+```
+
+Parametry:
 
 ```json
 {
@@ -61,7 +62,9 @@ Parametry (sugerowane):
 }
 ```
 
-Ładunek odpowiedzi:
+Flagi CLI są mapowane bezpośrednio: `--location-timeout` -> `timeoutMs`, `--max-age` -> `maxAgeMs`, `--accuracy` -> `desiredAccuracy`.
+
+Dane odpowiedzi:
 
 ```json
 {
@@ -81,30 +84,32 @@ Błędy (stabilne kody):
 
 - `LOCATION_DISABLED`: selektor jest wyłączony.
 - `LOCATION_PERMISSION_REQUIRED`: brakuje uprawnienia dla żądanego trybu.
-- `LOCATION_BACKGROUND_UNAVAILABLE`: aplikacja działa w tle, ale dozwolone jest tylko Podczas używania.
-- `LOCATION_TIMEOUT`: brak ustalenia pozycji w czasie.
-- `LOCATION_UNAVAILABLE`: awaria systemu / brak dostawców.
+- `LOCATION_BACKGROUND_UNAVAILABLE`: aplikacja działa w tle, ale przyznano uprawnienie tylko Podczas używania.
+- `LOCATION_TIMEOUT`: nie udało się ustalić lokalizacji w wyznaczonym czasie.
+- `LOCATION_UNAVAILABLE`: błąd systemu lub brak dostawców lokalizacji.
 
-## Zachowanie w tle
+## Działanie w tle
 
-- Aplikacja Android odmawia `location.get`, gdy działa w tle.
-- Pozostaw OpenClaw otwarte podczas żądania lokalizacji na Androidzie.
-- Inne platformy Node mogą się różnić.
+- Zewnętrzne kompilacje dla systemu Android akceptują wywołanie `location.get` w tle tylko wtedy, gdy użytkownik wybrał opcję `Always`, a system Android przyznał uprawnienie do lokalizacji w tle. Istniejąca trwała usługa Node dodaje typ usługi `location` i podczas działania informuje o ustawieniu `Location: Always`.
+- Kompilacje z Google Play oraz tryb `While Using` odrzucają wywołanie `location.get`, gdy aplikacja działa w tle.
+- Inne platformy Node mogą działać inaczej.
 
-## Integracja z modelem/narzędziami
+## Integracja z modelem i narzędziami
 
-- Powierzchnia narzędzia: narzędzie `nodes` dodaje akcję `location_get` (wymagany Node).
+- Narzędzie agenta: akcja `location_get` narzędzia `nodes` (wymagany Node).
 - CLI: `openclaw nodes location get --node <id>`.
-- Wytyczne dla agenta: wywołuj tylko wtedy, gdy użytkownik włączył lokalizację i rozumie zakres.
+- Wytyczne dla agenta: wywołuj tylko wtedy, gdy użytkownik włączył lokalizację i rozumie zakres jej udostępniania.
 
-## Tekst UX (sugerowany)
+## Teksty interfejsu użytkownika (sugerowane)
 
-- Wyłączone: „Udostępnianie lokalizacji jest wyłączone.”
-- Podczas używania: „Tylko gdy OpenClaw jest otwarte.”
-- Dokładna: „Używaj dokładnej lokalizacji GPS. Wyłącz przełącznik, aby udostępniać przybliżoną lokalizację.”
+- Wyłączone: „Udostępnianie lokalizacji jest wyłączone”.
+- Podczas używania: „Tylko gdy aplikacja OpenClaw jest otwarta”.
+- Zawsze: „Zezwalaj na żądane sprawdzanie lokalizacji, gdy aplikacja OpenClaw działa w tle”.
+- Dokładna: „Używaj dokładnej lokalizacji GPS. Wyłącz, aby udostępniać przybliżoną lokalizację”.
 
 ## Powiązane
 
-- [Parsowanie lokalizacji kanału](/pl/channels/location)
+- [Omówienie węzłów](/pl/nodes)
+- [Analizowanie lokalizacji kanału](/pl/channels/location)
 - [Przechwytywanie obrazu z kamery](/pl/nodes/camera)
 - [Tryb rozmowy](/pl/nodes/talk)

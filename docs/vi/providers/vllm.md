@@ -1,55 +1,50 @@
 ---
 read_when:
-    - Bạn muốn chạy OpenClaw với một máy chủ vLLM cục bộ
-    - Bạn muốn các endpoint /v1 tương thích với OpenAI với các mô hình của riêng bạn
-summary: Chạy OpenClaw với vLLM (máy chủ cục bộ tương thích OpenAI)
+    - Bạn muốn chạy OpenClaw với máy chủ vLLM cục bộ
+    - Bạn muốn các điểm cuối /v1 tương thích với OpenAI dành cho các mô hình của riêng mình
+summary: Chạy OpenClaw với vLLM (máy chủ cục bộ tương thích với OpenAI)
 title: vLLM
 x-i18n:
-    generated_at: "2026-06-27T18:06:54Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:18:12Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a3a5da5ce359bf62c44cddd0c97d2852d98c996ad6d44552a68d4aeb4d1d2893
+    source_hash: 98d1044c0a82efb6c9937e961d765d0cfcea8664cbaa043168921b457756512c
     source_path: providers/vllm.md
     workflow: 16
 ---
 
-vLLM có thể phục vụ các mô hình mã nguồn mở (và một số mô hình tùy chỉnh) thông qua API HTTP **tương thích OpenAI**. OpenClaw kết nối với vLLM bằng API `openai-completions`.
+vLLM phục vụ các mô hình mã nguồn mở (và một số mô hình tùy chỉnh) thông qua API HTTP **tương thích OpenAI**. OpenClaw kết nối bằng API `openai-completions` và có thể **tự động khám phá** các mô hình khi bạn chủ động bật bằng `VLLM_API_KEY`.
 
-OpenClaw cũng có thể **tự động phát hiện** các mô hình có sẵn từ vLLM khi bạn chọn bật bằng `VLLM_API_KEY` (giá trị bất kỳ đều dùng được nếu máy chủ của bạn không bắt buộc xác thực). Dùng `vllm/*` trong `agents.defaults.models` để giữ việc phát hiện luôn động khi bạn cũng cấu hình URL cơ sở vLLM tùy chỉnh.
-
-OpenClaw xem `vllm` là một nhà cung cấp cục bộ tương thích OpenAI hỗ trợ
-hạch toán mức sử dụng dạng truyền luồng, vì vậy số lượng token trạng thái/ngữ cảnh có thể cập nhật từ
-phản hồi `stream_options.include_usage`.
-
-| Thuộc tính       | Giá trị                                  |
-| ---------------- | ---------------------------------------- |
-| ID nhà cung cấp  | `vllm`                                   |
-| API              | `openai-completions` (tương thích OpenAI) |
-| Xác thực         | Biến môi trường `VLLM_API_KEY`           |
-| URL cơ sở mặc định | `http://127.0.0.1:8000/v1`             |
+| Thuộc tính       | Giá trị                                    |
+| ---------------- | ------------------------------------------ |
+| ID nhà cung cấp  | `vllm`                                     |
+| API              | `openai-completions` (tương thích OpenAI)  |
+| Xác thực         | Biến môi trường `VLLM_API_KEY`             |
+| URL cơ sở mặc định | `http://127.0.0.1:8000/v1`               |
+| Mức sử dụng khi truyền phát | Được hỗ trợ (`stream_options.include_usage`) |
 
 ## Bắt đầu
 
 <Steps>
-  <Step title="Khởi động vLLM với máy chủ tương thích OpenAI">
-    URL cơ sở của bạn nên cung cấp các endpoint `/v1` (ví dụ: `/v1/models`, `/v1/chat/completions`). vLLM thường chạy tại:
+  <Step title="Start vLLM with an OpenAI-compatible server">
+    URL cơ sở của bạn phải cung cấp các endpoint `/v1` (`/v1/models`, `/v1/chat/completions`). vLLM thường chạy tại:
 
-    ```
+    ```text
     http://127.0.0.1:8000/v1
     ```
 
   </Step>
-  <Step title="Đặt biến môi trường khóa API">
-    Giá trị bất kỳ đều dùng được nếu máy chủ của bạn không bắt buộc xác thực:
+  <Step title="Set the API key environment variable">
+    Nếu máy chủ của bạn không bắt buộc xác thực, mọi giá trị không rỗng đều dùng được:
 
     ```bash
     export VLLM_API_KEY="vllm-local"
     ```
 
   </Step>
-  <Step title="Chọn mô hình">
-    Thay bằng một trong các ID mô hình vLLM của bạn:
+  <Step title="Select a model">
+    Thay thế bằng một trong các ID mô hình vLLM của bạn:
 
     ```json5
     {
@@ -62,35 +57,38 @@ phản hồi `stream_options.include_usage`.
     ```
 
   </Step>
-  <Step title="Xác minh mô hình có sẵn">
+  <Step title="Verify the model is available">
     ```bash
     openclaw models list --provider vllm
     ```
   </Step>
 </Steps>
 
-## Phát hiện mô hình (nhà cung cấp ngầm định)
+<Tip>
+Để thiết lập không tương tác (CI, viết tập lệnh), hãy truyền trực tiếp URL cơ sở, khóa và mô hình:
 
-Khi `VLLM_API_KEY` được đặt (hoặc có hồ sơ xác thực) và bạn **không** định nghĩa `models.providers.vllm`, OpenClaw truy vấn:
-
+```bash
+openclaw onboard --non-interactive \
+  --mode local \
+  --auth-choice vllm \
+  --custom-base-url "http://127.0.0.1:8000/v1" \
+  --custom-api-key "vllm-local" \
+  --custom-model-id "your-model-id"
 ```
-GET http://127.0.0.1:8000/v1/models
-```
 
-và chuyển đổi các ID được trả về thành mục mô hình.
+</Tip>
+
+## Khám phá mô hình (nhà cung cấp ngầm định)
+
+Khi `VLLM_API_KEY` được đặt (hoặc tồn tại hồ sơ xác thực) và `models.providers.vllm` **chưa** được định nghĩa, OpenClaw truy vấn `GET http://127.0.0.1:8000/v1/models` rồi chuyển đổi các ID trả về thành các mục mô hình.
 
 <Note>
-Nếu bạn đặt `models.providers.vllm` một cách tường minh, OpenClaw mặc định dùng các mô hình bạn đã khai báo. Thêm `"vllm/*": {}` vào `agents.defaults.models` khi bạn muốn OpenClaw truy vấn endpoint `/models` của nhà cung cấp đã cấu hình đó và bao gồm mọi mô hình vLLM được quảng bá.
+Nếu bạn đặt `models.providers.vllm` một cách tường minh, OpenClaw chỉ sử dụng các mô hình bạn đã khai báo. Thêm `"vllm/*": {}` vào `agents.defaults.models` để OpenClaw cũng truy vấn endpoint `/models` của nhà cung cấp đã cấu hình đó và bao gồm tất cả mô hình vLLM được công bố.
 </Note>
 
-## Cấu hình tường minh (mô hình thủ công)
+## Cấu hình tường minh
 
-Dùng cấu hình tường minh khi:
-
-- vLLM chạy trên host hoặc cổng khác
-- Bạn muốn cố định các giá trị `contextWindow` hoặc `maxTokens`
-- Máy chủ của bạn yêu cầu khóa API thật (hoặc bạn muốn kiểm soát header)
-- Bạn kết nối tới endpoint vLLM local loopback, LAN, hoặc Tailscale đáng tin cậy
+Hãy cấu hình tường minh khi vLLM chạy trên máy chủ hoặc cổng khác, bạn muốn cố định `contextWindow`/`maxTokens`, máy chủ yêu cầu khóa API thực hoặc bạn kết nối tới endpoint loopback, LAN hay Tailscale đáng tin cậy:
 
 ```json5
 {
@@ -100,7 +98,7 @@ Dùng cấu hình tường minh khi:
         baseUrl: "http://127.0.0.1:8000/v1",
         apiKey: "${VLLM_API_KEY}",
         api: "openai-completions",
-        timeoutSeconds: 300, // Optional: extend connect/header/body/request timeout for slow local models
+        timeoutSeconds: 300, // Optional: extend request timeout for slow local models
         models: [
           {
             id: "your-model-id",
@@ -118,8 +116,7 @@ Dùng cấu hình tường minh khi:
 }
 ```
 
-Để giữ nhà cung cấp này động mà không cần liệt kê thủ công từng mô hình, hãy thêm ký tự đại diện nhà cung cấp
-vào danh mục mô hình hiển thị:
+Để giữ nhà cung cấp ở trạng thái động mà không liệt kê từng mô hình, hãy thêm ký tự đại diện vào danh mục mô hình hiển thị:
 
 ```json5
 {
@@ -136,28 +133,22 @@ vào danh mục mô hình hiển thị:
 ## Cấu hình nâng cao
 
 <AccordionGroup>
-  <Accordion title="Hành vi kiểu proxy">
-    vLLM được xem là backend `/v1` tương thích OpenAI kiểu proxy, không phải endpoint
-    OpenAI gốc. Điều này có nghĩa là:
+  <Accordion title="Proxy-style behavior">
+    vLLM được xử lý như một backend `/v1` kiểu proxy tương thích OpenAI, không phải endpoint OpenAI gốc:
 
-    | Hành vi | Được áp dụng? |
-    |----------|----------|
-    | Định hình yêu cầu OpenAI gốc | Không |
-    | `service_tier` | Không gửi |
-    | Responses `store` | Không gửi |
-    | Gợi ý prompt-cache | Không gửi |
-    | Định hình payload tương thích reasoning của OpenAI | Không áp dụng |
-    | Header quy thuộc OpenClaw ẩn | Không chèn trên URL cơ sở tùy chỉnh |
+    | Hành vi                                 | Có áp dụng không?                |
+    | --------------------------------------- | -------------------------------- |
+    | Định dạng yêu cầu OpenAI gốc            | Không                            |
+    | `service_tier`                          | Không được gửi                   |
+    | `store` của Responses                   | Không được gửi                   |
+    | Gợi ý bộ nhớ đệm prompt                 | Không được gửi                   |
+    | Định dạng tải trọng tương thích suy luận OpenAI | Không được áp dụng       |
+    | Header ghi nhận OpenClaw ẩn             | Không được chèn vào URL cơ sở tùy chỉnh |
 
   </Accordion>
 
-  <Accordion title="Điều khiển suy nghĩ Qwen">
-    Với các mô hình Qwen được phục vụ qua vLLM, đặt
-    `compat.thinkingFormat: "qwen-chat-template"` trên dòng mô hình của nhà cung cấp
-    đã cấu hình khi máy chủ mong đợi kwargs chat-template của Qwen. Các mô hình
-    được cấu hình theo cách này cung cấp hồ sơ `/think` nhị phân (`off`, `on`) vì
-    suy nghĩ theo mẫu Qwen là một cờ yêu cầu bật/tắt, không phải thang mức nỗ lực
-    kiểu OpenAI.
+  <Accordion title="Qwen thinking controls">
+    Với các mô hình Qwen, hãy đặt `compat.thinkingFormat: "qwen-chat-template"` trên hàng mô hình khi máy chủ yêu cầu các đối số từ khóa của mẫu trò chuyện Qwen. Các mô hình này cung cấp hồ sơ `/think` nhị phân (`off`, `on`) vì chế độ suy nghĩ của mẫu trò chuyện Qwen là cờ bật/tắt, không phải thang mức độ nỗ lực kiểu OpenAI.
 
     ```json5
     {
@@ -189,16 +180,12 @@ vào danh mục mô hình hiển thị:
     }
     ```
 
-    Các mức suy nghĩ không phải `off` gửi `enable_thinking: true`. Nếu endpoint của bạn
-    thay vào đó mong đợi các cờ cấp cao nhất kiểu DashScope, hãy dùng
-    `compat.thinkingFormat: "qwen"` để gửi `enable_thinking` ở gốc yêu cầu.
+    Các mức suy nghĩ khác `off` sẽ gửi `enable_thinking: true`. Nếu endpoint của bạn yêu cầu các cờ cấp cao nhất kiểu DashScope, hãy dùng `compat.thinkingFormat: "qwen"` để gửi `enable_thinking` tại gốc yêu cầu.
 
   </Accordion>
 
-  <Accordion title="Điều khiển suy nghĩ Nemotron 3">
-    vLLM/Nemotron 3 có thể dùng kwargs chat-template để kiểm soát reasoning được
-    trả về dưới dạng reasoning ẩn hay văn bản câu trả lời hiển thị. Khi một phiên OpenClaw
-    dùng `vllm/nemotron-3-*` với suy nghĩ tắt, Plugin vLLM đi kèm gửi:
+  <Accordion title="Nemotron 3 thinking controls">
+    Với các mô hình `vllm/nemotron-3-*` đã tắt chế độ suy nghĩ, Plugin đi kèm sẽ gửi:
 
     ```json
     {
@@ -209,9 +196,7 @@ vào danh mục mô hình hiển thị:
     }
     ```
 
-    Để tùy chỉnh các giá trị này, đặt `chat_template_kwargs` dưới tham số mô hình.
-    Nếu bạn cũng đặt `params.extra_body.chat_template_kwargs`, giá trị đó có
-    quyền ưu tiên cuối cùng vì `extra_body` là phần ghi đè thân yêu cầu cuối cùng.
+    Để tùy chỉnh các giá trị này, hãy đặt `chat_template_kwargs` trong tham số mô hình. Nếu bạn cũng đặt `params.extra_body.chat_template_kwargs`, giá trị đó sẽ được ưu tiên vì `extra_body` là phần ghi đè nội dung yêu cầu cuối cùng.
 
     ```json5
     {
@@ -234,21 +219,12 @@ vào danh mục mô hình hiển thị:
 
   </Accordion>
 
-  <Accordion title="Lệnh gọi công cụ Qwen xuất hiện dưới dạng văn bản">
-    Trước tiên hãy bảo đảm vLLM đã được khởi động với trình phân tích lệnh gọi công cụ và mẫu trò chuyện
-    đúng cho mô hình. Ví dụ, vLLM ghi nhận `hermes` cho các mô hình Qwen2.5
-    và `qwen3_xml` cho các mô hình Qwen3-Coder.
+  <Accordion title="Qwen tool calls appear as text">
+    Trước tiên, hãy xác nhận vLLM đã được khởi động với trình phân tích cú pháp lệnh gọi công cụ và mẫu trò chuyện phù hợp cho mô hình. Tài liệu vLLM chỉ định `hermes` cho các mô hình Qwen2.5 và `qwen3_xml` cho các mô hình Qwen3-Coder.
 
-    Triệu chứng:
+    Triệu chứng: Skills/công cụ không bao giờ chạy, trợ lý in JSON/XML thô như `{"name":"read","arguments":...}` hoặc vLLM trả về mảng `tool_calls` rỗng khi OpenClaw gửi `tool_choice: "auto"`.
 
-    - Skills hoặc công cụ không bao giờ chạy
-    - trợ lý in JSON/XML thô như `{"name":"read","arguments":...}`
-    - vLLM trả về mảng `tool_calls` rỗng khi OpenClaw gửi
-      `tool_choice: "auto"`
-
-    Một số tổ hợp Qwen/vLLM chỉ trả về lệnh gọi công cụ có cấu trúc khi
-    yêu cầu dùng `tool_choice: "required"`. Với các mục mô hình đó, ép trường yêu cầu
-    tương thích OpenAI bằng `params.extra_body`:
+    Một số tổ hợp Qwen/vLLM chỉ trả về lệnh gọi công cụ có cấu trúc khi yêu cầu sử dụng `tool_choice: "required"`. Buộc thiết lập này theo từng mô hình bằng `params.extra_body`:
 
     ```json5
     {
@@ -268,28 +244,18 @@ vào danh mục mô hình hiển thị:
     }
     ```
 
-    Thay `Qwen-Qwen2.5-Coder-32B-Instruct` bằng id chính xác được trả về bởi:
-
-    ```bash
-    openclaw models list --provider vllm
-    ```
-
-    Bạn có thể áp dụng cùng phần ghi đè từ CLI:
+    Thay ID mô hình bằng ID chính xác từ `openclaw models list --provider vllm`, hoặc áp dụng cùng phần ghi đè từ CLI:
 
     ```bash
     openclaw config set agents.defaults.models '{"vllm/Qwen-Qwen2.5-Coder-32B-Instruct":{"params":{"extra_body":{"tool_choice":"required"}}}}' --strict-json --merge
     ```
 
-    Đây là biện pháp tương thích cần chọn bật. Nó khiến mọi lượt mô hình có
-    công cụ đều yêu cầu một lệnh gọi công cụ, vì vậy chỉ dùng cho một mục mô hình cục bộ chuyên dụng
-    nơi hành vi đó chấp nhận được. Không dùng nó làm mặc định toàn cục cho tất cả
-    mô hình vLLM, và không dùng proxy tự động chuyển đổi tùy tiện
-    văn bản trợ lý thành lệnh gọi công cụ có thể thực thi.
+    Đây là giải pháp thay thế phải chủ động bật: nó buộc mỗi lượt có công cụ phải thực hiện một lệnh gọi công cụ, vì vậy chỉ dùng cho một mục mô hình chuyên biệt khi hành vi đó có thể chấp nhận được. Không đặt nó làm mặc định chung cho mọi mô hình vLLM và không kết hợp nó với proxy chuyển đổi văn bản tùy ý của trợ lý thành các lệnh gọi công cụ có thể thực thi.
 
   </Accordion>
 
-  <Accordion title="URL cơ sở tùy chỉnh">
-    Nếu máy chủ vLLM của bạn chạy trên host hoặc cổng không mặc định, đặt `baseUrl` trong cấu hình nhà cung cấp tường minh:
+  <Accordion title="Custom base URL">
+    Nếu máy chủ vLLM chạy trên máy chủ hoặc cổng không mặc định, hãy đặt `baseUrl` trong cấu hình nhà cung cấp tường minh:
 
     ```json5
     {
@@ -322,9 +288,8 @@ vào danh mục mô hình hiển thị:
 ## Khắc phục sự cố
 
 <AccordionGroup>
-  <Accordion title="Phản hồi đầu tiên chậm hoặc máy chủ từ xa hết thời gian chờ">
-    Với các mô hình cục bộ lớn, host LAN từ xa, hoặc liên kết tailnet, hãy đặt
-    thời gian chờ yêu cầu theo phạm vi nhà cung cấp:
+  <Accordion title="Slow first response or remote server timeout">
+    Với các mô hình cục bộ lớn, máy chủ LAN từ xa hoặc liên kết tailnet, hãy đặt thời gian chờ yêu cầu trong phạm vi nhà cung cấp:
 
     ```json5
     {
@@ -342,52 +307,40 @@ vào danh mục mô hình hiển thị:
     }
     ```
 
-    `timeoutSeconds` chỉ áp dụng cho các yêu cầu HTTP mô hình vLLM, bao gồm
-    thiết lập kết nối, header phản hồi, truyền luồng phần thân, và tổng thời gian
-    hủy guarded-fetch. Ưu tiên cách này trước khi tăng
-    `agents.defaults.timeoutSeconds`, vốn kiểm soát toàn bộ lượt chạy agent.
+    `timeoutSeconds` chỉ áp dụng cho các yêu cầu HTTP mô hình vLLM: thiết lập kết nối, header phản hồi, truyền phát nội dung và thao tác hủy tổng thể của cơ chế truy xuất được bảo vệ. Nó cũng nâng giới hạn bộ giám sát trạng thái nhàn rỗi/truyền phát của LLM cao hơn mức mặc định ngầm định khoảng 120 giây cho nhà cung cấp này. Nên dùng cách này thay vì tăng `agents.defaults.timeoutSeconds`, vốn kiểm soát toàn bộ lượt chạy của tác tử.
 
   </Accordion>
 
-  <Accordion title="Không thể truy cập máy chủ">
-    Kiểm tra rằng máy chủ vLLM đang chạy và có thể truy cập:
+  <Accordion title="Server not reachable">
+    Kiểm tra xem máy chủ vLLM có đang chạy và có thể truy cập được không:
 
     ```bash
     curl http://127.0.0.1:8000/v1/models
     ```
 
-    Nếu bạn thấy lỗi kết nối, hãy xác minh host, cổng, và vLLM đã khởi động với chế độ máy chủ tương thích OpenAI.
-    Với các endpoint local loopback, LAN, hoặc Tailscale tường minh, OpenClaw tin cậy
-    origin `models.providers.vllm.baseUrl` được cấu hình chính xác cho các yêu cầu mô hình
-    được bảo vệ. Các origin metadata/link-local vẫn bị chặn nếu không có
-    lựa chọn bật tường minh. Chỉ đặt `models.providers.vllm.request.allowPrivateNetwork: true`
-    khi yêu cầu vLLM phải truy cập một origin riêng tư khác, và đặt thành `false`
-    để không chọn tin cậy origin chính xác.
+    Nếu bạn thấy lỗi kết nối, hãy xác minh máy chủ, cổng và việc vLLM đã khởi động ở chế độ máy chủ tương thích OpenAI. OpenClaw tin cậy chính xác nguồn gốc `models.providers.vllm.baseUrl` đã cấu hình cho các yêu cầu mô hình được bảo vệ trên endpoint loopback, LAN và Tailscale. Các nguồn gốc siêu dữ liệu/link-local vẫn bị chặn nếu không chủ động bật rõ ràng. Chỉ đặt `models.providers.vllm.request.allowPrivateNetwork: true` khi các yêu cầu vLLM phải truy cập một nguồn gốc riêng tư khác, hoặc đặt `false` để không sử dụng cơ chế tin cậy nguồn gốc chính xác.
 
   </Accordion>
 
-  <Accordion title="Lỗi xác thực trên yêu cầu">
-    Nếu yêu cầu thất bại vì lỗi xác thực, đặt `VLLM_API_KEY` thật khớp với cấu hình máy chủ của bạn, hoặc cấu hình nhà cung cấp tường minh dưới `models.providers.vllm`.
+  <Accordion title="Auth errors on requests">
+    Nếu yêu cầu thất bại do lỗi xác thực, hãy đặt `VLLM_API_KEY` thực khớp với cấu hình máy chủ hoặc cấu hình nhà cung cấp một cách tường minh trong `models.providers.vllm`.
 
     <Tip>
-    Nếu máy chủ vLLM của bạn không bắt buộc xác thực, mọi giá trị không rỗng cho `VLLM_API_KEY` đều dùng được làm tín hiệu chọn bật cho OpenClaw.
+    Nếu máy chủ vLLM của bạn không bắt buộc xác thực, mọi giá trị không rỗng của `VLLM_API_KEY` đều có thể dùng làm tín hiệu chủ động bật cho OpenClaw.
     </Tip>
 
   </Accordion>
 
-  <Accordion title="Không phát hiện mô hình nào">
-    Tự động phát hiện yêu cầu `VLLM_API_KEY` phải được đặt. Nếu bạn đã định nghĩa `models.providers.vllm`, OpenClaw chỉ dùng các mô hình bạn đã khai báo trừ khi `agents.defaults.models` bao gồm `"vllm/*": {}`.
+  <Accordion title="No models discovered">
+    Tính năng tự động khám phá yêu cầu phải đặt `VLLM_API_KEY`. Nếu bạn đã định nghĩa `models.providers.vllm`, OpenClaw chỉ sử dụng các mô hình đã khai báo, trừ khi `agents.defaults.models` chứa `"vllm/*": {}`.
   </Accordion>
 
-  <Accordion title="Công cụ hiển thị dưới dạng văn bản thô">
-    Nếu một mô hình Qwen in cú pháp công cụ JSON/XML thay vì thực thi một skill,
-    hãy kiểm tra hướng dẫn Qwen trong phần Cấu hình nâng cao ở trên. Cách sửa thường dùng là:
+  <Accordion title="Tools render as raw text">
+    Nếu một mô hình Qwen in cú pháp công cụ JSON/XML thay vì thực thi một Skill:
 
-    - khởi động vLLM với parser/template đúng cho mô hình đó
-    - xác nhận id mô hình chính xác bằng `openclaw models list --provider vllm`
-    - chỉ thêm phần ghi đè `params.extra_body.tool_choice: "required"`
-      riêng cho từng mô hình nếu `tool_choice: "auto"` vẫn trả về lệnh gọi công cụ
-      rỗng hoặc chỉ dạng văn bản
+    - Khởi động vLLM với trình phân tích cú pháp/mẫu phù hợp cho mô hình đó.
+    - Xác nhận ID mô hình chính xác bằng `openclaw models list --provider vllm`.
+    - Chỉ thêm phần ghi đè `params.extra_body.tool_choice: "required"` chuyên biệt cho từng mô hình nếu `tool_choice: "auto"` vẫn trả về lệnh gọi công cụ rỗng hoặc chỉ có văn bản.
 
   </Accordion>
 </AccordionGroup>
@@ -399,16 +352,16 @@ Trợ giúp thêm: [Khắc phục sự cố](/vi/help/troubleshooting) và [Câu
 ## Liên quan
 
 <CardGroup cols={2}>
-  <Card title="Lựa chọn mô hình" href="/vi/concepts/model-providers" icon="layers">
+  <Card title="Model selection" href="/vi/concepts/model-providers" icon="layers">
     Chọn nhà cung cấp, tham chiếu mô hình và hành vi chuyển đổi dự phòng.
   </Card>
   <Card title="OpenAI" href="/vi/providers/openai" icon="bolt">
-    Nhà cung cấp OpenAI gốc và hành vi tuyến tương thích với OpenAI.
+    Nhà cung cấp OpenAI gốc và hành vi định tuyến tương thích OpenAI.
   </Card>
-  <Card title="OAuth và xác thực" href="/vi/gateway/authentication" icon="key">
-    Chi tiết xác thực và quy tắc tái sử dụng thông tin đăng nhập.
+  <Card title="OAuth and auth" href="/vi/gateway/authentication" icon="key">
+    Chi tiết xác thực và quy tắc tái sử dụng thông tin xác thực.
   </Card>
-  <Card title="Khắc phục sự cố" href="/vi/help/troubleshooting" icon="wrench">
-    Các vấn đề thường gặp và cách giải quyết.
+  <Card title="Troubleshooting" href="/vi/help/troubleshooting" icon="wrench">
+    Các sự cố thường gặp và cách giải quyết.
   </Card>
 </CardGroup>

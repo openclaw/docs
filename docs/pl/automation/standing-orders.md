@@ -1,95 +1,83 @@
 ---
 read_when:
-    - Konfigurowanie autonomicznych przepływów pracy agentów działających bez monitowania przy każdym zadaniu
+    - Konfigurowanie autonomicznych przepływów pracy agentów działających bez monitów dla każdego zadania
     - Określanie, co agent może robić samodzielnie, a co wymaga zatwierdzenia przez człowieka
-    - Strukturyzowanie agentów wieloprogramowych z wyraźnymi granicami i regułami eskalacji
-summary: Zdefiniuj trwałe uprawnienia operacyjne dla autonomicznych programów agentowych
+    - Strukturyzowanie agentów wieloprogramowych z jasno określonymi granicami i zasadami eskalacji
+summary: Określ stałe uprawnienia operacyjne dla autonomicznych programów agentowych
 title: Stałe polecenia
 x-i18n:
-    generated_at: "2026-05-12T00:56:20Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:51:25Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3a51baa7aca31cb34b682983374d4d551ed6ab57ae54a5c63e7d044bffeef756
+    source_hash: 9e7ad622efe734facc9dc3716f5ee7f57ed3923499db78730bda234a5c62ad80
     source_path: automation/standing-orders.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Stałe zlecenia nadają agentowi **trwałe uprawnienia operacyjne** dla zdefiniowanych programów. Zamiast za każdym razem podawać instrukcje dla pojedynczego zadania, definiujesz programy z jasnym zakresem, wyzwalaczami i regułami eskalacji - a agent działa autonomicznie w tych granicach.
+Stałe zlecenia przyznają agentowi **trwałe uprawnienia operacyjne** w ramach zdefiniowanych programów. Zamiast przekazywać agentowi polecenie dla każdego zadania, definiujesz programy z wyraźnym zakresem, wyzwalaczami i regułami eskalacji, a agent wykonuje je autonomicznie w tych granicach: „Odpowiadasz za cotygodniowy raport. Przygotowuj go w każdy piątek, wysyłaj i eskaluj tylko wtedy, gdy coś wygląda nieprawidłowo”.
 
-To różnica między mówieniem asystentowi „wyślij cotygodniowy raport” w każdy piątek a nadaniem stałych uprawnień: „Odpowiadasz za cotygodniowy raport. Przygotuj go w każdy piątek, wyślij i eskaluj tylko wtedy, gdy coś wygląda nieprawidłowo”.
+## Dlaczego warto używać stałych zleceń
 
-## Dlaczego stałe zlecenia
+**Bez stałych zleceń:** przekazujesz agentowi polecenie dla każdego zadania, rutynowe prace są zapominane lub opóźniane, a Ty stajesz się wąskim gardłem.
 
-**Bez stałych zleceń:**
-
-- Musisz instruować agenta przy każdym zadaniu
-- Agent pozostaje bezczynny między żądaniami
-- Rutynowa praca jest zapominana lub opóźniana
-- Ty stajesz się wąskim gardłem
-
-**Ze stałymi zleceniami:**
-
-- Agent działa autonomicznie w zdefiniowanych granicach
-- Rutynowa praca odbywa się zgodnie z harmonogramem bez przypominania
-- Angażujesz się tylko przy wyjątkach i zatwierdzeniach
-- Agent produktywnie wykorzystuje czas bezczynności
+**Ze stałymi zleceniami:** agent działa autonomicznie w zdefiniowanych granicach, rutynowe prace odbywają się zgodnie z harmonogramem, a Twój udział jest potrzebny tylko w przypadku wyjątków i zatwierdzeń.
 
 ## Jak działają
 
-Stałe zlecenia są definiowane w plikach [przestrzeni roboczej agenta](/pl/concepts/agent-workspace). Zalecane podejście to umieszczenie ich bezpośrednio w `AGENTS.md` (który jest automatycznie wstrzykiwany w każdej sesji), aby agent zawsze miał je w kontekście. W przypadku większych konfiguracji możesz też umieścić je w dedykowanym pliku, takim jak `standing-orders.md`, i odwołać się do niego z `AGENTS.md`.
+Stałe zlecenia definiuje się w plikach [przestrzeni roboczej agenta](/pl/concepts/agent-workspace). Zalecane podejście polega na umieszczeniu ich bezpośrednio w pliku `AGENTS.md` (który jest automatycznie wstrzykiwany podczas każdej sesji), dzięki czemu agent zawsze ma je w kontekście. W przypadku większych konfiguracji możesz również umieścić je w osobnym pliku, takim jak `standing-orders.md`, i odwołać się do niego z pliku `AGENTS.md`.
 
 Każdy program określa:
 
-1. **Zakres** - co agent ma prawo robić
-2. **Wyzwalacze** - kiedy wykonać działanie (harmonogram, zdarzenie lub warunek)
-3. **Bramki zatwierdzeń** - co wymaga zgody człowieka przed działaniem
-4. **Reguły eskalacji** - kiedy przerwać i poprosić o pomoc
+1. **Zakres** — co agent może robić
+2. **Wyzwalacze** — kiedy należy go wykonać (harmonogram, zdarzenie lub warunek)
+3. **Punkty zatwierdzania** — co przed wykonaniem wymaga zgody człowieka
+4. **Reguły eskalacji** — kiedy należy przerwać działanie i poprosić o pomoc
 
-Agent ładuje te instrukcje w każdej sesji za pośrednictwem plików inicjalizujących przestrzeń roboczą (pełna lista automatycznie wstrzykiwanych plików: [Przestrzeń robocza agenta](/pl/concepts/agent-workspace)) i wykonuje je w połączeniu z [zadaniami Cron](/pl/automation/cron-jobs) do egzekwowania działań opartych na czasie.
+Agent wczytuje te instrukcje podczas każdej sesji za pośrednictwem plików inicjalizacyjnych przestrzeni roboczej (pełną listę automatycznie wstrzykiwanych plików znajdziesz w sekcji [Przestrzeń robocza agenta](/pl/concepts/agent-workspace)) i wykonuje je w połączeniu z [zadaniami Cron](/pl/automation/cron-jobs), które zapewniają realizację według harmonogramu.
 
 <Tip>
-Umieść stałe zlecenia w `AGENTS.md`, aby zagwarantować ich ładowanie w każdej sesji. Inicjalizacja przestrzeni roboczej automatycznie wstrzykuje `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md` i `MEMORY.md` - ale nie dowolne pliki w podkatalogach.
+Umieść stałe zlecenia w pliku `AGENTS.md`, aby zagwarantować ich wczytywanie podczas każdej sesji. Mechanizm inicjalizacji przestrzeni roboczej automatycznie wstrzykuje pliki `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md` i `MEMORY.md` — ale nie dowolne pliki znajdujące się w podkatalogach.
 </Tip>
 
-## Anatomia stałego zlecenia
+## Struktura stałego zlecenia
 
 ```markdown
-## Program: Weekly Status Report
+## Program: Cotygodniowy raport o stanie
 
-**Authority:** Compile data, generate report, deliver to stakeholders
-**Trigger:** Every Friday at 4 PM (enforced via cron job)
-**Approval gate:** None for standard reports. Flag anomalies for human review.
-**Escalation:** If data source is unavailable or metrics look unusual (>2σ from norm)
+**Uprawnienia:** Zbieranie danych, generowanie raportu, dostarczanie go interesariuszom
+**Wyzwalacz:** W każdy piątek o 16:00 (egzekwowane za pomocą zadania cron)
+**Punkt zatwierdzania:** Brak w przypadku standardowych raportów. Oznaczaj anomalie do sprawdzenia przez człowieka.
+**Eskalacja:** Jeśli źródło danych jest niedostępne lub wskaźniki wyglądają nietypowo (>2σ od normy)
 
-### Execution steps
+### Kroki wykonania
 
-1. Pull metrics from configured sources
-2. Compare to prior week and targets
-3. Generate report in Reports/weekly/YYYY-MM-DD.md
-4. Deliver summary via configured channel
-5. Log completion to Agent/Logs/
+1. Pobierz wskaźniki ze skonfigurowanych źródeł
+2. Porównaj je z poprzednim tygodniem i wartościami docelowymi
+3. Wygeneruj raport w Reports/weekly/YYYY-MM-DD.md
+4. Dostarcz podsumowanie przez skonfigurowany kanał
+5. Zapisz ukończenie w Agent/Logs/
 
-### What NOT to do
+### Czego NIE robić
 
-- Do not send reports to external parties
-- Do not modify source data
-- Do not skip delivery if metrics look bad - report accurately
+- Nie wysyłaj raportów podmiotom zewnętrznym
+- Nie modyfikuj danych źródłowych
+- Nie pomijaj dostarczenia raportu, jeśli wskaźniki wyglądają źle — przedstaw je rzetelnie
 ```
 
-## Stałe zlecenia plus zadania Cron
+## Stałe zlecenia i zadania Cron
 
-Stałe zlecenia definiują, **co** agent ma prawo robić. [Zadania Cron](/pl/automation/cron-jobs) definiują, **kiedy** to się dzieje. Działają razem:
+Stałe zlecenia definiują, **co** agent może robić. [Zadania Cron](/pl/automation/cron-jobs) definiują, **kiedy** ma się to odbywać. Działają razem:
 
-```
-Standing Order: "You own the daily inbox triage"
+```text
+Stałe zlecenie: „Odpowiadasz za codzienną klasyfikację skrzynki odbiorczej”
     ↓
-Cron Job (8 AM daily): "Execute inbox triage per standing orders"
+Zadanie Cron (codziennie o 8:00): „Wykonaj klasyfikację skrzynki odbiorczej zgodnie ze stałymi zleceniami”
     ↓
-Agent: Reads standing orders → executes steps → reports results
+Agent: Odczytuje stałe zlecenia → wykonuje kroki → raportuje wyniki
 ```
 
-Prompt zadania Cron powinien odwoływać się do stałego zlecenia zamiast je duplikować:
+Polecenie zadania Cron powinno odwoływać się do stałego zlecenia zamiast je powielać:
 
 ```bash
 openclaw cron add \
@@ -100,7 +88,7 @@ openclaw cron add \
   --announce \
   --channel imessage \
   --to "+1XXXXXXXXXX" \
-  --message "Execute daily inbox triage per standing orders. Check mail for new alerts. Parse, categorize, and persist each item. Report summary to owner. Escalate unknowns."
+  --message "Wykonaj codzienną klasyfikację skrzynki odbiorczej zgodnie ze stałymi zleceniami. Sprawdź pocztę pod kątem nowych alertów. Przeanalizuj, skategoryzuj i utrwal każdy element. Przekaż właścicielowi podsumowanie. Eskaluj nieznane przypadki."
 ```
 
 ## Przykłady
@@ -108,151 +96,151 @@ openclaw cron add \
 ### Przykład 1: treści i media społecznościowe (cykl tygodniowy)
 
 ```markdown
-## Program: Content & Social Media
+## Program: Treści i media społecznościowe
 
-**Authority:** Draft content, schedule posts, compile engagement reports
-**Approval gate:** All posts require owner review for first 30 days, then standing approval
-**Trigger:** Weekly cycle (Monday review → mid-week drafts → Friday brief)
+**Uprawnienia:** Tworzenie wersji roboczych treści, planowanie publikacji, przygotowywanie raportów zaangażowania
+**Punkt zatwierdzania:** Wszystkie publikacje wymagają sprawdzenia przez właściciela przez pierwsze 30 dni, a następnie obowiązuje stała zgoda
+**Wyzwalacz:** Cykl tygodniowy (przegląd w poniedziałek → wersje robocze w środku tygodnia → podsumowanie w piątek)
 
-### Weekly cycle
+### Cykl tygodniowy
 
-- **Monday:** Review platform metrics and audience engagement
-- **Tuesday-Thursday:** Draft social posts, create blog content
-- **Friday:** Compile weekly marketing brief → deliver to owner
+- **Poniedziałek:** Przejrzyj wskaźniki platformy i zaangażowanie odbiorców
+- **Wtorek–czwartek:** Przygotuj wersje robocze postów społecznościowych i treści na blog
+- **Piątek:** Przygotuj cotygodniowe podsumowanie marketingowe → dostarcz je właścicielowi
 
-### Content rules
+### Reguły dotyczące treści
 
-- Voice must match the brand (see SOUL.md or brand voice guide)
-- Never identify as AI in public-facing content
-- Include metrics when available
-- Focus on value to audience, not self-promotion
+- Styl komunikacji musi odpowiadać marce (patrz SOUL.md lub przewodnik po stylu komunikacji marki)
+- Nigdy nie przedstawiaj się jako AI w treściach publicznych
+- Uwzględniaj wskaźniki, gdy są dostępne
+- Koncentruj się na wartości dla odbiorców, a nie na autopromocji
 ```
 
-### Przykład 2: operacje finansowe (wyzwalane zdarzeniem)
+### Przykład 2: operacje finansowe (wyzwalane zdarzeniami)
 
 ```markdown
-## Program: Financial Processing
+## Program: Przetwarzanie finansowe
 
-**Authority:** Process transaction data, generate reports, send summaries
-**Approval gate:** None for analysis. Recommendations require owner approval.
-**Trigger:** New data file detected OR scheduled monthly cycle
+**Uprawnienia:** Przetwarzanie danych transakcyjnych, generowanie raportów, wysyłanie podsumowań
+**Punkt zatwierdzania:** Brak w przypadku analiz. Rekomendacje wymagają zatwierdzenia przez właściciela.
+**Wyzwalacz:** Wykrycie nowego pliku danych LUB zaplanowany cykl miesięczny
 
-### When new data arrives
+### Gdy pojawią się nowe dane
 
-1. Detect new file in designated input directory
-2. Parse and categorize all transactions
-3. Compare against budget targets
-4. Flag: unusual items, threshold breaches, new recurring charges
-5. Generate report in designated output directory
-6. Deliver summary to owner via configured channel
+1. Wykryj nowy plik w wyznaczonym katalogu wejściowym
+2. Przeanalizuj i skategoryzuj wszystkie transakcje
+3. Porównaj je z wartościami docelowymi budżetu
+4. Oznacz: nietypowe pozycje, przekroczenia progów, nowe opłaty cykliczne
+5. Wygeneruj raport w wyznaczonym katalogu wyjściowym
+6. Dostarcz podsumowanie właścicielowi przez skonfigurowany kanał
 
-### Escalation rules
+### Reguły eskalacji
 
-- Single item > $500: immediate alert
-- Category > budget by 20%: flag in report
-- Unrecognizable transaction: ask owner for categorization
-- Failed processing after 2 retries: report failure, do not guess
+- Pojedyncza pozycja > 500 USD: natychmiastowy alert
+- Kategoria przekracza budżet o 20%: oznacz w raporcie
+- Nierozpoznana transakcja: poproś właściciela o jej skategoryzowanie
+- Nieudane przetwarzanie po 2 ponowieniach: zgłoś niepowodzenie, nie zgaduj
 ```
 
 ### Przykład 3: monitorowanie i alerty (ciągłe)
 
 ```markdown
-## Program: System Monitoring
+## Program: Monitorowanie systemu
 
-**Authority:** Check system health, restart services, send alerts
-**Approval gate:** Restart services automatically. Escalate if restart fails twice.
-**Trigger:** Every heartbeat cycle
+**Uprawnienia:** Sprawdzanie stanu systemu, ponowne uruchamianie usług, wysyłanie alertów
+**Punkt zatwierdzania:** Automatycznie uruchamiaj usługi ponownie. Eskaluj, jeśli ponowne uruchomienie nie powiedzie się dwukrotnie.
+**Wyzwalacz:** Każdy cykl Heartbeat
 
-### Checks
+### Kontrole
 
-- Service health endpoints responding
-- Disk space above threshold
-- Pending tasks not stale (>24 hours)
-- Delivery channels operational
+- Punkty końcowe stanu usług odpowiadają
+- Ilość wolnego miejsca na dysku przekracza próg
+- Oczekujące zadania nie są przeterminowane (>24 godziny)
+- Kanały dostarczania działają
 
-### Response matrix
+### Macierz reakcji
 
-| Condition        | Action                   | Escalate?                |
-| ---------------- | ------------------------ | ------------------------ |
-| Service down     | Restart automatically    | Only if restart fails 2x |
-| Disk space < 10% | Alert owner              | Yes                      |
-| Stale task > 24h | Remind owner             | No                       |
-| Channel offline  | Log and retry next cycle | If offline > 2 hours     |
+| Warunek                   | Działanie                              | Eskalować?                                  |
+| ------------------------- | -------------------------------------- | -------------------------------------------- |
+| Usługa nie działa         | Automatycznie uruchom ponownie         | Tylko jeśli 2 próby ponownego uruchomienia zawiodą |
+| Miejsce na dysku < 10%    | Powiadom właściciela                   | Tak                                          |
+| Zadanie starsze niż 24 godziny | Przypomnij właścicielowi          | Nie                                          |
+| Kanał jest offline        | Zapisz w dzienniku i ponów w następnym cyklu | Jeśli jest offline przez ponad 2 godziny |
 ```
 
-## Wzorzec wykonaj-zweryfikuj-zaraportuj
+## Wzorzec wykonaj–zweryfikuj–zaraportuj
 
-Stałe zlecenia działają najlepiej, gdy są połączone z rygorystyczną dyscypliną wykonania. Każde zadanie w stałym zleceniu powinno stosować tę pętlę:
+Stałe zlecenia działają najlepiej w połączeniu ze ścisłą dyscypliną wykonania. Każde zadanie w stałym zleceniu powinno przebiegać zgodnie z następującą pętlą:
 
-1. **Wykonaj** - Wykonaj właściwą pracę (nie tylko potwierdź instrukcję)
-2. **Zweryfikuj** - Potwierdź, że wynik jest poprawny (plik istnieje, wiadomość dostarczona, dane przeanalizowane)
-3. **Zaraportuj** - Powiedz właścicielowi, co zrobiono i co zweryfikowano
+1. **Wykonaj** — wykonaj właściwą pracę (nie ograniczaj się do potwierdzenia instrukcji)
+2. **Zweryfikuj** — potwierdź poprawność wyniku (plik istnieje, wiadomość została dostarczona, dane zostały przeanalizowane)
+3. **Zaraportuj** — poinformuj właściciela, co wykonano i co zweryfikowano
 
 ```markdown
-### Execution rules
+### Reguły wykonania
 
-- Every task follows Execute-Verify-Report. No exceptions.
-- "I'll do that" is not execution. Do it, then report.
-- "Done" without verification is not acceptable. Prove it.
-- If execution fails: retry once with adjusted approach.
-- If still fails: report failure with diagnosis. Never silently fail.
-- Never retry indefinitely - 3 attempts max, then escalate.
+- Każde zadanie jest realizowane według schematu Wykonaj–Zweryfikuj–Zaraportuj. Bez wyjątków.
+- „Zrobię to” nie oznacza wykonania. Najpierw wykonaj zadanie, a potem zdaj raport.
+- „Gotowe” bez weryfikacji jest niedopuszczalne. Przedstaw dowód.
+- Jeśli wykonanie się nie powiedzie: ponów je raz, stosując zmienione podejście.
+- Jeśli nadal się nie powiedzie: zgłoś niepowodzenie wraz z diagnozą. Nigdy nie ukrywaj niepowodzenia.
+- Nigdy nie ponawiaj bez końca — maksymalnie 3 próby, a następnie eskalacja.
 ```
 
-Ten wzorzec zapobiega najczęstszemu trybowi awarii agenta: potwierdzeniu zadania bez jego ukończenia.
+Ten wzorzec zapobiega najczęstszemu trybowi niepowodzenia agenta: potwierdzeniu zadania bez jego ukończenia.
 
-## Architektura wieloprogramowa
+## Architektura wielu programów
 
-W przypadku agentów zarządzających wieloma obszarami organizuj stałe zlecenia jako osobne programy z jasnymi granicami:
+W przypadku agentów zarządzających wieloma obszarami uporządkuj stałe zlecenia jako osobne programy z wyraźnymi granicami:
 
 ```markdown
-## Program 1: [Domain A] (Weekly)
+## Program 1: [Domena A] (co tydzień)
 
 ...
 
-## Program 2: [Domain B] (Monthly + On-Demand)
+## Program 2: [Domena B] (co miesiąc + na żądanie)
 
 ...
 
-## Program 3: [Domain C] (As-Needed)
+## Program 3: [Domena C] (w razie potrzeby)
 
 ...
 
-## Escalation Rules (All Programs)
+## Reguły eskalacji (wszystkie programy)
 
-- [Common escalation criteria]
-- [Approval gates that apply across programs]
+- [Wspólne kryteria eskalacji]
+- [Punkty zatwierdzania obowiązujące we wszystkich programach]
 ```
 
 Każdy program powinien mieć:
 
-- Własną **kadencję wyzwalaczy** (tygodniową, miesięczną, sterowaną zdarzeniami, ciągłą)
-- Własne **bramki zatwierdzeń** (niektóre programy wymagają większego nadzoru niż inne)
-- Jasne **granice** (agent powinien wiedzieć, gdzie kończy się jeden program, a zaczyna drugi)
+- Własny **harmonogram wyzwalania** (tygodniowy, miesięczny, sterowany zdarzeniami, ciągły)
+- Własne **punkty zatwierdzania** (niektóre programy wymagają większego nadzoru niż inne)
+- Wyraźne **granice** (agent powinien wiedzieć, gdzie kończy się jeden program, a zaczyna drugi)
 
-## Najlepsze praktyki
+## Sprawdzone praktyki
 
-### Rób
+### Zalecane
 
-- Zacznij od wąskich uprawnień i rozszerzaj je wraz ze wzrostem zaufania
-- Definiuj wyraźne bramki zatwierdzeń dla działań wysokiego ryzyka
-- Uwzględniaj sekcje „Czego NIE robić” - granice są równie ważne jak uprawnienia
-- Łącz z zadaniami Cron, aby zapewnić niezawodne wykonywanie oparte na czasie
-- Przeglądaj logi agenta co tydzień, aby sprawdzić, czy stałe zlecenia są przestrzegane
-- Aktualizuj stałe zlecenia wraz ze zmianą potrzeb - to żywe dokumenty
+- Zacznij od wąskiego zakresu uprawnień i rozszerzaj go wraz ze wzrostem zaufania
+- Zdefiniuj wyraźne punkty zatwierdzania dla działań wysokiego ryzyka
+- Uwzględnij sekcje „Czego NIE robić” — granice są równie ważne jak uprawnienia
+- Połącz stałe zlecenia z zadaniami Cron, aby zapewnić niezawodne wykonywanie według harmonogramu
+- Co tydzień przeglądaj dzienniki agenta, aby zweryfikować przestrzeganie stałych zleceń
+- Aktualizuj stałe zlecenia wraz ze zmianą potrzeb — są to żywe dokumenty
 
-### Unikaj
+### Niezalecane
 
-- Nadawania szerokich uprawnień pierwszego dnia („rób, co uważasz za najlepsze”)
-- Pomijania reguł eskalacji - każdy program potrzebuje klauzuli „kiedy przerwać i zapytać”
-- Zakładania, że agent zapamięta instrukcje ustne - umieść wszystko w pliku
-- Mieszania obszarów w jednym programie - osobne programy dla osobnych domen
-- Zapominania o egzekwowaniu przez zadania Cron - stałe zlecenia bez wyzwalaczy stają się sugestiami
+- Nie przyznawaj szerokich uprawnień od pierwszego dnia („rób wszystko, co uznasz za najlepsze”)
+- Nie pomijaj reguł eskalacji — każdy program wymaga klauzuli określającej, kiedy przerwać działanie i zapytać
+- Nie zakładaj, że agent zapamięta instrukcje ustne — umieść wszystko w pliku
+- Nie łącz różnych obszarów w jednym programie — używaj osobnych programów dla osobnych domen
+- Nie zapominaj o egzekwowaniu za pomocą zadań Cron — stałe zlecenia bez wyzwalaczy stają się sugestiami
 
-## Powiązane
+## Powiązane materiały
 
-- [Automatyzacja](/pl/automation): wszystkie mechanizmy automatyzacji w skrócie.
-- [Zadania Cron](/pl/automation/cron-jobs): egzekwowanie harmonogramu dla stałych zleceń.
-- [Hooks](/pl/automation/hooks): skrypty sterowane zdarzeniami dla zdarzeń cyklu życia agenta.
-- [Webhooks](/pl/automation/cron-jobs#webhooks): przychodzące wyzwalacze zdarzeń HTTP.
-- [Przestrzeń robocza agenta](/pl/concepts/agent-workspace): miejsce przechowywania stałych zleceń, w tym pełna lista automatycznie wstrzykiwanych plików inicjalizujących (`AGENTS.md`, `SOUL.md` itd.).
+- [Automatyzacja](/pl/automation): przegląd wszystkich mechanizmów automatyzacji.
+- [Zadania Cron](/pl/automation/cron-jobs): egzekwowanie harmonogramu stałych zleceń.
+- [Hooki](/pl/automation/hooks): skrypty sterowane zdarzeniami cyklu życia agenta.
+- [Webhooki](/pl/automation/cron-jobs#webhooks): wyzwalacze przychodzących zdarzeń HTTP.
+- [Przestrzeń robocza agenta](/pl/concepts/agent-workspace): miejsce przechowywania stałych zleceń wraz z pełną listą automatycznie wstrzykiwanych plików inicjalizacyjnych (`AGENTS.md`, `SOUL.md` itd.).

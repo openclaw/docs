@@ -1,51 +1,43 @@
 ---
 read_when:
-    - Đang cập nhật giao diện cài đặt Skills trên macOS
-    - Thay đổi cơ chế kiểm soát Skills hoặc hành vi cài đặt
-summary: Giao diện cài đặt Skills trên macOS và trạng thái dựa trên Gateway
+    - Cập nhật giao diện cài đặt Skills trên macOS
+    - Thay đổi cơ chế kiểm soát hoặc hành vi cài đặt của Skills
+summary: Giao diện cài đặt Skills trên macOS và trạng thái do Gateway cung cấp
 title: Skills (macOS)
 x-i18n:
-    generated_at: "2026-06-27T17:42:49Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:05:28Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5ecc470f1645051e03ab4f51bcb4972da4853c690354bc8ea18a89fcd387d413
+    source_hash: fd9d8f1190320889029335e008c3605bd4bf0194f83398cedd4ae658fd90065c
     source_path: platforms/mac/skills.md
     workflow: 16
 ---
 
-Ứng dụng macOS hiển thị Skills của OpenClaw thông qua Gateway; ứng dụng không phân tích Skills cục bộ.
+Ứng dụng macOS cung cấp Skills của OpenClaw thông qua Gateway; ứng dụng không phân tích Skills cục bộ.
 
 ## Nguồn dữ liệu
 
-- `skills.status` (Gateway) trả về tất cả Skills cùng với tính đủ điều kiện và các yêu cầu còn thiếu
-  (bao gồm cả các chặn bằng danh sách cho phép đối với Skills đi kèm).
-- Các yêu cầu được suy ra từ `metadata.openclaw.requires` trong mỗi `SKILL.md`.
+- `skills.status` (Gateway) trả về tất cả Skills cùng trạng thái đủ điều kiện và các yêu cầu còn thiếu, bao gồm cả các trường hợp bị danh sách cho phép chặn đối với Skills đi kèm.
+- Các yêu cầu lấy từ `metadata.openclaw.requires` trong mỗi tệp `SKILL.md`.
 
-## Hành động cài đặt
+## Thao tác cài đặt
 
-- `metadata.openclaw.install` định nghĩa các tùy chọn cài đặt (brew/node/go/uv).
+- `metadata.openclaw.install` xác định các tùy chọn cài đặt (brew/node/go/uv/download).
 - Ứng dụng gọi `skills.install` để chạy trình cài đặt trên máy chủ Gateway.
-- `security.installPolicy` do người vận hành sở hữu có thể chặn các lượt cài đặt Skills
-  được Gateway hỗ trợ trước khi siêu dữ liệu trình cài đặt chạy. Cơ chế chặn mã nguy hiểm
-  tích hợp sẵn tại thời điểm cài đặt không phải là một phần của luồng cài đặt Skills.
-- Nếu mọi tùy chọn cài đặt đều là `download`, Gateway sẽ hiển thị tất cả lựa chọn
-  tải xuống.
-- Nếu không, Gateway chọn một trình cài đặt ưu tiên bằng các tùy chọn cài đặt
-  hiện tại và các tệp nhị phân trên máy chủ: Homebrew trước khi
-  `skills.install.preferBrew` được bật và `brew` tồn tại, sau đó là `uv`, rồi đến
-  trình quản lý node được cấu hình từ `skills.install.nodeManager`, rồi các
-  phương án dự phòng sau đó như `go` hoặc `download`.
-- Nhãn cài đặt Node phản ánh trình quản lý node đã cấu hình, bao gồm cả `yarn`.
+- `security.installPolicy` (`enabled`, `targets`, `exec`) do người vận hành quản lý có thể chặn việc cài đặt Skills thông qua Gateway trước khi siêu dữ liệu của trình cài đặt được xử lý. Tính năng quét mã nguy hiểm tích hợp sẵn (được dùng khi cài đặt Plugin) chưa được kết nối với quy trình cài đặt Skills.
+- Nếu mọi tùy chọn cài đặt đều là `download`, Gateway sẽ hiển thị tất cả lựa chọn tải xuống.
+- Nếu không, Gateway chọn một trình cài đặt ưu tiên dựa trên các tùy chọn cài đặt hiện tại (`skills.install.preferBrew`, `skills.install.nodeManager`) và các tệp thực thi trên máy chủ: ưu tiên Homebrew trước nếu `preferBrew` được bật và có `brew`, sau đó đến `uv`, trình quản lý Node đã cấu hình, rồi lại đến Homebrew nếu khả dụng (ngay cả khi không có `preferBrew`), tiếp theo là `go` và cuối cùng là `download`.
+- Nhãn cài đặt Node phản ánh trình quản lý Node đã cấu hình, bao gồm cả `yarn`.
 
-## Khóa env/API
+## Biến môi trường/khóa API
 
-- Ứng dụng lưu khóa trong `~/.openclaw/openclaw.json` dưới `skills.entries.<skillKey>`.
-- `skills.update` vá `enabled`, `apiKey`, và `env`.
+- Ứng dụng lưu các khóa trong `~/.openclaw/openclaw.json` tại `skills.entries.<skillKey>`.
+- `skills.update` cập nhật một phần các trường `enabled`, `apiKey` và `env`.
 
 ## Chế độ từ xa
 
-- Các bản cập nhật cài đặt và cấu hình diễn ra trên máy chủ Gateway (không phải máy Mac cục bộ).
+- Việc cài đặt và cập nhật cấu hình diễn ra trên máy chủ Gateway, không phải trên máy Mac cục bộ.
 
 ## Liên quan
 

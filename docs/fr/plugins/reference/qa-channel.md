@@ -1,31 +1,31 @@
 ---
 read_when:
     - Vous installez, configurez ou auditez le Plugin qa-channel
-summary: Ajoute la surface du canal QA pour envoyer et recevoir des messages OpenClaw.
-title: Plugin de canal QA
+summary: Ajoute l’interface QA Channel pour envoyer et recevoir des messages OpenClaw.
+title: Plugin de canal d’assurance qualité
 x-i18n:
-    generated_at: "2026-05-02T20:57:41Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T03:09:39Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: 3c6f0aec62fb014895d11fa46b75626d929c326eb2ded463188e4338f0fdae5d
     source_path: plugins/reference/qa-channel.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Plugin QA Channel
 
-Ajoute la surface QA Channel pour envoyer et recevoir des messages OpenClaw.
+Ajoute l’interface QA Channel pour envoyer et recevoir des messages OpenClaw.
 
 ## Distribution
 
-- Paquet : `@openclaw/qa-channel`
-- Mode d'installation : extraction du code source uniquement
+- Paquet : `@openclaw/qa-channel`
+- Méthode d’installation : uniquement à partir du code source extrait
 
-## Surface
+## Interface
 
-canaux : qa-channel
+canaux : qa-channel
 
-## Documentation associée
+## Documentation connexe
 
 - [qa-channel](/fr/channels/qa-channel)

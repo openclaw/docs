@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz Plugin moonshot
-summary: Dodaje obsługę dostawcy modeli Moonshot w OpenClaw.
+    - Instalujesz, konfigurujesz lub audytujesz plugin moonshot
+summary: Dodaje obsługę dostawcy modeli Moonshot do OpenClaw.
 title: Plugin Moonshot
 x-i18n:
-    generated_at: "2026-06-27T18:02:08Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:23:47Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 477307769a710ac8d430a837d7b5ffda012a942f3b44f367bf4ea0770b87f48e
@@ -13,18 +13,18 @@ x-i18n:
     workflow: 16
 ---
 
-# Moonshot Plugin
+# Plugin Moonshot
 
-Dodaje obsługę dostawcy modeli Moonshot do OpenClaw.
+Dodaje do OpenClaw obsługę dostawcy modeli Moonshot.
 
 ## Dystrybucja
 
 - Pakiet: `@openclaw/moonshot-provider`
-- Ścieżka instalacji: npm; ClawHub: `clawhub:@openclaw/moonshot-provider`
+- Sposób instalacji: npm; ClawHub: `clawhub:@openclaw/moonshot-provider`
 
-## Interfejs
+## Zakres
 
-providers: moonshot; contracts: mediaUnderstandingProviders, webSearchProviders
+dostawcy: moonshot; kontrakty: mediaUnderstandingProviders, webSearchProviders
 
 ## Powiązana dokumentacja
 

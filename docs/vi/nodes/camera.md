@@ -1,174 +1,154 @@
 ---
 read_when:
-    - Thêm hoặc sửa đổi tính năng chụp camera trên các nút iOS/Android hoặc macOS
-    - Mở rộng quy trình làm việc tệp tạm thời MEDIA mà agent có thể truy cập
-summary: 'Chụp bằng camera (nút iOS/Android + ứng dụng macOS) để agent sử dụng: ảnh (jpg) và đoạn video ngắn (mp4)'
-title: Ghi hình từ camera
+    - Thêm hoặc sửa đổi tính năng chụp ảnh bằng camera trên các Node iOS/Android hoặc macOS
+    - Mở rộng quy trình làm việc với tệp tạm MEDIA mà agent có thể truy cập
+summary: 'Chụp bằng camera (các Node iOS/Android + ứng dụng macOS) để tác tử sử dụng: ảnh (jpg) và đoạn video ngắn (mp4)'
+title: Chụp ảnh bằng camera
 x-i18n:
-    generated_at: "2026-06-27T17:39:27Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:02:04Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8cb02b1e0e5d68e537dc699bcabacfb48b7beaf07459bf47800810a721191795
+    source_hash: 38555c98886f6cd74ddacabc049da353cdb023e7f99aba81a272021cd8a0e33d
     source_path: nodes/camera.md
     workflow: 16
 ---
 
-OpenClaw hỗ trợ **chụp/quay bằng camera** cho quy trình làm việc của agent:
+OpenClaw hỗ trợ chụp từ camera cho các quy trình tác tử trên các node **iOS**, **Android** và **macOS** đã ghép nối: chụp ảnh (`jpg`) hoặc quay một đoạn video ngắn (`mp4`, có thể kèm âm thanh) thông qua `node.invoke` của Gateway.
 
-- **Nút iOS** (ghép đôi qua Gateway): chụp **ảnh** (`jpg`) hoặc quay **đoạn video ngắn** (`mp4`, có âm thanh tùy chọn) qua `node.invoke`.
-- **Nút Android** (ghép đôi qua Gateway): chụp **ảnh** (`jpg`) hoặc quay **đoạn video ngắn** (`mp4`, có âm thanh tùy chọn) qua `node.invoke`.
-- **Ứng dụng macOS** (nút qua Gateway): chụp **ảnh** (`jpg`) hoặc quay **đoạn video ngắn** (`mp4`, có âm thanh tùy chọn) qua `node.invoke`.
+Mọi quyền truy cập camera đều được kiểm soát bằng một cài đặt do người dùng quản lý trên từng nền tảng.
 
-Mọi quyền truy cập camera đều được kiểm soát bằng **cài đặt do người dùng điều khiển**.
+## Node iOS
 
-## Nút iOS
+### Cài đặt người dùng trên iOS
 
-### Cài đặt người dùng (bật theo mặc định)
-
-- Thẻ Cài đặt iOS → **Camera** → **Cho phép Camera** (`camera.enabled`)
-  - Mặc định: **bật** (khóa bị thiếu được xem là đã bật).
+- Thẻ iOS Settings → **Camera** → **Allow Camera** (`camera.enabled`).
+  - Mặc định: **bật** (khóa bị thiếu được coi là đã bật).
   - Khi tắt: các lệnh `camera.*` trả về `CAMERA_DISABLED`.
 
-### Lệnh (qua Gateway `node.invoke`)
+### Lệnh iOS (thông qua `node.invoke` của Gateway)
 
 - `camera.list`
-  - Tải trọng phản hồi:
-    - `devices`: mảng `{ id, name, position, deviceType }`
+  - Dữ liệu phản hồi: `devices` — mảng gồm `{ id, name, position, deviceType }`.
 
 - `camera.snap`
   - Tham số:
     - `facing`: `front|back` (mặc định: `front`)
-    - `maxWidth`: số (tùy chọn; mặc định `1600` trên nút iOS)
-    - `quality`: `0..1` (tùy chọn; mặc định `0.9`)
+    - `maxWidth`: số (không bắt buộc; mặc định `1600`)
+    - `quality`: `0..1` (không bắt buộc; mặc định `0.9`, được giới hạn trong `[0.05, 1.0]`)
     - `format`: hiện là `jpg`
-    - `delayMs`: số (tùy chọn; mặc định `0`)
-    - `deviceId`: chuỗi (tùy chọn; từ `camera.list`)
-  - Tải trọng phản hồi:
-    - `format: "jpg"`
-    - `base64: "<...>"`
-    - `width`, `height`
-  - Bảo vệ tải trọng: ảnh được nén lại để giữ tải trọng base64 dưới 5 MB.
+    - `delayMs`: số (không bắt buộc; mặc định `0`, được giới hạn nội bộ tối đa ở `10000`)
+    - `deviceId`: chuỗi (không bắt buộc; lấy từ `camera.list`)
+  - Dữ liệu phản hồi: `format: "jpg"`, `base64`, `width`, `height`.
+  - Giới hạn dữ liệu: ảnh được nén lại để giữ dữ liệu mã hóa base64 dưới 5MB.
 
 - `camera.clip`
   - Tham số:
     - `facing`: `front|back` (mặc định: `front`)
-    - `durationMs`: số (mặc định `3000`, bị giới hạn tối đa `60000`)
-    - `includeAudio`: boolean (mặc định `true`)
+    - `durationMs`: số (mặc định `3000`, được giới hạn trong `[250, 60000]`)
+    - `includeAudio`: giá trị boolean (mặc định `true`)
     - `format`: hiện là `mp4`
-    - `deviceId`: chuỗi (tùy chọn; từ `camera.list`)
-  - Tải trọng phản hồi:
-    - `format: "mp4"`
-    - `base64: "<...>"`
-    - `durationMs`
-    - `hasAudio`
+    - `deviceId`: chuỗi (không bắt buộc; lấy từ `camera.list`)
+  - Dữ liệu phản hồi: `format: "mp4"`, `base64`, `durationMs`, `hasAudio`.
 
-### Yêu cầu chạy ở tiền cảnh
+### Yêu cầu chạy ở tiền cảnh trên iOS
 
-Giống như `canvas.*`, nút iOS chỉ cho phép các lệnh `camera.*` ở **tiền cảnh**. Lệnh gọi nền trả về `NODE_BACKGROUND_UNAVAILABLE`.
+Tương tự `canvas.*`, node iOS chỉ cho phép các lệnh `camera.*` khi ứng dụng ở **tiền cảnh**. Các lệnh gọi trong nền trả về `NODE_BACKGROUND_UNAVAILABLE`.
 
-### Trình trợ giúp CLI
+### Trình hỗ trợ CLI
 
-Cách dễ nhất để lấy tệp media là dùng trình trợ giúp CLI, công cụ này ghi media đã giải mã vào tệp tạm và in đường dẫn đã lưu.
-
-Ví dụ:
+Cách dễ nhất để lấy tệp phương tiện là dùng trình hỗ trợ CLI. Trình này ghi dữ liệu phương tiện đã giải mã vào một tệp tạm thời và in ra đường dẫn đã lưu.
 
 ```bash
-openclaw nodes camera snap --node <id>               # mặc định: cả trước + sau (2 dòng MEDIA)
+openclaw nodes camera snap --node <id>                 # mặc định: cả camera trước + sau (2 dòng MEDIA)
 openclaw nodes camera snap --node <id> --facing front
 openclaw nodes camera clip --node <id> --duration 3000
 openclaw nodes camera clip --node <id> --no-audio
 ```
 
-Ghi chú:
+`nodes camera snap` mặc định dùng `--facing both`, chụp cả camera trước và sau để cung cấp cho tác tử cả hai góc nhìn; hãy truyền `--device-id` cùng một hướng camera cụ thể (`both` sẽ bị từ chối khi đặt `--device-id`). Các tệp đầu ra là tệp tạm thời (trong thư mục tạm của hệ điều hành), trừ khi bạn tự xây dựng trình bao bọc.
 
-- `nodes camera snap` mặc định dùng **cả hai** hướng camera để cung cấp cho agent cả hai góc nhìn.
-- Tệp đầu ra là tệp tạm thời (trong thư mục tạm của HĐH) trừ khi bạn tự xây dựng wrapper riêng.
+## Node Android
 
-## Nút Android
+### Cài đặt người dùng trên Android
 
-### Cài đặt người dùng Android (bật theo mặc định)
-
-- Trang Cài đặt Android → **Camera** → **Cho phép Camera** (`camera.enabled`)
-  - Mặc định: **bật** (khóa bị thiếu được xem là đã bật).
-  - Khi tắt: các lệnh `camera.*` trả về `CAMERA_DISABLED`.
+- Bảng Android Settings → **Camera** → **Allow Camera** (`camera.enabled`).
+  - **Các bản cài đặt mới mặc định ở trạng thái tắt.** Các bản cài đặt hiện có từ trước khi cài đặt này được bổ sung sẽ được chuyển sang trạng thái **bật**, để việc nâng cấp không âm thầm làm mất quyền truy cập camera vốn đang hoạt động.
+  - Khi tắt: các lệnh `camera.*` trả về `CAMERA_DISABLED: enable Camera in Settings`.
 
 ### Quyền
 
-- Android yêu cầu quyền khi chạy:
-  - `CAMERA` cho cả `camera.snap` và `camera.clip`.
-  - `RECORD_AUDIO` cho `camera.clip` khi `includeAudio=true`.
+- `CAMERA` là bắt buộc cho cả `camera.snap` và `camera.clip`; quyền bị thiếu hoặc bị từ chối sẽ trả về `CAMERA_PERMISSION_REQUIRED`.
+- `RECORD_AUDIO` là bắt buộc đối với `camera.clip` khi `includeAudio` là `true`; quyền bị thiếu hoặc bị từ chối sẽ trả về `MIC_PERMISSION_REQUIRED`.
 
-Nếu thiếu quyền, ứng dụng sẽ nhắc khi có thể; nếu bị từ chối, yêu cầu `camera.*` sẽ thất bại với lỗi
-`*_PERMISSION_REQUIRED`.
+Ứng dụng sẽ yêu cầu quyền khi chạy nếu có thể.
 
 ### Yêu cầu chạy ở tiền cảnh trên Android
 
-Giống như `canvas.*`, nút Android chỉ cho phép các lệnh `camera.*` ở **tiền cảnh**. Lệnh gọi nền trả về `NODE_BACKGROUND_UNAVAILABLE`.
+Tương tự `canvas.*`, node Android chỉ cho phép các lệnh `camera.*` khi ứng dụng ở **tiền cảnh**. Các lệnh gọi trong nền trả về `NODE_BACKGROUND_UNAVAILABLE: command requires foreground`.
 
-### Lệnh Android (qua Gateway `node.invoke`)
+### Lệnh Android (thông qua `node.invoke` của Gateway)
 
 - `camera.list`
-  - Tải trọng phản hồi:
-    - `devices`: mảng `{ id, name, position, deviceType }`
+  - Dữ liệu phản hồi: `devices` — mảng gồm `{ id, name, position, deviceType }`.
 
-### Bảo vệ tải trọng
+- `camera.snap`
+  - Tham số: `facing` (`front|back`, mặc định `front`), `quality` (mặc định `0.95`, được giới hạn trong `[0.1, 1.0]`), `maxWidth` (mặc định `1600`), `deviceId` (không bắt buộc; mã không xác định sẽ thất bại với `INVALID_REQUEST`).
+  - Dữ liệu phản hồi: `format: "jpg"`, `base64`, `width`, `height`.
+  - Giới hạn dữ liệu: được nén lại để giữ base64 dưới 5MB (cùng giới hạn với iOS).
 
-Ảnh được nén lại để giữ tải trọng base64 dưới 5 MB.
+- `camera.clip`
+  - Tham số: `facing` (mặc định `front`), `durationMs` (mặc định `3000`, được giới hạn trong `[200, 60000]`), `includeAudio` (mặc định `true`), `deviceId` (không bắt buộc).
+  - Dữ liệu phản hồi: `format: "mp4"`, `base64`, `durationMs`, `hasAudio`.
+  - Giới hạn dữ liệu: MP4 thô được giới hạn ở 18MB trước khi mã hóa base64; các đoạn video vượt quá kích thước sẽ thất bại với `PAYLOAD_TOO_LARGE` (hãy giảm `durationMs` rồi thử lại).
 
 ## Ứng dụng macOS
 
-### Cài đặt người dùng (tắt theo mặc định)
+### Cài đặt người dùng trên macOS
 
-Ứng dụng đồng hành macOS hiển thị một hộp kiểm:
+Ứng dụng đồng hành macOS cung cấp một hộp kiểm:
 
-- **Cài đặt → Chung → Cho phép Camera** (`openclaw.cameraEnabled`)
-  - Mặc định: **tắt**
-  - Khi tắt: yêu cầu camera trả về "Camera disabled by user".
+- **Settings → General → Allow Camera** (`openclaw.cameraEnabled`).
+  - Mặc định: **tắt**.
+  - Khi tắt: các yêu cầu camera trả về `CAMERA_DISABLED: enable Camera in Settings`.
 
-### Trình trợ giúp CLI (node invoke)
+### Trình hỗ trợ CLI (gọi node)
 
-Dùng CLI `openclaw` chính để gọi các lệnh camera trên nút macOS.
-
-Ví dụ:
+Dùng CLI `openclaw` chính để gọi các lệnh camera trên node macOS.
 
 ```bash
-openclaw nodes camera list --node <id>            # liệt kê id camera
-openclaw nodes camera snap --node <id>            # in đường dẫn đã lưu
+openclaw nodes camera list --node <id>                     # liệt kê mã camera
+openclaw nodes camera snap --node <id>                     # in đường dẫn đã lưu
 openclaw nodes camera snap --node <id> --max-width 1280
 openclaw nodes camera snap --node <id> --delay-ms 2000
 openclaw nodes camera snap --node <id> --device-id <id>
-openclaw nodes camera clip --node <id> --duration 10s          # in đường dẫn đã lưu
-openclaw nodes camera clip --node <id> --duration-ms 3000      # in đường dẫn đã lưu (cờ cũ)
+openclaw nodes camera clip --node <id> --duration 10s       # in đường dẫn đã lưu
+openclaw nodes camera clip --node <id> --duration-ms 3000   # in đường dẫn đã lưu (cờ cũ)
 openclaw nodes camera clip --node <id> --device-id <id>
 openclaw nodes camera clip --node <id> --no-audio
 ```
 
-Ghi chú:
+- `openclaw nodes camera snap` mặc định dùng `maxWidth=1600`, trừ khi bị ghi đè.
+- `camera.snap` chờ `delayMs` (mặc định 2000ms, được giới hạn trong `[0, 10000]`) sau khi quá trình làm nóng và ổn định phơi sáng hoàn tất rồi mới chụp.
+- Dữ liệu ảnh được nén lại để giữ base64 dưới 5MB.
 
-- `openclaw nodes camera snap` mặc định là `maxWidth=1600` trừ khi bị ghi đè.
-- Trên macOS, `camera.snap` chờ `delayMs` (mặc định 2000ms) sau khi khởi động/lấy phơi sáng ổn định rồi mới chụp.
-- Tải trọng ảnh được nén lại để giữ base64 dưới 5 MB.
+## An toàn và giới hạn thực tế
 
-## An toàn + giới hạn thực tế
+- Quyền truy cập camera và micrô kích hoạt các lời nhắc cấp quyền thông thường của hệ điều hành (và yêu cầu các chuỗi mô tả mục đích sử dụng trong `Info.plist`).
+- Các đoạn video được giới hạn ở 60 giây để tránh dữ liệu node quá lớn (chi phí bổ sung của base64 cộng với giới hạn tin nhắn).
 
-- Quyền truy cập camera và microphone kích hoạt lời nhắc cấp quyền thông thường của HĐH (và yêu cầu chuỗi mô tả sử dụng trong Info.plist).
-- Đoạn video bị giới hạn (hiện là `<= 60s`) để tránh tải trọng nút quá lớn (chi phí base64 + giới hạn tin nhắn).
+## Video màn hình macOS (cấp hệ điều hành)
 
-## Video màn hình macOS (cấp HĐH)
-
-Đối với video _màn hình_ (không phải camera), hãy dùng ứng dụng đồng hành macOS:
+Để quay video _màn hình_ (không phải camera), hãy dùng ứng dụng đồng hành macOS:
 
 ```bash
 openclaw nodes screen record --node <id> --duration 10s --fps 15   # in đường dẫn đã lưu
 ```
 
-Ghi chú:
-
-- Yêu cầu quyền **Ghi màn hình** của macOS (TCC).
+Yêu cầu quyền **Screen Recording** của macOS (TCC).
 
 ## Liên quan
 
-- [Hỗ trợ hình ảnh và media](/vi/nodes/images)
-- [Hiểu media](/vi/nodes/media-understanding)
+- [Hỗ trợ hình ảnh và phương tiện](/vi/nodes/images)
+- [Hiểu nội dung phương tiện](/vi/nodes/media-understanding)
 - [Lệnh vị trí](/vi/nodes/location-command)

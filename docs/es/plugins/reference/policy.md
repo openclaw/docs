@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Está instalando, configurando o auditando el Plugin de políticas
-summary: Agrega comprobaciones de doctor respaldadas por políticas para la conformidad del espacio de trabajo.
+    - Estás instalando, configurando o auditando el plugin de políticas
+summary: Añade comprobaciones de diagnóstico respaldadas por políticas para verificar la conformidad del espacio de trabajo.
 title: Plugin de políticas
 x-i18n:
-    generated_at: "2026-07-05T11:31:40Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T23:25:24Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: f01de4816a191a175367c06ff69e4ebf6032ee1a105d1d9a48a74093e5e6f774
@@ -15,69 +15,39 @@ x-i18n:
 
 # Plugin de políticas
 
-Añade comprobaciones de doctor respaldadas por políticas para la conformidad del espacio de trabajo.
+Añade comprobaciones de diagnóstico respaldadas por políticas para verificar la conformidad del espacio de trabajo.
 
 ## Distribución
 
 - Paquete: `@openclaw/policy`
-- Ruta de instalación: incluido en OpenClaw
+- Vía de instalación: incluido en OpenClaw
 
 ## Superficie
 
-plugin
+Plugin
 
 <!-- openclaw-plugin-reference:manual-start -->
 
 ## Comportamiento
 
-El Plugin de políticas aporta comprobaciones de estado de doctor para ajustes de OpenClaw
-gestionados por políticas y declaraciones de espacio de trabajo gobernadas. Actualmente, la política cubre la
-conformidad de canales, los metadatos de herramientas gobernadas, la postura de servidores MCP, la postura de proveedores de modelos,
-la postura de acceso a redes privadas, la postura de exposición del Gateway, la postura del espacio de trabajo/herramientas de agentes, la postura de herramientas globales/por agente configuradas, la postura del entorno de ejecución de sandbox configurado, la postura de acceso de entrada/canales, la postura de manejo de datos y la postura del proveedor de secretos/perfil de autenticación de la configuración de OpenClaw.
+El Plugin de políticas aporta comprobaciones de estado del diagnóstico para los ajustes de OpenClaw gestionados mediante políticas y las declaraciones de espacios de trabajo sujetas a gobernanza. Actualmente, las políticas abarcan la conformidad de los canales, los metadatos de herramientas sujetos a gobernanza, la postura de los servidores MCP, la postura de los proveedores de modelos, la postura de acceso a redes privadas, la postura de exposición del Gateway, la postura de los espacios de trabajo y las herramientas de los agentes, la postura configurada de las herramientas globales y por agente, la postura configurada del entorno de ejecución del sandbox, la postura de acceso de entrada y de los canales, la postura de tratamiento de datos y la postura de los proveedores de secretos y los perfiles de autenticación de la configuración de OpenClaw.
 
-La política almacena los requisitos redactados en `policy.jsonc`, observa los ajustes existentes
-de OpenClaw y las declaraciones del espacio de trabajo como evidencia, e informa desviaciones
-mediante `openclaw policy check` y `openclaw doctor --lint`. Una comprobación de política
-limpia emite hashes de política, evidencia, hallazgos y certificación que los operadores
-pueden registrar para auditoría.
+Las políticas almacenan los requisitos definidos en `policy.jsonc`, observan los ajustes existentes de OpenClaw y las declaraciones del espacio de trabajo como evidencia, e informan de las desviaciones mediante `openclaw policy check` y `openclaw doctor --lint`. Una comprobación de políticas sin problemas emite hashes de las políticas, las evidencias, los hallazgos y las atestaciones que los operadores pueden registrar para auditorías.
 
-`openclaw policy compare --baseline <file>` compara un archivo de política con otro
-archivo de política. Es solo conformidad a nivel de configuración: usa metadatos de reglas de política
-para verificar que a la política comprobada no le falte nada ni sea más débil que la línea base
-redactada, y no inspecciona el estado de ejecución, las credenciales ni los valores secretos.
+`openclaw policy compare --baseline <file>` compara un archivo de políticas con otro. Solo comprueba la conformidad en el nivel de configuración: utiliza los metadatos de las reglas de políticas para verificar que la política comprobada no omita requisitos ni sea menos estricta que la referencia definida, y no inspecciona el estado del entorno de ejecución, las credenciales ni los valores secretos.
 
-Las reglas de postura de herramientas pueden exigir perfiles aprobados, herramientas de sistema de archivos
-solo del espacio de trabajo, ajustes acotados de seguridad/solicitud/host de exec, modo elevado deshabilitado, entradas exactas de
-`alsoAllow` y entradas requeridas de denegación de herramientas. Los registros de evidencia
-incluyen entradas aditivas de `alsoAllow` porque pueden ampliar la postura efectiva de las herramientas.
-Estas comprobaciones observan solo la conformidad de la configuración; no leen el estado de aprobación en ejecución
-ni añaden aplicación en ejecución.
+Las reglas de postura de las herramientas pueden exigir perfiles aprobados, herramientas del sistema de archivos limitadas al espacio de trabajo, ajustes acotados de seguridad, consulta y host para la ejecución, el modo con privilegios elevados desactivado, entradas exactas de `alsoAllow` y entradas obligatorias de denegación de herramientas. La evidencia registra las entradas adicionales de `alsoAllow` porque pueden ampliar la postura efectiva de las herramientas. Estas comprobaciones solo observan la conformidad de la configuración; no leen el estado de aprobación del entorno de ejecución ni añaden medidas de cumplimiento durante la ejecución.
 
-Las reglas de postura de sandbox pueden exigir modos/backends de sandbox aprobados, denegar redes de contenedor
-del host, denegar uniones de espacio de nombres de contenedor, exigir montajes de contenedor de solo lectura, denegar montajes de sockets del entorno de ejecución de contenedores y perfiles de contenedor no confinados,
-y exigir rangos de origen de CDP del navegador de sandbox.
-Estas comprobaciones observan solo la conformidad de la configuración; no leen el estado de aprobación en ejecución,
-no inspeccionan contenedores activos ni añaden aplicación en ejecución.
+Las reglas de postura del sandbox pueden exigir modos y backends de sandbox aprobados, denegar las redes de contenedores del host, denegar la unión a espacios de nombres de contenedores, exigir montajes de contenedores de solo lectura, denegar los montajes de sockets del entorno de ejecución de contenedores y los perfiles de contenedores sin restricciones, y exigir rangos de origen CDP para el navegador del sandbox.
+Estas comprobaciones solo observan la conformidad de la configuración; no leen el estado de aprobación del entorno de ejecución, no inspeccionan contenedores activos ni añaden medidas de cumplimiento durante la ejecución.
 
-Las reglas de manejo de datos pueden exigir redacción de registros sensibles, denegar la captura de contenido
-de telemetría, exigir mantenimiento de retención de sesiones y denegar la indexación de memoria
-de transcripciones de sesión. Estas comprobaciones observan solo la conformidad de la configuración; no
-inspeccionan registros sin procesar, exportaciones de telemetría, transcripciones, archivos de memoria, secretos
-ni datos personales.
+Las reglas de tratamiento de datos pueden exigir la ocultación de información sensible en los registros, denegar la captura de contenido de telemetría, exigir el mantenimiento de la retención de sesiones y denegar la indexación en memoria de las transcripciones de sesiones. Estas comprobaciones solo observan la conformidad de la configuración; no inspeccionan registros sin procesar, exportaciones de telemetría, transcripciones, archivos de memoria, secretos ni datos personales.
 
-Los ámbitos de política con nombre bajo `scopes.<scopeName>` pueden añadir secciones de política normal
-más estrictas para el selector que enumeran. `agentIds` admite `tools`,
-`agents.workspace`, `sandbox` y `dataHandling.memory`; `channelIds` admite
-`ingress.channels`.
-Los ids de agente en ejecución que no figuren explícitamente en `agents.list[]` se comprueban
-contra la postura global/predeterminada heredada, en lugar de pasar silenciosamente sin
-evidencia. Cada ámbito presente en `policy.jsonc` debe ser válido y aplicable
-para su selector. Las reglas superpuestas son declaraciones adicionales, por lo que no debilitan
-la política de nivel superior y pueden producir sus propios hallazgos cuando la misma configuración
-observada infringe ambos ámbitos.
+Los ámbitos de políticas con nombre definidos en `scopes.<scopeName>` pueden añadir secciones de políticas normales más estrictas para el selector que indiquen. `agentIds` admite `tools`, `agents.workspace`, `sandbox` y `dataHandling.memory`; `channelIds` admite `ingress.channels`.
+Los identificadores de agentes del entorno de ejecución que no se indiquen explícitamente en `agents.list[]` se comprueban con respecto a la postura global o predeterminada heredada, en lugar de aprobarse silenciosamente sin evidencia. Cada ámbito presente en `policy.jsonc` debe ser válido y aplicable a su selector. Las reglas de superposición son requisitos adicionales, por lo que no debilitan la política de nivel superior y pueden generar sus propios hallazgos cuando una misma configuración observada infringe ambos ámbitos.
 
 <!-- openclaw-plugin-reference:manual-end -->
 
-## Documentos relacionados
+## Documentación relacionada
 
-- [policy](/es/cli/policy)
+- [políticas](/es/cli/policy)

@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Anda sedang memasang, mengonfigurasi, atau mengaudit plugin groq
+    - Anda sedang menginstal, mengonfigurasi, atau mengaudit plugin groq
 summary: Menambahkan dukungan penyedia model Groq ke OpenClaw.
 title: Plugin Groq
 x-i18n:
-    generated_at: "2026-06-27T17:54:24Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:26:58Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 41bae84645b09b5185d62530788a17be0338e93e6f29b9cca11438b69932bbc5
@@ -20,11 +20,11 @@ Menambahkan dukungan penyedia model Groq ke OpenClaw.
 ## Distribusi
 
 - Paket: `@openclaw/groq-provider`
-- Rute pemasangan: npm; ClawHub: `clawhub:@openclaw/groq-provider`
+- Jalur instalasi: npm; ClawHub: `clawhub:@openclaw/groq-provider`
 
-## Permukaan
+## Antarmuka
 
-providers: groq; kontrak: mediaUnderstandingProviders
+penyedia: groq; kontrak: mediaUnderstandingProviders
 
 ## Dokumentasi terkait
 

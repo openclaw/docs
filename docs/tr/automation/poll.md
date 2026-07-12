@@ -2,19 +2,19 @@
 summary: /cli/message adresine yönlendir
 title: Anketler
 x-i18n:
-    generated_at: "2026-04-24T08:57:10Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: a277212ed680b7aeb9153d003bc084d2d0c918dc53f2f469c72f7fe5a881cfae
-    source_path: automation/poll.md
-    workflow: 15
+    generated_at: "2026-07-12T11:27:42Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 071617c5fe910ad8a5d4a03416876ba3092d4fc67d5c206570a0456469ef73a9
+    source_path: automation/poll.md
+    workflow: 16
 ---
 
-Bu sayfa [Message tool](/tr/cli/message) sayfasına taşındı. Anket belgeleri için [Message tool](/tr/cli/message) sayfasına bakın.
+Bu sayfa taşındı. `openclaw message poll` bayrakları ve kanal başına sınırlar dâhil olmak üzere anket belgeleri [Mesaj aracı](/tr/cli/message) sayfasında yer alır.
 
-## İlgili
+## İlgili konular
 
-- [Webhook](/tr/automation/cron-jobs)
+- [Webhook'lar](/tr/automation/cron-jobs#webhooks)
 - [Zamanlanmış görevler](/tr/automation/cron-jobs)
 - [Arka plan görevleri](/tr/automation/tasks)

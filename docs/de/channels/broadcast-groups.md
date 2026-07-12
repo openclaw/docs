@@ -7,10 +7,9 @@ status: experimental
 summary: Eine WhatsApp-Nachricht an mehrere Agenten senden
 title: Broadcast-Gruppen
 x-i18n:
-    generated_at: "2026-07-12T14:59:34Z"
+    generated_at: "2026-07-12T01:23:41Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 2771c15b31592f11293385498b9c89decf84747a9172caafb994a5dca4bbdc06
     source_path: channels/broadcast-groups.md
@@ -21,13 +20,13 @@ x-i18n:
 **Status:** Experimentell. Hinzugefügt in 2026.1.9. Nur WhatsApp (Webkanal).
 </Note>
 
-## Übersicht
+## Überblick
 
-Broadcast-Gruppen führen **mehrere Agenten** für dieselbe eingehende Nachricht aus. Jeder Agent verarbeitet die Nachricht in seiner eigenen isolierten Sitzung und sendet seine eigene Antwort, sodass eine WhatsApp-Nummer ein Team spezialisierter Agenten in einem einzelnen Gruppenchat oder einer Direktnachricht beherbergen kann.
+Broadcast-Gruppen führen **mehrere Agenten** für dieselbe eingehende Nachricht aus. Jeder Agent verarbeitet die Nachricht in seiner eigenen isolierten Sitzung und veröffentlicht seine eigene Antwort, sodass eine WhatsApp-Nummer ein Team spezialisierter Agenten in einem einzelnen Gruppenchat oder einer Direktnachricht beherbergen kann.
 
-Broadcast-Gruppen werden nach Kanal-Zulassungslisten und Gruppenaktivierungsregeln ausgewertet. In WhatsApp-Gruppen erfolgen Broadcasts, wenn OpenClaw normalerweise antworten würde (beispielsweise bei einer Erwähnung, abhängig von Ihren Gruppeneinstellungen). Sie ändern nur, **welche Agenten ausgeführt werden**, niemals, ob eine Nachricht verarbeitet werden darf.
+Broadcast-Gruppen werden nach den Kanal-Zulassungslisten und den Regeln zur Gruppenaktivierung ausgewertet. In WhatsApp-Gruppen erfolgen Broadcasts, wenn OpenClaw normalerweise antworten würde (beispielsweise bei einer Erwähnung, abhängig von Ihren Gruppeneinstellungen). Sie ändern ausschließlich, **welche Agenten ausgeführt werden**, niemals, ob eine Nachricht verarbeitet werden darf.
 
-Die aktive WhatsApp-QA-Teststrecke enthält `whatsapp-broadcast-group-fanout`. Sie überprüft, ob eine erwähnende Gruppennachricht unterschiedliche sichtbare Antworten von zwei konfigurierten Agenten erzeugen kann.
+Die aktive WhatsApp-QA-Teststrecke enthält `whatsapp-broadcast-group-fanout`. Sie überprüft, ob eine einzelne Gruppennachricht mit Erwähnung unterschiedliche sichtbare Antworten von zwei konfigurierten Agenten erzeugen kann.
 
 ## Konfiguration
 
@@ -54,10 +53,10 @@ Jede aufgeführte Agenten-ID muss in `agents.list` vorhanden sein: Die Konfigura
 
 `broadcast.strategy` legt fest, wie Agenten die Nachricht verarbeiten:
 
-| Strategie            | Verhalten                                                                    |
-| -------------------- | --------------------------------------------------------------------------- |
+| Strategie            | Verhalten                                                                       |
+| -------------------- | ------------------------------------------------------------------------------- |
 | `parallel` (Standard) | Alle Agenten verarbeiten gleichzeitig; Antworten treffen in beliebiger Reihenfolge ein. |
-| `sequential`         | Agenten verarbeiten in Array-Reihenfolge; jeder wartet, bis der vorherige fertig ist. |
+| `sequential`         | Agenten verarbeiten in der Reihenfolge des Arrays; jeder wartet, bis der vorherige fertig ist. |
 
 ```json
 {
@@ -112,40 +111,40 @@ Jede aufgeführte Agenten-ID muss in `agents.list` vorhanden sein: Die Konfigura
     Eine WhatsApp-Gruppen- oder Direktnachricht trifft ein.
   </Step>
   <Step title="Routing und Zulassung">
-    OpenClaw wendet Kanal-Zulassungslisten, Gruppenaktivierungsregeln und die konfigurierte Zuständigkeit von ACP-Bindungen an.
+    OpenClaw wendet Kanal-Zulassungslisten, Regeln zur Gruppenaktivierung und die konfigurierte Zuständigkeit von ACP-Bindungen an.
   </Step>
   <Step title="Broadcast-Prüfung">
-    Wenn keine konfigurierte ACP-Bindung für die Route zuständig ist, prüft OpenClaw, ob sich die Peer-ID in `broadcast` befindet.
+    Wenn keine konfigurierte ACP-Bindung für die Route zuständig ist, prüft OpenClaw, ob die Peer-ID in `broadcast` enthalten ist.
   </Step>
   <Step title="Wenn Broadcast angewendet wird">
     - Alle aufgeführten Agenten verarbeiten die Nachricht.
-    - Jeder Agent verfügt über einen eigenen Sitzungsschlüssel und isolierten Kontext.
+    - Jeder Agent verfügt über einen eigenen Sitzungsschlüssel und einen isolierten Kontext.
     - Agenten verarbeiten parallel (Standard) oder sequenziell.
-    - Audioanhänge werden vor der Verteilung einmal transkribiert, sodass die Agenten ein gemeinsames Transkript verwenden, statt separate STT-Aufrufe durchzuführen.
+    - Audioanhänge werden vor der Verteilung einmal transkribiert, sodass die Agenten ein Transkript gemeinsam verwenden, anstatt separate STT-Aufrufe auszuführen.
 
   </Step>
   <Step title="Wenn Broadcast nicht angewendet wird">
-    OpenClaw führt die gewöhnliche Route oder die während des Routings ausgewählte konfigurierte ACP-Sitzungsroute aus.
+    OpenClaw leitet an die reguläre Route oder die während des Routings ausgewählte konfigurierte ACP-Sitzungsroute weiter.
   </Step>
 </Steps>
 
 <Note>
-Broadcast-Gruppen umgehen weder Kanal-Zulassungslisten noch Gruppenaktivierungsregeln (Erwähnungen/Befehle/usw.). Sie ändern nur, _welche Agenten ausgeführt werden_, wenn eine Nachricht verarbeitet werden darf.
+Broadcast-Gruppen umgehen weder Kanal-Zulassungslisten noch Regeln zur Gruppenaktivierung (Erwähnungen/Befehle usw.). Sie ändern nur, _welche Agenten ausgeführt werden_, wenn eine Nachricht verarbeitet werden darf.
 </Note>
 
-### Sitzungsisolation
+### Sitzungsisolierung
 
 Jeder Agent in einer Broadcast-Gruppe verwaltet vollständig getrennte:
 
 - **Sitzungsschlüssel** (`agent:alfred:whatsapp:group:120363...` gegenüber `agent:baerbel:whatsapp:group:120363...`)
-- **Konversationsverläufe** (ein Agent sieht die Antworten anderer Agenten nicht)
-- **Arbeitsbereiche** (separate Sandboxes, sofern konfiguriert)
+- **Unterhaltungsverläufe** (ein Agent sieht die Antworten anderer Agenten nicht)
+- **Arbeitsbereiche** (separate Sandboxen, falls konfiguriert)
 - **Werkzeugzugriffe** (unterschiedliche Zulassungs-/Sperrlisten)
-- **Speicher/Kontext** (separate `IDENTITY.md`, `SOUL.md` usw.)
+- **Speicher/Kontexte** (separate `IDENTITY.md`, `SOUL.md` usw.)
 
-Eine Ausnahme wird absichtlich gemeinsam genutzt: Der **Gruppenkontextpuffer** (zuletzt gesendete Gruppennachrichten, die als Kontext dienen) wird pro Peer gemeinsam verwendet, sodass alle Broadcast-Agenten bei ihrer Auslösung denselben Kontext sehen. Er wird nach Abschluss der Verteilung einmal geleert.
+Eine Ausnahme wird absichtlich gemeinsam verwendet: Der **Gruppenkontextpuffer** (die letzten Gruppennachrichten, die als Kontext verwendet werden) wird pro Peer gemeinsam genutzt, sodass alle Broadcast-Agenten bei ihrer Auslösung denselben Kontext sehen. Er wird einmal geleert, nachdem die Verteilung abgeschlossen ist.
 
-Dadurch kann jeder Agent unterschiedliche Persönlichkeiten, Modelle, Skills und Werkzeugzugriffe haben (beispielsweise nur Lesezugriff gegenüber Lese- und Schreibzugriff).
+Dadurch kann jeder Agent unterschiedliche Persönlichkeiten, Modelle, Skills und Werkzeugzugriffe haben (beispielsweise schreibgeschützt gegenüber Lese- und Schreibzugriff).
 
 ### Beispiel: isolierte Sitzungen
 
@@ -154,25 +153,25 @@ In der Gruppe `120363403215116621@g.us` mit den Agenten `["alfred", "baerbel"]`:
 <Tabs>
   <Tab title="Alfreds Kontext">
     ```text
-    Sitzung: agent:alfred:whatsapp:group:120363403215116621@g.us
-    Verlauf: [Benutzernachricht, frühere Antworten von Alfred]
-    Arbeitsbereich: ~/openclaw-alfred/
-    Werkzeuge: Lesen, Schreiben, Ausführen
+    Session: agent:alfred:whatsapp:group:120363403215116621@g.us
+    History: [user message, alfred's previous responses]
+    Workspace: ~/openclaw-alfred/
+    Tools: read, write, exec
     ```
   </Tab>
   <Tab title="Baerbels Kontext">
     ```text
-    Sitzung: agent:baerbel:whatsapp:group:120363403215116621@g.us
-    Verlauf: [Benutzernachricht, frühere Antworten von Baerbel]
-    Arbeitsbereich: ~/openclaw-baerbel/
-    Werkzeuge: nur Lesen
+    Session: agent:baerbel:whatsapp:group:120363403215116621@g.us
+    History: [user message, baerbel's previous responses]
+    Workspace: ~/openclaw-baerbel/
+    Tools: read only
     ```
   </Tab>
 </Tabs>
 
 ## Anwendungsfälle
 
-- **Spezialisierte Agententeams**: Eine Entwicklungsgruppe, in der `code-reviewer`, `security-auditor`, `test-generator` und `docs-checker` jeweils dieselbe Nachricht aus ihrer eigenen Perspektive beantworten.
+- **Teams spezialisierter Agenten**: Eine Entwicklungsgruppe, in der `code-reviewer`, `security-auditor`, `test-generator` und `docs-checker` jeweils dieselbe Nachricht aus ihrer eigenen Perspektive beantworten.
 - **Mehrsprachiger Support**: Ein Support-Chat, in dem `support-en`, `support-de` und `support-es` in ihren jeweiligen Sprachen antworten.
 - **Qualitätssicherung**: `support-agent` antwortet, während `qa-agent` die Antwort überprüft und nur reagiert, wenn Probleme gefunden werden.
 - **Aufgabenautomatisierung**: `task-tracker`, `time-logger` und `report-generator` verarbeiten alle dieselbe Statusaktualisierung.
@@ -180,8 +179,8 @@ In der Gruppe `120363403215116621@g.us` mit den Agenten `["alfred", "baerbel"]`:
 ## Bewährte Vorgehensweisen
 
 <AccordionGroup>
-  <Accordion title="1. Agenten fokussiert halten">
-    Weisen Sie jedem Agenten eine einzelne, klare Verantwortung zu (`formatter`, `linter`, `tester`), statt einen generischen „dev-helper“-Agenten zu verwenden.
+  <Accordion title="1. Agenten klar ausrichten">
+    Weisen Sie jedem Agenten eine einzelne, klar definierte Zuständigkeit (`formatter`, `linter`, `tester`) zu, anstatt einen generischen Agenten namens „dev-helper“ zu verwenden.
   </Accordion>
   <Accordion title="2. Aussagekräftige IDs und Namen verwenden">
     ```json
@@ -212,10 +211,10 @@ In der Gruppe `120363403215116621@g.us` mit den Agenten `["alfred", "baerbel"]`:
 
   </Accordion>
   <Accordion title="4. Leistung überwachen">
-    Bevorzugen Sie bei vielen Agenten `"strategy": "parallel"` (Standard), beschränken Sie Broadcast-Gruppen auf einige wenige Agenten und verwenden Sie schnellere Modelle für einfachere Agenten.
+    Bevorzugen Sie bei vielen Agenten `"strategy": "parallel"` (Standard), beschränken Sie Broadcast-Gruppen auf wenige Agenten und verwenden Sie schnellere Modelle für einfachere Agenten.
   </Accordion>
   <Accordion title="5. Fehler bleiben isoliert">
-    Agenten schlagen unabhängig voneinander fehl. Der Fehler eines Agenten wird protokolliert (`Broadcast agent <id> failed: ...`) und blockiert die anderen nicht.
+    Agenten können unabhängig voneinander fehlschlagen. Der Fehler eines Agenten wird protokolliert (`Broadcast agent <id> failed: ...`) und blockiert die anderen nicht.
   </Accordion>
 </AccordionGroup>
 
@@ -247,7 +246,7 @@ Broadcast-Gruppen funktionieren zusammen mit dem bestehenden Routing:
 - `GROUP_B`: agent1 UND agent2 antworten (Broadcast).
 
 <Note>
-**Priorität:** `broadcast` hat Vorrang vor gewöhnlichen Routenbindungen. Konfigurierte ACP-Bindungen (`bindings[].type="acp"`) sind exklusiv: Wenn eine davon übereinstimmt, leitet OpenClaw an die konfigurierte ACP-Sitzung weiter, statt einen Broadcast an mehrere Agenten zu verteilen.
+**Priorität:** `broadcast` hat Vorrang vor regulären Routenbindungen. Konfigurierte ACP-Bindungen (`bindings[].type="acp"`) sind exklusiv: Wenn eine solche Bindung übereinstimmt, leitet OpenClaw an die konfigurierte ACP-Sitzung weiter, statt die Nachricht per Broadcast zu verteilen.
 </Note>
 
 ## Fehlerbehebung
@@ -256,27 +255,27 @@ Broadcast-Gruppen funktionieren zusammen mit dem bestehenden Routing:
   <Accordion title="Agenten antworten nicht">
     **Prüfen Sie Folgendes:**
 
-    1. Die Agenten-IDs sind in `agents.list` vorhanden (die Konfigurationsvalidierung lehnt unbekannte IDs ab).
-    2. Das Peer-ID-Format ist korrekt (Gruppen-JID wie `120363403215116621@g.us` oder E.164 wie `+15551234567` für Direktnachrichten).
+    1. Die Agenten-IDs sind in `agents.list` vorhanden (die Konfigurationsvalidierung weist unbekannte IDs zurück).
+    2. Das Format der Peer-ID ist korrekt (eine Gruppen-JID wie `120363403215116621@g.us` oder für Direktnachrichten eine E.164-Nummer wie `+15551234567`).
     3. Die Nachricht hat die normale Zugangsprüfung bestanden (Erwähnungs-/Aktivierungsregeln gelten weiterhin).
 
-    **Debugging:**
+    **Fehlersuche:**
 
     ```bash
     openclaw logs --follow | grep -i broadcast
     ```
 
-    Eine erfolgreiche Verteilung protokolliert `Broadcasting message to <n> agents (<strategy>)`.
+    Bei einer erfolgreichen Verteilung wird `Broadcasting message to <n> agents (<strategy>)` protokolliert.
 
   </Accordion>
   <Accordion title="Nur ein Agent antwortet">
-    **Ursache:** Die Peer-ID befindet sich möglicherweise in gewöhnlichen Routenbindungen, aber nicht in `broadcast`, oder sie stimmt mit einer exklusiven konfigurierten ACP-Bindung überein.
+    **Ursache:** Die Peer-ID befindet sich möglicherweise in regulären Routenbindungen, aber nicht in `broadcast`, oder sie stimmt mit einer exklusiven konfigurierten ACP-Bindung überein.
 
-    **Lösung:** Fügen Sie an gewöhnliche Routen gebundene Peers zur Broadcast-Konfiguration hinzu oder entfernen/ändern Sie die konfigurierte ACP-Bindung, wenn eine Broadcast-Verteilung gewünscht ist.
+    **Behebung:** Fügen Sie Peers mit regulärer Routenbindung zur Broadcast-Konfiguration hinzu, oder entfernen/ändern Sie die konfigurierte ACP-Bindung, wenn eine Broadcast-Verteilung gewünscht ist.
 
   </Accordion>
   <Accordion title="Leistungsprobleme">
-    Falls die Verarbeitung mit vielen Agenten langsam ist: Reduzieren Sie die Anzahl der Agenten pro Gruppe, verwenden Sie ressourcenschonendere Modelle und prüfen Sie die Startzeit der Sandbox.
+    Wenn die Verarbeitung mit vielen Agenten langsam ist: Reduzieren Sie die Anzahl der Agenten pro Gruppe, verwenden Sie ressourcenschonendere Modelle und prüfen Sie die Startzeit der Sandbox.
   </Accordion>
 </AccordionGroup>
 
@@ -318,10 +317,10 @@ Broadcast-Gruppen funktionieren zusammen mit dem bestehenden Routing:
     }
     ```
 
-    Ein Codeausschnitt in der Gruppe erzeugt vier Antworten: Formatierungskorrekturen, einen Sicherheitsbefund, eine Abdeckungslücke und einen kleinen Dokumentationshinweis.
+    Ein einzelner Codeausschnitt in der Gruppe erzeugt vier Antworten: Formatierungskorrekturen, einen Sicherheitsbefund, eine Lücke in der Testabdeckung und einen kleinen Dokumentationshinweis.
 
   </Accordion>
-  <Accordion title="Beispiel 2: Mehrsprachige Pipeline">
+  <Accordion title="Beispiel 2: Mehrsprachige Verarbeitungskette">
     ```json
     {
       "broadcast": {
@@ -356,23 +355,23 @@ interface OpenClawConfig {
 ### Felder
 
 <ParamField path="strategy" type='"parallel" | "sequential"' default='"parallel"'>
-  Legt fest, wie Agenten verarbeitet werden. `parallel` führt alle Agenten gleichzeitig aus; `sequential` führt sie in Array-Reihenfolge aus.
+  Legt fest, wie Agenten verarbeitet werden. `parallel` führt alle Agenten gleichzeitig aus; `sequential` führt sie in der Reihenfolge des Arrays aus.
 </ParamField>
 <ParamField path="[peerId]" type="string[]">
-  WhatsApp-Gruppen-JID oder Telefonnummer im E.164-Format. Der Wert ist das Array von Agenten-IDs, die alle Nachrichten von diesem Peer verarbeiten sollen.
+  WhatsApp-Gruppen-JID oder Telefonnummer im E.164-Format. Der Wert ist das Array der Agenten-IDs, die alle Nachrichten von diesem Peer verarbeiten sollen.
 </ParamField>
 
 ## Einschränkungen
 
-1. **Maximale Agentenzahl:** Es gibt keine feste Begrenzung, aber viele Agenten (10+) können langsam sein.
-2. **Gemeinsamer Kontext:** Agenten sehen die Antworten der anderen nicht (beabsichtigtes Verhalten).
+1. **Maximale Anzahl von Agenten:** Es gibt keine feste Grenze, aber viele Agenten (10 oder mehr) können langsam sein.
+2. **Gemeinsamer Kontext:** Agenten sehen die Antworten der jeweils anderen nicht (beabsichtigtes Verhalten).
 3. **Nachrichtenreihenfolge:** Parallele Antworten können in beliebiger Reihenfolge eintreffen.
-4. **Ratenbegrenzungen:** Alle Antworten stammen von einem WhatsApp-Konto, daher wird die Antwort jedes Agenten auf dieselben WhatsApp-Ratenbegrenzungen angerechnet.
+4. **Ratenbegrenzungen:** Alle Antworten stammen von einem WhatsApp-Konto, daher zählt die Antwort jedes Agenten für dieselben WhatsApp-Ratenbegrenzungen.
 
 ## Verwandte Themen
 
-- [Kanal-Routing](/de/channels/channel-routing)
+- [Kanalrouting](/de/channels/channel-routing)
 - [Gruppen](/de/channels/groups)
-- [Multi-Agent-Sandbox-Tools](/de/tools/multi-agent-sandbox-tools)
+- [Sandbox-Tools für mehrere Agenten](/de/tools/multi-agent-sandbox-tools)
 - [Kopplung](/de/channels/pairing)
 - [Sitzungsverwaltung](/de/concepts/session)

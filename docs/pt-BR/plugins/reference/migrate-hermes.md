@@ -1,27 +1,27 @@
 ---
 read_when:
-    - Você está instalando, configurando ou fazendo auditoria do Plugin migrate-hermes
-summary: Importa a configuração, as memórias, as Skills e as credenciais compatíveis do Hermes para o OpenClaw.
-title: Migrar o Plugin Hermes
+    - Você está instalando, configurando ou auditando o plugin migrate-hermes
+summary: Importa configurações, memórias, Skills e credenciais compatíveis do Hermes para o OpenClaw.
+title: Migrar o plugin Hermes
 x-i18n:
-    generated_at: "2026-05-02T20:58:14Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T00:12:58Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: 231102d87795a43c45d8fb5dc12cda4faf8f4b9c4f85254e7d44676fead7f00c
     source_path: plugins/reference/migrate-hermes.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# Migrar Plugin Hermes
+# Migrar o plugin Hermes
 
-Importa configuração, memórias, Skills e credenciais compatíveis do Hermes para o OpenClaw.
+Importa a configuração, as memórias, as Skills e as credenciais compatíveis do Hermes para o OpenClaw.
 
 ## Distribuição
 
 - Pacote: `@openclaw/migrate-hermes`
-- Rota de instalação: incluído no OpenClaw
+- Forma de instalação: incluído no OpenClaw
 
 ## Superfície
 
-contracts: migrationProviders
+contratos: migrationProviders

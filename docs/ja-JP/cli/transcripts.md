@@ -1,13 +1,13 @@
 ---
 read_when:
-    - 保存されたトランスクリプト要約をターミナルから読みたい
-    - トランスクリプトのMarkdown要約へのパスが必要です
-    - コアのトランスクリプト保存レイアウトをデバッグしている
-summary: '`openclaw transcripts` のCLIリファレンス（保存されたトランスクリプトの一覧表示、表示、場所の特定）'
-title: Transcripts CLI
+    - ターミナルから保存済みのトランスクリプト要約を読みたい場合
+    - トランスクリプトの Markdown サマリーへのパスが必要です
+    - コアのトランスクリプト保存レイアウトをデバッグしています
+summary: '`openclaw transcripts` の CLI リファレンス（保存済みトランスクリプトの一覧表示、詳細表示、保存場所の特定）'
+title: トランスクリプト CLI
 x-i18n:
-    generated_at: "2026-07-05T11:11:43Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:08:50Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: dde02e924339c64cf6acd5c4b6162785dcfccf4a1df2aac0d9d52d5306511579
@@ -17,10 +17,10 @@ x-i18n:
 
 # `openclaw transcripts`
 
-`transcripts` agent ツールによって書き込まれた transcript 用の読み取り専用インスペクター。
-キャプチャ、インポート、要約はこの CLI ではなく、そのツール経由で実行される。
+`transcripts` エージェントツールによって書き込まれた文字起こしを参照するための読み取り専用インスペクターです。
+キャプチャ、インポート、要約は、この CLI ではなく、そのツールを通じて実行します。
 
-アーティファクトは state ディレクトリ配下に置かれる。
+成果物は状態ディレクトリの下に保存されます。
 
 ```text
 $OPENCLAW_STATE_DIR/transcripts/YYYY-MM-DD/<session>/
@@ -30,9 +30,9 @@ $OPENCLAW_STATE_DIR/transcripts/YYYY-MM-DD/<session>/
   summary.md
 ```
 
-デフォルトの state ディレクトリは `~/.openclaw`。`OPENCLAW_STATE_DIR` で上書きできる。
-日付ディレクトリはセッション開始時刻から決まり、セッションディレクトリは
-セッション ID から派生したファイルシステム安全な slug になる。
+デフォルトの状態ディレクトリは `~/.openclaw` です。`OPENCLAW_STATE_DIR` で上書きできます。
+日付ディレクトリはセッションの開始時刻に基づきます。セッションディレクトリは、
+セッション ID から生成された、ファイルシステムで安全に使用できるスラッグです。
 
 ## コマンド
 
@@ -52,45 +52,44 @@ openclaw transcripts path <session> --json
 
 | コマンド                      | 説明                                            |
 | ----------------------------- | ----------------------------------------------- |
-| `list`                        | 保存済みセッションを一覧表示する。              |
-| `show <session>`              | 保存済みの `summary.md` を出力する。            |
-| `path <session>`              | `summary.md` のパスを出力する。                 |
-| `path <session> --dir`        | セッションディレクトリを出力する。              |
-| `path <session> --metadata`   | `metadata.json` を出力する。                    |
-| `path <session> --transcript` | `transcript.jsonl` を出力する。                 |
-| `--json`                      | 機械可読な出力を表示する（任意のサブコマンド）。|
+| `list`                        | 保存されているセッションを一覧表示します。      |
+| `show <session>`              | 保存されている `summary.md` を出力します。       |
+| `path <session>`              | `summary.md` のパスを出力します。                |
+| `path <session> --dir`        | セッションディレクトリを出力します。             |
+| `path <session> --metadata`   | `metadata.json` を出力します。                   |
+| `path <session> --transcript` | `transcript.jsonl` を出力します。                |
+| `--json`                      | 機械可読形式の出力を表示します（全サブコマンド）。 |
 
-`<session>` には、裸のセッション ID または日付修飾セレクター
-（`YYYY-MM-DD/<session>`）のいずれかを指定できる。同じセッション ID が
-複数の日に現れる場合は、たとえば `openclaw transcripts show
-2026-05-22/standup` のように修飾形式を使う。デフォルトのセッション ID には
-タイムスタンプとランダムなサフィックスが含まれる。固定 ID をセッションに付けるのは、
-その ID がその日内で一意になる場合だけにする。
+`<session>` には、単独のセッション ID または日付付きセレクター
+（`YYYY-MM-DD/<session>`）を指定できます。同じセッション ID が複数の日に
+存在する場合は、日付付き形式を使用してください。たとえば、`openclaw transcripts show
+2026-05-22/standup` のように指定します。デフォルトのセッション ID にはタイムスタンプと
+ランダムなサフィックスが含まれます。固定 ID をセッションに指定するのは、その ID が
+同じ日付内で一意である場合に限ってください。
 
 ## 出力
 
-`list` はセッションごとに、セレクター、開始時刻、タイトル、
-summary パスをタブ区切りで 1 行出力する。
+`list` は、セッションごとにタブ区切りの 1 行を出力します。内容は、セレクター、開始時刻、タイトル、
+要約のパスです。
 
 ```text
-2026-05-22/standup  2026-05-22T09:00:00.000Z  Weekly standup  /Users/user/.openclaw/transcripts/2026-05-22/standup/summary.md
+2026-05-22/standup  2026-05-22T09:00:00.000Z  週次スタンドアップ  /Users/user/.openclaw/transcripts/2026-05-22/standup/summary.md
 ```
 
-セレクターは、`show` または `path` に渡し戻す値として最も安全である。
+`show` または `path` に再度渡す値としては、セレクターが最も安全です。
 
-`list --json` は `sessionId`、`selector`、`date`、`title`、
-`startedAt`、`stoppedAt`、`source`、`path`、`summaryPath`、`hasSummary`
-を持つオブジェクトを返す。
+`list --json` は、`sessionId`、`selector`、`date`、`title`、
+`startedAt`、`stoppedAt`、`source`、`path`、`summaryPath`、`hasSummary` を持つオブジェクトを返します。
 
-`show --json` は保存済みのセッションメタデータ、セレクター、セッション
-ディレクトリ、summary パス、summary Markdown テキストを返す。
+`show --json` は、保存されているセッションメタデータ、セレクター、セッション
+ディレクトリ、要約のパス、および要約の Markdown テキストを返します。
 
-`path --json` は選択されたパスと、そのファイルが存在するかどうかを返す。
+`path --json` は、選択されたパスと、そのファイルが存在するかどうかを返します。
 
 ## 1 日あたり複数のセッション
 
-セッションは日付ごとにグループ化され、その下でセッション ID ごとに分かれる。1 日に 10 件のミーティングがある場合は、
-10 個の兄弟フォルダーになる。
+セッションは日付、次にセッション ID でグループ化されます。1 日に 10 件の会議がある場合、
+10 個の同階層フォルダーになります。
 
 ```text
 ~/.openclaw/transcripts/2026-05-22/
@@ -99,22 +98,23 @@ summary パスをタブ区切りで 1 行出力する。
   standup/
 ```
 
-自動化にはデフォルトで生成される ID を使う。`standup` のような固定 ID は、
-同じ日付で繰り返されない場合だけ使う。
+自動化には、デフォルトで生成される ID を使用してください。`standup` のような固定 ID は、
+同じ日付に繰り返されない場合に限って使用してください。
 
-## summary がない場合
+## 要約がない場合
 
-ライブセッションは、セッション停止時に `summary.md` を書き込む。インポートされた transcript は、
-インポート直後にそれを書き込む。キャプチャがまだアクティブな間、停止中にプロバイダーが失敗した場合、または
-発話が届く前にメタデータが書き込まれた場合、summary なしでセッションが `list` に現れることがある。
+ライブセッションは、セッションの停止時に `summary.md` を書き込みます。インポートされた文字起こしは、
+インポート直後に書き込みます。キャプチャがまだアクティブな場合、停止中にプロバイダーで障害が発生した場合、
+または発話が到着する前にメタデータが書き込まれた場合、セッションが要約なしで `list` に表示されることがあります。
 
-raw の追記専用 transcript を調べるには `path <session> --transcript` を使うか、
-Markdown summary を再生成するには `transcripts` ツールの `summarize` アクションを実行する。
+`path <session> --transcript` を使用して、生の追記専用文字起こしを確認するか、
+`transcripts` ツールの `summarize` アクションを実行して Markdown
+要約を再生成してください。
 
 ## 設定
 
-キャプチャはオプトインである（ライブソースはミーティング音声に参加して録音できる）。有効にするには、
-次を使う。
+キャプチャはオプトインです（ライブソースが参加して会議の音声を録音できます）。次の設定で
+有効にします。
 
 ```json
 {
@@ -125,14 +125,14 @@ Markdown summary を再生成するには `transcripts` ツールの `summarize`
 }
 ```
 
-- `enabled`（デフォルト `false`）: ツールをオンにする。
-- `maxUtterances`（デフォルト `2000`、1-10000 にクランプ）: セッションごとの
-  発話バッファサイズ。
+- `enabled`（デフォルトは `false`）：ツールを有効にします。
+- `maxUtterances`（デフォルトは `2000`、1～10000 の範囲に制限）：セッションごとの
+  発話バッファーサイズです。
 
-自動開始ソースは `transcripts.autoStart` で設定する。各エントリーは
-存在することで有効になる。そのソースを無効にするにはエントリーを省略する。`discord-voice`
-は同梱の自動開始対応ソースで、`guildId` と
-`channelId` が必要である。
+自動開始するソースは `transcripts.autoStart` で設定します。各エントリは
+存在することで有効になります。そのソースを無効にするには、エントリを省略してください。`discord-voice`
+は同梱の自動開始対応ソースであり、`guildId` と
+`channelId` が必要です。
 
 ```json
 {

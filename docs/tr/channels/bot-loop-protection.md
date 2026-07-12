@@ -1,48 +1,40 @@
 ---
 read_when:
-    - Bot tarafından yazılan kanal mesajlarını yapılandırma
+    - Bot tarafından oluşturulan kanal mesajlarını yapılandırma
     - Botlar arası döngü korumasını ayarlama
 sidebarTitle: Bot loop protection
-summary: Bot'tan bot'a döngü koruması varsayılanları ve kanal geçersiz kılmaları
+summary: Botlar arası döngü koruması varsayılanları ve kanal geçersiz kılmaları
 title: Bot döngüsü koruması
 x-i18n:
-    generated_at: "2026-06-28T00:10:59Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:28:02Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7a36794332e89dc7a9cf558e1687beabf4a6d10fb8e73c39794b0f0fd01c65b7
+    source_hash: 08637267cd3422d3154315e709c85c85fa57641f1adb0e8ef10c32e8a7b73312
     source_path: channels/bot-loop-protection.md
     workflow: 16
 ---
 
-# Bot döngüsü koruması
+OpenClaw, `allowBots` desteği bulunan kanallarda diğer botlar tarafından yazılan mesajları kabul edebilir. Bu yol etkinleştirildiğinde, bot çifti döngü koruması iki bot kimliğinin birbirine süresiz olarak yanıt vermesini önler.
 
-OpenClaw, `allowBots` desteği olan kanallarda diğer botlar tarafından yazılan mesajları kabul edebilir.
-Bu yol etkinleştirildiğinde, çift döngüsü koruması iki bot kimliğinin
-süresiz olarak birbirine yanıt vermesini önler.
-
-Koruma, çekirdek gelen yanıt çalıştırıcısı tarafından uygulanır. Destekleyen her kanal
-kendi gelen olayını genel olgulara eşler: hesap veya kapsam, konuşma kimliği,
-gönderen bot kimliği ve alıcı bot kimliği. Ardından çekirdek katılımcı çiftini her iki
-yönde izler, kayan pencere bütçesi uygular ve bütçe aşıldıktan sonra çifti bir
-bekleme süresi boyunca bastırır.
+Koruma, çekirdek gelen yanıt yürütücüsü tarafından uygulanır. Destekleyen her kanal, gelen olayını genel olgulara eşler: hesap veya kapsam, konuşma kimliği, gönderen bot kimliği ve alıcı bot kimliği. Çekirdek, katılımcı çiftini her iki yönde de izler (A'dan B'ye ve B'den A'ya aynı çift olarak sayılır), kayan pencere bütçesi uygular ve bütçe aşıldıktan sonra bekleme süresi boyunca çifti engeller.
 
 ## Varsayılanlar
 
-Çift döngüsü koruması, bir kanal bot tarafından yazılmış mesajların
-dispatch'e ulaşmasına izin verdiğinde aktiftir. Yerleşik varsayılanlar şunlardır:
+Bir kanal, botlar tarafından yazılan mesajların dağıtıma ulaşmasına izin verdiğinde bot çifti döngü koruması etkindir. Yerleşik varsayılanlar:
 
-- `maxEventsPerWindow: 20` - bir bot çifti pencere içinde 20 olay alışverişi yapabilir
-- `windowSeconds: 60` - kayan pencere uzunluğu
-- `cooldownSeconds: 60` - çift bütçeyi aştıktan sonraki bastırma süresi
+| Anahtar              | Varsayılan | Anlamı                                                     |
+| -------------------- | ---------- | ---------------------------------------------------------- |
+| `enabled`            | `true`     | Destekleyen kanallar için koruma etkindir.                  |
+| `maxEventsPerWindow` | `20`       | Bir bot çiftinin pencere içinde paylaşabileceği olay sayısı. |
+| `windowSeconds`      | `60`       | Kayan pencerenin uzunluğu.                                 |
+| `cooldownSeconds`    | `60`       | Çift bütçeyi aştıktan sonraki engelleme süresi.             |
 
-Koruma normal insan tarafından yazılmış mesajları, tek botlu dağıtımları,
-kendi mesajını filtrelemeyi veya bütçenin altında kalan tek seferlik bot yanıtlarını etkilemez.
+Koruma; insanlar tarafından yazılan mesajları, tek botlu dağıtımları, kendi mesajlarını filtrelemeyi veya bütçenin altında kalan bot yanıtlarını etkilemez.
 
 ## Paylaşılan varsayılanları yapılandırma
 
-Destekleyen her kanala aynı tabanı vermek için `channels.defaults.botLoopProtection` değerini bir kez ayarlayın.
-Kanal ve hesap geçersiz kılmaları tek tek yüzeyleri yine de ayarlayabilir.
+Destekleyen her kanala aynı temel ayarları vermek için `channels.defaults.botLoopProtection` değerini bir kez ayarlayın. Kanal, hesap ve oda geçersiz kılmalarıyla ayrı yüzeylerin ayarları yine değiştirilebilir.
 
 ```json5
 {
@@ -58,18 +50,17 @@ Kanal ve hesap geçersiz kılmaları tek tek yüzeyleri yine de ayarlayabilir.
 }
 ```
 
-`enabled: false` değerini yalnızca kanal politikanız otomatik bastırma olmadan
-botlar arası konuşmalara bilerek izin verdiğinde ayarlayın.
+Yalnızca kanal politikanız botlar arası konuşmalara otomatik engelleme olmadan kasıtlı olarak izin veriyorsa `enabled: false` ayarını kullanın.
 
-## Kanal veya hesap başına geçersiz kılma
+## Kanal, hesap veya oda bazında geçersiz kılma
 
-Destekleyen kanallar kendi yapılandırmalarını paylaşılan varsayılanın üzerine katmanlar. Öncelik sırası şöyledir:
+Destekleyen kanallar, kendi yapılandırmalarını anahtar bazında paylaşılan varsayılanın üzerine uygular. Öncelik sırası, en dar kapsamdan başlayarak şöyledir:
 
-- `channels.<channel>.<room-or-space>.botLoopProtection`, kanal konuşma başına geçersiz kılmaları desteklediğinde
-- `channels.<channel>.accounts.<account>.botLoopProtection`, kanal hesapları desteklediğinde
-- `channels.<channel>.botLoopProtection`, kanal üst düzey varsayılanları desteklediğinde
-- `channels.defaults.botLoopProtection`
-- yerleşik varsayılanlar
+1. Kanal konuşma bazında geçersiz kılmaları desteklediğinde `channels.<channel>.<room-or-space>.botLoopProtection`
+2. Kanal hesapları desteklediğinde `channels.<channel>.accounts.<account>.botLoopProtection`
+3. Kanal üst düzey varsayılanları desteklediğinde `channels.<channel>.botLoopProtection`
+4. `channels.defaults.botLoopProtection`
+5. yerleşik varsayılanlar
 
 ```json5
 {
@@ -84,27 +75,11 @@ Destekleyen kanallar kendi yapılandırmalarını paylaşılan varsayılanın ü
         maxEventsPerWindow: 8,
       },
       accounts: {
-        molty: {
+        secondary: {
           allowBots: "mentions",
           botLoopProtection: {
             maxEventsPerWindow: 5,
             cooldownSeconds: 90,
-          },
-        },
-      },
-    },
-    slack: {
-      allowBots: "mentions",
-      botLoopProtection: {
-        maxEventsPerWindow: 8,
-      },
-    },
-    matrix: {
-      allowBots: "mentions",
-      groups: {
-        "!roomid:example.org": {
-          botLoopProtection: {
-            maxEventsPerWindow: 5,
           },
         },
       },
@@ -119,19 +94,33 @@ Destekleyen kanallar kendi yapılandırmalarını paylaşılan varsayılanın ü
         },
       },
     },
+    matrix: {
+      allowBots: "mentions",
+      groups: {
+        "!roomid:example.org": {
+          botLoopProtection: {
+            maxEventsPerWindow: 5,
+          },
+        },
+      },
+    },
+    slack: {
+      allowBots: "mentions",
+      botLoopProtection: {
+        maxEventsPerWindow: 8,
+      },
+    },
   },
 }
 ```
 
 ## Kanal desteği
 
-- Discord: yerel `author.bot` olguları; Discord hesabı, kanal ve bot çiftine göre anahtarlanır.
-- Slack: kabul edilen bot tarafından yazılmış mesajlar için yerel `bot_id` olguları; Slack hesabı, kanal ve bot çiftine göre anahtarlanır.
-- Matrix: yapılandırılmış Matrix bot hesapları; Matrix hesabı, oda ve yapılandırılmış bot çiftine göre anahtarlanır.
-- Google Chat: kabul edilen bot tarafından yazılmış mesajlar için yerel `sender.type=BOT` olguları; hesap, alan ve bot çiftine göre anahtarlanır.
+- Discord: Discord hesabı, kanal ve bot çiftine göre anahtarlanan yerel `author.bot` olguları.
+- Google Chat: kabul edilen ve botlar tarafından yazılan mesajlar için hesap, alan ve bot çiftine göre anahtarlanan yerel `sender.type=BOT` olguları.
+- Matrix: Matrix hesabı, oda ve yapılandırılmış bot çiftine göre anahtarlanan yapılandırılmış Matrix bot hesapları.
+- Slack: kabul edilen ve botlar tarafından yazılan mesajlar için Slack hesabı, kanal ve bot çiftine göre anahtarlanan yerel `bot_id` olguları.
 
-Güvenilir bir gelen bot kimliği sunmayan kanallar normal kendi mesajı ve erişim politikası
-filtrelerini kullanmaya devam eder. Bot çiftindeki her iki katılımcıyı da tanımlayabilene
-kadar bu korumaya dahil olmamalıdırlar.
+Güvenilir bir gelen bot kimliği sunmayan kanallar, normal kendi mesajını ve erişim politikası filtrelerini kullanmaya devam eder. Bot çiftindeki her iki katılımcıyı da tanımlayabilene kadar bu korumayı etkinleştirmemelidirler.
 
 Plugin uygulama ayrıntıları için [SDK çalışma zamanı](/tr/plugins/sdk-runtime#reusable-runtime-utilities) bölümüne bakın.

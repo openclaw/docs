@@ -4,11 +4,11 @@ read_when:
 summary: เพิ่มการรองรับผู้ให้บริการโมเดล DeepSeek ให้กับ OpenClaw
 title: Plugin DeepSeek
 x-i18n:
-    generated_at: "2026-06-27T18:01:07Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:29:16Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c391a9d87d4de66f279f0b851868857b1a57e328feede3f5833e5e323ea5e281
+    source_hash: e2e7de36581db36818f63f754da829d91163c0ae3eaab9a087da087d3c681538
     source_path: plugins/reference/deepseek.md
     workflow: 16
 ---
@@ -17,14 +17,14 @@ x-i18n:
 
 เพิ่มการรองรับผู้ให้บริการโมเดล DeepSeek ให้กับ OpenClaw
 
-## การจัดจำหน่าย
+## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/deepseek-provider`
-- เส้นทางการติดตั้ง: npm; ClawHub: `clawhub:@openclaw/deepseek-provider`
+- ช่องทางการติดตั้ง: npm; ClawHub: `clawhub:@openclaw/deepseek-provider`
 
-## พื้นผิว
+## ส่วนที่รองรับ
 
-providers: deepseek
+ผู้ให้บริการ: deepseek; สัญญา: usageProviders
 
 ## เอกสารที่เกี่ยวข้อง
 

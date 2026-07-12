@@ -1,31 +1,31 @@
 ---
 read_when:
-    - คุณต้องแก้ไขไฟล์อย่างมีโครงสร้างในหลายไฟล์
-    - คุณต้องการจัดทำเอกสารหรือดีบักการแก้ไขแบบใช้แพตช์
-summary: ใช้แพตช์หลายไฟล์ด้วยเครื่องมือ apply_patch
+    - คุณต้องแก้ไขไฟล์หลายไฟล์อย่างเป็นระบบ
+    - คุณต้องการจัดทำเอกสารหรือแก้ไขข้อบกพร่องของการแก้ไขที่อิงแพตช์
+summary: ใช้แพตช์กับหลายไฟล์ด้วยเครื่องมือ apply_patch
 title: เครื่องมือ apply_patch
 x-i18n:
-    generated_at: "2026-05-06T09:32:11Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:45:25Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 9ff2f8e6ecd55ff1bdc553619ab3d590d0967efe7a9a90a31946ad15fd89a1dc
+    source_hash: 1c0422550ea8d9b0cb6b0ea22d7dcaecc462426f9600003f70c177746f30a3d9
     source_path: tools/apply-patch.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-ใช้การเปลี่ยนแปลงไฟล์ด้วยรูปแบบแพตช์ที่มีโครงสร้าง เหมาะสำหรับการแก้ไขหลายไฟล์
-หรือหลายฮังก์ที่การเรียก `edit` เพียงครั้งเดียวอาจเปราะบาง
+ใช้การเปลี่ยนแปลงไฟล์ด้วยรูปแบบแพตช์ที่มีโครงสร้าง วิธีนี้เหมาะสำหรับการแก้ไขหลายไฟล์
+หรือหลายส่วน ซึ่งการเรียก `edit` เพียงครั้งเดียวอาจเปราะบางและเกิดข้อผิดพลาดได้ง่าย
 
-เครื่องมือนี้รับสตริง `input` เดียวที่ครอบการดำเนินการกับไฟล์หนึ่งรายการขึ้นไป:
+เครื่องมือนี้รับสตริง `input` เพียงรายการเดียว ซึ่งครอบการดำเนินการกับไฟล์อย่างน้อยหนึ่งรายการ:
 
-```
+```text
 *** Begin Patch
 *** Add File: path/to/file.txt
 +line 1
 +line 2
 *** Update File: src/app.ts
-@@
+@@ optional change context
 -old line
 +new line
 *** Delete File: obsolete.txt
@@ -38,15 +38,15 @@ x-i18n:
 
 ## หมายเหตุ
 
-- เส้นทางแพตช์รองรับเส้นทางสัมพัทธ์ (จากไดเรกทอรีเวิร์กสเปซ) และเส้นทางสัมบูรณ์
-- `tools.exec.applyPatch.workspaceOnly` มีค่าเริ่มต้นเป็น `true` (จำกัดอยู่ในเวิร์กสเปซ) ตั้งค่าเป็น `false` เฉพาะเมื่อคุณตั้งใจให้ `apply_patch` เขียน/ลบนอกไดเรกทอรีเวิร์กสเปซ
-- ใช้ `*** Move to:` ภายในฮังก์ `*** Update File:` เพื่อเปลี่ยนชื่อไฟล์
-- `*** End of File` ทำเครื่องหมายการแทรกเฉพาะ EOF เมื่อจำเป็น
-- พร้อมใช้งานตามค่าเริ่มต้นสำหรับโมเดล OpenAI และ OpenAI Codex ตั้งค่า
-  `tools.exec.applyPatch.enabled: false` เพื่อปิดใช้งาน
-- เลือกกำหนดให้จำกัดตามโมเดลได้ผ่าน
-  `tools.exec.applyPatch.allowModels`
-- การกำหนดค่าอยู่ภายใต้ `tools.exec` เท่านั้น
+- พาธในแพตช์รองรับทั้งพาธสัมพัทธ์ (อ้างอิงจากไดเรกทอรีพื้นที่ทำงาน) และพาธสัมบูรณ์
+- ค่าเริ่มต้นของ `tools.exec.applyPatch.workspaceOnly` คือ `true` (จำกัดให้อยู่ภายในพื้นที่ทำงาน) ตั้งค่าเป็น `false` เฉพาะเมื่อคุณตั้งใจให้ `apply_patch` เขียนหรือลบไฟล์ภายนอกไดเรกทอรีพื้นที่ทำงาน
+- ใช้ `*** Move to:` ภายในส่วน `*** Update File:` เพื่อเปลี่ยนชื่อไฟล์
+- `*** End of File` ใช้ระบุการแทรกเฉพาะที่ท้ายไฟล์เมื่อจำเป็น
+- เปิดใช้งานเป็นค่าเริ่มต้นสำหรับทุกโมเดล ตั้งค่า `tools.exec.applyPatch.enabled: false`
+  เพื่อปิดใช้งาน หรือจำกัดให้ใช้ได้เฉพาะบางโมเดลด้วย
+  `tools.exec.applyPatch.allowModels` (รองรับรหัสดิบ เช่น `gpt-5.4` หรือรหัสแบบเต็ม
+  เช่น `openai/gpt-5.4`)
+- การกำหนดค่าอยู่ภายใต้ `tools.exec.applyPatch.*`
 
 ## ตัวอย่าง
 
@@ -57,16 +57,16 @@ x-i18n:
 }
 ```
 
-## ที่เกี่ยวข้อง
+## เนื้อหาที่เกี่ยวข้อง
 
 <CardGroup cols={2}>
-  <Card title="Diffs" href="/th/tools/diffs" icon="code-compare">
-    ตัวดู diff แบบอ่านอย่างเดียวสำหรับการนำเสนอการเปลี่ยนแปลง
+  <Card title="ส่วนต่าง" href="/th/tools/diffs" icon="code-compare">
+    เครื่องมือดูส่วนต่างแบบอ่านอย่างเดียวสำหรับนำเสนอการเปลี่ยนแปลง
   </Card>
-  <Card title="Exec tool" href="/th/tools/exec" icon="terminal">
-    การรันคำสั่งเชลล์จาก agent
+  <Card title="เครื่องมือ Exec" href="/th/tools/exec" icon="terminal">
+    การเรียกใช้คำสั่งเชลล์จากเอเจนต์
   </Card>
-  <Card title="Code execution" href="/th/tools/code-execution" icon="square-code">
-    การวิเคราะห์ Python ระยะไกลในแซนด์บ็อกซ์ด้วย xAI
+  <Card title="การเรียกใช้โค้ด" href="/th/tools/code-execution" icon="square-code">
+    การวิเคราะห์ด้วย Python จากระยะไกลในสภาพแวดล้อมแยกด้วย xAI
   </Card>
 </CardGroup>

@@ -1,29 +1,31 @@
 ---
 read_when:
-    - Je wilt ontdekking over een groot gebied (DNS-SD) via Tailscale + CoreDNS
+    - Je wilt netwerkbrede detectie (DNS-SD) via Tailscale + CoreDNS
     - You're setting up split DNS for a custom discovery domain (example: openclaw.internal)
-summary: CLI-referentie voor `openclaw dns` (hulpmiddelen voor wide-area discovery)
+summary: CLI-referentie voor `openclaw dns` (hulpprogramma's voor detectie via een WAN)
 title: DNS
 x-i18n:
-    generated_at: "2026-05-06T09:05:05Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:41:10Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 460bdcbaa2c0c0fc1a4f5bdd76b904d8ac35195a25324c66421abfdc2044bb07
+    source_hash: bb07353df03f9d169e1aede2da0b711ffb68e8c9d21d51359e93e92cc0818ca2
     source_path: cli/dns.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw dns`
 
-DNS-helpers voor wide-area-detectie (Tailscale + CoreDNS). Momenteel gericht op macOS + Homebrew CoreDNS.
+DNS-hulpprogramma's voor wide-area-detectie (Tailscale + CoreDNS). Momenteel alleen macOS + Homebrew CoreDNS.
 
 Gerelateerd:
 
 - Gateway-detectie: [Detectie](/nl/gateway/discovery)
 - Configuratie voor wide-area-detectie: [Configuratie](/nl/gateway/configuration)
 
-## Instellen
+## `dns setup`
+
+Plan of pas de CoreDNS-configuratie toe voor unicast DNS-SD-detectie.
 
 ```bash
 openclaw dns setup
@@ -31,29 +33,25 @@ openclaw dns setup --domain openclaw.internal
 openclaw dns setup --apply
 ```
 
-## `dns setup`
+| Optie               | Effect                                                                                                  |
+| ------------------- | ------------------------------------------------------------------------------------------------------- |
+| `--domain <domain>` | Domein voor wide-area-detectie (bijvoorbeeld `openclaw.internal`).                                      |
+| `--apply`           | Installeer/werk de CoreDNS-configuratie bij en (her)start de service. Vereist sudo, alleen voor macOS. |
 
-Plan de CoreDNS-installatie voor unicast DNS-SD-detectie of pas deze toe.
+Zonder `--domain` gebruikt OpenClaw `discovery.wideArea.domain` uit de configuratie.
 
-Opties:
+Zonder `--apply` geeft de opdracht alleen het volgende weer:
 
-- `--domain <domain>`: domein voor wide-area-detectie (bijvoorbeeld `openclaw.internal`)
-- `--apply`: installeer of werk de CoreDNS-config bij en herstart de service (vereist sudo; alleen macOS)
+- Opgelost detectiedomein en pad naar het zonebestand
+- Huidige tailnet-IP-adressen
+- Aanbevolen detectieconfiguratie voor `openclaw.json`
+- Waarden voor de Tailscale Split DNS-naamserver en het domein die in de Tailscale-beheerconsole moeten worden ingesteld
 
-Wat het toont:
+Met `--apply` (alleen macOS, vereist Homebrew CoreDNS):
 
-- opgelost detectiedomein
-- pad naar zonebestand
-- huidige tailnet-IP's
-- aanbevolen `openclaw.json`-detectieconfig
-- de in te stellen waarden voor Tailscale Split DNS-naamserver/domein
-
-Opmerkingen:
-
-- Zonder `--apply` is de opdracht alleen een planningshelper en drukt deze de aanbevolen installatie af.
-- Als `--domain` wordt weggelaten, gebruikt OpenClaw `discovery.wideArea.domain` uit de configuratie.
-- `--apply` ondersteunt momenteel alleen macOS en verwacht Homebrew CoreDNS.
-- `--apply` initialiseert het zonebestand indien nodig, zorgt dat de CoreDNS-importstanza bestaat en herstart de `coredns` brew-service.
+- Maakt het zonebestand aan als het ontbreekt
+- Voegt de CoreDNS-importsectie toe als deze ontbreekt
+- Herstart de `coredns`-brewservice
 
 ## Gerelateerd
 

@@ -4,8 +4,8 @@ read_when:
 summary: Добавляет поддержку провайдера веб-поиска.
 title: Plugin Exa
 x-i18n:
-    generated_at: "2026-06-28T23:23:45Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:39:09Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 6170d70f03913f87b62f7a85647b4748032b7d01c56e909826e10e261e58160f
@@ -15,17 +15,17 @@ x-i18n:
 
 # Plugin Exa
 
-Добавляет поддержку провайдеров веб-поиска.
+Добавляет поддержку провайдера веб-поиска.
 
 ## Распространение
 
 - Пакет: `@openclaw/exa-plugin`
 - Способ установки: npm; ClawHub: `clawhub:@openclaw/exa-plugin`
 
-## Поверхность
+## Интерфейс
 
 контракты: webSearchProviders
 
-## Связанные документы
+## Связанная документация
 
 - [exa](/ru/tools/exa-search)

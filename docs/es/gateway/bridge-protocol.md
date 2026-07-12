@@ -1,12 +1,12 @@
 ---
 read_when:
-    - Investigación de código antiguo de cliente Node o registros de emparejamiento archivados
-    - Auditar lo que solía exponer la superficie heredada de Node
-summary: 'Protocolo de puente histórico (nodos heredados): TCP JSONL, emparejamiento, RPC con alcance'
-title: Protocolo de puente
+    - Investigación del código antiguo del cliente Node o de los registros de emparejamiento archivados
+    - Auditoría de lo que exponía anteriormente la superficie heredada de Node
+summary: 'Protocolo histórico del puente (nodos heredados): JSONL sobre TCP, emparejamiento y RPC con ámbito definido'
+title: Protocolo del puente
 x-i18n:
-    generated_at: "2026-07-05T11:17:29Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T23:06:19Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 6e8b69c59f2170439f0e7b139bf5bbdb429d7c9d8dde7b36cd64aab63939c95d
@@ -15,73 +15,73 @@ x-i18n:
 ---
 
 <Warning>
-El puente TCP se ha **eliminado**. Las compilaciones actuales de OpenClaw no incluyen el listener del puente, y las claves de configuración `bridge.*` ya no están en el esquema. Esta página es solo una referencia histórica. Usa el [protocolo Gateway](/es/gateway/protocol) para todos los clientes de nodo/operador.
+El puente TCP ha sido **eliminado**. Las compilaciones actuales de OpenClaw no incluyen el proceso de escucha del puente y las claves de configuración `bridge.*` ya no forman parte del esquema. Esta página es únicamente una referencia histórica. Use el [protocolo del Gateway](/es/gateway/protocol) para todos los clientes de nodos y operadores.
 </Warning>
 
 ## Por qué existía
 
 - **Límite de seguridad**: exponía una pequeña lista de permitidos en lugar de toda la superficie de la API del Gateway.
-- **Emparejamiento + identidad de nodo**: la admisión de nodos era propiedad del Gateway y estaba vinculada a un token por nodo.
-- **UX de descubrimiento**: los nodos podían descubrir gateways mediante Bonjour en la LAN, o conectarse directamente a través de una tailnet.
-- **WS de loopback**: el plano de control WS completo permanecía local salvo que se tunelizara mediante SSH.
+- **Emparejamiento e identidad del nodo**: la admisión de nodos estaba a cargo del Gateway y vinculada a un token específico de cada nodo.
+- **Experiencia de detección**: los nodos podían detectar Gateways mediante Bonjour en la red LAN o conectarse directamente a través de una tailnet.
+- **WS en local loopback**: el plano de control WS completo permanecía local, salvo que se canalizara mediante SSH.
 
 ## Transporte
 
 - TCP, un objeto JSON por línea (JSONL).
 - TLS opcional (`bridge.tls.enabled: true`).
-- El puerto de listener predeterminado era `18790`.
+- El puerto predeterminado del proceso de escucha era `18790`.
 
-Cuando TLS estaba habilitado, los registros TXT de descubrimiento incluían `bridgeTls=1` más `bridgeTlsSha256` como pista no secreta. Los registros TXT de Bonjour/mDNS no están autenticados; los clientes no podían tratar la huella anunciada como un pin autoritativo sin otra verificación fuera de banda.
+Cuando TLS estaba habilitado, los registros TXT de detección incluían `bridgeTls=1` y `bridgeTlsSha256` como indicación no secreta. Los registros TXT de Bonjour/mDNS no están autenticados; los clientes no podían tratar la huella digital anunciada como un pin autoritativo sin otra verificación fuera de banda.
 
-## Handshake y emparejamiento
+## Negociación inicial y emparejamiento
 
-1. El cliente envía `hello` con metadatos del nodo más el token (si ya está emparejado).
-2. Si no está emparejado, el Gateway responde `error` (`NOT_PAIRED` / `UNAUTHORIZED`).
+1. El cliente envía `hello` con los metadatos del nodo y el token (si ya está emparejado).
+2. Si no está emparejado, el Gateway responde con `error` (`NOT_PAIRED` / `UNAUTHORIZED`).
 3. El cliente envía `pair-request`.
-4. El Gateway espera la aprobación y luego envía `pair-ok` y `hello-ok`.
+4. El Gateway espera la aprobación y, a continuación, envía `pair-ok` y `hello-ok`.
 
-`hello-ok` solía devolver `serverName`; las superficies de Plugin alojadas ahora se anuncian mediante `pluginSurfaceUrls` en el protocolo Gateway actual (Canvas/A2UI usa `pluginSurfaceUrls.canvas`).
+Anteriormente, `hello-ok` devolvía `serverName`; las superficies de Plugin alojadas ahora se anuncian mediante `pluginSurfaceUrls` en el protocolo actual del Gateway (Canvas/A2UI usa `pluginSurfaceUrls.canvas`).
 
-## Frames
+## Tramas
 
-Cliente a Gateway:
+Del cliente al Gateway:
 
-- `req` / `res`: RPC de Gateway acotado (chat, sesiones, configuración, estado, voicewake, skills.bins).
-- `event`: señales del nodo (transcripción de voz, solicitud de agente, suscripción a chat, ciclo de vida de exec).
+- `req` / `res`: RPC con ámbito limitado del Gateway (chat, sesiones, configuración, estado, activación por voz, skills.bins).
+- `event`: señales del nodo (transcripción de voz, solicitud del agente, suscripción al chat, ciclo de vida de ejecución).
 
-Gateway a cliente:
+Del Gateway al cliente:
 
-- `invoke` / `invoke-res`: comandos de nodo (`canvas.*`, `camera.*`, `screen.record`, `location.get`, `sms.send`).
-- `event`: actualizaciones de chat para sesiones suscritas.
-- `ping` / `pong`: keepalive.
+- `invoke` / `invoke-res`: comandos del nodo (`canvas.*`, `camera.*`, `screen.record`, `location.get`, `sms.send`).
+- `event`: actualizaciones del chat para las sesiones suscritas.
+- `ping` / `pong`: mantenimiento de la conexión.
 
-La aplicación de la lista de permitidos vivía en `src/gateway/server-bridge.ts` (eliminado).
+La aplicación de la lista de permitidos se encontraba en `src/gateway/server-bridge.ts` (eliminado).
 
-## Eventos del ciclo de vida de exec
+## Eventos del ciclo de vida de ejecución
 
-Los nodos emitían `exec.finished` para exponer actividad de `system.run` completada, asignada a eventos del sistema por el Gateway (los nodos heredados también podían emitir `exec.started`). `exec.denied` marcaba un intento denegado de `system.run` como una denegación terminal sin encolar un evento del sistema ni activar trabajo de agente.
+Los nodos emitían `exec.finished` para mostrar la actividad completada de `system.run`, que el Gateway asignaba a eventos del sistema (los nodos heredados también podían emitir `exec.started`). `exec.denied` marcaba un intento denegado de `system.run` como denegación terminal, sin poner en cola un evento del sistema ni activar el trabajo del agente.
 
-Campos de payload (todos opcionales salvo que se indique lo contrario):
+Campos de la carga útil (todos opcionales, salvo que se indique lo contrario):
 
-| Campo                            | Notas                                                                                          |
-| -------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `sessionKey`                     | Obligatorio. Sesión de agente para correlación de eventos y, para `exec.finished`, entrega de eventos del sistema. |
-| `runId`                          | ID de exec único para agrupación.                                                              |
-| `command`                        | Cadena de comando sin procesar o formateada.                                                   |
-| `exitCode`, `timedOut`, `output` | Detalles de finalización (solo finalizados).                                                   |
-| `reason`                         | Motivo de denegación (solo denegados).                                                         |
+| Campo                            | Notas                                                                                                           |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `sessionKey`                     | Obligatorio. Sesión del agente para correlacionar eventos y, en el caso de `exec.finished`, entregar el evento del sistema. |
+| `runId`                          | Identificador único de la ejecución para agrupar.                                                               |
+| `command`                        | Cadena del comando sin procesar o con formato.                                                                  |
+| `exitCode`, `timedOut`, `output` | Detalles de finalización (solo cuando finaliza).                                                                |
+| `reason`                         | Motivo de la denegación (solo cuando se deniega).                                                               |
 
 ## Uso histórico de tailnet
 
-- Vincula el puente a una IP de tailnet: `bridge.bind: "tailnet"` en `~/.openclaw/openclaw.json` (solo histórico; `bridge.*` ya no es configuración válida).
-- Los clientes se conectaban mediante un nombre MagicDNS o una IP de tailnet.
-- Bonjour no cruza redes; de lo contrario, se requería DNS-SD de área amplia o un host/puerto manual.
+- Vincular el puente a una dirección IP de tailnet: `bridge.bind: "tailnet"` en `~/.openclaw/openclaw.json` (solo con fines históricos; `bridge.*` ya no es una configuración válida).
+- Los clientes se conectaban mediante el nombre de MagicDNS o la dirección IP de tailnet.
+- Bonjour no atraviesa redes; de lo contrario, se requería DNS-SD de área extensa o un host y puerto especificados manualmente.
 
-## Versionado
+## Control de versiones
 
-El puente era v1 implícito, sin negociación min/max. Los clientes de nodo/operador actuales usan el [protocolo Gateway](/es/gateway/protocol) WebSocket, que sí negocia un rango de versiones del protocolo.
+El puente usaba implícitamente la versión 1, sin negociación de valores mínimos y máximos. Los clientes actuales de nodos y operadores usan el [protocolo del Gateway](/es/gateway/protocol) mediante WebSocket, que sí negocia un intervalo de versiones del protocolo.
 
-## Relacionado
+## Temas relacionados
 
-- [Protocolo Gateway](/es/gateway/protocol)
+- [Protocolo del Gateway](/es/gateway/protocol)
 - [Nodos](/es/nodes)

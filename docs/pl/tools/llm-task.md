@@ -1,26 +1,22 @@
 ---
 read_when:
-    - Chcesz mieć krok LLM zwracający wyłącznie JSON wewnątrz workflowów
-    - Potrzebujesz danych wyjściowych LLM zweryfikowanych względem schematu do automatyzacji
-summary: Zadania LLM wyłącznie w formacie JSON dla przepływów pracy (opcjonalne narzędzie Plugin)
+    - Chcesz użyć w przepływach pracy kroku LLM zwracającego wyłącznie JSON
+    - Potrzebujesz danych wyjściowych LLM zweryfikowanych względem schematu na potrzeby automatyzacji
+summary: Zadania LLM zwracające wyłącznie JSON na potrzeby przepływów pracy (opcjonalne narzędzie pluginu)
 title: Zadanie LLM
 x-i18n:
-    generated_at: "2026-06-27T18:28:15Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:42:44Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ab83202bd0954a948c933c80de17385eb385573b8e3974dba41ff876f91c3ddb
+    source_hash: 78ea533f43546fbdd66c7f7138b8dea0b12b02d38925689324b390a12d0c4c5a
     source_path: tools/llm-task.md
     workflow: 16
 ---
 
-`llm-task` to **opcjonalne narzędzie Plugin**, które uruchamia zadanie LLM wyłącznie w JSON i
-zwraca dane strukturalne (opcjonalnie walidowane względem JSON Schema).
+`llm-task` to dołączone **opcjonalne narzędzie Pluginu**, które wykonuje pojedyncze wywołanie LLM zwracające wyłącznie JSON i zwraca dane strukturalne, opcjonalnie zweryfikowane względem schematu JSON. Zapewnia silnikom przepływów pracy, takim jak Lobster, krok LLM bez konieczności tworzenia niestandardowego kodu OpenClaw dla każdego przepływu pracy.
 
-To idealne rozwiązanie dla silników przepływów pracy takich jak Lobster: możesz dodać pojedynczy krok LLM
-bez pisania niestandardowego kodu OpenClaw dla każdego przepływu pracy.
-
-## Włącz Plugin
+## Włączanie
 
 1. Włącz Plugin:
 
@@ -34,7 +30,7 @@ bez pisania niestandardowego kodu OpenClaw dla każdego przepływu pracy.
 }
 ```
 
-2. Zezwól na opcjonalne narzędzie:
+2. Zezwól na użycie narzędzia:
 
 ```json
 {
@@ -44,7 +40,7 @@ bez pisania niestandardowego kodu OpenClaw dla każdego przepływu pracy.
 }
 ```
 
-Używaj `tools.allow` tylko wtedy, gdy chcesz restrykcyjnego trybu listy dozwolonych.
+`alsoAllow` dodaje `llm-task` do aktywnego profilu narzędzi bez ograniczania innych podstawowych narzędzi. Zamiast tego użyj `tools.allow` tylko wtedy, gdy chcesz zastosować restrykcyjny tryb listy dozwolonych narzędzi.
 
 ## Konfiguracja (opcjonalna)
 
@@ -56,9 +52,9 @@ Używaj `tools.allow` tylko wtedy, gdy chcesz restrykcyjnego trybu listy dozwolo
         "enabled": true,
         "config": {
           "defaultProvider": "openai",
-          "defaultModel": "gpt-5.5",
+          "defaultModel": "gpt-5.6-sol",
           "defaultAuthProfileId": "main",
-          "allowedModels": ["openai/gpt-5.5"],
+          "allowedModels": ["openai/gpt-5.6-sol"],
           "maxTokens": 800,
           "timeoutMs": 30000
         }
@@ -68,47 +64,45 @@ Używaj `tools.allow` tylko wtedy, gdy chcesz restrykcyjnego trybu listy dozwolo
 }
 ```
 
-`allowedModels` to lista dozwolonych ciągów `provider/model`. Jeśli jest ustawiona, każde żądanie
-spoza listy jest odrzucane.
+`allowedModels` to lista dozwolonych ciągów znaków `provider/model`; żądanie użycia dowolnego innego modelu jest odrzucane. Wszystkie pozostałe klucze są wartościami zastępczymi dla poszczególnych wywołań, używanymi, gdy wywołanie narzędzia pomija dany parametr.
 
 ## Parametry narzędzia
 
-- `prompt` (ciąg znaków, wymagany)
-- `input` (dowolny, opcjonalny)
-- `schema` (obiekt, opcjonalny JSON Schema)
-- `provider` (ciąg znaków, opcjonalny)
-- `model` (ciąg znaków, opcjonalny)
-- `thinking` (ciąg znaków, opcjonalny)
-- `authProfileId` (ciąg znaków, opcjonalny)
-- `temperature` (liczba, opcjonalna)
-- `maxTokens` (liczba, opcjonalna)
-- `timeoutMs` (liczba, opcjonalna)
-
-`thinking` akceptuje standardowe presety rozumowania OpenClaw, takie jak `low` lub `medium`.
+| Parametr        | Typ    | Uwagi                                                                                                                                                              |
+| --------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `prompt`        | string | Wymagany. Instrukcja zadania dla LLM.                                                                                                                              |
+| `input`         | any    | Opcjonalne dane wejściowe; serializowane do formatu JSON i dołączane do promptu.                                                                                   |
+| `schema`        | object | Opcjonalny schemat JSON, względem którego muszą zostać zweryfikowane przeanalizowane dane wyjściowe.                                                               |
+| `provider`      | string | Zastępuje `defaultProvider` / domyślnego dostawcę agenta.                                                                                                          |
+| `model`         | string | Zastępuje `defaultModel`; przyjmuje identyfikatory modeli bez prefiksu, aliasy lub odwołanie `provider/model` (powielony prefiks dostawcy jest usuwany automatycznie). |
+| `thinking`      | string | Poziom rozumowania (np. `low`, `medium`); musi być obsługiwany przez wybrany model.                                                                                  |
+| `authProfileId` | string | Zastępuje `defaultAuthProfileId`.                                                                                                                                  |
+| `temperature`   | number | Stosowany w miarę możliwości; nie wszyscy dostawcy go obsługują.                                                                                                   |
+| `maxTokens`     | number | Stosowany w miarę możliwości limit tokenów wyjściowych.                                                                                                            |
+| `timeoutMs`     | number | Limit czasu wykonania; domyślnie `30000`.                                                                                                                          |
 
 ## Dane wyjściowe
 
-Zwraca `details.json` zawierający sparsowany JSON (i waliduje go względem
-`schema`, gdy jest podany).
+Zwraca `details.json` (przeanalizowany i zweryfikowany względem schematu JSON) oraz `details.provider` i `details.model`, które wskazują faktycznie użytego dostawcę i model.
 
 ## Przykład: krok przepływu pracy Lobster
 
 ### Ważne ograniczenie
 
-Poniższy przykład zakłada, że **samodzielny Lobster CLI** działa w środowisku, w którym `openclaw.invoke` ma już poprawny adres URL Gateway i kontekst uwierzytelniania.
+Poniższy przykład zakłada, że **samodzielny Lobster CLI** działa w środowisku, w którym `openclaw.invoke` ma już prawidłowy adres URL Gateway i kontekst uwierzytelniania.
 
-Dla dołączonego **osadzonego** runnera Lobster wewnątrz OpenClaw ten zagnieżdżony wzorzec CLI **nie jest obecnie niezawodny**:
+W przypadku dołączonego **osadzonego** mechanizmu uruchamiającego Lobster wewnątrz OpenClaw ten wzorzec zagnieżdżonego CLI **nie jest obecnie niezawodny**:
 
 ```lobster
 openclaw.invoke --tool llm-task --action json --args-json '{ ... }'
 ```
 
-Dopóki osadzony Lobster nie będzie miał obsługiwanego mostu dla tego przepływu, preferuj:
+Dopóki osadzony Lobster nie będzie mieć obsługiwanego mechanizmu integracji dla tego przepływu, preferuj:
 
-- bezpośrednie wywołania narzędzia `llm-task` poza Lobster, albo
-- kroki Lobster, które nie polegają na zagnieżdżonych wywołaniach `openclaw.invoke`.
+- bezpośrednie wywołania narzędzia `llm-task` poza Lobster lub
+- kroki Lobster, które nie opierają się na zagnieżdżonych wywołaniach `openclaw.invoke`.
 
-Przykład samodzielnego Lobster CLI:
+Przykład dla samodzielnego Lobster CLI:
 
 ```lobster
 openclaw.invoke --tool llm-task --action json --args-json '{
@@ -132,14 +126,13 @@ openclaw.invoke --tool llm-task --action json --args-json '{
 
 ## Uwagi dotyczące bezpieczeństwa
 
-- Narzędzie działa **wyłącznie w JSON** i instruuje model, aby generował tylko JSON (bez
-  bloków kodu, bez komentarza).
-- W tym uruchomieniu model nie ma udostępnionych żadnych narzędzi.
-- Traktuj dane wyjściowe jako niezaufane, chyba że walidujesz je za pomocą `schema`.
-- Umieszczaj zatwierdzenia przed każdym krokiem wywołującym skutki uboczne (wysłanie, publikacja, wykonanie).
+- **Tylko JSON**: model otrzymuje instrukcję, aby zwrócić wyłącznie wartość JSON, bez bloków kodu ani komentarzy.
+- **Bez narzędzi**: w podstawowym przebiegu narzędzia są wyłączone, więc model nie może wykonywać wywołań w trakcie zadania.
+- Traktuj dane wyjściowe jako niezaufane, chyba że zweryfikujesz je za pomocą `schema`.
+- Umieść zatwierdzenia przed każdym krokiem wywołującym skutki uboczne (wysyłanie, publikowanie, wykonywanie), który korzysta z tych danych wyjściowych.
 
-## Powiązane
+## Powiązane materiały
 
 - [Poziomy rozumowania](/pl/tools/thinking)
 - [Podagenci](/pl/tools/subagents)
-- [Polecenia ukośnikowe](/pl/tools/slash-commands)
+- [Polecenia z ukośnikiem](/pl/tools/slash-commands)

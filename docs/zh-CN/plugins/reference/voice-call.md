@@ -1,11 +1,11 @@
 ---
 read_when:
-    - 你正在安装、配置或审计语音通话插件
-summary: 用于 Twilio、Telnyx 和 Plivo 电话呼叫的 OpenClaw 语音通话插件。
+    - 你正在安装、配置或审核语音通话插件
+summary: 适用于 Twilio、Telnyx 和 Plivo 电话呼叫的 OpenClaw 语音通话插件。
 title: 语音通话插件
 x-i18n:
-    generated_at: "2026-06-27T02:53:00Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T20:49:47Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: b0e298a2d8701d6fd531b761f8c14477b8c37a376af43127aa67c2fa6ff1b02d
@@ -15,17 +15,17 @@ x-i18n:
 
 # 语音通话插件
 
-用于 Twilio、Telnyx 和 Plivo 电话通话的 OpenClaw voice-call 插件。
+用于 Twilio、Telnyx 和 Plivo 电话通话的 OpenClaw 语音通话插件。
 
 ## 分发
 
-- 包：`@openclaw/voice-call`
-- 安装路径：npm；ClawHub
+- 软件包：`@openclaw/voice-call`
+- 安装方式：npm；ClawHub
 
-## 公开面
+## 接口
 
-契约：工具；技能
+契约：工具；Skills
 
 ## 相关文档
 
-- [voice-call](/zh-CN/plugins/voice-call)
+- [语音通话](/zh-CN/plugins/voice-call)

@@ -1,31 +1,28 @@
 ---
 read_when:
-    - Bạn muốn tìm nạp một URL và trích xuất nội dung dễ đọc
-    - Bạn cần cấu hình web_fetch hoặc phương án dự phòng Firecrawl của nó
-    - Bạn muốn hiểu các giới hạn và bộ nhớ đệm của web_fetch
+    - Bạn muốn truy xuất một URL và trích xuất nội dung dễ đọc
+    - Bạn cần cấu hình `web_fetch` hoặc phương án dự phòng Firecrawl của công cụ này
+    - Bạn muốn tìm hiểu các giới hạn và cơ chế lưu vào bộ nhớ đệm của web_fetch
 sidebarTitle: Web Fetch
-summary: công cụ web_fetch -- truy xuất HTTP với trích xuất nội dung dễ đọc
+summary: Công cụ web_fetch -- tìm nạp qua HTTP và trích xuất nội dung dễ đọc
 title: Tìm nạp web
 x-i18n:
-    generated_at: "2026-06-27T18:20:32Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:32:29Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b5a4127b97ded80eec1a5944bc8606069e630c61f89c4d5ce9cb729390b4eb4d
+    source_hash: 8c956b01fce44dc4b8f3ac289b312691c3fe4293ed2e6777fb53f3345dd99e93
     source_path: tools/web-fetch.md
     workflow: 16
 ---
 
-Công cụ `web_fetch` thực hiện HTTP GET thuần và trích xuất nội dung dễ đọc
-(HTML sang markdown hoặc văn bản). Công cụ này **không** thực thi JavaScript.
-
-Đối với các trang phụ thuộc nhiều vào JS hoặc các trang được bảo vệ bằng đăng nhập, hãy dùng
-[Trình duyệt Web](/vi/tools/browser) thay thế.
+`web_fetch` thực hiện một yêu cầu HTTP GET thuần túy và trích xuất nội dung có thể đọc được (HTML thành
+markdown hoặc văn bản). Công cụ này **không** thực thi JavaScript. Đối với các trang sử dụng nhiều JS hoặc
+được bảo vệ bằng đăng nhập, hãy sử dụng [Trình duyệt web](/vi/tools/browser) thay thế.
 
 ## Bắt đầu nhanh
 
-`web_fetch` được **bật theo mặc định** -- không cần cấu hình. Agent có thể
-gọi công cụ này ngay:
+Được bật theo mặc định, không cần cấu hình:
 
 ```javascript
 await web_fetch({ url: "https://example.com/article" });
@@ -34,7 +31,7 @@ await web_fetch({ url: "https://example.com/article" });
 ## Tham số công cụ
 
 <ParamField path="url" type="string" required>
-URL cần tìm nạp. Chỉ `http(s)`.
+URL cần truy xuất. Chỉ hỗ trợ `http(s)`.
 </ParamField>
 
 <ParamField path="extractMode" type="'markdown' | 'text'" default="markdown">
@@ -42,43 +39,41 @@ URL cần tìm nạp. Chỉ `http(s)`.
 </ParamField>
 
 <ParamField path="maxChars" type="number">
-Cắt ngắn đầu ra còn số ký tự này.
+Cắt ngắn đầu ra còn số ký tự này. Bị giới hạn ở `tools.web.fetch.maxCharsCap`.
 </ParamField>
 
 ## Cách hoạt động
 
 <Steps>
-  <Step title="Tìm nạp">
-    Gửi HTTP GET với User-Agent giống Chrome và header `Accept-Language`.
-    Chặn tên máy chủ riêng tư/nội bộ và kiểm tra lại các chuyển hướng.
+  <Step title="Truy xuất">
+    Gửi một yêu cầu HTTP GET với User-Agent giống Chrome và tiêu đề
+    `Accept-Language`. Chặn tên máy chủ riêng/nội bộ và kiểm tra lại các chuyển hướng.
   </Step>
   <Step title="Trích xuất">
     Chạy Readability (trích xuất nội dung chính) trên phản hồi HTML.
   </Step>
-  <Step title="Dự phòng (tùy chọn)">
-    Nếu Readability thất bại và Firecrawl được chọn, thử lại qua
-    Firecrawl API với chế độ vượt né bot.
+  <Step title="Phương án dự phòng (tùy chọn)">
+    Nếu Readability thất bại và có nhà cung cấp truy xuất khả dụng, thử lại thông qua
+    nhà cung cấp đó (ví dụ: chế độ vượt cơ chế chống bot của Firecrawl).
   </Step>
   <Step title="Bộ nhớ đệm">
-    Kết quả được lưu vào bộ nhớ đệm trong 15 phút (có thể cấu hình) để giảm
-    số lần tìm nạp lặp lại cùng một URL.
+    Kết quả được lưu vào bộ nhớ đệm trong 15 phút (có thể cấu hình) để giảm số lần
+    truy xuất lặp lại cùng một URL.
   </Step>
 </Steps>
 
 ## Cập nhật tiến trình
 
-`web_fetch` chỉ phát một dòng tiến trình công khai khi lượt tìm nạp vẫn đang chờ
+`web_fetch` chỉ phát một dòng tiến trình công khai khi việc truy xuất vẫn đang chờ
 sau năm giây:
 
 ```text
-Fetching page content...
+Đang truy xuất nội dung trang...
 ```
 
-Các lần trúng bộ nhớ đệm nhanh và phản hồi mạng nhanh sẽ hoàn tất trước khi bộ hẹn giờ kích hoạt, nên
-chúng không hiển thị dòng tiến trình. Nếu lệnh gọi bị hủy, bộ hẹn giờ sẽ được xóa.
-Khi lượt tìm nạp cuối cùng hoàn tất, agent nhận kết quả công cụ bình thường;
-dòng tiến trình chỉ là trạng thái giao diện kênh và không bao giờ chứa nội dung
-trang đã tìm nạp.
+Các lần trúng bộ nhớ đệm nhanh và phản hồi mạng nhanh sẽ hoàn tất trước khi bộ hẹn giờ kích hoạt, vì vậy
+chúng không bao giờ hiển thị dòng tiến trình. Việc hủy lệnh gọi sẽ xóa bộ hẹn giờ. Dòng
+tiến trình chỉ là trạng thái giao diện người dùng của kênh và không bao giờ chứa nội dung trang đã truy xuất.
 
 ## Cấu hình
 
@@ -87,20 +82,20 @@ trang đã tìm nạp.
   tools: {
     web: {
       fetch: {
-        enabled: true, // default: true
-        provider: "firecrawl", // optional; omit for auto-detect
-        maxChars: 50000, // max output chars
-        maxCharsCap: 50000, // hard cap for maxChars param
-        maxResponseBytes: 2000000, // max download size before truncation
+        enabled: true, // mặc định: true
+        provider: "firecrawl", // tùy chọn; bỏ qua để tự động phát hiện
+        maxChars: 20000, // số ký tự đầu ra mặc định; bị giới hạn bởi maxCharsCap
+        maxCharsCap: 20000, // giới hạn cứng cho tham số maxChars
+        maxResponseBytes: 750000, // kích thước tải xuống tối đa trước khi cắt ngắn (32000-10000000)
         timeoutSeconds: 30,
         cacheTtlMinutes: 15,
         maxRedirects: 3,
-        useTrustedEnvProxy: false, // let a trusted HTTP(S) env proxy resolve DNS
-        readability: true, // use Readability extraction
-        userAgent: "Mozilla/5.0 ...", // override User-Agent
+        useTrustedEnvProxy: false, // cho phép proxy môi trường HTTP(S) đáng tin cậy phân giải DNS
+        readability: true, // sử dụng trích xuất Readability
+        userAgent: "Mozilla/5.0 ...", // ghi đè User-Agent
         ssrfPolicy: {
-          allowRfc2544BenchmarkRange: true, // opt-in for trusted fake-IP proxies using 198.18.0.0/15
-          allowIpv6UniqueLocalRange: true, // opt-in for trusted fake-IP proxies using fc00::/7
+          allowRfc2544BenchmarkRange: true, // chủ động bật cho proxy IP giả đáng tin cậy sử dụng 198.18.0.0/15
+          allowIpv6UniqueLocalRange: true, // chủ động bật cho proxy IP giả đáng tin cậy sử dụng fc00::/7
         },
       },
     },
@@ -108,17 +103,17 @@ trang đã tìm nạp.
 }
 ```
 
-## Dự phòng Firecrawl
+## Phương án dự phòng Firecrawl
 
-Nếu trích xuất Readability thất bại, `web_fetch` có thể dự phòng sang
-[Firecrawl](/vi/tools/firecrawl) để vượt né bot và trích xuất tốt hơn:
+Nếu việc trích xuất bằng Readability thất bại, `web_fetch` có thể dùng
+[Firecrawl](/vi/tools/firecrawl) làm phương án dự phòng để vượt cơ chế chống bot và trích xuất tốt hơn:
 
 ```json5
 {
   tools: {
     web: {
       fetch: {
-        provider: "firecrawl", // optional; omit for auto-detect from available credentials
+        provider: "firecrawl", // tùy chọn; bỏ qua để tự động phát hiện từ thông tin xác thực khả dụng
       },
     },
   },
@@ -128,10 +123,10 @@ Nếu trích xuất Readability thất bại, `web_fetch` có thể dự phòng 
         enabled: true,
         config: {
           webFetch: {
-            // apiKey: "fc-...", // optional; omit for keyless starter access
+            // apiKey: "fc-...", // tùy chọn; bỏ qua để sử dụng quyền truy cập khởi đầu không cần khóa
             baseUrl: "https://api.firecrawl.dev",
             onlyMainContent: true,
-            maxAgeMs: 86400000, // cache duration (1 day)
+            maxAgeMs: 172800000, // thời lượng bộ nhớ đệm (2 ngày)
             timeoutSeconds: 60,
           },
         },
@@ -142,80 +137,81 @@ Nếu trích xuất Readability thất bại, `web_fetch` có thể dự phòng 
 ```
 
 `plugins.entries.firecrawl.config.webFetch.apiKey` là tùy chọn và hỗ trợ các đối tượng SecretRef.
-Cấu hình `tools.web.fetch.firecrawl.*` cũ được tự động di chuyển bởi `openclaw doctor --fix`.
+Cấu hình `tools.web.fetch.firecrawl.*` cũ được tự động di chuyển sang
+`plugins.entries.firecrawl.config.webFetch` thông qua `openclaw doctor --fix`.
 
 <Note>
-  Nếu bạn cấu hình SecretRef khóa API Firecrawl và khóa đó không được phân giải mà không có
-  dự phòng env `FIRECRAWL_API_KEY`, Gateway sẽ khởi động thất bại nhanh.
+  Nếu bạn cấu hình SecretRef cho khóa API Firecrawl nhưng không thể phân giải và không có
+  biến môi trường `FIRECRAWL_API_KEY` dự phòng, quá trình khởi động Gateway sẽ thất bại ngay lập tức.
 </Note>
 
 <Note>
-  Các ghi đè `baseUrl` của Firecrawl được khóa chặt: lưu lượng được lưu trữ dùng
-  `https://api.firecrawl.dev`; các ghi đè tự lưu trữ phải trỏ tới endpoint riêng tư hoặc
-  nội bộ, và `http://` chỉ được chấp nhận cho những đích riêng tư đó.
+  Các giá trị ghi đè `baseUrl` của Firecrawl bị kiểm soát chặt chẽ: lưu lượng đến dịch vụ lưu trữ sử dụng
+  `https://api.firecrawl.dev`; các giá trị ghi đè tự lưu trữ phải nhắm đến điểm cuối riêng hoặc
+  nội bộ, và `http://` chỉ được chấp nhận cho các đích riêng đó.
 </Note>
 
-Hành vi runtime hiện tại:
+Hành vi thời gian chạy hiện tại:
 
-- `tools.web.fetch.provider` chọn rõ ràng provider dự phòng tìm nạp.
-- Nếu bỏ qua `provider`, OpenClaw tự động phát hiện provider web-fetch sẵn sàng đầu tiên
-  từ thông tin xác thực đã cấu hình. `web_fetch` không sandbox có thể dùng
-  các Plugin đã cài đặt khai báo `contracts.webFetchProviders` và đăng ký
-  provider khớp tại runtime. Plugin Firecrawl chính thức cung cấp
-  dự phòng này.
-- Các lệnh gọi `web_fetch` sandbox cho phép provider được đóng gói kèm cùng các provider đã cài đặt
-  có nguồn gốc npm chính thức hoặc ClawHub đã được xác minh. Hiện tại điều đó cho phép
-  Plugin Firecrawl chính thức; các Plugin tìm nạp bên ngoài của bên thứ ba vẫn bị loại trừ.
-- Nếu Readability bị tắt, `web_fetch` bỏ qua thẳng tới
-  dự phòng provider đã chọn. Nếu không có provider nào khả dụng, công cụ sẽ thất bại theo hướng đóng an toàn.
+- `tools.web.fetch.provider` chọn rõ ràng nhà cung cấp truy xuất dự phòng.
+- Nếu bỏ qua `provider`, OpenClaw tự động phát hiện nhà cung cấp truy xuất web
+  sẵn sàng đầu tiên từ thông tin xác thực đã cấu hình. `web_fetch` không nằm trong sandbox có thể sử dụng
+  các plugin đã cài đặt khai báo `contracts.webFetchProviders` và đăng ký một
+  nhà cung cấp tương ứng trong thời gian chạy. Plugin Firecrawl chính thức hiện cung cấp
+  phương án dự phòng này.
+- Các lệnh gọi `web_fetch` trong sandbox cho phép các nhà cung cấp đi kèm cùng với các nhà cung cấp đã cài đặt
+  có nguồn gốc npm chính thức hoặc ClawHub đã được xác minh. Hiện tại, điều này cho phép
+  Plugin Firecrawl chính thức; các plugin truy xuất bên ngoài của bên thứ ba vẫn bị loại trừ.
+- Nếu Readability bị tắt, `web_fetch` chuyển thẳng sang nhà cung cấp
+  dự phòng đã chọn. Nếu không có nhà cung cấp nào khả dụng, công cụ sẽ từ chối thực hiện.
 
-## Proxy env tin cậy
+## Proxy môi trường đáng tin cậy
 
-Nếu triển khai của bạn yêu cầu `web_fetch` đi qua một proxy HTTP(S) đi ra
-tin cậy, hãy đặt `tools.web.fetch.useTrustedEnvProxy: true`.
+Nếu hoạt động triển khai của bạn yêu cầu `web_fetch` đi qua proxy HTTP(S)
+đầu ra đáng tin cậy, hãy đặt `tools.web.fetch.useTrustedEnvProxy: true`.
 
-Trong chế độ này, OpenClaw vẫn áp dụng các kiểm tra SSRF dựa trên tên máy chủ trước khi gửi
-yêu cầu, nhưng cho phép proxy phân giải DNS thay vì thực hiện ghim DNS cục bộ.
-Chỉ bật tùy chọn này khi proxy do operator kiểm soát và thực thi
-chính sách đi ra sau khi phân giải DNS.
+Trong chế độ này, OpenClaw vẫn áp dụng kiểm tra SSRF dựa trên tên máy chủ trước khi gửi
+yêu cầu, nhưng cho phép proxy phân giải DNS thay vì ghim DNS
+cục bộ. Chỉ bật tính năng này khi proxy do đơn vị vận hành kiểm soát và thực thi
+chính sách đầu ra sau khi phân giải DNS.
 
 <Note>
-  Nếu không có biến env proxy HTTP(S) nào được cấu hình, hoặc máy chủ đích bị loại trừ bởi
-  `NO_PROXY`, `web_fetch` sẽ quay về đường dẫn nghiêm ngặt bình thường với
-  ghim DNS cục bộ.
+  Nếu không có biến môi trường proxy HTTP(S) nào được cấu hình hoặc máy chủ đích bị loại trừ bởi
+  `NO_PROXY`, `web_fetch` sẽ quay lại đường dẫn nghiêm ngặt thông thường với cơ chế ghim DNS
+  cục bộ.
 </Note>
 
 ## Giới hạn và an toàn
 
-- `maxChars` bị giới hạn ở `tools.web.fetch.maxCharsCap`
-- Phần thân phản hồi bị giới hạn ở `maxResponseBytes` trước khi phân tích; các phản hồi
-  quá lớn bị cắt ngắn kèm cảnh báo
-- Tên máy chủ riêng tư/nội bộ bị chặn
+- `maxChars` bị giới hạn ở `tools.web.fetch.maxCharsCap` (mặc định `20000`)
+- Nội dung phản hồi bị giới hạn ở `maxResponseBytes` (mặc định `750000`, được giới hạn trong
+  khoảng 32000-10000000) trước khi phân tích; phản hồi quá lớn sẽ bị cắt ngắn kèm cảnh báo
+- Tên máy chủ riêng/nội bộ bị chặn
 - `tools.web.fetch.ssrfPolicy.allowRfc2544BenchmarkRange` và
-  `tools.web.fetch.ssrfPolicy.allowIpv6UniqueLocalRange` là các tùy chọn opt-in hẹp
-  cho các ngăn xếp proxy IP giả tin cậy; hãy để chúng chưa đặt trừ khi proxy của bạn sở hữu
+  `tools.web.fetch.ssrfPolicy.allowIpv6UniqueLocalRange` là các tùy chọn bật có phạm vi hẹp
+  dành cho ngăn xếp proxy IP giả đáng tin cậy; hãy để chúng không được thiết lập trừ khi proxy của bạn sở hữu
   các dải tổng hợp đó và thực thi chính sách đích riêng
-- Chuyển hướng được kiểm tra và bị giới hạn bởi `maxRedirects`
-- `useTrustedEnvProxy` là opt-in rõ ràng và chỉ nên được bật cho
-  các proxy do operator kiểm soát vẫn thực thi chính sách đi ra sau khi
-  phân giải DNS
-- `web_fetch` hoạt động theo nỗ lực tốt nhất -- một số trang cần [Trình duyệt Web](/vi/tools/browser)
+- Các chuyển hướng được kiểm tra và giới hạn bởi `maxRedirects` (mặc định `3`)
+- `useTrustedEnvProxy` là tùy chọn chủ động bật rõ ràng và chỉ nên được bật cho
+  các proxy do đơn vị vận hành kiểm soát, vẫn thực thi chính sách đầu ra sau khi phân giải
+  DNS
+- `web_fetch` hoạt động theo nguyên tắc nỗ lực tối đa -- một số trang web cần [Trình duyệt web](/vi/tools/browser)
 
 ## Hồ sơ công cụ
 
-Nếu bạn dùng hồ sơ công cụ hoặc danh sách cho phép, hãy thêm `web_fetch` hoặc `group:web`:
+Nếu bạn sử dụng hồ sơ công cụ hoặc danh sách cho phép, hãy thêm `web_fetch` hoặc `group:web`:
 
 ```json5
 {
   tools: {
     allow: ["web_fetch"],
-    // or: allow: ["group:web"]  (includes web_fetch, web_search, and x_search)
+    // hoặc: allow: ["group:web"]  (bao gồm web_fetch, web_search và x_search)
   },
 }
 ```
 
 ## Liên quan
 
-- [Tìm kiếm Web](/vi/tools/web) -- tìm kiếm web bằng nhiều provider
-- [Trình duyệt Web](/vi/tools/browser) -- tự động hóa trình duyệt đầy đủ cho các trang phụ thuộc nhiều vào JS
-- [Firecrawl](/vi/tools/firecrawl) -- công cụ tìm kiếm và scrape của Firecrawl
+- [Tìm kiếm web](/vi/tools/web) -- tìm kiếm trên web bằng nhiều nhà cung cấp
+- [Trình duyệt web](/vi/tools/browser) -- tự động hóa trình duyệt đầy đủ cho các trang sử dụng nhiều JS
+- [Firecrawl](/vi/tools/firecrawl) -- các công cụ tìm kiếm và thu thập dữ liệu của Firecrawl

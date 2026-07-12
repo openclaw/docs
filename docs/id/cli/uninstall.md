@@ -1,35 +1,41 @@
 ---
 read_when:
-    - Anda ingin menghapus layanan Gateway dan/atau state lokal
-    - Anda ingin dry-run terlebih dahulu
-summary: Referensi CLI untuk `openclaw uninstall` (hapus layanan gateway + data lokal)
-title: Hapus instalasi
+    - Anda ingin menghapus layanan Gateway dan/atau status lokal
+    - Anda ingin menjalankan simulasi terlebih dahulu
+summary: Referensi CLI untuk `openclaw uninstall` (menghapus layanan Gateway + data lokal)
+title: Copot pemasangan
 x-i18n:
-    generated_at: "2026-06-27T17:21:59Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:08:11Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f90fa8cf513e2e8cd422c3b8a880e7fd20fb71131a3ec88260e765daa2ace543
+    source_hash: 1e2e3996cf6d5c0fd11e5054c8fe60f7f8d25047193bb13944ca170bf77b581a
     source_path: cli/uninstall.md
     workflow: 16
 ---
 
 # `openclaw uninstall`
 
-Copot pemasangan layanan gateway + data lokal (CLI tetap ada).
+Hapus instalasi layanan Gateway dan/atau data lokal. CLI itu sendiri tidak
+dihapus; hapus instalasinya melalui npm/pnpm secara terpisah.
 
-Opsi:
+## Opsi
 
-- `--service`: hapus layanan gateway
-- `--state`: hapus state dan konfigurasi
-- `--workspace`: hapus direktori workspace
-- `--app`: hapus aplikasi macOS
-- `--all`: hapus layanan, state, workspace, dan aplikasi
-- `--yes`: lewati prompt konfirmasi
-- `--non-interactive`: nonaktifkan prompt; memerlukan `--yes`
-- `--dry-run`: cetak tindakan tanpa menghapus berkas
+| Flag                | Bawaan  | Deskripsi                                                    |
+| ------------------- | ------- | ------------------------------------------------------------ |
+| `--service`         | `false` | Hapus layanan Gateway.                                       |
+| `--state`           | `false` | Hapus status dan konfigurasi.                                |
+| `--workspace`       | `false` | Hapus direktori ruang kerja.                                 |
+| `--app`             | `false` | Hapus aplikasi macOS.                                        |
+| `--all`             | `false` | Singkatan untuk `--service --state --workspace --app`.       |
+| `--yes`             | `false` | Lewati permintaan konfirmasi.                                |
+| `--non-interactive` | `false` | Nonaktifkan permintaan input; memerlukan `--yes`.             |
+| `--dry-run`         | `false` | Tampilkan tindakan yang direncanakan tanpa menghapus berkas. |
 
-Contoh:
+Tanpa flag cakupan, pilihan jamak interaktif akan meminta komponen mana yang
+akan dihapus (secara bawaan layanan, status, dan ruang kerja telah dipilih).
+
+## Contoh
 
 ```bash
 openclaw backup create
@@ -40,14 +46,14 @@ openclaw uninstall --all --yes
 openclaw uninstall --dry-run
 ```
 
-Catatan:
+## Catatan
 
-- Jalankan `openclaw backup create` terlebih dahulu jika Anda menginginkan snapshot yang dapat dipulihkan sebelum menghapus state atau workspace.
-- `--state` mempertahankan direktori workspace yang dikonfigurasi kecuali `--workspace` juga dipilih.
-- `--all` adalah singkatan untuk menghapus layanan, state, workspace, dan aplikasi sekaligus.
-- `--non-interactive` memerlukan `--yes`.
+- Jalankan `openclaw backup create` terlebih dahulu untuk membuat snapshot yang dapat dipulihkan sebelum menghapus
+  status atau ruang kerja.
+- `--state` mempertahankan direktori ruang kerja yang dikonfigurasi kecuali jika `--workspace`
+  juga dipilih.
 
 ## Terkait
 
 - [Referensi CLI](/id/cli)
-- [Copot pemasangan](/id/install/uninstall)
+- [Hapus instalasi](/id/install/uninstall)

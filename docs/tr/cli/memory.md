@@ -1,163 +1,188 @@
 ---
 read_when:
-    - Semantik belleği indekslemek veya aramak istiyorsunuz
-    - Bellek kullanılabilirliğini veya dizinlemeyi hata ayıklıyorsunuz
-    - Geri çağrılan kısa süreli belleği `MEMORY.md` içine yükseltmek istiyorsunuz
-summary: '`openclaw memory` için CLI başvurusu (status/index/search/promote/promote-explain/rem-harness)'
+    - Anlamsal belleği dizine eklemek veya aramak istiyorsunuz
+    - Bellek kullanılabilirliği veya indeksleme sorunlarını ayıklıyorsunuz
+    - Hatırlanan kısa süreli belleği `MEMORY.md` içine aktarmak istiyorsunuz
+summary: '`openclaw memory` için CLI referansı (durum/dizin/arama/yükseltme/yükseltme-açıklaması/rem-harness/rem-backfill)'
 title: Bellek
 x-i18n:
-    generated_at: "2026-06-30T14:21:17Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:09:53Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 74b85d7299cc12e6133a10678f7c8fe17ee704e029993aebea417727ba94e629
+    source_hash: f0002c48044455520f32a5a3e111415a746fbafba2a27a655ded90abdc94623b
     source_path: cli/memory.md
     workflow: 16
 ---
 
 # `openclaw memory`
 
-Anlamsal bellek dizinlemeyi ve aramayı yönetin.
-Paketle gelen `memory-core` plugin tarafından sağlanır. Komut,
-`plugins.slots.memory` `memory-core` seçtiğinde kullanılabilir (varsayılan); diğer bellek pluginleri
-kendi CLI ad alanlarını sunar.
+Anlamsal bellek dizinlemeyi, aramayı ve `MEMORY.md` dosyasına yükseltmeyi yönetin.
+Paketle birlikte gelen `memory-core` Plugin'i tarafından sağlanır ve
+`plugins.slots.memory`, `memory-core` öğesini seçtiğinde (varsayılan) kullanılabilir. Diğer bellek
+Plugin'leri kendi CLI ad alanlarını sunar.
 
-İlgili:
+İlgili: [Bellek](/tr/concepts/memory) kavramı, [Dreaming](/tr/concepts/dreaming),
+[Bellek yapılandırma başvurusu](/tr/reference/memory-config), [Bellek Wiki'si](/tr/plugins/memory-wiki),
+[wiki](/tr/cli/wiki), [Plugin'ler](/tr/tools/plugin).
 
-- Bellek kavramı: [Bellek](/tr/concepts/memory)
-- Bellek wiki'si: [Bellek Wiki](/tr/plugins/memory-wiki)
-- Wiki CLI: [wiki](/tr/cli/wiki)
-- Pluginler: [Pluginler](/tr/tools/plugin)
-
-## Örnekler
+## `memory status`
 
 ```bash
-openclaw memory status
-openclaw memory status --deep
-openclaw memory status --fix
-openclaw memory index --force
-openclaw memory search "meeting notes"
-openclaw memory search --query "deployment" --max-results 20
-openclaw memory promote --limit 10 --min-score 0.75
-openclaw memory promote --apply
-openclaw memory promote --json --min-recall-count 0 --min-unique-queries 0
-openclaw memory promote-explain "router vlan"
-openclaw memory promote-explain "router vlan" --json
-openclaw memory rem-harness
-openclaw memory rem-harness --json
-openclaw memory status --json
-openclaw memory status --deep --index
-openclaw memory status --deep --index --verbose
-openclaw memory status --agent main
-openclaw memory index --agent main --verbose
+openclaw memory status [--agent <id>] [--deep] [--index] [--fix] [--json] [--verbose]
 ```
 
-## Seçenekler
+`--agent` olmadan `agents.list` içindeki her ajan için çalışır; herhangi bir ajan listesi
+yapılandırılmamışsa varsayılan ajana geri döner.
 
-`memory status` ve `memory index`:
+| Bayrak      | Etki                                                                                                                                                                                                                                                                                                                                       |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `--deep`    | Vektör deposunun, gömme sağlayıcısının ve anlamsal aramanın hazır olup olmadığını denetler (ek sağlayıcı çağrıları yapılmasını gerektirir). Düz `memory status` hızlı kalır ve bunu atlar; bilinmeyen vektör/anlamsal durumu, denetlenmediği anlamına gelir. QMD sözcüksel `searchMode: "search"`, `--deep` ile bile anlamsal vektör denetimlerini her zaman atlar. |
+| `--index`   | Depo kirliyse yeniden dizinler. `--deep` kullanımını gerektirir.                                                                                                                                                                                                                                                                             |
+| `--fix`     | Eski geri çağırma kilitlerini onarır ve yükseltme meta verilerini normalleştirir.                                                                                                                                                                                                                                                            |
+| `--json`    | JSON yazdırır.                                                                                                                                                                                                                                                                                                                              |
+| `--verbose` | Her aşama için ayrıntılı günlükler yayınlar.                                                                                                                                                                                                                                                                                                 |
 
-- `--agent <id>`: kapsamı tek bir ajanla sınırlar. Bu seçenek olmadan, bu komutlar yapılandırılmış her ajan için çalışır; ajan listesi yapılandırılmamışsa varsayılan ajana geri dönerler.
-- `--verbose`: yoklamalar ve dizinleme sırasında ayrıntılı günlükler üretir.
+`dreaming.enabled: true` olduğunda bile `Dreaming` satırı `off` olarak kalıyorsa veya
+zamanlanmış taramalar hiç çalışmıyor gibi görünüyorsa yönetilen Dreaming Cron görevi,
+uzlaştırmayı tetiklemek için varsayılan ajanın Heartbeat'inin çalışmasına bağlıdır. Zamanlama
+ayrıntıları için [Dreaming](/tr/concepts/dreaming) bölümüne bakın.
 
-`memory status`:
+Durum ayrıca `agents.defaults.memorySearch.extraPaths` içindeki ek arama yollarını da listeler.
 
-- `--deep`: yerel vektör deposu hazır oluşunu, gömme sağlayıcı hazır oluşunu ve anlamsal vektör araması hazır oluşunu yoklar. Düz `memory status` hızlı kalır ve canlı gömme ya da sağlayıcı keşfi işi çalıştırmaz; bilinmeyen vektör deposu veya anlamsal vektör durumu, o komutta yoklanmadığı anlamına gelir. QMD sözlüksel `searchMode: "search"`, `--deep` ile bile anlamsal vektör yoklamalarını ve gömme bakımını atlar.
-- `--index`: depo kirliyse yeniden dizinleme çalıştırır (`--deep` anlamına gelir).
-- `--fix`: eski hatırlama kilitlerini onarır ve yükseltme meta verilerini normalleştirir.
-- `--json`: JSON çıktısı yazdırır.
-
-`memory status` `Dreaming status: blocked` gösteriyorsa, yönetilen Dreaming cron etkindir ancak onu süren Heartbeat varsayılan ajan için çalışmıyordur. İki yaygın neden için [Dreaming hiç çalışmıyor](/tr/concepts/dreaming#dreaming-never-runs-status-shows-blocked) bölümüne bakın.
-
-`memory index`:
-
-- `--force`: tam yeniden dizinlemeyi zorlar.
-
-`memory search`:
-
-- Sorgu girdisi: konumsal `[query]` veya `--query <text>` geçirin.
-- İkisi de sağlanırsa `--query` kazanır.
-- Hiçbiri sağlanmazsa komut bir hatayla çıkar.
-- `--agent <id>`: kapsamı tek bir ajanla sınırlar (varsayılan: varsayılan ajan).
-- `--max-results <n>`: döndürülen sonuç sayısını sınırlar.
-- `--min-score <n>`: düşük skorlu eşleşmeleri filtreler.
-- `--json`: JSON sonuçları yazdırır.
-
-`memory promote`:
-
-Kısa süreli bellek yükseltmelerini önizleyin ve uygulayın.
+## `memory index`
 
 ```bash
-openclaw memory promote [--apply] [--limit <n>] [--include-promoted]
+openclaw memory index [--agent <id>] [--force] [--verbose]
 ```
 
-- `--apply` -- yükseltmeleri `MEMORY.md` dosyasına yazar (varsayılan: yalnızca önizleme).
-- `--limit <n>` -- gösterilen aday sayısını sınırlar.
-- `--include-promoted` -- önceki döngülerde zaten yükseltilmiş girdileri dahil eder.
+`status` ile aynı ajan başına kapsamlandırmayı kullanır. `--force`, artımlı yeniden dizinleme yerine
+tam yeniden dizinleme çalıştırır. `--verbose`, dizinleme ilerlemesini göstermeden önce ajan başına
+sağlayıcı, model, kaynak ve ek yol ayrıntılarını yazdırır.
 
-Tam seçenekler:
+## `memory search`
 
-- `memory/YYYY-MM-DD.md` içindeki kısa süreli adayları ağırlıklı yükseltme sinyallerini (`frequency`, `relevance`, `query diversity`, `recency`, `consolidation`, `conceptual richness`) kullanarak sıralar.
-- Hem bellek hatırlamalarından hem de günlük alım geçişlerinden gelen kısa süreli sinyalleri, ayrıca hafif/REM aşaması pekiştirme sinyallerini kullanır.
-- Dreaming etkin olduğunda, `memory-core` arka planda tam bir tarama (`light -> REM -> deep`) çalıştıran tek bir cron işini otomatik yönetir (elle `openclaw cron add` gerekmez).
-- `--agent <id>`: kapsamı tek bir ajanla sınırlar (varsayılan: varsayılan ajan).
-- `--limit <n>`: döndürülecek/uygulanacak en fazla aday sayısı.
-- `--min-score <n>`: minimum ağırlıklı yükseltme skoru.
-- `--min-recall-count <n>`: bir aday için gereken minimum hatırlama sayısı.
-- `--min-unique-queries <n>`: bir aday için gereken minimum farklı sorgu sayısı.
-- `--apply`: seçili adayları `MEMORY.md` dosyasına ekler ve yükseltilmiş olarak işaretler.
-- `--include-promoted`: çıktıya zaten yükseltilmiş adayları dahil eder.
-- `--json`: JSON çıktısı yazdırır.
+```bash
+openclaw memory search [query] [--query <text>] [--agent <id>] [--max-results <n>] [--min-score <n>] [--json]
+```
 
-`memory promote-explain`:
+- Sorgu: konumsal `[query]` veya `--query <text>`. Her ikisi de ayarlanırsa `--query`
+  önceliklidir. Hiçbiri ayarlanmazsa komut hata verir.
+- `--agent <id>`: varsayılan ajanı kullanır (tam ajan listesini değil).
+- `--max-results <n>`: sonuç sayısını sınırlar (pozitif tam sayı).
+- `--min-score <n>`: bu puanın altındaki eşleşmeleri filtreler.
 
-Belirli bir yükseltme adayını ve skor dökümünü açıklayın.
+## `memory promote`
+
+`memory/YYYY-MM-DD.md` içindeki kısa vadeli adayları sıralayın ve isteğe bağlı olarak
+en iyi girdileri `MEMORY.md` dosyasına ekleyin.
+
+```bash
+openclaw memory promote [--agent <id>] [--limit <n>] [--min-score <n>] \
+  [--min-recall-count <n>] [--min-unique-queries <n>] [--apply] [--include-promoted] [--json]
+```
+
+| Bayrak                     | Varsayılan         | Etki                                                               |
+| -------------------------- | ------------------ | ------------------------------------------------------------------ |
+| `--limit <n>`              |                    | Döndürülecek/uygulanacak en fazla aday sayısı.                      |
+| `--min-score <n>`          | `0.75`             | En düşük ağırlıklı yükseltme puanı.                                 |
+| `--min-recall-count <n>`   | `3`                | Gereken en düşük geri çağırma sayısı.                               |
+| `--min-unique-queries <n>` | `2`                | Gereken en düşük farklı sorgu sayısı.                               |
+| `--apply`                  | yalnızca önizleme  | Seçilen adayları `MEMORY.md` dosyasına ekler ve yükseltilmiş olarak işaretler. |
+| `--include-promoted`       |                    | Önceki döngülerde zaten yükseltilmiş adayları dahil eder.           |
+| `--json`                   |                    | JSON yazdırır.                                                      |
+
+Bu CLI varsayılanları, zamanlanmış Dreaming taramasının derin aşama
+eşiklerinden farklıdır (aşağıdaki [Dreaming](#dreaming) bölümüne bakın); tek seferlik
+manuel çalıştırmada tarama davranışıyla eşleşmek için açık bayraklar iletin.
+
+Sıralama sinyalleri: hem bellek geri çağırmalarından hem de günlük alım geçişlerinden
+elde edilen geri çağırma sıklığı, getirme ilgililiği, sorgu çeşitliliği,
+zamansal güncellik, günler arası birleştirme ve türetilmiş kavram zenginliği;
+ayrıca tekrarlanan Dreaming ziyaretleri için hafif/REM aşaması pekiştirme artışı.
+Yükseltme, yazmadan önce canlı günlük notu yeniden okur; böylece sıralamadan sonra
+kısa vadeli parçalarda yapılan düzenlemelere veya silmelere uyulur ve eski bir
+anlık görüntüden yükseltme yapılmaz.
+
+## `memory promote-explain`
+
+Bir yükseltme adayının puan dökümünü açıklayın.
 
 ```bash
 openclaw memory promote-explain <selector> [--agent <id>] [--include-promoted] [--json]
 ```
 
-- `<selector>`: aranacak aday anahtarı, yol parçası veya kesit parçası.
-- `--agent <id>`: kapsamı tek bir ajanla sınırlar (varsayılan: varsayılan ajan).
-- `--include-promoted`: zaten yükseltilmiş adayları dahil eder.
-- `--json`: JSON çıktısı yazdırır.
+`<selector>`, adayın anahtarıyla (tam veya alt dize), yoluyla ya da parça
+metniyle eşleşir.
 
-`memory rem-harness`:
+## `memory rem-harness`
 
-Hiçbir şey yazmadan REM yansımalarını, aday gerçekleri ve derin yükseltme çıktısını önizleyin.
+Hiçbir şey yazmadan REM yansımalarını, aday doğruları ve derin aşama yükseltme çıktısını
+önizleyin.
 
 ```bash
-openclaw memory rem-harness [--agent <id>] [--include-promoted] [--json]
+openclaw memory rem-harness [--agent <id>] [--path <file-or-dir>] [--grounded] [--include-promoted] [--json]
 ```
 
-- `--agent <id>`: kapsamı tek bir ajanla sınırlar (varsayılan: varsayılan ajan).
-- `--include-promoted`: zaten yükseltilmiş derin adayları dahil eder.
-- `--json`: JSON çıktısı yazdırır.
+- `--path <file-or-dir>`: test düzeneğini canlı çalışma alanı yerine geçmiş
+  `YYYY-MM-DD.md` günlük dosyalarından başlatır.
+- `--grounded`: geçmiş notlardan temellendirilmiş bir `Ne Oldu` / `Yansımalar` /
+  `Olası Kalıcı Güncellemeler` önizlemesi de oluşturur.
+
+## `memory rem-backfill`
+
+Arayüzde incelenmek üzere temellendirilmiş geçmiş REM özetlerini `DREAMS.md` dosyasına yazın.
+Geri alınabilir.
+
+```bash
+openclaw memory rem-backfill --path <file-or-dir> [--agent <id>] [--stage-short-term] [--json]
+openclaw memory rem-backfill --rollback [--rollback-short-term] [--json]
+```
+
+- `--path <file-or-dir>`: `--rollback`/`--rollback-short-term` ayarlanmadıkça
+  gereklidir. Geriye dönük doldurma kaynağı olarak geçmiş günlük bellek dosyaları veya dizini.
+- `--stage-short-term`: normal derin aşamanın sıralayabilmesi için temellendirilmiş kalıcı
+  adayları canlı kısa vadeli yükseltme deposuna da ekler.
+- `--rollback`: daha önce yazılmış temellendirilmiş günlük girdilerini
+  `DREAMS.md` dosyasından kaldırır.
+- `--rollback-short-term`: daha önce hazırlanmış temellendirilmiş kısa vadeli
+  adayları kaldırır.
 
 ## Dreaming
 
-Dreaming, üç işbirlikçi aşamaya sahip arka plan bellek pekiştirme sistemidir:
-**light** (kısa süreli materyali sırala/aşamaya al), **deep** (kalıcı
-olguları `MEMORY.md` içine yükselt) ve **REM** (yansıt ve temaları yüzeye çıkar).
+Dreaming, tek bir zamanlamada sırayla çalışan üç iş birliğine dayalı aşamadan
+oluşan arka plan bellek birleştirme sistemidir: **hafif** (kısa vadeli
+malzemeyi sırala/hazırla), **REM** (düşün ve temaları ortaya çıkar), **derin** (kalıcı
+olguları `MEMORY.md` dosyasına yükselt). Yalnızca derin aşama `MEMORY.md` dosyasına yazar.
 
-- `plugins.entries.memory-core.config.dreaming.enabled: true` ile etkinleştirin.
-- Sohbetten `/dreaming on|off` ile değiştirin (veya `/dreaming status` ile inceleyin).
-  Kanal çağıranların ayarı değiştirmek için sahip olması gerekir; Gateway istemcilerinin
-  `operator.admin` yetkisine ihtiyacı vardır. Salt okunur durum ve yardım, yetkili
-  komut göndericilerine açık kalır.
-- Dreaming, tek bir yönetilen tarama zamanlamasında (`dreaming.frequency`) çalışır ve aşamaları sırayla yürütür: light, REM, deep.
-- Yalnızca deep aşaması kalıcı belleği `MEMORY.md` dosyasına yazar.
-- İnsan tarafından okunabilir aşama çıktısı ve günlük girdileri `DREAMS.md` (veya mevcut `dreams.md`) dosyasına, isteğe bağlı aşama başına raporlarla `memory/dreaming/<phase>/YYYY-MM-DD.md` içine yazılır.
-- Sıralama ağırlıklı sinyaller kullanır: hatırlama sıklığı, getirme ilgililiği, sorgu çeşitliliği, zamansal yakınlık, günler arası pekiştirme ve türetilmiş kavram zenginliği.
-- Yükseltme, `MEMORY.md` dosyasına yazmadan önce canlı günlük notu yeniden okur; böylece düzenlenmiş veya silinmiş kısa süreli kesitler eski hatırlama deposu anlık görüntülerinden yükseltilmez.
-- Zamanlanmış ve elle çalıştırılan `memory promote` çalışmaları, CLI eşik geçersiz kılmaları vermediğiniz sürece aynı deep aşaması varsayılanlarını paylaşır.
-- Otomatik çalışmalar yapılandırılmış bellek çalışma alanlarına yayılır.
+- `plugins.entries.memory-core.config.dreaming.enabled: true` ile etkinleştirin
+  (varsayılan `false`); `memory-core` tarama Cron görevini otomatik olarak yönetir,
+  manuel `openclaw cron add` gerekmez.
+- Sohbetten `/dreaming on|off` ile açıp kapatın; `/dreaming status`
+  (veya `/dreaming`/`/dreaming help`) ile inceleyin. `on`/`off` için kanal sahibi durumu
+  veya Gateway `operator.admin` gerekir; `status` ve yardım, komutu
+  çağırabilen herkes tarafından kullanılabilir.
+- İnsan tarafından okunabilir aşama çıktısı `DREAMS.md` dosyasına (veya mevcut bir `dreams.md` dosyasına) gider.
+  Varsayılan olarak (`dreaming.storage.mode: "separate"`) her aşama ayrıca
+  `memory/dreaming/<phase>/YYYY-MM-DD.md` konumuna bağımsız bir rapor yazar; raporları
+  bunun yerine günlük bellek dosyasına dahil etmek için `mode:
+"inline"`, her ikisi içinse `"both"` ayarlayın.
+- Zamanlanmış ve manuel `memory promote` çalıştırmaları aynı derin aşama
+  sıralama sinyallerini paylaşır; yalnızca varsayılan eşikler farklıdır (yukarıdaki tabloyla
+  aşağıdaki zamanlanmış varsayılanları karşılaştırın).
+- Zamanlanmış çalıştırmalar, yapılandırılmış her ajanın bellek çalışma alanına dağıtılır.
 
-Varsayılan zamanlama:
+Zamanlanmış varsayılanlar (`plugins.entries.memory-core.config.dreaming`):
 
-- **Tarama sıklığı**: `dreaming.frequency = 0 3 * * *`
-- **Deep eşikleri**: `minScore=0.8`, `minRecallCount=3`, `minUniqueQueries=3`, `recencyHalfLifeDays=14`, `maxAgeDays=30`
-
-Örnek:
+| Anahtar                                | Varsayılan  |
+| -------------------------------------- | ----------- |
+| `frequency`                            | `0 3 * * *` |
+| `phases.deep.minScore`                 | `0.8`       |
+| `phases.deep.minRecallCount`           | `3`         |
+| `phases.deep.minUniqueQueries`         | `3`         |
+| `phases.deep.recencyHalfLifeDays`      | `14`        |
+| `phases.deep.maxAgeDays`               | `30`        |
+| `phases.deep.maxPromotedSnippetTokens` | `160`       |
 
 ```json
 {
@@ -175,20 +200,17 @@ Varsayılan zamanlama:
 }
 ```
 
-Notlar:
+Tam anahtar listesi ve aşama ayrıntıları: [Dreaming](/tr/concepts/dreaming),
+[Bellek yapılandırma başvurusu](/tr/reference/memory-config#dreaming).
 
-- `memory index --verbose` aşama başına ayrıntıları yazdırır (sağlayıcı, model, kaynaklar, toplu işlem etkinliği).
-- `memory status`, `memorySearch.extraPaths` ile yapılandırılmış ek yolları içerir.
-- Etkin bellek uzak API anahtarı alanları SecretRef olarak yapılandırılmışsa komut bu değerleri etkin Gateway anlık görüntüsünden çözer. Gateway kullanılamıyorsa komut hızlı başarısız olur.
-- Gateway sürüm uyuşmazlığı notu: bu komut yolu `secrets.resolve` destekleyen bir Gateway gerektirir; daha eski Gatewayler bilinmeyen yöntem hatası döndürür.
-- Zamanlanmış tarama sıklığını `dreaming.frequency` ile ayarlayın. Deep yükseltme politikası, kaynak görünürlüğünü korurken yükseltilmiş kesit uzunluğunu sınırlayan `dreaming.phases.deep.maxPromotedSnippetTokens` dışında dahili kalır. Tek seferlik manuel eşik geçersiz kılmalarına ihtiyacınız olduğunda `memory promote` üzerinde CLI bayraklarını kullanın.
-- `memory rem-harness --path <file-or-dir> --grounded`, hiçbir şey yazmadan tarihsel günlük notlardan temellendirilmiş `What Happened`, `Reflections` ve `Possible Lasting Updates` önizlemesi yapar.
-- `memory rem-backfill --path <file-or-dir>`, UI incelemesi için geri alınabilir temellendirilmiş günlük girdilerini `DREAMS.md` içine yazar.
-- `memory rem-backfill --path <file-or-dir> --stage-short-term`, normal deep aşamasının bunları sıralayabilmesi için temellendirilmiş kalıcı adayları canlı kısa süreli yükseltme deposuna da eker.
-- `memory rem-backfill --rollback`, daha önce yazılmış temellendirilmiş günlük girdilerini kaldırır ve `memory rem-backfill --rollback-short-term`, daha önce aşamaya alınmış temellendirilmiş kısa süreli adayları kaldırır.
-- Tam aşama açıklamaları ve yapılandırma başvurusu için [Dreaming](/tr/concepts/dreaming) bölümüne bakın.
+## SecretRef Gateway bağımlılığı
+
+Active Memory uzak API anahtarı alanları SecretRef olarak yapılandırılmışsa `memory`
+komutları bunları etkin Gateway anlık görüntüsünden çözümler; Gateway
+kullanılamıyorsa komut hemen başarısız olur. Bunun için `secrets.resolve`
+yöntemini destekleyen bir Gateway gerekir; eski Gateway'ler bilinmeyen yöntem hatası döndürür.
 
 ## İlgili
 
 - [CLI başvurusu](/tr/cli)
-- [Bellek genel bakışı](/tr/concepts/memory)
+- [Belleğe genel bakış](/tr/concepts/memory)

@@ -2,92 +2,87 @@
 read_when:
     - تريد استخدام اشتراك Claude Max مع أدوات متوافقة مع OpenAI
     - تريد خادم API محليًا يغلّف Claude Code CLI
-    - تريد تقييم الوصول إلى Anthropic القائم على الاشتراك مقابل الوصول القائم على مفتاح API
-summary: وكيل مجتمعي لعرض بيانات اعتماد اشتراك Claude كنقطة نهاية متوافقة مع OpenAI
-title: وكيل Claude Max API
+    - تريد تقييم الوصول إلى Anthropic القائم على الاشتراك مقارنةً بالوصول القائم على مفتاح API
+summary: وكيل مجتمعي لإتاحة بيانات اعتماد اشتراك Claude كنقطة نهاية متوافقة مع OpenAI
+title: وكيل API لـ Claude Max
 x-i18n:
-    generated_at: "2026-06-28T20:46:23Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:26:24Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5d8800f7d5bd7adf9bff4825a45878a1bbde73b4d54afe4b5b4aa2b1b5523bee
+    source_hash: 5d0d9a70e14d7d444e57e9bcf169816fec4013a2680dfc9b1761e6ab32109e9f
     source_path: providers/claude-max-api-proxy.md
     workflow: 16
 ---
 
-**claude-max-api-proxy** هي أداة مجتمعية تتيح عرض اشتراكك في Claude Max/Pro كنقطة نهاية API متوافقة مع OpenAI. يتيح لك ذلك استخدام اشتراكك مع أي أداة تدعم تنسيق OpenAI API.
+**claude-max-api-proxy** هي حزمة npm مجتمعية (وليست Plugin لـ OpenClaw) تتيح
+اشتراك Claude Max/Pro كنقطة نهاية API متوافقة مع OpenAI، بحيث يمكنك توجيه
+أي أداة متوافقة مع OpenAI إلى اشتراكك بدلًا من مفتاح Anthropic API.
 
 <Warning>
-هذا المسار مخصص للتوافق التقني فقط. حظرت Anthropic في الماضي بعض استخدامات الاشتراكات
-خارج Claude Code. يجب أن تقرر بنفسك ما إذا كنت ستستخدمه
-وأن تتحقق من قواعد الفوترة الحالية لدى Anthropic قبل الاعتماد عليه.
+هذا مسار متوافق تقنيًا فقط، وليس مسارًا معتمدًا رسميًا. سبق أن حظرت Anthropic
+بعض استخدامات الاشتراك خارج Claude Code؛ تحقّق من قواعد الفوترة الحالية لدى
+Anthropic قبل الاعتماد على هذا المسار.
 
-تقول مستندات الدعم الحالية لدى Anthropic إن `claude -p` هو استخدام Agent SDK/برمجي.
-أوقف تحديث دعم Anthropic في 15 يونيو 2026 خطة أرصدة Agent SDK
-المنفصلة التي كانت معلنة. في الوقت الحالي، لا يزال استخدام Claude Agent SDK و`claude -p` وتطبيقات الجهات الخارجية
-يُحتسب من حدود الاستخدام لاشتراك الحساب المسجّل دخوله.
-
-قبل الاعتماد على هذا المسار، راجع [مقالة خطة Agent SDK](https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan)
-لدى Anthropic، بالإضافة إلى مقالات دعم Claude Code لحسابات
-[Pro/Max](https://support.claude.com/en/articles/11145838-use-claude-code-with-your-pro-or-max-plan)
-أو
-[Team/Enterprise](https://support.claude.com/en/articles/11845131-use-claude-code-with-your-team-or-enterprise-plan).
+تصف وثائق Claude Code من Anthropic الأمر `claude -p` بأنه استخدام برمجي أو
+عبر Agent SDK. ووفقًا لتحديث دعم Anthropic الصادر في 15 يونيو 2026، فإن
+استخدام Claude Agent SDK و`claude -p` وتطبيقات الجهات الخارجية يُحتسب ضمن
+حدود استخدام الاشتراك المسجّل الدخول إليه (وقد عُلّقت خطة الرصيد المنفصلة
+لـ Agent SDK التي أُعلن عنها سابقًا). راجع [مقالة خطة Agent SDK
+من Anthropic](https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan)،
+ومقالتَي خطط [Pro/Max](https://support.claude.com/en/articles/11145838-use-claude-code-with-your-pro-or-max-plan)
+و[Team/Enterprise](https://support.claude.com/en/articles/11845131-use-claude-code-with-your-team-or-enterprise-plan)،
+و[موفّر Anthropic](/ar/providers/anthropic) للاطلاع على ملاحظات OpenClaw الخاصة
+بفوترة Claude CLI.
 </Warning>
 
-## لماذا تستخدم هذا؟
+## لماذا تستخدم هذا
 
-| النهج                     | مسار التكلفة                                      | الأنسب لـ                                  |
+| النهج                     | مسار التكلفة                                     | الأنسب لـ                                      |
 | ------------------------- | ----------------------------------------------- | ------------------------------------------ |
-| Anthropic API             | الدفع لكل رمز عبر Claude Console أو السحابة      | تطبيقات الإنتاج، والأتمتة المشتركة، والحجم |
-| وكيل اشتراك Claude        | قواعد خطة وأرصدة Claude Code / `claude -p`       | التجارب الشخصية مع الأدوات المتوافقة       |
+| مفتاح Anthropic API       | الدفع لكل رمز عبر Claude Console                 | تطبيقات الإنتاج والأتمتة المشتركة والأحجام الكبيرة |
+| وكيل اشتراك Claude        | قواعد الخطة والرصيد في Claude Code / `claude -p` | التجارب الشخصية باستخدام أدوات متوافقة          |
 
-إذا كان لديك اشتراك Claude Max أو Pro وتريد استخدامه مع
-أدوات متوافقة مع OpenAI، فقد يناسب هذا الوكيل بعض سير العمل الشخصية. إنه ليس مسارًا
-غير محدود بسعر ثابت. تظل مفاتيح API المسار الأوضح من ناحية السياسات والفوترة
-لاستخدام الإنتاج.
+يتيح هذا الوكيل لاشتراك Claude Max أو Pro العمل مع الأدوات المتوافقة مع
+OpenAI. وهو ليس مسارًا غير محدود بسعر ثابت، بل يرث حدود استخدام Claude Code.
+تظل مفاتيح API مسار الفوترة الأوضح للاستخدام في بيئات الإنتاج.
 
-## كيف يعمل
+## آلية العمل
 
+```text
+Your App -> claude-max-api-proxy -> Claude Code CLI / claude -p -> Anthropic
+     (OpenAI format)                (converts format)              (uses your login)
 ```
-Your App → claude-max-api-proxy → Claude Code CLI / claude -p → Anthropic
-     (OpenAI format)              (converts format)          (uses your login)
-```
 
-الوكيل:
+يشغّل الوكيل Claude Code CLI كعملية فرعية لكل طلب، ويحوّل طلبات المحادثة
+بتنسيق OpenAI إلى مطالبات CLI، ثم يبث الاستجابة (أو يعيدها) بتنسيق OpenAI.
 
-1. يقبل طلبات بتنسيق OpenAI على `http://localhost:3456/v1/chat/completions`
-2. يحوّلها إلى أوامر Claude Code CLI
-3. يعيد الاستجابات بتنسيق OpenAI (مع دعم البث)
-
-## البدء
+## بدء الاستخدام
 
 <Steps>
-  <Step title="تثبيت الوكيل">
-    يتطلب Node.js 22+ وClaude Code CLI.
+  <Step title="Install the proxy">
+    يتطلب Node.js 20 أو أحدث وClaude Code CLI تمت مصادقته.
 
     ```bash
     npm install -g claude-max-api-proxy
 
     # Verify Claude CLI is authenticated
     claude --version
+    claude auth login   # if not already authenticated
     ```
 
   </Step>
-  <Step title="تشغيل الخادم">
+  <Step title="Start the server">
     ```bash
     claude-max-api
     # Server runs at http://localhost:3456
     ```
   </Step>
-  <Step title="اختبار الوكيل">
+  <Step title="Test the proxy">
     ```bash
-    # Health check
     curl http://localhost:3456/health
-
-    # List models
     curl http://localhost:3456/v1/models
 
-    # Chat completion
     curl http://localhost:3456/v1/chat/completions \
       -H "Content-Type: application/json" \
       -d '{
@@ -97,8 +92,8 @@ Your App → claude-max-api-proxy → Claude Code CLI / claude -p → Anthropic
     ```
 
   </Step>
-  <Step title="تهيئة OpenClaw">
-    وجّه OpenClaw إلى الوكيل كنقطة نهاية مخصصة متوافقة مع OpenAI:
+  <Step title="Configure OpenClaw">
+    وجّه OpenClaw إلى الوكيل بوصفه نقطة نهاية مخصصة متوافقة مع OpenAI:
 
     ```json5
     {
@@ -117,32 +112,42 @@ Your App → claude-max-api-proxy → Claude Code CLI / claude -p → Anthropic
   </Step>
 </Steps>
 
-## الكتالوج المضمّن
+<Note>
+معرّفات النماذج أدناه تخص كتالوج الوكيل نفسه، وليست مراجع نماذج Anthropic
+في OpenClaw. يرتبط كل معرّف باسم مستعار لنموذج Claude Code CLI (`opus` أو
+`sonnet` أو `haiku`)، ولذلك يتغير النموذج الأساسي كلما حدّثت Anthropic ذلك
+الاسم المستعار في CLI. تحقّق من ملف README الحالي للوكيل قبل الاعتماد على
+تعيين محدد.
+</Note>
 
-| معرّف النموذج     | يُطابق          |
-| ----------------- | --------------- |
-| `claude-opus-4`   | Claude Opus 4   |
-| `claude-sonnet-4` | Claude Sonnet 4 |
-| `claude-haiku-4`  | Claude Haiku 4  |
+| معرّف النموذج       | الاسم المستعار في CLI | التعيين الحالي    |
+| ----------------- | --------- | --------------- |
+| `claude-opus-4`   | `opus`    | Claude Opus 4.5 |
+| `claude-sonnet-4` | `sonnet`  | Claude Sonnet 4 |
+| `claude-haiku-4`  | `haiku`   | Claude Haiku 4  |
 
-## التهيئة المتقدمة
+## الإعداد المتقدم
 
 <AccordionGroup>
-  <Accordion title="ملاحظات متوافقة مع OpenAI بنمط الوكيل">
-    يستخدم هذا المسار نفس المسار المتوافق مع OpenAI بنمط الوكيل مثل واجهات الخلفية
-    المخصصة الأخرى ضمن `/v1`:
+  <Accordion title="Proxy-style OpenAI-compatible notes">
+    يستخدم هذا المسار العام المخصص `/v1` والمتوافق مع OpenAI في OpenClaw،
+    وهو المسار نفسه الذي تستخدمه أي واجهة خلفية أخرى مستضافة ذاتيًا ومتوافقة
+    مع OpenAI:
 
-    - لا ينطبق تشكيل الطلبات الأصلي الخاص بـ OpenAI فقط
-    - لا يوجد `service_tier`، ولا Responses `store`، ولا تلميحات لذاكرة التخزين المؤقت للمطالبات، ولا
-      تشكيل حمولة متوافق مع استدلال OpenAI
-    - لا تُحقن ترويسات إسناد OpenClaw المخفية (`originator` و`version` و`User-Agent`)
-      في عنوان URL الخاص بالوكيل
+    - لا ينطبق تشكيل الطلبات الأصلي الخاص بـ OpenAI فقط.
+    - لا ينطبق `/fast` و`service_tier` إلا على حركة البيانات المباشرة إلى
+      `api.anthropic.com`؛ وتترك مسارات الوكيل `service_tier` دون تغيير
+      (راجع [الوضع السريع لموفّر Anthropic](/ar/providers/anthropic#advanced-configuration)).
+    - لا يتوفر `store` الخاص بواجهة Responses، ولا تلميحات ذاكرة التخزين
+      المؤقت للمطالبات، ولا تشكيل حمولات توافق الاستدلال في OpenAI.
+    - لا تُرسل ترويسات الإسناد الخاصة بـ OpenAI/Codex في OpenClaw
+      (`originator` و`version` و`User-Agent`) إلا مع حركة OAuth الأصلية إلى
+      `api.openai.com`، ولا تُرسل إلى أهداف `OPENAI_BASE_URL` المخصصة مثل
+      هذا الوكيل.
 
   </Accordion>
 
-  <Accordion title="التشغيل التلقائي على macOS باستخدام LaunchAgent">
-    أنشئ LaunchAgent لتشغيل الوكيل تلقائيًا:
-
+  <Accordion title="Auto-start on macOS with LaunchAgent">
     ```bash
     cat > ~/Library/LaunchAgents/com.claude-max-api.plist << 'EOF'
     <?xml version="1.0" encoding="UTF-8"?>
@@ -177,29 +182,28 @@ Your App → claude-max-api-proxy → Claude Code CLI / claude -p → Anthropic
 
 ## ملاحظات
 
-- هذه **أداة مجتمعية**، وليست مدعومة رسميًا من Anthropic أو OpenClaw
-- تتطلب اشتراك Claude Max/Pro نشطًا مع مصادقة Claude Code CLI
-- ترث سلوك الفوترة وأرصدة الاستخدام وحدود المعدّل من Claude Code `claude -p`
-- يعمل الوكيل محليًا ولا يرسل البيانات إلى أي خوادم تابعة لجهات خارجية
-- استجابات البث مدعومة بالكامل
+- يرث سلوك الفوترة ورصيد الاستخدام وحدود المعدل الخاص بـ `claude -p` في Claude Code.
+- يرتبط بـ `127.0.0.1` فقط، ولا يرسل البيانات إلى أي خادم تابع لجهة خارجية بخلاف اتصال CLI نفسه بـ Anthropic.
+- يدعم بث الاستجابات.
+- لا يجري التحقق من إخفاقات المصادقة عند بدء التشغيل، ولا تظهر إلا عند تنفيذ طلب محادثة فعليًا؛ إذا لم تتم مصادقة CLI، فتوقّع إخفاق الطلب الأول بدلًا من رفض الخادم بدء التشغيل.
 
 <Note>
-للتكامل الأصلي مع Anthropic باستخدام Claude CLI أو مفاتيح API، راجع [موفر Anthropic](/ar/providers/anthropic). لاشتراكات OpenAI/Codex، راجع [موفر OpenAI](/ar/providers/openai).
+للتكامل الأصلي مع Anthropic باستخدام Claude CLI أو مفاتيح API، راجع [موفّر Anthropic](/ar/providers/anthropic). ولاشتراكات OpenAI/Codex، راجع [موفّر OpenAI](/ar/providers/openai).
 </Note>
 
-## ذات صلة
+## ذو صلة
 
 <CardGroup cols={2}>
-  <Card title="موفر Anthropic" href="/ar/providers/anthropic" icon="bolt">
-    تكامل OpenClaw أصلي مع Claude CLI أو مفاتيح API.
+  <Card title="Anthropic provider" href="/ar/providers/anthropic" icon="bolt">
+    تكامل OpenClaw الأصلي مع Claude CLI أو مفاتيح API.
   </Card>
-  <Card title="موفر OpenAI" href="/ar/providers/openai" icon="robot">
+  <Card title="OpenAI provider" href="/ar/providers/openai" icon="robot">
     لاشتراكات OpenAI/Codex.
   </Card>
-  <Card title="اختيار النموذج" href="/ar/concepts/model-providers" icon="layers">
-    نظرة عامة على جميع الموفرين ومراجع النماذج وسلوك تجاوز الفشل.
+  <Card title="Model selection" href="/ar/concepts/model-providers" icon="layers">
+    نظرة عامة على جميع الموفّرين ومراجع النماذج وسلوك تجاوز الفشل.
   </Card>
-  <Card title="التهيئة" href="/ar/gateway/configuration" icon="gear">
-    مرجع التهيئة الكامل.
+  <Card title="Configuration" href="/ar/gateway/configuration" icon="gear">
+    مرجع الإعداد الكامل.
   </Card>
 </CardGroup>

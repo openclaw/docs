@@ -1,13 +1,12 @@
 ---
 read_when:
-    - Você quer ajustar interativamente credenciais, dispositivos ou padrões do agente
-summary: Referência da CLI para `openclaw configure` (prompts de configuração interativos)
+    - Você quer ajustar credenciais, dispositivos ou padrões do agente de forma interativa
+summary: Referência da CLI para `openclaw configure` (solicitações de configuração interativas)
 title: Configurar
 x-i18n:
-    generated_at: "2026-07-12T15:00:22Z"
+    generated_at: "2026-07-11T23:49:57Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 6001ea712ee4db3f7bdc2db784a9df2e3f15a8360890b69aec2ea67694c3514b
     source_path: cli/configure.md
@@ -18,7 +17,7 @@ x-i18n:
 
 Prompts interativos para alterações específicas em uma configuração existente: credenciais, dispositivos, padrões de agentes, Gateway, canais, plugins, Skills e verificações de integridade.
 
-Use `openclaw onboard` ou `openclaw setup` para o processo guiado completo da primeira execução, `openclaw setup --baseline` somente para a configuração e o espaço de trabalho básicos e `openclaw channels add` quando você precisar apenas configurar uma conta de canal.
+Use `openclaw onboard` ou `openclaw setup` para realizar todo o processo guiado da primeira execução, `openclaw setup --baseline` somente para a configuração básica e o espaço de trabalho, e `openclaw channels add` quando você precisar apenas configurar uma conta de canal.
 
 <Tip>
 `openclaw config` sem subcomando abre o mesmo assistente. Use `openclaw config get|set|unset` para edições não interativas.
@@ -37,34 +36,34 @@ openclaw configure --section model --section channels
 openclaw configure --section gateway --section daemon
 ```
 
-Selecionar `gateway`, `daemon` ou `health` (ou executar o assistente completo sem `--section`) solicita onde o Gateway é executado e atualiza `gateway.mode`. Filtros de seção que ignoram as três opções seguem diretamente para a configuração solicitada, sem solicitar o modo do Gateway. A escolha do modo de Gateway remoto grava a configuração remota e encerra imediatamente; ela não executa etapas exclusivas do ambiente local, como instalações de plugins.
+Selecionar `gateway`, `daemon` ou `health` (ou executar o assistente completo sem `--section`) solicita onde o Gateway é executado e atualiza `gateway.mode`. Os filtros de seção que ignoram as três opções seguem diretamente para a configuração solicitada, sem solicitar o modo do Gateway. Escolher o modo de Gateway remoto grava a configuração remota e encerra imediatamente; essa opção não executa etapas exclusivamente locais, como instalações de plugins.
 
 <Note>
-`openclaw configure` requer um terminal interativo (stdin e stdout devem ser TTYs). Sem um, ele exibe os comandos não interativos equivalentes `openclaw config get|set|patch|validate` e encerra com um erro, em vez de executar apenas parcialmente.
+`openclaw configure` requer um terminal interativo (tanto stdin quanto stdout devem ser TTYs). Sem um terminal interativo, o comando exibe os comandos não interativos equivalentes `openclaw config get|set|patch|validate` e encerra com um erro, em vez de executar apenas parcialmente.
 </Note>
 
 ## Seção de modelo
 
 <Note>
-**Modelo** inclui uma seleção múltipla para a lista de permissões `agents.defaults.models` (o que aparece em `/model` e no seletor de modelos). As opções de configuração específicas de um provedor mesclam os modelos selecionados à lista de permissões existente, em vez de substituir provedores não relacionados que já estejam na configuração.
+**Modelo** inclui uma seleção múltipla para a lista de permissões `agents.defaults.models` (o que aparece em `/model` e no seletor de modelos). As opções de configuração específicas de um provedor incorporam os modelos selecionados à lista de permissões existente, em vez de substituir provedores não relacionados que já estejam na configuração.
 
-Executar novamente a autenticação do provedor por meio de configure preserva um `agents.defaults.model.primary` existente, mesmo quando a etapa de autenticação do provedor retorna uma alteração de configuração com o próprio modelo padrão recomendado. Adicionar ou autenticar novamente um provedor disponibiliza seus modelos sem substituir seu modelo primário atual. Use `openclaw models auth login --provider <id> --set-default` ou `openclaw models set <model>` para alterar intencionalmente o modelo padrão.
+Executar novamente a autenticação de um provedor por meio de configure preserva um `agents.defaults.model.primary` existente, mesmo quando a etapa de autenticação do provedor retorna uma atualização de configuração com seu próprio modelo padrão recomendado. Adicionar ou autenticar novamente um provedor disponibiliza os modelos dele sem substituir seu modelo principal atual. Use `openclaw models auth login --provider <id> --set-default` ou `openclaw models set <model>` para alterar intencionalmente o modelo padrão.
 </Note>
 
-Quando configure é iniciado a partir de uma opção de autenticação de provedor, os seletores de modelo padrão e lista de permissões dão preferência automaticamente a esse provedor. Para provedores emparelhados, como Volcengine e BytePlus, a mesma preferência também corresponde às variantes de planos de programação (`volcengine-plan/*`, `byteplus-plan/*`). Se o filtro de provedor preferencial resultar em uma lista vazia, configure recorrerá ao catálogo sem filtro, em vez de exibir um seletor vazio.
+Quando configure é iniciado a partir de uma opção de autenticação de provedor, os seletores de modelo padrão e da lista de permissões priorizam automaticamente esse provedor. Para provedores pareados, como Volcengine e BytePlus, a mesma preferência também corresponde às variantes de planos de programação (`volcengine-plan/*`, `byteplus-plan/*`). Se o filtro do provedor preferencial produzir uma lista vazia, configure usa o catálogo sem filtro, em vez de exibir um seletor vazio.
 
-## Seção Web
+## Seção web
 
-`openclaw configure --section web` seleciona um provedor de pesquisa na Web e configura suas credenciais. Alguns provedores exibem etapas adicionais específicas:
+`openclaw configure --section web` seleciona um provedor de pesquisa na web e configura suas credenciais. Alguns provedores exibem opções adicionais específicas:
 
-- **Grok** pode oferecer a configuração opcional de `x_search` com o mesmo perfil OAuth da xAI ou a mesma chave de API e permitir que você escolha um modelo de `x_search`.
-- **Kimi** pode solicitar a região da API Moonshot (`api.moonshot.ai` ou `api.moonshot.cn`) e o modelo padrão de pesquisa na Web do Kimi.
+- **Grok** pode oferecer a configuração opcional de `x_search` com o mesmo perfil OAuth da xAI ou chave de API e permitir a escolha de um modelo de `x_search`.
+- **Kimi** pode solicitar a região da API Moonshot (`api.moonshot.ai` ou `api.moonshot.cn`) e o modelo padrão de pesquisa na web do Kimi.
 
 ## Outras observações
 
-- Após gravar a configuração local, configure instala os plugins selecionados disponíveis para download quando o caminho de configuração escolhido os exige. A configuração de um Gateway remoto não instala pacotes de plugins locais.
-- Serviços voltados a canais (Slack/Discord/Matrix/Microsoft Teams) solicitam listas de permissões de canais/salas durante a configuração. Você pode inserir nomes ou IDs; o assistente converte nomes em IDs quando possível.
-- Se você executar a etapa de instalação do daemon, a autenticação por token exigirá um token. Se `gateway.auth.token` for gerenciado por SecretRef, configure valida o SecretRef, mas não persiste os valores de token em texto simples resolvidos nos metadados de ambiente do serviço supervisor; se o SecretRef não puder ser resolvido, configure bloqueia a instalação do daemon e fornece orientações práticas para correção.
+- Após gravar a configuração local, configure instala os plugins selecionados disponíveis para download quando o caminho de configuração escolhido os exige. A configuração do Gateway remoto não instala pacotes locais de plugins.
+- Serviços voltados a canais (Slack/Discord/Matrix/Microsoft Teams) solicitam listas de permissões de canais/salas durante a configuração. Você pode inserir nomes ou IDs; o assistente resolve os nomes em IDs quando possível.
+- Se você executar a etapa de instalação do daemon, a autenticação por token exigirá um token. Se `gateway.auth.token` for gerenciado por SecretRef, configure validará o SecretRef, mas não persistirá os valores resolvidos do token em texto simples nos metadados de ambiente do serviço supervisor; se o SecretRef não puder ser resolvido, configure bloqueará a instalação do daemon e fornecerá orientações práticas para a correção.
 - Se `gateway.auth.token` e `gateway.auth.password` estiverem configurados e `gateway.auth.mode` não estiver definido, configure bloqueará a instalação do daemon até que você defina explicitamente o modo.
 
 ## Conteúdo relacionado

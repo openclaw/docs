@@ -1,16 +1,16 @@
 ---
 read_when:
-    - lmstudio Pluginをインストール、設定、または監査する場合
+    - lmstudio Pluginをインストール、設定、または監査している場合
 summary: OpenClaw に LM Studio モデルプロバイダーのサポートを追加します。
 title: LM Studio Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:58:44Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:30:39Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: ec6c84ec422c0795d00f744239fcad96a5a01ef4fddd4823ba0b6ed93444a75b
     source_path: plugins/reference/lmstudio.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # LM Studio Plugin
@@ -20,11 +20,11 @@ OpenClaw に LM Studio モデルプロバイダーのサポートを追加しま
 ## 配布
 
 - パッケージ: `@openclaw/lmstudio-provider`
-- インストール経路: OpenClaw に含まれています
+- インストール方法: OpenClaw に同梱
 
-## サーフェス
+## 提供機能
 
-providers: lmstudio; contracts: memoryEmbeddingProviders
+プロバイダー: lmstudio、コントラクト: memoryEmbeddingProviders
 
 ## 関連ドキュメント
 

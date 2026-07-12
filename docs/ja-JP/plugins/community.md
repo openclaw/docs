@@ -1,13 +1,13 @@
 ---
 doc-schema-version: 1
 read_when:
-    - サードパーティ製 OpenClaw plugins を探したい
-    - 自分のPluginをClawHubで公開または掲載したい
-summary: コミュニティが管理する OpenClaw プラグインを見つけて公開する
+    - サードパーティ製のOpenClaw Pluginを探したい場合
+    - ClawHub で独自の Plugin を公開または掲載したい場合
+summary: コミュニティによってメンテナンスされている OpenClaw Plugin を探して公開する
 title: コミュニティ Plugin
 x-i18n:
-    generated_at: "2026-07-05T11:36:43Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:25:54Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 6a9eb477f20da8171a35c22ea6b112d77ff4afe0878f60314c052746aef4e0ac
@@ -15,58 +15,58 @@ x-i18n:
     workflow: 16
 ---
 
-コミュニティPluginは、チャンネル、ツール、プロバイダー、フック、またはその他の機能でOpenClawを拡張するサードパーティパッケージです。公開コミュニティPluginの主な発見場所として[ClawHub](/clawhub)を使用します。
+コミュニティ Plugin は、チャンネル、ツール、プロバイダー、フック、その他の機能によって OpenClaw を拡張するサードパーティ製パッケージです。公開コミュニティ Plugin を探すための主要な場所として、[ClawHub](/clawhub) を使用してください。
 
-## Pluginを探す
+## Plugin を探す
 
-CLIからClawHubを検索します。
+CLI から ClawHub を検索します。
 
 ```bash
 openclaw plugins search "calendar"
 ```
 
-明示的なソースプレフィックスを付けてClawHub Pluginをインストールします。
+ソースのプレフィックスを明示して ClawHub Plugin をインストールします。
 
 ```bash
 openclaw plugins install clawhub:<package-name>
 ```
 
-ローンチ移行期間中は、npmも直接インストールの対応パスとして残ります。
+提供開始時の移行期間中は、npm からの直接インストールも引き続きサポートされます。
 
 ```bash
 openclaw plugins install npm:<package-name>
 ```
 
-一般的なインストール、更新、検査、アンインストールの例については、[Pluginを管理する](/ja-JP/plugins/manage-plugins)を使用します。完全なコマンドリファレンスとソース選択ルールについては、[`openclaw plugins`](/ja-JP/cli/plugins)を使用します。
+一般的なインストール、更新、調査、アンインストールの例については、[Plugin を管理する](/ja-JP/plugins/manage-plugins)を参照してください。コマンドの完全なリファレンスとソース選択ルールについては、[`openclaw plugins`](/ja-JP/cli/plugins)を参照してください。
 
-## Pluginを公開する
+## Plugin を公開する
 
-公開コミュニティPluginをClawHubで公開し、OpenClawユーザーが発見してインストールできるようにします。ClawHubはライブのパッケージ一覧、リリース履歴、スキャン状態、インストールのヒントを所有します。ドキュメントでは静的なサードパーティPluginカタログを維持しません。
+OpenClaw ユーザーが公開コミュニティ Plugin を見つけてインストールできるよう、ClawHub で公開してください。ClawHub は、最新のパッケージ一覧、リリース履歴、スキャン状況、インストール案内を管理します。ドキュメントでは、サードパーティ Plugin の静的なカタログを管理しません。
 
 ```bash
 clawhub package publish your-org/your-plugin --dry-run
 clawhub package publish your-org/your-plugin
 ```
 
-公開する前に、Pluginにパッケージメタデータ、Pluginマニフェスト、セットアップドキュメント、明確なメンテナンス所有者があることを確認します。ClawHubはリリースを作成する前に、所有者スコープ、パッケージ名、バージョン、ファイル制限、ソースメタデータを検証し、その後レビューと検証が完了するまで、新しいリリースを通常のインストールおよびダウンロード面から非表示にします。
+公開する前に、Plugin にパッケージメタデータ、Plugin マニフェスト、セットアップドキュメント、明確なメンテナンス責任者が含まれていることを確認してください。ClawHub はリリースを作成する前に、所有者のスコープ、パッケージ名、バージョン、ファイル制限、ソースメタデータを検証します。その後、レビューと検証が完了するまで、新しいリリースを通常のインストールおよびダウンロード画面に表示しません。
 
-公開前のチェックリスト:
+公開前のチェックリスト：
 
-| 要件                 | 理由                                                |
-| -------------------- | --------------------------------------------------- |
-| ClawHubで公開済み    | ユーザーには`openclaw plugins install`ヒントが必要 |
-| 公開GitHubリポジトリ | ソースレビュー、課題追跡、透明性                    |
-| セットアップと使用方法のドキュメント | ユーザーは設定方法を知る必要がある |
-| アクティブなメンテナンス | 最近の更新または応答性のある課題対応            |
+| 要件                 | 理由                                                        |
+| -------------------- | ----------------------------------------------------------- |
+| ClawHub で公開済み   | `openclaw plugins install` の案内が機能する必要があるため   |
+| 公開 GitHub リポジトリ | ソースレビュー、Issue の追跡、透明性のため                  |
+| セットアップと使用方法のドキュメント | ユーザーが設定方法を把握する必要があるため    |
+| 継続的なメンテナンス | 最近の更新、または Issue への迅速な対応が必要なため         |
 
-完全な公開契約:
+完全な公開仕様：
 
-- [ClawHub公開](/ja-JP/clawhub/publishing) - 所有者、スコープ、リリース、レビュー、パッケージ検証、パッケージ移管
-- [Pluginの構築](/ja-JP/plugins/building-plugins) - Pluginパッケージの形状と初回公開ワークフロー
-- [Pluginマニフェスト](/ja-JP/plugins/manifest) - ネイティブPluginマニフェストフィールド
+- [ClawHub での公開](/ja-JP/clawhub/publishing) - 所有者、スコープ、リリース、レビュー、パッケージ検証、パッケージ移管
+- [Plugin の構築](/ja-JP/plugins/building-plugins) - Plugin パッケージの構成と初回公開のワークフロー
+- [Plugin マニフェスト](/ja-JP/plugins/manifest) - ネイティブ Plugin マニフェストのフィールド
 
-## 関連
+## 関連項目
 
-- [Plugins](/ja-JP/tools/plugin) - インストール、設定、再起動、トラブルシューティング
-- [Pluginを管理する](/ja-JP/plugins/manage-plugins) - コマンド例
-- [ClawHub公開](/ja-JP/clawhub/publishing) - 公開とリリースのルール
+- [Plugin](/ja-JP/tools/plugin) - インストール、設定、再起動、トラブルシューティング
+- [Plugin を管理する](/ja-JP/plugins/manage-plugins) - コマンド例
+- [ClawHub での公開](/ja-JP/clawhub/publishing) - 公開とリリースのルール

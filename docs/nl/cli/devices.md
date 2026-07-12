@@ -1,112 +1,205 @@
 ---
 read_when:
-    - Je keurt apparaatkoppelingsverzoeken goed
+    - U keurt aanvragen voor het koppelen van apparaten goed
     - Je moet apparaattokens roteren of intrekken
-summary: CLI-referentie voor `openclaw devices` (apparaatkoppeling + tokenrotatie/intrekking)
+summary: CLI-referentie voor `openclaw devices` (apparaatkoppeling + tokenrotatie/-intrekking)
 title: Apparaten
 x-i18n:
-    generated_at: "2026-06-27T17:19:03Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:42:26Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 08d6945af4fa2403a97dfec94af7bbd0dc746efe90d3e5b4c9f5c5d6d27d70a4
+    source_hash: 83fb10f7a484fec06bfa5e53ae50181b12a9724746176bbace330ec468235494
     source_path: cli/devices.md
     workflow: 16
 ---
 
 # `openclaw devices`
 
-Beheer apparaatkoppelingsverzoeken en apparaatspecifieke tokens.
+Beheer koppelingsverzoeken van apparaten en apparaatspecifieke tokens.
 
-## Commando's
+## Algemene opties
+
+- `--url <url>`: Gateway-WebSocket-URL (standaard `gateway.remote.url` indien geconfigureerd)
+- `--token <token>`: Gateway-token (indien vereist)
+- `--password <password>`: Gateway-wachtwoord (wachtwoordauthenticatie)
+- `--timeout <ms>`: RPC-time-out
+- `--json`: JSON-uitvoer (aanbevolen voor scripts)
+
+<Warning>
+Wanneer u `--url` instelt, valt de CLI niet terug op configuratie- of omgevingsreferenties. Geef `--token` of `--password` expliciet door, anders geeft de opdracht een fout.
+</Warning>
+
+## Opdrachten
 
 ### `openclaw devices list`
 
 Toon openstaande koppelingsverzoeken en gekoppelde apparaten.
 
-```
+```bash
 openclaw devices list
 openclaw devices list --json
 ```
 
-Uitvoer voor openstaande verzoeken toont de gevraagde toegang naast de huidige
-goedgekeurde toegang van het apparaat wanneer het apparaat al gekoppeld is. Dit maakt scope-/rolupgrades expliciet in plaats van dat het lijkt alsof de koppeling verloren is gegaan.
+Bij een openstaand verzoek op een al gekoppeld apparaat toont de uitvoer de aangevraagde toegang naast de momenteel goedgekeurde toegang van het apparaat, zodat uitbreidingen van bereik of rol zichtbaar zijn en niet lijken op een verloren koppeling.
 
-### `openclaw devices remove <deviceId>`
-
-Verwijder één gekoppeld apparaatitem.
-
-Wanneer je bent geauthenticeerd met een gekoppeld apparaattoken, kunnen niet-beheerderaanroepers
-alleen **hun eigen** apparaatitem verwijderen. Het verwijderen van een ander apparaat vereist
-`operator.admin`.
-
-```
-openclaw devices remove <deviceId>
-openclaw devices remove <deviceId> --json
-```
-
-### `openclaw devices clear --yes [--pending]`
-
-Wis gekoppelde apparaten in bulk.
-
-```
-openclaw devices clear --yes
-openclaw devices clear --yes --pending
-openclaw devices clear --yes --pending --json
-```
+Weergavenamen van gekoppelde apparaten gebruiken deze volgorde van prioriteit: operatorlabel (`operatorLabel` van `devices rename`), vervolgens `displayName` van de client, daarna `clientId` en ten slotte `deviceId`.
 
 ### `openclaw devices approve [requestId] [--latest]`
 
-Keur een openstaand apparaatkoppelingsverzoek goed op exacte `requestId`. Als `requestId`
-wordt weggelaten of `--latest` wordt meegegeven, drukt OpenClaw alleen het geselecteerde openstaande
-verzoek af en sluit af; voer de goedkeuring opnieuw uit met de exacte verzoek-ID nadat je
-de details hebt gecontroleerd.
+Keur een openstaand koppelingsverzoek goed aan de hand van de exacte `requestId`. Als u `requestId` weglaat of `--latest` doorgeeft, wordt alleen een voorbeeld van het nieuwste openstaande verzoek getoond en wordt afgesloten (code 1); voer de opdracht opnieuw uit met de exacte aanvraag-ID om het verzoek goed te keuren.
 
-<Note>
-Als een apparaat opnieuw probeert te koppelen met gewijzigde auth-details (rol, scopes of openbare sleutel), vervangt OpenClaw het vorige openstaande item en geeft een nieuwe `requestId` uit. Voer vlak voor goedkeuring `openclaw devices list` uit om de huidige ID te gebruiken.
-</Note>
-
-Als het apparaat al gekoppeld is en om bredere scopes of een bredere rol vraagt,
-laat OpenClaw de bestaande goedkeuring staan en maakt het een nieuw openstaand upgradeverzoek
-aan. Controleer de kolommen `Requested` versus `Approved` in `openclaw devices list`
-of gebruik `openclaw devices approve --latest` om de exacte upgrade vooraf te bekijken voordat
-je deze goedkeurt.
-
-Als de Gateway expliciet is geconfigureerd met
-`gateway.nodes.pairing.autoApproveCidrs`, kunnen eerste `role: node`-verzoeken van
-overeenkomende client-IP's worden goedgekeurd voordat ze in deze lijst verschijnen. Dat beleid
-is standaard uitgeschakeld en geldt nooit voor operator-/browserclients of upgradeverzoeken.
-
-Het goedkeuren van node- of andere niet-operatorapparaatrollen vereist `operator.admin`.
-`operator.pairing` is alleen genoeg voor goedkeuringen van operatorapparaten wanneer de
-gevraagde operator-scopes binnen de eigen scopes van de aanroeper blijven. Zie
-[Operator-scopes](/nl/gateway/operator-scopes) voor de controles tijdens goedkeuring.
-
-```
+```bash
 openclaw devices approve
 openclaw devices approve <requestId>
 openclaw devices approve --latest
 ```
 
-## Paperclip / eerste-run-goedkeuring voor `openclaw_gateway`
+<Note>
+Als een apparaat opnieuw probeert te koppelen met gewijzigde authenticatiegegevens (rol, bereiken of openbare sleutel), vervangt OpenClaw de vorige openstaande vermelding door een nieuwe `requestId`. Voer vlak vóór de goedkeuring `openclaw devices list` uit om de actuele ID op te halen.
+</Note>
 
-Wanneer een nieuwe Paperclip-agent voor het eerst verbinding maakt via de `openclaw_gateway`-adapter, kan de Gateway een eenmalige apparaatkoppelingsgoedkeuring vereisen voordat runs kunnen slagen. Als Paperclip `openclaw_gateway_pairing_required` meldt, keur dan het openstaande apparaat goed en probeer opnieuw.
+Gedrag bij goedkeuring:
 
-Bekijk voor lokale gateways het nieuwste openstaande verzoek vooraf:
+- Als het apparaat al is gekoppeld en bredere bereiken of een andere rol aanvraagt, behoudt OpenClaw de bestaande goedkeuring en maakt het een nieuw openstaand upgradeverzoek. Vergelijk `Requested` met `Approved` in `openclaw devices list`, of bekijk een voorbeeld met `--latest`, voordat u het verzoek goedkeurt.
+- Voor het goedkeuren van een `node`-rol of een andere rol die geen operatorrol is, is `operator.admin` vereist. `operator.pairing` volstaat voor goedkeuringen van operatorapparaten, maar alleen wanneer de aangevraagde operatorbereiken binnen de eigen bereiken van de aanroeper blijven. Zie [Operatorbereiken](/nl/gateway/operator-scopes).
+- Als `gateway.nodes.pairing.autoApproveCidrs` is geconfigureerd, kunnen eerste verzoeken met `role: node` vanaf overeenkomende client-IP-adressen automatisch worden goedgekeurd voordat ze in deze lijst verschijnen. Dit is standaard uitgeschakeld en geldt nooit voor operator-/browserclients of upgradeverzoeken.
+- `gateway.nodes.pairing.sshVerify` (standaard ingeschakeld) keurt eerste verzoeken met `role: node` automatisch goed wanneer de Gateway de apparaatsleutel via SSH verifieert bij de nodehost. Verzoeken kunnen daarom kort nadat ze verschijnen al als goedgekeurd worden afgehandeld. Stel `sshVerify: false` in om SSH-verificatie uit te schakelen; dit staat los van `autoApproveCidrs`, dus schakel dat eveneens uit voor uitsluitend handmatige koppeling.
+
+### `openclaw devices reject <requestId>`
+
+Wijs een openstaand koppelingsverzoek van een apparaat af.
+
+```bash
+openclaw devices reject <requestId>
+```
+
+### `openclaw devices remove <deviceId>`
+
+Verwijder één vermelding van een gekoppeld apparaat.
+
+```bash
+openclaw devices remove <deviceId>
+openclaw devices remove <deviceId> --json
+```
+
+Een aanroeper die is geauthenticeerd met een token van een gekoppeld apparaat kan alleen de vermelding van het **eigen** apparaat verwijderen. Voor het verwijderen van een ander apparaat is `operator.admin` vereist.
+
+### `openclaw devices rename --device <id> --name <label>`
+
+Wijs een operatorlabel toe aan een gekoppeld apparaat. Labels zijn status aan de eigenaarszijde: ze blijven behouden bij herstel van koppelingen en hernieuwde goedkeuringen van rollen, en wijzigen de stabiele `deviceId` niet.
+
+```bash
+openclaw devices rename --device <deviceId> --name "Kitchen Mac"
+openclaw devices rename --device <deviceId> --name "Kitchen Mac" --json
+```
+
+- `--name` is vereist, wordt ontdaan van omringende witruimte, mag niet leeg zijn en is beperkt tot 64 tekens.
+- Weergaveoppervlakken (CLI-lijst, inventaris van de Control UI) geven de voorkeur aan het operatorlabel boven de door de client gemelde weergavenaam.
+- Een aanroeper van een gekoppeld apparaat zonder beheerdersrechten kan alleen het **eigen** apparaat hernoemen. Voor het hernoemen van een ander apparaat is `operator.admin` vereist.
+
+### `openclaw devices clear --yes [--pending]`
+
+Wis gekoppelde apparaten in bulk. Beveiligd met `--yes`.
+
+```bash
+openclaw devices clear --yes
+openclaw devices clear --yes --pending
+openclaw devices clear --yes --pending --json
+```
+
+`--pending` wijst ook alle openstaande koppelingsverzoeken af.
+
+### `openclaw devices rotate --device <id> --role <role> [--scope <scope...>]`
+
+Roteer een apparaattoken voor een rol en werk desgewenst de bereiken ervan bij.
+
+```bash
+openclaw devices rotate --device <deviceId> --role operator --scope operator.read --scope operator.write
+```
+
+- De doelrol moet al bestaan in het goedgekeurde koppelingscontract van dat apparaat; rotatie kan geen nieuwe, niet-goedgekeurde rol uitgeven.
+- Als u `--scope` weglaat, worden bij latere nieuwe verbindingen de in de cache opgeslagen, goedgekeurde bereiken van het opgeslagen token hergebruikt. Het doorgeven van expliciete `--scope`-waarden vervangt de opgeslagen verzameling bereiken voor toekomstige nieuwe verbindingen met een token uit de cache.
+- Een aanroeper van een gekoppeld apparaat zonder beheerdersrechten kan alleen het token van het **eigen** apparaat roteren, en de doelverzameling van bereiken moet binnen de eigen operatorbereiken van de aanroeper blijven; rotatie kan geen token uitgeven of behouden met bredere rechten dan de aanroeper al heeft.
+
+Retourneert rotatiemetadata als JSON. Als de aanroeper het eigen token roteert terwijl deze met dat apparaattoken is geauthenticeerd, bevat het antwoord het vervangende token, zodat de client dit vóór het opnieuw verbinden kan opslaan. Bij gedeelde rotaties of rotaties door beheerders wordt het bearer-token nooit teruggegeven.
+
+### `openclaw devices revoke --device <id> --role <role>`
+
+Trek een apparaattoken voor een rol in.
+
+```bash
+openclaw devices revoke --device <deviceId> --role node
+```
+
+Een aanroeper van een gekoppeld apparaat zonder beheerdersrechten kan alleen het token van het **eigen** apparaat intrekken. Voor het intrekken van het token van een ander apparaat is `operator.admin` vereist. De doelverzameling van bereiken moet ook binnen de eigen operatorbereiken van de aanroeper vallen; aanroepers met alleen koppelingsrechten kunnen geen operator-tokens met beheer-/schrijfrechten intrekken.
+
+## Opmerkingen
+
+- Voor deze opdrachten is het bereik `operator.pairing` (of `operator.admin`) vereist. Apparaatrollen die geen operatorrol zijn, vereisen altijd `operator.admin`; zie [Operatorbereiken](/nl/gateway/operator-scopes).
+- Tokenrotatie en -intrekking blijven binnen de goedgekeurde verzameling koppelingsrollen en het basisbereik van het apparaat. Een verdwaalde tokenvermelding in de cache verleent geen doel voor tokenbeheer.
+- Voor tokensessies van gekoppelde apparaten is beheer tussen apparaten (`remove`, `rename`, `rotate`, `revoke`) beperkt tot het eigen apparaat, tenzij de aanroeper `operator.admin` heeft.
+- Tokenrotatie retourneert een nieuw token (gevoelig) — behandel dit als een geheim.
+- Als het koppelingsbereik niet beschikbaar is op local loopback en geen expliciete `--url` wordt doorgegeven, kunnen `list`/`approve` terugvallen op de lokale koppelingsstatus.
+
+## Controlelijst voor herstel van tokenafwijkingen
+
+Gebruik dit wanneer de Control UI of andere clients blijven mislukken met `AUTH_TOKEN_MISMATCH`, `AUTH_DEVICE_TOKEN_MISMATCH` of `AUTH_SCOPE_MISMATCH`.
+
+1. Bevestig de huidige bron van het Gateway-token:
+
+   ```bash
+   openclaw config get gateway.auth.token
+   ```
+
+2. Toon gekoppelde apparaten en identificeer de ID van het getroffen apparaat:
+
+   ```bash
+   openclaw devices list
+   ```
+
+3. Roteer het operatortoken voor het getroffen apparaat:
+
+   ```bash
+   openclaw devices rotate --device <deviceId> --role operator
+   ```
+
+4. Als rotatie niet voldoende is, verwijder dan de verouderde koppeling en keur deze opnieuw goed:
+
+   ```bash
+   openclaw devices remove <deviceId>
+   openclaw devices list
+   openclaw devices approve <requestId>
+   ```
+
+5. Probeer de clientverbinding opnieuw met het huidige gedeelde token/wachtwoord.
+
+Opmerkingen:
+
+- Normale prioriteitsvolgorde voor authenticatie bij opnieuw verbinden: eerst het expliciete gedeelde token/wachtwoord, daarna de expliciete `deviceToken`, vervolgens het opgeslagen apparaattoken en ten slotte het bootstrap-token.
+- Bij vertrouwd herstel van `AUTH_TOKEN_MISMATCH` kunnen tijdelijk zowel het gedeelde token als het opgeslagen apparaattoken samen worden verzonden voor één begrensde nieuwe poging.
+- `AUTH_SCOPE_MISMATCH` betekent dat het apparaattoken is herkend, maar niet de aangevraagde verzameling bereiken bevat; herstel het goedkeuringscontract voor koppeling/bereik voordat u de gedeelde Gateway-authenticatie wijzigt.
+
+Gerelateerd:
+
+- [Problemen met dashboardauthenticatie oplossen](/nl/web/dashboard#if-you-see-unauthorized-1008)
+- [Problemen met de Gateway oplossen](/nl/gateway/troubleshooting#dashboard-control-ui-connectivity)
+
+## Goedkeuring bij de eerste uitvoering van Paperclip / `openclaw_gateway`
+
+Paperclip-agents die via de `openclaw_gateway`-adapter verbinding maken, doorlopen dezelfde goedkeuring voor apparaatkoppeling bij de eerste uitvoering als elke andere nieuwe client. Als Paperclip `openclaw_gateway_pairing_required` meldt, keur dan het openstaande apparaat goed en probeer het opnieuw.
 
 ```bash
 openclaw devices approve --latest
 ```
 
-De preview drukt het exacte commando `openclaw devices approve <requestId>` af. Controleer de verzoekdetails en voer daarna dat commando opnieuw uit met de verzoek-ID om het goed te keuren.
-
-Geef voor externe gateways of expliciete referenties dezelfde opties mee tijdens vooraf bekijken en goedkeuren:
+Het voorbeeld toont de exacte opdracht `openclaw devices approve <requestId>`; controleer de details en voer die opdracht vervolgens opnieuw uit met de aanvraag-ID om het verzoek goed te keuren. Geef voor een externe Gateway of expliciete referenties dezelfde opties door bij het bekijken van het voorbeeld en het goedkeuren:
 
 ```bash
 openclaw devices approve --latest --url <gateway-ws-url> --token <gateway-token>
 ```
 
-Om opnieuw goedkeuren na herstarts te voorkomen, bewaar je een persistente apparaatsleutel in de Paperclip-adapterconfiguratie in plaats van bij elke run een nieuwe tijdelijke identiteit te genereren:
+Om te voorkomen dat na elke herstart opnieuw goedkeuring nodig is, configureert u in Paperclip een permanente `adapterConfig.devicePrivateKeyPem` in plaats van bij elke uitvoering een nieuwe tijdelijke apparaatidentiteit te laten genereren:
 
 ```json
 {
@@ -116,129 +209,7 @@ Om opnieuw goedkeuren na herstarts te voorkomen, bewaar je een persistente appar
 }
 ```
 
-Als goedkeuring blijft mislukken, voer dan eerst `openclaw devices list` uit om te bevestigen dat er een openstaand verzoek bestaat.
-
-### `openclaw devices reject <requestId>`
-
-Wijs een openstaand apparaatkoppelingsverzoek af.
-
-```
-openclaw devices reject <requestId>
-```
-
-### `openclaw devices rotate --device <id> --role <role> [--scope <scope...>]`
-
-Roteer een apparaattoken voor een specifieke rol (optioneel met bijgewerkte scopes).
-De doelrol moet al bestaan in het goedgekeurde koppelingscontract van dat apparaat;
-rotatie kan geen nieuwe niet-goedgekeurde rol uitgeven.
-Als je `--scope` weglaat, gebruiken latere herverbindingen met het opgeslagen geroteerde token opnieuw de
-gecachete goedgekeurde scopes van dat token. Als je expliciete `--scope`-waarden meegeeft, worden die
-de opgeslagen scopeset voor toekomstige herverbindingen met gecachete tokens.
-Niet-beheerderaanroepers met een gekoppeld apparaat kunnen alleen hun **eigen** apparaattoken roteren.
-De scopeset van het doeltoken moet binnen de eigen operator-scopes van de aanroepersessie blijven;
-rotatie kan geen breder operatortoken uitgeven of behouden dan de
-aanroeper al heeft.
-
-```
-openclaw devices rotate --device <deviceId> --role operator --scope operator.read --scope operator.write
-```
-
-Retourneert rotatiemetadata als JSON. Als de aanroeper zijn eigen token roteert terwijl
-hij is geauthenticeerd met dat apparaattoken, bevat de respons ook het vervangende
-token zodat de client het kan bewaren voordat opnieuw verbinding wordt gemaakt. Gedeelde/beheerdersrotaties
-echoën het bearer-token niet.
-
-### `openclaw devices revoke --device <id> --role <role>`
-
-Trek een apparaattoken voor een specifieke rol in.
-
-Niet-beheerderaanroepers met een gekoppeld apparaat kunnen alleen hun **eigen** apparaattoken intrekken.
-Het intrekken van het token van een ander apparaat vereist `operator.admin`.
-De scopeset van het doeltoken moet ook binnen de eigen
-operator-scopes van de aanroepersessie passen; aanroepers met alleen pairing kunnen geen admin-/write-operatortokens intrekken.
-
-```
-openclaw devices revoke --device <deviceId> --role node
-```
-
-Retourneert het intrekkingsresultaat als JSON.
-
-## Algemene opties
-
-- `--url <url>`: Gateway WebSocket-URL (standaard `gateway.remote.url` wanneer geconfigureerd).
-- `--token <token>`: Gateway-token (indien vereist).
-- `--password <password>`: Gateway-wachtwoord (wachtwoordauth).
-- `--timeout <ms>`: RPC-time-out.
-- `--json`: JSON-uitvoer (aanbevolen voor scripting).
-
-<Warning>
-Wanneer je `--url` instelt, valt de CLI niet terug op configuratie- of omgevingsreferenties. Geef `--token` of `--password` expliciet mee. Ontbrekende expliciete referenties zijn een fout.
-</Warning>
-
-## Notities
-
-- Tokenrotatie retourneert een nieuw token (gevoelig). Behandel het als een geheim.
-- Deze commando's vereisen scope `operator.pairing` (of `operator.admin`). Sommige
-  goedkeuringen vereisen ook dat de aanroeper de operator-scopes heeft die het doelapparaat
-  zou uitgeven of erven. Niet-operatorapparaatrollen vereisen
-  `operator.admin`; zie [Operator-scopes](/nl/gateway/operator-scopes).
-- `gateway.nodes.pairing.autoApproveCidrs` is een opt-in Gateway-beleid alleen voor
-  nieuwe koppeling van node-apparaten; het verandert de goedkeuringsbevoegdheid van de CLI niet.
-- Tokenrotatie en intrekking blijven binnen de goedgekeurde koppelingsrollenset en
-  goedgekeurde scopebasis voor dat apparaat. Een verdwaald gecachet tokenitem
-  geeft geen doel voor tokenbeheer.
-- Voor apparaattokensessies met gekoppelde apparaten is beheer tussen apparaten alleen voor beheerders:
-  `remove`, `rotate` en `revoke` zijn alleen voor het eigen apparaat, tenzij de aanroeper
-  `operator.admin` heeft.
-- Tokenmutatie is ook beperkt tot de scope van de aanroeper: een sessie met alleen pairing kan geen
-  token roteren of intrekken dat momenteel `operator.admin` of
-  `operator.write` draagt.
-- `devices clear` wordt bewust afgeschermd door `--yes`.
-- Als pairingscope niet beschikbaar is op local loopback (en er geen expliciete `--url` is meegegeven), kunnen list/approve een lokale pairing-fallback gebruiken.
-- `devices approve` vereist een expliciete verzoek-ID voordat tokens worden uitgegeven; het weglaten van `requestId` of meegeven van `--latest` toont alleen een preview van het nieuwste openstaande verzoek.
-
-## Checklist voor herstel bij tokendrift
-
-Gebruik dit wanneer Control UI of andere clients blijven falen met `AUTH_TOKEN_MISMATCH`, `AUTH_DEVICE_TOKEN_MISMATCH` of `AUTH_SCOPE_MISMATCH`.
-
-1. Bevestig de huidige bron van het gatewaytoken:
-
-```bash
-openclaw config get gateway.auth.token
-```
-
-2. Toon gekoppelde apparaten en identificeer de getroffen apparaat-ID:
-
-```bash
-openclaw devices list
-```
-
-3. Roteer het operatortoken voor het getroffen apparaat:
-
-```bash
-openclaw devices rotate --device <deviceId> --role operator
-```
-
-4. Als rotatie niet genoeg is, verwijder dan de verouderde koppeling en keur opnieuw goed:
-
-```bash
-openclaw devices remove <deviceId>
-openclaw devices list
-openclaw devices approve <requestId>
-```
-
-5. Probeer de clientverbinding opnieuw met het huidige gedeelde token/wachtwoord.
-
-Notities:
-
-- Normale auth-prioriteit bij opnieuw verbinden is eerst expliciet gedeeld token/wachtwoord, daarna expliciet `deviceToken`, daarna opgeslagen apparaattoken, daarna bootstraptoken.
-- Vertrouwd herstel van `AUTH_TOKEN_MISMATCH` kan tijdelijk zowel het gedeelde token als het opgeslagen apparaattoken samen verzenden voor die ene begrensde nieuwe poging.
-- `AUTH_SCOPE_MISMATCH` betekent dat het apparaattoken is herkend maar niet de gevraagde scopeset draagt; herstel het contract voor koppelings-/scopegoedkeuring voordat je gedeelde Gateway-auth wijzigt.
-
-Gerelateerd:
-
-- [Probleemoplossing voor dashboardauth](/nl/web/dashboard#if-you-see-unauthorized-1008)
-- [Gateway-probleemoplossing](/nl/gateway/troubleshooting#dashboard-control-ui-connectivity)
+Als de goedkeuring blijft mislukken, voert u eerst `openclaw devices list` uit om te bevestigen dat er een openstaand verzoek bestaat.
 
 ## Gerelateerd
 

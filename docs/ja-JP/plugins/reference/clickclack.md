@@ -1,11 +1,11 @@
 ---
 read_when:
-    - clickclack プラグインをインストール、構成、または監査しています
-summary: OpenClaw メッセージを送受信するための Clickclack チャネルサーフェスを追加します。
+    - clickclack Plugin をインストール、設定、または監査している場合
+summary: OpenClaw メッセージを送受信するための Clickclack チャネル機能を追加します。
 title: Clickclack Plugin
 x-i18n:
-    generated_at: "2026-06-27T12:22:16Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:31:59Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: d939f5291de0510eaac361732f93fb79cac94656ac56a653f3c9e97394c6a9ae
@@ -15,16 +15,16 @@ x-i18n:
 
 # Clickclack Plugin
 
-OpenClaw メッセージを送受信するための Clickclack チャンネルサーフェスを追加します。
+OpenClawメッセージを送受信するためのClickclackチャネル機能を追加します。
 
 ## 配布
 
 - パッケージ: `@openclaw/clickclack`
-- インストールルート: npm; ClawHub: `clawhub:@openclaw/clickclack`
+- インストール方法: npm、ClawHub: `clawhub:@openclaw/clickclack`
 
-## サーフェス
+## 提供機能
 
-channels: clickclack
+チャネル: clickclack
 
 ## 関連ドキュメント
 

@@ -1,44 +1,51 @@
 ---
 read_when:
-    - Một người dùng báo cáo rằng các tác tử bị kẹt khi lặp lại các lệnh gọi công cụ
-    - Bạn cần tinh chỉnh cơ chế bảo vệ chống lệnh gọi lặp lại
+    - Một người dùng báo cáo rằng các tác tử bị kẹt trong việc lặp lại các lệnh gọi công cụ
+    - Bạn cần tinh chỉnh cơ chế bảo vệ chống các lệnh gọi lặp lại
     - Bạn đang chỉnh sửa các chính sách về công cụ/thời gian chạy của tác nhân
-    - Bạn gặp các lỗi hủy `compaction_loop_persisted` sau một lần thử lại do tràn ngữ cảnh
-summary: Cách bật và điều chỉnh các cơ chế bảo vệ phát hiện các vòng lặp gọi công cụ lặp lại
+    - Bạn gặp phải các lần hủy `compaction_loop_persisted` sau khi thử lại do tràn ngữ cảnh
+summary: Cách bật và tinh chỉnh các biện pháp bảo vệ để phát hiện vòng lặp gọi công cụ lặp đi lặp lại
 title: Phát hiện vòng lặp công cụ
 x-i18n:
-    generated_at: "2026-05-11T20:38:02Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:30:46Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cc261bebc0e3138a98ea8be166edbaf4e133c8f582429c5380fe2954196a6fc5
+    source_hash: fccbb81281b6c6921e6dad50d15295c1be3f59c664f2caed900bf3dce14bc40a
     source_path: tools/loop-detection.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw có hai guardrail phối hợp cho các mẫu gọi công cụ lặp lại:
+OpenClaw có hai cơ chế bảo vệ phối hợp nhằm ngăn chặn các mẫu gọi công cụ lặp lại,
+cả hai đều được cấu hình trong `tools.loopDetection`:
 
-1. **Phát hiện vòng lặp** (`tools.loopDetection.enabled`) — bị tắt theo mặc định. Theo dõi lịch sử gọi công cụ dạng cuộn để tìm các mẫu lặp lại và các lần thử lại công cụ không xác định.
-2. **Chốt chặn sau Compaction** (`tools.loopDetection.postCompactionGuard`) — được bật theo mặc định trừ khi `tools.loopDetection.enabled` được đặt rõ ràng là `false`. Kích hoạt sau mỗi lần thử lại sau Compaction và hủy lượt chạy khi agent phát ra cùng bộ ba `(tool, args, result)` trong cửa sổ.
+1. **Phát hiện vòng lặp** (`enabled`) - mặc định bị tắt. Theo dõi lịch sử
+   gọi công cụ luân phiên để phát hiện các mẫu lặp lại và những lần thử lại công cụ không xác định.
+2. **Cơ chế bảo vệ sau Compaction** (`postCompactionGuard`) - được bật bất cứ khi nào
+   `enabled` không được đặt rõ ràng thành `false`. Kích hoạt sau mỗi lần thử lại sau Compaction và
+   hủy lượt chạy nếu tác tử lặp lại cùng một bộ ba `(tool, args, result)`
+   trong cửa sổ.
 
-Cả hai được cấu hình trong cùng khối `tools.loopDetection`, nhưng chốt chặn sau Compaction chạy bất cứ khi nào công tắc chính không bị tắt rõ ràng. Đặt `tools.loopDetection.enabled: false` để tắt cả hai bề mặt.
+Đặt `tools.loopDetection.enabled: false` để tắt cả hai cơ chế bảo vệ.
 
 ## Lý do tồn tại
 
 - Phát hiện các chuỗi lặp lại không tạo ra tiến triển.
-- Phát hiện các vòng lặp tần suất cao không có kết quả (cùng công cụ, cùng đầu vào, lỗi lặp lại).
-- Phát hiện các mẫu gọi lặp lại cụ thể cho những công cụ thăm dò đã biết.
-- Ngăn các chu kỳ tràn ngữ cảnh rồi Compaction rồi cùng vòng lặp chạy vô thời hạn.
+- Phát hiện các vòng lặp không có kết quả với tần suất cao (cùng công cụ, cùng đầu vào, lỗi
+  lặp lại).
+- Phát hiện các mẫu gọi lặp lại cụ thể đối với những công cụ thăm dò đã biết.
+- Ngắt chu kỳ tràn ngữ cảnh -> Compaction -> lặp lại cùng vòng lặp thay vì để
+  chúng chạy vô thời hạn.
 
 ## Khối cấu hình
 
-Mặc định toàn cục, hiển thị mọi trường đã được ghi tài liệu:
+Các giá trị mặc định toàn cục, hiển thị mọi trường đã được lập tài liệu:
 
 ```json5
 {
   tools: {
     loopDetection: {
-      enabled: false, // master switch for the rolling-history detectors
+      enabled: false, // công tắc chính cho các bộ phát hiện dựa trên lịch sử luân phiên
       historySize: 30,
       warningThreshold: 10,
       criticalThreshold: 20,
@@ -50,14 +57,14 @@ Mặc định toàn cục, hiển thị mọi trường đã được ghi tài l
         pingPong: true,
       },
       postCompactionGuard: {
-        windowSize: 3, // armed after compaction-retry; runs unless enabled is explicitly false
+        windowSize: 3, // kích hoạt sau lần thử lại sau Compaction; chạy trừ khi enabled được đặt rõ ràng thành false
       },
     },
   },
 }
 ```
 
-Ghi đè theo từng agent (tùy chọn):
+Ghi đè theo từng tác tử (tùy chọn, tại `agents.list[].tools.loopDetection`):
 
 ```json5
 {
@@ -78,85 +85,117 @@ Ghi đè theo từng agent (tùy chọn):
 }
 ```
 
+Cài đặt theo từng tác tử sẽ phủ lên khối toàn cục theo từng trường (bao gồm cả
+`detectors` và `postCompactionGuard` lồng nhau), vì vậy tác tử chỉ cần đặt
+những trường mà nó muốn thay đổi.
+
 ### Hành vi của trường
 
-| Trường                           | Mặc định | Tác dụng                                                                                                                        |
-| -------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `enabled`                        | `false`  | Công tắc chính cho các bộ phát hiện lịch sử dạng cuộn. Đặt `false` cũng tắt chốt chặn sau Compaction.                          |
-| `historySize`                    | `30`     | Số lượng lệnh gọi công cụ gần đây được giữ lại để phân tích.                                                                    |
-| `warningThreshold`               | `10`     | Ngưỡng trước khi một mẫu được phân loại là chỉ cảnh báo.                                                                        |
-| `criticalThreshold`              | `20`     | Ngưỡng để chặn các mẫu vòng lặp lặp lại không có tiến triển.                                                                    |
-| `unknownToolThreshold`           | `10`     | Chặn các lệnh gọi lặp lại đến cùng một công cụ không khả dụng sau số lần trượt này.                                             |
-| `globalCircuitBreakerThreshold`  | `30`     | Ngưỡng bộ ngắt toàn cục cho trạng thái không có tiến triển trên tất cả bộ phát hiện.                                            |
-| `detectors.genericRepeat`        | `true`   | Cảnh báo về các mẫu lặp lại cùng công cụ + cùng tham số và chặn khi các lệnh gọi đó cũng trả về kết quả giống hệt nhau.        |
-| `detectors.knownPollNoProgress`  | `true`   | Phát hiện các mẫu giống thăm dò đã biết mà không có thay đổi trạng thái.                                                        |
-| `detectors.pingPong`             | `true`   | Phát hiện các mẫu ping-pong luân phiên.                                                                                         |
-| `postCompactionGuard.windowSize` | `3`      | Số lệnh gọi công cụ sau Compaction mà chốt chặn vẫn được kích hoạt và số bộ ba giống hệt nhau sẽ hủy lượt chạy.                |
+| Trường                           | Mặc định | Tác dụng                                                                                                                                                                |
+| -------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `enabled`                        | `false`  | Công tắc chính cho các bộ phát hiện dựa trên lịch sử luân phiên. `false` cũng tắt cơ chế bảo vệ sau Compaction.                                                           |
+| `historySize`                    | `30`     | Số lần gọi công cụ gần đây được lưu lại để phân tích.                                                                                                                    |
+| `warningThreshold`               | `10`     | Số lần lặp trước khi một mẫu được phân loại là chỉ cảnh báo.                                                                                                             |
+| `criticalThreshold`              | `20`     | Số lần lặp để chặn một mẫu vòng lặp không có tiến triển. Môi trường chạy sẽ điều chỉnh giá trị này cao hơn `warningThreshold` nếu cấu hình sai.                           |
+| `unknownToolThreshold`           | `10`     | Chặn các lần gọi lặp lại đến cùng một công cụ không khả dụng sau số lần không tìm thấy này. Không chịu sự chi phối của `detectors`.                                       |
+| `globalCircuitBreakerThreshold`  | `30`     | Bộ ngắt không có tiến triển toàn cục trên tất cả bộ phát hiện. Môi trường chạy sẽ điều chỉnh giá trị này cao hơn `criticalThreshold` nếu cấu hình sai. Không chịu sự chi phối của `detectors`. |
+| `detectors.genericRepeat`        | `true`   | Cảnh báo khi lặp lại các lần gọi cùng công cụ + cùng đối số; chặn khi những lần gọi đó cũng trả về kết quả giống hệt nhau.                                                |
+| `detectors.knownPollNoProgress`  | `true`   | Phát hiện các mẫu thăm dò không có tiến triển đã biết (`process` với `action: "poll"`/`"log"`, `command_status`).                                                        |
+| `detectors.pingPong`             | `true`   | Phát hiện các mẫu ping-pong không có tiến triển xen kẽ giữa hai lần gọi.                                                                                                  |
+| `postCompactionGuard.windowSize` | `3`      | Số lần thử mà cơ chế bảo vệ vẫn được kích hoạt sau Compaction, đồng thời là số bộ ba giống hệt nhau khiến lượt chạy bị hủy.                                               |
 
-Đối với `exec`, các kiểm tra không có tiến triển so sánh kết quả lệnh ổn định và bỏ qua siêu dữ liệu runtime dễ biến động như thời lượng, PID, ID phiên và thư mục làm việc. Khi có ID lượt chạy, lịch sử gọi công cụ gần đây chỉ được đánh giá trong lượt chạy đó, để các chu kỳ Heartbeat theo lịch và lượt chạy mới không kế thừa số đếm vòng lặp cũ từ các lượt chạy trước.
+Đối với `exec`, phép băm trạng thái không có tiến triển so sánh các kết quả lệnh ổn định (trạng thái,
+mã thoát, cờ hết thời gian, đầu ra) và bỏ qua siêu dữ liệu biến động của môi trường chạy như
+thời lượng, PID, ID phiên và thư mục làm việc. Kết quả gửi tin nhắn đi
+được băm sau khi loại bỏ các ID biến động theo từng lần gọi (ID tin nhắn, ID tệp, dấu thời gian),
+do đó một kết quả "đã gửi" không bị xem là giống hệt một kết quả "đã gửi"
+khác. Khi có ID lượt chạy, lịch sử chỉ được đánh giá trong lượt chạy đó,
+vì vậy các chu kỳ Heartbeat đã lên lịch và lượt chạy mới không kế thừa số lần lặp cũ
+từ những lượt chạy trước.
 
-## Thiết lập được khuyến nghị
+## Thiết lập khuyến nghị
 
-- Với các mô hình nhỏ hơn, đặt `enabled: true` và giữ các ngưỡng ở mặc định. Các mô hình hàng đầu hiếm khi cần phát hiện lịch sử dạng cuộn và có thể giữ công tắc chính ở `false` trong khi vẫn hưởng lợi từ chốt chặn sau Compaction.
-- Giữ thứ tự các ngưỡng là `warningThreshold < criticalThreshold < globalCircuitBreakerThreshold`.
-- Nếu xảy ra dương tính giả:
+- Đối với các mô hình nhỏ hơn, hãy đặt `enabled: true` và giữ nguyên các ngưỡng
+  mặc định. Các mô hình hàng đầu hiếm khi cần phát hiện dựa trên lịch sử luân phiên và có thể
+  để công tắc chính ở `false` trong khi vẫn hưởng lợi từ
+  cơ chế bảo vệ sau Compaction.
+- Giữ thứ tự các ngưỡng `warningThreshold < criticalThreshold <
+globalCircuitBreakerThreshold`; môi trường chạy sẽ tăng `criticalThreshold` và
+  `globalCircuitBreakerThreshold` nếu bạn đặt chúng bằng hoặc thấp hơn
+  ngưỡng mà chúng phải vượt qua.
+- Nếu xảy ra cảnh báo sai:
   - Tăng `warningThreshold` và/hoặc `criticalThreshold`.
-  - Tùy chọn tăng `globalCircuitBreakerThreshold`.
-  - Chỉ tắt bộ phát hiện cụ thể gây vấn đề (`detectors.<name>: false`).
-  - Giảm `historySize` để bối cảnh lịch sử ít nghiêm ngặt hơn.
-- Để tắt mọi thứ (bao gồm cả chốt chặn sau Compaction), đặt rõ ràng `tools.loopDetection.enabled: false`.
+  - Có thể tăng `globalCircuitBreakerThreshold`.
+  - Chỉ tắt bộ phát hiện cụ thể gây ra vấn đề (`detectors.<name>: false`).
+  - Giảm `historySize` để có cửa sổ lịch sử ngắn hơn.
+- Để tắt mọi thứ, bao gồm cả cơ chế bảo vệ sau Compaction, hãy đặt rõ ràng
+  `tools.loopDetection.enabled: false`.
 
-## Chốt chặn sau Compaction
+## Cơ chế bảo vệ sau Compaction
 
-Khi runner hoàn tất một lần thử lại sau Compaction sau khi tràn ngữ cảnh, nó kích hoạt một chốt chặn cửa sổ ngắn để theo dõi vài lệnh gọi công cụ tiếp theo. Nếu agent phát ra cùng bộ ba `(toolName, argsHash, resultHash)` nhiều lần trong cửa sổ, chốt chặn kết luận rằng Compaction không phá được vòng lặp và hủy lượt chạy với lỗi `compaction_loop_persisted`.
+Sau một lần thử lại sau Compaction tiếp nối sự kiện tràn ngữ cảnh, trình chạy sẽ kích hoạt một
+cơ chế bảo vệ với cửa sổ ngắn cho vài lần gọi công cụ tiếp theo. Nếu tác tử phát ra cùng một
+bộ ba `(toolName, argsHash, resultHash)` đủ `postCompactionGuard.windowSize`
+lần trong cửa sổ đó, cơ chế bảo vệ kết luận rằng Compaction không ngắt được
+vòng lặp và hủy lượt chạy với lỗi `compaction_loop_persisted`.
 
-Chốt chặn được kiểm soát bởi cờ chính `tools.loopDetection.enabled` với một điểm khác biệt: nó vẫn **được bật khi cờ chưa được đặt hoặc là `true`** và chỉ ngừng hoạt động khi cờ được đặt rõ ràng là `false`. Điều này là có chủ đích. Chốt chặn tồn tại để thoát khỏi các vòng lặp Compaction vốn có thể tiêu tốn token không giới hạn, nên người dùng không cấu hình vẫn nhận được lớp bảo vệ.
+Cơ chế bảo vệ chịu sự chi phối của cờ chính `tools.loopDetection.enabled`, nhưng có một
+điểm khác biệt: nó vẫn **được bật khi cờ chưa được đặt hoặc là `true`**, và chỉ
+tắt khi cờ được đặt rõ ràng thành `false`. Đây là chủ ý - cơ chế bảo vệ
+tồn tại để thoát khỏi các vòng lặp Compaction vốn sẽ tiêu tốn token không giới hạn,
+vì vậy người dùng không cấu hình vẫn được bảo vệ.
 
 ```json5
 {
   tools: {
     loopDetection: {
-      // master switch; set false to disable the guard along with the rolling detectors
+      // công tắc chính; đặt thành false để tắt cơ chế bảo vệ cùng các bộ phát hiện luân phiên
       enabled: true,
       postCompactionGuard: {
-        windowSize: 3, // default
+        windowSize: 3, // mặc định
       },
     },
   },
 }
 ```
 
-- `windowSize` thấp hơn thì nghiêm ngặt hơn (ít lần thử hơn trước khi hủy).
-- `windowSize` cao hơn cho agent nhiều lần thử khôi phục hơn.
-- Chốt chặn không bao giờ hủy khi kết quả đang thay đổi, chỉ hủy khi kết quả giống hệt từng byte trong cửa sổ.
-- Nó được cố ý giới hạn hẹp: chỉ kích hoạt ngay sau một lần thử lại sau Compaction.
+- `windowSize` thấp hơn sẽ nghiêm ngặt hơn (ít lần thử hơn trước khi hủy).
+- `windowSize` cao hơn cho tác tử nhiều lần thử khôi phục hơn.
+- Cơ chế bảo vệ không bao giờ hủy khi kết quả vẫn thay đổi; chỉ những kết quả
+  giống hệt từng byte trong cửa sổ mới kích hoạt nó.
+- Nó chỉ kích hoạt ngay sau một lần thử lại sau Compaction, không phải tại các
+  thời điểm khác trong lượt chạy.
 
 <Note>
-  Chốt chặn sau Compaction chạy bất cứ khi nào cờ chính không được đặt rõ ràng là `false`, ngay cả khi bạn chưa từng viết khối `tools.loopDetection`. Để xác minh, tìm `post-compaction guard armed for N attempts` trong nhật ký Gateway ngay sau một sự kiện Compaction.
+  Cơ chế bảo vệ sau Compaction chạy bất cứ khi nào cờ chính không được đặt rõ ràng thành `false`, ngay cả khi bạn chưa từng viết khối `tools.loopDetection`. Để xác minh, hãy tìm `post-compaction guard armed for N attempts` trong nhật ký Gateway ngay sau một sự kiện Compaction.
 </Note>
 
 ## Nhật ký và hành vi dự kiến
 
-Khi phát hiện vòng lặp, OpenClaw báo cáo một sự kiện vòng lặp và giảm nhịp hoặc chặn chu kỳ công cụ tiếp theo tùy theo mức độ nghiêm trọng. Điều này bảo vệ người dùng khỏi chi tiêu token mất kiểm soát và tình trạng khóa cứng trong khi vẫn giữ quyền truy cập công cụ bình thường.
+Khi phát hiện vòng lặp, OpenClaw ghi lại một sự kiện vòng lặp và cảnh báo hoặc chặn
+chu kỳ công cụ tiếp theo tùy theo mức độ nghiêm trọng, qua đó bảo vệ khỏi việc tiêu tốn token
+mất kiểm soát và tình trạng treo trong khi vẫn duy trì quyền truy cập công cụ bình thường.
 
 - Cảnh báo xuất hiện trước.
-- Việc triệt tiêu theo sau khi các mẫu tiếp tục vượt ngưỡng cảnh báo.
-- Các ngưỡng nghiêm trọng chặn chu kỳ công cụ tiếp theo và hiển thị lý do phát hiện vòng lặp rõ ràng trong bản ghi lượt chạy.
-- Chốt chặn sau Compaction phát ra lỗi `compaction_loop_persisted` cùng tên công cụ vi phạm và số lượng lệnh gọi giống hệt nhau.
+- Việc chặn diễn ra khi một mẫu tiếp tục vượt quá ngưỡng cảnh báo.
+- Các ngưỡng nghiêm trọng chặn chu kỳ công cụ tiếp theo và hiển thị rõ
+  lý do phát hiện vòng lặp trong bản ghi lượt chạy.
+- Cơ chế bảo vệ sau Compaction phát ra lỗi `compaction_loop_persisted`, nêu rõ
+  công cụ vi phạm và số lần gọi giống hệt nhau.
 
 ## Liên quan
 
 <CardGroup cols={2}>
-  <Card title="Exec approvals" href="/vi/tools/exec-approvals" icon="shield">
-    Chính sách cho phép/từ chối cho việc thực thi shell.
+  <Card title="Phê duyệt Exec" href="/vi/tools/exec-approvals" icon="shield">
+    Chính sách cho phép/từ chối việc thực thi shell.
   </Card>
-  <Card title="Thinking levels" href="/vi/tools/thinking" icon="brain">
-    Các mức nỗ lực suy luận và tương tác với chính sách của nhà cung cấp.
+  <Card title="Mức độ suy luận" href="/vi/tools/thinking" icon="brain">
+    Các mức nỗ lực suy luận và sự tương tác với chính sách của nhà cung cấp.
   </Card>
-  <Card title="Sub-agents" href="/vi/tools/subagents" icon="users">
-    Tạo các agent cô lập để giới hạn hành vi mất kiểm soát.
+  <Card title="Tác tử phụ" href="/vi/tools/subagents" icon="users">
+    Khởi tạo các tác tử biệt lập để giới hạn hành vi mất kiểm soát.
   </Card>
-  <Card title="Configuration reference" href="/vi/gateway/configuration-reference" icon="gear">
+  <Card title="Tham chiếu cấu hình" href="/vi/gateway/config-tools#toolsloopdetection" icon="gear">
     Lược đồ `tools.loopDetection` đầy đủ và ngữ nghĩa hợp nhất.
   </Card>
 </CardGroup>

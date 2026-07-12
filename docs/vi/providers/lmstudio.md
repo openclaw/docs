@@ -5,77 +5,78 @@ read_when:
 summary: Chạy OpenClaw với LM Studio
 title: LM Studio
 x-i18n:
-    generated_at: "2026-06-27T18:04:15Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:21:02Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 20dff6e3156edf0e840c5450999bc511ba168b23692494c9030bfb946936ae40
+    source_hash: b4223f90e786e285651fc889985dd61124c60758b4e9c3599d76201d9ac20b46
     source_path: providers/lmstudio.md
     workflow: 16
 ---
 
-LM Studio là một ứng dụng thân thiện nhưng mạnh mẽ để chạy các mô hình open-weight trên phần cứng của riêng bạn. Ứng dụng này cho phép bạn chạy các mô hình llama.cpp (GGUF) hoặc MLX (Apple Silicon). Có sẵn dưới dạng gói GUI hoặc daemon headless (`llmster`). Để xem tài liệu sản phẩm và thiết lập, hãy xem [lmstudio.ai](https://lmstudio.ai/).
+LM Studio chạy các mô hình llama.cpp (GGUF) hoặc MLX cục bộ dưới dạng ứng dụng GUI hoặc daemon `llmster`
+không giao diện. Để xem tài liệu cài đặt và sản phẩm, hãy truy cập [lmstudio.ai](https://lmstudio.ai/).
 
 ## Bắt đầu nhanh
 
-1. Cài đặt LM Studio (desktop) hoặc `llmster` (headless), rồi khởi động máy chủ cục bộ:
+<Steps>
+  <Step title="Cài đặt và khởi động máy chủ">
+    Cài đặt LM Studio (máy tính để bàn) hoặc `llmster` (không giao diện), sau đó khởi động máy chủ:
 
-```bash
-curl -fsSL https://lmstudio.ai/install.sh | bash
-```
+    ```bash
+    lms server start --port 1234
+    ```
 
-2. Khởi động máy chủ
+    Hoặc chạy daemon không giao diện:
 
-Hãy chắc chắn bạn đã khởi động ứng dụng desktop hoặc chạy daemon bằng lệnh sau:
+    ```bash
+    lms daemon up
+    ```
 
-```bash
-lms daemon up
-```
+    Nếu sử dụng ứng dụng máy tính để bàn, hãy bật JIT để tải mô hình mượt mà; xem
+    [hướng dẫn JIT và TTL của LM Studio](https://lmstudio.ai/docs/developer/core/ttl-and-auto-evict).
 
-```bash
-lms server start --port 1234
-```
+  </Step>
+  <Step title="Đặt khóa API nếu đã bật xác thực">
+    ```bash
+    export LM_API_TOKEN="your-lm-studio-api-token"
+    ```
 
-Nếu bạn đang dùng ứng dụng, hãy chắc chắn đã bật JIT để có trải nghiệm mượt mà. Tìm hiểu thêm trong [hướng dẫn JIT và TTL của LM Studio](https://lmstudio.ai/docs/developer/core/ttl-and-auto-evict).
+    Nếu xác thực LM Studio bị tắt, hãy để trống khóa API trong quá trình thiết lập. Xem
+    [Xác thực LM Studio](https://lmstudio.ai/docs/developer/core/authentication).
 
-3. Nếu xác thực LM Studio được bật, hãy đặt `LM_API_TOKEN`:
+  </Step>
+  <Step title="Chạy quy trình thiết lập ban đầu">
+    ```bash
+    openclaw onboard
+    ```
 
-```bash
-export LM_API_TOKEN="your-lm-studio-api-token"
-```
+    Chọn `LM Studio`, sau đó chọn một mô hình tại lời nhắc `Default model`.
 
-Nếu xác thực LM Studio bị tắt, bạn có thể để trống khóa API trong quá trình thiết lập OpenClaw tương tác.
+  </Step>
+</Steps>
 
-Để biết chi tiết thiết lập xác thực LM Studio, hãy xem [Xác thực LM Studio](https://lmstudio.ai/docs/developer/core/authentication).
-
-4. Chạy onboarding và chọn `LM Studio`:
-
-```bash
-openclaw onboard
-```
-
-5. Trong onboarding, dùng lời nhắc `Default model` để chọn mô hình LM Studio của bạn.
-
-Bạn cũng có thể đặt hoặc thay đổi sau:
+Thay đổi mô hình mặc định sau:
 
 ```bash
 openclaw models set lmstudio/qwen/qwen3.5-9b
 ```
 
-Khóa mô hình LM Studio dùng định dạng `author/model-name` (ví dụ: `qwen/qwen3.5-9b`). Tham chiếu mô hình OpenClaw thêm tên nhà cung cấp ở đầu: `lmstudio/qwen/qwen3.5-9b`. Bạn có thể tìm khóa chính xác của một mô hình bằng cách chạy `curl http://localhost:1234/api/v1/models` và xem trường `key`.
-
-## Onboarding không tương tác
-
-Dùng onboarding không tương tác khi bạn muốn viết script thiết lập (CI, provisioning, bootstrap từ xa):
+Khóa mô hình LM Studio sử dụng định dạng `author/model-name` (ví dụ: `qwen/qwen3.5-9b`); tham chiếu mô hình OpenClaw
+thêm nhà cung cấp ở đầu: `lmstudio/qwen/qwen3.5-9b`. Để tìm khóa chính xác của một mô hình, hãy chạy
+lệnh bên dưới và xem trường `key`:
 
 ```bash
-openclaw onboard \
-  --non-interactive \
-  --accept-risk \
-  --auth-choice lmstudio
+curl http://localhost:1234/api/v1/models
 ```
 
-Hoặc chỉ định URL cơ sở, mô hình và khóa API tùy chọn:
+## Thiết lập ban đầu không tương tác
+
+```bash
+openclaw onboard --non-interactive --accept-risk --auth-choice lmstudio
+```
+
+Hoặc chỉ định rõ URL cơ sở, mô hình và khóa API:
 
 ```bash
 openclaw onboard \
@@ -87,39 +88,37 @@ openclaw onboard \
   --custom-model-id qwen/qwen3.5-9b
 ```
 
-`--custom-model-id` nhận khóa mô hình do LM Studio trả về (ví dụ: `qwen/qwen3.5-9b`), không có tiền tố nhà cung cấp `lmstudio/`.
+`--custom-model-id` nhận khóa mô hình do LM Studio trả về (ví dụ: `qwen/qwen3.5-9b`), không có
+tiền tố nhà cung cấp `lmstudio/`. Truyền `--lmstudio-api-key` (hoặc đặt `LM_API_TOKEN`) cho các
+máy chủ có xác thực; bỏ qua tùy chọn này đối với máy chủ không xác thực và OpenClaw sẽ lưu một dấu hiệu cục bộ không chứa bí mật.
+`--custom-api-key` vẫn được chấp nhận để tương thích, nhưng nên dùng `--lmstudio-api-key`.
 
-Với các máy chủ LM Studio có xác thực, truyền `--lmstudio-api-key` hoặc đặt `LM_API_TOKEN`.
-Với các máy chủ LM Studio không xác thực, bỏ qua khóa; OpenClaw lưu một dấu mốc cục bộ không bí mật.
+Thao tác này ghi `models.providers.lmstudio` và đặt mô hình mặc định thành `lmstudio/<custom-model-id>`.
+Việc cung cấp khóa API cũng ghi hồ sơ xác thực `lmstudio:default`.
 
-`--custom-api-key` vẫn được hỗ trợ để tương thích, nhưng `--lmstudio-api-key` được ưu tiên cho LM Studio.
-
-Thao tác này ghi `models.providers.lmstudio` và đặt mô hình mặc định thành `lmstudio/<custom-model-id>`. Khi bạn cung cấp khóa API, quá trình thiết lập cũng ghi hồ sơ xác thực `lmstudio:default`.
-
-Thiết lập tương tác có thể nhắc nhập độ dài ngữ cảnh tải ưu tiên tùy chọn và áp dụng giá trị đó cho các mô hình LM Studio đã phát hiện được lưu vào cấu hình.
-Cấu hình Plugin LM Studio tin cậy endpoint LM Studio đã cấu hình cho các yêu cầu mô hình, bao gồm loopback, LAN và máy chủ tailnet. Nguồn metadata/link-local vẫn yêu cầu chọn tham gia rõ ràng. Bạn có thể chọn không tham gia bằng cách đặt `models.providers.lmstudio.request.allowPrivateNetwork: false`.
+Quá trình thiết lập tương tác còn có thể nhắc nhập độ dài ngữ cảnh tải mong muốn và áp dụng giá trị đó cho
+các mô hình được phát hiện mà nó lưu vào cấu hình.
 
 ## Cấu hình
 
-### Tương thích usage streaming
+### Khả năng tương thích với mức sử dụng khi phát trực tiếp
 
-LM Studio tương thích với usage streaming. Khi không phát ra đối tượng `usage` có dạng OpenAI, OpenClaw khôi phục số lượng token từ metadata kiểu llama.cpp `timings.prompt_n` / `timings.predicted_n` thay thế.
+LM Studio không phải lúc nào cũng phát đối tượng `usage` theo định dạng OpenAI trong các phản hồi được phát trực tiếp. Thay vào đó, OpenClaw
+khôi phục số lượng token từ siêu dữ liệu kiểu llama.cpp `timings.prompt_n` / `timings.predicted_n`.
+Mọi điểm cuối tương thích với OpenAI được xác định là điểm cuối cục bộ (máy chủ local loopback) đều nhận cùng
+cơ chế dự phòng này, bao gồm các phần phụ trợ cục bộ khác như vLLM, SGLang, llama.cpp, LocalAI, Jan, TabbyAPI
+và text-generation-webui.
 
-Hành vi usage streaming tương tự áp dụng cho các backend cục bộ tương thích OpenAI sau:
+### Khả năng tương thích với suy luận
 
-- vLLM
-- SGLang
-- llama.cpp
-- LocalAI
-- Jan
-- TabbyAPI
-- text-generation-webui
+Khi quá trình khám phá `/api/v1/models` của LM Studio báo cáo các tùy chọn suy luận dành riêng cho mô hình, OpenClaw
+hiển thị các giá trị `reasoning_effort` tương ứng (`none`, `minimal`, `low`, `medium`, `high`, `xhigh`) trong
+siêu dữ liệu tương thích của mô hình. Một số bản dựng LM Studio công bố tùy chọn UI nhị phân (`allowed_options: ["off",
+"on"]`) nhưng từ chối các giá trị nguyên văn đó trên `/v1/chat/completions`; OpenClaw chuẩn hóa
+dạng nhị phân này thành thang sáu mức trước khi gửi yêu cầu, kể cả đối với cấu hình cũ đã lưu
+vẫn có ánh xạ suy luận `off`/`on`.
 
-### Tương thích thinking
-
-Khi khám phá `/api/v1/models` của LM Studio báo cáo các tùy chọn reasoning theo từng mô hình, OpenClaw hiển thị các giá trị `reasoning_effort` tương thích OpenAI tương ứng trong metadata tương thích mô hình. Các bản dựng LM Studio hiện tại có thể quảng bá tùy chọn UI nhị phân như `allowed_options: ["off", "on"]` nhưng từ chối các giá trị đó trên `/v1/chat/completions`; OpenClaw chuẩn hóa dạng khám phá nhị phân đó thành `none`, `minimal`, `low`, `medium`, `high` và `xhigh` trước khi gửi yêu cầu. Cấu hình LM Studio cũ đã lưu có chứa bản đồ reasoning `off`/`on` cũng được chuẩn hóa theo cùng cách khi catalog được tải.
-
-### Cấu hình rõ ràng
+### Cấu hình tường minh
 
 ```json5
 {
@@ -146,34 +145,12 @@ Khi khám phá `/api/v1/models` của LM Studio báo cáo các tùy chọn reaso
 }
 ```
 
-## Khắc phục sự cố
+### Tắt tải trước
 
-### Không phát hiện được LM Studio
-
-Hãy chắc chắn LM Studio đang chạy. Nếu xác thực được bật, cũng đặt `LM_API_TOKEN`:
-
-```bash
-# Start via desktop app, or headless:
-lms server start --port 1234
-```
-
-Xác minh API có thể truy cập được:
-
-```bash
-curl http://localhost:1234/api/v1/models
-```
-
-### Lỗi xác thực (HTTP 401)
-
-Nếu thiết lập báo HTTP 401, hãy xác minh khóa API của bạn:
-
-- Kiểm tra rằng `LM_API_TOKEN` khớp với khóa được cấu hình trong LM Studio.
-- Để biết chi tiết thiết lập xác thực LM Studio, hãy xem [Xác thực LM Studio](https://lmstudio.ai/docs/developer/core/authentication).
-- Nếu máy chủ của bạn không yêu cầu xác thực, hãy để trống khóa trong quá trình thiết lập.
-
-### Tải mô hình just-in-time
-
-LM Studio hỗ trợ tải mô hình just-in-time (JIT), trong đó mô hình được tải ở yêu cầu đầu tiên. OpenClaw mặc định tải trước mô hình thông qua endpoint tải gốc của LM Studio, điều này hữu ích khi JIT bị tắt. Để để JIT, TTL nhàn rỗi và hành vi tự động loại bỏ của LM Studio sở hữu vòng đời mô hình, hãy tắt bước tải trước của OpenClaw:
+LM Studio hỗ trợ tải mô hình đúng lúc (JIT), tức tải mô hình khi có yêu cầu đầu tiên. Theo mặc định, OpenClaw
+tải trước mô hình thông qua điểm cuối tải gốc của LM Studio, điều này hữu ích khi JIT
+bị tắt. Để LM Studio JIT, TTL khi không hoạt động và cơ chế tự động loại bỏ tự quản lý vòng đời mô hình,
+hãy tắt bước tải trước của OpenClaw:
 
 ```json5
 {
@@ -190,9 +167,10 @@ LM Studio hỗ trợ tải mô hình just-in-time (JIT), trong đó mô hình đ
 }
 ```
 
-### Máy chủ LM Studio trên LAN hoặc tailnet
+### Máy chủ LAN hoặc tailnet
 
-Dùng địa chỉ có thể truy cập của máy chủ LM Studio, giữ `/v1`, và chắc chắn LM Studio được bind ngoài loopback trên máy đó:
+Sử dụng địa chỉ có thể truy cập của máy chủ LM Studio, giữ nguyên `/v1` và bảo đảm LM Studio được liên kết
+vượt ra ngoài loopback trên máy đó:
 
 ```json5
 {
@@ -209,7 +187,33 @@ Dùng địa chỉ có thể truy cập của máy chủ LM Studio, giữ `/v1`,
 }
 ```
 
-`lmstudio` tự động tin cậy endpoint cục bộ/riêng tư đã cấu hình cho các yêu cầu mô hình được bảo vệ. Các mục nhà cung cấp tùy chỉnh/cục bộ tương thích OpenAI cũng tin cậy đúng nguồn `baseUrl` đã cấu hình của chúng, ngoại trừ nguồn metadata/link-local; các yêu cầu tới cổng hoặc đích riêng tư khác vẫn yêu cầu `models.providers.<id>.request.allowPrivateNetwork: true`. Đặt `models.providers.<id>.request.allowPrivateNetwork: false` để chọn không tin cậy theo đúng nguồn.
+`lmstudio` tự động tin cậy điểm cuối đã cấu hình cho các yêu cầu mô hình, bao gồm các máy chủ loopback,
+LAN và tailnet (ngoại trừ nguồn gốc siêu dữ liệu/liên kết cục bộ). Mọi mục nhập nhà cung cấp tùy chỉnh/cục bộ
+tương thích với OpenAI đều nhận cùng mức tin cậy theo nguồn gốc chính xác. Các yêu cầu đến một máy chủ riêng tư
+hoặc cổng khác vẫn yêu cầu `models.providers.<id>.request.allowPrivateNetwork: true`; đặt thành `false` để
+từ chối mức tin cậy mặc định.
+
+## Khắc phục sự cố
+
+### Không phát hiện được LM Studio
+
+Hãy bảo đảm LM Studio đang chạy:
+
+```bash
+lms server start --port 1234
+```
+
+Nếu xác thực được bật, hãy đặt cả `LM_API_TOKEN`. Xác minh rằng có thể truy cập API:
+
+```bash
+curl http://localhost:1234/api/v1/models
+```
+
+### Lỗi xác thực (HTTP 401)
+
+- Kiểm tra xem `LM_API_TOKEN` có khớp với khóa được cấu hình trong LM Studio hay không.
+- Xem [Xác thực LM Studio](https://lmstudio.ai/docs/developer/core/authentication).
+- Nếu máy chủ không yêu cầu xác thực, hãy để trống khóa trong quá trình thiết lập.
 
 ## Liên quan
 

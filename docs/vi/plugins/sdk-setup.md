@@ -1,25 +1,25 @@
 ---
 read_when:
-    - Bạn đang thêm trình hướng dẫn thiết lập vào một Plugin
-    - Bạn cần hiểu setup-entry.ts so với index.ts
+    - Bạn đang thêm trình hướng dẫn thiết lập vào một plugin
+    - Bạn cần hiểu sự khác biệt giữa setup-entry.ts và index.ts
     - Bạn đang định nghĩa các lược đồ cấu hình Plugin hoặc siêu dữ liệu openclaw trong package.json
 sidebarTitle: Setup and config
 summary: Trình hướng dẫn thiết lập, setup-entry.ts, lược đồ cấu hình và siêu dữ liệu package.json
 title: Thiết lập và cấu hình Plugin
 x-i18n:
-    generated_at: "2026-07-04T15:24:24Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:18:00Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 0969ab2cc069389b8957b07e76591bc76fea7bee22125587fa067122d11bb024
+    source_hash: 3b47e1f18a92871c442980168e302c82d7aa9a38b38bbbeed4add9dd6479365b
     source_path: plugins/sdk-setup.md
     workflow: 16
 ---
 
-Tham chiếu cho đóng gói plugin (siêu dữ liệu `package.json`), manifest (`openclaw.plugin.json`), mục thiết lập và schema cấu hình.
+Tham chiếu về cách đóng gói plugin (siêu dữ liệu `package.json`), tệp kê khai (`openclaw.plugin.json`), các điểm vào thiết lập và lược đồ cấu hình.
 
 <Tip>
-**Bạn đang tìm hướng dẫn từng bước?** Các hướng dẫn cách làm trình bày đóng gói trong ngữ cảnh: [Plugin kênh](/vi/plugins/sdk-channel-plugins#step-1-package-and-manifest) và [Plugin nhà cung cấp](/vi/plugins/sdk-provider-plugins#step-1-package-and-manifest).
+**Bạn đang tìm hướng dẫn từng bước?** Các hướng dẫn thực hành trình bày việc đóng gói trong ngữ cảnh cụ thể: [Plugin kênh](/vi/plugins/sdk-channel-plugins#step-1-package-and-manifest) và [Plugin nhà cung cấp](/vi/plugins/sdk-provider-plugins#step-1-package-and-manifest).
 </Tip>
 
 ## Siêu dữ liệu gói
@@ -27,7 +27,7 @@ Tham chiếu cho đóng gói plugin (siêu dữ liệu `package.json`), manifest
 `package.json` của bạn cần có trường `openclaw` để cho hệ thống plugin biết plugin của bạn cung cấp những gì:
 
 <Tabs>
-  <Tab title="Channel plugin">
+  <Tab title="Plugin kênh">
     ```json
     {
       "name": "@myorg/openclaw-my-channel",
@@ -45,7 +45,7 @@ Tham chiếu cho đóng gói plugin (siêu dữ liệu `package.json`), manifest
     }
     ```
   </Tab>
-  <Tab title="Provider plugin / ClawHub baseline">
+  <Tab title="Plugin nhà cung cấp / cấu hình cơ sở ClawHub">
     ```json openclaw-clawhub-package.json
     {
       "name": "@myorg/openclaw-my-plugin",
@@ -74,55 +74,68 @@ Tham chiếu cho đóng gói plugin (siêu dữ liệu `package.json`), manifest
 </Tabs>
 
 <Note>
-Nếu bạn phát hành plugin bên ngoài trên ClawHub, các trường `compat` và `build` đó là bắt buộc. Các đoạn mã phát hành chuẩn nằm trong `docs/snippets/plugin-publish/`.
+Việc phát hành ra bên ngoài trên ClawHub yêu cầu `compat` và `build`. Các đoạn mã phát hành chuẩn nằm trong `docs/snippets/plugin-publish/`.
 </Note>
 
 ### Các trường `openclaw`
 
 <ParamField path="extensions" type="string[]">
-  Các tệp điểm vào (tương đối với gốc gói).
+  Các tệp điểm vào (tương đối với thư mục gốc của gói). Đây là các điểm vào mã nguồn hợp lệ để phát triển trong không gian làm việc và bản sao làm việc git.
+</ParamField>
+<ParamField path="runtimeExtensions" type="string[]">
+  Các tệp JavaScript đã biên dịch tương ứng với `extensions`, được ưu tiên khi OpenClaw tải một gói npm đã cài đặt. Xem [Các điểm vào SDK](/vi/plugins/sdk-entrypoints) để biết thứ tự phân giải giữa mã nguồn và bản đã biên dịch.
 </ParamField>
 <ParamField path="setupEntry" type="string">
-  Mục chỉ dành cho thiết lập, gọn nhẹ (không bắt buộc).
+  Điểm vào nhẹ chỉ dành cho thiết lập (không bắt buộc).
+</ParamField>
+<ParamField path="runtimeSetupEntry" type="string">
+  Tệp JavaScript đã biên dịch tương ứng với `setupEntry`. Đồng thời yêu cầu phải đặt `setupEntry`.
+</ParamField>
+<ParamField path="plugin" type="object">
+  Danh tính plugin dự phòng `{ id, label }`, được dùng khi plugin không có siêu dữ liệu kênh/nhà cung cấp để suy ra mã định danh hoặc nhãn.
 </ParamField>
 <ParamField path="channel" type="object">
-  Siêu dữ liệu danh mục kênh cho các bề mặt thiết lập, bộ chọn, khởi động nhanh và trạng thái.
-</ParamField>
-<ParamField path="providers" type="string[]">
-  Mã định danh nhà cung cấp được plugin này đăng ký.
+  Siêu dữ liệu danh mục kênh cho các giao diện thiết lập, bộ chọn, bắt đầu nhanh và trạng thái.
 </ParamField>
 <ParamField path="install" type="object">
-  Gợi ý cài đặt: `npmSpec`, `localPath`, `defaultChoice`, `minHostVersion`, `expectedIntegrity`, `allowInvalidConfigRecovery`.
+  Gợi ý cài đặt: `npmSpec`, `localPath`, `defaultChoice`, `minHostVersion`, `expectedIntegrity`, `allowInvalidConfigRecovery`, `requiredPlatformPackages`.
 </ParamField>
 <ParamField path="startup" type="object">
-  Cờ hành vi khởi động.
+  Các cờ điều khiển hành vi khởi động.
 </ParamField>
+<ParamField path="compat" type="object">
+  Phạm vi phiên bản `pluginApi` mà plugin này hỗ trợ. Bắt buộc đối với các bản phát hành ClawHub bên ngoài.
+</ParamField>
+
+<Note>
+Mã định danh nhà cung cấp (`providers: string[]`) là siêu dữ liệu tệp kê khai, không phải siêu dữ liệu gói. Khai báo chúng trong `openclaw.plugin.json`, không phải tại đây — xem [Tệp kê khai plugin](/vi/plugins/manifest).
+</Note>
 
 ### `openclaw.channel`
 
-`openclaw.channel` là siêu dữ liệu gói nhẹ cho việc phát hiện kênh và các bề mặt thiết lập trước khi thời gian chạy tải.
+`openclaw.channel` là siêu dữ liệu gói nhẹ dùng cho việc khám phá kênh và các giao diện thiết lập trước khi tải thời gian chạy.
 
-| Trường                                 | Kiểu      | Ý nghĩa                                                                       |
-| -------------------------------------- | --------- | ----------------------------------------------------------------------------- |
-| `id`                                   | `string`  | Mã định danh kênh chuẩn.                                                      |
-| `label`                                | `string`  | Nhãn kênh chính.                                                              |
-| `selectionLabel`                       | `string`  | Nhãn bộ chọn/thiết lập khi cần khác với `label`.                              |
-| `detailLabel`                          | `string`  | Nhãn chi tiết phụ cho danh mục kênh và bề mặt trạng thái phong phú hơn.       |
-| `docsPath`                             | `string`  | Đường dẫn tài liệu cho liên kết thiết lập và lựa chọn.                        |
-| `docsLabel`                            | `string`  | Ghi đè nhãn dùng cho liên kết tài liệu khi cần khác với mã định danh kênh.    |
-| `blurb`                                | `string`  | Mô tả ngắn cho onboarding/danh mục.                                           |
-| `order`                                | `number`  | Thứ tự sắp xếp trong danh mục kênh.                                           |
-| `aliases`                              | `string[]` | Bí danh tra cứu bổ sung cho lựa chọn kênh.                                    |
-| `preferOver`                           | `string[]` | Mã định danh plugin/kênh có mức ưu tiên thấp hơn mà kênh này nên xếp trên.   |
-| `systemImage`                          | `string`  | Tên biểu tượng/hình ảnh hệ thống tùy chọn cho danh mục giao diện kênh.        |
-| `selectionDocsPrefix`                  | `string`  | Văn bản tiền tố trước liên kết tài liệu trong bề mặt lựa chọn.                |
-| `selectionDocsOmitLabel`               | `boolean` | Hiển thị trực tiếp đường dẫn tài liệu thay vì liên kết tài liệu có nhãn trong bản sao lựa chọn. |
-| `selectionExtras`                      | `string[]` | Các chuỗi ngắn bổ sung được thêm vào bản sao lựa chọn.                        |
-| `markdownCapable`                      | `boolean` | Đánh dấu kênh là hỗ trợ markdown cho các quyết định định dạng gửi đi.         |
-| `exposure`                             | `object`  | Điều khiển khả năng hiển thị kênh cho thiết lập, danh sách đã cấu hình và bề mặt tài liệu. |
-| `quickstartAllowFrom`                  | `boolean` | Đưa kênh này vào luồng thiết lập khởi động nhanh `allowFrom` tiêu chuẩn.      |
-| `forceAccountBinding`                  | `boolean` | Yêu cầu liên kết tài khoản rõ ràng ngay cả khi chỉ tồn tại một tài khoản.     |
-| `preferSessionLookupForAnnounceTarget` | `boolean` | Ưu tiên tra cứu phiên khi phân giải mục tiêu thông báo cho kênh này.          |
+| Trường                                 | Kiểu       | Ý nghĩa                                                                       |
+| -------------------------------------- | ---------- | ----------------------------------------------------------------------------- |
+| `id`                                   | `string`   | Mã định danh kênh chuẩn.                                                       |
+| `label`                                | `string`   | Nhãn chính của kênh.                                                          |
+| `selectionLabel`                       | `string`   | Nhãn trong bộ chọn/thiết lập khi cần khác với `label`.                        |
+| `detailLabel`                          | `string`   | Nhãn chi tiết phụ cho danh mục kênh phong phú hơn và các giao diện trạng thái. |
+| `docsPath`                             | `string`   | Đường dẫn tài liệu cho các liên kết thiết lập và lựa chọn.                    |
+| `docsLabel`                            | `string`   | Ghi đè nhãn dùng cho liên kết tài liệu khi cần khác với mã định danh kênh.    |
+| `blurb`                                | `string`   | Mô tả ngắn dùng trong quá trình làm quen/danh mục.                             |
+| `order`                                | `number`   | Thứ tự sắp xếp trong danh mục kênh.                                            |
+| `aliases`                              | `string[]` | Các bí danh tra cứu bổ sung để lựa chọn kênh.                                 |
+| `preferOver`                           | `string[]` | Các mã định danh plugin/kênh có mức ưu tiên thấp hơn mà kênh này nên xếp trên. |
+| `systemImage`                          | `string`   | Tên biểu tượng/hình ảnh hệ thống không bắt buộc cho danh mục giao diện kênh.  |
+| `selectionDocsPrefix`                  | `string`   | Văn bản tiền tố trước liên kết tài liệu trong giao diện lựa chọn.             |
+| `selectionDocsOmitLabel`               | `boolean`  | Hiển thị trực tiếp đường dẫn tài liệu thay vì liên kết tài liệu có nhãn trong nội dung lựa chọn. |
+| `selectionExtras`                      | `string[]` | Các chuỗi ngắn bổ sung được nối vào nội dung lựa chọn.                         |
+| `markdownCapable`                      | `boolean`  | Đánh dấu kênh có khả năng xử lý markdown để quyết định định dạng gửi đi.      |
+| `exposure`                             | `object`   | Điều khiển khả năng hiển thị của kênh trong thiết lập, danh sách đã cấu hình và giao diện tài liệu. |
+| `quickstartAllowFrom`                  | `boolean`  | Cho phép kênh này tham gia luồng thiết lập bắt đầu nhanh `allowFrom` tiêu chuẩn. |
+| `forceAccountBinding`                  | `boolean`  | Yêu cầu liên kết tài khoản rõ ràng ngay cả khi chỉ tồn tại một tài khoản.     |
+| `preferSessionLookupForAnnounceTarget` | `boolean`  | Ưu tiên tra cứu phiên khi phân giải đích thông báo cho kênh này.               |
 
 Ví dụ:
 
@@ -156,38 +169,38 @@ Ví dụ:
 
 `exposure` hỗ trợ:
 
-- `configured`: đưa kênh vào các bề mặt liệt kê kiểu đã cấu hình/trạng thái
+- `configured`: đưa kênh vào các giao diện danh sách kiểu đã cấu hình/trạng thái
 - `setup`: đưa kênh vào các bộ chọn thiết lập/cấu hình tương tác
-- `docs`: đánh dấu kênh là hướng ra công chúng trong bề mặt tài liệu/điều hướng
+- `docs`: đánh dấu kênh là công khai trong các giao diện tài liệu/điều hướng
 
 <Note>
-`showConfigured` và `showInSetup` vẫn được hỗ trợ dưới dạng bí danh cũ. Ưu tiên dùng `exposure`.
+`showConfigured` và `showInSetup` vẫn được hỗ trợ dưới dạng bí danh cũ. Nên ưu tiên `exposure`.
 </Note>
 
 ### `openclaw.install`
 
-`openclaw.install` là siêu dữ liệu gói, không phải siêu dữ liệu manifest.
+`openclaw.install` là siêu dữ liệu gói, không phải siêu dữ liệu tệp kê khai.
 
 | Trường                       | Kiểu                                | Ý nghĩa                                                                           |
 | ---------------------------- | ----------------------------------- | --------------------------------------------------------------------------------- |
-| `clawhubSpec`                | `string`                            | Đặc tả ClawHub chuẩn cho cài đặt/cập nhật và các luồng onboarding cài đặt theo nhu cầu. |
-| `npmSpec`                    | `string`                            | Đặc tả npm chuẩn cho các luồng dự phòng cài đặt/cập nhật.                         |
-| `localPath`                  | `string`                            | Đường dẫn cài đặt phát triển cục bộ hoặc đi kèm.                                  |
-| `defaultChoice`              | `"clawhub"` \| `"npm"` \| `"local"` | Nguồn cài đặt ưu tiên khi có nhiều nguồn khả dụng.                                |
-| `minHostVersion`             | `string`                            | Phiên bản OpenClaw được hỗ trợ tối thiểu ở dạng `>=x.y.z` hoặc `>=x.y.z-prerelease`. |
-| `expectedIntegrity`          | `string`                            | Chuỗi toàn vẹn dist npm dự kiến, thường là `sha512-...`, cho các bản cài đặt được ghim. |
-| `allowInvalidConfigRecovery` | `boolean`                           | Cho phép các luồng cài đặt lại plugin đi kèm khôi phục từ những lỗi cấu hình cũ cụ thể. |
-| `requiredPlatformPackages`   | `string[]`                          | Các bí danh npm theo nền tảng bắt buộc được xác minh trong quá trình cài đặt npm.  |
+| `clawhubSpec`                | `string`                            | Đặc tả ClawHub chuẩn cho các luồng cài đặt/cập nhật và cài đặt theo yêu cầu trong quá trình làm quen. |
+| `npmSpec`                    | `string`                            | Đặc tả npm chuẩn cho các luồng cài đặt/cập nhật dự phòng.                         |
+| `localPath`                  | `string`                            | Đường dẫn cài đặt cục bộ dùng cho phát triển hoặc gói tích hợp sẵn.               |
+| `defaultChoice`              | `"clawhub"` \| `"npm"` \| `"local"` | Nguồn cài đặt ưu tiên khi có nhiều nguồn.                                         |
+| `minHostVersion`             | `string`                            | Phiên bản OpenClaw tối thiểu được hỗ trợ, `>=x.y.z` hoặc `>=x.y.z-prerelease`.    |
+| `expectedIntegrity`          | `string`                            | Chuỗi toàn vẹn bản phân phối npm dự kiến, thường là `sha512-...`, cho các bản cài đặt được ghim. |
+| `allowInvalidConfigRecovery` | `boolean`                           | Cho phép các luồng cài đặt lại plugin tích hợp sẵn khôi phục từ một số lỗi cấu hình cũ cụ thể. |
+| `requiredPlatformPackages`   | `string[]`                          | Các bí danh npm dành riêng cho nền tảng bắt buộc, được xác minh trong khi cài đặt npm. |
 
 <AccordionGroup>
-  <Accordion title="Onboarding behavior">
-    Onboarding tương tác cũng dùng `openclaw.install` cho các bề mặt cài đặt theo nhu cầu. Nếu plugin của bạn hiển thị các lựa chọn xác thực nhà cung cấp hoặc siêu dữ liệu thiết lập/danh mục kênh trước khi thời gian chạy tải, onboarding có thể hiển thị lựa chọn đó, nhắc chọn cài đặt từ ClawHub, npm hoặc cục bộ, cài đặt hoặc bật plugin, rồi tiếp tục luồng đã chọn. Các lựa chọn onboarding ClawHub dùng `clawhubSpec` và được ưu tiên khi có; lựa chọn npm yêu cầu siêu dữ liệu danh mục đáng tin cậy với `npmSpec` của registry; phiên bản chính xác và `expectedIntegrity` là các ghim npm tùy chọn. Nếu có `expectedIntegrity`, các luồng cài đặt/cập nhật sẽ thực thi nó cho npm. Giữ siêu dữ liệu "hiển thị gì" trong `openclaw.plugin.json` và siêu dữ liệu "cài đặt như thế nào" trong `package.json`.
+  <Accordion title="Hành vi làm quen">
+    Quá trình làm quen tương tác sử dụng `openclaw.install` cho các giao diện cài đặt theo yêu cầu: nếu plugin của bạn cung cấp các lựa chọn xác thực nhà cung cấp hoặc siêu dữ liệu thiết lập/danh mục kênh trước khi tải thời gian chạy, quá trình làm quen có thể nhắc cài đặt từ ClawHub, npm hoặc cục bộ, cài đặt hoặc bật plugin, rồi tiếp tục luồng đã chọn. Các lựa chọn ClawHub sử dụng `clawhubSpec` và được ưu tiên khi có; các lựa chọn npm yêu cầu siêu dữ liệu danh mục đáng tin cậy với `npmSpec` từ registry (phiên bản chính xác và `expectedIntegrity` là các giá trị ghim không bắt buộc, được thực thi khi cài đặt/cập nhật nếu đã đặt). Hãy giữ nội dung "hiển thị gì" trong `openclaw.plugin.json` và "cài đặt như thế nào" trong `package.json`.
   </Accordion>
-  <Accordion title="minHostVersion enforcement">
-    Nếu đặt `minHostVersion`, cả cài đặt và tải registry manifest không đi kèm đều thực thi trường này. Máy chủ cũ hơn bỏ qua plugin bên ngoài; chuỗi phiên bản không hợp lệ bị từ chối. Plugin nguồn đi kèm được giả định là cùng phiên bản với checkout máy chủ.
+  <Accordion title="Thực thi minHostVersion">
+    Nếu đặt `minHostVersion`, cả quá trình cài đặt và tải registry tệp kê khai không tích hợp sẵn đều thực thi giá trị này. Các máy chủ cũ hơn sẽ bỏ qua plugin bên ngoài; các chuỗi phiên bản không hợp lệ sẽ bị từ chối. Plugin mã nguồn tích hợp sẵn được giả định có cùng phiên bản với bản sao làm việc của máy chủ.
   </Accordion>
-  <Accordion title="Pinned npm installs">
-    Với các bản cài đặt npm được ghim, giữ phiên bản chính xác trong `npmSpec` và thêm tính toàn vẹn artifact dự kiến:
+  <Accordion title="Các bản cài đặt npm được ghim">
+    Đối với các bản cài đặt npm được ghim, hãy giữ phiên bản chính xác trong `npmSpec` và thêm giá trị toàn vẹn dự kiến của gói tạo tác:
 
     ```json
     {
@@ -202,14 +215,14 @@ Ví dụ:
     ```
 
   </Accordion>
-  <Accordion title="allowInvalidConfigRecovery scope">
-    `allowInvalidConfigRecovery` không phải là cơ chế bỏ qua chung cho cấu hình hỏng. Nó chỉ dành cho khôi phục plugin đi kèm trong phạm vi hẹp, để cài đặt lại/thiết lập có thể sửa các phần sót lại sau nâng cấp đã biết, như thiếu đường dẫn plugin đi kèm hoặc mục `channels.<id>` cũ cho cùng plugin đó. Nếu cấu hình hỏng vì lý do không liên quan, cài đặt vẫn đóng khi lỗi và yêu cầu người vận hành chạy `openclaw doctor --fix`.
+  <Accordion title="Phạm vi của allowInvalidConfigRecovery">
+    `allowInvalidConfigRecovery` không phải là cơ chế bỏ qua chung cho cấu hình bị hỏng. Cơ chế này chỉ dành cho phạm vi khôi phục hẹp của plugin tích hợp sẵn, cho phép quá trình cài đặt lại/thiết lập sửa chữa các phần dư sau nâng cấp đã biết, chẳng hạn như thiếu đường dẫn plugin tích hợp sẵn hoặc mục `channels.<id>` cũ của chính plugin đó. Nếu cấu hình bị hỏng vì lý do không liên quan, quá trình cài đặt vẫn từ chối tiếp tục và yêu cầu người vận hành chạy `openclaw doctor --fix`.
   </Accordion>
 </AccordionGroup>
 
-### Tải đầy đủ trì hoãn
+### Trì hoãn tải đầy đủ
 
-Plugin kênh có thể chọn tải trì hoãn bằng:
+Plugin kênh có thể chọn trì hoãn việc tải bằng cấu hình:
 
 ```json
 {
@@ -223,17 +236,17 @@ Plugin kênh có thể chọn tải trì hoãn bằng:
 }
 ```
 
-Khi bật, OpenClaw chỉ tải `setupEntry` trong giai đoạn khởi động trước khi lắng nghe, ngay cả với các kênh đã được cấu hình. Mục đầy đủ sẽ tải sau khi gateway bắt đầu lắng nghe.
+Khi được bật, OpenClaw chỉ tải `setupEntry` trong giai đoạn khởi động trước khi bắt đầu lắng nghe, kể cả đối với các kênh đã được cấu hình. Điểm vào đầy đủ được tải sau khi Gateway bắt đầu lắng nghe.
 
 <Warning>
-Chỉ bật tải trì hoãn khi `setupEntry` của bạn đăng ký mọi thứ gateway cần trước khi bắt đầu lắng nghe (đăng ký kênh, tuyến HTTP, phương thức gateway). Nếu mục đầy đủ sở hữu các năng lực khởi động bắt buộc, hãy giữ hành vi mặc định.
+Chỉ bật tính năng trì hoãn tải khi `setupEntry` đăng ký mọi thứ mà Gateway cần trước khi bắt đầu lắng nghe (đăng ký kênh, tuyến HTTP, phương thức Gateway). Nếu điểm vào đầy đủ sở hữu các khả năng khởi động bắt buộc, hãy giữ hành vi mặc định.
 </Warning>
 
-Nếu mục thiết lập/đầy đủ của bạn đăng ký các phương thức RPC gateway, hãy giữ chúng trên một tiền tố dành riêng cho plugin. Các không gian tên quản trị lõi được dành riêng (`config.*`, `exec.approvals.*`, `wizard.*`, `update.*`) vẫn thuộc sở hữu lõi và luôn phân giải thành `operator.admin`.
+Nếu điểm vào thiết lập/đầy đủ của bạn đăng ký các phương thức RPC của Gateway, hãy đặt chúng dưới một tiền tố riêng cho plugin. Các không gian tên quản trị lõi dành riêng (`config.*`, `exec.approvals.*`, `wizard.*`, `update.*`) vẫn thuộc quyền sở hữu của lõi và luôn được chuẩn hóa thành `operator.admin`.
 
-## Manifest plugin
+## Tệp kê khai plugin
 
-Mọi plugin native phải kèm theo `openclaw.plugin.json` trong gốc gói. OpenClaw dùng tệp này để xác thực cấu hình mà không thực thi mã plugin.
+Mọi plugin gốc đều phải cung cấp tệp `openclaw.plugin.json` tại thư mục gốc của gói. OpenClaw sử dụng tệp này để xác thực cấu hình mà không thực thi mã của plugin.
 
 ```json
 {
@@ -253,12 +266,11 @@ Mọi plugin native phải kèm theo `openclaw.plugin.json` trong gốc gói. Op
 }
 ```
 
-Với plugin kênh, thêm `kind` và `channels`:
+Đối với plugin kênh, hãy thêm `channels` (và plugin nhà cung cấp thêm `providers`):
 
 ```json
 {
   "id": "my-channel",
-  "kind": "channel",
   "channels": ["my-channel"],
   "configSchema": {
     "type": "object",
@@ -268,7 +280,7 @@ Với plugin kênh, thêm `kind` và `channels`:
 }
 ```
 
-Ngay cả các Plugin không có cấu hình cũng phải phát hành kèm schema. Schema rỗng là hợp lệ:
+Ngay cả plugin không có cấu hình cũng phải cung cấp một lược đồ. Lược đồ trống là hợp lệ:
 
 ```json
 {
@@ -280,11 +292,11 @@ Ngay cả các Plugin không có cấu hình cũng phải phát hành kèm schem
 }
 ```
 
-Xem [manifest Plugin](/vi/plugins/manifest) để biết tham chiếu schema đầy đủ.
+Xem [tệp kê khai Plugin](/vi/plugins/manifest) để biết tài liệu tham khảo đầy đủ về lược đồ.
 
-## Xuất bản lên ClawHub
+## Phát hành trên ClawHub
 
-Đối với các gói Plugin, hãy dùng lệnh ClawHub dành riêng cho gói:
+Các gói Skills và plugin sử dụng những lệnh phát hành ClawHub riêng biệt. Đối với gói plugin, hãy sử dụng lệnh dành riêng cho gói:
 
 ```bash
 clawhub package publish your-org/your-plugin --dry-run
@@ -292,12 +304,12 @@ clawhub package publish your-org/your-plugin
 ```
 
 <Note>
-Alias xuất bản cũ chỉ dành cho skill là dành cho skills. Các gói Plugin phải luôn dùng `clawhub package publish`.
+`clawhub skill publish <path>` là một lệnh khác dùng để phát hành thư mục skill, không phải gói plugin. Xem [Phát hành trên ClawHub](/vi/clawhub/publishing).
 </Note>
 
-## Mục nhập thiết lập
+## Điểm vào thiết lập
 
-Tệp `setup-entry.ts` là lựa chọn thay thế nhẹ hơn cho `index.ts` mà OpenClaw tải khi chỉ cần các bề mặt thiết lập (onboarding, sửa cấu hình, kiểm tra kênh bị tắt).
+`setup-entry.ts` là một lựa chọn thay thế gọn nhẹ cho `index.ts` mà OpenClaw tải khi chỉ cần các bề mặt thiết lập (hướng dẫn ban đầu, sửa cấu hình, kiểm tra kênh bị vô hiệu hóa):
 
 ```typescript
 // setup-entry.ts
@@ -307,71 +319,67 @@ import { myChannelPlugin } from "./src/channel.js";
 export default defineSetupPluginEntry(myChannelPlugin);
 ```
 
-Điều này tránh tải mã runtime nặng (thư viện mã hóa, đăng ký CLI, dịch vụ nền) trong các luồng thiết lập.
+Điều này tránh tải mã thời gian chạy nặng (thư viện mật mã, đăng ký CLI, dịch vụ nền) trong các luồng thiết lập.
 
-Các kênh workspace được đóng gói sẵn giữ export an toàn cho thiết lập trong các module sidecar có thể dùng `defineBundledChannelSetupEntry(...)` từ `openclaw/plugin-sdk/channel-entry-contract` thay vì `defineSetupPluginEntry(...)`. Contract được đóng gói đó cũng hỗ trợ export `runtime` tùy chọn để wiring runtime ở thời điểm thiết lập có thể vẫn nhẹ và tường minh.
+Các kênh không gian làm việc đi kèm lưu các phần xuất an toàn cho thiết lập trong mô-đun phụ có thể sử dụng `defineBundledChannelSetupEntry(...)` từ `openclaw/plugin-sdk/channel-entry-contract` thay cho `defineSetupPluginEntry(...)`. Hợp đồng đi kèm đó cũng hỗ trợ phần xuất `runtime` tùy chọn để việc kết nối thời gian chạy trong lúc thiết lập luôn gọn nhẹ và tường minh.
 
 <AccordionGroup>
-  <Accordion title="Khi OpenClaw dùng setupEntry thay vì mục nhập đầy đủ">
-    - Kênh bị tắt nhưng cần các bề mặt thiết lập/onboarding.
+  <Accordion title="Khi OpenClaw sử dụng setupEntry thay cho điểm vào đầy đủ">
+    - Kênh bị vô hiệu hóa nhưng cần các bề mặt thiết lập/hướng dẫn ban đầu.
     - Kênh được bật nhưng chưa được cấu hình.
-    - Tải trì hoãn được bật (`deferConfiguredChannelFullLoadUntilAfterListen`).
+    - Tính năng tải trì hoãn được bật (`deferConfiguredChannelFullLoadUntilAfterListen`).
 
   </Accordion>
-  <Accordion title="setupEntry phải đăng ký những gì">
-    - Đối tượng Plugin kênh (qua `defineSetupPluginEntry`).
-    - Bất kỳ route HTTP nào cần trước khi Gateway lắng nghe.
-    - Bất kỳ phương thức Gateway nào cần trong quá trình khởi động.
+  <Accordion title="Những gì setupEntry phải đăng ký">
+    - Đối tượng plugin kênh (thông qua `defineSetupPluginEntry`).
+    - Mọi tuyến HTTP cần thiết trước khi Gateway bắt đầu lắng nghe.
+    - Mọi phương thức Gateway cần thiết trong quá trình khởi động.
 
-    Các phương thức Gateway khi khởi động đó vẫn nên tránh các namespace quản trị lõi được dành riêng như `config.*` hoặc `update.*`.
+    Các phương thức Gateway khi khởi động đó vẫn nên tránh các không gian tên quản trị cốt lõi dành riêng như `config.*` hoặc `update.*`.
 
   </Accordion>
-  <Accordion title="setupEntry KHÔNG nên bao gồm những gì">
+  <Accordion title="Những gì setupEntry KHÔNG nên bao gồm">
     - Đăng ký CLI.
     - Dịch vụ nền.
-    - Import runtime nặng (crypto, SDK).
-    - Các phương thức Gateway chỉ cần sau khi khởi động.
+    - Phần nhập thời gian chạy nặng (mật mã, SDK).
+    - Các phương thức Gateway chỉ cần thiết sau khi khởi động.
 
   </Accordion>
 </AccordionGroup>
 
-### Import helper thiết lập phạm vi hẹp
+### Phần nhập trình trợ giúp thiết lập phạm vi hẹp
 
-Đối với các đường dẫn nóng chỉ dành cho thiết lập, hãy ưu tiên các điểm nối helper thiết lập phạm vi hẹp hơn thay vì umbrella `plugin-sdk/setup` rộng hơn khi bạn chỉ cần một phần của bề mặt thiết lập:
+Đối với các đường dẫn nóng chỉ dành cho thiết lập, hãy ưu tiên các điểm nối trình trợ giúp thiết lập phạm vi hẹp thay vì điểm nối bao quát `plugin-sdk/setup` khi bạn chỉ cần một phần của bề mặt thiết lập:
 
-| Đường dẫn import                   | Dùng cho                                                                                  | Export chính                                                                                                                                                                                                                                                                                                         |
-| ---------------------------------- | ----------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `plugin-sdk/setup-runtime`         | helper runtime ở thời điểm thiết lập vẫn khả dụng trong `setupEntry` / khởi động kênh trì hoãn | `createSetupTranslator`, `createPatchedAccountSetupAdapter`, `createEnvPatchedAccountSetupAdapter`, `createSetupInputPresenceValidator`, `noteChannelLookupFailure`, `noteChannelLookupSummary`, `promptResolvedAllowFrom`, `splitSetupEntries`, `createAllowlistSetupWizardProxy`, `createDelegatedSetupWizardProxy` |
-| `plugin-sdk/setup-adapter-runtime` | alias tương thích đã ngừng khuyến nghị; dùng `plugin-sdk/setup-runtime`                   | `createEnvPatchedAccountSetupAdapter`                                                                                                                                                                                                                                                                                 |
-| `plugin-sdk/setup-tools`           | helper CLI/cài đặt/lưu trữ/tài liệu cho thiết lập                                         | `formatCliCommand`, `detectBinary`, `extractArchive`, `resolveBrewExecutable`, `formatDocsLink`, `CONFIG_DIR`                                                                                                                                                                                                         |
+| Đường dẫn nhập                      | Dùng cho                                                                                       | Các phần xuất chính                                                                                                                                                                                                                                                                                                    |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `plugin-sdk/setup-runtime`         | trình trợ giúp thời gian chạy lúc thiết lập vẫn khả dụng trong `setupEntry` / khởi động kênh trì hoãn | `createSetupTranslator`, `createPatchedAccountSetupAdapter`, `createEnvPatchedAccountSetupAdapter`, `createSetupInputPresenceValidator`, `noteChannelLookupFailure`, `noteChannelLookupSummary`, `promptResolvedAllowFrom`, `splitSetupEntries`, `createAllowlistSetupWizardProxy`, `createDelegatedSetupWizardProxy` |
+| `plugin-sdk/setup-adapter-runtime` | bí danh tương thích đã lỗi thời; hãy dùng `plugin-sdk/setup-runtime`                            | `createEnvPatchedAccountSetupAdapter`                                                                                                                                                                                                                                                                                 |
+| `plugin-sdk/setup-tools`           | trình trợ giúp CLI/lưu trữ/tài liệu cho thiết lập/cài đặt                                      | `formatCliCommand`, `detectBinary`, `extractArchive`, `resolveBrewExecutable`, `formatDocsLink`, `CONFIG_DIR`                                                                                                                                                                                                         |
 
-Dùng điểm nối `plugin-sdk/setup` rộng hơn khi bạn muốn bộ công cụ thiết lập dùng chung đầy đủ, bao gồm các helper vá cấu hình như `moveSingleAccountChannelSectionToDefaultAccount(...)`.
+Sử dụng điểm nối rộng hơn `plugin-sdk/setup` khi bạn muốn toàn bộ bộ công cụ thiết lập dùng chung, bao gồm các trình trợ giúp vá cấu hình như `moveSingleAccountChannelSectionToDefaultAccount(...)`.
 
-Dùng `createSetupTranslator(...)` cho nội dung wizard thiết lập cố định. Nó tuân theo
-locale của wizard CLI (`OPENCLAW_LOCALE`, rồi đến các biến locale hệ thống) và fallback
-về tiếng Anh. Giữ văn bản thiết lập dành riêng cho Plugin trong mã do Plugin sở hữu và chỉ dùng
-khóa catalog dùng chung cho nhãn thiết lập phổ biến, văn bản trạng thái, và nội dung thiết lập
-Plugin đóng gói chính thức.
+Sử dụng `createSetupTranslator(...)` cho nội dung cố định của trình hướng dẫn thiết lập. Hàm này tuân theo ngôn ngữ của trình hướng dẫn CLI (`OPENCLAW_LOCALE`, sau đó là các biến ngôn ngữ hệ thống) và dùng tiếng Anh làm phương án dự phòng. Giữ văn bản thiết lập dành riêng cho plugin trong mã do plugin sở hữu và chỉ dùng các khóa danh mục dùng chung cho nhãn thiết lập phổ biến, văn bản trạng thái và nội dung thiết lập của plugin chính thức đi kèm.
 
-Các adapter vá thiết lập vẫn an toàn cho đường dẫn nóng khi import. Việc tra cứu bề mặt contract thăng cấp tài khoản đơn được đóng gói của chúng là lazy, nên import `plugin-sdk/setup-runtime` không tải háo hức quá trình khám phá bề mặt contract được đóng gói trước khi adapter thực sự được dùng.
+Các bộ điều hợp vá thiết lập vẫn an toàn cho đường dẫn nóng khi nhập. Việc tra cứu bề mặt hợp đồng thăng cấp tài khoản đơn đi kèm của chúng được thực hiện trì hoãn, vì vậy việc nhập `plugin-sdk/setup-runtime` không tải ngay quá trình khám phá bề mặt hợp đồng đi kèm trước khi bộ điều hợp thực sự được sử dụng.
 
 ### Thăng cấp tài khoản đơn do kênh sở hữu
 
-Khi một kênh nâng cấp từ cấu hình cấp cao nhất một tài khoản sang `channels.<id>.accounts.*`, hành vi dùng chung mặc định là chuyển các giá trị phạm vi tài khoản được thăng cấp vào `accounts.default`.
+Khi một kênh nâng cấp từ cấu hình cấp cao nhất dành cho một tài khoản sang `channels.<id>.accounts.*`, hành vi dùng chung mặc định sẽ chuyển các giá trị trong phạm vi tài khoản được thăng cấp vào `accounts.default`.
 
-Các kênh được đóng gói có thể thu hẹp hoặc ghi đè việc thăng cấp đó thông qua bề mặt contract thiết lập của chúng:
+Các kênh đi kèm có thể thu hẹp hoặc ghi đè quá trình thăng cấp đó thông qua bề mặt hợp đồng thiết lập của mình:
 
-- `singleAccountKeysToMove`: các khóa cấp cao nhất bổ sung nên được chuyển vào tài khoản được thăng cấp
-- `namedAccountPromotionKeys`: khi các tài khoản có tên đã tồn tại, chỉ các khóa này được chuyển vào tài khoản được thăng cấp; các khóa policy/delivery dùng chung vẫn ở root của kênh
-- `resolveSingleAccountPromotionTarget(...)`: chọn tài khoản hiện có nào nhận các giá trị được thăng cấp
+- `singleAccountKeysToMove`: các khóa cấp cao nhất bổ sung cần được chuyển vào tài khoản được thăng cấp
+- `namedAccountPromotionKeys`: khi các tài khoản có tên đã tồn tại, chỉ những khóa này được chuyển vào tài khoản được thăng cấp; các khóa chính sách/phân phối dùng chung vẫn nằm ở thư mục gốc của kênh
+- `resolveSingleAccountPromotionTarget(...)`: chọn tài khoản hiện có sẽ nhận các giá trị được thăng cấp
 
 <Note>
-Matrix là ví dụ được đóng gói hiện tại. Nếu đúng một tài khoản Matrix có tên đã tồn tại, hoặc nếu `defaultAccount` trỏ tới một khóa không chuẩn hiện có như `Ops`, việc thăng cấp giữ nguyên tài khoản đó thay vì tạo mục `accounts.default` mới.
+Matrix là ví dụ đi kèm hiện tại. Nếu đã tồn tại chính xác một tài khoản Matrix có tên, hoặc nếu `defaultAccount` trỏ đến một khóa phi chuẩn hiện có như `Ops`, quá trình thăng cấp sẽ giữ nguyên tài khoản đó thay vì tạo mục `accounts.default` mới.
 </Note>
 
-## Schema cấu hình
+## Lược đồ cấu hình
 
-Cấu hình Plugin được xác thực dựa trên JSON Schema trong manifest của bạn. Người dùng cấu hình Plugin qua:
+Cấu hình plugin được xác thực dựa trên JSON Schema trong tệp kê khai của bạn. Người dùng cấu hình plugin thông qua:
 
 ```json5
 {
@@ -389,7 +397,7 @@ Cấu hình Plugin được xác thực dựa trên JSON Schema trong manifest c
 
 Plugin của bạn nhận cấu hình này dưới dạng `api.pluginConfig` trong quá trình đăng ký.
 
-Đối với cấu hình dành riêng cho kênh, hãy dùng phần cấu hình kênh thay thế:
+Đối với cấu hình dành riêng cho kênh, hãy sử dụng phần cấu hình kênh:
 
 ```json5
 {
@@ -402,9 +410,9 @@ Plugin của bạn nhận cấu hình này dưới dạng `api.pluginConfig` tro
 }
 ```
 
-### Xây dựng schema cấu hình kênh
+### Xây dựng lược đồ cấu hình kênh
 
-Dùng `buildChannelConfigSchema` để chuyển schema Zod thành wrapper `ChannelConfigSchema` được dùng bởi các artifact cấu hình do Plugin sở hữu:
+Sử dụng `buildChannelConfigSchema` để chuyển đổi lược đồ Zod thành trình bao `ChannelConfigSchema` được dùng bởi các cấu phần cấu hình do plugin sở hữu:
 
 ```typescript
 import { z } from "zod";
@@ -420,7 +428,7 @@ const accountSchema = z.object({
 const configSchema = buildChannelConfigSchema(accountSchema);
 ```
 
-Nếu bạn đã viết contract dưới dạng JSON Schema hoặc TypeBox, hãy dùng helper trực tiếp để OpenClaw có thể bỏ qua chuyển đổi Zod sang JSON Schema trên các đường dẫn metadata:
+Nếu bạn đã viết hợp đồng dưới dạng JSON Schema hoặc TypeBox, hãy dùng trình trợ giúp trực tiếp để OpenClaw có thể bỏ qua việc chuyển đổi Zod sang JSON Schema trên các đường dẫn siêu dữ liệu:
 
 ```typescript
 import { Type } from "typebox";
@@ -434,11 +442,11 @@ const configSchema = buildJsonChannelConfigSchema(
 );
 ```
 
-Đối với Plugin bên thứ ba, contract đường dẫn lạnh vẫn là manifest Plugin: phản chiếu JSON Schema đã tạo vào `openclaw.plugin.json#channelConfigs` để schema cấu hình, thiết lập, và bề mặt UI có thể kiểm tra `channels.<id>` mà không tải mã runtime.
+Đối với plugin của bên thứ ba, hợp đồng đường dẫn lạnh vẫn là tệp kê khai plugin: phản chiếu JSON Schema đã tạo vào `openclaw.plugin.json#channelConfigs` để các bề mặt lược đồ cấu hình, thiết lập và giao diện người dùng có thể kiểm tra `channels.<id>` mà không cần tải mã thời gian chạy.
 
-## Wizard thiết lập
+## Trình hướng dẫn thiết lập
 
-Plugin kênh có thể cung cấp wizard thiết lập tương tác cho `openclaw onboard`. Wizard là một đối tượng `ChannelSetupWizard` trên `ChannelPlugin`:
+Plugin kênh có thể cung cấp trình hướng dẫn thiết lập tương tác cho `openclaw onboard`. Trình hướng dẫn là một đối tượng `ChannelSetupWizard` trên `ChannelPlugin`:
 
 ```typescript
 import type { ChannelSetupWizard } from "openclaw/plugin-sdk/channel-setup";
@@ -471,14 +479,14 @@ const setupWizard: ChannelSetupWizard = {
 };
 ```
 
-Kiểu `ChannelSetupWizard` hỗ trợ `credentials`, `textInputs`, `dmPolicy`, `allowFrom`, `groupAccess`, `prepare`, `finalize`, và nhiều hơn nữa. Xem các gói Plugin được đóng gói sẵn (ví dụ Plugin Discord `src/channel.setup.ts`) để biết ví dụ đầy đủ.
+`ChannelSetupWizard` cũng hỗ trợ `textInputs`, `dmPolicy`, `allowFrom`, `groupAccess`, `prepare`, `finalize` và nhiều mục khác. Xem `src/setup-core.ts` của plugin Discord để tham khảo ví dụ đi kèm đầy đủ.
 
 <AccordionGroup>
-  <Accordion title="Prompt allowFrom dùng chung">
-    Đối với prompt danh sách cho phép DM chỉ cần luồng chuẩn `note -> prompt -> parse -> merge -> patch`, hãy ưu tiên các helper thiết lập dùng chung từ `openclaw/plugin-sdk/setup`: `createPromptParsedAllowFromForAccount(...)`, `createTopLevelChannelParsedAllowFromPrompt(...)`, và `createNestedChannelParsedAllowFromPrompt(...)`.
+  <Accordion title="Lời nhắc allowFrom dùng chung">
+    Đối với lời nhắc danh sách cho phép DM chỉ cần luồng `note -> prompt -> parse -> merge -> patch` tiêu chuẩn, hãy ưu tiên các trình trợ giúp thiết lập dùng chung từ `openclaw/plugin-sdk/setup`: `createPromptParsedAllowFromForAccount(...)`, `createTopLevelChannelParsedAllowFromPrompt(...)` và `createNestedChannelParsedAllowFromPrompt(...)`.
   </Accordion>
-  <Accordion title="Trạng thái thiết lập kênh chuẩn">
-    Đối với các khối trạng thái thiết lập kênh chỉ khác nhau theo nhãn, điểm số, và các dòng bổ sung tùy chọn, hãy ưu tiên `createStandardChannelSetupStatus(...)` từ `openclaw/plugin-sdk/setup` thay vì tự tạo cùng đối tượng `status` trong từng Plugin.
+  <Accordion title="Trạng thái thiết lập kênh tiêu chuẩn">
+    Đối với các khối trạng thái thiết lập kênh chỉ khác nhau về nhãn, điểm số và các dòng bổ sung tùy chọn, hãy ưu tiên `createStandardChannelSetupStatus(...)` từ `openclaw/plugin-sdk/setup` thay vì tự xây dựng cùng một đối tượng `status` trong mỗi plugin.
   </Accordion>
   <Accordion title="Bề mặt thiết lập kênh tùy chọn">
     Đối với các bề mặt thiết lập tùy chọn chỉ nên xuất hiện trong một số ngữ cảnh nhất định, hãy dùng `createOptionalChannelSetupSurface` từ `openclaw/plugin-sdk/channel-setup`:
@@ -495,25 +503,25 @@ Kiểu `ChannelSetupWizard` hỗ trợ `credentials`, `textInputs`, `dmPolicy`, 
     // Returns { setupAdapter, setupWizard }
     ```
 
-    `plugin-sdk/channel-setup` cũng expose các builder cấp thấp hơn `createOptionalChannelSetupAdapter(...)` và `createOptionalChannelSetupWizard(...)` khi bạn chỉ cần một nửa của bề mặt cài đặt tùy chọn đó.
+    `plugin-sdk/channel-setup` cũng cung cấp các trình dựng cấp thấp hơn `createOptionalChannelSetupAdapter(...)` và `createOptionalChannelSetupWizard(...)` khi bạn chỉ cần một nửa bề mặt cài đặt tùy chọn đó.
 
-    Adapter/wizard tùy chọn được tạo sẽ đóng kín khi ghi cấu hình thật. Chúng tái sử dụng một thông báo yêu cầu cài đặt trên `validateInput`, `applyAccountConfig`, và `finalize`, đồng thời thêm liên kết tài liệu khi `docsPath` được đặt.
+    Adapter/trình hướng dẫn tùy chọn được tạo sẽ từ chối an toàn khi thực sự ghi cấu hình. Chúng dùng lại một thông báo yêu cầu cài đặt cho `validateInput`, `applyAccountConfig` và `finalize`, đồng thời thêm liên kết tài liệu khi `docsPath` được đặt.
 
   </Accordion>
-  <Accordion title="Helper thiết lập dựa trên binary">
-    Đối với UI thiết lập dựa trên binary, hãy ưu tiên các helper ủy quyền dùng chung thay vì sao chép cùng phần gắn kết binary/trạng thái vào mọi kênh:
+  <Accordion title="Trình trợ giúp thiết lập dựa trên tệp nhị phân">
+    Đối với giao diện thiết lập dựa trên tệp nhị phân, hãy ưu tiên các trình trợ giúp ủy quyền dùng chung thay vì sao chép cùng một mã kết nối tệp nhị phân/trạng thái vào từng kênh:
 
-    - `createDetectedBinaryStatus(...)` cho các khối trạng thái chỉ khác nhau về nhãn, gợi ý, điểm số và phát hiện binary
-    - `createCliPathTextInput(...)` cho các ô nhập văn bản dựa trên đường dẫn
-    - `createDelegatedSetupWizardStatusResolvers(...)`, `createDelegatedPrepare(...)`, `createDelegatedFinalize(...)` và `createDelegatedResolveConfigured(...)` khi `setupEntry` cần chuyển tiếp lười sang một wizard đầy đủ nặng hơn
+    - `createDetectedBinaryStatus(...)` cho các khối trạng thái chỉ khác nhau về nhãn, gợi ý, điểm số và khả năng phát hiện tệp nhị phân
+    - `createCliPathTextInput(...)` cho các trường nhập văn bản dựa trên đường dẫn
+    - `createDelegatedSetupWizardStatusResolvers(...)`, `createDelegatedPrepare(...)`, `createDelegatedFinalize(...)` và `createDelegatedResolveConfigured(...)` khi `setupEntry` cần chuyển tiếp đến một trình hướng dẫn đầy đủ, nặng hơn theo cách tải lười
     - `createDelegatedTextInputShouldPrompt(...)` khi `setupEntry` chỉ cần ủy quyền quyết định `textInputs[*].shouldPrompt`
 
   </Accordion>
 </AccordionGroup>
 
-## Xuất bản và cài đặt
+## Phát hành và cài đặt
 
-**Plugin bên ngoài:** xuất bản lên [ClawHub](/clawhub), rồi cài đặt:
+**Plugin bên ngoài:** phát hành lên [ClawHub](/vi/clawhub), sau đó cài đặt:
 
 <Tabs>
   <Tab title="npm">
@@ -521,16 +529,16 @@ Kiểu `ChannelSetupWizard` hỗ trợ `credentials`, `textInputs`, `dmPolicy`, 
     openclaw plugins install @myorg/openclaw-my-plugin
     ```
 
-    Các đặc tả gói trần sẽ cài đặt từ npm trong giai đoạn chuyển đổi khi ra mắt.
+    Đặc tả gói thuần túy sẽ cài đặt từ npm trong quá trình chuyển đổi lúc khởi chạy, trừ khi tên khớp với mã định danh của một Plugin tích hợp sẵn hoặc chính thức; trong trường hợp đó, OpenClaw sẽ dùng bản sao cục bộ/chính thức tương ứng. Hãy dùng `clawhub:`, `npm:`, `git:` hoặc `npm-pack:` để chọn nguồn một cách xác định — xem [Quản lý Plugin](/vi/plugins/manage-plugins).
 
   </Tab>
-  <Tab title="ClawHub only">
+  <Tab title="Chỉ ClawHub">
     ```bash
     openclaw plugins install clawhub:@myorg/openclaw-my-plugin
     ```
   </Tab>
-  <Tab title="npm package spec">
-    Dùng npm khi một gói chưa chuyển sang ClawHub, hoặc khi bạn cần một
+  <Tab title="Đặc tả gói npm">
+    Dùng npm khi một gói chưa được chuyển sang ClawHub hoặc khi bạn cần
     đường dẫn cài đặt npm trực tiếp trong quá trình di chuyển:
 
     ```bash
@@ -540,26 +548,20 @@ Kiểu `ChannelSetupWizard` hỗ trợ `credentials`, `textInputs`, `dmPolicy`, 
   </Tab>
 </Tabs>
 
-**Plugin trong repo:** đặt dưới cây workspace Plugin được đóng gói kèm và chúng sẽ tự động được phát hiện trong quá trình build.
-
-**Người dùng có thể cài đặt:**
-
-```bash
-openclaw plugins install <package-name>
-```
+**Plugin trong kho mã:** đặt trong cây không gian làm việc Plugin tích hợp sẵn; chúng được tự động phát hiện trong quá trình dựng.
 
 <Info>
-Đối với các bản cài đặt có nguồn từ npm, `openclaw plugins install` cài đặt gói vào một project riêng cho từng Plugin dưới `~/.openclaw/npm/projects` với lifecycle scripts bị tắt. Giữ cây phụ thuộc của Plugin thuần JS/TS và tránh các gói yêu cầu build bằng `postinstall`.
+Đối với các bản cài đặt có nguồn từ npm, `openclaw plugins install` cài đặt gói vào một dự án riêng cho từng Plugin trong `~/.openclaw/npm/projects` với các tập lệnh vòng đời bị vô hiệu hóa (`--ignore-scripts`). Hãy giữ cây phần phụ thuộc của Plugin ở dạng JS/TS thuần túy và tránh các gói yêu cầu dựng bằng `postinstall`.
 </Info>
 
 <Note>
-Quá trình khởi động Gateway không cài đặt phụ thuộc của Plugin. Các luồng cài đặt npm/git/ClawHub chịu trách nhiệm hội tụ phụ thuộc; Plugin cục bộ phải đã được cài đặt sẵn các phụ thuộc của chúng.
+Việc khởi động Gateway không cài đặt các phần phụ thuộc của Plugin. Các luồng cài đặt npm/git/ClawHub chịu trách nhiệm hội tụ phần phụ thuộc; các Plugin cục bộ phải được cài đặt sẵn phần phụ thuộc.
 </Note>
 
-Siêu dữ liệu gói đóng kèm là tường minh, không được suy luận từ JavaScript đã build khi gateway khởi động. Các phụ thuộc runtime thuộc về gói Plugin sở hữu chúng; quá trình khởi động OpenClaw đã đóng gói không bao giờ sửa chữa hoặc phản chiếu phụ thuộc của Plugin.
+Siêu dữ liệu gói tích hợp sẵn được khai báo tường minh, không được suy luận từ JavaScript đã dựng khi Gateway khởi động. Các phần phụ thuộc thời gian chạy thuộc về gói Plugin sở hữu chúng; quá trình khởi động OpenClaw đã đóng gói không bao giờ sửa chữa hoặc sao chép phần phụ thuộc của Plugin.
 
 ## Liên quan
 
 - [Xây dựng Plugin](/vi/plugins/building-plugins) — hướng dẫn bắt đầu từng bước
-- [Tệp kê khai Plugin](/vi/plugins/manifest) — tài liệu tham khảo đầy đủ về schema tệp kê khai
-- [Điểm vào SDK](/vi/plugins/sdk-entrypoints) — `definePluginEntry` và `defineChannelPluginEntry`
+- [Tệp kê khai Plugin](/vi/plugins/manifest) — tài liệu tham chiếu đầy đủ về lược đồ tệp kê khai
+- [Các điểm vào SDK](/vi/plugins/sdk-entrypoints) — `definePluginEntry` và `defineChannelPluginEntry`

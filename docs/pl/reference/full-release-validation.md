@@ -1,26 +1,26 @@
 ---
 read_when:
     - Uruchamianie lub ponowne uruchamianie pełnej walidacji wydania
-    - Porównywanie stabilnych i pełnych profili walidacji wydań
-    - Debugowanie błędów na etapie walidacji wydania
-summary: Etapy pełnej walidacji wydania, podrzędne przepływy pracy, profile wydań, uchwyty ponownych uruchomień i dowody
+    - Porównanie profili walidacji wersji stabilnej i pełnej wersji wydania
+    - Debugowanie niepowodzeń etapów walidacji wydania
+summary: Etapy pełnej walidacji wydania, podrzędne przepływy pracy, profile wydania, identyfikatory ponownego uruchomienia i materiały dowodowe
 title: Pełna walidacja wydania
 x-i18n:
-    generated_at: "2026-06-27T18:17:57Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:33:39Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 791930254e3cac7da101d809cfc9b56773225159574d3727189f67cf85bd3fce
+    source_hash: a0c152128a27b173f131bcf2754c7f06d7bf3e9f7d2d1d0f745ab999f53c78c9
     source_path: reference/full-release-validation.md
     workflow: 16
 ---
 
-`Full Release Validation` to nadrzędna walidacja wydania. Jest pojedynczym ręcznym
-punktem wejścia dla dowodów przedwydaniowych, ale większość pracy odbywa się w podrzędnych workflow, aby
-nieudane środowisko można było uruchomić ponownie bez restartowania całego wydania.
+`Full Release Validation` to nadrzędny proces wydania: pojedynczy ręczny punkt wejścia
+do weryfikacji przed wydaniem. Większość zadań jest wykonywana w podrzędnych przepływach pracy, dzięki czemu
+zadanie zakończone niepowodzeniem można uruchomić ponownie bez ponownego rozpoczynania całego wydania.
 
-Uruchom ją z zaufanej referencji workflow, zwykle `main`, i przekaż gałąź wydania,
-tag albo pełny SHA commita jako `ref`:
+Uruchom go z zaufanego odwołania przepływu pracy, zwykle `main`, i przekaż gałąź wydania,
+tag lub pełny SHA commita jako `ref`:
 
 ```bash
 gh workflow run full-release-validation.yml \
@@ -31,183 +31,259 @@ gh workflow run full-release-validation.yml \
   -f release_profile=stable
 ```
 
-Podrzędne workflow używają zaufanej referencji workflow dla harnessa oraz wejściowego
-`ref` dla kandydata objętego testami. Dzięki temu nowa logika walidacji jest dostępna
-podczas walidowania starszej gałęzi wydania albo tagu.
+`provider` akceptuje również `anthropic` lub `minimax` na potrzeby wdrażania w różnych systemach operacyjnych oraz
+pełnego przebiegu agenta. Zadania podrzędne wielokrotnego użytku ustalają środowisko wywoływanego przepływu pracy
+na podstawie `job.workflow_repository` i `job.workflow_sha`, natomiast parametr wejściowy `ref`
+wybiera testowanego kandydata. Dzięki temu bieżąca zaufana logika walidacji
+pozostaje dostępna podczas walidowania starszej gałęzi lub starszego tagu wydania.
+
+Każdy uruchomiony proces podrzędny musi zgłosić ten sam SHA przepływu pracy co nadrzędne
+uruchomienie `Full Release Validation`. Jeśli `main` zmieni się między uruchomieniem procesu nadrzędnego
+a procesów podrzędnych, proces nadrzędny zakończy się bezpiecznym niepowodzeniem, nawet jeśli sam proces podrzędny się powiedzie. Aby
+uzyskać niezmienny dowód dla dokładnego commita, użyj
+`pnpm ci:full-release --sha <target-sha>`. Narzędzie pomocnicze tworzy tymczasowe
+odwołanie `release-ci/*` przypięte do bieżącego zaufanego `origin/main`, przekazuje docelowy
+SHA wyłącznie jako `ref` kandydata, ponownie wykorzystuje ścisłe dowody dla dokładnego celu, gdy
+są dostępne, i usuwa odwołanie po walidacji. Przekaż
+`-f reuse_evidence=false`, aby wymusić nowe uruchomienie, lub
+`--workflow-sha <trusted-main-sha>`, aby wybrać starszy commit przepływu pracy, który nadal
+jest osiągalny z bieżącego `origin/main`. Sam przepływ pracy nigdy nie tworzy ani nie aktualizuje
+odwołań repozytorium.
 
 `release_profile=stable` i `release_profile=full` zawsze uruchamiają wyczerpujący
-soak live/Docker. Przekaż `run_release_soak=true`, aby włączyć te same ścieżki soak
-z profilem beta. Publikacja stable odrzuca manifest walidacji bez tych
-dowodów soak i blokujących dowodów wydajności produktu.
+długotrwały test środowiska rzeczywistego/Dockera. Przekaż `run_release_soak=true`, aby uwzględnić te same ścieżki długotrwałych testów
+w profilu `beta`. Publikacja stabilna odrzuca manifest walidacji
+bez tego długotrwałego testu oraz blokujących dowodów wydajności produktu.
 
-Akceptacja pakietu zwykle buduje tarball kandydata z rozwiązanej
-referencji `ref`, w tym uruchomienia z pełnym SHA wywołane przez `pnpm ci:full-release`. Po
-publikacji beta przekaż `release_package_spec=openclaw@YYYY.M.PATCH-beta.N`, aby ponownie użyć
-opublikowanego pakietu npm w kontrolach wydania, akceptacji pakietu, testach cross-OS,
-Docker dla ścieżki wydania oraz pakietowym Telegram. Używaj `package_acceptance_package_spec`
-tylko wtedy, gdy akceptacja pakietu ma celowo udowodnić inny pakiet.
-Ścieżka pakietu live Pluginu Codex zachowuje ten sam stan: opublikowane
-wartości `release_package_spec` wyprowadzają `codex_plugin_spec=npm:@openclaw/codex@<version>`;
-uruchomienia SHA/artefaktów pakują `extensions/codex` z wybranej referencji; a operatorzy
-mogą ustawić `codex_plugin_spec` bezpośrednio dla źródeł Pluginu `npm:`, `npm-pack:` lub `git:`.
-Ta ścieżka przyznaje jawne zatwierdzenie instalacji Codex CLI wymagane przez
-ten Plugin, a następnie uruchamia preflight Codex CLI i tury agenta OpenAI w tej samej sesji.
+Package Acceptance zwykle buduje archiwum tar kandydata z rozpoznanego
+`ref`, w tym dla uruchomień z pełnym SHA wywołanych za pomocą `pnpm ci:full-release`. Po
+opublikowaniu wersji beta przekaż `release_package_spec=openclaw@YYYY.M.PATCH-beta.N`, aby ponownie wykorzystać
+wydany pakiet npm w kontrolach wydania, Package Acceptance, testach międzyplatformowych,
+ścieżce wydania Dockera i testach pakietu Telegram. Używaj `package_acceptance_package_spec`
+tylko wtedy, gdy Package Acceptance ma celowo zweryfikować inny pakiet.
+Ścieżka testów rzeczywistych pakietu Pluginu Codex działa według tego samego stanu: opublikowane
+wartości `release_package_spec` wyznaczają `codex_plugin_spec=npm:@openclaw/codex@<version>`;
+uruchomienia SHA/artefaktów pakują `extensions/codex` z wybranego odwołania, a operatorzy
+mogą ustawić `codex_plugin_spec` bezpośrednio dla źródeł Pluginu
+`npm:`, `npm-pack:` lub `git:`. Ścieżka udziela jawnej zgody na instalację CLI Codex wymaganej przez
+ten Plugin, a następnie wykonuje kontrolę wstępną CLI Codex i przebiegi agenta OpenAI w tej samej sesji.
 
 ## Etapy najwyższego poziomu
 
-| Etap                 | Szczegóły                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Rozwiązanie celu     | **Zadanie:** `Resolve target ref`<br />**Podrzędne workflow:** brak<br />**Udowadnia:** rozwiązuje gałąź wydania, tag albo pełny SHA commita i zapisuje wybrane dane wejściowe.<br />**Ponowne uruchomienie:** uruchom ponownie nadrzędną walidację, jeśli to się nie powiedzie.                                                                                                                                                                             |
-| Vitest i zwykłe CI   | **Zadanie:** `Run normal full CI`<br />**Podrzędne workflow:** `CI`<br />**Udowadnia:** ręczny pełny graf CI względem docelowej referencji, w tym ścieżki Linux Node, shardy dołączonych Pluginów, shardy kontraktów Pluginów i kanałów, zgodność z Node 22, `check-*`, `check-additional-*`, kontrole smoke zbudowanych artefaktów, kontrole dokumentacji, Skills Python, Windows, macOS, i18n Control UI oraz Android przez nadrzędną walidację.<br />**Ponowne uruchomienie:** `rerun_group=ci`. |
-| Przedwydaniowa walidacja Pluginów | **Zadanie:** `Run plugin prerelease validation`<br />**Podrzędne workflow:** `Plugin Prerelease`<br />**Udowadnia:** statyczne kontrole Pluginów tylko dla wydania, agentową pokrywalność Pluginów, pełne shardy partii rozszerzeń, przedwydaniowe ścieżki Docker dla Pluginów oraz nieblokujący artefakt `plugin-inspector-advisory` do triage zgodności.<br />**Ponowne uruchomienie:** `rerun_group=plugin-prerelease`. |
-| Kontrole wydania     | **Zadanie:** `Run release/live/Docker/QA validation`<br />**Podrzędne workflow:** `OpenClaw Release Checks`<br />**Udowadnia:** smoke instalacji, kontrole pakietu cross-OS, akceptację pakietu, parytet QA Lab, Matrix live oraz Telegram live. Profile stable i full uruchamiają też wyczerpujące pakiety live/E2E oraz fragmenty Docker dla ścieżki wydania; beta może je włączyć przez `run_release_soak=true`.<br />**Ponowne uruchomienie:** `rerun_group=release-checks` albo węższy uchwyt release-checks. |
-| Pakietowy Telegram   | **Zadanie:** `Run package Telegram E2E`<br />**Podrzędne workflow:** `NPM Telegram Beta E2E`<br />**Udowadnia:** ukierunkowane E2E Telegram dla opublikowanego pakietu, gdy ustawiono `release_package_spec` albo `npm_telegram_package_spec`. Pełna walidacja kandydata używa zamiast tego kanonicznego E2E Telegram z akceptacji pakietu.<br />**Ponowne uruchomienie:** `rerun_group=npm-telegram` z `release_package_spec` albo `npm_telegram_package_spec`. |
-| Weryfikator nadrzędny | **Zadanie:** `Verify full validation`<br />**Podrzędne workflow:** brak<br />**Udowadnia:** ponownie sprawdza zapisane konkluzje uruchomień podrzędnych i dołącza tabele najwolniejszych zadań z podrzędnych workflow.<br />**Ponowne uruchomienie:** uruchom ponownie tylko to zadanie po ponownym uruchomieniu nieudanego procesu podrzędnego do stanu zielonego.                                                                                                                              |
+Dla `rerun_group=all` najpierw wykonywane jest zadanie `Check for reusable validation evidence`:
+wyszukuje ono najnowszą wcześniejszą zakończoną powodzeniem pełną walidację dla dokładnie tego samego
+docelowego SHA, profilu wydania, efektywnego ustawienia długotrwałego testu i parametrów wejściowych walidacji.
+Gdy taki dowód istnieje, każda ścieżka jest pomijana, a nadrzędny weryfikator
+ponownie sprawdza niezmienny artefakt nadrzędny, uruchomienia podrzędne i dzienniki wywołań. Jest to
+wyłącznie mechanizm odzyskiwania po ponownym uruchomieniu tego samego kandydata; nie zezwala na ponowne użycie między różnymi SHA. W przypadku
+zmienionego kandydata uruchom ponownie każdą kontrolę pakietu, artefaktu, instalacji, Dockera lub dostawcy,
+na którą wpływa ta zmiana. Przekaż `reuse_evidence=false`, aby wymusić nową pełną
+walidację. Ponowne użycie dowodów działa tylko z `main` lub kanonicznego, przypiętego do SHA
+odwołania `release-ci/*`, którego commit przepływu pracy pozostaje w zaufanej linii `main`;
+inne odwołania przepływu pracy uruchamiają wybrane ścieżki od nowa.
 
-Dla `ref=main` i `rerun_group=all` nowsza nadrzędna walidacja zastępuje starszą.
-Gdy rodzic zostaje anulowany, jego monitor anuluje każde podrzędne workflow, które już
-uruchomił. Uruchomienia walidacji gałęzi wydania i tagów domyślnie nie anulują się
-wzajemnie.
+Również dla `rerun_group=all` zadanie `Verify Docker runtime image assets` buduje
+cel Dockera `runtime-assets` z
+`OPENCLAW_EXTENSIONS=diagnostics-otel,codex`. Działa ono równolegle z
+innymi etapami i jest egzekwowane przez nadrzędny weryfikator; ścieżki nie czekają już na
+jego zakończenie przed uruchomieniem. Węższa wartość `rerun_group` pomija tę kontrolę wstępną.
+
+| Etap                    | Szczegóły                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Rozpoznawanie celu      | **Zadanie:** `Resolve target ref`<br />**Podrzędny przepływ pracy:** brak<br />**Weryfikuje:** rozpoznaje gałąź wydania, tag lub pełny SHA commita i zapisuje wybrane parametry wejściowe.<br />**Ponowne uruchomienie:** jeśli to zadanie się nie powiedzie, uruchom ponownie proces nadrzędny.                                                                                                                                                                                                                                                                                                            |
+| Kontrola wstępna zasobów Dockera | **Zadanie:** `Verify Docker runtime image assets`<br />**Podrzędny przepływ pracy:** brak<br />**Weryfikuje:** cel kompilacji Dockera `runtime-assets` nadal kończy się powodzeniem przed uruchomieniem pozostałych etapów. Działa tylko dla `rerun_group=all`.<br />**Ponowne uruchomienie:** uruchom ponownie proces nadrzędny z `rerun_group=all`.                                                                                                                                                                                                                                         |
+| Vitest i standardowe CI | **Zadanie:** `Run normal full CI`<br />**Podrzędny przepływ pracy:** `CI`<br />**Weryfikuje:** ręczny pełny graf CI dla docelowego odwołania, obejmujący ścieżki Linux Node, fragmenty dołączonych Pluginów, fragmenty kontraktów Pluginów i kanałów, zgodność z Node 22, `check-*`, `check-additional-*`, testy dymne zbudowanych artefaktów, kontrole dokumentacji, Skills Pythona, Windows, macOS, internacjonalizację Control UI oraz Android za pośrednictwem procesu nadrzędnego.<br />**Ponowne uruchomienie:** `rerun_group=ci`.                                                                                          |
+| Walidacja Pluginów przed wydaniem | **Zadanie:** `Run plugin prerelease validation`<br />**Podrzędny przepływ pracy:** `Plugin Prerelease`<br />**Weryfikuje:** statyczne kontrole Pluginów wykonywane tylko przed wydaniem, pokrycie Pluginów przez agentów, pełne fragmenty wsadowe Pluginów, ścieżki Dockera przed wydaniem Pluginów oraz nieblokujący artefakt `plugin-inspector-advisory` do selekcji problemów ze zgodnością.<br />**Ponowne uruchomienie:** `rerun_group=plugin-prerelease`.                                                                                                                                                          |
+| Kontrole wydania        | **Zadanie:** `Run release/live/Docker/QA validation`<br />**Podrzędny przepływ pracy:** `OpenClaw Release Checks`<br />**Weryfikuje:** test dymny instalacji, międzyplatformowe kontrole pakietu, Package Acceptance, zgodność z QA Lab, testy rzeczywiste Matrix i testy rzeczywiste Telegram. Profile stabilny i pełny uruchamiają również wyczerpujące zestawy testów rzeczywistych/E2E oraz fragmenty ścieżki wydania Dockera; wersja beta może je włączyć za pomocą `run_release_soak=true`.<br />**Ponowne uruchomienie:** `rerun_group=release-checks` lub węższy uchwyt kontroli wydania.                                                                |
+| Pakiet Telegram         | **Zadanie:** `Run package Telegram E2E`<br />**Podrzędny przepływ pracy:** `NPM Telegram Beta E2E`<br />**Weryfikuje:** ukierunkowany test E2E opublikowanego pakietu Telegram, gdy ustawiono `release_package_spec` lub `npm_telegram_package_spec`. Pełna walidacja kandydata używa zamiast tego kanonicznego testu E2E Telegram w Package Acceptance.<br />**Ponowne uruchomienie:** `rerun_group=npm-telegram` z `release_package_spec` lub `npm_telegram_package_spec`.                                                                                                              |
+| Wydajność produktu      | **Zadanie:** `Run product performance evidence`<br />**Podrzędny przepływ pracy:** `OpenClaw Performance`<br />**Weryfikuje:** uruchomienie wydajności dla profilu wydania (`profile=release`, `repeat=3`, `fail_on_regression=true`, `publish_reports=false`) względem docelowego SHA. Dane wyjściowe Kova pozostają w artefaktach przepływu pracy, a proces podrzędny musi wykazać, że zadanie publikowania raportu zostało pominięte. Wymagane (blokujące) tylko dla `rerun_group=all` lub `rerun_group=performance`; niewymagane dla węższych grup ponownych uruchomień.<br />**Ponowne uruchomienie:** `rerun_group=performance`. |
+| Nadrzędny weryfikator   | **Zadanie:** `Verify full validation`<br />**Podrzędny przepływ pracy:** brak<br />**Weryfikuje:** ponownie sprawdza zapisane wyniki uruchomień podrzędnych i dołącza tabele najwolniejszych zadań z podrzędnych przepływów pracy.<br />**Ponowne uruchomienie:** po pomyślnym ponownym uruchomieniu nieudanego procesu podrzędnego uruchom ponownie tylko to zadanie.                                                                                                                                                                                                                                                                 |
+
+Proces nadrzędny zawsze uruchamia testy wydajności produktu w trybie wyłącznie artefaktowym.
+`OpenClaw Performance` zezwala na publikację raportu tylko dla zaplanowanych uruchomień lub
+ręcznego wywołania, które jawnie ustawia `publish_reports=true`. Kontrola trybu wyłącznie artefaktowego
+musi zakończyć się powodzeniem, potwierdzając, że zadanie publikujące pozostało pominięte.
+Nowe i ponownie użyte dowody zapisują
+`controls.performanceReportPublication=artifact-only`; weryfikator i selektor ponownego użycia
+odrzucają dowody bez pasującego, znormalizowanego potwierdzenia z podrzędnego procesu wydajnościowego.
+
+Weryfikator przesyła kanoniczny manifest jako
+`full-release-validation-<run-id>-<run-attempt>`. Narzędzia obsługi dowodów weryfikują
+identyfikator artefaktu, skrót, uruchomienie producenta i próbę przed pobraniem tego dokładnego
+identyfikatora artefaktu. Nakładają limit na pobierany plik ZIP, weryfikują jego bajty względem skrótu REST
+`sha256:` i strumieniowo odczytują jedyny dozwolony wpis manifestu o ograniczonym rozmiarze bez
+rozpakowywania archiwum. Alias o stabilnej nazwie pozostaje tymczasowo dla starszych
+konsumentów publikacji. Weryfikator zawsze preferuje artefakt z nazwą uwzględniającą próbę;
+przejściowo akceptuje stabilną nazwę tylko dla producenta manifestu v2 z pierwszej próby.
+Odrzuca tę starszą nazwę dla późniejszych prób i manifestu v3.
+
+Dla `ref=main` z `rerun_group=all`, dla odwołań `release/*`
+oraz odwołań alfa Tideclaw nowsze uruchomienie procesu nadrzędnego zastępuje starsze o tym samym
+odwołaniu i tej samej grupie ponownego uruchomienia. Gdy proces nadrzędny zostaje anulowany, jego monitor anuluje każdy podrzędny
+przepływ pracy, który został już uruchomiony. Uruchomienia walidacji tagów i przypiętych SHA nie
+anulują się wzajemnie.
 
 ## Etapy kontroli wydania
 
-`OpenClaw Release Checks` to największe podrzędne workflow. Rozwiązuje cel
-raz i przygotowuje współdzielony artefakt `release-package-under-test`, gdy potrzebują go etapy
-dotyczące pakietu albo Docker.
+`OpenClaw Release Checks` jest największym podrzędnym przepływem pracy. Jednorazowo rozpoznaje cel
+i przygotowuje współdzielony artefakt `release-package-under-test`, gdy wymagają go etapy
+związane z pakietem lub Dockerem.
 
-| Etap                | Szczegóły                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Cel wydania         | **Zadanie:** `Resolve target ref`<br />**Workflow bazowy:** brak<br />**Testy:** wybrany ref, opcjonalny oczekiwany SHA, profil, grupa ponownego uruchomienia i zawężony filtr zestawu live.<br />**Ponowne uruchomienie:** `rerun_group=release-checks`.                                                                                                                                                                                                                                             |
-| Artefakt pakietu    | **Zadanie:** `Prepare release package artifact`<br />**Workflow bazowy:** brak<br />**Testy:** pakuje albo wybiera jeden kandydacki tarball i przesyła `release-package-under-test` dla dalszych kontroli dotyczących pakietu.<br />**Ponowne uruchomienie:** odpowiedni pakiet, grupa cross-OS albo live/E2E.                                                                                                                                                                                          |
-| Smoke instalacji    | **Zadanie:** `Run install smoke`<br />**Workflow bazowy:** `Install Smoke`<br />**Testy:** pełna ścieżka instalacji z ponownym użyciem obrazu smoke z głównego Dockerfile, instalacja pakietu QR, smoke Dockera dla roota i Gateway, testy Dockera instalatora, smoke globalnej instalacji Bun dla image-provider oraz szybkie E2E instalacji/deinstalacji wbudowanego Plugin.<br />**Ponowne uruchomienie:** `rerun_group=install-smoke`.                                                              |
-| Cross-OS            | **Zadanie:** `cross_os_release_checks`<br />**Workflow bazowy:** `OpenClaw Cross-OS Release Checks (Reusable)`<br />**Testy:** ścieżki świeżej instalacji i aktualizacji na Linuxie, Windowsie i macOS dla wybranego dostawcy i trybu, z użyciem kandydackiego tarballa oraz pakietu bazowego.<br />**Ponowne uruchomienie:** `rerun_group=cross-os`.                                                                                                                                                  |
-| Repo i live E2E     | **Zadanie:** `Run repo/live E2E validation`<br />**Workflow bazowy:** `OpenClaw Live And E2E Checks (Reusable)`<br />**Testy:** E2E repozytorium, cache live, streaming WebSocket OpenAI, natywne shardy live dostawców i Plugin oraz harnessy live modelu/backendu/Gateway oparte na Dockerze, wybierane przez `release_profile`.<br />**Uruchomienia:** `run_release_soak=true`, `release_profile=full` albo zawężone `rerun_group=live-e2e`.<br />**Ponowne uruchomienie:** `rerun_group=live-e2e`, opcjonalnie z `live_suite_filter`. |
-| Ścieżka wydania Docker | **Zadanie:** `Run Docker release-path validation`<br />**Workflow bazowy:** `OpenClaw Live And E2E Checks (Reusable)`<br />**Testy:** fragmenty ścieżki wydania Docker względem współdzielonego artefaktu pakietu.<br />**Uruchomienia:** `run_release_soak=true`, `release_profile=full` albo zawężone `rerun_group=live-e2e`.<br />**Ponowne uruchomienie:** `rerun_group=live-e2e`.                                                                                                                  |
-| Akceptacja pakietu  | **Zadanie:** `Run package acceptance`<br />**Workflow bazowy:** `Package Acceptance`<br />**Testy:** offline’owe fixture’y pakietów Plugin, aktualizacja Plugin, kanoniczne E2E pakietu mock-OpenAI Telegram oraz kontrole przetrwania aktualizacji z opublikowanej wersji względem tego samego tarballa. Blokujące kontrole wydania używają domyślnej najnowszej opublikowanej bazy; kontrole soak rozszerzają zakres na każde stabilne wydanie npm od `2026.4.23` włącznie oraz fixture’y zgłoszonych problemów.<br />**Ponowne uruchomienie:** `rerun_group=package`. |
-| Parzystość QA       | **Zadanie:** `Run QA Lab parity lane` i `Run QA Lab parity report`<br />**Workflow bazowy:** zadania bezpośrednie<br />**Testy:** pakiety parzystości agentowej kandydata i bazy, a następnie raport parzystości.<br />**Ponowne uruchomienie:** `rerun_group=qa-parity` albo `rerun_group=qa`.                                                                                                                                                                                                       |
-| Macierz QA live     | **Zadanie:** `Run QA Lab live Matrix lane`<br />**Workflow bazowy:** zadanie bezpośrednie<br />**Testy:** szybki profil QA live Matrix w środowisku `qa-live-shared`.<br />**Ponowne uruchomienie:** `rerun_group=qa-live` albo `rerun_group=qa`.                                                                                                                                                                                                                                                       |
-| Telegram QA live    | **Zadanie:** `Run QA Lab live Telegram lane`<br />**Workflow bazowy:** zadanie bezpośrednie<br />**Testy:** QA live Telegram z dzierżawami poświadczeń Convex CI.<br />**Ponowne uruchomienie:** `rerun_group=qa-live` albo `rerun_group=qa`.                                                                                                                                                                                                                                                          |
-| Weryfikator wydania | **Zadanie:** `Verify release checks`<br />**Workflow bazowy:** brak<br />**Testy:** wymagane zadania kontroli wydania dla wybranej grupy ponownego uruchomienia.<br />**Ponowne uruchomienie:** uruchom ponownie po przejściu zawężonych zadań podrzędnych.                                                                                                                                                                                                                                           |
+| Etap                     | Szczegóły                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Cel wydania              | **Zadanie:** `Resolve target ref`<br />**Bazowy przepływ pracy:** brak<br />**Testy:** wybrana referencja, opcjonalny oczekiwany SHA, profil, grupa ponownego uruchomienia i filtr ukierunkowanego zestawu testów na żywo.<br />**Ponowne uruchomienie:** `rerun_group=release-checks`.                                                                                                                                                                                                                                                                                                          |
+| Artefakt pakietu         | **Zadanie:** `Prepare release package artifact`<br />**Bazowy przepływ pracy:** brak<br />**Testy:** pakuje lub wskazuje jeden kandydujący plik tarball i przesyła `release-package-under-test` na potrzeby dalszych kontroli dotyczących pakietu.<br />**Ponowne uruchomienie:** odpowiednia grupa pakietu, testów międzyplatformowych albo testów na żywo/E2E.                                                                                                                                                                                                                                 |
+| Test dymny instalacji    | **Zadanie:** `Run install smoke`<br />**Bazowy przepływ pracy:** `Install Smoke`<br />**Testy:** pełna ścieżka instalacji z ponownym użyciem obrazu testów dymnych z głównego pliku Dockerfile, instalacja pakietu QR, testy dymne głównego obrazu Dockera i obrazu Gateway, testy instalatora w Dockerze oraz test dymny dostawcy obrazów po globalnej instalacji za pomocą Bun.<br />**Ponowne uruchomienie:** `rerun_group=install-smoke`.                                                                                                                                                |
+| Testy międzyplatformowe  | **Zadanie:** `cross_os_release_checks`<br />**Bazowy przepływ pracy:** `OpenClaw Cross-OS Release Checks (Reusable)`<br />**Testy:** ścieżki świeżej instalacji i aktualizacji w systemach Linux, Windows i macOS dla wybranego dostawcy i trybu, korzystające z kandydującego pliku tarball oraz pakietu bazowego.<br />**Ponowne uruchomienie:** `rerun_group=cross-os`.                                                                                                                                                                                                                       |
+| E2E repozytorium i na żywo | **Zadanie:** `Run repo/live E2E validation`<br />**Bazowy przepływ pracy:** `OpenClaw Live And E2E Checks (Reusable)`<br />**Testy:** E2E repozytorium, pamięć podręczna testów na żywo, strumieniowanie WebSocket OpenAI, natywne fragmenty testów dostawców i Pluginów na żywo oraz oparte na Dockerze środowiska testowe modelu, zaplecza i Gateway na żywo, wybrane przez `release_profile`.<br />**Uruchomienia:** `run_release_soak=true`, `release_profile=full` lub ukierunkowane `rerun_group=live-e2e`.<br />**Ponowne uruchomienie:** `rerun_group=live-e2e`, opcjonalnie z `live_suite_filter`. |
+| Ścieżka wydania w Dockerze | **Zadanie:** `Run Docker release-path validation`<br />**Bazowy przepływ pracy:** `OpenClaw Live And E2E Checks (Reusable)`<br />**Testy:** fragmenty dockerowej ścieżki wydania wykonywane względem współdzielonego artefaktu pakietu.<br />**Uruchomienia:** `run_release_soak=true`, `release_profile=full` lub ukierunkowane `rerun_group=live-e2e`.<br />**Ponowne uruchomienie:** `rerun_group=live-e2e`.                                                                                                                                                                                           |
+| Akceptacja pakietu       | **Zadanie:** `Run package acceptance`<br />**Bazowy przepływ pracy:** `Package Acceptance`<br />**Testy:** działające offline dane testowe pakietów Pluginów, aktualizacja Pluginu, kanoniczny test E2E pakietu Telegram z makietą OpenAI oraz kontrole przetrwania opublikowanej aktualizacji względem tego samego pliku tarball. Blokujące kontrole wydania używają domyślnie najnowszej opublikowanej wersji bazowej; testy długotrwałe (`run_release_soak=true`) rozszerzają zakres o ostatnie 4 stabilne wydania npm i 3 przypięte wersje historyczne (`2026.4.23`, `2026.5.2`, `2026.4.15`), wykonywane na danych testowych aktualizacji odtwarzających zgłoszone problemy.<br />**Ponowne uruchomienie:** `rerun_group=package`. |
+| Karta dojrzałości        | **Zadanie:** `Render maturity scorecard release docs`<br />**Bazowy przepływ pracy:** `maturity-scorecard.yml`<br />**Testy:** generuje dokumentację informacyjnej karty dojrzałości względem docelowej referencji. Uruchamiane tylko po przekazaniu `run_maturity_scorecard=true`.<br />**Ponowne uruchomienie:** `rerun_group=qa` z `run_maturity_scorecard=true`.                                                                                                                                                                                                                              |
+| Zgodność QA              | **Zadanie:** `Run QA Lab parity lane` i `Run QA Lab parity report`<br />**Bazowy przepływ pracy:** zadania bezpośrednie<br />**Testy:** agentowe zestawy zgodności kandydata i wersji bazowej, a następnie raport zgodności.<br />**Ponowne uruchomienie:** `rerun_group=qa-parity` lub `rerun_group=qa`.                                                                                                                                                                                                                                                                                      |
+| Zgodność środowisk uruchomieniowych QA | **Zadanie:** `Run QA Lab runtime parity lane`<br />**Bazowy przepływ pracy:** zadanie bezpośrednie<br />**Testy:** agentowa ścieżka zgodności pary środowisk uruchomieniowych `openclaw`/`codex` (`pnpm openclaw qa suite --runtime-pair openclaw,codex`), obejmująca poziom standardowy oraz, przy `run_release_soak=true`, poziom testów długotrwałych. Informacyjnie: pojedyncze niepowodzenia nie blokują weryfikatora kontroli wydania.<br />**Ponowne uruchomienie:** `rerun_group=qa-parity` lub `rerun_group=qa`.                                                                 |
+| Pokrycie narzędzi środowisk uruchomieniowych QA | **Zadanie:** `Enforce QA Lab runtime tool coverage`<br />**Bazowy przepływ pracy:** zadanie bezpośrednie<br />**Testy:** dynamiczne rozbieżności narzędzi między `openclaw` i `codex` na standardowym poziomie zgodności środowisk uruchomieniowych (`pnpm openclaw qa coverage --tools`), z użyciem danych wyjściowych ze ścieżki zgodności środowisk uruchomieniowych QA. Blokujące: tego zadania nie można zastąpić wynikiem informacyjnym.<br />**Ponowne uruchomienie:** `rerun_group=qa-parity` lub `rerun_group=qa`.                                                             |
+| Testy QA Matrix na żywo  | **Zadanie:** `Run QA Lab live Matrix lane`<br />**Bazowy przepływ pracy:** zadanie bezpośrednie<br />**Testy:** szybki profil testów QA Matrix na żywo w środowisku `qa-live-shared`.<br />**Ponowne uruchomienie:** `rerun_group=qa-live` lub `rerun_group=qa`.                                                                                                                                                                                                                                                                                                                            |
+| Testy QA Telegram na żywo | **Zadanie:** `Run QA Lab live Telegram lane`<br />**Bazowy przepływ pracy:** zadanie bezpośrednie<br />**Testy:** testy QA Telegram na żywo z dzierżawami poświadczeń Convex CI.<br />**Ponowne uruchomienie:** `rerun_group=qa-live` lub `rerun_group=qa`.                                                                                                                                                                                                                                                                                                                              |
+| Weryfikator wydania      | **Zadanie:** `Verify release checks`<br />**Bazowy przepływ pracy:** brak<br />**Testy:** wymagane zadania kontroli wydania dla wybranej grupy ponownego uruchomienia.<br />**Ponowne uruchomienie:** uruchom ponownie po pomyślnym zakończeniu ukierunkowanych zadań podrzędnych.                                                                                                                                                                                                                                                                                                        |
 
-## Fragmenty ścieżki wydania Docker
+## Fragmenty dockerowej ścieżki wydania
 
-Etap ścieżki wydania Docker uruchamia te fragmenty, gdy `live_suite_filter` jest
-pusty:
+Etap dockerowej ścieżki wydania uruchamia następujące fragmenty, gdy
+`live_suite_filter` jest pusty:
 
-| Fragment                                                        | Zakres                                                                                                                     |
-| --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `core`                                                          | Ścieżki smoke głównej ścieżki wydania Docker.                                                                              |
-| `package-update-openai`                                         | Zachowanie instalacji/aktualizacji pakietu OpenAI, instalacja Codex na żądanie, tury live Plugin Codex i wywołania narzędzi Chat Completions. |
-| `package-update-anthropic`                                      | Zachowanie instalacji i aktualizacji pakietu Anthropic.                                                                    |
-| `package-update-core`                                           | Zachowanie pakietu i aktualizacji neutralne względem dostawcy.                                                             |
-| `plugins-runtime-plugins`                                       | Ścieżki środowiska uruchomieniowego Plugin, które sprawdzają zachowanie Plugin.                                            |
-| `plugins-runtime-services`                                      | Ścieżki środowiska uruchomieniowego Plugin oparte na usługach i live; obejmuje OpenWebUI, gdy jest wymagane.              |
-| `plugins-runtime-install-a` do `plugins-runtime-install-h`       | Partie instalacji/środowiska uruchomieniowego Plugin podzielone na potrzeby równoległej walidacji wydania.                |
+| Fragment                                                        | Zakres                                                                                                                                    |
+| --------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `core`                                                          | Podstawowe ścieżki testów dymnych dockerowej ścieżki wydania.                                                                             |
+| `package-update-openai`                                         | Instalacja i aktualizacja pakietu OpenAI, instalacja Codex na żądanie, interakcje Pluginu Codex na żywo oraz wywołania narzędzi Chat Completions. |
+| `package-update-anthropic`                                      | Instalacja i aktualizacja pakietu Anthropic.                                                                                              |
+| `package-update-core`                                           | Niezależna od dostawcy obsługa pakietu i aktualizacji.                                                                                    |
+| `plugins-runtime-plugins`                                       | Ścieżki środowiska uruchomieniowego Pluginów sprawdzające ich działanie.                                                                  |
+| `plugins-runtime-services`                                      | Ścieżki środowiska uruchomieniowego Pluginów korzystające z usług i testów na żywo.                                                       |
+| `plugins-runtime-install-a` do `plugins-runtime-install-h`      | Partie instalacji i uruchamiania Pluginów podzielone na potrzeby równoległej walidacji wydania.                                           |
+| `openwebui`                                                     | Test dymny zgodności z OpenWebUI izolowany na dedykowanym środowisku wykonawczym z dużym dyskiem, gdy jest wymagany.                       |
 
-Użyj ukierunkowanego `docker_lanes=<lane[,lane]>` w wielokrotnego użytku workflow live/E2E, gdy
-nie powiodła się tylko jedna ścieżka Docker. Artefakty wydania zawierają polecenia ponownego uruchomienia
-dla poszczególnych ścieżek z artefaktem pakietu i wejściami ponownego użycia obrazu, gdy są dostępne.
+Gdy nie powiedzie się tylko jedna ścieżka Dockera, użyj ukierunkowanego
+`docker_lanes=<lane[,lane]>` w przepływie pracy wielokrotnego użytku dla testów
+na żywo/E2E. Artefakty wydania zawierają polecenia ponownego uruchomienia dla
+poszczególnych ścieżek wraz z parametrami ponownego użycia artefaktu pakietu
+i obrazu, jeśli są dostępne.
 
 ## Profile wydania
 
-`release_profile` kontroluje głównie szerokość live/dostawców w kontrolach wydania.
-Nie usuwa normalnego pełnego CI, Plugin Prerelease, smoke instalacji, akceptacji pakietu
-ani QA Lab. Profile stabilny i pełny zawsze uruchamiają wyczerpujące E2E repo/live
-oraz pokrycie soak ścieżki wydania Docker. Profil beta może włączyć je przez
-`run_release_soak=true`. Package Acceptance dostarcza kanoniczne E2E pakietu
-Telegram dla każdego pełnego kandydata, więc workflow zbiorczy nie duplikuje tego
-pollera live.
+`release_profile` steruje głównie zakresem testów live/dostawców w ramach kontroli wydania.
+Nie usuwa standardowego pełnego CI, wersji przedpremierowej Pluginu, testu dymnego
+instalacji, akceptacji pakietu ani QA Lab. Profile stabilny i pełny zawsze uruchamiają
+wyczerpujące testy E2E repozytorium/live oraz długotrwałe testy ścieżki wydania w Dockerze.
+Profil beta może je włączyć za pomocą `run_release_soak=true`. Akceptacja pakietu zapewnia
+kanoniczny test E2E Telegramu dla pakietu w przypadku każdego pełnego kandydata, dlatego
+nadrzędny przepływ nie powiela tego pollera live.
 
-| Profil    | Zamierzone użycie                 | Uwzględnione pokrycie live/dostawców                                                                                                                                                 |
-| --------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `minimum` | Najszybszy smoke krytyczny dla wydania. | Ścieżka live OpenAI/core, modele Docker live dla OpenAI, natywny rdzeń Gateway, natywny profil Gateway OpenAI, natywny Plugin OpenAI i Docker live Gateway OpenAI.                 |
-| `stable`  | Domyślny profil zatwierdzania wydania. | `minimum` plus smoke Anthropic, Google, MiniMax, backend, natywny harness testów live, backend CLI Docker live, bind Docker ACP, harness Docker Codex i shard smoke OpenCode Go. |
-| `full`    | Szeroki przegląd doradczy.        | `stable` plus dostawcy doradczy, shardy live Plugin i shardy live mediów.                                                                                                           |
+| Profil   | Przeznaczenie                              | Uwzględniony zakres testów live/dostawców                                                                                                                                                                         |
+| -------- | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `beta`   | Najszybszy test dymny krytyczny dla wydania. | Ścieżka live OpenAI/rdzenia, modele live w Dockerze dla OpenAI, natywny rdzeń Gateway, natywny profil Gateway OpenAI, natywny Plugin OpenAI oraz Gateway OpenAI live w Dockerze.                                  |
+| `stable` | Domyślny profil zatwierdzania wydania.     | `beta` oraz test dymny Anthropic, Google, MiniMax, backend, natywny zestaw testów live, backend CLI live w Dockerze, powiązanie ACP w Dockerze, zestaw testów Codex w Dockerze, ogłaszanie podagentów w Dockerze oraz fragment testu dymnego OpenCode Go. |
+| `full`   | Szeroki przebieg doradczy.                 | `stable` oraz dostawcy doradczy, fragmenty testów live Pluginów i fragmenty testów multimediów live.                                                                                                               |
 
-## Dodatki tylko w pełnym profilu
+## Dodatki tylko dla profilu pełnego
 
-Te zestawy są pomijane przez `stable` i uwzględniane przez `full`:
+Poniższe zestawy są pomijane przez `stable` i uwzględniane przez `full`:
 
-| Obszar                           | Pokrycie tylko w pełnym profilu                                                                                             |
-| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| Modele Docker live               | OpenCode Go, OpenRouter, xAI, Z.ai i Fireworks.                                                                             |
-| Gateway Docker live              | Dostawcy doradczy podzieleni na shardy DeepSeek/Fireworks, OpenCode Go/OpenRouter oraz xAI/Z.ai.                           |
-| Natywne profile dostawców Gateway | Pełne shardy Anthropic Opus i Sonnet/Haiku, Fireworks, DeepSeek, pełne shardy modeli OpenCode Go, OpenRouter, xAI i Z.ai. |
-| Natywne shardy live Plugin       | Plugins A-K, L-N, O-Z other, Moonshot i xAI.                                                                                |
-| Natywne shardy live mediów       | Audio, muzyka Google, muzyka MiniMax i grupy wideo A-D.                                                                     |
+| Obszar                           | Zakres tylko dla profilu pełnego                                                                                           |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Modele live w Dockerze           | OpenCode Go, OpenRouter, xAI, Z.ai i Fireworks.                                                                            |
+| Gateway live w Dockerze          | Dostawcy doradczy podzieleni na fragmenty DeepSeek/Fireworks, OpenCode Go/OpenRouter oraz xAI/Z.ai.                        |
+| Natywne profile dostawców Gateway | Pełne fragmenty Anthropic Opus i Sonnet/Haiku, Fireworks, DeepSeek, pełne fragmenty modeli OpenCode Go, OpenRouter, xAI i Z.ai. |
+| Natywne fragmenty live Pluginów  | Pluginy A-K, L-N, pozostałe O-Z, Moonshot i xAI.                                                                           |
+| Natywne fragmenty multimediów live | Dźwięk, muzyka Google, muzyka MiniMax oraz grupy wideo A-D.                                                               |
 
-`stable` obejmuje `native-live-src-gateway-profiles-anthropic-smoke` i
-`native-live-src-gateway-profiles-opencode-go-smoke`; `full` używa zamiast tego szerszych
-shardów modeli Anthropic i OpenCode Go. Zawężone ponowne uruchomienia nadal mogą używać
-zbiorczych uchwytów `native-live-src-gateway-profiles-anthropic` albo
+`stable` obejmuje `native-live-src-gateway-profiles-anthropic-smoke` oraz
+`native-live-src-gateway-profiles-opencode-go-smoke`; `full` używa zamiast nich
+szerszych fragmentów modeli Anthropic i OpenCode Go. Ukierunkowane ponowne uruchomienia
+mogą nadal używać zbiorczych uchwytów
+`native-live-src-gateway-profiles-anthropic` lub
 `native-live-src-gateway-profiles-opencode-go`.
 
-## Zawężone ponowne uruchomienia
+## Ukierunkowane ponowne uruchomienia
 
-Użyj `rerun_group`, aby uniknąć powtarzania niezwiązanych pól wydania:
+Użyj `rerun_group`, aby uniknąć powtarzania niepowiązanych środowisk wydania:
 
-| Uchwyt              | Zakres                                                                                          |
-| ------------------- | ----------------------------------------------------------------------------------------------- |
-| `all`               | Wszystkie etapy pełnej walidacji wydania.                                                       |
-| `ci`                | Tylko podrzędny ręczny pełny CI.                                                                |
-| `plugin-prerelease` | Tylko podrzędny etap przedpremierowy Plugin.                                                    |
-| `release-checks`    | Wszystkie etapy kontroli wydania OpenClaw.                                                      |
-| `install-smoke`     | Install Smoke przez kontrole wydania.                                                           |
-| `cross-os`          | Kontrole wydania dla wielu systemów operacyjnych.                                               |
-| `live-e2e`          | Walidacja E2E repo/live i ścieżki wydania Docker.                                               |
-| `package`           | Akceptacja pakietu.                                                                             |
-| `qa`                | Parzystość QA oraz ścieżki QA live.                                                             |
-| `qa-parity`         | Tylko ścieżki parzystości QA i raport.                                                          |
-| `qa-live`           | Matrix/Telegram QA live oraz bramkowane ścieżki Discord, WhatsApp i Slack, gdy są włączone.     |
-| `npm-telegram`      | Telegram E2E opublikowanego pakietu; wymaga `release_package_spec` lub `npm_telegram_package_spec`. |
+| Uchwyt              | Zakres                                                                                                 |
+| ------------------- | ------------------------------------------------------------------------------------------------------ |
+| `all`               | Wszystkie etapy pełnej walidacji wydania.                                                              |
+| `ci`                | Tylko podrzędny przepływ ręcznego pełnego CI.                                                          |
+| `plugin-prerelease` | Tylko podrzędny przepływ wersji przedpremierowej Pluginu.                                              |
+| `release-checks`    | Wszystkie etapy kontroli wydania OpenClaw.                                                             |
+| `install-smoke`     | Od testu dymnego instalacji po kontrole wydania.                                                       |
+| `cross-os`          | Kontrole wydania na różnych systemach operacyjnych.                                                    |
+| `live-e2e`          | Walidacja E2E repozytorium/live i ścieżki wydania w Dockerze.                                          |
+| `package`           | Akceptacja pakietu.                                                                                    |
+| `qa`                | Zgodność QA oraz ścieżki QA live.                                                                      |
+| `qa-parity`         | Tylko ścieżki zgodności QA i raport.                                                                   |
+| `qa-live`           | Matrix/Telegram QA live oraz warunkowe ścieżki Discord, WhatsApp i Slack, gdy są włączone.             |
+| `npm-telegram`      | Test E2E Telegramu opublikowanego pakietu; wymaga `release_package_spec` lub `npm_telegram_package_spec`. |
+| `performance`       | Tylko dane potwierdzające wydajność produktu.                                                          |
 
-Użyj `live_suite_filter` z `rerun_group=live-e2e`, gdy jeden pakiet live zakończył się niepowodzeniem.
-Prawidłowe identyfikatory filtrów są zdefiniowane w wielokrotnego użytku workflow live/E2E, w tym
+Gdy nie powiedzie się jeden zestaw live, użyj `live_suite_filter` z
+`rerun_group=live-e2e`. Prawidłowe identyfikatory filtrów są zdefiniowane w przepływie
+wielokrotnego użytku live/E2E i obejmują
 `docker-live-models`, `live-gateway-docker`,
 `live-gateway-anthropic-docker`, `live-gateway-google-docker`,
 `live-gateway-minimax-docker`, `live-gateway-advisory-docker`,
 `live-cli-backend-docker`, `live-acp-bind-docker` oraz
 `live-codex-harness-docker`.
 
-Uchwyt `live-gateway-advisory-docker` jest zbiorczym uchwytem ponownego uruchomienia dla jego
-trzech shardów dostawców, więc nadal rozgałęzia się na wszystkie zadania advisory Docker gateway.
+Uchwyt `live-gateway-advisory-docker` jest zbiorczym uchwytem ponownego uruchomienia
+dla trzech fragmentów dostawców, dlatego nadal rozdziela się na wszystkie doradcze
+zadania Gateway w Dockerze.
 
-Użyj `cross_os_suite_filter` z `rerun_group=cross-os`, gdy jedna ścieżka dla wielu systemów operacyjnych
-zakończyła się niepowodzeniem. Filtr akceptuje identyfikator systemu operacyjnego, identyfikator pakietu albo parę system/pakiet, na
-przykład `windows/packaged-upgrade`, `windows` lub `packaged-fresh`. Podsumowania dla wielu systemów operacyjnych
-zawierają czasy poszczególnych faz dla ścieżek aktualizacji pakietowej, a długotrwałe
-polecenia wypisują linie heartbeat, dzięki czemu zablokowana aktualizacja Windows jest widoczna przed
-limitem czasu zadania.
+Gdy nie powiedzie się jedna ścieżka obejmująca wiele systemów operacyjnych, użyj
+`cross_os_suite_filter` z `rerun_group=cross-os`. Filtr przyjmuje identyfikator systemu
+operacyjnego, identyfikator zestawu lub parę system/zestaw, na przykład
+`windows/packaged-upgrade`, `windows` albo `packaged-fresh`. Podsumowania dla wielu
+systemów operacyjnych obejmują czasy poszczególnych faz ścieżek aktualizacji pakietowej,
+a długotrwałe polecenia wypisują wiersze Heartbeat, dzięki czemu zawieszoną aktualizację
+można zauważyć przed przekroczeniem limitu czasu zadania.
 
-Niepowodzenia kontroli wydania QA blokują normalną walidację wydania. Wymagany dryf dynamicznych narzędzi OpenClaw
-w standardowej warstwie również blokuje weryfikator kontroli wydania.
-Uruchomienia Tideclaw alpha mogą nadal traktować ścieżki kontroli wydania niezwiązane z bezpieczeństwem pakietu jako
-doradcze. Gdy `live_suite_filter` jawnie żąda bramkowanej ścieżki QA live, takiej
-jak Discord, WhatsApp lub Slack, odpowiadająca zmienna repozytorium
+Niepowodzenia kontroli wydania QA blokują standardową walidację wydania. Kontrola
+pokrycia narzędzi środowiska uruchomieniowego QA (dynamiczne rozbieżności narzędzi między
+`openclaw` a `codex` na poziomie standardowym) również blokuje weryfikator kontroli
+wydania, mimo że bazowa ścieżka zgodności środowiska uruchomieniowego QA ma charakter
+doradczy. Uruchomienia alfa Tideclaw mogą nadal traktować ścieżki kontroli wydania
+niezwiązane z bezpieczeństwem pakietu jako doradcze. Przy `release_profile=beta` zestawy
+dostawców live w ramach `Run repo/live E2E validation` mają charakter doradczy:
+wdrożenia modeli innych firm zmieniają się niezależnie od wydania, dlatego profil beta
+przedstawia ich niepowodzenia jako ostrzeżenia, podczas gdy profile stabilny i pełny
+nadal traktują je jako blokujące. Gdy `live_suite_filter` jawnie żąda warunkowej ścieżki
+QA live, takiej jak Discord, WhatsApp lub Slack, odpowiednia zmienna repozytorium
 `OPENCLAW_RELEASE_QA_*_LIVE_CI_ENABLED` musi być włączona; w przeciwnym razie
-przechwytywanie wejścia kończy się niepowodzeniem zamiast po cichu pominąć ścieżkę. Uruchom ponownie `rerun_group=qa`,
-`qa-parity` lub `qa-live`, gdy potrzebujesz świeżych dowodów QA.
+przechwytywanie danych wejściowych kończy się niepowodzeniem zamiast po cichu pomijać
+ścieżkę. Uruchom ponownie `rerun_group=qa`, `qa-parity` lub `qa-live`, gdy potrzebujesz
+aktualnych danych potwierdzających QA.
 
-## Dowody do zachowania
+## Dane, które należy zachować
 
-Zachowaj podsumowanie `Full Release Validation` jako indeks na poziomie wydania. Łączy ono
-identyfikatory uruchomień podrzędnych i zawiera tabele najwolniejszych zadań. W przypadku niepowodzeń najpierw sprawdź podrzędny
-workflow, a następnie uruchom ponownie najmniejszy pasujący uchwyt powyżej.
+Zachowaj podsumowanie `Full Release Validation` jako indeks na poziomie wydania. Zawiera
+ono odnośniki do identyfikatorów przebiegów podrzędnych oraz tabele najwolniejszych zadań.
+W przypadku niepowodzeń najpierw sprawdź przepływ podrzędny, a następnie ponownie uruchom
+najmniejszy pasujący uchwyt wymieniony powyżej.
 
 Przydatne artefakty:
 
 - `release-package-under-test` z `OpenClaw Release Checks`
-- Artefakty ścieżki wydania Docker w `.artifacts/docker-tests/`
-- `package-under-test` z akceptacji pakietu oraz artefakty akceptacji Docker
-- Artefakty kontroli wydania dla wielu systemów operacyjnych dla każdego systemu operacyjnego i pakietu
-- Artefakty parzystości QA, Matrix i Telegram
+- artefakty ścieżki wydania w Dockerze w `.artifacts/docker-tests/`
+- artefakty `package-under-test` z akceptacji pakietu oraz artefakty akceptacji w Dockerze
+- artefakty kontroli wydania na różnych systemach operacyjnych dla każdego systemu i zestawu
+- artefakty zgodności QA, zgodności środowiska uruchomieniowego, Matrix i Telegramu
 
-## Pliki workflow
+## Pliki przepływów pracy
 
 - `.github/workflows/full-release-validation.yml`
 - `.github/workflows/openclaw-release-checks.yml`
 - `.github/workflows/openclaw-live-and-e2e-checks-reusable.yml`
 - `.github/workflows/plugin-prerelease.yml`
 - `.github/workflows/install-smoke.yml`
+- `.github/workflows/install-smoke-reusable.yml`
 - `.github/workflows/openclaw-cross-os-release-checks-reusable.yml`
 - `.github/workflows/package-acceptance.yml`
+- `.github/workflows/openclaw-performance.yml`
+- `.github/workflows/npm-telegram-beta-e2e.yml`

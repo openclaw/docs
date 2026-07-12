@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Vous installez, configurez ou auditez le Plugin tlon
-summary: Plugin de canal OpenClaw Tlon/Urbit pour les flux de travail de chat.
+    - Vous installez, configurez ou auditez le plugin tlon
+summary: Plugin de canal Tlon/Urbit pour OpenClaw destiné aux flux de travail de chat.
 title: Plugin Tlon
 x-i18n:
-    generated_at: "2026-06-27T17:57:16Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T02:58:49Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 6fd1dcc934734599c0b671f0a9659dc5cc6e4ff907e3e14f9ff3ba5ec86aa0cc
@@ -15,17 +15,17 @@ x-i18n:
 
 # Plugin Tlon
 
-Plugin de canal OpenClaw Tlon/Urbit pour les flux de travail de chat.
+Plugin de canal Tlon/Urbit pour OpenClaw destiné aux flux de discussion.
 
 ## Distribution
 
-- Paquet : `@openclaw/tlon`
-- Mode d’installation : npm ; ClawHub
+- Paquet : `@openclaw/tlon`
+- Méthode d’installation : npm ; ClawHub
 
 ## Surface
 
-channels: tlon; skills
+canaux : tlon ; Skills
 
-## Docs associées
+## Documentation connexe
 
 - [tlon](/fr/channels/tlon)

@@ -1,114 +1,112 @@
 ---
 read_when:
     - Menyiapkan lingkungan pengembangan macOS
-summary: Panduan penyiapan untuk pengembang yang mengerjakan aplikasi macOS OpenClaw
+summary: Panduan penyiapan bagi pengembang yang mengerjakan aplikasi OpenClaw untuk macOS
 title: Penyiapan pengembangan macOS
 x-i18n:
-    generated_at: "2026-07-04T06:52:41Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:21:33Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5438de16d6d796f4c3df5d896f288ee3dfaba16471a4abb932d277cd8e8b84f8
+    source_hash: bd7d556af92892d3deea3f5d8238a33cd413e10b0b377468396221e174ace8fe
     source_path: platforms/mac/dev-setup.md
     workflow: 16
 ---
 
-# Penyiapan pengembang macOS
+# Penyiapan pengembangan macOS
 
-Bangun dan jalankan aplikasi macOS OpenClaw dari sumber.
+Bangun dan jalankan aplikasi OpenClaw untuk macOS dari kode sumber.
 
 ## Prasyarat
 
-Sebelum membangun aplikasi, pastikan Anda telah menginstal hal berikut:
+- **Xcode 26.2+** (toolchain Swift 6.2), pada macOS terbaru yang tersedia di
+  Software Update.
+- **Node.js 24 & pnpm** untuk Gateway, CLI, dan skrip pengemasan. Node
+  22.19+ juga dapat digunakan.
 
-1. **Xcode 26.2+**: Diperlukan untuk pengembangan Swift.
-2. **Node.js 24 & pnpm**: Direkomendasikan untuk Gateway, CLI, dan skrip pengemasan. Node 22 LTS, saat ini `22.19+`, tetap didukung untuk kompatibilitas.
-
-## 1. Instal Dependensi
-
-Instal dependensi seluruh proyek:
+## 1. Instal dependensi
 
 ```bash
 pnpm install
 ```
 
-## 2. Bangun dan Kemas Aplikasi
-
-Untuk membangun aplikasi macOS dan mengemasnya ke dalam `dist/OpenClaw.app`, jalankan:
+## 2. Bangun dan kemas aplikasi
 
 ```bash
 ./scripts/package-mac-app.sh
 ```
 
-Jika Anda tidak memiliki sertifikat Apple Developer ID, skrip akan otomatis menggunakan **penandatanganan ad-hoc** (`-`).
+Menghasilkan `dist/OpenClaw.app`. Tanpa sertifikat Apple Developer ID, skrip
+akan menggunakan penandatanganan ad-hoc sebagai alternatif.
 
-Untuk mode jalankan pengembangan, flag penandatanganan, dan pemecahan masalah Team ID, lihat README aplikasi macOS:
-[https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md](https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md)
+Untuk mode eksekusi pengembangan, flag penandatanganan, dan pemecahan masalah Team ID, lihat
+[apps/macos/README.md](https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md).
+Siklus pengembangan cepat dari root repositori: `scripts/restart-mac.sh` (tambahkan `--no-sign` untuk
+penandatanganan ad-hoc; izin TCC tidak dipertahankan saat menggunakan `--no-sign`).
 
-> **Catatan**: Aplikasi yang ditandatangani ad-hoc dapat memicu prompt keamanan. Jika aplikasi langsung macet dengan "Abort trap 6", lihat bagian [Pemecahan masalah](#troubleshooting).
+<Note>
+Aplikasi yang ditandatangani secara ad-hoc dapat memicu permintaan keamanan. Jika aplikasi langsung
+mengalami crash dengan pesan "Abort trap 6", lihat [Pemecahan masalah](#troubleshooting).
+</Note>
 
 ## 3. Instal CLI dan Gateway
 
-Aplikasi yang dikemas menyematkan penginstal kanonis `scripts/install-cli.sh`. Pada profil
-baru, pilih **Mac Ini** selama onboarding; aplikasi akan menginstal CLI dan runtime
-ruang pengguna yang sesuai sebelum memulai wizard Gateway.
+Aplikasi yang dikemas menyertakan penginstal kanonis `scripts/install-cli.sh`. Pada
+profil baru, pilih **This Mac** selama orientasi awal; aplikasi akan menginstal
+CLI dan runtime ruang pengguna yang sesuai sebelum memulai wizard Gateway.
 
-Untuk pemulihan pengembangan manual, instal sendiri CLI yang sesuai:
+Untuk pemulihan pengembangan secara manual, instal sendiri CLI yang sesuai:
 
 ```bash
 npm install -g openclaw@<version>
 ```
 
-`pnpm add -g openclaw@<version>` dan `bun add -g openclaw@<version>` juga berfungsi.
-Untuk runtime Gateway, Node tetap menjadi jalur yang direkomendasikan.
+`pnpm add -g openclaw@<version>` dan `bun add -g openclaw@<version>` juga
+dapat digunakan. Node tetap menjadi runtime yang direkomendasikan untuk Gateway itu sendiri.
 
 ## Pemecahan masalah
 
-### Build gagal: ketidakcocokan toolchain atau SDK
+### Pembangunan gagal: toolchain atau SDK tidak cocok
 
-Build aplikasi macOS mengharapkan SDK macOS terbaru dan toolchain Swift 6.2.
-
-**Dependensi sistem (wajib):**
-
-- **Versi macOS terbaru yang tersedia di Software Update** (diwajibkan oleh SDK Xcode 26.2)
-- **Xcode 26.2** (toolchain Swift 6.2)
-
-**Pemeriksaan:**
+Pembangunan aplikasi macOS memerlukan SDK macOS terbaru dan toolchain Swift 6.2
+(Xcode 26.2+).
 
 ```bash
 xcodebuild -version
 xcrun swift --version
 ```
 
-Jika versi tidak cocok, perbarui macOS/Xcode dan jalankan ulang build.
+Jika versinya tidak cocok, perbarui macOS/Xcode dan jalankan kembali proses pembangunan.
 
-### Aplikasi macet saat pemberian izin
+### Aplikasi mengalami crash saat pemberian izin
 
-Jika aplikasi macet saat Anda mencoba mengizinkan akses **Speech Recognition** atau **Microphone**, penyebabnya mungkin cache TCC yang rusak atau ketidakcocokan tanda tangan.
+Jika aplikasi mengalami crash ketika Anda mencoba mengizinkan akses **Speech Recognition** atau
+**Microphone**, penyebabnya mungkin cache TCC yang rusak atau ketidakcocokan tanda tangan.
 
-**Perbaikan:**
-
-1. Reset izin TCC:
+1. Atur ulang izin TCC untuk id bundel debug:
 
    ```bash
    tccutil reset All ai.openclaw.mac.debug
    ```
 
-2. Jika itu gagal, ubah `BUNDLE_ID` sementara di [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) untuk memaksa "clean slate" dari macOS.
+2. Jika gagal, ubah sementara `BUNDLE_ID` di
+   [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh)
+   untuk memaksa macOS memulai dari keadaan bersih.
 
-### Gateway "Memulai..." tanpa batas
+### Gateway terus menampilkan "Starting..."
 
-Jika status gateway tetap pada "Memulai...", periksa apakah proses zombie menahan port:
+Periksa apakah proses zombie menggunakan port tersebut:
 
 ```bash
 openclaw gateway status
 openclaw gateway stop
 
-# If you're not using a LaunchAgent (dev mode / manual runs), find the listener:
+# Jika Anda tidak menggunakan LaunchAgent (mode pengembangan / eksekusi manual), cari proses yang mendengarkan:
 lsof -nP -iTCP:18789 -sTCP:LISTEN
 ```
 
-Jika proses manual menahan port, hentikan proses tersebut (Ctrl+C). Sebagai pilihan terakhir, hentikan paksa PID yang Anda temukan di atas.
+Jika eksekusi manual menggunakan port tersebut, hentikan (Ctrl+C), atau sebagai
+upaya terakhir, hentikan paksa PID yang ditemukan di atas.
 
 ## Terkait
 

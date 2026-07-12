@@ -1,44 +1,43 @@
 ---
 read_when:
     - คุณต้องการใช้ Synthetic เป็นผู้ให้บริการโมเดล
-    - คุณต้องการการตั้งค่า Synthetic API key หรือ base URL
-summary: ใช้ API แบบเข้ากันได้กับ Anthropic ของ Synthetic ใน OpenClaw
-title: Synthetic
+    - คุณต้องตั้งค่าคีย์ Synthetic API หรือ URL พื้นฐาน
+summary: ใช้ API ของ Synthetic ที่เข้ากันได้กับ Anthropic ใน OpenClaw
+title: สังเคราะห์
 x-i18n:
-    generated_at: "2026-04-24T09:30:03Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 81a48573782d46f0b018d19ab607729b236c241e57535e4af52eb8c142fee59b
-    source_path: providers/synthetic.md
-    workflow: 15
+    generated_at: "2026-07-12T16:41:15Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: f1882a34aa1ca52403b92effdbf3b753fd911575af6d8b8aa5d692245b8e8f1b
+    source_path: providers/synthetic.md
+    workflow: 16
 ---
 
-[Synthetic](https://synthetic.new) เปิดเผยปลายทางที่เข้ากันได้กับ Anthropic
-OpenClaw ลงทะเบียนมันเป็น provider `synthetic` และใช้ Anthropic
-Messages API
+[Synthetic](https://synthetic.new) ให้บริการปลายทางที่เข้ากันได้กับ Anthropic
+OpenClaw รวมบริการนี้ไว้เป็นผู้ให้บริการ `synthetic` และใช้ API ข้อความของ Anthropic
 
-| คุณสมบัติ | ค่า |
+| คุณสมบัติ | ค่า                                   |
 | -------- | ------------------------------------- |
-| Provider | `synthetic` |
-| Auth | `SYNTHETIC_API_KEY` |
-| API | Anthropic Messages |
-| Base URL | `https://api.synthetic.new/anthropic` |
+| ผู้ให้บริการ | `synthetic`                           |
+| การยืนยันตัวตน | `SYNTHETIC_API_KEY`                   |
+| API      | ข้อความของ Anthropic                  |
+| URL ฐาน | `https://api.synthetic.new/anthropic` |
 
 ## เริ่มต้นใช้งาน
 
 <Steps>
-  <Step title="รับ API key">
-    รับ `SYNTHETIC_API_KEY` จากบัญชี Synthetic ของคุณ หรือให้
-    onboarding wizard ถามคุณก็ได้
+  <Step title="รับคีย์ API">
+    รับ `SYNTHETIC_API_KEY` จากบัญชี Synthetic ของคุณ หรือให้ขั้นตอนเริ่มต้นใช้งาน
+    แจ้งให้คุณป้อนคีย์
   </Step>
-  <Step title="รันการเริ่มต้นใช้งาน">
+  <Step title="เรียกใช้ขั้นตอนเริ่มต้นใช้งาน">
     ```bash
     openclaw onboard --auth-choice synthetic-api-key
     ```
   </Step>
   <Step title="ตรวจสอบโมเดลเริ่มต้น">
-    หลัง onboarding โมเดลเริ่มต้นจะถูกตั้งเป็น:
+    ขั้นตอนเริ่มต้นใช้งานจะตั้งค่าโมเดลเริ่มต้นเป็น:
     ```text
     synthetic/hf:MiniMaxAI/MiniMax-M2.5
     ```
@@ -46,12 +45,12 @@ Messages API
 </Steps>
 
 <Warning>
-ไคลเอนต์ Anthropic ของ OpenClaw จะต่อท้าย `/v1` ให้ base URL โดยอัตโนมัติ ดังนั้นให้ใช้
+ไคลเอ็นต์ Anthropic ของ OpenClaw จะเติม `/v1` ต่อท้าย URL ฐานโดยอัตโนมัติ ดังนั้นให้ใช้
 `https://api.synthetic.new/anthropic` (ไม่ใช่ `/anthropic/v1`) หาก Synthetic
-เปลี่ยน base URL ให้ override `models.providers.synthetic.baseUrl`
+เปลี่ยน URL ฐาน ให้แทนที่ `models.providers.synthetic.baseUrl`
 </Warning>
 
-## ตัวอย่าง Config
+## ตัวอย่างการกำหนดค่า
 
 ```json5
 {
@@ -86,49 +85,49 @@ Messages API
 }
 ```
 
-## แค็ตตาล็อกที่มาพร้อมระบบ
+## แค็ตตาล็อกในตัว
 
-โมเดล Synthetic ทั้งหมดใช้ cost `0` (input/output/cache)
+โมเดล Synthetic ทั้งหมดมีค่าใช้จ่าย `0` (อินพุต/เอาต์พุต/แคช)
 
-| Model ID | Context window | Max tokens | Reasoning | อินพุต |
+| รหัสโมเดล                                              | ขนาดหน้าต่างบริบท | โทเค็นสูงสุด | การให้เหตุผล | อินพุต       |
 | ------------------------------------------------------ | -------------- | ---------- | --------- | ------------ |
-| `hf:MiniMaxAI/MiniMax-M2.5` | 192,000 | 65,536 | no | text |
-| `hf:moonshotai/Kimi-K2-Thinking` | 256,000 | 8,192 | yes | text |
-| `hf:zai-org/GLM-4.7` | 198,000 | 128,000 | no | text |
-| `hf:deepseek-ai/DeepSeek-R1-0528` | 128,000 | 8,192 | no | text |
-| `hf:deepseek-ai/DeepSeek-V3-0324` | 128,000 | 8,192 | no | text |
-| `hf:deepseek-ai/DeepSeek-V3.1` | 128,000 | 8,192 | no | text |
-| `hf:deepseek-ai/DeepSeek-V3.1-Terminus` | 128,000 | 8,192 | no | text |
-| `hf:deepseek-ai/DeepSeek-V3.2` | 159,000 | 8,192 | no | text |
-| `hf:meta-llama/Llama-3.3-70B-Instruct` | 128,000 | 8,192 | no | text |
-| `hf:meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8` | 524,000 | 8,192 | no | text |
-| `hf:moonshotai/Kimi-K2-Instruct-0905` | 256,000 | 8,192 | no | text |
-| `hf:moonshotai/Kimi-K2.5` | 256,000 | 8,192 | yes | text + image |
-| `hf:openai/gpt-oss-120b` | 128,000 | 8,192 | no | text |
-| `hf:Qwen/Qwen3-235B-A22B-Instruct-2507` | 256,000 | 8,192 | no | text |
-| `hf:Qwen/Qwen3-Coder-480B-A35B-Instruct` | 256,000 | 8,192 | no | text |
-| `hf:Qwen/Qwen3-VL-235B-A22B-Instruct` | 250,000 | 8,192 | no | text + image |
-| `hf:zai-org/GLM-4.5` | 128,000 | 128,000 | no | text |
-| `hf:zai-org/GLM-4.6` | 198,000 | 128,000 | no | text |
-| `hf:zai-org/GLM-5` | 256,000 | 128,000 | yes | text + image |
-| `hf:deepseek-ai/DeepSeek-V3` | 128,000 | 8,192 | no | text |
-| `hf:Qwen/Qwen3-235B-A22B-Thinking-2507` | 256,000 | 8,192 | yes | text |
+| `hf:MiniMaxAI/MiniMax-M2.5`                            | 192,000        | 65,536     | ไม่        | ข้อความ         |
+| `hf:moonshotai/Kimi-K2-Thinking`                       | 256,000        | 8,192      | ใช่       | ข้อความ         |
+| `hf:zai-org/GLM-4.7`                                   | 198,000        | 128,000    | ไม่        | ข้อความ         |
+| `hf:deepseek-ai/DeepSeek-R1-0528`                      | 128,000        | 8,192      | ไม่        | ข้อความ         |
+| `hf:deepseek-ai/DeepSeek-V3-0324`                      | 128,000        | 8,192      | ไม่        | ข้อความ         |
+| `hf:deepseek-ai/DeepSeek-V3.1`                         | 128,000        | 8,192      | ไม่        | ข้อความ         |
+| `hf:deepseek-ai/DeepSeek-V3.1-Terminus`                | 128,000        | 8,192      | ไม่        | ข้อความ         |
+| `hf:deepseek-ai/DeepSeek-V3.2`                         | 159,000        | 8,192      | ไม่        | ข้อความ         |
+| `hf:meta-llama/Llama-3.3-70B-Instruct`                 | 128,000        | 8,192      | ไม่        | ข้อความ         |
+| `hf:meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8` | 524,000        | 8,192      | ไม่        | ข้อความ         |
+| `hf:moonshotai/Kimi-K2-Instruct-0905`                  | 256,000        | 8,192      | ไม่        | ข้อความ         |
+| `hf:moonshotai/Kimi-K2.5`                              | 256,000        | 8,192      | ใช่       | ข้อความ + รูปภาพ |
+| `hf:openai/gpt-oss-120b`                               | 128,000        | 8,192      | ไม่        | ข้อความ         |
+| `hf:Qwen/Qwen3-235B-A22B-Instruct-2507`                | 256,000        | 8,192      | ไม่        | ข้อความ         |
+| `hf:Qwen/Qwen3-Coder-480B-A35B-Instruct`               | 256,000        | 8,192      | ไม่        | ข้อความ         |
+| `hf:Qwen/Qwen3-VL-235B-A22B-Instruct`                  | 250,000        | 8,192      | ไม่        | ข้อความ + รูปภาพ |
+| `hf:zai-org/GLM-4.5`                                   | 128,000        | 128,000    | ไม่        | ข้อความ         |
+| `hf:zai-org/GLM-4.6`                                   | 198,000        | 128,000    | ไม่        | ข้อความ         |
+| `hf:zai-org/GLM-5`                                     | 256,000        | 128,000    | ใช่       | ข้อความ + รูปภาพ |
+| `hf:deepseek-ai/DeepSeek-V3`                           | 128,000        | 8,192      | ไม่        | ข้อความ         |
+| `hf:Qwen/Qwen3-235B-A22B-Thinking-2507`                | 256,000        | 8,192      | ใช่       | ข้อความ         |
 
 <Tip>
-model refs ใช้รูปแบบ `synthetic/<modelId>` ใช้
-`openclaw models list --provider synthetic` เพื่อดูโมเดลทั้งหมดที่ใช้ได้ใน
+การอ้างอิงโมเดลใช้รูปแบบ `synthetic/<modelId>` ใช้
+`openclaw models list --provider synthetic` เพื่อดูโมเดลทั้งหมดที่พร้อมใช้งานใน
 บัญชีของคุณ
 </Tip>
 
 <AccordionGroup>
-  <Accordion title="Model allowlist">
-    หากคุณเปิดใช้ model allowlist (`agents.defaults.models`) ให้เพิ่มทุก
-    โมเดล Synthetic ที่คุณวางแผนจะใช้ โมเดลที่ไม่อยู่ใน allowlist จะถูกซ่อน
+  <Accordion title="รายการโมเดลที่อนุญาต">
+    หากคุณเปิดใช้งานรายการโมเดลที่อนุญาต (`agents.defaults.models`) ให้เพิ่มโมเดล
+    Synthetic ทุกโมเดลที่คุณวางแผนจะใช้ โมเดลที่ไม่อยู่ในรายการที่อนุญาตจะถูกซ่อน
     จากเอเจนต์
   </Accordion>
 
-  <Accordion title="Base URL override">
-    หาก Synthetic เปลี่ยน API endpoint ให้ override base URL ใน config ของคุณ:
+  <Accordion title="แทนที่ URL ฐาน">
+    หาก Synthetic เปลี่ยนปลายทาง API ให้แทนที่ URL ฐาน:
 
     ```json5
     {
@@ -142,19 +141,19 @@ model refs ใช้รูปแบบ `synthetic/<modelId>` ใช้
     }
     ```
 
-    โปรดจำไว้ว่า OpenClaw จะต่อท้าย `/v1` ให้อัตโนมัติ
+    OpenClaw ยังคงเติม `/v1` ต่อท้ายโดยอัตโนมัติ
 
   </Accordion>
 </AccordionGroup>
 
-## ที่เกี่ยวข้อง
+## เนื้อหาที่เกี่ยวข้อง
 
 <CardGroup cols={2}>
-  <Card title="การเลือกโมเดล" href="/th/concepts/model-providers" icon="layers">
-    กฎของ provider, model refs และลักษณะการทำงานของ failover
+  <Card title="ผู้ให้บริการโมเดล" href="/th/concepts/model-providers" icon="layers">
+    กฎของผู้ให้บริการ การอ้างอิงโมเดล และพฤติกรรมการสลับไปใช้ระบบสำรอง
   </Card>
   <Card title="ข้อมูลอ้างอิงการกำหนดค่า" href="/th/gateway/configuration-reference" icon="gear">
-    schema ของ config แบบเต็ม รวมถึงการตั้งค่า provider
+    สคีมาการกำหนดค่าฉบับเต็ม รวมถึงการตั้งค่าผู้ให้บริการ
   </Card>
   <Card title="Synthetic" href="https://synthetic.new" icon="arrow-up-right-from-square">
     แดชบอร์ด Synthetic และเอกสาร API

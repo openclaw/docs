@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Quieres configurar el id de proveedor qwen-oauth
-    - Anteriormente usaste credenciales OAuth de Qwen Portal
-    - Necesitas el endpoint de Qwen Portal o la guía de migración
+    - Quieres configurar el identificador de proveedor `qwen-oauth`
+    - Anteriormente usaste credenciales de OAuth de Qwen Portal
+    - Necesitas el endpoint de Qwen Portal o una guía de migración
 summary: Usa el id de proveedor de Qwen Portal con OpenClaw
-title: OAuth de Qwen / Portal
+title: OAuth / Portal de Qwen
 x-i18n:
-    generated_at: "2026-07-05T11:41:52Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T23:30:47Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: b78f6f23e62e38d11e6fe4e2bf515b13b414f276d08f672740ad94747a22c8fb
@@ -15,43 +15,45 @@ x-i18n:
     workflow: 16
 ---
 
-`qwen-oauth` es el id del proveedor Qwen Portal, registrado por el plugin Qwen
-(`@openclaw/qwen-provider`). Apunta al endpoint de Qwen Portal en
-`https://portal.qwen.ai/v1` y mantiene las configuraciones antiguas de Qwen OAuth
-/ portal accesibles mediante un id de proveedor distinto, separado del proveedor
-`qwen` canónico.
+`qwen-oauth` es el id del proveedor de Qwen Portal, registrado por el Plugin de Qwen
+(`@openclaw/qwen-provider`). Utiliza el endpoint de Qwen Portal en
+`https://portal.qwen.ai/v1` y permite seguir accediendo a configuraciones
+anteriores de Qwen OAuth o del portal mediante un id de proveedor distinto,
+separado del proveedor canónico `qwen`.
 
-Elige `qwen-oauth` si ya tienes un token funcional de Qwen Portal, estás
-migrando un flujo heredado de Qwen OAuth o Qwen CLI, o necesitas probar
-específicamente el endpoint de Qwen Portal. Para configuraciones nuevas, prefiere
-[Qwen](/es/providers/qwen) con el endpoint Standard ModelStudio: cubre
-configuraciones nuevas con clave de API, opciones de endpoint más amplias,
-Standard de pago por uso, Coding Plan y el catálogo completo del plugin Qwen.
+Elija `qwen-oauth` si ya tiene un token de Qwen Portal que funciona, está
+migrando un flujo de trabajo heredado de Qwen OAuth o Qwen CLI, o necesita
+probar específicamente el endpoint de Qwen Portal. Para configuraciones nuevas,
+prefiera [Qwen](/es/providers/qwen) con el endpoint estándar de ModelStudio:
+admite nuevas configuraciones con clave de API, más opciones de endpoints,
+el plan Standard de pago por uso, Coding Plan y el catálogo completo del
+Plugin de Qwen.
 
 ## Configuración
 
-Instala el plugin Qwen si aún no lo has hecho:
+Instale el Plugin de Qwen si aún no lo ha hecho:
 
 ```bash
 openclaw plugins install @openclaw/qwen-provider
 openclaw gateway restart
 ```
 
-Proporciona tu token del portal mediante el onboarding:
+Proporcione su token del portal durante la incorporación:
 
 ```bash
 openclaw onboard --auth-choice qwen-oauth
 ```
 
-Las ejecuciones no interactivas leen el token desde `--qwen-oauth-token <token>`, o establece:
+Las ejecuciones no interactivas leen el token de `--qwen-oauth-token <token>`, o bien configure:
 
 ```bash
 export QWEN_API_KEY="<your-qwen-portal-token>" # pragma: allowlist secret
 ```
 
-El onboarding almacena el token en un perfil de autenticación `qwen-oauth`,
-inicializa el catálogo de modelos del portal y establece `qwen-oauth/qwen3.5-plus`
-como modelo predeterminado cuando no hay ninguno configurado.
+La incorporación almacena el token en un perfil de autenticación `qwen-oauth`,
+inicializa el catálogo de modelos del portal y establece
+`qwen-oauth/qwen3.5-plus` como modelo predeterminado cuando no hay ninguno
+configurado.
 
 ## Valores predeterminados
 
@@ -62,40 +64,40 @@ como modelo predeterminado cuando no hay ninguno configurado.
 - Estilo de API: compatible con OpenAI
 - Modelo predeterminado: `qwen-oauth/qwen3.5-plus`
 
-## En qué se diferencia de Qwen
+## Diferencias con Qwen
 
 OpenClaw tiene dos ids de proveedor orientados a Qwen:
 
-| Proveedor    | Familia de endpoints                                    | Ideal para                                                                                 |
-| ------------ | -------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| `qwen`       | Endpoints de Qwen Cloud / Alibaba DashScope y Coding Plan | Configuraciones nuevas con clave de API, Standard de pago por uso, Coding Plan, funciones multimodales de DashScope |
-| `qwen-oauth` | Endpoint de Qwen Portal en `portal.qwen.ai/v1`           | Tokens existentes de Qwen Portal y configuraciones heredadas de Qwen OAuth / CLI           |
+| Proveedor    | Familia de endpoints                                      | Recomendado para                                                                                              |
+| ------------ | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `qwen`       | Endpoints de Qwen Cloud / Alibaba DashScope y Coding Plan | Nuevas configuraciones con clave de API, Standard de pago por uso, Coding Plan y funciones multimodales de DashScope |
+| `qwen-oauth` | Endpoint de Qwen Portal en `portal.qwen.ai/v1`            | Tokens existentes de Qwen Portal y configuraciones heredadas de Qwen OAuth / CLI                             |
 
 Ambos proveedores usan formatos de solicitud compatibles con OpenAI, pero son
-superficies de autenticación separadas. Un token almacenado para `qwen-oauth` no
-debe tratarse como una clave de DashScope o ModelStudio, y una clave nueva de
-DashScope debe usar el proveedor `qwen` canónico en su lugar.
+superficies de autenticación independientes. Un token almacenado para
+`qwen-oauth` no debe tratarse como una clave de DashScope o ModelStudio, y una
+clave nueva de DashScope debe usar en su lugar el proveedor canónico `qwen`.
 
 ## Modelos
 
-El plugin Qwen inicializa este catálogo estático para el endpoint de Qwen Portal.
-Todas las entradas usan una salida máxima de 65,536 tokens; la disponibilidad
-depende de la cuenta y el token actuales de Qwen Portal.
+El Plugin de Qwen inicializa este catálogo estático para el endpoint de Qwen
+Portal. Todas las entradas permiten una salida máxima de 65 536 tokens; la
+disponibilidad depende de la cuenta y el token actuales de Qwen Portal.
 
-| Ref. de modelo                   | Entrada       | Contexto  | Notas                 |
-| --------------------------------- | ------------- | --------- | --------------------- |
-| `qwen-oauth/qwen3.5-plus`         | texto, imagen | 1,000,000 | Modelo predeterminado |
-| `qwen-oauth/qwen3.6-plus`         | texto, imagen | 1,000,000 |                       |
-| `qwen-oauth/qwen3-max-2026-01-23` | texto         | 262,144   |                       |
-| `qwen-oauth/qwen3-coder-next`     | texto         | 262,144   |                       |
-| `qwen-oauth/qwen3-coder-plus`     | texto         | 1,000,000 |                       |
-| `qwen-oauth/MiniMax-M2.5`         | texto         | 1,000,000 | Razonamiento          |
-| `qwen-oauth/glm-5`                | texto         | 202,752   |                       |
-| `qwen-oauth/glm-4.7`              | texto         | 202,752   |                       |
-| `qwen-oauth/kimi-k2.5`            | texto, imagen | 262,144   |                       |
+| Referencia del modelo             | Entrada       | Contexto  | Notas               |
+| --------------------------------- | ------------- | --------- | ------------------- |
+| `qwen-oauth/qwen3.5-plus`         | texto, imagen | 1 000 000 | Modelo predeterminado |
+| `qwen-oauth/qwen3.6-plus`         | texto, imagen | 1 000 000 |                     |
+| `qwen-oauth/qwen3-max-2026-01-23` | texto         | 262 144   |                     |
+| `qwen-oauth/qwen3-coder-next`     | texto         | 262 144   |                     |
+| `qwen-oauth/qwen3-coder-plus`     | texto         | 1 000 000 |                     |
+| `qwen-oauth/MiniMax-M2.5`         | texto         | 1 000 000 | Razonamiento         |
+| `qwen-oauth/glm-5`                | texto         | 202 752   |                     |
+| `qwen-oauth/glm-4.7`              | texto         | 202 752   |                     |
+| `qwen-oauth/kimi-k2.5`            | texto, imagen | 262 144   |                     |
 
-Si tu cuenta usa claves de API de ModelStudio / DashScope en su lugar, configura
-el proveedor `qwen` canónico:
+Si su cuenta utiliza claves de API de ModelStudio / DashScope, configure en su
+lugar el proveedor canónico `qwen`:
 
 ```bash
 openclaw onboard --auth-choice qwen-standard-api-key
@@ -104,15 +106,16 @@ openclaw models set qwen/qwen3-coder-plus
 
 ## Migración
 
-Los perfiles heredados de Qwen Portal OAuth no se pueden actualizar; `openclaw doctor`
-los marca. Si un perfil del portal deja de funcionar, vuelve a ejecutar el
-onboarding con un token actual o cambia al proveedor Qwen Standard:
+Los perfiles OAuth heredados de Qwen Portal no se pueden renovar;
+`openclaw doctor` los marca. Si un perfil del portal deja de funcionar, vuelva
+a ejecutar la incorporación con un token actual o cambie al proveedor Standard
+de Qwen:
 
 ```bash
 openclaw onboard --auth-choice qwen-standard-api-key
 ```
 
-Standard global ModelStudio usa:
+El servicio global Standard de ModelStudio utiliza:
 
 ```text
 https://dashscope-intl.aliyuncs.com/compatible-mode/v1
@@ -120,17 +123,18 @@ https://dashscope-intl.aliyuncs.com/compatible-mode/v1
 
 ## Solución de problemas
 
-- Fallos de actualización de Portal OAuth: los perfiles heredados de Qwen Portal
-  OAuth no se pueden actualizar. Vuelve a ejecutar el onboarding con un token actual.
-- Errores de endpoint incorrecto: confirma que la ref. de modelo empieza por
-  `qwen-oauth/` al usar un token del portal. Usa refs. `qwen/` solo para el
-  proveedor Qwen canónico.
+- Errores de renovación de OAuth del portal: los perfiles OAuth heredados de
+  Qwen Portal no se pueden renovar. Vuelva a ejecutar la incorporación con un
+  token actual.
+- Errores de endpoint incorrecto: confirme que la referencia del modelo
+  comienza por `qwen-oauth/` cuando utilice un token del portal. Use referencias
+  `qwen/` solo para el proveedor canónico de Qwen.
 - Confusión con `QWEN_API_KEY`: ambas páginas de Qwen mencionan esta variable de
-  entorno, pero el onboarding almacena las credenciales bajo el id de proveedor
-  seleccionado. Prefiere el onboarding cuando mantengas `qwen` y `qwen-oauth`
-  disponibles en la misma máquina.
+  entorno, pero la incorporación almacena las credenciales bajo el id del
+  proveedor seleccionado. Prefiera la incorporación cuando mantenga disponibles
+  tanto `qwen` como `qwen-oauth` en la misma máquina.
 
-## Relacionado
+## Contenido relacionado
 
 - [Qwen](/es/providers/qwen)
 - [Alibaba Model Studio](/es/providers/alibaba)

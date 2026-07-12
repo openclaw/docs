@@ -1,11 +1,11 @@
 ---
 read_when:
-    - شما در حال نصب، پیکربندی یا ممیزی Plugin perplexity هستید
+    - شما در حال نصب، پیکربندی یا ممیزی Plugin پرپلکسیتی هستید
 summary: پشتیبانی از ارائه‌دهندهٔ جست‌وجوی وب را اضافه می‌کند.
-title: Plugin Perplexity
+title: Plugin پرپلکسیتی
 x-i18n:
-    generated_at: "2026-06-27T18:28:20Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:31:15Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: c649c4dc4df04ca668e924e2644af970d75eab404b8f57579e509aa061994ffe
@@ -13,9 +13,9 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin Perplexity
+# Plugin پرپلکسیتی
 
-پشتیبانی از ارائه‌دهنده جستجوی وب را اضافه می‌کند.
+پشتیبانی از ارائه‌دهندهٔ جست‌وجوی وب را اضافه می‌کند.
 
 ## توزیع
 
@@ -26,6 +26,6 @@ x-i18n:
 
 قراردادها: webSearchProviders
 
-## اسناد مرتبط
+## مستندات مرتبط
 
-- [perplexity](/fa/tools/perplexity-search)
+- [پرپلکسیتی](/fa/tools/perplexity-search)

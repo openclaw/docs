@@ -2,72 +2,54 @@
 read_when:
     - การโฮสต์ PeekabooBridge ใน OpenClaw.app
     - การผสานรวม Peekaboo ผ่าน Swift Package Manager
-    - การเปลี่ยนโปรโตคอล/เส้นทางของ PeekabooBridge
+    - การเปลี่ยนโปรโตคอล/พาธของ PeekabooBridge
     - การตัดสินใจเลือกระหว่าง PeekabooBridge, Codex Computer Use และ cua-driver MCP
-summary: การผสานการทำงาน PeekabooBridge สำหรับการทำ UI automation บน macOS
-title: บริดจ์จ๊ะเอ๋
+summary: การผสานรวม PeekabooBridge สำหรับระบบอัตโนมัติของ UI บน macOS
+title: บริดจ์ Peekaboo
 x-i18n:
-    generated_at: "2026-06-27T17:49:35Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:21:35Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2343f90e500664b302236a6dabadfe64a24cedd13e57b4e234e70d4fad640c21
+    source_hash: 030b5017f6a43df58e6843e8a4c37448bdaaa41ac7d7d7ab2a46cce05fa9f893
     source_path: platforms/mac/peekaboo.md
     workflow: 16
 ---
 
-OpenClaw สามารถโฮสต์ **PeekabooBridge** เป็นโบรกเกอร์ระบบอัตโนมัติ UI แบบภายในเครื่องและรับรู้สิทธิ์ได้
-ซึ่งทำให้ `peekaboo` CLI ขับเคลื่อนระบบอัตโนมัติ UI ได้พร้อมกับใช้สิทธิ์ TCC
-ของแอป macOS ซ้ำ
+OpenClaw สามารถโฮสต์ **PeekabooBridge** เป็นโบรกเกอร์ระบบอัตโนมัติสำหรับ UI ภายในเครื่องที่คำนึงถึงสิทธิ์ (`PeekabooBridgeHostCoordinator` ซึ่งใช้แพ็กเกจ Swift `steipete/Peekaboo` เป็นระบบเบื้องหลัง) ซึ่งช่วยให้ CLI `peekaboo` ควบคุมระบบอัตโนมัติของ UI โดยใช้สิทธิ์ TCC ของแอป macOS ร่วมกัน
 
 ## สิ่งนี้คืออะไร (และไม่ใช่อะไร)
 
-- **โฮสต์**: OpenClaw.app สามารถทำหน้าที่เป็นโฮสต์ PeekabooBridge ได้
-- **ไคลเอนต์**: ใช้ `peekaboo` CLI (ไม่มีพื้นผิว `openclaw ui ...` แยกต่างหาก)
-- **UI**: โอเวอร์เลย์ภาพยังคงอยู่ใน Peekaboo.app; OpenClaw เป็นเพียงโฮสต์โบรกเกอร์แบบบาง
+- **โฮสต์**: OpenClaw.app สามารถทำหน้าที่เป็นโฮสต์ PeekabooBridge
+- **ไคลเอนต์**: CLI `peekaboo` (ไม่มีส่วนคำสั่ง `openclaw ui ...` แยกต่างหาก)
+- **UI**: โอเวอร์เลย์ภาพยังคงอยู่ใน Peekaboo.app ส่วน OpenClaw เป็นเพียงโฮสต์โบรกเกอร์แบบบาง
 
-## ความสัมพันธ์กับ Computer Use
+## ความสัมพันธ์กับช่องทางควบคุมเดสก์ท็อปอื่น
 
-OpenClaw มีเส้นทางควบคุมเดสก์ท็อปสามแบบ และตั้งใจให้แยกจากกัน:
+OpenClaw มีช่องทางควบคุมเดสก์ท็อปสี่แบบซึ่งจงใจแยกออกจากกัน:
 
-- **โฮสต์ PeekabooBridge**: OpenClaw.app สามารถโฮสต์ซ็อกเก็ต PeekabooBridge ภายในเครื่องได้
-  `peekaboo` CLI ยังคงเป็นไคลเอนต์และใช้สิทธิ์ macOS ของ OpenClaw.app
-  สำหรับพรimitives ระบบอัตโนมัติของ Peekaboo เช่น ภาพหน้าจอ การคลิก
-  เมนู กล่องโต้ตอบ การดำเนินการกับ Dock และการจัดการหน้าต่าง
-- **Codex Computer Use**: Plugin `codex` ที่รวมมาให้จะเตรียม Codex app-server
-  ตรวจสอบว่าเซิร์ฟเวอร์ MCP `computer-use` ของ Codex พร้อมใช้งาน แล้วจึงให้
-  Codex เป็นเจ้าของการเรียกเครื่องมือควบคุมเดสก์ท็อปแบบเนทีฟในระหว่างเทิร์นโหมด Codex OpenClaw
-  จะไม่พร็อกซีการดำเนินการเหล่านั้นผ่าน PeekabooBridge
-- **MCP `cua-driver` โดยตรง**: OpenClaw สามารถลงทะเบียนเซิร์ฟเวอร์
-  `cua-driver mcp` ต้นทางของ TryCua เป็นเซิร์ฟเวอร์ MCP ปกติได้ ซึ่งให้ schemas
-  ของ CUA driver เองและเวิร์กโฟลว์ pid/window/element-index แก่ agent โดยไม่ต้องกำหนดเส้นทาง
-  ผ่าน marketplace ของ Codex หรือซ็อกเก็ต PeekabooBridge
+- **โฮสต์ PeekabooBridge**: OpenClaw.app โฮสต์ซ็อกเก็ต PeekabooBridge ภายในเครื่อง โดย CLI `peekaboo` เป็นไคลเอนต์และใช้สิทธิ์ macOS ของ OpenClaw.app สำหรับการจับภาพหน้าจอ การคลิก เมนู กล่องโต้ตอบ การดำเนินการกับ Dock และการจัดการหน้าต่าง
+- **การใช้งานคอมพิวเตอร์ที่ขับเคลื่อนโดยเอเจนต์ (`computer.act`)**: เครื่องมือ `computer` ในตัวของเอเจนต์ Gateway จะจับภาพหน้าจอผ่าน `screen.snapshot` และควบคุมตัวชี้กับแป้นพิมพ์ผ่านคำสั่ง Node `computer.act` ที่มีความเสี่ยง Node บน macOS จะดำเนินการ `computer.act` ภายในโปรเซสโดยใช้บริการระบบอัตโนมัติ Peekaboo แบบฝังตัวที่บริดจ์นี้เปิดให้ใช้ ร่วมกับพรימิทีฟ CoreGraphics ที่จำกัดขอบเขต โดยไม่ผ่านซ็อกเก็ต PeekabooBridge หรือ CLI `peekaboo` โปรดดู [การใช้งานคอมพิวเตอร์](/nodes/computer-use)
+- **Codex Computer Use**: Plugin `codex` ที่ให้มาพร้อมระบบจะตรวจสอบและสามารถติดตั้ง Plugin MCP `computer-use` ของ Codex (`extensions/codex/src/app-server/computer-use.ts`) จากนั้นให้ Codex เป็นผู้ควบคุมการเรียกใช้เครื่องมือควบคุมเดสก์ท็อปแบบเนทีฟระหว่างรอบการทำงานในโหมด Codex โดย OpenClaw จะไม่พร็อกซีการดำเนินการเหล่านั้นผ่าน PeekabooBridge
+- **MCP `cua-driver` โดยตรง**: OpenClaw สามารถลงทะเบียนเซิร์ฟเวอร์ `cua-driver mcp` ต้นทางของ TryCua เป็นเซิร์ฟเวอร์ MCP ปกติ เพื่อให้เอเจนต์ใช้สคีมาของไดรเวอร์ CUA และเวิร์กโฟลว์ pid/หน้าต่าง/ดัชนีองค์ประกอบได้โดยตรง โดยไม่กำหนดเส้นทางผ่านมาร์เก็ตเพลสของ Codex หรือซ็อกเก็ต PeekabooBridge
 
-ใช้ Peekaboo เมื่อคุณต้องการพื้นผิวระบบอัตโนมัติ macOS ที่กว้างและโฮสต์บริดจ์แบบรับรู้สิทธิ์ของ OpenClaw.app
-ใช้ Codex Computer Use เมื่อ agent โหมด Codex
-ควรพึ่งพา Plugin computer-use แบบเนทีฟของ Codex ใช้ `cua-driver mcp` โดยตรง
-เมื่อคุณต้องการเปิดเผย CUA driver ให้กับ runtime ใดๆ ที่ OpenClaw จัดการในฐานะ
-เซิร์ฟเวอร์ MCP ปกติ
+ใช้ Peekaboo สำหรับระบบอัตโนมัติบน macOS ที่ครอบคลุมผ่านโฮสต์บริดจ์ของ OpenClaw.app ซึ่งคำนึงถึงสิทธิ์ ใช้การใช้งานคอมพิวเตอร์ที่ขับเคลื่อนโดยเอเจนต์เมื่อเอเจนต์ Gateway ควรมองเห็นและควบคุมเดสก์ท็อปผ่านคำสั่ง Node `computer.act` รูปแบบเดียวกันที่โมเดลด้านการมองเห็นใด ๆ ก็สามารถควบคุมได้ ใช้ Codex Computer Use เมื่อเอเจนต์ในโหมด Codex ควรพึ่งพา Plugin แบบเนทีฟของ Codex ใช้ `cua-driver mcp` โดยตรงเพื่อเปิดให้รันไทม์ใด ๆ ที่ OpenClaw จัดการสามารถเข้าถึงไดรเวอร์ CUA ในฐานะเซิร์ฟเวอร์ MCP ปกติ
 
-## เปิดใช้บริดจ์
+## เปิดใช้งานบริดจ์
 
-ในแอป macOS:
+ในแอป macOS: **การตั้งค่า -> เปิดใช้งาน Peekaboo Bridge**
 
-- Settings → **Enable Peekaboo Bridge**
-
-เมื่อเปิดใช้งาน OpenClaw จะเริ่มเซิร์ฟเวอร์ซ็อกเก็ต UNIX ภายในเครื่อง หากปิดใช้งาน โฮสต์
-จะหยุดทำงานและ `peekaboo` จะถอยกลับไปใช้โฮสต์อื่นที่พร้อมใช้งาน
+เมื่อเปิดใช้งาน OpenClaw จะเริ่มเซิร์ฟเวอร์ซ็อกเก็ต UNIX ภายในเครื่องที่ `~/Library/Application Support/OpenClaw/<socket-name>` หากปิดใช้งาน โฮสต์จะหยุดทำงานและ `peekaboo` จะเปลี่ยนไปใช้โฮสต์อื่นที่พร้อมใช้งาน นอกจากนี้ ตัวประสานงานยังดูแลลิงก์สัญลักษณ์ของซ็อกเก็ตรุ่นเก่า (`clawdbot`, `clawdis`, `moltbot` ภายใต้ Application Support) ให้ชี้ไปยังซ็อกเก็ตปัจจุบันสำหรับการติดตั้ง `peekaboo` รุ่นเก่า
 
 ## ลำดับการค้นหาไคลเอนต์
 
-โดยทั่วไปไคลเอนต์ Peekaboo จะลองโฮสต์ตามลำดับนี้:
+โดยทั่วไป ไคลเอนต์ Peekaboo จะลองเชื่อมต่อโฮสต์ตามลำดับนี้:
 
-1. Peekaboo.app (UX เต็มรูปแบบ)
+1. Peekaboo.app (ประสบการณ์ผู้ใช้เต็มรูปแบบ)
 2. Claude.app (หากติดตั้งไว้)
 3. OpenClaw.app (โบรกเกอร์แบบบาง)
 
-ใช้ `peekaboo bridge status --verbose` เพื่อดูว่าโฮสต์ใดทำงานอยู่และใช้
-เส้นทางซ็อกเก็ตใด คุณสามารถแทนที่ได้ด้วย:
+ใช้ `peekaboo bridge status --verbose` เพื่อดูว่าโฮสต์ใดทำงานอยู่และกำลังใช้พาธซ็อกเก็ตใด หากต้องการแทนที่ค่า ให้ใช้:
 
 ```bash
 export PEEKABOO_BRIDGE_SOCKET=/path/to/bridge.sock
@@ -75,30 +57,21 @@ export PEEKABOO_BRIDGE_SOCKET=/path/to/bridge.sock
 
 ## ความปลอดภัยและสิทธิ์
 
-- บริดจ์ตรวจสอบ **ลายเซ็นโค้ดของผู้เรียก**; มีการบังคับใช้ allowlist ของ TeamIDs
-  (TeamID โฮสต์ Peekaboo + TeamID แอป OpenClaw)
-- ควรใช้ตัวตนบริดจ์/แอปที่ลงนามแล้วแทน runtime `node` ทั่วไปสำหรับ
-  Accessibility การให้สิทธิ์ Accessibility แก่ `node` ทำให้แพ็กเกจใดๆ ที่เปิดโดย
-  ไฟล์ปฏิบัติการ Node นั้นสืบทอดสิทธิ์การเข้าถึงระบบอัตโนมัติ GUI ได้; ดู
-  [สิทธิ์ macOS](/th/platforms/mac/permissions#accessibility-grants-for-node-and-cli-runtimes)
-- คำขอจะหมดเวลาหลังจากประมาณ 10 วินาที
-- หากสิทธิ์ที่จำเป็นขาดหายไป บริดจ์จะส่งคืนข้อความข้อผิดพลาดที่ชัดเจน
-  แทนการเปิด System Settings
+- บริดจ์จะตรวจสอบ **ลายเซ็นโค้ดของผู้เรียกใช้** และบังคับใช้รายการ TeamID ที่อนุญาต (TeamID ของโฮสต์ Peekaboo รวมถึง TeamID ของแอปที่กำลังทำงาน)
+- สำหรับสิทธิ์การช่วยการเข้าถึง ควรใช้ข้อมูลประจำตัวของบริดจ์/แอปที่มีลายเซ็นแทนรันไทม์ `node` ทั่วไป การให้สิทธิ์การช่วยการเข้าถึงแก่ `node` จะทำให้แพ็กเกจใด ๆ ที่เรียกใช้โดยไฟล์ปฏิบัติการ Node นั้นได้รับสิทธิ์เข้าถึงระบบอัตโนมัติของ GUI ไปด้วย โปรดดู [สิทธิ์ macOS](/th/platforms/mac/permissions#accessibility-grants-for-node-and-cli-runtimes)
+- คำขอจะหมดเวลาหลังจาก 10 วินาที (`requestTimeoutSec: 10`)
+- หากไม่มีสิทธิ์ที่จำเป็น บริดจ์จะส่งคืนข้อความแสดงข้อผิดพลาดที่ชัดเจนแทนการเปิดการตั้งค่าระบบ
 
-## พฤติกรรมสแนปช็อต (ระบบอัตโนมัติ)
+## ลักษณะการทำงานของสแนปช็อต (ระบบอัตโนมัติ)
 
-สแนปช็อตจะถูกเก็บไว้ในหน่วยความจำและหมดอายุโดยอัตโนมัติหลังจากช่วงเวลาสั้นๆ
-หากคุณต้องการเก็บไว้นานขึ้น ให้จับภาพใหม่จากไคลเอนต์
+สแนปช็อตจะถูกเก็บไว้ในหน่วยความจำ โดยมีช่วงเวลาที่ใช้ได้ 10 นาทีและจำกัดสูงสุด 50 สแนปช็อต (`InMemorySnapshotManager`) อาร์ติแฟกต์จะไม่ถูกลบเมื่อทำความสะอาด หากต้องการเก็บไว้นานกว่านั้น ให้จับภาพใหม่จากไคลเอนต์
 
 ## การแก้ไขปัญหา
 
-- หาก `peekaboo` รายงานว่า "bridge client is not authorized" ให้ตรวจสอบว่าไคลเอนต์
-  ได้รับการลงนามอย่างถูกต้อง หรือรันโฮสต์ด้วย `PEEKABOO_ALLOW_UNSIGNED_SOCKET_CLIENTS=1`
-  ในโหมด **debug** เท่านั้น
-- หากไม่พบโฮสต์ ให้เปิดหนึ่งในแอปโฮสต์ (Peekaboo.app หรือ OpenClaw.app)
-  และยืนยันว่าได้ให้สิทธิ์แล้ว
+- หาก `peekaboo` รายงาน "bridge client is not authorized" ให้ตรวจสอบว่าไคลเอนต์ได้รับการลงนามอย่างถูกต้อง หรือเรียกใช้โฮสต์โดยกำหนด `PEEKABOO_ALLOW_UNSIGNED_SOCKET_CLIENTS=1` เฉพาะในโหมด **ดีบัก** เท่านั้น
+- หากไม่พบโฮสต์ ให้เปิดแอปโฮสต์แอปใดแอปหนึ่ง (Peekaboo.app หรือ OpenClaw.app) และยืนยันว่าได้ให้สิทธิ์แล้ว
 
-## ที่เกี่ยวข้อง
+## เนื้อหาที่เกี่ยวข้อง
 
 - [แอป macOS](/th/platforms/macos)
 - [สิทธิ์ macOS](/th/platforms/mac/permissions)

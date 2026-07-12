@@ -1,26 +1,26 @@
 ---
 read_when:
-    - Você está instalando, configurando ou auditando o Plugin xai
-summary: Adiciona suporte ao provedor de modelos xAI ao OpenClaw.
-title: Plugin xAI
+    - Você está instalando, configurando ou auditando o plugin xai
+summary: Adiciona suporte ao provedor de modelos xAI no OpenClaw.
+title: Plugin da xAI
 x-i18n:
-    generated_at: "2026-05-02T21:02:12Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T00:16:20Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: 2ec2ac3af258ae6876b2c0957e4ffc5db2d780fc9f33458204c8089fd47238bc
     source_path: plugins/reference/xai.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# Plugin xAI
+# Plugin da xAI
 
-Adiciona suporte ao provedor de modelos xAI ao OpenClaw.
+Adiciona ao OpenClaw suporte ao provedor de modelos da xAI.
 
 ## Distribuição
 
 - Pacote: `@openclaw/xai-plugin`
-- Rota de instalação: incluído no OpenClaw
+- Forma de instalação: incluído no OpenClaw
 
 ## Superfície
 

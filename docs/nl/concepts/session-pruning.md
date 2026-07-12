@@ -1,63 +1,69 @@
 ---
 read_when:
-    - Je wilt contextgroei door tooluitvoer verminderen
-    - Je wilt de promptcache-optimalisatie van Anthropic begrijpen
-summary: Oude resultaten van hulpprogramma's inkorten om de context compact en het cachegebruik efficiënt te houden
-title: Sessie-opschoning
+    - Je wilt de groei van de context door tooluitvoer beperken
+    - Je wilt de optimalisatie van de Anthropic-promptcache begrijpen
+summary: Oude toolresultaten inkorten om de context compact en caching efficiënt te houden
+title: Sessies opschonen
 x-i18n:
-    generated_at: "2026-04-29T22:40:51Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:47:28Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3ea07f0ae23076906e2ff0246ac75813572f98cffa50afddb6a6b0af8964c4a9
+    source_hash: dd5cb4582cb8d9d7265213abe1f5b5893634882b9f8b3ce1deef746293dd07db
     source_path: concepts/session-pruning.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Sessiesnoei verwijdert **oude toolresultaten** uit de context vóór elke LLM-aanroep. Het vermindert contextoverbelasting door opgehoopte tooluitvoer (exec-resultaten, bestandslezingen, zoekresultaten) zonder normale conversatietekst te herschrijven.
+Sessiesnoeiing verkort **oude toolresultaten** in de context vóór elke LLM-aanroep. Dit beperkt contextophoping door verzamelde tooluitvoer (uitvoerresultaten, gelezen bestanden, zoekresultaten) zonder normale gesprekstekst te herschrijven.
 
 <Info>
-Snoeien gebeurt alleen in het geheugen -- het wijzigt het sessietranscript op schijf niet. Je volledige geschiedenis blijft altijd bewaard.
+Snoeiing vindt alleen in het geheugen plaats -- het sessietranscript op schijf wordt niet gewijzigd. Uw volledige geschiedenis blijft altijd behouden.
 </Info>
 
 ## Waarom dit belangrijk is
 
-Lange sessies verzamelen tooluitvoer die het contextvenster opblaast. Dit verhoogt de kosten en kan [Compaction](/nl/concepts/compaction) eerder dan nodig afdwingen.
+Tijdens lange sessies stapelt tooluitvoer zich op, waardoor het contextvenster groter wordt. Dit verhoogt de kosten en kan [Compaction](/nl/concepts/compaction) eerder dan nodig afdwingen.
 
-Snoeien is vooral waardevol voor **Anthropic prompt caching**. Nadat de cache-TTL verloopt, cachet de volgende aanvraag de volledige prompt opnieuw. Snoeien verkleint de cache-schrijfgrootte, wat de kosten rechtstreeks verlaagt.
+Snoeiing is vooral waardevol voor **promptcaching van Anthropic**. Nadat de TTL van de cache is verlopen, wordt bij het volgende verzoek de volledige prompt opnieuw gecachet. Snoeiing verkleint de hoeveelheid gegevens die naar de cache wordt geschreven en verlaagt daarmee rechtstreeks de kosten.
 
 ## Hoe het werkt
 
-1. Wacht tot de cache-TTL verloopt (standaard 5 minuten).
-2. Zoek oude toolresultaten voor normale snoei (conversatietekst blijft ongemoeid).
-3. **Zacht inkorten** van te grote resultaten -- behoud het begin en einde, voeg `...` in.
-4. **Hard wissen** van de rest -- vervang door een tijdelijke aanduiding.
-5. Reset de TTL zodat vervolgaanvragen de verse cache hergebruiken.
+Snoeiing wordt uitgevoerd in de modus `cache-ttl` en vindt alleen plaats als zowel aan een tijdscontrole als aan een controle van de contextgrootte is voldaan:
 
-## Oude afbeeldingen opschonen
+1. Wacht tot de TTL van de cache verloopt (standaard 5 minuten wanneer deze handmatig is ingesteld; zie [Slimme standaardwaarden](#smart-defaults) voor de automatische standaardwaarde van Anthropic). Voordat de TTL is verstreken, wordt snoeiing volledig overgeslagen om hergebruik van de promptcache voor kort op elkaar volgende beurten te behouden.
+2. Zodra de TTL is verstreken, wordt de totale contextgrootte geschat ten opzichte van het contextvenster van het model. Als de verhouding lager is dan `softTrimRatio` (standaard 0,3), wordt snoeiing overgeslagen en blijft de TTL-klok doorlopen.
+3. Voer een **zachte verkorting** uit op te grote toolresultaten boven de verhouding: behoud het begin en einde (standaard elk 1500 tekens, met een gecombineerd maximum van 4000 tekens) en voeg daartussen `...` in.
+4. Als de verhouding nog steeds gelijk is aan of hoger is dan `hardClearRatio` (standaard 0,5) en er ten minste `minPrunableToolChars` (standaard 50.000) aan snoeibare toolinhoud overblijft, worden die resultaten **volledig gewist**: de inhoud wordt vervangen door een tijdelijke aanduiding (standaard `[Inhoud van oud toolresultaat gewist]`).
+5. Stel de TTL-klok alleen opnieuw in wanneer de snoeiing de context daadwerkelijk heeft gewijzigd, zodat vervolgverzoeken de vernieuwde cache hergebruiken.
 
-OpenClaw bouwt ook een afzonderlijke idempotente replayweergave voor sessies die ruwe afbeeldingsblokken of media-markeringen voor prompt-hydratatie in de geschiedenis bewaren.
+Ongeacht de drempelwaarden gelden twee veiligheidsregels: de meest recente `keepLastAssistants` assistentbeurten (standaard 3) worden nooit gesnoeid en niets vóór het eerste gebruikersbericht van de sessie wordt ooit gesnoeid (dit beschermt initiële leesbewerkingen zoals `SOUL.md`/`USER.md`).
 
-- Het behoudt de **3 meest recente voltooide beurten** byte-voor-byte zodat promptcache-prefixen voor recente vervolgvragen stabiel blijven.
-- In de replayweergave kunnen oudere, al verwerkte afbeeldingsblokken uit `user`- of `toolResult`-geschiedenis worden vervangen door `[image data removed - already processed by model]`.
-- Oudere tekstuele mediaverwijzingen zoals `[media attached: ...]`, `[Image: source: ...]` en `media://inbound/...` kunnen worden vervangen door `[media reference removed - already processed by model]`. Bijlagemarkeringen van de huidige beurt blijven intact zodat vision-modellen verse afbeeldingen nog steeds kunnen hydrateren.
-- Het ruwe sessietranscript wordt niet herschreven, zodat geschiedenisviewers de oorspronkelijke berichtitems en hun afbeeldingen nog steeds kunnen renderen.
-- Dit staat los van normale cache-TTL-snoei. Het bestaat om te voorkomen dat herhaalde afbeeldingspayloads of verouderde mediaverwijzingen promptcaches in latere beurten ongeldig maken.
+Alleen `toolResult`-berichten komen in aanmerking; normale gesprekstekst blijft ongewijzigd. Gebruik `agents.defaults.contextPruning.tools.{allow,deny}` om te bepalen welke toolnamen snoeibaar zijn.
+
+## Opschoning van verouderde afbeeldingen
+
+OpenClaw maakt ook een afzonderlijke idempotente herhalingsweergave voor sessies waarin onbewerkte afbeeldingsblokken of mediamarkeringen voor promptinitialisatie in de geschiedenis worden bewaard.
+
+- De **3 meest recente voltooide beurten** worden byte voor byte behouden, zodat voorvoegsels van de promptcache voor recente vervolgvragen stabiel blijven. Dit aantal omvat alle voltooide beurten, niet alleen beurten met afbeeldingen; beurten met alleen tekst tellen dus ook mee voor dit venster.
+- In de herhalingsweergave worden oudere, reeds verwerkte afbeeldingsblokken uit de geschiedenis van `user` of `toolResult` vervangen door `[afbeeldingsgegevens verwijderd - al door model verwerkt]`.
+- Oudere tekstuele mediaverwijzingen zoals `[media attached: ...]`, `[Image: source: ...]` en `media://inbound/...` worden vervangen door `[mediaverwijzing verwijderd - al door model verwerkt]`. Bijlagemarkeringen van de huidige beurt blijven intact, zodat visuele modellen nieuwe afbeeldingen nog steeds kunnen initialiseren.
+- Het onbewerkte sessietranscript wordt niet herschreven, zodat geschiedenisweergaven de oorspronkelijke berichtitems en hun afbeeldingen nog steeds kunnen weergeven.
+- Dit staat los van de normale snoeiing op basis van de cache-TTL hierboven. Het voorkomt dat herhaalde afbeeldingspayloads of verouderde mediaverwijzingen de promptcaches bij latere beurten ongeldig maken.
 
 ## Slimme standaardwaarden
 
-OpenClaw schakelt snoeien automatisch in voor Anthropic-profielen:
+De meegeleverde Anthropic-Plugin configureert automatisch de snoeiings- en Heartbeat-frequentie wanneer voor het eerst een authenticatieprofiel van Anthropic (of Claude CLI) wordt gevonden, maar alleen voor velden die u nog niet expliciet hebt ingesteld:
 
-| Profieltype                                             | Snoeien ingeschakeld | Heartbeat |
-| ------------------------------------------------------- | -------------------- | --------- |
-| Anthropic OAuth/token-auth (inclusief Claude CLI-hergebruik) | Ja               | 1 uur     |
-| API-sleutel                                             | Ja                   | 30 min    |
+| Authenticatiemodus                         | `contextPruning.mode` | `contextPruning.ttl` | `heartbeat.every` |
+| ------------------------------------------ | --------------------- | -------------------- | ----------------- |
+| OAuth/token (inclusief hergebruik Claude CLI) | `cache-ttl`        | `1h`                 | `1h`              |
+| API-sleutel                                | `cache-ttl`           | `1h`                 | `30m`             |
 
-Als je expliciete waarden instelt, overschrijft OpenClaw die niet.
+Als u `agents.defaults.contextPruning.mode` of `agents.defaults.heartbeat.every` zelf instelt, overschrijft OpenClaw deze niet. Deze automatische standaardwaarde wordt alleen toegepast bij authenticatie uit de Anthropic-familie; voor andere providers staat snoeiing op `off`, tenzij u dit configureert.
 
 ## In- of uitschakelen
 
-Snoeien is standaard uitgeschakeld voor niet-Anthropic-providers. Inschakelen:
+Snoeiing is standaard uitgeschakeld voor providers die niet van Anthropic zijn. Inschakelen:
 
 ```json5
 {
@@ -71,23 +77,23 @@ Snoeien is standaard uitgeschakeld voor niet-Anthropic-providers. Inschakelen:
 
 Uitschakelen: stel `mode: "off"` in.
 
-## Snoeien versus Compaction
+## Snoeiing versus Compaction
 
-|            | Snoeien              | Compaction                 |
-| ---------- | -------------------- | -------------------------- |
-| **Wat**    | Kort toolresultaten in | Vat conversatie samen    |
-| **Opgeslagen?** | Nee (per aanvraag) | Ja (in transcript)     |
-| **Bereik** | Alleen toolresultaten | Volledige conversatie      |
+|                | Snoeiing                  | Compaction              |
+| -------------- | ------------------------- | ----------------------- |
+| **Wat**        | Verkort toolresultaten    | Vat het gesprek samen   |
+| **Opgeslagen?** | Nee (per verzoek)         | Ja (in het transcript)  |
+| **Bereik**     | Alleen toolresultaten     | Volledig gesprek        |
 
-Ze vullen elkaar aan -- snoeien houdt tooluitvoer slank tussen Compaction-cycli.
+Ze vullen elkaar aan -- snoeiing houdt tooluitvoer beknopt tussen Compaction-cycli.
 
 ## Verder lezen
 
-- [Compaction](/nl/concepts/compaction) -- contextreductie op basis van samenvatting
-- [Gateway-configuratie](/nl/gateway/configuration) -- alle configuratieknoppen voor snoeien (`contextPruning.*`)
+- [Compaction](/nl/concepts/compaction): contextreductie op basis van samenvattingen
+- [Gateway-configuratie](/nl/gateway/configuration): alle configuratieopties voor snoeiing (`contextPruning.*`)
 
 ## Gerelateerd
 
 - [Sessiebeheer](/nl/concepts/session)
 - [Sessietools](/nl/concepts/session-tool)
-- [Context-engine](/nl/concepts/context-engine)
+- [Contextengine](/nl/concepts/context-engine)

@@ -2,98 +2,81 @@
 read_when:
     - Triển khai OpenClaw lên Railway
     - Bạn muốn triển khai lên đám mây chỉ bằng một cú nhấp chuột với giao diện điều khiển trên trình duyệt
-summary: Triển khai OpenClaw trên Railway bằng mẫu một cú nhấp
+summary: Triển khai OpenClaw trên Railway bằng mẫu một cú nhấp chuột
 title: Railway
 x-i18n:
-    generated_at: "2026-04-29T22:53:46Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:03:39Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 989c8467ead04b8aa7c94101abd99c936ecd3e451fe728afe8c2f2bd5a78df48
+    source_hash: cbef00b8de61545e9971b18164472c2f47fe607f69ec36f83a27a11b65ea863f
     source_path: install/railway.mdx
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# Railway
+Triển khai OpenClaw trên Railway bằng mẫu một cú nhấp và truy cập thông qua Control UI trên web. Đây là cách dễ nhất để "không cần terminal trên máy chủ": Railway sẽ chạy Gateway cho bạn.
 
-Triển khai OpenClaw trên Railway bằng mẫu một cú nhấp và truy cập qua giao diện điều khiển trên web.
-Đây là cách dễ nhất "không cần terminal trên máy chủ": Railway chạy Gateway cho bạn.
-
-## Danh sách kiểm tra nhanh (người dùng mới)
-
-1. Nhấp **Triển khai trên Railway** (bên dưới).
-2. Thêm một **Volume** được gắn tại `/data`.
-3. Đặt các **Biến** bắt buộc (ít nhất là `OPENCLAW_GATEWAY_PORT` và `OPENCLAW_GATEWAY_TOKEN`).
-4. Bật **HTTP Proxy** trên cổng `8080`.
-5. Mở `https://<your-railway-domain>/openclaw` và kết nối bằng bí mật dùng chung đã cấu hình. Mẫu này mặc định dùng `OPENCLAW_GATEWAY_TOKEN`; nếu bạn thay bằng xác thực mật khẩu, hãy dùng mật khẩu đó thay thế.
-
-## Triển khai một cú nhấp
+## Triển khai bằng một cú nhấp
 
 <a href="https://railway.com/deploy/clawdbot-railway-template" target="_blank" rel="noreferrer">
   Triển khai trên Railway
 </a>
 
-Sau khi triển khai, tìm URL công khai của bạn trong **Railway → dịch vụ của bạn → Settings → Domains**.
+<Steps>
+  <Step title="Triển khai mẫu">
+    Nhấp vào **Deploy on Railway** ở trên.
+  </Step>
 
-Railway sẽ:
+<Step title="Thêm ổ đĩa">
+  Gắn một ổ đĩa được mount tại `/data` (bắt buộc để lưu trạng thái lâu dài).
+</Step>
 
-- cấp cho bạn một miền được tạo sẵn (thường là `https://<something>.up.railway.app`), hoặc
-- dùng miền tùy chỉnh của bạn nếu bạn đã gắn một miền.
+  <Step title="Đặt biến">
+    Đặt các **Variables** bắt buộc cho dịch vụ:
 
-Sau đó mở:
+    - `OPENCLAW_GATEWAY_PORT=8080` (bắt buộc -- phải khớp với cổng trong Public Networking)
+    - `OPENCLAW_GATEWAY_TOKEN` (bắt buộc; hãy coi đây là bí mật quản trị)
+    - `OPENCLAW_STATE_DIR=/data/.openclaw` (khuyến nghị)
+    - `OPENCLAW_WORKSPACE_DIR=/data/workspace` (khuyến nghị)
 
-- `https://<your-railway-domain>/openclaw` — Giao diện điều khiển
+  </Step>
 
-## Bạn nhận được gì
+<Step title="Bật mạng công khai">
+  Trong **Public Networking**, bật **HTTP Proxy** cho dịch vụ trên cổng `8080`.
+</Step>
 
-- OpenClaw Gateway + giao diện điều khiển được lưu trữ
-- Lưu trữ bền vững qua Railway Volume (`/data`) để `openclaw.json`,
-  `auth-profiles.json` theo từng tác tử, trạng thái kênh/nhà cung cấp, phiên và
-  workspace vẫn tồn tại sau các lần triển khai lại
+  <Step title="Kết nối">
+    Tìm URL công khai của bạn trong **Railway -> your service -> Settings -> Domains** -- có thể là miền được tạo tự động (thường là `https://<something>.up.railway.app`) hoặc miền tùy chỉnh bạn đã đính kèm.
 
-## Cài đặt Railway bắt buộc
+    Mở `https://<your-railway-domain>/openclaw` và kết nối bằng bí mật dùng chung đã cấu hình. Theo mặc định, mẫu sử dụng `OPENCLAW_GATEWAY_TOKEN`; nếu bạn thay thế bằng xác thực mật khẩu, hãy dùng mật khẩu đó.
 
-### Mạng công khai
+  </Step>
+</Steps>
 
-Bật **HTTP Proxy** cho dịch vụ.
+## Những gì bạn nhận được
 
-- Cổng: `8080`
-
-### Volume (bắt buộc)
-
-Gắn một volume tại:
-
-- `/data`
-
-### Biến
-
-Đặt các biến này trên dịch vụ:
-
-- `OPENCLAW_GATEWAY_PORT=8080` (bắt buộc — phải khớp với cổng trong Mạng công khai)
-- `OPENCLAW_GATEWAY_TOKEN` (bắt buộc; coi như bí mật quản trị)
-- `OPENCLAW_STATE_DIR=/data/.openclaw` (khuyến nghị)
-- `OPENCLAW_WORKSPACE_DIR=/data/workspace` (khuyến nghị)
+- Gateway OpenClaw được lưu trữ + Control UI
+- Lưu trữ lâu dài thông qua Railway Volume (`/data`), nhờ đó `openclaw.json`, `auth-profiles.json` của từng tác nhân, trạng thái kênh/nhà cung cấp, phiên và không gian làm việc vẫn được giữ nguyên sau khi triển khai lại
 
 ## Kết nối một kênh
 
-Dùng giao diện điều khiển tại `/openclaw` hoặc chạy `openclaw onboard` qua shell của Railway để xem hướng dẫn thiết lập kênh:
+Sử dụng Control UI tại `/openclaw` hoặc chạy `openclaw onboard` qua shell của Railway để xem hướng dẫn thiết lập kênh:
 
-- [Telegram](/vi/channels/telegram) (nhanh nhất — chỉ cần token bot)
 - [Discord](/vi/channels/discord)
-- [Tất cả kênh](/vi/channels)
+- [Telegram](/vi/channels/telegram) (nhanh nhất -- chỉ cần token bot)
+- [Tất cả các kênh](/vi/channels)
 
-## Sao lưu & di chuyển
+## Sao lưu và di chuyển
 
-Xuất trạng thái, cấu hình, hồ sơ xác thực và workspace của bạn:
+Xuất trạng thái, cấu hình, hồ sơ xác thực và không gian làm việc của bạn:
 
 ```bash
 openclaw backup create
 ```
 
-Lệnh này tạo một kho lưu trữ sao lưu có thể mang đi, gồm trạng thái OpenClaw cùng mọi
-workspace đã cấu hình. Xem [Sao lưu](/vi/cli/backup) để biết chi tiết.
+Lệnh này tạo một tệp lưu trữ sao lưu có thể di chuyển, bao gồm trạng thái OpenClaw và mọi không gian làm việc đã cấu hình. Xem [Sao lưu](/vi/cli/backup) để biết chi tiết.
 
-## Bước tiếp theo
+## Các bước tiếp theo
 
 - Thiết lập các kênh nhắn tin: [Kênh](/vi/channels)
 - Cấu hình Gateway: [Cấu hình Gateway](/vi/gateway/configuration)

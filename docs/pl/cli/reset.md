@@ -1,34 +1,24 @@
 ---
 read_when:
     - Chcesz wyczyścić stan lokalny, zachowując zainstalowane CLI
-    - Chcesz wykonać próbę na sucho tego, co zostałoby usunięte
-summary: Odwołanie CLI dla `openclaw reset` (resetowanie stanu/konfiguracji lokalnej)
-title: Resetowanie
+    - Chcesz przeprowadzić próbę usuwania bez wprowadzania zmian
+summary: Dokumentacja CLI dla `openclaw reset` (resetowanie lokalnego stanu/konfiguracji)
+title: Resetuj
 x-i18n:
-    generated_at: "2026-04-24T09:04:02Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: e4a4aba32fb44905d079bf2a22e582a3affbe9809eac9af237ce3e48da72b42c
-    source_path: cli/reset.md
-    workflow: 15
+    generated_at: "2026-07-12T15:02:36Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: f18af9c5e187217de4c02f4b55de9a1c94f7246b74056dc660aa172168edcef9
+    source_path: cli/reset.md
+    workflow: 16
 ---
 
 # `openclaw reset`
 
-Resetuje lokalny stan/konfigurację (pozostawia zainstalowane CLI).
-
-Opcje:
-
-- `--scope <scope>`: `config`, `config+creds+sessions` lub `full`
-- `--yes`: pomija monity o potwierdzenie
-- `--non-interactive`: wyłącza monity; wymaga `--scope` i `--yes`
-- `--dry-run`: wypisuje działania bez usuwania plików
-
-Przykłady:
+Resetuje lokalną konfigurację i stan (pozostawia zainstalowany CLI).
 
 ```bash
-openclaw backup create
 openclaw reset
 openclaw reset --dry-run
 openclaw reset --scope config --yes --non-interactive
@@ -36,12 +26,30 @@ openclaw reset --scope config+creds+sessions --yes --non-interactive
 openclaw reset --scope full --yes --non-interactive
 ```
 
-Uwagi:
+## Opcje
 
-- Najpierw uruchom `openclaw backup create`, jeśli chcesz mieć możliwą do przywrócenia migawkę przed usunięciem stanu lokalnego.
-- Jeśli pominiesz `--scope`, `openclaw reset` użyje interaktywnego monitu do wyboru, co usunąć.
-- `--non-interactive` jest prawidłowe tylko wtedy, gdy ustawiono zarówno `--scope`, jak i `--yes`.
+- `--scope <scope>`: `config`, `config+creds+sessions` lub `full`
+- `--yes`: pomija monity o potwierdzenie
+- `--non-interactive`: wyłącza monity; wymaga `--scope` i `--yes`
+- `--dry-run`: wyświetla działania bez usuwania plików
+
+## Zakresy
+
+| Zakres                  | Usuwa                                                                                                         | Najpierw zatrzymuje Gateway |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------- | --------------------------- |
+| `config`                | tylko plik konfiguracji                                                                                       | nie                         |
+| `config+creds+sessions` | plik konfiguracji, katalog OAuth/danych uwierzytelniających i katalogi sesji poszczególnych agentów           | tak                         |
+| `full`                  | katalog stanu (w tym konfigurację/dane uwierzytelniające, jeśli są w nim zagnieżdżone), katalogi obszarów roboczych i poświadczenia obszarów roboczych | tak |
+
+Zakresy `config+creds+sessions` i `full` zatrzymują działającą zarządzaną usługę Gateway przed usunięciem stanu.
+
+## Uwagi
+
+- Przed usunięciem stanu lokalnego uruchom najpierw `openclaw backup create`, aby utworzyć migawkę możliwą do przywrócenia.
+- Bez `--scope` polecenie `openclaw reset` interaktywnie prosi o wybór zakresu do usunięcia.
+- Opcja `--non-interactive` jest prawidłowa tylko wtedy, gdy ustawiono zarówno `--scope`, jak i `--yes`.
+- Po zakończeniu zakresy `config+creds+sessions` i `full` wyświetlają komunikat `Next: openclaw onboard --install-daemon`.
 
 ## Powiązane
 
-- [Odwołanie CLI](/pl/cli)
+- [Dokumentacja CLI](/pl/cli)

@@ -1,11 +1,11 @@
 ---
 read_when:
     - Вы устанавливаете, настраиваете или проверяете Plugin nvidia
-summary: Добавляет поддержку поставщика моделей NVIDIA в OpenClaw.
-title: NVIDIA Plugin
+summary: Добавляет в OpenClaw поддержку провайдера моделей NVIDIA.
+title: Plugin NVIDIA
 x-i18n:
-    generated_at: "2026-06-28T23:27:00Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:40:31Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 4d2ea102071e09fc60385a3f2bcbb4e1a636e7b87d9a3e541bac551bea7d9dbd
@@ -13,18 +13,18 @@ x-i18n:
     workflow: 16
 ---
 
-# NVIDIA Plugin
+# Plugin NVIDIA
 
-Добавляет поддержку поставщика моделей NVIDIA в OpenClaw.
+Добавляет в OpenClaw поддержку провайдера моделей NVIDIA.
 
 ## Распространение
 
 - Пакет: `@openclaw/nvidia-provider`
-- Способ установки: включен в OpenClaw
+- Способ установки: входит в состав OpenClaw
 
-## Поверхность
+## Интерфейс
 
-поставщики: nvidia
+Провайдеры: nvidia
 
 ## Связанная документация
 

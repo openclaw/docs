@@ -1,33 +1,33 @@
 ---
 read_when:
-    - คุณใช้ช่องทาง BlueBubbles เดิมและต้องย้ายไปใช้ iMessage
-    - คุณกำลังเลือกการตั้งค่า iMessage ของ OpenClaw ที่รองรับ
-    - คุณต้องมีคำอธิบายสั้น ๆ เกี่ยวกับการนำ BlueBubbles ออก
-summary: การรองรับ BlueBubbles ถูกนำออกจาก OpenClaw แล้ว ใช้ Plugin iMessage ที่รวมมาพร้อมกับ imsg สำหรับการตั้งค่า iMessage ใหม่และที่ย้ายข้อมูลมา
-title: การนำ BlueBubbles ออกและเส้นทาง iMessage ของ imsg
+    - คุณเคยใช้ช่องทาง BlueBubbles แบบเก่าและต้องการย้ายไปใช้ iMessage
+    - คุณกำลังเลือกการตั้งค่า iMessage ที่ OpenClaw รองรับ
+    - คุณต้องการคำอธิบายสั้น ๆ เกี่ยวกับการนำ BlueBubbles ออก
+summary: การรองรับ BlueBubbles ถูกนำออกจาก OpenClaw แล้ว สำหรับการตั้งค่า iMessage ใหม่และที่ย้ายมา ให้ใช้ Plugin iMessage ที่รวมมาพร้อมกับ imsg
+title: การนำ BlueBubbles ออกและเส้นทาง iMessage ผ่าน imsg
 x-i18n:
-    generated_at: "2026-05-11T20:20:31Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:44:57Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 970e33772534fd3e3d8d3012222bdd9c645ed713b8d38cff21b25b276ae1f544
+    source_hash: 7dec7d3f27e0df6431494d864b0c7ae7457574797e199f9a2cb6931d28feacd0
     source_path: announcements/bluebubbles-imessage.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # การนำ BlueBubbles ออกและเส้นทาง iMessage ผ่าน imsg
 
-OpenClaw ไม่ได้มาพร้อมกับช่องทาง BlueBubbles อีกต่อไปแล้ว ตอนนี้การรองรับ iMessage ทำงานผ่าน Plugin `imessage` ที่รวมมาให้ ซึ่งเริ่ม [`imsg`](https://github.com/steipete/imsg) ภายในเครื่องหรือผ่านตัวห่อ SSH และสื่อสาร JSON-RPC ผ่าน stdin/stdout
+OpenClaw ไม่ได้จัดส่งช่องทาง BlueBubbles อีกต่อไป การรองรับ iMessage ทำงานผ่าน Plugin `imessage` ที่รวมมาให้ โดย Gateway จะเรียกใช้ [`imsg`](https://github.com/steipete/imsg) เป็นโพรเซสลูกในเครื่องหรือผ่านตัวห่อหุ้ม SSH และสื่อสารด้วย JSON-RPC ผ่าน stdin/stdout ไม่มีเซิร์ฟเวอร์ ไม่มี Webhook และไม่มีพอร์ต
 
-หากการกำหนดค่าของคุณยังมี `channels.bluebubbles` ให้ย้ายไปเป็น `channels.imessage` URL เอกสารเดิม `/channels/bluebubbles` จะเปลี่ยนเส้นทางไปยัง [การย้ายมาจาก BlueBubbles](/th/channels/imessage-from-bluebubbles) ซึ่งมีตารางแปลการกำหนดค่าแบบเต็มและเช็กลิสต์การเปลี่ยนระบบ
+หากการกำหนดค่าของคุณยังมี `channels.bluebubbles` ให้ย้ายไปใช้ `channels.imessage` URL เอกสารเดิม `/channels/bluebubbles` จะเปลี่ยนเส้นทางไปยัง [การย้ายมาจาก BlueBubbles](/th/channels/imessage-from-bluebubbles) ซึ่งมีตารางแปลงการกำหนดค่าฉบับเต็มและรายการตรวจสอบสำหรับการสลับระบบ
 
-## สิ่งที่เปลี่ยนไป
+## สิ่งที่เปลี่ยนแปลง
 
-- ไม่มีเซิร์ฟเวอร์ HTTP ของ BlueBubbles, เส้นทาง Webhook, รหัสผ่าน REST หรือรันไทม์ Plugin ของ BlueBubbles ในเส้นทาง iMessage ของ OpenClaw ที่รองรับ
-- OpenClaw อ่านและเฝ้าดู Messages ผ่าน `imsg` บน Mac ที่ลงชื่อเข้าใช้ Messages.app อยู่
-- การส่ง รับ ประวัติ และสื่อพื้นฐานใช้พื้นผิว `imsg` ปกติและสิทธิ์ของ macOS
-- การทำงานขั้นสูง เช่น การตอบกลับในเธรด, tapbacks, แก้ไข, ยกเลิกการส่ง, เอฟเฟกต์, ใบตอบรับการอ่าน, ตัวบ่งชี้การพิมพ์ และการจัดการกลุ่ม ต้องใช้ `imsg launch` พร้อมบริดจ์ API ส่วนตัวที่พร้อมใช้งาน
-- Gateway บน Linux และ Windows ยังคงใช้ iMessage ได้โดยตั้งค่า `channels.imessage.cliPath` เป็นตัวห่อ SSH ที่เรียกใช้ `imsg` บน Mac ที่ลงชื่อเข้าใช้แล้ว
+- เส้นทาง iMessage ที่รองรับไม่มีเซิร์ฟเวอร์ HTTP ของ BlueBubbles, เส้นทาง Webhook, รหัสผ่าน REST หรือรันไทม์ Plugin ของ BlueBubbles
+- OpenClaw อ่านและเฝ้าติดตาม Messages ผ่าน `imsg` บน Mac ที่ลงชื่อเข้าใช้ Messages.app อยู่
+- การส่ง การรับ ประวัติ และสื่อพื้นฐานใช้ส่วนเชื่อมต่อ `imsg` ตามปกติและสิทธิ์ของ macOS
+- การดำเนินการขั้นสูง (การตอบกลับแบบเธรด, tapbacks, การแก้ไข, การยกเลิกส่ง, เอฟเฟกต์, การแจ้งว่าอ่านแล้ว, ตัวบ่งชี้การพิมพ์ และการจัดการกลุ่ม) ต้องใช้บริดจ์ API ส่วนตัว โดยเรียกใช้ `imsg launch` ซึ่งต้องปิดใช้งาน SIP
+- Gateway บน Linux และ Windows ยังคงใช้ iMessage ได้โดยกำหนด `channels.imessage.cliPath` ให้ชี้ไปยังตัวห่อหุ้ม SSH ที่เรียกใช้ `imsg` บน Mac ที่ลงชื่อเข้าใช้อยู่
 
 ## สิ่งที่ต้องทำ
 
@@ -40,7 +40,7 @@ OpenClaw ไม่ได้มาพร้อมกับช่องทาง B
    imsg rpc --help
    ```
 
-2. ให้สิทธิ์ Full Disk Access และ Automation แก่บริบทของโปรเซสที่เรียกใช้ `imsg` และ OpenClaw
+2. ให้สิทธิ์ Full Disk Access และ Automation แก่บริบทของโพรเซสที่เรียกใช้ `imsg` และ OpenClaw
 
 3. แปลงการกำหนดค่าเดิม:
 
@@ -63,22 +63,22 @@ OpenClaw ไม่ได้มาพร้อมกับช่องทาง B
    }
    ```
 
-4. รีสตาร์ท Gateway แล้วตรวจสอบ:
+4. รีสตาร์ต Gateway และตรวจสอบ:
 
    ```bash
    openclaw channels status --probe
    ```
 
-5. ทดสอบ DM, กลุ่ม, ไฟล์แนบ และการทำงานของ API ส่วนตัวใดๆ ที่คุณต้องพึ่งพา ก่อนลบเซิร์ฟเวอร์ BlueBubbles เดิมของคุณ
+5. ทดสอบข้อความส่วนตัว กลุ่ม ไฟล์แนบ และการดำเนินการผ่าน API ส่วนตัวที่คุณพึ่งพา ก่อนลบเซิร์ฟเวอร์ BlueBubbles เดิม
 
-## หมายเหตุการย้ายระบบ
+## หมายเหตุเกี่ยวกับการย้ายระบบ
 
-- `channels.bluebubbles.serverUrl` และ `channels.bluebubbles.password` ไม่มีค่าเทียบเท่าใน iMessage
-- `channels.bluebubbles.allowFrom`, `groupAllowFrom`, `groups`, `includeAttachments`, รากไฟล์แนบ, ขีดจำกัดขนาดสื่อ, การแบ่งชิ้น และสวิตช์การทำงาน มีค่าเทียบเท่าใน iMessage
-- `channels.imessage.includeAttachments` ยังคงปิดตามค่าเริ่มต้น ให้ตั้งค่าอย่างชัดเจนหากคุณคาดหวังให้รูปภาพ ข้อความเสียง วิดีโอ หรือไฟล์ขาเข้าถึงเอเจนต์
-- เมื่อใช้ `groupPolicy: "allowlist"` ให้คัดลอกบล็อก `groups` เดิม รวมถึงรายการไวลด์การ์ด `"*"` หากมี รายการอนุญาตผู้ส่งในกลุ่มและรีจิสทรีของกลุ่มเป็นด่านแยกกัน
-- การผูก ACP ที่จับคู่กับ `channel: "bluebubbles"` ต้องเปลี่ยนเป็น `channel: "imessage"`
-- คีย์เซสชัน BlueBubbles เดิมจะไม่กลายเป็นคีย์เซสชัน iMessage การอนุมัติการจับคู่จะส่งต่อด้วยแฮนเดิล แต่ประวัติการสนทนาภายใต้คีย์เซสชัน BlueBubbles จะไม่ส่งต่อ
+- `channels.bluebubbles.serverUrl` และ `channels.bluebubbles.password` ไม่มีค่าที่เทียบเท่าใน iMessage เนื่องจากไม่มีเซิร์ฟเวอร์ให้เชื่อมต่อหรือยืนยันตัวตน
+- `allowFrom`, `groupAllowFrom`, `groups`, `includeAttachments`, `attachmentRoots`, `mediaMaxMb`, `textChunkLimit` และ `actions.*` ยังคงมีความหมายเดิมภายใต้ `channels.imessage`
+- `channels.imessage.includeAttachments` ยังคงปิดอยู่โดยค่าเริ่มต้น ให้ตั้งค่าอย่างชัดเจนหากคุณต้องการให้รูปภาพ บันทึกเสียง วิดีโอ หรือไฟล์ขาเข้าถึงเอเจนต์
+- เมื่อใช้ `groupPolicy: "allowlist"` ให้คัดลอกบล็อก `groups` เดิม รวมถึงรายการไวลด์การ์ด `"*"` หากมี รายการอนุญาตผู้ส่งของกลุ่มและรีจิสทรีกลุ่มเป็นด่านตรวจสอบแยกกัน บล็อก `groups` ที่มีรายการแต่ไม่มี `chat_id` ที่ตรงกัน (หรือไม่มี `"*"`) จะทิ้งข้อความขณะรันไทม์ และบล็อก `groups` ที่ว่างจะบันทึกคำเตือนเมื่อเริ่มต้นระบบ แม้ว่าการกรองผู้ส่งจะยังคงปล่อยให้ข้อความผ่านก็ตาม
+- การผูก ACP ที่ใช้ `match.channel: "bluebubbles"` ต้องเปลี่ยนเป็น `"imessage"`
+- คีย์เซสชัน BlueBubbles เดิมจะไม่กลายเป็นคีย์เซสชัน iMessage การอนุมัติการจับคู่จะอิงตามตัวระบุผู้ส่ง ดังนั้นรายการ `allowFrom` ที่คัดลอกมาจะยังคงใช้งานได้ แต่ประวัติการสนทนาภายใต้คีย์เซสชัน BlueBubbles จะไม่ถูกย้ายตามมา
 
 ## ดูเพิ่มเติม
 

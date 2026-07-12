@@ -1,21 +1,20 @@
 ---
 read_when:
-    - Anda ingin Claude Code menggunakan alat MCP OpenClaw Gateway
-    - Anda memerlukan izin MCP sementara yang terikat sesi untuk harness eksternal
-summary: Referensi CLI untuk `openclaw attach` (meluncurkan Claude Code dengan pemberian izin MCP Gateway bercakupan terbatas)
+    - Anda ingin Claude Code menggunakan alat MCP Gateway OpenClaw
+    - Anda memerlukan izin MCP sementara yang terikat pada sesi untuk harness eksternal
+summary: Referensi CLI untuk `openclaw attach` (jalankan Claude Code dengan pemberian akses MCP Gateway yang terbatas cakupannya)
 title: Lampirkan CLI
 x-i18n:
-    generated_at: "2026-07-02T01:16:31Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:04:33Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1445c9bbf28e5365d070f69bf8f53e249d70ac6e8690ed68831404d041e41e86
+    source_hash: 0d8ac60724adef1439af09179806af537b8f2925f06b3715850e4dd3b83b080f
     source_path: cli/attach.md
     workflow: 16
 ---
 
-`openclaw attach` meluncurkan Claude Code dengan konfigurasi MCP sementara yang ketat dan terikat
-ke satu sesi Gateway.
+`openclaw attach` menjalankan Claude Code dengan konfigurasi MCP sementara yang ketat dan terikat pada satu sesi Gateway.
 
 ```sh
 openclaw attach
@@ -25,14 +24,11 @@ openclaw attach --print-config
 
 Opsi:
 
-- `--session <key>` mengikat grant ke sesi Gateway. Default-nya adalah sesi utama.
-- `--ttl <ms>` meminta TTL grant positif dalam milidetik. Gateway menerapkan batas atasnya sendiri.
-- `--bin <path>` memilih binary Claude Code. Default-nya adalah `claude`.
-- `--print-config` menulis `.mcp.json` sementara, mencetak perintah peluncuran dan env, serta membiarkan grant tetap aktif hingga TTL berakhir.
+- `--session <key>` mengikat pemberian akses ke sesi Gateway. Nilai bawaannya adalah sesi utama.
+- `--ttl <ms>` meminta TTL pemberian akses bernilai positif dalam milidetik. Gateway menerapkan batas maksimumnya sendiri.
+- `--bin <path>` memilih biner Claude Code. Nilai bawaan: `claude`.
+- `--print-config` menulis `.mcp.json` sementara, mencetak perintah peluncuran dan variabel lingkungan, serta membiarkan pemberian akses tetap aktif hingga TTL berakhir (opsi ini tidak menjalankan Claude Code atau mencabut pemberian akses).
 
-Token bearer diteruskan melalui variabel lingkungan, bukan argv. OpenClaw
-meluncurkan Claude Code dengan `--strict-mcp-config --mcp-config <path>` sehingga server
-Claude MCP ambient tidak bergabung ke sesi yang dilampirkan. Peluncuran normal mencabut
-grant saat proses Claude Code keluar.
+Token bearer diteruskan melalui variabel lingkungan, bukan argv. OpenClaw menjalankan Claude Code dengan `--strict-mcp-config --mcp-config <path>` agar server MCP Claude dari lingkungan sekitar tidak bergabung ke sesi yang dilampirkan. Peluncuran normal (tanpa `--print-config`) mencabut pemberian akses saat proses Claude Code berakhir.
 
 Lihat juga: [CLI Gateway](/id/cli/gateway), [CLI MCP](/id/cli/mcp), dan [CLI ACP](/id/cli/acp).

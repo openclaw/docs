@@ -1,11 +1,11 @@
 ---
 read_when:
-    - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin copilot
-summary: ลงทะเบียนรันไทม์เอเจนต์ GitHub Copilot
+    - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin Copilot
+summary: ลงทะเบียนรันไทม์ของเอเจนต์ GitHub Copilot
 title: Plugin Copilot
 x-i18n:
-    generated_at: "2026-06-27T18:01:02Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:32:35Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 38deb5a5898d9b9a9ea5584baec4b749339a6178838542f1905a8a12bfa78090
@@ -13,18 +13,18 @@ x-i18n:
     workflow: 16
 ---
 
-# ปลั๊กอิน Copilot
+# Plugin Copilot
 
 ลงทะเบียนรันไทม์เอเจนต์ GitHub Copilot
 
-## การแจกจ่าย
+## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/copilot`
 - ช่องทางการติดตั้ง: npm; ClawHub: `clawhub:@openclaw/copilot`
 
 ## ส่วนติดต่อ
 
-ปลั๊กอิน
+Plugin
 
 ## เอกสารที่เกี่ยวข้อง
 

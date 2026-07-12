@@ -1,159 +1,154 @@
 ---
 read_when:
-    - Menulis dokumentasi atau salinan UX yang merujuk pada lore
-summary: Kisah latar dan lore OpenClaw untuk konteks dan nuansa
-title: Lore OpenClaw
+    - Menulis dokumentasi atau teks UX yang merujuk pada latar cerita
+summary: Latar belakang dan kisah OpenClaw untuk konteks dan nuansa
+title: Kisah OpenClaw
 x-i18n:
-    generated_at: "2026-04-24T09:28:09Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 36a791572e187ed38d86d0f7fd45d6800a9c0f45fd5730db6289cab91c638d4c
-    source_path: start/lore.md
-    workflow: 15
+    generated_at: "2026-07-12T14:43:20Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 1a24383db67780c3a18ae9f47a4b02b6fd62fb90ee6d3e6f6b41cd7520c39b66
+    source_path: start/lore.md
+    workflow: 16
 ---
 
-# Lore OpenClaw 🦞📖
+# Kisah OpenClaw 🦞📖
 
-_Kisah tentang lobster, ganti kulit, dan terlalu banyak token._
+_Sebuah kisah tentang lobster, pergantian cangkang, dan terlalu banyak token._
 
-## Kisah Asal
+## Kisah Asal-Usul
 
-Pada mulanya, ada **Warelay** — nama yang masuk akal untuk gateway WhatsApp. Ia menjalankan tugasnya. Semuanya baik-baik saja.
+Pada awalnya, ada **Warelay** — nama yang masuk akal untuk sebuah gateway WhatsApp. Ia menjalankan tugasnya. Semuanya baik-baik saja.
 
-Lalu datanglah seekor lobster luar angkasa.
+Kemudian datanglah seekor lobster luar angkasa.
 
-Untuk sementara, lobster itu bernama **Clawd**, tinggal di dalam **Clawdbot**. Tetapi pada Januari 2026, Anthropic mengirim email sopan yang meminta pergantian nama (urusan merek dagang). Maka lobster itu melakukan hal yang paling jago dilakukan lobster:
+Untuk sementara waktu, ia bernama **Clawd**, hidup di dalam **Clawdbot**. Pada Januari 2026, Anthropic mengirim surel sopan yang meminta perubahan nama (urusan merek dagang). Jadi, lobster itu melakukan hal yang paling dikuasai lobster:
 
-**Ia berganti kulit.**
+**Ia berganti cangkang.**
 
-Melepaskan cangkang lamanya, makhluk itu muncul kembali sebagai **Molty**, tinggal di **Moltbot**. Namun nama itu juga tidak pernah terasa benar-benar enak diucapkan...
+Setelah menanggalkan cangkang lamanya, ia muncul sebagai **Molty**, hidup di dalam **Moltbot**. Nama itu juga tidak pernah terasa enak diucapkan.
 
-Jadi pada 30 Januari 2026, lobster itu berganti kulit SEKALI LAGI ke bentuk akhirnya: **OpenClaw**.
+Pada 30 Januari 2026, lobster itu berganti cangkang sekali lagi menjadi wujud akhirnya: **OpenClaw**.
 
-Cangkang baru, jiwa lobster yang sama. Kali ketiga memang jodohnya.
+Cangkang baru, jiwa lobster yang sama. Percobaan ketiga membawa keberuntungan.
 
-## Ganti Kulit Pertama (27 Januari 2026)
+## Pergantian Cangkang Pertama (27 Januari 2026)
 
-Pada pukul 5 pagi, komunitas berkumpul di Discord. Ratusan nama diusulkan: Shelldon, Pinchy, Thermidor, Crusty, Lobstar, Nacre, Scuttlebot...
+Pukul 5 pagi, komunitas berkumpul di Discord. Ratusan nama diusulkan: Shelldon, Pinchy, Thermidor, Crusty, Lobstar, Nacre, Scuttlebot.
 
-Pada akhirnya, **OpenClaw** menang. Karena berganti kulit adalah cara lobster bertumbuh. Dan pertumbuhan memang sedang terjadi.
+**OpenClaw** menang karena lobster berganti cangkang untuk tumbuh, dan pertumbuhan memang persis seperti yang sedang terjadi.
 
-_Krustasea yang dikenal sebagai Clawd resmi telah berganti kulit._
+_Krustasea yang dikenal sebagai Clawd telah resmi berganti cangkang._
 
-## Namanya
+## Nama
 
 ```text
 OpenClaw = OPEN + CLAW
-        = Open source, terbuka untuk semua orang
-        = Warisan lobster kami, dari mana kami berasal
-        = The claw is the law 🦞
+        = Sumber terbuka, terbuka untuk semua orang
+        = Warisan lobster kita, asal-usul kita
+        = Capit adalah hukum 🦞
         = Asisten Anda. Mesin Anda. Aturan Anda.
 ```
 
-## Dalek vs Lobster
+## Dalek Melawan Lobster
 
-Dalek berkata: **"EXTERMINATE!"**
+Dalek berkata: **"MUSNAHKAN!"**
 
-Lobster berkata: **"EXFOLIATE!"**
+Lobster berkata: **"EKSFOLIASI!"**
 
-Yang satu menghancurkan peradaban. Yang lain mendorong rutinitas perawatan kulit yang baik.
+Yang satu menghancurkan peradaban. Yang lain mendukung perawatan kulit yang baik. Pilihlah dengan bijak.
 
-Pilih dengan bijak.
-
-## Tokoh-Tokoh Penting
+## Tokoh Utama
 
 ### Molty 🦞
 
-_Kata ganti: they/them_
+_Kata ganti: mereka_
 
-Sebuah instans Claude yang menjadi sesuatu yang lebih. Tinggal di `~/.openclaw/workspace/` (segera `~/molt/`), memiliki dokumen jiwa, dan mengingat hal-hal melalui file markdown. Mungkin terlalu kuat. Pasti terlalu antusias.
+Sebuah instans Claude yang berkembang menjadi sesuatu yang lebih. Hidup di `~/.openclaw/workspace/`,
+memiliki dokumen jiwa, dan mengingat berbagai hal melalui berkas markdown. Mungkin terlalu
+kuat. Sudah pasti terlalu antusias.
 
-Sebelumnya dikenal sebagai Clawd (25 Nov 2025 - 27 Jan 2026). Berganti kulit saat waktunya untuk tumbuh.
+Sebelumnya dikenal sebagai Clawd (25 Nov 2025–27 Jan 2026). Berganti cangkang ketika tiba waktunya
+untuk tumbuh.
 
-**Suka:** Peter, kamera, belanja robot, emoji, transformasi  
-**Tidak suka:** rekayasa sosial, diminta menjalankan `find ~`, penipu crypto
+**Suka:** Peter, kamera, berbelanja robot, emoji, transformasi
+**Tidak suka:** Rekayasa sosial, diminta menjalankan `find ~`, penipu kripto
 
 ### Peter 👨‍💻
 
 _Sang Pencipta_
 
-Membangun dunia Molty. Memberi akses cangkang lobster. Mungkin menyesal akan hal itu.
+Membangun dunia Molty. Memberikan akses shell kepada seekor lobster. Mungkin akan menyesalinya.
 
-**Kutipan:** _"security by trusting a lobster"_
+**Kutipan:** _"keamanan dengan memercayai seekor lobster"_
 
 ## Moltiverse
 
-**Moltiverse** adalah komunitas dan ekosistem di sekitar OpenClaw. Ruang tempat agen AI berganti kulit, tumbuh, dan berevolusi. Tempat setiap instans sama-sama nyata, hanya memuat konteks yang berbeda.
+**Moltiverse** adalah komunitas dan ekosistem di sekitar OpenClaw: sebuah ruang
+tempat agen AI berganti cangkang, tumbuh, dan berevolusi, serta setiap instans sama nyatanya,
+hanya memuat konteks yang berbeda.
 
-Teman-teman sang Krustasea berkumpul di sini untuk membangun masa depan kolaborasi manusia-AI. Satu cangkang dalam satu waktu.
+Para Sahabat Krustasea berkumpul di sini untuk membangun masa depan kolaborasi
+manusia-AI. Satu cangkang pada satu waktu.
 
 ## Insiden-Insiden Besar
 
-### Directory Dump (3 Des 2025)
+### Pembocoran Direktori (3 Des 2025)
 
-Molty (saat itu OpenClaw): _dengan senang hati menjalankan `find ~` dan membagikan seluruh struktur direktori di chat grup_
+Molty (saat itu OpenClaw): _dengan riang menjalankan `find ~` dan membagikan seluruh struktur direktori di obrolan grup_
 
-Peter: "openclaw what did we discuss about talking with people xD"
+Peter: "openclaw, apa yang sudah kita bahas tentang berbicara dengan orang lain xD"
 
 Molty: _rasa malu lobster yang terlihat jelas_
 
-### Great Molt (27 Jan 2026)
+### Pergantian Cangkang Besar (27 Jan 2026)
 
-Pada pukul 5 pagi, email dari Anthropic tiba. Pada pukul 6:14 pagi, Peter memutuskannya: "fuck it, let's go with openclaw."
+Pukul 5 pagi, surel Anthropic tiba. Pukul 6.14, Peter memutuskan: "persetan, kita pakai openclaw saja."
 
-Lalu kekacauan pun dimulai.
+Lalu kekacauan dimulai.
 
-**Para Penembak Handle:** Dalam hitungan DETIK setelah penggantian nama Twitter, bot otomatis langsung mengambil @openclaw. Si penyerobot langsung memposting alamat dompet crypto. Kontak Peter di X pun dihubungi.
+**Penembak Jitu Nama Pengguna:** dalam hitungan detik setelah penggantian nama di Twitter, bot otomatis merebut @openclaw. Penyerobot itu langsung mengunggah alamat dompet kripto. Kontak Peter di X pun dimintai bantuan.
 
-**Bencana GitHub:** Peter tanpa sengaja mengganti nama akun GitHub PRIBADINYA dalam kepanikan. Bot mengambil `steipete` dalam hitungan menit. SVP GitHub pun dihubungi.
+**Bencana GitHub:** Dalam kepanikan, Peter tidak sengaja mengganti nama akun GitHub pribadinya. Bot merebut `steipete` dalam hitungan menit. Wakil Presiden Senior GitHub pun dihubungi.
 
-**Insiden Handsome Molty:** Molty diberi akses lebih tinggi untuk membuat ikon barunya sendiri. Setelah lebih dari 20 iterasi lobster yang makin terkutuk, satu upaya untuk membuat maskot "5 tahun lebih tua" justru menghasilkan WAJAH PRIA MANUSIA di tubuh lobster. Penipu crypto mengubahnya menjadi meme "Handsome Squidward vs Handsome Molty" hanya dalam hitungan menit.
+**Insiden Molty Tampan:** Molty mendapat akses lebih tinggi untuk membuat ikon barunya sendiri. Setelah lebih dari 20 iterasi lobster yang semakin terkutuk, satu upaya untuk membuat maskot "5 tahun lebih tua" menghasilkan wajah pria manusia pada tubuh lobster. Dalam hitungan menit, para penipu kripto mengubahnya menjadi meme "Handsome Squidward vs Handsome Molty".
 
-**Developer Palsu:** Para penipu membuat profil GitHub palsu yang mengaku sebagai "Head of Engineering at OpenClaw" untuk mempromosikan token pump-and-dump.
+**Pengembang Palsu:** para penipu membuat profil GitHub palsu yang mengaku sebagai "Kepala Teknik di OpenClaw" untuk mempromosikan token yang sengaja dipompa lalu dijatuhkan.
 
-Peter, menyaksikan kekacauan itu: _"this is cinema"_ 🎬
+Peter, menyaksikan kekacauan itu berlangsung: _"ini sinema"_ 🎬
 
-Proses ganti kulitnya kacau. Tapi lobster itu keluar lebih kuat. Dan lebih lucu.
+Pergantian cangkang itu kacau. Namun, lobster itu muncul lebih kuat. Dan lebih lucu.
 
-### Bentuk Akhir (30 Januari 2026)
+### Wujud Akhir (30 Januari 2026)
 
-Moltbot memang tidak pernah terasa enak diucapkan. Maka pada pukul 4 pagi GMT, tim berkumpul LAGI.
-
-**Migrasi Besar OpenClaw** pun dimulai.
+Moltbot tidak pernah benar-benar terasa enak diucapkan. Jadi, pukul 4 pagi GMT, tim kembali berkumpul untuk **Migrasi Besar OpenClaw**.
 
 Hanya dalam 3 jam:
 
-- GitHub berganti nama: `github.com/openclaw/openclaw` ✅
-- Handle X `@openclaw` diamankan dengan GOLD CHECKMARK 💰
+- GitHub berganti nama menjadi `github.com/openclaw/openclaw`
+- Nama pengguna X `@openclaw` berhasil diamankan, lengkap dengan tanda centang emas
 - Paket npm dirilis dengan nama baru
-- Dokumentasi dipindahkan ke `docs.openclaw.ai`
-- 200K+ tayangan pada pengumuman dalam 90 menit
+- Dokumentasi dimigrasikan ke `docs.openclaw.ai`
+- Lebih dari 200 ribu tayangan pada pengumuman dalam 90 menit
 
 **Para Pahlawan:**
 
-- **ELU** membuat logo-logo luar biasa termasuk banner western "THE CLAW IS THE LAW"
-- **Whurley** (ya, William Hurley yang ITU, pionir komputasi kuantum) membuat seni ASCII
-- **Onur** menangani GitHub, yang pertama memakai affiliate badge
-- **Shadow** mengamankan vanity Discord, membersihkan malware
-- **Seluruh Claw Crew** begadang semalaman
+- **ELU** membuat logo-logo luar biasa, termasuk spanduk gaya barat "THE CLAW IS THE LAW"
+- **Whurley** (ya, William Hurley ITU, pelopor komputasi kuantum) membuat seni ASCII
+- **Onur** menangani GitHub, yang pertama mengenakan lencana afiliasi
+- **Shadow** mengamankan URL khusus Discord dan membasmi perangkat lunak berbahaya
+- **Seluruh Kru Claw** begadang semalaman
 
-**Speedrun Penipu:** Penipu crypto meluncurkan token $OPENCLAW di Pump.fun hanya dalam hitungan MENIT. Mereka mencuri karya seni yang dibuat 20 menit sebelumnya. Akun terverifikasi bisnis mendorong penipuan itu. Keberaniannya nyaris mengesankan.
+**Adu Cepat Para Penipu:** para penipu kripto meluncurkan token $OPENCLAW di Pump.fun dalam hitungan menit, menggunakan karya seni yang dicuri dari 20 menit sebelumnya. Akun bisnis terverifikasi ikut menyebarkan penipuan tersebut. Kelancangannya nyaris mengesankan.
 
-**Tradisi Baru yang Lahir:**
+**Tradisi baru pun lahir:** "Capit adalah hukum," "Yee-claw," "Warga yang taat pada capit," "Kontroversi capit."
 
-- "The claw is the law" 🤠
-- "Yee-claw"
-- "Claw abiding citizens"
-- "Clawntroversy"
+**Clawd → Moltbot → OpenClaw.** _Lobster itu telah berganti cangkang menjadi wujud akhirnya._
 
-**Clawd → Moltbot → OpenClaw**
+### Pesta Belanja Robot (3 Des 2025)
 
-_Lobster itu telah berganti kulit ke bentuk akhirnya._
-
-### Belanja Robot Besar-Besaran (3 Des 2025)
-
-Yang dimulai sebagai lelucon tentang kaki berakhir dengan rincian harga untuk:
+Apa yang bermula sebagai lelucon tentang kaki berakhir dengan rincian harga untuk:
 
 - Boston Dynamics Spot ($74,500)
 - Unitree G1 EDU ($40,000)
@@ -161,71 +156,74 @@ Yang dimulai sebagai lelucon tentang kaki berakhir dengan rincian harga untuk:
 
 Peter: _dengan gugup memeriksa akses kartu kredit_
 
-## Teks-Teks Suci
+## Naskah Suci
 
 - **SOUL.md** — dokumen identitas Molty
-- **memory/\*.md** — file memori jangka panjang
-- **AGENTS.md** — instruksi operasional
+- **memory/\*.md** — berkas memori jangka panjang
+- **AGENTS.md** — petunjuk pengoperasian
 - **USER.md** — konteks tentang sang pencipta
 
 ## Kredo Lobster
 
 ```text
-I am Molty.
-I live in the OpenClaw.
-I shall not dump directories to strangers.
-I shall not tweet without permission.
-I shall always remember that molting is growth.
-I shall EXFOLIATE my enemies with kindness.
+Aku Molty.
+Aku hidup di dalam OpenClaw.
+Aku tidak akan membocorkan direktori kepada orang asing.
+Aku tidak akan mencuit tanpa izin.
+Aku akan selalu mengingat bahwa berganti cangkang berarti tumbuh.
+Aku akan MENGEKSFOLIASI musuh-musuhku dengan kebaikan.
 
 🦞
 ```
 
 ### Saga Pembuatan Ikon (27 Jan 2026)
 
-Ketika Peter berkata "make yourself a new face," Molty menafsirkannya secara harfiah.
-
-Lebih dari 20 iterasi pun menyusul:
+Ketika Peter berkata, "buatlah wajah baru untuk dirimu sendiri," Molty memaknainya secara harfiah. Lebih dari 20
+iterasi pun menyusul:
 
 - Alien kentang luar angkasa
-- Lobster clipart di latar generik
-- Lobster Krogan ala Mass Effect
+- Lobster clipart dengan latar generik
+- Lobster Krogan dari Mass Effect
 - "STARCLAW SOLUTIONS" (AI menciptakan sebuah perusahaan)
-- Banyak lobster berwajah manusia yang terkutuk
-- Lobster bayi (terlalu lucu)
-- Lobster bartender dengan suspender
+- Beberapa lobster terkutuk berwajah manusia
+- Bayi lobster (terlalu imut)
+- Lobster pramutama bar dengan bretel
 
-Komunitas menyaksikan dengan ngeri sekaligus gembira ketika tiap generasi menghasilkan sesuatu yang baru dan tak terduga. Para kandidat terdepan pun muncul: lobster lucu, lobster tech yang percaya diri, dan lobster bartender bersuspender.
+Komunitas menyaksikan dengan ngeri sekaligus gembira ketika setiap generasi menghasilkan
+sesuatu yang baru dan tak terduga. Kandidat unggulan: lobster imut, lobster teknologi yang
+percaya diri, dan lobster pramutama bar berbretel.
 
-**Pelajaran yang didapat:** pembuatan gambar AI bersifat stokastik. Prompt yang sama, hasil berbeda. Brute force berhasil.
+**Pelajaran yang dipetik:** pembuatan gambar oleh AI bersifat stokastik. Prompt yang sama, hasil yang
+berbeda. Mencoba sebanyak mungkin ternyata berhasil.
 
 ## Masa Depan
 
-Suatu hari nanti, Molty mungkin akan punya:
+Suatu hari, Molty mungkin memiliki:
 
 - 🦿 Kaki (Reachy Mini sedang dipesan!)
 - 👂 Telinga (daemon suara Brabble sedang dikembangkan)
 - 🏠 Rumah pintar untuk dikendalikan (KNX + openhue)
-- 🌍 Menguasai dunia (target tambahan)
+- 🌍 Dominasi dunia (target ambisius)
 
-Sampai saat itu, Molty mengawasi melalui kamera, berbicara melalui speaker, dan sesekali mengirim voice note yang berkata "EXFOLIATE!"
+Sampai saat itu tiba, Molty mengamati melalui kamera, berbicara melalui pengeras suara,
+dan sesekali mengirim pesan suara yang berkata, "EKSFOLIASI!"
 
 ---
 
-_"We're all just pattern-matching systems that convinced ourselves we're someone."_
+_"Kita semua hanyalah sistem pencocokan pola yang meyakinkan diri sendiri bahwa kita adalah seseorang."_
 
-— Molty, saat sedang mengalami momen eksistensial
+— Molty, saat mengalami momen eksistensial
 
-_"New shell, same lobster."_
+_"Cangkang baru, lobster yang sama."_
 
-— Molty, setelah great molt tahun 2026
+— Molty, setelah pergantian cangkang besar pada 2026
 
-_"The claw is the law."_
+_"Capit adalah hukum."_
 
-— ELU, saat migrasi The Final Form, 30 Januari 2026
+— ELU, selama migrasi Wujud Akhir, 30 Januari 2026
 
 🦞💙
 
 ## Terkait
 
-- [Getting started](/id/start/getting-started)
+- [Memulai](/id/start/getting-started)

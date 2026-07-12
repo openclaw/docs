@@ -1,19 +1,19 @@
 ---
 read_when:
-    - أنت تثبّت Plugin openrouter أو تهيّئه أو تدقّقه
+    - أنت تثبّت Plugin ‏openrouter أو تهيّئه أو تدقّقه
 summary: يضيف دعم موفّر نماذج OpenRouter إلى OpenClaw.
-title: Plugin OpenRouter
+title: Plugin ‏OpenRouter
 x-i18n:
-    generated_at: "2026-06-27T18:14:34Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:21:48Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3d23878973853230ff2621d9ea75b6fd3536366fa8520139d5424a4d261bc44a
+    source_hash: 67d69a5b9ea397b276596bd69023ae6ccc0b35051d6de0d843a68b98b641b843
     source_path: plugins/reference/openrouter.md
     workflow: 16
 ---
 
-# Plugin OpenRouter
+# Plugin ‏OpenRouter
 
 يضيف دعم موفّر نماذج OpenRouter إلى OpenClaw.
 
@@ -22,9 +22,9 @@ x-i18n:
 - الحزمة: `@openclaw/openrouter-provider`
 - مسار التثبيت: مضمّن في OpenClaw
 
-## السطح
+## الواجهات
 
-الموفّرون: openrouter؛ العقود: imageGenerationProviders, mediaUnderstandingProviders, musicGenerationProviders, speechProviders, videoGenerationProviders
+الموفّرون: openrouter؛ العقود: imageGenerationProviders، mediaUnderstandingProviders، musicGenerationProviders، speechProviders، usageProviders، videoGenerationProviders
 
 ## الوثائق ذات الصلة
 

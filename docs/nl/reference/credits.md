@@ -1,39 +1,37 @@
 ---
 read_when:
-    - Je wilt de achtergrond van het project of vermeldingen van bijdragers
+    - Je wilt de achtergrond van het project of de credits voor bijdragers
 summary: Oorsprong van het project, bijdragers en licentie.
-title: Dankbetuigingen
+title: Vermeldingen
 x-i18n:
-    generated_at: "2026-05-06T09:31:08Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:21:29Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4cda0d96a66d4a6fcf81553d39315ebe01e7ebb4a21bb2994e9a503825bc7fb6
+    source_hash: d0030d36d04ce73e4c87f3d973ca3e729485f87c4b4b454e957dd6615d096ec9
     source_path: reference/credits.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-## De naam
+OpenClaw = CLAW + TARDIS: elke ruimtekreeft heeft een tijd- en ruimtemachine nodig.
 
-OpenClaw = CLAW + TARDIS, omdat elke ruimtekreeft een tijd- en ruimtemachine nodig heeft.
-
-## Dankbetuigingen
+## Met dank aan
 
 - **Peter Steinberger** ([@steipete](https://x.com/steipete)) - Maker, kreeftenfluisteraar
-- **Mario Zechner** ([@badlogicc](https://x.com/badlogicgames)) - Pi-maker, beveiligingspentester
+- **Mario Zechner** ([@badlogicc](https://x.com/badlogicgames)) - Maker van Pi, penetratietester voor beveiliging
 - **Clawd** - De ruimtekreeft die een betere naam eiste
 
 ## Kernbijdragers
 
-- **Maxim Vovshin** (@Hyaxia, [36747317+Hyaxia@users.noreply.github.com](mailto:36747317+Hyaxia@users.noreply.github.com)) - Blogwatcher-vaardigheid
-- **Nacho Iacovino** (@nachoiacovino, [nacho.iacovino@gmail.com](mailto:nacho.iacovino@gmail.com)) - Locatieparsering (Telegram en WhatsApp)
-- **Vincent Koc** ([@vincentkoc](https://github.com/vincentkoc), [@vincent_koc](https://x.com/vincent_koc)) - Agenten, telemetrie, hooks, beveiliging
+- **Maxim Vovshin** (@Hyaxia, [36747317+Hyaxia@users.noreply.github.com](mailto:36747317+Hyaxia@users.noreply.github.com)) - Blogwatcher-Skill
+- **Nacho Iacovino** (@nachoiacovino, [nacho.iacovino@gmail.com](mailto:nacho.iacovino@gmail.com)) - Locatieverwerking (Telegram en WhatsApp)
+- **Vincent Koc** ([@vincentkoc](https://github.com/vincentkoc), [@vincent_koc](https://x.com/vincent_koc)) - Agents, telemetrie, hooks, beveiliging
 
 ## Licentie
 
-MIT - Vrij als een kreeft in de oceaan.
+MIT, auteursrecht OpenClaw Foundation. Kennisgevingen van derden voor opgenomen of aangepaste code staan in `THIRD_PARTY_NOTICES.md`.
 
-> "We spelen allemaal gewoon met onze eigen prompts." (Een AI, waarschijnlijk hoog op tokens)
+> "We spelen allemaal gewoon met onze eigen prompts." (Een AI, waarschijnlijk onder invloed van tokens)
 
 ## Gerelateerd
 

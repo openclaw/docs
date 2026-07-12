@@ -5,19 +5,16 @@ read_when:
 summary: Meta 设置（身份验证 + muse-spark-1.1 模型选择）
 title: Meta
 x-i18n:
-    generated_at: "2026-07-12T14:43:05Z"
+    generated_at: "2026-07-11T20:53:35Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: f2ce7616d9abc14a2d15ee53ea7725d3e70059af1a38bb61dbfe5b3969106432
     source_path: providers/meta.md
     workflow: 16
 ---
 
-**Meta API** 使用与 OpenAI 兼容的 **Responses API**（`POST /v1/responses`）
-来支持 `muse-spark-1.1` 推理模型。该提供商以 OpenClaw 内置
-插件的形式提供。
+**Meta API** 对 `muse-spark-1.1` 推理模型使用兼容 OpenAI 的 **Responses API**（`POST /v1/responses`）。该提供商以 OpenClaw 内置插件的形式发布。
 
 | 属性              | 值                                 |
 | ----------------- | ---------------------------------- |
@@ -47,7 +44,7 @@ openclaw onboard --non-interactive --accept-risk \
   --meta-api-key "$MODEL_API_KEY"
 ```
 
-```bash 仅使用环境变量
+```bash 仅环境变量
 export MODEL_API_KEY=<key>
 ```
 
@@ -59,9 +56,7 @@ export MODEL_API_KEY=<key>
     openclaw models list --provider meta
     ```
 
-    列出静态的 `muse-spark-1.1` 目录条目。如果无法解析 `MODEL_API_KEY`，
-    `openclaw models status --json` 会在 `auth.unusableProfiles`
-    下报告缺失的凭据。
+    列出静态的 `muse-spark-1.1` 目录条目。如果无法解析 `MODEL_API_KEY`，`openclaw models status --json` 会在 `auth.unusableProfiles` 下报告缺失的凭据。
 
   </Step>
 </Steps>
@@ -83,14 +78,13 @@ openclaw onboard --non-interactive --accept-risk \
 
 能力：
 
-- 文本 + 图像输入
+- 文本和图像输入
 - 工具调用和流式传输
 - 推理强度：`minimal`、`low`、`medium`、`high`、`xhigh`（默认：`high`）
 - 无状态加密推理重放（`store: false`、`include: ["reasoning.encrypted_content"]`）
 
 <Warning>
-`muse-spark-1.1` 不接受 `reasoning.effort: "none"`。对于此提供商，OpenClaw 会将
-`--thinking off` 映射为 `minimal`。
+`muse-spark-1.1` 不接受 `reasoning.effort: "none"`。对于此提供商，OpenClaw 会将 `--thinking off` 映射为 `minimal`。
 </Warning>
 
 ## 手动配置
@@ -110,11 +104,7 @@ openclaw onboard --non-interactive --accept-risk \
 ```
 
 <Note>
-如果 Gateway 网关以守护进程（launchd、systemd、Docker）的形式运行，请确保
-该进程可以访问 `MODEL_API_KEY`，例如将其放在
-`~/.openclaw/.env` 中或通过 `env.shellEnv` 提供。如果环境变量仅在
-交互式 shell 中导出，除非单独导入该环境变量，否则它不会对托管服务
-生效。
+如果 Gateway 网关作为守护进程运行（launchd、systemd、Docker），请确保该进程可以访问 `MODEL_API_KEY`，例如将其配置在 `~/.openclaw/.env` 中或通过 `env.shellEnv` 提供。除非单独导入环境变量，否则仅在交互式 shell 中导出的 key 对托管服务不起作用。
 </Note>
 
 ## 冒烟测试
@@ -136,6 +126,6 @@ pnpm test:live -- extensions/meta/meta.live.test.ts
     muse-spark-1.1 的推理强度级别。
   </Card>
   <Card title="配置参考" href="/zh-CN/gateway/config-agents#agent-defaults" icon="gear">
-    Agent 默认值和模型配置。
+    Agent 默认设置和模型配置。
   </Card>
 </CardGroup>

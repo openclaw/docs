@@ -1,55 +1,57 @@
 ---
 read_when:
-    - Je wilt OpenClaw uitvoeren op antirez/ds4
+    - Je wilt OpenClaw uitvoeren met antirez/ds4
     - Je wilt een lokale DeepSeek V4 Flash-backend met toolaanroepen
     - Je hebt de OpenClaw-configuratie voor ds4-server nodig
-summary: OpenClaw uitvoeren via ds4, een lokale OpenAI-compatibele DeepSeek V4 Flash-server
+summary: Voer OpenClaw uit via ds4, een lokale, met OpenAI compatibele DeepSeek V4 Flash-server
 title: ds4
 x-i18n:
-    generated_at: "2026-06-27T18:12:11Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:19:03Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a9922421d39f5d2d29dfa62de9fc3de7131dfa96445d0646cd02ad766a125544
+    source_hash: be449813295648694625ef8003b3f4b12903535b74816916ca5af0695174fbf4
     source_path: providers/ds4.md
     workflow: 16
 ---
 
-[ds4](https://github.com/antirez/ds4) serveert DeepSeek V4 Flash vanuit een lokale
+[ds4](https://github.com/antirez/ds4) biedt DeepSeek V4 Flash aan via een lokale
 Metal-backend met een OpenAI-compatibele `/v1`-API. OpenClaw maakt verbinding met ds4
-via de generieke `openai-completions`-providerfamilie.
+via de generieke providerfamilie `openai-completions`.
 
-ds4 is geen gebundelde OpenClaw-provider-Plugin. Configureer het onder
-`models.providers.ds4` en selecteer daarna `ds4/deepseek-v4-flash`.
+ds4 is geen gebundelde OpenClaw-providerplugin. Configureer deze onder
+`models.providers.ds4` en selecteer vervolgens `ds4/deepseek-v4-flash`.
 
-- Provider-id: `ds4`
-- Plugin: geen
-- API: OpenAI-compatibele Chat Completions (`openai-completions`)
-- Voorgestelde basis-URL: `http://127.0.0.1:18000/v1`
-- Model-id: `deepseek-v4-flash`
-- Toolaanroepen: ondersteund via OpenAI-stijl `tools` en `tool_calls`
-- Redeneren: DeepSeek-stijl `thinking` en `reasoning_effort`
+| Eigenschap    | Waarde                                                     |
+| ------------- | ---------------------------------------------------------- |
+| Provider-id   | `ds4`                                                      |
+| Plugin        | geen (alleen configuratie)                                 |
+| API           | OpenAI-compatibele Chat Completions (`openai-completions`) |
+| Basis-URL     | `http://127.0.0.1:18000/v1` (aanbevolen)                   |
+| Model-id      | `deepseek-v4-flash`                                        |
+| Toolaanroepen | OpenAI-stijl `tools` / `tool_calls`                        |
+| Redeneren     | DeepSeek-stijl `thinking` en `reasoning_effort`            |
 
 ## Vereisten
 
 - macOS met Metal-ondersteuning.
-- Een werkende ds4-checkout met `ds4-server` en het DeepSeek V4 Flash GGUF-bestand.
-- Genoeg geheugen voor de context die je kiest. Grotere `--ctx`-waarden wijzen meer
-  KV-geheugen toe wanneer de server start.
+- Een werkende ds4-check-out met `ds4-server` en het GGUF-bestand van DeepSeek V4 Flash.
+- Voldoende geheugen voor de context die u kiest; grotere `--ctx`-waarden wijzen bij
+  het opstarten van de server meer KV-geheugen toe.
 
 <Warning>
 OpenClaw-agentbeurten bevatten toolschema's en werkruimtecontext. Een kleine context
-zoals `--ctx 4096` kan directe curl-tests doorstaan maar volledige agentruns laten mislukken met
-`500 prompt exceeds context`. Gebruik minstens `--ctx 32768` voor agent- en tool-
-smoketests. Gebruik `--ctx 393216` alleen wanneer je genoeg geheugen hebt en ds4
-Think Max-gedrag wilt.
+zoals `--ctx 4096` kan directe curl-tests doorstaan, maar volledige agentuitvoeringen
+laten mislukken met `500 prompt exceeds context`. Gebruik voor rooktests van agents
+en tools ten minste `--ctx 32768`. Gebruik `--ctx 393216` alleen als er voldoende
+geheugen beschikbaar is en om ds4 Think Max in te schakelen.
 </Warning>
 
 ## Snelstart
 
 <Steps>
-  <Step title="Start ds4-server">
-    Vervang `<DS4_DIR>` door het pad naar je ds4-checkout.
+  <Step title="ds4-server starten">
+    Vervang `<DS4_DIR>` door het pad naar uw ds4-check-out.
 
     ```bash
     <DS4_DIR>/ds4-server \
@@ -61,7 +63,7 @@ Think Max-gedrag wilt.
     ```
 
   </Step>
-  <Step title="Controleer het OpenAI-compatibele endpoint">
+  <Step title="Het OpenAI-compatibele eindpunt verifiëren">
     ```bash
     curl http://127.0.0.1:18000/v1/models
     ```
@@ -69,9 +71,9 @@ Think Max-gedrag wilt.
     Het antwoord moet `deepseek-v4-flash` bevatten.
 
   </Step>
-  <Step title="Voeg de OpenClaw-providerconfiguratie toe">
-    Voeg de configuratie uit [Volledige configuratie](#full-config) toe en voer daarna een eenmalige modelcontrole
-    uit:
+  <Step title="De OpenClaw-providerconfiguratie toevoegen">
+    Voeg de configuratie uit [Volledige configuratie](#full-config) toe en voer vervolgens
+    een eenmalige modelcontrole uit:
 
     ```bash
     openclaw infer model run \
@@ -87,7 +89,7 @@ Think Max-gedrag wilt.
 
 ## Volledige configuratie
 
-Gebruik deze configuratie wanneer ds4 al draait op `127.0.0.1:18000`.
+Gebruik deze configuratie wanneer ds4 al op `127.0.0.1:18000` draait.
 
 ```json5
 {
@@ -134,11 +136,11 @@ Gebruik deze configuratie wanneer ds4 al draait op `127.0.0.1:18000`.
 }
 ```
 
-Houd `contextWindow` afgestemd op de waarde van `ds4-server --ctx`. Houd `maxTokens`
-afgestemd op `--tokens`, tenzij je OpenClaw bewust minder uitvoer wilt laten aanvragen
-dan de serverstandaard.
+Houd `contextWindow` in overeenstemming met `ds4-server --ctx`. Houd `maxTokens` in
+overeenstemming met `--tokens`, tenzij u bewust wilt dat OpenClaw minder uitvoer
+aanvraagt dan de standaardwaarde van de server.
 
-## Opstarten op aanvraag
+## Op aanvraag starten
 
 OpenClaw kan ds4 alleen starten wanneer een `ds4/...`-model is geselecteerd. Voeg
 `localService` toe aan dezelfde providervermelding:
@@ -196,19 +198,19 @@ OpenClaw kan ds4 alleen starten wanneer een `ds4/...`-model is geselecteerd. Voe
 }
 ```
 
-`command` moet een absoluut pad naar een uitvoerbaar bestand zijn. Shell-lookup en `~`-uitbreiding worden
-niet gebruikt. Zie [Lokale modelservices](/nl/gateway/local-model-services) voor elk
-`localService`-veld.
+`command` moet een absoluut pad naar een uitvoerbaar bestand zijn. Shell-opzoeking en
+uitbreiding van `~` worden niet gebruikt. Zie [Lokale modelservices](/nl/gateway/local-model-services)
+voor elk `localService`-veld.
 
 ## Think Max
 
-ds4 past Think Max alleen toe wanneer aan beide voorwaarden is voldaan:
+ds4 past Think Max alleen toe wanneer aan beide voorwaarden wordt voldaan:
 
 - `ds4-server` start met `--ctx 393216` of hoger.
-- De aanvraag gebruikt `reasoning_effort: "max"` of het equivalente ds4-effortveld.
+- Het verzoek gebruikt `reasoning_effort: "max"` (of het equivalente ds4-inspanningsveld).
 
-Als je die grote context gebruikt, werk dan zowel de serverflags als de OpenClaw-modelmetadata
-bij:
+Als u die grote context gebruikt, werkt u zowel de servervlaggen als de
+OpenClaw-modelmetadata bij:
 
 ```json5
 {
@@ -225,9 +227,9 @@ bij:
 }
 ```
 
-## Testen
+## Test
 
-Begin met een directe HTTP-controle:
+Directe HTTP-controle, waarbij OpenClaw wordt omzeild:
 
 ```bash
 curl http://127.0.0.1:18000/v1/chat/completions \
@@ -235,7 +237,7 @@ curl http://127.0.0.1:18000/v1/chat/completions \
   -d '{"model":"deepseek-v4-flash","messages":[{"role":"user","content":"Reply with exactly: ds4-ok"}],"max_tokens":16,"stream":false,"thinking":{"type":"disabled"}}'
 ```
 
-Test daarna OpenClaw-modelroutering:
+OpenClaw-modelroutering (hetzelfde als de controle in Snelstart):
 
 ```bash
 openclaw infer model run \
@@ -246,7 +248,7 @@ openclaw infer model run \
   --json
 ```
 
-Gebruik voor een volledige agent- en toolaanroep-smoketest een context van minstens 32768:
+Volledige rooktest voor agent- en toolaanroepen, met een context van ten minste 32768:
 
 ```bash
 openclaw agent \
@@ -263,15 +265,15 @@ Verwacht resultaat:
 
 - `executionTrace.winnerProvider` is `ds4`
 - `executionTrace.winnerModel` is `deepseek-v4-flash`
-- `toolSummary.calls` is minstens `1`
+- `toolSummary.calls` is ten minste `1`
 - `finalAssistantVisibleText` begint met `tool-ok`
 
-## Probleemoplossing
+## Problemen oplossen
 
 <AccordionGroup>
   <Accordion title="curl /v1/models kan geen verbinding maken">
-    ds4 draait niet of is niet gebonden aan de host en poort in `baseUrl`. Start
-    `ds4-server` en probeer het daarna opnieuw:
+    ds4 draait niet of is niet gebonden aan de host/poort in `baseUrl`. Start
+    `ds4-server` en probeer het vervolgens opnieuw:
 
     ```bash
     curl http://127.0.0.1:18000/v1/models
@@ -281,20 +283,20 @@ Verwacht resultaat:
 
   <Accordion title="500 prompt exceeds context">
     De geconfigureerde `--ctx` is te klein voor de OpenClaw-beurt. Verhoog
-    `ds4-server --ctx` en werk daarna `models.providers.ds4.models[].contextWindow`
-    bij zodat deze overeenkomt. Volledige agentbeurten met tools hebben aanzienlijk meer context nodig dan een
-    directe curl-aanvraag met één bericht.
+    `ds4-server --ctx` en werk vervolgens `models.providers.ds4.models[].contextWindow`
+    bij zodat deze overeenkomt. Volledige agentbeurten met tools vereisen aanzienlijk
+    meer context dan een direct curl-verzoek met één bericht.
   </Accordion>
 
   <Accordion title="Think Max wordt niet geactiveerd">
-    ds4 gebruikt Think Max alleen wanneer `--ctx` minstens `393216` is en de aanvraag
-    vraagt om `reasoning_effort: "max"`. Kleinere contexten vallen terug op hoog
-    redeneren.
+    ds4 gebruikt Think Max alleen wanneer `--ctx` ten minste `393216` is en het verzoek
+    om `reasoning_effort: "max"` vraagt. Kleinere contexten vallen terug op een hoog
+    redeneerniveau.
   </Accordion>
 
-  <Accordion title="De eerste aanvraag is traag">
-    ds4 heeft een koude Metal-residentie en een opwarmfase voor het model. Gebruik
-    `localService.readyTimeoutMs: 300000` wanneer OpenClaw de server op aanvraag
+  <Accordion title="Het eerste verzoek is traag">
+    ds4 heeft een koude Metal-residentie en een opwarmfase voor het model. Stel
+    `localService.readyTimeoutMs: 300000` in wanneer OpenClaw de server op aanvraag
     start.
   </Accordion>
 </AccordionGroup>
@@ -303,15 +305,15 @@ Verwacht resultaat:
 
 <CardGroup cols={2}>
   <Card title="Lokale modelservices" href="/nl/gateway/local-model-services" icon="play">
-    Start lokale modelservers op aanvraag voordat modelaanvragen worden gedaan.
+    Start lokale modelservers op aanvraag vóór modelverzoeken.
   </Card>
   <Card title="Lokale modellen" href="/nl/gateway/local-models" icon="server">
     Kies en beheer lokale modelbackends.
   </Card>
   <Card title="Modelproviders" href="/nl/concepts/model-providers" icon="layers">
-    Configureer providerrefs, auth en failover.
+    Configureer providerverwijzingen, authenticatie en failover.
   </Card>
   <Card title="DeepSeek" href="/nl/providers/deepseek" icon="brain">
-    Native DeepSeek-providergedrag en thinking-instellingen.
+    Systeemeigen DeepSeek-providergedrag en besturing voor denkprocessen.
   </Card>
 </CardGroup>

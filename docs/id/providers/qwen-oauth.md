@@ -1,88 +1,101 @@
 ---
 read_when:
-    - Anda ingin mengonfigurasi id penyedia qwen-oauth
+    - Anda ingin mengonfigurasi ID penyedia qwen-oauth
     - Anda sebelumnya menggunakan kredensial OAuth Qwen Portal
-    - Anda memerlukan endpoint Qwen Portal atau panduan migrasi
+    - Anda memerlukan endpoint Portal Qwen atau panduan migrasi
 summary: Gunakan ID penyedia Qwen Portal dengan OpenClaw
-title: Qwen OAuth / Portal
+title: OAuth / Portal Qwen
 x-i18n:
-    generated_at: "2026-06-27T18:07:07Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:38:13Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 46f147e3730024bf63e99827f666e2be791318723eace98941ca067c440dddd0
+    source_hash: b78f6f23e62e38d11e6fe4e2bf515b13b414f276d08f672740ad94747a22c8fb
     source_path: providers/qwen-oauth.md
     workflow: 16
 ---
 
-`qwen-oauth` adalah id penyedia Qwen Portal. Ini menargetkan endpoint Qwen Portal
-dan membuat penyiapan Qwen OAuth / portal lama tetap dapat dialamati melalui id
-penyedia yang berbeda.
+`qwen-oauth` adalah id penyedia Qwen Portal, yang didaftarkan oleh plugin Qwen
+(`@openclaw/qwen-provider`). Penyedia ini menggunakan endpoint Qwen Portal di
+`https://portal.qwen.ai/v1` dan mempertahankan agar penyiapan Qwen OAuth / portal
+lama tetap dapat diakses melalui id penyedia yang berbeda, terpisah dari penyedia
+kanonis `qwen`.
 
-Gunakan penyedia ini saat Anda secara khusus memiliki token Qwen Portal saat ini untuk
-`https://portal.qwen.ai/v1`, atau saat Anda memigrasikan penyiapan Qwen Portal /
-Qwen CLI lama dan ingin memisahkan kredensial tersebut dari penyedia Qwen Cloud
-kanonis. Ini bukan pilihan pertama yang direkomendasikan untuk pengguna Qwen baru.
-
-Untuk penyiapan Qwen Cloud baru, utamakan [Qwen](/id/providers/qwen) dengan endpoint
-Standard ModelStudio kecuali Anda secara khusus memiliki token Qwen Portal saat ini.
+Pilih `qwen-oauth` jika Anda sudah memiliki token Qwen Portal yang berfungsi,
+sedang memigrasikan alur kerja Qwen OAuth atau Qwen CLI lama, atau perlu menguji
+endpoint Qwen Portal secara khusus. Untuk penyiapan baru, utamakan
+[Qwen](/id/providers/qwen) dengan endpoint Standard ModelStudio: opsi ini mencakup
+penyiapan kunci API baru, pilihan endpoint yang lebih luas, Standard bayar sesuai
+pemakaian, Coding Plan, dan katalog lengkap plugin Qwen.
 
 ## Penyiapan
 
-Berikan token portal Anda melalui onboarding:
+Instal plugin Qwen jika Anda belum melakukannya:
+
+```bash
+openclaw plugins install @openclaw/qwen-provider
+openclaw gateway restart
+```
+
+Berikan token portal Anda melalui orientasi awal:
 
 ```bash
 openclaw onboard --auth-choice qwen-oauth
 ```
 
-Atau tetapkan:
+Proses noninteraktif membaca token dari `--qwen-oauth-token <token>`, atau tetapkan:
 
 ```bash
 export QWEN_API_KEY="<your-qwen-portal-token>" # pragma: allowlist secret
 ```
 
-## Default
+Orientasi awal menyimpan token dalam profil autentikasi `qwen-oauth`, mengisi
+katalog model portal, dan menetapkan `qwen-oauth/qwen3.5-plus` sebagai model
+bawaan jika belum ada model yang dikonfigurasi.
+
+## Nilai bawaan
 
 - Penyedia: `qwen-oauth`
 - Alias: `qwen-portal`, `qwen-cli`
 - URL dasar: `https://portal.qwen.ai/v1`
-- Variabel env: `QWEN_API_KEY`
+- Variabel lingkungan: `QWEN_API_KEY`
 - Gaya API: kompatibel dengan OpenAI
-- Model default: `qwen-oauth/qwen3.5-plus`
+- Model bawaan: `qwen-oauth/qwen3.5-plus`
 
-## Perbedaannya dari Qwen
+## Perbedaannya dengan Qwen
 
-OpenClaw memiliki dua id penyedia yang menghadap Qwen:
+OpenClaw memiliki dua id penyedia yang berhubungan dengan Qwen:
 
-| Penyedia     | Keluarga endpoint                                      | Paling cocok untuk                                                                    |
-| ------------ | ------------------------------------------------------ | ------------------------------------------------------------------------------------- |
-| `qwen`       | Endpoint Qwen Cloud / Alibaba DashScope dan Coding Plan | Penyiapan kunci API baru, Standard bayar sesuai penggunaan, Coding Plan, fitur multimodal DashScope |
-| `qwen-oauth` | Endpoint Qwen Portal di `portal.qwen.ai/v1`             | Token Qwen Portal yang ada dan penyiapan Qwen OAuth / CLI lama                        |
+| Penyedia     | Keluarga endpoint                                          | Paling sesuai untuk                                                                                          |
+| ------------ | ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `qwen`       | Endpoint Qwen Cloud / Alibaba DashScope dan Coding Plan    | Penyiapan kunci API baru, Standard bayar sesuai pemakaian, Coding Plan, fitur DashScope multimodal            |
+| `qwen-oauth` | Endpoint Qwen Portal di `portal.qwen.ai/v1`                | Token Qwen Portal yang sudah ada dan penyiapan Qwen OAuth / CLI lama                                         |
 
-Kedua penyedia menggunakan bentuk permintaan yang kompatibel dengan OpenAI, tetapi keduanya adalah permukaan auth
-yang terpisah. Token yang disimpan untuk `qwen-oauth` tidak boleh diperlakukan sebagai kunci DashScope
-atau ModelStudio, dan kunci DashScope baru sebaiknya menggunakan penyedia `qwen`
-kanonis.
-
-## Kapan memilih Qwen OAuth / Portal
-
-- Anda sudah memiliki token Qwen Portal yang berfungsi.
-- Anda mempertahankan alur kerja Qwen OAuth atau Qwen CLI lama sambil berpindah ke
-  model penyedia OpenClaw.
-- Anda perlu menguji kompatibilitas secara khusus dengan endpoint Qwen Portal.
-
-Pilih [Qwen](/id/providers/qwen) untuk penyiapan baru, pilihan endpoint yang lebih luas, Standard
-ModelStudio, Coding Plan, dan katalog plugin Qwen lengkap.
+Kedua penyedia menggunakan bentuk permintaan yang kompatibel dengan OpenAI,
+tetapi merupakan antarmuka autentikasi yang terpisah. Token yang disimpan untuk
+`qwen-oauth` tidak boleh dianggap sebagai kunci DashScope atau ModelStudio, dan
+kunci DashScope baru sebaiknya menggunakan penyedia kanonis `qwen`.
 
 ## Model
 
-Katalog plugin Qwen mengisi default Qwen Portal:
+Plugin Qwen mengisi katalog statis ini untuk endpoint Qwen Portal. Semua entri
+menggunakan keluaran maksimum 65.536 token; ketersediaannya bergantung pada akun
+dan token Qwen Portal saat ini.
 
-- `qwen-oauth/qwen3.5-plus`
+| Referensi model                    | Masukan     | Konteks   | Catatan       |
+| ---------------------------------- | ----------- | --------- | ------------- |
+| `qwen-oauth/qwen3.5-plus`          | teks, gambar | 1.000.000 | Model bawaan  |
+| `qwen-oauth/qwen3.6-plus`          | teks, gambar | 1.000.000 |               |
+| `qwen-oauth/qwen3-max-2026-01-23`  | teks         | 262.144   |               |
+| `qwen-oauth/qwen3-coder-next`      | teks         | 262.144   |               |
+| `qwen-oauth/qwen3-coder-plus`      | teks         | 1.000.000 |               |
+| `qwen-oauth/MiniMax-M2.5`          | teks         | 1.000.000 | Penalaran     |
+| `qwen-oauth/glm-5`                 | teks         | 202.752   |               |
+| `qwen-oauth/glm-4.7`               | teks         | 202.752   |               |
+| `qwen-oauth/kimi-k2.5`             | teks, gambar | 262.144   |               |
 
-Ketersediaan bergantung pada akun dan token Qwen Portal saat ini. Jika akun Anda
-menggunakan kunci API ModelStudio / DashScope, konfigurasikan penyedia
-`qwen` kanonis:
+Jika akun Anda menggunakan kunci API ModelStudio / DashScope, konfigurasikan
+penyedia kanonis `qwen`:
 
 ```bash
 openclaw onboard --auth-choice qwen-standard-api-key
@@ -91,9 +104,9 @@ openclaw models set qwen/qwen3-coder-plus
 
 ## Migrasi
 
-Profil OAuth Qwen Portal lama mungkin tidak dapat disegarkan. Jika profil portal
-berhenti berfungsi, autentikasi ulang dengan token saat ini atau beralih ke penyedia Qwen
-Standard:
+Profil OAuth Qwen Portal lama tidak dapat disegarkan; `openclaw doctor`
+menandainya. Jika profil portal berhenti berfungsi, jalankan kembali orientasi
+awal dengan token terkini atau beralihlah ke penyedia Standard Qwen:
 
 ```bash
 openclaw onboard --auth-choice qwen-standard-api-key
@@ -107,13 +120,15 @@ https://dashscope-intl.aliyuncs.com/compatible-mode/v1
 
 ## Pemecahan masalah
 
-- Kegagalan penyegaran OAuth portal: profil OAuth Qwen Portal lama mungkin tidak dapat
-  disegarkan. Jalankan ulang onboarding dengan token saat ini.
-- Kesalahan endpoint yang salah: pastikan ref model diawali dengan `qwen-oauth/` saat
-  menggunakan token portal. Gunakan ref `qwen/` hanya untuk penyedia Qwen kanonis.
-- Kebingungan `QWEN_API_KEY`: kedua halaman Qwen menyebutkan variabel env ini, tetapi onboarding
-  menyimpan kredensial di bawah id penyedia yang dipilih. Utamakan onboarding saat Anda
-  membuat `qwen` dan `qwen-oauth` sama-sama tersedia di mesin yang sama.
+- Kegagalan penyegaran OAuth portal: profil OAuth Qwen Portal lama tidak dapat
+  disegarkan. Jalankan kembali orientasi awal dengan token terkini.
+- Kesalahan endpoint yang keliru: pastikan referensi model diawali dengan
+  `qwen-oauth/` saat menggunakan token portal. Gunakan referensi `qwen/` hanya
+  untuk penyedia kanonis Qwen.
+- Kebingungan `QWEN_API_KEY`: kedua halaman Qwen menyebutkan variabel lingkungan
+  ini, tetapi orientasi awal menyimpan kredensial di bawah id penyedia yang
+  dipilih. Utamakan orientasi awal jika Anda menyediakan `qwen` dan `qwen-oauth`
+  sekaligus di mesin yang sama.
 
 ## Terkait
 

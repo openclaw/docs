@@ -1,21 +1,21 @@
 ---
 read_when:
-    - OpenClaw'ı yüklemeden önce Node.js'i yüklemeniz gerekir
+    - OpenClaw'u yüklemeden önce Node.js'i yüklemeniz gerekir
     - OpenClaw'ı yüklediniz ancak `openclaw` komutu bulunamadı
     - npm install -g izinler veya PATH sorunları nedeniyle başarısız oluyor
-summary: OpenClaw için Node.js’i kurma ve yapılandırma - sürüm gereksinimleri, kurulum seçenekleri ve PATH sorunlarını giderme
+summary: OpenClaw için Node.js'i yükleyin ve yapılandırın - sürüm gereksinimleri, yükleme seçenekleri ve PATH sorun giderme
 title: Node.js
 x-i18n:
-    generated_at: "2026-07-04T10:58:53Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:23:01Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6c556593982efa7f6fcd6e24787cca7ca6af30d265f54bb927a0608d2efc58d6
+    source_hash: 410686b714fe2830a0c6d77a52850eab5720a97747b9579bd730808db23a9dda
     source_path: install/node.md
     workflow: 16
 ---
 
-OpenClaw, **Node 22.19+, Node 23.11+ veya Node 24+** gerektirir. **Node 24; kurulumlar, CI ve sürüm iş akışları için varsayılan ve önerilen çalışma zamanıdır**. Node 22, etkin LTS hattı üzerinden desteklenmeye devam eder. [Yükleyici betiği](/tr/install#alternative-install-methods) Node’u otomatik olarak algılayıp kurar - bu sayfa, Node’u kendiniz kurmak ve her şeyin doğru bağlandığından emin olmak istediğiniz durumlar içindir (sürümler, PATH, global kurulumlar).
+OpenClaw için **Node 22.19+, Node 23.11+ veya Node 24+** gereklidir. **Node 24; kurulumlar, CI ve sürüm iş akışları için varsayılan ve önerilen çalışma zamanıdır**; Node 22, etkin LTS serisi üzerinden desteklenmeye devam eder. [Kurulum betiği](/tr/install#alternative-install-methods) Node'u otomatik olarak algılar ve kurar. Node'u kendiniz yapılandırmak istediğinizde (sürümler, PATH, genel kurulumlar) bu sayfayı kullanın.
 
 ## Sürümünüzü kontrol edin
 
@@ -23,9 +23,9 @@ OpenClaw, **Node 22.19+, Node 23.11+ veya Node 24+** gerektirir. **Node 24; kuru
 node -v
 ```
 
-Bu komut `v24.x.x` veya daha yüksek bir sürüm yazdırıyorsa önerilen varsayılan sürümdesiniz. `v22.19.x` veya daha yüksek bir sürüm yazdırıyorsa desteklenen Node 22 LTS yolundasınız, ancak uygun olduğunda yine de Node 24’e yükseltmenizi öneririz. `v23.11.0` öncesindeki Node 23 sürümleri desteklenmez. Node kurulu değilse veya sürüm desteklenen aralığın dışındaysa aşağıdan bir kurulum yöntemi seçin.
+Önerilen varsayılan sürüm `v24.x.x` veya üzeridir. Desteklenen Node 22 LTS yolu `v22.19.x` veya üzeridir (uygun olduğunda Node 24'e yükseltin). `v23.11.0` öncesindeki Node 23 derlemeleri desteklenmez. Node yüklü değilse veya desteklenen aralığın dışındaysa aşağıdaki kurulum yöntemlerinden birini seçin.
 
-## Node’u kurun
+## Node'u kurun
 
 <Tabs>
   <Tab title="macOS">
@@ -35,7 +35,7 @@ Bu komut `v24.x.x` veya daha yüksek bir sürüm yazdırıyorsa önerilen varsay
     brew install node
     ```
 
-    Ya da macOS yükleyicisini [nodejs.org](https://nodejs.org/) adresinden indirin.
+    Alternatif olarak macOS yükleyicisini [nodejs.org](https://nodejs.org/) adresinden indirin.
 
   </Tab>
   <Tab title="Linux">
@@ -52,7 +52,7 @@ Bu komut `v24.x.x` veya daha yüksek bir sürüm yazdırıyorsa önerilen varsay
     sudo dnf install nodejs
     ```
 
-    Ya da bir sürüm yöneticisi kullanın (aşağıya bakın).
+    Alternatif olarak bir sürüm yöneticisi kullanın (aşağıya bakın).
 
   </Tab>
   <Tab title="Windows">
@@ -68,13 +68,13 @@ Bu komut `v24.x.x` veya daha yüksek bir sürüm yazdırıyorsa önerilen varsay
     choco install nodejs-lts
     ```
 
-    Ya da Windows yükleyicisini [nodejs.org](https://nodejs.org/) adresinden indirin.
+    Alternatif olarak Windows yükleyicisini [nodejs.org](https://nodejs.org/) adresinden indirin.
 
   </Tab>
 </Tabs>
 
 <Accordion title="Sürüm yöneticisi kullanma (nvm, fnm, mise, asdf)">
-  Sürüm yöneticileri, Node sürümleri arasında kolayca geçiş yapmanızı sağlar. Popüler seçenekler:
+  Sürüm yöneticileri, Node sürümleri arasında kolayca geçiş yapmanızı sağlar. Yaygın seçenekler:
 
 - [**fnm**](https://github.com/Schniz/fnm) - hızlı, platformlar arası
 - [**nvm**](https://github.com/nvm-sh/nvm) - macOS/Linux üzerinde yaygın olarak kullanılır
@@ -88,7 +88,7 @@ fnm use 24
 ```
 
   <Warning>
-  Sürüm yöneticinizin kabuk başlangıç dosyanızda (`~/.zshrc` veya `~/.bashrc`) başlatıldığından emin olun. Başlatılmamışsa, PATH Node’un bin dizinini içermeyeceği için yeni terminal oturumlarında `openclaw` bulunamayabilir.
+  Sürüm yöneticinizi kabuk başlangıç dosyanızda (`~/.zshrc` veya `~/.bashrc`) başlatın. Bu adımı atlarsanız PATH, Node'un ikili dosya dizinini içermeyeceği için yeni terminal oturumlarında `openclaw` bulunamayabilir.
   </Warning>
 </Accordion>
 
@@ -96,20 +96,20 @@ fnm use 24
 
 ### `openclaw: command not found`
 
-Bu neredeyse her zaman npm’in global bin dizininin PATH’inizde olmadığı anlamına gelir.
+Bu, neredeyse her zaman npm'in genel ikili dosya dizininin PATH'inizde olmadığı anlamına gelir.
 
 <Steps>
-  <Step title="Global npm prefix’inizi bulun">
+  <Step title="Genel npm önekinizi bulun">
     ```bash
     npm prefix -g
     ```
   </Step>
-  <Step title="PATH’inizde olup olmadığını kontrol edin">
+  <Step title="PATH'inizde olup olmadığını kontrol edin">
     ```bash
     echo "$PATH"
     ```
 
-    Çıktıda `<npm-prefix>/bin` (macOS/Linux) veya `<npm-prefix>` (Windows) arayın.
+    Çıktıda `<npm-prefix>/bin` (macOS/Linux) veya `<npm-prefix>` (Windows) değerini arayın.
 
   </Step>
   <Step title="Kabuk başlangıç dosyanıza ekleyin">
@@ -121,19 +121,19 @@ Bu neredeyse her zaman npm’in global bin dizininin PATH’inizde olmadığı a
         export PATH="$(npm prefix -g)/bin:$PATH"
         ```
 
-        Ardından yeni bir terminal açın (veya zsh içinde `rehash` / bash içinde `hash -r` çalıştırın).
+        Ardından yeni bir terminal açın (veya zsh'de `rehash`, bash'te `hash -r` komutunu çalıştırın).
       </Tab>
       <Tab title="Windows">
-        `npm prefix -g` çıktısını Ayarlar → Sistem → Ortam Değişkenleri üzerinden sistem PATH’inize ekleyin.
+        `npm prefix -g` çıktısını Settings → System → Environment Variables üzerinden sistem PATH'inize ekleyin.
       </Tab>
     </Tabs>
 
   </Step>
 </Steps>
 
-### `npm install -g` üzerinde izin hataları (Linux)
+### `npm install -g` sırasında izin hataları (Linux)
 
-`EACCES` hataları görürseniz npm’in global prefix’ini kullanıcı tarafından yazılabilir bir dizine taşıyın:
+`EACCES` hataları görürseniz npm'in genel önekini kullanıcının yazabildiği bir dizine geçirin:
 
 ```bash
 mkdir -p "$HOME/.npm-global"
@@ -141,10 +141,10 @@ npm config set prefix "$HOME/.npm-global"
 export PATH="$HOME/.npm-global/bin:$PATH"
 ```
 
-Kalıcı hale getirmek için `export PATH=...` satırını `~/.bashrc` veya `~/.zshrc` dosyanıza ekleyin.
+Kalıcı hâle getirmek için `export PATH=...` satırını `~/.bashrc` veya `~/.zshrc` dosyanıza ekleyin.
 
 ## İlgili
 
-- [Kurulum Genel Bakışı](/tr/install) - tüm kurulum yöntemleri
-- [Güncelleme](/tr/install/updating) - OpenClaw’ı güncel tutma
+- [Kuruluma Genel Bakış](/tr/install) - tüm kurulum yöntemleri
+- [Güncelleme](/tr/install/updating) - OpenClaw'u güncel tutma
 - [Başlarken](/tr/start/getting-started) - kurulumdan sonraki ilk adımlar

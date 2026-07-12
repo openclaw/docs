@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Usabas el canal antiguo de BlueBubbles y necesitas pasar a iMessage
-    - Estás eligiendo la configuración de iMessage compatible con OpenClaw
-    - Necesitas una breve explicación de la eliminación de BlueBubbles
-summary: La compatibilidad con BlueBubbles se eliminó de OpenClaw. Usa el plugin de iMessage incluido con imsg para las configuraciones nuevas y migradas de iMessage.
-title: Eliminación de BlueBubbles y la ruta imsg de iMessage
+    - Usabas el antiguo canal BlueBubbles y necesitas migrar a iMessage
+    - Estás eligiendo la configuración compatible de iMessage para OpenClaw
+    - Necesitas una breve explicación sobre la eliminación de BlueBubbles
+summary: Se eliminó la compatibilidad con BlueBubbles de OpenClaw. Use el plugin de iMessage incluido con imsg para las configuraciones nuevas y migradas de iMessage.
+title: Eliminación de BlueBubbles y la ruta de iMessage de imsg
 x-i18n:
-    generated_at: "2026-07-05T11:00:46Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:49:48Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 7dec7d3f27e0df6431494d864b0c7ae7457574797e199f9a2cb6931d28feacd0
@@ -15,23 +15,23 @@ x-i18n:
     workflow: 16
 ---
 
-# Eliminación de BlueBubbles y la ruta imsg de iMessage
+# Eliminación de BlueBubbles y la vía de iMessage mediante imsg
 
-OpenClaw ya no incluye el canal BlueBubbles. La compatibilidad con iMessage se ejecuta a través del Plugin `imessage` incluido: el Gateway inicia [`imsg`](https://github.com/steipete/imsg) como proceso secundario, localmente o mediante un envoltorio SSH, y se comunica por JSON-RPC a través de stdin/stdout. Sin servidor, sin Webhook, sin puerto.
+OpenClaw ya no incluye el canal BlueBubbles. La compatibilidad con iMessage funciona mediante el plugin `imessage` incluido: el Gateway inicia [`imsg`](https://github.com/steipete/imsg) como proceso secundario, localmente o mediante un contenedor SSH, y se comunica por JSON-RPC a través de stdin/stdout. Sin servidor, sin Webhook y sin puerto.
 
-Si tu configuración todavía contiene `channels.bluebubbles`, mígrala a `channels.imessage`. La URL de documentación heredada `/channels/bluebubbles` redirige a [Venir desde BlueBubbles](/es/channels/imessage-from-bluebubbles), que contiene la tabla completa de traducción de configuración y la lista de verificación de transición.
+Si tu configuración aún contiene `channels.bluebubbles`, migra a `channels.imessage`. La URL antigua de la documentación `/channels/bluebubbles` redirige a [Migración desde BlueBubbles](/es/channels/imessage-from-bluebubbles), donde encontrarás la tabla completa de conversión de la configuración y la lista de comprobación para la transición.
 
 ## Qué cambió
 
-- La ruta de iMessage compatible no tiene servidor HTTP de BlueBubbles, ruta de Webhook, contraseña REST ni runtime de Plugin de BlueBubbles.
-- OpenClaw lee y observa Messages a través de `imsg` en la Mac donde Messages.app tiene la sesión iniciada.
-- El envío, la recepción, el historial y los medios básicos usan las superficies normales de `imsg` y los permisos de macOS.
-- Las acciones avanzadas (respuestas en hilos, tapbacks, editar, deshacer envío, efectos, confirmaciones de lectura, indicadores de escritura, gestión de grupos) necesitan el puente de API privada: ejecuta `imsg launch`, que requiere SIP desactivado.
-- Los gateways de Linux y Windows todavía pueden usar iMessage apuntando `channels.imessage.cliPath` a un envoltorio SSH que ejecute `imsg` en la Mac con sesión iniciada.
+- La vía compatible con iMessage no tiene servidor HTTP de BlueBubbles, ruta de Webhook, contraseña REST ni entorno de ejecución del plugin BlueBubbles.
+- OpenClaw lee y supervisa Mensajes mediante `imsg` en el Mac donde se ha iniciado sesión en Messages.app.
+- El envío, la recepción, el historial y el contenido multimedia básicos utilizan las interfaces habituales de `imsg` y los permisos de macOS.
+- Las acciones avanzadas (respuestas en hilos, reacciones, edición, anulación del envío, efectos, confirmaciones de lectura, indicadores de escritura y administración de grupos) requieren el puente de la API privada: ejecuta `imsg launch`, lo que requiere que SIP esté desactivado.
+- Los Gateways de Linux y Windows aún pueden usar iMessage configurando `channels.imessage.cliPath` con un contenedor SSH que ejecute `imsg` en el Mac donde se haya iniciado sesión.
 
-## Qué hacer
+## Qué debes hacer
 
-1. Instala y verifica `imsg` en la Mac de Messages:
+1. Instala y verifica `imsg` en el Mac con Mensajes:
 
    ```bash
    brew install steipete/tap/imsg
@@ -40,9 +40,9 @@ Si tu configuración todavía contiene `channels.bluebubbles`, mígrala a `chann
    imsg rpc --help
    ```
 
-2. Concede permisos de Acceso total al disco y Automatización al contexto de proceso que ejecuta `imsg` y OpenClaw.
+2. Concede permisos de acceso total al disco y automatización al contexto del proceso que ejecuta `imsg` y OpenClaw.
 
-3. Traduce la configuración anterior:
+3. Convierte la configuración anterior:
 
    ```json5
    {
@@ -63,25 +63,25 @@ Si tu configuración todavía contiene `channels.bluebubbles`, mígrala a `chann
    }
    ```
 
-4. Reinicia el gateway y verifica:
+4. Reinicia el Gateway y comprueba su funcionamiento:
 
    ```bash
    openclaw channels status --probe
    ```
 
-5. Prueba los DM, los grupos, los adjuntos y cualquier acción de API privada de la que dependas antes de eliminar tu servidor BlueBubbles anterior.
+5. Prueba los mensajes directos, los grupos, los archivos adjuntos y todas las acciones de la API privada de las que dependas antes de eliminar tu antiguo servidor BlueBubbles.
 
 ## Notas de migración
 
-- `channels.bluebubbles.serverUrl` y `channels.bluebubbles.password` no tienen equivalente en iMessage; no hay ningún servidor al que acceder ni contra el cual autenticarse.
-- `allowFrom`, `groupAllowFrom`, `groups`, `includeAttachments`, `attachmentRoots`, `mediaMaxMb`, `textChunkLimit` y `actions.*` conservan su significado bajo `channels.imessage`.
-- `channels.imessage.includeAttachments` sigue desactivado de forma predeterminada. Configúralo explícitamente si esperas que las fotos, notas de voz, videos o archivos entrantes lleguen al agente.
-- Con `groupPolicy: "allowlist"`, copia el bloque `groups` anterior, incluida cualquier entrada comodín `"*"`. Las listas de permitidos de remitentes de grupo y el registro de grupos son controles separados; un bloque `groups` con entradas pero sin un `chat_id` coincidente (o sin `"*"`) descarta el mensaje en runtime, y un bloque `groups` vacío registra una advertencia de inicio aunque el filtrado de remitentes siga permitiendo que pasen los mensajes.
+- `channels.bluebubbles.serverUrl` y `channels.bluebubbles.password` no tienen equivalente en iMessage; no hay ningún servidor al que conectarse ni en el que autenticarse.
+- `allowFrom`, `groupAllowFrom`, `groups`, `includeAttachments`, `attachmentRoots`, `mediaMaxMb`, `textChunkLimit` y `actions.*` conservan su significado en `channels.imessage`.
+- `channels.imessage.includeAttachments` sigue desactivado de forma predeterminada. Actívalo explícitamente si esperas que las fotos, notas de voz, vídeos o archivos entrantes lleguen al agente.
+- Con `groupPolicy: "allowlist"`, copia el bloque `groups` anterior, incluida cualquier entrada comodín `"*"`. Las listas de remitentes permitidos de los grupos y el registro de grupos son controles independientes; un bloque `groups` con entradas pero sin un `chat_id` coincidente (o sin `"*"`) descarta el mensaje durante la ejecución, y un bloque `groups` vacío registra una advertencia durante el inicio aunque el filtrado de remitentes siga permitiendo el paso de mensajes.
 - Los enlaces ACP con `match.channel: "bluebubbles"` deben cambiar a `"imessage"`.
-- Las claves de sesión antiguas de BlueBubbles no se convierten en claves de sesión de iMessage. Las aprobaciones de emparejamiento se basan en identificadores de remitente, por lo que las entradas `allowFrom` copiadas siguen funcionando, pero el historial de conversaciones bajo claves de sesión de BlueBubbles no se transfiere.
+- Las claves de sesión antiguas de BlueBubbles no se convierten en claves de sesión de iMessage. Las aprobaciones de emparejamiento se basan en los identificadores de los remitentes, por lo que las entradas copiadas de `allowFrom` siguen funcionando, pero el historial de conversaciones asociado a las claves de sesión de BlueBubbles no se transfiere.
 
-## Ver también
+## Véase también
 
-- [Venir desde BlueBubbles](/es/channels/imessage-from-bluebubbles)
+- [Migración desde BlueBubbles](/es/channels/imessage-from-bluebubbles)
 - [iMessage](/es/channels/imessage)
-- [Referencia de configuración - iMessage](/es/gateway/config-channels#imessage)
+- [Referencia de configuración: iMessage](/es/gateway/config-channels#imessage)

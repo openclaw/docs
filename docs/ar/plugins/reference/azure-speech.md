@@ -1,21 +1,21 @@
 ---
 read_when:
-    - تقوم بتثبيت Plugin azure-speech أو تكوينه أو تدقيقه
-summary: تحويل النص إلى كلام من Azure AI Speech (MP3، ملاحظات صوتية أصلية بصيغة Ogg/Opus، واتصالات هاتفية بصيغة PCM).
-title: Plugin Azure Speech
+    - أنت تثبّت Plugin ‏azure-speech أو تهيئه أو تدقّق فيه
+summary: تحويل النص إلى كلام من Azure AI Speech (‏MP3، وملاحظات صوتية أصلية بتنسيق Ogg/Opus، وصوت PCM للاتصالات الهاتفية).
+title: Plugin الكلام في Azure
 x-i18n:
-    generated_at: "2026-05-02T20:53:46Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:19:35Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: fdcf7c9166d90a92362478ebc361a2917b9e29c0a7dfdcfa86d34003647a8034
     source_path: plugins/reference/azure-speech.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# Azure Speech Plugin
+# Plugin ‏Azure Speech
 
-تحويل النص إلى كلام في Azure AI Speech (MP3، وملاحظات صوتية أصلية بتنسيق Ogg/Opus، وPCM للاتصالات الهاتفية).
+تحويل النص إلى كلام باستخدام Azure AI Speech ‏(MP3، وملاحظات صوتية أصلية بتنسيق Ogg/Opus، وصوت هاتفي بتنسيق PCM).
 
 ## التوزيع
 
@@ -26,6 +26,6 @@ x-i18n:
 
 العقود: speechProviders
 
-## المستندات ذات الصلة
+## الوثائق ذات الصلة
 
 - [azure-speech](/ar/providers/azure-speech)

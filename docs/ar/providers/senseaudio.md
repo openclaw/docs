@@ -1,36 +1,36 @@
 ---
 read_when:
     - تريد استخدام تحويل الكلام إلى نص من SenseAudio للمرفقات الصوتية
-    - تحتاج إلى متغير البيئة الخاص بمفتاح واجهة برمجة تطبيقات SenseAudio أو مسار إعدادات الصوت
-summary: تحويل الكلام إلى نص على دفعات باستخدام SenseAudio للملاحظات الصوتية الواردة
+    - تحتاج إلى متغير البيئة لمفتاح SenseAudio API أو مسار إعدادات الصوت
+summary: تحويل الدفعات من الكلام إلى نص باستخدام SenseAudio للملاحظات الصوتية الواردة
 title: SenseAudio
 x-i18n:
-    generated_at: "2026-05-06T08:11:12Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:29:33Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f53af21c746cdd44c71485cbad669f4a01a6e5be956675c73831e7b5f15df8c4
+    source_hash: 2d2b310982a9e0f1afe2f95ae92d1516d490314f40b4b0e4eded25c72dfca586
     source_path: providers/senseaudio.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-SenseAudio يمكنه نسخ مرفقات الصوت الواردة والملاحظات الصوتية عبر مسار `tools.media.audio` المشترك في OpenClaw. يرسل OpenClaw الصوت متعدد الأجزاء إلى نقطة نهاية النسخ المتوافقة مع OpenAI ويحقن النص المُعاد في صورة `{{Transcript}}` إضافةً إلى كتلة `[Audio]`.
+ينسخ SenseAudio مرفقات الصوت والملاحظات الصوتية الواردة عبر مسار `tools.media.audio` المشترك في OpenClaw. يرسل OpenClaw الصوت متعدد الأجزاء إلى نقطة نهاية النسخ المتوافقة مع OpenAI، ويدرج النص المُعاد بوصفه `{{Transcript}}` بالإضافة إلى كتلة `[Audio]`.
 
-| الخاصية      | القيمة                                            |
-| ------------- | ------------------------------------------------ |
-| معرّف المزوّد   | `senseaudio`                                     |
-| Plugin        | مضمّن، `enabledByDefault: true`                |
-| العقد      | `mediaUnderstandingProviders` (الصوت)            |
+| الخاصية              | القيمة                                           |
+| -------------------- | ------------------------------------------------ |
+| معرّف المزوّد        | `senseaudio`                                     |
+| Plugin               | مضمّن، `enabledByDefault: true`                  |
+| العقد                | `mediaUnderstandingProviders` (الصوت)            |
 | متغير بيئة المصادقة  | `SENSEAUDIO_API_KEY`                             |
-| النموذج الافتراضي | `senseaudio-asr-pro-1.5-260319`                  |
-| عنوان URL الافتراضي   | `https://api.senseaudio.cn/v1`                   |
-| الموقع الإلكتروني       | [senseaudio.cn](https://senseaudio.cn)           |
-| الوثائق          | [senseaudio.cn/docs](https://senseaudio.cn/docs) |
+| النموذج الافتراضي    | `senseaudio-asr-pro-1.5-260319`                  |
+| عنوان URL الافتراضي  | `https://api.senseaudio.cn/v1`                   |
+| الموقع الإلكتروني    | [senseaudio.cn](https://senseaudio.cn)           |
+| الوثائق              | [senseaudio.cn/docs](https://senseaudio.cn/docs) |
 
 ## بدء الاستخدام
 
 <Steps>
-  <Step title="عيّن مفتاح API الخاص بك">
+  <Step title="عيّن مفتاح API">
     ```bash
     export SENSEAUDIO_API_KEY="..."
     ```
@@ -50,22 +50,24 @@ SenseAudio يمكنه نسخ مرفقات الصوت الواردة والملا
     ```
   </Step>
   <Step title="أرسل ملاحظة صوتية">
-    أرسل رسالة صوتية عبر أي قناة متصلة. يرفع OpenClaw الصوت إلى SenseAudio ويستخدم النص المنسوخ في مسار الرد.
+    أرسل رسالة صوتية عبر أي قناة متصلة. يرفع OpenClaw الصوت
+    إلى SenseAudio ويستخدم النص المنسوخ في مسار الرد.
   </Step>
 </Steps>
 
 ## الخيارات
 
-| الخيار     | المسار                                  | الوصف                         |
-| ---------- | ------------------------------------- | ----------------------------------- |
-| `model`    | `tools.media.audio.models[].model`    | معرّف نموذج ASR في SenseAudio             |
-| `language` | `tools.media.audio.models[].language` | تلميح لغة اختياري              |
-| `prompt`   | `tools.media.audio.prompt`            | موجّه نسخ اختياري       |
-| `baseUrl`  | `tools.media.audio.baseUrl` أو النموذج  | تجاوز الأساس المتوافق مع OpenAI |
-| `headers`  | `tools.media.audio.request.headers`   | ترويسات طلب إضافية               |
+| الخيار     | المسار                                | الوصف                                      |
+| ---------- | ------------------------------------- | ------------------------------------------ |
+| `model`    | `tools.media.audio.models[].model`    | معرّف نموذج ASR في SenseAudio              |
+| `language` | `tools.media.audio.models[].language` | تلميح اختياري للغة                         |
+| `prompt`   | `tools.media.audio.prompt`            | موجّه اختياري للنسخ                        |
+| `baseUrl`  | `tools.media.audio.baseUrl` أو النموذج | تجاوز العنوان الأساسي المتوافق مع OpenAI   |
+| `headers`  | `tools.media.audio.request.headers`   | ترويسات إضافية للطلب                       |
 
 <Note>
-SenseAudio يدعم STT الدفعية فقط في OpenClaw. يستمر نسخ المكالمات الصوتية في الوقت الفعلي باستخدام المزوّدين الذين يدعمون STT المتدفق.
+لا يدعم SenseAudio في OpenClaw سوى تحويل الكلام إلى نص على دفعات. ويواصل النسخ الفوري للمكالمات الصوتية
+استخدام المزوّدين الذين يدعمون تحويل الكلام إلى نص عبر البث.
 </Note>
 
 ## ذو صلة

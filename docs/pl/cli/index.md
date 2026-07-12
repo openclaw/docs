@@ -1,70 +1,93 @@
 ---
 read_when:
     - Znajdowanie właściwego podpolecenia `openclaw`
-    - Wyszukiwanie globalnych flag lub reguł stylizacji danych wyjściowych
+    - Wyszukiwanie globalnych flag lub reguł formatowania danych wyjściowych
 summary: 'Indeks CLI OpenClaw: lista poleceń, flagi globalne i linki do stron poszczególnych poleceń'
-title: Dokumentacja referencyjna CLI
+title: Dokumentacja CLI
 x-i18n:
-    generated_at: "2026-07-02T01:17:53Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:00:25Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 627ccd257834e9bc8cacf2f2ac4600530ff4aa1132d2c34fcb0922b29a1facce
+    source_hash: 91dce0026e177c0f0664f7a3dbe286630dcaec68b1abf2d4640e090f965515f3
     source_path: cli/index.md
     workflow: 16
 ---
 
-`openclaw` jest głównym punktem wejścia CLI. Każde polecenie podstawowe ma osobną stronę referencyjną albo jest udokumentowane razem z poleceniem, którego jest aliasem; ten indeks zawiera listę poleceń, flag globalnych oraz reguł stylowania wyjścia obowiązujących w całym CLI.
+`openclaw` jest głównym punktem wejścia CLI. Każde podstawowe polecenie ma osobną
+stronę referencyjną lub jest udokumentowane wraz z poleceniem, którego jest aliasem; ten indeks zawiera
+polecenia, flagi globalne oraz reguły formatowania danych wyjściowych obowiązujące w całym CLI.
 
-Używaj poleceń konfiguracji zgodnie z intencją:
+Polecenia konfiguracji według przeznaczenia:
 
-- `openclaw setup` i `openclaw onboard` uruchamiają pełną, prowadzoną ścieżkę pierwszego uruchomienia dla gateway, uwierzytelniania modelu, obszaru roboczego, kanałów, skills i kondycji.
-- `openclaw setup --baseline` tworzy bazową konfigurację i obszar roboczy bez przechodzenia przez prowadzony przepływ onboardingu.
-- `openclaw configure` zmienia wybrane części istniejącej konfiguracji, takie jak uwierzytelnianie modelu, gateway, kanały, plugins lub skills.
-- `openclaw channels add` konfiguruje konta kanałów po utworzeniu konfiguracji bazowej; uruchom je bez flag, aby przejść prowadzoną konfigurację kanału, albo z flagami specyficznymi dla kanału na potrzeby skryptów.
+- `openclaw setup` i `openclaw onboard` najpierw weryfikują wnioskowanie, a następnie uruchamiają Crestodian w celu skonfigurowania Gateway, obszaru roboczego, kanałów, Skills i kontroli kondycji.
+- `openclaw setup --baseline` tworzy konfigurację bazową i obszar roboczy bez przechodzenia przez proces konfiguracji z przewodnikiem.
+- `openclaw configure` zmienia wybrane części istniejącej konfiguracji: uwierzytelnianie modelu, Gateway, kanały, pluginy lub Skills.
+- `openclaw channels add` konfiguruje konta kanałów po utworzeniu konfiguracji bazowej; uruchom bez flag, aby przejść przez konfigurację z przewodnikiem, albo z flagami specyficznymi dla kanału na potrzeby skryptów.
 
 ## Strony poleceń
 
-| Obszar                 | Polecenia                                                                                                                                                                                                                                 |
-| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Konfiguracja i onboarding | [`crestodian`](/pl/cli/crestodian) · [`setup`](/pl/cli/setup) · [`onboard`](/pl/cli/onboard) · [`configure`](/pl/cli/configure) · [`config`](/pl/cli/config) · [`completion`](/pl/cli/completion) · [`doctor`](/pl/cli/doctor) · [`dashboard`](/pl/cli/dashboard) |
-| Resetowanie i odinstalowanie | [`backup`](/pl/cli/backup) · [`reset`](/pl/cli/reset) · [`uninstall`](/pl/cli/uninstall) · [`update`](/pl/cli/update)                                                                                                                           |
-| Wiadomości i agenci | [`message`](/pl/cli/message) · [`agent`](/pl/cli/agent) · [`agents`](/pl/cli/agents) · [`attach`](/cli/attach) · [`acp`](/pl/cli/acp) · [`mcp`](/pl/cli/mcp)                                                                                                |
-| Kondycja i sesje | [`status`](/pl/cli/status) · [`health`](/pl/cli/health) · [`sessions`](/pl/cli/sessions)                                                                                                                                                              |
-| Gateway i logi | [`gateway`](/pl/cli/gateway) · [`logs`](/pl/cli/logs) · [`system`](/pl/cli/system)                                                                                                                                                                      |
-| Modele i inferencja | [`models`](/pl/cli/models) · [`infer`](/pl/cli/infer) · `capability` (alias dla [`infer`](/pl/cli/infer)) · [`memory`](/pl/cli/memory) · [`commitments`](/pl/cli/commitments) · [`wiki`](/pl/cli/wiki)                                                         |
-| Sieć i węzły | [`directory`](/pl/cli/directory) · [`nodes`](/pl/cli/nodes) · [`devices`](/pl/cli/devices) · [`node`](/pl/cli/node)                                                                                                                                       |
-| Runtime i sandbox | [`approvals`](/pl/cli/approvals) · `exec-policy` (zobacz [`approvals`](/pl/cli/approvals)) · [`sandbox`](/pl/cli/sandbox) · [`tui`](/pl/cli/tui) · `chat`/`terminal` (aliasy dla [`tui --local`](/pl/cli/tui)) · [`browser`](/pl/cli/browser)                   |
-| Automatyzacja | [`cron`](/pl/cli/cron) · [`tasks`](/pl/cli/tasks) · [`hooks`](/pl/cli/hooks) · [`webhooks`](/pl/cli/webhooks) · [`transcripts`](/pl/cli/transcripts)                                                                                                        |
-| Odkrywanie i dokumentacja | [`dns`](/pl/cli/dns) · [`docs`](/pl/cli/docs)                                                                                                                                                                                                 |
-| Parowanie i kanały | [`pairing`](/pl/cli/pairing) · [`qr`](/pl/cli/qr) · [`channels`](/pl/cli/channels)                                                                                                                                                                    |
-| Bezpieczeństwo i plugins | [`security`](/pl/cli/security) · [`secrets`](/pl/cli/secrets) · [`skills`](/pl/cli/skills) · [`plugins`](/pl/cli/plugins) · [`proxy`](/pl/cli/proxy)                                                                                                      |
-| Starsze aliasy | [`daemon`](/pl/cli/daemon) (usługa gateway) · [`clawbot`](/pl/cli/clawbot) (przestrzeń nazw)                                                                                                                                                         |
-| Plugins (opcjonalne) | [`path`](/pl/cli/path) · [`policy`](/pl/cli/policy) · [`voicecall`](/pl/cli/voicecall) · [`workboard`](/pl/cli/workboard) (jeśli zainstalowane)                                                                                                           |
+| Obszar                         | Polecenia                                                                                                                                                                                                                                  |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Konfiguracja i wdrażanie       | [`crestodian`](/pl/cli/crestodian) · [`setup`](/pl/cli/setup) · [`onboard`](/pl/cli/onboard) · [`configure`](/pl/cli/configure) · [`config`](/pl/cli/config) · [`completion`](/pl/cli/completion) · [`doctor`](/pl/cli/doctor) · [`dashboard`](/pl/cli/dashboard) |
+| Resetowanie, kopie zapasowe i migracja | [`backup`](/pl/cli/backup) · [`migrate`](/pl/cli/migrate) · [`reset`](/pl/cli/reset) · [`uninstall`](/pl/cli/uninstall) · [`update`](/pl/cli/update)                                                                                              |
+| Wiadomości i agenci            | [`message`](/pl/cli/message) · [`agent`](/pl/cli/agent) · [`agents`](/pl/cli/agents) · [`attach`](/pl/cli/attach) · [`acp`](/pl/cli/acp) · [`mcp`](/pl/cli/mcp)                                                                                             |
+| Kondycja i sesje               | [`status`](/pl/cli/status) · [`health`](/pl/cli/health) · [`sessions`](/pl/cli/sessions) · [`audit`](/cli/audit)                                                                                                                                   |
+| Gateway i dzienniki            | [`gateway`](/pl/cli/gateway) · [`logs`](/pl/cli/logs) · [`system`](/pl/cli/system)                                                                                                                                                                 |
+| Modele i wnioskowanie          | [`models`](/pl/cli/models) · [`promos`](/pl/cli/promos) · [`infer`](/pl/cli/infer) · `capability` (alias polecenia [`infer`](/pl/cli/infer)) · [`memory`](/pl/cli/memory) · [`commitments`](/pl/cli/commitments) · [`wiki`](/pl/cli/wiki)                     |
+| Sieć i węzły                   | [`directory`](/pl/cli/directory) · [`nodes`](/pl/cli/nodes) · [`devices`](/pl/cli/devices) · [`node`](/pl/cli/node)                                                                                                                                   |
+| Środowisko wykonawcze i piaskownica | [`approvals`](/pl/cli/approvals) · `exec-policy` (zobacz [`approvals`](/pl/cli/approvals)) · [`sandbox`](/pl/cli/sandbox) · [`tui`](/pl/cli/tui) · `chat`/`terminal` (aliasy polecenia [`tui --local`](/pl/cli/tui)) · [`browser`](/pl/cli/browser)      |
+| Automatyzacja                  | [`cron`](/pl/cli/cron) · [`tasks`](/pl/cli/tasks) · [`hooks`](/pl/cli/hooks) · [`webhooks`](/pl/cli/webhooks) · [`transcripts`](/pl/cli/transcripts)                                                                                                     |
+| Wykrywanie i dokumentacja      | [`dns`](/pl/cli/dns) · [`docs`](/pl/cli/docs)                                                                                                                                                                                                   |
+| Parowanie i kanały             | [`pairing`](/pl/cli/pairing) · [`qr`](/pl/cli/qr) · [`channels`](/pl/cli/channels)                                                                                                                                                                 |
+| Bezpieczeństwo i pluginy       | [`security`](/pl/cli/security) · [`secrets`](/pl/cli/secrets) · [`skills`](/pl/cli/skills) · [`plugins`](/pl/cli/plugins) · [`proxy`](/pl/cli/proxy)                                                                                                     |
+| Starsze aliasy                 | [`daemon`](/pl/cli/daemon) (usługa Gateway) · [`clawbot`](/pl/cli/clawbot) (przestrzeń nazw)                                                                                                                                                    |
+| Pluginy (opcjonalne)           | [`path`](/pl/cli/path) · [`policy`](/pl/cli/policy) · [`voicecall`](/pl/cli/voicecall) · [`workboard`](/pl/cli/workboard) (jeśli zainstalowano)                                                                                                       |
 
 ## Flagi globalne
 
-| Flaga                   | Cel                                                                   |
-| ----------------------- | --------------------------------------------------------------------- |
-| `--dev`                 | Izoluje stan w `~/.openclaw-dev` i przesuwa domyślne porty            |
-| `--profile <name>`      | Izoluje stan w `~/.openclaw-<name>`                                   |
-| `--container <name>`    | Wskazuje nazwany kontener jako cel wykonania                          |
-| `--no-color`            | Wyłącza kolory ANSI (respektowane jest także `NO_COLOR=1`)            |
-| `--update`              | Skrót dla [`openclaw update`](/pl/cli/update) (tylko instalacje ze źródeł) |
-| `-V`, `--version`, `-v` | Wypisuje wersję i kończy działanie                                    |
+| Flaga                   | Przeznaczenie                                                                                                      |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `--dev`                 | Izoluje stan w `~/.openclaw-dev`, ustawia domyślny port Gateway na 19001 i przesuwa porty pochodne                 |
+| `--profile <name>`      | Izoluje stan w `~/.openclaw-<name>` (`OPENCLAW_STATE_DIR`/`OPENCLAW_CONFIG_PATH`)                                 |
+| `--container <name>`    | Uruchamia CLI wewnątrz działającego kontenera Podman/Docker o nazwie `<name>` (domyślnie: zmienna `OPENCLAW_CONTAINER`) |
+| `--log-level <level>`   | Zastępuje globalny poziom dziennika dla danych wyjściowych zapisywanych do pliku i konsoli                         |
+| `--no-color`            | Wyłącza kolory ANSI (uwzględniane jest również `NO_COLOR=1`)                                                      |
+| `--update`              | Skrót polecenia [`openclaw update`](/pl/cli/update); działa zarówno dla kopii roboczych kodu źródłowego, jak i instalacji pakietów |
+| `-V`, `--version`, `-v` | Wyświetla wersję i kończy działanie                                                                                |
 
 ## Tryby wyjścia
 
-- Kolory ANSI i wskaźniki postępu renderują się tylko w sesjach TTY.
-- Hiperłącza OSC-8 renderują się jako klikalne linki tam, gdzie są obsługiwane; w przeciwnym razie CLI przełącza się na zwykłe adresy URL.
-- `--json` (oraz `--plain` tam, gdzie jest obsługiwane) wyłącza stylowanie, aby uzyskać czyste wyjście.
-- Długo działające polecenia pokazują wskaźnik postępu (OSC 9;4, gdy jest obsługiwany).
+- Kolory ANSI i wskaźniki postępu są wyświetlane tylko w sesjach TTY.
+- Hiperłącza OSC-8 są wyświetlane jako klikalne odnośniki tam, gdzie są obsługiwane; w przeciwnym razie
+  CLI używa zwykłych adresów URL.
+- `--json` (oraz `--plain`, jeśli jest obsługiwane) wyłącza formatowanie, zapewniając czyste dane wyjściowe.
+- Długotrwałe polecenia wyświetlają wskaźnik postępu (OSC 9;4, jeśli jest obsługiwany).
 
-Źródło prawdy dla palety: `src/terminal/palette.ts`.
+## Paleta kolorów
+
+OpenClaw używa palety homarowej w danych wyjściowych CLI:
+
+| Token          | Wartość szesnastkowa | Zastosowanie                              |
+| -------------- | -------------------- | ----------------------------------------- |
+| `accent`       | `#FF5A2D`            | Nagłówki, etykiety, główne wyróżnienia    |
+| `accentBright` | `#FF7A3D`            | Nazwy poleceń, podkreślenia                |
+| `accentDim`    | `#D14A22`            | Tekst wyróżnienia drugorzędnego            |
+| `info`         | `#FF8A5B`            | Wartości informacyjne                      |
+| `success`      | `#2FBF71`            | Stany powodzenia                           |
+| `warn`         | `#FFB020`            | Ostrzeżenia, flagi opcji, mechanizmy rezerwowe |
+| `error`        | `#E23D2D`            | Błędy, niepowodzenia                       |
+| `muted`        | `#8B7F77`            | Osłabione wyróżnienie, metadane            |
+
+Źródło prawdy dla palety: `packages/terminal-core/src/palette.ts`.
 
 ## Drzewo poleceń
 
 <Accordion title="Pełne drzewo poleceń">
+
+Ta mapa obejmuje podstawowe polecenia i ich główne podpolecenia. Podpolecenia dodawane przez pluginy
+(na przykład w ramach `skills`, `plugins` i `wiki`) rozwijają się
+niezależnie; uruchom `<command> --help`, aby uzyskać miarodajną, aktualną listę.
 
 ```
 openclaw [--dev] [--profile <name>] <command>
@@ -85,6 +108,10 @@ openclaw [--dev] [--profile <name>] <command>
   backup
     create
     verify
+  migrate
+    list
+    plan <provider>
+    apply <provider>
   security
     audit
   secrets
@@ -97,6 +124,7 @@ openclaw [--dev] [--profile <name>] <command>
   update
     wizard
     status
+    repair
   channels
     list
     status
@@ -115,11 +143,14 @@ openclaw [--dev] [--profile <name>] <command>
     search
     install
     update
+    verify
+    workshop list|inspect|propose-create|propose-update|revise|apply|reject|quarantine
     list
     info
     check
   plugins
     list
+    search
     inspect
     install
     uninstall
@@ -127,7 +158,11 @@ openclaw [--dev] [--profile <name>] <command>
     enable
     disable
     doctor
-    marketplace list
+    build
+    validate
+    init
+    registry
+    marketplace list|entries|refresh
   workboard
     list
     create
@@ -154,14 +189,16 @@ openclaw [--dev] [--profile <name>] <command>
     status
     doctor
     init
-    ingest
     compile
     lint
+    ingest
+    okf import
     search
     get
-    apply
+    apply synthesis|metadata
     bridge import
     unsafe-local import
+    chatgpt import|rollback
     obsidian status|search|open|command|daily
   message
     send
@@ -209,6 +246,7 @@ openclaw [--dev] [--profile <name>] <command>
   health
   sessions
     cleanup
+  audit
   tasks
     list
     audit
@@ -221,6 +259,8 @@ openclaw [--dev] [--profile <name>] <command>
     call
     usage-cost
     health
+    stability
+    diagnostics export
     status
     probe
     discover
@@ -251,18 +291,21 @@ openclaw [--dev] [--profile <name>] <command>
     fallbacks list|add|remove|clear
     image-fallbacks list|add|remove|clear
     scan
+    auth list|add|login|setup-token|paste-token|paste-api-key|login-github-copilot
+    auth order get|set|clear
+  promos
+    list
+    claim <slug>
   infer (alias: capability)
     list
     inspect
     model run|list|inspect|providers|auth login|logout|status
     image generate|edit|describe|describe-many|providers
     audio transcribe|providers
-    tts convert|voices|providers|status|enable|disable|set-provider
+    tts convert|voices|personas|providers|status|enable|disable|set-provider|set-persona
     video generate|describe|providers
     web search|fetch|providers
     embedding create|providers
-    auth add|login|login-github-copilot|setup-token|paste-token
-    auth order get|set|clear
   sandbox
     list
     recreate
@@ -378,29 +421,34 @@ openclaw [--dev] [--profile <name>] <command>
   terminal (alias: tui --local)
 ```
 
-Plugins mogą dodawać dodatkowe polecenia najwyższego poziomu, takie jak [`openclaw workboard`](/pl/cli/workboard) lub `openclaw voicecall`.
+Pluginy mogą dodawać dodatkowe polecenia najwyższego poziomu, takie jak
+[`openclaw workboard`](/pl/cli/workboard) lub `openclaw voicecall`.
 
 </Accordion>
 
-## Polecenia slash na czacie
+## Polecenia ukośnikowe na czacie
 
-Wiadomości czatu obsługują polecenia `/...`. Zobacz [polecenia slash](/pl/tools/slash-commands).
+Wiadomości na czacie obsługują polecenia `/...`. Zobacz [polecenia ukośnikowe](/pl/tools/slash-commands).
 
 Najważniejsze:
 
 - `/status` — szybka diagnostyka.
-- `/trace` — linie śledzenia/debugowania pluginu w zakresie sesji.
-- `/config` — utrwalone zmiany konfiguracji.
-- `/debug` — nadpisania konfiguracji tylko w runtime (pamięć, nie dysk; wymaga `commands.debug: true`).
+- `/trace` — wiersze śledzenia/debugowania Pluginu ograniczone do sesji.
+- `/config` — trwałe zmiany konfiguracji.
+- `/debug` — nadpisania konfiguracji tylko w czasie działania (w pamięci, nie na dysku; wymaga `commands.debug: true`).
 
 ## Śledzenie użycia
 
-`openclaw status --usage` i Control UI pokazują użycie/limit dostawcy, gdy dostępne są dane logowania OAuth/API. Dane pochodzą bezpośrednio z endpointów użycia dostawcy i są normalizowane do `X% left`. Dostawcy z bieżącymi oknami użycia: Anthropic, GitHub Copilot, Gemini CLI, OpenAI Codex, MiniMax, Xiaomi i z.ai.
+Polecenie `openclaw status --usage` oraz interfejs sterowania wyświetlają użycie i limity dostawcy, gdy
+dostępne są dane uwierzytelniające OAuth/API. Dane pochodzą bezpośrednio z punktów końcowych
+dostawców dotyczących użycia i są normalizowane do postaci `X% left`. Dostawcy udostępniający bieżące
+okna użycia: Anthropic, Gemini CLI, GitHub Copilot, MiniMax, OpenAI Codex,
+Xiaomi oraz z.ai.
 
-Szczegóły znajdziesz w [Śledzenie użycia](/pl/concepts/usage-tracking).
+Szczegółowe informacje zawiera sekcja [Śledzenie użycia](/pl/concepts/usage-tracking).
 
 ## Powiązane
 
-- [Polecenia slash](/pl/tools/slash-commands)
+- [Polecenia ukośnikowe](/pl/tools/slash-commands)
 - [Konfiguracja](/pl/gateway/configuration)
 - [Środowisko](/pl/help/environment)

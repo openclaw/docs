@@ -1,41 +1,61 @@
 ---
 read_when: You are managing sandbox runtimes or debugging sandbox/tool-policy behavior.
 status: active
-summary: Керуйте середовищами виконання пісочниці та переглядайте чинну політику пісочниці
+summary: Керуйте середовищами виконання пісочниці та перевіряйте чинну політику пісочниці
 title: CLI пісочниці
 x-i18n:
-    generated_at: "2026-06-27T17:22:18Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:06:06Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: eeba1a5530bb946b334cfe399b7a0c862694ae47c55b2341d7146333e112602a
+    source_hash: d41d81971b673d814697a4bf800d6973180c58e4cc5e69748614501dca3a6b6d
     source_path: cli/sandbox.md
     workflow: 16
 ---
 
-Керуйте середовищами виконання пісочниці для ізольованого виконання агентів.
-
-## Огляд
-
-OpenClaw може запускати агентів в ізольованих середовищах виконання пісочниці для безпеки. Команди `sandbox` допомагають перевіряти та перестворювати ці середовища виконання після оновлень або змін конфігурації.
-
-Сьогодні це зазвичай означає:
-
-- Docker-контейнери пісочниці
-- SSH-середовища виконання пісочниці, коли `agents.defaults.sandbox.backend = "ssh"`
-- OpenShell-середовища виконання пісочниці, коли `agents.defaults.sandbox.backend = "openshell"`
-
-Для `ssh` і OpenShell `remote` перестворення важливіше, ніж для Docker:
-
-- віддалений робочий простір є канонічним після початкового заповнення
-- `openclaw sandbox recreate` видаляє цей канонічний віддалений робочий простір для вибраної області
-- наступне використання знову заповнює його з поточного локального робочого простору
+Керуйте середовищами виконання пісочниці для ізольованого виконання агентів: контейнерами Docker, цільовими вузлами SSH або бекендами OpenShell.
 
 ## Команди
 
+### `openclaw sandbox list`
+
+Вивести список середовищ виконання пісочниці зі станом, бекендом, відповідністю конфігурації, віком, часом простою та пов’язаним сеансом або агентом.
+
+```bash
+openclaw sandbox list
+openclaw sandbox list --browser  # лише браузерні контейнери
+openclaw sandbox list --json
+```
+
+### `openclaw sandbox recreate`
+
+Видалити середовища виконання пісочниці, щоб примусово повторно створити їх із поточною конфігурацією. Середовища виконання автоматично створюються повторно під час наступного використання агента.
+
+```bash
+openclaw sandbox recreate --all
+openclaw sandbox recreate --agent mybot        # включає підсеанси agent:mybot:*
+openclaw sandbox recreate --session "agent:main:main"
+openclaw sandbox recreate --browser --all      # лише браузерні контейнери
+openclaw sandbox recreate --all --force        # пропустити підтвердження
+```
+
+Параметри:
+
+- `--all`: повторно створити всі контейнери пісочниці
+- `--session <key>`: повторно створити середовище виконання з цим точним ключем області дії (як показано командою `sandbox list`); без розгортання короткого імені
+- `--agent <id>`: повторно створити середовища виконання для одного агента (відповідає `agent:<id>` і `agent:<id>:*`)
+- `--browser`: впливати лише на браузерні контейнери
+- `--force`: пропустити запит на підтвердження
+
+Передайте рівно один із параметрів: `--all`, `--session` або `--agent`.
+
+Для `ssh` і OpenShell `remote` повторне створення важливіше, ніж для Docker: після початкового заповнення віддалений робочий простір стає канонічним, команда `recreate` видаляє цей канонічний віддалений робочий простір для вибраної області дії, а наступний запуск повторно заповнює його з поточного локального робочого простору.
+
 ### `openclaw sandbox explain`
 
-Перевірте **ефективний** режим/область/доступ до робочого простору пісочниці, політику інструментів пісочниці та підвищені шлюзи (зі шляхами ключів конфігурації для виправлення).
+Переглянути ефективний режим і область дії пісочниці, доступ до робочого простору, політику інструментів пісочниці та обмеження для інструментів із підвищеними привілеями (зі шляхами до ключів конфігурації для виправлення).
+
+У звіті `workspaceRoot` залишається налаштованим коренем пісочниці, а ефективний робочий простір хоста, робочий каталог середовища виконання бекенда й таблиця монтувань Docker відображаються окремо. Для `workspaceAccess: "rw"` ефективним робочим простором хоста є робочий простір агента, а не каталог усередині `workspaceRoot`.
 
 ```bash
 openclaw sandbox explain
@@ -44,146 +64,43 @@ openclaw sandbox explain --agent work
 openclaw sandbox explain --json
 ```
 
-### `openclaw sandbox list`
+На відміну від `recreate --session`, ця команда приймає короткі імена сеансів (наприклад, `main`) і розгортає їх відносно визначеного агента.
 
-Виведіть список усіх середовищ виконання пісочниці з їхнім станом і конфігурацією.
+## Навіщо потрібне повторне створення
 
-```bash
-openclaw sandbox list
-openclaw sandbox list --browser  # List only browser containers
-openclaw sandbox list --json     # JSON output
-```
-
-**Вивід містить:**
-
-- Назву та стан середовища виконання
-- Бекенд (`docker`, `openshell` тощо)
-- Мітку конфігурації та чи відповідає вона поточній конфігурації
-- Вік (час від створення)
-- Час простою (час від останнього використання)
-- Пов’язаний сеанс/агент
-
-### `openclaw sandbox recreate`
-
-Видаліть середовища виконання пісочниці, щоб примусово перестворити їх з оновленою конфігурацією.
-
-```bash
-openclaw sandbox recreate --all                # Recreate all containers
-openclaw sandbox recreate --session main       # Specific session
-openclaw sandbox recreate --agent mybot        # Specific agent
-openclaw sandbox recreate --browser            # Only browser containers
-openclaw sandbox recreate --all --force        # Skip confirmation
-```
-
-**Параметри:**
-
-- `--all`: перестворити всі контейнери пісочниці
-- `--session <key>`: перестворити контейнер для конкретного сеансу
-- `--agent <id>`: перестворити контейнери для конкретного агента
-- `--browser`: перестворити лише браузерні контейнери
-- `--force`: пропустити запит підтвердження
-
-<Note>
-Середовища виконання автоматично перестворюються під час наступного використання агента.
-</Note>
-
-## Приклади використання
-
-### Після оновлення образу Docker
-
-```bash
-# Pull new image
-docker pull openclaw-sandbox:latest
-docker tag openclaw-sandbox:latest openclaw-sandbox:bookworm-slim
-
-# Update config to use new image
-# Edit config: agents.defaults.sandbox.docker.image (or agents.list[].sandbox.docker.image)
-
-# Recreate containers
-openclaw sandbox recreate --all
-```
-
-### Після зміни конфігурації пісочниці
-
-```bash
-# Edit config: agents.defaults.sandbox.* (or agents.list[].sandbox.*)
-
-# Recreate to apply new config
-openclaw sandbox recreate --all
-```
-
-### Після зміни цілі SSH або матеріалу автентифікації SSH
-
-```bash
-# Edit config:
-# - agents.defaults.sandbox.backend
-# - agents.defaults.sandbox.ssh.target
-# - agents.defaults.sandbox.ssh.workspaceRoot
-# - agents.defaults.sandbox.ssh.identityFile / certificateFile / knownHostsFile
-# - agents.defaults.sandbox.ssh.identityData / certificateData / knownHostsData
-
-openclaw sandbox recreate --all
-```
-
-Для основного бекенда `ssh` перестворення видаляє корінь віддаленого робочого простору для кожної області
-на цілі SSH. Наступний запуск знову заповнює його з локального робочого простору.
-
-### Після зміни джерела, політики або режиму OpenShell
-
-```bash
-# Edit config:
-# - agents.defaults.sandbox.backend
-# - plugins.entries.openshell.config.from
-# - plugins.entries.openshell.config.mode
-# - plugins.entries.openshell.config.policy
-
-openclaw sandbox recreate --all
-```
-
-Для режиму OpenShell `remote` перестворення видаляє канонічний віддалений робочий простір
-для цієї області. Наступний запуск знову заповнює його з локального робочого простору.
-
-### Після зміни setupCommand
-
-```bash
-openclaw sandbox recreate --all
-# or just one agent:
-openclaw sandbox recreate --agent family
-```
-
-### Лише для конкретного агента
-
-```bash
-# Update only one agent's containers
-openclaw sandbox recreate --agent alfred
-```
-
-## Навіщо це потрібно
-
-Коли ви оновлюєте конфігурацію пісочниці:
-
-- Наявні середовища виконання продовжують працювати зі старими налаштуваннями.
-- Середовища виконання видаляються лише після 24 годин неактивності.
-- Агенти, які використовуються регулярно, зберігають старі середовища виконання активними безстроково.
-
-Використовуйте `openclaw sandbox recreate`, щоб примусово видалити старі середовища виконання. Вони автоматично перестворюються з поточними налаштуваннями, коли знадобляться наступного разу.
+Оновлення конфігурації пісочниці не впливає на запущені контейнери: наявні середовища виконання зберігають старі налаштування, а неактивні середовища видаляються лише після завершення періоду `prune.idleHours` (типове значення — 24 години). Агенти, яких використовують регулярно, можуть необмежено довго підтримувати застарілі середовища виконання активними. Команда `openclaw sandbox recreate` видаляє старе середовище виконання, щоб під час наступного використання його було перебудовано відповідно до поточної конфігурації.
 
 <Tip>
-Надавайте перевагу `openclaw sandbox recreate` замість ручного очищення, специфічного для бекенда. Вона використовує реєстр середовищ виконання Gateway і запобігає невідповідностям, коли змінюються ключі області або сеансу.
+Віддавайте перевагу `openclaw sandbox recreate` замість ручного очищення, специфічного для бекенда. Ця команда використовує реєстр середовищ виконання Gateway й уникає невідповідностей у разі зміни області дії або ключів сеансів.
 </Tip>
+
+## Поширені причини
+
+| Зміна                                                                                                                                                          | Команда                                                             |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| Оновлення образу Docker (`agents.defaults.sandbox.docker.image`)                                                                                               | `openclaw sandbox recreate --all`                                   |
+| Конфігурація пісочниці (`agents.defaults.sandbox.*`)                                                                                                           | `openclaw sandbox recreate --all`                                   |
+| Цільовий вузол або автентифікація SSH (`agents.defaults.sandbox.ssh.{target,workspaceRoot,identityFile,certificateFile,knownHostsFile,identityData,certificateData,knownHostsData}`) | `openclaw sandbox recreate --all`                                   |
+| Джерело, політика або режим OpenShell (`plugins.entries.openshell.config.{from,mode,policy}`)                                                                  | `openclaw sandbox recreate --all`                                   |
+| `setupCommand`                                                                                                                                                 | `openclaw sandbox recreate --all` (або `--agent <id>` для одного агента) |
+
+<Note>
+Середовища виконання автоматично створюються повторно під час наступного використання агента.
+</Note>
 
 ## Міграція реєстру
 
-OpenClaw зберігає метадані середовищ виконання пісочниці у спільній базі даних стану SQLite. У старіших інсталяціях досі можуть бути застарілі файли реєстру пісочниці:
+Метадані середовищ виконання пісочниці зберігаються у спільній базі даних стану SQLite. У старіших інсталяціях можуть залишатися застарілі файли реєстру, які звичайне читання більше не перезаписує:
 
 - `~/.openclaw/sandbox/containers.json`
 - `~/.openclaw/sandbox/browsers.json`
+- один сегмент JSON на кожен контейнер або браузер у `~/.openclaw/sandbox/containers/` чи `~/.openclaw/sandbox/browsers/`
 
-Деякі оновлення також можуть мати по одному JSON-фрагменту на контейнер/браузер у `~/.openclaw/sandbox/containers/` або `~/.openclaw/sandbox/browsers/`. Звичайні читання середовищ виконання пісочниці не перезаписують ці застарілі джерела. Запустіть `openclaw doctor --fix`, щоб мігрувати дійсні застарілі записи до SQLite. Недійсні застарілі файли ізолюються, щоб один пошкоджений старий реєстр не міг приховати поточні записи середовищ виконання.
+Запустіть `openclaw doctor --fix`, щоб перенести коректні застарілі записи до SQLite. Некоректні застарілі файли поміщаються в карантин, щоб пошкоджений старий реєстр не міг приховувати поточні записи середовищ виконання.
 
 ## Конфігурація
 
-Налаштування пісочниці містяться в `~/.openclaw/openclaw.json` у `agents.defaults.sandbox` (перевизначення для окремих агентів розміщуються в `agents.list[].sandbox`):
+Налаштування пісочниці зберігаються в `~/.openclaw/openclaw.json` у розділі `agents.defaults.sandbox` (перевизначення для окремих агентів розміщуються в `agents.list[].sandbox`):
 
 ```jsonc
 {
@@ -191,16 +108,16 @@ OpenClaw зберігає метадані середовищ виконання
     "defaults": {
       "sandbox": {
         "mode": "all", // off, non-main, all
-        "backend": "docker", // docker, ssh, openshell
+        "backend": "docker", // docker, ssh, openshell (надається Plugin)
         "scope": "agent", // session, agent, shared
         "docker": {
           "image": "openclaw-sandbox:bookworm-slim",
           "containerPrefix": "openclaw-sbx-",
-          // ... more Docker options
+          // ... інші параметри Docker
         },
         "prune": {
-          "idleHours": 24, // Auto-prune after 24h idle
-          "maxAgeDays": 7, // Auto-prune after 7 days
+          "idleHours": 24, // автоматичне видалення після 24 годин простою
+          "maxAgeDays": 7, // автоматичне видалення через 7 днів
         },
       },
     },
@@ -208,9 +125,9 @@ OpenClaw зберігає метадані середовищ виконання
 }
 ```
 
-## Пов’язане
+## Пов’язані матеріали
 
 - [Довідник CLI](/uk/cli)
-- [Пісочниця](/uk/gateway/sandboxing)
+- [Ізоляція в пісочниці](/uk/gateway/sandboxing)
 - [Робочий простір агента](/uk/concepts/agent-workspace)
 - [Doctor](/uk/gateway/doctor): перевіряє налаштування пісочниці.

@@ -1,11 +1,11 @@
 ---
 read_when:
-    - firecrawlプラグインをインストール、設定、または監査している
-summary: エージェントから呼び出せるツールを追加します。Web フェッチプロバイダーのサポートを追加します。Web 検索プロバイダーのサポートを追加します。
+    - firecrawl Plugin のインストール、設定、または監査を行っています
+summary: エージェントから呼び出せるツールを追加します。ウェブ取得プロバイダーのサポートを追加します。ウェブ検索プロバイダーのサポートを追加します。
 title: Firecrawl Plugin
 x-i18n:
-    generated_at: "2026-06-27T12:24:18Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:32:39Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: ca5577e6e850d947a3714e3dc62c7756faae8471e150d3cdb320a85efe3fe4f5
@@ -13,18 +13,18 @@ x-i18n:
     workflow: 16
 ---
 
-# Firecrawlプラグイン
+# Firecrawl Plugin
 
-エージェントから呼び出せるツールを追加します。Web取得プロバイダーのサポートを追加します。Web検索プロバイダーのサポートを追加します。
+エージェントから呼び出せるツールを追加します。Web 取得プロバイダーのサポートを追加します。Web 検索プロバイダーのサポートを追加します。
 
 ## 配布
 
 - パッケージ: `@openclaw/firecrawl-plugin`
-- インストール経路: npm; ClawHub: `clawhub:@openclaw/firecrawl-plugin`
+- インストール経路: npm、ClawHub: `clawhub:@openclaw/firecrawl-plugin`
 
-## サーフェス
+## 提供機能
 
-contracts: tools, webFetchProviders, webSearchProviders
+コントラクト: tools、webFetchProviders、webSearchProviders
 
 ## 関連ドキュメント
 

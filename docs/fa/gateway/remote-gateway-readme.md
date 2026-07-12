@@ -3,37 +3,37 @@ read_when: Connecting the macOS app to a remote gateway over SSH
 summary: راه‌اندازی تونل SSH برای اتصال OpenClaw.app به یک Gateway راه دور
 title: راه‌اندازی Gateway راه دور
 x-i18n:
-    generated_at: "2026-04-29T22:55:20Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:08:01Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: fccc75e672bf3295c335fc4d2f610e9cbb3f1882edd12ffb9d009120291bd2d9
+    source_hash: 842578eb74e99d115b04abff5e9673a6454fa6d2cf7905d056999469e1c6b66d
     source_path: gateway/remote-gateway-readme.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-> این محتوا در [دسترسی راه‌دور](/fa/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent) ادغام شده است. برای راهنمای فعلی، آن صفحه را ببینید.
+<Note>
+این محتوا اکنون در [دسترسی از راه دور](/fa/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent) قرار دارد. برای راهنمای فعلی از آن صفحه استفاده کنید؛ این صفحه به‌عنوان مقصد تغییرمسیر باقی می‌ماند.
+</Note>
 
-# اجرای OpenClaw.app با Gateway راه‌دور
+# اجرای OpenClaw.app با یک Gateway راه دور
 
-OpenClaw.app برای اتصال به یک Gateway راه‌دور از تونل‌زنی SSH استفاده می‌کند. این راهنما نشان می‌دهد چگونه آن را راه‌اندازی کنید.
-
-## نمای کلی
+OpenClaw.app از طریق یک تونل SSH به Gateway راه دور متصل می‌شود: یک `LocalForward` در SSH، یک درگاه محلی را به درگاه WebSocket مربوط به Gateway روی میزبان راه دور نگاشت می‌کند.
 
 ```mermaid
 flowchart TB
-    subgraph Client["Client Machine"]
+    subgraph Client["دستگاه کارخواه"]
         direction TB
         A["OpenClaw.app"]
-        B["ws://127.0.0.1:18789\n(local port)"]
-        T["SSH Tunnel"]
+        B["ws://127.0.0.1:18789\n(درگاه محلی)"]
+        T["تونل SSH"]
 
         A --> B
         B --> T
     end
-    subgraph Remote["Remote Machine"]
+    subgraph Remote["دستگاه راه دور"]
         direction TB
-        C["Gateway WebSocket"]
+        C["WebSocket مربوط به Gateway"]
         D["ws://127.0.0.1:18789"]
 
         C --> D
@@ -41,137 +41,28 @@ flowchart TB
     T --> C
 ```
 
-## راه‌اندازی سریع
+## راه‌اندازی
 
-### مرحله ۱: افزودن پیکربندی SSH
+1. یک ورودی پیکربندی SSH با `LocalForward 18789 127.0.0.1:18789` اضافه کنید (برای بلوک کامل پیکربندی، به [دسترسی از راه دور](/fa/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent) مراجعه کنید).
+2. کلید SSH خود را با `ssh-copy-id` روی میزبان راه دور کپی کنید.
+3. مقدار `gateway.remote.token` (یا `gateway.remote.password`) را با `openclaw config set gateway.remote.token "<your-token>"` تنظیم کنید.
+4. تونل را راه‌اندازی کنید: `ssh -N remote-gateway &`.
+5. از OpenClaw.app خارج شوید و آن را دوباره باز کنید.
 
-`~/.ssh/config` را ویرایش کنید و این را اضافه کنید:
+برای تونلی که پس از راه‌اندازی مجدد سیستم همچنان برقرار می‌ماند و به‌طور خودکار دوباره متصل می‌شود، به‌جای اجرای دستی `ssh -N` از راه‌اندازی LaunchAgent در صفحه [دسترسی از راه دور](/fa/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent) استفاده کنید.
 
-```ssh
-Host remote-gateway
-    HostName <REMOTE_IP>          # e.g., 172.27.187.184
-    User <REMOTE_USER>            # e.g., jefferson
-    LocalForward 18789 127.0.0.1:18789
-    IdentityFile ~/.ssh/id_rsa
-```
+## سازوکار
 
-`<REMOTE_IP>` و `<REMOTE_USER>` را با مقادیر خودتان جایگزین کنید.
+| مؤلفه                               | کاری که انجام می‌دهد                                                       |
+| ------------------------------------ | -------------------------------------------------------------------------- |
+| `LocalForward 18789 127.0.0.1:18789` | درگاه محلی ۱۸۷۸۹ را به درگاه راه دور ۱۸۷۸۹ هدایت می‌کند                    |
+| `ssh -N`                             | اجرای SSH بدون اجرای فرمان‌های راه دور (فقط هدایت درگاه)                   |
+| `KeepAlive`                          | اگر تونل از کار بیفتد، آن را به‌طور خودکار دوباره راه‌اندازی می‌کند (LaunchAgent) |
+| `RunAtLoad`                          | هنگام بارگذاری LaunchAgent، تونل را راه‌اندازی می‌کند (LaunchAgent)        |
 
-### مرحله ۲: کپی کردن کلید SSH
-
-کلید عمومی خود را روی ماشین راه‌دور کپی کنید (رمز عبور را یک‌بار وارد کنید):
-
-```bash
-ssh-copy-id -i ~/.ssh/id_rsa <REMOTE_USER>@<REMOTE_IP>
-```
-
-### مرحله ۳: پیکربندی احراز هویت Gateway راه‌دور
-
-```bash
-openclaw config set gateway.remote.token "<your-token>"
-```
-
-اگر Gateway راه‌دور شما از احراز هویت با رمز عبور استفاده می‌کند، به‌جای آن از `gateway.remote.password` استفاده کنید.
-`OPENCLAW_GATEWAY_TOKEN` همچنان به‌عنوان بازنویسی در سطح شِل معتبر است، اما راه‌اندازی پایدار
-کلاینت راه‌دور، `gateway.remote.token` / `gateway.remote.password` است.
-
-### مرحله ۴: شروع تونل SSH
-
-```bash
-ssh -N remote-gateway &
-```
-
-### مرحله ۵: راه‌اندازی دوباره OpenClaw.app
-
-```bash
-# Quit OpenClaw.app (⌘Q), then reopen:
-open /path/to/OpenClaw.app
-```
-
-اکنون برنامه از طریق تونل SSH به Gateway راه‌دور متصل می‌شود.
-
----
-
-## شروع خودکار تونل هنگام ورود
-
-برای اینکه تونل SSH هنگام ورود شما به‌صورت خودکار شروع شود، یک عامل راه‌اندازی ایجاد کنید.
-
-### ایجاد فایل PLIST
-
-این را با نام `~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist` ذخیره کنید:
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>Label</key>
-    <string>ai.openclaw.ssh-tunnel</string>
-    <key>ProgramArguments</key>
-    <array>
-        <string>/usr/bin/ssh</string>
-        <string>-N</string>
-        <string>remote-gateway</string>
-    </array>
-    <key>KeepAlive</key>
-    <true/>
-    <key>RunAtLoad</key>
-    <true/>
-</dict>
-</plist>
-```
-
-### بارگذاری عامل راه‌اندازی
-
-```bash
-launchctl bootstrap gui/$UID ~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist
-```
-
-اکنون تونل:
-
-- هنگام ورود شما به‌صورت خودکار شروع می‌شود
-- اگر از کار بیفتد، دوباره راه‌اندازی می‌شود
-- در پس‌زمینه در حال اجرا می‌ماند
-
-یادداشت قدیمی: اگر LaunchAgent باقی‌مانده‌ای با نام `com.openclaw.ssh-tunnel` وجود دارد، آن را حذف کنید.
-
----
-
-## عیب‌یابی
-
-**بررسی اینکه تونل در حال اجرا است یا نه:**
-
-```bash
-ps aux | grep "ssh -N remote-gateway" | grep -v grep
-lsof -i :18789
-```
-
-**راه‌اندازی دوباره تونل:**
-
-```bash
-launchctl kickstart -k gui/$UID/ai.openclaw.ssh-tunnel
-```
-
-**توقف تونل:**
-
-```bash
-launchctl bootout gui/$UID/ai.openclaw.ssh-tunnel
-```
-
----
-
-## نحوه کارکرد
-
-| مؤلفه                               | کارکرد                                                        |
-| ------------------------------------ | ------------------------------------------------------------ |
-| `LocalForward 18789 127.0.0.1:18789` | پورت محلی 18789 را به پورت راه‌دور 18789 هدایت می‌کند        |
-| `ssh -N`                             | SSH بدون اجرای فرمان‌های راه‌دور، فقط برای هدایت پورت        |
-| `KeepAlive`                          | اگر تونل از کار بیفتد، آن را به‌صورت خودکار دوباره راه‌اندازی می‌کند |
-| `RunAtLoad`                          | هنگام بارگذاری عامل، تونل را شروع می‌کند                     |
-
-OpenClaw.app روی ماشین کلاینت شما به `ws://127.0.0.1:18789` متصل می‌شود. تونل SSH آن اتصال را به پورت 18789 روی ماشین راه‌دوری که Gateway روی آن اجرا می‌شود هدایت می‌کند.
+OpenClaw.app در دستگاه کارخواه به `ws://127.0.0.1:18789` متصل می‌شود. تونل این اتصال را به درگاه ۱۸۷۸۹ روی میزبان راه دوری که Gateway را اجرا می‌کند، هدایت می‌کند.
 
 ## مرتبط
 
-- [دسترسی راه‌دور](/fa/gateway/remote)
+- [دسترسی از راه دور](/fa/gateway/remote)
 - [Tailscale](/fa/gateway/tailscale)

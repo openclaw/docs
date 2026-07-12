@@ -1,85 +1,95 @@
 ---
 doc-schema-version: 1
 read_when:
-    - Vuoi trovare Plugin OpenClaw di terze parti
-    - Vuoi pubblicare o elencare il tuo Plugin su ClawHub
-summary: Trova e pubblica Plugin OpenClaw mantenuti dalla community
+    - Vuoi trovare Plugin di terze parti per OpenClaw
+    - Vuoi pubblicare o inserire il tuo Plugin su ClawHub
+summary: Trova e pubblica Plugin OpenClaw gestiti dalla community
 title: Plugin della community
 x-i18n:
-    generated_at: "2026-06-27T17:48:40Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:15:50Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 0ecf059fa0c32f09d09381b2153a6a63ca522d49719aaa8476209389a6b5b36a
+    source_hash: 6a9eb477f20da8171a35c22ea6b112d77ff4afe0878f60314c052746aef4e0ac
     source_path: plugins/community.md
     workflow: 16
 ---
 
-I plugin della community sono pacchetti di terze parti che estendono OpenClaw con canali,
-strumenti, provider, hook o altre funzionalità. Usa [ClawHub](/it/clawhub) come
-superficie principale di scoperta per i plugin pubblici della community.
+I plugin della community sono pacchetti di terze parti che estendono OpenClaw con
+canali, strumenti, provider, hook o altre funzionalità. Usa
+[ClawHub](/clawhub) come principale punto di riferimento per trovare i plugin
+pubblici della community.
 
-## Trova plugin
+## Trovare i plugin
 
-Cerca in ClawHub dalla CLI:
+Cerca su ClawHub dalla CLI:
 
 ```bash
 openclaw plugins search "calendar"
 ```
 
-Installa un plugin ClawHub con un prefisso di origine esplicito:
+Installa un plugin di ClawHub con un prefisso di origine esplicito:
 
 ```bash
 openclaw plugins install clawhub:<package-name>
 ```
 
-npm rimane un percorso di installazione diretta supportato durante la transizione di lancio:
+Durante la transizione del lancio, npm rimane un metodo supportato per
+l'installazione diretta:
 
 ```bash
 openclaw plugins install npm:<package-name>
 ```
 
-Usa [Gestire i plugin](/it/plugins/manage-plugins) per esempi comuni di installazione, aggiornamento,
-ispezione e disinstallazione. Usa [`openclaw plugins`](/it/cli/plugins) per il
-riferimento completo dei comandi e le regole di selezione dell'origine.
+Consulta [Gestire i plugin](/it/plugins/manage-plugins) per esempi comuni di
+installazione, aggiornamento, ispezione e disinstallazione. Consulta
+[`openclaw plugins`](/it/cli/plugins) per il riferimento completo dei comandi e
+le regole di selezione dell'origine.
 
-## Pubblica plugin
+## Pubblicare i plugin
 
-Pubblica i plugin pubblici della community su ClawHub quando vuoi che gli utenti di OpenClaw li
-scoprano e li installino. ClawHub gestisce l'elenco live dei pacchetti, la cronologia delle
-release, lo stato di scansione e i suggerimenti di installazione; la documentazione non mantiene un catalogo
-statico di plugin di terze parti.
+Pubblica i plugin pubblici della community su ClawHub, affinché gli utenti di
+OpenClaw possano trovarli e installarli. ClawHub gestisce l'elenco aggiornato
+dei pacchetti, la cronologia delle versioni, lo stato della scansione e i
+suggerimenti per l'installazione; la documentazione non mantiene un catalogo
+statico dei plugin di terze parti.
 
 ```bash
 clawhub package publish your-org/your-plugin --dry-run
 clawhub package publish your-org/your-plugin
 ```
 
-Prima della pubblicazione, assicurati che il plugin abbia metadati del pacchetto, un manifesto del plugin,
-documentazione di configurazione e un proprietario della manutenzione chiaro. ClawHub convalida l'ambito del proprietario,
-il nome del pacchetto, la versione, i limiti dei file e i metadati dell'origine prima di creare una
-release, quindi mantiene le nuove release nascoste dalle normali superfici di installazione e download
-finché revisione e verifica non sono completate.
+Prima della pubblicazione, assicurati che il plugin disponga dei metadati del
+pacchetto, di un manifest del plugin, della documentazione per la
+configurazione e di un responsabile della manutenzione chiaramente
+identificato. Prima di creare una versione, ClawHub convalida l'ambito del
+proprietario, il nome e la versione del pacchetto, i limiti dei file e i
+metadati dell'origine; mantiene quindi le nuove versioni nascoste dalle
+normali interfacce di installazione e download fino al completamento della
+revisione e della verifica.
 
-Usa questa checklist prima di pubblicare:
+Elenco di controllo prima della pubblicazione:
 
-| Requisito            | Perché                                              |
-| -------------------- | --------------------------------------------------- |
-| Pubblicato su ClawHub | Gli utenti hanno bisogno che i suggerimenti di `openclaw plugins install` funzionino |
-| Repository GitHub pubblico | Revisione del sorgente, tracciamento dei problemi, trasparenza |
-| Documentazione di configurazione e uso | Gli utenti devono sapere come configurarlo |
-| Manutenzione attiva  | Aggiornamenti recenti o gestione reattiva dei problemi |
+| Requisito                    | Motivo                                                            |
+| ---------------------------- | ----------------------------------------------------------------- |
+| Pubblicato su ClawHub        | I suggerimenti di `openclaw plugins install` devono funzionare    |
+| Repository GitHub pubblico   | Revisione del codice sorgente, tracciamento dei problemi, trasparenza |
+| Documentazione di configurazione e utilizzo | Gli utenti devono sapere come configurarlo              |
+| Manutenzione attiva          | Aggiornamenti recenti o gestione tempestiva dei problemi          |
 
-Usa queste pagine per il contratto completo di pubblicazione:
+Contratto completo per la pubblicazione:
 
-- [Pubblicazione su ClawHub](/it/clawhub/publishing) spiega proprietari, ambiti, release,
-  revisione, convalida dei pacchetti e trasferimento dei pacchetti.
-- [Creazione di plugin](/it/plugins/building-plugins) mostra la struttura del pacchetto plugin
-  e il primo flusso di pubblicazione.
-- [Manifesto del plugin](/it/plugins/manifest) definisce i campi del manifesto del plugin nativo.
+- [Pubblicazione su ClawHub](/it/clawhub/publishing) - proprietari, ambiti,
+  versioni, revisione, convalida e trasferimento dei pacchetti
+- [Creazione dei plugin](/it/plugins/building-plugins) - la struttura del
+  pacchetto del plugin e il flusso di lavoro per la prima pubblicazione
+- [Manifest del plugin](/it/plugins/manifest) - campi del manifest nativo del
+  plugin
 
-## Correlati
+## Contenuti correlati
 
-- [Plugin](/it/tools/plugin) - installazione, configurazione, riavvio e risoluzione dei problemi
+- [Plugin](/it/tools/plugin) - installazione, configurazione, riavvio e
+  risoluzione dei problemi
 - [Gestire i plugin](/it/plugins/manage-plugins) - esempi di comandi
-- [Pubblicazione su ClawHub](/it/clawhub/publishing) - regole di pubblicazione e release
+- [Pubblicazione su ClawHub](/it/clawhub/publishing) - regole per la
+  pubblicazione e le versioni

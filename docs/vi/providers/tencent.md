@@ -1,59 +1,69 @@
 ---
 read_when:
-    - Bạn muốn dùng bản xem trước Tencent Hy3 với OpenClaw
-    - Bạn cần thiết lập khóa API TokenHub
-summary: Thiết lập Tencent Cloud TokenHub cho bản xem trước Hy3
-title: Tencent Cloud (TokenHub)
+    - Bạn muốn sử dụng Tencent hy3 với OpenClaw
+    - Bạn cần thiết lập khóa API TokenHub hoặc TokenPlan
+summary: Thiết lập Tencent Cloud TokenHub và TokenPlan cho hy3
+title: Tencent Cloud (TokenHub / TokenPlan)
 x-i18n:
-    generated_at: "2026-06-27T18:06:14Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:19:51Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 62bcdd795cc0334f409405fa7c369ed9966854616a89dbc7153f91ee349895ad
+    source_hash: 5c2ffb8ab824539c7765d38e4332c30a6dd371fdc19be825f2ad9af0197fa256
     source_path: providers/tencent.md
     workflow: 16
 ---
 
-Cài đặt Plugin nhà cung cấp Tencent Cloud chính thức để truy cập Tencent Hy3 preview thông qua điểm cuối TokenHub (`tencent-tokenhub`) bằng API tương thích với OpenAI.
+Cài đặt plugin nhà cung cấp Tencent Cloud chính thức để truy cập Tencent Hy3 qua hai điểm cuối — TokenHub (`tencent-tokenhub`) và TokenPlan (`tencent-tokenplan`) — bằng API tương thích với OpenAI.
 
-| Thuộc tính        | Giá trị                                               |
-| ----------------- | ----------------------------------------------------- |
-| ID nhà cung cấp   | `tencent-tokenhub`                                    |
-| Gói               | `@openclaw/tencent-provider`                          |
-| Biến môi trường xác thực | `TOKENHUB_API_KEY`                            |
-| Cờ thiết lập ban đầu | `--auth-choice tokenhub-api-key`                   |
-| Cờ CLI trực tiếp  | `--tokenhub-api-key <key>`                            |
-| API               | Tương thích với OpenAI (`openai-completions`)         |
-| URL cơ sở mặc định | `https://tokenhub.tencentmaas.com/v1`                |
-| URL cơ sở toàn cầu | `https://tokenhub-intl.tencentmaas.com/v1` (ghi đè) |
-| Mô hình mặc định  | `tencent-tokenhub/hy3-preview`                        |
+| Thuộc tính                           | Giá trị                                               |
+| ------------------------------------ | ----------------------------------------------------- |
+| ID nhà cung cấp                      | `tencent-tokenhub`, `tencent-tokenplan`               |
+| Gói                                  | `@openclaw/tencent-provider`                          |
+| Biến môi trường xác thực TokenHub    | `TOKENHUB_API_KEY`                                    |
+| Biến môi trường xác thực TokenPlan   | `TOKENPLAN_API_KEY`                                   |
+| Cờ thiết lập ban đầu cho TokenHub    | `--auth-choice tokenhub-api-key`                      |
+| Cờ thiết lập ban đầu cho TokenPlan   | `--auth-choice tokenplan-api-key`                     |
+| Cờ CLI trực tiếp cho TokenHub        | `--tokenhub-api-key <key>`                            |
+| Cờ CLI trực tiếp cho TokenPlan       | `--tokenplan-api-key <key>`                           |
+| API                                  | Tương thích với OpenAI (`openai-completions`)         |
+| URL cơ sở của TokenHub               | `https://tokenhub.tencentmaas.com/v1`                 |
+| URL cơ sở toàn cầu của TokenHub      | `https://tokenhub-intl.tencentmaas.com/v1` (ghi đè)   |
+| URL cơ sở của TokenPlan              | `https://api.lkeap.cloud.tencent.com/plan/v3`         |
+| Mô hình mặc định                     | `tencent-tokenhub/hy3`                                |
 
 ## Bắt đầu nhanh
 
 <Steps>
-  <Step title="Cài đặt Plugin">
-    ```bash
-    openclaw plugins install @openclaw/tencent-provider
-    ```
+  <Step title="Tạo khóa API Tencent">
+    Tạo khóa API cho Tencent Cloud TokenHub và TokenPlan. Nếu chọn phạm vi truy cập giới hạn cho khóa, hãy đưa **hy3** (và **hy3 preview** nếu bạn dự định sử dụng mô hình này trên TokenHub) vào danh sách mô hình được phép.
   </Step>
-  <Step title="Tạo khóa API TokenHub">
-    Tạo khóa API trong Tencent Cloud TokenHub. Nếu bạn chọn phạm vi truy cập giới hạn cho khóa, hãy bao gồm **Hy3 preview** trong các mô hình được phép.
-  </Step>
-  <Step title="Chạy thiết lập ban đầu">
+  <Step title="Chạy quy trình thiết lập ban đầu">
     <CodeGroup>
 
-```bash Thiết lập ban đầu
+```bash TokenHub onboarding
 openclaw onboard --auth-choice tokenhub-api-key
 ```
 
-```bash Cờ trực tiếp
+```bash TokenHub direct flag
 openclaw onboard --non-interactive \
   --auth-choice tokenhub-api-key \
   --tokenhub-api-key "$TOKENHUB_API_KEY"
 ```
 
-```bash Chỉ env
+```bash TokenPlan onboarding
+openclaw onboard --auth-choice tokenplan-api-key
+```
+
+```bash TokenPlan direct flag
+openclaw onboard --non-interactive \
+  --auth-choice tokenplan-api-key \
+  --tokenplan-api-key "$TOKENPLAN_API_KEY"
+```
+
+```bash Env only
 export TOKENHUB_API_KEY=...
+export TOKENPLAN_API_KEY=...
 ```
 
     </CodeGroup>
@@ -62,6 +72,7 @@ export TOKENHUB_API_KEY=...
   <Step title="Xác minh mô hình">
     ```bash
     openclaw models list --provider tencent-tokenhub
+    openclaw models list --provider tencent-tokenplan
     ```
   </Step>
 </Steps>
@@ -69,75 +80,76 @@ export TOKENHUB_API_KEY=...
 ## Thiết lập không tương tác
 
 ```bash
+# TokenHub
 openclaw onboard --non-interactive \
   --mode local \
   --auth-choice tokenhub-api-key \
   --tokenhub-api-key "$TOKENHUB_API_KEY" \
   --skip-health \
   --accept-risk
+
+# TokenPlan
+openclaw onboard --non-interactive \
+  --mode local \
+  --auth-choice tokenplan-api-key \
+  --tokenplan-api-key "$TOKENPLAN_API_KEY" \
+  --skip-health \
+  --accept-risk
 ```
+
+<Note>
+Phải sử dụng `--accept-risk` cùng với `--non-interactive`.
+</Note>
 
 ## Danh mục tích hợp sẵn
 
-| Tham chiếu mô hình             | Tên                    | Đầu vào | Ngữ cảnh | Đầu ra tối đa | Ghi chú                    |
-| ------------------------------ | ---------------------- | ------- | -------- | ------------- | -------------------------- |
-| `tencent-tokenhub/hy3-preview` | Hy3 preview (TokenHub) | text    | 256,000  | 64,000        | Mặc định; hỗ trợ suy luận  |
+| Tham chiếu mô hình             | Tên                    | Đầu vào | Ngữ cảnh | Đầu ra tối đa | Ghi chú               |
+| ------------------------------ | ---------------------- | ------- | -------- | ------------ | --------------------- |
+| `tencent-tokenhub/hy3-preview` | hy3 preview (TokenHub) | văn bản | 256,000  | 64,000       | hỗ trợ suy luận        |
+| `tencent-tokenhub/hy3`         | hy3 (TokenHub)         | văn bản | 256,000  | 64,000       | hỗ trợ suy luận        |
+| `tencent-tokenplan/hy3`        | hy3 (TokenPlan)        | văn bản | 256,000  | 64,000       | hỗ trợ suy luận        |
 
-Hy3 preview là mô hình ngôn ngữ MoE lớn Tencent Hunyuan dành cho suy luận, làm theo hướng dẫn với ngữ cảnh dài, mã và quy trình tác tử. Các ví dụ tương thích OpenAI của Tencent dùng `hy3-preview` làm ID mô hình và hỗ trợ gọi công cụ chat-completions tiêu chuẩn cùng với `reasoning_effort`.
+hy3 là mô hình ngôn ngữ MoE lớn của Tencent Hunyuan dành cho suy luận, tuân theo chỉ dẫn với ngữ cảnh dài, lập trình và quy trình làm việc của tác nhân. Các ví dụ tương thích với OpenAI của Tencent sử dụng `hy3` làm ID mô hình và hỗ trợ gọi công cụ theo chuẩn chat completions cùng với `reasoning_effort`.
 
 <Tip>
-  ID mô hình là `hy3-preview`. Đừng nhầm với các mô hình `HY-3D-*` của Tencent, vốn là API tạo 3D và không phải mô hình trò chuyện OpenClaw được nhà cung cấp này cấu hình.
+  ID mô hình là `hy3`. Đừng nhầm mô hình này với các mô hình `HY-3D-*` của Tencent; đó là các API tạo nội dung 3D, không phải mô hình trò chuyện OpenClaw do nhà cung cấp này cấu hình.
 </Tip>
-
-## Giá theo bậc
-
-Danh mục nhà cung cấp đi kèm siêu dữ liệu chi phí theo bậc, co giãn theo độ dài cửa sổ đầu vào, nên ước tính chi phí được điền mà không cần ghi đè thủ công.
-
-| Phạm vi token đầu vào | Giá đầu vào | Giá đầu ra | Đọc bộ nhớ đệm |
-| --------------------- | ----------- | ---------- | -------------- |
-| 0 - 16,000            | 0.176       | 0.587      | 0.059          |
-| 16,000 - 32,000       | 0.235       | 0.939      | 0.088          |
-| 32,000+               | 0.293       | 1.173      | 0.117          |
-
-Mức giá tính theo mỗi triệu token bằng USD như Tencent công bố. Chỉ ghi đè giá trong `models.providers.tencent-tokenhub` khi bạn cần một bề mặt khác.
 
 ## Cấu hình nâng cao
 
 <AccordionGroup>
   <Accordion title="Ghi đè điểm cuối">
-    OpenClaw mặc định dùng điểm cuối `https://tokenhub.tencentmaas.com/v1` của Tencent Cloud. Tencent cũng tài liệu hóa một điểm cuối TokenHub quốc tế:
+    Danh mục tích hợp sẵn của OpenClaw sử dụng điểm cuối `https://tokenhub.tencentmaas.com/v1` của Tencent Cloud. Chỉ ghi đè điểm cuối này nếu tài khoản hoặc khu vực TokenHub của bạn yêu cầu một điểm cuối khác:
 
     ```bash
-    openclaw config set models.providers.tencent-tokenhub.baseUrl "https://tokenhub-intl.tencentmaas.com/v1"
+    openclaw config set models.providers.tencent-tokenhub.baseUrl "https://your-endpoint/v1"
     ```
-
-    Chỉ ghi đè điểm cuối khi tài khoản hoặc khu vực TokenHub của bạn yêu cầu.
 
   </Accordion>
 
-  <Accordion title="Tính khả dụng của môi trường cho daemon">
-    Nếu Gateway chạy dưới dạng dịch vụ được quản lý (launchd, systemd, Docker), `TOKENHUB_API_KEY` phải hiển thị với tiến trình đó. Đặt nó trong `~/.openclaw/.env` hoặc qua `env.shellEnv` để các môi trường launchd, systemd hoặc Docker exec có thể đọc được.
+  <Accordion title="Khả dụng của biến môi trường đối với tiến trình nền">
+    Nếu Gateway chạy dưới dạng dịch vụ được quản lý (launchd, systemd, Docker), tiến trình đó phải truy cập được `TOKENHUB_API_KEY` và `TOKENPLAN_API_KEY`. Đặt chúng trong `~/.openclaw/.env` hoặc thông qua `env.shellEnv` để các môi trường thực thi của launchd, systemd hoặc Docker có thể đọc được.
 
     <Warning>
-      Các khóa chỉ được export trong shell tương tác sẽ không hiển thị với các tiến trình Gateway được quản lý. Hãy dùng tệp env hoặc cấu hình để có tính khả dụng bền vững.
+      Các khóa chỉ được xuất trong shell tương tác sẽ không hiển thị với các tiến trình Gateway được quản lý. Hãy sử dụng tệp môi trường hoặc điểm cấu hình để duy trì khả năng truy cập lâu dài.
     </Warning>
 
   </Accordion>
 </AccordionGroup>
 
-## Liên quan
+## Nội dung liên quan
 
 <CardGroup cols={2}>
   <Card title="Nhà cung cấp mô hình" href="/vi/concepts/model-providers" icon="layers">
     Chọn nhà cung cấp, tham chiếu mô hình và hành vi chuyển đổi dự phòng.
   </Card>
-  <Card title="Tham chiếu cấu hình" href="/vi/gateway/configuration" icon="gear">
-    Sơ đồ cấu hình đầy đủ, bao gồm cài đặt nhà cung cấp.
+  <Card title="Tài liệu tham chiếu cấu hình" href="/vi/gateway/configuration-reference" icon="gear">
+    Lược đồ cấu hình đầy đủ, bao gồm các thiết lập nhà cung cấp.
   </Card>
   <Card title="Tencent TokenHub" href="https://cloud.tencent.com/product/tokenhub" icon="arrow-up-right-from-square">
     Trang sản phẩm TokenHub của Tencent Cloud.
   </Card>
   <Card title="Thẻ mô hình Hy3 preview" href="https://huggingface.co/tencent/Hy3-preview" icon="square-poll-horizontal">
-    Chi tiết và benchmark của Tencent Hunyuan Hy3 preview.
+    Chi tiết và kết quả đánh giá hiệu năng của Tencent Hunyuan Hy3 preview.
   </Card>
 </CardGroup>

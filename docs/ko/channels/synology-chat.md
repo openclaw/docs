@@ -5,17 +5,16 @@ read_when:
 summary: Synology Chat Webhook 설정 및 OpenClaw 구성
 title: Synology Chat
 x-i18n:
-    generated_at: "2026-07-12T14:59:22Z"
+    generated_at: "2026-07-12T00:33:35Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 7829bb1464c4f5546adf086a96b7f3478e6f03e35ed2443bd92c160fa3d2bb8b
     source_path: channels/synology-chat.md
     workflow: 16
 ---
 
-Synology Chat은 Webhook 쌍을 통해 OpenClaw에 연결됩니다. Synology Chat 발신 Webhook이 수신 다이렉트 메시지를 Gateway에 게시하고, 응답은 Synology Chat 수신 Webhook을 통해 다시 전송됩니다.
+Synology Chat은 Webhook 쌍을 통해 OpenClaw에 연결됩니다. Synology Chat 발신 Webhook은 수신된 다이렉트 메시지를 Gateway로 전송하고, 응답은 Synology Chat 수신 Webhook을 통해 다시 전달됩니다.
 
 상태: 공식 Plugin이며 별도로 설치합니다. 다이렉트 메시지만 지원하며, 텍스트 및 URL 기반 파일 전송을 지원합니다.
 
@@ -35,29 +34,28 @@ openclaw plugins install ./path/to/local/synology-chat-plugin
 
 ## 빠른 설정
 
-1. Plugin을 설치합니다(위 참조).
-2. Synology Chat integrations에서:
-   - 수신 Webhook을 생성하고 URL을 복사합니다.
-   - 비밀 토큰으로 발신 Webhook을 생성합니다.
+1. 위의 Plugin을 설치합니다.
+2. Synology Chat 통합에서:
+   - 수신 Webhook을 생성하고 해당 URL을 복사합니다.
+   - 비밀 토큰을 사용하여 발신 Webhook을 생성합니다.
 3. 발신 Webhook URL이 OpenClaw Gateway를 가리키도록 설정합니다.
    - 기본값은 `https://gateway-host/webhook/synology`입니다.
    - 또는 사용자 지정 `channels.synology-chat.webhookPath`를 사용합니다.
-4. OpenClaw에서 설정을 완료합니다. Synology Chat은 두 흐름 모두에서 동일한 채널 설정 목록에 표시됩니다.
-   - 안내형: `openclaw onboard` 또는 `openclaw channels add`
-   - 직접 설정: `openclaw channels add --channel synology-chat --token <token> --url <incoming-webhook-url>`
+4. OpenClaw에서 설정을 완료합니다. 두 흐름 모두 동일한 채널 설정 목록에 Synology Chat이 표시됩니다.
+   - 안내 방식: `openclaw onboard` 또는 `openclaw channels add`
+   - 직접 방식: `openclaw channels add --channel synology-chat --token <token> --url <incoming-webhook-url>`
 5. Gateway를 다시 시작하고 Synology Chat 봇에 DM을 보냅니다.
 
 Webhook 인증 세부 정보:
 
-- OpenClaw는 먼저 `body.token`, 그다음
-  `?token=...`, 마지막으로 헤더에서 발신 Webhook 토큰을 받습니다.
+- OpenClaw은 먼저 `body.token`, 그다음 `?token=...`, 마지막으로 헤더에서 발신 Webhook 토큰을 받습니다.
 - 허용되는 헤더 형식:
   - `x-synology-token`
   - `x-webhook-token`
   - `x-openclaw-token`
   - `Authorization: Bearer <token>`
 - 토큰이 비어 있거나 없으면 안전하게 거부됩니다.
-- 페이로드는 `application/x-www-form-urlencoded` 또는 `application/json`일 수 있으며, `token`, `user_id`, `text`가 필수입니다.
+- 페이로드는 `application/x-www-form-urlencoded` 또는 `application/json` 형식일 수 있으며, `token`, `user_id`, `text`가 필수입니다.
 
 최소 구성:
 
@@ -91,42 +89,38 @@ Webhook 인증 세부 정보:
 
 구성 값은 환경 변수보다 우선합니다.
 
-`SYNOLOGY_CHAT_INCOMING_URL` 및 `SYNOLOGY_NAS_HOST`는 워크스페이스 `.env`에서 설정할 수 없습니다. [워크스페이스 `.env` 파일](/ko/gateway/security#workspace-env-files)을 참조하십시오.
+`SYNOLOGY_CHAT_INCOMING_URL`과 `SYNOLOGY_NAS_HOST`는 워크스페이스 `.env`에서 설정할 수 없습니다. [워크스페이스 `.env` 파일](/ko/gateway/security#workspace-env-files)을 참조하세요.
 
-## DM 정책 및 액세스 제어
+## DM 정책 및 접근 제어
 
-- 지원되는 `dmPolicy` 값은 `allowlist`(기본값), `open`, `disabled`입니다. Synology Chat에는 페어링 흐름이 없습니다. 발신자를 승인하려면 숫자로 된 Synology 사용자 ID를 `allowedUserIds`에 추가하십시오.
-- `allowedUserIds`에는 Synology 사용자 ID 목록(또는 쉼표로 구분된 문자열)을 지정할 수 있습니다.
+- 지원되는 `dmPolicy` 값은 `allowlist`(기본값), `open`, `disabled`입니다. Synology Chat에는 페어링 흐름이 없으므로, 발신자의 숫자형 Synology 사용자 ID를 `allowedUserIds`에 추가하여 승인합니다.
+- `allowedUserIds`에는 Synology 사용자 ID 목록 또는 쉼표로 구분된 문자열을 지정할 수 있습니다.
 - `allowlist` 모드에서 `allowedUserIds` 목록이 비어 있으면 잘못된 구성으로 처리되며 Webhook 경로가 시작되지 않습니다.
-- `dmPolicy: "open"`은 `allowedUserIds`에 `"*"`가 포함된 경우에만 공개 DM을 허용합니다. 제한적인 항목이 있으면 일치하는 사용자만 채팅할 수 있습니다. `allowedUserIds` 목록이 비어 있는 `open` 설정도 경로 시작을 거부합니다.
+- `dmPolicy: "open"`은 `allowedUserIds`에 `"*"`가 포함된 경우에만 공개 DM을 허용합니다. 제한적인 항목이 있으면 일치하는 사용자만 채팅할 수 있습니다. `allowedUserIds` 목록이 비어 있는 상태에서 `open`을 사용해도 경로 시작이 거부됩니다.
 - `dmPolicy: "disabled"`는 DM을 차단합니다.
-- 응답 수신자 바인딩은 기본적으로 안정적인 숫자 `user_id`를 계속 사용합니다. `channels.synology-chat.dangerouslyAllowNameMatching: true`는 응답 전달을 위해 변경 가능한 사용자 이름/닉네임 조회를 다시 활성화하는 비상 호환성 모드입니다.
+- 응답 수신자 바인딩은 기본적으로 변경되지 않는 숫자형 `user_id`를 사용합니다. `channels.synology-chat.dangerouslyAllowNameMatching: true`는 응답 전달을 위해 변경 가능한 사용자 이름/별명 조회를 다시 활성화하는 비상 호환 모드입니다.
 
 ## 발신 전달
 
-숫자로 된 Synology Chat 사용자 ID를 대상으로 사용하십시오. `synology-chat:`, `synology_chat:`, `synology:` 접두사를 사용할 수 있습니다.
+대상에는 숫자형 Synology Chat 사용자 ID를 사용합니다. `synology-chat:`, `synology_chat:`, `synology:` 접두사를 사용할 수 있습니다.
 
 예:
 
 ```bash
-openclaw message send --channel synology-chat --target 123456 --message "OpenClaw에서 보낸 인사"
-openclaw message send --channel synology-chat --target synology-chat:123456 --message "다시 안녕하세요"
-openclaw message send --channel synology-chat --target synology:123456 --message "짧은 접두사"
+openclaw message send --channel synology-chat --target 123456 --message "Hello from OpenClaw"
+openclaw message send --channel synology-chat --target synology-chat:123456 --message "Hello again"
+openclaw message send --channel synology-chat --target synology:123456 --message "Short prefix"
 ```
 
-발신 텍스트는 2000자 단위로 분할됩니다. URL 기반 파일 전달을 통한 미디어 전송을 지원합니다. NAS가 파일을 다운로드하여 첨부합니다(최대 32 MB). 발신 파일 URL은 `http` 또는 `https`를 사용해야 하며, 비공개 또는 그 밖의 차단된 네트워크 대상은 OpenClaw가 URL을 NAS Webhook으로 전달하기 전에 거부됩니다.
+발신 텍스트는 2,000자 단위로 분할됩니다. URL 기반 파일 전달을 통한 미디어 전송을 지원합니다. NAS가 파일을 다운로드하여 첨부하며 최대 크기는 32MB입니다. 발신 파일 URL은 `http` 또는 `https`를 사용해야 하며, OpenClaw이 URL을 NAS Webhook으로 전달하기 전에 사설 네트워크 대상이나 그 밖의 차단된 네트워크 대상은 거부됩니다.
 
 ## 다중 계정
 
 `channels.synology-chat.accounts`에서 여러 Synology Chat 계정을 지원합니다.
-각 계정은 토큰, 수신 URL, Webhook 경로, DM 정책 및 제한을 재정의할 수 있습니다.
-다이렉트 메시지 세션은 계정과 사용자별로 격리되므로, 서로 다른 두 Synology 계정의 동일한 숫자 `user_id`는
-대화 기록 상태를 공유하지 않습니다.
-활성화된 각 계정에 고유한 `webhookPath`를 지정하십시오. OpenClaw는 완전히 동일한 중복 경로를 거부하며,
-다중 계정 설정에서 공유 Webhook 경로만 상속하는 명명된 계정의 시작을 거부합니다.
-명명된 계정에 레거시 상속이 의도적으로 필요한 경우 해당 계정 또는 `channels.synology-chat`에
-`dangerouslyAllowInheritedWebhookPath: true`를 설정할 수 있지만,
-완전히 동일한 중복 경로는 여전히 안전하게 거부됩니다. 계정별 경로를 명시적으로 지정하는 것이 좋습니다.
+각 계정은 토큰, 수신 URL, Webhook 경로, DM 정책, 제한을 재정의할 수 있습니다.
+다이렉트 메시지 세션은 계정 및 사용자별로 격리되므로 서로 다른 두 Synology 계정의 동일한 숫자형 `user_id`가 대화 기록 상태를 공유하지 않습니다.
+활성화된 각 계정에 서로 다른 `webhookPath`를 지정하세요. OpenClaw은 정확히 중복되는 경로를 거부하며, 다중 계정 설정에서 공유 Webhook 경로만 상속하는 명명된 계정의 시작을 거부합니다.
+명명된 계정에 레거시 상속이 의도적으로 필요한 경우 해당 계정 또는 `channels.synology-chat`에서 `dangerouslyAllowInheritedWebhookPath: true`를 설정하세요. 단, 정확히 중복되는 경로는 여전히 안전하게 거부됩니다. 계정별 경로를 명시적으로 지정하는 것이 좋습니다.
 
 ```json5
 {
@@ -153,35 +147,35 @@ openclaw message send --channel synology-chat --target synology:123456 --message
 
 ## 보안 참고 사항
 
-- `token`을 비밀로 유지하고 유출되면 교체하십시오.
-- 자체 서명된 로컬 NAS 인증서를 명시적으로 신뢰하지 않는 한 `allowInsecureSsl: false`를 유지하십시오.
+- `token`을 비밀로 유지하고 유출된 경우 교체하세요.
+- 자체 서명된 로컬 NAS 인증서를 명시적으로 신뢰하는 경우가 아니면 `allowInsecureSsl: false`를 유지하세요.
 - 수신 Webhook 요청은 토큰을 검증하며 발신자별로 속도가 제한됩니다(`rateLimitPerMinute`, 기본값 30).
-- 잘못된 토큰 검사는 상수 시간 비밀 값 비교를 사용하고 안전하게 거부합니다. 잘못된 토큰 시도가 반복되면 원본 IP가 일시적으로 차단됩니다.
-- 수신 메시지 텍스트는 알려진 프롬프트 인젝션 패턴을 제거하도록 정리되고 4000자로 잘립니다.
-- 프로덕션에서는 `dmPolicy: "allowlist"`를 사용하는 것이 좋습니다.
-- 레거시 사용자 이름 기반 응답 전달이 명시적으로 필요하지 않은 한 `dangerouslyAllowNameMatching`을 끈 상태로 유지하십시오.
-- 다중 계정 설정에서 공유 경로 라우팅 위험을 명시적으로 감수하지 않는 한 `dangerouslyAllowInheritedWebhookPath`를 끈 상태로 유지하십시오.
+- 유효하지 않은 토큰 검사는 일정 시간 비밀 비교를 사용하고 안전하게 거부합니다. 유효하지 않은 토큰 시도가 반복되면 원본 IP가 일시적으로 차단됩니다.
+- 수신 메시지 텍스트는 알려진 프롬프트 인젝션 패턴을 방지하도록 정제되며 4,000자로 잘립니다.
+- 프로덕션 환경에서는 `dmPolicy: "allowlist"`를 사용하는 것이 좋습니다.
+- 레거시 사용자 이름 기반 응답 전달이 명시적으로 필요하지 않으면 `dangerouslyAllowNameMatching`을 끄세요.
+- 다중 계정 설정에서 공유 경로 라우팅 위험을 명시적으로 허용하지 않으면 `dangerouslyAllowInheritedWebhookPath`를 끄세요.
 
 ## 문제 해결
 
 - `Missing required fields (token, user_id, text)`:
   - 발신 Webhook 페이로드에 필수 필드 중 하나가 없습니다.
-  - Synology가 헤더로 토큰을 보내는 경우 Gateway/프록시가 해당 헤더를 보존하는지 확인하십시오.
+  - Synology가 헤더로 토큰을 보내는 경우 Gateway/프록시가 해당 헤더를 보존하는지 확인하세요.
 - `Invalid token`:
-  - 발신 Webhook 비밀 값이 `channels.synology-chat.token`과 일치하지 않습니다.
+  - 발신 Webhook 비밀이 `channels.synology-chat.token`과 일치하지 않습니다.
   - 요청이 잘못된 계정/Webhook 경로에 도달하고 있습니다.
   - 요청이 OpenClaw에 도달하기 전에 리버스 프록시가 토큰 헤더를 제거했습니다.
 - `Rate limit exceeded`:
-  - 동일한 원본에서 잘못된 토큰을 너무 많이 시도하면 해당 원본이 일시적으로 차단될 수 있습니다.
+  - 동일한 원본에서 유효하지 않은 토큰 시도가 너무 많으면 해당 원본이 일시적으로 차단될 수 있습니다.
   - 인증된 발신자에게도 별도의 사용자별 메시지 속도 제한이 적용됩니다.
 - `Allowlist is empty. Configure allowedUserIds or use dmPolicy=open with allowedUserIds=["*"].`:
   - `dmPolicy="allowlist"`가 활성화되어 있지만 구성된 사용자가 없습니다.
 - `User not authorized`:
-  - 발신자의 숫자 `user_id`가 `allowedUserIds`에 없습니다.
+  - 발신자의 숫자형 `user_id`가 `allowedUserIds`에 없습니다.
 
 ## 관련 항목
 
 - [채널 개요](/ko/channels) — 지원되는 모든 채널
-- [그룹](/ko/channels/groups) — 그룹 채팅 동작 및 멘션 게이팅
+- [그룹](/ko/channels/groups) — 그룹 채팅 동작 및 멘션 제한
 - [채널 라우팅](/ko/channels/channel-routing) — 메시지의 세션 라우팅
-- [보안](/ko/gateway/security) — 액세스 모델 및 보안 강화
+- [보안](/ko/gateway/security) — 접근 모델 및 보안 강화

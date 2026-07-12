@@ -4,8 +4,8 @@ read_when:
 summary: Plugin saluran Nextcloud Talk OpenClaw untuk percakapan.
 title: Plugin Nextcloud Talk
 x-i18n:
-    generated_at: "2026-06-27T17:55:25Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:29:29Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: ce8dd648fcc2226e6b365f092eb3dc54062d2c9d8d5c613cb0c2d5e9f237c720
@@ -15,16 +15,16 @@ x-i18n:
 
 # Plugin Nextcloud Talk
 
-Plugin kanal Nextcloud Talk OpenClaw untuk percakapan.
+Plugin saluran Nextcloud Talk OpenClaw untuk percakapan.
 
 ## Distribusi
 
 - Paket: `@openclaw/nextcloud-talk`
-- Rute instalasi: npm; ClawHub
+- Jalur instalasi: npm; ClawHub
 
 ## Permukaan
 
-kanal: nextcloud-talk
+saluran: nextcloud-talk
 
 ## Dokumentasi terkait
 

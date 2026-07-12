@@ -1,11 +1,11 @@
 ---
 read_when:
-    - slack pluginをインストール、設定、または監査している
-summary: チャンネル、DM、コマンド、アプリイベントに対応する OpenClaw Slack チャンネルPlugin。
+    - slack Plugin のインストール、設定、または監査を行う場合
+summary: チャンネル、DM、コマンド、アプリイベントに対応する OpenClaw Slack チャンネル Plugin。
 title: Slack Plugin
 x-i18n:
-    generated_at: "2026-06-27T12:28:39Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:32:03Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 602ccb21ce084219d922860d186664bbb098fd034117893dc7359d79495bedd6
@@ -15,17 +15,17 @@ x-i18n:
 
 # Slack Plugin
 
-チャネル、DM、コマンド、アプリイベント向けの OpenClaw Slack チャネル Plugin。
+チャンネル、DM、コマンド、アプリイベントに対応する OpenClaw Slack チャンネル Plugin。
 
 ## 配布
 
 - パッケージ: `@openclaw/slack`
-- インストール経路: npm; ClawHub
+- インストール経路: npm、ClawHub
 
-## サーフェス
+## 対応領域
 
-チャネル: slack; skills
+チャンネル: Slack、Skills
 
 ## 関連ドキュメント
 
-- [slack](/ja-JP/channels/slack)
+- [Slack](/ja-JP/channels/slack)

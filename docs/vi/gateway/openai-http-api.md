@@ -1,123 +1,33 @@
 ---
 read_when:
     - Tích hợp các công cụ yêu cầu OpenAI Chat Completions
-summary: Cung cấp điểm cuối HTTP /v1/chat/completions tương thích với OpenAI từ Gateway
+summary: Cung cấp điểm cuối HTTP `/v1/chat/completions` tương thích với OpenAI từ Gateway
 title: Hoàn tất trò chuyện OpenAI
 x-i18n:
-    generated_at: "2026-06-27T17:30:50Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:56:28Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e8746f4f5964a5d0b948877b64b5d20440dea3aa45b36813c404cd06660792cf
+    source_hash: 9b1fffd2ce3da881ecd91adbb7c5d10b1d7adbd99af9b2ea4544b62ecbaf1f32
     source_path: gateway/openai-http-api.md
     workflow: 16
 ---
 
-Gateway của OpenClaw có thể phục vụ một điểm cuối Chat Completions nhỏ tương thích với OpenAI.
+Gateway có thể cung cấp một bề mặt Chat Completions nhỏ tương thích với OpenAI. Tính năng này **bị tắt theo mặc định**.
 
-Điểm cuối này **bị tắt theo mặc định**. Trước tiên hãy bật nó trong cấu hình.
+Sau khi được bật, Gateway cung cấp tất cả các endpoint sau trên cùng cổng với Gateway (ghép kênh WS + HTTP):
 
-- `POST /v1/chat/completions`
-- Cùng cổng với Gateway (ghép kênh WS + HTTP): `http://<gateway-host>:<port>/v1/chat/completions`
+| Phương thức | Đường dẫn              |
+| ----------- | ---------------------- |
+| POST        | `/v1/chat/completions` |
+| GET         | `/v1/models`           |
+| GET         | `/v1/models/{id}`      |
+| POST        | `/v1/embeddings`       |
+| POST        | `/v1/responses`        |
 
-Khi bề mặt HTTP tương thích OpenAI của Gateway được bật, nó cũng phục vụ:
+Các yêu cầu chạy như một lượt chạy agent Gateway thông thường (cùng đường dẫn mã với `openclaw agent`), vì vậy cơ chế định tuyến, quyền và cấu hình khớp với Gateway của bạn.
 
-- `GET /v1/models`
-- `GET /v1/models/{id}`
-- `POST /v1/embeddings`
-- `POST /v1/responses`
-
-Bên dưới, các yêu cầu được thực thi như một lần chạy tác nhân Gateway bình thường (cùng đường mã với `openclaw agent`), nên định tuyến/quyền/cấu hình khớp với Gateway của bạn.
-
-## Xác thực
-
-Sử dụng cấu hình xác thực của Gateway.
-
-Các đường dẫn xác thực HTTP phổ biến:
-
-- xác thực bằng bí mật dùng chung (`gateway.auth.mode="token"` hoặc `"password"`):
-  `Authorization: Bearer <token-or-password>`
-- xác thực HTTP mang danh tính đáng tin cậy (`gateway.auth.mode="trusted-proxy"`):
-  định tuyến qua proxy nhận biết danh tính đã cấu hình và để nó chèn các
-  header danh tính bắt buộc
-- xác thực mở qua ingress riêng tư (`gateway.auth.mode="none"`):
-  không cần header xác thực
-
-Ghi chú:
-
-- Khi `gateway.auth.mode="token"`, dùng `gateway.auth.token` (hoặc `OPENCLAW_GATEWAY_TOKEN`).
-- Khi `gateway.auth.mode="password"`, dùng `gateway.auth.password` (hoặc `OPENCLAW_GATEWAY_PASSWORD`).
-- Khi `gateway.auth.mode="trusted-proxy"`, yêu cầu HTTP phải đến từ một
-  nguồn proxy đáng tin cậy đã cấu hình; proxy loopback cùng máy chủ yêu cầu bật rõ ràng
-  `gateway.auth.trustedProxy.allowLoopback = true`.
-- Các caller nội bộ cùng máy chủ bỏ qua proxy có thể dùng
-  `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD` làm phương án dự phòng
-  trực tiếp cục bộ. Bất kỳ bằng chứng header `Forwarded`, `X-Forwarded-*`, hoặc `X-Real-IP` nào
-  sẽ giữ yêu cầu trên đường dẫn trusted-proxy thay thế.
-- Nếu `gateway.auth.rateLimit` được cấu hình và xảy ra quá nhiều lỗi xác thực, điểm cuối trả về `429` kèm `Retry-After`.
-
-## Ranh giới bảo mật (quan trọng)
-
-Hãy xem điểm cuối này là một bề mặt **truy cập đầy đủ của operator** cho phiên bản gateway.
-
-- Xác thực bearer HTTP ở đây không phải là mô hình phạm vi hẹp theo từng người dùng.
-- Token/mật khẩu Gateway hợp lệ cho điểm cuối này nên được xem như thông tin xác thực của chủ sở hữu/operator.
-- Các yêu cầu chạy qua cùng đường dẫn tác nhân control-plane như các hành động operator đáng tin cậy.
-- Không có ranh giới công cụ riêng cho non-owner/theo từng người dùng trên điểm cuối này; một khi caller vượt qua xác thực Gateway ở đây, OpenClaw xem caller đó là operator đáng tin cậy cho gateway này.
-- Với các chế độ xác thực bằng bí mật dùng chung (`token` và `password`), điểm cuối khôi phục các mặc định operator đầy đủ bình thường ngay cả khi caller gửi header `x-openclaw-scopes` hẹp hơn.
-- Các chế độ HTTP mang danh tính đáng tin cậy (ví dụ xác thực proxy đáng tin cậy hoặc `gateway.auth.mode="none"`) tôn trọng `x-openclaw-scopes` khi có mặt và nếu không thì quay về tập phạm vi operator mặc định bình thường.
-- Nếu chính sách tác nhân đích cho phép các công cụ nhạy cảm, điểm cuối này có thể dùng chúng.
-- Chỉ giữ điểm cuối này trên loopback/tailnet/ingress riêng tư; không phơi bày trực tiếp ra internet công cộng.
-
-Ma trận xác thực:
-
-- `gateway.auth.mode="token"` hoặc `"password"` + `Authorization: Bearer ...`
-  - chứng minh đang sở hữu bí mật operator gateway dùng chung
-  - bỏ qua `x-openclaw-scopes` hẹp hơn
-  - khôi phục tập phạm vi operator mặc định đầy đủ:
-    `operator.admin`, `operator.approvals`, `operator.pairing`,
-    `operator.read`, `operator.talk.secrets`, `operator.write`
-  - xem các lượt chat trên điểm cuối này là lượt do chủ sở hữu gửi
-- các chế độ HTTP mang danh tính đáng tin cậy (ví dụ xác thực proxy đáng tin cậy, hoặc `gateway.auth.mode="none"` trên ingress riêng tư)
-  - xác thực một danh tính đáng tin cậy bên ngoài hoặc ranh giới triển khai
-  - tôn trọng `x-openclaw-scopes` khi header có mặt
-  - quay về tập phạm vi operator mặc định bình thường khi header vắng mặt
-  - chỉ mất ngữ nghĩa chủ sở hữu khi caller thu hẹp phạm vi một cách rõ ràng và bỏ qua `operator.admin`
-  - yêu cầu `operator.admin` cho các điều khiển yêu cầu cấp chủ sở hữu như `x-openclaw-model`
-
-Xem [Bảo mật](/vi/gateway/security) và [Truy cập từ xa](/vi/gateway/remote).
-
-## Khi nào dùng điểm cuối này
-
-Dùng `/v1/chat/completions` khi bạn đang tích hợp công cụ hoặc backend phía ứng dụng đáng tin cậy với một gateway hiện có và có thể giữ an toàn thông tin xác thực operator của gateway.
-
-- Ưu tiên cách này thay vì thêm một kênh tích hợp sẵn mới khi tích hợp của bạn chỉ là một bề mặt operator/client khác cho cùng gateway.
-- Với client di động native kết nối trực tiếp tới gateway từ xa, hãy ưu tiên [WebChat](/vi/web/webchat) hoặc [Giao thức Gateway](/vi/gateway/protocol) và triển khai luồng bootstrap thiết bị ghép cặp/device-token để thiết bị không cần token/mật khẩu HTTP dùng chung.
-- Thay vào đó hãy xây dựng một Plugin kênh khi bạn đang tích hợp một mạng nhắn tin bên ngoài có người dùng, phòng, phân phối Webhook hoặc transport gửi đi riêng. Xem [Xây dựng plugin](/vi/plugins/building-plugins).
-
-## Hợp đồng mô hình ưu tiên tác nhân
-
-OpenClaw xem trường OpenAI `model` là **đích tác nhân**, không phải id mô hình provider thô.
-
-- `model: "openclaw"` định tuyến tới tác nhân mặc định đã cấu hình.
-- `model: "openclaw/default"` cũng định tuyến tới tác nhân mặc định đã cấu hình.
-- `model: "openclaw/<agentId>"` định tuyến tới một tác nhân cụ thể.
-
-Các header yêu cầu tùy chọn:
-
-- `x-openclaw-model: <provider/model-or-bare-id>` ghi đè mô hình backend cho tác nhân đã chọn. Caller bearer dùng bí mật dùng chung có thể dùng header này. Caller mang danh tính, chẳng hạn yêu cầu trusted-proxy hoặc ingress riêng tư không xác thực có `x-openclaw-scopes`, cần `operator.admin`; caller chỉ có quyền ghi nhận `403 missing scope: operator.admin`.
-- `x-openclaw-agent-id: <agentId>` vẫn được hỗ trợ như một ghi đè tương thích.
-- `x-openclaw-session-key: <sessionKey>` điều khiển định tuyến phiên một cách rõ ràng. Giá trị không được dùng các namespace phiên nội bộ dành riêng như `subagent:`, `cron:`, hoặc `acp:`; các yêu cầu đó bị từ chối với `400 invalid_request_error`.
-- `x-openclaw-message-channel: <channel>` đặt ngữ cảnh kênh ingress tổng hợp cho các prompt và chính sách nhận biết kênh.
-
-Các bí danh tương thích vẫn được chấp nhận:
-
-- `model: "openclaw:<agentId>"`
-- `model: "agent:<agentId>"`
-
-## Bật điểm cuối
-
-Đặt `gateway.http.endpoints.chatCompletions.enabled` thành `true`:
+## Bật endpoint
 
 ```json5
 {
@@ -131,183 +41,213 @@ Các bí danh tương thích vẫn được chấp nhận:
 }
 ```
 
-## Tắt điểm cuối
+Đặt `enabled: false` (hoặc bỏ qua thuộc tính này) để tắt.
 
-Đặt `gateway.http.endpoints.chatCompletions.enabled` thành `false`:
+## Ranh giới bảo mật (quan trọng)
+
+Hãy coi endpoint này là quyền **truy cập đầy đủ của người vận hành** đối với phiên bản Gateway:
+
+- Token/mật khẩu Gateway hợp lệ cho endpoint này tương đương với thông tin xác thực của chủ sở hữu/người vận hành, không phải phạm vi hẹp dành riêng cho từng người dùng.
+- Các yêu cầu chạy qua cùng đường dẫn agent của mặt phẳng điều khiển như các thao tác của người vận hành đáng tin cậy, vì vậy nếu chính sách của agent đích cho phép các công cụ nhạy cảm, endpoint này có thể sử dụng chúng.
+- Chỉ duy trì endpoint này trên local loopback/tailnet/điểm vào riêng tư. Không để endpoint tiếp xúc với Internet công cộng.
+
+Ma trận xác thực:
+
+| Đường dẫn xác thực                                                                                   | Hành vi                                                                                                                                                                                                                                                                                                                                                            |
+| ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `gateway.auth.mode="token"` hoặc `"password"` + `Authorization: Bearer ...`                          | Chứng minh quyền sở hữu bí mật dùng chung của Gateway. Bỏ qua mọi header `x-openclaw-scopes` và khôi phục tập phạm vi mặc định đầy đủ của người vận hành: `operator.admin`, `operator.approvals`, `operator.pairing`, `operator.read`, `operator.talk.secrets`, `operator.write`. Xử lý các lượt trò chuyện như lượt của người gửi là chủ sở hữu. |
+| HTTP đáng tin cậy có mang danh tính (xác thực trusted-proxy hoặc `gateway.auth.mode="none"` trên điểm vào riêng tư) | Tuân theo `x-openclaw-scopes` khi có; nếu không có, dùng tập phạm vi mặc định của người vận hành. Chỉ mất ngữ nghĩa chủ sở hữu khi bên gọi chủ động thu hẹp phạm vi và bỏ qua `operator.admin`. Yêu cầu `operator.admin` cho các quyền điều khiển cấp chủ sở hữu như `x-openclaw-model`.                                                      |
+
+Xem [Phạm vi của người vận hành](/vi/gateway/operator-scopes), [Bảo mật](/vi/gateway/security) và [Truy cập từ xa](/vi/gateway/remote).
+
+## Xác thực
+
+Sử dụng cấu hình xác thực của Gateway (xem [Xác thực proxy đáng tin cậy](/vi/gateway/trusted-proxy-auth) để biết chi tiết về chế độ đó):
+
+| Chế độ                              | Cách xác thực                                                                                                                                                                                            |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `gateway.auth.mode="token"`         | `Authorization: Bearer <token>`. Thiết lập qua `gateway.auth.token` hoặc `OPENCLAW_GATEWAY_TOKEN`.                                                                                                        |
+| `gateway.auth.mode="password"`      | `Authorization: Bearer <password>`. Thiết lập qua `gateway.auth.password` hoặc `OPENCLAW_GATEWAY_PASSWORD`.                                                                                               |
+| `gateway.auth.mode="trusted-proxy"` | Định tuyến qua proxy nhận biết danh tính đã cấu hình; proxy này chèn các header danh tính bắt buộc. Proxy local loopback trên cùng máy chủ cần đặt rõ `gateway.auth.trustedProxy.allowLoopback = true`. |
+| `gateway.auth.mode="none"`          | Không yêu cầu header xác thực (chỉ dành cho điểm vào riêng tư).                                                                                                                                           |
+
+Lưu ý:
+
+- Bên gọi trên cùng máy chủ bỏ qua proxy của Gateway `trusted-proxy` có thể trực tiếp dùng `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD` làm phương án dự phòng. Mọi bằng chứng từ header `Forwarded`, `X-Forwarded-*` hoặc `X-Real-IP` sẽ khiến yêu cầu tiếp tục đi theo đường dẫn trusted-proxy.
+- Nếu `gateway.auth.rateLimit` được cấu hình và có quá nhiều lần xác thực thất bại, endpoint trả về `429` cùng header `Retry-After`.
+
+## Khi nào nên sử dụng endpoint này
+
+- Ưu tiên endpoint này thay vì thêm một kênh tích hợp mới khi phần tích hợp của bạn chỉ là một bề mặt người vận hành/máy khách khác cho cùng Gateway.
+- Với máy khách di động gốc kết nối trực tiếp đến Gateway từ xa, hãy ưu tiên [WebChat](/vi/web/webchat) hoặc [Giao thức Gateway](/vi/gateway/protocol) với quy trình khởi tạo thiết bị đã ghép nối/token thiết bị, để thiết bị không cần token/mật khẩu HTTP dùng chung.
+- Thay vào đó, hãy xây dựng Plugin kênh khi tích hợp một mạng nhắn tin bên ngoài có người dùng, phòng, cơ chế phân phối Webhook hoặc phương thức truyền gửi đi riêng. Xem [Xây dựng Plugin](/vi/plugins/building-plugins).
+
+## Hợp đồng mô hình ưu tiên agent
+
+OpenClaw coi trường `model` của OpenAI là một **đích agent**, không phải mã định danh mô hình thô của nhà cung cấp.
+
+| Giá trị `model`                              | Định tuyến đến                                                                                                                              |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `openclaw`                                   | Agent mặc định đã cấu hình                                                                                                                   |
+| `openclaw/default`                           | Agent mặc định đã cấu hình (bí danh ổn định; có thể mã hóa cứng an toàn ngay cả khi mã định danh agent mặc định thực tế thay đổi giữa các môi trường) |
+| `openclaw/<agentId>` hoặc `openclaw:<agentId>` | Agent cụ thể                                                                                                                               |
+| `agent:<agentId>`                            | Agent cụ thể (bí danh tương thích)                                                                                                           |
+
+Các header yêu cầu tùy chọn:
+
+| Header                                          | Tác dụng                                                                                                                                                                                                                                                                                                                    |
+| ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `x-openclaw-model: <provider/model-or-bare-id>` | Ghi đè mô hình backend cho agent đã chọn. Bên gọi sử dụng bearer bí mật dùng chung có thể dùng trực tiếp header này; bên gọi có mang danh tính (trusted-proxy hoặc điểm vào riêng tư không xác thực có `x-openclaw-scopes`) cần `operator.admin`, nếu không sẽ nhận `403 missing scope: operator.admin`. |
+| `x-openclaw-agent-id: <agentId>`                | Ghi đè tương thích cho việc chọn agent.                                                                                                                                                                                                                                                                                      |
+| `x-openclaw-session-key: <sessionKey>`          | Định tuyến phiên rõ ràng. Bị từ chối với `400 invalid_request_error` nếu sử dụng không gian tên nội bộ dành riêng (`subagent:`, `cron:`, `acp:`).                                                                                                              |
+| `x-openclaw-message-channel: <channel>`         | Thiết lập ngữ cảnh kênh điểm vào tổng hợp cho các prompt/chính sách nhận biết kênh.                                                                                                                                                                                                                                         |
+
+`/v1/models` liệt kê các đích agent cấp cao nhất (`openclaw`, `openclaw/default`, `openclaw/<agentId>`), không phải các mô hình backend của nhà cung cấp hay agent con; agent con vẫn là cấu trúc liên kết thực thi nội bộ. Nếu bạn bỏ qua `x-openclaw-model`, agent đã chọn sẽ chạy với mô hình được cấu hình thông thường của nó.
+
+`/v1/embeddings` sử dụng cùng các mã định danh `model` của đích agent. Gửi `x-openclaw-model` (từ bên gọi sử dụng bí mật dùng chung hoặc bên gọi có mang danh tính với `operator.admin`) để chọn một mô hình nhúng cụ thể; nếu không, yêu cầu sẽ sử dụng thiết lập nhúng thông thường của agent đã chọn.
+
+## Hành vi phiên
+
+Theo mặc định, endpoint **không lưu trạng thái cho từng yêu cầu** (mỗi lần gọi sẽ tạo một khóa phiên mới).
+
+Nếu yêu cầu chứa chuỗi `user` của OpenAI, Gateway sẽ suy ra một khóa phiên ổn định từ chuỗi đó để các lần gọi lặp lại có thể dùng chung một phiên agent. Đối với ứng dụng tùy chỉnh, hãy tái sử dụng cùng một giá trị `user` cho mỗi luồng hội thoại; tránh các mã định danh cấp tài khoản trừ khi bạn muốn nhiều cuộc hội thoại/thiết bị dùng chung một phiên OpenClaw. Chỉ sử dụng `x-openclaw-session-key` khi cần kiểm soát định tuyến rõ ràng trên nhiều máy khách/luồng, với các khóa do ứng dụng sở hữu và không sử dụng các không gian tên dành riêng nêu trên.
+
+## Giới hạn yêu cầu (cấu hình)
+
+Có thể tinh chỉnh các giá trị mặc định trong `gateway.http.endpoints.chatCompletions`:
 
 ```json5
 {
   gateway: {
     http: {
       endpoints: {
-        chatCompletions: { enabled: false },
+        chatCompletions: {
+          enabled: true,
+          maxBodyBytes: 20000000,
+          maxImageParts: 8,
+          maxTotalImageBytes: 20000000,
+          images: {
+            allowUrl: false,
+            urlAllowlist: ["cdn.example.com", "*.assets.example.com"],
+            allowedMimes: [
+              "image/jpeg",
+              "image/png",
+              "image/gif",
+              "image/webp",
+              "image/heic",
+              "image/heif",
+            ],
+            maxBytes: 10485760,
+            maxRedirects: 3,
+            timeoutMs: 10000,
+          },
+        },
       },
     },
   },
 }
 ```
 
-## Hành vi phiên
+Giá trị mặc định khi bỏ qua:
 
-Theo mặc định, điểm cuối là **không trạng thái theo từng yêu cầu** (một khóa phiên mới được tạo cho mỗi lệnh gọi).
+| Khóa                  | Mặc định                                                                                      |
+| --------------------- | --------------------------------------------------------------------------------------------- |
+| `maxBodyBytes`        | 20MB                                                                                          |
+| `maxImageParts`       | 8 (số phần `image_url` tối đa được đọc từ tin nhắn mới nhất của người dùng)                    |
+| `maxTotalImageBytes`  | 20MB (tổng số byte đã giải mã cộng dồn trên tất cả các phần `image_url` trong một yêu cầu)     |
+| `images.allowUrl`     | `false` (các phần `image_url` lấy từ URL sẽ bị từ chối trừ khi được bật)                       |
+| `images.maxBytes`     | 10MB cho mỗi ảnh                                                                              |
+| `images.maxRedirects` | 3                                                                                             |
+| `images.timeoutMs`    | 10 giây                                                                                       |
 
-Nếu yêu cầu bao gồm chuỗi OpenAI `user`, Gateway dẫn xuất một khóa phiên ổn định từ chuỗi đó, để các lệnh gọi lặp lại có thể dùng chung một phiên tác nhân.
+Các nguồn `image_url` HEIC/HEIF được chấp nhận và chuẩn hóa thành JPEG trước khi chuyển đến nhà cung cấp thông qua bộ xử lý ảnh dùng chung của OpenClaw (Rastermill); bộ xử lý này dùng trình chuyển đổi hệ thống (`sips`, ImageMagick, GraphicsMagick hoặc ffmpeg) làm phương án dự phòng cho các định dạng cần hỗ trợ codec bên ngoài.
 
-Với ứng dụng tùy chỉnh, mặc định an toàn nhất là dùng lại cùng giá trị `user` cho mỗi luồng hội thoại. Tránh định danh cấp tài khoản trừ khi bạn rõ ràng muốn nhiều cuộc hội thoại hoặc thiết bị dùng chung một phiên OpenClaw. Chỉ dùng `x-openclaw-session-key` khi bạn cần điều khiển định tuyến rõ ràng trên nhiều client hoặc luồng, và chọn các khóa do ứng dụng sở hữu không bắt đầu bằng namespace nội bộ dành riêng như `subagent:`, `cron:`, hoặc `acp:`.
+Lưu ý bảo mật: việc đưa một tên máy chủ vào danh sách cho phép không vô hiệu hóa cơ chế chặn địa chỉ IP riêng/nội bộ. Đối với các Gateway tiếp xúc với Internet, hãy áp dụng biện pháp kiểm soát lưu lượng mạng đi ra bên cạnh các cơ chế bảo vệ ở cấp ứng dụng. Xem [Bảo mật](/vi/gateway/security).
 
-## Vì sao bề mặt này quan trọng
+## Hợp đồng công cụ trò chuyện
 
-Đây là tập tương thích có đòn bẩy cao nhất cho frontend và công cụ tự lưu trữ:
-
-- Hầu hết thiết lập Open WebUI, LobeChat và LibreChat mong đợi `/v1/models`.
-- Nhiều hệ thống RAG mong đợi `/v1/embeddings`.
-- Các client chat OpenAI hiện có thường có thể bắt đầu với `/v1/chat/completions`.
-- Các client thiên về tác nhân hơn ngày càng ưu tiên `/v1/responses`.
-
-## Danh sách mô hình và định tuyến tác nhân
-
-<AccordionGroup>
-  <Accordion title="`/v1/models` trả về gì?">
-    Một danh sách đích tác nhân OpenClaw.
-
-    Các id được trả về là các mục `openclaw`, `openclaw/default`, và `openclaw/<agentId>`.
-    Dùng chúng trực tiếp làm giá trị OpenAI `model`.
-
-  </Accordion>
-  <Accordion title="`/v1/models` liệt kê tác nhân hay tác nhân con?">
-    Nó liệt kê các đích tác nhân cấp cao nhất, không phải mô hình provider backend và không phải tác nhân con.
-
-    Tác nhân con vẫn là topo thực thi nội bộ. Chúng không xuất hiện như các pseudo-model.
-
-  </Accordion>
-  <Accordion title="Vì sao có `openclaw/default`?">
-    `openclaw/default` là bí danh ổn định cho tác nhân mặc định đã cấu hình.
-
-    Điều đó có nghĩa là client có thể tiếp tục dùng một id dự đoán được ngay cả khi id tác nhân mặc định thực tế thay đổi giữa các môi trường.
-
-  </Accordion>
-  <Accordion title="Làm cách nào để ghi đè mô hình backend?">
-    Dùng `x-openclaw-model`. Đây là ghi đè cấp chủ sở hữu: nó hoạt động với đường dẫn token/mật khẩu bearer dùng bí mật dùng chung của Gateway, và yêu cầu `operator.admin` trên các đường dẫn HTTP mang danh tính như xác thực proxy đáng tin cậy.
-
-    Ví dụ:
-    `x-openclaw-model: openai/gpt-5.4`
-    `x-openclaw-model: gpt-5.5`
-
-    Nếu bạn bỏ qua nó, tác nhân được chọn chạy với lựa chọn mô hình đã cấu hình bình thường của nó.
-
-  </Accordion>
-  <Accordion title="Embeddings phù hợp với hợp đồng này như thế nào?">
-    `/v1/embeddings` dùng cùng các id `model` đích tác nhân.
-
-    Dùng `model: "openclaw/default"` hoặc `model: "openclaw/<agentId>"`.
-    Khi cần một mô hình embedding cụ thể, hãy gửi nó trong `x-openclaw-model` từ caller dùng bí mật dùng chung hoặc caller mang danh tính có `operator.admin`.
-    Không có header đó, yêu cầu được chuyển tiếp tới thiết lập embedding bình thường của tác nhân đã chọn.
-
-  </Accordion>
-</AccordionGroup>
-
-## Streaming (SSE)
-
-Đặt `stream: true` để nhận Server-Sent Events (SSE):
-
-- `Content-Type: text/event-stream`
-- Mỗi dòng sự kiện là `data: <json>`
-- Luồng kết thúc bằng `data: [DONE]`
-
-## Hợp đồng công cụ chat
-
-`/v1/chat/completions` hỗ trợ một tập con function-tool tương thích với các client OpenAI Chat phổ biến.
+`/v1/chat/completions` hỗ trợ một tập con công cụ hàm tương thích với các ứng dụng trò chuyện OpenAI phổ biến.
 
 ### Các trường yêu cầu được hỗ trợ
 
-- `tools`: mảng `{ "type": "function", "function": { ... } }`
-- `tool_choice`: `"auto"`, `"none"`, `"required"`, hoặc `{ "type": "function", "function": { "name": "..." } }`
-- các lượt theo sau `messages[*].role: "tool"`
-- `messages[*].tool_call_id` để liên kết kết quả công cụ trở lại một lệnh gọi công cụ trước đó
-- `max_completion_tokens`: số; giới hạn theo mỗi lệnh gọi cho tổng token hoàn tất (bao gồm token suy luận). Tên trường OpenAI Chat Completions hiện tại; được ưu tiên khi cả `max_completion_tokens` và `max_tokens` được gửi.
-- `max_tokens`: số; bí danh cũ được chấp nhận để tương thích ngược. Bị bỏ qua khi `max_completion_tokens` cũng có mặt.
-- `temperature`: số; nhiệt độ lấy mẫu theo best-effort được chuyển tiếp tới provider upstream qua kênh stream-param của tác nhân.
-- `top_p`: số; lấy mẫu nucleus theo best-effort được chuyển tiếp tới provider upstream qua kênh stream-param của tác nhân.
-- `frequency_penalty`: số; penalty tần suất theo best-effort được chuyển tiếp tới provider upstream qua kênh stream-param của tác nhân. Khoảng hợp lệ: -2.0 đến 2.0. Trả về `400 invalid_request_error` cho giá trị ngoài khoảng.
-- `presence_penalty`: số; penalty hiện diện theo best-effort được chuyển tiếp tới provider upstream qua kênh stream-param của tác nhân. Khoảng hợp lệ: -2.0 đến 2.0. Trả về `400 invalid_request_error` cho giá trị ngoài khoảng.
-- `seed`: số (số nguyên); seed theo best-effort được chuyển tiếp tới provider upstream qua kênh stream-param của tác nhân. Trả về `400 invalid_request_error` cho giá trị không phải số nguyên.
-- `stop`: chuỗi hoặc mảng tối đa 4 chuỗi; chuỗi dừng theo best-effort được chuyển tiếp tới provider upstream qua kênh stream-param của tác nhân. Trả về `400 invalid_request_error` nếu có hơn 4 chuỗi hoặc mục không phải chuỗi/rỗng.
+| Trường                     | Ghi chú                                                                                                                                                                  |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `tools`                    | Mảng gồm các phần tử `{ "type": "function", "function": { ... } }`                                                                                                       |
+| `tool_choice`              | `"auto"`, `"none"`, `"required"`, hoặc `{ "type": "function", "function": { "name": "..." } }`                                                                            |
+| `messages[*].role: "tool"` | Các lượt tiếp theo                                                                                                                                                       |
+| `messages[*].tool_call_id` | Liên kết kết quả công cụ với một lệnh gọi công cụ trước đó                                                                                                               |
+| `max_completion_tokens`    | Số; giới hạn tổng số token hoàn thành cho mỗi lệnh gọi (bao gồm token suy luận). Tên trường hiện tại; được sử dụng khi gửi cả trường này và `max_tokens`.                  |
+| `max_tokens`               | Số; bí danh cũ, bị bỏ qua khi cũng có `max_completion_tokens`.                                                                                                           |
+| `temperature`              | Số từ 0 đến 2; áp dụng theo khả năng tốt nhất và chuyển tiếp đến nhà cung cấp thượng nguồn. Trả về `400 invalid_request_error` nếu nằm ngoài phạm vi.                     |
+| `top_p`                    | Số từ 0 đến 1; áp dụng theo khả năng tốt nhất. Trả về `400 invalid_request_error` nếu nằm ngoài phạm vi.                                                                  |
+| `frequency_penalty`        | Số từ -2.0 đến 2.0; áp dụng theo khả năng tốt nhất. Trả về `400 invalid_request_error` nếu nằm ngoài phạm vi.                                                             |
+| `presence_penalty`         | Số từ -2.0 đến 2.0; áp dụng theo khả năng tốt nhất. Trả về `400 invalid_request_error` nếu nằm ngoài phạm vi.                                                             |
+| `seed`                     | Số nguyên; áp dụng theo khả năng tốt nhất. Trả về `400 invalid_request_error` đối với giá trị không phải số nguyên.                                                       |
+| `stop`                     | Chuỗi hoặc mảng gồm tối đa 4 chuỗi; áp dụng theo khả năng tốt nhất. Trả về `400 invalid_request_error` nếu có hơn 4 chuỗi dừng hoặc phần tử không phải chuỗi/chuỗi rỗng. |
 
-Khi một trong hai trường giới hạn token được đặt, giá trị sẽ được chuyển tiếp tới nhà cung cấp upstream qua kênh stream-param của tác tử. Tên trường wire thực tế được gửi tới nhà cung cấp upstream do transport của nhà cung cấp chọn: `max_completion_tokens` cho các endpoint họ OpenAI, và `max_tokens` cho các nhà cung cấp chỉ chấp nhận tên kế thừa (chẳng hạn như Mistral và Chutes). Các trường sampling (`temperature`, `top_p`, `frequency_penalty`, `presence_penalty`, `seed`) đi theo cùng kênh stream-param; backend Codex Responses dựa trên ChatGPT sẽ loại bỏ chúng ở phía máy chủ vì backend này dùng sampling cố định. `stop` cũng đi qua kênh stream-param và ánh xạ tới trường stop của transport (`stop` cho các backend Chat Completions, `stop_sequences` cho Anthropic); API OpenAI Responses không có tham số stop, vì vậy `stop` không được áp dụng trên các model dùng backend Responses.
+Tất cả các trường lấy mẫu và giới hạn token đều đi qua cùng một kênh tham số luồng của tác nhân và được chuyển tiếp theo khả năng tốt nhất:
+
+- Giới hạn token: tên trường trên giao thức truyền được chọn theo cơ chế truyền tải của nhà cung cấp: `max_completion_tokens` cho các điểm cuối thuộc họ OpenAI, `max_tokens` cho các nhà cung cấp chỉ chấp nhận tên cũ (Mistral, Chutes).
+- `stop` ánh xạ tới trường dừng của cơ chế truyền tải: `stop` cho các phần phụ trợ Chat Completions, `stop_sequences` cho Anthropic. OpenAI Responses API không có tham số dừng, vì vậy `stop` không được áp dụng cho các mô hình dựa trên Responses.
+- Phần phụ trợ Codex Responses dựa trên ChatGPT sử dụng cấu hình lấy mẫu cố định ở phía máy chủ và loại bỏ `temperature`/`top_p` (cùng với `max_output_tokens`, `metadata`, `prompt_cache_retention`, `service_tier`) trước khi yêu cầu đến phần phụ trợ đó.
 
 ### Các biến thể không được hỗ trợ
 
-Endpoint trả về `400 invalid_request_error` cho các biến thể công cụ không được hỗ trợ, bao gồm:
+Trả về `400 invalid_request_error` đối với:
 
-- `tools` không phải mảng
-- các mục công cụ không phải function
-- thiếu `tool.function.name`
+- `tools` không phải mảng, phần tử công cụ không phải hàm, hoặc thiếu `tool.function.name`
 - các biến thể `tool_choice` như `allowed_tools` và `custom`
-- các giá trị `tool_choice.function.name` không khớp với `tools` được cung cấp
+- các giá trị `tool_choice.function.name` không khớp với công cụ đã cung cấp
 
-Đối với `tool_choice: "required"` và `tool_choice` được ghim theo function, endpoint thu hẹp tập function-tool của client được hiển thị, hướng dẫn runtime gọi một công cụ client trước khi phản hồi, và trả về lỗi nếu phản hồi của tác tử không bao gồm lệnh gọi client-tool có cấu trúc khớp. Hợp đồng này áp dụng cho danh sách HTTP `tools` do bên gọi cung cấp, không phải mọi công cụ tác tử nội bộ của OpenClaw.
+Đối với `tool_choice: "required"` và `tool_choice` được ghim vào một hàm, điểm cuối sẽ thu hẹp tập công cụ hàm phía máy khách được cung cấp, yêu cầu môi trường thời gian chạy gọi một công cụ máy khách trước khi phản hồi và trả về lỗi nếu phản hồi của tác nhân không có lệnh gọi công cụ máy khách có cấu trúc tương ứng. Điều này áp dụng cho danh sách HTTP `tools` do bên gọi cung cấp, không phải mọi công cụ nội bộ của tác nhân OpenClaw.
 
-### Hình dạng phản hồi công cụ không streaming
+### Cấu trúc phản hồi công cụ không truyền phát
 
-Khi tác tử quyết định gọi công cụ, phản hồi dùng:
+Khi tác nhân gọi công cụ, phản hồi sử dụng:
 
-- các mục `choices[0].finish_reason = "tool_calls"`
-- `choices[0].message.tool_calls[]` với:
-  - `id`
-  - `type: "function"`
-  - `function.name`
-  - `function.arguments` (chuỗi JSON)
+- `choices[0].finish_reason = "tool_calls"`
+- các phần tử `choices[0].message.tool_calls[]` gồm `id`, `type: "function"`, `function.name`, `function.arguments` (chuỗi JSON)
+- Nội dung giải thích của trợ lý trước lệnh gọi công cụ trong `choices[0].message.content` (có thể rỗng)
 
-Bình luận của assistant trước lệnh gọi công cụ được trả về trong `choices[0].message.content` (có thể trống).
+### Cấu trúc phản hồi công cụ truyền phát
 
-### Hình dạng phản hồi công cụ streaming
+Khi `stream: true`, các lệnh gọi công cụ đến dưới dạng những đoạn SSE tăng dần: một delta vai trò trợ lý ban đầu, các delta nội dung giải thích tùy chọn của trợ lý, một hoặc nhiều đoạn `delta.tool_calls` chứa danh tính công cụ và các phần đối số, sau đó là đoạn cuối cùng với `finish_reason: "tool_calls"` và `data: [DONE]`.
 
-Khi `stream: true`, các lệnh gọi công cụ được phát ra dưới dạng các chunk SSE tăng dần:
+Nếu `stream_options.include_usage=true`, một đoạn thông tin sử dụng cuối luồng được phát ra trước `[DONE]`.
 
-- delta vai trò assistant ban đầu
-- các delta bình luận assistant tùy chọn
-- một hoặc nhiều chunk `delta.tool_calls` mang danh tính công cụ và các mảnh đối số
-- chunk cuối cùng với `finish_reason: "tool_calls"`
-- `data: [DONE]`
+### Vòng lặp tiếp nối công cụ
 
-Nếu `stream_options.include_usage=true`, một chunk usage ở cuối sẽ được phát ra trước `[DONE]`.
+Sau khi nhận được `tool_calls`, hãy thực thi các hàm được yêu cầu và gửi một yêu cầu tiếp theo bao gồm thông báo gọi công cụ trước đó của trợ lý cùng một hoặc nhiều thông báo `role: "tool"` có `tool_call_id` tương ứng. Thao tác này tiếp tục cùng một vòng lặp suy luận của tác nhân để tạo ra câu trả lời cuối cùng.
 
-### Vòng lặp theo dõi công cụ
+## Truyền phát (SSE)
 
-Sau khi nhận `tool_calls`, client nên thực thi function được yêu cầu và gửi một yêu cầu tiếp theo bao gồm:
+Đặt `stream: true` để nhận Sự kiện do máy chủ gửi:
 
-- tin nhắn gọi công cụ trước đó của assistant
-- một hoặc nhiều tin nhắn `role: "tool"` với `tool_call_id` khớp
-
-Điều này cho phép lượt chạy tác tử Gateway tiếp tục cùng vòng lặp suy luận và tạo câu trả lời assistant cuối cùng.
+- `Content-Type: text/event-stream`
+- Mỗi dòng sự kiện có dạng `data: <json>`
+- Luồng kết thúc bằng `data: [DONE]`
 
 ## Thiết lập nhanh Open WebUI
 
-Đối với kết nối Open WebUI cơ bản:
-
 - URL cơ sở: `http://127.0.0.1:18789/v1`
 - URL cơ sở Docker trên macOS: `http://host.docker.internal:18789/v1`
-- Khóa API: token bearer Gateway của bạn
-- Model: `openclaw/default`
+- Khóa API: token bearer của Gateway
+- Mô hình: `openclaw/default`
 
-Hành vi mong đợi:
+Hành vi dự kiến: `GET /v1/models` liệt kê `openclaw/default` và Open WebUI sử dụng giá trị đó làm mã mô hình trò chuyện. Đối với một nhà cung cấp/mô hình phần phụ trợ cụ thể, hãy đặt mô hình mặc định thông thường của tác nhân hoặc gửi `x-openclaw-model` (bên gọi dùng bí mật dùng chung hoặc bên gọi mang danh tính với `operator.admin`).
 
-- `GET /v1/models` nên liệt kê `openclaw/default`
-- Open WebUI nên dùng `openclaw/default` làm id model chat
-- Nếu bạn muốn một nhà cung cấp/model backend cụ thể cho tác tử đó, hãy đặt model mặc định thông thường của tác tử hoặc gửi `x-openclaw-model` từ bên gọi dùng shared-secret hoặc bên gọi có danh tính với `operator.admin`
-
-Smoke nhanh:
+Kiểm tra nhanh:
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/models \
   -H 'Authorization: Bearer YOUR_TOKEN'
 ```
 
-Nếu lệnh đó trả về `openclaw/default`, hầu hết thiết lập Open WebUI có thể kết nối bằng cùng URL cơ sở và token.
+Nếu lệnh đó trả về `openclaw/default`, hầu hết cấu hình Open WebUI có thể kết nối bằng cùng URL cơ sở và token.
 
 ## Ví dụ
 
-Phiên ổn định cho một cuộc hội thoại ứng dụng:
+Phiên ổn định cho một cuộc hội thoại của ứng dụng:
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/chat/completions \
@@ -320,9 +260,9 @@ curl -sS http://127.0.0.1:18789/v1/chat/completions \
   }'
 ```
 
-Dùng lại cùng giá trị `user` trong các lệnh gọi sau cho cuộc hội thoại đó để tiếp tục cùng phiên tác tử.
+Dùng lại cùng giá trị `user` trong các lệnh gọi sau cho cuộc hội thoại đó để tiếp tục cùng một phiên tác nhân.
 
-Không streaming:
+Không truyền phát:
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/chat/completions \
@@ -334,7 +274,7 @@ curl -sS http://127.0.0.1:18789/v1/chat/completions \
   }'
 ```
 
-Streaming:
+Truyền phát:
 
 ```bash
 curl -N http://127.0.0.1:18789/v1/chat/completions \
@@ -348,21 +288,21 @@ curl -N http://127.0.0.1:18789/v1/chat/completions \
   }'
 ```
 
-Liệt kê model:
+Liệt kê các mô hình:
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/models \
   -H 'Authorization: Bearer YOUR_TOKEN'
 ```
 
-Lấy một model:
+Truy xuất một mô hình:
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/models/openclaw%2Fdefault \
   -H 'Authorization: Bearer YOUR_TOKEN'
 ```
 
-Tạo embeddings:
+Tạo vector nhúng:
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/embeddings \
@@ -375,14 +315,10 @@ curl -sS http://127.0.0.1:18789/v1/embeddings \
   }'
 ```
 
-Ghi chú:
-
-- `/v1/models` trả về các mục tiêu tác tử OpenClaw, không phải catalog nhà cung cấp thô.
-- `openclaw/default` luôn hiện diện để một id ổn định hoạt động trên nhiều môi trường.
-- Các ghi đè nhà cung cấp/model backend thuộc về `x-openclaw-model`, không phải trường OpenAI `model`. Trên các đường dẫn xác thực HTTP có danh tính, header này yêu cầu `operator.admin`.
-- `/v1/embeddings` hỗ trợ `input` là chuỗi hoặc mảng chuỗi.
+`/v1/embeddings` hỗ trợ `input` dưới dạng chuỗi hoặc mảng chuỗi.
 
 ## Liên quan
 
 - [Tham chiếu cấu hình](/vi/gateway/configuration-reference)
+- [Phạm vi của người vận hành](/vi/gateway/operator-scopes)
 - [OpenAI](/vi/providers/openai)

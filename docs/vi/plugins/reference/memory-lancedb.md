@@ -1,11 +1,11 @@
 ---
 read_when:
     - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin memory-lancedb
-summary: Plugin bộ nhớ dài hạn của OpenClaw dùng LanceDB làm nền tảng, với tính năng tự động gợi nhớ, tự động ghi lại và tìm kiếm vector.
-title: Plugin bộ nhớ Lancedb
+summary: Plugin bộ nhớ dài hạn dựa trên LanceDB của OpenClaw, có tính năng tự động truy hồi, tự động thu thập và tìm kiếm vectơ.
+title: Plugin bộ nhớ LanceDB
 x-i18n:
-    generated_at: "2026-06-27T17:54:05Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:10:25Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: db3843c421abdf738723f87f5bf12ed7acc2e6638e5869c2ad10b4b5722d402d
@@ -13,14 +13,14 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin bộ nhớ Lancedb
+# Plugin bộ nhớ LanceDB
 
-Plugin bộ nhớ dài hạn của OpenClaw dùng LanceDB, có tự động gợi nhớ, tự động ghi nhận và tìm kiếm vector.
+Plugin bộ nhớ dài hạn của OpenClaw dựa trên LanceDB, hỗ trợ tự động truy hồi, tự động thu thập và tìm kiếm vectơ.
 
 ## Phân phối
 
 - Gói: `@openclaw/memory-lancedb`
-- Tuyến cài đặt: npm; ClawHub
+- Phương thức cài đặt: npm; ClawHub
 
 ## Bề mặt
 

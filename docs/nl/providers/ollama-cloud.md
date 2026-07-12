@@ -1,95 +1,96 @@
 ---
 read_when:
     - Je wilt gehoste Ollama-modellen gebruiken zonder een lokale Ollama-server
-    - Je hebt de ollama-cloud-provider-id, -sleutel of -endpoint nodig
+    - Je hebt de provider-id, sleutel of het eindpunt van ollama-cloud nodig
 summary: Gebruik Ollama Cloud rechtstreeks met OpenClaw
 title: Ollama Cloud
 x-i18n:
-    generated_at: "2026-06-27T18:13:36Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:19:36Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 24b937085de1ed805b7bb0fe76a4197030bd45cd989ede8030386f3c721b9763
+    source_hash: 966e5237e37134cef109979079db390e9844714001e921e7976dc8ca7f58bcc4
     source_path: providers/ollama-cloud.md
     workflow: 16
 ---
 
-Ollama Cloud is Ollama's gehoste model-API. Hiermee kan OpenClaw Ollama-gehoste
-modellen rechtstreeks aanroepen, zonder een lokale Ollama-server te installeren of een lokale
-Ollama-app aan te melden in cloudmodus. Gebruik provider-id `ollama-cloud` en modelverwijzingen zoals
-`ollama-cloud/kimi-k2.6`.
+Ollama Cloud is Ollama's gehoste model-API. De provider `ollama-cloud` roept deze
+rechtstreeks aan op `https://ollama.com` via Ollama's eigen `/api/chat`-API, zonder
+lokale Ollama-server en zonder lokale Ollama-app die bij de cloudmodus is aangemeld. Gebruik
+modelverwijzingen zoals `ollama-cloud/kimi-k2.6`.
 
-Deze pagina is bedoeld voor directe cloud-only routing. De provider gebruikt Ollama's native
-`/api/chat`-stijl, niet de OpenAI-compatibele `/v1`-route. OpenClaw registreert deze
-als een afzonderlijke provider-id, zodat cloud-only referenties, live catalogusdetectie en
-modelselectie niet worden vermengd met een lokale `ollama`-host.
+OpenClaw registreert `ollama-cloud` als een eigen provider-id, zodat uitsluitend voor de cloud bestemde
+referenties, live catalogusdetectie en modelselectie niet worden vermengd met
+een lokale `ollama`-host. Zie [Ollama](/nl/providers/ollama) voor lokale Ollama, hybride routering
+via cloud en lokaal, embeddings en details over aangepaste hosts.
 
-Gebruik deze pagina wanneer je cloud-only routing wilt. Voor lokale Ollama, hybride
-cloud-plus-lokale routing, embeddings en aangepaste hostdetails, zie
-[Ollama](/nl/providers/ollama).
+## Configuratie
 
-## Instellen
-
-Maak een Ollama Cloud API-sleutel aan op [ollama.com/settings/keys](https://ollama.com/settings/keys) en voer daarna uit:
+Maak een Ollama Cloud-API-sleutel aan op [ollama.com/settings/keys](https://ollama.com/settings/keys) en voer daarna het volgende uit:
 
 ```bash
 openclaw onboard --auth-choice ollama-cloud
 ```
 
-Of stel in:
+Of stel het volgende in:
 
 ```bash
 export OLLAMA_API_KEY="<your-ollama-cloud-api-key>" # pragma: allowlist secret
 ```
+
+Niet-interactieve onboarding accepteert de sleutel rechtstreeks:
+
+```bash
+openclaw onboard --auth-choice ollama-cloud --ollama-cloud-api-key "<key>"
+```
+
+Onboarding stelt het standaardmodel in op `ollama-cloud/kimi-k2.5:cloud`.
 
 ## Standaardwaarden
 
 - Provider: `ollama-cloud`
 - Basis-URL: `https://ollama.com`
 - Omgevingsvariabele: `OLLAMA_API_KEY`
-- API-stijl: Ollama native `/api/chat`
-- Voorbeeldmodel: `ollama-cloud/kimi-k2.6`
+- API-stijl: Ollama's eigen `/api/chat`
+- Standaardmodel voor onboarding: `ollama-cloud/kimi-k2.5:cloud`
 
-## Wanneer je Ollama Cloud kiest
+## Wanneer u Ollama Cloud kiest
 
-- Je wilt gehoste Ollama-modellen zonder `ollama serve` lokaal uit te voeren.
-- Je wilt dezelfde native Ollama chat-API-vorm die OpenClaw gebruikt voor lokale
-  Ollama, maar gericht op `https://ollama.com`.
-- Je wilt een eenvoudig cloudpad voor modellen die al in Ollama's gehoste
+- U wilt gehoste Ollama-modellen gebruiken zonder lokaal `ollama serve` uit te voeren.
+- U wilt dezelfde structuur van Ollama's eigen chat-API die OpenClaw gebruikt voor lokale
+  Ollama, maar dan gericht op `https://ollama.com`.
+- U wilt een eenvoudig cloudtraject voor modellen die al in Ollama's gehoste
   catalogus staan.
-- Je hebt geen lokale model-pulls, lokale GPU-besturing of LAN-only inferentie nodig.
+- U hebt geen lokale modeldownloads, lokale GPU-besturing of uitsluitend via het LAN beschikbare inferentie nodig.
 
-Gebruik in plaats daarvan [Ollama](/nl/providers/ollama) wanneer je local-only of
-cloud-plus-lokale routing via een aangemelde Ollama-host wilt. Gebruik een
-OpenAI-compatibele provider wanneer je `/v1/chat/completions`-semantiek
-of providerspecifieke OpenAI-achtige functies nodig hebt.
+Gebruik in plaats daarvan [Ollama](/nl/providers/ollama) als u uitsluitend lokale routering of
+routering via cloud en lokaal wilt gebruiken via een aangemelde Ollama-host. Gebruik in plaats daarvan een
+OpenAI-compatibele provider wanneer u `/v1/chat/completions`-semantiek
+of providerspecifieke functies in OpenAI-stijl nodig hebt.
 
 ## Modellen
 
-OpenClaw detecteert Ollama Cloud-modellen vanuit de live gehoste catalogus. Vaak
-beschikbare gehoste id's zijn onder andere:
-
-- `ollama-cloud/gpt-oss:20b`
-- `ollama-cloud/kimi-k2.6`
-- `ollama-cloud/deepseek-v4-flash`
-- `ollama-cloud/minimax-m2.7`
-- `ollama-cloud/glm-5`
-
-Gebruik een model-id uit je huidige gehoste catalogus:
+De provider vereist een API-sleutel; zonder sleutel blijft deze inactief. Met een sleutel
+detecteert OpenClaw Ollama Cloud-modellen live vanuit de gehoste catalogus:
 
 ```bash
 openclaw models list --provider ollama-cloud
 openclaw models set ollama-cloud/kimi-k2.6
 ```
 
-Model-id's zijn cloudcatalogus-id's, geen lokale pull-namen. Als een modelnaam werkt in
-een lokale Ollama-host maar ontbreekt in de gehoste catalogus, gebruik dan in plaats daarvan de `ollama`-
-provider met die lokale host.
+Gehoste id's in de live catalogus zijn onder andere `deepseek-v4-flash`, `glm-5`,
+`gpt-oss:20b`, `kimi-k2.6` en `minimax-m2.7`. Wanneer live detectie
+niets retourneert, valt OpenClaw terug op de meegeleverde vermeldingen `kimi-k2.5:cloud`,
+`minimax-m2.7:cloud`, `glm-5.1:cloud` en `glm-5.2:cloud`.
 
-## Live test
+Model-id's zijn id's uit de cloudcatalogus, geen namen voor lokale downloads. Als een modelnaam werkt op
+een lokale Ollama-host maar ontbreekt in de gehoste catalogus, gebruikt u in plaats daarvan de provider `ollama`
+met die lokale host.
 
-Voor smoke tests met Ollama Cloud API-sleutel wijs je de Ollama live test naar het gehoste
-endpoint en kies je een model uit je huidige catalogus:
+## Livetest
+
+Voor rooktests met Ollama Cloud-API-sleutels richt u de Ollama-livetest op het gehoste
+eindpunt en kiest u een model uit uw huidige catalogus:
 
 ```bash
 export OLLAMA_API_KEY="<your-ollama-cloud-api-key>" # pragma: allowlist secret
@@ -98,23 +99,24 @@ OPENCLAW_LIVE_TEST=1 \
 OPENCLAW_LIVE_OLLAMA=1 \
 OPENCLAW_LIVE_OLLAMA_BASE_URL=https://ollama.com \
 OPENCLAW_LIVE_OLLAMA_MODEL=kimi-k2.6 \
-OPENCLAW_LIVE_OLLAMA_WEB_SEARCH=1 \
 pnpm test:live -- extensions/ollama/ollama.live.test.ts
 ```
 
-De cloud-smoke test voert tekst, native stream en webzoekopdrachten uit. Embeddings worden
-standaard overgeslagen voor `https://ollama.com`, omdat Ollama Cloud API-sleutels mogelijk geen
-toegang geven tot `/api/embed`.
+De cloud-rooktest voert tekst, eigen streaming en zoeken op het web uit; stel
+`OPENCLAW_LIVE_OLLAMA_WEB_SEARCH=0` in om zoeken op het web over te slaan. Embeddings worden
+standaard overgeslagen voor `https://ollama.com`, omdat Ollama Cloud-API-sleutels mogelijk geen
+toegang verlenen tot `/api/embed`; dwing ze af met `OPENCLAW_LIVE_OLLAMA_EMBEDDINGS=1`.
 
-## Probleemoplossing
+## Problemen oplossen
 
-- `Set OLLAMA_API_KEY`-fouten: geef een echte cloud-API-sleutel op. De lokale
-  `ollama-local`-markering is alleen bedoeld voor lokale of private Ollama-hosts.
-- Fouten met onbekend model: voer `openclaw models list --provider ollama-cloud` uit en
-  kopieer de gehoste model-id exact.
-- Problemen met tool calls of ruwe JSON op aangepaste Ollama-hosts: controleer of je
-  per ongeluk een OpenAI-compatibele `/v1`-URL gebruikt. Ollama-routes moeten de
-  native basis-URL gebruiken zonder `/v1`-achtervoegsel.
+- Fouten `Ollama Cloud requires an API key` / `Set OLLAMA_API_KEY`: geef een
+  echte cloud-API-sleutel op. De lokale markering `ollama-local` is alleen bedoeld voor lokale of
+  privé-Ollama-hosts.
+- Fouten over onbekende modellen: voer `openclaw models list --provider ollama-cloud` uit en
+  kopieer de id van het gehoste model exact.
+- Problemen met toolaanroepen of onbewerkte JSON op aangepaste Ollama-hosts: controleer of u
+  per ongeluk een OpenAI-compatibele `/v1`-URL gebruikt. Ollama-routes moeten
+  de eigen basis-URL zonder het achtervoegsel `/v1` gebruiken.
 
 ## Gerelateerd
 

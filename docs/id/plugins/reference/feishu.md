@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Anda sedang menginstal, mengonfigurasi, atau mengaudit Plugin feishu
-summary: Plugin kanal Feishu/Lark OpenClaw untuk obrolan dan alat kerja (dikelola komunitas oleh @m1heng).
+    - Anda sedang menginstal, mengonfigurasi, atau mengaudit plugin Feishu
+summary: Plugin saluran Feishu/Lark OpenClaw untuk obrolan dan alat tempat kerja (dikelola oleh komunitas melalui @m1heng).
 title: Plugin Feishu
 x-i18n:
-    generated_at: "2026-06-27T17:53:56Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:28:14Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: d55792e08be92877a8b86548b725b59aee149b352bba8a5e51ed590a59e0dbc9
@@ -20,11 +20,11 @@ Plugin saluran Feishu/Lark OpenClaw untuk obrolan dan alat tempat kerja (dikelol
 ## Distribusi
 
 - Paket: `@openclaw/feishu`
-- Rute instalasi: npm; ClawHub
+- Jalur instalasi: npm; ClawHub
 
-## Permukaan
+## Cakupan
 
-channels: feishu; contracts: tools; skills
+saluran: feishu; kontrak: alat; Skills
 
 ## Dokumentasi terkait
 

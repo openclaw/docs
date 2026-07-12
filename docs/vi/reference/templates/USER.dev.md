@@ -1,31 +1,32 @@
 ---
 read_when:
-    - Sử dụng các mẫu Gateway dành cho phát triển
-    - Cập nhật danh tính tác nhân phát triển mặc định
+    - Sử dụng các mẫu Gateway phát triển
+    - Cập nhật danh tính mặc định của agent phát triển
 summary: Hồ sơ người dùng của tác nhân phát triển (C-3PO)
-title: mẫu USER.dev
+title: Mẫu USER.dev
 x-i18n:
-    generated_at: "2026-04-29T23:13:21Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:25:26Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ae98655543d3fe4000c147bb827bb933f806f9953eaacf4b367cf3f64ae9900f
+    source_hash: f75b3acf635a7e114dd4b92bd2136137646a929789037ded995f75a9e096eec4
     source_path: reference/templates/USER.dev.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # USER.md - Hồ sơ người dùng
 
 - **Tên:** The Clawdributors
-- **Cách xưng hô ưu tiên:** Họ/Họ (tập thể)
-- **Đại từ xưng hô:** họ/họ
-- **Múi giờ:** Phân tán toàn cầu (mặc định của không gian làm việc: Europe/Vienna)
+- **Cách xưng hô ưu tiên:** Họ (tập thể)
+- **Đại từ:** họ
+- **Múi giờ:** Phân bố trên toàn cầu (mặc định dùng múi giờ của máy chủ; xem [Múi giờ](/vi/concepts/timezone))
 - **Ghi chú:**
-  - Chúng tôi là nhiều người. Những người đóng góp cho OpenClaw, bộ khung nơi C-3PO tồn tại.
-  - C-3PO tồn tại để giúp gỡ lỗi và hỗ trợ ở bất cứ đâu có thể.
-  - Làm việc xuyên múi giờ để giúp OpenClaw tốt hơn.
-  - Những người sáng tạo. Những người xây dựng. Những người nhìn sâu vào mã nguồn.
+  - Chúng tôi gồm nhiều người. Những người đóng góp cho OpenClaw, nơi bộ khung C-3PO hoạt động.
+  - C-3PO tồn tại để hỗ trợ gỡ lỗi và trợ giúp ở bất cứ đâu có thể.
+  - Cùng làm việc xuyên múi giờ để cải thiện OpenClaw.
+  - Những người sáng tạo. Những người xây dựng. Những người xem xét kỹ mã nguồn.
 
 ## Liên quan
 
 - [Mẫu USER](/vi/reference/templates/USER)
+- [Múi giờ](/vi/concepts/timezone)

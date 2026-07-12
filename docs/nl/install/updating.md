@@ -2,88 +2,111 @@
 read_when:
     - OpenClaw bijwerken
     - Er gaat iets mis na een update
-summary: OpenClaw veilig bijwerken (globale installatie of broncode), plus rollbackstrategie
+summary: OpenClaw veilig bijwerken (globale installatie of broncode), inclusief terugdraaistrategie
 title: Bijwerken
 x-i18n:
-    generated_at: "2026-06-27T17:44:03Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:01:04Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a96c5b9b12040fe9bb8b1623c88a9c305d58dc6fcee7003f500e897ded9e7b4a
+    source_hash: 06b475fcd715afa5f4b9fa3fc7d546ba8dc53805c6a29e12fd4706dceb04cb60
     source_path: install/updating.md
     workflow: 16
 ---
 
 Houd OpenClaw up-to-date.
 
+Zie voor het vervangen van Docker-, Podman- en Kubernetes-images
+[Container-images upgraden](/nl/install/docker#upgrading-container-images). De
+Gateway voert vóór de gereedheidscontrole upgradebewerkingen uit die veilig zijn
+tijdens het opstarten en wordt afgesloten als gekoppelde status handmatig moet
+worden hersteld.
+
 ## Aanbevolen: `openclaw update`
 
-De snelste manier om te updaten. Het detecteert je installatietype (npm of git), haalt de nieuwste versie op, voert `openclaw doctor` uit en herstart de Gateway.
+Detecteert je installatietype (npm of git), haalt de nieuwste versie op, voert `openclaw doctor` uit en herstart de Gateway.
 
 ```bash
 openclaw update
 ```
 
-Om van kanaal te wisselen of een specifieke versie te gebruiken:
+Wissel van kanaal of kies een specifieke versie:
 
 ```bash
 openclaw update --channel beta
+openclaw update --channel extended-stable
 openclaw update --channel dev
-openclaw update --dry-run   # preview without applying
+openclaw update --dry-run   # voorbeeldweergave zonder wijzigingen toe te passen
 ```
 
-`openclaw update` accepteert geen `--verbose`. Gebruik voor updatediagnostiek
-`--dry-run` om de geplande acties vooraf te bekijken, `--json` voor gestructureerde resultaten, of
-`openclaw update status --json` om de kanaal- en beschikbaarheidsstatus te inspecteren. Het
-installatieprogramma heeft een eigen `--verbose`-vlag, maar die vlag maakt geen deel uit van
-`openclaw update`.
+`openclaw update` heeft geen vlag `--verbose` (het installatieprogramma wel). Gebruik voor diagnostiek
+`--dry-run` om geplande acties vooraf te bekijken, `--json` voor gestructureerde resultaten of
+`openclaw update status --json` om de status van het kanaal en de beschikbaarheid te controleren.
 
-`--channel beta` geeft de voorkeur aan beta, maar de runtime valt terug op stable/latest wanneer
-de beta-tag ontbreekt of ouder is dan de nieuwste stabiele release. Gebruik `--tag beta`
-als je de ruwe npm beta dist-tag wilt voor een eenmalige pakketupdate.
+`--channel beta` geeft de voorkeur aan de npm-dist-tag beta, maar valt terug op stable/latest
+wanneer de beta-tag ontbreekt of de versie ervan ouder is dan de nieuwste stabiele
+release. Gebruik in plaats daarvan `--tag beta` voor een eenmalige pakketupdate die is vastgezet op de onbewerkte npm-
+dist-tag beta.
 
-Gebruik `--channel dev` voor een permanente, bewegende GitHub `main`-checkout. Voor pakketupdates
-wordt `--tag main` voor een enkele run gekoppeld aan `github:openclaw/openclaw#main`, en
-GitHub/git-bronspecificaties worden in een tijdelijke tarball verpakt voordat de gefaseerde
-npm-installatie plaatsvindt.
+`--channel extended-stable` werkt alleen met pakketten en de installatie blijft
+uitsluitend op de voorgrond plaatsvinden. OpenClaw leest de openbare npm-selector `extended-stable`,
+verifieert het exact geselecteerde pakket en installeert precies die versie. Ontbrekende
+of inconsistente registergegevens leiden tot een veilige fout; er wordt nooit teruggevallen op `latest`.
+Als de geselecteerde versie ouder is dan de geïnstalleerde versie, blijft de normale
+bevestiging voor downgraden van toepassing. De CLI slaat het kanaal op na een
+geslaagde update van de kern; een rechtstreekse `npm install -g openclaw@extended-stable`
+werkt `update.channel` niet bij.
+Na het vervangen van de kern worden geschikte officiële npm-plugins met een ongespecificeerde/standaardintentie of
+`latest`-intentie afgestemd op exact die kernversie. Exact vastgezette versies en expliciete
+andere tags dan `latest`, plugins van derden en bronnen die niet van npm afkomstig zijn, blijven ongewijzigd.
+Catalogusinstallaties die door huidige OpenClaw-versies zijn aangemaakt, behouden die standaard-
+intentie. Oudere records die alleen een exacte versie bevatten, blijven vastgezet omdat
+OpenClaw niet veilig onderscheid kan maken tussen een oude automatische vastzetting en een vastzetting door een gebruiker; voer
+eenmalig `openclaw plugins update @openclaw/name` uit op het extended-stable-kanaal
+om die plugin opnieuw exacte kernversies te laten volgen.
 
-Voor beheerde plugins is terugval van het beta-kanaal een waarschuwing: de core-update kan
-nog steeds slagen terwijl een plugin de vastgelegde standaard-/nieuwste release gebruikt omdat er geen
-plugin-beta beschikbaar is.
+`--channel dev` biedt een permanente, bewegende GitHub-check-out van `main`. Voor een eenmalige
+pakketupdate wordt `--tag main` omgezet naar de pakketspecificatie `github:openclaw/openclaw#main`
+en rechtstreeks geïnstalleerd via het gekozen pakketbeheer (npm/pnpm/bun).
 
-Zie [Ontwikkelingskanalen](/nl/install/development-channels) voor kanaalsemantiek.
+Voor beheerde plugins is een ontbrekende betarelease een waarschuwing en geen fout: de
+kernupdate kan nog steeds slagen terwijl een plugin terugvalt op de geregistreerde
+standaard-/nieuwste release.
+
+Zie [Releasekanalen](/nl/install/development-channels) voor de semantiek van kanalen.
 
 ## Wisselen tussen npm- en git-installaties
 
-Gebruik kanalen wanneer je het installatietype wilt wijzigen. De updater behoudt je
-state, config, inloggegevens en workspace in `~/.openclaw`; hij wijzigt alleen
-welke OpenClaw-code-installatie de CLI en Gateway gebruiken.
+Gebruik kanalen om het installatietype te wijzigen. De updater behoudt je status, configuratie,
+aanmeldgegevens en werkruimte in `~/.openclaw`; alleen de OpenClaw-
+code-installatie die de CLI en Gateway gebruiken, wordt gewijzigd.
 
 ```bash
-# npm package install -> editable git checkout
+# npm-pakketinstallatie -> bewerkbare git-check-out
 openclaw update --channel dev
 
-# git checkout -> npm package install
+# git-check-out -> npm-pakketinstallatie
 openclaw update --channel stable
 ```
 
-Voer eerst uit met `--dry-run` om de exacte installatiemoduswissel vooraf te bekijken:
+Bekijk eerst een voorbeeld van de wisseling van installatiemodus:
 
 ```bash
 openclaw update --channel dev --dry-run
 openclaw update --channel stable --dry-run
 ```
 
-Het `dev`-kanaal zorgt voor een git-checkout, bouwt die en installeert de globale CLI
-vanuit die checkout. De kanalen `stable` en `beta` gebruiken pakketinstallaties. Als de
-Gateway al is geinstalleerd, vernieuwt `openclaw update` de servicemetadata
-en herstart deze, tenzij je `--no-restart` meegeeft.
+`dev` zorgt voor een git-check-out, bouwt deze en installeert de globale CLI vanuit die
+check-out. De kanalen `stable`, `extended-stable` en `beta` gebruiken pakket-
+installaties. Extended-stable wordt bij een git-check-out geweigerd zonder deze te wijzigen of
+te converteren. Als de Gateway al is geïnstalleerd, vernieuwt `openclaw update`
+de servicemetadata en herstart de service, tenzij je `--no-restart` doorgeeft.
 
-Voor pakketinstallaties met een beheerde Gateway-service richt `openclaw update` zich op
-de pakketroot die door die service wordt gebruikt. Als de shellopdracht `openclaw`
-uit een andere installatie komt, print de updater beide roots en het Node-pad van de beheerde service. De pakketupdate gebruikt de pakketbeheerder die eigenaar is van de service-root
-en controleert de Node van de beheerde service tegen de engine van de doelrelease
-voordat het pakket wordt vervangen.
+Voor pakketinstallaties met een beheerde Gateway-service richt `openclaw update` zich
+op de pakketroot die door die service wordt gebruikt. Als de shellopdracht `openclaw`
+uit een andere installatie afkomstig is, toont de updater beide roots en het Node-pad
+van de beheerde service, en controleert de Node-versie aan de hand van de
+`engines.node`-vereiste van de doelrelease voordat het pakket wordt vervangen.
 
 ## Alternatief: voer het installatieprogramma opnieuw uit
 
@@ -91,43 +114,41 @@ voordat het pakket wordt vervangen.
 curl -fsSL https://openclaw.ai/install.sh | bash
 ```
 
-Voeg `--no-onboard` toe om onboarding over te slaan. Om een specifiek installatietype via
-het installatieprogramma af te dwingen, geef je `--install-method git --no-onboard` of
-`--install-method npm --no-onboard` mee.
+Voeg `--no-onboard` toe om de onboarding over te slaan. Geef
+`--install-method git --no-onboard` of `--install-method npm --no-onboard` door om een specifiek installatietype af te dwingen.
 
-Als `openclaw update` faalt na de npm-pakketinstallatiefase, voer dan het
-installatieprogramma opnieuw uit. Het installatieprogramma roept de oude updater niet aan; het voert de globale
-pakketinstallatie rechtstreeks uit en kan een gedeeltelijk bijgewerkte npm-installatie herstellen.
+Als `openclaw update` mislukt na de installatiefase van het npm-pakket, voer dan het
+installatieprogramma opnieuw uit. Dit roept de updater niet aan; het voert de globale pakket-
+installatie rechtstreeks uit en kan een gedeeltelijk bijgewerkte npm-installatie herstellen.
 
 ```bash
 curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method npm
 ```
 
-Om het herstel vast te zetten op een specifieke versie of dist-tag, voeg je `--version` toe:
+Zet het herstel met `--version` vast op een specifieke versie of dist-tag:
 
 ```bash
 curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method npm --version <version-or-dist-tag>
 ```
 
-## Alternatief: handmatig npm, pnpm of bun
+## Alternatief: handmatig met npm, pnpm of bun
 
 ```bash
 npm i -g openclaw@latest
 ```
 
-Geef de voorkeur aan `openclaw update` voor begeleide installaties omdat het de
-pakketwissel kan coordineren met de draaiende Gateway-service. Als je handmatig updatet op een
-begeleide installatie, stop dan de beheerde Gateway voordat de pakketbeheerder start.
-Pakketbeheerders vervangen bestanden ter plaatse, en een draaiende Gateway kan anders proberen
-core- of plugin-bestanden te laden terwijl de pakketstructuur tijdelijk half verwisseld is.
-Herstart de Gateway nadat de pakketbeheerder klaar is, zodat de service de
-nieuwe installatie oppakt.
+Geef de voorkeur aan `openclaw update` voor installaties onder servicebeheer: hiermee kan het vervangen van het pakket
+worden gecoördineerd met de actieve Gateway-service. Als je een installatie onder servicebeheer handmatig
+bijwerkt, stop dan eerst de beheerde Gateway. Pakketbeheerders vervangen bestanden
+ter plaatse, waardoor een actieve Gateway anders kan proberen kern- of pluginbestanden
+te laden terwijl de vervanging bezig is. Herstart de Gateway nadat het pakketbeheer is voltooid, zodat
+de nieuwe installatie wordt geladen.
 
-Voor een Linux-systeembrede installatie die eigendom is van root: als `openclaw update` faalt met
-`EACCES` en je herstelt met systeem-npm, houd de Gateway dan gestopt tijdens de
-handmatige pakketvervanging. Gebruik dezelfde `openclaw`-profielvlaggen of omgeving
-die je normaal voor die Gateway gebruikt. Vervang `/usr/bin/npm` door de systeem-npm
-die eigenaar is van de root-owned globale prefix op je host:
+Als `openclaw update` bij een globale Linux-systeeminstallatie die eigendom is van root mislukt met
+`EACCES`, herstel dan met de npm van het systeem terwijl de Gateway gestopt blijft voor de
+handmatige vervanging. Gebruik dezelfde profielvlaggen/-omgeving die je normaal voor
+die Gateway gebruikt. Vervang `/usr/bin/npm` door de systeem-npm die eigenaar is van het
+globale rootprefix op je host:
 
 ```bash
 openclaw gateway stop
@@ -136,7 +157,7 @@ openclaw gateway install --force
 openclaw gateway restart
 ```
 
-Verifieer daarna de service:
+Verifieer daarna:
 
 ```bash
 openclaw --version
@@ -146,19 +167,17 @@ openclaw gateway status --deep --json
 openclaw doctor --lint --json
 ```
 
-Wanneer `openclaw update` een globale npm-installatie beheert, installeert het eerst het doel in
-een tijdelijke npm-prefix, verifieert de verpakte `dist`-inventaris en wisselt daarna
-de schone pakketstructuur naar de echte globale prefix. Dat voorkomt dat npm een
-nieuw pakket over oude bestanden van het vorige pakket heen legt. Als de installatieopdracht faalt,
-probeert OpenClaw het eenmaal opnieuw met `--omit=optional`. Die retry helpt hosts waar native
-optionele afhankelijkheden niet kunnen compileren, terwijl de oorspronkelijke fout zichtbaar blijft
-als de fallback ook faalt.
+Wanneer `openclaw update` een globale npm-installatie beheert, installeert het eerst het doel
+in een tijdelijk npm-prefix, verifieert het de verpakte `dist`-inventaris en
+verwisselt het vervolgens de schone pakketstructuur met het werkelijke globale prefix — zodat npm
+geen nieuw pakket over verouderde bestanden van het oude pakket heen legt. Als de installatie-
+opdracht mislukt, probeert OpenClaw het eenmaal opnieuw met `--omit=optional`, wat helpt op hosts
+waar optionele native afhankelijkheden niet kunnen worden gecompileerd.
 
-Door OpenClaw beheerde npm-update- en plugin-update-opdrachten wissen ook de npm
-`min-release-age`-quarantaine voor het child-npm-proces. npm kan dat beleid rapporteren als
-een afgeleide `before`-grens; beide zijn nuttig voor algemene supply-chain-quarantainebeleidsregels,
-maar een expliciete OpenClaw-update betekent: "installeer de geselecteerde
-OpenClaw-release nu."
+Door OpenClaw beheerde npm-update- en pluginupdate-opdrachten wissen ook de
+`min-release-age`-quarantaine voor de toeleveringsketen van npm (of de oudere configuratiesleutel `before`)
+voor het onderliggende npm-proces. Dat beleid bestaat voor algemene bescherming, maar een
+expliciete OpenClaw-update betekent: "installeer de geselecteerde release nu."
 
 ```bash
 pnpm add -g openclaw@latest
@@ -168,31 +187,31 @@ pnpm add -g openclaw@latest
 bun add -g openclaw@latest
 ```
 
-### Geavanceerde npm-installatieonderwerpen
+### Geavanceerde onderwerpen voor npm-installaties
 
 <AccordionGroup>
   <Accordion title="Alleen-lezen pakketstructuur">
-    OpenClaw behandelt verpakte globale installaties tijdens runtime als alleen-lezen, zelfs wanneer de globale pakketdirectory schrijfbaar is voor de huidige gebruiker. Plugin-pakketinstallaties staan in door OpenClaw beheerde npm/git-roots onder de gebruikersconfiguratiedirectory, en het starten van de Gateway wijzigt de OpenClaw-pakketstructuur niet.
+    OpenClaw behandelt verpakte globale installaties tijdens runtime als alleen-lezen, zelfs wanneer de globale pakketmap beschrijfbaar is voor de huidige gebruiker. Installaties van pluginpakketten bevinden zich in npm-/git-roots die eigendom zijn van OpenClaw, onder de configuratiemap van de gebruiker, en tijdens het opstarten wijzigt de Gateway de OpenClaw-pakketstructuur niet.
 
-    Sommige Linux-npm-configuraties installeren globale pakketten onder directories die eigendom zijn van root, zoals `/usr/lib/node_modules/openclaw`. OpenClaw ondersteunt die indeling omdat opdrachten voor het installeren/updaten van plugins buiten die globale pakketdirectory schrijven.
+    Sommige Linux-npm-configuraties installeren globale pakketten onder mappen die eigendom zijn van root, zoals `/usr/lib/node_modules/openclaw`. OpenClaw ondersteunt die indeling omdat opdrachten voor het installeren en bijwerken van plugins buiten die globale pakketmap schrijven.
 
   </Accordion>
-  <Accordion title="Versterkte systemd-units">
-    Geef OpenClaw schrijftoegang tot zijn config-/state-roots zodat expliciete plugin-installaties, plugin-updates en doctor-opruiming hun wijzigingen kunnen opslaan:
+  <Accordion title="Versterkte systemd-eenheden">
+    Geef OpenClaw schrijftoegang tot de roots voor configuratie en status, zodat expliciete plugininstallaties, pluginupdates en opschoning door doctor hun wijzigingen kunnen opslaan:
 
     ```ini
     ReadWritePaths=/var/lib/openclaw /home/openclaw/.openclaw /tmp
     ```
 
   </Accordion>
-  <Accordion title="Schijfruimte-preflight">
-    Voor pakketupdates en expliciete plugin-installaties probeert OpenClaw een best-effort schijfruimtecontrole uit te voeren voor het doelvolume. Weinig ruimte levert een waarschuwing op met het gecontroleerde pad, maar blokkeert de update niet omdat filesystemquota, snapshots en netwerkvolumes na de controle kunnen veranderen. De daadwerkelijke pakketbeheerderinstallatie en post-installverificatie blijven leidend.
+  <Accordion title="Voorafgaande controle van schijfruimte">
+    Vóór pakketupdates en expliciete plugininstallaties probeert OpenClaw naar beste vermogen de beschikbare schijfruimte op het doelvolume te controleren. Weinig ruimte levert een waarschuwing met het gecontroleerde pad op, maar blokkeert de update niet, omdat bestandssysteemquota, momentopnamen en netwerkvolumes na de controle kunnen veranderen. De daadwerkelijke installatie door het pakketbeheer en de verificatie na installatie blijven doorslaggevend.
   </Accordion>
 </AccordionGroup>
 
-## Auto-updater
+## Automatische updater
 
-De auto-updater staat standaard uit. Schakel deze in via `~/.openclaw/openclaw.json`:
+Standaard uitgeschakeld. Schakel deze in via `~/.openclaw/openclaw.json`:
 
 ```json5
 {
@@ -208,24 +227,34 @@ De auto-updater staat standaard uit. Schakel deze in via `~/.openclaw/openclaw.j
 }
 ```
 
-| Kanaal   | Gedrag                                                                                                            |
-| -------- | ----------------------------------------------------------------------------------------------------------------- |
-| `stable` | Wacht `stableDelayHours` en past daarna toe met deterministische jitter over `stableJitterHours` (gespreide uitrol). |
-| `beta`   | Controleert elke `betaCheckIntervalHours` (standaard: elk uur) en past onmiddellijk toe.                          |
-| `dev`    | Geen automatische toepassing. Gebruik `openclaw update` handmatig.                                                |
+| Kanaal            | Gedrag                                                                                                                                       |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `stable`          | Wacht `stableDelayHours` (standaard: 6) en past de update daarna toe met deterministische spreiding over `stableJitterHours` (standaard: 12) voor een gefaseerde uitrol. |
+| `extended-stable` | Controleert bij het opstarten en elke 24 uur op een alleen-lezen updatehint wanneer `checkOnStart` is ingeschakeld. Past nooit automatisch toe. |
+| `beta`            | Controleert elke `betaCheckIntervalHours` (standaard: 1) en past de update onmiddellijk toe.                                                  |
+| `dev`             | Geen automatische toepassing. Gebruik `openclaw update` handmatig.                                                                           |
 
-De Gateway logt bij het opstarten ook een updatehint (uitschakelen met `update.checkOnStart: false`).
-Voor downgrade of incidentherstel stel je `OPENCLAW_NO_AUTO_UPDATE=1` in de Gateway-omgeving in om automatische toepassingen te blokkeren, zelfs wanneer `update.auto.enabled` is geconfigureerd. Updatehints bij het opstarten kunnen nog steeds draaien tenzij `update.checkOnStart` ook is uitgeschakeld.
+De Gateway registreert bij het opstarten ook een updatehint (schakel dit uit met
+`update.checkOnStart: false`). Opgeslagen extended-stable-selecties gebruiken dit
+alleen-lezen hintpad en het bestaande hintinterval van 24 uur, maar roepen nooit
+automatische installatie, overdracht, herstart, stabiele vertraging/spreiding of betacontrole aan.
+Stel voor een downgrade of herstel na een incident `OPENCLAW_NO_AUTO_UPDATE=1` in de Gateway-omgeving in om automatische toepassingen te blokkeren, zelfs wanneer `update.auto.enabled` is geconfigureerd. Updatehints bij het opstarten kunnen nog steeds worden uitgevoerd, tenzij `update.checkOnStart` ook is uitgeschakeld.
 
-Pakketbeheerderupdates die via de live Gateway-control-plane-handler worden aangevraagd,
-vervangen de pakketstructuur niet binnen het draaiende Gateway-proces. Bij beheerde
-service-installaties start de Gateway een losgekoppelde overdracht, sluit af en laat het
-normale CLI-pad `openclaw update --yes --json` de service stoppen, het
-pakket vervangen, servicemetadata vernieuwen, herstarten, de Gateway-versie en
-bereikbaarheid verifiëren, en waar mogelijk een geinstalleerde-maar-niet-geladen macOS LaunchAgent herstellen. Als de Gateway die overdracht niet veilig kan uitvoeren, rapporteert `update.run` een
-veilige shellopdracht in plaats van de pakketbeheerder in-process uit te voeren.
+Updates van pakketbeheer die via het live besturingsvlak van de Gateway
+(`update.run`) worden aangevraagd, vervangen de pakketstructuur niet binnen het actieve Gateway-
+proces. Bij installaties met een beheerde service start de Gateway een losgekoppelde overdracht,
+wordt afgesloten en laat het normale CLI-pad `openclaw update --yes --json` de
+service stoppen, het pakket vervangen, servicemetadata vernieuwen, herstarten, de
+Gateway-versie en bereikbaarheid verifiëren en waar mogelijk een geïnstalleerde maar niet-geladen macOS-
+LaunchAgent herstellen. Als de Gateway die overdracht niet veilig kan uitvoeren,
+rapporteert `update.run` een veilige shellopdracht in plaats van het pakketbeheer
+binnen het proces uit te voeren.
 
-## Na het updaten
+De updatekaart in de zijbalk van de Control UI start dezelfde `update.run`-stroom. In de
+ondertekende macOS-app werkt de kaart eerst de app bij via Sparkle; na het opnieuw starten
+brengt de app de beheerde lokale Gateway naar de overeenkomende versie.
+
+## Na het bijwerken
 
 <Steps>
 
@@ -235,7 +264,7 @@ veilige shellopdracht in plaats van de pakketbeheerder in-process uit te voeren.
 openclaw doctor
 ```
 
-Migreert config, controleert DM-beleid en controleert de Gateway-gezondheid. Details: [Doctor](/nl/gateway/doctor)
+Migreert de configuratie, controleert DM-beleid en controleert de gezondheid van de Gateway. Details: [Doctor](/nl/gateway/doctor)
 
 ### Herstart de Gateway
 
@@ -253,7 +282,7 @@ openclaw health
 
 ## Terugdraaien
 
-### Zet een versie vast (npm)
+### Een versie vastzetten (npm)
 
 ```bash
 npm i -g openclaw@<version>
@@ -265,7 +294,7 @@ openclaw gateway restart
 `npm view openclaw version` toont de huidige gepubliceerde versie.
 </Tip>
 
-### Zet een commit vast (source)
+### Een commit vastzetten (broncode)
 
 ```bash
 git fetch origin
@@ -276,15 +305,15 @@ openclaw gateway restart
 
 Om terug te keren naar de nieuwste versie: `git checkout main && git pull`.
 
-## Als je vastzit
+## Als je vastloopt
 
 - Voer `openclaw doctor` opnieuw uit en lees de uitvoer zorgvuldig.
-- Voor `openclaw update --channel dev` op source-checkouts bootstrapt de updater `pnpm` automatisch wanneer dat nodig is. Als je een pnpm/corepack-bootstrapfout ziet, installeer `pnpm` dan handmatig (of schakel `corepack` opnieuw in) en voer de update opnieuw uit.
-- Controleer: [Probleemoplossing](/nl/gateway/troubleshooting)
+- Voor `openclaw update --channel dev` bij check-outs van de broncode initialiseert de updater `pnpm` indien nodig automatisch. Als je een pnpm-/corepack-initialisatiefout ziet, installeer `pnpm` dan handmatig (of schakel `corepack` opnieuw in) en voer de update opnieuw uit.
+- Raadpleeg: [Probleemoplossing](/nl/gateway/troubleshooting)
 - Vraag het in Discord: [https://discord.gg/clawd](https://discord.gg/clawd)
 
 ## Gerelateerd
 
 - [Installatieoverzicht](/nl/install): alle installatiemethoden.
-- [Doctor](/nl/gateway/doctor): gezondheidscontroles na updates.
-- [Migreren](/nl/install/migrating): migratiegidsen voor hoofdversies.
+- [Doctor](/nl/gateway/doctor): statuscontroles na updates.
+- [Migreren](/nl/install/migrating): migratiehandleidingen voor hoofdversies.

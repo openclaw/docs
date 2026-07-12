@@ -5,19 +5,18 @@ read_when:
 summary: 'Plugin Zalo Personal : connexion par code QR + messagerie via zca-js natif (installation du Plugin + configuration du canal + outil)'
 title: Plugin personnel Zalo
 x-i18n:
-    generated_at: "2026-07-12T15:40:43Z"
+    generated_at: "2026-07-12T02:58:23Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: cb0bdaa10340b5d78dc32abf6b0520fda6cf5f65e2e17b551b4e9bd72acfbbf2
     source_path: plugins/zalouser.md
     workflow: 16
 ---
 
-Prise en charge de Zalo Personal pour OpenClaw via un Plugin qui utilise directement `zca-js` afin
-d’automatiser un compte utilisateur Zalo standard. Aucun exécutable CLI externe
-`zca`/`openzca` n’est requis.
+Prise en charge de Zalo Personal pour OpenClaw via un Plugin qui utilise la bibliothèque native `zca-js` afin
+d’automatiser un compte utilisateur Zalo standard. Aucun binaire CLI externe `zca`/`openzca`
+n’est requis.
 
 <Warning>
 L’automatisation non officielle peut entraîner la suspension ou le bannissement du compte. Utilisez-la à vos propres risques.
@@ -27,11 +26,11 @@ L’automatisation non officielle peut entraîner la suspension ou le bannisseme
 
 L’identifiant du canal est `zalouser` afin d’indiquer explicitement qu’il automatise un **compte
 utilisateur Zalo personnel** (non officiel). L’identifiant de canal distinct `zalo` correspond à l’intégration
-officielle et intégrée du Bot/Webhook Zalo — consultez [Zalo](/fr/channels/zalo).
+officielle et intégrée du bot Zalo/Webhook — consultez [Zalo](/fr/channels/zalo).
 
-## Emplacement d’exécution
+## Environnement d’exécution
 
-Ce Plugin s’exécute **dans le processus du Gateway**. Pour un Gateway distant,
+Ce Plugin s’exécute **dans le processus Gateway**. Pour un Gateway distant,
 installez-le et configurez-le sur cet hôte, puis redémarrez le Gateway.
 
 ## Installation
@@ -42,9 +41,8 @@ installez-le et configurez-le sur cet hôte, puis redémarrez le Gateway.
 openclaw plugins install @openclaw/zalouser
 ```
 
-Utilisez le paquet sans version pour suivre le tag de publication officiel actuel ; épinglez une version
-exacte uniquement lorsque vous avez besoin d’une installation reproductible. Redémarrez ensuite le
-Gateway.
+Utilisez le paquet sans version pour suivre la balise de la version officielle actuelle ; épinglez une version
+exacte uniquement lorsqu’une installation reproductible est nécessaire. Redémarrez ensuite le Gateway.
 
 ### Depuis un dossier local (développement)
 
@@ -71,8 +69,8 @@ La configuration du canal se trouve sous `channels.zalouser` (et non sous `plugi
 }
 ```
 
-Consultez [Configuration du canal Zalo personnel](/fr/channels/zalouser) pour le contrôle d’accès
-aux messages privés/groupes, la configuration de plusieurs comptes, les variables d’environnement et le dépannage.
+Consultez la [configuration du canal Zalo personnel](/fr/channels/zalouser) pour le contrôle d’accès
+aux messages privés et aux groupes, la configuration de plusieurs comptes, les variables d’environnement et le dépannage.
 
 ## CLI
 
@@ -81,10 +79,10 @@ openclaw channels login --channel zalouser
 openclaw channels login --channel zalouser --account <name>
 openclaw channels logout --channel zalouser
 openclaw channels status --probe
-openclaw message send --channel zalouser --target <threadId> --message "Bonjour de la part d’OpenClaw"
+openclaw message send --channel zalouser --target <threadId> --message "Hello from OpenClaw"
 openclaw directory self --channel zalouser
-openclaw directory peers list --channel zalouser --query "nom"
-openclaw directory groups list --channel zalouser --query "nom"
+openclaw directory peers list --channel zalouser --query "name"
+openclaw directory groups list --channel zalouser --query "name"
 openclaw directory groups members --channel zalouser --group-id <id>
 ```
 
@@ -94,12 +92,12 @@ Nom de l’outil : `zalouser`
 
 Actions : `send`, `image`, `link`, `friends`, `groups`, `me`, `status`
 
-Les actions de message du canal (et non l’outil de l’agent) prennent également en charge `react` pour les
+Les actions sur les messages du canal, distinctes de l’outil de l’agent, prennent également en charge `react` pour les
 réactions aux messages.
 
-## Ressources associées
+## Pages connexes
 
 - [Configuration du canal Zalo personnel](/fr/channels/zalouser)
-- [Zalo (canal Bot/Webhook officiel)](/fr/channels/zalo)
+- [Zalo (canal officiel de bot/Webhook)](/fr/channels/zalo)
 - [Création de plugins](/fr/plugins/building-plugins)
 - [ClawHub](/clawhub)

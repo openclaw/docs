@@ -1,43 +1,33 @@
 ---
 read_when:
-    - การติดตั้งใช้งาน OpenClaw บน Render
-    - คุณต้องการการติดตั้งใช้งานบนคลาวด์แบบประกาศด้วย Render Blueprints
-summary: ติดตั้งใช้งาน OpenClaw บน Render ด้วย Infrastructure-as-Code
-title: Render
+    - การปรับใช้ OpenClaw บน Render
+    - คุณต้องการปรับใช้บนคลาวด์แบบประกาศด้วย Render Blueprints
+summary: ปรับใช้ OpenClaw บน Render ด้วยโครงสร้างพื้นฐานในรูปแบบโค้ด
+title: แสดงผล
 x-i18n:
-    generated_at: "2026-04-23T10:19:30Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 95ffe98a60e9919826a7c7fdb9cbafd63d20ce3de111ac305f43907b1ae442dc
-    source_path: install/render.mdx
-    workflow: 15
+    generated_at: "2026-07-12T16:17:17Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: a5fbb3c6df04e186df958a62a6130da4e3e485acfeecc7e85fee0d5b69a0438f
+    source_path: install/render.mdx
+    workflow: 16
 ---
 
-# Render
-
-ติดตั้งใช้งาน OpenClaw บน Render โดยใช้ Infrastructure as Code ไฟล์ Blueprint `render.yaml` ที่รวมมาให้จะกำหนดทั้งสแตกของคุณแบบประกาศ ทั้ง service, disk และ environment variables เพื่อให้คุณติดตั้งใช้งานได้ในคลิกเดียว และจัดการเวอร์ชันของโครงสร้างพื้นฐานไปพร้อมกับโค้ดของคุณ
+ติดตั้งใช้งาน OpenClaw บน [Render](https://render.com) โดยใช้ Blueprint `render.yaml` ของรีโพซิทอรี ซึ่งประกาศบริการ ดิสก์ และตัวแปรสภาพแวดล้อมไว้ในไฟล์เดียว
 
 ## ข้อกำหนดเบื้องต้น
 
-- บัญชี [Render account](https://render.com) (มี free tier)
-- API key จาก [model provider](/th/providers) ที่คุณต้องการ
+- [บัญชี Render](https://render.com) (มีแพ็กเกจฟรี)
+- คีย์ API จาก[ผู้ให้บริการโมเดล](/th/providers)ที่คุณเลือก
 
-## ติดตั้งใช้งานด้วย Render Blueprint
+## ติดตั้งใช้งาน
 
-[Deploy to Render](https://render.com/deploy?repo=https://github.com/openclaw/openclaw)
+[ติดตั้งใช้งานบน Render](https://render.com/deploy?repo=https://github.com/openclaw/openclaw)
 
-การคลิกลิงก์นี้จะ:
+ขั้นตอนนี้จะสร้างบริการ Render จาก `render.yaml` สร้างอิมเมจ Docker และติดตั้งใช้งาน URL ของบริการจะเป็นไปตามรูปแบบ `https://<service-name>.onrender.com`
 
-1. สร้าง Render service ใหม่จาก Blueprint `render.yaml` ที่รากของ repo นี้
-2. build Docker image และติดตั้งใช้งาน
-
-เมื่อติดตั้งใช้งานแล้ว URL ของ service จะอยู่ในรูปแบบ `https://<service-name>.onrender.com`
-
-## ทำความเข้าใจกับ Blueprint
-
-Render Blueprints คือไฟล์ YAML ที่กำหนดโครงสร้างพื้นฐานของคุณ `render.yaml` ใน
-repository นี้ตั้งค่าทุกอย่างที่จำเป็นสำหรับการรัน OpenClaw:
+## Blueprint
 
 ```yaml
 services:
@@ -54,121 +44,100 @@ services:
       - key: OPENCLAW_WORKSPACE_DIR
         value: /data/workspace
       - key: OPENCLAW_GATEWAY_TOKEN
-        generateValue: true # auto-generates a secure token
+        generateValue: true # สร้างโทเค็นที่ปลอดภัยโดยอัตโนมัติ
     disk:
       name: openclaw-data
       mountPath: /data
       sizeGB: 1
 ```
 
-ความสามารถหลักของ Blueprint ที่ใช้:
+| คุณสมบัติ             | วัตถุประสงค์                                                        |
+| --------------------- | ------------------------------------------------------------------- |
+| `runtime: docker`     | สร้างจาก Dockerfile ของรีโพซิทอรี                                   |
+| `healthCheckPath`     | Render ตรวจสอบ `/health` และรีสตาร์ตอินสแตนซ์ที่มีสถานะไม่สมบูรณ์ |
+| `generateValue: true` | สร้างค่าที่ปลอดภัยด้วยการเข้ารหัสโดยอัตโนมัติ                       |
+| `disk`                | พื้นที่จัดเก็บถาวรที่ยังคงอยู่หลังติดตั้งใช้งานใหม่                  |
 
-| ความสามารถ            | วัตถุประสงค์                                              |
-| --------------------- | --------------------------------------------------------- |
-| `runtime: docker`     | build จาก Dockerfile ของ repo                            |
-| `healthCheckPath`     | Render เฝ้าตรวจ `/health` และรีสตาร์ต instance ที่ไม่พร้อมใช้งาน |
-| `generateValue: true` | สร้างค่าที่ปลอดภัยเชิงการเข้ารหัสให้โดยอัตโนมัติ       |
-| `disk`                | พื้นที่จัดเก็บถาวรที่คงอยู่ข้ามการติดตั้งใช้งานใหม่       |
+## การเลือกแพ็กเกจ
 
-## การเลือก plan
+| แพ็กเกจ   | การหยุดทำงาน           | ดิสก์         | เหมาะสำหรับ                       |
+| ---------- | ---------------------- | ------------- | --------------------------------- |
+| Free       | หลังไม่มีการใช้งาน 15 นาที | ไม่มีให้บริการ | การทดสอบ การสาธิต                 |
+| Starter    | ไม่หยุด                | 1GB ขึ้นไป    | การใช้งานส่วนบุคคล ทีมขนาดเล็ก   |
+| Standard+  | ไม่หยุด                | 1GB ขึ้นไป    | ระบบใช้งานจริง หลายช่องทาง        |
 
-| Plan      | การหยุดทำงานชั่วคราว | Disk          | เหมาะที่สุดสำหรับ               |
-| --------- | -------------------- | ------------- | ------------------------------- |
-| Free      | หลังไม่มีการใช้งาน 15 นาที | ไม่มีให้ใช้    | การทดสอบ, เดโม                  |
-| Starter   | ไม่หยุด              | 1GB+          | การใช้งานส่วนตัว, ทีมขนาดเล็ก   |
-| Standard+ | ไม่หยุด              | 1GB+          | การใช้งานจริง, หลาย channels    |
-
-Blueprint ใช้ค่าเริ่มต้นเป็น `starter` หากต้องการใช้ free tier ให้เปลี่ยน `plan: free` ใน
-`render.yaml` ของ fork ของคุณ (แต่โปรดทราบว่า: การไม่มี persistent disk หมายความว่า state ของ OpenClaw
-จะถูกรีเซ็ตทุกครั้งที่ติดตั้งใช้งานใหม่)
+Blueprint ใช้ค่าเริ่มต้นเป็น `starter` หากต้องการใช้แพ็กเกจฟรี ให้เปลี่ยน `plan: free` ใน `render.yaml` ของฟอร์กคุณ โปรดทราบว่าเมื่อไม่มีดิสก์ถาวร สถานะของ OpenClaw จะถูกรีเซ็ตในการติดตั้งใช้งานแต่ละครั้ง
 
 ## หลังการติดตั้งใช้งาน
 
-### เข้าถึง Control UI
+### เข้าถึง UI ควบคุม
 
-เว็บแดชบอร์ดใช้งานได้ที่ `https://<your-service>.onrender.com/`
+แดชบอร์ดเว็บพร้อมใช้งานที่ `https://<your-service>.onrender.com/` เชื่อมต่อโดยใช้ข้อมูลลับที่ใช้ร่วมกัน ซึ่งคือ `OPENCLAW_GATEWAY_TOKEN` ที่สร้างโดยอัตโนมัติ (ค้นหาได้ใน **Dashboard → your service → Environment**) หรือใช้รหัสผ่านของคุณหากเปลี่ยนไปใช้การยืนยันตัวตนด้วยรหัสผ่าน
 
-เชื่อมต่อโดยใช้ shared secret ที่ตั้งค่าไว้ เทมเพลตการติดตั้งนี้จะสร้าง
-`OPENCLAW_GATEWAY_TOKEN` ให้โดยอัตโนมัติ (ดูได้ที่ **Dashboard → your service →
-Environment**) หากคุณเปลี่ยนไปใช้ password auth ให้ใช้รหัสผ่านนั้นแทน
+### บันทึก
 
-## ความสามารถของ Render Dashboard
+**Dashboard → your service → Logs** แสดงบันทึกการสร้าง (การสร้างอิมเมจ Docker) บันทึกการติดตั้งใช้งาน (การเริ่มต้นบริการ) และบันทึกขณะทำงาน (เอาต์พุตของแอปพลิเคชัน)
 
-### Logs
+### การเข้าถึงเชลล์
 
-ดู logs แบบเรียลไทม์ได้ที่ **Dashboard → your service → Logs** กรองได้ตาม:
+**Dashboard → your service → Shell** เปิดเซสชันเชลล์ ดิสก์ถาวรจะถูกเมานต์ที่ `/data`
 
-- Build logs (การสร้าง Docker image)
-- Deploy logs (การเริ่มต้น service)
-- Runtime logs (เอาต์พุตของแอปพลิเคชัน)
+### ตัวแปรสภาพแวดล้อม
 
-### การเข้าถึง shell
+แก้ไขตัวแปรใน **Dashboard → your service → Environment** การเปลี่ยนแปลงจะเรียกให้ติดตั้งใช้งานใหม่โดยอัตโนมัติ
 
-สำหรับการดีบัก ให้เปิด shell session ผ่าน **Dashboard → your service → Shell** โดย persistent disk จะถูก mount ไว้ที่ `/data`
+### การติดตั้งใช้งานอัตโนมัติ
 
-### Environment variables
+Render จะติดตั้งใช้งานใหม่โดยอัตโนมัติเมื่อแบรนช์ของรีโพซิทอรีที่เชื่อมต่อได้รับคอมมิตใหม่ หากคุณติดตั้งใช้งานโดยตรงจาก `openclaw/openclaw` แทนฟอร์กของคุณเอง คุณจะไม่มีสิทธิ์พุชเพื่อเรียกการทำงานดังกล่าว ดังนั้นให้อัปเดตโดยเรียกการซิงค์ Blueprint ด้วยตนเองจาก Dashboard หรือกำหนดให้บริการใช้ฟอร์กของคุณเอง
 
-แก้ไขตัวแปรได้ที่ **Dashboard → your service → Environment** การเปลี่ยนแปลงจะทริกเกอร์การติดตั้งใช้งานใหม่โดยอัตโนมัติ
+## โดเมนแบบกำหนดเอง
 
-### Auto-deploy
-
-หากคุณใช้ OpenClaw repository ต้นฉบับ Render จะไม่ auto-deploy OpenClaw ของคุณ หากต้องการอัปเดต ให้รันการซิงก์ Blueprint แบบ manual จากแดชบอร์ด
-
-## โดเมนกำหนดเอง
-
-1. ไปที่ **Dashboard → your service → Settings → Custom Domains**
+1. **Dashboard → your service → Settings → Custom Domains**
 2. เพิ่มโดเมนของคุณ
-3. ตั้งค่า DNS ตามคำแนะนำ (CNAME ไปยัง `*.onrender.com`)
-4. Render จะจัดเตรียมใบรับรอง TLS ให้อัตโนมัติ
+3. กำหนดค่า DNS ตามคำแนะนำ (CNAME ไปยัง `*.onrender.com`)
+4. Render จะออกใบรับรอง TLS ให้โดยอัตโนมัติ
 
 ## การปรับขนาด
 
-Render รองรับการปรับขนาดทั้งแนวนอนและแนวตั้ง:
-
-- **แนวตั้ง**: เปลี่ยน plan เพื่อรับ CPU/RAM เพิ่ม
-- **แนวนอน**: เพิ่มจำนวน instances (แผน Standard ขึ้นไป)
-
-สำหรับ OpenClaw โดยทั่วไปการปรับขนาดแนวตั้งก็เพียงพอ การปรับขนาดแนวนอนต้องใช้ sticky sessions หรือการจัดการ state ภายนอก
+- **แนวตั้ง**: เปลี่ยนแพ็กเกจเพื่อเพิ่ม CPU/RAM โดยปกติวิธีนี้เพียงพอสำหรับ OpenClaw
+- **แนวนอน**: เพิ่มจำนวนอินสแตนซ์ (แพ็กเกจ Standard ขึ้นไป) ต้องใช้เซสชันแบบยึดติดหรือการจัดการสถานะภายนอก เนื่องจาก OpenClaw เก็บสถานะขณะทำงานไว้ในดิสก์ภายในเครื่อง
 
 ## การสำรองข้อมูลและการย้ายระบบ
 
-ส่งออก state, config, auth profiles และ workspace ของคุณได้ทุกเมื่อโดยใช้
-การเข้าถึง shell ใน Render Dashboard:
+จากเชลล์ใน Render Dashboard คุณสามารถส่งออกสถานะ การกำหนดค่า โปรไฟล์การยืนยันตัวตน และพื้นที่ทำงานได้ทุกเมื่อ:
 
 ```bash
 openclaw backup create
 ```
 
-คำสั่งนี้จะสร้างไฟล์สำรองแบบพกพาที่มี state ของ OpenClaw พร้อม workspace
-ที่ตั้งค่าไว้ ดูรายละเอียดได้ที่ [Backup](/th/cli/backup)
+คำสั่งนี้จะสร้างไฟล์เก็บถาวรสำรองที่เคลื่อนย้ายได้ ดู[การสำรองข้อมูล](/th/cli/backup)
 
-## การแก้ปัญหา
+## การแก้ไขปัญหา
 
-### Service ไม่เริ่มทำงาน
+### บริการไม่เริ่มทำงาน
 
-ตรวจสอบ deploy logs ใน Render Dashboard ปัญหาที่พบบ่อย:
+ตรวจสอบบันทึกการติดตั้งใช้งานใน Render Dashboard ปัญหาที่พบบ่อย ได้แก่:
 
-- ไม่มี `OPENCLAW_GATEWAY_TOKEN` — ตรวจสอบว่าตั้งค่าไว้ใน **Dashboard → Environment**
-- พอร์ตไม่ตรงกัน — ตรวจสอบว่าได้ตั้ง `OPENCLAW_GATEWAY_PORT=8080` เพื่อให้ gateway bind กับพอร์ตที่ Render คาดไว้
+- ไม่มี `OPENCLAW_GATEWAY_TOKEN` — ตรวจสอบว่าได้ตั้งค่าไว้ใน **Dashboard → Environment**
+- พอร์ตไม่ตรงกัน — ตรวจสอบให้แน่ใจว่าเป็น `OPENCLAW_GATEWAY_PORT=8080` เพื่อให้ Gateway ผูกกับพอร์ตที่ Render คาดไว้
 
-### Cold start ช้า (free tier)
+### การเริ่มระบบแบบ Cold Start ช้า (แพ็กเกจฟรี)
 
-services ใน free tier จะหยุดทำงานชั่วคราวหลังไม่มีการใช้งาน 15 นาที คำขอแรกหลังจากหยุดทำงานจะใช้เวลาหลายวินาทีขณะคอนเทนเนอร์เริ่มต้น อัปเกรดเป็น Starter plan เพื่อให้ทำงานตลอดเวลา
+บริการในแพ็กเกจฟรีจะหยุดทำงานหลังไม่มีการใช้งาน 15 นาที คำขอแรกหลังจากหยุดทำงานจะใช้เวลาสองสามวินาทีระหว่างที่คอนเทนเนอร์เริ่มต้น อัปเกรดเป็น Starter เพื่อให้ทำงานตลอดเวลา
 
-### ข้อมูลหายหลังติดตั้งใช้งานใหม่
+### ข้อมูลสูญหายหลังติดตั้งใช้งานใหม่
 
-สิ่งนี้เกิดขึ้นใน free tier (ไม่มี persistent disk) ให้อัปเกรดเป็น plan แบบชำระเงิน หรือ
-ส่งออกข้อมูลสำรองแบบเต็มเป็นประจำผ่าน `openclaw backup create` ใน Render shell
+กรณีนี้เกิดขึ้นในแพ็กเกจฟรี (ไม่มีดิสก์ถาวร) ให้อัปเกรดเป็นแพ็กเกจแบบชำระเงิน หรือส่งออกข้อมูลสำรองเป็นประจำด้วย `openclaw backup create` จากเชลล์ของ Render
 
-### Health check ล้มเหลว
+### การตรวจสอบสถานะล้มเหลว
 
-Render คาดหวังการตอบกลับ 200 จาก `/health` ภายใน 30 วินาที หาก build สำเร็จแต่ติดตั้งใช้งานล้มเหลว service อาจใช้เวลาเริ่มต้นนานเกินไป ให้ตรวจสอบ:
+หากการสร้างสำเร็จแต่การติดตั้งใช้งานล้มเหลว บริการอาจใช้เวลาเริ่มต้นนานเกินไป หรืออาจเข้าถึง `/health` ไม่ได้ ให้ตรวจสอบ:
 
-- Build logs เพื่อหาข้อผิดพลาด
-- ว่าคอนเทนเนอร์รันในเครื่องได้ด้วย `docker build && docker run`
+- ข้อผิดพลาดในบันทึกการสร้าง
+- คอนเทนเนอร์ทำงานภายในเครื่องด้วย `docker build && docker run` ได้หรือไม่
 
 ## ขั้นตอนถัดไป
 
-- ตั้งค่า messaging channels: [Channels](/th/channels)
-- กำหนดค่า Gateway: [Gateway configuration](/th/gateway/configuration)
-- อัปเดต OpenClaw ให้ทันสมัยอยู่เสมอ: [Updating](/th/install/updating)
+- ตั้งค่าช่องทางการรับส่งข้อความ: [ช่องทาง](/th/channels)
+- กำหนดค่า Gateway: [การกำหนดค่า Gateway](/th/gateway/configuration)
+- อัปเดต OpenClaw ให้เป็นเวอร์ชันล่าสุดอยู่เสมอ: [การอัปเดต](/th/install/updating)

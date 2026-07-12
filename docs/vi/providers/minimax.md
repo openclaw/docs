@@ -1,84 +1,77 @@
 ---
 read_when:
-    - Bạn muốn các mô hình MiniMax trong OpenClaw
+    - Bạn muốn sử dụng các mô hình MiniMax trong OpenClaw
     - Bạn cần hướng dẫn thiết lập MiniMax
 summary: Sử dụng các mô hình MiniMax trong OpenClaw
 title: MiniMax
 x-i18n:
-    generated_at: "2026-06-27T18:04:19Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:21:12Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 37fe606178d7d15383e56c026b02ba7be751ead706adc097c776c0a6a92aa2a2
+    source_hash: 1172d2d2c92dc92858f15564eee9ffeb8eb9599ee70157116fd2e302556dd75a
     source_path: providers/minimax.md
     workflow: 16
 ---
 
-OpenClaw's MiniMax provider defaults to **MiniMax M3**.
+  Plugin `minimax` đi kèm đăng ký hai nhà cung cấp cùng năm khả năng: trò chuyện, tạo hình ảnh, tạo nhạc, tạo video, hiểu hình ảnh, giọng nói (T2A v2) và tìm kiếm web.
 
-MiniMax also provides:
+  | ID nhà cung cấp  | Xác thực | Khả năng                                                                                                   |
+  | ---------------- | -------- | ---------------------------------------------------------------------------------------------------------- |
+  | `minimax`        | Khóa API | Văn bản, tạo hình ảnh, tạo nhạc, tạo video, hiểu hình ảnh, giọng nói, tìm kiếm web                          |
+  | `minimax-portal` | OAuth    | Văn bản, tạo hình ảnh, tạo nhạc, tạo video, hiểu hình ảnh, giọng nói                                       |
 
-- Bundled speech synthesis via T2A v2
-- Bundled image understanding via `MiniMax-VL-01`
-- Bundled music generation via `music-2.6`
-- Bundled `web_search` through the MiniMax Token Plan search API
+  <Tip>
+  Liên kết giới thiệu MiniMax Coding Plan (giảm 10%): [MiniMax Coding Plan](https://platform.minimax.io/subscribe/coding-plan?code=DbXJTRClnb&source=link)
+  </Tip>
 
-Provider split:
+  ## Danh mục tích hợp sẵn
 
-| Provider ID      | Auth    | Capabilities                                                                                        |
-| ---------------- | ------- | --------------------------------------------------------------------------------------------------- |
-| `minimax`        | API key | Text, image generation, music generation, video generation, image understanding, speech, web search |
-| `minimax-portal` | OAuth   | Text, image generation, music generation, video generation, image understanding, speech             |
+  | Mô hình                  | Loại                   | Mô tả                                      |
+  | ------------------------ | ---------------------- | ------------------------------------------ |
+  | `MiniMax-M3`             | Trò chuyện (suy luận)  | Mô hình suy luận lưu trữ mặc định          |
+  | `MiniMax-M2.7`           | Trò chuyện (suy luận)  | Mô hình suy luận lưu trữ trước đó           |
+  | `MiniMax-M2.7-highspeed` | Trò chuyện (suy luận)  | Cấp suy luận M2.7 nhanh hơn                 |
+  | `MiniMax-VL-01`          | Thị giác               | Mô hình hiểu hình ảnh                      |
+  | `image-01`               | Tạo hình ảnh           | Chuyển văn bản thành hình ảnh và chỉnh sửa từ hình ảnh sang hình ảnh |
+  | `music-2.6`              | Tạo nhạc               | Mô hình âm nhạc mặc định                   |
+  | `MiniMax-Hailuo-2.3`     | Tạo video              | Quy trình chuyển văn bản thành video và hình ảnh thành video |
 
-## Built-in catalog
+  Tham chiếu mô hình tuân theo phương thức xác thực: `minimax/<model>` cho thiết lập bằng khóa API, `minimax-portal/<model>` cho thiết lập bằng OAuth.
 
-| Model                    | Type             | Description                              |
-| ------------------------ | ---------------- | ---------------------------------------- |
-| `MiniMax-M3`             | Chat (reasoning) | Default hosted reasoning model           |
-| `MiniMax-M2.7`           | Chat (reasoning) | Previous hosted reasoning model          |
-| `MiniMax-M2.7-highspeed` | Chat (reasoning) | Faster M2.7 reasoning tier               |
-| `MiniMax-VL-01`          | Vision           | Image understanding model                |
-| `image-01`               | Image generation | Text-to-image and image-to-image editing |
-| `music-2.6`              | Music generation | Default music model                      |
-| `music-2.5`              | Music generation | Previous music generation tier           |
-| `music-2.0`              | Music generation | Legacy music generation tier             |
-| `MiniMax-Hailuo-2.3`     | Video generation | Text-to-video and image reference flows  |
+  ## Bắt đầu
 
-## Getting started
-
-Choose your preferred auth method and follow the setup steps.
-
-<Tabs>
+  <Tabs>
   <Tab title="OAuth (Coding Plan)">
-    **Best for:** quick setup with MiniMax Coding Plan via OAuth, no API key required.
+    **Phù hợp nhất cho:** thiết lập nhanh với MiniMax Coding Plan qua OAuth, không yêu cầu khóa API.
 
     <Tabs>
-      <Tab title="International">
+      <Tab title="Quốc tế">
         <Steps>
-          <Step title="Run onboarding">
+          <Step title="Chạy quy trình thiết lập ban đầu">
             ```bash
             openclaw onboard --auth-choice minimax-global-oauth
             ```
 
-            This authenticates against `api.minimax.io`.
+            URL cơ sở của nhà cung cấp sau khi thiết lập: `api.minimax.io`.
           </Step>
-          <Step title="Verify the model is available">
+          <Step title="Xác minh mô hình khả dụng">
             ```bash
             openclaw models list --provider minimax-portal
             ```
           </Step>
         </Steps>
       </Tab>
-      <Tab title="China">
+      <Tab title="Trung Quốc">
         <Steps>
-          <Step title="Run onboarding">
+          <Step title="Chạy quy trình thiết lập ban đầu">
             ```bash
             openclaw onboard --auth-choice minimax-cn-oauth
             ```
 
-            This authenticates against `api.minimaxi.com`.
+            URL cơ sở của nhà cung cấp sau khi thiết lập: `api.minimaxi.com`.
           </Step>
-          <Step title="Verify the model is available">
+          <Step title="Xác minh mô hình khả dụng">
             ```bash
             openclaw models list --provider minimax-portal
             ```
@@ -88,45 +81,41 @@ Choose your preferred auth method and follow the setup steps.
     </Tabs>
 
     <Note>
-    OAuth setups use the `minimax-portal` provider id. Model refs follow the form `minimax-portal/MiniMax-M3`.
+    Các thiết lập OAuth sử dụng ID nhà cung cấp `minimax-portal`. Tham chiếu mô hình có dạng `minimax-portal/MiniMax-M3`.
     </Note>
-
-    <Tip>
-    Referral link for MiniMax Coding Plan (10% off): [MiniMax Coding Plan](https://platform.minimax.io/subscribe/coding-plan?code=DbXJTRClnb&source=link)
-    </Tip>
 
   </Tab>
 
-  <Tab title="API key">
-    **Best for:** hosted MiniMax with Anthropic-compatible API.
+  <Tab title="Khóa API">
+    **Phù hợp nhất cho:** MiniMax được lưu trữ với API tương thích Anthropic.
 
     <Tabs>
-      <Tab title="International">
+      <Tab title="Quốc tế">
         <Steps>
-          <Step title="Run onboarding">
+          <Step title="Chạy quy trình thiết lập ban đầu">
             ```bash
             openclaw onboard --auth-choice minimax-global-api
             ```
 
-            This configures `api.minimax.io` as the base URL.
+            Thao tác này cấu hình `api.minimax.io` làm URL cơ sở.
           </Step>
-          <Step title="Verify the model is available">
+          <Step title="Xác minh mô hình khả dụng">
             ```bash
             openclaw models list --provider minimax
             ```
           </Step>
         </Steps>
       </Tab>
-      <Tab title="China">
+      <Tab title="Trung Quốc">
         <Steps>
-          <Step title="Run onboarding">
+          <Step title="Chạy quy trình thiết lập ban đầu">
             ```bash
             openclaw onboard --auth-choice minimax-cn-api
             ```
 
-            This configures `api.minimaxi.com` as the base URL.
+            Thao tác này cấu hình `api.minimaxi.com` làm URL cơ sở.
           </Step>
-          <Step title="Verify the model is available">
+          <Step title="Xác minh mô hình khả dụng">
             ```bash
             openclaw models list --provider minimax
             ```
@@ -135,7 +124,7 @@ Choose your preferred auth method and follow the setup steps.
       </Tab>
     </Tabs>
 
-    ### Config example
+    ### Ví dụ cấu hình
 
     ```json5
     {
@@ -184,58 +173,49 @@ Choose your preferred auth method and follow the setup steps.
     ```
 
     <Warning>
-    On the Anthropic-compatible streaming path, OpenClaw disables MiniMax M2.x thinking by default unless you explicitly set `thinking` yourself. M2.x's streaming endpoint emits `reasoning_content` in OpenAI-style delta chunks instead of native Anthropic thinking blocks, which can leak internal reasoning into visible output if left enabled implicitly. MiniMax-M3 (and forward-compatible M3.x) is exempt from this default: M3 emits proper Anthropic thinking blocks and requires thinking active to produce visible content, so OpenClaw keeps M3 on the provider's omitted/adaptive thinking path.
+    Điểm cuối truyền phát tương thích Anthropic của MiniMax-M2.x phát `reasoning_content` trong các đoạn delta theo kiểu OpenAI thay vì các khối suy nghĩ Anthropic nguyên bản, khiến suy luận nội bộ bị lộ trong đầu ra hiển thị nếu chế độ suy nghĩ được ngầm bật. OpenClaw mặc định tắt chế độ suy nghĩ của M2.x, trừ khi bạn tự đặt `thinking` một cách rõ ràng. MiniMax-M3 (và các phiên bản M3.x tương thích về sau) được miễn trừ: M3 phát các khối suy nghĩ Anthropic đúng chuẩn và yêu cầu chế độ suy nghĩ hoạt động để tạo nội dung hiển thị, vì vậy OpenClaw duy trì M3 trên cơ chế suy nghĩ thích ứng của nhà cung cấp. Xem phần Mặc định về chế độ suy nghĩ trong mục Cấu hình nâng cao bên dưới.
     </Warning>
 
     <Note>
-    API-key setups use the `minimax` provider id. Model refs follow the form `minimax/MiniMax-M3`.
+    Các thiết lập bằng khóa API sử dụng ID nhà cung cấp `minimax`. Tham chiếu mô hình có dạng `minimax/MiniMax-M3`.
     </Note>
 
   </Tab>
 </Tabs>
 
-## Configure via `openclaw configure`
-
-Use the interactive config wizard to set MiniMax without editing JSON:
+## Cấu hình qua `openclaw configure`
 
 <Steps>
-  <Step title="Launch the wizard">
+  <Step title="Khởi chạy trình hướng dẫn">
     ```bash
     openclaw configure
     ```
   </Step>
-  <Step title="Select Model/auth">
-    Choose **Model/auth** from the menu.
+  <Step title="Chọn mô hình/xác thực">
+    Chọn **Mô hình/xác thực** từ trình đơn.
   </Step>
-  <Step title="Choose a MiniMax auth option">
-    Pick one of the available MiniMax options:
-
-    | Auth choice | Description |
-    | --- | --- |
-    | `minimax-global-oauth` | International OAuth (Coding Plan) |
-    | `minimax-cn-oauth` | China OAuth (Coding Plan) |
-    | `minimax-global-api` | International API key |
-    | `minimax-cn-api` | China API key |
-
+  <Step title="Chọn một tùy chọn xác thực MiniMax">
+    | Lựa chọn xác thực      | Mô tả                               |
+    | ----------------------- | ----------------------------------- |
+    | `minimax-global-oauth` | OAuth quốc tế (Gói lập trình)       |
+    | `minimax-cn-oauth`     | OAuth Trung Quốc (Gói lập trình)    |
+    | `minimax-global-api`   | Khóa API quốc tế                    |
+    | `minimax-cn-api`       | Khóa API Trung Quốc                 |
   </Step>
-  <Step title="Pick your default model">
-    Select your default model when prompted.
+  <Step title="Chọn mô hình mặc định">
+    Chọn mô hình mặc định khi được nhắc.
   </Step>
 </Steps>
 
-## Capabilities
+## Khả năng
 
-### Image generation
+### Tạo hình ảnh
 
-The MiniMax plugin registers the `image-01` model for the `image_generate` tool. It supports:
+Plugin MiniMax đăng ký mô hình `image-01` cho công cụ `image_generate` trên cả `minimax` và `minimax-portal`, sử dụng lại cùng `MINIMAX_API_KEY` hoặc thông tin xác thực OAuth như các mô hình văn bản.
 
-- **Text-to-image generation** with aspect ratio control
-- **Image-to-image editing** (subject reference) with aspect ratio control
-- Up to **9 output images** per request
-- Up to **1 reference image** per edit request
-- Supported aspect ratios: `1:1`, `16:9`, `4:3`, `3:2`, `2:3`, `3:4`, `9:16`, `21:9`
-
-To use MiniMax for image generation, set it as the image generation provider:
+- Tạo ảnh từ văn bản và chỉnh sửa ảnh dựa trên ảnh (tham chiếu chủ thể), cả hai đều hỗ trợ kiểm soát tỷ lệ khung hình
+- Tối đa 9 ảnh đầu ra cho mỗi yêu cầu, 1 ảnh tham chiếu cho mỗi yêu cầu chỉnh sửa
+- Các tỷ lệ khung hình được hỗ trợ: `1:1`, `16:9`, `4:3`, `3:2`, `2:3`, `3:4`, `9:16`, `21:9`
 
 ```json5
 {
@@ -247,149 +227,107 @@ To use MiniMax for image generation, set it as the image generation provider:
 }
 ```
 
-The plugin uses the same `MINIMAX_API_KEY` or OAuth auth as the text models. No additional configuration is needed if MiniMax is already set up.
-
-Both `minimax` and `minimax-portal` register `image_generate` with the same
-`image-01` model. API-key setups use `MINIMAX_API_KEY`; OAuth setups can use
-the bundled `minimax-portal` auth path instead.
-
-Image generation always uses MiniMax's dedicated image endpoint
-(`/v1/image_generation`) and ignores `models.providers.minimax.baseUrl`,
-since that field configures the chat/Anthropic-compatible base URL. Set
-`MINIMAX_API_HOST=https://api.minimaxi.com` to route image generation
-through the CN endpoint; the default global endpoint is
-`https://api.minimax.io`.
-
-When onboarding or API-key setup writes explicit `models.providers.minimax`
-entries, OpenClaw materializes `MiniMax-M3`, `MiniMax-M2.7`, and
-`MiniMax-M2.7-highspeed` as chat models. M3 advertises text and image input;
-image understanding remains exposed separately through the plugin-owned
-`MiniMax-VL-01` media provider.
+Việc tạo hình ảnh luôn sử dụng điểm cuối dành riêng cho hình ảnh của MiniMax (`/v1/image_generation`) và bỏ qua `models.providers.minimax.baseUrl`, vì trường đó dùng để cấu hình URL cơ sở tương thích với trò chuyện/Anthropic. Đặt `MINIMAX_API_HOST=https://api.minimaxi.com` để định tuyến việc tạo hình ảnh qua điểm cuối Trung Quốc; điểm cuối toàn cầu mặc định là `https://api.minimax.io`.
 
 <Note>
-See [Image Generation](/vi/tools/image-generation) for shared tool parameters, provider selection, and failover behavior.
+Xem [Tạo hình ảnh](/vi/tools/image-generation) để biết các tham số công cụ dùng chung, cách chọn nhà cung cấp và hành vi chuyển đổi dự phòng.
 </Note>
 
-### Text-to-speech
+### Chuyển văn bản thành giọng nói
 
-The bundled `minimax` plugin registers MiniMax T2A v2 as a speech provider for
-`messages.tts`.
+Plugin `minimax` đi kèm đăng ký MiniMax T2A v2 làm nhà cung cấp giọng nói cho `messages.tts`.
 
-- Default TTS model: `speech-2.8-hd`
-- Default voice: `English_expressive_narrator`
-- Supported bundled model ids include `speech-2.8-hd`, `speech-2.8-turbo`,
-  `speech-2.6-hd`, `speech-2.6-turbo`, `speech-02-hd`,
-  `speech-02-turbo`, `speech-01-hd`, and `speech-01-turbo`.
-- Auth resolution is `messages.tts.providers.minimax.apiKey`, then
-  `minimax-portal` OAuth/token auth profiles, then Token Plan environment
-  keys (`MINIMAX_OAUTH_TOKEN`, `MINIMAX_CODE_PLAN_KEY`,
-  `MINIMAX_CODING_API_KEY`), then `MINIMAX_API_KEY`.
-- If no TTS host is configured, OpenClaw reuses the configured
-  `minimax-portal` OAuth host and strips Anthropic-compatible path suffixes
-  such as `/anthropic`.
-- Normal audio attachments stay MP3.
-- Voice-note targets such as Feishu and Telegram are transcoded from MiniMax
-  MP3 to 48kHz Opus with `ffmpeg`, because the Feishu/Lark file API only
-  accepts `file_type: "opus"` for native audio messages.
-- MiniMax T2A accepts fractional `speed` and `vol`, but `pitch` is sent as an
-  integer; OpenClaw truncates fractional `pitch` values before the API request.
+- Mô hình TTS mặc định: `speech-2.8-hd`
+- Giọng nói mặc định: `English_expressive_narrator`
+- Các mã định danh mô hình đi kèm: `speech-2.8-hd`, `speech-2.8-turbo`, `speech-2.6-hd`, `speech-2.6-turbo`, `speech-02-hd`, `speech-02-turbo`, `speech-01-hd`, `speech-01-turbo`, `speech-01-240228`
+- Thứ tự phân giải thông tin xác thực: `messages.tts.providers.minimax.apiKey`, sau đó là các hồ sơ xác thực OAuth/token của `minimax-portal`, tiếp theo là các khóa môi trường của Gói token (`MINIMAX_OAUTH_TOKEN`, `MINIMAX_CODE_PLAN_KEY`, `MINIMAX_CODING_API_KEY`), rồi đến `MINIMAX_API_KEY`
+- Nếu chưa cấu hình máy chủ TTS, OpenClaw sử dụng lại máy chủ OAuth `minimax-portal` đã cấu hình và loại bỏ các hậu tố đường dẫn tương thích với Anthropic như `/anthropic`
+- Các tệp âm thanh đính kèm thông thường vẫn ở định dạng MP3. Các đích ghi chú thoại (Feishu, Telegram và các kênh khác yêu cầu tệp đính kèm tương thích với ghi chú thoại) được chuyển mã từ MP3 của MiniMax sang Opus 48 kHz bằng `ffmpeg`, vì chẳng hạn API tệp của Feishu/Lark chỉ chấp nhận `file_type: "opus"` cho tin nhắn âm thanh gốc
+- MiniMax T2A chấp nhận giá trị thập phân cho `speed` và `vol`, nhưng `pitch` được gửi dưới dạng số nguyên; OpenClaw cắt bỏ phần thập phân của giá trị `pitch` trước khi gửi yêu cầu API
 
-| Setting                                         | Env var                | Default                       | Description                      |
-| ----------------------------------------------- | ---------------------- | ----------------------------- | -------------------------------- |
-| `messages.tts.providers.minimax.baseUrl`        | `MINIMAX_API_HOST`     | `https://api.minimax.io`      | MiniMax T2A API host.            |
-| `messages.tts.providers.minimax.model`          | `MINIMAX_TTS_MODEL`    | `speech-2.8-hd`               | TTS model id.                    |
-| `messages.tts.providers.minimax.speakerVoiceId` | `MINIMAX_TTS_VOICE_ID` | `English_expressive_narrator` | Voice id used for speech output. |
-| `messages.tts.providers.minimax.speed`          |                        | `1.0`                         | Playback speed, `0.5..2.0`.      |
-| `messages.tts.providers.minimax.vol`            |                        | `1.0`                         | Volume, `(0, 10]`.               |
-| `messages.tts.providers.minimax.pitch`          |                        | `0`                           | Integer pitch shift, `-12..12`.  |
+| Cài đặt                                  | Biến môi trường        | Mặc định                      | Mô tả                                      |
+| ---------------------------------------- | ---------------------- | ----------------------------- | ------------------------------------------ |
+| `messages.tts.providers.minimax.baseUrl` | `MINIMAX_API_HOST`     | `https://api.minimax.io`      | Máy chủ API MiniMax T2A.                   |
+| `messages.tts.providers.minimax.model`   | `MINIMAX_TTS_MODEL`    | `speech-2.8-hd`               | Mã định danh mô hình TTS.                  |
+| `messages.tts.providers.minimax.voiceId` | `MINIMAX_TTS_VOICE_ID` | `English_expressive_narrator` | Mã định danh giọng nói dùng cho đầu ra.    |
+| `messages.tts.providers.minimax.speed`   |                        | `1.0`                         | Tốc độ phát, `0.5..2.0`.                   |
+| `messages.tts.providers.minimax.vol`     |                        | `1.0`                         | Âm lượng, `(0, 10]`.                       |
+| `messages.tts.providers.minimax.pitch`   |                        | `0`                           | Độ dịch cao độ dạng số nguyên, `-12..12`.  |
 
-### Music generation
+### Tạo nhạc
 
-The bundled MiniMax plugin registers music generation through the shared
-`music_generate` tool for both `minimax` and `minimax-portal`.
+Plugin MiniMax đi kèm đăng ký khả năng tạo nhạc thông qua công cụ dùng chung `music_generate` cho cả `minimax` và `minimax-portal`.
 
-- Mô hình nhạc mặc định: `minimax/music-2.6`
-- Mô hình nhạc OAuth: `minimax-portal/music-2.6`
-- Cũng hỗ trợ `minimax/music-2.5` và `minimax/music-2.0`
-- Điều khiển prompt: `lyrics`, `instrumental`
+- Mô hình nhạc mặc định: `minimax/music-2.6` (OAuth: `minimax-portal/music-2.6`)
+- Cũng hỗ trợ `music-2.6-free`, `music-cover` và `music-cover-free`
+- Các tham số điều khiển lời nhắc: `lyrics`, `instrumental`
 - Định dạng đầu ra: `mp3`
-- Các lượt chạy có phiên hỗ trợ sẽ tách ra qua luồng tác vụ/trạng thái dùng chung, bao gồm `action: "status"`
-
-Để dùng MiniMax làm nhà cung cấp nhạc mặc định:
+- Các lượt chạy dựa trên phiên được tách ra thông qua luồng tác vụ/trạng thái dùng chung, bao gồm `action: "status"`
 
 ```json5
 {
   agents: {
     defaults: {
-      musicGenerationModel: {
-        primary: "minimax/music-2.6",
-      },
+      musicGenerationModel: { primary: "minimax/music-2.6" },
     },
   },
 }
 ```
 
 <Note>
-Xem [Tạo nhạc](/vi/tools/music-generation) để biết các tham số công cụ dùng chung, lựa chọn nhà cung cấp và hành vi chuyển đổi dự phòng.
+Xem [Tạo nhạc](/vi/tools/music-generation) để biết các tham số công cụ dùng chung, cách chọn nhà cung cấp và hành vi chuyển đổi dự phòng.
 </Note>
 
 ### Tạo video
 
-Plugin MiniMax đi kèm đăng ký tạo video thông qua công cụ dùng chung
-`video_generate` cho cả `minimax` và `minimax-portal`.
+Plugin MiniMax đi kèm đăng ký khả năng tạo video thông qua công cụ dùng chung `video_generate` cho cả `minimax` và `minimax-portal`.
 
-- Mô hình video mặc định: `minimax/MiniMax-Hailuo-2.3`
-- Mô hình video OAuth: `minimax-portal/MiniMax-Hailuo-2.3`
-- Chế độ: luồng văn bản thành video và tham chiếu một hình ảnh
-- Hỗ trợ `aspectRatio` và `resolution`
-
-Để dùng MiniMax làm nhà cung cấp video mặc định:
+- Mô hình video mặc định: `minimax/MiniMax-Hailuo-2.3` (OAuth: `minimax-portal/MiniMax-Hailuo-2.3`)
+- Cũng hỗ trợ `MiniMax-Hailuo-2.3-Fast`, `MiniMax-Hailuo-02`, `I2V-01-Director`, `I2V-01-live` và `I2V-01`
+- Chế độ: chuyển văn bản thành video và các luồng tham chiếu một hình ảnh
+- Hỗ trợ `resolution` (`768P` hoặc `1080P` trên các mô hình Hailuo 2.3/02); `aspectRatio` không được hỗ trợ và sẽ bị bỏ qua
 
 ```json5
 {
   agents: {
     defaults: {
-      videoGenerationModel: {
-        primary: "minimax/MiniMax-Hailuo-2.3",
-      },
+      videoGenerationModel: { primary: "minimax/MiniMax-Hailuo-2.3" },
     },
   },
 }
 ```
 
 <Note>
-Xem [Tạo video](/vi/tools/video-generation) để biết các tham số công cụ dùng chung, lựa chọn nhà cung cấp và hành vi chuyển đổi dự phòng.
+Xem [Tạo video](/vi/tools/video-generation) để biết các tham số công cụ dùng chung, cách chọn nhà cung cấp và hành vi chuyển đổi dự phòng.
 </Note>
 
 ### Hiểu hình ảnh
 
-Plugin MiniMax đăng ký khả năng hiểu hình ảnh tách biệt với danh mục
-văn bản:
+Plugin MiniMax đăng ký chức năng hiểu hình ảnh riêng biệt với danh mục văn bản:
 
-| ID nhà cung cấp  | Mô hình hình ảnh mặc định |
-| ---------------- | ------------------- |
-| `minimax`        | `MiniMax-VL-01`     |
-| `minimax-portal` | `MiniMax-VL-01`     |
+| ID nhà cung cấp   | Mô hình hình ảnh mặc định | Trích xuất văn bản PDF |
+| ----------------- | ------------------------- | ---------------------- |
+| `minimax`         | `MiniMax-VL-01`           | `MiniMax-M2.7`         |
+| `minimax-portal`  | `MiniMax-VL-01`           | `MiniMax-M2.7`         |
 
-Đó là lý do định tuyến phương tiện tự động có thể dùng khả năng hiểu hình ảnh của MiniMax ngay cả
-khi danh mục nhà cung cấp văn bản đi kèm cũng bao gồm các tham chiếu trò chuyện M3 có khả năng xử lý hình ảnh.
+Đó là lý do cơ chế định tuyến phương tiện tự động có thể sử dụng chức năng hiểu hình ảnh của MiniMax ngay cả khi danh mục nhà cung cấp văn bản đi kèm cũng chứa các tham chiếu trò chuyện M3 có khả năng xử lý hình ảnh. Chức năng hiểu PDF chỉ sử dụng `MiniMax-M2.7` để trích xuất văn bản; MiniMax không đăng ký đường dẫn chuyển đổi PDF thành hình ảnh.
 
 ### Tìm kiếm web
 
-Plugin MiniMax cũng đăng ký `web_search` thông qua API tìm kiếm MiniMax Token Plan.
+Plugin MiniMax cũng đăng ký `web_search` thông qua API tìm kiếm MiniMax Token Plan (`/v1/coding_plan/search`).
 
 - ID nhà cung cấp: `minimax`
 - Kết quả có cấu trúc: tiêu đề, URL, đoạn trích, truy vấn liên quan
 - Biến môi trường ưu tiên: `MINIMAX_CODE_PLAN_KEY`
-- Bí danh môi trường được chấp nhận: `MINIMAX_CODING_API_KEY`, `MINIMAX_OAUTH_TOKEN`
-- Dự phòng tương thích: `MINIMAX_API_KEY` khi biến này đã trỏ tới thông tin xác thực token-plan
-- Tái sử dụng vùng: `plugins.entries.minimax.config.webSearch.region`, rồi `MINIMAX_API_HOST`, rồi các URL cơ sở của nhà cung cấp MiniMax
-- Tìm kiếm vẫn ở ID nhà cung cấp `minimax`; thiết lập OAuth CN/toàn cầu có thể điều hướng vùng gián tiếp thông qua `models.providers.minimax-portal.baseUrl` và có thể cung cấp xác thực bearer thông qua `MINIMAX_OAUTH_TOKEN`
+- Bí danh biến môi trường được chấp nhận: `MINIMAX_CODING_API_KEY`, `MINIMAX_OAUTH_TOKEN`
+- Phương án dự phòng tương thích: `MINIMAX_API_KEY` khi biến này đã trỏ đến thông tin xác thực của gói token
+- Tái sử dụng khu vực: `plugins.entries.minimax.config.webSearch.region`, sau đó `MINIMAX_API_HOST`, rồi đến các URL cơ sở của nhà cung cấp MiniMax
+- Tìm kiếm vẫn dùng ID nhà cung cấp `minimax`; thiết lập OAuth Trung Quốc/toàn cầu có thể gián tiếp điều hướng khu vực thông qua `models.providers.minimax-portal.baseUrl` và có thể cung cấp xác thực bearer thông qua `MINIMAX_OAUTH_TOKEN`
 
-Cấu hình nằm dưới `plugins.entries.minimax.config.webSearch.*`.
+Cấu hình nằm trong `plugins.entries.minimax.config.webSearch.*`.
 
 <Note>
-Xem [Tìm kiếm MiniMax](/vi/tools/minimax-search) để biết cấu hình và cách dùng tìm kiếm web đầy đủ.
+Xem [Tìm kiếm MiniMax](/vi/tools/minimax-search) để biết đầy đủ cách cấu hình và sử dụng tìm kiếm web.
 </Note>
 
 ## Cấu hình nâng cao
@@ -398,29 +336,34 @@ Xem [Tìm kiếm MiniMax](/vi/tools/minimax-search) để biết cấu hình và
   <Accordion title="Tùy chọn cấu hình">
     | Tùy chọn | Mô tả |
     | --- | --- |
-    | `models.providers.minimax.baseUrl` | Ưu tiên `https://api.minimax.io/anthropic` (tương thích Anthropic); `https://api.minimax.io/v1` là tùy chọn cho payload tương thích OpenAI |
-    | `models.providers.minimax.api` | Ưu tiên `anthropic-messages`; `openai-completions` là tùy chọn cho payload tương thích OpenAI |
+    | `models.providers.minimax.baseUrl` | Ưu tiên `https://api.minimax.io/anthropic` (tương thích Anthropic); `https://api.minimax.io/v1` là tùy chọn dành cho payload tương thích OpenAI |
+    | `models.providers.minimax.api` | Ưu tiên `anthropic-messages`; `openai-completions` là tùy chọn dành cho payload tương thích OpenAI |
     | `models.providers.minimax.apiKey` | Khóa API MiniMax (`MINIMAX_API_KEY`) |
     | `models.providers.minimax.models` | Định nghĩa `id`, `name`, `reasoning`, `contextWindow`, `maxTokens`, `cost` |
-    | `agents.defaults.models` | Đặt bí danh cho các mô hình bạn muốn đưa vào allowlist |
-    | `models.mode` | Giữ `merge` nếu bạn muốn thêm MiniMax cùng với các mục tích hợp sẵn |
+    | `agents.defaults.models` | Đặt bí danh cho các mô hình bạn muốn đưa vào danh sách cho phép |
+    | `models.mode` | Giữ `merge` nếu bạn muốn thêm MiniMax bên cạnh các mô hình tích hợp sẵn |
   </Accordion>
 
-  <Accordion title="Mặc định Thinking">
-    Trên `api: "anthropic-messages"`, OpenClaw chèn `thinking: { type: "disabled" }` cho các mô hình MiniMax M2.x trừ khi thinking đã được đặt rõ ràng trong tham số/cấu hình.
+  <Accordion title="Mặc định về suy luận">
+    Khi dùng `api: "anthropic-messages"`, OpenClaw chèn `thinking: { type: "disabled" }` cho các mô hình MiniMax M2.x, trừ khi một trình bao bọc trước đó đã đặt trường `thinking` trong payload. Điều này ngăn điểm cuối truyền phát của M2.x phát `reasoning_content` trong các phần delta theo kiểu OpenAI, vốn sẽ làm lộ suy luận nội bộ trong đầu ra hiển thị.
 
-    Điều này ngăn endpoint streaming của M2.x phát ra `reasoning_content` trong các đoạn delta kiểu OpenAI, vốn sẽ làm lộ suy luận nội bộ trong đầu ra hiển thị.
+    MiniMax-M3 (và M3.x) được miễn: M3 trả về mảng `content` trống với `stop_reason: "end_turn"` khi tính năng suy luận bị tắt, vì vậy OpenClaw loại bỏ mặc định tắt ngầm định đối với M3 và khi đã đặt mức suy luận, thay vào đó buộc dùng `thinking: { type: "adaptive" }`.
 
-    MiniMax-M3 (và M3.x) được miễn trừ: M3 phát ra các khối thinking Anthropic đúng chuẩn và trả về mảng `content` rỗng với `stop_reason: "end_turn"` khi thinking bị tắt, nên wrapper giữ M3 trên đường dẫn thinking bị bỏ qua/thích ứng của nhà cung cấp.
+    Các mức suy luận khả dụng theo họ mô hình:
+
+    | Họ mô hình      | Mức độ                                    | Mặc định   |
+    | --------------- | ----------------------------------------- | ---------- |
+    | `MiniMax-M3`    | `off`, `adaptive`                         | `adaptive` |
+    | `MiniMax-M2.x`  | `off`, `minimal`, `low`, `medium`, `high` | `off`      |
 
   </Accordion>
 
   <Accordion title="Chế độ nhanh">
-    `/fast on` hoặc `params.fastMode: true` viết lại `MiniMax-M2.7` thành `MiniMax-M2.7-highspeed` trên đường dẫn stream tương thích Anthropic.
+    `/fast on` hoặc `params.fastMode: true` chuyển `MiniMax-M2.7` thành `MiniMax-M2.7-highspeed` trên đường dẫn truyền phát tương thích Anthropic (`api: "anthropic-messages"`, nhà cung cấp `minimax` hoặc `minimax-portal`).
   </Accordion>
 
-  <Accordion title="Ví dụ dự phòng">
-    **Phù hợp nhất cho:** giữ mô hình thế hệ mới nhất mạnh nhất của bạn làm chính, chuyển đổi dự phòng sang MiniMax M2.7. Ví dụ bên dưới dùng Opus làm mô hình chính cụ thể; hãy thay bằng mô hình chính thế hệ mới nhất bạn ưa dùng.
+  <Accordion title="Ví dụ về phương án dự phòng">
+    **Phù hợp nhất khi:** giữ mô hình thế hệ mới nhất và mạnh nhất của bạn làm mô hình chính, đồng thời chuyển đổi dự phòng sang MiniMax M2.7. Ví dụ dưới đây dùng Opus làm mô hình chính cụ thể; hãy thay bằng mô hình chính thế hệ mới nhất mà bạn ưu tiên.
 
     ```json5
     {
@@ -443,50 +386,41 @@ Xem [Tìm kiếm MiniMax](/vi/tools/minimax-search) để biết cấu hình và
   </Accordion>
 
   <Accordion title="Chi tiết sử dụng Coding Plan">
-    - API sử dụng Coding Plan: `https://api.minimaxi.com/v1/token_plan/remains` hoặc `https://api.minimax.io/v1/token_plan/remains` (yêu cầu khóa coding plan).
-    - Việc thăm dò mức sử dụng lấy host từ `models.providers.minimax-portal.baseUrl` hoặc `models.providers.minimax.baseUrl` khi được cấu hình, vì vậy các thiết lập toàn cầu dùng `https://api.minimax.io/anthropic` sẽ thăm dò `api.minimax.io`. URL cơ sở bị thiếu hoặc sai định dạng sẽ giữ dự phòng CN để tương thích.
-    - OpenClaw chuẩn hóa mức sử dụng coding-plan của MiniMax sang cùng màn hình `% left` được các nhà cung cấp khác dùng. Các trường thô `usage_percent` / `usagePercent` của MiniMax là hạn mức còn lại, không phải hạn mức đã tiêu thụ, nên OpenClaw đảo ngược chúng. Các trường dựa trên số lượng được ưu tiên khi có.
-    - Khi API trả về `model_remains`, OpenClaw ưu tiên mục mô hình trò chuyện, suy ra nhãn cửa sổ từ `start_time` / `end_time` khi cần, và đưa tên mô hình đã chọn vào nhãn gói để các cửa sổ coding-plan dễ phân biệt hơn.
-    - Ảnh chụp nhanh mức sử dụng coi `minimax`, `minimax-cn` và `minimax-portal` là cùng một bề mặt hạn mức MiniMax, và ưu tiên OAuth MiniMax đã lưu trước khi dự phòng về các biến môi trường khóa Coding Plan.
+    - API mức sử dụng Coding Plan: `https://api.minimaxi.com/v1/token_plan/remains` hoặc `https://api.minimax.io/v1/token_plan/remains` (yêu cầu khóa gói lập trình).
+    - Cơ chế thăm dò mức sử dụng lấy máy chủ từ `models.providers.minimax-portal.baseUrl` hoặc `models.providers.minimax.baseUrl` khi được cấu hình, vì vậy các thiết lập toàn cầu dùng `https://api.minimax.io/anthropic` sẽ thăm dò `api.minimax.io`. URL cơ sở bị thiếu hoặc không đúng định dạng vẫn dùng phương án dự phòng Trung Quốc để duy trì khả năng tương thích.
+    - OpenClaw chuẩn hóa mức sử dụng gói lập trình MiniMax theo cùng cách hiển thị `% còn lại` được các nhà cung cấp khác sử dụng. Các trường thô `usage_percent` / `usagePercent` của MiniMax biểu thị hạn mức còn lại, không phải hạn mức đã dùng, nên OpenClaw đảo ngược chúng. Các trường dựa trên số lượng được ưu tiên khi có.
+    - Khi API trả về `model_remains`, OpenClaw ưu tiên mục mô hình trò chuyện, suy ra nhãn khoảng thời gian từ `start_time` / `end_time` khi cần và đưa tên mô hình đã chọn vào nhãn gói để dễ phân biệt các khoảng thời gian của gói lập trình.
+    - Ảnh chụp nhanh mức sử dụng coi `minimax`, `minimax-cn`, `minimax-portal` và `minimax-portal-cn` là cùng một bề mặt hạn mức MiniMax, đồng thời ưu tiên OAuth MiniMax đã lưu trước khi dùng dự phòng là các biến môi trường khóa Coding Plan.
 
   </Accordion>
 </AccordionGroup>
 
 ## Ghi chú
 
-- Tham chiếu mô hình đi theo đường dẫn xác thực:
-  - Thiết lập khóa API: `minimax/<model>`
-  - Thiết lập OAuth: `minimax-portal/<model>`
-- Mô hình trò chuyện mặc định: `MiniMax-M3`
-- Mô hình trò chuyện thay thế: `MiniMax-M2.7`, `MiniMax-M2.7-highspeed`
-- Onboarding và thiết lập khóa API trực tiếp ghi định nghĩa mô hình cho M3 và cả hai biến thể M2.7
-- Hiểu hình ảnh dùng nhà cung cấp phương tiện `MiniMax-VL-01` do Plugin sở hữu
-- Cập nhật giá trị giá trong `models.json` nếu bạn cần theo dõi chi phí chính xác
-- Dùng `openclaw models list` để xác nhận ID nhà cung cấp hiện tại, rồi chuyển bằng `openclaw models set minimax/MiniMax-M3` hoặc `openclaw models set minimax-portal/MiniMax-M3`
-
-<Tip>
-Liên kết giới thiệu cho MiniMax Coding Plan (giảm 10%): [MiniMax Coding Plan](https://platform.minimax.io/subscribe/coding-plan?code=DbXJTRClnb&source=link)
-</Tip>
+- Mô hình trò chuyện mặc định: `MiniMax-M3`. Các mô hình trò chuyện thay thế: `MiniMax-M2.7`, `MiniMax-M2.7-highspeed`
+- Quy trình thiết lập ban đầu và thiết lập trực tiếp bằng khóa API ghi định nghĩa mô hình cho M3 và cả hai biến thể M2.7
+- Chức năng hiểu hình ảnh sử dụng nhà cung cấp phương tiện `MiniMax-VL-01` do Plugin sở hữu
+- Cập nhật các giá trị định giá trong `models.json` nếu bạn cần theo dõi chi phí chính xác
+- Dùng `openclaw models list` để xác nhận ID nhà cung cấp hiện tại, sau đó chuyển đổi bằng `openclaw models set minimax/MiniMax-M3` hoặc `openclaw models set minimax-portal/MiniMax-M3`
 
 <Note>
-Xem [Nhà cung cấp mô hình](/vi/concepts/model-providers) để biết quy tắc nhà cung cấp.
+Xem [Nhà cung cấp mô hình](/vi/concepts/model-providers) để biết các quy tắc về nhà cung cấp.
 </Note>
 
 ## Khắc phục sự cố
 
 <AccordionGroup>
   <Accordion title='"Mô hình không xác định: minimax/MiniMax-M3"'>
-    Điều này thường có nghĩa là **nhà cung cấp MiniMax chưa được cấu hình** (không có mục nhà cung cấp khớp và không tìm thấy hồ sơ xác thực/khóa môi trường MiniMax). Bản sửa cho phát hiện này có trong **2026.1.12**. Sửa bằng cách:
+    Điều này thường có nghĩa là **nhà cung cấp MiniMax chưa được cấu hình** (không có mục nhà cung cấp tương ứng và không tìm thấy hồ sơ xác thực hoặc khóa môi trường MiniMax). Khắc phục bằng cách:
 
-    - Nâng cấp lên **2026.1.12** (hoặc chạy từ mã nguồn `main`), rồi khởi động lại gateway.
     - Chạy `openclaw configure` và chọn một tùy chọn xác thực **MiniMax**, hoặc
-    - Thêm thủ công khối `models.providers.minimax` hoặc `models.providers.minimax-portal` khớp, hoặc
-    - Đặt `MINIMAX_API_KEY`, `MINIMAX_OAUTH_TOKEN`, hoặc một hồ sơ xác thực MiniMax để nhà cung cấp khớp có thể được chèn.
+    - Thêm thủ công khối `models.providers.minimax` hoặc `models.providers.minimax-portal` tương ứng, hoặc
+    - Đặt `MINIMAX_API_KEY`, `MINIMAX_OAUTH_TOKEN` hoặc một hồ sơ xác thực MiniMax để có thể chèn nhà cung cấp tương ứng.
 
     Đảm bảo ID mô hình **phân biệt chữ hoa chữ thường**:
 
-    - Đường dẫn khóa API: `minimax/MiniMax-M3`, `minimax/MiniMax-M2.7`, hoặc `minimax/MiniMax-M2.7-highspeed`
-    - Đường dẫn OAuth: `minimax-portal/MiniMax-M3`, `minimax-portal/MiniMax-M2.7`, hoặc `minimax-portal/MiniMax-M2.7-highspeed`
+    - Đường dẫn khóa API: `minimax/MiniMax-M3`, `minimax/MiniMax-M2.7` hoặc `minimax/MiniMax-M2.7-highspeed`
+    - Đường dẫn OAuth: `minimax-portal/MiniMax-M3`, `minimax-portal/MiniMax-M2.7` hoặc `minimax-portal/MiniMax-M2.7-highspeed`
 
     Sau đó kiểm tra lại bằng:
 
@@ -498,28 +432,28 @@ Xem [Nhà cung cấp mô hình](/vi/concepts/model-providers) để biết quy t
 </AccordionGroup>
 
 <Note>
-Trợ giúp thêm: [Khắc phục sự cố](/vi/help/troubleshooting) và [FAQ](/vi/help/faq).
+Trợ giúp thêm: [Khắc phục sự cố](/vi/help/troubleshooting) và [Câu hỏi thường gặp](/vi/help/faq).
 </Note>
 
 ## Liên quan
 
 <CardGroup cols={2}>
-  <Card title="Lựa chọn mô hình" href="/vi/concepts/model-providers" icon="layers">
+  <Card title="Chọn mô hình" href="/vi/concepts/model-providers" icon="layers">
     Chọn nhà cung cấp, tham chiếu mô hình và hành vi chuyển đổi dự phòng.
   </Card>
   <Card title="Tạo hình ảnh" href="/vi/tools/image-generation" icon="image">
-    Tham số công cụ hình ảnh dùng chung và lựa chọn nhà cung cấp.
+    Các tham số công cụ hình ảnh dùng chung và cách chọn nhà cung cấp.
   </Card>
   <Card title="Tạo nhạc" href="/vi/tools/music-generation" icon="music">
-    Tham số công cụ nhạc dùng chung và lựa chọn nhà cung cấp.
+    Các tham số công cụ âm nhạc dùng chung và cách chọn nhà cung cấp.
   </Card>
   <Card title="Tạo video" href="/vi/tools/video-generation" icon="video">
-    Tham số công cụ video dùng chung và lựa chọn nhà cung cấp.
+    Các tham số công cụ video dùng chung và cách chọn nhà cung cấp.
   </Card>
   <Card title="Tìm kiếm MiniMax" href="/vi/tools/minimax-search" icon="magnifying-glass">
-    Cấu hình tìm kiếm web qua MiniMax Token Plan.
+    Cấu hình tìm kiếm web thông qua MiniMax Token Plan.
   </Card>
   <Card title="Khắc phục sự cố" href="/vi/help/troubleshooting" icon="wrench">
-    Khắc phục sự cố chung và FAQ.
+    Hướng dẫn khắc phục sự cố chung và câu hỏi thường gặp.
   </Card>
 </CardGroup>

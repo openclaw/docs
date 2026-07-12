@@ -4,8 +4,8 @@ read_when:
 summary: '`openclaw pairing` の CLI リファレンス（ペアリング要求の承認/一覧表示）'
 title: ペアリング
 x-i18n:
-    generated_at: "2026-07-05T11:12:56Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:03:30Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: ca83ad9d9e55cfffd49301cb529b28df370c2dcff03484880f7cfc85ec2d6440
@@ -15,9 +15,9 @@ x-i18n:
 
 # `openclaw pairing`
 
-ペアリングをサポートするチャネルの DM ペアリング要求を承認または確認します（チャット DM のみ - ノード/デバイスのペアリングには `openclaw devices` を使用します）。
+ペアリングに対応するチャンネルの DM ペアリングリクエストを承認または確認します（チャット DM のみ。Node/デバイスのペアリングには `openclaw devices` を使用します）。
 
-関連: [ペアリングフロー](/ja-JP/channels/pairing)
+関連項目: [ペアリングフロー](/ja-JP/channels/pairing)
 
 ## コマンド
 
@@ -33,16 +33,16 @@ openclaw pairing approve --channel telegram --account work <code> --notify
 
 ## `pairing list`
 
-1 つのチャネルの保留中のペアリング要求を一覧表示します。
+1 つのチャンネルについて、保留中のペアリングリクエストを一覧表示します。
 
-| オプション              | 説明                                  |
-| ----------------------- | ------------------------------------- |
-| `[channel]`             | 位置引数のチャネル ID                 |
-| `--channel <channel>`   | 明示的なチャネル ID                   |
-| `--account <accountId>` | 複数アカウントチャネル用のアカウント ID |
-| `--json`                | 機械可読な出力                        |
+| オプション                | 説明                                       |
+| ------------------------- | ------------------------------------------ |
+| `[channel]`               | 位置引数で指定するチャンネル ID            |
+| `--channel <channel>`     | 明示的に指定するチャンネル ID              |
+| `--account <accountId>`   | 複数アカウント対応チャンネルのアカウント ID |
+| `--json`                  | 機械可読形式の出力                         |
 
-ペアリング対応チャネルが複数設定されている場合は、チャネルを位置引数または `--channel` で渡します。拡張チャネルは、チャネル ID が有効であれば動作します。
+ペアリングに対応するチャンネルが複数設定されている場合は、位置引数または `--channel` でチャンネルを指定します。チャンネル ID が有効であれば、拡張チャンネルも使用できます。
 
 ## `pairing approve`
 
@@ -52,19 +52,19 @@ openclaw pairing approve --channel telegram --account work <code> --notify
 
 - `openclaw pairing approve <channel> <code>`
 - `openclaw pairing approve --channel <channel> <code>`
-- ペアリング対応チャネルがちょうど 1 つ設定されている場合は `openclaw pairing approve <code>`
+- ペアリングに対応するチャンネルが 1 つだけ設定されている場合は `openclaw pairing approve <code>`
 
-オプション: `--channel <channel>`、`--account <accountId>`、`--notify`（同じチャネルで要求者に確認を送り返します）。
+オプション: `--channel <channel>`、`--account <accountId>`、`--notify`（同じチャンネルでリクエスト元へ確認メッセージを送信します）。
 
-### 所有者のブートストラップ
+### 所有者の初期設定
 
-ペアリングコードを承認した時点で `commands.ownerAllowFrom` が空の場合、OpenClaw は承認された送信者もコマンド所有者として記録します。たとえば `telegram:123456789` のようなチャネルスコープのエントリを使用します。これは最初の所有者だけをブートストラップします。以降のペアリング承認が `commands.ownerAllowFrom` を置き換えたり拡張したりすることはありません。
+ペアリングコードを承認した時点で `commands.ownerAllowFrom` が空の場合、OpenClaw は承認した送信者をコマンド所有者としても記録し、`telegram:123456789` のようなチャンネルスコープのエントリを使用します。これは最初の所有者のみを初期設定します。以降のペアリング承認によって `commands.ownerAllowFrom` が置き換えられたり、拡張されたりすることはありません。
 
-コマンド所有者は、所有者専用コマンドを実行し、`/diagnostics`、`/export-trajectory`、`/config`、exec 承認などの危険な操作を承認できる人間のオペレーターアカウントです。ペアリングは送信者がエージェントと会話できるようにするだけであり、この 1 回限りのブートストラップを超えて、それ自体が所有者権限を付与することはありません。
+コマンド所有者とは、所有者専用コマンドを実行し、`/diagnostics`、`/export-trajectory`、`/config`、exec の承認などの危険な操作を承認できる人間のオペレーターアカウントです。ペアリングで許可されるのは、送信者がエージェントと会話することだけです。この 1 回限りの初期設定を除き、ペアリング自体によって所有者権限が付与されることはありません。
 
-このブートストラップが存在する前に送信者を承認していた場合は、`openclaw doctor` を実行してください。コマンド所有者が設定されていない場合に警告し、修正に必要な正確な `openclaw config set commands.ownerAllowFrom ...` コマンドを表示します。
+この初期設定が導入される前に送信者を承認していた場合は、`openclaw doctor` を実行してください。コマンド所有者が設定されていない場合に警告が表示され、修正に必要な `openclaw config set commands.ownerAllowFrom ...` コマンドが正確に示されます。
 
-## 関連
+## 関連項目
 
 - [CLI リファレンス](/ja-JP/cli)
-- [チャネルペアリング](/ja-JP/channels/pairing)
+- [チャンネルのペアリング](/ja-JP/channels/pairing)

@@ -1,47 +1,44 @@
 ---
 read_when:
-    - Je wilt Deepgram-spraak-naar-tekst gebruiken voor audiobijlagen
-    - Je wilt Deepgram-streamingtranscriptie voor Spraakoproep
-    - Je hebt een beknopt Deepgram-configuratievoorbeeld nodig
+    - Je wilt spraak-naar-tekst van Deepgram voor audiobijlagen
+    - Je wilt streamingtranscriptie van Deepgram voor Voice Call
+    - Je hebt een snel Deepgram-configuratievoorbeeld nodig
 summary: Deepgram-transcriptie voor inkomende spraaknotities
 title: Deepgram
 x-i18n:
-    generated_at: "2026-04-29T23:09:32Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:18:55Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 9d591aa24a5477fd9fe69b7a0dc44b204d28ea0c2f89e6dfef66f9ceb76da34d
+    source_hash: 8b0f407829ba47344ad92c5fe63aacd0ce234909c439c96370e7bd900cadff8b
     source_path: providers/deepgram.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Deepgram is een speech-to-text-API. In OpenClaw wordt deze gebruikt voor inkomende
-audio-/spraaknotitie-transcriptie via `tools.media.audio` en voor streaming-STT
-voor Voice Call via `plugins.entries.voice-call.config.streaming`.
+Deepgram is een spraak-naar-tekst-API. OpenClaw gebruikt deze voor de transcriptie
+van inkomende audio en spraakberichten via `tools.media.audio` en voor streaming-STT
+van Voice Call via `plugins.entries.voice-call.config.streaming`.
 
-Voor batchtranscriptie uploadt OpenClaw het volledige audiobestand naar Deepgram
-en injecteert het transcript in de antwoordpipeline (`{{Transcript}}` +
-`[Audio]`-blok). Voor Voice Call-streaming stuurt OpenClaw live G.711
-u-law-frames door via Deepgrams WebSocket-`listen`-endpoint en geeft gedeeltelijke
-of definitieve transcripties uit zodra Deepgram ze terugstuurt.
+Bij batchtranscriptie wordt het volledige audiobestand naar Deepgram geüpload en
+wordt het transcript in de antwoordpijplijn ingevoegd (`{{Transcript}}` + `[Audio]`-blok).
+Bij streaming van Voice Call worden live G.711-u-law-frames via Deepgrams
+WebSocket-`listen`-eindpunt doorgestuurd en worden gedeeltelijke/definitieve transcripten
+uitgestuurd zodra Deepgram deze retourneert.
 
-| Detail        | Waarde                                                     |
-| ------------- | ---------------------------------------------------------- |
-| Website       | [deepgram.com](https://deepgram.com)                       |
-| Docs          | [developers.deepgram.com](https://developers.deepgram.com) |
-| Auth          | `DEEPGRAM_API_KEY`                                         |
-| Standaardmodel | `nova-3`                                                  |
+| Detail          | Waarde                                                     |
+| --------------- | ---------------------------------------------------------- |
+| Website         | [deepgram.com](https://deepgram.com)                       |
+| Documentatie    | [developers.deepgram.com](https://developers.deepgram.com) |
+| Authenticatie   | `DEEPGRAM_API_KEY`                                         |
+| Standaardmodel  | `nova-3`                                                   |
 
 ## Aan de slag
 
 <Steps>
-  <Step title="Stel je API-sleutel in">
-    Voeg je Deepgram-API-sleutel toe aan de omgeving:
-
-    ```
+  <Step title="Stel uw API-sleutel in">
+    ```bash
     DEEPGRAM_API_KEY=dg_...
     ```
-
   </Step>
   <Step title="Schakel de audioprovider in">
     ```json5
@@ -57,21 +54,22 @@ of definitieve transcripties uit zodra Deepgram ze terugstuurt.
     }
     ```
   </Step>
-  <Step title="Stuur een spraaknotitie">
+  <Step title="Stuur een spraakbericht">
     Stuur een audiobericht via een verbonden kanaal. OpenClaw transcribeert het
-    via Deepgram en injecteert het transcript in de antwoordpipeline.
+    via Deepgram en voegt het transcript in de antwoordpijplijn in.
   </Step>
 </Steps>
 
 ## Configuratieopties
 
-| Optie             | Pad                                                          | Beschrijving                              |
-| ----------------- | ------------------------------------------------------------ | ----------------------------------------- |
-| `model`           | `tools.media.audio.models[].model`                           | Deepgram-model-id (standaard: `nova-3`)   |
-| `language`        | `tools.media.audio.models[].language`                        | Taalhint (optioneel)                      |
-| `detect_language` | `tools.media.audio.providerOptions.deepgram.detect_language` | Taaldetectie inschakelen (optioneel)      |
-| `punctuate`       | `tools.media.audio.providerOptions.deepgram.punctuate`       | Interpunctie inschakelen (optioneel)      |
-| `smart_format`    | `tools.media.audio.providerOptions.deepgram.smart_format`    | Slimme opmaak inschakelen (optioneel)     |
+| Optie      | Pad                                   | Beschrijving                               |
+| ---------- | ------------------------------------- | ------------------------------------------ |
+| `model`    | `tools.media.audio.models[].model`    | Deepgram-model-ID (standaard: `nova-3`)    |
+| `language` | `tools.media.audio.models[].language` | Taalhint (optioneel)                       |
+
+`providerOptions.deepgram` voegt extra queryparameters rechtstreeks samen met het
+Deepgram-`/listen`-verzoek, zodat elke door Deepgram ondersteunde parameternaam werkt
+(bijvoorbeeld `detect_language`, `punctuate`, `smart_format`):
 
 <Tabs>
   <Tab title="Met taalhint">
@@ -111,20 +109,20 @@ of definitieve transcripties uit zodra Deepgram ze terugstuurt.
   </Tab>
 </Tabs>
 
-## Voice Call-streaming-STT
+## Streaming-STT voor Voice Call
 
-De gebundelde `deepgram`-plugin registreert ook een realtime transcriptieprovider
-voor de Voice Call-plugin.
+De meegeleverde `deepgram`-plugin registreert ook een provider voor realtime
+transcriptie voor de Voice Call-plugin.
 
-| Instelling          | Configuratiepad                                                        | Standaard                         |
-| ------------------- | ---------------------------------------------------------------------- | --------------------------------- |
-| API-sleutel         | `plugins.entries.voice-call.config.streaming.providers.deepgram.apiKey` | Valt terug op `DEEPGRAM_API_KEY`  |
-| Model               | `...deepgram.model`                                                    | `nova-3`                          |
-| Taal                | `...deepgram.language`                                                 | (niet ingesteld)                  |
-| Codering            | `...deepgram.encoding`                                                 | `mulaw`                           |
-| Samplefrequentie    | `...deepgram.sampleRate`                                               | `8000`                            |
-| Endpointing         | `...deepgram.endpointingMs`                                            | `800`                             |
-| Tussenresultaten    | `...deepgram.interimResults`                                           | `true`                            |
+| Instelling          | Configuratiepad                                                          | Standaard                              |
+| ------------------- | ------------------------------------------------------------------------ | -------------------------------------- |
+| API-sleutel         | `plugins.entries.voice-call.config.streaming.providers.deepgram.apiKey`  | Valt terug op `DEEPGRAM_API_KEY`       |
+| Model               | `...deepgram.model`                                                      | `nova-3`                               |
+| Taal                | `...deepgram.language`                                                   | (niet ingesteld)                       |
+| Codering            | `...deepgram.encoding`                                                   | `mulaw`                                |
+| Bemonsteringsfrequentie | `...deepgram.sampleRate`                                             | `8000`                                 |
+| Eindpuntdetectie    | `...deepgram.endpointingMs`                                              | `800`                                  |
+| Tussentijdse resultaten | `...deepgram.interimResults`                                         | `true`                                 |
 
 ```json5
 {
@@ -152,8 +150,8 @@ voor de Voice Call-plugin.
 ```
 
 <Note>
-Voice Call ontvangt telefonie-audio als 8 kHz G.711 u-law. De Deepgram-
-streamingprovider gebruikt standaard `encoding: "mulaw"` en `sampleRate: 8000`, zodat
+Voice Call ontvangt telefonieaudio als 8 kHz G.711 u-law. De streamingprovider
+van Deepgram gebruikt standaard `encoding: "mulaw"` en `sampleRate: 8000`, zodat
 Twilio-mediaframes rechtstreeks kunnen worden doorgestuurd.
 </Note>
 
@@ -161,16 +159,16 @@ Twilio-mediaframes rechtstreeks kunnen worden doorgestuurd.
 
 <AccordionGroup>
   <Accordion title="Authenticatie">
-    Authenticatie volgt de standaardvolgorde voor provider-authenticatie. `DEEPGRAM_API_KEY` is
-    de eenvoudigste route.
+    Authenticatie volgt de standaardvolgorde voor providerauthenticatie.
+    `DEEPGRAM_API_KEY` is de eenvoudigste optie.
   </Accordion>
-  <Accordion title="Proxy en aangepaste endpoints">
-    Overschrijf endpoints of headers met `tools.media.audio.baseUrl` en
-    `tools.media.audio.headers` wanneer je een proxy gebruikt.
+  <Accordion title="Proxy en aangepaste eindpunten">
+    Overschrijf eindpunten of headers met `tools.media.audio.baseUrl` en
+    `tools.media.audio.headers` wanneer u een proxy gebruikt.
   </Accordion>
   <Accordion title="Uitvoergedrag">
-    Uitvoer volgt dezelfde audioregels als andere providers (groottelimieten, time-outs,
-    transcriptinjectie).
+    De uitvoer volgt dezelfde audioregels als bij andere providers
+    (groottelimieten, time-outs, invoeging van transcripten).
   </Accordion>
 </AccordionGroup>
 
@@ -178,15 +176,15 @@ Twilio-mediaframes rechtstreeks kunnen worden doorgestuurd.
 
 <CardGroup cols={2}>
   <Card title="Mediatools" href="/nl/tools/media-overview" icon="photo-film">
-    Overzicht van de verwerkingspipeline voor audio, afbeeldingen en video.
+    Overzicht van de verwerkingspijplijn voor audio, afbeeldingen en video.
   </Card>
   <Card title="Configuratie" href="/nl/gateway/configuration" icon="gear">
-    Volledige configuratiereferentie inclusief instellingen voor mediatools.
+    Volledige configuratiereferentie, inclusief instellingen voor mediatools.
   </Card>
-  <Card title="Probleemoplossing" href="/nl/help/troubleshooting" icon="wrench">
+  <Card title="Problemen oplossen" href="/nl/help/troubleshooting" icon="wrench">
     Veelvoorkomende problemen en stappen voor foutopsporing.
   </Card>
-  <Card title="FAQ" href="/nl/help/faq" icon="circle-question">
+  <Card title="Veelgestelde vragen" href="/nl/help/faq" icon="circle-question">
     Veelgestelde vragen over het instellen van OpenClaw.
   </Card>
 </CardGroup>

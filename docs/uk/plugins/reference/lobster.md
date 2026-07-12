@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або проводите аудит lobster Plugin
-summary: Plugin інструмента робочих процесів Lobster для типізованих конвеєрів і відновлюваних схвалень.
-title: Плагін Lobster
+    - Ви встановлюєте, налаштовуєте або перевіряєте плагін lobster
+summary: Plugin інструмента робочих процесів Lobster для типізованих конвеєрів і відновлюваних погоджень.
+title: Plugin Lobster
 x-i18n:
-    generated_at: "2026-06-27T17:59:49Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:34:59Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: b91ea189fe8339380e2a7ef8a8761ea1591e1f1d8459b4a554211128c33f338b
@@ -15,13 +15,13 @@ x-i18n:
 
 # Plugin Lobster
 
-Plugin інструмента робочих процесів Lobster для типізованих конвеєрів і відновлюваних затверджень.
+Plugin інструмента робочих процесів Lobster для типізованих конвеєрів і відновлюваних погоджень.
 
 ## Розповсюдження
 
-- Пакет: `@openclaw/lobster`
-- Маршрут встановлення: npm; ClawHub
+- Пакунок: `@openclaw/lobster`
+- Спосіб установлення: npm; ClawHub
 
-## Поверхня
+## Інтерфейс
 
 контракти: інструменти

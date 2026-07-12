@@ -1,32 +1,31 @@
 ---
 read_when:
     - Vous souhaitez utiliser Cerebras avec OpenClaw
-    - Vous avez besoin de la variable d’environnement de la clé API Cerebras ou de l’option d’authentification de la CLI
+    - Vous devez fournir la variable d’environnement de la clé API Cerebras ou choisir l’authentification via la CLI
 summary: Configuration de Cerebras (authentification + sélection du modèle)
 title: Cerebras
 x-i18n:
-    generated_at: "2026-07-12T15:51:02Z"
+    generated_at: "2026-07-12T03:13:50Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: fca8110d345c796f0481ebf1a8d85c2cc9630b8bd55db8d4bf60772151b35b37
     source_path: providers/cerebras.md
     workflow: 16
 ---
 
-[Cerebras](https://www.cerebras.ai) fournit une inférence à haute vitesse compatible avec OpenAI sur du matériel d’inférence personnalisé. Le Plugin inclut un catalogue statique de quatre modèles (sans découverte en direct).
+[Cerebras](https://www.cerebras.ai) fournit une inférence à haute vitesse compatible avec OpenAI sur du matériel d’inférence personnalisé. Le Plugin inclut un catalogue statique de quatre modèles (sans découverte en temps réel).
 
-| Propriété                  | Valeur                                                    |
-| -------------------------- | --------------------------------------------------------- |
-| Identifiant du fournisseur | `cerebras`                                                |
-| Plugin                     | paquet externe officiel (`@openclaw/cerebras-provider`)   |
-| Variable d’environnement d’authentification | `CEREBRAS_API_KEY`                          |
-| Option d’intégration       | `--auth-choice cerebras-api-key`                          |
-| Option CLI directe         | `--cerebras-api-key <key>`                                |
-| API                        | compatible avec OpenAI (`openai-completions`)             |
-| URL de base                | `https://api.cerebras.ai/v1`                              |
-| Modèle par défaut          | `cerebras/zai-glm-4.7`                                    |
+| Propriété                       | Valeur                                                    |
+| ------------------------------- | --------------------------------------------------------- |
+| Identifiant du fournisseur      | `cerebras`                                                |
+| Plugin                          | paquet externe officiel (`@openclaw/cerebras-provider`)   |
+| Variable d’environnement d’authentification | `CEREBRAS_API_KEY`                              |
+| Option d’intégration            | `--auth-choice cerebras-api-key`                          |
+| Option CLI directe              | `--cerebras-api-key <key>`                                |
+| API                             | compatible avec OpenAI (`openai-completions`)             |
+| URL de base                     | `https://api.cerebras.ai/v1`                              |
+| Modèle par défaut               | `cerebras/zai-glm-4.7`                                    |
 
 ## Installer le Plugin
 
@@ -39,7 +38,7 @@ openclaw gateway restart
 
 <Steps>
   <Step title="Obtenir une clé API">
-    Créez une clé API dans la [console Cerebras Cloud](https://cloud.cerebras.ai).
+    Créez une clé API dans la [Cerebras Cloud Console](https://cloud.cerebras.ai).
   </Step>
   <Step title="Exécuter l’intégration">
     <CodeGroup>
@@ -54,7 +53,7 @@ openclaw onboard --non-interactive \
   --cerebras-api-key "$CEREBRAS_API_KEY"
 ```
 
-```bash Environnement uniquement
+```bash Variable d’environnement uniquement
 export CEREBRAS_API_KEY=csk-...
 ```
 
@@ -66,7 +65,7 @@ export CEREBRAS_API_KEY=csk-...
     openclaw models list --provider cerebras
     ```
 
-    Répertorie les quatre modèles statiques. Si `CEREBRAS_API_KEY` n’est pas résolue, `openclaw models status --json` signale l’identifiant d’authentification manquant sous `auth.unusableProfiles`.
+    Répertorie les quatre modèles statiques. Si `CEREBRAS_API_KEY` ne peut pas être résolue, `openclaw models status --json` signale l’identifiant d’authentification manquant sous `auth.unusableProfiles`.
 
   </Step>
 </Steps>
@@ -82,22 +81,22 @@ openclaw onboard --non-interactive \
 
 ## Catalogue intégré
 
-Les quatre modèles partagent une fenêtre de contexte de 128k et une sortie maximale de 8,192 jetons.
+Les quatre modèles disposent d’une fenêtre de contexte de 128 000 jetons et d’une sortie maximale de 8 192 jetons.
 
-| Référence du modèle                       | Nom                  | Raisonnement | Remarques                                         |
-| ----------------------------------------- | -------------------- | ------------ | ------------------------------------------------- |
-| `cerebras/zai-glm-4.7`                    | Z.ai GLM 4.7         | oui          | Modèle par défaut ; modèle de raisonnement en aperçu |
-| `cerebras/gpt-oss-120b`                   | GPT OSS 120B         | oui          | Modèle de raisonnement en production              |
-| `cerebras/qwen-3-235b-a22b-instruct-2507` | Qwen 3 235B Instruct | non          | Modèle sans raisonnement en aperçu                 |
-| `cerebras/llama3.1-8b`                    | Llama 3.1 8B         | non          | Modèle de production axé sur la vitesse            |
+| Référence du modèle                       | Nom                  | Raisonnement | Remarques                                          |
+| ----------------------------------------- | -------------------- | ------------ | -------------------------------------------------- |
+| `cerebras/zai-glm-4.7`                    | Z.ai GLM 4.7         | oui          | Modèle par défaut ; modèle de raisonnement en préversion |
+| `cerebras/gpt-oss-120b`                   | GPT OSS 120B         | oui          | Modèle de raisonnement pour la production          |
+| `cerebras/qwen-3-235b-a22b-instruct-2507` | Qwen 3 235B Instruct | non          | Modèle sans raisonnement en préversion              |
+| `cerebras/llama3.1-8b`                    | Llama 3.1 8B         | non          | Modèle de production axé sur la vitesse             |
 
 <Warning>
-Cerebras indique que `zai-glm-4.7` et `qwen-3-235b-a22b-instruct-2507` sont des modèles en aperçu, et la dépréciation de `llama3.1-8b` ainsi que de `qwen-3-235b-a22b-instruct-2507` est documentée pour le 27 mai 2026. Consultez la [page des modèles pris en charge](https://inference-docs.cerebras.ai/models/overview) de Cerebras avant de les utiliser pour des charges de travail de production.
+Cerebras classe `zai-glm-4.7` et `qwen-3-235b-a22b-instruct-2507` comme modèles en préversion. La dépréciation de `llama3.1-8b` et de `qwen-3-235b-a22b-instruct-2507` est par ailleurs annoncée pour le 27 mai 2026. Consultez la [page des modèles pris en charge](https://inference-docs.cerebras.ai/models/overview) de Cerebras avant de les utiliser pour des charges de travail en production.
 </Warning>
 
 ## Configuration manuelle
 
-La plupart des configurations nécessitent uniquement la clé API. Utilisez une configuration `models.providers.cerebras` explicite pour remplacer les métadonnées des modèles ou exécuter le mode `mode: "merge"` avec le catalogue statique :
+Dans la plupart des configurations, seule la clé API est nécessaire. Utilisez une configuration `models.providers.cerebras` explicite pour remplacer les métadonnées des modèles ou utiliser `mode: "merge"` avec le catalogue statique :
 
 ```json5
 {
@@ -125,10 +124,10 @@ La plupart des configurations nécessitent uniquement la clé API. Utilisez une 
 ```
 
 <Note>
-Si le Gateway s’exécute comme un démon (launchd, systemd, Docker), assurez-vous que `CEREBRAS_API_KEY` est disponible pour ce processus, par exemple dans `~/.openclaw/.env` ou via `env.shellEnv`. Une clé exportée uniquement dans un interpréteur de commandes interactif ne sera pas accessible à un service géré, sauf si l’environnement est importé séparément.
+Si le Gateway s’exécute en tant que démon (launchd, systemd, Docker), assurez-vous que `CEREBRAS_API_KEY` est accessible à ce processus, par exemple dans `~/.openclaw/.env` ou par l’intermédiaire de `env.shellEnv`. Une clé exportée uniquement dans un shell interactif ne sera pas accessible à un service géré, sauf si l’environnement est importé séparément.
 </Note>
 
-## Ressources associées
+## Pages connexes
 
 <CardGroup cols={2}>
   <Card title="Fournisseurs de modèles" href="/fr/concepts/model-providers" icon="layers">

@@ -1,42 +1,40 @@
 ---
 read_when:
     - Anda ingin melakukan pencarian web tanpa kunci API
-    - Anda menginginkan Search API berbayar Parallel
-    - Anda menginginkan kutipan padat yang diperingkat untuk efisiensi konteks LLM
-summary: Pencarian Paralel -- cuplikan padat dari sumber web yang dioptimalkan untuk LLM
+    - Anda ingin Search API berbayar dari Parallel
+    - Anda menginginkan kutipan padat yang diperingkatkan untuk efisiensi konteks LLM
+summary: Pencarian Paralel -- Kutipan padat yang dioptimalkan untuk LLM dari sumber web
 title: Pencarian paralel
 x-i18n:
-    generated_at: "2026-06-27T18:20:07Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:47:23Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ef64c2c125d2885385308dd8a57421b696fa1a9a5455b8c3b83854016f6514cb
+    source_hash: eff693f286015b287bbdacf44f11ff6f07f2f7d2605ef6f09259e7402b40515e
     source_path: tools/parallel-search.md
     workflow: 16
 ---
 
-Plugin Parallel menyediakan dua penyedia `web_search` [Parallel](https://parallel.ai/):
+Plugin Parallel menyediakan dua penyedia `web_search` [Parallel](https://parallel.ai/), yang keduanya mengembalikan kutipan berperingkat dan dioptimalkan untuk LLM dari indeks web yang dibangun untuk agen AI:
 
-- **Parallel Search (Free)** (`parallel-free`) -- [Search MCP](https://docs.parallel.ai/integrations/mcp/search-mcp) gratis dari Parallel. Tidak memerlukan
-  akun atau kunci API. Pilih secara eksplisit saat Anda menginginkan jalur pencarian
-  tanpa kunci yang dihosting Parallel.
-- **Parallel Search** (`parallel`) -- Search API berbayar dari Parallel. Memerlukan
-  `PARALLEL_API_KEY` dan menawarkan batas laju yang lebih tinggi serta penyetelan objektif.
+| Penyedia                  | id              | Autentikasi                                                                                  |
+| ------------------------- | --------------- | -------------------------------------------------------------------------------------------- |
+| Pencarian Parallel (Gratis) | `parallel-free` | Tidak ada -- [Search MCP](https://docs.parallel.ai/integrations/mcp/search-mcp) gratis dari Parallel |
+| Pencarian Parallel        | `parallel`      | `PARALLEL_API_KEY` -- API Pencarian berbayar, batas laju lebih tinggi dan penyesuaian objektif |
 
-Keduanya mengembalikan cuplikan berperingkat yang dioptimalkan untuk LLM dari indeks web yang dibuat untuk agen AI.
-Atur `tools.web.search.provider` ke `parallel-free` atau `parallel` untuk memilih salah satunya
-secara eksplisit.
+Atur `tools.web.search.provider` ke `parallel-free` atau `parallel` untuk memilih salah satunya secara eksplisit; keduanya tidak dideteksi secara otomatis.
 
 <Note>
-  Model OpenAI Responses menggunakan pencarian web native OpenAI saat
-  `tools.web.search.provider` tidak diatur, sehingga model tersebut melewati penyedia Parallel.
-  Atur `tools.web.search.provider` ke `parallel-free` atau `parallel` untuk merutekannya
-  melalui Parallel.
+  Model OpenAI Responses langsung (`api: "openai-responses"`, penyedia
+  `openai`, URL dasar API resmi) secara otomatis menggunakan pencarian web
+  native yang dihosting OpenAI ketika `tools.web.search.provider` tidak diatur,
+  kosong, `"auto"`, atau `"openai"` -- sehingga secara default melewati
+  Parallel. Atur `tools.web.search.provider` ke `parallel-free` atau `parallel`
+  agar permintaan diarahkan melalui Parallel. Lihat
+  [ikhtisar Pencarian Web](/id/tools/web).
 </Note>
 
 ## Instal Plugin
-
-Instal Plugin resmi, lalu mulai ulang Gateway:
 
 ```bash
 openclaw plugins install @openclaw/parallel-plugin
@@ -45,8 +43,8 @@ openclaw gateway restart
 
 ## Kunci API (penyedia berbayar)
 
-`parallel-free` tidak memerlukan kunci API, tetapi tetap harus dipilih sebagai
-penyedia terkelola. Penyedia `parallel` berbayar memerlukan kunci API:
+`parallel-free` tidak memerlukan kunci, tetapi tetap harus dipilih secara eksplisit.
+Penyedia `parallel` berbayar memerlukan kunci API:
 
 <Steps>
   <Step title="Buat akun">
@@ -72,8 +70,8 @@ penyedia terkelola. Penyedia `parallel` berbayar memerlukan kunci API:
       parallel: {
         config: {
           webSearch: {
-            apiKey: "par-...", // optional if PARALLEL_API_KEY is set
-            baseUrl: "https://api.parallel.ai", // optional; OpenClaw appends /v1/search
+            apiKey: "par-...", // opsional jika PARALLEL_API_KEY telah diatur
+            baseUrl: "https://api.parallel.ai", // opsional; OpenClaw menambahkan /v1/search
           },
         },
       },
@@ -82,8 +80,8 @@ penyedia terkelola. Penyedia `parallel` berbayar memerlukan kunci API:
   tools: {
     web: {
       search: {
-        // Use "parallel-free" for the free Search MCP, or "parallel" for
-        // the paid API-backed provider shown here.
+        // "parallel-free" untuk Search MCP gratis, atau "parallel" untuk
+        // penyedia berbayar berbasis API yang ditampilkan di sini.
         provider: "parallel",
       },
     },
@@ -91,82 +89,51 @@ penyedia terkelola. Penyedia `parallel` berbayar memerlukan kunci API:
 }
 ```
 
-**Alternatif lingkungan:** atur `PARALLEL_API_KEY` di lingkungan Gateway.
-Untuk instalasi gateway, masukkan ke `~/.openclaw/.env`.
+**Alternatif lingkungan:** atur `PARALLEL_API_KEY` di lingkungan Gateway. Untuk instalasi Gateway, letakkan di `~/.openclaw/.env`.
 
 ## Penggantian URL dasar
 
-Penggantian URL dasar hanya berlaku untuk penyedia `parallel` berbayar. Penyedia gratis
-`parallel-free` selalu menggunakan `https://search.parallel.ai/mcp`.
+Hanya berlaku untuk penyedia `parallel` berbayar; `parallel-free` selalu menggunakan
+`https://search.parallel.ai/mcp` dan mengabaikan pengaturan ini.
 
-Atur `plugins.entries.parallel.config.webSearch.baseUrl` saat permintaan Parallel
-harus melalui proxy yang kompatibel atau endpoint Parallel alternatif (misalnya,
-Cloudflare AI Gateway). OpenClaw menormalkan host polos dengan
-menambahkan awalan `https://` dan menambahkan `/v1/search` kecuali path sudah berakhir
-di sana. Endpoint yang diselesaikan disertakan dalam kunci cache pencarian, sehingga hasil
-dari endpoint Parallel yang berbeda tidak dibagikan.
+Atur `plugins.entries.parallel.config.webSearch.baseUrl` untuk mengarahkan permintaan berbayar melalui proksi yang kompatibel atau titik akhir alternatif (misalnya, Cloudflare AI Gateway). OpenClaw menormalkan host tanpa skema dengan menambahkan `https://` di awal dan menambahkan `/v1/search` kecuali jalurnya sudah berakhir demikian. Titik akhir yang dihasilkan menjadi bagian dari kunci tembolok pencarian, sehingga hasil dari titik akhir yang berbeda tidak pernah dibagikan.
 
 ## Parameter alat
 
-OpenClaw mengekspos bentuk pencarian native Parallel sehingga model dapat mengisi baik
-tujuan bahasa alami maupun beberapa kueri kata kunci pendek — pasangan yang
-[direkomendasikan](https://docs.parallel.ai/search/best-practices) Parallel untuk
-hasil terbaik.
+Kedua penyedia mengekspos bentuk pencarian native Parallel agar model mengisi tujuan dalam bahasa alami beserta beberapa kueri kata kunci singkat -- pasangan yang [direkomendasikan](https://docs.parallel.ai/search/best-practices) Parallel untuk hasil terbaik.
 
 <ParamField path="objective" type="string" required>
-Deskripsi bahasa alami tentang pertanyaan atau tujuan yang mendasari (maks 5000
-karakter). Harus mandiri.
+Deskripsi dalam bahasa alami mengenai pertanyaan atau tujuan yang mendasarinya (maks. 5000 karakter). Harus dapat dipahami secara mandiri.
 </ParamField>
 
 <ParamField path="search_queries" type="string[]" required>
-Kueri pencarian kata kunci yang ringkas, masing-masing 3-6 kata (1-5 entri, maks 200 karakter
-masing-masing). Berikan 2-3 kueri yang beragam untuk hasil terbaik.
+Kueri pencarian kata kunci yang ringkas, masing-masing 3-6 kata (1-5 entri, maks. 200 karakter per entri). Berikan 2-3 kueri yang beragam untuk hasil terbaik.
 </ParamField>
 
 <ParamField path="count" type="number">
-Hasil yang akan dikembalikan (1-40).
+Jumlah hasil yang dikembalikan (1-40).
 </ParamField>
 
 <ParamField path="session_id" type="string">
-ID sesi Parallel opsional (maks 1000 karakter pada `parallel`; Search MCP gratis
-`parallel-free` membatasinya pada 100). Teruskan `sessionId` dari hasil Parallel sebelumnya
-pada pencarian lanjutan yang merupakan bagian dari tugas yang sama agar Parallel
-dapat mengelompokkan panggilan terkait dan meningkatkan hasil berikutnya. ID yang melewati batas
-dihapus dan yang baru dibuat.
+ID sesi Parallel opsional dari `sessionId` hasil sebelumnya. Teruskan pada pencarian lanjutan dalam tugas yang sama agar Parallel mengelompokkan panggilan terkait dan meningkatkan hasil berikutnya. Maks. 1000 karakter pada `parallel`; Search MCP gratis `parallel-free` membatasinya hingga 100. ID yang melampaui batas akan dibuang (berbayar) atau dibuatkan yang baru (gratis).
 </ParamField>
 
 <ParamField path="client_model" type="string">
-Pengidentifikasi opsional untuk model yang melakukan panggilan (mis. `claude-opus-4-7`,
-`gpt-5.5`). Memungkinkan Parallel menyesuaikan pengaturan default untuk
-kemampuan model Anda. Teruskan slug model aktif yang persis; jangan mempersingkatnya menjadi alias
-keluarga.
+Pengidentifikasi opsional untuk model yang melakukan panggilan (misalnya `claude-opus-4-7`, `gpt-5.6-sol`), maks. 100 karakter. Memungkinkan Parallel menyesuaikan pengaturan default dengan kemampuan model Anda. Teruskan slug model aktif yang persis; jangan memendekkannya menjadi alias keluarga.
 </ParamField>
 
 ## Catatan
 
-- Parallel memberi peringkat dan mengompresi hasil berdasarkan utilitas penalaran LLM, bukan
-  click-through manusia; harapkan cuplikan padat di setiap hasil, bukan
-  konten halaman penuh
-- Cuplikan hasil dikembalikan sebagai array `excerpts` dan juga digabungkan ke dalam
-  bidang `description` untuk kompatibilitas dengan kontrak `web_search`
-  generik
-- Parallel mengembalikan `session_id` pada setiap respons; OpenClaw mengeksposnya sebagai
-  `sessionId` dalam payload alat agar pemanggil dapat mengelompokkan pencarian lanjutan
-- `searchId`, `warnings`, dan `usage` dari Parallel diteruskan saat
-  ada
-- OpenClaw selalu meneruskan jumlah hasil yang diselesaikan ke Parallel sebagai
-  `advanced_settings.max_results`. Arg `count` pemanggil menang, lalu pengaturan
-  tingkat atas `tools.web.search.maxResults`, jika tidak default
-  `web_search` generik OpenClaw (5). Ini menjaga volume hasil tetap konsisten
-  saat beralih antarpenyedia; Parallel sendiri default ke 10
-- Hasil di-cache selama 15 menit secara default (dapat dikonfigurasi melalui
-  `cacheTtlMinutes`)
-- Penyedia gratis `parallel-free` menerima parameter yang sama. Penyedia ini menerapkan
-  `count` di sisi klien dan menghasilkan `session_id` per panggilan saat tidak
-  disediakan.
+- Parallel memberi peringkat dan memampatkan hasil untuk kegunaan penalaran LLM, bukan untuk klik-tayang manusia; hasilnya berupa kutipan padat per hasil, bukan konten halaman penuh.
+- Kutipan hasil dikembalikan sebagai larik `excerpts` dan juga digabungkan ke dalam `description` untuk kompatibilitas dengan kontrak `web_search` generik.
+- Kedua penyedia mengembalikan `session_id`; OpenClaw menampilkannya sebagai `sessionId` dalam muatan alat agar pemanggil dapat mengelompokkan pencarian lanjutan. ID sesi yang dihasilkan Parallel (yang tidak diberikan oleh pemanggil) dikecualikan dari entri tembolok, karena tugas yang tidak terkait dengan kueri identik tidak boleh mewarisinya.
+- `searchId`, `warnings`, dan `usage` dari Parallel diteruskan jika tersedia.
+- OpenClaw selalu meneruskan jumlah hasil yang telah ditentukan ke Parallel sebagai `advanced_settings.max_results` (`parallel`) atau menerapkan `count` di sisi klien setelah respons berukuran tetap dari Parallel (`parallel-free`). Argumen `count` dari pemanggil diprioritaskan, lalu `tools.web.search.maxResults`, atau jika keduanya tidak ada, nilai default `web_search` generik OpenClaw (5) -- nilai default API Parallel sendiri adalah 10.
+- Hasil disimpan dalam tembolok selama 15 menit secara default (`cacheTtlMinutes`).
+- `parallel-free` membuat `session_id` baru untuk setiap panggilan melalui jabat tangan MCP ketika pemanggil tidak memberikannya; dalam kasus tersebut, `parallel` membiarkannya tidak diatur.
 
 ## Terkait
 
-- [Ikhtisar Web Search](/id/tools/web) -- semua penyedia dan deteksi otomatis
+- [Ikhtisar Pencarian Web](/id/tools/web) -- semua penyedia dan deteksi otomatis
 - [Pencarian Exa](/id/tools/exa-search) -- pencarian neural dengan ekstraksi konten
-- [Perplexity Search](/id/tools/perplexity-search) -- hasil terstruktur dengan pemfilteran domain
+- [Pencarian Perplexity](/id/tools/perplexity-search) -- hasil terstruktur dengan pemfilteran domain

@@ -6,28 +6,29 @@ read_when:
 summary: Gunakan API NVIDIA yang kompatibel dengan OpenAI di OpenClaw
 title: NVIDIA
 x-i18n:
-    generated_at: "2026-07-01T20:35:42Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:33:41Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7b738746acead8dcaa74a39b13b4413171c5bf60efa5166dbc9b259d883a4e22
+    source_hash: b5ac7bcc19400a661b2f2861a1dd4d2306c94e445783929e342e9184003314e9
     source_path: providers/nvidia.md
     workflow: 16
 ---
 
-NVIDIA menyediakan API yang kompatibel dengan OpenAI di `https://integrate.api.nvidia.com/v1` untuk
-model terbuka secara gratis. Autentikasikan dengan kunci API dari
+NVIDIA menyediakan model terbuka secara gratis melalui API yang kompatibel dengan OpenAI di
+`https://integrate.api.nvidia.com/v1`, yang diautentikasi dengan kunci API dari
 [build.nvidia.com](https://build.nvidia.com/settings/api-keys). OpenClaw
-menyetel default penyedia NVIDIA ke Nemotron 3 Ultra, model penalaran aktif
-550B total / 55B milik NVIDIA untuk pekerjaan agentik konteks panjang.
+menetapkan Nemotron 3 Ultra sebagai model bawaan penyedia NVIDIA, yaitu model
+penalaran NVIDIA dengan total 550B parameter / 55B parameter aktif untuk tugas
+agen dengan konteks panjang.
 
-## Mulai cepat
+## Memulai
 
 <Steps>
   <Step title="Dapatkan kunci API Anda">
     Buat kunci API di [build.nvidia.com](https://build.nvidia.com/settings/api-keys).
   </Step>
-  <Step title="Ekspor kunci dan jalankan onboarding">
+  <Step title="Ekspor kunci dan jalankan orientasi awal">
     ```bash
     export NVIDIA_API_KEY="nvapi-..."
     openclaw onboard --auth-choice nvidia-api-key
@@ -40,17 +41,16 @@ menyetel default penyedia NVIDIA ke Nemotron 3 Ultra, model penalaran aktif
   </Step>
 </Steps>
 
-<Warning>
-Jika Anda meneruskan `--nvidia-api-key` alih-alih variabel env, nilainya akan masuk ke riwayat shell
-dan keluaran `ps`. Pilih variabel lingkungan `NVIDIA_API_KEY` bila
-memungkinkan.
-</Warning>
-
-Untuk penyiapan non-interaktif, Anda juga dapat meneruskan kunci secara langsung:
+Untuk penyiapan noninteraktif, berikan kunci secara langsung:
 
 ```bash
 openclaw onboard --auth-choice nvidia-api-key --nvidia-api-key "nvapi-..."
 ```
+
+<Warning>
+`--nvidia-api-key` menyimpan kunci dalam riwayat shell dan keluaran `ps`. Jika
+memungkinkan, gunakan variabel lingkungan `NVIDIA_API_KEY`.
+</Warning>
 
 ## Contoh konfigurasi
 
@@ -75,73 +75,93 @@ openclaw onboard --auth-choice nvidia-api-key --nvidia-api-key "nvapi-..."
 
 ## Katalog unggulan
 
-Ketika kunci API NVIDIA dikonfigurasi, jalur penyiapan dan pemilihan model OpenClaw
-mencoba katalog model unggulan publik NVIDIA dari
+Saat kunci API NVIDIA dikonfigurasi, alur penyiapan dan pemilihan model mengambil
+katalog publik model unggulan NVIDIA dari
 `https://assets.ngc.nvidia.com/products/api-catalog/featured-models.json` dan
-menyimpan hasil berperingkat dalam cache selama 24 jam. Karena itu, model unggulan baru dari build.nvidia.com
-muncul di permukaan penyiapan dan pemilihan model tanpa menunggu
-rilis OpenClaw. Ketika feed langsung tersedia, model pertama yang dikembalikan adalah
-opsi default yang ditampilkan selama penyiapan NVIDIA.
+menyimpan hasilnya dalam cache selama 24 jam (32 entri pertama, diimpor sebagai
+baris masukan teks gratis). Karena itu, model unggulan baru dari build.nvidia.com
+akan muncul pada antarmuka penyiapan dan pemilihan model tanpa harus menunggu
+rilis OpenClaw. Saat umpan langsung tersedia, model pertama yang dikembalikan
+menjadi opsi yang telah dipilih sebelumnya selama penyiapan NVIDIA.
 
-Pengambilan menggunakan kebijakan host HTTPS tetap untuk `assets.ngc.nvidia.com`. Jika tidak ada
-kunci API NVIDIA yang dikonfigurasi, atau jika katalog publik tersebut tidak tersedia atau
-cacat, OpenClaw kembali ke katalog bawaan dan default bawaan di bawah.
+Pengambilan menggunakan kebijakan host HTTPS tetap untuk `assets.ngc.nvidia.com`.
+Jika tidak ada kunci API NVIDIA yang dikonfigurasi, atau jika umpan tidak tersedia
+atau berformat tidak valid, OpenClaw kembali menggunakan katalog bawaan dan model
+bawaan di bawah ini.
 
 ## Nemotron 3 Ultra
 
-Nemotron 3 Ultra adalah model NVIDIA default di OpenClaw. Halaman build NVIDIA untuk
+Nemotron 3 Ultra adalah model NVIDIA bawaan di OpenClaw. Halaman build NVIDIA untuk
 [`nvidia/nemotron-3-ultra-550b-a55b`](https://build.nvidia.com/nvidia/nemotron-3-ultra-550b-a55b)
-mencantumkannya sebagai endpoint gratis yang tersedia dengan spesifikasi konteks 1 juta token.
-Katalog bawaan mencatat output maksimum 16.384 token agar sesuai dengan permintaan sampel
-yang kompatibel dengan OpenAI saat ini dari NVIDIA untuk endpoint yang di-host.
+mencantumkannya sebagai titik akhir gratis yang tersedia dengan spesifikasi konteks
+1 juta token.
 
-Gunakan Ultra untuk default NVIDIA berkapabilitas tertinggi. Tetap pilih Super ketika
-Anda menginginkan opsi Nemotron 3 yang lebih kecil, atau pilih salah satu model pihak ketiga
-yang di-host di katalog NVIDIA ketika konteks, latensi, atau perilakunya lebih cocok.
-Baris Ultra bawaan mengirim `chat_template_kwargs.enable_thinking: false` dan
-`force_nonempty_content: true` secara default agar output chat normal tetap berada di
-jawaban yang terlihat alih-alih mengekspos teks penalaran.
+Baris Ultra bawaan mengirim
+`chat_template_kwargs: { enable_thinking: false, force_nonempty_content: true }`
+secara bawaan agar keluaran percakapan biasa tetap berada dalam jawaban yang
+terlihat dan tidak menampilkan teks penalaran.
 
-## Katalog fallback bawaan
+Gunakan Ultra sebagai model bawaan NVIDIA dengan kemampuan tertinggi. Tetap pilih
+Super jika Anda menginginkan opsi Nemotron 3 yang lebih kecil, atau pilih salah
+satu model pihak ketiga yang dihosting dalam katalog NVIDIA jika konteks, latensi,
+atau perilakunya lebih sesuai.
 
-| Ref model                                  | Nama                         | Konteks   | Output maks. | Catatan                              |
-| ------------------------------------------ | ---------------------------- | --------- | ------------ | ------------------------------------ |
-| `nvidia/nvidia/nemotron-3-ultra-550b-a55b` | NVIDIA Nemotron 3 Ultra 550B | 1,000,000 | 16,384       | Default                              |
-| `nvidia/nvidia/nemotron-3-super-120b-a12b` | NVIDIA Nemotron 3 Super 120B | 1,048,576 | 8,192        | Fallback unggulan                    |
-| `nvidia/moonshotai/kimi-k2.5`              | Kimi K2.5                    | 262,144   | 8,192        | Fallback unggulan                    |
-| `nvidia/minimaxai/minimax-m2.7`            | Minimax M2.7                 | 196,608   | 8,192        | Fallback unggulan                    |
-| `nvidia/z-ai/glm-5.1`                      | GLM 5.1                      | 202,752   | 8,192        | Fallback unggulan                    |
-| `nvidia/minimaxai/minimax-m2.5`            | MiniMax M2.5                 | 196,608   | 8,192        | Tidak digunakan lagi, kompatibilitas upgrade |
-| `nvidia/z-ai/glm5`                         | GLM-5                        | 202,752   | 8,192        | Tidak digunakan lagi, kompatibilitas upgrade |
+## Katalog cadangan bawaan
+
+Baris bawaan yang dapat dipilih merupakan cuplikan katalog model unggulan NVIDIA.
+Baris kompatibilitas yang sudah tidak digunakan tetap dapat diakses melalui
+referensi persis, tetapi tidak ditampilkan dalam pemilih model.
+
+| Referensi model                            | Nama                  | Konteks   | Keluaran maks. |
+| ------------------------------------------ | --------------------- | --------- | -------------- |
+| `nvidia/nvidia/nemotron-3-ultra-550b-a55b` | Nemotron 3 Ultra 550B | 1,048,576 | 8,192          |
+| `nvidia/nvidia/nemotron-3-super-120b-a12b` | Nemotron 3 Super 120B | 1,000,000 | 8,192          |
+| `nvidia/z-ai/glm-5.2`                      | GLM 5.2               | 202,752   | 8,192          |
+| `nvidia/moonshotai/kimi-k2.6`              | Kimi K2.6             | 262,144   | 8,192          |
+| `nvidia/minimaxai/minimax-m3`              | Minimax M3            | 196,608   | 8,192          |
+| `nvidia/deepseek-ai/deepseek-v4-pro`       | DeepSeek V4 Pro       | 262,144   | 16,384         |
+| `nvidia/qwen/qwen3.5-397b-a17b`            | Qwen3.5 397B A17B     | 262,144   | 16,384         |
+
+Katalog kompatibilitas lengkap juga mempertahankan referensi yang telah dirilis
+berikut untuk konfigurasi yang sudah ada: `nvidia/moonshotai/kimi-k2.5`,
+`nvidia/z-ai/glm-5.1`, `nvidia/minimaxai/minimax-m2.5`, `nvidia/z-ai/glm5`, dan
+`nvidia/minimaxai/minimax-m2.7`. Model tersebut tetap tersedia melalui referensi
+persis, tetapi tidak pernah muncul dalam orientasi awal atau pemilih model.
 
 ## Konfigurasi lanjutan
 
 <AccordionGroup>
-  <Accordion title="Perilaku aktif otomatis">
-    Penyedia aktif otomatis ketika variabel lingkungan `NVIDIA_API_KEY` ditetapkan.
-    Tidak diperlukan konfigurasi penyedia eksplisit selain kunci tersebut.
+  <Accordion title="Perilaku pengaktifan otomatis">
+    Penyedia diaktifkan secara otomatis saat variabel lingkungan `NVIDIA_API_KEY`
+    ditetapkan atau kunci disimpan selama orientasi awal. Tidak diperlukan
+    konfigurasi penyedia secara eksplisit selain kunci tersebut.
   </Accordion>
 
   <Accordion title="Katalog dan harga">
-    OpenClaw lebih memilih katalog model unggulan publik NVIDIA ketika autentikasi NVIDIA
-    dikonfigurasi dan menyimpannya dalam cache selama 24 jam. Katalog fallback bawaan bersifat statis
-    dan mempertahankan ref terkirim yang tidak digunakan lagi untuk kompatibilitas upgrade. Biaya default
-    ke `0` di sumber karena NVIDIA saat ini menawarkan akses API gratis untuk
-    model yang tercantum.
+    OpenClaw mengutamakan katalog publik model unggulan NVIDIA saat autentikasi
+    NVIDIA dikonfigurasi dan menyimpannya dalam cache selama 24 jam. Cadangan
+    bawaan yang dapat dipilih merupakan cuplikan statis katalog model unggulan
+    NVIDIA; baris kompatibilitas dengan referensi persis yang sudah tidak
+    digunakan disembunyikan dari pemilih model. Biaya secara bawaan ditetapkan
+    ke `0` dalam kode sumber karena NVIDIA saat ini menawarkan akses API gratis
+    untuk model yang tercantum.
   </Accordion>
 
-  <Accordion title="Endpoint yang kompatibel dengan OpenAI">
-    NVIDIA menggunakan endpoint completions standar `/v1`. Tooling apa pun yang kompatibel dengan OpenAI
-    seharusnya langsung berfungsi dengan URL dasar NVIDIA.
+  <Accordion title="Titik akhir yang kompatibel dengan OpenAI">
+    OpenClaw berkomunikasi dengan NVIDIA menggunakan adaptor
+    `openai-completions` melalui rute penyelesaian percakapan standar `/v1`.
+    Peralatan apa pun yang kompatibel dengan OpenAI seharusnya langsung berfungsi
+    dengan URL dasar NVIDIA.
   </Accordion>
 
   <Accordion title="Parameter penalaran Nemotron 3 Ultra">
-    Permintaan sampel Ultra NVIDIA menggunakan `chat_template_kwargs.enable_thinking`
-    dan `reasoning_budget` untuk output penalaran. Baris Ultra bawaan OpenClaw
-    menonaktifkan template thinking secara default untuk penggunaan chat normal. Jika Anda perlu
-    ikut menggunakan output penalaran NVIDIA atau memaksa bidang permintaan khusus NVIDIA lainnya,
-    tetapkan parameter per model dan jaga override khusus penyedia tetap terbatas pada
-    model NVIDIA:
+    Contoh permintaan Ultra dari NVIDIA menggunakan
+    `chat_template_kwargs.enable_thinking` dan `reasoning_budget` untuk keluaran
+    penalaran. Baris Ultra bawaan OpenClaw secara bawaan menonaktifkan penalaran
+    templat untuk penggunaan percakapan biasa. Jika Anda perlu mengaktifkan
+    keluaran penalaran NVIDIA atau memaksakan kolom permintaan khusus NVIDIA
+    lainnya, tetapkan parameter per model dan batasi penggantian khusus penyedia
+    hanya untuk model NVIDIA:
 
     ```json5
     {
@@ -160,16 +180,22 @@ jawaban yang terlihat alih-alih mengekspos teks penalaran.
     }
     ```
 
-    `params.extra_body` adalah override akhir body permintaan yang kompatibel dengan OpenAI, jadi
-    gunakan hanya untuk bidang yang didokumentasikan NVIDIA untuk endpoint yang dipilih.
+    `params.chat_template_kwargs` digabungkan ke dalam
+    `chat_template_kwargs` yang sudah ada pada permintaan, alih-alih mengganti
+    seluruh objek. `params.extra_body` adalah penggantian akhir isi permintaan
+    yang kompatibel dengan OpenAI dan akan menimpa kunci muatan yang bertabrakan,
+    jadi gunakan hanya untuk kolom yang didokumentasikan NVIDIA bagi titik akhir
+    yang dipilih.
 
   </Accordion>
 
-  <Accordion title="Respons penyedia kustom yang lambat">
-    Beberapa model kustom yang di-host NVIDIA dapat memakan waktu lebih lama daripada watchdog idle model default
-    sebelum memancarkan chunk respons pertama. Untuk entri penyedia NVIDIA kustom,
-    naikkan timeout penyedia alih-alih menaikkan seluruh timeout runtime
-    agen:
+  <Accordion title="Respons penyedia khusus yang lambat">
+    Beberapa model khusus yang dihosting NVIDIA dapat memerlukan waktu lebih lama
+    daripada pengawas waktu menganggur model bawaan sekitar 120 detik sebelum
+    mengirim potongan respons pertama. Untuk entri penyedia NVIDIA khusus,
+    tingkatkan batas waktu penyedia, bukan batas waktu seluruh lingkungan
+    eksekusi agen; `timeoutSeconds` mencakup permintaan HTTP penyedia dan
+    meningkatkan batas pengawas waktu menganggur/aliran untuk penyedia tersebut:
 
     ```json5
     {
@@ -199,7 +225,7 @@ jawaban yang terlihat alih-alih mengekspos teks penalaran.
 </AccordionGroup>
 
 <Tip>
-Model NVIDIA saat ini gratis untuk digunakan. Periksa
+Model NVIDIA saat ini dapat digunakan secara gratis. Periksa
 [build.nvidia.com](https://build.nvidia.com/) untuk ketersediaan terbaru dan
 detail batas laju.
 </Tip>
@@ -208,7 +234,7 @@ detail batas laju.
 
 <CardGroup cols={2}>
   <Card title="Pemilihan model" href="/id/concepts/model-providers" icon="layers">
-    Memilih penyedia, ref model, dan perilaku failover.
+    Memilih penyedia, referensi model, dan perilaku pengalihan saat gagal.
   </Card>
   <Card title="Referensi konfigurasi" href="/id/gateway/configuration-reference" icon="gear">
     Referensi konfigurasi lengkap untuk agen, model, dan penyedia.

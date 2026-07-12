@@ -1,27 +1,27 @@
 ---
 read_when:
-    - شما در حال نصب، پیکربندی یا ممیزی Plugin open-prose هستید
-summary: بستهٔ مهارت OpenProse VM با یک دستور اسلش /prose.
-title: Plugin Open Prose
+    - شما در حال نصب، پیکربندی یا ممیزی Plugin نثر باز هستید
+summary: بستهٔ Skills ماشین مجازی OpenProse با فرمان اسلش `/prose`.
+title: Plugin نثر باز
 x-i18n:
-    generated_at: "2026-05-02T20:56:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:31:03Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: a17a753e5a79871deebeac745abb93efe784055f0159cad9540b68cf7784e75b
     source_path: plugins/reference/open-prose.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# Plugin Open Prose
+# Plugin ‏Open Prose
 
-بستهٔ مهارت VM برای OpenProse همراه با دستور اسلش /prose.
+بستهٔ مهارتی ماشین مجازی OpenProse با فرمان اسلش `/prose`.
 
 ## توزیع
 
 - بسته: `@openclaw/open-prose`
-- مسیر نصب: همراه OpenClaw گنجانده شده است
+- روش نصب: همراه OpenClaw ارائه می‌شود
 
-## سطح
+## سطح ارائه
 
 Skills

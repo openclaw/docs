@@ -1,21 +1,21 @@
 ---
 read_when:
     - رابط قديم إلى building-extensions
-summary: إعادات التوجيه إلى دليل Building Plugins الحالي
-title: Building Plugins (إعادة توجيه)
+summary: يعيد التوجيه إلى دليل إنشاء Plugins الحالي
+title: بناء Plugins (إعادة توجيه)
 x-i18n:
-    generated_at: "2026-04-24T07:53:30Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: d687ccddfe7dcadf8bdd0fc903bf8a5da112902a8d23086b04da25df752facaf
-    source_path: plugins/building-extensions.md
-    workflow: 15
+    generated_at: "2026-07-12T06:07:22Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 912a6de72e2ea3a3fc7cc93a15f952d504c00873f7662ead0f50662bcc7771c5
+    source_path: plugins/building-extensions.md
+    workflow: 16
 ---
 
-تم نقل هذه الصفحة إلى [Building Plugins](/ar/plugins/building-plugins).
+تم نقل هذه الصفحة. راجع [إنشاء Plugins](/ar/plugins/building-plugins).
 
-## ذو صلة
+## موضوعات ذات صلة
 
-- [Building Plugins](/ar/plugins/building-plugins)
-- [معمارية Plugin](/ar/plugins/architecture)
+- [إنشاء Plugins](/ar/plugins/building-plugins)
+- [بنية Plugin](/ar/plugins/architecture)

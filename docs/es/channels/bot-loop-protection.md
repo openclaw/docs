@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Configuración de mensajes de canal creados por bots
-    - Ajustar la protección contra bucles de bot a bot
+    - Configuración de los mensajes de canal escritos por bots
+    - Ajuste de la protección contra bucles entre bots
 sidebarTitle: Bot loop protection
-summary: Protección predeterminada contra bucles de bot a bot y anulaciones de canal
-title: Protección contra bucles de bot
+summary: Valores predeterminados de protección contra bucles entre bots y anulaciones por canal
+title: Protección contra bucles de bots
 x-i18n:
-    generated_at: "2026-07-05T11:01:11Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:50:08Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 08637267cd3422d3154315e709c85c85fa57641f1adb0e8ef10c32e8a7b73312
@@ -15,26 +15,26 @@ x-i18n:
     workflow: 16
 ---
 
-OpenClaw puede aceptar mensajes escritos por otros bots en canales que admiten `allowBots`. Cuando esa ruta está habilitada, la protección contra bucles por par evita que dos identidades de bot se respondan entre sí indefinidamente.
+OpenClaw puede aceptar mensajes escritos por otros bots en canales que admiten `allowBots`. Cuando esta vía está habilitada, la protección contra bucles entre pares evita que dos identidades de bot se respondan entre sí indefinidamente.
 
-La protección la aplica el ejecutor central de respuestas entrantes. Cada canal compatible asigna su evento entrante a datos genéricos: cuenta o ámbito, id de conversación, id del bot remitente e id del bot receptor. El núcleo rastrea el par de participantes en ambas direcciones (A a B y B a A cuentan como el mismo par), aplica un presupuesto de ventana deslizante y suprime el par durante un periodo de enfriamiento después de que se supera el presupuesto.
+La protección se aplica mediante el ejecutor principal de respuestas entrantes. Cada canal compatible convierte su evento entrante en datos genéricos: cuenta o ámbito, id. de conversación, id. del bot remitente e id. del bot receptor. El núcleo registra el par de participantes en ambas direcciones (de A a B y de B a A cuentan como el mismo par), aplica un límite de ventana deslizante y bloquea el par durante un período de espera después de que se supere el límite.
 
 ## Valores predeterminados
 
-La protección contra bucles por par está activa siempre que un canal permite que los mensajes escritos por bots lleguen al despacho. Valores predeterminados integrados:
+La protección contra bucles entre pares está activa siempre que un canal permita que los mensajes escritos por bots lleguen al despacho. Valores predeterminados integrados:
 
-| Clave                | Predeterminado | Significado                                               |
-| -------------------- | -------------- | --------------------------------------------------------- |
-| `enabled`            | `true`         | Protección activa para los canales que la admiten.        |
-| `maxEventsPerWindow` | `20`           | Eventos que un par de bots puede intercambiar en la ventana. |
-| `windowSeconds`      | `60`           | Duración de la ventana deslizante.                        |
-| `cooldownSeconds`    | `60`           | Tiempo de supresión después de que el par supera el presupuesto. |
+| Clave                | Valor predeterminado | Significado                                                        |
+| -------------------- | -------------------- | ------------------------------------------------------------------ |
+| `enabled`            | `true`               | Protección activa para los canales que la admiten.                 |
+| `maxEventsPerWindow` | `20`                 | Eventos que un par de bots puede intercambiar dentro de la ventana. |
+| `windowSeconds`      | `60`                 | Duración de la ventana deslizante.                                 |
+| `cooldownSeconds`    | `60`                 | Tiempo de bloqueo después de que el par supere el límite.          |
 
-La protección no afecta a mensajes escritos por humanos, despliegues de un solo bot, filtrado de mensajes propios ni respuestas de bots que se mantienen por debajo del presupuesto.
+La protección no afecta a los mensajes escritos por personas, las implementaciones con un solo bot, el filtrado de mensajes propios ni las respuestas de bots que no superen el límite.
 
 ## Configurar valores predeterminados compartidos
 
-Configura `channels.defaults.botLoopProtection` una vez para dar a todos los canales compatibles la misma base. Las anulaciones de canal, cuenta y sala aún pueden ajustar superficies individuales.
+Establezca `channels.defaults.botLoopProtection` una sola vez para proporcionar la misma configuración básica a todos los canales compatibles. Las anulaciones de canal, cuenta y sala pueden seguir ajustando superficies individuales.
 
 ```json5
 {
@@ -50,11 +50,11 @@ Configura `channels.defaults.botLoopProtection` una vez para dar a todos los can
 }
 ```
 
-Configura `enabled: false` solo cuando la política de tu canal permite intencionadamente conversaciones entre bots sin supresión automática.
+Establezca `enabled: false` únicamente cuando la política de su canal permita intencionadamente conversaciones entre bots sin bloqueo automático.
 
 ## Anular por canal, cuenta o sala
 
-Los canales compatibles superponen su propia configuración sobre el valor predeterminado compartido, clave por clave. Precedencia, de más estrecha a más amplia:
+Los canales compatibles superponen su propia configuración al valor predeterminado compartido, clave por clave. Precedencia, de la más específica a la más general:
 
 1. `channels.<channel>.<room-or-space>.botLoopProtection`, cuando el canal admite anulaciones por conversación
 2. `channels.<channel>.accounts.<account>.botLoopProtection`, cuando el canal admite cuentas
@@ -116,11 +116,11 @@ Los canales compatibles superponen su propia configuración sobre el valor prede
 
 ## Compatibilidad de canales
 
-- Discord: datos nativos de `author.bot`, con clave por cuenta de Discord, canal y par de bots.
-- Google Chat: datos nativos de `sender.type=BOT` para mensajes aceptados escritos por bots, con clave por cuenta, espacio y par de bots.
-- Matrix: cuentas de bot de Matrix configuradas, con clave por cuenta de Matrix, sala y par de bots configurado.
-- Slack: datos nativos de `bot_id` para mensajes aceptados escritos por bots, con clave por cuenta de Slack, canal y par de bots.
+- Discord: datos nativos de `author.bot`, identificados por cuenta de Discord, canal y par de bots.
+- Google Chat: datos nativos de `sender.type=BOT` para mensajes aceptados escritos por bots, identificados por cuenta, espacio y par de bots.
+- Matrix: cuentas de bot de Matrix configuradas, identificadas por cuenta de Matrix, sala y par de bots configurado.
+- Slack: datos nativos de `bot_id` para mensajes aceptados escritos por bots, identificados por cuenta de Slack, canal y par de bots.
 
-Los canales que no exponen una identidad de bot entrante fiable siguen usando sus filtros normales de mensajes propios y política de acceso. No deberían optar por esta protección hasta que puedan identificar a ambos participantes del par de bots.
+Los canales que no proporcionan una identidad fiable del bot entrante siguen utilizando sus filtros habituales de mensajes propios y de políticas de acceso. No deben activar esta protección hasta que puedan identificar a ambos participantes del par de bots.
 
-Consulta [runtime del SDK](/es/plugins/sdk-runtime#reusable-runtime-utilities) para obtener detalles de implementación del plugin.
+Consulte [entorno de ejecución del SDK](/es/plugins/sdk-runtime#reusable-runtime-utilities) para obtener detalles sobre la implementación del Plugin.

@@ -2,20 +2,19 @@
 read_when:
     - Você quer que o OpenClaw receba mensagens diretas via Nostr
     - Você está configurando mensagens descentralizadas
-summary: Canal de mensagens diretas do Nostr via mensagens criptografadas com NIP-04
+summary: Canal de mensagens diretas do Nostr por meio de mensagens criptografadas com NIP-04
 title: Nostr
 x-i18n:
-    generated_at: "2026-07-12T14:58:28Z"
+    generated_at: "2026-07-11T23:46:14Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 31fa283f706036a37795ddad71602058ba94388a9cb01044927c4bb2d83ba4a8
     source_path: channels/nostr.md
     workflow: 16
 ---
 
-Nostr é um plugin de canal para download (`@openclaw/nostr`) que permite ao OpenClaw receber e responder a mensagens diretas criptografadas com NIP-04 por meio de relays Nostr. Uma conta por Gateway; somente DMs.
+Nostr é um plugin de canal disponível para download (`@openclaw/nostr`) que permite ao OpenClaw receber e responder a mensagens diretas criptografadas com NIP-04 por meio de relays Nostr. Uma conta por Gateway; somente mensagens diretas.
 
 ## Instalação
 
@@ -23,7 +22,7 @@ Nostr é um plugin de canal para download (`@openclaw/nostr`) que permite ao Ope
 openclaw plugins install @openclaw/nostr
 ```
 
-Use a especificação simples do pacote para acompanhar a tag da versão oficial atual. Fixe uma versão exata somente quando precisar de uma instalação reproduzível.
+Use a especificação simples do pacote para acompanhar a tag oficial da versão atual. Fixe uma versão exata somente quando precisar de uma instalação reproduzível.
 
 A partir de um checkout local (fluxos de desenvolvimento):
 
@@ -31,7 +30,7 @@ A partir de um checkout local (fluxos de desenvolvimento):
 openclaw plugins install --link <path-to-local-nostr-plugin>
 ```
 
-Reinicie o Gateway após instalar ou habilitar plugins. O processo de integração (`openclaw onboard`) e `openclaw channels add` disponibilizam o Nostr por meio do catálogo compartilhado de canais após a instalação do plugin.
+Reinicie o Gateway após instalar ou habilitar plugins. A integração inicial (`openclaw onboard`) e `openclaw channels add` disponibilizam o Nostr a partir do catálogo compartilhado de canais assim que o plugin é instalado.
 
 ### Configuração não interativa
 
@@ -77,7 +76,7 @@ export NOSTR_PRIVATE_KEY="nsec1..."
 | ------------ | -------- | ------------------------------------------- | ---------------------------------------------------------------- |
 | `privateKey` | string   | obrigatório                                 | Chave privada no formato `nsec` ou hexadecimal; referências a segredos são permitidas |
 | `relays`     | string[] | `['wss://relay.damus.io', 'wss://nos.lol']` | URLs dos relays (WebSocket)                                      |
-| `dmPolicy`   | string   | `pairing`                                   | Política de acesso a DMs                                         |
+| `dmPolicy`   | string   | `pairing`                                   | Política de acesso a mensagens diretas                           |
 | `allowFrom`  | string[] | `[]`                                        | Chaves públicas de remetentes permitidos                         |
 | `enabled`    | boolean  | `true`                                      | Habilitar/desabilitar o canal                                    |
 | `name`       | string   | -                                           | Nome de exibição                                                  |
@@ -85,7 +84,7 @@ export NOSTR_PRIVATE_KEY="nsec1..."
 
 ## Metadados do perfil
 
-Os dados do perfil são publicados como um evento NIP-01 `kind:0`. Você pode gerenciá-los na Control UI (Channels -> Nostr -> Profile) ou defini-los diretamente na configuração.
+Os dados do perfil são publicados como um evento NIP-01 `kind:0`. Você pode gerenciá-los pela interface de controle (Channels -> Nostr -> Profile) ou defini-los diretamente na configuração.
 
 Exemplo:
 
@@ -97,7 +96,7 @@ Exemplo:
       profile: {
         name: "openclaw",
         displayName: "OpenClaw",
-        about: "Bot de mensagens diretas para assistência pessoal",
+        about: "Bot de mensagens diretas que atua como assistente pessoal",
         picture: "https://example.com/avatar.png",
         banner: "https://example.com/banner.png",
         website: "https://example.com",
@@ -116,18 +115,18 @@ Observações:
 
 ## Controle de acesso
 
-### Políticas de DM
+### Políticas de mensagens diretas
 
 - **pairing** (padrão): remetentes desconhecidos recebem um código de pareamento.
-- **allowlist**: somente as chaves públicas em `allowFrom` podem enviar DMs.
-- **open**: DMs públicas de entrada (requer `allowFrom: ["*"]`).
-- **disabled**: ignora DMs de entrada.
+- **allowlist**: somente chaves públicas em `allowFrom` podem enviar mensagens diretas.
+- **open**: mensagens diretas públicas de entrada (requer `allowFrom: ["*"]`).
+- **disabled**: ignora mensagens diretas de entrada.
 
 Observações sobre a aplicação das regras:
 
-- As assinaturas dos eventos de entrada são verificadas antes da política de remetentes e da descriptografia NIP-04, portanto eventos forjados são rejeitados antecipadamente.
-- As respostas de pareamento são enviadas sem descriptografar nem processar o conteúdo da DM original.
-- As DMs de entrada têm limitação de taxa (global e por remetente), e cargas úteis grandes demais são descartadas antes da descriptografia.
+- As assinaturas dos eventos de entrada são verificadas antes da política de remetentes e da descriptografia NIP-04; assim, eventos falsificados são rejeitados antecipadamente.
+- As respostas de pareamento são enviadas sem descriptografar nem processar o conteúdo da mensagem direta original.
+- As mensagens diretas de entrada têm limitação de taxa (global e por remetente), e conteúdos grandes demais são descartados antes da descriptografia.
 
 ### Exemplo de lista de permissões
 
@@ -147,7 +146,7 @@ Observações sobre a aplicação das regras:
 
 Formatos aceitos:
 
-- **Chave privada:** `nsec...` ou hexadecimal de 64 caracteres
+- **Chave privada:** `nsec...` ou hexadecimal com 64 caracteres
 - **Chaves públicas (`allowFrom`):** `npub...` ou hexadecimal
 
 ## Relays
@@ -167,19 +166,19 @@ Padrões: `relay.damus.io` e `nos.lol`.
 
 Dicas:
 
-- Use 2-3 relays para obter redundância.
-- Evite relays em excesso (latência, duplicação).
-- Relays pagos podem melhorar a confiabilidade.
+- Use de 2 a 3 relays para redundância.
+- Evite relays demais (latência e duplicação).
+- Relays pagos podem aumentar a confiabilidade.
 - Relays locais são adequados para testes (`ws://localhost:7777`).
 
-## Suporte a protocolos
+## Compatibilidade com protocolos
 
-| NIP    | Status      | Descrição                                       |
-| ------ | ----------- | ----------------------------------------------- |
+| NIP    | Status      | Descrição                                      |
+| ------ | ----------- | ---------------------------------------------- |
 | NIP-01 | Compatível  | Formato básico de eventos + metadados de perfil |
-| NIP-04 | Compatível  | DMs criptografadas (`kind:4`)                   |
-| NIP-17 | Planejado   | DMs encapsuladas                                |
-| NIP-44 | Planejado   | Criptografia versionada                         |
+| NIP-04 | Compatível  | Mensagens diretas criptografadas (`kind:4`)    |
+| NIP-17 | Planejado   | Mensagens diretas encapsuladas                 |
+| NIP-44 | Planejado   | Criptografia com controle de versão            |
 
 ## Testes
 
@@ -205,23 +204,23 @@ docker run -p 7777:7777 ghcr.io/hoytech/strfry
 
 1. Anote a chave pública do bot nos logs do Gateway ou em `openclaw channels status` (hexadecimal; converta para npub no seu cliente, se necessário).
 2. Abra um cliente Nostr (Amethyst, Damus etc.).
-3. Envie uma DM para a chave pública do bot.
+3. Envie uma mensagem direta para a chave pública do bot.
 4. Verifique a resposta.
 
 ## Solução de problemas
 
-### Não recebe mensagens
+### Mensagens não são recebidas
 
 - Verifique se a chave privada é válida.
-- Certifique-se de que as URLs dos relays estejam acessíveis e usem `wss://` (ou `ws://` para relays locais).
+- Certifique-se de que as URLs dos relays estejam acessíveis e usem `wss://` (ou `ws://` para um relay local).
 - Confirme que `enabled` não seja `false`.
 - Verifique os logs do Gateway em busca de erros de conexão com relays.
 
-### Não envia respostas
+### Respostas não são enviadas
 
 - Verifique se o relay aceita gravações.
 - Verifique a conectividade de saída.
-- Observe os limites de taxa do relay.
+- Observe possíveis limites de taxa dos relays.
 
 ### Respostas duplicadas
 
@@ -233,7 +232,7 @@ docker run -p 7777:7777 ghcr.io/hoytech/strfry
 - Nunca faça commit de chaves privadas.
 - Use variáveis de ambiente para as chaves.
 - Considere usar `allowlist` para bots em produção.
-- As assinaturas são verificadas antes da política de remetentes, e a política de remetentes é aplicada antes da descriptografia; portanto, eventos forjados são rejeitados antecipadamente e remetentes desconhecidos não podem forçar a execução de todo o processamento criptográfico.
+- As assinaturas são verificadas antes da política de remetentes, e essa política é aplicada antes da descriptografia; assim, eventos falsificados são rejeitados antecipadamente e remetentes desconhecidos não podem forçar a execução de todo o processamento criptográfico.
 
 ## Limitações (MVP)
 
@@ -241,10 +240,10 @@ docker run -p 7777:7777 ghcr.io/hoytech/strfry
 - Sem anexos de mídia.
 - Somente NIP-04 (encapsulamento NIP-17 planejado).
 
-## Relacionados
+## Conteúdo relacionado
 
 - [Visão geral dos canais](/pt-BR/channels) — todos os canais compatíveis
-- [Pareamento](/pt-BR/channels/pairing) — autenticação de DMs e fluxo de pareamento
+- [Pareamento](/pt-BR/channels/pairing) — autenticação de mensagens diretas e fluxo de pareamento
 - [Grupos](/pt-BR/channels/groups) — comportamento de conversas em grupo e controle por menções
 - [Roteamento de canais](/pt-BR/channels/channel-routing) — roteamento de sessões para mensagens
 - [Segurança](/pt-BR/gateway/security) — modelo de acesso e proteção

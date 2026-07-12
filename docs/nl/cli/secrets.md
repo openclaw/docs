@@ -1,32 +1,32 @@
 ---
 read_when:
-    - Geheime verwijzingen opnieuw oplossen tijdens runtime
-    - Controleren op resten in platte tekst en onopgeloste verwijzingen
-    - SecretRefs configureren en eenrichtings-scrubwijzigingen toepassen
-summary: CLI-referentie voor `openclaw secrets` (reload, audit, configure, apply)
+    - Geheime verwijzingen opnieuw omzetten tijdens runtime
+    - Platte-tekstresten en niet-opgeloste verwijzingen controleren
+    - SecretRefs configureren en eenrichtingsopschoningswijzigingen toepassen
+summary: CLI-referentie voor `openclaw secrets` (herladen, controleren, configureren, toepassen)
 title: Geheimen
 x-i18n:
-    generated_at: "2026-04-29T22:34:56Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:44:19Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6fe1933ca6a9f2a24fbbe20fa3b83bf8f6493ea6c94061e135b4e1b48c33d62c
+    source_hash: d1ac0d0f6e29ae52d9dd03e3333665062ccd961ed22a2b06ca7fa7fde128e177
     source_path: cli/secrets.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw secrets`
 
-Gebruik `openclaw secrets` om SecretRefs te beheren en de actieve runtime-snapshot gezond te houden.
+Beheer SecretRefs en houd de actieve runtime-snapshot gezond.
 
-Commandorollen:
+| Opdracht     | Rol                                                                                                                                                                                                                 |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `reload`     | Gateway-RPC (`secrets.reload`): lost verwijzingen opnieuw op en vervangt de runtime-snapshot alleen bij volledig succes (zonder configuratie te schrijven)                                                           |
+| `audit`      | Alleen-lezen-scan van configuratie-, authenticatie- en gegenereerde modelopslag en verouderde restanten op platte tekst, niet-opgeloste verwijzingen en afwijkingen in prioriteit (exec-verwijzingen worden overgeslagen tenzij `--allow-exec`) |
+| `configure`  | Interactieve planner voor providerconfiguratie, doeltoewijzing en preflight (vereist een TTY)                                                                                                                        |
+| `apply`      | Voert een opgeslagen plan uit (`--dry-run` valideert alleen en slaat exec-controles standaard over; de schrijfmodus weigert plannen met exec tenzij `--allow-exec` is opgegeven) en verwijdert daarna gerichte restanten in platte tekst |
 
-- `reload`: Gateway-RPC (`secrets.reload`) die refs opnieuw resolved en de runtime-snapshot alleen bij volledig succes wisselt (geen configuratiewrites).
-- `audit`: alleen-lezen scan van configuratie-/auth-/gegenereerde-model-stores en legacyresten op platte tekst, onopgeloste refs en prioriteitsdrift (exec-refs worden overgeslagen tenzij `--allow-exec` is ingesteld).
-- `configure`: interactieve planner voor providerconfiguratie, doelmapping en preflight (TTY vereist).
-- `apply`: voer een opgeslagen plan uit (`--dry-run` alleen voor validatie; dry-run slaat exec-controles standaard over, en schrijfmodus weigert plannen met exec tenzij `--allow-exec` is ingesteld), en scrub daarna gerichte plattetekstresten.
-
-Aanbevolen operatorloop:
+Aanbevolen routine voor beheerders:
 
 ```bash
 openclaw secrets audit --check
@@ -37,22 +37,16 @@ openclaw secrets audit --check
 openclaw secrets reload
 ```
 
-Als je plan `exec` SecretRefs/providers bevat, geef dan `--allow-exec` mee aan zowel dry-run- als schrijf-apply-commando's.
+Als uw plan `exec`-SecretRefs/providers bevat, geeft u `--allow-exec` door aan zowel de dry-run- als de schrijfopdracht voor `apply`.
 
-Opmerking over exitcodes voor CI/gates:
+Afsluitcodes voor CI/controles:
 
 - `audit --check` retourneert `1` bij bevindingen.
-- onopgeloste refs retourneren `2`.
+- Niet-opgeloste verwijzingen retourneren `2` (ongeacht `--check`).
 
-Gerelateerd:
-
-- Geheimenhandleiding: [Geheimenbeheer](/nl/gateway/secrets)
-- Credential-oppervlak: [SecretRef Credential-oppervlak](/nl/reference/secretref-credential-surface)
-- Beveiligingshandleiding: [Beveiliging](/nl/gateway/security)
+Gerelateerd: [Geheimenbeheer](/nl/gateway/secrets) · [Oppervlak voor SecretRef-referenties](/nl/reference/secretref-credential-surface) · [Beveiliging](/nl/gateway/security)
 
 ## Runtime-snapshot herladen
-
-Resolve geheime refs opnieuw en wissel de runtime-snapshot atomair.
 
 ```bash
 openclaw secrets reload
@@ -60,32 +54,21 @@ openclaw secrets reload --json
 openclaw secrets reload --url ws://127.0.0.1:18789 --token <token>
 ```
 
-Opmerkingen:
+Gebruikt de Gateway-RPC-methode `secrets.reload`. Als het oplossen mislukt, behoudt de Gateway de laatst bekende werkende snapshot en retourneert deze een fout (geen gedeeltelijke activering). Het JSON-antwoord bevat `warningCount`.
 
-- Gebruikt de Gateway-RPC-methode `secrets.reload`.
-- Als resolutie mislukt, behoudt de Gateway de laatst bekende goede snapshot en retourneert een fout (geen gedeeltelijke activatie).
-- JSON-respons bevat `warningCount`.
-
-Opties:
-
-- `--url <url>`
-- `--token <token>`
-- `--timeout <ms>`
-- `--json`
+Opties: `--url <url>`, `--token <token>`, `--timeout <ms>`, `--json`.
 
 ## Audit
 
-Scan OpenClaw-status op:
+Scant de OpenClaw-status op:
 
 - opslag van geheimen in platte tekst
-- onopgeloste refs
-- prioriteitsdrift (`auth-profiles.json`-credentials die `openclaw.json`-refs overschaduwen)
-- gegenereerde `agents/*/agent/models.json`-resten (provider-`apiKey`-waarden en gevoelige providerheaders)
-- legacyresten (legacy-auth-storevermeldingen, OAuth-herinneringen)
+- niet-opgeloste verwijzingen
+- afwijkingen in prioriteit (`auth-profiles.json`-referenties die verwijzingen in `openclaw.json` overschrijven)
+- restanten in gegenereerde `agents/*/agent/models.json`-bestanden (`apiKey`-waarden van providers en gevoelige providerheaders)
+- verouderde restanten (verouderde vermeldingen in de authenticatieopslag, OAuth-herinneringen)
 
-Opmerking over headerresten:
-
-- Detectie van gevoelige providerheaders is gebaseerd op naamheuristiek (veelvoorkomende auth-/credential-headernamen en fragmenten zoals `authorization`, `x-api-key`, `token`, `secret`, `password` en `credential`).
+Detectie van gevoelige providerheaders is gebaseerd op naamheuristiek: headers worden gemarkeerd wanneer hun naam overeenkomt met veelvoorkomende fragmenten voor authenticatie/referenties (`authorization`, `x-api-key`, `token`, `secret`, `password`, `credential`).
 
 ```bash
 openclaw secrets audit
@@ -94,25 +77,16 @@ openclaw secrets audit --json
 openclaw secrets audit --allow-exec
 ```
 
-Exitgedrag:
-
-- `--check` sluit af met een niet-nulstatus bij bevindingen.
-- onopgeloste refs sluiten af met een niet-nulcode met hogere prioriteit.
-
-Hoogtepunten van de rapportvorm:
+Rapportstructuur:
 
 - `status`: `clean | findings | unresolved`
 - `resolution`: `refsChecked`, `skippedExecRefs`, `resolvabilityComplete`
 - `summary`: `plaintextCount`, `unresolvedRefCount`, `shadowedRefCount`, `legacyResidueCount`
-- bevindingscodes:
-  - `PLAINTEXT_FOUND`
-  - `REF_UNRESOLVED`
-  - `REF_SHADOWED`
-  - `LEGACY_RESIDUE`
+- bevindingscodes: `PLAINTEXT_FOUND`, `REF_UNRESOLVED`, `REF_SHADOWED`, `LEGACY_RESIDUE`
 
-## Configure (interactieve helper)
+## Configureren (interactieve hulp)
 
-Bouw provider- en SecretRef-wijzigingen interactief, voer preflight uit en pas ze optioneel toe:
+Stel provider- en SecretRef-wijzigingen interactief samen, voer de preflight uit en pas ze desgewenst toe:
 
 ```bash
 openclaw secrets configure
@@ -124,43 +98,33 @@ openclaw secrets configure --agent ops
 openclaw secrets configure --json
 ```
 
-Flow:
+Proces: eerst providerconfiguratie (aliassen voor `secrets.providers` toevoegen/bewerken/verwijderen), vervolgens referentietoewijzing (velden selecteren, `{source, provider, id}`-verwijzingen toewijzen), daarna de preflight en optionele toepassing.
 
-- Providerconfiguratie eerst (`add/edit/remove` voor `secrets.providers`-aliassen).
-- Credential-mapping daarna (selecteer velden en wijs `{source, provider, id}`-refs toe).
-- Preflight en optionele apply als laatste.
+Vlaggen:
 
-Flags:
+- `--providers-only`: configureer alleen `secrets.providers` en sla referentietoewijzing over
+- `--skip-provider-setup`: sla providerconfiguratie over en wijs referenties toe aan bestaande providers
+- `--agent <id>`: beperk de detectie van doelen en schrijfbewerkingen voor `auth-profiles.json` tot de opslag van één agent
+- `--allow-exec`: sta controles van exec-SecretRefs toe tijdens preflight/toepassing (kan provideropdrachten uitvoeren)
 
-- `--providers-only`: configureer alleen `secrets.providers`, sla credential-mapping over.
-- `--skip-provider-setup`: sla providerconfiguratie over en map credentials naar bestaande providers.
-- `--agent <id>`: beperk doeldetectie en writes voor `auth-profiles.json` tot één agent-store.
-- `--allow-exec`: sta exec-SecretRef-controles toe tijdens preflight/apply (kan providercommando's uitvoeren).
+`--providers-only` en `--skip-provider-setup` kunnen niet worden gecombineerd.
 
 Opmerkingen:
 
 - Vereist een interactieve TTY.
-- Je kunt `--providers-only` niet combineren met `--skip-provider-setup`.
-- `configure` richt zich op velden met geheimen in `openclaw.json` plus `auth-profiles.json` voor de geselecteerde agent-scope.
-- `configure` ondersteunt het rechtstreeks maken van nieuwe `auth-profiles.json`-mappings in de pickerflow.
-- Canoniek ondersteund oppervlak: [SecretRef Credential-oppervlak](/nl/reference/secretref-credential-surface).
-- Het voert preflight-resolutie uit vóór apply.
-- Als preflight/apply exec-refs bevat, houd `--allow-exec` dan ingesteld voor beide stappen.
-- Gegenereerde plannen gebruiken standaard scrubopties (`scrubEnv`, `scrubAuthProfilesForProviderTargets`, `scrubLegacyAuthJson` allemaal ingeschakeld).
-- Het apply-pad is eenrichtingsverkeer voor gescrubde plattetekstwaarden.
-- Zonder `--apply` vraagt de CLI na preflight nog steeds `Apply this plan now?`.
-- Met `--apply` (en zonder `--yes`) vraagt de CLI om een extra onomkeerbare bevestiging.
-- `--json` drukt het plan + preflight-rapport af, maar het commando vereist nog steeds een interactieve TTY.
+- Richt zich op velden met geheimen in `openclaw.json` plus `auth-profiles.json` voor het geselecteerde agentbereik; canoniek ondersteund oppervlak: [Oppervlak voor SecretRef-referenties](/nl/reference/secretref-credential-surface).
+- Ondersteunt het rechtstreeks maken van nieuwe `auth-profiles.json`-toewijzingen in de selectiestroom.
+- Voert vóór het toepassen een preflight-oplossing uit.
+- Gegenereerde plannen hebben standaard ingeschakelde opschoningsopties (`scrubEnv`, `scrubAuthProfilesForProviderTargets`, `scrubLegacyAuthJson`). De toepassing kan niet ongedaan worden gemaakt voor opgeschoonde waarden in platte tekst.
+- Zonder `--apply` vraagt de CLI na de preflight nog steeds `Apply this plan now?`.
+- Met `--apply` (en zonder `--yes`) vraagt de CLI om een extra bevestiging voor de onomkeerbare migratie.
+- `--json` drukt het plan en preflightrapport af, maar vereist nog steeds een interactieve TTY.
 
-Veiligheidsopmerking voor exec-provider:
+### Veiligheid van exec-providers
 
-- Homebrew-installaties stellen vaak gesymlinkte binaries beschikbaar onder `/opt/homebrew/bin/*`.
-- Stel `allowSymlinkCommand: true` alleen in wanneer dat nodig is voor vertrouwde package-managerpaden, en combineer dit met `trustedDirs` (bijvoorbeeld `["/opt/homebrew"]`).
-- Op Windows faalt OpenClaw gesloten als ACL-verificatie niet beschikbaar is voor een providerpad. Stel alleen voor vertrouwde paden `allowInsecurePath: true` in op die provider om padbeveiligingscontroles te omzeilen.
+Homebrew-installaties stellen vaak via symbolische koppelingen beschikbare uitvoerbare bestanden onder `/opt/homebrew/bin/*` bloot. Stel `allowSymlinkCommand: true` alleen in wanneer dit nodig is voor vertrouwde paden van pakketbeheerders, gecombineerd met `trustedDirs` (bijvoorbeeld `["/opt/homebrew"]`). Als op Windows ACL-verificatie niet beschikbaar is voor een providerpad, weigert OpenClaw uit veiligheidsoverwegingen; stel uitsluitend voor vertrouwde paden `allowInsecurePath: true` in voor die provider om de padbeveiligingscontrole te omzeilen.
 
 ## Een opgeslagen plan toepassen
-
-Pas een eerder gegenereerd plan toe of voer er een preflight op uit:
 
 ```bash
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json
@@ -170,29 +134,20 @@ openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run --allow-
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --json
 ```
 
-Exec-gedrag:
-
-- `--dry-run` valideert preflight zonder bestanden te schrijven.
-- exec-SecretRef-controles worden standaard overgeslagen in dry-run.
-- schrijfmodus weigert plannen die exec-SecretRefs/providers bevatten tenzij `--allow-exec` is ingesteld.
-- Gebruik `--allow-exec` om in beide modi expliciet te kiezen voor exec-providercontroles/-uitvoering.
-
-Details van het plancontract (toegestane doelpaden, validatieregels en faalsemantiek):
-
-- [Secrets Apply Plan-contract](/nl/gateway/secrets-plan-contract)
+`--dry-run` valideert de preflight zonder bestanden te schrijven; controles van exec-SecretRefs worden tijdens een dry-run standaard overgeslagen. De schrijfmodus weigert plannen met exec-SecretRefs/providers tenzij `--allow-exec` is opgegeven. Gebruik `--allow-exec` om in een van beide modi expliciet in te stemmen met controles/uitvoering van exec-providers.
 
 Wat `apply` kan bijwerken:
 
-- `openclaw.json` (SecretRef-doelen + provider-upserts/-verwijderingen)
-- `auth-profiles.json` (scrubbing van providerdoelen)
-- legacy-`auth.json`-resten
+- `openclaw.json` (SecretRef-doelen + providers invoegen/bijwerken/verwijderen)
+- `auth-profiles.json` (opschoning van providerdoelen)
+- verouderde restanten in `auth.json`
 - bekende geheime sleutels in `~/.openclaw/.env` waarvan de waarden zijn gemigreerd
 
-## Waarom geen rollbackback-ups
+Details van het plancontract (toegestane doelpaden, validatieregels, foutsemantiek): [Contract voor het toepassen van geheimenplannen](/nl/gateway/secrets-plan-contract).
 
-`secrets apply` schrijft bewust geen rollbackback-ups die oude plattetekstwaarden bevatten.
+### Waarom er geen back-ups voor terugdraaien zijn
 
-Veiligheid komt van strikte preflight + atomair-achtige apply met best-effort herstel in het geheugen bij falen.
+`secrets apply` schrijft bewust geen back-ups voor terugdraaien die oude waarden in platte tekst bevatten. De veiligheid komt voort uit een strikte preflight en vrijwel atomaire toepassing, met bij een fout een herstelpoging in het geheugen.
 
 ## Voorbeeld
 
@@ -202,9 +157,10 @@ openclaw secrets configure
 openclaw secrets audit --check
 ```
 
-Als `audit --check` nog steeds plattetekstbevindingen rapporteert, werk dan de resterende gerapporteerde doelpaden bij en voer audit opnieuw uit.
+Als `audit --check` nog steeds bevindingen voor platte tekst rapporteert, werkt u de overige gerapporteerde doelpaden bij en voert u de audit opnieuw uit.
 
 ## Gerelateerd
 
 - [CLI-referentie](/nl/cli)
 - [Geheimenbeheer](/nl/gateway/secrets)
+- [Vault-SecretRefs](/plugins/vault)

@@ -1,42 +1,36 @@
 ---
 read_when:
-    - Вы развертываете OpenClaw на облачной ВМ с Docker
-    - Вам нужен общий процесс сборки бинарного файла, сохранения состояния и обновления
-summary: Общие шаги выполнения Docker VM для долгоживущих хостов OpenClaw Gateway
-title: Среда выполнения Docker VM
+    - Вы развёртываете OpenClaw на облачной виртуальной машине с помощью Docker
+    - Вам нужен общий процесс сборки бинарного файла, обеспечения постоянства данных и обновления
+summary: Этапы настройки общей среды выполнения виртуальной машины Docker для долгосрочно работающих хостов OpenClaw Gateway
+title: Среда выполнения виртуальной машины Docker
 x-i18n:
-    generated_at: "2026-06-28T23:05:11Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:28:34Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e6a01c20ac6b85a32167fd1d897368ee0ebc6997cbc95a25f831ea7dd2e623c9
+    source_hash: d1c474b1f826077ac03c7aaa1e334ed2f38d2de2770f32f2cc907846ecc8bb19
     source_path: install/docker-vm-runtime.md
     workflow: 16
 ---
 
-Общие шаги среды выполнения для Docker-установок на базе VM, таких как GCP, Hetzner и похожие VPS-провайдеры.
+Общие шаги настройки среды выполнения для установки Docker в виртуальных машинах, например у GCP, Hetzner и аналогичных провайдеров VPS.
 
-## Встройте обязательные бинарные файлы в образ
+## Включение необходимых исполняемых файлов в образ
 
-Установка бинарных файлов внутри запущенного контейнера — ловушка.
-Все, что устанавливается во время выполнения, будет потеряно при перезапуске.
+Устанавливать исполняемые файлы в работающем контейнере — плохая практика: всё установленное во время выполнения теряется после перезапуска. Включайте каждый внешний исполняемый файл, необходимый Skills, в образ на этапе сборки.
 
-Все внешние бинарные файлы, требуемые навыками, должны быть установлены во время сборки образа.
-
-Примеры ниже показывают только три распространенных бинарных файла:
+В примерах ниже рассматриваются только три исполняемых файла в алфавитном порядке:
 
 - `gog` (из `gogcli`) для доступа к Gmail
 - `goplaces` для Google Places
 - `wacli` для WhatsApp
 
-Это примеры, а не полный список.
-Вы можете установить столько бинарных файлов, сколько нужно, используя тот же шаблон.
+Это примеры, а не полный список. Установите по той же схеме столько исполняемых файлов, сколько требуется вашим Skills. Если позднее вы добавите Skills, которому нужен новый исполняемый файл:
 
-Если позже вы добавите новые навыки, зависящие от дополнительных бинарных файлов, необходимо:
-
-1. Обновить Dockerfile
-2. Пересобрать образ
-3. Перезапустить контейнеры
+1. Обновите Dockerfile.
+2. Пересоберите образ.
+3. Перезапустите контейнеры.
 
 **Пример Dockerfile**
 
@@ -45,25 +39,25 @@ FROM node:24-bookworm
 
 RUN apt-get update && apt-get install -y socat && rm -rf /var/lib/apt/lists/*
 
-# Example binary 1: Gmail CLI (gogcli — installs as `gog`)
-# Copy the current Linux asset URL from https://github.com/steipete/gogcli/releases
+# Пример исполняемого файла 1: CLI для Gmail (gogcli — устанавливается как `gog`)
+# Скопируйте URL текущего файла для Linux со страницы https://github.com/steipete/gogcli/releases
 RUN curl -L https://github.com/steipete/gogcli/releases/latest/download/gogcli_linux_amd64.tar.gz \
   | tar -xzO gog > /usr/local/bin/gog; \
   chmod +x /usr/local/bin/gog
 
-# Example binary 2: Google Places CLI
-# Copy the current Linux asset URL from https://github.com/steipete/goplaces/releases
+# Пример исполняемого файла 2: CLI для Google Places
+# Скопируйте URL текущего файла для Linux со страницы https://github.com/steipete/goplaces/releases
 RUN curl -L https://github.com/steipete/goplaces/releases/latest/download/goplaces_linux_amd64.tar.gz \
   | tar -xzO goplaces > /usr/local/bin/goplaces; \
   chmod +x /usr/local/bin/goplaces
 
-# Example binary 3: WhatsApp CLI
-# Copy the current Linux asset URL from https://github.com/steipete/wacli/releases
+# Пример исполняемого файла 3: CLI для WhatsApp
+# Скопируйте URL текущего файла для Linux со страницы https://github.com/steipete/wacli/releases
 RUN curl -L https://github.com/steipete/wacli/releases/latest/download/wacli-linux-amd64.tar.gz \
   | tar -xzO wacli > /usr/local/bin/wacli; \
   chmod +x /usr/local/bin/wacli
 
-# Add more binaries below using the same pattern
+# Добавьте ниже другие исполняемые файлы по той же схеме
 
 WORKDIR /app
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
@@ -84,7 +78,7 @@ CMD ["node","dist/index.js"]
 ```
 
 <Note>
-URL-адреса выше являются примерами. Для VM на базе ARM выбирайте ресурсы `arm64`. Для воспроизводимых сборок закрепляйте URL-адреса версионированных релизов.
+Приведённые выше URL служат примерами. Для виртуальных машин на базе ARM выбирайте файлы `arm64`. Для воспроизводимых сборок указывайте URL выпусков с фиксированными версиями.
 </Note>
 
 ## Сборка и запуск
@@ -94,10 +88,9 @@ docker compose build
 docker compose up -d openclaw-gateway
 ```
 
-Если сборка завершается ошибкой `Killed` или `exit code 137` во время `pnpm install --frozen-lockfile`, на VM не хватает памяти.
-Перед повторной попыткой используйте класс машины большего размера.
+Если во время `pnpm install --frozen-lockfile` сборка завершается с сообщением `Killed` или кодом выхода 137, виртуальной машине не хватает памяти. Перед повторной попыткой выберите более мощный класс машины.
 
-Проверьте бинарные файлы:
+Проверьте исполняемые файлы:
 
 ```bash
 docker compose exec openclaw-gateway which gog
@@ -107,47 +100,44 @@ docker compose exec openclaw-gateway which wacli
 
 Ожидаемый вывод:
 
-```
+```text
 /usr/local/bin/gog
 /usr/local/bin/goplaces
 /usr/local/bin/wacli
 ```
 
-Проверьте Gateway:
+Убедитесь, что Gateway запущен:
 
 ```bash
 docker compose logs -f openclaw-gateway
+curl -fsS http://127.0.0.1:18789/healthz
 ```
 
-Ожидаемый вывод:
+Ответ 200 от `/healthz` подтверждает, что процесс Gateway принимает подключения и работает исправно; встроенная в образ проверка `HEALTHCHECK` опрашивает ту же конечную точку.
 
-```
-[gateway] listening on ws://0.0.0.0:18789
-```
+## Где и какие данные сохраняются
 
-## Что где сохраняется
+OpenClaw работает в Docker, но Docker не является источником достоверных данных. Всё долговременное состояние должно сохраняться при перезапусках, пересборках и перезагрузках.
 
-OpenClaw работает в Docker, но Docker не является источником истины.
-Все долговременное состояние должно переживать перезапуски, пересборки и перезагрузки.
-
-| Компонент           | Расположение                                           | Механизм сохранения    | Примечания                                                    |
-| ------------------- | ------------------------------------------------------ | ---------------------- | ------------------------------------------------------------- |
-| Конфигурация Gateway | `/home/node/.openclaw/`                                | Монтирование тома хоста | Включает `openclaw.json`, `.env`                              |
-| Профили авторизации моделей | `/home/node/.openclaw/agents/`                         | Монтирование тома хоста | `agents/<agentId>/agent/auth-profiles.json` (OAuth, API-ключи) |
-| Ключ профиля авторизации | `/home/node/.config/openclaw/`                         | Монтирование тома хоста | Локальный ключ шифрования для токенов профиля авторизации OAuth |
-| Конфигурации навыков | `/home/node/.openclaw/skills/`                         | Монтирование тома хоста | Состояние уровня навыка                                       |
-| Рабочая область агента | `/home/node/.openclaw/workspace/`                      | Монтирование тома хоста | Код и артефакты агента                                       |
-| Сессия WhatsApp     | `/home/node/.openclaw/`                                | Монтирование тома хоста | Сохраняет вход по QR-коду                                    |
-| Хранилище ключей Gmail | `/home/node/.openclaw/`                                | Том хоста + пароль     | Требует `GOG_KEYRING_PASSWORD`                               |
-| Пакеты Plugin       | `/home/node/.openclaw/npm`, `/home/node/.openclaw/git` | Монтирование тома хоста | Корневые каталоги загружаемых пакетов Plugin                  |
-| Внешние бинарные файлы | `/usr/local/bin/`                                      | Образ Docker           | Должны быть встроены во время сборки                         |
-| Среда выполнения Node | Файловая система контейнера                            | Образ Docker           | Пересобирается при каждой сборке образа                      |
-| Пакеты ОС           | Файловая система контейнера                            | Образ Docker           | Не устанавливайте во время выполнения                        |
-| Контейнер Docker    | Эфемерный                                             | Перезапускаемый        | Можно безопасно удалить                                      |
+| Компонент                       | Расположение                                           | Механизм сохранения            | Примечания                                                                                                                         |
+| ------------------------------- | ------------------------------------------------------ | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Конфигурация Gateway            | `/home/node/.openclaw/`                                | Подключение тома хоста         | Включает `openclaw.json`                                                                                                           |
+| Учётные данные каналов/провайдеров | `/home/node/.openclaw/credentials/`                 | Подключение тома хоста         | Материалы учётных данных каналов и провайдеров                                                                                      |
+| Профили аутентификации моделей  | `/home/node/.openclaw/agents/`                         | Подключение тома хоста         | `agents/<agentId>/agent/auth-profiles.json` (OAuth, ключи API)                                                                      |
+| Устаревший файл ключей OAuth    | `/home/node/.config/openclaw/`                         | Подключение тома хоста         | Совместимость только для чтения с дополнительными файлами OAuth до миграции; `openclaw doctor --fix` переносит их в `auth-profiles.json` |
+| Конфигурации Skills             | `/home/node/.openclaw/skills/`                         | Подключение тома хоста         | Состояние на уровне Skills                                                                                                         |
+| Рабочая область агента          | `/home/node/.openclaw/workspace/`                      | Подключение тома хоста         | Код и артефакты агента                                                                                                             |
+| Сеанс WhatsApp                  | `/home/node/.openclaw/`                                | Подключение тома хоста         | Сохраняет вход по QR-коду                                                                                                          |
+| Хранилище ключей Gmail          | `/home/node/.openclaw/`                                | Том хоста + пароль             | Требуется `GOG_KEYRING_PASSWORD`                                                                                                   |
+| Пакеты Plugin                   | `/home/node/.openclaw/npm`, `/home/node/.openclaw/git` | Подключение тома хоста         | Корневые каталоги загружаемых пакетов Plugin                                                                                        |
+| Внешние исполняемые файлы       | `/usr/local/bin/`                                      | Образ Docker                   | Должны включаться на этапе сборки                                                                                                   |
+| Среда выполнения Node           | Файловая система контейнера                            | Образ Docker                   | Пересобирается при каждой сборке образа                                                                                             |
+| Пакеты ОС                       | Файловая система контейнера                            | Образ Docker                   | Не устанавливайте во время выполнения                                                                                              |
+| Контейнер Docker                | Временный                                              | Перезапускаемый                | Можно безопасно удалить                                                                                                            |
 
 ## Обновления
 
-Чтобы обновить OpenClaw на VM:
+Чтобы обновить OpenClaw на виртуальной машине:
 
 ```bash
 git pull

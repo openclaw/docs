@@ -1,30 +1,30 @@
 ---
 read_when:
-    - می‌خواهید OpenClaw را روی یک کلاستر Kubernetes اجرا کنید
+    - می‌خواهید OpenClaw را روی یک خوشهٔ Kubernetes اجرا کنید
     - می‌خواهید OpenClaw را در یک محیط Kubernetes آزمایش کنید
-summary: استقرار OpenClaw Gateway در یک خوشه Kubernetes با Kustomize
-title: Kubernetes
+summary: Gateway ‏OpenClaw را با Kustomize در یک کلاستر Kubernetes مستقر کنید
+title: کوبرنتیز
 x-i18n:
-    generated_at: "2026-06-28T20:46:00Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:11:20Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5a38c2754b4a5267e79854958a252b2e4bc9811da191d8ccf3ac597534cc8e7a
+    source_hash: c05eb0eb923fa1f515aca1f6dcb6073aba69af0bdf30233243027edfedd45a39
     source_path: install/kubernetes.md
     workflow: 16
 ---
 
-نقطه‌ی شروعی حداقلی برای اجرای OpenClaw روی Kubernetes — نه یک استقرار آماده‌ی تولید. این راهنما منابع اصلی را پوشش می‌دهد و قرار است متناسب با محیط شما تطبیق داده شود.
+نقطه شروعی حداقلی برای اجرای OpenClaw روی Kubernetes است، نه استقراری آماده برای محیط تولید. این راهنما منابع اصلی را پوشش می‌دهد و برای سازگار شدن با محیط شما در نظر گرفته شده است.
 
-## چرا نه Helm؟
+## چرا Helm نه
 
-OpenClaw یک کانتینر واحد با چند فایل پیکربندی است. سفارشی‌سازی مهم در محتوای agent است (فایل‌های markdown، Skills، بازنویسی‌های پیکربندی)، نه قالب‌بندی زیرساخت. Kustomize overlayها را بدون سربار یک chart در Helm مدیریت می‌کند. اگر استقرار شما پیچیده‌تر شود، می‌توان یک chart در Helm را روی این manifestها قرار داد.
+OpenClaw یک کانتینر واحد با چند فایل پیکربندی است. سفارشی‌سازی مهم در محتوای عامل (فایل‌های Markdown، Skills و بازنویسی‌های پیکربندی) انجام می‌شود، نه در قالب‌سازی زیرساخت. Kustomize هم‌پوشانی‌ها را بدون سربار یک نمودار Helm مدیریت می‌کند. اگر استقرار شما پیچیده‌تر شد، یک نمودار Helm روی این مانیفست‌ها قرار دهید.
 
-## چه چیزهایی لازم دارید
+## آنچه نیاز دارید
 
 - یک کلاستر Kubernetes در حال اجرا (AKS، EKS، GKE، k3s، kind، OpenShift و غیره)
 - `kubectl` متصل به کلاستر شما
-- یک کلید API برای دست‌کم یک ارائه‌دهنده‌ی مدل
+- یک کلید API برای دست‌کم یک ارائه‌دهنده مدل
 
 ## شروع سریع
 
@@ -37,8 +37,7 @@ kubectl port-forward svc/openclaw 18789:18789 -n openclaw
 open http://localhost:18789
 ```
 
-راز مشترک پیکربندی‌شده برای Control UI را بازیابی کنید. این اسکریپت استقرار
-به‌صورت پیش‌فرض احراز هویت مبتنی بر توکن ایجاد می‌کند:
+`deploy.sh` به‌طور پیش‌فرض احراز هویت مبتنی بر توکن ایجاد می‌کند. توکن تولیدشده Gateway را برای رابط کنترل دریافت کنید:
 
 ```bash
 kubectl get secret openclaw-secrets -n openclaw -o jsonpath='{.data.OPENCLAW_GATEWAY_TOKEN}' | base64 -d
@@ -48,20 +47,20 @@ kubectl get secret openclaw-secrets -n openclaw -o jsonpath='{.data.OPENCLAW_GAT
 
 ## آزمایش محلی با Kind
 
-اگر کلاستر ندارید، یکی را به‌صورت محلی با [Kind](https://kind.sigs.k8s.io/) بسازید:
+اگر کلاستر ندارید، با [Kind](https://kind.sigs.k8s.io/) یک کلاستر محلی ایجاد کنید:
 
 ```bash
 ./scripts/k8s/create-kind.sh           # auto-detects docker or podman
 ./scripts/k8s/create-kind.sh --delete  # tear down
 ```
 
-سپس طبق معمول با `./scripts/k8s/deploy.sh` استقرار را انجام دهید.
+سپس طبق روال معمول با `./scripts/k8s/deploy.sh` استقرار را انجام دهید.
 
 ## گام‌به‌گام
 
-### 1) استقرار
+### ۱) استقرار
 
-**گزینه A** — کلید API در محیط (یک مرحله):
+**گزینه الف: کلید API در محیط (یک مرحله)**
 
 ```bash
 # Replace with your provider: ANTHROPIC, GEMINI, OPENAI, or OPENROUTER
@@ -69,9 +68,9 @@ export <PROVIDER>_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-اسکریپت یک Secret در Kubernetes با کلید API و یک توکن Gateway تولیدشده به‌صورت خودکار ایجاد می‌کند و سپس استقرار را انجام می‌دهد. اگر Secret از قبل وجود داشته باشد، توکن فعلی Gateway و هر کلید ارائه‌دهنده‌ای را که تغییر نمی‌کند حفظ می‌کند.
+اسکریپت یک Secret در Kubernetes شامل کلید API و یک توکن Gateway تولیدشده به‌صورت خودکار ایجاد می‌کند و سپس استقرار را انجام می‌دهد. اگر Secret از قبل وجود داشته باشد، توکن فعلی Gateway و کلیدهای ارائه‌دهندگانی را که تغییر نمی‌کنند حفظ می‌کند.
 
-**گزینه B** — secret را جداگانه ایجاد کنید:
+**گزینه ب: ایجاد Secret به‌صورت جداگانه**
 
 ```bash
 export <PROVIDER>_API_KEY="..."
@@ -79,18 +78,18 @@ export <PROVIDER>_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-اگر می‌خواهید توکن برای آزمایش محلی در stdout چاپ شود، با هرکدام از فرمان‌ها از `--show-token` استفاده کنید.
+برای آزمایش محلی، `--show-token` را به هر یک از فرمان‌ها اضافه کنید تا توکن در خروجی استاندارد چاپ شود.
 
-### 2) دسترسی به Gateway
+### ۲) دسترسی به Gateway
 
 ```bash
 kubectl port-forward svc/openclaw 18789:18789 -n openclaw
 open http://localhost:18789
 ```
 
-## چه چیزهایی مستقر می‌شود
+## مواردی که مستقر می‌شوند
 
-```
+```text
 Namespace: openclaw (configurable via OPENCLAW_NAMESPACE)
 ├── Deployment/openclaw        # Single pod, init container + gateway
 ├── Service/openclaw           # ClusterIP on port 18789
@@ -101,9 +100,9 @@ Namespace: openclaw (configurable via OPENCLAW_NAMESPACE)
 
 ## سفارشی‌سازی
 
-### دستورالعمل‌های agent
+### دستورالعمل‌های عامل
 
-`AGENTS.md` را در `scripts/k8s/manifests/configmap.yaml` ویرایش کنید و دوباره استقرار دهید:
+فایل `AGENTS.md` را در `scripts/k8s/manifests/configmap.yaml` ویرایش و دوباره مستقر کنید:
 
 ```bash
 ./scripts/k8s/deploy.sh
@@ -111,11 +110,11 @@ Namespace: openclaw (configurable via OPENCLAW_NAMESPACE)
 
 ### پیکربندی Gateway
 
-`openclaw.json` را در `scripts/k8s/manifests/configmap.yaml` ویرایش کنید. برای مرجع کامل، [پیکربندی Gateway](/fa/gateway/configuration) را ببینید.
+فایل `openclaw.json` را در `scripts/k8s/manifests/configmap.yaml` ویرایش کنید. برای مرجع کامل، به [پیکربندی Gateway](/fa/gateway/configuration) مراجعه کنید.
 
-### افزودن ارائه‌دهنده‌ها
+### افزودن ارائه‌دهندگان
 
-با کلیدهای اضافی exportشده دوباره اجرا کنید:
+با صادر کردن کلیدهای بیشتر، دوباره اجرا کنید:
 
 ```bash
 export ANTHROPIC_API_KEY="..."
@@ -124,9 +123,9 @@ export OPENAI_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-کلیدهای ارائه‌دهنده‌ی موجود در Secret باقی می‌مانند مگر اینکه آن‌ها را بازنویسی کنید.
+کلیدهای ارائه‌دهندگان موجود در Secret باقی می‌مانند، مگر اینکه آن‌ها را بازنویسی کنید.
 
-یا Secret را مستقیما patch کنید:
+یا Secret را مستقیماً وصله کنید:
 
 ```bash
 kubectl patch secret openclaw-secrets -n openclaw \
@@ -140,52 +139,52 @@ kubectl rollout restart deployment/openclaw -n openclaw
 OPENCLAW_NAMESPACE=my-namespace ./scripts/k8s/deploy.sh
 ```
 
-### image سفارشی
+### ایمیج سفارشی
 
 فیلد `image` را در `scripts/k8s/manifests/deployment.yaml` ویرایش کنید:
 
 ```yaml
-image: ghcr.io/openclaw/openclaw:latest # primary; official Docker Hub mirror: openclaw/openclaw:latest
+image: ghcr.io/openclaw/openclaw:slim # primary; official Docker Hub mirror: openclaw/openclaw
 ```
 
-### ارائه فراتر از port-forward
+### در معرض دسترسی قرار دادن فراتر از هدایت پورت
 
-manifestهای پیش‌فرض Gateway را داخل pod به loopback متصل می‌کنند. این با `kubectl port-forward` کار می‌کند، اما با یک `Service` در Kubernetes یا مسیر Ingress که باید به IP مربوط به pod برسد کار نمی‌کند.
+مانیفست‌های پیش‌فرض، Gateway را داخل پاد به local loopback متصل می‌کنند. این روش با `kubectl port-forward` کار می‌کند، اما برای یک `Service` در Kubernetes یا مسیر Ingress که باید مستقیماً به IP پاد دسترسی داشته باشد، مناسب نیست.
 
-اگر می‌خواهید Gateway را از طریق Ingress یا load balancer ارائه کنید:
+برای در معرض دسترسی قرار دادن Gateway از طریق Ingress یا متعادل‌کننده بار:
 
-- اتصال Gateway را در `scripts/k8s/manifests/configmap.yaml` از `loopback` به یک اتصال غیر-loopback تغییر دهید که با مدل استقرار شما سازگار باشد
-- احراز هویت Gateway را فعال نگه دارید و از یک نقطه‌ی ورود مناسب با TLS پایان‌یافته استفاده کنید
-- Control UI را برای دسترسی راه دور با مدل امنیت وب پشتیبانی‌شده پیکربندی کنید (برای مثال HTTPS/Tailscale Serve و originهای مجاز صریح در صورت نیاز)
+- اتصال Gateway را در `scripts/k8s/manifests/configmap.yaml` از `loopback` به اتصالی غیر از local loopback تغییر دهید که با مدل استقرار شما مطابقت داشته باشد.
+- احراز هویت Gateway را فعال نگه دارید و از یک نقطه ورود مناسب با خاتمه TLS استفاده کنید.
+- رابط کنترل را با استفاده از مدل امنیتی وب پشتیبانی‌شده برای دسترسی راه دور پیکربندی کنید (برای مثال HTTPS/Tailscale Serve و در صورت نیاز، مبدأهای مجاز صریح).
 
-## استقرار دوباره
+## استقرار مجدد
 
 ```bash
 ./scripts/k8s/deploy.sh
 ```
 
-این همه‌ی manifestها را اعمال می‌کند و pod را restart می‌کند تا هر تغییر پیکربندی یا secret اعمال شود.
+این فرمان همه مانیفست‌ها را اعمال و پاد را راه‌اندازی مجدد می‌کند تا هرگونه تغییر در پیکربندی یا Secret اعمال شود.
 
-## حذف
+## برچیدن
 
 ```bash
 ./scripts/k8s/deploy.sh --delete
 ```
 
-این فضای نام و همه‌ی منابع داخل آن، از جمله PVC، را حذف می‌کند.
+این فرمان فضای نام و همه منابع داخل آن، از جمله PVC را حذف می‌کند.
 
-## یادداشت‌های معماری
+## نکات معماری
 
-- Gateway به‌صورت پیش‌فرض داخل pod به loopback متصل می‌شود، بنابراین راه‌اندازی ارائه‌شده برای `kubectl port-forward` است
-- هیچ منبعی در سطح کلاستر وجود ندارد — همه‌چیز در یک فضای نام واحد قرار دارد
-- امنیت: قابلیت‌های `readOnlyRootFilesystem`، `drop: ALL`، کاربر غیر-root (UID 1000)
-- پیکربندی پیش‌فرض Control UI را روی مسیر امن‌تر دسترسی محلی نگه می‌دارد: اتصال loopback به‌علاوه‌ی `kubectl port-forward` به `http://127.0.0.1:18789`
-- اگر فراتر از دسترسی localhost می‌روید، از مدل راه دور پشتیبانی‌شده استفاده کنید: HTTPS/Tailscale به‌علاوه‌ی اتصال مناسب Gateway و تنظیمات origin در Control UI
-- secretها در یک دایرکتوری موقت تولید و مستقیما روی کلاستر اعمال می‌شوند — هیچ ماده‌ی محرمانه‌ای در checkout مخزن نوشته نمی‌شود
+- Gateway به‌طور پیش‌فرض داخل پاد به local loopback متصل می‌شود؛ بنابراین، راه‌اندازی ارائه‌شده برای `kubectl port-forward` است.
+- هیچ منبعی در سطح کلاستر وجود ندارد؛ همه‌چیز در یک فضای نام واحد قرار دارد.
+- مقاوم‌سازی امنیتی: `readOnlyRootFilesystem`، قابلیت‌های `drop: ALL` و کاربر غیرریشه (UID 1000).
+- پیکربندی پیش‌فرض، رابط کنترل را در مسیر امن‌تر دسترسی محلی نگه می‌دارد: اتصال local loopback به‌همراه `kubectl port-forward` به `http://127.0.0.1:18789`.
+- اگر از دسترسی localhost فراتر می‌روید، از مدل راه دور پشتیبانی‌شده استفاده کنید: HTTPS/Tailscale به‌همراه اتصال مناسب Gateway و تنظیمات مبدأ رابط کنترل.
+- Secretها در یک پوشه موقت تولید و مستقیماً روی کلاستر اعمال می‌شوند؛ هیچ داده محرمانه‌ای در نسخه کاری مخزن نوشته نمی‌شود.
 
-## ساختار فایل
+## ساختار فایل‌ها
 
-```
+```text
 scripts/k8s/
 ├── deploy.sh                   # Creates namespace + secret, deploys via kustomize
 ├── create-kind.sh              # Local Kind cluster (auto-detects docker/podman)
@@ -200,5 +199,5 @@ scripts/k8s/
 ## مرتبط
 
 - [Docker](/fa/install/docker)
-- [زمان اجرای Docker VM](/fa/install/docker-vm-runtime)
+- [محیط اجرای ماشین مجازی Docker](/fa/install/docker-vm-runtime)
 - [نمای کلی نصب](/fa/install)

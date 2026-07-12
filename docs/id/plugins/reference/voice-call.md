@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Anda sedang menginstal, mengonfigurasi, atau mengaudit Plugin panggilan suara
-summary: Plugin panggilan suara OpenClaw untuk panggilan telepon Twilio, Telnyx, dan Plivo.
+    - Anda sedang menginstal, mengonfigurasi, atau mengaudit plugin panggilan suara
+summary: Plugin panggilan suara OpenClaw untuk panggilan telepon melalui Twilio, Telnyx, dan Plivo.
 title: Plugin Panggilan Suara
 x-i18n:
-    generated_at: "2026-06-27T17:57:31Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:33:12Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: b0e298a2d8701d6fd531b761f8c14477b8c37a376af43127aa67c2fa6ff1b02d
@@ -13,19 +13,19 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin Voice Call
+# Plugin Panggilan Suara
 
 Plugin panggilan suara OpenClaw untuk panggilan telepon Twilio, Telnyx, dan Plivo.
 
 ## Distribusi
 
 - Paket: `@openclaw/voice-call`
-- Rute instalasi: npm; ClawHub
+- Jalur instalasi: npm; ClawHub
 
-## Permukaan
+## Antarmuka
 
 kontrak: alat; Skills
 
-## Dokumen terkait
+## Dokumentasi terkait
 
-- [voice-call](/id/plugins/voice-call)
+- [panggilan suara](/id/plugins/voice-call)

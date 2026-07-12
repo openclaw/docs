@@ -1,19 +1,19 @@
 ---
 read_when:
-    - أنت تثبّت Plugin zai أو تهيّئه أو تدقّقه
-summary: يضيف دعم مزوّد نماذج Z.AI إلى OpenClaw.
-title: Plugin Z.AI
+    - أنت تثبّت Plugin ‏zai أو تهيّئه أو تدقّق فيه
+summary: يضيف دعم موفّر نماذج Z.AI إلى OpenClaw.
+title: Plugin ‏Z.AI
 x-i18n:
-    generated_at: "2026-06-27T18:16:34Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:22:50Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f02339093c874b13e97cfbeaca4a5343159079a008618faac435ac80f2f935c4
+    source_hash: 47eed5f843c7659c7b4aefb06ef919b5420998609ae8d46ac5ebcd5871b0f673
     source_path: plugins/reference/zai.md
     workflow: 16
 ---
 
-# Plugin Z.AI
+# Plugin ‏Z.AI
 
 يضيف دعم موفّر نماذج Z.AI إلى OpenClaw.
 
@@ -22,9 +22,9 @@ x-i18n:
 - الحزمة: `@openclaw/zai-provider`
 - مسار التثبيت: npm؛ ClawHub: `clawhub:@openclaw/zai-provider`
 
-## الواجهة
+## الواجهات
 
-providers: zai; contracts: mediaUnderstandingProviders
+الموفّرون: zai؛ العقود: mediaUnderstandingProviders، usageProviders
 
 ## الوثائق ذات الصلة
 

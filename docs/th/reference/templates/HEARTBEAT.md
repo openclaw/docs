@@ -1,32 +1,37 @@
 ---
 read_when:
-    - การตั้งค่าเวิร์กสเปซเริ่มต้นด้วยตนเอง
-summary: เทมเพลตพื้นที่ทำงานสำหรับ HEARTBEAT.md
+    - การเริ่มต้นพื้นที่ทำงานด้วยตนเอง
+summary: เทมเพลตเวิร์กสเปซสำหรับ HEARTBEAT.md
 title: เทมเพลต HEARTBEAT.md
 x-i18n:
-    generated_at: "2026-06-27T18:22:05Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:41:25Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 44a1ea787d67110ca53d752706b62f5ce5c4df8637897dee97ce6502f6a05eb6
+    source_hash: 1605f546995e0bdcb11f9bf905173b14aca25cfad664fe2c7644d18c2b4142e2
     source_path: reference/templates/HEARTBEAT.md
     workflow: 16
 ---
 
 # เทมเพลต HEARTBEAT.md
 
-`HEARTBEAT.md` อยู่ในพื้นที่ทำงานของเอเจนต์ ปล่อยไฟล์ให้ว่างไว้ หรือมีเฉพาะคอมเมนต์และหัวเรื่อง Markdown เมื่อคุณต้องการให้ OpenClaw ข้ามการเรียกโมเดล Heartbeat
+`HEARTBEAT.md` อยู่ในพื้นที่ทำงานของเอเจนต์และเก็บรายการตรวจสอบ Heartbeat ตามรอบเวลา ปล่อยไฟล์ให้ว่าง หรือให้มีเพียงช่องว่าง ความคิดเห็น Markdown หัวเรื่องแบบ ATX โครงรายการว่าง (`- `, `* [ ]`) หรือเครื่องหมายขอบเขตบล็อกโค้ด เพื่อให้ OpenClaw ข้ามการเรียกโมเดล Heartbeat ทั้งหมด (`reason=empty-heartbeat-file`)
 
-เทมเพลตรันไทม์เริ่มต้นคือ:
+เนื้อหาเริ่มต้นที่เผยแพร่มาพร้อมระบบ:
 
 ```markdown
-# Keep this file empty (or with only comments) to skip heartbeat API calls.
+<!-- เทมเพลต Heartbeat; เนื้อหาที่มีเฉพาะความคิดเห็นจะป้องกันการเรียก Heartbeat API ตามกำหนดเวลา -->
 
-# Add tasks below when you want the agent to check something periodically.
+# ปล่อยไฟล์นี้ให้ว่าง (หรือให้มีเฉพาะความคิดเห็น) เพื่อข้ามการเรียก Heartbeat API
+
+# เพิ่มงานด้านล่างเมื่อต้องการให้เอเจนต์ตรวจสอบบางสิ่งเป็นระยะ
 ```
 
-เพิ่มงานสั้น ๆ ไว้ใต้คอมเมนต์เฉพาะเมื่อคุณต้องการให้เอเจนต์ตรวจสอบบางอย่างเป็นระยะเท่านั้น เขียนคำสั่ง Heartbeat ให้สั้น เพราะคำสั่งเหล่านี้จะถูกอ่านระหว่างการปลุกซ้ำ
+เพิ่มงานสั้น ๆ ใต้บรรทัดความคิดเห็นเฉพาะเมื่อต้องการให้ตรวจสอบเป็นระยะเท่านั้น ควรรักษาเนื้อหาให้กระชับ เนื่องจากการทำงานของ Heartbeat จะอ่านไฟล์นี้ในทุกจังหวะ (ค่าเริ่มต้นคือทุก 30 นาที) ดังนั้นคำสั่งที่ยืดยาวจะใช้โทเค็นทุกครั้งที่ระบบตื่นขึ้นมา
+
+สำหรับการตรวจสอบเฉพาะงานที่ถึงกำหนดแทนรายการตรวจสอบทั่วไป ให้ใช้บล็อก `tasks:` แบบมีโครงสร้างพร้อมฟิลด์ `interval` และ `prompt` สำหรับแต่ละงาน โปรดดูรูปแบบและลักษณะการทำงานที่ [HEARTBEAT.md](/th/gateway/heartbeat#heartbeatmd-optional)
 
 ## ที่เกี่ยวข้อง
 
+- [Heartbeat](/th/gateway/heartbeat)
 - [การกำหนดค่า Heartbeat](/th/gateway/config-agents)

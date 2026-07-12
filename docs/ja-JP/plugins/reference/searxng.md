@@ -1,11 +1,11 @@
 ---
 read_when:
-    - searxng Plugin のインストール、設定、または監査を行っています
-summary: Web検索プロバイダー対応を追加します。
+    - searxng Pluginをインストール、設定、または監査している場合
+summary: ウェブ検索プロバイダーのサポートを追加します。
 title: SearXNG Plugin
 x-i18n:
-    generated_at: "2026-06-27T12:28:23Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:33:47Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 96d320ccd6ec69e380edfcfa33b498569058be6953257b5770cd4eea95cb401a
@@ -15,13 +15,13 @@ x-i18n:
 
 # SearXNG Plugin
 
-Web 検索プロバイダーのサポートを追加します。
+ウェブ検索プロバイダーのサポートを追加します。
 
 ## 配布
 
 - パッケージ: `@openclaw/searxng-plugin`
 - インストール経路: npm; ClawHub: `clawhub:@openclaw/searxng-plugin`
 
-## サーフェス
+## 公開インターフェース
 
-契約: webSearchProviders
+コントラクト: webSearchProviders

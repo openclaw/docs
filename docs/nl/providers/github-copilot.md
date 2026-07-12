@@ -2,39 +2,40 @@
 read_when:
     - Je wilt GitHub Copilot als modelprovider gebruiken
     - Je hebt de `openclaw models auth login-github-copilot`-flow nodig
-    - Je kiest tussen de ingebouwde Copilot-provider, de Copilot SDK-harness en Copilot Proxy
-summary: Meld je aan bij GitHub Copilot vanuit OpenClaw via de apparaatflow of niet-interactieve tokenimport
+    - U kiest tussen de ingebouwde Copilot-provider, de Copilot SDK-harnas en de Copilot Proxy
+summary: Meld u vanuit OpenClaw aan bij GitHub Copilot via de apparaatstroom of niet-interactieve tokenimport
 title: GitHub Copilot
 x-i18n:
-    generated_at: "2026-06-27T18:12:03Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:13:31Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a0cd7103ec880592b1f4506ed844abe788f53040f3751e7034daf9aafedc2f94
+    source_hash: e731d46dd387bbecb0219c4ec3e319fb8d07fd4017da8035561f110501587ad4
     source_path: providers/github-copilot.md
     workflow: 16
 ---
 
-GitHub Copilot is de AI-codeerassistent van GitHub. Het biedt toegang tot Copilot-
-modellen voor je GitHub-account en -abonnement. OpenClaw kan Copilot op drie verschillende
-manieren gebruiken als modelprovider of agentruntime.
+GitHub Copilot is de AI-codeerassistent van GitHub. Deze biedt toegang tot Copilot-
+modellen voor je GitHub-account en -abonnement. OpenClaw kan Copilot op drie
+verschillende manieren gebruiken als modelprovider of agentruntime.
 
 ## Drie manieren om Copilot in OpenClaw te gebruiken
 
 <Tabs>
   <Tab title="Ingebouwde provider (github-copilot)">
-    Gebruik de native apparaatlogin-flow om een GitHub-token te verkrijgen en wissel dit
-    vervolgens om voor Copilot API-tokens wanneer OpenClaw draait. Dit is het **standaard** en eenvoudigste pad
-    omdat VS Code niet vereist is.
+    Gebruik de ingebouwde apparaat-aanmeldingsflow om een GitHub-token te verkrijgen
+    en wissel dit vervolgens tijdens het uitvoeren van OpenClaw in voor Copilot
+    API-tokens. Dit is het **standaardpad** en het eenvoudigste pad, omdat VS Code
+    niet vereist is.
 
     <Steps>
-      <Step title="Voer de loginopdracht uit">
+      <Step title="Voer de aanmeldingsopdracht uit">
         ```bash
         openclaw models auth login-github-copilot
         ```
 
-        Je wordt gevraagd een URL te bezoeken en een eenmalige code in te voeren. Houd de
-        terminal open totdat dit is voltooid.
+        Je wordt gevraagd een URL te bezoeken en een eenmalige code in te voeren.
+        Houd de terminal open totdat het proces is voltooid.
       </Step>
       <Step title="Stel een standaardmodel in">
         ```bash
@@ -55,16 +56,16 @@ manieren gebruiken als modelprovider of agentruntime.
 
   </Tab>
 
-  <Tab title="Copilot SDK-harness-Plugin (copilot)">
-    Installeer de externe `@openclaw/copilot` Plugin wanneer je wilt dat GitHub's
-    Copilot CLI en SDK de low-level agentlus beheren voor geselecteerde
-    `github-copilot/*`-modellen.
+  <Tab title="Copilot SDK-harnasplugin (copilot)">
+    Installeer de externe Plugin `@openclaw/copilot` wanneer je wilt dat de
+    Copilot CLI en SDK van GitHub de agentlus op laag niveau beheren voor
+    geselecteerde `github-copilot/*`-modellen.
 
     ```bash
-    openclaw plugins install clawhub:@openclaw/copilot
+    openclaw plugins install @openclaw/copilot
     ```
 
-    Kies vervolgens een model of provider voor de runtime:
+    Schakel vervolgens een model of provider in voor de runtime:
 
     ```json5
     {
@@ -81,43 +82,128 @@ manieren gebruiken als modelprovider of agentruntime.
     }
     ```
 
-    Kies dit wanneer je native Copilot CLI-sessies, door de SDK beheerde threadstatus
-    en door Copilot beheerde Compaction voor die agentbeurten wilt. Zie
-    [Copilot SDK-harness](/nl/plugins/copilot) voor het volledige runtimecontract.
+    Kies dit wanneer je voor die agentbeurten ingebouwde Copilot CLI-sessies,
+    door de SDK beheerde threadstatus en door Copilot beheerde Compaction wilt.
+    Zonder de expliciete `agentRuntime`-inschakeling blijven
+    `github-copilot/*`-modellen de ingebouwde provider gebruiken. Zie
+    [Copilot SDK-harnas](/nl/plugins/copilot) voor het volledige runtimecontract.
 
   </Tab>
 
-  <Tab title="Copilot Proxy-Plugin (copilot-proxy)">
-    Gebruik de **Copilot Proxy** VS Code-extensie als lokale brug. OpenClaw communiceert met
-    het `/v1`-eindpunt van de proxy en gebruikt de modellenlijst die je daar configureert.
+  <Tab title="Copilot Proxy-plugin (copilot-proxy)">
+    Gebruik de VS Code-extensie **Copilot Proxy** als lokale brug. OpenClaw
+    communiceert met het `/v1`-eindpunt van de proxy (standaard
+    `http://localhost:3000/v1`) en gebruikt de modellenlijst die je configureert.
+
+    De Plugin `copilot-proxy` wordt met OpenClaw meegeleverd en is standaard
+    ingeschakeld. Configureer de basis-URL en model-ID's met:
+
+    ```bash
+    openclaw models auth login --provider copilot-proxy --set-default
+    ```
 
     <Note>
-    Kies dit wanneer je Copilot Proxy al in VS Code gebruikt of verkeer erdoorheen moet routeren.
-    Je moet de Plugin inschakelen en de VS Code-extensie actief houden.
+    Kies dit wanneer je Copilot Proxy al in VS Code uitvoert of verkeer erdoorheen
+    moet routeren. De VS Code-extensie moet actief blijven.
     </Note>
 
   </Tab>
 </Tabs>
 
+## GitHub Enterprise (gegevenslocatie)
+
+Als je organisatie een GitHub Enterprise-tenant met gegevenslocatie gebruikt
+(een `*.ghe.com`-host, zoals `your-org.ghe.com`), bevindt Copilot zich op lokale
+eindpunten van de tenant in plaats van op het openbare `github.com`. OpenClaw
+biedt dit aan als volwaardige verificatiekeuze, zodat je URL's niet handmatig
+hoeft te bewerken.
+
+<Steps>
+  <Step title="Kies de Enterprise-verificatieoptie">
+    Kies tijdens de onboarding of in `openclaw models auth`
+    **GitHub Copilot (Enterprise / data residency)**. Je wordt gevraagd om je
+    Enterprise-domein (bijvoorbeeld `your-org.ghe.com`), waarna de
+    apparaat-aanmelding voor die tenant wordt uitgevoerd.
+
+    Voer alleen de tenantroot in (`your-org.ghe.com`). Afgeleide servicehosts,
+    zoals `api.your-org.ghe.com` of `copilot-api.your-org.ghe.com`, worden niet
+    geaccepteerd; OpenClaw leidt die eindpunten automatisch af van de tenantroot.
+
+    ```bash
+    openclaw models auth login --provider github-copilot --method device-enterprise
+    ```
+
+  </Step>
+  <Step title="Het domein wordt in de configuratie opgeslagen">
+    De gekozen host wordt onder de providerparameters opgeslagen, zodat latere
+    tokenvernieuwingen en voltooiingen automatisch op de tenant worden gericht:
+
+    ```json5
+    {
+      models: {
+        providers: {
+          "github-copilot": { params: { githubDomain: "your-org.ghe.com" } },
+        },
+      },
+    }
+    ```
+
+  </Step>
+</Steps>
+
+De apparaatflow, tokenuitwisseling en voltooiingen worden respectievelijk
+omgezet naar `https://your-org.ghe.com/login/device/code`,
+`https://api.your-org.ghe.com/copilot_internal/v2/token` en
+`https://copilot-api.your-org.ghe.com`. Tokens voor gegevenslocatie bevatten
+een tenantstempel en geen proxyaanwijzing. Daardoor valt de basis-URL voor
+voltooiingen terug op de Copilot-host van de tenant in plaats van op het
+openbare eindpunt.
+
+<Note>
+Bij het wisselen van domein wordt de apparaat-aanmelding altijd opnieuw
+uitgevoerd. Als je al een Copilot-token hebt opgeslagen en een ander domein
+kiest (openbaar `github.com` ↔ een `*.ghe.com`-tenant, of van de ene tenant naar
+de andere), gebruikt OpenClaw het bestaande token niet opnieuw. Er wordt een
+nieuwe aanmelding afgedwongen, zodat het token is beperkt tot het domein dat in
+de configuratie wordt opgeslagen. Wanneer je je opnieuw aanmeldt voor
+*hetzelfde* domein, wordt nog steeds aangeboden om het huidige token opnieuw te
+gebruiken. Bij terugschakelen naar het openbare `github.com` wordt de opgeslagen
+`githubDomain` gewist, zodat de configuratie terugkeert naar de standaardwaarde.
+</Note>
+
+<Note>
+De omgevingsvariabele `COPILOT_GITHUB_DOMAIN` overschrijft het bepaalde domein
+voor elk Copilot-pad dat het domein bepaalt: de Enterprise-apparaataanmelding
+(`--method device-enterprise`), de zelfstandige snelkoppeling
+`openclaw models auth login-github-copilot`, tokenvernieuwing, embeddings en
+voltooiingen. Stel deze in op je `*.ghe.com`-host voor volledig headless
+opstellingen of CI-opstellingen. Laat de variabele oningesteld (en laat de
+configuratieparameter weg) om het openbare `github.com` te gebruiken.
+Aanmeldingen slaan het domein op waarvoor het token is uitgegeven (en wissen
+het wanneer je je bij het openbare `github.com` aanmeldt), zodat de routering
+correct blijft nadat de omgevingsvariabele is verwijderd.
+</Note>
+
 ## Optionele vlaggen
 
-| Vlag            | Beschrijving                                        |
-| --------------- | --------------------------------------------------- |
-| `--yes`         | Sla de bevestigingsprompt over                     |
-| `--set-default` | Pas ook het aanbevolen standaardmodel van de provider toe |
+| Opdracht                                                               | Vlag            | Beschrijving                                                     |
+| ---------------------------------------------------------------------- | --------------- | ---------------------------------------------------------------- |
+| `openclaw models auth login-github-copilot`                            | `--yes`         | Overschrijf een bestaand verificatieprofiel zonder bevestiging   |
+| `openclaw models auth login --provider github-copilot --method device` | `--set-default` | Pas ook het aanbevolen standaardmodel van de provider toe        |
 
 ```bash
-# Skip confirmation
+# De bevestiging voor opnieuw aanmelden overslaan
 openclaw models auth login-github-copilot --yes
 
-# Login and set the default model in one step
+# Aanmelden en het standaardmodel in één stap instellen
 openclaw models auth login --provider github-copilot --method device --set-default
 ```
 
 ## Niet-interactieve onboarding
 
-Als je al een GitHub OAuth-toegangstoken voor Copilot hebt, importeer dit dan tijdens
-headless setup met `openclaw onboard --non-interactive`:
+Voor de apparaat-aanmeldingsflow is een interactieve TTY vereist. Importeer voor
+een headless opstelling een bestaand GitHub OAuth-toegangstoken met
+`openclaw onboard --non-interactive`:
 
 ```bash
 openclaw onboard --non-interactive --accept-risk \
@@ -126,39 +212,46 @@ openclaw onboard --non-interactive --accept-risk \
   --skip-channels --skip-health
 ```
 
-Je kunt `--auth-choice` ook weglaten; het doorgeven van `--github-copilot-token` leidt de
-authenticatiekeuze voor de GitHub Copilot-provider af. Als de vlag wordt weggelaten, valt onboarding
-terug op `COPILOT_GITHUB_TOKEN`, `GH_TOKEN` en daarna `GITHUB_TOKEN`. Gebruik
-`--secret-input-mode ref` met `COPILOT_GITHUB_TOKEN` ingesteld om een door env ondersteunde
-`tokenRef` op te slaan in plaats van platte tekst in `auth-profiles.json`.
+Je kunt `--auth-choice` ook weglaten; door `--github-copilot-token` door te geven,
+wordt de providerverificatiekeuze voor GitHub Copilot afgeleid. Als de vlag
+wordt weggelaten, valt de onboarding terug op `COPILOT_GITHUB_TOKEN`, daarna
+`GH_TOKEN` en vervolgens `GITHUB_TOKEN`. Gebruik `--secret-input-mode ref` met
+een ingestelde `COPILOT_GITHUB_TOKEN` om een door een omgevingsvariabele
+ondersteunde `tokenRef` op te slaan in plaats van leesbare tekst in
+`auth-profiles.json`.
 
 <AccordionGroup>
   <Accordion title="Interactieve TTY vereist">
-    De apparaatlogin-flow vereist een interactieve TTY. Voer deze rechtstreeks uit in een
-    terminal, niet in een niet-interactief script of CI-pijplijn.
+    Voor de apparaat-aanmeldingsflow is een interactieve TTY vereist. Voer deze
+    rechtstreeks in een terminal uit, niet in een niet-interactief script of
+    een CI-pijplijn.
   </Accordion>
 
-  <Accordion title="Modelbeschikbaarheid hangt af van je abonnement">
-    De beschikbaarheid van Copilot-modellen hangt af van je GitHub-abonnement. Als een model wordt
-    geweigerd, probeer dan een andere ID (bijvoorbeeld `github-copilot/gpt-5.5`). Zie
-    GitHub's [ondersteunde modellen per Copilot-abonnement](https://docs.github.com/en/copilot/reference/ai-models/supported-models#supported-ai-models-per-copilot-plan)
-    voor de actuele modellenlijst.
+  <Accordion title="Modelbeschikbaarheid is afhankelijk van je abonnement">
+    De beschikbaarheid van Copilot-modellen is afhankelijk van je GitHub-
+    abonnement. Als een model wordt geweigerd, probeer dan een andere ID
+    (bijvoorbeeld `github-copilot/gpt-5.5`). Zie de
+    [ondersteunde modellen per Copilot-abonnement](https://docs.github.com/en/copilot/reference/ai-models/supported-models#supported-ai-models-per-copilot-plan)
+    van GitHub voor de huidige modellenlijst.
   </Accordion>
 
   <Accordion title="Live catalogusvernieuwing vanuit de Copilot API">
-    Zodra het authpad via apparaatlogin (of env-var) een GitHub-token heeft opgelost,
-    vernieuwt OpenClaw de modelcatalogus op aanvraag vanuit `${baseUrl}/models`
-    (hetzelfde eindpunt dat VS Code Copilot gebruikt), zodat de runtime
-    per-accountrechten en nauwkeurige contextvensters volgt zonder manifestverloop.
-    Nieuw gepubliceerde Copilot-modellen worden zichtbaar zonder OpenClaw-upgrade,
-    en contextvensters weerspiegelen de echte limieten per model
-    (bijv. 400k voor de gpt-5.x-serie, 1M voor de interne
+    Zodra het verificatiepad via apparaat-aanmelding (of omgevingsvariabele)
+    een GitHub-token heeft bepaald, vernieuwt OpenClaw de modelcatalogus op
+    aanvraag via `${baseUrl}/models` (hetzelfde eindpunt dat VS Code Copilot
+    gebruikt). Zo volgt de runtime de rechten per account en nauwkeurige
+    contextvensters zonder wijzigingen in het manifest. Nieuw gepubliceerde
+    Copilot-modellen worden zichtbaar zonder een OpenClaw-upgrade en
+    contextvensters weerspiegelen de werkelijke limieten per model
+    (bijvoorbeeld 400k voor de gpt-5.x-serie en 1M voor de interne
     `claude-opus-*-1m`-varianten).
 
-    De gebundelde statische catalogus blijft de zichtbare fallback wanneer detectie
-    is uitgeschakeld, de gebruiker geen GitHub-authprofiel heeft, de tokenwisseling
-    mislukt of de HTTPS-aanroep naar `/models` een fout geeft. Om je af te melden en volledig
-    te vertrouwen op de statische manifestcatalogus (offline / air-gapped scenario's):
+    De meegeleverde statische catalogus blijft zichtbaar als terugvaloptie
+    wanneer detectie is uitgeschakeld, de gebruiker geen GitHub-
+    verificatieprofiel heeft, de tokenuitwisseling mislukt of de HTTPS-aanroep
+    naar `/models` een fout oplevert. Als je dit wilt uitschakelen en volledig
+    wilt vertrouwen op de statische manifestcatalogus (offline of fysiek van
+    netwerken gescheiden scenario's):
 
     ```json5
     {
@@ -175,57 +268,57 @@ terug op `COPILOT_GITHUB_TOKEN`, `GH_TOKEN` en daarna `GITHUB_TOKEN`. Gebruik
   </Accordion>
 
   <Accordion title="Transportselectie">
-    Claude-model-ID's gebruiken automatisch het Anthropic Messages-transport. GPT-,
-    o-series- en Gemini-modellen behouden het OpenAI Responses-transport. OpenClaw
-    selecteert het juiste transport op basis van de modelref.
+    Claude-model-ID's gebruiken automatisch het Anthropic Messages-transport.
+    Gemini-modellen gebruiken het OpenAI Chat Completions-transport; GPT- en
+    o-serie-modellen blijven het OpenAI Responses-transport gebruiken. OpenClaw
+    selecteert het juiste transport op basis van de modelverwijzing.
   </Accordion>
 
-  <Accordion title="Requestcompatibiliteit">
-    OpenClaw verzendt Copilot IDE-stijl requestheaders op Copilot-transporten,
-    inclusief ingebouwde Compaction, toolresultaat- en afbeeldingsvervolgbeurten. Het
-    schakelt geen provider-level Responses-continuation in voor Copilot, tenzij
-    dat gedrag is geverifieerd tegen de API van Copilot.
+  <Accordion title="Aanvraagcompatibiliteit">
+    OpenClaw verzendt aanvraagheaders in Copilot IDE-stijl via Copilot-
+    transporten (versies van de VS Code-editor en -Plugin en de integratie-ID
+    `vscode-chat`), markeert vervolgbeurten met toolresultaten als door de agent
+    geïnitieerd en stelt de Copilot-visionheader in wanneer een beurt
+    afbeeldingsinvoer bevat.
   </Accordion>
 
-  <Accordion title="Oplosvolgorde voor omgevingsvariabelen">
-    OpenClaw lost Copilot-authenticatie op uit omgevingsvariabelen in de volgende
+  <Accordion title="Volgorde voor het bepalen van omgevingsvariabelen">
+    OpenClaw bepaalt Copilot-verificatie via omgevingsvariabelen in de volgende
     prioriteitsvolgorde:
 
-    | Prioriteit | Variabele             | Opmerkingen                      |
-    | ---------- | --------------------- | -------------------------------- |
-    | 1          | `COPILOT_GITHUB_TOKEN` | Hoogste prioriteit, Copilot-specifiek |
-    | 2          | `GH_TOKEN`            | GitHub CLI-token (fallback)      |
-    | 3          | `GITHUB_TOKEN`        | Standaard GitHub-token (laagste) |
+    | Prioriteit | Variabele               | Opmerkingen                              |
+    | ---------- | ------------------------ | ---------------------------------------- |
+    | 1          | `COPILOT_GITHUB_TOKEN`   | Hoogste prioriteit, specifiek voor Copilot |
+    | 2          | `GH_TOKEN`               | GitHub CLI-token (terugvaloptie)         |
+    | 3          | `GITHUB_TOKEN`           | Standaard GitHub-token (laagste)         |
 
-    Wanneer meerdere variabelen zijn ingesteld, gebruikt OpenClaw degene met de hoogste prioriteit.
-    De apparaatlogin-flow (`openclaw models auth login-github-copilot`) slaat
-    het token op in de authprofielopslag en heeft voorrang op alle omgevingsvariabelen.
+    Wanneer meerdere variabelen zijn ingesteld, gebruikt OpenClaw de variabele
+    met de hoogste prioriteit. De apparaat-aanmeldingsflow
+    (`openclaw models auth login-github-copilot`) slaat het token op in de
+    verificatieprofielopslag en heeft voorrang op alle omgevingsvariabelen.
 
   </Accordion>
 
   <Accordion title="Tokenopslag">
-    De login slaat een GitHub-token op in de authprofielopslag en wisselt dit
-    om voor een Copilot API-token wanneer OpenClaw draait. Je hoeft het
-    token niet handmatig te beheren.
+    De aanmelding slaat een GitHub-token op in de verificatieprofielopslag
+    (profiel-ID `github-copilot:github`) en wisselt dit tijdens het uitvoeren
+    van OpenClaw in voor een kortstondig Copilot API-token. Je hoeft het token
+    niet handmatig te beheren.
   </Accordion>
 </AccordionGroup>
 
-<Warning>
-De apparaatloginopdracht vereist een interactieve TTY. Gebruik niet-interactieve
-onboarding wanneer je headless setup nodig hebt.
-</Warning>
-
 ## Embeddings voor geheugenzoekopdrachten
 
-GitHub Copilot kan ook dienen als embeddingprovider voor
-[geheugenzoekopdrachten](/nl/concepts/memory-search). Als je een Copilot-abonnement hebt en
-bent ingelogd, kan OpenClaw dit gebruiken voor embeddings zonder aparte API-sleutel.
+GitHub Copilot kan ook fungeren als embeddingprovider voor
+[geheugenzoekopdrachten](/nl/concepts/memory-search). Als je een Copilot-abonnement
+hebt en bent aangemeld, kan OpenClaw dit gebruiken voor embeddings zonder een
+afzonderlijke API-sleutel.
 
 ### Configuratie
 
-Stel `memorySearch.provider` expliciet in om GitHub Copilot-embeddings te gebruiken. Als een
-GitHub-token beschikbaar is, detecteert OpenClaw beschikbare embeddingmodellen vanuit
-de Copilot API en kiest automatisch het beste model.
+Stel `memorySearch.provider` expliciet in om GitHub Copilot-embeddings te
+gebruiken. Als een GitHub-token beschikbaar is, detecteert OpenClaw beschikbare
+embeddingmodellen via de Copilot API en kiest het automatisch het beste model.
 
 ```json5
 {
@@ -233,7 +326,7 @@ de Copilot API en kiest automatisch het beste model.
     defaults: {
       memorySearch: {
         provider: "github-copilot",
-        // Optional: override the auto-discovered model
+        // Optioneel: het automatisch gedetecteerde model overschrijven
         model: "text-embedding-3-small",
       },
     },
@@ -241,24 +334,26 @@ de Copilot API en kiest automatisch het beste model.
 }
 ```
 
-### Hoe het werkt
+### Werking
 
-1. OpenClaw lost je GitHub-token op (uit env-vars of authprofiel).
-2. Wisselt dit om voor een kortlevend Copilot API-token.
-3. Vraagt het Copilot `/models`-eindpunt op om beschikbare embeddingmodellen te detecteren.
-4. Kiest het beste model (geeft de voorkeur aan `text-embedding-3-small`).
-5. Verzendt embeddingrequests naar het Copilot `/embeddings`-eindpunt.
+1. OpenClaw bepaalt je GitHub-token (via omgevingsvariabelen of een verificatieprofiel).
+2. Het token wordt ingewisseld voor een kortstondig Copilot API-token.
+3. Het Copilot-eindpunt `/models` wordt opgevraagd om beschikbare embeddingmodellen te detecteren.
+4. Het beste model wordt gekozen (voorkeursvolgorde: `text-embedding-3-small`,
+   `text-embedding-3-large`, `text-embedding-ada-002`).
+5. Embeddingaanvragen worden naar het Copilot-eindpunt `/embeddings` verzonden.
 
-Modelbeschikbaarheid hangt af van je GitHub-abonnement. Als er geen embeddingmodellen
-beschikbaar zijn, slaat OpenClaw Copilot over en probeert het de volgende provider.
+De beschikbaarheid van modellen is afhankelijk van je GitHub-abonnement. Als
+er geen embeddingmodellen beschikbaar zijn, slaat OpenClaw Copilot over en
+probeert het de volgende provider.
 
 ## Gerelateerd
 
 <CardGroup cols={2}>
   <Card title="Modelselectie" href="/nl/concepts/model-providers" icon="layers">
-    Providers, modelrefs en failovergedrag kiezen.
+    Providers, modelreferenties en failovergedrag kiezen.
   </Card>
-  <Card title="OAuth en auth" href="/nl/gateway/authentication" icon="key">
-    Authdetails en regels voor hergebruik van referenties.
+  <Card title="OAuth en authenticatie" href="/nl/gateway/authentication" icon="key">
+    Authenticatiedetails en regels voor hergebruik van aanmeldgegevens.
   </Card>
 </CardGroup>

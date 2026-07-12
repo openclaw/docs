@@ -1,15 +1,14 @@
 ---
 read_when:
     - Sie möchten Chutes mit OpenClaw verwenden
-    - Sie benötigen den Einrichtungsweg für OAuth oder API-Schlüssel
-    - Sie möchten das Standardmodell, Aliase oder das Ermittlungsverhalten festlegen
+    - Sie benötigen den Einrichtungsweg für OAuth oder einen API-Schlüssel.
+    - Sie möchten das Standardmodell, Aliasse oder das Erkennungsverhalten festlegen
 summary: Chutes-Einrichtung (OAuth oder API-Schlüssel, Modellerkennung, Aliasse)
 title: Chutes
 x-i18n:
-    generated_at: "2026-07-12T15:42:02Z"
+    generated_at: "2026-07-12T02:02:56Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: dafa96c4a56b9d38d033b87cc077d359cb71adaf1ca41a0ab6b6cc77b66484a7
     source_path: providers/chutes.md
@@ -26,10 +25,10 @@ OpenAI-kompatible API bereit. OpenClaw unterstützt sowohl Browser-OAuth als auc
 | API              | OpenAI-kompatibel                                       |
 | Basis-URL        | `https://llm.chutes.ai/v1`                              |
 | Authentifizierung | OAuth oder API-Schlüssel (siehe unten)                 |
-| Laufzeit-Umgebungsvariablen | `CHUTES_API_KEY`, `CHUTES_OAUTH_TOKEN`        |
+| Laufzeit-Umgebungsvariablen | `CHUTES_API_KEY`, `CHUTES_OAUTH_TOKEN`         |
 
 `CHUTES_OAUTH_TOKEN` stellt ein bereits abgerufenes OAuth-Zugriffstoken direkt
-bereit (beispielsweise in CI) und umgeht damit den nachfolgend beschriebenen interaktiven Browser-Ablauf.
+bereit (beispielsweise in CI) und umgeht damit den nachfolgend beschriebenen interaktiven Browserablauf.
 
 ## Plugin installieren
 
@@ -46,13 +45,13 @@ den Chutes-Katalog.
 <Tabs>
   <Tab title="OAuth">
     <Steps>
-      <Step title="OAuth-Onboarding-Ablauf ausführen">
+      <Step title="OAuth-Onboarding ausführen">
         ```bash
         openclaw onboard --auth-choice chutes
         ```
-        OpenClaw startet den Browser-Ablauf lokal oder zeigt auf entfernten/headless Hosts
-        eine URL sowie einen Ablauf zum Einfügen der Weiterleitungs-URL an. OAuth-Tokens werden über die
-        Authentifizierungsprofile von OpenClaw automatisch aktualisiert.
+        OpenClaw startet den Browserablauf lokal oder zeigt auf entfernten/headless
+        Hosts eine URL und einen Ablauf zum Einfügen der Weiterleitungs-URL an. OAuth-Token
+        werden über die OpenClaw-Authentifizierungsprofile automatisch aktualisiert.
       </Step>
     </Steps>
   </Tab>
@@ -62,7 +61,7 @@ den Chutes-Katalog.
         Erstellen Sie einen Schlüssel unter
         [chutes.ai/settings/api-keys](https://chutes.ai/settings/api-keys).
       </Step>
-      <Step title="Onboarding-Ablauf für API-Schlüssel ausführen">
+      <Step title="Onboarding für API-Schlüssel ausführen">
         ```bash
         openclaw onboard --auth-choice chutes-api-key
         ```
@@ -71,19 +70,20 @@ den Chutes-Katalog.
   </Tab>
 </Tabs>
 
-## Erkennungsverhalten
+## Ermittlungsverhalten
 
-Wenn eine Chutes-Authentifizierung verfügbar ist, fragt OpenClaw mit diesen
-Anmeldedaten `GET /v1/models` ab und verwendet die erkannten Modelle, die pro
-Anmeldedatensatz 5 Minuten lang zwischengespeichert werden. Bei einem abgelaufenen/nicht autorisierten Schlüssel (HTTP 401) versucht OpenClaw die Anfrage einmal
-ohne Anmeldedaten erneut. Wenn die Erkennung weiterhin keine Zeilen zurückgibt, fehlschlägt oder einen
-anderen Nicht-2xx-Status zurückgibt, greift OpenClaw auf den mitgelieferten statischen Katalog zurück (sowohl die Erkennung
-per API-Schlüssel als auch per OAuth verwendet denselben Pfad). Falls die Erkennung beim Start fehlschlägt, wird
-automatisch der statische Katalog verwendet.
+Wenn eine Chutes-Authentifizierung verfügbar ist, fragt OpenClaw `GET /v1/models`
+mit diesen Anmeldedaten ab und verwendet die ermittelten Modelle, die pro
+Anmeldedatensatz fünf Minuten lang zwischengespeichert werden. Bei einem abgelaufenen oder nicht autorisierten
+Schlüssel (HTTP 401) versucht OpenClaw die Abfrage einmal ohne Anmeldedaten
+erneut. Wenn die Ermittlung weiterhin keine Einträge liefert, fehlschlägt oder einen
+anderen Nicht-2xx-Status zurückgibt, greift OpenClaw auf den mitgelieferten statischen Katalog zurück (die
+Ermittlung per API-Schlüssel und OAuth verwendet denselben Ablauf). Wenn die Ermittlung beim Start fehlschlägt, wird
+der statische Katalog automatisch verwendet.
 
-## Standardaliase
+## Standard-Aliasse
 
-OpenClaw registriert drei praktische Aliase für den Chutes-Katalog:
+OpenClaw registriert drei praktische Aliasse für den Chutes-Katalog:
 
 | Alias           | Zielmodell                                            |
 | --------------- | ----------------------------------------------------- |
@@ -129,20 +129,20 @@ Führen Sie `openclaw models list --all --provider chutes` aus, um die vollstän
     Passen Sie den OAuth-Ablauf mit optionalen Umgebungsvariablen an:
 
     | Variable | Zweck |
-    | -------- | ------- |
+    | -------- | ----- |
     | `CHUTES_CLIENT_ID` | OAuth-Client-ID (wird abgefragt, wenn nicht festgelegt) |
     | `CHUTES_CLIENT_SECRET` | OAuth-Client-Secret |
-    | `CHUTES_OAUTH_REDIRECT_URI` | Weiterleitungs-URI (Standardwert `http://127.0.0.1:1456/oauth-callback`) |
-    | `CHUTES_OAUTH_SCOPES` | Durch Leerzeichen getrennte Bereiche (Standardwert `openid profile chutes:invoke`) |
+    | `CHUTES_OAUTH_REDIRECT_URI` | Weiterleitungs-URI (Standard: `http://127.0.0.1:1456/oauth-callback`) |
+    | `CHUTES_OAUTH_SCOPES` | Durch Leerzeichen getrennte Berechtigungsbereiche (Standard: `openid profile chutes:invoke`) |
 
-    Informationen zu den Anforderungen an Weiterleitungsanwendungen und weitere Hilfe finden Sie in der
+    Weitere Informationen zu den Anforderungen für Weiterleitungs-Apps und Hilfestellung finden Sie in der
     [Chutes-OAuth-Dokumentation](https://chutes.ai/docs/sign-in-with-chutes/overview).
 
   </Accordion>
 
   <Accordion title="Hinweise">
     - Chutes-Modelle werden als `chutes/<model-id>` registriert.
-    - Chutes meldet während des Streamings keine Token-Nutzung (`supportsUsageInStreaming: false`); die Gesamtnutzung wird dennoch angezeigt, sobald der Stream abgeschlossen ist.
+    - Chutes meldet die Token-Nutzung während des Streamings nicht (`supportsUsageInStreaming: false`); die Gesamtnutzung wird dennoch angezeigt, sobald der Stream abgeschlossen ist.
 
   </Accordion>
 </AccordionGroup>
@@ -154,12 +154,12 @@ Führen Sie `openclaw models list --all --provider chutes` aus, um die vollstän
     Provider-Regeln, Modellreferenzen und Failover-Verhalten.
   </Card>
   <Card title="Konfigurationsreferenz" href="/de/gateway/configuration-reference" icon="gear">
-    Vollständiges Konfigurationsschema einschließlich Provider-Einstellungen.
+    Vollständiges Konfigurationsschema einschließlich der Provider-Einstellungen.
   </Card>
   <Card title="Chutes" href="https://chutes.ai" icon="arrow-up-right-from-square">
     Chutes-Dashboard und API-Dokumentation.
   </Card>
   <Card title="Chutes-API-Schlüssel" href="https://chutes.ai/settings/api-keys" icon="key">
-    Erstellen und verwalten Sie Chutes-API-Schlüssel.
+    Chutes-API-Schlüssel erstellen und verwalten.
   </Card>
 </CardGroup>

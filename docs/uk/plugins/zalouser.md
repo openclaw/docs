@@ -1,51 +1,51 @@
 ---
 read_when:
-    - Вам потрібна підтримка Zalo Personal (неофіційна) в OpenClaw
-    - Ви налаштовуєте або розробляєте Plugin zalouser
-summary: 'Plugin Zalo Personal: вхід за QR-кодом + обмін повідомленнями через нативний zca-js (встановлення Plugin + конфігурація каналу + інструмент)'
-title: Особистий Plugin Zalo
+    - Ви хочете додати підтримку Zalo Personal (неофіційну) в OpenClaw
+    - Ви налаштовуєте або розробляєте плагін zalouser
+summary: 'Plugin Zalo Personal: вхід за QR-кодом і обмін повідомленнями через нативний zca-js (встановлення плагіна + налаштування каналу + інструмент)'
+title: Plugin особистого облікового запису Zalo
 x-i18n:
-    generated_at: "2026-05-11T20:53:31Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:39:39Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 405348eac4c08cc6e28b22cfff615fa34c117dedc51a31613545c4057069c20b
+    source_hash: cb0bdaa10340b5d78dc32abf6b0520fda6cf5f65e2e17b551b4e9bd72acfbbf2
     source_path: plugins/zalouser.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Підтримка Zalo Personal для OpenClaw через плагін із використанням нативного `zca-js` для автоматизації звичайного облікового запису користувача Zalo.
+Підтримка Zalo Personal для OpenClaw через Plugin, що використовує нативний `zca-js` для
+автоматизації звичайного облікового запису користувача Zalo. Зовнішній виконуваний файл CLI
+`zca`/`openzca` не потрібен.
 
 <Warning>
 Неофіційна автоматизація може призвести до призупинення або блокування облікового запису. Використовуйте на власний ризик.
 </Warning>
 
-## Іменування
+## Найменування
 
-Ідентифікатор каналу — `zalouser`, щоб явно вказати, що це автоматизує **особистий обліковий запис користувача Zalo** (неофіційно). Ми залишаємо `zalo` зарезервованим для потенційної майбутньої офіційної інтеграції з Zalo API.
+Ідентифікатор каналу — `zalouser`, щоб чітко вказати, що він автоматизує **особистий
+обліковий запис користувача Zalo** (неофіційно). Окремий ідентифікатор каналу `zalo` призначений для офіційної
+вбудованої інтеграції Zalo Bot/Webhook — див. [Zalo](/uk/channels/zalo).
 
-## Де це працює
+## Де він працює
 
-Цей плагін працює **всередині процесу Gateway**.
+Цей Plugin працює **всередині процесу Gateway**. Для віддаленого Gateway
+встановіть і налаштуйте його на відповідному хості, а потім перезапустіть Gateway.
 
-Якщо ви використовуєте віддалений Gateway, установіть/налаштуйте його на **машині, де запущено Gateway**, а потім перезапустіть Gateway.
+## Встановлення
 
-Зовнішній CLI-бінарник `zca`/`openzca` не потрібен.
-
-## Установлення
-
-### Варіант A: установлення з npm
+### З npm
 
 ```bash
 openclaw plugins install @openclaw/zalouser
 ```
 
-Використовуйте пакет без префіксів, щоб стежити за поточним офіційним тегом релізу. Закріплюйте точну
-версію лише тоді, коли потрібне відтворюване встановлення.
+Використовуйте пакет без зазначення версії, щоб отримувати поточний офіційний тег випуску; закріплюйте точну
+версію лише тоді, коли потрібне відтворюване встановлення. Після цього перезапустіть
+Gateway.
 
-Після цього перезапустіть Gateway.
-
-### Варіант B: установлення з локальної папки (dev)
+### З локальної папки (розробка)
 
 ```bash
 PLUGIN_SRC=./path/to/local/zalouser-plugin
@@ -57,7 +57,7 @@ cd "$PLUGIN_SRC" && pnpm install
 
 ## Конфігурація
 
-Конфігурація каналу розміщується в `channels.zalouser` (а не в `plugins.entries.*`):
+Конфігурація каналу міститься в `channels.zalouser` (а не в `plugins.entries.*`):
 
 ```json5
 {
@@ -70,14 +70,21 @@ cd "$PLUGIN_SRC" && pnpm install
 }
 ```
 
+Відомості про керування доступом до особистих повідомлень і груп, налаштування кількох облікових записів,
+змінні середовища та усунення несправностей див. у розділі [Конфігурація особистого каналу Zalo](/uk/channels/zalouser).
+
 ## CLI
 
 ```bash
 openclaw channels login --channel zalouser
+openclaw channels login --channel zalouser --account <name>
 openclaw channels logout --channel zalouser
 openclaw channels status --probe
 openclaw message send --channel zalouser --target <threadId> --message "Hello from OpenClaw"
+openclaw directory self --channel zalouser
 openclaw directory peers list --channel zalouser --query "name"
+openclaw directory groups list --channel zalouser --query "name"
+openclaw directory groups members --channel zalouser --group-id <id>
 ```
 
 ## Інструмент агента
@@ -86,9 +93,12 @@ openclaw directory peers list --channel zalouser --query "name"
 
 Дії: `send`, `image`, `link`, `friends`, `groups`, `me`, `status`
 
-Дії повідомлень каналу також підтримують `react` для реакцій на повідомлення.
+Дії з повідомленнями каналу (не інструмент агента) також підтримують `react` для
+реакцій на повідомлення.
 
-## Пов’язане
+## Пов’язані матеріали
 
+- [Конфігурація особистого каналу Zalo](/uk/channels/zalouser)
+- [Zalo (офіційний канал Bot/Webhook)](/uk/channels/zalo)
 - [Створення плагінів](/uk/plugins/building-plugins)
-- [ClawHub](/uk/clawhub)
+- [ClawHub](/clawhub)

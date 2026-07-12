@@ -1,39 +1,39 @@
 ---
 read_when:
-    - Modele veya kullanıcılara zaman damgalarının nasıl gösterildiğini değiştiriyorsunuz
-    - Mesajlarda veya sistem istemi çıktısında zaman biçimlendirmesinde hata ayıklıyorsunuz
-summary: Zarfılar, istemler, araçlar ve bağlayıcılar genelinde tarih ve saat işleme
+    - Zaman damgalarının modele veya kullanıcılara nasıl gösterildiğini değiştiriyorsunuz
+    - Mesajlardaki veya sistem istemi çıktısındaki zaman biçimlendirmesinde hata ayıklıyorsunuz
+summary: Zarf, istem, araç ve bağlayıcılarda tarih ve saat işleme
 title: Tarih ve saat
 x-i18n:
-    generated_at: "2026-06-28T00:32:05Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:41:23Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d40e8626269d26a14506a178080b353529080b6ee5ce523c3281521f1a34bf90
+    source_hash: e6f923022c021c1cf18ba306cd7b9a4873f5df947bb9a8fae9c737a89f64cbf2
     source_path: date-time.md
     workflow: 16
 ---
 
-OpenClaw, varsayılan olarak **aktarım zaman damgaları için ana makine yerel saatini** ve **yalnızca sistem isteminde kullanıcı saat dilimini** kullanır.
-Sağlayıcı zaman damgaları korunur; böylece araçlar yerel anlamlarını korur (geçerli saat `session_status` üzerinden kullanılabilir).
+OpenClaw, **aktarım zaman damgaları için ana makinenin yerel saatini** kullanır ve sistem istemine **yalnızca saat dilimini** ekler.
+Sağlayıcı zaman damgaları korunur; böylece araçlar kendi doğal anlamlarını korur. Temsilcinin geçerli
+saate ihtiyacı olduğunda `session_status` aracını çalıştırır.
 
-## Mesaj zarfları (varsayılan olarak yerel)
+## İleti zarfları (varsayılan olarak yerel)
 
-Gelen mesajlar bir zaman damgasıyla (saniye hassasiyetinde) sarmalanır:
+Gelen iletiler, haftanın günü ve saniye hassasiyetinde bir zaman damgasıyla sarmalanır:
 
 ```
-[Provider ... Mon 2026-01-05 16:26:34 PST] message text
+[WhatsApp +1555 Pzt 2026-01-05 16:26:34 PST] ileti metni
 ```
 
-Bu zarf zaman damgası, sağlayıcı saat diliminden bağımsız olarak **varsayılan olarak ana makine yerel saatindedir**.
-
-Bu davranışı geçersiz kılabilirsiniz:
+Zarf zaman damgası, sağlayıcının saat diliminden bağımsız olarak **varsayılan biçimde ana makinenin yerel saatindedir**.
+`agents.defaults` altında geçersiz kılın:
 
 ```json5
 {
   agents: {
     defaults: {
-      envelopeTimezone: "local", // "utc" | "local" | "user" | IANA timezone
+      envelopeTimezone: "local", // "utc" | "local" | "user" | IANA saat dilimi
       envelopeTimestamp: "on", // "on" | "off"
       envelopeElapsed: "on", // "on" | "off"
     },
@@ -41,53 +41,52 @@ Bu davranışı geçersiz kılabilirsiniz:
 }
 ```
 
-- `envelopeTimezone: "utc"` UTC kullanır.
-- `envelopeTimezone: "local"` ana makine saat dilimini kullanır.
-- `envelopeTimezone: "user"` `agents.defaults.userTimezone` değerini kullanır (ana makine saat dilimine geri döner).
-- Sabit bir bölge için açık bir IANA saat dilimi (ör. `"America/Chicago"`) kullanın.
-- `envelopeTimestamp: "off"` zarf başlıklarından, doğrudan ajan istemi öneklerinden ve gömülü model girdisi öneklerinden mutlak zaman damgalarını kaldırır.
-- `envelopeElapsed: "off"` geçen süre soneklerini (`+2m` biçimi) kaldırır.
+| Anahtar             | Değerler                                             | Davranış                                                                                                                                                                                                 |
+| ------------------- | ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `envelopeTimezone`  | `local` (varsayılan), `utc`, `user`, açık IANA adı   | `user`, `agents.defaults.userTimezone` değerini kullanır (ayarlanmamışsa ana makinenin saat dilimi). Açık bir IANA adı (ör. `"America/Chicago"`) sabit bir bölge belirler; tanınmayan adlar UTC'ye geri döner. |
+| `envelopeTimestamp` | `on` (varsayılan), `off`                             | `off`, zarf başlıklarından, doğrudan temsilci istemi öneklerinden ve gömülü model girdisi öneklerinden mutlak zaman damgalarını kaldırır.                                                                  |
+| `envelopeElapsed`   | `on` (varsayılan), `off`                             | `off`, oturumdaki önceki iletiden bu yana gösterilen geçen süre son ekini (`+30s` / `+2m` biçimi) kaldırır.                                                                                                |
 
 ### Örnekler
 
 **Yerel (varsayılan):**
 
 ```
-[WhatsApp +1555 Sun 2026-01-18 00:19:42 PST] hello
+[WhatsApp +1555 Paz 2026-01-18 00:19:42 PST] merhaba
 ```
 
 **Kullanıcı saat dilimi:**
 
 ```
-[WhatsApp +1555 Sun 2026-01-18 00:19:42 CST] hello
+[WhatsApp +1555 Paz 2026-01-18 00:19:42 CST] merhaba
 ```
 
-**Geçen süre etkin:**
+**`envelopeTimezone: "utc"` ile geçen süre:**
 
 ```
-[WhatsApp +1555 +30s Sun 2026-01-18T05:19:00Z] follow-up
+[WhatsApp +1555 +30s Paz 2026-01-18T05:19:00Z] devam iletisi
 ```
 
 ## Sistem istemi: geçerli tarih ve saat
 
-Kullanıcı saat dilimi biliniyorsa sistem istemi, istem önbelleğe almayı kararlı tutmak için
-**yalnızca saat dilimini** içeren (saat/zaman biçimi yok) özel bir
-**Geçerli Tarih ve Saat** bölümü içerir:
+Sistem istemi, istem önbelleğe alımının kararlı kalması için **yalnızca saat dilimini**
+(saat veya saat biçimi olmadan) içeren bir **Geçerli Tarih ve Saat** bölümü içerir:
 
 ```
-Time zone: America/Chicago
+Saat dilimi: America/Chicago
 ```
 
-Ajan geçerli saate ihtiyaç duyduğunda `session_status` aracını kullanın; durum
-kartı bir zaman damgası satırı içerir.
+Bölge, yapılandırılmışsa `agents.defaults.userTimezone`; aksi durumda ana makinenin saat dilimidir.
+İstem ayrıca temsilciye geçerli tarih, saat veya haftanın gününe ihtiyaç duyduğunda
+`session_status` aracını çalıştırmasını söyler.
 
 ## Sistem olayı satırları (varsayılan olarak yerel)
 
-Ajan bağlamına eklenen kuyruğa alınmış sistem olaylarının başına, mesaj zarflarıyla
-aynı saat dilimi seçimi kullanılarak bir zaman damgası eklenir (varsayılan: ana makine yerel).
+Temsilci bağlamına eklenen kuyruktaki sistem olaylarının başına, ileti zarflarıyla aynı
+`envelopeTimezone` seçimini kullanan bir zaman damgası eklenir (varsayılan: ana makinenin yerel saati).
 
 ```
-System: [2026-01-12 12:19:17 PST] Model switched.
+Sistem: [2026-01-12 12:19:17 PST] Model değiştirildi.
 ```
 
 ### Kullanıcı saat dilimini ve biçimini yapılandırma
@@ -103,32 +102,32 @@ System: [2026-01-12 12:19:17 PST] Model switched.
 }
 ```
 
-- `userTimezone`, istem bağlamı için **kullanıcı yerel saat dilimini** ayarlar.
-- `timeFormat`, istemde **12 saat/24 saat gösterimini** denetler. `auto`, işletim sistemi tercihlerini izler.
+- `userTimezone`, istem bağlamı (ve `envelopeTimezone: "user"`) için **kullanıcının yerel saat dilimini** ayarlar.
+- `timeFormat`, istemde gösterilen saatlerin **12/24 saatlik gösterimini** denetler. `auto`, işletim sistemi tercihlerini izler.
 
-## Saat biçimi algılama (auto)
+## Saat biçimi algılama (otomatik)
 
-`timeFormat: "auto"` olduğunda OpenClaw işletim sistemi tercihini (macOS/Windows)
-inceler ve yerel ayar biçimlendirmesine geri döner. Algılanan değer, yinelenen sistem çağrılarını
-önlemek için **işlem başına önbelleğe alınır**.
+`timeFormat: "auto"` olduğunda OpenClaw, işletim sistemi tercihini (macOS ve Windows)
+inceler ve bulunamazsa yerel ayar biçimlendirmesine geri döner. Algılanan değer, yinelenen sistem
+çağrılarını önlemek için **işlem başına önbelleğe alınır**.
 
-## Araç yükleri + bağlayıcılar (ham sağlayıcı zamanı + normalleştirilmiş alanlar)
+## Araç yükleri ve bağlayıcılar (ham sağlayıcı saati ve normalleştirilmiş alanlar)
 
-Kanal araçları **sağlayıcıya özgü zaman damgaları** döndürür ve tutarlılık için normalleştirilmiş alanlar ekler:
+Kanal araçları, **sağlayıcının doğal zaman damgalarını** döndürür ve tutarlılık için normalleştirilmiş alanlar ekler:
 
-- `timestampMs`: epoch milisaniyeleri (UTC)
+- `timestampMs`: dönem başlangıcından itibaren milisaniye (UTC)
 - `timestampUtc`: ISO 8601 UTC dizesi
 
-Ham sağlayıcı alanları korunur; böylece hiçbir şey kaybolmaz.
+Hiçbir şeyin kaybolmaması için ham sağlayıcı alanları korunur.
 
-- Slack: API’den gelen epoch benzeri dizeler
 - Discord: UTC ISO zaman damgaları
+- Slack: API'den gelen dönem başlangıcı benzeri dizeler
 - Telegram/WhatsApp: sağlayıcıya özgü sayısal/ISO zaman damgaları
 
-Yerel saate ihtiyacınız varsa bilinen saat dilimini kullanarak bunu aşağı akışta dönüştürün.
+Yerel saate ihtiyacınız varsa bilinen saat dilimini kullanarak sonraki aşamada dönüştürün.
 
-## İlgili dokümanlar
+## İlgili belgeler
 
 - [Sistem İstemi](/tr/concepts/system-prompt)
 - [Saat Dilimleri](/tr/concepts/timezone)
-- [Mesajlar](/tr/concepts/messages)
+- [İletiler](/tr/concepts/messages)

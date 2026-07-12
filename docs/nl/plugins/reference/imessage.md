@@ -1,31 +1,31 @@
 ---
 read_when:
-    - Je installeert, configureert of controleert de iMessage-plugin
+    - U installeert, configureert of controleert de iMessage-Plugin
 summary: Voegt de iMessage-kanaalinterface toe voor het verzenden en ontvangen van OpenClaw-berichten.
-title: iMessage Plugin
+title: iMessage-Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:51:40Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:07:23Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3cf902a898d37329fe52d3b7a26c0ecebd641a88c5e490ad678adccb2d9b0d8d
+    source_hash: 5c48bb24e59d5dea948c5f04f579df48b0ae51f923e5dc8a0fc35888ddbbc1c6
     source_path: plugins/reference/imessage.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# iMessage Plugin
+# iMessage-Plugin
 
-Voegt het iMessage-kanaaloppervlak toe voor het verzenden en ontvangen van OpenClaw-berichten.
+Voegt de iMessage-kanaalinterface toe voor het verzenden en ontvangen van OpenClaw-berichten.
 
 ## Distributie
 
 - Pakket: `@openclaw/imessage`
-- Installatieroute: opgenomen in OpenClaw
+- Installatieroute: inbegrepen bij OpenClaw
 
-## Oppervlak
+## Interface
 
-channels: imessage
+kanalen: imessage; Skills
 
-## Gerelateerde docs
+## Gerelateerde documentatie
 
 - [imessage](/nl/channels/imessage)

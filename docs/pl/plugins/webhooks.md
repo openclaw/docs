@@ -1,36 +1,31 @@
 ---
 read_when:
-    - Chcesz wyzwalać lub sterować przepływami TaskFlow z systemu zewnętrznego
-    - Konfigurujesz dołączony plugin webhooków
-summary: 'Plugin Webhooks: uwierzytelnione wejście TaskFlow dla zaufanej automatyzacji zewnętrznej'
-title: Plugin Webhooks
+    - Chcesz uruchamiać TaskFlows lub sterować nimi z systemu zewnętrznego
+    - Konfigurujesz dołączony Plugin Webhooków
+summary: 'Plugin Webhooków: uwierzytelniony punkt wejścia TaskFlow dla zaufanej automatyzacji zewnętrznej'
+title: Plugin Webhooków
 x-i18n:
-    generated_at: "2026-05-06T17:59:21Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:32:52Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 9d21d96f680fa24d4a53c1ed5759f800d3cfdc3336789c42c15266edd8ce9e80
+    source_hash: 081ccbb4ca60234b20f4db7379395bdc51e7203caad4c0a88f292989ca18b28e
     source_path: plugins/webhooks.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Plugin Webhooks dodaje uwierzytelnione trasy HTTP, które łączą zewnętrzną
-automatyzację z TaskFlow OpenClaw.
+Plugin Webhooks dodaje uwierzytelnione trasy HTTP, dzięki którym zaufany system
+zewnętrzny (Zapier, n8n, zadanie CI, usługa wewnętrzna) może tworzyć i sterować
+zarządzanymi TaskFlows OpenClaw przez HTTP bez pisania niestandardowego pluginu.
 
-Użyj go, gdy chcesz, aby zaufany system, taki jak Zapier, n8n, zadanie CI lub
-usługa wewnętrzna, tworzył i obsługiwał zarządzane TaskFlow bez wcześniejszego
-pisania niestandardowego pluginu.
-
-## Gdzie działa
-
-Plugin Webhooks działa wewnątrz procesu Gateway.
-
-Jeśli Twój Gateway działa na innym komputerze, zainstaluj i skonfiguruj plugin
-na tym hoście Gateway, a następnie uruchom ponownie Gateway.
+Plugin działa wewnątrz procesu Gateway. W przypadku zdalnego Gateway zainstaluj
+i skonfiguruj go na tym hoście, a następnie uruchom ponownie Gateway. Domyślnie
+nie ma skonfigurowanych żadnych tras, więc nie wykonuje żadnych działań, dopóki
+nie dodasz co najmniej jednej trasy.
 
 ## Konfigurowanie tras
 
-Ustaw konfigurację pod `plugins.entries.webhooks.config`:
+Ustaw konfigurację w `plugins.entries.webhooks.config`:
 
 ```json5
 {
@@ -49,7 +44,7 @@ Ustaw konfigurację pod `plugins.entries.webhooks.config`:
                 id: "OPENCLAW_WEBHOOK_SECRET",
               },
               controllerId: "webhooks/zapier",
-              description: "Most TaskFlow Zapier",
+              description: "Zapier TaskFlow bridge",
             },
           },
         },
@@ -61,50 +56,51 @@ Ustaw konfigurację pod `plugins.entries.webhooks.config`:
 
 Pola trasy:
 
-- `enabled`: opcjonalne, domyślnie `true`
-- `path`: opcjonalne, domyślnie `/plugins/webhooks/<routeId>`
-- `sessionKey`: wymagana sesja, która jest właścicielem powiązanych TaskFlow
-- `secret`: wymagany współdzielony sekret lub SecretRef
-- `controllerId`: opcjonalny identyfikator kontrolera dla utworzonych zarządzanych przepływów
-- `description`: opcjonalna notatka operatora
+| Pole           | Wymagane | Wartość domyślna              | Uwagi                                              |
+| -------------- | -------- | ----------------------------- | -------------------------------------------------- |
+| `enabled`      | nie      | `true`                        |                                                    |
+| `path`         | nie      | `/plugins/webhooks/<routeId>` | Musi być unikatowe wśród tras.                     |
+| `sessionKey`   | tak      | -                             | Sesja będąca właścicielem powiązanych TaskFlows.   |
+| `secret`       | tak      | -                             | Zwykły ciąg znaków lub SecretRef (poniżej).        |
+| `controllerId` | nie      | `webhooks/<routeId>`          | Używane jako domyślny kontroler `create_flow`.      |
+| `description`  | nie      | -                             | Wyłącznie uwaga dla operatora.                     |
 
-Obsługiwane dane wejściowe `secret`:
+`secret` przyjmuje zwykły ciąg znaków lub SecretRef: `{ source: "env" | "file" | "exec", provider: "default", id: "..." }`.
 
-- Zwykły ciąg znaków
-- SecretRef z `source: "env" | "file" | "exec"`
-
-Jeśli trasa oparta na sekrecie nie może rozwiązać swojego sekretu podczas uruchamiania,
-plugin pomija tę trasę i rejestruje ostrzeżenie zamiast udostępniać niedziałający punkt końcowy.
+Każda skonfigurowana trasa jest rejestrowana podczas uruchamiania niezależnie
+od tego, czy jej sekret można w danej chwili rozpoznać. Sekret, którego nie
+można rozpoznać, nie wyłącza ani nie pomija trasy — żądania do niej nie
+przechodzą uwierzytelniania (`401`), dopóki rozpoznanie sekretu nie stanie się
+możliwe. Wartości SecretRef są rozpoznawane ponownie przy każdym żądaniu, więc
+rotacja źródłowego sekretu (zmiennej środowiskowej, pliku lub wyniku polecenia)
+zaczyna obowiązywać bez ponownego uruchamiania Gateway.
 
 ## Model zabezpieczeń
 
-Każda trasa jest zaufana do działania z uprawnieniami TaskFlow skonfigurowanego
-`sessionKey`.
+Każda trasa działa z uprawnieniami TaskFlow skonfigurowanego `sessionKey`: może
+sprawdzać i modyfikować dowolny TaskFlow należący do tej sesji. Dostęp do
+TaskFlow zawsze odbywa się przez
+`api.runtime.tasks.managedFlows.bindSession(...)`, dlatego trasa nigdy nie może
+działać poza powiązaną sesją. Aby ograniczyć zasięg potencjalnych szkód:
 
-Oznacza to, że trasa może sprawdzać i modyfikować TaskFlow należące do tej sesji, więc
-należy:
+- Używaj silnego, unikatowego sekretu dla każdej trasy.
+- Preferuj SecretRef zamiast jawnego sekretu umieszczonego bezpośrednio w konfiguracji.
+- Powiąż trasy z sesją o najwęższym zakresie odpowiednim dla przepływu pracy.
+- Udostępniaj tylko konkretną ścieżkę Webhooka, której potrzebujesz.
 
-- Używać silnego, unikalnego sekretu dla każdej trasy
-- Preferować odwołania do sekretów zamiast sekretów zapisanych jawnie w konfiguracji
-- Wiązać trasy z najwęższą sesją pasującą do przepływu pracy
-- Udostępniać tylko konkretną ścieżkę Webhook, której potrzebujesz
-
-Plugin stosuje:
-
-- Uwierzytelnianie współdzielonym sekretem
-- Ograniczenia rozmiaru treści żądania i czasu oczekiwania
-- Limitowanie szybkości w stałym oknie
-- Limitowanie równoległych żądań w toku
-- Dostęp do TaskFlow powiązany z właścicielem przez `api.runtime.tasks.managedFlows.bindSession(...)`
+Kolejność obsługi żądania dla każdej ścieżki: sprawdzenie metody HTTP (wyłącznie
+`POST`) i `Content-Type: application/json`, następnie ograniczenie częstotliwości
+w stałym oknie (120 żądań na 60-sekundowe okno dla każdego klucza
+ścieżka+adres-IP-klienta, maksymalnie 4096 śledzonych kluczy), następnie
+ograniczenie liczby trwających żądań (8 równoczesnych żądań na klucz,
+maksymalnie 4096 śledzonych kluczy), następnie uwierzytelnienie współdzielonym
+sekretem, a na końcu odczyt treści JSON z limitem 256 KB i 15 sekund. Żądania,
+które nie przejdą wcześniejszej kontroli, nigdy nie docierają do kolejnych.
 
 ## Format żądania
 
-Wysyłaj żądania `POST` z:
-
-- `Content-Type: application/json`
-- `Authorization: Bearer <secret>` lub `x-openclaw-webhook-secret: <secret>`
-
-Przykład:
+Wysyłaj żądania `POST` z `Content-Type: application/json` oraz nagłówkiem
+`Authorization: Bearer <secret>` albo `x-openclaw-webhook-secret: <secret>`:
 
 ```bash
 curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
@@ -115,27 +111,28 @@ curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
 
 ## Obsługiwane akcje
 
-Plugin obecnie akceptuje następujące wartości JSON `action`:
+| Akcja              | Przeznaczenie                                                              |
+| ------------------ | -------------------------------------------------------------------------- |
+| `create_flow`      | Tworzy zarządzany TaskFlow dla sesji trasy.                                |
+| `get_flow`         | Pobiera jeden TaskFlow według identyfikatora.                              |
+| `list_flows`       | Wyświetla listę TaskFlows dla sesji trasy.                                 |
+| `find_latest_flow` | Pobiera ostatnio zaktualizowany TaskFlow.                                  |
+| `resolve_flow`     | Rozpoznaje TaskFlow na podstawie nieprzezroczystego tokenu.                |
+| `get_task_summary` | Pobiera podsumowanie zadania dla TaskFlow.                                 |
+| `set_waiting`      | Oznacza TaskFlow jako oczekujący, opcjonalnie ze stanem/danymi oczekiwania. |
+| `resume_flow`      | Wznawia oczekujący/zablokowany TaskFlow.                                   |
+| `finish_flow`      | Oznacza TaskFlow jako zakończony.                                          |
+| `fail_flow`        | Oznacza TaskFlow jako nieudany.                                            |
+| `request_cancel`   | Żąda kooperacyjnego anulowania.                                            |
+| `cancel_flow`      | Anuluje TaskFlow (może zwrócić `202`, jeśli zadania podrzędne są nadal aktywne). |
+| `run_task`         | Tworzy zarządzane zadanie podrzędne w istniejącym TaskFlow.                |
 
-- `create_flow`
-- `get_flow`
-- `list_flows`
-- `find_latest_flow`
-- `resolve_flow`
-- `get_task_summary`
-- `set_waiting`
-- `resume_flow`
-- `finish_flow`
-- `fail_flow`
-- `request_cancel`
-- `cancel_flow`
-- `run_task`
+Akcje modyfikujące (`set_waiting`, `resume_flow`, `finish_flow`, `fail_flow`,
+`request_cancel`) wymagają pól `flowId` i `expectedRevision` do optymistycznej
+kontroli współbieżności; nieaktualna rewizja powoduje zwrócenie
+`409 revision_conflict`.
 
 ### `create_flow`
-
-Tworzy zarządzany TaskFlow dla sesji powiązanej z trasą.
-
-Przykład:
 
 ```json
 {
@@ -148,14 +145,10 @@ Przykład:
 
 ### `run_task`
 
-Tworzy zarządzane zadanie podrzędne w istniejącym zarządzanym TaskFlow.
-
-Dozwolone środowiska uruchomieniowe to:
-
-- `subagent`
-- `acp`
-
-Przykład:
+Dozwolone wartości `runtime`: `subagent`, `acp`. Pola `startedAt`, `lastEventAt`
+i `progressSummary` są prawidłowe tylko wtedy, gdy `status` ma wartość
+`"running"`; wysłanie ich z dowolnym innym statusem powoduje zwrócenie
+`400 invalid_request`.
 
 ```json
 {
@@ -167,9 +160,7 @@ Przykład:
 }
 ```
 
-## Kształt odpowiedzi
-
-Pomyślne odpowiedzi zwracają:
+## Struktura odpowiedzi
 
 ```json
 {
@@ -178,8 +169,6 @@ Pomyślne odpowiedzi zwracają:
   "result": {}
 }
 ```
-
-Odrzucone żądania zwracają:
 
 ```json
 {
@@ -191,10 +180,18 @@ Odrzucone żądania zwracają:
 }
 ```
 
-Plugin celowo usuwa metadane właściciela/sesji z odpowiedzi Webhook.
+Widoki przepływów i zadań nigdy nie zawierają metadanych właściciela ani sesji,
+dlatego odpowiedzi nie mogą ujawnić powiązanego z trasą `sessionKey`. Wartości
+`code` obejmują `not_found`, `not_managed`, `revision_conflict`,
+`persist_failed`, `cancel_requested`, `cancel_pending`, `terminal`,
+`invalid_request`, `request_rejected` oraz kody rezerwowe specyficzne dla akcji
+(`mutation_rejected`, `create_rejected`, `task_not_created`, `cancel_rejected`),
+gdy modyfikacja zostanie odrzucona z powodu nieobjętego wymienionymi wyżej
+kodami.
 
-## Powiązana dokumentacja
+## Powiązane materiały
 
-- [SDK środowiska uruchomieniowego Plugin](/pl/plugins/sdk-runtime)
-- [Omówienie hooków i Webhooków](/pl/automation/hooks)
+- [Hooki](/pl/automation/hooks) — wewnętrzne hooki sterowane zdarzeniami w porównaniu z tym mostem TaskFlow opartym na HTTP
+- [Webhooki Gateway (konfiguracja `hooks.*`)](/pl/automation/cron-jobs#webhooks) — oddzielna, ogólna funkcja punktu końcowego HTTP Gateway; nie jest tym samym co trasy tego pluginu
+- [SDK środowiska uruchomieniowego pluginów](/pl/plugins/sdk-runtime)
 - [Webhooki CLI](/pl/cli/webhooks)

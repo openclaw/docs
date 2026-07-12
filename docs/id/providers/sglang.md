@@ -1,55 +1,55 @@
 ---
 read_when:
     - Anda ingin menjalankan OpenClaw dengan server SGLang lokal
-    - Anda menginginkan titik akhir /v1 yang kompatibel dengan OpenAI untuk model Anda sendiri
+    - Anda menginginkan endpoint /v1 yang kompatibel dengan OpenAI untuk model Anda sendiri
 summary: Jalankan OpenClaw dengan SGLang (server yang dihosting sendiri dan kompatibel dengan OpenAI)
 title: SGLang
 x-i18n:
-    generated_at: "2026-05-13T05:33:31Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:37:05Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: bd1a5954e3994e3640ee17c62acedc314716c3ed5e52528da436c36c077ebead
+    source_hash: 54a7805315a7d65fdd2c7c9b6836aa2faccc88db7802cce0ba8c2d4a1aac9d65
     source_path: providers/sglang.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-SGLang menyajikan model open-weight melalui API HTTP yang kompatibel dengan OpenAI. OpenClaw terhubung ke SGLang menggunakan keluarga penyedia `openai-completions` dengan penemuan otomatis model yang tersedia.
+SGLang menyajikan model berbobot terbuka melalui API HTTP yang kompatibel dengan OpenAI. OpenClaw terhubung ke SGLang menggunakan keluarga penyedia `openai-completions` dengan penemuan otomatis model yang tersedia.
 
-| Properti                  | Nilai                                                        |
-| ------------------------- | ------------------------------------------------------------ |
-| id penyedia               | `sglang`                                                     |
-| Plugin                    | dibundel, `enabledByDefault: true`                           |
-| Variabel env autentikasi  | `SGLANG_API_KEY` (nilai tidak kosong apa pun jika server tidak memiliki auth) |
-| Flag onboarding           | `--auth-choice sglang`                                       |
-| API                       | kompatibel dengan OpenAI (`openai-completions`)              |
-| URL dasar default         | `http://127.0.0.1:30000/v1`                                  |
-| Placeholder model default | `sglang/Qwen/Qwen3-8B`                                       |
-| Penggunaan streaming      | Ya (`supportsStreamingUsage: true`)                          |
-| Penetapan harga           | Ditandai external-free (`modelPricing.external: false`)      |
+| Properti                      | Nilai                                                               |
+| ----------------------------- | ------------------------------------------------------------------- |
+| ID penyedia                   | `sglang`                                                            |
+| Plugin                        | bawaan, `enabledByDefault: true`                                    |
+| Variabel lingkungan autentikasi | `SGLANG_API_KEY` (nilai apa pun yang tidak kosong jika server tidak menggunakan autentikasi) |
+| Flag orientasi awal           | `--auth-choice sglang`                                              |
+| API                           | Kompatibel dengan OpenAI (`openai-completions`)                     |
+| URL dasar default             | `http://127.0.0.1:30000/v1`                                        |
+| Placeholder model default     | `sglang/Qwen/Qwen3-8B`                                              |
+| Penggunaan streaming          | Ya (`supportsStreamingUsage: true`)                                 |
+| Harga                         | Ditandai gratis eksternal (`modelPricing.external: false`)          |
 
-OpenClaw juga **menemukan otomatis** model yang tersedia dari SGLang saat Anda ikut serta dengan `SGLANG_API_KEY`. Gunakan `sglang/*` di `agents.defaults.models` agar penemuan tetap dinamis saat Anda juga mengonfigurasi URL dasar SGLang kustom. Lihat [Penemuan model (penyedia implisit)](#model-discovery-implicit-provider) di bawah.
+OpenClaw juga **menemukan secara otomatis** model yang tersedia dari SGLang saat Anda mengaktifkannya dengan `SGLANG_API_KEY`. Gunakan `sglang/*` di `agents.defaults.models` agar penemuan tetap dinamis ketika Anda juga mengonfigurasi URL dasar SGLang khusus. Lihat [Penemuan model (penyedia implisit)](#model-discovery-implicit-provider) di bawah.
 
 ## Memulai
 
 <Steps>
   <Step title="Mulai SGLang">
-    Jalankan SGLang dengan server yang kompatibel dengan OpenAI. URL dasar Anda harus mengekspos
+    Jalankan SGLang dengan server yang kompatibel dengan OpenAI. URL dasar Anda harus menyediakan
     endpoint `/v1` (misalnya `/v1/models`, `/v1/chat/completions`). SGLang
-    umumnya berjalan pada:
+    biasanya berjalan di:
 
     - `http://127.0.0.1:30000/v1`
 
   </Step>
   <Step title="Tetapkan kunci API">
-    Nilai apa pun berfungsi jika tidak ada auth yang dikonfigurasi pada server Anda:
+    Nilai apa pun dapat digunakan jika autentikasi tidak dikonfigurasi pada server Anda:
 
     ```bash
     export SGLANG_API_KEY="sglang-local"
     ```
 
   </Step>
-  <Step title="Jalankan onboarding atau tetapkan model secara langsung">
+  <Step title="Jalankan orientasi awal atau tetapkan model secara langsung">
     ```bash
     openclaw onboard
     ```
@@ -71,27 +71,27 @@ OpenClaw juga **menemukan otomatis** model yang tersedia dari SGLang saat Anda i
 
 ## Penemuan model (penyedia implisit)
 
-Saat `SGLANG_API_KEY` ditetapkan (atau profil auth ada) dan Anda **tidak**
-mendefinisikan `models.providers.sglang`, OpenClaw akan membuat kueri ke:
+Ketika `SGLANG_API_KEY` ditetapkan (atau profil autentikasi tersedia) dan Anda **tidak**
+mendefinisikan `models.providers.sglang`, OpenClaw mengirim kueri ke:
 
 - `GET http://127.0.0.1:30000/v1/models`
 
 dan mengonversi ID yang dikembalikan menjadi entri model.
 
 <Note>
-Jika Anda menetapkan `models.providers.sglang` secara eksplisit, OpenClaw menggunakan model
-yang Anda deklarasikan secara default. Tambahkan `"sglang/*": {}` ke `agents.defaults.models` saat Anda
-ingin OpenClaw membuat kueri ke endpoint `/models` milik penyedia yang dikonfigurasi tersebut dan menyertakan
-semua model SGLang yang diiklankan.
+Jika Anda menetapkan `models.providers.sglang` secara eksplisit, secara default OpenClaw menggunakan
+model yang Anda deklarasikan. Tambahkan `"sglang/*": {}` ke `agents.defaults.models` ketika Anda
+ingin OpenClaw mengirim kueri ke endpoint `/models` milik penyedia yang dikonfigurasi tersebut dan menyertakan
+semua model SGLang yang diumumkan.
 </Note>
 
 ## Konfigurasi eksplisit (model manual)
 
-Gunakan konfigurasi eksplisit saat:
+Gunakan konfigurasi eksplisit ketika:
 
 - SGLang berjalan pada host/port yang berbeda.
-- Anda ingin menyematkan nilai `contextWindow`/`maxTokens`.
-- Server Anda memerlukan kunci API nyata (atau Anda ingin mengontrol header).
+- Anda ingin menetapkan nilai `contextWindow`/`maxTokens`.
+- Server Anda memerlukan kunci API yang sebenarnya (atau Anda ingin mengontrol header).
 
 ```json5
 {
@@ -121,37 +121,37 @@ Gunakan konfigurasi eksplisit saat:
 ## Konfigurasi lanjutan
 
 <AccordionGroup>
-  <Accordion title="Perilaku bergaya proxy">
-    SGLang diperlakukan sebagai backend `/v1` yang kompatibel dengan OpenAI bergaya proxy, bukan
+  <Accordion title="Perilaku bergaya proksi">
+    SGLang diperlakukan sebagai backend `/v1` bergaya proksi yang kompatibel dengan OpenAI, bukan
     endpoint OpenAI native.
 
     | Perilaku | SGLang |
     |----------|--------|
     | Pembentukan permintaan khusus OpenAI | Tidak diterapkan |
-    | `service_tier`, Responses `store`, petunjuk prompt-cache | Tidak dikirim |
-    | Pembentukan payload reasoning-compat | Tidak diterapkan |
-    | Header atribusi tersembunyi (`originator`, `version`, `User-Agent`) | Tidak disuntikkan pada URL dasar SGLang kustom |
+    | `service_tier`, `store` Responses, petunjuk cache prompt | Tidak dikirim |
+    | Pembentukan payload kompatibilitas penalaran | Tidak diterapkan |
+    | Header atribusi tersembunyi (`originator`, `version`, `User-Agent`) | Tidak disisipkan pada URL dasar SGLang khusus |
 
   </Accordion>
 
   <Accordion title="Pemecahan masalah">
     **Server tidak dapat dijangkau**
 
-    Verifikasi server sedang berjalan dan merespons:
+    Pastikan server berjalan dan merespons:
 
     ```bash
     curl http://127.0.0.1:30000/v1/models
     ```
 
-    **Kesalahan auth**
+    **Kesalahan autentikasi**
 
-    Jika permintaan gagal dengan kesalahan auth, tetapkan `SGLANG_API_KEY` nyata yang cocok
+    Jika permintaan gagal karena kesalahan autentikasi, tetapkan `SGLANG_API_KEY` sebenarnya yang sesuai
     dengan konfigurasi server Anda, atau konfigurasikan penyedia secara eksplisit di bawah
     `models.providers.sglang`.
 
     <Tip>
-    Jika Anda menjalankan SGLang tanpa autentikasi, nilai tidak kosong apa pun untuk
-    `SGLANG_API_KEY` cukup untuk ikut serta dalam penemuan model.
+    Jika Anda menjalankan SGLang tanpa autentikasi, nilai apa pun yang tidak kosong untuk
+    `SGLANG_API_KEY` sudah cukup untuk mengaktifkan penemuan model.
     </Tip>
 
   </Accordion>

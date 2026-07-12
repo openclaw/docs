@@ -1,16 +1,16 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz Plugin runway
+    - Instalujesz, konfigurujesz lub audytujesz plugin runway
 summary: Dodaje obsługę dostawcy generowania wideo.
 title: Plugin Runway
 x-i18n:
-    generated_at: "2026-05-02T20:55:07Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:24:19Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: 52a36a1257fa59b6d159816496158940bdc2c84b1764cc822506b74f22b08465
     source_path: plugins/reference/runway.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Plugin Runway
@@ -20,12 +20,12 @@ Dodaje obsługę dostawcy generowania wideo.
 ## Dystrybucja
 
 - Pakiet: `@openclaw/runway-provider`
-- Ścieżka instalacji: dołączone do OpenClaw
+- Sposób instalacji: dołączony do OpenClaw
 
 ## Interfejs
 
-contracts: videoGenerationProviders
+kontrakty: videoGenerationProviders
 
 ## Powiązana dokumentacja
 
-- [runway](/pl/providers/runway)
+- [Runway](/pl/providers/runway)

@@ -1,19 +1,19 @@
 ---
-summary: تغییرمسیر به /automation/cron-jobs
+summary: تغییر مسیر به /automation/cron-jobs
 title: Gmail PubSub
 x-i18n:
-    generated_at: "2026-04-29T22:23:17Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:31:42Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4462fb58fa73ac3eb3d8d2994760b96424dcad3f1543e8ff10222936f6c54caf
+    source_hash: 1307459db642f4a11f9bb84fbedd73053a813ce9221cd1d63a0be99b6199dbf5
     source_path: automation/gmail-pubsub.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-این صفحه به [وظایف زمان‌بندی‌شده](/fa/automation/cron-jobs#gmail-pubsub-integration) منتقل شد. برای مستندات Gmail PubSub، [وظایف زمان‌بندی‌شده](/fa/automation/cron-jobs#gmail-pubsub-integration) را ببینید.
+این صفحه به بخش [یکپارچه‌سازی Gmail PubSub](/fa/automation/cron-jobs#gmail-pubsub-integration) در صفحهٔ وظایف زمان‌بندی‌شده منتقل شده است.
 
 ## مرتبط
 
-- [Webhook](/fa/automation/cron-jobs)
-- [عیب‌یابی خودکارسازی](/fa/automation/cron-jobs)
+- [Webhookها](/fa/automation/cron-jobs#webhooks)
+- [عیب‌یابی](/fa/automation/cron-jobs#troubleshooting)

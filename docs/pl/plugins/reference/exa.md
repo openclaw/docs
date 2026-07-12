@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz plugin exa
-summary: Dodaje obsługę dostawcy wyszukiwania w sieci.
+    - Instalujesz, konfigurujesz lub przeprowadzasz audyt pluginu exa
+summary: Dodaje obsługę dostawcy wyszukiwania internetowego.
 title: Plugin Exa
 x-i18n:
-    generated_at: "2026-06-27T18:00:23Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:25:17Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 6170d70f03913f87b62f7a85647b4748032b7d01c56e909826e10e261e58160f
@@ -13,16 +13,16 @@ x-i18n:
     workflow: 16
 ---
 
-# Exa Plugin
+# Plugin Exa
 
-Dodaje obsługę dostawcy wyszukiwania w sieci.
+Dodaje obsługę dostawcy wyszukiwania internetowego.
 
 ## Dystrybucja
 
 - Pakiet: `@openclaw/exa-plugin`
-- Ścieżka instalacji: npm; ClawHub: `clawhub:@openclaw/exa-plugin`
+- Sposób instalacji: npm; ClawHub: `clawhub:@openclaw/exa-plugin`
 
-## Powierzchnia
+## Interfejs
 
 kontrakty: webSearchProviders
 

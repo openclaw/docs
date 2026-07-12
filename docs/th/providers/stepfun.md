@@ -1,31 +1,29 @@
 ---
 read_when:
-    - คุณต้องการโมเดล StepFun ใน OpenClaw
-    - คุณต้องการคำแนะนำการตั้งค่า StepFun
+    - คุณต้องการใช้โมเดล StepFun ใน OpenClaw
+    - คุณต้องการคำแนะนำในการตั้งค่า StepFun
 summary: ใช้โมเดล StepFun กับ OpenClaw
 title: StepFun
 x-i18n:
-    generated_at: "2026-06-27T18:16:57Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:37:09Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 08c5d684382ae98a981f6f441f7eb49c01342598952bcf16dc251d0bdfb526ca
+    source_hash: c65e6d395f4ea890efc0e4847ec21dc1c2796fa240d20ca3e6d40eea480ed9f4
     source_path: providers/stepfun.md
     workflow: 16
 ---
 
-Plugin ของผู้ให้บริการ StepFun รองรับรหัสผู้ให้บริการสองรายการ:
+StepFun จัดส่งในรูปแบบ Plugin ทางการภายนอก (`@openclaw/stepfun-provider`) โดยมีรหัสผู้ให้บริการสองรายการ:
 
 - `stepfun` สำหรับปลายทางมาตรฐาน
 - `stepfun-plan` สำหรับปลายทาง Step Plan
 
 <Warning>
-มาตรฐานและ Step Plan เป็น **ผู้ให้บริการแยกกัน** โดยมีปลายทางและคำนำหน้าการอ้างอิงโมเดลต่างกัน (`stepfun/...` กับ `stepfun-plan/...`) ใช้คีย์จีนกับปลายทาง `.com` และใช้คีย์โกลบอลกับปลายทาง `.ai`
+Standard และ Step Plan เป็น**ผู้ให้บริการแยกจากกัน** ซึ่งใช้ปลายทางและคำนำหน้าการอ้างอิงโมเดลต่างกัน (`stepfun/...` เทียบกับ `stepfun-plan/...`) ใช้คีย์สำหรับจีนกับปลายทาง `.com` และใช้คีย์สากลกับปลายทาง `.ai`
 </Warning>
 
 ## ติดตั้ง Plugin
-
-ติดตั้ง Plugin อย่างเป็นทางการ แล้วรีสตาร์ท Gateway:
 
 ```bash
 openclaw plugins install @openclaw/stepfun-provider
@@ -34,7 +32,7 @@ openclaw gateway restart
 
 ## ภาพรวมภูมิภาคและปลายทาง
 
-| ปลายทาง  | จีน (`.com`)                         | โกลบอล (`.ai`)                        |
+| ปลายทาง  | จีน (`.com`)                         | สากล (`.ai`)                        |
 | --------- | -------------------------------------- | ------------------------------------- |
 | มาตรฐาน  | `https://api.stepfun.com/v1`           | `https://api.stepfun.ai/v1`           |
 | Step Plan | `https://api.stepfun.com/step_plan/v1` | `https://api.stepfun.ai/step_plan/v1` |
@@ -45,38 +43,38 @@ openclaw gateway restart
 
 มาตรฐาน (`stepfun`):
 
-| การอ้างอิงโมเดล                | บริบท | เอาต์พุตสูงสุด | หมายเหตุ                  |
-| ------------------------ | ------- | ---------- | ---------------------- |
-| `stepfun/step-3.5-flash` | 262,144 | 65,536     | โมเดลมาตรฐานเริ่มต้น |
+| การอ้างอิงโมเดล                | บริบท | เอาต์พุตสูงสุด | หมายเหตุ                          |
+| ------------------------ | ------- | ---------- | ------------------------------ |
+| `stepfun/step-3.5-flash` | 262,144 | 65,536     | โมเดลมาตรฐานเริ่มต้น         |
+| `stepfun/step-3.7-flash` | 262,144 | 262,144    | รองรับอินพุตรูปภาพแบบหลายสื่อ |
 
 Step Plan (`stepfun-plan`):
 
-| การอ้างอิงโมเดล                          | บริบท | เอาต์พุตสูงสุด | หมายเหตุ                      |
-| ---------------------------------- | ------- | ---------- | -------------------------- |
-| `stepfun-plan/step-3.5-flash`      | 262,144 | 65,536     | โมเดล Step Plan เริ่มต้น    |
-| `stepfun-plan/step-3.5-flash-2603` | 262,144 | 65,536     | โมเดล Step Plan เพิ่มเติม |
+| การอ้างอิงโมเดล                          | บริบท | เอาต์พุตสูงสุด | หมายเหตุ                          |
+| ---------------------------------- | ------- | ---------- | ------------------------------ |
+| `stepfun-plan/step-3.5-flash`      | 262,144 | 65,536     | โมเดล Step Plan เริ่มต้น        |
+| `stepfun-plan/step-3.7-flash`      | 262,144 | 262,144    | รองรับอินพุตรูปภาพแบบหลายสื่อ |
+| `stepfun-plan/step-3.5-flash-2603` | 262,144 | 65,536     | โมเดล Step Plan เพิ่มเติม     |
 
 ## เริ่มต้นใช้งาน
 
-เลือกพื้นผิวผู้ให้บริการของคุณ แล้วทำตามขั้นตอนการตั้งค่า
-
 <Tabs>
   <Tab title="มาตรฐาน">
-    **เหมาะที่สุดสำหรับ:** การใช้งานทั่วไปผ่านปลายทาง StepFun มาตรฐาน
+    เหมาะที่สุดสำหรับการใช้งานทั่วไปผ่านปลายทางมาตรฐานของ StepFun
 
     <Steps>
       <Step title="เลือกภูมิภาคปลายทางของคุณ">
-        | ตัวเลือกการยืนยันตัวตน                      | ปลายทาง                         | ภูมิภาค        |
-        | -------------------------------- | -------------------------------- | ------------- |
-        | `stepfun-standard-api-key-intl`  | `https://api.stepfun.ai/v1`     | นานาชาติ |
-        | `stepfun-standard-api-key-cn`    | `https://api.stepfun.com/v1`    | จีน         |
+        | ตัวเลือกการยืนยันตัวตน                    | ปลายทาง                     | ภูมิภาค        |
+        | -------------------------------- | ----------------------------- | -------------- |
+        | `stepfun-standard-api-key-intl` | `https://api.stepfun.ai/v1`  | ระหว่างประเทศ |
+        | `stepfun-standard-api-key-cn`   | `https://api.stepfun.com/v1` | จีน          |
       </Step>
-      <Step title="เรียกใช้ onboarding">
+      <Step title="เรียกใช้การเริ่มต้นใช้งาน">
         ```bash
         openclaw onboard --auth-choice stepfun-standard-api-key-intl
         ```
 
-        หรือสำหรับปลายทางจีน:
+        ปลายทางจีน:
 
         ```bash
         openclaw onboard --auth-choice stepfun-standard-api-key-cn
@@ -95,28 +93,27 @@ Step Plan (`stepfun-plan`):
       </Step>
     </Steps>
 
-    ### การอ้างอิงโมเดล
-
-    - โมเดลเริ่มต้น: `stepfun/step-3.5-flash`
+    โมเดลเริ่มต้น: `stepfun/step-3.5-flash`
+    โมเดลทางเลือก: `stepfun/step-3.7-flash`
 
   </Tab>
 
   <Tab title="Step Plan">
-    **เหมาะที่สุดสำหรับ:** ปลายทางการให้เหตุผลของ Step Plan
+    เหมาะที่สุดสำหรับปลายทางการให้เหตุผลของ Step Plan
 
     <Steps>
       <Step title="เลือกภูมิภาคปลายทางของคุณ">
-        | ตัวเลือกการยืนยันตัวตน                  | ปลายทาง                                | ภูมิภาค        |
-        | ---------------------------- | --------------------------------------- | ------------- |
-        | `stepfun-plan-api-key-intl`  | `https://api.stepfun.ai/step_plan/v1`  | นานาชาติ |
-        | `stepfun-plan-api-key-cn`    | `https://api.stepfun.com/step_plan/v1` | จีน         |
+        | ตัวเลือกการยืนยันตัวตน                 | ปลายทาง                                | ภูมิภาค        |
+        | ------------------------------ | ------------------------------------------ | -------------- |
+        | `stepfun-plan-api-key-intl` | `https://api.stepfun.ai/step_plan/v1`  | ระหว่างประเทศ |
+        | `stepfun-plan-api-key-cn`   | `https://api.stepfun.com/step_plan/v1` | จีน          |
       </Step>
-      <Step title="เรียกใช้ onboarding">
+      <Step title="เรียกใช้การเริ่มต้นใช้งาน">
         ```bash
         openclaw onboard --auth-choice stepfun-plan-api-key-intl
         ```
 
-        หรือสำหรับปลายทางจีน:
+        ปลายทางจีน:
 
         ```bash
         openclaw onboard --auth-choice stepfun-plan-api-key-cn
@@ -135,18 +132,18 @@ Step Plan (`stepfun-plan`):
       </Step>
     </Steps>
 
-    ### การอ้างอิงโมเดล
-
-    - โมเดลเริ่มต้น: `stepfun-plan/step-3.5-flash`
-    - โมเดลทางเลือก: `stepfun-plan/step-3.5-flash-2603`
+    โมเดลเริ่มต้น: `stepfun-plan/step-3.5-flash`
+    โมเดลทางเลือก: `stepfun-plan/step-3.7-flash`, `stepfun-plan/step-3.5-flash-2603`
 
   </Tab>
 </Tabs>
 
+ขั้นตอนการยืนยันตัวตนเพียงครั้งเดียวจะเขียนโปรไฟล์ที่ตรงกับภูมิภาคให้ทั้ง `stepfun` และ `stepfun-plan` ดังนั้นจึงค้นพบทั้งสองพื้นผิวพร้อมกันหลังจากเรียกใช้การเริ่มต้นใช้งานครั้งเดียว
+
 ## การกำหนดค่าขั้นสูง
 
 <AccordionGroup>
-  <Accordion title="การกำหนดค่าเต็ม: ผู้ให้บริการมาตรฐาน">
+  <Accordion title="การกำหนดค่าแบบเต็ม: ผู้ให้บริการมาตรฐาน">
     ```json5
     {
       env: { STEPFUN_API_KEY: "your-key" },
@@ -159,6 +156,36 @@ Step Plan (`stepfun-plan`):
             api: "openai-completions",
             apiKey: "${STEPFUN_API_KEY}",
             models: [
+              {
+                id: "step-3.7-flash",
+                name: "Step 3.7 Flash",
+                reasoning: true,
+                input: ["text", "image"],
+                thinkingLevelMap: { off: "low", minimal: "low", xhigh: "high", max: "high" },
+                cost: { input: 0.2, output: 1.15, cacheRead: 0.04, cacheWrite: 0 },
+                contextWindow: 262144,
+                maxTokens: 262144,
+                compat: {
+                  supportsStore: false,
+                  supportsDeveloperRole: false,
+                  supportsUsageInStreaming: false,
+                  supportsReasoningEffort: true,
+                  supportsStrictMode: false,
+                  supportedReasoningEfforts: ["low", "medium", "high"],
+                  maxTokensField: "max_tokens",
+                  reasoningEffortMap: {
+                    off: "low",
+                    none: "low",
+                    minimal: "low",
+                    low: "low",
+                    medium: "medium",
+                    high: "high",
+                    xhigh: "high",
+                    adaptive: "high",
+                    max: "high",
+                  },
+                },
+              },
               {
                 id: "step-3.5-flash",
                 name: "Step 3.5 Flash",
@@ -176,7 +203,7 @@ Step Plan (`stepfun-plan`):
     ```
   </Accordion>
 
-  <Accordion title="การกำหนดค่าเต็ม: ผู้ให้บริการ Step Plan">
+  <Accordion title="การกำหนดค่าแบบเต็ม: ผู้ให้บริการ Step Plan">
     ```json5
     {
       env: { STEPFUN_API_KEY: "your-key" },
@@ -189,6 +216,36 @@ Step Plan (`stepfun-plan`):
             api: "openai-completions",
             apiKey: "${STEPFUN_API_KEY}",
             models: [
+              {
+                id: "step-3.7-flash",
+                name: "Step 3.7 Flash",
+                reasoning: true,
+                input: ["text", "image"],
+                thinkingLevelMap: { off: "low", minimal: "low", xhigh: "high", max: "high" },
+                cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+                contextWindow: 262144,
+                maxTokens: 262144,
+                compat: {
+                  supportsStore: false,
+                  supportsDeveloperRole: false,
+                  supportsUsageInStreaming: false,
+                  supportsReasoningEffort: true,
+                  supportsStrictMode: false,
+                  supportedReasoningEfforts: ["low", "medium", "high"],
+                  maxTokensField: "max_tokens",
+                  reasoningEffortMap: {
+                    off: "low",
+                    none: "low",
+                    minimal: "low",
+                    low: "low",
+                    medium: "medium",
+                    high: "high",
+                    xhigh: "high",
+                    adaptive: "high",
+                    max: "high",
+                  },
+                },
+              },
               {
                 id: "step-3.5-flash",
                 name: "Step 3.5 Flash",
@@ -216,28 +273,24 @@ Step Plan (`stepfun-plan`):
   </Accordion>
 
   <Accordion title="หมายเหตุ">
-    - ผู้ให้บริการนี้เป็นแพ็กเกจภายนอกอย่างเป็นทางการ ให้ติดตั้งก่อนการตั้งค่า
-    - ปัจจุบัน `step-3.5-flash-2603` เปิดให้ใช้เฉพาะบน `stepfun-plan`
-    - โฟลว์การยืนยันตัวตนเดียวจะเขียนโปรไฟล์ที่ตรงกับภูมิภาคสำหรับทั้ง `stepfun` และ `stepfun-plan` เพื่อให้ค้นพบทั้งสองพื้นผิวพร้อมกันได้
+    - `step-3.7-flash` รับอินพุตข้อความและรูปภาพผ่าน OpenClaw นอกจากนี้ API ของ StepFun ยังรองรับวิดีโอ ซึ่งยังไม่ใช่รูปแบบอินพุตของโมเดลใน OpenClaw
+    - Step 3.7 รองรับระดับความพยายามในการให้เหตุผล `low`, `medium` และ `high` เนื่องจากโมเดลไม่มีโหมดที่ไม่ใช้การให้เหตุผล `/think off` จึงแมปเป็น `low`
+    - ปัจจุบัน `step-3.5-flash-2603` เปิดให้ใช้งานเฉพาะบน `stepfun-plan`
     - ใช้ `openclaw models list` และ `openclaw models set <provider/model>` เพื่อตรวจสอบหรือสลับโมเดล
 
   </Accordion>
 </AccordionGroup>
 
-<Note>
-สำหรับภาพรวมผู้ให้บริการที่กว้างขึ้น โปรดดู [ผู้ให้บริการโมเดล](/th/concepts/model-providers)
-</Note>
-
-## ที่เกี่ยวข้อง
+## เนื้อหาที่เกี่ยวข้อง
 
 <CardGroup cols={2}>
-  <Card title="การเลือกโมเดล" href="/th/concepts/model-providers" icon="layers">
-    ภาพรวมของผู้ให้บริการทั้งหมด การอ้างอิงโมเดล และพฤติกรรม failover
+  <Card title="ผู้ให้บริการโมเดล" href="/th/concepts/model-providers" icon="layers">
+    ภาพรวมของผู้ให้บริการทั้งหมด การอ้างอิงโมเดล และลักษณะการทำงานเมื่อสลับไปใช้ตัวสำรอง
   </Card>
   <Card title="ข้อมูลอ้างอิงการกำหนดค่า" href="/th/gateway/configuration-reference" icon="gear">
-    สคีมาการกำหนดค่าเต็มสำหรับผู้ให้บริการ โมเดล และ Plugin
+    สคีมาการกำหนดค่าแบบเต็มสำหรับผู้ให้บริการ โมเดล และ Plugin
   </Card>
-  <Card title="การเลือกโมเดล" href="/th/concepts/models" icon="brain">
+  <Card title="CLI สำหรับโมเดล" href="/th/concepts/models" icon="brain">
     วิธีเลือกและกำหนดค่าโมเดล
   </Card>
   <Card title="แพลตฟอร์ม StepFun" href="https://platform.stepfun.com" icon="globe">

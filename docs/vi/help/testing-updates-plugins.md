@@ -1,52 +1,49 @@
 ---
 read_when:
-    - Thay đổi hành vi cập nhật, doctor, chấp nhận gói hoặc cài đặt Plugin của OpenClaw
-    - Đang chuẩn bị hoặc phê duyệt một bản ứng viên phát hành
-    - Gỡ lỗi hồi quy cập nhật gói, dọn dẹp phụ thuộc Plugin hoặc cài đặt Plugin
+    - Thay đổi hành vi cập nhật, doctor, chấp nhận gói hoặc cài đặt plugin của OpenClaw
+    - Chuẩn bị hoặc phê duyệt một bản phát hành ứng viên
+    - Gỡ lỗi cập nhật gói, dọn dẹp phần phụ thuộc của Plugin hoặc lỗi hồi quy khi cài đặt Plugin
 sidebarTitle: Update and plugin tests
-summary: Cách OpenClaw xác thực các lộ trình cập nhật, quá trình di trú gói và hành vi cài đặt/cập nhật Plugin
-title: 'Kiểm thử: bản cập nhật và Plugin'
+summary: Cách OpenClaw xác thực các lộ trình cập nhật, quá trình di chuyển gói và hành vi cài đặt/cập nhật Plugin
+title: 'Kiểm thử: bản cập nhật và plugin'
 x-i18n:
-    generated_at: "2026-06-27T17:36:20Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:02:08Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 9be94eab4be97c53022bdac3110da74a61cfa23db989964c803497305e5415db
+    source_hash: 4e930960b5819d2144467476cb473e62f236eca63e1d9941a6bc793b484e731c
     source_path: help/testing-updates-plugins.md
     workflow: 16
 ---
 
-Đây là danh sách kiểm tra chuyên dụng cho xác thực cập nhật và Plugin. Mục tiêu rất
-đơn giản: chứng minh gói có thể cài đặt có thể cập nhật trạng thái người dùng thực, sửa chữa trạng thái
-kế thừa đã cũ thông qua `doctor`, và vẫn cài đặt, tải, cập nhật, cũng như gỡ cài đặt
-Plugin từ các nguồn được hỗ trợ.
+Danh sách kiểm tra để xác thực cập nhật và Plugin: chứng minh gói có thể cài đặt có thể
+cập nhật trạng thái người dùng thực, sửa chữa trạng thái cũ lỗi thời thông qua `doctor`, đồng thời vẫn
+cài đặt, tải, cập nhật và gỡ cài đặt Plugin từ mọi nguồn được hỗ trợ.
 
-Để xem bản đồ trình chạy kiểm thử rộng hơn, xem [Kiểm thử](/vi/help/testing). Với các khóa
-nhà cung cấp trực tiếp và các bộ kiểm thử có chạm mạng, xem [Kiểm thử trực tiếp](/vi/help/testing-live).
+Để xem bản đồ trình chạy kiểm thử rộng hơn, hãy xem [Kiểm thử](/vi/help/testing). Đối với khóa
+của nhà cung cấp trực tiếp và các bộ kiểm thử có truy cập mạng, hãy xem [Kiểm thử trực tiếp](/vi/help/testing-live).
 
-## Những gì chúng ta bảo vệ
+## Những gì chúng tôi bảo vệ
 
-Các kiểm thử cập nhật và Plugin bảo vệ những hợp đồng này:
-
-- Một tarball gói phải đầy đủ, có `dist/postinstall-inventory.json` hợp lệ,
-  và không phụ thuộc vào các tệp repo chưa được đóng gói.
+- Tarball của gói phải đầy đủ, có `dist/postinstall-inventory.json` hợp lệ
+  và không phụ thuộc vào các tệp kho lưu trữ chưa được đóng gói.
 - Người dùng có thể chuyển từ một gói đã phát hành cũ hơn sang gói ứng viên
-  mà không mất cấu hình, agent, phiên, không gian làm việc, danh sách cho phép Plugin, hoặc
+  mà không làm mất cấu hình, agent, phiên, không gian làm việc, danh sách cho phép của Plugin hoặc
   cấu hình kênh.
-- `openclaw doctor --fix --non-interactive` sở hữu các đường dẫn dọn dẹp và sửa chữa
-  kế thừa. Khởi động không nên phát sinh các di chuyển tương thích ẩn cho trạng thái
-  Plugin đã cũ.
-- Cài đặt Plugin hoạt động từ thư mục cục bộ, repo git, gói npm, và đường dẫn
-  registry ClawHub.
-- Phụ thuộc npm của Plugin được cài đặt trong một dự án npm được quản lý cho mỗi Plugin,
-  được quét trước khi tin cậy, và được xóa thông qua npm trong quá trình gỡ cài đặt để các phụ thuộc
-  được hoist không còn sót lại.
-- Cập nhật Plugin ổn định khi không có gì thay đổi: bản ghi cài đặt, nguồn đã phân giải,
-  bố cục phụ thuộc đã cài đặt, và trạng thái bật vẫn nguyên vẹn.
+- `openclaw doctor --fix --non-interactive` chịu trách nhiệm về các đường dẫn dọn dẹp và sửa chữa
+  cũ. Quá trình khởi động không được phát sinh các bước di chuyển tương thích ẩn cho
+  trạng thái Plugin lỗi thời.
+- Việc cài đặt Plugin hoạt động từ thư mục cục bộ, kho git, gói npm và
+  đường dẫn registry ClawHub.
+- Các phần phụ thuộc npm của Plugin được cài đặt trong một dự án npm được quản lý cho mỗi Plugin,
+  được quét trước khi tin cậy và được xóa thông qua `npm uninstall` khi
+  gỡ cài đặt Plugin để các phần phụ thuộc được nâng cấp không còn sót lại.
+- Việc cập nhật Plugin là thao tác không làm gì khi không có thay đổi: bản ghi cài đặt, nguồn
+  đã phân giải, bố cục phần phụ thuộc đã cài đặt và trạng thái kích hoạt vẫn nguyên vẹn.
 
 ## Bằng chứng cục bộ trong quá trình phát triển
 
-Bắt đầu hẹp:
+Bắt đầu với phạm vi hẹp:
 
 ```bash
 pnpm changed:lanes --json
@@ -54,31 +51,32 @@ pnpm check:changed
 pnpm test:changed
 ```
 
-Với thay đổi về cài đặt Plugin, gỡ cài đặt, phụ thuộc, hoặc kiểm kê gói, cũng
-chạy các kiểm thử tập trung bao phủ ranh giới đã chỉnh sửa:
+Đối với các thay đổi về cài đặt, gỡ cài đặt, phần phụ thuộc hoặc kiểm kê gói của Plugin, cũng
+chạy các kiểm thử tập trung bao phủ điểm nối đã chỉnh sửa:
 
 ```bash
 pnpm test src/plugins/uninstall.test.ts src/infra/package-dist-inventory.test.ts test/scripts/package-acceptance-workflow.test.ts
 ```
 
-Trước khi bất kỳ lane Docker gói nào tiêu thụ một tarball, chứng minh artifact gói:
+Trước khi bất kỳ luồng Docker gói nào sử dụng tarball, hãy xác minh tạo phẩm gói:
 
 ```bash
 pnpm release:check
 ```
 
-`release:check` chạy kiểm tra trôi lệch cấu hình/tài liệu/API, ghi kiểm kê dist của gói,
-chạy `npm pack --dry-run`, từ chối các tệp bị cấm đã đóng gói, cài đặt
-tarball vào một prefix tạm, chạy postinstall, và smoke các entrypoint kênh
-được đóng gói kèm.
+`release:check` chạy các bước kiểm tra sai lệch cấu hình/tài liệu/API (lược đồ cấu hình, đường cơ sở
+tài liệu cấu hình, đường cơ sở và các mục xuất API của SDK Plugin, phiên bản/kiểm kê Plugin),
+ghi kiểm kê bản phân phối gói, chạy `npm pack --dry-run`, từ chối các tệp đóng gói
+bị cấm, cài đặt tarball vào một tiền tố tạm thời, chạy postinstall và
+kiểm tra nhanh các điểm vào kênh đi kèm.
 
-## Các lane Docker
+## Các luồng Docker
 
-Các lane Docker là bằng chứng cấp sản phẩm. Chúng cài đặt hoặc cập nhật một
-gói thực bên trong container Linux và xác nhận hành vi thông qua lệnh CLI,
-khởi động Gateway, probe HTTP, trạng thái RPC, và trạng thái hệ thống tệp.
+Các luồng Docker là bằng chứng ở cấp sản phẩm. Chúng cài đặt hoặc cập nhật một
+gói thực bên trong các vùng chứa Linux và xác nhận hành vi thông qua các lệnh CLI,
+khởi động Gateway, phép dò HTTP, trạng thái RPC và trạng thái hệ thống tệp.
 
-Dùng các lane tập trung trong khi lặp:
+Sử dụng các luồng tập trung trong khi lặp:
 
 ```bash
 pnpm test:docker:plugins
@@ -90,41 +88,41 @@ pnpm test:docker:update-restart-auth
 pnpm test:docker:update-migration
 ```
 
-Các lane quan trọng:
+Các luồng quan trọng:
 
-- `test:docker:plugins` xác thực smoke cài đặt Plugin, cài đặt thư mục cục bộ,
-  hành vi bỏ qua cập nhật cho thư mục cục bộ, thư mục cục bộ có phụ thuộc
-  được cài sẵn, cài đặt gói `file:`, cài đặt git có thực thi CLI, cập nhật
-  moving-ref của git, cài đặt registry npm với phụ thuộc bắc cầu được hoist,
-  no-op cập nhật npm, từ chối metadata gói npm sai định dạng,
-  cài đặt fixture ClawHub cục bộ và no-op cập nhật, hành vi cập nhật marketplace,
-  và bật/kiểm tra Claude-bundle. Đặt `OPENCLAW_PLUGINS_E2E_CLAWHUB=0` để
-  giữ khối ClawHub hermetic/offline.
-- `test:docker:plugin-lifecycle-matrix` cài đặt gói ứng viên trong một
-  container trống, chạy một Plugin npm qua cài đặt, kiểm tra, tắt, bật,
-  nâng cấp tường minh, hạ cấp tường minh, và gỡ cài đặt sau khi xóa mã Plugin.
-  Nó ghi lại chỉ số RSS và CPU cho từng pha.
-- `test:docker:plugin-update` xác thực rằng một Plugin đã cài đặt không đổi
-  không bị cài đặt lại hoặc mất metadata cài đặt trong `openclaw plugins update`.
-- `test:docker:upgrade-survivor` cài đặt tarball ứng viên lên một fixture
-  người dùng cũ bẩn, chạy cập nhật gói cùng doctor không tương tác, rồi khởi động
-  một Gateway loopback và kiểm tra việc bảo toàn trạng thái.
-- `test:docker:published-upgrade-survivor` trước tiên cài đặt một baseline đã phát hành,
-  cấu hình nó thông qua một công thức `openclaw config set` được bake sẵn, cập nhật nó lên
-  tarball ứng viên, chạy doctor, kiểm tra dọn dẹp kế thừa, khởi động Gateway, và
-  probe `/healthz`, `/readyz`, cùng trạng thái RPC.
+- `test:docker:plugins` bao phủ kiểm tra nhanh cài đặt Plugin, cài đặt từ thư mục cục bộ,
+  hành vi bỏ qua cập nhật thư mục cục bộ, thư mục cục bộ có các phần phụ thuộc được cài đặt sẵn,
+  cài đặt gói `file:`, cài đặt git có thực thi CLI, cập nhật tham chiếu git
+  di chuyển, cài đặt từ registry npm với các phần phụ thuộc bắc cầu được nâng cấp,
+  cập nhật npm không làm gì, từ chối siêu dữ liệu gói npm không hợp lệ,
+  cài đặt từ fixture ClawHub cục bộ và cập nhật không làm gì, hành vi cập nhật marketplace,
+  cũng như kích hoạt/kiểm tra gói Claude. Đặt `OPENCLAW_PLUGINS_E2E_CLAWHUB=0` để
+  giữ khối ClawHub biệt lập/ngoại tuyến.
+- `test:docker:plugin-lifecycle-matrix` cài đặt gói ứng viên trong một vùng chứa
+  trống, chạy một Plugin npm qua các bước cài đặt, kiểm tra, vô hiệu hóa, kích hoạt,
+  nâng cấp tường minh, hạ cấp tường minh và gỡ cài đặt sau khi xóa mã Plugin.
+  Luồng này ghi nhật ký các chỉ số RSS và CPU theo từng giai đoạn.
+- `test:docker:plugin-update` xác thực rằng một Plugin đã cài đặt không thay đổi
+  sẽ không được cài đặt lại hoặc mất siêu dữ liệu cài đặt trong quá trình `openclaw plugins update`.
+- `test:docker:upgrade-survivor` cài đặt tarball ứng viên đè lên một fixture
+  người dùng cũ có trạng thái không sạch, chạy cập nhật gói cùng doctor không tương tác, sau đó khởi động
+  Gateway local loopback và kiểm tra việc bảo toàn trạng thái.
+- `test:docker:published-upgrade-survivor` trước tiên cài đặt một đường cơ sở đã phát hành,
+  cấu hình nó thông qua công thức `openclaw config set` được tích hợp sẵn, cập nhật lên
+  tarball ứng viên, chạy doctor, kiểm tra việc dọn dẹp dữ liệu cũ, khởi động Gateway và
+  dò `/healthz`, `/readyz` cùng trạng thái RPC.
 - `test:docker:update-restart-auth` cài đặt gói ứng viên, khởi động một
-  Gateway auth bằng token được quản lý, unset env auth gateway của caller cho
-  `openclaw update --yes --json`, và yêu cầu lệnh cập nhật ứng viên
-  khởi động lại Gateway trước các probe bình thường.
-- `test:docker:update-migration` là lane published-update nặng về dọn dẹp. Nó
-  bắt đầu từ trạng thái người dùng kiểu Discord/Telegram đã cấu hình, chạy
-  doctor baseline để các phụ thuộc Plugin đã cấu hình có cơ hội được hiện thực hóa, seed
-  mảnh vụn phụ thuộc Plugin kế thừa cho một Plugin đóng gói đã cấu hình, cập nhật lên
-  tarball ứng viên, và yêu cầu doctor sau cập nhật xóa các root phụ thuộc
-  kế thừa.
+  Gateway xác thực bằng token được quản lý, hủy đặt biến môi trường xác thực gateway của bên gọi cho
+  `openclaw update --yes --json` và yêu cầu lệnh cập nhật ứng viên
+  khởi động lại Gateway trước các phép dò thông thường.
+- `test:docker:update-migration` là luồng cập nhật đã phát hành tập trung nhiều vào việc dọn dẹp. Luồng này
+  bắt đầu từ trạng thái người dùng kiểu Discord/Telegram đã cấu hình, chạy doctor
+  đường cơ sở để các phần phụ thuộc Plugin đã cấu hình có cơ hội hiện thực hóa, tạo sẵn
+  phần dư thừa của phần phụ thuộc Plugin cũ cho một Plugin đóng gói đã cấu hình, cập nhật lên
+  tarball ứng viên và yêu cầu doctor sau cập nhật xóa các thư mục gốc phần phụ thuộc
+  cũ.
 
-Các biến thể published-upgrade survivor hữu ích:
+Các biến thể hữu ích của quy trình nâng cấp từ bản đã phát hành:
 
 ```bash
 OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPEC=openclaw@2026.4.23 \
@@ -136,16 +134,17 @@ OPENCLAW_UPGRADE_SURVIVOR_SCENARIO=bootstrap-persona \
 pnpm test:docker:published-upgrade-survivor
 ```
 
-Các kịch bản có sẵn là `base`, `feishu-channel`, `bootstrap-persona`,
-`plugin-deps-cleanup`, `configured-plugin-installs`,
-`stale-source-plugin-shadow`, `tilde-log-path`, và `versioned-runtime-deps`. Trong các lượt chạy tổng hợp,
-`OPENCLAW_UPGRADE_SURVIVOR_SCENARIOS=reported-issues` mở rộng thành tất cả các kịch bản
-có dạng issue đã báo cáo, bao gồm cả di chuyển cài đặt Plugin đã cấu hình.
+Các kịch bản có sẵn: `base`, `acpx-openclaw-tools-bridge`, `feishu-channel`,
+`bootstrap-persona`, `channel-post-core-restore`, `plugin-deps-cleanup`,
+`configured-plugin-installs`, `stale-source-plugin-shadow`, `tilde-log-path`
+và `versioned-runtime-deps`. Trong các lần chạy tổng hợp, `OPENCLAW_UPGRADE_SURVIVOR_SCENARIOS=reported-issues`
+(bí danh `far-reaching`) mở rộng thành tất cả kịch bản, bao gồm cả
+bước di chuyển cài đặt Plugin đã cấu hình.
 
-Full update migration được tách riêng có chủ ý khỏi Full Release CI. Dùng
-workflow thủ công `Update Migration` khi câu hỏi phát hành là "mọi
+Việc di chuyển cập nhật đầy đủ được chủ ý tách biệt khỏi CI Bản phát hành đầy đủ. Sử dụng
+quy trình thủ công `Update Migration` khi câu hỏi về bản phát hành là "mọi
 bản phát hành ổn định đã xuất bản từ 2026.4.23 trở đi có thể cập nhật lên ứng viên này và
-dọn sạch mảnh vụn phụ thuộc Plugin không?":
+dọn dẹp phần dư thừa của phần phụ thuộc Plugin không?":
 
 ```bash
 gh workflow run update-migration.yml \
@@ -156,43 +155,44 @@ gh workflow run update-migration.yml \
   -f scenarios=plugin-deps-cleanup
 ```
 
-## Package Acceptance
+## Chấp nhận gói
 
-Package Acceptance là cổng gói native trên GitHub. Nó phân giải một gói ứng viên
-thành một tarball `package-under-test`, ghi lại phiên bản và SHA-256, rồi
-chạy các lane Docker E2E tái sử dụng với đúng tarball đó. Ref harness workflow
-tách biệt với ref nguồn gói, nên logic kiểm thử hiện tại có thể xác thực
+Chấp nhận gói là cổng gói nguyên bản của GitHub. Nó phân giải một gói ứng viên
+thành tarball `package-under-test`, ghi lại phiên bản và SHA-256, sau đó
+chạy các luồng Docker E2E có thể tái sử dụng đối với chính tarball đó. Tham chiếu bộ khung quy trình
+tách biệt với tham chiếu nguồn gói, vì vậy logic kiểm thử hiện tại có thể xác thực
 các bản phát hành đáng tin cậy cũ hơn.
 
-Nguồn ứng viên:
+Các nguồn ứng viên:
 
-- `source=npm`: xác thực `openclaw@beta`, `openclaw@latest`, hoặc một
-  phiên bản đã phát hành chính xác.
-- `source=ref`: đóng gói một nhánh, tag, hoặc commit đáng tin cậy bằng harness hiện tại
+- `source=npm`: xác thực `openclaw@extended-stable`, `openclaw@beta`,
+  `openclaw@latest` hoặc một phiên bản đã phát hành chính xác.
+- `source=ref`: đóng gói một nhánh, thẻ hoặc commit đáng tin cậy bằng bộ khung hiện tại
   đã chọn.
-- `source=url`: xác thực một tarball HTTPS công khai với `package_sha256` bắt buộc.
-  Đường dẫn này từ chối thông tin xác thực URL, cổng HTTPS không mặc định, hostname hoặc
-  kết quả DNS/IP riêng tư/nội bộ, không gian IP dùng đặc biệt, và redirect không an toàn.
-- `source=trusted-url`: xác thực một tarball HTTPS với
-  `package_sha256` và `trusted_source_id` bắt buộc dựa trên chính sách do maintainer sở hữu
-  trong `.github/package-trusted-sources.json`. Dùng lựa chọn này cho mirror enterprise/private
-  thay vì làm yếu `source=url` bằng một công tắc allow-private ở cấp input.
-  Bearer auth, khi được cấu hình bằng chính sách, dùng secret cố định
-  `OPENCLAW_TRUSTED_PACKAGE_TOKEN`.
-- `source=artifact`: tái sử dụng một tarball được tải lên bởi một lượt chạy Actions khác.
+- `source=url`: xác thực tarball HTTPS công khai với `package_sha256` bắt buộc.
+  Đường dẫn này từ chối thông tin xác thực trong URL, cổng HTTPS không mặc định, tên máy chủ
+  riêng tư/nội bộ hoặc kết quả DNS/IP tương ứng, không gian IP dùng cho mục đích đặc biệt và chuyển hướng không an toàn.
+- `source=trusted-url`: xác thực tarball HTTPS với
+  `package_sha256` và `trusted_source_id` bắt buộc dựa trên chính sách do người bảo trì sở hữu
+  trong `.github/package-trusted-sources.json`. Sử dụng tùy chọn này cho các mirror doanh nghiệp/riêng tư
+  thay vì làm suy yếu `source=url` bằng nút chuyển cho phép riêng tư ở cấp đầu vào.
+  Xác thực Bearer, khi được cấu hình bằng chính sách, sử dụng secret
+  `OPENCLAW_TRUSTED_PACKAGE_TOKEN` cố định.
+- `source=artifact`: tái sử dụng tarball được tải lên bởi một lần chạy Actions khác.
 
-Full Release Validation dùng `source=artifact` theo mặc định, được build từ
-SHA phát hành đã phân giải. Với bằng chứng sau phát hành, truyền
+Theo mặc định, Xác thực bản phát hành đầy đủ sử dụng `source=artifact`, được xây dựng từ
+SHA bản phát hành đã phân giải. Để xác minh sau phát hành, truyền
 `package_acceptance_package_spec=openclaw@YYYY.M.PATCH` để cùng ma trận nâng cấp
-nhắm tới gói npm đã ship thay thế.
+nhắm đến gói npm đã phát hành.
 
-Release checks gọi Package Acceptance với bộ package/update/restart/plugin:
+Các bước kiểm tra bản phát hành gọi Chấp nhận gói với tập hợp gói/cập nhật/khởi động lại/Plugin:
 
 ```text
-doctor-switch update-channel-switch update-corrupt-plugin upgrade-survivor published-upgrade-survivor update-restart-auth plugins-offline plugin-update
+doctor-switch update-channel-switch skill-install update-corrupt-plugin upgrade-survivor published-upgrade-survivor root-managed-vps-upgrade update-restart-auth plugins-offline plugin-update plugin-binding-command-escape
 ```
 
-Khi bật release soak, chúng cũng truyền:
+Khi thời gian theo dõi bản phát hành được bật (bắt buộc với `release_profile=stable` và
+`full`), chúng cũng truyền:
 
 ```text
 published_upgrade_survivor_baselines=last-stable-4 2026.4.23 2026.5.2 2026.4.15
@@ -200,27 +200,27 @@ published_upgrade_survivor_scenarios=reported-issues
 telegram_mode=mock-openai
 ```
 
-Điều này giữ di chuyển gói, chuyển kênh cập nhật, khả năng chịu lỗi managed-plugin
-bị hỏng, dọn dẹp phụ thuộc Plugin đã cũ, bao phủ Plugin offline, hành vi
-cập nhật Plugin, và QA gói Telegram trên cùng artifact đã phân giải mà không
-khiến cổng gói phát hành mặc định phải đi qua mọi bản phát hành đã xuất bản.
+Điều này giữ việc di chuyển gói, chuyển kênh cập nhật, khả năng chịu lỗi của Plugin
+được quản lý bị hỏng, dọn dẹp phần phụ thuộc Plugin lỗi thời, phạm vi bao phủ Plugin
+ngoại tuyến, hành vi cập nhật Plugin và QA gói Telegram trên cùng một tạo phẩm đã phân giải mà không
+buộc cổng gói phát hành mặc định phải duyệt qua mọi bản phát hành đã xuất bản.
 
 `last-stable-4` phân giải thành bốn bản phát hành OpenClaw ổn định mới nhất
-đã được xuất bản lên npm. Release package acceptance ghim `2026.4.23` làm ranh giới
-tương thích plugin-update đầu tiên, `2026.5.2` làm ranh giới xáo trộn kiến trúc Plugin, và
-`2026.4.15` làm baseline published-update 2026.4.1x cũ hơn; resolver
-loại trùng các pin đã nằm trong bốn bản mới nhất. Để bao phủ published
-update migration toàn diện, dùng `all-since-2026.4.23` trong workflow Update
-Migration riêng thay vì Full Release CI. `release-history` vẫn
-có sẵn để lấy mẫu rộng hơn thủ công khi bạn cũng muốn anchor kế thừa trước ngày đó.
+được xuất bản trên npm. Quy trình chấp nhận gói phát hành ghim `2026.4.23` làm ranh giới tương thích
+cập nhật Plugin đầu tiên, `2026.5.2` làm ranh giới biến động kiến trúc Plugin và
+`2026.4.15` làm đường cơ sở cập nhật đã phát hành cũ hơn thuộc chuỗi 2026.4.1x; trình phân giải
+loại bỏ các ghim trùng đã có trong bốn bản mới nhất. Để có phạm vi bao phủ di chuyển
+cập nhật đã phát hành toàn diện, hãy sử dụng `all-since-2026.4.23` trong quy trình Di chuyển
+cập nhật riêng thay vì CI Bản phát hành đầy đủ. `release-history` vẫn
+khả dụng để lấy mẫu thủ công rộng hơn khi bạn cũng muốn mốc neo cũ trước ngày đó.
 
-Khi nhiều baseline published-upgrade survivor được chọn, workflow Docker tái sử dụng
-chia mỗi baseline thành job runner nhắm mục tiêu riêng. Mỗi shard baseline
-vẫn chạy bộ kịch bản đã chọn, nhưng log và artifact được giữ
-theo từng baseline và thời gian tường bị giới hạn bởi shard chậm nhất thay vì một job
+Khi chọn nhiều đường cơ sở của quy trình nâng cấp từ bản đã phát hành, quy trình Docker
+có thể tái sử dụng chia mỗi đường cơ sở thành một tác vụ trình chạy được nhắm mục tiêu riêng. Mỗi
+phân đoạn đường cơ sở vẫn chạy tập kịch bản đã chọn, nhưng nhật ký và tạo phẩm được giữ
+riêng theo đường cơ sở, còn thời gian chạy thực tế bị giới hạn bởi phân đoạn chậm nhất thay vì một tác vụ
 tuần tự lớn.
 
-Chạy thủ công một profile gói khi xác thực ứng viên trước phát hành:
+Chạy thủ công một hồ sơ gói khi xác thực ứng viên trước khi phát hành:
 
 ```bash
 gh workflow run package-acceptance.yml \
@@ -234,72 +234,66 @@ gh workflow run package-acceptance.yml \
   -f telegram_mode=mock-openai
 ```
 
-Dùng `suite_profile=product` khi câu hỏi phát hành bao gồm kênh MCP,
-dọn dẹp cron/subagent, tìm kiếm web OpenAI, hoặc OpenWebUI. Chỉ dùng `suite_profile=full`
-khi bạn cần bao phủ đầy đủ đường dẫn phát hành Docker.
+Đối với bản canary extended-stable đã phát hành, đặt
+`package_spec=openclaw@extended-stable`. Chấp nhận gói phân giải
+bộ chọn đó thành một tarball chính xác trước khi các luồng Docker chạy.
+
+Sử dụng `suite_profile=product` khi câu hỏi phát hành bao gồm các kênh MCP,
+việc dọn dẹp cron/agent con, tìm kiếm web OpenAI hoặc OpenWebUI. Chỉ sử dụng `suite_profile=full`
+khi bạn cần phạm vi bao phủ đầy đủ đường dẫn phát hành Docker.
 
 ## Mặc định phát hành
 
-Với release candidate, ngăn xếp bằng chứng mặc định là:
+Đối với các ứng viên phát hành, ngăn xếp bằng chứng mặc định là:
 
-1. `pnpm check:changed` và `pnpm test:changed` cho hồi quy cấp nguồn.
-2. `pnpm release:check` cho tính toàn vẹn artifact gói.
-3. Profile Package Acceptance `package` hoặc các lane gói tùy chỉnh của release-check
+1. `pnpm check:changed` và `pnpm test:changed` cho các hồi quy ở cấp mã nguồn.
+2. `pnpm release:check` để kiểm tra tính toàn vẹn của tạo phẩm gói.
+3. Hồ sơ Chấp nhận gói `package` hoặc các luồng gói tùy chỉnh của bước kiểm tra phát hành
    cho các hợp đồng cài đặt/cập nhật/khởi động lại/Plugin.
-4. Kiểm tra phát hành đa hệ điều hành cho trình cài đặt, onboarding, và hành vi nền tảng
-   đặc thù theo OS.
-5. Các bộ trực tiếp chỉ khi bề mặt đã thay đổi chạm đến hành vi nhà cung cấp hoặc dịch vụ được host.
+4. Các bước kiểm tra phát hành đa hệ điều hành cho hành vi riêng theo hệ điều hành của trình cài đặt, quy trình
+   thiết lập ban đầu và nền tảng.
+5. Chỉ chạy các bộ kiểm thử trực tiếp khi bề mặt thay đổi liên quan đến hành vi của nhà cung cấp hoặc dịch vụ
+   được lưu trữ.
 
-Trên máy maintainer, các cổng rộng và bằng chứng sản phẩm Docker/gói nên chạy
-trong Testbox trừ khi đang thực hiện bằng chứng cục bộ một cách tường minh.
+Trên máy của người bảo trì, các cổng kiểm tra rộng và bằng chứng sản phẩm Docker/gói nên chạy
+trong Testbox, trừ khi đang thực hiện bằng chứng cục bộ một cách tường minh.
 
-## Tương thích kế thừa
+## Khả năng tương thích cũ
 
-Mức nới lỏng tương thích rất hẹp và có giới hạn thời gian:
+Mức nới lỏng tương thích có phạm vi hẹp và giới hạn thời gian:
 
-- Các gói đến `2026.4.25`, bao gồm `2026.4.25-beta.*`, có thể dung thứ
-  các khoảng trống metadata gói đã ship trong Package Acceptance.
-- Gói `2026.4.26` đã phát hành có thể cảnh báo về các tệp dấu metadata bản build cục bộ
-  đã ship.
-- Các gói sau đó phải thỏa mãn hợp đồng hiện đại. Cùng các khoảng trống đó sẽ thất bại thay vì
-  cảnh báo hoặc bỏ qua.
+- Các gói đến hết `2026.4.25`, bao gồm `2026.4.25-beta.*`, có thể chấp nhận
+  các khoảng trống siêu dữ liệu gói đã phát hành trong Chấp nhận gói.
+- Gói `2026.4.26` đã phát hành có thể cảnh báo về các tệp dấu siêu dữ liệu
+  bản dựng cục bộ đã được phát hành.
+- Các gói sau đó phải đáp ứng các hợp đồng hiện đại. Những khoảng trống tương tự sẽ gây lỗi thay vì
+  cảnh báo hoặc bị bỏ qua.
 
-Không thêm di chuyển khởi động mới cho các hình dạng cũ này. Thêm hoặc mở rộng một sửa chữa bằng doctor,
-rồi chứng minh nó bằng `upgrade-survivor`, `published-upgrade-survivor`, hoặc
-`update-restart-auth` khi lệnh cập nhật sở hữu việc khởi động lại.
+Không thêm các bước di chuyển khởi động mới cho những hình dạng cũ này. Hãy thêm hoặc mở rộng một bước sửa chữa
+của doctor, sau đó chứng minh bằng `upgrade-survivor`, `published-upgrade-survivor` hoặc
+`update-restart-auth` khi lệnh cập nhật chịu trách nhiệm khởi động lại.
 
-## Thêm bao phủ
+## Bổ sung phạm vi bao phủ
 
-Khi thay đổi hành vi cập nhật hoặc Plugin, thêm bao phủ ở lớp thấp nhất có thể
-thất bại vì đúng lý do:
+Khi thay đổi hành vi cập nhật hoặc Plugin, hãy thêm phạm vi bao phủ ở lớp thấp nhất có thể
+thất bại vì đúng nguyên nhân:
 
-- Logic thuần về đường dẫn hoặc siêu dữ liệu: kiểm thử đơn vị đặt cạnh mã nguồn.
-- Hành vi kiểm kê gói hoặc tệp đã đóng gói: kiểm thử `package-dist-inventory` hoặc
-  trình kiểm tra tarball.
-- Hành vi cài đặt/cập nhật CLI: xác nhận trong lane Docker hoặc fixture.
-- Hành vi di trú bản phát hành đã công bố: kịch bản `published-upgrade-survivor`.
-- Hành vi khởi động lại do cập nhật sở hữu: `update-restart-auth`.
-- Hành vi nguồn registry/gói: fixture `test:docker:plugins` hoặc máy chủ fixture
-  ClawHub.
-- Hành vi bố cục dependency hoặc dọn dẹp: xác nhận cả việc thực thi lúc chạy và
-  ranh giới hệ thống tệp. Các dependency npm có thể được hoist bên trong dự án
-  npm do Plugin quản lý, vì vậy kiểm thử nên chứng minh rằng dự án đó được quét/dọn dẹp
-  thay vì giả định chỉ có cây `node_modules` cục bộ trong gói Plugin.
+- Logic thuần túy về đường dẫn hoặc siêu dữ liệu: kiểm thử đơn vị đặt cạnh mã nguồn.
+- Danh mục gói hoặc hành vi của tệp đã đóng gói: kiểm thử `package-dist-inventory` hoặc kiểm thử trình kiểm tra tarball.
+- Hành vi cài đặt/cập nhật qua CLI: xác nhận trong luồng Docker hoặc fixture.
+- Hành vi di chuyển dữ liệu của bản phát hành đã xuất bản: kịch bản `published-upgrade-survivor`.
+- Hành vi khởi động lại do quá trình cập nhật quản lý: `update-restart-auth`.
+- Hành vi nguồn registry/gói: fixture `test:docker:plugins` hoặc máy chủ fixture ClawHub.
+- Hành vi bố trí hoặc dọn dẹp phần phụ thuộc: xác nhận cả việc thực thi khi chạy và ranh giới hệ thống tệp. Các phần phụ thuộc npm có thể được đưa lên cấp cao hơn trong dự án npm do Plugin quản lý, vì vậy kiểm thử phải chứng minh rằng dự án đó được quét/dọn dẹp thay vì giả định chỉ có cây `node_modules` cục bộ trong gói Plugin.
 
-Theo mặc định, hãy giữ các fixture Docker mới khép kín. Dùng registry fixture cục bộ và
-gói giả trừ khi mục đích của kiểm thử là hành vi registry trực tiếp.
+Theo mặc định, hãy giữ các fixture Docker mới ở trạng thái khép kín. Sử dụng registry fixture cục bộ và các gói giả, trừ khi mục đích của kiểm thử là kiểm tra hành vi của registry trực tiếp.
 
 ## Phân loại lỗi
 
-Bắt đầu với định danh artifact:
+Bắt đầu bằng danh tính của cấu phần:
 
-- Tóm tắt `resolve_package` của Package Acceptance: nguồn, phiên bản, SHA-256 và
-  tên artifact.
-- Artifact Docker: `.artifacts/docker-tests/**/summary.json`,
-  `failures.json`, nhật ký lane và lệnh chạy lại.
-- Tóm tắt upgrade survivor: `.artifacts/upgrade-survivor/summary.json`,
-  bao gồm phiên bản baseline, phiên bản ứng viên, kịch bản, thời gian từng pha và
-  các bước công thức.
+- Tóm tắt `resolve_package` của quy trình Chấp nhận gói: nguồn, phiên bản, SHA-256 và tên cấu phần.
+- Cấu phần Docker: `.artifacts/docker-tests/**/summary.json`, `failures.json`, nhật ký luồng và các lệnh chạy lại.
+- Tóm tắt quá trình duy trì sau nâng cấp: `.artifacts/upgrade-survivor/summary.json`, bao gồm phiên bản cơ sở, phiên bản ứng viên, kịch bản, thời gian của từng giai đoạn và mức độ bao phủ công thức cấu hình.
 
-Ưu tiên chạy lại đúng lane đã lỗi với cùng artifact gói thay vì
-chạy lại toàn bộ umbrella phát hành.
+Ưu tiên chạy lại chính xác luồng bị lỗi với cùng cấu phần gói thay vì chạy lại toàn bộ bộ kiểm thử phát hành.

@@ -1,11 +1,11 @@
 ---
 read_when:
-    - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin twitch
-summary: Plugin ช่อง Twitch ของ OpenClaw สำหรับเวิร์กโฟลว์แชทและการดูแลจัดการ
+    - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin Twitch
+summary: Plugin ช่อง Twitch ของ OpenClaw สำหรับเวิร์กโฟลว์การแชตและการดูแลจัดการเนื้อหา
 title: Plugin Twitch
 x-i18n:
-    generated_at: "2026-06-27T18:05:41Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:32:17Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: fc1bbe93d4d91427cf9c53abd4ed6833c9a06520f466cc31a24f94f6f0f327d7
@@ -15,16 +15,16 @@ x-i18n:
 
 # Plugin Twitch
 
-Plugin ช่องทาง Twitch ของ OpenClaw สำหรับเวิร์กโฟลว์แชทและการมอดเดอเรชัน
+Plugin ช่อง Twitch ของ OpenClaw สำหรับเวิร์กโฟลว์การแชตและการดูแลเนื้อหา
 
-## การแจกจ่าย
+## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/twitch`
-- เส้นทางการติดตั้ง: npm; ClawHub
+- ช่องทางการติดตั้ง: npm; ClawHub
 
-## ส่วนติดต่อ
+## ส่วนเชื่อมต่อ
 
-channels: twitch
+ช่องทาง: twitch
 
 ## เอกสารที่เกี่ยวข้อง
 

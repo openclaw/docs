@@ -1,67 +1,65 @@
 ---
 read_when:
     - Menanggapi laporan keamanan atau dugaan insiden keamanan
-    - Mempersiapkan pengungkapan terkoordinasi atau rilis keamanan yang berisi tambalan
+    - Menyiapkan pengungkapan terkoordinasi atau rilis keamanan yang telah ditambal
     - Meninjau ekspektasi tindak lanjut pascainsiden
-summary: Bagaimana OpenClaw melakukan triase, menanggapi, dan menindaklanjuti insiden keamanan
+summary: Cara OpenClaw melakukan triase, merespons, dan menindaklanjuti insiden keamanan
 title: Respons insiden
 x-i18n:
-    generated_at: "2026-05-06T09:27:42Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:39:18Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 546b69242fc4674e3d27e79e4c7b5cfecb83bcb17e8edb2a4b62f1a7498fb84f
+    source_hash: 30f2d754408e95133ee86254ce193c0d8aab293040df55e0c1cec0c4d7644c56
     source_path: security/incident-response.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 ## 1. Deteksi dan triase
 
-Kami memantau sinyal keamanan dari:
+Sinyal keamanan berasal dari:
 
 - GitHub Security Advisories (GHSA) dan laporan kerentanan privat.
-- Isu/diskusi GitHub publik ketika laporan tidak sensitif.
-- Sinyal otomatis (misalnya Dependabot, CodeQL, advisori npm, dan pemindaian rahasia).
+- Isu/diskusi GitHub publik jika laporan tidak bersifat sensitif.
+- Sinyal otomatis: Dependabot, CodeQL, advisori npm, pemindaian rahasia.
 
 Triase awal:
 
-1. Konfirmasi komponen yang terdampak, versi, dan dampak batas kepercayaan.
-2. Klasifikasikan sebagai isu keamanan vs pengerasan/tanpa tindakan menggunakan cakupan `SECURITY.md` repositori dan aturan di luar cakupan.
-3. Pemilik insiden merespons sesuai kebutuhan.
+1. Konfirmasikan komponen dan versi yang terdampak, serta dampaknya terhadap batas kepercayaan.
+2. Klasifikasikan sebagai masalah keamanan atau penguatan/tanpa tindakan, menggunakan aturan cakupan dan di luar cakupan dalam `SECURITY.md`.
+3. Penanggung jawab insiden merespons sesuai klasifikasi tersebut.
 
-## 2. Penilaian
+## 2. Tingkat keparahan
 
-Panduan tingkat keparahan:
-
-- **Kritis:** Penyusupan paket/rilis/repositori, eksploitasi aktif, atau bypass batas kepercayaan tanpa autentikasi dengan kontrol berdampak tinggi atau paparan data.
-- **Tinggi:** Bypass batas kepercayaan yang terverifikasi dan memerlukan prasyarat terbatas (misalnya tindakan berdampak tinggi yang terautentikasi tetapi tidak terotorisasi), atau paparan kredensial sensitif milik OpenClaw.
-- **Sedang:** Kelemahan keamanan signifikan dengan dampak praktis tetapi eksploitabilitas terbatas atau prasyarat substansial.
-- **Rendah:** Temuan pertahanan berlapis, denial-of-service bercakupan sempit, atau celah pengerasan/paritas tanpa bypass batas kepercayaan yang terbukti.
+| Tingkat keparahan | Definisi                                                                                                                                                                                                     |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Kritis            | Kompromi paket/rilis/repositori, eksploitasi aktif, atau penerobosan batas kepercayaan tanpa autentikasi yang memberikan kendali berdampak tinggi atau mengekspos data.                                        |
+| Tinggi            | Penerobosan batas kepercayaan yang terverifikasi dan memerlukan prasyarat terbatas (misalnya, tindakan berdampak tinggi oleh pengguna terautentikasi tetapi tanpa otorisasi), atau tereksposnya kredensial sensitif milik OpenClaw. |
+| Sedang            | Kelemahan keamanan signifikan dengan dampak praktis, tetapi memiliki keterbatasan untuk dieksploitasi atau memerlukan prasyarat yang substansial.                                                              |
+| Rendah            | Temuan pertahanan berlapis, penolakan layanan dengan cakupan sempit, atau kesenjangan penguatan/paritas tanpa penerobosan batas kepercayaan yang telah dibuktikan.                                              |
 
 ## 3. Respons
 
-1. Akui penerimaan kepada pelapor (secara privat ketika sensitif).
-2. Reproduksi pada rilis yang didukung dan `main` terbaru, lalu implementasikan dan validasi patch dengan cakupan regresi.
-3. Untuk insiden kritis/tinggi, siapkan rilis yang telah dipatch secepat yang praktis.
-4. Untuk insiden sedang/rendah, patch dalam alur rilis normal dan dokumentasikan panduan mitigasi.
+1. Konfirmasikan penerimaan laporan kepada pelapor (secara privat jika sensitif).
+2. Reproduksi pada rilis yang didukung dan `main` terbaru, lalu implementasikan dan validasi patch dengan cakupan pengujian regresi.
+3. Kritis/tinggi: siapkan rilis yang telah ditambal secepat mungkin secara praktis.
+4. Sedang/rendah: terapkan patch melalui alur rilis normal dan dokumentasikan panduan mitigasi.
 
-## 4. Komunikasi
+## 4. Komunikasi dan pengungkapan
 
-Kami berkomunikasi melalui:
+Lakukan komunikasi melalui GitHub Security Advisories di repositori yang terdampak, catatan rilis/entri log perubahan untuk versi yang telah diperbaiki, serta tindak lanjut langsung kepada pelapor mengenai status dan penyelesaian.
 
-- GitHub Security Advisories di repositori yang terdampak.
-- Entri catatan rilis/catatan perubahan untuk versi yang diperbaiki.
-- Tindak lanjut langsung kepada pelapor mengenai status dan penyelesaian.
-
-Kebijakan pengungkapan:
-
-- Insiden kritis/tinggi harus menerima pengungkapan terkoordinasi, dengan penerbitan CVE bila sesuai.
-- Temuan pengerasan berisiko rendah dapat didokumentasikan dalam catatan rilis atau advisori tanpa CVE, bergantung pada dampak dan paparan pengguna.
+Insiden kritis/tinggi ditangani dengan pengungkapan terkoordinasi, termasuk penerbitan CVE jika sesuai. Temuan penguatan berisiko rendah dapat didokumentasikan dalam catatan rilis atau advisori tanpa CVE, bergantung pada dampak dan paparan pengguna.
 
 ## 5. Pemulihan dan tindak lanjut
 
-Setelah mengirimkan perbaikan:
+Setelah perbaikan dirilis:
 
-1. Verifikasi remediasi di CI dan artefak rilis.
-2. Jalankan tinjauan singkat pascainsiden (linimasa, akar penyebab, celah deteksi, rencana pencegahan).
-3. Tambahkan tugas tindak lanjut untuk pengerasan/pengujian/dokumentasi dan lacak hingga selesai.
+1. Verifikasi remediasi dalam CI dan artefak rilis.
+2. Lakukan tinjauan singkat pascainsiden: linimasa, akar penyebab, kesenjangan deteksi, dan rencana pencegahan.
+3. Tambahkan tugas tindak lanjut untuk penguatan/pengujian/dokumentasi dan pantau hingga selesai.
+
+## Terkait
+
+- [Kebijakan keamanan](https://github.com/openclaw/openclaw/blob/main/SECURITY.md) — cakupan laporan dan model kepercayaan.
+- [Model ancaman](/id/security/THREAT-MODEL-ATLAS)

@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Anda sedang memasang, mengonfigurasi, atau mengaudit plugin irc
-summary: Menambahkan permukaan channel IRC untuk mengirim dan menerima pesan OpenClaw.
+    - Anda sedang memasang, mengonfigurasi, atau mengaudit plugin IRC
+summary: Menambahkan antarmuka saluran IRC untuk mengirim dan menerima pesan OpenClaw.
 title: Plugin IRC
 x-i18n:
-    generated_at: "2026-06-27T17:54:27Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:31:37Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: ef4c5df880542d4d3554320f4d183a2464ef8b31d0e86edc1b6c63e1e41f35d3
@@ -15,16 +15,16 @@ x-i18n:
 
 # Plugin IRC
 
-Menambahkan permukaan kanal IRC untuk mengirim dan menerima pesan OpenClaw.
+Menambahkan antarmuka kanal IRC untuk mengirim dan menerima pesan OpenClaw.
 
 ## Distribusi
 
 - Paket: `@openclaw/irc`
-- Rute instalasi: npm; ClawHub: `clawhub:@openclaw/irc`
+- Jalur instalasi: npm; ClawHub: `clawhub:@openclaw/irc`
 
-## Permukaan
+## Antarmuka
 
-channels: irc
+kanal: irc
 
 ## Dokumentasi terkait
 

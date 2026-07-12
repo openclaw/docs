@@ -1,11 +1,11 @@
 ---
 read_when:
-    - در حال نصب، پیکربندی یا ممیزی Plugin moonshot هستید
+    - در حال نصب، پیکربندی یا ممیزی Plugin مون‌شات هستید
 summary: پشتیبانی از ارائه‌دهندهٔ مدل Moonshot را به OpenClaw اضافه می‌کند.
 title: Plugin مون‌شات
 x-i18n:
-    generated_at: "2026-06-27T18:27:19Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:31:32Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 477307769a710ac8d430a837d7b5ffda012a942f3b44f367bf4ea0770b87f48e
@@ -13,9 +13,9 @@ x-i18n:
     workflow: 16
 ---
 
-# افزونه Moonshot
+# Plugin مدل Moonshot
 
-پشتیبانی از ارائه‌دهنده مدل Moonshot را به OpenClaw اضافه می‌کند.
+پشتیبانی از ارائه‌دهندهٔ مدل Moonshot را به OpenClaw اضافه می‌کند.
 
 ## توزیع
 
@@ -24,8 +24,8 @@ x-i18n:
 
 ## سطح
 
-providers: moonshot؛ قراردادها: mediaUnderstandingProviders، webSearchProviders
+ارائه‌دهندگان: moonshot؛ قراردادها: mediaUnderstandingProviders، webSearchProviders
 
 ## مستندات مرتبط
 
-- [Moonshot](/fa/providers/moonshot)
+- [moonshot](/fa/providers/moonshot)

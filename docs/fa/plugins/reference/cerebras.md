@@ -1,11 +1,11 @@
 ---
 read_when:
-    - شما در حال نصب، پیکربندی، یا ممیزی Plugin cerebras هستید
-summary: پشتیبانی از ارائه‌دهندهٔ مدل Cerebras را به OpenClaw اضافه می‌کند.
-title: Plugin Cerebras
+    - شما در حال نصب، پیکربندی یا ممیزی Plugin ‏cerebras هستید
+summary: پشتیبانی از ارائه‌دهنده مدل Cerebras را به OpenClaw اضافه می‌کند.
+title: Plugin سربراس
 x-i18n:
-    generated_at: "2026-06-27T18:23:49Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:35:03Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 272a592b6099b7dc30c48e40e004ca01c1113a1fcf65917ac6266987a63ec01f
@@ -13,9 +13,9 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin Cerebras
+# Plugin‏ Cerebras
 
-پشتیبانی از ارائه‌دهندهٔ مدل Cerebras را به OpenClaw اضافه می‌کند.
+پشتیبانی از ارائه‌دهنده مدل Cerebras را به OpenClaw اضافه می‌کند.
 
 ## توزیع
 
@@ -24,8 +24,8 @@ x-i18n:
 
 ## سطح
 
-providers: cerebras
+ارائه‌دهندگان: cerebras
 
 ## مستندات مرتبط
 
-- [cerebras](/fa/providers/cerebras)
+- [Cerebras](/fa/providers/cerebras)

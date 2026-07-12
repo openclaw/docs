@@ -1,147 +1,113 @@
 ---
 read_when:
     - Menyiapkan integrasi IDE berbasis ACP
-    - Men-debug routing sesi ACP ke Gateway
-summary: Jalankan bridge ACP untuk integrasi IDE
+    - Men-debug perutean sesi ACP ke Gateway
+summary: Jalankan jembatan ACP untuk integrasi IDE
 title: ACP
 x-i18n:
-    generated_at: "2026-06-27T17:17:03Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:00:07Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 79fa816811f78c3fa59577342e568868ef63e88f5262fd954e346ed46b02afc3
+    source_hash: becdcfdd1cc62b206cc92e9b8248c79a2ff63cfc3779d8a124b9713e779ad33c
     source_path: cli/acp.md
     workflow: 16
 ---
 
-Jalankan jembatan [Agent Client Protocol (ACP)](https://agentclientprotocol.com/) yang berbicara dengan OpenClaw Gateway.
+Jalankan jembatan [Agent Client Protocol (ACP)](https://agentclientprotocol.com/) yang berkomunikasi dengan Gateway OpenClaw.
 
-Perintah ini berbicara ACP melalui stdio untuk IDE dan meneruskan prompt ke Gateway
-melalui WebSocket. Perintah ini menjaga sesi ACP tetap dipetakan ke kunci sesi Gateway.
+`openclaw acp` menggunakan ACP melalui stdio untuk IDE dan meneruskan prompt ke Gateway melalui WebSocket, sambil mempertahankan pemetaan sesi ACP ke kunci sesi Gateway. Ini adalah jembatan ACP yang didukung Gateway, bukan runtime editor native ACP lengkap: fokusnya adalah perutean sesi, pengiriman prompt, dan pembaruan streaming.
 
-`openclaw acp` adalah jembatan ACP yang didukung Gateway, bukan runtime editor
-ACP-native penuh. Perintah ini berfokus pada perutean sesi, pengiriman prompt, dan pembaruan
-streaming dasar.
+Jika Anda ingin klien MCP eksternal berkomunikasi langsung dengan percakapan kanal OpenClaw alih-alih menghosting sesi harness ACP, gunakan [`openclaw mcp serve`](/id/cli/mcp).
 
-Jika Anda ingin klien MCP eksternal berbicara langsung dengan percakapan channel
-OpenClaw alih-alih menghosting sesi harness ACP, gunakan
-[`openclaw mcp serve`](/id/cli/mcp) sebagai gantinya.
+## Yang bukan merupakan fungsi ini
 
-## Ini bukan apa
+`openclaw acp` berarti OpenClaw bertindak sebagai server ACP: IDE atau klien ACP terhubung ke OpenClaw, lalu OpenClaw meneruskan pekerjaan tersebut ke sesi Gateway.
 
-Halaman ini sering tertukar dengan sesi harness ACP.
+Ini berbeda dari [Agen ACP](/id/tools/acp-agents), tempat OpenClaw menjalankan harness eksternal seperti Codex atau Claude Code melalui `acpx`.
 
-`openclaw acp` berarti:
+Aturan singkat:
 
-- OpenClaw bertindak sebagai server ACP
-- IDE atau klien ACP terhubung ke OpenClaw
-- OpenClaw meneruskan pekerjaan itu ke dalam sesi Gateway
+- editor/klien ingin berkomunikasi dengan OpenClaw melalui ACP: gunakan `openclaw acp`
+- OpenClaw harus menjalankan Codex/Claude/Gemini sebagai harness ACP: gunakan `/acp spawn` dan [Agen ACP](/id/tools/acp-agents)
 
-Ini berbeda dari [ACP Agents](/id/tools/acp-agents), tempat OpenClaw menjalankan
-harness eksternal seperti Codex atau Claude Code melalui `acpx`.
+## Matriks kompatibilitas
 
-Aturan cepat:
+| Area ACP                                                              | Status                | Catatan                                                                                                                                                                                                                                             |
+| --------------------------------------------------------------------- | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `initialize`, `newSession`, `prompt`, `cancel`                        | Diimplementasikan     | Alur jembatan inti melalui stdio ke obrolan/pengiriman + pembatalan Gateway.                                                                                                                                                                        |
+| `listSessions`, perintah garis miring                                 | Diimplementasikan     | Daftar sesi bekerja terhadap status sesi Gateway dengan paginasi kursor terbatas dan pemfilteran `cwd` ketika baris sesi Gateway memuat metadata ruang kerja; perintah diumumkan melalui `available_commands_update`.                                |
+| Metadata silsilah sesi                                                | Diimplementasikan     | Daftar sesi dan snapshot informasi sesi menyertakan silsilah induk dan anak OpenClaw dalam `_meta` agar klien ACP dapat merender grafik subagen tanpa kanal samping Gateway privat.                                                                  |
+| `resumeSession`, `closeSession`                                       | Diimplementasikan     | Pelanjutan mengikat ulang sesi ACP ke sesi Gateway yang ada tanpa memutar ulang riwayat. Penutupan membatalkan pekerjaan jembatan aktif, menyelesaikan prompt tertunda sebagai dibatalkan, dan melepaskan status sesi jembatan.                       |
+| `loadSession`                                                         | Sebagian              | Mengikat ulang sesi ACP ke kunci sesi Gateway dan memutar ulang riwayat buku besar peristiwa ACP untuk sesi yang dibuat oleh jembatan. Sesi lama/tanpa buku besar beralih ke teks pengguna/asisten yang tersimpan.                                  |
+| Konten prompt (`text`, `resource` tersemat, gambar)                   | Sebagian              | Teks/sumber daya diratakan menjadi masukan obrolan; gambar menjadi lampiran Gateway.                                                                                                                                                                |
+| Mode sesi                                                             | Sebagian              | `session/set_mode` didukung; jembatan menyediakan kontrol sesi yang didukung Gateway untuk tingkat pemikiran, verbositas alat, penalaran, detail penggunaan, dan tindakan dengan hak lebih tinggi. Permukaan mode/konfigurasi native ACP yang lebih luas masih di luar cakupan. |
+| Streaming pemikiran                                                   | Diimplementasikan     | Konten pemikiran model dialirkan sebagai pembaruan sesi `agent_thought_chunk`. Rencana sesi native ACP tidak dipancarkan.                                                                                                                           |
+| Pembaruan informasi dan penggunaan sesi                               | Sebagian              | Jembatan memancarkan notifikasi `session_info_update` dan `usage_update` secara upaya terbaik dari snapshot sesi Gateway yang disimpan dalam cache. Penggunaan bersifat perkiraan dan hanya dikirim ketika total token Gateway ditandai mutakhir. |
+| Streaming alat                                                        | Sebagian              | Peristiwa `tool_call`/`tool_call_update` menyertakan I/O mentah, konten teks, dan lokasi berkas secara upaya terbaik ketika argumen/hasil alat Gateway menyediakannya. Terminal tersemat dan keluaran native diff yang lebih kaya tidak disediakan. |
+| Persetujuan eksekusi                                                  | Sebagian              | Prompt persetujuan eksekusi Gateway selama giliran prompt ACP aktif diteruskan ke klien ACP melalui `session/request_permission`.                                                                                                                   |
+| Server MCP per sesi (`mcpServers`)                                    | Tidak didukung        | Mode jembatan menolak permintaan server MCP per sesi. Konfigurasikan MCP pada Gateway atau agen OpenClaw sebagai gantinya.                                                                                                                          |
+| Metode sistem berkas klien (`fs/read_text_file`, `fs/write_text_file`) | Tidak didukung       | Jembatan tidak memanggil metode sistem berkas klien ACP.                                                                                                                                                                                            |
+| Metode terminal klien (`terminal/*`)                                  | Tidak didukung        | Jembatan tidak membuat terminal klien ACP atau mengalirkan ID terminal melalui panggilan alat.                                                                                                                                                      |
 
-- editor/klien ingin berbicara ACP ke OpenClaw: gunakan `openclaw acp`
-- OpenClaw harus meluncurkan Codex/Claude/Gemini sebagai harness ACP: gunakan `/acp spawn` dan [ACP Agents](/id/tools/acp-agents)
+## Keterbatasan yang diketahui
 
-## Matriks Kompatibilitas
-
-| Area ACP                                                              | Status      | Catatan                                                                                                                                                                                                                                          |
-| --------------------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `initialize`, `newSession`, `prompt`, `cancel`                        | Diimplementasikan | Alur jembatan inti melalui stdio ke chat/send + abort Gateway.                                                                                                                                                                                   |
-| `listSessions`, perintah slash                                        | Diimplementasikan | Daftar sesi bekerja terhadap status sesi Gateway dengan paginasi kursor terbatas dan pemfilteran `cwd` saat baris sesi Gateway membawa metadata workspace; perintah diiklankan melalui `available_commands_update`.                            |
-| Metadata garis keturunan sesi                                         | Diimplementasikan | Listing sesi dan snapshot info sesi menyertakan garis keturunan induk dan anak OpenClaw di `_meta` sehingga klien ACP dapat merender grafik subagen tanpa side channel Gateway privat.                                                          |
-| `resumeSession`, `closeSession`                                       | Diimplementasikan | Resume mengikat ulang sesi ACP ke sesi Gateway yang sudah ada tanpa memutar ulang riwayat. Close membatalkan pekerjaan jembatan aktif, menyelesaikan prompt tertunda sebagai dibatalkan, dan merilis status sesi jembatan.                     |
-| `loadSession`                                                         | Parsial     | Mengikat ulang sesi ACP ke kunci sesi Gateway dan memutar ulang riwayat ledger peristiwa ACP untuk sesi yang dibuat jembatan. Sesi lama/tanpa ledger kembali ke teks pengguna/asisten yang tersimpan.                                           |
-| Konten prompt (`text`, `resource` tertanam, gambar)                   | Parsial     | Teks/resource diratakan menjadi input chat; gambar menjadi lampiran Gateway.                                                                                                                                                                      |
-| Mode sesi                                                            | Parsial     | `session/set_mode` didukung dan jembatan mengekspos kontrol sesi awal yang didukung Gateway untuk tingkat pemikiran, verbositas tool, reasoning, detail penggunaan, dan tindakan elevated. Permukaan mode/konfigurasi ACP-native yang lebih luas masih di luar cakupan. |
-| Info sesi dan pembaruan penggunaan                                    | Parsial     | Jembatan memancarkan notifikasi `session_info_update` dan `usage_update` upaya terbaik dari snapshot sesi Gateway yang di-cache. Penggunaan bersifat perkiraan dan hanya dikirim saat total token Gateway ditandai segar.                       |
-| Streaming tool                                                       | Parsial     | Peristiwa `tool_call` / `tool_call_update` menyertakan I/O mentah, konten teks, dan lokasi file upaya terbaik saat argumen/hasil tool Gateway mengeksposnya. Terminal tertanam dan output diff-native yang lebih kaya masih belum diekspos.      |
-| Persetujuan exec                                                     | Parsial     | Prompt persetujuan exec Gateway selama putaran prompt ACP aktif diteruskan ke klien ACP dengan `session/request_permission`.                                                                                                                     |
-| Server MCP per sesi (`mcpServers`)                                    | Tidak didukung | Mode jembatan menolak permintaan server MCP per sesi. Konfigurasikan MCP pada Gateway atau agen OpenClaw sebagai gantinya.                                                                                                                       |
-| Metode filesystem klien (`fs/read_text_file`, `fs/write_text_file`)   | Tidak didukung | Jembatan tidak memanggil metode filesystem klien ACP.                                                                                                                                                                                            |
-| Metode terminal klien (`terminal/*`)                                  | Tidak didukung | Jembatan tidak membuat terminal klien ACP atau mengalirkan id terminal melalui panggilan tool.                                                                                                                                                   |
-| Rencana sesi / streaming pemikiran                                    | Tidak didukung | Jembatan saat ini memancarkan teks output dan status tool, bukan pembaruan rencana atau pemikiran ACP.                                                                                                                                           |
-
-## Batasan yang Diketahui
-
-- `loadSession` dapat memutar ulang riwayat ledger peristiwa ACP lengkap hanya untuk
-  sesi yang dibuat jembatan. Sesi lama/tanpa ledger masih menggunakan fallback
-  transkrip dan tidak merekonstruksi panggilan tool historis atau pemberitahuan sistem.
-- Jika beberapa klien ACP berbagi kunci sesi Gateway yang sama, perutean peristiwa dan pembatalan
-  bersifat upaya terbaik, bukan terisolasi ketat per klien. Pilih sesi
-  default terisolasi `acp-bridge:<uuid>` saat Anda membutuhkan putaran editor-lokal
-  yang bersih.
-- Status berhenti Gateway diterjemahkan menjadi alasan berhenti ACP, tetapi pemetaan itu
-  kurang ekspresif dibanding runtime ACP-native penuh.
-- Kontrol sesi awal saat ini menampilkan subset knob Gateway yang terfokus:
-  tingkat pemikiran, verbositas tool, reasoning, detail penggunaan, dan tindakan
-  elevated. Pemilihan model dan kontrol exec-host belum diekspos sebagai opsi
-  konfigurasi ACP.
-- `session_info_update` dan `usage_update` diturunkan dari snapshot sesi Gateway,
-  bukan akuntansi runtime ACP-native langsung. Penggunaan bersifat perkiraan,
-  tidak membawa data biaya, dan hanya dipancarkan saat Gateway menandai data
-  total token sebagai segar.
-- Data mengikuti tool bersifat upaya terbaik. Jembatan dapat menampilkan path file yang
-  muncul dalam argumen/hasil tool yang dikenal, tetapi belum memancarkan terminal ACP atau
-  diff file terstruktur.
-- Relay persetujuan exec dibatasi pada putaran prompt ACP aktif; persetujuan dari
-  sesi Gateway lain diabaikan.
+- `loadSession` memutar ulang riwayat lengkap buku besar peristiwa ACP hanya untuk sesi yang dibuat oleh jembatan. Sesi lama/tanpa buku besar menggunakan fallback transkrip dan tidak merekonstruksi panggilan alat historis atau pemberitahuan sistem.
+- Jika beberapa klien ACP berbagi kunci sesi Gateway yang sama, perutean peristiwa dan pembatalan dilakukan secara upaya terbaik, bukan diisolasi secara ketat per klien. Gunakan sesi `acp-bridge:<uuid>` terisolasi bawaan ketika Anda memerlukan giliran lokal editor yang bersih.
+- Status penghentian Gateway diterjemahkan menjadi alasan penghentian ACP, tetapi pemetaan tersebut tidak sekomprehensif runtime native ACP sepenuhnya.
+- Kontrol sesi menampilkan subset terfokus dari pengaturan Gateway: tingkat pemikiran, verbositas alat, penalaran, detail penggunaan, dan tindakan dengan hak lebih tinggi. Pemilihan model dan kontrol host eksekusi tidak disediakan sebagai opsi konfigurasi ACP.
+- `session_info_update` dan `usage_update` berasal dari snapshot sesi Gateway, bukan penghitungan runtime native ACP langsung. Penggunaan bersifat perkiraan, tidak memuat data biaya, dan hanya dipancarkan ketika Gateway menandai data total token sebagai mutakhir.
+- Data pemantauan alat bersifat upaya terbaik: jembatan menampilkan jalur berkas yang muncul dalam argumen/hasil alat yang dikenal, tetapi tidak memancarkan terminal ACP atau diff berkas terstruktur.
+- Penerusan persetujuan eksekusi dibatasi pada giliran prompt ACP aktif; persetujuan dari sesi Gateway lain diabaikan.
 
 ## Penggunaan
 
 ```bash
 openclaw acp
 
-# Remote Gateway
+# Gateway jarak jauh
 openclaw acp --url wss://gateway-host:18789 --token <token>
 
-# Remote Gateway (token from file)
+# Gateway jarak jauh (token dari berkas)
 openclaw acp --url wss://gateway-host:18789 --token-file ~/.openclaw/gateway.token
 
-# Attach to an existing session key
+# Lampirkan ke kunci sesi yang ada
 openclaw acp --session agent:main:main
 
-# Attach by label (must already exist)
+# Lampirkan berdasarkan label (harus sudah ada)
 openclaw acp --session-label "support inbox"
 
-# Reset the session key before the first prompt
+# Atur ulang kunci sesi sebelum prompt pertama
 openclaw acp --session agent:main:main --reset-session
 ```
 
 ## Klien ACP (debug)
 
-Gunakan klien ACP bawaan untuk memeriksa kewarasan jembatan tanpa IDE.
-Klien ini menjalankan jembatan ACP dan memungkinkan Anda mengetik prompt secara interaktif.
+Gunakan klien ACP bawaan untuk memeriksa kelayakan jembatan tanpa IDE. Klien ini menjalankan jembatan ACP dan memungkinkan Anda mengetik prompt secara interaktif.
 
 ```bash
 openclaw acp client
 
-# Point the spawned bridge at a remote Gateway
+# Arahkan jembatan yang dijalankan ke Gateway jarak jauh
 openclaw acp client --server-args --url wss://gateway-host:18789 --token-file ~/.openclaw/gateway.token
 
-# Override the server command (default: openclaw)
+# Timpa perintah server (bawaan: openclaw)
 openclaw acp client --server "node" --server-args openclaw.mjs acp --url ws://127.0.0.1:19001
 ```
 
 Model izin (mode debug klien):
 
-- Persetujuan otomatis berbasis allowlist dan hanya berlaku untuk ID tool inti tepercaya.
-- Persetujuan otomatis `read` dibatasi ke direktori kerja saat ini (`--cwd` saat disetel).
-- ACP hanya menyetujui otomatis kelas readonly yang sempit: panggilan `read` tercakup di bawah cwd aktif ditambah tool pencarian readonly (`search`, `web_search`, `memory_search`). Tool yang tidak dikenal/non-inti, pembacaan di luar cakupan, tool berkemampuan exec, tool control-plane, tool yang memutasi, dan alur interaktif selalu memerlukan persetujuan prompt eksplisit.
-- `toolCall.kind` yang disediakan server diperlakukan sebagai metadata tidak tepercaya (bukan sumber otorisasi).
-- Kebijakan jembatan ACP ini terpisah dari izin harness ACPX. Jika Anda menjalankan OpenClaw melalui backend `acpx`, `plugins.entries.acpx.config.permissionMode=approve-all` adalah sakelar "yolo" darurat untuk sesi harness tersebut.
+- Persetujuan otomatis didasarkan pada daftar izin dan hanya berlaku untuk ID alat inti tepercaya.
+- Persetujuan otomatis `read` dibatasi pada direktori kerja saat ini (`--cwd` jika ditetapkan).
+- ACP hanya menyetujui otomatis kelas baca-saja yang terbatas: panggilan `read` dengan cakupan di bawah cwd aktif, serta alat pencarian baca-saja (`search`, `web_search`, `memory_search`). Alat yang tidak dikenal/bukan inti, pembacaan di luar cakupan, alat yang dapat mengeksekusi, alat bidang kontrol, alat yang mengubah data, dan alur interaktif selalu memerlukan persetujuan prompt eksplisit.
+- `toolCall.kind` yang disediakan server diperlakukan sebagai metadata tidak tepercaya, bukan sumber otorisasi.
+- Kebijakan jembatan ACP ini terpisah dari izin harness ACPX. Jika Anda menjalankan OpenClaw melalui backend `acpx`, `plugins.entries.acpx.config.permissionMode=approve-all` adalah sakelar darurat "yolo" untuk sesi harness tersebut.
 
-## Pengujian smoke protokol
+## Pengujian cepat protokol
 
-Untuk debugging tingkat protokol, mulai Gateway dengan status terisolasi dan kendalikan
-`openclaw acp` melalui stdio dengan klien JSON-RPC ACP. Cakup `initialize`,
-`session/new`, `session/list` dengan `cwd` absolut, `session/resume`,
-`session/close`, close duplikat, dan resume yang hilang.
+Untuk debug tingkat protokol, jalankan Gateway dengan status terisolasi dan kendalikan `openclaw acp` melalui stdio menggunakan klien JSON-RPC ACP. Cakup `initialize`, `session/new`, `session/list` dengan `cwd` absolut, `session/resume`, `session/close`, penutupan duplikat, dan pelanjutan yang tidak ditemukan.
 
-Bukti harus menyertakan kemampuan siklus hidup yang diiklankan, baris sesi yang didukung
-Gateway, notifikasi pembaruan, dan log `sessions.list` Gateway:
+Bukti harus mencakup kapabilitas siklus hidup yang diumumkan, baris sesi yang didukung Gateway, notifikasi pembaruan, dan log `sessions.list` Gateway:
 
 ```json
 {
@@ -173,39 +139,34 @@ Gateway, notifikasi pembaruan, dan log `sessions.list` Gateway:
 }
 ```
 
-Hindari menggunakan `openclaw gateway call sessions.list` sebagai satu-satunya bukti ACP. Path
-CLI itu dapat meminta peningkatan cakupan operator fresh-token; kebenaran jembatan ACP
-dibuktikan oleh frame stdio ACP ditambah log `sessions.list` Gateway.
+Hindari menggunakan `openclaw gateway call sessions.list` sebagai satu-satunya bukti ACP. Jalur CLI tersebut dapat meminta peningkatan cakupan operator dengan token baru; kebenaran jembatan ACP dibuktikan oleh bingkai stdio ACP beserta log `sessions.list` Gateway.
 
 ## Cara menggunakan ini
 
-Gunakan ACP saat IDE (atau klien lain) berbicara Agent Client Protocol dan Anda ingin
-klien tersebut mengendalikan sesi OpenClaw Gateway.
+Gunakan ACP ketika IDE (atau klien lain) menggunakan Agent Client Protocol dan Anda ingin IDE tersebut mengendalikan sesi Gateway OpenClaw.
 
-1. Pastikan Gateway berjalan (lokal atau jarak jauh).
+1. Pastikan Gateway sedang berjalan (lokal atau jarak jauh).
 2. Konfigurasikan target Gateway (konfigurasi atau flag).
 3. Arahkan IDE Anda untuk menjalankan `openclaw acp` melalui stdio.
 
-Contoh konfigurasi (dipersistenkan):
+Contoh konfigurasi (dipertahankan):
 
 ```bash
 openclaw config set gateway.remote.url wss://gateway-host:18789
 openclaw config set gateway.remote.token <token>
 ```
 
-Contoh jalankan langsung (tanpa penulisan konfigurasi):
+Contoh eksekusi langsung (tanpa menulis konfigurasi):
 
 ```bash
 openclaw acp --url wss://gateway-host:18789 --token <token>
-# preferred for local process safety
+# lebih disarankan demi keamanan proses lokal
 openclaw acp --url wss://gateway-host:18789 --token-file ~/.openclaw/gateway.token
 ```
 
 ## Memilih agen
 
-ACP tidak memilih agen secara langsung. ACP merutekan berdasarkan kunci sesi Gateway.
-
-Gunakan kunci sesi bercakupan agen untuk menargetkan agen tertentu:
+ACP tidak memilih agen secara langsung. ACP merutekan berdasarkan kunci sesi Gateway. Gunakan kunci sesi dengan cakupan agen untuk menargetkan agen tertentu:
 
 ```bash
 openclaw acp --session agent:main:main
@@ -213,45 +174,35 @@ openclaw acp --session agent:design:main
 openclaw acp --session agent:qa:bug-123
 ```
 
-Setiap sesi ACP dipetakan ke satu kunci sesi Gateway. Satu agen dapat memiliki banyak
-sesi; ACP secara default menggunakan sesi `acp-bridge:<uuid>` yang terisolasi kecuali Anda menimpa
-kunci atau labelnya.
+Setiap sesi ACP dipetakan ke satu kunci sesi Gateway. Satu agen dapat memiliki banyak sesi; ACP menggunakan sesi `acp-bridge:<uuid>` terisolasi secara bawaan, kecuali Anda menimpa kunci atau labelnya.
 
-`mcpServers` per sesi tidak didukung dalam mode bridge. Jika klien ACP
-mengirimkannya selama `newSession` atau `loadSession`, bridge mengembalikan
-kesalahan yang jelas alih-alih mengabaikannya secara diam-diam.
+`mcpServers` per sesi tidak didukung dalam mode jembatan. Jika klien ACP mengirimkannya selama `newSession` atau `loadSession`, jembatan akan mengembalikan galat yang jelas alih-alih mengabaikannya secara diam-diam.
 
-Jika Anda ingin sesi yang didukung ACPX melihat alat Plugin OpenClaw atau alat
-bawaan tertentu seperti `cron`, aktifkan bridge ACPX MCP di sisi Gateway alih-alih
-mencoba meneruskan `mcpServers` per sesi. Lihat
-[ACP Agents](/id/tools/acp-agents-setup#plugin-tools-mcp-bridge) dan
-[bridge MCP alat OpenClaw](/id/tools/acp-agents-setup#openclaw-tools-mcp-bridge).
+Jika Anda ingin sesi yang didukung ACPX dapat melihat alat Plugin OpenClaw atau alat bawaan tertentu seperti `cron`, aktifkan jembatan MCP ACPX di sisi Gateway alih-alih mencoba meneruskan `mcpServers` per sesi. Lihat [Agen ACP](/id/tools/acp-agents-setup#plugin-tools-mcp-bridge) dan [Jembatan MCP alat OpenClaw](/id/tools/acp-agents-setup#openclaw-tools-mcp-bridge).
 
-## Gunakan dari `acpx` (Codex, Claude, klien ACP lainnya)
+## Penggunaan dari `acpx` (Codex, Claude, dan klien ACP lainnya)
 
-Jika Anda ingin agen pengodean seperti Codex atau Claude Code berbicara dengan
-bot OpenClaw Anda melalui ACP, gunakan `acpx` dengan target `openclaw` bawaannya.
+Jika Anda ingin agen pemrograman seperti Codex atau Claude Code berkomunikasi dengan bot OpenClaw Anda melalui ACP, gunakan `acpx` dengan target bawaan `openclaw`.
 
 Alur umum:
 
-1. Jalankan Gateway dan pastikan bridge ACP dapat menjangkaunya.
+1. Jalankan Gateway dan pastikan jembatan ACP dapat menjangkaunya.
 2. Arahkan `acpx openclaw` ke `openclaw acp`.
-3. Targetkan kunci sesi OpenClaw yang Anda ingin digunakan oleh agen pengodean.
+3. Tentukan kunci sesi OpenClaw yang ingin digunakan oleh agen pemrograman.
 
 Contoh:
 
 ```bash
-# Permintaan sekali jalan ke sesi ACP OpenClaw default Anda
+# One-shot request into your default OpenClaw ACP session
 acpx openclaw exec "Summarize the active OpenClaw session state."
 
-# Sesi bernama persisten untuk giliran lanjutan
+# Persistent named session for follow-up turns
 acpx openclaw sessions ensure --name codex-bridge
 acpx openclaw -s codex-bridge --cwd /path/to/repo \
   "Ask my OpenClaw work agent for recent context relevant to this repo."
 ```
 
-Jika Anda ingin `acpx openclaw` menargetkan Gateway dan kunci sesi tertentu setiap
-saat, timpa perintah agen `openclaw` di `~/.acpx/config.json`:
+Jika Anda ingin `acpx openclaw` selalu menargetkan Gateway dan kunci sesi tertentu, timpa perintah agen `openclaw` di `~/.acpx/config.json`:
 
 ```json
 {
@@ -263,19 +214,17 @@ saat, timpa perintah agen `openclaw` di `~/.acpx/config.json`:
 }
 ```
 
-Untuk checkout OpenClaw lokal repo, gunakan entrypoint CLI langsung alih-alih
-runner dev agar stream ACP tetap bersih. Misalnya:
+Untuk salinan kerja OpenClaw lokal di repositori, gunakan titik masuk CLI langsung alih-alih peluncur pengembangan agar aliran ACP tetap bersih:
 
 ```bash
 env OPENCLAW_HIDE_BANNER=1 OPENCLAW_SUPPRESS_NOTES=1 node openclaw.mjs acp ...
 ```
 
-Ini adalah cara termudah untuk memungkinkan Codex, Claude Code, atau klien lain yang paham ACP
-menarik informasi kontekstual dari agen OpenClaw tanpa melakukan scraping terminal.
+Ini adalah cara termudah agar Codex, Claude Code, atau klien lain yang mendukung ACP dapat mengambil informasi kontekstual dari agen OpenClaw tanpa mengorek terminal.
 
 ## Penyiapan editor Zed
 
-Tambahkan agen ACP kustom di `~/.config/zed/settings.json` (atau gunakan UI Settings Zed):
+Tambahkan agen ACP khusus di `~/.config/zed/settings.json` (atau gunakan antarmuka Settings milik Zed):
 
 ```json
 {
@@ -313,20 +262,17 @@ Untuk menargetkan Gateway atau agen tertentu:
 }
 ```
 
-Di Zed, buka panel Agent dan pilih "OpenClaw ACP" untuk memulai thread.
+Di Zed, buka panel Agent dan pilih "OpenClaw ACP" untuk memulai utas.
 
 ## Pemetaan sesi
 
-Secara default, sesi bridge ACP mendapatkan kunci sesi Gateway terisolasi dengan
-prefiks `acp-bridge:`. Sesi bridge model normal ini bersifat sintetis dan
-tunduk pada pemangkasan entri usang serta batas jumlah entri. Untuk menggunakan kembali sesi yang diketahui,
-teruskan kunci atau label sesi:
+Secara default, sesi jembatan ACP mendapatkan kunci sesi Gateway terisolasi dengan awalan `acp-bridge:`. Sesi jembatan model normal ini bersifat sintetis dan sekali pakai: sesi tersebut dapat dipangkas jika entrinya kedaluwarsa dan tidak diperlakukan sebagai media percakapan manusia yang dilindungi. Untuk menggunakan kembali sesi yang telah diketahui, teruskan kunci atau label sesi:
 
 - `--session <key>`: gunakan kunci sesi Gateway tertentu.
-- `--session-label <label>`: selesaikan sesi yang sudah ada berdasarkan label.
-- `--reset-session`: buat id sesi baru untuk kunci tersebut (kunci yang sama, transkrip baru).
+- `--session-label <label>`: temukan sesi yang ada berdasarkan label.
+- `--reset-session`: buat ID sesi baru untuk kunci tersebut (kunci sama, transkrip baru).
 
-Jika klien ACP Anda mendukung metadata, Anda dapat menimpa per sesi:
+Jika klien ACP Anda mendukung metadata, Anda dapat menimpanya per sesi:
 
 ```json
 {
@@ -338,43 +284,41 @@ Jika klien ACP Anda mendukung metadata, Anda dapat menimpa per sesi:
 }
 ```
 
-Pelajari selengkapnya tentang kunci sesi di [/concepts/session](/id/concepts/session).
+Pelajari lebih lanjut tentang kunci sesi di [/concepts/session](/id/concepts/session).
 
 ## Opsi
 
-- `--url <url>`: URL WebSocket Gateway (default ke gateway.remote.url saat dikonfigurasi).
+- `--url <url>`: URL WebSocket Gateway (nilai default-nya adalah `gateway.remote.url` jika dikonfigurasi).
 - `--token <token>`: token autentikasi Gateway.
-- `--token-file <path>`: baca token autentikasi Gateway dari file.
+- `--token-file <path>`: baca token autentikasi Gateway dari berkas.
 - `--password <password>`: kata sandi autentikasi Gateway.
-- `--password-file <path>`: baca kata sandi autentikasi Gateway dari file.
+- `--password-file <path>`: baca kata sandi autentikasi Gateway dari berkas.
 - `--session <key>`: kunci sesi default.
-- `--session-label <label>`: label sesi default untuk diselesaikan.
+- `--session-label <label>`: label sesi default yang akan ditemukan.
 - `--require-existing`: gagal jika kunci/label sesi tidak ada.
-- `--reset-session`: reset kunci sesi sebelum penggunaan pertama.
-- `--no-prefix-cwd`: jangan awali prompt dengan direktori kerja.
-- `--provenance <off|meta|meta+receipt>`: sertakan metadata atau tanda terima provenance ACP.
-- `--verbose, -v`: logging verbose ke stderr.
+- `--reset-session`: atur ulang kunci sesi sebelum penggunaan pertama.
+- `--no-prefix-cwd`: jangan tambahkan direktori kerja sebagai awalan pada perintah.
+- `--provenance <off|meta|meta+receipt>`: sertakan metadata atau tanda terima asal-usul ACP.
+- `--verbose, -v`: pencatatan log terperinci ke stderr.
 
 Catatan keamanan:
 
-- `--token` dan `--password` dapat terlihat dalam daftar proses lokal pada beberapa sistem.
-- Utamakan `--token-file`/`--password-file` atau variabel lingkungan (`OPENCLAW_GATEWAY_TOKEN`, `OPENCLAW_GATEWAY_PASSWORD`).
+- `--token` dan `--password` dapat terlihat dalam daftar proses lokal pada beberapa sistem. Utamakan `--token-file`/`--password-file` atau variabel lingkungan (`OPENCLAW_GATEWAY_TOKEN`, `OPENCLAW_GATEWAY_PASSWORD`).
 - Resolusi autentikasi Gateway mengikuti kontrak bersama yang digunakan oleh klien Gateway lainnya:
-  - mode lokal: env (`OPENCLAW_GATEWAY_*`) -> `gateway.auth.*` -> fallback `gateway.remote.*` hanya saat `gateway.auth.*` tidak disetel (SecretRefs lokal yang dikonfigurasi tetapi tidak terselesaikan gagal tertutup)
-  - mode remote: `gateway.remote.*` dengan fallback env/config sesuai aturan prioritas remote
-  - `--url` aman sebagai override dan tidak menggunakan ulang kredensial config/env implisit; teruskan `--token`/`--password` eksplisit (atau varian file)
-- Proses anak backend runtime ACP menerima `OPENCLAW_SHELL=acp`, yang dapat digunakan untuk aturan shell/profil khusus konteks.
-- `openclaw acp client` menyetel `OPENCLAW_SHELL=acp-client` pada proses bridge yang di-spawn.
+  - mode lokal: env (`OPENCLAW_GATEWAY_*`), kemudian `gateway.auth.*`, dengan beralih ke `gateway.remote.*` hanya jika `gateway.auth.*` belum ditetapkan (`SecretRef` lokal yang telah dikonfigurasi tetapi tidak dapat diresolusi akan gagal secara tertutup alih-alih beralih secara diam-diam)
+  - mode jarak jauh: `gateway.remote.*` dengan fallback env/konfigurasi sesuai aturan prioritas jarak jauh
+  - `--url` aman untuk penimpaan dan tidak menggunakan kembali kredensial konfigurasi/env implisit; teruskan `--token`/`--password` secara eksplisit (atau varian berkasnya)
 
 ### Opsi `acp client`
 
 - `--cwd <dir>`: direktori kerja untuk sesi ACP.
 - `--server <command>`: perintah server ACP (default: `openclaw`).
 - `--server-args <args...>`: argumen tambahan yang diteruskan ke server ACP.
-- `--server-verbose`: aktifkan logging verbose pada server ACP.
-- `--verbose, -v`: logging klien verbose.
+- `--server-verbose`: aktifkan pencatatan log terperinci pada server ACP.
+- `--verbose, -v`: pencatatan log klien secara terperinci.
+- `openclaw acp client` menetapkan `OPENCLAW_SHELL=acp-client` pada proses jembatan yang dijalankan, yang dapat digunakan untuk aturan shell/profil khusus konteks.
 
 ## Terkait
 
-- [referensi CLI](/id/cli)
-- [agen ACP](/id/tools/acp-agents)
+- [Referensi CLI](/id/cli)
+- [Agen ACP](/id/tools/acp-agents)

@@ -1,22 +1,22 @@
 ---
 read_when:
-    - Je wilt Arcee AI gebruiken met OpenClaw
-    - Je hebt de API-sleutel-env-var of CLI-authenticatiekeuze nodig
+    - Je wilt Arcee AI met OpenClaw gebruiken
+    - Je hebt de omgevingsvariabele voor de API-sleutel of de CLI-authenticatiekeuze nodig
 summary: Arcee AI instellen (authenticatie + modelselectie)
 title: Arcee AI
 x-i18n:
-    generated_at: "2026-06-27T18:09:58Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:17:28Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 15570c1d018104377a473fe5f9b556d9a6ffd2dea6db5d55d46ca3702e237101
+    source_hash: fe519393db3cf39f1b14b8121603b6f667102ac8c122fb6560d9b73a6ee6b0a3
     source_path: providers/arcee.md
     workflow: 16
 ---
 
-[Arcee AI](https://arcee.ai) biedt toegang tot de Trinity-familie van mixture-of-experts-modellen via een OpenAI-compatibele API. Alle Trinity-modellen hebben een Apache 2.0-licentie.
+[Arcee AI](https://arcee.ai) biedt de Trinity-familie van mixture-of-experts-modellen aan via een OpenAI-compatibele API. Alle Trinity-modellen vallen onder de Apache 2.0-licentie. Arcee is een officiële OpenClaw-Plugin die niet met de kern wordt meegeleverd. Daarom moet deze vóór de onboarding worden geïnstalleerd.
 
-Arcee AI-modellen zijn rechtstreeks toegankelijk via het Arcee-platform of via [OpenRouter](/nl/providers/openrouter).
+Gebruik Arcee-modellen rechtstreeks via het Arcee-platform of via [OpenRouter](/nl/providers/openrouter).
 
 | Eigenschap | Waarde                                                                                |
 | ---------- | ------------------------------------------------------------------------------------- |
@@ -26,8 +26,6 @@ Arcee AI-modellen zijn rechtstreeks toegankelijk via het Arcee-platform of via [
 | Basis-URL  | `https://api.arcee.ai/api/v1` (rechtstreeks) of `https://openrouter.ai/api/v1` (OpenRouter) |
 
 ## Plugin installeren
-
-Installeer de officiële plugin en herstart daarna Gateway:
 
 ```bash
 openclaw plugins install @openclaw/arcee-provider
@@ -39,7 +37,7 @@ openclaw gateway restart
 <Tabs>
   <Tab title="Rechtstreeks (Arcee-platform)">
     <Steps>
-      <Step title="Een API-sleutel ophalen">
+      <Step title="Een API-sleutel verkrijgen">
         Maak een API-sleutel aan bij [Arcee AI](https://chat.arcee.ai/).
       </Step>
       <Step title="Onboarding uitvoeren">
@@ -63,7 +61,7 @@ openclaw gateway restart
 
   <Tab title="Via OpenRouter">
     <Steps>
-      <Step title="Een API-sleutel ophalen">
+      <Step title="Een API-sleutel verkrijgen">
         Maak een API-sleutel aan bij [OpenRouter](https://openrouter.ai/keys).
       </Step>
       <Step title="Onboarding uitvoeren">
@@ -82,7 +80,7 @@ openclaw gateway restart
         }
         ```
 
-        Dezelfde modelrefs werken voor zowel rechtstreekse als OpenRouter-configuraties (bijvoorbeeld `arcee/trinity-large-thinking`).
+        Dezelfde modelreferenties werken voor zowel rechtstreekse configuraties als configuraties via OpenRouter.
       </Step>
     </Steps>
 
@@ -113,39 +111,37 @@ openclaw gateway restart
 
 ## Ingebouwde catalogus
 
-OpenClaw levert momenteel deze statische Arcee-catalogus mee:
-
-| Modelref                       | Naam                   | Invoer | Context | Kosten (in/uit per 1M) | Opmerkingen                                |
-| ------------------------------ | ---------------------- | ------ | ------- | ---------------------- | ------------------------------------------ |
-| `arcee/trinity-large-thinking` | Trinity Large Thinking | tekst  | 256K    | $0.25 / $0.90          | Standaardmodel; redeneren ingeschakeld     |
-| `arcee/trinity-large-preview`  | Trinity Large Preview  | tekst  | 128K    | $0.25 / $1.00          | Algemeen gebruik; 400B parameters, 13B actief |
-| `arcee/trinity-mini`           | Trinity Mini 26B       | tekst  | 128K    | $0.045 / $0.15         | Snel en kostenefficiënt; function calling  |
+| Modelreferentie                | Naam                   | Invoer | Context | Maximale uitvoer | Kosten (in/uit per 1 mln.) | Hulpmiddelen | Opmerkingen                                    |
+| ------------------------------ | ---------------------- | ------ | ------- | ---------------- | -------------------------- | ------------ | ---------------------------------------------- |
+| `arcee/trinity-large-thinking` | Trinity Large Thinking | tekst  | 256K    | 80K              | $0.25 / $0.90              | Nee          | Standaardmodel; uitgebreid redeneervermogen    |
+| `arcee/trinity-large-preview`  | Trinity Large Preview  | tekst  | 128K    | 16K              | $0.25 / $1.00              | Ja           | Algemeen gebruik; 400 mld. parameters, 13 mld. actief |
+| `arcee/trinity-mini`           | Trinity Mini 26B       | tekst  | 128K    | 80K              | $0.045 / $0.15             | Ja           | Snel en kostenefficiënt; functieaanroepen      |
 
 <Tip>
-De onboarding-preset stelt `arcee/trinity-large-thinking` in als standaardmodel.
+De onboardingvoorinstelling stelt `arcee/trinity-large-thinking` in als standaardmodel.
 </Tip>
 
 ## Ondersteunde functies
 
-| Functie                                       | Ondersteund                                  |
-| --------------------------------------------- | -------------------------------------------- |
-| Streaming                                     | Ja                                           |
-| Toolgebruik / function calling                | Ja (Trinity Mini, Trinity Large Preview)     |
-| Gestructureerde uitvoer (JSON-modus en JSON-schema) | Ja                                    |
-| Uitgebreid redeneren                          | Ja (Trinity Large Thinking; tools uitgeschakeld) |
+| Functie                                         | Ondersteund                                  |
+| ----------------------------------------------- | -------------------------------------------- |
+| Streaming                                       | Ja                                           |
+| Hulpmiddelen gebruiken / functieaanroepen       | Ja (Trinity Mini, Trinity Large Preview)     |
+| Gestructureerde uitvoer (JSON-modus en JSON-schema) | Ja                                       |
+| Uitgebreid redeneervermogen                     | Ja (Trinity Large Thinking; hulpmiddelen uitgeschakeld) |
 
 <AccordionGroup>
-  <Accordion title="Omgevingsnotitie">
-    Als de Gateway als daemon draait (launchd/systemd), zorg er dan voor dat `ARCEEAI_API_KEY`
-    (of `OPENROUTER_API_KEY`) beschikbaar is voor dat proces (bijvoorbeeld in
-    `~/.openclaw/.env` of via `env.shellEnv`).
+  <Accordion title="Opmerking over de omgeving">
+    Als de Gateway als daemon wordt uitgevoerd (launchd/systemd), moet `ARCEEAI_API_KEY`
+    (of `OPENROUTER_API_KEY`) beschikbaar zijn voor dat proces, bijvoorbeeld in
+    `~/.openclaw/.env` of via `env.shellEnv`.
   </Accordion>
 
-  <Accordion title="OpenRouter-routering">
-    Wanneer je Arcee-modellen via OpenRouter gebruikt, gelden dezelfde `arcee/*`-modelrefs.
-    OpenClaw handelt de routering transparant af op basis van je auth-keuze. Zie de
-    [OpenRouter-providerdocumentatie](/nl/providers/openrouter) voor OpenRouter-specifieke
-    configuratiedetails.
+  <Accordion title="Routering via OpenRouter">
+    Wanneer u Arcee-modellen via OpenRouter gebruikt, zijn dezelfde `arcee/*`-modelreferenties van toepassing.
+    OpenClaw routeert transparant op basis van uw authenticatiekeuze. Raadpleeg de
+    [documentatie voor de OpenRouter-provider](/nl/providers/openrouter) voor
+    OpenRouter-specifieke configuratiedetails.
   </Accordion>
 </AccordionGroup>
 
@@ -153,9 +149,9 @@ De onboarding-preset stelt `arcee/trinity-large-thinking` in als standaardmodel.
 
 <CardGroup cols={2}>
   <Card title="OpenRouter" href="/nl/providers/openrouter" icon="shuffle">
-    Krijg toegang tot Arcee-modellen en vele andere via één API-sleutel.
+    Gebruik Arcee-modellen en vele andere modellen met één API-sleutel.
   </Card>
   <Card title="Modelselectie" href="/nl/concepts/model-providers" icon="layers">
-    Providers, modelrefs en failovergedrag kiezen.
+    Providers, modelreferenties en failovergedrag kiezen.
   </Card>
 </CardGroup>

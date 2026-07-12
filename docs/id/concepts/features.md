@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Anda menginginkan daftar lengkap tentang apa yang didukung OpenClaw
-summary: Kemampuan OpenClaw di seluruh channel, perutean, media, dan UX.
+    - Anda menginginkan daftar lengkap tentang apa saja yang didukung OpenClaw
+summary: Kemampuan OpenClaw di berbagai kanal, perutean, media, dan pengalaman pengguna.
 title: Fitur
 x-i18n:
-    generated_at: "2026-06-27T17:23:52Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:04:51Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b69cead6fc3c6af91e95f8080d9ca409f24c314cf97f707b67d8fdeb84cf92fa
+    source_hash: 5bc3ebdd87a0f6ea0f3d75d029bf7cae469ecd9db84a165bd47c4896936fe303
     source_path: concepts/features.md
     workflow: 16
 ---
@@ -16,84 +16,88 @@ x-i18n:
 ## Sorotan
 
 <Columns>
-  <Card title="Kanal" icon="message-square" href="/id/channels">
+  <Card title="Saluran" icon="message-square" href="/id/channels">
     Discord, iMessage, Signal, Slack, Telegram, WhatsApp, WebChat, dan lainnya dengan satu Gateway.
   </Card>
   <Card title="Plugin" icon="plug" href="/id/tools/plugin">
-    Plugin bawaan menambahkan Matrix, Nextcloud Talk, Nostr, Twitch, Zalo, dan lainnya tanpa instalasi terpisah pada rilis normal saat ini.
+    Plugin resmi menambahkan Matrix, Nextcloud Talk, Nostr, Twitch, Zalo, dan puluhan lainnya dengan satu perintah instalasi.
   </Card>
   <Card title="Perutean" icon="route" href="/id/concepts/multi-agent">
-    Perutean multi-agen dengan sesi terisolasi.
+    Perutean multiagen dengan sesi yang terisolasi.
   </Card>
   <Card title="Media" icon="image" href="/id/nodes/images">
     Gambar, audio, video, dokumen, serta pembuatan gambar/video.
   </Card>
   <Card title="Aplikasi dan UI" icon="monitor" href="/id/platforms">
-    Windows Hub, Web Control UI, aplikasi macOS, dan node seluler.
+    Windows Hub, Control UI berbasis peramban, aplikasi bilah menu macOS, dan node seluler.
   </Card>
   <Card title="Node seluler" icon="smartphone" href="/id/nodes">
-    Node iOS dan Android dengan pairing, suara/chat, dan perintah perangkat kaya.
+    Node iOS dan Android dengan pemasangan, suara/obrolan, serta perintah perangkat yang lengkap.
   </Card>
 </Columns>
 
 ## Daftar lengkap
 
-**Kanal:**
+**Saluran:**
 
-- Kanal bawaan mencakup Discord, Google Chat, iMessage, IRC, Signal, Slack, Telegram, WebChat, dan WhatsApp
-- Kanal Plugin bawaan mencakup Feishu, LINE, Matrix, Mattermost, Microsoft Teams, Nextcloud Talk, Nostr, QQ Bot, Synology Chat, Tlon, Twitch, Zalo, dan Zalo Personal
-- Plugin kanal opsional yang diinstal terpisah mencakup Voice Call dan paket pihak ketiga seperti WeChat
-- Plugin kanal pihak ketiga dapat memperluas Gateway lebih jauh, seperti WeChat
-- Dukungan chat grup dengan aktivasi berbasis mention
-- Keamanan DM dengan allowlist dan pairing
+- iMessage, Telegram, dan WebChat disertakan dalam instalasi inti; setiap saluran lainnya merupakan
+  Plugin resmi yang diinstal dengan `openclaw plugins install @openclaw/<id>` (atau sesuai kebutuhan
+  selama `openclaw onboard` / `openclaw channels add`)
+- Saluran Plugin resmi: Discord, Feishu, Google Chat, IRC, LINE, Matrix, Mattermost,
+  Microsoft Teams, Nextcloud Talk, Nostr, QQ Bot, Raft, Signal, Slack, SMS, Synology Chat,
+  Tlon, Twitch, Voice Call, WhatsApp, Zalo, dan Zalo Personal
+- Saluran Plugin eksternal yang dipelihara di luar repo OpenClaw: WeChat, Yuanbao, dan Zalo ClawBot
+- Dukungan obrolan grup dengan aktivasi berbasis penyebutan
+- Keamanan pesan langsung dengan daftar izin dan pemasangan
 
 **Agen:**
 
-- Runtime agen tertanam dengan streaming tool
-- Perutean multi-agen dengan sesi terisolasi per workspace atau pengirim
-- Sesi: chat langsung digabungkan ke `main` bersama; grup diisolasi
-- Streaming dan pemecahan potongan untuk respons panjang
+- Runtime agen tertanam dengan streaming alat
+- Perutean multiagen dengan sesi yang terisolasi untuk setiap ruang kerja atau pengirim
+- Sesi: obrolan langsung digabungkan ke dalam `main` bersama; grup diisolasi
+- Streaming dan pemenggalan untuk respons panjang
 
 **Autentikasi dan penyedia:**
 
-- 35+ penyedia model (Anthropic, OpenAI, Google, dan lainnya)
-- Autentikasi langganan melalui OAuth (mis. OpenAI Codex)
-- Dukungan penyedia kustom dan self-hosted (vLLM, SGLang, Ollama, dan endpoint apa pun yang kompatibel dengan OpenAI atau kompatibel dengan Anthropic)
+- Lebih dari 35 penyedia model (Anthropic, OpenAI, Google, dan lainnya)
+- Autentikasi langganan melalui OAuth (misalnya OpenAI Codex)
+- Dukungan penyedia khusus dan yang dihosting sendiri (vLLM, SGLang, Ollama, llama.cpp, LM Studio, serta
+  endpoint apa pun yang kompatibel dengan OpenAI atau Anthropic)
 
 **Media:**
 
-- Gambar, audio, video, dan dokumen masuk dan keluar
-- Permukaan kapabilitas pembuatan gambar dan pembuatan video bersama
-- Transkripsi voice note
-- Text-to-speech dengan beberapa penyedia
+- Masukan dan keluaran gambar, audio, video, dan dokumen
+- Antarmuka kemampuan bersama untuk pembuatan gambar dan video
+- Transkripsi catatan suara
+- Teks ke ucapan dengan beberapa penyedia
 
 **Aplikasi dan antarmuka:**
 
-- WebChat dan Control UI browser
+- WebChat dan Control UI berbasis peramban
 - Aplikasi pendamping bilah menu macOS
-- Node iOS dengan pairing, Canvas, kamera, perekaman layar, lokasi, dan suara
-- Node Android dengan pairing, chat, suara, Canvas, kamera, dan perintah perangkat
+- Node iOS dengan pemasangan, Canvas, kamera, perekaman layar, lokasi, dan suara
+- Node Android dengan pemasangan, obrolan, suara, Canvas, kamera, dan perintah perangkat
 
-**Tool dan otomatisasi:**
+**Alat dan otomatisasi:**
 
-- Otomatisasi browser, exec, sandboxing
+- Otomatisasi peramban, eksekusi, dan sandboxing
 - Pencarian web (Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Ollama Web Search, Perplexity, SearXNG, Tavily)
-- Job Cron dan penjadwalan Heartbeat
-- Skills, Plugin, dan pipeline workflow (Lobster)
+- Tugas Cron dan penjadwalan Heartbeat
+- Skills, Plugin, dan pipeline alur kerja (Lobster)
 
 ## Terkait
 
 <CardGroup cols={2}>
   <Card title="Fitur eksperimental" href="/id/concepts/experimental-features" icon="flask">
-    Fitur opt-in yang belum dikirimkan ke permukaan default.
+    Fitur opsional yang belum disertakan pada antarmuka bawaan.
   </Card>
   <Card title="Runtime agen" href="/id/concepts/agent" icon="robot">
-    Model runtime agen dan bagaimana run dikirimkan.
+    Model runtime agen dan cara proses dijalankan.
   </Card>
-  <Card title="Kanal" href="/id/channels" icon="message-square">
+  <Card title="Saluran" href="/id/channels" icon="message-square">
     Hubungkan Telegram, WhatsApp, Discord, Slack, dan lainnya dari satu Gateway.
   </Card>
   <Card title="Plugin" href="/id/tools/plugin" icon="plug">
-    Plugin bawaan dan pihak ketiga yang memperluas OpenClaw.
+    Plugin resmi dan eksternal yang memperluas OpenClaw.
   </Card>
 </CardGroup>

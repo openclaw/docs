@@ -1,48 +1,45 @@
 ---
 read_when:
-    - Bạn muốn các mô hình Xiaomi MiMo trong OpenClaw
-    - Bạn cần xác thực Xiaomi MiMo hoặc thiết lập Token Plan
-summary: Sử dụng các mô hình trả theo mức dùng và Token Plan của Xiaomi MiMo với OpenClaw
+    - Bạn muốn sử dụng các mô hình Xiaomi MiMo trong OpenClaw
+    - Bạn cần thiết lập xác thực Xiaomi MiMo hoặc Gói Token
+summary: Sử dụng các mô hình trả theo mức dùng và Gói Token của Xiaomi MiMo với OpenClaw
 title: Xiaomi MiMo
 x-i18n:
-    generated_at: "2026-06-27T18:07:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:22:49Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 171c4b95c6ff12d4b8d75747d35fcad19c6173d670a3af65fe0a286e04199751
+    source_hash: e6b91ead3e4a32a93bca7e02476b8de11137e8a5b5fa434bad8187bc1b204856
     source_path: providers/xiaomi.md
     workflow: 16
 ---
 
-Xiaomi MiMo là nền tảng API cho các mô hình **MiMo**. OpenClaw bao gồm một Plugin Xiaomi được tích hợp sẵn với hai cấu hình sẵn nhà cung cấp văn bản:
+Xiaomi MiMo là nền tảng API cho các mô hình **MiMo**. Plugin `xiaomi` đi kèm (`enabledByDefault: true`, không cần bước cài đặt) đăng ký hai nhà cung cấp văn bản cùng một nhà cung cấp giọng nói (TTS):
 
-- `xiaomi` cho khóa trả theo mức dùng (`sk-...`)
-- `xiaomi-token-plan` cho khóa Token Plan (`tp-...`) với các cấu hình sẵn điểm cuối theo khu vực
+- `xiaomi` - khóa trả theo mức sử dụng (`sk-...`)
+- `xiaomi-token-plan` - khóa Token Plan (`tp-...`) với các cấu hình sẵn điểm cuối theo khu vực
 
-Cùng Plugin đó cũng đăng ký nhà cung cấp giọng nói (TTS) `xiaomi`.
-
-| Thuộc tính       | Giá trị                                                                                                                                            |
-| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ID nhà cung cấp  | `xiaomi` (trả theo mức dùng), `xiaomi-token-plan` (Token Plan)                                                                                     |
-| Plugin           | tích hợp sẵn, `enabledByDefault: true`                                                                                                             |
-| Biến môi trường xác thực | `XIAOMI_API_KEY`, `XIAOMI_TOKEN_PLAN_API_KEY`                                                                                              |
-| Cờ onboarding    | `--auth-choice xiaomi-api-key`, `--auth-choice xiaomi-token-plan-cn`, `--auth-choice xiaomi-token-plan-sgp`, `--auth-choice xiaomi-token-plan-ams` |
-| Cờ CLI trực tiếp | `--xiaomi-api-key <key>`, `--xiaomi-token-plan-api-key <key>`                                                                                      |
-| Hợp đồng         | chat completions + `speechProviders`                                                                                                               |
-| API              | tương thích OpenAI (`openai-completions`)                                                                                                          |
-| URL cơ sở        | Trả theo mức dùng: `https://api.xiaomimimo.com/v1`; cấu hình sẵn Token Plan: `token-plan-{cn,sgp,ams}...`                                          |
-| Mô hình mặc định | `xiaomi/mimo-v2-flash`, `xiaomi-token-plan/mimo-v2.5-pro`                                                                                          |
-| TTS mặc định     | `mimo-v2.5-tts`, giọng `mimo_default`; mô hình voicedesign `mimo-v2.5-tts-voicedesign`                                                             |
+| Thuộc tính                    | Giá trị                                                                                                                                            |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ID nhà cung cấp               | `xiaomi` (trả theo mức sử dụng), `xiaomi-token-plan` (Token Plan)                                                                                   |
+| Biến môi trường xác thực      | `XIAOMI_API_KEY`, `XIAOMI_TOKEN_PLAN_API_KEY`                                                                                                      |
+| Cờ thiết lập ban đầu          | `--auth-choice xiaomi-api-key`, `--auth-choice xiaomi-token-plan-cn`, `--auth-choice xiaomi-token-plan-sgp`, `--auth-choice xiaomi-token-plan-ams` |
+| Cờ CLI trực tiếp              | `--xiaomi-api-key <key>`, `--xiaomi-token-plan-api-key <key>`                                                                                      |
+| API                           | API hoàn tất trò chuyện tương thích với OpenAI (`openai-completions`)                                                                               |
+| Hợp đồng giọng nói            | `speechProviders: ["xiaomi"]`                                                                                                                      |
+| URL cơ sở                     | Trả theo mức sử dụng: `https://api.xiaomimimo.com/v1`; Token Plan: `token-plan-{cn,sgp,ams}.xiaomimimo.com/v1`                                     |
+| Mô hình mặc định              | `xiaomi/mimo-v2-flash`, `xiaomi-token-plan/mimo-v2.5-pro`                                                                                          |
+| TTS mặc định                  | `mimo-v2.5-tts`, giọng `mimo_default`; mô hình thiết kế giọng nói `mimo-v2.5-tts-voicedesign`                                                       |
 
 ## Bắt đầu
 
 <Steps>
-  <Step title="Get the right key">
-    Tạo một khóa trả theo mức dùng trong [bảng điều khiển Xiaomi MiMo](https://platform.xiaomimimo.com/#/console/api-keys), hoặc mở trang đăng ký Token Plan của bạn rồi sao chép URL cơ sở tương thích OpenAI theo khu vực cùng khóa `tp-...` tương ứng.
+  <Step title="Lấy đúng khóa">
+    Tạo khóa trả theo mức sử dụng trong [bảng điều khiển Xiaomi MiMo](https://platform.xiaomimimo.com/#/console/api-keys), hoặc mở trang đăng ký Token Plan của bạn rồi sao chép URL cơ sở tương thích với OpenAI theo khu vực cùng khóa `tp-...` tương ứng.
   </Step>
 
-  <Step title="Run onboarding">
-    Trả theo mức dùng:
+  <Step title="Chạy thiết lập ban đầu">
+    Trả theo mức sử dụng:
 
     ```bash
     openclaw onboard --auth-choice xiaomi-api-key
@@ -54,7 +51,7 @@ Cùng Plugin đó cũng đăng ký nhà cung cấp giọng nói (TTS) `xiaomi`.
     openclaw onboard --auth-choice xiaomi-token-plan-sgp
     ```
 
-    Hoặc truyền khóa trực tiếp:
+    Hoặc truyền trực tiếp các khóa:
 
     ```bash
     openclaw onboard --auth-choice xiaomi-api-key --xiaomi-api-key "$XIAOMI_API_KEY"
@@ -62,7 +59,7 @@ Cùng Plugin đó cũng đăng ký nhà cung cấp giọng nói (TTS) `xiaomi`.
     ```
 
   </Step>
-  <Step title="Verify the model is available">
+  <Step title="Xác minh mô hình khả dụng">
     ```bash
     openclaw models list --provider xiaomi
     openclaw models list --provider xiaomi-token-plan
@@ -70,48 +67,50 @@ Cùng Plugin đó cũng đăng ký nhà cung cấp giọng nói (TTS) `xiaomi`.
   </Step>
 </Steps>
 
-## Danh mục trả theo mức dùng
-
-| Tham chiếu mô hình      | Đầu vào     | Ngữ cảnh  | Đầu ra tối đa | Suy luận | Ghi chú          |
-| ---------------------- | ----------- | --------- | ------------- | -------- | ---------------- |
-| `xiaomi/mimo-v2-flash` | text        | 262,144   | 8,192         | Không    | Mô hình mặc định |
-| `xiaomi/mimo-v2-pro`   | text        | 1,048,576 | 32,000        | Có       | Ngữ cảnh lớn     |
-| `xiaomi/mimo-v2-omni`  | text, image | 262,144   | 32,000        | Có       | Đa phương thức   |
-
 <Tip>
-Tham chiếu mô hình mặc định là `xiaomi/mimo-v2-flash`. Nhà cung cấp được chèn tự động khi `XIAOMI_API_KEY` được đặt hoặc khi có hồ sơ xác thực.
+Quá trình thiết lập ban đầu xác thực định dạng khóa và cảnh báo khi khóa `tp-...` được nhập vào luồng trả theo mức sử dụng hoặc khóa `sk-...` được nhập vào luồng Token Plan.
 </Tip>
+
+## Danh mục trả theo mức sử dụng
+
+| Tham chiếu mô hình      | Đầu vào      | Ngữ cảnh  | Đầu ra tối đa | Suy luận | Ghi chú            |
+| ----------------------- | ------------ | --------- | ------------ | ------- | ------------------ |
+| `xiaomi/mimo-v2-flash`  | văn bản      | 262,144   | 8,192        | Không   | Mô hình mặc định   |
+| `xiaomi/mimo-v2-pro`    | văn bản      | 1,048,576 | 32,000       | Có      | Ngữ cảnh lớn       |
+| `xiaomi/mimo-v2-omni`   | văn bản, ảnh | 262,144   | 32,000       | Có      | Đa phương thức     |
 
 ## Danh mục Token Plan
 
-Chọn tùy chọn xác thực Token Plan khớp với URL cơ sở theo khu vực được hiển thị trong giao diện đăng ký của Xiaomi:
+Chọn phương thức xác thực Token Plan khớp với URL cơ sở theo khu vực hiển thị trong giao diện đăng ký của Xiaomi:
 
-- `xiaomi-token-plan-cn` -> `https://token-plan-cn.xiaomimimo.com/v1`
-- `xiaomi-token-plan-sgp` -> `https://token-plan-sgp.xiaomimimo.com/v1`
-- `xiaomi-token-plan-ams` -> `https://token-plan-ams.xiaomimimo.com/v1`
+| Phương thức xác thực     | URL cơ sở                                  |
+| ------------------------ | ------------------------------------------ |
+| `xiaomi-token-plan-cn`   | `https://token-plan-cn.xiaomimimo.com/v1`  |
+| `xiaomi-token-plan-sgp`  | `https://token-plan-sgp.xiaomimimo.com/v1` |
+| `xiaomi-token-plan-ams`  | `https://token-plan-ams.xiaomimimo.com/v1` |
 
-| Tham chiếu mô hình                 | Đầu vào     | Ngữ cảnh  | Đầu ra tối đa | Suy luận | Ghi chú          |
-| --------------------------------- | ----------- | --------- | ------------- | -------- | ---------------- |
-| `xiaomi-token-plan/mimo-v2.5-pro` | text        | 1,048,576 | 131,072       | Có       | Mô hình mặc định |
-| `xiaomi-token-plan/mimo-v2.5`     | text, image | 1,048,576 | 131,072       | Có       | Đa phương thức   |
+| Tham chiếu mô hình               | Đầu vào      | Ngữ cảnh  | Đầu ra tối đa | Suy luận | Ghi chú          |
+| -------------------------------- | ------------ | --------- | ------------ | ------- | ---------------- |
+| `xiaomi-token-plan/mimo-v2.5-pro` | văn bản      | 1,048,576 | 131,072      | Có      | Mô hình mặc định |
+| `xiaomi-token-plan/mimo-v2.5`     | văn bản, ảnh | 1,048,576 | 131,072      | Có      | Đa phương thức   |
 
-<Tip>
-Onboarding Token Plan xác thực định dạng khóa và cảnh báo khi khóa `tp-...` được nhập vào đường dẫn trả theo mức dùng, hoặc khóa `sk-...` được nhập vào đường dẫn Token Plan.
-</Tip>
+`xiaomi-token-plan` cần một URL cơ sở theo khu vực để phân giải. Luồng được hỗ trợ là chọn một phương thức thiết lập ban đầu Token Plan đi kèm hoặc dùng một khối cấu hình `models.providers.xiaomi-token-plan` tường minh có đặt `baseUrl`; nhà cung cấp sẽ không được cung cấp nếu thiếu một trong hai yếu tố đó.
+
+## Các mô hình suy luận
+
+`mimo-v2-pro`, `mimo-v2-omni`, `mimo-v2.5` và `mimo-v2.5-pro` hỗ trợ [chỉ thị `/think`](/vi/tools/thinking) của OpenClaw với các mức `off`, `minimal`, `low`, `medium`, `high`, `xhigh` và `max` (mặc định là `high`). `mimo-v2-flash` không hỗ trợ suy luận.
 
 ## Chuyển văn bản thành giọng nói
 
-Plugin `xiaomi` được tích hợp sẵn cũng đăng ký Xiaomi MiMo làm nhà cung cấp giọng nói cho
-`messages.tts`. Nó gọi hợp đồng TTS chat-completions của Xiaomi với văn bản dưới dạng
-tin nhắn `assistant` và hướng dẫn phong cách tùy chọn dưới dạng tin nhắn `user`.
+Plugin `xiaomi` đi kèm cũng đăng ký Xiaomi MiMo làm nhà cung cấp giọng nói cho `messages.tts`. Plugin gọi hợp đồng TTS hoàn tất trò chuyện của Xiaomi, trong đó văn bản là một tin nhắn `assistant` và hướng dẫn phong cách tùy chọn là một tin nhắn `user`.
 
 | Thuộc tính | Giá trị                                  |
-| -------- | ---------------------------------------- |
-| ID TTS   | `xiaomi` (bí danh `mimo`)                |
-| Xác thực | `XIAOMI_API_KEY`                         |
-| API      | `POST /v1/chat/completions` với `audio`  |
-| Mặc định | `mimo-v2.5-tts`, giọng `mimo_default`    |
-| Đầu ra   | MP3 theo mặc định; WAV khi được cấu hình |
+| ---------- | ---------------------------------------- |
+| ID TTS     | `xiaomi` (bí danh `mimo`)                |
+| Xác thực   | `XIAOMI_API_KEY`                         |
+| API        | `POST /v1/chat/completions` với `audio`  |
+| Mặc định   | `mimo-v2.5-tts`, giọng `mimo_default`    |
+| Đầu ra     | MP3 theo mặc định; WAV khi được cấu hình |
 
 ```json5
 {
@@ -133,15 +132,9 @@ tin nhắn `assistant` và hướng dẫn phong cách tùy chọn dưới dạng
 }
 ```
 
-Các giọng tích hợp được hỗ trợ bao gồm `mimo_default`, `default_zh`, `default_en`,
-`Mia`, `Chloe`, `Milo` và `Dean`. Các mô hình giọng đặt sẵn dùng `audio.voice`, nên
-OpenClaw gửi `speakerVoice` cho `mimo-v2.5-tts` và `mimo-v2-tts`.
+Các giọng tích hợp sẵn: `mimo_default`, `default_zh`, `default_en`, `Mia`, `Chloe`, `Milo`, `Dean`. Các mô hình dùng giọng cài sẵn (`mimo-v2.5-tts`, `mimo-v2-tts`) sử dụng `audio.voice`, vì vậy OpenClaw gửi `speakerVoice` cho các mô hình đó.
 
-Mô hình voicedesign của Xiaomi, `mimo-v2.5-tts-voicedesign`, tạo giọng nói
-từ lời nhắc phong cách bằng ngôn ngữ tự nhiên thay vì ID giọng đặt sẵn. Cấu hình
-`style` bằng mô tả giọng mong muốn; OpenClaw gửi nó dưới dạng tin nhắn `user`,
-gửi văn bản được đọc dưới dạng tin nhắn `assistant` và bỏ qua
-`audio.voice` cho mô hình này.
+Mô hình thiết kế giọng nói `mimo-v2.5-tts-voicedesign` tạo giọng nói từ lời nhắc phong cách bằng ngôn ngữ tự nhiên thay vì ID giọng cài sẵn. Đặt `style` thành phần mô tả giọng mong muốn; OpenClaw gửi nội dung đó dưới dạng tin nhắn `user`, gửi văn bản cần đọc dưới dạng tin nhắn `assistant` và bỏ qua `audio.voice` đối với mô hình này.
 
 ```json5
 {
@@ -160,8 +153,7 @@ gửi văn bản được đọc dưới dạng tin nhắn `assistant` và bỏ 
 }
 ```
 
-Đối với các mục tiêu ghi chú giọng nói như Feishu và Telegram, OpenClaw chuyển mã
-đầu ra Xiaomi sang Opus 48kHz bằng `ffmpeg` trước khi gửi.
+Đối với các kênh yêu cầu đích tổng hợp ghi chú thoại (Discord, Feishu, Matrix, Telegram và WhatsApp), OpenClaw chuyển mã đầu ra của Xiaomi sang Opus đơn kênh 48 kHz bằng `ffmpeg` trước khi phân phối.
 
 ## Ví dụ cấu hình
 
@@ -208,7 +200,7 @@ gửi văn bản được đọc dưới dạng tin nhắn `assistant` và bỏ 
 }
 ```
 
-Giá và cờ tương thích đến từ manifest Plugin được tích hợp sẵn, nên ví dụ cấu hình bỏ qua `cost` và `compat` để tránh lệch khỏi hành vi runtime.
+Giá và các cờ tương thích lấy từ bản kê khai của plugin đi kèm, vì vậy ví dụ cấu hình bỏ qua `cost` và `compat` để tránh sai khác với hành vi thời gian chạy.
 
 Token Plan:
 
@@ -247,33 +239,33 @@ Token Plan:
 }
 ```
 
-Giá đến từ manifest được tích hợp sẵn (các mô hình Token Plan bao gồm giá đọc bộ nhớ đệm theo bậc), nên ví dụ cấu hình bỏ qua `cost`.
+Giá lấy từ bản kê khai đi kèm (các mô hình Token Plan bao gồm giá đọc bộ nhớ đệm theo bậc), vì vậy ví dụ cấu hình bỏ qua `cost`.
 
 <AccordionGroup>
-  <Accordion title="Auto-injection behavior">
-    Nhà cung cấp `xiaomi` được chèn tự động khi `XIAOMI_API_KEY` được đặt trong môi trường của bạn hoặc khi có hồ sơ xác thực. `xiaomi-token-plan` cần URL cơ sở theo khu vực, nên đường dẫn được hỗ trợ là tùy chọn onboarding Token Plan được tích hợp sẵn hoặc khối cấu hình `models.providers.xiaomi-token-plan` rõ ràng.
+  <Accordion title="Hành vi tự động chèn">
+    Nhà cung cấp `xiaomi` được tự động bật khi `XIAOMI_API_KEY` được đặt trong môi trường của bạn hoặc tồn tại hồ sơ xác thực. `xiaomi-token-plan` cần một URL cơ sở theo khu vực, vì vậy luồng được hỗ trợ là chọn phương thức thiết lập ban đầu Token Plan đi kèm hoặc dùng một khối cấu hình `models.providers.xiaomi-token-plan` tường minh.
   </Accordion>
 
-  <Accordion title="Model details">
-    - **mimo-v2-flash** — nhẹ và nhanh, lý tưởng cho các tác vụ văn bản đa dụng. Không hỗ trợ suy luận.
-    - **mimo-v2-pro** — hỗ trợ suy luận với cửa sổ ngữ cảnh 1M token cho khối lượng công việc tài liệu dài.
-    - **mimo-v2-omni** — mô hình đa phương thức có hỗ trợ suy luận, chấp nhận cả đầu vào văn bản và hình ảnh.
-    - **mimo-v2.5-pro** — mặc định của Token Plan với stack suy luận V2.5 hiện tại của Xiaomi.
-    - **mimo-v2.5** — tuyến V2.5 đa phương thức của Token Plan.
+  <Accordion title="Chi tiết mô hình">
+    - **mimo-v2-flash** - gọn nhẹ và nhanh, lý tưởng cho các tác vụ văn bản đa dụng. Không hỗ trợ suy luận.
+    - **mimo-v2-pro** - hỗ trợ suy luận với cửa sổ ngữ cảnh 1 triệu token dành cho khối lượng công việc xử lý tài liệu dài.
+    - **mimo-v2-omni** - mô hình đa phương thức hỗ trợ suy luận, chấp nhận cả đầu vào văn bản và hình ảnh.
+    - **mimo-v2.5-pro** - mô hình mặc định của Token Plan với ngăn xếp suy luận V2.5 hiện tại của Xiaomi.
+    - **mimo-v2.5** - tuyến V2.5 đa phương thức của Token Plan.
 
     <Note>
-    Các mô hình trả theo mức dùng sử dụng tiền tố `xiaomi/`. Các mô hình Token Plan sử dụng tiền tố `xiaomi-token-plan/`.
+    Các mô hình trả theo mức sử dụng dùng tiền tố `xiaomi/`. Các mô hình Token Plan dùng tiền tố `xiaomi-token-plan/`.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Troubleshooting">
-    - Nếu mô hình không xuất hiện, hãy xác nhận biến môi trường khóa liên quan hoặc hồ sơ xác thực hiện diện và hợp lệ.
-    - Với Token Plan, hãy xác nhận khu vực onboarding đã chọn khớp với URL cơ sở trên trang đăng ký và khóa bắt đầu bằng `tp-`.
-    - Khi Gateway chạy dưới dạng daemon, hãy đảm bảo khóa có sẵn cho tiến trình đó (ví dụ trong `~/.openclaw/.env` hoặc qua `env.shellEnv`).
+  <Accordion title="Khắc phục sự cố">
+    - Nếu các mô hình không xuất hiện, hãy xác nhận biến môi trường khóa hoặc hồ sơ xác thực tương ứng tồn tại và hợp lệ.
+    - Đối với Token Plan, hãy xác nhận khu vực thiết lập ban đầu đã chọn khớp với URL cơ sở trên trang đăng ký và khóa bắt đầu bằng `tp-`.
+    - Khi Gateway chạy dưới dạng tiến trình nền, hãy đảm bảo khóa khả dụng cho tiến trình đó (ví dụ trong `~/.openclaw/.env` hoặc qua `env.shellEnv`).
 
     <Warning>
-    Các khóa chỉ được đặt trong shell tương tác của bạn sẽ không hiển thị với các tiến trình Gateway do daemon quản lý. Dùng cấu hình `~/.openclaw/.env` hoặc `env.shellEnv` để đảm bảo khả dụng lâu dài.
+    Các khóa chỉ được đặt trong shell tương tác của bạn sẽ không hiển thị với các tiến trình Gateway do tiến trình nền quản lý. Hãy sử dụng `~/.openclaw/.env` hoặc cấu hình `env.shellEnv` để bảo đảm tính khả dụng lâu dài.
     </Warning>
 
   </Accordion>
@@ -282,13 +274,16 @@ Giá đến từ manifest được tích hợp sẵn (các mô hình Token Plan 
 ## Liên quan
 
 <CardGroup cols={2}>
-  <Card title="Model selection" href="/vi/concepts/model-providers" icon="layers">
-    Chọn nhà cung cấp, tham chiếu mô hình và hành vi chuyển dự phòng.
+  <Card title="Lựa chọn mô hình" href="/vi/concepts/model-providers" icon="layers">
+    Chọn nhà cung cấp, tham chiếu mô hình và hành vi chuyển đổi dự phòng.
   </Card>
-  <Card title="Configuration reference" href="/vi/gateway/configuration-reference" icon="gear">
-    Tài liệu tham khảo cấu hình OpenClaw đầy đủ.
+  <Card title="Các mức suy luận" href="/vi/tools/thinking" icon="brain">
+    Cú pháp chỉ thị `/think` và ánh xạ mức.
   </Card>
-  <Card title="Xiaomi MiMo console" href="https://platform.xiaomimimo.com" icon="arrow-up-right-from-square">
-    Bảng điều khiển Xiaomi MiMo và quản lý khóa API.
+  <Card title="Tham chiếu cấu hình" href="/vi/gateway/configuration-reference" icon="gear">
+    Tham chiếu cấu hình OpenClaw đầy đủ.
+  </Card>
+  <Card title="Bảng điều khiển Xiaomi MiMo" href="https://platform.xiaomimimo.com" icon="arrow-up-right-from-square">
+    Bảng điều khiển Xiaomi MiMo và chức năng quản lý khóa API.
   </Card>
 </CardGroup>

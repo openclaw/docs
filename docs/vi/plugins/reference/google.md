@@ -4,27 +4,27 @@ read_when:
 summary: Thêm hỗ trợ nhà cung cấp mô hình Google, Google Gemini CLI và Google Vertex cho OpenClaw.
 title: Plugin Google
 x-i18n:
-    generated_at: "2026-05-02T20:51:15Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:09:59Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 24246ba7ebfd5c62a6f02ded8c555a5dbdeec3df128bf5863923d32f6424ea57
+    source_hash: 4228126f246fd09d996c9f76dd10d79ad29f578788a0284abfc7107450a8bf62
     source_path: plugins/reference/google.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# Google Plugin
+# Plugin Google
 
-Thêm hỗ trợ nhà cung cấp mô hình Google, Google Gemini CLI và Google Vertex cho OpenClaw.
+Bổ sung hỗ trợ nhà cung cấp mô hình Google, Google Gemini CLI và Google Vertex cho OpenClaw.
 
 ## Phân phối
 
 - Gói: `@openclaw/google-plugin`
-- Cách cài đặt: được bao gồm trong OpenClaw
+- Cách cài đặt: được tích hợp sẵn trong OpenClaw
 
 ## Bề mặt
 
-providers: google, google-gemini-cli, google-vertex; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, musicGenerationProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders, webSearchProviders
+nhà cung cấp: google, google-gemini-cli, google-vertex; hợp đồng: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, musicGenerationProviders, realtimeVoiceProviders, speechProviders, usageProviders, videoGenerationProviders, webSearchProviders
 
 ## Tài liệu liên quan
 

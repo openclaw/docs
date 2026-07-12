@@ -5,17 +5,16 @@ read_when:
 summary: Canal de messages privés Nostr via des messages chiffrés NIP-04
 title: Nostr
 x-i18n:
-    generated_at: "2026-07-12T15:07:04Z"
+    generated_at: "2026-07-12T02:24:53Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 31fa283f706036a37795ddad71602058ba94388a9cb01044927c4bb2d83ba4a8
     source_path: channels/nostr.md
     workflow: 16
 ---
 
-Nostr est un plugin de canal téléchargeable (`@openclaw/nostr`) qui permet à OpenClaw de recevoir des messages directs chiffrés NIP-04 via des relais Nostr et d’y répondre. Un compte par Gateway ; messages directs uniquement.
+Nostr est un plugin de canal téléchargeable (`@openclaw/nostr`) qui permet à OpenClaw de recevoir des messages directs chiffrés avec NIP-04 et d’y répondre via des relais Nostr. Un compte par Gateway ; messages directs uniquement.
 
 ## Installation
 
@@ -23,7 +22,7 @@ Nostr est un plugin de canal téléchargeable (`@openclaw/nostr`) qui permet à 
 openclaw plugins install @openclaw/nostr
 ```
 
-Utilisez la spécification de paquet seule pour suivre le tag de la version officielle actuelle. Épinglez une version exacte uniquement si vous avez besoin d’une installation reproductible.
+Utilisez la spécification de paquet sans version pour suivre le tag de la version officielle actuelle. Épinglez une version exacte uniquement si vous avez besoin d’une installation reproductible.
 
 Depuis une copie de travail locale (flux de développement) :
 
@@ -40,7 +39,7 @@ openclaw channels add --channel nostr --private-key "$NOSTR_PRIVATE_KEY"
 openclaw channels add --channel nostr --private-key "$NOSTR_PRIVATE_KEY" --relay-urls "wss://relay.damus.io,wss://relay.primal.net"
 ```
 
-Utilisez `--use-env` pour conserver `NOSTR_PRIVATE_KEY` dans l’environnement au lieu de stocker la clé dans la configuration (compte par défaut uniquement).
+Utilisez `--use-env` pour conserver `NOSTR_PRIVATE_KEY` dans l’environnement au lieu d’enregistrer la clé dans la configuration (compte par défaut uniquement).
 
 ## Configuration rapide
 
@@ -73,19 +72,19 @@ export NOSTR_PRIVATE_KEY="nsec1..."
 
 ## Référence de configuration
 
-| Clé          | Type     | Valeur par défaut                           | Description                                                      |
-| ------------ | -------- | ------------------------------------------- | ---------------------------------------------------------------- |
-| `privateKey` | string   | obligatoire                                 | Clé privée au format `nsec` ou hexadécimal ; références secrètes autorisées |
-| `relays`     | string[] | `['wss://relay.damus.io', 'wss://nos.lol']` | URL des relais (WebSocket)                                       |
-| `dmPolicy`   | string   | `pairing`                                   | Politique d’accès aux messages directs                           |
-| `allowFrom`  | string[] | `[]`                                        | Clés publiques des expéditeurs autorisés                         |
-| `enabled`    | boolean  | `true`                                      | Activer/désactiver le canal                                      |
-| `name`       | string   | -                                           | Nom d’affichage                                                  |
-| `profile`    | object   | -                                           | Métadonnées de profil NIP-01                                     |
+| Clé          | Type     | Valeur par défaut                           | Description                                                         |
+| ------------ | -------- | ------------------------------------------- | ------------------------------------------------------------------- |
+| `privateKey` | string   | obligatoire                                 | Clé privée au format `nsec` ou hexadécimal ; références de secrets autorisées |
+| `relays`     | string[] | `['wss://relay.damus.io', 'wss://nos.lol']` | URL des relais (WebSocket)                                          |
+| `dmPolicy`   | string   | `pairing`                                   | Politique d’accès aux messages directs                              |
+| `allowFrom`  | string[] | `[]`                                        | Clés publiques des expéditeurs autorisés                            |
+| `enabled`    | boolean  | `true`                                      | Activer ou désactiver le canal                                      |
+| `name`       | string   | -                                           | Nom d’affichage                                                      |
+| `profile`    | object   | -                                           | Métadonnées de profil NIP-01                                        |
 
-## Métadonnées de profil
+## Métadonnées du profil
 
-Les données du profil sont publiées sous forme d’événement NIP-01 `kind:0`. Vous pouvez les gérer depuis l’interface de contrôle (Canaux -> Nostr -> Profil) ou les définir directement dans la configuration.
+Les données du profil sont publiées sous la forme d’un événement NIP-01 `kind:0`. Vous pouvez les gérer depuis l’interface de contrôle (Channels -> Nostr -> Profile) ou les définir directement dans la configuration.
 
 Exemple :
 
@@ -112,22 +111,22 @@ Exemple :
 Remarques :
 
 - Les URL de profil doivent utiliser `https://`.
-- L’importation depuis les relais fusionne les champs et préserve les remplacements locaux.
+- L’importation depuis les relais fusionne les champs et préserve les valeurs locales prioritaires.
 
 ## Contrôle d’accès
 
 ### Politiques des messages directs
 
-- **pairing** (par défaut) : les expéditeurs inconnus reçoivent un code d’association.
+- **pairing** (par défaut) : les expéditeurs inconnus reçoivent un code d’appairage.
 - **allowlist** : seules les clés publiques figurant dans `allowFrom` peuvent envoyer des messages directs.
 - **open** : messages directs entrants publics (nécessite `allowFrom: ["*"]`).
-- **disabled** : ignorer les messages directs entrants.
+- **disabled** : ignore les messages directs entrants.
 
 Remarques sur l’application des règles :
 
-- Les signatures des événements entrants sont vérifiées avant l’application de la politique d’expéditeur et le déchiffrement NIP-04, ce qui permet de rejeter rapidement les événements falsifiés.
-- Les réponses d’association sont envoyées sans déchiffrer ni traiter le contenu du message direct d’origine.
-- Les messages directs entrants sont soumis à une limitation de débit (globale et par expéditeur), et les charges utiles trop volumineuses sont rejetées avant le déchiffrement.
+- Les signatures des événements entrants sont vérifiées avant l’application de la politique d’expéditeur et le déchiffrement NIP-04, afin de rejeter rapidement les événements falsifiés.
+- Les réponses d’appairage sont envoyées sans déchiffrer ni traiter le contenu du message direct d’origine.
+- Le débit des messages directs entrants est limité globalement et par expéditeur, et les charges utiles trop volumineuses sont abandonnées avant le déchiffrement.
 
 ### Exemple de liste d’autorisation
 
@@ -143,7 +142,7 @@ Remarques sur l’application des règles :
 }
 ```
 
-## Formats de clés
+## Formats de clé
 
 Formats acceptés :
 
@@ -168,7 +167,7 @@ Valeurs par défaut : `relay.damus.io` et `nos.lol`.
 Conseils :
 
 - Utilisez 2 à 3 relais pour assurer la redondance.
-- Évitez d’utiliser trop de relais (latence, duplication).
+- Évitez d’utiliser trop de relais (latence, doublons).
 - Les relais payants peuvent améliorer la fiabilité.
 - Les relais locaux conviennent aux tests (`ws://localhost:7777`).
 
@@ -176,10 +175,10 @@ Conseils :
 
 | NIP    | État      | Description                                      |
 | ------ | --------- | ------------------------------------------------ |
-| NIP-01 | Pris en charge | Format d’événement de base + métadonnées de profil |
+| NIP-01 | Pris en charge | Format d’événement de base et métadonnées de profil |
 | NIP-04 | Pris en charge | Messages directs chiffrés (`kind:4`)             |
 | NIP-17 | Prévu     | Messages directs encapsulés comme cadeaux        |
-| NIP-44 | Prévu     | Chiffrement versionné                            |
+| NIP-44 | Prévu     | Chiffrement versionné                             |
 
 ## Tests
 
@@ -208,13 +207,13 @@ docker run -p 7777:7777 ghcr.io/hoytech/strfry
 3. Envoyez un message direct à la clé publique du bot.
 4. Vérifiez la réponse.
 
-## Dépannage
+## Résolution des problèmes
 
 ### Aucun message reçu
 
 - Vérifiez que la clé privée est valide.
 - Assurez-vous que les URL des relais sont accessibles et utilisent `wss://` (ou `ws://` en local).
-- Vérifiez que `enabled` n’est pas défini sur `false`.
+- Confirmez que `enabled` n’est pas défini sur `false`.
 - Consultez les journaux du Gateway pour détecter les erreurs de connexion aux relais.
 
 ### Aucune réponse envoyée
@@ -230,10 +229,10 @@ docker run -p 7777:7777 ghcr.io/hoytech/strfry
 
 ## Sécurité
 
-- Ne validez jamais les clés privées dans le dépôt.
+- Ne validez jamais de clés privées dans le dépôt.
 - Utilisez des variables d’environnement pour les clés.
 - Envisagez `allowlist` pour les bots en production.
-- Les signatures sont vérifiées avant l’application de la politique d’expéditeur, et cette politique est appliquée avant le déchiffrement ; les événements falsifiés sont donc rejetés rapidement et les expéditeurs inconnus ne peuvent pas imposer l’exécution de l’ensemble des opérations cryptographiques.
+- Les signatures sont vérifiées avant l’application de la politique d’expéditeur, laquelle intervient avant le déchiffrement ; les événements falsifiés sont donc rejetés rapidement et les expéditeurs inconnus ne peuvent pas imposer l’exécution de l’intégralité des opérations cryptographiques.
 
 ## Limitations (MVP)
 
@@ -241,10 +240,10 @@ docker run -p 7777:7777 ghcr.io/hoytech/strfry
 - Aucune pièce jointe multimédia.
 - NIP-04 uniquement (encapsulation NIP-17 prévue).
 
-## Voir aussi
+## Pages connexes
 
 - [Présentation des canaux](/fr/channels) — tous les canaux pris en charge
-- [Association](/fr/channels/pairing) — authentification des messages directs et flux d’association
+- [Appairage](/fr/channels/pairing) — authentification des messages directs et processus d’appairage
 - [Groupes](/fr/channels/groups) — comportement des discussions de groupe et filtrage par mention
 - [Routage des canaux](/fr/channels/channel-routing) — routage des sessions pour les messages
-- [Sécurité](/fr/gateway/security) — modèle d’accès et renforcement
+- [Sécurité](/fr/gateway/security) — modèle d’accès et renforcement de la sécurité

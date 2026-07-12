@@ -1,77 +1,181 @@
 ---
 read_when:
-    - การเรียกใช้หรือแก้ไขการทดสอบ
-summary: วิธีรันการทดสอบในเครื่อง (vitest) และเมื่อใดควรใช้โหมดบังคับ/ความครอบคลุม
+    - การรันหรือแก้ไขการทดสอบ
+summary: วิธีรันการทดสอบในเครื่อง (vitest) และกรณีที่ควรใช้โหมดบังคับ/ความครอบคลุม
 title: การทดสอบ
 x-i18n:
-    generated_at: "2026-06-28T00:13:57Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:41:50Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7d1aed76ed59713ee320eb2d18dc8c392ea7a810096a0ef3131388001bbe5d8d
+    source_hash: 63806ea72da1579f4aa0b92c14a6d2d3e67990d6c10cb6d9b1b2bb4a63c8e140
     source_path: reference/test.md
     workflow: 16
 ---
 
-- ชุดเครื่องมือการทดสอบครบชุด (ชุดทดสอบ, การทดสอบจริง, Docker): [การทดสอบ](/th/help/testing)
-- การตรวจสอบความถูกต้องของการอัปเดตและแพ็กเกจ Plugin: [การทดสอบการอัปเดตและ Plugin](/th/help/testing-updates-plugins)
+- ชุดเครื่องมือทดสอบฉบับเต็ม (ชุดทดสอบ, แบบใช้งานจริง, Docker): [การทดสอบ](/th/help/testing)
+- การตรวจสอบการอัปเดตและแพ็กเกจ Plugin: [การทดสอบการอัปเดตและ Plugin](/th/help/testing-updates-plugins)
 
-- ลำดับการทดสอบภายในเครื่องตามปกติ:
-  1. `pnpm test:changed` สำหรับหลักฐาน Vitest ตามขอบเขตที่เปลี่ยนแปลง
-  2. `pnpm test <path-or-filter>` สำหรับไฟล์เดียว ไดเรกทอรีเดียว หรือเป้าหมายที่ระบุชัดเจน
-  3. `pnpm test` เฉพาะเมื่อคุณตั้งใจต้องใช้ชุด Vitest ภายในเครื่องแบบเต็ม
-- `pnpm test:force`: ฆ่าโปรเซส gateway ที่ค้างอยู่ซึ่งยึดพอร์ตควบคุมเริ่มต้นไว้ จากนั้นเรียกใช้ชุด Vitest แบบเต็มด้วยพอร์ต gateway แยกต่างหากเพื่อไม่ให้การทดสอบเซิร์ฟเวอร์ชนกับอินสแตนซ์ที่กำลังทำงาน ใช้คำสั่งนี้เมื่อการรัน gateway ก่อนหน้าปล่อยให้พอร์ต 18789 ถูกใช้งานอยู่
-- `pnpm test:coverage`: เรียกใช้ชุด unit พร้อมความครอบคลุม V8 (ผ่าน `vitest.unit.config.ts`) นี่คือเกตความครอบคลุมของเลน unit เริ่มต้น ไม่ใช่ความครอบคลุมทุกไฟล์ทั้งรีโป Thresholds คือ 70% สำหรับ lines/functions/statements และ 55% สำหรับ branches เนื่องจาก `coverage.all` เป็น false และเลนเริ่มต้นจำกัด coverage includes ไว้ที่การทดสอบ unit ที่ไม่ใช่แบบเร็วพร้อมไฟล์ซอร์สข้างเคียง เกตนี้จึงวัดซอร์สที่เลนนี้เป็นเจ้าของ แทนที่จะวัดทุก transitive import ที่บังเอิญโหลด
-- `pnpm test:coverage:changed`: เรียกใช้ความครอบคลุม unit เฉพาะไฟล์ที่เปลี่ยนไปตั้งแต่ `origin/main`
-- `pnpm test:changed`: การรันทดสอบ changed แบบ smart ราคาถูก รันเป้าหมายที่แม่นยำจากการแก้ไขการทดสอบโดยตรง ไฟล์ `*.test.ts` ข้างเคียง การแมปซอร์สที่ระบุชัดเจน และกราฟ import ภายในเครื่อง การเปลี่ยนแปลง broad/config/package จะถูกข้าม เว้นแต่จะ map ไปยังการทดสอบที่แม่นยำได้
-- `OPENCLAW_TEST_CHANGED_BROAD=1 pnpm test:changed`: การรันทดสอบ changed แบบกว้างที่ระบุชัดเจน ใช้เมื่อการแก้ไข test harness/config/package ควรถอยกลับไปใช้พฤติกรรม changed-test ที่กว้างกว่าของ Vitest
-- `pnpm changed:lanes`: แสดงเลนสถาปัตยกรรมที่ถูกทริกเกอร์โดย diff เทียบกับ `origin/main`
-- `pnpm check:changed`: delegate ไปยัง Crabbox/Testbox เป็นค่าเริ่มต้นนอก CI จากนั้นรันเกต smart changed check สำหรับ diff เทียบกับ `origin/main` ภายใน remote child คำสั่งนี้รัน typecheck, lint และคำสั่ง guard สำหรับเลนสถาปัตยกรรมที่ได้รับผลกระทบ แต่ไม่รันการทดสอบ Vitest ใช้ `pnpm test:changed` หรือ `pnpm test <target>` ที่ระบุชัดเจนสำหรับหลักฐานการทดสอบ
-- Codex worktrees และ linked/sparse checkouts: หลีกเลี่ยงการรัน `pnpm test*`, `pnpm check*` และ `pnpm crabbox:run` ภายในเครื่องโดยตรง เว้นแต่คุณได้ตรวจสอบแล้วว่า pnpm จะไม่ reconcile dependencies สำหรับหลักฐานไฟล์เดียวขนาดเล็กที่ระบุชัดเจน ให้ใช้ `node scripts/run-vitest.mjs <path-or-filter>`; สำหรับ changed gates หรือหลักฐานแบบกว้าง ให้ใช้ `node scripts/crabbox-wrapper.mjs run --provider blacksmith-testbox ... -- env OPENCLAW_CHECK_CHANGED_REMOTE_CHILD=1 OPENCLAW_CHANGED_LANES_RAW_SYNC=1 corepack pnpm check:changed` เพื่อให้ pnpm รันภายใน Testbox
-- หลักฐาน Testbox-through-Crabbox: ใช้ `exitCode` สุดท้ายของ wrapper และ timing JSON เป็นผลลัพธ์คำสั่ง การรัน Blacksmith GitHub Actions ที่ถูก delegate อาจแสดง `cancelled` หลังคำสั่ง SSH สำเร็จ เพราะ Testbox ถูกหยุดจากภายนอก keepalive action; ตรวจสอบสรุปของ wrapper และเอาต์พุตคำสั่งก่อนถือว่านั่นเป็นความล้มเหลวของการทดสอบ
-- `OPENCLAW_HEAVY_CHECK_LOCK_SCOPE=worktree <local-heavy-check command>`: จำกัดการ serialize heavy-check ให้อยู่ภายใน worktree ปัจจุบันแทน Git common dir สำหรับคำสั่งอย่าง `pnpm check:changed` และ `pnpm test ...` แบบเจาะจง ใช้เฉพาะบนโฮสต์ภายในเครื่องที่มีความจุสูง เมื่อคุณตั้งใจรัน checks อิสระข้าม linked worktrees
-- `pnpm test`: route เป้าหมายไฟล์/ไดเรกทอรีที่ระบุชัดเจนผ่านเลน Vitest ตามขอบเขต การรันแบบไม่ระบุเป้าหมายเป็นหลักฐาน full-suite: ใช้กลุ่ม shard คงที่ ขยายเป็น leaf configs สำหรับการรันแบบขนานภายในเครื่อง และพิมพ์ local shard fanout ที่คาดไว้ก่อนเริ่ม กลุ่ม extension จะขยายเป็น per-extension shard configs เสมอ แทนการใช้โปรเซสรูทโปรเจกต์ขนาดใหญ่หนึ่งตัว
-- การรัน test wrapper จบด้วยสรุปสั้น ๆ `[test] passed|failed|skipped ... in ...` บรรทัด duration ของ Vitest เองยังคงเป็นรายละเอียดต่อ shard
-- สถานะทดสอบ OpenClaw ที่ใช้ร่วมกัน: ใช้ `src/test-utils/openclaw-test-state.ts` จาก Vitest เมื่อการทดสอบต้องการ `HOME`, `OPENCLAW_STATE_DIR`, `OPENCLAW_CONFIG_PATH`, config fixture, workspace, agent dir หรือ auth-profile store ที่แยกกัน
-- `pnpm test:env-mutations:report`: รายงานแบบไม่บล็อกของการทดสอบและ harnesses ที่ mutate `HOME`, `OPENCLAW_STATE_DIR`, `OPENCLAW_CONFIG_PATH`, `OPENCLAW_WORKSPACE_DIR` หรือคีย์ env ของ OpenClaw ที่เกี่ยวข้องโดยตรง ใช้เพื่อหาผู้สมัครสำหรับ migration ไปยัง shared test-state helper
-- Control UI mocked E2E: ใช้ `pnpm test:ui:e2e` สำหรับเลน Vitest + Playwright ที่เริ่ม Vite Control UI และขับหน้า Chromium จริงกับ Gateway WebSocket แบบ mocked การทดสอบอยู่ใน `ui/src/**/*.e2e.test.ts`; mocks และ controls ที่ใช้ร่วมกันอยู่ใน `ui/src/test-helpers/control-ui-e2e.ts` `pnpm test:e2e` รวมเลนนี้ไว้ด้วย ใน Codex worktrees ให้ใช้ `node scripts/run-vitest.mjs run --config test/vitest/vitest.ui-e2e.config.ts --configLoader runner ui/src/ui/e2e/chat-flow.e2e.test.ts` สำหรับหลักฐานเป้าหมายเล็กหลังติดตั้ง dependencies แล้ว หรือใช้ Testbox/Crabbox สำหรับหลักฐาน GUI ที่กว้างกว่า
-- Process E2E helpers: ใช้ `test/helpers/openclaw-test-instance.ts` เมื่อการทดสอบ E2E ระดับโปรเซสของ Vitest ต้องการ Gateway ที่ทำงานอยู่, CLI env, การจับ log และ cleanup ในที่เดียว
-- การทดสอบ TUI PTY: ใช้ `node scripts/run-vitest.mjs run --config test/vitest/vitest.tui-pty.config.ts` สำหรับเลน PTY fake-backend ที่เร็ว ใช้ `OPENCLAW_TUI_PTY_INCLUDE_LOCAL=1` หรือ `pnpm tui:pty:test:watch --mode local` สำหรับ smoke `tui --local` ที่ช้ากว่า ซึ่ง mock เฉพาะ external model endpoint ตรวจ assert ข้อความที่มองเห็นได้อย่างเสถียรหรือ fixture calls ไม่ใช่ raw ANSI snapshots
-- Docker/Bash E2E helpers: เลนที่ source `scripts/lib/docker-e2e-image.sh` สามารถส่ง `docker_e2e_test_state_shell_b64 <label> <scenario>` เข้า container และ decode ด้วย `scripts/lib/openclaw-e2e-instance.sh`; สคริปต์ multi-home สามารถส่ง `docker_e2e_test_state_function_b64` และเรียก `openclaw_test_state_create <label> <scenario>` ในแต่ละ flow ผู้เรียกระดับล่างสามารถใช้ `scripts/lib/openclaw-test-state.mjs shell --label <name> --scenario <name>` สำหรับ snippet shell ภายใน container หรือ `node scripts/lib/openclaw-test-state.mjs -- create --label <name> --scenario <name> --env-file <path> --json` สำหรับไฟล์ env บนโฮสต์ที่ source ได้ `--` ก่อน `create` ป้องกันไม่ให้ Node runtimes รุ่นใหม่ตีความ `--env-file` เป็น Node flag เลน Docker/Bash ที่เปิด Gateway สามารถ source `scripts/lib/openclaw-e2e-instance.sh` ภายใน container สำหรับการ resolve entrypoint, การเริ่ม mock OpenAI, การเปิด Gateway แบบ foreground/background, readiness probes, การ export state env, log dumps และ process cleanup
-- การรัน shard แบบ full, extension และ include-pattern อัปเดตข้อมูล timing ภายในเครื่องใน `.artifacts/vitest-shard-timings.json`; การรัน whole-config ภายหลังใช้ timings เหล่านั้นเพื่อ balance shard ที่ช้าและเร็ว CI shards แบบ include-pattern จะ append ชื่อ shard ต่อท้าย timing key ซึ่งทำให้มองเห็น filtered shard timings ได้โดยไม่แทนที่ข้อมูล whole-config timing ตั้งค่า `OPENCLAW_TEST_PROJECTS_TIMINGS=0` เพื่อไม่สนใจ local timing artifact
-- ไฟล์ทดสอบ `plugin-sdk` และ `commands` ที่เลือก ตอนนี้ route ผ่านเลนเบาเฉพาะที่เก็บไว้เฉพาะ `test/setup.ts` โดยปล่อยเคสที่หนักด้าน runtime ไว้บนเลนเดิม
-- ไฟล์ซอร์สที่มีการทดสอบข้างเคียงจะ map ไปยังไฟล์ข้างเคียงนั้นก่อนถอยกลับไปใช้ directory globs ที่กว้างกว่า การแก้ไข helper ใต้ `src/channels/plugins/contracts/test-helpers`, `src/plugin-sdk/test-helpers` และ `src/plugins/contracts` ใช้กราฟ import ภายในเครื่องเพื่อรันการทดสอบที่ import แทนการรันทุก shard แบบกว้างเมื่อ dependency path มีความแม่นยำ
-- `auto-reply` ตอนนี้ยังแยกเป็นสาม configs เฉพาะ (`core`, `top-level`, `reply`) เพื่อให้ reply harness ไม่ครอบงำการทดสอบ status/token/helper ระดับ top-level ที่เบากว่า
-- Base Vitest config ตอนนี้มีค่าเริ่มต้นเป็น `pool: "threads"` และ `isolate: false` พร้อมเปิดใช้ shared non-isolated runner ข้าม configs ของรีโป
-- `pnpm test:channels` รัน `vitest.channels.config.ts`
-- `pnpm test:extensions` และ `pnpm test extensions` รัน shard ของ extension/Plugin ทั้งหมด Plugin ช่องทางที่หนัก, browser plugin และ OpenAI จะรันเป็น shard เฉพาะ; กลุ่ม Plugin อื่นยังคง batch รวมกัน ใช้ `pnpm test extensions/<id>` สำหรับเลน Plugin แบบ bundled หนึ่งรายการ
-- `pnpm test:perf:imports`: เปิดใช้งานรายงาน Vitest import-duration + import-breakdown ขณะที่ยังใช้ scoped lane routing สำหรับเป้าหมายไฟล์/ไดเรกทอรีที่ระบุชัดเจน
-- `pnpm test:perf:imports:changed`: การทำ import profiling แบบเดียวกัน แต่เฉพาะไฟล์ที่เปลี่ยนไปตั้งแต่ `origin/main`
-- `pnpm test:perf:changed:bench -- --ref <git-ref>` benchmark เส้นทาง changed-mode ที่ถูก route เทียบกับการรัน native root-project สำหรับ git diff ที่ commit แล้วเดียวกัน
-- `pnpm test:perf:changed:bench -- --worktree` benchmark ชุดการเปลี่ยนแปลงของ worktree ปัจจุบันโดยไม่ต้อง commit ก่อน
-- `pnpm test:perf:profile:main`: เขียน CPU profile สำหรับ main thread ของ Vitest (`.artifacts/vitest-main-profile`)
-- `pnpm test:perf:profile:runner`: เขียน CPU + heap profiles สำหรับ unit runner (`.artifacts/vitest-runner-profile`)
-- `pnpm test:perf:groups --full-suite --allow-failures --output .artifacts/test-perf/baseline-before.json`: รัน leaf config ของ Vitest แบบ full-suite ทุกตัวตามลำดับ และเขียนข้อมูล duration แบบ grouped พร้อม artifacts JSON/log ต่อ config Test Performance Agent ใช้สิ่งนี้เป็น baseline ก่อนพยายามแก้ slow-test
-- `pnpm test:perf:groups:compare .artifacts/test-perf/baseline-before.json .artifacts/test-perf/after-agent.json`: เปรียบเทียบ grouped reports หลังการเปลี่ยนแปลงที่เน้น performance
-- `pnpm test:docker:timings <summary.json>` ตรวจดูเลน Docker ที่ช้าหลังการรัน Docker all; ใช้ `pnpm test:docker:rerun <run-id|summary.json|failures.json>` เพื่อพิมพ์คำสั่ง rerun แบบเจาะจงราคาถูกจาก artifacts เดียวกัน
-- การรวม Gateway: opt-in ผ่าน `OPENCLAW_TEST_INCLUDE_GATEWAY=1 pnpm test` หรือ `pnpm test:gateway`
-- `pnpm test:e2e`: รันชุดรวม E2E ของรีโป: การทดสอบ smoke แบบ gateway end-to-end พร้อมเลน Control UI mocked browser E2E
-- `pnpm test:e2e:gateway`: รันการทดสอบ smoke แบบ gateway end-to-end (การจับคู่ multi-instance WS/HTTP/node) ค่าเริ่มต้นเป็น `threads` + `isolate: false` พร้อม workers แบบ adaptive ใน `vitest.e2e.config.ts`; ปรับด้วย `OPENCLAW_E2E_WORKERS=<n>` และตั้ง `OPENCLAW_E2E_VERBOSE=1` สำหรับ logs แบบละเอียด
-- `pnpm test:live`: รัน provider live tests (minimax/zai) ต้องใช้ API keys และ `LIVE=1` (หรือ `*_LIVE_TEST=1` เฉพาะ provider) เพื่อยกเลิกการ skip
-- `pnpm test:docker:all`: สร้างอิมเมจ live-test ที่ใช้ร่วมกัน, แพ็ก OpenClaw หนึ่งครั้งเป็น npm tarball, สร้าง/ใช้อิมเมจรันเนอร์ Node/Git แบบเปล่าซ้ำ พร้อมอิมเมจฟังก์ชันที่ติดตั้ง tarball นั้นลงใน `/app`, จากนั้นรันเลน Docker smoke ด้วย `OPENCLAW_SKIP_DOCKER_BUILD=1` ผ่านตัวจัดตารางแบบถ่วงน้ำหนัก อิมเมจแบบเปล่า (`OPENCLAW_DOCKER_E2E_BARE_IMAGE`) ใช้สำหรับเลน installer/update/plugin-dependency; เลนเหล่านั้นเมานต์ tarball ที่สร้างไว้ล่วงหน้าแทนการใช้ซอร์สของรีโปที่คัดลอกมา อิมเมจฟังก์ชัน (`OPENCLAW_DOCKER_E2E_FUNCTIONAL_IMAGE`) ใช้สำหรับเลนฟังก์ชันการทำงานปกติของแอปที่ build แล้ว `scripts/package-openclaw-for-docker.mjs` เป็นตัวแพ็กแพ็กเกจ local/CI เพียงตัวเดียว และตรวจสอบ tarball รวมถึง `dist/postinstall-inventory.json` ก่อนที่ Docker จะนำไปใช้ นิยามเลน Docker อยู่ใน `scripts/lib/docker-e2e-scenarios.mjs`; ตรรกะของตัววางแผนอยู่ใน `scripts/lib/docker-e2e-plan.mjs`; `scripts/test-docker-all.mjs` ใช้รันแผนที่เลือก `node scripts/test-docker-all.mjs --plan-json` ส่งออกแผน CI ที่ตัวจัดตารางเป็นเจ้าของสำหรับเลนที่เลือก, ชนิดอิมเมจ, ความต้องการ package/live-image, สถานการณ์ state, และการตรวจสอบ credential โดยไม่ build หรือรัน Docker `OPENCLAW_DOCKER_ALL_PARALLELISM=<n>` ควบคุมช่อง process และมีค่าเริ่มต้นเป็น 10; `OPENCLAW_DOCKER_ALL_TAIL_PARALLELISM=<n>` ควบคุมพูล tail ที่อ่อนไหวต่อ provider และมีค่าเริ่มต้นเป็น 10 ค่า cap ของเลนหนักมีค่าเริ่มต้นเป็น `OPENCLAW_DOCKER_ALL_LIVE_LIMIT=9`, `OPENCLAW_DOCKER_ALL_NPM_LIMIT=5`, และ `OPENCLAW_DOCKER_ALL_SERVICE_LIMIT=7`; ค่า cap ของ provider มีค่าเริ่มต้นเป็นเลนหนักหนึ่งเลนต่อ provider ผ่าน `OPENCLAW_DOCKER_ALL_LIVE_CLAUDE_LIMIT=4`, `OPENCLAW_DOCKER_ALL_LIVE_CODEX_LIMIT=4`, และ `OPENCLAW_DOCKER_ALL_LIVE_GEMINI_LIMIT=4` ใช้ `OPENCLAW_DOCKER_ALL_WEIGHT_LIMIT` หรือ `OPENCLAW_DOCKER_ALL_DOCKER_LIMIT` สำหรับโฮสต์ขนาดใหญ่กว่า หากเลนหนึ่งเกินน้ำหนักหรือ resource cap ที่มีผลบนโฮสต์ที่มี parallelism ต่ำ เลนนั้นยังเริ่มจากพูลว่างได้ และจะรันเดี่ยวจนกว่าจะคืนความจุ การเริ่มเลนจะถูกหน่วงห่างกัน 2 วินาทีตามค่าเริ่มต้นเพื่อหลีกเลี่ยงการสร้างงานถาโถมใส่ Docker daemon ในเครื่อง; override ด้วย `OPENCLAW_DOCKER_ALL_START_STAGGER_MS=<ms>` รันเนอร์จะ preflight Docker ตามค่าเริ่มต้น, ล้างคอนเทนเนอร์ OpenClaw E2E ที่ค้างอยู่, แสดงสถานะเลนที่ทำงานอยู่ทุก 30 วินาที, แชร์แคชเครื่องมือ CLI ของ provider ระหว่างเลนที่เข้ากันได้, retry ความล้มเหลวชั่วคราวของ live-provider หนึ่งครั้งตามค่าเริ่มต้น (`OPENCLAW_DOCKER_ALL_LIVE_RETRIES=<n>`), และเก็บ timing ของเลนใน `.artifacts/docker-tests/lane-timings.json` เพื่อเรียงลำดับแบบ longest-first ในการรันครั้งถัดไป ใช้ `OPENCLAW_DOCKER_ALL_DRY_RUN=1` เพื่อพิมพ์แมนิเฟสต์เลนโดยไม่รัน Docker, `OPENCLAW_DOCKER_ALL_STATUS_INTERVAL_MS=<ms>` เพื่อปรับเอาต์พุตสถานะ, หรือ `OPENCLAW_DOCKER_ALL_TIMINGS=0` เพื่อปิดการใช้ timing ซ้ำ ใช้ `OPENCLAW_DOCKER_ALL_LIVE_MODE=skip` สำหรับเลน deterministic/local เท่านั้น หรือ `OPENCLAW_DOCKER_ALL_LIVE_MODE=only` สำหรับเลน live-provider เท่านั้น; alias ของแพ็กเกจคือ `pnpm test:docker:local:all` และ `pnpm test:docker:live:all` โหมดเฉพาะ live จะรวมเลน live หลักและ tail เข้าเป็นพูล longest-first เดียว เพื่อให้ bucket ของ provider จัดงาน Claude, Codex, และ Gemini ร่วมกันได้ รันเนอร์จะหยุดจัดตารางเลน pooled ใหม่หลังความล้มเหลวครั้งแรก เว้นแต่ตั้งค่า `OPENCLAW_DOCKER_ALL_FAIL_FAST=0` และแต่ละเลนมี timeout สำรอง 120 นาทีที่ override ได้ด้วย `OPENCLAW_DOCKER_ALL_LANE_TIMEOUT_MS`; เลน live/tail บางเลนที่เลือกใช้ cap ต่อเลนที่เข้มงวดกว่า คำสั่งตั้งค่า Docker ของ CLI backend มี timeout ของตัวเองผ่าน `OPENCLAW_LIVE_CLI_BACKEND_SETUP_TIMEOUT_SECONDS` (ค่าเริ่มต้น 180) log รายเลน, `summary.json`, `failures.json`, และ timing ของ phase จะถูกเขียนไว้ใต้ `.artifacts/docker-tests/<run-id>/`; ใช้ `pnpm test:docker:timings <summary.json>` เพื่อตรวจสอบเลนที่ช้า และ `pnpm test:docker:rerun <run-id|summary.json|failures.json>` เพื่อพิมพ์คำสั่ง rerun แบบเจาะจงที่ประหยัด
-- `pnpm test:docker:browser-cdp-snapshot`: สร้างคอนเทนเนอร์ source E2E ที่ใช้ Chromium, เริ่ม raw CDP พร้อม Gateway ที่แยกโดดเดี่ยว, รัน `browser doctor --deep`, และตรวจสอบว่า snapshot ของบทบาท CDP มี URL ของลิงก์, clickables ที่ถูกเลื่อนขั้นจาก cursor, refs ของ iframe, และ metadata ของ frame
-- `pnpm test:docker:skill-install`: ติดตั้ง OpenClaw tarball ที่แพ็กแล้วใน Docker runner แบบเปล่า, ปิดใช้งาน `skills.install.allowUploadedArchives`, resolve slug ของ skill ปัจจุบันจากการค้นหา ClawHub แบบ live, ติดตั้งผ่าน `openclaw skills install`, และตรวจสอบ `SKILL.md`, `.clawhub/origin.json`, `.clawhub/lock.json`, และ `skills info --json`
-- probe Docker แบบ live ของ CLI backend สามารถรันเป็นเลนแบบโฟกัสได้ เช่น `pnpm test:docker:live-cli-backend:claude`, `pnpm test:docker:live-cli-backend:claude:resume`, หรือ `pnpm test:docker:live-cli-backend:claude:mcp` Gemini มี alias `:resume` และ `:mcp` ที่ตรงกัน
-- `pnpm test:docker:openwebui`: เริ่ม OpenClaw + Open WebUI ใน Docker, ลงชื่อเข้าใช้ผ่าน Open WebUI, ตรวจสอบ `/api/models`, จากนั้นรันแชทจริงที่ถูก proxy ผ่าน `/api/chat/completions` ต้องมี key ของ live model ที่ใช้ได้, pull อิมเมจ Open WebUI ภายนอก, และไม่คาดว่าจะเสถียรใน CI เท่ากับชุด unit/e2e ปกติ
-- `pnpm test:docker:mcp-channels`: เริ่มคอนเทนเนอร์ Gateway ที่ seed แล้วและคอนเทนเนอร์ client ตัวที่สองซึ่ง spawn `openclaw mcp serve`, จากนั้นตรวจสอบการค้นพบการสนทนาที่ route แล้ว, การอ่าน transcript, metadata ของ attachment, พฤติกรรม live event queue, การ route การส่งออก, และการแจ้งเตือน channel + permission แบบ Claude ผ่าน stdio bridge จริง assertion การแจ้งเตือนของ Claude อ่าน frame MCP ของ stdio ดิบโดยตรง เพื่อให้ smoke สะท้อนสิ่งที่ bridge ส่งออกจริง
-- `pnpm test:docker:upgrade-survivor`: ติดตั้ง OpenClaw tarball ที่แพ็กแล้วทับ fixture ผู้ใช้เก่าที่มีสถานะสกปรก, รันการอัปเดตแพ็กเกจพร้อม doctor แบบ non-interactive โดยไม่มี key ของ live provider หรือ channel, จากนั้นเริ่ม Gateway แบบ loopback และตรวจสอบว่า agents, config ของ channel, allowlists ของ plugin, ไฟล์ workspace/session, สถานะ dependency ของ legacy plugin ที่ค้างอยู่, startup, และสถานะ RPC ยังอยู่รอด
-- `pnpm test:docker:published-upgrade-survivor`: ติดตั้ง `openclaw@latest` ตามค่าเริ่มต้น, seed ไฟล์ผู้ใช้เดิมที่สมจริงโดยไม่มี key ของ live provider หรือ channel, ตั้งค่า baseline นั้นด้วยสูตรคำสั่ง `openclaw config set` ที่อบไว้, อัปเดต install ที่เผยแพร่นั้นเป็น OpenClaw tarball ที่แพ็กแล้ว, รัน doctor แบบ non-interactive, เขียน `.artifacts/upgrade-survivor/summary.json`, จากนั้นเริ่ม Gateway แบบ loopback และตรวจสอบว่า intents ที่ตั้งค่าไว้, ไฟล์ workspace/session, config ของ plugin ที่ค้างอยู่และสถานะ dependency แบบ legacy, startup, `/healthz`, `/readyz`, และสถานะ RPC ยังอยู่รอดหรือซ่อมแซมได้สะอาด Override baseline หนึ่งรายการด้วย `OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPEC`, ขยายเมทริกซ์ local แบบ exact ด้วย `OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPECS` เช่น `openclaw@2026.5.2 openclaw@2026.4.23 openclaw@2026.4.15`, หรือเพิ่ม scenario fixtures ด้วย `OPENCLAW_UPGRADE_SURVIVOR_SCENARIOS=reported-issues`; ชุด reported-issues มี `configured-plugin-installs` เพื่อตรวจสอบว่า OpenClaw plugins ภายนอกที่ตั้งค่าไว้ติดตั้งอัตโนมัติระหว่างอัปเกรด และ `stale-source-plugin-shadow` เพื่อป้องกันไม่ให้เงา plugin แบบ source-only ทำให้ startup พัง Package Acceptance เปิดเผยสิ่งเหล่านั้นเป็น `published_upgrade_survivor_baseline`, `published_upgrade_survivor_baselines`, และ `published_upgrade_survivor_scenarios` และ resolve token baseline แบบ meta เช่น `last-stable-4` หรือ `all-since-2026.4.23` ก่อนส่ง package spec แบบ exact ให้เลน Docker
-- `pnpm test:docker:update-migration`: รัน harness published-upgrade survivor ใน scenario `plugin-deps-cleanup` ที่เน้น cleanup หนัก โดยเริ่มที่ `openclaw@2026.4.23` ตามค่าเริ่มต้น workflow `Update Migration` แยกต่างหากจะขยายเลนนี้ด้วย `baselines=all-since-2026.4.23` เพื่อให้ทุกแพ็กเกจ stable ที่เผยแพร่ตั้งแต่ `.23` เป็นต้นไปอัปเดตเป็น candidate และพิสูจน์การ cleanup dependency ของ configured-plugin นอก Full Release CI
-- `pnpm test:docker:plugins`: รัน install/update smoke สำหรับ local path, `file:`, แพ็กเกจ npm registry ที่มี dependency แบบ hoisted, refs ของ git ที่เปลี่ยนได้, fixtures ของ ClawHub, marketplace updates, และการ enable/inspect bundle ของ Claude
+## ค่าเริ่มต้นสำหรับเอเจนต์
+
+เซสชันของเอเจนต์รันการทดสอบและการตรวจสอบที่ใช้ทรัพยากรประมวลผลสูงจากระยะไกล
+ผ่าน Crabbox โดยโค้ดของผู้ดูแลที่เชื่อถือได้จะใช้ Blacksmith Testbox เป็นค่าเริ่มต้น
+เวิร์กโฟลว์ Testbox ที่กำหนดค่าไว้จะเติมข้อมูลประจำตัว ดังนั้นโค้ดจากผู้มีส่วนร่วมที่
+ไม่น่าเชื่อถือหรือจากฟอร์กต้องใช้ CI ของฟอร์กที่ไม่มีข้อมูลลับ หรือใช้ AWS Crabbox
+โดยตรงที่ผ่านการปรับสภาพให้ปลอดภัยแทน
+
+เมื่องานโค้ดที่เชื่อถือได้มีแนวโน้มต้องใช้การทดสอบหรือหลักฐานที่ใช้ทรัพยากรสูง ให้เริ่ม
+อุ่นเครื่องล่วงหน้าทันทีในเซสชันคำสั่งเบื้องหลัง ทำงานต่อระหว่างที่ระบบเติมข้อมูล
+นำรหัส `tbx_...` ที่ได้รับกลับมาใช้ซ้ำ ซิงค์เช็กเอาต์ปัจจุบันทุกครั้งที่รัน และ
+หยุดระบบก่อนส่งมอบงาน:
+
+```bash
+node scripts/crabbox-wrapper.mjs warmup --provider blacksmith-testbox --keep --timing-json
+```
+
+หลังจากนำกลับมาใช้ซ้ำสำเร็จครั้งแรก ตัวห่อหุ้มจะบันทึกลายนิ้วมือของฐานลีส
+การขึ้นต่อกัน และเวิร์กโฟลว์ Testbox ไว้ภายใต้ `.crabbox/testbox-leases/`
+การแก้ไขเฉพาะซอร์สจะยังคงใช้กล่องที่อุ่นเครื่องไว้ซ้ำต่อไป หากฐานการผสาน
+ไฟล์ล็อก อินพุตของตัวจัดการแพ็กเกจ ตัวห่อหุ้ม หรือเวิร์กโฟลว์ Testbox เปลี่ยนแปลง
+ระบบจะปิดโดยไม่ดำเนินการต่อและกำหนดให้ใช้ลีสใหม่ ทุกครั้งที่รันยังคงซิงค์
+เช็กเอาต์ปัจจุบัน
+`OPENCLAW_TESTBOX_ALLOW_STALE=1` ใช้เฉพาะสำหรับการวินิจฉัยโดยตั้งใจเท่านั้น
+ไม่ใช่สำหรับหลักฐานการเผยแพร่
+
+คำสั่งทดสอบภายในเครื่องด้านล่างมีไว้สำหรับเวิร์กโฟลว์ของมนุษย์ หรือกรณีสำรอง
+ของเอเจนต์ที่ผู้ใช้ร้องขออย่างชัดเจน ต้องรายงานเมื่อผู้ให้บริการระยะไกลไม่พร้อมใช้งาน
+กรณีดังกล่าวไม่ใช่สิทธิ์ให้รันด่านตรวจสอบขนาดใหญ่ภายในเครื่องโดยไม่แจ้งให้ทราบ
+
+สำหรับโค้ดที่ไม่น่าเชื่อถือ ให้อุ่นเครื่องล่วงหน้าด้วย `--provider aws` ทุกครั้งที่รัน
+ต้องตั้งค่า `CRABBOX_ENV_ALLOW=CI` ส่ง `--provider aws --no-hydrate` และใช้
+`HOME` ระยะไกลชั่วคราวใหม่ก่อนติดตั้งการขึ้นต่อกันหรือรันการทดสอบ ใช้ลีสที่เพิ่ง
+อุ่นเครื่องใหม่และจัดสรรเฉพาะสำหรับซอร์สที่ไม่น่าเชื่อถือนั้น ห้ามใช้ลีสที่เชื่อถือได้
+หรือลีสที่เคยเติมข้อมูลแล้วซ้ำ เปิดไบนารี Crabbox ที่ติดตั้งและเชื่อถือได้จากเช็กเอาต์
+`main` ที่สะอาดและเชื่อถือได้ และดึงเฉพาะ PR ระยะไกลด้วย `--fresh-pr` เท่านั้น
+ห้ามเรียกใช้ตัวห่อหุ้มหรือการกำหนดค่าของเช็กเอาต์ที่ไม่น่าเชื่อถือภายในเครื่อง
+ยกเลิกการตั้งค่า `CRABBOX_AWS_INSTANCE_PROFILE` และปิดโดยไม่ดำเนินการต่อ
+เว้นแต่ค่า `aws.instanceProfile` ที่ประมวลผลแล้วจะว่างเปล่า ก่อนติดตั้งหรือทดสอบใด ๆ
+ให้ใช้เครื่องมือพาธสัมบูรณ์ที่เชื่อถือได้เพื่อบังคับให้ใช้โทเค็น IMDSv2 พิสูจน์ว่า
+เอนด์พอยต์ข้อมูลประจำตัว IAM ส่งคืน 404 และตรวจสอบว่า `git rev-parse HEAD`
+ระยะไกลตรงกับ SHA แบบเต็มของหัว PR ที่ตรวจสอบแล้ว ผูกลีสกับ SHA นั้นและ
+หยุด/อุ่นเครื่องใหม่เมื่อหัวเปลี่ยนแปลง อัปโหลด
+`scripts/crabbox-untrusted-bootstrap.sh` ที่เชื่อถือได้จาก `main` ที่สะอาด
+พร้อมกับ `--fresh-pr`; สคริปต์นี้จะติดตั้ง Node/pnpm เวอร์ชันที่ตรึงไว้ ตรวจสอบ SHA
+และเวอร์ชันที่ตรึงของตัวจัดการแพ็กเกจ แยก `HOME` ติดตั้งการขึ้นต่อกัน แล้วจึง
+เรียกใช้การทดสอบที่ร้องขอ หากโบรกเกอร์ไม่สามารถพิสูจน์ได้ว่าไม่มีบทบาท หรือ
+ไม่มี PR ระยะไกล ให้ใช้ CI ของฟอร์กที่ไม่มีข้อมูลลับ ห้ามใช้ `hydrate-github`,
+`--no-sync` หรือเวิร์กโฟลว์ Testbox ที่เติมข้อมูลประจำตัวแล้ว
+ยกเลิกการตั้งค่าการเขียนทับ `CRABBOX_TAILSCALE*` ทั้งหมด บังคับใช้ `--network public
+--tailscale=false` ล้างแฟล็กโหนดทางออก/LAN และกำหนดให้ `crabbox inspect`
+รายงานเครือข่ายสาธารณะที่ไม่มีสถานะ Tailscale ก่อนอัปโหลดสคริปต์ใด ๆ
+
+## ลำดับการทำงานภายในเครื่องตามปกติ
+
+1. `pnpm test:changed` สำหรับหลักฐาน Vitest ตามขอบเขตที่เปลี่ยนแปลง
+2. `pnpm test <path-or-filter>` สำหรับไฟล์ ไดเรกทอรี หรือเป้าหมายที่ระบุอย่างชัดเจนหนึ่งรายการ
+3. `pnpm test` เฉพาะเมื่อคุณตั้งใจต้องใช้ชุดทดสอบ Vitest ภายในเครื่องทั้งหมด
+
+ในเวิร์กทรี Codex หรือเช็กเอาต์แบบเชื่อมโยง/กระจัดกระจาย เอเจนต์จะหลีกเลี่ยงการรัน
+`pnpm test*` / `pnpm check*` / `pnpm crabbox:run` โดยตรงภายในเครื่อง:
+
+- กรณีสำรองภายในเครื่องสำหรับไฟล์ขนาดเล็กที่ผู้ใช้ร้องขออย่างชัดเจน:
+  `node scripts/run-vitest.mjs <path-or-filter>`
+- ด่านตรวจสอบการเปลี่ยนแปลงหรือหลักฐานขนาดใหญ่: `node scripts/crabbox-wrapper.mjs run --provider blacksmith-testbox ... -- env OPENCLAW_CHECK_CHANGED_REMOTE_CHILD=1 OPENCLAW_CHANGED_LANES_RAW_SYNC=1 corepack pnpm check:changed` เพื่อให้ pnpm ทำงานภายใน Testbox
+- `exitCode` สุดท้ายและ JSON การจับเวลาของตัวห่อหุ้มคือผลลัพธ์ของคำสั่ง การรัน Blacksmith GitHub Actions ที่มอบหมายอาจแสดง `cancelled` หลังคำสั่ง SSH สำเร็จ เนื่องจาก Testbox ถูกหยุดจากภายนอกแอ็กชันรักษาการทำงาน ให้ตรวจสอบสรุปของตัวห่อหุ้มและเอาต์พุตคำสั่งก่อนถือว่าเป็นความล้มเหลว
+- `OPENCLAW_HEAVY_CHECK_LOCK_SCOPE=worktree <local-heavy-check command>`: จำกัดการทำงานแบบอนุกรมของการตรวจสอบหนักไว้ภายในเวิร์กทรีปัจจุบัน แทนไดเรกทอรี Git ร่วม สำหรับคำสั่งเช่น `pnpm check:changed` และ `pnpm test ...` แบบเจาะจง ใช้เฉพาะบนโฮสต์ภายในเครื่องที่มีความจุสูง เมื่อคุณตั้งใจรันการตรวจสอบอิสระข้ามเวิร์กทรีที่เชื่อมโยงกัน
+
+## คำสั่งหลัก
+
+การรันผ่านตัวห่อหุ้มการทดสอบจะจบด้วยสรุปสั้น ๆ `[test] passed|failed|skipped ... in ...`; บรรทัดระยะเวลาของ Vitest เองยังคงเป็นรายละเอียดต่อชาร์ด
+
+| คำสั่ง                                           | การทำงาน                                                                                                                                                                                                                                                                                                                                          |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm test`                                       | เป้าหมายไฟล์/ไดเรกทอรีที่ระบุอย่างชัดเจนจะถูกส่งผ่านเลน Vitest ตามขอบเขต การรันที่ไม่ระบุเป้าหมายเป็นหลักฐานของชุดทดสอบทั้งหมด: กลุ่มชาร์ดแบบคงที่จะขยายเป็นการกำหนดค่าปลายทางสำหรับการทำงานคู่ขนานภายในเครื่อง โดยพิมพ์จำนวนชาร์ดที่คาดไว้ก่อนเริ่ม กลุ่มส่วนขยายจะขยายเป็นการกำหนดค่าชาร์ดต่อส่วนขยายเสมอ แทนกระบวนการโปรเจกต์รากขนาดใหญ่เพียงกระบวนการเดียว |
+| `pnpm test:changed`                               | การรันทดสอบที่เปลี่ยนแปลงแบบชาญฉลาดและประหยัด: ใช้เป้าหมายที่แม่นยำจากการแก้ไขการทดสอบโดยตรง ไฟล์พี่น้อง `*.test.ts` การแมปซอร์สที่ระบุไว้อย่างชัดเจน และกราฟการนำเข้าภายในเครื่อง การเปลี่ยนแปลงขนาดใหญ่/การกำหนดค่า/แพ็กเกจจะถูกข้าม เว้นแต่จะแมปไปยังการทดสอบที่แม่นยำได้ |
+| `OPENCLAW_TEST_CHANGED_BROAD=1 pnpm test:changed` | การรันทดสอบที่เปลี่ยนแปลงแบบกว้างอย่างชัดเจน ใช้เมื่อการแก้ไขชุดเครื่องมือทดสอบ/การกำหนดค่า/แพ็กเกจควรถอยกลับไปใช้พฤติกรรมการทดสอบการเปลี่ยนแปลงแบบกว้างกว่าของ Vitest |
+| `pnpm test:force`                                 | ปลดพอร์ต Gateway ของ OpenClaw ที่กำหนดค่าไว้ (ค่าเริ่มต้น `18789`) จากนั้นรันชุดทดสอบทั้งหมดด้วยพอร์ต Gateway ที่แยกต่างหาก เพื่อไม่ให้การทดสอบเซิร์ฟเวอร์ชนกับอินสแตนซ์ที่กำลังทำงาน |
+| `pnpm test:coverage`                              | สร้างรายงานความครอบคลุม V8 เพื่อให้ข้อมูลสำหรับเลนหน่วยเริ่มต้น (`vitest.unit.config.ts`); ไม่มีการบังคับใช้เกณฑ์ความครอบคลุม |
+| `pnpm test:coverage:changed`                      | ความครอบคลุมของการทดสอบหน่วยเฉพาะไฟล์ที่เปลี่ยนแปลงตั้งแต่ `origin/main` |
+| `pnpm changed:lanes`                              | แสดงเลนสถาปัตยกรรมที่ถูกเรียกใช้โดยส่วนต่างเมื่อเทียบกับ `origin/main` |
+| `pnpm check:changed`                              | มอบหมายให้ Crabbox/Testbox เป็นค่าเริ่มต้นเมื่ออยู่นอก CI จากนั้นรันด่านตรวจสอบการเปลี่ยนแปลงอัจฉริยะภายในโพรเซสลูกระยะไกล ได้แก่ การจัดรูปแบบ รวมถึงคำสั่งตรวจสอบชนิด ลินต์ และการป้องกันสำหรับเลนที่ได้รับผลกระทบ ไม่รัน Vitest; ใช้ `pnpm test:changed` หรือ `pnpm test <target>` สำหรับหลักฐานการทดสอบ |
+
+## สถานะการทดสอบร่วมและตัวช่วยโพรเซส
+
+- `src/test-utils/openclaw-test-state.ts`: ใช้จาก Vitest เมื่อการทดสอบต้องการ `HOME`, `OPENCLAW_STATE_DIR`, `OPENCLAW_CONFIG_PATH`, ฟิกซ์เจอร์การกำหนดค่า เวิร์กสเปซ ไดเรกทอรีเอเจนต์ หรือที่เก็บโปรไฟล์การยืนยันตัวตนแบบแยกต่างหาก
+- `pnpm test:env-mutations:report`: รายงานแบบไม่บล็อกของการทดสอบ/ชุดเครื่องมือที่แก้ไข `HOME`, `OPENCLAW_STATE_DIR`, `OPENCLAW_CONFIG_PATH`, `OPENCLAW_WORKSPACE_DIR` หรือคีย์สภาพแวดล้อมที่เกี่ยวข้องโดยตรง ใช้เพื่อค้นหารายการที่ควรย้ายไปใช้ตัวช่วยสถานะการทดสอบร่วม
+- `test/helpers/openclaw-test-instance.ts`: สำหรับการทดสอบ E2E ระดับโพรเซสที่ต้องใช้ Gateway ซึ่งกำลังทำงาน สภาพแวดล้อม CLI การบันทึกล็อก และการล้างข้อมูลในที่เดียว
+- เลน E2E ของ Docker/Bash ที่ซอร์ส `scripts/lib/docker-e2e-image.sh` สามารถส่ง `docker_e2e_test_state_shell_b64 <label> <scenario>` เข้าไปในคอนเทนเนอร์ และถอดรหัสด้วย `scripts/lib/openclaw-e2e-instance.sh`; สคริปต์แบบหลายโฮมสามารถส่ง `docker_e2e_test_state_function_b64` และเรียก `openclaw_test_state_create <label> <scenario>` ในแต่ละโฟลว์ได้ `node scripts/lib/openclaw-test-state.mjs -- create --label <name> --scenario <name> --env-file <path> --json` จะเขียนไฟล์สภาพแวดล้อมของโฮสต์ที่สามารถนำไปซอร์สได้ (`--` ก่อน `create` ป้องกันไม่ให้รันไทม์ Node รุ่นใหม่ตีความ `--env-file` เป็นแฟล็กของ Node) เลนที่เปิด Gateway สามารถซอร์ส `scripts/lib/openclaw-e2e-instance.sh` เพื่อใช้การกำหนดเอนทรีพอยต์ การเริ่มต้น OpenAI จำลอง การเปิดแบบเบื้องหน้า/เบื้องหลัง การตรวจสอบความพร้อม การส่งออกสภาพแวดล้อมสถานะ การดัมพ์ล็อก และการล้างโพรเซส
+
+## เลน Control UI, TUI และส่วนขยาย
+
+- **E2E แบบจำลองของ Control UI:** `pnpm test:ui:e2e` เรียกใช้เลน Vitest + Playwright ซึ่งเริ่ม Vite Control UI และควบคุมหน้า Chromium จริงโดยเชื่อมต่อกับ Gateway WebSocket จำลอง การทดสอบอยู่ใน `ui/src/**/*.e2e.test.ts`; ม็อกและตัวควบคุมที่ใช้ร่วมกันอยู่ใน `ui/src/test-helpers/control-ui-e2e.ts` โดย `pnpm test:e2e` รวมเลนนี้ไว้ด้วย การรันโดยเอเจนต์ใช้ Testbox/Crabbox เป็นค่าเริ่มต้น รวมถึงการพิสูจน์แบบเจาะจง; ใช้ `node scripts/run-vitest.mjs run --config test/vitest/vitest.ui-e2e.config.ts --configLoader runner ui/src/ui/e2e/chat-flow.e2e.test.ts` เฉพาะเมื่อระบุให้ใช้ทางเลือกสำรองภายในเครื่องอย่างชัดเจนเท่านั้น
+- **การทดสอบ TUI PTY:** `node scripts/run-vitest.mjs run --config test/vitest/vitest.tui-pty.config.ts` เรียกใช้เลน PTY ที่รวดเร็วด้วยแบ็กเอนด์จำลอง `OPENCLAW_TUI_PTY_INCLUDE_LOCAL=1` หรือ `pnpm tui:pty:test:watch --mode local` เรียกใช้การทดสอบควัน `tui --local` ที่ช้ากว่า ซึ่งจำลองเฉพาะปลายทางโมเดลภายนอก ให้ตรวจยืนยันข้อความที่มองเห็นได้และมีความเสถียร หรือการเรียกฟิกซ์เจอร์ ไม่ใช่สแนปช็อต ANSI ดิบ
+- `pnpm test:extensions` และ `pnpm test extensions` เรียกใช้ชาร์ดส่วนขยาย/Plugin ทั้งหมด Plugin ช่องทางที่ใช้ทรัพยากรมาก, Plugin เบราว์เซอร์ และ OpenAI จะทำงานเป็นชาร์ดเฉพาะ ส่วนกลุ่ม Plugin อื่นยังคงถูกรวมเป็นชุด `pnpm test extensions/<id>` เรียกใช้เลน Plugin ที่รวมมากับระบบหนึ่งรายการ
+- ไฟล์ซอร์สที่มีการทดสอบระดับเดียวกันจะถูกแมปไปยังการทดสอบนั้นก่อน แล้วจึงย้อนกลับไปใช้โกลบไดเรกทอรีที่กว้างขึ้น การแก้ไขตัวช่วยภายใต้ `src/channels/plugins/contracts/test-helpers`, `src/plugin-sdk/test-helpers` และ `src/plugins/contracts` ใช้กราฟการนำเข้าภายในเพื่อเรียกใช้การทดสอบที่นำเข้าไฟล์เหล่านั้น แทนการเรียกใช้ทุกชาร์ดแบบกว้างเมื่อเส้นทางการขึ้นต่อกันมีความชัดเจน
+- เป้าหมายไดเรกทอรีสัญญาจะกระจายไปยังเลนสัญญาที่เกี่ยวข้อง: `pnpm test src/channels/plugins/contracts` เรียกใช้การกำหนดค่าสัญญาช่องทางทั้งสี่รายการ และ `pnpm test src/plugins/contracts` เรียกใช้การกำหนดค่าสัญญา Plugin เนื่องจากโปรเจกต์ทั่วไป `channels`/`plugins` ไม่รวม `contracts/**`
+- `auto-reply` แยกออกเป็นการกำหนดค่าเฉพาะสามรายการ (`core`, `top-level`, `reply`) เพื่อไม่ให้ชุดทดสอบการตอบกลับกินทรัพยากรเหนือกว่าการทดสอบสถานะ/โทเค็น/ตัวช่วยระดับบนที่เบากว่า
+- ไฟล์ทดสอบ `plugin-sdk` และ `commands` บางรายการจะถูกส่งผ่านเลนเฉพาะที่มีน้ำหนักเบา ซึ่งคงไว้เฉพาะ `test/setup.ts` ส่วนกรณีที่ใช้รันไทม์หนักยังคงอยู่ในเลนเดิม
+- การกำหนดค่า Vitest พื้นฐานใช้ `pool: "threads"` และ `isolate: false` เป็นค่าเริ่มต้น พร้อมเปิดใช้ตัวรันแบบไม่แยกที่ใช้ร่วมกันทั่วทั้งการกำหนดค่าของรีโพ
+- `pnpm test:channels` เรียกใช้ `vitest.channels.config.ts`
+
+## Gateway และ E2E
+
+- การผสานรวม Gateway ต้องเลือกเปิดใช้: `OPENCLAW_TEST_INCLUDE_GATEWAY=1 pnpm test` หรือ `pnpm test:gateway`
+- `pnpm test:e2e`: ชุดรวม E2E ของรีโพ = `pnpm test:e2e:gateway && pnpm test:ui:e2e`
+- `pnpm test:e2e:gateway`: การทดสอบควัน Gateway แบบต้นทางถึงปลายทาง (การจับคู่ WS/HTTP/Node แบบหลายอินสแตนซ์) ใช้ `threads` + `isolate: false` เป็นค่าเริ่มต้น พร้อมจำนวนเวิร์กเกอร์ที่ปรับได้ใน `vitest.e2e.config.ts`; ปรับด้วย `OPENCLAW_E2E_WORKERS=<n>` และเปิดบันทึกแบบละเอียดด้วย `OPENCLAW_E2E_VERBOSE=1`
+- `pnpm test:live`: การทดสอบผู้ให้บริการแบบสด (Claude/Minimax/DeepSeek/z.ai/ฯลฯ ซึ่งควบคุมด้วย `*.live.test.ts`) ต้องใช้คีย์ API และ `LIVE=1` (หรือ `OPENCLAW_LIVE_TEST=1`) เพื่อยกเลิกการข้าม; เปิดเอาต์พุตแบบละเอียดด้วย `OPENCLAW_LIVE_TEST_QUIET=0`
+
+## ชุด Docker เต็มรูปแบบ (`pnpm test:docker:all`)
+
+สร้างอิมเมจการทดสอบแบบสดที่ใช้ร่วมกัน แพ็ก OpenClaw หนึ่งครั้งเป็นทาร์บอล npm สร้าง/นำอิมเมจตัวรัน Node/Git เปล่ากลับมาใช้ใหม่ พร้อมอิมเมจใช้งานจริงที่ติดตั้งทาร์บอลนั้นลงใน `/app` จากนั้นเรียกใช้เลนทดสอบควัน Docker ผ่านตัวจัดตารางแบบถ่วงน้ำหนัก `scripts/package-openclaw-for-docker.mjs` เป็นตัวแพ็กแพ็กเกจภายในเครื่อง/CI เพียงตัวเดียว และตรวจสอบทาร์บอลพร้อม `dist/postinstall-inventory.json` ก่อนที่ Docker จะนำไปใช้
+
+- อิมเมจเปล่า (`OPENCLAW_DOCKER_E2E_BARE_IMAGE`): เลนตัวติดตั้ง/การอัปเดต/การขึ้นต่อกันของ Plugin; เมานต์ทาร์บอลที่สร้างไว้ล่วงหน้าแทนการคัดลอกซอร์สของรีโพ
+- อิมเมจใช้งานจริง (`OPENCLAW_DOCKER_E2E_FUNCTIONAL_IMAGE`): เลนฟังก์ชันการทำงานปกติของแอปที่สร้างแล้ว
+- คำจำกัดความเลน: `scripts/lib/docker-e2e-scenarios.mjs` ตัววางแผน: `scripts/lib/docker-e2e-plan.mjs` ตัวดำเนินการ: `scripts/test-docker-all.mjs`
+- `node scripts/test-docker-all.mjs --plan-json` ส่งออกแผน CI ที่ตัวจัดตารางเป็นเจ้าของ (เลน, ชนิดอิมเมจ, ความต้องการแพ็กเกจ/อิมเมจแบบสด, สถานการณ์สถานะ, การตรวจสอบข้อมูลรับรอง) โดยไม่สร้างหรือเรียกใช้ Docker
+
+ตัวปรับแต่งการจัดตาราง (ตัวแปรสภาพแวดล้อม โดยค่าเริ่มต้นอยู่ในวงเล็บ):
+
+| ตัวแปรสภาพแวดล้อม                                                                                              | ค่าเริ่มต้น          | วัตถุประสงค์                                                                                                                                                                                                                                                                                                       |
+| --------------------------------------------------------------------------------------------------------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `OPENCLAW_DOCKER_ALL_PARALLELISM`                                                                               | 10                  | สล็อตกระบวนการ                                                                                                                                                                                                                                                                                                    |
+| `OPENCLAW_DOCKER_ALL_TAIL_PARALLELISM`                                                                          | 10                  | พูลส่วนท้ายที่ไวต่อผู้ให้บริการ                                                                                                                                                                                                                                                                                    |
+| `OPENCLAW_DOCKER_ALL_LIVE_LIMIT`                                                                                | 9                   | ขีดจำกัดเลนผู้ให้บริการแบบสดที่ใช้ทรัพยากรมาก                                                                                                                                                                                                                                                                       |
+| `OPENCLAW_DOCKER_ALL_NPM_LIMIT`                                                                                 | 5                   | ขีดจำกัดเลนทรัพยากร npm                                                                                                                                                                                                                                                                                            |
+| `OPENCLAW_DOCKER_ALL_SERVICE_LIMIT`                                                                             | 7                   | ขีดจำกัดเลนทรัพยากรบริการ                                                                                                                                                                                                                                                                                          |
+| `OPENCLAW_DOCKER_ALL_LIVE_CLAUDE_LIMIT` / `_CODEX_LIMIT` / `_GEMINI_LIMIT` / `_DROID_LIMIT` / `_OPENCODE_LIMIT` | 4                   | ขีดจำกัดเลนหนักต่อผู้ให้บริการ                                                                                                                                                                                                                                                                                      |
+| `OPENCLAW_DOCKER_ALL_LIVE_OPENAI_LIMIT` / `_TELEGRAM_LIMIT`                                                     | 1                   | ขีดจำกัดต่อผู้ให้บริการที่แคบกว่า                                                                                                                                                                                                                                                                                   |
+| `OPENCLAW_DOCKER_ALL_WEIGHT_LIMIT` / `OPENCLAW_DOCKER_ALL_DOCKER_LIMIT`                                         | -                   | ค่าทดแทนสำหรับโฮสต์ขนาดใหญ่กว่า                                                                                                                                                                                                                                                                                    |
+| `OPENCLAW_DOCKER_ALL_START_STAGGER_MS`                                                                          | 2000                | หน่วงเวลาระหว่างการเริ่มเลน เพื่อหลีกเลี่ยงการสร้างงานจำนวนมากพร้อมกันในดีมอน Docker ภายในเครื่อง                                                                                                                                                                                                                     |
+| `OPENCLAW_DOCKER_ALL_LANE_TIMEOUT_MS`                                                                           | 7,200,000 (120 นาที) | เวลาหมดอายุสำรองต่อเลน; เลนแบบสด/ส่วนท้ายที่เลือกใช้ขีดจำกัดที่เข้มงวดกว่า                                                                                                                                                                                                                                            |
+| `OPENCLAW_DOCKER_ALL_LIVE_RETRIES`                                                                              | 1                   | จำนวนครั้งที่ลองใหม่สำหรับความล้มเหลวชั่วคราวของผู้ให้บริการแบบสด                                                                                                                                                                                                                                                     |
+| `OPENCLAW_DOCKER_ALL_DRY_RUN`                                                                                   | ปิด                 | พิมพ์รายการเลนโดยไม่เรียกใช้ Docker                                                                                                                                                                                                                                                                                 |
+| `OPENCLAW_DOCKER_ALL_STATUS_INTERVAL_MS`                                                                        | 30000               | ช่วงเวลาการพิมพ์สถานะเลนที่ทำงานอยู่                                                                                                                                                                                                                                                                                |
+| `OPENCLAW_DOCKER_ALL_TIMINGS`                                                                                   | เปิด                | นำ `.artifacts/docker-tests/lane-timings.json` กลับมาใช้ใหม่เพื่อจัดลำดับจากงานที่ใช้เวลานานที่สุดก่อน; ตั้งเป็น `0` เพื่อปิดใช้                                                                                                                                                                                         |
+| `OPENCLAW_DOCKER_ALL_LIVE_MODE`                                                                                 | -                   | `skip` สำหรับเลนแบบกำหนดผลลัพธ์ได้/ภายในเครื่องเท่านั้น, `only` สำหรับเลนผู้ให้บริการแบบสดเท่านั้น ชื่อแทน: `pnpm test:docker:local:all`, `pnpm test:docker:live:all` โหมดเฉพาะแบบสดจะรวมเลนสดหลักและเลนสดส่วนท้ายไว้ในพูลเดียวที่เรียงจากงานยาวที่สุดก่อน เพื่อให้บักเก็ตผู้ให้บริการจัดกลุ่มงาน Claude/Codex/Gemini ร่วมกัน |
+| `OPENCLAW_LIVE_CLI_BACKEND_SETUP_TIMEOUT_SECONDS`                                                               | 180                 | เวลาหมดอายุการตั้งค่า Docker สำหรับแบ็กเอนด์ CLI                                                                                                                                                                                                                                                                    |
+
+รูปแบบตัวแปรสภาพแวดล้อมสำหรับขีดจำกัดทรัพยากรคือ `OPENCLAW_DOCKER_ALL_<RESOURCE>_LIMIT` (ชื่อทรัพยากรเป็นตัวพิมพ์ใหญ่ และอักขระที่ไม่ใช่ตัวอักษรหรือตัวเลขจะถูกรวมเป็น `_`)
+
+ลักษณะการทำงานอื่น ๆ: โดยค่าเริ่มต้น ตัวรันจะตรวจสอบความพร้อมของ Docker ล่วงหน้า ล้างคอนเทนเนอร์ E2E ของ OpenClaw ที่ค้างอยู่ แชร์แคชเครื่องมือ CLI ของผู้ให้บริการระหว่างเลนที่เข้ากันได้ และหยุดจัดกำหนดการเลนแบบพูลใหม่หลังพบความล้มเหลวครั้งแรก เว้นแต่จะตั้งค่า `OPENCLAW_DOCKER_ALL_FAIL_FAST=0` หากเลนใดเลนหนึ่งใช้เกินขีดจำกัดน้ำหนัก/ทรัพยากรที่มีผลบนโฮสต์ที่มีระดับการทำงานแบบขนานต่ำ เลนนั้นยังคงเริ่มจากพูลว่างและทำงานเพียงลำพังได้จนกว่าจะคืนความจุ บันทึกแยกตามเลน, `summary.json`, `failures.json` และข้อมูลเวลาของแต่ละเฟสจะถูกเขียนไว้ใต้ `.artifacts/docker-tests/<run-id>/`; ใช้ `pnpm test:docker:timings <summary.json>` เพื่อตรวจสอบเลนที่ทำงานช้า และใช้ `pnpm test:docker:rerun <run-id|summary.json|failures.json>` เพื่อพิมพ์คำสั่งรันซ้ำแบบเจาะจงที่ใช้ทรัพยากรน้อย
+
+### เลน Docker ที่สำคัญ
+
+| คำสั่ง                                                                      | สิ่งที่ตรวจสอบ                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm test:docker:browser-cdp-snapshot`                                     | คอนเทนเนอร์ E2E ต้นทางที่ใช้ Chromium พร้อม CDP ดิบและ Gateway แบบแยกส่วน; สแนปช็อตบทบาท CDP ของ `browser doctor --deep` ประกอบด้วย URL ของลิงก์ องค์ประกอบที่คลิกได้ซึ่งเลื่อนเคอร์เซอร์ไปชี้ได้ การอ้างอิง iframe และข้อมูลเมตาของเฟรม                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `pnpm test:docker:skill-install`                                            | ติดตั้ง tarball ที่แพ็กแล้วในตัวรัน Docker เปล่าซึ่งกำหนด `skills.install.allowUploadedArchives: false` ค้นหา slug ของ skill ปัจจุบันจากการค้นหา ClawHub แบบสด ติดตั้งผ่าน `openclaw skills install` และตรวจสอบ `SKILL.md`, `.clawhub/origin.json`, `.clawhub/lock.json` และ `skills info --json`                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `pnpm test:docker:live-cli-backend:claude`, `:claude:resume`, `:claude:mcp` | โพรบแบบสดที่มุ่งเน้นแบ็กเอนด์ CLI; Gemini มีนามแฝง `:resume` และ `:mcp` ที่สอดคล้องกัน                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `pnpm test:docker:openwebui`                                                | OpenClaw + Open WebUI ใน Docker: ลงชื่อเข้าใช้ ตรวจสอบ `/api/models` และเรียกใช้แชตจริงผ่านพร็อกซีทาง `/api/chat/completions` ต้องใช้คีย์โมเดลแบบสดที่ใช้งานได้และดึงอิมเมจภายนอก จึงไม่คาดว่าจะเสถียรบน CI เท่ากับชุดทดสอบหน่วย/E2E                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `pnpm test:docker:mcp-channels`                                             | คอนเทนเนอร์ Gateway ที่ใส่ข้อมูลเริ่มต้นไว้แล้ว พร้อมคอนเทนเนอร์ไคลเอนต์ที่เรียก `openclaw mcp serve`: การค้นหาบทสนทนาที่กำหนดเส้นทางแล้ว การอ่านบันทึกบทสนทนา ข้อมูลเมตาของไฟล์แนบ พฤติกรรมคิวเหตุการณ์แบบสด การกำหนดเส้นทางการส่งออก และการแจ้งเตือนช่องทางพร้อมสิทธิ์แบบ Claude ผ่านบริดจ์ stdio จริง (การยืนยันผลอ่านเฟรม MCP ของ stdio ดิบโดยตรง)                                                                                                                                                                                                                                                                                                                                                                        |
+| `pnpm test:docker:upgrade-survivor`                                         | ติดตั้ง tarball ที่แพ็กแล้วทับฟิกซ์เจอร์ผู้ใช้เก่าแบบไม่สะอาด เรียกใช้การอัปเดตแพ็กเกจร่วมกับ doctor แบบไม่โต้ตอบโดยไม่มีคีย์ผู้ให้บริการ/ช่องทางแบบสด เริ่ม Gateway บน local loopback และตรวจสอบว่า agents/การกำหนดค่าช่องทาง/รายการอนุญาต Plugin/ไฟล์พื้นที่ทำงาน/ไฟล์เซสชัน/สถานะการพึ่งพาของ Plugin รุ่นเก่าที่ค้างอยู่/การเริ่มต้น/สถานะ RPC ยังคงอยู่ครบ                                                                                                                                                                                                                                                                                                                                                          |
+| `pnpm test:docker:published-upgrade-survivor`                               | ติดตั้ง `openclaw@latest` โดยค่าเริ่มต้น ใส่ไฟล์ผู้ใช้เดิมที่สมจริง กำหนดค่าผ่านสูตร `openclaw config set` ที่ฝังไว้ อัปเดตเป็น tarball ที่แพ็กแล้ว เรียกใช้ doctor แบบไม่โต้ตอบ เขียน `.artifacts/upgrade-survivor/summary.json` และตรวจสอบ `/healthz`, `/readyz` รวมถึงสถานะ RPC ปรับค่าได้ด้วย `OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPEC`, ขยายเมทริกซ์ด้วย `OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPECS` หรือเพิ่มฟิกซ์เจอร์สถานการณ์ด้วย `OPENCLAW_UPGRADE_SURVIVOR_SCENARIOS=reported-issues` (รวม `configured-plugin-installs` และ `stale-source-plugin-shadow`) การตรวจรับแพ็กเกจเผยรายการเหล่านี้เป็น `published_upgrade_survivor_baseline(s)` / `_scenarios` และแปลงโทเค็นเมตา เช่น `last-stable-4` หรือ `all-since-2026.4.23` |
+| `pnpm test:docker:update-migration`                                         | ชุดทดสอบความอยู่รอดหลังอัปเกรดจากรุ่นที่เผยแพร่แล้วในสถานการณ์ `plugin-deps-cleanup` โดยเริ่มต้นจาก `openclaw@2026.4.23` ตามค่าเริ่มต้น เวิร์กโฟลว์ `Update Migration` ขยายการทดสอบนี้ด้วย `baselines=all-since-2026.4.23` เพื่อพิสูจน์การล้างการพึ่งพาของ Plugin ที่กำหนดค่าไว้นอก CI การเผยแพร่ฉบับเต็ม                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `pnpm test:docker:plugins`                                                  | การทดสอบควันสำหรับการติดตั้ง/อัปเดตจากพาธภายในเครื่อง, `file:`, แพ็กเกจในรีจิสทรี npm ที่มีการพึ่งพาแบบยกระดับ, การอ้างอิง git ที่เคลื่อนที่ได้, ฟิกซ์เจอร์ ClawHub, การอัปเดตมาร์เก็ตเพลส และการเปิดใช้/ตรวจสอบบันเดิล Claude                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 
 ## เกต PR ภายในเครื่อง
 
-สำหรับการตรวจ land/gate ของ PR ภายในเครื่อง ให้รัน:
+สำหรับการตรวจสอบก่อนรวม/เกต PR ภายในเครื่อง ให้เรียกใช้:
 
 - `pnpm check:changed`
 - `pnpm check`
@@ -80,171 +184,106 @@ x-i18n:
 - `pnpm test`
 - `pnpm check:docs`
 
-หาก `pnpm test` flake บนโฮสต์ที่มีโหลดสูง ให้รันซ้ำหนึ่งครั้งก่อนถือว่าเป็น regression จากนั้นแยกตรวจด้วย `pnpm test <path/to/test>` สำหรับโฮสต์ที่มีหน่วยความจำจำกัด ให้ใช้:
+หาก `pnpm test` ล้มเหลวเป็นครั้งคราวบนโฮสต์ที่มีภาระสูง ให้รันซ้ำหนึ่งครั้งก่อนถือว่าเป็นการถดถอย จากนั้นแยกตรวจสอบด้วย `pnpm test <path/to/test>` สำหรับโฮสต์ที่มีหน่วยความจำจำกัด:
 
 - `OPENCLAW_VITEST_MAX_WORKERS=1 pnpm test`
 - `OPENCLAW_VITEST_FS_MODULE_CACHE_PATH=/tmp/openclaw-vitest-cache pnpm test:changed`
 
-## เบนช์ latency ของโมเดล (คีย์ภายในเครื่อง)
+## เครื่องมือวัดประสิทธิภาพการทดสอบ
 
-สคริปต์: [`scripts/bench-model.ts`](https://github.com/openclaw/openclaw/blob/main/scripts/bench-model.ts)
+- `pnpm test:perf:imports`: เปิดใช้การรายงานระยะเวลาการนำเข้าและรายละเอียดการนำเข้าของ Vitest โดยยังคงใช้การกำหนดเส้นทางเลนตามขอบเขตสำหรับเป้าหมายไฟล์/ไดเรกทอรีที่ระบุอย่างชัดเจน ส่วน `pnpm test:perf:imports:changed` จำกัดการทำโปรไฟล์แบบเดียวกันไว้เฉพาะไฟล์ที่เปลี่ยนแปลงนับตั้งแต่ `origin/main`
+- `pnpm test:perf:changed:bench -- --ref <git-ref>` วัดประสิทธิภาพเส้นทางโหมดการเปลี่ยนแปลงที่ผ่านการกำหนดเส้นทาง เทียบกับการเรียกใช้โปรเจกต์รากโดยตรงสำหรับส่วนต่าง git ที่คอมมิตแล้วชุดเดียวกัน ส่วน `pnpm test:perf:changed:bench -- --worktree` วัดประสิทธิภาพชุดการเปลี่ยนแปลงในเวิร์กทรีปัจจุบันโดยไม่ต้องคอมมิตก่อน
+- `pnpm test:perf:profile:main` เขียนโปรไฟล์ CPU สำหรับเธรดหลักของ Vitest (`.artifacts/vitest-main-profile`) ส่วน `pnpm test:perf:profile:runner` เขียนโปรไฟล์ CPU และฮีปสำหรับตัวรันการทดสอบหน่วย (`.artifacts/vitest-runner-profile`)
+- `pnpm test:perf:groups --full-suite --allow-failures --output .artifacts/test-perf/baseline-before.json`: เรียกใช้การกำหนดค่า Vitest ปลายทางทุกชุดของชุดทดสอบเต็มรูปแบบแบบอนุกรม และเขียนข้อมูลระยะเวลาที่จัดกลุ่ม พร้อมอาร์ติแฟกต์ JSON/บันทึกแยกตามการกำหนดค่า รายงานชุดทดสอบเต็มรูปแบบจะแยกไฟล์โดยค่าเริ่มต้น เพื่อไม่ให้กราฟโมดูลที่คงอยู่และช่วงหยุดของ GC จากไฟล์ก่อนหน้าถูกนับรวมกับการตรวจสอบยืนยันในไฟล์ถัดไป ให้ส่ง `-- --no-isolate` เฉพาะเมื่อตั้งใจทำโปรไฟล์การสะสมของเวิร์กเกอร์ที่ใช้ร่วมกันเท่านั้น ตัวแทนวัดประสิทธิภาพการทดสอบใช้ข้อมูลนี้เป็นค่าฐานก่อนพยายามแก้ไขการทดสอบที่ทำงานช้า `pnpm test:perf:groups:compare .artifacts/test-perf/baseline-before.json .artifacts/test-perf/after-agent.json` เปรียบเทียบรายงานที่จัดกลุ่มหลังการเปลี่ยนแปลงที่มุ่งเน้นด้านประสิทธิภาพ
+- การเรียกใช้ชาร์ดแบบเต็ม แบบส่วนขยาย และแบบรูปแบบรวม จะอัปเดตข้อมูลเวลาในเครื่องที่ `.artifacts/vitest-shard-timings.json` การเรียกใช้การกำหนดค่าทั้งชุดในภายหลังจะใช้เวลาเหล่านี้เพื่อสร้างสมดุลระหว่างชาร์ดที่ช้าและเร็ว ชาร์ด CI แบบรูปแบบรวมจะต่อท้ายชื่อชาร์ดเข้ากับคีย์เวลา ซึ่งช่วยให้มองเห็นเวลาของชาร์ดที่กรองแล้วโดยไม่แทนที่ข้อมูลเวลาของการกำหนดค่าทั้งชุด ตั้งค่า `OPENCLAW_TEST_PROJECTS_TIMINGS=0` เพื่อไม่สนใจอาร์ติแฟกต์เวลาในเครื่อง
 
-วิธีใช้:
+## การวัดประสิทธิภาพ
 
-- `pnpm tsx scripts/bench-model.ts --runs 10`
-- env ทางเลือก: `MINIMAX_API_KEY`, `MINIMAX_BASE_URL`, `MINIMAX_MODEL`, `ANTHROPIC_API_KEY`
-- prompt เริ่มต้น: "ตอบด้วยคำเดียว: ok ไม่มีเครื่องหมายวรรคตอนหรือข้อความเพิ่มเติม"
+<Accordion title="เวลาแฝงของโมเดล (scripts/bench-model.ts)">
 
-การรันล่าสุด (2025-12-31, 20 รอบ):
+```bash
+pnpm tsx scripts/bench-model.ts --runs 10
+```
 
-- minimax median 1279ms (min 1114, max 2431)
-- opus median 2454ms (min 1224, max 3170)
+ตัวแปรสภาพแวดล้อมที่เลือกใช้ได้: `MINIMAX_API_KEY`, `MINIMAX_BASE_URL`, `MINIMAX_MODEL`, `ANTHROPIC_API_KEY` พรอมต์เริ่มต้น: "ตอบด้วยคำเดียว: ok ห้ามมีเครื่องหมายวรรคตอนหรือข้อความเพิ่มเติม"
 
-## เบนช์การเริ่มต้น CLI
+</Accordion>
 
-สคริปต์: [`scripts/bench-cli-startup.ts`](https://github.com/openclaw/openclaw/blob/main/scripts/bench-cli-startup.ts)
+<Accordion title="การเริ่มต้น CLI (scripts/bench-cli-startup.ts)">
 
-วิธีใช้:
+```bash
+pnpm test:startup:bench
+pnpm test:startup:bench:smoke
+pnpm test:startup:bench:save
+pnpm test:startup:bench:update
+pnpm test:startup:bench:check
+pnpm tsx scripts/bench-cli-startup.ts --runs 12
+pnpm tsx scripts/bench-cli-startup.ts --preset real --case status --case gatewayStatus --runs 3
+pnpm tsx scripts/bench-cli-startup.ts --entry openclaw.mjs --entry-secondary dist/entry.js --preset all
+```
 
-- `pnpm test:startup:bench`
-- `pnpm test:startup:bench:smoke`
-- `pnpm test:startup:bench:save`
-- `pnpm test:startup:bench:update`
-- `pnpm test:startup:bench:check`
-- `pnpm tsx scripts/bench-cli-startup.ts`
-- `pnpm tsx scripts/bench-cli-startup.ts --runs 12`
-- `pnpm tsx scripts/bench-cli-startup.ts --preset real`
-- `pnpm tsx scripts/bench-cli-startup.ts --preset real --case status --case gatewayStatus --runs 3`
-- `pnpm tsx scripts/bench-cli-startup.ts --preset real --case tasksJson --case tasksListJson --case tasksAuditJson --runs 3`
-- `pnpm tsx scripts/bench-cli-startup.ts --entry openclaw.mjs --entry-secondary dist/entry.js --preset all`
-- `pnpm tsx scripts/bench-cli-startup.ts --preset all --output .artifacts/cli-startup-bench-all.json`
-- `pnpm tsx scripts/bench-cli-startup.ts --preset real --case gatewayStatusJson --output .artifacts/cli-startup-bench-smoke.json`
-- `pnpm tsx scripts/bench-cli-startup.ts --preset real --cpu-prof-dir .artifacts/cli-cpu`
-- `pnpm tsx scripts/bench-cli-startup.ts --json`
-
-พรีเซ็ต:
+ชุดค่าที่กำหนดไว้ล่วงหน้า:
 
 - `startup`: `--version`, `--help`, `health`, `health --json`, `status --json`, `status`
 - `real`: `health`, `status`, `status --json`, `sessions`, `sessions --json`, `tasks --json`, `tasks list --json`, `tasks audit --json`, `agents list --json`, `gateway status`, `gateway status --json`, `gateway health --json`, `config get gateway.port`
-- `all`: ทั้งสองพรีเซ็ต
+- `all`: รวมชุดค่าที่กำหนดไว้ล่วงหน้าทั้งสองชุด
 
-เอาต์พุตประกอบด้วย `sampleCount`, avg, p50, p95, min/max, การกระจาย exit-code/signal และสรุป max RSS สำหรับแต่ละคำสั่ง ตัวเลือก `--cpu-prof-dir` / `--heap-prof-dir` จะเขียนโปรไฟล์ V8 ต่อการรัน เพื่อให้การจับเวลาและการจับโปรไฟล์ใช้ harness เดียวกัน
+ผลลัพธ์ประกอบด้วย `sampleCount`, ค่าเฉลี่ย, p50, p95, ค่าต่ำสุด/สูงสุด, การแจกแจงรหัสออก/สัญญาณ และ RSS สูงสุดต่อคำสั่ง `--cpu-prof-dir` / `--heap-prof-dir` จะเขียนโปรไฟล์ V8 แยกต่อการเรียกใช้แต่ละครั้ง
 
-ข้อตกลงของเอาต์พุตที่บันทึกไว้:
+ผลลัพธ์ที่บันทึกไว้: `pnpm test:startup:bench:smoke` เขียน `.artifacts/cli-startup-bench-smoke.json`; `pnpm test:startup:bench:save` เขียน `.artifacts/cli-startup-bench-all.json` (`runs=5 warmup=1`) ข้อมูลตัวอย่างที่เช็กอินไว้: `test/fixtures/cli-startup-bench.json` ซึ่งรีเฟรชด้วย `pnpm test:startup:bench:update` และเปรียบเทียบด้วย `pnpm test:startup:bench:check`
 
-- `pnpm test:startup:bench:smoke` เขียน artifact smoke แบบเจาะจงที่ `.artifacts/cli-startup-bench-smoke.json`
-- `pnpm test:startup:bench:save` เขียน artifact ชุดเต็มที่ `.artifacts/cli-startup-bench-all.json` โดยใช้ `runs=5` และ `warmup=1`
-- `pnpm test:startup:bench:update` รีเฟรช fixture baseline ที่เช็กอินไว้ที่ `test/fixtures/cli-startup-bench.json` โดยใช้ `runs=5` และ `warmup=1`
+</Accordion>
 
-fixture ที่เช็กอินไว้:
+<Accordion title="การเริ่มต้น Gateway (scripts/bench-gateway-startup.ts)">
 
-- `test/fixtures/cli-startup-bench.json`
-- รีเฟรชด้วย `pnpm test:startup:bench:update`
-- เปรียบเทียบผลลัพธ์ปัจจุบันกับ fixture ด้วย `pnpm test:startup:bench:check`
+โดยค่าเริ่มต้นจะใช้จุดเข้า CLI ที่สร้างแล้ว ณ `dist/entry.js` ให้เรียกใช้ `pnpm build` ก่อน ส่ง `--entry scripts/run-node.mjs` เพื่อวัดตัวรันซอร์สแทน และแยกผลลัพธ์เหล่านั้นออกจากค่าฐานของจุดเข้าที่สร้างแล้ว
 
-## เบนช์การเริ่มต้น Gateway
+```bash
+pnpm test:startup:gateway -- --runs 5 --warmup 1
+pnpm test:startup:gateway -- --case skipChannels --case fiftyPlugins --runs 5
+node --import tsx scripts/bench-gateway-startup.ts --case default --runs 5 --output .artifacts/gateway-startup.json
+```
 
-สคริปต์: [`scripts/bench-gateway-startup.ts`](https://github.com/openclaw/openclaw/blob/main/scripts/bench-gateway-startup.ts)
+รหัสกรณี: `default`, `skipChannels` (ข้ามการเริ่มต้นช่องทาง), `oneInternalHook`, `allInternalHooks`, `fiftyPlugins` (Plugin จากแมนิเฟสต์ 50 รายการ), `fiftyStartupLazyPlugins` (Plugin จากแมนิเฟสต์ที่โหลดแบบหน่วงเวลาเมื่อเริ่มต้น 50 รายการ)
 
-benchmark ใช้ค่าเริ่มต้นเป็น entry ของ CLI ที่ build แล้วที่ `dist/entry.js`; ให้รัน
-`pnpm build` ก่อนใช้คำสั่ง package-script หากต้องการวัด source
-runner แทน ให้ส่ง `--entry scripts/run-node.mjs` และเก็บผลลัพธ์เหล่านั้น
-แยกจาก baseline ของ built-entry
+ผลลัพธ์ประกอบด้วยเอาต์พุตแรกของกระบวนการ, `/healthz`, `/readyz`, เวลาในบันทึกการเริ่มฟัง HTTP, เวลาในบันทึกที่ Gateway พร้อมทำงาน, เวลา CPU, อัตราส่วนคอร์ CPU, RSS สูงสุด, ฮีป, เมตริกการติดตามการเริ่มต้น, ความหน่วงของลูปเหตุการณ์ และเมตริกรายละเอียดตารางค้นหา Plugin สคริปต์จะตั้งค่า `OPENCLAW_GATEWAY_STARTUP_TRACE=1` ในสภาพแวดล้อมของ Gateway ลูก
 
-วิธีใช้:
+`/healthz` ใช้ตรวจสอบว่าระบบยังทำงานอยู่ (เซิร์ฟเวอร์ HTTP สามารถตอบกลับได้) `/readyz` ใช้ตรวจสอบความพร้อมใช้งาน (ไซด์คาร์ Plugin ที่เริ่มต้นพร้อมระบบ ช่องทาง และงานหลังแนบที่สำคัญต่อความพร้อมทำงานเสร็จสิ้นแล้ว) ฮุกการเริ่มต้นจะถูกส่งแบบอะซิงโครนัสและไม่รวมอยู่ในการรับประกันความพร้อม เวลาในบันทึกความพร้อมคือการประทับเวลาภายในของ Gateway ซึ่งมีประโยชน์ต่อการระบุสาเหตุจากฝั่งกระบวนการ แต่ใช้แทนการตรวจสอบ `/readyz` จากภายนอกไม่ได้
 
-- `pnpm test:startup:gateway -- --runs 5 --warmup 1`
-- `pnpm test:startup:gateway -- --case default --runs 10 --warmup 1`
-- `pnpm test:startup:gateway -- --case skipChannels --case fiftyPlugins --runs 5`
-- `node --import tsx scripts/bench-gateway-startup.ts --case default --runs 5 --output .artifacts/gateway-startup.json`
-- `node --import tsx scripts/bench-gateway-startup.ts --case default --runs 3 --cpu-prof-dir .artifacts/gateway-startup-cpu`
+ใช้ผลลัพธ์ JSON หรือ `--output` เมื่อเปรียบเทียบการเปลี่ยนแปลง ใช้ `--cpu-prof-dir` เฉพาะเมื่อผลลัพธ์การติดตามชี้ไปที่การนำเข้า การคอมไพล์ หรืองานที่ติดคอขวดด้าน CPU ซึ่งการจับเวลาของแต่ละระยะเพียงอย่างเดียวไม่สามารถอธิบายได้
 
-รหัส case:
+</Accordion>
 
-- `default`: การเริ่มต้น Gateway ตามปกติ
-- `skipChannels`: การเริ่มต้น Gateway โดยข้ามการเริ่มต้น channel
-- `oneInternalHook`: internal hook ที่ตั้งค่าไว้หนึ่งรายการ
-- `allInternalHooks`: internal hook ทั้งหมด
-- `fiftyPlugins`: manifest plugins 50 รายการ
-- `fiftyStartupLazyPlugins`: startup-lazy manifest plugins 50 รายการ
+<Accordion title="การเริ่ม Gateway ใหม่ (scripts/bench-gateway-restart.ts)">
 
-เอาต์พุตประกอบด้วยเอาต์พุตแรกของ process, `/healthz`, `/readyz`, เวลา log ของการ listen HTTP,
-เวลา log ที่ Gateway พร้อม, เวลา CPU, อัตราส่วน CPU core, max RSS, heap, metric ของ startup trace,
-event-loop delay และ metric รายละเอียดของ plugin lookup-table สคริปต์
-เปิดใช้ `OPENCLAW_GATEWAY_STARTUP_TRACE=1` ในสภาพแวดล้อม Gateway ลูก
+รองรับเฉพาะ macOS และ Linux (ใช้ SIGUSR1 สำหรับการเริ่มใหม่ภายในกระบวนการ และจะล้มเหลวทันทีบน Windows) มีค่าเริ่มต้นเป็นจุดเข้าที่สร้างแล้วและรองรับการแทนที่ด้วย `--entry scripts/run-node.mjs` เช่นเดียวกับการเริ่มต้น Gateway ข้างต้น
 
-อ่าน `/healthz` เป็น liveness: เซิร์ฟเวอร์ HTTP สามารถตอบได้ อ่าน `/readyz` เป็น
-readiness ที่ใช้งานได้: startup plugin sidecars, channels และงาน
-post-attach ที่ ready-critical เข้าสู่สภาวะนิ่งแล้ว Gateway startup hooks จะถูก dispatch
-แบบ asynchronous และไม่เป็นส่วนหนึ่งของการรับประกัน readiness เวลา ready log คือ
-timestamp ของ ready log ภายใน Gateway; มีประโยชน์สำหรับการระบุที่มาฝั่ง process
-แต่ไม่ใช่สิ่งทดแทน probe `/readyz` ภายนอก
+```bash
+pnpm test:restart:gateway -- --case skipChannels --runs 1 --restarts 5
+pnpm test:restart:gateway -- --case default --runs 3 --restarts 3 --warmup 1
+```
 
-ใช้เอาต์พุต JSON หรือ `--output` เมื่อเปรียบเทียบการเปลี่ยนแปลง ใช้ `--cpu-prof-dir` เฉพาะ
-หลังจากเอาต์พุต trace ชี้ไปที่งาน import, compile หรืองานที่ผูกกับ CPU ซึ่งไม่สามารถ
-อธิบายได้จาก phase timings เพียงอย่างเดียว อย่าเปรียบเทียบผลลัพธ์ของ source-runner กับ
-ผลลัพธ์ของ `dist/entry.js` ที่ build แล้วในฐานะ baseline เดียวกัน
+รหัสกรณี: `skipChannels`, `skipChannelsAcpxProbe` (เปิดการตรวจสอบ ACPX เมื่อเริ่มต้น), `skipChannelsNoAcpxProbe` (ปิดการตรวจสอบ), `default`, `fiftyPlugins`
 
-## เบนช์การรีสตาร์ต Gateway
+ผลลัพธ์ประกอบด้วย `/healthz` ถัดไป, `/readyz` ถัดไป, ระยะเวลาหยุดให้บริการ, เวลาความพร้อมหลังเริ่มใหม่, CPU, RSS, เมตริกการติดตามการเริ่มต้นสำหรับกระบวนการทดแทน และเมตริกการติดตามการเริ่มใหม่สำหรับการจัดการสัญญาณ การรอให้งานที่กำลังทำงานเสร็จสิ้น ระยะการปิด การเริ่มครั้งถัดไป เวลาความพร้อม และสแนปช็อตหน่วยความจำ สคริปต์จะตั้งค่า `OPENCLAW_GATEWAY_STARTUP_TRACE=1` และ `OPENCLAW_GATEWAY_RESTART_TRACE=1`
 
-สคริปต์: [`scripts/bench-gateway-restart.ts`](https://github.com/openclaw/openclaw/blob/main/scripts/bench-gateway-restart.ts)
+ใช้การวัดประสิทธิภาพนี้เมื่อการเปลี่ยนแปลงเกี่ยวข้องกับการส่งสัญญาณเริ่มใหม่ ตัวจัดการการปิด การเริ่มต้นหลังเริ่มใหม่ การปิดไซด์คาร์ การส่งมอบบริการ หรือความพร้อมหลังเริ่มใหม่ เริ่มด้วย `skipChannels` เพื่อแยกกลไกของ Gateway ออกจากการเริ่มต้นช่องทาง ใช้ `default` หรือกรณีที่มี Plugin จำนวนมากหลังจากกรณีขอบเขตแคบอธิบายเส้นทางการเริ่มใหม่ได้แล้วเท่านั้น เมตริกการติดตามเป็นเพียงข้อมูลบ่งชี้สำหรับการระบุสาเหตุ ไม่ใช่ข้อสรุป — ให้ตัดสินการเปลี่ยนแปลงด้านการเริ่มใหม่จากหลายตัวอย่าง ช่วงการทำงานของเจ้าของที่ตรงกัน พฤติกรรมของ `/healthz`/`/readyz` และสัญญาการเริ่มใหม่ที่ผู้ใช้มองเห็น
 
-benchmark การรีสตาร์ตรองรับเฉพาะ macOS และ Linux เท่านั้น ใช้ SIGUSR1 สำหรับ
-การรีสตาร์ตภายใน process และล้มเหลวทันทีบน Windows
+</Accordion>
 
-benchmark ใช้ค่าเริ่มต้นเป็น entry ของ CLI ที่ build แล้วที่ `dist/entry.js`; ให้รัน
-`pnpm build` ก่อนใช้คำสั่ง package-script หากต้องการวัด source
-runner แทน ให้ส่ง `--entry scripts/run-node.mjs` และเก็บผลลัพธ์เหล่านั้น
-แยกจาก baseline ของ built-entry
+## E2E การเริ่มใช้งาน (Docker)
 
-วิธีใช้:
-
-- `pnpm test:restart:gateway -- --case skipChannels --runs 1 --restarts 5`
-- `pnpm test:restart:gateway -- --case default --runs 3 --restarts 3 --warmup 1`
-- `pnpm test:restart:gateway -- --case skipChannelsAcpxProbe --case skipChannelsNoAcpxProbe --runs 1 --restarts 5`
-- `node --import tsx scripts/bench-gateway-restart.ts --case fiftyPlugins --runs 1 --restarts 5 --output .artifacts/gateway-restart.json`
-- `node --import tsx scripts/bench-gateway-restart.ts --json`
-
-รหัส case:
-
-- `skipChannels`: รีสตาร์ตโดยข้าม channels
-- `skipChannelsAcpxProbe`: รีสตาร์ตโดยข้าม channels และเปิด ACPX startup probe
-- `skipChannelsNoAcpxProbe`: รีสตาร์ตโดยข้าม channels และปิด ACPX startup probe
-- `default`: รีสตาร์ตตามปกติ
-- `fiftyPlugins`: รีสตาร์ตพร้อม manifest plugins 50 รายการ
-
-เอาต์พุตประกอบด้วย `/healthz` ถัดไป, `/readyz` ถัดไป, downtime, timing ของ restart ready,
-CPU, RSS, metric ของ startup trace สำหรับ process ทดแทน และ metric ของ restart trace
-สำหรับการจัดการ signal, การ drain งานที่ active, phase การ close, การ start ถัดไป, timing ของ ready
-และ snapshot หน่วยความจำ สคริปต์เปิดใช้
-`OPENCLAW_GATEWAY_STARTUP_TRACE=1` และ `OPENCLAW_GATEWAY_RESTART_TRACE=1` ใน
-สภาพแวดล้อม Gateway ลูก
-
-ใช้ benchmark นี้เมื่อการเปลี่ยนแปลงแตะ restart signaling, close handlers,
-startup-after-restart, sidecar shutdown, service handoff หรือ readiness หลัง
-รีสตาร์ต เริ่มด้วย `skipChannels` เมื่อแยกกลไก Gateway ออกจากการเริ่มต้น
-channel ใช้ `default` หรือ case ที่มี Plugin หนักเฉพาะหลังจาก case แบบแคบอธิบาย
-เส้นทางการรีสตาร์ตได้แล้ว
-
-Trace metrics เป็นคำใบ้สำหรับการระบุที่มา ไม่ใช่ verdict การเปลี่ยนแปลงการรีสตาร์ตควร
-ตัดสินจากตัวอย่างหลายชุด, owner span ที่ตรงกัน, พฤติกรรม `/healthz` และ `/readyz`
-และสัญญาการรีสตาร์ตที่ผู้ใช้มองเห็นได้
-
-## Onboarding E2E (Docker)
-
-Docker เป็นทางเลือก; จำเป็นเฉพาะสำหรับการทดสอบ smoke ของ onboarding แบบ containerized
-
-โฟลว์ cold-start เต็มรูปแบบใน container Linux ที่สะอาด:
+เลือกใช้ได้ จำเป็นเฉพาะสำหรับการทดสอบควันของการเริ่มใช้งานแบบคอนเทนเนอร์ ลำดับการเริ่มต้นใหม่ทั้งหมดในคอนเทนเนอร์ Linux ที่สะอาด:
 
 ```bash
 scripts/e2e/onboard-docker.sh
 ```
 
-สคริปต์นี้ขับ interactive wizard ผ่าน pseudo-tty, ตรวจสอบไฟล์ config/workspace/session จากนั้นเริ่ม gateway และรัน `openclaw health`
+ควบคุมตัวช่วยแบบโต้ตอบผ่านเทอร์มินัลเสมือน ตรวจสอบไฟล์การกำหนดค่า/เวิร์กสเปซ/เซสชัน จากนั้นเริ่ม Gateway และเรียกใช้ `openclaw health`
 
-## QR import smoke (Docker)
+## การทดสอบควันการนำเข้า QR (Docker)
 
-ตรวจให้แน่ใจว่า runtime helper ของ QR ที่ดูแลอยู่โหลดได้ภายใต้ runtime Docker Node ที่รองรับ (Node 24 เป็นค่าเริ่มต้น, Node 22 ใช้งานร่วมกันได้):
+ตรวจสอบให้แน่ใจว่าตัวช่วยรันไทม์ QR ที่ดูแลอยู่สามารถโหลดได้ภายใต้รันไทม์ Docker Node ที่รองรับ (Node 24 เป็นค่าเริ่มต้น และเข้ากันได้กับ Node 22):
 
 ```bash
 pnpm test:docker:qr
@@ -253,5 +292,5 @@ pnpm test:docker:qr
 ## ที่เกี่ยวข้อง
 
 - [การทดสอบ](/th/help/testing)
-- [การทดสอบแบบ live](/th/help/testing-live)
-- [การทดสอบอัปเดตและ Plugin](/th/help/testing-updates-plugins)
+- [การทดสอบแบบใช้งานจริง](/th/help/testing-live)
+- [การทดสอบการอัปเดตและ Plugin](/th/help/testing-updates-plugins)

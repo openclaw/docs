@@ -1,11 +1,11 @@
 ---
 read_when:
-    - diagnostics-otel Plugin'ini yüklüyor, yapılandırıyor veya denetliyorsunuz
+    - diagnostics-otel pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
 summary: Metrikler, izler ve günlükler için OpenClaw tanılama OpenTelemetry dışa aktarıcısı.
 title: Tanılama OpenTelemetry Plugin'i
 x-i18n:
-    generated_at: "2026-06-28T00:59:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:01:44Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 1fdbe6d3e52856e0db8e472aa2607622c60d3f0cadd5db0ae1eac5eedb2d4591
@@ -13,9 +13,9 @@ x-i18n:
     workflow: 16
 ---
 
-# Tanılama OpenTelemetry plugin’i
+# Tanılama OpenTelemetry plugini
 
-Metrikler, izler ve günlükler için OpenClaw tanılama OpenTelemetry dışa aktarıcısı.
+Metrikler, izlemeler ve günlükler için OpenClaw tanılama OpenTelemetry dışa aktarıcısı.
 
 ## Dağıtım
 

@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Вы устанавливаете, настраиваете или проверяете Plugin opencode
-summary: Добавляет поддержку провайдера моделей OpenCode в OpenClaw.
+    - Вы устанавливаете, настраиваете или проверяете Plugin opencode.
+summary: Добавляет в OpenClaw поддержку поставщика моделей OpenCode.
 title: Plugin OpenCode
 x-i18n:
-    generated_at: "2026-06-28T23:27:13Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:40:47Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 8c1c1264da52e8f362e83b2733390ccc3b2fc1dd62f14f8e5211bbb8fa47e95f
@@ -15,16 +15,16 @@ x-i18n:
 
 # Plugin OpenCode
 
-Добавляет в OpenClaw поддержку поставщика моделей OpenCode.
+Добавляет в OpenClaw поддержку провайдера моделей OpenCode.
 
 ## Распространение
 
 - Пакет: `@openclaw/opencode-provider`
-- Способ установки: включен в OpenClaw
+- Способ установки: входит в состав OpenClaw
 
 ## Интерфейс
 
-providers: opencode; contracts: mediaUnderstandingProviders
+провайдеры: opencode; контракты: mediaUnderstandingProviders
 
 ## Связанная документация
 

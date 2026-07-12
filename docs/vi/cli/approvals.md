@@ -1,43 +1,30 @@
 ---
 read_when:
-    - Bạn muốn chỉnh sửa các phê duyệt exec từ CLI
-    - Bạn cần quản lý danh sách cho phép trên máy chủ gateway hoặc node
-summary: Tham chiếu CLI cho `openclaw approvals` và `openclaw exec-policy`
+    - Bạn muốn chỉnh sửa các phê duyệt thực thi từ CLI
+    - Bạn cần quản lý danh sách cho phép trên các máy chủ Gateway hoặc Node
+summary: Tài liệu tham khảo CLI cho `openclaw approvals` và `openclaw exec-policy`
 title: Phê duyệt
 x-i18n:
-    generated_at: "2026-06-27T17:17:03Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:43:55Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e5521622ee48237d3cc9feaa54906d026dfb15da4c9b9b17655cd59b35cae19d
+    source_hash: f5b045a4dee3726a7df2368b704a00464dc9e575bf77747103e34ebdfe0aa2df
     source_path: cli/approvals.md
     workflow: 16
 ---
 
 # `openclaw approvals`
 
-Quản lý phê duyệt exec cho **máy chủ cục bộ**, **máy chủ gateway**, hoặc **máy chủ nút**.
-Theo mặc định, các lệnh nhắm đến tệp phê duyệt cục bộ trên đĩa. Dùng `--gateway` để nhắm đến gateway, hoặc `--node` để nhắm đến một nút cụ thể.
+Quản lý phê duyệt thực thi cho **máy cục bộ**, **máy Gateway** hoặc **máy Node**. Khi không có cờ đích, các lệnh đọc/ghi tệp phê duyệt cục bộ trên đĩa. Dùng `--gateway` để nhắm đến Gateway hoặc `--node <id|name|ip>` để nhắm đến một Node cụ thể.
 
 Bí danh: `openclaw exec-approvals`
 
-Liên quan:
-
-- Phê duyệt exec: [Phê duyệt exec](/vi/tools/exec-approvals)
-- Nút: [Nút](/vi/nodes)
+Liên quan: [Phê duyệt thực thi](/vi/tools/exec-approvals), [Các Node](/vi/nodes)
 
 ## `openclaw exec-policy`
 
-`openclaw exec-policy` là lệnh tiện ích cục bộ để giữ cấu hình
-`tools.exec.*` được yêu cầu và tệp phê duyệt của máy chủ cục bộ đồng bộ trong một bước.
-
-Dùng lệnh này khi bạn muốn:
-
-- kiểm tra chính sách cục bộ được yêu cầu, tệp phê duyệt của máy chủ và kết quả hợp nhất hiệu lực
-- áp dụng một preset cục bộ như YOLO hoặc deny-all
-- đồng bộ `tools.exec.*` cục bộ và tệp phê duyệt của máy chủ cục bộ
-
-Ví dụ:
+`openclaw exec-policy` là lệnh tiện ích **chỉ dành cho máy cục bộ**, giúp đồng bộ cấu hình `tools.exec.*` được yêu cầu và tệp phê duyệt của máy cục bộ chỉ trong một bước:
 
 ```bash
 openclaw exec-policy show
@@ -49,23 +36,17 @@ openclaw exec-policy preset cautious --json
 openclaw exec-policy set --host gateway --security full --ask off --ask-fallback full
 ```
 
-Chế độ đầu ra:
+Các bộ thiết lập sẵn (`yolo`, `cautious`, `deny-all`) áp dụng đồng thời `host`, `security`, `ask` và `askFallback`. `set` chỉ áp dụng các cờ bạn truyền vào; mỗi giá trị được chấp nhận đều được xác thực (`--host auto|sandbox|gateway|node`, `--security deny|allowlist|full`, `--ask off|on-miss|always`, `--ask-fallback deny|allowlist|full`).
 
-- không có `--json`: in chế độ xem bảng dễ đọc cho người dùng
-- `--json`: in đầu ra có cấu trúc để máy đọc được
+Phạm vi:
 
-Phạm vi hiện tại:
+- Cập nhật đồng thời tệp cấu hình cục bộ và tệp phê duyệt cục bộ; không đẩy chính sách đến Gateway hoặc máy Node.
+- `--host node` bị từ chối: phê duyệt thực thi của Node được lấy từ Node trong thời gian chạy, vì vậy `exec-policy` cục bộ không thể đồng bộ chúng. Thay vào đó, hãy dùng `openclaw approvals set --node <id|name|ip>`.
+- `exec-policy show` đánh dấu các phạm vi `host=node` là do Node quản lý trong thời gian chạy, thay vì suy ra chính sách có hiệu lực từ tệp phê duyệt cục bộ.
 
-- `exec-policy` **chỉ cục bộ**
-- lệnh này cập nhật đồng thời tệp cấu hình cục bộ và tệp phê duyệt cục bộ
-- lệnh này **không** đẩy chính sách đến máy chủ gateway hoặc máy chủ nút
-- `--host node` bị từ chối trong lệnh này vì phê duyệt exec của nút được lấy từ nút khi chạy và thay vào đó phải được quản lý qua các lệnh phê duyệt nhắm đến nút
-- `openclaw exec-policy show` đánh dấu các phạm vi `host=node` là do nút quản lý khi chạy, thay vì suy ra chính sách hiệu lực từ tệp phê duyệt cục bộ
+Đối với phê duyệt trên máy từ xa, hãy dùng trực tiếp `openclaw approvals set --gateway` hoặc `openclaw approvals set --node <id|name|ip>`.
 
-Nếu cần chỉnh sửa trực tiếp phê duyệt của máy chủ từ xa, hãy tiếp tục dùng `openclaw approvals set --gateway`
-hoặc `openclaw approvals set --node <id|name|ip>`.
-
-## Lệnh phổ biến
+## Các lệnh thường dùng
 
 ```bash
 openclaw approvals get
@@ -73,18 +54,20 @@ openclaw approvals get --node <id|name|ip>
 openclaw approvals get --gateway
 ```
 
-`openclaw approvals get` hiện hiển thị chính sách exec hiệu lực cho các mục tiêu cục bộ, gateway và nút:
+`get` hiển thị chính sách thực thi có hiệu lực cho đích: chính sách `tools.exec` được yêu cầu, chính sách trong tệp phê duyệt của máy và kết quả có hiệu lực sau khi hợp nhất. Các Node có chính sách gốc của máy, chẳng hạn như ứng dụng đồng hành trên Windows, sẽ hiển thị trực tiếp chính sách đó thay vì áp dụng phép tính chính sách từ tệp phê duyệt của OpenClaw.
 
-- chính sách `tools.exec` được yêu cầu
-- chính sách trong tệp phê duyệt của máy chủ
-- kết quả hiệu lực sau khi áp dụng quy tắc ưu tiên
+Đối với các Node sử dụng tệp, chế độ xem hợp nhất yêu cầu một ảnh chụp chính sách đã được phân giải trên máy. Các Node cũ hơn hiển thị chính sách có hiệu lực là không khả dụng, thay vì giả định rằng chính sách được yêu cầu của Gateway cũng áp dụng trên máy.
 
-Thứ tự ưu tiên là có chủ ý:
+<Note>
+Các ghi đè `/exec` theo từng phiên không được bao gồm. Hãy chạy `/exec` trong phiên liên quan để kiểm tra các giá trị mặc định hiện tại của phiên đó.
+</Note>
 
-- tệp phê duyệt của máy chủ là nguồn sự thật có thể thực thi
-- chính sách `tools.exec` được yêu cầu có thể thu hẹp hoặc mở rộng ý định, nhưng kết quả hiệu lực vẫn được suy ra từ các quy tắc của máy chủ
-- `--node` kết hợp tệp phê duyệt của máy chủ nút với chính sách `tools.exec` của gateway, vì cả hai vẫn áp dụng khi chạy
-- nếu cấu hình gateway không khả dụng, CLI sẽ fallback về snapshot phê duyệt của nút và ghi chú rằng không thể tính toán chính sách runtime cuối cùng
+Thứ tự ưu tiên:
+
+- Tệp phê duyệt của máy là nguồn thông tin chuẩn có thể thực thi.
+- Chính sách `tools.exec` được yêu cầu có thể thu hẹp hoặc mở rộng ý định, nhưng kết quả có hiệu lực được suy ra từ các quy tắc của máy.
+- `--node` kết hợp tệp phê duyệt của máy Node với chính sách `tools.exec` của Gateway (cả hai đều áp dụng trong thời gian chạy).
+- Nếu không có cấu hình Gateway, CLI sẽ dùng ảnh chụp phê duyệt của Node làm phương án dự phòng và ghi chú rằng không thể tính toán chính sách cuối cùng trong thời gian chạy.
 
 ## Thay thế phê duyệt từ một tệp
 
@@ -97,11 +80,24 @@ openclaw approvals set --node <id|name|ip> --file ./exec-approvals.json
 openclaw approvals set --gateway --file ./exec-approvals.json
 ```
 
-`set` chấp nhận JSON5, không chỉ JSON nghiêm ngặt. Dùng `--file` hoặc `--stdin`, không dùng cả hai.
+`set` chấp nhận JSON5, không chỉ JSON nghiêm ngặt. Chỉ dùng một trong hai tùy chọn `--file` hoặc `--stdin`, không dùng đồng thời cả hai.
+
+Các Node Windows dùng chính sách gốc của máy có cấu trúc chính sách riêng:
+
+```bash
+openclaw approvals set --node <id|name|ip> --stdin <<'EOF'
+{
+  defaultAction: "deny",
+  rules: [{ pattern: "hostname", action: "allow" }]
+}
+EOF
+```
+
+Trước tiên, CLI đọc giá trị băm hiện tại của Node rồi gửi kèm giá trị đó trong bản cập nhật, nhờ vậy các chỉnh sửa cục bộ đồng thời sẽ bị từ chối thay vì bị ghi đè. `rules` là bắt buộc vì thao tác này thay thế toàn bộ danh sách quy tắc của Node; `defaultAction` là tùy chọn. Không thể cấu hình từ xa một Node báo cáo rằng chính sách gốc của nó đã bị vô hiệu hóa; trước tiên, hãy bật hoặc cấu hình chính sách trên máy đó. Các chính sách gốc của máy không hỗ trợ các tiện ích `allowlist add|remove`.
 
 ## Ví dụ "Không bao giờ nhắc" / YOLO
 
-Với một máy chủ không bao giờ nên dừng lại vì phê duyệt exec, hãy đặt mặc định phê duyệt của máy chủ thành `full` + `off`:
+Đặt giá trị mặc định phê duyệt của máy thành `full` + `off` cho một máy không bao giờ được dừng lại để chờ phê duyệt thực thi:
 
 ```bash
 openclaw approvals set --stdin <<'EOF'
@@ -116,22 +112,9 @@ openclaw approvals set --stdin <<'EOF'
 EOF
 ```
 
-Biến thể Node:
+Đối với các Node cung cấp tệp phê duyệt OpenClaw, hãy dùng cùng nội dung với `openclaw approvals set --node <id|name|ip> --stdin`. Các Node dùng chính sách gốc của máy yêu cầu cấu trúc riêng theo chủ sở hữu như minh họa ở trên.
 
-```bash
-openclaw approvals set --node <id|name|ip> --stdin <<'EOF'
-{
-  version: 1,
-  defaults: {
-    security: "full",
-    ask: "off",
-    askFallback: "full"
-  }
-}
-EOF
-```
-
-Thao tác này chỉ thay đổi **tệp phê duyệt của máy chủ**. Để giữ chính sách OpenClaw được yêu cầu đồng bộ, cũng đặt:
+Thao tác này chỉ thay đổi **tệp phê duyệt của máy**. Để giữ cho chính sách OpenClaw được yêu cầu đồng bộ, hãy đặt thêm:
 
 ```bash
 openclaw config set tools.exec.host gateway
@@ -139,26 +122,17 @@ openclaw config set tools.exec.security full
 openclaw config set tools.exec.ask off
 ```
 
-Vì sao dùng `tools.exec.host=gateway` trong ví dụ này:
+`tools.exec.host=gateway` được chỉ định rõ ở đây vì `host=auto` vẫn có nghĩa là "dùng sandbox khi khả dụng, nếu không thì dùng Gateway": YOLO liên quan đến phê duyệt, không phải định tuyến. Dùng `gateway` (hoặc `/exec host=gateway`) khi bạn muốn thực thi trên máy ngay cả khi đã cấu hình sandbox.
 
-- `host=auto` vẫn có nghĩa là "dùng sandbox khi có, nếu không thì dùng gateway".
-- YOLO nói về phê duyệt, không phải định tuyến.
-- Nếu bạn muốn exec trên máy chủ ngay cả khi sandbox đã được cấu hình, hãy chỉ định rõ lựa chọn máy chủ bằng `gateway` hoặc `/exec host=gateway`.
+Nếu bỏ qua `askFallback`, giá trị mặc định là `deny`. Hãy đặt rõ `askFallback: "full"` khi nâng cấp một máy không có giao diện người dùng cần duy trì hành vi không bao giờ nhắc.
 
-`askFallback` bị bỏ qua sẽ mặc định là `deny`. Đặt rõ `askFallback: "full"`
-khi nâng cấp một máy chủ không có UI nhưng cần giữ hành vi không bao giờ nhắc.
-
-Lối tắt cục bộ:
+Lối tắt cục bộ cho cùng mục đích, chỉ trên máy cục bộ:
 
 ```bash
 openclaw exec-policy preset yolo
 ```
 
-Lối tắt cục bộ đó cập nhật đồng thời cả cấu hình `tools.exec.*` cục bộ được yêu cầu và
-mặc định phê duyệt cục bộ. Về ý định, nó tương đương với thiết lập hai bước thủ công
-ở trên, nhưng chỉ dành cho máy cục bộ.
-
-## Trình trợ giúp allowlist
+## Tiện ích danh sách cho phép
 
 ```bash
 openclaw approvals allowlist add "~/Projects/**/bin/rg"
@@ -168,34 +142,24 @@ openclaw approvals allowlist add --agent "*" "/usr/bin/uname"
 openclaw approvals allowlist remove "~/Projects/**/bin/rg"
 ```
 
-## Tùy chọn phổ biến
+## Các tùy chọn thường dùng
 
-`get`, `set`, và `allowlist add|remove` đều hỗ trợ:
+`get`, `set` và `allowlist add|remove` đều hỗ trợ:
 
-- `--node <id|name|ip>`
+- `--node <id|name|ip>` (phân giải mã định danh, tên, địa chỉ IP hoặc tiền tố mã định danh; dùng cùng bộ phân giải như `openclaw nodes`)
 - `--gateway`
-- các tùy chọn RPC nút dùng chung: `--url`, `--token`, `--timeout`, `--json`
+- các tùy chọn RPC Node dùng chung: `--url`, `--token`, `--timeout`, `--json`
 
-Ghi chú về nhắm mục tiêu:
+Không có cờ đích nghĩa là sử dụng tệp phê duyệt cục bộ trên đĩa.
 
-- không có cờ mục tiêu nghĩa là dùng tệp phê duyệt cục bộ trên đĩa
-- `--gateway` nhắm đến tệp phê duyệt của máy chủ gateway
-- `--node` nhắm đến một máy chủ nút sau khi phân giải id, tên, IP hoặc tiền tố id
-
-`allowlist add|remove` cũng hỗ trợ:
-
-- `--agent <id>` (mặc định là `*`)
+`allowlist add|remove` cũng hỗ trợ `--agent <id>` (mặc định là `"*"`, áp dụng cho tất cả tác tử).
 
 ## Ghi chú
 
-- `--node` dùng cùng bộ phân giải như `openclaw nodes` (id, tên, ip hoặc tiền tố id).
-- `--agent` mặc định là `"*"`, áp dụng cho tất cả agent.
-- Máy chủ nút phải quảng bá `system.execApprovals.get/set` (ứng dụng macOS hoặc máy chủ nút headless).
-- Các tệp phê duyệt được lưu theo từng máy chủ trong thư mục trạng thái OpenClaw
-  (`$OPENCLAW_STATE_DIR/exec-approvals.json`, hoặc
-  `~/.openclaw/exec-approvals.json` khi biến chưa được đặt).
+- Máy Node phải công bố `system.execApprovals.get/set` (ứng dụng macOS, máy Node không giao diện hoặc ứng dụng đồng hành trên Windows).
+- Các tệp phê duyệt được lưu riêng theo từng máy trong thư mục trạng thái OpenClaw: `$OPENCLAW_STATE_DIR/exec-approvals.json`, hoặc `~/.openclaw/exec-approvals.json` khi biến chưa được đặt.
 
 ## Liên quan
 
-- [Tham chiếu CLI](/vi/cli)
-- [Phê duyệt exec](/vi/tools/exec-approvals)
+- [Tài liệu tham khảo CLI](/vi/cli)
+- [Phê duyệt thực thi](/vi/tools/exec-approvals)

@@ -1,11 +1,11 @@
 ---
 read_when:
-    - شما در حال نصب، پیکربندی یا ممیزی Plugin admin-http-rpc هستید
-summary: نقطهٔ پایانی HTTP RPC مدیریتی OpenClaw.
-title: Plugin مدیریت Http Rpc
+    - شما در حال نصب، پیکربندی یا ممیزی Plugin ‏admin-http-rpc هستید
+summary: نقطه پایانی RPC مبتنی بر HTTP برای مدیریت OpenClaw.
+title: Plugin مدیریت RPC مبتنی بر HTTP
 x-i18n:
-    generated_at: "2026-06-27T18:22:55Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:28:55Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 58909f4c97bfacc22d3a597939ff8724ec111995841822962c66305140aef4ba
@@ -13,14 +13,14 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin آرپی‌سی HTTP ادمین
+# Plugin فراخوانی رویهٔ راه‌دور HTTP مدیریت
 
-نقطه پایانی آرپی‌سی HTTP ادمین OpenClaw.
+نقطهٔ پایانی فراخوانی رویهٔ راه‌دور HTTP مدیریت OpenClaw.
 
 ## توزیع
 
 - بسته: `@openclaw/admin-http-rpc`
-- مسیر نصب: گنجانده‌شده در OpenClaw
+- روش نصب: همراه OpenClaw ارائه می‌شود
 
 ## سطح
 
@@ -28,4 +28,4 @@ x-i18n:
 
 ## مستندات مرتبط
 
-- [admin-http-rpc](/fa/plugins/admin-http-rpc)
+- [فراخوانی رویهٔ راه‌دور HTTP مدیریت](/fa/plugins/admin-http-rpc)

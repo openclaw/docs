@@ -1,26 +1,26 @@
 ---
 read_when:
-    - 你正在安装、配置或审计 memory-wiki 插件
+    - 你正在安装、配置或审计 Memory Wiki 插件
 summary: 面向 OpenClaw 的持久化 wiki 编译器和 Obsidian 友好的知识库。
 title: Memory Wiki 插件
 x-i18n:
-    generated_at: "2026-05-02T15:15:30Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T20:48:37Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: 461c9e3e52db968fc98b058c70070585f272ad27024392a6af0ce3d2f0237635
     source_path: plugins/reference/memory-wiki.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Memory Wiki 插件
 
-面向 OpenClaw 的持久化 wiki 编译器和 Obsidian 友好型知识库。
+面向 OpenClaw 的持久化 wiki 编译器和兼容 Obsidian 的知识库。
 
 ## 分发
 
-- 包：`@openclaw/memory-wiki`
-- 安装路径：已包含在 OpenClaw 中
+- 软件包：`@openclaw/memory-wiki`
+- 安装方式：内置于 OpenClaw
 
 ## 接口
 
@@ -28,4 +28,4 @@ x-i18n:
 
 ## 相关文档
 
-- [memory-wiki](/zh-CN/plugins/memory-wiki)
+- [Memory Wiki](/zh-CN/plugins/memory-wiki)

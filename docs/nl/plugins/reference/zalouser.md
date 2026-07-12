@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Je installeert, configureert of controleert de zalouser Plugin
-summary: OpenClaw Zalo Plugin voor persoonlijke accounts via native zca-js-integratie.
+    - Je installeert, configureert of controleert de zalouser-plugin
+summary: OpenClaw-plugin voor persoonlijke Zalo-accounts via native zca-js-integratie.
 title: Zalo Personal-Plugin
 x-i18n:
-    generated_at: "2026-06-27T18:05:30Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:09:31Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: c03db694c940cb1fb20f4a2f73512c9d3cf3c79e910cc6a0dd4aa38bd4465ed5
@@ -13,9 +13,9 @@ x-i18n:
     workflow: 16
 ---
 
-# Zalo Personal-plugin
+# Plugin voor persoonlijk Zalo-account
 
-OpenClaw Zalo Personal Account-plugin via native zca-js-integratie.
+OpenClaw-Plugin voor een persoonlijk Zalo-account via systeemeigen zca-js-integratie.
 
 ## Distributie
 

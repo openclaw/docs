@@ -1,30 +1,29 @@
 ---
 read_when:
     - Bạn muốn xem những Skills nào hiện có và sẵn sàng chạy
-    - Bạn muốn tìm kiếm trên ClawHub hoặc cài đặt Skills từ ClawHub, Git hoặc các thư mục cục bộ
-    - Bạn muốn xác minh một kỹ năng ClawHub bằng ClawHub
-    - Bạn muốn gỡ lỗi các tệp nhị phân/env/cấu hình bị thiếu cho Skills
-summary: Tham chiếu CLI cho `openclaw skills` (search/install/update/verify/list/info/check/workshop)
+    - Bạn muốn tìm kiếm trên ClawHub hoặc cài đặt Skills từ ClawHub, Git hay các thư mục cục bộ
+    - Bạn muốn xác minh một skill ClawHub bằng ClawHub
+    - Bạn muốn gỡ lỗi các tệp nhị phân/biến môi trường/cấu hình bị thiếu cho Skills
+summary: Tài liệu tham khảo CLI cho `openclaw skills` (tìm kiếm/cài đặt/cập nhật/xác minh/liệt kê/thông tin/kiểm tra/xưởng)
 title: Skills
 x-i18n:
-    generated_at: "2026-06-27T17:20:48Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:52:00Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8f76c49e04559362cac9c0d12ce86cd422b46653242212c7611cc1033941ac43
+    source_hash: 3eafd40704b666e6be185aa8148b60613c861a2899fb9b0cc3353212e8e4d678
     source_path: cli/skills.md
     workflow: 16
 ---
 
 # `openclaw skills`
 
-Kiểm tra Skills cục bộ, tìm kiếm ClawHub, cài đặt kỹ năng từ ClawHub/Git/thư mục
-cục bộ, xác minh kỹ năng ClawHub, và cập nhật các bản cài đặt được ClawHub theo dõi.
+Kiểm tra Skills cục bộ, tìm kiếm trên ClawHub, cài đặt Skills từ ClawHub/Git/thư mục cục bộ, xác minh Skills trên ClawHub và cập nhật các bản cài đặt được ClawHub theo dõi.
 
 Liên quan:
 
 - Hệ thống Skills: [Skills](/vi/tools/skills)
-- Xưởng kỹ năng: [Xưởng kỹ năng](/vi/tools/skill-workshop)
+- Xưởng Skills: [Xưởng Skills](/vi/tools/skill-workshop)
 - Cấu hình Skills: [Cấu hình Skills](/vi/tools/skills-config)
 - Bản cài đặt ClawHub: [ClawHub](/vi/clawhub/cli)
 
@@ -39,10 +38,12 @@ openclaw skills install git:owner/repo
 openclaw skills install git:owner/repo@main
 openclaw skills install ./path/to/skill --as custom-name
 openclaw skills install @owner/<slug> --force
+openclaw skills install @owner/<slug> --force-install
 openclaw skills install @owner/<slug> --acknowledge-clawhub-risk
 openclaw skills install @owner/<slug> --agent <id>
 openclaw skills install @owner/<slug> --global
 openclaw skills update @owner/<slug>
+openclaw skills update @owner/<slug> --force-install
 openclaw skills update @owner/<slug> --acknowledge-clawhub-risk
 openclaw skills update @owner/<slug> --global
 openclaw skills update --all
@@ -74,107 +75,66 @@ openclaw skills workshop reject <proposal-id> --reason "Not reusable"
 openclaw skills workshop quarantine <proposal-id> --reason "Needs security review"
 ```
 
-`search`, `update`, và `verify` dùng trực tiếp ClawHub. `install @owner/<slug>`
-cài đặt một kỹ năng ClawHub, `install git:owner/repo[@ref]` sao chép một kỹ năng Git, và
-`install ./path` sao chép một thư mục kỹ năng cục bộ. Theo mặc định, `install`, `update`,
-và `verify` nhắm tới thư mục `skills/` của không gian làm việc đang hoạt động; với `--global`,
-chúng nhắm tới thư mục Skills được quản lý dùng chung. `list`/`info`/`check` vẫn
-kiểm tra các kỹ năng cục bộ mà không gian làm việc và cấu hình hiện tại có thể thấy.
-Các lệnh dựa trên không gian làm việc phân giải không gian làm việc đích từ `--agent <id>`, rồi đến
-thư mục làm việc hiện tại khi nó nằm trong một không gian làm việc tác tử đã cấu hình,
-rồi đến tác tử mặc định.
+`search`, `update` và `verify` sử dụng ClawHub trực tiếp. `install @owner/<slug>` cài đặt một Skill từ ClawHub, `install git:owner/repo[@ref]` sao chép một Skill từ Git và `install ./path` sao chép một thư mục Skill cục bộ. Theo mặc định, `install`, `update` và `verify` nhắm đến thư mục `skills/` của không gian làm việc đang hoạt động; khi dùng `--global`, chúng nhắm đến thư mục Skills được quản lý dùng chung. `list`/`info`/`check` vẫn kiểm tra các Skills cục bộ hiển thị với không gian làm việc và cấu hình hiện tại. Các lệnh dựa trên không gian làm việc phân giải không gian làm việc đích từ `--agent <id>`, sau đó là thư mục làm việc hiện tại nếu thư mục đó nằm trong một không gian làm việc của tác tử đã cấu hình, rồi đến tác tử mặc định.
 
-Các bản cài đặt Git và thư mục cục bộ yêu cầu `SKILL.md` ở gốc nguồn. Slug
-cài đặt lấy từ frontmatter `name` của `SKILL.md` khi hợp lệ, sau đó đến
-thư mục nguồn hoặc tên kho lưu trữ; dùng `--as <slug>` để ghi đè. `--version`
-chỉ dành cho ClawHub. Các bản cài đặt kỹ năng không hỗ trợ đặc tả gói npm hoặc
-đường dẫn zip/lưu trữ, và `openclaw skills update` chỉ cập nhật các bản cài đặt được ClawHub theo dõi.
+Các bản cài đặt từ Git và thư mục cục bộ yêu cầu `SKILL.md` tại thư mục gốc của nguồn. Slug cài đặt được lấy từ trường `name` trong frontmatter của `SKILL.md` nếu hợp lệ, sau đó là tên thư mục nguồn hoặc kho lưu trữ; dùng `--as <slug>` để ghi đè. `--version` chỉ dành cho ClawHub. Bản cài đặt Skill không hỗ trợ đặc tả gói npm hoặc đường dẫn zip/kho lưu trữ và `openclaw skills update` chỉ cập nhật các bản cài đặt được ClawHub theo dõi.
 
-Các bản cài đặt phụ thuộc kỹ năng dựa trên Gateway được kích hoạt từ quá trình onboarding hoặc phần cài đặt Skills
-dùng đường dẫn yêu cầu `skills.install` riêng.
+Các bản cài đặt phần phụ thuộc của Skill dựa trên Gateway được kích hoạt từ quá trình thiết lập ban đầu hoặc phần cài đặt Skills sẽ sử dụng đường dẫn yêu cầu `skills.install` riêng.
 
-Ghi chú:
+Lưu ý:
 
-- `search [query...]` chấp nhận truy vấn tùy chọn; bỏ qua để duyệt nguồn tìm kiếm
-  ClawHub mặc định.
-- `search --limit <n>` giới hạn số kết quả trả về.
-- `install git:owner/repo[@ref]` cài đặt một kỹ năng Git. Tham chiếu nhánh có thể chứa
-  dấu gạch chéo, chẳng hạn `git:owner/repo@feature/foo`.
-- `install ./path/to/skill` cài đặt một thư mục cục bộ có gốc chứa
-  `SKILL.md`.
-- `install --as <slug>` ghi đè slug được suy ra cho các bản cài đặt từ Git và thư mục cục bộ.
-- `install --version <version>` chỉ áp dụng cho tham chiếu kỹ năng ClawHub.
-- `install --force` ghi đè thư mục kỹ năng hiện có trong không gian làm việc cho cùng
-  slug.
-- Các bản cài đặt và cập nhật kỹ năng ClawHub cộng đồng kiểm tra độ tin cậy trước khi tải xuống.
-  Các bản phát hành lưu trữ cộng đồng có phiên bản dùng siêu dữ liệu tin cậy theo đúng bản phát hành.
-  Các kỹ năng GitHub dựa trên bộ phân giải dựa vào bộ phân giải cài đặt của ClawHub để thực thi
-  chính sách quét và buộc cài đặt trước khi trả về một commit đã ghim. Các bản phát hành cộng đồng độc hại hoặc
-  bị chặn sẽ bị từ chối. Các bản phát hành cộng đồng rủi ro yêu cầu
-  xem xét và `--acknowledge-clawhub-risk` khi một lệnh không tương tác cần
-  tiếp tục sau quá trình xem xét đó. Nhà xuất bản kỹ năng ClawHub chính thức và các
-  nguồn kỹ năng OpenClaw đi kèm bỏ qua lời nhắc tin cậy bản phát hành này.
-- `--global` nhắm tới thư mục Skills được quản lý dùng chung và không thể kết hợp
-  với `--agent <id>`.
-- `--agent <id>` nhắm tới một không gian làm việc tác tử đã cấu hình và ghi đè suy luận
-  thư mục làm việc hiện tại.
-- `update @owner/<slug>` cập nhật một kỹ năng được theo dõi. Thêm `--global` để
-  nhắm tới thư mục Skills được quản lý dùng chung thay vì không gian làm việc.
-- `update --all` cập nhật các bản cài đặt ClawHub được theo dõi trong không gian làm việc đã chọn, hoặc
-  trong thư mục Skills được quản lý dùng chung khi kết hợp với `--global`.
-- `verify @owner/<slug>` mặc định in phong bì JSON `clawhub.skill.verify.v1` của ClawHub.
-  Không có cờ `--json` vì JSON đã là mặc định.
-  Slug trần vẫn được chấp nhận để tương thích khi kỹ năng đã được
-  cài đặt hoặc không mơ hồ, nhưng tham chiếu có chủ sở hữu tránh nhầm lẫn
-  nhà xuất bản.
-- Khi ClawHub trả về nguồn gốc mã nguồn do máy chủ phân giải, JSON xác minh cũng
-  bao gồm `openclaw.verifiedSourceUrl` được ghim theo commit. URL nguồn không khả dụng hoặc
-  tự khai báo chỉ ở lại trong phong bì nguồn gốc thô và không được
-  nâng cấp.
-- `verify` dùng `.clawhub/origin.json` cho các kỹ năng ClawHub đã cài đặt, nên nó
-  xác minh phiên bản đã cài đặt theo registry nguồn của nó. `--version`
-  và `--tag` ghi đè bộ chọn phiên bản nhưng vẫn giữ registry đã cài đặt đó
-  khi có siêu dữ liệu nguồn gốc.
-- `verify --card` in Markdown Thẻ kỹ năng được tạo thay vì JSON. Lệnh
-  thoát khác 0 khi ClawHub trả về `ok: false` hoặc `decision: "fail"`;
-  chữ ký chưa ký chỉ mang tính thông tin trừ khi chính sách ClawHub thay đổi.
-- Các gói ClawHub đã cài đặt có thể bao gồm `skill-card.md` được tạo. OpenClaw
-  xem xác minh là quyết định của máy chủ ClawHub và không từ chối một
-  kỹ năng đã cài đặt chỉ vì thẻ được tạo đó thay đổi
-  dấu vân tay của gói.
-- `check --agent <id>` kiểm tra không gian làm việc của tác tử đã chọn và báo cáo những
-  kỹ năng sẵn sàng nào thật sự hiển thị với prompt hoặc bề mặt lệnh của tác tử đó.
-- `list` là hành động mặc định khi không cung cấp lệnh con.
-- `list`, `info`, và `check` ghi đầu ra đã kết xuất vào stdout. Với
-  `--json`, điều đó nghĩa là payload máy đọc được vẫn nằm trên stdout cho pipe
-  và script.
+| Cờ/hành vi                       | Mô tả                                                                                                                                                                                                                                                                                                                                                     |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `search [query...]`              | Truy vấn không bắt buộc; bỏ qua để duyệt nguồn cấp tìm kiếm ClawHub mặc định.                                                                                                                                                                                                                                                                              |
+| `search --limit <n>`             | Giới hạn số kết quả trả về.                                                                                                                                                                                                                                                                                                                               |
+| `install git:owner/repo[@ref]`   | Cài đặt một Skill từ Git. Tham chiếu nhánh có thể chứa dấu gạch chéo, chẳng hạn như `git:owner/repo@feature/foo`.                                                                                                                                                                                                                                           |
+| `install ./path/to/skill`        | Cài đặt một thư mục cục bộ có thư mục gốc chứa `SKILL.md`.                                                                                                                                                                                                                                                                                                 |
+| `install --as <slug>`            | Ghi đè slug được suy ra cho các bản cài đặt từ Git và thư mục cục bộ.                                                                                                                                                                                                                                                                                      |
+| `install --version <version>`    | Chỉ áp dụng cho tham chiếu Skill trên ClawHub.                                                                                                                                                                                                                                                                                                             |
+| `install --force`                | Ghi đè thư mục Skill hiện có trong không gian làm việc đối với cùng một slug.                                                                                                                                                                                                                                                                              |
+| `install/update --force-install` | Cài đặt một Skill ClawHub dựa trên GitHub đang chờ xử lý trước khi quá trình quét của ClawHub hoàn tất.                                                                                                                                                                                                                                                     |
+| `--global`                       | Nhắm đến thư mục Skills được quản lý dùng chung; không thể kết hợp với `--agent <id>`.                                                                                                                                                                                                                                                                     |
+| `--agent <id>`                   | Nhắm đến một không gian làm việc của tác tử đã cấu hình; ghi đè việc suy luận từ thư mục làm việc hiện tại.                                                                                                                                                                                                                                                |
+| `update @owner/<slug>`           | Cập nhật một Skill được theo dõi. Thêm `--global` để nhắm đến thư mục Skills được quản lý dùng chung thay vì không gian làm việc.                                                                                                                                                                                                                           |
+| `update --all`                   | Cập nhật các bản cài đặt ClawHub được theo dõi trong không gian làm việc đã chọn hoặc trong thư mục Skills được quản lý dùng chung khi có `--global`.                                                                                                                                                                                                       |
+| `verify @owner/<slug>`           | Theo mặc định, in ra phong bì JSON `clawhub.skill.verify.v1` của ClawHub. Không có cờ `--json` vì JSON đã là định dạng mặc định. Slug không kèm chủ sở hữu được chấp nhận để tương thích khi Skill đã được cài đặt hoặc không gây nhầm lẫn; tham chiếu có chủ sở hữu giúp tránh nhập nhằng về nhà phát hành.                                                        |
+| Nguồn gốc của `verify`           | Khi ClawHub trả về nguồn gốc mã nguồn do máy chủ phân giải, JSON xác minh cũng bao gồm `openclaw.verifiedSourceUrl` được cố định vào một commit. URL nguồn không khả dụng hoặc do chính bên phát hành khai báo chỉ được giữ trong phong bì nguồn gốc thô và không được nâng cấp.                                                                                 |
+| Bộ chọn phiên bản của `verify`   | `verify` sử dụng `.clawhub/origin.json` cho các Skills ClawHub đã cài đặt, vì vậy nó xác minh phiên bản đã cài đặt với registry nơi phiên bản đó bắt nguồn. `--version` và `--tag` ghi đè bộ chọn phiên bản nhưng vẫn giữ registry đã cài đặt đó khi có siêu dữ liệu nguồn gốc.                                                                                   |
+| `verify --card`                  | In Markdown Thẻ Skill đã tạo thay vì JSON. Thoát với mã khác 0 khi ClawHub trả về `ok: false` hoặc `decision: "fail"`; chữ ký chưa được ký chỉ mang tính cung cấp thông tin, trừ khi chính sách ClawHub thay đổi.                                                                                                                                                 |
+| Dấu vân tay Thẻ Skill            | Các gói ClawHub đã cài đặt có thể bao gồm `skill-card.md` được tạo tự động. OpenClaw coi việc xác minh là quyết định của máy chủ ClawHub và không từ chối một Skill đã cài đặt chỉ vì thẻ được tạo đó làm thay đổi dấu vân tay của gói.                                                                                                                         |
+| `check --agent <id>`             | Kiểm tra không gian làm việc của tác tử đã chọn và báo cáo những Skills sẵn sàng nào thực sự hiển thị trên bề mặt lời nhắc hoặc lệnh của tác tử đó.                                                                                                                                                                                                         |
+| `list`                           | Hành động mặc định khi không cung cấp lệnh con.                                                                                                                                                                                                                                                                                                            |
+| Đầu ra `list`/`info`/`check`     | Đầu ra đã kết xuất được gửi đến stdout. Khi dùng `--json`, tải trọng dành cho máy đọc vẫn nằm trên stdout để dùng với đường ống và tập lệnh.                                                                                                                                                                                                                |
 
-## Xưởng kỹ năng
+Các bản cài đặt và cập nhật Skill cộng đồng trên ClawHub kiểm tra mức độ tin cậy trước khi tải xuống. Các bản phát hành kho lưu trữ cộng đồng có phiên bản sử dụng siêu dữ liệu tin cậy của chính xác bản phát hành đó. Các Skills GitHub dựa trên trình phân giải phụ thuộc vào trình phân giải cài đặt của ClawHub để thực thi chính sách quét và cài đặt cưỡng bức trước khi trả về một commit đã cố định; dùng `--force-install` để cài đặt một Skill dựa trên GitHub đang chờ xử lý trước khi quá trình quét hoàn tất. Các bản phát hành cộng đồng độc hại hoặc bị chặn sẽ bị từ chối. Các bản phát hành cộng đồng có rủi ro yêu cầu xem xét và cần `--acknowledge-clawhub-risk` khi một lệnh không tương tác cần tiếp tục sau quá trình xem xét đó. Các nhà phát hành Skill ClawHub chính thức và nguồn Skill đi kèm OpenClaw bỏ qua lời nhắc về độ tin cậy của bản phát hành này.
 
-`openclaw skills workshop` quản lý các đề xuất kỹ năng đang chờ trong
-không gian làm việc đã chọn. Đề xuất chưa phải là kỹ năng hoạt động cho đến khi được áp dụng. Để biết về nơi lưu trữ đề xuất,
-biện pháp bảo vệ tệp hỗ trợ, phương thức Gateway, và chính sách phê duyệt, xem
-[Xưởng kỹ năng](/vi/tools/skill-workshop).
+## Xưởng Skills
+
+`openclaw skills workshop` quản lý các đề xuất Skill đang chờ xử lý trong không gian làm việc đã chọn. Các đề xuất chưa phải là Skills đang hoạt động cho đến khi được áp dụng. Để biết về lưu trữ đề xuất, biện pháp bảo vệ tệp hỗ trợ, các phương thức Gateway và chính sách phê duyệt, hãy xem [Xưởng Skills](/vi/tools/skill-workshop).
 
 ```bash
 openclaw skills workshop propose-create \
   --name "qa-check" \
-  --description "Repeatable QA checklist" \
+  --description "Danh sách kiểm tra QA có thể lặp lại" \
   --proposal ./PROPOSAL.md
 openclaw skills workshop propose-create \
   --name "qa-check" \
-  --description "Repeatable QA checklist" \
+  --description "Danh sách kiểm tra QA có thể lặp lại" \
   --proposal-dir ./qa-check-proposal
 openclaw skills workshop propose-update qa-check --proposal ./PROPOSAL.md
 openclaw skills workshop list
 openclaw skills workshop inspect <proposal-id>
 openclaw skills workshop revise <proposal-id> --proposal ./PROPOSAL.md
 openclaw skills workshop apply <proposal-id>
-openclaw skills workshop reject <proposal-id> --reason "Duplicate"
-openclaw skills workshop quarantine <proposal-id> --reason "Needs security review"
+openclaw skills workshop reject <proposal-id> --reason "Trùng lặp"
+openclaw skills workshop quarantine <proposal-id> --reason "Cần xem xét bảo mật"
 ```
+
+`propose-create`, `propose-update` và `revise` cũng chấp nhận `--goal <text>`
+và `--evidence <text>` để ghi lại động lực của đề xuất và các ghi chú hỗ trợ
+cùng với nội dung `--proposal`/`--proposal-dir`.
 
 ## Liên quan
 
-- [Tham chiếu CLI](/vi/cli)
+- [Tài liệu tham khảo CLI](/vi/cli)
 - [Skills](/vi/tools/skills)

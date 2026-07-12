@@ -1,63 +1,57 @@
 ---
 read_when:
-    - Zmienianie wykonywania automatycznych odpowiedzi lub współbieżności
-    - Wyjaśnianie trybów /queue lub zachowania sterowania wiadomościami
-summary: Tryby kolejki automatycznych odpowiedzi, wartości domyślne i nadpisania dla poszczególnych sesji
+    - Zmiana wykonywania automatycznych odpowiedzi lub współbieżności
+    - Objaśnienie trybów /queue lub mechanizmu kierowania wiadomościami
+summary: Tryby kolejki automatycznych odpowiedzi, wartości domyślne i ustawienia zastępujące dla poszczególnych sesji
 title: Kolejka poleceń
 x-i18n:
-    generated_at: "2026-06-27T17:29:14Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:00:11Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6e518b018a85ddbc7afa3925180cc2329eb1d249316d81907ba51cfb3c692375
+    source_hash: 309d149545aaba91d2248dd6354d82e3cb7ddd489817a5f84acbb0269a0815ec
     source_path: concepts/queue.md
     workflow: 16
 ---
 
-Serializujemy przychodzące uruchomienia automatycznych odpowiedzi (we wszystkich kanałach) przez niewielką kolejkę w procesie, aby zapobiec kolizjom wielu uruchomień agenta, jednocześnie nadal pozwalając na bezpiełą równoległość między sesjami.
+OpenClaw szereguje przychodzące uruchomienia automatycznych odpowiedzi (ze wszystkich kanałów) za pomocą niewielkiej kolejki wewnątrz procesu, aby zapobiec kolizjom wielu uruchomień agenta, jednocześnie umożliwiając bezpieczne wykonywanie równoległe w różnych sesjach.
 
 ## Dlaczego
 
-- Uruchomienia automatycznych odpowiedzi mogą być kosztowne (wywołania LLM) i mogą kolidować, gdy wiele wiadomości przychodzących dociera w krótkim odstępie czasu.
-- Serializacja pozwala uniknąć rywalizacji o współdzielone zasoby (pliki sesji, logi, stdin CLI) i zmniejsza ryzyko limitów szybkości po stronie dostawców.
+- Uruchomienia automatycznych odpowiedzi mogą być kosztowne (wywołania LLM) i mogą ze sobą kolidować, gdy wiele wiadomości przychodzących pojawi się w krótkim odstępie.
+- Szeregowanie zapobiega rywalizacji o współdzielone zasoby (pliki sesji, dzienniki, standardowe wejście CLI) i zmniejsza ryzyko przekroczenia limitów częstotliwości usług nadrzędnych.
 
 ## Jak to działa
 
-- Świadoma torów kolejka FIFO opróżnia każdy tor z konfigurowalnym limitem współbieżności (domyślnie 1 dla nieskonfigurowanych torów; main domyślnie 4, subagent 8).
-- `runEmbeddedAgent` dodaje do kolejki według **klucza sesji** (tor `session:<key>`), aby zagwarantować tylko jedno aktywne uruchomienie na sesję.
-- Każde uruchomienie sesji jest następnie kolejkowane w **torze globalnym** (domyślnie `main`), więc ogólna równoległość jest ograniczona przez `agents.defaults.maxConcurrent`.
-- Gdy włączone jest szczegółowe logowanie, uruchomienia w kolejce emitują krótką informację, jeśli czekały ponad ~2 s przed startem.
-- Wskaźniki pisania nadal uruchamiają się natychmiast po dodaniu do kolejki (gdy kanał to obsługuje), więc doświadczenie użytkownika pozostaje bez zmian, gdy czekamy na swoją kolej.
+- Kolejka FIFO uwzględniająca tory opróżnia każdy tor zgodnie z konfigurowalnym limitem współbieżności (domyślnie 1 dla nieskonfigurowanych torów; domyślnie 4 dla `main` i 8 dla `subagent`).
+- `runEmbeddedAgent` umieszcza zadania w kolejce według **klucza sesji** (tor `session:<key>`), aby zagwarantować tylko jedno aktywne uruchomienie na sesję.
+- Każde uruchomienie sesji jest następnie umieszczane w **torze globalnym** (domyślnie `main`), dzięki czemu ogólna równoległość jest ograniczana przez `agents.defaults.maxConcurrent`.
+- Gdy włączone jest szczegółowe rejestrowanie, uruchomienia oczekujące w kolejce emitują krótkie powiadomienie, jeśli przed rozpoczęciem czekały dłużej niż około 2 sekundy.
+- Wskaźniki pisania nadal są uruchamiane natychmiast po umieszczeniu w kolejce (jeśli kanał je obsługuje), dzięki czemu podczas oczekiwania na swoją kolej środowisko użytkownika pozostaje niezmienione.
 
-## Domyślne ustawienia
+## Wartości domyślne
 
-Gdy nie są ustawione, wszystkie przychodzące powierzchnie kanałów używają:
+Jeśli nie ustawiono inaczej, wszystkie powierzchnie kanałów przychodzących używają:
 
 - `mode: "steer"`
 - `debounceMs: 500`
 - `cap: 20`
 - `drop: "summarize"`
 
-Sterowanie w tej samej turze jest domyślne. Prompt, który przychodzi w trakcie uruchomienia, jest wstrzykiwany
-do aktywnego runtime, gdy uruchomienie może przyjąć sterowanie, więc drugie uruchomienie
-sesji nie jest uruchamiane. Jeśli aktywne uruchomienie nie może przyjąć sterowania, OpenClaw czeka, aż
-aktywne uruchomienie się zakończy, zanim uruchomi prompt.
+Domyślnie stosowane jest sterowanie w tej samej turze. Polecenie, które nadejdzie w trakcie uruchomienia, jest wstrzykiwane do aktywnego środowiska wykonawczego, jeśli uruchomienie może przyjąć sterowanie, więc nie jest rozpoczynane drugie uruchomienie sesji. Jeśli aktywne uruchomienie nie może przyjąć sterowania, OpenClaw czeka z rozpoczęciem polecenia do zakończenia aktywnego uruchomienia.
 
 ## Tryby kolejki
 
-`/queue` kontroluje, co normalne wiadomości przychodzące robią, gdy sesja ma już
-aktywne uruchomienie:
+`/queue` określa sposób obsługi zwykłych wiadomości przychodzących, gdy sesja ma już aktywne uruchomienie:
 
-- `steer`: wstrzykuj wiadomości do aktywnego runtime. OpenClaw dostarcza wszystkie oczekujące wiadomości sterujące **po zakończeniu wykonywania wywołań narzędzi w bieżącej turze asystenta**, przed następnym wywołaniem LLM; serwer aplikacji Codex otrzymuje jedno zbiorcze `turn/steer`. Jeśli uruchomienie nie streamuje aktywnie albo sterowanie jest niedostępne, OpenClaw czeka, aż aktywne uruchomienie się zakończy, zanim uruchomi prompt.
-- `followup`: nie steruj. Dodaj każdą wiadomość do kolejki na późniejszą turę agenta po zakończeniu bieżącego uruchomienia.
-- `collect`: nie steruj. Scal wiadomości w kolejce w **pojedynczą** turę followup po oknie ciszy. Jeśli wiadomości celują w różne kanały/wątki, są opróżniane pojedynczo, aby zachować routing.
-- `interrupt`: przerwij aktywne uruchomienie dla tej sesji, a następnie uruchom najnowszą wiadomość.
+- `steer`: wstrzykuje wiadomości do aktywnego środowiska wykonawczego. OpenClaw dostarcza wszystkie oczekujące wiadomości sterujące **po zakończeniu wykonywania wywołań narzędzi w bieżącej turze asystenta**, przed następnym wywołaniem LLM; serwer aplikacji Codex otrzymuje jedno zbiorcze `turn/steer`. Jeśli uruchomienie nie przesyła aktywnie strumienia lub sterowanie jest niedostępne, OpenClaw czeka z rozpoczęciem polecenia do zakończenia aktywnego uruchomienia.
+- `followup`: nie steruje. Umieszcza każdą wiadomość w kolejce do późniejszej tury agenta po zakończeniu bieżącego uruchomienia.
+- `collect`: nie steruje. Scala wiadomości z kolejki w **jedną** turę uzupełniającą po upływie okresu ciszy. Jeśli wiadomości są kierowane do różnych kanałów lub wątków, są pobierane pojedynczo, aby zachować routing.
+- `interrupt`: przerywa aktywne uruchomienie tej sesji, a następnie uruchamia najnowszą wiadomość.
 
-Aby poznać specyficzne dla runtime zachowanie czasowe i zależności, zobacz
-[Kolejka sterowania](/pl/concepts/queue-steering). Aby poznać jawne polecenie `/steer <message>`,
-zobacz [Steruj](/pl/tools/steer).
+Informacje o czasie i zachowaniu zależnym od środowiska wykonawczego oraz zależności znajdziesz w sekcji [Kolejka sterowania](/pl/concepts/queue-steering). Informacje o jawnym poleceniu `/steer <message>` znajdziesz w sekcji [Sterowanie](/pl/tools/steer).
 
-Skonfiguruj globalnie lub per kanał przez `messages.queue`:
+Skonfiguruj globalnie lub dla poszczególnych kanałów za pomocą `messages.queue`:
 
 ```json5
 {
@@ -75,69 +69,76 @@ Skonfiguruj globalnie lub per kanał przez `messages.queue`:
 
 ## Opcje kolejki
 
-Opcje mają zastosowanie do dostarczania z kolejki. `debounceMs` ustawia też okno
-ciszy sterowania Codex w trybie `steer`:
+Opcje dotyczą dostarczania z kolejki. `debounceMs` określa również okres ciszy sterowania Codex w trybie `steer`:
 
-- `debounceMs`: okno ciszy przed opróżnieniem kolejkowanych followupów lub partii collect; w trybie Codex `steer`, okno ciszy przed wysłaniem zbiorczego `turn/steer`. Same liczby oznaczają milisekundy; jednostki `ms`, `s`, `m`, `h` i `d` są akceptowane przez opcje `/queue`.
-- `cap`: maksymalna liczba wiadomości w kolejce na sesję. Wartości poniżej `1` są ignorowane.
-- `drop: "summarize"`: domyślnie. Odrzucaj najstarsze wpisy z kolejki według potrzeb, zachowuj zwięzłe podsumowania i wstrzykuj je jako syntetyczny prompt followup.
-- `drop: "old"`: odrzucaj najstarsze wpisy z kolejki według potrzeb, bez zachowywania podsumowań.
-- `drop: "new"`: odrzuć najnowszą wiadomość, gdy kolejka jest już pełna.
+- `debounceMs`: okres ciszy przed pobraniem z kolejki tur uzupełniających lub zbiorczych partii; w trybie Codex `steer` — okres ciszy przed wysłaniem zbiorczego `turn/steer`. Same liczby oznaczają milisekundy; opcje `/queue` akceptują jednostki `ms`, `s`, `m`, `h` i `d`.
+- `cap`: maksymalna liczba wiadomości w kolejce na sesję. Wartości mniejsze niż `1` są ignorowane.
+- `drop: "summarize"` (domyślnie): w razie potrzeby usuwa najstarsze wpisy z kolejki, zachowuje ich zwięzłe podsumowania i wstrzykuje je jako syntetyczne polecenie uzupełniające.
+- `drop: "old"`: w razie potrzeby usuwa najstarsze wpisy z kolejki bez zachowywania podsumowań.
+- `drop: "new"`: odrzuca najnowszą wiadomość, gdy kolejka jest już pełna.
 
-Domyślne ustawienia: `debounceMs: 500`, `cap: 20`, `drop: summarize`.
+Wartości domyślne: `debounceMs: 500`, `cap: 20`, `drop: summarize`.
 
-## Sterowanie i streaming
+## Sterowanie i przesyłanie strumieniowe
 
-Gdy streaming kanału ma wartość `partial` lub `block`, sterowanie może wyglądać jak kilka
-krótkich widocznych odpowiedzi, podczas gdy aktywne uruchomienie dociera do granic runtime:
+Gdy przesyłanie strumieniowe kanału ma wartość `partial` lub `block`, sterowanie może wyglądać jak kilka krótkich, widocznych odpowiedzi, gdy aktywne uruchomienie dociera do granic środowiska wykonawczego:
 
-- `partial`: podgląd może zakończyć się wcześnie, a potem nowy podgląd zaczyna się po
-  zaakceptowaniu sterowania.
-- `block`: bloki o rozmiarze szkicu mogą tworzyć taki sam sekwencyjny wygląd.
-- Bez streamingu sterowanie wraca do followupu po aktywnym uruchomieniu, gdy
-  runtime nie może przyjąć sterowania w tej samej turze.
+- `partial`: podgląd może zostać zakończony wcześniej, a po przyjęciu sterowania rozpoczyna się nowy podgląd.
+- `block`: bloki o rozmiarze wersji roboczej mogą powodować taki sam wygląd sekwencyjny.
+- Bez przesyłania strumieniowego sterowanie przechodzi na turę uzupełniającą po aktywnym uruchomieniu, gdy środowisko wykonawcze nie może przyjąć sterowania w tej samej turze.
 
-`steer` nie przerywa narzędzi w toku. Użyj `/queue interrupt`, gdy najnowsza
-wiadomość powinna przerwać bieżące uruchomienie.
+`steer` nie przerywa narzędzi będących w trakcie wykonywania. Użyj `/queue interrupt`, gdy najnowsza wiadomość powinna przerwać bieżące uruchomienie.
 
-## Pierwszeństwo
+## Kolejność pierwszeństwa
 
-Przy wyborze trybu OpenClaw rozstrzyga:
+Przy wyborze trybu OpenClaw uwzględnia kolejno:
 
-1. Wbudowane lub zapisane nadpisanie `/queue` per sesja.
+1. Wbudowane lub zapisane dla sesji nadpisanie `/queue`.
 2. `messages.queue.byChannel.<channel>`.
 3. `messages.queue.mode`.
-4. Domyślne `steer`.
+4. Domyślny tryb `steer`.
 
-Dla opcji wbudowane lub zapisane opcje `/queue` mają pierwszeństwo przed konfiguracją. Następnie
-stosowane są debounce specyficzny dla kanału (`messages.queue.debounceMsByChannel`), domyślne
-debounce Plugin, globalne opcje `messages.queue` i wbudowane ustawienia domyślne. `cap` i `drop` są
-opcjami globalnymi/sesyjnymi, a nie kluczami konfiguracji per kanał.
+W przypadku opcji opcje `/queue` podane bezpośrednio lub zapisane mają pierwszeństwo przed konfiguracją. Następnie, w podanej kolejności, stosowane są: opóźnienie właściwe dla kanału (`messages.queue.debounceMsByChannel`), domyślne opóźnienie Pluginu, globalne opcje `messages.queue` oraz wbudowane wartości domyślne. `cap` i `drop` są opcjami globalnymi lub sesyjnymi, a nie kluczami konfiguracji poszczególnych kanałów.
 
-## Nadpisania per sesja
+## Nadpisania dla sesji
 
 - Wyślij `/queue <steer|followup|collect|interrupt>` jako samodzielne polecenie, aby zapisać tryb kolejki dla bieżącej sesji.
 - Opcje można łączyć: `/queue collect debounce:0.5s cap:25 drop:summarize`
-- `/queue default` lub `/queue reset` czyści nadpisanie sesji.
+- `/queue default` lub `/queue reset` usuwa nadpisanie sesji.
+
+## Anulowanie tur w kolejce
+
+Gdy polecenie znajduje się w kolejce `followup` lub `collect` (na przykład `chat.send` z TUI lub czatu internetowego przychodzące w czasie aktywności innej tury), Gateway zachowuje **tożsamość anulowania należącą do Gateway** dla identyfikatora klienta `runId`, dopóki zawartość z kolejki nie zostanie uruchomiona lub odrzucona. Tożsamość podąża za zawartością scaloną z podsumowaniem przepełnienia.
+
+- `chat.abort` z określonym `runId` anuluje tę turę, gdy nadal znajduje się ona w kolejce, jeśli żądający ma autoryzację (obowiązują te same reguły własności co w przypadku aktywnych uruchomień).
+- `chat.abort` dla sesji bez `runId` anuluje najpierw **autoryzowane tury w kolejce**, a następnie przerywa autoryzowane aktywne uruchomienia. Taka kolejność zapobiega wypromowaniu pracy przez opróżnianie kolejki do częściowo zatrzymanej sesji.
+- Czyszczenie całej kolejki sesji bez sprawdzania poszczególnych żądających nie stanowi ścieżki zatrzymywania sesji z wieloma właścicielami.
+- Oczekiwanie w kolejce nie jest przedstawiane jako aktywne uruchomienie agenta w `sessions.list` i nie podlega semantyce limitu czasu aktywnego uruchomienia; dotyczy ona wyłącznie fazy aktywnej.
+
+Klienty (w tym TUI) przekazują polecenia przychodzące w trakcie uruchomienia i pozwalają Gateway zastosować tryb kolejki. Esc/`/stop` używa przerwania o zakresie sesji, dzięki czemu utrata lokalnych uchwytów nie pozostawia wciąż oczekującego polecenia do późniejszego uruchomienia.
 
 ## Zakres i gwarancje
 
-- Dotyczy uruchomień agenta automatycznych odpowiedzi we wszystkich kanałach przychodzących, które używają potoku odpowiedzi Gateway (WhatsApp web, Telegram, Slack, Discord, Signal, iMessage, webchat itd.).
-- Domyślny tor (`main`) jest ogólny dla procesu dla przychodzących wiadomości + głównych Heartbeat; ustaw `agents.defaults.maxConcurrent`, aby pozwolić na wiele sesji równolegle.
-- Mogą istnieć dodatkowe tory (np. `cron`, `cron-nested`, `nested`, `subagent`), aby zadania w tle mogły działać równolegle bez blokowania odpowiedzi przychodzących. Izolowane tury agenta Cron zajmują slot `cron`, podczas gdy ich wewnętrzne wykonanie agenta używa `cron-nested`; oba używają `cron.maxConcurrentRuns`. Współdzielone przepływy niebędące Cron `nested` zachowują własne zachowanie toru. Te odłączone uruchomienia są śledzone jako [zadania w tle](/pl/automation/tasks).
-- Tory per sesja gwarantują, że tylko jedno uruchomienie agenta dotyka danej sesji naraz.
-- Brak zewnętrznych zależności lub wątków pracowników w tle; czysty TypeScript + obietnice.
+- Dotyczy uruchomień agentów automatycznej odpowiedzi we wszystkich kanałach przychodzących korzystających z potoku odpowiedzi Gateway (WhatsApp w przeglądarce, Telegram, Slack, Discord, Signal, iMessage, czat internetowy itd.).
+- Domyślny tor (`main`) obejmuje cały proces dla ruchu przychodzącego i głównych Heartbeatów; ustaw `agents.defaults.maxConcurrent`, aby zezwolić na równoległe działanie wielu sesji.
+- Mogą istnieć dodatkowe tory (np. `cron`, `cron-nested`, `nested`, `subagent`), dzięki czemu zadania w tle mogą działać równolegle bez blokowania odpowiedzi przychodzących. Izolowane tury agenta Cron zajmują miejsce `cron`, podczas gdy ich wewnętrzne wykonanie agenta używa `cron-nested`; oba korzystają z `cron.maxConcurrentRuns`. Współdzielone przepływy `nested`, które nie należą do Cron, zachowują własne działanie toru. Te odłączone uruchomienia są śledzone jako [zadania w tle](/pl/automation/tasks).
+- Tory dla poszczególnych sesji gwarantują, że w danym momencie tylko jedno uruchomienie agenta korzysta z określonej sesji.
+- Brak zewnętrznych zależności i wątków roboczych działających w tle; wyłącznie TypeScript i obietnice.
 
 ## Rozwiązywanie problemów
 
-- Jeśli polecenia wydają się zablokowane, włącz szczegółowe logi i szukaj wierszy "queued for ...ms", aby potwierdzić, że kolejka się opróżnia.
-- Jeśli potrzebujesz głębokości kolejki, włącz szczegółowe logi i obserwuj wiersze czasu kolejki.
-- Uruchomienia serwera aplikacji Codex, które przyjmują turę, a potem przestają emitować postęp, są przerywane przez adapter Codex, aby aktywny tor sesji mógł się zwolnić zamiast czekać na timeout zewnętrznego uruchomienia.
-- Gdy diagnostyka jest włączona, sesje, które pozostają w `processing` po `diagnostics.stuckSessionWarnMs` bez zaobserwowanej odpowiedzi, narzędzia, statusu, bloku lub postępu ACP, są klasyfikowane według bieżącej aktywności. Aktywna praca loguje się jako `session.long_running`; posiadane ciche wywołania modelu również pozostają `session.long_running` do `diagnostics.stuckSessionAbortMs`, aby wolni lub niestreamujący dostawcy nie byli zgłaszani jako zablokowani zbyt wcześnie. Aktywna praca bez niedawnego postępu loguje się jako `session.stalled`; posiadane wywołania modelu przełączają się na `session.stalled` na progu przerwania lub po nim, a przestarzała aktywność modelu/narzędzia bez właściciela nie jest ukrywana jako długotrwała. `session.stuck` jest zarezerwowane dla odtwarzalnej przestarzałej księgowości sesji, w tym bezczynnych sesji w kolejce z przestarzałą aktywnością modelu/narzędzia bez właściciela, i tylko ta ścieżka może zwolnić dotknięty tor sesji, aby praca w kolejce została opróżniona. Powtarzające się diagnostyki `session.stuck` wycofują się, dopóki sesja pozostaje niezmieniona.
+- Jeśli polecenia wydają się zablokowane, włącz szczegółowe dzienniki i poszukaj wierszy „queued for ...ms”, aby potwierdzić, że kolejka jest opróżniana.
+- Uruchomienia serwera aplikacji Codex, które przyjmują turę, a następnie przestają emitować postęp, są przerywane przez adapter Codex, aby aktywny tor sesji mógł zostać zwolniony zamiast czekać na limit czasu zewnętrznego uruchomienia.
+- Gdy diagnostyka jest włączona, sesje pozostające w stanie `processing` dłużej niż `diagnostics.stuckSessionWarnMs` bez zaobserwowanej odpowiedzi, użycia narzędzia, zmiany stanu, bloku ani postępu ACP są klasyfikowane według bieżącej aktywności:
+  - Aktywna praca z niedawnym postępem jest rejestrowana jako `session.long_running`. Należące do właściciela ciche wywołania modelu również pozostają w stanie `session.long_running` do upływu `diagnostics.stuckSessionAbortMs`, aby powolni lub niestrumieniujący dostawcy nie byli zbyt wcześnie zgłaszani jako zablokowani.
+  - Aktywna praca bez niedawno zarejestrowanego postępu jest klasyfikowana jako `session.stalled`; należące do właściciela wywołania modelu, zablokowane wywołania narzędzi i zablokowane osadzone uruchomienia przechodzą w stan `session.stalled` po osiągnięciu progu przerwania. Nieaktualna aktywność modelu lub narzędzia bez właściciela nie jest ukrywana jako długotrwała.
+  - `session.stuck` jest zarezerwowane dla możliwego do naprawienia, nieaktualnego stanu ewidencyjnego sesji, w tym bezczynnych sesji w kolejce z nieaktualną aktywnością modelu lub narzędzia bez właściciela.
+  - `session.stuck` zawsze uruchamia odzyskiwanie, które może zwolnić dotknięty problemem tor sesji. Klasyfikacja `session.stalled` po przekroczeniu `diagnostics.stuckSessionAbortMs` (zablokowane wywołanie narzędzia, zablokowane wywołanie modelu lub zablokowane osadzone uruchomienie) również może uruchomić aktywne odzyskiwanie przez przerwanie, więc kolejkę mogą odblokować obie klasyfikacje, nie tylko `session.stuck`.
+  - Powtarzające się ostrzeżenia `session.stuck` i `session.long_running` w dzienniku stosują wykładniczo rosnące odstępy, dopóki sesja pozostaje niezmieniona; próby odzyskiwania nadal są wykonywane przy każdym takcie Heartbeatu, niezależnie od tego zwiększania odstępów.
 
 ## Powiązane
 
-- [Zarządzanie sesją](/pl/concepts/session)
+- [Zarządzanie sesjami](/pl/concepts/session)
 - [Kolejka sterowania](/pl/concepts/queue-steering)
-- [Steruj](/pl/tools/steer)
+- [Sterowanie](/pl/tools/steer)
 - [Zasady ponawiania](/pl/concepts/retry)

@@ -4,8 +4,8 @@ read_when:
 summary: Embedding GGUF cục bộ thông qua node-llama-cpp.
 title: Plugin Llama Cpp
 x-i18n:
-    generated_at: "2026-06-27T17:53:28Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:10:15Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: be9fd199e252fd3f905e8064316e45b9b2816945a2e5e16a56a6a88fdd55ef8e
@@ -20,9 +20,9 @@ Embedding GGUF cục bộ thông qua node-llama-cpp.
 ## Phân phối
 
 - Gói: `@openclaw/llama-cpp-provider`
-- Tuyến cài đặt: npm; ClawHub
+- Kênh cài đặt: npm; ClawHub
 
-## Bề mặt
+## Giao diện
 
 hợp đồng: embeddingProviders
 

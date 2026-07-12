@@ -2,55 +2,56 @@
 read_when:
     - Bạn muốn sử dụng các quy trình làm việc ComfyUI cục bộ với OpenClaw
     - Bạn muốn sử dụng Comfy Cloud với các quy trình làm việc về hình ảnh, video hoặc âm nhạc
-    - Bạn cần các khóa cấu hình của Plugin comfy được tích hợp sẵn
-summary: Thiết lập tạo hình ảnh, video và âm nhạc bằng quy trình làm việc ComfyUI trong OpenClaw
+    - Bạn cần các khóa cấu hình của Plugin comfy đi kèm
+summary: Thiết lập quy trình tạo hình ảnh, video và âm nhạc bằng ComfyUI trong OpenClaw
 title: ComfyUI
 x-i18n:
-    generated_at: "2026-04-29T23:05:48Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:17:16Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 41dda4be24d5b2c283fa499a345cf9f38747ec19b4010163ceffd998307ca086
+    source_hash: 74150d202a422de8e0f4b2b82d5d12bd42eb46991e8ef688832208e1a2ff7793
     source_path: providers/comfy.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw đi kèm Plugin `comfy` được tích hợp sẵn cho các lần chạy ComfyUI theo quy trình làm việc. Plugin này hoàn toàn dựa trên quy trình làm việc, vì vậy OpenClaw không cố ánh xạ các điều khiển chung như `size`, `aspectRatio`, `resolution`, `durationSeconds`, hoặc kiểu TTS vào đồ thị của bạn.
+OpenClaw cung cấp kèm Plugin `comfy` để chạy ComfyUI theo quy trình công việc. Plugin
+hoàn toàn vận hành theo quy trình công việc: OpenClaw không ánh xạ các tùy chọn chung như `size`,
+`aspectRatio`, `resolution`, `durationSeconds` hoặc các tùy chọn kiểu TTS vào
+đồ thị của bạn.
 
-| Thuộc tính      | Chi tiết                                                                         |
-| --------------- | -------------------------------------------------------------------------------- |
-| Nhà cung cấp    | `comfy`                                                                          |
-| Mô hình         | `comfy/workflow`                                                                 |
-| Bề mặt dùng chung | `image_generate`, `video_generate`, `music_generate`                             |
-| Xác thực        | Không cần cho ComfyUI cục bộ; `COMFY_API_KEY` hoặc `COMFY_CLOUD_API_KEY` cho Comfy Cloud |
-| API             | ComfyUI `/prompt` / `/history` / `/view` và Comfy Cloud `/api/*`                |
+| Thuộc tính       | Chi tiết                                                                                   |
+| ---------------- | ------------------------------------------------------------------------------------------ |
+| Nhà cung cấp     | `comfy`                                                                                    |
+| Mô hình          | `comfy/workflow`                                                                           |
+| Công cụ dùng chung | `image_generate`, `video_generate`, `music_generate`                                     |
+| Xác thực         | Không cần cho ComfyUI cục bộ; `COMFY_API_KEY` hoặc `COMFY_CLOUD_API_KEY` cho Comfy Cloud   |
+| API              | ComfyUI `/prompt` / `/history` / `/view`; Comfy Cloud `/api/*`                             |
 
-## Hỗ trợ những gì
+## Các tính năng được hỗ trợ
 
-- Tạo hình ảnh từ JSON quy trình làm việc
-- Chỉnh sửa hình ảnh với 1 hình ảnh tham chiếu đã tải lên
-- Tạo video từ JSON quy trình làm việc
-- Tạo video với 1 hình ảnh tham chiếu đã tải lên
-- Tạo nhạc hoặc âm thanh thông qua công cụ dùng chung `music_generate`
-- Tải xuống đầu ra từ một node đã cấu hình hoặc tất cả các node đầu ra khớp
+- Tạo và chỉnh sửa hình ảnh từ JSON quy trình công việc (chỉnh sửa nhận 1 hình ảnh tham chiếu đã tải lên)
+- Tạo video từ JSON quy trình công việc, chuyển văn bản thành video hoặc hình ảnh thành video (1 hình ảnh tham chiếu)
+- Tạo nhạc/âm thanh thông qua công cụ dùng chung `music_generate`, với 1 hình ảnh tham chiếu tùy chọn
+- Tải xuống đầu ra từ Node đã cấu hình hoặc từ tất cả Node đầu ra phù hợp khi không có Node nào được cấu hình
 
 ## Bắt đầu
 
-Chọn giữa việc chạy ComfyUI trên máy của bạn hoặc sử dụng Comfy Cloud.
+Chọn chạy ComfyUI trên máy của riêng bạn hoặc sử dụng Comfy Cloud.
 
 <Tabs>
-  <Tab title="Cục bộ">
-    **Phù hợp nhất cho:** chạy phiên bản ComfyUI của riêng bạn trên máy hoặc LAN.
+  <Tab title="Local">
+    **Phù hợp nhất cho:** chạy phiên bản ComfyUI của riêng bạn trên máy hoặc mạng LAN.
 
     <Steps>
-      <Step title="Khởi động ComfyUI cục bộ">
-        Đảm bảo phiên bản ComfyUI cục bộ của bạn đang chạy (mặc định là `http://127.0.0.1:8188`).
+      <Step title="Start ComfyUI locally">
+        Đảm bảo phiên bản ComfyUI cục bộ của bạn đang chạy (mặc định tại `http://127.0.0.1:8188`).
       </Step>
-      <Step title="Chuẩn bị JSON quy trình làm việc của bạn">
-        Xuất hoặc tạo tệp JSON quy trình làm việc ComfyUI. Ghi lại ID node cho node nhập lời nhắc và node đầu ra mà bạn muốn OpenClaw đọc từ đó.
+      <Step title="Prepare your workflow JSON">
+        Xuất hoặc tạo tệp JSON quy trình công việc ComfyUI. Ghi lại ID Node của Node đầu vào lời nhắc và Node đầu ra mà bạn muốn OpenClaw đọc.
       </Step>
-      <Step title="Cấu hình nhà cung cấp">
-        Đặt `mode: "local"` và trỏ đến tệp quy trình làm việc của bạn. Đây là ví dụ hình ảnh tối thiểu:
+      <Step title="Configure the provider">
+        Đặt `mode: "local"` và trỏ đến tệp quy trình công việc của bạn. Ví dụ hình ảnh tối thiểu:
 
         ```json5
         {
@@ -72,8 +73,8 @@ Chọn giữa việc chạy ComfyUI trên máy của bạn hoặc sử dụng Co
         }
         ```
       </Step>
-      <Step title="Đặt mô hình mặc định">
-        Trỏ OpenClaw đến mô hình `comfy/workflow` cho năng lực bạn đã cấu hình:
+      <Step title="Set the default model">
+        Trỏ OpenClaw đến mô hình `comfy/workflow` cho khả năng bạn đã cấu hình:
 
         ```json5
         {
@@ -87,7 +88,7 @@ Chọn giữa việc chạy ComfyUI trên máy của bạn hoặc sử dụng Co
         }
         ```
       </Step>
-      <Step title="Xác minh">
+      <Step title="Verify">
         ```bash
         openclaw models list --provider comfy
         ```
@@ -97,17 +98,20 @@ Chọn giữa việc chạy ComfyUI trên máy của bạn hoặc sử dụng Co
   </Tab>
 
   <Tab title="Comfy Cloud">
-    **Phù hợp nhất cho:** chạy quy trình làm việc trên Comfy Cloud mà không cần quản lý tài nguyên GPU cục bộ.
+    **Phù hợp nhất cho:** chạy quy trình công việc trên Comfy Cloud mà không cần quản lý tài nguyên GPU cục bộ.
 
     <Steps>
-      <Step title="Lấy khóa API">
+      <Step title="Get an API key">
         Đăng ký tại [comfy.org](https://comfy.org) và tạo khóa API từ bảng điều khiển tài khoản của bạn.
       </Step>
-      <Step title="Đặt khóa API">
-        Cung cấp khóa của bạn thông qua một trong các phương thức sau:
+      <Step title="Set the API key">
+        Cung cấp khóa của bạn bằng bất kỳ phương thức nào sau đây:
 
         ```bash
-        # Environment variable (preferred)
+        # Onboarding flag
+        openclaw onboard --comfy-api-key "your-key"
+
+        # Environment variable (preferred for daemons)
         export COMFY_API_KEY="your-key"
 
         # Alternative environment variable
@@ -117,11 +121,11 @@ Chọn giữa việc chạy ComfyUI trên máy của bạn hoặc sử dụng Co
         openclaw config set plugins.entries.comfy.config.apiKey "your-key"
         ```
       </Step>
-      <Step title="Chuẩn bị JSON quy trình làm việc của bạn">
-        Xuất hoặc tạo tệp JSON quy trình làm việc ComfyUI. Ghi lại ID node cho node nhập lời nhắc và node đầu ra.
+      <Step title="Prepare your workflow JSON">
+        Xuất hoặc tạo tệp JSON quy trình công việc ComfyUI. Ghi lại ID Node của Node đầu vào lời nhắc và Node đầu ra.
       </Step>
-      <Step title="Cấu hình nhà cung cấp">
-        Đặt `mode: "cloud"` và trỏ đến tệp quy trình làm việc của bạn:
+      <Step title="Configure the provider">
+        Đặt `mode: "cloud"` và trỏ đến tệp quy trình công việc của bạn:
 
         ```json5
         {
@@ -143,10 +147,10 @@ Chọn giữa việc chạy ComfyUI trên máy của bạn hoặc sử dụng Co
         ```
 
         <Tip>
-        Chế độ đám mây mặc định `baseUrl` là `https://cloud.comfy.org`. Bạn chỉ cần đặt `baseUrl` nếu sử dụng endpoint đám mây tùy chỉnh.
+        Chế độ đám mây mặc định đặt `baseUrl` thành `https://cloud.comfy.org`. Chỉ đặt `baseUrl` khi sử dụng điểm cuối đám mây tùy chỉnh.
         </Tip>
       </Step>
-      <Step title="Đặt mô hình mặc định">
+      <Step title="Set the default model">
         ```json5
         {
           agents: {
@@ -159,7 +163,7 @@ Chọn giữa việc chạy ComfyUI trên máy của bạn hoặc sử dụng Co
         }
         ```
       </Step>
-      <Step title="Xác minh">
+      <Step title="Verify">
         ```bash
         openclaw models list --provider comfy
         ```
@@ -171,7 +175,7 @@ Chọn giữa việc chạy ComfyUI trên máy của bạn hoặc sử dụng Co
 
 ## Cấu hình
 
-Comfy hỗ trợ các thiết lập kết nối cấp cao nhất dùng chung cùng với các phần quy trình làm việc theo từng năng lực (`image`, `video`, `music`):
+Comfy hỗ trợ các thiết lập kết nối cấp cao nhất dùng chung cùng với các phần quy trình công việc riêng cho từng khả năng (`image`, `video`, `music`):
 
 ```json5
 {
@@ -203,39 +207,45 @@ Comfy hỗ trợ các thiết lập kết nối cấp cao nhất dùng chung cù
 }
 ```
 
-### Khóa dùng chung
+### Các khóa dùng chung
 
-| Khóa                  | Kiểu                   | Mô tả                                                                                 |
-| --------------------- | ---------------------- | ------------------------------------------------------------------------------------- |
-| `mode`                | `"local"` hoặc `"cloud"` | Chế độ kết nối.                                                                      |
-| `baseUrl`             | string                 | Mặc định là `http://127.0.0.1:8188` cho cục bộ hoặc `https://cloud.comfy.org` cho đám mây. |
-| `apiKey`              | string                 | Khóa nội tuyến tùy chọn, thay thế cho biến môi trường `COMFY_API_KEY` / `COMFY_CLOUD_API_KEY`. |
-| `allowPrivateNetwork` | boolean                | Cho phép `baseUrl` riêng tư/LAN trong chế độ đám mây.                                |
+| Khóa                  | Kiểu                   | Mô tả                                                                                           |
+| --------------------- | ---------------------- | ----------------------------------------------------------------------------------------------- |
+| `mode`                | `"local"` hoặc `"cloud"` | Chế độ kết nối. Mặc định là `"local"`.                                                        |
+| `baseUrl`             | chuỗi                  | Mặc định là `http://127.0.0.1:8188` cho cục bộ hoặc `https://cloud.comfy.org` cho đám mây.      |
+| `apiKey`              | chuỗi                  | Khóa nội tuyến tùy chọn, thay thế cho các biến môi trường `COMFY_API_KEY` / `COMFY_CLOUD_API_KEY`. |
+| `allowPrivateNetwork` | boolean                | Cho phép `baseUrl` riêng tư/LAN trong chế độ đám mây hoặc FQDN DNS riêng cục bộ.                 |
 
-### Khóa theo từng năng lực
+<Note>
+Trong chế độ `local`, các địa chỉ IP dạng literal thuộc local loopback/riêng tư và tên dịch vụ một nhãn như `http://comfyui:8188` hoạt động mà không cần `allowPrivateNetwork`. Các FQDN DNS riêng có hình thức công khai như `https://comfy.local.example.com` yêu cầu `allowPrivateNetwork: true`. Mức tin cậy dành cho nguồn riêng tư chỉ giới hạn trong giao thức, tên máy chủ và cổng đã cấu hình; chuyển hướng cục bộ không thể rời khỏi tên máy chủ đã cấu hình, còn các chuyển hướng đám mây đến CDN công khai được kiểm tra bằng chính sách SSRF mặc định.
+</Note>
 
-Các khóa này áp dụng bên trong các phần `image`, `video`, hoặc `music`:
+### Các khóa theo từng khả năng
 
-| Khóa                         | Bắt buộc | Mặc định | Mô tả                                                                      |
-| ---------------------------- | -------- | -------- | ---------------------------------------------------------------------------- |
-| `workflow` hoặc `workflowPath` | Có      | --       | Đường dẫn đến tệp JSON quy trình làm việc ComfyUI.                         |
-| `promptNodeId`               | Có      | --       | ID node nhận lời nhắc văn bản.                                             |
-| `promptInputName`            | Không   | `"text"` | Tên đầu vào trên node lời nhắc.                                            |
-| `outputNodeId`               | Không   | --       | ID node để đọc đầu ra từ đó. Nếu bỏ qua, tất cả node đầu ra khớp sẽ được dùng. |
-| `pollIntervalMs`             | Không   | --       | Khoảng thời gian thăm dò tính bằng mili giây để hoàn tất tác vụ.            |
-| `timeoutMs`                  | Không   | --       | Thời gian chờ tính bằng mili giây cho lần chạy quy trình làm việc.          |
+Các khóa này áp dụng bên trong các phần `image`, `video` hoặc `music`:
 
-Các phần `image` và `video` cũng hỗ trợ:
+| Khóa                          | Bắt buộc | Mặc định | Mô tả                                                                            |
+| ---------------------------- | -------- | -------- | -------------------------------------------------------------------------------- |
+| `workflow` hoặc `workflowPath` | Có     | --       | JSON quy trình công việc nội tuyến hoặc đường dẫn đến tệp JSON quy trình công việc ComfyUI. |
+| `promptNodeId`               | Có       | --       | ID Node nhận lời nhắc văn bản.                                                   |
+| `promptInputName`            | Không    | `"text"` | Tên đầu vào trên Node lời nhắc.                                                  |
+| `outputNodeId`               | Không    | --       | ID Node dùng để đọc đầu ra. Nếu bỏ qua, tất cả Node đầu ra phù hợp đều được sử dụng. |
+| `pollIntervalMs`             | Không    | `1500`   | Khoảng thời gian thăm dò tính bằng mili giây để kiểm tra công việc hoàn tất.      |
+| `timeoutMs`                  | Không    | `300000` | Thời gian chờ tính bằng mili giây cho lần chạy quy trình công việc.               |
 
-| Khóa                  | Bắt buộc                                      | Mặc định  | Mô tả                                                  |
-| --------------------- | --------------------------------------------- | --------- | ------------------------------------------------------ |
-| `inputImageNodeId`    | Có (khi truyền một hình ảnh tham chiếu)        | --        | ID node nhận hình ảnh tham chiếu đã tải lên.           |
-| `inputImageInputName` | Không                                         | `"image"` | Tên đầu vào trên node hình ảnh.                        |
+Các phần `image` và `video` cũng hỗ trợ Node đầu vào hình ảnh tham chiếu:
 
-## Chi tiết quy trình làm việc
+| Khóa                  | Bắt buộc                              | Mặc định | Mô tả                                               |
+| --------------------- | ------------------------------------- | -------- | --------------------------------------------------- |
+| `inputImageNodeId`    | Có (khi truyền hình ảnh tham chiếu)   | --       | ID Node nhận hình ảnh tham chiếu đã tải lên.        |
+| `inputImageInputName` | Không                                 | `"image"` | Tên đầu vào trên Node hình ảnh.                    |
+
+`apiKey` chấp nhận chuỗi literal hoặc đối tượng [tham chiếu bí mật](/vi/gateway/configuration-reference#secrets).
+
+## Chi tiết quy trình công việc
 
 <AccordionGroup>
-  <Accordion title="Quy trình làm việc hình ảnh">
+  <Accordion title="Image workflows">
     Đặt mô hình hình ảnh mặc định thành `comfy/workflow`:
 
     ```json5
@@ -250,9 +260,9 @@ Các phần `image` và `video` cũng hỗ trợ:
     }
     ```
 
-    **Ví dụ chỉnh sửa hình ảnh tham chiếu:**
+    **Ví dụ chỉnh sửa bằng hình ảnh tham chiếu:**
 
-    Để bật chỉnh sửa hình ảnh với một hình ảnh tham chiếu đã tải lên, hãy thêm `inputImageNodeId` vào cấu hình hình ảnh của bạn:
+    Để bật tính năng chỉnh sửa hình ảnh bằng hình ảnh tham chiếu đã tải lên, hãy thêm `inputImageNodeId` vào cấu hình hình ảnh của bạn:
 
     ```json5
     {
@@ -276,7 +286,7 @@ Các phần `image` và `video` cũng hỗ trợ:
 
   </Accordion>
 
-  <Accordion title="Quy trình làm việc video">
+  <Accordion title="Video workflows">
     Đặt mô hình video mặc định thành `comfy/workflow`:
 
     ```json5
@@ -291,26 +301,26 @@ Các phần `image` và `video` cũng hỗ trợ:
     }
     ```
 
-    Các quy trình làm việc video của Comfy hỗ trợ chuyển văn bản thành video và hình ảnh thành video thông qua đồ thị đã cấu hình.
+    Các quy trình công việc video của Comfy hỗ trợ chuyển văn bản thành video và hình ảnh thành video thông qua đồ thị đã cấu hình.
 
     <Note>
-    OpenClaw không truyền video đầu vào vào quy trình làm việc Comfy. Chỉ hỗ trợ lời nhắc văn bản và một hình ảnh tham chiếu đơn lẻ làm đầu vào.
+    OpenClaw không truyền video đầu vào vào các quy trình công việc Comfy. Chỉ hỗ trợ lời nhắc văn bản và một hình ảnh tham chiếu làm đầu vào.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Quy trình làm việc nhạc">
-    Plugin tích hợp sẵn đăng ký một nhà cung cấp tạo nhạc cho đầu ra âm thanh hoặc nhạc được định nghĩa bằng quy trình làm việc, được hiển thị thông qua công cụ dùng chung `music_generate`:
+  <Accordion title="Music workflows">
+    Plugin đi kèm đăng ký một nhà cung cấp tạo nhạc cho đầu ra âm thanh hoặc nhạc được xác định bởi quy trình công việc, được cung cấp thông qua công cụ dùng chung `music_generate`. Công cụ này chấp nhận một hình ảnh tham chiếu tùy chọn (tối đa 1):
 
     ```text
     /tool music_generate prompt="Warm ambient synth loop with soft tape texture"
     ```
 
-    Sử dụng phần cấu hình `music` để trỏ đến JSON quy trình làm việc âm thanh và node đầu ra của bạn.
+    Sử dụng phần cấu hình `music` để trỏ đến JSON quy trình công việc âm thanh và Node đầu ra của bạn.
 
   </Accordion>
 
-  <Accordion title="Khả năng tương thích ngược">
+  <Accordion title="Backward compatibility">
     Cấu hình hình ảnh cấp cao nhất hiện có (không có phần `image` lồng nhau) vẫn hoạt động:
 
     ```json5
@@ -329,22 +339,18 @@ Các phần `image` và `video` cũng hỗ trợ:
     }
     ```
 
-    OpenClaw coi hình dạng kế thừa đó là cấu hình quy trình làm việc hình ảnh. Bạn không cần di chuyển ngay lập tức, nhưng các phần `image` / `video` / `music` lồng nhau được khuyến nghị cho thiết lập mới.
-
-    <Tip>
-    Nếu bạn chỉ sử dụng tạo hình ảnh, cấu hình phẳng kế thừa và phần `image` lồng nhau mới tương đương về mặt chức năng.
-    </Tip>
+    OpenClaw coi cấu trúc cũ đó là cấu hình quy trình công việc hình ảnh. Bạn không cần di chuyển ngay lập tức, nhưng các phần `image` / `video` / `music` lồng nhau được khuyến nghị cho các thiết lập mới. Nếu bạn chỉ sử dụng tính năng tạo hình ảnh, cấu hình phẳng cũ và phần `image` lồng nhau mới tương đương nhau về chức năng.
 
   </Accordion>
 
-  <Accordion title="Kiểm thử trực tiếp">
-    Phạm vi kiểm thử trực tiếp tùy chọn có sẵn cho Plugin tích hợp sẵn:
+  <Accordion title="Live tests">
+    Có phạm vi kiểm thử trực tiếp tùy chọn cho Plugin đi kèm:
 
     ```bash
     OPENCLAW_LIVE_TEST=1 COMFY_LIVE_TEST=1 pnpm test:live -- extensions/comfy/comfy.live.test.ts
     ```
 
-    Kiểm thử trực tiếp bỏ qua từng trường hợp hình ảnh, video, hoặc nhạc riêng lẻ trừ khi phần quy trình làm việc Comfy tương ứng được cấu hình.
+    Bài kiểm thử trực tiếp sẽ bỏ qua từng trường hợp hình ảnh, video hoặc âm nhạc, trừ khi phần quy trình làm việc Comfy tương ứng đã được cấu hình.
 
   </Accordion>
 </AccordionGroup>
@@ -358,13 +364,13 @@ Các phần `image` và `video` cũng hỗ trợ:
   <Card title="Tạo video" href="/vi/tools/video-generation" icon="video">
     Cấu hình và cách sử dụng công cụ tạo video.
   </Card>
-  <Card title="Tạo nhạc" href="/vi/tools/music-generation" icon="music">
-    Thiết lập công cụ tạo nhạc và âm thanh.
+  <Card title="Tạo âm nhạc" href="/vi/tools/music-generation" icon="music">
+    Thiết lập công cụ tạo âm nhạc và âm thanh.
   </Card>
   <Card title="Danh mục nhà cung cấp" href="/vi/providers/index" icon="layers">
     Tổng quan về tất cả nhà cung cấp và tham chiếu mô hình.
   </Card>
   <Card title="Tham chiếu cấu hình" href="/vi/gateway/config-agents#agent-defaults" icon="gear">
-    Tham chiếu cấu hình đầy đủ, bao gồm mặc định của tác tử.
+    Tham chiếu cấu hình đầy đủ, bao gồm các giá trị mặc định của tác tử.
   </Card>
 </CardGroup>

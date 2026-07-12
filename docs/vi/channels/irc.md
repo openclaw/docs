@@ -1,21 +1,21 @@
 ---
 read_when:
     - Bạn muốn kết nối OpenClaw với các kênh IRC hoặc tin nhắn trực tiếp
-    - Bạn đang cấu hình danh sách cho phép IRC, chính sách nhóm hoặc kiểm soát lượt nhắc đến
+    - Bạn đang cấu hình danh sách cho phép IRC, chính sách nhóm hoặc cơ chế kiểm soát lượt nhắc đến
 summary: Thiết lập Plugin IRC, kiểm soát truy cập và khắc phục sự cố
 title: IRC
 x-i18n:
-    generated_at: "2026-06-27T17:10:44Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:39:50Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7182796ff92f98bd1e6c24cbd456dd1037fa304e3fca4eee13f62eea8cd946f6
+    source_hash: 23e288f18a57a3ee74a433feb1ffb7dda0480f998cf74d4ec825bd7f3c0745c5
     source_path: channels/irc.md
     workflow: 16
 ---
 
-Dùng IRC khi bạn muốn dùng OpenClaw trong các kênh cổ điển (`#room`) và tin nhắn trực tiếp.
-Cài đặt Plugin IRC chính thức, rồi cấu hình nó trong `channels.irc`.
+Sử dụng IRC khi bạn muốn OpenClaw hoạt động trong các kênh truyền thống (`#room`) và tin nhắn trực tiếp.
+Cài đặt Plugin IRC chính thức, sau đó cấu hình Plugin này trong `channels.irc`.
 
 ## Bắt đầu nhanh
 
@@ -25,8 +25,7 @@ Cài đặt Plugin IRC chính thức, rồi cấu hình nó trong `channels.irc`
 openclaw plugins install @openclaw/irc
 ```
 
-2. Bật cấu hình IRC trong `~/.openclaw/openclaw.json`.
-3. Thiết lập ít nhất:
+2. Thiết lập tối thiểu máy chủ, biệt danh và các kênh cần tham gia trong `~/.openclaw/openclaw.json`:
 
 ```json5
 {
@@ -43,51 +42,65 @@ openclaw plugins install @openclaw/irc
 }
 ```
 
-Ưu tiên máy chủ IRC riêng cho việc điều phối bot. Nếu bạn chủ ý dùng mạng IRC công cộng, các lựa chọn phổ biến gồm Libera.Chat, OFTC và Snoonet. Tránh các kênh công cộng dễ đoán cho lưu lượng backchannel của bot hoặc swarm.
-
-4. Khởi động/khởi động lại gateway:
+3. Khởi động/khởi động lại Gateway:
 
 ```bash
 openclaw gateway run
 ```
 
+Nên dùng máy chủ IRC riêng để điều phối bot. Nếu bạn chủ ý sử dụng mạng IRC công cộng, các lựa chọn phổ biến gồm Libera.Chat, OFTC và Snoonet. Tránh dùng các kênh công cộng có tên dễ đoán cho lưu lượng liên lạc hậu tuyến của bot hoặc cụm bot.
+
+## Cài đặt kết nối
+
+| Khóa                          | Mặc định                      | Ghi chú                                                     |
+| ----------------------------- | ----------------------------- | ----------------------------------------------------------- |
+| `host`                        | không có (bắt buộc)           | Tên máy chủ IRC                                             |
+| `port`                        | `6697` với TLS, `6667` thường | 1-65535                                                     |
+| `tls`                         | `true`                        | Chỉ đặt thành `false` khi chủ ý dùng văn bản thuần          |
+| `nick`                        | không có (bắt buộc)           | Biệt danh của bot                                           |
+| `username`                    | biệt danh, nếu không thì `openclaw` | Tên người dùng IRC                                     |
+| `realname`                    | `OpenClaw`                    | Trường tên thật/GECOS                                       |
+| `password` / `passwordFile`   | không có                      | Mật khẩu máy chủ; tệp phải là tệp thông thường              |
+| `channels`                    | không có                      | Các kênh cần tham gia (`["#openclaw"]`)                     |
+| `accounts` / `defaultAccount` | không có                      | Thiết lập nhiều tài khoản; biến môi trường chỉ điền cho tài khoản mặc định |
+
 ## Mặc định bảo mật
 
-- IRC dùng socket TCP/TLS thô nằm ngoài định tuyến proxy chuyển tiếp do người vận hành OpenClaw quản lý. Trong các triển khai yêu cầu mọi lưu lượng đi ra phải đi qua proxy chuyển tiếp đó, hãy đặt `channels.irc.enabled=false` trừ khi lưu lượng IRC đi ra trực tiếp đã được phê duyệt rõ ràng.
-- `channels.irc.dmPolicy` mặc định là `"pairing"`.
+- IRC sử dụng các socket TCP/TLS thô nằm ngoài định tuyến proxy chuyển tiếp do người vận hành OpenClaw quản lý. Trong các bản triển khai yêu cầu mọi lưu lượng đi ra phải qua proxy chuyển tiếp đó, hãy đặt `channels.irc.enabled=false` trừ khi lưu lượng IRC trực tiếp được phê duyệt rõ ràng.
+- `channels.irc.dmPolicy` mặc định là `"pairing"`: người gửi tin nhắn trực tiếp chưa xác định sẽ nhận được mã ghép nối để bạn phê duyệt bằng `openclaw pairing approve irc <code>`.
 - `channels.irc.groupPolicy` mặc định là `"allowlist"`.
-- Với `groupPolicy="allowlist"`, hãy đặt `channels.irc.groups` để định nghĩa các kênh được phép.
-- Dùng TLS (`channels.irc.tls=true`) trừ khi bạn chủ ý chấp nhận truyền tải dạng văn bản thuần.
+- Với `groupPolicy="allowlist"`, hãy đặt `channels.irc.groups` để xác định các kênh được phép.
+- Sử dụng TLS (`channels.irc.tls=true`) trừ khi bạn chủ ý chấp nhận truyền tải bằng văn bản thuần.
 
 ## Kiểm soát truy cập
 
-Có hai "cổng" riêng biệt cho các kênh IRC:
+Có hai "cổng" riêng biệt dành cho các kênh IRC:
 
 1. **Quyền truy cập kênh** (`groupPolicy` + `groups`): bot có chấp nhận tin nhắn từ một kênh hay không.
-2. **Quyền truy cập của người gửi** (`groupAllowFrom` / `groups["#channel"].allowFrom` theo từng kênh): ai được phép kích hoạt bot bên trong kênh đó.
+2. **Quyền truy cập của người gửi** (`groupAllowFrom` / `groups["#channel"].allowFrom` theo từng kênh): ai được phép kích hoạt bot trong kênh đó.
 
 Các khóa cấu hình:
 
-- Danh sách cho phép DM (quyền truy cập của người gửi DM): `channels.irc.allowFrom`
+- Danh sách cho phép tin nhắn trực tiếp (quyền truy cập của người gửi tin nhắn trực tiếp): `channels.irc.allowFrom`
 - Danh sách cho phép người gửi trong nhóm (quyền truy cập của người gửi trong kênh): `channels.irc.groupAllowFrom`
-- Điều khiển theo từng kênh (quy tắc kênh + người gửi + nhắc đến): `channels.irc.groups["#channel"]`
-- `channels.irc.groupPolicy="open"` cho phép các kênh chưa cấu hình (**theo mặc định vẫn được kiểm soát bằng nhắc đến**)
+- Các tùy chọn kiểm soát theo từng kênh (quy tắc về kênh, người gửi và lượt đề cập): `channels.irc.groups["#channel"]` với `requireMention`, `allowFrom`, `enabled`, `tools`, `toolsBySender`, `skills` và `systemPrompt`
+- `channels.irc.groupPolicy="open"` cho phép các kênh chưa được cấu hình (**theo mặc định vẫn yêu cầu đề cập**)
 
-Các mục trong danh sách cho phép nên dùng danh tính người gửi ổn định (`nick!user@host`).
-Khớp nick trần có thể thay đổi và chỉ được bật khi `channels.irc.dangerouslyAllowNameMatching: true`.
+Các mục trong danh sách cho phép nên sử dụng danh tính người gửi ổn định (`nick!user@host`).
+Việc đối chiếu chỉ bằng biệt danh có thể thay đổi và chỉ được bật khi `channels.irc.dangerouslyAllowNameMatching: true`.
 
-### Lỗi thường gặp: `allowFrom` dành cho DM, không phải kênh
+### Lỗi thường gặp: `allowFrom` dành cho tin nhắn trực tiếp, không phải kênh
 
-Nếu bạn thấy log như:
+Nếu bạn thấy nhật ký như:
 
 - `irc: drop group sender alice!ident@host (policy=allowlist)`
 
-...điều đó nghĩa là người gửi không được phép cho tin nhắn **nhóm/kênh**. Khắc phục bằng một trong hai cách:
+...điều đó có nghĩa là người gửi không được phép gửi tin nhắn **nhóm/kênh**. Hãy khắc phục bằng một trong hai cách:
 
-- đặt `channels.irc.groupAllowFrom` (toàn cục cho mọi kênh), hoặc
+- đặt `channels.irc.groupAllowFrom` (áp dụng chung cho tất cả các kênh), hoặc
 - đặt danh sách cho phép người gửi theo từng kênh: `channels.irc.groups["#channel"].allowFrom`
 
-Ví dụ (cho phép bất kỳ ai trong `#tuirc-dev` nói chuyện với bot):
+Ví dụ (cho phép mọi người trong `#openclaw` trò chuyện với bot):
 
 ```json5
 {
@@ -95,20 +108,20 @@ Ví dụ (cho phép bất kỳ ai trong `#tuirc-dev` nói chuyện với bot):
     irc: {
       groupPolicy: "allowlist",
       groups: {
-        "#tuirc-dev": { allowFrom: ["*"] },
+        "#openclaw": { allowFrom: ["*"] },
       },
     },
   },
 }
 ```
 
-## Kích hoạt trả lời (nhắc đến)
+## Kích hoạt phản hồi (lượt đề cập)
 
-Ngay cả khi một kênh được cho phép (qua `groupPolicy` + `groups`) và người gửi được cho phép, OpenClaw mặc định **kiểm soát bằng nhắc đến** trong ngữ cảnh nhóm.
+Ngay cả khi một kênh được cho phép (thông qua `groupPolicy` + `groups`) và người gửi cũng được cho phép, OpenClaw theo mặc định vẫn **yêu cầu đề cập** trong ngữ cảnh nhóm. Bot được xem là đã được đề cập khi tin nhắn chứa biệt danh hiện được kết nối của bot hoặc khớp với các mẫu đề cập mà bạn đã cấu hình.
 
-Điều đó nghĩa là bạn có thể thấy các log như `drop channel … (missing-mention)` trừ khi tin nhắn có mẫu nhắc đến khớp với bot.
+Điều đó có nghĩa là bạn có thể thấy nhật ký như `drop channel … (missing-mention)` trừ khi tin nhắn chứa mẫu đề cập khớp với bot.
 
-Để bot trả lời trong một kênh IRC **mà không cần được nhắc đến**, hãy tắt kiểm soát bằng nhắc đến cho kênh đó:
+Để bot phản hồi trong một kênh IRC **mà không cần đề cập**, hãy tắt yêu cầu đề cập cho kênh đó:
 
 ```json5
 {
@@ -116,7 +129,7 @@ Ngay cả khi một kênh được cho phép (qua `groupPolicy` + `groups`) và 
     irc: {
       groupPolicy: "allowlist",
       groups: {
-        "#tuirc-dev": {
+        "#openclaw": {
           requireMention: false,
           allowFrom: ["*"],
         },
@@ -126,7 +139,7 @@ Ngay cả khi một kênh được cho phép (qua `groupPolicy` + `groups`) và 
 }
 ```
 
-Hoặc để cho phép **tất cả** kênh IRC (không có danh sách cho phép theo từng kênh) và vẫn trả lời mà không cần nhắc đến:
+Hoặc để cho phép **tất cả** các kênh IRC (không có danh sách cho phép theo từng kênh) nhưng vẫn phản hồi mà không cần đề cập:
 
 ```json5
 {
@@ -141,19 +154,19 @@ Hoặc để cho phép **tất cả** kênh IRC (không có danh sách cho phép
 }
 ```
 
-## Ghi chú bảo mật (khuyến nghị cho kênh công cộng)
+## Lưu ý bảo mật (khuyến nghị cho các kênh công cộng)
 
-Nếu bạn cho phép `allowFrom: ["*"]` trong một kênh công cộng, bất kỳ ai cũng có thể prompt bot.
-Để giảm rủi ro, hãy hạn chế công cụ cho kênh đó.
+Nếu bạn cho phép `allowFrom: ["*"]` trong một kênh công cộng, bất kỳ ai cũng có thể gửi lời nhắc cho bot.
+Để giảm rủi ro, hãy hạn chế các công cụ cho kênh đó.
 
-### Cùng công cụ cho mọi người trong kênh
+### Cùng một bộ công cụ cho mọi người trong kênh
 
 ```json5
 {
   channels: {
     irc: {
       groups: {
-        "#tuirc-dev": {
+        "#openclaw": {
           allowFrom: ["*"],
           tools: {
             deny: ["group:runtime", "group:fs", "gateway", "nodes", "cron", "browser"],
@@ -167,20 +180,20 @@ Nếu bạn cho phép `allowFrom: ["*"]` trong một kênh công cộng, bất k
 
 ### Công cụ khác nhau theo từng người gửi (chủ sở hữu có nhiều quyền hơn)
 
-Dùng `toolsBySender` để áp dụng chính sách chặt hơn cho `"*"` và chính sách thoáng hơn cho nick của bạn:
+Sử dụng `toolsBySender` để áp dụng chính sách nghiêm ngặt hơn cho `"*"` và chính sách ít hạn chế hơn cho biệt danh của bạn:
 
 ```json5
 {
   channels: {
     irc: {
       groups: {
-        "#tuirc-dev": {
+        "#openclaw": {
           allowFrom: ["*"],
           toolsBySender: {
             "*": {
               deny: ["group:runtime", "group:fs", "gateway", "nodes", "cron", "browser"],
             },
-            "id:eigen": {
+            "id:alice": {
               deny: ["gateway", "nodes", "cron"],
             },
           },
@@ -193,16 +206,15 @@ Dùng `toolsBySender` để áp dụng chính sách chặt hơn cho `"*"` và ch
 
 Ghi chú:
 
-- Các khóa `toolsBySender` nên dùng `id:` cho giá trị danh tính người gửi IRC:
-  `id:eigen` hoặc `id:eigen!~eigen@174.127.248.171` để khớp mạnh hơn.
-- Các khóa cũ không có tiền tố vẫn được chấp nhận và chỉ được khớp như `id:`.
-- Chính sách người gửi khớp đầu tiên sẽ thắng; `"*"` là phương án dự phòng ký tự đại diện.
+- Các khóa `toolsBySender` nên sử dụng tiền tố rõ ràng (`channel:`, `id:`, `e164:`, `username:`, `name:`). Đối với IRC, hãy sử dụng `id:` cùng với giá trị danh tính của người gửi: `id:alice` hoặc `id:alice!~alice@203.0.113.7` để đối chiếu chặt chẽ hơn.
+- Các khóa cũ không có tiền tố vẫn được chấp nhận, chỉ được đối chiếu như `id:` và sẽ tạo cảnh báo ngừng hỗ trợ.
+- Chính sách người gửi khớp đầu tiên sẽ được áp dụng; `"*"` là phương án dự phòng ký tự đại diện.
 
-Để biết thêm về quyền truy cập nhóm so với kiểm soát bằng nhắc đến (và cách chúng tương tác), xem: [/channels/groups](/vi/channels/groups).
+Để tìm hiểu thêm về quyền truy cập nhóm so với yêu cầu đề cập (và cách chúng tương tác), hãy xem: [/channels/groups](/vi/channels/groups).
 
 ## NickServ
 
-Để định danh với NickServ sau khi kết nối:
+Để xác thực với NickServ sau khi kết nối:
 
 ```json5
 {
@@ -218,7 +230,9 @@ Ghi chú:
 }
 ```
 
-Đăng ký một lần tùy chọn khi kết nối:
+Theo mặc định, việc xác thực NickServ sẽ chạy mỗi khi mật khẩu được thiết lập (`enabled` chỉ cần được đặt thành `false` nếu muốn không tham gia). `service` mặc định là `NickServ`; `passwordFile` là phương án thay thế cho `password` nội tuyến.
+
+Tùy chọn đăng ký một lần khi kết nối (`register: true` yêu cầu `registerEmail`):
 
 ```json5
 {
@@ -233,7 +247,7 @@ Ghi chú:
 }
 ```
 
-Tắt `register` sau khi nick đã được đăng ký để tránh thử REGISTER lặp lại.
+Tắt `register` sau khi biệt danh đã được đăng ký để tránh các lần thử REGISTER lặp lại.
 
 ## Biến môi trường
 
@@ -250,18 +264,18 @@ Tài khoản mặc định hỗ trợ:
 - `IRC_NICKSERV_PASSWORD`
 - `IRC_NICKSERV_REGISTER_EMAIL`
 
-Không thể đặt `IRC_HOST` từ tệp `.env` của workspace; xem [Tệp `.env` của workspace](/vi/gateway/security).
+Không thể đặt `IRC_HOST` từ tệp `.env` của không gian làm việc; xem [Tệp `.env` của không gian làm việc](/vi/gateway/security).
 
 ## Khắc phục sự cố
 
-- Nếu bot kết nối nhưng không bao giờ trả lời trong kênh, hãy kiểm tra `channels.irc.groups` **và** liệu kiểm soát bằng nhắc đến có đang bỏ tin nhắn (`missing-mention`) hay không. Nếu bạn muốn nó trả lời mà không cần ping, hãy đặt `requireMention:false` cho kênh.
-- Nếu đăng nhập thất bại, hãy kiểm tra nick còn khả dụng và mật khẩu máy chủ.
-- Nếu TLS thất bại trên mạng tùy chỉnh, hãy kiểm tra host/port và thiết lập chứng chỉ.
+- Nếu bot kết nối nhưng không bao giờ phản hồi trong các kênh, hãy kiểm tra `channels.irc.groups` **và** xem việc yêu cầu đề cập có đang loại bỏ tin nhắn hay không (`missing-mention`). Nếu bạn muốn bot phản hồi mà không cần gọi tên, hãy đặt `requireMention:false` cho kênh.
+- Nếu đăng nhập thất bại, hãy kiểm tra tính khả dụng của biệt danh và mật khẩu máy chủ.
+- Nếu TLS thất bại trên mạng tùy chỉnh, hãy kiểm tra máy chủ/cổng và thiết lập chứng chỉ.
 
 ## Liên quan
 
-- [Tổng quan kênh](/vi/channels) — tất cả các kênh được hỗ trợ
-- [Ghép đôi](/vi/channels/pairing) — xác thực DM và luồng ghép đôi
-- [Nhóm](/vi/channels/groups) — hành vi trò chuyện nhóm và kiểm soát bằng nhắc đến
+- [Tổng quan về các kênh](/vi/channels) — tất cả các kênh được hỗ trợ
+- [Ghép nối](/vi/channels/pairing) — quy trình xác thực và ghép nối tin nhắn trực tiếp
+- [Nhóm](/vi/channels/groups) — hành vi trò chuyện nhóm và yêu cầu đề cập
 - [Định tuyến kênh](/vi/channels/channel-routing) — định tuyến phiên cho tin nhắn
 - [Bảo mật](/vi/gateway/security) — mô hình truy cập và gia cố bảo mật

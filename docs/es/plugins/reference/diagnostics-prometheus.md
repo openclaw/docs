@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Estás instalando, configurando o auditando el plugin diagnostics-prometheus
-summary: Exportador de Prometheus de diagnósticos de OpenClaw para métricas de tiempo de ejecución.
-title: Plugin de Prometheus para diagnóstico
+    - Está instalando, configurando o auditando el plugin diagnostics-prometheus
+summary: Exportador de Prometheus para diagnósticos de OpenClaw y métricas de tiempo de ejecución.
+title: Plugin de diagnóstico de Prometheus
 x-i18n:
-    generated_at: "2026-06-27T12:19:57Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T23:23:55Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: dbf2b296f6ff8a468ad0072dc78066a48a9bee26cf1d233506aeae79149b5822
@@ -13,15 +13,15 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin de diagnóstico Prometheus
+# Plugin de diagnóstico de Prometheus
 
-Exportador Prometheus de diagnóstico de OpenClaw para métricas de runtime.
+Exportador de diagnóstico de Prometheus de OpenClaw para métricas de ejecución.
 
 ## Distribución
 
 - Paquete: `@openclaw/diagnostics-prometheus`
-- Ruta de instalación: npm; ClawHub: `clawhub:@openclaw/diagnostics-prometheus`
+- Método de instalación: npm; ClawHub: `clawhub:@openclaw/diagnostics-prometheus`
 
 ## Superficie
 
-plugin
+Plugin

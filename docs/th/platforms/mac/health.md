@@ -1,47 +1,56 @@
 ---
 read_when:
-    - การดีบักตัวบ่งชี้สุขภาพของแอป macOS
-summary: วิธีที่แอป macOS รายงานสถานะสุขภาพของ gateway/Baileys
-title: Health checks (macOS)
+    - การแก้ไขข้อบกพร่องของตัวบ่งชี้สถานะแอป Mac
+summary: วิธีที่แอป macOS รายงานสถานะความพร้อมใช้งานของ Gateway/ช่องทาง
+title: การตรวจสอบสถานะการทำงาน (macOS)
 x-i18n:
-    generated_at: "2026-04-24T09:21:50Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: a7488b39b0eec013083f52e2798d719bec35780acad743a97f5646a6891810e5
-    source_path: platforms/mac/health.md
-    workflow: 15
+    generated_at: "2026-07-12T16:23:35Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: a086c527796dbe453bdee1cc9cbe1e0fc1157de710c8c6de186411fe9aa3bc7b
+    source_path: platforms/mac/health.md
+    workflow: 16
 ---
 
-# Health Checks บน macOS
+# การตรวจสอบสถานะบน macOS
 
-วิธีดูว่าช่องทางที่เชื่อมต่ออยู่ยังทำงานปกติหรือไม่จากแอปบน menu bar
+วิธีอ่านสถานะการทำงานของช่องทางที่เชื่อมโยงจากแอปแถบเมนู
 
-## Menu bar
+## แถบเมนู
 
-- จุดแสดงสถานะตอนนี้สะท้อนสุขภาพของ Baileys:
-  - สีเขียว: เชื่อมต่อแล้ว + socket เพิ่งเปิดเมื่อไม่นานมานี้
-  - สีส้ม: กำลังเชื่อมต่อ/พยายามใหม่
-  - สีแดง: ออกจากระบบแล้วหรือ probe ล้มเหลว
-- บรรทัดรองจะแสดง "linked · auth 12m" หรือแสดงเหตุผลของความล้มเหลว
-- รายการเมนู "Run Health Check" จะเรียก probe แบบตามต้องการ
+จุดแสดงสถานะ:
 
-## Settings
+- สีเขียว: เชื่อมโยงแล้ว + การตรวจสอบทำงานปกติ
+- สีส้ม: เชื่อมโยงแล้ว แต่การตรวจสอบช่องทางรายงานว่าประสิทธิภาพลดลง/ไม่ได้เชื่อมต่อ
+- สีแดง: ยังไม่ได้เชื่อมโยง
 
-- แท็บ General มีการ์ด Health ที่แสดง: อายุ auth ของการเชื่อมต่อ, path/count ของ session-store, เวลา last check, last error/status code และปุ่มสำหรับ Run Health Check / Reveal Logs
-- ใช้ snapshot ที่แคชไว้เพื่อให้ UI โหลดได้ทันที และย้อนกลับอย่างนุ่มนวลเมื่อออฟไลน์
-- **แท็บ Channels** แสดงสถานะช่องทาง + controls สำหรับ WhatsApp/Telegram (login QR, logout, probe, last disconnect/error)
+บรรทัดรองแสดงข้อความ "เชื่อมโยงแล้ว · ยืนยันตัวตนเมื่อ 12 นาทีที่แล้ว" หรือแสดงสาเหตุของความล้มเหลว
+"เรียกใช้การตรวจสอบสถานะทันที" ในเมนูจะเรียกการตรวจสอบตามคำขอ
 
-## Probe ทำงานอย่างไร
+## การตั้งค่า
 
-- แอปรัน `openclaw health --json` ผ่าน `ShellExecutor` ทุกประมาณ ~60 วินาทีและตามต้องการ probe จะโหลด creds และรายงานสถานะโดยไม่ส่งข้อความ
-- แคช last good snapshot และ last error แยกกันเพื่อหลีกเลี่ยงการกะพริบ และแสดง timestamp ของแต่ละรายการ
+- แท็บทั่วไปแสดงการ์ดสถานะการทำงาน ได้แก่ จุดแสดงสถานะ บรรทัดสรุป (สถานะการเชื่อมโยง +
+  ระยะเวลาตั้งแต่ยืนยันตัวตน) และบรรทัดรายละเอียดความล้มเหลวซึ่งอาจแสดงหรือไม่ก็ได้ พร้อมปุ่ม **ลองอีกครั้งทันที** และ
+  **เปิดบันทึก**
+- **แท็บช่องทาง** แสดงสถานะและตัวควบคุมของแต่ละช่องทาง (คิวอาร์โค้ดสำหรับเข้าสู่ระบบ
+  ออกจากระบบ ตรวจสอบ การตัดการเชื่อมต่อ/ข้อผิดพลาดล่าสุด) สำหรับ WhatsApp และ Telegram
+
+## วิธีการทำงานของการตรวจสอบ
+
+แอปจะเรียก RPC `health` ของ Gateway ผ่านการเชื่อมต่อ WebSocket
+ที่มีอยู่ (ไม่ใช่การเรียกใช้ผ่านเชลล์ CLI) ทุกประมาณ 60 วินาทีและเมื่อมีการร้องขอ RPC จะโหลด
+ข้อมูลประจำตัวและรายงานสถานะโดยไม่ส่งข้อความ แอปจะแคชสแนปช็อตล่าสุด
+ที่ทำงานปกติและข้อผิดพลาดล่าสุดแยกกัน เพื่อให้ UI โหลดได้ทันทีและ
+ไม่กะพริบขณะออฟไลน์
 
 ## เมื่อไม่แน่ใจ
 
-- คุณยังสามารถใช้โฟลว์ CLI ใน [Gateway health](/th/gateway/health) (`openclaw status`, `openclaw status --deep`, `openclaw health --json`) และ tail `/tmp/openclaw/openclaw-*.log` เพื่อดู `web-heartbeat` / `web-reconnect`
+ใช้ขั้นตอน CLI ใน [สถานะการทำงานของ Gateway](/th/gateway/health) (`openclaw status`,
+`openclaw status --deep`, `openclaw health --json`) และติดตาม
+`/tmp/openclaw/openclaw-*.log` โดยกรองหา `web-heartbeat` / `web-reconnect`
 
-## ที่เกี่ยวข้อง
+## เนื้อหาที่เกี่ยวข้อง
 
-- [Gateway health](/th/gateway/health)
+- [สถานะการทำงานของ Gateway](/th/gateway/health)
 - [แอป macOS](/th/platforms/macos)

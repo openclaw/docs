@@ -5,33 +5,32 @@ read_when:
 summary: Configuration de Tencent Cloud TokenHub et TokenPlan pour hy3
 title: Tencent Cloud (TokenHub / TokenPlan)
 x-i18n:
-    generated_at: "2026-07-12T15:54:44Z"
+    generated_at: "2026-07-12T03:17:06Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 5c2ffb8ab824539c7765d38e4332c30a6dd371fdc19be825f2ad9af0197fa256
     source_path: providers/tencent.md
     workflow: 16
 ---
 
-Installez le plugin fournisseur officiel Tencent Cloud pour accéder à Tencent Hy3 par l’intermédiaire de deux points de terminaison — TokenHub (`tencent-tokenhub`) et TokenPlan (`tencent-tokenplan`) — à l’aide d’une API compatible avec OpenAI.
+Installez le Plugin fournisseur officiel de Tencent Cloud pour accéder à Tencent Hy3 via deux points de terminaison — TokenHub (`tencent-tokenhub`) et TokenPlan (`tencent-tokenplan`) — à l’aide d’une API compatible avec OpenAI.
 
-| Propriété                                      | Valeur                                                |
-| ---------------------------------------------- | ----------------------------------------------------- |
-| Identifiants des fournisseurs                  | `tencent-tokenhub`, `tencent-tokenplan`               |
-| Paquet                                         | `@openclaw/tencent-provider`                          |
-| Variable d’environnement d’authentification TokenHub  | `TOKENHUB_API_KEY`                                    |
-| Variable d’environnement d’authentification TokenPlan | `TOKENPLAN_API_KEY`                                   |
-| Option d’intégration TokenHub                  | `--auth-choice tokenhub-api-key`                      |
-| Option d’intégration TokenPlan                 | `--auth-choice tokenplan-api-key`                     |
-| Option CLI directe TokenHub                    | `--tokenhub-api-key <key>`                            |
-| Option CLI directe TokenPlan                   | `--tokenplan-api-key <key>`                           |
-| API                                            | Compatible avec OpenAI (`openai-completions`)         |
-| URL de base TokenHub                           | `https://tokenhub.tencentmaas.com/v1`                 |
-| URL de base mondiale TokenHub                  | `https://tokenhub-intl.tencentmaas.com/v1` (remplacement) |
-| URL de base TokenPlan                          | `https://api.lkeap.cloud.tencent.com/plan/v3`         |
-| Modèle par défaut                              | `tencent-tokenhub/hy3`                                |
+| Propriété                                | Valeur                                                |
+| ---------------------------------------- | ----------------------------------------------------- |
+| Identifiants des fournisseurs            | `tencent-tokenhub`, `tencent-tokenplan`               |
+| Paquet                                   | `@openclaw/tencent-provider`                          |
+| Variable d’environnement d’authentification TokenHub  | `TOKENHUB_API_KEY`                       |
+| Variable d’environnement d’authentification TokenPlan | `TOKENPLAN_API_KEY`                      |
+| Option d’intégration TokenHub            | `--auth-choice tokenhub-api-key`                      |
+| Option d’intégration TokenPlan           | `--auth-choice tokenplan-api-key`                     |
+| Option CLI directe TokenHub              | `--tokenhub-api-key <key>`                            |
+| Option CLI directe TokenPlan             | `--tokenplan-api-key <key>`                           |
+| API                                      | Compatible avec OpenAI (`openai-completions`)         |
+| URL de base TokenHub                     | `https://tokenhub.tencentmaas.com/v1`                 |
+| URL de base globale TokenHub             | `https://tokenhub-intl.tencentmaas.com/v1` (remplacement) |
+| URL de base TokenPlan                    | `https://api.lkeap.cloud.tencent.com/plan/v3`         |
+| Modèle par défaut                        | `tencent-tokenhub/hy3`                                |
 
 ## Démarrage rapide
 
@@ -39,7 +38,7 @@ Installez le plugin fournisseur officiel Tencent Cloud pour accéder à Tencent 
   <Step title="Créer une clé API Tencent">
     Créez une clé API pour Tencent Cloud TokenHub et TokenPlan. Si vous choisissez une portée d’accès limitée pour la clé, incluez **hy3** (ainsi que **hy3 preview** si vous prévoyez de l’utiliser sur TokenHub) dans les modèles autorisés.
   </Step>
-  <Step title="Exécuter l’intégration">
+  <Step title="Lancer l’intégration">
     <CodeGroup>
 
 ```bash Intégration TokenHub
@@ -99,18 +98,18 @@ openclaw onboard --non-interactive \
 ```
 
 <Note>
-`--accept-risk` est requis avec `--non-interactive`.
+`--accept-risk` est obligatoire avec `--non-interactive`.
 </Note>
 
 ## Catalogue intégré
 
-| Référence du modèle            | Nom                    | Entrée | Contexte | Sortie maximale | Remarques                     |
-| ------------------------------ | ---------------------- | ------ | -------- | --------------- | ----------------------------- |
-| `tencent-tokenhub/hy3-preview` | hy3 preview (TokenHub) | texte  | 256,000  | 64,000          | raisonnement activé           |
-| `tencent-tokenhub/hy3`         | hy3 (TokenHub)         | texte  | 256,000  | 64,000          | raisonnement activé           |
-| `tencent-tokenplan/hy3`        | hy3 (TokenPlan)        | texte  | 256,000  | 64,000          | raisonnement activé           |
+| Référence du modèle             | Nom                    | Entrée | Contexte | Sortie maximale | Remarques               |
+| ------------------------------- | ---------------------- | ------ | -------- | --------------- | ----------------------- |
+| `tencent-tokenhub/hy3-preview`  | hy3 preview (TokenHub) | texte  | 256,000  | 64,000          | raisonnement activé     |
+| `tencent-tokenhub/hy3`          | hy3 (TokenHub)         | texte  | 256,000  | 64,000          | raisonnement activé     |
+| `tencent-tokenplan/hy3`         | hy3 (TokenPlan)        | texte  | 256,000  | 64,000          | raisonnement activé     |
 
-hy3 est le grand modèle de langage MoE de Tencent Hunyuan destiné au raisonnement, au suivi d’instructions avec un contexte long, au code et aux workflows d’agents. Les exemples de Tencent compatibles avec OpenAI utilisent `hy3` comme identifiant de modèle et prennent en charge l’appel d’outils standard de complétion de conversation ainsi que `reasoning_effort`.
+hy3 est le grand modèle de langage MoE de Tencent Hunyuan destiné au raisonnement, au suivi d’instructions avec un contexte long, au code et aux flux de travail d’agents. Les exemples compatibles avec OpenAI de Tencent utilisent `hy3` comme identifiant de modèle et prennent en charge les appels d’outils standard de l’API Chat Completions ainsi que `reasoning_effort`.
 
 <Tip>
   L’identifiant du modèle est `hy3`. Ne le confondez pas avec les modèles `HY-3D-*` de Tencent, qui sont des API de génération 3D et non le modèle de conversation OpenClaw configuré par ce fournisseur.
@@ -120,7 +119,7 @@ hy3 est le grand modèle de langage MoE de Tencent Hunyuan destiné au raisonnem
 
 <AccordionGroup>
   <Accordion title="Remplacement du point de terminaison">
-    Le catalogue intégré d’OpenClaw utilise le point de terminaison `https://tokenhub.tencentmaas.com/v1` de Tencent Cloud. Remplacez-le uniquement si votre compte ou votre région TokenHub en exige un autre :
+    Le catalogue intégré d’OpenClaw utilise le point de terminaison Tencent Cloud `https://tokenhub.tencentmaas.com/v1`. Remplacez-le uniquement si votre compte ou votre région TokenHub en exige un autre :
 
     ```bash
     openclaw config set models.providers.tencent-tokenhub.baseUrl "https://your-endpoint/v1"
@@ -129,10 +128,10 @@ hy3 est le grand modèle de langage MoE de Tencent Hunyuan destiné au raisonnem
   </Accordion>
 
   <Accordion title="Disponibilité des variables d’environnement pour le démon">
-    Si le Gateway s’exécute en tant que service géré (launchd, systemd, Docker), `TOKENHUB_API_KEY` et `TOKENPLAN_API_KEY` doivent être visibles par ce processus. Définissez-les dans `~/.openclaw/.env` ou au moyen de `env.shellEnv` afin que les environnements d’exécution de launchd, systemd ou Docker puissent les lire.
+    Si le Gateway s’exécute en tant que service géré (launchd, systemd, Docker), `TOKENHUB_API_KEY` et `TOKENPLAN_API_KEY` doivent être visibles par ce processus. Définissez-les dans `~/.openclaw/.env` ou via `env.shellEnv` afin que les environnements d’exécution de launchd, systemd ou Docker puissent les lire.
 
     <Warning>
-      Les clés exportées uniquement dans un shell interactif ne sont pas visibles par les processus Gateway gérés. Utilisez le fichier d’environnement ou le mécanisme de configuration pour assurer une disponibilité persistante.
+      Les clés exportées uniquement dans un shell interactif ne sont pas visibles par les processus Gateway gérés. Utilisez le fichier d’environnement ou le point de configuration pour assurer leur disponibilité persistante.
     </Warning>
 
   </Accordion>
@@ -148,9 +147,9 @@ hy3 est le grand modèle de langage MoE de Tencent Hunyuan destiné au raisonnem
     Schéma de configuration complet, y compris les paramètres des fournisseurs.
   </Card>
   <Card title="Tencent TokenHub" href="https://cloud.tencent.com/product/tokenhub" icon="arrow-up-right-from-square">
-    Page produit TokenHub de Tencent Cloud.
+    Page du produit TokenHub de Tencent Cloud.
   </Card>
   <Card title="Fiche du modèle Hy3 preview" href="https://huggingface.co/tencent/Hy3-preview" icon="square-poll-horizontal">
-    Détails et benchmarks de la version préliminaire de Tencent Hunyuan Hy3.
+    Détails et évaluations comparatives de Tencent Hunyuan Hy3 preview.
   </Card>
 </CardGroup>

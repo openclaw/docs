@@ -1,17 +1,17 @@
 ---
 read_when:
-    - دنبال سریع‌ترین مراحل راه‌اندازی هستید
-    - از یک پیوند قدیمی به اینجا هدایت شده‌اید
-summary: شروع سریع به «شروع به کار» منتقل شده است.
+    - شما به‌دنبال سریع‌ترین مراحل راه‌اندازی هستید
+    - از طریق یک پیوند قدیمی‌تر به اینجا هدایت شده‌اید
+summary: شروع سریع به «آغاز به کار» منتقل شده است.
 title: شروع سریع
 x-i18n:
-    generated_at: "2026-04-29T23:37:21Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:49:01Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: faff0c266d7e509952e1492ef224a83c39379461c7258e379296b167beb68ad0
     source_path: start/quickstart.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 <Info>
@@ -20,10 +20,10 @@ x-i18n:
 
 <Columns>
   <Card title="شروع به کار" href="/fa/start/getting-started">
-    OpenClaw را نصب کنید و نخستین گفتگوی خود را در چند دقیقه اجرا کنید.
+    OpenClaw را نصب کنید و نخستین گفت‌وگوی خود را در چند دقیقه اجرا کنید.
   </Card>
   <Card title="راه‌اندازی اولیه (CLI)" href="/fa/start/wizard">
-    مرجع کامل راه‌اندازی اولیه CLI و گزینه‌های پیشرفته.
+    مرجع کامل راه‌اندازی اولیه با CLI و گزینه‌های پیشرفته.
   </Card>
 </Columns>
 

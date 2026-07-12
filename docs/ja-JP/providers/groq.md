@@ -1,13 +1,13 @@
 ---
 read_when:
-    - OpenClawでGroqを使用する
+    - OpenClaw で Groq を使用する場合
     - APIキーの環境変数またはCLI認証の選択が必要です
     - Groq で Whisper 音声文字起こしを設定しています
-summary: Groq セットアップ（認証 + モデル選択 + Whisper 文字起こし）
+summary: Groq のセットアップ（認証 + モデル選択 + Whisper 文字起こし）
 title: Groq
 x-i18n:
-    generated_at: "2026-07-05T11:44:24Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:35:41Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: f04f9365127c72aa2f976f453e5d11657b19d6b4a57de1179b88924744db1dc1
@@ -15,19 +15,19 @@ x-i18n:
     workflow: 16
 ---
 
-[Groq](https://groq.com) は、カスタム LPU ハードウェアを使用して、オープンウェイトモデル（Llama、Gemma、Kimi、Qwen、GPT OSS など）で超高速推論を提供します。Groq Plugin は、OpenAI 互換のチャットプロバイダーと音声メディア理解プロバイダーの両方を登録します。
+[Groq](https://groq.com) は、カスタム LPU ハードウェアを使用し、オープンウェイトモデル（Llama、Gemma、Kimi、Qwen、GPT OSS など）で超高速な推論を提供します。Groq Plugin は、OpenAI 互換のチャットプロバイダーと、音声メディア理解プロバイダーの両方を登録します。
 
-| プロパティ           | 値                                       |
-| ---------------------- | ---------------------------------------- |
-| プロバイダーID       | `groq`                                   |
-| Plugin                 | 公式外部パッケージ                       |
-| 認証 env var           | `GROQ_API_KEY`                           |
-| API                    | OpenAI 互換（`openai-completions`）      |
-| ベースURL              | `https://api.groq.com/openai/v1`         |
-| 音声文字起こし        | `whisper-large-v3-turbo`（デフォルト）   |
-| 推奨チャットデフォルト | `groq/llama-3.3-70b-versatile`           |
+| プロパティ                 | 値                                       |
+| -------------------------- | ---------------------------------------- |
+| プロバイダー ID            | `groq`                                   |
+| Plugin                     | 公式外部パッケージ                       |
+| 認証環境変数               | `GROQ_API_KEY`                           |
+| API                        | OpenAI 互換（`openai-completions`）      |
+| ベース URL                 | `https://api.groq.com/openai/v1`         |
+| 音声文字起こし             | `whisper-large-v3-turbo`（デフォルト）   |
+| 推奨デフォルトチャットモデル | `groq/llama-3.3-70b-versatile`           |
 
-## Plugin をインストール
+## Plugin のインストール
 
 公式 Plugin をインストールしてから、Gateway を再起動します。
 
@@ -39,15 +39,15 @@ openclaw gateway restart
 ## はじめに
 
 <Steps>
-  <Step title="API キーを取得">
+  <Step title="API キーを取得する">
     [console.groq.com/keys](https://console.groq.com/keys) で API キーを作成します。
   </Step>
-  <Step title="API キーを設定">
+  <Step title="API キーを設定する">
     ```bash
 export GROQ_API_KEY=gsk_...
 ```
   </Step>
-  <Step title="デフォルトモデルを設定">
+  <Step title="デフォルトモデルを設定する">
     ```json5
     {
       agents: {
@@ -58,7 +58,7 @@ export GROQ_API_KEY=gsk_...
     }
     ```
   </Step>
-  <Step title="カタログに到達できることを確認">
+  <Step title="カタログにアクセスできることを確認する">
     ```bash
     openclaw models list --provider groq
     ```
@@ -80,43 +80,43 @@ export GROQ_API_KEY=gsk_...
 
 ## 組み込みカタログ
 
-OpenClaw は、推論ありと推論なしのエントリを含む、manifest ベースの Groq カタログを同梱しています。インストール済みバージョンの静的な行を確認するには `openclaw models list --provider groq` を実行し、Groq の公式リストを確認するには [console.groq.com/docs/models](https://console.groq.com/docs/models) を参照してください。
+OpenClaw には、推論モデルと非推論モデルの両方を含む、マニフェストに基づく Groq カタログが同梱されています。インストール済みバージョンの静的な一覧を確認するには `openclaw models list --provider groq` を実行し、Groq の正式な一覧を確認するには [console.groq.com/docs/models](https://console.groq.com/docs/models) を参照してください。
 
-| モデル参照                                       | 名前                    | 推論 | 入力         | コンテキスト |
-| ------------------------------------------------ | ----------------------- | --------- | ------------ | ------- |
-| `groq/llama-3.3-70b-versatile`                   | Llama 3.3 70B Versatile | なし      | テキスト     | 131,072 |
-| `groq/llama-3.1-8b-instant`                      | Llama 3.1 8B Instant    | なし      | テキスト     | 131,072 |
-| `groq/meta-llama/llama-4-scout-17b-16e-instruct` | Llama 4 Scout 17B       | なし      | テキスト + 画像 | 131,072 |
-| `groq/openai/gpt-oss-120b`                       | GPT OSS 120B            | あり      | テキスト     | 131,072 |
-| `groq/openai/gpt-oss-20b`                        | GPT OSS 20B             | あり      | テキスト     | 131,072 |
-| `groq/openai/gpt-oss-safeguard-20b`              | Safety GPT OSS 20B      | あり      | テキスト     | 131,072 |
-| `groq/qwen/qwen3-32b`                            | Qwen3 32B               | あり      | テキスト     | 131,072 |
-| `groq/groq/compound`                             | Compound                | あり      | テキスト     | 131,072 |
-| `groq/groq/compound-mini`                        | Compound Mini           | あり      | テキスト     | 131,072 |
+| モデル参照                                         | 名前                    | 推論 | 入力             | コンテキスト |
+| -------------------------------------------------- | ----------------------- | ---- | ---------------- | ------------ |
+| `groq/llama-3.3-70b-versatile`                     | Llama 3.3 70B Versatile | なし | テキスト         | 131,072      |
+| `groq/llama-3.1-8b-instant`                        | Llama 3.1 8B Instant    | なし | テキスト         | 131,072      |
+| `groq/meta-llama/llama-4-scout-17b-16e-instruct`   | Llama 4 Scout 17B       | なし | テキスト + 画像  | 131,072      |
+| `groq/openai/gpt-oss-120b`                         | GPT OSS 120B            | あり | テキスト         | 131,072      |
+| `groq/openai/gpt-oss-20b`                          | GPT OSS 20B             | あり | テキスト         | 131,072      |
+| `groq/openai/gpt-oss-safeguard-20b`                | Safety GPT OSS 20B      | あり | テキスト         | 131,072      |
+| `groq/qwen/qwen3-32b`                              | Qwen3 32B               | あり | テキスト         | 131,072      |
+| `groq/groq/compound`                               | Compound                | あり | テキスト         | 131,072      |
+| `groq/groq/compound-mini`                          | Compound Mini           | あり | テキスト         | 131,072      |
 
 <Tip>
-  カタログは OpenClaw の各リリースで進化します。`openclaw models list --provider groq` は、インストール済みバージョンが認識している行を表示します。新しく追加されたモデルや非推奨になったモデルについては、[console.groq.com/docs/models](https://console.groq.com/docs/models) と照合してください。
+  カタログは OpenClaw のリリースごとに更新されます。`openclaw models list --provider groq` には、インストール済みバージョンが認識している一覧が表示されます。新しく追加されたモデルや非推奨になったモデルについては、[console.groq.com/docs/models](https://console.groq.com/docs/models) と照合してください。
 </Tip>
 
 ## 推論モデル
 
-Groq の推論モデル（上の表で `reasoning: true`）は、OpenClaw の共有 `/think` レベルを `low`、`medium`、`high` の `reasoning_effort` 値にマッピングします。`/think off` または `/think none` は、無効化された値を送信するのではなく、リクエストから `reasoning_effort` を省略します。
+Groq の推論モデル（上の表で `reasoning: true` のモデル）は、OpenClaw 共通の `/think` レベルを、`low`、`medium`、`high` の `reasoning_effort` 値に対応付けます。`/think off` または `/think none` の場合、無効化を示す値を送信するのではなく、リクエストから `reasoning_effort` を省略します。
 
-共有 `/think` レベルと、OpenClaw がプロバイダーごとにそれらを変換する方法については、[思考モード](/ja-JP/tools/thinking) を参照してください。
+共通の `/think` レベルと、OpenClaw がプロバイダーごとにそれらを変換する方法については、[思考モード](/ja-JP/tools/thinking)を参照してください。
 
 ## 音声文字起こし
 
-Groq の Plugin は、音声メッセージを共有 `tools.media.audio` サーフェス経由で文字起こしできるようにするため、**音声メディア理解プロバイダー**も登録します。
+Groq Plugin は、音声メッセージを共通の `tools.media.audio` サーフェス経由で文字起こしできるように、**音声メディア理解プロバイダー**も登録します。
 
 | プロパティ       | 値                                        |
-| ------------------ | ----------------------------------------- |
-| 共有設定パス     | `tools.media.audio`                       |
-| デフォルトベースURL | `https://api.groq.com/openai/v1`          |
+| ---------------- | ----------------------------------------- |
+| 共通設定パス     | `tools.media.audio`                       |
+| デフォルトのベース URL | `https://api.groq.com/openai/v1`    |
 | デフォルトモデル | `whisper-large-v3-turbo`                  |
 | 自動優先度       | 20                                        |
-| API エンドポイント | OpenAI 互換 `/audio/transcriptions`       |
+| API エンドポイント | OpenAI 互換の `/audio/transcriptions`   |
 
-Groq をデフォルトの音声バックエンドにするには:
+Groq をデフォルトの音声バックエンドにするには、次のように設定します。
 
 ```json5
 {
@@ -131,17 +131,17 @@ Groq をデフォルトの音声バックエンドにするには:
 ```
 
 <AccordionGroup>
-  <Accordion title="デーモンでの環境の可用性">
-    Gateway が管理サービス（launchd、systemd、Docker）として実行される場合、`GROQ_API_KEY` は対話型シェルだけでなく、そのプロセスからも見えている必要があります。
+  <Accordion title="デーモンでの環境変数の利用">
+    Gateway が管理対象サービス（launchd、systemd、Docker）として実行される場合、`GROQ_API_KEY` は対話型シェルだけでなく、そのプロセスから参照できる必要があります。
 
     <Warning>
-      対話型シェルでのみ export されたキーは、その環境もそこに取り込まれていない限り、launchd または systemd デーモンには役立ちません。gateway プロセスから読み取れるようにするには、`~/.openclaw/.env` または `env.shellEnv` 経由でキーを設定してください。
+      対話型シェルでのみエクスポートされたキーは、その環境も取り込まない限り、launchd または systemd のデーモンでは利用できません。Gateway プロセスから読み取れるように、キーを `~/.openclaw/.env` または `env.shellEnv` で設定してください。
     </Warning>
 
   </Accordion>
 
   <Accordion title="カスタム Groq モデル ID">
-    OpenClaw は実行時に任意の Groq モデル ID を受け入れます。Groq が示す正確な ID を使用し、`groq/` を前置してください。静的カタログは一般的なケースをカバーします。カタログにない ID は、デフォルトの OpenAI 互換テンプレートにフォールスルーします。
+    OpenClaw は、実行時に任意の Groq モデル ID を受け付けます。Groq に表示される正確な ID を使用し、先頭に `groq/` を付けてください。静的カタログは一般的なケースを網羅しています。カタログにない ID には、デフォルトの OpenAI 互換テンプレートが適用されます。
 
     ```json5
     {
@@ -156,19 +156,19 @@ Groq をデフォルトの音声バックエンドにするには:
   </Accordion>
 </AccordionGroup>
 
-## 関連
+## 関連項目
 
 <CardGroup cols={2}>
   <Card title="モデルプロバイダー" href="/ja-JP/concepts/model-providers" icon="layers">
-    プロバイダー、モデル参照、フェイルオーバー動作の選択。
+    プロバイダー、モデル参照、フェイルオーバー動作の選択方法。
   </Card>
   <Card title="思考モード" href="/ja-JP/tools/thinking" icon="brain">
-    推論エフォートレベルとプロバイダーポリシーの相互作用。
+    推論強度のレベルとプロバイダーポリシーの相互作用。
   </Card>
   <Card title="設定リファレンス" href="/ja-JP/gateway/configuration-reference" icon="gear">
     プロバイダーと音声設定を含む完全な設定スキーマ。
   </Card>
   <Card title="Groq Console" href="https://console.groq.com" icon="arrow-up-right-from-square">
-    Groq ダッシュボード、API ドキュメント、価格。
+    Groq のダッシュボード、API ドキュメント、料金。
   </Card>
 </CardGroup>

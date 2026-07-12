@@ -1,11 +1,11 @@
 ---
 read_when:
-    - google-meet Pluginをインストール、設定、または監査しています
-summary: Chrome または Twilio トランスポート経由で通話に参加するための OpenClaw Google Meet 参加者 Plugin。
+    - google-meet Plugin をインストール、設定、または監査している場合
+summary: Chrome または Twilio トランスポートを介して通話に参加するための OpenClaw Google Meet 参加者 Plugin。
 title: Google Meet Plugin
 x-i18n:
-    generated_at: "2026-06-27T12:24:38Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:30:12Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 2f0086a8b48f6e120ad391a99d60a14d7682910ca3ad176e41a51b341e9bdb49
@@ -13,18 +13,18 @@ x-i18n:
     workflow: 16
 ---
 
-# Google Meet プラグイン
+# Google Meet Plugin
 
-Chrome または Twilio トランスポートを通じて通話に参加するための OpenClaw Google Meet 参加者プラグイン。
+Chrome または Twilio トランスポートを介して通話に参加するための OpenClaw Google Meet 参加者 Plugin。
 
 ## 配布
 
 - パッケージ: `@openclaw/google-meet`
-- インストール経路: npm; ClawHub
+- インストール経路: npm、ClawHub
 
-## サーフェス
+## 提供機能
 
-契約: ツール
+コントラクト: ツール
 
 ## 関連ドキュメント
 

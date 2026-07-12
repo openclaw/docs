@@ -1,11 +1,11 @@
 ---
 read_when:
-    - أنت تقوم بتثبيت Plugin ollama أو تهيئته أو تدقيقه
-summary: يضيف دعم موفّر نماذج Ollama وOllama Cloud إلى OpenClaw.
-title: Plugin Ollama
+    - أنت تثبّت Plugin ‏ollama أو تهيئه أو تدقّق فيه
+summary: يضيف دعم مزوّد نماذج Ollama وOllama Cloud إلى OpenClaw.
+title: Plugin ‏Ollama
 x-i18n:
-    generated_at: "2026-07-04T03:49:32Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:22:06Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 2d37136b5bcc8e6f9efb2cfcae52836546e62a5526215118490598e2c4152810
@@ -13,9 +13,9 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin Ollama
+# Plugin ‏Ollama
 
-يضيف دعم مزوّد نماذج Ollama وOllama Cloud إلى OpenClaw.
+يضيف دعم موفّر نماذج Ollama وOllama Cloud إلى OpenClaw.
 
 ## التوزيع
 
@@ -24,9 +24,9 @@ x-i18n:
 
 ## السطح
 
-providers: ollama, ollama-cloud; contracts: memoryEmbeddingProviders, tools, webSearchProviders
+الموفّرون: ollama، ollama-cloud؛ العقود: memoryEmbeddingProviders، tools، webSearchProviders
 
-## المستندات ذات الصلة
+## الوثائق ذات الصلة
 
 - [ollama](/ar/providers/ollama)
 - [ollama-cloud](/ar/providers/ollama-cloud)

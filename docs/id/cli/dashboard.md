@@ -1,17 +1,17 @@
 ---
 read_when:
-    - Anda ingin membuka Control UI dengan token Anda saat ini
+    - Anda ingin membuka UI Kontrol dengan token Anda saat ini
     - Anda ingin mencetak URL tanpa membuka peramban
-summary: Referensi CLI untuk `openclaw dashboard` (buka Control UI)
+summary: Referensi CLI untuk `openclaw dashboard` (buka UI Kontrol)
 title: Dasbor
 x-i18n:
-    generated_at: "2026-05-05T01:44:14Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:03:56Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 51b3326b3884013ebcf570b417e66efe62ea89dcdedb5ab3173f39fb021de89f
+    source_hash: 349dff4bad7fc6aa622067ed502d7d6800b93ebcfe26d2594e602e06e564993f
     source_path: cli/dashboard.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw dashboard`
@@ -21,20 +21,23 @@ Buka UI Kontrol menggunakan autentikasi Anda saat ini.
 ```bash
 openclaw dashboard
 openclaw dashboard --no-open
+openclaw dashboard --yes
 ```
+
+- `--no-open`: cetak URL tetapi jangan membuka peramban.
+- `--yes`: mulai/instal Gateway tanpa meminta konfirmasi saat diperlukan.
 
 Catatan:
 
-- `dashboard` menyelesaikan SecretRef `gateway.auth.token` yang dikonfigurasi jika memungkinkan.
-- `dashboard` mengikuti `gateway.tls.enabled`: gateway dengan TLS diaktifkan mencetak/membuka URL UI Kontrol
-  `https://` dan terhubung melalui `wss://`.
-- Jika pengiriman melalui clipboard/browser gagal untuk URL dashboard yang diautentikasi token,
-  `dashboard` mencatat petunjuk autentikasi manual yang aman dengan menyebut `OPENCLAW_GATEWAY_TOKEN`,
-  `gateway.auth.token`, dan kunci fragmen `token` tanpa mencetak nilai token.
-- Untuk token yang dikelola SecretRef (terselesaikan atau belum terselesaikan), `dashboard` mencetak/menyalin/membuka URL tanpa token untuk menghindari pemaparan secret eksternal dalam output terminal, riwayat clipboard, atau argumen peluncuran browser.
-- Jika `gateway.auth.token` dikelola SecretRef tetapi tidak terselesaikan di jalur perintah ini, perintah mencetak URL tanpa token dan panduan remediasi eksplisit alih-alih menyematkan placeholder token yang tidak valid.
+- Menyelesaikan SecretRef `gateway.auth.token` yang dikonfigurasi jika memungkinkan.
+- Mengikuti `gateway.tls.enabled`: Gateway yang mengaktifkan TLS mencetak/membuka URL UI Kontrol `https://` dan terhubung melalui `wss://`.
+- Untuk pengikatan `lan` atau `custom` dengan wildcard, peluncuran pada host yang sama selalu menggunakan local loopback karena wildcard bukan tujuan peramban. Pengikatan `tailnet` dan `custom` tanpa enkripsi juga menggunakan `127.0.0.1` agar peramban memiliki konteks aman; host spesifik yang mengaktifkan TLS mempertahankan alamat yang dikonfigurasi agar nama sertifikat cocok.
+- Sebelum memberikan URL local loopback terautentikasi untuk pengikatan antarmuka tertentu, perintah memeriksa antarmuka yang dikonfigurasi dan memverifikasi bahwa antarmuka tersebut serta `127.0.0.1` dimiliki oleh proses Gateway yang sama. Kepemilikan listener yang ambigu akan ditolak secara aman dengan panduan status.
+- Untuk token yang dikelola SecretRef (baik terselesaikan maupun belum), URL yang dicetak/disalin/dibuka tidak pernah menyertakan token, sehingga rahasia eksternal tidak bocor ke keluaran terminal, riwayat papan klip, atau argumen peluncuran peramban.
+- Jika `gateway.auth.token` dikelola SecretRef tetapi belum terselesaikan, perintah mencetak URL tanpa token dan panduan perbaikan, bukan placeholder token yang tidak valid.
+- Jika pengiriman melalui papan klip/peramban gagal untuk URL yang diautentikasi dengan token, perintah mencatat petunjuk autentikasi manual yang aman dengan menyebutkan `OPENCLAW_GATEWAY_TOKEN`, `gateway.auth.token`, dan kunci fragmen URL `token`, tanpa mencetak nilai token.
 
 ## Terkait
 
 - [Referensi CLI](/id/cli)
-- [Dashboard](/id/web/dashboard)
+- [Dasbor](/id/web/dashboard)

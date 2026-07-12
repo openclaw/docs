@@ -2,18 +2,18 @@
 summary: Alihkan ke /gateway/authentication
 title: Pemantauan autentikasi
 x-i18n:
-    generated_at: "2026-04-30T09:31:37Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:58:04Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d0bb68c2881911afc634aaba017444a5a8356f4cc519f0a2b5e415ff9ad739f3
+    source_hash: 2d2c52a0082ff90306c61fb33ee2f2dc74b8703c9d8ee7a13581e72d2d564f0a
     source_path: automation/auth-monitoring.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Pemantauan autentikasi berada di bawah [Autentikasi](/id/gateway/authentication).
+Halaman ini telah dipindahkan. Autentikasi penyedia model tersedia di bagian [Autentikasi](/id/gateway/authentication); skrip operasional untuk memantau status autentikasi tersedia di [Skrip pemantauan autentikasi](/id/help/scripts#auth-monitoring-scripts).
 
 ## Terkait
 
-- [Pemecahan masalah otomasi](/id/automation/cron-jobs)
-- [Kait](/id/automation/hooks)
+- [Pemecahan masalah otomatisasi](/id/automation/cron-jobs#troubleshooting)
+- [Hook](/id/automation/hooks)

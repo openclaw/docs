@@ -5,44 +5,32 @@ read_when:
 summary: Canale DM Nostr tramite messaggi crittografati NIP-04
 title: Nostr
 x-i18n:
-    generated_at: "2026-05-02T22:16:39Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:51:26Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d6158c22c0ffc5aea56d0ac2b68955f30c3a785013dba5410cbd70f9b689dc3c
+    source_hash: 31fa283f706036a37795ddad71602058ba94388a9cb01044927c4bb2d83ba4a8
     source_path: channels/nostr.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-**Stato:** Plugin in bundle opzionale (disabilitato per impostazione predefinita finché non viene configurato).
+Nostr è un plugin di canale scaricabile (`@openclaw/nostr`) che consente a OpenClaw di ricevere e rispondere a messaggi diretti crittografati NIP-04 tramite relay Nostr. Un account per Gateway; solo messaggi diretti.
 
-Nostr è un protocollo decentralizzato per i social network. Questo canale consente a OpenClaw di ricevere e rispondere ai messaggi diretti (DM) crittografati tramite NIP-04.
-
-## Plugin in bundle
-
-Le versioni attuali di OpenClaw distribuiscono Nostr come Plugin in bundle, quindi le normali build pacchettizzate
-non richiedono un'installazione separata.
-
-### Installazioni precedenti/personalizzate
-
-- L'onboarding (`openclaw onboard`) e `openclaw channels add` mostrano ancora
-  Nostr dal catalogo dei canali condiviso.
-- Se la tua build esclude Nostr in bundle, installa direttamente il pacchetto npm.
+## Installazione
 
 ```bash
 openclaw plugins install @openclaw/nostr
 ```
 
-Usa il pacchetto base per seguire l'attuale tag di rilascio ufficiale. Fissa una versione esatta
-solo quando hai bisogno di un'installazione riproducibile.
+Usa la specifica del pacchetto senza versione per seguire il tag della versione ufficiale corrente. Blocca una versione esatta solo quando ti serve un'installazione riproducibile.
 
-Usa un checkout locale (flussi di lavoro di sviluppo):
+Da un checkout locale (flussi di lavoro di sviluppo):
 
 ```bash
 openclaw plugins install --link <path-to-local-nostr-plugin>
 ```
 
-Riavvia il Gateway dopo aver installato o abilitato i Plugin.
+Riavvia il Gateway dopo aver installato o abilitato i plugin. La configurazione iniziale (`openclaw onboard`) e `openclaw channels add` mostrano Nostr dal catalogo dei canali condiviso una volta installato il plugin.
 
 ### Configurazione non interattiva
 
@@ -51,18 +39,18 @@ openclaw channels add --channel nostr --private-key "$NOSTR_PRIVATE_KEY"
 openclaw channels add --channel nostr --private-key "$NOSTR_PRIVATE_KEY" --relay-urls "wss://relay.damus.io,wss://relay.primal.net"
 ```
 
-Usa `--use-env` per mantenere `NOSTR_PRIVATE_KEY` nell'ambiente invece di archiviare la chiave nella configurazione.
+Usa `--use-env` per mantenere `NOSTR_PRIVATE_KEY` nell'ambiente invece di archiviare la chiave nella configurazione (solo per l'account predefinito).
 
 ## Configurazione rapida
 
 1. Genera una coppia di chiavi Nostr (se necessario):
 
 ```bash
-# Using nak
+# Utilizzando nak
 nak key generate
 ```
 
-2. Aggiungi alla configurazione:
+2. Aggiungila alla configurazione:
 
 ```json5
 {
@@ -84,19 +72,19 @@ export NOSTR_PRIVATE_KEY="nsec1..."
 
 ## Riferimento della configurazione
 
-| Chiave       | Tipo     | Predefinito                                 | Descrizione                         |
-| ------------ | -------- | ------------------------------------------- | ----------------------------------- |
-| `privateKey` | string   | obbligatorio                                | Chiave privata in formato `nsec` o esadecimale |
-| `relays`     | string[] | `['wss://relay.damus.io', 'wss://nos.lol']` | URL dei relay (WebSocket)           |
-| `dmPolicy`   | string   | `pairing`                                   | Criterio di accesso ai DM           |
-| `allowFrom`  | string[] | `[]`                                        | Pubkey dei mittenti consentiti      |
-| `enabled`    | boolean  | `true`                                      | Abilita/disabilita il canale        |
-| `name`       | string   | -                                           | Nome visualizzato                   |
-| `profile`    | object   | -                                           | Metadati del profilo NIP-01         |
+| Chiave       | Tipo     | Valore predefinito                          | Descrizione                                                       |
+| ------------ | -------- | ------------------------------------------- | ----------------------------------------------------------------- |
+| `privateKey` | string   | obbligatorio                                | Chiave privata in formato `nsec` o esadecimale; sono ammessi riferimenti ai segreti |
+| `relays`     | string[] | `['wss://relay.damus.io', 'wss://nos.lol']` | URL dei relay (WebSocket)                                         |
+| `dmPolicy`   | string   | `pairing`                                   | Criterio di accesso ai messaggi diretti                           |
+| `allowFrom`  | string[] | `[]`                                        | Chiavi pubbliche dei mittenti consentiti                          |
+| `enabled`    | boolean  | `true`                                      | Abilita/disabilita il canale                                      |
+| `name`       | string   | -                                           | Nome visualizzato                                                 |
+| `profile`    | object   | -                                           | Metadati del profilo NIP-01                                       |
 
 ## Metadati del profilo
 
-I dati del profilo vengono pubblicati come evento NIP-01 `kind:0`. Puoi gestirli dalla Control UI (Channels -> Nostr -> Profile) o impostarli direttamente nella configurazione.
+I dati del profilo vengono pubblicati come evento NIP-01 `kind:0`. Puoi gestirli dall'interfaccia di controllo (Channels -> Nostr -> Profile) o impostarli direttamente nella configurazione.
 
 Esempio:
 
@@ -108,7 +96,7 @@ Esempio:
       profile: {
         name: "openclaw",
         displayName: "OpenClaw",
-        about: "Personal assistant DM bot",
+        about: "Bot assistente personale per messaggi diretti",
         picture: "https://example.com/avatar.png",
         banner: "https://example.com/banner.png",
         website: "https://example.com",
@@ -123,24 +111,24 @@ Esempio:
 Note:
 
 - Gli URL del profilo devono usare `https://`.
-- L'importazione dai relay unisce i campi e conserva le sovrascritture locali.
+- L'importazione dai relay unisce i campi e mantiene le sostituzioni locali.
 
 ## Controllo degli accessi
 
-### Criteri DM
+### Criteri per i messaggi diretti
 
-- **pairing** (predefinito): i mittenti sconosciuti ricevono un codice di abbinamento.
-- **allowlist**: solo le pubkey in `allowFrom` possono inviare DM.
-- **open**: DM in ingresso pubblici (richiede `allowFrom: ["*"]`).
-- **disabled**: ignora i DM in ingresso.
+- **pairing** (predefinito): i mittenti sconosciuti ricevono un codice di associazione.
+- **allowlist**: solo le chiavi pubbliche in `allowFrom` possono inviare messaggi diretti.
+- **open**: messaggi diretti pubblici in entrata (richiede `allowFrom: ["*"]`).
+- **disabled**: ignora i messaggi diretti in entrata.
 
 Note sull'applicazione:
 
-- Le firme degli eventi in ingresso vengono verificate prima della policy del mittente e della decrittazione NIP-04, quindi gli eventi falsificati vengono rifiutati in anticipo.
-- Le risposte di pairing vengono inviate senza elaborare il corpo del DM originale.
-- I DM in ingresso sono soggetti a rate limit e i payload sovradimensionati vengono scartati prima della decrittazione.
+- Le firme degli eventi in entrata vengono verificate prima del criterio relativo al mittente e della decrittografia NIP-04, pertanto gli eventi contraffatti vengono rifiutati in anticipo.
+- Le risposte di associazione vengono inviate senza decrittografare né elaborare il corpo del messaggio diretto originale.
+- I messaggi diretti in entrata sono soggetti a limiti di frequenza (globalmente e per mittente) e i payload di dimensioni eccessive vengono scartati prima della decrittografia.
 
-### Esempio di allowlist
+### Esempio di elenco consentiti
 
 ```json5
 {
@@ -158,12 +146,12 @@ Note sull'applicazione:
 
 Formati accettati:
 
-- **Chiave privata:** `nsec...` o esadecimale di 64 caratteri
-- **Chiavi pubbliche (`allowFrom`):** `npub...` o esadecimale
+- **Chiave privata:** `nsec...` o formato esadecimale di 64 caratteri
+- **Chiavi pubbliche (`allowFrom`):** `npub...` o formato esadecimale
 
 ## Relay
 
-Predefiniti: `relay.damus.io` e `nos.lol`.
+Valori predefiniti: `relay.damus.io` e `nos.lol`.
 
 ```json5
 {
@@ -178,26 +166,26 @@ Predefiniti: `relay.damus.io` e `nos.lol`.
 
 Suggerimenti:
 
-- Usa 2-3 relay per la ridondanza.
-- Evita troppi relay (latenza, duplicazione).
+- Usa 2-3 relay per garantire ridondanza.
+- Evita un numero eccessivo di relay (latenza, duplicazione).
 - I relay a pagamento possono migliorare l'affidabilità.
-- I relay locali vanno bene per i test (`ws://localhost:7777`).
+- I relay locali sono adatti per i test (`ws://localhost:7777`).
 
 ## Supporto del protocollo
 
-| NIP    | Stato       | Descrizione                              |
-| ------ | ----------- | ---------------------------------------- |
-| NIP-01 | Supportato  | Formato evento di base + metadati profilo |
-| NIP-04 | Supportato  | DM crittografati (`kind:4`)              |
-| NIP-17 | Pianificato | DM con gift-wrap                         |
-| NIP-44 | Pianificato | Crittografia versionata                  |
+| NIP    | Stato        | Descrizione                                    |
+| ------ | ------------ | ---------------------------------------------- |
+| NIP-01 | Supportato   | Formato di base degli eventi + metadati del profilo |
+| NIP-04 | Supportato   | Messaggi diretti crittografati (`kind:4`)      |
+| NIP-17 | Pianificato  | Messaggi diretti in busta crittografica        |
+| NIP-44 | Pianificato  | Crittografia con versione                      |
 
 ## Test
 
 ### Relay locale
 
 ```bash
-# Start strfry
+# Avvia strfry
 docker run -p 7777:7777 ghcr.io/hoytech/strfry
 ```
 
@@ -214,48 +202,48 @@ docker run -p 7777:7777 ghcr.io/hoytech/strfry
 
 ### Test manuale
 
-1. Prendi nota della chiave pubblica del bot (npub) dai log.
-2. Apri un client Nostr (Damus, Amethyst, ecc.).
-3. Invia un DM alla chiave pubblica del bot.
+1. Prendi nota della chiave pubblica del bot dai log del Gateway o da `openclaw channels status` (formato esadecimale; convertila in npub nel tuo client, se necessario).
+2. Apri un client Nostr (Amethyst, Damus, ecc.).
+3. Invia un messaggio diretto alla chiave pubblica del bot.
 4. Verifica la risposta.
 
 ## Risoluzione dei problemi
 
-### Messaggi non ricevuti
+### Mancata ricezione dei messaggi
 
 - Verifica che la chiave privata sia valida.
-- Assicurati che gli URL dei relay siano raggiungibili e usino `wss://` (o `ws://` per locale).
-- Conferma che `enabled` non sia `false`.
+- Assicurati che gli URL dei relay siano raggiungibili e usino `wss://` (o `ws://` per quelli locali).
+- Verifica che `enabled` non sia `false`.
 - Controlla nei log del Gateway la presenza di errori di connessione ai relay.
 
-### Risposte non inviate
+### Mancato invio delle risposte
 
-- Controlla che il relay accetti le scritture.
+- Verifica che il relay accetti le scritture.
 - Verifica la connettività in uscita.
-- Fai attenzione ai rate limit dei relay.
+- Controlla eventuali limiti di frequenza imposti dal relay.
 
 ### Risposte duplicate
 
-- Previsto quando si usano più relay.
-- I messaggi vengono deduplicati per ID evento; solo la prima consegna attiva una risposta.
+- È un comportamento previsto quando si utilizzano più relay.
+- I messaggi vengono deduplicati in base all'ID evento; solo la prima consegna attiva una risposta.
 
 ## Sicurezza
 
-- Non committare mai chiavi private.
+- Non eseguire mai il commit delle chiavi private.
 - Usa variabili d'ambiente per le chiavi.
-- Considera `allowlist` per i bot di produzione.
-- Le firme vengono verificate prima della policy del mittente, e la policy del mittente viene applicata prima della decrittazione, quindi gli eventi falsificati vengono rifiutati in anticipo e i mittenti sconosciuti non possono forzare il lavoro crittografico completo.
+- Valuta l'uso di `allowlist` per i bot in produzione.
+- Le firme vengono verificate prima del criterio relativo al mittente e tale criterio viene applicato prima della decrittografia, pertanto gli eventi contraffatti vengono rifiutati in anticipo e i mittenti sconosciuti non possono imporre l'esecuzione dell'intera elaborazione crittografica.
 
 ## Limitazioni (MVP)
 
 - Solo messaggi diretti (nessuna chat di gruppo).
 - Nessun allegato multimediale.
-- Solo NIP-04 (gift-wrap NIP-17 pianificato).
+- Solo NIP-04 (è pianificato il supporto per le buste crittografiche NIP-17).
 
-## Correlati
+## Contenuti correlati
 
 - [Panoramica dei canali](/it/channels) — tutti i canali supportati
-- [Pairing](/it/channels/pairing) — autenticazione DM e flusso di pairing
-- [Gruppi](/it/channels/groups) — comportamento delle chat di gruppo e gating delle menzioni
+- [Associazione](/it/channels/pairing) — autenticazione dei messaggi diretti e flusso di associazione
+- [Gruppi](/it/channels/groups) — comportamento delle chat di gruppo e controllo tramite menzioni
 - [Instradamento dei canali](/it/channels/channel-routing) — instradamento delle sessioni per i messaggi
-- [Sicurezza](/it/gateway/security) — modello di accesso e hardening
+- [Sicurezza](/it/gateway/security) — modello di accesso e rafforzamento della sicurezza

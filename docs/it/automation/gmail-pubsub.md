@@ -1,19 +1,19 @@
 ---
 summary: Reindirizza a /automation/cron-jobs
-title: Gmail PubSub
+title: Pub/Sub di Gmail
 x-i18n:
-    generated_at: "2026-04-24T08:28:49Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 4462fb58fa73ac3eb3d8d2994760b96424dcad3f1543e8ff10222936f6c54caf
-    source_path: automation/gmail-pubsub.md
-    workflow: 15
+    generated_at: "2026-07-12T06:46:56Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 1307459db642f4a11f9bb84fbedd73053a813ce9221cd1d63a0be99b6199dbf5
+    source_path: automation/gmail-pubsub.md
+    workflow: 16
 ---
 
-Questa pagina è stata spostata in [Task pianificati](/it/automation/cron-jobs#gmail-pubsub-integration). Consulta [Task pianificati](/it/automation/cron-jobs#gmail-pubsub-integration) per la documentazione di Gmail PubSub.
+Questa pagina è stata spostata in [Integrazione Gmail PubSub](/it/automation/cron-jobs#gmail-pubsub-integration) nella pagina Attività pianificate.
 
-## Correlati
+## Contenuti correlati
 
-- [Webhook](/it/automation/cron-jobs)
-- [Risoluzione dei problemi di automazione](/it/automation/cron-jobs)
+- [Webhook](/it/automation/cron-jobs#webhooks)
+- [Risoluzione dei problemi](/it/automation/cron-jobs#troubleshooting)

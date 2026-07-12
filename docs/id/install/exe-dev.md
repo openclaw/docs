@@ -1,124 +1,131 @@
 ---
 read_when:
     - Anda menginginkan host Linux murah yang selalu aktif untuk Gateway
-    - Anda ingin akses UI Kontrol jarak jauh tanpa menjalankan VPS Anda sendiri
-summary: Jalankan OpenClaw Gateway di exe.dev (VM + proksi HTTPS) untuk akses jarak jauh
+    - Anda ingin mengakses UI Kontrol dari jarak jauh tanpa menjalankan VPS sendiri
+summary: Jalankan Gateway OpenClaw di exe.dev (VM + proksi HTTPS) untuk akses jarak jauh
 title: exe.dev
 x-i18n:
-    generated_at: "2026-04-30T09:55:45Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:19:04Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b571f9b29bb2cca0f311db4188c922b2f70ee91cb48b233cf9922e57a7f05340
+    source_hash: a768511d2d7e4e4ec10bcdae83684417bde05286468b0534200f8dd5ec015f7b
     source_path: install/exe-dev.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Tujuan: OpenClaw Gateway berjalan di VM exe.dev, dapat dijangkau dari laptop Anda melalui: `https://<vm-name>.exe.xyz`
+**Tujuan:** Gateway OpenClaw berjalan pada VM [exe.dev](https://exe.dev), dapat diakses di `https://<vm-name>.exe.xyz`.
 
-Halaman ini mengasumsikan image **exeuntu** default dari exe.dev. Jika Anda memilih distro lain, sesuaikan paketnya.
+Panduan ini mengasumsikan image **exeuntu** bawaan exe.dev. Sesuaikan paket untuk distro lain.
+
+## Yang Anda perlukan
+
+- Akun exe.dev
+- Akses `ssh exe.dev` ke VM exe.dev (opsional, untuk penyiapan manual)
 
 ## Jalur cepat untuk pemula
 
-1. [https://exe.new/openclaw](https://exe.new/openclaw)
-2. Isi kunci/token autentikasi Anda sesuai kebutuhan
-3. Klik "Agen" di sebelah VM Anda dan tunggu Shelley selesai melakukan penyediaan
-4. Buka `https://<vm-name>.exe.xyz/` dan autentikasi dengan secret bersama yang dikonfigurasi (panduan ini menggunakan autentikasi token secara default, tetapi autentikasi kata sandi juga berfungsi jika Anda mengganti `gateway.auth.mode`)
+1. Buka [https://exe.new/openclaw](https://exe.new/openclaw)
+2. Isi kunci autentikasi/token sesuai kebutuhan
+3. Klik "Agent" di samping VM Anda dan tunggu hingga Shelley selesai melakukan penyediaan
+4. Buka `https://<vm-name>.exe.xyz/` dan lakukan autentikasi menggunakan rahasia bersama yang dikonfigurasi (autentikasi token secara default; autentikasi kata sandi juga berfungsi jika Anda mengubah `gateway.auth.mode`)
 5. Setujui permintaan pemasangan perangkat yang tertunda dengan `openclaw devices approve <requestId>`
-
-## Yang Anda butuhkan
-
-- Akun exe.dev
-- Akses `ssh exe.dev` ke mesin virtual [exe.dev](https://exe.dev) (opsional)
 
 ## Instalasi otomatis dengan Shelley
 
-Shelley, agen [exe.dev](https://exe.dev), dapat langsung menginstal OpenClaw dengan prompt kami. Prompt yang digunakan adalah sebagai berikut:
+Shelley, agen exe.dev, dapat menginstal OpenClaw berdasarkan perintah:
 
-```
-Set up OpenClaw (https://docs.openclaw.ai/install) on this VM. Use the non-interactive and accept-risk flags for openclaw onboarding. Add the supplied auth or token as needed. Configure nginx to forward from the default port 18789 to the root location on the default enabled site config, making sure to enable Websocket support. Pairing is done by "openclaw devices list" and "openclaw devices approve <request id>". Make sure the dashboard shows that OpenClaw's health is OK. exe.dev handles forwarding from port 8000 to port 80/443 and HTTPS for us, so the final "reachable" should be <vm-name>.exe.xyz, without port specification.
+```text
+Siapkan OpenClaw (https://docs.openclaw.ai/install) pada VM ini. Gunakan flag noninteraktif dan penerimaan risiko untuk orientasi awal openclaw. Tambahkan autentikasi atau token yang diberikan sesuai kebutuhan. Konfigurasikan nginx untuk meneruskan dari port bawaan 18789 ke lokasi akar pada konfigurasi situs bawaan yang diaktifkan, serta pastikan dukungan WebSocket diaktifkan. Pemasangan dilakukan dengan "openclaw devices list" dan "openclaw devices approve <request id>". Pastikan dasbor menunjukkan bahwa kondisi OpenClaw baik. exe.dev menangani penerusan dari port 8000 ke port 80/443 dan HTTPS untuk kita, sehingga alamat akhir yang "dapat diakses" harus berupa <vm-name>.exe.xyz, tanpa mencantumkan port.
 ```
 
 ## Instalasi manual
 
-## 1) Buat VM
+<Steps>
+  <Step title="Buat VM">
+    Dari perangkat Anda:
 
-Dari perangkat Anda:
+    ```bash
+    ssh exe.dev new
+    ```
 
-```bash
-ssh exe.dev new
-```
+    Kemudian hubungkan:
 
-Lalu sambungkan:
+    ```bash
+    ssh <vm-name>.exe.xyz
+    ```
 
-```bash
-ssh <vm-name>.exe.xyz
-```
+    <Tip>
+    Pertahankan VM ini agar **memiliki status persisten**. OpenClaw menyimpan `openclaw.json`, `auth-profiles.json` per agen, sesi, serta status saluran/penyedia di bawah `~/.openclaw/`, dan ruang kerja di bawah `~/.openclaw/workspace/`.
+    </Tip>
 
-<Tip>
-Pertahankan VM ini **stateful**. OpenClaw menyimpan `openclaw.json`, `auth-profiles.json` per agen, sesi, dan status channel/provider di bawah `~/.openclaw/`, ditambah workspace di bawah `~/.openclaw/workspace/`.
-</Tip>
+  </Step>
 
-## 2) Instal prasyarat (di VM)
+  <Step title="Instal prasyarat (pada VM)">
+    ```bash
+    sudo apt-get update
+    sudo apt-get install -y git curl jq ca-certificates openssl
+    ```
+  </Step>
 
-```bash
-sudo apt-get update
-sudo apt-get install -y git curl jq ca-certificates openssl
-```
+  <Step title="Instal OpenClaw">
+    ```bash
+    curl -fsSL https://openclaw.ai/install.sh | bash
+    ```
+  </Step>
 
-## 3) Instal OpenClaw
+  <Step title="Konfigurasikan nginx sebagai proksi ke port 8000">
+    Edit `/etc/nginx/sites-enabled/default`:
 
-Jalankan skrip instalasi OpenClaw:
+    ```nginx
+    server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+        listen 8000;
+        listen [::]:8000;
 
-```bash
-curl -fsSL https://openclaw.ai/install.sh | bash
-```
+        server_name _;
 
-## 4) Siapkan nginx untuk mem-proxy OpenClaw ke port 8000
+        location / {
+            proxy_pass http://127.0.0.1:18789;
+            proxy_http_version 1.1;
 
-Edit `/etc/nginx/sites-enabled/default` dengan
+            # Dukungan WebSocket
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
 
-```
-server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-    listen 8000;
-    listen [::]:8000;
+            # Header proksi standar
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $remote_addr;
+            proxy_set_header X-Forwarded-Proto $scheme;
 
-    server_name _;
-
-    location / {
-        proxy_pass http://127.0.0.1:18789;
-        proxy_http_version 1.1;
-
-        # WebSocket support
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-
-        # Standard proxy headers
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $remote_addr;
-        proxy_set_header X-Forwarded-Proto $scheme;
-
-        # Timeout settings for long-lived connections
-        proxy_read_timeout 86400s;
-        proxy_send_timeout 86400s;
+            # Pengaturan batas waktu untuk koneksi berumur panjang
+            proxy_read_timeout 86400s;
+            proxy_send_timeout 86400s;
+        }
     }
-}
-```
+    ```
 
-Timpa header penerusan alih-alih mempertahankan rantai yang diberikan klien. OpenClaw memercayai metadata IP yang diteruskan hanya dari proxy yang dikonfigurasi secara eksplisit, dan rantai `X-Forwarded-For` bergaya append diperlakukan sebagai risiko hardening.
+    Timpa header penerusan alih-alih mempertahankan rantai yang diberikan klien. OpenClaw hanya memercayai metadata IP yang diteruskan dari proksi yang dikonfigurasi secara eksplisit, dan rantai `X-Forwarded-For` bergaya penambahan dianggap sebagai risiko penguatan keamanan.
 
-## 5) Akses OpenClaw dan berikan hak istimewa
+  </Step>
 
-Akses `https://<vm-name>.exe.xyz/` (lihat output Control UI dari onboarding). Jika meminta autentikasi, tempel secret bersama yang dikonfigurasi dari VM. Panduan ini menggunakan autentikasi token, jadi ambil `gateway.auth.token` dengan `openclaw config get gateway.auth.token` (atau buat satu dengan `openclaw doctor --generate-gateway-token`). Jika Anda mengubah gateway ke autentikasi kata sandi, gunakan `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD` sebagai gantinya. Setujui perangkat dengan `openclaw devices list` dan `openclaw devices approve <requestId>`. Jika ragu, gunakan Shelley dari browser Anda!
+  <Step title="Akses OpenClaw dan setujui perangkat">
+    Buka `https://<vm-name>.exe.xyz/` (lihat keluaran UI Kontrol dari orientasi awal). Jika autentikasi diminta, tempelkan rahasia bersama yang dikonfigurasi dari VM.
 
-## Penyiapan channel jarak jauh
+    Panduan ini menggunakan autentikasi token secara default, jadi ambil `gateway.auth.token` dengan `openclaw config get gateway.auth.token`, atau buat yang baru dengan `openclaw doctor --n`. Jika Anda mengubah Gateway ke autentikasi kata sandi, gunakan `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD` sebagai gantinya.
 
-Untuk host jarak jauh, lebih pilih satu panggilan `config patch` daripada banyak panggilan SSH ke `config set`. Simpan token asli di lingkungan VM atau `~/.openclaw/.env`, dan masukkan hanya SecretRefs di `openclaw.json`.
+    Setujui perangkat dengan `openclaw devices list` dan `openclaw devices approve <requestId>`. Jika ragu, gunakan Shelley dari peramban Anda.
 
-Di VM, buat lingkungan layanan berisi secret yang dibutuhkan:
+  </Step>
+</Steps>
+
+## Penyiapan saluran jarak jauh
+
+Untuk host jarak jauh, pilih satu panggilan `config patch` daripada banyak panggilan SSH ke `config set`. Simpan token sebenarnya di lingkungan VM atau `~/.openclaw/.env`, dan hanya masukkan SecretRef ke `openclaw.json`. Lihat [Pengelolaan rahasia](/id/gateway/secrets) untuk kontrak SecretRef lengkap.
+
+Pada VM, pastikan lingkungan layanan berisi rahasia yang diperlukan:
 
 ```bash
 cat >> ~/.openclaw/.env <<'EOF'
@@ -129,7 +136,7 @@ OPENAI_API_KEY=sk-...
 EOF
 ```
 
-Dari mesin lokal Anda, buat file patch dan pipe ke VM:
+Dari mesin lokal Anda, buat berkas tambalan dan salurkan ke VM:
 
 ```json5
 // openclaw.remote.patch.json5
@@ -158,9 +165,9 @@ Dari mesin lokal Anda, buat file patch dan pipe ke VM:
   },
   agents: {
     defaults: {
-      model: { primary: "openai/gpt-5.5" },
+      model: { primary: "openai/gpt-5.6-sol" },
       models: {
-        "openai/gpt-5.5": { params: { fastMode: true } },
+        "openai/gpt-5.6-sol": { params: { fastMode: true } },
       },
     },
   },
@@ -173,26 +180,25 @@ ssh <vm-name>.exe.xyz 'openclaw config patch --stdin' < ./openclaw.remote.patch.
 ssh <vm-name>.exe.xyz 'openclaw gateway restart && openclaw health'
 ```
 
-Gunakan `--replace-path` saat allowlist bersarang harus menjadi persis nilai patch, misalnya saat mengganti allowlist channel Discord:
+Gunakan `--replace-path` ketika daftar izin bertingkat harus menjadi sama persis dengan nilai tambalan, misalnya saat mengganti daftar izin saluran Discord:
 
 ```bash
 ssh <vm-name>.exe.xyz 'openclaw config patch --stdin --replace-path "channels.discord.guilds[\"123\"].channels"' < ./discord.patch.json5
 ```
 
+Lihat [Discord](/id/channels/discord) dan [Slack](/id/channels/slack) untuk referensi lengkap konfigurasi saluran.
+
 ## Akses jarak jauh
 
-Akses jarak jauh ditangani oleh autentikasi [exe.dev](https://exe.dev). Secara default, lalu lintas HTTP dari port 8000 diteruskan ke `https://<vm-name>.exe.xyz` dengan autentikasi email.
+exe.dev menangani autentikasi untuk akses jarak jauh. Secara default, lalu lintas HTTP dari port 8000 diteruskan ke `https://<vm-name>.exe.xyz` dengan autentikasi email.
 
 ## Memperbarui
 
 ```bash
-npm i -g openclaw@latest
-openclaw doctor
-openclaw gateway restart
-openclaw health
+openclaw update
 ```
 
-Panduan: [Memperbarui](/id/install/updating)
+Lihat [Memperbarui](/id/install/updating) untuk pergantian saluran dan pemulihan manual.
 
 ## Terkait
 

@@ -1,27 +1,26 @@
 ---
 read_when:
-    - Preparare una segnalazione di bug o una richiesta di supporto
-    - Debug di crash, riavvii, pressione sulla memoria o payload sovradimensionati del Gateway
-    - Esaminare quali dati diagnostici vengono registrati o oscurati
-summary: Crea bundle diagnostici Gateway condivisibili per le segnalazioni di bug
-title: Esportazione diagnostica
+    - Preparazione di una segnalazione di bug o di una richiesta di assistenza
+    - Debug di arresti anomali e riavvii del Gateway, pressione sulla memoria o payload di dimensioni eccessive
+    - Verifica di quali dati diagnostici vengono registrati o oscurati
+summary: Crea pacchetti diagnostici del Gateway condivisibili per le segnalazioni di bug
+title: Esportazione della diagnostica
 x-i18n:
-    generated_at: "2026-06-27T17:30:59Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:01:34Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ce431bafa51a245f2a3829074b0ca92e2d30ddfc1ae9738eed46a4e51ae98208
+    source_hash: ee9014da15368971d8257f62707f013b579e607fa0d8413db51253612f0c0957
     source_path: gateway/diagnostics.md
     workflow: 16
 ---
 
-OpenClaw può creare un file zip di diagnostica locale per le segnalazioni di bug. Combina
-stato, integrità, log, forma della configurazione e eventi recenti di stabilità
-senza payload del Gateway, in forma sanificata.
+OpenClaw può creare un file `.zip` locale di diagnostica per le segnalazioni di bug: stato
+sanitizzato del Gateway, integrità, log, struttura della configurazione ed eventi recenti di stabilità privi di payload.
 
-Tratta i bundle di diagnostica come segreti finché non li hai esaminati. Sono
-progettati per omettere o oscurare payload e credenziali, ma riassumono comunque
-i log locali del Gateway e lo stato di runtime a livello host.
+Tratta i pacchetti di diagnostica come segreti finché non vengono esaminati. I payload e le credenziali
+vengono oscurati per impostazione predefinita, ma il pacchetto riepiloga comunque i log locali del Gateway e
+lo stato di runtime a livello di host.
 
 ## Avvio rapido
 
@@ -29,7 +28,7 @@ i log locali del Gateway e lo stato di runtime a livello host.
 openclaw gateway diagnostics export
 ```
 
-Il comando stampa il percorso del file zip scritto. Per scegliere un percorso:
+Stampa il percorso del file zip creato. Per scegliere un percorso di output:
 
 ```bash
 openclaw gateway diagnostics export --output openclaw-diagnostics.zip
@@ -41,112 +40,90 @@ Per l'automazione:
 openclaw gateway diagnostics export --json
 ```
 
-## Comando chat
+## Comando di chat
 
-I proprietari possono usare `/diagnostics [note]` in chat per richiedere
-un'esportazione locale del Gateway. Usalo quando il bug si è verificato in una
-conversazione reale e vuoi un report unico, copiabile e incollabile, per il supporto:
+I proprietari possono eseguire `/diagnostics [note]` in qualsiasi conversazione per richiedere
+un'esportazione locale del Gateway sotto forma di singolo report di supporto copiabile e incollabile:
 
-1. Invia `/diagnostics` nella conversazione in cui hai notato il problema. Aggiungi
-   una breve nota se utile, ad esempio `/diagnostics bad tool choice`.
-2. OpenClaw invia il preambolo della diagnostica e richiede un'approvazione exec
-   esplicita. L'approvazione esegue `openclaw gateway diagnostics export --json`.
-   Non approvare la diagnostica tramite una regola allow-all.
-3. Dopo l'approvazione, OpenClaw risponde con un report incollabile che contiene
-   il percorso del bundle locale, il riepilogo del manifesto, note sulla privacy
-   e gli id sessione pertinenti.
+1. Invia `/diagnostics`, facoltativamente con una breve nota (`/diagnostics bad tool choice`).
+2. OpenClaw invia un preambolo e richiede un'unica approvazione esplicita dell'esecuzione, che avvia
+   `openclaw gateway diagnostics export --json`. Non approvare la diagnostica tramite
+   una regola che consenta tutto.
+3. Dopo l'approvazione, OpenClaw risponde con il percorso del pacchetto locale, il riepilogo
+   del manifesto, le note sulla privacy e gli ID di sessione pertinenti.
 
-Nelle chat di gruppo, un proprietario può comunque eseguire `/diagnostics`, ma
-OpenClaw non pubblica i dettagli diagnostici nella chat condivisa. Invia il
-preambolo, le richieste di approvazione, il risultato dell'esportazione del
-Gateway e la suddivisione di sessione/thread Codex al proprietario tramite il
-percorso di approvazione privato. Il gruppo riceve solo un breve avviso che il
-flusso di diagnostica è stato inviato privatamente. Se OpenClaw non riesce a
-trovare un percorso privato per il proprietario, il comando fallisce in modo
-chiuso e chiede al proprietario di eseguirlo da un DM.
+Nelle chat di gruppo, un proprietario può comunque eseguire `/diagnostics`, ma OpenClaw invia
+privatamente al proprietario il risultato dell'esportazione, le richieste di approvazione e la suddivisione
+delle sessioni e dei thread di Codex. Il gruppo vede solo un breve avviso che indica che la diagnostica è stata inviata
+privatamente. Se non esiste un canale privato verso il proprietario, il comando si arresta in modo sicuro e chiede
+al proprietario di eseguirlo da un messaggio diretto.
 
-Quando la sessione OpenClaw attiva usa l'harness OpenAI Codex nativo, la stessa
-approvazione exec copre anche un caricamento di feedback OpenAI per i thread di
-runtime Codex di cui OpenClaw è a conoscenza. Quel caricamento è separato dal file
-zip locale del Gateway e appare solo per le sessioni dell'harness Codex. Prima
-dell'approvazione, la richiesta spiega che l'approvazione della diagnostica
-invierà anche feedback Codex, ma non elenca gli id sessione o thread Codex. Dopo
-l'approvazione, la risposta in chat elenca i canali, gli id sessione OpenClaw,
-gli id thread Codex e i comandi di ripresa locali per i thread inviati ai server
-OpenAI. Se neghi o ignori l'approvazione, OpenClaw non esegue l'esportazione, non
-invia feedback Codex e non stampa gli id Codex.
+Quando la sessione attiva usa l'harness nativo OpenAI Codex, la stessa approvazione
+dell'esecuzione copre anche il caricamento di feedback a OpenAI per i thread di Codex noti
+a OpenClaw. Tale caricamento è separato dal file zip locale del Gateway e avviene solo
+per le sessioni dell'harness Codex. La richiesta di approvazione specifica che l'approvazione
+invia anche il feedback di Codex, senza elencare gli ID di sessione o di thread di Codex. Dopo
+l'approvazione, la risposta elenca i canali, gli ID di sessione di OpenClaw, gli ID dei thread di Codex e
+i comandi locali di ripresa per i thread inviati a OpenAI. Negare o
+ignorare l'approvazione impedisce l'esportazione, il caricamento del feedback di Codex e la visualizzazione
+dell'elenco degli ID di Codex.
 
-Questo rende breve il ciclo comune di debug Codex: nota il comportamento errato in
-Telegram, Discord o un altro canale, esegui `/diagnostics`, approva una volta,
-condividi il report con il supporto, quindi esegui localmente il comando stampato
-`codex resume <thread-id>` se vuoi ispezionare tu stesso il thread Codex nativo.
-Vedi [harness Codex](/it/plugins/codex-harness#inspect-codex-threads-locally) per
-quel flusso di ispezione.
+Questo rende breve il ciclo di debug di Codex: rileva un comportamento errato in un canale,
+esegui `/diagnostics`, approva una sola volta, condividi il report, quindi esegui localmente il comando
+`codex resume <thread-id>` stampato se vuoi esaminare personalmente il thread.
+Consulta [Harness Codex](/it/plugins/codex-harness#inspect-codex-threads-locally).
 
 ## Contenuto dell'esportazione
 
-Il file zip include:
-
-- `summary.md`: panoramica leggibile da persone per il supporto.
-- `diagnostics.json`: riepilogo leggibile da macchina di configurazione, log,
-  stato, integrità e dati di stabilità.
+- `summary.md`: panoramica leggibile destinata al supporto.
+- `diagnostics.json`: riepilogo leggibile dalle macchine di configurazione, log, stato, integrità
+  e dati di stabilità.
 - `manifest.json`: metadati dell'esportazione ed elenco dei file.
-- Forma della configurazione sanificata e dettagli di configurazione non segreti.
-- Riepiloghi dei log sanificati e righe di log recenti oscurate.
-- Snapshot best-effort di stato e integrità del Gateway.
-- `stability/latest.json`: il bundle di stabilità persistito più recente, quando disponibile.
+- Struttura sanitizzata della configurazione e dettagli di configurazione non segreti.
+- Riepiloghi sanitizzati dei log e righe di log recenti oscurate.
+- Snapshot dello stato e dell'integrità del Gateway acquisiti con il massimo impegno possibile.
+- `stability/latest.json`: pacchetto di stabilità persistente più recente, quando disponibile.
 
-L'esportazione è utile anche quando il Gateway non è integro. Se il Gateway non
-può rispondere alle richieste di stato o integrità, i log locali, la forma della
-configurazione e l'ultimo bundle di stabilità vengono comunque raccolti quando
-disponibili.
+L'esportazione rimane utile anche quando il Gateway non è integro: se le richieste
+di stato o integrità non riescono, vengono comunque raccolti, quando disponibili, i log locali, la struttura
+della configurazione e il pacchetto di stabilità più recente.
 
 ## Modello di privacy
 
-La diagnostica è progettata per essere condivisibile. L'esportazione mantiene i
-dati operativi utili al debug, come:
+Conservati: nomi dei sottosistemi, ID dei Plugin, ID dei provider, ID dei canali, modalità
+configurate, codici di stato, durate, conteggi dei byte, stato delle code, letture della memoria,
+metadati sanitizzati dei log, messaggi operativi oscurati, struttura della configurazione e
+impostazioni non segrete delle funzionalità.
 
-- nomi dei sottosistemi, id Plugin, id provider, id canale e modalità configurate
-- codici di stato, durate, conteggi di byte, stato della coda e letture di memoria
-- metadati dei log sanificati e messaggi operativi oscurati
-- forma della configurazione e impostazioni di funzionalità non segrete
+Omessi o oscurati: testo delle chat, prompt, istruzioni, corpi dei Webhook, output degli
+strumenti, credenziali, chiavi API, token, cookie, valori segreti, corpi non elaborati
+di richieste e risposte, ID degli account, ID dei messaggi, ID di sessione non elaborati,
+nomi host e nomi utente locali.
 
-L'esportazione omette o oscura:
-
-- testo della chat, prompt, istruzioni, corpi webhook e output degli strumenti
-- credenziali, chiavi API, token, cookie e valori segreti
-- corpi grezzi di richieste o risposte
-- id account, id messaggio, id sessione grezzi, nomi host e nomi utente locali
-
-Quando un messaggio di log sembra testo di payload utente, chat, prompt o strumento,
-l'esportazione mantiene solo l'indicazione che un messaggio è stato omesso e il
-conteggio dei byte.
+Quando un messaggio di log sembra contenere testo proveniente da un utente, una chat, un prompt o il payload di uno strumento,
+l'esportazione conserva solo l'indicazione che il messaggio è stato omesso e il relativo conteggio dei byte.
 
 ## Registratore di stabilità
 
-Il Gateway registra per impostazione predefinita un flusso di stabilità limitato
-e senza payload quando la diagnostica è abilitata. È destinato ai fatti operativi,
-non ai contenuti.
+Per impostazione predefinita, quando la diagnostica è abilitata, il Gateway registra un flusso di stabilità
+limitato e privo di payload. Acquisisce dati operativi, non contenuti.
 
-Lo stesso heartbeat diagnostico registra campioni di attività quando il Gateway
-continua a funzionare ma il loop eventi Node.js o la CPU sembrano saturi. Questi
-eventi `diagnostic.liveness.warning` includono ritardo del loop eventi, utilizzo
-del loop eventi, rapporto dei core CPU, conteggi di sessioni attive/in attesa/in
-coda, la fase corrente di avvio/runtime quando nota, span di fase recenti ed
-etichette limitate di lavoro attivo/in coda. I campioni inattivi restano nella
-telemetria a livello `info`. I campioni di attività diventano avvisi del Gateway
-solo quando del lavoro è in attesa o in coda, oppure quando lavoro attivo si
-sovrappone a un ritardo sostenuto del loop eventi. I picchi transitori di ritardo
-massimo durante lavoro in background altrimenti sano restano nei log di debug. Da
-soli non riavviano il Gateway.
+Lo stesso Heartbeat campiona anche la vitalità quando il ciclo degli eventi o la CPU sembrano
+saturi, generando eventi `diagnostic.liveness.warning` con il ritardo del ciclo degli eventi,
+il suo utilizzo, il rapporto tra core della CPU, il numero di sessioni attive/in attesa/in coda,
+la fase corrente di avvio o runtime (quando nota), gli intervalli delle fasi recenti e
+etichette limitate delle attività. Questi dati diventano righe di log di livello `warn` del Gateway solo quando
+sono presenti attività in attesa o in coda, oppure quando un'attività attiva coincide con un ritardo prolungato
+del ciclo degli eventi; in caso contrario vengono registrati a livello `debug`. I campioni di vitalità durante l'inattività vengono comunque registrati
+come eventi di diagnostica, ma da soli non vengono mai elevati al livello di avviso.
 
-Le fasi di avvio emettono anche eventi `diagnostic.phase.completed` con tempi
-wall-clock e CPU. La diagnostica di esecuzioni embedded bloccate imposta
-`terminalProgressStale=true` quando l'ultimo avanzamento del bridge sembrava
-terminale, come un elemento di risposta grezzo o un evento di completamento
-risposta, ma il Gateway considera ancora attiva l'esecuzione embedded.
+Le fasi di avvio generano eventi `diagnostic.phase.completed` con le tempistiche
+dell'orologio reale e della CPU. La diagnostica delle esecuzioni incorporate bloccate imposta `terminalProgressStale=true`
+quando l'ultimo avanzamento del bridge sembrava terminale, ad esempio un elemento di risposta non elaborato
+o un evento di completamento della risposta, ma il Gateway considera ancora attiva
+l'esecuzione incorporata.
 
-Ispeziona il registratore live:
+Per ispezionare il registratore in tempo reale:
 
 ```bash
 openclaw gateway stability
@@ -154,20 +131,20 @@ openclaw gateway stability --type payload.large
 openclaw gateway stability --json
 ```
 
-Ispeziona il bundle di stabilità persistito più recente dopo un'uscita fatale, un
-timeout di arresto o un errore di avvio al riavvio:
+Per ispezionare il pacchetto persistente più recente dopo un'uscita fatale, un timeout di arresto o
+un errore di avvio successivo a un riavvio:
 
 ```bash
 openclaw gateway stability --bundle latest
 ```
 
-Crea un file zip di diagnostica dal bundle persistito più recente:
+Per creare un file zip di diagnostica dal pacchetto persistente più recente:
 
 ```bash
 openclaw gateway stability --bundle latest --export
 ```
 
-I bundle persistiti si trovano sotto `~/.openclaw/logs/stability/` quando esistono eventi.
+Quando esistono eventi, i pacchetti persistenti si trovano in `~/.openclaw/logs/stability/`.
 
 ## Opzioni utili
 
@@ -178,20 +155,22 @@ openclaw gateway diagnostics export \
   --log-bytes 1000000
 ```
 
-- `--output <path>`: scrive in un percorso zip specifico.
-- `--log-lines <count>`: numero massimo di righe di log sanificate da includere.
-- `--log-bytes <bytes>`: numero massimo di byte di log da ispezionare.
-- `--url <url>`: URL WebSocket del Gateway per gli snapshot di stato e integrità.
-- `--token <token>`: token del Gateway per gli snapshot di stato e integrità.
-- `--password <password>`: password del Gateway per gli snapshot di stato e integrità.
-- `--timeout <ms>`: timeout degli snapshot di stato e integrità.
-- `--no-stability-bundle`: salta la ricerca del bundle di stabilità persistito.
-- `--json`: stampa metadati di esportazione leggibili da macchina.
+| Flag                    | Valore predefinito                                                            | Descrizione                                                        |
+| ----------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `--output <path>`       | `$OPENCLAW_STATE_DIR/logs/support/openclaw-diagnostics-<timestamp>-<pid>.zip` | Scrive in un percorso specifico per il file zip o la directory.    |
+| `--log-lines <count>`   | `5000`                                                                        | Numero massimo di righe di log sanitizzate da includere.           |
+| `--log-bytes <bytes>`   | `1000000`                                                                     | Numero massimo di byte dei log da esaminare.                       |
+| `--url <url>`           | -                                                                             | URL WebSocket del Gateway per gli snapshot di stato e integrità.   |
+| `--token <token>`       | -                                                                             | Token del Gateway per gli snapshot di stato e integrità.           |
+| `--password <password>` | -                                                                             | Password del Gateway per gli snapshot di stato e integrità.        |
+| `--timeout <ms>`        | `3000`                                                                        | Timeout degli snapshot di stato e integrità.                       |
+| `--no-stability-bundle` | disattivato                                                                   | Salta la ricerca del pacchetto di stabilità persistente.           |
+| `--json`                | disattivato                                                                   | Stampa i metadati dell'esportazione in formato leggibile dalle macchine. |
 
 ## Disabilitare la diagnostica
 
-La diagnostica è abilitata per impostazione predefinita. Per disabilitare il
-registratore di stabilità e la raccolta di eventi diagnostici:
+La diagnostica è abilitata per impostazione predefinita. Per disabilitare il registratore di stabilità e
+la raccolta degli eventi di diagnostica:
 
 ```json5
 {
@@ -201,12 +180,11 @@ registratore di stabilità e la raccolta di eventi diagnostici:
 }
 ```
 
-Disabilitare la diagnostica riduce i dettagli delle segnalazioni di bug. Non
-influisce sul normale logging del Gateway.
+La disabilitazione della diagnostica riduce i dettagli disponibili nelle segnalazioni di bug, ma non influisce sulla normale
+registrazione dei log del Gateway.
 
-Gli snapshot di pressione critica sulla memoria sono disattivati per impostazione
-predefinita. Per mantenere gli eventi di diagnostica e acquisire anche lo snapshot
-di stabilità pre-OOM:
+Gli snapshot in condizioni critiche di pressione sulla memoria sono disattivati per impostazione predefinita. Per acquisire lo
+snapshot di stabilità precedente all'esaurimento della memoria, oltre ai normali eventi di diagnostica:
 
 ```json5
 {
@@ -216,15 +194,15 @@ di stabilità pre-OOM:
 }
 ```
 
-Usalo solo su host che possono tollerare la scansione aggiuntiva del file system
-e la scrittura dello snapshot durante pressione critica sulla memoria. I normali
-eventi di pressione sulla memoria registrano comunque RSS, heap, soglia e fatti
-di crescita quando lo snapshot è disattivato.
+Usa questa opzione solo su host in grado di tollerare la scansione aggiuntiva del file system e
+la scrittura dello snapshot durante una pressione critica sulla memoria. Quando lo snapshot è disattivato,
+i normali eventi di pressione sulla memoria registrano comunque RSS, heap, soglia e dati di crescita
+(`rss_threshold`, `heap_threshold`, `rss_growth`).
 
-## Correlati
+## Argomenti correlati
 
 - [Controlli di integrità](/it/gateway/health)
-- [CLI Gateway](/it/cli/gateway#gateway-diagnostics-export)
-- [Protocollo Gateway](/it/gateway/protocol#system-and-identity)
-- [Logging](/it/logging)
-- [Esportazione OpenTelemetry](/it/gateway/opentelemetry) — flusso separato per inviare diagnostica in streaming a un collector
+- [CLI del Gateway](/it/cli/gateway#gateway-diagnostics-export)
+- [Protocollo del Gateway](/it/gateway/protocol#rpc-method-families)
+- [Registrazione dei log](/it/logging)
+- [Esportazione OpenTelemetry](/it/gateway/opentelemetry) - flusso separato per trasmettere la diagnostica a un raccoglitore

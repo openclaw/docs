@@ -1,11 +1,11 @@
 ---
 read_when:
-    - شما در حال نصب، پیکربندی یا ممیزی Plugin chutes هستید
+    - شما در حال نصب، پیکربندی یا ممیزی Plugin ‏chutes هستید
 summary: پشتیبانی از ارائه‌دهندهٔ مدل Chutes را به OpenClaw اضافه می‌کند.
-title: Plugin Chutes
+title: Plugin چوتس
 x-i18n:
-    generated_at: "2026-06-27T18:24:16Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:28:33Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 63f5196b0202e47ea95c3dd226546ff3e09083632e58ca780c608f53c2ba85af
@@ -15,7 +15,7 @@ x-i18n:
 
 # Plugin چوتس
 
-پشتیبانی از ارائه‌دهندهٔ مدل Chutes را به OpenClaw اضافه می‌کند.
+پشتیبانی از ارائه‌دهنده مدل چوتس را به OpenClaw اضافه می‌کند.
 
 ## توزیع
 
@@ -24,8 +24,8 @@ x-i18n:
 
 ## سطح
 
-providers: chutes
+ارائه‌دهندگان: چوتس
 
 ## مستندات مرتبط
 
-- [chutes](/fa/providers/chutes)
+- [چوتس](/fa/providers/chutes)

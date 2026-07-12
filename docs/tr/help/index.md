@@ -1,47 +1,47 @@
 ---
 read_when:
-    - Yeniyseniz ve bir "neye tıklamalı/neyi çalıştırmalıyım" kılavuzu istiyorsanız
-    - Bir şey bozuldu ve düzeltmeye en hızlı yoldan ulaşmak istiyorsunuz
-summary: 'Yardım merkezi: yaygın düzeltmeler, kurulum doğrulaması ve bir şey bozulduğunda nereye bakılacağı'
+    - Yenisiniz ve “neye tıklamalıyım/neyi çalıştırmalıyım” türünde bir kılavuz istiyorsunuz
+    - Bir şey bozuldu ve sorunu düzeltmenin en hızlı yolunu arıyorsunuz
+summary: 'Yardım merkezi: yaygın düzeltmeler, kurulum denetimi ve bir sorun oluştuğunda bakılacak yerler'
 title: Yardım
 x-i18n:
-    generated_at: "2026-05-06T09:16:28Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:23:20Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 118e8ad2207d32739d3da7d0097604dfad8e7780843841f4f84a44cd77eb8736
+    source_hash: 3068eafc6157b73b1245d56c51b10091292a9f9d86849423cb70bd311f76c1bb
     source_path: help/index.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Takıldığınız yerden çıkmak için en yaygın sorunlara yönelik hızlı yol:
+Belirtiye göre sorunu en hızlı giderme yolları:
 
 - [Sorun giderme](/tr/help/troubleshooting) - belirti odaklı karar ağacı
-- [Hata ayıklama](/tr/help/debugging) - izleme modu, ham akışlar, geliştirici profili
-- [Kurulum sağlaması](/tr/install/node#troubleshooting) - Node / npm / PATH kontrolleri
-- [Gateway sorun giderme](/tr/gateway/troubleshooting) - Gateway’e özgü sorunlar
-- [Doctor](/tr/gateway/doctor) - otomatik onarım + tanılama paketi
+- [Hata ayıklama](/tr/help/debugging) - izleme modu, ham akışlar, geliştirme profili
+- [Kurulum doğrulaması](/tr/install/node#troubleshooting) - Node / npm / PATH kontrolleri
+- [Gateway sorunlarını giderme](/tr/gateway/troubleshooting) - Gateway'e özgü sorunlar
+- [Doctor](/tr/gateway/doctor) - `openclaw doctor`: sistem durumu kontrolleri, yapılandırma geçişleri, onarım adımları
 
 ## SSS
 
-- [SSS](/tr/help/faq) - günlük kavramlar ve operasyonel sorular
-- [İlk çalıştırma SSS](/tr/help/faq-first-run) - kurulum, başlangıç süreci, kimlik doğrulama, abonelikler, erken hatalar
+- [SSS](/tr/help/faq) - günlük kavramlar ve işletim soruları
+- [İlk çalıştırma SSS](/tr/help/faq-first-run) - kurulum, ilk yapılandırma, kimlik doğrulama, abonelikler, ilk aşamadaki hatalar
 - [Modeller SSS](/tr/help/faq-models) - model seçimi, yük devretme, kimlik doğrulama profilleri
 
 ## Tanılama
 
-- [Ortam değişkenleri](/tr/help/environment) - OpenClaw’ın env vars yüklediği yerler ve öncelik sırası
+- [Ortam değişkenleri](/tr/help/environment) - OpenClaw'un ortam değişkenlerini nereden yüklediği ve öncelik sırası
 - [Tanılama bayrakları](/tr/diagnostics/flags) - çalışma zamanı tanılaması ve ayrıntılı modlar
 - [Node + tsx çökmesi](/tr/debug/node-issue) - belirli Node / tsx çalışma zamanı çökme senaryoları
 
-## Test Etme
+## Test
 
-- [Test etme](/tr/help/testing) - test paketleri ve Docker çalıştırıcıları
+- [Test](/tr/help/testing) - test paketleri ve Docker çalıştırıcıları
 - [Güncelleme ve Plugin testleri](/tr/help/testing-updates-plugins) - paket güncellemesi, geçiş ve Plugin kurulum doğrulaması
-- [Canlı testler](/tr/help/testing-live) - ağa dokunan sağlayıcı ve CLI duman testleri
+- [Canlı testler](/tr/help/testing-live) - ağa erişen sağlayıcı ve CLI temel doğrulama testleri
 
-## Topluluk ve meta
+## Topluluk ve üst bilgiler
 
-- [OpenClaw bilgisi](/tr/start/lore) - hikaye
-- [Dokümantasyon merkezleri](/tr/start/hubs) - bu dokümantasyonun nasıl düzenlendiği
-- [Dokümantasyon dizini](/tr/start/docs-directory) - tam dosya haritası
+- [OpenClaw hikâyesi](/tr/start/lore) - hikâye
+- [Belge merkezleri](/tr/start/hubs) - bu belgelerin nasıl düzenlendiği
+- [Belgeler dizini](/tr/start/docs-directory) - tam dosya haritası

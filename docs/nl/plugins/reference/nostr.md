@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Je installeert, configureert of controleert de nostr-Plugin
-summary: OpenClaw Nostr-kanaal-Plugin voor met NIP-04 versleutelde privéberichten.
+    - U installeert, configureert of controleert de nostr-plugin
+summary: OpenClaw Nostr-kanaalplugin voor met NIP-04 versleutelde directe berichten.
 title: Nostr-Plugin
 x-i18n:
-    generated_at: "2026-06-27T18:02:44Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:13:20Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: e56fd9eee17c55bcbba3d7b85d783930c10d2368f36173ac478b254c2bd5ec22
@@ -13,9 +13,9 @@ x-i18n:
     workflow: 16
 ---
 
-# Nostr Plugin
+# Nostr-Plugin
 
-OpenClaw Nostr-kanaal-Plugin voor met NIP-04 versleutelde directe berichten.
+OpenClaw Nostr-kanaalplugin voor volgens NIP-04 versleutelde privéberichten.
 
 ## Distributie
 

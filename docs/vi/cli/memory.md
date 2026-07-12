@@ -1,163 +1,191 @@
 ---
 read_when:
     - Bạn muốn lập chỉ mục hoặc tìm kiếm bộ nhớ ngữ nghĩa
-    - Bạn đang gỡ lỗi về khả dụng bộ nhớ hoặc lập chỉ mục
-    - Bạn muốn đưa bộ nhớ ngắn hạn đã truy xuất vào `MEMORY.md`
-summary: Tham chiếu CLI cho `openclaw memory` (status/index/search/promote/promote-explain/rem-harness)
+    - Bạn đang gỡ lỗi tính khả dụng hoặc việc lập chỉ mục của bộ nhớ
+    - Bạn muốn chuyển ký ức ngắn hạn được truy hồi thành `MEMORY.md`
+summary: Tài liệu tham chiếu CLI cho `openclaw memory` (trạng thái/chỉ mục/tìm kiếm/thăng hạng/giải thích thăng hạng/bộ kiểm thử rem/điền bù rem)
 title: Bộ nhớ
 x-i18n:
-    generated_at: "2026-06-30T14:08:03Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:48:34Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 74b85d7299cc12e6133a10678f7c8fe17ee704e029993aebea417727ba94e629
+    source_hash: f0002c48044455520f32a5a3e111415a746fbafba2a27a655ded90abdc94623b
     source_path: cli/memory.md
     workflow: 16
 ---
 
 # `openclaw memory`
 
-Quản lý lập chỉ mục và tìm kiếm bộ nhớ ngữ nghĩa.
-Được cung cấp bởi plugin `memory-core` đi kèm. Lệnh này khả dụng khi
-`plugins.slots.memory` chọn `memory-core` (mặc định); các plugin bộ nhớ khác
-cung cấp namespace CLI riêng của chúng.
+Quản lý việc lập chỉ mục bộ nhớ ngữ nghĩa, tìm kiếm và đưa nội dung vào `MEMORY.md`.
+Được cung cấp bởi plugin `memory-core` đi kèm, khả dụng khi
+`plugins.slots.memory` chọn `memory-core` (mặc định). Các plugin bộ nhớ khác
+cung cấp không gian tên CLI riêng.
 
-Liên quan:
+Liên quan: khái niệm [Bộ nhớ](/vi/concepts/memory), [Dreaming](/vi/concepts/dreaming),
+[Tham chiếu cấu hình bộ nhớ](/vi/reference/memory-config), [Wiki bộ nhớ](/vi/plugins/memory-wiki),
+[wiki](/vi/cli/wiki), [Plugin](/vi/tools/plugin).
 
-- Khái niệm bộ nhớ: [Bộ nhớ](/vi/concepts/memory)
-- Wiki bộ nhớ: [Wiki bộ nhớ](/vi/plugins/memory-wiki)
-- CLI wiki: [wiki](/vi/cli/wiki)
-- Plugin: [Plugin](/vi/tools/plugin)
-
-## Ví dụ
+## `memory status`
 
 ```bash
-openclaw memory status
-openclaw memory status --deep
-openclaw memory status --fix
-openclaw memory index --force
-openclaw memory search "meeting notes"
-openclaw memory search --query "deployment" --max-results 20
-openclaw memory promote --limit 10 --min-score 0.75
-openclaw memory promote --apply
-openclaw memory promote --json --min-recall-count 0 --min-unique-queries 0
-openclaw memory promote-explain "router vlan"
-openclaw memory promote-explain "router vlan" --json
-openclaw memory rem-harness
-openclaw memory rem-harness --json
-openclaw memory status --json
-openclaw memory status --deep --index
-openclaw memory status --deep --index --verbose
-openclaw memory status --agent main
-openclaw memory index --agent main --verbose
+openclaw memory status [--agent <id>] [--deep] [--index] [--fix] [--json] [--verbose]
 ```
 
-## Tùy chọn
+Nếu không có `--agent`, lệnh sẽ chạy cho mọi tác tử trong `agents.list`; nếu chưa
+cấu hình danh sách tác tử, lệnh sẽ dùng tác tử mặc định.
 
-`memory status` và `memory index`:
+| Cờ          | Tác dụng                                                                                                                                                                                                                                                                                                                                 |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--deep`    | Kiểm tra mức độ sẵn sàng của kho vectơ, nhà cung cấp embedding và tìm kiếm ngữ nghĩa (dẫn đến các lệnh gọi bổ sung tới nhà cung cấp). `memory status` thông thường vẫn chạy nhanh và bỏ qua bước này; trạng thái vectơ/ngữ nghĩa không xác định nghĩa là chưa được kiểm tra. Chế độ từ vựng QMD `searchMode: "search"` luôn bỏ qua kiểm tra vectơ ngữ nghĩa, kể cả khi có `--deep`. |
+| `--index`   | Lập chỉ mục lại nếu kho đang ở trạng thái bẩn. Bao hàm `--deep`.                                                                                                                                                                                                                                                                          |
+| `--fix`     | Sửa các khóa truy hồi cũ và chuẩn hóa siêu dữ liệu đưa vào bộ nhớ.                                                                                                                                                                                                                                                                        |
+| `--json`    | In JSON.                                                                                                                                                                                                                                                                                                                                 |
+| `--verbose` | Xuất nhật ký chi tiết theo từng giai đoạn.                                                                                                                                                                                                                                                                                                |
 
-- `--agent <id>`: giới hạn phạm vi vào một agent duy nhất. Khi không có tùy chọn này, các lệnh này chạy cho từng agent đã cấu hình; nếu chưa cấu hình danh sách agent, chúng dùng lại agent mặc định.
-- `--verbose`: phát nhật ký chi tiết trong khi thăm dò và lập chỉ mục.
+Nếu dòng `Dreaming` vẫn ở trạng thái `off` ngay cả khi có
+`dreaming.enabled: true`, hoặc các lượt quét theo lịch dường như không bao giờ
+chạy, Cron Dreaming được quản lý phụ thuộc vào Heartbeat của tác tử mặc định
+được kích hoạt để bắt đầu quá trình đối soát. Xem
+[Dreaming](/vi/concepts/dreaming) để biết chi tiết về lịch chạy.
 
-`memory status`:
+Trạng thái cũng liệt kê mọi đường dẫn tìm kiếm bổ sung từ `agents.defaults.memorySearch.extraPaths`.
 
-- `--deep`: thăm dò mức sẵn sàng của kho vector cục bộ, mức sẵn sàng của nhà cung cấp embedding, và mức sẵn sàng của tìm kiếm vector ngữ nghĩa. `memory status` thông thường vẫn nhanh và không chạy embedding trực tiếp hoặc công việc khám phá nhà cung cấp; trạng thái kho vector hoặc vector ngữ nghĩa không xác định nghĩa là trạng thái đó chưa được thăm dò trong lệnh đó. QMD lexical `searchMode: "search"` bỏ qua thăm dò vector ngữ nghĩa và bảo trì embedding ngay cả với `--deep`.
-- `--index`: chạy lập chỉ mục lại nếu kho đang bẩn (ngụ ý `--deep`).
-- `--fix`: sửa các khóa recall cũ và chuẩn hóa siêu dữ liệu promotion.
-- `--json`: in đầu ra JSON.
-
-Nếu `memory status` hiển thị `Dreaming status: blocked`, cron Dreaming được quản lý đã bật nhưng heartbeat điều khiển nó không kích hoạt cho agent mặc định. Xem [Dreaming không bao giờ chạy](/vi/concepts/dreaming#dreaming-never-runs-status-shows-blocked) để biết hai nguyên nhân phổ biến.
-
-`memory index`:
-
-- `--force`: buộc lập chỉ mục lại toàn bộ.
-
-`memory search`:
-
-- Đầu vào truy vấn: truyền `[query]` dạng vị trí hoặc `--query <text>`.
-- Nếu cung cấp cả hai, `--query` được ưu tiên.
-- Nếu không cung cấp cái nào, lệnh thoát với lỗi.
-- `--agent <id>`: giới hạn phạm vi vào một agent duy nhất (mặc định: agent mặc định).
-- `--max-results <n>`: giới hạn số lượng kết quả trả về.
-- `--min-score <n>`: lọc bỏ các kết quả khớp có điểm thấp.
-- `--json`: in kết quả JSON.
-
-`memory promote`:
-
-Xem trước và áp dụng các promotion bộ nhớ ngắn hạn.
+## `memory index`
 
 ```bash
-openclaw memory promote [--apply] [--limit <n>] [--include-promoted]
+openclaw memory index [--agent <id>] [--force] [--verbose]
 ```
 
-- `--apply` -- ghi promotion vào `MEMORY.md` (mặc định: chỉ xem trước).
-- `--limit <n>` -- giới hạn số lượng ứng viên được hiển thị.
-- `--include-promoted` -- bao gồm các mục đã được promote trong những chu kỳ trước.
+Có cùng phạm vi theo tác tử như `status`. `--force` thực hiện lập chỉ mục lại
+toàn bộ thay vì lập chỉ mục tăng dần. `--verbose` in thông tin về nhà cung cấp,
+mô hình, nguồn và đường dẫn bổ sung của từng tác tử trước khi hiển thị tiến trình
+lập chỉ mục.
 
-Toàn bộ tùy chọn:
+## `memory search`
 
-- Xếp hạng ứng viên ngắn hạn từ `memory/YYYY-MM-DD.md` bằng các tín hiệu promotion có trọng số (`frequency`, `relevance`, `query diversity`, `recency`, `consolidation`, `conceptual richness`).
-- Sử dụng tín hiệu ngắn hạn từ cả recall bộ nhớ và các lượt nhập hằng ngày, cộng thêm tín hiệu củng cố từ pha light/REM.
-- Khi Dreaming được bật, `memory-core` tự quản lý một tác vụ cron chạy một lượt quét đầy đủ (`light -> REM -> deep`) trong nền (không cần tự chạy `openclaw cron add`).
-- `--agent <id>`: giới hạn phạm vi vào một agent duy nhất (mặc định: agent mặc định).
-- `--limit <n>`: số ứng viên tối đa để trả về/áp dụng.
-- `--min-score <n>`: điểm promotion có trọng số tối thiểu.
-- `--min-recall-count <n>`: số lần recall tối thiểu cần có cho một ứng viên.
-- `--min-unique-queries <n>`: số lượng truy vấn riêng biệt tối thiểu cần có cho một ứng viên.
-- `--apply`: nối các ứng viên đã chọn vào `MEMORY.md` và đánh dấu chúng là đã promote.
-- `--include-promoted`: bao gồm các ứng viên đã được promote trong đầu ra.
-- `--json`: in đầu ra JSON.
+```bash
+openclaw memory search [query] [--query <text>] [--agent <id>] [--max-results <n>] [--min-score <n>] [--json]
+```
 
-`memory promote-explain`:
+- Truy vấn: đối số vị trí `[query]` hoặc `--query <text>`. Nếu đặt cả hai,
+  `--query` được ưu tiên. Nếu không đặt đối số nào, lệnh sẽ báo lỗi.
+- `--agent <id>`: mặc định là tác tử mặc định (không phải toàn bộ danh sách tác tử).
+- `--max-results <n>`: giới hạn số lượng kết quả (số nguyên dương).
+- `--min-score <n>`: lọc bỏ các kết quả khớp có điểm thấp hơn giá trị này.
 
-Giải thích một ứng viên promotion cụ thể và phân rã điểm của nó.
+## `memory promote`
+
+Xếp hạng các ứng viên ngắn hạn từ `memory/YYYY-MM-DD.md` và tùy chọn nối thêm
+các mục hàng đầu vào `MEMORY.md`.
+
+```bash
+openclaw memory promote [--agent <id>] [--limit <n>] [--min-score <n>] \
+  [--min-recall-count <n>] [--min-unique-queries <n>] [--apply] [--include-promoted] [--json]
+```
+
+| Cờ                         | Mặc định        | Tác dụng                                                              |
+| -------------------------- | --------------- | --------------------------------------------------------------------- |
+| `--limit <n>`              |                 | Số ứng viên tối đa cần trả về/áp dụng.                                |
+| `--min-score <n>`          | `0.75`          | Điểm đưa vào bộ nhớ có trọng số tối thiểu.                            |
+| `--min-recall-count <n>`   | `3`             | Số lượt truy hồi tối thiểu bắt buộc.                                  |
+| `--min-unique-queries <n>` | `2`             | Số truy vấn riêng biệt tối thiểu bắt buộc.                            |
+| `--apply`                  | chỉ xem trước   | Nối các ứng viên đã chọn vào `MEMORY.md` và đánh dấu là đã được đưa vào bộ nhớ. |
+| `--include-promoted`       |                 | Bao gồm các ứng viên đã được đưa vào bộ nhớ trong những chu kỳ trước. |
+| `--json`                   |                 | In JSON.                                                              |
+
+Các giá trị mặc định của CLI này khác với ngưỡng giai đoạn sâu của lượt quét
+Dreaming theo lịch (xem [Dreaming](#dreaming) bên dưới); hãy truyền các cờ tường
+minh để khớp với hành vi quét khi chạy thủ công một lần.
+
+Các tín hiệu xếp hạng: tần suất truy hồi, mức độ liên quan khi truy xuất, độ đa
+dạng truy vấn, độ mới theo thời gian, sự hợp nhất qua nhiều ngày và độ phong phú
+của khái niệm dẫn xuất, được lấy từ cả các lượt truy hồi bộ nhớ lẫn các lượt nhập
+hằng ngày, cùng với mức tăng cường nhẹ từ giai đoạn nhẹ/REM cho những lần Dreaming
+lặp lại. Trước khi ghi, quá trình đưa vào bộ nhớ sẽ đọc lại ghi chú hằng ngày hiện
+hành, vì vậy các chỉnh sửa hoặc nội dung bị xóa khỏi đoạn trích ngắn hạn sau khi
+xếp hạng vẫn được tôn trọng, thay vì đưa nội dung từ một ảnh chụp cũ vào bộ nhớ.
+
+## `memory promote-explain`
+
+Giải thích chi tiết cách tính điểm của một ứng viên đưa vào bộ nhớ.
 
 ```bash
 openclaw memory promote-explain <selector> [--agent <id>] [--include-promoted] [--json]
 ```
 
-- `<selector>`: khóa ứng viên, đoạn đường dẫn, hoặc đoạn trích cần tra cứu.
-- `--agent <id>`: giới hạn phạm vi vào một agent duy nhất (mặc định: agent mặc định).
-- `--include-promoted`: bao gồm các ứng viên đã được promote.
-- `--json`: in đầu ra JSON.
+`<selector>` khớp với khóa (chính xác hoặc chuỗi con), đường dẫn hoặc văn bản
+đoạn trích của ứng viên.
 
-`memory rem-harness`:
+## `memory rem-harness`
 
-Xem trước các phản tư REM, sự thật ứng viên, và đầu ra promotion sâu mà không ghi gì.
+Xem trước các suy ngẫm REM, các sự thật ứng viên và kết quả đưa vào bộ nhớ của
+giai đoạn sâu mà không ghi bất kỳ nội dung nào.
 
 ```bash
-openclaw memory rem-harness [--agent <id>] [--include-promoted] [--json]
+openclaw memory rem-harness [--agent <id>] [--path <file-or-dir>] [--grounded] [--include-promoted] [--json]
 ```
 
-- `--agent <id>`: giới hạn phạm vi vào một agent duy nhất (mặc định: agent mặc định).
-- `--include-promoted`: bao gồm các ứng viên sâu đã được promote.
-- `--json`: in đầu ra JSON.
+- `--path <file-or-dir>`: khởi tạo bộ thử nghiệm từ các tệp hằng ngày
+  `YYYY-MM-DD.md` trong lịch sử thay vì không gian làm việc hiện hành.
+- `--grounded`: đồng thời kết xuất bản xem trước có căn cứ gồm `Điều đã xảy ra` /
+  `Suy ngẫm` / `Các cập nhật lâu dài khả dĩ` từ các ghi chú lịch sử.
+
+## `memory rem-backfill`
+
+Ghi các bản tóm tắt REM lịch sử có căn cứ vào `DREAMS.md` để xem xét trong giao
+diện người dùng. Có thể hoàn tác.
+
+```bash
+openclaw memory rem-backfill --path <file-or-dir> [--agent <id>] [--stage-short-term] [--json]
+openclaw memory rem-backfill --rollback [--rollback-short-term] [--json]
+```
+
+- `--path <file-or-dir>`: bắt buộc trừ khi đặt `--rollback`/`--rollback-short-term`.
+  Một hoặc nhiều tệp bộ nhớ hằng ngày trong lịch sử hoặc thư mục dùng làm nguồn
+  để điền bù.
+- `--stage-short-term`: đồng thời đưa các ứng viên bền vững có căn cứ vào kho đưa
+  vào bộ nhớ ngắn hạn hiện hành để giai đoạn sâu thông thường có thể xếp hạng chúng.
+- `--rollback`: xóa các mục nhật ký có căn cứ đã ghi trước đó khỏi `DREAMS.md`.
+- `--rollback-short-term`: xóa các ứng viên ngắn hạn có căn cứ đã được đưa vào
+  trước đó.
 
 ## Dreaming
 
-Dreaming là hệ thống hợp nhất bộ nhớ chạy nền với ba
-pha phối hợp: **light** (sắp xếp/chuẩn bị tư liệu ngắn hạn), **deep** (promote
-các sự kiện bền vững vào `MEMORY.md`), và **REM** (phản tư và làm nổi bật các chủ đề).
+Dreaming là hệ thống hợp nhất bộ nhớ chạy nền với ba giai đoạn phối hợp, chạy
+theo thứ tự trong cùng một lịch: **nhẹ** (sắp xếp/chuẩn bị tài liệu ngắn hạn),
+**REM** (suy ngẫm và làm nổi bật các chủ đề), **sâu** (đưa các dữ kiện bền vững
+vào `MEMORY.md`). Chỉ giai đoạn sâu ghi vào `MEMORY.md`.
 
-- Bật bằng `plugins.entries.memory-core.config.dreaming.enabled: true`.
-- Bật/tắt từ trò chuyện bằng `/dreaming on|off` (hoặc kiểm tra bằng `/dreaming status`).
-  Người gọi qua kênh phải là owner để thay đổi cài đặt; client Gateway cần
-  `operator.admin`. Trạng thái chỉ đọc và trợ giúp vẫn khả dụng cho những người gửi
-  lệnh đã được ủy quyền.
-- Dreaming chạy theo một lịch quét được quản lý (`dreaming.frequency`) và thực thi các pha theo thứ tự: light, REM, deep.
-- Chỉ pha deep ghi bộ nhớ bền vững vào `MEMORY.md`.
-- Đầu ra pha và các mục nhật ký dễ đọc cho con người được ghi vào `DREAMS.md` (hoặc `dreams.md` hiện có), với báo cáo tùy chọn theo từng pha trong `memory/dreaming/<phase>/YYYY-MM-DD.md`.
-- Việc xếp hạng dùng các tín hiệu có trọng số: tần suất recall, độ liên quan khi truy xuất, độ đa dạng truy vấn, độ gần đây theo thời gian, hợp nhất xuyên ngày, và độ phong phú khái niệm được suy ra.
-- Promotion đọc lại ghi chú hằng ngày đang hoạt động trước khi ghi vào `MEMORY.md`, nên các đoạn trích ngắn hạn đã chỉnh sửa hoặc xóa sẽ không được promote từ ảnh chụp recall-store đã cũ.
-- Các lượt chạy theo lịch và `memory promote` thủ công dùng chung mặc định pha deep trừ khi bạn truyền các ghi đè ngưỡng qua CLI.
-- Các lượt chạy tự động mở rộng trên các workspace bộ nhớ đã cấu hình.
+- Bật bằng `plugins.entries.memory-core.config.dreaming.enabled: true`
+  (mặc định là `false`); `memory-core` tự động quản lý tác vụ Cron quét, không
+  cần chạy thủ công `openclaw cron add`.
+- Bật/tắt từ cuộc trò chuyện bằng `/dreaming on|off`; kiểm tra bằng
+  `/dreaming status` (hoặc `/dreaming`/`/dreaming help`). `on`/`off` yêu cầu
+  trạng thái chủ sở hữu kênh hoặc quyền `operator.admin` của Gateway; trạng thái
+  và trợ giúp vẫn khả dụng cho bất kỳ ai có thể gọi lệnh.
+- Kết quả dễ đọc của từng giai đoạn được ghi vào `DREAMS.md` (hoặc tệp
+  `dreams.md` hiện có). Theo mặc định (`dreaming.storage.mode: "separate"`),
+  mỗi giai đoạn cũng ghi một báo cáo độc lập vào
+  `memory/dreaming/<phase>/YYYY-MM-DD.md`; đặt `mode: "inline"` để gộp các báo
+  cáo vào tệp bộ nhớ hằng ngày, hoặc `"both"` để dùng cả hai.
+- Các lượt chạy theo lịch và chạy thủ công bằng `memory promote` sử dụng chung
+  các tín hiệu xếp hạng của giai đoạn sâu; chỉ các ngưỡng mặc định là khác nhau
+  (xem bảng bên trên so với các giá trị mặc định theo lịch bên dưới).
+- Các lượt chạy theo lịch được phân phối trên không gian làm việc bộ nhớ của mọi
+  tác tử đã cấu hình.
 
-Lịch mặc định:
+Các giá trị mặc định theo lịch (`plugins.entries.memory-core.config.dreaming`):
 
-- **Nhịp quét**: `dreaming.frequency = 0 3 * * *`
-- **Ngưỡng deep**: `minScore=0.8`, `minRecallCount=3`, `minUniqueQueries=3`, `recencyHalfLifeDays=14`, `maxAgeDays=30`
-
-Ví dụ:
+| Khóa                                   | Mặc định    |
+| -------------------------------------- | ----------- |
+| `frequency`                            | `0 3 * * *` |
+| `phases.deep.minScore`                 | `0.8`       |
+| `phases.deep.minRecallCount`           | `3`         |
+| `phases.deep.minUniqueQueries`         | `3`         |
+| `phases.deep.recencyHalfLifeDays`      | `14`        |
+| `phases.deep.maxAgeDays`               | `30`        |
+| `phases.deep.maxPromotedSnippetTokens` | `160`       |
 
 ```json
 {
@@ -175,20 +203,18 @@ Ví dụ:
 }
 ```
 
-Ghi chú:
+Danh sách khóa đầy đủ và chi tiết từng giai đoạn: [Dreaming](/vi/concepts/dreaming),
+[Tham chiếu cấu hình bộ nhớ](/vi/reference/memory-config#dreaming).
 
-- `memory index --verbose` in chi tiết theo từng pha (nhà cung cấp, model, nguồn, hoạt động batch).
-- `memory status` bao gồm mọi đường dẫn bổ sung đã cấu hình qua `memorySearch.extraPaths`.
-- Nếu các trường khóa API Active Memory từ xa đang hiệu lực được cấu hình là SecretRefs, lệnh sẽ phân giải các giá trị đó từ snapshot gateway đang hoạt động. Nếu gateway không khả dụng, lệnh thất bại nhanh.
-- Ghi chú về lệch phiên bản Gateway: đường dẫn lệnh này yêu cầu gateway hỗ trợ `secrets.resolve`; gateway cũ hơn trả về lỗi phương thức không xác định.
-- Điều chỉnh nhịp quét theo lịch bằng `dreaming.frequency`. Chính sách promotion deep ngoài ra là nội bộ, trừ `dreaming.phases.deep.maxPromotedSnippetTokens`, tùy chọn giới hạn độ dài đoạn trích được promote trong khi vẫn giữ hiển thị nguồn gốc. Dùng các cờ CLI trên `memory promote` khi bạn cần ghi đè ngưỡng thủ công một lần.
-- `memory rem-harness --path <file-or-dir> --grounded` xem trước `What Happened`, `Reflections`, và `Possible Lasting Updates` có căn cứ từ các ghi chú hằng ngày lịch sử mà không ghi gì.
-- `memory rem-backfill --path <file-or-dir>` ghi các mục nhật ký có căn cứ, có thể đảo ngược vào `DREAMS.md` để UI xem xét.
-- `memory rem-backfill --path <file-or-dir> --stage-short-term` cũng gieo các ứng viên bền vững có căn cứ vào kho promotion ngắn hạn đang hoạt động để pha deep bình thường có thể xếp hạng chúng.
-- `memory rem-backfill --rollback` xóa các mục nhật ký có căn cứ đã ghi trước đó, và `memory rem-backfill --rollback-short-term` xóa các ứng viên ngắn hạn có căn cứ đã được chuẩn bị trước đó.
-- Xem [Dreaming](/vi/concepts/dreaming) để biết mô tả đầy đủ về các pha và tham chiếu cấu hình.
+## Phụ thuộc Gateway của SecretRef
+
+Nếu các trường khóa API từ xa của Active Memory được cấu hình dưới dạng
+SecretRef, các lệnh `memory` sẽ phân giải chúng từ ảnh chụp Gateway đang hoạt
+động; nếu Gateway không khả dụng, lệnh sẽ thất bại ngay. Điều này yêu cầu
+Gateway hỗ trợ phương thức `secrets.resolve`; các Gateway cũ hơn sẽ trả về lỗi
+không xác định phương thức.
 
 ## Liên quan
 
 - [Tham chiếu CLI](/vi/cli)
-- [Tổng quan bộ nhớ](/vi/concepts/memory)
+- [Tổng quan về bộ nhớ](/vi/concepts/memory)

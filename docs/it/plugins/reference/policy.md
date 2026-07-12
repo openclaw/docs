@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Stai installando, configurando o verificando il Plugin delle policy
-summary: Aggiunge controlli doctor basati su policy per la conformità del workspace.
-title: Plugin dei criteri
+    - Stai installando, configurando o verificando il plugin dei criteri
+summary: Aggiunge controlli doctor basati su criteri per verificare la conformità dello spazio di lavoro.
+title: Plugin per le policy
 x-i18n:
-    generated_at: "2026-06-27T17:58:30Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:23:24Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: f01de4816a191a175367c06ff69e4ebf6032ee1a105d1d9a48a74093e5e6f774
@@ -13,69 +13,37 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin policy
+# Plugin Policy
 
-Aggiunge controlli doctor basati su policy per la conformità del workspace.
+Aggiunge controlli doctor basati su policy per la conformità dello spazio di lavoro.
 
 ## Distribuzione
 
 - Pacchetto: `@openclaw/policy`
-- Percorso di installazione: incluso in OpenClaw
+- Modalità di installazione: incluso in OpenClaw
 
 ## Superficie
 
-plugin
+Plugin
 
 <!-- openclaw-plugin-reference:manual-start -->
 
 ## Comportamento
 
-Il Plugin Policy contribuisce controlli di integrità doctor per le impostazioni OpenClaw
-gestite da policy e per le dichiarazioni del workspace governate. Attualmente Policy copre la
-conformità dei canali, i metadati degli strumenti governati, la postura dei server MCP, la postura dei provider di modelli,
-la postura di accesso alla rete privata, la postura di esposizione del Gateway, la postura del workspace/degli strumenti dell’agente, la postura configurata degli strumenti globali/per agente, la postura configurata del runtime sandbox, la postura di accesso ingress/canale, la postura di gestione dei dati e la postura del provider di segreti/profilo di autenticazione della configurazione di OpenClaw.
+Il Plugin Policy fornisce controlli di integrità doctor per le impostazioni di OpenClaw gestite tramite policy e le dichiarazioni regolamentate dello spazio di lavoro. Attualmente, Policy verifica la conformità dei canali, i metadati regolamentati degli strumenti, la configurazione di sicurezza dei server MCP, dei fornitori di modelli, dell'accesso alla rete privata, dell'esposizione del Gateway, dello spazio di lavoro e degli strumenti degli agenti, degli strumenti globali e per agente configurati, del runtime sandbox configurato, dell'accesso in ingresso e ai canali, della gestione dei dati e dei fornitori di segreti e profili di autenticazione della configurazione di OpenClaw.
 
-Policy archivia i requisiti creati in `policy.jsonc`, osserva le impostazioni OpenClaw
-e le dichiarazioni del workspace esistenti come evidenza e segnala la deriva
-tramite `openclaw policy check` e `openclaw doctor --lint`. Un controllo policy
-pulito emette policy, evidenze, risultati e hash di attestazione che gli operatori
-possono registrare per audit.
+Policy memorizza i requisiti definiti in `policy.jsonc`, considera come evidenze le impostazioni e le dichiarazioni dello spazio di lavoro OpenClaw esistenti e segnala gli scostamenti tramite `openclaw policy check` e `openclaw doctor --lint`. Un controllo della policy senza problemi produce la policy, le evidenze, i risultati e gli hash di attestazione che gli operatori possono registrare a fini di audit.
 
-`openclaw policy compare --baseline <file>` confronta un file policy con un altro
-file policy. È solo conformità a livello di configurazione: usa i metadati delle regole policy
-per verificare che alla policy controllata non manchi nulla e che non sia più debole della baseline
-creata, e non ispeziona lo stato del runtime, le credenziali o i valori segreti.
+`openclaw policy compare --baseline <file>` confronta un file di policy con un altro file di policy. Verifica esclusivamente la conformità a livello di configurazione: utilizza i metadati delle regole della policy per verificare che la policy controllata non presenti requisiti mancanti o meno rigorosi rispetto alla baseline definita e non esamina lo stato del runtime, le credenziali o i valori dei segreti.
 
-Le regole di postura degli strumenti possono richiedere profili approvati, strumenti filesystem
-solo per workspace, impostazioni di sicurezza/richiesta/host exec limitate, modalità elevata disabilitata, voci
-`alsoAllow` esatte e voci di negazione strumenti richieste. I record di evidenza
-registrano voci `alsoAllow` additive perché possono ampliare la postura effettiva degli strumenti.
-Questi controlli osservano solo la conformità della configurazione; non leggono lo stato di approvazione del runtime
-né aggiungono enforcement del runtime.
+Le regole sulla configurazione di sicurezza degli strumenti possono richiedere profili approvati, strumenti del file system limitati allo spazio di lavoro, impostazioni circoscritte per sicurezza, richieste di conferma e host di exec, la modalità con privilegi elevati disabilitata, voci `alsoAllow` esatte e voci obbligatorie di esclusione degli strumenti. Le evidenze registrano le voci `alsoAllow` aggiuntive, poiché possono ampliare le autorizzazioni effettive degli strumenti. Questi controlli verificano esclusivamente la conformità della configurazione; non leggono lo stato delle approvazioni del runtime né aggiungono meccanismi di applicazione nel runtime.
 
-Le regole di postura sandbox possono richiedere modalità/backend sandbox approvati, negare il networking
-host dei container, negare join di namespace dei container, richiedere mount dei container in sola lettura,
-negare mount dei socket del runtime container e profili container non confinati,
-e richiedere intervalli sorgente CDP del browser sandbox.
-Questi controlli osservano solo la conformità della configurazione; non leggono lo stato di approvazione del runtime,
-non ispezionano container live né aggiungono enforcement del runtime.
+Le regole sulla configurazione di sicurezza della sandbox possono richiedere modalità e backend sandbox approvati, vietare la rete host dei container, vietare l'accesso agli spazi dei nomi dei container, richiedere montaggi dei container in sola lettura, vietare i montaggi dei socket del runtime dei container e i profili dei container senza restrizioni e richiedere intervalli di origine CDP per il browser della sandbox. Questi controlli verificano esclusivamente la conformità della configurazione; non leggono lo stato delle approvazioni del runtime, non esaminano i container attivi né aggiungono meccanismi di applicazione nel runtime.
 
-Le regole di gestione dei dati possono richiedere la redazione del logging sensibile, negare l’acquisizione
-di contenuti telemetrici, richiedere la manutenzione della conservazione delle sessioni e negare
-l’indicizzazione in memoria delle trascrizioni di sessione. Questi controlli osservano solo la conformità della configurazione;
-non ispezionano log grezzi, esportazioni telemetriche, trascrizioni, file di memoria, segreti
-o dati personali.
+Le regole sulla gestione dei dati possono richiedere l'oscuramento delle informazioni sensibili nei log, vietare l'acquisizione di contenuti nella telemetria, richiedere la manutenzione della conservazione delle sessioni e vietare l'indicizzazione in memoria delle trascrizioni delle sessioni. Questi controlli verificano esclusivamente la conformità della configurazione; non esaminano i log non elaborati, le esportazioni di telemetria, le trascrizioni, i file di memoria, i segreti o i dati personali.
 
-Gli scope policy denominati in `scopes.<scopeName>` possono aggiungere sezioni policy normali più rigorose
-per il selettore che elencano. `agentIds` supporta `tools`,
-`agents.workspace`, `sandbox` e `dataHandling.memory`; `channelIds` supporta
-`ingress.channels`.
-Gli ID agente runtime che non sono elencati esplicitamente in `agents.list[]` vengono controllati
-rispetto alla postura globale/predefinita ereditata invece di passare silenziosamente senza
-evidenza. Ogni scope presente in `policy.jsonc` deve essere valido e applicabile
-per il proprio selettore. Le regole overlay sono dichiarazioni aggiuntive, quindi non indeboliscono
-la policy di livello superiore e possono produrre risultati propri quando la stessa configurazione
-osservata viola entrambi gli scope.
+Gli ambiti di policy denominati in `scopes.<scopeName>` possono aggiungere sezioni di policy normali più rigorose per il selettore specificato. `agentIds` supporta `tools`, `agents.workspace`, `sandbox` e `dataHandling.memory`; `channelIds` supporta `ingress.channels`.
+Gli ID degli agenti del runtime non elencati esplicitamente in `agents.list[]` vengono verificati rispetto alla configurazione di sicurezza globale o predefinita ereditata, anziché essere approvati implicitamente senza evidenze. Ogni ambito presente in `policy.jsonc` deve essere valido e applicabile al relativo selettore. Le regole di sovrapposizione costituiscono requisiti aggiuntivi, pertanto non indeboliscono la policy di primo livello e possono produrre risultati propri quando la stessa configurazione osservata viola entrambi gli ambiti.
 
 <!-- openclaw-plugin-reference:manual-end -->
 

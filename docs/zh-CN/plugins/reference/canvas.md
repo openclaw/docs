@@ -1,11 +1,11 @@
 ---
 read_when:
     - 你正在安装、配置或审计 canvas 插件
-summary: 面向配对节点的实验性 Canvas 控制和 A2UI 渲染界面。
+summary: 用于已配对节点的实验性 Canvas 控制和 A2UI 渲染界面。
 title: Canvas 插件
 x-i18n:
-    generated_at: "2026-06-27T02:46:27Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T20:46:34Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 623f241907be5c88e7b20139f8a03e9c54e29df4bc7d3411fa90a029bfcb285f
@@ -19,9 +19,9 @@ x-i18n:
 
 ## 分发
 
-- 包：`@openclaw/canvas-plugin`
-- 安装路径：包含在 OpenClaw 中
+- 软件包：`@openclaw/canvas-plugin`
+- 安装方式：随 OpenClaw 提供
 
-## 界面
+## 功能界面
 
-合约：工具；技能
+契约：工具；Skills

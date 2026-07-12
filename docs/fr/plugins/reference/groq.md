@@ -4,8 +4,8 @@ read_when:
 summary: Ajoute la prise en charge du fournisseur de modèles Groq à OpenClaw.
 title: Plugin Groq
 x-i18n:
-    generated_at: "2026-06-27T17:54:40Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T02:53:23Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 41bae84645b09b5185d62530788a17be0338e93e6f29b9cca11438b69932bbc5
@@ -19,12 +19,12 @@ Ajoute la prise en charge du fournisseur de modèles Groq à OpenClaw.
 
 ## Distribution
 
-- Paquet : `@openclaw/groq-provider`
-- Méthode d’installation : npm ; ClawHub : `clawhub:@openclaw/groq-provider`
+- Paquet : `@openclaw/groq-provider`
+- Méthode d’installation : npm ; ClawHub : `clawhub:@openclaw/groq-provider`
 
-## Surface
+## Interface
 
-providers: groq; contracts: mediaUnderstandingProviders
+fournisseurs : groq ; contrats : mediaUnderstandingProviders
 
 ## Documentation associée
 

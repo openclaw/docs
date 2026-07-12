@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Está instalando, configurando o auditando el plugin gradium
-summary: Añade soporte para proveedor de texto a voz.
-title: Plugin Gradium
+    - Estás instalando, configurando o auditando el plugin gradium
+summary: Añade compatibilidad con proveedores de conversión de texto a voz.
+title: Plugin de Gradium
 x-i18n:
-    generated_at: "2026-06-27T12:21:12Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T23:20:41Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 4ae70f3e901d44c238d6e1abcec13f67c0d19df6f82d92e365c3ddf0355ea23d
@@ -13,14 +13,14 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin de Gradium
+# Plugin Gradium
 
-Agrega compatibilidad con proveedores de texto a voz.
+Añade compatibilidad con proveedores de texto a voz.
 
 ## Distribución
 
 - Paquete: `@openclaw/gradium-speech`
-- Ruta de instalación: npm; ClawHub: `clawhub:@openclaw/gradium-speech`
+- Vía de instalación: npm; ClawHub: `clawhub:@openclaw/gradium-speech`
 
 ## Superficie
 

@@ -1,13 +1,13 @@
 ---
 read_when:
-    - コマンド権限に auto、ask、allowlist、full、deny のいずれかを選択する
-    - tools.exec.mode を通じて Codex Guardian レビュー済み承認を設定する
-    - OpenClaw exec 承認と ACPX ハーネス権限の比較
-summary: ホスト exec、Codex Guardian 承認、ACPX ハーネスセッションの権限モード
+    - コマンド権限で auto、ask、allowlist、full、deny のいずれかを選択する
+    - tools.exec.mode を使用した Codex Guardian レビュー済み承認の設定
+    - OpenClaw の exec 承認と ACPX ハーネス権限の比較
+summary: ホスト実行の権限モード、Codex Guardian の承認、ACPX ハーネスセッション
 title: 権限モード
 x-i18n:
-    generated_at: "2026-07-05T11:56:07Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:45:45Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: f580e66508c1f69e868ed26a62d88a675f86a4d1ca738650dc5af82e967f3ac3
@@ -15,17 +15,17 @@ x-i18n:
     workflow: 16
 ---
 
-権限モードは、エージェントがホストコマンドを実行したり、ファイルを書き込んだり、追加アクセスをバックエンドハーネスに要求したりする前に、どれだけの権限を持つかを決定します。
+権限モードは、エージェントがホストコマンドを実行したり、ファイルを書き込んだり、バックエンドハーネスに追加アクセスを要求したりする前に、どの程度の権限を持つかを決定します。
 
 <Note>
-  権限モードは `tools.exec.host=auto` とは別です。`tools.exec.host`
-  はコマンドを実行する場所を選びます。`tools.exec.mode` はホスト exec が
-  どのように承認されるかを選びます。
+  権限モードは `tools.exec.host=auto` とは別のものです。`tools.exec.host`
+  はコマンドを実行する場所を選択します。`tools.exec.mode` はホストでの exec を
+  どのように承認するかを選択します。
 </Note>
 
-## 推奨デフォルト
+## 推奨されるデフォルト
 
-すべてのミスを人間へのプロンプトにせず、有用なホストアクセスを必要とするコーディングエージェントには `auto` を使用します。
+すべての不一致で人間への確認を発生させることなく、実用的なホストアクセスを必要とするコーディングエージェントには `auto` を使用します。
 
 ```bash
 openclaw config set tools.exec.mode auto
@@ -39,49 +39,49 @@ openclaw gateway restart
 openclaw exec-policy show
 ```
 
-## OpenClaw ホスト exec モード
+## OpenClaw のホスト exec モード
 
-`tools.exec.mode` はホスト `exec` の正規化されたポリシーサーフェスです。各モードは、基盤となる `security`（allowlist の厳格さ）と `ask`（ミス時のプロンプト）のペアに解決されます。
+`tools.exec.mode` は、ホスト `exec` 用に正規化されたポリシー設定です。各モードは、基盤となる `security`（許可リストの厳格さ）と `ask`（不一致時の確認）の組み合わせに解決されます。
 
-| モード      | security / ask          | 動作                                                                                          | 使用する場面                                            |
-| ----------- | ----------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
-| `deny`      | `deny` / `off`          | ホスト exec を完全にブロックします。                                                          | ホストコマンドを許可しない場合。                        |
-| `allowlist` | `allowlist` / `off`     | allowlist に含まれるコマンドのみを実行し、ミスは静かに拒否します。                            | 安全だと分かっているコマンドセットがある場合。          |
-| `ask`       | `allowlist` / `on-miss` | allowlist に一致するものを実行し、ミス時は人間に確認します。                                  | すべての新しいコマンドを人間がレビューすべき場合。      |
-| `auto`      | `allowlist` / `on-miss` | allowlist に一致するものを実行し、ミスは人間の承認にフォールバックする前に自動レビューへ送ります。 | コーディングセッションに実用的な保護付きアクセスが必要な場合。 |
-| `full`      | `full` / `off`          | プロンプトなしでホスト exec を実行します。                                                     | この信頼済みホスト/セッションで承認ゲートをスキップすべき場合。 |
+| モード      | security / ask          | 動作                                                                                                    | 使用する状況                                              |
+| ----------- | ----------------------- | ------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| `deny`      | `deny` / `off`          | ホストでの exec を完全にブロックします。                                                               | ホストコマンドを一切許可しない場合。                      |
+| `allowlist` | `allowlist` / `off`     | 許可リストに登録されたコマンドのみ実行し、不一致は通知せずに拒否します。                                | 安全性が確認済みのコマンドセットがある場合。              |
+| `ask`       | `allowlist` / `on-miss` | 許可リストに一致するコマンドを実行し、不一致の場合は人間に確認します。                                  | 新しいコマンドを毎回人間が確認する必要がある場合。        |
+| `auto`      | `allowlist` / `on-miss` | 許可リストに一致するコマンドを実行し、不一致は人間の承認にフォールバックする前に自動レビューへ送ります。 | コーディングセッションに、保護された実用的アクセスが必要な場合。 |
+| `full`      | `full` / `off`          | 確認なしでホストでの exec を実行します。                                                               | この信頼済みホストまたはセッションで承認ゲートを省略する場合。 |
 
-`ask` と `auto` は同じ allowlist/ask 設定を共有します。`auto` はさらにネイティブ自動レビュアーを有効にし、ミスを自ら判断して、安全に承認できない場合だけ設定済みの人間承認ルートへ委ねます。
+`ask` と `auto` は同じ許可リストおよび確認設定を共有します。`auto` はさらにネイティブの自動レビュー機能を有効にします。この機能は不一致を自ら判定し、安全に承認できない場合にのみ、設定された人間の承認経路へ判断を委ねます。
 
-完全なホスト exec ポリシー、ローカル承認ファイル、allowlist スキーマ、安全なバイナリ、転送動作については、[Exec 承認](/ja-JP/tools/exec-approvals)を参照してください。
+ホストでの exec に関する完全なポリシー、ローカル承認ファイル、許可リストのスキーマ、安全なバイナリ、および転送動作については、[Exec の承認](/ja-JP/tools/exec-approvals)を参照してください。
 
-## Codex Guardian マッピング
+## Codex Guardian の対応関係
 
-ネイティブ Codex アプリサーバーセッションでは、ローカルの Codex 要件が許す場合、`tools.exec.mode: "auto"` は Codex を Guardian レビュー済み承認へ向かわせます。典型的な結果値は次のとおりです。
+ネイティブ Codex app-server セッションでは、ローカルの Codex 要件で許可されている場合、`tools.exec.mode: "auto"` によって Codex は Guardian によるレビュー付き承認を使用するようになります。通常、次の値になります。
 
-| Codex フィールド    | 典型的な値        |
-| ------------------- | ----------------- |
-| `approvalPolicy`    | `on-request`      |
-| `approvalsReviewer` | `auto_review`     |
-| `sandbox`           | `workspace-write` |
+| Codex フィールド     | 通常の値          |
+| -------------------- | ----------------- |
+| `approvalPolicy`     | `on-request`      |
+| `approvalsReviewer`  | `auto_review`     |
+| `sandbox`            | `workspace-write` |
 
-`auto` モードは、設定済みの Codex サンドボックス/承認オーバーライドよりもこのポリシーを優先するため、`approvalPolicy: "never"` と `sandbox: "danger-full-access"` のような従来の安全でない組み合わせは保持されません。`tools.exec.mode: "deny"` と `"allowlist"` は、Codex アプリサーバーのローカル実行を完全にブロックします。承認なしの姿勢を意図的に使いたい場合にのみ、`tools.exec.mode: "full"` を使用してください。
+`auto` モードは、設定済みの Codex サンドボックスや承認のオーバーライドよりもこのポリシーを優先します。そのため、`approvalPolicy: "never"` と `sandbox: "danger-full-access"` の組み合わせのような、従来の安全でない構成は維持されません。`tools.exec.mode: "deny"` と `"allowlist"` は、Codex app-server のローカル実行を完全にブロックします。承認を行わない構成を意図的に使用する場合にのみ、`tools.exec.mode: "full"` を使用してください。
 
-アプリサーバーのセットアップ、認証順序、ネイティブ Codex ランタイムの詳細については、[Codex ハーネス](/ja-JP/plugins/codex-harness)を参照してください。
+app-server のセットアップ、認証順序、およびネイティブ Codex ランタイムの詳細については、[Codex ハーネス](/ja-JP/plugins/codex-harness)を参照してください。
 
-## ACPX ハーネス権限
+## ACPX ハーネスの権限
 
-ACPX セッションは非対話型のため、TTY 権限プロンプトをクリックできません。ACPX は `plugins.entries.acpx.config` 配下の別個のハーネスレベル設定を使用します。
+ACPX セッションは非対話型であるため、TTY の権限確認をクリックできません。ACPX は、`plugins.entries.acpx.config` 以下にある個別のハーネスレベル設定を使用します。
 
-| 設定                        | 値              | 意味                                      |
-| --------------------------- | --------------- | ----------------------------------------- |
-| `permissionMode`            | `approve-reads` | 読み取りのみを自動承認します。            |
-| `permissionMode`            | `approve-all`   | 書き込みとシェルコマンドを自動承認します。 |
-| `permissionMode`            | `deny-all`      | すべての権限プロンプトを拒否します。      |
-| `nonInteractivePermissions` | `fail`          | プロンプトが必要になる場合は中止します。  |
-| `nonInteractivePermissions` | `deny`          | 可能な場合はプロンプトを拒否して続行します。 |
+| 設定                        | 値              | 意味                                         |
+| --------------------------- | --------------- | -------------------------------------------- |
+| `permissionMode`            | `approve-reads` | 読み取りのみを自動承認します。               |
+| `permissionMode`            | `approve-all`   | 書き込みとシェルコマンドを自動承認します。   |
+| `permissionMode`            | `deny-all`      | すべての権限確認を拒否します。               |
+| `nonInteractivePermissions` | `fail`          | 確認が必要になった場合は中止します。         |
+| `nonInteractivePermissions` | `deny`          | 確認を拒否し、可能であれば処理を続行します。 |
 
-ACPX 権限は OpenClaw exec 承認とは別に設定します。
+ACPX の権限は、OpenClaw の exec 承認とは別に設定します。
 
 ```bash
 openclaw config set plugins.entries.acpx.config.permissionMode approve-all
@@ -89,31 +89,31 @@ openclaw config set plugins.entries.acpx.config.nonInteractivePermissions fail
 openclaw gateway restart
 ```
 
-`approve-all` は、プロンプトなしハーネスセッションに相当する ACPX の非常用設定として使用します。セットアップの詳細と失敗モードについては、[ACP エージェントセットアップ](/ja-JP/tools/acp-agents-setup#permission-configuration)を参照してください。
+確認なしのハーネスセッションに相当する ACPX の緊急時用設定として、`approve-all` を使用します。セットアップの詳細と失敗モードについては、[ACP エージェントのセットアップ](/ja-JP/tools/acp-agents-setup#permission-configuration)を参照してください。
 
 ## モードの選択
 
-| 目的                                           | 設定                                                        |
-| ---------------------------------------------- | ----------------------------------------------------------- |
-| ホストコマンドを完全にブロックする             | `tools.exec.mode: "deny"`                                   |
-| 安全だと分かっているコマンドのみを実行させる   | `tools.exec.mode: "allowlist"`                              |
-| 新しいコマンド形状ごとに人間へ確認する         | `tools.exec.mode: "ask"`                                    |
-| 人間の前に Codex/OpenClaw 自動レビューを使用する | `tools.exec.mode: "auto"`                                   |
-| ホスト exec 承認を完全にスキップする           | `tools.exec.mode: "full"` と一致するホスト承認ファイル      |
-| 非対話型 ACPX セッションに write/exec を許可する | `plugins.entries.acpx.config.permissionMode: "approve-all"` |
+| 目的                                              | 設定                                                               |
+| ------------------------------------------------- | ------------------------------------------------------------------ |
+| ホストコマンドを完全にブロックする                | `tools.exec.mode: "deny"`                                          |
+| 安全性が確認済みのコマンドのみ実行する            | `tools.exec.mode: "allowlist"`                                     |
+| 新しいコマンド形式ごとに人間へ確認する            | `tools.exec.mode: "ask"`                                           |
+| 人間による確認の前に Codex/OpenClaw の自動レビューを使用する | `tools.exec.mode: "auto"`                                          |
+| ホストでの exec の承認を完全に省略する             | `tools.exec.mode: "full"` と対応するホスト承認ファイル              |
+| 非対話型 ACPX セッションで書き込みや実行を行う     | `plugins.entries.acpx.config.permissionMode: "approve-all"`         |
 
-モード変更後もコマンドがプロンプトを出したり失敗したりする場合は、両方のレイヤーを確認します。
+モードを変更した後もコマンドで確認が表示されたり失敗したりする場合は、両方のレイヤーを調べてください。
 
 ```bash
 openclaw approvals get
 openclaw exec-policy show
 ```
 
-ホスト exec は、OpenClaw 設定とホストローカル承認ファイルのうち、より厳格な結果を使用します。ACPX ハーネス権限はホスト exec 承認を緩めず、ホスト exec 承認も ACPX ハーネスプロンプトを緩めません。
+ホストでの exec には、OpenClaw の設定とホストローカルの承認ファイルのうち、より厳格な結果が適用されます。ACPX ハーネスの権限によってホストでの exec の承認が緩和されることはなく、ホストでの exec の承認によって ACPX ハーネスの確認が緩和されることもありません。
 
-## 関連
+## 関連項目
 
-- [Exec 承認](/ja-JP/tools/exec-approvals)
-- [Exec 承認 - 詳細](/ja-JP/tools/exec-approvals-advanced)
+- [Exec の承認](/ja-JP/tools/exec-approvals)
+- [Exec の承認 - 高度な設定](/ja-JP/tools/exec-approvals-advanced)
 - [Codex ハーネス](/ja-JP/plugins/codex-harness)
-- [ACP エージェントセットアップ](/ja-JP/tools/acp-agents-setup#permission-configuration)
+- [ACP エージェントのセットアップ](/ja-JP/tools/acp-agents-setup#permission-configuration)

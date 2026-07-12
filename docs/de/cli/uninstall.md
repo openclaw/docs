@@ -5,10 +5,9 @@ read_when:
 summary: CLI-Referenz für `openclaw uninstall` (Gateway-Dienst und lokale Daten entfernen)
 title: Deinstallieren
 x-i18n:
-    generated_at: "2026-07-12T15:12:01Z"
+    generated_at: "2026-07-12T01:34:26Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 1e2e3996cf6d5c0fd11e5054c8fe60f7f8d25047193bb13944ca170bf77b581a
     source_path: cli/uninstall.md
@@ -17,7 +16,7 @@ x-i18n:
 
 # `openclaw uninstall`
 
-Deinstallieren Sie den Gateway-Dienst und/oder lokale Daten. Die CLI selbst wird
+Deinstalliert den Gateway-Dienst und/oder lokale Daten. Die CLI selbst wird
 nicht entfernt; deinstallieren Sie sie separat über npm/pnpm.
 
 ## Optionen
@@ -26,15 +25,16 @@ nicht entfernt; deinstallieren Sie sie separat über npm/pnpm.
 | ------------------- | ------------ | ----------------------------------------------------------- |
 | `--service`         | `false`      | Entfernt den Gateway-Dienst.                                |
 | `--state`           | `false`      | Entfernt Status und Konfiguration.                          |
-| `--workspace`       | `false`      | Entfernt Workspace-Verzeichnisse.                           |
+| `--workspace`       | `false`      | Entfernt Arbeitsbereichsverzeichnisse.                      |
 | `--app`             | `false`      | Entfernt die macOS-App.                                     |
 | `--all`             | `false`      | Kurzform für `--service --state --workspace --app`.         |
-| `--yes`             | `false`      | Überspringt Bestätigungsabfragen.                           |
-| `--non-interactive` | `false`      | Deaktiviert Abfragen; erfordert `--yes`.                    |
-| `--dry-run`         | `false`      | Gibt geplante Aktionen aus, ohne Dateien zu entfernen.      |
+| `--yes`             | `false`      | Überspringt Bestätigungsaufforderungen.                     |
+| `--non-interactive` | `false`      | Deaktiviert Eingabeaufforderungen; erfordert `--yes`.       |
+| `--dry-run`         | `false`      | Zeigt geplante Aktionen an, ohne Dateien zu entfernen.      |
 
-Wenn keine Bereichs-Flags angegeben sind, können Sie in einer interaktiven Mehrfachauswahl
-die zu entfernenden Komponenten auswählen (Dienst, Status und Workspace sind standardmäßig vorausgewählt).
+Wenn keine Bereichs-Flags angegeben sind, werden Sie über eine interaktive
+Mehrfachauswahl gefragt, welche Komponenten entfernt werden sollen
+(Dienst, Status und Arbeitsbereich sind standardmäßig vorausgewählt).
 
 ## Beispiele
 
@@ -49,10 +49,10 @@ openclaw uninstall --dry-run
 
 ## Hinweise
 
-- Führen Sie zuerst `openclaw backup create` aus, um einen wiederherstellbaren Snapshot zu erstellen, bevor Sie
-  Status oder Workspaces entfernen.
-- `--state` behält konfigurierte Workspace-Verzeichnisse bei, sofern nicht auch
-  `--workspace` ausgewählt ist.
+- Führen Sie zuerst `openclaw backup create` aus, um einen wiederherstellbaren
+  Schnappschuss zu erstellen, bevor Sie Status oder Arbeitsbereiche entfernen.
+- `--state` behält konfigurierte Arbeitsbereichsverzeichnisse bei, sofern nicht
+  zusätzlich `--workspace` ausgewählt ist.
 
 ## Verwandte Themen
 

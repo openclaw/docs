@@ -1,151 +1,127 @@
 ---
 read_when:
-    - Bạn muốn một gateway được đóng gói trong container bằng Podman thay vì Docker
+    - Bạn muốn một Gateway được đóng gói trong container bằng Podman thay vì Docker
 summary: Chạy OpenClaw trong container Podman không cần quyền root
 title: Podman
 x-i18n:
-    generated_at: "2026-06-27T17:38:10Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:01:14Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3f6950956551dc3c274db33712cf66632fb5facbca4954bf67c30a8bff740c2f
+    source_hash: 2db1f2b0413d7b9e1b2007aaae2da9d07fa44a1b52901d4a6cbc6274e54567f1
     source_path: install/podman.md
     workflow: 16
 ---
 
-Chạy OpenClaw Gateway trong container Podman không dùng root, được quản lý bởi người dùng hiện tại không phải root của bạn.
+Chạy OpenClaw Gateway trong một container Podman không cần quyền root, do người dùng hiện tại không có quyền root của bạn quản lý.
 
-Mô hình dự kiến là:
+Mô hình:
 
 - Podman chạy container Gateway.
 - CLI `openclaw` trên máy chủ của bạn là mặt phẳng điều khiển.
-- Trạng thái bền vững nằm trên máy chủ trong `~/.openclaw` theo mặc định.
-- Việc quản lý hằng ngày dùng `openclaw --container <name> ...` thay vì `sudo -u openclaw`, `podman exec`, hoặc một người dùng dịch vụ riêng.
+- Theo mặc định, trạng thái bền vững nằm trên máy chủ tại `~/.openclaw`.
+- Việc quản lý hằng ngày sử dụng `openclaw --container <name> ...` thay vì `sudo -u openclaw`, `podman exec` hoặc một người dùng dịch vụ riêng biệt.
 
 ## Điều kiện tiên quyết
 
-- **Podman** ở chế độ không dùng root
-- **OpenClaw CLI** được cài đặt trên máy chủ
+- **Podman** ở chế độ không cần quyền root
+- **CLI OpenClaw** được cài đặt trên máy chủ
 - **Tùy chọn:** `systemd --user` nếu bạn muốn tự động khởi động do Quadlet quản lý
-- **Tùy chọn:** `sudo` chỉ khi bạn muốn `loginctl enable-linger "$(whoami)"` để duy trì khi khởi động trên máy chủ không có giao diện
+- **Tùy chọn:** chỉ cần `sudo` nếu bạn muốn dùng `loginctl enable-linger "$(whoami)"` để duy trì hoạt động sau khi khởi động trên máy chủ không có màn hình
 
 ## Bắt đầu nhanh
 
 <Steps>
   <Step title="Thiết lập một lần">
-    Từ gốc repo, chạy `./scripts/podman/setup.sh`.
+    Từ thư mục gốc của kho mã, chạy `./scripts/podman/setup.sh`.
+
+    Thao tác này xây dựng `openclaw:local` trong kho Podman không cần quyền root của bạn (hoặc kéo `OPENCLAW_IMAGE` / `OPENCLAW_PODMAN_IMAGE` nếu được đặt), tạo `~/.openclaw/openclaw.json` với `gateway.mode: "local"` nếu chưa có và tạo `~/.openclaw/.env` với một `OPENCLAW_GATEWAY_TOKEN` được tạo tự động nếu chưa có.
+
+    Các biến môi trường tùy chọn khi xây dựng:
+
+    | Biến | Tác dụng |
+    | --- | --- |
+    | `OPENCLAW_IMAGE` / `OPENCLAW_PODMAN_IMAGE` | Sử dụng ảnh hiện có/được kéo thay vì xây dựng `openclaw:local` |
+    | `OPENCLAW_IMAGE_APT_PACKAGES` | Cài đặt các gói apt bổ sung trong quá trình xây dựng ảnh (cũng chấp nhận biến cũ `OPENCLAW_DOCKER_APT_PACKAGES`) |
+    | `OPENCLAW_IMAGE_PIP_PACKAGES` | Cài đặt các gói Python bổ sung trong quá trình xây dựng ảnh; hãy ghim phiên bản và chỉ sử dụng các chỉ mục gói mà bạn tin cậy |
+    | `OPENCLAW_EXTENSIONS` | Biên dịch/đóng gói các plugin được hỗ trợ đã chọn và cài đặt các phần phụ thuộc thời gian chạy của chúng |
+    | `OPENCLAW_INSTALL_BROWSER` | Cài đặt sẵn Chromium và Xvfb để tự động hóa trình duyệt (đặt thành `1`) |
+
+    Để thay vào đó sử dụng thiết lập do Quadlet quản lý (chỉ dành cho Linux + dịch vụ người dùng systemd):
+
+    ```bash
+    ./scripts/podman/setup.sh --quadlet
+    ```
+
+    Hoặc đặt `OPENCLAW_PODMAN_QUADLET=1`.
+
   </Step>
 
   <Step title="Khởi động container Gateway">
-    Khởi động container bằng `./scripts/run-openclaw-podman.sh launch`.
+    ```bash
+    ./scripts/run-openclaw-podman.sh launch
+    ```
+
+    Khởi động container bằng uid/gid hiện tại của bạn với `--userns=keep-id` và gắn kết trạng thái OpenClaw của bạn vào container.
+
   </Step>
 
-  <Step title="Chạy onboarding bên trong container">
-    Chạy `./scripts/run-openclaw-podman.sh launch setup`, rồi mở `http://127.0.0.1:18789/`.
+  <Step title="Chạy quy trình làm quen bên trong container">
+    ```bash
+    ./scripts/run-openclaw-podman.sh launch setup
+    ```
+
+    Sau đó mở `http://127.0.0.1:18789/` và sử dụng token từ `~/.openclaw/.env`.
+
+    Xác thực mô hình: sử dụng cơ chế xác thực do OpenClaw quản lý trong quá trình thiết lập (khóa API Anthropic hoặc xác thực OAuth trình duyệt/mã thiết bị OpenAI Codex cho OpenAI sử dụng Codex). Trình khởi chạy Podman không gắn kết các thư mục thông tin xác thực CLI trên máy chủ như `~/.claude` hoặc `~/.codex` vào container thiết lập hoặc Gateway. Các phiên đăng nhập CLI hiện có trên máy chủ chỉ là đường dẫn tiện lợi trên cùng máy chủ -- đối với bản cài đặt trong container, hãy lưu thông tin xác thực nhà cung cấp trong trạng thái `~/.openclaw` được gắn kết mà quy trình thiết lập quản lý.
+
   </Step>
 
   <Step title="Quản lý container đang chạy từ CLI trên máy chủ">
-    Đặt `OPENCLAW_CONTAINER=openclaw`, rồi dùng các lệnh `openclaw` thông thường từ máy chủ.
+    ```bash
+    export OPENCLAW_CONTAINER=openclaw
+    ```
+
+    Sau đó, các lệnh `openclaw` thông thường sẽ tự động chạy bên trong container đó:
+
+    ```bash
+    openclaw dashboard --no-open
+    openclaw gateway status --deep   # bao gồm quét dịch vụ bổ sung
+    openclaw doctor
+    openclaw channels login
+    ```
+
+    Trên macOS, máy Podman có thể khiến trình duyệt có vẻ không phải cục bộ đối với Gateway. Nếu Giao diện điều khiển báo cáo lỗi xác thực thiết bị sau khi khởi chạy, hãy sử dụng hướng dẫn về Tailscale trong [Podman và Tailscale](#podman-and-tailscale).
+
   </Step>
 </Steps>
 
-Chi tiết thiết lập:
+Trình khởi chạy thủ công chỉ đọc một danh sách cho phép nhỏ gồm các khóa liên quan đến Podman từ `~/.openclaw/.env` và truyền các biến môi trường thời gian chạy tường minh vào container; nó không chuyển toàn bộ tệp môi trường cho Podman.
 
-- `./scripts/podman/setup.sh` xây dựng `openclaw:local` trong kho Podman không dùng root của bạn theo mặc định, hoặc dùng `OPENCLAW_IMAGE` / `OPENCLAW_PODMAN_IMAGE` nếu bạn đặt một trong hai.
-- Nó tạo `~/.openclaw/openclaw.json` với `gateway.mode: "local"` nếu chưa có.
-- Nó tạo `~/.openclaw/.env` với `OPENCLAW_GATEWAY_TOKEN` nếu chưa có.
-- Với các lần khởi chạy thủ công, trình trợ giúp chỉ đọc một allowlist nhỏ gồm các khóa liên quan đến Podman từ `~/.openclaw/.env` và truyền các biến môi trường runtime rõ ràng vào container; nó không đưa toàn bộ tệp env cho Podman.
-
-Thiết lập do Quadlet quản lý:
-
-```bash
-./scripts/podman/setup.sh --quadlet
-```
-
-Quadlet là tùy chọn chỉ dành cho Linux vì nó phụ thuộc vào các dịch vụ người dùng systemd.
-
-Bạn cũng có thể đặt `OPENCLAW_PODMAN_QUADLET=1`.
-
-Các biến môi trường build/setup tùy chọn:
-
-- `OPENCLAW_IMAGE` hoặc `OPENCLAW_PODMAN_IMAGE` -- dùng một image hiện có/đã pull thay vì build `openclaw:local`
-- `OPENCLAW_IMAGE_APT_PACKAGES` -- cài đặt thêm các gói apt trong quá trình build image (cũng chấp nhận `OPENCLAW_DOCKER_APT_PACKAGES` cũ)
-- `OPENCLAW_IMAGE_PIP_PACKAGES` -- cài đặt thêm các gói Python trong quá trình build image; ghim phiên bản và chỉ dùng các chỉ mục gói mà bạn tin cậy
-- `OPENCLAW_EXTENSIONS` -- cài đặt sẵn các phụ thuộc Plugin tại thời điểm build
-- `OPENCLAW_INSTALL_BROWSER` -- cài đặt sẵn Chromium và Xvfb cho tự động hóa trình duyệt (đặt thành `1` để bật)
-
-Khởi động container:
-
-```bash
-./scripts/run-openclaw-podman.sh launch
-```
-
-Script khởi động container với uid/gid hiện tại của bạn bằng `--userns=keep-id` và bind-mount trạng thái OpenClaw của bạn vào container.
-
-Onboarding:
-
-```bash
-./scripts/run-openclaw-podman.sh launch setup
-```
-
-Sau đó mở `http://127.0.0.1:18789/` và dùng token từ `~/.openclaw/.env`.
-
-Xác thực mô hình trong Podman:
-
-- Dùng xác thực do OpenClaw quản lý trong quá trình thiết lập: khóa API Anthropic cho Anthropic, hoặc xác thực OAuth trình duyệt/device-code của OpenAI Codex cho OpenAI được Codex hỗ trợ.
-- Trình khởi chạy Podman không mount các thư mục thông tin xác thực CLI của máy chủ như `~/.claude` hoặc `~/.codex` vào container thiết lập hoặc Gateway.
-- Các phiên đăng nhập CLI hiện có trên máy chủ là các đường dẫn tiện lợi cùng máy. Với cài đặt trong container, hãy giữ xác thực nhà cung cấp trong trạng thái `~/.openclaw` được mount mà thiết lập quản lý.
-
-Mặc định CLI trên máy chủ:
-
-```bash
-export OPENCLAW_CONTAINER=openclaw
-```
-
-Sau đó các lệnh như sau sẽ tự động chạy bên trong container đó:
-
-```bash
-openclaw dashboard --no-open
-openclaw gateway status --deep   # includes extra service scan
-openclaw doctor
-openclaw channels login
-```
-
-Trên macOS, máy Podman có thể khiến trình duyệt trông như không cục bộ đối với Gateway.
-Nếu Control UI báo lỗi xác thực thiết bị sau khi khởi chạy, hãy dùng hướng dẫn Tailscale trong
-[Podman và Tailscale](#podman--tailscale).
-
-<a id="podman--tailscale"></a>
+<a id="podman-and-tailscale"></a>
 
 ## Podman và Tailscale
 
-Để truy cập HTTPS hoặc trình duyệt từ xa, hãy làm theo tài liệu Tailscale chính.
+Để truy cập HTTPS hoặc truy cập trình duyệt từ xa, hãy làm theo tài liệu Tailscale chính.
 
-Lưu ý riêng cho Podman:
+Lưu ý dành riêng cho Podman:
 
-- Giữ máy chủ publish của Podman ở `127.0.0.1`.
+- Giữ máy chủ xuất bản của Podman ở `127.0.0.1`.
 - Ưu tiên `tailscale serve` do máy chủ quản lý thay vì `openclaw gateway --tailscale serve`.
-- Trên macOS, nếu ngữ cảnh xác thực thiết bị của trình duyệt cục bộ không ổn định, hãy dùng quyền truy cập Tailscale thay vì các cách né tạm thời bằng đường hầm cục bộ tùy biến.
+- Trên macOS, nếu ngữ cảnh xác thực thiết bị của trình duyệt cục bộ không đáng tin cậy, hãy sử dụng quyền truy cập Tailscale thay vì các giải pháp đường hầm cục bộ tạm thời.
 
-Xem:
-
-- [Tailscale](/vi/gateway/tailscale)
-- [Control UI](/vi/web/control-ui)
+Xem [Tailscale](/vi/gateway/tailscale) và [Giao diện điều khiển](/vi/web/control-ui).
 
 ## Systemd (Quadlet, tùy chọn)
 
-Nếu bạn đã chạy `./scripts/podman/setup.sh --quadlet`, thiết lập sẽ cài đặt một tệp Quadlet tại:
+Nếu bạn đã chạy `./scripts/podman/setup.sh --quadlet`, quy trình thiết lập sẽ cài đặt một tệp Quadlet tại `~/.config/containers/systemd/openclaw.container`.
 
-```bash
-~/.config/containers/systemd/openclaw.container
-```
-
-Các lệnh hữu ích:
-
-- **Khởi động:** `systemctl --user start openclaw.service`
-- **Dừng:** `systemctl --user stop openclaw.service`
-- **Trạng thái:** `systemctl --user status openclaw.service`
-- **Nhật ký:** `journalctl --user -u openclaw.service -f`
+| Hành động | Lệnh                                       |
+| --------- | ------------------------------------------ |
+| Khởi động | `systemctl --user start openclaw.service`  |
+| Dừng      | `systemctl --user stop openclaw.service`   |
+| Trạng thái | `systemctl --user status openclaw.service` |
+| Nhật ký   | `journalctl --user -u openclaw.service -f` |
 
 Sau khi chỉnh sửa tệp Quadlet:
 
@@ -154,70 +130,85 @@ systemctl --user daemon-reload
 systemctl --user restart openclaw.service
 ```
 
-Để duy trì khi khởi động trên máy chủ SSH/không có giao diện, hãy bật lingering cho người dùng hiện tại của bạn:
+Để duy trì hoạt động sau khi khởi động trên máy chủ SSH/không có màn hình, hãy bật chế độ duy trì cho người dùng hiện tại của bạn:
 
 ```bash
 sudo loginctl enable-linger "$(whoami)"
 ```
 
-## Cấu hình, env và lưu trữ
+Dịch vụ Quadlet được tạo giữ một cấu hình mặc định cố định và được tăng cường bảo mật: các cổng được xuất bản trên `127.0.0.1` (`18789` cho Gateway, `18790` cho cầu nối), `--bind lan` bên trong container, không gian tên người dùng `keep-id`, `OPENCLAW_NO_RESPAWN=1`, `Restart=on-failure` và `TimeoutStartSec=300`. Dịch vụ đọc `~/.openclaw/.env` dưới dạng `EnvironmentFile` thời gian chạy cho các giá trị như `OPENCLAW_GATEWAY_TOKEN`, nhưng không sử dụng danh sách cho phép ghi đè dành riêng cho Podman của trình khởi chạy thủ công. Đối với cổng xuất bản tùy chỉnh, máy chủ xuất bản hoặc các cờ chạy container khác, hãy sử dụng trình khởi chạy thủ công hoặc chỉnh sửa trực tiếp `~/.config/containers/systemd/openclaw.container`, sau đó tải lại và khởi động lại dịch vụ.
+
+## Cấu hình, môi trường và lưu trữ
 
 - **Thư mục cấu hình:** `~/.openclaw`
-- **Thư mục workspace:** `~/.openclaw/workspace`
+- **Thư mục không gian làm việc:** `~/.openclaw/workspace`
 - **Tệp token:** `~/.openclaw/.env`
 - **Trình trợ giúp khởi chạy:** `./scripts/run-openclaw-podman.sh`
 
-Script khởi chạy và Quadlet bind-mount trạng thái máy chủ vào container:
+Tập lệnh khởi chạy và Quadlet gắn kết trạng thái máy chủ vào container: `OPENCLAW_CONFIG_DIR` -> `/home/node/.openclaw`, `OPENCLAW_WORKSPACE_DIR` -> `/home/node/.openclaw/workspace`. Theo mặc định, đây là các thư mục trên máy chủ, không phải trạng thái container ẩn danh, vì vậy `openclaw.json`, `auth-profiles.json` theo từng tác nhân, trạng thái kênh/nhà cung cấp, phiên và không gian làm việc vẫn tồn tại sau khi thay thế container. Quy trình thiết lập cũng khởi tạo `gateway.controlUi.allowedOrigins` cho `127.0.0.1` và `localhost` trên cổng Gateway được xuất bản để bảng điều khiển cục bộ hoạt động với liên kết không phải local loopback của container.
 
-- `OPENCLAW_CONFIG_DIR` -> `/home/node/.openclaw`
-- `OPENCLAW_WORKSPACE_DIR` -> `/home/node/.openclaw/workspace`
+Các biến môi trường hữu ích cho trình khởi chạy thủ công (lưu các biến này trong `~/.openclaw/.env`; trình khởi chạy đọc tệp đó trước khi hoàn tất các giá trị mặc định của container/ảnh):
 
-Theo mặc định, đó là các thư mục trên máy chủ, không phải trạng thái container ẩn danh, vì vậy
-`openclaw.json`, `auth-profiles.json` theo từng agent, trạng thái kênh/nhà cung cấp,
-phiên và workspace vẫn tồn tại sau khi thay thế container.
-Thiết lập Podman cũng khởi tạo `gateway.controlUi.allowedOrigins` cho `127.0.0.1` và `localhost` trên cổng Gateway đã publish để dashboard cục bộ hoạt động với bind không phải loopback của container.
+| Biến                                       | Mặc định         | Tác dụng                                      |
+| ------------------------------------------ | ---------------- | --------------------------------------------- |
+| `OPENCLAW_PODMAN_CONTAINER`                | `openclaw`       | Tên container                                 |
+| `OPENCLAW_PODMAN_IMAGE` / `OPENCLAW_IMAGE` | `openclaw:local` | Ảnh cần chạy                                  |
+| `OPENCLAW_PODMAN_GATEWAY_HOST_PORT`        | `18789`          | Cổng máy chủ được ánh xạ tới cổng `18789` của container |
+| `OPENCLAW_PODMAN_BRIDGE_HOST_PORT`         | `18790`          | Cổng máy chủ được ánh xạ tới cổng `18790` của container |
+| `OPENCLAW_PODMAN_PUBLISH_HOST`             | `127.0.0.1`      | Giao diện máy chủ cho các cổng được xuất bản  |
+| `OPENCLAW_GATEWAY_BIND`                    | `lan`            | Chế độ liên kết Gateway bên trong container   |
+| `OPENCLAW_PODMAN_USERNS`                   | `keep-id`        | `keep-id`, `auto` hoặc `host`                 |
 
-Các biến môi trường hữu ích cho trình khởi chạy thủ công:
+Nếu bạn sử dụng `OPENCLAW_CONFIG_DIR` hoặc `OPENCLAW_WORKSPACE_DIR` không mặc định, hãy đặt cùng các biến cho cả `./scripts/podman/setup.sh` và các lệnh `./scripts/run-openclaw-podman.sh launch` sau đó -- trình khởi chạy cục bộ của kho mã không duy trì các ghi đè đường dẫn tùy chỉnh giữa các shell.
 
-- `OPENCLAW_PODMAN_CONTAINER` -- tên container (`openclaw` theo mặc định)
-- `OPENCLAW_PODMAN_IMAGE` / `OPENCLAW_IMAGE` -- image để chạy
-- `OPENCLAW_PODMAN_GATEWAY_HOST_PORT` -- cổng máy chủ được ánh xạ tới container `18789`
-- `OPENCLAW_PODMAN_BRIDGE_HOST_PORT` -- cổng máy chủ được ánh xạ tới container `18790`
-- `OPENCLAW_PODMAN_PUBLISH_HOST` -- giao diện máy chủ cho các cổng đã publish; mặc định là `127.0.0.1`
-- `OPENCLAW_GATEWAY_BIND` -- chế độ bind Gateway bên trong container; mặc định là `lan`
-- `OPENCLAW_PODMAN_USERNS` -- `keep-id` (mặc định), `auto`, hoặc `host`
+## Nâng cấp ảnh
 
-Trình khởi chạy thủ công đọc `~/.openclaw/.env` trước khi chốt các mặc định container/image, vì vậy bạn có thể lưu bền vững các giá trị này ở đó.
+Sau khi xây dựng lại hoặc kéo ảnh mới, hãy khởi động lại container hoặc dịch vụ Quadlet.
+Trong lần khởi động đầu tiên của một phiên bản OpenClaw mới, Gateway chạy các thao tác sửa chữa an toàn cho trạng thái và plugin trước khi báo cáo là sẵn sàng.
 
-Nếu bạn dùng `OPENCLAW_CONFIG_DIR` hoặc `OPENCLAW_WORKSPACE_DIR` không mặc định, hãy đặt cùng các biến cho cả lệnh `./scripts/podman/setup.sh` và các lệnh `./scripts/run-openclaw-podman.sh launch` sau này. Trình khởi chạy cục bộ trong repo không lưu bền vững các ghi đè đường dẫn tùy chỉnh giữa các shell.
+Nếu Gateway thoát thay vì chuyển sang trạng thái sẵn sàng, hãy chạy cùng ảnh đó một lần với
+`openclaw doctor --fix` trên cùng trạng thái/cấu hình được gắn kết, sau đó khởi động lại
+Gateway theo cách thông thường:
 
-Lưu ý Quadlet:
+```bash
+OPENCLAW_CONFIG_DIR="${OPENCLAW_CONFIG_DIR:-$HOME/.openclaw}"
+OPENCLAW_WORKSPACE_DIR="${OPENCLAW_WORKSPACE_DIR:-$OPENCLAW_CONFIG_DIR/workspace}"
+OPENCLAW_PODMAN_IMAGE="${OPENCLAW_PODMAN_IMAGE:-${OPENCLAW_IMAGE:-openclaw:local}}"
 
-- Dịch vụ Quadlet được tạo ra cố ý giữ một hình dạng mặc định cố định và được gia cố: các cổng publish `127.0.0.1`, `--bind lan` bên trong container, và không gian tên người dùng `keep-id`.
-- Nó ghim `OPENCLAW_NO_RESPAWN=1`, `Restart=on-failure`, và `TimeoutStartSec=300`.
-- Nó publish cả `127.0.0.1:18789:18789` (Gateway) và `127.0.0.1:18790:18790` (bridge).
-- Nó đọc `~/.openclaw/.env` làm `EnvironmentFile` runtime cho các giá trị như `OPENCLAW_GATEWAY_TOKEN`, nhưng không tiêu thụ allowlist ghi đè riêng cho Podman của trình khởi chạy thủ công.
-- Nếu bạn cần tùy chỉnh cổng publish, máy chủ publish hoặc các cờ chạy container khác, hãy dùng trình khởi chạy thủ công hoặc chỉnh sửa trực tiếp `~/.config/containers/systemd/openclaw.container`, rồi tải lại và khởi động lại dịch vụ.
+podman run --rm -it \
+  --userns=keep-id \
+  --user "$(id -u):$(id -g)" \
+  -e HOME=/home/node \
+  -e NPM_CONFIG_CACHE=/home/node/.openclaw/.npm \
+  -v "$OPENCLAW_CONFIG_DIR:/home/node/.openclaw:rw" \
+  -v "$OPENCLAW_WORKSPACE_DIR:/home/node/.openclaw/workspace:rw" \
+  "$OPENCLAW_PODMAN_IMAGE" \
+  openclaw doctor --fix
+```
+
+Trên các máy chủ SELinux, hãy thêm `,Z` vào cả hai điểm gắn kết nếu Podman chặn quyền truy cập vào
+trạng thái được gắn kết.
 
 ## Các lệnh hữu ích
 
 - **Nhật ký container:** `podman logs -f openclaw`
 - **Dừng container:** `podman stop openclaw`
 - **Xóa container:** `podman rm -f openclaw`
-- **Mở URL dashboard từ CLI trên máy chủ:** `openclaw dashboard --no-open`
-- **Sức khỏe/trạng thái qua CLI trên máy chủ:** `openclaw gateway status --deep` (thăm dò RPC + quét dịch vụ bổ sung)
+- **Mở URL bảng điều khiển từ CLI trên máy chủ:** `openclaw dashboard --no-open`
+- **Tình trạng/trạng thái qua CLI trên máy chủ:** `openclaw gateway status --deep` (thăm dò RPC + quét dịch vụ bổ sung)
 
 ## Khắc phục sự cố
 
-- **Bị từ chối quyền (EACCES) trên cấu hình hoặc workspace:** Theo mặc định, container chạy với `--userns=keep-id` và `--user <your uid>:<your gid>`. Hãy đảm bảo các đường dẫn cấu hình/workspace trên máy chủ thuộc sở hữu của người dùng hiện tại của bạn.
-- **Khởi động Gateway bị chặn (thiếu `gateway.mode=local`):** Đảm bảo `~/.openclaw/openclaw.json` tồn tại và đặt `gateway.mode="local"`. `scripts/podman/setup.sh` sẽ tạo tệp này nếu thiếu.
-- **Các lệnh CLI container trỏ nhầm đích:** Dùng rõ ràng `openclaw --container <name> ...`, hoặc export `OPENCLAW_CONTAINER=<name>` trong shell của bạn.
-- **`openclaw update` thất bại với `--container`:** Đúng như dự kiến. Build lại/pull image, rồi khởi động lại container hoặc dịch vụ Quadlet.
-- **Dịch vụ Quadlet không khởi động:** Chạy `systemctl --user daemon-reload`, rồi `systemctl --user start openclaw.service`. Trên hệ thống không có giao diện, bạn cũng có thể cần `sudo loginctl enable-linger "$(whoami)"`.
-- **SELinux chặn bind mount:** Giữ nguyên hành vi mount mặc định; trình khởi chạy tự động thêm `:Z` trên Linux khi SELinux đang ở chế độ enforcing hoặc permissive.
+- **Quyền bị từ chối (EACCES) trên cấu hình hoặc không gian làm việc:** Theo mặc định, container chạy với `--userns=keep-id` và `--user <uid của bạn>:<gid của bạn>`. Đảm bảo các đường dẫn cấu hình/không gian làm việc trên máy chủ thuộc quyền sở hữu của người dùng hiện tại.
+- **Khởi động Gateway bị chặn (thiếu `gateway.mode=local`):** Đảm bảo `~/.openclaw/openclaw.json` tồn tại và đặt `gateway.mode="local"`. `scripts/podman/setup.sh` sẽ tạo tệp này nếu chưa có.
+- **Container khởi động lại sau khi cập nhật ảnh:** Chạy lệnh `openclaw doctor --fix` dùng một lần trong [Nâng cấp ảnh](#upgrading-images), sau đó khởi động lại Gateway.
+- **Các lệnh CLI của container nhắm sai đích:** Sử dụng tường minh `openclaw --container <name> ...` hoặc xuất `OPENCLAW_CONTAINER=<name>` trong shell của bạn.
+- **`openclaw update` thất bại với `--container`:** Đây là hành vi dự kiến. Xây dựng lại/kéo ảnh, sau đó khởi động lại container hoặc dịch vụ Quadlet.
+- **Dịch vụ Quadlet không khởi động:** Chạy `systemctl --user daemon-reload`, sau đó chạy `systemctl --user start openclaw.service`. Trên các hệ thống không có màn hình, bạn cũng có thể cần `sudo loginctl enable-linger "$(whoami)"`.
+- **SELinux chặn các điểm gắn kết:** Giữ nguyên hành vi gắn kết mặc định; trình khởi chạy tự động thêm `:Z` trên Linux khi SELinux ở chế độ thực thi hoặc cho phép.
 
 ## Liên quan
 
 - [Docker](/vi/install/docker)
-- [Tiến trình nền Gateway](/vi/gateway/background-process)
+- [Tiến trình nền của Gateway](/vi/gateway/background-process)
 - [Khắc phục sự cố Gateway](/vi/gateway/troubleshooting)

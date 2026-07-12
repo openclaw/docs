@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Refatorar a UI de mensagens de canais, payloads interativos ou renderizadores nativos de canais
-    - Alterar capacidades de ferramentas de mensagem, dicas de entrega ou marcadores entre contextos
-    - Depuração do fanout da importação do Discord Carbon ou da inicialização tardia em tempo de execução do Plugin de canal
-summary: Desacople a apresentação semântica de mensagens dos renderizadores de UI nativos do canal.
+    - Refatoração da interface de mensagens de canais, payloads interativos ou renderizadores nativos de canais
+    - Alteração dos recursos da ferramenta de mensagens, das indicações de entrega ou dos marcadores entre contextos
+    - Depuração do fanout de importação do Discord Carbon ou do carregamento tardio em tempo de execução do plugin de canal
+summary: Desacople a apresentação semântica de mensagens dos renderizadores de interface nativos dos canais.
 title: Plano de refatoração da apresentação de canais
 x-i18n:
-    generated_at: "2026-06-27T17:41:52Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T00:03:06Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 6b0f0c4f64e0c503209ac0a5b763b1b5483bf8d55a28ceacffbbcd1337d4371e
@@ -17,50 +17,50 @@ x-i18n:
 
 ## Status
 
-Implementado para o agente compartilhado, CLI, capacidade de Plugin e superfícies de entrega de saída:
+Implementado para as superfícies de agente compartilhado, CLI, recursos de plugins e entrega de saída:
 
-- `ReplyPayload.presentation` carrega a UI semântica de mensagens.
-- `ReplyPayload.delivery.pin` carrega solicitações de fixação de mensagens enviadas.
-- Ações de mensagem compartilhadas expõem `presentation`, `delivery` e `pin` em vez de `components`, `blocks`, `buttons` ou `card` nativos do provedor.
-- O core renderiza ou autodegrada a apresentação por meio das capacidades de saída declaradas pelo Plugin.
-- Renderizadores do Discord, Slack, Telegram, Mattermost, MS Teams e Feishu consomem o contrato genérico.
-- O código do plano de controle do canal Discord não importa mais contêineres de UI baseados em Carbon.
+- `ReplyPayload.presentation` transporta a interface semântica da mensagem.
+- `ReplyPayload.delivery.pin` transporta solicitações para fixar mensagens enviadas.
+- As ações de mensagem compartilhadas expõem `presentation`, `delivery` e `pin`, em vez de `components`, `blocks`, `buttons` ou `card` nativos do provedor.
+- O núcleo renderiza ou degrada automaticamente a apresentação por meio dos recursos de saída declarados pelo plugin.
+- Os renderizadores do Discord, Slack, Telegram, Mattermost, MS Teams e Feishu consomem o contrato genérico.
+- O código do plano de controle do canal Discord não importa mais contêineres de interface baseados no Carbon.
 
-A documentação canônica agora fica em [Apresentação de mensagens](/pt-BR/plugins/message-presentation).
-Mantenha este plano como contexto histórico de implementação; atualize o guia canônico
-para mudanças de contrato, renderizador ou comportamento de fallback.
+A documentação canônica agora está em [Apresentação de mensagens](/pt-BR/plugins/message-presentation).
+Mantenha este plano como contexto histórico da implementação; atualize o guia canônico
+quando houver alterações no contrato, no renderizador ou no comportamento de fallback.
 
 ## Problema
 
-A UI de canais está atualmente dividida entre várias superfícies incompatíveis:
+Atualmente, a interface dos canais está dividida entre várias superfícies incompatíveis:
 
-- O core possui um hook de renderizador entre contextos com formato de Discord por meio de `buildCrossContextComponents`.
-- O `channel.ts` do Discord pode importar UI Carbon nativa por meio de `DiscordUiContainer`, o que traz dependências de UI em runtime para o plano de controle do Plugin de canal.
-- O agente e a CLI expõem escapes de payload nativo, como `components` do Discord, `blocks` do Slack, `buttons` do Telegram ou Mattermost e `card` do Teams ou Feishu.
-- `ReplyPayload.channelData` carrega tanto dicas de transporte quanto envelopes de UI nativa.
-- O modelo genérico `interactive` existe, mas é mais restrito do que os layouts mais ricos já usados por Discord, Slack, Teams, Feishu, LINE, Telegram e Mattermost.
+- O núcleo possui um hook de renderização entre contextos no formato do Discord por meio de `buildCrossContextComponents`.
+- O `channel.ts` do Discord pode importar a interface nativa do Carbon por meio de `DiscordUiContainer`, o que incorpora dependências de interface em tempo de execução ao plano de controle do plugin de canal.
+- O agente e a CLI expõem mecanismos de escape para payloads nativos, como `components` do Discord, `blocks` do Slack, `buttons` do Telegram ou Mattermost e `card` do Teams ou Feishu.
+- `ReplyPayload.channelData` transporta tanto indicações de transporte quanto envelopes de interface nativa.
+- O modelo genérico `interactive` existe, mas é mais limitado do que os layouts mais sofisticados já usados pelo Discord, Slack, Teams, Feishu, LINE, Telegram e Mattermost.
 
-Isso faz o core conhecer formatos de UI nativa, enfraquece a preguiça de runtime de Plugins e dá aos agentes muitas formas específicas por provedor para expressar a mesma intenção de mensagem.
+Isso faz com que o núcleo conheça os formatos de interface nativos, prejudica o carregamento tardio do runtime dos plugins e oferece aos agentes muitas formas específicas de cada provedor para expressar a mesma intenção de mensagem.
 
 ## Objetivos
 
-- O core decide a melhor apresentação semântica para uma mensagem a partir das capacidades declaradas.
-- Extensões declaram capacidades e renderizam apresentação semântica em payloads de transporte nativos.
-- A UI de Controle Web permanece separada da UI nativa de chat.
-- Payloads nativos de canal não são expostos pela superfície de mensagens do agente compartilhado ou da CLI.
-- Recursos de apresentação sem suporte são autodegradados para a melhor representação em texto.
-- Comportamento de entrega, como fixar uma mensagem enviada, é metadado genérico de entrega, não apresentação.
+- O núcleo decide a melhor apresentação semântica para uma mensagem com base nos recursos declarados.
+- As extensões declaram recursos e renderizam a apresentação semântica em payloads de transporte nativos.
+- A interface Web Control permanece separada da interface nativa de chat.
+- Os payloads nativos de canais não são expostos pela superfície compartilhada de mensagens do agente ou da CLI.
+- Recursos de apresentação não compatíveis são automaticamente degradados para a melhor representação em texto.
+- Comportamentos de entrega, como fixar uma mensagem enviada, são metadados genéricos de entrega, não de apresentação.
 
-## Não objetivos
+## Fora do escopo
 
-- Nenhum shim de compatibilidade retroativa para `buildCrossContextComponents`.
-- Nenhum escape nativo público para `components`, `blocks`, `buttons` ou `card`.
-- Nenhuma importação pelo core de bibliotecas de UI nativas de canal.
-- Nenhuma interface de SDK específica de provedor para canais empacotados.
+- Nenhuma camada de compatibilidade retroativa para `buildCrossContextComponents`.
+- Nenhum mecanismo de escape nativo público para `components`, `blocks`, `buttons` ou `card`.
+- Nenhuma importação, pelo núcleo, de bibliotecas de interface nativas de canais.
+- Nenhuma interface de SDK específica de provedor para canais incluídos.
 
-## Modelo-alvo
+## Modelo desejado
 
-Adicione um campo `presentation` de propriedade do core a `ReplyPayload`.
+Adicione um campo `presentation`, pertencente ao núcleo, a `ReplyPayload`.
 
 ```ts
 type MessagePresentationTone = "neutral" | "info" | "success" | "warning" | "danger";
@@ -91,20 +91,20 @@ type MessagePresentationOption = {
 };
 ```
 
-`interactive` se torna um subconjunto de `presentation` durante a migração:
+Durante a migração, `interactive` torna-se um subconjunto de `presentation`:
 
-- Bloco de texto de `interactive` é mapeado para `presentation.blocks[].type = "text"`.
-- Bloco de botões de `interactive` é mapeado para `presentation.blocks[].type = "buttons"`.
-- Bloco de seleção de `interactive` é mapeado para `presentation.blocks[].type = "select"`.
+- O bloco de texto de `interactive` corresponde a `presentation.blocks[].type = "text"`.
+- O bloco de botões de `interactive` corresponde a `presentation.blocks[].type = "buttons"`.
+- O bloco de seleção de `interactive` corresponde a `presentation.blocks[].type = "select"`.
 
-Os schemas externos do agente e da CLI agora usam `presentation`; `interactive` permanece como helper interno legado de análise/renderização para produtores de resposta existentes.
-A API pública voltada a produtores trata `interactive` como obsoleto. O suporte em runtime
-permanece para que helpers de aprovação existentes e Plugins mais antigos continuem
-funcionando enquanto o código novo emite `presentation`.
+Os esquemas externos do agente e da CLI agora usam `presentation`; `interactive` permanece como um auxiliar interno legado de análise/renderização para os produtores de respostas existentes.
+A API pública voltada a produtores considera `interactive` obsoleto. O suporte em runtime
+permanece para que os auxiliares de aprovação existentes e plugins antigos continuem
+funcionando enquanto o novo código emite `presentation`.
 
 ## Metadados de entrega
 
-Adicione um campo `delivery` de propriedade do core para comportamento de envio que não é UI.
+Adicione um campo `delivery`, pertencente ao núcleo, para comportamentos de envio que não fazem parte da interface.
 
 ```ts
 type ReplyPayloadDelivery = {
@@ -121,15 +121,15 @@ type ReplyPayloadDelivery = {
 Semântica:
 
 - `delivery.pin = true` significa fixar a primeira mensagem entregue com sucesso.
-- `notify` usa `false` como padrão.
-- `required` usa `false` como padrão; canais sem suporte ou falha na fixação são autodegradados ao continuar a entrega.
-- Ações manuais de mensagem `pin`, `unpin` e `list-pins` permanecem para mensagens existentes.
+- O valor padrão de `notify` é `false`.
+- O valor padrão de `required` é `false`; canais não compatíveis ou falhas ao fixar degradam automaticamente, permitindo que a entrega continue.
+- As ações manuais de mensagem `pin`, `unpin` e `list-pins` permanecem disponíveis para mensagens existentes.
 
-A vinculação atual de tópico ACP do Telegram deve passar de `channelData.telegram.pin = true` para `delivery.pin = true`.
+A vinculação atual de tópicos ACP do Telegram deve migrar de `channelData.telegram.pin = true` para `delivery.pin = true`.
 
-## Contrato de capacidade em runtime
+## Contrato de recursos do runtime
 
-Adicione hooks de renderização de apresentação e entrega ao adaptador de saída em runtime, não ao Plugin de canal do plano de controle.
+Adicione hooks de renderização de apresentação e entrega ao adaptador de saída do runtime, não ao plugin de canal do plano de controle.
 
 ```ts
 type ChannelPresentationCapabilities = {
@@ -190,35 +190,35 @@ type ChannelOutboundAdapter = {
 };
 ```
 
-Comportamento do core:
+Comportamento do núcleo:
 
-- Resolver o canal de destino e o adaptador em runtime.
-- Consultar capacidades de apresentação.
-- Degradar blocos sem suporte e aplicar limites genéricos de capacidade antes de
-  renderizar.
+- Resolver o canal de destino e o adaptador do runtime.
+- Consultar os recursos de apresentação.
+- Degradar blocos não compatíveis e aplicar limites genéricos de recursos antes
+  da renderização.
 - Chamar `renderPresentation`.
-- Se nenhum renderizador existir, converter a apresentação para fallback de texto.
-- Após envio bem-sucedido, chamar `pinDeliveredMessage` quando `delivery.pin` for solicitado e suportado.
+- Se não houver um renderizador, converter a apresentação em um fallback de texto.
+- Após um envio bem-sucedido, chamar `pinDeliveredMessage` quando `delivery.pin` for solicitado e houver suporte.
 
 ## Mapeamento de canais
 
 Discord:
 
-- Renderizar `presentation` para componentes v2 e contêineres Carbon em módulos somente de runtime.
-- Manter helpers de cor de destaque em módulos leves.
-- Remover importações de `DiscordUiContainer` do código do plano de controle do Plugin de canal.
+- Renderizar `presentation` em componentes v2 e contêineres Carbon em módulos exclusivos do runtime.
+- Manter os auxiliares de cores de destaque em módulos leves.
+- Remover as importações de `DiscordUiContainer` do código do plano de controle do plugin de canal.
 
 Slack:
 
-- Renderizar `presentation` para Block Kit.
-- Remover entrada `blocks` do agente e da CLI.
+- Renderizar `presentation` em Block Kit.
+- Remover a entrada `blocks` do agente e da CLI.
 
 Telegram:
 
 - Renderizar texto, contexto e divisores como texto.
-- Renderizar ações e seleção como teclados inline quando configurado e permitido para a superfície de destino.
-- Usar fallback de texto quando botões inline estiverem desativados.
-- Mover a fixação de tópico ACP para `delivery.pin`.
+- Renderizar ações e seleções como teclados embutidos quando configurado e permitido para a superfície de destino.
+- Usar fallback de texto quando os botões embutidos estiverem desativados.
+- Migrar a fixação de tópicos ACP para `delivery.pin`.
 
 Mattermost:
 
@@ -227,66 +227,66 @@ Mattermost:
 
 MS Teams:
 
-- Renderizar `presentation` para Adaptive Cards.
-- Manter ações manuais de fixar/desafixar/listar fixados.
-- Opcionalmente implementar `pinDeliveredMessage` se o suporte do Graph for confiável para a conversa de destino.
+- Renderizar `presentation` em Adaptive Cards.
+- Manter as ações manuais `pin`/`unpin`/`list-pins`.
+- Implementar opcionalmente `pinDeliveredMessage` se o suporte do Graph for confiável para a conversa de destino.
 
 Feishu:
 
-- Renderizar `presentation` para cartões interativos.
-- Manter ações manuais de fixar/desafixar/listar fixados.
-- Opcionalmente implementar `pinDeliveredMessage` para fixação de mensagem enviada se o comportamento da API for confiável.
+- Renderizar `presentation` em cartões interativos.
+- Manter as ações manuais `pin`/`unpin`/`list-pins`.
+- Implementar opcionalmente `pinDeliveredMessage` para fixar mensagens enviadas, caso o comportamento da API seja confiável.
 
 LINE:
 
-- Renderizar `presentation` para mensagens Flex ou de modelo quando possível.
-- Fazer fallback para texto em blocos sem suporte.
-- Remover payloads de UI do LINE de `channelData`.
+- Renderizar `presentation` em mensagens Flex ou de modelo quando possível.
+- Usar fallback de texto para blocos não compatíveis.
+- Remover os payloads de interface do LINE de `channelData`.
 
 Canais simples ou limitados:
 
-- Converter apresentação para texto com formatação conservadora.
+- Converter a apresentação em texto com formatação conservadora.
 
-## Etapas de refatoração
+## Etapas da refatoração
 
-1. Reaplicar a correção de release do Discord que separa `ui-colors.ts` da UI baseada em Carbon e remove `DiscordUiContainer` de `extensions/discord/src/channel.ts`.
-2. Adicionar `presentation` e `delivery` a `ReplyPayload`, normalização de payload de saída, resumos de entrega e payloads de hook.
-3. Adicionar schema `MessagePresentation` e helpers de parser em um subcaminho estreito de SDK/runtime.
-4. Substituir capacidades de mensagem `buttons`, `cards`, `components` e `blocks` por capacidades de apresentação semântica.
-5. Adicionar hooks de adaptador de saída em runtime para renderização de apresentação e fixação de entrega.
-6. Substituir construção de componentes entre contextos por `buildCrossContextPresentation`.
-7. Excluir `src/infra/outbound/channel-adapters.ts` e remover `buildCrossContextComponents` dos tipos de Plugin de canal.
+1. Reaplicar a correção de versão do Discord que separa `ui-colors.ts` da interface baseada no Carbon e remove `DiscordUiContainer` de `extensions/discord/src/channel.ts`.
+2. Adicionar `presentation` e `delivery` a `ReplyPayload`, à normalização de payloads de saída, aos resumos de entrega e aos payloads de hooks.
+3. Adicionar o esquema `MessagePresentation` e auxiliares de análise em um subcaminho restrito do SDK/runtime.
+4. Substituir os recursos de mensagem `buttons`, `cards`, `components` e `blocks` por recursos de apresentação semântica.
+5. Adicionar hooks ao adaptador de saída do runtime para renderização da apresentação e fixação na entrega.
+6. Substituir a construção de componentes entre contextos por `buildCrossContextPresentation`.
+7. Excluir `src/infra/outbound/channel-adapters.ts` e remover `buildCrossContextComponents` dos tipos de plugins de canal.
 8. Alterar `maybeApplyCrossContextMarker` para anexar `presentation` em vez de parâmetros nativos.
-9. Atualizar caminhos de envio de despacho de Plugins para consumir somente apresentação semântica e metadados de entrega.
-10. Remover parâmetros de payload nativo do agente e da CLI: `components`, `blocks`, `buttons` e `card`.
-11. Remover helpers do SDK que criam schemas de ferramenta de mensagem nativa, substituindo-os por helpers de schema de apresentação.
-12. Remover envelopes de UI/nativos de `channelData`; manter somente metadados de transporte até que cada campo restante seja revisado.
-13. Migrar renderizadores do Discord, Slack, Telegram, Mattermost, MS Teams, Feishu e LINE.
-14. Atualizar documentação para CLI de mensagens, páginas de canal, SDK de Plugin e cookbook de capacidades.
-15. Executar perfilamento de fanout de importação para Discord e entrypoints de canais afetados.
+9. Atualizar os caminhos de envio do dispatcher de plugins para consumir somente apresentação semântica e metadados de entrega.
+10. Remover os parâmetros de payload nativo do agente e da CLI: `components`, `blocks`, `buttons` e `card`.
+11. Remover os auxiliares do SDK que criam esquemas nativos de ferramentas de mensagem, substituindo-os por auxiliares de esquema de apresentação.
+12. Remover envelopes nativos/de interface de `channelData`; manter somente metadados de transporte até que cada campo restante seja revisado.
+13. Migrar os renderizadores do Discord, Slack, Telegram, Mattermost, MS Teams, Feishu e LINE.
+14. Atualizar a documentação da CLI de mensagens, das páginas de canais, do SDK de plugins e do guia prático de recursos.
+15. Executar a análise de propagação de importações para o Discord e os pontos de entrada dos canais afetados.
 
-As etapas 1-11 e 13-14 estão implementadas nesta refatoração para os contratos do agente compartilhado, CLI, capacidade de Plugin e adaptador de saída. A etapa 12 permanece como uma limpeza interna mais profunda para envelopes de transporte `channelData` privados de provedor. A etapa 15 permanece como validação de acompanhamento se quisermos números quantificados de fanout de importação além do gate de tipo/teste.
+As etapas 1 a 11 e 13 a 14 foram implementadas nesta refatoração para os contratos do agente compartilhado, da CLI, dos recursos de plugins e do adaptador de saída. A etapa 12 ainda requer uma limpeza interna mais profunda dos envelopes de transporte `channelData` privados dos provedores. A etapa 15 permanece como validação posterior, caso sejam desejados números quantificados de propagação de importações além da verificação de tipos/testes.
 
 ## Testes
 
 Adicionar ou atualizar:
 
-- Testes de normalização de apresentação.
-- Testes de autodegradação de apresentação para blocos sem suporte.
-- Testes de marcador entre contextos para despacho de Plugin e caminhos de entrega do core.
-- Testes de matriz de renderização de canais para Discord, Slack, Telegram, Mattermost, MS Teams, Feishu, LINE e fallback de texto.
-- Testes de schema de ferramenta de mensagem provando que campos nativos desapareceram.
-- Testes de CLI provando que flags nativas desapareceram.
-- Regressão de preguiça de importação do entrypoint do Discord cobrindo Carbon.
-- Testes de fixação de entrega cobrindo Telegram e fallback genérico.
+- Testes de normalização da apresentação.
+- Testes de degradação automática da apresentação para blocos não compatíveis.
+- Testes de marcadores entre contextos para o dispatcher de plugins e os caminhos de entrega do núcleo.
+- Testes da matriz de renderização de canais para Discord, Slack, Telegram, Mattermost, MS Teams, Feishu, LINE e fallback de texto.
+- Testes do esquema de ferramentas de mensagem que comprovem a remoção dos campos nativos.
+- Testes da CLI que comprovem a remoção das opções nativas.
+- Regressão de carregamento tardio das importações do ponto de entrada do Discord abrangendo o Carbon.
+- Testes de fixação na entrega abrangendo o Telegram e o fallback genérico.
 
-## Perguntas em aberto
+## Questões em aberto
 
-- `delivery.pin` deve ser implementado para Discord, Slack, MS Teams e Feishu na primeira passada, ou somente Telegram primeiro?
-- `delivery` deve eventualmente absorver campos existentes como `replyToId`, `replyToCurrent`, `silent` e `audioAsVoice`, ou permanecer focado em comportamentos pós-envio?
-- A apresentação deve dar suporte direto a imagens ou referências de arquivo, ou a mídia deve permanecer separada do layout de UI por enquanto?
+- `delivery.pin` deve ser implementado para Discord, Slack, MS Teams e Feishu na primeira etapa ou inicialmente apenas para o Telegram?
+- `delivery` deve futuramente incorporar campos existentes como `replyToId`, `replyToCurrent`, `silent` e `audioAsVoice`, ou permanecer focado em comportamentos posteriores ao envio?
+- A apresentação deve oferecer suporte direto a imagens ou referências de arquivos, ou a mídia deve permanecer separada do layout da interface por enquanto?
 
 ## Relacionado
 
-- [Visão geral de canais](/pt-BR/channels)
+- [Visão geral dos canais](/pt-BR/channels)
 - [Apresentação de mensagens](/pt-BR/plugins/message-presentation)

@@ -1,30 +1,30 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або перевіряєте plugin openrouter
+    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin openrouter
 summary: Додає підтримку постачальника моделей OpenRouter до OpenClaw.
 title: Plugin OpenRouter
 x-i18n:
-    generated_at: "2026-06-27T18:01:01Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:35:39Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3d23878973853230ff2621d9ea75b6fd3536366fa8520139d5424a4d261bc44a
+    source_hash: 67d69a5b9ea397b276596bd69023ae6ccc0b35051d6de0d843a68b98b641b843
     source_path: plugins/reference/openrouter.md
     workflow: 16
 ---
 
 # Plugin OpenRouter
 
-Додає підтримку провайдера моделей OpenRouter до OpenClaw.
+Додає до OpenClaw підтримку постачальника моделей OpenRouter.
 
-## Дистрибуція
+## Розповсюдження
 
-- Пакет: `@openclaw/openrouter-provider`
-- Маршрут інсталяції: включено в OpenClaw
+- Пакунок: `@openclaw/openrouter-provider`
+- Спосіб установлення: входить до складу OpenClaw
 
-## Поверхня
+## Інтерфейс
 
-провайдери: openrouter; контракти: imageGenerationProviders, mediaUnderstandingProviders, musicGenerationProviders, speechProviders, videoGenerationProviders
+постачальники: openrouter; контракти: imageGenerationProviders, mediaUnderstandingProviders, musicGenerationProviders, speechProviders, usageProviders, videoGenerationProviders
 
 ## Пов’язана документація
 

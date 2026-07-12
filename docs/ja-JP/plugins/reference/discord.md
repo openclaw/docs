@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Discord Pluginをインストール、設定、または監査している
-summary: チャンネル、DM、コマンド、アプリイベント向けの OpenClaw Discord チャンネル Plugin。
-title: Discord プラグイン
+    - Discord Plugin のインストール、設定、または監査を行っている場合
+summary: チャンネル、DM、コマンド、アプリイベントに対応する OpenClaw Discord チャンネル Plugin。
+title: Discord Plugin
 x-i18n:
-    generated_at: "2026-06-27T12:23:53Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:32:20Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 9e3305f8ad8eb84fd350bdfa0983b4fd8f848e0697ecf3e779e31cd6cb44dbf5
@@ -15,17 +15,17 @@ x-i18n:
 
 # Discord Plugin
 
-チャンネル、DM、コマンド、アプリイベント向けの OpenClaw Discord チャンネル Plugin。
+チャンネル、DM、コマンド、アプリイベントに対応するOpenClaw DiscordチャンネルPlugin。
 
 ## 配布
 
-- Package: `@openclaw/discord`
-- インストール経路: npm; ClawHub
+- パッケージ: `@openclaw/discord`
+- インストール経路: npm、ClawHub
 
-## サーフェス
+## 対応範囲
 
-channels: discord; contracts: transcriptSourceProviders; skills
+チャンネル: discord、コントラクト: transcriptSourceProviders、Skills
 
 ## 関連ドキュメント
 
-- [discord](/ja-JP/channels/discord)
+- [Discord](/ja-JP/channels/discord)

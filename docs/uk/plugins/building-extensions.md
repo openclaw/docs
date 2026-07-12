@@ -1,21 +1,21 @@
 ---
 read_when:
     - Застаріле посилання на building-extensions
-summary: Переспрямування до поточного посібника Building Plugins
-title: Створення Plugin (переспрямування)
+summary: Переспрямовує до актуального посібника зі створення плагінів
+title: Створення плагінів (переспрямування)
 x-i18n:
-    generated_at: "2026-04-23T23:02:08Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: d687ccddfe7dcadf8bdd0fc903bf8a5da112902a8d23086b04da25df752facaf
-    source_path: plugins/building-extensions.md
-    workflow: 15
+    generated_at: "2026-07-12T13:24:18Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 912a6de72e2ea3a3fc7cc93a15f952d504c00873f7662ead0f50662bcc7771c5
+    source_path: plugins/building-extensions.md
+    workflow: 16
 ---
 
-Цю сторінку переміщено до [Building Plugins](/uk/plugins/building-plugins).
+Цю сторінку переміщено. Див. [Створення плагінів](/uk/plugins/building-plugins).
 
-## Пов’язане
+## Пов’язані матеріали
 
-- [Building plugins](/uk/plugins/building-plugins)
-- [Архітектура Plugin](/uk/plugins/architecture)
+- [Створення плагінів](/uk/plugins/building-plugins)
+- [Архітектура плагінів](/uk/plugins/architecture)

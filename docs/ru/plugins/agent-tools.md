@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Устаревшая ссылка на agent-tools
-summary: Перенаправляет к разделу Building Plugins (раздел регистрации инструментов)
+    - Устаревшая ссылка на инструменты агента
+summary: Перенаправляет на раздел «Регистрация инструментов» в руководстве по созданию плагинов
 title: Регистрация инструментов
 x-i18n:
-    generated_at: "2026-06-28T23:13:51Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:34:06Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: e73137487a9394454dd037d449bc2a0896725cddc7d0f174eda41f5fdc451982
@@ -13,9 +13,9 @@ x-i18n:
     workflow: 16
 ---
 
-Эта страница перемещена. См. [Создание Plugin: регистрация инструментов агента](/ru/plugins/building-plugins#registering-agent-tools).
+Эта страница перемещена. См. [Создание плагинов: регистрация инструментов агента](/ru/plugins/building-plugins#registering-agent-tools).
 
 ## Связанные материалы
 
-- [Создание plugins](/ru/plugins/building-plugins)
-- [Настройка SDK для Plugin](/ru/plugins/sdk-setup)
+- [Создание плагинов](/ru/plugins/building-plugins)
+- [Настройка Plugin SDK](/ru/plugins/sdk-setup)

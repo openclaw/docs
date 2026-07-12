@@ -1,59 +1,69 @@
 ---
 read_when:
     - Tarayıcı otomasyonu için sitelerde oturum açmanız gerekir
-    - X/Twitter'da güncellemeler paylaşmak istiyorsunuz
-summary: Tarayıcı otomasyonu + X/Twitter paylaşımı için manuel oturum açma işlemleri
-title: Tarayıcıyla oturum açma
+    - X/Twitter'da güncellemeler yayımlamak istiyorsunuz
+summary: Tarayıcı otomasyonu ve X/Twitter gönderileri için manuel oturum açma işlemleri
+title: Tarayıcı girişi
 x-i18n:
-    generated_at: "2026-05-11T20:37:00Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:16:43Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 89501b47611a39df5a658ed7e144b7c16a07188dfa52544b56cbfc6e296e2ecc
+    source_hash: bccd363cf7c9611f4687d50a92f7fb3e2fd1c1d67bb27a80c892f7ac58ae1f8f
     source_path: tools/browser-login.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-## Manuel giriş (önerilir)
+## Manuel oturum açma (önerilir)
 
-Bir site giriş yapmayı gerektiriyorsa, **ana makine** tarayıcı profilinde (openclaw tarayıcısı) **manuel olarak oturum açın**.
+Bir site oturum açmayı gerektirdiğinde, ana makine tarayıcısının `openclaw`
+profilinde manuel olarak oturum açın. Kimlik bilgilerinizi modele vermeyin:
+otomatik oturum açma işlemleri çoğu zaman bot karşıtı savunmaları tetikler ve
+hesabın kilitlenmesine neden olabilir.
 
-Modele kimlik bilgilerinizi **vermeyin**. Otomatik girişler genellikle bot karşıtı savunmaları tetikler ve hesabın kilitlenmesine neden olabilir.
+X/Twitter ve botlara karşı hassas diğer sitelerde hem içerik okumak
+(aramalar/iletiler) hem de gönderi paylaşmak için ana makine tarayıcısını
+(manuel oturum açma) kullanın. Korumalı alan tarayıcı oturumlarının bot
+algılamayı tetikleme olasılığı daha yüksektir.
 
 Ana tarayıcı belgelerine dönün: [Tarayıcı](/tr/tools/browser).
 
 ## Hangi Chrome profili kullanılır?
 
-OpenClaw, **ayrılmış bir Chrome profilini** denetler (`openclaw` adlı, turuncu tonlu UI). Bu, günlük tarayıcı profilinizden ayrıdır.
+OpenClaw, günlük tarayıcı profilinizden ayrı olarak `openclaw` adlı özel bir
+Chrome profilini (turuncu tonlu kullanıcı arayüzü) kontrol eder.
 
 Aracı tarayıcı aracı çağrıları için:
 
-- Varsayılan seçim: aracı, yalıtılmış `openclaw` tarayıcısını kullanmalıdır.
-- `profile="user"` seçeneğini yalnızca mevcut oturum açılmış oturumlar önemli olduğunda ve kullanıcı herhangi bir ekleme istemine tıklamak/onaylamak için bilgisayar başındaysa kullanın.
-- Birden fazla kullanıcı tarayıcı profiliniz varsa, tahmin etmek yerine profili açıkça belirtin.
+- Varsayılan seçim: aracı, yalıtılmış `openclaw` tarayıcısını kullanır.
+- `profile="user"` seçeneğini yalnızca mevcut oturumların açık olması
+  önemliyse ve herhangi bir bağlanma istemine tıklamak/onay vermek için
+  bilgisayarın başındaysanız kullanın.
+- Birden fazla kullanıcı tarayıcısı profiliniz varsa tahminde bulunmak yerine
+  profili açıkça belirtin.
 
-Erişmenin iki kolay yolu:
+`openclaw` profiline erişmenin iki yolu vardır:
 
-1. **Aracıdan tarayıcıyı açmasını isteyin** ve ardından kendiniz giriş yapın.
-2. **CLI üzerinden açın**:
+1. Aracıdan tarayıcıyı açmasını isteyin, ardından kendiniz oturum açın.
+2. CLI üzerinden açın:
 
 ```bash
 openclaw browser start
 openclaw browser open https://x.com
 ```
 
-Birden fazla profiliniz varsa, `--browser-profile <name>` iletin (varsayılan `openclaw` değeridir).
+Varsayılan olmayan bir profil için alt komuttan önce
+`--browser-profile <name>` seçeneğini ekleyin (varsayılan `openclaw`'dur):
 
-## X/Twitter: önerilen akış
+```bash
+openclaw browser --browser-profile <name> open https://x.com
+```
 
-- **Okuma/arama/konular:** **ana makine** tarayıcısını kullanın (manuel giriş).
-- **Güncellemeler yayımlama:** **ana makine** tarayıcısını kullanın (manuel giriş).
+## Korumalı alan: ana makine tarayıcısına erişime izin verme
 
-## Sandbox + ana makine tarayıcı erişimi
-
-Sandbox içindeki tarayıcı oturumlarının bot algılamayı tetikleme olasılığı **daha yüksektir**. X/Twitter (ve diğer katı siteler) için **ana makine** tarayıcısını tercih edin.
-
-Aracı sandbox içindeyse, tarayıcı aracı varsayılan olarak sandbox'ı kullanır. Ana makine denetimine izin vermek için:
+Aracı korumalı alandaysa `browser` aracı çağrıları varsayılan olarak ana
+makine tarayıcısını değil, korumalı alan tarayıcısını kullanır. Aracının bunun
+yerine ana makine tarayıcısını hedeflemesine izin vermek için:
 
 ```json5
 {
@@ -70,16 +80,20 @@ Aracı sandbox içindeyse, tarayıcı aracı varsayılan olarak sandbox'ı kulla
 }
 ```
 
-Ardından ana makine tarayıcısını kendiniz açın (CLI çağrıları her zaman ana makine tarayıcısına karşı çalışır):
+CLI çağrıları her zaman ana makine tarayıcısını hedefler, korumalı alanı asla
+hedeflemez; dolayısıyla bu ayardan bağımsız olarak ana makine tarayıcısını
+kendiniz açabilirsiniz:
 
 ```bash
-openclaw browser open https://x.com --browser-profile openclaw
+openclaw browser --browser-profile openclaw open https://x.com
 ```
 
-Aracının `browser` aracı çağrıları, `sandbox.browser.allowHostControl: true` ayarlandıktan sonra ana makineyi hedefleyebilir. Alternatif olarak, güncellemeleri yayımlayan aracı için sandbox'ı devre dışı bırakın.
+`sandbox.browser.allowHostControl: true` ayarlandıktan sonra aracının `browser`
+aracı çağrıları da ana makineyi hedefleyebilir. Alternatif olarak,
+güncellemeleri paylaşan aracı için korumalı alanı devre dışı bırakın.
 
-## İlgili
+## İlgili içerikler
 
 - [Tarayıcı](/tr/tools/browser)
-- [Tarayıcı Linux sorun giderme](/tr/tools/browser-linux-troubleshooting)
-- [Tarayıcı WSL2 sorun giderme](/tr/tools/browser-wsl2-windows-remote-cdp-troubleshooting)
+- [Linux'ta tarayıcı sorunlarını giderme](/tr/tools/browser-linux-troubleshooting)
+- [WSL2'de tarayıcı sorunlarını giderme](/tr/tools/browser-wsl2-windows-remote-cdp-troubleshooting)

@@ -1,49 +1,40 @@
 ---
 read_when:
-    - Configurazione dei messaggi di canale creati dai bot
-    - Regolazione della protezione dei loop tra bot
+    - Configurazione dei messaggi del canale creati dai bot
+    - Ottimizzazione della protezione dai loop tra bot
 sidebarTitle: Bot loop protection
-summary: Impostazioni predefinite della protezione dal loop tra bot e override dei canali
+summary: Valori predefiniti per la protezione dai cicli tra bot e override dei canali
 title: Protezione dai loop dei bot
 x-i18n:
-    generated_at: "2026-06-27T17:09:31Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:47:17Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7a36794332e89dc7a9cf558e1687beabf4a6d10fb8e73c39794b0f0fd01c65b7
+    source_hash: 08637267cd3422d3154315e709c85c85fa57641f1adb0e8ef10c32e8a7b73312
     source_path: channels/bot-loop-protection.md
     workflow: 16
 ---
 
-# Protezione dai loop tra bot
+OpenClaw può accettare messaggi scritti da altri bot nei canali che supportano `allowBots`. Quando questo percorso è abilitato, la protezione dai cicli tra coppie impedisce a due identità bot di rispondersi indefinitamente.
 
-OpenClaw può accettare messaggi scritti da altri bot sui canali che supportano `allowBots`.
-Quando quel percorso è abilitato, la protezione dai loop per coppia impedisce a due identità bot di
-rispondersi tra loro all'infinito.
-
-La protezione è applicata dal runner core delle risposte in ingresso. Ogni canale supportato
-mappa il proprio evento in ingresso in fatti generici: account o ambito, ID conversazione,
-ID bot del mittente e ID bot del destinatario. Il core quindi traccia la coppia di partecipanti in entrambe
-le direzioni, applica un budget a finestra mobile e sopprime la coppia durante un
-periodo di cooldown dopo il superamento del budget.
+La protezione viene applicata dal gestore principale delle risposte in ingresso. Ogni canale compatibile converte il proprio evento in ingresso in informazioni generiche: account o ambito, ID della conversazione, ID del bot mittente e ID del bot destinatario. Il componente principale tiene traccia della coppia di partecipanti in entrambe le direzioni (da A a B e da B ad A sono considerate la stessa coppia), applica un limite in una finestra temporale scorrevole e sospende la coppia per un periodo di attesa dopo il superamento del limite.
 
 ## Valori predefiniti
 
-La protezione dai loop per coppia è attiva quando un canale lascia arrivare al
-dispatch messaggi creati da bot. I valori predefiniti integrati sono:
+La protezione dai cicli tra coppie è attiva ogni volta che un canale consente ai messaggi creati da bot di raggiungere lo smistamento. Valori predefiniti integrati:
 
-- `maxEventsPerWindow: 20` - una coppia di bot può scambiare 20 eventi entro la finestra
-- `windowSeconds: 60` - durata della finestra mobile
-- `cooldownSeconds: 60` - tempo di soppressione dopo che la coppia supera il budget
+| Chiave               | Valore predefinito | Significato                                                   |
+| -------------------- | ------------------- | ------------------------------------------------------------- |
+| `enabled`            | `true`              | Protezione attiva per i canali che la supportano.              |
+| `maxEventsPerWindow` | `20`                | Eventi che una coppia di bot può scambiarsi entro la finestra. |
+| `windowSeconds`      | `60`                | Durata della finestra temporale scorrevole.                    |
+| `cooldownSeconds`    | `60`                | Tempo di sospensione dopo che la coppia supera il limite.      |
 
-La protezione non influisce sui normali messaggi creati da esseri umani, sulle distribuzioni con un solo bot,
-sul filtraggio dei messaggi propri o sulle risposte bot una tantum che restano sotto il budget.
+La protezione non influisce sui messaggi scritti da persone, sulle distribuzioni con un solo bot, sul filtraggio dei messaggi inviati a sé stessi o sulle risposte dei bot che rimangono entro il limite.
 
 ## Configurare i valori predefiniti condivisi
 
-Imposta `channels.defaults.botLoopProtection` una sola volta per dare a ogni canale supportato
-la stessa base. Gli override di canale e account possono comunque regolare le singole
-superfici.
+Imposta una sola volta `channels.defaults.botLoopProtection` per fornire a tutti i canali compatibili la stessa configurazione di base. Le sostituzioni a livello di canale, account e stanza possono comunque adattare le singole superfici.
 
 ```json5
 {
@@ -59,18 +50,17 @@ superfici.
 }
 ```
 
-Imposta `enabled: false` solo quando la policy del tuo canale consente intenzionalmente
-conversazioni bot-a-bot senza soppressione automatica.
+Imposta `enabled: false` solo quando la politica del canale consente intenzionalmente conversazioni tra bot senza sospensione automatica.
 
-## Override per canale o account
+## Sostituire i valori per canale, account o stanza
 
-I canali supportati applicano la propria configurazione sopra il valore predefinito condiviso. La precedenza è:
+I canali compatibili sovrappongono la propria configurazione al valore predefinito condiviso, chiave per chiave. Precedenza, dal livello più specifico:
 
-- `channels.<channel>.<room-or-space>.botLoopProtection`, quando il canale supporta override per conversazione
-- `channels.<channel>.accounts.<account>.botLoopProtection`, quando il canale supporta account
-- `channels.<channel>.botLoopProtection`, quando il canale supporta valori predefiniti di livello superiore
-- `channels.defaults.botLoopProtection`
-- valori predefiniti integrati
+1. `channels.<channel>.<room-or-space>.botLoopProtection`, quando il canale supporta sostituzioni per singola conversazione
+2. `channels.<channel>.accounts.<account>.botLoopProtection`, quando il canale supporta gli account
+3. `channels.<channel>.botLoopProtection`, quando il canale supporta valori predefiniti di primo livello
+4. `channels.defaults.botLoopProtection`
+5. valori predefiniti integrati
 
 ```json5
 {
@@ -85,27 +75,11 @@ I canali supportati applicano la propria configurazione sopra il valore predefin
         maxEventsPerWindow: 8,
       },
       accounts: {
-        molty: {
+        secondary: {
           allowBots: "mentions",
           botLoopProtection: {
             maxEventsPerWindow: 5,
             cooldownSeconds: 90,
-          },
-        },
-      },
-    },
-    slack: {
-      allowBots: "mentions",
-      botLoopProtection: {
-        maxEventsPerWindow: 8,
-      },
-    },
-    matrix: {
-      allowBots: "mentions",
-      groups: {
-        "!roomid:example.org": {
-          botLoopProtection: {
-            maxEventsPerWindow: 5,
           },
         },
       },
@@ -120,19 +94,33 @@ I canali supportati applicano la propria configurazione sopra il valore predefin
         },
       },
     },
+    matrix: {
+      allowBots: "mentions",
+      groups: {
+        "!roomid:example.org": {
+          botLoopProtection: {
+            maxEventsPerWindow: 5,
+          },
+        },
+      },
+    },
+    slack: {
+      allowBots: "mentions",
+      botLoopProtection: {
+        maxEventsPerWindow: 8,
+      },
+    },
   },
 }
 ```
 
-## Supporto dei canali
+## Compatibilità dei canali
 
-- Discord: fatti nativi `author.bot`, indicizzati per account Discord, canale e coppia di bot.
-- Slack: fatti nativi `bot_id` per i messaggi creati da bot accettati, indicizzati per account Slack, canale e coppia di bot.
+- Discord: informazioni native `author.bot`, indicizzate per account Discord, canale e coppia di bot.
+- Google Chat: informazioni native `sender.type=BOT` per i messaggi accettati creati da bot, indicizzate per account, spazio e coppia di bot.
 - Matrix: account bot Matrix configurati, indicizzati per account Matrix, stanza e coppia di bot configurata.
-- Google Chat: fatti nativi `sender.type=BOT` per i messaggi creati da bot accettati, indicizzati per account, spazio e coppia di bot.
+- Slack: informazioni native `bot_id` per i messaggi accettati creati da bot, indicizzate per account Slack, canale e coppia di bot.
 
-I canali che non espongono un'identità bot in ingresso affidabile continuano a usare i loro
-normali filtri per messaggi propri e policy di accesso. Non dovrebbero aderire a questa
-protezione finché non possono identificare entrambi i partecipanti nella coppia di bot.
+I canali che non espongono un'identità bot in ingresso affidabile continuano a utilizzare i normali filtri per i messaggi inviati a sé stessi e per le politiche di accesso. Non devono adottare questa protezione finché non sono in grado di identificare entrambi i partecipanti della coppia di bot.
 
-Consulta [runtime SDK](/it/plugins/sdk-runtime#reusable-runtime-utilities) per i dettagli di implementazione dei Plugin.
+Consulta [Runtime dell'SDK](/it/plugins/sdk-runtime#reusable-runtime-utilities) per i dettagli di implementazione dei plugin.

@@ -1,22 +1,21 @@
 ---
 read_when:
-    - Vous intégrez le transport d’assurance qualité synthétique à une exécution de test locale ou CI.
-    - Vous avez besoin de la surface de configuration intégrée de qa-channel
+    - Vous intégrez le transport de QA synthétique à une exécution de test locale ou en CI
+    - Vous avez besoin de l’interface de configuration qa-channel intégrée
     - Vous améliorez de manière itérative l’automatisation de l’assurance qualité de bout en bout
 summary: Plugin de canal synthétique de type Slack pour des scénarios d’assurance qualité OpenClaw déterministes
 title: Canal d’assurance qualité
 x-i18n:
-    generated_at: "2026-07-12T15:03:57Z"
+    generated_at: "2026-07-12T02:21:34Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: f33af6ef31515e0cab0ee2540f48f3ffea8aba3d13915dc8cf66111599354187
     source_path: channels/qa-channel.md
     workflow: 16
 ---
 
-`qa-channel` est un transport synthétique de messages local au dépôt pour l’assurance qualité automatisée d’OpenClaw (`extensions/qa-channel`, paquet privé, exclu des installations empaquetées). Ce n’est pas un canal de production : il sert à exercer la même interface de Plugin de canal que les transports réels, tout en conservant un état déterministe et entièrement inspectable.
+`qa-channel` est un transport synthétique de messages local au dépôt destiné à l’assurance qualité automatisée d’OpenClaw (`extensions/qa-channel`, paquet privé, exclu des installations empaquetées). Ce n’est pas un canal de production : il sert à exercer la même interface de Plugin de canal que les transports réels, tout en conservant un état déterministe et entièrement inspectable.
 
 ## Fonctionnement
 
@@ -25,9 +24,9 @@ x-i18n:
   - `channel:<room>`
   - `group:<room>`
   - `thread:<room>/<thread>`
-- Les conversations partagées `channel:` et `group:` sont présentées aux agents comme des tours de salon de groupe/canal, afin d’exercer la même politique de routage des réponses visibles et de l’outil de messagerie que Discord, Slack, Telegram et les transports similaires.
-- Bus synthétique reposant sur HTTP pour l’injection de messages entrants, la capture des transcriptions sortantes, la création de fils de discussion, les réactions, les modifications, les suppressions et les actions de recherche/lecture.
-- Exécuteur d’auto-vérification côté hôte qui écrit un rapport Markdown dans `.artifacts/qa-e2e/`.
+- Les conversations partagées `channel:` et `group:` sont présentées aux agents comme des tours de salle de groupe/canal, afin d’exercer la même politique de routage des réponses visibles et des outils de messagerie que Discord, Slack, Telegram et les transports similaires.
+- Bus synthétique basé sur HTTP pour l’injection de messages entrants, la capture de la transcription sortante, la création de fils de discussion, les réactions, les modifications, les suppressions et les actions de recherche/lecture.
+- Exécuteur d’autovérification côté hôte qui écrit un rapport Markdown dans `.artifacts/qa-e2e/`.
 
 ## Configuration
 
@@ -47,41 +46,41 @@ x-i18n:
 
 Clés de compte :
 
-- `enabled` - interrupteur principal de ce compte.
+- `enabled` - commutateur principal de ce compte.
 - `name` - libellé d’affichage facultatif.
 - `baseUrl` - URL du bus synthétique. Le compte est considéré comme configuré dès que cette valeur est définie.
-- `botUserId` - identifiant utilisateur synthétique du bot utilisé dans la grammaire de cible (valeur par défaut : `openclaw`).
+- `botUserId` - identifiant utilisateur du bot synthétique utilisé dans la grammaire de cible (valeur par défaut : `openclaw`).
 - `botDisplayName` - nom d’affichage des messages sortants (valeur par défaut : `OpenClaw QA`).
 - `pollTimeoutMs` - fenêtre d’attente de l’interrogation longue. Entier compris entre 100 et 30000 (valeur par défaut : 1000).
-- `allowFrom` - liste d’autorisation des expéditeurs (identifiants utilisateur ou `"*"` ; valeur par défaut : `["*"]`). Les messages privés utilisent
+- `allowFrom` - liste des expéditeurs autorisés (identifiants utilisateur ou `"*"` ; valeur par défaut : `["*"]`). Les messages privés appliquent
   toujours la politique `open` ; la politique de groupe avec liste d’autorisation utilise également ces
-  identifiants d’expéditeur synthétiques.
-- `groupPolicy` - politique des salons partagés : `"open"` (valeur par défaut), `"allowlist"` ou
+  identifiants d’expéditeurs synthétiques.
+- `groupPolicy` - politique des salles partagées : `"open"` (valeur par défaut), `"allowlist"` ou
   `"disabled"`.
-- `groupAllowFrom` - liste d’autorisation facultative des expéditeurs des salons partagés. Lorsqu’elle est omise avec
-  `"allowlist"`, QA Channel utilise `allowFrom` comme solution de repli.
-- `groups.<room>.requireMention` - exige une mention du bot avant de répondre dans un
-  salon de groupe/canal spécifique (valeur par défaut : false). `groups."*"` définit la valeur par défaut ;
-  les paramètres `tools` / `toolsBySender` propres à chaque salon remplacent la politique des outils.
-- `defaultTo` - cible de repli lorsqu’aucune n’est fournie.
-- `actions.messages` / `actions.reactions` / `actions.search` / `actions.threads` - contrôle d’accès aux outils par action.
+- `groupAllowFrom` - liste facultative des expéditeurs autorisés dans les salles partagées. Lorsqu’elle est omise avec
+  `"allowlist"`, le canal QA utilise `allowFrom` comme solution de repli.
+- `groups.<room>.requireMention` - exige une mention du bot avant de répondre dans une
+  salle de groupe/canal donnée (valeur par défaut : false). `groups."*"` définit la valeur par défaut ;
+  les paramètres `tools` / `toolsBySender` propres à chaque salle définissent les dérogations à la politique des outils.
+- `defaultTo` - cible de repli lorsqu’aucune cible n’est fournie.
+- `actions.messages` / `actions.reactions` / `actions.search` / `actions.threads` - contrôle de l’accès aux outils pour chaque action.
 
-Clés multicomptes de niveau supérieur :
+Clés multicomptes au niveau supérieur :
 
-- `accounts` - collection des remplacements nommés propres à chaque compte, indexés par identifiant de compte.
+- `accounts` - ensemble de dérogations nommées propres à chaque compte, indexées par identifiant de compte.
 - `defaultAccount` - identifiant de compte privilégié lorsque plusieurs comptes sont configurés.
 
 ## Exécuteurs
 
-Auto-vérification côté hôte (écrit un rapport Markdown sous `.artifacts/qa-e2e/`) :
+Autovérification côté hôte (écrit un rapport Markdown sous `.artifacts/qa-e2e/`) :
 
 ```bash
 pnpm qa:e2e
 ```
 
-Cette commande passe par `qa-lab`, démarre le bus QA intégré au dépôt, amorce la tranche d’exécution `qa-channel` et exécute une auto-vérification déterministe.
+Cette commande passe par `qa-lab`, démarre le bus QA intégré au dépôt, amorce la tranche d’exécution de `qa-channel` et exécute une autovérification déterministe.
 
-Suite complète de scénarios reposant sur le dépôt :
+Suite complète de scénarios adossée au dépôt :
 
 ```bash
 pnpm openclaw qa suite
@@ -89,18 +88,18 @@ pnpm openclaw qa suite
 
 Exécute les scénarios en parallèle sur la voie du Gateway QA. Consultez la [présentation de l’assurance qualité](/fr/concepts/qa-e2e-automation) pour les scénarios, les profils et les modes de fournisseur.
 
-Site QA reposant sur Docker (Gateway + interface utilisateur de débogage de QA Lab dans une même pile) :
+Site d’assurance qualité basé sur Docker (Gateway + interface de débogage QA Lab dans une même pile) :
 
 ```bash
 pnpm qa:lab:up
 ```
 
-Construit le site QA, démarre la pile Gateway + QA Lab reposant sur Docker et affiche l’URL de QA Lab. Vous pouvez ensuite sélectionner des scénarios, choisir la voie de modèle, lancer des exécutions individuelles et observer les résultats en direct. Le débogueur QA Lab est distinct du paquet Control UI distribué.
+Construit le site d’assurance qualité, démarre la pile Gateway + QA Lab basée sur Docker et affiche l’URL de QA Lab. Vous pouvez ensuite sélectionner des scénarios, choisir la voie du modèle, lancer des exécutions individuelles et suivre les résultats en direct. Le débogueur QA Lab est distinct du paquet Control UI distribué.
 
 ## Voir aussi
 
 - [Présentation de l’assurance qualité](/fr/concepts/qa-e2e-automation) - pile globale, adaptateurs de transport, création de scénarios
-- [QA Matrix](/fr/concepts/qa-matrix) - exemple d’exécuteur de transport réel qui pilote un véritable canal
-- [Appairage](/fr/channels/pairing)
+- [Assurance qualité matricielle](/fr/concepts/qa-matrix) - exemple d’exécuteur avec transport réel qui pilote un véritable canal
+- [Association](/fr/channels/pairing)
 - [Groupes](/fr/channels/groups)
 - [Présentation des canaux](/fr/channels)

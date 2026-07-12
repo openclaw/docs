@@ -1,41 +1,37 @@
 ---
 read_when:
-    - Mengerjakan fitur Zalo atau Webhook
+    - Mengerjakan fitur atau webhook Zalo
 summary: Status dukungan, kemampuan, dan konfigurasi bot Zalo
 title: Zalo
 x-i18n:
-    generated_at: "2026-05-02T22:16:39Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:01:28Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6226af1217e1e8b03b485df99f6375872b487f7040c091f2bb2d85e18dec75d0
+    source_hash: 36e624f1abeeaee56d7376b9df9209f8e7614ade2f089bcecd76ff746b942765
     source_path: channels/zalo.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Status: eksperimental. DM didukung. Bagian [Kemampuan](#capabilities) di bawah mencerminkan perilaku bot Marketplace saat ini.
+Status: eksperimental. Pesan langsung dan obrolan grup telah diimplementasikan; tabel [Kemampuan](#capabilities) di bawah mencerminkan perilaku yang telah diverifikasi pada bot Zalo Bot Creator / Marketplace.
 
 ## Plugin bawaan
 
-Zalo disertakan sebagai Plugin bawaan dalam rilis OpenClaw saat ini, sehingga build paket normal tidak memerlukan instalasi terpisah.
+Zalo disertakan sebagai Plugin bawaan dalam rilis OpenClaw saat ini, sehingga build terpaket tidak memerlukan instalasi terpisah.
 
-Jika Anda menggunakan build lama atau instalasi kustom yang mengecualikan Zalo, instal paket npm secara langsung:
+Pada build lama atau instalasi khusus yang tidak menyertakan Zalo, instal paket npm secara langsung:
 
-- Instal melalui CLI: `openclaw plugins install @openclaw/zalo`
-- Versi yang dipatok: `openclaw plugins install @openclaw/zalo@2026.5.2`
-- Atau dari checkout sumber: `openclaw plugins install ./path/to/local/zalo-plugin`
+- Instal: `openclaw plugins install @openclaw/zalo`
+- Versi yang dipatok: `openclaw plugins install @openclaw/zalo@2026.6.11`
+- Dari checkout lokal: `openclaw plugins install ./path/to/local/zalo-plugin`
 - Detail: [Plugin](/id/tools/plugin)
 
-## Penyiapan cepat (pemula)
+## Penyiapan cepat
 
-1. Pastikan Plugin Zalo tersedia.
-   - Rilis OpenClaw paket saat ini sudah menyertakannya.
-   - Instalasi lama/kustom dapat menambahkannya secara manual dengan perintah di atas.
-2. Tetapkan token:
-   - Env: `ZALO_BOT_TOKEN=...`
-   - Atau konfigurasi: `channels.zalo.accounts.default.botToken: "..."`.
-3. Mulai ulang Gateway (atau selesaikan penyiapan).
-4. Akses DM menggunakan pairing secara default; setujui kode pairing pada kontak pertama.
+1. Buat token bot di [https://bot.zaloplatforms.com](https://bot.zaloplatforms.com) (masuk, buat bot, konfigurasikan pengaturan). Format token adalah `numeric_id:secret`; untuk bot Marketplace, token runtime yang dapat digunakan mungkin muncul dalam pesan sambutan bot.
+2. Tetapkan token, baik sebagai env `ZALO_BOT_TOKEN=...` (hanya akun bawaan) maupun dalam konfigurasi.
+3. Mulai ulang Gateway.
+4. Setujui kode pemasangan saat kontak pesan langsung pertama (kebijakan pesan langsung bawaan adalah pemasangan).
 
 Konfigurasi minimal:
 
@@ -55,205 +51,137 @@ Konfigurasi minimal:
 }
 ```
 
-## Apa ini
+Multiakun: tambahkan entri lain di bawah `channels.zalo.accounts.<id>`, masing-masing dengan `botToken`/`name` sendiri. `channels.zalo.botToken` (datar, tanpa `accounts`) adalah bentuk singkat akun tunggal lama; utamakan `accounts.<id>.*` untuk konfigurasi baru.
 
-Zalo adalah aplikasi perpesanan yang berfokus pada Vietnam; Bot API-nya memungkinkan Gateway menjalankan bot untuk percakapan 1:1.
-Ini cocok untuk dukungan atau notifikasi ketika Anda menginginkan perutean deterministik kembali ke Zalo.
+## Apa itu Zalo
 
-Halaman ini mencerminkan perilaku OpenClaw saat ini untuk **bot Zalo Bot Creator / Marketplace**.
-**Bot Zalo Official Account (OA)** adalah permukaan produk Zalo yang berbeda dan dapat berperilaku berbeda.
+Zalo adalah aplikasi perpesanan yang berfokus pada Vietnam. API Bot-nya memungkinkan Gateway menjalankan bot untuk percakapan 1:1 maupun obrolan grup, dengan perutean deterministik kembali ke Zalo (model tidak pernah memilih saluran).
 
-- Kanal Zalo Bot API yang dimiliki oleh Gateway.
-- Perutean deterministik: balasan kembali ke Zalo; model tidak pernah memilih kanal.
-- DM berbagi sesi utama agen.
-- Bagian [Kemampuan](#capabilities) di bawah menunjukkan dukungan bot Marketplace saat ini.
+Halaman ini membahas **bot Zalo Bot Creator / Marketplace**. **Bot Zalo Official Account (OA)** merupakan permukaan produk yang berbeda dan mungkin berperilaku berbeda; halaman ini tidak membahasnya.
 
-## Penyiapan (jalur cepat)
+## Cara kerjanya
 
-### 1) Buat token bot (Zalo Bot Platform)
+- Pesan masuk dinormalisasi ke dalam amplop saluran bersama dengan placeholder media.
+- Balasan selalu dirutekan kembali ke obrolan Zalo yang sama; balasan kutipan tidak digunakan (`replyToMode` selalu dinonaktifkan).
+- Long-polling (`getUpdates`) digunakan secara bawaan; mode Webhook tersedia melalui `channels.zalo.webhookUrl`.
+- Grup memerlukan @mention untuk memicu bot; ini tidak dapat dikonfigurasi per saluran.
 
-1. Buka [https://bot.zaloplatforms.com](https://bot.zaloplatforms.com) dan masuk.
-2. Buat bot baru dan konfigurasikan pengaturannya.
-3. Salin token bot lengkap (biasanya `numeric_id:secret`). Untuk bot Marketplace, token runtime yang dapat digunakan mungkin muncul di pesan sambutan bot setelah dibuat.
+## Batas
 
-### 2) Konfigurasikan token (env atau konfigurasi)
+| Batas                          | Nilai                                                                         |
+| ------------------------------ | ----------------------------------------------------------------------------- |
+| Ukuran potongan teks keluar    | 2000 karakter (batas API Zalo)                                                |
+| Ukuran media (masuk/keluar)    | `channels.zalo.mediaMaxMb`, bawaan `5` MB                                     |
+| Isi permintaan Webhook         | 1 MB, batas waktu baca 30 detik                                               |
+| Batas laju Webhook             | 120 permintaan / 60 detik per jalur+IP klien, lalu HTTP 429                   |
+| Jendela kejadian duplikat Webhook | 5 menit (berdasarkan jalur + akun + nama kejadian + obrolan + pengirim + ID pesan) |
 
-Contoh:
+## Kontrol akses
 
-```json5
-{
-  channels: {
-    zalo: {
-      enabled: true,
-      accounts: {
-        default: {
-          botToken: "12345689:abc-xyz",
-          dmPolicy: "pairing",
-        },
-      },
-    },
-  },
-}
-```
+### Pesan langsung
 
-Jika nanti Anda berpindah ke permukaan bot Zalo tempat grup tersedia, Anda dapat menambahkan konfigurasi khusus grup seperti `groupPolicy` dan `groupAllowFrom` secara eksplisit. Untuk perilaku bot Marketplace saat ini, lihat [Kemampuan](#capabilities).
-
-Opsi env: `ZALO_BOT_TOKEN=...` (hanya berfungsi untuk akun default).
-
-Dukungan multi-akun: gunakan `channels.zalo.accounts` dengan token per akun dan `name` opsional.
-
-3. Mulai ulang Gateway. Zalo dimulai saat token berhasil ditentukan (env atau konfigurasi).
-4. Akses DM default ke pairing. Setujui kode saat bot pertama kali dihubungi.
-
-## Cara kerjanya (perilaku)
-
-- Pesan masuk dinormalisasi ke dalam envelope kanal bersama dengan placeholder media.
-- Balasan selalu dirutekan kembali ke chat Zalo yang sama.
-- Long-polling secara default; mode Webhook tersedia dengan `channels.zalo.webhookUrl`.
-
-## Batasan
-
-- Teks keluar dipecah menjadi potongan 2000 karakter (batas Zalo API).
-- Unduhan/unggahan media dibatasi oleh `channels.zalo.mediaMaxMb` (default 5).
-- Streaming diblokir secara default karena batas 2000 karakter membuat streaming kurang berguna.
-
-## Kontrol akses (DM)
-
-### Akses DM
-
-- Default: `channels.zalo.dmPolicy = "pairing"`. Pengirim tak dikenal menerima kode pairing; pesan diabaikan hingga disetujui (kode kedaluwarsa setelah 1 jam).
-- Setujui melalui:
+- `channels.zalo.dmPolicy`: `pairing` (bawaan) | `allowlist` | `open` | `disabled`.
+- Pemasangan: pengirim yang tidak dikenal menerima kode pemasangan; pesan diabaikan hingga disetujui. Kode kedaluwarsa setelah 1 jam.
   - `openclaw pairing list zalo`
   - `openclaw pairing approve zalo <CODE>`
-- Pairing adalah pertukaran token default. Detail: [Pairing](/id/channels/pairing)
-- `channels.zalo.allowFrom` menerima ID pengguna numerik (pencarian nama pengguna tidak tersedia).
+  - Detail: [Pemasangan](/id/channels/pairing)
+- `channels.zalo.allowFrom` menerima ID pengguna Zalo numerik (tanpa pencarian nama pengguna). `open` memerlukan `"*"`.
 
-## Kontrol akses (Grup)
+### Grup
 
-Untuk **bot Zalo Bot Creator / Marketplace**, dukungan grup tidak tersedia dalam praktik karena bot sama sekali tidak dapat ditambahkan ke grup.
+Obrolan grup didukung oleh Plugin (`chatTypes: ["direct", "group"]`) dan dibatasi oleh mention serta kebijakan grup:
 
-Artinya, kunci konfigurasi terkait grup di bawah ada dalam skema, tetapi tidak dapat digunakan untuk bot Marketplace:
+- `channels.zalo.groupPolicy`: `open` | `allowlist` | `disabled`.
+- `channels.zalo.groupAllowFrom` membatasi ID pengirim yang dapat memicu bot dalam grup; kembali menggunakan `allowFrom` jika tidak ditetapkan.
+- Resolusi bawaan: ketika `channels.zalo` dikonfigurasi, `groupPolicy` yang tidak ditetapkan ditetapkan menjadi `open`. Ketika `channels.zalo` sama sekali tidak ada, runtime menutup akses secara aman dengan `allowlist`.
+- Catatan berdasarkan penggunaan nyata: pada beberapa penyiapan bot Marketplace, bot sama sekali tidak dapat ditambahkan ke grup. Jika Anda mengalaminya, verifikasi melalui pengaturan Zalo Bot Platform milik bot Anda; ini adalah batasan dari sisi platform, bukan kebijakan OpenClaw.
 
-- `channels.zalo.groupPolicy` mengontrol penanganan masuk grup: `open | allowlist | disabled`.
-- `channels.zalo.groupAllowFrom` membatasi ID pengirim mana yang dapat memicu bot di grup.
-- Jika `groupAllowFrom` tidak ditetapkan, Zalo kembali ke `allowFrom` untuk pemeriksaan pengirim.
-- Catatan runtime: jika `channels.zalo` sama sekali tidak ada, runtime tetap kembali ke `groupPolicy="allowlist"` demi keamanan.
+## Long-polling dibandingkan dengan Webhook
 
-Nilai kebijakan grup (saat akses grup tersedia di permukaan bot Anda) adalah:
-
-- `groupPolicy: "disabled"` — memblokir semua pesan grup.
-- `groupPolicy: "open"` — mengizinkan anggota grup mana pun (dibatasi mention).
-- `groupPolicy: "allowlist"` — default gagal-tertutup; hanya pengirim yang diizinkan yang diterima.
-
-Jika Anda menggunakan permukaan produk bot Zalo yang berbeda dan telah memverifikasi perilaku grup berfungsi, dokumentasikan hal itu secara terpisah daripada mengasumsikan perilakunya sama dengan alur bot Marketplace.
-
-## Long-polling vs Webhook
-
-- Default: long-polling (tidak memerlukan URL publik).
+- Bawaan: long-polling (tidak memerlukan URL publik).
 - Mode Webhook: tetapkan `channels.zalo.webhookUrl` dan `channels.zalo.webhookSecret`.
-  - Rahasia Webhook harus 8-256 karakter.
   - URL Webhook harus menggunakan HTTPS.
-  - Zalo mengirim peristiwa dengan header `X-Bot-Api-Secret-Token` untuk verifikasi.
-  - HTTP Gateway menangani permintaan Webhook di `channels.zalo.webhookPath` (default ke path URL Webhook).
+  - Rahasia Webhook harus terdiri dari 8-256 karakter.
+  - Zalo mengirim kejadian dengan header `X-Bot-Api-Secret-Token`, yang diperiksa menggunakan perbandingan waktu konstan.
+  - HTTP Gateway menangani permintaan Webhook pada `channels.zalo.webhookPath` (secara bawaan menggunakan jalur URL Webhook).
   - Permintaan harus menggunakan `Content-Type: application/json` (atau jenis media `+json`).
-  - Peristiwa duplikat (`event_name + message_id`) diabaikan untuk jendela replay singkat.
-  - Lalu lintas burst dibatasi lajunya per path/sumber dan dapat mengembalikan HTTP 429.
-
-**Catatan:** getUpdates (polling) dan Webhook saling eksklusif menurut dokumentasi Zalo API.
+  - Polling getUpdates dan Webhook saling eksklusif menurut dokumentasi API Zalo.
 
 ## Jenis pesan yang didukung
 
-Untuk ringkasan dukungan cepat, lihat [Kemampuan](#capabilities). Catatan di bawah menambahkan detail saat perilaku memerlukan konteks tambahan.
-
-- **Pesan teks**: Dukungan penuh dengan pemecahan 2000 karakter.
-- **URL polos dalam teks**: Berperilaku seperti input teks normal.
-- **Pratinjau tautan / kartu tautan kaya**: Lihat status bot Marketplace di [Kemampuan](#capabilities); fitur ini tidak selalu memicu balasan secara andal.
-- **Pesan gambar**: Lihat status bot Marketplace di [Kemampuan](#capabilities); penanganan gambar masuk tidak andal (indikator mengetik tanpa balasan akhir).
-- **Stiker**: Lihat status bot Marketplace di [Kemampuan](#capabilities).
-- **Catatan suara / file audio / video / lampiran file generik**: Lihat status bot Marketplace di [Kemampuan](#capabilities).
-- **Jenis yang tidak didukung**: Dicatat (misalnya, pesan dari pengguna terlindungi).
+- Teks: dukungan penuh, dipecah menjadi potongan 2000 karakter.
+- Media: masuk/keluar, dibatasi oleh `mediaMaxMb`.
+- Reaksi, utas, jajak pendapat, perintah native: tidak didukung oleh Plugin.
+- Streaming: Plugin menyatakan kemampuan streaming blok, tetapi Zalo tidak memiliki opsi khusus untuk penyetelan antrean keluar/penggabungan teks (tidak seperti beberapa saluran regional lainnya); verifikasi perilaku saat ini di lingkungan Anda jika hal ini penting bagi kasus penggunaan Anda.
 
 ## Kemampuan
 
-Tabel ini merangkum perilaku **bot Zalo Bot Creator / Marketplace** saat ini di OpenClaw.
+| Fitur                    | Status                                      |
+| ------------------------ | ------------------------------------------- |
+| Pesan langsung           | Didukung                                    |
+| Grup                     | Didukung (memerlukan mention)               |
+| Media (masuk/keluar)     | Didukung, dibatasi oleh `mediaMaxMb`        |
+| Reaksi                   | Tidak didukung                              |
+| Utas                     | Tidak didukung                              |
+| Jajak pendapat           | Tidak didukung                              |
+| Perintah native          | Tidak didukung                              |
+| Balas ke / kutipan       | Tidak digunakan (selalu dinonaktifkan)      |
 
-| Fitur                       | Status                                             |
-| --------------------------- | -------------------------------------------------- |
-| Pesan langsung              | ✅ Didukung                                        |
-| Grup                        | ❌ Tidak tersedia untuk bot Marketplace            |
-| Media (gambar masuk)        | ⚠️ Terbatas / verifikasi di lingkungan Anda        |
-| Media (gambar keluar)       | ⚠️ Belum diuji ulang untuk bot Marketplace         |
-| URL polos dalam teks        | ✅ Didukung                                        |
-| Pratinjau tautan            | ⚠️ Tidak andal untuk bot Marketplace               |
-| Reaksi                      | ❌ Tidak didukung                                  |
-| Stiker                      | ⚠️ Tidak ada balasan agen untuk bot Marketplace    |
-| Catatan suara / audio / video | ⚠️ Tidak ada balasan agen untuk bot Marketplace  |
-| Lampiran file               | ⚠️ Tidak ada balasan agen untuk bot Marketplace    |
-| Thread                      | ❌ Tidak didukung                                  |
-| Polling                     | ❌ Tidak didukung                                  |
-| Perintah native             | ❌ Tidak didukung                                  |
-| Streaming                   | ⚠️ Diblokir (batas 2000 karakter)                  |
+## Target pengiriman (CLI/Cron)
 
-## Target pengiriman (CLI/cron)
+Gunakan ID obrolan sebagai target:
 
-- Gunakan id chat sebagai target.
-- Contoh: `openclaw message send --channel zalo --target 123456789 --message "hi"`.
+```bash
+openclaw message send --channel zalo --target 123456789 --message "hi"
+```
 
 ## Pemecahan masalah
 
 **Bot tidak merespons:**
 
-- Periksa apakah token valid: `openclaw channels status --probe`
-- Verifikasi pengirim sudah disetujui (pairing atau allowFrom)
+- Periksa token: `openclaw channels status --probe`
+- Pastikan pengirim telah disetujui (pemasangan atau `allowFrom`)
 - Periksa log Gateway: `openclaw logs --follow`
 
-**Webhook tidak menerima peristiwa:**
+**Webhook tidak menerima kejadian:**
 
 - Pastikan URL Webhook menggunakan HTTPS
-- Verifikasi token rahasia 8-256 karakter
-- Konfirmasi endpoint HTTP Gateway dapat dijangkau pada path yang dikonfigurasi
-- Periksa bahwa polling getUpdates tidak berjalan (keduanya saling eksklusif)
+- Pastikan rahasia terdiri dari 8-256 karakter
+- Pastikan endpoint HTTP Gateway dapat dijangkau pada jalur yang dikonfigurasi
+- Pastikan polling getUpdates tidak juga berjalan (keduanya saling eksklusif)
+- Lonjakan permintaan dapat menghasilkan HTTP 429 (120 permintaan / 60 detik per jalur+IP); tunggu sejenak lalu coba lagi
 
-## Referensi konfigurasi (Zalo)
+## Referensi konfigurasi
 
 Konfigurasi lengkap: [Konfigurasi](/id/gateway/configuration)
 
-Kunci tingkat atas datar (`channels.zalo.botToken`, `channels.zalo.dmPolicy`, dan sejenisnya) adalah shorthand satu akun lama. Lebih baik gunakan `channels.zalo.accounts.<id>.*` untuk konfigurasi baru. Kedua bentuk masih didokumentasikan di sini karena ada dalam skema.
+| Pengaturan                                   | Deskripsi                                         | Bawaan                |
+| -------------------------------------------- | ------------------------------------------------- | --------------------- |
+| `channels.zalo.enabled`                      | Aktifkan/nonaktifkan pemulaian saluran            | `true`                |
+| `channels.zalo.accounts.<id>.botToken`       | Token bot dari Zalo Bot Platform                  | -                     |
+| `channels.zalo.accounts.<id>.tokenFile`      | Baca token dari file (symlink ditolak)             | -                     |
+| `channels.zalo.accounts.<id>.name`           | Nama tampilan                                     | -                     |
+| `channels.zalo.accounts.<id>.enabled`        | Aktifkan/nonaktifkan akun ini                     | `true`                |
+| `channels.zalo.accounts.<id>.dmPolicy`       | Kebijakan pesan langsung per akun                 | `pairing`             |
+| `channels.zalo.accounts.<id>.allowFrom`      | Daftar izin pesan langsung (ID pengguna)          | -                     |
+| `channels.zalo.accounts.<id>.groupPolicy`    | Kebijakan grup per akun                           | lihat [Grup](#groups) |
+| `channels.zalo.accounts.<id>.groupAllowFrom` | Daftar izin pengirim grup; kembali ke `allowFrom` | -                     |
+| `channels.zalo.accounts.<id>.mediaMaxMb`     | Batas media masuk/keluar (MB)                     | `5`                   |
+| `channels.zalo.accounts.<id>.webhookUrl`     | Aktifkan mode Webhook (HTTPS diwajibkan)          | -                     |
+| `channels.zalo.accounts.<id>.webhookSecret`  | Rahasia Webhook (8-256 karakter)                  | -                     |
+| `channels.zalo.accounts.<id>.webhookPath`    | Jalur Webhook pada server HTTP Gateway            | jalur URL Webhook     |
+| `channels.zalo.accounts.<id>.proxy`          | URL proksi untuk permintaan API                   | -                     |
+| `channels.zalo.accounts.<id>.responsePrefix` | Penimpaan prefiks respons keluar                  | -                     |
+| `channels.zalo.defaultAccount`               | Akun bawaan saat beberapa akun dikonfigurasi      | `default`             |
 
-Opsi penyedia:
+`channels.zalo.botToken`, `channels.zalo.dmPolicy`, dan kunci tingkat atas datar lainnya adalah bentuk singkat akun tunggal lama untuk kolom di atas; kedua bentuk didukung.
 
-- `channels.zalo.enabled`: aktifkan/nonaktifkan startup kanal.
-- `channels.zalo.botToken`: token bot dari Zalo Bot Platform.
-- `channels.zalo.tokenFile`: baca token dari path file reguler. Symlink ditolak.
-- `channels.zalo.dmPolicy`: `pairing | allowlist | open | disabled` (default: pairing).
-- `channels.zalo.allowFrom`: allowlist DM (ID pengguna). `open` memerlukan `"*"`. Wizard akan meminta ID numerik.
-- `channels.zalo.groupPolicy`: `open | allowlist | disabled` (default: allowlist). Ada dalam konfigurasi; lihat [Kemampuan](#capabilities) dan [Kontrol akses (Grup)](#access-control-groups) untuk perilaku bot Marketplace saat ini.
-- `channels.zalo.groupAllowFrom`: allowlist pengirim grup (ID pengguna). Kembali ke `allowFrom` jika tidak ditetapkan.
-- `channels.zalo.mediaMaxMb`: batas media masuk/keluar (MB, default 5).
-- `channels.zalo.webhookUrl`: aktifkan mode Webhook (HTTPS wajib).
-- `channels.zalo.webhookSecret`: rahasia Webhook (8-256 karakter).
-- `channels.zalo.webhookPath`: path Webhook pada server HTTP Gateway.
-- `channels.zalo.proxy`: URL proksi untuk permintaan API.
-
-Opsi multi-akun:
-
-- `channels.zalo.accounts.<id>.botToken`: token per akun.
-- `channels.zalo.accounts.<id>.tokenFile`: file token reguler per akun. Symlink ditolak.
-- `channels.zalo.accounts.<id>.name`: nama tampilan.
-- `channels.zalo.accounts.<id>.enabled`: aktifkan/nonaktifkan akun.
-- `channels.zalo.accounts.<id>.dmPolicy`: kebijakan DM per akun.
-- `channels.zalo.accounts.<id>.allowFrom`: allowlist per akun.
-- `channels.zalo.accounts.<id>.groupPolicy`: kebijakan grup per akun. Ada dalam konfigurasi; lihat [Kemampuan](#capabilities) dan [Kontrol akses (Grup)](#access-control-groups) untuk perilaku bot Marketplace saat ini.
-- `channels.zalo.accounts.<id>.groupAllowFrom`: allowlist pengirim grup per akun.
-- `channels.zalo.accounts.<id>.webhookUrl`: URL Webhook per akun.
-- `channels.zalo.accounts.<id>.webhookSecret`: rahasia Webhook per akun.
-- `channels.zalo.accounts.<id>.webhookPath`: path Webhook per akun.
-- `channels.zalo.accounts.<id>.proxy`: URL proksi per akun.
+Opsi env: `ZALO_BOT_TOKEN=...` hanya ditetapkan sebagai token akun bawaan.
 
 ## Terkait
 
-- [Ikhtisar Kanal](/id/channels) — semua kanal yang didukung
-- [Pairing](/id/channels/pairing) — autentikasi DM dan alur pairing
-- [Grup](/id/channels/groups) — perilaku chat grup dan gating mention
-- [Perutean Kanal](/id/channels/channel-routing) — perutean sesi untuk pesan
-- [Keamanan](/id/gateway/security) — model akses dan hardening
+- [Ikhtisar Saluran](/id/channels) - semua saluran yang didukung
+- [Pemasangan](/id/channels/pairing) - autentikasi pesan langsung dan alur pemasangan
+- [Grup](/id/channels/groups) - perilaku obrolan grup dan pembatasan mention
+- [Perutean Saluran](/id/channels/channel-routing) - perutean sesi untuk pesan
+- [Keamanan](/id/gateway/security) - model akses dan penguatan

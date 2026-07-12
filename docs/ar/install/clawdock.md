@@ -1,85 +1,86 @@
 ---
 read_when:
-    - تشغّل OpenClaw باستخدام Docker كثيرًا وتريد أوامر يومية أقصر
-    - تحتاج إلى طبقة مساعدة للوحة المعلومات والسجلات وإعداد الرموز المميزة وتدفقات الاقتران
-summary: مساعدات الصدفة في ClawDock لتثبيتات OpenClaw المستندة إلى Docker
+    - أنت تشغّل OpenClaw باستخدام Docker كثيرًا وتريد أوامر أقصر للاستخدام اليومي
+    - تريد طبقة مساعدة للوحة المعلومات والسجلات وإعداد الرمز المميز وتدفقات الاقتران
+summary: أدوات ClawDock المساعدة للصدفة لتثبيتات OpenClaw المستندة إلى Docker
 title: ClawDock
 x-i18n:
-    generated_at: "2026-05-06T07:59:42Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T05:58:47Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 82d31ba74694cda9e195534ce33f7b61343546f174ceacd2607aeb1d5487229e
+    source_hash: 5bb829a3301178503f910931e86a39f7befeaf186044f4088a25dc80ea99130d
     source_path: install/clawdock.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-ClawDock هي طبقة صغيرة من مساعدات الصدفة لتثبيتات OpenClaw المعتمدة على Docker.
+ClawDock عبارة عن طبقة صغيرة من الأدوات المساعدة للصدفة لعمليات تثبيت OpenClaw المستندة إلى Docker.
 
-تمنحك أوامر قصيرة مثل `clawdock-start` و`clawdock-dashboard` و`clawdock-fix-token` بدلاً من استدعاءات أطول مثل `docker compose ...`.
+وهي توفر لك أوامر قصيرة مثل `clawdock-start` و`clawdock-dashboard` و`clawdock-fix-token` بدلًا من استدعاءات `docker compose ...` الأطول.
 
-إذا لم تكن قد أعددت Docker بعد، فابدأ بـ [Docker](/ar/install/docker).
+إذا لم تكن قد أعددت Docker بعد، فابدأ بـ[Docker](/ar/install/docker).
 
 ## التثبيت
-
-استخدم مسار المساعد القياسي:
 
 ```bash
 mkdir -p ~/.clawdock && curl -sL https://raw.githubusercontent.com/openclaw/openclaw/main/scripts/clawdock/clawdock-helpers.sh -o ~/.clawdock/clawdock-helpers.sh
 echo 'source ~/.clawdock/clawdock-helpers.sh' >> ~/.zshrc && source ~/.zshrc
 ```
 
-إذا كنت قد ثبّت ClawDock سابقًا من `scripts/shell-helpers/clawdock-helpers.sh`، فأعد التثبيت من المسار الجديد `scripts/clawdock/clawdock-helpers.sh`. تمت إزالة مسار GitHub الخام القديم.
+إذا سبق لك تثبيت ClawDock من `scripts/shell-helpers/clawdock-helpers.sh`، فأعد تثبيته من المسار الحالي `scripts/clawdock/clawdock-helpers.sh`؛ فقد أُزيل مسار GitHub الخام القديم.
 
-## ما تحصل عليه
+تكتشف الأدوات المساعدة نسخة OpenClaw المحلية تلقائيًا عند أول استخدام (عبر التحقق من المسارات الشائعة مثل `~/openclaw` و`~/projects/openclaw`) وتخزّن النتيجة مؤقتًا في `~/.clawdock/config`. عيّن `CLAWDOCK_DIR` بنفسك إذا كانت نسختك المحلية موجودة في مكان آخر.
+
+## ما الذي ستحصل عليه
 
 ### العمليات الأساسية
 
-| الأمر              | الوصف                     |
-| ------------------ | ------------------------- |
-| `clawdock-start`   | بدء تشغيل Gateway         |
-| `clawdock-stop`    | إيقاف Gateway             |
-| `clawdock-restart` | إعادة تشغيل Gateway       |
-| `clawdock-status`  | التحقق من حالة الحاوية    |
-| `clawdock-logs`    | متابعة سجلات Gateway      |
+| الأمر                | الوصف                    |
+| -------------------- | ------------------------ |
+| `clawdock-start`     | تشغيل Gateway            |
+| `clawdock-stop`      | إيقاف Gateway            |
+| `clawdock-restart`   | إعادة تشغيل Gateway      |
+| `clawdock-status`    | التحقق من حالة الحاوية   |
+| `clawdock-logs`      | متابعة سجلات Gateway     |
 
 ### الوصول إلى الحاوية
 
-| الأمر                     | الوصف                                      |
-| ------------------------- | ------------------------------------------ |
-| `clawdock-shell`          | فتح صدفة داخل حاوية Gateway                |
-| `clawdock-cli <command>`  | تشغيل أوامر OpenClaw CLI في Docker         |
-| `clawdock-exec <command>` | تنفيذ أمر عشوائي داخل الحاوية              |
+| الأمر                     | الوصف                                    |
+| ------------------------- | ---------------------------------------- |
+| `clawdock-shell`          | فتح صدفة داخل حاوية Gateway              |
+| `clawdock-cli <command>`  | تشغيل أوامر CLI الخاصة بـOpenClaw في Docker |
+| `clawdock-exec <command>` | تنفيذ أمر عشوائي داخل الحاوية            |
 
-### واجهة الويب والاقتران
+### واجهة الويب والإقران
 
 | الأمر                   | الوصف                         |
 | ----------------------- | ----------------------------- |
 | `clawdock-dashboard`    | فتح عنوان URL لواجهة التحكم   |
-| `clawdock-devices`      | عرض اقترانات الأجهزة المعلقة  |
-| `clawdock-approve <id>` | الموافقة على طلب اقتران       |
+| `clawdock-devices`      | عرض عمليات إقران الأجهزة المعلّقة |
+| `clawdock-approve <id>` | الموافقة على طلب إقران        |
 
 ### الإعداد والصيانة
 
-| الأمر                | الوصف                                      |
-| -------------------- | ------------------------------------------ |
-| `clawdock-fix-token` | تكوين رمز Gateway داخل الحاوية             |
-| `clawdock-update`    | السحب، وإعادة البناء، وإعادة التشغيل       |
-| `clawdock-rebuild`   | إعادة بناء صورة Docker فقط                 |
-| `clawdock-clean`     | إزالة الحاويات ووحدات التخزين              |
+| الأمر                | الوصف                                              |
+| -------------------- | -------------------------------------------------- |
+| `clawdock-fix-token` | كتابة رمز Gateway في إعدادات الحاوية               |
+| `clawdock-update`    | السحب وإعادة البناء وإعادة التشغيل                 |
+| `clawdock-rebuild`   | إعادة بناء صورة Docker فقط                         |
+| `clawdock-clean`     | إزالة الحاويات ووحدات التخزين                      |
 
 ### الأدوات المساعدة
 
-| الأمر                  | الوصف                                      |
-| ---------------------- | ------------------------------------------ |
-| `clawdock-health`      | تشغيل فحص سلامة Gateway                    |
-| `clawdock-token`       | طباعة رمز Gateway                          |
-| `clawdock-cd`          | الانتقال إلى دليل مشروع OpenClaw           |
-| `clawdock-config`      | فتح `~/.openclaw`                          |
-| `clawdock-show-config` | طباعة ملفات التكوين مع حجب القيم الحساسة   |
-| `clawdock-workspace`   | فتح دليل مساحة العمل                       |
+| الأمر                  | الوصف                                           |
+| ---------------------- | ----------------------------------------------- |
+| `clawdock-health`      | إجراء فحص سلامة Gateway                         |
+| `clawdock-token`       | طباعة رمز Gateway                               |
+| `clawdock-cd`          | الانتقال إلى دليل مشروع OpenClaw                |
+| `clawdock-config`      | فتح `~/.openclaw`                               |
+| `clawdock-show-config` | طباعة ملفات الإعدادات مع حجب القيم الحساسة      |
+| `clawdock-workspace`   | فتح دليل مساحة العمل                            |
+| `clawdock-help`        | عرض جميع أوامر ClawDock                         |
 
-## تدفق الاستخدام لأول مرة
+## سير العمل في المرة الأولى
 
 ```bash
 clawdock-start
@@ -87,32 +88,32 @@ clawdock-fix-token
 clawdock-dashboard
 ```
 
-إذا قال المتصفح إن الاقتران مطلوب:
+إذا أشار المتصفح إلى أن الإقران مطلوب:
 
 ```bash
 clawdock-devices
 clawdock-approve <request-id>
 ```
 
-## التكوين والأسرار
+## الإعدادات والأسرار
 
-يعمل ClawDock مع التقسيم نفسه لتكوين Docker الموضح في [Docker](/ar/install/docker):
+يقرأ ClawDock ملفي `.env` منفصلين، بما يتوافق مع التقسيم الموضح في [Docker](/ar/install/docker):
 
-- `<project>/.env` للقيم الخاصة بـ Docker مثل اسم الصورة والمنافذ ورمز Gateway
-- `~/.openclaw/.env` لمفاتيح المزوّدين المدعومة بمتغيرات البيئة ورموز البوتات
-- `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` لمصادقة OAuth/API-key الخاصة بالمزوّدين والمخزنة
-- `~/.openclaw/openclaw.json` لتكوين السلوك
+- ملف `.env` الخاص بالمشروع بجوار `docker-compose.yml`: قيم خاصة بـDocker مثل اسم الصورة والمنافذ و`OPENCLAW_GATEWAY_TOKEN`. يقرأ `clawdock-token` الرمز من هنا.
+- `~/.openclaw/.env` (يُركّب داخل الحاوية): أسرار مدعومة بمتغيرات البيئة يديرها OpenClaw نفسه، إلى جانب `openclaw.json` و`agents/<agentId>/agent/auth-profiles.json`.
 
-استخدم `clawdock-show-config` عندما تريد فحص ملفات `.env` و`openclaw.json` بسرعة. يحجب قيم `.env` في المخرجات المطبوعة.
+ينسخ `clawdock-fix-token` الرمز من ملف `.env` الخاص بالمشروع إلى قيمتي الإعداد `gateway.remote.token` و`gateway.auth.token` داخل الحاوية، ثم يعيد تشغيل Gateway.
+
+استخدم `clawdock-show-config` لفحص `openclaw.json` وملفي `.env` بسرعة؛ إذ يحجب قيم `.env` في المخرجات المطبوعة.
 
 ## ذو صلة
 
 <CardGroup cols={2}>
   <Card title="Docker" href="/ar/install/docker" icon="docker">
-    تثبيت Docker القياسي لـ OpenClaw.
+    التثبيت القياسي لـOpenClaw باستخدام Docker.
   </Card>
-  <Card title="وقت تشغيل Docker VM" href="/ar/install/docker-vm-runtime" icon="cube">
-    وقت تشغيل VM مُدار بواسطة Docker لعزل معزز.
+  <Card title="بيئة تشغيل آلة Docker الافتراضية" href="/ar/install/docker-vm-runtime" icon="cube">
+    بيئة تشغيل آلة افتراضية يديرها Docker لتوفير عزل مُحصّن.
   </Card>
   <Card title="التحديث" href="/ar/install/updating" icon="arrow-up-right-from-square">
     تحديث حزمة OpenClaw والخدمات المُدارة.

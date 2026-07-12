@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Anda sedang memasang, mengonfigurasi, atau mengaudit plugin brave
+    - Anda sedang menginstal, mengonfigurasi, atau mengaudit plugin Brave
 summary: Plugin penyedia Brave Search OpenClaw untuk pencarian web.
 title: Plugin Brave
 x-i18n:
-    generated_at: "2026-06-27T17:52:08Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:26:03Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 265b0efa840eb3ebc7bfc1cc47b703737bbd76050ac95e79825728030a166d37
@@ -20,9 +20,9 @@ Plugin penyedia Brave Search OpenClaw untuk pencarian web.
 ## Distribusi
 
 - Paket: `@openclaw/brave-plugin`
-- Rute instalasi: npm; ClawHub
+- Jalur instalasi: npm; ClawHub
 
-## Permukaan
+## Antarmuka
 
 kontrak: webSearchProviders
 

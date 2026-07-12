@@ -1,97 +1,80 @@
 ---
 read_when:
     - OpenClaw implementeren op Railway
-    - Je wilt een cloudimplementatie met één klik en een browsergebaseerde bedieningsinterface
-summary: OpenClaw op Railway implementeren met een eenkliktemplate
+    - Je wilt met één klik implementeren in de cloud met een browsergebaseerde bedieningsinterface
+summary: Implementeer OpenClaw op Railway met een éénklikssjabloon
 title: Railway
 x-i18n:
-    generated_at: "2026-04-29T22:56:04Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:04:30Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 989c8467ead04b8aa7c94101abd99c936ecd3e451fe728afe8c2f2bd5a78df48
+    source_hash: cbef00b8de61545e9971b18164472c2f47fe607f69ec36f83a27a11b65ea863f
     source_path: install/railway.mdx
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# Railway
+Implementeer OpenClaw op Railway met een sjabloon voor implementatie met één klik en open het via de webgebaseerde Control UI. Dit is de eenvoudigste methode zonder terminal op de server: Railway voert de Gateway voor u uit.
 
-Implementeer OpenClaw op Railway met een one-click-template en open het via de web-Control UI.
-Dit is het eenvoudigste pad zonder terminal op de server: Railway voert de Gateway voor je uit.
-
-## Snelle checklist (nieuwe gebruikers)
-
-1. Klik op **Deploy on Railway** (hieronder).
-2. Voeg een **Volume** toe dat is aangekoppeld op `/data`.
-3. Stel de vereiste **Variables** in (minimaal `OPENCLAW_GATEWAY_PORT` en `OPENCLAW_GATEWAY_TOKEN`).
-4. Schakel **HTTP Proxy** in op poort `8080`.
-5. Open `https://<your-railway-domain>/openclaw` en maak verbinding met het geconfigureerde gedeelde geheim. Deze template gebruikt standaard `OPENCLAW_GATEWAY_TOKEN`; als je dit vervangt door wachtwoordauthenticatie, gebruik dan in plaats daarvan dat wachtwoord.
-
-## One-click-implementatie
+## Implementatie met één klik
 
 <a href="https://railway.com/deploy/clawdbot-railway-template" target="_blank" rel="noreferrer">
-  Deploy on Railway
+  Implementeren op Railway
 </a>
 
-Zoek na de implementatie je openbare URL in **Railway → je service → Settings → Domains**.
+<Steps>
+  <Step title="Het sjabloon implementeren">
+    Klik hierboven op **Deploy on Railway**.
+  </Step>
 
-Railway zal ofwel:
+<Step title="Een volume toevoegen">
+  Koppel een volume dat op `/data` is aangekoppeld (vereist voor permanente statusopslag).
+</Step>
 
-- je een gegenereerd domein geven (vaak `https://<something>.up.railway.app`), of
-- je aangepaste domein gebruiken als je er een hebt gekoppeld.
+  <Step title="Variabelen instellen">
+    Stel de vereiste **Variables** voor de service in:
 
-Open daarna:
+    - `OPENCLAW_GATEWAY_PORT=8080` (vereist -- moet overeenkomen met de poort in Public Networking)
+    - `OPENCLAW_GATEWAY_TOKEN` (vereist; behandel dit als een beheerdersgeheim)
+    - `OPENCLAW_STATE_DIR=/data/.openclaw` (aanbevolen)
+    - `OPENCLAW_WORKSPACE_DIR=/data/workspace` (aanbevolen)
 
-- `https://<your-railway-domain>/openclaw` — Control UI
+  </Step>
 
-## Wat je krijgt
+<Step title="Openbare netwerktoegang inschakelen">
+  Schakel onder **Public Networking** voor de service **HTTP Proxy** in op poort `8080`.
+</Step>
 
-- Gehoste OpenClaw Gateway + Control UI
-- Persistente opslag via Railway Volume (`/data`), zodat `openclaw.json`,
-  `auth-profiles.json` per agent, kanaal-/providerstatus, sessies en
-  workspace herimplementaties overleven
+  <Step title="Verbinding maken">
+    Zoek uw openbare URL onder **Railway -> your service -> Settings -> Domains** -- dit is een gegenereerd domein (vaak `https://<something>.up.railway.app`) of uw gekoppelde aangepaste domein.
 
-## Vereiste Railway-instellingen
+    Open `https://<your-railway-domain>/openclaw` en maak verbinding met het geconfigureerde gedeelde geheim. Het sjabloon gebruikt standaard `OPENCLAW_GATEWAY_TOKEN`; als u dit vervangt door wachtwoordverificatie, gebruikt u in plaats daarvan dat wachtwoord.
 
-### Openbaar netwerk
+  </Step>
+</Steps>
 
-Schakel **HTTP Proxy** in voor de service.
+## Wat u krijgt
 
-- Poort: `8080`
-
-### Volume (vereist)
-
-Koppel een volume aan op:
-
-- `/data`
-
-### Variabelen
-
-Stel deze variabelen in op de service:
-
-- `OPENCLAW_GATEWAY_PORT=8080` (vereist — moet overeenkomen met de poort in Openbaar netwerk)
-- `OPENCLAW_GATEWAY_TOKEN` (vereist; behandel als een beheerdersgeheim)
-- `OPENCLAW_STATE_DIR=/data/.openclaw` (aanbevolen)
-- `OPENCLAW_WORKSPACE_DIR=/data/workspace` (aanbevolen)
+- Gehoste OpenClaw Gateway en Control UI
+- Permanente opslag via het Railway-volume (`/data`), zodat `openclaw.json`, `auth-profiles.json` per agent, de status van kanalen/providers, sessies en de werkruimte behouden blijven wanneer u opnieuw implementeert
 
 ## Een kanaal verbinden
 
-Gebruik de Control UI op `/openclaw` of voer `openclaw onboard` uit via de shell van Railway voor instructies voor kanaalconfiguratie:
+Gebruik de Control UI op `/openclaw` of voer `openclaw onboard` uit via de shell van Railway voor instructies om kanalen in te stellen:
 
-- [Telegram](/nl/channels/telegram) (snelst — alleen een bottoken)
 - [Discord](/nl/channels/discord)
+- [Telegram](/nl/channels/telegram) (het snelst -- alleen een bottoken nodig)
 - [Alle kanalen](/nl/channels)
 
 ## Back-ups en migratie
 
-Exporteer je status, configuratie, auth-profielen en workspace:
+Exporteer uw status, configuratie, verificatieprofielen en werkruimte:
 
 ```bash
 openclaw backup create
 ```
 
-Dit maakt een draagbaar back-uparchief met OpenClaw-status plus elke geconfigureerde
-workspace. Zie [Back-up](/nl/cli/backup) voor details.
+Hiermee maakt u een overdraagbaar back-uparchief met de OpenClaw-status en eventueel een geconfigureerde werkruimte. Zie [Back-up](/nl/cli/backup) voor meer informatie.
 
 ## Volgende stappen
 

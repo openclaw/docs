@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz Plugin workboard
-summary: Panel roboczy dla problemów i sesji należących do agenta.
+    - Instalujesz, konfigurujesz lub audytujesz plugin tablicy zadań
+summary: Panel roboczy dla zgłoszeń i sesji obsługiwanych przez agentów.
 title: Plugin Workboard
 x-i18n:
-    generated_at: "2026-06-27T18:04:44Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:28:00Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 1e5a48a52d45dbe87b73020103c2bc3f0bd46305b4c0d26b3010864af65fa99c
@@ -15,14 +15,14 @@ x-i18n:
 
 # Plugin Workboard
 
-Tablica robocza pulpitu nawigacyjnego dla issue i sesji należących do agenta.
+Tablica robocza pulpitu nawigacyjnego dla zgłoszeń i sesji zarządzanych przez agenta.
 
 ## Dystrybucja
 
 - Pakiet: `@openclaw/workboard`
-- Ścieżka instalacji: zawarte w OpenClaw
+- Sposób instalacji: dołączony do OpenClaw
 
-## Powierzchnia
+## Interfejs
 
 kontrakty: narzędzia
 

@@ -1,65 +1,63 @@
 ---
 read_when:
-    - Bạn muốn bật hoặc cấu hình code_execution
+    - Bạn muốn bật hoặc cấu hình `code_execution`
     - Bạn muốn phân tích từ xa mà không cần quyền truy cập shell cục bộ
-    - Bạn muốn kết hợp x_search hoặc web_search với phân tích Python từ xa
-summary: 'code_execution: chạy phân tích Python từ xa trong sandbox với xAI'
+    - Bạn muốn kết hợp x_search hoặc web_search với việc phân tích Python từ xa
+summary: 'code_execution: chạy phân tích Python từ xa trong sandbox bằng xAI'
 title: Thực thi mã
 x-i18n:
-    generated_at: "2026-06-27T18:14:07Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:29:42Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d510d0d2b41deab527d456e675a23ef80ac3b55b5f01906ba2c43d90e4452e36
+    source_hash: 1ab391daed9154f113535e6d241c45d5c08c22abdc012148a9f0f2ae5ec548b3
     source_path: tools/code-execution.md
     workflow: 16
 ---
 
-`code_execution` chạy phân tích Python từ xa trong sandbox trên Responses API của xAI. Công cụ này được đăng ký bởi plugin `xai` đi kèm (theo hợp đồng `tools`) và chuyển tiếp đến cùng endpoint `https://api.x.ai/v1/responses` mà `x_search` sử dụng.
+`code_execution` chạy phân tích Python từ xa trong môi trường cách ly trên Responses API của xAI
+(`https://api.x.ai/v1/responses`, cùng điểm cuối mà `x_search` sử dụng). Công cụ này được
+Plugin `xai` đi kèm đăng ký theo hợp đồng `tools`.
 
-| Thuộc tính            | Giá trị                                                                                  |
-| --------------------- | ---------------------------------------------------------------------------------------- |
-| Tên công cụ           | `code_execution`                                                                         |
-| Plugin nhà cung cấp   | `xai` (đi kèm, `enabledByDefault: true`)                                                 |
-| Xác thực              | hồ sơ xác thực xAI, `XAI_API_KEY`, hoặc `plugins.entries.xai.config.webSearch.apiKey`    |
-| Mô hình mặc định      | `grok-4-1-fast`                                                                          |
-| Thời gian chờ mặc định | 30 giây                                                                                 |
-| `maxTurns` mặc định   | chưa đặt (xAI áp dụng giới hạn nội bộ riêng)                                             |
+<Warning>
+  `code_execution` chạy trên máy chủ của xAI. xAI tính phí 5 USD cho mỗi 1.000 lượt gọi công cụ,
+  cộng thêm token đầu vào và đầu ra của mô hình.
+</Warning>
 
-Công cụ này khác với [`exec`](/vi/tools/exec) cục bộ:
+| Thuộc tính          | Giá trị                                                                            |
+| ------------------- | ---------------------------------------------------------------------------------- |
+| Tên công cụ         | `code_execution`                                                                   |
+| Plugin nhà cung cấp | `xai` (đi kèm, `enabledByDefault: true`)                                           |
+| Xác thực            | Hồ sơ xác thực xAI, `XAI_API_KEY` hoặc `plugins.entries.xai.config.webSearch.apiKey` |
+| Mô hình mặc định    | `grok-4.3`                                                                         |
+| Thời gian chờ mặc định | 30 giây                                                                         |
+| `maxTurns` mặc định | chưa đặt (xAI áp dụng giới hạn nội bộ riêng)                                       |
 
-- `exec` chạy lệnh shell trên máy của bạn hoặc nút được ghép nối.
-- `code_execution` chạy Python trong sandbox từ xa của xAI.
+Dùng công cụ này cho các phép tính, lập bảng, thống kê nhanh và phân tích
+dạng biểu đồ, bao gồm dữ liệu do `x_search` hoặc `web_search` trả về. Công cụ
+không thể truy cập tệp cục bộ, shell, kho mã nguồn hoặc thiết bị đã ghép nối
+của bạn và không duy trì trạng thái giữa các lượt gọi, vì vậy hãy coi mỗi lượt
+gọi là một phiên phân tích tạm thời, không phải phiên sổ tay. Để lấy dữ liệu X
+mới nhất, trước tiên hãy chạy [`x_search`](/vi/tools/web#x_search) rồi chuyển kết
+quả vào.
 
-Dùng `code_execution` cho:
-
-- Tính toán.
-- Lập bảng.
-- Thống kê nhanh.
-- Phân tích kiểu biểu đồ.
-- Phân tích dữ liệu do `x_search` hoặc `web_search` trả về.
-
-**Không** dùng công cụ này khi bạn cần tệp cục bộ, shell của bạn, repo của bạn hoặc thiết bị được ghép nối. Hãy dùng [`exec`](/vi/tools/exec) cho việc đó.
+Để thực thi cục bộ, hãy dùng [`exec`](/vi/tools/exec) thay thế.
 
 ## Thiết lập
 
 <Steps>
   <Step title="Cung cấp thông tin xác thực xAI">
-    Đăng nhập bằng Grok OAuth với gói đăng ký SuperGrok hoặc X Premium đủ điều kiện,
-    hoặc lưu trữ khóa API. xAI OAuth dùng xác minh bằng mã thiết bị, nên hoạt động
-    từ máy chủ từ xa mà không cần callback localhost. OAuth hoạt động cho
-    `code_execution` và `x_search`; `XAI_API_KEY` hoặc cấu hình web-search của plugin
-    cũng có thể cấp quyền cho Grok `web_search`.
+    OAuth yêu cầu gói đăng ký SuperGrok hoặc X Premium đủ điều kiện
+    (xác minh bằng mã thiết bị, vì vậy có thể hoạt động từ máy chủ từ xa mà
+    không cần callback localhost):
 
     ```bash
     openclaw models auth login --provider xai --method oauth
     ```
 
-    Trong lần cài đặt mới, các lựa chọn xác thực tương tự có sẵn trong
-    quy trình onboarding:
+    Trong quá trình cài đặt mới, lựa chọn tương tự có sẵn ở bước hướng dẫn thiết lập:
 
     ```bash
-    openclaw onboard --install-daemon
     openclaw onboard --install-daemon --auth-choice xai-oauth
     ```
 
@@ -88,12 +86,21 @@ Dùng `code_execution` cho:
     }
     ```
 
+    Bất kỳ phương thức nào trong ba phương thức này cũng cung cấp quyền hoạt động cho `x_search` và `web_search` của Grok.
+
   </Step>
 
   <Step title="Bật và tinh chỉnh code_execution">
-    `code_execution` khả dụng khi thông tin xác thực xAI khả dụng. Đặt
-    `plugins.entries.xai.config.codeExecution.enabled` thành `false` để tắt,
-    hoặc dùng cùng khối này để tinh chỉnh mô hình và thời gian chờ.
+    Khi bỏ qua `enabled`, `code_execution` chỉ được cung cấp khi nhà cung cấp
+    của mô hình đang hoạt động là `xai` và thông tin xác thực xAI được phân
+    giải thành công. Đối với mô hình đang hoạt động có nhà cung cấp không phải
+    xAI đã biết, hãy đặt `plugins.entries.xai.config.codeExecution.enabled`
+    thành `true` để chủ động bật việc sử dụng giữa các nhà cung cấp. Nếu nhà
+    cung cấp của mô hình đang hoạt động bị thiếu hoặc không thể phân giải,
+    công cụ vẫn bị ẩn. Đặt `enabled` thành `false` để tắt công cụ cho mọi
+    nhà cung cấp. Thông tin xác thực xAI luôn là bắt buộc.
+
+    Dùng cùng khối cấu hình để ghi đè mô hình, giới hạn lượt hoặc thời gian chờ:
 
     ```json5
     {
@@ -102,10 +109,10 @@ Dùng `code_execution` cho:
           xai: {
             config: {
               codeExecution: {
-                enabled: true,
-                model: "grok-4-1-fast", // override the default xAI code-execution model
-                maxTurns: 2,            // optional cap on internal tool turns
-                timeoutSeconds: 30,     // request timeout (default: 30)
+                enabled: true, // bắt buộc đối với nhà cung cấp mô hình không phải xAI đã biết
+                model: "grok-4.3", // ghi đè mô hình thực thi mã xAI mặc định
+                maxTurns: 2,            // giới hạn tùy chọn cho các lượt công cụ nội bộ
+                timeoutSeconds: 30,     // thời gian chờ yêu cầu (mặc định: 30)
               },
             },
           },
@@ -121,61 +128,56 @@ Dùng `code_execution` cho:
     openclaw gateway restart
     ```
 
-    `code_execution` xuất hiện trong danh sách công cụ của agent sau khi plugin xAI đăng ký lại với `enabled: true`.
+    `code_execution` xuất hiện trong danh sách công cụ của tác tử sau khi Plugin
+    xAI đăng ký lại và các bước kiểm tra nhà cung cấp, trạng thái bật và xác
+    thực ở trên đều đạt yêu cầu.
 
   </Step>
 </Steps>
 
 ## Cách sử dụng
 
-Hãy hỏi một cách tự nhiên và nêu rõ ý định phân tích:
+Hãy nêu rõ mục đích phân tích; công cụ nhận một tham số `task` duy nhất,
+vì vậy hãy gửi toàn bộ yêu cầu và mọi dữ liệu nội tuyến trong một lời nhắc:
 
 ```text
-Use code_execution to calculate the 7-day moving average for these numbers: ...
+Dùng code_execution để tính trung bình động 7 ngày cho các số sau: ...
 ```
 
 ```text
-Use x_search to find posts mentioning OpenClaw this week, then use code_execution to count them by day.
+Dùng x_search để tìm các bài đăng đề cập đến OpenClaw trong tuần này, sau đó dùng code_execution để đếm chúng theo ngày.
 ```
 
 ```text
-Use web_search to gather the latest AI benchmark numbers, then use code_execution to compare percent changes.
+Dùng web_search để thu thập các số liệu chuẩn đánh giá AI mới nhất, sau đó dùng code_execution để so sánh mức thay đổi phần trăm.
 ```
-
-Công cụ này nội bộ nhận một tham số `task`, nên agent nên gửi toàn bộ yêu cầu phân tích và mọi dữ liệu nội tuyến trong một prompt.
 
 ## Lỗi
 
-Khi công cụ chạy mà không có xác thực, nó trả về lỗi có cấu trúc `missing_xai_api_key` trỏ đến các tùy chọn hồ sơ xác thực, biến môi trường và cấu hình. Lỗi ở dạng JSON, không phải ngoại lệ được ném ra, nên agent có thể tự sửa:
+Khi không có thông tin xác thực, công cụ trả về lỗi JSON có cấu trúc (không
+ném ngoại lệ), vì vậy tác tử có thể tự sửa lỗi:
 
 ```json
 {
   "error": "missing_xai_api_key",
-  "message": "code_execution needs xAI credentials. Run `openclaw onboard --auth-choice xai-oauth` to sign in with Grok, run `openclaw onboard --auth-choice xai-api-key`, set `XAI_API_KEY` in the Gateway environment, or configure `plugins.entries.xai.config.webSearch.apiKey`.",
+  "message": "code_execution cần thông tin xác thực xAI. Chạy `openclaw onboard --auth-choice xai-oauth` để đăng nhập bằng Grok, chạy `openclaw onboard --auth-choice xai-api-key`, đặt `XAI_API_KEY` trong môi trường Gateway hoặc cấu hình `plugins.entries.xai.config.webSearch.apiKey`.",
   "docs": "https://docs.openclaw.ai/tools/code-execution"
 }
 ```
-
-## Giới hạn
-
-- Đây là thực thi từ xa của xAI, không phải thực thi tiến trình cục bộ.
-- Xem kết quả là phân tích tạm thời, không phải phiên notebook liên tục.
-- Đừng giả định có quyền truy cập vào tệp cục bộ hoặc workspace của bạn.
-- Với dữ liệu X mới, trước tiên hãy dùng [`x_search`](/vi/tools/web#x_search), rồi chuyển kết quả vào `code_execution`.
 
 ## Liên quan
 
 <CardGroup cols={2}>
   <Card title="Công cụ Exec" href="/vi/tools/exec" icon="terminal">
-    Thực thi shell cục bộ trên máy của bạn hoặc nút được ghép nối.
+    Thực thi shell cục bộ trên máy của bạn hoặc Node đã ghép nối.
   </Card>
   <Card title="Phê duyệt Exec" href="/vi/tools/exec-approvals" icon="shield">
-    Chính sách cho phép/từ chối đối với thực thi shell.
+    Chính sách cho phép/từ chối thực thi shell.
   </Card>
   <Card title="Công cụ web" href="/vi/tools/web" icon="globe">
-    `web_search`, `x_search`, và `web_fetch`.
+    `web_search`, `x_search` và `web_fetch`.
   </Card>
   <Card title="Nhà cung cấp xAI" href="/vi/providers/xai" icon="microchip">
-    Mô hình Grok, tìm kiếm web/X và cấu hình thực thi mã.
+    Các mô hình Grok, tìm kiếm web/X và cấu hình thực thi mã.
   </Card>
 </CardGroup>

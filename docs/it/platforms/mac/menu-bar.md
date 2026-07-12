@@ -1,101 +1,100 @@
 ---
 read_when:
-    - Modifica dell'interfaccia utente del menu Mac o della logica di stato
-summary: Logica dello stato della barra dei menu e ciò che viene mostrato agli utenti
+    - Modifica dell'interfaccia del menu Mac o della logica di stato
+summary: Logica dello stato della barra dei menu e informazioni mostrate agli utenti
 title: Barra dei menu
 x-i18n:
-    generated_at: "2026-05-06T09:00:09Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:14:01Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c569ced20b2f6a639d52d373cc8b55a42d7c015a0b234d5154ce67ac03c2eaf6
+    source_hash: 480a85f383a6495c0e45850a322c0c67c4cc35e21d2d29b4bd86f42fdbf9430a
     source_path: platforms/mac/menu-bar.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 ## Cosa viene mostrato
 
-- Mostriamo lo stato di lavoro corrente dell'agente nell'icona della barra dei menu e nella prima riga di stato del menu.
-- Lo stato di salute è nascosto mentre il lavoro è attivo; ritorna quando tutte le sessioni sono inattive.
-- Un sottomenu radice "Contesto" contiene le sessioni recenti invece di espanderle direttamente nel menu radice.
-- Il blocco "Nodes" nel menu radice elenca solo i **dispositivi** (nodi associati tramite `node.list`), non le voci client/presenza.
-- Una sezione radice "Utilizzo" appare sotto Contesto quando sono disponibili snapshot dell'utilizzo del provider, seguita dai dettagli sui costi di utilizzo quando disponibili.
+- Lo stato di lavoro corrente dell'agente viene visualizzato nell'icona della barra dei menu e nella prima riga di stato del menu.
+- Lo stato di integrità viene nascosto mentre è in corso un'attività; riappare quando tutte le sessioni sono inattive.
+- Una voce radice "Contesto" apre un sottomenu con le sessioni recenti anziché espanderle nel menu radice.
+- Un blocco "Nodi" nel menu radice elenca solo i **dispositivi** associati (da `node.list`), non le voci relative a client/presenza.
+- Una sezione radice "Utilizzo" appare sotto Contesto quando sono disponibili istantanee dell'utilizzo del provider, seguite dai dettagli sui costi, se disponibili.
 
 ## Modello di stato
 
-- Sessioni: gli eventi arrivano con `runId` (per esecuzione) più `sessionKey` nel payload. La sessione "main" è la chiave `main`; se assente, ripieghiamo sulla sessione aggiornata più di recente.
-- Priorità: main vince sempre. Se main è attiva, il suo stato viene mostrato immediatamente. Se main è inattiva, viene mostrata la sessione non-main attiva più di recente. Non oscilliamo durante l'attività; cambiamo solo quando la sessione corrente diventa inattiva o main diventa attiva.
+- Origine: `WorkActivityStore` (`apps/macos/Sources/OpenClaw/WorkActivityStore.swift`).
+- Gli eventi arrivano come `ControlAgentEvent` con un `runId`; il gestore (`ControlChannel.routeWorkActivity`) legge `sessionKey` dal payload dell'evento e usa `"main"` come valore predefinito se assente.
+- Priorità: la sessione principale (`sessionKey == "main"` per impostazione predefinita) ha sempre la precedenza. Se la sessione principale è attiva, il suo stato viene mostrato immediatamente. Se è inattiva, viene mostrata invece la sessione non principale attiva più di recente. L'archivio non cambia sessione durante un'attività; passa a un'altra sessione solo quando quella corrente diventa inattiva o quella principale diventa attiva.
 - Tipi di attività:
-  - `job`: esecuzione di comandi ad alto livello (`state: started|streaming|done|error`).
-  - `tool`: `phase: start|result` con `toolName` e `meta/args`.
+  - `job`: esecuzione di comandi di alto livello (`state: started|streaming|done|error|...`).
+  - `tool`: `phase: start|result` con `name` e `meta`/`args` facoltativi.
 
-## Enum IconState (Swift)
+## Enumerazione IconState (Swift)
 
 - `idle`
 - `workingMain(ActivityKind)`
 - `workingOther(ActivityKind)`
-- `overridden(ActivityKind)` (override di debug)
+- `overridden(ActivityKind)` (sostituzione per il debug)
 
-### ActivityKind → glifo
+### ActivityKind -> simbolo del badge
 
-- `exec` → 💻
-- `read` → 📄
-- `write` → ✍️
-- `edit` → 📝
-- `attach` → 📎
-- predefinito → 🛠️
+`ActivityKind` incapsula un `ToolKind` (`bash`, `read`, `write`, `edit`, `attach`, `other`) o un semplice `job`. Ciascuno corrisponde a un badge SF Symbol disegnato sopra l'icona della creatura (`IconState.badgeSymbolName`):
 
-### Mappatura visiva
+| Tipo            | Simbolo                            |
+| --------------- | ---------------------------------- |
+| `bash`          | `chevron.left.slash.chevron.right` |
+| `read`          | `doc`                              |
+| `write`         | `pencil`                           |
+| `edit`          | `pencil.tip`                       |
+| `attach`        | `paperclip`                        |
+| `other` / `job` | `gearshape.fill`                   |
 
-- `idle`: creatura normale.
-- `workingMain`: badge con glifo, tinta piena, animazione "working" delle zampe.
-- `workingOther`: badge con glifo, tinta attenuata, nessuno scatto.
-- `overridden`: usa il glifo/la tinta scelti indipendentemente dall'attività.
+### Corrispondenza visiva
 
-## Sottomenu Contesto
+- `idle`: creatura normale, nessun badge.
+- `workingMain`: badge con simbolo, tinta piena (risalto `.primary`), animazione delle zampe "al lavoro".
+- `workingOther`: badge con simbolo, tinta attenuata (risalto `.secondary`), nessun movimento rapido.
+- `overridden`: usa il simbolo e la tinta scelti indipendentemente dall'attività reale.
 
-- Il menu radice mostra una riga "Contesto" con conteggio/stato delle sessioni e apre un sottomenu.
-- L'intestazione del sottomenu Contesto mostra il conteggio delle sessioni attive nelle ultime 24 ore.
-- Ogni riga di sessione mantiene la propria barra dei token, età, anteprima, azioni di thinking/verbose, reset, compact ed eliminazione.
-- I messaggi di caricamento, disconnessione ed errore di caricamento delle sessioni appaiono nel sottomenu Contesto.
-- I dettagli di utilizzo del provider e dei costi di utilizzo restano a livello radice sotto Contesto, così rimangono consultabili a colpo d'occhio senza aprire il sottomenu.
+## Sottomenu del contesto
+
+- Il menu principale mostra una riga "Contesto" con il numero e lo stato delle sessioni; apre un sottomenu (`MenuSessionsInjector`).
+- L'intestazione del sottomenu mostra il numero di sessioni attive nelle ultime 24 ore.
+- Ogni riga di sessione mantiene la barra dei token, l'età, l'anteprima, le opzioni per attivare o disattivare il ragionamento e la modalità dettagliata e le azioni di reimpostazione, Compaction ed eliminazione.
+- I messaggi di caricamento, disconnessione ed errore durante il caricamento delle sessioni vengono visualizzati nel sottomenu del contesto.
+- Le sezioni relative all'utilizzo e ai costi rimangono al livello principale sotto Contesto, così da poter essere consultate a colpo d'occhio senza aprire il sottomenu.
 
 ## Testo della riga di stato (menu)
 
-- Mentre il lavoro è attivo: `<Session role> · <activity label>`
-  - Esempi: `Main · exec: pnpm test`, `Other · read: apps/macos/Sources/OpenClaw/AppState.swift`.
-- Quando è inattivo: ripiega sul riepilogo dello stato di salute.
+- Mentre il lavoro è attivo: `<Session role> · <activity label>` (`"\(roleLabel) · \(activity.label)"` in `MenuContentView`), dove l'etichetta del ruolo è `Main` o `Other`.
+- Quando è inattivo: torna al riepilogo dello stato di integrità.
 
-## Acquisizione eventi
+## Acquisizione degli eventi
 
-- Origine: eventi `agent` del canale di controllo (`ControlChannel.handleAgentEvent`).
+- Origine: eventi `agent` del canale di controllo, instradati da `ControlChannel.routeWorkActivity(from:)`.
 - Campi analizzati:
-  - `stream: "job"` con `data.state` per avvio/arresto.
-  - `stream: "tool"` con `data.phase`, `name`, `meta`/`args` opzionali.
-- Etichette:
-  - `exec`: prima riga di `args.command`.
-  - `read`/`write`: percorso abbreviato.
-  - `edit`: percorso più tipo di modifica dedotto da `meta`/conteggi diff.
-  - ripiego: nome dello strumento.
+  - `stream: "job"` con `data.state` per l'avvio/arresto.
+  - `stream: "tool"` con `data.phase`, `data.name` e `data.meta`/`data.args` facoltativi.
+- Le etichette degli strumenti provengono da `ToolDisplayRegistry.resolve(name:args:meta:)`; per i nomi non risolti viene utilizzato il nome grezzo dello strumento.
 
 ## Override di debug
 
-- Impostazioni ▸ Debug ▸ selettore "Override icona":
+- Impostazioni > Debug > selettore "Icon override":
   - `System (auto)` (predefinito)
-  - `Working: main` (per tipo di strumento)
-  - `Working: other` (per tipo di strumento)
+  - `Working: main` / `Working: other` (per tipo di strumento: bash, lettura, scrittura, modifica, altro)
   - `Idle`
-- Salvato tramite `@AppStorage("iconOverride")`; mappato a `IconState.overridden`.
+- Memorizzato nella chiave `UserDefaults` `openclaw.iconOverride`; associato a `IconState.overridden`.
 
-## Checklist di test
+## Elenco di controllo per i test
 
-- Attiva un job della sessione main: verifica che l'icona cambi immediatamente e che la riga di stato mostri l'etichetta main.
-- Attiva un job di sessione non-main mentre main è inattiva: icona/stato mostrano la non-main; resta stabile finché non termina.
-- Avvia main mentre un'altra sessione è attiva: l'icona passa istantaneamente a main.
-- Raffiche rapide di strumenti: assicurati che il badge non lampeggi (grazia TTL sui risultati degli strumenti).
-- La riga di salute riappare quando tutte le sessioni sono inattive.
+- Avviare un processo della sessione principale: l'icona cambia immediatamente e la riga di stato mostra l'etichetta della sessione principale.
+- Avviare un processo di una sessione non principale mentre quella principale è inattiva: l'icona e lo stato mostrano la sessione non principale e rimangono stabili fino al suo completamento.
+- Avviare la sessione principale mentre un'altra sessione è attiva: l'icona passa immediatamente alla sessione principale.
+- Raffiche rapide di strumenti: il badge non sfarfalla (finestra di tolleranza di 2 secondi prima di rimuovere uno strumento che ha terminato, `WorkActivityStore.toolResultGrace`).
+- La riga dello stato di integrità ricompare quando tutte le sessioni sono inattive.
 
 ## Correlati
 
-- [app macOS](/it/platforms/macos)
+- [App macOS](/it/platforms/macos)
 - [Icona della barra dei menu](/it/platforms/mac/icon)

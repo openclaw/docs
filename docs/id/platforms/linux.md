@@ -2,95 +2,78 @@
 read_when:
     - Mencari status aplikasi pendamping Linux
     - Merencanakan cakupan platform atau kontribusi
-    - Men-debug penghentian OOM Linux atau exit 137 pada VPS atau kontainer
-summary: Dukungan Linux + status aplikasi pendamping
+    - Men-debug penghentian akibat OOM Linux atau kode keluar 137 pada VPS atau kontainer
+summary: Status dukungan Linux + aplikasi pendamping
 title: Aplikasi Linux
 x-i18n:
-    generated_at: "2026-06-27T17:42:25Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:21:12Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 437eb12d373ff9161ec7fa1e6fc04bf5662f903374d17f55b45ae1ea355c9085
+    source_hash: 3a1b57fc7e37257a05eb06f265a49f165eef429f1c8d93c988853f39eba89627
     source_path: platforms/linux.md
     workflow: 16
 ---
 
-Gateway didukung sepenuhnya di Linux. **Node adalah runtime yang direkomendasikan**.
-Bun tidak direkomendasikan untuk Gateway (bug WhatsApp/Telegram).
+Gateway didukung sepenuhnya di Linux. Node adalah runtime yang direkomendasikan; Bun
+tidak direkomendasikan (terdapat masalah WhatsApp/Telegram yang diketahui).
 
-Aplikasi pendamping Linux native sedang direncanakan. Kontribusi dipersilakan jika Anda ingin membantu membuatnya.
+Belum ada aplikasi pendamping Linux native. Kontribusi dipersilakan.
 
-## Jalur cepat pemula (VPS)
+## Jalur cepat (VPS)
 
-1. Instal Node 24 (direkomendasikan; Node 22 LTS, saat ini `22.19+`, masih berfungsi untuk kompatibilitas)
+1. Instal Node 24 (direkomendasikan) atau Node 22.19+ (LTS, masih didukung).
 2. `npm i -g openclaw@latest`
 3. `openclaw onboard --install-daemon`
 4. Dari laptop Anda: `ssh -N -L 18789:127.0.0.1:18789 <user>@<host>`
-5. Buka `http://127.0.0.1:18789/` dan lakukan autentikasi dengan rahasia bersama yang dikonfigurasi (token secara default; kata sandi jika Anda menetapkan `gateway.auth.mode: "password"`)
+5. Buka `http://127.0.0.1:18789/` dan lakukan autentikasi dengan rahasia bersama yang
+   telah dikonfigurasi (secara default berupa token; kata sandi jika `gateway.auth.mode` adalah `"password"`).
 
-Panduan server Linux lengkap: [Server Linux](/id/vps). Contoh VPS langkah demi langkah: [exe.dev](/id/install/exe-dev)
+Panduan server lengkap: [Server Linux](/id/vps). Contoh VPS langkah demi langkah:
+[exe.dev](/id/install/exe-dev).
 
-## Instal
+## Instalasi
 
 - [Memulai](/id/start/getting-started)
-- [Instal & pembaruan](/id/install/updating)
-- Alur opsional: [Bun (eksperimental)](/id/install/bun), [Nix](/id/install/nix), [Docker](/id/install/docker)
+- [Instalasi & pembaruan](/id/install/updating)
+- Opsional: [Bun (eksperimental)](/id/install/bun), [Nix](/id/install/nix), [Docker](/id/install/docker)
 
-## Gateway
+## Layanan Gateway (systemd)
 
-- [Runbook Gateway](/id/gateway)
-- [Konfigurasi](/id/gateway/configuration)
+Instal dengan salah satu perintah berikut:
 
-## Instal layanan Gateway (CLI)
-
-Gunakan salah satu dari ini:
-
-```
+```bash
 openclaw onboard --install-daemon
-```
-
-Atau:
-
-```
 openclaw gateway install
+openclaw configure   # pilih "Layanan Gateway" saat diminta
 ```
 
-Atau:
+Perbaiki atau migrasikan instalasi yang sudah ada:
 
-```
-openclaw configure
-```
-
-Pilih **Layanan Gateway** saat diminta.
-
-Perbaiki/migrasikan:
-
-```
+```bash
 openclaw doctor
 ```
 
-## Kontrol sistem (unit pengguna systemd)
+`openclaw gateway install` secara default menghasilkan unit **pengguna** systemd. Panduan
+layanan lengkap, termasuk varian unit tingkat **sistem** untuk host bersama atau
+yang selalu aktif, tersedia di [panduan operasional Gateway](/id/gateway#supervision-and-service-lifecycle).
 
-OpenClaw menginstal layanan **pengguna** systemd secara default. Gunakan layanan
-**sistem** untuk server bersama atau yang selalu aktif. `openclaw gateway install` dan
-`openclaw onboard --install-daemon` sudah merender unit kanonis saat ini
-untuk Anda; tulis sendiri hanya ketika Anda memerlukan penyiapan sistem/manajer layanan
-khusus. Panduan layanan lengkap tersedia di [Runbook Gateway](/id/gateway).
+Tulis unit secara manual hanya untuk penyiapan khusus. Contoh unit pengguna minimal
+(`~/.config/systemd/user/openclaw-gateway[-<profile>].service`):
 
-Penyiapan minimal:
-
-Buat `~/.config/systemd/user/openclaw-gateway[-<profile>].service`:
-
-```
+```ini
 [Unit]
 Description=OpenClaw Gateway (profile: <profile>, v<version>)
 After=network-online.target
 Wants=network-online.target
+StartLimitBurst=5
+StartLimitIntervalSec=60
 
 [Service]
 ExecStart=/usr/local/bin/openclaw gateway --port 18789
 Restart=always
 RestartSec=5
+RestartPreventExitStatus=78
 TimeoutStopSec=30
 TimeoutStartSec=30
 SuccessExitStatus=0 143
@@ -101,55 +84,57 @@ KillMode=control-group
 WantedBy=default.target
 ```
 
-Aktifkan:
+Aktifkan unit tersebut:
 
-```
+```bash
 systemctl --user enable --now openclaw-gateway[-<profile>].service
 ```
 
 ## Tekanan memori dan penghentian OOM
 
-Di Linux, kernel memilih korban OOM ketika cgroup host, VM, atau kontainer
-kehabisan memori. Gateway bisa menjadi korban yang buruk karena memiliki
-sesi berumur panjang dan koneksi kanal. Karena itu, OpenClaw mengarahkan proses
-anak sementara agar dihentikan sebelum Gateway jika memungkinkan.
+Di Linux, kernel memilih proses korban OOM ketika cgroup host, VM, atau kontainer
+kehabisan memori. Gateway bukan korban yang tepat karena mengelola sesi
+berumur panjang dan koneksi saluran, sehingga OpenClaw mengupayakan agar proses
+anak sementara dihentikan terlebih dahulu jika memungkinkan.
 
-Untuk proses anak Linux yang memenuhi syarat, OpenClaw memulai anak melalui wrapper
-`/bin/sh` singkat yang menaikkan `oom_score_adj` milik anak itu sendiri ke `1000`, lalu
-melakukan `exec` pada perintah sebenarnya. Ini adalah operasi tanpa hak istimewa karena anak
-hanya meningkatkan kemungkinan penghentian OOM untuk dirinya sendiri.
+Untuk proses anak Linux yang memenuhi syarat, OpenClaw membungkus perintah dengan shim
+`/bin/sh` singkat yang menaikkan `oom_score_adj` milik proses anak tersebut menjadi `1000`, lalu
+menjalankan perintah sebenarnya dengan `exec`. Tindakan ini tidak memerlukan hak istimewa: sebuah proses selalu
+dapat menaikkan skor OOM miliknya sendiri.
 
-Permukaan proses anak yang tercakup meliputi:
+Cakupan proses anak:
 
-- anak perintah yang dikelola supervisor,
-- anak shell PTY,
-- anak server stdio MCP,
-- proses browser/Chrome yang diluncurkan OpenClaw.
+- Proses anak perintah yang dikelola supervisor
+- Proses anak shell PTY
+- Proses anak server stdio MCP
+- Proses peramban/Chrome yang diluncurkan OpenClaw (melalui runtime proses SDK plugin)
 
-Wrapper ini khusus Linux dan dilewati ketika `/bin/sh` tidak tersedia. Wrapper ini
-juga dilewati jika env anak menetapkan `OPENCLAW_CHILD_OOM_SCORE_ADJ=0`, `false`,
-`no`, atau `off`.
+Pembungkus ini hanya digunakan di Linux dan dilewati ketika `/bin/sh` tidak tersedia, atau ketika
+lingkungan proses anak menetapkan `OPENCLAW_CHILD_OOM_SCORE_ADJ` ke `0`, `false`, `no`, atau
+`off`.
 
-Untuk memverifikasi proses anak:
+Verifikasi proses anak:
 
 ```bash
 cat /proc/<child-pid>/oom_score_adj
 ```
 
-Nilai yang diharapkan untuk anak yang tercakup adalah `1000`. Proses Gateway harus mempertahankan
-skor normalnya, biasanya `0`.
+Nilai yang diharapkan untuk proses anak yang tercakup adalah `1000`; proses Gateway itu sendiri
+mempertahankan skor normalnya (biasanya `0`).
 
-Unit systemd yang direkomendasikan juga menetapkan `OOMPolicy=continue`. Ini menjaga
-unit Gateway tetap hidup ketika proses anak sementara dipilih oleh OOM killer;
-perintah/sesi anak dapat gagal dan melaporkan kesalahannya tanpa systemd menandai
-seluruh layanan gateway gagal dan memulai ulang semua kanal.
+`OOMPolicy=continue` pada unit systemd menjaga layanan Gateway tetap berjalan ketika
+proses anak sementara dipilih oleh penghenti OOM, alih-alih menandai seluruh
+unit sebagai gagal dan memulai ulang semua saluran; proses anak/sesi yang gagal melaporkan
+kesalahannya sendiri.
 
-Ini tidak menggantikan penyetelan memori normal. Jika VPS atau kontainer berulang kali
-menghentikan anak, tingkatkan batas memori, kurangi konkurensi, atau tambahkan
-kontrol sumber daya yang lebih kuat seperti `MemoryMax=` systemd atau batas memori tingkat kontainer.
+Hal ini tidak menggantikan penyesuaian memori yang semestinya. Jika VPS atau kontainer berulang kali
+menghentikan proses anak, naikkan batas memori, kurangi konkurensi, atau tambahkan
+kontrol sumber daya yang lebih ketat (`MemoryMax=` systemd, batas memori kontainer).
 
 ## Terkait
 
 - [Ringkasan instalasi](/id/install)
 - [Server Linux](/id/vps)
 - [Raspberry Pi](/id/install/raspberry-pi)
+- [Panduan operasional Gateway](/id/gateway)
+- [Konfigurasi Gateway](/id/gateway/configuration)

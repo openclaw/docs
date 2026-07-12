@@ -6,17 +6,16 @@ read_when:
 summary: Exa AI 검색 -- 콘텐츠 추출을 지원하는 신경망 및 키워드 검색
 title: Exa 검색
 x-i18n:
-    generated_at: "2026-07-12T15:48:28Z"
+    generated_at: "2026-07-12T01:15:21Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 3ddfd6fb471f92e705facf5a2d02361c1a343b9032fa8e0a7b135af634df65b7
     source_path: tools/exa-search.md
     workflow: 16
 ---
 
-[Exa AI](https://exa.ai/)는 신경망, 키워드 및 하이브리드 검색 모드와 기본 제공 콘텐츠 추출(하이라이트, 텍스트, 요약)을 지원하는 `web_search` 제공자입니다.
+[Exa AI](https://exa.ai/)는 신경망, 키워드, 하이브리드 검색 모드와 내장 콘텐츠 추출(하이라이트, 텍스트, 요약)을 제공하는 `web_search` 제공자입니다.
 
 ## Plugin 설치
 
@@ -28,7 +27,7 @@ openclaw gateway restart
 ## API 키 발급
 
 <Steps>
-  <Step title="계정 생성">
+  <Step title="계정 만들기">
     [exa.ai](https://exa.ai/)에서 가입하고 대시보드에서 API 키를 생성합니다.
   </Step>
   <Step title="키 저장">
@@ -67,11 +66,11 @@ openclaw gateway restart
 }
 ```
 
-**환경 변수 대안:** Gateway 환경에 `EXA_API_KEY`를 설정합니다. Gateway 설치 환경에서는 `~/.openclaw/.env`에 추가합니다. [환경 변수](/ko/help/faq#env-vars-and-env-loading)를 참조하십시오.
+**환경 변수 대안:** Gateway 환경에 `EXA_API_KEY`를 설정합니다. Gateway 설치 환경에서는 `~/.openclaw/.env`에 추가합니다. [환경 변수](/ko/help/faq#env-vars-and-env-loading)를 참조하세요.
 
 ## 기본 URL 재정의
 
-Exa 검색 요청을 호환 프록시나 대체 엔드포인트를 통해 라우팅하려면 `plugins.entries.exa.config.webSearch.baseUrl`을 설정합니다. OpenClaw는 프로토콜이 없는 호스트 앞에 `https://`를 추가하여 정규화하고, 경로가 이미 `/search`로 끝나지 않으면 이를 추가합니다. 확인된 엔드포인트는 검색 캐시 키의 일부이므로 서로 다른 엔드포인트의 결과가 공유되는 일은 없습니다.
+호환 프록시 또는 대체 엔드포인트를 통해 Exa 검색 요청을 라우팅하려면 `plugins.entries.exa.config.webSearch.baseUrl`을 설정합니다. OpenClaw는 프로토콜이 없는 호스트 앞에 `https://`를 붙여 정규화하고, 경로가 이미 `/search`로 끝나지 않는 한 `/search`를 추가합니다. 확인된 엔드포인트는 검색 캐시 키에 포함되므로 서로 다른 엔드포인트의 결과가 공유되는 일은 없습니다.
 
 ## 도구 매개변수
 
@@ -109,7 +108,7 @@ Exa 검색 요청을 호환 프록시나 대체 엔드포인트를 통해 라우
 
 ```javascript
 await web_search({
-  query: "트랜스포머 아키텍처 설명",
+  query: "transformer architecture explained",
   type: "neural",
   contents: {
     text: true, // 전체 페이지 텍스트
@@ -119,29 +118,29 @@ await web_search({
 });
 ```
 
-| 콘텐츠 옵션     | 유형                                                                  | 설명                  |
-| --------------- | --------------------------------------------------------------------- | --------------------- |
+| 콘텐츠 옵션     | 유형                                                                  | 설명                    |
+| --------------- | --------------------------------------------------------------------- | ----------------------- |
 | `text`          | `boolean \| { maxCharacters }`                                        | 전체 페이지 텍스트 추출 |
 | `highlights`    | `boolean \| { maxCharacters, query, numSentences, highlightsPerUrl }` | 핵심 문장 추출          |
 | `summary`       | `boolean \| { query }`                                                | AI 생성 요약            |
 
-`contents`를 생략하면 Exa는 기본적으로 `{ highlights: true }`를 사용하므로 결과에 핵심 문장 발췌문이 포함됩니다. 결과 설명은 하이라이트, 요약, 전체 텍스트 순으로 사용 가능한 첫 번째 항목에서 가져옵니다. 또한 사용 가능한 경우 Exa API 응답의 원시 `highlightScores` 및 `summary` 필드도 결과에 그대로 유지됩니다.
+`contents`를 생략하면 Exa는 기본적으로 `{ highlights: true }`를 사용하므로 결과에 핵심 문장 발췌문이 포함됩니다. 결과 설명은 하이라이트, 요약, 전체 텍스트 순으로 먼저 사용할 수 있는 항목에서 가져옵니다. 또한 사용 가능한 경우 Exa API 응답의 원본 `highlightScores` 및 `summary` 필드도 결과에 보존됩니다.
 
 ### 검색 모드
 
-| 모드             | 설명                               |
-| ---------------- | ---------------------------------- |
-| `auto`           | Exa가 최적의 모드를 선택함(기본값) |
-| `neural`         | 의미 기반 시맨틱 검색              |
-| `fast`           | 빠른 키워드 검색                   |
-| `deep`           | 철저한 심층 검색                   |
-| `deep-reasoning` | 추론을 포함한 심층 검색            |
-| `instant`        | 가장 빠른 결과                     |
+| 모드             | 설명                                   |
+| ---------------- | -------------------------------------- |
+| `auto`           | Exa가 최적의 모드를 선택함(기본값)     |
+| `neural`         | 의미 기반 검색                         |
+| `fast`           | 빠른 키워드 검색                       |
+| `deep`           | 철저한 심층 검색                       |
+| `deep-reasoning` | 추론을 포함한 심층 검색                |
+| `instant`        | 가장 빠른 결과                         |
 
 ## 참고 사항
 
-- `count`는 Exa 검색 유형 제한에 따라 최대 100까지 허용합니다.
-- 결과는 기본적으로 15분 동안 캐시됩니다. Exa를 포함한 모든 `web_search` 제공자의 캐싱 및 요청 시간 제한을 변경하려면 공유 설정인 `tools.web.search.cacheTtlMinutes`(분)와 `tools.web.search.timeoutSeconds`(기본값 30초)를 구성합니다.
+- `count`에는 최대 100까지 지정할 수 있으며 Exa 검색 유형 제한이 적용됩니다.
+- 결과는 기본적으로 15분 동안 캐시됩니다. Exa를 포함한 모든 `web_search` 제공자의 캐시 및 요청 제한 시간을 변경하려면 공유 설정인 `tools.web.search.cacheTtlMinutes`(분)와 `tools.web.search.timeoutSeconds`(기본값 30초)를 구성하세요.
 
 ## 관련 문서
 

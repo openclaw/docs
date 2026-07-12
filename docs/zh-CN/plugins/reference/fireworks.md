@@ -4,8 +4,8 @@ read_when:
 summary: 为 OpenClaw 添加 Fireworks 模型提供商支持。
 title: Fireworks 插件
 x-i18n:
-    generated_at: "2026-06-27T02:48:18Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T20:45:01Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 1750e345f485fa7d8735a16278422188ad761b0c682cd5f09227f4407d502203
@@ -19,12 +19,12 @@ x-i18n:
 
 ## 分发
 
-- 包：`@openclaw/fireworks-provider`
-- 安装路径：npm；ClawHub：`clawhub:@openclaw/fireworks-provider`
+- 软件包：`@openclaw/fireworks-provider`
+- 安装渠道：npm；ClawHub：`clawhub:@openclaw/fireworks-provider`
 
-## 接口范围
+## 接口
 
-providers: fireworks
+提供商：fireworks
 
 ## 相关文档
 

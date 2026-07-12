@@ -1,88 +1,72 @@
 ---
 read_when:
-    - OpenClaw'ı Railway'e dağıtma
-    - Tarayıcı tabanlı Control UI ile tek tıklamalı bir bulut dağıtımı istiyorsunuz
-summary: OpenClaw'ı Railway üzerinde tek tıklamalı şablonla dağıtın
+    - OpenClaw'u Railway'e Dağıtma
+    - Tarayıcı tabanlı Denetim Kullanıcı Arabirimi ile tek tıklamayla buluta dağıtım yapmak istiyorsunuz
+summary: Tek tıklamalı şablonla OpenClaw'ı Railway üzerinde dağıtın
 title: Railway
 x-i18n:
-    generated_at: "2026-04-23T09:04:46Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 989c8467ead04b8aa7c94101abd99c936ecd3e451fe728afe8c2f2bd5a78df48
-    source_path: install/railway.mdx
-    workflow: 15
+    generated_at: "2026-07-12T11:54:44Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: cbef00b8de61545e9971b18164472c2f47fe607f69ec36f83a27a11b65ea863f
+    source_path: install/railway.mdx
+    workflow: 16
 ---
 
-# Railway
-
-OpenClaw'ı Railway üzerinde tek tıklamalı şablonla dağıtın ve web Control UI üzerinden erişin.
-Bu, "sunucuda terminal yok" için en kolay yoldur: Gateway'i Railway sizin için çalıştırır.
-
-## Hızlı kontrol listesi (yeni kullanıcılar)
-
-1. Aşağıdaki **Railway'de dağıt** düğmesine tıklayın.
-2. `/data` konumuna bağlanan bir **Volume** ekleyin.
-3. Gerekli **Variables** değerlerini ayarlayın (en azından `OPENCLAW_GATEWAY_PORT` ve `OPENCLAW_GATEWAY_TOKEN`).
-4. `8080` portunda **HTTP Proxy**'yi etkinleştirin.
-5. `https://<your-railway-domain>/openclaw` adresini açın ve yapılandırılmış paylaşılan gizli anahtarı kullanarak bağlanın. Bu şablon varsayılan olarak `OPENCLAW_GATEWAY_TOKEN` kullanır; bunu parola kimlik doğrulamasıyla değiştirirseniz onun yerine bu parolayı kullanın.
+OpenClaw'ı tek tıklamalı bir şablonla Railway üzerinde dağıtın ve web Denetim Arayüzü üzerinden erişin. Bu, en kolay "sunucuda terminal gerektirmeyen" yöntemdir: Railway, Gateway'i sizin için çalıştırır.
 
 ## Tek tıklamayla dağıtım
 
 <a href="https://railway.com/deploy/clawdbot-railway-template" target="_blank" rel="noreferrer">
-  Railway'de dağıt
+  Railway üzerinde dağıt
 </a>
 
-Dağıtımdan sonra genel URL'nizi **Railway → hizmetiniz → Settings → Domains** içinde bulun.
+<Steps>
+  <Step title="Şablonu dağıtın">
+    Yukarıdaki **Deploy on Railway** düğmesine tıklayın.
+  </Step>
 
-Railway ya:
+<Step title="Birim ekleyin">
+  `/data` konumuna bağlanan bir birim ekleyin (kalıcı durum için gereklidir).
+</Step>
 
-- size oluşturulmuş bir alan adı verir (çoğunlukla `https://<something>.up.railway.app`), veya
-- bir tane bağladıysanız özel alan adınızı kullanır.
+  <Step title="Değişkenleri ayarlayın">
+    Hizmette gerekli **Variables** değerlerini ayarlayın:
 
-Ardından şunu açın:
+    - `OPENCLAW_GATEWAY_PORT=8080` (gerekli -- Public Networking bölümündeki bağlantı noktasıyla eşleşmelidir)
+    - `OPENCLAW_GATEWAY_TOKEN` (gerekli; yönetici gizli bilgisi olarak değerlendirin)
+    - `OPENCLAW_STATE_DIR=/data/.openclaw` (önerilir)
+    - `OPENCLAW_WORKSPACE_DIR=/data/workspace` (önerilir)
 
-- `https://<your-railway-domain>/openclaw` — Control UI
+  </Step>
 
-## Elde ettikleriniz
+<Step title="Genel ağ erişimini etkinleştirin">
+  **Public Networking** altında, hizmet için `8080` bağlantı noktasında **HTTP Proxy** seçeneğini etkinleştirin.
+</Step>
 
-- Barındırılan OpenClaw Gateway + Control UI
-- `openclaw.json`,
-  ajan başına `auth-profiles.json`, kanal/sağlayıcı durumu, oturumlar ve
-  çalışma alanının yeniden dağıtımlarda kalıcı olması için Railway Volume (`/data`) üzerinden kalıcı depolama
+  <Step title="Bağlanın">
+    Genel URL'nizi **Railway -> your service -> Settings -> Domains** konumunda bulun. Bu, oluşturulmuş bir alan adı (genellikle `https://<something>.up.railway.app`) veya eklediğiniz özel alan adı olabilir.
 
-## Gerekli Railway ayarları
+    `https://<your-railway-domain>/openclaw` adresini açın ve yapılandırılmış paylaşılan gizli bilgiyi kullanarak bağlanın. Şablon varsayılan olarak `OPENCLAW_GATEWAY_TOKEN` kullanır; bunu parola kimlik doğrulamasıyla değiştirirseniz onun yerine bu parolayı kullanın.
 
-### Public Networking
+  </Step>
+</Steps>
 
-Hizmet için **HTTP Proxy**'yi etkinleştirin.
+## Elde edecekleriniz
 
-- Port: `8080`
+- Barındırılan OpenClaw Gateway + Denetim Arayüzü
+- Railway Volume (`/data`) üzerinden kalıcı depolama; böylece `openclaw.json`, her aracıya özgü `auth-profiles.json`, kanal/sağlayıcı durumu, oturumlar ve çalışma alanı yeniden dağıtımlarda korunur
 
-### Volume (zorunlu)
+## Kanal bağlama
 
-Şu konuma bağlanan bir volume ekleyin:
+Kanal kurulum talimatları için `/openclaw` adresindeki Denetim Arayüzünü kullanın veya Railway kabuğu üzerinden `openclaw onboard` komutunu çalıştırın:
 
-- `/data`
-
-### Variables
-
-Hizmet üzerinde şu değişkenleri ayarlayın:
-
-- `OPENCLAW_GATEWAY_PORT=8080` (zorunlu — Public Networking içindeki portla eşleşmelidir)
-- `OPENCLAW_GATEWAY_TOKEN` (zorunlu; yönetici sırrı olarak değerlendirin)
-- `OPENCLAW_STATE_DIR=/data/.openclaw` (önerilir)
-- `OPENCLAW_WORKSPACE_DIR=/data/workspace` (önerilir)
-
-## Bir kanal bağlayın
-
-Kanal kurulum yönergeleri için `/openclaw` üzerindeki Control UI'yi kullanın veya Railway'nin shell'i üzerinden `openclaw onboard` çalıştırın:
-
-- [Telegram](/tr/channels/telegram) (en hızlısı — yalnızca bir bot token'ı)
 - [Discord](/tr/channels/discord)
+- [Telegram](/tr/channels/telegram) (en hızlısı -- yalnızca bir bot belirteci gerekir)
 - [Tüm kanallar](/tr/channels)
 
-## Yedekler ve geçiş
+## Yedeklemeler ve geçiş
 
 Durumunuzu, yapılandırmanızı, kimlik doğrulama profillerinizi ve çalışma alanınızı dışa aktarın:
 
@@ -90,11 +74,10 @@ Durumunuzu, yapılandırmanızı, kimlik doğrulama profillerinizi ve çalışma
 openclaw backup create
 ```
 
-Bu, OpenClaw durumu ile birlikte yapılandırılmış
-çalışma alanını da içeren taşınabilir bir yedek arşivi oluşturur. Ayrıntılar için bkz. [Backup](/tr/cli/backup).
+Bu komut, OpenClaw durumu ve yapılandırılmış çalışma alanlarını içeren taşınabilir bir yedekleme arşivi oluşturur. Ayrıntılar için [Yedekleme](/tr/cli/backup) bölümüne bakın.
 
 ## Sonraki adımlar
 
-- Mesajlaşma kanallarını kurun: [Kanallar](/tr/channels)
+- Mesajlaşma kanallarını ayarlayın: [Kanallar](/tr/channels)
 - Gateway'i yapılandırın: [Gateway yapılandırması](/tr/gateway/configuration)
 - OpenClaw'ı güncel tutun: [Güncelleme](/tr/install/updating)

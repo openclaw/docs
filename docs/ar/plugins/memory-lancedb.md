@@ -1,45 +1,42 @@
 ---
 read_when:
-    - أنت تقوم بتكوين Plugin memory-lancedb
+    - أنت تُعِدّ Plugin ‏memory-lancedb
     - تريد ذاكرة طويلة الأمد مدعومة بـ LanceDB مع الاستدعاء التلقائي أو الالتقاط التلقائي
     - أنت تستخدم تضمينات محلية متوافقة مع OpenAI مثل Ollama
 sidebarTitle: Memory LanceDB
-summary: تكوين Plugin الذاكرة الخارجي الرسمي LanceDB، بما في ذلك التضمينات المحلية المتوافقة مع Ollama
+summary: تهيئة Plugin الذاكرة الخارجي الرسمي LanceDB، بما في ذلك التضمينات المحلية المتوافقة مع Ollama
 title: ذاكرة LanceDB
 x-i18n:
-    generated_at: "2026-06-27T18:07:27Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:12:10Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4142a755e788418a8b9c64a6ff3a8ce3c520bd6be09b685929478ae0754f7d39
+    source_hash: cdcf5ef7b7fbb8bf6055363d86782cfa36df193fc724406dba06c1380fd9f434
     source_path: plugins/memory-lancedb.md
     workflow: 16
 ---
 
-`memory-lancedb` هو Plugin ذاكرة خارجي رسمي يخزن الذاكرة طويلة الأمد في
-LanceDB ويستخدم التضمينات للاسترجاع. يمكنه استرجاع الذكريات ذات الصلة تلقائيا
-قبل دور النموذج والتقاط الحقائق المهمة بعد الرد.
+`memory-lancedb` هو Plugin خارجي رسمي يخزّن الذاكرة طويلة الأمد في
+LanceDB مع البحث المتجهي. ويمكنه استدعاء الذكريات ذات الصلة تلقائيًا قبل دور
+النموذج والتقاط الحقائق المهمة تلقائيًا بعد الاستجابة.
 
-استخدمه عندما تريد قاعدة بيانات متجهات محلية للذاكرة، أو تحتاج إلى نقطة نهاية
-تضمين متوافقة مع OpenAI، أو تريد إبقاء قاعدة بيانات الذاكرة خارج مخزن الذاكرة
-المدمج الافتراضي.
+استخدمه لقاعدة بيانات متجهية محلية، أو نقطة نهاية للتضمينات متوافقة مع OpenAI، أو
+مخزن ذاكرة خارج الواجهة الخلفية الافتراضية المضمنة للذاكرة.
 
 ## التثبيت
-
-ثبّت `memory-lancedb` قبل تعيين `plugins.slots.memory = "memory-lancedb"`:
 
 ```bash
 openclaw plugins install @openclaw/memory-lancedb
 ```
 
-ينشر Plugin على npm ولا يكون مضمنًا في صورة وقت تشغيل OpenClaw.
-يكتب المثبّت إدخال Plugin ويبدّل خانة الذاكرة عندما لا يملكها أي
-Plugin آخر.
+يُنشر Plugin على npm؛ ولا يكون مضمّنًا في صورة بيئة تشغيل OpenClaw.
+تؤدي عملية تثبيته إلى كتابة إدخال Plugin وتمكينه وتبديل
+`plugins.slots.memory` إلى `memory-lancedb`. إذا كان Plugin آخر يشغل حاليًا
+فتحة الذاكرة، فسيُعطّل ذلك Plugin مع عرض تحذير.
 
 <Note>
-`memory-lancedb` هو Plugin Active Memory. فعّله بتحديد خانة الذاكرة
-باستخدام `plugins.slots.memory = "memory-lancedb"`. يمكن تشغيل Plugins مرافقة مثل
-`memory-wiki` إلى جانبه، لكن Plugin واحدًا فقط يملك خانة Active Memory.
+يمكن أن تعمل Plugins المصاحبة مثل `memory-wiki` بجانب `memory-lancedb`،
+لكن لا يمكن إلا لـ Plugin واحد شغل فتحة الذاكرة النشطة في كل مرة.
 </Note>
 
 ## البدء السريع
@@ -67,57 +64,47 @@ Plugin آخر.
 }
 ```
 
-أعد تشغيل Gateway بعد تغيير إعدادات Plugin:
+أعد تشغيل Gateway بعد تغيير إعدادات Plugin، ثم تحقق من تحميله:
 
 ```bash
 openclaw gateway restart
-```
-
-ثم تحقق من تحميل Plugin:
-
-```bash
 openclaw plugins list
 ```
 
-## التضمينات المدعومة بالمزوّدين
+## إعدادات التضمين
 
-يمكن لـ `memory-lancedb` استخدام محولات مزوّد تضمينات الذاكرة نفسها التي يستخدمها
-`memory-core`. عيّن `embedding.provider` واحذف `embedding.apiKey` لاستخدام
-ملف تعريف المصادقة المهيأ للمزوّد، أو متغير البيئة، أو
-`models.providers.<provider>.apiKey`.
+`embedding` مطلوب ويجب أن يتضمن حقلاً واحدًا على الأقل. القيمة الافتراضية لـ
+`provider` هي `openai`، والقيمة الافتراضية لـ `model` هي `text-embedding-3-small`.
 
-```json5
-{
-  plugins: {
-    slots: {
-      memory: "memory-lancedb",
-    },
-    entries: {
-      "memory-lancedb": {
-        enabled: true,
-        config: {
-          embedding: {
-            provider: "openai",
-            model: "text-embedding-3-small",
-          },
-          autoRecall: true,
-        },
-      },
-    },
-  },
-}
-```
+| الحقل                  | النوع          | ملاحظات                                                                    |
+| ---------------------- | ------------- | ------------------------------------------------------------------------ |
+| `embedding.provider`   | سلسلة نصية        | معرّف المهايئ، مثل `openai` و`github-copilot` و`ollama`. القيمة الافتراضية `openai`. |
+| `embedding.model`      | سلسلة نصية        | القيمة الافتراضية `text-embedding-3-small`.                                        |
+| `embedding.apiKey`     | سلسلة نصية        | اختياري؛ يدعم توسيع `${ENV_VAR}`.                               |
+| `embedding.baseUrl`    | سلسلة نصية        | اختياري؛ يدعم توسيع `${ENV_VAR}`.                               |
+| `embedding.dimensions` | عدد صحيح (>=1) | مطلوب للنماذج غير الموجودة في الجدول المضمن (انظر أدناه).               |
 
-يعمل هذا المسار مع ملفات تعريف مصادقة المزوّد التي تعرض بيانات اعتماد التضمينات.
-على سبيل المثال، يمكن استخدام GitHub Copilot عندما يدعم ملف تعريف/خطة Copilot
-التضمينات:
+يوجد مساران للطلبات:
+
+- **مسار مهايئ المزوّد** (الافتراضي): عيّن `embedding.provider` واترك
+  `embedding.apiKey`/`embedding.baseUrl` دون تعيين. يحل Plugin ملف تعريف
+  المصادقة المُعدّ للمزوّد، أو متغير البيئة، أو
+  `models.providers.<provider>.apiKey` من خلال مهايئات تضمين الذاكرة نفسها
+  التي يستخدمها `memory-core`. هذا هو المسار الخاص بـ `github-copilot` و`ollama`
+  وأي مزوّد مضمّن آخر يدعم التضمينات.
+- **مسار العميل المباشر المتوافق مع OpenAI**: اترك `embedding.provider` دون تعيين
+  (أو عيّنه إلى `"openai"`) وعيّن `embedding.apiKey` مع `embedding.baseUrl`. استخدم هذا
+  لنقطة نهاية تضمينات أولية متوافقة مع OpenAI لا يتوفر لها مهايئ مزوّد
+  مضمّن.
+
+لا تُعد OAuth الخاصة بـ OpenAI Codex / ChatGPT بيانات اعتماد لتضمينات منصة OpenAI.
+لاستخدام تضمينات OpenAI، استخدم ملف تعريف مصادقة بمفتاح OpenAI API، أو `OPENAI_API_KEY`، أو
+`models.providers.openai.apiKey`. ينبغي للمستخدمين الذين لا يملكون إلا OAuth اختيار مزوّد آخر
+يدعم التضمينات، مثل `github-copilot` أو `ollama`.
 
 ```json5
 {
   plugins: {
-    slots: {
-      memory: "memory-lancedb",
-    },
     entries: {
       "memory-lancedb": {
         enabled: true,
@@ -133,16 +120,43 @@ openclaw plugins list
 }
 ```
 
-OpenAI Codex / ChatGPT OAuth ليس بيانات اعتماد تضمينات OpenAI Platform.
-لتضمينات OpenAI، استخدم ملف تعريف مصادقة بمفتاح OpenAI API،
-أو `OPENAI_API_KEY`، أو `models.providers.openai.apiKey`. يمكن للمستخدمين المعتمدين على OAuth فقط استخدام
-مزوّد آخر قادر على التضمين مثل GitHub Copilot أو Ollama.
+ترفض بعض نقاط نهاية التضمينات المتوافقة مع OpenAI المعلمة `encoding_format`؛
+بينما تتجاهلها نقاط أخرى وتعيد دائمًا `number[]`. يحذف `memory-lancedb`
+المعلمة `encoding_format` من الطلبات ويقبل استجابات إما على شكل مصفوفة أعداد عشرية أو
+قيم float32 مرمّزة بـ base64، ولذلك يعمل شكلا الاستجابة دون إعدادات إضافية.
+
+### الأبعاد
+
+يتضمن OpenClaw أبعادًا مضمنة فقط لـ `text-embedding-3-small`‏ (1536) و
+`text-embedding-3-large`‏ (3072). يحتاج أي نموذج آخر إلى قيمة صريحة لـ
+`embedding.dimensions` حتى يتمكن LanceDB من إنشاء عمود المتجهات، مثل
+نموذج ZhiPu‏ `embedding-3` ذي 2048 بُعدًا:
+
+```json5
+{
+  plugins: {
+    entries: {
+      "memory-lancedb": {
+        enabled: true,
+        config: {
+          embedding: {
+            apiKey: "${ZHIPU_API_KEY}",
+            baseUrl: "https://open.bigmodel.cn/api/paas/v4",
+            model: "embedding-3",
+            dimensions: 2048,
+          },
+        },
+      },
+    },
+  },
+}
+```
 
 ## تضمينات Ollama
 
-لتضمينات Ollama، يفضّل استخدام مزوّد تضمينات Ollama المضمن. يستخدم نقطة نهاية
-Ollama الأصلية `/api/embed` ويتبع قواعد المصادقة/عنوان URL الأساسي نفسها مثل
-مزوّد Ollama الموثق في [Ollama](/ar/providers/ollama).
+استخدم مسار مهايئ مزوّد Ollama المضمّن (`embedding.provider: "ollama"`).
+يستدعي هذا المسار نقطة النهاية الأصلية `/api/embed` في Ollama ويتبع قواعد المصادقة/عنوان URL
+الأساسي نفسها الخاصة بمزوّد [Ollama](/ar/providers/ollama).
 
 ```json5
 {
@@ -170,105 +184,72 @@ Ollama الأصلية `/api/embed` ويتبع قواعد المصادقة/عنو
 }
 ```
 
-عيّن `dimensions` لنماذج التضمين غير القياسية. يعرف OpenClaw
-الأبعاد الخاصة بـ `text-embedding-3-small` و`text-embedding-3-large`؛ وتحتاج
-النماذج المخصصة إلى القيمة في الإعدادات كي يتمكن LanceDB من إنشاء عمود المتجهات.
+لا يوجد `mxbai-embed-large` في جدول الأبعاد المضمن، لذا تكون `dimensions`
+مطلوبة. بالنسبة إلى نماذج التضمين المحلية الصغيرة، اخفض `recallMaxChars` إذا أعاد
+الخادم المحلي أخطاء طول السياق.
 
-بالنسبة إلى نماذج التضمين المحلية الصغيرة، خفّض `recallMaxChars` إذا ظهرت لك أخطاء
-طول السياق من الخادم المحلي.
+## حدود الاستدعاء والالتقاط
 
-## المزوّدون المتوافقون مع OpenAI
+| الإعداد           | القيمة الافتراضية | النطاق                        | ينطبق على                                                 |
+| ----------------- | ------- | ---------------------------- | ---------------------------------------------------------- |
+| `recallMaxChars`  | `1000`  | 100-10000                    | النص المرسل إلى API التضمين للاستدعاء.                 |
+| `captureMaxChars` | `500`   | 100-10000                    | طول الرسالة المؤهلة للالتقاط التلقائي.                  |
+| `customTriggers`  | `[]`    | من 0 إلى 50 عنصرًا، كل منها <=100 حرف | العبارات الحرفية التي تجعل الالتقاط التلقائي يأخذ الرسالة في الحسبان. |
 
-ترفض بعض مزوّدات التضمين المتوافقة مع OpenAI معلمة `encoding_format`،
-بينما تتجاهلها أخرى وتعيد دائمًا متجهات `number[]`.
-لذلك يحذف `memory-lancedb` معلمة `encoding_format` في طلبات التضمين ويقبل
-إما استجابات مصفوفات الأعداد العشرية أو استجابات float32 المرمزة بـ base64.
+يضع `recallMaxChars` حدًا لاستعلام الاستدعاء التلقائي `before_prompt_build`،
+وأداة `memory_recall`، ومسار استعلام `memory_forget`، وأمر `openclaw ltm
+search`. يضمّن الاستدعاء التلقائي أحدث رسالة للمستخدم في الدور، ولا يعود
+إلى الموجّه الكامل إلا عند عدم وجود رسالة مستخدم، مما يُبقي بيانات القناة
+الوصفية وكتل الموجّه الكبيرة خارج طلب التضمين.
 
-إذا كانت لديك نقطة نهاية تضمينات خام متوافقة مع OpenAI ولا تملك
-محول مزوّد مضمنًا، فاحذف `embedding.provider` (أو اتركه كـ `openai`) وعيّن
-`embedding.apiKey` مع `embedding.baseUrl`. يحافظ هذا على مسار العميل المباشر
-المتوافق مع OpenAI.
+يتحكم `captureMaxChars` في ما إذا كانت رسالة المستخدم الواردة من حدث `agent_end`
+الخاص بالدور قصيرة بما يكفي للنظر فيها للالتقاط التلقائي؛ ولا يؤثر في
+استعلامات الاستدعاء.
 
-عيّن `embedding.dimensions` للمزوّدين الذين لا تكون أبعاد نماذجهم مدمجة.
-على سبيل المثال، يستخدم ZhiPu `embedding-3` أبعادًا بقيمة `2048`:
+يضيف `customTriggers` عبارات حرفية للالتقاط التلقائي دون تعبيرات نمطية. تغطي المشغّلات
+المضمنة عبارات الذاكرة الشائعة بالإنجليزية والتشيكية والصينية واليابانية والكورية
+(`remember` و`prefer` و`记住` و`覚えて` و`기억해` وما شابهها).
 
-```json5
-{
-  plugins: {
-    entries: {
-      "memory-lancedb": {
-        enabled: true,
-        config: {
-          embedding: {
-            apiKey: "${ZHIPU_API_KEY}",
-            baseUrl: "https://open.bigmodel.cn/api/paas/v4",
-            model: "embedding-3",
-            dimensions: 2048,
-          },
-        },
-      },
-    },
-  },
-}
-```
-
-## حدود الاسترجاع والالتقاط
-
-يحتوي `memory-lancedb` على حدين منفصلين للنص:
-
-| الإعداد           | الافتراضي | النطاق     | ينطبق على                                                |
-| ----------------- | ------- | --------- | --------------------------------------------------------- |
-| `recallMaxChars`  | `1000`  | 100-10000 | النص المرسل إلى واجهة API التضمين للاسترجاع                 |
-| `captureMaxChars` | `500`   | 100-10000 | طول الرسالة المؤهلة للالتقاط التلقائي                  |
-| `customTriggers`  | `[]`    | 0-50      | عبارات حرفية تجعل الالتقاط التلقائي يأخذ رسالة في الاعتبار |
-
-يتحكم `recallMaxChars` في الاسترجاع التلقائي، وأداة `memory_recall`، ومسار استعلام
-`memory_forget`، و`openclaw ltm search`. يفضّل الاسترجاع التلقائي
-أحدث رسالة مستخدم من الدور، ويعود إلى الموجّه الكامل فقط عندما لا تكون هناك
-رسالة مستخدم متاحة. هذا يبقي بيانات تعريف القناة وكتل الموجّهات الكبيرة
-خارج طلب التضمين.
-
-يتحكم `captureMaxChars` فيما إذا كان الرد قصيرًا بما يكفي للنظر فيه
-للالتقاط التلقائي. ولا يحد من تضمينات استعلامات الاسترجاع.
-
-يتيح لك `customTriggers` إضافة عبارات التقاط تلقائي حرفية دون كتابة
-تعابير نمطية. تتضمن المشغلات المدمجة عبارات ذاكرة شائعة بالإنجليزية والتشيكية
-والصينية واليابانية والكورية.
+يرفض الالتقاط التلقائي أيضًا النص الذي يبدو كبيانات وصفية للغلاف/النقل،
+أو حمولات لحقن الموجّهات، أو سياق `<relevant-memories>` سبق حقنه،
+ويضع حدًا أقصى قدره 3 ذكريات ملتقطة لكل دور للوكيل.
 
 ## الأوامر
 
-عندما يكون `memory-lancedb` هو Plugin الذاكرة النشط، فإنه يسجل مساحة أسماء CLI
-`ltm`:
+يسجّل `memory-lancedb` نطاق CLI‏ `ltm` متى كان مثبّتًا
+(وليس فقط عندما يشغل فتحة الذاكرة النشطة):
 
 ```bash
-openclaw ltm list
-openclaw ltm search "project preferences"
+openclaw ltm list [--limit <n>] [--order-by-created-at]
+openclaw ltm search <query> [--limit <n>]
 openclaw ltm stats
 ```
 
-يشغّل الأمر الفرعي `query` استعلامًا غير متجهي على جدول LanceDB
-مباشرة:
+يشغّل `ltm query` استعلامًا غير متجهي مباشرةً على جدول LanceDB:
 
 ```bash
 openclaw ltm query --cols id,text,createdAt --limit 20
 openclaw ltm query --filter "category = 'preference'" --order-by createdAt:desc
 ```
 
-- `--cols <columns>`: قائمة سماح بالأعمدة مفصولة بفواصل (الافتراضي هو `id` و`text` و`importance` و`category` و`createdAt`).
-- `--filter <condition>`: عبارة WHERE بأسلوب SQL؛ محدودة بـ 200 حرف ومقيدة بالأحرف الأبجدية الرقمية، وعوامل المقارنة، وعلامات الاقتباس، والأقواس، ومجموعة صغيرة من علامات الترقيم الآمنة.
-- `--limit <n>`: عدد صحيح موجب؛ الافتراضي `10`.
-- `--order-by <column>:<asc|desc>`: فرز في الذاكرة يطبق بعد المرشح؛ يدرج عمود الفرز تلقائيًا في الإسقاط.
+| العلامة                              | القيمة الافتراضية                                 | ملاحظات                                                                                                                                     |
+| --------------------------------- | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `--cols <columns>`                | `id,text,importance,category,createdAt` | قائمة مسموح بها من الأعمدة مفصولة بفواصل.                                                                                                         |
+| `--filter <condition>`            | لا شيء                                    | عبارة WHERE بأسلوب SQL. الحد الأقصى 200 حرف؛ ولا يُسمح إلا بالأحرف والأرقام و`_-` والمسافات و`='"<>!.,()%*`.                              |
+| `--limit <n>`                     | `10`                                    | عدد صحيح موجب.                                                                                                                         |
+| `--order-by <column>:<asc\|desc>` | لا شيء                                    | يُرتّب في الذاكرة بعد تشغيل عامل التصفية؛ ويُضاف عمود الترتيب تلقائيًا إلى الإسقاط ثم يُحذف من المخرجات إذا لم يكن مطلوبًا. |
 
-يحصل الوكلاء أيضًا على أدوات ذاكرة LanceDB من Plugin الذاكرة النشط:
+تحصل الوكلاء على ثلاث أدوات من Plugin الذاكرة النشط:
 
-- `memory_recall` للاسترجاع المدعوم بـ LanceDB
-- `memory_store` لحفظ الحقائق والتفضيلات والقرارات والكيانات المهمة
-- `memory_forget` لإزالة الذكريات المطابقة
+- `memory_recall`: بحث متجهي في الذكريات المخزنة.
+- `memory_store`: يحفظ حقيقة أو تفضيلاً أو قرارًا أو كيانًا (ويرفض النص
+  الذي يبدو كحمولة لحقن الموجّهات، ويتخطى عمليات التخزين شبه المكررة).
+- `memory_forget`: يحذف باستخدام `memoryId`، أو باستخدام `query` (يحذف تلقائيًا تطابقًا واحدًا
+  بدرجة أعلى من 90%، وإلا يسرد معرّفات العناصر المرشحة لإزالة الالتباس).
 
 ## التخزين
 
-افتراضيًا، تعيش بيانات LanceDB تحت `~/.openclaw/memory/lancedb`. تجاوز
-المسار باستخدام `dbPath`:
+تكون بيانات LanceDB افتراضيًا في `~/.openclaw/memory/lancedb`. ويمكن تجاوز ذلك باستخدام `dbPath`:
 
 ```json5
 {
@@ -289,8 +270,8 @@ openclaw ltm query --filter "category = 'preference'" --order-by createdAt:desc
 }
 ```
 
-يقبل `storageOptions` أزواج مفاتيح/قيم نصية لخلفيات تخزين LanceDB ويدعم
-توسيع `${ENV_VAR}`:
+يقبل `storageOptions` أزواج مفاتيح/قيم نصية لواجهات التخزين الخلفية في LanceDB
+(مثل تخزين الكائنات المتوافق مع S3) ويدعم توسيع `${ENV_VAR}`:
 
 ```json5
 {
@@ -316,32 +297,29 @@ openclaw ltm query --filter "category = 'preference'" --order-by createdAt:desc
 }
 ```
 
-## تبعيات وقت التشغيل
+## تبعيات بيئة التشغيل ودعم المنصات
 
-يعتمد `memory-lancedb` على الحزمة الأصلية `@lancedb/lancedb`. يتعامل OpenClaw
-المعبأ مع تلك الحزمة كجزء من حزمة Plugin. لا يصلح بدء تشغيل Gateway
-تبعيات Plugin؛ إذا كانت التبعية مفقودة، فأعد تثبيت حزمة Plugin أو
-حدّثها ثم أعد تشغيل Gateway.
+يعتمد `memory-lancedb` على الحزمة الأصلية `@lancedb/lancedb` المملوكة
+لحزمة Plugin (وليس لتوزيعة OpenClaw الأساسية). لا يصلح بدء تشغيل Gateway
+تبعيات Plugin؛ فإذا كانت التبعية الأصلية مفقودة أو تعذر تحميلها،
+فأعد تثبيت حزمة Plugin أو حدّثها، ثم أعد تشغيل Gateway.
 
-إذا سجّل تثبيت أقدم خطأ `dist/package.json` مفقودًا أو خطأ
-`@lancedb/lancedb` مفقودًا أثناء تحميل Plugin، فرَقِّ OpenClaw وأعد تشغيل
-Gateway.
-
-إذا سجّل Plugin أن LanceDB غير متاح على `darwin-x64`، فاستخدم خلفية
-الذاكرة الافتراضية على ذلك الجهاز، أو انقل Gateway إلى منصة مدعومة، أو
-عطّل `memory-lancedb`.
+لا تنشر `@lancedb/lancedb` إصدارًا أصليًا لـ `darwin-x64`‏ (أجهزة Mac بمعالج Intel).
+على هذه المنصة، يسجّل Plugin عند التحميل أن LanceDB غير متاح؛ استخدم
+واجهة الذاكرة الخلفية الافتراضية، أو شغّل Gateway على منصة/بنية مدعومة،
+أو عطّل `memory-lancedb`.
 
 ## استكشاف الأخطاء وإصلاحها
 
 ### يتجاوز طول الإدخال طول السياق
 
-يعني هذا عادة أن نموذج التضمين رفض استعلام الاسترجاع:
+رفض نموذج التضمين استعلام الاستدعاء:
 
 ```text
 memory-lancedb: recall failed: Error: 400 the input length exceeds the context length
 ```
 
-عيّن قيمة أقل لـ `recallMaxChars`، ثم أعد تشغيل Gateway:
+اخفض `recallMaxChars`، ثم أعد تشغيل Gateway:
 
 ```json5
 {
@@ -357,37 +335,38 @@ memory-lancedb: recall failed: Error: 400 the input length exceeds the context l
 }
 ```
 
-بالنسبة إلى Ollama، تحقق أيضًا من إمكانية وصول خادم التضمين من مضيف Gateway:
+بالنسبة إلى Ollama، تحقق أيضًا من إمكانية الوصول إلى خادم التضمين من مضيف Gateway
+باستخدام نقطة نهاية التضمين الأصلية الخاصة به:
 
 ```bash
-curl http://127.0.0.1:11434/v1/embeddings \
+curl http://127.0.0.1:11434/api/embed \
   -H "Content-Type: application/json" \
   -d '{"model":"mxbai-embed-large","input":"hello"}'
 ```
 
 ### نموذج تضمين غير مدعوم
 
-بدون `dimensions`، لا تكون معروفة إلا أبعاد تضمين OpenAI المدمجة.
-بالنسبة إلى نماذج التضمين المحلية أو المخصصة، عيّن `embedding.dimensions` إلى حجم
-المتجه الذي يبلّغ عنه ذلك النموذج.
+دون `embedding.dimensions`، لا تكون معروفة سوى أبعاد تضمين OpenAI المضمنة
+(`text-embedding-3-small` و`text-embedding-3-large`). لأي نموذج آخر،
+عيّن `embedding.dimensions` إلى حجم المتجه الذي يبلّغ عنه ذلك النموذج.
 
-### يتم تحميل Plugin لكن لا تظهر أي ذكريات
+### يتم تحميل Plugin ولكن لا تظهر أي ذكريات
 
-تحقق من أن `plugins.slots.memory` يشير إلى `memory-lancedb`، ثم شغّل:
+تأكّد من أن `plugins.slots.memory` يشير إلى `memory-lancedb`، ثم شغّل:
 
 ```bash
 openclaw ltm stats
 openclaw ltm search "recent preference"
 ```
 
-إذا كان `autoCapture` معطلًا، فسوف يسترجع Plugin الذكريات الموجودة لكنه
-لن يخزن ذكريات جديدة تلقائيًا. استخدم أداة `memory_store` أو فعّل
-`autoCapture` إذا كنت تريد الالتقاط التلقائي.
+إذا كان `autoCapture` معطّلًا، فسيظل Plugin يسترجع الذكريات الموجودة، لكنه
+لن يخزّن ذكريات جديدة تلقائيًا. استخدم أداة `memory_store`، أو فعّل
+`autoCapture`.
 
 ## ذو صلة
 
 - [نظرة عامة على الذاكرة](/ar/concepts/memory)
 - [Active Memory](/ar/concepts/active-memory)
-- [بحث الذاكرة](/ar/concepts/memory-search)
-- [Memory Wiki](/ar/plugins/memory-wiki)
+- [البحث في الذاكرة](/ar/concepts/memory-search)
+- [ويكي الذاكرة](/ar/plugins/memory-wiki)
 - [Ollama](/ar/providers/ollama)

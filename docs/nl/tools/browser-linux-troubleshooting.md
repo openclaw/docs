@@ -1,64 +1,48 @@
 ---
 read_when: Browser control fails on Linux, especially with snap Chromium
-summary: Los CDP-opstartproblemen in Chrome/Brave/Edge/Chromium op voor de browserbesturing van OpenClaw op Linux
-title: Browserproblemen oplossen
+summary: Problemen met het opstarten van Chrome/Brave/Edge/Chromium CDP voor OpenClaw-browserbesturing op Linux oplossen
+title: Problemen met de browser oplossen
 x-i18n:
-    generated_at: "2026-04-29T23:21:00Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:20:32Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d9a91ea42a8a600163bcf66ad398677175bd0c5186d3e1dddb629a55c2ea66ed
+    source_hash: e0256e8ee441802086cd486923060be54f8966b423e5dcb71fc8961bbab5d729
     source_path: tools/browser-linux-troubleshooting.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-## Probleem: "Failed to start Chrome CDP on port 18800"
+## Probleem: Chrome CDP kan niet worden gestart op poort 18800
 
-De browserbesturingsserver van OpenClaw kan Chrome/Brave/Edge/Chromium niet starten met de fout:
-
-```
-{"error":"Error: Failed to start Chrome CDP on port 18800 for profile \"openclaw\"."}
+```json
+{ "error": "Error: Failed to start Chrome CDP on port 18800 for profile \"openclaw\"." }
 ```
 
 ### Hoofdoorzaak
 
-Op Ubuntu (en veel Linux-distributies) is de standaardinstallatie van Chromium een **snap-pakket**. De AppArmor-afscherming van snap verstoort de manier waarop OpenClaw het browserproces start en bewaakt.
+Op Ubuntu en de meeste Linux-distributies installeert `apt install chromium` een snap-wrapper en geen echte browser:
 
-De opdracht `apt install chromium` installeert een stubpakket dat doorverwijst naar snap:
-
-```
+```text
 Note, selecting 'chromium-browser' instead of 'chromium'
 chromium-browser is already the newest version (2:1snap1-0ubuntu2).
 ```
 
-Dit is GEEN echte browser - het is alleen een wrapper.
+De AppArmor-beperkingen van snap verstoren de manier waarop OpenClaw het browserproces start en bewaakt.
 
-Andere veelvoorkomende Linux-startfouten:
+Andere veelvoorkomende opstartfouten in Linux:
 
-- `The profile appears to be in use by another Chromium process` betekent dat Chrome
-  verouderde `Singleton*`-lockbestanden in de beheerde profielmap heeft gevonden. OpenClaw
-  verwijdert die locks en probeert het eenmaal opnieuw wanneer de lock verwijst naar een dood
-  proces of een proces op een andere host.
-- `Missing X server or $DISPLAY` betekent dat er expliciet om een zichtbare browser is
-  gevraagd op een host zonder desktopsessie. Standaard vallen lokale beheerde
-  profielen op Linux nu terug op headless-modus wanneer `DISPLAY` en
-  `WAYLAND_DISPLAY` allebei niet zijn ingesteld. Als je `OPENCLAW_BROWSER_HEADLESS=0`,
-  `browser.headless: false` of `browser.profiles.<name>.headless: false` hebt ingesteld,
-  verwijder dan die headed-override, stel `OPENCLAW_BROWSER_HEADLESS=1` in, start `Xvfb`,
-  voer `openclaw browser start --headless` uit voor een eenmalige beheerde start, of voer
-  OpenClaw uit in een echte desktopsessie.
+- `The profile appears to be in use by another Chromium process`: verouderde `Singleton*`-vergrendelingsbestanden in de beheerde profielmap. OpenClaw verwijdert deze vergrendelingen en probeert het één keer opnieuw wanneer de vergrendeling verwijst naar een beëindigd proces of een proces op een andere host.
+- `Missing X server or $DISPLAY`: er is expliciet om een zichtbare browser gevraagd op een host zonder desktopsessie. Lokale beheerde profielen vallen in Linux terug op headless-modus wanneer zowel `DISPLAY` als `WAYLAND_DISPLAY` niet is ingesteld. Als u `OPENCLAW_BROWSER_HEADLESS=0`, `browser.headless: false` of `browser.profiles.<name>.headless: false` hebt ingesteld, verwijder dan die instelling voor zichtbare modus, stel `OPENCLAW_BROWSER_HEADLESS=1` in, start `Xvfb`, voer `openclaw browser start --headless` uit voor een eenmalige beheerde start of voer OpenClaw uit in een echte desktopsessie.
 
-### Oplossing 1: Installeer Google Chrome (Aanbevolen)
-
-Installeer het officiële Google Chrome `.deb`-pakket, dat niet door snap wordt gesandboxt:
+### Oplossing 1: installeer Google Chrome (aanbevolen)
 
 ```bash
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 sudo dpkg -i google-chrome-stable_current_amd64.deb
-sudo apt --fix-broken install -y  # if there are dependency errors
+sudo apt --fix-broken install -y  # bij afhankelijkheidsfouten
 ```
 
-Werk daarna je OpenClaw-configuratie bij (`~/.openclaw/openclaw.json`):
+Werk `~/.openclaw/openclaw.json` bij:
 
 ```json
 {
@@ -71,11 +55,9 @@ Werk daarna je OpenClaw-configuratie bij (`~/.openclaw/openclaw.json`):
 }
 ```
 
-### Oplossing 2: Gebruik Snap Chromium met alleen-koppelenmodus
+### Oplossing 2: gebruik snap Chromium in de modus voor uitsluitend koppelen
 
-Als je snap Chromium moet gebruiken, configureer OpenClaw dan om te koppelen aan een handmatig gestarte browser:
-
-1. Werk de configuratie bij:
+Als u snap Chromium moet behouden, configureert u OpenClaw om verbinding te maken met een handmatig gestarte browser in plaats van deze zelf te starten:
 
 ```json
 {
@@ -88,7 +70,7 @@ Als je snap Chromium moet gebruiken, configureer OpenClaw dan om te koppelen aan
 }
 ```
 
-2. Start Chromium handmatig:
+Start Chromium handmatig:
 
 ```bash
 chromium-browser --headless --no-sandbox --disable-gpu \
@@ -97,7 +79,7 @@ chromium-browser --headless --no-sandbox --disable-gpu \
   about:blank &
 ```
 
-3. Maak eventueel een systemd-gebruikersservice om Chrome automatisch te starten:
+U kunt Chromium desgewenst automatisch starten met een systemd-gebruikersservice:
 
 ```ini
 # ~/.config/systemd/user/openclaw-browser.service
@@ -114,68 +96,55 @@ RestartSec=5
 WantedBy=default.target
 ```
 
-Schakel in met: `systemctl --user enable --now openclaw-browser.service`
+```bash
+systemctl --user enable --now openclaw-browser.service
+```
 
 ### Controleren of de browser werkt
 
-Controleer de status:
-
 ```bash
 curl -s http://127.0.0.1:18791/ | jq '{running, pid, chosenBrowser}'
-```
-
-Test browsen:
-
-```bash
 curl -s -X POST http://127.0.0.1:18791/start
 curl -s http://127.0.0.1:18791/tabs
 ```
 
-### Configuratiereferentie
+### Configuratieoverzicht
 
-| Optie                            | Beschrijving                                                        | Standaard                                                   |
-| -------------------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------- |
-| `browser.enabled`                | Browserbesturing inschakelen                                        | `true`                                                      |
-| `browser.executablePath`         | Pad naar een op Chromium gebaseerde browser-binary (Chrome/Brave/Edge/Chromium) | automatisch gedetecteerd (geeft voorkeur aan standaardbrowser wanneer die op Chromium is gebaseerd) |
-| `browser.headless`               | Uitvoeren zonder GUI                                                | `false`                                                     |
-| `OPENCLAW_BROWSER_HEADLESS`      | Override per proces voor headless-modus van lokale beheerde browser | niet ingesteld                                              |
-| `browser.noSandbox`              | Voeg de vlag `--no-sandbox` toe (nodig voor sommige Linux-setups)   | `false`                                                     |
-| `browser.attachOnly`             | Browser niet starten, alleen koppelen aan bestaande browser         | `false`                                                     |
-| `browser.cdpPort`                | Chrome DevTools Protocol-poort                                      | `18800`                                                     |
-| `browser.localLaunchTimeoutMs`   | Time-out voor lokale beheerde Chrome-detectie                       | `15000`                                                     |
-| `browser.localCdpReadyTimeoutMs` | Time-out voor CDP-gereedheid na lokale beheerde start               | `8000`                                                      |
+| Optie                            | Beschrijving                                                                 | Standaard                                                                |
+| -------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `browser.enabled`                | Browserbesturing inschakelen                                                 | `true`                                                                   |
+| `browser.executablePath`         | Pad naar een Chromium-browserprogramma (Chrome/Brave/Edge/Chromium)           | automatisch gedetecteerd (geeft de voorkeur aan de op Chromium gebaseerde standaardbrowser van het besturingssysteem) |
+| `browser.headless`               | Zonder grafische gebruikersinterface uitvoeren                               | `false`                                                                  |
+| `OPENCLAW_BROWSER_HEADLESS`      | Procesgebonden overschrijving voor de headless-modus van de lokaal beheerde browser | niet ingesteld                                                     |
+| `browser.noSandbox`              | De vlag `--no-sandbox` toevoegen (vereist voor sommige Linux-configuraties)   | `false`                                                                  |
+| `browser.attachOnly`             | Geen browser starten; alleen verbinding maken met een bestaande browser       | `false`                                                                  |
+| `browser.cdpPortRangeStart`      | Eerste lokale CDP-poort voor automatisch toegewezen profielen                 | `18800` (afgeleid van de Gateway-poort)                                  |
+| `browser.localLaunchTimeoutMs`   | Time-out voor het vinden van lokaal beheerde Chrome, maximaal `120000`        | `15000`                                                                  |
+| `browser.localCdpReadyTimeoutMs` | Time-out voor CDP-gereedheid na het lokaal beheerd starten, maximaal `120000` | `8000`                                                                   |
 
-Verhoog op Raspberry Pi, oudere VPS-hosts of trage opslag
-`browser.localLaunchTimeoutMs` wanneer Chrome meer tijd nodig heeft om zijn CDP HTTP-
-endpoint beschikbaar te maken. Verhoog `browser.localCdpReadyTimeoutMs` wanneer het starten lukt maar
-`openclaw browser start` nog steeds `not reachable after start` meldt. Waarden moeten
-positieve gehele getallen tot `120000` ms zijn; ongeldige configuratiewaarden worden geweigerd.
+Beide time-outwaarden moeten positieve gehele getallen van maximaal `120000` ms zijn; andere waarden worden geweigerd bij het laden van de configuratie. Verhoog op Raspberry Pi, oudere VPS-hosts of trage opslag `browser.localLaunchTimeoutMs` wanneer Chrome meer tijd nodig heeft om het HTTP-eindpunt van CDP beschikbaar te maken. Verhoog `browser.localCdpReadyTimeoutMs` wanneer het starten slaagt, maar `openclaw browser start` nog steeds `not reachable after start` meldt.
 
-### Probleem: "No Chrome tabs found for profile=\"user\""
+### Probleem: geen Chrome-tabbladen gevonden voor profile="user"
 
-Je gebruikt een `existing-session` / Chrome MCP-profiel. OpenClaw kan lokale Chrome zien,
-maar er zijn geen open tabbladen beschikbaar om aan te koppelen.
+U gebruikt het profiel `user` (`existing-session` / Chrome MCP) en er zijn geen geopende tabbladen waarmee verbinding kan worden gemaakt.
 
-Oplossingsopties:
+Mogelijke oplossingen:
 
-1. **Gebruik de beheerde browser:** `openclaw browser start --browser-profile openclaw`
-   (of stel `browser.defaultProfile: "openclaw"` in).
-2. **Gebruik Chrome MCP:** zorg ervoor dat lokale Chrome actief is met minstens één open tabblad, en probeer het daarna opnieuw met `--browser-profile user`.
+1. Gebruik in plaats daarvan de beheerde browser:
+   `openclaw browser --browser-profile openclaw start` (of stel
+   `browser.defaultProfile: "openclaw"` in).
+2. Laat lokale Chrome actief met ten minste één geopend tabblad en probeer het vervolgens opnieuw met
+   `--browser-profile user`.
 
 Opmerkingen:
 
-- `user` is alleen voor de host. Geef voor Linux-servers, containers of externe hosts de voorkeur aan CDP-profielen.
-- `user` / andere `existing-session`-profielen behouden de huidige Chrome MCP-beperkingen:
-  ref-gestuurde acties, hooks voor uploaden van één bestand, geen overrides voor dialoogtime-outs, geen
-  `wait --load networkidle`, en geen `responsebody`, PDF-export, download-
-  interceptie of batchacties.
-- Lokale `openclaw`-profielen wijzen `cdpPort`/`cdpUrl` automatisch toe; stel die alleen in voor externe CDP.
-- Externe CDP-profielen accepteren `http://`, `https://`, `ws://` en `wss://`.
-  Gebruik HTTP(S) voor `/json/version`-detectie, of WS(S) wanneer je browser-
-  service je een directe DevTools-socket-URL geeft.
+- `user` werkt alleen op de host. Geef op Linux-servers, in containers of op externe hosts de voorkeur aan CDP-profielen.
+- `user` en andere `existing-session`-profielen delen de huidige beperkingen van Chrome MCP: alleen acties op basis van referenties, één bestand per upload, geen overschrijvingen van `timeoutMs` voor dialoogvensters, geen `wait --load networkidle` en geen `responsebody`, PDF-export, onderschepping van downloads of batchacties.
+- Lokale profielen met het stuurprogramma `openclaw` wijzen automatisch `cdpPort`/`cdpUrl` toe; stel deze alleen handmatig in voor externe CDP.
+- Externe CDP-profielen accepteren `http://`, `https://`, `ws://` en `wss://`. Gebruik HTTP(S) voor detectie via `/json/version` of WS(S) wanneer uw browserservice u een rechtstreekse DevTools-socket-URL verstrekt.
 
 ## Gerelateerd
 
 - [Browser](/nl/tools/browser)
 - [Browseraanmelding](/nl/tools/browser-login)
-- [Browser WSL2-probleemoplossing](/nl/tools/browser-wsl2-windows-remote-cdp-troubleshooting)
+- [Problemen met Browser in WSL2 oplossen](/nl/tools/browser-wsl2-windows-remote-cdp-troubleshooting)

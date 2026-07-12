@@ -1,11 +1,11 @@
 ---
 read_when:
-    - novita Plugin'i kuruyor, yapılandırıyor veya denetliyorsunuz
+    - novita Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
 summary: OpenClaw'a Novita, Novita AI ve Novitaai model sağlayıcısı desteği ekler.
-title: Novita Plugin
+title: Novita Plugin'i
 x-i18n:
-    generated_at: "2026-06-28T01:01:35Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:38:10Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: ac6689ad781f0a0ead936521c1ce90a7347ed930b1e4ccd3d21efe640ac916c2
@@ -13,19 +13,19 @@ x-i18n:
     workflow: 16
 ---
 
-# Novita Plugin
+# Novita Plugin’i
 
-OpenClaw'a Novita, Novita AI, Novitaai model sağlayıcısı desteği ekler.
+OpenClaw’a Novita, Novita AI ve Novitaai model sağlayıcısı desteği ekler.
 
 ## Dağıtım
 
 - Paket: `@openclaw/novita-provider`
-- Kurulum yolu: OpenClaw'a dahildir
+- Kurulum yöntemi: OpenClaw’a dahildir
 
-## Yüzey
+## Kapsam
 
 sağlayıcılar: novita, novita-ai, novitaai
 
-## İlgili dokümanlar
+## İlgili belgeler
 
 - [novita](/tr/providers/novita)

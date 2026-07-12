@@ -1,151 +1,127 @@
 ---
 read_when:
-    - Je wilt een gecontaineriseerde gateway met Podman in plaats van Docker
-summary: OpenClaw uitvoeren in een rootless Podman-container
+    - U wilt een Gateway in een container met Podman in plaats van Docker
+summary: Voer OpenClaw uit in een rootless Podman-container
 title: Podman
 x-i18n:
-    generated_at: "2026-06-27T17:43:23Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:56:19Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3f6950956551dc3c274db33712cf66632fb5facbca4954bf67c30a8bff740c2f
+    source_hash: 2db1f2b0413d7b9e1b2007aaae2da9d07fa44a1b52901d4a6cbc6274e54567f1
     source_path: install/podman.md
     workflow: 16
 ---
 
-Voer de OpenClaw Gateway uit in een rootless Podman-container, beheerd door je huidige niet-rootgebruiker.
+Voer de OpenClaw Gateway uit in een rootless Podman-container, beheerd door uw huidige niet-rootgebruiker.
 
-Het beoogde model is:
+Het model:
 
-- Podman voert de gateway-container uit.
-- Je host-`openclaw` CLI is het besturingsvlak.
-- Persistente status staat standaard op de host onder `~/.openclaw`.
-- Dagelijks beheer gebruikt `openclaw --container <name> ...` in plaats van `sudo -u openclaw`, `podman exec` of een afzonderlijke servicegebruiker.
+- Podman voert de Gateway-container uit.
+- De `openclaw`-CLI op uw host is het besturingsvlak.
+- Persistente status bevindt zich standaard op de host onder `~/.openclaw`.
+- Voor dagelijks beheer gebruikt u `openclaw --container <name> ...` in plaats van `sudo -u openclaw`, `podman exec` of een afzonderlijke servicegebruiker.
 
 ## Vereisten
 
-- **Podman** in rootless-modus
-- **OpenClaw CLI** geïnstalleerd op de host
-- **Optioneel:** `systemd --user` als je door Quadlet beheerd automatisch starten wilt
-- **Optioneel:** `sudo` alleen als je `loginctl enable-linger "$(whoami)"` wilt voor opstartpersistentie op een headless host
+- **Podman** in rootless modus
+- **OpenClaw-CLI** geïnstalleerd op de host
+- **Optioneel:** `systemd --user` als u automatisch starten via Quadlet wilt beheren
+- **Optioneel:** `sudo`, alleen als u `loginctl enable-linger "$(whoami)"` wilt gebruiken om opstartpersistentie op een headless host mogelijk te maken
 
-## Snelstart
+## Snel aan de slag
 
 <Steps>
-  <Step title="Eenmalige installatie">
-    Voer vanuit de repo-root `./scripts/podman/setup.sh` uit.
+  <Step title="Eenmalige configuratie">
+    Voer vanuit de hoofdmap van de repository `./scripts/podman/setup.sh` uit.
+
+    Hiermee wordt `openclaw:local` gebouwd in uw rootless Podman-opslag (of `OPENCLAW_IMAGE` / `OPENCLAW_PODMAN_IMAGE` opgehaald indien ingesteld), wordt `~/.openclaw/openclaw.json` met `gateway.mode: "local"` aangemaakt indien dit bestand ontbreekt en wordt `~/.openclaw/.env` met een gegenereerd `OPENCLAW_GATEWAY_TOKEN` aangemaakt indien dit bestand ontbreekt.
+
+    Optionele omgevingsvariabelen voor de bouw:
+
+    | Variabele | Effect |
+    | --- | --- |
+    | `OPENCLAW_IMAGE` / `OPENCLAW_PODMAN_IMAGE` | Een bestaande/opgehaalde image gebruiken in plaats van `openclaw:local` te bouwen |
+    | `OPENCLAW_IMAGE_APT_PACKAGES` | Extra apt-pakketten installeren tijdens het bouwen van de image (accepteert ook het verouderde `OPENCLAW_DOCKER_APT_PACKAGES`) |
+    | `OPENCLAW_IMAGE_PIP_PACKAGES` | Extra Python-pakketten installeren tijdens het bouwen van de image; zet versies vast en gebruik alleen pakketindexen die u vertrouwt |
+    | `OPENCLAW_EXTENSIONS` | Geselecteerde ondersteunde plugins compileren/verpakken en hun runtime-afhankelijkheden installeren |
+    | `OPENCLAW_INSTALL_BROWSER` | Chromium en Xvfb vooraf installeren voor browserautomatisering (stel in op `1`) |
+
+    Voor configuratie die in plaats daarvan door Quadlet wordt beheerd (alleen Linux + systemd-gebruikersservices):
+
+    ```bash
+    ./scripts/podman/setup.sh --quadlet
+    ```
+
+    Of stel `OPENCLAW_PODMAN_QUADLET=1` in.
+
   </Step>
 
-  <Step title="Start de Gateway-container">
-    Start de container met `./scripts/run-openclaw-podman.sh launch`.
+  <Step title="De Gateway-container starten">
+    ```bash
+    ./scripts/run-openclaw-podman.sh launch
+    ```
+
+    Start de container met uw huidige uid/gid en `--userns=keep-id` en koppelt uw OpenClaw-status via bind-mounts aan de container.
+
   </Step>
 
-  <Step title="Voer onboarding uit binnen de container">
-    Voer `./scripts/run-openclaw-podman.sh launch setup` uit en open daarna `http://127.0.0.1:18789/`.
+  <Step title="Onboarding in de container uitvoeren">
+    ```bash
+    ./scripts/run-openclaw-podman.sh launch setup
+    ```
+
+    Open vervolgens `http://127.0.0.1:18789/` en gebruik het token uit `~/.openclaw/.env`.
+
+    Modelauthenticatie: gebruik tijdens de configuratie door OpenClaw beheerde authenticatie (Anthropic-API-sleutels, of OpenAI Codex-browser-OAuth/apparaatcode-authenticatie voor door Codex ondersteunde OpenAI). Het Podman-startprogramma koppelt mappen met CLI-aanmeldgegevens van de host, zoals `~/.claude` of `~/.codex`, niet aan de configuratie- of Gateway-container. Bestaande CLI-aanmeldingen op de host zijn alleen gemakspaden voor dezelfde host -- bewaar bij containerinstallaties de providerauthenticatie in de gekoppelde `~/.openclaw`-status die door de configuratie wordt beheerd.
+
   </Step>
 
-  <Step title="Beheer de draaiende container vanaf de host-CLI">
-    Stel `OPENCLAW_CONTAINER=openclaw` in en gebruik daarna normale `openclaw`-opdrachten vanaf de host.
+  <Step title="De actieve container beheren via de CLI op de host">
+    ```bash
+    export OPENCLAW_CONTAINER=openclaw
+    ```
+
+    Normale `openclaw`-opdrachten worden vervolgens automatisch in die container uitgevoerd:
+
+    ```bash
+    openclaw dashboard --no-open
+    openclaw gateway status --deep   # bevat een extra servicescan
+    openclaw doctor
+    openclaw channels login
+    ```
+
+    Op macOS kan de Podman-machine ervoor zorgen dat de browser voor de Gateway niet lokaal lijkt. Als de Control UI na het starten fouten voor apparaatauthenticatie meldt, volgt u de Tailscale-instructies in [Podman en Tailscale](#podman-and-tailscale).
+
   </Step>
 </Steps>
 
-Installatiedetails:
+Het handmatige startprogramma leest alleen een kleine toegestane lijst met Podman-gerelateerde sleutels uit `~/.openclaw/.env` en geeft expliciete runtime-omgevingsvariabelen door aan de container; het geeft niet het volledige omgevingsbestand door aan Podman.
 
-- `./scripts/podman/setup.sh` bouwt standaard `openclaw:local` in je rootless Podman-store, of gebruikt `OPENCLAW_IMAGE` / `OPENCLAW_PODMAN_IMAGE` als je er een instelt.
-- Het maakt `~/.openclaw/openclaw.json` met `gateway.mode: "local"` aan als die ontbreekt.
-- Het maakt `~/.openclaw/.env` met `OPENCLAW_GATEWAY_TOKEN` aan als die ontbreekt.
-- Voor handmatige starts leest de helper alleen een kleine allowlist met Podman-gerelateerde sleutels uit `~/.openclaw/.env` en geeft expliciete runtime-env-vars door aan de container; hij geeft niet het volledige env-bestand aan Podman.
-
-Door Quadlet beheerde installatie:
-
-```bash
-./scripts/podman/setup.sh --quadlet
-```
-
-Quadlet is een optie alleen voor Linux, omdat het afhankelijk is van systemd-gebruikersservices.
-
-Je kunt ook `OPENCLAW_PODMAN_QUADLET=1` instellen.
-
-Optionele build-/installatie-env-vars:
-
-- `OPENCLAW_IMAGE` of `OPENCLAW_PODMAN_IMAGE` -- gebruik een bestaande/opgehaalde image in plaats van `openclaw:local` te bouwen
-- `OPENCLAW_IMAGE_APT_PACKAGES` -- installeer extra apt-pakketten tijdens de image-build (accepteert ook legacy `OPENCLAW_DOCKER_APT_PACKAGES`)
-- `OPENCLAW_IMAGE_PIP_PACKAGES` -- installeer extra Python-pakketten tijdens de image-build; pin versies en gebruik alleen pakketindexen die je vertrouwt
-- `OPENCLAW_EXTENSIONS` -- installeer Plugin-afhankelijkheden vooraf tijdens buildtijd
-- `OPENCLAW_INSTALL_BROWSER` -- installeer Chromium en Xvfb vooraf voor browserautomatisering (stel in op `1` om in te schakelen)
-
-Container starten:
-
-```bash
-./scripts/run-openclaw-podman.sh launch
-```
-
-Het script start de container als je huidige uid/gid met `--userns=keep-id` en bind-mount je OpenClaw-status in de container.
-
-Onboarding:
-
-```bash
-./scripts/run-openclaw-podman.sh launch setup
-```
-
-Open daarna `http://127.0.0.1:18789/` en gebruik de token uit `~/.openclaw/.env`.
-
-Model-auth in Podman:
-
-- Gebruik door OpenClaw beheerde auth tijdens de installatie: Anthropic-API-sleutels voor Anthropic, of OpenAI Codex browser-OAuth/device-code-auth voor door Codex ondersteunde OpenAI.
-- De Podman-launcher mount geen host-CLI-credential-homes zoals `~/.claude` of `~/.codex` in de setup- of gateway-container.
-- Bestaande host-CLI-logins zijn gemakspaden op dezelfde host. Houd voor containerinstallaties provider-auth in de gemounte `~/.openclaw`-status die setup beheert.
-
-Host-CLI-standaard:
-
-```bash
-export OPENCLAW_CONTAINER=openclaw
-```
-
-Dan worden opdrachten zoals deze automatisch binnen die container uitgevoerd:
-
-```bash
-openclaw dashboard --no-open
-openclaw gateway status --deep   # includes extra service scan
-openclaw doctor
-openclaw channels login
-```
-
-Op macOS kan Podman machine ervoor zorgen dat de browser voor de gateway niet-lokaal lijkt.
-Als de Control UI na het starten device-auth-fouten meldt, gebruik dan de Tailscale-richtlijnen in
-[Podman en Tailscale](#podman--tailscale).
-
-<a id="podman--tailscale"></a>
+<a id="podman-and-tailscale"></a>
 
 ## Podman en Tailscale
 
-Volg voor HTTPS of externe browsertoegang de hoofd-documentatie van Tailscale.
+Volg voor HTTPS of externe browsertoegang de algemene Tailscale-documentatie.
 
-Podman-specifieke opmerking:
+Specifieke opmerkingen voor Podman:
 
-- Houd de Podman-publicatiehost op `127.0.0.1`.
-- Geef de voorkeur aan host-beheerde `tailscale serve` boven `openclaw gateway --tailscale serve`.
-- Gebruik op macOS, als de lokale browsercontext voor device-auth onbetrouwbaar is, Tailscale-toegang in plaats van ad-hoc lokale tunnelworkarounds.
+- Houd de publicatiehost van Podman op `127.0.0.1`.
+- Geef de voorkeur aan door de host beheerde `tailscale serve` boven `openclaw gateway --tailscale serve`.
+- Gebruik op macOS Tailscale-toegang in plaats van geïmproviseerde tijdelijke oplossingen met lokale tunnels als de context voor apparaatauthenticatie van de lokale browser onbetrouwbaar is.
 
-Zie:
-
-- [Tailscale](/nl/gateway/tailscale)
-- [Control UI](/nl/web/control-ui)
+Zie [Tailscale](/nl/gateway/tailscale) en [Control UI](/nl/web/control-ui).
 
 ## Systemd (Quadlet, optioneel)
 
-Als je `./scripts/podman/setup.sh --quadlet` hebt uitgevoerd, installeert setup een Quadlet-bestand op:
+Als u `./scripts/podman/setup.sh --quadlet` hebt uitgevoerd, installeert de configuratie een Quadlet-bestand op `~/.config/containers/systemd/openclaw.container`.
 
-```bash
-~/.config/containers/systemd/openclaw.container
-```
-
-Nuttige opdrachten:
-
-- **Starten:** `systemctl --user start openclaw.service`
-- **Stoppen:** `systemctl --user stop openclaw.service`
-- **Status:** `systemctl --user status openclaw.service`
-- **Logs:** `journalctl --user -u openclaw.service -f`
+| Actie | Opdracht                                   |
+| ------ | ------------------------------------------ |
+| Starten | `systemctl --user start openclaw.service`  |
+| Stoppen | `systemctl --user stop openclaw.service`   |
+| Status | `systemctl --user status openclaw.service` |
+| Logboeken | `journalctl --user -u openclaw.service -f` |
 
 Na het bewerken van het Quadlet-bestand:
 
@@ -154,71 +130,82 @@ systemctl --user daemon-reload
 systemctl --user restart openclaw.service
 ```
 
-Schakel voor opstartpersistentie op SSH/headless hosts lingering in voor je huidige gebruiker:
+Schakel voor opstartpersistentie op SSH-/headless hosts lingering in voor uw huidige gebruiker:
 
 ```bash
 sudo loginctl enable-linger "$(whoami)"
 ```
 
-## Configuratie, env en opslag
+De gegenereerde Quadlet-service behoudt een vaste, geharde standaardconfiguratie: op `127.0.0.1` gepubliceerde poorten (`18789` voor de Gateway, `18790` voor de bridge), `--bind lan` in de container, de gebruikersnaamruimte `keep-id`, `OPENCLAW_NO_RESPAWN=1`, `Restart=on-failure` en `TimeoutStartSec=300`. De service leest `~/.openclaw/.env` als runtime-`EnvironmentFile` voor waarden zoals `OPENCLAW_GATEWAY_TOKEN`, maar gebruikt niet de toegestane lijst met Podman-specifieke overschrijvingen van het handmatige startprogramma. Gebruik voor aangepaste publicatiepoorten, een aangepaste publicatiehost of andere vlaggen voor het uitvoeren van de container het handmatige startprogramma, of bewerk `~/.config/containers/systemd/openclaw.container` rechtstreeks en laad en herstart daarna de service.
+
+## Configuratie, omgeving en opslag
 
 - **Configuratiemap:** `~/.openclaw`
 - **Werkruimtemap:** `~/.openclaw/workspace`
 - **Tokenbestand:** `~/.openclaw/.env`
-- **Launch-helper:** `./scripts/run-openclaw-podman.sh`
+- **Starthulpprogramma:** `./scripts/run-openclaw-podman.sh`
 
-Het launch-script en Quadlet bind-mounten hoststatus in de container:
+Het startscript en Quadlet koppelen de status van de host via bind-mounts aan de container: `OPENCLAW_CONFIG_DIR` -> `/home/node/.openclaw`, `OPENCLAW_WORKSPACE_DIR` -> `/home/node/.openclaw/workspace`. Standaard zijn dit hostmappen en geen anonieme containerstatus, zodat `openclaw.json`, `auth-profiles.json` per agent, kanaal-/providerstatus, sessies en de werkruimte behouden blijven wanneer de container wordt vervangen. De configuratie vult ook `gateway.controlUi.allowedOrigins` vooraf in voor `127.0.0.1` en `localhost` op de gepubliceerde Gateway-poort, zodat het lokale dashboard werkt met de niet-loopback-binding van de container.
 
-- `OPENCLAW_CONFIG_DIR` -> `/home/node/.openclaw`
-- `OPENCLAW_WORKSPACE_DIR` -> `/home/node/.openclaw/workspace`
+Nuttige omgevingsvariabelen voor het handmatige startprogramma (sla deze op in `~/.openclaw/.env`; het startprogramma leest dat bestand voordat het de standaardwaarden voor de container/image definitief vastlegt):
 
-Standaard zijn dit hostmappen, geen anonieme containerstatus, dus
-`openclaw.json`, per-agent `auth-profiles.json`, kanaal-/providerstatus,
-sessies en werkruimte blijven behouden wanneer de container wordt vervangen.
-De Podman-installatie vult ook `gateway.controlUi.allowedOrigins` vooraf in voor `127.0.0.1` en `localhost` op de gepubliceerde gateway-poort, zodat het lokale dashboard werkt met de niet-loopback-bind van de container.
+| Variabele                                  | Standaard        | Effect                                         |
+| ------------------------------------------ | ---------------- | ---------------------------------------------- |
+| `OPENCLAW_PODMAN_CONTAINER`                | `openclaw`       | Containernaam                                  |
+| `OPENCLAW_PODMAN_IMAGE` / `OPENCLAW_IMAGE` | `openclaw:local` | Uit te voeren image                            |
+| `OPENCLAW_PODMAN_GATEWAY_HOST_PORT`        | `18789`          | Hostpoort gekoppeld aan containerpoort `18789` |
+| `OPENCLAW_PODMAN_BRIDGE_HOST_PORT`         | `18790`          | Hostpoort gekoppeld aan containerpoort `18790` |
+| `OPENCLAW_PODMAN_PUBLISH_HOST`             | `127.0.0.1`      | Hostinterface voor gepubliceerde poorten       |
+| `OPENCLAW_GATEWAY_BIND`                    | `lan`            | Gateway-bindingsmodus in de container          |
+| `OPENCLAW_PODMAN_USERNS`                   | `keep-id`        | `keep-id`, `auto` of `host`                    |
 
-Nuttige env-vars voor de handmatige launcher:
+Als u een niet-standaardwaarde voor `OPENCLAW_CONFIG_DIR` of `OPENCLAW_WORKSPACE_DIR` gebruikt, stelt u dezelfde variabelen in voor zowel `./scripts/podman/setup.sh` als latere opdrachten met `./scripts/run-openclaw-podman.sh launch` -- het repositorylokale startprogramma bewaart aangepaste padoverschrijvingen niet tussen shells.
 
-- `OPENCLAW_PODMAN_CONTAINER` -- containernaam (standaard `openclaw`)
-- `OPENCLAW_PODMAN_IMAGE` / `OPENCLAW_IMAGE` -- uit te voeren image
-- `OPENCLAW_PODMAN_GATEWAY_HOST_PORT` -- hostpoort toegewezen aan container `18789`
-- `OPENCLAW_PODMAN_BRIDGE_HOST_PORT` -- hostpoort toegewezen aan container `18790`
-- `OPENCLAW_PODMAN_PUBLISH_HOST` -- hostinterface voor gepubliceerde poorten; standaard is `127.0.0.1`
-- `OPENCLAW_GATEWAY_BIND` -- gateway-bindmodus binnen de container; standaard is `lan`
-- `OPENCLAW_PODMAN_USERNS` -- `keep-id` (standaard), `auto` of `host`
+## Images upgraden
 
-De handmatige launcher leest `~/.openclaw/.env` voordat container-/image-standaarden worden afgerond, zodat je deze daar persistent kunt maken.
+Nadat u een nieuwe image hebt gebouwd of opgehaald, herstart u de container of Quadlet-service.
+Bij de eerste start voor een nieuwe OpenClaw-versie voert de Gateway veilige reparaties van de status en plugins uit voordat deze meldt gereed te zijn.
 
-Als je een niet-standaard `OPENCLAW_CONFIG_DIR` of `OPENCLAW_WORKSPACE_DIR` gebruikt, stel dan dezelfde variabelen in voor zowel `./scripts/podman/setup.sh` als latere `./scripts/run-openclaw-podman.sh launch`-opdrachten. De repo-lokale launcher bewaart aangepaste padoverschrijvingen niet tussen shells.
+Als de Gateway wordt afgesloten in plaats van gereed te worden, voert u dezelfde image eenmaal uit met `openclaw doctor --fix` voor dezelfde gekoppelde status/configuratie en herstart u de Gateway daarna normaal:
 
-Quadlet-opmerking:
+```bash
+OPENCLAW_CONFIG_DIR="${OPENCLAW_CONFIG_DIR:-$HOME/.openclaw}"
+OPENCLAW_WORKSPACE_DIR="${OPENCLAW_WORKSPACE_DIR:-$OPENCLAW_CONFIG_DIR/workspace}"
+OPENCLAW_PODMAN_IMAGE="${OPENCLAW_PODMAN_IMAGE:-${OPENCLAW_IMAGE:-openclaw:local}}"
 
-- De gegenereerde Quadlet-service houdt bewust een vaste, geharde standaardvorm aan: gepubliceerde poorten op `127.0.0.1`, `--bind lan` binnen de container en `keep-id`-gebruikersnaamruimte.
-- Hij pint `OPENCLAW_NO_RESPAWN=1`, `Restart=on-failure` en `TimeoutStartSec=300`.
-- Hij publiceert zowel `127.0.0.1:18789:18789` (gateway) als `127.0.0.1:18790:18790` (bridge).
-- Hij leest `~/.openclaw/.env` als runtime-`EnvironmentFile` voor waarden zoals `OPENCLAW_GATEWAY_TOKEN`, maar gebruikt niet de Podman-specifieke override-allowlist van de handmatige launcher.
-- Als je aangepaste publicatiepoorten, publicatiehost of andere container-run-flags nodig hebt, gebruik dan de handmatige launcher of bewerk `~/.config/containers/systemd/openclaw.container` rechtstreeks en laad en herstart daarna de service.
+podman run --rm -it \
+  --userns=keep-id \
+  --user "$(id -u):$(id -g)" \
+  -e HOME=/home/node \
+  -e NPM_CONFIG_CACHE=/home/node/.openclaw/.npm \
+  -v "$OPENCLAW_CONFIG_DIR:/home/node/.openclaw:rw" \
+  -v "$OPENCLAW_WORKSPACE_DIR:/home/node/.openclaw/workspace:rw" \
+  "$OPENCLAW_PODMAN_IMAGE" \
+  openclaw doctor --fix
+```
+
+Voeg op SELinux-hosts `,Z` toe aan beide bind-mounts als Podman de toegang tot de gekoppelde status blokkeert.
 
 ## Nuttige opdrachten
 
-- **Containerlogs:** `podman logs -f openclaw`
+- **Containerlogboeken:** `podman logs -f openclaw`
 - **Container stoppen:** `podman stop openclaw`
 - **Container verwijderen:** `podman rm -f openclaw`
-- **Dashboard-URL openen vanaf host-CLI:** `openclaw dashboard --no-open`
-- **Health/status via host-CLI:** `openclaw gateway status --deep` (RPC-probe + extra
-  servicescan)
+- **Dashboard-URL openen via de CLI op de host:** `openclaw dashboard --no-open`
+- **Gezondheid/status via de CLI op de host:** `openclaw gateway status --deep` (RPC-probe + extra servicescan)
 
-## Probleemoplossing
+## Problemen oplossen
 
-- **Toegang geweigerd (EACCES) voor configuratie of werkruimte:** De container draait standaard met `--userns=keep-id` en `--user <your uid>:<your gid>`. Zorg dat de hostpaden voor configuratie/werkruimte eigendom zijn van je huidige gebruiker.
-- **Gateway-start geblokkeerd (ontbrekende `gateway.mode=local`):** Zorg dat `~/.openclaw/openclaw.json` bestaat en `gateway.mode="local"` instelt. `scripts/podman/setup.sh` maakt dit aan als het ontbreekt.
-- **Container-CLI-opdrachten raken het verkeerde doel:** Gebruik expliciet `openclaw --container <name> ...`, of exporteer `OPENCLAW_CONTAINER=<name>` in je shell.
-- **`openclaw update` mislukt met `--container`:** Verwacht. Bouw/haal de image opnieuw op en herstart daarna de container of de Quadlet-service.
-- **Quadlet-service start niet:** Voer `systemctl --user daemon-reload` uit en daarna `systemctl --user start openclaw.service`. Op headless systemen heb je mogelijk ook `sudo loginctl enable-linger "$(whoami)"` nodig.
-- **SELinux blokkeert bind mounts:** Laat het standaard mountgedrag ongemoeid; de launcher voegt op Linux automatisch `:Z` toe wanneer SELinux enforcing of permissive is.
+- **Toegang geweigerd (EACCES) voor configuratie of werkruimte:** De container wordt standaard uitgevoerd met `--userns=keep-id` en `--user <uw uid>:<uw gid>`. Zorg dat de configuratie-/werkruimtepaden op de host eigendom zijn van uw huidige gebruiker.
+- **Starten van de Gateway geblokkeerd (`gateway.mode=local` ontbreekt):** Zorg dat `~/.openclaw/openclaw.json` bestaat en `gateway.mode="local"` instelt. `scripts/podman/setup.sh` maakt dit bestand aan als het ontbreekt.
+- **Container wordt na een image-update opnieuw gestart:** Voer de eenmalige opdracht `openclaw doctor --fix` uit onder [Images upgraden](#upgrading-images) en start de Gateway daarna opnieuw.
+- **CLI-opdrachten voor de container gebruiken het verkeerde doel:** Gebruik expliciet `openclaw --container <name> ...` of exporteer `OPENCLAW_CONTAINER=<name>` in uw shell.
+- **`openclaw update` mislukt met `--container`:** Dit is te verwachten. Bouw de image opnieuw of haal deze opnieuw op en herstart daarna de container of Quadlet-service.
+- **Quadlet-service start niet:** Voer `systemctl --user daemon-reload` uit en daarna `systemctl --user start openclaw.service`. Op headless systemen hebt u mogelijk ook `sudo loginctl enable-linger "$(whoami)"` nodig.
+- **SELinux blokkeert bind-mounts:** Laat het standaard mountgedrag ongewijzigd; het startprogramma voegt op Linux automatisch `:Z` toe wanneer SELinux in afdwingende of permissieve modus staat.
 
 ## Gerelateerd
 
 - [Docker](/nl/install/docker)
 - [Gateway-achtergrondproces](/nl/gateway/background-process)
-- [Gateway-probleemoplossing](/nl/gateway/troubleshooting)
+- [Problemen met de Gateway oplossen](/nl/gateway/troubleshooting)

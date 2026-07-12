@@ -2,19 +2,19 @@
 summary: Chuyển hướng đến /automation/cron-jobs
 title: Khắc phục sự cố tự động hóa
 x-i18n:
-    generated_at: "2026-04-29T22:23:53Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:42:14Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e7784858f6d2594a1d6019435b2a5a1647e12f5de6329198db9539e325f73737
+    source_hash: 2f279c2c51d880b58907cb3d3866c8a1103027d3bbf28e0f0f97d6a9c2cffc16
     source_path: automation/troubleshooting.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Trang này đã chuyển đến [Tác vụ đã lên lịch](/vi/automation/cron-jobs#troubleshooting). Xem [Tác vụ đã lên lịch](/vi/automation/cron-jobs#troubleshooting) để biết tài liệu khắc phục sự cố.
+Trang này đã được chuyển. Nội dung khắc phục sự cố tự động hóa hiện nằm tại [Tác vụ đã lên lịch](/vi/automation/cron-jobs#troubleshooting).
 
 ## Liên quan
 
-- [Móc nối](/vi/automation/hooks)
+- [Hook](/vi/automation/hooks)
 - [Tác vụ nền](/vi/automation/tasks)
 - [Khắc phục sự cố Gateway](/vi/gateway/troubleshooting)

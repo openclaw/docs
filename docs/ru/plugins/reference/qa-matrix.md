@@ -1,11 +1,11 @@
 ---
 read_when:
     - Вы устанавливаете, настраиваете или проверяете Plugin qa-matrix
-summary: Средство запуска и основа транспорта Matrix QA.
-title: Plugin матрицы QA
+summary: Средство запуска и базовая среда транспортного уровня для QA Matrix.
+title: Plugin матрицы контроля качества
 x-i18n:
-    generated_at: "2026-06-28T23:28:11Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:43:19Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 07cc2771bbcb23f010d14de6eb0335d4de60a447ac257174b0f5e3f31f10a2f6
@@ -13,15 +13,15 @@ x-i18n:
     workflow: 16
 ---
 
-# QA Matrix plugin
+# Plugin матрицы QA
 
-Транспортный runner и substrate для QA Matrix.
+Средство запуска и базовый слой транспорта для QA Matrix.
 
 ## Распространение
 
 - Пакет: `@openclaw/qa-matrix`
-- Маршрут установки: только source checkout
+- Способ установки: только из рабочей копии исходного кода
 
-## Поверхность
+## Интерфейс
 
-plugin
+Plugin

@@ -1,75 +1,101 @@
 ---
 read_when:
-    - Chcesz skonfigurować identyfikator providera qwen-oauth
-    - Wcześniej używano poświadczeń OAuth Qwen Portal
-    - Potrzebujesz punktu końcowego Qwen Portal albo wskazówek migracji
-summary: Używanie identyfikatora dostawcy Qwen Portal z OpenClaw
+    - Chcesz skonfigurować identyfikator dostawcy qwen-oauth
+    - Wcześniej używano danych uwierzytelniających OAuth portalu Qwen
+    - Potrzebujesz punktu końcowego Qwen Portal lub wskazówek dotyczących migracji
+summary: Użyj identyfikatora dostawcy Qwen Portal z OpenClaw
 title: Qwen OAuth / Portal
 x-i18n:
-    generated_at: "2026-06-27T18:15:13Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:36:11Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 46f147e3730024bf63e99827f666e2be791318723eace98941ca067c440dddd0
+    source_hash: b78f6f23e62e38d11e6fe4e2bf515b13b414f276d08f672740ad94747a22c8fb
     source_path: providers/qwen-oauth.md
     workflow: 16
 ---
 
-`qwen-oauth` to identyfikator dostawcy Qwen Portal. Jest przeznaczony dla punktu końcowego Qwen Portal i pozwala nadal adresować starsze konfiguracje Qwen OAuth / portal przez osobny identyfikator dostawcy.
+`qwen-oauth` to identyfikator dostawcy Qwen Portal, rejestrowany przez plugin Qwen
+(`@openclaw/qwen-provider`). Korzysta z punktu końcowego Qwen Portal pod adresem
+`https://portal.qwen.ai/v1` i umożliwia dostęp do starszych konfiguracji Qwen OAuth /
+portalu przez odrębny identyfikator dostawcy, niezależny od kanonicznego dostawcy
+`qwen`.
 
-Użyj tego dostawcy, gdy masz konkretnie aktualny token Qwen Portal dla `https://portal.qwen.ai/v1`, albo gdy migrujesz starszą konfigurację Qwen Portal / Qwen CLI i chcesz trzymać te dane uwierzytelniające oddzielnie od kanonicznego dostawcy Qwen Cloud. Nie jest to zalecany pierwszy wybór dla nowych użytkowników Qwen.
-
-Dla nowych konfiguracji Qwen Cloud preferuj [Qwen](/pl/providers/qwen) ze standardowym punktem końcowym ModelStudio, chyba że masz konkretnie aktualny token Qwen Portal.
+Wybierz `qwen-oauth`, jeśli masz już działający token Qwen Portal, migrujesz starszy
+przepływ pracy Qwen OAuth lub Qwen CLI albo chcesz przetestować konkretnie punkt
+końcowy Qwen Portal. W przypadku nowych konfiguracji preferuj
+[Qwen](/pl/providers/qwen) ze standardowym punktem końcowym ModelStudio: obsługuje on
+nowe konfiguracje z kluczem API, szerszy wybór punktów końcowych, standardowe
+rozliczanie według użycia, Coding Plan oraz pełny katalog pluginu Qwen.
 
 ## Konfiguracja
 
-Podaj token portalu podczas onboardingu:
+Zainstaluj plugin Qwen, jeśli nie został jeszcze zainstalowany:
+
+```bash
+openclaw plugins install @openclaw/qwen-provider
+openclaw gateway restart
+```
+
+Podaj token portalu podczas procesu wdrażania:
 
 ```bash
 openclaw onboard --auth-choice qwen-oauth
 ```
 
-Albo ustaw:
+Uruchomienia nieinteraktywne odczytują token z opcji `--qwen-oauth-token <token>`; możesz też ustawić:
 
 ```bash
 export QWEN_API_KEY="<your-qwen-portal-token>" # pragma: allowlist secret
 ```
 
+Proces wdrażania zapisuje token w profilu uwierzytelniania `qwen-oauth`, inicjuje
+katalog modeli portalu i ustawia `qwen-oauth/qwen3.5-plus` jako model domyślny,
+jeśli nie skonfigurowano żadnego innego.
+
 ## Wartości domyślne
 
 - Dostawca: `qwen-oauth`
 - Aliasy: `qwen-portal`, `qwen-cli`
-- Bazowy URL: `https://portal.qwen.ai/v1`
+- Bazowy adres URL: `https://portal.qwen.ai/v1`
 - Zmienna środowiskowa: `QWEN_API_KEY`
 - Styl API: zgodny z OpenAI
 - Model domyślny: `qwen-oauth/qwen3.5-plus`
 
-## Czym różni się od Qwen
+## Różnice względem Qwen
 
-OpenClaw ma dwa identyfikatory dostawców obsługujących Qwen:
+OpenClaw ma dwa identyfikatory dostawców powiązanych z Qwen:
 
-| Dostawca     | Rodzina punktów końcowych                              | Najlepsze do                                                                                      |
-| ------------ | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------- |
-| `qwen`       | Punkty końcowe Qwen Cloud / Alibaba DashScope i Coding Plan | Nowe konfiguracje z kluczem API, Standard pay-as-you-go, Coding Plan, multimodalne funkcje DashScope |
-| `qwen-oauth` | Punkt końcowy Qwen Portal pod `portal.qwen.ai/v1`      | Istniejące tokeny Qwen Portal i starsze konfiguracje Qwen OAuth / CLI                             |
+| Dostawca     | Rodzina punktów końcowych                                | Najlepsze zastosowanie                                                                                  |
+| ------------ | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `qwen`       | Punkty końcowe Qwen Cloud / Alibaba DashScope i Coding Plan | Nowe konfiguracje z kluczem API, standardowe rozliczanie według użycia, Coding Plan, multimodalne funkcje DashScope |
+| `qwen-oauth` | Punkt końcowy Qwen Portal pod adresem `portal.qwen.ai/v1` | Istniejące tokeny Qwen Portal oraz starsze konfiguracje Qwen OAuth / CLI                                |
 
-Obaj dostawcy używają kształtów żądań zgodnych z OpenAI, ale są osobnymi powierzchniami uwierzytelniania. Token zapisany dla `qwen-oauth` nie powinien być traktowany jako klucz DashScope ani ModelStudio, a nowy klucz DashScope powinien zamiast tego używać kanonicznego dostawcy `qwen`.
-
-## Kiedy wybrać Qwen OAuth / Portal
-
-- Masz już działający token Qwen Portal.
-- Zachowujesz starszy przepływ pracy Qwen OAuth lub Qwen CLI podczas przechodzenia na model dostawców OpenClaw.
-- Musisz przetestować zgodność konkretnie z punktem końcowym Qwen Portal.
-
-Wybierz [Qwen](/pl/providers/qwen) dla nowej konfiguracji, szerszego wyboru punktów końcowych, Standard ModelStudio, Coding Plan i pełnego katalogu Plugin Qwen.
+Obaj dostawcy używają formatów żądań zgodnych z OpenAI, ale stanowią odrębne
+obszary uwierzytelniania. Tokenu zapisanego dla `qwen-oauth` nie należy traktować
+jako klucza DashScope ani ModelStudio, a nowy klucz DashScope powinien zamiast
+tego korzystać z kanonicznego dostawcy `qwen`.
 
 ## Modele
 
-Katalog Plugin Qwen inicjalizuje domyślny model Qwen Portal:
+Plugin Qwen inicjuje ten statyczny katalog dla punktu końcowego Qwen Portal.
+Wszystkie pozycje mają maksymalny rozmiar danych wyjściowych wynoszący 65 536
+tokenów; dostępność zależy od bieżącego konta i tokenu Qwen Portal.
 
-- `qwen-oauth/qwen3.5-plus`
+| Odwołanie do modelu               | Dane wejściowe | Kontekst | Uwagi          |
+| --------------------------------- | -------------- | -------- | -------------- |
+| `qwen-oauth/qwen3.5-plus`         | tekst, obraz   | 1,000,000 | Model domyślny |
+| `qwen-oauth/qwen3.6-plus`         | tekst, obraz   | 1,000,000 |                |
+| `qwen-oauth/qwen3-max-2026-01-23` | tekst          | 262,144   |                |
+| `qwen-oauth/qwen3-coder-next`     | tekst          | 262,144   |                |
+| `qwen-oauth/qwen3-coder-plus`     | tekst          | 1,000,000 |                |
+| `qwen-oauth/MiniMax-M2.5`         | tekst          | 1,000,000 | Rozumowanie    |
+| `qwen-oauth/glm-5`                | tekst          | 202,752   |                |
+| `qwen-oauth/glm-4.7`              | tekst          | 202,752   |                |
+| `qwen-oauth/kimi-k2.5`            | tekst, obraz   | 262,144   |                |
 
-Dostępność zależy od aktualnego konta i tokenu Qwen Portal. Jeśli Twoje konto używa zamiast tego kluczy API ModelStudio / DashScope, skonfiguruj kanonicznego dostawcę `qwen`:
+Jeśli Twoje konto korzysta zamiast tego z kluczy API ModelStudio / DashScope,
+skonfiguruj kanonicznego dostawcę `qwen`:
 
 ```bash
 openclaw onboard --auth-choice qwen-standard-api-key
@@ -78,13 +104,16 @@ openclaw models set qwen/qwen3-coder-plus
 
 ## Migracja
 
-Starsze profile Qwen Portal OAuth mogą nie nadawać się do odświeżenia. Jeśli profil portalu przestanie działać, uwierzytelnij się ponownie aktualnym tokenem albo przełącz się na standardowego dostawcę Qwen:
+Starszych profili OAuth Qwen Portal nie można odświeżać; `openclaw doctor`
+oznacza je jako problematyczne. Jeśli profil portalu przestanie działać, ponownie
+uruchom proces wdrażania z aktualnym tokenem lub przełącz się na standardowego
+dostawcę Qwen:
 
 ```bash
 openclaw onboard --auth-choice qwen-standard-api-key
 ```
 
-Standard global ModelStudio używa:
+Globalny standardowy ModelStudio korzysta z adresu:
 
 ```text
 https://dashscope-intl.aliyuncs.com/compatible-mode/v1
@@ -92,11 +121,17 @@ https://dashscope-intl.aliyuncs.com/compatible-mode/v1
 
 ## Rozwiązywanie problemów
 
-- Błędy odświeżania Portal OAuth: starsze profile Qwen Portal OAuth mogą nie nadawać się do odświeżenia. Uruchom onboarding ponownie z aktualnym tokenem.
-- Błędy niewłaściwego punktu końcowego: upewnij się, że referencja modelu zaczyna się od `qwen-oauth/`, gdy używasz tokenu portalu. Referencji `qwen/` używaj tylko dla kanonicznego dostawcy Qwen.
-- Niejasność wokół `QWEN_API_KEY`: obie strony Qwen wspominają tę zmienną środowiskową, ale onboarding zapisuje dane uwierzytelniające pod wybranym identyfikatorem dostawcy. Preferuj onboarding, gdy na tej samej maszynie chcesz mieć dostępne jednocześnie `qwen` i `qwen-oauth`.
+- Błędy odświeżania OAuth portalu: starszych profili OAuth Qwen Portal nie można
+  odświeżać. Ponownie uruchom proces wdrażania z aktualnym tokenem.
+- Błędy nieprawidłowego punktu końcowego: podczas używania tokenu portalu upewnij
+  się, że odwołanie do modelu zaczyna się od `qwen-oauth/`. Odwołań `qwen/`
+  używaj wyłącznie z kanonicznym dostawcą Qwen.
+- Niejasności związane z `QWEN_API_KEY`: obie strony Qwen wspominają tę zmienną
+  środowiskową, ale proces wdrażania zapisuje dane uwierzytelniające pod
+  identyfikatorem wybranego dostawcy. Preferuj proces wdrażania, gdy zarówno
+  `qwen`, jak i `qwen-oauth` są dostępne na tym samym komputerze.
 
-## Powiązane
+## Powiązane materiały
 
 - [Qwen](/pl/providers/qwen)
 - [Alibaba Model Studio](/pl/providers/alibaba)

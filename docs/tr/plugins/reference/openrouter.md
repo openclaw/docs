@@ -1,30 +1,30 @@
 ---
 read_when:
-    - openrouter Plugin'ini yüklüyor, yapılandırıyor veya denetliyorsunuz
+    - openrouter Pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
 summary: OpenClaw'a OpenRouter model sağlayıcısı desteği ekler.
-title: OpenRouter Plugin
+title: OpenRouter Plugin'i
 x-i18n:
-    generated_at: "2026-06-28T01:01:54Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:03:08Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3d23878973853230ff2621d9ea75b6fd3536366fa8520139d5424a4d261bc44a
+    source_hash: 67d69a5b9ea397b276596bd69023ae6ccc0b35051d6de0d843a68b98b641b843
     source_path: plugins/reference/openrouter.md
     workflow: 16
 ---
 
-# OpenRouter Plugin
+# OpenRouter Plugin'i
 
 OpenClaw'a OpenRouter model sağlayıcısı desteği ekler.
 
 ## Dağıtım
 
 - Paket: `@openclaw/openrouter-provider`
-- Kurulum yolu: OpenClaw'a dahil
+- Kurulum yolu: OpenClaw'a dahildir
 
 ## Yüzey
 
-sağlayıcılar: openrouter; sözleşmeler: imageGenerationProviders, mediaUnderstandingProviders, musicGenerationProviders, speechProviders, videoGenerationProviders
+sağlayıcılar: openrouter; sözleşmeler: imageGenerationProviders, mediaUnderstandingProviders, musicGenerationProviders, speechProviders, usageProviders, videoGenerationProviders
 
 ## İlgili belgeler
 

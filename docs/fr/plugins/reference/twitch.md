@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Vous installez, configurez ou auditez le Plugin twitch
-summary: Plugin de canal Twitch OpenClaw pour les workflows de chat et de modération.
+    - Vous installez, configurez ou auditez le Plugin Twitch
+summary: Plugin de canal Twitch d’OpenClaw pour les flux de travail de discussion et de modération.
 title: Plugin Twitch
 x-i18n:
-    generated_at: "2026-06-27T17:57:22Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T03:10:31Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: fc1bbe93d4d91427cf9c53abd4ed6833c9a06520f466cc31a24f94f6f0f327d7
@@ -15,17 +15,17 @@ x-i18n:
 
 # Plugin Twitch
 
-Plugin de canal Twitch OpenClaw pour les workflows de chat et de modération.
+Plugin de canal Twitch pour OpenClaw, destiné aux flux de travail de discussion et de modération.
 
 ## Distribution
 
-- Package : `@openclaw/twitch`
-- Voie d’installation : npm ; ClawHub
+- Paquet : `@openclaw/twitch`
+- Méthode d’installation : npm ; ClawHub
 
 ## Surface
 
-channels: twitch
+canaux : twitch
 
 ## Documentation associée
 
-- [twitch](/fr/channels/twitch)
+- [Twitch](/fr/channels/twitch)

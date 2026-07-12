@@ -2,37 +2,44 @@
 read_when:
     - Chcesz uruchomić OpenClaw z modelami GMI Cloud
     - Potrzebujesz identyfikatora dostawcy GMI, klucza lub punktu końcowego
-summary: Używaj API GMI Cloud zgodnego z OpenAI z OpenClaw
+summary: Używanie interfejsu API GMI Cloud zgodnego z OpenAI w OpenClaw
 title: GMI Cloud
 x-i18n:
-    generated_at: "2026-06-27T18:12:09Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:29:49Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 119db777a2285259d646c9b5ab7e3885e3c7c714039277fa06a5a881e46284b9
+    source_hash: a21fd2a997f44e1f78d97a0fba24ca2bbc00dd193323da712d650ed4ba105355
     source_path: providers/gmi.md
     workflow: 16
 ---
 
-GMI Cloud to hostowana platforma inferencyjna dla modeli frontier i open-weight
-udostępnianych przez API zgodne z OpenAI. W OpenClaw jest to oficjalny zewnętrzny
-plugin dostawcy, co oznacza, że instalujesz go raz, wybierasz za pomocą identyfikatora dostawcy `gmi`,
-przechowujesz dane uwierzytelniające przez zwykłe uwierzytelnianie modelu i używasz odwołań do modeli, takich jak
-`gmi/google/gemini-3.1-flash-lite`.
+GMI Cloud to hostowana platforma wnioskowania dla modeli frontier i modeli z otwartymi wagami,
+udostępniana za pośrednictwem interfejsu API zgodnego z OpenAI. W OpenClaw jest oficjalnym zewnętrznym
+Pluginem dostawcy: zainstaluj go raz, zapisz dane uwierzytelniające za pomocą standardowego uwierzytelniania
+modelu i używaj odwołań do modeli, takich jak `gmi/google/gemini-3.1-flash-lite`.
 
-Użyj GMI, gdy chcesz mieć jeden klucz API dla kilku rodzin hostowanych modeli, w tym
-tras Google, Anthropic, OpenAI, DeepSeek, Moonshot i Z.AI udostępnianych przez
-katalog GMI. Jest przydatny jako dodatkowy dostawca do awaryjnego przełączania modeli, porównywania
-hostowanych tras między dostawcami lub gdy GMI udostępnia model wcześniej niż
-dostawca główny.
+Użyj GMI, jeśli chcesz korzystać z jednego klucza API dla kilku hostowanych rodzin modeli, w tym
+tras Anthropic, DeepSeek, Google, Moonshot, OpenAI i Z.AI udostępnianych w katalogu
+GMI. Może działać jako dodatkowy dostawca na potrzeby przełączania awaryjnego modeli, porównywania
+hostowanych tras różnych dostawców lub gdy GMI udostępnia model wcześniej niż
+Twój główny dostawca. OpenClaw odpowiada za identyfikator dostawcy, profil uwierzytelniania, aliasy,
+początkowy katalog modeli i bazowy adres URL; GMI odpowiada za bieżącą dostępność modeli, rozliczenia,
+limity żądań oraz wszelkie zasady routingu po stronie dostawcy.
 
-Ten dostawca używa semantyki czatu zgodnej z OpenAI. OpenClaw odpowiada za
-identyfikator dostawcy, profil uwierzytelniania, aliasy, początkowy katalog modeli i bazowy adres URL; GMI odpowiada za bieżącą
-dostępność modeli, rozliczenia, limity szybkości oraz wszelkie zasady routingu po stronie dostawcy.
+| Właściwość                 | Wartość                                  |
+| -------------------------- | ---------------------------------------- |
+| Identyfikator dostawcy     | `gmi` (aliasy: `gmi-cloud`, `gmicloud`)  |
+| Pakiet                     | `@openclaw/gmi-provider`                 |
+| Zmienna środowiskowa uwierzytelniania | `GMI_API_KEY`                 |
+| API                        | Zgodne z OpenAI (`openai-completions`)   |
+| Bazowy adres URL           | `https://api.gmi-serving.com/v1`         |
+| Domyślny model             | `gmi/google/gemini-3.1-flash-lite`       |
 
 ## Konfiguracja
 
-Zainstaluj plugin, uruchom ponownie Gateway, a następnie utwórz klucz API w GMI Cloud:
+Zainstaluj Plugin, uruchom ponownie Gateway, a następnie utwórz klucz API w GMI Cloud
+(`https://www.gmicloud.ai/`):
 
 ```bash
 openclaw plugins install @openclaw/gmi-provider
@@ -45,48 +52,41 @@ Następnie uruchom:
 openclaw onboard --auth-choice gmi-api-key
 ```
 
-Albo ustaw:
+W konfiguracjach nieinteraktywnych można przekazać `--gmi-api-key <key>` lub ustawić:
 
 ```bash
 export GMI_API_KEY="<your-gmi-api-key>" # pragma: allowlist secret
 ```
 
-## Wartości domyślne
-
-- Dostawca: `gmi`
-- Aliasy: `gmi-cloud`, `gmicloud`
-- Bazowy adres URL: `https://api.gmi-serving.com/v1`
-- Zmienna środowiskowa: `GMI_API_KEY`
-- Model domyślny: `gmi/google/gemini-3.1-flash-lite`
-
 ## Kiedy wybrać GMI
 
-- Chcesz hostowany endpoint zgodny z OpenAI zamiast lokalnego serwera modeli.
-- Chcesz wypróbować kilka komercyjnych i open-weight rodzin modeli przez jedno
-  konto dostawcy.
-- Chcesz dostawcę awaryjnego z innym routingiem upstream niż OpenRouter,
-  DeepInfra, Together lub bezpośrednie API dostawców.
-- Potrzebujesz identyfikatorów modeli, cennika lub mechanizmów kontroli konta specyficznych dla GMI.
+- Chcesz korzystać z hostowanego punktu końcowego zgodnego z OpenAI zamiast lokalnego serwera modeli.
+- Chcesz wypróbować kilka komercyjnych rodzin modeli i modeli z otwartymi wagami za pośrednictwem jednego
+  konta dostawcy.
+- Chcesz mieć dostawcę zapasowego z routingiem źródłowym innym niż w przypadku DeepInfra,
+  OpenRouter, Together lub bezpośrednich interfejsów API dostawców.
+- Potrzebujesz identyfikatorów modeli, cennika lub mechanizmów zarządzania kontem specyficznych dla GMI.
 
-Wybierz zamiast tego bezpośredniego dostawcę, gdy potrzebujesz natywnych funkcji dostawcy,
-których GMI nie udostępnia przez swoją trasę zgodną z OpenAI. Wybierz lokalnego
-dostawcę, takiego jak Ollama, LM Studio, vLLM lub SGLang, gdy lokalność danych lub lokalna
-kontrola GPU są ważniejsze niż wygoda hostowania.
+Zamiast tego wybierz bezpośredniego dostawcę producenta, jeśli potrzebujesz funkcji natywnych dla producenta,
+których GMI nie udostępnia za pośrednictwem swojej trasy zgodnej z OpenAI. Wybierz lokalnego
+dostawcę, takiego jak LM Studio, Ollama, SGLang lub vLLM, gdy lokalność danych lub kontrola nad lokalnym
+GPU są ważniejsze niż wygoda hostowanego rozwiązania.
 
 ## Modele
 
-Katalog pluginu zawiera początkowy zestaw często dostępnych identyfikatorów tras GMI Cloud, w tym:
+Katalog Pluginu zawiera początkowy zestaw powszechnie dostępnych identyfikatorów tras GMI Cloud:
 
-- `gmi/zai-org/GLM-5.1-FP8`
-- `gmi/deepseek-ai/DeepSeek-V3.2`
-- `gmi/moonshotai/Kimi-K2.5`
-- `gmi/google/gemini-3.1-flash-lite`
-- `gmi/anthropic/claude-sonnet-4.6`
-- `gmi/openai/gpt-5.4`
+| Odwołanie do modelu                | Dane wejściowe | Kontekst  | Maks. dane wyjściowe |
+| ---------------------------------- | -------------- | --------- | -------------------- |
+| `gmi/anthropic/claude-sonnet-4.6`  | tekst + obraz  | 200,000   | 64,000               |
+| `gmi/deepseek-ai/DeepSeek-V3.2`    | tekst          | 163,840   | 65,536               |
+| `gmi/google/gemini-3.1-flash-lite` | tekst + obraz  | 1,048,576 | 65,536               |
+| `gmi/moonshotai/Kimi-K2.5`         | tekst + obraz  | 262,144   | 65,536               |
+| `gmi/openai/gpt-5.4`               | tekst + obraz  | 400,000   | 128,000              |
+| `gmi/zai-org/GLM-5.1-FP8`          | tekst          | 202,752   | 65,536               |
 
-Katalog jest zestawem początkowym, a nie obietnicą, że każde konto może wywołać każdy model
-w każdej chwili. Użyj polecenia OpenClaw do listowania modeli, aby zobaczyć, co skonfigurowany
-dostawca zgłasza w Twoim środowisku:
+Katalog jest zestawem początkowym, a nie gwarancją, że każde konto może wywołać każdy model
+w dowolnym momencie. Wyświetl modele zgłaszane przez skonfigurowanego dostawcę w swoim środowisku:
 
 ```bash
 openclaw models list --provider gmi
@@ -94,12 +94,12 @@ openclaw models list --provider gmi
 
 ## Rozwiązywanie problemów
 
-- `401` lub `403`: sprawdź, czy `GMI_API_KEY` jest ustawione dla procesu uruchamiającego
-  OpenClaw, albo ponownie uruchom onboarding, aby zapisać klucz w profilu uwierzytelniania dostawcy.
-- Błędy nieznanego modelu: potwierdź, że model istnieje na Twoim koncie GMI, i użyj
-  pełnego odwołania `gmi/<route-id>` pokazanego przez `openclaw models list --provider gmi`.
-- Sporadyczne błędy dostawcy: spróbuj innej trasy GMI albo skonfiguruj GMI jako
-  dostawcę awaryjnego zamiast jedynego głównego dostawcy modeli.
+- `401` lub `403`: sprawdź, czy `GMI_API_KEY` jest ustawiona dla procesu uruchamiającego
+  OpenClaw, albo ponownie przeprowadź konfigurację początkową, aby zapisać klucz w profilu uwierzytelniania dostawcy.
+- Błędy nieznanego modelu: upewnij się, że model istnieje na Twoim koncie GMI, i użyj
+  pełnego odwołania `gmi/<route-id>` wyświetlanego przez `openclaw models list --provider gmi`.
+- Sporadyczne błędy dostawcy: wypróbuj inną trasę GMI lub skonfiguruj GMI jako
+  dostawcę zapasowego zamiast jedynego głównego dostawcy modeli.
 
 ## Powiązane
 

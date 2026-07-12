@@ -1,27 +1,25 @@
 ---
 read_when:
-    - Chcesz sprawdzić wywnioskowane zobowiązania dotyczące dalszych działań
-    - Chcesz odrzucić oczekujące zgłoszenia
-    - Sprawdzasz, co Heartbeat może dostarczyć
-summary: Dokumentacja referencyjna CLI dla `openclaw commitments` (sprawdzanie i odrzucanie wywnioskowanych działań następczych)
+    - Chcesz sprawdzić wywnioskowane zobowiązania do dalszych działań
+    - Chcesz odrzucić oczekujące zgłoszenia kontrolne
+    - Sprawdzasz, co może dostarczyć heartbeat
+summary: Dokumentacja CLI dla `openclaw commitments` (przeglądanie i odrzucanie sugerowanych działań następczych)
 title: '`openclaw commitments`'
 x-i18n:
-    generated_at: "2026-04-30T09:42:29Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:59:44Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 37d5e5dca25cf649a5069360aa4e41fcc33d042dea99f643b98c07189c58f21c
+    source_hash: 4323273a5d73975532f4728dc5e40c5d59e0c6d2e31a538f96bf3451e3fdf4d9
     source_path: cli/commitments.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Wyświetlaj i zarządzaj wnioskowanymi zobowiązaniami do dalszych działań.
+Wyświetlaj wywnioskowane zobowiązania dotyczące dalszych działań i zarządzaj nimi.
 
-Zobowiązania to opcjonalne, krótkotrwałe wpisy pamięci dotyczące dalszych działań, tworzone z
-kontekstu rozmowy. Zobacz [Wnioskowane zobowiązania](/pl/concepts/commitments), aby zapoznać się z
-przewodnikiem koncepcyjnym.
+Zobowiązania są opcjonalne (`commitments.enabled`) i stanowią krótkotrwałe wspomnienia o dalszych działaniach, tworzone na podstawie kontekstu rozmowy oraz dostarczane przez Heartbeat. Przewodnik koncepcyjny i konfigurację znajdziesz w sekcji [Wywnioskowane zobowiązania](/pl/concepts/commitments).
 
-Bez podpolecenia `openclaw commitments` wyświetla oczekujące zobowiązania.
+Bez podkomendy `openclaw commitments` wyświetla oczekujące zobowiązania.
 
 ## Użycie
 
@@ -33,45 +31,46 @@ openclaw commitments dismiss <id...> [--json]
 
 ## Opcje
 
-- `--all`: pokaż wszystkie statusy zamiast tylko oczekujących zobowiązań.
-- `--agent <id>`: filtruj do jednego identyfikatora agenta.
-- `--status <status>`: filtruj według statusu. Wartości: `pending`, `sent`,
-  `dismissed`, `snoozed` lub `expired`.
-- `--json`: wyprowadź JSON czytelny maszynowo.
+- `--all`: wyświetla wszystkie statusy zamiast tylko oczekujących zobowiązań.
+- `--agent <id>`: ogranicza wyniki do jednego identyfikatora agenta.
+- `--status <status>`: filtruje według statusu. Wartości: `pending`, `sent`, `dismissed`, `snoozed` lub `expired`. Nieznane wartości powodują zakończenie z błędem.
+- `--json`: generuje dane JSON do odczytu maszynowego.
+
+Polecenie `dismiss` oznacza podane identyfikatory zobowiązań jako `dismissed`, aby Heartbeat ich nie dostarczał.
 
 ## Przykłady
 
-Wyświetl oczekujące zobowiązania:
+Wyświetlanie oczekujących zobowiązań:
 
 ```bash
 openclaw commitments
 ```
 
-Wyświetl każde zapisane zobowiązanie:
+Wyświetlanie wszystkich zapisanych zobowiązań:
 
 ```bash
 openclaw commitments --all
 ```
 
-Filtruj do jednego agenta:
+Filtrowanie według jednego agenta:
 
 ```bash
 openclaw commitments --agent main
 ```
 
-Znajdź odłożone zobowiązania:
+Wyszukiwanie odroczonych zobowiązań:
 
 ```bash
 openclaw commitments --status snoozed
 ```
 
-Odrzuć jedno lub więcej zobowiązań:
+Odrzucanie jednego lub większej liczby zobowiązań:
 
 ```bash
 openclaw commitments dismiss cm_abc123 cm_def456
 ```
 
-Eksportuj jako JSON:
+Eksportowanie jako JSON:
 
 ```bash
 openclaw commitments --all --json
@@ -79,20 +78,20 @@ openclaw commitments --all --json
 
 ## Dane wyjściowe
 
-Dane tekstowe obejmują:
+Tekstowe dane wyjściowe zawierają liczbę zobowiązań, ścieżkę magazynu, wszystkie aktywne filtry oraz po jednym wierszu dla każdego zobowiązania:
 
 - identyfikator zobowiązania
 - status
-- typ
-- najwcześniejszy termin wykonania
-- zakres
+- rodzaj (`event_check_in`, `deadline_check`, `care_check_in` lub `open_loop`)
+- najwcześniejszy termin realizacji
+- zakres (agent/kanał/cel)
 - sugerowany tekst kontaktu kontrolnego
 
-Dane JSON zawierają także ścieżkę magazynu zobowiązań oraz pełne zapisane rekordy.
+Dane wyjściowe JSON zawierają liczbę zobowiązań, aktywne filtry statusu i agenta, ścieżkę magazynu zobowiązań oraz pełne zapisane rekordy.
 
 ## Powiązane
 
-- [Wnioskowane zobowiązania](/pl/concepts/commitments)
-- [Przegląd pamięci](/pl/concepts/memory)
+- [Wywnioskowane zobowiązania](/pl/concepts/commitments)
+- [Omówienie pamięci](/pl/concepts/memory)
 - [Heartbeat](/pl/gateway/heartbeat)
 - [Zaplanowane zadania](/pl/automation/cron-jobs)

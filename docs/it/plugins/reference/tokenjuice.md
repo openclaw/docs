@@ -1,11 +1,11 @@
 ---
 read_when:
     - Stai installando, configurando o verificando il plugin tokenjuice
-summary: Compatta i risultati degli strumenti exec e bash con riduttori tokenjuice.
+summary: Compatta i risultati degli strumenti exec e bash con i riduttori tokenjuice.
 title: Plugin Tokenjuice
 x-i18n:
-    generated_at: "2026-06-27T17:59:38Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:20:18Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: a51416caa94a17799e3a55c1d3b88bf2c026fd003317b86d7926cf11b9b81fab
@@ -15,14 +15,14 @@ x-i18n:
 
 # Plugin Tokenjuice
 
-Compatta i risultati degli strumenti exec e bash con i reducer tokenjuice.
+Compatta i risultati degli strumenti exec e bash con i riduttori tokenjuice.
 
 ## Distribuzione
 
 - Pacchetto: `@openclaw/tokenjuice`
-- Percorso di installazione: npm; ClawHub: `clawhub:@openclaw/tokenjuice`
+- Metodo di installazione: npm; ClawHub: `clawhub:@openclaw/tokenjuice`
 
-## Superficie
+## Interfaccia
 
 contratti: agentToolResultMiddleware
 

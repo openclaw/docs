@@ -6,84 +6,79 @@ read_when:
 summary: OpenClaw ile Qwen Portal sağlayıcı kimliğini kullanın
 title: Qwen OAuth / Portalı
 x-i18n:
-    generated_at: "2026-06-28T01:12:47Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:44:18Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 46f147e3730024bf63e99827f666e2be791318723eace98941ca067c440dddd0
+    source_hash: b78f6f23e62e38d11e6fe4e2bf515b13b414f276d08f672740ad94747a22c8fb
     source_path: providers/qwen-oauth.md
     workflow: 16
 ---
 
-`qwen-oauth`, Qwen Portal sağlayıcı kimliğidir. Qwen Portal uç noktasını hedefler
-ve eski Qwen OAuth / portal kurulumlarının ayrı bir sağlayıcı kimliğiyle
-adreslenebilir kalmasını sağlar.
+`qwen-oauth`, Qwen eklentisi (`@openclaw/qwen-provider`) tarafından kaydedilen Qwen Portal sağlayıcı kimliğidir. `https://portal.qwen.ai/v1` adresindeki Qwen Portal uç noktasını hedefler ve eski Qwen OAuth / portal kurulumlarının, standart `qwen` sağlayıcısından ayrı bir sağlayıcı kimliği üzerinden kullanılabilmesini sağlar.
 
-Bu sağlayıcıyı özellikle `https://portal.qwen.ai/v1` için güncel bir Qwen Portal
-token’ınız varsa veya eski bir Qwen Portal / Qwen CLI kurulumunu taşıyor ve bu
-kimlik bilgilerini kanonik Qwen Cloud sağlayıcısından ayrı tutmak istiyorsanız
-kullanın. Yeni Qwen kullanıcıları için önerilen ilk seçenek değildir.
-
-Yeni Qwen Cloud kurulumları için, özellikle güncel bir Qwen Portal token’ınız
-yoksa Standard ModelStudio uç noktasıyla [Qwen](/tr/providers/qwen) sağlayıcısını
-tercih edin.
+Çalışan bir Qwen Portal belirteciniz zaten varsa, eski bir Qwen OAuth veya Qwen CLI iş akışını taşıyorsanız ya da özellikle Qwen Portal uç noktasını test etmeniz gerekiyorsa `qwen-oauth` seçeneğini tercih edin. Yeni kurulumlarda Standart ModelStudio uç noktasıyla [Qwen](/tr/providers/qwen) kullanmayı tercih edin: yeni API anahtarı kurulumlarını, daha geniş uç nokta seçeneklerini, kullandıkça ödemeli Standart planı, Coding Plan'i ve Qwen eklenti kataloğunun tamamını kapsar.
 
 ## Kurulum
 
-Portal token’ınızı onboarding üzerinden sağlayın:
+Henüz yüklemediyseniz Qwen eklentisini yükleyin:
+
+```bash
+openclaw plugins install @openclaw/qwen-provider
+openclaw gateway restart
+```
+
+Portal belirtecinizi ilk katılım süreciyle sağlayın:
 
 ```bash
 openclaw onboard --auth-choice qwen-oauth
 ```
 
-Veya şunu ayarlayın:
+Etkileşimsiz çalıştırmalar belirteci `--qwen-oauth-token <token>` seçeneğinden okur; alternatif olarak şunu ayarlayın:
 
 ```bash
 export QWEN_API_KEY="<your-qwen-portal-token>" # pragma: allowlist secret
 ```
 
+İlk katılım süreci, belirteci bir `qwen-oauth` kimlik doğrulama profili altında saklar, portal model kataloğunu başlangıç verileriyle doldurur ve yapılandırılmış bir model yoksa `qwen-oauth/qwen3.5-plus` modelini varsayılan olarak ayarlar.
+
 ## Varsayılanlar
 
 - Sağlayıcı: `qwen-oauth`
-- Takma adlar: `qwen-portal`, `qwen-cli`
+- Diğer adlar: `qwen-portal`, `qwen-cli`
 - Temel URL: `https://portal.qwen.ai/v1`
 - Ortam değişkeni: `QWEN_API_KEY`
-- API stili: OpenAI uyumlu
+- API biçimi: OpenAI uyumlu
 - Varsayılan model: `qwen-oauth/qwen3.5-plus`
 
-## Bunun Qwen’den farkı
+## Qwen'den farkı
 
-OpenClaw’da Qwen’e yönelik iki sağlayıcı kimliği vardır:
+OpenClaw'da Qwen'e yönelik iki sağlayıcı kimliği vardır:
 
-| Sağlayıcı    | Uç nokta ailesi                                        | En uygun kullanım                                                                      |
-| ------------ | ------------------------------------------------------ | -------------------------------------------------------------------------------------- |
-| `qwen`       | Qwen Cloud / Alibaba DashScope ve Coding Plan uç noktaları | Yeni API anahtarı kurulumları, Standard kullandıkça öde, Coding Plan, çok modlu DashScope özellikleri |
-| `qwen-oauth` | `portal.qwen.ai/v1` adresindeki Qwen Portal uç noktası | Mevcut Qwen Portal token’ları ve eski Qwen OAuth / CLI kurulumları                     |
+| Sağlayıcı    | Uç nokta ailesi                                           | En uygun kullanım                                                                        |
+| ------------ | --------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `qwen`       | Qwen Cloud / Alibaba DashScope ve Coding Plan uç noktaları | Yeni API anahtarı kurulumları, kullandıkça ödemeli Standart plan, Coding Plan, çok modlu DashScope özellikleri |
+| `qwen-oauth` | `portal.qwen.ai/v1` adresindeki Qwen Portal uç noktası     | Mevcut Qwen Portal belirteçleri ve eski Qwen OAuth / CLI kurulumları                       |
 
-Her iki sağlayıcı da OpenAI uyumlu istek şekilleri kullanır, ancak ayrı kimlik
-doğrulama yüzeyleridir. `qwen-oauth` için saklanan bir token DashScope veya
-ModelStudio anahtarı olarak değerlendirilmemeli; yeni bir DashScope anahtarı
-ise bunun yerine kanonik `qwen` sağlayıcısını kullanmalıdır.
-
-## Qwen OAuth / Portal ne zaman seçilmeli
-
-- Zaten çalışan bir Qwen Portal token’ınız var.
-- OpenClaw’ın sağlayıcı modeline geçerken eski bir Qwen OAuth veya Qwen CLI iş
-  akışını koruyorsunuz.
-- Özellikle Qwen Portal uç noktasıyla uyumluluğu test etmeniz gerekiyor.
-
-Yeni kurulum, daha geniş uç nokta seçenekleri, Standard ModelStudio, Coding Plan
-ve tam Qwen Plugin kataloğu için [Qwen](/tr/providers/qwen) seçeneğini kullanın.
+Her iki sağlayıcı da OpenAI uyumlu istek biçimleri kullanır ancak kimlik doğrulama yüzeyleri ayrıdır. `qwen-oauth` için saklanan bir belirteç, DashScope veya ModelStudio anahtarı olarak değerlendirilmemelidir; yeni bir DashScope anahtarı ise standart `qwen` sağlayıcısını kullanmalıdır.
 
 ## Modeller
 
-Qwen Plugin kataloğu, Qwen Portal varsayılanını başlatır:
+Qwen eklentisi, Qwen Portal uç noktası için bu statik kataloğu başlangıç verileriyle doldurur. Tüm girdiler en fazla 65.536 belirteçlik çıktı kullanır; kullanılabilirlik mevcut Qwen Portal hesabına ve belirtecine bağlıdır.
 
-- `qwen-oauth/qwen3.5-plus`
+| Model başvurusu                    | Girdi        | Bağlam    | Notlar           |
+| ---------------------------------- | ------------ | --------- | ---------------- |
+| `qwen-oauth/qwen3.5-plus`          | metin, görsel | 1.000.000 | Varsayılan model |
+| `qwen-oauth/qwen3.6-plus`          | metin, görsel | 1.000.000 |                  |
+| `qwen-oauth/qwen3-max-2026-01-23`  | metin         | 262.144   |                  |
+| `qwen-oauth/qwen3-coder-next`      | metin         | 262.144   |                  |
+| `qwen-oauth/qwen3-coder-plus`      | metin         | 1.000.000 |                  |
+| `qwen-oauth/MiniMax-M2.5`          | metin         | 1.000.000 | Akıl yürütme     |
+| `qwen-oauth/glm-5`                 | metin         | 202.752   |                  |
+| `qwen-oauth/glm-4.7`               | metin         | 202.752   |                  |
+| `qwen-oauth/kimi-k2.5`             | metin, görsel | 262.144   |                  |
 
-Kullanılabilirlik, güncel Qwen Portal hesabına ve token’a bağlıdır. Hesabınız
-bunun yerine ModelStudio / DashScope API anahtarları kullanıyorsa kanonik
-`qwen` sağlayıcısını yapılandırın:
+Hesabınız bunun yerine ModelStudio / DashScope API anahtarlarını kullanıyorsa standart `qwen` sağlayıcısını yapılandırın:
 
 ```bash
 openclaw onboard --auth-choice qwen-standard-api-key
@@ -92,15 +87,13 @@ openclaw models set qwen/qwen3-coder-plus
 
 ## Geçiş
 
-Eski Qwen Portal OAuth profilleri yenilenebilir olmayabilir. Bir portal profili
-çalışmayı durdurursa güncel bir token ile yeniden kimlik doğrulayın veya
-Standard Qwen sağlayıcısına geçin:
+Eski Qwen Portal OAuth profilleri yenilenemez; `openclaw doctor` bunları işaretler. Bir portal profili çalışmayı durdurursa güncel bir belirteçle ilk katılım sürecini yeniden çalıştırın veya Standart Qwen sağlayıcısına geçin:
 
 ```bash
 openclaw onboard --auth-choice qwen-standard-api-key
 ```
 
-Standard global ModelStudio şunu kullanır:
+Standart küresel ModelStudio şu adresi kullanır:
 
 ```text
 https://dashscope-intl.aliyuncs.com/compatible-mode/v1
@@ -108,17 +101,11 @@ https://dashscope-intl.aliyuncs.com/compatible-mode/v1
 
 ## Sorun giderme
 
-- Portal OAuth yenileme hataları: eski Qwen Portal OAuth profilleri yenilenebilir
-  olmayabilir. Güncel bir token ile onboarding’i yeniden çalıştırın.
-- Yanlış uç nokta hataları: portal token’ı kullanırken model referansının
-  `qwen-oauth/` ile başladığını doğrulayın. `qwen/` referanslarını yalnızca
-  kanonik Qwen sağlayıcısı için kullanın.
-- `QWEN_API_KEY` karışıklığı: Her iki Qwen sayfası da bu ortam değişkeninden
-  bahseder, ancak onboarding kimlik bilgilerini seçilen sağlayıcı kimliği altında
-  saklar. Aynı makinede hem `qwen` hem de `qwen-oauth` kullanılabilir durumdaysa
-  onboarding’i tercih edin.
+- Portal OAuth yenileme hataları: Eski Qwen Portal OAuth profilleri yenilenemez. Güncel bir belirteçle ilk katılım sürecini yeniden çalıştırın.
+- Yanlış uç nokta hataları: Portal belirteci kullanırken model başvurusunun `qwen-oauth/` ile başladığını doğrulayın. `qwen/` başvurularını yalnızca standart Qwen sağlayıcısı için kullanın.
+- `QWEN_API_KEY` karışıklığı: Her iki Qwen sayfasında da bu ortam değişkeninden bahsedilir ancak ilk katılım süreci kimlik bilgilerini seçilen sağlayıcı kimliği altında saklar. Aynı makinede hem `qwen` hem de `qwen-oauth` kullanılabilir durumda tutuluyorsa ilk katılım sürecini tercih edin.
 
-## İlgili
+## İlgili içerikler
 
 - [Qwen](/tr/providers/qwen)
 - [Alibaba Model Studio](/tr/providers/alibaba)

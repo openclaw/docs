@@ -2,21 +2,21 @@
 read_when:
     - Gateway のネットワークモデルを簡潔に把握したい場合
 redirect: /network#core-model
-summary: /network#core-model にリダイレクトする
+summary: /network#core-model へリダイレクト
 title: ネットワークモデル
 x-i18n:
-    generated_at: "2026-05-06T05:05:08Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:16:25Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: a0ef2806cfb539157d827fe9c2ffddc914aa680e3ef318c211b2ec1f374cfed2
     source_path: gateway/network-model.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-この内容は [ネットワーク — コアモデル](/ja-JP/network#core-model) に統合されました。
+この内容は[ネットワーク — コアモデル](/ja-JP/network#core-model)に統合されました。
 
-## 関連
+## 関連項目
 
 - [リモートアクセス](/ja-JP/gateway/remote)
 - [信頼済みプロキシ認証](/ja-JP/gateway/trusted-proxy-auth)

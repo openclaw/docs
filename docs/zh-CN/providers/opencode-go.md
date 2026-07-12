@@ -1,23 +1,20 @@
 ---
 read_when:
-    - 你需要 OpenCode Go 目录
+    - 你想要 OpenCode Go 目录
     - 你需要 Go 托管模型的运行时模型引用
-summary: 使用采用共享 OpenCode 设置的 OpenCode Go 目录
+summary: 使用 OpenCode Go 目录和共享的 OpenCode 设置
 title: OpenCode Go
 x-i18n:
-    generated_at: "2026-07-12T14:44:06Z"
+    generated_at: "2026-07-11T20:53:41Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: df647721e8966fd4fad3178550b071a2eb827148fe765bda53b3d7c97ceaadc2
     source_path: providers/opencode-go.md
     workflow: 16
 ---
 
-OpenCode Go 是 [OpenCode](/zh-CN/providers/opencode) 中的 Go 目录。它与 Zen 目录共享
-`OPENCODE_API_KEY` 凭据，但保留自己的运行时提供商 ID（`opencode-go`），以确保上游按模型路由
-保持正确。
+OpenCode Go 是 [OpenCode](/zh-CN/providers/opencode) 中的 Go 目录。它与 Zen 目录共享 `OPENCODE_API_KEY` 凭据，但保留独立的运行时提供商 ID（`opencode-go`），以确保上游按模型路由保持正确。
 
 | 属性           | 值                                                 |
 | -------------- | -------------------------------------------------- |
@@ -68,7 +65,7 @@ OpenCode Go 是 [OpenCode](/zh-CN/providers/opencode) 中的 Go 目录。它与 
 
 ```json5
 {
-  env: { OPENCODE_API_KEY: "YOUR_API_KEY_HERE" }, // pragma: 允许列入密钥白名单
+  env: { OPENCODE_API_KEY: "YOUR_API_KEY_HERE" }, // pragma: allowlist secret
   agents: { defaults: { model: { primary: "opencode-go/kimi-k2.6" } } },
 }
 ```
@@ -103,18 +100,15 @@ OpenCode Go 是 [OpenCode](/zh-CN/providers/opencode) 中的 Go 目录。它与 
 
 <AccordionGroup>
   <Accordion title="路由行为">
-    OpenClaw 会自动路由任何 `opencode-go/...` 模型引用。无需额外的
-    提供商配置。
+    OpenClaw 会自动路由任何 `opencode-go/...` 模型引用。无需额外的提供商配置。
   </Accordion>
 
   <Accordion title="运行时引用约定">
-    运行时引用保持明确：Zen 使用 `opencode/...`，Go 使用 `opencode-go/...`。
-    这可确保两个目录的上游按模型路由均保持正确。
+    运行时引用保持明确：Zen 使用 `opencode/...`，Go 使用 `opencode-go/...`。这样可确保上游按模型路由在两个目录中都保持正确。
   </Accordion>
 
   <Accordion title="共享凭据">
-    一个 `OPENCODE_API_KEY` 即可覆盖 Zen 和 Go 两个目录。在设置期间输入
-    密钥会为两个运行时提供商存储凭据。
+    一个 `OPENCODE_API_KEY` 可同时用于 Zen 和 Go 目录。在设置期间输入该密钥，会为两个运行时提供商存储凭据。
   </Accordion>
 </AccordionGroup>
 

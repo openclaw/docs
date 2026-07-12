@@ -1,12 +1,12 @@
 ---
 read_when:
-    - 你想要排程工作與喚醒
-    - 你正在偵錯排程執行與記錄
+    - 你需要排程工作與喚醒功能
+    - 你正在偵錯排程執行與日誌
 summary: '`openclaw cron` 的命令列介面參考（排程並執行背景工作）'
 title: 排程
 x-i18n:
-    generated_at: "2026-07-06T10:47:35Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T21:11:03Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 9e16335b13f92229df0ba49c320e2714e39ab3e503e8e72f376ec2c5b0803cf7
@@ -16,19 +16,19 @@ x-i18n:
 
 # `openclaw cron`
 
-管理閘道排程器的排程作業。
+管理閘道排程器的排程工作。
 
 <Tip>
-執行 `openclaw cron --help` 查看完整命令介面。概念指南請參閱[排程作業](/zh-TW/automation/cron-jobs)。
+執行 `openclaw cron --help` 以查看完整命令介面。概念指南請參閱[排程工作](/zh-TW/automation/cron-jobs)。
 </Tip>
 
 <Note>
-所有排程異動（`add`/`create`、`update`/`edit`、`remove`、`run`）都需要 `operator.admin`。命令酬載執行會直接在閘道程序中執行，而不是作為代理的 `tools.exec` 工具呼叫；`tools.exec.*` 和 exec 核准仍會控管模型可見的 exec 工具。
+所有排程異動（`add`/`create`、`update`/`edit`、`remove`、`run`）都需要 `operator.admin`。命令酬載的執行會直接在閘道程序中進行，而不是作為代理程式的 `tools.exec` 工具呼叫；模型可見的執行工具仍受 `tools.exec.*` 與執行核准機制管控。
 </Note>
 
-## 快速建立作業
+## 快速建立工作
 
-`openclaw cron create` 是 `openclaw cron add` 的別名。對於新作業，請先放排程，再放提示：
+`openclaw cron create` 是 `openclaw cron add` 的別名。建立新工作時，請先指定排程，再指定提示詞：
 
 ```bash
 openclaw cron create "0 7 * * *" \
@@ -37,7 +37,7 @@ openclaw cron create "0 7 * * *" \
   --agent ops
 ```
 
-當作業應該 POST 完成的酬載，而不是傳送到聊天目標時，請使用 `--webhook <url>`：
+當工作應以 POST 傳送完成的酬載，而非傳送至聊天目標時，請使用 `--webhook <url>`：
 
 ```bash
 openclaw cron create "0 18 * * 1-5" \
@@ -46,7 +46,7 @@ openclaw cron create "0 18 * * 1-5" \
   --webhook "https://example.invalid/openclaw/cron"
 ```
 
-對於在 OpenClaw 排程內執行、且不啟動隔離代理/模型執行的確定性 shell 風格作業，請使用 `--command`：
+對於在 OpenClaw 排程內執行、且不啟動隔離代理程式／模型執行的確定性 shell 風格工作，請使用 `--command`：
 
 ```bash
 openclaw cron create "*/15 * * * *" \
@@ -58,180 +58,180 @@ openclaw cron create "*/15 * * * *" \
   --to "-1001234567890"
 ```
 
-`--command <shell>` 會儲存 `argv: ["sh", "-lc", <shell>]`。使用 `--command-argv '["node","scripts/report.mjs"]'` 以精確 argv 執行。命令作業會擷取 stdout/stderr、記錄一般排程歷史，並透過與隔離作業相同的 `announce`、`webhook` 或 `none` 傳送模式路由輸出。只印出 `NO_REPLY` 的命令會被抑制。
+`--command <shell>` 會儲存 `argv: ["sh", "-lc", <shell>]`。若要精確執行 argv，請使用 `--command-argv '["node","scripts/report.mjs"]'`。命令工作會擷取 stdout/stderr、記錄一般排程歷程，並透過與隔離工作相同的 `announce`、`webhook` 或 `none` 傳遞模式轉送輸出。只輸出 `NO_REPLY` 的命令會被抑制。
 
 ## 工作階段
 
 `--session` 接受 `main`、`isolated`、`current` 或 `session:<id>`。
 
 <AccordionGroup>
-  <Accordion title="工作階段鍵">
-    - `main` 綁定到代理的主要工作階段。
-    - `isolated` 會為每次執行建立新的逐字稿和工作階段 ID。
-    - `current` 綁定到建立當下的作用中工作階段。
-    - `session:<id>` 釘選到明確的持久工作階段鍵。
+  <Accordion title="工作階段索引鍵">
+    - `main` 綁定至代理程式的主要工作階段。
+    - `isolated` 為每次執行建立全新的對話記錄與工作階段 ID。
+    - `current` 綁定至建立時的作用中工作階段。
+    - `session:<id>` 固定使用明確的持久工作階段索引鍵。
 
   </Accordion>
   <Accordion title="隔離工作階段語意">
-    隔離執行會重設周遭對話脈絡。新執行會重設頻道和群組路由、傳送/佇列策略、權限提升、來源，以及 ACP 執行階段綁定。安全偏好設定與使用者明確選取的模型或驗證覆寫可跨執行保留。
+    隔離執行會重設周遭的對話情境。新執行會重設頻道與群組路由、傳送／佇列政策、權限提升、來源，以及 ACP 執行階段綁定。安全偏好設定，以及使用者明確選取的模型或驗證覆寫，可以延續至後續執行。
   </Accordion>
 </AccordionGroup>
 
-## 傳送
+## 傳遞
 
-`openclaw cron list` 和 `openclaw cron show <job-id>` 會預覽解析後的傳送路由。對於 `channel: "last"`，預覽會顯示路由是從主要或目前工作階段解析，或會以封閉失敗處理。
+`openclaw cron list` 與 `openclaw cron show <job-id>` 會預覽解析後的傳遞路由。對於 `channel: "last"`，預覽會顯示路由是從主要工作階段或目前工作階段解析而來，或將以封閉方式失敗。
 
-供應商前綴目標可釐清未解析的 announce 頻道。例如，當 `delivery.channel` 省略或為 `last` 時，`to: "telegram:123"` 會選取 Telegram。只有已載入外掛宣告的前綴才是供應商選擇器。如果 `delivery.channel` 是明確的，前綴必須符合該頻道；`channel: "whatsapp"` 搭配 `to: "telegram:123"` 會被拒絕。像 `imessage:` 和 `sms:` 這類服務前綴仍是頻道所擁有的目標語法。
+帶有提供者前綴的目標可釐清尚未解析的公告頻道。例如，當省略 `delivery.channel` 或其值為 `last` 時，`to: "telegram:123"` 會選取 Telegram。只有已載入外掛所公布的前綴才是提供者選擇器。如果明確指定 `delivery.channel`，前綴就必須符合該頻道；`channel: "whatsapp"` 搭配 `to: "telegram:123"` 會遭拒絕。`imessage:` 與 `sms:` 等服務前綴仍屬於頻道所擁有的目標語法。
 
 <Note>
-隔離的 `cron add` 作業預設使用 `--announce` 傳送。使用 `--no-deliver` 將輸出保留在內部。`--deliver` 仍作為 `--announce` 的已棄用別名。
+隔離的 `cron add` 工作預設使用 `--announce` 傳遞。使用 `--no-deliver` 可將輸出保留在內部。`--deliver` 仍作為 `--announce` 的已棄用別名。
 </Note>
 
-### 傳送所有權
+### 傳遞責任歸屬
 
-隔離排程聊天傳送由代理和執行器共享：
+隔離排程的聊天傳遞由代理程式與執行器共同負責：
 
-- 當聊天路由可用時，代理可以使用 `message` 工具直接傳送。
-- 只有當代理未直接傳送到解析後的目標時，`announce` 才會後備傳送最終回覆。
-- `webhook` 會將完成的酬載發佈到 URL。
-- `none` 會停用執行器後備傳送。
+- 有可用的聊天路由時，代理程式可以使用 `message` 工具直接傳送。
+- 只有當代理程式未直接傳送至解析後的目標時，`announce` 才會以備援方式傳遞最終回覆。
+- `webhook` 會將完成的酬載以 POST 傳送至 URL。
+- `none` 會停用執行器的備援傳遞。
 
-使用 `cron add|create --webhook <url>` 或 `cron edit <job-id> --webhook <url>` 設定網路鉤子傳送。請勿將 `--webhook` 與聊天傳送旗標（例如 `--announce`、`--no-deliver`、`--channel`、`--to`、`--thread-id` 或 `--account`）合併使用。
+使用 `cron add|create --webhook <url>` 或 `cron edit <job-id> --webhook <url>` 設定網路鉤子傳遞。請勿將 `--webhook` 與 `--announce`、`--no-deliver`、`--channel`、`--to`、`--thread-id` 或 `--account` 等聊天傳遞旗標併用。
 
-`cron edit <job-id>` 可使用 `--clear-channel`、`--clear-to`、`--clear-thread-id` 和 `--clear-account` 取消設定個別傳送路由欄位（每個旗標在與相對應的設定旗標合併時都會被拒絕）。不同於只停用執行器後備傳送的 `--no-deliver`，這些旗標會移除已儲存欄位，讓作業再次從預設值解析該部分路由。
+`cron edit <job-id>` 可以使用 `--clear-channel`、`--clear-to`、`--clear-thread-id` 與 `--clear-account` 取消設定個別傳遞路由欄位（每個旗標與其對應的設定旗標併用時都會遭拒絕）。`--no-deliver` 只會停用執行器的備援傳遞；與其不同的是，這些旗標會移除已儲存的欄位，讓工作重新依預設值解析該部分路由。
 
-`--announce` 是最終回覆的執行器後備傳送。`--no-deliver` 會停用該後備，但在聊天路由可用時，不會移除代理的 `message` 工具。
+`--announce` 是執行器對最終回覆的備援傳遞。`--no-deliver` 會停用該備援，但在有可用聊天路由時，不會移除代理程式的 `message` 工具。
 
-從作用中聊天建立的提醒會保留即時聊天傳送目標，用於後備 announce 傳送。內部工作階段鍵可能是小寫；請勿將它們用作區分大小寫供應商 ID（例如 Matrix 房間 ID）的真實來源。
+從作用中聊天建立的提醒會保留即時聊天傳遞目標，以供備援公告傳遞使用。內部工作階段索引鍵可能使用小寫；請勿將其作為 Matrix 房間 ID 等區分大小寫之提供者 ID 的真實依據。
 
-### 失敗傳送
+### 失敗傳遞
 
 失敗通知會依下列順序解析：
 
-1. 作業上的 `delivery.failureDestination`。
+1. 工作上的 `delivery.failureDestination`。
 2. 全域 `cron.failureDestination`。
-3. 作業的主要 announce 目標（當上述兩者都未解析為具體目的地時）。
+3. 工作的主要公告目標（當上述兩者皆無法解析為具體目的地時）。
 
 <Note>
-主要工作階段作業只有在主要傳送模式為 `webhook` 時，才可使用 `delivery.failureDestination`。隔離作業在所有模式中都接受它。
+主要工作階段的工作只有在主要傳遞模式為 `webhook` 時，才能使用 `delivery.failureDestination`。隔離工作在所有模式下都可使用。
 </Note>
 
-即使未產生回覆酬載，隔離排程執行也會將執行層級的代理失敗視為作業錯誤，因此模型/供應商失敗仍會增加錯誤計數器並觸發失敗通知。
+即使未產生回覆酬載，隔離排程執行仍會將執行層級的代理程式失敗視為工作錯誤，因此模型／提供者失敗仍會增加錯誤計數器並觸發失敗通知。
 
-命令排程作業不會啟動隔離代理回合。結束碼為零會記錄 `ok`；非零結束、訊號、逾時或無輸出逾時會記錄 `error`，並可觸發相同的失敗通知路徑。
+命令排程工作不會啟動隔離代理程式回合。結束碼為零時記錄為 `ok`；非零結束碼、訊號、逾時或無輸出逾時則記錄為 `error`，並可觸發相同的失敗通知路徑。
 
-如果隔離執行在第一次模型請求前逾時，`openclaw cron show` 和 `openclaw cron runs` 會包含階段特定錯誤，例如 `setup timed out before runner start`，或命名最後已知啟動階段的停滯訊息（例如 `context-engine`）。對於命令列介面後端供應商，前模型 watchdog 會保持作用中，直到外部命令列介面回合開始，因此工作階段查詢、hook、驗證、提示和命令列介面設定停滯都會回報為前模型排程失敗。
+如果隔離執行在第一次模型請求之前逾時，`openclaw cron show` 與 `openclaw cron runs` 會包含特定階段的錯誤，例如 `setup timed out before runner start`，或指出最後已知啟動階段的停滯訊息（例如 `context-engine`）。對於以命令列介面為後端的提供者，模型前監控計時器會持續運作，直到外部命令列介面回合開始，因此工作階段查詢、掛鉤、驗證、提示詞與命令列介面設定的停滯，都會回報為模型前的排程失敗。
 
 ## 排程
 
-### 一次性作業
+### 單次工作
 
-`--at <datetime>` 排程一次性執行。沒有偏移量的日期時間會視為 UTC，除非你也傳入 `--tz <iana>`，它會以指定時區解讀壁鐘時間。
+`--at <datetime>` 會安排單次執行。沒有時區偏移量的日期時間會視為 UTC，除非您同時傳入 `--tz <iana>`，此時會依指定時區解讀當地鐘面時間。
 
 <Note>
-一次性作業預設會在成功後刪除。使用 `--keep-after-run` 保留它們。
+單次工作預設會在成功後刪除。使用 `--keep-after-run` 可保留工作。
 </Note>
 
-### 重複作業
+### 週期性工作
 
-重複作業會在連續錯誤後使用指數重試退避：30s、1m、5m、15m、60m。下一次成功執行後，排程會恢復正常。
+週期性工作在連續發生錯誤後，會採用指數重試退避：30 秒、1 分鐘、5 分鐘、15 分鐘、60 分鐘。下次執行成功後，排程會恢復正常。
 
-略過的執行會與執行錯誤分開追蹤。它們不會影響重試退避，但 `openclaw cron edit <job-id> --failure-alert-include-skipped` 可選擇將失敗警示納入重複略過執行通知。
+略過的執行會與執行錯誤分開追蹤。它們不會影響重試退避，但可使用 `openclaw cron edit <job-id> --failure-alert-include-skipped`，讓失敗警示也包含重複的略過執行通知。
 
-對於以本機已設定模型供應商為目標的隔離作業（基底 URL 在 loopback、私有網路或 `.local` 上），排程會在啟動代理回合前執行輕量供應商預檢：`api: "ollama"` 供應商會在 `/api/tags` 探測；其他本機 OpenAI 相容供應商（`api: "openai-completions"`，例如 vLLM、SGLang、LM Studio）會在 `/models` 探測。如果端點無法連線，該執行會記錄為 `skipped`，並在稍後的排程重試；可達性結果會按端點快取 5 分鐘，因此針對同一本機伺服器的大量作業不會用重複探測轟炸它。
+對於以本機已設定模型提供者為目標的隔離工作（基底 URL 位於 local loopback、私人網路或 `.local`），排程會在啟動代理程式回合之前執行輕量的提供者預檢：對 `api: "ollama"` 提供者探測 `/api/tags`；對其他與 OpenAI 相容的本機提供者（`api: "openai-completions"`，例如 vLLM、SGLang、LM Studio）探測 `/models`。如果端點無法連線，該次執行會記錄為 `skipped`，並在後續排程中重試；每個端點的連線結果會快取 5 分鐘，避免多個使用相同本機伺服器的工作以重複探測造成負荷。
 
-排程作業、待處理執行階段狀態和執行歷史都位於共享 SQLite 狀態資料庫。舊版 `jobs.json`、`<name>-state.json` 和 `runs/*.jsonl` 檔案會匯入一次，並以 `.migrated` 後綴重新命名。匯入後，請使用 `openclaw cron add|edit|remove` 編輯排程，而不是編輯 JSON 檔案。
+排程工作、待處理的執行階段狀態與執行歷程均存放在共用 SQLite 狀態資料庫中。舊版 `jobs.json`、`<name>-state.json` 與 `runs/*.jsonl` 檔案會匯入一次，並重新命名加上 `.migrated` 後綴。匯入後，請使用 `openclaw cron add|edit|remove` 編輯排程，而不要編輯 JSON 檔案。
 
 ### 手動執行
 
-`openclaw cron run <job-id>` 預設會強制執行，並在手動執行排入佇列後立即返回。成功回應包含 `{ ok: true, enqueued: true, runId }`。使用傳回的 `runId` 檢查稍後結果：
+`openclaw cron run <job-id>` 預設會強制執行，並在手動執行排入佇列後立即返回。成功回應包含 `{ ok: true, enqueued: true, runId }`。使用返回的 `runId` 查詢後續結果：
 
 ```bash
 openclaw cron run <job-id>
 openclaw cron runs --id <job-id> --run-id <run-id>
 ```
 
-當腳本應封鎖直到該確切排入佇列的執行記錄終端狀態時，請加入 `--wait`：
+當指令碼應阻塞至該筆確切的佇列執行記錄終止狀態時，請加入 `--wait`：
 
 ```bash
 openclaw cron run <job-id> --wait --wait-timeout 10m --poll-interval 2s
 ```
 
-使用 `--wait` 時，命令列介面仍會先呼叫 `cron.run`，再輪詢 `cron.runs` 取得傳回的 `runId`。只有當執行以 `ok` 狀態完成時，命令才會以 `0` 結束。當執行以 `error` 或 `skipped` 完成、閘道回應未包含 `runId`，或 `--wait-timeout` 到期時（預設 `10m`，預設每 `2s` 輪詢一次），它會以非零結束。`--poll-interval` 必須大於零。
+使用 `--wait` 時，命令列介面仍會先呼叫 `cron.run`，再以返回的 `runId` 輪詢 `cron.runs`。只有當執行以 `ok` 狀態完成時，命令才會以 `0` 結束。當執行以 `error` 或 `skipped` 完成、閘道回應不含 `runId`，或 `--wait-timeout` 到期時，命令會以非零值結束（預設為 `10m`，預設每 `2s` 輪詢一次）。`--poll-interval` 必須大於零。
 
 <Note>
-當你希望手動命令只在作業目前到期時執行，請使用 `--due`。如果 `--due --wait` 未將執行排入佇列，命令會傳回一般非執行回應，而不是進行輪詢。
+當您只想在工作目前已到期時才透過手動命令執行，請使用 `--due`。如果 `--due --wait` 未將執行排入佇列，命令會返回一般的未執行回應，而不會進行輪詢。
 </Note>
 
 ## 模型
 
-`cron add|edit --model <ref>` 會為作業選取允許的模型。`cron add|edit --fallbacks <list>` 會設定每個作業的後備模型，例如 `--fallbacks openrouter/gpt-4.1-mini,openai/gpt-5`；傳入 `--fallbacks ""` 可進行沒有後備的嚴格執行。`cron edit <job-id> --clear-fallbacks` 會移除每個作業的後備覆寫。`cron edit <job-id> --clear-model` 會移除每個作業的模型覆寫，讓作業遵循一般排程模型選取優先順序（若存在則為已儲存的排程工作階段覆寫，否則為代理/預設模型）；它不能與 `--model` 合併使用。`cron add|edit --thinking <level>` 會設定每個作業的 thinking 覆寫；`cron edit <job-id> --clear-thinking` 會移除它，讓作業遵循一般排程 thinking 優先順序，且它不能與 `--thinking` 合併使用。
+`cron add|edit --model <ref>` 會為工作選取允許使用的模型。`cron add|edit --fallbacks <list>` 會設定每個工作的備援模型，例如 `--fallbacks openrouter/gpt-4.1-mini,openai/gpt-5`；傳入 `--fallbacks ""` 可進行沒有備援的嚴格執行。`cron edit <job-id> --clear-fallbacks` 會移除每個工作的備援覆寫。`cron edit <job-id> --clear-model` 會移除每個工作的模型覆寫，使工作遵循一般排程模型選擇優先順序（若有已儲存的排程工作階段覆寫則使用它，否則使用代理程式／預設模型）；此旗標不能與 `--model` 併用。`cron add|edit --thinking <level>` 會設定每個工作的思考覆寫；`cron edit <job-id> --clear-thinking` 會將其移除，使工作遵循一般排程思考優先順序，且不能與 `--thinking` 併用。
 
 <Warning>
-如果模型不被允許或無法解析，排程會以明確的驗證錯誤讓執行失敗，而不是後備到作業的代理或預設模型選取。
+如果模型不受允許或無法解析，排程會以明確的驗證錯誤讓該次執行失敗，而不會退回使用工作的代理程式或預設模型選擇。
 </Warning>
 
-排程 `--model` 是**作業主要模型**，不是聊天工作階段 `/model` 覆寫。這表示：
+排程的 `--model` 是**工作主要模型**，不是聊天工作階段的 `/model` 覆寫。這表示：
 
-- 當選取的作業模型失敗時，已設定的模型後備仍會套用。
-- 存在時，每個作業酬載 `fallbacks` 會取代已設定的後備清單。
-- 空的每作業後備清單（作業酬載/API 中的 `--fallbacks ""` 或 `fallbacks: []`）會讓排程執行成為嚴格模式。
-- 當作業有 `--model` 但未設定後備清單時，OpenClaw 會傳入明確的空後備覆寫，因此代理主要模型不會作為隱藏重試目標附加。
-- 本機供應商預檢會在將排程執行標記為 `skipped` 前遍歷已設定的後備。
+- 選取的工作模型失敗時，已設定的模型備援仍會套用。
+- 當每個工作的酬載存在 `fallbacks` 時，它會取代已設定的備援清單。
+- 空的每個工作備援清單（`--fallbacks ""`，或工作酬載／API 中的 `fallbacks: []`）會使排程執行採用嚴格模式。
+- 當工作有 `--model` 但未設定備援清單時，OpenClaw 會傳入明確的空白備援覆寫，以避免將代理程式主要模型附加為隱藏的重試目標。
+- 在將排程執行標記為 `skipped` 之前，本機提供者預檢會依序檢查已設定的備援模型。
 
-`openclaw doctor` 會回報已設定 `payload.model` 的作業，包括供應商命名空間計數，以及與 `agents.defaults.model` 的不相符。當驗證、供應商或計費行為在即時聊天和排程作業之間看起來不同時，請使用該檢查。
+`openclaw doctor` 會回報已設定 `payload.model` 的工作，包括提供者命名空間計數，以及與 `agents.defaults.model` 不相符的項目。當即時聊天與排程工作的驗證、提供者或計費行為似乎不同時，請使用此檢查。
 
 ### 隔離排程模型優先順序
 
 隔離排程會依下列順序解析作用中模型：
 
-1. Gmail hook 覆寫。
-2. 每個作業的 `--model`。
-3. 已儲存的排程工作階段模型覆寫（當使用者選取一個時）。
-4. 代理或預設模型選取。
+1. Gmail 掛鉤覆寫。
+2. 每個工作的 `--model`。
+3. 已儲存的排程工作階段模型覆寫（使用者選取時）。
+4. 代理程式或預設模型選擇。
 
 ### 快速模式
 
-隔離排程快速模式會遵循解析後的即時模型選取。模型設定 `params.fastMode` 預設會套用，但已儲存工作階段的 `fastMode` 覆寫仍優先於設定。當解析後模式為 `auto` 時，截止值會使用所選模型的 `params.fastAutoOnSeconds` 值，預設為 60 秒。
+隔離排程的快速模式會遵循解析後的即時模型選擇。模型設定 `params.fastMode` 預設會套用，但已儲存工作階段的 `fastMode` 覆寫仍優先於設定。當解析後的模式為 `auto` 時，臨界值會使用所選模型的 `params.fastAutoOnSeconds` 值，預設為 60 秒。
 
 ### 即時模型切換重試
 
-如果隔離執行擲出 `LiveSessionModelSwitchError`，排程會在重試前，為作用中執行持久保存已切換的供應商和模型（以及存在時的已切換驗證設定檔覆寫）。外層重試迴圈在初次嘗試後限制為兩次切換重試，之後會中止而不是無限迴圈。
+如果隔離執行擲出 `LiveSessionModelSwitchError`，排程會在重試前，為作用中的執行保存切換後的提供者與模型（若存在，也會保存切換後的驗證設定檔覆寫）。外層重試迴圈最多只允許在初次嘗試後進行兩次切換重試，之後便會中止，而不會無限循環。
 
-## 執行輸出和拒絕
+## 執行輸出與拒絕
 
-### 抑制過期確認
+### 過期確認回覆抑制
 
-隔離排程回合會抑制過期的僅確認回覆。如果第一個結果只是臨時狀態更新，且沒有子代理後代執行負責最終答案，排程會在傳送前重新提示一次以取得真正結果。
+隔離排程回合會抑制過期且僅含確認的回覆。如果第一個結果只是暫時的狀態更新，且沒有任何後代子代理程式執行負責最終答案，排程會重新提示一次以取得實際結果，再進行傳遞。
 
 ### 靜默權杖抑制
 
-如果隔離排程執行只傳回靜默權杖（`NO_REPLY` 或 `no_reply`），排程會抑制直接對外傳送與備援佇列摘要路徑，因此不會有任何內容回傳到聊天。
+如果隔離的排程執行只傳回靜默權杖（`NO_REPLY` 或 `no_reply`），排程會同時抑制直接對外傳送與備援的佇列摘要路徑，因此不會有任何內容回傳至聊天。
 
 ### 結構化拒絕
 
-隔離排程執行會使用內嵌執行中的結構化執行拒絕中繼資料（編碼為 `SYSTEM_RUN_DENIED` 或 `INVALID_REQUEST` 的致命 exec-tool 錯誤）作為權威拒絕訊號。它們也會遵循節點主機在巢狀結構化錯誤外包覆、且該錯誤帶有其中一個代碼的 `UNAVAILABLE` 包裝。
+隔離的排程執行會使用內嵌執行所提供的結構化執行拒絕中繼資料（代碼為 `SYSTEM_RUN_DENIED` 或 `INVALID_REQUEST` 的致命執行工具錯誤）作為權威拒絕訊號。它們也會辨識節點主機的 `UNAVAILABLE` 包裝錯誤，前提是其中巢狀的結構化錯誤帶有上述任一代碼。
 
-除非內嵌執行也提供結構化拒絕中繼資料，否則排程不會將最終輸出的散文或看似核准的拒絕片語分類為拒絕，因此一般助理文字不會被視為遭封鎖的命令。
+除非內嵌執行也提供結構化拒絕中繼資料，否則排程不會將最終輸出的文字或看似要求核准的拒絕措辭分類為拒絕，因此一般的助理文字不會被視為遭封鎖的命令。
 
-`cron list` 和執行歷史會顯示拒絕原因，而不是將遭封鎖的命令回報為 `ok`。
+`cron list` 和執行歷史記錄會顯示拒絕原因，而不會將遭封鎖的命令回報為 `ok`。
 
 ## 保留
 
 保留與修剪由設定控制：
 
-- `cron.sessionRetention`（預設 `24h`，或設為 `false` 以停用）會修剪已完成的隔離執行工作階段。
-- `cron.runLog.keepLines`（預設 `2000`）會依每個工作的保留 SQLite 執行歷史列數進行修剪。`cron.runLog.maxBytes`（預設 `2000000`）仍會為了相容於較舊的檔案支援執行記錄而被接受；SQLite 修剪以列數為基準。
+- `cron.sessionRetention`（預設為 `24h`，設為 `false` 可停用）會修剪已完成之隔離執行的工作階段。
+- `cron.runLog.keepLines`（預設為 `2000`）會依各工作修剪保留在 SQLite 中的執行歷史記錄列。為了與舊版檔案式執行記錄相容，仍接受 `cron.runLog.maxBytes`（預設為 `2000000`）；SQLite 修剪以列數為基準。
 
-## 遷移較舊的工作
+## 遷移舊版工作
 
 <Note>
-如果你有目前傳送與儲存格式之前建立的排程工作，請執行 `openclaw doctor --fix`。Doctor 會正規化舊版排程欄位（`jobId`、`schedule.cron`、頂層傳送欄位，包括舊版 `threadId`、承載資料 `provider` 傳送別名），並將 `notify: true` 網路鉤子備援工作從 `cron.webhook` 遷移到明確的網路鉤子傳送。已經向聊天公告的工作會保留該傳送，並取得完成網路鉤子目的地。當 `cron.webhook` 未設定時，對於沒有遷移目標的工作，會移除無作用的頂層 `notify` 標記（既有傳送會原封不動保留），因此 `doctor --fix` 不會再持續對它們重新發出警告。
+如果你的排程工作建立於目前的傳送與儲存格式推出之前，請執行 `openclaw doctor --fix`。Doctor 會正規化舊版排程欄位（`jobId`、`schedule.cron`、頂層傳送欄位，包括舊版 `threadId`，以及承載資料中的 `provider` 傳送別名），並將使用 `notify: true` 的網路鉤子備援工作從 `cron.webhook` 遷移為明確的網路鉤子傳送。已向聊天發布通知的工作會保留該傳送方式，並新增完成時的網路鉤子目的地。當未設定 `cron.webhook` 時，對於沒有遷移目標的工作，系統會移除無作用的頂層 `notify` 標記（既有傳送設定會原封不動地保留），因此 `doctor --fix` 不會再持續對它們發出警告。
 </Note>
 
 ## 常見編輯
 
-更新傳送設定而不變更訊息：
+在不變更訊息的情況下更新傳送設定：
 
 ```bash
 openclaw cron edit <job-id> --announce --channel telegram --to "123456789"
@@ -243,25 +243,25 @@ openclaw cron edit <job-id> --announce --channel telegram --to "123456789"
 openclaw cron edit <job-id> --no-deliver
 ```
 
-啟用隔離工作的輕量啟動內容：
+為隔離工作啟用輕量啟動內容：
 
 ```bash
 openclaw cron edit <job-id> --light-context
 ```
 
-公告到特定頻道：
+向特定頻道發布通知：
 
 ```bash
 openclaw cron edit <job-id> --announce --channel slack --to "channel:C1234567890"
 ```
 
-公告到 Telegram 論壇主題：
+向 Telegram 論壇主題發布通知：
 
 ```bash
 openclaw cron edit <job-id> --announce --channel telegram --to "-1001234567890" --thread-id 42
 ```
 
-建立具備輕量啟動內容的隔離工作：
+建立具有輕量啟動內容的隔離工作：
 
 ```bash
 openclaw cron create "0 7 * * *" \
@@ -272,7 +272,7 @@ openclaw cron create "0 7 * * *" \
   --no-deliver
 ```
 
-`--light-context` 只適用於隔離的 agent-turn 工作。對於排程執行，輕量模式會讓啟動內容保持空白，而不是注入完整的工作區啟動集合。
+`--light-context` 僅適用於隔離的代理程式回合工作。對於排程執行，輕量模式會讓啟動內容保持空白，而不會注入完整的工作區啟動集合。
 
 建立具有精確 argv、cwd、env、stdin 與輸出限制的命令工作：
 
@@ -306,15 +306,15 @@ openclaw cron runs --id <job-id> --limit 50
 openclaw cron runs --id <job-id> --run-id <run-id>
 ```
 
-`openclaw cron list` 預設會顯示所有符合的工作。傳入 `--agent <id>` 可只顯示有效正規化代理程式 ID 相符的工作；沒有儲存代理程式 ID 的工作會計為已設定的預設代理程式。
+`openclaw cron list` 預設會顯示所有相符的工作。傳入 `--agent <id>` 可只顯示有效正規化代理程式 ID 相符的工作；未儲存代理程式 ID 的工作會視為屬於已設定的預設代理程式。
 
-`openclaw cron get <job-id>` 會直接傳回儲存的工作 JSON。當你想要包含傳送路由預覽的人類可讀檢視時，請使用 `cron show <job-id>`。
+`openclaw cron get <job-id>` 會直接傳回已儲存的工作 JSON。若要查看包含傳送路由預覽的易讀檢視，請使用 `cron show <job-id>`。
 
-`cron list --json` 和 `cron show <job-id> --json` 會在每個工作上包含頂層 `status` 欄位，該欄位由 `enabled`、`state.runningAtMs` 與 `state.lastRunStatus` 計算而來。值為：`disabled`、`running`、`ok`、`error`、`skipped` 或 `idle`。JSON 狀態會保持典範且不加裝飾，讓外部工具可讀取工作狀態而不必重新推導；人類輸出可能會以失敗次數裝飾重複的 `error` 狀態。
+`cron list --json` 和 `cron show <job-id> --json` 會在每個工作的頂層包含一個 `status` 欄位，此欄位根據 `enabled`、`state.runningAtMs` 與 `state.lastRunStatus` 計算。值可為：`disabled`、`running`、`ok`、`error`、`skipped` 或 `idle`。JSON 狀態會保持標準且不加修飾，讓外部工具無須重新推導即可讀取工作狀態；易讀輸出則可能以失敗次數修飾重複出現的 `error` 狀態。
 
-`cron runs` 項目包含傳送診斷，包括預期的排程目標、解析後的目標、訊息工具傳送、備援使用情況，以及已傳送狀態。
+`cron runs` 項目包含傳送診斷資訊，其中有預定的排程目標、解析後的目標、訊息工具傳送、備援使用情況與已傳送狀態。
 
-代理程式與工作階段重新指定目標：
+重新指定代理程式與工作階段：
 
 ```bash
 openclaw cron edit <job-id> --agent ops
@@ -323,7 +323,7 @@ openclaw cron edit <job-id> --session current
 openclaw cron edit <job-id> --session "session:daily-brief"
 ```
 
-`openclaw cron add` 會在 agent-turn 工作省略 `--agent` 時發出警告，並退回預設代理程式（`main`）。建立時傳入 `--agent <id>` 可釘選特定代理程式。
+若代理程式回合工作未指定 `--agent`，`openclaw cron add` 會發出警告，並改用預設代理程式（`main`）。建立時傳入 `--agent <id>`，即可固定使用特定代理程式。
 
 傳送微調：
 
@@ -335,7 +335,7 @@ openclaw cron edit <job-id> --no-best-effort-deliver
 openclaw cron edit <job-id> --no-deliver
 ```
 
-## 相關
+## 相關內容
 
 - [命令列介面參考](/zh-TW/cli)
-- [排定工作](/zh-TW/automation/cron-jobs)
+- [排程任務](/zh-TW/automation/cron-jobs)

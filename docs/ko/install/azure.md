@@ -1,28 +1,27 @@
 ---
 read_when:
-    - Network Security Group 보안 강화를 적용하여 Azure에서 OpenClaw를 연중무휴 24시간 실행하려고 합니다.
-    - 자체 Azure Linux VM에서 프로덕션급 상시 실행 OpenClaw Gateway를 운영하려는 경우
-    - Azure Bastion SSH를 통한 안전한 관리를 원합니다
-summary: 지속성 있는 상태로 Azure Linux VM에서 OpenClaw Gateway를 연중무휴 실행하기
+    - Network Security Group 보안 강화를 적용하여 Azure에서 OpenClaw를 연중무휴로 실행하려는 경우
+    - 자체 Azure Linux VM에서 프로덕션급으로 상시 실행되는 OpenClaw Gateway를 원합니다.
+    - Azure Bastion SSH를 사용하여 안전하게 관리하려는 경우
+summary: Azure Linux VM에서 지속적 상태를 유지하며 OpenClaw Gateway를 연중무휴 실행하기
 title: Azure
 x-i18n:
-    generated_at: "2026-07-12T15:25:18Z"
+    generated_at: "2026-07-12T00:53:17Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: e8598014cdc2786a47039ffb42ddd85354da9c87fd55ea46bb6dad7714171a14
     source_path: install/azure.md
     workflow: 16
 ---
 
-Azure CLI를 사용하여 Azure Linux VM을 설정하고, NSG(Network Security Group) 보안 강화를 적용하며, SSH 액세스를 위한 Azure Bastion을 구성하고, OpenClaw를 설치합니다.
+Azure CLI를 사용하여 Azure Linux VM을 설정하고, NSG(Network Security Group) 보안 강화를 적용하고, SSH 액세스를 위한 Azure Bastion을 구성한 다음 OpenClaw를 설치합니다.
 
 ## 수행할 작업
 
 - Azure CLI로 Azure 네트워킹(VNet, 서브넷, NSG) 및 컴퓨팅 리소스 생성
-- Azure Bastion에서만 VM에 SSH로 액세스할 수 있도록 NSG 규칙 적용
-- SSH 액세스에 Azure Bastion 사용(VM에는 공용 IP 없음)
+- Azure Bastion에서만 VM에 SSH로 연결할 수 있도록 NSG 규칙 적용
+- Azure Bastion을 통한 SSH 액세스 사용(VM에 공용 IP 없음)
 - 설치 프로그램 스크립트로 OpenClaw 설치
 - Gateway 확인
 
@@ -30,8 +29,8 @@ Azure CLI를 사용하여 Azure Linux VM을 설정하고, NSG(Network Security G
 
 - 컴퓨팅 및 네트워크 리소스를 생성할 권한이 있는 Azure 구독
 - 설치된 Azure CLI([Azure CLI 설치 단계](https://learn.microsoft.com/cli/azure/install-azure-cli) 참조)
-- SSH 키 쌍(필요한 경우 이 가이드에서 생성 방법을 설명합니다)
-- 약 20-30분
+- SSH 키 쌍(필요한 경우 이 가이드에서 생성 방법을 설명)
+- 약 20~30분
 
 ## 배포 구성
 
@@ -42,7 +41,7 @@ Azure CLI를 사용하여 Azure Linux VM을 설정하고, NSG(Network Security G
     az extension add -n ssh
     ```
 
-    Azure Bastion 네이티브 SSH 터널링에는 `ssh` 확장이 필요합니다.
+    Azure Bastion의 네이티브 SSH 터널링에는 `ssh` 확장이 필요합니다.
 
   </Step>
 
@@ -52,7 +51,7 @@ Azure CLI를 사용하여 Azure Linux VM을 설정하고, NSG(Network Security G
     az provider register --namespace Microsoft.Network
     ```
 
-    등록 상태를 확인하고 둘 다 `Registered`로 표시될 때까지 기다립니다.
+    등록을 확인하고 둘 다 `Registered`로 표시될 때까지 기다립니다.
 
     ```bash
     az provider show --namespace Microsoft.Compute --query registrationState -o tsv
@@ -82,13 +81,13 @@ Azure CLI를 사용하여 Azure Linux VM을 설정하고, NSG(Network Security G
   </Step>
 
   <Step title="SSH 키 선택">
-    기존 공개 키가 있으면 해당 키를 사용합니다.
+    기존 공개 키가 있다면 사용합니다.
 
     ```bash
     SSH_PUB_KEY="$(cat ~/.ssh/id_ed25519.pub)"
     ```
 
-    없으면 새로 생성합니다.
+    없다면 생성합니다.
 
     ```bash
     ssh-keygen -t ed25519 -a 100 -f ~/.ssh/id_ed25519 -C "you@example.com"
@@ -103,11 +102,11 @@ Azure CLI를 사용하여 Azure Linux VM을 설정하고, NSG(Network Security G
     OS_DISK_SIZE_GB=64
     ```
 
-    - 가벼운 용도라면 작은 크기로 시작하고 나중에 확장합니다.
-    - 더 무거운 자동화, 더 많은 채널 또는 더 큰 모델/도구 워크로드에는 더 많은 vCPU/RAM/디스크를 사용합니다.
-    - 해당 크기를 리전이나 구독 할당량에서 사용할 수 없으면 가장 유사한 가용 SKU를 선택합니다.
+    - 사용량이 적다면 작은 크기로 시작하고 나중에 확장합니다.
+    - 자동화 작업이 많거나, 채널이 더 많거나, 모델/도구 워크로드가 더 크다면 vCPU/RAM/디스크를 더 많이 사용합니다.
+    - 해당 지역이나 구독 할당량에서 특정 크기를 사용할 수 없다면 가장 비슷한 가용 SKU를 선택합니다.
 
-    대상 리전에서 사용 가능한 VM 크기를 나열합니다.
+    대상 지역에서 사용 가능한 VM 크기를 나열합니다.
 
     ```bash
     az vm list-skus --location "${LOCATION}" --resource-type virtualMachines -o table
@@ -132,7 +131,7 @@ Azure CLI를 사용하여 Azure Linux VM을 설정하고, NSG(Network Security G
   </Step>
 
   <Step title="네트워크 보안 그룹 생성">
-    NSG를 생성하고 Bastion 서브넷에서만 VM에 SSH로 액세스할 수 있도록 규칙을 추가합니다.
+    Bastion 서브넷에서만 VM에 SSH로 연결할 수 있도록 NSG를 생성하고 규칙을 추가합니다.
 
     ```bash
     az network nsg create \
@@ -163,12 +162,12 @@ Azure CLI를 사용하여 Azure Linux VM을 설정하고, NSG(Network Security G
       --destination-port-ranges 22
     ```
 
-    규칙은 우선순위에 따라 숫자가 낮은 것부터 평가됩니다. Bastion 트래픽은 우선순위 100에서 허용되고, 그 외 모든 SSH는 우선순위 110과 120에서 차단됩니다.
+    규칙은 우선순위가 낮은 번호부터 평가됩니다. Bastion 트래픽은 우선순위 100에서 허용되고, 그 외 모든 SSH는 110과 120에서 차단됩니다.
 
   </Step>
 
   <Step title="가상 네트워크 및 서브넷 생성">
-    VM 서브넷(NSG 연결)을 포함하는 VNet을 생성한 다음 Bastion 서브넷을 추가합니다.
+    VM 서브넷(NSG 연결됨)이 포함된 VNet을 생성한 다음 Bastion 서브넷을 추가합니다.
 
     ```bash
     az network vnet create \
@@ -209,7 +208,7 @@ Azure CLI를 사용하여 Azure Linux VM을 설정하고, NSG(Network Security G
       --nsg ""
     ```
 
-    `--public-ip-address ""`는 공용 IP가 할당되지 않도록 합니다. 서브넷 수준 NSG에서 이미 보안을 처리하므로 `--nsg ""`는 NIC별 NSG 생성을 건너뜁니다.
+    `--public-ip-address ""`는 공용 IP가 할당되지 않도록 합니다. 서브넷 수준 NSG가 이미 보안을 처리하므로 `--nsg ""`는 NIC별 NSG 생성을 건너뜁니다.
 
     `latest` 대신 특정 Ubuntu 이미지 버전을 고정하려면 먼저 사용 가능한 버전을 나열합니다.
 
@@ -236,7 +235,7 @@ Azure CLI를 사용하여 Azure Linux VM을 설정하고, NSG(Network Security G
       --sku Standard --enable-tunneling true
     ```
 
-    Bastion 프로비저닝에는 일반적으로 5-10분이 걸리지만 일부 리전에서는 최대 15-30분이 걸릴 수 있습니다.
+    Bastion 프로비저닝은 일반적으로 5~10분이 걸리지만 일부 지역에서는 최대 15~30분이 걸릴 수 있습니다.
 
   </Step>
 </Steps>
@@ -244,7 +243,7 @@ Azure CLI를 사용하여 Azure Linux VM을 설정하고, NSG(Network Security G
 ## OpenClaw 설치
 
 <Steps>
-  <Step title="Azure Bastion을 통해 VM에 SSH로 접속">
+  <Step title="Azure Bastion을 통해 VM에 SSH로 연결">
     ```bash
     VM_ID="$(az vm show -g "${RG}" -n "${VM_NAME}" --query id -o tsv)"
 
@@ -266,40 +265,40 @@ Azure CLI를 사용하여 Azure Linux VM을 설정하고, NSG(Network Security G
     rm -f /tmp/install.sh
     ```
 
-    설치 프로그램은 Node와 종속 항목이 아직 없으면 설치하고, OpenClaw를 설치한 다음 온보딩을 시작합니다. 자세한 내용은 [설치](/ko/install)를 참조하십시오.
+    설치 프로그램은 Node와 종속 항목이 아직 없는 경우 이를 설치하고, OpenClaw를 설치한 다음 온보딩을 시작합니다. 자세한 내용은 [설치](/ko/install)를 참조하세요.
 
   </Step>
 
   <Step title="Gateway 확인">
-    온보딩이 완료되면 다음을 실행합니다.
+    온보딩이 완료된 후 다음을 실행합니다.
 
     ```bash
     openclaw gateway status
     ```
 
-    조직에 이미 GitHub Copilot 라이선스가 있다면 온보딩 중 별도의 모델 API 키 대신 GitHub Copilot 공급자를 선택할 수 있습니다. [GitHub Copilot 공급자](/ko/providers/github-copilot)를 참조하십시오.
+    조직에 이미 GitHub Copilot 라이선스가 있다면 별도의 모델 API 키 대신 온보딩 중에 GitHub Copilot 공급자를 선택할 수 있습니다. [GitHub Copilot 공급자](/ko/providers/github-copilot)를 참조하세요.
 
   </Step>
 </Steps>
 
 ## 비용 고려 사항
 
-대략적인 월별 비용입니다(요금은 리전에 따라 다르고 시간이 지나면서 변경되므로 Azure 가격 계산기에서 현재 가격을 확인하십시오).
+대략적인 월간 비용입니다. 요금은 지역마다 다르고 시간이 지나면서 변경되므로 Azure Pricing Calculator에서 현재 가격을 확인하세요.
 
-- Azure Bastion Standard SKU: 약 $140/월
-- VM(`Standard_B2as_v2`): 약 $55/월
+- Azure Bastion Standard SKU: 월 약 140달러
+- VM(`Standard_B2as_v2`): 월 약 55달러
 
 비용을 절감하려면 다음을 수행합니다.
 
-- 사용하지 않을 때 VM의 할당을 해제합니다. 이렇게 하면 컴퓨팅 요금 청구가 중지됩니다(디스크 요금은 계속 부과됩니다). 할당이 해제된 동안에는 Gateway에 연결할 수 없습니다.
+- 사용하지 않을 때 VM의 할당을 해제합니다. 그러면 컴퓨팅 요금 청구가 중지됩니다(디스크 요금은 계속 부과됨). 할당이 해제된 동안에는 Gateway에 연결할 수 없습니다.
 
   ```bash
   az vm deallocate -g "${RG}" -n "${VM_NAME}"
   az vm start -g "${RG}" -n "${VM_NAME}"   # 나중에 다시 시작
   ```
 
-- 필요하지 않을 때 Bastion을 삭제하고 SSH 액세스가 다시 필요할 때 재생성합니다. Bastion은 가장 큰 비용 요소이며 몇 분 내에 프로비저닝됩니다.
-- 포털 기반 SSH만 필요하고 CLI 터널링(`az network bastion ssh`)이 필요하지 않으면 Basic Bastion SKU(약 $38/월)를 사용합니다.
+- Bastion이 필요하지 않을 때 삭제하고 SSH 액세스가 다시 필요할 때 재생성합니다. Bastion은 비용에서 가장 큰 비중을 차지하며 프로비저닝에는 몇 분이 걸립니다.
+- 포털 기반 SSH만 필요하고 CLI 터널링(`az network bastion ssh`)이 필요하지 않다면 Basic Bastion SKU(월 약 38달러)를 사용합니다.
 
 ## 정리
 
@@ -316,9 +315,9 @@ az group delete -n "${RG}" --yes --no-wait
 - 메시징 채널 설정: [채널](/ko/channels)
 - 로컬 장치를 Node로 페어링: [Node](/ko/nodes)
 - Gateway 구성: [Gateway 구성](/ko/gateway/configuration)
-- GitHub Copilot 모델 공급자를 사용하는 Azure 배포에 대한 자세한 내용: [GitHub Copilot을 사용하는 Azure의 OpenClaw](https://github.com/johnsonshi/openclaw-azure-github-copilot)
+- GitHub Copilot 모델 공급자를 사용한 Azure 배포에 대한 자세한 내용: [GitHub Copilot을 사용하여 Azure에 OpenClaw 배포](https://github.com/johnsonshi/openclaw-azure-github-copilot)
 
-## 관련 항목
+## 관련 문서
 
 - [설치 개요](/ko/install)
 - [GCP](/ko/install/gcp)

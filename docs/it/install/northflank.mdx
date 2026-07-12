@@ -1,51 +1,46 @@
 ---
 read_when:
-    - Distribuire OpenClaw su Northflank
-    - Vuoi un deployment cloud one-click con Control UI basata su browser
-summary: Distribuire OpenClaw su Northflank con un template one-click
+    - Distribuzione di OpenClaw su Northflank
+    - Vuoi una distribuzione nel cloud con un solo clic e un'interfaccia di controllo basata su browser
+summary: Distribuisci OpenClaw su Northflank con un modello in un clic
 title: Northflank
 x-i18n:
-    generated_at: "2026-04-23T08:30:27Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 5610e076b09d50c23186f1f8db16c039c99d287c34ef6fd71d4272bc527b0388
-    source_path: install/northflank.mdx
-    workflow: 15
+    generated_at: "2026-07-12T07:12:20Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 16bb96fdf470999e15e163b6227d228ce8b60b9a172eb74cadc87bddd3955957
+    source_path: install/northflank.mdx
+    workflow: 16
 ---
 
-# Northflank
-
-Distribuisci OpenClaw su Northflank con un template one-click e accedivi tramite la web Control UI.
-Questo è il percorso più semplice “senza terminale sul server”: Northflank esegue il Gateway al posto tuo.
+Distribuisci OpenClaw su Northflank con un modello a un clic e accedi tramite l'interfaccia web Control UI. Questo è il percorso più semplice «senza terminale sul server»: Northflank esegue il Gateway per te.
 
 ## Come iniziare
 
-1. Fai clic su [Deploy OpenClaw](https://northflank.com/stacks/deploy-openclaw) per aprire il template.
+1. Fai clic su [Distribuisci OpenClaw](https://northflank.com/stacks/deploy-openclaw) per aprire il modello.
 2. Crea un [account su Northflank](https://app.northflank.com/signup) se non ne hai già uno.
 3. Fai clic su **Deploy OpenClaw now**.
-4. Imposta la variabile d'ambiente richiesta: `OPENCLAW_GATEWAY_TOKEN` (usa un valore casuale forte).
-5. Fai clic su **Deploy stack** per compilare ed eseguire il template OpenClaw.
-6. Attendi il completamento del deployment, poi fai clic su **View resources**.
+4. Imposta la variabile di ambiente obbligatoria: `OPENCLAW_GATEWAY_TOKEN` (usa un valore casuale robusto).
+5. Fai clic su **Deploy stack** per compilare ed eseguire il modello OpenClaw.
+6. Attendi il completamento della distribuzione, quindi fai clic su **View resources**.
 7. Apri il servizio OpenClaw.
-8. Apri l'URL pubblico di OpenClaw su `/openclaw` e connettiti usando il secret condiviso configurato. Questo template usa `OPENCLAW_GATEWAY_TOKEN` per impostazione predefinita; se lo sostituisci con autenticazione tramite password, usa invece quella password.
+8. Apri l'URL pubblico di OpenClaw nel percorso `/openclaw` e connettiti usando il segreto condiviso configurato. Per impostazione predefinita, questo modello usa `OPENCLAW_GATEWAY_TOKEN`; se lo sostituisci con l'autenticazione tramite password, usa invece tale password.
 
 ## Cosa ottieni
 
 - Gateway OpenClaw ospitato + Control UI
-- Archiviazione persistente tramite Volume Northflank (`/data`) così `openclaw.json`,
-  `auth-profiles.json` per agente, stato di canale/provider, sessioni e
-  workspace sopravvivono ai redeploy
+- Archiviazione persistente tramite un volume Northflank (`/data`), affinché `openclaw.json`, i file `auth-profiles.json` dei singoli agenti, lo stato dei canali e dei provider, le sessioni e lo spazio di lavoro persistano dopo le ridistribuzioni
 
-## Collegare un canale
+## Connettere un canale
 
-Usa la Control UI su `/openclaw` oppure esegui `openclaw onboard` via SSH per le istruzioni di configurazione del canale:
+Usa la Control UI nel percorso `/openclaw` oppure esegui `openclaw onboard` tramite SSH per visualizzare le istruzioni di configurazione dei canali:
 
-- [Telegram](/it/channels/telegram) (il più rapido — basta un token bot)
+- [Telegram](/it/channels/telegram) (il più rapido, richiede solo un token del bot)
 - [Discord](/it/channels/discord)
 - [Tutti i canali](/it/channels)
 
-## Passi successivi
+## Passaggi successivi
 
 - Configura i canali di messaggistica: [Canali](/it/channels)
 - Configura il Gateway: [Configurazione del Gateway](/it/gateway/configuration)

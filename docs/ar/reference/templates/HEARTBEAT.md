@@ -1,32 +1,37 @@
 ---
 read_when:
-    - إعداد مساحة عمل يدويًا
-summary: قالب مساحة العمل لـ HEARTBEAT.md
+    - تهيئة مساحة عمل يدويًا
+summary: قالب مساحة العمل لملف HEARTBEAT.md
 title: قالب HEARTBEAT.md
 x-i18n:
-    generated_at: "2026-06-27T18:34:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:36:55Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 44a1ea787d67110ca53d752706b62f5ce5c4df8637897dee97ce6502f6a05eb6
+    source_hash: 1605f546995e0bdcb11f9bf905173b14aca25cfad664fe2c7644d18c2b4142e2
     source_path: reference/templates/HEARTBEAT.md
     workflow: 16
 ---
 
 # قالب HEARTBEAT.md
 
-يوجد `HEARTBEAT.md` في مساحة عمل الوكيل. أبقِ الملف فارغًا، أو يحتوي فقط على تعليقات وعناوين Markdown، عندما تريد أن يتجاوز OpenClaw استدعاءات نموذج Heartbeat.
+يوجد الملف `HEARTBEAT.md` في مساحة عمل الوكيل، ويحتوي على قائمة التحقق الدورية الخاصة بـ Heartbeat. اتركه فارغًا، أو مقتصرًا على المسافات البيضاء أو تعليقات Markdown أو عناوين ATX أو بدايات قوائم فارغة (`- `، `* [ ]`) أو علامات الأسوار، لكي يتخطى OpenClaw استدعاء نموذج Heartbeat بالكامل (`reason=empty-heartbeat-file`).
 
-قالب وقت التشغيل الافتراضي هو:
+المحتوى الافتراضي المضمّن:
 
 ```markdown
-# Keep this file empty (or with only comments) to skip heartbeat API calls.
+<!-- قالب Heartbeat؛ يمنع المحتوى المقتصر على التعليقات استدعاءات API المجدولة لـ Heartbeat. -->
 
-# Add tasks below when you want the agent to check something periodically.
+# اترك هذا الملف فارغًا (أو مقتصرًا على التعليقات) لتخطي استدعاءات API لـ Heartbeat.
+
+# أضف المهام أدناه عندما تريد من الوكيل التحقق من أمر ما دوريًا.
 ```
 
-أضف مهام قصيرة أسفل التعليقات فقط عندما تريد من الوكيل التحقق من شيء ما دوريًا. أبقِ تعليمات Heartbeat صغيرة لأنها تُقرأ أثناء الاستيقاظات المتكررة.
+لا تضف مهام قصيرة أسفل أسطر التعليقات إلا عندما تريد إجراء عمليات تحقق دورية. أبقِ الملف صغيرًا: تقرأ عمليات Heartbeat هذا الملف في كل نبضة (افتراضيًا كل 30 دقيقة)، لذلك تستهلك التعليمات المتضخمة الرموز المميزة عند كل تنشيط.
 
-## ذات صلة
+لإجراء عمليات التحقق المستحقة فقط بدلًا من قائمة تحقق عادية، استخدم كتلة `tasks:` منظّمة تتضمن الحقلين `interval` و`prompt` لكل مهمة؛ راجع [HEARTBEAT.md](/ar/gateway/heartbeat#heartbeatmd-optional) لمعرفة التنسيق والسلوك.
 
-- [تكوين Heartbeat](/ar/gateway/config-agents)
+## ذو صلة
+
+- [Heartbeat](/ar/gateway/heartbeat)
+- [إعدادات Heartbeat](/ar/gateway/config-agents)

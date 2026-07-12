@@ -1,11 +1,11 @@
 ---
 read_when:
     - 你正在安装、配置或审计 llama-cpp 插件
-summary: 通过 node-llama-cpp 使用本地 GGUF 嵌入。
+summary: 通过 node-llama-cpp 使用本地 GGUF 嵌入模型。
 title: Llama Cpp 插件
 x-i18n:
-    generated_at: "2026-06-27T02:49:11Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T20:47:38Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: be9fd199e252fd3f905e8064316e45b9b2816945a2e5e16a56a6a88fdd55ef8e
@@ -19,10 +19,10 @@ x-i18n:
 
 ## 分发
 
-- 包：`@openclaw/llama-cpp-provider`
+- 软件包：`@openclaw/llama-cpp-provider`
 - 安装途径：npm；ClawHub
 
-## 接口面
+## 接口
 
 契约：embeddingProviders
 

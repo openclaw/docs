@@ -1,14 +1,14 @@
 ---
 read_when:
     - Stai installando, configurando o verificando il plugin openrouter
-summary: Aggiunge il supporto del provider di modelli OpenRouter a OpenClaw.
+summary: Aggiunge a OpenClaw il supporto per il provider di modelli OpenRouter.
 title: Plugin OpenRouter
 x-i18n:
-    generated_at: "2026-06-27T17:58:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:19:47Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3d23878973853230ff2621d9ea75b6fd3536366fa8520139d5424a4d261bc44a
+    source_hash: 67d69a5b9ea397b276596bd69023ae6ccc0b35051d6de0d843a68b98b641b843
     source_path: plugins/reference/openrouter.md
     workflow: 16
 ---
@@ -20,11 +20,11 @@ Aggiunge a OpenClaw il supporto per il provider di modelli OpenRouter.
 ## Distribuzione
 
 - Pacchetto: `@openclaw/openrouter-provider`
-- Percorso di installazione: incluso in OpenClaw
+- Modalità di installazione: incluso in OpenClaw
 
-## Superficie
+## Interfaccia
 
-providers: openrouter; contracts: imageGenerationProviders, mediaUnderstandingProviders, musicGenerationProviders, speechProviders, videoGenerationProviders
+provider: openrouter; contratti: imageGenerationProviders, mediaUnderstandingProviders, musicGenerationProviders, speechProviders, usageProviders, videoGenerationProviders
 
 ## Documentazione correlata
 

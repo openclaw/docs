@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Je installeert, configureert of controleert de WhatsApp-Plugin
-summary: OpenClaw WhatsApp-kanaalplugin voor WhatsApp Web-chats.
+    - Je installeert, configureert of controleert de WhatsApp-plugin
+summary: OpenClaw WhatsApp-kanaalplugin voor chats via WhatsApp Web.
 title: WhatsApp-Plugin
 x-i18n:
-    generated_at: "2026-07-04T15:25:56Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:15:17Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 2fed1a21b859b7d3bd2798d013faaf7460cd6984c4b06b70e59e3ac85c5327fb
@@ -13,16 +13,16 @@ x-i18n:
     workflow: 16
 ---
 
-# WhatsApp Plugin
+# WhatsApp-plugin
 
-OpenClaw WhatsApp-kanaal-Plugin voor WhatsApp Web-chats.
+OpenClaw WhatsApp-kanaalplugin voor chats via WhatsApp Web.
 
 ## Distributie
 
 - Pakket: `@openclaw/whatsapp`
 - Installatieroute: ClawHub: `clawhub:@openclaw/whatsapp`; npm
 
-## Interface
+## Oppervlak
 
 kanalen: whatsapp; contracten: tools; Skills
 

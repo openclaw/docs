@@ -1,21 +1,21 @@
 ---
 read_when:
-    - nvidia Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
+    - nvidia Pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
 summary: OpenClaw'a NVIDIA model sağlayıcısı desteği ekler.
-title: NVIDIA Plugin
+title: NVIDIA Plugin'i
 x-i18n:
-    generated_at: "2026-05-02T20:55:28Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:34:17Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: 4d2ea102071e09fc60385a3f2bcbb4e1a636e7b87d9a3e541bac551bea7d9dbd
     source_path: plugins/reference/nvidia.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# NVIDIA Plugin
+# NVIDIA plugini
 
-OpenClaw'a NVIDIA model sağlayıcı desteği ekler.
+OpenClaw'a NVIDIA model sağlayıcısı desteği ekler.
 
 ## Dağıtım
 
@@ -24,7 +24,7 @@ OpenClaw'a NVIDIA model sağlayıcı desteği ekler.
 
 ## Yüzey
 
-providers: nvidia
+sağlayıcılar: nvidia
 
 ## İlgili belgeler
 

@@ -1,29 +1,30 @@
 ---
 read_when:
     - Anda ingin melihat Skills mana yang tersedia dan siap dijalankan
-    - Anda ingin mencari di ClawHub atau menginstal skills dari ClawHub, Git, atau direktori lokal
-    - Anda ingin memverifikasi keterampilan ClawHub dengan ClawHub
-    - Anda ingin men-debug biner/env/konfigurasi yang hilang untuk Skills
-summary: Referensi CLI untuk `openclaw skills` (search/install/update/verify/list/info/check/workshop)
+    - Anda ingin mencari di ClawHub atau menginstal Skills dari ClawHub, Git, atau direktori lokal
+    - Anda ingin memverifikasi Skills ClawHub dengan ClawHub
+    - Anda ingin men-debug biner/variabel lingkungan/konfigurasi yang tidak tersedia untuk Skills
+summary: Referensi CLI untuk `openclaw skills` (mencari/menginstal/memperbarui/memverifikasi/mencantumkan/info/memeriksa/lokakarya)
 title: Skills
 x-i18n:
-    generated_at: "2026-06-27T17:21:19Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:07:47Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8f76c49e04559362cac9c0d12ce86cd422b46653242212c7611cc1033941ac43
+    source_hash: 3eafd40704b666e6be185aa8148b60613c861a2899fb9b0cc3353212e8e4d678
     source_path: cli/skills.md
     workflow: 16
 ---
 
 # `openclaw skills`
 
-Periksa Skills lokal, cari di ClawHub, instal Skills dari direktori ClawHub/Git/lokal, verifikasi Skills ClawHub, dan perbarui instalasi yang dilacak ClawHub.
+Periksa Skills lokal, cari di ClawHub, instal Skills dari ClawHub/Git/direktori
+lokal, verifikasi Skills ClawHub, dan perbarui instalasi yang dilacak ClawHub.
 
 Terkait:
 
 - Sistem Skills: [Skills](/id/tools/skills)
-- Workshop Skill: [Workshop Skill](/id/tools/skill-workshop)
+- Lokakarya Skill: [Lokakarya Skill](/id/tools/skill-workshop)
 - Konfigurasi Skills: [Konfigurasi Skills](/id/tools/skills-config)
 - Instalasi ClawHub: [ClawHub](/id/clawhub/cli)
 
@@ -38,10 +39,12 @@ openclaw skills install git:owner/repo
 openclaw skills install git:owner/repo@main
 openclaw skills install ./path/to/skill --as custom-name
 openclaw skills install @owner/<slug> --force
+openclaw skills install @owner/<slug> --force-install
 openclaw skills install @owner/<slug> --acknowledge-clawhub-risk
 openclaw skills install @owner/<slug> --agent <id>
 openclaw skills install @owner/<slug> --global
 openclaw skills update @owner/<slug>
+openclaw skills update @owner/<slug> --force-install
 openclaw skills update @owner/<slug> --acknowledge-clawhub-risk
 openclaw skills update @owner/<slug> --global
 openclaw skills update --all
@@ -73,56 +76,90 @@ openclaw skills workshop reject <proposal-id> --reason "Not reusable"
 openclaw skills workshop quarantine <proposal-id> --reason "Needs security review"
 ```
 
-`search`, `update`, dan `verify` menggunakan ClawHub secara langsung. `install @owner/<slug>` menginstal skill ClawHub, `install git:owner/repo[@ref]` mengkloning skill Git, dan `install ./path` menyalin direktori skill lokal. Secara default, `install`, `update`, dan `verify` menargetkan direktori `skills/` ruang kerja aktif; dengan `--global`, perintah tersebut menargetkan direktori Skills terkelola bersama. `list`/`info`/`check` tetap memeriksa Skills lokal yang terlihat oleh ruang kerja dan konfigurasi saat ini. Perintah yang didukung ruang kerja menyelesaikan ruang kerja target dari `--agent <id>`, lalu direktori kerja saat ini ketika berada di dalam ruang kerja agen yang dikonfigurasi, lalu agen default.
+`search`, `update`, dan `verify` menggunakan ClawHub secara langsung. `install @owner/<slug>`
+menginstal Skill ClawHub, `install git:owner/repo[@ref]` mengkloning Skill Git,
+dan `install ./path` menyalin direktori Skill lokal. Secara default, `install`,
+`update`, dan `verify` menargetkan direktori `skills/` ruang kerja aktif; dengan
+`--global`, perintah tersebut menargetkan direktori Skills terkelola bersama. `list`/`info`/`check`
+tetap memeriksa Skills lokal yang terlihat oleh ruang kerja dan konfigurasi saat ini.
+Perintah berbasis ruang kerja menentukan ruang kerja target dari `--agent <id>`,
+kemudian direktori kerja saat ini jika berada di dalam ruang kerja agen yang
+dikonfigurasi, lalu agen default.
 
-Instalasi Git dan direktori lokal mengharapkan `SKILL.md` di root sumber. Slug instalasi berasal dari frontmatter `name` di `SKILL.md` ketika valid, lalu dari nama direktori sumber atau repositori; gunakan `--as <slug>` untuk menimpanya. `--version` hanya untuk ClawHub. Instalasi skill tidak mendukung spesifikasi paket npm atau jalur zip/arsip, dan `openclaw skills update` hanya memperbarui instalasi yang dilacak ClawHub.
+Instalasi Git dan direktori lokal mengharapkan `SKILL.md` di root sumber. Slug
+instalasi berasal dari `name` pada frontmatter `SKILL.md` jika valid, kemudian
+nama direktori sumber atau repositori; gunakan `--as <slug>` untuk menggantinya.
+`--version` hanya berlaku untuk ClawHub. Instalasi Skill tidak mendukung spesifikasi
+paket npm atau jalur zip/arsip, dan `openclaw skills update` hanya memperbarui
+instalasi yang dilacak ClawHub.
 
-Instalasi dependensi skill yang didukung Gateway yang dipicu dari onboarding atau pengaturan Skills menggunakan jalur permintaan `skills.install` yang terpisah.
+Instalasi dependensi Skill berbasis Gateway yang dipicu dari orientasi awal atau
+pengaturan Skills menggunakan jalur permintaan `skills.install` yang terpisah.
 
 Catatan:
 
-- `search [query...]` menerima kueri opsional; hilangkan untuk menjelajahi feed pencarian default ClawHub.
-- `search --limit <n>` membatasi hasil yang dikembalikan.
-- `install git:owner/repo[@ref]` menginstal skill Git. Ref cabang dapat berisi garis miring, seperti `git:owner/repo@feature/foo`.
-- `install ./path/to/skill` menginstal direktori lokal yang root-nya berisi `SKILL.md`.
-- `install --as <slug>` menimpa slug yang disimpulkan untuk instalasi Git dan direktori lokal.
-- `install --version <version>` hanya berlaku untuk ref skill ClawHub.
-- `install --force` menimpa folder skill ruang kerja yang sudah ada untuk slug yang sama.
-- Instalasi dan pembaruan skill ClawHub komunitas memeriksa kepercayaan sebelum mengunduh. Rilis arsip komunitas berversi menggunakan metadata kepercayaan rilis persis. Skills GitHub yang didukung resolver mengandalkan resolver instalasi ClawHub untuk menegakkan kebijakan pemindaian dan instalasi paksa sebelum mengembalikan commit yang dipin. Rilis komunitas berbahaya atau diblokir akan ditolak. Rilis komunitas berisiko memerlukan peninjauan dan `--acknowledge-clawhub-risk` ketika perintah non-interaktif harus melanjutkan setelah peninjauan tersebut. Penerbit skill ClawHub resmi dan sumber skill OpenClaw bawaan melewati prompt kepercayaan rilis ini.
-- `--global` menargetkan direktori Skills terkelola bersama dan tidak dapat digabungkan dengan `--agent <id>`.
-- `--agent <id>` menargetkan satu ruang kerja agen yang dikonfigurasi dan menimpa inferensi direktori kerja saat ini.
-- `update @owner/<slug>` memperbarui satu skill yang dilacak. Tambahkan `--global` untuk menargetkan direktori Skills terkelola bersama alih-alih ruang kerja.
-- `update --all` memperbarui instalasi ClawHub yang dilacak di ruang kerja yang dipilih, atau di direktori Skills terkelola bersama ketika digabungkan dengan `--global`.
-- `verify @owner/<slug>` mencetak envelope JSON `clawhub.skill.verify.v1` milik ClawHub secara default. Tidak ada flag `--json` karena JSON sudah menjadi default. Slug polos tetap diterima untuk kompatibilitas ketika skill sudah terinstal atau tidak ambigu, tetapi ref dengan pemilik menghindari ambiguitas penerbit.
-- Ketika ClawHub mengembalikan asal-usul sumber yang diselesaikan server, JSON verifikasi juga menyertakan `openclaw.verifiedSourceUrl` yang dipin ke commit. URL sumber yang tidak tersedia atau dideklarasikan sendiri tetap hanya berada di envelope asal-usul mentah dan tidak dipromosikan.
-- `verify` menggunakan `.clawhub/origin.json` untuk Skills ClawHub yang terinstal, sehingga memverifikasi versi terinstal terhadap registry asalnya. `--version` dan `--tag` menimpa pemilih versi tetapi tetap menggunakan registry terinstal tersebut ketika metadata origin ada.
-- `verify --card` mencetak Markdown Kartu Skill yang dihasilkan alih-alih JSON. Perintah keluar non-nol ketika ClawHub mengembalikan `ok: false` atau `decision: "fail"`; tanda tangan yang tidak ditandatangani bersifat informasional kecuali kebijakan ClawHub berubah.
-- Bundel ClawHub yang terinstal dapat menyertakan `skill-card.md` yang dihasilkan. OpenClaw memperlakukan verifikasi sebagai keputusan server ClawHub dan tidak menolak skill terinstal hanya karena kartu yang dihasilkan tersebut mengubah fingerprint bundel.
-- `check --agent <id>` memeriksa ruang kerja agen yang dipilih dan melaporkan Skills siap mana yang benar-benar terlihat oleh prompt atau permukaan perintah agen tersebut.
-- `list` adalah tindakan default ketika tidak ada subperintah yang diberikan.
-- `list`, `info`, dan `check` menulis output yang dirender ke stdout. Dengan `--json`, itu berarti payload yang dapat dibaca mesin tetap berada di stdout untuk pipe dan skrip.
+| Flag/perilaku                    | Deskripsi                                                                                                                                                                                                                                                                       |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `search [query...]`              | Kueri opsional; abaikan untuk menelusuri umpan pencarian ClawHub default.                                                                                                                                                                                                        |
+| `search --limit <n>`             | Membatasi hasil yang dikembalikan.                                                                                                                                                                                                                                               |
+| `install git:owner/repo[@ref]`   | Menginstal Skill Git. Referensi cabang dapat berisi garis miring, seperti `git:owner/repo@feature/foo`.                                                                                                                                                                           |
+| `install ./path/to/skill`        | Menginstal direktori lokal yang root-nya berisi `SKILL.md`.                                                                                                                                                                                                                       |
+| `install --as <slug>`            | Mengganti slug yang disimpulkan untuk instalasi Git dan direktori lokal.                                                                                                                                                                                                          |
+| `install --version <version>`    | Hanya berlaku untuk referensi Skill ClawHub.                                                                                                                                                                                                                                      |
+| `install --force`                | Menimpa folder Skill ruang kerja yang sudah ada untuk slug yang sama.                                                                                                                                                                                                             |
+| `install/update --force-install` | Menginstal Skill ClawHub berbasis GitHub yang tertunda sebelum pemindaian ClawHub selesai.                                                                                                                                                                                        |
+| `--global`                       | Menargetkan direktori Skills terkelola bersama; tidak dapat digabungkan dengan `--agent <id>`.                                                                                                                                                                                    |
+| `--agent <id>`                   | Menargetkan satu ruang kerja agen yang dikonfigurasi; menggantikan inferensi direktori kerja saat ini.                                                                                                                                                                            |
+| `update @owner/<slug>`           | Memperbarui satu Skill yang dilacak. Tambahkan `--global` untuk menargetkan direktori Skills terkelola bersama, bukan ruang kerja.                                                                                                                                                 |
+| `update --all`                   | Memperbarui instalasi ClawHub yang dilacak di ruang kerja terpilih, atau direktori Skills terkelola bersama dengan `--global`.                                                                                                                                                     |
+| `verify @owner/<slug>`           | Secara default mencetak amplop JSON `clawhub.skill.verify.v1` dari ClawHub. Tidak ada flag `--json` karena JSON sudah menjadi format default. Slug tanpa pemilik diterima demi kompatibilitas jika Skill sudah diinstal atau tidak ambigu; referensi berkualifikasi pemilik menghindari ambiguitas penerbit. |
+| Asal-usul `verify`               | Ketika ClawHub mengembalikan asal-usul sumber yang ditentukan server, JSON verifikasi juga menyertakan `openclaw.verifiedSourceUrl` yang disematkan ke commit. URL sumber yang tidak tersedia atau dinyatakan sendiri tetap hanya berada dalam amplop asal-usul mentah dan tidak dipromosikan. |
+| Pemilih versi `verify`           | `verify` menggunakan `.clawhub/origin.json` untuk Skills ClawHub yang terinstal, sehingga versi terinstal diverifikasi terhadap registri asalnya. `--version` dan `--tag` mengganti pemilih versi tetapi tetap menggunakan registri terinstal tersebut jika metadata asal tersedia. |
+| `verify --card`                  | Mencetak Markdown Kartu Skill yang dihasilkan, bukan JSON. Keluar dengan status bukan nol ketika ClawHub mengembalikan `ok: false` atau `decision: "fail"`; tanda tangan tanpa penandatanganan hanya bersifat informasional kecuali kebijakan ClawHub berubah. |
+| Sidik jari Kartu Skill           | Bundel ClawHub yang terinstal dapat menyertakan `skill-card.md` yang dihasilkan. OpenClaw memperlakukan verifikasi sebagai keputusan server ClawHub dan tidak menolak Skill yang terinstal hanya karena kartu yang dihasilkan tersebut mengubah sidik jari bundel. |
+| `check --agent <id>`             | Memeriksa ruang kerja agen terpilih dan melaporkan Skills siap pakai mana yang benar-benar terlihat oleh permukaan perintah atau prompt agen tersebut.                                                                                                                             |
+| `list`                           | Tindakan default jika tidak ada subperintah yang diberikan.                                                                                                                                                                                                                       |
+| Keluaran `list`/`info`/`check`   | Keluaran yang dirender dikirim ke stdout. Dengan `--json`, muatan yang dapat dibaca mesin tetap berada di stdout untuk pipe dan skrip.                                                                                                                                             |
 
-## Workshop Skill
+Instalasi dan pembaruan Skill komunitas ClawHub memeriksa kepercayaan sebelum
+mengunduh. Rilis arsip komunitas berversi menggunakan metadata kepercayaan rilis
+yang tepat. Skill GitHub berbasis resolver mengandalkan resolver instalasi ClawHub
+untuk menerapkan kebijakan pemindaian dan instalasi paksa sebelum mengembalikan
+commit yang disematkan; gunakan `--force-install` untuk menginstal Skill berbasis
+GitHub yang tertunda sebelum pemindaian tersebut selesai. Rilis komunitas yang
+berbahaya atau diblokir akan ditolak. Rilis komunitas berisiko memerlukan
+peninjauan dan `--acknowledge-clawhub-risk` jika perintah noninteraktif harus
+dilanjutkan setelah peninjauan tersebut. Penerbit Skill ClawHub resmi dan sumber
+Skill OpenClaw bawaan melewati prompt kepercayaan rilis ini.
 
-`openclaw skills workshop` mengelola proposal skill tertunda di ruang kerja yang dipilih. Proposal bukan skill aktif sampai diterapkan. Untuk penyimpanan proposal, pengamanan file pendukung, metode Gateway, dan kebijakan persetujuan, lihat [Workshop Skill](/id/tools/skill-workshop).
+## Lokakarya Skill
+
+`openclaw skills workshop` mengelola proposal Skill tertunda di ruang kerja
+terpilih. Proposal bukanlah Skill aktif hingga diterapkan. Untuk penyimpanan
+proposal, perlindungan berkas pendukung, metode Gateway, dan kebijakan persetujuan,
+lihat [Lokakarya Skill](/id/tools/skill-workshop).
 
 ```bash
 openclaw skills workshop propose-create \
   --name "qa-check" \
-  --description "Repeatable QA checklist" \
+  --description "Daftar periksa QA yang dapat diulang" \
   --proposal ./PROPOSAL.md
 openclaw skills workshop propose-create \
   --name "qa-check" \
-  --description "Repeatable QA checklist" \
+  --description "Daftar periksa QA yang dapat diulang" \
   --proposal-dir ./qa-check-proposal
 openclaw skills workshop propose-update qa-check --proposal ./PROPOSAL.md
 openclaw skills workshop list
 openclaw skills workshop inspect <proposal-id>
 openclaw skills workshop revise <proposal-id> --proposal ./PROPOSAL.md
 openclaw skills workshop apply <proposal-id>
-openclaw skills workshop reject <proposal-id> --reason "Duplicate"
-openclaw skills workshop quarantine <proposal-id> --reason "Needs security review"
+openclaw skills workshop reject <proposal-id> --reason "Duplikat"
+openclaw skills workshop quarantine <proposal-id> --reason "Memerlukan tinjauan keamanan"
 ```
+
+`propose-create`, `propose-update`, dan `revise` juga menerima `--goal <text>`
+dan `--evidence <text>` untuk mencatat motivasi proposal dan catatan
+pendukung bersama konten `--proposal`/`--proposal-dir`.
 
 ## Terkait
 

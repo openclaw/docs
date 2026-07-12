@@ -1,98 +1,81 @@
 ---
 read_when:
-    - Ви хочете встановлювати Plugin-и Gateway або керувати ними чи сумісними бандлами
+    - Ви хочете встановити Gateway plugins або сумісні пакети чи керувати ними
     - Ви хочете створити каркас або перевірити простий Plugin інструмента
-    - Ви хочете налагодити збої завантаження plugin
+    - Ви хочете налагодити помилки завантаження плагінів
 sidebarTitle: Plugins
-summary: Довідник CLI для `openclaw plugins` (init, build, validate, list, install, marketplace, uninstall, enable/disable, doctor)
+summary: Довідник CLI для `openclaw plugins` (ініціалізація, збирання, перевірка, перелік, установлення, маркетплейс, видалення, увімкнення/вимкнення, діагностика)
 title: Плагіни
 x-i18n:
-    generated_at: "2026-06-28T22:33:48Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:05:29Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 528a7ead224eab330bc0a83314d205a68c7f814ad336441aee7b19170c105e43
+    source_hash: 729e74103a302936dc45da3be31306803b16e9dae182e78b3742783b892a9027
     source_path: cli/plugins.md
     workflow: 16
 ---
 
-Керуйте Plugin-ами Gateway, наборами хуків і сумісними наборами.
+Керуйте плагінами Gateway, пакетами хуків і сумісними комплектами.
 
 <CardGroup cols={2}>
-  <Card title="Plugin system" href="/uk/tools/plugin">
-    Посібник для кінцевих користувачів зі встановлення, увімкнення та усунення несправностей Plugin-ів.
+  <Card title="Система плагінів" href="/uk/tools/plugin">
+    Посібник для кінцевих користувачів зі встановлення, увімкнення та усунення несправностей плагінів.
   </Card>
-  <Card title="Manage plugins" href="/uk/plugins/manage-plugins">
-    Швидкі приклади для встановлення, перегляду списку, оновлення, видалення та публікації.
+  <Card title="Керування плагінами" href="/uk/plugins/manage-plugins">
+    Короткі приклади встановлення, перегляду списку, оновлення, видалення та публікації.
   </Card>
-  <Card title="Plugin bundles" href="/uk/plugins/bundles">
-    Модель сумісності наборів.
+  <Card title="Комплекти плагінів" href="/uk/plugins/bundles">
+    Модель сумісності комплектів.
   </Card>
-  <Card title="Plugin manifest" href="/uk/plugins/manifest">
+  <Card title="Маніфест плагіна" href="/uk/plugins/manifest">
     Поля маніфесту та схема конфігурації.
   </Card>
-  <Card title="Security" href="/uk/gateway/security">
-    Посилення безпеки для встановлення Plugin-ів.
+  <Card title="Безпека" href="/uk/gateway/security">
+    Посилення безпеки встановлення плагінів.
   </Card>
 </CardGroup>
 
 ## Команди
 
 ```bash
-openclaw plugins list
-openclaw plugins list --enabled
-openclaw plugins list --verbose
-openclaw plugins list --json
-openclaw plugins search <query>
-openclaw plugins search <query> --limit 20
-openclaw plugins search <query> --json
-openclaw plugins install <path-or-spec>
-openclaw plugins inspect <id>
-openclaw plugins inspect <id> --runtime
-openclaw plugins inspect <id> --json
-openclaw plugins inspect --all
-openclaw plugins info <id>
+openclaw plugins list [--enabled] [--verbose] [--json]
+openclaw plugins search <query> [--limit <n>] [--json]
+openclaw plugins install <path-or-spec> [--link] [--force] [--pin] [--marketplace <source>]
+openclaw plugins inspect <id> [--runtime] [--json]
+openclaw plugins inspect --all [--runtime] [--json]
+openclaw plugins info <id>                    # alias for inspect
 openclaw plugins enable <id>
 openclaw plugins disable <id>
-openclaw plugins registry
-openclaw plugins registry --refresh
-openclaw plugins uninstall <id>
+openclaw plugins uninstall <id> [--dry-run] [--keep-files] [--force]
+openclaw plugins update <id-or-npm-spec> | --all [--dry-run]
+openclaw plugins registry [--refresh] [--json]
 openclaw plugins doctor
-openclaw plugins update <id-or-npm-spec>
-openclaw plugins update --all
-openclaw plugins marketplace entries
-openclaw plugins marketplace entries --offline
-openclaw plugins marketplace entries --json
-openclaw plugins marketplace list <marketplace>
-openclaw plugins marketplace list <marketplace> --json
-openclaw plugins marketplace refresh
-openclaw plugins marketplace refresh --feed-profile clawhub-public --json
-openclaw plugins marketplace refresh --feed-url https://clawhub.ai/v1/feeds/plugins --expected-sha256 <sha256>
-openclaw plugins init my-tool --name "My Tool"
-openclaw plugins init my-provider --name "My Provider" --type provider
-openclaw plugins init my-provider --name "My Provider" --type provider --directory ./my-provider
-openclaw plugins build --entry ./dist/index.js
-openclaw plugins build --entry ./dist/index.js --check
-openclaw plugins validate --entry ./dist/index.js
+openclaw plugins init <id> [--name <name>] [--type tool|provider] [--directory <path>]
+openclaw plugins build [--entry <path>] [--check]
+openclaw plugins validate [--entry <path>]
+openclaw plugins marketplace entries [--offline] [--feed-profile <name>] [--json]
+openclaw plugins marketplace list <source> [--json]
+openclaw plugins marketplace refresh [--feed-profile <name>] [--expected-sha256 <sha256>] [--json]
 ```
 
-Для розслідування повільного встановлення, інспектування, видалення або оновлення реєстру запустіть
-команду з `OPENCLAW_PLUGIN_LIFECYCLE_TRACE=1`. Трасування записує таймінги фаз
-у stderr і зберігає JSON-вивід придатним для розбору. Див. [Налагодження](/uk/help/debugging#plugin-lifecycle-trace).
+Щоб дослідити повільне встановлення, перевірку, видалення або оновлення реєстру, запустіть
+команду з `OPENCLAW_PLUGIN_LIFECYCLE_TRACE=1`. Трасування записує тривалість етапів
+у stderr і зберігає JSON-вивід придатним для синтаксичного аналізу. Див. [Налагодження](/uk/help/debugging#plugin-lifecycle-trace).
 
 <Note>
-У режимі Nix (`OPENCLAW_NIX_MODE=1`) змінювальні операції життєвого циклу Plugin-ів вимкнено. Для цього встановлення використовуйте джерело Nix замість `plugins install`, `plugins update`, `plugins uninstall`, `plugins enable` або `plugins disable`; для nix-openclaw використовуйте орієнтований на агента [Швидкий старт](https://github.com/openclaw/nix-openclaw#quick-start).
+У режимі Nix (`OPENCLAW_NIX_MODE=1`) файл `openclaw.json` незмінний. Команди `install`, `update`, `uninstall`, `enable` і `disable` відмовляються виконуватися. Натомість відредагуйте джерело Nix для цього встановлення (`programs.openclaw.config` або `instances.<name>.config` для nix-openclaw), а потім виконайте повторне складання. Див. орієнтований на агента [Швидкий старт](https://github.com/openclaw/nix-openclaw#quick-start).
 </Note>
 
 <Note>
-Вбудовані Plugin-и постачаються з OpenClaw. Деякі увімкнені за замовчуванням (наприклад, вбудовані провайдери моделей, вбудовані провайдери мовлення та вбудований браузерний Plugin); інші потребують `plugins enable`.
+Вбудовані плагіни постачаються разом з OpenClaw. Деякі з них увімкнено за замовчуванням (наприклад, вбудовані постачальники моделей, вбудовані постачальники мовлення та вбудований плагін браузера); інші потрібно вмикати за допомогою `plugins enable`.
 
-Нативні Plugin-и OpenClaw мають постачати `openclaw.plugin.json` з вбудованою JSON Schema (`configSchema`, навіть якщо вона порожня). Сумісні набори натомість використовують власні маніфести наборів.
+Нативні плагіни OpenClaw постачають файл `openclaw.plugin.json` із вбудованою JSON Schema (`configSchema`, навіть якщо вона порожня). Натомість сумісні комплекти використовують власні маніфести комплектів.
 
-`plugins list` показує `Format: openclaw` або `Format: bundle`. Докладний вивід list/info також показує підтип набору (`codex`, `claude` або `cursor`) і виявлені можливості набору.
+`plugins list` показує `Format: openclaw` або `Format: bundle`. Докладний вивід списку та інформації також показує підтип комплекту (`codex`, `claude` або `cursor`) разом із виявленими можливостями комплекту.
 </Note>
 
-### Автор
+## Створення
 
 ```bash
 openclaw plugins init stock-quotes --name "Stock Quotes"
@@ -101,23 +84,25 @@ npm run plugin:build
 npm run plugin:validate
 ```
 
-`plugins init` за замовчуванням створює мінімальний інструментальний Plugin TypeScript. Перший
-аргумент — це ідентифікатор Plugin-а; передайте `--name` для відображуваної назви. OpenClaw використовує
-ідентифікатор для типової вихідної директорії та іменування пакета. Заготовки інструментів використовують
-`defineToolPlugin`.
-`plugins build` імпортує зібрану точку входу, читає її статичні метадані інструментів, записує
-`openclaw.plugin.json` і підтримує `package.json` `openclaw.extensions` узгодженим.
+За замовчуванням `plugins init` створює мінімальний плагін інструмента TypeScript. Перший
+аргумент — це ідентифікатор плагіна; `--name` задає відображувану назву. OpenClaw використовує
+ідентифікатор для каталогу виводу за замовчуванням та іменування пакета. Заготовки інструментів використовують
+`defineToolPlugin` і створюють у `package.json` скрипти `plugin:build` та
+`plugin:validate`, які виконують складання, а потім викликають `openclaw plugins build`/`validate`.
+
+`plugins build` імпортує зібрану точку входу, зчитує її статичні метадані інструмента, записує
+`openclaw.plugin.json` і підтримує узгодженість `openclaw.extensions` у `package.json`.
 `plugins validate` перевіряє, що згенерований маніфест, метадані пакета та
-поточний експорт точки входу досі узгоджуються. Див. [Tool Plugins](/uk/plugins/tool-plugins) для
-повного робочого процесу створення інструментів.
+поточний експорт точки входу досі узгоджуються. Повний процес створення див. у розділі
+[Плагіни інструментів](/uk/plugins/tool-plugins).
 
-Заготовка записує вихідний код TypeScript, але генерує метадані зі зібраної
-точки входу `./dist/index.js`, тому робочий процес також працює з опублікованим CLI. Використовуйте
-`--entry <path>`, коли точка входу не є типовою точкою входу пакета. Використовуйте
-`plugins build --check` у CI, щоб завершуватися з помилкою, коли згенеровані метадані застаріли, без
-перезапису файлів.
+Заготовка записує вихідний код TypeScript, але генерує метадані із зібраної
+точки входу `./dist/index.js`, тому цей процес також працює з опублікованим CLI. Використовуйте
+`--entry <path>`, якщо точка входу відрізняється від стандартної точки входу пакета. Використовуйте
+`plugins build --check` у CI, щоб завершувати перевірку помилкою, коли згенеровані метадані застаріли, не
+перезаписуючи файли.
 
-### Заготовка провайдера
+### Заготовка постачальника
 
 ```bash
 openclaw plugins init acme-models --name "Acme Models" --type provider
@@ -128,142 +113,148 @@ npm test
 npm run validate
 ```
 
-Заготовки провайдерів створюють загальний текстовий/модельний Plugin провайдера з OpenAI-сумісною
-проводкою API-ключів, вбудованим скриптом `npm run validate` для `clawhub package
-validate`, метаданими пакета ClawHub і вручну запущеним робочим процесом GitHub
-для майбутньої довіреної публікації через GitHub Actions OIDC. Заготовки провайдерів
-не генерують Skills і не використовують `openclaw plugins build` або
-`openclaw plugins validate`; ці команди призначені для шляху згенерованих метаданих
+Заготовки постачальників створюють універсальний плагін постачальника моделей, сумісний з OpenAI,
+з інфраструктурою автентифікації за ключем API, скриптом `npm run validate`, який запускає
+`clawhub package validate`, метаданими пакета ClawHub і вручну
+запусканим робочим процесом GitHub Actions для майбутньої довіреної публікації через GitHub
+OIDC. Заготовки постачальників не створюють Skills і не використовують
+`openclaw plugins build`/`validate`; ці команди призначені для шляху згенерованих метаданих
 заготовки інструмента.
 
-Перед публікацією замініть заповнювач URL бази API, каталог моделей, маршрут документації,
-текст облікових даних і текст README реальними даними провайдера. Використовуйте
+Перед публікацією замініть заповнювачі базової URL-адреси API, каталогу моделей, маршруту
+документації, тексту облікових даних і вмісту README реальними даними постачальника. Використовуйте
 згенерований README для першої публікації в ClawHub і налаштування довіреного видавця.
 
-### Встановлення
+## Встановлення
 
 ```bash
-openclaw plugins search "calendar"                   # search ClawHub plugins
-openclaw plugins install <package>                      # source auto-detection
-openclaw plugins install clawhub:<package>              # ClawHub only
-openclaw plugins install npm:<package>                  # npm only
-openclaw plugins install npm-pack:<path.tgz>            # local npm pack through npm install semantics
-openclaw plugins install git:github.com/<owner>/<repo>  # git repo
+openclaw plugins search "calendar"                      # search ClawHub plugins
+openclaw plugins install <package>                       # source auto-detection
+openclaw plugins install clawhub:<package>                # ClawHub only
+openclaw plugins install npm:<package>                    # npm only
+openclaw plugins install npm-pack:<path.tgz>               # local npm-pack tarball
+openclaw plugins install git:github.com/<owner>/<repo>     # git repo
 openclaw plugins install git:github.com/<owner>/<repo>@<ref>
-openclaw plugins install <package> --force              # overwrite existing install
-openclaw plugins install <package> --pin                # pin version
+openclaw plugins install <path>                            # local path or archive
+openclaw plugins install -l <path>                         # link instead of copy
+openclaw plugins install <plugin>@<marketplace>             # marketplace shorthand
+openclaw plugins install <plugin> --marketplace <name>      # marketplace (explicit)
+openclaw plugins install <package> --force                  # overwrite existing install
+openclaw plugins install <package> --pin                    # pin resolved npm version
 openclaw plugins install clawhub:<package> --acknowledge-clawhub-risk
 openclaw plugins install <package> --dangerously-force-unsafe-install
-openclaw plugins install <path>                         # local path
-openclaw plugins install <plugin>@<marketplace>         # marketplace
-openclaw plugins install <plugin> --marketplace <name>  # marketplace (explicit)
-openclaw plugins install <plugin> --marketplace https://github.com/<owner>/<repo>
 ```
 
-Мейнтейнери, які тестують встановлення під час налаштування, можуть перевизначати автоматичні джерела
-встановлення Plugin-ів за допомогою захищених змінних середовища. Див.
-[Перевизначення встановлення Plugin-ів](/uk/plugins/install-overrides).
+Супровідники, які тестують встановлення під час налаштування, можуть перевизначити автоматичні джерела
+встановлення плагінів за допомогою захищених змінних середовища. Див.
+[Перевизначення встановлення плагінів](/uk/plugins/install-overrides).
 
 <Warning>
-Голі імена пакетів за замовчуванням установлюються з npm під час перехідного запуску, якщо вони не збігаються з ідентифікатором офіційного Plugin-а. Необроблені специфікації пакетів `@openclaw/*`, які збігаються з вбудованими Plugin-ами, використовують вбудовану копію, що постачалася з поточною збіркою OpenClaw. Використовуйте `npm:<package>`, коли навмисно хочете зовнішній пакет npm. Використовуйте `clawhub:<package>` для ClawHub. Ставтеся до встановлення Plugin-ів як до запуску коду. Надавайте перевагу закріпленим версіям.
+Під час переходу на нову схему запуску прості назви пакетів за замовчуванням установлюються з npm, якщо вони не відповідають ідентифікатору вбудованого або офіційного плагіна; у такому разі OpenClaw використовує локальну або офіційну копію замість звернення до реєстру npm. Використовуйте `npm:<package>`, коли свідомо хочете встановити зовнішній пакет npm. Для ClawHub використовуйте `clawhub:<package>`. Ставтеся до встановлення плагінів як до запуску коду; віддавайте перевагу зафіксованим версіям.
 </Warning>
 
-`plugins search` запитує ClawHub щодо доступних для встановлення пакетів Plugin-ів і друкує
-готові до встановлення імена пакетів. Він шукає пакети code-plugin і bundle-plugin,
-а не Skills. Використовуйте `openclaw skills search` для Skills ClawHub.
+`plugins search` виконує пошук у ClawHub доступних для встановлення пакетів `code-plugin` і
+`bundle-plugin` (не Skills; для них використовуйте `openclaw skills search`).
+Значення `--limit` за замовчуванням — 20, а максимальне — 100. Команда лише читає віддалений каталог: без
+перевірки локального стану, зміни конфігурації, встановлення пакетів або завантаження середовища виконання
+плагіна. Результати містять назву пакета ClawHub, сімейство, канал, версію,
+опис і підказку щодо встановлення, наприклад `openclaw plugins install clawhub:<package>`.
 
 <Note>
-ClawHub є основною поверхнею поширення та виявлення для більшості Plugin-ів. Npm
-залишається підтримуваним запасним варіантом і шляхом прямого встановлення. Належні OpenClaw
-пакети Plugin-ів `@openclaw/*` знову публікуються в npm; див. поточний список
-на [npmjs.com/org/openclaw](https://www.npmjs.com/org/openclaw) або
-[інвентар Plugin-ів](/uk/plugins/plugin-inventory). Стабільні встановлення використовують `latest`.
-Встановлення та оновлення бета-каналу надають перевагу npm dist-tag `beta`, коли цей тег
-доступний, а потім повертаються до `latest`.
+ClawHub є основним засобом розповсюдження та пошуку більшості плагінів. Npm
+залишається підтримуваним резервним і прямим шляхом встановлення. Пакети плагінів
+`@openclaw/*`, що належать OpenClaw, знову публікуються в npm; поточний список див.
+на [npmjs.com/org/openclaw](https://www.npmjs.com/org/openclaw) або в
+[переліку плагінів](/uk/plugins/plugin-inventory). Стабільні встановлення використовують `latest`.
+Встановлення й оновлення з бета-каналу віддають перевагу тегу дистрибутива npm `beta`, якщо він доступний,
+інакше використовують `latest`. На каналі розширеної стабільності офіційні плагіни npm
+із простим, стандартним або `latest`-наміром визначаються до точної встановленої версії
+ядра. Точні фіксації та явно вказані теги, відмінні від `latest`, пакети сторонніх розробників і
+джерела, відмінні від npm, не переписуються.
 </Note>
 
 <AccordionGroup>
-  <Accordion title="Config includes and invalid-config repair">
-    Якщо ваш розділ `plugins` підкріплений однофайловим `$include`, `plugins install/update/enable/disable/uninstall` записують у цей включений файл і залишають `openclaw.json` без змін. Кореневі включення, масиви включень і включення з сусідніми перевизначеннями завершуються закрито замість вирівнювання. Див. [Включення конфігурації](/uk/gateway/configuration) для підтримуваних форм.
+  <Accordion title="Включення конфігурації та виправлення недійсної конфігурації">
+    Якщо ваш розділ `plugins` підтримується однофайловим `$include`, команди `plugins install/update/enable/disable/uninstall` записують зміни в цей включений файл і не змінюють `openclaw.json`. Кореневі включення, масиви включень і включення із сусідніми перевизначеннями завершуються безпечною відмовою замість зведення в один файл. Підтримувані структури див. у розділі [Включення конфігурації](/uk/gateway/configuration).
 
-    Якщо конфігурація недійсна під час встановлення, `plugins install` зазвичай завершується закрито і просить вас спочатку запустити `openclaw doctor --fix`. Під час запуску Gateway і гарячого перезавантаження недійсна конфігурація Plugin-а завершується закрито, як і будь-яка інша недійсна конфігурація; `openclaw doctor --fix` може помістити недійсний запис Plugin-а в карантин. Єдиний задокументований виняток під час встановлення — вузький шлях відновлення вбудованого Plugin-а для Plugin-ів, які явно обирають `openclaw.install.allowInvalidConfigRecovery`.
-
-  </Accordion>
-  <Accordion title="--force and reinstall vs update">
-    `--force` повторно використовує наявну ціль встановлення та перезаписує вже встановлений Plugin або набір хуків на місці. Використовуйте його, коли ви навмисно перевстановлюєте той самий ідентифікатор з нового локального шляху, архіву, пакета ClawHub або артефакту npm. Для звичайних оновлень уже відстежуваного npm Plugin-а надавайте перевагу `openclaw plugins update <id-or-npm-spec>`.
-
-    Якщо ви запускаєте `plugins install` для ідентифікатора Plugin-а, який уже встановлено, OpenClaw зупиняється і вказує на `plugins update <id-or-npm-spec>` для звичайного оновлення або на `plugins install <package> --force`, коли ви справді хочете перезаписати поточне встановлення з іншого джерела.
+    Якщо під час встановлення конфігурація недійсна, `plugins install` зазвичай завершується безпечною відмовою та пропонує спочатку запустити `openclaw doctor --fix`. Під час запуску Gateway і гарячого перезавантаження недійсна конфігурація плагіна спричиняє безпечну відмову, як і будь-яка інша недійсна конфігурація; `openclaw doctor --fix` може помістити недійсний запис плагіна в карантин. Єдиний задокументований виняток під час встановлення — вузький шлях відновлення вбудованого плагіна для плагінів, які явно вмикають `openclaw.install.allowInvalidConfigRecovery`.
 
   </Accordion>
-  <Accordion title="--pin scope">
-    `--pin` застосовується лише до встановлень npm. Він не підтримується з установленнями `git:`; використовуйте явне посилання git, наприклад `git:github.com/acme/plugin@v1.2.3`, коли хочете закріплене джерело. Він не підтримується з `--marketplace`, тому що встановлення з marketplace зберігають метадані джерела marketplace замість специфікації npm.
+  <Accordion title="--force і повторне встановлення порівняно з оновленням">
+    `--force` повторно використовує наявну ціль встановлення та перезаписує вже встановлений плагін або пакет хуків на місці. Використовуйте його, коли навмисно повторно встановлюєте той самий ідентифікатор із нового локального шляху, архіву, пакета ClawHub або артефакту npm. Для звичайних оновлень уже відстежуваного плагіна npm віддавайте перевагу `openclaw plugins update <id-or-npm-spec>`.
+
+    Якщо запустити `plugins install` для вже встановленого ідентифікатора плагіна, OpenClaw зупинить операцію та запропонує `plugins update <id-or-npm-spec>` для звичайного оновлення або `plugins install <package> --force`, якщо ви справді хочете перезаписати поточне встановлення з іншого джерела. `--force` не підтримується разом із `--link`.
+
+  </Accordion>
+  <Accordion title="Область дії --pin">
+    `--pin` застосовується лише до встановлень npm і записує визначене точне значення `<name>@<version>`. Він не підтримується зі встановленнями `git:` (натомість зафіксуйте посилання у специфікації, наприклад `git:github.com/acme/plugin@v1.2.3`) або з `--marketplace` (встановлення з маркетплейсу зберігають метадані джерела маркетплейсу замість специфікації npm).
   </Accordion>
   <Accordion title="--dangerously-force-unsafe-install">
-    `--dangerously-force-unsafe-install` застаріло і тепер нічого не робить. OpenClaw більше не виконує вбудоване блокування небезпечного коду під час встановлення Plugin-ів.
+    `--dangerously-force-unsafe-install` застарів і тепер не виконує жодних дій. OpenClaw більше не застосовує вбудоване блокування небезпечного коду під час встановлення плагінів.
 
-    Використовуйте спільну поверхню `security.installPolicy`, якою володіє оператор, коли потрібна специфічна для хоста політика встановлення. Хуки Plugin-а `before_install` є хуками життєвого циклу середовища виконання Plugin-а і не є основною політичною межею для встановлень CLI.
+    Використовуйте керовану оператором поверхню `security.installPolicy`, коли потрібна специфічна для хоста політика встановлення. Хуки плагіна `before_install` є хуками життєвого циклу середовища виконання плагіна, а не основною межею політики для встановлень через CLI.
 
-    Якщо Plugin, який ви опублікували в ClawHub, прихований або заблокований скануванням реєстру, використовуйте кроки видавця в [Публікація ClawHub](/uk/clawhub/publishing). `--dangerously-force-unsafe-install` не просить ClawHub повторно просканувати Plugin або зробити заблокований реліз публічним.
+    Якщо опублікований вами в ClawHub плагін приховано або заблоковано перевіркою реєстру, скористайтеся кроками для видавців у розділі [Публікація в ClawHub](/uk/clawhub/publishing). `--dangerously-force-unsafe-install` не надсилає ClawHub запит на повторну перевірку плагіна та не робить заблокований випуск загальнодоступним.
 
   </Accordion>
   <Accordion title="--acknowledge-clawhub-risk">
-    Встановлення зі спільноти ClawHub перевіряють запис довіри вибраного релізу перед завантаженням пакета. Якщо ClawHub вимикає завантаження для релізу, повідомляє про шкідливі результати сканування або переводить реліз у блокувальний стан модерації, наприклад карантин, OpenClaw відхиляє реліз. Для неблокувальних ризикових статусів сканування, ризикових станів модерації або причин реєстру OpenClaw показує подробиці довіри і просить підтвердження перед продовженням.
+    Під час установлення пакетів спільноти з ClawHub перед завантаженням перевіряється запис довіри вибраного випуску. Якщо ClawHub вимикає завантаження випуску, повідомляє про виявлення шкідливого коду під час перевірки або переводить випуск у блокувальний стан модерації (карантин, відкликання), OpenClaw безумовно відхиляє його незалежно від цього прапорця. Для неблокувальних ризикованих станів перевірки або модерації OpenClaw показує відомості про довіру та запитує підтвердження перед продовженням.
 
-    Використовуйте `--acknowledge-clawhub-risk` лише після перегляду попередження ClawHub і рішення продовжити без інтерактивного запиту. Очікувані або застарілі чисті записи довіри попереджають, але не потребують підтвердження. Офіційні пакети ClawHub і вбудовані джерела Plugin-ів OpenClaw обходять цей запит довіри до релізу.
-
-  </Accordion>
-  <Accordion title="Hook packs and npm specs">
-    `plugins install` також є поверхнею встановлення для наборів хуків, які надають `openclaw.hooks` у `package.json`. Використовуйте `openclaw hooks` для відфільтрованої видимості хуків і ввімкнення окремих хуків, а не для встановлення пакета.
-
-    Специфікації npm є **лише реєстровими** (назва пакета + необов’язкова **точна версія** або **dist-tag**). Специфікації Git/URL/file і діапазони semver відхиляються. Встановлення залежностей виконується в одному керованому npm-проєкті на Plugin із `--ignore-scripts` для безпеки, навіть якщо у вашій оболонці задані глобальні налаштування встановлення npm. Керовані npm-проєкти Plugin успадковують npm `overrides` OpenClaw на рівні пакета, тож хостові security pins застосовуються і до піднятих залежностей Plugin.
-
-    Використовуйте `npm:<package>`, коли хочете явно вказати npm-розв’язання. Голі специфікації пакетів також встановлюються безпосередньо з npm під час запускового переходу, якщо вони не збігаються з офіційним id Plugin.
-
-    Необроблені специфікації пакетів `@openclaw/*`, що збігаються з вбудованими plugins, розв’язуються до вбудованої копії, що належить образу, перед fallback до npm. Наприклад, `openclaw plugins install @openclaw/discord@2026.5.20 --pin` використовує вбудований Discord plugin із поточного білда OpenClaw замість створення керованого npm override. Щоб примусово використати зовнішній npm-пакет, застосуйте `openclaw plugins install npm:@openclaw/discord@2026.5.20 --pin`.
-
-    Голі специфікації та `@latest` залишаються на стабільній гілці. Версії виправлень OpenClaw із датованою позначкою, як-от `2026.5.3-1`, для цієї перевірки є стабільними релізами. Якщо npm розв’язує будь-яку з них до prerelease, OpenClaw зупиняється і просить вас явно погодитися через prerelease-тег, як-от `@beta`/`@rc`, або точну prerelease-версію, як-от `@1.2.3-beta.4`.
-
-    Для npm-встановлень без точної версії (`npm:<package>` або `npm:<package>@latest`) OpenClaw перевіряє розв’язані метадані пакета перед встановленням. Якщо найновіший стабільний пакет потребує новішого OpenClaw plugin API або мінімальної версії хоста, OpenClaw переглядає старіші стабільні версії й натомість встановлює найновіший сумісний реліз. Точні версії та явні dist-tags, як-от `@beta`, залишаються строгими: якщо вибраний пакет несумісний, команда завершується помилкою і просить оновити OpenClaw або вибрати сумісну версію.
-
-    Якщо гола специфікація встановлення збігається з офіційним id Plugin (наприклад `diffs`), OpenClaw встановлює запис каталогу безпосередньо. Щоб встановити npm-пакет із такою самою назвою, використовуйте явну scoped-специфікацію (наприклад `@scope/diffs`).
+    Використовуйте `--acknowledge-clawhub-risk` лише після перегляду попередження ClawHub і рішення продовжити без інтерактивного запиту. Результати перевірки, що очікуються або застаріли (ще не мають чистого статусу), спричиняють попередження, але не потребують підтвердження. Офіційні пакети ClawHub і джерела вбудованих плагінів OpenClaw повністю оминають цю перевірку довіри до випуску.
 
   </Accordion>
-  <Accordion title="Git repositories">
-    Використовуйте `git:<repo>`, щоб встановити безпосередньо з git-репозиторію. Підтримувані форми включають `git:github.com/owner/repo`, `git:owner/repo`, повні URL клонування `https://`, `ssh://`, `git://`, `file://` і `git@host:owner/repo.git`. Додайте `@<ref>` або `#<ref>`, щоб перед встановленням перейти на гілку, тег або коміт.
+  <Accordion title="Пакети хуків і специфікації npm">
+    `plugins install` також є засобом установлення пакетів хуків, які надають `openclaw.hooks` у `package.json`. Використовуйте `openclaw hooks` для відфільтрованого перегляду хуків та увімкнення окремих хуків, а не для встановлення пакетів.
 
-    Git-встановлення клонують у тимчасовий каталог, переходять на запитаний ref за наявності, а потім використовують звичайний інсталятор каталогу Plugin. Це означає, що валідація маніфесту, політика встановлення оператора, робота встановлення менеджера пакетів і записи встановлення поводяться так само, як npm-встановлення. Записані git-встановлення включають вихідний URL/ref плюс розв’язаний коміт, щоб `openclaw plugins update` міг пізніше повторно розв’язати джерело.
+    Специфікації npm підтримують **лише реєстр** (назва пакета та необов’язкова **точна версія** або **dist-tag**). Специфікації Git/URL/файлів і діапазони semver відхиляються. Для безпеки залежності встановлюються з `--ignore-scripts` в одному керованому проєкті npm для кожного Plugin, навіть якщо у вашій оболонці налаштовано глобальні параметри встановлення npm. Керовані проєкти npm для Plugin успадковують npm `overrides` рівня пакета OpenClaw, тому закріплені на рівні хоста версії для усунення вразливостей також застосовуються до піднятих залежностей Plugin.
 
-    Після встановлення з git використовуйте `openclaw plugins inspect <id> --runtime --json`, щоб перевірити runtime-реєстрації, як-от методи gateway і CLI-команди. Якщо Plugin зареєстрував CLI-корінь через `api.registerCli`, виконайте цю команду безпосередньо через кореневий CLI OpenClaw, наприклад `openclaw demo-plugin ping`.
+    Використовуйте `npm:<package>`, щоб явно вказати розв’язання через npm. Під час перехідного етапу запуску специфікації пакетів без префікса також установлюються безпосередньо з npm, якщо вони не відповідають ідентифікатору офіційного Plugin.
+
+    Необроблені специфікації `@openclaw/*`, що відповідають вбудованим Plugin, спочатку розв’язуються до вбудованої копії, яка належить образу, і лише потім використовується резервне розв’язання через npm. Наприклад, `openclaw plugins install @openclaw/discord@2026.5.20 --pin` використовує вбудований Plugin Discord із поточної збірки OpenClaw замість створення керованого перевизначення npm. Щоб примусово використати зовнішній пакет npm, виконайте `openclaw plugins install npm:@openclaw/discord@2026.5.20 --pin`.
+
+    Специфікації без префікса та `@latest` залишаються у стабільному каналі. Версії виправлень OpenClaw із датою, як-от `2026.5.3-1`, для цієї перевірки вважаються стабільними. Якщо npm розв’язує будь-яку з цих форм до попередньої версії, OpenClaw зупиняється та просить явно погодитися, указавши тег попередньої версії (`@beta`/`@rc`) або точну попередню версію (`@1.2.3-beta.4`).
+
+    Для встановлень npm без точної версії (`npm:<package>` або `npm:<package>@latest`) OpenClaw перед установленням перевіряє метадані розв’язаного пакета. Якщо найновіший стабільний пакет потребує новішого API Plugin OpenClaw або вищої мінімальної версії хоста, OpenClaw перевіряє старіші стабільні версії та встановлює найновіший сумісний випуск. Точні версії та явно вказані dist-tag залишаються суворими: вибір несумісної версії завершується помилкою з пропозицією оновити OpenClaw або вибрати сумісну версію.
+
+    Якщо специфікація встановлення без префікса відповідає ідентифікатору офіційного Plugin (наприклад, `diffs`), OpenClaw установлює безпосередньо запис із каталогу. Щоб установити однойменний пакет npm, використовуйте явну специфікацію з областю видимості (наприклад, `@scope/diffs`).
 
   </Accordion>
-  <Accordion title="Archives">
-    Підтримувані архіви: `.zip`, `.tgz`, `.tar.gz`, `.tar`. Нативні архіви OpenClaw Plugin мають містити дійсний `openclaw.plugin.json` у корені розпакованого Plugin; архіви, що містять лише `package.json`, відхиляються до того, як OpenClaw запише записи встановлення.
+  <Accordion title="Репозиторії Git">
+    Використовуйте `git:<repo>` для встановлення безпосередньо з репозиторію Git. Підтримувані форми: `git:github.com/owner/repo`, `git:owner/repo`, повні URL-адреси `https://`, `ssh://`, `git://`, `file://` і URL-адреси клонування `git@host:owner/repo.git`. Додайте `@<ref>` або `#<ref>`, щоб перед установленням перейти на гілку, тег або коміт.
 
-    Використовуйте `npm-pack:<path.tgz>`, коли файл є npm-pack tarball і ви хочете
-    протестувати той самий шлях керованого npm-проєкту на Plugin, що використовується реєстровими
-    встановленнями, включно з перевіркою `package-lock.json`, скануванням піднятих залежностей
-    і записами npm-встановлення. Звичайні шляхи до архівів і надалі встановлюються як локальні
-    архіви під коренем розширень Plugin.
+    Під час установлення з Git репозиторій клонується до тимчасового каталогу, за наявності виконується перехід на вказане посилання, а потім використовується звичайний інсталятор каталогу Plugin. Тому перевірка маніфесту, політика встановлення оператора, встановлення через менеджер пакетів і записи про встановлення працюють так само, як для встановлень із npm. Записані встановлення з Git містять URL-адресу та посилання джерела, а також розв’язаний коміт, щоб `openclaw plugins update` міг згодом повторно розв’язати джерело.
 
-    Встановлення з Claude marketplace також підтримуються.
+    Після встановлення з Git скористайтеся `openclaw plugins inspect <id> --runtime --json`, щоб перевірити реєстрації середовища виконання, як-от методи Gateway і команди CLI. Якщо Plugin зареєстрував кореневу команду CLI за допомогою `api.registerCli`, запускайте її безпосередньо через кореневий CLI OpenClaw, наприклад `openclaw demo-plugin ping`.
+
+  </Accordion>
+  <Accordion title="Архіви">
+    Підтримувані архіви: `.zip`, `.tgz`, `.tar.gz`, `.tar`. Нативні архіви Plugin OpenClaw повинні містити дійсний файл `openclaw.plugin.json` у корені видобутого Plugin; архіви, що містять лише `package.json`, відхиляються до того, як OpenClaw запише відомості про встановлення.
+
+    Використовуйте `npm-pack:<path.tgz>`, якщо файл є tar-архівом npm-pack і вам потрібен
+    той самий шлях керованого проєкту npm для кожного Plugin, який використовується під час установлення з реєстру,
+    зокрема перевірка `package-lock.json`, сканування піднятих залежностей
+    і записи про встановлення npm. Звичайні шляхи до архівів і надалі встановлюються як локальні
+    архіви в корені розширень Plugin.
+
+    Також підтримується встановлення з маркетплейсу Claude.
 
   </Accordion>
 </AccordionGroup>
 
-Встановлення ClawHub використовують явний locator `clawhub:<package>`:
+Для встановлення з ClawHub використовується явний локатор `clawhub:<package>`:
 
 ```bash
 openclaw plugins install clawhub:openclaw-codex-app-server
 openclaw plugins install clawhub:openclaw-codex-app-server@1.2.3
 ```
 
-Голі npm-безпечні специфікації Plugin типово встановлюються з npm під час запускового переходу, якщо вони не збігаються з офіційним id Plugin:
+Під час перехідного етапу запуску безпечні для npm специфікації Plugin без префікса типово встановлюються з npm, якщо вони не відповідають ідентифікатору офіційного Plugin:
 
 ```bash
 openclaw plugins install openclaw-codex-app-server
 ```
 
-Використовуйте `npm:`, щоб явно вказати лише npm-розв’язання:
+Використовуйте `npm:`, щоб явно обмежити розв’язання лише npm:
 
 ```bash
 openclaw plugins install npm:openclaw-codex-app-server
@@ -271,19 +262,19 @@ openclaw plugins install npm:@openclaw/discord@2026.5.20
 openclaw plugins install npm:@scope/plugin-name@1.0.1
 ```
 
-OpenClaw перевіряє заявлену сумісність plugin API / мінімального gateway перед встановленням. Коли вибрана версія ClawHub публікує артефакт ClawPack, OpenClaw завантажує версійний npm-pack `.tgz`, перевіряє заголовок digest ClawHub і digest артефакту, а потім встановлює його через звичайний шлях архіву. Старіші версії ClawHub без метаданих ClawPack і надалі встановлюються через застарілий шлях перевірки архіву пакета. Записані встановлення зберігають свої вихідні метадані ClawHub, тип артефакту, npm integrity, npm shasum, назву tarball і факти ClawPack digest для подальших оновлень.
-Неверсійні встановлення ClawHub зберігають неверсійну записану специфікацію, щоб `openclaw plugins update` міг відстежувати новіші релізи ClawHub; явні селектори версії або тегу, як-от `clawhub:pkg@1.2.3` і `clawhub:pkg@beta`, залишаються закріпленими за цим селектором.
+Перед установленням OpenClaw перевіряє заявлену сумісність з API Plugin і мінімальною версією Gateway. Якщо вибрана версія ClawHub публікує артефакт ClawPack, OpenClaw завантажує версійний `.tgz` npm-pack, перевіряє заголовок дайджесту ClawHub і дайджест артефакту, а потім установлює його звичайним шляхом для архівів. Старіші версії ClawHub без метаданих ClawPack і надалі встановлюються за допомогою застарілого механізму перевірки архіву пакета. Записи про встановлення зберігають метадані джерела ClawHub, тип артефакту, цілісність npm, контрольну суму npm, назву tar-архіву та дані дайджесту ClawPack для подальших оновлень.
+Для встановлень ClawHub без указаної версії зберігається специфікація без версії, щоб `openclaw plugins update` міг переходити на новіші випуски ClawHub; явно вказані селектори версій або тегів, як-от `clawhub:pkg@1.2.3` і `clawhub:pkg@beta`, залишаються закріпленими за цим селектором.
 
-#### Скорочення marketplace
+### Скорочений запис маркетплейсу
 
-Використовуйте скорочення `plugin@marketplace`, коли назва marketplace існує в локальному кеші реєстру Claude за шляхом `~/.claude/plugins/known_marketplaces.json`:
+Використовуйте скорочений запис `plugin@marketplace`, якщо назва маркетплейсу існує в локальному кеші реєстру Claude за шляхом `~/.claude/plugins/known_marketplaces.json`:
 
 ```bash
 openclaw plugins marketplace list <marketplace-name>
 openclaw plugins install <plugin-name>@<marketplace-name>
 ```
 
-Використовуйте `--marketplace`, коли хочете явно передати джерело marketplace:
+Використовуйте `--marketplace`, щоб явно передати джерело маркетплейсу:
 
 ```bash
 openclaw plugins install <plugin-name> --marketplace <marketplace-name>
@@ -293,145 +284,141 @@ openclaw plugins install <plugin-name> --marketplace ./my-marketplace
 ```
 
 <Tabs>
-  <Tab title="Marketplace sources">
-    - відома Claude назва marketplace з `~/.claude/plugins/known_marketplaces.json`
-    - локальний корінь marketplace або шлях `marketplace.json`
-    - скорочення GitHub repo, як-от `owner/repo`
-    - URL GitHub repo, як-от `https://github.com/owner/repo`
-    - git URL
+  <Tab title="Джерела маркетплейсу">
+    - назва відомого маркетплейсу Claude з `~/.claude/plugins/known_marketplaces.json`
+    - локальний корінь маркетплейсу або шлях до `marketplace.json`
+    - скорочений запис репозиторію GitHub, як-от `owner/repo`
+    - URL-адреса репозиторію GitHub, як-от `https://github.com/owner/repo`
+    - URL-адреса Git
 
   </Tab>
-  <Tab title="Remote marketplace rules">
-    Для віддалених marketplaces, завантажених із GitHub або git, записи Plugin мають залишатися всередині клонованого marketplace repo. OpenClaw приймає джерела з відносними шляхами з цього repo і відхиляє HTTP(S), абсолютні шляхи, git, GitHub та інші не-шляхові джерела Plugin з віддалених маніфестів.
+  <Tab title="Правила віддаленого маркетплейсу">
+    Для віддалених маркетплейсів, завантажених із GitHub або Git, записи Plugin повинні залишатися в межах клонованого репозиторію маркетплейсу. OpenClaw приймає джерела з відносними шляхами в цьому репозиторії та відхиляє HTTP(S), абсолютні шляхи, Git, GitHub та інші джерела Plugin, що не є шляхами, у віддалених маніфестах.
   </Tab>
 </Tabs>
 
-Для локальних шляхів і архівів OpenClaw автоматично визначає:
+Для локальних шляхів і архівів OpenClaw автоматично виявляє:
 
-- нативні OpenClaw plugins (`openclaw.plugin.json`)
-- Codex-сумісні bundles (`.codex-plugin/plugin.json`)
-- Claude-сумісні bundles (`.claude-plugin/plugin.json` або типовий макет компонентів Claude)
-- Cursor-сумісні bundles (`.cursor-plugin/plugin.json`)
+- нативні Plugin OpenClaw (`openclaw.plugin.json`)
+- пакети, сумісні з Codex (`.codex-plugin/plugin.json`)
+- пакети, сумісні з Claude (`.claude-plugin/plugin.json`, або типовий макет компонентів Claude, якщо файл маніфесту відсутній)
+- пакети, сумісні з Cursor (`.cursor-plugin/plugin.json`)
 
 Керовані локальні встановлення мають бути каталогами або архівами Plugin. Окремі файли Plugin `.js`,
-`.mjs`, `.cjs` і `.ts` не копіюються в керований корінь Plugin
-командою `plugins install`; натомість явно перелічіть їх у `plugins.load.paths`.
+`.mjs`, `.cjs` і `.ts` не копіюються до керованого кореня Plugin командою
+`plugins install` і не завантажуються, якщо розмістити їх безпосередньо в
+`~/.openclaw/extensions` або `<workspace>/.openclaw/extensions`; ці
+автоматично виявлені корені завантажують каталоги пакетів або комплектів Plugin і пропускають
+файли сценаріїв верхнього рівня як локальні допоміжні файли. Натомість явно вкажіть окремі файли в
+`plugins.load.paths`.
 
 <Note>
-Сумісні bundles встановлюються у звичайний корінь Plugin і беруть участь у тому самому потоці list/info/enable/disable. Наразі підтримуються bundle skills, Claude command-skills, типові значення Claude `settings.json`, типові значення Claude `.lsp.json` / оголошені в маніфесті `lspServers`, Cursor command-skills і сумісні каталоги hook Codex; інші виявлені можливості bundle показуються в diagnostics/info, але ще не під’єднані до runtime-виконання.
+Сумісні комплекти встановлюються до звичайного кореня Plugin та беруть участь у тому самому процесі перегляду списку, інформації, увімкнення й вимкнення. Наразі підтримуються Skills із комплектів, командні Skills Claude, типові значення Claude з `settings.json`, типові значення Claude з `.lsp.json` / оголошених у маніфесті `lspServers`, командні Skills Cursor і каталоги перехоплювачів, сумісні з Codex; інші виявлені можливості комплектів показуються в діагностиці та інформації, але ще не підключені до виконання в середовищі виконання.
 </Note>
 
-### Список
+Використовуйте `-l`/`--link`, щоб указати локальний каталог Plugin без його копіювання (додає
+до `plugins.load.paths`):
+
+```bash
+openclaw plugins install -l ./my-plugin
+```
+
+`--link` не підтримується разом із `--force` (пов’язані Plugin указують безпосередньо на шлях
+до джерела, тому перезаписувати на місці нічого), `--marketplace` або
+встановленнями `git:`; також потрібен уже наявний локальний шлях.
+
+<Note>
+Plugin, виявлені в корені розширень робочого простору, не
+імпортуються й не виконуються, доки їх явно не ввімкнено. Для локальної розробки
+виконайте `openclaw plugins enable <plugin-id>` або задайте
+`plugins.entries.<plugin-id>.enabled: true`; якщо у вашій конфігурації використовується
+`plugins.allow`, також додайте туди той самий ідентифікатор Plugin. Це правило
+із забороною за замовчуванням також застосовується, коли налаштування каналу явно націлено на Plugin із робочого простору для
+завантаження лише під час налаштування, тому локальний код налаштування Plugin каналу не виконуватиметься, доки цей
+Plugin робочого простору залишається вимкненим або виключеним зі списку дозволених. Пов’язані встановлення
+та явні записи `plugins.load.paths` дотримуються звичайної політики для
+розв’язаного джерела Plugin. Див.
+[Налаштування політики Plugin](/uk/tools/plugin#configure-plugin-policy)
+і [Довідник із конфігурації](/uk/gateway/configuration-reference#plugins).
+
+Використовуйте `--pin` під час установлення з npm, щоб зберегти розв’язану точну специфікацію (`name@version`) у керованому індексі Plugin, тоді як за замовчуванням версія залишається незакріпленою.
+</Note>
+
+## Список
 
 ```bash
 openclaw plugins list
 openclaw plugins list --enabled
 openclaw plugins list --verbose
 openclaw plugins list --json
-openclaw plugins search <query>
-openclaw plugins search <query> --limit 20
-openclaw plugins search <query> --json
 ```
 
 <ParamField path="--enabled" type="boolean">
-  Показати лише увімкнені plugins.
+  Показувати лише ввімкнені Plugin.
 </ParamField>
 <ParamField path="--verbose" type="boolean">
-  Перемкнутися з табличного подання на деталізовані рядки для кожного Plugin із метаданими source/origin/version/activation.
+  Перемкнутися з табличного подання на рядки докладної інформації для кожного Plugin з метаданими формату, джерела, походження, версії та активації.
 </ParamField>
 <ParamField path="--json" type="boolean">
-  Машинозчитуваний inventory плюс diagnostics реєстру і стан встановлення залежностей пакета.
+  Машиночитаний перелік разом із діагностикою реєстру та станом установлення залежностей пакета.
 </ParamField>
 
 <Note>
-`plugins list` спершу читає збережений локальний реєстр Plugin, із fallback на основі лише маніфесту, коли реєстр відсутній або недійсний. Це корисно для перевірки, чи Plugin встановлений, увімкнений і видимий для планування холодного запуску, але це не живий runtime-пробник уже запущеного процесу Gateway. Після зміни коду Plugin, enablement, політики hook або `plugins.load.paths` перезапустіть Gateway, який обслуговує канал, перш ніж очікувати виконання нового коду `register(api)` або hooks. Для віддалених/container deployments перевірте, що ви перезапускаєте фактичний дочірній процес `openclaw gateway run`, а не лише wrapper-процес.
+`plugins list` спочатку читає збережений локальний реєстр Plugin, а якщо реєстр відсутній або недійсний, використовує похідний резервний варіант лише на основі маніфесту. Команда корисна для перевірки того, чи встановлено та ввімкнено Plugin і чи видимий він для планування холодного запуску, але вона не є оперативною перевіркою середовища виконання вже запущеного процесу Gateway. Після зміни коду Plugin, стану ввімкнення, політики перехоплювачів або `plugins.load.paths` перезапустіть Gateway, який обслуговує канал, перш ніж очікувати виконання нового коду `register(api)` або перехоплювачів. Для віддалених або контейнерних розгортань переконайтеся, що перезапускаєте фактичній дочірній процес `openclaw gateway run`, а не лише процес-обгортку.
 
-`plugins list --json` включає `dependencyStatus` кожного Plugin із `package.json`
-`dependencies` і `optionalDependencies`. OpenClaw перевіряє, чи ці назви пакетів
-наявні вздовж звичайного шляху пошуку Node `node_modules` для Plugin; він
-не імпортує runtime-код Plugin, не запускає менеджер пакетів і не ремонтує відсутні
-залежності.
+`plugins list --json` містить `dependencyStatus` кожного Plugin з `dependencies`
+і `optionalDependencies` у `package.json`. OpenClaw перевіряє, чи присутні назви цих пакетів
+у звичайному шляху пошуку `node_modules` Node для Plugin; він
+не імпортує код середовища виконання Plugin, не запускає менеджер пакетів і не виправляє
+відсутні залежності.
 </Note>
 
-Якщо startup logs показують `plugins.allow is empty; discovered non-bundled plugins may auto-load: ...`,
-запустіть `openclaw plugins list --enabled --verbose` або
-`openclaw plugins inspect <id>` із переліченим id Plugin, щоб підтвердити
-ids Plugin і скопіювати довірені ids у `plugins.allow` в `openclaw.json`. Коли
-попередження може перелічити кожен виявлений Plugin, воно друкує готовий для вставлення
-фрагмент `plugins.allow`, який уже містить ці ids. Якщо Plugin завантажується
-без provenance встановлення/load-path, перевірте цей id Plugin, а потім або закріпіть
-довірений id у `plugins.allow`, або перевстановіть Plugin із довіреного джерела,
-щоб OpenClaw записав provenance встановлення.
+Якщо під час запуску в журналі з’являється `plugins.allow is empty; discovered non-bundled plugins may auto-load: ...`,
+виконайте `openclaw plugins list --enabled --verbose` або
+`openclaw plugins inspect <id>` з ідентифікатором Plugin зі списку, щоб підтвердити
+ідентифікатори Plugin і скопіювати довірені ідентифікатори до `plugins.allow` у `openclaw.json`. Якщо
+в попередженні можна перелічити всі виявлені Plugin, воно виводить готовий до вставлення
+фрагмент `plugins.allow`, який уже містить ці ідентифікатори. Якщо Plugin завантажується
+без даних про походження встановлення або шлях завантаження, перевірте цей ідентифікатор Plugin, а потім або закріпіть
+довірений ідентифікатор у `plugins.allow`, або повторно встановіть Plugin із довіреного джерела,
+щоб OpenClaw записав походження встановлення.
 
-`plugins search` — це віддалений пошук у каталозі ClawHub. Він не перевіряє локальний
-стан, не змінює config, не встановлює пакети і не завантажує runtime-код Plugin. Результати пошуку
-містять назву пакета ClawHub, family, channel, версію, summary і
-підказку для встановлення, як-от `openclaw plugins install clawhub:<package>`.
+Для роботи з вбудованим Plugin усередині упакованого образу Docker підключіть каталог
+із вихідним кодом Plugin поверх відповідного упакованого шляху до вихідного коду, наприклад
+`/app/extensions/synology-chat`. OpenClaw виявляє це підключене перекриття вихідного коду
+перед `/app/dist/extensions/synology-chat`; просто скопійований каталог вихідного коду
+залишається неактивним, тому звичайні упаковані встановлення й надалі використовують скомпільований dist.
 
-Для роботи з вбудованим Plugin усередині запакованого Docker image змонтуйте bind-mount каталогу
-джерел Plugin поверх відповідного запакованого шляху джерел, як-от
-`/app/extensions/synology-chat`. OpenClaw виявить цей змонтований source
-overlay перед `/app/dist/extensions/synology-chat`; звичайний скопійований source
-directory залишається неактивним, тож нормальні запаковані встановлення й надалі використовують скомпільований dist.
+Для налагодження перехоплювачів середовища виконання:
 
-Для debugging runtime hooks:
+- `openclaw plugins inspect <id> --runtime --json` показує зареєстровані хуки й діагностику, отримані під час перевірки із завантаженням модуля. Перевірка середовища виконання ніколи не встановлює залежності; скористайтеся `openclaw doctor --fix`, щоб очистити застарілий стан залежностей або відновити відсутні завантажувані плагіни, на які посилається конфігурація.
+- `openclaw gateway status --deep --require-rpc` підтверджує доступну URL-адресу/профіль Gateway, відомості про службу/процес, шлях до конфігурації та справність RPC.
+- Невбудовані хуки розмови (`llm_input`, `llm_output`, `before_model_resolve`, `before_agent_reply`, `before_agent_run`, `before_agent_finalize`, `agent_end`) потребують `plugins.entries.<id>.hooks.allowConversationAccess=true`.
 
-- `openclaw plugins inspect <id> --runtime --json` показує зареєстровані hooks і diagnostics з проходу inspection із завантаженим module. Runtime inspection ніколи не встановлює залежності; використовуйте `openclaw doctor --fix`, щоб очистити застарілий стан залежностей або відновити відсутні downloadable plugins, на які посилається config.
-- `openclaw gateway status --deep --require-rpc` підтверджує досяжний Gateway URL/profile, підказки service/process, шлях config і RPC health.
-- Невбудовані conversation hooks (`llm_input`, `llm_output`, `before_model_resolve`, `before_agent_reply`, `before_agent_run`, `before_agent_finalize`, `agent_end`) потребують `plugins.entries.<id>.hooks.allowConversationAccess=true`.
+### Індекс плагінів
 
-Використовуйте `--link`, щоб уникнути копіювання локального каталогу Plugin (додає до `plugins.load.paths`):
+Метадані встановлення плагінів — це стан, яким керує система, а не конфігурація користувача. Під час встановлення й оновлення вони записуються до спільної бази даних стану SQLite в активному каталозі стану OpenClaw. Рядок `installed_plugin_index` зберігає довговічні метадані `installRecords`, зокрема записи про пошкоджені або відсутні маніфести плагінів, а також похідний від маніфестів кеш холодного реєстру, який використовують `openclaw plugins update`, видалення, діагностика та холодний реєстр плагінів.
 
-```bash
-openclaw plugins install -l ./my-plugin
-```
+Коли OpenClaw виявляє в конфігурації випущені застарілі записи `plugins.installs`, середовище виконання читає їх як вхідні дані сумісності, не перезаписуючи `openclaw.json`. Явні операції запису плагінів і `openclaw doctor --fix` переносять ці записи до індексу плагінів і видаляють ключ конфігурації, якщо запис конфігурації дозволено; якщо будь-яка з операцій запису завершується невдало, записи конфігурації зберігаються, щоб не втратити метадані встановлення.
 
-Окремі файли Plugin мають бути перелічені в `plugins.load.paths`, а не
-встановлені через `plugins install` чи розміщені безпосередньо в `~/.openclaw/extensions`
-або `<workspace>/.openclaw/extensions`. Ці auto-discovered roots завантажують каталоги
-package або bundle Plugin, тоді як top-level script files трактуються як локальні
-helpers і пропускаються.
-
-<Note>
-Плагіни з джерелом у робочій області, виявлені з кореня розширень робочої області, не
-імпортуються й не виконуються, доки їх явно не ввімкнено. Для локальної розробки
-запустіть `openclaw plugins enable <plugin-id>` або задайте
-`plugins.entries.<plugin-id>.enabled: true`; якщо ваша конфігурація використовує
-`plugins.allow`, додайте туди той самий ідентифікатор плагіна. Це правило fail-closed
-також застосовується, коли налаштування каналу явно націлюється на плагін із робочої області для
-завантаження лише під час налаштування, тому локальний код налаштування канального плагіна не запускатиметься, доки цей
-плагін робочої області лишається вимкненим або виключеним зі списку дозволених. Пов’язані встановлення
-та явні записи `plugins.load.paths` дотримуються звичайної політики для свого
-розв’язаного джерела плагіна. Див.
-[Налаштування політики плагінів](/uk/tools/plugin#configure-plugin-policy)
-і [Довідник конфігурації](/uk/gateway/configuration-reference#plugins).
-
-`--force` не підтримується з `--link`, оскільки пов’язані встановлення повторно використовують шлях до джерела замість копіювання поверх керованої цілі встановлення.
-
-Використовуйте `--pin` для npm-встановлень, щоб зберегти розв’язану точну специфікацію (`name@version`) у керованому індексі плагінів, зберігаючи типову поведінку без закріплення.
-</Note>
-
-### Індекс Plugin
-
-Метадані встановлення плагінів є машинно керованим станом, а не користувацькою конфігурацією. Встановлення й оновлення записують їх до спільної бази даних стану SQLite в активному каталозі стану OpenClaw. Рядок `installed_plugin_index` зберігає довговічні метадані `installRecords`, зокрема записи для пошкоджених або відсутніх маніфестів плагінів, а також похідний від маніфесту холодний кеш реєстру, який використовується `openclaw plugins update`, видаленням, діагностикою та холодним реєстром плагінів.
-
-Коли OpenClaw бачить у конфігурації поставлені застарілі записи `plugins.installs`, читання під час виконання трактують їх як сумісний вхід без перезапису `openclaw.json`. Явні записи плагінів і `openclaw doctor --fix` переміщують ці записи в індекс плагінів і видаляють ключ конфігурації, коли записи конфігурації дозволені; якщо будь-який запис завершується невдало, записи конфігурації зберігаються, щоб метадані встановлення не було втрачено.
-
-### Видалення
+## Видалення
 
 ```bash
 openclaw plugins uninstall <id>
 openclaw plugins uninstall <id> --dry-run
 openclaw plugins uninstall <id> --keep-files
+openclaw plugins uninstall <id> --force
 ```
 
-`uninstall` видаляє записи плагінів із `plugins.entries`, збереженого індексу плагінів, записів списків дозволу/заборони плагінів і пов’язаних записів `plugins.load.paths`, коли це застосовно. Якщо `--keep-files` не задано, видалення також прибирає відстежуваний каталог керованого встановлення, коли він розміщений у корені розширень плагінів OpenClaw. Для плагінів Active Memory слот пам’яті скидається до `memory-core`.
+`uninstall` видаляє записи плагіна з `plugins.entries`, збереженого індексу плагінів, списків дозволених/заборонених плагінів і, де застосовно, пов’язані записи `plugins.load.paths`. Якщо не задано `--keep-files`, видалення також вилучає відстежуваний керований каталог встановлення, але лише якщо визначений шлях розташований усередині кореневого каталогу розширень плагінів OpenClaw. Якщо плагін наразі займає слот `memory` або `contextEngine`, цей слот повертається до стандартного значення (`memory-core` для пам’яті, `legacy` для рушія контексту).
+
+`uninstall` показує попередній перегляд того, що буде видалено, а потім перед внесенням змін запитує `Видалити плагін "<id>"?`. Передайте `--force`, щоб пропустити запит підтвердження (корисно для скриптів і неінтерактивних запусків); без цього прапорця для видалення потрібен інтерактивний TTY. `--dry-run` показує такий самий попередній перегляд і завершує роботу без запиту та будь-яких змін.
 
 <Note>
 `--keep-config` підтримується як застарілий псевдонім для `--keep-files`.
 </Note>
 
-### Оновлення
+## Оновлення
 
 ```bash
 openclaw plugins update <id-or-npm-spec>
@@ -442,79 +429,82 @@ openclaw plugins update openclaw-codex-app-server --acknowledge-clawhub-risk
 openclaw plugins update openclaw-codex-app-server --dangerously-force-unsafe-install
 ```
 
-Оновлення застосовуються до відстежуваних встановлень плагінів у керованому індексі плагінів і відстежуваних встановлень hook-pack у `hooks.internal.installs`.
+Оновлення застосовуються до відстежуваних встановлень плагінів у керованому індексі плагінів і відстежуваних встановлень пакетів хуків у `hooks.internal.installs`.
 
 <AccordionGroup>
-  <Accordion title="Resolving plugin id vs npm spec">
-    Коли ви передаєте ідентифікатор плагіна, OpenClaw повторно використовує записану специфікацію встановлення для цього плагіна. Це означає, що раніше збережені dist-tags, як-от `@beta`, і точні закріплені версії продовжують використовуватися під час подальших запусків `update <id>`.
+  <Accordion title="Визначення ідентифікатора плагіна й специфікації npm">
+    Коли ви передаєте ідентифікатор плагіна, OpenClaw повторно використовує записану специфікацію встановлення цього плагіна. Це означає, що раніше збережені dist-теги, як-от `@beta`, і точно закріплені версії продовжують використовуватися під час наступних запусків `update <id>`.
 
-    Під час `update <id> --dry-run` точно закріплені npm-встановлення лишаються закріпленими. Якщо OpenClaw також може розв’язати типову лінію реєстру пакета і ця типова лінія новіша за встановлену закріплену версію, пробний запуск повідомляє про закріплення й друкує явну команду оновлення пакета `@latest`, щоб перейти на типову лінію реєстру.
+    Під час `update <id> --dry-run` точно закріплені встановлення npm залишаються закріпленими. Якщо OpenClaw також може визначити стандартну гілку пакета в реєстрі й вона новіша за встановлену закріплену версію, пробний запуск повідомляє про закріплення та показує явну команду оновлення пакета до `@latest`, щоб перейти на стандартну гілку реєстру.
 
-    Це правило цільового оновлення відрізняється від масового шляху обслуговування `openclaw plugins update --all`. Масові оновлення й далі поважають звичайні відстежувані специфікації встановлення, але записи довірених офіційних плагінів OpenClaw можуть синхронізуватися з поточною ціллю офіційного каталогу замість того, щоб залишатися на застарілому точному офіційному пакеті. Використовуйте цільове `update <id>`, коли навмисно хочете залишити точну або теговану офіційну специфікацію без змін.
+    Це правило цільового оновлення відрізняється від шляху масового обслуговування `openclaw plugins update --all`. Масові оновлення й надалі дотримуються звичайних відстежуваних специфікацій установлення, але записи довірених офіційних плагінів OpenClaw можуть синхронізуватися з поточною цільовою версією офіційного каталогу замість збереження застарілого точно вказаного офіційного пакета. Використовуйте цільове `update <id>`, коли навмисно хочете залишити точну або позначену тегом офіційну специфікацію без змін.
 
-    Для npm-встановлень ви також можете передати явну специфікацію npm-пакета з dist-tag або точною версією. OpenClaw розв’язує цю назву пакета назад до відстежуваного запису плагіна, оновлює цей встановлений плагін і записує нову npm-специфікацію для майбутніх оновлень за ідентифікатором.
+    Для встановлень npm також можна передати явну специфікацію пакета npm із dist-тегом або точною версією. OpenClaw зіставляє назву цього пакета з відстежуваним записом плагіна, оновлює встановлений плагін і записує нову специфікацію npm для майбутніх оновлень за ідентифікатором.
 
-    Передавання назви npm-пакета без версії або тегу також розв’язується назад до відстежуваного запису плагіна. Використовуйте це, коли плагін було закріплено на точній версії, а ви хочете повернути його до типової релізної лінії реєстру.
-
-  </Accordion>
-  <Accordion title="Beta channel updates">
-    Цільове `openclaw plugins update <id-or-npm-spec>` повторно використовує відстежувану специфікацію плагіна, якщо ви не передаєте нову специфікацію. Масове `openclaw plugins update --all` використовує налаштований `update.channel`, коли синхронізує записи довірених офіційних плагінів із ціллю офіційного каталогу, тож встановлення з бета-каналу можуть залишатися на бета-релізній лінії замість тихої нормалізації до stable/latest.
-
-    `openclaw update` також знає активний канал оновлень OpenClaw: на бета-каналі записи npm і плагінів ClawHub типової лінії спершу пробують `@beta`. Вони повертаються до записаної типової/latest специфікації, якщо бета-релізу плагіна не існує; npm-плагіни також повертаються назад, коли бета-пакет існує, але не проходить перевірку встановлення. Про такий fallback повідомляється як про попередження, і він не провалює основне оновлення. Точні версії та явні теги лишаються закріпленими на цьому селекторі для цільових оновлень.
+    Передавання назви пакета npm без версії або тегу також зіставляє її з відстежуваним записом плагіна. Скористайтеся цим, коли плагін було закріплено на точній версії, а ви хочете повернути його до стандартної гілки випусків реєстру.
 
   </Accordion>
-  <Accordion title="Version checks and integrity drift">
-    Перед живим npm-оновленням OpenClaw перевіряє встановлену версію пакета за метаданими npm-реєстру. Якщо встановлена версія й записана ідентичність артефакту вже відповідають розв’язаній цілі, оновлення пропускається без завантаження, перевстановлення або перезапису `openclaw.json`.
+  <Accordion title="Оновлення бета-каналу">
+    Цільова команда `openclaw plugins update <id-or-npm-spec>` повторно використовує відстежувану специфікацію плагіна, якщо ви не передали нову. Масова команда `openclaw plugins update --all` використовує налаштований `update.channel`, коли синхронізує записи довірених офіційних плагінів із цільовою версією офіційного каталогу, тому встановлення з бета-каналу можуть залишатися на гілці бета-випусків замість неявної нормалізації до стабільної/найновішої версії.
 
-    Коли існує збережений хеш цілісності, а хеш отриманого артефакту змінюється, OpenClaw трактує це як дрейф npm-артефакту. Інтерактивна команда `openclaw plugins update` друкує очікуваний і фактичний хеші та просить підтвердження перед продовженням. Неінтерактивні помічники оновлення fail closed, якщо викликач не надає явну політику продовження.
+    `openclaw update` також враховує активний канал оновлень OpenClaw: на бета-каналі записи плагінів npm зі стандартною гілкою та записи ClawHub спочатку пробують `@beta`. Якщо бета-випуску плагіна немає, вони повертаються до записаної стандартної/найновішої специфікації; плагіни npm також використовують резервний варіант, коли бета-пакет існує, але не проходить перевірку встановлення. Про такий перехід повідомляється попередженням, і він не спричиняє збою оновлення ядра. Для цільових оновлень точні версії та явні теги залишаються закріпленими на відповідному селекторі.
 
   </Accordion>
-  <Accordion title="--dangerously-force-unsafe-install on update">
-    `--dangerously-force-unsafe-install` також приймається в `plugins update` для сумісності, але він застарілий і більше не змінює поведінку оновлення плагінів. Операторська `security.installPolicy` усе ще може блокувати оновлення; хуки плагіна `before_install` застосовуються лише в процесах, де хуки плагінів завантажені.
+  <Accordion title="Перевірки версій і розбіжність цілісності">
+    Перед фактичним оновленням npm OpenClaw звіряє версію встановленого пакета з метаданими реєстру npm. Якщо встановлена версія та записана ідентичність артефакту вже відповідають визначеній цілі, оновлення пропускається без завантаження, повторного встановлення чи перезапису `openclaw.json`.
+
+    Якщо існує збережений хеш цілісності, а хеш отриманого артефакту змінився, OpenClaw розцінює це як розбіжність артефакту npm. Інтерактивна команда `openclaw plugins update` показує очікуваний і фактичний хеші та запитує підтвердження перед продовженням. Неінтерактивні допоміжні засоби оновлення забороняють продовження в разі помилки, якщо викликач не надав явну політику продовження.
+
   </Accordion>
-  <Accordion title="--acknowledge-clawhub-risk on update">
-    Оновлення плагінів спільноти, підтримані ClawHub, виконують ту саму перевірку довіри до точного релізу, що й встановлення, перед завантаженням замінного пакета. Використовуйте `--acknowledge-clawhub-risk` для перевіреної автоматизації, яка має продовжувати роботу, коли вибраний реліз ClawHub має ризикове попередження довіри. Офіційні пакети ClawHub і вбудовані джерела плагінів OpenClaw обходять цей запит довіри до релізу.
+  <Accordion title="--dangerously-force-unsafe-install під час оновлення">
+    `--dangerously-force-unsafe-install` також приймається командою `plugins update` для сумісності, але є застарілим і більше не змінює поведінку оновлення плагінів. Операторська політика `security.installPolicy` усе ще може блокувати оновлення; хуки плагіна `before_install` застосовуються лише у процесах, де завантажено хуки плагінів.
+  </Accordion>
+  <Accordion title="--acknowledge-clawhub-risk під час оновлення">
+    Оновлення плагінів спільноти, що походять із ClawHub, перед завантаженням пакета-замінника проходять ту саму перевірку довіри до конкретного випуску, що й під час установлення. Використовуйте `--acknowledge-clawhub-risk` для перевіреної автоматизації, яка має продовжувати роботу, коли вибраний випуск ClawHub має ризиковане попередження щодо довіри. Офіційні пакети ClawHub і вбудовані джерела плагінів OpenClaw оминають цей запит щодо довіри до випуску.
   </Accordion>
 </AccordionGroup>
 
-### Перевірка
+## Перевірка
 
 ```bash
 openclaw plugins inspect <id>
 openclaw plugins inspect <id> --runtime
 openclaw plugins inspect <id> --json
+openclaw plugins inspect --all
 ```
 
-Inspect показує ідентичність, статус завантаження, джерело, можливості маніфесту, прапорці політики, діагностику, метадані встановлення, можливості бандла та будь-яку виявлену підтримку MCP- або LSP-сервера без типового імпорту середовища виконання плагіна. JSON-вивід містить контракти маніфесту плагіна, як-от `contracts.agentToolResultMiddleware` і `contracts.trustedToolPolicies`, щоб оператори могли перевірити декларації довіреної поверхні перед увімкненням або перезапуском плагіна. Додайте `--runtime`, щоб завантажити модуль плагіна й додати зареєстровані хуки, інструменти, команди, сервіси, методи Gateway та HTTP-маршрути. Runtime inspection напряму повідомляє про відсутні залежності плагіна; встановлення й ремонти лишаються в `openclaw plugins install`, `openclaw plugins update` і `openclaw doctor --fix`.
+Перевірка показує ідентичність, стан завантаження, джерело, можливості маніфесту, прапорці політики, діагностику, метадані встановлення, можливості пакета та всю виявлену підтримку серверів MCP або LSP, типово не імпортуючи середовище виконання плагіна. Вивід JSON містить контракти маніфесту плагіна, як-от `contracts.agentToolResultMiddleware` і `contracts.trustedToolPolicies`, щоб оператори могли перевірити декларації довірених поверхонь перед увімкненням або перезапуском плагіна. Додайте `--runtime`, щоб завантажити модуль плагіна й включити зареєстровані хуки, інструменти, команди, служби, методи Gateway і маршрути HTTP. Перевірка середовища виконання безпосередньо повідомляє про відсутні залежності плагіна; встановлення й виправлення виконуються командами `openclaw plugins install`, `openclaw plugins update` і `openclaw doctor --fix`.
 
-Команди CLI, що належать плагінам, зазвичай встановлюються як кореневі групи команд `openclaw`, але плагіни також можуть реєструвати вкладені команди під основним батьківським вузлом, наприклад `openclaw nodes`. Після того як `inspect --runtime` покаже команду в `cliCommands`, запустіть її за вказаним шляхом; наприклад, плагін, що реєструє `demo-git`, можна перевірити за допомогою `openclaw demo-git ping`.
+Команди CLI, що належать плагінам, зазвичай установлюються як кореневі групи команд `openclaw`, але плагіни також можуть реєструвати вкладені команди під батьківською командою ядра, як-от `openclaw nodes`. Коли `inspect --runtime` покаже команду в `cliCommands`, запустіть її за вказаним шляхом; наприклад, плагін, який реєструє `demo-git`, можна перевірити командою `openclaw demo-git ping`.
 
 Кожен плагін класифікується за тим, що він фактично реєструє під час виконання:
 
-- **plain-capability** — один тип можливості (наприклад, плагін лише провайдера)
-- **hybrid-capability** — кілька типів можливостей (наприклад, текст + мовлення + зображення)
-- **hook-only** — лише хуки, без можливостей або поверхонь
-- **non-capability** — інструменти/команди/сервіси, але без можливостей
+| Форма               | Значення                                                               |
+| ------------------- | ---------------------------------------------------------------------- |
+| `plain-capability`  | рівно один тип можливостей (наприклад, плагін лише постачальника)      |
+| `hybrid-capability` | більше одного типу можливостей (наприклад, текст + мовлення + зображення) |
+| `hook-only`         | лише хуки, без можливостей, інструментів, команд, служб або маршрутів   |
+| `non-capability`    | інструменти/команди/служби, але без можливостей                         |
 
-Див. [Форми Plugin](/uk/plugins/architecture#plugin-shapes), щоб дізнатися більше про модель можливостей.
+Докладніше про модель можливостей див. у розділі [Форми плагінів](/uk/plugins/architecture#plugin-shapes).
 
 <Note>
-Прапорець `--json` виводить машинозчитуваний звіт, придатний для скриптів і аудиту. `inspect --all` відтворює таблицю для всього парку зі стовпцями форми, видів можливостей, сповіщень про сумісність, можливостей бандла та підсумку хуків. `info` є псевдонімом для `inspect`.
+Прапорець `--json` виводить машиночитний звіт, придатний для скриптів і аудиту. `inspect --all` відображає загальну таблицю для всього парку зі стовпцями форми, типів можливостей, повідомлень про сумісність, можливостей пакета та зведення хуків. `info` — псевдонім для `inspect`.
 </Note>
 
-### Doctor
+## Діагностика
 
 ```bash
 openclaw plugins doctor
 ```
 
-`doctor` повідомляє про помилки завантаження плагінів, діагностику маніфестів/виявлення, сповіщення про сумісність і застарілі посилання конфігурації плагінів, як-от відсутні слоти плагінів. Коли дерево встановлення й конфігурація плагінів чисті, він друкує `No plugin issues detected.` Якщо застаріла конфігурація лишається, але дерево встановлення інакше справне, підсумок каже саме це, а не натякає на повне здоров’я плагінів.
+`doctor` повідомляє про помилки завантаження плагінів, діагностику маніфестів/виявлення, повідомлення про сумісність і застарілі посилання на плагіни в конфігурації, як-от відсутні слоти плагінів. Коли дерево встановлення та конфігурація плагінів не мають проблем, команда виводить `Проблем із плагінами не виявлено.` Якщо застаріла конфігурація залишається, але дерево встановлення в іншому справне, у зведенні це зазначається без твердження про повну справність плагінів.
 
-Якщо налаштований плагін присутній на диску, але заблокований перевірками безпеки шляхів завантажувача, перевірка конфігурації зберігає запис плагіна й повідомляє про нього як `present but blocked`. Виправте попередню діагностику заблокованого плагіна, наприклад власника шляху або дозволи world-writable, замість видалення конфігурації `plugins.entries.<id>` або `plugins.allow`.
+Якщо налаштований плагін наявний на диску, але заблокований перевірками безпечності шляхів завантажувача, перевірка конфігурації зберігає запис плагіна й повідомляє про стан `наявний, але заблокований`. Виправте попереднє діагностичне повідомлення про заблокований плагін, наприклад щодо власника шляху або дозволів на запис для всіх користувачів, замість видалення `plugins.entries.<id>` чи `plugins.allow` із конфігурації.
 
-Для помилок форми модуля, як-от відсутні експорти `register`/`activate`, перезапустіть із `OPENCLAW_PLUGIN_LOAD_DEBUG=1`, щоб додати компактний підсумок форми експортів до діагностичного виводу.
+У разі помилок форми модуля, як-от відсутність експортів `register`/`activate`, повторіть запуск із `OPENCLAW_PLUGIN_LOAD_DEBUG=1`, щоб додати до діагностичного виводу стислий опис форми експортів.
 
-### Реєстр
+## Реєстр
 
 ```bash
 openclaw plugins registry
@@ -522,17 +512,17 @@ openclaw plugins registry --refresh
 openclaw plugins registry --json
 ```
 
-Локальний реєстр плагінів — це збережена холодна модель читання OpenClaw для ідентичності встановлених плагінів, увімкнення, метаданих джерела та власності внесків. Звичайний запуск, пошук власника провайдера, класифікація налаштування каналу та інвентаризація плагінів можуть читати його без імпорту модулів середовища виконання плагінів.
+Локальний реєстр плагінів — це збережена холодна модель читання OpenClaw для ідентичності встановлених плагінів, стану їх увімкнення, метаданих джерела та належності внесків. Звичайний запуск, пошук власника постачальника, класифікація налаштування каналів та інвентаризація плагінів можуть читати його без імпорту модулів середовища виконання плагінів.
 
-Використовуйте `plugins registry`, щоб перевірити, чи збережений реєстр наявний, поточний або застарілий. Використовуйте `--refresh`, щоб перебудувати його зі збереженого індексу плагінів, політики конфігурації та метаданих маніфесту/пакета. Це шлях ремонту, а не шлях активації під час виконання.
+Використовуйте `plugins registry`, щоб перевірити, чи збережений реєстр наявний, актуальний або застарілий. Використовуйте `--refresh`, щоб перебудувати його зі збереженого індексу плагінів, політики конфігурації та метаданих маніфестів/пакетів. Це шлях відновлення, а не шлях активації середовища виконання.
 
-`openclaw doctor --fix` також ремонтує суміжний із реєстром керований npm-дрейф: якщо осиротілий або відновлений пакет `@openclaw/*` у керованому npm-проєкті плагіна або застарілому пласкому керованому npm-корені затіняє вбудований плагін, doctor видаляє цей застарілий пакет і перебудовує реєстр, щоб запуск перевірявся за вбудованим маніфестом. Doctor також повторно пов’язує хостовий пакет `openclaw` у керовані npm-плагіни, які оголошують `peerDependencies.openclaw`, щоб локальні для пакета імпорти під час виконання, як-от `openclaw/plugin-sdk/*`, розв’язувалися після оновлень або npm-ремонтів.
+`openclaw doctor --fix` також виправляє пов’язані з реєстром розбіжності керованих пакетів npm: якщо осиротілий або відновлений пакет `@openclaw/*` у керованому проєкті npm плагіна чи застарілому пласкому корені керованих пакетів npm затіняє вбудований плагін, doctor видаляє цей застарілий пакет і перебудовує реєстр, щоб під час запуску перевірка виконувалася за вбудованим маніфестом. Doctor також повторно створює посилання на пакет хоста `openclaw` у керованих плагінах npm, які оголошують `peerDependencies.openclaw`, щоб локальні для пакета імпорти середовища виконання, як-от `openclaw/plugin-sdk/*`, коректно визначалися після оновлень або виправлень npm.
 
 <Warning>
-`OPENCLAW_DISABLE_PERSISTED_PLUGIN_REGISTRY=1` — це застарілий аварійний перемикач сумісності для збоїв читання реєстру. Надавайте перевагу `plugins registry --refresh` або `openclaw doctor --fix`; fallback через змінну середовища призначений лише для аварійного відновлення запуску під час розгортання міграції.
+`OPENCLAW_DISABLE_PERSISTED_PLUGIN_REGISTRY=1` — це застарілий аварійний перемикач сумісності для помилок читання реєстру. Віддавайте перевагу `plugins registry --refresh` або `openclaw doctor --fix`; резервний варіант через змінну середовища призначений лише для аварійного відновлення запуску під час розгортання міграції.
 </Warning>
 
-### Marketplace
+## Маркетплейс
 
 ```bash
 openclaw plugins marketplace entries
@@ -548,26 +538,26 @@ openclaw plugins marketplace refresh --feed-url <url>
 openclaw plugins marketplace refresh --expected-sha256 <sha256> --json
 ```
 
-`plugins marketplace entries` виводить записи з налаштованої стрічки маркетплейсу OpenClaw. За замовчуванням вона пробує використати розміщену стрічку й повертається до останнього прийнятого знімка або вбудованих даних. Використовуйте `--feed-profile <name>`, щоб читати певний налаштований профіль, `--feed-url <url>`, щоб читати явну URL-адресу розміщеної стрічки, і `--offline`, щоб читати останній прийнятий знімок без отримання стрічки.
+`plugins marketplace entries` виводить записи з налаштованого каналу маркетплейсу OpenClaw. За замовчуванням команда намагається використати розміщений канал, а в разі невдачі переходить до останнього прийнятого знімка або вбудованих даних. Використовуйте `--feed-profile <name>`, щоб прочитати певний налаштований профіль, `--feed-url <url>`, щоб прочитати канал за явно вказаною URL-адресою, і `--offline`, щоб прочитати останній прийнятий знімок без завантаження каналу.
 
-`plugins marketplace refresh` оновлює налаштований знімок розміщеної стрічки та повідомляє, чи OpenClaw прийняв розміщені дані, розміщений знімок або вбудовані резервні дані. Використовуйте `--expected-sha256`, коли виклику потрібно, щоб команда завершилася помилкою, якщо свіжий розміщений вміст не збігається із закріпленою контрольною сумою.
+`plugins marketplace refresh` оновлює налаштований знімок розміщеного каналу та повідомляє, чи прийняв OpenClaw розміщені дані, знімок розміщеного каналу або вбудовані резервні дані. Використовуйте `--expected-sha256`, коли потрібно, щоб команда завершилася помилкою, якщо свіжі дані з розміщеного джерела не відповідають закріпленій контрольній сумі.
 
-Marketplace `list` приймає локальний шлях маркетплейсу, шлях `marketplace.json`, скорочення GitHub на кшталт `owner/repo`, URL репозиторію GitHub або git URL. `--json` виводить розв’язану мітку джерела, а також розібраний маніфест маркетплейсу й записи плагінів.
+Команда `list` для маркетплейсу приймає шлях до локального маркетплейсу, шлях до `marketplace.json`, скорочене позначення GitHub на кшталт `owner/repo`, URL-адресу репозиторію GitHub або URL-адресу git. Параметр `--json` виводить мітку визначеного джерела, а також оброблений маніфест маркетплейсу та записи плагінів.
 
-Оновлення маркетплейсу завантажує розміщену стрічку маркетплейсу OpenClaw і зберігає
-перевірену відповідь як локальний знімок розміщеної стрічки. Без параметрів воно використовує
-налаштований стандартний профіль стрічки. Використовуйте `--feed-profile <name>`, щоб оновити
-певний налаштований профіль, `--feed-url <url>`, щоб оновити явну URL-адресу розміщеної
-стрічки, `--expected-sha256 <sha256>`, щоб вимагати збігу контрольної суми вмісту
-(`sha256:<hex>` або простий 64-символьний шістнадцятковий дайджест), і `--json` для
-машиночитного виводу. Явні URL-адреси розміщених стрічок не мають містити
-облікові дані, рядки запиту або фрагменти. Незакріплені оновлення можуть повідомити про
-розміщений знімок або вбудований резервний результат без помилки команди. Закріплені
-оновлення завершуються помилкою, якщо вони не приймають свіжий розміщений вміст, а успішні розміщені
-оновлення завершуються помилкою, якщо OpenClaw не може зберегти перевірений знімок.
+Оновлення маркетплейсу завантажує розміщений канал маркетплейсу OpenClaw і зберігає
+перевірену відповідь як локальний знімок розміщеного каналу. Без параметрів команда використовує
+налаштований профіль каналу за замовчуванням. Використовуйте `--feed-profile <name>`, щоб оновити
+певний налаштований профіль, `--feed-url <url>`, щоб оновити явно вказану URL-адресу
+розміщеного каналу, `--expected-sha256 <sha256>`, щоб вимагати відповідності контрольної суми даних
+(`sha256:<hex>` або 64-символьний шістнадцятковий дайджест без префікса), і `--json` для
+машиночитного виведення. Явно вказані URL-адреси розміщених каналів не повинні містити
+облікових даних, рядків запиту або фрагментів. Оновлення без закріпленої контрольної суми можуть повідомляти про
+результат зі знімка розміщеного каналу або вбудованих резервних даних, не спричиняючи помилки команди. Оновлення
+із закріпленою контрольною сумою завершуються помилкою, якщо не прийнято свіжі дані з розміщеного джерела, а успішні оновлення
+з розміщеного джерела завершуються помилкою, якщо OpenClaw не може зберегти перевірений знімок.
 
-## Пов’язане
+## Пов’язані матеріали
 
 - [Створення плагінів](/uk/plugins/building-plugins)
 - [Довідник CLI](/uk/cli)
-- [ClawHub](/uk/clawhub)
+- [ClawHub](/clawhub)

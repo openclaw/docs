@@ -1,33 +1,32 @@
 ---
 read_when:
     - Configuration de la diffusion silencieuse Matrix pour Synapse ou Tuwunel auto-hébergé
-    - Les utilisateurs souhaitent recevoir des notifications uniquement lorsque les blocs sont terminés, et non à chaque modification de l’aperçu
+    - Les utilisateurs souhaitent recevoir des notifications uniquement pour les blocs terminés, et non à chaque modification de l’aperçu.
 summary: Règles de notification push Matrix par destinataire pour les modifications silencieuses des aperçus finalisés
-title: Règles de push Matrix pour des aperçus discrets
+title: Règles de push Matrix pour les aperçus silencieux
 x-i18n:
-    generated_at: "2026-07-12T15:02:30Z"
+    generated_at: "2026-07-12T02:37:31Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 3f2260b4cc68f82cbe1aef86b8963b6b40e93f089b31991964fc9282b2c121fb
     source_path: channels/matrix-push-rules.md
     workflow: 16
 ---
 
-Lorsque `channels.matrix.streaming` est défini sur `"quiet"`, OpenClaw diffuse la réponse en modifiant sur place un seul événement d’aperçu. Les aperçus sont envoyés sous forme d’événements `m.notice` sans notification, et la modification finale est marquée avec `content["com.openclaw.finalized_preview"] = true`. Les clients Matrix n’émettent une notification pour cette modification finale que si une règle de notification push propre à l’utilisateur correspond au marqueur. Cette page s’adresse aux opérateurs qui auto-hébergent Matrix et souhaitent installer cette règle pour chaque compte destinataire.
+Lorsque `channels.matrix.streaming` vaut `"quiet"`, OpenClaw diffuse la réponse en modifiant sur place un unique événement d’aperçu. Les aperçus sont envoyés sous forme d’événements `m.notice` sans notification, et la modification finale est marquée avec `content["com.openclaw.finalized_preview"] = true`. Les clients Matrix n’émettent une notification lors de cette modification finale que si une règle de notification push propre à l’utilisateur correspond au marqueur. Cette page s’adresse aux opérateurs qui auto-hébergent Matrix et souhaitent installer cette règle pour chaque compte destinataire.
 
 `streaming: "progress"` finalise ses brouillons par le même chemin ; la même règle se déclenche donc également pour les modifications finalisées en mode progression.
 
-Si vous souhaitez uniquement le comportement de notification standard de Matrix, utilisez `streaming: "partial"` ou désactivez le streaming. Consultez [Configuration du canal Matrix](/fr/channels/matrix#streaming-previews).
+Si vous souhaitez uniquement le comportement de notification Matrix standard, utilisez `streaming: "partial"` ou désactivez la diffusion en continu. Consultez la [configuration du canal Matrix](/fr/channels/matrix#streaming-previews).
 
 ## Prérequis
 
 - utilisateur destinataire = la personne qui doit recevoir la notification
 - utilisateur bot = le compte Matrix d’OpenClaw qui envoie la réponse
 - utilisez le jeton d’accès de l’utilisateur destinataire pour les appels d’API ci-dessous
-- faites correspondre `sender` dans la règle de notification push au MXID complet de l’utilisateur bot
-- le compte destinataire doit déjà disposer de pushers fonctionnels ; les règles d’aperçu silencieux ne fonctionnent que lorsque la distribution push normale de Matrix est opérationnelle
+- faites correspondre `sender` dans la règle de notification push avec le MXID complet de l’utilisateur bot
+- le compte destinataire doit déjà disposer de services de notification push fonctionnels ; les règles d’aperçu silencieux ne fonctionnent que lorsque la distribution push Matrix normale est opérationnelle
 
 ## Étapes
 
@@ -47,7 +46,7 @@ Si vous souhaitez uniquement le comportement de notification standard de Matrix,
   </Step>
 
   <Step title="Obtenir le jeton d’accès du destinataire">
-    Réutilisez si possible le jeton d’une session cliente existante. Pour en créer un nouveau :
+    Réutilisez si possible le jeton d’une session cliente existante. Pour en générer un nouveau :
 
 ```bash
 curl -sS -X POST \
@@ -62,7 +61,7 @@ curl -sS -X POST \
 
   </Step>
 
-  <Step title="Vérifier que des pushers existent">
+  <Step title="Vérifier que des services de notification push existent">
 
 ```bash
 curl -sS \
@@ -70,7 +69,7 @@ curl -sS \
   "https://matrix.example.org/_matrix/client/v3/pushers"
 ```
 
-Si aucun pusher n’est renvoyé, rétablissez la distribution push normale de Matrix pour ce compte avant de continuer.
+Si aucun service de notification push n’est renvoyé, corrigez la distribution push Matrix normale pour ce compte avant de continuer.
 
   </Step>
 
@@ -107,9 +106,9 @@ curl -sS -X PUT \
 
     Remplacez les éléments suivants avant l’exécution :
 
-    - `https://matrix.example.org` : l’URL de base de votre serveur Matrix
+    - `https://matrix.example.org` : l’URL de base de votre serveur d’accueil
     - `$USER_ACCESS_TOKEN` : le jeton d’accès de l’utilisateur destinataire
-    - `openclaw-finalized-preview-botname` : un identifiant de règle unique pour chaque bot et chaque destinataire (modèle : `openclaw-finalized-preview-<botname>`)
+    - `openclaw-finalized-preview-botname` : un identifiant de règle unique pour chaque paire bot-destinataire (modèle : `openclaw-finalized-preview-<botname>`)
     - `@bot:example.org` : le MXID de votre bot OpenClaw, et non celui du destinataire
 
   </Step>
@@ -122,40 +121,40 @@ curl -sS \
   "https://matrix.example.org/_matrix/client/v3/pushrules/global/override/openclaw-finalized-preview-botname"
 ```
 
-Testez ensuite une réponse diffusée en streaming. En mode silencieux, le salon affiche un aperçu silencieux du brouillon et émet une notification lorsque le bloc ou le tour se termine.
+Testez ensuite une réponse diffusée en continu. En mode silencieux, le salon affiche un aperçu silencieux du brouillon et émet une notification lorsque le bloc ou le tour se termine.
 
   </Step>
 </Steps>
 
 Pour supprimer ultérieurement la règle, envoyez une requête `DELETE` à la même URL de règle avec le jeton du destinataire.
 
-## Remarques concernant plusieurs bots
+## Remarques sur l’utilisation de plusieurs bots
 
-Les règles de notification push sont indexées par `ruleId` : répéter une requête `PUT` avec le même identifiant met à jour une seule règle. Si plusieurs bots OpenClaw envoient des notifications au même destinataire, créez une règle par bot avec une correspondance d’expéditeur distincte.
+Les règles de notification push sont indexées par `ruleId` : répéter une requête `PUT` avec le même identifiant met à jour une seule règle. Si plusieurs bots OpenClaw doivent notifier le même destinataire, créez une règle par bot avec une correspondance d’expéditeur distincte.
 
-Les nouvelles règles `override` définies par l’utilisateur sont insérées avant les règles de suppression par défaut du serveur ; aucun paramètre d’ordre supplémentaire n’est donc nécessaire. La règle ne concerne que les modifications d’aperçus textuels pouvant être finalisées sur place ; les réponses multimédias, les mécanismes de repli après expiration de l’aperçu et les textes finaux qui activeraient des mentions Matrix sont distribués comme des messages ordinaires avec notification.
+Les nouvelles règles `override` définies par l’utilisateur sont insérées avant les règles de suppression par défaut du serveur ; aucun paramètre d’ordre supplémentaire n’est donc nécessaire. La règle ne concerne que les modifications d’aperçus textuels pouvant être finalisées sur place ; les réponses multimédias, les mécanismes de repli pour les aperçus obsolètes et les textes finaux qui activeraient des mentions Matrix sont envoyés à la place comme des messages normaux déclenchant une notification.
 
-## Remarques concernant le serveur Matrix
+## Remarques sur les serveurs d’accueil
 
 <AccordionGroup>
   <Accordion title="Synapse">
-    Aucune modification particulière de `homeserver.yaml` n’est nécessaire. Si les notifications Matrix ordinaires parviennent déjà à cet utilisateur, le jeton du destinataire et l’appel à `pushrules` ci-dessus constituent l’étape principale de la configuration.
+    Aucune modification particulière de `homeserver.yaml` n’est nécessaire. Si les notifications Matrix normales parviennent déjà à cet utilisateur, l’utilisation du jeton du destinataire et l’appel à `pushrules` ci-dessus constituent la principale étape de configuration.
 
-    Si vous exécutez Synapse derrière un proxy inverse ou avec des workers, vérifiez que `/_matrix/client/.../pushrules/` atteint correctement Synapse. La distribution push est gérée par le processus principal ou par `synapse.app.pusher` / les workers de pusher configurés ; assurez-vous de leur bon fonctionnement.
+    Si vous exécutez Synapse derrière un proxy inverse ou avec des processus de travail, assurez-vous que `/_matrix/client/.../pushrules/` atteint correctement Synapse. La distribution push est gérée par le processus principal ou par `synapse.app.pusher` / les processus de travail de notification push configurés — assurez-vous qu’ils fonctionnent correctement.
 
-    La règle utilise la condition de règle de notification push `event_property_is` (MSC3758, règle de notification push v1.10), ajoutée à Synapse en 2023. Les anciennes versions de Synapse acceptent l’appel `PUT pushrules/...`, mais la condition ne correspond jamais et aucun avertissement n’est émis ; mettez Synapse à niveau si aucune notification n’arrive lors de la modification d’un aperçu finalisé.
+    La règle utilise la condition de règle de notification push `event_property_is` (MSC3758, règles de notification push v1.10), ajoutée à Synapse en 2023. Les anciennes versions de Synapse acceptent l’appel `PUT pushrules/...`, mais la condition ne correspond jamais et aucune erreur n’est signalée — mettez Synapse à niveau si aucune notification n’arrive lors de la modification d’un aperçu finalisé.
 
   </Accordion>
 
   <Accordion title="Tuwunel">
     Le processus est identique à celui de Synapse ; aucune configuration propre à Tuwunel n’est nécessaire pour le marqueur d’aperçu finalisé.
 
-    Si les notifications disparaissent lorsque l’utilisateur est actif sur un autre appareil, vérifiez si `suppress_push_when_active` est activé. Tuwunel a ajouté cette option dans la version 1.4.2 (septembre 2025) ; elle peut intentionnellement supprimer les notifications push vers les autres appareils lorsqu’un appareil est actif.
+    Si les notifications disparaissent lorsque l’utilisateur est actif sur un autre appareil, vérifiez si `suppress_push_when_active` est activé. Tuwunel a ajouté cette option dans la version 1.4.2 (septembre 2025), et celle-ci peut volontairement supprimer les notifications push vers les autres appareils lorsqu’un appareil est actif.
 
   </Accordion>
 </AccordionGroup>
 
-## Voir aussi
+## Pages associées
 
 - [Configuration du canal Matrix](/fr/channels/matrix)
-- [Concepts du streaming](/fr/concepts/streaming)
+- [Concepts de diffusion en continu](/fr/concepts/streaming)

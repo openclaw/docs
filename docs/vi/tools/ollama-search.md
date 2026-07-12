@@ -1,33 +1,28 @@
 ---
 read_when:
     - Bạn muốn sử dụng Ollama cho web_search
-    - Bạn muốn một nhà cung cấp web_search không cần khóa
+    - Bạn muốn một nhà cung cấp `web_search` không cần khóa API
     - Bạn muốn sử dụng Ollama Web Search được lưu trữ với OLLAMA_API_KEY
     - Bạn cần hướng dẫn thiết lập Ollama Web Search
-summary: Tìm kiếm web Ollama qua máy chủ Ollama cục bộ hoặc API Ollama được lưu trữ
-title: Tìm kiếm web Ollama
+summary: Tìm kiếm web bằng Ollama qua máy chủ Ollama cục bộ hoặc API Ollama được lưu trữ
+title: Tìm kiếm web bằng Ollama
 x-i18n:
-    generated_at: "2026-06-27T18:17:32Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:25:26Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4a30a6a2ed78d0d5f680ca2894e5e015cf99fbae2bcad4601727bbc9f560c124
+    source_hash: edbbd887841339ab4c0c62ab7682a22fe99434a788957a91989fce6942187e9a
     source_path: tools/ollama-search.md
     workflow: 16
 ---
 
-OpenClaw hỗ trợ **Ollama Web Search** như một nhà cung cấp `web_search` được tích hợp sẵn. Nó
-sử dụng API tìm kiếm web của Ollama và trả về kết quả có cấu trúc gồm tiêu đề, URL,
-và đoạn trích.
+OpenClaw hỗ trợ **Ollama Web Search** dưới dạng nhà cung cấp `web_search` tích hợp sẵn,
+trả về tiêu đề, URL và đoạn trích từ API tìm kiếm web của Ollama.
 
-Đối với Ollama cục bộ hoặc tự lưu trữ, thiết lập này mặc định không cần khóa API.
-Nó yêu cầu:
-
-- một máy chủ Ollama mà OpenClaw có thể truy cập được
-- `ollama signin`
-
-Đối với tìm kiếm lưu trữ trực tiếp, hãy đặt URL cơ sở của nhà cung cấp Ollama thành `https://ollama.com`
-và cung cấp một `OLLAMA_API_KEY` thật.
+Theo mặc định, Ollama cục bộ/tự lưu trữ không cần khóa API; hệ thống yêu cầu
+máy chủ Ollama có thể truy cập được cùng với `ollama signin`. Tìm kiếm trực tiếp
+trên dịch vụ lưu trữ (không dùng Ollama cục bộ) yêu cầu
+`baseUrl: "https://ollama.com"` và `OLLAMA_API_KEY` hợp lệ.
 
 ## Thiết lập
 
@@ -36,27 +31,28 @@ và cung cấp một `OLLAMA_API_KEY` thật.
     Đảm bảo Ollama đã được cài đặt và đang chạy.
   </Step>
   <Step title="Đăng nhập">
-    Chạy:
-
     ```bash
     ollama signin
     ```
-
   </Step>
   <Step title="Chọn Ollama Web Search">
-    Chạy:
-
     ```bash
     openclaw configure --section web
     ```
 
-    Sau đó chọn **Ollama Web Search** làm nhà cung cấp.
+    Chọn **Ollama Web Search** làm nhà cung cấp.
 
   </Step>
 </Steps>
 
-Nếu bạn đã dùng Ollama cho các mô hình, Ollama Web Search sẽ tái sử dụng cùng
-máy chủ đã cấu hình.
+Nếu bạn đã sử dụng Ollama cho các mô hình, Ollama Web Search sẽ dùng lại máy chủ
+đã được cấu hình đó.
+
+<Note>
+  OpenClaw không bao giờ tự động chọn Ollama Web Search thay cho nhà cung cấp
+  dùng thông tin xác thực có mức ưu tiên cao hơn; bạn phải chọn rõ ràng bằng
+  `tools.web.search.provider: "ollama"`.
+</Note>
 
 ## Cấu hình
 
@@ -72,7 +68,7 @@ máy chủ đã cấu hình.
 }
 ```
 
-Ghi đè máy chủ Ollama tùy chọn:
+Tùy chọn ghi đè máy chủ, chỉ áp dụng cho tìm kiếm web:
 
 ```json5
 {
@@ -90,8 +86,7 @@ Ghi đè máy chủ Ollama tùy chọn:
 }
 ```
 
-Nếu bạn đã cấu hình Ollama làm nhà cung cấp mô hình, nhà cung cấp tìm kiếm web có thể
-tái sử dụng máy chủ đó thay thế:
+Hoặc dùng lại máy chủ đã được cấu hình cho nhà cung cấp mô hình Ollama:
 
 ```json5
 {
@@ -105,15 +100,12 @@ tái sử dụng máy chủ đó thay thế:
 }
 ```
 
-Nhà cung cấp mô hình Ollama sử dụng `baseUrl` làm khóa chuẩn. Nhà cung cấp tìm kiếm web cũng chấp nhận `baseURL` trên `models.providers.ollama` để tương thích với các ví dụ cấu hình kiểu OpenAI SDK.
+`models.providers.ollama.baseUrl` là khóa chuẩn; nhà cung cấp tìm kiếm web
+cũng chấp nhận `baseURL` tại đó để tương thích với các ví dụ cấu hình theo kiểu
+OpenAI SDK. Nếu không thiết lập gì, OpenClaw mặc định sử dụng
+`http://127.0.0.1:11434`.
 
-Nếu không đặt URL cơ sở Ollama rõ ràng, OpenClaw sử dụng `http://127.0.0.1:11434`.
-
-Nếu máy chủ Ollama của bạn yêu cầu xác thực bearer, OpenClaw tái sử dụng
-`models.providers.ollama.apiKey` (hoặc xác thực nhà cung cấp tương ứng được hỗ trợ bằng biến môi trường)
-cho các yêu cầu tới máy chủ đã cấu hình đó.
-
-Ollama Web Search lưu trữ trực tiếp:
+Ollama Web Search được lưu trữ trực tiếp (không dùng Ollama cục bộ):
 
 ```json5
 {
@@ -135,28 +127,26 @@ Ollama Web Search lưu trữ trực tiếp:
 }
 ```
 
-## Ghi chú
+## Xác thực và định tuyến yêu cầu
 
-- Không cần trường khóa API riêng cho tìm kiếm web đối với nhà cung cấp này.
-- Nếu máy chủ Ollama được bảo vệ bằng xác thực, OpenClaw tái sử dụng khóa API
-  thông thường của nhà cung cấp Ollama khi có.
-- Nếu `baseUrl` là `https://ollama.com`, OpenClaw gọi trực tiếp
-  `https://ollama.com/api/web_search` và gửi khóa API Ollama đã cấu hình
-  dưới dạng xác thực bearer.
-- Nếu máy chủ đã cấu hình không cung cấp tìm kiếm web và `OLLAMA_API_KEY` được đặt,
-  OpenClaw có thể quay về `https://ollama.com/api/web_search` mà không gửi
-  khóa biến môi trường đó tới máy chủ cục bộ.
-- OpenClaw cảnh báo trong quá trình thiết lập nếu không truy cập được Ollama hoặc chưa đăng nhập, nhưng
-  không chặn việc chọn.
-- OpenClaw không tự động chọn Ollama Web Search khi chưa cấu hình nhà cung cấp
-  có thông tin xác thực với độ ưu tiên cao hơn; hãy chọn rõ ràng bằng
-  `tools.web.search.provider: "ollama"`.
-- Các máy chủ daemon Ollama cục bộ sử dụng điểm cuối proxy cục bộ
-  `/api/experimental/web_search`, nơi ký và chuyển tiếp tới Ollama Cloud.
-- Các máy chủ `https://ollama.com` sử dụng trực tiếp điểm cuối lưu trữ công khai
-  `/api/web_search` với xác thực bằng khóa API bearer.
+- Không có trường khóa API dành riêng cho tìm kiếm web; nhà cung cấp dùng lại
+  `models.providers.ollama.apiKey` (hoặc thông tin xác thực của nhà cung cấp tương ứng
+  được cấp qua biến môi trường) khi máy chủ đã cấu hình được bảo vệ bằng xác thực.
+- Thứ tự phân giải máy chủ: `plugins.entries.ollama.config.webSearch.baseUrl` →
+  `models.providers.ollama.baseUrl` (hoặc `baseURL`) → `http://127.0.0.1:11434`.
+- Nếu máy chủ đã phân giải là `https://ollama.com`, OpenClaw gọi trực tiếp
+  `https://ollama.com/api/web_search` với khóa API dùng làm thông tin xác thực
+  bearer.
+- Nếu không, trước tiên OpenClaw gọi điểm cuối proxy cục bộ
+  `/api/experimental/web_search` (điểm cuối này ký và chuyển tiếp đến Ollama
+  Cloud), sau đó chuyển sang `/api/web_search` trên cùng máy chủ nếu lần gọi đầu
+  thất bại. Nếu cả hai đều thất bại và `OLLAMA_API_KEY` đã được đặt, hệ thống thử
+  lại một lần với `https://ollama.com/api/web_search` bằng khóa đó — mà không gửi
+  khóa đến máy chủ cục bộ.
+- OpenClaw cảnh báo trong quá trình thiết lập nếu không thể truy cập Ollama hoặc
+  chưa đăng nhập, nhưng không ngăn việc chọn nhà cung cấp.
 
 ## Liên quan
 
-- [Tổng quan về Tìm kiếm web](/vi/tools/web) -- tất cả nhà cung cấp và tự động phát hiện
-- [Ollama](/vi/providers/ollama) -- thiết lập mô hình Ollama và các chế độ cloud/cục bộ
+- [Tổng quan về tìm kiếm web](/vi/tools/web) -- tất cả nhà cung cấp và tính năng tự động phát hiện
+- [Ollama](/vi/providers/ollama) -- thiết lập mô hình Ollama và các chế độ đám mây/cục bộ

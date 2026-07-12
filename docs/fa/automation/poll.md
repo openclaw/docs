@@ -1,20 +1,20 @@
 ---
-summary: بازهدایت به /cli/message
+summary: تغییر مسیر به /cli/message
 title: نظرسنجی‌ها
 x-i18n:
-    generated_at: "2026-04-29T22:23:15Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:31:49Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a277212ed680b7aeb9153d003bc084d2d0c918dc53f2f469c72f7fe5a881cfae
+    source_hash: 071617c5fe910ad8a5d4a03416876ba3092d4fc67d5c206570a0456469ef73a9
     source_path: automation/poll.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-این صفحه به [ابزار پیام](/fa/cli/message) منتقل شده است. برای مستندات نظرسنجی به [ابزار پیام](/fa/cli/message) مراجعه کنید.
+این صفحه منتقل شده است. مستندات نظرسنجی، از جمله پرچم‌های `openclaw message poll` و محدودیت‌های مختص هر کانال، در [ابزار پیام](/fa/cli/message) قرار دارد.
 
 ## مرتبط
 
-- [Webhook](/fa/automation/cron-jobs)
+- [Webhookها](/fa/automation/cron-jobs#webhooks)
 - [وظایف زمان‌بندی‌شده](/fa/automation/cron-jobs)
 - [وظایف پس‌زمینه](/fa/automation/tasks)

@@ -1,11 +1,11 @@
 ---
 read_when:
     - Stai installando, configurando o verificando il plugin google-meet
-summary: Plugin partecipante Google Meet di OpenClaw per partecipare alle chiamate tramite trasporti Chrome o Twilio.
+summary: Plugin di OpenClaw per partecipare alle chiamate di Google Meet tramite Chrome o i trasporti Twilio.
 title: Plugin Google Meet
 x-i18n:
-    generated_at: "2026-06-27T17:56:27Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:18:15Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 2f0086a8b48f6e120ad391a99d60a14d7682910ca3ad176e41a51b341e9bdb49
@@ -15,14 +15,14 @@ x-i18n:
 
 # Plugin Google Meet
 
-Plugin partecipante Google Meet di OpenClaw per partecipare alle chiamate tramite trasporti Chrome o Twilio.
+Plugin per partecipanti a Google Meet di OpenClaw, per partecipare alle chiamate tramite i trasporti Chrome o Twilio.
 
 ## Distribuzione
 
 - Pacchetto: `@openclaw/google-meet`
-- Percorso di installazione: npm; ClawHub
+- Metodo di installazione: npm; ClawHub
 
-## Superficie
+## Interfaccia
 
 contratti: strumenti
 

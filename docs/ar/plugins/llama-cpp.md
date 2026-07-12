@@ -1,24 +1,24 @@
 ---
 read_when:
     - تريد تضمينات بحث الذاكرة من نموذج GGUF محلي
-    - أنت تقوم بتكوين memorySearch.provider = "local"
-    - تحتاج إلى Plugin الخاص بـ OpenClaw المسؤول عن بيئة تشغيل node-llama-cpp
+    - أنت تُعِدّ `memorySearch.provider = "local"`
+    - تحتاج إلى Plugin الخاص بـ OpenClaw الذي يدير بيئة تشغيل node-llama-cpp
 sidebarTitle: llama.cpp Provider
-summary: ثبّت مزود llama.cpp الرسمي لتضمينات الذاكرة المحلية بصيغة GGUF
+summary: ثبّت موفّر llama.cpp الرسمي لتضمينات الذاكرة المحلية بتنسيق GGUF
 title: موفّر llama.cpp
 x-i18n:
-    generated_at: "2026-06-27T18:06:51Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:16:30Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3b0988c36c5ed5c61a7e97980df291fb43a0071e57c7460bf5a653f516114963
+    source_hash: 369ec199e8493356912337b849a84f829672e8872d17083c9a597f4e5294ebd5
     source_path: plugins/llama-cpp.md
     workflow: 16
 ---
 
 `llama-cpp` هو Plugin المزوّد الخارجي الرسمي لتضمينات GGUF المحلية.
-وهو يملك اعتمادية وقت التشغيل `node-llama-cpp` المستخدمة بواسطة
-`memorySearch.provider: "local"`.
+وهو يسجّل معرّف مزوّد التضمينات `local` ويمتلك تبعية وقت التشغيل
+`node-llama-cpp` التي يستخدمها `memorySearch.provider: "local"`.
 
 ثبّته قبل استخدام تضمينات الذاكرة المحلية:
 
@@ -26,13 +26,13 @@ x-i18n:
 openclaw plugins install @openclaw/llama-cpp-provider
 ```
 
-لا تتضمن حزمة npm الرئيسية `openclaw` الحزمة `node-llama-cpp`. إن إبقاء
-الاعتمادية الأصلية في هذا Plugin يمنع تحديثات npm العادية لـ OpenClaw من
-حذف وقت تشغيل مثبّت يدويًا داخل دليل حزمة OpenClaw.
+لا تتضمن حزمة npm الرئيسية `openclaw` التبعية `node-llama-cpp`. يؤدي إبقاء
+التبعية الأصلية في هذا الـ Plugin إلى منع تحديثات npm العادية لـ OpenClaw من
+حذف وقت تشغيل مُثبّت يدويًا داخل دليل حزمة OpenClaw.
 
-## التكوين
+## الإعداد
 
-اضبط مزوّد بحث الذاكرة على `local`:
+اضبط `memorySearch.provider` على `local`:
 
 ```json5
 {
@@ -49,18 +49,49 @@ openclaw plugins install @openclaw/llama-cpp-provider
 }
 ```
 
-النموذج الافتراضي هو `embeddinggemma-300m-qat-Q8_0.gguf`. يمكنك أيضًا توجيه
-`local.modelPath` إلى ملف `.gguf` محلي.
+القيمة الافتراضية لـ `local.modelPath` هي معرّف URI ذي البادئة `hf:` الموضح أعلاه (`embeddinggemma-300m-qat-Q8_0.gguf`).
+وجّهه إلى معرّف URI مختلف ذي البادئة `hf:` أو إلى ملف `.gguf` محلي لاستخدام
+نموذج آخر. يتجاوز `local.modelCacheDir` الموقع الذي تُخزّن فيه النماذج المنزّلة
+مؤقتًا (القيمة الافتراضية: `~/.node-llama-cpp/models`)، ويقبل `local.contextSize`
+عددًا صحيحًا أو `"auto"`.
+
+عندما تكون قيمة `local.contextSize` رقمية، يمرّر المزوّد هذا المتطلب أيضًا
+إلى التوزيع التلقائي لطبقات وحدة معالجة الرسومات في node-llama-cpp. يتيح ذلك
+لـ node-llama-cpp ملاءمة النموذج وسياق التضمين معًا مع الإبقاء على فحوصات
+سلامة الذاكرة. عند استخدام `"auto"`، يحتفظ node-llama-cpp بالتوزيع التلقائي
+المعتاد.
 
 ## وقت التشغيل الأصلي
 
-استخدم Node 24 للحصول على أسلس مسار تثبيت أصلي. قد تحتاج نسخ المصدر التي تستخدم pnpm
-إلى الموافقة على الاعتمادية الأصلية وإعادة بنائها:
+استخدم Node 24 للحصول على أكثر مسارات التثبيت الأصلي سلاسة. قد تحتاج نُسخ
+الشيفرة المصدرية التي تستخدم pnpm إلى الموافقة على التبعية الأصلية وإعادة بنائها:
 
 ```bash
 pnpm approve-builds
 pnpm rebuild node-llama-cpp
 ```
 
-لتضمينات محلية أقل احتكاكًا، استخدم مزوّد خدمة محليًا مثل
-Ollama أو LM Studio بدلًا من ذلك.
+## تشخيصات وقت التشغيل
+
+شغّل `openclaw memory status --deep` بعد تحميل المزوّد لفحص الواجهة الخلفية
+والبنية المحددتين، وأسماء الأجهزة، وطبقات وحدة معالجة الرسومات المنقولة إليها،
+وحجم السياق المطلوب، وآخر لقطة مرصودة لذاكرة الفيديو أو الذاكرة الموحّدة. تتضمن
+قيم ذاكرة الفيديو طابعًا زمنيًا للرصد لأن قراءات الحالة السلبية لا تعيد تحميل
+النموذج ولا تستطلع الجهاز.
+
+يمكن أن تظهر الحقائق نفسها بآخر قيم معروفة في `openclaw doctor` عندما يكون
+Gateway قيد التشغيل قد استخدم المزوّد المحلي بالفعل. لا يحمّل أمر الحالة أو
+الفحص العادي نموذجًا لمجرد جمع التشخيصات.
+
+## استكشاف الأخطاء وإصلاحها
+
+إذا كانت `node-llama-cpp` مفقودة أو فشل تحميلها، يُبلغ OpenClaw عن الفشل
+مع الإرشادات التالية:
+
+1. ثبّت الـ Plugin: `openclaw plugins install @openclaw/llama-cpp-provider`.
+2. استخدم Node 24 لعمليات التثبيت والتحديث الأصلية.
+3. من نسخة شيفرة مصدرية تستخدم pnpm: نفّذ `pnpm approve-builds`، ثم `pnpm rebuild node-llama-cpp`.
+
+للحصول على تضمينات محلية أقل تعقيدًا دون خطوة البناء الأصلي، اضبط
+`memorySearch.provider` بدلًا من ذلك على مزوّد تضمينات بعيد مثل `lmstudio`
+أو `ollama` أو `openai` أو `voyage`.

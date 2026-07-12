@@ -1,18 +1,18 @@
 ---
 doc-schema-version: 1
 read_when:
-    - Je wilt dat OpenClaw één doelstelling zichtbaar houdt gedurende een lange sessie
+    - Je wilt dat OpenClaw gedurende een lange sessie één doel voor ogen houdt
     - Je moet een sessiedoel pauzeren, hervatten, blokkeren, voltooien of wissen
     - U wilt de tools get_goal, create_goal en update_goal begrijpen
-    - Je wilt zien hoe doelen in de TUI verschijnen
-summary: 'Sessiedoelen: duurzame doelstellingen per sessie, /goal-bedieningselementen, modeldoeltools, tokenbudgetten en TUI-status'
+    - Je wilt zien hoe doelen in de TUI worden weergegeven
+summary: 'Sessiedoelen: duurzame doelstellingen per sessie, `/goal`-bediening, modeltools voor doelen, tokenbudgetten en TUI-status'
 title: Doel
 x-i18n:
-    generated_at: "2026-06-27T18:27:12Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:29:09Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4313983dff7f37496f6c996303cace75f6863a71c8a9cd5367fdafbcc3f459c4
+    source_hash: 046356770522dc8a5584a59f3322b4502554a4b7f129b074da633861050ee5fd
     source_path: tools/goal.md
     workflow: 16
 ---
@@ -20,201 +20,208 @@ x-i18n:
 # Doel
 
 Een **doel** is één duurzame doelstelling die aan de huidige OpenClaw-sessie is gekoppeld.
-Het geeft de agent en de operator een gedeeld doel voor langlopend werk,
-zonder dat doel om te zetten in een achtergrondtaak, herinnering, Cron-taak of
-doorlopende opdracht.
+Het geeft de agent en de operator een gezamenlijk richtpunt voor langdurige werkzaamheden,
+zonder dat richtpunt om te zetten in een achtergrondtaak, herinnering, Cron-taak of
+vaste opdracht.
 
-Doelen zijn sessiestatus. Ze bewegen mee met de sessiesleutel, overleven
-procesherstarts, verschijnen in `/goal`, zijn via de goal-tools beschikbaar voor
-het model, en verschijnen in de TUI-voettekst wanneer de actieve sessie er een heeft.
+Doelen zijn sessiestatus: ze bewegen mee met de sessiesleutel, blijven behouden na het
+herstarten van processen en verschijnen in `/goal`, de doeltools voor het model en de
+voettekst van de TUI.
 
 ## Snel aan de slag
 
-Stel een doel in:
-
 ```text
 /goal start get CI green for PR 87469 and push the fix
-```
-
-Controleer het:
-
-```text
 /goal
-```
-
-Pauzeer het wanneer het werk bewust wacht:
-
-```text
+/goal edit get CI green for PR 87469, push the fix, and update docs
 /goal pause waiting for CI
-```
-
-Hervat het:
-
-```text
 /goal resume
-```
-
-Markeer het als voltooid:
-
-```text
 /goal complete pushed and verified
-```
-
-Wis het:
-
-```text
 /goal clear
 ```
 
-## Waar doelen voor zijn
+`start` is optioneel: `/goal get CI green for PR 87469` maakt ook een doel aan,
+omdat alle tekst na `/goal` die geen bekend actiewoord is, als een nieuwe
+doelstelling wordt behandeld.
 
-Gebruik een doel wanneer een sessie een concreet resultaat heeft dat zichtbaar
-moet blijven over veel beurten heen:
+## Waarvoor doelen dienen
 
-- Een PR-afronding: oplossen, verifiëren, autoreview uitvoeren, pushen, en de PR openen of bijwerken.
-- Een debugrun: de bug reproduceren, het verantwoordelijke oppervlak identificeren, patchen en de
-  oplossing bewijzen.
-- Een documentatieronde: de relevante docs lezen, de nieuwe pagina schrijven, kruislings linken en
-  verifiëren dat de docs-build slaagt.
-- Een onderhoudstaak: de huidige status inspecteren, begrensde wijzigingen maken, de juiste
-  controles uitvoeren en rapporteren wat is gewijzigd.
+Gebruik een doel wanneer een sessie een concreet resultaat heeft dat gedurende
+vele beurten zichtbaar moet blijven:
 
-Een doel is geen taakwachtrij. Gebruik [Task Flow](/nl/automation/taskflow),
-[taken](/nl/automation/tasks), [Cron-taken](/nl/automation/cron-jobs), of
-[doorlopende opdrachten](/nl/automation/standing-orders) wanneer werk losgekoppeld
-moet draaien, volgens een schema moet worden herhaald, moet uitwaaieren naar beheerd deelwerk,
-of als beleid moet blijven bestaan.
+- Een PR afronden: corrigeren, verifiëren, automatisch beoordelen, pushen en de PR openen of bijwerken.
+- Een foutopsporingsronde: de fout reproduceren, het verantwoordelijke onderdeel identificeren, corrigeren en
+  de oplossing aantonen.
+- Een documentatieronde: de relevante documentatie lezen, de nieuwe pagina schrijven, kruisverwijzingen toevoegen en
+  de documentatiebuild verifiëren.
+- Een onderhoudstaak: de huidige status inspecteren, afgebakende wijzigingen aanbrengen, de
+  juiste controles uitvoeren en rapporteren wat er is gewijzigd.
 
-## Opdrachtreferentie
+Een doel is geen takenwachtrij. Gebruik [TaskFlow](/nl/automation/taskflow),
+[taken](/nl/automation/tasks), [Cron-taken](/nl/automation/cron-jobs) of
+[vaste opdrachten](/nl/automation/standing-orders) wanneer werkzaamheden losgekoppeld moeten worden uitgevoerd,
+volgens een planning moeten worden herhaald, moeten worden opgesplitst in beheerde subtaken of als beleid moeten blijven gelden.
 
-`/goal` zonder argumenten drukt de huidige doelsamenvatting af:
+## Opdrachtenoverzicht
+
+`/goal` zonder argumenten toont de samenvatting van het huidige doel:
 
 ```text
-Goal
-Status: active
-Objective: get CI green for PR 87469 and push the fix
-Tokens used: 12k
-Token budget: 12k/50k
+Doel
+Status: actief
+Doelstelling: CI voor PR 87469 succesvol maken en de correctie pushen
+Gebruikte tokens: 12k
+Tokenbudget: 12k/50k
 
-Commands: /goal pause, /goal complete, /goal clear
+Opdrachten: /goal edit <doelstelling>, /goal pause, /goal complete, /goal clear
 ```
 
-Opdrachten:
+| Opdracht                                            | Effect                                                                      |
+| --------------------------------------------------- | --------------------------------------------------------------------------- |
+| `/goal` of `/goal status`                           | Toon het huidige doel.                                                      |
+| `/goal start <objective>`                           | Maak een nieuw doel voor de huidige sessie.                                 |
+| `/goal set <objective>`, `/goal create <objective>` | Aliassen voor `start`.                                                      |
+| `/goal <objective>`                                 | Maakt ook een nieuw doel aan (alle tekst die geen herkend actiewoord is).    |
+| `/goal edit <objective>`                            | Herformuleer de huidige doelstelling; de status en tokenregistratie blijven behouden. |
+| `/goal pause [note]`                                | Pauzeer een actief doel.                                                     |
+| `/goal resume [note]`                               | Hervat een gepauzeerd, geblokkeerd, gebruiksbeperkt of budgetbeperkt doel.   |
+| `/goal complete [note]`                             | Markeer het doel als bereikt.                                               |
+| `/goal done [note]`                                 | Alias voor `complete`.                                                       |
+| `/goal block [note]`                                | Markeer het doel als geblokkeerd.                                           |
+| `/goal blocked [note]`                              | Alias voor `block`.                                                          |
+| `/goal clear`                                       | Verwijder het doel uit de sessie.                                           |
 
-- `/goal` of `/goal status` toont het huidige doel.
-- `/goal start <objective>` maakt een nieuw doel voor de huidige sessie.
-- `/goal set <objective>` en `/goal create <objective>` zijn aliassen voor
-  `start`.
-- `/goal pause [note]` pauzeert een actief doel.
-- `/goal resume [note]` hervat een gepauzeerd, geblokkeerd, gebruiksbeperkt of
-  budgetbeperkt doel.
-- `/goal complete [note]` markeert het doel als bereikt.
-- `/goal done [note]` is een alias voor `complete`.
-- `/goal block [note]` markeert het doel als geblokkeerd.
-- `/goal blocked [note]` is een alias voor `block`.
-- `/goal clear` verwijdert het doel uit de sessie.
+Er kan slechts één doel tegelijk in een sessie bestaan. Het starten van een
+tweede doel mislukt met `Goal error: goal already exists` totdat het huidige doel
+is gewist.
 
-Er kan maar één doel tegelijk in een sessie bestaan. Het starten van een tweede doel mislukt
-totdat het huidige doel is gewist.
+`/goal start` accepteert geen vlag voor het tokenbudget; een budget kan alleen worden ingesteld
+via de modeltool `create_goal`.
 
 ## Statussen
 
-Doelen gebruiken een kleine set statussen:
-
-- `active`: de sessie werkt aan het doel.
-- `paused`: de operator heeft het doel gepauzeerd; `/goal resume` maakt het weer actief.
+- `active`: de sessie streeft het doel na.
+- `paused`: de operator heeft het doel gepauzeerd; `/goal resume` maakt het weer
+  actief.
 - `blocked`: de agent of operator heeft een echte blokkade gemeld; `/goal resume`
-  maakt het weer actief wanneer nieuwe informatie of status beschikbaar is.
+  maakt het weer actief wanneer nieuwe informatie of een nieuwe status beschikbaar is.
 - `budget_limited`: het geconfigureerde tokenbudget is bereikt; `/goal resume`
-  hervat het nastreven vanuit dezelfde doelstelling.
-- `usage_limited`: gereserveerd voor stopstatussen door gebruikslimieten; `/goal resume`
-  hervat het nastreven wanneer dat is toegestaan.
-- `complete`: het doel is bereikt. Voltooide doelen zijn eindstatussen; gebruik
-  `/goal clear` voordat je een ander doel start.
+  hervat het nastreven van dezelfde doelstelling met een nieuw budgetvenster.
+- `usage_limited`: gereserveerd voor een toekomstige stopstatus wegens een gebruikslimiet; `/goal
+resume` hervat het nastreven van het doel op dezelfde manier.
+- `complete`: het doel is bereikt. Voltooide doelen zijn definitief; gebruik `/goal
+clear` voordat u een ander doel start.
 
-`/new` en `/reset` wissen het huidige sessiedoel omdat ze bewust
-met een nieuwe sessiecontext beginnen.
+`/new` en `/reset` wissen het huidige sessiedoel, omdat ze bewust met een
+nieuwe sessiecontext beginnen.
 
 ## Tokenbudgetten
 
-Doelen kunnen een optioneel positief tokenbudget hebben. Het budget wordt met het
-doel opgeslagen en gemeten vanaf de verse tokentelling van de sessie op het moment van aanmaken. Als de
-huidige sessie alleen verouderd of onbekend tokengebruik heeft wanneer het doel start,
-wacht OpenClaw op de volgende verse sessietokensnapshot en gebruikt die als
-basislijn, zodat tokens die vóór het bestaan van het doel zijn besteed niet aan het doel worden toegerekend.
+Doelen kunnen een optioneel positief tokenbudget hebben, ingesteld via de
+parameter `token_budget` van de tool `create_goal`. Het budget wordt gemeten vanaf het
+actuele aantal tokens van de sessie op het moment dat het doel wordt aangemaakt. Als de sessie bij
+aanvang van het doel alleen een verouderde of onbekende tokenmomentopname heeft, wacht OpenClaw op de
+volgende actuele momentopname en gebruikt die als uitgangspunt, zodat tokens die zijn verbruikt voordat het
+doel bestond niet eraan worden toegerekend.
 
-Wanneer het tokengebruik het budget bereikt, verandert het doel naar `budget_limited`. Dit
-verwijdert het doel niet en wist de doelstelling niet. Het vertelt de operator en de
-agent dat het doel niet langer actief wordt nagestreefd totdat het wordt hervat of
-gewist.
+Wanneer het gebruik het budget bereikt, krijgt het doel de status `budget_limited`. Hierdoor wordt
+het doel niet verwijderd en de doelstelling niet gewist; het geeft de operator en de
+agent aan dat het doel niet langer actief wordt nagestreefd totdat het wordt hervat of
+gewist. Bij hervatten begint een nieuw budgetvenster vanaf het huidige actuele
+aantal tokens.
 
 Tokenbudgetten zijn een vangrail voor sessiedoelen, geen factureringslimiet. Providerquota,
-kostenrapportage en contextvenstergedrag gebruiken nog steeds de normale OpenClaw-
-gebruiks- en modelinstellingen.
+kostenrapportage en gedrag van het contextvenster blijven de normale
+gebruiks- en modelinstellingen van OpenClaw volgen.
 
 ## Modeltools
 
-OpenClaw stelt drie kern-goal-tools beschikbaar aan agent-harnassen:
+OpenClaw stelt drie doeltools beschikbaar aan agentharnassen:
 
-- `get_goal`: lees het huidige sessiedoel, inclusief status, doelstelling, tokengebruik
-  en tokenbudget.
-- `create_goal`: maak alleen een doel wanneer de gebruiker, het systeem of de developer-
-  instructies daar expliciet om vragen. Dit mislukt als de sessie al een
-  doel heeft.
-- `update_goal`: markeer het doel als `complete` of `blocked`.
+| Tool          | Doel                                                                                                                       |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `get_goal`    | Lees het huidige sessiedoel: status, doelstelling, tokengebruik en tokenbudget.                                             |
+| `create_goal` | Maak alleen een doel aan wanneer de gebruiker of systeeminstructies daar expliciet om vragen. Mislukt als de sessie al een doel heeft. |
+| `update_goal` | Markeer het doel als `complete` of `blocked`.                                                                               |
 
-Het model kan een doel niet stilzwijgend pauzeren, hervatten, wissen of vervangen. Dat zijn
-operator-/sessie-instellingen via `/goal` en resetopdrachten. Dit voorkomt dat de
-agent ongemerkt het doel verplaatst, terwijl er een helder pad blijft voor de
-agent om een behaald resultaat of een echte blokkade te melden.
+Het model kan een doel niet stilzwijgend pauzeren, hervatten, wissen of vervangen. Dit blijven
+bedieningselementen voor de operator en sessie via `/goal` en resetopdrachten, zodat de agent
+kan melden dat het doel is bereikt of dat er een echte blokkade is zonder ongemerkt het
+richtpunt te verplaatsen.
 
-De tool `update_goal` moet een doel alleen als `complete` markeren wanneer de doelstelling
-daadwerkelijk is bereikt. Deze moet een doel alleen als `blocked` markeren wanneer dezelfde blokkerende
-voorwaarde zich heeft herhaald en de agent geen betekenisvolle voortgang kan boeken zonder
-nieuwe gebruikersinvoer of een wijziging in externe status.
+`update_goal` mag een doel alleen als `complete` markeren wanneer de doelstelling
+daadwerkelijk is bereikt. Het mag een doel alleen als `blocked` markeren nadat dezelfde
+blokkerende omstandigheid gedurende ten minste drie opeenvolgende doelbeurten terugkeert, niet bij
+gewone moeilijkheden of ontbrekende afwerking.
+
+## Doelcontext bij elke beurt
+
+Elke gebruikers-/chatbeurt met een actief doel bevat deze contextregel met gebruikersrol:
+
+```text
+Actief doel: <doelstelling> — werk eraan verder of werk de status bij (get_goal/update_goal).
+```
+
+OpenClaw houdt de regel compact door lange doelstellingen af te kappen. Gepauzeerde,
+geblokkeerde, budgetbeperkte, gebruiksbeperkte en voltooide doelen worden niet ingevoegd,
+zodat een stop door de operator van kracht blijft totdat het doel wordt hervat.
+
+## Bedieningsinterface
+
+De webgebaseerde bedieningsinterface toont het doel als een compacte capsule boven het invoerveld voor de chat:
+een statuspictogram, het statuslabel (bijvoorbeeld `Doel wordt nagestreefd`), de afgekorte
+doelstelling en een live timer voor de verstreken tijd.
+
+De capsule bevat bedieningselementen:
+
+- **Potlood** vult het invoerveld vooraf met `/goal edit <objective>`, zodat de
+  doelstelling kan worden geherformuleerd en verzonden.
+- **Pauzeren / hervatten** schakelt op basis van de huidige status tussen `/goal pause` en `/goal resume`.
+- **Prullenbak** verzendt `/goal clear`.
+- **Chevron** vouwt de capsule uit om de volledige doelstelling, de nieuwste statusnotitie,
+  het tokengebruik en de verstreken tijd weer te geven.
+
+De actieknoppen zijn verborgen zolang het invoerveld niet kan verzenden (bijvoorbeeld
+wanneer de verbinding met de Gateway is verbroken); de chevron voor uitvouwen blijft werken.
 
 ## TUI
 
-De TUI houdt het doel van de actieve sessie zichtbaar in de voettekst naast de
-agent, sessie, model, runbesturing en tokentellingen.
+De voettekst van de TUI houdt het doel van de actieve sessie zichtbaar naast de velden voor de agent,
+sessie en het model, vóór de indicatoren voor tokens en modus.
 
 Voorbeelden van voetteksten:
 
-- `Pursuing goal (12k/50k)` voor een actief doel met een tokenbudget.
-- `Goal paused (/goal resume)` voor een gepauzeerd doel.
-- `Goal blocked (/goal resume)` voor een geblokkeerd doel.
-- `Goal hit usage limits (/goal resume)` voor een gebruiksbeperkt doel.
-- `Goal unmet (50k/50k)` voor een budgetbeperkt doel.
-- `Goal achieved (42k)` voor een voltooid doel.
+- `Doel wordt nagestreefd (12k/50k)` voor een actief doel met een tokenbudget.
+- `Doel gepauzeerd (/goal resume)` voor een gepauzeerd doel.
+- `Doel geblokkeerd (/goal resume)` voor een geblokkeerd doel.
+- `Doel heeft gebruikslimieten bereikt (/goal resume)` voor een gebruiksbeperkt doel.
+- `Doel niet bereikt (50k/50k)` voor een budgetbeperkt doel.
+- `Doel bereikt (42k)` voor een voltooid doel.
 
-De voettekst is bewust compact. Gebruik `/goal` voor de volledige doelstelling, notitie,
-tokenbudget en beschikbare opdrachten.
+De voettekst is bewust compact. Gebruik `/goal` voor de volledige doelstelling,
+notitie, het tokenbudget en de beschikbare opdrachten.
 
 ## Kanaalgedrag
 
-De opdracht `/goal` werkt in OpenClaw-sessies met opdrachtmogelijkheden, inclusief de
-TUI en chatoppervlakken die tekstopdrachten toestaan. Doelstatus is gekoppeld aan de
-sessiesleutel, niet aan het transport. Als twee oppervlakken dezelfde sessie gebruiken, zien ze
-hetzelfde doel.
+`/goal` werkt in OpenClaw-sessies die opdrachten ondersteunen, waaronder de TUI en
+chatinterfaces die tekstopdrachten toestaan. De doelstatus is gekoppeld aan de
+sessiesleutel, niet aan het transport, zodat twee interfaces die een sessiesleutel delen hetzelfde
+doel zien.
 
-Doelstatus is geen afleveringsrichtlijn. Het dwingt geen antwoorden af via een
-kanaal, verandert wachtrijgedrag niet, keurt geen tools goed en plant geen werk in.
+De doelstatus is geen afleveringsinstructie: deze dwingt geen antwoorden via een
+kanaal af, wijzigt het wachtrijgedrag niet, keurt geen tools goed en plant geen werkzaamheden.
 
-## Probleemoplossing
+## Problemen oplossen
 
-`Goal error: goal already exists` betekent dat de sessie al een doel heeft. Gebruik
-`/goal` om het te inspecteren, `/goal complete` als het klaar is, of `/goal clear` voordat je
-een andere doelstelling start.
+| Bericht                                | Betekenis                                                                                                                                     |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Goal error: goal already exists`      | De sessie heeft al een doel. Gebruik `/goal` om het te bekijken, `/goal complete` als het klaar is of `/goal clear` voordat u een andere doelstelling start. |
+| `Goal error: goal not found`           | De sessie heeft nog geen doel. Start er een met `/goal start <objective>`.                                                                    |
+| `Goal error: goal is already complete` | Het doel is definitief. Wis het voordat u een andere doelstelling start of hervat.                                                            |
 
-`Goal error: goal not found` betekent dat de sessie nog geen doel heeft. Start er een met
-`/goal start <objective>`.
-
-`Goal error: goal is already complete` betekent dat het doel een eindstatus heeft. Wis het
-voordat je een andere doelstelling start of hervat.
-
-Als tokengebruik eruitziet als `0` of verouderd is, heeft de actieve sessie mogelijk nog geen verse
-tokensnapshot. Gebruik wordt vernieuwd terwijl OpenClaw sessiegebruik en
-uit transcript afgeleide totalen vastlegt.
+Als het tokengebruik `0` weergeeft of verouderd lijkt, heeft de actieve sessie mogelijk nog geen
+actuele tokenmomentopname. Het gebruik wordt vernieuwd wanneer OpenClaw sessiegebruik
+en uit het transcript afgeleide totalen registreert.
 
 ## Gerelateerd
 
@@ -222,5 +229,5 @@ uit transcript afgeleide totalen vastlegt.
 - [TUI](/nl/web/tui)
 - [Sessietool](/nl/concepts/session-tool)
 - [Compaction](/nl/concepts/compaction)
-- [Task Flow](/nl/automation/taskflow)
-- [Doorlopende opdrachten](/nl/automation/standing-orders)
+- [TaskFlow](/nl/automation/taskflow)
+- [Vaste opdrachten](/nl/automation/standing-orders)

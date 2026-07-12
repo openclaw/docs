@@ -2,12 +2,11 @@
 read_when:
     - Configuration de l’environnement de développement macOS
 summary: Guide de configuration pour les développeurs travaillant sur l’application macOS OpenClaw
-title: Configuration de l’environnement de développement sous macOS
+title: Configuration de l’environnement de développement macOS
 x-i18n:
-    generated_at: "2026-07-12T15:37:38Z"
+    generated_at: "2026-07-12T02:47:40Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: bd7d556af92892d3deea3f5d8238a33cd413e10b0b377468396221e174ace8fe
     source_path: platforms/mac/dev-setup.md
@@ -22,7 +21,7 @@ Compilez et exécutez l’application OpenClaw pour macOS à partir du code sour
 
 - **Xcode 26.2+** (chaîne d’outils Swift 6.2), sur la dernière version de macOS disponible dans
   Software Update.
-- **Node.js 24 et pnpm** pour le Gateway, la CLI et les scripts de packaging. Node
+- **Node.js 24 et pnpm** pour le Gateway, la CLI et les scripts de création de paquets. Node
   22.19+ fonctionne également.
 
 ## 1. Installer les dépendances
@@ -38,9 +37,9 @@ pnpm install
 ```
 
 Génère `dist/OpenClaw.app`. Sans certificat Apple Developer ID, le
-script utilise à la place une signature ad hoc.
+script utilise par défaut une signature ad hoc.
 
-Pour les modes d’exécution de développement, les options de signature et la résolution des problèmes liés à l’identifiant d’équipe, consultez
+Pour les modes d’exécution de développement, les options de signature et la résolution des problèmes liés au Team ID, consultez
 [apps/macos/README.md](https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md).
 Boucle de développement rapide depuis la racine du dépôt : `scripts/restart-mac.sh` (ajoutez `--no-sign` pour
 une signature ad hoc ; les autorisations TCC ne sont pas conservées avec `--no-sign`).
@@ -54,7 +53,7 @@ immédiatement avec « Abort trap 6 », consultez la section [Résolution des pr
 
 L’application empaquetée intègre le programme d’installation canonique `scripts/install-cli.sh`. Sur un
 nouveau profil, choisissez **This Mac** pendant la configuration initiale ; l’application installe la
-CLI en espace utilisateur et l’environnement d’exécution correspondants avant de lancer l’assistant du Gateway.
+CLI correspondante dans l’espace utilisateur ainsi que l’environnement d’exécution avant de lancer l’assistant du Gateway.
 
 Pour une récupération manuelle de l’environnement de développement, installez vous-même la CLI correspondante :
 
@@ -84,7 +83,7 @@ Si les versions ne correspondent pas, mettez à jour macOS/Xcode et relancez la 
 Si l’application plante lorsque vous tentez d’autoriser l’accès à **Speech Recognition** ou au
 **Microphone**, il peut s’agir d’un cache TCC corrompu ou d’une incompatibilité de signature.
 
-1. Réinitialisez les autorisations TCC pour l’identifiant de bundle de débogage :
+1. Réinitialisez les autorisations TCC pour l’identifiant du bundle de débogage :
 
    ```bash
    tccutil reset All ai.openclaw.mac.debug
@@ -107,9 +106,9 @@ lsof -nP -iTCP:18789 -sTCP:LISTEN
 ```
 
 Si une exécution manuelle occupe le port, arrêtez-la (Ctrl+C) ou, en dernier
-recours, terminez le PID trouvé ci-dessus.
+recours, interrompez le PID trouvé ci-dessus.
 
-## Contenu associé
+## Ressources connexes
 
 - [Application macOS](/fr/platforms/macos)
-- [Présentation de l’installation](/fr/install)
+- [Vue d’ensemble de l’installation](/fr/install)

@@ -1,123 +1,33 @@
 ---
 read_when:
-    - OpenAI Chat Completions bekleyen araçları entegre etme
-summary: Gateway’den OpenAI uyumlu /v1/chat/completions HTTP uç noktasını kullanıma açın
+    - OpenAI Chat Completions'ı kullanan araçları entegre etme
+summary: Gateway üzerinden OpenAI uyumlu bir /v1/chat/completions HTTP uç noktası sunun
 title: OpenAI sohbet tamamlamaları
 x-i18n:
-    generated_at: "2026-06-28T00:36:34Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:18:09Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e8746f4f5964a5d0b948877b64b5d20440dea3aa45b36813c404cd06660792cf
+    source_hash: 9b1fffd2ce3da881ecd91adbb7c5d10b1d7adbd99af9b2ea4544b62ecbaf1f32
     source_path: gateway/openai-http-api.md
     workflow: 16
 ---
 
-OpenClaw'ın Gateway'i, küçük bir OpenAI uyumlu Chat Completions uç noktası sunabilir.
+Gateway, OpenAI uyumlu küçük bir Chat Completions yüzeyi sunabilir. Bu özellik **varsayılan olarak devre dışıdır**.
 
-Bu uç nokta **varsayılan olarak devre dışıdır**. Önce yapılandırmada etkinleştirin.
+Etkinleştirildiğinde, bunların tümünü Gateway ile aynı bağlantı noktasında sunar (WS + HTTP çoklama):
 
-- `POST /v1/chat/completions`
-- Gateway ile aynı bağlantı noktası (WS + HTTP çoklama): `http://<gateway-host>:<port>/v1/chat/completions`
+| Yöntem | Yol                    |
+| ------ | ---------------------- |
+| POST   | `/v1/chat/completions` |
+| GET    | `/v1/models`           |
+| GET    | `/v1/models/{id}`      |
+| POST   | `/v1/embeddings`       |
+| POST   | `/v1/responses`        |
 
-Gateway'in OpenAI uyumlu HTTP yüzeyi etkinleştirildiğinde, şunları da sunar:
-
-- `GET /v1/models`
-- `GET /v1/models/{id}`
-- `POST /v1/embeddings`
-- `POST /v1/responses`
-
-Arka planda istekler normal bir Gateway ajan çalıştırması olarak yürütülür (`openclaw agent` ile aynı kod yolu), bu nedenle yönlendirme/izinler/yapılandırma Gateway'inizle eşleşir.
-
-## Kimlik Doğrulama
-
-Gateway kimlik doğrulama yapılandırmasını kullanır.
-
-Yaygın HTTP kimlik doğrulama yolları:
-
-- paylaşılan gizli anahtar kimlik doğrulaması (`gateway.auth.mode="token"` veya `"password"`):
-  `Authorization: Bearer <token-or-password>`
-- güvenilir kimlik taşıyan HTTP kimlik doğrulaması (`gateway.auth.mode="trusted-proxy"`):
-  yapılandırılmış kimlik farkında proxy üzerinden yönlendirin ve gerekli
-  kimlik başlıklarını enjekte etmesine izin verin
-- özel giriş açık kimlik doğrulaması (`gateway.auth.mode="none"`):
-  kimlik doğrulama başlığı gerekmez
-
-Notlar:
-
-- `gateway.auth.mode="token"` olduğunda, `gateway.auth.token` (veya `OPENCLAW_GATEWAY_TOKEN`) kullanın.
-- `gateway.auth.mode="password"` olduğunda, `gateway.auth.password` (veya `OPENCLAW_GATEWAY_PASSWORD`) kullanın.
-- `gateway.auth.mode="trusted-proxy"` olduğunda, HTTP isteği yapılandırılmış bir
-  güvenilir proxy kaynağından gelmelidir; aynı ana makinedeki loopback proxy'leri açıkça
-  `gateway.auth.trustedProxy.allowLoopback = true` gerektirir.
-- Proxy'yi atlayan dahili aynı ana makine çağırıcıları, yerel doğrudan
-  yedek yol olarak `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD` kullanabilir.
-  Bunun yerine herhangi bir `Forwarded`, `X-Forwarded-*` veya `X-Real-IP` başlık kanıtı
-  isteği güvenilir proxy yolunda tutar.
-- `gateway.auth.rateLimit` yapılandırılmışsa ve çok fazla kimlik doğrulama hatası oluşursa, uç nokta `Retry-After` ile `429` döndürür.
-
-## Güvenlik sınırı (önemli)
-
-Bu uç noktayı gateway örneği için **tam operatör erişimli** bir yüzey olarak ele alın.
-
-- Buradaki HTTP bearer kimlik doğrulaması dar bir kullanıcı başına kapsam modeli değildir.
-- Bu uç nokta için geçerli bir Gateway token/parolası, sahip/operatör kimlik bilgisi gibi ele alınmalıdır.
-- İstekler, güvenilir operatör eylemleriyle aynı denetim düzlemi ajan yolundan geçer.
-- Bu uç noktada ayrı bir sahip olmayan/kullanıcı başına araç sınırı yoktur; bir çağırıcı burada Gateway kimlik doğrulamasını geçtikten sonra, OpenClaw bu çağırıcıyı bu gateway için güvenilir operatör olarak ele alır.
-- Paylaşılan gizli anahtar kimlik doğrulama modlarında (`token` ve `password`), çağırıcı daha dar bir `x-openclaw-scopes` başlığı gönderse bile uç nokta normal tam operatör varsayılanlarını geri yükler.
-- Güvenilir kimlik taşıyan HTTP modları (örneğin güvenilir proxy kimlik doğrulaması veya `gateway.auth.mode="none"`) mevcut olduğunda `x-openclaw-scopes` değerine uyar ve aksi halde normal operatör varsayılan kapsam kümesine geri döner.
-- Hedef ajan ilkesi hassas araçlara izin veriyorsa, bu uç nokta onları kullanabilir.
-- Bu uç noktayı yalnızca loopback/tailnet/özel giriş üzerinde tutun; doğrudan genel internete açmayın.
-
-Kimlik doğrulama matrisi:
-
-- `gateway.auth.mode="token"` veya `"password"` + `Authorization: Bearer ...`
-  - paylaşılan gateway operatör sırrına sahip olunduğunu kanıtlar
-  - daha dar `x-openclaw-scopes` değerini yok sayar
-  - tam varsayılan operatör kapsam kümesini geri yükler:
-    `operator.admin`, `operator.approvals`, `operator.pairing`,
-    `operator.read`, `operator.talk.secrets`, `operator.write`
-  - bu uç noktadaki sohbet dönüşlerini sahip gönderen dönüşleri olarak ele alır
-- güvenilir kimlik taşıyan HTTP modları (örneğin güvenilir proxy kimlik doğrulaması veya özel girişte `gateway.auth.mode="none"`)
-  - bazı dış güvenilir kimliği veya dağıtım sınırını doğrular
-  - başlık mevcut olduğunda `x-openclaw-scopes` değerine uyar
-  - başlık yoksa normal operatör varsayılan kapsam kümesine geri döner
-  - yalnızca çağırıcı kapsamları açıkça daraltıp `operator.admin` öğesini atladığında sahip semantiğini kaybeder
-  - `x-openclaw-model` gibi sahip düzeyi istek denetimleri için `operator.admin` gerektirir
-
-Bkz. [Güvenlik](/tr/gateway/security) ve [Uzaktan erişim](/tr/gateway/remote).
-
-## Bu uç nokta ne zaman kullanılmalı
-
-Mevcut bir gateway ile araçları veya güvenilir bir uygulama tarafı arka ucu tümleştiriyorsanız ve gateway operatör kimlik bilgilerini güvenle tutabiliyorsanız `/v1/chat/completions` kullanın.
-
-- Entegrasyonunuz aynı gateway için yalnızca başka bir operatör/istemci yüzeyiyse, yeni bir yerleşik kanal eklemek yerine bunu tercih edin.
-- Uzak bir gateway'e doğrudan bağlanan yerel mobil istemciler için [WebChat](/tr/web/webchat) veya [Gateway Protocol](/tr/gateway/protocol) tercih edin ve cihazın paylaşılan bir HTTP token/parolasına ihtiyaç duymaması için eşleştirilmiş cihaz önyükleme/cihaz token akışını uygulayın.
-- Kendi kullanıcıları, odaları, Webhook teslimi veya giden aktarımı olan harici bir mesajlaşma ağıyla tümleştiriyorsanız bunun yerine bir kanal Plugin'i oluşturun. Bkz. [Plugin oluşturma](/tr/plugins/building-plugins).
-
-## Ajan öncelikli model sözleşmesi
-
-OpenClaw, OpenAI `model` alanını ham sağlayıcı model kimliği olarak değil, bir **ajan hedefi** olarak ele alır.
-
-- `model: "openclaw"` yapılandırılmış varsayılan ajana yönlendirir.
-- `model: "openclaw/default"` da yapılandırılmış varsayılan ajana yönlendirir.
-- `model: "openclaw/<agentId>"` belirli bir ajana yönlendirir.
-
-İsteğe bağlı istek başlıkları:
-
-- `x-openclaw-model: <provider/model-or-bare-id>` seçilen ajan için arka uç modelini geçersiz kılar. Paylaşılan gizli anahtar bearer çağırıcıları bu başlığı kullanabilir. Güvenilir proxy veya `x-openclaw-scopes` içeren özel kimlik doğrulamasız giriş istekleri gibi kimlik taşıyan çağırıcılar `operator.admin` gerektirir; yalnızca yazma yetkili çağırıcılar `403 missing scope: operator.admin` alır.
-- `x-openclaw-agent-id: <agentId>` uyumluluk geçersiz kılması olarak desteklenmeye devam eder.
-- `x-openclaw-session-key: <sessionKey>` oturum yönlendirmesini açıkça denetler. Değer `subagent:`, `cron:` veya `acp:` gibi ayrılmış dahili oturum ad alanlarını kullanmamalıdır; bu istekler `400 invalid_request_error` ile reddedilir.
-- `x-openclaw-message-channel: <channel>` kanal farkında istemler ve ilkeler için sentetik giriş kanalı bağlamını ayarlar.
-
-Hâlâ kabul edilen uyumluluk takma adları:
-
-- `model: "openclaw:<agentId>"`
-- `model: "agent:<agentId>"`
+İstekler normal bir Gateway ajan çalıştırması olarak (`openclaw agent` ile aynı kod yolu üzerinden) yürütülür; dolayısıyla yönlendirme, izinler ve yapılandırma Gateway'inizle eşleşir.
 
 ## Uç noktayı etkinleştirme
-
-`gateway.http.endpoints.chatCompletions.enabled` değerini `true` olarak ayarlayın:
 
 ```json5
 {
@@ -131,179 +41,209 @@ Hâlâ kabul edilen uyumluluk takma adları:
 }
 ```
 
-## Uç noktayı devre dışı bırakma
+Devre dışı bırakmak için `enabled: false` olarak ayarlayın (veya bu ayarı atlayın).
 
-`gateway.http.endpoints.chatCompletions.enabled` değerini `false` olarak ayarlayın:
+## Güvenlik sınırı (önemli)
+
+Bu uç noktayı Gateway örneğine **tam operatör erişimi** sağlıyor olarak değerlendirin:
+
+- Bu uç nokta için geçerli bir Gateway belirteci/parolası, kullanıcı başına dar kapsamlı bir kimlik bilgisine değil, sahip/operatör kimlik bilgisine eşdeğerdir.
+- İstekler, güvenilir operatör eylemleriyle aynı denetim düzlemi ajan yolundan geçer; dolayısıyla hedef ajanın ilkesi hassas araçlara izin veriyorsa bu uç nokta bunları kullanabilir.
+- Yalnızca local loopback/tailnet/özel giriş üzerinde tutun. Genel internete açmayın.
+
+Kimlik doğrulama matrisi:
+
+| Kimlik doğrulama yolu                                                                                | Davranış                                                                                                                                                                                                                                                                                                                                                       |
+| ---------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `gateway.auth.mode="token"` veya `"password"` + `Authorization: Bearer ...`                          | Paylaşılan Gateway gizli bilgisinin elde bulundurulduğunu kanıtlar. Tüm `x-openclaw-scopes` üstbilgilerini yok sayar ve varsayılan operatör kapsamlarının tamamını geri yükler: `operator.admin`, `operator.approvals`, `operator.pairing`, `operator.read`, `operator.talk.secrets`, `operator.write`. Sohbet turlarını sahip-gönderici turları olarak değerlendirir. |
+| Kimlik taşıyan güvenilir HTTP (trusted-proxy kimlik doğrulaması veya özel girişte `gateway.auth.mode="none"`) | Mevcut olduğunda `x-openclaw-scopes` değerini dikkate alır; bulunmadığında varsayılan operatör kapsamlarına geri döner. Yalnızca çağıran kapsamları açıkça daraltıp `operator.admin` kapsamını atladığında sahip anlamını kaybeder. `x-openclaw-model` gibi sahip düzeyindeki denetimler için `operator.admin` gerektirir.                                              |
+
+Bkz. [Operatör kapsamları](/tr/gateway/operator-scopes), [Güvenlik](/tr/gateway/security) ve [Uzaktan erişim](/tr/gateway/remote).
+
+## Kimlik doğrulama
+
+Gateway kimlik doğrulama yapılandırmasını kullanır (bu modun ayrıntıları için bkz. [Güvenilir proxy kimlik doğrulaması](/tr/gateway/trusted-proxy-auth)):
+
+| Mod                                 | Kimlik doğrulama yöntemi                                                                                                                                                                                   |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `gateway.auth.mode="token"`         | `Authorization: Bearer <token>`. `gateway.auth.token` veya `OPENCLAW_GATEWAY_TOKEN` aracılığıyla ayarlayın.                                                                                                 |
+| `gateway.auth.mode="password"`      | `Authorization: Bearer <password>`. `gateway.auth.password` veya `OPENCLAW_GATEWAY_PASSWORD` aracılığıyla ayarlayın.                                                                                        |
+| `gateway.auth.mode="trusted-proxy"` | Yapılandırılmış, kimlik bilgisine duyarlı proxy üzerinden yönlendirin; gerekli kimlik üstbilgilerini proxy ekler. Aynı makinedeki local loopback proxy'leri için açıkça `gateway.auth.trustedProxy.allowLoopback = true` ayarlanmalıdır. |
+| `gateway.auth.mode="none"`          | Kimlik doğrulama üstbilgisi gerekmez (yalnızca özel giriş).                                                                                                                                                 |
+
+Notlar:
+
+- `trusted-proxy` Gateway'inde proxy'yi atlayan aynı makinedeki çağıranlar, doğrudan `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD` kullanımına geri dönebilir. Herhangi bir `Forwarded`, `X-Forwarded-*` veya `X-Real-IP` üstbilgisi kanıtı, isteği bunun yerine trusted-proxy yolunda tutar.
+- `gateway.auth.rateLimit` yapılandırılmışsa ve çok fazla kimlik doğrulama girişimi başarısız olursa uç nokta, `Retry-After` üstbilgisiyle birlikte `429` döndürür.
+
+## Bu uç nokta ne zaman kullanılmalı?
+
+- Entegrasyonunuz aynı Gateway için yalnızca başka bir operatör/istemci yüzeyiyse yeni bir yerleşik kanal eklemek yerine bunu tercih edin.
+- Uzak bir Gateway'e doğrudan bağlanan yerel mobil istemcilerde, cihazın paylaşılan bir HTTP belirtecine/parolasına ihtiyaç duymaması için eşleştirilmiş cihaz önyükleme/cihaz belirteci akışıyla [WebChat](/tr/web/webchat) veya [Gateway Protokolü](/tr/gateway/protocol) kullanmayı tercih edin.
+- Kendi kullanıcıları, odaları, Webhook teslimatı veya giden aktarımı olan harici bir mesajlaşma ağıyla entegrasyon yaparken bunun yerine bir kanal Plugin'i oluşturun. Bkz. [Plugin oluşturma](/tr/plugins/building-plugins).
+
+## Ajan öncelikli model sözleşmesi
+
+OpenClaw, OpenAI `model` alanını ham sağlayıcı model kimliği olarak değil, bir **ajan hedefi** olarak değerlendirir.
+
+| `model` değeri                              | Yönlendirildiği hedef                                                                                                                      |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `openclaw`                                  | Yapılandırılmış varsayılan ajan                                                                                                            |
+| `openclaw/default`                          | Yapılandırılmış varsayılan ajan (kararlı takma ad; gerçek varsayılan ajan kimliği ortamlar arasında değişse bile kodda sabitlenmesi güvenlidir) |
+| `openclaw/<agentId>` veya `openclaw:<agentId>` | Belirli ajan                                                                                                                            |
+| `agent:<agentId>`                           | Belirli ajan (uyumluluk takma adı)                                                                                                         |
+
+İsteğe bağlı istek üstbilgileri:
+
+| Üstbilgi                                        | Etki                                                                                                                                                                                                                                                                                                                                                     |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `x-openclaw-model: <provider/model-or-bare-id>` | Seçilen ajanın arka uç modelini geçersiz kılar. Paylaşılan gizli bilgi taşıyıcısı kullanan çağıranlar bunu doğrudan kullanabilir; kimlik taşıyan çağıranlar (trusted-proxy veya `x-openclaw-scopes` içeren kimlik doğrulamasız özel giriş) için `operator.admin` gerekir, aksi hâlde `403 missing scope: operator.admin` döndürülür. |
+| `x-openclaw-agent-id: <agentId>`                | Ajan seçimi için uyumluluk geçersiz kılması.                                                                                                                                                                                                                                                                                                             |
+| `x-openclaw-session-key: <sessionKey>`          | Açık oturum yönlendirmesi. Ayrılmış bir iç ad alanı (`subagent:`, `cron:`, `acp:`) kullanıyorsa `400 invalid_request_error` ile reddedilir.                                                                                                                                                                                                               |
+| `x-openclaw-message-channel: <channel>`         | Kanala duyarlı istemler/ilkeler için sentetik giriş kanalı bağlamını ayarlar.                                                                                                                                                                                                                                                                             |
+
+`/v1/models`, arka uç sağlayıcı modellerini veya alt ajanları değil, üst düzey ajan hedeflerini (`openclaw`, `openclaw/default`, `openclaw/<agentId>`) listeler; alt ajanlar iç yürütme topolojisinde kalır. `x-openclaw-model` değerini atlarsanız seçilen ajan normal yapılandırılmış modeliyle çalışır.
+
+`/v1/embeddings` aynı ajan hedefi `model` kimliklerini kullanır. Belirli bir gömme modeli seçmek için `x-openclaw-model` gönderin (paylaşılan gizli bilgi kullanan bir çağırandan veya `operator.admin` kapsamına sahip kimlik taşıyan bir çağırandan); aksi hâlde istek, seçilen ajanın normal gömme yapılandırmasını kullanır.
+
+## Oturum davranışı
+
+Uç nokta varsayılan olarak **her istek için durum bilgisizdir** (her çağrıda yeni bir oturum anahtarı oluşturulur).
+
+İstek bir OpenAI `user` dizesi içeriyorsa Gateway, yinelenen çağrıların bir ajan oturumunu paylaşabilmesi için bu değerden kararlı bir oturum anahtarı türetir. Özel uygulamalarda her konuşma dizisi için aynı `user` değerini yeniden kullanın; birden fazla konuşmanın/cihazın tek bir OpenClaw oturumunu paylaşmasını istemiyorsanız hesap düzeyindeki tanımlayıcılardan kaçının. `x-openclaw-session-key` değerini yalnızca birden fazla istemci/dizi arasında açık yönlendirme denetimine ihtiyaç duyduğunuzda, yukarıdaki ayrılmış ad alanlarından kaçınan uygulamaya ait anahtarlarla kullanın.
+
+## İstek sınırları (yapılandırma)
+
+Varsayılan değerler `gateway.http.endpoints.chatCompletions` altında ayarlanabilir:
 
 ```json5
 {
   gateway: {
     http: {
       endpoints: {
-        chatCompletions: { enabled: false },
+        chatCompletions: {
+          enabled: true,
+          maxBodyBytes: 20000000,
+          maxImageParts: 8,
+          maxTotalImageBytes: 20000000,
+          images: {
+            allowUrl: false,
+            urlAllowlist: ["cdn.example.com", "*.assets.example.com"],
+            allowedMimes: [
+              "image/jpeg",
+              "image/png",
+              "image/gif",
+              "image/webp",
+              "image/heic",
+              "image/heif",
+            ],
+            maxBytes: 10485760,
+            maxRedirects: 3,
+            timeoutMs: 10000,
+          },
+        },
       },
     },
   },
 }
 ```
 
-## Oturum davranışı
+Atlandığında kullanılan varsayılanlar:
 
-Varsayılan olarak uç nokta **istek başına durumsuzdur** (her çağrıda yeni bir oturum anahtarı oluşturulur).
+| Anahtar               | Varsayılan                                                                                         |
+| --------------------- | -------------------------------------------------------------------------------------------------- |
+| `maxBodyBytes`        | 20MB                                                                                               |
+| `maxImageParts`       | 8 (en son kullanıcı mesajından okunan en fazla `image_url` parçası)                                |
+| `maxTotalImageBytes`  | 20MB (tek bir istekteki tüm `image_url` parçalarının toplam kodu çözülmüş bayt sayısı)              |
+| `images.allowUrl`     | `false` (URL kaynaklı `image_url` parçaları etkinleştirilmedikçe reddedilir)                        |
+| `images.maxBytes`     | Görsel başına 10MB                                                                                 |
+| `images.maxRedirects` | 3                                                                                                  |
+| `images.timeoutMs`    | 10s                                                                                                |
 
-İstek bir OpenAI `user` dizesi içeriyorsa, Gateway bundan kararlı bir oturum anahtarı türetir; böylece tekrarlanan çağrılar bir ajan oturumunu paylaşabilir.
+HEIC/HEIF `image_url` kaynakları kabul edilir ve sağlayıcıya teslim edilmeden önce paylaşılan OpenClaw görüntü işlemcisi (Rastermill) aracılığıyla JPEG'e dönüştürülür; harici codec desteği gerektiren biçimler için işlemci, sistem dönüştürücüsüne (`sips`, ImageMagick, GraphicsMagick veya ffmpeg) geri döner.
 
-Özel uygulamalar için en güvenli varsayılan, konuşma iş parçacığı başına aynı `user` değerini yeniden kullanmaktır. Birden çok konuşmanın veya cihazın tek bir OpenClaw oturumunu paylaşmasını açıkça istemiyorsanız hesap düzeyi tanımlayıcılardan kaçının. `x-openclaw-session-key` değerini yalnızca birden çok istemci veya iş parçacığı arasında açık yönlendirme denetimine ihtiyaç duyduğunuzda kullanın ve `subagent:`, `cron:` veya `acp:` gibi ayrılmış dahili ad alanlarıyla başlamayan, uygulamaya ait anahtarlar seçin.
-
-## Bu yüzey neden önemlidir
-
-Bu, kendi barındırdığınız ön uçlar ve araçlar için en yüksek kaldıraçlı uyumluluk kümesidir:
-
-- Çoğu Open WebUI, LobeChat ve LibreChat kurulumu `/v1/models` bekler.
-- Birçok RAG sistemi `/v1/embeddings` bekler.
-- Mevcut OpenAI sohbet istemcileri genellikle `/v1/chat/completions` ile başlayabilir.
-- Daha ajan-yerel istemciler giderek daha fazla `/v1/responses` tercih eder.
-
-## Model listesi ve ajan yönlendirme
-
-<AccordionGroup>
-  <Accordion title="`/v1/models` ne döndürür?">
-    Bir OpenClaw ajan hedef listesi.
-
-    Döndürülen kimlikler `openclaw`, `openclaw/default` ve `openclaw/<agentId>` girdileridir.
-    Bunları doğrudan OpenAI `model` değerleri olarak kullanın.
-
-  </Accordion>
-  <Accordion title="`/v1/models` ajanları mı yoksa alt ajanları mı listeler?">
-    Arka uç sağlayıcı modellerini veya alt ajanları değil, üst düzey ajan hedeflerini listeler.
-
-    Alt ajanlar dahili yürütme topolojisi olarak kalır. Sözde modeller olarak görünmezler.
-
-  </Accordion>
-  <Accordion title="`openclaw/default` neden dahil?">
-    `openclaw/default`, yapılandırılmış varsayılan ajan için kararlı takma addır.
-
-    Bu, gerçek varsayılan ajan kimliği ortamlar arasında değişse bile istemcilerin öngörülebilir tek bir kimliği kullanmaya devam edebileceği anlamına gelir.
-
-  </Accordion>
-  <Accordion title="Arka uç modelini nasıl geçersiz kılarım?">
-    `x-openclaw-model` kullanın. Bu sahip düzeyi bir geçersiz kılmadır: Gateway paylaşılan gizli anahtar bearer token/parola yolu ile çalışır ve güvenilir proxy kimlik doğrulaması gibi kimlik taşıyan HTTP yollarında `operator.admin` gerektirir.
-
-    Örnekler:
-    `x-openclaw-model: openai/gpt-5.4`
-    `x-openclaw-model: gpt-5.5`
-
-    Bunu atlarsanız, seçilen ajan normal yapılandırılmış model seçimiyle çalışır.
-
-  </Accordion>
-  <Accordion title="Embeddings bu sözleşmeye nasıl uyar?">
-    `/v1/embeddings` aynı ajan hedefli `model` kimliklerini kullanır.
-
-    `model: "openclaw/default"` veya `model: "openclaw/<agentId>"` kullanın.
-    Belirli bir embedding modeline ihtiyaç duyduğunuzda, bunu paylaşılan gizli anahtar çağırıcısından veya `operator.admin` bulunan kimlik taşıyan çağırıcıdan `x-openclaw-model` içinde gönderin.
-    Bu başlık olmadan istek, seçilen ajanın normal embedding kurulumuna iletilir.
-
-  </Accordion>
-</AccordionGroup>
-
-## Akış (SSE)
-
-Server-Sent Events (SSE) almak için `stream: true` ayarlayın:
-
-- `Content-Type: text/event-stream`
-- Her olay satırı `data: <json>` biçimindedir
-- Akış `data: [DONE]` ile biter
+Güvenlik notu: Bir ana bilgisayar adını izin verilenler listesine eklemek, özel/dahili IP engellemesini atlamaz. İnternete açık Gateway'ler için uygulama düzeyindeki korumalara ek olarak ağ çıkış denetimleri uygulayın. Bkz. [Güvenlik](/tr/gateway/security).
 
 ## Sohbet aracı sözleşmesi
 
-`/v1/chat/completions`, yaygın OpenAI Chat istemcileriyle uyumlu bir function-tool alt kümesini destekler.
+`/v1/chat/completions`, yaygın OpenAI Chat istemcileriyle uyumlu bir işlev aracı alt kümesini destekler.
 
 ### Desteklenen istek alanları
 
-- `tools`: `{ "type": "function", "function": { ... } }` dizisi
-- `tool_choice`: `"auto"`, `"none"`, `"required"` veya `{ "type": "function", "function": { "name": "..." } }`
-- `messages[*].role: "tool"` takip dönüşleri
-- `messages[*].tool_call_id` araç sonuçlarını önceki bir araç çağrısına geri bağlamak için
-- `max_completion_tokens`: sayı; toplam tamamlama token'ları için çağrı başına üst sınır (akıl yürütme token'ları dahil). Geçerli OpenAI Chat Completions alan adı; hem `max_completion_tokens` hem de `max_tokens` gönderildiğinde tercih edilir.
-- `max_tokens`: sayı; geriye dönük uyumluluk için kabul edilen eski takma ad. `max_completion_tokens` da mevcut olduğunda yok sayılır.
-- `temperature`: sayı; agent stream-param kanalı üzerinden yukarı akış sağlayıcısına iletilen en iyi çaba örnekleme sıcaklığı.
-- `top_p`: sayı; agent stream-param kanalı üzerinden yukarı akış sağlayıcısına iletilen en iyi çaba nucleus sampling.
-- `frequency_penalty`: sayı; agent stream-param kanalı üzerinden yukarı akış sağlayıcısına iletilen en iyi çaba frequency penalty. Doğrulanan aralık: -2.0 ile 2.0 arası. Aralık dışı değerler için `400 invalid_request_error` döndürür.
-- `presence_penalty`: sayı; agent stream-param kanalı üzerinden yukarı akış sağlayıcısına iletilen en iyi çaba presence penalty. Doğrulanan aralık: -2.0 ile 2.0 arası. Aralık dışı değerler için `400 invalid_request_error` döndürür.
-- `seed`: sayı (tamsayı); agent stream-param kanalı üzerinden yukarı akış sağlayıcısına iletilen en iyi çaba seed. Tamsayı olmayan değerler için `400 invalid_request_error` döndürür.
-- `stop`: dize veya en fazla 4 dizeden oluşan dizi; agent stream-param kanalı üzerinden yukarı akış sağlayıcısına iletilen en iyi çaba durdurma dizileri. 4'ten fazla dizi veya dize olmayan/boş girdiler için `400 invalid_request_error` döndürür.
+| Alan                       | Notlar                                                                                                                                                            |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `tools`                    | `{ "type": "function", "function": { ... } }` dizisi                                                                                                              |
+| `tool_choice`              | `"auto"`, `"none"`, `"required"` veya `{ "type": "function", "function": { "name": "..." } }`                                                                      |
+| `messages[*].role: "tool"` | Takip turları                                                                                                                                                      |
+| `messages[*].tool_call_id` | Bir araç sonucunu önceki bir araç çağrısına bağlar                                                                                                                 |
+| `max_completion_tokens`    | Sayı; toplam tamamlama belirteçleri için çağrı başına üst sınırdır (akıl yürütme belirteçleri dahil). Geçerli alan adıdır; hem bu hem de `max_tokens` gönderildiğinde kullanılır. |
+| `max_tokens`               | Sayı; eski takma addır, `max_completion_tokens` da mevcutsa yok sayılır.                                                                                            |
+| `temperature`              | 0-2 arasında sayı; mümkün olan en iyi şekilde üst sağlayıcıya iletilir. Aralık dışındaysa `400 invalid_request_error`.                                              |
+| `top_p`                    | 0-1 arasında sayı; mümkün olan en iyi şekilde uygulanır. Aralık dışındaysa `400 invalid_request_error`.                                                             |
+| `frequency_penalty`        | -2.0 ile 2.0 arasında sayı; mümkün olan en iyi şekilde uygulanır. Aralık dışındaysa `400 invalid_request_error`.                                                     |
+| `presence_penalty`         | -2.0 ile 2.0 arasında sayı; mümkün olan en iyi şekilde uygulanır. Aralık dışındaysa `400 invalid_request_error`.                                                     |
+| `seed`                     | Tam sayı; mümkün olan en iyi şekilde uygulanır. Tam sayı olmayan değerlerde `400 invalid_request_error`.                                                            |
+| `stop`                     | Dize veya en fazla 4 dizelik dizi; mümkün olan en iyi şekilde uygulanır. 4'ten fazla dizi ya da dize olmayan/boş girdilerde `400 invalid_request_error`.             |
 
-Her iki token sınırı alanından biri ayarlandığında, değer agent stream-param kanalı üzerinden upstream sağlayıcıya iletilir. Upstream sağlayıcıya gönderilen gerçek wire alanı adı sağlayıcı transport'u tarafından seçilir: OpenAI ailesi endpoint'leri için `max_completion_tokens`, yalnızca eski adı kabul eden sağlayıcılar için (Mistral ve Chutes gibi) `max_tokens`. Örnekleme alanları (`temperature`, `top_p`, `frequency_penalty`, `presence_penalty`, `seed`) aynı stream-param kanalını izler; ChatGPT tabanlı Codex Responses backend'i, sabit örnekleme kullandığı için bunları sunucu tarafında çıkarır. `stop` da stream-param kanalı üzerinden gider ve transport'un stop alanına eşlenir (Chat Completions backend'leri için `stop`, Anthropic için `stop_sequences`); OpenAI Responses API'de stop parametresi yoktur, bu nedenle `stop` Responses destekli modellerde uygulanmaz.
+Tüm örnekleme ve belirteç üst sınırı alanları aynı ajan akış parametresi kanalı üzerinden taşınır ve mümkün olan en iyi şekilde iletilir:
 
-### Desteklenmeyen varyantlar
+- Belirteç üst sınırı: İletişim alanının adı sağlayıcı aktarımı tarafından seçilir: OpenAI ailesi uç noktaları için `max_completion_tokens`, yalnızca eski adı kabul eden sağlayıcılar (Mistral, Chutes) için `max_tokens`.
+- `stop`, aktarımın durdurma alanına eşlenir: Chat Completions arka uçları için `stop`, Anthropic için `stop_sequences`. OpenAI Responses API'de durdurma parametresi bulunmadığından `stop`, Responses tabanlı modellerde uygulanmaz.
+- ChatGPT tabanlı Codex Responses arka ucu, sabit sunucu tarafı örnekleme kullanır ve istek bu arka uca ulaşmadan önce `temperature`/`top_p` alanlarını (`max_output_tokens`, `metadata`, `prompt_cache_retention`, `service_tier` ile birlikte) kaldırır.
 
-Endpoint, aşağıdakiler dahil desteklenmeyen araç varyantları için `400 invalid_request_error` döndürür:
+### Desteklenmeyen değişkenler
 
-- dizi olmayan `tools`
-- işlev olmayan araç girdileri
-- eksik `tool.function.name`
-- `allowed_tools` ve `custom` gibi `tool_choice` varyantları
-- sağlanan `tools` ile eşleşmeyen `tool_choice.function.name` değerleri
+Şu durumlarda `400 invalid_request_error` döndürür:
 
-`tool_choice: "required"` ve işleve sabitlenmiş `tool_choice` için endpoint, açığa çıkarılan istemci işlev-aracı kümesini daraltır, runtime'a yanıt vermeden önce bir istemci aracını çağırması talimatını verir ve agent yanıtı eşleşen yapılandırılmış bir istemci-aracı çağrısı içermiyorsa hata döndürür. Bu sözleşme, her dahili OpenClaw agent aracına değil, çağıranın sağladığı HTTP `tools` listesine uygulanır.
+- dizi olmayan `tools`, işlev olmayan araç girdileri veya eksik `tool.function.name`
+- `allowed_tools` ve `custom` gibi `tool_choice` değişkenleri
+- sağlanan bir araçla eşleşmeyen `tool_choice.function.name` değerleri
 
-### Streaming olmayan araç yanıtı şekli
+`tool_choice: "required"` ve işleve sabitlenmiş `tool_choice` için uç nokta, kullanıma sunulan istemci işlev aracı kümesini daraltır, çalışma zamanına yanıt vermeden önce bir istemci aracını çağırma talimatı verir ve ajan yanıtında eşleşen yapılandırılmış bir istemci aracı çağrısı yoksa hata verir. Bu, tüm dahili OpenClaw ajan araçlarına değil, çağıran tarafından sağlanan HTTP `tools` listesine uygulanır.
 
-Agent araçları çağırmaya karar verdiğinde yanıt şunu kullanır:
+### Akışsız araç yanıtı biçimi
+
+Ajan araçları çağırdığında yanıt şunları kullanır:
 
 - `choices[0].finish_reason = "tool_calls"`
-- Şunları içeren `choices[0].message.tool_calls[]` girdileri:
-  - `id`
-  - `type: "function"`
-  - `function.name`
-  - `function.arguments` (JSON dizesi)
+- `id`, `type: "function"`, `function.name`, `function.arguments` (JSON dizesi) içeren `choices[0].message.tool_calls[]` girdileri
+- Araç çağrısından önceki yardımcı açıklaması, `choices[0].message.content` içinde (boş olabilir)
 
-Araç çağrısından önceki assistant yorumu `choices[0].message.content` içinde döndürülür (boş olabilir).
+### Akışlı araç yanıtı biçimi
 
-### Streaming araç yanıtı şekli
+`stream: true` olduğunda araç çağrıları artımlı SSE parçaları olarak gelir: başlangıçta yardımcı rol deltası, isteğe bağlı yardımcı açıklaması deltaları, araç kimliği ve bağımsız değişken parçalarını taşıyan bir veya daha fazla `delta.tool_calls` parçası, ardından `finish_reason: "tool_calls"` içeren son parça ve `data: [DONE]`.
 
-`stream: true` olduğunda, araç çağrıları artımlı SSE parçaları olarak yayınlanır:
-
-- ilk assistant rol deltası
-- isteğe bağlı assistant yorum deltaları
-- araç kimliğini ve argüman parçalarını taşıyan bir veya daha fazla `delta.tool_calls` parçası
-- `finish_reason: "tool_calls"` içeren son parça
-- `data: [DONE]`
-
-`stream_options.include_usage=true` ise, `[DONE]` öncesinde sonda bir kullanım parçası yayınlanır.
+`stream_options.include_usage=true` ise `[DONE]` öncesinde sondaki bir kullanım parçası yayınlanır.
 
 ### Araç takip döngüsü
 
-İstemci, `tool_calls` aldıktan sonra istenen işlevleri yürütmeli ve şunları içeren bir takip isteği göndermelidir:
+`tool_calls` alındıktan sonra istenen işlevleri yürütün ve önceki yardımcı araç çağrısı iletisiyle birlikte eşleşen `tool_call_id` değerlerine sahip bir veya daha fazla `role: "tool"` iletisi içeren bir takip isteği gönderin. Bu işlem, nihai yanıtı üretmek için aynı ajan akıl yürütme döngüsünü sürdürür.
 
-- önceki assistant araç çağrısı mesajı
-- eşleşen `tool_call_id` değerlerine sahip bir veya daha fazla `role: "tool"` mesajı
+## Akış (SSE)
 
-Bu, Gateway agent çalışmasının aynı muhakeme döngüsüne devam etmesini ve son assistant yanıtını üretmesini sağlar.
+Sunucu Tarafından Gönderilen Olayları almak için `stream: true` ayarlayın:
 
-## Open WebUI hızlı kurulum
+- `Content-Type: text/event-stream`
+- Her olay satırı `data: <json>` biçimindedir
+- Akış `data: [DONE]` ile sona erer
 
-Temel bir Open WebUI bağlantısı için:
+## Open WebUI hızlı kurulumu
 
 - Temel URL: `http://127.0.0.1:18789/v1`
-- macOS üzerinde Docker temel URL'si: `http://host.docker.internal:18789/v1`
-- API anahtarı: Gateway bearer token'ınız
+- macOS'ta Docker temel URL'si: `http://host.docker.internal:18789/v1`
+- API anahtarı: Gateway taşıyıcı belirteciniz
 - Model: `openclaw/default`
 
-Beklenen davranış:
+Beklenen davranış: `GET /v1/models`, `openclaw/default` değerini listeler ve Open WebUI bunu sohbet modeli kimliği olarak kullanır. Belirli bir arka uç sağlayıcısı/modeli için ajanın normal varsayılan modelini ayarlayın veya `x-openclaw-model` gönderin (paylaşılan gizli anahtar kullanan çağıran ya da `operator.admin` yetkisine sahip kimlik taşıyan çağıran).
 
-- `GET /v1/models`, `openclaw/default` değerini listelemelidir
-- Open WebUI, sohbet model kimliği olarak `openclaw/default` kullanmalıdır
-- Bu agent için belirli bir backend sağlayıcı/model istiyorsanız, agent'ın normal varsayılan modelini ayarlayın veya paylaşılan gizli anahtarlı bir çağırandan ya da `operator.admin` içeren kimlik taşıyan bir çağırandan `x-openclaw-model` gönderin
-
-Hızlı smoke testi:
+Hızlı duman testi:
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/models \
   -H 'Authorization: Bearer YOUR_TOKEN'
 ```
 
-Bu `openclaw/default` döndürürse, çoğu Open WebUI kurulumu aynı temel URL ve token ile bağlanabilir.
+Bu komut `openclaw/default` döndürürse çoğu Open WebUI kurulumu aynı temel URL ve belirteçle bağlanabilir.
 
 ## Örnekler
 
@@ -320,9 +260,9 @@ curl -sS http://127.0.0.1:18789/v1/chat/completions \
   }'
 ```
 
-Aynı agent oturumunu sürdürmek için bu konuşmanın sonraki çağrılarında aynı `user` değerini yeniden kullanın.
+Aynı ajan oturumunu sürdürmek için bu konuşmaya yönelik sonraki çağrılarda aynı `user` değerini yeniden kullanın.
 
-Streaming olmayan:
+Akışsız:
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/chat/completions \
@@ -334,7 +274,7 @@ curl -sS http://127.0.0.1:18789/v1/chat/completions \
   }'
 ```
 
-Streaming:
+Akışlı:
 
 ```bash
 curl -N http://127.0.0.1:18789/v1/chat/completions \
@@ -348,21 +288,21 @@ curl -N http://127.0.0.1:18789/v1/chat/completions \
   }'
 ```
 
-Modelleri listele:
+Modelleri listeleme:
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/models \
   -H 'Authorization: Bearer YOUR_TOKEN'
 ```
 
-Tek bir modeli getir:
+Tek bir modeli getirme:
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/models/openclaw%2Fdefault \
   -H 'Authorization: Bearer YOUR_TOKEN'
 ```
 
-Embedding oluştur:
+Gömme vektörleri oluşturma:
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/embeddings \
@@ -375,14 +315,10 @@ curl -sS http://127.0.0.1:18789/v1/embeddings \
   }'
 ```
 
-Notlar:
-
-- `/v1/models`, ham sağlayıcı kataloglarını değil OpenClaw agent hedeflerini döndürür.
-- `openclaw/default` her zaman bulunur; böylece tek bir kararlı kimlik ortamlar arasında çalışır.
-- Backend sağlayıcı/model geçersiz kılmaları OpenAI `model` alanında değil, `x-openclaw-model` içinde olmalıdır. Kimlik taşıyan HTTP kimlik doğrulama yollarında bu header `operator.admin` gerektirir.
-- `/v1/embeddings`, `input` değerini dize veya dize dizisi olarak destekler.
+`/v1/embeddings`, `input` için dizeyi veya dize dizisini destekler.
 
 ## İlgili
 
 - [Yapılandırma başvurusu](/tr/gateway/configuration-reference)
+- [Operatör kapsamları](/tr/gateway/operator-scopes)
 - [OpenAI](/tr/providers/openai)

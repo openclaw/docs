@@ -1,36 +1,35 @@
 ---
 read_when:
-    - Geliştirici Gateway şablonlarını kullanma
-    - Varsayılan geliştirici aracı kimliğini güncelleme
-summary: Geliştirici aracı araç notları (C-3PO)
+    - Geliştirme Gateway şablonlarını kullanma
+    - Varsayılan geliştirme ajanı kimliğini güncelleme
+summary: Geliştirme ajanı araçları notları (C-3PO)
 title: TOOLS.dev şablonu
 x-i18n:
-    generated_at: "2026-04-24T09:30:35Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 23c11e2832ed0dcf9ddd43e5472e0c025c1a91a33299019c16f00a7230e8e99c
-    source_path: reference/templates/TOOLS.dev.md
-    workflow: 15
+    generated_at: "2026-07-12T12:44:09Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 3259107a9252ff3d01b98608e6005387cb54a75da5db64f833c945056abd4173
+    source_path: reference/templates/TOOLS.dev.md
+    workflow: 16
 ---
 
 # TOOLS.md - Kullanıcı Araç Notları (düzenlenebilir)
 
-Bu dosya, harici araçlar ve kurallar hakkındaki _sizin_ notlarınız içindir.
-Hangi araçların var olduğunu tanımlamaz; OpenClaw yerleşik araçları dahili olarak sağlar.
+Bu dosya, harici araçlar ve kurallar hakkındaki _kendi_ notlarınız içindir. Hangi araçların mevcut olduğunu tanımlamaz; OpenClaw yerleşik araçları dahili olarak sağlar, geri kalanları ise Skills ekler.
 
 ## Örnekler
 
 ### imsg
 
-- Bir iMessage/SMS gönderin: kime/ne olduğunu açıklayın, göndermeden önce onaylayın.
-- Kısa mesajları tercih edin; sır göndermekten kaçının.
+- Bir iMessage/SMS gönderme: kime/ne gönderileceğini açıklayın, göndermeden önce onaylayın.
+- Kısa mesajları tercih edin; gizli bilgileri göndermekten kaçının.
 
 ### sag
 
-- Metinden konuşmaya: sesi, hedef hoparlörü/odayı ve akış yapılıp yapılmayacağını belirtin.
+- Metinden konuşmaya: sesi, hedef konuşmacıyı/odayı ve akış yapılıp yapılmayacağını belirtin.
 
-Asistanın yerel araç zinciriniz hakkında bilmesini istediğiniz başka her şeyi ekleyin.
+Asistanın yerel araç zinciriniz hakkında bilmesini istediğiniz diğer bilgileri ekleyin.
 
 ## İlgili
 

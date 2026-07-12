@@ -1,12 +1,12 @@
 ---
 read_when:
-    - Necesitas registros de depuración específicos sin aumentar los niveles de registro globales
-    - Necesitas capturar registros específicos del subsistema para soporte
+    - Necesitas registros de depuración específicos sin aumentar los niveles globales de registro
+    - Necesitas recopilar registros específicos del subsistema para obtener soporte.
 summary: Indicadores de diagnóstico para registros de depuración específicos
 title: Indicadores de diagnóstico
 x-i18n:
-    generated_at: "2026-07-05T11:16:35Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T23:04:48Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 9847f464fde89d9e639b089fe54fb933deb9debad2a6d8b120ab01bacff181a8
@@ -14,31 +14,27 @@ x-i18n:
     workflow: 16
 ---
 
-Las marcas de diagnóstico activan registros adicionales para un subsistema sin elevar
-`logging.level` globalmente. Una marca no tiene efecto a menos que un subsistema la compruebe.
+Las opciones de diagnóstico activan registros adicionales para un subsistema sin aumentar globalmente `logging.level`. Una opción no tiene efecto a menos que un subsistema la compruebe.
 
 ## Cómo funciona
 
-- Las marcas son cadenas que no distinguen mayúsculas de minúsculas, resueltas desde `diagnostics.flags` en
-  la configuración más la anulación de env `OPENCLAW_DIAGNOSTICS`, deduplicadas y convertidas a minúsculas.
-- `name.*` coincide con `name` y con cualquier cosa bajo `name.` (por ejemplo,
-  `telegram.*` coincide con `telegram.http`).
-- `*` o `all` habilita todas las marcas.
-- Reinicia el Gateway después de cambiar `diagnostics.flags` en la configuración; no se
-  recarga en caliente.
+- Las opciones son cadenas que no distinguen entre mayúsculas y minúsculas, obtenidas de `diagnostics.flags` en la configuración junto con la anulación de la variable de entorno `OPENCLAW_DIAGNOSTICS`; se eliminan los duplicados y se convierten a minúsculas.
+- `name.*` coincide con el propio `name` y con cualquier elemento bajo `name.` (por ejemplo, `telegram.*` coincide con `telegram.http`).
+- `*` o `all` activa todas las opciones.
+- Reinicie el Gateway después de cambiar `diagnostics.flags` en la configuración; no se recarga en caliente.
 
-## Marcas conocidas
+## Opciones conocidas
 
-| Marca            | Habilita                                                  |
-| ---------------- | --------------------------------------------------------- |
-| `telegram.http`  | Registro de errores HTTP de Telegram Bot API              |
-| `brave.http`     | Registro de solicitudes/respuestas/caché de Brave Search  |
-| `profiler`       | Perfilador de etapa de respuesta y perfilador del servidor de aplicación de Codex (ambos) |
-| `reply.profiler` | Solo el perfilador de etapa de respuesta                  |
-| `codex.profiler` | Solo el perfilador del servidor de aplicación de Codex    |
-| `timeline`       | Artefacto de línea de tiempo JSONL estructurado (ver abajo) |
+| Opción           | Activa                                                              |
+| ---------------- | ------------------------------------------------------------------- |
+| `telegram.http`  | Registro de errores HTTP de la API de bots de Telegram              |
+| `brave.http`     | Registro de solicitudes, respuestas y caché de Brave Search         |
+| `profiler`       | Perfilador de la fase de respuesta y de Codex app-server (ambos)    |
+| `reply.profiler` | Solo el perfilador de la fase de respuesta                          |
+| `codex.profiler` | Solo el perfilador de Codex app-server                              |
+| `timeline`       | Artefacto de cronología JSONL estructurado (consulte más adelante)   |
 
-## Habilitar mediante configuración
+## Activación mediante la configuración
 
 ```json
 {
@@ -48,7 +44,7 @@ Las marcas de diagnóstico activan registros adicionales para un subsistema sin 
 }
 ```
 
-Varias marcas:
+Varias opciones:
 
 ```json
 {
@@ -58,49 +54,46 @@ Varias marcas:
 }
 ```
 
-## Anulación por env (puntual)
+## Anulación mediante variable de entorno (uso puntual)
 
 ```bash
 OPENCLAW_DIAGNOSTICS=telegram.http,brave.http
 ```
 
-Los valores se dividen por comas o espacios en blanco. Valores especiales:
+Los valores se separan por comas o espacios en blanco. Valores especiales:
 
-| Valor                       | Efecto                                  |
-| --------------------------- | --------------------------------------- |
-| `0`, `false`, `off`, `none` | Deshabilita todas las marcas, anulando también la configuración |
-| `1`, `true`, `all`, `*`     | Habilita todas las marcas               |
+| Valor                       | Efecto                                                     |
+| --------------------------- | ---------------------------------------------------------- |
+| `0`, `false`, `off`, `none` | Desactiva todas las opciones y también anula la configuración |
+| `1`, `true`, `all`, `*`     | Activa todas las opciones                                  |
 
-`OPENCLAW_DIAGNOSTICS=0` deshabilita las marcas tanto de env como de la configuración para ese
-proceso, útil para silenciar temporalmente una marca de perfilador que quedó activada en la configuración
-sin editar el archivo.
+`OPENCLAW_DIAGNOSTICS=0` desactiva las opciones tanto de la variable de entorno como de la configuración para ese proceso. Esto resulta útil para silenciar temporalmente una opción del perfilador que se haya dejado activada en la configuración sin editar el archivo.
 
-## Marcas de perfilador
+## Opciones del perfilador
 
-Las marcas de perfilador controlan tramos de temporización ligeros; no añaden sobrecarga cuando están desactivadas.
+Las opciones del perfilador controlan intervalos ligeros de medición de tiempo; cuando están desactivadas, no añaden sobrecarga.
 
-Habilita todos los tramos controlados por perfilador para una ejecución del Gateway:
+Active todos los intervalos controlados por el perfilador para una ejecución del Gateway:
 
 ```bash
 OPENCLAW_DIAGNOSTICS=profiler openclaw gateway run
 ```
 
-Habilita solo los tramos del perfilador de despacho de respuestas:
+Active solo los intervalos del perfilador de distribución de respuestas:
 
 ```bash
 OPENCLAW_DIAGNOSTICS=reply.profiler openclaw gateway run
 ```
 
-Habilita solo los tramos del perfilador de inicio/herramienta/hilo del servidor de aplicación de Codex:
+Active solo los intervalos del perfilador de inicio, herramientas e hilos de Codex app-server:
 
 ```bash
 OPENCLAW_DIAGNOSTICS=codex.profiler openclaw gateway run
 ```
 
-`profiler` habilita tanto el perfilador de respuestas como el perfilador de Codex; usa los
-nombres de marcas con ámbito para habilitar solo uno.
+`profiler` activa tanto el perfilador de respuestas como el perfilador de Codex; utilice los nombres de opciones específicos para activar solo uno.
 
-O configúralo en la configuración:
+También puede configurarlo en la configuración:
 
 ```json
 {
@@ -110,14 +103,11 @@ O configúralo en la configuración:
 }
 ```
 
-Reinicia el Gateway después de cambiar las marcas de configuración. Para deshabilitar una marca de perfilador,
-elimínala de `diagnostics.flags` y reinicia, o inicia el proceso con
-`OPENCLAW_DIAGNOSTICS=0` para anular todas las marcas de diagnóstico en esa ejecución.
+Reinicie el Gateway después de cambiar las opciones de configuración. Para desactivar una opción del perfilador, elimínela de `diagnostics.flags` y reinicie, o inicie el proceso con `OPENCLAW_DIAGNOSTICS=0` para anular todas las opciones de diagnóstico durante esa ejecución.
 
-## Artefactos de línea de tiempo
+## Artefactos de cronología
 
-La marca `timeline` (alias: `diagnostics.timeline`) escribe eventos estructurados de temporización de inicio
-y ejecución como JSONL, para arneses de QA externos:
+La opción `timeline` (alias: `diagnostics.timeline`) escribe como JSONL eventos estructurados de medición de tiempo del inicio y de la ejecución para sistemas externos de control de calidad:
 
 ```bash
 OPENCLAW_DIAGNOSTICS=timeline \
@@ -125,7 +115,7 @@ OPENCLAW_DIAGNOSTICS_TIMELINE_PATH=/tmp/openclaw-timeline.jsonl \
 openclaw gateway run
 ```
 
-O habilítala en la configuración:
+También puede activarla en la configuración:
 
 ```json
 {
@@ -135,81 +125,60 @@ O habilítala en la configuración:
 }
 ```
 
-La ruta de salida siempre proviene de `OPENCLAW_DIAGNOSTICS_TIMELINE_PATH`, incluso
-cuando la marca se define en la configuración; no hay una clave de configuración para la ruta.
-Cuando `timeline` se habilita solo desde la configuración, faltan los primeros tramos de carga de configuración
-porque OpenClaw aún no ha leído la configuración; los tramos de inicio posteriores
-se capturan normalmente.
+La ruta de salida siempre procede de `OPENCLAW_DIAGNOSTICS_TIMELINE_PATH`, incluso cuando la propia opción se establece en la configuración; no existe ninguna clave de configuración para la ruta. Cuando `timeline` se activa únicamente desde la configuración, no se incluyen los primeros intervalos de carga de la configuración porque OpenClaw aún no la ha leído; los intervalos posteriores del inicio se capturan con normalidad.
 
-`OPENCLAW_DIAGNOSTICS=1`, `=all` y `=*` también habilitan la línea de tiempo, ya que
-habilitan todas las marcas. Prefiere la marca con ámbito `timeline` cuando solo quieres el
-artefacto JSONL y no todas las demás marcas de diagnóstico.
+`OPENCLAW_DIAGNOSTICS=1`, `=all` y `=*` también activan la cronología, ya que activan todas las opciones. Utilice preferentemente la opción específica `timeline` cuando solo quiera el artefacto JSONL y no todas las demás opciones de diagnóstico.
 
-Las muestras de retardo del bucle de eventos en la línea de tiempo necesitan una activación adicional además de
-`timeline`: define `OPENCLAW_DIAGNOSTICS_EVENT_LOOP=1` (o `on`/`true`/`yes`) junto
-con la habilitación de la línea de tiempo.
+Las muestras de retardo del bucle de eventos en la cronología requieren una activación adicional aparte de `timeline`: establezca `OPENCLAW_DIAGNOSTICS_EVENT_LOOP=1` (o `on`/`true`/`yes`) además de activar la cronología.
 
-Los registros de línea de tiempo usan el contenedor `openclaw.diagnostics.v1` y pueden incluir
-ids de proceso, nombres de fase, nombres de tramo, duraciones, ids de plugin, recuentos de dependencias,
-muestras de retardo del bucle de eventos, nombres de operación del proveedor, estado de salida de procesos hijo
-y nombres/mensajes de errores de inicio. Trata los archivos de línea de tiempo como artefactos locales
-de diagnóstico; revísalos antes de compartirlos fuera de tu máquina.
+Los registros de la cronología utilizan el contenedor `openclaw.diagnostics.v1` y pueden incluir identificadores de procesos, nombres de fases, nombres de intervalos, duraciones, identificadores de plugins, recuentos de dependencias, muestras de retardo del bucle de eventos, nombres de operaciones de proveedores, estado de salida de procesos secundarios y nombres o mensajes de errores de inicio. Trate los archivos de cronología como artefactos locales de diagnóstico; revíselos antes de compartirlos fuera de su equipo.
 
-## Dónde van los registros
+## Dónde se guardan los registros
 
-Las marcas emiten registros en el archivo de registro de diagnóstico estándar. De forma predeterminada:
+Las opciones envían registros al archivo estándar de registro de diagnóstico. De forma predeterminada:
 
 ```
 /tmp/openclaw/openclaw-YYYY-MM-DD.log
 ```
 
-Si defines `logging.file`, usa esa ruta en su lugar. Los registros son JSONL (un objeto JSON
-por línea). La redacción sigue aplicándose según `logging.redactSensitive`.
-Consulta [Registro](/es/logging) para ver el modelo completo de resolución de rutas de registro, rotación y
-redacción.
+Si establece `logging.file`, se utiliza esa ruta. Los registros tienen formato JSONL (un objeto JSON por línea). La censura continúa aplicándose según `logging.redactSensitive`. Consulte [Registro](/es/logging) para conocer el modelo completo de resolución de rutas de registro, rotación y censura.
 
-## Extraer registros
+## Extracción de registros
 
-Elige el archivo de registro más reciente:
+Seleccione el archivo de registro más reciente:
 
 ```bash
 ls -t /tmp/openclaw/openclaw-*.log | head -n 1
 ```
 
-Filtra diagnósticos HTTP de Telegram:
+Filtre los diagnósticos HTTP de Telegram:
 
 ```bash
 rg "telegram http error" /tmp/openclaw/openclaw-*.log
 ```
 
-Filtra diagnósticos HTTP de Brave Search:
+Filtre los diagnósticos HTTP de Brave Search:
 
 ```bash
 rg "brave http" /tmp/openclaw/openclaw-*.log
 ```
 
-O sigue el registro mientras reproduces:
+O supervise el archivo mientras reproduce el problema:
 
 ```bash
 tail -f /tmp/openclaw/openclaw-$(date +%F).log | rg "telegram http error"
 ```
 
-Para Gateways remotos, usa `openclaw logs --follow` en su lugar (consulta
-[/cli/logs](/es/cli/logs)).
+Para Gateways remotos, utilice `openclaw logs --follow` en su lugar (consulte [/cli/logs](/es/cli/logs)).
 
 ## Notas
 
-- Si `logging.level` está por encima de `warn`, los registros controlados por marcas pueden quedar
-  suprimidos. El valor predeterminado `info` está bien.
-- `brave.http` registra URLs/parámetros de consulta de solicitudes de Brave Search, estado/tiempo
-  de respuesta y eventos de acierto/fallo/escritura de caché. No registra la clave de API
-  (enviada como encabezado de solicitud) ni los cuerpos de respuesta, pero las búsquedas pueden ser
-  sensibles.
-- Es seguro dejar las marcas habilitadas; solo afectan al volumen de registros del
-  subsistema específico.
-- Usa [/logging](/es/logging) para cambiar destinos, niveles y redacción de registros.
+- Si `logging.level` se establece en un nivel superior a `warn`, es posible que se supriman los registros controlados por opciones. El valor predeterminado `info` es adecuado.
+- `brave.http` registra las URL y los parámetros de consulta de las solicitudes de Brave Search, el estado y el tiempo de las respuestas, y los eventos de acierto, fallo y escritura de la caché. No registra la clave de la API (enviada como cabecera de la solicitud) ni los cuerpos de las respuestas, pero las consultas de búsqueda pueden contener información sensible.
+- Es seguro dejar activadas las opciones; solo afectan al volumen de registros del subsistema específico.
+- Utilice [/logging](/es/logging) para cambiar los destinos, los niveles y la censura de los registros.
 
-## Relacionado
+## Contenido relacionado
 
 - [Diagnósticos del Gateway](/es/gateway/diagnostics)
 - [Solución de problemas del Gateway](/es/gateway/troubleshooting)

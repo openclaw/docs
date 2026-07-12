@@ -1,13 +1,12 @@
 ---
 read_when:
-    - iMessage Plugin のインストール、設定、または監査を行っています
-summary: OpenClaw メッセージを送受信するための iMessage チャネル機能を追加します。
+    - iMessage Pluginのインストール、設定、または監査を行っています
+summary: OpenClawメッセージを送受信するためのiMessageチャネル機能を追加します。
 title: iMessage Plugin
 x-i18n:
-    generated_at: "2026-07-12T14:43:45Z"
+    generated_at: "2026-07-11T22:30:23Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 5c48bb24e59d5dea948c5f04f579df48b0ae51f923e5dc8a0fc35888ddbbc1c6
     source_path: plugins/reference/imessage.md
@@ -16,17 +15,17 @@ x-i18n:
 
 # iMessage Plugin
 
-OpenClaw メッセージを送受信するための iMessage チャネル機能を追加します。
+OpenClawメッセージを送受信するためのiMessageチャンネル機能を追加します。
 
 ## 配布
 
 - パッケージ: `@openclaw/imessage`
-- インストール方法: OpenClaw に同梱
+- インストール方法: OpenClawに同梱
 
 ## 提供機能
 
-チャネル: imessage; Skills
+チャンネル: imessage、Skills
 
 ## 関連ドキュメント
 
-- [imessage](/ja-JP/channels/imessage)
+- [iMessage](/ja-JP/channels/imessage)

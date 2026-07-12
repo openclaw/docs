@@ -1,30 +1,32 @@
 ---
 read_when:
-    - Weryfikacja pokrycia poświadczeń SecretRef
-    - Audytowanie, czy poświadczenie kwalifikuje się do `secrets configure` lub `secrets apply`
-    - Weryfikacja, dlaczego poświadczenie znajduje się poza obsługiwanym zakresem
-summary: Kanoniczny obsługiwany i nieobsługiwany obszar poświadczeń SecretRef
+    - Weryfikowanie obsługi poświadczeń SecretRef
+    - Sprawdzanie, czy dane uwierzytelniające kwalifikują się do `secrets configure` lub `secrets apply`
+    - Weryfikowanie, dlaczego poświadczenie znajduje się poza obsługiwanym zakresem
+summary: Kanoniczny zakres obsługiwanych i nieobsługiwanych poświadczeń SecretRef
 title: Powierzchnia poświadczeń SecretRef
 x-i18n:
-    generated_at: "2026-06-27T18:19:51Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:36:22Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 668ee7e72565194bfe53a397767d060e5fe7743c9bf8bde2597ec3dad2a32431
+    source_hash: 435fc25ea9268be40abc367d96def70e8d367cb0ab640a4f2d271a0e9db19147
     source_path: reference/secretref-credential-surface.md
     workflow: 16
 ---
 
-Ta strona definiuje kanoniczną powierzchnię poświadczeń SecretRef.
+Ta strona definiuje kanoniczny zakres poświadczeń SecretRef: które pola poświadczeń akceptują `SecretRef` (odwołanie oparte na env/pliku/exec) zamiast nieprzetworzonej wartości tajnej.
 
 Zakres:
 
-- W zakresie: wyłącznie poświadczenia dostarczane przez użytkownika, których OpenClaw nie tworzy ani nie rotuje.
-- Poza zakresem: poświadczenia tworzone w czasie wykonywania lub rotowane, materiały odświeżania OAuth oraz artefakty podobne do sesji.
+- W zakresie: wyłącznie poświadczenia dostarczane przez użytkownika, których OpenClaw nie generuje ani nie rotuje.
+- Poza zakresem: poświadczenia generowane lub rotowane w czasie działania, dane odświeżania OAuth oraz artefakty podobne do sesji.
+
+Poniższe listy są generowane z rejestru docelowego w kodzie źródłowym i sprawdzane w CI względem `docs/reference/secretref-user-supplied-credentials-matrix.json`; nie edytuj wpisów ręcznie.
 
 ## Obsługiwane poświadczenia
 
-### Cele `openclaw.json` (`secrets configure` + `secrets apply` + `secrets audit`)
+### Cele w `openclaw.json` (`secrets configure` + `secrets apply` + `secrets audit`)
 
 [//]: # "secretref-supported-list-start"
 
@@ -123,10 +125,10 @@ Zakres:
 - `channels.zalo.webhookSecret`
 - `channels.zalo.accounts.*.botToken`
 - `channels.zalo.accounts.*.webhookSecret`
-- `channels.googlechat.serviceAccount` przez sąsiednie `serviceAccountRef` (wyjątek zgodności)
-- `channels.googlechat.accounts.*.serviceAccount` przez sąsiednie `serviceAccountRef` (wyjątek zgodności)
+- `channels.googlechat.serviceAccount` za pośrednictwem sąsiedniego pola `serviceAccountRef` (wyjątek zgodności)
+- `channels.googlechat.accounts.*.serviceAccount` za pośrednictwem sąsiedniego pola `serviceAccountRef` (wyjątek zgodności)
 
-### Cele `auth-profiles.json` (`secrets configure` + `secrets apply` + `secrets audit`)
+### Cele w `auth-profiles.json` (`secrets configure` + `secrets apply` + `secrets audit`)
 
 - `profiles.*.keyRef` (`type: "api_key"`; nieobsługiwane, gdy `auth.profiles.<id>.mode = "oauth"`)
 - `profiles.*.tokenRef` (`type: "token"`; nieobsługiwane, gdy `auth.profiles.<id>.mode = "oauth"`)
@@ -135,22 +137,15 @@ Zakres:
 
 Uwagi:
 
-- Cele planu profilu uwierzytelniania wymagają `agentId`.
-- Wpisy planu wskazują `profiles.*.key` / `profiles.*.token` i zapisują sąsiednie referencje (`keyRef` / `tokenRef`).
-- Referencje profili uwierzytelniania są uwzględnione w rozwiązywaniu w czasie wykonywania i w zakresie audytu.
-- W `openclaw.json` SecretRefs muszą używać obiektów strukturalnych, takich jak `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}`. Starsze ciągi znaczników `secretref-env:<ENV_VAR>` są odrzucane na ścieżkach poświadczeń SecretRef; uruchom `openclaw doctor --fix`, aby zmigrować prawidłowe znaczniki.
-- Ochrona zasad OAuth: `auth.profiles.<id>.mode = "oauth"` nie może być łączone z danymi wejściowymi SecretRef dla tego profilu. Uruchamianie/ponowne ładowanie oraz rozwiązywanie profilu uwierzytelniania kończą się szybko błędem, gdy ta zasada zostanie naruszona.
-- Dla dostawców modeli zarządzanych przez SecretRef wygenerowane wpisy `agents/*/agent/models.json` utrwalają niejawne znaczniki (nie rozwiązane wartości sekretów) dla powierzchni `apiKey`/nagłówków.
-- Utrwalanie znaczników jest autorytatywne względem źródła: OpenClaw zapisuje znaczniki z aktywnej migawki konfiguracji źródłowej (przed rozwiązaniem), a nie z rozwiązanych wartości sekretów w czasie wykonywania.
-- Dla wyszukiwania w sieci:
-  - W trybie jawnego dostawcy (ustawione `tools.web.search.provider`) aktywny jest tylko klucz wybranego dostawcy.
-  - W trybie automatycznym (nieustawione `tools.web.search.provider`) aktywny jest tylko pierwszy klucz dostawcy, który rozwiązuje się według priorytetu.
-  - W trybie automatycznym referencje niewybranych dostawców są traktowane jako nieaktywne, dopóki nie zostaną wybrane.
-  - Starsze ścieżki dostawców `tools.web.search.*` nadal rozwiązują się w oknie zgodności, ale kanoniczną powierzchnią SecretRef jest `plugins.entries.<plugin>.config.webSearch.*`.
+- Cele planu profilu uwierzytelniania wymagają `agentId`; wpisy planu wskazują `profiles.*.key` / `profiles.*.token` i zapisują sąsiednie odwołania (`keyRef` / `tokenRef`). Odwołania profili uwierzytelniania są uwzględniane podczas rozwiązywania w czasie działania oraz w zakresie audytu.
+- W `openclaw.json` odwołania SecretRef muszą używać obiektów strukturalnych, takich jak `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}`. Starsze ciągi znaczników `secretref-env:<ENV_VAR>` są odrzucane w ścieżkach poświadczeń SecretRef; uruchom `openclaw doctor --fix`, aby zmigrować prawidłowe znaczniki.
+- Ograniczenie zasad OAuth: `auth.profiles.<id>.mode = "oauth"` nie może być łączone z danymi wejściowymi SecretRef dla tego profilu. Uruchamianie, ponowne wczytywanie oraz rozwiązywanie profilu uwierzytelniania natychmiast kończą się niepowodzeniem w przypadku naruszenia tej zasady.
+- W przypadku dostawców modeli zarządzanych przez SecretRef wygenerowane wpisy `agents/*/agent/models.json` przechowują nietajne znaczniki (a nie rozwiązane wartości tajne) dla pól `apiKey`/nagłówków. Utrwalanie znaczników opiera się autorytatywnie na źródle: OpenClaw zapisuje znaczniki z aktywnej migawki konfiguracji źródłowej (sprzed rozwiązania), a nie z rozwiązanych wartości tajnych używanych w czasie działania.
+- W przypadku wyszukiwania internetowego: w trybie jawnego dostawcy (gdy ustawiono `tools.web.search.provider`) aktywny jest tylko klucz wybranego dostawcy. W trybie automatycznym (gdy `tools.web.search.provider` nie jest ustawione) aktywny jest tylko pierwszy klucz dostawcy rozwiązany zgodnie z kolejnością pierwszeństwa, a odwołania do niewybranych dostawców są traktowane jako nieaktywne do momentu ich wybrania. Starsze ścieżki dostawców `tools.web.search.*` są nadal rozwiązywane w okresie zgodności, ale kanonicznym zakresem SecretRef jest `plugins.entries.<plugin>.config.webSearch.*`.
 
 ## Nieobsługiwane poświadczenia
 
-Poświadczenia poza zakresem obejmują:
+Te poświadczenia należą do klas generowanych, rotowanych, zawierających dane sesji lub trwale związanych z OAuth, które nie pasują do zewnętrznego rozwiązywania SecretRef tylko do odczytu:
 
 [//]: # "secretref-unsupported-list-start"
 
@@ -166,11 +161,7 @@ Poświadczenia poza zakresem obejmują:
 
 [//]: # "secretref-unsupported-list-end"
 
-Uzasadnienie:
-
-- Te poświadczenia należą do klas tworzonych, rotowanych, zawierających sesję lub trwałych dla OAuth, które nie pasują do rozwiązywania zewnętrznego SecretRef tylko do odczytu.
-
 ## Powiązane
 
 - [Zarządzanie sekretami](/pl/gateway/secrets)
-- [Semantyka poświadczeń uwierzytelniania](/pl/auth-credential-semantics)
+- [Semantyka poświadczeń uwierzytelniających](/pl/auth-credential-semantics)

@@ -1,99 +1,102 @@
 ---
 read_when:
-    - تريد استخدام إنشاء الفيديو باستخدام PixVerse في OpenClaw
-    - تحتاج إلى إعداد مفتاح API ومتغيرات البيئة لـ PixVerse
-    - تريد جعل PixVerse مزوّد الفيديو الافتراضي
-summary: إعداد توليد فيديو PixVerse في OpenClaw
+    - تريد استخدام إنشاء الفيديو عبر PixVerse في OpenClaw
+    - تحتاج إلى إعداد مفتاح PixVerse API ومتغيرات البيئة الخاصة به
+    - تريد جعل PixVerse موفّر الفيديو الافتراضي
+summary: إعداد إنشاء الفيديو باستخدام PixVerse في OpenClaw
 title: PixVerse
 x-i18n:
-    generated_at: "2026-06-27T18:27:11Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:24:07Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 9967ec20f7a9db3413db12ed75f836ae0bee6610e765f049720988b43494d37b
+    source_hash: 50204c771deb315e7336325f2852e4b65dfba4264bbe288b819d44b8def1ce82
     source_path: providers/pixverse.md
     workflow: 16
 ---
 
-يوفّر OpenClaw `pixverse` بصفته Plugin خارجيًا رسميًا لتوليد فيديو PixVerse المستضاف. يسجّل Plugin مزوّد `pixverse` مقابل عقد `videoGenerationProviders`.
+يوفّر OpenClaw ‏`pixverse` بوصفه Plugin خارجيًا رسميًا لتوليد فيديوهات PixVerse المستضافة. يسجّل Plugin موفّر `pixverse` وفق عقد `videoGenerationProviders`.
 
-| الخاصية           | القيمة                                                                |
-| ------------------ | -------------------------------------------------------------------- |
-| معرّف المزوّد        | `pixverse`                                                           |
-| حزمة Plugin     | `@openclaw/pixverse-provider`                                        |
-| متغير بيئة المصادقة       | `PIXVERSE_API_KEY`                                                   |
-| علم التهيئة    | `--auth-choice pixverse-api-key`                                     |
-| علم CLI المباشر    | `--pixverse-api-key <key>`                                           |
-| API                | PixVerse Platform API v2 (إرسال `video_id` مع استطلاع النتائج) |
-| النموذج الافتراضي      | `pixverse/v6`                                                        |
-| منطقة API الافتراضية | دولية                                                        |
+| الخاصية                 | القيمة                                                                |
+| ----------------------- | --------------------------------------------------------------------- |
+| معرّف الموفّر           | `pixverse`                                                            |
+| حزمة Plugin             | `@openclaw/pixverse-provider`                                         |
+| متغيّر بيئة المصادقة    | `PIXVERSE_API_KEY`                                                    |
+| خيار الإعداد الأولي     | `--auth-choice pixverse-api-key`                                      |
+| خيار CLI المباشر        | `--pixverse-api-key <key>`                                            |
+| API                     | PixVerse Platform API v2 (إرسال `video_id` ثم استطلاع النتيجة)        |
+| النموذج الافتراضي       | `pixverse/v6`                                                         |
+| منطقة API الافتراضية    | الدولية                                                               |
 
-## البدء
+## بدء الاستخدام
 
 <Steps>
-  <Step title="Install the plugin">
+  <Step title="ثبّت Plugin">
     ```bash
-    openclaw plugins install clawhub:@openclaw/pixverse-provider
+    openclaw plugins install @openclaw/pixverse-provider
     openclaw gateway restart
     ```
   </Step>
-  <Step title="Set the API key">
+  <Step title="عيّن مفتاح API">
     ```bash
     openclaw onboard --auth-choice pixverse-api-key
     ```
 
-    يسأل المعالج هل تريد استخدام نقطة النهاية الدولية
-    (`https://app-api.pixverse.ai/openapi/v2`) أم نقطة نهاية CN
-    (`https://app-api.pixverseai.cn/openapi/v2`) قبل كتابة `region` و
-    `baseUrl` في إعدادات المزوّد.
+    يطالبك المعالج باختيار نقطة النهاية الدولية أو الصينية (راجع منطقة API
+    أدناه) قبل كتابة `region` و`baseUrl` في إعدادات الموفّر.
+    تستخدم عمليات التشغيل غير التفاعلية (عند أخذ المفتاح من `--pixverse-api-key` أو `PIXVERSE_API_KEY`)
+    المنطقة الدولية افتراضيًا.
+
+    يعيّن الإعداد الأولي أيضًا `agents.defaults.videoGenerationModel.primary` إلى
+    `pixverse/v6` إذا لم يكن هناك نموذج فيديو افتراضي مُعدّ بعد.
 
   </Step>
-  <Step title="Set PixVerse as the default video provider">
+  <Step title="بدّل موفّر الفيديو الافتراضي الحالي (اختياري)">
     ```bash
     openclaw config set agents.defaults.videoGenerationModel.primary "pixverse/v6"
     ```
   </Step>
-  <Step title="Generate a video">
-    اطلب من الوكيل توليد فيديو. سيُستخدم PixVerse تلقائيًا.
+  <Step title="أنشئ فيديو">
+    اطلب من الوكيل إنشاء فيديو. سيُستخدم PixVerse تلقائيًا.
   </Step>
 </Steps>
 
 ## الأوضاع والنماذج المدعومة
 
-يعرض المزوّد نماذج توليد PixVerse عبر أداة الفيديو المشتركة في OpenClaw.
+يتيح الموفّر نماذج توليد PixVerse من خلال أداة الفيديو المشتركة في OpenClaw.
 
-| الوضع           | النماذج               | إدخال مرجعي         |
-| -------------- | -------------------- | ----------------------- |
-| تحويل النص إلى فيديو  | `v6` (افتراضي)، `c1` | لا شيء                    |
-| تحويل الصورة إلى فيديو | `v6` (افتراضي)، `c1` | صورة محلية أو بعيدة واحدة |
+| الوضع             | النماذج              | الإدخال المرجعي             |
+| ----------------- | -------------------- | --------------------------- |
+| تحويل النص إلى فيديو  | `v6` (افتراضي)، `c1` | لا يوجد                     |
+| تحويل الصورة إلى فيديو | `v6` (افتراضي)، `c1` | صورة محلية أو بعيدة واحدة   |
 
-تُرفع مراجع الصور المحلية إلى PixVerse قبل طلب تحويل الصورة إلى فيديو. تُمرّر عناوين URL للصور البعيدة عبر نقطة نهاية رفع الصور في PixVerse باسم `image_url`.
+تُرفع مراجع الصور المحلية إلى PixVerse قبل طلب تحويل الصورة إلى فيديو. وتُمرّر عناوين URL للصور البعيدة عبر نقطة نهاية رفع الصور في PixVerse بصيغة `image_url`.
 
-| الخيار          | القيم المدعومة                                                            |
-| --------------- | --------------------------------------------------------------------------- |
-| المدة        | 1-15 ثانية                                                                |
-| الدقة      | `360P`, `540P`, `720P`, `1080P`                                             |
-| نسبة العرض إلى الارتفاع    | `16:9`, `4:3`, `1:1`, `3:4`, `9:16`, `2:3`, `3:2`, `21:9` لتحويل النص إلى فيديو |
-| الصوت المولّد | `audio: true`                                                               |
+| الخيار            | القيم المدعومة                                                                                                                           |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| المدة             | من ثانية واحدة إلى 15 ثانية (الافتراضي 5)                                                                                               |
+| الدقة             | `360P`، `540P`، `720P`، `1080P` (الافتراضي `540P`؛ تُحوّل طلبات `480P` إلى `540P`)                                                       |
+| نسبة العرض إلى الارتفاع | `16:9` (افتراضي)، `4:3`، `1:1`، `3:4`، `9:16`، `2:3`، `3:2`، `21:9`؛ لتحويل النص إلى فيديو فقط، أما تحويل الصورة إلى فيديو فيتبع الصورة المصدر |
+| الصوت المُنشأ     | `audio: true`                                                                                                                            |
 
 <Note>
-توليد قوالب الصور في PixVerse غير معروض عبر `image_generate` حتى الآن. يعتمد ذلك API على معرّف القالب، بينما لا يتضمن عقد توليد الصور المشترك في OpenClaw حاليًا حزمة خيارات typed خاصة بـ PixVerse.
+لم يُتح توليد قوالب الصور في PixVerse عبر `image_generate` حتى الآن. تعتمد API هذه على معرّف القالب، بينما لا يتضمن عقد توليد الصور المشترك في OpenClaw حاليًا مجموعة خيارات مكتوبة خاصة بـ PixVerse.
 </Note>
 
-## خيارات المزوّد
+## خيارات الموفّر
 
-يقبل مزوّد الفيديو هذه المفاتيح الاختيارية الخاصة بالمزوّد:
+يقبل موفّر الفيديو المفاتيح الاختيارية التالية الخاصة بالموفّر:
 
-| الخيار                               | النوع   | التأثير                            |
-| ------------------------------------ | ------ | --------------------------------- |
-| `seed`                               | number | بذرة حتمية عند دعمها |
-| `negativePrompt` / `negative_prompt` | string | موجّه سلبي                   |
-| `quality`                            | string | جودة PixVerse مثل `720p`   |
-| `motionMode` / `motion_mode`         | string | وضع حركة تحويل الصورة إلى فيديو        |
-| `cameraMovement` / `camera_movement` | string | إعداد مسبق لحركة كاميرا PixVerse   |
-| `templateId` / `template_id`         | number | معرّف قالب PixVerse مفعّل    |
+| الخيار                               | النوع   | التأثير                                           |
+| ------------------------------------ | ------- | ------------------------------------------------- |
+| `seed`                               | رقم     | قيمة أولية حتمية من 0 إلى 2147483647              |
+| `negativePrompt` / `negative_prompt` | سلسلة   | موجّه سلبي                                        |
+| `quality`                            | سلسلة   | جودة PixVerse مثل `720p`                          |
+| `motionMode` / `motion_mode`         | سلسلة   | وضع الحركة لتحويل الصورة إلى فيديو (الافتراضي `normal`) |
+| `cameraMovement` / `camera_movement` | سلسلة   | إعداد مسبق لحركة كاميرا PixVerse                  |
+| `templateId` / `template_id`         | رقم     | معرّف قالب PixVerse المُفعّل                       |
 
-## الإعدادات
+## الإعداد
 
 ```json5
 {
@@ -107,25 +110,26 @@ x-i18n:
 }
 ```
 
-## الإعدادات المتقدمة
+## الإعداد المتقدم
 
 <AccordionGroup>
-  <Accordion title="API region">
-    يستخدم OpenClaw افتراضيًا PixVerse API الدولي. عيّن `models.providers.pixverse.region`
-    يدويًا عندما ينتمي مفتاحك إلى منطقة منصة PixVerse محددة، أو استخدم
-    `openclaw onboard --auth-choice pixverse-api-key` لاختيار منطقة في معالج الإعداد:
-
-    | قيمة المنطقة    | عنوان URL الأساسي لـ PixVerse API                         |
-    | --------------- | --------------------------------------------- |
+  <Accordion title="منطقة API">
+    | قيمة المنطقة   | عنوان URL الأساسي لـ PixVerse API            |
+    | -------------- | --------------------------------------------- |
     | `international` | `https://app-api.pixverse.ai/openapi/v2`      |
     | `cn`            | `https://app-api.pixverseai.cn/openapi/v2`    |
+
+    عيّن `models.providers.pixverse.region` يدويًا عندما ينتمي مفتاحك إلى
+    منطقة محددة في منصة PixVerse، أو شغّل
+    `openclaw onboard --auth-choice pixverse-api-key` لاختيار منطقة في
+    معالج الإعداد:
 
     ```json5
     {
       models: {
         providers: {
           pixverse: {
-            region: "cn", // "international" or "cn"
+            region: "cn", // "international" أو "cn"
             baseUrl: "https://app-api.pixverseai.cn/openapi/v2",
             models: [],
           },
@@ -136,9 +140,9 @@ x-i18n:
 
   </Accordion>
 
-  <Accordion title="Custom base URL">
-    عيّن `models.providers.pixverse.baseUrl` فقط عند التوجيه عبر وكيل موثوق ومتوافق.
-    تكون لـ `baseUrl` أسبقية على `region`.
+  <Accordion title="عنوان URL أساسي مخصص">
+    عيّن `models.providers.pixverse.baseUrl` فقط عند التوجيه عبر وكيل متوافق وموثوق.
+    تكون لـ `baseUrl` الأولوية على `region`.
 
     ```json5
     {
@@ -154,20 +158,21 @@ x-i18n:
 
   </Accordion>
 
-  <Accordion title="Task polling">
+  <Accordion title="استطلاع المهمة">
     يعيد PixVerse قيمة `video_id` من طلب التوليد. يستطلع OpenClaw
-    `/openapi/v2/video/result/{video_id}` حتى تنجح المهمة أو تفشل
-    أو تنتهي مهلتها.
+    المسار `/openapi/v2/video/result/{video_id}` كل 5 ثوانٍ حتى تنجح المهمة
+    أو تفشل أو تبلغ المهلة الزمنية (الافتراضي 5 دقائق؛ ويمكن تجاوزها باستخدام
+    `agents.defaults.videoGenerationModel.timeoutMs`).
   </Accordion>
 </AccordionGroup>
 
-## ذات صلة
+## ذو صلة
 
 <CardGroup cols={2}>
-  <Card title="Video generation" href="/ar/tools/video-generation" icon="video">
-    معلمات الأداة المشتركة، واختيار المزوّد، والسلوك غير المتزامن.
+  <Card title="توليد الفيديو" href="/ar/tools/video-generation" icon="video">
+    معلمات الأداة المشتركة واختيار الموفّر والسلوك غير المتزامن.
   </Card>
-  <Card title="Configuration reference" href="/ar/gateway/config-agents#agent-defaults" icon="gear">
-    إعدادات الوكيل الافتراضية، بما في ذلك نموذج توليد الفيديو.
+  <Card title="مرجع الإعداد" href="/ar/gateway/config-agents#agent-defaults" icon="gear">
+    الإعدادات الافتراضية للوكيل، بما في ذلك نموذج توليد الفيديو.
   </Card>
 </CardGroup>

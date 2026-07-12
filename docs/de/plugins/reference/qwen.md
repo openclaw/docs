@@ -1,13 +1,12 @@
 ---
 read_when:
     - Sie installieren, konfigurieren oder prüfen das qwen-Plugin.
-summary: Fügt OpenClaw Unterstützung für die Modell-Provider Qwen, Qwen Cloud, Model Studio, DashScope, Qwen Oauth, Qwen Portal, Qwen CLI, Qwen Token Plan und Bailian Token Plan hinzu.
+summary: Fügt OpenClaw Unterstützung für die Modell-Provider Qwen, Qwen Cloud, Model Studio, DashScope, Qwen OAuth, Qwen Portal, Qwen CLI, Qwen Token Plan und Bailian Token Plan hinzu.
 title: Qwen-Plugin
 x-i18n:
-    generated_at: "2026-07-12T15:37:40Z"
+    generated_at: "2026-07-12T02:00:30Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 3d3c529b0b98f0c7b2137754264e9acfddd90a245418ee105b9efc9541b1911b
     source_path: plugins/reference/qwen.md

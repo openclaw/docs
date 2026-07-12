@@ -1,35 +1,42 @@
 ---
 read_when:
-    - Je wilt de Gateway-service en/of lokale status verwijderen
-    - Je wilt eerst een dry-run
-summary: CLI-referentie voor `openclaw uninstall` (Gateway-service + lokale gegevens verwijderen)
+    - U wilt de Gateway-service en/of de lokale status verwijderen
+    - Je wilt eerst een proefuitvoering
+summary: CLI-referentie voor `openclaw uninstall` (Gateway-service en lokale gegevens verwijderen)
 title: Verwijderen
 x-i18n:
-    generated_at: "2026-06-27T17:23:51Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:47:30Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f90fa8cf513e2e8cd422c3b8a880e7fd20fb71131a3ec88260e765daa2ace543
+    source_hash: 1e2e3996cf6d5c0fd11e5054c8fe60f7f8d25047193bb13944ca170bf77b581a
     source_path: cli/uninstall.md
     workflow: 16
 ---
 
 # `openclaw uninstall`
 
-Verwijder de Gateway-service + lokale gegevens (CLI blijft behouden).
+Verwijder de Gateway-service en/of lokale gegevens. De CLI zelf wordt niet
+verwijderd; verwijder deze afzonderlijk via npm/pnpm.
 
-Opties:
+## Opties
 
-- `--service`: verwijder de Gateway-service
-- `--state`: verwijder status en configuratie
-- `--workspace`: verwijder werkruimtemappen
-- `--app`: verwijder de macOS-app
-- `--all`: verwijder service, status, werkruimte en app
-- `--yes`: sla bevestigingsprompts over
-- `--non-interactive`: schakel prompts uit; vereist `--yes`
-- `--dry-run`: toon acties zonder bestanden te verwijderen
+| Vlag                | Standaard | Beschrijving                                                   |
+| ------------------- | --------- | -------------------------------------------------------------- |
+| `--service`         | `false`   | Verwijder de Gateway-service.                                  |
+| `--state`           | `false`   | Verwijder status en configuratie.                              |
+| `--workspace`       | `false`   | Verwijder werkruimtemappen.                                    |
+| `--app`             | `false`   | Verwijder de macOS-app.                                        |
+| `--all`             | `false`   | Verkorte vorm voor `--service --state --workspace --app`.      |
+| `--yes`             | `false`   | Sla bevestigingsvragen over.                                   |
+| `--non-interactive` | `false`   | Schakel vragen uit; vereist `--yes`.                            |
+| `--dry-run`         | `false`   | Toon geplande acties zonder bestanden te verwijderen.          |
 
-Voorbeelden:
+Zonder bereikvlaggen vraagt een interactieve meervoudige selectie welke
+onderdelen moeten worden verwijderd (standaard zijn service, status en
+werkruimte vooraf geselecteerd).
+
+## Voorbeelden
 
 ```bash
 openclaw backup create
@@ -40,12 +47,12 @@ openclaw uninstall --all --yes
 openclaw uninstall --dry-run
 ```
 
-Opmerkingen:
+## Opmerkingen
 
-- Voer eerst `openclaw backup create` uit als je een herstelbare momentopname wilt voordat je status of werkruimten verwijdert.
-- `--state` behoudt geconfigureerde werkruimtemappen tenzij `--workspace` ook is geselecteerd.
-- `--all` is een verkorte optie om service, status, werkruimte en app samen te verwijderen.
-- `--non-interactive` vereist `--yes`.
+- Voer eerst `openclaw backup create` uit om een herstelbare momentopname te
+  maken voordat u status of werkruimten verwijdert.
+- `--state` behoudt geconfigureerde werkruimtemappen, tenzij ook `--workspace`
+  is geselecteerd.
 
 ## Gerelateerd
 

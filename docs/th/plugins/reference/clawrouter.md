@@ -4,11 +4,11 @@ read_when:
 summary: เพิ่มการรองรับผู้ให้บริการโมเดล ClawRouter ให้กับ OpenClaw
 title: Plugin ClawRouter
 x-i18n:
-    generated_at: "2026-07-04T04:11:25Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:26:44Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e7ba259cdc8545967e3472225595fb5c3e9248b7cbcbdba3ef56ea15e0fd1655
+    source_hash: 9e9b6bb73e00ead4df682d7c5873b1fd97f84c7c9fe29d4f511403c598651f82
     source_path: plugins/reference/clawrouter.md
     workflow: 16
 ---
@@ -20,11 +20,11 @@ x-i18n:
 ## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/clawrouter`
-- ช่องทางการติดตั้ง: รวมอยู่ใน OpenClaw
+- วิธีติดตั้ง: รวมอยู่ใน OpenClaw
 
-## พื้นผิวการใช้งาน
+## ส่วนที่รองรับ
 
-providers: clawrouter
+ผู้ให้บริการ: clawrouter; สัญญา: usageProviders
 
 ## เอกสารที่เกี่ยวข้อง
 

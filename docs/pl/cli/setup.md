@@ -1,47 +1,74 @@
 ---
 read_when:
-    - Przeprowadzasz konfigurację przy pierwszym uruchomieniu za pomocą kreatora onboardingu CLI
+    - Przeprowadzasz konfigurację początkową za pomocą kreatora wdrażania w CLI
     - Chcesz ustawić domyślną ścieżkę obszaru roboczego
-    - Potrzebujesz flagi konfiguracji tylko bazowej dla skryptów
-summary: Dokumentacja CLI dla `openclaw setup` (alias onboardingu, z podstawową konfiguracją dostępną przez flagę)
+    - Potrzebujesz flagi konfiguracji wyłącznie bazowej dla skryptów
+summary: Dokumentacja CLI dla `openclaw setup` (alias procesu wdrażania, z podstawową konfiguracją dostępną za pomocą flagi)
 title: Konfiguracja
 x-i18n:
-    generated_at: "2026-06-30T22:38:34Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:56:09Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 797c023d5ba27920fbea9828c9bb12f6c10d25dd3aa6fc68fe9c742f432ebb05
+    source_hash: fe3c631a2ed7328ab7e7d1438adff2d6112514b3fdcfb82923ba6ea04650c385
     source_path: cli/setup.md
     workflow: 16
 ---
 
 # `openclaw setup`
 
-Uruchamia pełny proces wdrażania w CLI. `openclaw setup` jest aliasem `openclaw onboard`; użyj `--baseline`, gdy chcesz tylko zainicjować foldery konfiguracji/przestrzeni roboczej bez kreatora.
+Polecenie `openclaw setup` uruchamia ten sam prowadzony proces wstępnej konfiguracji co `openclaw onboard`:
+najpierw weryfikuje i zapisuje konfigurację inferencji, a następnie uruchamia Crestodian w celu skonfigurowania
+obszaru roboczego, Gateway, kanałów, Skills oraz stanu systemu. Użyj `--baseline`, gdy
+chcesz jedynie zainicjować foldery konfiguracji i obszaru roboczego bez kreatora.
+
+W trybie prowadzonym `--workspace <dir>` określa obszar roboczy proponowany narzędziu Crestodian;
+zostaje on zapisany dopiero po zatwierdzeniu tej propozycji. Konfiguracja bazowa, klasyczna i
+nieinteraktywna zapisują podany obszar roboczy w ramach swoich standardowych procesów.
+
+Polecenie `setup` przyjmuje te same flagi wstępnej konfiguracji co `openclaw onboard`, w tym
+uwierzytelniania (`--auth-choice`, `--token`, flagi kluczy dostawców), Gateway
+(`--gateway-port`, `--gateway-bind`, `--gateway-auth`, `--install-daemon`),
+Tailscale (`--tailscale`), resetowania (`--reset`, `--reset-scope`), przebiegu
+(`--flow quickstart|advanced|manual|import`) oraz pomijania
+(`--skip-channels`, `--skip-skills`, `--skip-bootstrap`, `--skip-search`,
+`--skip-health`, `--skip-ui`, `--skip-hooks`). Pełny opis flag i
+przykłady użycia nieinteraktywnego zawierają strony [Wstępna konfiguracja](/pl/cli/onboard) oraz
+[Automatyzacja CLI](/pl/start/wizard-cli-automation). `openclaw onboard --modern` jest aliasem zgodności
+dla asystenta Crestodian z bramką inferencji i nie ma odpowiednika w poleceniu `setup`.
 
 <Note>
-`openclaw setup` jest przeznaczone do instalacji z modyfikowalną konfiguracją. W trybie Nix (`OPENCLAW_NIX_MODE=1`) OpenClaw odmawia zapisów konfiguracji, ponieważ plik konfiguracji jest zarządzany przez Nix. Użyj oficjalnego [nix-openclaw Quick Start](https://github.com/openclaw/nix-openclaw#quick-start) albo równoważnej konfiguracji źródłowej dla innego pakietu Nix.
+Polecenie `openclaw setup` służy do instalacji z modyfikowalną konfiguracją. W trybie Nix (`OPENCLAW_NIX_MODE=1`) OpenClaw odmawia zapisywania zmian konfiguracji, ponieważ plikiem konfiguracyjnym zarządza Nix. Skorzystaj z oficjalnej instrukcji [Szybki start z nix-openclaw](https://github.com/openclaw/nix-openclaw#quick-start) lub równoważnej konfiguracji źródłowej dla innego pakietu Nix.
 </Note>
 
 ## Opcje
 
-| Flaga                      | Opis                                                                                                          |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `--workspace <dir>`        | Katalog przestrzeni roboczej agenta (domyślnie `~/.openclaw/workspace`; zapisany jako `agents.defaults.workspace`). |
-| `--baseline`               | Tworzy podstawowe foldery konfiguracji/przestrzeni roboczej/sesji bez wdrażania.                              |
-| `--wizard`                 | Akceptowane dla zgodności; setup domyślnie uruchamia wdrażanie.                                                |
-| `--non-interactive`        | Uruchamia wdrażanie bez monitów.                                                                              |
-| `--accept-risk`            | Potwierdza ryzyko dostępu agenta do całego systemu; wymagane z `--non-interactive`.                           |
-| `--mode <mode>`            | Tryb wdrażania: `local` lub `remote`.                                                                         |
-| `--import-from <provider>` | Dostawca migracji uruchamiany podczas wdrażania.                                                              |
-| `--import-source <path>`   | Katalog domowy agenta źródłowego dla `--import-from`.                                                         |
-| `--import-secrets`         | Importuje obsługiwane sekrety podczas migracji wdrażania.                                                     |
-| `--remote-url <url>`       | Zdalny adres URL WebSocket Gateway.                                                                           |
-| `--remote-token <token>`   | Token zdalnego Gateway (opcjonalny).                                                                          |
+| Flaga                      | Opis                                                                                                             |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `--workspace <dir>`        | Propozycja obszaru roboczego w trybie prowadzonym; zapisywana bezpośrednio przez konfigurację bazową, klasyczną i nieinteraktywną. |
+| `--baseline`               | Tworzy bazowe foldery konfiguracji, obszaru roboczego i sesji bez wstępnej konfiguracji.                         |
+| `--wizard`                 | Akceptowana ze względu na zgodność; polecenie setup domyślnie uruchamia wstępną konfigurację.                    |
+| `--non-interactive`        | Uruchamia wstępną konfigurację bez monitów.                                                                      |
+| `--accept-risk`            | Potwierdza ryzyko związane z dostępem agenta do całego systemu; wymagane z `--non-interactive`.                  |
+| `--mode <mode>`            | Tryb wstępnej konfiguracji: `local` lub `remote`.                                                                |
+| `--flow <flow>`            | Przebieg wstępnej konfiguracji: `quickstart`, `advanced`, `manual` lub `import`.                                 |
+| `--reset`                  | Resetuje konfigurację, dane uwierzytelniające i sesje przed wstępną konfiguracją (obszar roboczy tylko z `--reset-scope full`). |
+| `--reset-scope <scope>`    | Zakres resetowania: `config`, `config+creds+sessions` lub `full`.                                                |
+| `--import-from <provider>` | Dostawca migracji uruchamianej podczas wstępnej konfiguracji.                                                    |
+| `--import-source <path>`   | Katalog domowy agenta źródłowego dla `--import-from`.                                                            |
+| `--import-secrets`         | Importuje obsługiwane sekrety podczas migracji w ramach wstępnej konfiguracji.                                  |
+| `--remote-url <url>`       | Adres URL WebSocket zdalnego Gateway.                                                                            |
+| `--remote-token <token>`   | Token zdalnego Gateway (opcjonalny).                                                                              |
+| `--json`                   | Wyświetla podsumowanie w formacie JSON.                                                                           |
 
-### Tryb podstawowy
+Opcje `--classic` i `--non-interactive` wzajemnie się wykluczają: tryb klasyczny otwiera
+kreator z monitami, natomiast konfiguracja nieinteraktywna korzysta ze ścieżki automatyzacji.
 
-`openclaw setup --baseline` zachowuje starsze zachowanie obejmujące tylko konfigurację podstawową: tworzy katalogi konfiguracji, przestrzeni roboczej i sesji, a następnie kończy działanie bez uruchamiania wdrażania.
+### Tryb bazowy
+
+Polecenie `openclaw setup --baseline` zachowuje starsze działanie ograniczone do konfiguracji bazowej:
+tworzy katalogi konfiguracji, obszaru roboczego i sesji, a następnie kończy działanie bez
+uruchamiania wstępnej konfiguracji.
 
 ## Przykłady
 
@@ -55,13 +82,13 @@ openclaw setup --non-interactive --accept-risk --mode remote --remote-url wss://
 
 ## Uwagi
 
-- Zwykłe `openclaw setup` uruchamia ten sam prowadzony proces co `openclaw onboard`.
-- Po podstawowej konfiguracji uruchom `openclaw setup` lub `openclaw onboard`, aby przejść pełny prowadzony proces, `openclaw configure` do ukierunkowanych zmian albo `openclaw channels add`, aby dodać konta kanałów.
-- Jeśli zostanie wykryty stan Hermes, interaktywne wdrażanie może automatycznie zaoferować migrację. Wdrażanie z importem wymaga świeżej konfiguracji; użyj [Migracja](/pl/cli/migrate), aby poza wdrażaniem przygotować plany próbne, kopie zapasowe i tryb nadpisywania.
+- Po konfiguracji bazowej uruchom `openclaw setup` lub `openclaw onboard`, aby przejść pełny prowadzony proces, `openclaw configure`, aby wprowadzić wybrane zmiany, albo `openclaw channels add`, aby dodać konta kanałów.
+- W przypadku wykrycia stanu Hermes interaktywna wstępna konfiguracja może automatycznie zaproponować migrację. Import w ramach wstępnej konfiguracji wymaga świeżej konfiguracji; użyj polecenia [Migracja](/pl/cli/migrate), aby poza wstępną konfiguracją tworzyć plany przebiegu próbnego i kopie zapasowe oraz korzystać z trybu nadpisywania.
 
 ## Powiązane
 
 - [Dokumentacja CLI](/pl/cli)
-- [Wdrażanie (CLI)](/pl/start/wizard)
+- [Wstępna konfiguracja](/pl/cli/onboard)
+- [Wstępna konfiguracja (CLI)](/pl/start/wizard)
 - [Pierwsze kroki](/pl/start/getting-started)
 - [Omówienie instalacji](/pl/install)

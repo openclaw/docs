@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Вы устанавливаете, настраиваете или проверяете plugin chutes
-summary: Добавляет поддержку провайдера моделей Chutes в OpenClaw.
+    - Вы устанавливаете, настраиваете или проверяете Plugin chutes
+summary: Добавляет в OpenClaw поддержку провайдера моделей Chutes.
 title: Plugin Chutes
 x-i18n:
-    generated_at: "2026-06-28T23:22:19Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:38:29Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 63f5196b0202e47ea95c3dd226546ff3e09083632e58ca780c608f53c2ba85af
@@ -15,7 +15,7 @@ x-i18n:
 
 # Plugin Chutes
 
-Добавляет в OpenClaw поддержку поставщика моделей Chutes.
+Добавляет в OpenClaw поддержку провайдера моделей Chutes.
 
 ## Распространение
 
@@ -24,8 +24,8 @@ x-i18n:
 
 ## Интерфейс
 
-providers: chutes
+провайдеры: chutes
 
 ## Связанная документация
 
-- [chutes](/ru/providers/chutes)
+- [Chutes](/ru/providers/chutes)

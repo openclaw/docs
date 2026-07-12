@@ -1,54 +1,49 @@
 ---
 read_when:
-    - Mengubah perilaku pembaruan, doctor, penerimaan paket, atau pemasangan plugin OpenClaw
+    - Mengubah perilaku pembaruan, doctor, penerimaan paket, atau instalasi plugin OpenClaw
     - Menyiapkan atau menyetujui kandidat rilis
-    - Pemecahan masalah pembaruan paket, pembersihan dependensi Plugin, atau regresi instalasi Plugin
+    - Men-debug pembaruan paket, pembersihan dependensi plugin, atau regresi instalasi plugin
 sidebarTitle: Update and plugin tests
-summary: Bagaimana OpenClaw memvalidasi jalur pembaruan, migrasi paket, dan perilaku instalasi/pembaruan plugin
-title: 'Pengujian: pembaruan dan Plugin'
+summary: Cara OpenClaw memvalidasi jalur pembaruan, migrasi paket, serta perilaku pemasangan/pembaruan plugin
+title: 'Pengujian: pembaruan dan plugin'
 x-i18n:
-    generated_at: "2026-06-27T17:36:11Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:18:05Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 9be94eab4be97c53022bdac3110da74a61cfa23db989964c803497305e5415db
+    source_hash: 4e930960b5819d2144467476cb473e62f236eca63e1d9941a6bc793b484e731c
     source_path: help/testing-updates-plugins.md
     workflow: 16
 ---
 
-Ini adalah checklist khusus untuk validasi pembaruan dan plugin. Tujuannya
-sederhana: membuktikan bahwa paket yang dapat diinstal bisa memperbarui status
-pengguna nyata, memperbaiki status legacy yang usang melalui `doctor`, dan tetap
-dapat menginstal, memuat, memperbarui, serta menghapus plugin dari sumber yang
-didukung.
+Daftar periksa untuk validasi pembaruan dan plugin: buktikan bahwa paket yang dapat diinstal bisa
+memperbarui status pengguna nyata, memperbaiki status legasi yang usang melalui `doctor`, dan tetap
+dapat menginstal, memuat, memperbarui, serta menghapus instalasi plugin dari setiap sumber yang didukung.
 
-Untuk peta test runner yang lebih luas, lihat [Pengujian](/id/help/testing). Untuk
-kunci penyedia live dan suite yang menyentuh jaringan, lihat [Pengujian live](/id/help/testing-live).
+Untuk peta runner pengujian yang lebih luas, lihat [Pengujian](/id/help/testing). Untuk kunci penyedia
+langsung dan rangkaian pengujian yang mengakses jaringan, lihat [Pengujian langsung](/id/help/testing-live).
 
-## Yang kita lindungi
-
-Pengujian pembaruan dan plugin melindungi kontrak berikut:
+## Yang kami lindungi
 
 - Tarball paket lengkap, memiliki `dist/postinstall-inventory.json` yang valid,
-  dan tidak bergantung pada file repo yang belum dipaketkan.
-- Pengguna dapat berpindah dari paket terbitan lama ke paket kandidat tanpa
-  kehilangan konfigurasi, agen, sesi, workspace, allowlist plugin, atau
-  konfigurasi channel.
-- `openclaw doctor --fix --non-interactive` memiliki jalur pembersihan dan
-  perbaikan legacy. Startup tidak boleh menambah migrasi kompatibilitas
-  tersembunyi untuk status plugin yang usang.
-- Instalasi plugin berfungsi dari direktori lokal, repo git, paket npm, dan
+  dan tidak bergantung pada berkas repositori yang belum dikemas.
+- Pengguna dapat berpindah dari paket lama yang telah dipublikasikan ke paket kandidat
+  tanpa kehilangan konfigurasi, agen, sesi, ruang kerja, daftar izin plugin, atau
+  konfigurasi kanal.
+- `openclaw doctor --fix --non-interactive` menangani jalur pembersihan dan perbaikan
+  legasi. Proses startup tidak boleh menambahkan migrasi kompatibilitas tersembunyi untuk
+  status plugin yang usang.
+- Instalasi plugin berfungsi dari direktori lokal, repositori git, paket npm, dan
   jalur registri ClawHub.
 - Dependensi npm plugin diinstal dalam satu proyek npm terkelola per plugin,
-  dipindai sebelum dipercaya, dan dihapus melalui npm saat uninstall agar
-  dependensi yang di-hoist tidak tertinggal.
-- Pembaruan plugin stabil ketika tidak ada yang berubah: catatan instalasi,
-  sumber yang diselesaikan, tata letak dependensi terinstal, dan status aktif
-  tetap utuh.
+  dipindai sebelum dipercaya, dan dihapus melalui `npm uninstall` saat
+  penghapusan instalasi plugin agar dependensi yang dinaikkan tidak tertinggal.
+- Pembaruan plugin tidak melakukan apa pun ketika tidak ada perubahan: catatan instalasi, sumber
+  yang diselesaikan, tata letak dependensi yang terinstal, dan status aktif tetap utuh.
 
 ## Pembuktian lokal selama pengembangan
 
-Mulai dari cakupan sempit:
+Mulai dari lingkup sempit:
 
 ```bash
 pnpm changed:lanes --json
@@ -56,33 +51,32 @@ pnpm check:changed
 pnpm test:changed
 ```
 
-Untuk perubahan instalasi plugin, uninstall, dependensi, atau inventaris paket,
-jalankan juga pengujian terfokus yang mencakup seam yang diedit:
+Untuk perubahan instalasi, penghapusan instalasi, dependensi, atau inventaris paket plugin, jalankan juga
+pengujian terfokus yang mencakup batas yang diedit:
 
 ```bash
 pnpm test src/plugins/uninstall.test.ts src/infra/package-dist-inventory.test.ts test/scripts/package-acceptance-workflow.test.ts
 ```
 
-Sebelum lane Docker paket mana pun menggunakan tarball, buktikan artefak paket:
+Sebelum jalur Docker paket menggunakan tarball, buktikan artefak paket:
 
 ```bash
 pnpm release:check
 ```
 
-`release:check` menjalankan pemeriksaan drift konfigurasi/dokumentasi/API,
-menulis inventaris dist paket, menjalankan `npm pack --dry-run`, menolak file
-terlarang yang ikut dipaketkan, menginstal tarball ke prefix sementara,
-menjalankan postinstall, dan melakukan smoke test pada entrypoint channel
-bawaan.
+`release:check` menjalankan pemeriksaan penyimpangan konfigurasi/dokumentasi/API (skema konfigurasi, garis dasar
+dokumentasi konfigurasi, garis dasar API dan ekspor SDK plugin, versi/inventaris plugin),
+menulis inventaris distribusi paket, menjalankan `npm pack --dry-run`, menolak
+berkas terlarang yang dikemas, menginstal tarball ke prefiks sementara, menjalankan pascainstalasi, dan
+melakukan uji asap terhadap titik masuk kanal bawaan.
 
-## Lane Docker
+## Jalur Docker
 
-Lane Docker adalah pembuktian tingkat produk. Lane ini menginstal atau
-memperbarui paket nyata di dalam container Linux dan memverifikasi perilaku
-melalui perintah CLI, startup Gateway, probe HTTP, status RPC, dan status
-filesystem.
+Jalur Docker merupakan pembuktian tingkat produk. Jalur ini menginstal atau memperbarui paket nyata
+di dalam kontainer Linux dan memverifikasi perilaku melalui perintah CLI,
+startup Gateway, pemeriksaan HTTP, status RPC, dan status sistem berkas.
 
-Gunakan lane terfokus saat iterasi:
+Gunakan jalur terfokus selama iterasi:
 
 ```bash
 pnpm test:docker:plugins
@@ -94,44 +88,41 @@ pnpm test:docker:update-restart-auth
 pnpm test:docker:update-migration
 ```
 
-Lane penting:
+Jalur penting:
 
-- `test:docker:plugins` memvalidasi smoke test instalasi plugin, instalasi
-  folder lokal, perilaku skip pembaruan folder lokal, folder lokal dengan
-  dependensi yang sudah terinstal, instalasi paket `file:`, instalasi git dengan
-  eksekusi CLI, pembaruan moving-ref git, instalasi registri npm dengan
-  dependensi transitif yang di-hoist, no-op pembaruan npm, penolakan metadata
-  paket npm yang malformed, instalasi fixture ClawHub lokal dan no-op pembaruan,
-  perilaku pembaruan marketplace, serta enable/inspect bundle Claude. Atur
-  `OPENCLAW_PLUGINS_E2E_CLAWHUB=0` untuk menjaga blok ClawHub hermetik/offline.
-- `test:docker:plugin-lifecycle-matrix` menginstal paket kandidat dalam
-  container kosong, menjalankan plugin npm melalui install, inspect, disable,
-  enable, upgrade eksplisit, downgrade eksplisit, dan uninstall setelah menghapus
-  kode plugin. Lane ini mencatat metrik RSS dan CPU untuk setiap fase.
-- `test:docker:plugin-update` memvalidasi bahwa plugin terinstal yang tidak
-  berubah tidak diinstal ulang atau kehilangan metadata instalasi selama
-  `openclaw plugins update`.
+- `test:docker:plugins` mencakup uji asap instalasi plugin, instalasi folder lokal,
+  perilaku melewati pembaruan folder lokal, folder lokal dengan
+  dependensi yang telah diinstal, instalasi paket `file:`, instalasi git dengan eksekusi CLI, pembaruan
+  referensi bergerak git, instalasi registri npm dengan dependensi transitif
+  yang dinaikkan, pembaruan npm tanpa operasi, penolakan metadata paket npm yang rusak,
+  instalasi fixture ClawHub lokal dan pembaruan tanpa operasi, perilaku pembaruan marketplace,
+  serta pengaktifan/pemeriksaan bundel Claude. Tetapkan `OPENCLAW_PLUGINS_E2E_CLAWHUB=0` untuk
+  menjaga blok ClawHub tetap hermetis/luring.
+- `test:docker:plugin-lifecycle-matrix` menginstal paket kandidat dalam kontainer
+  kosong, menjalankan plugin npm melalui instalasi, pemeriksaan, penonaktifan, pengaktifan,
+  peningkatan eksplisit, penurunan versi eksplisit, dan penghapusan instalasi setelah menghapus kode
+  plugin. Jalur ini mencatat metrik RSS dan CPU per fase.
+- `test:docker:plugin-update` memvalidasi bahwa plugin terinstal yang tidak berubah tidak
+  diinstal ulang atau kehilangan metadata instalasi selama `openclaw plugins update`.
 - `test:docker:upgrade-survivor` menginstal tarball kandidat di atas fixture
-  pengguna lama yang kotor, menjalankan pembaruan paket plus doctor
-  non-interaktif, lalu memulai Gateway loopback dan memeriksa pelestarian status.
-- `test:docker:published-upgrade-survivor` pertama menginstal baseline yang
-  sudah diterbitkan, mengonfigurasinya melalui resep `openclaw config set` yang
-  sudah dipanggang, memperbaruinya ke tarball kandidat, menjalankan doctor,
-  memeriksa pembersihan legacy, memulai Gateway, dan mem-probe `/healthz`,
-  `/readyz`, serta status RPC.
-- `test:docker:update-restart-auth` menginstal paket kandidat, memulai Gateway
-  token-auth terkelola, menghapus env auth gateway pemanggil untuk
-  `openclaw update --yes --json`, dan mewajibkan perintah pembaruan kandidat
-  me-restart Gateway sebelum probe normal.
-- `test:docker:update-migration` adalah lane pembaruan-terbitan yang berat pada
-  pembersihan. Lane ini dimulai dari status pengguna bergaya Discord/Telegram
-  yang sudah dikonfigurasi, menjalankan doctor baseline agar dependensi plugin
-  yang dikonfigurasi punya kesempatan untuk terwujud, menanam sisa dependensi
-  plugin legacy untuk plugin paket yang dikonfigurasi, memperbarui ke tarball
-  kandidat, dan mewajibkan doctor pasca-pembaruan menghapus root dependensi
-  legacy.
+  pengguna lama yang kotor, menjalankan pembaruan paket beserta doctor noninteraktif, kemudian memulai
+  Gateway local loopback dan memeriksa preservasi status.
+- `test:docker:published-upgrade-survivor` terlebih dahulu menginstal garis dasar yang dipublikasikan,
+  mengonfigurasinya melalui resep `openclaw config set` bawaan, memperbaruinya ke
+  tarball kandidat, menjalankan doctor, memeriksa pembersihan legasi, memulai Gateway, dan
+  memeriksa `/healthz`, `/readyz`, serta status RPC.
+- `test:docker:update-restart-auth` menginstal paket kandidat, memulai
+  Gateway autentikasi token terkelola, menghapus env autentikasi gateway pemanggil untuk
+  `openclaw update --yes --json`, dan mengharuskan perintah pembaruan kandidat untuk
+  memulai ulang Gateway sebelum pemeriksaan normal.
+- `test:docker:update-migration` adalah jalur pembaruan terpublikasi yang sarat pembersihan. Jalur ini
+  dimulai dari status pengguna bergaya Discord/Telegram yang telah dikonfigurasi, menjalankan
+  doctor garis dasar agar dependensi plugin yang dikonfigurasi mendapat kesempatan untuk terbentuk, menanam
+  sisa dependensi plugin legasi untuk plugin terkemas yang dikonfigurasi, memperbarui ke
+  tarball kandidat, dan mengharuskan doctor pascapembaruan menghapus akar dependensi
+  legasi.
 
-Varian survivor pembaruan-terbitan yang berguna:
+Varian survivor peningkatan terpublikasi yang berguna:
 
 ```bash
 OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPEC=openclaw@2026.4.23 \
@@ -143,16 +134,16 @@ OPENCLAW_UPGRADE_SURVIVOR_SCENARIO=bootstrap-persona \
 pnpm test:docker:published-upgrade-survivor
 ```
 
-Skenario yang tersedia adalah `base`, `feishu-channel`, `bootstrap-persona`,
-`plugin-deps-cleanup`, `configured-plugin-installs`,
-`stale-source-plugin-shadow`, `tilde-log-path`, dan `versioned-runtime-deps`. Dalam run agregat,
-`OPENCLAW_UPGRADE_SURVIVOR_SCENARIOS=reported-issues` diekspansi ke semua
-skenario berbentuk isu yang dilaporkan, termasuk migrasi instalasi plugin yang
-dikonfigurasi.
+Skenario yang tersedia: `base`, `acpx-openclaw-tools-bridge`, `feishu-channel`,
+`bootstrap-persona`, `channel-post-core-restore`, `plugin-deps-cleanup`,
+`configured-plugin-installs`, `stale-source-plugin-shadow`, `tilde-log-path`,
+dan `versioned-runtime-deps`. Dalam proses agregat, `OPENCLAW_UPGRADE_SURVIVOR_SCENARIOS=reported-issues`
+(alias `far-reaching`) diperluas ke semua skenario, termasuk migrasi
+instalasi plugin yang dikonfigurasi.
 
-Migrasi pembaruan penuh sengaja dipisahkan dari CI Rilis Penuh. Gunakan workflow
-manual `Update Migration` ketika pertanyaan rilisnya adalah "bisakah setiap
-rilis stabil yang diterbitkan sejak 2026.4.23 memperbarui ke kandidat ini dan
+Migrasi pembaruan penuh sengaja dipisahkan dari CI Rilis Penuh. Gunakan alur kerja
+manual `Update Migration` ketika pertanyaan rilisnya adalah "dapatkah setiap
+rilis stabil yang dipublikasikan sejak 2026.4.23 diperbarui ke kandidat ini dan
 membersihkan sisa dependensi plugin?":
 
 ```bash
@@ -164,44 +155,44 @@ gh workflow run update-migration.yml \
   -f scenarios=plugin-deps-cleanup
 ```
 
-## Package Acceptance
+## Penerimaan Paket
 
-Package Acceptance adalah gate paket native GitHub. Gate ini menyelesaikan satu
-paket kandidat menjadi tarball `package-under-test`, mencatat versi dan SHA-256,
-lalu menjalankan lane E2E Docker reusable terhadap tarball persis tersebut. Ref
-harness workflow terpisah dari ref sumber paket, sehingga logika pengujian
-terkini dapat memvalidasi rilis tepercaya yang lebih lama.
+Penerimaan Paket adalah gerbang paket bawaan GitHub. Proses ini menyelesaikan satu paket
+kandidat menjadi tarball `package-under-test`, mencatat versi dan SHA-256, kemudian
+menjalankan jalur E2E Docker yang dapat digunakan kembali terhadap tarball persis tersebut. Referensi harness alur kerja
+terpisah dari referensi sumber paket, sehingga logika pengujian saat ini dapat memvalidasi
+rilis tepercaya yang lebih lama.
 
 Sumber kandidat:
 
-- `source=npm`: validasi `openclaw@beta`, `openclaw@latest`, atau versi terbitan
-  yang persis.
-- `source=ref`: kemas branch, tag, atau commit tepercaya dengan harness terkini
+- `source=npm`: validasi `openclaw@extended-stable`, `openclaw@beta`,
+  `openclaw@latest`, atau versi terpublikasi yang tepat.
+- `source=ref`: kemas cabang, tag, atau commit tepercaya dengan harness saat ini
   yang dipilih.
 - `source=url`: validasi tarball HTTPS publik dengan `package_sha256` wajib.
-  Jalur ini menolak kredensial URL, port HTTPS non-default, hostname atau hasil
-  DNS/IP privat/internal, ruang IP penggunaan khusus, dan redirect yang tidak
-  aman.
+  Jalur ini menolak kredensial URL, port HTTPS nonbawaan, nama host atau
+  hasil DNS/IP privat/internal, ruang IP penggunaan khusus, dan pengalihan yang tidak aman.
 - `source=trusted-url`: validasi tarball HTTPS dengan `package_sha256` dan
-  `trusted_source_id` wajib terhadap kebijakan milik maintainer di
-  `.github/package-trusted-sources.json`. Gunakan ini untuk mirror
-  enterprise/privat alih-alih melemahkan `source=url` dengan switch
-  allow-private tingkat input. Auth Bearer, ketika dikonfigurasi oleh kebijakan,
-  menggunakan secret tetap `OPENCLAW_TRUSTED_PACKAGE_TOKEN`.
-- `source=artifact`: gunakan kembali tarball yang diunggah oleh run Actions lain.
+  `trusted_source_id` wajib terhadap kebijakan milik pengelola
+  di `.github/package-trusted-sources.json`. Gunakan ini untuk mirror perusahaan/privat
+  alih-alih melemahkan `source=url` dengan sakelar izinkan-privat pada tingkat input.
+  Autentikasi bearer, ketika dikonfigurasi oleh kebijakan, menggunakan rahasia tetap
+  `OPENCLAW_TRUSTED_PACKAGE_TOKEN`.
+- `source=artifact`: gunakan kembali tarball yang diunggah oleh proses Actions lain.
 
-Validasi Rilis Penuh menggunakan `source=artifact` secara default, yang dibangun
-dari SHA rilis yang diselesaikan. Untuk pembuktian pasca-terbit, teruskan
-`package_acceptance_package_spec=openclaw@YYYY.M.PATCH` agar matriks upgrade yang
-sama menargetkan paket npm yang sudah dikirim sebagai gantinya.
+Validasi Rilis Penuh menggunakan `source=artifact` secara bawaan, yang dibangun dari
+SHA rilis yang diselesaikan. Untuk pembuktian pascapublikasi, teruskan
+`package_acceptance_package_spec=openclaw@YYYY.M.PATCH` agar matriks peningkatan yang sama
+menargetkan paket npm yang telah dirilis.
 
-Pemeriksaan rilis memanggil Package Acceptance dengan set paket/pembaruan/restart/plugin:
+Pemeriksaan rilis memanggil Penerimaan Paket dengan kumpulan paket/pembaruan/mulai ulang/plugin:
 
 ```text
-doctor-switch update-channel-switch update-corrupt-plugin upgrade-survivor published-upgrade-survivor update-restart-auth plugins-offline plugin-update
+doctor-switch update-channel-switch skill-install update-corrupt-plugin upgrade-survivor published-upgrade-survivor root-managed-vps-upgrade update-restart-auth plugins-offline plugin-update plugin-binding-command-escape
 ```
 
-Ketika soak rilis diaktifkan, pemeriksaan itu juga meneruskan:
+Ketika perendaman rilis diaktifkan (dipaksakan aktif untuk `release_profile=stable` dan
+`full`), pemeriksaan juga meneruskan:
 
 ```text
 published_upgrade_survivor_baselines=last-stable-4 2026.4.23 2026.5.2 2026.4.15
@@ -209,27 +200,26 @@ published_upgrade_survivor_scenarios=reported-issues
 telegram_mode=mock-openai
 ```
 
-Ini menjaga migrasi paket, perpindahan channel pembaruan, toleransi plugin
-terkelola yang rusak, pembersihan dependensi plugin usang, cakupan plugin
-offline, perilaku pembaruan plugin, dan QA paket Telegram pada artefak yang sama
-yang sudah diselesaikan tanpa membuat gate paket rilis default menelusuri setiap
-rilis yang telah diterbitkan.
+Hal ini menjaga migrasi paket, peralihan kanal pembaruan, toleransi terhadap plugin terkelola
+yang rusak, pembersihan dependensi plugin usang, cakupan plugin luring, perilaku
+pembaruan plugin, dan QA paket Telegram pada artefak terselesaikan yang sama tanpa
+mengharuskan gerbang paket rilis bawaan melewati setiap rilis terpublikasi.
 
-`last-stable-4` diselesaikan ke empat rilis stabil OpenClaw terbaru yang
-diterbitkan di npm. Package acceptance rilis mem-pin `2026.4.23` sebagai batas
-kompatibilitas pembaruan plugin pertama, `2026.5.2` sebagai batas churn
-arsitektur plugin, dan `2026.4.15` sebagai baseline pembaruan-terbitan 2026.4.1x
-yang lebih lama; resolver menghapus duplikat pin yang sudah ada dalam empat
-terbaru. Untuk cakupan migrasi pembaruan-terbitan yang menyeluruh, gunakan
-`all-since-2026.4.23` dalam workflow Update Migration terpisah alih-alih CI
-Rilis Penuh. `release-history` tetap tersedia untuk sampling manual yang lebih
-luas ketika Anda juga menginginkan anchor legacy pra-tanggal.
+`last-stable-4` diselesaikan menjadi empat rilis OpenClaw stabil terbaru yang dipublikasikan di npm.
+Penerimaan paket rilis menetapkan `2026.4.23` sebagai batas kompatibilitas pembaruan
+plugin pertama, `2026.5.2` sebagai batas perubahan besar arsitektur plugin, dan
+`2026.4.15` sebagai garis dasar pembaruan terpublikasi 2026.4.1x yang lebih lama; resolver
+menghapus duplikasi sematan yang sudah termasuk dalam empat versi terbaru. Untuk cakupan migrasi
+pembaruan terpublikasi yang menyeluruh, gunakan `all-since-2026.4.23` dalam alur kerja Migrasi
+Pembaruan terpisah, bukan CI Rilis Penuh. `release-history` tetap
+tersedia untuk pengambilan sampel manual yang lebih luas ketika Anda juga menginginkan jangkar legasi
+sebelum tanggal tersebut.
 
-Ketika beberapa baseline survivor pembaruan-terbitan dipilih, workflow Docker
-reusable memecah setiap baseline menjadi job runner tertargetnya sendiri. Setiap
-shard baseline tetap menjalankan set skenario yang dipilih, tetapi log dan
-artefak tetap per-baseline dan waktu dinding dibatasi oleh shard paling lambat
-alih-alih satu job serial besar.
+Ketika beberapa garis dasar survivor peningkatan terpublikasi dipilih, alur kerja Docker
+yang dapat digunakan kembali membagi setiap garis dasar menjadi tugas runner tertarget tersendiri. Setiap
+shard garis dasar tetap menjalankan kumpulan skenario yang dipilih, tetapi log dan artefak tetap
+terpisah per garis dasar dan waktu keseluruhan dibatasi oleh shard paling lambat, bukan oleh satu tugas
+serial besar.
 
 Jalankan profil paket secara manual saat memvalidasi kandidat sebelum rilis:
 
@@ -245,64 +235,66 @@ gh workflow run package-acceptance.yml \
   -f telegram_mode=mock-openai
 ```
 
-Gunakan `suite_profile=product` ketika pertanyaan rilis mencakup channel MCP,
-pembersihan cron/subagent, pencarian web OpenAI, atau OpenWebUI. Gunakan
-`suite_profile=full` hanya ketika Anda memerlukan cakupan jalur rilis Docker
-penuh.
+Untuk canary extended-stable terpublikasi, tetapkan
+`package_spec=openclaw@extended-stable`. Penerimaan Paket menyelesaikan
+pemilih tersebut menjadi tarball yang tepat sebelum jalur Docker dijalankan.
 
-## Default rilis
+Gunakan `suite_profile=product` ketika pertanyaan rilis mencakup kanal MCP,
+pembersihan cron/subagen, pencarian web OpenAI, atau OpenWebUI. Gunakan `suite_profile=full`
+hanya ketika Anda memerlukan cakupan penuh jalur rilis Docker.
 
-Untuk kandidat rilis, tumpukan pembuktian default adalah:
+## Bawaan rilis
+
+Untuk kandidat rilis, tumpukan pembuktian bawaan adalah:
 
 1. `pnpm check:changed` dan `pnpm test:changed` untuk regresi tingkat sumber.
 2. `pnpm release:check` untuk integritas artefak paket.
-3. Profil Package Acceptance `package` atau lane paket kustom release-check
-   untuk kontrak instalasi/pembaruan/restart/plugin.
-4. Pemeriksaan rilis lintas-OS untuk perilaku installer, onboarding, dan platform
-   yang spesifik OS.
-5. Suite live hanya ketika surface yang berubah menyentuh perilaku penyedia atau
-   layanan hosted.
+3. Profil `package` Penerimaan Paket atau jalur paket khusus pemeriksaan rilis
+   untuk kontrak instalasi/pembaruan/mulai ulang/plugin.
+4. Pemeriksaan rilis lintas OS untuk perilaku penginstal, orientasi awal, dan platform
+   khusus OS.
+5. Rangkaian langsung hanya ketika permukaan yang diubah menyentuh perilaku penyedia atau
+   layanan terhost.
 
-Pada mesin maintainer, gate luas dan pembuktian produk Docker/paket harus
-berjalan di Testbox kecuali secara eksplisit melakukan pembuktian lokal.
+Pada mesin pengelola, gerbang luas dan pembuktian produk Docker/paket sebaiknya dijalankan
+di Testbox kecuali secara eksplisit melakukan pembuktian lokal.
 
-## Kompatibilitas legacy
+## Kompatibilitas legasi
 
-Kelonggaran kompatibilitas sempit dan dibatasi waktu:
+Kelonggaran kompatibilitas bersifat sempit dan dibatasi waktu:
 
 - Paket hingga `2026.4.25`, termasuk `2026.4.25-beta.*`, dapat menoleransi
-  celah metadata paket yang sudah dikirim di Package Acceptance.
-- Paket `2026.4.26` yang diterbitkan dapat memperingatkan untuk file stamp
-  metadata build lokal yang sudah dikirim.
-- Paket yang lebih baru harus memenuhi kontrak modern. Celah yang sama akan
-  gagal alih-alih memperingatkan atau melewati.
+  kekurangan metadata paket yang telah dirilis dalam Penerimaan Paket.
+- Paket `2026.4.26` yang dipublikasikan dapat memperingatkan tentang berkas stempel metadata
+  build lokal yang telah dirilis.
+- Paket yang lebih baru harus memenuhi kontrak modern. Kekurangan yang sama akan gagal alih-alih
+  hanya memperingatkan atau dilewati.
 
-Jangan tambahkan migrasi startup baru untuk bentuk lama ini. Tambahkan atau
-perluas perbaikan doctor, lalu buktikan dengan `upgrade-survivor`,
-`published-upgrade-survivor`, atau `update-restart-auth` ketika perintah
-pembaruan memiliki tanggung jawab restart.
+Jangan tambahkan migrasi startup baru untuk bentuk lama ini. Tambahkan atau perluas perbaikan
+doctor, lalu buktikan dengan `upgrade-survivor`, `published-upgrade-survivor`, atau
+`update-restart-auth` ketika perintah pembaruan menangani mulai ulang.
 
 ## Menambahkan cakupan
 
-Saat mengubah perilaku pembaruan atau plugin, tambahkan cakupan pada lapisan
-terendah yang dapat gagal karena alasan yang tepat:
+Saat mengubah perilaku pembaruan atau plugin, tambahkan cakupan pada lapisan terendah yang
+dapat gagal karena alasan yang tepat:
 
 - Logika jalur atau metadata murni: pengujian unit di samping sumber.
-- Inventaris paket atau perilaku file yang dipaketkan: pengujian `package-dist-inventory` atau pemeriksa tarball.
-- Perilaku instalasi/pembaruan CLI: asersi lane Docker atau fixture.
-- Perilaku migrasi rilis yang dipublikasikan: skenario `published-upgrade-survivor`.
-- Perilaku mulai ulang milik pembaruan: `update-restart-auth`.
+- Inventaris paket atau perilaku berkas yang dikemas: pengujian pemeriksa `package-dist-inventory` atau tarball.
+- Perilaku pemasangan/pembaruan CLI: asersi jalur Docker atau fixture.
+- Perilaku migrasi rilis yang telah dipublikasikan: skenario `published-upgrade-survivor`.
+- Perilaku mulai ulang yang dimiliki pembaruan: `update-restart-auth`.
 - Perilaku sumber registri/paket: fixture `test:docker:plugins` atau server fixture ClawHub.
-- Perilaku tata letak dependensi atau pembersihan: asersikan eksekusi runtime dan batas sistem berkas. Dependensi npm mungkin di-hoist di dalam proyek npm terkelola milik Plugin, jadi pengujian harus membuktikan bahwa proyek tersebut dipindai/dibersihkan alih-alih mengasumsikan hanya pohon `node_modules` lokal paket Plugin.
+- Tata letak dependensi atau perilaku pembersihan: asersikan eksekusi runtime dan batas sistem berkas. Dependensi npm dapat dinaikkan ke dalam proyek npm terkelola milik plugin, sehingga pengujian harus membuktikan bahwa proyek tersebut dipindai/dibersihkan alih-alih mengasumsikan hanya pohon `node_modules` lokal paket plugin.
 
-Jaga fixture Docker baru tetap hermetik secara default. Gunakan registri fixture lokal dan paket palsu kecuali tujuan pengujian adalah perilaku registri live.
+Secara default, pertahankan fixture Docker baru agar terisolasi. Gunakan registri fixture lokal dan paket palsu, kecuali tujuan pengujian adalah perilaku registri langsung.
 
-## Triage kegagalan
+## Triase kegagalan
 
 Mulailah dengan identitas artefak:
 
-- Ringkasan Package Acceptance `resolve_package`: sumber, versi, SHA-256, dan nama artefak.
-- Artefak Docker: `.artifacts/docker-tests/**/summary.json`, `failures.json`, log lane, dan perintah rerun.
-- Ringkasan upgrade survivor: `.artifacts/upgrade-survivor/summary.json`, termasuk versi baseline, versi kandidat, skenario, timing fase, dan langkah resep.
+- Ringkasan `resolve_package` Package Acceptance: sumber, versi, SHA-256, dan nama artefak.
+- Artefak Docker: `.artifacts/docker-tests/**/summary.json`, `failures.json`, log jalur, dan perintah untuk menjalankan ulang.
+- Ringkasan kelangsungan pemutakhiran: `.artifacts/upgrade-survivor/summary.json`, termasuk versi dasar, versi kandidat, skenario, waktu setiap fase, dan cakupan resep konfigurasi.
 
-Utamakan menjalankan ulang lane persis yang gagal dengan artefak paket yang sama daripada menjalankan ulang seluruh payung rilis.
+Utamakan menjalankan ulang jalur spesifik yang gagal dengan artefak paket yang sama daripada menjalankan ulang seluruh rangkaian rilis.

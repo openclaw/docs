@@ -2,141 +2,163 @@
 read_when:
     - Thêm hoặc sửa đổi Skills
     - Thay đổi cơ chế kiểm soát Skills, danh sách cho phép hoặc quy tắc tải
-    - Hiểu thứ tự ưu tiên của skill và hành vi snapshot
+    - Tìm hiểu thứ tự ưu tiên của Skills và hành vi ảnh chụp nhanh
 sidebarTitle: Skills
-summary: Skills dạy agent của bạn cách sử dụng công cụ. Tìm hiểu cách chúng được tải, cách hoạt động của thứ tự ưu tiên, và cách cấu hình gating, danh sách cho phép, cùng việc chèn môi trường.
+summary: Skills hướng dẫn tác nhân của bạn cách sử dụng các công cụ. Tìm hiểu cách chúng được nạp, cách thức hoạt động của thứ tự ưu tiên và cách cấu hình cơ chế kiểm soát, danh sách cho phép cũng như việc chèn biến môi trường.
 title: Skills
 x-i18n:
-    generated_at: "2026-07-04T06:38:37Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:28:07Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 81b0f8dfc6522994b2dba865e236d1de3220fe265698506332d3139e38d9c929
+    source_hash: 9eb87daab8a10caab2823e35d68293fe306d11a951e8a2b264cbbe3f2c3e8fff
     source_path: tools/skills.md
     workflow: 16
 ---
 
-Skills là các tệp hướng dẫn markdown dạy agent cách và thời điểm sử dụng
-công cụ. Mỗi skill nằm trong một thư mục chứa tệp `SKILL.md` có YAML
-frontmatter và phần thân markdown. OpenClaw tải các skill đi kèm cùng mọi phần
-ghi đè cục bộ, rồi lọc chúng khi tải dựa trên môi trường, cấu hình và sự hiện
-diện của binary.
+Skills là các tệp hướng dẫn Markdown chỉ cho tác nhân cách thức và thời điểm sử dụng
+công cụ. Mỗi Skills nằm trong một thư mục chứa tệp `SKILL.md` với phần đầu YAML
+và phần nội dung Markdown. OpenClaw tải các Skills đi kèm cùng mọi bản ghi đè
+cục bộ, rồi lọc chúng tại thời điểm tải dựa trên môi trường, cấu hình và sự hiện
+diện của tệp nhị phân.
 
 <CardGroup cols={2}>
-  <Card title="Creating skills" href="/vi/tools/creating-skills" icon="hammer">
-    Xây dựng và kiểm thử một skill tùy chỉnh từ đầu.
+  <Card title="Tạo Skills" href="/vi/tools/creating-skills" icon="hammer">
+    Xây dựng và kiểm thử một Skills tùy chỉnh từ đầu.
   </Card>
-  <Card title="Skill Workshop" href="/vi/tools/skill-workshop" icon="flask">
-    Rà soát và phê duyệt các đề xuất skill do agent soạn thảo.
+  <Card title="Xưởng Skills" href="/vi/tools/skill-workshop" icon="flask">
+    Xem xét và phê duyệt các đề xuất Skills do tác nhân soạn thảo.
   </Card>
-  <Card title="Skills config" href="/vi/tools/skills-config" icon="gear">
-    Lược đồ cấu hình `skills.*` đầy đủ và allowlist cho agent.
+  <Card title="Cấu hình Skills" href="/vi/tools/skills-config" icon="gear">
+    Lược đồ cấu hình `skills.*` đầy đủ và danh sách cho phép của tác nhân.
   </Card>
   <Card title="ClawHub" href="/clawhub" icon="cloud">
-    Duyệt và cài đặt skill cộng đồng.
+    Duyệt và cài đặt Skills từ cộng đồng.
   </Card>
 </CardGroup>
 
 ## Thứ tự tải
 
-OpenClaw tải từ các nguồn này, **theo thứ tự ưu tiên cao nhất trước**. Khi cùng
-một tên skill xuất hiện ở nhiều nơi, nguồn có độ ưu tiên cao nhất sẽ thắng.
+OpenClaw tải từ các nguồn sau, **theo thứ tự ưu tiên từ cao xuống thấp**. Khi cùng
+một tên Skills xuất hiện ở nhiều nơi, nguồn có mức ưu tiên cao nhất sẽ được dùng.
 
-| Mức ưu tiên | Nguồn                  | Đường dẫn                               |
-| ----------- | ---------------------- | --------------------------------------- |
-| 1 — cao nhất | Skill workspace        | `<workspace>/skills`                    |
-| 2           | Skill agent dự án      | `<workspace>/.agents/skills`            |
-| 3           | Skill agent cá nhân    | `~/.agents/skills`                      |
-| 4           | Skill được quản lý / cục bộ | `~/.openclaw/skills`                    |
-| 5           | Skill đi kèm           | đi kèm với bản cài đặt                  |
-| 6 — thấp nhất | Thư mục bổ sung       | `skills.load.extraDirs` + skill plugin |
+| Ưu tiên       | Nguồn                            | Đường dẫn                              |
+| ------------- | -------------------------------- | -------------------------------------- |
+| 1 — cao nhất  | Skills của không gian làm việc   | `<workspace>/skills`                   |
+| 2             | Skills tác nhân của dự án        | `<workspace>/.agents/skills`           |
+| 3             | Skills tác nhân cá nhân          | `~/.agents/skills`                     |
+| 4             | Skills được quản lý / cục bộ     | `~/.openclaw/skills`                   |
+| 5             | Skills đi kèm                    | được cung cấp cùng bản cài đặt         |
+| 6 — thấp nhất | Các thư mục bổ sung              | `skills.load.extraDirs` + Skills Plugin |
 
-Các gốc skill hỗ trợ bố cục theo nhóm. OpenClaw phát hiện một skill bất cứ khi
-nào `SKILL.md` xuất hiện ở bất kỳ đâu dưới một gốc đã cấu hình:
+Các thư mục gốc của Skills hỗ trợ bố cục theo nhóm. OpenClaw phát hiện một Skills
+bất cứ khi nào `SKILL.md` xuất hiện ở bất kỳ đâu bên dưới thư mục gốc đã cấu hình
+(sâu tối đa 6 cấp):
 
 ```text
-<workspace>/skills/research/SKILL.md          ✓ found as "research"
-<workspace>/skills/personal/research/SKILL.md ✓ also found as "research"
+<workspace>/skills/research/SKILL.md          ✓ được tìm thấy với tên "research"
+<workspace>/skills/personal/research/SKILL.md ✓ cũng được tìm thấy với tên "research"
 ```
 
-Đường dẫn thư mục chỉ dùng để tổ chức. Tên skill, lệnh slash và khóa allowlist
-đều lấy từ trường frontmatter `name` (hoặc tên thư mục khi thiếu `name`).
+Đường dẫn thư mục chỉ dùng để tổ chức. Tên và lệnh dấu gạch chéo của Skills
+được lấy từ trường `name` trong phần đầu (hoặc tên thư mục khi thiếu `name`).
+Danh sách cho phép của tác nhân (bên dưới) cũng khớp theo `name` này.
 
 <Note>
-  Thư mục `$CODEX_HOME/skills` gốc của Codex CLI **không** phải là gốc skill
-  của OpenClaw. Dùng `openclaw migrate plan codex` để kiểm kê các skill đó, rồi
-  `openclaw migrate codex` để sao chép chúng vào workspace OpenClaw của bạn.
+  Thư mục `$CODEX_HOME/skills` gốc của Codex CLI **không** phải là thư mục gốc
+  Skills của OpenClaw. Dùng `openclaw migrate plan codex` để kiểm kê các Skills
+  đó, sau đó dùng `openclaw migrate codex` để sao chép chúng vào không gian làm
+  việc OpenClaw của bạn.
 </Note>
 
-## Skill theo từng agent so với skill dùng chung
+## Skills được lưu trữ trên Node
 
-Trong thiết lập nhiều agent, mỗi agent có workspace riêng. Hãy dùng đường dẫn
-khớp với phạm vi hiển thị bạn muốn:
+Một Node không giao diện đã kết nối có thể công bố các Skills được cài đặt trong
+thư mục Skills OpenClaw đang hoạt động của nó (mặc định là
+`~/.openclaw/skills`; các giá trị ghi đè từ môi trường hồ sơ sẽ được áp dụng).
+Chúng xuất hiện trong danh sách Skills thông thường của tác nhân khi Node được
+kết nối và biến mất khi Node ngắt kết nối. Skills cục bộ hoặc của Gateway giữ
+nguyên tên khi xảy ra xung đột; Skills của Node nhận một tên xác định có tiền tố
+Node. Phiên bản v1 của Skills được lưu trữ trên Node yêu cầu tên thư mục phải
+khớp với trường `name` trong phần đầu của Skills.
 
-| Phạm vi       | Đường dẫn                    | Hiển thị với                |
-| ------------- | ---------------------------- | --------------------------- |
-| Theo agent    | `<workspace>/skills`         | Chỉ agent đó                |
-| Agent dự án   | `<workspace>/.agents/skills` | Chỉ agent của workspace đó  |
-| Agent cá nhân | `~/.agents/skills`           | Tất cả agent trên máy này   |
-| Dùng chung được quản lý | `~/.openclaw/skills` | Tất cả agent trên máy này   |
-| Thư mục bổ sung | `skills.load.extraDirs`    | Tất cả agent trên máy này   |
+Mục Skills bao gồm thông tin định vị Node. Các tệp, tham chiếu tương đối và tệp
+nhị phân của nó nằm trên Node, vì vậy hãy tải và thực thi bằng
+`exec host=node node=<node-id>`. Khởi động lại máy chủ Node sau khi thay đổi các
+tệp Skills của nó. Xem [Node](/vi/nodes#node-hosted-skills) để biết cách ghép nối và
+các tùy chọn tắt.
 
-## Allowlist cho agent
+## Skills theo từng tác nhân và Skills dùng chung
 
-**Vị trí** skill (độ ưu tiên) và **khả năng hiển thị** skill (agent nào có thể
-dùng nó) là các cơ chế kiểm soát riêng biệt. Dùng allowlist để giới hạn những
-skill mà một agent nhìn thấy, bất kể chúng được tải từ đâu.
+Trong thiết lập nhiều tác nhân, mỗi tác nhân có không gian làm việc riêng. Dùng
+đường dẫn phù hợp với phạm vi hiển thị mong muốn:
+
+| Phạm vi               | Đường dẫn                     | Hiển thị với                                  |
+| --------------------- | ----------------------------- | --------------------------------------------- |
+| Theo từng tác nhân    | `<workspace>/skills`          | Chỉ tác nhân đó                               |
+| Tác nhân của dự án    | `<workspace>/.agents/skills`  | Chỉ tác nhân của không gian làm việc đó       |
+| Tác nhân cá nhân      | `~/.agents/skills`            | Tất cả tác nhân trên máy này                  |
+| Dùng chung có quản lý | `~/.openclaw/skills`          | Tất cả tác nhân trên máy này                  |
+| Thư mục bổ sung       | `skills.load.extraDirs`       | Tất cả tác nhân trên máy này                  |
+
+## Danh sách cho phép của tác nhân
+
+**Vị trí** của Skills (mức ưu tiên) và **phạm vi hiển thị** của Skills (tác nhân
+nào có thể sử dụng) là các cơ chế kiểm soát riêng biệt. Dùng danh sách cho phép
+để hạn chế những Skills mà một tác nhân nhìn thấy, bất kể chúng được tải từ đâu.
 
 ```json5
 {
   agents: {
     defaults: {
-      skills: ["github", "weather"], // shared baseline
+      skills: ["github", "weather"], // đường cơ sở dùng chung
     },
     list: [
-      { id: "writer" }, // inherits github, weather
-      { id: "docs", skills: ["docs-search"] }, // replaces defaults entirely
-      { id: "locked-down", skills: [] }, // no skills
+      { id: "writer" }, // kế thừa github, weather
+      { id: "docs", skills: ["docs-search"] }, // thay thế hoàn toàn giá trị mặc định
+      { id: "locked-down", skills: [] }, // không có Skills
     ],
   },
 }
 ```
 
 <AccordionGroup>
-  <Accordion title="Allowlist rules">
-    - Bỏ qua `agents.defaults.skills` để mặc định không hạn chế skill nào.
+  <Accordion title="Quy tắc danh sách cho phép">
+    - Bỏ qua `agents.defaults.skills` để mặc định không hạn chế bất kỳ Skills nào.
     - Bỏ qua `agents.list[].skills` để kế thừa `agents.defaults.skills`.
-    - Đặt `agents.list[].skills: []` để không cung cấp skill nào cho agent đó.
-    - Danh sách `agents.list[].skills` không rỗng là tập **cuối cùng** — nó không
-      hợp nhất với mặc định.
-    - Allowlist có hiệu lực áp dụng trên quá trình xây dựng prompt, phát hiện
-      lệnh slash, đồng bộ sandbox và snapshot skill.
-    - Đây không phải là ranh giới ủy quyền shell host. Nếu cùng agent đó có thể
-      dùng `exec`, hãy ràng buộc shell đó riêng bằng sandboxing, cô lập người dùng
-      OS, deny/allowlist cho exec và thông tin xác thực theo từng tài nguyên.
+    - Đặt `agents.list[].skills: []` để không cung cấp Skills nào cho tác nhân đó.
+    - Danh sách `agents.list[].skills` không rỗng là tập hợp **cuối cùng** — nó
+      không hợp nhất với các giá trị mặc định.
+    - Danh sách cho phép có hiệu lực được áp dụng xuyên suốt quá trình tạo lời
+      nhắc, phát hiện lệnh dấu gạch chéo, đồng bộ sandbox và ảnh chụp nhanh Skills.
+    - Đây không phải là ranh giới ủy quyền cho shell của máy chủ. Nếu cùng tác
+      nhân đó có thể dùng `exec`, hãy hạn chế riêng shell bằng sandbox, cô lập
+      người dùng hệ điều hành, danh sách từ chối/cho phép thực thi và thông tin
+      xác thực riêng cho từng tài nguyên.
   </Accordion>
 </AccordionGroup>
 
-## Plugin và skill
+## Plugin và Skills
 
-Plugin có thể đi kèm skill riêng bằng cách liệt kê các thư mục `skills` trong
-`openclaw.plugin.json` (đường dẫn tương đối với gốc plugin). Skill plugin tải
-khi plugin được bật — ví dụ, plugin trình duyệt đi kèm skill
-`browser-automation` để điều khiển trình duyệt nhiều bước.
+Plugin có thể cung cấp Skills riêng bằng cách liệt kê các thư mục `skills` trong
+`openclaw.plugin.json` (đường dẫn tương đối với thư mục gốc của Plugin). Skills
+của Plugin được tải khi Plugin được bật — ví dụ: Plugin trình duyệt cung cấp một
+Skills `browser-automation` để điều khiển trình duyệt qua nhiều bước.
 
-Các thư mục skill plugin được hợp nhất ở cùng mức ưu tiên thấp như
-`skills.load.extraDirs`, vì vậy skill đi kèm, được quản lý, agent hoặc workspace
-trùng tên sẽ ghi đè chúng. Kiểm soát chúng qua `metadata.openclaw.requires.config`
-trên mục cấu hình của plugin.
+Các thư mục Skills của Plugin được hợp nhất ở cùng mức ưu tiên thấp như
+`skills.load.extraDirs`, vì vậy một Skills đi kèm, được quản lý, của tác nhân
+hoặc của không gian làm việc có cùng tên sẽ ghi đè chúng. Kiểm soát điều kiện
+hợp lệ riêng của một Skills Plugin qua `metadata.openclaw.requires` trong phần
+đầu của nó, giống như mọi Skills khác.
 
-Xem [Plugin](/vi/tools/plugin) và [Công cụ](/vi/tools) để biết toàn bộ hệ thống plugin.
+Xem [Plugin](/vi/tools/plugin) và [Công cụ](/vi/tools) để biết toàn bộ hệ thống Plugin.
 
-## Skill Workshop
+## Xưởng Skills
 
-[Skill Workshop](/vi/tools/skill-workshop) là hàng đợi đề xuất giữa agent và các
-tệp skill đang hoạt động của bạn. Khi agent phát hiện công việc có thể tái sử
-dụng, nó soạn một đề xuất thay vì ghi trực tiếp vào `SKILL.md`. Bạn rà soát và
-phê duyệt trước khi có bất kỳ thay đổi nào.
+[Xưởng Skills](/vi/tools/skill-workshop) là hàng đợi đề xuất giữa tác nhân và các
+tệp Skills đang hoạt động của bạn. Khi tác nhân phát hiện công việc có thể tái
+sử dụng, nó soạn thảo một đề xuất thay vì ghi trực tiếp vào `SKILL.md`. Bạn xem
+xét và phê duyệt trước khi có bất kỳ thay đổi nào.
 
 ```bash
 openclaw skills workshop list
@@ -144,142 +166,150 @@ openclaw skills workshop inspect <proposal-id>
 openclaw skills workshop apply <proposal-id>
 ```
 
-Xem [Skill Workshop](/vi/tools/skill-workshop) để biết toàn bộ vòng đời, tham chiếu
-CLI và cấu hình.
+Xem [Xưởng Skills](/vi/tools/skill-workshop) để biết toàn bộ vòng đời, tài liệu tham
+khảo CLI và cấu hình.
 
 ## Cài đặt từ ClawHub
 
-[ClawHub](https://clawhub.ai) là registry skill công khai. Dùng các lệnh
-`openclaw skills` để cài đặt và cập nhật, hoặc CLI `clawhub` để phát hành và
-đồng bộ.
+[ClawHub](https://clawhub.ai) là kho đăng ký Skills công khai. Dùng các lệnh
+`openclaw skills` để cài đặt và cập nhật, hoặc CLI `clawhub` để công bố và đồng
+bộ.
 
-| Hành động                          | Lệnh                                                   |
-| ---------------------------------- | ------------------------------------------------------ |
-| Cài đặt skill vào workspace        | `openclaw skills install @owner/<slug>`                |
-| Cài đặt từ kho Git                 | `openclaw skills install git:owner/repo@ref`           |
-| Cài đặt thư mục skill cục bộ       | `openclaw skills install ./path/to/skill --as my-tool` |
-| Cài đặt cho tất cả agent cục bộ    | `openclaw skills install @owner/<slug> --global`       |
-| Cập nhật tất cả skill workspace    | `openclaw skills update --all`                         |
-| Cập nhật skill dùng chung được quản lý | `openclaw skills update @owner/<slug> --global`        |
-| Cập nhật tất cả skill dùng chung được quản lý | `openclaw skills update --all --global`                |
-| Xác minh phong bì tin cậy của skill | `openclaw skills verify @owner/<slug>`                 |
-| In Skill Card đã tạo               | `openclaw skills verify @owner/<slug> --card`          |
-| Phát hành / đồng bộ qua ClawHub CLI | `clawhub sync --all`                                   |
+| Hành động                                      | Lệnh                                                   |
+| ---------------------------------------------- | ------------------------------------------------------ |
+| Cài đặt một Skills vào không gian làm việc     | `openclaw skills install @owner/<slug>`                |
+| Cài đặt từ kho lưu trữ Git                     | `openclaw skills install git:owner/repo@ref`           |
+| Cài đặt một thư mục Skills cục bộ              | `openclaw skills install ./path/to/skill --as my-tool` |
+| Cài đặt cho tất cả tác nhân cục bộ             | `openclaw skills install @owner/<slug> --global`       |
+| Cập nhật tất cả Skills của không gian làm việc | `openclaw skills update --all`                         |
+| Cập nhật một Skills dùng chung có quản lý      | `openclaw skills update @owner/<slug> --global`        |
+| Cập nhật mọi Skills dùng chung có quản lý      | `openclaw skills update --all --global`                |
+| Xác minh phạm vi tin cậy của Skills            | `openclaw skills verify @owner/<slug>`                 |
+| In Thẻ Skills đã tạo                           | `openclaw skills verify @owner/<slug> --card`          |
+| Công bố / đồng bộ qua CLI ClawHub              | `clawhub sync --all`                                   |
 
 <AccordionGroup>
-  <Accordion title="Install details">
+  <Accordion title="Chi tiết cài đặt">
     Theo mặc định, `openclaw skills install` cài đặt vào thư mục `skills/` của
-    workspace đang hoạt động. Thêm `--global` để cài đặt vào thư mục dùng chung
-    `~/.openclaw/skills`, hiển thị với tất cả agent cục bộ trừ khi allowlist của
-    agent thu hẹp phạm vi đó.
+    không gian làm việc đang hoạt động. Thêm `--global` để cài đặt vào thư mục
+    dùng chung `~/.openclaw/skills`, hiển thị với mọi tác nhân cục bộ trừ khi
+    danh sách cho phép của tác nhân thu hẹp phạm vi đó.
 
-    Cài đặt Git và cục bộ yêu cầu `SKILL.md` ở gốc nguồn. Slug lấy từ
-    frontmatter `name` của `SKILL.md` khi hợp lệ, rồi fallback về tên thư mục
-    hoặc kho. Dùng `--as <slug>` để ghi đè. `openclaw skills update` chỉ theo dõi
-    các bản cài đặt ClawHub — hãy cài đặt lại nguồn Git hoặc cục bộ để làm mới.
-
-  </Accordion>
-  <Accordion title="Verification and security scanning">
-    `openclaw skills verify @owner/<slug>` yêu cầu ClawHub cung cấp phong bì tin
-    cậy `clawhub.skill.verify.v1` của skill. Các skill ClawHub đã cài đặt được
-    xác minh dựa trên phiên bản và registry ghi trong `.clawhub/origin.json`.
-    Slug trần vẫn được chấp nhận cho các skill đã cài đặt hiện có hoặc không mơ
-    hồ, nhưng ref có chủ sở hữu giúp tránh nhầm lẫn nhà phát hành.
-
-    Trang skill ClawHub hiển thị trạng thái quét bảo mật mới nhất trước khi cài
-    đặt, với các trang chi tiết cho VirusTotal, ClawScan và phân tích tĩnh. Lệnh
-    thoát khác 0 khi ClawHub đánh dấu xác minh là thất bại. Nhà phát hành xử lý
-    dương tính giả qua bảng điều khiển ClawHub hoặc
-    `clawhub skill rescan @owner/<slug>`.
+    Các bản cài đặt từ Git và nguồn cục bộ yêu cầu `SKILL.md` ở thư mục gốc của
+    nguồn. Slug được lấy từ `name` trong phần đầu của `SKILL.md` khi hợp lệ, sau
+    đó dùng tên thư mục hoặc kho lưu trữ nếu không có. Dùng `--as <slug>` để ghi
+    đè. `openclaw skills update` chỉ theo dõi các bản cài đặt từ ClawHub — hãy
+    cài đặt lại nguồn Git hoặc cục bộ để làm mới chúng.
 
   </Accordion>
-  <Accordion title="Private archive installs">
-    Gateway client cần phân phối không qua ClawHub có thể stage một kho lưu trữ
-    skill dạng zip bằng `skills.upload.begin`, `skills.upload.chunk` và
-    `skills.upload.commit`, rồi cài đặt bằng
-    `skills.install({ source: "upload", ... })`. Đường dẫn này mặc định tắt và
-    yêu cầu `skills.install.allowUploadedArchives: true` trong `openclaw.json`.
-    Cài đặt ClawHub thông thường không bao giờ cần thiết lập đó.
+  <Accordion title="Xác minh và quét bảo mật">
+    `openclaw skills verify @owner/<slug>` yêu cầu ClawHub cung cấp phạm vi tin
+    cậy `clawhub.skill.verify.v1` của Skills. Các Skills ClawHub đã cài đặt được
+    xác minh theo phiên bản và kho đăng ký được ghi trong `.clawhub/origin.json`.
+    Các slug trần vẫn được chấp nhận đối với Skills đã cài đặt hoặc không mơ hồ,
+    nhưng tham chiếu kèm chủ sở hữu giúp tránh nhập nhằng về nhà phát hành.
+
+    Các trang Skills của ClawHub hiển thị trạng thái quét bảo mật mới nhất trước
+    khi cài đặt, cùng các trang chi tiết cho VirusTotal, ClawScan và phân tích
+    tĩnh. Lệnh thoát với mã khác 0 khi ClawHub đánh dấu xác minh là thất bại.
+    Nhà phát hành xử lý các kết quả dương tính giả qua bảng điều khiển ClawHub
+    hoặc `clawhub skill rescan @owner/<slug>`.
+
+  </Accordion>
+  <Accordion title="Cài đặt từ kho lưu trữ riêng tư">
+    Các máy khách Gateway cần phương thức phân phối ngoài ClawHub có thể chuẩn
+    bị một kho lưu trữ Skills dạng zip bằng `skills.upload.begin`,
+    `skills.upload.chunk` và `skills.upload.commit`, sau đó cài đặt bằng
+    `skills.install({ source: "upload", ... })`. Đường dẫn này mặc định bị tắt
+    và yêu cầu `skills.install.allowUploadedArchives: true` trong
+    `openclaw.json`. Các bản cài đặt ClawHub thông thường không bao giờ cần cài
+    đặt đó.
   </Accordion>
 </AccordionGroup>
 
 ## Bảo mật
 
 <Warning>
-  Hãy xem skill bên thứ ba là **mã không đáng tin cậy**. Đọc chúng trước khi
-  bật. Ưu tiên chạy trong sandbox cho đầu vào không đáng tin cậy và công cụ rủi
-  ro. Xem [Sandboxing](/vi/gateway/sandboxing) để biết các kiểm soát phía agent.
+  Hãy coi Skills của bên thứ ba là **mã không đáng tin cậy**. Đọc chúng trước
+  khi bật. Ưu tiên chạy trong sandbox đối với đầu vào không đáng tin cậy và công
+  cụ có rủi ro. Xem [Sandbox](/vi/gateway/sandboxing) để biết các cơ chế kiểm soát
+  phía tác nhân.
 </Warning>
 
 <AccordionGroup>
-  <Accordion title="Path containment">
-    Phát hiện skill trong workspace, agent dự án và thư mục bổ sung chỉ chấp
-    nhận các gốc skill có realpath đã phân giải vẫn nằm trong gốc đã cấu hình,
-    trừ khi `skills.load.allowSymlinkTargets` tin cậy rõ ràng một gốc đích.
-    Skill Workshop chỉ ghi qua các đích đáng tin cậy đó khi
-    `skills.workshop.allowSymlinkTargetWrites` được bật. `~/.openclaw/skills`
-    được quản lý và `~/.agents/skills` cá nhân có thể chứa thư mục skill symlink,
-    nhưng mọi realpath của `SKILL.md` vẫn phải nằm trong thư mục skill đã phân
-    giải của nó.
+  <Accordion title="Giới hạn đường dẫn">
+    Việc phát hiện Skills trong không gian làm việc, tác nhân của dự án và thư
+    mục bổ sung chỉ chấp nhận các thư mục gốc Skills có đường dẫn thực đã phân
+    giải nằm bên trong thư mục gốc được cấu hình, trừ khi
+    `skills.load.allowSymlinkTargets` tin cậy rõ ràng một thư mục gốc đích.
+    Xưởng Skills chỉ ghi thông qua các đích tin cậy đó khi
+    `skills.workshop.allowSymlinkTargetWrites` được bật.
+    Thư mục được quản lý `~/.openclaw/skills` và thư mục cá nhân
+    `~/.agents/skills` có thể chứa các thư mục Skills được liên kết tượng trưng,
+    nhưng đường dẫn thực của mọi `SKILL.md` vẫn phải nằm bên trong thư mục Skills
+    đã phân giải tương ứng.
   </Accordion>
-  <Accordion title="Operator install policy">
-    Cấu hình `security.installPolicy` để chạy một lệnh chính sách cục bộ đáng
-    tin cậy trước khi tiếp tục cài đặt skill. Chính sách nhận metadata và đường
-    dẫn nguồn đã stage, áp dụng cho ClawHub, upload, Git, cục bộ, cập nhật và
-    các đường dẫn trình cài đặt phụ thuộc, đồng thời fail closed khi lệnh không
-    thể trả về quyết định hợp lệ.
+  <Accordion title="Chính sách cài đặt của người vận hành">
+    Cấu hình `security.installPolicy` để chạy một lệnh chính sách cục bộ đáng tin
+    cậy trước khi tiếp tục cài đặt Skills. Chính sách nhận siêu dữ liệu và đường
+    dẫn nguồn đã chuẩn bị, áp dụng cho các đường dẫn ClawHub, tải lên, Git, cục
+    bộ, cập nhật và trình cài đặt phần phụ thuộc, đồng thời từ chối theo mặc định
+    khi lệnh không thể trả về một quyết định hợp lệ.
   </Accordion>
-  <Accordion title="Secret injection scope">
-    `skills.entries.*.env` và `skills.entries.*.apiKey` tiêm secret vào tiến
-    trình **host** chỉ cho lượt agent đó — không vào sandbox. Giữ secret khỏi
-    prompt và log.
+  <Accordion title="Phạm vi chèn bí mật">
+    `skills.entries.*.env` và `skills.entries.*.apiKey` chỉ chèn bí mật vào tiến
+    trình **máy chủ** trong lượt tác nhân đó — không chèn vào sandbox. Không đưa
+    bí mật vào lời nhắc và nhật ký.
   </Accordion>
 </AccordionGroup>
 
-Để biết mô hình đe dọa rộng hơn và checklist bảo mật, xem
+Để biết mô hình mối đe dọa rộng hơn và các danh sách kiểm tra bảo mật, hãy xem
 [Bảo mật](/vi/gateway/security).
 
 ## Định dạng SKILL.md
 
-Mỗi skill tối thiểu cần có `name` và `description` trong frontmatter:
+Mỗi Skills tối thiểu cần có `name` và `description` trong phần đầu:
 
 ```markdown
 ---
 name: image-lab
-description: Generate or edit images via a provider-backed image workflow
+description: Tạo hoặc chỉnh sửa hình ảnh thông qua quy trình hình ảnh được hỗ trợ bởi nhà cung cấp
 ---
 
-When the user asks to generate an image, use the `image_generate` tool...
+Khi người dùng yêu cầu tạo hình ảnh, hãy dùng công cụ `image_generate`...
 ```
 
 <Note>
-  OpenClaw tuân theo đặc tả [AgentSkills](https://agentskills.io). Trình phân
-  tích frontmatter chỉ hỗ trợ **khóa một dòng** — `metadata` phải là một đối
-  tượng JSON một dòng. Dùng `{baseDir}` trong phần thân để tham chiếu đường dẫn
-  thư mục skill.
+  OpenClaw tuân theo đặc tả [AgentSkills](https://agentskills.io). Frontmatter
+  trước tiên được phân tích cú pháp dưới dạng YAML; nếu thất bại, hệ thống sẽ
+  chuyển sang trình phân tích cú pháp chỉ hỗ trợ một dòng. Các khối `metadata`
+  lồng nhau (bao gồm ánh xạ YAML nhiều dòng) được làm phẳng thành chuỗi JSON và
+  phân tích lại dưới dạng JSON5, vì vậy dạng khối minh họa trong phần
+  [Điều kiện](#gating) sẽ hoạt động. Dùng `{baseDir}` trong phần nội dung để
+  tham chiếu đường dẫn thư mục skill.
 </Note>
 
-### Khóa frontmatter tùy chọn
+### Các khóa frontmatter tùy chọn
 
 <ParamField path="homepage" type="string">
-  URL hiển thị là "Trang web" trong giao diện macOS Skills. Cũng được hỗ trợ qua
-  `metadata.openclaw.homepage`.
+  URL được hiển thị dưới dạng "Website" trong giao diện Skills trên macOS. Cũng
+  được hỗ trợ qua `metadata.openclaw.homepage`.
 </ParamField>
 
 <ParamField path="user-invocable" type="boolean" default="true">
-  Khi là `true`, skill được hiển thị dưới dạng lệnh slash mà người dùng có thể
-  gọi.
+  Khi là `true`, skill được cung cấp dưới dạng lệnh gạch chéo mà người dùng có
+  thể gọi.
 </ParamField>
 
 <ParamField path="disable-model-invocation" type="boolean" default="false">
   Khi là `true`, OpenClaw không đưa hướng dẫn của skill vào prompt thông thường
-  của agent. Skill vẫn khả dụng dưới dạng lệnh slash khi `user-invocable` cũng
-  là `true`.
+  của tác tử. Skill vẫn khả dụng dưới dạng lệnh gạch chéo khi `user-invocable`
+  cũng là `true`.
 </ParamField>
 
 <ParamField path="command-dispatch" type='"tool"'>
-  Khi đặt thành `tool`, lệnh slash bỏ qua model và điều phối trực tiếp đến một
-  công cụ đã đăng ký.
+  Khi được đặt thành `tool`, lệnh gạch chéo sẽ bỏ qua mô hình và được chuyển
+  trực tiếp đến một công cụ đã đăng ký.
 </ParamField>
 
 <ParamField path="command-tool" type="string">
@@ -287,16 +317,17 @@ When the user asks to generate an image, use the `image_generate` tool...
 </ParamField>
 
 <ParamField path="command-arg-mode" type='"raw"' default="raw">
-  Đối với việc điều phối công cụ, chuyển tiếp chuỗi đối số thô đến công cụ mà
-  không phân tích cú pháp ở lõi. Công cụ nhận
+  Đối với việc chuyển tiếp đến công cụ, chuyển nguyên chuỗi đối số thô đến công
+  cụ mà không qua phân tích cú pháp của lõi. Công cụ nhận
   `{ command: "<raw args>", commandName: "<slash command>", skillName: "<skill name>" }`.
 </ParamField>
 
-## Kiểm soát điều kiện
+## Điều kiện
 
-OpenClaw lọc skills tại thời điểm tải bằng `metadata.openclaw` (JSON một dòng
-trong frontmatter). Một skill không có khối `metadata.openclaw` luôn đủ điều
-kiện trừ khi bị tắt rõ ràng.
+OpenClaw lọc các skill tại thời điểm tải bằng `metadata.openclaw` (đối tượng
+JSON5 được nhúng trong frontmatter, xem ghi chú phân tích cú pháp ở trên). Một
+skill không có khối `metadata.openclaw` luôn đủ điều kiện, trừ khi bị vô hiệu
+hóa rõ ràng.
 
 ```markdown
 ---
@@ -314,19 +345,21 @@ metadata:
 ```
 
 <ParamField path="always" type="boolean">
-  Khi là `true`, luôn bao gồm skill và bỏ qua mọi cổng điều kiện khác.
+  Khi là `true`, luôn bao gồm skill và bỏ qua tất cả các điều kiện khác.
 </ParamField>
 
 <ParamField path="emoji" type="string">
-  Emoji tùy chọn hiển thị trong giao diện Skills của macOS.
+  Emoji tùy chọn được hiển thị trong giao diện Skills trên macOS.
 </ParamField>
 
 <ParamField path="homepage" type="string">
-  URL tùy chọn hiển thị dưới dạng "Website" trong giao diện Skills của macOS.
+  URL tùy chọn được hiển thị dưới dạng "Website" trong giao diện Skills trên
+  macOS.
 </ParamField>
 
-<ParamField path="os" type='"darwin" | "linux" | "win32"'>
-  Bộ lọc nền tảng. Khi được đặt, skill chỉ đủ điều kiện trên các hệ điều hành được liệt kê.
+<ParamField path="os" type='("darwin" | "linux" | "win32")[]'>
+  Bộ lọc nền tảng. Khi được đặt, skill chỉ đủ điều kiện trên hệ điều hành có
+  trong danh sách.
 </ParamField>
 
 <ParamField path="requires.bins" type="string[]">
@@ -338,30 +371,34 @@ metadata:
 </ParamField>
 
 <ParamField path="requires.env" type="string[]">
-  Mỗi biến môi trường phải tồn tại trong tiến trình hoặc được cung cấp qua cấu hình.
+  Mỗi biến môi trường phải tồn tại trong tiến trình hoặc được cung cấp qua cấu
+  hình.
 </ParamField>
 
 <ParamField path="requires.config" type="string[]">
-  Mỗi đường dẫn `openclaw.json` phải có giá trị truthy.
+  Mỗi đường dẫn `openclaw.json` phải có giá trị đúng.
 </ParamField>
 
 <ParamField path="primaryEnv" type="string">
-  Tên biến môi trường liên kết với `skills.entries.<name>.apiKey`.
+  Tên biến môi trường được liên kết với `skills.entries.<name>.apiKey`.
 </ParamField>
 
 <ParamField path="install" type="object[]">
-  Đặc tả trình cài đặt tùy chọn được giao diện Skills của macOS sử dụng (brew / node / go / uv / download).
+  Các đặc tả trình cài đặt tùy chọn được giao diện Skills trên macOS sử dụng
+  (brew / node / go / uv / download).
 </ParamField>
 
 <Note>
   Các khối `metadata.clawdbot` cũ vẫn được chấp nhận khi không có
-  `metadata.openclaw`, để các skills đã cài đặt cũ vẫn giữ cổng phụ thuộc và
-  gợi ý trình cài đặt của chúng. Skills mới nên dùng `metadata.openclaw`.
+  `metadata.openclaw`, nhờ đó các skill cũ đã cài đặt vẫn giữ nguyên điều kiện
+  phụ thuộc và gợi ý trình cài đặt. Các skill mới nên dùng
+  `metadata.openclaw`.
 </Note>
 
 ### Đặc tả trình cài đặt
 
-Đặc tả trình cài đặt cho giao diện Skills của macOS biết cách cài đặt một phụ thuộc:
+Đặc tả trình cài đặt cho giao diện Skills trên macOS biết cách cài đặt một phần
+phụ thuộc:
 
 ```markdown
 ---
@@ -389,48 +426,54 @@ metadata:
 ```
 
 <AccordionGroup>
-  <Accordion title="Installer selection rules">
-    - Khi liệt kê nhiều trình cài đặt, gateway chọn một tùy chọn ưu tiên
-      (brew khi có sẵn, nếu không thì node).
-    - Nếu tất cả trình cài đặt là `download`, OpenClaw liệt kê từng mục để bạn
-      có thể xem mọi hiện vật có sẵn.
-    - Đặc tả có thể bao gồm `os: ["darwin"|"linux"|"win32"]` để lọc theo nền tảng.
-    - Cài đặt Node tuân theo `skills.install.nodeManager` trong `openclaw.json`
-      (mặc định: npm; tùy chọn: npm / pnpm / yarn / bun). Điều này chỉ ảnh hưởng
-      đến việc cài đặt skill; thời gian chạy Gateway vẫn nên là Node.
-    - Ưu tiên trình cài đặt của Gateway: Homebrew → uv → trình quản lý node đã cấu hình →
-      go → download.
+  <Accordion title="Quy tắc chọn trình cài đặt">
+    - Khi liệt kê nhiều trình cài đặt, Gateway chọn một phương án ưu tiên
+      (brew nếu khả dụng, nếu không thì node).
+    - Nếu tất cả trình cài đặt đều là `download`, OpenClaw liệt kê từng mục để
+      bạn có thể xem tất cả tạo tác khả dụng.
+    - Đặc tả có thể bao gồm `os: ["darwin"|"linux"|"win32"]` để lọc theo nền
+      tảng.
+    - Các bản cài đặt Node tuân theo `skills.install.nodeManager` trong
+      `openclaw.json` (mặc định: npm; các tùy chọn: npm / pnpm / yarn / bun).
+      Điều này chỉ ảnh hưởng đến việc cài đặt skill; môi trường chạy Gateway
+      vẫn nên là Node.
+    - Thứ tự ưu tiên trình cài đặt của Gateway: Homebrew → uv → trình quản lý
+      node đã cấu hình → go → download.
   </Accordion>
-  <Accordion title="Per-installer details">
-    - **Homebrew:** OpenClaw không tự động cài đặt Homebrew hoặc chuyển đổi
-      công thức brew thành lệnh gói hệ thống. Trong container Linux không có
-      `brew`, các trình cài đặt chỉ dùng brew sẽ bị ẩn; hãy dùng image tùy chỉnh
-      hoặc cài đặt phụ thuộc thủ công.
-    - **Go:** OpenClaw yêu cầu Go 1.21 trở lên cho việc cài đặt skill tự động và
-      giữ nguyên các thiết lập `GOBIN`, `GOPATH`, và `GOTOOLCHAIN` hiện có. Nếu
-      toolchain đã cấu hình không thể đáp ứng phiên bản Go mà một module yêu cầu,
-      onboarding sẽ nhóm skill với các điều kiện tiên quyết Go thủ công sau lần thử
-      cài đặt. Nếu thiếu `go` và Homebrew có sẵn, OpenClaw cài đặt Go qua Homebrew
-      trước và đặt `GOBIN` thành `bin` của Homebrew. Trên Linux,
-      OpenClaw có thể thay vào đó dùng `apt-get` với quyền root hoặc qua `sudo`
-      không cần mật khẩu khi ứng viên `golang-go` đã làm mới đáp ứng phiên bản tối thiểu.
-    - **Download:** `url` (bắt buộc), `archive` (`tar.gz` | `tar.bz2` | `zip`),
-      `extract` (mặc định: tự động khi phát hiện archive), `stripComponents`,
+  <Accordion title="Chi tiết theo từng trình cài đặt">
+    - **Homebrew:** OpenClaw không tự động cài đặt Homebrew hoặc chuyển đổi các
+      công thức brew thành lệnh gói hệ thống. Trong các bộ chứa Linux không có
+      `brew`, trình cài đặt chỉ hỗ trợ brew sẽ bị ẩn; hãy dùng ảnh tùy chỉnh
+      hoặc cài đặt phần phụ thuộc theo cách thủ công.
+    - **Go:** OpenClaw yêu cầu Go 1.21 trở lên để tự động cài đặt skill. Nếu
+      thiếu `go` và có Homebrew, OpenClaw sẽ cài đặt Go qua Homebrew trước;
+      trên Linux không có Homebrew, hệ thống có thể dùng `apt-get` với quyền
+      root hoặc thông qua `sudo` không cần mật khẩu nếu ứng viên `golang-go`
+      sau khi làm mới đáp ứng phiên bản tối thiểu. Lệnh `go install` thực tế
+      cho phần phụ thuộc luôn nhắm đến một thư mục bin chuyên dụng do OpenClaw
+      quản lý (`bin` của Homebrew trên bản cài đặt mới, nếu không thì
+      `~/.local/bin`) thay vì `GOBIN` đã cấu hình của bạn — các biến môi trường
+      `GOBIN`, `GOPATH` và `GOTOOLCHAIN` của bạn được đọc nhưng không bao giờ
+      bị ghi đè.
+    - **Tải xuống:** `url` (bắt buộc), `archive` (`tar.gz` | `tar.bz2` | `zip`),
+      `extract` (mặc định: tự động khi phát hiện tệp lưu trữ), `stripComponents`,
       `targetDir` (mặc định: `~/.openclaw/tools/<skillKey>`).
   </Accordion>
-  <Accordion title="Sandboxing notes">
-    `requires.bins` được kiểm tra trên **máy chủ** tại thời điểm tải skill. Nếu một agent
-    chạy trong sandbox, tệp nhị phân cũng phải tồn tại **bên trong container**.
-    Cài đặt nó qua `agents.defaults.sandbox.docker.setupCommand` hoặc một image
-    tùy chỉnh. `setupCommand` chạy một lần sau khi tạo container và yêu cầu
-    kết nối mạng ra ngoài, hệ thống tệp root có thể ghi, và người dùng root trong sandbox.
+  <Accordion title="Ghi chú về cách ly">
+    `requires.bins` được kiểm tra trên **máy chủ** tại thời điểm tải skill. Nếu
+    tác tử chạy trong môi trường cách ly, tệp nhị phân cũng phải tồn tại
+    **bên trong bộ chứa**. Hãy cài đặt tệp đó qua
+    `agents.defaults.sandbox.docker.setupCommand` hoặc một ảnh tùy chỉnh.
+    `setupCommand` chạy một lần sau khi tạo bộ chứa và yêu cầu quyền truy cập
+    mạng ra ngoài, hệ thống tệp gốc có thể ghi và người dùng root trong môi
+    trường cách ly.
   </Accordion>
 </AccordionGroup>
 
 ## Ghi đè cấu hình
 
-Bật/tắt và cấu hình các skills được đóng gói hoặc quản lý dưới `skills.entries` trong
-`~/.openclaw/openclaw.json`:
+Bật/tắt và cấu hình các skill đi kèm hoặc được quản lý trong `skills.entries`
+tại `~/.openclaw/openclaw.json`:
 
 ```json5
 {
@@ -453,90 +496,92 @@ Bật/tắt và cấu hình các skills được đóng gói hoặc quản lý d
 ```
 
 <ParamField path="enabled" type="boolean">
-  `false` tắt skill ngay cả khi được đóng gói hoặc đã cài đặt. Skill đóng gói `coding-agent`
-  là tùy chọn tham gia — đặt `skills.entries.coding-agent.enabled: true`
-  và bảo đảm một trong `claude`, `codex`, `opencode`, hoặc CLI được hỗ trợ khác
-  đã được cài đặt và xác thực.
+  `false` vô hiệu hóa skill ngay cả khi skill đó đi kèm hoặc đã được cài đặt.
+  Skill đi kèm `coding-agent` cần được chủ động bật — hãy đặt
+  `skills.entries.coding-agent.enabled: true` và đảm bảo `claude`, `codex`,
+  `opencode` hoặc một CLI được hỗ trợ khác đã được cài đặt và xác thực.
 </ParamField>
 
 <ParamField path="apiKey" type='string | { source, provider, id }'>
-  Trường tiện lợi cho skills khai báo `metadata.openclaw.primaryEnv`.
+  Trường tiện ích dành cho các skill khai báo `metadata.openclaw.primaryEnv`.
   Hỗ trợ chuỗi văn bản thuần hoặc đối tượng SecretRef.
 </ParamField>
 
 <ParamField path="env" type="Record<string, string>">
-  Biến môi trường được chèn cho lần chạy agent. Chỉ được chèn khi biến
-  chưa được đặt trong tiến trình.
+  Các biến môi trường được đưa vào lượt chạy của tác tử. Chỉ được đưa vào khi
+  biến đó chưa được đặt trong tiến trình.
 </ParamField>
 
 <ParamField path="config" type="object">
-  Túi tùy chọn cho các trường cấu hình tùy chỉnh theo từng skill.
+  Nhóm tùy chọn dành cho các trường cấu hình riêng của từng skill.
 </ParamField>
 
 <ParamField path="allowBundled" type="string[]">
-  Danh sách cho phép tùy chọn chỉ dành cho skills **được đóng gói**. Khi được đặt,
-  chỉ các skills được đóng gói trong danh sách mới đủ điều kiện. Skills được quản lý
-  và workspace không bị ảnh hưởng.
+  Danh sách cho phép tùy chọn chỉ dành cho các skill **đi kèm**. Khi được đặt,
+  chỉ các skill đi kèm có trong danh sách mới đủ điều kiện. Các skill được quản
+  lý và skill trong không gian làm việc không bị ảnh hưởng.
 </ParamField>
 
 <Note>
-  Theo mặc định, khóa cấu hình khớp với **tên skill**. Nếu một skill định nghĩa
-  `metadata.openclaw.skillKey`, hãy dùng khóa đó dưới `skills.entries`. Đặt
-  tên có dấu gạch nối trong dấu nháy: JSON5 cho phép khóa được trích dẫn.
+  Theo mặc định, các khóa cấu hình khớp với **tên skill**. Nếu một skill định
+  nghĩa `metadata.openclaw.skillKey`, hãy dùng khóa đó trong `skills.entries`.
+  Đặt tên có dấu gạch nối trong dấu ngoặc kép: JSON5 cho phép các khóa được đặt
+  trong dấu ngoặc kép.
 </Note>
 
-## Chèn môi trường
+## Đưa biến môi trường vào
 
-Khi một lần chạy agent bắt đầu, OpenClaw:
+Khi một lượt chạy của tác tử bắt đầu, OpenClaw:
 
 <Steps>
-  <Step title="Reads skill metadata">
-    OpenClaw phân giải danh sách skill hiệu lực cho agent, áp dụng các quy tắc
-    kiểm soát điều kiện, danh sách cho phép, và ghi đè cấu hình.
+  <Step title="Đọc siêu dữ liệu skill">
+    OpenClaw phân giải danh sách skill có hiệu lực cho tác tử, áp dụng các quy
+    tắc điều kiện, danh sách cho phép và ghi đè cấu hình.
   </Step>
-  <Step title="Injects env and API keys">
-    `skills.entries.<key>.env` và `skills.entries.<key>.apiKey` được áp dụng vào
-    `process.env` trong thời lượng của lần chạy.
+  <Step title="Đưa biến môi trường và khóa API vào">
+    `skills.entries.<key>.env` và `skills.entries.<key>.apiKey` được áp dụng cho
+    `process.env` trong suốt thời gian chạy.
   </Step>
-  <Step title="Builds the system prompt">
-    Skills đủ điều kiện được biên dịch thành một khối XML gọn và chèn vào
-    system prompt.
+  <Step title="Tạo prompt hệ thống">
+    Các skill đủ điều kiện được biên dịch thành một khối XML nhỏ gọn và đưa vào
+    prompt hệ thống.
   </Step>
-  <Step title="Restores the environment">
-    Sau khi lần chạy kết thúc, môi trường ban đầu được khôi phục.
+  <Step title="Khôi phục môi trường">
+    Sau khi lượt chạy kết thúc, môi trường ban đầu được khôi phục.
   </Step>
 </Steps>
 
 <Warning>
-  Việc chèn env chỉ giới hạn trong lần chạy agent trên **máy chủ**, không phải sandbox. Bên trong
-  sandbox, `env` và `apiKey` không có hiệu lực. Xem
-  [Cấu hình Skills](/vi/tools/skills-config#sandboxed-skills-and-env-vars) để biết cách
-  truyền secrets vào các lần chạy trong sandbox.
+  Việc đưa biến môi trường vào chỉ áp dụng cho lượt chạy tác tử trên **máy
+  chủ**, không áp dụng cho môi trường cách ly. Bên trong môi trường cách ly,
+  `env` và `apiKey` không có tác dụng. Xem
+  [Cấu hình Skills](/vi/tools/skills-config#sandboxed-skills-and-env-vars) để biết
+  cách truyền thông tin bí mật vào các lượt chạy trong môi trường cách ly.
 </Warning>
 
-Đối với backend `claude-cli` được đóng gói, OpenClaw cũng vật chất hóa cùng
-snapshot skill đủ điều kiện dưới dạng một Plugin Claude Code tạm thời và truyền nó qua
-`--plugin-dir`. Các backend CLI khác chỉ dùng danh mục prompt.
+Đối với backend `claude-cli` đi kèm, OpenClaw cũng hiện thực hóa cùng một bản
+chụp skill đủ điều kiện dưới dạng Plugin Claude Code tạm thời và truyền nó qua
+`--plugin-dir`. Các backend CLI khác chỉ sử dụng danh mục prompt.
 
-## Snapshot và làm mới
+## Bản chụp và làm mới
 
-OpenClaw chụp snapshot skills đủ điều kiện **khi một phiên bắt đầu** và tái sử dụng
-danh sách đó cho mọi lượt tiếp theo trong phiên. Thay đổi đối với skills hoặc cấu hình có
-hiệu lực ở phiên mới tiếp theo.
+OpenClaw chụp lại các skill đủ điều kiện **khi một phiên bắt đầu** và tái sử
+dụng danh sách đó cho tất cả các lượt tiếp theo trong phiên. Các thay đổi đối
+với skill hoặc cấu hình sẽ có hiệu lực trong phiên mới tiếp theo.
 
-Skills làm mới giữa phiên trong hai trường hợp:
+Skills được làm mới giữa phiên trong hai trường hợp:
 
-- Trình theo dõi skills phát hiện thay đổi `SKILL.md`.
+- Trình theo dõi skill phát hiện thay đổi trong `SKILL.md`.
 - Một node từ xa mới đủ điều kiện kết nối.
 
-Danh sách đã làm mới được dùng ở lượt agent tiếp theo. Nếu danh sách cho phép hiệu lực
-của agent thay đổi, OpenClaw làm mới snapshot để giữ các skills hiển thị
-được căn chỉnh.
+Danh sách đã làm mới được sử dụng trong lượt tác tử tiếp theo. Nếu danh sách cho
+phép có hiệu lực của tác tử thay đổi, OpenClaw sẽ làm mới bản chụp để duy trì
+sự đồng bộ của các skill hiển thị.
 
 <AccordionGroup>
-  <Accordion title="Skills watcher">
-    Theo mặc định, OpenClaw theo dõi các thư mục skill và tăng snapshot khi
-    tệp `SKILL.md` thay đổi. Cấu hình dưới `skills.load`:
+  <Accordion title="Trình theo dõi Skills">
+    Theo mặc định, OpenClaw theo dõi các thư mục skill và cập nhật bản chụp khi
+    các tệp `SKILL.md` thay đổi. Cấu hình trong `skills.load`:
 
     ```json5
     {
@@ -544,67 +589,78 @@ của agent thay đổi, OpenClaw làm mới snapshot để giữ các skills hi
         load: {
           extraDirs: ["~/Projects/agent-scripts/skills"],
           allowSymlinkTargets: ["~/Projects/manager/skills"],
-          watch: true,
-          watchDebounceMs: 250,
+          watch: true, // default
+          watchDebounceMs: 250, // default
         },
       },
     }
     ```
 
-    Dùng `allowSymlinkTargets` cho các bố cục symlink có chủ ý, nơi một symlink
-    gốc skill trỏ ra ngoài gốc đã cấu hình, ví dụ
+    Dùng `allowSymlinkTargets` cho các bố cục liên kết tượng trưng có chủ đích,
+    trong đó liên kết tượng trưng gốc của skill trỏ ra ngoài thư mục gốc đã cấu
+    hình, ví dụ
     `<workspace>/skills/manager -> ~/Projects/manager/skills`.
-    Chỉ bật `skills.workshop.allowSymlinkTargetWrites` khi Skill Workshop
-    cũng nên áp dụng đề xuất thông qua các đường dẫn symlink đáng tin cậy đó.
+    Chỉ bật `skills.workshop.allowSymlinkTargetWrites` khi Skill Workshop cũng
+    cần áp dụng các đề xuất thông qua những đường dẫn liên kết tượng trưng đáng
+    tin cậy đó.
 
   </Accordion>
-  <Accordion title="Remote macOS nodes (Linux gateway)">
-    Nếu Gateway chạy trên Linux nhưng một **node macOS** được kết nối với
-    `system.run` được phép, OpenClaw có thể coi skills chỉ dành cho macOS là đủ điều kiện khi
-    các tệp nhị phân bắt buộc hiện diện trên node đó. Agent nên chạy các
-    skills đó qua công cụ `exec` với `host=node`.
+  <Accordion title="Các node macOS từ xa (Gateway Linux)">
+    Nếu Gateway chạy trên Linux nhưng một **node macOS** được kết nối và cho
+    phép `system.run`, OpenClaw có thể coi các skill chỉ dành cho macOS là đủ
+    điều kiện khi các tệp nhị phân cần thiết có trên node đó. Tác tử nên chạy
+    các skill này qua công cụ `exec` với `host=node`.
 
-    Các node ngoại tuyến **không** làm cho skills chỉ từ xa hiển thị. Nếu một node ngừng
-    trả lời các probe bin, OpenClaw xóa các kết quả khớp bin đã lưu cache của node đó.
+    Các node ngoại tuyến **không** làm cho các skill chỉ dùng từ xa hiển thị.
+    Nếu một node ngừng phản hồi các phép dò tệp nhị phân, OpenClaw sẽ xóa các
+    kết quả khớp tệp nhị phân đã lưu trong bộ nhớ đệm của node đó.
 
   </Accordion>
 </AccordionGroup>
 
-## Tác động token
+## Ảnh hưởng đến token
 
-Khi skills đủ điều kiện, OpenClaw chèn một khối XML gọn vào system
-prompt. Chi phí là xác định:
+Khi các skill đủ điều kiện, OpenClaw đưa một khối XML nhỏ gọn vào prompt hệ
+thống. Chi phí có tính xác định và tăng tuyến tính theo từng skill:
 
-```text
-total = 195 + Σ (97 + len(name) + len(description) + len(filepath))
-```
+- **Chi phí cơ sở** (chỉ khi có từ 1 skill đủ điều kiện trở lên): một khối cố
+  định gồm phần giới thiệu và phần bao `<available_skills>`.
+- **Mỗi skill:** khoảng 97 ký tự + độ dài các trường `name`, `description` và
+  `location` của bạn.
+- Việc thoát ký tự XML chuyển `& < > " '` thành các thực thể, làm tăng thêm vài
+  ký tự cho mỗi lần xuất hiện.
+- Với khoảng 4 ký tự/token, 97 ký tự ≈ 24 token cho mỗi skill trước khi tính độ
+  dài các trường.
 
-- **Chi phí nền** (chỉ khi ≥ 1 skill): ~195 ký tự
-- **Mỗi skill:** ~97 ký tự + độ dài các trường `name`, `description`, và `location` của bạn
-- Escape XML mở rộng `& < > " '` thành thực thể, thêm vài ký tự cho mỗi lần xuất hiện
-- Với ~4 ký tự/token, 97 ký tự ≈ 24 token cho mỗi skill trước độ dài trường
+Nếu khối được kết xuất vượt quá ngân sách prompt đã cấu hình
+(`skills.limits.maxSkillsPromptChars`), trước tiên OpenClaw sẽ giữ lại nhiều định danh Skills
+(tên, vị trí và phiên bản) nhất có thể trong phạm vi mà định dạng rút gọn không có phần mô tả
+cho phép. Sau đó, OpenClaw sử dụng phần ngân sách còn lại cho các mô tả được rút ngắn. Nếu không
+còn ngân sách cho phần mô tả, các mô tả sẽ bị lược bỏ. Prompt sẽ bao gồm một
+ghi chú trỏ đến `openclaw skills check` bất cứ khi nào cần dùng định dạng rút gọn hoặc
+cắt bớt danh sách.
 
-Giữ mô tả ngắn gọn và có tính mô tả để giảm thiểu chi phí prompt.
+Giữ phần mô tả ngắn gọn và rõ nghĩa để giảm thiểu chi phí prompt.
 
 ## Liên quan
 
 <CardGroup cols={2}>
-  <Card title="Creating skills" href="/vi/tools/creating-skills" icon="hammer">
-    Hướng dẫn từng bước để viết một skill tùy chỉnh.
+  <Card title="Tạo Skills" href="/vi/tools/creating-skills" icon="hammer">
+    Hướng dẫn từng bước để tạo một Skills tùy chỉnh.
   </Card>
-  <Card title="Skill Workshop" href="/vi/tools/skill-workshop" icon="flask">
-    Hàng đợi đề xuất cho skills do agent soạn thảo.
+  <Card title="Xưởng Skills" href="/vi/tools/skill-workshop" icon="flask">
+    Hàng đợi đề xuất dành cho các Skills do agent soạn thảo.
   </Card>
-  <Card title="Skills config" href="/vi/tools/skills-config" icon="gear">
-    Lược đồ cấu hình `skills.*` đầy đủ và danh sách cho phép agent.
+  <Card title="Cấu hình Skills" href="/vi/tools/skills-config" icon="gear">
+    Lược đồ cấu hình `skills.*` đầy đủ và danh sách cho phép của agent.
   </Card>
-  <Card title="Slash commands" href="/vi/tools/slash-commands" icon="terminal">
-    Cách đăng ký và định tuyến slash command của skill.
+  <Card title="Lệnh gạch chéo" href="/vi/tools/slash-commands" icon="terminal">
+    Cách đăng ký và định tuyến các lệnh gạch chéo của Skills.
   </Card>
   <Card title="ClawHub" href="/clawhub" icon="cloud">
-    Duyệt và xuất bản skills trên registry công khai.
+    Duyệt và phát hành Skills trên sổ đăng ký công khai.
   </Card>
-  <Card title="Plugins" href="/vi/tools/plugin" icon="plug">
-    Plugins có thể phân phối skills cùng với các công cụ mà chúng ghi tài liệu.
+  <Card title="Các Plugin" href="/vi/tools/plugin" icon="plug">
+    Các Plugin có thể phân phối Skills cùng với những công cụ mà chúng lập tài liệu.
   </Card>
 </CardGroup>

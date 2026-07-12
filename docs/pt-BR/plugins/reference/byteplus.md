@@ -1,27 +1,27 @@
 ---
 read_when:
-    - Você está instalando, configurando ou auditando o Plugin byteplus
+    - Você está instalando, configurando ou auditando o plugin byteplus
 summary: Adiciona ao OpenClaw suporte aos provedores de modelos BytePlus e BytePlus Plan.
 title: Plugin BytePlus
 x-i18n:
-    generated_at: "2026-05-02T20:54:25Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T00:09:14Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: ecb4a427b1809c11631115b63e67bc7ce619191a0c840c13cf46cade27e76d4b
     source_path: plugins/reference/byteplus.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Plugin BytePlus
 
-Adiciona suporte aos provedores de modelo BytePlus e BytePlus Plan ao OpenClaw.
+Adiciona ao OpenClaw suporte aos provedores de modelos BytePlus e BytePlus Plan.
 
 ## Distribuição
 
 - Pacote: `@openclaw/byteplus-provider`
-- Rota de instalação: incluído no OpenClaw
+- Forma de instalação: incluído no OpenClaw
 
 ## Superfície
 
-providers: byteplus, byteplus-plan; contracts: videoGenerationProviders
+provedores: byteplus, byteplus-plan; contratos: videoGenerationProviders

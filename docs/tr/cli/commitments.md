@@ -1,25 +1,25 @@
 ---
 read_when:
-    - Çıkarımla belirlenen takip taahhütlerini incelemek istiyorsunuz
-    - Bekleyen kontrol bildirimlerini kapatmak istiyorsunuz
-    - Heartbeat'in ne iletebileceğini denetliyorsunuz
-summary: '`openclaw commitments` için CLI referansı (çıkarılan takipleri inceleyin ve kapatın)'
+    - Çıkarımsanan takip taahhütlerini incelemek istiyorsunuz
+    - Bekleyen yoklamaları kapatmak istiyorsunuz
+    - Heartbeat'in neler iletebileceğini denetliyorsunuz
+summary: '`openclaw commitments` için CLI başvurusu (çıkarılan takip görevlerini inceleme ve kaldırma)'
 title: '`openclaw commitments`'
 x-i18n:
-    generated_at: "2026-04-30T09:11:29Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:09:35Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 37d5e5dca25cf649a5069360aa4e41fcc33d042dea99f643b98c07189c58f21c
+    source_hash: 4323273a5d73975532f4728dc5e40c5d59e0c6d2e31a538f96bf3451e3fdf4d9
     source_path: cli/commitments.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 Çıkarılan takip taahhütlerini listeleyin ve yönetin.
 
-Taahhütler, konuşma bağlamından oluşturulan, katılım gerektiren ve kısa ömürlü takip bellekleridir. Kavramsal kılavuz için [Çıkarılan taahhütler](/tr/concepts/commitments) bölümüne bakın.
+Taahhütler isteğe bağlıdır (`commitments.enabled`); konuşma bağlamından oluşturulan ve Heartbeat tarafından iletilen kısa ömürlü takip anılarıdır. Kavramsal kılavuz ve yapılandırma için [Çıkarılan taahhütler](/tr/concepts/commitments) bölümüne bakın.
 
-Alt komut olmadan, `openclaw commitments` bekleyen taahhütleri listeler.
+Alt komut verilmediğinde `openclaw commitments`, bekleyen taahhütleri listeler.
 
 ## Kullanım
 
@@ -32,10 +32,11 @@ openclaw commitments dismiss <id...> [--json]
 ## Seçenekler
 
 - `--all`: yalnızca bekleyen taahhütler yerine tüm durumları gösterir.
-- `--agent <id>`: tek bir ajan kimliğine göre filtreler.
-- `--status <status>`: duruma göre filtreler. Değerler: `pending`, `sent`,
-  `dismissed`, `snoozed` veya `expired`.
-- `--json`: makine tarafından okunabilir JSON çıktısı verir.
+- `--agent <id>`: sonuçları tek bir aracı kimliğine göre filtreler.
+- `--status <status>`: duruma göre filtreler. Değerler: `pending`, `sent`, `dismissed`, `snoozed` veya `expired`. Bilinmeyen değerlerde hata ile çıkılır.
+- `--json`: makine tarafından okunabilir JSON çıktısı üretir.
+
+`dismiss`, belirtilen taahhüt kimliklerini `dismissed` olarak işaretler; böylece Heartbeat bunları iletmez.
 
 ## Örnekler
 
@@ -45,13 +46,13 @@ Bekleyen taahhütleri listeleyin:
 openclaw commitments
 ```
 
-Saklanan her taahhüdü listeleyin:
+Saklanan tüm taahhütleri listeleyin:
 
 ```bash
 openclaw commitments --all
 ```
 
-Tek bir ajana göre filtreleyin:
+Tek bir aracıya göre filtreleyin:
 
 ```bash
 openclaw commitments --agent main
@@ -63,7 +64,7 @@ Ertelenmiş taahhütleri bulun:
 openclaw commitments --status snoozed
 ```
 
-Bir veya daha fazla taahhüdü kapatın:
+Bir veya daha fazla taahhüdü iptal edin:
 
 ```bash
 openclaw commitments dismiss cm_abc123 cm_def456
@@ -77,16 +78,16 @@ openclaw commitments --all --json
 
 ## Çıktı
 
-Metin çıktısı şunları içerir:
+Metin çıktısı; taahhüt sayısını, depo yolunu, etkin filtreleri ve her taahhüt için bir satırı yazdırır:
 
 - taahhüt kimliği
 - durum
-- tür
-- en erken son tarih
-- kapsam
-- önerilen yoklama metni
+- tür (`event_check_in`, `deadline_check`, `care_check_in` veya `open_loop`)
+- en erken vade zamanı
+- kapsam (aracı/kanal/hedef)
+- önerilen durum sorma metni
 
-JSON çıktısı ayrıca taahhüt deposu yolunu ve saklanan kayıtların tamamını içerir.
+JSON çıktısı; sayıyı, etkin durum ve aracı filtrelerini, taahhüt deposunun yolunu ve saklanan kayıtların tamamını içerir.
 
 ## İlgili
 

@@ -1,55 +1,41 @@
 ---
 read_when:
-    - Chcesz analizować pliki PDF od agentów
+    - Chcesz analizować pliki PDF za pomocą agentów
     - Potrzebujesz dokładnych parametrów i limitów narzędzia PDF
-    - Debugujesz natywny tryb PDF względem zapasowej ekstrakcji
-summary: Analizuj jeden lub więcej dokumentów PDF z natywną obsługą dostawcy i zapasowym wyodrębnianiem
+    - Debugujesz natywny tryb PDF w porównaniu z awaryjnym wyodrębnianiem
+summary: Analizuj co najmniej jeden dokument PDF z natywną obsługą dostawcy i awaryjnym wyodrębnianiem
 title: Narzędzie PDF
 x-i18n:
-    generated_at: "2026-06-27T18:29:26Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:43:36Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6cce4328a7457f30b8c64abdcfa94b6a5d5649c2bcdfde3187288b11a0e154b1
+    source_hash: 54bde94a2b70fd209c70c13a1e75dc81c6cbebca7f6d56776bf37fa62cd78254
     source_path: tools/pdf.md
     workflow: 16
 ---
 
-`pdf` analizuje jeden lub więcej dokumentów PDF i zwraca tekst.
-
-Szybkie zachowanie:
-
-- Natywny tryb dostawcy dla dostawców modeli Anthropic i Google.
-- Rezerwowy tryb ekstrakcji dla innych dostawców (najpierw wyodrębnij tekst, potem obrazy stron, gdy są potrzebne).
-- Obsługuje pojedyncze (`pdf`) lub wielokrotne (`pdfs`) dane wejściowe, maks. 10 plików PDF na wywołanie.
+`pdf` analizuje co najmniej jeden dokument PDF i zwraca tekst. Korzysta z natywnej obsługi dokumentów w modelach Anthropic i Google, a w przypadku wszystkich pozostałych dostawców używa awaryjnie wyodrębniania tekstu i obrazów.
 
 ## Dostępność
 
-Narzędzie jest rejestrowane tylko wtedy, gdy OpenClaw może rozwiązać konfigurację modelu obsługującego PDF dla agenta:
+Narzędzie jest rejestrowane tylko wtedy, gdy OpenClaw może określić dla agenta model obsługujący pliki PDF. Kolejność określania:
 
-1. `agents.defaults.pdfModel`
-2. rezerwowo `agents.defaults.imageModel`
-3. rezerwowo rozwiązany model sesji/domyślny agenta
-4. jeśli natywni dostawcy PDF są oparci na uwierzytelnianiu, preferuj ich przed ogólnymi rezerwowymi kandydatami obrazowymi
+1. `agents.defaults.pdfModel` (jawnie określony model podstawowy i modele zapasowe)
+2. `agents.defaults.imageModel` (jawnie określony model podstawowy i modele zapasowe)
+3. Model określony dla sesji agenta lub model domyślny, jeśli jego dostawca obsługuje natywne dane wejściowe PDF (Anthropic, Google) albo ma już skonfigurowany model wizyjny
+4. Automatycznie wykryci dostawcy modeli obsługujących obrazy lub dane wizyjne, z dostępnym uwierzytelnianiem i pierwszeństwem dostawców natywnie obsługujących pliki PDF
 
-Jeśli nie można rozwiązać żadnego użytecznego modelu, narzędzie `pdf` nie jest udostępniane.
+Przed użyciem każdego kandydata zapasowego sprawdzane jest uwierzytelnianie, dlatego skonfigurowany `provider/model` jest uwzględniany tylko wtedy, gdy OpenClaw może uwierzytelnić agenta u tego dostawcy. Jeśli nie uda się określić żadnego dostępnego modelu, narzędzie `pdf` nie jest udostępniane.
 
-Uwagi dotyczące dostępności:
-
-- Łańcuch rezerwowy uwzględnia uwierzytelnianie. Skonfigurowany `provider/model` liczy się tylko wtedy, gdy
-  OpenClaw może faktycznie uwierzytelnić tego dostawcę dla agenta.
-- Natywni dostawcy PDF to obecnie **Anthropic** i **Google**.
-- Jeśli rozwiązany dostawca sesji/domyślny ma już skonfigurowany model vision/PDF,
-  narzędzie PDF używa go ponownie przed przejściem do innych dostawców opartych na uwierzytelnianiu.
-
-## Odniesienie danych wejściowych
+## Parametry wejściowe
 
 <ParamField path="pdf" type="string">
-Jedna ścieżka lub URL do pliku PDF.
+Jedna ścieżka lub adres URL pliku PDF.
 </ParamField>
 
 <ParamField path="pdfs" type="string[]">
-Wiele ścieżek lub URL-i do plików PDF, łącznie do 10.
+Wiele ścieżek lub adresów URL plików PDF, łącznie maksymalnie 10.
 </ParamField>
 
 <ParamField path="prompt" type="string" default="Analyze this PDF document.">
@@ -57,78 +43,60 @@ Prompt analizy.
 </ParamField>
 
 <ParamField path="pages" type="string">
-Filtr stron, np. `1-5` lub `1,3,7-9`.
+Filtr stron, na przykład `1-5` lub `1,3,7-9`. Nie jest obsługiwany w trybie natywnym dostawcy.
 </ParamField>
 
 <ParamField path="password" type="string">
-Hasło do zaszyfrowanych plików PDF w rezerwowym trybie ekstrakcji.
+Hasło do zaszyfrowanych plików PDF. Dotyczy każdego pliku PDF w żądaniu; jest używane tylko w awaryjnym trybie wyodrębniania.
 </ParamField>
 
 <ParamField path="model" type="string">
-Opcjonalne nadpisanie modelu w formie `provider/model`.
+Opcjonalne zastąpienie modelu w formacie `provider/model`.
 </ParamField>
 
 <ParamField path="maxBytesMb" type="number">
-Limit rozmiaru na plik PDF w MB. Domyślnie `agents.defaults.pdfMaxBytesMb` albo `10`.
+Limit rozmiaru pojedynczego pliku PDF w MB. Domyślnie `agents.defaults.pdfMaxBytesMb` albo `10`, jeśli wartość nie jest ustawiona.
 </ParamField>
 
-Uwagi dotyczące danych wejściowych:
+Uwagi:
 
-- `pdf` i `pdfs` są scalane i deduplikowane przed wczytaniem.
-- Jeśli nie podano żadnego pliku PDF, narzędzie zwraca błąd.
-- `pages` jest parsowane jako numery stron liczone od 1, deduplikowane, sortowane i ograniczane do skonfigurowanej maksymalnej liczby stron.
-- `password` dotyczy każdego pliku PDF w żądaniu i jest używane tylko przez rezerwowy tryb ekstrakcji.
-- `maxBytesMb` domyślnie przyjmuje `agents.defaults.pdfMaxBytesMb` albo `10`.
+- Wartości `pdf` i `pdfs` są scalane i deduplikowane przed wczytaniem; wymagane jest podanie co najmniej jednej z nich.
+- Wartość `pages` jest interpretowana jako numery stron liczone od 1, deduplikowana, sortowana i ograniczana do `agents.defaults.pdfMaxPages` (domyślnie `20`). Zakres, który nie obejmuje żadnych istniejących stron, powoduje błąd przed wywołaniem modelu.
 
-## Obsługiwane odniesienia do plików PDF
+## Obsługiwane odwołania do plików PDF
 
-- lokalna ścieżka pliku (w tym rozwijanie `~`)
-- URL `file://`
-- URL `http://` i `https://`
-- zarządzane przez OpenClaw przychodzące odwołania, takie jak `media://inbound/<id>`
+- Ścieżka do pliku lokalnego (w tym z rozwinięciem `~`)
+- Adres URL `file://`
+- Adres URL `http://` lub `https://`
+- Zarządzane przez OpenClaw odwołania do danych przychodzących, takie jak `media://inbound/<id>`
 
-Uwagi dotyczące odniesień:
+Inne schematy URI (na przykład `ftp://`) zwracają `details.error = "unsupported_pdf_reference"`. Zdalne adresy URL `http(s)` są odrzucane, gdy narzędzie działa w piaskownicy. Po włączeniu zasad dostępu do plików ograniczonych do przestrzeni roboczej lokalne ścieżki poza dozwolonymi katalogami głównymi są odrzucane; zarządzane odwołania do danych przychodzących oraz odtwarzane ścieżki w magazynie przychodzących multimediów OpenClaw pozostają dozwolone.
 
-- Inne schematy URI (na przykład `ftp://`) są odrzucane z `unsupported_pdf_reference`.
-- W trybie sandbox zdalne URL-e `http(s)` są odrzucane.
-- Przy włączonej polityce plików ograniczonej do workspace lokalne ścieżki plików poza dozwolonymi katalogami głównymi są odrzucane.
-- Zarządzane przychodzące odwołania i odtwarzane ścieżki w magazynie mediów przychodzących OpenClaw są dozwolone przy polityce plików ograniczonej do workspace.
+## Tryby wykonywania
 
-## Tryby wykonania
+### Tryb natywny dostawcy
 
-### Natywny tryb dostawcy
+Używany w przypadku dostawców `anthropic` i `google` (jedynych dostawców, którzy obecnie deklarują natywną obsługę dokumentów PDF). Surowe bajty każdego pliku PDF trafiają bezpośrednio do interfejsu API dostawcy jako natywny dokument lub osadzona część PDF.
 
-Tryb natywny jest używany dla dostawców `anthropic` i `google`.
-Narzędzie wysyła surowe bajty PDF bezpośrednio do API dostawców.
+Ograniczenia:
 
-Ograniczenia trybu natywnego:
+- Parametr `pages` nie jest obsługiwany; jeśli zostanie ustawiony, narzędzie zgłasza `pages is not supported with native PDF providers`.
+- Parametr `password` nie jest obsługiwany; jeśli zostanie ustawiony, narzędzie zgłasza `password is not supported with native PDF providers`. Do zaszyfrowanych plików PDF użyj modelu bez natywnej obsługi.
 
-- `pages` nie jest obsługiwane. Jeśli jest ustawione, narzędzie zwraca błąd.
-- `password` nie jest obsługiwane. Użyj nienatywnego modelu, aby analizować zaszyfrowane pliki PDF.
-- Obsługiwane są dane wejściowe z wieloma plikami PDF; każdy PDF jest wysyłany jako natywny blok dokumentu /
-  osadzona część PDF przed promptem.
+### Awaryjny tryb wyodrębniania
 
-### Rezerwowy tryb ekstrakcji
+Używany w przypadku wszystkich pozostałych dostawców.
 
-Tryb rezerwowy jest używany dla nienatywnych dostawców.
+1. Wyodrębnij tekst z wybranych stron (maksymalnie do `agents.defaults.pdfMaxPages`, domyślnie `20`) za pomocą dołączonego Pluginu `document-extract`, który używa pakietu `clawpdf` (PDFium WebAssembly) do wyodrębniania tekstu i obrazów.
+2. Jeśli wyodrębniony tekst ma mniej niż `200` znaków, wyrenderuj te same strony jako obrazy PNG. Łączny budżet renderowania wynosi `4,000,000` pikseli i jest współdzielony przez wszystkie strony wymagające obrazów (przydzielany proporcjonalnie na każdą pozostałą stronę, a nie osobno dla każdej strony), dlatego strony tekstowe, które zawierają już wystarczającą ilość tekstu, w ogóle nie są renderowane.
+3. Wyślij wyodrębniony tekst (oraz wszystkie wyrenderowane obrazy) wraz z promptem do wybranego modelu.
 
-Przepływ:
+Szczegóły:
 
-1. Wyodrębnij tekst z wybranych stron (do `agents.defaults.pdfMaxPages`, domyślnie `20`).
-2. Jeśli długość wyodrębnionego tekstu jest mniejsza niż `200` znaków, wyrenderuj wybrane strony jako obrazy PNG i dołącz je.
-3. Wyślij wyodrębnioną treść wraz z promptem do wybranego modelu.
-
-Szczegóły trybu rezerwowego:
-
-- Ekstrakcja obrazów stron używa budżetu pikseli `4,000,000`.
-- Zaszyfrowane pliki PDF można otworzyć za pomocą parametru najwyższego poziomu `password`.
-- Jeśli model docelowy nie obsługuje danych wejściowych obrazu i nie ma tekstu możliwego do wyodrębnienia, narzędzie zwraca błąd.
-- Jeśli ekstrakcja tekstu powiedzie się, ale ekstrakcja obrazów wymagałaby vision w
-  modelu obsługującym tylko tekst, OpenClaw porzuca wyrenderowane obrazy i kontynuuje z
-  wyodrębnionym tekstem.
-- Rezerwowa ekstrakcja używa dołączonego Pluginu `document-extract`. Plugin jest właścicielem
-  `clawpdf`, który zapewnia ekstrakcję tekstu i renderowanie obrazów przez PDFium
-  WebAssembly.
+- Zaszyfrowane pliki PDF są otwierane za pomocą parametru najwyższego poziomu `password`.
+- Jeśli model nie obsługuje obrazów wejściowych i nie można wyodrębnić tekstu, narzędzie zgłasza błąd.
+- Jeśli renderowanie obrazów się nie powiedzie, OpenClaw pomija obrazy i kontynuuje z wyodrębnionym tekstem.
+- Jeśli model docelowy obsługuje wyłącznie tekst, a podczas wyodrębniania powstały obrazy, OpenClaw pomija obrazy i wysyła tylko tekst.
 
 ## Konfiguracja
 
@@ -147,34 +115,43 @@ Szczegóły trybu rezerwowego:
 }
 ```
 
-Zobacz [Odniesienie konfiguracji](/pl/gateway/configuration-reference), aby poznać pełne szczegóły pól.
+| Klucz                           | Wartość domyślna | Znaczenie                                                                                                            |
+| ------------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `agents.defaults.pdfModel`      | nieustawiona     | Jawnie określone podstawowe i zapasowe modele PDF; w razie potrzeby używa `imageModel`, a następnie modelu sesji.    |
+| `agents.defaults.pdfMaxBytesMb` | `10`             | Limit rozmiaru pojedynczego pliku PDF w MB.                                                                           |
+| `agents.defaults.pdfMaxPages`   | `20`             | Maksymalna liczba stron przetwarzanych w pojedynczym pliku PDF.                                                       |
 
-## Szczegóły wyjścia
+Pełne informacje o polach zawiera [Dokumentacja konfiguracji](/pl/gateway/config-agents#agent-defaults).
 
-Narzędzie zwraca tekst w `content[0].text` oraz uporządkowane metadane w `details`.
+## Szczegóły danych wyjściowych
+
+Narzędzie zwraca tekst w `content[0].text`, a ustrukturyzowane metadane w `details`.
 
 Typowe pola `details`:
 
-- `model`: rozwiązane odniesienie modelu (`provider/model`)
-- `native`: `true` dla natywnego trybu dostawcy, `false` dla trybu rezerwowego
-- `attempts`: próby rezerwowe, które nie powiodły się przed sukcesem
+- `model`: określone odwołanie do modelu (`provider/model`)
+- `native`: `true` dla trybu natywnego dostawcy, `false` dla trybu awaryjnego
+- `attempts`: nieudane próby użycia modeli zapasowych poprzedzające powodzenie
 
 Pola ścieżek:
 
-- pojedynczy plik PDF na wejściu: `details.pdf`
-- wiele plików PDF na wejściu: `details.pdfs[]` z wpisami `pdf`
-- metadane przepisywania ścieżek sandbox (gdy ma zastosowanie): `rewrittenFrom`
+- Pojedynczy plik PDF na wejściu: `details.pdf`
+- Wiele plików PDF na wejściu: `details.pdfs[]` z wpisami `pdf`
+- Metadane przepisywania ścieżek w piaskownicy (gdy ma zastosowanie): `rewrittenFrom`
 
-## Zachowanie błędów
+## Obsługa błędów
 
-- Brak pliku PDF na wejściu: zgłasza `pdf required: provide a path or URL to a PDF document`
-- Zbyt wiele plików PDF: zwraca uporządkowany błąd w `details.error = "too_many_pdfs"`
-- Nieobsługiwany schemat odniesienia: zwraca `details.error = "unsupported_pdf_reference"`
-- Tryb natywny z `pages`: zgłasza jasny błąd `pages is not supported with native PDF providers`
+| Warunek                               | Wynik                                                          |
+| ------------------------------------- | -------------------------------------------------------------- |
+| Brak pliku PDF na wejściu             | Zgłasza `pdf required: provide a path or URL to a PDF document` |
+| Więcej niż 10 plików PDF              | `details.error = "too_many_pdfs"`                              |
+| Nieobsługiwany schemat odwołania      | `details.error = "unsupported_pdf_reference"`                  |
+| `pages` z natywnym dostawcą           | Zgłasza `pages is not supported with native PDF providers`      |
+| `password` z natywnym dostawcą        | Zgłasza `password is not supported with native PDF providers`   |
 
 ## Przykłady
 
-Pojedynczy PDF:
+Pojedynczy plik PDF:
 
 ```json
 {
@@ -192,7 +169,7 @@ Wiele plików PDF:
 }
 ```
 
-Model rezerwowy z filtrem stron:
+Model zapasowy z filtrowaniem stron:
 
 ```json
 {
@@ -203,7 +180,7 @@ Model rezerwowy z filtrem stron:
 }
 ```
 
-Zaszyfrowany PDF z rezerwową ekstrakcją:
+Zaszyfrowany plik PDF z awaryjnym wyodrębnianiem:
 
 ```json
 {
@@ -214,7 +191,7 @@ Zaszyfrowany PDF z rezerwową ekstrakcją:
 }
 ```
 
-## Powiązane
+## Powiązane materiały
 
-- [Przegląd narzędzi](/pl/tools) - wszystkie dostępne narzędzia agenta
-- [Odniesienie konfiguracji](/pl/gateway/config-agents#agent-defaults) - konfiguracja pdfMaxBytesMb i pdfMaxPages
+- [Przegląd narzędzi](/pl/tools) — wszystkie dostępne narzędzia agenta
+- [Dokumentacja konfiguracji](/pl/gateway/config-agents#agent-defaults) — konfiguracja `pdfMaxBytesMb` i `pdfMaxPages`

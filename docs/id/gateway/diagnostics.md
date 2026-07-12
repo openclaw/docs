@@ -1,27 +1,27 @@
 ---
 read_when:
     - Menyiapkan laporan bug atau permintaan dukungan
-    - Men-debug crash, restart, tekanan memori, atau payload yang terlalu besar pada Gateway
+    - Men-debug crash, mulai ulang, tekanan memori, atau payload berukuran terlalu besar pada Gateway
     - Meninjau data diagnostik apa yang direkam atau disunting
 summary: Buat bundel diagnostik Gateway yang dapat dibagikan untuk laporan bug
 title: Ekspor diagnostik
 x-i18n:
-    generated_at: "2026-06-27T17:29:00Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:09:46Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ce431bafa51a245f2a3829074b0ca92e2d30ddfc1ae9738eed46a4e51ae98208
+    source_hash: ee9014da15368971d8257f62707f013b579e607fa0d8413db51253612f0c0957
     source_path: gateway/diagnostics.md
     workflow: 16
 ---
 
-OpenClaw dapat membuat zip diagnostik lokal untuk laporan bug. Zip ini menggabungkan
-status Gateway yang disanitasi, kesehatan, log, bentuk konfigurasi, dan peristiwa
-stabilitas terbaru tanpa payload.
+OpenClaw dapat membuat `.zip` diagnostik lokal untuk laporan bug: status Gateway
+yang telah disanitasi, kesehatan, log, struktur konfigurasi, dan peristiwa stabilitas
+terbaru tanpa payload.
 
-Perlakukan bundel diagnostik seperti rahasia sampai Anda meninjaunya. Bundel ini
-dirancang untuk menghilangkan atau menyunting payload dan kredensial, tetapi tetap
-merangkum log Gateway lokal dan status runtime tingkat host.
+Perlakukan bundel diagnostik seperti rahasia hingga ditinjau. Payload dan kredensial
+disunting secara bawaan, tetapi bundel tersebut tetap merangkum log Gateway lokal dan
+status runtime tingkat host.
 
 ## Mulai cepat
 
@@ -29,7 +29,7 @@ merangkum log Gateway lokal dan status runtime tingkat host.
 openclaw gateway diagnostics export
 ```
 
-Perintah ini mencetak path zip yang ditulis. Untuk memilih path:
+Mencetak jalur zip yang ditulis. Pilih jalur keluaran:
 
 ```bash
 openclaw gateway diagnostics export --output openclaw-diagnostics.zip
@@ -41,103 +41,89 @@ Untuk otomatisasi:
 openclaw gateway diagnostics export --json
 ```
 
-## Perintah chat
+## Perintah obrolan
 
-Pemilik dapat menggunakan `/diagnostics [note]` di chat untuk meminta ekspor Gateway lokal.
-Gunakan ini ketika bug terjadi dalam percakapan nyata dan Anda menginginkan satu
-laporan yang dapat disalin-tempel untuk dukungan:
+Pemilik dapat menjalankan `/diagnostics [note]` dalam percakapan apa pun untuk meminta
+ekspor Gateway lokal sebagai satu laporan dukungan yang dapat disalin dan ditempel:
 
-1. Kirim `/diagnostics` di percakapan tempat Anda melihat masalah. Tambahkan
-   catatan singkat jika membantu, misalnya `/diagnostics bad tool choice`.
-2. OpenClaw mengirim pembuka diagnostik dan meminta satu persetujuan exec
-   eksplisit. Persetujuan ini menjalankan `openclaw gateway diagnostics export --json`.
-   Jangan setujui diagnostik melalui aturan allow-all.
-3. Setelah disetujui, OpenClaw membalas dengan laporan yang dapat ditempel berisi path
-   bundel lokal, ringkasan manifes, catatan privasi, dan id sesi yang relevan.
+1. Kirim `/diagnostics`, dengan catatan singkat jika perlu (`/diagnostics bad tool choice`).
+2. OpenClaw mengirim pengantar dan meminta satu persetujuan eksekusi eksplisit, yang
+   menjalankan `openclaw gateway diagnostics export --json`. Jangan menyetujui diagnostik
+   melalui aturan izinkan-semua.
+3. Setelah disetujui, OpenClaw membalas dengan jalur bundel lokal, ringkasan manifes,
+   catatan privasi, dan ID sesi yang relevan.
 
-Di chat grup, pemilik tetap dapat menjalankan `/diagnostics`, tetapi OpenClaw tidak
-memposting detail diagnostik kembali ke chat bersama. OpenClaw mengirim pembuka,
-prompt persetujuan, hasil ekspor Gateway, dan perincian sesi/utas Codex kepada
-pemilik melalui rute persetujuan pribadi. Grup hanya menerima pemberitahuan singkat
-bahwa alur diagnostik dikirim secara pribadi. Jika OpenClaw tidak dapat menemukan rute
-pemilik pribadi, perintah gagal tertutup dan meminta pemilik menjalankannya dari DM.
+Dalam obrolan grup, pemilik tetap dapat menjalankan `/diagnostics`, tetapi OpenClaw
+mengirim hasil ekspor, permintaan persetujuan, serta perincian sesi/utas Codex kepada
+pemilik secara privat. Grup hanya melihat pemberitahuan singkat bahwa diagnostik telah
+dikirim secara privat. Jika tidak tersedia rute privat ke pemilik, perintah gagal secara
+tertutup dan meminta pemilik menjalankannya dari DM.
 
-Ketika sesi OpenClaw aktif menggunakan harness OpenAI Codex native,
-persetujuan exec yang sama juga mencakup unggahan umpan balik OpenAI untuk utas runtime
-Codex yang diketahui OpenClaw. Unggahan itu terpisah dari zip Gateway lokal dan hanya
-muncul untuk sesi harness Codex. Sebelum persetujuan, prompt menjelaskan bahwa
-menyetujui diagnostik juga akan mengirim umpan balik Codex, tetapi tidak mencantumkan
-id sesi atau utas Codex. Setelah persetujuan, balasan chat mencantumkan kanal, id sesi
-OpenClaw, id utas Codex, dan perintah resume lokal untuk utas yang dikirim ke server
-OpenAI. Jika Anda menolak atau mengabaikan persetujuan, OpenClaw tidak menjalankan
-ekspor, tidak mengirim umpan balik Codex, dan tidak mencetak id Codex.
+Saat sesi aktif menggunakan harness OpenAI Codex native, persetujuan eksekusi yang sama
+juga mencakup pengunggahan umpan balik OpenAI untuk utas Codex yang diketahui OpenClaw.
+Pengunggahan tersebut terpisah dari zip Gateway lokal dan hanya terjadi untuk sesi
+harness Codex. Permintaan persetujuan menyatakan bahwa persetujuan juga mengirim umpan
+balik Codex, tanpa mencantumkan ID sesi atau utas Codex. Setelah disetujui, balasan
+mencantumkan channel, ID sesi OpenClaw, ID utas Codex, dan perintah pelanjutan lokal
+untuk utas yang dikirim ke OpenAI. Menolak atau mengabaikan persetujuan akan melewati
+ekspor, pengunggahan umpan balik Codex, dan daftar ID Codex.
 
-Itu membuat loop debugging Codex umum menjadi singkat: lihat perilaku buruk di
-Telegram, Discord, atau kanal lain, jalankan `/diagnostics`, setujui sekali, bagikan
-laporan dengan dukungan, lalu jalankan perintah `codex resume <thread-id>` yang dicetak
-secara lokal jika Anda ingin memeriksa sendiri utas Codex native. Lihat
-[harness Codex](/id/plugins/codex-harness#inspect-codex-threads-locally) untuk
-alur kerja pemeriksaan tersebut.
+Hal ini mempersingkat siklus debugging Codex: temukan perilaku buruk di suatu channel,
+jalankan `/diagnostics`, setujui sekali, bagikan laporan, lalu jalankan perintah
+`codex resume <thread-id>` yang dicetak secara lokal jika Anda ingin memeriksa sendiri
+utas tersebut. Lihat [harness Codex](/id/plugins/codex-harness#inspect-codex-threads-locally).
 
 ## Isi ekspor
 
-Zip mencakup:
-
-- `summary.md`: ringkasan yang mudah dibaca manusia untuk dukungan.
-- `diagnostics.json`: ringkasan yang dapat dibaca mesin tentang konfigurasi, log, status, kesehatan,
-  dan data stabilitas.
-- `manifest.json`: metadata ekspor dan daftar file.
-- Bentuk konfigurasi yang disanitasi dan detail konfigurasi non-rahasia.
-- Ringkasan log yang disanitasi dan baris log terbaru yang disunting.
-- Snapshot status dan kesehatan Gateway upaya terbaik.
+- `summary.md`: ikhtisar yang mudah dibaca manusia untuk dukungan.
+- `diagnostics.json`: ringkasan konfigurasi, log, status, kesehatan, dan data stabilitas
+  yang dapat dibaca mesin.
+- `manifest.json`: metadata ekspor dan daftar berkas.
+- Struktur konfigurasi yang disanitasi dan detail konfigurasi yang bukan rahasia.
+- Ringkasan log yang disanitasi dan baris log terbaru yang telah disunting.
+- Snapshot status dan kesehatan Gateway berdasarkan upaya terbaik.
 - `stability/latest.json`: bundel stabilitas tersimpan terbaru, jika tersedia.
 
-Ekspor tetap berguna walaupun Gateway tidak sehat. Jika Gateway tidak dapat
-menjawab permintaan status atau kesehatan, log lokal, bentuk konfigurasi, dan bundel
-stabilitas terbaru tetap dikumpulkan jika tersedia.
+Ekspor tetap berguna ketika Gateway tidak sehat: jika permintaan status/kesehatan
+gagal, log lokal, struktur konfigurasi, dan bundel stabilitas terbaru tetap dikumpulkan
+jika tersedia.
 
 ## Model privasi
 
-Diagnostik dirancang agar dapat dibagikan. Ekspor mempertahankan data operasional
-yang membantu debugging, seperti:
+Dipertahankan: nama subsistem, ID plugin, ID penyedia, ID channel, mode yang
+dikonfigurasi, kode status, durasi, jumlah bita, status antrean, pembacaan memori,
+metadata log yang disanitasi, pesan operasional yang disunting, struktur konfigurasi,
+dan pengaturan fitur yang bukan rahasia.
 
-- nama subsistem, id Plugin, id penyedia, id kanal, dan mode yang dikonfigurasi
-- kode status, durasi, jumlah byte, status antrean, dan pembacaan memori
-- metadata log yang disanitasi dan pesan operasional yang disunting
-- bentuk konfigurasi dan pengaturan fitur non-rahasia
+Dihilangkan atau disunting: teks obrolan, prompt, instruksi, isi webhook, keluaran alat,
+kredensial, kunci API, token, cookie, nilai rahasia, isi mentah permintaan/respons, ID
+akun, ID pesan, ID sesi mentah, nama host, dan nama pengguna lokal.
 
-Ekspor menghilangkan atau menyunting:
-
-- teks chat, prompt, instruksi, bodi Webhook, dan keluaran alat
-- kredensial, kunci API, token, cookie, dan nilai rahasia
-- bodi permintaan atau respons mentah
-- id akun, id pesan, id sesi mentah, hostname, dan nama pengguna lokal
-
-Ketika pesan log tampak seperti teks pengguna, chat, prompt, atau payload alat,
-ekspor hanya menyimpan bahwa pesan dihilangkan dan jumlah byte.
+Saat pesan log tampak seperti teks payload pengguna, obrolan, prompt, atau alat,
+ekspor hanya mencatat bahwa sebuah pesan dihilangkan beserta jumlah bitanya.
 
 ## Perekam stabilitas
 
-Gateway merekam stream stabilitas terbatas tanpa payload secara default ketika
-diagnostik diaktifkan. Ini untuk fakta operasional, bukan konten.
+Secara bawaan, Gateway merekam aliran stabilitas terbatas tanpa payload saat diagnostik
+diaktifkan. Aliran ini merekam fakta operasional, bukan konten.
 
-Heartbeat diagnostik yang sama merekam sampel liveness ketika Gateway tetap
-berjalan tetapi loop peristiwa Node.js atau CPU terlihat jenuh. Peristiwa
-`diagnostic.liveness.warning` ini mencakup jeda loop peristiwa, utilisasi loop peristiwa,
-rasio core CPU, jumlah sesi aktif/menunggu/diantrekan, fase startup/runtime saat ini
-jika diketahui, rentang fase terbaru, dan label pekerjaan aktif/diantrekan yang dibatasi.
-Sampel idle tetap berada di telemetri pada level `info`. Sampel liveness menjadi
-peringatan Gateway hanya ketika pekerjaan sedang menunggu atau diantrekan, atau ketika
-pekerjaan aktif bertumpang tindih dengan jeda loop peristiwa yang berkelanjutan.
-Lonjakan max-delay sementara selama pekerjaan latar belakang yang sehat tetap berada
-di log debug. Peristiwa itu tidak memulai ulang Gateway dengan sendirinya.
+Heartbeat yang sama juga mengambil sampel keaktifan saat event loop atau CPU tampak
+jenuh, dengan memancarkan peristiwa `diagnostic.liveness.warning` yang berisi penundaan
+event loop, utilisasi event loop, rasio inti CPU, jumlah sesi aktif/menunggu/diantrekan,
+fase startup/runtime saat ini (jika diketahui), rentang fase terbaru, dan label pekerjaan
+terbatas. Peristiwa ini hanya menjadi baris log Gateway tingkat `warn` saat ada pekerjaan
+yang menunggu atau diantrekan, atau saat pekerjaan aktif berimpitan dengan penundaan
+event loop yang berkelanjutan; jika tidak, peristiwa dicatat pada tingkat `debug`.
+Sampel keaktifan saat menganggur tetap direkam sebagai peristiwa diagnostik, tetapi
+tidak pernah meningkat menjadi peringatan dengan sendirinya.
 
-Fase startup juga memancarkan peristiwa `diagnostic.phase.completed` dengan timing
-wall-clock dan CPU. Diagnostik embedded-run yang macet menandai `terminalProgressStale=true`
-ketika progres bridge terakhir terlihat terminal, seperti item respons mentah atau
-peristiwa penyelesaian respons, tetapi Gateway masih menganggap embedded run aktif.
+Fase startup memancarkan peristiwa `diagnostic.phase.completed` dengan pengukuran waktu
+jam dinding dan CPU. Diagnostik eksekusi tertanam yang macet menandai
+`terminalProgressStale=true` saat progres bridge terakhir tampak terminal (misalnya item
+respons mentah atau peristiwa penyelesaian respons), tetapi Gateway masih menganggap
+eksekusi tertanam tersebut aktif.
 
-Periksa perekam live:
+Periksa perekam langsung:
 
 ```bash
 openclaw gateway stability
@@ -145,8 +131,8 @@ openclaw gateway stability --type payload.large
 openclaw gateway stability --json
 ```
 
-Periksa bundel stabilitas tersimpan terbaru setelah fatal exit, timeout shutdown,
-atau kegagalan startup restart:
+Periksa bundel tersimpan terbaru setelah penghentian fatal, batas waktu penonaktifan,
+atau kegagalan startup setelah dimulai ulang:
 
 ```bash
 openclaw gateway stability --bundle latest
@@ -158,9 +144,9 @@ Buat zip diagnostik dari bundel tersimpan terbaru:
 openclaw gateway stability --bundle latest --export
 ```
 
-Bundel tersimpan berada di bawah `~/.openclaw/logs/stability/` ketika ada peristiwa.
+Bundel tersimpan berada di bawah `~/.openclaw/logs/stability/` saat terdapat peristiwa.
 
-## Opsi berguna
+## Opsi yang berguna
 
 ```bash
 openclaw gateway diagnostics export \
@@ -169,19 +155,21 @@ openclaw gateway diagnostics export \
   --log-bytes 1000000
 ```
 
-- `--output <path>`: tulis ke path zip tertentu.
-- `--log-lines <count>`: jumlah maksimum baris log yang disanitasi untuk disertakan.
-- `--log-bytes <bytes>`: byte log maksimum untuk diperiksa.
-- `--url <url>`: URL WebSocket Gateway untuk snapshot status dan kesehatan.
-- `--token <token>`: token Gateway untuk snapshot status dan kesehatan.
-- `--password <password>`: kata sandi Gateway untuk snapshot status dan kesehatan.
-- `--timeout <ms>`: timeout snapshot status dan kesehatan.
-- `--no-stability-bundle`: lewati pencarian bundel stabilitas tersimpan.
-- `--json`: cetak metadata ekspor yang dapat dibaca mesin.
+| Flag                    | Bawaan                                                                        | Deskripsi                                                   |
+| ----------------------- | ----------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| `--output <path>`       | `$OPENCLAW_STATE_DIR/logs/support/openclaw-diagnostics-<timestamp>-<pid>.zip` | Tulis ke jalur zip (atau direktori) tertentu.                |
+| `--log-lines <count>`   | `5000`                                                                        | Jumlah maksimum baris log tersanitasi yang disertakan.       |
+| `--log-bytes <bytes>`   | `1000000`                                                                     | Jumlah maksimum bita log yang diperiksa.                     |
+| `--url <url>`           | -                                                                             | URL WebSocket Gateway untuk snapshot status/kesehatan.       |
+| `--token <token>`       | -                                                                             | Token Gateway untuk snapshot status/kesehatan.               |
+| `--password <password>` | -                                                                             | Kata sandi Gateway untuk snapshot status/kesehatan.          |
+| `--timeout <ms>`        | `3000`                                                                        | Batas waktu snapshot status/kesehatan.                       |
+| `--no-stability-bundle` | nonaktif                                                                      | Lewati pencarian bundel stabilitas tersimpan.                |
+| `--json`                | nonaktif                                                                      | Cetak metadata ekspor yang dapat dibaca mesin.               |
 
-## Nonaktifkan diagnostik
+## Menonaktifkan diagnostik
 
-Diagnostik diaktifkan secara default. Untuk menonaktifkan perekam stabilitas dan
+Diagnostik diaktifkan secara bawaan. Untuk menonaktifkan perekam stabilitas dan
 pengumpulan peristiwa diagnostik:
 
 ```json5
@@ -192,11 +180,11 @@ pengumpulan peristiwa diagnostik:
 }
 ```
 
-Menonaktifkan diagnostik mengurangi detail laporan bug. Ini tidak memengaruhi
-logging Gateway normal.
+Menonaktifkan diagnostik mengurangi detail laporan bug; hal ini tidak memengaruhi
+pencatatan log Gateway normal.
 
-Snapshot tekanan memori kritis nonaktif secara default. Untuk mempertahankan
-peristiwa diagnostik dan juga menangkap snapshot stabilitas pra-OOM:
+Snapshot tekanan memori kritis dinonaktifkan secara bawaan. Untuk merekam snapshot
+stabilitas pra-OOM selain peristiwa diagnostik normal:
 
 ```json5
 {
@@ -206,14 +194,15 @@ peristiwa diagnostik dan juga menangkap snapshot stabilitas pra-OOM:
 }
 ```
 
-Gunakan ini hanya pada host yang dapat menoleransi pemindaian sistem file tambahan
+Gunakan ini hanya pada host yang dapat menoleransi pemindaian sistem berkas tambahan
 dan penulisan snapshot selama tekanan memori kritis. Peristiwa tekanan memori normal
-tetap merekam RSS, heap, ambang batas, dan fakta pertumbuhan ketika snapshot nonaktif.
+tetap merekam fakta RSS, heap, ambang batas, dan pertumbuhan (`rss_threshold`,
+`heap_threshold`, `rss_growth`) saat snapshot dinonaktifkan.
 
 ## Terkait
 
 - [Pemeriksaan kesehatan](/id/gateway/health)
 - [CLI Gateway](/id/cli/gateway#gateway-diagnostics-export)
-- [Protokol Gateway](/id/gateway/protocol#system-and-identity)
-- [Logging](/id/logging)
-- [Ekspor OpenTelemetry](/id/gateway/opentelemetry) — alur terpisah untuk mengalirkan diagnostik ke kolektor
+- [Protokol Gateway](/id/gateway/protocol#rpc-method-families)
+- [Pencatatan log](/id/logging)
+- [Ekspor OpenTelemetry](/id/gateway/opentelemetry) - alur terpisah untuk mengalirkan diagnostik ke pengumpul

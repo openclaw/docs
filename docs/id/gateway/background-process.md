@@ -1,109 +1,110 @@
 ---
 read_when:
-    - Menambahkan atau memodifikasi perilaku exec latar belakang
+    - Menambahkan atau mengubah perilaku eksekusi latar belakang
     - Men-debug tugas exec yang berjalan lama
-summary: Eksekusi exec latar belakang dan manajemen proses
+summary: Eksekusi latar belakang dan manajemen proses
 title: Eksekusi latar belakang dan alat proses
 x-i18n:
-    generated_at: "2026-06-27T17:28:00Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:10:41Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5822c1e26b0144c5216ae6e59e279ccc506cf4c0a42b8cd6c386f535fe458bd3
+    source_hash: b540455797df71dcdb18b0caa5f5088e81ef8823e0ec79364bebad8e6f060f12
     source_path: gateway/background-process.md
     workflow: 16
 ---
 
-OpenClaw menjalankan perintah shell melalui alat `exec` dan menyimpan tugas berjalan lama di memori. Alat `process` mengelola sesi latar belakang tersebut.
+OpenClaw menjalankan perintah shell melalui alat `exec` dan menyimpan tugas yang berjalan lama dalam memori. Alat `process` mengelola sesi latar belakang tersebut.
 
-## alat exec
+## Alat exec
 
-Parameter utama:
+Parameter:
 
-- `command` (wajib)
-- `yieldMs` (default 10000): otomatis berjalan di latar belakang setelah penundaan ini
-- `background` (bool): langsung berjalan di latar belakang
-- `timeout` (detik, default `tools.exec.timeoutSec`): hentikan proses setelah batas waktu ini; atur `timeout: 0` hanya untuk menonaktifkan batas waktu proses exec untuk panggilan tersebut
-- `elevated` (bool): jalankan di luar sandbox jika mode elevated diaktifkan/diizinkan (`gateway` secara default, atau `node` ketika target exec adalah `node`)
-- Perlu TTY sungguhan? Atur `pty: true`.
-- `workdir`, `env`
+| Parameter    | Deskripsi                                                                                                                                                           |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `command`    | Wajib. Perintah shell yang akan dijalankan.                                                                                                                         |
+| `workdir`    | Direktori kerja; abaikan untuk menggunakan cwd bawaan.                                                                                                              |
+| `env`        | Variabel lingkungan tambahan untuk perintah.                                                                                                                        |
+| `yieldMs`    | Waktu tunggu dalam milidetik sebelum dialihkan ke latar belakang (bawaan 10000).                                                                                     |
+| `background` | Jalankan segera di latar belakang.                                                                                                                                  |
+| `timeout`    | Batas waktu dalam detik (bawaan `tools.exec.timeoutSec`); menghentikan proses saat waktu habis. Atur `timeout: 0` untuk menonaktifkan batas waktu proses exec bagi pemanggilan tersebut. |
+| `pty`        | Jalankan dalam terminal semu jika tersedia (CLI yang memerlukan TTY, agen pemrograman).                                                                              |
+| `elevated`   | Jalankan di luar sandbox jika mode dengan hak tinggi diaktifkan/diizinkan (`gateway` secara bawaan, atau `node` jika target exec adalah `node`).                     |
+| `host`       | Target exec: `auto`, `sandbox`, `gateway`, atau `node`.                                                                                                             |
+| `node`       | ID/nama Node, digunakan dengan `host: "node"`.                                                                                                                      |
 
 Perilaku:
 
-- Proses foreground mengembalikan output secara langsung.
-- Saat dijalankan di latar belakang (eksplisit atau karena batas waktu), alat mengembalikan `status: "running"` + `sessionId` dan tail singkat.
-- Proses latar belakang dan proses `yieldMs` mewarisi `tools.exec.timeoutSec` kecuali panggilan menyediakan `timeout` eksplisit.
-- Output disimpan di memori sampai sesi di-poll atau dibersihkan.
-- Jika alat `process` tidak diizinkan, `exec` berjalan sinkron dan mengabaikan `yieldMs`/`background`.
-- Perintah exec yang dibuat menerima `OPENCLAW_SHELL=exec` untuk aturan shell/profil yang sadar konteks.
-- Untuk pekerjaan berjalan lama yang dimulai sekarang, mulai sekali dan andalkan
-  pemicu bangun penyelesaian otomatis saat diaktifkan dan perintah mengeluarkan output atau gagal.
-- Jika pemicu bangun penyelesaian otomatis tidak tersedia, atau Anda memerlukan
-  konfirmasi keberhasilan senyap untuk perintah yang selesai bersih tanpa output, gunakan `process`
-  untuk mengonfirmasi penyelesaian.
-- Jangan meniru pengingat atau tindak lanjut tertunda dengan loop `sleep` atau polling
-  berulang; gunakan cron untuk pekerjaan mendatang.
+- Proses latar depan mengembalikan keluaran secara langsung.
+- Saat dialihkan ke latar belakang (secara eksplisit atau karena batas waktu `yieldMs`), alat mengembalikan `status: "running"` + `sessionId` dan cuplikan singkat keluaran terakhir.
+- Proses yang berjalan di latar belakang dan proses `yieldMs` mewarisi `tools.exec.timeoutSec`, kecuali pemanggilan meneruskan `timeout` secara eksplisit.
+- Keluaran tetap berada dalam memori hingga sesi diperiksa atau dibersihkan.
+- Jika alat `process` tidak diizinkan, `exec` berjalan secara sinkron dan mengabaikan `yieldMs`/`background`.
+- Perintah exec yang dibuat menerima `OPENCLAW_SHELL=exec` untuk aturan shell/profil yang peka konteks.
+- Untuk pekerjaan jangka panjang yang dimulai sekarang: mulai sekali dan andalkan pengaktifan otomatis saat selesai (jika diaktifkan) ketika perintah menghasilkan keluaran atau gagal.
+- Jika pengaktifan otomatis saat selesai tidak tersedia, atau Anda memerlukan konfirmasi keberhasilan tanpa keluaran untuk perintah yang berakhir dengan baik tanpa keluaran, lakukan pemeriksaan dengan `process`.
+- Jangan meniru pengingat atau tindak lanjut tertunda dengan perulangan `sleep` atau pemeriksaan berulang — gunakan Cron untuk pekerjaan mendatang.
 
-## Penjembatanan proses anak
+### Penggantian melalui variabel lingkungan
 
-Saat membuat proses anak berjalan lama di luar alat exec/process (misalnya, respawn CLI atau helper gateway), pasang helper jembatan proses anak agar sinyal terminasi diteruskan dan listener dilepas saat keluar/error. Ini menghindari proses yatim pada systemd dan menjaga perilaku shutdown tetap konsisten lintas platform.
+| Variabel                                 | Efek                                                                                                                    |
+| ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `OPENCLAW_BASH_YIELD_MS`                 | Waktu tunggu bawaan sebelum dialihkan ke latar belakang (md). Bawaan 10000, dibatasi antara 10-120000.                  |
+| `OPENCLAW_BASH_MAX_OUTPUT_CHARS`         | Batas keluaran dalam memori (karakter).                                                                                 |
+| `OPENCLAW_BASH_PENDING_MAX_OUTPUT_CHARS` | Batas stdout/stderr tertunda per aliran (karakter).                                                                     |
+| `OPENCLAW_BASH_JOB_TTL_MS`               | TTL untuk sesi yang telah selesai (md), dibatasi antara 1 mnt-3 jam.                                                    |
+| `OPENCLAW_PROCESS_INPUT_WAIT_IDLE_MS`    | Ambang keluaran tidak aktif sebelum sesi latar belakang yang dapat ditulisi ditandai kemungkinan menunggu masukan. Bawaan 15000. |
 
-Override lingkungan:
+### Konfigurasi (lebih disarankan daripada penggantian melalui variabel lingkungan)
 
-- `OPENCLAW_BASH_YIELD_MS`: yield default (md)
-- `OPENCLAW_BASH_MAX_OUTPUT_CHARS`: batas output dalam memori (karakter)
-- `OPENCLAW_BASH_PENDING_MAX_OUTPUT_CHARS`: batas stdout/stderr tertunda per stream (karakter)
-- `OPENCLAW_BASH_JOB_TTL_MS`: TTL untuk sesi yang selesai (md, dibatasi 1m–3j)
-- `OPENCLAW_PROCESS_INPUT_WAIT_IDLE_MS`: ambang output idle sebelum sesi latar belakang yang dapat ditulis ditandai kemungkinan menunggu input (default 15000 md)
+| Kunci                                 | Bawaan  | Efek                                                                                  |
+| ------------------------------------- | ------- | ------------------------------------------------------------------------------------- |
+| `tools.exec.backgroundMs`             | 10000   | Sama seperti `OPENCLAW_BASH_YIELD_MS`.                                                 |
+| `tools.exec.timeoutSec`               | 1800    | Batas waktu bawaan per pemanggilan.                                                    |
+| `tools.exec.cleanupMs`                | 1800000 | Sama seperti `OPENCLAW_BASH_JOB_TTL_MS`.                                               |
+| `tools.exec.notifyOnExit`             | true    | Antrekan peristiwa sistem + minta Heartbeat saat exec latar belakang berakhir.         |
+| `tools.exec.notifyOnExitEmptySuccess` | false   | Antrekan juga peristiwa penyelesaian untuk proses latar belakang yang berhasil tanpa keluaran. |
 
-Konfigurasi (disarankan):
+## Penghubungan proses anak
 
-- `tools.exec.backgroundMs` (default 10000)
-- `tools.exec.timeoutSec` (default 1800)
-- `tools.exec.cleanupMs` (default 1800000)
-- `tools.exec.notifyOnExit` (default true): antrekan event sistem + minta Heartbeat saat exec latar belakang keluar.
-- `tools.exec.notifyOnExitEmptySuccess` (default false): ketika true, juga antrekan event penyelesaian untuk proses latar belakang yang berhasil tetapi tidak menghasilkan output.
+Saat membuat proses anak yang berjalan lama di luar alat exec/process (pemunculan ulang CLI, pembantu Gateway), lampirkan pembantu jembatan proses anak agar sinyal penghentian diteruskan dan pendengar dilepas saat keluar/terjadi kesalahan. Hal ini mencegah proses yatim pada systemd dan menjaga penghentian tetap konsisten di seluruh platform.
 
-## alat process
+## Alat process
 
 Tindakan:
 
-- `list`: sesi berjalan + selesai
-- `poll`: kuras output baru untuk sebuah sesi (juga melaporkan status keluar)
-- `log`: baca output agregat dan tampilkan petunjuk pemulihan input (mendukung `offset` + `limit`)
-- `write`: kirim stdin (`data`, `eof` opsional)
-- `send-keys`: kirim token tombol eksplisit atau byte ke sesi berbasis PTY
-- `submit`: kirim Enter / carriage return ke sesi berbasis PTY
-- `paste`: kirim teks literal, opsional dibungkus dalam mode paste bertanda kurung
-- `kill`: hentikan sesi latar belakang
-- `clear`: hapus sesi selesai dari memori
-- `remove`: hentikan jika sedang berjalan, jika tidak bersihkan jika selesai
+| Tindakan    | Efek                                                                                       |
+| ----------- | ------------------------------------------------------------------------------------------ |
+| `list`      | Sesi yang berjalan + selesai.                                                              |
+| `poll`      | Ambil keluaran baru untuk suatu sesi (juga melaporkan status keluar).                      |
+| `log`       | Baca keluaran gabungan dan petunjuk pemulihan masukan. Mendukung `offset` + `limit`.       |
+| `write`     | Kirim stdin (`data`, `eof` opsional).                                                      |
+| `send-keys` | Kirim token tombol atau byte secara eksplisit ke sesi yang didukung PTY.                   |
+| `submit`    | Kirim Enter/carriage return ke sesi yang didukung PTY.                                     |
+| `paste`     | Kirim teks literal, secara opsional dibungkus dalam mode penempelan bertanda kurung.       |
+| `kill`      | Hentikan sesi latar belakang.                                                              |
+| `clear`     | Hapus sesi yang telah selesai dari memori.                                                 |
+| `remove`    | Hentikan jika sedang berjalan, atau bersihkan jika telah selesai.                          |
 
 Catatan:
 
-- Hanya sesi latar belakang yang dicantumkan/disimpan di memori.
-- Sesi hilang saat proses dimulai ulang (tidak ada persistensi disk).
-- Log sesi hanya disimpan ke riwayat chat jika Anda menjalankan `process poll/log` dan hasil alat direkam.
-- `process` tercakup per agent; alat ini hanya melihat sesi yang dimulai oleh agent tersebut.
-- Gunakan `poll` / `log` untuk status, log, konfirmasi keberhasilan senyap, atau
-  konfirmasi penyelesaian saat pemicu bangun penyelesaian otomatis tidak tersedia.
-- Gunakan `log` sebelum memulihkan CLI interaktif agar transkrip saat ini,
-  status stdin, dan petunjuk tunggu-input terlihat bersama.
-- Gunakan `write` / `send-keys` / `submit` / `paste` / `kill` saat Anda memerlukan input
-  atau intervensi.
+- Hanya sesi latar belakang yang dicantumkan/disimpan — hanya dalam memori, bukan pada disk. Sesi hilang saat proses dimulai ulang.
+- Sesi latar belakang aktif mencegah penangguhan host secara kooperatif dan mulai ulang Gateway yang aman hingga pemilik proses mengonfirmasi bahwa proses benar-benar telah berhenti.
+- `process remove` dapat langsung menyembunyikan sesi yang sedang berjalan setelah meminta penghentian; penangguhan dan mulai ulang tetap terblokir hingga keluarnya proses dikonfirmasi.
+- Log sesi hanya disimpan ke riwayat obrolan jika Anda menjalankan `process poll`/`log` dan hasil alat direkam.
+- `process` memiliki cakupan per agen; alat ini hanya melihat sesi yang dimulai oleh agen tersebut.
+- Gunakan `poll`/`log` untuk status, log, atau konfirmasi penyelesaian saat pengaktifan otomatis ketika selesai tidak tersedia.
+- Gunakan `log` sebelum memulihkan CLI interaktif agar transkrip saat ini, status stdin, dan petunjuk menunggu masukan terlihat bersama-sama.
+- Gunakan `write`/`send-keys`/`submit`/`paste`/`kill` saat Anda memerlukan masukan atau intervensi.
 - `process list` menyertakan `name` turunan (kata kerja perintah + target) untuk pemindaian cepat.
-- `process list`, `poll`, dan `log` melaporkan `waitingForInput` hanya
-  saat sesi masih memiliki stdin yang dapat ditulis dan telah idle lebih lama dari
-  ambang tunggu-input.
-- `process log` menggunakan `offset`/`limit` berbasis baris.
-- Ketika `offset` dan `limit` sama-sama dihilangkan, alat mengembalikan 200 baris terakhir dan menyertakan petunjuk paging.
-- Ketika `offset` diberikan dan `limit` dihilangkan, alat mengembalikan dari `offset` hingga akhir (tidak dibatasi 200).
-- Polling digunakan untuk status sesuai permintaan, bukan penjadwalan loop tunggu. Jika pekerjaan harus
-  terjadi nanti, gunakan cron sebagai gantinya.
+- `process list`, `poll`, dan `log` melaporkan `waitingForInput` hanya ketika sesi masih memiliki stdin yang dapat ditulisi dan telah tidak aktif lebih lama daripada ambang tunggu masukan (bawaan 15000 md, `OPENCLAW_PROCESS_INPUT_WAIT_IDLE_MS`).
+- `process log` menggunakan `offset`/`limit` berbasis baris. Jika keduanya diabaikan, alat mengembalikan 200 baris terakhir beserta petunjuk paginasi. Jika `offset` ditetapkan dan `limit` tidak ditetapkan, alat mengembalikan dari `offset` hingga akhir (tidak dibatasi hingga 200).
+- `timeout` milik `poll` menunggu hingga jumlah milidetik tersebut sebelum mengembalikan hasil; nilai di atas 30000 dibatasi menjadi 30000.
+- Pemeriksaan digunakan untuk status sesuai permintaan, bukan penjadwalan perulangan tunggu. Jika pekerjaan harus dilakukan nanti, gunakan Cron.
 
 ## Contoh
 
-Jalankan tugas panjang dan poll nanti:
+Jalankan tugas panjang dan periksa nanti:
 
 ```json
 { "tool": "exec", "command": "sleep 5 && echo done", "yieldMs": 1000 }
@@ -113,13 +114,13 @@ Jalankan tugas panjang dan poll nanti:
 { "tool": "process", "action": "poll", "sessionId": "<id>" }
 ```
 
-Periksa sesi interaktif sebelum mengirim input:
+Periksa sesi interaktif sebelum mengirim masukan:
 
 ```json
 { "tool": "process", "action": "log", "sessionId": "<id>" }
 ```
 
-Mulai langsung di latar belakang:
+Mulai segera di latar belakang:
 
 ```json
 { "tool": "exec", "command": "npm run build", "background": true }
@@ -151,5 +152,5 @@ Tempel teks literal:
 
 ## Terkait
 
-- [Alat exec](/id/tools/exec)
-- [Persetujuan exec](/id/tools/exec-approvals)
+- [Alat Exec](/id/tools/exec)
+- [Persetujuan Exec](/id/tools/exec-approvals)

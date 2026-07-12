@@ -4,8 +4,8 @@ read_when:
 summary: 为 OpenClaw 添加 DeepInfra 模型提供商支持。
 title: DeepInfra 插件
 x-i18n:
-    generated_at: "2026-06-27T02:47:13Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T20:47:47Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 67ee0e714d812bbb72a05233ac52a17da796631766a9222bb9caa4d441c8433f
@@ -19,13 +19,13 @@ x-i18n:
 
 ## 分发
 
-- 包：`@openclaw/deepinfra-provider`
-- 安装路径：npm；ClawHub：`clawhub:@openclaw/deepinfra-provider`
+- 软件包：`@openclaw/deepinfra-provider`
+- 安装方式：npm；ClawHub：`clawhub:@openclaw/deepinfra-provider`
 
-## Surface
+## 接口范围
 
 提供商：deepinfra；契约：imageGenerationProviders、mediaUnderstandingProviders、memoryEmbeddingProviders、speechProviders、videoGenerationProviders
 
 ## 相关文档
 
-- [deepinfra](/zh-CN/providers/deepinfra)
+- [DeepInfra](/zh-CN/providers/deepinfra)

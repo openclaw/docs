@@ -1,23 +1,23 @@
 ---
 read_when:
     - Leren hoe u OpenClaw configureert
-    - Zoeken naar configuratievoorbeelden
+    - Op zoek naar configuratievoorbeelden
     - OpenClaw voor het eerst instellen
-summary: Schema-nauwkeurige configuratievoorbeelden voor veelvoorkomende OpenClaw-installaties
+summary: Schemanauwkeurige configuratievoorbeelden voor veelvoorkomende OpenClaw-installaties
 title: Configuratievoorbeelden
 x-i18n:
-    generated_at: "2026-06-27T17:32:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:51:39Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 945f4cd8571814597ec0188853e91c6483a0d8b09bd0ca7dcfb79eb877607ce2
+    source_hash: c3ad82ccce62e0c8dbb72f81b0de62d60d8a6282f0a327ed1cbda7ffa3e47969
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-Voorbeelden hieronder zijn afgestemd op het huidige configuratieschema. Zie [Configuratie](/nl/gateway/configuration) voor de volledige referentie en opmerkingen per veld.
+De onderstaande voorbeelden zijn afgestemd op het huidige configuratieschema. Zie [Configuratie](/nl/gateway/configuration) voor het volledige naslagwerk en opmerkingen per veld.
 
-## Snelstart
+## Snel aan de slag
 
 ### Absoluut minimum
 
@@ -28,7 +28,7 @@ Voorbeelden hieronder zijn afgestemd op het huidige configuratieschema. Zie [Con
 }
 ```
 
-Sla dit op in `~/.openclaw/openclaw.json` en je kunt de bot vanaf dat nummer een DM sturen.
+Sla dit op als `~/.openclaw/openclaw.json`; daarna kun je vanaf dat nummer een privébericht naar de bot sturen.
 
 ### Aanbevolen startconfiguratie
 
@@ -59,7 +59,7 @@ Sla dit op in `~/.openclaw/openclaw.json` en je kunt de bot vanaf dat nummer een
   messages: {
     visibleReplies: "automatic",
     groupChat: {
-      visibleReplies: "message_tool", // opt-in; visible output requires message(action=send)
+      visibleReplies: "message_tool", // expliciete inschakeling; zichtbare uitvoer vereist message(action=send)
       unmentionedInbound: "room_event",
     },
   },
@@ -145,7 +145,7 @@ Sla dit op in `~/.openclaw/openclaw.json` en je kunt de bot vanaf dat nummer een
         enabled: true,
         maxBytes: 20971520,
         models: [
-          { provider: "openai", model: "gpt-4o-mini-transcribe" },
+          { provider: "openai", model: "gpt-4o-transcribe" },
           // Optional CLI fallback (Whisper binary):
           // { type: "cli", command: "whisper", args: ["--model", "base", "{{MediaPath}}"] }
         ],
@@ -172,7 +172,7 @@ Sla dit op in `~/.openclaw/openclaw.json` en je kunt de bot vanaf dat nummer een
       discord: { mode: "idle", idleMinutes: 10080 },
     },
     resetTriggers: ["/new", "/reset"],
-    store: "~/.openclaw/agents/default/sessions/sessions.json",
+    store: "~/.openclaw/agents/main/sessions/sessions.json",
     maintenance: {
       mode: "warn",
       pruneAfter: "30d",
@@ -216,8 +216,8 @@ Sla dit op in `~/.openclaw/openclaw.json` en je kunt de bot vanaf dat nummer een
           slug: "friends-of-openclaw",
           requireMention: false,
           channels: {
-            general: { allow: true },
-            help: { allow: true, requireMention: true },
+            general: { enabled: true },
+            help: { enabled: true, requireMention: true },
           },
         },
       },
@@ -228,7 +228,7 @@ Sla dit op in `~/.openclaw/openclaw.json` en je kunt de bot vanaf dat nummer een
       botToken: "xoxb-REPLACE_ME",
       appToken: "xapp-REPLACE_ME",
       channels: {
-        "#general": { allow: true, requireMention: true },
+        "#general": { enabled: true, requireMention: true },
       },
       dm: { enabled: true, allowFrom: ["U123"] },
       slashCommand: {
@@ -391,7 +391,7 @@ Sla dit op in `~/.openclaw/openclaw.json` en je kunt de bot vanaf dat nummer een
   // Cron jobs
   cron: {
     enabled: true,
-    store: "~/.openclaw/cron/cron.json",
+    store: "~/.openclaw/cron/jobs.json",
     maxConcurrentRuns: 8, // default; cron dispatch + isolated cron agent-turn execution
     sessionRetention: "24h",
     runLog: {
@@ -455,7 +455,7 @@ Sla dit op in `~/.openclaw/openclaw.json` en je kunt de bot vanaf dat nummer een
       allowTailscale: true,
     },
     tailscale: { mode: "serve", resetOnExit: false },
-    remote: { url: "ws://gateway.tailnet:18789", token: "remote-token" },
+    remote: { url: "ws://gateway-host.ts.net:18789", token: "remote-token" },
     reload: { mode: "hybrid", debounceMs: 300 },
   },
 
@@ -482,9 +482,9 @@ Sla dit op in `~/.openclaw/openclaw.json` en je kunt de bot vanaf dat nummer een
 }
 ```
 
-### Gesymlinkte naastgelegen skill-repo
+### Via een symbolische koppeling verbonden aangrenzende skill-repository
 
-Gebruik dit wanneer een ingebouwde skill-root een symlink naar een naastgelegen repo bevat, bijvoorbeeld `~/.agents/skills/manager -> ~/Projects/manager/skills`.
+Gebruik dit wanneer de hoofdmap van een ingebouwde skill een symbolische koppeling naar een aangrenzende repository bevat, bijvoorbeeld `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 
 ```json5
 {
@@ -497,13 +497,13 @@ Gebruik dit wanneer een ingebouwde skill-root een symlink naar een naastgelegen 
 }
 ```
 
-- `extraDirs` scant de naastgelegen repo als een expliciete skill-root.
-- Met `allowSymlinkTargets` kunnen gesymlinkte skill-mappen worden omgezet naar die vertrouwde echte doelroot, zonder willekeurige symlink-escapes toe te staan.
-- Stel `skills.workshop.allowSymlinkTargetWrites: true` in om Skill Workshop schrijftoegang te laten toepassen via hetzelfde vertrouwde symlink-doel.
+- `extraDirs` scant de aangrenzende repository als een expliciete hoofdmap voor skills.
+- `allowSymlinkTargets` zorgt ervoor dat via symbolische koppelingen verbonden skill-mappen naar die vertrouwde echte doelhoofdmap kunnen verwijzen, zonder willekeurige ontsnappingen via symbolische koppelingen toe te staan.
+- Stel `skills.workshop.allowSymlinkTargetWrites: true` in om Skill Workshop via hetzelfde vertrouwde doel van de symbolische koppeling te laten schrijven.
 
 ## Veelvoorkomende patronen
 
-### Gedeelde skill-basislijn met één override
+### Gedeelde basisconfiguratie voor skills met één overschrijving
 
 ```json5
 {
@@ -520,8 +520,8 @@ Gebruik dit wanneer een ingebouwde skill-root een symlink naar een naastgelegen 
 }
 ```
 
-- `agents.defaults.skills` is de gedeelde basislijn.
-- `agents.list[].skills` vervangt die basislijn voor één agent.
+- `agents.defaults.skills` is de gedeelde basisconfiguratie.
+- `agents.list[].skills` vervangt die basisconfiguratie voor één agent.
 - Gebruik `skills: []` wanneer een agent geen Skills mag zien.
 
 ### Installatie voor meerdere platforms
@@ -545,11 +545,11 @@ Gebruik dit wanneer een ingebouwde skill-root een symlink naar een naastgelegen 
 }
 ```
 
-### Automatische goedkeuring voor vertrouwd nodenetwerk
+### Automatische goedkeuring voor een vertrouwd Node-netwerk
 
-Houd apparaatkoppeling handmatig, tenzij je het netwerkpad beheert. Voor een dedicated
-lab- of tailnet-subnet kun je je aanmelden voor automatische goedkeuring van nieuwe node-apparaten
-met exacte CIDR's of IP's:
+Houd het koppelen van apparaten handmatig, tenzij je het netwerkpad beheert. Voor een specifiek
+lab- of tailnet-subnet kun je automatische goedkeuring inschakelen wanneer een Node-apparaat voor het eerst wordt gekoppeld,
+met exacte CIDR's of IP-adressen:
 
 ```json5
 {
@@ -563,27 +563,27 @@ met exacte CIDR's of IP's:
 }
 ```
 
-Dit blijft uitgeschakeld wanneer het niet is ingesteld. Het geldt alleen voor nieuwe `role: node`-koppelingen zonder
-aangevraagde scopes. Operator-/browserclients en upgrades van rol, scope, metadata of
-public key vereisen nog steeds handmatige goedkeuring.
+Dit blijft uitgeschakeld wanneer het niet is ingesteld. Het is alleen van toepassing op een nieuwe koppeling met `role: node`
+zonder aangevraagde scopes. Operator-/browserclients en upgrades van rol, scope, metagegevens of
+openbare sleutels vereisen nog steeds handmatige goedkeuring.
 
 ### Veilige DM-modus (gedeelde inbox / DM's met meerdere gebruikers)
 
-Als meer dan één persoon je bot kan DM'en (meerdere vermeldingen in `allowFrom`, koppelingsgoedkeuringen voor meerdere personen, of `dmPolicy: "open"`), schakel dan **veilige DM-modus** in zodat DM's van verschillende afzenders standaard niet één context delen:
+Als meer dan één persoon je bot een DM kan sturen (meerdere vermeldingen in `allowFrom`, goedgekeurde koppelingen voor meerdere personen of `dmPolicy: "open"`), schakel dan de **veilige DM-modus** in, zodat DM's van verschillende afzenders niet standaard dezelfde context delen:
 
 ```json5
 {
-  // Secure DM mode (recommended for multi-user or sensitive DM agents)
+  // Veilige DM-modus (aanbevolen voor DM-agents met meerdere gebruikers of gevoelige gegevens)
   session: { dmScope: "per-channel-peer" },
 
   channels: {
-    // Example: WhatsApp multi-user inbox
+    // Voorbeeld: WhatsApp-inbox voor meerdere gebruikers
     whatsapp: {
       dmPolicy: "allowlist",
       allowFrom: ["+15555550123", "+15555550124"],
     },
 
-    // Example: Discord multi-user inbox
+    // Voorbeeld: Discord-inbox voor meerdere gebruikers
     discord: {
       enabled: true,
       token: "YOUR_DISCORD_BOT_TOKEN",
@@ -593,10 +593,10 @@ Als meer dan één persoon je bot kan DM'en (meerdere vermeldingen in `allowFrom
 }
 ```
 
-Voor Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC is afzenderautorisatie standaard eerst op ID gebaseerd.
-Schakel directe, wijzigbare naam-/e-mail-/nickmatching met de `dangerouslyAllowNameMatching: true` van elk kanaal alleen in als je dat risico expliciet accepteert.
+Voor Discord/Google Chat/IRC/Mattermost/Microsoft Teams/Slack is afzenderautorisatie standaard primair gebaseerd op ID's.
+Schakel directe overeenkomsten met veranderlijke namen, e-mailadressen of bijnamen via `dangerouslyAllowNameMatching: true` voor elk kanaal alleen in als je dat risico uitdrukkelijk aanvaardt.
 
-### Anthropic API-sleutel + MiniMax-fallback
+### Anthropic-API-sleutel + MiniMax als terugvaloptie
 
 ```json5
 {
@@ -656,8 +656,8 @@ Schakel directe, wijzigbare naam-/e-mail-/nickmatching met de `dangerouslyAllowN
       enabled: true,
       botToken: "xoxb-...",
       channels: {
-        "#engineering": { allow: true, requireMention: true },
-        "#general": { allow: true, requireMention: true },
+        "#engineering": { enabled: true, requireMention: true },
+        "#general": { enabled: true, requireMention: true },
       },
     },
   },
@@ -700,10 +700,10 @@ Schakel directe, wijzigbare naam-/e-mail-/nickmatching met de `dangerouslyAllowN
 
 ## Tips
 
-- Als je `dmPolicy: "open"` instelt, moet de bijbehorende `allowFrom`-lijst `"*"` bevatten.
-- Provider-ID's verschillen (telefoonnummers, gebruikers-ID's, kanaal-ID's). Gebruik de providerdocumentatie om de indeling te bevestigen.
+- Als je `dmPolicy: "open"` instelt, moet de bijbehorende lijst `allowFrom` `"*"` bevatten.
+- Provider-ID's verschillen (telefoonnummers, gebruikers-ID's, kanaal-ID's). Raadpleeg de documentatie van de provider om de indeling te bevestigen.
 - Optionele secties om later toe te voegen: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
-- Zie [Providers](/nl/providers) en [Probleemoplossing](/nl/gateway/troubleshooting) voor uitgebreidere installatienotities.
+- Zie [Providers](/nl/providers) en [Probleemoplossing](/nl/gateway/troubleshooting) voor uitgebreidere installatie-informatie.
 
 ## Gerelateerd
 

@@ -1,33 +1,31 @@
 ---
 read_when:
-    - OpenClaw ile Arcee AI kullanmak istiyorsunuz
-    - API anahtarı ortam değişkenine veya CLI kimlik doğrulama seçimine ihtiyacınız var
+    - Arcee AI'ı OpenClaw ile kullanmak istiyorsunuz
+    - API anahtarı ortam değişkenine veya CLI kimlik doğrulama seçeneğine ihtiyacınız var
 summary: Arcee AI kurulumu (kimlik doğrulama + model seçimi)
 title: Arcee AI
 x-i18n:
-    generated_at: "2026-06-28T01:08:25Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:41:29Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 15570c1d018104377a473fe5f9b556d9a6ffd2dea6db5d55d46ca3702e237101
+    source_hash: fe519393db3cf39f1b14b8121603b6f667102ac8c122fb6560d9b73a6ee6b0a3
     source_path: providers/arcee.md
     workflow: 16
 ---
 
-[Arcee AI](https://arcee.ai), OpenAI uyumlu bir API üzerinden uzmanlar karışımı model ailesi Trinity'ye erişim sağlar. Tüm Trinity modelleri Apache 2.0 lisanslıdır.
+[Arcee AI](https://arcee.ai), OpenAI uyumlu bir API üzerinden uzmanlar karışımı Trinity model ailesini sunar. Tüm Trinity modelleri Apache 2.0 lisanslıdır. Arcee, çekirdekle birlikte paketlenmeyen resmî bir OpenClaw Plugin'idir; bu nedenle ilk kurulumdan önce yüklenmesi gerekir.
 
-Arcee AI modellerine doğrudan Arcee platformu üzerinden veya [OpenRouter](/tr/providers/openrouter) aracılığıyla erişilebilir.
+Arcee modellerine doğrudan Arcee platformu veya [OpenRouter](/tr/providers/openrouter) üzerinden erişin.
 
-| Özellik | Değer                                                                                 |
-| -------- | ------------------------------------------------------------------------------------- |
-| Sağlayıcı | `arcee`                                                                               |
-| Kimlik doğrulama | `ARCEEAI_API_KEY` (doğrudan) veya `OPENROUTER_API_KEY` (OpenRouter üzerinden)                   |
-| API      | OpenAI uyumlu                                                                     |
-| Temel URL | `https://api.arcee.ai/api/v1` (doğrudan) veya `https://openrouter.ai/api/v1` (OpenRouter) |
+| Özellik   | Değer                                                                                       |
+| --------- | ------------------------------------------------------------------------------------------- |
+| Sağlayıcı | `arcee`                                                                                     |
+| Kimlik doğrulama | `ARCEEAI_API_KEY` (doğrudan) veya `OPENROUTER_API_KEY` (OpenRouter üzerinden)         |
+| API       | OpenAI uyumlu                                                                               |
+| Temel URL | `https://api.arcee.ai/api/v1` (doğrudan) veya `https://openrouter.ai/api/v1` (OpenRouter)   |
 
-## Plugin'i kur
-
-Resmi Plugin'i kurun, ardından Gateway'i yeniden başlatın:
+## Plugin'i yükleme
 
 ```bash
 openclaw plugins install @openclaw/arcee-provider
@@ -37,17 +35,17 @@ openclaw gateway restart
 ## Başlarken
 
 <Tabs>
-  <Tab title="Direct (Arcee platform)">
+  <Tab title="Doğrudan (Arcee platformu)">
     <Steps>
-      <Step title="Get an API key">
+      <Step title="API anahtarı edinme">
         [Arcee AI](https://chat.arcee.ai/) üzerinde bir API anahtarı oluşturun.
       </Step>
-      <Step title="Run onboarding">
+      <Step title="İlk kurulumu çalıştırma">
         ```bash
         openclaw onboard --auth-choice arceeai-api-key
         ```
       </Step>
-      <Step title="Set a default model">
+      <Step title="Varsayılan model ayarlama">
         ```json5
         {
           agents: {
@@ -61,17 +59,17 @@ openclaw gateway restart
     </Steps>
   </Tab>
 
-  <Tab title="Via OpenRouter">
+  <Tab title="OpenRouter üzerinden">
     <Steps>
-      <Step title="Get an API key">
+      <Step title="API anahtarı edinme">
         [OpenRouter](https://openrouter.ai/keys) üzerinde bir API anahtarı oluşturun.
       </Step>
-      <Step title="Run onboarding">
+      <Step title="İlk kurulumu çalıştırma">
         ```bash
         openclaw onboard --auth-choice arceeai-openrouter
         ```
       </Step>
-      <Step title="Set a default model">
+      <Step title="Varsayılan model ayarlama">
         ```json5
         {
           agents: {
@@ -82,7 +80,7 @@ openclaw gateway restart
         }
         ```
 
-        Aynı model ref'leri hem doğrudan hem de OpenRouter kurulumlarında çalışır (örneğin `arcee/trinity-large-thinking`).
+        Aynı model referansları hem doğrudan hem de OpenRouter kurulumlarında çalışır.
       </Step>
     </Steps>
 
@@ -92,7 +90,7 @@ openclaw gateway restart
 ## Etkileşimsiz kurulum
 
 <Tabs>
-  <Tab title="Direct (Arcee platform)">
+  <Tab title="Doğrudan (Arcee platformu)">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -101,7 +99,7 @@ openclaw gateway restart
     ```
   </Tab>
 
-  <Tab title="Via OpenRouter">
+  <Tab title="OpenRouter üzerinden">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -113,49 +111,47 @@ openclaw gateway restart
 
 ## Yerleşik katalog
 
-OpenClaw şu anda bu Arcee statik kataloğuyla gelir:
-
-| Model ref'i                      | Ad                   | Girdi | Bağlam | Maliyet (1M başına giriş/çıkış) | Notlar                                     |
-| ------------------------------ | ---------------------- | ----- | ------- | -------------------- | ----------------------------------------- |
-| `arcee/trinity-large-thinking` | Trinity Large Thinking | metin  | 256K    | $0.25 / $0.90        | Varsayılan model; akıl yürütme etkin          |
-| `arcee/trinity-large-preview`  | Trinity Large Preview  | metin  | 128K    | $0.25 / $1.00        | Genel amaçlı; 400B parametre, 13B aktif  |
-| `arcee/trinity-mini`           | Trinity Mini 26B       | metin  | 128K    | $0.045 / $0.15       | Hızlı ve maliyet açısından verimli; fonksiyon çağırma |
+| Model referansı                | Ad                     | Girdi | Bağlam | En fazla çıktı | Maliyet (1 milyon başına giriş/çıkış) | Araçlar | Notlar                                           |
+| ------------------------------ | ---------------------- | ----- | ------ | -------------- | ------------------------------------- | ------- | ------------------------------------------------ |
+| `arcee/trinity-large-thinking` | Trinity Large Thinking | metin | 256K   | 80K            | $0.25 / $0.90                         | Hayır   | Varsayılan model; genişletilmiş düşünme           |
+| `arcee/trinity-large-preview`  | Trinity Large Preview  | metin | 128K   | 16K            | $0.25 / $1.00                         | Evet    | Genel amaçlı; 400 milyar parametre, 13 milyar etkin |
+| `arcee/trinity-mini`           | Trinity Mini 26B       | metin | 128K   | 80K            | $0.045 / $0.15                        | Evet    | Hızlı ve uygun maliyetli; işlev çağırma           |
 
 <Tip>
-Onboarding ön ayarı `arcee/trinity-large-thinking` modelini varsayılan model olarak ayarlar.
+İlk kurulum ön ayarı, varsayılan model olarak `arcee/trinity-large-thinking` modelini ayarlar.
 </Tip>
 
 ## Desteklenen özellikler
 
-| Özellik                                       | Destekleniyor                                    |
-| --------------------------------------------- | -------------------------------------------- |
-| Akış                                     | Evet                                          |
-| Araç kullanımı / fonksiyon çağırma                   | Evet (Trinity Mini, Trinity Large Preview)    |
-| Yapılandırılmış çıktı (JSON modu ve JSON şeması) | Evet                                          |
-| Genişletilmiş düşünme                             | Evet (Trinity Large Thinking; araçlar devre dışı) |
+| Özellik                                           | Destek durumu                                      |
+| ------------------------------------------------- | -------------------------------------------------- |
+| Akış                                              | Evet                                               |
+| Araç kullanımı / işlev çağırma                    | Evet (Trinity Mini, Trinity Large Preview)         |
+| Yapılandırılmış çıktı (JSON modu ve JSON şeması)  | Evet                                               |
+| Genişletilmiş düşünme                             | Evet (Trinity Large Thinking; araçlar devre dışı)  |
 
 <AccordionGroup>
-  <Accordion title="Environment note">
-    Gateway bir daemon (launchd/systemd) olarak çalışıyorsa `ARCEEAI_API_KEY`
-    (veya `OPENROUTER_API_KEY`) değişkeninin bu süreç tarafından erişilebilir olduğundan emin olun (örneğin
-    `~/.openclaw/.env` içinde veya `env.shellEnv` üzerinden).
+  <Accordion title="Ortam notu">
+    Gateway bir arka plan hizmeti (launchd/systemd) olarak çalışıyorsa `ARCEEAI_API_KEY`
+    (veya `OPENROUTER_API_KEY`) değişkeninin bu işlem tarafından erişilebilir olduğundan
+    emin olun; örneğin `~/.openclaw/.env` içinde veya `env.shellEnv` aracılığıyla.
   </Accordion>
 
-  <Accordion title="OpenRouter routing">
-    Arcee modellerini OpenRouter üzerinden kullanırken aynı `arcee/*` model ref'leri geçerlidir.
-    OpenClaw, kimlik doğrulama seçiminize göre yönlendirmeyi saydam biçimde yönetir. OpenRouter'a özgü
-    yapılandırma ayrıntıları için
-    [OpenRouter sağlayıcı dokümanlarına](/tr/providers/openrouter) bakın.
+  <Accordion title="OpenRouter yönlendirmesi">
+    Arcee modellerini OpenRouter üzerinden kullanırken aynı `arcee/*` model referansları
+    geçerlidir. OpenClaw, kimlik doğrulama seçiminize göre yönlendirmeyi şeffaf biçimde
+    gerçekleştirir. OpenRouter'a özgü yapılandırma ayrıntıları için
+    [OpenRouter sağlayıcı belgelerine](/tr/providers/openrouter) bakın.
   </Accordion>
 </AccordionGroup>
 
-## İlgili
+## İlgili içerikler
 
 <CardGroup cols={2}>
   <Card title="OpenRouter" href="/tr/providers/openrouter" icon="shuffle">
-    Arcee modellerine ve birçok başka modele tek bir API anahtarıyla erişin.
+    Arcee modellerine ve diğer birçok modele tek bir API anahtarıyla erişin.
   </Card>
-  <Card title="Model selection" href="/tr/concepts/model-providers" icon="layers">
-    Sağlayıcıları, model ref'lerini ve yük devretme davranışını seçme.
+  <Card title="Model seçimi" href="/tr/concepts/model-providers" icon="layers">
+    Sağlayıcıların, model referanslarının ve yük devretme davranışının seçimi.
   </Card>
 </CardGroup>

@@ -5,41 +5,32 @@ read_when:
 summary: Saluran DM Nostr melalui pesan terenkripsi NIP-04
 title: Nostr
 x-i18n:
-    generated_at: "2026-05-02T22:16:47Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:00:51Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d6158c22c0ffc5aea56d0ac2b68955f30c3a785013dba5410cbd70f9b689dc3c
+    source_hash: 31fa283f706036a37795ddad71602058ba94388a9cb01044927c4bb2d83ba4a8
     source_path: channels/nostr.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-**Status:** Plugin bawaan opsional (dinonaktifkan secara default hingga dikonfigurasi).
+Nostr adalah plugin saluran yang dapat diunduh (`@openclaw/nostr`) yang memungkinkan OpenClaw menerima dan menjawab pesan langsung terenkripsi NIP-04 melalui relai Nostr. Satu akun per Gateway; hanya pesan langsung.
 
-Nostr adalah protokol terdesentralisasi untuk jejaring sosial. Channel ini memungkinkan OpenClaw menerima dan merespons pesan langsung (DM) terenkripsi melalui NIP-04.
-
-## Plugin bawaan
-
-Rilis OpenClaw saat ini menyertakan Nostr sebagai Plugin bawaan, sehingga build paket normal tidak memerlukan instalasi terpisah.
-
-### Instalasi lama/kustom
-
-- Onboarding (`openclaw onboard`) dan `openclaw channels add` tetap menampilkan Nostr dari katalog channel bersama.
-- Jika build Anda mengecualikan Nostr bawaan, instal paket npm secara langsung.
+## Instalasi
 
 ```bash
 openclaw plugins install @openclaw/nostr
 ```
 
-Gunakan paket polos untuk mengikuti tag rilis resmi saat ini. Sematkan versi persis hanya saat Anda memerlukan instalasi yang dapat direproduksi.
+Gunakan spesifikasi paket tanpa versi untuk mengikuti tag rilis resmi saat ini. Sematkan versi persis hanya jika Anda memerlukan instalasi yang dapat direproduksi.
 
-Gunakan checkout lokal (alur kerja dev):
+Dari checkout lokal (alur kerja pengembangan):
 
 ```bash
 openclaw plugins install --link <path-to-local-nostr-plugin>
 ```
 
-Mulai ulang Gateway setelah menginstal atau mengaktifkan plugin.
+Mulai ulang Gateway setelah memasang atau mengaktifkan plugin. Orientasi awal (`openclaw onboard`) dan `openclaw channels add` menampilkan Nostr dari katalog saluran bersama setelah plugin dipasang.
 
 ### Penyiapan noninteraktif
 
@@ -48,18 +39,18 @@ openclaw channels add --channel nostr --private-key "$NOSTR_PRIVATE_KEY"
 openclaw channels add --channel nostr --private-key "$NOSTR_PRIVATE_KEY" --relay-urls "wss://relay.damus.io,wss://relay.primal.net"
 ```
 
-Gunakan `--use-env` untuk menyimpan `NOSTR_PRIVATE_KEY` di environment alih-alih menyimpan kunci dalam config.
+Gunakan `--use-env` agar `NOSTR_PRIVATE_KEY` tetap berada di lingkungan alih-alih menyimpan kunci dalam konfigurasi (hanya akun bawaan).
 
 ## Penyiapan cepat
 
-1. Buat keypair Nostr (jika diperlukan):
+1. Buat pasangan kunci Nostr (jika diperlukan):
 
 ```bash
-# Using nak
+# Menggunakan nak
 nak key generate
 ```
 
-2. Tambahkan ke config:
+2. Tambahkan ke konfigurasi:
 
 ```json5
 {
@@ -81,19 +72,19 @@ export NOSTR_PRIVATE_KEY="nsec1..."
 
 ## Referensi konfigurasi
 
-| Kunci        | Tipe     | Default                                     | Deskripsi                                  |
-| ------------ | -------- | ------------------------------------------- | ------------------------------------------ |
-| `privateKey` | string   | wajib                                       | Kunci privat dalam format `nsec` atau hex  |
-| `relays`     | string[] | `['wss://relay.damus.io', 'wss://nos.lol']` | URL relay (WebSocket)                      |
-| `dmPolicy`   | string   | `pairing`                                   | Kebijakan akses DM                         |
-| `allowFrom`  | string[] | `[]`                                        | Pubkey pengirim yang diizinkan             |
-| `enabled`    | boolean  | `true`                                      | Aktifkan/nonaktifkan channel               |
-| `name`       | string   | -                                           | Nama tampilan                              |
-| `profile`    | object   | -                                           | Metadata profil NIP-01                     |
+| Kunci        | Jenis    | Bawaan                                      | Deskripsi                                                       |
+| ------------ | -------- | ------------------------------------------- | --------------------------------------------------------------- |
+| `privateKey` | string   | wajib                                       | Kunci privat dalam format `nsec` atau hex; referensi rahasia diizinkan |
+| `relays`     | string[] | `['wss://relay.damus.io', 'wss://nos.lol']` | URL relai (WebSocket)                                           |
+| `dmPolicy`   | string   | `pairing`                                   | Kebijakan akses pesan langsung                                  |
+| `allowFrom`  | string[] | `[]`                                        | Kunci publik pengirim yang diizinkan                            |
+| `enabled`    | boolean  | `true`                                      | Aktifkan/nonaktifkan saluran                                    |
+| `name`       | string   | -                                           | Nama tampilan                                                   |
+| `profile`    | object   | -                                           | Metadata profil NIP-01                                          |
 
 ## Metadata profil
 
-Data profil diterbitkan sebagai event NIP-01 `kind:0`. Anda dapat mengelolanya dari Control UI (Channels -> Nostr -> Profile) atau mengaturnya langsung di config.
+Data profil dipublikasikan sebagai peristiwa NIP-01 `kind:0`. Anda dapat mengelolanya dari UI Kontrol (Channels -> Nostr -> Profile) atau mengaturnya langsung dalam konfigurasi.
 
 Contoh:
 
@@ -105,7 +96,7 @@ Contoh:
       profile: {
         name: "openclaw",
         displayName: "OpenClaw",
-        about: "Personal assistant DM bot",
+        about: "Bot pesan langsung asisten pribadi",
         picture: "https://example.com/avatar.png",
         banner: "https://example.com/banner.png",
         website: "https://example.com",
@@ -120,24 +111,24 @@ Contoh:
 Catatan:
 
 - URL profil harus menggunakan `https://`.
-- Mengimpor dari relay menggabungkan field dan mempertahankan override lokal.
+- Pengimporan dari relai menggabungkan bidang dan mempertahankan penggantian lokal.
 
 ## Kontrol akses
 
-### Kebijakan DM
+### Kebijakan pesan langsung
 
-- **pairing** (default): pengirim tidak dikenal menerima kode pairing.
-- **allowlist**: hanya pubkey di `allowFrom` yang dapat mengirim DM.
-- **open**: DM masuk publik (memerlukan `allowFrom: ["*"]`).
-- **disabled**: abaikan DM masuk.
+- **pairing** (bawaan): pengirim yang tidak dikenal mendapatkan kode pemasangan.
+- **allowlist**: hanya kunci publik dalam `allowFrom` yang dapat mengirim pesan langsung.
+- **open**: pesan langsung masuk terbuka untuk publik (memerlukan `allowFrom: ["*"]`).
+- **disabled**: abaikan pesan langsung masuk.
 
 Catatan penegakan:
 
-- Tanda tangan event masuk diverifikasi sebelum kebijakan pengirim dan dekripsi NIP-04, sehingga event palsu ditolak sejak awal.
-- Balasan pairing dikirim tanpa memproses isi DM asli.
-- DM masuk dibatasi lajunya dan payload terlalu besar dibuang sebelum dekripsi.
+- Tanda tangan peristiwa masuk diverifikasi sebelum kebijakan pengirim dan dekripsi NIP-04, sehingga peristiwa palsu ditolak sejak awal.
+- Balasan pemasangan dikirim tanpa mendekripsi atau memproses isi pesan langsung asli.
+- Pesan langsung masuk dibatasi lajunya (secara global dan per pengirim), dan muatan yang terlalu besar dibuang sebelum dekripsi.
 
-### Contoh allowlist
+### Contoh daftar izin
 
 ```json5
 {
@@ -156,11 +147,11 @@ Catatan penegakan:
 Format yang diterima:
 
 - **Kunci privat:** `nsec...` atau hex 64 karakter
-- **Pubkey (`allowFrom`):** `npub...` atau hex
+- **Kunci publik (`allowFrom`):** `npub...` atau hex
 
-## Relay
+## Relai
 
-Default: `relay.damus.io` dan `nos.lol`.
+Bawaan: `relay.damus.io` dan `nos.lol`.
 
 ```json5
 {
@@ -173,28 +164,28 @@ Default: `relay.damus.io` dan `nos.lol`.
 }
 ```
 
-Tips:
+Kiat:
 
-- Gunakan 2-3 relay untuk redundansi.
-- Hindari terlalu banyak relay (latensi, duplikasi).
-- Relay berbayar dapat meningkatkan keandalan.
-- Relay lokal cocok untuk pengujian (`ws://localhost:7777`).
+- Gunakan 2–3 relai untuk redundansi.
+- Hindari terlalu banyak relai (latensi, duplikasi).
+- Relai berbayar dapat meningkatkan keandalan.
+- Relai lokal cocok untuk pengujian (`ws://localhost:7777`).
 
 ## Dukungan protokol
 
-| NIP    | Status       | Deskripsi                              |
-| ------ | ------------ | -------------------------------------- |
-| NIP-01 | Didukung     | Format event dasar + metadata profil   |
-| NIP-04 | Didukung     | DM terenkripsi (`kind:4`)              |
-| NIP-17 | Direncanakan | DM berbungkus hadiah                   |
-| NIP-44 | Direncanakan | Enkripsi berversi                      |
+| NIP    | Status       | Deskripsi                                |
+| ------ | ------------ | ---------------------------------------- |
+| NIP-01 | Didukung     | Format peristiwa dasar + metadata profil |
+| NIP-04 | Didukung     | Pesan langsung terenkripsi (`kind:4`)    |
+| NIP-17 | Direncanakan | Pesan langsung berbungkus hadiah         |
+| NIP-44 | Direncanakan | Enkripsi berversi                        |
 
 ## Pengujian
 
-### Relay lokal
+### Relai lokal
 
 ```bash
-# Start strfry
+# Jalankan strfry
 docker run -p 7777:7777 ghcr.io/hoytech/strfry
 ```
 
@@ -211,48 +202,48 @@ docker run -p 7777:7777 ghcr.io/hoytech/strfry
 
 ### Pengujian manual
 
-1. Catat pubkey bot (npub) dari log.
-2. Buka klien Nostr (Damus, Amethyst, dll.).
-3. Kirim DM ke pubkey bot.
+1. Catat kunci publik bot dari log Gateway atau `openclaw channels status` (hex; konversikan ke npub di klien Anda jika diperlukan).
+2. Buka klien Nostr (Amethyst, Damus, dan sebagainya).
+3. Kirim pesan langsung ke kunci publik bot.
 4. Verifikasi responsnya.
 
 ## Pemecahan masalah
 
 ### Tidak menerima pesan
 
-- Verifikasi kunci privat valid.
-- Pastikan URL relay dapat dijangkau dan menggunakan `wss://` (atau `ws://` untuk lokal).
+- Verifikasi bahwa kunci privat valid.
+- Pastikan URL relai dapat dijangkau dan menggunakan `wss://` (atau `ws://` untuk lokal).
 - Pastikan `enabled` bukan `false`.
-- Periksa log Gateway untuk error koneksi relay.
+- Periksa log Gateway untuk menemukan kesalahan koneksi relai.
 
 ### Tidak mengirim respons
 
-- Periksa apakah relay menerima penulisan.
+- Periksa apakah relai menerima penulisan.
 - Verifikasi konektivitas keluar.
-- Perhatikan batas laju relay.
+- Waspadai batas laju relai.
 
 ### Respons duplikat
 
-- Wajar saat menggunakan beberapa relay.
-- Pesan dideduplikasi berdasarkan ID event; hanya pengiriman pertama yang memicu respons.
+- Hal ini wajar saat menggunakan beberapa relai.
+- Pesan dideduplikasi berdasarkan ID peristiwa; hanya pengiriman pertama yang memicu respons.
 
 ## Keamanan
 
-- Jangan pernah commit kunci privat.
-- Gunakan variabel environment untuk kunci.
+- Jangan pernah memasukkan kunci privat ke dalam commit.
+- Gunakan variabel lingkungan untuk kunci.
 - Pertimbangkan `allowlist` untuk bot produksi.
-- Tanda tangan diverifikasi sebelum kebijakan pengirim, dan kebijakan pengirim ditegakkan sebelum dekripsi, sehingga event palsu ditolak sejak awal dan pengirim tidak dikenal tidak dapat memaksa kerja kripto penuh.
+- Tanda tangan diverifikasi sebelum kebijakan pengirim, dan kebijakan pengirim diberlakukan sebelum dekripsi, sehingga peristiwa palsu ditolak sejak awal dan pengirim yang tidak dikenal tidak dapat memaksa pemrosesan kriptografi penuh.
 
 ## Keterbatasan (MVP)
 
 - Hanya pesan langsung (tanpa obrolan grup).
 - Tidak ada lampiran media.
-- Hanya NIP-04 (gift-wrap NIP-17 direncanakan).
+- Hanya NIP-04 (pembungkusan hadiah NIP-17 direncanakan).
 
 ## Terkait
 
-- [Ikhtisar Channel](/id/channels) — semua channel yang didukung
-- [Pairing](/id/channels/pairing) — autentikasi DM dan alur pairing
-- [Grup](/id/channels/groups) — perilaku obrolan grup dan gating mention
-- [Routing Channel](/id/channels/channel-routing) — routing sesi untuk pesan
-- [Keamanan](/id/gateway/security) — model akses dan hardening
+- [Ikhtisar Saluran](/id/channels) — semua saluran yang didukung
+- [Pemasangan](/id/channels/pairing) — autentikasi pesan langsung dan alur pemasangan
+- [Grup](/id/channels/groups) — perilaku obrolan grup dan pembatasan berdasarkan sebutan
+- [Perutean Saluran](/id/channels/channel-routing) — perutean sesi untuk pesan
+- [Keamanan](/id/gateway/security) — model akses dan penguatan

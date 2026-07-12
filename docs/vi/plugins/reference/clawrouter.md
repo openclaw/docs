@@ -4,27 +4,27 @@ read_when:
 summary: Thêm hỗ trợ nhà cung cấp mô hình ClawRouter vào OpenClaw.
 title: Plugin ClawRouter
 x-i18n:
-    generated_at: "2026-07-04T03:53:31Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:09:25Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e7ba259cdc8545967e3472225595fb5c3e9248b7cbcbdba3ef56ea15e0fd1655
+    source_hash: 9e9b6bb73e00ead4df682d7c5873b1fd97f84c7c9fe29d4f511403c598651f82
     source_path: plugins/reference/clawrouter.md
     workflow: 16
 ---
 
 # Plugin ClawRouter
 
-Thêm hỗ trợ nhà cung cấp mô hình ClawRouter vào OpenClaw.
+Bổ sung hỗ trợ nhà cung cấp mô hình ClawRouter cho OpenClaw.
 
 ## Phân phối
 
 - Gói: `@openclaw/clawrouter`
-- Cách cài đặt: được bao gồm trong OpenClaw
+- Cách cài đặt: được tích hợp trong OpenClaw
 
-## Bề mặt
+## Bề mặt tích hợp
 
-providers: clawrouter
+nhà cung cấp: clawrouter; hợp đồng: usageProviders
 
 ## Tài liệu liên quan
 

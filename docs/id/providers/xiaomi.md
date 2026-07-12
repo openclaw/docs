@@ -1,44 +1,43 @@
 ---
 read_when:
-    - Anda menginginkan model Xiaomi MiMo di OpenClaw
+    - Anda ingin model Xiaomi MiMo di OpenClaw
     - Anda memerlukan autentikasi Xiaomi MiMo atau penyiapan Token Plan
-summary: Gunakan model bayar sesuai penggunaan dan Paket Token Xiaomi MiMo dengan OpenClaw
+summary: Gunakan model bayar sesuai pemakaian dan Paket Token Xiaomi MiMo dengan OpenClaw
 title: Xiaomi MiMo
 x-i18n:
-    generated_at: "2026-06-27T18:08:29Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:38:50Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 171c4b95c6ff12d4b8d75747d35fcad19c6173d670a3af65fe0a286e04199751
+    source_hash: e6b91ead3e4a32a93bca7e02476b8de11137e8a5b5fa434bad8187bc1b204856
     source_path: providers/xiaomi.md
     workflow: 16
 ---
 
-Xiaomi MiMo adalah platform API untuk model **MiMo**. OpenClaw menyertakan Plugin Xiaomi bawaan dengan dua preset penyedia teks:
+Xiaomi MiMo adalah platform API untuk model **MiMo**. Plugin `xiaomi`
+bawaan (`enabledByDefault: true`, tanpa langkah instalasi) mendaftarkan dua
+penyedia teks serta satu penyedia suara (TTS):
 
-- `xiaomi` untuk kunci bayar sesuai pemakaian (`sk-...`)
-- `xiaomi-token-plan` untuk kunci Token Plan (`tp-...`) dengan preset endpoint regional
+- `xiaomi` - kunci bayar sesuai pemakaian (`sk-...`)
+- `xiaomi-token-plan` - kunci Token Plan (`tp-...`) dengan prasetel endpoint regional
 
-Plugin yang sama juga mendaftarkan penyedia ucapan (TTS) `xiaomi`.
-
-| Properti         | Nilai                                                                                                                                              |
-| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ID penyedia      | `xiaomi` (bayar sesuai pemakaian), `xiaomi-token-plan` (Token Plan)                                                                                |
-| Plugin           | dibundel, `enabledByDefault: true`                                                                                                                 |
-| Variabel env auth | `XIAOMI_API_KEY`, `XIAOMI_TOKEN_PLAN_API_KEY`                                                                                                      |
-| Flag onboarding  | `--auth-choice xiaomi-api-key`, `--auth-choice xiaomi-token-plan-cn`, `--auth-choice xiaomi-token-plan-sgp`, `--auth-choice xiaomi-token-plan-ams` |
-| Flag CLI langsung | `--xiaomi-api-key <key>`, `--xiaomi-token-plan-api-key <key>`                                                                                      |
-| Kontrak          | penyelesaian chat + `speechProviders`                                                                                                              |
-| API              | kompatibel dengan OpenAI (`openai-completions`)                                                                                                    |
-| URL dasar        | Bayar sesuai pemakaian: `https://api.xiaomimimo.com/v1`; preset Token Plan: `token-plan-{cn,sgp,ams}...`                                           |
-| Model default    | `xiaomi/mimo-v2-flash`, `xiaomi-token-plan/mimo-v2.5-pro`                                                                                          |
-| Default TTS      | `mimo-v2.5-tts`, suara `mimo_default`; model voicedesign `mimo-v2.5-tts-voicedesign`                                                               |
+| Properti               | Nilai                                                                                                                                              |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ID penyedia            | `xiaomi` (bayar sesuai pemakaian), `xiaomi-token-plan` (Token Plan)                                                                                |
+| Variabel lingkungan autentikasi | `XIAOMI_API_KEY`, `XIAOMI_TOKEN_PLAN_API_KEY`                                                                                            |
+| Flag orientasi awal    | `--auth-choice xiaomi-api-key`, `--auth-choice xiaomi-token-plan-cn`, `--auth-choice xiaomi-token-plan-sgp`, `--auth-choice xiaomi-token-plan-ams` |
+| Flag CLI langsung      | `--xiaomi-api-key <key>`, `--xiaomi-token-plan-api-key <key>`                                                                                      |
+| API                    | Penyelesaian percakapan yang kompatibel dengan OpenAI (`openai-completions`)                                                                       |
+| Kontrak suara          | `speechProviders: ["xiaomi"]`                                                                                                                      |
+| URL dasar              | Bayar sesuai pemakaian: `https://api.xiaomimimo.com/v1`; Token Plan: `token-plan-{cn,sgp,ams}.xiaomimimo.com/v1`                                  |
+| Model bawaan           | `xiaomi/mimo-v2-flash`, `xiaomi-token-plan/mimo-v2.5-pro`                                                                                          |
+| TTS bawaan             | `mimo-v2.5-tts`, suara `mimo_default`; model desain suara `mimo-v2.5-tts-voicedesign`                                                              |
 
 ## Memulai
 
 <Steps>
   <Step title="Get the right key">
-    Buat kunci bayar sesuai pemakaian di [konsol Xiaomi MiMo](https://platform.xiaomimimo.com/#/console/api-keys), atau buka halaman langganan Token Plan Anda dan salin URL dasar regional yang kompatibel dengan OpenAI beserta kunci `tp-...` yang cocok.
+    Buat kunci bayar sesuai pemakaian di [konsol Xiaomi MiMo](https://platform.xiaomimimo.com/#/console/api-keys), atau buka halaman langganan Token Plan Anda dan salin URL dasar regional yang kompatibel dengan OpenAI beserta kunci `tp-...` yang sesuai.
   </Step>
 
   <Step title="Run onboarding">
@@ -54,7 +53,7 @@ Plugin yang sama juga mendaftarkan penyedia ucapan (TTS) `xiaomi`.
     openclaw onboard --auth-choice xiaomi-token-plan-sgp
     ```
 
-    Atau berikan kunci secara langsung:
+    Atau teruskan kunci secara langsung:
 
     ```bash
     openclaw onboard --auth-choice xiaomi-api-key --xiaomi-api-key "$XIAOMI_API_KEY"
@@ -70,48 +69,59 @@ Plugin yang sama juga mendaftarkan penyedia ucapan (TTS) `xiaomi`.
   </Step>
 </Steps>
 
+<Tip>
+Orientasi awal memvalidasi format kunci dan memperingatkan ketika kunci `tp-...` dimasukkan ke jalur bayar sesuai pemakaian, atau kunci `sk-...` dimasukkan ke jalur Token Plan.
+</Tip>
+
 ## Katalog bayar sesuai pemakaian
 
-| Ref model              | Input       | Konteks   | Output maks | Penalaran | Catatan       |
-| ---------------------- | ----------- | --------- | ----------- | --------- | ------------- |
-| `xiaomi/mimo-v2-flash` | teks        | 262,144   | 8,192       | Tidak     | Model default |
-| `xiaomi/mimo-v2-pro`   | teks        | 1,048,576 | 32,000      | Ya        | Konteks besar |
-| `xiaomi/mimo-v2-omni`  | teks, gambar | 262,144  | 32,000      | Ya        | Multimodal    |
-
-<Tip>
-Ref model default adalah `xiaomi/mimo-v2-flash`. Penyedia disuntikkan secara otomatis saat `XIAOMI_API_KEY` disetel atau profil auth tersedia.
-</Tip>
+| Referensi model        | Masukan     | Konteks   | Keluaran maks. | Penalaran | Catatan       |
+| ---------------------- | ----------- | --------- | -------------- | --------- | ------------- |
+| `xiaomi/mimo-v2-flash` | teks        | 262,144   | 8,192          | Tidak     | Model bawaan  |
+| `xiaomi/mimo-v2-pro`   | teks        | 1,048,576 | 32,000         | Ya        | Konteks besar |
+| `xiaomi/mimo-v2-omni`  | teks, gambar | 262,144  | 32,000         | Ya        | Multimodal    |
 
 ## Katalog Token Plan
 
-Pilih pilihan auth Token Plan yang cocok dengan URL dasar regional yang ditampilkan di UI langganan Xiaomi:
+Pilih opsi autentikasi Token Plan yang sesuai dengan URL dasar regional yang ditampilkan di UI langganan Xiaomi:
 
-- `xiaomi-token-plan-cn` -> `https://token-plan-cn.xiaomimimo.com/v1`
-- `xiaomi-token-plan-sgp` -> `https://token-plan-sgp.xiaomimimo.com/v1`
-- `xiaomi-token-plan-ams` -> `https://token-plan-ams.xiaomimimo.com/v1`
+| Opsi autentikasi        | URL dasar                                  |
+| ----------------------- | ------------------------------------------ |
+| `xiaomi-token-plan-cn`  | `https://token-plan-cn.xiaomimimo.com/v1`  |
+| `xiaomi-token-plan-sgp` | `https://token-plan-sgp.xiaomimimo.com/v1` |
+| `xiaomi-token-plan-ams` | `https://token-plan-ams.xiaomimimo.com/v1` |
 
-| Ref model                         | Input       | Konteks   | Output maks | Penalaran | Catatan       |
-| --------------------------------- | ----------- | --------- | ----------- | --------- | ------------- |
-| `xiaomi-token-plan/mimo-v2.5-pro` | teks        | 1,048,576 | 131,072     | Ya        | Model default |
-| `xiaomi-token-plan/mimo-v2.5`     | teks, gambar | 1,048,576 | 131,072    | Ya        | Multimodal    |
+| Referensi model                   | Masukan      | Konteks   | Keluaran maks. | Penalaran | Catatan      |
+| --------------------------------- | ------------ | --------- | -------------- | --------- | ------------ |
+| `xiaomi-token-plan/mimo-v2.5-pro` | teks         | 1,048,576 | 131,072        | Ya        | Model bawaan |
+| `xiaomi-token-plan/mimo-v2.5`     | teks, gambar | 1,048,576 | 131,072        | Ya        | Multimodal   |
 
-<Tip>
-Onboarding Token Plan memvalidasi bentuk kunci dan memberi peringatan saat kunci `tp-...` dimasukkan ke jalur bayar sesuai pemakaian, atau kunci `sk-...` dimasukkan ke jalur Token Plan.
-</Tip>
+`xiaomi-token-plan` memerlukan URL dasar regional agar dapat diresolusikan. Jalur
+yang didukung adalah opsi orientasi awal Token Plan bawaan atau blok konfigurasi
+`models.providers.xiaomi-token-plan` eksplisit dengan `baseUrl` yang ditetapkan;
+penyedia tidak ditawarkan tanpa salah satunya.
 
-## Teks-ke-ucapan
+## Model penalaran
 
-Plugin `xiaomi` bawaan juga mendaftarkan Xiaomi MiMo sebagai penyedia ucapan untuk
-`messages.tts`. Plugin ini memanggil kontrak TTS penyelesaian chat Xiaomi dengan teks sebagai
-pesan `assistant` dan panduan gaya opsional sebagai pesan `user`.
+`mimo-v2-pro`, `mimo-v2-omni`, `mimo-v2.5`, dan `mimo-v2.5-pro` mendukung
+[direktif `/think`](/id/tools/thinking) OpenClaw dengan tingkat `off`,
+`minimal`, `low`, `medium`, `high`, `xhigh`, dan `max` (bawaan `high`).
+`mimo-v2-flash` tidak mendukung penalaran.
+
+## Teks ke suara
+
+Plugin `xiaomi` bawaan juga mendaftarkan Xiaomi MiMo sebagai penyedia suara
+untuk `messages.tts`. Plugin ini memanggil kontrak TTS penyelesaian percakapan
+Xiaomi dengan teks sebagai pesan `assistant` dan panduan gaya opsional sebagai
+pesan `user`.
 
 | Properti | Nilai                                    |
 | -------- | ---------------------------------------- |
 | ID TTS   | `xiaomi` (alias `mimo`)                  |
-| Auth     | `XIAOMI_API_KEY`                         |
+| Autentikasi | `XIAOMI_API_KEY`                      |
 | API      | `POST /v1/chat/completions` dengan `audio` |
-| Default  | `mimo-v2.5-tts`, suara `mimo_default`    |
-| Output   | MP3 secara default; WAV saat dikonfigurasi |
+| Bawaan   | `mimo-v2.5-tts`, suara `mimo_default`    |
+| Keluaran | MP3 secara bawaan; WAV jika dikonfigurasi |
 
 ```json5
 {
@@ -133,14 +143,14 @@ pesan `assistant` dan panduan gaya opsional sebagai pesan `user`.
 }
 ```
 
-Suara bawaan yang didukung mencakup `mimo_default`, `default_zh`, `default_en`,
-`Mia`, `Chloe`, `Milo`, dan `Dean`. Model suara preset menggunakan `audio.voice`, jadi
-OpenClaw mengirim `speakerVoice` untuk `mimo-v2.5-tts` dan `mimo-v2-tts`.
+Suara bawaan: `mimo_default`, `default_zh`, `default_en`, `Mia`, `Chloe`,
+`Milo`, `Dean`. Model suara prasetel (`mimo-v2.5-tts`, `mimo-v2-tts`) menggunakan
+`audio.voice`, sehingga OpenClaw mengirimkan `speakerVoice` untuk model tersebut.
 
-Model voicedesign Xiaomi, `mimo-v2.5-tts-voicedesign`, menghasilkan suara
-dari prompt gaya bahasa alami, bukan dari ID suara preset. Konfigurasikan
-`style` dengan deskripsi suara yang diinginkan; OpenClaw mengirimkannya sebagai pesan `user`,
-mengirim teks yang diucapkan sebagai pesan `assistant`, dan menghilangkan
+Model desain suara `mimo-v2.5-tts-voicedesign` menghasilkan suara dari perintah
+gaya dalam bahasa alami, bukan dari ID suara prasetel. Tetapkan `style` ke
+deskripsi suara yang diinginkan; OpenClaw mengirimkannya sebagai pesan `user`,
+mengirimkan teks yang akan diucapkan sebagai pesan `assistant`, dan menghilangkan
 `audio.voice` untuk model ini.
 
 ```json5
@@ -160,10 +170,11 @@ mengirim teks yang diucapkan sebagai pesan `assistant`, dan menghilangkan
 }
 ```
 
-Untuk target catatan suara seperti Feishu dan Telegram, OpenClaw mentranskode output Xiaomi
-ke Opus 48kHz dengan `ffmpeg` sebelum pengiriman.
+Untuk saluran yang meminta target sintesis catatan suara (Discord, Feishu,
+Matrix, Telegram, dan WhatsApp), OpenClaw mentranskode keluaran Xiaomi menjadi
+Opus mono 48 kHz dengan `ffmpeg` sebelum dikirimkan.
 
-## Contoh config
+## Contoh konfigurasi
 
 ```json5
 {
@@ -208,7 +219,7 @@ ke Opus 48kHz dengan `ffmpeg` sebelum pengiriman.
 }
 ```
 
-Harga dan flag kompatibilitas berasal dari manifes Plugin bawaan, sehingga contoh config menghilangkan `cost` dan `compat` agar tidak menyimpang dari perilaku runtime.
+Harga dan flag kompatibilitas berasal dari manifes plugin bawaan, sehingga contoh konfigurasi menghilangkan `cost` dan `compat` agar tidak menyimpang dari perilaku runtime.
 
 Token Plan:
 
@@ -247,19 +258,19 @@ Token Plan:
 }
 ```
 
-Harga berasal dari manifes bawaan (model Token Plan mencakup harga baca cache bertingkat), sehingga contoh config menghilangkan `cost`.
+Harga berasal dari manifes bawaan (model Token Plan mencakup harga pembacaan cache bertingkat), sehingga contoh konfigurasi menghilangkan `cost`.
 
 <AccordionGroup>
   <Accordion title="Auto-injection behavior">
-    Penyedia `xiaomi` disuntikkan secara otomatis saat `XIAOMI_API_KEY` disetel di lingkungan Anda atau profil auth tersedia. `xiaomi-token-plan` membutuhkan URL dasar regional, jadi jalur yang didukung adalah pilihan onboarding Token Plan bawaan atau blok config `models.providers.xiaomi-token-plan` eksplisit.
+    Penyedia `xiaomi` diaktifkan secara otomatis ketika `XIAOMI_API_KEY` ditetapkan di lingkungan Anda atau terdapat profil autentikasi. `xiaomi-token-plan` memerlukan URL dasar regional, sehingga jalur yang didukung adalah opsi orientasi awal Token Plan bawaan atau blok konfigurasi `models.providers.xiaomi-token-plan` eksplisit.
   </Accordion>
 
   <Accordion title="Model details">
-    - **mimo-v2-flash** — ringan dan cepat, ideal untuk tugas teks tujuan umum. Tidak mendukung penalaran.
-    - **mimo-v2-pro** — mendukung penalaran dengan jendela konteks 1 juta token untuk beban kerja dokumen panjang.
-    - **mimo-v2-omni** — model multimodal dengan penalaran yang menerima input teks dan gambar.
-    - **mimo-v2.5-pro** — default Token Plan dengan stack penalaran V2.5 Xiaomi saat ini.
-    - **mimo-v2.5** — rute V2.5 multimodal Token Plan.
+    - **mimo-v2-flash** - ringan dan cepat, ideal untuk tugas teks serbaguna. Tidak mendukung penalaran.
+    - **mimo-v2-pro** - mendukung penalaran dengan jendela konteks 1 juta token untuk beban kerja dokumen panjang.
+    - **mimo-v2-omni** - model multimodal berkemampuan penalaran yang menerima masukan teks dan gambar.
+    - **mimo-v2.5-pro** - model bawaan Token Plan dengan tumpukan penalaran V2.5 Xiaomi saat ini.
+    - **mimo-v2.5** - rute V2.5 multimodal Token Plan.
 
     <Note>
     Model bayar sesuai pemakaian menggunakan prefiks `xiaomi/`. Model Token Plan menggunakan prefiks `xiaomi-token-plan/`.
@@ -268,12 +279,12 @@ Harga berasal dari manifes bawaan (model Token Plan mencakup harga baca cache be
   </Accordion>
 
   <Accordion title="Troubleshooting">
-    - Jika model tidak muncul, pastikan variabel env kunci yang relevan atau profil auth tersedia dan valid.
-    - Untuk Token Plan, pastikan wilayah onboarding yang dipilih cocok dengan URL dasar halaman langganan dan kunci dimulai dengan `tp-`.
-    - Saat Gateway berjalan sebagai daemon, pastikan kunci tersedia untuk proses tersebut (misalnya di `~/.openclaw/.env` atau melalui `env.shellEnv`).
+    - Jika model tidak muncul, pastikan variabel lingkungan kunci atau profil autentikasi yang relevan tersedia dan valid.
+    - Untuk Token Plan, pastikan wilayah orientasi awal yang dipilih sesuai dengan URL dasar halaman langganan dan kunci diawali dengan `tp-`.
+    - Ketika Gateway berjalan sebagai daemon, pastikan kunci tersedia bagi proses tersebut (misalnya di `~/.openclaw/.env` atau melalui `env.shellEnv`).
 
     <Warning>
-    Kunci yang hanya disetel di shell interaktif Anda tidak terlihat oleh proses gateway yang dikelola daemon. Gunakan config `~/.openclaw/.env` atau `env.shellEnv` untuk ketersediaan persisten.
+    Kunci yang hanya ditetapkan di shell interaktif Anda tidak terlihat oleh proses Gateway yang dikelola daemon. Gunakan konfigurasi `~/.openclaw/.env` atau `env.shellEnv` agar tersedia secara persisten.
     </Warning>
 
   </Accordion>
@@ -283,10 +294,13 @@ Harga berasal dari manifes bawaan (model Token Plan mencakup harga baca cache be
 
 <CardGroup cols={2}>
   <Card title="Model selection" href="/id/concepts/model-providers" icon="layers">
-    Memilih penyedia, ref model, dan perilaku failover.
+    Memilih penyedia, referensi model, dan perilaku failover.
+  </Card>
+  <Card title="Thinking levels" href="/id/tools/thinking" icon="brain">
+    Sintaks direktif `/think` dan pemetaan tingkat.
   </Card>
   <Card title="Configuration reference" href="/id/gateway/configuration-reference" icon="gear">
-    Referensi konfigurasi lengkap OpenClaw.
+    Referensi konfigurasi OpenClaw lengkap.
   </Card>
   <Card title="Xiaomi MiMo console" href="https://platform.xiaomimimo.com" icon="arrow-up-right-from-square">
     Dasbor Xiaomi MiMo dan pengelolaan kunci API.

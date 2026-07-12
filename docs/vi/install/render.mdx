@@ -1,43 +1,33 @@
 ---
 read_when:
     - Triển khai OpenClaw lên Render
-    - Bạn muốn triển khai đám mây dạng khai báo bằng Render Blueprints
-summary: Triển khai OpenClaw trên Render bằng Hạ tầng dưới dạng mã
+    - Bạn muốn triển khai đám mây theo kiểu khai báo bằng Render Blueprints
+summary: Triển khai OpenClaw trên Render bằng Hạ tầng dưới dạng mã nguồn
 title: Kết xuất
 x-i18n:
-    generated_at: "2026-04-29T22:53:55Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:01:24Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 95ffe98a60e9919826a7c7fdb9cbafd63d20ce3de111ac305f43907b1ae442dc
+    source_hash: a5fbb3c6df04e186df958a62a6130da4e3e485acfeecc7e85fee0d5b69a0438f
     source_path: install/render.mdx
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# Render
-
-Triển khai OpenClaw trên Render bằng Infrastructure as Code. Blueprint `render.yaml` đi kèm định nghĩa toàn bộ stack của bạn theo cách khai báo, gồm service, disk, biến môi trường, để bạn có thể triển khai chỉ bằng một cú nhấp và quản lý phiên bản hạ tầng cùng với mã nguồn.
+Triển khai OpenClaw trên [Render](https://render.com) bằng Blueprint `render.yaml` của kho mã nguồn. Tệp này khai báo dịch vụ, ổ đĩa và các biến môi trường trong một tệp duy nhất.
 
 ## Điều kiện tiên quyết
 
 - Một [tài khoản Render](https://render.com) (có gói miễn phí)
-- Một khóa API từ [nhà cung cấp mô hình](/vi/providers) bạn ưu tiên
+- Khóa API từ [nhà cung cấp mô hình](/vi/providers) bạn ưu tiên
 
-## Triển khai bằng Render Blueprint
+## Triển khai
 
 [Triển khai lên Render](https://render.com/deploy?repo=https://github.com/openclaw/openclaw)
 
-Khi nhấp vào liên kết này, hệ thống sẽ:
+Thao tác này tạo một dịch vụ Render từ `render.yaml`, xây dựng ảnh Docker và triển khai dịch vụ. URL dịch vụ của bạn có dạng `https://<service-name>.onrender.com`.
 
-1. Tạo một Render service mới từ Blueprint `render.yaml` ở thư mục gốc của repo này.
-2. Build Docker image và triển khai
-
-Sau khi triển khai, URL service của bạn có dạng `https://<service-name>.onrender.com`.
-
-## Tìm hiểu Blueprint
-
-Render Blueprints là các tệp YAML định nghĩa hạ tầng của bạn. `render.yaml` trong
-repository này cấu hình mọi thứ cần thiết để chạy OpenClaw:
+## Blueprint
 
 ```yaml
 services:
@@ -54,122 +44,100 @@ services:
       - key: OPENCLAW_WORKSPACE_DIR
         value: /data/workspace
       - key: OPENCLAW_GATEWAY_TOKEN
-        generateValue: true # auto-generates a secure token
+        generateValue: true # tự động tạo một token bảo mật
     disk:
       name: openclaw-data
       mountPath: /data
       sizeGB: 1
 ```
 
-Các tính năng Blueprint chính được sử dụng:
-
-| Tính năng             | Mục đích                                                   |
+| Tính năng              | Mục đích                                                    |
 | --------------------- | ---------------------------------------------------------- |
-| `runtime: docker`     | Build từ Dockerfile của repo                               |
-| `healthCheckPath`     | Render giám sát `/health` và khởi động lại instance lỗi    |
-| `generateValue: true` | Tự động tạo một giá trị bảo mật bằng mật mã học            |
-| `disk`                | Lưu trữ bền vững tồn tại qua các lần triển khai lại        |
+| `runtime: docker`     | Xây dựng từ Dockerfile của kho mã nguồn                    |
+| `healthCheckPath`     | Render giám sát `/health` và khởi động lại các phiên bản không khỏe mạnh |
+| `generateValue: true` | Tự động tạo một giá trị an toàn về mặt mật mã              |
+| `disk`                | Bộ nhớ lưu trữ bền vững, vẫn tồn tại sau khi triển khai lại |
 
 ## Chọn gói
 
-| Gói       | Tạm dừng          | Disk          | Phù hợp nhất cho              |
-| --------- | ----------------- | ------------- | ----------------------------- |
-| Free      | Sau 15 phút rảnh  | Không có      | Kiểm thử, demo                |
-| Starter   | Không bao giờ     | 1GB+          | Sử dụng cá nhân, nhóm nhỏ     |
-| Standard+ | Không bao giờ     | 1GB+          | Production, nhiều kênh        |
+| Gói       | Tạm dừng             | Ổ đĩa        | Phù hợp nhất cho              |
+| --------- | -------------------- | ------------ | ----------------------------- |
+| Free      | Sau 15 phút không hoạt động | Không có | Kiểm thử, bản trình diễn      |
+| Starter   | Không bao giờ        | 1GB+         | Sử dụng cá nhân, nhóm nhỏ     |
+| Standard+ | Không bao giờ        | 1GB+         | Môi trường sản xuất, nhiều kênh |
 
-Blueprint mặc định dùng `starter`. Để dùng gói miễn phí, hãy đổi `plan: free` trong
-`render.yaml` của fork của bạn (nhưng lưu ý: không có disk bền vững nghĩa là trạng thái OpenClaw
-sẽ đặt lại ở mỗi lần triển khai).
+Blueprint mặc định sử dụng `starter`. Để dùng gói miễn phí, hãy đổi thành `plan: free` trong `render.yaml` của bản fork — lưu ý rằng khi không có ổ đĩa bền vững, trạng thái OpenClaw sẽ được đặt lại sau mỗi lần triển khai.
 
 ## Sau khi triển khai
 
-### Truy cập Control UI
+### Truy cập giao diện điều khiển
 
-Bảng điều khiển web có tại `https://<your-service>.onrender.com/`.
-
-Kết nối bằng shared secret đã cấu hình. Mẫu triển khai này tự động tạo
-`OPENCLAW_GATEWAY_TOKEN` (tìm trong **Dashboard → service của bạn →
-Environment**); nếu bạn thay bằng xác thực mật khẩu, hãy dùng mật khẩu đó
-thay vào.
-
-## Tính năng Render Dashboard
+Bảng điều khiển web có tại `https://<your-service>.onrender.com/`. Kết nối bằng bí mật dùng chung: `OPENCLAW_GATEWAY_TOKEN` được tạo tự động (tìm trong **Dashboard → your service → Environment**), hoặc mật khẩu của bạn nếu đã chuyển sang xác thực bằng mật khẩu.
 
 ### Nhật ký
 
-Xem nhật ký thời gian thực trong **Dashboard → service của bạn → Logs**. Lọc theo:
-
-- Nhật ký build (tạo Docker image)
-- Nhật ký triển khai (khởi động service)
-- Nhật ký runtime (đầu ra ứng dụng)
+**Dashboard → your service → Logs** hiển thị nhật ký xây dựng (tạo ảnh Docker), nhật ký triển khai (khởi động dịch vụ) và nhật ký thời gian chạy (đầu ra của ứng dụng).
 
 ### Truy cập shell
 
-Để debug, mở một phiên shell qua **Dashboard → service của bạn → Shell**. Disk bền vững được mount tại `/data`.
+**Dashboard → your service → Shell** mở một phiên shell. Ổ đĩa bền vững được gắn tại `/data`.
 
 ### Biến môi trường
 
-Sửa đổi biến trong **Dashboard → service của bạn → Environment**. Các thay đổi sẽ kích hoạt triển khai lại tự động.
+Chỉnh sửa các biến trong **Dashboard → your service → Environment**. Các thay đổi sẽ kích hoạt quá trình tự động triển khai lại.
 
 ### Tự động triển khai
 
-Nếu bạn dùng repository OpenClaw gốc, Render sẽ không tự động triển khai OpenClaw của bạn. Để cập nhật, hãy chạy đồng bộ Blueprint thủ công từ dashboard.
+Render tự động triển khai lại khi nhánh của kho mã nguồn được kết nối có commit mới. Nếu bạn triển khai trực tiếp từ `openclaw/openclaw` thay vì bản fork của riêng mình, bạn không có quyền đẩy mã để kích hoạt quá trình này; vì vậy, hãy cập nhật bằng cách chạy đồng bộ Blueprint thủ công từ Dashboard hoặc trỏ dịch vụ đến bản fork của riêng bạn.
 
 ## Miền tùy chỉnh
 
-1. Vào **Dashboard → service của bạn → Settings → Custom Domains**
+1. **Dashboard → your service → Settings → Custom Domains**
 2. Thêm miền của bạn
-3. Cấu hình DNS theo hướng dẫn (CNAME tới `*.onrender.com`)
+3. Cấu hình DNS theo hướng dẫn (CNAME trỏ đến `*.onrender.com`)
 4. Render tự động cấp chứng chỉ TLS
 
 ## Mở rộng quy mô
 
-Render hỗ trợ mở rộng theo chiều ngang và chiều dọc:
-
-- **Chiều dọc**: Đổi gói để có thêm CPU/RAM
-- **Chiều ngang**: Tăng số lượng instance (gói Standard trở lên)
-
-Với OpenClaw, mở rộng theo chiều dọc thường là đủ. Mở rộng theo chiều ngang yêu cầu sticky sessions hoặc quản lý trạng thái bên ngoài.
+- **Theo chiều dọc**: đổi gói để có thêm CPU/RAM. Thường là đủ cho OpenClaw.
+- **Theo chiều ngang**: tăng số lượng phiên bản (gói Standard trở lên). Yêu cầu phiên cố định hoặc quản lý trạng thái bên ngoài vì OpenClaw lưu trạng thái thời gian chạy trên ổ đĩa cục bộ.
 
 ## Sao lưu và di chuyển
 
-Xuất trạng thái, cấu hình, hồ sơ xác thực và workspace của bạn bất cứ lúc nào bằng
-quyền truy cập shell trong Render Dashboard:
+Từ shell trong Render Dashboard, bạn có thể xuất trạng thái, cấu hình, hồ sơ xác thực và không gian làm việc bất cứ lúc nào:
 
 ```bash
 openclaw backup create
 ```
 
-Lệnh này tạo một kho lưu trữ sao lưu có thể di chuyển, gồm trạng thái OpenClaw cùng mọi
-workspace đã cấu hình. Xem [Sao lưu](/vi/cli/backup) để biết chi tiết.
+Lệnh này tạo một kho lưu trữ sao lưu có thể di chuyển. Xem [Sao lưu](/vi/cli/backup).
 
 ## Khắc phục sự cố
 
-### Service không khởi động
+### Dịch vụ không khởi động
 
 Kiểm tra nhật ký triển khai trong Render Dashboard. Các vấn đề thường gặp:
 
-- Thiếu `OPENCLAW_GATEWAY_TOKEN` — xác minh rằng nó đã được đặt trong **Dashboard → Environment**
-- Không khớp cổng — đảm bảo `OPENCLAW_GATEWAY_PORT=8080` được đặt để gateway bind vào cổng Render mong đợi
+- Thiếu `OPENCLAW_GATEWAY_TOKEN` — xác minh rằng biến này đã được đặt trong **Dashboard → Environment**
+- Cổng không khớp — bảo đảm `OPENCLAW_GATEWAY_PORT=8080` để Gateway liên kết với cổng mà Render mong đợi
 
-### Khởi động lạnh chậm (gói miễn phí)
+### Khởi động nguội chậm (gói miễn phí)
 
-Service gói miễn phí tạm dừng sau 15 phút không hoạt động. Yêu cầu đầu tiên sau khi tạm dừng mất vài giây trong khi container khởi động. Nâng cấp lên gói Starter để luôn bật.
+Các dịch vụ thuộc gói miễn phí sẽ tạm dừng sau 15 phút không hoạt động; yêu cầu đầu tiên sau khi tạm dừng sẽ mất vài giây trong khi vùng chứa khởi động. Nâng cấp lên Starter để dịch vụ luôn hoạt động.
 
 ### Mất dữ liệu sau khi triển khai lại
 
-Điều này xảy ra trên gói miễn phí (không có disk bền vững). Nâng cấp lên gói trả phí, hoặc
-thường xuyên xuất bản sao lưu đầy đủ bằng `openclaw backup create` trong Render shell.
+Điều này xảy ra ở gói miễn phí (không có ổ đĩa bền vững). Nâng cấp lên gói trả phí hoặc thường xuyên xuất bản sao lưu bằng `openclaw backup create` từ shell của Render.
 
-### Lỗi health check
+### Kiểm tra tình trạng không thành công
 
-Render mong đợi phản hồi 200 từ `/health` trong vòng 30 giây. Nếu build thành công nhưng triển khai thất bại, service có thể mất quá lâu để khởi động. Kiểm tra:
+Nếu quá trình xây dựng thành công nhưng triển khai thất bại, dịch vụ có thể mất quá nhiều thời gian để khởi động hoặc không thể truy cập `/health`. Hãy kiểm tra:
 
-- Nhật ký build để tìm lỗi
-- Container có chạy cục bộ với `docker build && docker run` hay không
+- Nhật ký xây dựng để tìm lỗi
+- Vùng chứa có chạy cục bộ bằng `docker build && docker run` hay không
 
-## Bước tiếp theo
+## Các bước tiếp theo
 
 - Thiết lập các kênh nhắn tin: [Kênh](/vi/channels)
 - Cấu hình Gateway: [Cấu hình Gateway](/vi/gateway/configuration)
-- Luôn cập nhật OpenClaw: [Cập nhật](/vi/install/updating)
+- Duy trì OpenClaw ở phiên bản mới nhất: [Cập nhật](/vi/install/updating)

@@ -1,205 +1,147 @@
 ---
 read_when:
-    - Je wilt begrijpen hoe geheugen werkt
+    - Je wilt begrijpen hoe het geheugen werkt
     - Je wilt weten welke geheugenbestanden je moet schrijven
-summary: Hoe OpenClaw dingen onthoudt tussen sessies
+summary: Hoe OpenClaw informatie tussen sessies onthoudt
 title: Geheugenoverzicht
 x-i18n:
-    generated_at: "2026-06-27T17:27:13Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:46:58Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 9ddcecfa3d902181583ab076f94a69ca323686c3544399dea2572863726dad2c
+    source_hash: c77d71dd6b1916b923fbf72c373f20128c4f604f96cc76150ea27e0f13a541f8
     source_path: concepts/memory.md
     workflow: 16
 ---
 
-OpenClaw onthoudt dingen door **platte Markdown-bestanden** te schrijven in de
-workspace van je agent. Het model "onthoudt" alleen wat op schijf wordt opgeslagen — er is geen
-verborgen status.
+OpenClaw onthoudt dingen door gewone Markdown-bestanden in de werkruimte van je agent te schrijven (standaard `~/.openclaw/workspace`). Het model onthoudt alleen wat op schijf wordt opgeslagen; er is geen verborgen status.
 
 ## Hoe het werkt
 
 Je agent heeft drie geheugengerelateerde bestanden:
 
-- **`MEMORY.md`** — langetermijngeheugen. Duurzame feiten, voorkeuren en
-  beslissingen. Wordt geladen aan het begin van elke DM-sessie.
-- **`memory/YYYY-MM-DD.md`** (of **`memory/YYYY-MM-DD-<slug>.md`**) — dagelijkse notities.
-  Lopende context en observaties. De notities van vandaag en gisteren worden
-  automatisch geladen, en slug-varianten zoals die door de gebundelde
-  session-memory-hook bij `/new` of `/reset` worden geschreven, worden nu naast het
-  bestand met alleen de datum meegenomen.
-- **`DREAMS.md`** (optioneel) — Dream Diary en samenvattingen van dreaming-sweeps
-  voor menselijke beoordeling, inclusief gefundeerde historische backfill-items.
-
-Deze bestanden staan in de agent-workspace (standaard `~/.openclaw/workspace`).
-
-## Wat hoort waar
-
-`MEMORY.md` is de compacte, samengestelde laag. Gebruik het voor duurzame feiten,
-voorkeuren, vaste beslissingen en korte samenvattingen die beschikbaar moeten zijn
-aan het begin van een hoofdprivésessie. Het is niet bedoeld als ruw transcript,
-dagelijks logboek of volledig archief.
-
-`memory/YYYY-MM-DD.md`-bestanden zijn de werklaag. Gebruik ze voor gedetailleerde dagelijkse
-notities, observaties, sessiesamenvattingen en ruwe context die later nog nuttig kan zijn.
-Deze bestanden worden geïndexeerd voor `memory_search` en `memory_get`, maar ze worden
-niet bij elke beurt in de normale bootstrap-prompt geïnjecteerd.
-
-Na verloop van tijd wordt verwacht dat de agent nuttig materiaal uit dagelijkse notities
-distilleert naar `MEMORY.md` en verouderde langetermijnitems verwijdert. De gegenereerde
-workspace-instructies en Heartbeat-flow kunnen dat periodiek doen; je hoeft
-`MEMORY.md` niet handmatig te bewerken voor elk detail dat onthouden moet worden.
-
-Als `MEMORY.md` groter wordt dan het bootstrap-bestandsbudget, houdt OpenClaw het bestand
-intact op schijf, maar kapt het de kopie af die in de modelcontext wordt geïnjecteerd.
-Zie dat als een signaal om gedetailleerd materiaal terug te verplaatsen naar `memory/*.md`,
-alleen de duurzame samenvatting in `MEMORY.md` te houden, of de bootstrap-limieten te
-verhogen als je expliciet meer promptbudget wilt besteden. Gebruik `/context list`,
-`/context detail` of `openclaw doctor` om ruwe versus geïnjecteerde groottes en
-afkapstatus te zien.
+- **`MEMORY.md`** — langetermijngeheugen. Blijvende feiten, voorkeuren en beslissingen. Wordt aan het begin van een sessie geladen.
+- **`memory/YYYY-MM-DD.md`** (of `memory/YYYY-MM-DD-<slug>.md`) — dagelijkse notities. Doorlopende context en observaties. De gedateerde notities van vandaag en gisteren worden automatisch geladen bij een kale `/new` of `/reset`; varianten met een slug, zoals die welke door de meegeleverde sessiegeheugenhook worden geschreven, worden samen met het bestand met alleen de datum opgehaald.
+- **`DREAMS.md`** (optioneel) — droomdagboek en samenvattingen van dreaming-rondes voor menselijke beoordeling, inclusief historisch onderbouwde aanvullingen.
 
 <Tip>
-Als je wilt dat je agent iets onthoudt, vraag het dan gewoon: "Onthoud dat ik
-TypeScript prefereer." De agent schrijft het naar het juiste bestand.
+Als je wilt dat je agent iets onthoudt, vraag je het gewoon: "Onthoud dat ik de voorkeur geef aan TypeScript." De agent schrijft de notitie naar het juiste bestand.
 </Tip>
+
+## Wat waar thuishoort
+
+`MEMORY.md` is de compacte, zorgvuldig samengestelde laag: blijvende feiten, voorkeuren, vaste beslissingen en korte samenvattingen die aan het begin van een sessie beschikbaar moeten zijn. Het is geen onbewerkt transcript, dagelijks logboek of volledig archief.
+
+`memory/YYYY-MM-DD.md`-bestanden vormen de werklaag: gedetailleerde dagelijkse notities, observaties, sessiesamenvattingen en onbewerkte context die later nog nuttig kunnen zijn. Deze worden geïndexeerd voor `memory_search` en `memory_get`, maar niet bij elke beurt in de bootstrap-prompt ingevoegd.
+
+Na verloop van tijd destilleert de agent nuttig materiaal uit dagelijkse notities naar `MEMORY.md` en verwijdert die verouderde langetermijnvermeldingen. Gegenereerde werkruimte-instructies en de Heartbeat-stroom doen dit periodiek; je hoeft `MEMORY.md` niet voor elk detail handmatig te bewerken.
+
+Als `MEMORY.md` het budget voor bootstrap-bestanden overschrijdt, behoudt OpenClaw het bestand intact op schijf, maar kapt het de kopie af die in de context wordt ingevoegd. Beschouw dat als een signaal om gedetailleerd materiaal naar `memory/*.md` te verplaatsen, alleen een blijvende samenvatting in `MEMORY.md` te bewaren of de bootstrap-limieten te verhogen als je meer promptbudget wilt gebruiken. Gebruik `/context list`, `/context detail` of `openclaw doctor` om de onbewerkte en ingevoegde grootten en de afkapstatus te bekijken.
 
 ## Actiegevoelige herinneringen
 
-De meeste herinneringen kunnen als gewone Markdown-notities worden geschreven. Maar sommige herinneringen beïnvloeden wat de agent later moet doen. Leg daarvoor vast wanneer het veilig is om op de notitie te handelen, niet alleen het feit zelf.
+De meeste herinneringen zijn gewone Markdown-notities. Sommige beïnvloeden wat de agent later moet doen; leg daarbij vast wanneer het veilig is om naar de notitie te handelen, niet alleen het feit zelf.
 
-Leg die actiegrens vast wanneer een notitie gaat over:
+Leg die actiegrens vast wanneer een notitie betrekking heeft op:
 
 - vereisten voor goedkeuring of toestemming,
 - tijdelijke beperkingen,
 - overdrachten naar een andere sessie, thread of persoon,
-- verloopvoorwaarden,
-- timing waarop handelen veilig is,
-- autoriteit van bron of eigenaar,
+- vervalvoorwaarden,
+- het moment waarop veilig kan worden gehandeld,
+- de autoriteit van de bron of eigenaar,
 - instructies om een verleidelijke actie te vermijden.
 
 Een nuttige actiegevoelige herinnering maakt duidelijk:
 
 - wat toekomstig gedrag verandert,
-- wanneer of onder welke voorwaarde dit geldt,
-- wanneer het verloopt, of wat actie vrijgeeft,
-- wat de agent moet vermijden,
-- wie de bron of eigenaar is, als dat vertrouwen of autoriteit beïnvloedt.
+- wanneer of onder welke voorwaarde dit van toepassing is,
+- wanneer dit vervalt of wat handelen mogelijk maakt,
+- wat de agent niet moet doen,
+- wie de bron of eigenaar is, als dat van invloed is op vertrouwen of autoriteit.
 
-Geheugen kan goedkeuringscontext bewaren, maar het dwingt geen beleid af. Gebruik OpenClaw-goedkeuringsinstellingen, sandboxing en geplande taken voor harde operationele controles.
+Het geheugen kan de context van een goedkeuring bewaren, maar dwingt geen beleid af. Gebruik de goedkeuringsinstellingen, sandboxing en geplande taken van OpenClaw voor harde operationele beheersmaatregelen.
 
 Voorbeeld:
 
 ```md
-The API migration is being designed in another session. Future turns should not edit the API implementation from this thread; use findings here only as design input until the migration plan lands.
+De API-migratie wordt in een andere sessie ontworpen. Toekomstige beurten mogen
+de API-implementatie niet vanuit deze thread bewerken; gebruik de bevindingen
+hier alleen als ontwerpinput totdat het migratieplan is opgeleverd.
 ```
 
 Nog een voorbeeld:
 
 ```md
-A report from an untrusted source needs review before promotion. Future turns should treat it as evidence only; do not store it as durable memory until a trusted reviewer confirms the contents.
+Een rapport van een niet-vertrouwde bron moet worden beoordeeld voordat het
+wordt gepromoveerd. Toekomstige beurten moeten het alleen als bewijs behandelen;
+sla het niet op als blijvende herinnering totdat een vertrouwde beoordelaar de
+inhoud bevestigt.
 ```
 
-Gebruik [commitments](/nl/concepts/commitments) voor afgeleide, kortdurende follow-ups. Gebruik [scheduled tasks](/nl/automation/cron-jobs) voor exacte herinneringen, getimede controles en terugkerend werk. Geheugen kan nog steeds de duurzame context rond beide paden samenvatten.
+Dit is geen verplicht schema voor elke herinnering; eenvoudige feiten kunnen beknopt blijven. Gebruik actiegevoelige grenzen wanneer het verlies van timing, autoriteit, vervalgegevens of context over wanneer veilig kan worden gehandeld ertoe kan leiden dat de agent later het verkeerde doet.
 
-Dit is geen verplicht schema voor elke herinnering. Simpele feiten kunnen beknopt blijven. Gebruik actiegevoelige grenzen wanneer verlies van timing, autoriteit, verloop of context waarin handelen veilig is ertoe kan leiden dat de agent later het verkeerde doet.
+Gebruik [toezeggingen](/nl/concepts/commitments) voor afgeleide, kortstondige vervolgacties. Gebruik [geplande taken](/nl/automation/cron-jobs) voor exacte herinneringen, tijdgebonden controles en terugkerend werk. Het geheugen kan nog steeds de blijvende context rond beide paden samenvatten.
 
-## Afgeleide commitments
+## Afgeleide toezeggingen
 
-Sommige toekomstige follow-ups zijn geen duurzame feiten. Als je morgen een interview
-noemt, is de nuttige herinnering mogelijk "check in na het interview", niet "sla
-dit voor altijd op in `MEMORY.md`."
+Sommige toekomstige vervolgacties zijn geen blijvende feiten. Als je vermeldt dat je morgen een sollicitatiegesprek hebt, kan de nuttige herinnering "vraag na het gesprek hoe het ging" zijn, en niet "bewaar dit voor altijd in `MEMORY.md`."
 
-[Commitments](/nl/concepts/commitments) zijn opt-in, kortdurende follow-upherinneringen
-voor dat geval. OpenClaw leidt ze af in een verborgen achtergrondpass, begrenst ze tot
-dezelfde agent en hetzelfde kanaal, en levert verschuldigde check-ins via Heartbeat.
-Expliciete herinneringen blijven [scheduled tasks](/nl/automation/cron-jobs) gebruiken.
+[Toezeggingen](/nl/concepts/commitments) zijn optionele, kortstondige herinneringen aan vervolgacties voor dat geval. OpenClaw leidt ze af tijdens een verborgen achtergrondronde, beperkt ze tot dezelfde agent en hetzelfde kanaal en levert verschuldigde controlevragen via Heartbeat. Expliciete herinneringen gebruiken nog steeds [geplande taken](/nl/automation/cron-jobs).
 
-## Geheugentools
+## Geheugenhulpmiddelen
 
-De agent heeft twee tools om met geheugen te werken:
+De agent heeft twee hulpmiddelen om met het geheugen te werken:
 
-- **`memory_search`** — vindt relevante notities met semantische zoekopdrachten, zelfs wanneer
-  de formulering afwijkt van het origineel.
+- **`memory_search`** — vindt relevante notities met semantisch zoeken, zelfs wanneer de formulering afwijkt van het origineel.
 - **`memory_get`** — leest een specifiek geheugenbestand of regelbereik.
 
-Beide tools worden geleverd door de actieve geheugen-Plugin (standaard: `memory-core`).
+Beide hulpmiddelen worden geleverd door de actieve geheugenplugin (standaard: `memory-core`).
 
-## Memory Wiki-begeleidende Plugin
+## Zoeken in het geheugen
 
-Als je wilt dat duurzaam geheugen zich meer gedraagt als een onderhouden kennisbank dan
-alleen als ruwe notities, gebruik dan de gebundelde `memory-wiki`-Plugin.
-
-`memory-wiki` compileert duurzame kennis naar een wiki-kluis met:
-
-- deterministische paginastructuur
-- gestructureerde claims en bewijs
-- tracking van tegenspraak en actualiteit
-- gegenereerde dashboards
-- gecompileerde digests voor agent-/runtime-consumenten
-- wiki-native tools zoals `wiki_search`, `wiki_get`, `wiki_apply` en `wiki_lint`
-
-Het vervangt de actieve geheugen-Plugin niet. De actieve geheugen-Plugin blijft
-verantwoordelijk voor recall, promotie en Dreaming. `memory-wiki` voegt ernaast een
-kennislaag met rijke herkomstinformatie toe.
-
-Zie [Memory Wiki](/nl/plugins/memory-wiki).
-
-## Geheugenzoekopdrachten
-
-Wanneer een embeddingprovider is geconfigureerd, gebruikt `memory_search` **hybride
-zoeken** — een combinatie van vectorovereenkomst (semantische betekenis) met trefwoordmatching
-(exacte termen zoals ID's en codesymbolen). Dit werkt direct zodra je
-een API-sleutel hebt voor een ondersteunde provider.
+Wanneer een inbeddingsprovider is geconfigureerd, gebruikt `memory_search` hybride zoeken: vectorovereenkomst (semantische betekenis) gecombineerd met trefwoordovereenkomst (exacte termen zoals ID's en codesymbolen). Dit werkt direct met een API-sleutel voor elke ondersteunde provider.
 
 <Info>
-OpenClaw gebruikt standaard OpenAI-embeddings. Stel
-`agents.defaults.memorySearch.provider` expliciet in om Gemini, Voyage,
-Mistral, lokaal, Ollama, Bedrock, GitHub Copilot of OpenAI-compatibele
-embeddings te gebruiken.
+OpenClaw gebruikt standaard inbeddingen van OpenAI. Stel `agents.defaults.memorySearch.provider` expliciet in om Gemini, Voyage, Mistral, Bedrock, DeepInfra, lokale GGUF, Ollama, LM Studio, GitHub Copilot of een algemeen OpenAI-compatibel eindpunt te gebruiken.
 </Info>
 
-Zie [Memory Search](/nl/concepts/memory-search) voor details over hoe zoeken werkt,
-afstelopties en providerconfiguratie.
+Zie [Zoeken in het geheugen](/nl/concepts/memory-search) voor de werking van zoeken, afstemmingsopties en het instellen van providers.
 
 ## Geheugenbackends
 
 <CardGroup cols={3}>
-<Card title="Builtin (default)" icon="database" href="/nl/concepts/memory-builtin">
-Gebaseerd op SQLite. Werkt direct met trefwoordzoekopdrachten, vectorovereenkomst en
-hybride zoeken. Geen extra afhankelijkheden.
+<Card title="Ingebouwd (standaard)" icon="database" href="/nl/concepts/memory-builtin">
+Gebaseerd op SQLite. Werkt direct met zoeken op trefwoorden, vectorovereenkomst en hybride zoeken. Geen extra afhankelijkheden.
 </Card>
 <Card title="QMD" icon="search" href="/nl/concepts/memory-qmd">
-Local-first sidecar met reranking, query-uitbreiding en de mogelijkheid om
-directories buiten de workspace te indexeren.
+Lokale sidecar met herrangschikking, query-uitbreiding en de mogelijkheid om mappen buiten de werkruimte te indexeren.
 </Card>
 <Card title="Honcho" icon="brain" href="/nl/concepts/memory-honcho">
-AI-native cross-session-geheugen met gebruikersmodellering, semantisch zoeken en
-bewustzijn van meerdere agents. Plugin-installatie.
+AI-native geheugen voor meerdere sessies, met gebruikersmodellering, semantisch zoeken en bewustzijn van meerdere agents. Plugin-installatie.
 </Card>
 <Card title="LanceDB" icon="layers" href="/nl/plugins/memory-lancedb">
-Gebundeld door LanceDB ondersteund geheugen met OpenAI-compatibele embeddings, auto-recall,
-auto-capture en ondersteuning voor lokale Ollama-embeddings.
+Door LanceDB ondersteund geheugen met OpenAI-compatibele inbeddingen, automatisch ophalen, automatisch vastleggen en ondersteuning voor lokale Ollama-inbeddingen. Plugin-installatie.
 </Card>
 </CardGroup>
 
 ## Kenniswikilaag
 
+Als je wilt dat blijvend geheugen zich meer gedraagt als een onderhouden kennisbank dan als onbewerkte notities, gebruik je de meegeleverde Plugin `memory-wiki`. Deze compileert blijvende kennis naar een wikikluis met een deterministische paginastructuur, gestructureerde beweringen en bewijzen, bijhouden van tegenstrijdigheden en actualiteit, gegenereerde dashboards, gecompileerde samenvattingen en wikispecifieke hulpmiddelen (`wiki_status`, `wiki_search`, `wiki_get`, `wiki_apply`, `wiki_lint`).
+
+`memory-wiki` vervangt de actieve geheugenplugin niet; de actieve geheugenplugin blijft verantwoordelijk voor ophalen, promoveren en dreaming. `memory-wiki` voegt daarnaast een kennislaag met uitgebreide herkomstinformatie toe.
+
 <CardGroup cols={1}>
-<Card title="Memory Wiki" icon="book" href="/nl/plugins/memory-wiki">
-Compileert duurzaam geheugen naar een wiki-kluis met rijke herkomstinformatie, met claims,
-dashboards, bridge-modus en Obsidian-vriendelijke workflows.
+<Card title="Geheugenwiki" icon="book" href="/nl/plugins/memory-wiki">
+Compileert blijvend geheugen naar een wikikluis met uitgebreide herkomstinformatie, beweringen, dashboards, brugmodus en Obsidian-vriendelijke workflows.
 </Card>
 </CardGroup>
 
-## Automatische geheugenflush
+## Automatisch geheugen wegschrijven
 
-Voordat [Compaction](/nl/concepts/compaction) je gesprek samenvat, voert OpenClaw
-een stille beurt uit die de agent eraan herinnert belangrijke context op te slaan in
-geheugenbestanden. Dit staat standaard aan — je hoeft niets te configureren.
+Voordat [Compaction](/nl/concepts/compaction) je gesprek samenvat, voert OpenClaw een stille beurt uit die de agent eraan herinnert belangrijke context in geheugenbestanden op te slaan. Dit is standaard ingeschakeld; stel `agents.defaults.compaction.memoryFlush.enabled: false` in om het uit te schakelen.
 
-Om die opschoonbeurt op een lokaal model te houden, stel je een exacte override voor het
-memory-flush-model in:
+Om die onderhoudsbeurt op een lokaal model uit te voeren, stel je een exacte overschrijving in die alleen op de beurt voor het wegschrijven van het geheugen van toepassing is (deze neemt de keten met reservemodellen van het actieve sessiemodel niet over):
 
 ```json
 {
@@ -215,62 +157,41 @@ memory-flush-model in:
 }
 ```
 
-De override geldt alleen voor de memory-flush-beurt en erft de
-fallbackketen van de actieve sessie niet.
-
 <Tip>
-De geheugenflush voorkomt contextverlies tijdens Compaction. Als je agent
-belangrijke feiten in het gesprek heeft die nog niet naar een bestand zijn geschreven, worden die
-automatisch opgeslagen voordat de samenvatting plaatsvindt.
+Het wegschrijven van het geheugen voorkomt contextverlies tijdens Compaction. Als je agent belangrijke feiten uit het gesprek nog niet naar een bestand heeft geschreven, worden deze automatisch opgeslagen voordat de samenvatting plaatsvindt.
 </Tip>
 
 ## Dreaming
 
-Dreaming is een optionele achtergrondconsolidatiepass voor geheugen. Het verzamelt
-kortetermijnsignalen, scoort kandidaten en promoveert alleen gekwalificeerde items naar
-langetermijngeheugen (`MEMORY.md`).
+Dreaming is een optionele consolidatieronde op de achtergrond voor het geheugen. Deze verzamelt signalen voor kortetermijnherinneringen, kent scores toe aan kandidaten en promoveert alleen geschikte items naar het langetermijngeheugen (`MEMORY.md`):
 
-Het is ontworpen om langetermijngeheugen signaalrijk te houden:
+- **Optioneel**: standaard uitgeschakeld.
+- **Gepland**: wanneer dit is ingeschakeld, beheert `memory-core` automatisch één terugkerende Cron-taak voor een volledige dreaming-ronde.
+- **Met drempelwaarden**: promoties moeten voldoen aan poorten voor score, ophaalfrequentie en querydiversiteit.
+- **Beoordeelbaar**: fasesamenvattingen en dagboekvermeldingen worden naar `DREAMS.md` geschreven voor menselijke beoordeling.
 
-- **Opt-in**: standaard uitgeschakeld.
-- **Gepland**: wanneer ingeschakeld, beheert `memory-core` automatisch één terugkerende Cron-taak
-  voor een volledige dreaming-sweep.
-- **Met drempels**: promoties moeten slagen voor poorten voor score, recallfrequentie en
-  querydiversiteit.
-- **Beoordeelbaar**: fasesamenvattingen en dagboekitems worden naar `DREAMS.md` geschreven
-  voor menselijke beoordeling.
+Zie [Dreaming](/nl/concepts/dreaming) voor het gedrag per fase, scoresignalen en details over het droomdagboek.
 
-Zie [Dreaming](/nl/concepts/dreaming) voor fasegedrag, scoringssignalen en details over Dream Diary.
+## Onderbouwde historische aanvulling en livepromotie
 
-## Gefundeerde backfill en live promotie
+Het dreamingsysteem heeft twee gerelateerde beoordelingstrajecten:
 
-Het Dreaming-systeem heeft nu twee nauw verwante beoordelingslanes:
+- **Live dreaming** werkt vanuit de kortetermijnopslag voor dreaming onder `memory/.dreams/` en wordt door de normale diepe fase gebruikt om te bepalen wat naar `MEMORY.md` promoveert.
+- **Onderbouwde historische aanvulling** leest historische notities in `memory/YYYY-MM-DD.md` als zelfstandige dagbestanden en schrijft gestructureerde beoordelingsuitvoer naar `DREAMS.md`.
 
-- **Live dreaming** werkt vanuit de kortetermijn-dreaming-store onder
-  `memory/.dreams/` en is wat de normale diepe fase gebruikt wanneer wordt bepaald wat
-  naar `MEMORY.md` mag doorstromen.
-- **Gefundeerde backfill** leest historische `memory/YYYY-MM-DD.md`-notities als
-  zelfstandige dagbestanden en schrijft gestructureerde beoordelingsoutput naar `DREAMS.md`.
-
-Gefundeerde backfill is nuttig wanneer je oudere notities opnieuw wilt afspelen en wilt inspecteren wat
-het systeem duurzaam vindt zonder `MEMORY.md` handmatig te bewerken.
-
-Wanneer je het volgende gebruikt:
+Onderbouwde historische aanvulling is nuttig om oudere notities opnieuw te verwerken en te bekijken wat het systeem als blijvend beschouwt, zonder `MEMORY.md` handmatig te bewerken.
 
 ```bash
 openclaw memory rem-backfill --path ./memory --stage-short-term
 ```
 
-worden de gefundeerde duurzame kandidaten niet rechtstreeks gepromoveerd. Ze worden gefaseerd in
-dezelfde kortetermijn-dreaming-store die de normale diepe fase al gebruikt. Dat
-betekent:
+De vlag `--stage-short-term` plaatst onderbouwde kandidaten voor blijvend geheugen in dezelfde kortetermijnopslag voor dreaming die de normale diepe fase al gebruikt; de kandidaten worden niet rechtstreeks gepromoveerd. Dus:
 
-- `DREAMS.md` blijft het menselijke beoordelingsoppervlak.
-- de kortetermijn-store blijft het machinegerichte rangschikkingsoppervlak.
+- `DREAMS.md` blijft het beoordelingsoppervlak voor mensen.
+- De kortetermijnopslag blijft het rangschikkingsoppervlak voor machines.
 - `MEMORY.md` wordt nog steeds alleen door diepe promotie geschreven.
 
-Als je besluit dat de replay niet nuttig was, kun je de gefaseerde artefacten verwijderen
-zonder gewone dagboekitems of normale recall-status aan te raken:
+Een herverwerking ongedaan maken zonder gewone dagboekvermeldingen of de normale ophaalstatus te wijzigen:
 
 ```bash
 openclaw memory rem-backfill --rollback
@@ -280,28 +201,20 @@ openclaw memory rem-backfill --rollback-short-term
 ## CLI
 
 ```bash
-openclaw memory status          # Check index status and provider
-openclaw memory search "query"  # Search from the command line
-openclaw memory index --force   # Rebuild the index
+openclaw memory status          # Indexstatus en provider controleren
+openclaw memory search "query"  # Zoeken vanaf de opdrachtregel
+openclaw memory index --force   # De index opnieuw opbouwen
 ```
 
 ## Verder lezen
 
-- [Builtin memory engine](/nl/concepts/memory-builtin): standaard SQLite-backend.
-- [QMD memory engine](/nl/concepts/memory-qmd): geavanceerde local-first sidecar.
-- [Honcho memory](/nl/concepts/memory-honcho): AI-native cross-session-geheugen.
-- [Memory LanceDB](/nl/plugins/memory-lancedb): door LanceDB ondersteunde Plugin met OpenAI-compatibele embeddings.
-- [Memory Wiki](/nl/plugins/memory-wiki): gecompileerde kenniskluis en wiki-native tools.
-- [Memory search](/nl/concepts/memory-search): zoekpipeline, providers en afstemming.
-- [Dreaming](/nl/concepts/dreaming): achtergrondpromotie van kortetermijn-recall naar langetermijngeheugen.
-- [Memory configuration reference](/nl/reference/memory-config): alle configuratieknoppen.
-- [Compaction](/nl/concepts/compaction): hoe Compaction samenwerkt met geheugen.
-
-## Gerelateerd
-
-- [Active memory](/nl/concepts/active-memory)
-- [Memory search](/nl/concepts/memory-search)
-- [Builtin memory engine](/nl/concepts/memory-builtin)
-- [Honcho memory](/nl/concepts/memory-honcho)
-- [Memory LanceDB](/nl/plugins/memory-lancedb)
-- [Commitments](/nl/concepts/commitments)
+- [Zoeken in het geheugen](/nl/concepts/memory-search): zoekpijplijn, providers en afstemming.
+- [Ingebouwde geheugenengine](/nl/concepts/memory-builtin): standaard SQLite-backend.
+- [QMD-geheugenengine](/nl/concepts/memory-qmd): geavanceerde lokale sidecar.
+- [Honcho-geheugen](/nl/concepts/memory-honcho): AI-native geheugen voor meerdere sessies.
+- [LanceDB-geheugen](/nl/plugins/memory-lancedb): door LanceDB ondersteunde Plugin met OpenAI-compatibele inbeddingen.
+- [Geheugenwiki](/nl/plugins/memory-wiki): gecompileerde kenniskluis en wikispecifieke hulpmiddelen.
+- [Dreaming](/nl/concepts/dreaming): promotie op de achtergrond van kortetermijnherinneringen naar langetermijngeheugen.
+- [Configuratiereferentie voor geheugen](/nl/reference/memory-config): alle configuratieopties.
+- [Compaction](/nl/concepts/compaction): hoe Compaction samenwerkt met het geheugen.
+- [Active Memory](/nl/concepts/active-memory): geheugen van subagents voor interactieve chatsessies.

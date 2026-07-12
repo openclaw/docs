@@ -1,11 +1,11 @@
 ---
 read_when:
-    - أنت تثبّت أو تهيئ أو تدقق Plugin fireworks
+    - أنت تقوم بتثبيت Plugin ‏fireworks أو تهيئته أو تدقيقه
 summary: يضيف دعم موفّر نماذج Fireworks إلى OpenClaw.
-title: Plugin Fireworks
+title: Plugin ‏Fireworks
 x-i18n:
-    generated_at: "2026-06-27T18:12:30Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:14:45Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 1750e345f485fa7d8735a16278422188ad761b0c682cd5f09227f4407d502203
@@ -13,7 +13,7 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin Fireworks
+# Plugin ‏Fireworks
 
 يضيف دعم موفّر نماذج Fireworks إلى OpenClaw.
 
@@ -24,8 +24,8 @@ x-i18n:
 
 ## الواجهة
 
-providers: fireworks
+الموفّرون: fireworks
 
-## المستندات ذات الصلة
+## الوثائق ذات الصلة
 
-- [fireworks](/ar/providers/fireworks)
+- [Fireworks](/ar/providers/fireworks)

@@ -1,60 +1,57 @@
 ---
 read_when:
     - OpenClaw implementeren op Fly.io
-    - Fly-volumes, secrets en configuratie voor de eerste run instellen
-summary: Stapsgewijze Fly.io-implementatie voor OpenClaw met permanente opslag en HTTPS
+    - Fly-volumes, secrets en de configuratie voor de eerste uitvoering instellen
+summary: Stapsgewijze implementatie van OpenClaw op Fly.io met permanente opslag en HTTPS
 title: Fly.io
 x-i18n:
-    generated_at: "2026-06-27T17:42:11Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:55:12Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2d74dbda6177ab279a59de720cf4e88a15aa90798e5f04e87712c99093282a1e
+    source_hash: e2cb4203cdea9db2fa76ed60de01da67d550a75d538895b06732446d0f70e2f4
     source_path: install/fly.md
     workflow: 16
 ---
 
-**Doel:** OpenClaw Gateway draait op een [Fly.io](https://fly.io)-machine met persistente opslag, automatische HTTPS en toegang tot Discord/kanalen.
+**Doel:** OpenClaw Gateway uitvoeren op een [Fly.io](https://fly.io)-machine met permanente opslag, automatische HTTPS en toegang tot Discord/kanalen.
 
-## Wat je nodig hebt
+## Wat u nodig hebt
 
 - [flyctl CLI](https://fly.io/docs/hands-on/install-flyctl/) geïnstalleerd
-- Fly.io-account (gratis laag werkt)
-- Modelauthenticatie: API-sleutel voor je gekozen modelprovider
-- Kanaalreferenties: Discord-bottoken, Telegram-token, enz.
+- Fly.io-account (gratis abonnement volstaat)
+- Modelauthenticatie: API-sleutel voor de gekozen modelprovider
+- Kanaalreferenties: Discord-bottoken, Telegram-token enzovoort
 
-## Snelpad voor beginners
+## Snelstart voor beginners
 
-1. Clone repo → pas `fly.toml` aan
-2. Maak app + volume → stel secrets in
+1. Kloon de repository en pas `fly.toml` aan
+2. Maak de app en het volume, en stel geheimen in
 3. Implementeer met `fly deploy`
-4. SSH naar binnen om configuratie te maken of gebruik de Control UI
+4. Meld u aan via SSH om de configuratie te maken, of gebruik de bedieningsinterface
 
 <Steps>
-  <Step title="Create the Fly app">
+  <Step title="De Fly-app maken">
     ```bash
-    # Clone the repo
     git clone https://github.com/openclaw/openclaw.git
     cd openclaw
 
-    # Create a new Fly app (pick your own name)
+    # kies uw eigen naam
     fly apps create my-openclaw
 
-    # Create a persistent volume (1GB is usually enough)
+    # 1 GB is doorgaans voldoende
     fly volumes create openclaw_data --size 1 --region iad
     ```
 
-    **Tip:** Kies een regio dicht bij jou. Veelgebruikte opties: `lhr` (Londen), `iad` (Virginia), `sjc` (San Jose).
+    Kies een regio dicht bij u. Veelgebruikte opties: `lhr` (Londen), `iad` (Virginia), `sjc` (San Jose).
 
   </Step>
 
-  <Step title="Configure fly.toml">
-    Bewerk `fly.toml` zodat deze overeenkomt met je appnaam en vereisten.
-
-    **Beveiligingsopmerking:** De standaardconfiguratie stelt een openbare URL bloot. Zie [Privé-implementatie](#private-deployment-hardened) voor een geharde implementatie zonder openbaar IP, of gebruik `deploy/fly.private.toml`.
+  <Step title="fly.toml configureren">
+    Bewerk `fly.toml` zodat deze overeenkomt met uw appnaam en vereisten. De bijgehouden `fly.toml` van de repository is de openbare sjabloon die hieronder wordt weergegeven; `deploy/fly.private.toml` is de versterkte variant zonder openbaar IP-adres (zie [Privé-implementatie](#private-deployment-hardened)).
 
     ```toml
-    app = "my-openclaw"  # Your app name
+    app = "my-openclaw"  # uw appnaam
     primary_region = "iad"
 
     [build]
@@ -86,75 +83,64 @@ x-i18n:
       destination = "/data"
     ```
 
-    De OpenClaw Docker-image gebruikt `tini` als entrypoint. Fly-procesopdrachten vervangen Docker `CMD` zonder `ENTRYPOINT` te vervangen, dus het proces draait nog steeds onder `tini`.
+    Het toegangspunt van de OpenClaw Docker-image is `tini`, dat standaard `node openclaw.mjs gateway` uitvoert. Fly `[processes]` vervangt de Docker-`CMD` (hier wordt rechtstreeks `node dist/index.js gateway ...` uitgevoerd, hetzelfde gecompileerde toegangspunt) zonder `ENTRYPOINT` te wijzigen, zodat het proces nog steeds onder `tini` wordt uitgevoerd.
 
-    **Belangrijke instellingen:**
+    **Belangrijkste instellingen:**
 
-    | Instelling                     | Waarom                                                                     |
-    | ------------------------------ | -------------------------------------------------------------------------- |
-    | `--bind lan`                   | Bindt aan `0.0.0.0`, zodat de proxy van Fly de Gateway kan bereiken        |
-    | `--allow-unconfigured`         | Start zonder configuratiebestand (je maakt er daarna een)                  |
-    | `internal_port = 3000`         | Moet overeenkomen met `--port 3000` (of `OPENCLAW_GATEWAY_PORT`) voor Fly-gezondheidscontroles |
-    | `memory = "2048mb"`            | 512 MB is te klein; 2 GB wordt aanbevolen                                  |
-    | `OPENCLAW_STATE_DIR = "/data"` | Bewaart status persistent op het volume                                    |
+    | Instelling                     | Reden                                                                       |
+    | ------------------------------ | --------------------------------------------------------------------------- |
+    | `--bind lan`                   | Bindt aan `0.0.0.0`, zodat de proxy van Fly de Gateway kan bereiken         |
+    | `--allow-unconfigured`         | Start zonder configuratiebestand (u maakt dit naderhand)                    |
+    | `internal_port = 3000`         | Moet voor de statuscontroles van Fly overeenkomen met `--port 3000` (of `OPENCLAW_GATEWAY_PORT`) |
+    | `memory = "2048mb"`            | 512 MB is te weinig; 2 GB wordt aanbevolen                                  |
+    | `OPENCLAW_STATE_DIR = "/data"` | Slaat de status permanent op het volume op                                  |
 
   </Step>
 
-  <Step title="Set secrets">
+  <Step title="Geheimen instellen">
     ```bash
-    # Required: Gateway token (for non-loopback binding)
+    # vereist: gateway-authenticatietoken voor binding buiten loopback
     fly secrets set OPENCLAW_GATEWAY_TOKEN=$(openssl rand -hex 32)
 
-    # Model provider API keys
+    # API-sleutels van modelproviders
     fly secrets set ANTHROPIC_API_KEY=example-anthropic-key-not-real
 
-    # Optional: Other providers
+    # optioneel: andere providers
     fly secrets set OPENAI_API_KEY=example-openai-key-not-real
     fly secrets set GOOGLE_API_KEY=...
 
-    # Channel tokens
+    # kanaaltokens
     fly secrets set DISCORD_BOT_TOKEN=example-discord-bot-token
     ```
 
-    **Opmerkingen:**
+    Bindingen buiten loopback (`--bind lan`) vereisen een geldig authenticatiepad voor de Gateway. Dit voorbeeld gebruikt `OPENCLAW_GATEWAY_TOKEN`, maar `gateway.auth.password` of een correct geconfigureerde vertrouwde-proxy-implementatie buiten loopback voldoet eveneens aan de vereiste. Zie [Beheer van geheimen](/nl/gateway/secrets) voor het SecretRef-contract.
 
-    - Niet-loopback-bindings (`--bind lan`) vereisen een geldig Gateway-authenticatiepad. Dit Fly.io-voorbeeld gebruikt `OPENCLAW_GATEWAY_TOKEN`, maar `gateway.auth.password` of een correct geconfigureerde niet-loopback-implementatie met `trusted-proxy` voldoet ook aan de vereiste.
-    - Behandel deze tokens als wachtwoorden.
-    - **Geef de voorkeur aan omgevingsvariabelen boven een configuratiebestand** voor alle API-sleutels en tokens. Dit houdt secrets uit `openclaw.json`, waar ze per ongeluk kunnen worden blootgesteld of gelogd.
+    Behandel deze tokens als wachtwoorden. Geef voor API-sleutels en tokens de voorkeur aan omgevingsvariabelen/`fly secrets` boven het configuratiebestand, zodat geheimen buiten `openclaw.json` blijven.
 
   </Step>
 
-  <Step title="Deploy">
+  <Step title="Implementeren">
     ```bash
     fly deploy
     ```
 
-    De eerste implementatie bouwt de Docker-image (~2-3 minuten). Volgende implementaties zijn sneller.
-
-    Controleer na de implementatie:
+    Bij de eerste implementatie wordt de Docker-image gebouwd. Controleer na de implementatie:
 
     ```bash
     fly status
     fly logs
     ```
 
-    Je zou dit moeten zien:
-
-    ```
-    [gateway] listening on ws://0.0.0.0:3000 (PID xxx)
-    [discord] logged in to discord as xxx
-    ```
+    Bij het starten registreert de Gateway `gateway ready` zodra de HTTP-/WebSocket-listener actief is. De eigen statuscontrole van Fly bewaakt `internal_port = 3000` volgens `fly.toml`; de Docker-`HEALTHCHECK`-instructie van de image vraagt daarnaast `/healthz` op de standaardpoort 18789 op. Die wordt hier niet gebruikt, omdat deze implementatie de Gateway met `--port 3000` overschrijft.
 
   </Step>
 
-  <Step title="Create config file">
-    SSH naar de machine om een goede configuratie te maken:
+  <Step title="Het configuratiebestand maken">
+    Meld u via SSH aan bij de machine om een correcte configuratie te maken:
 
     ```bash
     fly ssh console
     ```
-
-    Maak de configuratiemap en het bestand:
 
     ```bash
     mkdir -p /data
@@ -215,18 +201,16 @@ x-i18n:
     EOF
     ```
 
-    **Opmerking:** Met `OPENCLAW_STATE_DIR=/data` is het configuratiepad `/data/openclaw.json`.
+    Met `OPENCLAW_STATE_DIR=/data` is het configuratiepad `/data/openclaw.json`.
 
-    **Opmerking:** Vervang `https://my-openclaw.fly.dev` door de echte oorsprong van je Fly-app. Bij het opstarten van de Gateway worden lokale Control UI-oorsprongen gevuld op basis van de runtimewaarden `--bind` en `--port`, zodat de eerste start kan doorgaan voordat de configuratie bestaat, maar browsertoegang via Fly vereist nog steeds dat de exacte HTTPS-oorsprong is opgenomen in `gateway.controlUi.allowedOrigins`.
+    Vervang `https://my-openclaw.fly.dev` door de werkelijke oorsprong van uw Fly-app. Bij het starten vult de Gateway lokale oorsprongen voor de bedieningsinterface op basis van de runtimewaarden `--bind` en `--port`, zodat de eerste start kan doorgaan voordat de configuratie bestaat. Voor browsertoegang via Fly moet de exacte HTTPS-oorsprong echter nog steeds in `gateway.controlUi.allowedOrigins` staan.
 
-    **Opmerking:** Het Discord-token kan uit een van beide bronnen komen:
+    Het Discord-token kan afkomstig zijn uit:
 
-    - Omgevingsvariabele: `DISCORD_BOT_TOKEN` (aanbevolen voor secrets)
-    - Configuratiebestand: `channels.discord.token`
+    - Omgevingsvariabele `DISCORD_BOT_TOKEN` (aanbevolen voor geheimen); u hoeft deze niet aan de configuratie toe te voegen, de Gateway leest deze automatisch
+    - Configuratiebestand `channels.discord.token`
 
-    Als je een omgevingsvariabele gebruikt, hoef je geen token aan de configuratie toe te voegen. De Gateway leest `DISCORD_BOT_TOKEN` automatisch.
-
-    Herstart om toe te passen:
+    Start opnieuw om dit toe te passen:
 
     ```bash
     exit
@@ -235,24 +219,22 @@ x-i18n:
 
   </Step>
 
-  <Step title="Access the Gateway">
-    ### Control UI
-
-    Open in de browser:
+  <Step title="Toegang tot de Gateway">
+    ### Bedieningsinterface
 
     ```bash
     fly open
     ```
 
-    Of ga naar `https://my-openclaw.fly.dev/`
+    Of bezoek `https://my-openclaw.fly.dev/`.
 
-    Authenticeer met het geconfigureerde gedeelde secret. Deze gids gebruikt het Gateway-token uit `OPENCLAW_GATEWAY_TOKEN`; als je bent overgeschakeld naar wachtwoordauthenticatie, gebruik dan dat wachtwoord.
+    Authenticeer met het geconfigureerde gedeelde geheim: het Gateway-token van `OPENCLAW_GATEWAY_TOKEN`, of uw wachtwoord als u bent overgeschakeld op wachtwoordauthenticatie.
 
-    ### Logs
+    ### Logboeken
 
     ```bash
-    fly logs              # Live logs
-    fly logs --no-tail    # Recent logs
+    fly logs              # live-logboeken
+    fly logs --no-tail    # recente logboeken
     ```
 
     ### SSH-console
@@ -264,25 +246,25 @@ x-i18n:
   </Step>
 </Steps>
 
-## Probleemoplossing
+## Problemen oplossen
 
-### "App is not listening on expected address"
+### "App luistert niet op het verwachte adres"
 
-De Gateway bindt aan `127.0.0.1` in plaats van `0.0.0.0`.
+De Gateway bindt aan `127.0.0.1` in plaats van aan `0.0.0.0`.
 
-**Oplossing:** Voeg `--bind lan` toe aan je procesopdracht in `fly.toml`.
+**Oplossing:** voeg `--bind lan` toe aan de procesopdracht in `fly.toml`.
 
-### Gezondheidscontroles mislukken / verbinding geweigerd
+### Mislukkende statuscontroles / verbinding geweigerd
 
 Fly kan de Gateway niet bereiken op de geconfigureerde poort.
 
-**Oplossing:** Zorg dat `internal_port` overeenkomt met de Gateway-poort (stel `--port 3000` of `OPENCLAW_GATEWAY_PORT=3000` in).
+**Oplossing:** zorg dat `internal_port` overeenkomt met de Gateway-poort (`--port 3000` of `OPENCLAW_GATEWAY_PORT=3000`).
 
-### OOM / geheugenproblemen
+### OOM-/geheugenproblemen
 
-Container blijft herstarten of wordt beëindigd. Signalen: `SIGABRT`, `v8::internal::Runtime_AllocateInYoungGeneration` of stille herstarts.
+De container blijft opnieuw starten of wordt steeds beëindigd. Signalen: `SIGABRT`, `v8::internal::Runtime_AllocateInYoungGeneration` of stille herstarts.
 
-**Oplossing:** Verhoog het geheugen in `fly.toml`:
+**Oplossing:** vergroot het geheugen in `fly.toml`:
 
 ```toml
 [[vm]]
@@ -295,26 +277,22 @@ Of werk een bestaande machine bij:
 fly machine update <machine-id> --vm-memory 2048 -y
 ```
 
-**Opmerking:** 512 MB is te klein. 1 GB kan werken, maar kan onder belasting of met uitgebreide logging een OOM krijgen. **2 GB wordt aanbevolen.**
+512 MB is te weinig. 1 GB kan werken, maar kan onder belasting of bij uitgebreide logboekregistratie een OOM veroorzaken. 2 GB wordt aanbevolen.
 
-### Problemen met Gateway-vergrendeling
+### Problemen met de Gateway-vergrendeling
 
-Gateway weigert te starten met fouten over "already running".
+De Gateway weigert na een herstart van de container te starten met fouten dat deze „al actief” is.
 
-Dit gebeurt wanneer de container herstart, maar het PID-vergrendelingsbestand op het volume blijft staan.
-
-**Oplossing:** Verwijder het vergrendelingsbestand:
+Het vergrendelingsbestand voor één instantie bevindt zich in `<tmpdir>/openclaw-<uid>/gateway.<hash>.lock` (Linux: `/tmp/openclaw-<uid>/gateway.<hash>.lock`), niet op het permanente `/data`-volume. Een volledige herstart van de container wist het daarom normaal gesproken samen met de rest van het containerbestandssysteem. Als de vergrendeling behouden blijft (bijvoorbeeld bij een `fly machine restart` waarbij het containerbestandssysteem behouden blijft) en het starten blokkeert, verwijdert u deze handmatig:
 
 ```bash
-fly ssh console --command "rm -f /data/gateway.*.lock"
+fly ssh console --command "rm -f /tmp/openclaw-*/gateway.*.lock"
 fly machine restart <machine-id>
 ```
 
-Het vergrendelingsbestand staat op `/data/gateway.*.lock` (niet in een submap).
-
 ### Configuratie wordt niet gelezen
 
-`--allow-unconfigured` omzeilt alleen de opstartbewaking. Het maakt of repareert `/data/openclaw.json` niet, dus zorg dat je echte configuratie bestaat en `gateway.mode="local"` bevat wanneer je een normale lokale Gateway-start wilt.
+`--allow-unconfigured` omzeilt alleen de startcontrole. Het maakt of herstelt `/data/openclaw.json` niet. Zorg er daarom voor dat uw werkelijke configuratie bestaat en voor een normale lokale start van de Gateway `"gateway": { "mode": "local" }` bevat.
 
 Controleer of de configuratie bestaat:
 
@@ -324,18 +302,18 @@ fly ssh console --command "cat /data/openclaw.json"
 
 ### Configuratie schrijven via SSH
 
-De opdracht `fly ssh console -C` ondersteunt geen shell-omleiding. Een configuratiebestand schrijven:
+`fly ssh console -C` ondersteunt geen shellomleiding. Een configuratiebestand schrijven:
 
 ```bash
-# Use echo + tee (pipe from local to remote)
+# echo + tee (doorsturen van lokaal naar extern)
 echo '{"your":"config"}' | fly ssh console -C "tee /data/openclaw.json"
 
-# Or use sftp
+# of sftp
 fly sftp shell
 > put /local/path/config.json /data/openclaw.json
 ```
 
-**Opmerking:** `fly sftp` kan mislukken als het bestand al bestaat. Verwijder het eerst:
+`fly sftp` kan mislukken als het bestand al bestaat; verwijder het eerst:
 
 ```bash
 fly ssh console --command "rm /data/openclaw.json"
@@ -343,126 +321,110 @@ fly ssh console --command "rm /data/openclaw.json"
 
 ### Status blijft niet behouden
 
-Als je authenticatieprofielen, kanaal-/providerstatus of sessies verliest na een herstart, schrijft de statusmap naar het containerbestandssysteem.
+Als u na een herstart authenticatieprofielen, kanaal-/providerstatus of sessies verliest, wordt de statusmap naar het containerbestandssysteem geschreven in plaats van naar het volume.
 
-**Oplossing:** Zorg dat `OPENCLAW_STATE_DIR=/data` is ingesteld in `fly.toml` en implementeer opnieuw.
+**Oplossing:** zorg dat `OPENCLAW_STATE_DIR=/data` in `fly.toml` is ingesteld en implementeer opnieuw.
 
-## Updates
+## Bijwerken
 
 ```bash
-# Pull latest changes
 git pull
-
-# Redeploy
 fly deploy
-
-# Check health
 fly status
 fly logs
 ```
 
-### Machineopdracht bijwerken
+`git pull` + `fly deploy` is hier het gecontroleerde pad: hiermee wordt de image opnieuw vanuit het Dockerfile gebouwd, zodat de CLI-/Gateway-versie, de basisimage van het besturingssysteem en eventuele Dockerfile-wijzigingen samen worden bijgewerkt. `openclaw update` binnen de actieve container is niet dezelfde handeling, omdat de image wordt geleverd als een door Docker gebouwde `dist/`-structuur, zonder `.git`-checkout en zonder door npm beheerde globale installatie die kan worden gedetecteerd. Zie [Bijwerken](/nl/install/updating) voor die werkwijze bij VM-achtige installaties.
 
-Als je de opstartopdracht moet wijzigen zonder volledige herimplementatie:
+### De machineopdracht bijwerken
+
+De startopdracht wijzigen zonder volledige herimplementatie:
 
 ```bash
-# Get machine ID
 fly machines list
-
-# Update command
 fly machine update <machine-id> --command "node dist/index.js gateway --port 3000 --bind lan" -y
 
-# Or with memory increase
+# of met meer geheugen
 fly machine update <machine-id> --vm-memory 2048 --command "node dist/index.js gateway --port 3000 --bind lan" -y
 ```
 
-**Opmerking:** Na `fly deploy` kan de machineopdracht worden teruggezet naar wat in `fly.toml` staat. Als je handmatige wijzigingen hebt aangebracht, pas ze dan opnieuw toe na de implementatie.
+Een latere `fly deploy` zet de machineopdracht terug naar wat in `fly.toml` staat; pas handmatige wijzigingen na de herimplementatie opnieuw toe.
 
-## Privé-implementatie (gehard)
+## Privé-implementatie (versterkt)
 
-Standaard wijst Fly openbare IP's toe, waardoor je Gateway toegankelijk is op `https://your-app.fly.dev`. Dit is handig, maar betekent dat je implementatie vindbaar is door internetscanners (Shodan, Censys, enz.).
+Fly wijst standaard openbare IP-adressen toe, waardoor uw Gateway bereikbaar is via `https://your-app.fly.dev` en kan worden gevonden door internetscanners (Shodan, Censys enzovoort).
 
-Gebruik de privétemplate voor een geharde implementatie met **geen openbare blootstelling**.
+Gebruik `deploy/fly.private.toml` voor een versterkte implementatie **zonder openbaar IP-adres**: hierin ontbreekt `[http_service]`, zodat geen openbare inkomende toegang wordt toegewezen.
 
-### Wanneer privé-implementatie gebruiken
+### Wanneer u een privé-implementatie gebruikt
 
-- Je doet alleen **uitgaande** oproepen/berichten (geen inkomende webhooks)
-- Je gebruikt **ngrok- of Tailscale**-tunnels voor webhook-callbacks
-- Je benadert de Gateway via **SSH, proxy of WireGuard** in plaats van via de browser
-- Je wilt dat de implementatie **verborgen blijft voor internetscanners**
+- Alleen uitgaande aanroepen/berichten (geen inkomende webhooks)
+- ngrok- of Tailscale-tunnels verwerken eventuele Webhook-callbacks
+- Toegang tot de Gateway verloopt via SSH, proxy of WireGuard in plaats van via een browser
+- De implementatie moet verborgen blijven voor internetscanners
 
-### Installatie
-
-Gebruik `deploy/fly.private.toml` in plaats van de standaardconfiguratie:
+### Instellen
 
 ```bash
-# Deploy with private config
 fly deploy -c deploy/fly.private.toml
 ```
 
-Of converteer een bestaande implementatie:
+Of zet een bestaande implementatie om:
 
 ```bash
-# List current IPs
+# huidige IP-adressen weergeven
 fly ips list -a my-openclaw
 
-# Release public IPs
+# openbare IP-adressen vrijgeven
 fly ips release <public-ipv4> -a my-openclaw
 fly ips release <public-ipv6> -a my-openclaw
 
-# Switch to private config so future deploys don't re-allocate public IPs
-# (remove [http_service] or deploy with the private template)
+# overschakelen naar de privéconfiguratie, zodat toekomstige implementaties geen openbare IP-adressen opnieuw toewijzen
 fly deploy -c deploy/fly.private.toml
 
-# Allocate private-only IPv6
+# uitsluitend privé-IPv6 toewijzen
 fly ips allocate-v6 --private -a my-openclaw
 ```
 
-Daarna zou `fly ips list` alleen een IP van het type `private` moeten tonen:
+Hierna zou `fly ips list` alleen een IP van het type `private` moeten tonen:
 
-```
+```text
 VERSION  IP                   TYPE             REGION
 v6       fdaa:x:x:x:x::x      private          global
 ```
 
 ### Toegang tot een privé-implementatie
 
-Omdat er geen openbare URL is, gebruik je een van deze methoden:
-
-**Optie 1: Lokale proxy (eenvoudigst)**
+**Optie 1: lokale proxy (eenvoudigst)**
 
 ```bash
-# Forward local port 3000 to the app
 fly proxy 3000:3000 -a my-openclaw
-
-# Then open http://localhost:3000 in browser
+# open http://localhost:3000 in een browser
 ```
 
-**Optie 2: WireGuard VPN**
+**Optie 2: WireGuard-VPN**
 
 ```bash
-# WireGuard-config maken (eenmalig)
 fly wireguard create
-
-# Importeer naar de WireGuard-client en krijg daarna toegang via interne IPv6
-# Voorbeeld: http://[fdaa:x:x:x:x::x]:3000
+# importeer dit in een WireGuard-client en maak vervolgens verbinding via het interne IPv6-adres
+# voorbeeld: http://[fdaa:x:x:x:x::x]:3000
 ```
 
-**Optie 3: Alleen SSH**
+**Optie 3: alleen SSH**
 
 ```bash
 fly ssh console -a my-openclaw
 ```
 
-### Webhooks met private deployment
+### Webhooks bij een privé-implementatie
 
-Als je webhook-callbacks nodig hebt (Twilio, Telnyx, enz.) zonder openbare blootstelling:
+Voor Webhook-callbacks (Twilio, Telnyx enzovoort) zonder openbare blootstelling:
 
-1. **ngrok-tunnel** - Voer ngrok uit in de container of als sidecar
-2. **Tailscale Funnel** - Stel specifieke paden beschikbaar via Tailscale
-3. **Alleen uitgaand** - Sommige providers (Twilio) werken prima voor uitgaande gesprekken zonder webhooks
+1. **ngrok-tunnel**: voer ngrok uit in de container of als sidecar
+2. **Tailscale Funnel**: stel specifieke paden beschikbaar via Tailscale
+3. **Alleen uitgaand**: sommige providers (Twilio) werken voor uitgaande gesprekken zonder Webhooks
 
-Voorbeeldconfiguratie voor spraakoproepen met ngrok:
+Voorbeeldconfiguratie voor spraakoproepen met ngrok, onder `plugins.entries.voice-call.config`:
 
 ```json5
 {
@@ -483,39 +445,33 @@ Voorbeeldconfiguratie voor spraakoproepen met ngrok:
 }
 ```
 
-De ngrok-tunnel draait in de container en biedt een openbare webhook-URL zonder de Fly-app zelf bloot te stellen. Stel `webhookSecurity.allowedHosts` in op de openbare hostnaam van de tunnel zodat doorgestuurde host-headers worden geaccepteerd.
+De ngrok-tunnel wordt in de container uitgevoerd en biedt een openbare Webhook-URL zonder de Fly-app zelf openbaar te maken. Stel `webhookSecurity.allowedHosts` in op de hostnaam van de tunnel, zodat doorgestuurde hostheaders worden geaccepteerd.
 
-### Beveiligingsvoordelen
+### Afwegingen rond beveiliging
 
-| Aspect            | Openbaar     | Privé      |
-| ----------------- | ------------ | ---------- |
-| Internetscanners  | Vindbaar     | Verborgen  |
-| Directe aanvallen | Mogelijk     | Geblokkeerd |
-| Toegang tot Control UI | Browser      | Proxy/VPN  |
-| Webhook-bezorging | Direct       | Via tunnel |
+| Aspect             | Openbaar         | Privé         |
+| ------------------ | ---------------- | ------------- |
+| Internetscanners   | Vindbaar         | Verborgen     |
+| Rechtstreekse aanvallen | Mogelijk    | Geblokkeerd   |
+| Toegang tot de beheerinterface | Browser | Proxy/VPN |
+| Levering van Webhooks | Rechtstreeks  | Via tunnel    |
 
 ## Opmerkingen
 
-- Fly.io gebruikt **x86-architectuur** (niet ARM)
-- De Dockerfile is compatibel met beide architecturen
-- Gebruik `fly ssh console` voor WhatsApp/Telegram-onboarding
-- Persistente gegevens staan op het volume bij `/data`
-- Signal vereist Java + signal-cli; gebruik een aangepaste image en houd het geheugen op 2 GB+.
+- Fly.io gebruikt de x86-architectuur; het Dockerfile is compatibel met zowel x86 als ARM.
+- Gebruik `fly ssh console` voor de onboarding van WhatsApp/Telegram.
+- Permanente gegevens bevinden zich op het volume op `/data`.
+- Signal vereist signal-cli (een op Java gebaseerde CLI) in de image; gebruik een aangepaste image en wijs minimaal 2 GB geheugen toe.
 
 ## Kosten
 
-Met de aanbevolen configuratie (`shared-cpu-2x`, 2 GB RAM):
-
-- ~$10-15/maand, afhankelijk van gebruik
-- De gratis laag bevat enige tegoeden
-
-Zie [Fly.io-prijzen](https://fly.io/docs/about/pricing/) voor details.
+Met de aanbevolen configuratie (`shared-cpu-2x`, 2 GB RAM) kunt u, afhankelijk van het gebruik, rekenen op ongeveer $10-15 per maand; het gratis abonnement dekt een deel van de basistoewijzing. Zie [prijzen van Fly.io](https://fly.io/docs/about/pricing/) voor de actuele tarieven.
 
 ## Volgende stappen
 
-- Stel messagingkanalen in: [Kanalen](/nl/channels)
+- Stel berichtenkanalen in: [Kanalen](/nl/channels)
 - Configureer de Gateway: [Gateway-configuratie](/nl/gateway/configuration)
-- Houd OpenClaw up-to-date: [Updaten](/nl/install/updating)
+- Houd OpenClaw up-to-date: [Bijwerken](/nl/install/updating)
 
 ## Gerelateerd
 

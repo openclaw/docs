@@ -1,32 +1,32 @@
 ---
 read_when:
-    - Ponowne rozstrzyganie odwołań SecretRef w runtime
-    - Audyt pozostałości jawnego tekstu i nierozstrzygniętych odwołań
-    - Konfigurowanie SecretRef-ów i stosowanie jednokierunkowych zmian scrubovania
-summary: Dokumentacja CLI dla `openclaw secrets` (przeładowanie, audyt, konfiguracja, zastosowanie)
+    - Ponowne rozwiązywanie odwołań do sekretów w czasie działania
+    - Audyt pozostałości zwykłego tekstu i nierozwiązanych odwołań
+    - Konfigurowanie SecretRefs i stosowanie jednokierunkowych zmian oczyszczających
+summary: Dokumentacja CLI dla `openclaw secrets` (ponowne ładowanie, audyt, konfiguracja, zastosowanie)
 title: Sekrety
 x-i18n:
-    generated_at: "2026-04-24T09:04:13Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: 6fe1933ca6a9f2a24fbbe20fa3b83bf8f6493ea6c94061e135b4e1b48c33d62c
-    source_path: cli/secrets.md
-    workflow: 15
+    generated_at: "2026-07-12T14:55:57Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: d1ac0d0f6e29ae52d9dd03e3333665062ccd961ed22a2b06ca7fa7fde128e177
+    source_path: cli/secrets.md
+    workflow: 16
 ---
 
 # `openclaw secrets`
 
-Użyj `openclaw secrets`, aby zarządzać SecretRef-ami i utrzymywać aktywny snapshot runtime w dobrym stanie.
+Zarządzaj odwołaniami SecretRef i utrzymuj aktywną migawkę środowiska uruchomieniowego w prawidłowym stanie.
 
-Role poleceń:
+| Polecenie   | Rola                                                                                                                                                                                                 |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `reload`    | RPC Gateway (`secrets.reload`): ponownie rozwiązuje odwołania i zastępuje migawkę środowiska uruchomieniowego tylko po pełnym powodzeniu (bez zapisywania konfiguracji)                               |
+| `audit`     | Skan konfiguracji, magazynów uwierzytelniania i wygenerowanych modeli oraz pozostałości po starszych wersjach w trybie tylko do odczytu pod kątem tekstu jawnego, nierozwiązanych odwołań i rozbieżności priorytetów (odwołania exec są pomijane bez `--allow-exec`) |
+| `configure` | Interaktywny kreator konfiguracji dostawców, mapowania celów i kontroli wstępnej (wymaga TTY)                                                                                                         |
+| `apply`     | Wykonuje zapisany plan (`--dry-run` tylko go weryfikuje i domyślnie pomija kontrole exec; tryb zapisu odrzuca plany zawierające exec bez `--allow-exec`), a następnie usuwa wskazane pozostałości tekstu jawnego |
 
-- `reload`: RPC gateway (`secrets.reload`), które ponownie rozstrzyga odwołania i podmienia snapshot runtime tylko przy pełnym sukcesie (bez zapisów do konfiguracji).
-- `audit`: skan tylko do odczytu konfiguracji/uwierzytelniania/generowanych magazynów modeli oraz starszych pozostałości pod kątem jawnego tekstu, nierozstrzygniętych odwołań i dryfu pierwszeństwa (odwołania exec są pomijane, chyba że ustawiono `--allow-exec`).
-- `configure`: interaktywny planer konfiguracji providera, mapowania celów i preflight (wymagany TTY).
-- `apply`: wykonuje zapisany plan (`--dry-run` tylko do walidacji; dry-run domyślnie pomija kontrole exec, a tryb zapisu odrzuca plany zawierające exec, chyba że ustawiono `--allow-exec`), a następnie wykonuje scrub wskazanych pozostałości jawnego tekstu.
-
-Zalecana pętla operatora:
+Zalecany cykl pracy operatora:
 
 ```bash
 openclaw secrets audit --check
@@ -37,22 +37,16 @@ openclaw secrets audit --check
 openclaw secrets reload
 ```
 
-Jeśli plan zawiera SecretRef-y/providerów `exec`, przekaż `--allow-exec` zarówno do polecenia apply w trybie dry-run, jak i do polecenia apply w trybie zapisu.
+Jeśli plan obejmuje odwołania SecretRef lub dostawców typu `exec`, przekaż `--allow-exec` zarówno do polecenia próbnego, jak i zapisującego `apply`.
 
-Uwaga o kodach zakończenia dla CI/bramek:
+Kody wyjścia dla CI/bramek:
 
-- `audit --check` zwraca `1`, gdy są znaleziska.
-- nierozstrzygnięte odwołania zwracają `2`.
+- `audit --check` zwraca `1`, gdy wykryto problemy.
+- Nierozwiązane odwołania powodują zwrócenie `2` (niezależnie od `--check`).
 
-Powiązane:
+Powiązane: [Zarządzanie sekretami](/pl/gateway/secrets) · [Zakres poświadczeń SecretRef](/pl/reference/secretref-credential-surface) · [Bezpieczeństwo](/pl/gateway/security)
 
-- Przewodnik po sekretach: [Zarządzanie sekretami](/pl/gateway/secrets)
-- Powierzchnia poświadczeń: [Powierzchnia poświadczeń SecretRef](/pl/reference/secretref-credential-surface)
-- Przewodnik po bezpieczeństwie: [Bezpieczeństwo](/pl/gateway/security)
-
-## Ponowne załadowanie snapshotu runtime
-
-Ponownie rozstrzygnij odwołania do sekretów i atomowo podmień snapshot runtime.
+## Ponowne wczytywanie migawki środowiska uruchomieniowego
 
 ```bash
 openclaw secrets reload
@@ -60,32 +54,21 @@ openclaw secrets reload --json
 openclaw secrets reload --url ws://127.0.0.1:18789 --token <token>
 ```
 
-Uwagi:
+Używa metody RPC Gateway `secrets.reload`. Jeśli rozwiązanie odwołań się nie powiedzie, Gateway zachowuje ostatnią poprawną migawkę i zwraca błąd (bez częściowej aktywacji). Odpowiedź JSON zawiera `warningCount`.
 
-- Używa metody RPC gateway `secrets.reload`.
-- Jeśli rozstrzyganie się nie powiedzie, gateway zachowuje ostatni znany dobry snapshot i zwraca błąd (bez częściowej aktywacji).
-- Odpowiedź JSON zawiera `warningCount`.
-
-Opcje:
-
-- `--url <url>`
-- `--token <token>`
-- `--timeout <ms>`
-- `--json`
+Opcje: `--url <url>`, `--token <token>`, `--timeout <ms>`, `--json`.
 
 ## Audyt
 
-Skanuj stan OpenClaw pod kątem:
+Skanuje stan OpenClaw pod kątem:
 
-- przechowywania sekretów jako jawny tekst
-- nierozstrzygniętych odwołań
-- dryfu pierwszeństwa (poświadczenia w `auth-profiles.json` przesłaniające odwołania z `openclaw.json`)
-- pozostałości w wygenerowanych `agents/*/agent/models.json` (wartości `apiKey` providera i wrażliwe nagłówki providera)
-- starszych pozostałości (starsze wpisy magazynu auth, przypomnienia OAuth)
+- przechowywania sekretów w postaci tekstu jawnego
+- nierozwiązanych odwołań
+- rozbieżności priorytetów (poświadczenia z `auth-profiles.json` przesłaniające odwołania z `openclaw.json`)
+- pozostałości w wygenerowanych plikach `agents/*/agent/models.json` (wartości `apiKey` dostawców i poufne nagłówki dostawców)
+- pozostałości po starszych wersjach (wpisy w starszym magazynie uwierzytelniania, przypomnienia OAuth)
 
-Uwaga o pozostałościach w nagłówkach:
-
-- Wykrywanie wrażliwych nagłówków providera jest oparte na heurystykach nazw (typowe nazwy i fragmenty nagłówków uwierzytelniania/poświadczeń, takie jak `authorization`, `x-api-key`, `token`, `secret`, `password` i `credential`).
+Wykrywanie poufnych nagłówków dostawców opiera się na heurystyce nazw: oznaczane są nagłówki, których nazwy zawierają typowe fragmenty związane z uwierzytelnianiem lub poświadczeniami (`authorization`, `x-api-key`, `token`, `secret`, `password`, `credential`).
 
 ```bash
 openclaw secrets audit
@@ -94,25 +77,16 @@ openclaw secrets audit --json
 openclaw secrets audit --allow-exec
 ```
 
-Zachowanie przy zakończeniu:
-
-- `--check` kończy się kodem niezerowym, gdy są znaleziska.
-- nierozstrzygnięte odwołania kończą się kodem niezerowym o wyższym priorytecie.
-
-Najważniejsze elementy kształtu raportu:
+Struktura raportu:
 
 - `status`: `clean | findings | unresolved`
 - `resolution`: `refsChecked`, `skippedExecRefs`, `resolvabilityComplete`
 - `summary`: `plaintextCount`, `unresolvedRefCount`, `shadowedRefCount`, `legacyResidueCount`
-- kody znalezisk:
-  - `PLAINTEXT_FOUND`
-  - `REF_UNRESOLVED`
-  - `REF_SHADOWED`
-  - `LEGACY_RESIDUE`
+- kody wykrytych problemów: `PLAINTEXT_FOUND`, `REF_UNRESOLVED`, `REF_SHADOWED`, `LEGACY_RESIDUE`
 
-## Configure (interaktywny pomocnik)
+## Konfiguracja (interaktywny kreator)
 
-Interaktywnie buduj zmiany providera i SecretRef, uruchom preflight i opcjonalnie zastosuj:
+Interaktywnie utwórz zmiany dostawców i SecretRef, przeprowadź kontrolę wstępną i opcjonalnie je zastosuj:
 
 ```bash
 openclaw secrets configure
@@ -124,43 +98,33 @@ openclaw secrets configure --agent ops
 openclaw secrets configure --json
 ```
 
-Przepływ:
-
-- Najpierw konfiguracja providera (`add/edit/remove` dla aliasów `secrets.providers`).
-- Następnie mapowanie poświadczeń (wybór pól i przypisanie odwołań `{source, provider, id}`).
-- Na końcu preflight i opcjonalne zastosowanie.
+Przebieg: najpierw konfiguracja dostawców (dodawanie, edytowanie lub usuwanie aliasów `secrets.providers`), następnie mapowanie poświadczeń (wybór pól i przypisywanie odwołań `{source, provider, id}`), a potem kontrola wstępna i opcjonalne zastosowanie zmian.
 
 Flagi:
 
-- `--providers-only`: skonfiguruj tylko `secrets.providers`, pomiń mapowanie poświadczeń.
-- `--skip-provider-setup`: pomiń konfigurację providera i mapuj poświadczenia do istniejących providerów.
-- `--agent <id>`: ogranicza wykrywanie celów i zapisy `auth-profiles.json` do jednego magazynu agenta.
-- `--allow-exec`: zezwala na kontrole SecretRef exec podczas preflight/apply (może wykonywać polecenia providera).
+- `--providers-only`: konfiguruje tylko `secrets.providers`, pomijając mapowanie poświadczeń
+- `--skip-provider-setup`: pomija konfigurację dostawców i mapuje poświadczenia na istniejących dostawców
+- `--agent <id>`: ogranicza wykrywanie celów i zapisywanie w `auth-profiles.json` do magazynu jednego agenta
+- `--allow-exec`: zezwala na kontrole exec SecretRef podczas kontroli wstępnej i stosowania zmian (może wykonywać polecenia dostawców)
+
+Nie można łączyć `--providers-only` z `--skip-provider-setup`.
 
 Uwagi:
 
 - Wymaga interaktywnego TTY.
-- Nie można łączyć `--providers-only` z `--skip-provider-setup`.
-- `configure` kieruje się na pola zawierające sekrety w `openclaw.json` oraz `auth-profiles.json` dla wybranego zakresu agenta.
-- `configure` obsługuje tworzenie nowych mapowań `auth-profiles.json` bezpośrednio w przepływie wyboru.
-- Kanoniczna obsługiwana powierzchnia: [Powierzchnia poświadczeń SecretRef](/pl/reference/secretref-credential-surface).
-- Wykonuje rozstrzyganie preflight przed apply.
-- Jeśli preflight/apply zawiera odwołania exec, pozostaw `--allow-exec` ustawione dla obu kroków.
-- Wygenerowane plany domyślnie mają opcje scrub (`scrubEnv`, `scrubAuthProfilesForProviderTargets`, `scrubLegacyAuthJson` są wszystkie włączone).
-- Ścieżka apply jest jednokierunkowa dla wartości jawnego tekstu poddanych scrubowi.
-- Bez `--apply` CLI nadal pyta `Apply this plan now?` po preflight.
-- Z `--apply` (i bez `--yes`) CLI wyświetla dodatkowe nieodwracalne potwierdzenie.
-- `--json` wypisuje plan + raport preflight, ale polecenie nadal wymaga interaktywnego TTY.
+- Obejmuje pola zawierające sekrety w `openclaw.json` oraz `auth-profiles.json` w wybranym zakresie agenta; kanoniczny obsługiwany zakres: [Zakres poświadczeń SecretRef](/pl/reference/secretref-credential-surface).
+- Umożliwia tworzenie nowych mapowań `auth-profiles.json` bezpośrednio w procesie wyboru.
+- Przed zastosowaniem zmian przeprowadza wstępne rozwiązanie odwołań.
+- W generowanych planach opcje usuwania pozostałości są domyślnie włączone (`scrubEnv`, `scrubAuthProfilesForProviderTargets`, `scrubLegacyAuthJson`). Zastosowanie zmian jest nieodwracalne w przypadku usuniętych wartości tekstu jawnego.
+- Bez `--apply` CLI po kontroli wstępnej nadal wyświetla pytanie `Apply this plan now?`.
+- Z `--apply` (i bez `--yes`) CLI wyświetla dodatkowe potwierdzenie nieodwracalnej migracji.
+- `--json` wyświetla plan i raport kontroli wstępnej, ale nadal wymaga interaktywnego TTY.
 
-Uwaga o bezpieczeństwie providera exec:
+### Bezpieczeństwo dostawcy exec
 
-- Instalacje Homebrew często udostępniają binaria przez dowiązania symboliczne w `/opt/homebrew/bin/*`.
-- Ustaw `allowSymlinkCommand: true` tylko wtedy, gdy jest to potrzebne dla zaufanych ścieżek menedżera pakietów, i połącz to z `trustedDirs` (na przykład `["/opt/homebrew"]`).
-- W Windows, jeśli weryfikacja ACL jest niedostępna dla ścieżki providera, OpenClaw kończy się odmową w trybie fail-closed. Tylko dla zaufanych ścieżek ustaw `allowInsecurePath: true` dla tego providera, aby pominąć kontrole bezpieczeństwa ścieżki.
+Instalacje Homebrew często udostępniają pliki wykonywalne za pośrednictwem dowiązań symbolicznych w `/opt/homebrew/bin/*`. Ustaw `allowSymlinkCommand: true` tylko wtedy, gdy jest to konieczne dla zaufanych ścieżek menedżera pakietów, w połączeniu z `trustedDirs` (na przykład `["/opt/homebrew"]`). W systemie Windows, jeśli weryfikacja list ACL nie jest dostępna dla ścieżki dostawcy, OpenClaw domyślnie odmawia działania; wyłącznie dla zaufanych ścieżek ustaw `allowInsecurePath: true` dla tego dostawcy, aby pominąć kontrolę bezpieczeństwa ścieżki.
 
-## Zastosowanie zapisanego planu
-
-Zastosuj lub wykonaj preflight planu wygenerowanego wcześniej:
+## Stosowanie zapisanego planu
 
 ```bash
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json
@@ -170,29 +134,20 @@ openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run --allow-
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --json
 ```
 
-Zachowanie exec:
+`--dry-run` przeprowadza kontrolę wstępną bez zapisywania plików; kontrole exec SecretRef są domyślnie pomijane w trybie próbnym. Tryb zapisu odrzuca plany zawierające odwołania SecretRef lub dostawców typu exec bez `--allow-exec`. Użyj `--allow-exec`, aby zezwolić na kontrole lub wykonywanie dostawców exec w dowolnym z tych trybów.
 
-- `--dry-run` waliduje preflight bez zapisywania plików.
-- Kontrole SecretRef exec są domyślnie pomijane w dry-run.
-- Tryb zapisu odrzuca plany zawierające SecretRef-y/providerów exec, chyba że ustawiono `--allow-exec`.
-- Użyj `--allow-exec`, aby jawnie zezwolić na kontrole/wykonywanie providerów exec w dowolnym trybie.
+Elementy, które `apply` może zaktualizować:
 
-Szczegóły kontraktu planu (dozwolone ścieżki celów, reguły walidacji i semantyka błędów):
+- `openclaw.json` (cele SecretRef oraz wstawianie, aktualizowanie i usuwanie dostawców)
+- `auth-profiles.json` (usuwanie danych dostawców docelowych)
+- pozostałości w starszym pliku `auth.json`
+- znane klucze sekretów w `~/.openclaw/.env`, których wartości zostały zmigrowane
 
-- [Kontrakt planu apply dla Secrets](/pl/gateway/secrets-plan-contract)
+Szczegóły kontraktu planu (dozwolone ścieżki docelowe, reguły walidacji, semantyka błędów): [Kontrakt planu stosowania sekretów](/pl/gateway/secrets-plan-contract).
 
-Co `apply` może zaktualizować:
+### Dlaczego nie ma kopii zapasowych do wycofywania zmian
 
-- `openclaw.json` (cele SecretRef + upserty/usunięcia providerów)
-- `auth-profiles.json` (scrub celów providerów)
-- starsze pozostałości `auth.json`
-- `~/.openclaw/.env` znane klucze sekretów, których wartości zostały zmigrowane
-
-## Dlaczego nie ma kopii zapasowych do rollbacku
-
-`secrets apply` celowo nie zapisuje kopii zapasowych do rollbacku zawierających stare wartości jawnego tekstu.
-
-Bezpieczeństwo wynika ze ścisłego preflight + quasi-atomowego apply z best-effort przywróceniem w pamięci w razie błędu.
+`secrets apply` celowo nie zapisuje kopii zapasowych do wycofywania zmian, które zawierałyby stare wartości tekstu jawnego. Bezpieczeństwo zapewniają rygorystyczna kontrola wstępna i niemal atomowe zastosowanie zmian, z podejmowaną w miarę możliwości próbą przywrócenia stanu w pamięci w przypadku błędu.
 
 ## Przykład
 
@@ -202,9 +157,10 @@ openclaw secrets configure
 openclaw secrets audit --check
 ```
 
-Jeśli `audit --check` nadal zgłasza znaleziska jawnego tekstu, zaktualizuj pozostałe zgłoszone ścieżki celów i uruchom audyt ponownie.
+Jeśli `audit --check` nadal zgłasza tekst jawny, zaktualizuj pozostałe wskazane ścieżki docelowe i ponownie uruchom audyt.
 
 ## Powiązane
 
 - [Dokumentacja CLI](/pl/cli)
 - [Zarządzanie sekretami](/pl/gateway/secrets)
+- [SecretRef w Vault](/plugins/vault)

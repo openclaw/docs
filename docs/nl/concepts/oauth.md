@@ -1,227 +1,229 @@
 ---
 read_when:
-    - Je wilt OpenClaw OAuth end-to-end begrijpen
-    - Je loopt tegen problemen met tokenongeldigmaking / uitloggen aan
+    - U wilt OpenClaw OAuth van begin tot eind begrijpen
+    - Je ondervindt problemen met het ongeldig worden van tokens / uitloggen
     - Je wilt Claude CLI- of OAuth-authenticatiestromen
-    - Je wilt meerdere accounts of profielroutering
+    - U wilt meerdere accounts of profielroutering
 summary: 'OAuth in OpenClaw: tokenuitwisseling, opslag en patronen voor meerdere accounts'
 title: OAuth
 x-i18n:
-    generated_at: "2026-07-02T22:39:49Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:50:11Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5cffefec8bb3e755bcd4583a7957510c7ba3b605e21a3fd876f27c8fc9aa65aa
+    source_hash: 51aa98a9cb9614107ce979eca235c175a1748df2facdded852cd8899cebba22c
     source_path: concepts/oauth.md
     workflow: 16
 ---
 
-OpenClaw ondersteunt "abonnementsauthenticatie" via OAuth voor providers die dit aanbieden
-(met name **OpenAI Codex (ChatGPT OAuth)**). Voor Anthropic is de praktische verdeling
-nu:
+OpenClaw ondersteunt OAuth ("abonnementsauthenticatie") voor providers die dit aanbieden,
+met name **OpenAI Codex (ChatGPT OAuth)** en **hergebruik van Anthropic Claude CLI**.
+Voor Anthropic geldt in de praktijk het volgende onderscheid:
 
-- **Anthropic API-sleutel**: normale facturering voor de Anthropic API
-- **Anthropic Claude CLI / abonnementsauthenticatie binnen OpenClaw**: Anthropic-medewerkers
-  hebben ons verteld dat dit gebruik weer is toegestaan
+- **Anthropic-API-sleutel**: normale facturering via de Anthropic-API.
+- **Anthropic Claude CLI-/abonnementsauthenticatie binnen OpenClaw**: medewerkers van Anthropic
+  hebben ons verteld dat dit gebruik weer is toegestaan. Daarom beschouwt OpenClaw hergebruik van Claude CLI en
+  het gebruik van `claude -p` als toegestaan voor deze integratie, tenzij Anthropic
+  een nieuw beleid publiceert. Voor Anthropic in productie blijft authenticatie met een API-sleutel
+  de veiligere aanbevolen aanpak.
 
-OpenAI Codex OAuth wordt expliciet ondersteund voor gebruik in externe tools zoals
-OpenClaw.
-
-OpenClaw slaat zowel OpenAI API-sleutel-authenticatie als ChatGPT/Codex OAuth op onder de
-canonieke provider-id `openai`. Oudere `openai-codex:*`-profiel-id's en
-`auth.order.openai-codex`-items zijn legacy-status die wordt gerepareerd door
-`openclaw doctor --fix`; gebruik `openai:*`-profiel-id's en `auth.order.openai` voor
+OpenClaw slaat zowel authenticatie met een OpenAI-API-sleutel als ChatGPT/Codex OAuth op onder de
+canonieke provider-id `openai`. Oudere profiel-id's met `openai-codex:*` en
+vermeldingen van `auth.order.openai-codex` zijn verouderde status die wordt hersteld door
+`openclaw doctor --fix`; gebruik profiel-id's met `openai:*` en `auth.order.openai` voor
 nieuwe configuratie.
 
-Voor Anthropic in productie is API-sleutel-authenticatie het veiliger aanbevolen pad.
-
-Deze pagina legt uit:
+Deze pagina behandelt:
 
 - hoe de OAuth-**tokenuitwisseling** werkt (PKCE)
 - waar tokens worden **opgeslagen** (en waarom)
-- hoe je **meerdere accounts** beheert (profielen + overrides per sessie)
+- hoe u **meerdere accounts** beheert (profielen + overschrijvingen per sessie)
 
-OpenClaw ondersteunt ook **provider-plugins** die hun eigen OAuth- of API-sleutel-
-flows meeleveren. Voer ze uit via:
+Providerplugins die hun eigen OAuth- of API-sleutelprocedure leveren, gebruiken hetzelfde
+ingangspunt:
 
 ```bash
 openclaw models auth login --provider <id>
 ```
 
-## De tokenopvang (waarom die bestaat)
+## De tokenopvang (waarom deze bestaat)
 
-OAuth-providers geven vaak een **nieuw refresh token** uit tijdens login-/refresh-flows. Sommige providers (of OAuth-clients) kunnen oudere refresh tokens ongeldig maken wanneer er een nieuwe wordt uitgegeven voor dezelfde gebruiker/app.
+OAuth-providers genereren doorgaans bij elke aanmelding/vernieuwing een nieuw vernieuwingstoken.
+Sommige providers maken het vorige vernieuwingstoken ongeldig wanneer voor dezelfde
+gebruiker/app een nieuw token wordt uitgegeven. Praktisch gevolg: u meldt zich aan via OpenClaw _en_
+via Claude Code / Codex CLI, waarna een van beide later willekeurig wordt afgemeld.
 
-Praktisch symptoom:
+Om dit te beperken, behandelt OpenClaw de opslag voor authenticatieprofielen als een **tokenopvang**:
 
-- je logt in via OpenClaw _en_ via Claude Code / Codex CLI → een van beide wordt later willekeurig "uitgelogd"
+- de runtime leest de aanmeldgegevens voor elke agent vanaf één locatie
+- meerdere profielen kunnen naast elkaar bestaan en deterministisch worden gerouteerd
+- hergebruik van externe CLI's is providerspecifiek: zodra OpenClaw een lokaal OAuth-profiel
+  voor een provider beheert, is het lokale vernieuwingstoken canoniek. Als dat lokale
+  vernieuwingstoken wordt geweigerd, meldt OpenClaw dat het profiel opnieuw moet worden
+  geverifieerd, in plaats van terug te vallen op tokenmateriaal van een externe CLI.
+  Het opstarten via Codex CLI is nog beperkter: daarmee kan alleen een leeg profiel in de stijl van
+  `openai:default` worden gevuld voordat OpenClaw OAuth voor die
+  provider beheert; daarna blijven door OpenClaw beheerde vernieuwingen canoniek
+- status- en opstartpaden beperken het zoeken naar externe CLI's tot de providerset
+  die al is geconfigureerd, zodat bij een configuratie met één provider geen
+  niet-gerelateerde CLI-aanmeldingsopslag wordt onderzocht
 
-Om dat te beperken, behandelt OpenClaw `auth-profiles.json` als een **tokenopvang**:
+## Opslag (waar tokens zich bevinden)
 
-- de runtime leest credentials uit **één plek**
-- we kunnen meerdere profielen behouden en ze deterministisch routeren
-- hergebruik van externe CLI is providerspecifiek: Codex CLI kan een leeg
-  `openai:default`-profiel initialiseren, maar zodra OpenClaw een lokaal OAuth-profiel heeft,
-  is het lokale refresh token canoniek. Als dat lokale refresh token wordt geweigerd,
-  meldt OpenClaw het beheerde profiel voor herauthenticatie in plaats van
-  Codex CLI-tokenmateriaal te gebruiken als sibling-runtime-fallback. Andere integraties kunnen
-  extern beheerd blijven en hun CLI-auth-store opnieuw inlezen
-- status- en opstartpaden die de geconfigureerde providerset al kennen, beperken
-  externe CLI-detectie tot die set, zodat een niet-gerelateerde CLI-login-store niet
-  wordt onderzocht voor een setup met één provider
+Geheimen worden per agent opgeslagen onder de logische naam `auth-profiles.json` (de
+onderliggende opslag is de SQLite-database van de agent; de JSON-naam blijft behouden voor
+compatibiliteit en weergave in hulpprogramma's):
 
-## Opslag (waar tokens staan)
+- Authenticatieprofielen (OAuth + API-sleutels + optionele verwijzingen op waardeniveau):
+  `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
+- Verouderd compatibiliteitsbestand: `~/.openclaw/agents/<agentId>/agent/auth.json`
+  (statische `api_key`-vermeldingen worden bij ontdekking verwijderd)
 
-Geheimen worden opgeslagen in auth-stores van agents:
+Verouderd bestand dat uitsluitend voor import wordt gebruikt (nog steeds ondersteund, maar niet de hoofdopslag):
 
-- Auth-profielen (OAuth + API-sleutels + optionele refs op waardeniveau): `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
-- Legacy-compatibiliteitsbestand: `~/.openclaw/agents/<agentId>/agent/auth.json`
-  (statische `api_key`-items worden verwijderd wanneer ze worden ontdekt)
+- `~/.openclaw/credentials/oauth.json` (bij het eerste gebruik geïmporteerd in de opslag voor authenticatieprofielen)
 
-Legacy-bestand alleen voor import (nog steeds ondersteund, maar niet de hoofdopslag):
+Al het bovenstaande houdt ook rekening met `$OPENCLAW_STATE_DIR` (overschrijving van de statusmap). Volledige naslag: [/gateway/configuration-reference#auth-storage](/nl/gateway/configuration-reference#auth-storage)
 
-- `~/.openclaw/credentials/oauth.json` (bij eerste gebruik geïmporteerd in `auth-profiles.json`)
+Zie [Geheimenbeheer](/nl/gateway/secrets) voor statische geheimverwijzingen en het activeringsgedrag van runtime-snapshots.
 
-Al het bovenstaande respecteert ook `$OPENCLAW_STATE_DIR` (override voor state-dir). Volledige referentie: [/gateway/configuration](/nl/gateway/configuration-reference#auth-storage)
+Wanneer een secundaire agent geen lokaal authenticatieprofiel heeft, gebruikt OpenClaw transparante
+overerving vanuit de opslag van de standaard-/hoofdagent; de opslag van de hoofdagent wordt bij
+het lezen niet gekloond. OAuth-vernieuwingstokens zijn bijzonder gevoelig: normale
+kopieerprocedures slaan deze standaard over, omdat sommige providers vernieuwingstokens na gebruik
+roteren of ongeldig maken. Configureer voor een agent een afzonderlijke OAuth-aanmelding wanneer
+deze een onafhankelijk account nodig heeft.
 
-Voor statische secret-refs en het gedrag voor runtime-snapshotactivatie, zie [Geheimenbeheer](/nl/gateway/secrets).
+## Hergebruik van Anthropic Claude CLI
 
-Wanneer een secundaire agent geen lokaal auth-profiel heeft, gebruikt OpenClaw read-through-
-overerving vanuit de standaard-/hoofd-agent-store. Het kloont de
-`auth-profiles.json` van de hoofd-agent niet bij het lezen. OAuth-refresh tokens zijn extra
-gevoelig: normale kopieerflows slaan ze standaard over omdat sommige providers refresh tokens
-na gebruik roteren of ongeldig maken. Configureer een aparte OAuth-login voor een
-agent wanneer die een onafhankelijk account nodig heeft.
-
-## Compatibiliteit met legacy Anthropic-tokens
+OpenClaw ondersteunt hergebruik van Anthropic Claude CLI en `claude -p` als een toegestane
+authenticatiemethode. Als u al een lokale Claude-aanmelding op de host hebt,
+kan de onboarding/configuratie deze rechtstreeks hergebruiken. Het Anthropic-installatietoken blijft
+beschikbaar als ondersteunde methode voor tokenauthenticatie, maar OpenClaw geeft de voorkeur aan
+hergebruik van Claude CLI wanneer dit beschikbaar is.
 
 <Warning>
-De openbare Claude Code-documentatie van Anthropic zegt dat direct gebruik van Claude Code binnen
-Claude-abonnementslimieten blijft, en Anthropic-medewerkers hebben ons verteld dat OpenClaw-achtig Claude
-CLI-gebruik weer is toegestaan. OpenClaw behandelt hergebruik van Claude CLI en
-`claude -p`-gebruik daarom als goedgekeurd voor deze integratie, tenzij Anthropic
-nieuw beleid publiceert.
+In de openbare documentatie van Anthropic over Claude Code staat dat rechtstreeks gebruik van Claude Code binnen
+de limieten van het Claude-abonnement blijft, en medewerkers van Anthropic hebben ons verteld dat gebruik van Claude
+CLI in de stijl van OpenClaw weer is toegestaan. OpenClaw beschouwt hergebruik van Claude CLI en
+het gebruik van `claude -p` daarom als toegestaan voor deze integratie, tenzij Anthropic
+een nieuw beleid publiceert.
 
-Zie voor Anthropic's huidige documentatie voor directe Claude Code-abonnementen [Claude Code gebruiken
-met je Pro- of Max-
+Zie voor de huidige documentatie van Anthropic over abonnementen voor rechtstreeks gebruik van Claude Code [Claude Code gebruiken
+met uw Pro- of Max-
 abonnement](https://support.claude.com/en/articles/11145838-using-claude-code-with-your-pro-or-max-plan)
-en [Claude Code gebruiken met je Team- of Enterprise-
+en [Claude Code gebruiken met uw Team- of Enterprise-
 abonnement](https://support.anthropic.com/en/articles/11845131-using-claude-code-with-your-team-or-enterprise-plan/).
 
-Als je andere opties in abonnementsstijl in OpenClaw wilt, zie [OpenAI
+Zie [OpenAI
 Codex](/nl/providers/openai), [Qwen Cloud Coding
-Plan](/nl/providers/qwen), [MiniMax Coding Plan](/nl/providers/minimax),
-en [Z.AI / GLM Coding Plan](/nl/providers/zai).
+Plan](/nl/providers/qwen), [MiniMax Coding Plan](/nl/providers/minimax)
+en [Z.AI / GLM Coding Plan](/nl/providers/zai) als u andere abonnementsopties in OpenClaw wilt.
 </Warning>
 
-OpenClaw stelt Anthropic setup-token ook beschikbaar als ondersteund token-authenticatiepad, maar geeft nu de voorkeur aan hergebruik van Claude CLI en `claude -p` wanneer beschikbaar.
+## OAuth-uitwisseling (hoe aanmelden werkt)
 
-## Migratie van Anthropic Claude CLI
+De interactieve aanmeldingsprocedures van OpenClaw zijn geïmplementeerd in `openclaw/plugin-sdk/llm.ts` en gekoppeld aan de wizards/opdrachten.
 
-OpenClaw ondersteunt hergebruik van Anthropic Claude CLI weer. Als je al een lokale
-Claude-login op de host hebt, kan onboarding/configure die direct hergebruiken.
+### Anthropic-installatietoken
 
-## OAuth-uitwisseling (hoe login werkt)
+Proces:
 
-De interactieve login-flows van OpenClaw zijn geïmplementeerd in `openclaw/plugin-sdk/llm` en gekoppeld aan de wizards/commands.
-
-### Anthropic setup-token
-
-Flowvorm:
-
-1. start Anthropic setup-token of paste-token vanuit OpenClaw
-2. OpenClaw slaat de resulterende Anthropic-credential op in een auth-profiel
-3. modelselectie blijft op `anthropic/...`
-4. bestaande Anthropic-auth-profielen blijven beschikbaar voor rollback-/volgordebeheer
+1. start het Anthropic-installatietoken of plaktoken vanuit OpenClaw
+2. OpenClaw slaat de resulterende Anthropic-aanmeldgegevens op in een authenticatieprofiel
+3. de modelselectie blijft op `anthropic/...`
+4. bestaande Anthropic-authenticatieprofielen blijven beschikbaar voor terugdraaien/volgordebeheer
 
 ### OpenAI Codex (ChatGPT OAuth)
 
-OpenAI Codex OAuth wordt expliciet ondersteund voor gebruik buiten de Codex CLI, inclusief OpenClaw-workflows.
+OpenAI Codex OAuth wordt expliciet ondersteund voor gebruik buiten Codex CLI, waaronder OpenClaw-workflows.
 
-De login-command gebruikt nog steeds de canonieke OpenAI-provider-id:
+De aanmeldingsopdracht gebruikt de canonieke OpenAI-provider-id:
 
 ```bash
 openclaw models auth login --provider openai
 ```
 
-Gebruik `--profile-id openai:<name>` voor meerdere ChatGPT/Codex OAuth-accounts in
-één agent. Gebruik geen `openai-codex:<name>` voor nieuwe profielen. Doctor migreert
-dat oudere prefix naar een botsingsvrije `openai:*`-profiel-id; voer
-`openclaw models auth list --provider openai` uit na reparatie voordat je
-profiel-id's kopieert naar `auth.order` of `/model ...@<profileId>`.
+Gebruik `--profile-id openai:<name>` voor meerdere ChatGPT/Codex OAuth-accounts binnen
+één agent. Gebruik `openai-codex:<name>` niet voor nieuwe profielen. Doctor migreert
+dat oudere voorvoegsel naar een conflictvrije profiel-id met `openai:*`; voer
+`openclaw models auth list --provider openai` uit na het herstel en voordat u
+profiel-id's naar `auth.order` of `/model ...@<profileId>` kopieert.
 
-Flowvorm (PKCE):
+Proces (PKCE):
 
-1. genereer PKCE-verifier/challenge + willekeurige `state`
-2. open `https://auth.openai.com/oauth/authorize?...`
-3. probeer de callback op te vangen op `http://127.0.0.1:1455/auth/callback`
-4. als de callback niet kan binden (of je werkt remote/headless), plak dan de redirect-URL/code
-5. wissel uit bij `https://auth.openai.com/oauth/token`
-6. haal `accountId` uit het access token en sla `{ access, refresh, expires, accountId }` op
+1. genereer een PKCE-verificatiecode/-uitdaging en een willekeurige `state`
+2. open `https://auth.openai.com/oauth/authorize?...` (bereik
+   `openid profile email offline_access`)
+3. probeer de callback op `http://localhost:1455/auth/callback` op te vangen (de
+   callbackhost is standaard `localhost` en accepteert alleen local loopback-hosts;
+   overschrijf dit met `OPENCLAW_OAUTH_CALLBACK_HOST`)
+4. als u een code kunt plakken voordat de callback binnenkomt (of als u
+   op afstand/headless werkt en de callback niet kan binden), plakt u in plaats daarvan de omleidings-URL/code
+   - handmatig plakken concurreert met de browsercallback en wat het eerst is voltooid,
+   wint
+5. wissel de code uit via `https://auth.openai.com/oauth/token`
+6. haal `accountId` uit het toegangstoken en sla `{ access, refresh, expires, accountId }` op
 
-Het wizardpad is `openclaw onboard` → auth-keuze `openai`.
+Het wizardpad is `openclaw onboard` → authenticatiekeuze `openai`.
 
-## Refresh + verlopen
+## Vernieuwing + vervaldatum
 
-Profielen slaan een `expires`-timestamp op.
+Profielen slaan een `expires`-tijdstempel op. Tijdens runtime:
 
-Tijdens runtime:
+- als `expires` in de toekomst ligt, gebruikt u het opgeslagen toegangstoken
+- als het is verlopen, vernieuwt u het (onder een bestandsvergrendeling) en overschrijft u de opgeslagen aanmeldgegevens
+- als een secundaire agent een overgeërfd OAuth-profiel van de hoofdagent leest, schrijft de
+  vernieuwing terug naar de opslag van de hoofdagent in plaats van het vernieuwingstoken
+  naar de opslag van de secundaire agent te kopiëren
+- extern beheerde CLI-aanmeldgegevens (Claude CLI, beperkte initialisatie via Codex CLI;
+  zie [De tokenopvang](#the-token-sink-why-it-exists)) worden opnieuw gelezen in plaats van
+  een gekopieerd vernieuwingstoken te gebruiken. Als een beheerde vernieuwing mislukt, meldt OpenClaw
+  dat het betreffende profiel opnieuw moet worden geverifieerd in plaats van
+  tokenmateriaal van een externe CLI terug te geven.
 
-- als `expires` in de toekomst ligt → gebruik het opgeslagen access token
-- als het is verlopen → refresh (onder een file lock) en overschrijf de opgeslagen credentials
-- als een secundaire agent een overgeërfd OAuth-profiel van de hoofd-agent leest, schrijft
-  refresh terug naar de hoofd-agent-store in plaats van het refresh token te kopiëren naar
-  de store van de secundaire agent
-- uitzondering: sommige externe CLI-credentials blijven extern beheerd; OpenClaw
-  leest die CLI-auth-stores opnieuw in in plaats van gekopieerde refresh tokens te gebruiken.
-  Codex CLI-bootstrap is bewust nauwer: het kan alleen een leeg
-  `openai:default` of expliciet aangevraagd OpenAI-profiel seed-en voordat OpenClaw
-  eigenaar is van OAuth voor de provider. Daarna houden door OpenClaw beheerde refreshes lokale
-  profielen canoniek en voegt detectie geen Codex CLI-auth toe in een sibling-
-  slot. Als een beheerde refresh mislukt, meldt OpenClaw het getroffen profiel voor
-  herauthenticatie in plaats van extern CLI-tokenmateriaal terug te geven.
-
-De refresh-flow is automatisch; meestal hoef je tokens niet handmatig te beheren.
+De vernieuwingsprocedure verloopt automatisch; doorgaans hoeft u tokens niet handmatig te beheren.
 
 ## Meerdere accounts (profielen) + routering
 
 Twee patronen:
 
-### 1) Voorkeur: aparte agents
+### 1) Aanbevolen: afzonderlijke agents
 
-Als je wilt dat "persoonlijk" en "werk" nooit met elkaar interageren, gebruik dan geïsoleerde agents (aparte sessies + credentials + workspace):
+Als u wilt dat "persoonlijk" en "werk" nooit met elkaar in aanraking komen, gebruikt u geïsoleerde agents (afzonderlijke sessies + aanmeldgegevens + werkruimte):
 
 ```bash
 openclaw agents add work
 openclaw agents add personal
 ```
 
-Configureer daarna auth per agent (wizard) en routeer chats naar de juiste agent.
+Configureer vervolgens de authenticatie per agent (wizard) en routeer chats naar de juiste agent.
 
 ### 2) Geavanceerd: meerdere profielen in één agent
 
-`auth-profiles.json` ondersteunt meerdere profiel-ID's voor dezelfde provider.
-
+De opslag voor authenticatieprofielen ondersteunt meerdere profiel-id's voor dezelfde provider.
 Kies welk profiel wordt gebruikt:
 
-- globaal via configuratievolgorde (`auth.order`)
+- globaal via de configuratievolgorde (`auth.order`)
 - per sessie via `/model ...@<profileId>`
 
-Voorbeeld (sessie-override):
+Voorbeeld (overschrijving voor sessie):
 
 - `/model Opus@anthropic:work`
 
-Zo zie je welke profiel-ID's bestaan:
+Geef bestaande profiel-id's weer met:
 
-- `openclaw channels list --json` (toont `auth[]`)
+```bash
+openclaw models auth list --provider <id>
+```
 
 Gerelateerde documentatie:
 
-- [Model-failover](/nl/concepts/model-failover) (rotatie- + cooldownregels)
-- [Slash commands](/nl/tools/slash-commands) (command-oppervlak)
+- [Model-failover](/nl/concepts/model-failover) (regels voor rotatie + afkoelperiode)
+- [Slash-opdrachten](/nl/tools/slash-commands) (opdrachtinterface)
 
 ## Gerelateerd
 
 - [Authenticatie](/nl/gateway/authentication) - overzicht van authenticatie voor modelproviders
-- [Geheimen](/nl/gateway/secrets) - credentialopslag en SecretRef
-- [Configuratiereferentie](/nl/gateway/configuration-reference#auth-storage) - auth-configuratiesleutels
+- [Geheimen](/nl/gateway/secrets) - opslag van aanmeldgegevens en SecretRef
+- [Configuratienaslag](/nl/gateway/configuration-reference#auth-storage) - configuratiesleutels voor authenticatie

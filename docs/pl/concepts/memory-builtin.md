@@ -2,33 +2,34 @@
 read_when:
     - Chcesz zrozumieć domyślny backend pamięci
     - Chcesz skonfigurować dostawców osadzeń lub wyszukiwanie hybrydowe
-summary: Domyślny backend pamięci oparty na SQLite z wyszukiwaniem słów kluczowych, wektorowym i hybrydowym
+summary: Domyślny backend pamięci oparty na SQLite z wyszukiwaniem według słów kluczowych, wektorowym i hybrydowym
 title: Wbudowany silnik pamięci
 x-i18n:
-    generated_at: "2026-06-27T17:26:57Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:03:50Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a867bd295778f81109b258a63a35a1683d652d4564e44335053af4d86f90584e
+    source_hash: e8cbe2bae73b1d393ac158edb67fc442e76d1e5ff93e5201dbb7e7216801aa85
     source_path: concepts/memory-builtin.md
     workflow: 16
 ---
 
-Wbudowany silnik jest domyślnym backendem pamięci. Przechowuje indeks pamięci w
-bazie danych SQLite osobnej dla każdego agenta i nie wymaga dodatkowych zależności, aby rozpocząć.
+Wbudowany silnik jest domyślnym backendem pamięci. Przechowuje indeks pamięci
+w bazie danych SQLite przypisanej do agenta i nie wymaga żadnych dodatkowych
+zależności, aby rozpocząć pracę.
 
-## Co zapewnia
+## Co oferuje
 
-- **Wyszukiwanie po słowach kluczowych** przez pełnotekstowe indeksowanie FTS5 (punktacja BM25).
-- **Wyszukiwanie wektorowe** przez osadzenia z dowolnego obsługiwanego dostawcy.
-- **Wyszukiwanie hybrydowe**, które łączy oba podejścia dla najlepszych wyników.
-- **Obsługa CJK** przez tokenizację trigramową dla języka chińskiego, japońskiego i koreańskiego.
-- **Przyspieszenie sqlite-vec** dla zapytań wektorowych w bazie danych (opcjonalnie).
+- **Wyszukiwanie słów kluczowych** za pomocą pełnotekstowego indeksowania FTS5 (punktacja BM25).
+- **Wyszukiwanie wektorowe** za pomocą embeddingów od dowolnego obsługiwanego dostawcy.
+- **Wyszukiwanie hybrydowe**, które łączy obie metody w celu uzyskania najlepszych wyników.
+- **Obsługę języków CJK** za pomocą tokenizacji trigramowej dla języka chińskiego, japońskiego i koreańskiego.
+- **Przyspieszenie sqlite-vec** dla zapytań wektorowych wykonywanych w bazie danych (opcjonalnie).
 
 ## Pierwsze kroki
 
-Domyślnie wbudowany silnik używa osadzeń OpenAI. Jeśli masz już skonfigurowane
-`OPENAI_API_KEY` albo `models.providers.openai.apiKey`, wyszukiwanie wektorowe
+Domyślnie wbudowany silnik używa embeddingów OpenAI. Jeśli `OPENAI_API_KEY` lub
+`models.providers.openai.apiKey` jest już skonfigurowany, wyszukiwanie wektorowe
 działa bez dodatkowej konfiguracji pamięci.
 
 Aby jawnie ustawić dostawcę:
@@ -45,10 +46,10 @@ Aby jawnie ustawić dostawcę:
 }
 ```
 
-Bez dostawcy osadzeń dostępne jest tylko wyszukiwanie po słowach kluczowych.
+Bez dostawcy embeddingów dostępne jest tylko wyszukiwanie słów kluczowych.
 
-Aby wymusić lokalne osadzenia GGUF, zainstaluj oficjalny plugin dostawcy llama.cpp,
-a następnie wskaż w `local.modelPath` plik GGUF:
+Aby wymusić lokalne embeddingi GGUF, zainstaluj oficjalny plugin dostawcy
+llama.cpp, a następnie ustaw `local.modelPath` na plik GGUF:
 
 ```bash
 openclaw plugins install @openclaw/llama-cpp-provider
@@ -70,91 +71,100 @@ openclaw plugins install @openclaw/llama-cpp-provider
 }
 ```
 
-## Obsługiwani dostawcy osadzeń
+## Obsługiwani dostawcy embeddingów
 
-| Dostawca          | ID                  | Uwagi                               |
-| ----------------- | ------------------- | ----------------------------------- |
-| Bedrock           | `bedrock`           | Używa łańcucha poświadczeń AWS      |
-| DeepInfra         | `deepinfra`         | Domyślnie: `BAAI/bge-m3`            |
-| Gemini            | `gemini`            | Obsługuje multimodalność (obraz + audio) |
-| GitHub Copilot    | `github-copilot`    | Używa subskrypcji Copilot           |
-| Lokalny           | `local`             | `@openclaw/llama-cpp-provider`      |
-| Mistral           | `mistral`           |                                     |
-| Ollama            | `ollama`            | Lokalny/samodzielnie hostowany      |
-| OpenAI            | `openai`            | Domyślnie: `text-embedding-3-small` |
-| Zgodny z OpenAI   | `openai-compatible` | Ogólny punkt końcowy `/v1/embeddings` |
-| Voyage            | `voyage`            |                                     |
+| Dostawca          | ID                  | Uwagi                                      |
+| ----------------- | ------------------- | ------------------------------------------ |
+| Bedrock           | `bedrock`           | Używa łańcucha poświadczeń AWS             |
+| DeepInfra         | `deepinfra`         | Domyślnie: `BAAI/bge-m3`                   |
+| Gemini            | `gemini`            | Obsługuje multimodalność (obraz i dźwięk)  |
+| GitHub Copilot    | `github-copilot`    | Używa Twojej subskrypcji Copilot           |
+| LM Studio         | `lmstudio`          | Lokalny/samodzielnie hostowany              |
+| Lokalny           | `local`             | `@openclaw/llama-cpp-provider`             |
+| Mistral           | `mistral`           |                                            |
+| Ollama            | `ollama`            | Lokalny/samodzielnie hostowany              |
+| OpenAI            | `openai`            | Domyślnie: `text-embedding-3-small`         |
+| Zgodny z OpenAI   | `openai-compatible` | Ogólny punkt końcowy `/v1/embeddings`       |
+| Voyage            | `voyage`            |                                            |
 
-Ustaw `memorySearch.provider`, aby przełączyć się z OpenAI na innego dostawcę.
+Ustaw `memorySearch.provider`, aby zmienić dostawcę z OpenAI na innego.
 
 ## Jak działa indeksowanie
 
-OpenClaw indeksuje `MEMORY.md` i `memory/*.md` jako fragmenty (~400 tokenów z
-nakładaniem 80 tokenów) i przechowuje je w bazie danych SQLite osobnej dla każdego agenta.
+OpenClaw indeksuje pliki `MEMORY.md` i `memory/*.md` w segmentach (domyślnie
+po 400 tokenów z nakładaniem się 80 tokenów) i przechowuje je w bazie danych
+SQLite przypisanej do agenta.
 
-- **Lokalizacja indeksu:** baza danych agenta właściciela pod adresem
+- **Lokalizacja indeksu:** baza danych agenta będącego właścicielem:
   `~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite`
-- **Utrzymanie magazynu:** pliki poboczne SQLite WAL są ograniczane przez okresowe
-  punkty kontrolne oraz punkty kontrolne przy zamykaniu.
-- **Obserwowanie plików:** zmiany w plikach pamięci wyzwalają reindeksowanie z opóźnieniem antydrganiowym (1,5 s).
-- **Automatyczne reindeksowanie:** gdy dostawca osadzeń, model lub konfiguracja dzielenia na fragmenty
-  się zmieni, cały indeks jest automatycznie odbudowywany.
-- **Reindeksowanie na żądanie:** `openclaw memory index --force`
+- **Konserwacja pamięci:** rozmiar plików pomocniczych SQLite WAL jest ograniczany
+  za pomocą okresowych punktów kontrolnych oraz punktów kontrolnych przy zamykaniu.
+- **Monitorowanie plików:** zmiany w plikach pamięci wyzwalają ponowne indeksowanie
+  z eliminacją drgań (domyślnie 1,5 s).
+- **Automatyczne ponowne indeksowanie:** indeks jest automatycznie przebudowywany po zmianie
+  dostawcy embeddingów, modelu, konfiguracji segmentowania, skonfigurowanych źródeł lub zakresu.
+- **Ponowne indeksowanie na żądanie:** `openclaw memory index --force`
 
 <Info>
-Możesz także indeksować pliki Markdown spoza obszaru roboczego za pomocą
+Możesz również indeksować pliki Markdown spoza przestrzeni roboczej za pomocą
 `memorySearch.extraPaths`. Zobacz
-[odniesienie konfiguracji](/pl/reference/memory-config#additional-memory-paths).
+[dokumentację konfiguracji](/pl/reference/memory-config#additional-memory-paths).
 </Info>
 
 ## Kiedy używać
 
 Wbudowany silnik jest właściwym wyborem dla większości użytkowników:
 
-- Działa od razu bez dodatkowych zależności.
-- Dobrze obsługuje wyszukiwanie po słowach kluczowych i wektorowe.
-- Obsługuje wszystkich dostawców osadzeń.
-- Wyszukiwanie hybrydowe łączy najlepsze cechy obu podejść do pobierania.
+- Działa od razu, bez dodatkowych zależności.
+- Dobrze obsługuje wyszukiwanie słów kluczowych i wektorowe.
+- Obsługuje wszystkich dostawców embeddingów.
+- Wyszukiwanie hybrydowe łączy zalety obu metod pobierania informacji.
 
-Rozważ przełączenie na [QMD](/pl/concepts/memory-qmd), jeśli potrzebujesz rerankingu, rozszerzania zapytań
-albo chcesz indeksować katalogi poza obszarem roboczym.
+Rozważ przejście na [QMD](/pl/concepts/memory-qmd), jeśli potrzebujesz ponownego
+uszeregowania wyników, rozszerzania zapytań lub chcesz indeksować katalogi
+spoza przestrzeni roboczej.
 
-Rozważ [Honcho](/pl/concepts/memory-honcho), jeśli chcesz pamięć między sesjami z
-automatycznym modelowaniem użytkownika.
+Rozważ użycie [Honcho](/pl/concepts/memory-honcho), jeśli potrzebujesz pamięci
+między sesjami z automatycznym modelowaniem użytkownika.
 
 ## Rozwiązywanie problemów
 
-**Wyszukiwanie w pamięci jest wyłączone?** Sprawdź `openclaw memory status`. Jeśli żaden dostawca nie jest
-wykryty, ustaw go jawnie albo dodaj klucz API.
+**Wyszukiwanie pamięci jest wyłączone?** Sprawdź `openclaw memory status`. Jeśli
+nie wykryto dostawcy, ustaw go jawnie lub dodaj klucz API.
 
-**Lokalny dostawca nie został wykryty?** Potwierdź, że lokalna ścieżka istnieje, i uruchom:
+**Nie wykryto lokalnego dostawcy?** Upewnij się, że lokalna ścieżka istnieje, i uruchom:
 
 ```bash
 openclaw memory status --deep --agent main
 openclaw memory index --force --agent main
 ```
 
-Zarówno samodzielne polecenia CLI, jak i Gateway używają tego samego identyfikatora dostawcy `local`.
-Ustaw `memorySearch.provider: "local"`, gdy chcesz używać lokalnych osadzeń.
+Zarówno samodzielne polecenia CLI, jak i Gateway używają tego samego identyfikatora
+dostawcy `local`. Ustaw `memorySearch.provider: "local"`, jeśli chcesz używać
+lokalnych embeddingów.
 
-**Nieaktualne wyniki?** Uruchom `openclaw memory index --force`, aby odbudować indeks. Obserwator
-może pominąć zmiany w rzadkich przypadkach brzegowych.
+**Nieaktualne wyniki?** Uruchom `openclaw memory index --force`, aby przebudować
+indeks. W rzadkich przypadkach brzegowych mechanizm monitorowania może nie
+wykryć zmian.
 
-**sqlite-vec się nie ładuje?** OpenClaw automatycznie przełącza się na podobieństwo cosinusowe
-w procesie. `openclaw memory status --deep` raportuje lokalny magazyn wektorowy
-oddzielnie od dostawcy osadzeń, więc `Vector store: unavailable` wskazuje
-na ładowanie sqlite-vec, natomiast `Embeddings: unavailable` wskazuje na dostawcę/uwierzytelnianie
-albo gotowość modelu. Sprawdź w logach konkretny błąd ładowania.
+**sqlite-vec nie jest ładowany?** OpenClaw automatycznie przełącza się na
+obliczanie podobieństwa cosinusowego w procesie. Polecenie
+`openclaw memory status --deep` raportuje lokalny magazyn wektorów oddzielnie
+od dostawcy embeddingów, dlatego `Vector store:
+unavailable` wskazuje na problem z ładowaniem sqlite-vec, natomiast `Embeddings: unavailable`
+wskazuje na problem z dostawcą lub uwierzytelnianiem albo brak gotowości modelu.
+Sprawdź dzienniki pod kątem konkretnego błędu ładowania.
 
 ## Konfiguracja
 
-Informacje o konfiguracji dostawcy osadzeń, dostrajaniu wyszukiwania hybrydowego (wagi, MMR, zanikanie czasowe),
-indeksowaniu wsadowym, pamięci multimodalnej, sqlite-vec, dodatkowych ścieżkach i wszystkich
-innych opcjach konfiguracji znajdziesz w
-[odniesieniu konfiguracji pamięci](/pl/reference/memory-config).
+Informacje o konfiguracji dostawcy embeddingów, dostrajaniu wyszukiwania
+hybrydowego (wagi, MMR, wygaszanie czasowe), indeksowaniu wsadowym, pamięci
+multimodalnej, sqlite-vec, dodatkowych ścieżkach i wszystkich pozostałych
+ustawieniach znajdziesz w
+[dokumentacji konfiguracji pamięci](/pl/reference/memory-config).
 
 ## Powiązane
 
-- [Przegląd pamięci](/pl/concepts/memory)
-- [Wyszukiwanie w pamięci](/pl/concepts/memory-search)
+- [Omówienie pamięci](/pl/concepts/memory)
+- [Wyszukiwanie pamięci](/pl/concepts/memory-search)
 - [Active Memory](/pl/concepts/active-memory)

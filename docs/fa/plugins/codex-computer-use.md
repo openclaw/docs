@@ -1,89 +1,92 @@
 ---
 read_when:
-    - می‌خواهید عامل‌های OpenClaw در حالت Codex از Codex Computer Use استفاده کنند
+    - می‌خواهید عامل‌های OpenClaw در حالت Codex از قابلیت استفاده از رایانه در Codex بهره ببرند
     - شما در حال انتخاب میان Codex Computer Use، PeekabooBridge و MCP مستقیم cua-driver هستید
-    - شما در حال تصمیم‌گیری بین Codex Computer Use و راه‌اندازی مستقیم cua-driver MCP هستید
-    - در حال پیکربندی computerUse برای Plugin همراه Codex هستید
-    - در حال عیب‌یابی وضعیت یا نصب computer-use در /codex هستید
-summary: راه‌اندازی Codex Computer Use برای عامل‌های OpenClaw در حالت Codex
-title: استفاده از رایانه با Codex
+    - شما در حال پیکربندی `computerUse` برای Plugin همراه Codex هستید
+    - در حال عیب‌یابی وضعیت یا نصب قابلیت استفاده از رایانه در ‎/codex‎ هستید
+summary: راه‌اندازی قابلیت استفاده از رایانه در Codex برای عامل‌های OpenClaw در حالت Codex
+title: کاربرد رایانه‌ای Codex
 x-i18n:
-    generated_at: "2026-06-30T14:15:58Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:23:51Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4cb785e2fda0d89a7e7770df0c2a4b3aa23f97cb1c8515a7d555a8409acfd3b2
+    source_hash: a55ee330c4952c8bcc97c3178a85a67ea3b7964e6880277bd41d2bfc750e3138
     source_path: plugins/codex-computer-use.md
     workflow: 16
 ---
 
-استفاده از رایانه یک Plugin MCP بومی Codex برای کنترل دسکتاپ محلی است. OpenClaw
-برنامه دسکتاپ را در خود vendoring نمی‌کند، خودش کنش‌های دسکتاپ را اجرا نمی‌کند، و
-مجوزهای Codex را دور نمی‌زند. Plugin همراه `codex` فقط app-server مربوط به Codex را آماده می‌کند:
-پشتیبانی Plugin در Codex را فعال می‌کند، Plugin پیکربندی‌شده Codex
-Computer Use را پیدا یا نصب می‌کند، بررسی می‌کند که سرور MCP به نام `computer-use` در دسترس باشد، و
-سپس اجازه می‌دهد Codex در طول نوبت‌های حالت Codex مالک فراخوانی‌های ابزار MCP بومی باشد.
+Computer Use یک Plugin بومی Codex برای MCP و کنترل دسکتاپ محلی است. OpenClaw
+برنامهٔ دسکتاپ را همراه خود عرضه نمی‌کند، اقدامات دسکتاپ را مستقیماً اجرا نمی‌کند و
+مجوزهای Codex را دور نمی‌زند. Plugin همراه `codex` فقط app-server متعلق به Codex را آماده می‌کند:
+پشتیبانی از Pluginهای Codex را فعال می‌کند، Plugin پیکربندی‌شدهٔ Computer Use را می‌یابد
+یا نصب می‌کند، در دسترس بودن سرور MCP با نام `computer-use` را بررسی می‌کند و سپس
+در نوبت‌های حالت Codex، مالکیت فراخوانی‌های بومی ابزار MCP را به Codex می‌سپارد.
 
-از این صفحه زمانی استفاده کنید که OpenClaw از قبل از harness بومی Codex استفاده می‌کند. برای
-خود راه‌اندازی runtime، [Codex harness](/fa/plugins/codex-harness) را ببینید.
+زمانی از این صفحه استفاده کنید که OpenClaw از قبل از چارچوب بومی Codex استفاده می‌کند. برای
+راه‌اندازی خود محیط اجرا، به [چارچوب Codex](/fa/plugins/codex-harness) مراجعه کنید.
+
+این قابلیت با [ابزار رایانهٔ داخلی مبتنی بر Node](/fa/nodes/computer-use) در OpenClaw متفاوت است. زمانی از ابزار داخلی استفاده کنید که قرارداد یکسان عامل باید یک Mac جفت‌شده را کنترل کند، چه عامل روی Gateway اجرا شود و چه روی Node دیگری. زمانی از Codex Computer Use استفاده کنید که app-server متعلق به Codex باید نصب محلی MCP، مجوزها و فراخوانی‌های بومی ابزار را مدیریت کند.
 
 ## OpenClaw.app و Peekaboo
 
-یکپارچه‌سازی Peekaboo در OpenClaw.app از Codex Computer Use جدا است. برنامه
-macOS می‌تواند یک سوکت PeekabooBridge میزبانی کند تا CLI به نام `peekaboo` بتواند
-مجوزهای محلی Accessibility و Screen Recording برنامه را برای ابزارهای
-اتوماسیون خود Peekaboo دوباره استفاده کند. آن bridge، Codex Computer Use را نصب یا پراکسی نمی‌کند، و
-Codex Computer Use از طریق سوکت PeekabooBridge فراخوانی انجام نمی‌دهد.
+یکپارچه‌سازی Peekaboo در OpenClaw.app از Codex Computer Use جدا است.
+برنامهٔ macOS می‌تواند یک سوکت PeekabooBridge میزبانی کند تا CLI مربوط به `peekaboo` بتواند
+مجوزهای محلی دسترس‌پذیری و ضبط صفحهٔ برنامه را برای ابزارهای خودکارسازی خود Peekaboo
+دوباره استفاده کند. آن پل، Codex Computer Use را نصب یا پروکسی نمی‌کند و
+Codex Computer Use نیز از طریق سوکت PeekabooBridge فراخوانی انجام نمی‌دهد.
 
-وقتی می‌خواهید OpenClaw.app یک میزبان آگاه از مجوز برای اتوماسیون Peekaboo CLI باشد، از [Peekaboo bridge](/fa/platforms/mac/peekaboo) استفاده کنید. از این صفحه زمانی استفاده کنید که یک
-عامل OpenClaw در حالت Codex باید پیش از شروع نوبت، Plugin بومی MCP به نام `computer-use` مربوط به Codex را
-در دسترس داشته باشد.
+زمانی از [پل Peekaboo](/fa/platforms/mac/peekaboo) استفاده کنید که می‌خواهید OpenClaw.app
+میزبانی آگاه از مجوز برای خودکارسازی CLI مربوط به Peekaboo باشد. زمانی از این صفحه استفاده کنید که
+یک عامل OpenClaw در حالت Codex باید پیش از آغاز نوبت، به Plugin بومی MCP با نام
+`computer-use` در Codex دسترسی داشته باشد.
 
-## برنامه iOS
+## برنامهٔ iOS
 
-برنامه iOS از Codex Computer Use جدا است. این برنامه سرور MCP به نام `computer-use` مربوط به Codex را نصب یا پراکسی نمی‌کند
-و backend کنترل دسکتاپ نیست.
-در عوض، برنامه iOS به‌عنوان یک گره OpenClaw متصل می‌شود و قابلیت‌های موبایل را
-از طریق فرمان‌های گره مانند `canvas.*`، `camera.*`، `screen.*`،
-`location.*`، و `talk.*` ارائه می‌کند.
+برنامهٔ iOS از Codex Computer Use جدا است. این برنامه سرور MCP با نام
+`computer-use` در Codex را نصب یا پروکسی نمی‌کند و یک بخش پشتیبان کنترل دسکتاپ نیست.
+در عوض، برنامهٔ iOS به‌عنوان یک Node در OpenClaw متصل می‌شود و قابلیت‌های همراه را
+از طریق فرمان‌های Node مانند `canvas.*`، `camera.*`، `screen.*`،
+`location.*` و `talk.*` ارائه می‌کند.
 
-وقتی می‌خواهید یک عامل از طریق Gateway یک گره iPhone را هدایت کند، از [iOS](/fa/platforms/ios) استفاده کنید. از این صفحه زمانی استفاده کنید که یک عامل حالت Codex باید دسکتاپ
-macOS محلی را از طریق Plugin بومی Computer Use مربوط به Codex کنترل کند.
+زمانی از [iOS](/fa/platforms/ios) استفاده کنید که می‌خواهید یک عامل از طریق Gateway
+یک Node آیفون را کنترل کند. زمانی از این صفحه استفاده کنید که یک عامل در حالت Codex
+باید دسکتاپ محلی macOS را از طریق Plugin بومی Computer Use در Codex کنترل کند.
 
 ## MCP مستقیم cua-driver
 
-Codex Computer Use تنها راه ارائه کنترل دسکتاپ نیست. اگر می‌خواهید
-runtimeهای مدیریت‌شده توسط OpenClaw مستقیما درایور TryCua را فراخوانی کنند، به‌جای جریان بازارچه مختص Codex، از سرور upstream
-`cua-driver mcp` از طریق رجیستری MCP مربوط به OpenClaw استفاده کنید.
+Codex Computer Use تنها راه ارائهٔ کنترل دسکتاپ نیست. اگر می‌خواهید
+محیط‌های اجرای مدیریت‌شده توسط OpenClaw مستقیماً درایور TryCua را فراخوانی کنند، به‌جای
+جریان بازارچهٔ مختص Codex، از سرور بالادستی `cua-driver mcp` از طریق
+دفتر ثبت MCP در OpenClaw استفاده کنید.
 
-پس از نصب `cua-driver`، یا فرمان OpenClaw را از آن بخواهید:
+پس از نصب `cua-driver`، یا از آن بخواهید فرمان OpenClaw را ارائه کند:
 
 ```bash
 cua-driver mcp-config --client openclaw
 ```
 
-یا خودتان سرور stdio را ثبت کنید:
+یا سرور stdio را مستقیماً ثبت کنید:
 
 ```bash
 openclaw mcp set cua-driver '{"command":"cua-driver","args":["mcp"]}'
 ```
 
-این مسیر سطح ابزار MCP بالادستی را دست‌نخورده نگه می‌دارد، از جمله schemaهای درایور
-و پاسخ‌های ساختاریافته MCP. وقتی می‌خواهید درایور CUA
-به‌عنوان یک سرور عادی MCP در OpenClaw در دسترس باشد، از آن استفاده کنید. وقتی app-server مربوط به Codex باید مالک نصب Plugin، reloadهای MCP،
-و فراخوانی‌های ابزار بومی درون نوبت‌های حالت Codex باشد، از راه‌اندازی Codex Computer Use در
-این صفحه استفاده کنید.
+این مسیر سطح ابزار MCP بالادستی را، از جمله طرح‌واره‌های درایور
+و پاسخ‌های ساختاریافتهٔ MCP، دست‌نخورده نگه می‌دارد. زمانی از آن استفاده کنید که می‌خواهید
+درایور CUA به‌عنوان یک سرور عادی MCP در OpenClaw در دسترس باشد. زمانی از راه‌اندازی
+Codex Computer Use در این صفحه استفاده کنید که app-server متعلق به Codex باید نصب Plugin،
+بارگذاری مجدد MCP و فراخوانی‌های بومی ابزار را درون نوبت‌های حالت Codex مدیریت کند.
 
-درایور CUA مختص macOS است و همچنان به مجوزهای محلی macOS نیاز دارد
-که برنامه‌اش درخواست می‌کند، مانند Accessibility و Screen Recording. OpenClaw
-`cua-driver` را نصب نمی‌کند، آن مجوزها را اعطا نمی‌کند، یا مدل ایمنی درایور
-بالادستی را دور نمی‌زند.
+درایور CUA مختص macOS است و همچنان به مجوزهای محلی macOS که برنامهٔ آن درخواست می‌کند،
+مانند دسترس‌پذیری و ضبط صفحه، نیاز دارد. OpenClaw برنامهٔ `cua-driver` را
+نصب نمی‌کند، آن مجوزها را اعطا نمی‌کند و مدل ایمنی درایور بالادستی را دور نمی‌زند.
 
 ## راه‌اندازی سریع
 
-وقتی نوبت‌های حالت Codex باید پیش از شروع یک thread، Computer Use را
-در دسترس داشته باشند، `plugins.entries.codex.config.computerUse` را تنظیم کنید. `autoInstall: true`
-Computer Use را فعال می‌کند و به OpenClaw اجازه می‌دهد پیش از نوبت، آن را نصب یا دوباره فعال کند:
+زمانی که نوبت‌های حالت Codex باید پیش از آغاز یک رشته به Computer Use دسترسی داشته باشند،
+`plugins.entries.codex.config.computerUse` را تنظیم کنید. گزینهٔ `autoInstall: true`
+Computer Use را فعال می‌کند و به OpenClaw اجازه می‌دهد پیش از نوبت آن را نصب یا دوباره فعال کند:
 
 ```json5
 {
@@ -101,37 +104,52 @@ Computer Use را فعال می‌کند و به OpenClaw اجازه می‌ده
   },
   agents: {
     defaults: {
-      model: "openai/gpt-5.5",
+      model: "openai/gpt-5.6-sol",
     },
   },
 }
 ```
 
-با این پیکربندی، OpenClaw پیش از هر نوبت حالت Codex، app-server مربوط به Codex را بررسی می‌کند.
-اگر Computer Use موجود نباشد اما app-server مربوط به Codex پیش‌تر یک
-بازارچه قابل‌نصب را کشف کرده باشد، OpenClaw از app-server مربوط به Codex می‌خواهد
-Plugin را نصب یا دوباره فعال کند و سرورهای MCP را reload کند. در macOS، وقتی هیچ بازارچه منطبقی
-ثبت نشده و bundle استاندارد برنامه Codex وجود دارد، OpenClaw همچنین تلاش می‌کند
-بازارچه همراه Codex را از
-`/Applications/Codex.app/Contents/Resources/plugins/openai-bundled` پیش از شکست ثبت کند. اگر راه‌اندازی همچنان نتواند سرور MCP را در دسترس کند، نوبت
-پیش از شروع thread شکست می‌خورد.
+با این پیکربندی، OpenClaw پیش از هر نوبت حالت Codex، app-server متعلق به Codex را
+بررسی می‌کند. اگر Computer Use موجود نباشد اما app-server متعلق به Codex از قبل
+یک بازارچهٔ قابل نصب را کشف کرده باشد، OpenClaw از app-server متعلق به Codex می‌خواهد
+Plugin را نصب یا دوباره فعال کند و سرورهای MCP را مجدداً بارگذاری کند. در macOS،
+وقتی هیچ بازارچهٔ منطبقی ثبت نشده باشد و یک بستهٔ استاندارد برنامهٔ دسکتاپ وجود داشته باشد،
+OpenClaw همچنین تلاش می‌کند بازارچهٔ همراه Codex را از مسیر
+`/Applications/ChatGPT.app/Contents/Resources/plugins/openai-bundled` ثبت کند و
+`/Applications/Codex.app/Contents/Resources/plugins/openai-bundled` را
+به‌عنوان مسیر جایگزین برای نصب‌های مستقل قدیمی نگه می‌دارد. اگر راه‌اندازی همچنان نتواند
+سرور MCP را در دسترس قرار دهد، نوبت پیش از آغاز رشته با شکست مواجه می‌شود.
 
-پس از تغییر پیکربندی Computer Use، اگر یک thread موجود Codex از قبل شروع شده است،
-پیش از آزمایش از `/new` یا `/reset` در چت تحت‌تاثیر استفاده کنید.
+پس از تغییر پیکربندی Computer Use، اگر یک رشتهٔ موجود Codex از قبل آغاز شده است،
+پیش از آزمایش در گفت‌وگوی مربوطه از `/new` یا `/reset` استفاده کنید.
 
-در راه‌اندازی stdio مدیریت‌شده روی macOS، OpenClaw وقتی bundle امضاشده برنامه دسکتاپ Codex
-در `/Applications/Codex.app/Contents/Resources/codex` وجود داشته باشد، آن را ترجیح می‌دهد.
-این کار Computer Use را زیر همان bundle برنامه‌ای نگه می‌دارد که مالک مجوزهای کنترل دسکتاپ محلی است.
-اگر برنامه دسکتاپ نصب نشده باشد، OpenClaw به باینری مدیریت‌شده Codex که کنار Plugin نصب شده است
-fallback می‌کند. اگر یک برنامه دسکتاپ نصب‌شده با نسخه app-server پشتیبانی‌نشده initialize شود، OpenClaw آن فرزند را می‌بندد
-و به‌جای اینکه یک برنامه دسکتاپ قدیمی fallback محلی Plugin را پنهان کند، کاندیدای بعدی باینری مدیریت‌شده را دوباره امتحان می‌کند. پیکربندی صریح `appServer.command`
-یا `OPENCLAW_CODEX_APP_SERVER_BIN` همچنان این انتخاب مدیریت‌شده را override می‌کند.
+در macOS، راه‌اندازی مدیریت‌شدهٔ Computer Use ابتدا فایل اجرایی برنامهٔ دسکتاپ در
+`/Applications/ChatGPT.app/Contents/Resources/codex` را ترجیح می‌دهد و سپس
+برای نصب‌های مستقل قدیمی به
+`/Applications/Codex.app/Contents/Resources/codex` بازمی‌گردد.
+این قاعده برای فرمان‌های یک‌بارهٔ وضعیت و نصب Computer Use که کارخواه خود را
+راه‌اندازی می‌کنند نیز اعمال می‌شود. این کار کنترل دسکتاپ را زیر نظر بستهٔ برنامه‌ای نگه می‌دارد
+که مالک مجوزهای محلی macOS است. اگر برنامهٔ دسکتاپ نصب نشده باشد،
+OpenClaw به فایل اجرایی مدیریت‌شدهٔ Codex که کنار Plugin نصب شده است بازمی‌گردد.
+نوبت‌های عادی مدیریت‌شدهٔ Codex با خانهٔ پیش‌فرض و ایزولهٔ عامل، ابتدا آن بستهٔ
+سنجاق‌شده را ترجیح می‌دهند تا یک برنامهٔ دسکتاپ قدیمی نتواند پشتیبانی از مدل‌های فعلی را
+تحت‌الشعاع قرار دهد. خانه‌های محدودهٔ کاربر همچنان ابتدا دسکتاپ را ترجیح می‌دهند، زیرا
+می‌توانند وضعیت بومی Computer Use را بارگذاری کنند. یک خانهٔ ایزولهٔ عامل که پیکربندی
+مؤثر Codex آن، Computer Use را فعال می‌کند نیز ابتدا دسکتاپ را ترجیح می‌دهد.
+پیکربندی صریح `appServer.command` یا `OPENCLAW_CODEX_APP_SERVER_BIN`
+همچنان این انتخاب مدیریت‌شده را لغو می‌کند.
+
+OpenClaw خواندن پیکربندی بومی Codex و نصب Computer Use را درون یک Gateway در حال اجرا
+به‌صورت ترتیبی انجام می‌دهد. یک فرایند جداگانهٔ Codex یا Gateway دیگر بخشی از این
+محدودهٔ انحصار نیست. پس از تغییر پیکربندی بومی Plugin در Codex خارج از Gateway،
+Gateway را دوباره راه‌اندازی کنید و پیش از اتکا به انتخاب جدید، یک گفت‌وگوی تازه آغاز کنید.
 
 ## فرمان‌ها
 
-از فرمان‌های `/codex computer-use` در هر سطح چتی که سطح فرمان Plugin به نام `codex`
-در دسترس است استفاده کنید. این‌ها فرمان‌های چت/runtime در OpenClaw هستند،
-نه زیر‌فرمان‌های CLI به شکل `openclaw codex ...`:
+از فرمان‌های `/codex computer-use` در هر سطح گفت‌وگویی استفاده کنید که
+سطح فرمان Plugin با نام `codex` در آن در دسترس است. این‌ها فرمان‌های گفت‌وگو/محیط اجرای
+OpenClaw هستند، نه زیرفرمان‌های CLI به‌شکل `openclaw codex ...`:
 
 ```text
 /codex computer-use status
@@ -141,73 +159,98 @@ fallback می‌کند. اگر یک برنامه دسکتاپ نصب‌شده ب
 /codex computer-use install --marketplace <name>
 ```
 
-`status` فقط خواندنی است. این فرمان sourceهای بازارچه را اضافه نمی‌کند، Pluginها را نصب نمی‌کند، یا
-پشتیبانی Plugin در Codex را فعال نمی‌کند. اگر هیچ پیکربندی‌ای Computer Use را opt in نکرده باشد، `status` می‌تواند
-حتی پس از یک فرمان نصب تک‌باره، disabled گزارش کند.
+`status` اقدام پیش‌فرض و فقط‌خواندنی است: منبع بازارچه اضافه نمی‌کند،
+Plugin نصب نمی‌کند و پشتیبانی از Pluginهای Codex را فعال نمی‌کند. اگر هیچ پیکربندی‌ای
+Computer Use را فعال نکند، `status` ممکن است حتی پس از اجرای یک فرمان نصب یک‌باره،
+وضعیت غیرفعال را گزارش کند.
 
-`install` پشتیبانی Plugin در app-server مربوط به Codex را فعال می‌کند، به‌صورت اختیاری یک
-source بازارچه پیکربندی‌شده را اضافه می‌کند، Plugin پیکربندی‌شده را از طریق app-server مربوط به Codex
-نصب یا دوباره فعال می‌کند، سرورهای MCP را reload می‌کند، و بررسی می‌کند که سرور MCP ابزارها را ارائه کند.
-از آنجا که نصب منابع میزبان مورد اعتماد را تغییر می‌دهد، فقط مالک یا یک
-کلاینت Gateway با `operator.admin` می‌تواند `install` را اجرا کند. فرستنده‌های مجاز دیگر می‌توانند
-همچنان از فرمان فقط‌خواندنی `status` استفاده کنند، از جمله با overrideها.
+`install` پشتیبانی از Pluginهای app-server متعلق به Codex را فعال می‌کند، در صورت نیاز
+یک منبع بازارچهٔ پیکربندی‌شده را اضافه می‌کند، Plugin پیکربندی‌شده را از طریق app-server
+متعلق به Codex نصب یا دوباره فعال می‌کند، سرورهای MCP را مجدداً بارگذاری می‌کند و
+بررسی می‌کند که سرور MCP ابزارها را ارائه می‌دهد. از آنجا که نصب، منابع مورد اعتماد میزبان
+را تغییر می‌دهد، فقط مالک یا یک کارخواه Gateway با نقش `operator.admin` می‌تواند
+`install` را اجرا کند. سایر فرستندگان مجاز همچنان می‌توانند از فرمان فقط‌خواندنی
+`status`، از جمله همراه با مقادیر بازنویسی، استفاده کنند.
 
-## انتخاب‌های بازارچه
+نسخه‌های قدیمی‌تر مقادیر بازنویسی یک‌بارهٔ هویت با `--plugin`، `--server` و
+`--mcp-server` را می‌پذیرفتند. در عوض، `computerUse.pluginName` و
+`computerUse.mcpServerName` را به‌صورت پایدار پیکربندی کنید. هنگامی که یک پرچم
+قدیمی هویت استفاده شود، فرمان تنظیم دقیق موردنیاز برای ذخیره‌سازی را مشخص می‌کند و
+در راهنمای مهاجرت خود، اقدام درخواستی را همراه با هر پرچم پشتیبانی‌شدهٔ بازارچه تکرار می‌کند.
 
-OpenClaw از همان API app-server استفاده می‌کند که خود Codex ارائه می‌دهد. فیلدهای
-بازارچه تعیین می‌کنند Codex باید `computer-use` را از کجا پیدا کند.
+## گزینه‌های بازارچه
 
-| فیلد                 | زمان استفاده                                                    | پشتیبانی نصب                                             |
-| -------------------- | --------------------------------------------------------------- | -------------------------------------------------------- |
-| بدون فیلد بازارچه    | می‌خواهید app-server مربوط به Codex از بازارچه‌هایی استفاده کند که از قبل می‌شناسد. | بله، وقتی app-server یک بازارچه محلی برگرداند.          |
-| `marketplaceSource`  | یک source بازارچه Codex دارید که app-server می‌تواند اضافه کند. | بله، برای `/codex computer-use install` صریح.            |
-| `marketplacePath`    | از قبل مسیر فایل بازارچه محلی روی میزبان را می‌دانید.          | بله، برای نصب صریح و auto-install در شروع نوبت.          |
-| `marketplaceName`    | می‌خواهید یک بازارچه از پیش ثبت‌شده را با نام انتخاب کنید.     | فقط وقتی بازارچه انتخاب‌شده مسیر محلی داشته باشد.       |
+OpenClaw از همان API مربوط به app-server استفاده می‌کند که خود Codex ارائه می‌دهد.
+فیلدهای بازارچه تعیین می‌کنند Codex باید `computer-use` را در کجا پیدا کند.
 
-خانه‌های تازه Codex ممکن است برای seed کردن بازارچه‌های رسمی خود به لحظه‌ای کوتاه نیاز داشته باشند.
-در طول نصب، OpenClaw تا
-`marketplaceDiscoveryTimeoutMs` میلی‌ثانیه `plugin/list` را poll می‌کند. مقدار پیش‌فرض ۶۰ ثانیه است.
+| فیلد                 | زمان استفاده                                                     | پشتیبانی نصب                                                  |
+| -------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------- |
+| بدون فیلد بازارچه    | می‌خواهید app-server متعلق به Codex از بازارچه‌هایی استفاده کند که از قبل می‌شناسد. | بله، وقتی app-server یک بازارچهٔ محلی برگرداند.               |
+| `marketplaceSource`  | یک منبع بازارچهٔ Codex دارید که app-server می‌تواند اضافه کند.   | بله، برای `/codex computer-use install` صریح.                 |
+| `marketplacePath`    | مسیر محلی فایل بازارچه روی میزبان را از قبل می‌دانید.            | بله، برای نصب صریح و نصب خودکار هنگام آغاز نوبت.              |
+| `marketplaceName`    | می‌خواهید یک بازارچهٔ از قبل ثبت‌شده را با نام انتخاب کنید.       | فقط زمانی بله که بازارچهٔ انتخاب‌شده مسیر محلی داشته باشد.   |
 
-اگر چند بازارچه شناخته‌شده شامل Computer Use باشند، OpenClaw ابتدا
-`openai-bundled`، سپس `openai-curated`، سپس `local` را ترجیح می‌دهد. تطابق‌های مبهم ناشناخته
-fail closed می‌شوند و از شما می‌خواهند `marketplaceName` یا `marketplacePath` را تنظیم کنید.
+خانه‌های تازهٔ Codex ممکن است برای مقداردهی اولیهٔ بازارچه‌های رسمی خود به زمان کوتاهی
+نیاز داشته باشند. هنگام نصب، OpenClaw تا `marketplaceDiscoveryTimeoutMs`
+میلی‌ثانیه (پیش‌فرض ۶۰ ثانیه) `plugin/list` را به‌طور دوره‌ای بررسی می‌کند.
 
-## بازارچه همراه macOS
+اگر چند بازارچهٔ شناخته‌شده حاوی Computer Use باشند، OpenClaw ابتدا
+`openai-bundled`، سپس `openai-curated` و بعد `local` را ترجیح می‌دهد.
+انطباق‌های ناشناخته و مبهم به‌صورت امن رد می‌شوند و از شما می‌خواهند
+`marketplaceName` یا `marketplacePath` را تنظیم کنید.
 
-buildهای اخیر دسکتاپ Codex، Computer Use را اینجا همراه دارند:
+## بازارچهٔ همراه macOS
+
+نسخه‌های فعلی دسکتاپ ChatGPT، Computer Use را در این مسیر همراه دارند؛ نسخه‌های قدیمی
+و مستقل دسکتاپ Codex نیز از همین چیدمان زیر `Codex.app` استفاده می‌کنند:
 
 ```text
+/Applications/ChatGPT.app/Contents/Resources/plugins/openai-bundled/plugins/computer-use
 /Applications/Codex.app/Contents/Resources/plugins/openai-bundled/plugins/computer-use
 ```
 
 وقتی `computerUse.autoInstall` برابر true باشد و هیچ بازارچه‌ای که شامل
-`computer-use` باشد ثبت نشده باشد، OpenClaw تلاش می‌کند root استاندارد بازارچه همراه را
-به‌صورت خودکار اضافه کند:
+`computer-use` است ثبت نشده باشد، OpenClaw تلاش می‌کند نخستین ریشهٔ استاندارد
+بازارچهٔ همراه را که وجود دارد اضافه کند:
 
 ```text
+/Applications/ChatGPT.app/Contents/Resources/plugins/openai-bundled
 /Applications/Codex.app/Contents/Resources/plugins/openai-bundled
 ```
 
-همچنین می‌توانید آن را به‌صورت صریح از یک shell با Codex ثبت کنید:
+همچنین می‌توانید آن را به‌طور صریح از پوسته و با Codex ثبت کنید:
 
 ```bash
-codex plugin marketplace add /Applications/Codex.app/Contents/Resources/plugins/openai-bundled
+codex plugin marketplace add /Applications/ChatGPT.app/Contents/Resources/plugins/openai-bundled
 ```
 
-اگر از مسیر غیر استاندارد برنامه Codex استفاده می‌کنید، یک‌بار `/codex computer-use install
---source <marketplace-root>` را اجرا کنید یا `computerUse.marketplacePath` را روی یک
-مسیر فایل بازارچه محلی تنظیم کنید. فقط زمانی از `--marketplace-path` استفاده کنید که
-مسیر فایل JSON بازارچه را دارید، نه root بازارچه همراه.
+اگر از مسیر غیراستاندارد برنامهٔ Codex استفاده می‌کنید، یک‌بار
+`/codex computer-use install --source <marketplace-root>` را اجرا کنید یا
+`computerUse.marketplacePath` را روی مسیر محلی فایل بازارچه تنظیم کنید.
+فقط زمانی از `--marketplace-path` استفاده کنید که مسیر فایل JSON بازارچه را دارید،
+نه ریشهٔ بازارچهٔ همراه را.
 
-## محدودیت catalog راه دور
+### حافظهٔ نهان مشترک Plugin
 
-app-server مربوط به Codex می‌تواند entryهای catalog فقط‌راه‌دور را list و read کند، اما در حال حاضر
-از `plugin/install` راه دور پشتیبانی نمی‌کند. یعنی `marketplaceName` می‌تواند
-یک بازارچه فقط‌راه‌دور را برای بررسی‌های status انتخاب کند، اما نصب‌ها و فعال‌سازی‌های دوباره
-همچنان به یک بازارچه محلی از طریق `marketplaceSource` یا `marketplacePath` نیاز دارند.
+مقدار پیش‌فرض `pluginCacheMode: "independent"` هر خانهٔ Codex و حافظهٔ نهان
+Plugin آن را مدیریت‌نشده باقی می‌گذارد. `pluginCacheMode: "shared"` را تنظیم کنید تا
+Plugin همراه Computer Use پیش از راه‌اندازی app-server در حافظهٔ نهان قابل کشف Plugin
+در خانهٔ فعال Codex کپی شود. حالت مشترک نسخه‌های قدیمی‌تر ذخیره‌شده در حافظهٔ نهان را
+حفظ می‌کند، زیرا کارخواه‌های در حال اجرای Codex ممکن است همچنان به پوشه‌های نسخه‌بندی‌شدهٔ
+Plugin خود ارجاع دهند؛ شکست در کپی جایگزین نیز حافظهٔ نهان فعال را حفظ می‌کند.
+پیکربندی صریح `marketplaceName` یا `marketplacePath` این همگام‌سازی را غیرفعال
+می‌کند تا OpenClaw آن انتخاب را بازنویسی نکند.
 
-اگر status می‌گوید Plugin در یک بازارچه راه دور Codex در دسترس است اما نصب راه دور
-پشتیبانی نمی‌شود، نصب را با یک source یا path محلی اجرا کنید:
+## محدودیت فهرست راه‌دور
+
+app-server متعلق به Codex می‌تواند ورودی‌های فهرستِ فقط راه‌دور را نمایش دهد و بخواند،
+اما در حال حاضر از `plugin/install` راه‌دور پشتیبانی نمی‌کند. در نتیجه،
+`marketplaceName` می‌تواند برای بررسی وضعیت، یک بازارچهٔ فقط راه‌دور را انتخاب کند،
+اما نصب و فعال‌سازی مجدد همچنان به یک بازارچهٔ محلی از طریق
+`marketplaceSource` یا `marketplacePath` نیاز دارد.
+
+اگر وضعیت اعلام کرد که Plugin در یک بازارچهٔ راه‌دور Codex در دسترس است، اما نصب راه‌دور
+پشتیبانی نمی‌شود، نصب را با یک منبع یا مسیر محلی اجرا کنید:
 
 ```text
 /codex computer-use install --source <marketplace-source>
@@ -216,101 +259,137 @@ app-server مربوط به Codex می‌تواند entryهای catalog فقط‌
 
 ## مرجع پیکربندی
 
-| فیلد                            | پیش‌فرض        | معنی                                                                           |
-| ------------------------------- | -------------- | ------------------------------------------------------------------------------ |
-| `enabled`                       | inferred       | Computer Use را الزامی می‌کند. وقتی فیلد دیگری از Computer Use تنظیم شده باشد، مقدار پیش‌فرض true است. |
-| `autoInstall`                   | false          | در شروع نوبت، از بازارچه‌های از پیش کشف‌شده نصب یا دوباره فعال می‌کند.        |
-| `marketplaceDiscoveryTimeoutMs` | 60000          | مدت زمانی که نصب برای کشف بازارچه app-server مربوط به Codex منتظر می‌ماند.    |
-| `marketplaceSource`             | unset          | رشته source که به `marketplace/add` در app-server مربوط به Codex فرستاده می‌شود. |
-| `marketplacePath`               | unset          | مسیر فایل بازارچه محلی Codex که شامل Plugin است.                              |
-| `marketplaceName`               | unset          | نام بازارچه ثبت‌شده Codex برای انتخاب.                                        |
-| `pluginName`                    | `computer-use` | نام Plugin بازارچه Codex.                                                      |
-| `mcpServerName`                 | `computer-use` | نام سرور MCP که Plugin نصب‌شده ارائه می‌کند.                                  |
+| فیلد                           | پیش‌فرض        | مفهوم                                                                                 |
+| ------------------------------- | -------------- | ------------------------------------------------------------------------------------- |
+| `enabled`                       | استنباط‌شده    | استفاده از رایانه را الزامی می‌کند. وقتی فیلد دیگری از استفاده از رایانه تنظیم شده باشد، مقدار پیش‌فرض true است. |
+| `autoInstall`                   | false          | در آغاز نوبت، از بازارگاه‌های ازپیش کشف‌شده نصب یا دوباره فعال می‌کند.                 |
+| `marketplaceDiscoveryTimeoutMs` | 60000          | مدت‌زمان انتظار نصب برای کشف بازارگاه توسط app-server در Codex.                       |
+| `liveTestTimeoutMs`             | 60000          | مهلت زمانی ریسهٔ موقت آمادگی و درخواست‌های پاک‌سازی آن.                               |
+| `toolCallTimeoutMs`             | 60000          | مهلت زمانی فراخوانی ابزار آمادگی `list_apps` در استفاده از رایانه.                    |
+| `healthCheckEnabled`            | false          | تا زمانی که کلاینت app-server مالک فعال است، کاوش‌های دوره‌ای آمادگی را اجرا می‌کند.  |
+| `healthCheckIntervalMinutes`    | 60             | تناوب کاوش؛ مقادیر پذیرفته‌شده 30، 60، 120 یا 240 دقیقه هستند.                        |
+| `pluginCacheMode`               | `independent`  | برای تازه‌سازی حافظهٔ نهان خانهٔ Codex از Plugin دسکتاپ همراه، از `shared` استفاده کنید. |
+| `strictReadiness`               | false          | در صورت شکست کاوش زنده، به‌جای ادامه با هشدار، راه‌اندازی را متوقف می‌کند.            |
+| `autoRepair`                    | false          | فرایندهای فرزند MCP منقضی‌شده و محدودشده به استفاده از رایانه را می‌بندد و کاوش ناموفق را یک بار تکرار می‌کند. |
+| `marketplaceSource`             | تنظیم‌نشده     | رشتهٔ منبعی که به `marketplace/add` در app-server متعلق به Codex ارسال می‌شود.         |
+| `marketplacePath`               | تنظیم‌نشده     | مسیر فایل بازارگاه محلی Codex که حاوی Plugin است.                                     |
+| `marketplaceName`               | تنظیم‌نشده     | نام بازارگاه ثبت‌شدهٔ Codex که باید انتخاب شود.                                       |
+| `pluginName`                    | `computer-use` | نام Plugin در بازارگاه Codex.                                                         |
+| `mcpServerName`                 | `computer-use` | نام سرور MCP ارائه‌شده توسط Plugin نصب‌شده.                                           |
 
-auto-install در شروع نوبت عمدا مقدارهای پیکربندی‌شده `marketplaceSource` را رد می‌کند.
-افزودن یک source جدید یک عملیات راه‌اندازی صریح است، بنابراین یک‌بار از
-`/codex computer-use install --source <marketplace-source>` استفاده کنید، سپس اجازه دهید
-`autoInstall` فعال‌سازی‌های دوباره آینده را از بازارچه‌های محلی کشف‌شده انجام دهد.
-auto-install در شروع نوبت می‌تواند از `marketplacePath` پیکربندی‌شده استفاده کند، چون آن
-از قبل یک مسیر محلی روی میزبان است.
+نصب خودکار در آغاز نوبت عمداً مقادیر پیکربندی‌شدهٔ `marketplaceSource` را
+نمی‌پذیرد. افزودن منبع جدید یک عملیات راه‌اندازی صریح است؛ بنابراین یک بار از
+`/codex computer-use install --source <marketplace-source>` استفاده کنید و سپس
+اجازه دهید `autoInstall` فعال‌سازی‌های مجدد آینده را از بازارگاه‌های محلی
+کشف‌شده انجام دهد. نصب خودکار در آغاز نوبت می‌تواند از `marketplacePath`
+پیکربندی‌شده استفاده کند، زیرا آن مسیر از قبل روی میزبان محلی است.
 
-## OpenClaw چه چیزهایی را بررسی می‌کند
+هر فیلد همچنین یک متغیر محیطی برای بازنویسی می‌پذیرد که وقتی کلید پیکربندی
+منطبق تنظیم نشده باشد، بررسی می‌شود:
 
-OpenClaw یک دلیل راه‌اندازی پایدار را به‌صورت داخلی گزارش می‌کند و status قابل‌مشاهده برای کاربر را
-برای چت قالب‌بندی می‌کند:
+| فیلد                           | متغیر محیطی                                                    |
+| ------------------------------- | -------------------------------------------------------------- |
+| `enabled`                       | `OPENCLAW_CODEX_COMPUTER_USE`                                  |
+| `autoInstall`                   | `OPENCLAW_CODEX_COMPUTER_USE_AUTO_INSTALL`                     |
+| `marketplaceDiscoveryTimeoutMs` | `OPENCLAW_CODEX_COMPUTER_USE_MARKETPLACE_DISCOVERY_TIMEOUT_MS` |
+| `liveTestTimeoutMs`             | `OPENCLAW_CODEX_COMPUTER_USE_LIVE_TEST_TIMEOUT_MS`             |
+| `toolCallTimeoutMs`             | `OPENCLAW_CODEX_COMPUTER_USE_TOOL_CALL_TIMEOUT_MS`             |
+| `healthCheckEnabled`            | `OPENCLAW_CODEX_COMPUTER_USE_HEALTH_CHECK_ENABLED`             |
+| `healthCheckIntervalMinutes`    | `OPENCLAW_CODEX_COMPUTER_USE_HEALTH_CHECK_INTERVAL_MINUTES`    |
+| `pluginCacheMode`               | `OPENCLAW_CODEX_COMPUTER_USE_PLUGIN_CACHE_MODE`                |
+| `strictReadiness`               | `OPENCLAW_CODEX_COMPUTER_USE_STRICT_READINESS`                 |
+| `autoRepair`                    | `OPENCLAW_CODEX_COMPUTER_USE_AUTO_REPAIR`                      |
+| `marketplaceSource`             | `OPENCLAW_CODEX_COMPUTER_USE_MARKETPLACE_SOURCE`               |
+| `marketplacePath`               | `OPENCLAW_CODEX_COMPUTER_USE_MARKETPLACE_PATH`                 |
+| `marketplaceName`               | `OPENCLAW_CODEX_COMPUTER_USE_MARKETPLACE_NAME`                 |
+| `pluginName`                    | `OPENCLAW_CODEX_COMPUTER_USE_PLUGIN_NAME`                      |
+| `mcpServerName`                 | `OPENCLAW_CODEX_COMPUTER_USE_MCP_SERVER_NAME`                  |
 
-| دلیل                       | معنی                                                | گام بعدی                                     |
+## مواردی که OpenClaw بررسی می‌کند
+
+OpenClaw یک دلیل پایدار راه‌اندازی را به‌صورت داخلی گزارش می‌کند و وضعیت
+نمایش‌داده‌شده به کاربر را برای گفت‌وگو قالب‌بندی می‌کند:
+
+| دلیل                        | مفهوم                                                  | گام بعدی                                      |
 | ---------------------------- | ------------------------------------------------------ | --------------------------------------------- |
-| `disabled`                   | مقدار `computerUse.enabled` به false تبدیل شده است.               | `enabled` یا یک فیلد دیگر Computer Use را تنظیم کنید.  |
-| `marketplace_missing`        | هیچ marketplace مطابقی در دسترس نبود.                 | منبع، مسیر، یا نام marketplace را پیکربندی کنید.  |
-| `plugin_not_installed`       | marketplace وجود دارد، اما Plugin نصب نشده است.   | نصب را اجرا کنید یا `autoInstall` را فعال کنید.          |
-| `plugin_disabled`            | Plugin نصب شده اما در پیکربندی Codex غیرفعال است.      | نصب را اجرا کنید تا دوباره فعال شود.                  |
-| `remote_install_unsupported` | marketplace انتخاب‌شده فقط-راه‌دور است.                   | از `marketplaceSource` یا `marketplacePath` استفاده کنید. |
-| `mcp_missing`                | Plugin فعال است، اما سرور MCP در دسترس نیست.  | Computer Use در Codex و مجوزهای سیستم‌عامل را بررسی کنید.  |
-| `ready`                      | Plugin و ابزارهای MCP در دسترس هستند.                    | نوبت حالت Codex را شروع کنید.                    |
-| `check_failed`               | یک درخواست app-server مربوط به Codex هنگام بررسی وضعیت ناموفق شد. | اتصال و گزارش‌های app-server را بررسی کنید.       |
-| `auto_install_blocked`       | آماده‌سازی آغاز نوبت باید یک منبع جدید اضافه کند.       | ابتدا نصب صریح را اجرا کنید.                   |
+| `disabled`                   | مقدار نهایی `computerUse.enabled` برابر false است.     | `enabled` یا فیلد دیگری از استفاده از رایانه را تنظیم کنید. |
+| `marketplace_missing`        | هیچ بازارگاه منطبقی در دسترس نبود.                     | منبع، مسیر یا نام بازارگاه را پیکربندی کنید.  |
+| `plugin_not_installed`       | بازارگاه وجود دارد، اما Plugin نصب نشده است.           | نصب را اجرا یا `autoInstall` را فعال کنید.    |
+| `plugin_disabled`            | Plugin نصب شده اما در پیکربندی Codex غیرفعال است.      | برای فعال‌سازی دوباره، نصب را اجرا کنید.      |
+| `remote_install_unsupported` | بازارگاه انتخاب‌شده فقط راه‌دور است.                   | از `marketplaceSource` یا `marketplacePath` استفاده کنید. |
+| `mcp_missing`                | Plugin فعال است، اما سرور MCP در دسترس نیست.           | استفاده از رایانه در Codex و مجوزهای سیستم‌عامل را بررسی کنید. |
+| `ready`                      | Plugin و ابزارهای MCP در دسترس هستند.                  | نوبت حالت Codex را آغاز کنید.                 |
+| `check_failed`               | یک درخواست app-server در Codex هنگام بررسی وضعیت ناموفق بود. | اتصال app-server و گزارش‌ها را بررسی کنید.   |
+| `auto_install_blocked`       | راه‌اندازی آغاز نوبت مستلزم افزودن منبع جدید است.      | ابتدا نصب صریح را اجرا کنید.                  |
 
-خروجی چت شامل وضعیت Plugin، وضعیت سرور MCP، marketplace، ابزارها در صورت
-در دسترس بودن، و پیام مشخص برای گام ناموفق آماده‌سازی است.
+خروجی گفت‌وگو شامل وضعیت Plugin، وضعیت سرور MCP، بازارگاه، ابزارها در صورت
+دردسترس‌بودن و پیام اختصاصی گام ناموفق راه‌اندازی است.
 
 ## مجوزهای macOS
 
-Computer Use مخصوص macOS است. سرور MCP تحت مالکیت Codex ممکن است پیش از اینکه
-بتواند برنامه‌ها را بررسی یا کنترل کند، به مجوزهای محلی سیستم‌عامل
-نیاز داشته باشد. اگر OpenClaw می‌گوید Computer Use نصب شده است اما سرور MCP
-در دسترس نیست، ابتدا راه‌اندازی Computer Use سمت Codex را بررسی کنید:
+استفاده از رایانه مختص macOS است. سرور MCP متعلق به Codex ممکن است پیش از
+بررسی یا کنترل برنامه‌ها به مجوزهای محلی سیستم‌عامل نیاز داشته باشد. اگر
+OpenClaw اعلام می‌کند استفاده از رایانه نصب شده اما سرور MCP در دسترس نیست،
+ابتدا راه‌اندازی استفاده از رایانه در سمت Codex را بررسی کنید:
 
-- app-server مربوط به Codex روی همان میزبانی اجرا می‌شود که کنترل دسکتاپ باید
-  در آن انجام شود.
-- Plugin مربوط به Computer Use در پیکربندی Codex فعال است.
-- سرور MCP به نام `computer-use` در وضعیت MCP مربوط به app-server در Codex دیده می‌شود.
-- macOS مجوزهای لازم را برای برنامه کنترل دسکتاپ داده است.
-- نشست فعلی میزبان می‌تواند به دسکتاپی که کنترل می‌شود دسترسی داشته باشد.
+- app-server در Codex روی همان میزبانی اجرا می‌شود که کنترل دسکتاپ باید در
+  آن انجام شود.
+- Plugin استفاده از رایانه در پیکربندی Codex فعال است.
+- سرور MCP با نام `computer-use` در وضعیت MCP مربوط به app-server در Codex
+  نمایش داده می‌شود.
+- macOS مجوزهای لازم را به برنامهٔ کنترل دسکتاپ داده است.
+- نشست فعلی میزبان می‌تواند به دسکتاپ تحت کنترل دسترسی داشته باشد.
 
-OpenClaw وقتی `computerUse.enabled` برابر true باشد عمداً بسته و ناموفق عمل می‌کند. یک
-نوبت حالت Codex نباید بدون ابزارهای بومی دسکتاپ که پیکربندی لازم دانسته است
-بی‌سروصدا ادامه پیدا کند.
+وقتی `computerUse.enabled` برابر true باشد، OpenClaw عمداً با حالت بسته و
+ایمن شکست می‌خورد. نوبت حالت Codex نباید بدون ابزارهای بومی دسکتاپ که
+پیکربندی الزامی کرده است، بی‌سروصدا ادامه یابد.
 
 ## عیب‌یابی
 
-**وضعیت می‌گوید نصب نشده است.** `/codex computer-use install` را اجرا کنید. اگر
-marketplace کشف نمی‌شود، `--source` یا `--marketplace-path` را بدهید.
+**وضعیت می‌گوید نصب نشده است.** `/codex computer-use install` را اجرا کنید.
+اگر بازارگاه کشف نمی‌شود، `--source` یا `--marketplace-path` را وارد کنید.
 
-**وضعیت می‌گوید نصب شده اما غیرفعال است.** دوباره `/codex computer-use install` را اجرا کنید.
-نصب app-server در Codex پیکربندی Plugin را دوباره در حالت فعال می‌نویسد.
+**وضعیت می‌گوید نصب شده اما غیرفعال است.** دوباره
+`/codex computer-use install` را اجرا کنید. نصب app-server در Codex،
+پیکربندی Plugin را با وضعیت فعال بازنویسی می‌کند.
 
-**وضعیت می‌گوید نصب راه‌دور پشتیبانی نمی‌شود.** از یک منبع یا
-مسیر محلی marketplace استفاده کنید. ورودی‌های catalog فقط-راه‌دور را می‌توان بررسی کرد اما از طریق
-API فعلی app-server نمی‌توان نصب کرد.
+**وضعیت می‌گوید نصب راه‌دور پشتیبانی نمی‌شود.** از یک منبع یا مسیر بازارگاه
+محلی استفاده کنید. ورودی‌های کاتالوگِ فقط راه‌دور را می‌توان بررسی کرد، اما
+نمی‌توان آن‌ها را از طریق API فعلی app-server نصب کرد.
 
-**وضعیت می‌گوید سرور MCP در دسترس نیست.** یک بار دیگر نصب را اجرا کنید تا سرورهای MCP
-دوباره بارگذاری شوند. اگر همچنان در دسترس نبود، برنامه Codex Computer Use،
-وضعیت MCP در app-server مربوط به Codex، یا مجوزهای macOS را اصلاح کنید.
+**وضعیت می‌گوید سرور MCP در دسترس نیست.** نصب را یک بار دیگر اجرا کنید تا
+سرورهای MCP دوباره بارگذاری شوند. اگر همچنان در دسترس نبود، برنامهٔ استفاده
+از رایانه در Codex، وضعیت MCP در app-server متعلق به Codex یا مجوزهای macOS
+را اصلاح کنید.
 
-**وضعیت یا یک probe روی `computer-use.list_apps` با پایان مهلت روبه‌رو می‌شود.** Plugin و سرور MCP
-حاضر هستند، اما پل محلی Computer Use پاسخ نداد. Codex Computer Use را ببندید یا
-راه‌اندازی مجدد کنید، در صورت نیاز Codex Desktop را دوباره اجرا کنید، سپس در یک
-نشست تازه OpenClaw دوباره تلاش کنید. اگر میزبان قبلاً Computer Use را از طریق یک app-server مدیریت‌شده قدیمی‌تر Codex اجرا کرده است، Plugin نصب‌شده را از marketplace بسته‌بندی‌شده همراه دسکتاپ
-تازه‌سازی کنید:
+**وضعیت یا یک کاوش روی `computer-use.list_apps` به پایان مهلت زمانی
+می‌رسد.** Plugin و سرور MCP موجودند، اما پل محلی استفاده از رایانه پاسخ
+نداده است. از استفاده از رایانه در Codex خارج شوید یا آن را بازراه‌اندازی
+کنید، در صورت نیاز Codex Desktop را دوباره اجرا کنید و سپس در یک نشست تازهٔ
+OpenClaw دوباره تلاش کنید. اگر میزبان قبلاً استفاده از رایانه را از طریق
+یک app-server مدیریت‌شدهٔ قدیمی‌تر در Codex اجرا کرده است، Plugin نصب‌شده را
+از بازارگاه همراه دسکتاپ تازه‌سازی کنید (برای نصب‌های مستقل دسکتاپ Codex از
+مسیر `Codex.app` استفاده کنید):
 
 ```text
-/codex computer-use install --source /Applications/Codex.app/Contents/Resources/plugins/openai-bundled
+/codex computer-use install --source /Applications/ChatGPT.app/Contents/Resources/plugins/openai-bundled
 ```
 
-**یک ابزار Computer Use می‌گوید `Native hook relay unavailable`.** قلاب ابزار بومی Codex
-نتوانست از طریق پل محلی یا fallback مربوط به Gateway به یک رله فعال OpenClaw
-برسد. با `/new` یا `/reset` یک نشست تازه OpenClaw شروع کنید. اگر یک بار کار می‌کند
-و سپس در فراخوانی ابزار بعدی دوباره ناموفق می‌شود، `/new` فقط تلاش فعلی را پاک می‌کند؛
-app-server مربوط به Codex یا Gateway در OpenClaw را راه‌اندازی مجدد کنید تا threadهای قدیمی
-و ثبت‌نام‌های hook حذف شوند، سپس در یک نشست تازه دوباره تلاش کنید.
+**یک ابزار استفاده از رایانه می‌گوید `Native hook relay unavailable`.**
+قلاب ابزار بومی Codex نتوانسته است از طریق پل محلی یا مسیر جایگزین Gateway
+به یک رلهٔ فعال OpenClaw دسترسی پیدا کند. با `/new` یا `/reset` یک نشست تازهٔ
+OpenClaw آغاز کنید. اگر یک بار کار می‌کند و سپس در فراخوانی ابزار بعدی دوباره
+ناموفق می‌شود، `/new` فقط تلاش فعلی را پاک می‌کند؛ app-server در Codex یا
+Gateway در OpenClaw را بازراه‌اندازی کنید تا ریسه‌های قدیمی و ثبت‌های قلاب
+حذف شوند، سپس در یک نشست تازه دوباره تلاش کنید.
 
-**نصب خودکار آغاز نوبت یک منبع را رد می‌کند.** این عمدی است. ابتدا منبع را
-با `/codex computer-use install --source <marketplace-source>` صریح اضافه کنید،
-سپس نصب خودکار آغاز نوبت در آینده می‌تواند از marketplace محلی کشف‌شده استفاده کند.
+**نصب خودکار آغاز نوبت یک منبع را نمی‌پذیرد.** این رفتار عمدی است. ابتدا
+منبع را به‌طور صریح با `/codex computer-use install --source
+<marketplace-source>` اضافه کنید؛ سپس نصب خودکار آغاز نوبت در آینده می‌تواند
+از بازارگاه محلی کشف‌شده استفاده کند.
 
 ## مرتبط
 
-- [هارنس Codex](/fa/plugins/codex-harness)
+- [سامانهٔ اجرایی Codex](/fa/plugins/codex-harness)
 - [پل Peekaboo](/fa/platforms/mac/peekaboo)
-- [برنامه iOS](/fa/platforms/ios)
+- [برنامهٔ iOS](/fa/platforms/ios)

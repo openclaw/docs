@@ -2,127 +2,121 @@
 read_when:
     - Giden kanallar için Markdown biçimlendirmesini veya parçalamayı değiştiriyorsunuz
     - Yeni bir kanal biçimlendiricisi veya stil eşlemesi ekliyorsunuz
-    - Kanallar genelinde biçimlendirme regresyonlarında hata ayıklıyorsunuz
+    - Kanallar genelindeki biçimlendirme gerilemelerinde hata ayıklıyorsunuz
 summary: Giden kanallar için Markdown biçimlendirme işlem hattı
 title: Markdown biçimlendirmesi
 x-i18n:
-    generated_at: "2026-05-12T12:50:43Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:14:48Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8db92aaf1063ebcbd8630dfcb8ca0a4e9eeb1c64f5b8868bf11c836777180515
+    source_hash: f9a35fd9a6386068e1e3bec73ec6e692f49239b468f42dd737f919b1c6a88e41
     source_path: concepts/markdown-formatting.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw, kanala özgü çıktıyı işlemeden önce giden Markdown içeriğini paylaşılan bir ara temsile (IR) dönüştürerek biçimlendirir. IR, kaynak metni olduğu gibi korurken stil/bağlantı aralıklarını taşır; böylece parçalara ayırma ve işleme kanallar arasında tutarlı kalabilir.
+OpenClaw, kanala özgü çıktıyı oluşturmadan önce giden Markdown içeriğini ortak bir ara gösterime
+(IR) dönüştürür. IR, düz metni biçem/bağlantı aralıklarıyla birlikte tutar; böylece tek bir ayrıştırma
+adımı tüm kanalları besler ve parçalara ayırma işlemi biçimlendirmeyi hiçbir zaman bir aralığın
+ortasından bölmez.
 
-## Hedefler
+## İşlem hattı
 
-- **Tutarlılık:** tek ayrıştırma adımı, birden çok işleyici.
-- **Güvenli parçalara ayırma:** metni işlemeden önce bölerek satır içi biçimlendirmenin parçalar arasında asla bozulmamasını sağlama.
-- **Kanala uyum:** aynı IR'yi Markdown yeniden ayrıştırılmadan Slack mrkdwn, Telegram HTML ve Signal stil aralıklarına eşleme.
+1. **Markdown'ı IR'ye ayrıştırma** (`markdownToIR`) - düz metin ile biçem aralıkları
+   (kalın, italik, üstü çizili, kod, kod bloğu, spoiler, blok alıntı,
+   1-6 düzey başlık) ve bağlantı aralıkları. Konumlar UTF-16 kod birimleriyle belirtilir; böylece Signal biçem
+   aralıkları doğrudan API'siyle hizalanır. Tablolar yalnızca kanal
+   bir tablo modunu etkinleştirdiğinde ayrıştırılır.
+2. **IR'yi parçalara ayırma** (`chunkMarkdownIR` / `renderMarkdownIRChunksWithinLimit`)
+   - bölme işlemi oluşturmadan önce IR metni üzerinde gerçekleşir; böylece satır içi biçemler ve
+     bağlantılar bir sınırda kopmak yerine her parça için dilimlenir.
+3. **Kanala göre oluşturma** (`renderMarkdownWithMarkers`) - bir biçem işaretçisi eşlemesi,
+   aralıkları kanalın yerel işaretlemesine dönüştürür.
 
-## İş hattı
-
-1. **Markdown ayrıştır -> IR**
-   - IR, düz metin artı stil aralıkları (kalın/italik/üstü çizili/kod/spoiler) ve bağlantı aralıklarından oluşur.
-   - Ofsetler UTF-16 kod birimleridir, böylece Signal stil aralıkları API'siyle hizalanır.
-   - Tablolar yalnızca bir kanal tablo dönüştürmeyi seçtiğinde ayrıştırılır.
-2. **IR'yi parçalara ayır (önce biçim)**
-   - Parçalara ayırma, işlemeden önce IR metni üzerinde gerçekleşir.
-   - Satır içi biçimlendirme parçalar arasında bölünmez; aralıklar parça başına dilimlenir.
-3. **Kanal başına işle**
-   - **Slack:** mrkdwn belirteçleri (kalın/italik/üstü çizili/kod), bağlantılar `<url|label>` olarak.
-   - **Telegram:** HTML etiketleri (`<b>`, `<i>`, `<s>`, `<code>`, `<pre><code>`, `<a href>`).
-   - **Signal:** düz metin + `text-style` aralıkları; etiket farklıysa bağlantılar `label (url)` olur.
+| Kanal                                                            | Oluşturucu                                                                           | Notlar                                                                                   |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| Slack                                                            | mrkdwn belirteçleri (`*kalın*`, `_italik_`, `` `kod` ``, kod çitleri)                | Bağlantılar `<url\|etiket>` biçimine dönüşür; çift bağlantılandırmayı önlemek için ayrıştırma sırasında otomatik bağlantı devre dışıdır |
+| Telegram                                                         | HTML etiketleri (`<b>`, `<i>`, `<s>`, `<code>`, `<pre><code>`, `<a href>`, `<tg-spoiler>`) | `richMessages` açıkken zengin ileti tablolarını ve başlıkları (`<h1>`-`<h6>`) da destekler |
+| Signal                                                           | düz metin + `text-style` aralıkları                                                   | Etiket URL'den farklıysa bağlantılar `etiket (url)` biçiminde oluşturulur                |
+| Discord, WhatsApp, iMessage, Microsoft Teams ve diğer kanallar   | düz metin                                                                            | IR tabanlı biçemlendirme yoktur; Markdown tablo dönüşümü yine `convertMarkdownTables` aracılığıyla çalışır |
 
 ## IR örneği
 
-Girdi Markdown:
-
-```markdown
-Hello **world** - see [docs](https://docs.openclaw.ai).
-```
-
+Girdi Markdown'ı:
+__OC_I18N_900000__
 IR (şematik):
-
-```json
-{
-  "text": "Hello world - see docs.",
-  "styles": [{ "start": 6, "end": 11, "style": "bold" }],
-  "links": [{ "start": 19, "end": 23, "href": "https://docs.openclaw.ai" }]
-}
-```
-
-## Nerede kullanılır
-
-- Slack, Telegram ve Signal giden bağdaştırıcıları IR'den işler.
-- Diğer kanallar (WhatsApp, iMessage, Microsoft Teams, Discord) hâlâ düz metin veya kendi biçimlendirme kurallarını kullanır; etkinleştirildiğinde Markdown tablo dönüştürme, parçalara ayırmadan önce uygulanır.
-
+__OC_I18N_900001__
 ## Tablo işleme
 
-Markdown tabloları sohbet istemcileri arasında tutarlı şekilde desteklenmez. Kanal başına (ve hesap başına) dönüştürmeyi kontrol etmek için `markdown.tables` kullanın.
+`markdown.tables`, bir kanalın Markdown tablolarını kanal ve isteğe bağlı olarak hesap
+bazında nasıl dönüştüreceğini denetler:
 
-- `code`: tabloları kod blokları olarak işler (çoğu kanal için varsayılan).
-- `bullets`: her satırı madde işaretlerine dönüştürür (Matrix, Signal ve WhatsApp için varsayılan).
-- `off`: tablo ayrıştırmayı ve dönüştürmeyi devre dışı bırakır; ham tablo metni olduğu gibi geçer.
+| Mod       | Davranış                                                                             |
+| --------- | ------------------------------------------------------------------------------------ |
+| `code`    | Kod bloğu içinde hizalanmış bir ASCII tablosu olarak oluşturur (varsayılan geri dönüş) |
+| `bullets` | Her satırı `etiket: değer` madde işaretlerine dönüştürür                              |
+| `block`   | Aktarım destekliyorsa yerel tabloları korur; aksi durumda `code` moduna geri döner    |
+| `off`     | Tablo ayrıştırmayı devre dışı bırakır; ham tablo metni değiştirilmeden geçirilir      |
 
-Yapılandırma anahtarları:
-
-```yaml
-channels:
-  discord:
-    markdown:
-      tables: code
-    accounts:
-      work:
-        markdown:
-          tables: off
-```
-
+Kanal bazlı Plugin varsayılanları: Signal, WhatsApp ve Matrix varsayılan olarak
+`bullets`; Mattermost varsayılan olarak `off`; Telegram varsayılan olarak `block` kullanır (hesapta
+`richMessages` etkin değilse `code` olarak çözümlenir). Açık bir Plugin varsayılanı
+olmayan tüm kanallar `code` moduna geri döner.
+__OC_I18N_900002__
 ## Parçalara ayırma kuralları
 
-- Parça sınırları kanal bağdaştırıcılarından/yapılandırmadan gelir ve IR metnine uygulanır.
-- Kod çitleri, kanalların bunları doğru işlemesi için sonunda satır sonu olan tek bir blok olarak korunur.
-- Liste önekleri ve blok alıntı önekleri IR metninin parçasıdır, bu yüzden parçalara ayırma önek ortasında bölmez.
-- Satır içi stiller (kalın/italik/üstü çizili/satır içi kod/spoiler) parçalar arasında asla bölünmez; işleyici her parçanın içinde stilleri yeniden açar.
+- Parça sınırları kanal adaptörlerinden/yapılandırmasından gelir ve oluşturulan
+  çıktıya değil IR metnine uygulanır.
+- Çitli kod blokları, kanalların kapanış çitini doğru biçimde oluşturabilmesi için
+  sonunda yeni satır bulunan tek bir blok olarak tutulur.
+- Liste ve blok alıntı önekleri IR metninin parçasıdır; bu nedenle parçalara ayırma
+  işlemi hiçbir zaman önekin ortasından bölmez.
+- Satır içi biçemler hiçbir zaman parçalar arasında bölünmez; oluşturucu, açık bir
+  biçemi sonraki parçanın başında yeniden açar.
 
-Kanallar arasında parçalara ayırma davranışı hakkında daha fazlasına ihtiyacınız varsa bkz.
-[Streaming + chunking](/tr/concepts/streaming).
+Kanallar arasındaki parça sınırı ve teslim davranışı için [Akış ve parçalara ayırma](/concepts/streaming)
+bölümüne bakın.
 
-## Bağlantı ilkesi
+## Bağlantı politikası
 
-- **Slack:** `[label](url)` -> `<url|label>`; çıplak URL'ler çıplak kalır. Çift bağlantı oluşturmayı önlemek için ayrıştırma sırasında otomatik bağlantı devre dışıdır.
-- **Telegram:** `[label](url)` -> `<a href="url">label</a>` (HTML ayrıştırma modu).
-- **Signal:** etiket URL ile eşleşmediği sürece `[label](url)` -> `label (url)`.
+- **Slack:** `[etiket](url)` -> `<url|etiket>`; yalın URL'ler yalın kalır.
+- **Telegram:** `[etiket](url)` -> `<a href="url">etiket</a>` (HTML ayrıştırma modu).
+- **Signal:** Etiket zaten URL ile eşleşmiyorsa `[etiket](url)` -> `etiket (url)`.
 
-## Spoilerlar
+## Spoiler'lar
 
-Spoiler işaretleri (`||spoiler||`) yalnızca Signal için ayrıştırılır; burada SPOILER stil aralıklarına eşlenir. Diğer kanallar bunları düz metin olarak ele alır.
+Spoiler işaretçileri (`||spoiler||`) Signal için (`SPOILER`
+biçem aralıklarına eşlenir) ve Telegram için (`<tg-spoiler>` öğesine eşlenir) ayrıştırılır. Diğer kanallar
+`||...||` ifadesini düz metin olarak değerlendirir.
 
 ## Kanal biçimlendiricisi ekleme veya güncelleme
 
-1. **Bir kez ayrıştır:** kanala uygun seçeneklerle (otomatik bağlantı, başlık stili, blok alıntı öneki) paylaşılan `markdownToIR(...)` yardımcısını kullanın.
-2. **İşle:** `renderMarkdownWithMarkers(...)` ve bir stil işareti haritası (veya Signal stil aralıkları) ile bir işleyici uygulayın.
-3. **Parçalara ayır:** işlemeden önce `chunkMarkdownIR(...)` çağırın; her parçayı işleyin.
-4. **Bağdaştırıcıyı bağla:** yeni parçalayıcıyı ve işleyiciyi kullanmak için kanal giden bağdaştırıcısını güncelleyin.
-5. **Test et:** kanal parçalara ayırma kullanıyorsa biçim testleri ve bir giden teslimat testi ekleyin veya güncelleyin.
+1. Kanala uygun seçenekleri (`autolink`, `headingStyle`, `blockquotePrefix`, `tableMode`)
+   geçirerek `markdownToIR(...)` ile **bir kez ayrıştırın**.
+2. `renderMarkdownWithMarkers(...)` ve bir biçem işaretçisi eşlemesiyle **oluşturun** (veya
+   Signal gibi aktarımlar için özel biçem aralığı mantığı kullanın).
+3. Her parçayı oluşturmadan önce `chunkMarkdownIR(...)` veya
+   `renderMarkdownIRChunksWithinLimit(...)` ile **parçalara ayırın**.
+4. **Adaptörü bağlayarak** giden gönderim yolundan yeni parçalayıcıyı ve oluşturucuyu
+   çağırmasını sağlayın.
+5. Biçim testleriyle ve kanal parçalara ayırıyorsa bir giden teslim testiyle **test edin**.
 
-## Sık karşılaşılan tuzaklar
+## Yaygın sorunlar
 
-- Slack açılı ayraç belirteçleri (`<@U123>`, `<#C123>`, `<https://...>`) korunmalıdır; ham HTML'yi güvenli şekilde kaçışlayın.
-- Telegram HTML, bozuk işaretlemeyi önlemek için etiket dışındaki metnin kaçışlanmasını gerektirir.
-- Signal stil aralıkları UTF-16 ofsetlerine bağlıdır; kod noktası ofsetleri kullanmayın.
-- Çitli kod blokları için sondaki satır sonlarını koruyun, böylece kapanış işaretleri kendi satırlarına yerleşir.
+- Slack açılı ayraç belirteçleri (`<@U123>`, `<#C123>`, `<https://...>`)
+  kaçış işleminden etkilenmemelidir; ham HTML yine de güvenli biçimde kaçırılmalıdır.
+- Telegram HTML'sinde işaretlemenin bozulmasını önlemek için etiketlerin dışındaki metin kaçırılmalıdır.
+- Signal biçem aralıkları kod noktası konumlarını değil, UTF-16 konumlarını kullanır.
+- Kapanış işaretçisinin kendi satırında yer alması için çitli kod bloklarının sonundaki
+  yeni satırları koruyun.
 
 ## İlgili
 
 <CardGroup cols={2}>
-  <Card title="Streaming ve parçalara ayırma" href="/tr/concepts/streaming" icon="bars-staggered">
-    Giden streaming davranışı, parça sınırları ve kanala özgü teslimat.
+  <Card title="Akış ve parçalara ayırma" href="/tr/concepts/streaming" icon="bars-staggered">
+    Giden akış davranışı, parça sınırları ve kanala özgü teslim.
   </Card>
   <Card title="Sistem istemi" href="/tr/concepts/system-prompt" icon="message-lines">
-    Enjekte edilen çalışma alanı dosyaları dahil, modelin konuşmadan önce gördükleri.
+    Eklenen çalışma alanı dosyaları dahil olmak üzere modelin konuşmadan önce gördükleri.
   </Card>
 </CardGroup>

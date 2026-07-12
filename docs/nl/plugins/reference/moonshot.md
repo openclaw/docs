@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Je installeert, configureert of controleert de moonshot-Plugin
+    - U installeert, configureert of controleert de moonshot-plugin
 summary: Voegt ondersteuning voor de Moonshot-modelprovider toe aan OpenClaw.
 title: Moonshot-plugin
 x-i18n:
-    generated_at: "2026-06-27T18:02:16Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:13:09Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 477307769a710ac8d430a837d7b5ffda012a942f3b44f367bf4ea0770b87f48e
@@ -13,9 +13,9 @@ x-i18n:
     workflow: 16
 ---
 
-# Moonshot-Plugin
+# Moonshot-plugin
 
-Voegt ondersteuning voor Moonshot-modelproviders toe aan OpenClaw.
+Voegt ondersteuning voor de Moonshot-modelprovider toe aan OpenClaw.
 
 ## Distributie
 
@@ -26,6 +26,6 @@ Voegt ondersteuning voor Moonshot-modelproviders toe aan OpenClaw.
 
 providers: moonshot; contracten: mediaUnderstandingProviders, webSearchProviders
 
-## Gerelateerde docs
+## Gerelateerde documentatie
 
 - [moonshot](/nl/providers/moonshot)

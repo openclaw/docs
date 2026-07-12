@@ -1,31 +1,31 @@
 ---
 read_when:
-    - elevenlabs Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
-summary: Medya anlama sağlayıcı desteği ekler. Gerçek zamanlı transkripsiyon sağlayıcı desteği ekler. Metinden sese sağlayıcı desteği ekler.
-title: Elevenlabs Plugin'i
+    - elevenlabs Pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
+summary: Medya anlama sağlayıcısı desteği ekler. Gerçek zamanlı transkripsiyon sağlayıcısı desteği ekler. Metinden konuşmaya sağlayıcı desteği ekler.
+title: ElevenLabs Plugin'i
 x-i18n:
-    generated_at: "2026-05-02T20:52:33Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:37:04Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: 6a1461a4e6be6145245df937d9438aaba563febe02dd44141f0d1da1ea1c409b
     source_path: plugins/reference/elevenlabs.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# Elevenlabs Plugin
+# Elevenlabs Plugin'i
 
 Medya anlama sağlayıcısı desteği ekler. Gerçek zamanlı transkripsiyon sağlayıcısı desteği ekler. Metinden konuşmaya sağlayıcısı desteği ekler.
 
 ## Dağıtım
 
 - Paket: `@openclaw/elevenlabs-speech`
-- Kurulum yolu: OpenClaw içinde yer alır
+- Kurulum yolu: OpenClaw'a dahildir
 
 ## Yüzey
 
 sözleşmeler: mediaUnderstandingProviders, realtimeTranscriptionProviders, speechProviders
 
-## İlgili dokümanlar
+## İlgili belgeler
 
 - [elevenlabs](/tr/providers/elevenlabs)

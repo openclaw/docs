@@ -1,42 +1,30 @@
 ---
 read_when:
     - Anda ingin mengakses Gateway melalui Tailscale
-    - Anda menginginkan Control UI peramban dan penyuntingan konfigurasi
-summary: 'Gateway permukaan web: Control UI, mode bind, dan keamanan'
+    - Anda menginginkan antarmuka kontrol browser dan pengeditan konfigurasi
+summary: 'Antarmuka web Gateway: UI Kontrol, mode pengikatan, dan keamanan'
 title: Web
 x-i18n:
-    generated_at: "2026-06-27T18:23:28Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:48:57Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1c6b0c9f4ff53af295eb4eef7290d5d6b70c52543f57a9e83c7f8a635a2b35cd
+    source_hash: 413fb029d95241f5c6043b28825727cdee52b2fa8cbe998fbbd6e3ff7b81467b
     source_path: web/index.md
     workflow: 16
 ---
 
-Gateway menyajikan **UI Kontrol browser** kecil (Vite + Lit) dari port yang sama dengan WebSocket Gateway:
+Gateway menyajikan **UI Kontrol peramban** kecil (Vite + Lit) dari port yang sama dengan WebSocket Gateway:
 
-- default: `http://<host>:18789/`
+- bawaan: `http://<host>:18789/`
 - dengan `gateway.tls.enabled: true`: `https://<host>:18789/`
-- prefiks opsional: atur `gateway.controlUi.basePath` (mis. `/openclaw`)
+- prefiks opsional: atur `gateway.controlUi.basePath` (misalnya `/openclaw`)
 
-Kapabilitas tersedia di [UI Kontrol](/id/web/control-ui). Sisa halaman ini berfokus pada mode bind, keamanan, dan permukaan yang menghadap web.
+Kapabilitas dijelaskan di [UI Kontrol](/id/web/control-ui). Halaman ini membahas mode pengikatan, keamanan, dan permukaan lain yang dapat diakses melalui web.
 
-## Webhook
+## Konfigurasi (aktif secara bawaan)
 
-Saat `hooks.enabled=true`, Gateway juga mengekspos endpoint webhook kecil di server HTTP yang sama.
-Lihat [Konfigurasi Gateway](/id/gateway/configuration) → `hooks` untuk autentikasi + payload.
-
-## RPC HTTP Admin
-
-RPC HTTP Admin mengekspos metode control-plane Gateway tertentu di `POST /api/v1/admin/rpc`.
-Ini nonaktif secara default dan hanya didaftarkan saat plugin `admin-http-rpc` diaktifkan.
-Lihat [RPC HTTP Admin](/id/plugins/admin-http-rpc) untuk model autentikasi, metode yang diizinkan, dan perbandingan WebSocket.
-
-## Konfigurasi (aktif secara default)
-
-UI Kontrol **diaktifkan secara default** saat aset tersedia (`dist/control-ui`).
-Anda dapat mengendalikannya melalui konfigurasi:
+UI Kontrol **diaktifkan secara bawaan** saat aset tersedia (`dist/control-ui`):
 
 ```json5
 {
@@ -46,81 +34,89 @@ Anda dapat mengendalikannya melalui konfigurasi:
 }
 ```
 
+## Webhook
+
+Saat `hooks.enabled=true`, Gateway juga mengekspos titik akhir webhook pada server HTTP yang sama. Lihat `hooks` di [referensi konfigurasi Gateway](/id/gateway/configuration-reference#hooks) untuk autentikasi dan muatan.
+
+## RPC HTTP admin
+
+`POST /api/v1/admin/rpc` mengekspos metode bidang kontrol Gateway tertentu melalui HTTP. Dinonaktifkan secara bawaan; hanya didaftarkan saat plugin `admin-http-rpc` diaktifkan. Lihat [RPC HTTP Admin](/id/plugins/admin-http-rpc) untuk model autentikasi, metode yang diizinkan, dan perbandingannya dengan API WebSocket.
+
 ## Akses Tailscale
 
-### Serve Terintegrasi (disarankan)
+<Tabs>
+  <Tab title="Serve Terintegrasi (disarankan)">
+    Pertahankan Gateway pada local loopback dan biarkan Tailscale Serve memproksikannya:
 
-Pertahankan Gateway pada loopback dan biarkan Tailscale Serve mem-proxy-nya:
+    ```json5
+    {
+      gateway: {
+        bind: "loopback",
+        tailscale: { mode: "serve" },
+      },
+    }
+    ```
 
-```json5
-{
-  gateway: {
-    bind: "loopback",
-    tailscale: { mode: "serve" },
-  },
-}
-```
+    Mulai Gateway:
 
-Lalu mulai gateway:
+    ```bash
+    openclaw gateway
+    ```
 
-```bash
-openclaw gateway
-```
+    Buka `https://<magicdns>/` (atau `gateway.controlUi.basePath` yang telah Anda konfigurasikan).
 
-Buka:
+  </Tab>
+  <Tab title="Pengikatan tailnet + token">
+    ```json5
+    {
+      gateway: {
+        bind: "tailnet",
+        controlUi: { enabled: true },
+        auth: { mode: "token", token: "your-token" },
+      },
+    }
+    ```
 
-- `https://<magicdns>/` (atau `gateway.controlUi.basePath` yang Anda konfigurasi)
+    Mulai Gateway (contoh non-loopback ini menggunakan autentikasi token rahasia bersama):
 
-### Bind Tailnet + token
+    ```bash
+    openclaw gateway
+    ```
 
-```json5
-{
-  gateway: {
-    bind: "tailnet",
-    controlUi: { enabled: true },
-    auth: { mode: "token", token: "your-token" },
-  },
-}
-```
+    Buka `http://<tailscale-ip>:18789/` (atau `gateway.controlUi.basePath` yang telah Anda konfigurasikan).
 
-Lalu mulai gateway (contoh non-loopback ini menggunakan autentikasi token rahasia bersama):
+  </Tab>
+  <Tab title="Internet publik (Funnel)">
+    ```json5
+    {
+      gateway: {
+        bind: "loopback",
+        tailscale: { mode: "funnel" },
+        auth: { mode: "password" }, // atau OPENCLAW_GATEWAY_PASSWORD
+      },
+    }
+    ```
 
-```bash
-openclaw gateway
-```
+    `tailscale.mode: "funnel"` memerlukan `gateway.auth.mode: "password"`; Serve dan Funnel sama-sama memerlukan `gateway.bind: "loopback"`.
 
-Buka:
-
-- `http://<tailscale-ip>:18789/` (atau `gateway.controlUi.basePath` yang Anda konfigurasi)
-
-### Internet publik (Funnel)
-
-```json5
-{
-  gateway: {
-    bind: "loopback",
-    tailscale: { mode: "funnel" },
-    auth: { mode: "password" }, // atau OPENCLAW_GATEWAY_PASSWORD
-  },
-}
-```
+  </Tab>
+</Tabs>
 
 ## Catatan keamanan
 
-- Autentikasi Gateway diwajibkan secara default (token, kata sandi, trusted-proxy, atau header identitas Tailscale Serve saat diaktifkan).
-- Bind non-loopback tetap **memerlukan** autentikasi gateway. Dalam praktiknya, ini berarti autentikasi token/kata sandi atau reverse proxy sadar identitas dengan `gateway.auth.mode: "trusted-proxy"`.
-- Wizard membuat autentikasi rahasia bersama secara default dan biasanya menghasilkan token gateway (bahkan pada loopback).
-- Dalam mode rahasia bersama, UI mengirim `connect.params.auth.token` atau `connect.params.auth.password`.
-- Saat `gateway.tls.enabled: true`, helper dashboard dan status lokal merender URL dashboard `https://` dan URL WebSocket `wss://`.
-- Dalam mode yang membawa identitas seperti Tailscale Serve atau `trusted-proxy`, pemeriksaan autentikasi WebSocket dipenuhi dari header permintaan sebagai gantinya.
-- Untuk deployment UI Kontrol non-loopback publik, tetapkan `gateway.controlUi.allowedOrigins` secara eksplisit (origin lengkap). Pemuatan LAN/Tailnet private same-origin diterima untuk loopback, RFC1918/link-local, `.local`, `.ts.net`, dan host CGNAT Tailscale.
-- `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true` mengaktifkan mode fallback origin header Host, tetapi merupakan penurunan keamanan yang berbahaya.
-- Dengan Serve, header identitas Tailscale dapat memenuhi autentikasi UI Kontrol/WebSocket saat `gateway.auth.allowTailscale` bernilai `true` (tidak memerlukan token/kata sandi). Endpoint API HTTP tidak menggunakan header identitas Tailscale tersebut; endpoint tersebut mengikuti mode autentikasi HTTP normal gateway sebagai gantinya. Tetapkan `gateway.auth.allowTailscale: false` untuk memerlukan kredensial eksplisit. Lihat [Tailscale](/id/gateway/tailscale) dan [Keamanan](/id/gateway/security). Alur tanpa token ini mengasumsikan host gateway tepercaya.
-- `gateway.tailscale.mode: "funnel"` memerlukan `gateway.auth.mode: "password"` (kata sandi bersama).
+- Autentikasi Gateway diwajibkan secara bawaan: token, kata sandi, proksi tepercaya, atau header identitas Tailscale Serve saat diaktifkan.
+- Pengikatan non-loopback tetap **memerlukan** autentikasi Gateway: autentikasi token/kata sandi atau proksi balik sadar identitas dengan `gateway.auth.mode: "trusted-proxy"`.
+- Wisaya orientasi awal membuat autentikasi rahasia bersama secara bawaan dan biasanya menghasilkan token Gateway, bahkan pada local loopback.
+- Dalam mode rahasia bersama, UI mengirimkan `connect.params.auth.token` atau `connect.params.auth.password` selama jabat tangan WebSocket.
+- Dengan `gateway.tls.enabled: true`, pembantu dasbor/status lokal merender URL `https://` dan URL WebSocket `wss://`.
+- Dalam mode yang membawa identitas (Tailscale Serve, `trusted-proxy`), pemeriksaan autentikasi WebSocket dipenuhi dari header permintaan, bukan dari rahasia bersama.
+- Untuk penerapan UI Kontrol non-loopback publik, atur `gateway.controlUi.allowedOrigins` secara eksplisit (origin lengkap). Pemuatan privat dengan origin yang sama diterima tanpa pengaturan tersebut untuk local loopback, RFC1918/link-local, `.local`, `.ts.net`, dan host CGNAT Tailscale.
+- `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback: true` mengaktifkan fallback origin header Host; ini merupakan penurunan tingkat keamanan yang berbahaya.
+- Dengan Serve, header identitas Tailscale memenuhi autentikasi UI Kontrol/WebSocket saat `gateway.auth.allowTailscale: true` (token/kata sandi tidak diperlukan). Titik akhir API HTTP tidak menggunakan header identitas Tailscale; titik akhir tersebut selalu mengikuti mode autentikasi HTTP normal Gateway. Atur `gateway.auth.allowTailscale: false` untuk mewajibkan kredensial eksplisit bahkan melalui Serve. Alur tanpa token ini mengasumsikan host Gateway itu sendiri tepercaya. Lihat [Tailscale](/id/gateway/tailscale) dan [Keamanan](/id/gateway/security).
 
 ## Membangun UI
 
-Gateway menyajikan berkas statis dari `dist/control-ui`. Bangun berkas tersebut dengan:
+Gateway menyajikan berkas statis dari `dist/control-ui`:
 
 ```bash
 pnpm ui:build

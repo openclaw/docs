@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Responder a un informe de seguridad o a un incidente de seguridad sospechado
-    - Preparar una divulgación coordinada o una versión de seguridad parcheada
-    - Revisión de las expectativas de seguimiento posteriores al incidente
-summary: Cómo OpenClaw clasifica, responde y da seguimiento a los incidentes de seguridad
-title: Respuesta a incidentes
+    - Respuesta ante un informe de seguridad o un posible incidente de seguridad
+    - Preparación de una divulgación coordinada o una versión de seguridad corregida
+    - Revisión de las expectativas de seguimiento posterior al incidente
+summary: Cómo OpenClaw clasifica, responde y realiza el seguimiento de los incidentes de seguridad
+title: Respuesta ante incidentes
 x-i18n:
-    generated_at: "2026-07-05T11:46:37Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T23:32:09Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 30f2d754408e95133ee86254ce193c0d8aab293040df55e0c1cec0c4d7644c56
@@ -15,51 +15,51 @@ x-i18n:
     workflow: 16
 ---
 
-## 1. Detección y triage
+## 1. Detección y triaje
 
 Las señales de seguridad provienen de:
 
-- GitHub Security Advisories (GHSA) e informes privados de vulnerabilidades.
-- Issues/discussions públicos de GitHub cuando los informes no son sensibles.
-- Señales automatizadas: Dependabot, CodeQL, avisos de npm, escaneo de secretos.
+- Avisos de seguridad de GitHub (GHSA) e informes privados de vulnerabilidades.
+- Issues y debates públicos de GitHub cuando los informes no son confidenciales.
+- Señales automatizadas: Dependabot, CodeQL, avisos de npm y análisis de secretos.
 
-Triage inicial:
+Triaje inicial:
 
-1. Confirmar el componente afectado, la versión y el impacto en el límite de confianza.
-2. Clasificarlo como un problema de seguridad frente a refuerzo/sin acción, usando las reglas de alcance y fuera de alcance de `SECURITY.md`.
-3. Un responsable del incidente responde según corresponda.
+1. Confirmar el componente y la versión afectados, así como el impacto en los límites de confianza.
+2. Clasificarlo como un problema de seguridad o como una medida de refuerzo/sin acción, según las reglas de ámbito y exclusión de ámbito de `SECURITY.md`.
+3. La persona responsable del incidente responde según corresponda.
 
-## 2. Severidad
+## 2. Gravedad
 
-| Severidad | Definición                                                                                                                                                                                   |
-| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Crítica   | Compromiso de paquete/lanzamiento/repositorio, explotación activa o evasión no autenticada del límite de confianza con control de alto impacto o exposición de datos.                       |
-| Alta      | Evasión verificada del límite de confianza que requiere precondiciones limitadas (por ejemplo, una acción autenticada pero no autorizada de alto impacto), o exposición de credenciales sensibles propiedad de OpenClaw. |
-| Media     | Debilidad de seguridad significativa con impacto práctico, pero con explotabilidad limitada o requisitos previos sustanciales.                                                               |
-| Baja      | Hallazgos de defensa en profundidad, denegación de servicio de alcance reducido o brechas de refuerzo/paridad sin una evasión demostrada del límite de confianza.                            |
+| Gravedad | Definición                                                                                                                                                                                                 |
+| -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Crítica  | Compromiso de un paquete, una versión o un repositorio; explotación activa; o elusión no autenticada de un límite de confianza con control de alto impacto o exposición de datos.                           |
+| Alta     | Elusión verificada de un límite de confianza que requiere condiciones previas limitadas (por ejemplo, una acción autenticada pero no autorizada de alto impacto), o exposición de credenciales confidenciales propiedad de OpenClaw. |
+| Media    | Debilidad de seguridad significativa con impacto práctico, pero con una capacidad de explotación limitada o requisitos previos considerables.                                                              |
+| Baja     | Hallazgos de defensa en profundidad, denegación de servicio de ámbito limitado o carencias de refuerzo o paridad sin una elusión demostrada de un límite de confianza.                                     |
 
 ## 3. Respuesta
 
-1. Confirmar la recepción al informante (en privado cuando sea sensible).
-2. Reproducir en versiones compatibles y en la última versión de `main`, luego implementar y validar un parche con cobertura de regresión.
-3. Crítica/alta: preparar versiones parcheadas tan rápido como sea práctico.
-4. Media/baja: parchear en el flujo normal de lanzamiento y documentar la guía de mitigación.
+1. Confirmar la recepción al informante (de forma privada cuando sea confidencial).
+2. Reproducir el problema en las versiones compatibles y en la última versión de `main`; después, implementar y validar un parche con cobertura de regresión.
+3. Crítica/alta: preparar las versiones corregidas tan rápido como sea posible.
+4. Media/baja: aplicar el parche mediante el flujo normal de versiones y documentar las medidas de mitigación.
 
 ## 4. Comunicación y divulgación
 
-Comunicar a través de GitHub Security Advisories en el repositorio afectado, notas de lanzamiento/entradas del registro de cambios para las versiones corregidas y seguimiento directo con el informante sobre el estado y la resolución.
+Comunicarse mediante los avisos de seguridad de GitHub del repositorio afectado, las notas de la versión o entradas del registro de cambios de las versiones corregidas y el seguimiento directo con el informante sobre el estado y la resolución.
 
-Los incidentes críticos/altos reciben divulgación coordinada, con emisión de CVE cuando corresponda. Los hallazgos de refuerzo de bajo riesgo pueden documentarse en notas de lanzamiento o avisos sin un CVE, según el impacto y la exposición del usuario.
+Los incidentes críticos o de gravedad alta se divulgan de forma coordinada y se emite un CVE cuando corresponde. Los hallazgos de refuerzo de bajo riesgo pueden documentarse en las notas de la versión o en avisos sin un CVE, según el impacto y la exposición de los usuarios.
 
 ## 5. Recuperación y seguimiento
 
 Después de publicar la corrección:
 
-1. Verificar las remediaciones en CI y en los artefactos de lanzamiento.
-2. Realizar una breve revisión posterior al incidente: cronología, causa raíz, brecha de detección, plan de prevención.
-3. Agregar tareas de seguimiento de refuerzo/pruebas/docs y hacerles seguimiento hasta completarlas.
+1. Verificar las medidas correctivas en CI y en los artefactos de la versión.
+2. Realizar una breve revisión posterior al incidente: cronología, causa raíz, carencia de detección y plan de prevención.
+3. Añadir tareas de seguimiento de refuerzo, pruebas y documentación, y realizar su seguimiento hasta completarlas.
 
-## Relacionado
+## Contenido relacionado
 
-- [Política de seguridad](https://github.com/openclaw/openclaw/blob/main/SECURITY.md) — alcance de los informes y modelo de confianza.
+- [Política de seguridad](https://github.com/openclaw/openclaw/blob/main/SECURITY.md) — ámbito de los informes y modelo de confianza.
 - [Modelo de amenazas](/es/security/THREAT-MODEL-ATLAS)

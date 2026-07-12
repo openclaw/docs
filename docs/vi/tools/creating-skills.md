@@ -1,165 +1,161 @@
 ---
 read_when:
-    - Bạn đang tạo một kỹ năng tùy chỉnh mới
-    - Bạn cần một quy trình khởi đầu nhanh cho Skills dựa trên SKILL.md
-    - Bạn muốn sử dụng Skill Workshop để đề xuất một kỹ năng cho tác nhân xem xét
+    - Bạn đang tạo một skill tùy chỉnh mới
+    - Bạn cần một quy trình khởi đầu nhanh cho các Skills dựa trên SKILL.md
+    - Bạn muốn sử dụng Skill Workshop để đề xuất một skill cho tác nhân đánh giá
 sidebarTitle: Creating skills
-summary: Xây dựng, kiểm thử và phát hành các Skills không gian làm việc SKILL.md tùy chỉnh cho agent OpenClaw của bạn.
+summary: Xây dựng, kiểm thử và phát hành các Skills không gian làm việc SKILL.md tùy chỉnh cho các agent OpenClaw của bạn.
 title: Tạo Skills
 x-i18n:
-    generated_at: "2026-06-27T18:14:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:25:23Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7a744e9010c66b8465449d24430520473717edde86711bbb59774519189b9e72
+    source_hash: cba2aa863ebd083d4592e8a764dbdc2c30a0dd8aff49d273927e82df0069bc81
     source_path: tools/creating-skills.md
     workflow: 16
 ---
 
-Skills dạy tác nhân cách thức và thời điểm sử dụng công cụ. Mỗi skill là một thư mục
-chứa tệp `SKILL.md` với YAML frontmatter và hướng dẫn markdown.
-OpenClaw tải skills từ nhiều gốc theo [thứ tự ưu tiên](/vi/tools/skills#loading-order) đã định nghĩa.
+Skills hướng dẫn agent cách thức và thời điểm sử dụng các công cụ. Mỗi skill là một thư mục
+chứa tệp `SKILL.md` với phần đầu YAML và các hướng dẫn bằng Markdown.
+OpenClaw tải các skill từ nhiều thư mục gốc theo một [thứ tự ưu tiên](/vi/tools/skills#loading-order) xác định.
 
 ## Tạo skill đầu tiên của bạn
 
 <Steps>
-  <Step title="Create the skill directory">
-    Skills nằm trong thư mục `skills/` của workspace. Tạo một thư mục cho
-    skill mới của bạn:
+  <Step title="Tạo thư mục skill">
+    Skills nằm trong thư mục `skills/` của không gian làm việc:
 
     ```bash
     mkdir -p ~/.openclaw/workspace/skills/hello-world
     ```
 
-    Bạn có thể nhóm skills trong các thư mục con để tổ chức — skill vẫn được
-    đặt tên bằng frontmatter của `SKILL.md`, không phải đường dẫn thư mục:
+    Bạn có thể nhóm các skill vào thư mục con để dễ tổ chức — tên của skill vẫn
+    được xác định bởi phần đầu của `SKILL.md`, không phải đường dẫn thư mục:
 
     ```bash
     mkdir -p ~/.openclaw/workspace/skills/personal/hello-world
-    # skill name is still "hello-world", invoked as /hello-world
+    # tên skill vẫn là "hello-world", được gọi bằng /hello-world
     ```
 
   </Step>
 
-  <Step title="Write SKILL.md">
-    Tạo `SKILL.md` bên trong thư mục. Frontmatter định nghĩa siêu dữ liệu;
-    phần thân cung cấp hướng dẫn cho tác nhân.
+  <Step title="Viết SKILL.md">
+    Phần đầu định nghĩa siêu dữ liệu; phần nội dung cung cấp hướng dẫn cho agent.
 
     ```markdown
     ---
     name: hello-world
-    description: A simple skill that prints a greeting.
+    description: Một skill đơn giản in ra lời chào.
     ---
 
-    # Hello World
+    # Xin chào thế giới
 
-    When the user asks for a greeting, use the `exec` tool to run:
+    Khi người dùng yêu cầu lời chào, hãy dùng công cụ `exec` để chạy:
 
     ```bash
-    echo "Hello from your custom skill!"
+    echo "Xin chào từ skill tùy chỉnh của bạn!"
     ```
     ```
 
     Quy tắc đặt tên:
-    - Dùng chữ cái thường, chữ số và dấu gạch nối cho `name`.
-    - Giữ tên thư mục và `name` trong frontmatter khớp nhau.
-    - `description` được hiển thị cho tác nhân và trong phần khám phá slash-command —
-      giữ trong một dòng và dưới 160 ký tự.
+    - Dùng chữ cái viết thường, chữ số và dấu gạch nối cho `name`.
+    - Giữ tên thư mục và `name` trong phần đầu nhất quán.
+    - `description` được hiển thị cho agent và trong kết quả khám phá lệnh gạch chéo —
+      hãy viết trên một dòng và dưới 160 ký tự.
 
   </Step>
 
-  <Step title="Verify the skill loaded">
+  <Step title="Xác minh skill đã được tải">
     ```bash
     openclaw skills list
     ```
 
-    OpenClaw mặc định theo dõi các tệp `SKILL.md` dưới các gốc skills. Nếu
+    Theo mặc định, OpenClaw theo dõi các tệp `SKILL.md` trong những thư mục gốc của skill. Nếu
     trình theo dõi bị tắt hoặc bạn đang tiếp tục một phiên hiện có, hãy bắt đầu một
-    phiên mới để tác nhân nhận danh sách đã làm mới:
+    phiên mới để agent nhận được danh sách đã làm mới:
 
     ```bash
-    # From chat — archive current session and start fresh
+    # Từ cuộc trò chuyện — lưu trữ phiên hiện tại và bắt đầu phiên mới
     /new
 
-    # Or restart the gateway
+    # Hoặc khởi động lại Gateway
     openclaw gateway restart
     ```
 
   </Step>
 
-  <Step title="Test it">
-    Gửi một tin nhắn sẽ kích hoạt skill:
-
+  <Step title="Kiểm thử">
     ```bash
-    openclaw agent --message "give me a greeting"
+    openclaw agent --message "hãy gửi cho tôi một lời chào"
     ```
 
-    Hoặc mở một cuộc trò chuyện và hỏi trực tiếp tác nhân. Dùng `/skill hello-world` để
-    gọi rõ ràng theo tên.
+    Hoặc mở một cuộc trò chuyện và hỏi trực tiếp agent. Dùng `/skill hello-world` để
+    gọi skill một cách tường minh theo tên.
 
   </Step>
 </Steps>
 
 ## Tham chiếu SKILL.md
 
-### Trường bắt buộc
+### Các trường bắt buộc
 
-| Trường        | Mô tả                                                            |
-| ------------- | --------------------------------------------------------------- |
-| `name`        | Slug duy nhất dùng chữ cái thường, chữ số và dấu gạch nối       |
-| `description` | Mô tả một dòng hiển thị cho tác nhân và trong đầu ra khám phá   |
+| Trường        | Mô tả                                                                  |
+| ------------- | ---------------------------------------------------------------------- |
+| `name`        | Định danh duy nhất sử dụng chữ cái viết thường, chữ số và dấu gạch nối |
+| `description` | Mô tả một dòng được hiển thị cho agent và trong kết quả khám phá        |
 
-### Khóa frontmatter tùy chọn
+### Các khóa phần đầu tùy chọn
 
-| Trường                     | Mặc định | Mô tả                                                                                 |
-| -------------------------- | -------- | ------------------------------------------------------------------------------------- |
-| `user-invocable`           | `true`   | Hiển thị skill dưới dạng slash command của người dùng                                 |
-| `disable-model-invocation` | `false`  | Không đưa skill vào system prompt của tác nhân (vẫn chạy qua `/skill`)                |
-| `command-dispatch`         | —        | Đặt thành `tool` để định tuyến slash command trực tiếp đến một công cụ, bỏ qua mô hình |
-| `command-tool`             | —        | Tên công cụ cần gọi khi đã đặt `command-dispatch: tool`                               |
-| `command-arg-mode`         | `raw`    | Với điều phối công cụ, chuyển tiếp chuỗi đối số thô đến công cụ                       |
-| `homepage`                 | —        | URL hiển thị dưới dạng "Trang web" trong giao diện macOS Skills                       |
+| Trường                     | Mặc định | Mô tả                                                                                     |
+| -------------------------- | -------- | ----------------------------------------------------------------------------------------- |
+| `user-invocable`           | `true`   | Cung cấp skill dưới dạng lệnh gạch chéo cho người dùng                                     |
+| `disable-model-invocation` | `false`  | Loại skill khỏi lời nhắc hệ thống của agent (vẫn chạy qua `/skill`)                        |
+| `command-dispatch`         | —        | Đặt thành `tool` để định tuyến trực tiếp lệnh gạch chéo đến công cụ, bỏ qua mô hình         |
+| `command-tool`             | —        | Tên công cụ cần gọi khi `command-dispatch: tool` được đặt                                  |
+| `command-arg-mode`         | `raw`    | Khi điều phối đến công cụ, chuyển tiếp chuỗi đối số thô đến công cụ                        |
+| `homepage`                 | —        | URL được hiển thị dưới dạng "Website" trong giao diện Skills trên macOS                    |
 
-Để biết các trường gating (`requires.bins`, `requires.env`, v.v.), xem
-[Skills — Gating](/vi/tools/skills#gating).
+Đối với các trường kiểm soát điều kiện (`requires.bins`, `requires.env`, v.v.), xem
+[Skills — Kiểm soát điều kiện](/vi/tools/skills#gating).
 
 ### Sử dụng `{baseDir}`
 
-Dùng `{baseDir}` trong phần thân skill để tham chiếu các tệp bên trong thư mục
-skill mà không mã hóa cứng đường dẫn:
+Tham chiếu các tệp bên trong thư mục skill mà không mã hóa cứng đường dẫn — agent
+phân giải `{baseDir}` theo chính thư mục của skill:
 
 ```markdown
-Run the helper script at `{baseDir}/scripts/run.sh`.
+Chạy tập lệnh hỗ trợ tại `{baseDir}/scripts/run.sh`.
 ```
 
 ## Thêm kích hoạt có điều kiện
 
-Gate skill của bạn để skill chỉ tải khi các phụ thuộc của nó có sẵn:
+Đặt điều kiện cho skill để skill chỉ được tải khi các phần phụ thuộc khả dụng:
 
 ```markdown
 ---
 name: gemini-search
-description: Search using Gemini CLI.
+description: Tìm kiếm bằng Gemini CLI.
 metadata: { "openclaw": { "requires": { "bins": ["gemini"] }, "primaryEnv": "GEMINI_API_KEY" } }
 ---
 ```
 
 <AccordionGroup>
-  <Accordion title="Gating options">
+  <Accordion title="Các tùy chọn kiểm soát điều kiện">
     | Khóa | Mô tả |
     | --- | --- |
-    | `requires.bins` | Tất cả binary phải tồn tại trên `PATH` |
-    | `requires.anyBins` | Ít nhất một binary phải tồn tại trên `PATH` |
-    | `requires.env` | Mỗi biến env phải tồn tại trong tiến trình hoặc cấu hình |
-    | `requires.config` | Mỗi đường dẫn `openclaw.json` phải có giá trị truthy |
+    | `requires.bins` | Tất cả tệp nhị phân phải tồn tại trên `PATH` |
+    | `requires.anyBins` | Ít nhất một tệp nhị phân phải tồn tại trên `PATH` |
+    | `requires.env` | Mỗi biến môi trường phải tồn tại trong tiến trình hoặc cấu hình |
+    | `requires.config` | Mỗi đường dẫn `openclaw.json` phải có giá trị đúng |
     | `os` | Bộ lọc nền tảng: `["darwin"]`, `["linux"]`, `["win32"]` |
-    | `always` | Đặt `true` để bỏ qua mọi gate và luôn đưa skill vào |
+    | `always` | Đặt thành `true` để bỏ qua mọi điều kiện và luôn bao gồm skill |
 
-    Tham chiếu đầy đủ: [Skills — Gating](/vi/tools/skills#gating).
+    Tài liệu tham chiếu đầy đủ: [Skills — Kiểm soát điều kiện](/vi/tools/skills#gating).
 
   </Accordion>
-  <Accordion title="Environment and API keys">
-    Nối một khóa API vào một mục skill trong `openclaw.json`:
+  <Accordion title="Môi trường và khóa API">
+    Liên kết khóa API với một mục skill trong `openclaw.json`:
 
     ```json5
     {
@@ -174,30 +170,30 @@ metadata: { "openclaw": { "requires": { "bins": ["gemini"] }, "primaryEnv": "GEM
     }
     ```
 
-    Khóa chỉ được tiêm vào tiến trình host cho lượt tác nhân đó.
-    Khóa không đi vào sandbox — xem
-    [biến env trong sandbox](/vi/tools/skills-config#sandboxed-skills-and-env-vars).
+    Khóa chỉ được chèn vào tiến trình máy chủ trong lượt hoạt động đó của agent.
+    Khóa không được chuyển vào sandbox — xem
+    [các biến môi trường trong sandbox](/vi/tools/skills-config#sandboxed-skills-and-env-vars).
 
   </Accordion>
 </AccordionGroup>
 
-## Đề xuất qua Xưởng Skill
+## Đề xuất qua Skill Workshop
 
-Đối với skills do tác nhân soạn thảo hoặc khi bạn muốn người vận hành xem xét trước khi một skill đi vào
-hoạt động, hãy dùng đề xuất [Xưởng Skill](/vi/tools/skill-workshop) thay vì viết
+Đối với các skill do agent soạn thảo hoặc khi bạn muốn người vận hành xem xét trước khi một skill được
+đưa vào sử dụng, hãy dùng đề xuất của [Skill Workshop](/vi/tools/skill-workshop) thay vì viết
 trực tiếp `SKILL.md`.
 
 ```bash
-# Propose a brand-new skill
+# Đề xuất một skill hoàn toàn mới
 openclaw skills workshop propose-create \
   --name "hello-world" \
-  --description "A simple skill that prints a greeting." \
+  --description "Một skill đơn giản in ra lời chào." \
   --proposal ./PROPOSAL.md
 
-# Propose an update to an existing skill
+# Đề xuất cập nhật cho một skill hiện có
 openclaw skills workshop propose-update hello-world \
   --proposal ./PROPOSAL.md \
-  --description "Updated greeting skill"
+  --description "Skill lời chào đã cập nhật"
 ```
 
 Dùng `--proposal-dir` khi đề xuất bao gồm các tệp hỗ trợ:
@@ -205,12 +201,12 @@ Dùng `--proposal-dir` khi đề xuất bao gồm các tệp hỗ trợ:
 ```bash
 openclaw skills workshop propose-create \
   --name "hello-world" \
-  --description "A simple skill that prints a greeting." \
+  --description "Một skill đơn giản in ra lời chào." \
   --proposal-dir ./hello-world-proposal/
 ```
 
-Thư mục phải chứa `PROPOSAL.md`. Các tệp hỗ trợ có thể nằm trong `assets/`,
-`examples/`, `references/`, `scripts/`, hoặc `templates/`.
+Thư mục phải chứa `PROPOSAL.md` tại thư mục gốc. Các tệp hỗ trợ được đặt trong
+`assets/`, `examples/`, `references/`, `scripts/` hoặc `templates/`.
 
 Sau khi xem xét:
 
@@ -219,61 +215,62 @@ openclaw skills workshop inspect <proposal-id>
 openclaw skills workshop apply <proposal-id>
 ```
 
-Xem [Xưởng Skill](/vi/tools/skill-workshop) để biết toàn bộ vòng đời đề xuất.
+Xem [Skill Workshop](/vi/tools/skill-workshop) để biết toàn bộ vòng đời đề xuất.
 
 ## Xuất bản lên ClawHub
 
 <Steps>
-  <Step title="Ensure your SKILL.md is complete">
-    Đảm bảo `name`, `description` và mọi trường gating `metadata.openclaw`
-    đã được đặt. Thêm URL `homepage` nếu bạn có trang dự án.
+  <Step title="Đảm bảo SKILL.md của bạn đã hoàn chỉnh">
+    Đảm bảo `name`, `description` và mọi trường kiểm soát điều kiện `metadata.openclaw`
+    đều được đặt. Thêm URL `homepage` nếu bạn có trang dự án.
   </Step>
-  <Step title="Install the ClawHub skill">
-    Skill ClawHub ghi lại dạng lệnh xuất bản hiện tại và siêu dữ liệu
-    bắt buộc:
-
+  <Step title="Cài đặt CLI ClawHub độc lập và đăng nhập">
     ```bash
-    openclaw skills install @openclaw/clawhub-publish
+    npm i -g clawhub
+    clawhub login
+    ```
+  </Step>
+  <Step title="Xuất bản">
+    ```bash
+    clawhub skill publish ./path/to/hello-world
     ```
 
-  </Step>
-  <Step title="Publish">
-    ```bash
-    clawhub publish
-    ```
-
-    Xem [ClawHub — Xuất bản](/vi/clawhub/publishing) để biết toàn bộ quy trình.
+    Thêm `--version <version>` hoặc `--owner <owner>` để ghi đè phiên bản được suy ra
+    hoặc xuất bản dưới một chủ sở hữu cụ thể. Xem
+    [ClawHub — Xuất bản](/vi/clawhub/publishing) và
+    [CLI ClawHub](/vi/clawhub/cli) để biết toàn bộ quy trình, phạm vi chủ sở hữu và các
+    lệnh bảo trì khác (`clawhub sync`, `clawhub skill rename`, ...).
 
   </Step>
 </Steps>
 
-## Thực hành tốt nhất
+## Các phương pháp hay nhất
 
 <Tip>
-  - **Ngắn gọn** — hướng dẫn mô hình về *việc* cần làm, không phải cách trở thành AI.
-  - **An toàn trước tiên** — nếu skill của bạn dùng `exec`, hãy đảm bảo prompt không cho phép
+  - **Ngắn gọn** — hướng dẫn mô hình về *việc cần làm*, không phải cách trở thành AI.
+  - **Ưu tiên an toàn** — nếu skill của bạn sử dụng `exec`, hãy đảm bảo lời nhắc không cho phép
     chèn lệnh tùy ý từ đầu vào không đáng tin cậy.
   - **Kiểm thử cục bộ** — dùng `openclaw agent --message "..."` trước khi chia sẻ.
-  - **Dùng ClawHub** — duyệt skills cộng đồng tại [clawhub.ai](https://clawhub.ai)
-    trước khi xây dựng từ đầu.
+  - **Sử dụng ClawHub** — duyệt các skill cộng đồng tại [clawhub.ai](https://clawhub.ai)
+    trước khi tự xây dựng từ đầu.
 </Tip>
 
-## Liên quan
+## Nội dung liên quan
 
 <CardGroup cols={2}>
-  <Card title="Skills reference" href="/vi/tools/skills" icon="puzzle-piece">
-    Thứ tự tải, gating, allowlist và định dạng SKILL.md.
+  <Card title="Tài liệu tham chiếu Skills" href="/vi/tools/skills" icon="puzzle-piece">
+    Thứ tự tải, kiểm soát điều kiện, danh sách cho phép và định dạng SKILL.md.
   </Card>
   <Card title="Skill Workshop" href="/vi/tools/skill-workshop" icon="flask">
-    Hàng đợi đề xuất cho skills do tác nhân soạn thảo.
+    Hàng đợi đề xuất dành cho các skill do agent soạn thảo.
   </Card>
-  <Card title="Skills config" href="/vi/tools/skills-config" icon="gear">
+  <Card title="Cấu hình Skills" href="/vi/tools/skills-config" icon="gear">
     Lược đồ cấu hình `skills.*` đầy đủ.
   </Card>
-  <Card title="ClawHub" href="/vi/clawhub" icon="cloud">
-    Duyệt và xuất bản skills trên registry công khai.
+  <Card title="ClawHub" href="/clawhub" icon="cloud">
+    Duyệt và xuất bản các skill trên sổ đăng ký công khai.
   </Card>
-  <Card title="Building plugins" href="/vi/plugins/building-plugins" icon="plug">
-    Plugins có thể phát hành skills cùng với các công cụ mà chúng ghi lại.
+  <Card title="Xây dựng plugin" href="/vi/plugins/building-plugins" icon="plug">
+    Các plugin có thể cung cấp skill cùng với những công cụ mà chúng mô tả.
   </Card>
 </CardGroup>

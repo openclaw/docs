@@ -1,32 +1,32 @@
 ---
 read_when:
-    - Penyiapan pertama dari nol
-    - Anda menginginkan cara tercepat untuk menjalankan obrolan
-summary: Instal OpenClaw dan jalankan obrolan pertama Anda dalam hitungan menit.
+    - Penyiapan pertama kali dari nol
+    - Anda menginginkan cara tercepat untuk mendapatkan chat yang berfungsi
+summary: Instal OpenClaw dan jalankan percakapan pertama Anda dalam hitungan menit.
 title: Memulai
 x-i18n:
-    generated_at: "2026-06-28T20:44:50Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:40:51Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 579ed2b4797dc851b0293b96a4177cc356641b6842fe45c4d48f4e8c224eef75
+    source_hash: 308ca58b8a11832b5a4c0d4634d1c88ef44681ef755a18d675bcff60b5aba929
     source_path: start/getting-started.md
     workflow: 16
 ---
 
-Instal OpenClaw, jalankan onboarding, dan chat dengan asisten AI Anda — semuanya dalam
-sekitar 5 menit. Pada akhirnya, Anda akan memiliki Gateway yang berjalan, autentikasi yang dikonfigurasi,
-dan sesi chat yang berfungsi.
+Instal OpenClaw, jalankan orientasi awal, dan mengobrol dengan asisten AI Anda dalam waktu sekitar 5
+menit. Setelah selesai, Anda akan memiliki Gateway yang berjalan, autentikasi yang telah dikonfigurasi, dan
+sesi obrolan yang berfungsi.
 
-## Yang Anda butuhkan
+## Yang Anda perlukan
 
-- **Node.js** — Node 24 direkomendasikan (Node 22.19+ juga didukung)
-- **Kunci API** dari penyedia model (Anthropic, OpenAI, Google, dll.) — onboarding akan memintanya
+- **Node.js 22.19+, 23.11+, atau 24+** (24 adalah versi bawaan yang direkomendasikan)
+- **Kunci API** dari penyedia model (Anthropic, OpenAI, Google, dan sebagainya) — Anda akan diminta memasukkannya saat orientasi awal
 
 <Tip>
 Periksa versi Node Anda dengan `node --version`.
-**Pengguna Windows:** aplikasi native Windows Hub adalah jalur desktop termudah. Installer
-PowerShell dan jalur Gateway WSL2 juga didukung. Lihat [Windows](/id/platforms/windows).
+**Pengguna Windows:** aplikasi Windows Hub native adalah cara termudah untuk menggunakan desktop. Jalur
+penginstal PowerShell dan Gateway WSL2 juga didukung. Lihat [Windows](/id/platforms/windows).
 Perlu menginstal Node? Lihat [Penyiapan Node](/id/install/node).
 </Tip>
 
@@ -53,61 +53,61 @@ Perlu menginstal Node? Lihat [Penyiapan Node](/id/install/node).
     </Tabs>
 
     <Note>
-    Metode instalasi lain (Docker, Nix, npm): [Instal](/id/install).
+    Metode instalasi lainnya (Docker, Nix, npm): [Instalasi](/id/install).
     </Note>
 
   </Step>
-  <Step title="Jalankan onboarding">
+  <Step title="Jalankan orientasi awal">
     ```bash
     openclaw onboard --install-daemon
     ```
 
-    Wizard memandu Anda memilih penyedia model, menetapkan kunci API,
-    dan mengonfigurasi Gateway. QuickStart biasanya hanya memerlukan beberapa menit, tetapi
-    masuk ke penyedia, pairing channel, instalasi daemon, unduhan jaringan, Skills,
-    atau Plugin opsional dapat membuat onboarding penuh memerlukan waktu lebih lama. Anda dapat melewati langkah
-    opsional dan kembali nanti dengan `openclaw configure`.
+    Wisaya akan memandu Anda memilih penyedia model, menetapkan kunci API,
+    dan mengonfigurasi Gateway. Mulai Cepat biasanya hanya memerlukan beberapa menit, tetapi
+    proses masuk ke penyedia, pemasangan saluran, instalasi daemon, pengunduhan melalui jaringan, Skills,
+    atau Plugin opsional dapat membuat orientasi awal lengkap memerlukan waktu lebih lama. Lewati langkah
+    opsional dan kembali lagi nanti dengan `openclaw configure`.
 
-    Lihat [Onboarding (CLI)](/id/start/wizard) untuk referensi lengkap.
+    Lihat [Orientasi awal (CLI)](/id/start/wizard) untuk referensi lengkap.
 
   </Step>
-  <Step title="Verifikasi Gateway berjalan">
+  <Step title="Pastikan Gateway sedang berjalan">
     ```bash
     openclaw gateway status
     ```
 
-    Anda seharusnya melihat Gateway mendengarkan di port 18789.
+    Anda akan melihat Gateway mendengarkan pada porta 18789.
 
   </Step>
-  <Step title="Buka dashboard">
+  <Step title="Buka dasbor">
     ```bash
     openclaw dashboard
     ```
 
-    Ini membuka Control UI di browser Anda. Jika berhasil dimuat, semuanya berfungsi.
+    Perintah ini membuka UI Kontrol di peramban Anda. Jika berhasil dimuat, semuanya berfungsi.
 
   </Step>
   <Step title="Kirim pesan pertama Anda">
-    Ketik pesan di chat Control UI dan Anda seharusnya mendapatkan balasan AI.
+    Ketik pesan dalam obrolan UI Kontrol dan Anda akan menerima balasan dari AI.
 
-    Ingin chat dari ponsel Anda sebagai gantinya? Channel tercepat untuk disiapkan adalah
-    [Telegram](/id/channels/telegram) (cukup token bot). Lihat [Channel](/id/channels)
+    Ingin mengobrol dari ponsel? Saluran yang paling cepat disiapkan adalah
+    [Telegram](/id/channels/telegram) (hanya memerlukan token bot). Lihat [Saluran](/id/channels)
     untuk semua opsi.
 
   </Step>
 </Steps>
 
-<Accordion title="Lanjutan: mount build Control UI khusus">
-  Jika Anda mengelola build dashboard yang dilokalkan atau disesuaikan, arahkan
+<Accordion title="Lanjutan: pasang build UI Kontrol khusus">
+  Jika Anda mengelola build dasbor yang dilokalkan atau disesuaikan, arahkan
   `gateway.controlUi.root` ke direktori yang berisi aset statis hasil build
-  dan `index.html`.
+  dan `index.html` Anda.
 
 ```bash
 mkdir -p "$HOME/.openclaw/control-ui-custom"
-# Copy your built static files into that directory.
+# Salin file statis hasil build Anda ke direktori tersebut.
 ```
 
-Lalu tetapkan:
+Kemudian tetapkan:
 
 ```json
 {
@@ -120,7 +120,7 @@ Lalu tetapkan:
 }
 ```
 
-Mulai ulang gateway dan buka kembali dashboard:
+Mulai ulang Gateway dan buka kembali dasbor:
 
 ```bash
 openclaw gateway restart
@@ -129,29 +129,29 @@ openclaw dashboard
 
 </Accordion>
 
-## Yang harus dilakukan berikutnya
+## Langkah berikutnya
 
 <Columns>
-  <Card title="Hubungkan channel" href="/id/channels" icon="message-square">
+  <Card title="Hubungkan saluran" href="/id/channels" icon="message-square">
     Discord, Feishu, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo, dan lainnya.
   </Card>
-  <Card title="Pairing dan keamanan" href="/id/channels/pairing" icon="shield">
-    Kontrol siapa yang dapat mengirim pesan ke agent Anda.
+  <Card title="Pemasangan dan keamanan" href="/id/channels/pairing" icon="shield">
+    Kendalikan siapa yang dapat mengirim pesan kepada agen Anda.
   </Card>
-  <Card title="Konfigurasi Gateway" href="/id/gateway/configuration" icon="settings">
+  <Card title="Konfigurasikan Gateway" href="/id/gateway/configuration" icon="settings">
     Model, alat, sandbox, dan pengaturan lanjutan.
   </Card>
   <Card title="Jelajahi alat" href="/id/tools" icon="wrench">
-    Browser, exec, pencarian web, Skills, dan Plugin.
+    Peramban, eksekusi, pencarian web, Skills, dan Plugin.
   </Card>
 </Columns>
 
 <Accordion title="Lanjutan: variabel lingkungan">
-  Jika Anda menjalankan OpenClaw sebagai akun layanan atau menginginkan path khusus:
+  Jika Anda menjalankan OpenClaw sebagai akun layanan atau menginginkan jalur khusus:
 
-- `OPENCLAW_HOME` — direktori home untuk resolusi path internal
-- `OPENCLAW_STATE_DIR` — timpa direktori state
-- `OPENCLAW_CONFIG_PATH` — timpa path file konfigurasi
+- `OPENCLAW_HOME` — direktori beranda untuk resolusi jalur internal
+- `OPENCLAW_STATE_DIR` — mengganti direktori status
+- `OPENCLAW_CONFIG_PATH` — mengganti jalur file konfigurasi
 
 Referensi lengkap: [Variabel lingkungan](/id/help/environment).
 </Accordion>
@@ -159,5 +159,5 @@ Referensi lengkap: [Variabel lingkungan](/id/help/environment).
 ## Terkait
 
 - [Ikhtisar instalasi](/id/install)
-- [Ikhtisar channel](/id/channels)
+- [Ikhtisar saluran](/id/channels)
 - [Penyiapan](/id/start/setup)

@@ -1,37 +1,37 @@
 ---
 read_when:
     - إعداد OpenClaw على Hostinger
-    - البحث عن VPS مُدار لـ OpenClaw
-    - استخدام تثبيت OpenClaw بنقرة واحدة على Hostinger
-summary: استضافة OpenClaw على Hostinger
+    - هل تبحث عن خادم VPS مُدار لـ OpenClaw؟
+    - استخدام OpenClaw بنقرة واحدة من Hostinger
+summary: استضف OpenClaw على Hostinger
 title: Hostinger
 x-i18n:
-    generated_at: "2026-04-24T07:48:36Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: d9d221f54d6cd1697a48615c09616ad86968937941899ea7018622302e6ceb53
-    source_path: install/hostinger.md
-    workflow: 15
+    generated_at: "2026-07-12T05:59:34Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 7dc49e741f8581928553e2426ed91f92df6e7b0c31dd8780c0d6e891a07be263
+    source_path: install/hostinger.md
+    workflow: 16
 ---
 
-شغّل OpenClaw Gateway دائمة على [Hostinger](https://www.hostinger.com/openclaw) عبر نشر مُدار **بنقرة واحدة** أو تثبيت على **VPS**.
+شغّل Gateway دائمًا لـ OpenClaw على [Hostinger](https://www.hostinger.com/openclaw)، إما كنشر مُدار بنقرة واحدة **1-Click** أو كتثبيت على **VPS** تديره بنفسك.
 
 ## المتطلبات الأساسية
 
-- حساب Hostinger ‏([التسجيل](https://www.hostinger.com/openclaw))
+- حساب Hostinger ([التسجيل](https://www.hostinger.com/openclaw))
 - نحو 5-10 دقائق
 
-## الخيار A: OpenClaw بنقرة واحدة
+## الخيار أ: OpenClaw بنقرة واحدة
 
-أسرع طريقة للبدء. تتولى Hostinger البنية التحتية وDocker والتحديثات التلقائية.
+تتولى Hostinger إدارة البنية التحتية وDocker والتحديثات التلقائية. وهذا أسرع مسار للحصول على مثيل قيد التشغيل.
 
 <Steps>
   <Step title="الشراء والتشغيل">
-    1. من [صفحة OpenClaw في Hostinger](https://www.hostinger.com/openclaw)، اختر خطة OpenClaw مُدارة وأكمل عملية الشراء.
+    1. من [صفحة OpenClaw على Hostinger](https://www.hostinger.com/openclaw)، اختر خطة OpenClaw مُدارة وأكمل عملية الدفع.
 
     <Note>
-    أثناء إتمام الشراء يمكنك اختيار أرصدة **Ready-to-Use AI** التي يتم شراؤها مسبقًا ودمجها فورًا داخل OpenClaw -- من دون الحاجة إلى حسابات خارجية أو مفاتيح API من موفّرين آخرين. يمكنك البدء بالدردشة فورًا. وبدلًا من ذلك، يمكنك تقديم مفتاحك الخاص من Anthropic أو OpenAI أو Google Gemini أو xAI أثناء الإعداد.
+    أثناء الدفع، يمكنك تحديد رصيد **Ready-to-Use AI** مدفوع مسبقًا ومُدمج فورًا داخل OpenClaw، من دون الحاجة إلى حسابات خارجية أو مفاتيح API من مزودين آخرين. ويمكنك بدء المحادثة على الفور. وبدلًا من ذلك، أدخل مفتاحك الخاص من Anthropic أو OpenAI أو Google Gemini أو xAI أثناء الإعداد.
     </Note>
 
   </Step>
@@ -39,65 +39,65 @@ x-i18n:
   <Step title="اختيار قناة مراسلة">
     اختر قناة واحدة أو أكثر للاتصال بها:
 
-    - **WhatsApp** -- امسح رمز QR المعروض في معالج الإعداد.
+    - **WhatsApp** -- امسح رمز QR الظاهر في معالج الإعداد.
     - **Telegram** -- الصق رمز البوت من [BotFather](https://t.me/BotFather).
 
   </Step>
 
   <Step title="إكمال التثبيت">
-    انقر على **Finish** لنشر المثيل. وبمجرد أن يصبح جاهزًا، ادخل إلى لوحة تحكم OpenClaw من **OpenClaw Overview** في hPanel.
+    انقر على **Finish** لنشر المثيل. بعد أن يصبح جاهزًا، افتح لوحة معلومات OpenClaw من **OpenClaw Overview** في hPanel.
   </Step>
 
 </Steps>
 
-## الخيار B: OpenClaw على VPS
+## الخيار ب: OpenClaw على VPS
 
-تحكم أكبر في الخادم. تنشر Hostinger OpenClaw عبر Docker على VPS الخاصة بك، وتقوم بإدارتها من خلال **Docker Manager** في hPanel.
+يمنحك هذا الخيار تحكمًا أكبر في الخادم. تنشر Hostinger ‏OpenClaw عبر Docker على خادم VPS الخاص بك، وتتولى أنت إدارته من خلال **Docker Manager** في hPanel.
 
 <Steps>
   <Step title="شراء VPS">
-    1. من [صفحة OpenClaw في Hostinger](https://www.hostinger.com/openclaw)، اختر خطة OpenClaw على VPS وأكمل عملية الشراء.
+    1. من [صفحة OpenClaw على Hostinger](https://www.hostinger.com/openclaw)، اختر خطة OpenClaw على VPS وأكمل عملية الدفع.
 
     <Note>
-    يمكنك اختيار أرصدة **Ready-to-Use AI** أثناء إتمام الشراء -- يتم شراؤها مسبقًا ودمجها فورًا داخل OpenClaw، بحيث يمكنك بدء الدردشة من دون أي حسابات خارجية أو مفاتيح API من موفّرين آخرين.
+    يمكنك تحديد رصيد **Ready-to-Use AI** أثناء الدفع، وهو رصيد مدفوع مسبقًا ومُدمج فورًا داخل OpenClaw، ما يتيح لك بدء المحادثة من دون أي حسابات خارجية أو مفاتيح API من مزودين آخرين.
     </Note>
 
   </Step>
 
-  <Step title="إعداد OpenClaw">
-    بعد تهيئة VPS، املأ حقول الإعداد:
+  <Step title="تهيئة OpenClaw">
+    بعد تجهيز VPS، املأ حقول التهيئة:
 
-    - **Gateway token** -- يتم إنشاؤه تلقائيًا؛ احفظه لاستخدامه لاحقًا.
-    - **رقم WhatsApp** -- رقمك مع رمز الدولة (اختياري).
-    - **Telegram bot token** -- من [BotFather](https://t.me/BotFather) (اختياري).
-    - **مفاتيح API** -- مطلوبة فقط إذا لم تختر أرصدة Ready-to-Use AI أثناء إتمام الشراء.
+    - **رمز Gateway** -- يُنشأ تلقائيًا؛ احفظه لاستخدامه لاحقًا.
+    - **رقم WhatsApp** -- رقمك متضمنًا رمز البلد (اختياري).
+    - **رمز بوت Telegram** -- من [BotFather](https://t.me/BotFather) (اختياري).
+    - **مفاتيح API** -- لا تكون مطلوبة إلا إذا لم تحدد رصيد Ready-to-Use AI أثناء الدفع.
 
   </Step>
 
-  <Step title="بدء OpenClaw">
-    انقر على **Deploy**. وبعد التشغيل، افتح لوحة تحكم OpenClaw من hPanel بالنقر على **Open**.
+  <Step title="تشغيل OpenClaw">
+    انقر على **Deploy**. بعد بدء التشغيل، افتح لوحة معلومات OpenClaw من hPanel بالنقر على **Open**.
   </Step>
 
 </Steps>
 
-تُدار السجلات وعمليات إعادة التشغيل والتحديثات مباشرة من واجهة Docker Manager في hPanel. وللتحديث، اضغط على **Update** في Docker Manager وسيقوم ذلك بسحب أحدث صورة.
+يمكن إدارة السجلات وعمليات إعادة التشغيل والتحديثات من واجهة Docker Manager في hPanel. للتحديث، اضغط على **Update** في Docker Manager لتنزيل أحدث صورة.
 
 ## التحقق من الإعداد
 
-أرسل "Hi" إلى مساعدك على القناة التي قمت بربطها. سيرد OpenClaw ويرشدك خلال التفضيلات الأولية.
+أرسل "مرحبًا" إلى مساعدك عبر القناة التي ربطتها. سيرد OpenClaw ويرشدك خلال ضبط التفضيلات الأولية.
 
 ## استكشاف الأخطاء وإصلاحها
 
-**لوحة التحكم لا تُحمّل** -- انتظر بضع دقائق حتى تنتهي الحاوية من التهيئة. تحقق من سجلات Docker Manager في hPanel.
+**لوحة المعلومات لا تُحمّل** -- انتظر بضع دقائق حتى تنتهي تهيئة الحاوية، ثم تحقق من سجلات Docker Manager في hPanel.
 
-**حاوية Docker تستمر في إعادة التشغيل** -- افتح سجلات Docker Manager وابحث عن أخطاء في الإعداد (رموز مميزة مفقودة، أو مفاتيح API غير صالحة).
+**تستمر حاوية Docker في إعادة التشغيل** -- افتح سجلات Docker Manager وابحث عن أخطاء التهيئة، مثل الرموز المفقودة أو مفاتيح API غير الصالحة.
 
-**بوت Telegram لا يستجيب** -- أرسل رسالة رمز الاقتران من Telegram مباشرة كرسالة داخل دردشة OpenClaw لإكمال الاتصال.
+**بوت Telegram لا يستجيب** -- إذا كانت مصادقة الاقتران مطلوبة، فسيتلقى المرسل غير المعروف رمز اقتران قصيرًا بدلًا من الرد. وافق عليه من محادثة لوحة معلومات OpenClaw، أو باستخدام `openclaw pairing approve telegram <CODE>` إذا كان لديك وصول إلى صدفة الحاوية. راجع [الاقتران](/ar/channels/pairing).
 
 ## الخطوات التالية
 
-- [القنوات](/ar/channels) -- ربط Telegram وWhatsApp وDiscord والمزيد
-- [إعداد Gateway](/ar/gateway/configuration) -- جميع خيارات الإعداد
+- [القنوات](/ar/channels) -- اربط Telegram وWhatsApp وDiscord وغيرها
+- [تهيئة Gateway](/ar/gateway/configuration) -- جميع خيارات التهيئة
 
 ## ذو صلة
 

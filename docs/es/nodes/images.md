@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Modificar la canalización de medios o los archivos adjuntos
-summary: Reglas de gestión de imágenes y medios para respuestas de envío, Gateway y agentes
-title: Compatibilidad con imágenes y medios
+    - Modificación de la canalización multimedia o de los archivos adjuntos
+summary: Reglas de gestión de imágenes y contenido multimedia para envíos, el Gateway y las respuestas del agente
+title: Compatibilidad con imágenes y contenido multimedia
 x-i18n:
-    generated_at: "2026-07-05T11:27:55Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T23:14:10Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 41d5bbd174b4fb35b616a9e90930485fd76dc8cfbad2e178f0823e6fb40c36f8
@@ -13,84 +13,84 @@ x-i18n:
     workflow: 16
 ---
 
-El canal de WhatsApp se ejecuta en Baileys Web. Esta página cubre las reglas de manejo de medios para envíos, Gateway y respuestas de agentes.
+El canal de WhatsApp se ejecuta en Baileys Web. Esta página describe las reglas de gestión de contenido multimedia para los envíos, el Gateway y las respuestas del agente.
 
 ## Objetivos
 
-- Enviar medios con un pie de foto opcional mediante `openclaw message send --media`.
-- Permitir que las respuestas automáticas desde la bandeja de entrada web incluyan medios junto con texto.
-- Mantener los límites por tipo sensatos y predecibles.
+- Enviar contenido multimedia con una leyenda opcional mediante `openclaw message send --media`.
+- Permitir que las respuestas automáticas del buzón web incluyan contenido multimedia junto con texto.
+- Mantener límites razonables y predecibles para cada tipo.
 
-## Superficie de CLI
+## Interfaz de la CLI
 
 `openclaw message send --target <dest> --media <path-or-url> [--message <caption>]`
 
-- `--media <path-or-url>` — adjuntar medios (imagen/audio/video/documento); acepta rutas locales o URLs. Opcional; el pie de foto puede estar vacío para envíos solo con medios.
-- `--gif-playback` — tratar los medios de video como reproducción GIF (solo WhatsApp).
-- `--force-document` — enviar medios como documento para evitar la compresión del canal (Telegram, WhatsApp); se aplica a imágenes, GIFs y videos.
-- `--reply-to <id>`, `--thread-id <id>`, `--pin`, `--silent` — opciones de entrega/conversación compartidas con envíos solo de texto.
-- `--dry-run` — imprimir la carga útil resuelta y omitir el envío.
-- `--json` — imprimir el resultado como JSON: `{ action, channel, dryRun, handledBy, messageId?, payload }` (`payload` lleva el resultado de envío específico del canal, incluida cualquier referencia de medios).
+- `--media <path-or-url>` — adjunta contenido multimedia (imagen/audio/vídeo/documento); acepta rutas locales o URL. Es opcional; la leyenda puede estar vacía para envíos que solo contengan contenido multimedia.
+- `--gif-playback` — trata el contenido de vídeo como una reproducción GIF (solo WhatsApp).
+- `--force-document` — envía el contenido multimedia como documento para evitar la compresión del canal (Telegram, WhatsApp); se aplica a imágenes, GIF y vídeos.
+- `--reply-to <id>`, `--thread-id <id>`, `--pin`, `--silent` — opciones de entrega e hilos compartidas con los envíos que solo contienen texto.
+- `--dry-run` — imprime la carga útil resuelta y omite el envío.
+- `--json` — imprime el resultado como JSON: `{ action, channel, dryRun, handledBy, messageId?, payload }` (`payload` contiene el resultado de envío específico del canal, incluida cualquier referencia al contenido multimedia).
 
-## Comportamiento del canal WhatsApp Web
+## Comportamiento del canal de WhatsApp Web
 
 - Entrada: ruta de archivo local **o** URL HTTP(S).
-- Flujo: cargar en un búfer, detectar el tipo de medio y luego crear la carga útil saliente según el tipo:
-  - **Imágenes:** optimizadas para ajustarse por debajo de `channels.whatsapp.mediaMaxMb` (predeterminado 50MB). Las imágenes opacas se recomprimen a JPEG (la escala lateral predeterminada empieza en 2048px y desciende tras fallos repetidos por tamaño); las imágenes con transparencia se mantienen como PNG. Si la fuente ya es un JPEG/PNG/WebP aceptable dentro del presupuesto de tamaño y longitud de lado, los bytes originales se conservan sin cambios en lugar de recomprimirse. Los GIFs animados nunca se recodifican, solo se comprueba su tamaño.
-  - **Audio/voz:** salvo que ya sea audio de voz nativo (`.ogg`/`.opus`, o `audio/ogg`/`audio/opus`), el audio saliente se transcodifica mediante `ffmpeg` a Opus/OGG (48kHz mono, 64kbps, limitado a 20 minutos) antes de enviarlo como nota de voz (`ptt: true`).
-  - **Video:** transferencia directa hasta 16MB.
-  - **Documentos:** cualquier otra cosa, hasta 100MB, con el nombre de archivo conservado cuando esté disponible.
-- Reproducción estilo GIF de WhatsApp: enviar un MP4 con `gifPlayback: true` (CLI: `--gif-playback`) para que los clientes móviles lo reproduzcan en bucle dentro de la conversación.
-- La detección MIME prefiere los bytes mágicos detectados, luego la extensión del archivo y luego los encabezados de respuesta; un contenedor genérico detectado (`application/octet-stream`, `zip`) nunca reemplaza una asignación de extensión más específica (por ejemplo, XLSX frente a ZIP).
-- El pie de foto proviene de `--message` o `reply.text`; se permite un pie de foto vacío.
-- Registro: el modo no detallado muestra `↩️`/`✅`; el modo detallado incluye tamaño y ruta/URL de origen.
+- Flujo: carga el contenido en un búfer, detecta el tipo de contenido multimedia y, a continuación, crea la carga útil de salida según el tipo:
+  - **Imágenes:** se optimizan para ajustarse al límite de `channels.whatsapp.mediaMaxMb` (50 MB de forma predeterminada). Las imágenes opacas se recomprimen como JPEG (la secuencia predeterminada de dimensiones comienza en 2048 px y desciende cuando se supera repetidamente el tamaño); las imágenes con transparencia se conservan como PNG. Si el origen ya es un archivo JPEG/PNG/WebP aceptable dentro de los límites de tamaño y longitud de lado, los bytes originales se conservan sin cambios en lugar de recomprimirse. Los GIF animados nunca se recodifican; solo se comprueba su tamaño.
+  - **Audio/voz:** salvo que ya sea audio de voz nativo (`.ogg`/`.opus` o `audio/ogg`/`audio/opus`), el audio de salida se transcodifica mediante `ffmpeg` a Opus/OGG (48 kHz mono, 64 kbps y un máximo de 20 minutos) antes de enviarse como nota de voz (`ptt: true`).
+  - **Vídeo:** se transmite sin cambios hasta 16 MB.
+  - **Documentos:** cualquier otro contenido, hasta 100 MB, conservando el nombre del archivo cuando esté disponible.
+- Reproducción al estilo GIF de WhatsApp: envía un MP4 con `gifPlayback: true` (CLI: `--gif-playback`) para que los clientes móviles lo reproduzcan en bucle e integrado en la conversación.
+- La detección MIME prioriza los bytes mágicos detectados, después la extensión del archivo y, por último, los encabezados de respuesta; un contenedor genérico detectado (`application/octet-stream`, `zip`) nunca prevalece sobre una asignación de extensión más específica (por ejemplo, XLSX frente a ZIP).
+- La leyenda procede de `--message` o `reply.text`; se permite una leyenda vacía.
+- Registro: el modo no detallado muestra `↩️`/`✅`; el modo detallado incluye el tamaño y la ruta o URL de origen.
 
 <Note>
-Las cifras de 16MB para audio/video y 100MB para documentos anteriores son los valores predeterminados de medios compartidos por tipo que se usan cuando no se pasa un límite explícito de bytes. Los envíos de WhatsApp establecen un límite explícito desde `channels.whatsapp.mediaMaxMb` (predeterminado 50MB), que se aplica de manera uniforme a todos los tipos para esa cuenta.
+Las cifras anteriores de 16 MB para audio/vídeo y 100 MB para documentos son los valores predeterminados compartidos por tipo de contenido multimedia que se usan cuando no se proporciona un límite de bytes explícito. Los envíos de WhatsApp establecen un límite explícito mediante `channels.whatsapp.mediaMaxMb` (50 MB de forma predeterminada), que se aplica uniformemente a todos los tipos para esa cuenta.
 </Note>
 
-## Canalización de respuesta automática
+## Canalización de respuestas automáticas
 
-- `getReplyFromConfig` devuelve una carga útil de respuesta (o un arreglo de cargas útiles) con `text?`, `mediaUrl?` y `mediaUrls?`, entre otros campos.
-- Cuando hay medios presentes, el remitente web resuelve rutas locales o URLs usando la misma canalización que `openclaw message send`.
-- Varias entradas de medios se envían secuencialmente si se proporcionan.
+- `getReplyFromConfig` devuelve una carga útil de respuesta (o una matriz de cargas útiles) con `text?`, `mediaUrl?` y `mediaUrls?`, entre otros campos.
+- Cuando hay contenido multimedia, el remitente web resuelve las rutas locales o URL mediante la misma canalización que `openclaw message send`.
+- Si se proporcionan varias entradas de contenido multimedia, se envían secuencialmente.
 
-## Medios entrantes a comandos
+## Contenido multimedia entrante para comandos
 
-- Cuando los mensajes web entrantes incluyen medios, OpenClaw los descarga a un archivo temporal y expone variables de plantillas:
-  - `{{MediaUrl}}` — seudo-URL para los medios entrantes.
+- Cuando los mensajes web entrantes incluyen contenido multimedia, OpenClaw lo descarga en un archivo temporal y expone variables de plantilla:
+  - `{{MediaUrl}}` — pseudo-URL del contenido multimedia entrante.
   - `{{MediaPath}}` — ruta temporal local escrita antes de ejecutar el comando.
-- Cuando está habilitado un sandbox Docker por sesión, los medios entrantes se copian en el espacio de trabajo del sandbox y `MediaPath`/`MediaUrl` se reescriben a una ruta relativa al sandbox como `media/inbound/<filename>`.
-- La comprensión de medios (configurada mediante `tools.media.*` o `tools.media.models` compartido) se ejecuta antes de las plantillas y puede insertar bloques `[Image]`, `[Audio]` y `[Video]` en `Body`.
-  - El audio establece `{{Transcript}}` y usa la transcripción para el análisis de comandos, de modo que los comandos con barra sigan funcionando.
-  - Las descripciones de video e imagen conservan cualquier texto de pie de foto para el análisis de comandos.
-  - Si el modelo primario activo ya admite visión de forma nativa, OpenClaw omite el bloque de resumen `[Image]` y pasa la imagen original al modelo en su lugar.
-- De forma predeterminada, solo se procesa el primer adjunto de imagen/audio/video coincidente; establece `tools.media.<capability>.attachments` para procesar varios adjuntos.
+- Cuando se habilita un entorno aislado de Docker por sesión, el contenido multimedia entrante se copia en el espacio de trabajo del entorno aislado y `MediaPath`/`MediaUrl` se reescriben como una ruta relativa al entorno aislado, como `media/inbound/<filename>`.
+- La interpretación del contenido multimedia (configurada mediante `tools.media.*` o el valor compartido `tools.media.models`) se ejecuta antes de aplicar las plantillas y puede insertar bloques `[Image]`, `[Audio]` y `[Video]` en `Body`.
+  - El audio establece `{{Transcript}}` y utiliza la transcripción para analizar los comandos, de modo que los comandos con barra diagonal sigan funcionando.
+  - Las descripciones de vídeo e imagen conservan cualquier texto de la leyenda para analizar los comandos.
+  - Si el modelo principal activo ya admite visión de forma nativa, OpenClaw omite el bloque de resumen `[Image]` y, en su lugar, pasa la imagen original al modelo.
+- De forma predeterminada, solo se procesa el primer archivo adjunto coincidente de imagen/audio/vídeo; establece `tools.media.<capability>.attachments` para procesar varios archivos adjuntos.
 
 ## Límites y errores
 
 **Límites de envío saliente (envío web de WhatsApp)**
 
-- Imágenes: hasta `channels.whatsapp.mediaMaxMb` (predeterminado 50MB) después de la optimización.
-- Audio/video: límite de 16MB (valor predeterminado compartido; reemplazado por `mediaMaxMb` al enviar a través de WhatsApp).
-- Documentos: límite de 100MB (valor predeterminado compartido; reemplazado por `mediaMaxMb` al enviar a través de WhatsApp).
-- Los medios demasiado grandes o ilegibles producen un error claro en los registros y se omite la respuesta.
+- Imágenes: hasta `channels.whatsapp.mediaMaxMb` (50 MB de forma predeterminada) después de la optimización.
+- Audio/vídeo: límite de 16 MB (valor predeterminado compartido; se sustituye por `mediaMaxMb` cuando se envía mediante WhatsApp).
+- Documentos: límite de 100 MB (valor predeterminado compartido; se sustituye por `mediaMaxMb` cuando se envía mediante WhatsApp).
+- El contenido multimedia demasiado grande o ilegible genera un error claro en los registros y se omite la respuesta.
 
-**Límites de comprensión de medios (transcripción/descripción)**
+**Límites de interpretación del contenido multimedia (transcripción/descripción)**
 
-- Valor predeterminado de imagen: 10MB (`tools.media.image.maxBytes`).
-- Valor predeterminado de audio: 20MB (`tools.media.audio.maxBytes`).
-- Valor predeterminado de video: 50MB (`tools.media.video.maxBytes`).
-- Los medios demasiado grandes omiten la comprensión, pero la respuesta aun así continúa con el cuerpo original.
+- Valor predeterminado para imágenes: 10 MB (`tools.media.image.maxBytes`).
+- Valor predeterminado para audio: 20 MB (`tools.media.audio.maxBytes`).
+- Valor predeterminado para vídeo: 50 MB (`tools.media.video.maxBytes`).
+- Si el contenido multimedia es demasiado grande, se omite su interpretación, pero la respuesta se envía igualmente con el cuerpo original.
 
-## Notas para pruebas
+## Notas para las pruebas
 
-- Cubrir los flujos de envío y respuesta para casos de imagen/audio/documento.
-- Validar los límites de tamaño después de la optimización de imagen y la marca de nota de voz para audio.
-- Asegurar que las respuestas con múltiples medios se desplieguen como envíos secuenciales.
+- Cubrir los flujos de envío y respuesta para los casos de imagen, audio y documento.
+- Validar los límites de tamaño después de optimizar las imágenes y la marca de nota de voz para el audio.
+- Asegurarse de que las respuestas con varios elementos multimedia se distribuyan como envíos secuenciales.
 
 ## Relacionado
 
-- [Captura de cámara](/es/nodes/camera)
-- [Comprensión de medios](/es/nodes/media-understanding)
+- [Captura con la cámara](/es/nodes/camera)
+- [Interpretación del contenido multimedia](/es/nodes/media-understanding)
 - [Audio y notas de voz](/es/nodes/audio)

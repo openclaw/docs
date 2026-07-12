@@ -1,131 +1,131 @@
 ---
 read_when:
-    - تريد مضيف Linux منخفض التكلفة ويعمل دائمًا من أجل Gateway
-    - تريد الوصول عن بُعد إلى واجهة التحكم من دون تشغيل خادم افتراضي خاص بك
-summary: شغّل OpenClaw Gateway على exe.dev (جهاز افتراضي + وكيل HTTPS) للوصول عن بُعد
+    - تريد مضيف Linux منخفض التكلفة يعمل دائمًا لتشغيل Gateway
+    - تريد الوصول عن بُعد إلى واجهة التحكم دون تشغيل خادم VPS خاص بك
+summary: شغّل OpenClaw Gateway على exe.dev ‏(آلة افتراضية + وكيل HTTPS) للوصول عن بُعد
 title: exe.dev
 x-i18n:
-    generated_at: "2026-04-30T08:07:24Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:04:21Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b571f9b29bb2cca0f311db4188c922b2f70ee91cb48b233cf9922e57a7f05340
+    source_hash: a768511d2d7e4e4ec10bcdae83684417bde05286468b0534200f8dd5ec015f7b
     source_path: install/exe-dev.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-الهدف: تشغيل OpenClaw Gateway على آلة افتراضية من exe.dev، يمكن الوصول إليها من حاسوبك المحمول عبر: `https://<vm-name>.exe.xyz`
+**الهدف:** تشغيل Gateway الخاص بـ OpenClaw على جهاز افتراضي من [exe.dev](https://exe.dev)، مع إمكانية الوصول إليه عبر `https://<vm-name>.exe.xyz`.
 
-تفترض هذه الصفحة صورة **exeuntu** الافتراضية من exe.dev. إذا اخترت توزيعة مختلفة، فطابق الحزم وفقًا لذلك.
-
-## المسار السريع للمبتدئين
-
-1. [https://exe.new/openclaw](https://exe.new/openclaw)
-2. املأ مفتاح/رمز المصادقة لديك حسب الحاجة
-3. انقر على "الوكيل" بجوار آلتك الافتراضية وانتظر حتى تنهي Shelley التهيئة
-4. افتح `https://<vm-name>.exe.xyz/` وصادِق باستخدام السر المشترك المكوّن (يستخدم هذا الدليل مصادقة الرمز افتراضيًا، لكن مصادقة كلمة المرور تعمل أيضًا إذا غيّرت `gateway.auth.mode`)
-5. وافق على أي طلبات اقتران أجهزة معلقة باستخدام `openclaw devices approve <requestId>`
+يفترض هذا الدليل استخدام صورة **exeuntu** الافتراضية من exe.dev. استخدم الحزم المقابلة في التوزيعات الأخرى.
 
 ## ما تحتاج إليه
 
 - حساب exe.dev
-- وصول `ssh exe.dev` إلى الآلات الافتراضية في [exe.dev](https://exe.dev) (اختياري)
+- إمكانية الوصول إلى الأجهزة الافتراضية في exe.dev عبر `ssh exe.dev` (اختياري، للإعداد اليدوي)
+
+## المسار السريع للمبتدئين
+
+1. افتح [https://exe.new/openclaw](https://exe.new/openclaw)
+2. أدخل مفتاح المصادقة أو الرمز المميز حسب الحاجة
+3. انقر على "Agent" بجوار جهازك الافتراضي وانتظر حتى تنتهي Shelley من التجهيز
+4. افتح `https://<vm-name>.exe.xyz/` وصادِق باستخدام السر المشترك المُعدّ (المصادقة بالرمز المميز هي الافتراضية؛ وتعمل المصادقة بكلمة المرور أيضًا إذا غيّرت `gateway.auth.mode`)
+5. وافق على طلبات إقران الأجهزة المعلّقة باستخدام `openclaw devices approve <requestId>`
 
 ## التثبيت الآلي باستخدام Shelley
 
-يمكن لـ Shelley، وكيل [exe.dev](https://exe.dev)، تثبيت OpenClaw فورًا باستخدام
-الموجّه الخاص بنا. الموجّه المستخدم كما يلي:
+يمكن لـ Shelley، وكيل exe.dev، تثبيت OpenClaw استنادًا إلى مطالبة:
 
-```
+```text
 Set up OpenClaw (https://docs.openclaw.ai/install) on this VM. Use the non-interactive and accept-risk flags for openclaw onboarding. Add the supplied auth or token as needed. Configure nginx to forward from the default port 18789 to the root location on the default enabled site config, making sure to enable Websocket support. Pairing is done by "openclaw devices list" and "openclaw devices approve <request id>". Make sure the dashboard shows that OpenClaw's health is OK. exe.dev handles forwarding from port 8000 to port 80/443 and HTTPS for us, so the final "reachable" should be <vm-name>.exe.xyz, without port specification.
 ```
 
 ## التثبيت اليدوي
 
-## 1) أنشئ الآلة الافتراضية
+<Steps>
+  <Step title="إنشاء الجهاز الافتراضي">
+    من جهازك:
 
-من جهازك:
+    ```bash
+    ssh exe.dev new
+    ```
 
-```bash
-ssh exe.dev new
-```
+    ثم اتصل:
 
-ثم اتصل:
+    ```bash
+    ssh <vm-name>.exe.xyz
+    ```
 
-```bash
-ssh <vm-name>.exe.xyz
-```
+    <Tip>
+    اجعل هذا الجهاز الافتراضي **ذا حالة مستديمة**. يخزّن OpenClaw الملف `openclaw.json` وملفات `auth-profiles.json` الخاصة بكل وكيل والجلسات وحالة القنوات وموفّري الخدمة ضمن `~/.openclaw/`، بالإضافة إلى مساحة العمل ضمن `~/.openclaw/workspace/`.
+    </Tip>
 
-<Tip>
-أبقِ هذه الآلة الافتراضية **ذات حالة محفوظة**. يخزّن OpenClaw ملفات `openclaw.json` و`auth-profiles.json` الخاصة بكل وكيل، والجلسات، وحالة القنوات/المزوّدين ضمن `~/.openclaw/`، إضافة إلى مساحة العمل ضمن `~/.openclaw/workspace/`.
-</Tip>
+  </Step>
 
-## 2) ثبّت المتطلبات الأساسية (على الآلة الافتراضية)
+  <Step title="تثبيت المتطلبات الأساسية (على الجهاز الافتراضي)">
+    ```bash
+    sudo apt-get update
+    sudo apt-get install -y git curl jq ca-certificates openssl
+    ```
+  </Step>
 
-```bash
-sudo apt-get update
-sudo apt-get install -y git curl jq ca-certificates openssl
-```
+  <Step title="تثبيت OpenClaw">
+    ```bash
+    curl -fsSL https://openclaw.ai/install.sh | bash
+    ```
+  </Step>
 
-## 3) ثبّت OpenClaw
+  <Step title="إعداد nginx ليعمل وكيلاً إلى المنفذ 8000">
+    حرّر `/etc/nginx/sites-enabled/default`:
 
-شغّل سكربت تثبيت OpenClaw:
+    ```nginx
+    server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+        listen 8000;
+        listen [::]:8000;
 
-```bash
-curl -fsSL https://openclaw.ai/install.sh | bash
-```
+        server_name _;
 
-## 4) اضبط nginx لتمرير OpenClaw إلى المنفذ 8000
+        location / {
+            proxy_pass http://127.0.0.1:18789;
+            proxy_http_version 1.1;
 
-حرّر `/etc/nginx/sites-enabled/default` باستخدام
+            # دعم WebSocket
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
 
-```
-server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-    listen 8000;
-    listen [::]:8000;
+            # ترويسات الوكيل القياسية
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $remote_addr;
+            proxy_set_header X-Forwarded-Proto $scheme;
 
-    server_name _;
-
-    location / {
-        proxy_pass http://127.0.0.1:18789;
-        proxy_http_version 1.1;
-
-        # WebSocket support
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-
-        # Standard proxy headers
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $remote_addr;
-        proxy_set_header X-Forwarded-Proto $scheme;
-
-        # Timeout settings for long-lived connections
-        proxy_read_timeout 86400s;
-        proxy_send_timeout 86400s;
+            # إعدادات المهلة الزمنية للاتصالات طويلة الأمد
+            proxy_read_timeout 86400s;
+            proxy_send_timeout 86400s;
+        }
     }
-}
-```
+    ```
 
-استبدل ترويسات التمرير بدلًا من الحفاظ على السلاسل التي يقدّمها العميل.
-يثق OpenClaw ببيانات تعريف عنوان IP الممرّرة فقط من الوكلاء المكوّنين صراحةً،
-وتُعامل سلاسل `X-Forwarded-For` بنمط الإلحاق على أنها خطر تقوية أمني.
+    استبدل ترويسات إعادة التوجيه بدلًا من الاحتفاظ بالسلاسل التي يرسلها العميل. لا يثق OpenClaw ببيانات عنوان IP الوصفية المُعاد توجيهها إلا من الوكلاء المُعدّين صراحةً، وتُعد سلاسل `X-Forwarded-For` التي تستخدم أسلوب الإلحاق خطرًا على التحصين الأمني.
 
-## 5) ادخل إلى OpenClaw وامنح الصلاحيات
+  </Step>
 
-ادخل إلى `https://<vm-name>.exe.xyz/` (راجع مخرجات واجهة التحكم من مرحلة الإعداد). إذا طلب المصادقة، فالصق
-السر المشترك المكوّن من الآلة الافتراضية. يستخدم هذا الدليل مصادقة الرمز، لذا استرجع `gateway.auth.token`
-باستخدام `openclaw config get gateway.auth.token` (أو أنشئ واحدًا باستخدام `openclaw doctor --generate-gateway-token`).
-إذا غيّرت Gateway إلى مصادقة كلمة المرور، فاستخدم `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD` بدلًا من ذلك.
-وافق على الأجهزة باستخدام `openclaw devices list` و`openclaw devices approve <requestId>`. عند الشك، استخدم Shelley من متصفحك!
+  <Step title="الوصول إلى OpenClaw والموافقة على الأجهزة">
+    افتح `https://<vm-name>.exe.xyz/` (راجع مخرجات واجهة التحكم من عملية الإعداد الأولي). إذا طُلبت منك المصادقة، فألصق السر المشترك المُعدّ من الجهاز الافتراضي.
 
-## إعداد القنوات البعيدة
+    يستخدم هذا الدليل المصادقة بالرمز المميز افتراضيًا، لذا استرجع `gateway.auth.token` باستخدام `openclaw config get gateway.auth.token`، أو أنشئ رمزًا جديدًا باستخدام `openclaw doctor --n`. إذا غيّرت Gateway لاستخدام المصادقة بكلمة المرور، فاستخدم `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD` بدلًا من ذلك.
 
-للمضيفين البعيدين، فضّل استدعاء `config patch` واحدًا بدلًا من عدة استدعاءات SSH إلى `config set`. احتفظ بالرموز الحقيقية في بيئة الآلة الافتراضية أو `~/.openclaw/.env`، وضع SecretRefs فقط في `openclaw.json`.
+    وافق على الأجهزة باستخدام `openclaw devices list` و`openclaw devices approve <requestId>`. عند الشك، استخدم Shelley من متصفحك.
 
-على الآلة الافتراضية، اجعل بيئة الخدمة تحتوي على الأسرار التي تحتاج إليها:
+  </Step>
+</Steps>
+
+## إعداد القنوات عن بُعد
+
+بالنسبة إلى المضيفين البعيدين، يُفضّل إجراء استدعاء واحد لـ `config patch` بدلًا من إجراء عدة استدعاءات SSH إلى `config set`. احتفظ بالرموز المميزة الحقيقية في بيئة الجهاز الافتراضي أو في `~/.openclaw/.env`، وضع مراجع الأسرار فقط في `openclaw.json`. راجع [إدارة الأسرار](/ar/gateway/secrets) للاطلاع على عقد SecretRef الكامل.
+
+على الجهاز الافتراضي، اجعل بيئة الخدمة تحتوي على الأسرار التي تحتاج إليها:
 
 ```bash
 cat >> ~/.openclaw/.env <<'EOF'
@@ -136,7 +136,7 @@ OPENAI_API_KEY=sk-...
 EOF
 ```
 
-من جهازك المحلي، أنشئ ملف رقعة ومرّره إلى الآلة الافتراضية:
+من جهازك المحلي، أنشئ ملف تصحيح ومرّره إلى الجهاز الافتراضي:
 
 ```json5
 // openclaw.remote.patch.json5
@@ -165,9 +165,9 @@ EOF
   },
   agents: {
     defaults: {
-      model: { primary: "openai/gpt-5.5" },
+      model: { primary: "openai/gpt-5.6-sol" },
       models: {
-        "openai/gpt-5.5": { params: { fastMode: true } },
+        "openai/gpt-5.6-sol": { params: { fastMode: true } },
       },
     },
   },
@@ -180,30 +180,27 @@ ssh <vm-name>.exe.xyz 'openclaw config patch --stdin' < ./openclaw.remote.patch.
 ssh <vm-name>.exe.xyz 'openclaw gateway restart && openclaw health'
 ```
 
-استخدم `--replace-path` عندما ينبغي أن تصبح قائمة سماح متداخلة مساوية تمامًا لقيمة الرقعة، مثلًا عند استبدال قائمة سماح قنوات Discord:
+استخدم `--replace-path` عندما يجب أن تصبح قائمة سماح متداخلة مطابقة تمامًا لقيمة التصحيح، مثل استبدال قائمة سماح قناة Discord:
 
 ```bash
 ssh <vm-name>.exe.xyz 'openclaw config patch --stdin --replace-path "channels.discord.guilds[\"123\"].channels"' < ./discord.patch.json5
 ```
 
-## الوصول البعيد
+راجع [Discord](/ar/channels/discord) و[Slack](/ar/channels/slack) للاطلاع على المرجع الكامل لإعداد القنوات.
 
-تتم معالجة الوصول البعيد عبر مصادقة [exe.dev](https://exe.dev). افتراضيًا،
-تُمرَّر حركة مرور HTTP من المنفذ 8000 إلى `https://<vm-name>.exe.xyz`
-مع مصادقة البريد الإلكتروني.
+## الوصول عن بُعد
+
+يتولى exe.dev المصادقة للوصول عن بُعد. افتراضيًا، تُعاد توجيه حركة مرور HTTP من المنفذ 8000 إلى `https://<vm-name>.exe.xyz` مع المصادقة عبر البريد الإلكتروني.
 
 ## التحديث
 
 ```bash
-npm i -g openclaw@latest
-openclaw doctor
-openclaw gateway restart
-openclaw health
+openclaw update
 ```
 
-الدليل: [التحديث](/ar/install/updating)
+راجع [التحديث](/ar/install/updating) للتعرّف على تبديل القنوات والاسترداد اليدوي.
 
-## ذو صلة
+## مواضيع ذات صلة
 
 - [Gateway البعيد](/ar/gateway/remote)
 - [نظرة عامة على التثبيت](/ar/install)

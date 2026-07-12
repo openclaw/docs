@@ -1,24 +1,22 @@
 ---
 read_when:
     - İş akışlarının içinde yalnızca JSON çıktısı veren bir LLM adımı istiyorsunuz
-    - Otomasyon için şema doğrulamalı LLM çıktısına ihtiyacınız var
-summary: JSON-only iş akışları için LLM görevleri (isteğe bağlı plugin aracı)
+    - Otomasyon için şemaya göre doğrulanmış LLM çıktısına ihtiyacınız var
+summary: İş akışları için yalnızca JSON kullanan LLM görevleri (isteğe bağlı Plugin aracı)
 title: LLM görevi
 x-i18n:
-    generated_at: "2026-06-28T01:23:58Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:49:06Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ab83202bd0954a948c933c80de17385eb385573b8e3974dba41ff876f91c3ddb
+    source_hash: 78ea533f43546fbdd66c7f7138b8dea0b12b02d38925689324b390a12d0c4c5a
     source_path: tools/llm-task.md
     workflow: 16
 ---
 
-`llm-task`, JSON'a özgü bir LLM görevi çalıştıran ve yapılandırılmış çıktı döndüren **isteğe bağlı bir Plugin aracıdır** (isteğe bağlı olarak JSON Schema ile doğrulanır).
+`llm-task`, tek bir yalnızca JSON LLM çağrısı çalıştıran ve isteğe bağlı olarak bir JSON Schema'ya göre doğrulanan yapılandırılmış çıktı döndüren, paketle birlikte gelen **isteğe bağlı bir Plugin aracıdır**. Lobster gibi iş akışı motorlarına, her iş akışı için özel OpenClaw kodu gerektirmeden bir LLM adımı sağlar.
 
-Bu, Lobster gibi iş akışı motorları için idealdir: Her iş akışı için özel OpenClaw kodu yazmadan tek bir LLM adımı ekleyebilirsiniz.
-
-## Plugin'i etkinleştirme
+## Etkinleştirme
 
 1. Plugin'i etkinleştirin:
 
@@ -32,7 +30,7 @@ Bu, Lobster gibi iş akışı motorları için idealdir: Her iş akışı için 
 }
 ```
 
-2. İsteğe bağlı araca izin verin:
+2. Araca izin verin:
 
 ```json
 {
@@ -42,7 +40,7 @@ Bu, Lobster gibi iş akışı motorları için idealdir: Her iş akışı için 
 }
 ```
 
-`tools.allow` değerini yalnızca kısıtlayıcı izin listesi modunu istediğinizde kullanın.
+`alsoAllow`, diğer çekirdek araçları kısıtlamadan etkin araç profiline `llm-task` aracını ekler. Bunun yerine yalnızca kısıtlayıcı bir izin listesi modu istiyorsanız `tools.allow` kullanın.
 
 ## Yapılandırma (isteğe bağlı)
 
@@ -54,9 +52,9 @@ Bu, Lobster gibi iş akışı motorları için idealdir: Her iş akışı için 
         "enabled": true,
         "config": {
           "defaultProvider": "openai",
-          "defaultModel": "gpt-5.5",
+          "defaultModel": "gpt-5.6-sol",
           "defaultAuthProfileId": "main",
-          "allowedModels": ["openai/gpt-5.5"],
+          "allowedModels": ["openai/gpt-5.6-sol"],
           "maxTokens": 800,
           "timeoutMs": 30000
         }
@@ -66,34 +64,34 @@ Bu, Lobster gibi iş akışı motorları için idealdir: Her iş akışı için 
 }
 ```
 
-`allowedModels`, `provider/model` dizelerinden oluşan bir izin listesidir. Ayarlanırsa, listenin dışındaki tüm istekler reddedilir.
+`allowedModels`, `provider/model` dizelerinden oluşan bir izin listesidir; diğer modeller için yapılan istekler reddedilir. Diğer tüm anahtarlar, araç çağrısının ilgili parametreyi belirtmediği durumlarda kullanılan çağrı bazlı yedek değerlerdir.
 
 ## Araç parametreleri
 
-- `prompt` (dize, zorunlu)
-- `input` (herhangi biri, isteğe bağlı)
-- `schema` (nesne, isteğe bağlı JSON Schema)
-- `provider` (dize, isteğe bağlı)
-- `model` (dize, isteğe bağlı)
-- `thinking` (dize, isteğe bağlı)
-- `authProfileId` (dize, isteğe bağlı)
-- `temperature` (sayı, isteğe bağlı)
-- `maxTokens` (sayı, isteğe bağlı)
-- `timeoutMs` (sayı, isteğe bağlı)
-
-`thinking`, `low` veya `medium` gibi standart OpenClaw akıl yürütme ön ayarlarını kabul eder.
+| Parametre       | Tür    | Notlar                                                                                                                                                             |
+| --------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `prompt`        | string | Zorunludur. LLM için görev talimatı.                                                                                                                                |
+| `input`         | any    | İsteğe bağlı veri; JSON olarak serileştirilir ve istemin sonuna eklenir.                                                                                            |
+| `schema`        | object | Ayrıştırılan çıktının doğrulanması gereken isteğe bağlı JSON Schema.                                                                                                |
+| `provider`      | string | `defaultProvider` değerini / ajanın varsayılan sağlayıcısını geçersiz kılar.                                                                                        |
+| `model`         | string | `defaultModel` değerini geçersiz kılar; yalın model kimliklerini, takma adları veya bir `provider/model` başvurusunu kabul eder (yinelenen sağlayıcı öneki otomatik olarak kaldırılır). |
+| `thinking`      | string | Akıl yürütme düzeyi (ör. `low`, `medium`); çözümlenen modelin desteklediği düzeylerden biri olmalıdır.                                                               |
+| `authProfileId` | string | `defaultAuthProfileId` değerini geçersiz kılar.                                                                                                                     |
+| `temperature`   | number | Mümkün olan en iyi şekilde uygulanır; tüm sağlayıcılar bunu desteklemez.                                                                                            |
+| `maxTokens`     | number | Çıktı token'ları için mümkün olan en iyi şekilde uygulanan üst sınır.                                                                                               |
+| `timeoutMs`     | number | Çalıştırma zaman aşımı; varsayılan değer `30000`.                                                                                                                   |
 
 ## Çıktı
 
-Ayrıştırılmış JSON'u içeren `details.json` döndürür (ve sağlandığında `schema` ile doğrular).
+`details.json` (ayrıştırılmış ve şemaya göre doğrulanmış JSON) ile birlikte gerçekte hangi sağlayıcının ve modelin çalıştırıldığını belirten `details.provider` ve `details.model` değerlerini döndürür.
 
 ## Örnek: Lobster iş akışı adımı
 
 ### Önemli sınırlama
 
-Aşağıdaki örnek, **bağımsız Lobster CLI**'nin `openclaw.invoke` için doğru gateway URL'si/kimlik doğrulama bağlamının zaten bulunduğu bir ortamda çalıştığını varsayar.
+Aşağıdaki örnek, **bağımsız Lobster CLI**'ın `openclaw.invoke` için doğru Gateway URL'si/kimlik doğrulama bağlamının zaten bulunduğu bir ortamda çalıştığını varsayar.
 
-OpenClaw içindeki paketli **gömülü** Lobster çalıştırıcısı için bu iç içe CLI kalıbı **şu anda güvenilir değildir**:
+OpenClaw içindeki paketle birlikte gelen **gömülü** Lobster çalıştırıcısı için bu iç içe CLI kalıbı **şu anda güvenilir değildir**:
 
 ```lobster
 openclaw.invoke --tool llm-task --action json --args-json '{ ... }'
@@ -128,13 +126,13 @@ openclaw.invoke --tool llm-task --action json --args-json '{
 
 ## Güvenlik notları
 
-- Araç **yalnızca JSON** kullanır ve modele yalnızca JSON çıktısı üretmesini söyler (kod bloğu yok, yorum yok).
-- Bu çalıştırma için modele hiçbir araç sunulmaz.
-- `schema` ile doğrulamadığınız sürece çıktıyı güvenilmeyen kabul edin.
-- Yan etkisi olan herhangi bir adımdan (gönderme, yayımlama, çalıştırma) önce onayları koyun.
+- **Yalnızca JSON**: modele kod blokları veya açıklama olmadan yalnızca bir JSON değeri döndürmesi talimatı verilir.
+- **Araç yoktur**: temel çalıştırmada araçlar devre dışıdır; bu nedenle model görevin ortasında harici çağrı yapamaz.
+- `schema` ile doğrulamadığınız sürece çıktıyı güvenilmeyen veri olarak değerlendirin.
+- Bu çıktıyı kullanan, yan etkili her adımdan (gönderme, yayımlama, çalıştırma) önce onay alın.
 
 ## İlgili
 
-- [Düşünme düzeyleri](/tr/tools/thinking)
+- [Akıl yürütme düzeyleri](/tr/tools/thinking)
 - [Alt ajanlar](/tr/tools/subagents)
-- [Slash komutları](/tr/tools/slash-commands)
+- [Eğik çizgi komutları](/tr/tools/slash-commands)

@@ -1,12 +1,12 @@
 ---
 read_when:
     - OpenClaw を Render にデプロイする
-    - Render Blueprints を使った宣言型のクラウドデプロイが必要な場合
-summary: Infrastructure-as-CodeでRenderにOpenClawをデプロイする
+    - Render Blueprints を使用した宣言的なクラウドデプロイを行いたい場合
+summary: Infrastructure-as-Code を使用して OpenClaw を Render にデプロイする
 title: レンダリング
 x-i18n:
-    generated_at: "2026-07-05T11:27:47Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:20:29Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: a5fbb3c6df04e186df958a62a6130da4e3e485acfeecc7e85fee0d5b69a0438f
@@ -14,18 +14,18 @@ x-i18n:
     workflow: 16
 ---
 
-repo の `render.yaml` Blueprint を使用して、[Render](https://render.com) に OpenClaw をデプロイします。これはサービス、ディスク、環境変数を 1 つのファイルで宣言します。
+リポジトリの `render.yaml` Blueprint を使用して、OpenClaw を [Render](https://render.com) にデプロイします。このファイル1つで、サービス、ディスク、環境変数を定義します。
 
 ## 前提条件
 
-- [Render アカウント](https://render.com)（無料枠あり）
+- [Render アカウント](https://render.com)（無料プランあり）
 - 使用する[モデルプロバイダー](/ja-JP/providers)の API キー
 
 ## デプロイ
 
 [Render にデプロイ](https://render.com/deploy?repo=https://github.com/openclaw/openclaw)
 
-これにより、`render.yaml` から Render サービスが作成され、Docker イメージがビルドされてデプロイされます。サービス URL は `https://<service-name>.onrender.com` の形式になります。
+これにより、`render.yaml` から Render サービスが作成され、Docker イメージがビルドされてデプロイされます。サービス URL は `https://<service-name>.onrender.com` という形式になります。
 
 ## Blueprint
 
@@ -44,39 +44,39 @@ services:
       - key: OPENCLAW_WORKSPACE_DIR
         value: /data/workspace
       - key: OPENCLAW_GATEWAY_TOKEN
-        generateValue: true # auto-generates a secure token
+        generateValue: true # 安全なトークンを自動生成
     disk:
       name: openclaw-data
       mountPath: /data
       sizeGB: 1
 ```
 
-| 機能                  | 目的                                                       |
-| --------------------- | ---------------------------------------------------------- |
-| `runtime: docker`     | repo の Dockerfile からビルドします                        |
+| 機能                  | 目的                                                         |
+| --------------------- | ------------------------------------------------------------ |
+| `runtime: docker`     | リポジトリの Dockerfile からビルドします                     |
 | `healthCheckPath`     | Render が `/health` を監視し、異常なインスタンスを再起動します |
-| `generateValue: true` | 暗号学的に安全な値を自動生成します                         |
-| `disk`                | 再デプロイ後も保持される永続ストレージ                     |
+| `generateValue: true` | 暗号学的に安全な値を自動生成します                           |
+| `disk`                | 再デプロイ後も保持される永続ストレージです                   |
 
 ## プランの選択
 
-| プラン    | スピンダウン           | ディスク      | 最適な用途                          |
-| --------- | ---------------------- | ------------- | ----------------------------------- |
-| 無料      | 15 分のアイドル後      | 利用不可      | テスト、デモ                        |
-| Starter   | なし                   | 1GB+          | 個人利用、小規模チーム              |
-| Standard+ | なし                   | 1GB+          | 本番環境、複数チャンネル            |
+| プラン    | スピンダウン          | ディスク      | 最適な用途                    |
+| --------- | --------------------- | ------------- | ----------------------------- |
+| Free      | 15分間アイドル後      | 利用不可      | テスト、デモ                  |
+| Starter   | なし                  | 1GB以上       | 個人利用、小規模チーム        |
+| Standard+ | なし                  | 1GB以上       | 本番環境、複数チャンネル      |
 
-Blueprint のデフォルトは `starter` です。無料枠を使用するには、フォークした `render.yaml` で `plan: free` に変更します。永続ディスクがないため、OpenClaw の状態はデプロイごとにリセットされる点に注意してください。
+Blueprint のデフォルトは `starter` です。無料プランを使用するには、フォークしたリポジトリの `render.yaml` で `plan: free` に変更します。ただし永続ディスクがないため、デプロイのたびに OpenClaw の状態がリセットされる点に注意してください。
 
 ## デプロイ後
 
-### Control UI にアクセスする
+### Control UI へのアクセス
 
-Web ダッシュボードは `https://<your-service>.onrender.com/` で利用できます。共有シークレットを使って接続します。自動生成された `OPENCLAW_GATEWAY_TOKEN`（**Dashboard → your service → Environment** で確認）、またはパスワード認証に切り替えた場合はパスワードを使用します。
+ウェブダッシュボードは `https://<your-service>.onrender.com/` で利用できます。共有シークレットで接続します。自動生成された `OPENCLAW_GATEWAY_TOKEN`（**Dashboard → your service → Environment** で確認できます）を使用するか、パスワード認証に切り替えた場合はパスワードを使用します。
 
 ### ログ
 
-**Dashboard → your service → Logs** には、ビルドログ（Docker イメージ作成）、デプロイログ（サービス起動）、ランタイムログ（アプリケーション出力）が表示されます。
+**Dashboard → your service → Logs** には、ビルドログ（Docker イメージの作成）、デプロイログ（サービスの起動）、ランタイムログ（アプリケーションの出力）が表示されます。
 
 ### シェルアクセス
 
@@ -84,11 +84,11 @@ Web ダッシュボードは `https://<your-service>.onrender.com/` で利用で
 
 ### 環境変数
 
-**Dashboard → your service → Environment** で変数を編集します。変更すると自動的に再デプロイが開始されます。
+**Dashboard → your service → Environment** で変数を編集します。変更すると自動的に再デプロイされます。
 
 ### 自動デプロイ
 
-接続された repo のブランチに新しいコミットが追加されると、Render は自動的に再デプロイします。自分のフォークではなく `openclaw/openclaw` から直接デプロイした場合、そのトリガーを発生させる push 権限がないため、Dashboard から手動で Blueprint 同期を実行するか、サービスを自分のフォークに向けてください。
+接続されたリポジトリのブランチに新しいコミットが追加されると、Render は自動的に再デプロイします。自身のフォークではなく `openclaw/openclaw` から直接デプロイした場合、再デプロイをトリガーするためのプッシュ権限がありません。その場合は Dashboard から Blueprint の同期を手動で実行するか、サービスの参照先を自身のフォークに変更してください。
 
 ## カスタムドメイン
 
@@ -99,8 +99,8 @@ Web ダッシュボードは `https://<your-service>.onrender.com/` で利用で
 
 ## スケーリング
 
-- **垂直**: CPU/RAM を増やすにはプランを変更します。通常、OpenClaw にはこれで十分です。
-- **水平**: インスタンス数を増やします（Standard プラン以上）。OpenClaw はランタイム状態をローカルディスクに保持するため、スティッキーセッションまたは外部状態管理が必要です。
+- **垂直スケーリング**：プランを変更して CPU/RAM を増やします。通常は OpenClaw に十分です。
+- **水平スケーリング**：インスタンス数を増やします（Standard プラン以上）。OpenClaw はランタイム状態をローカルディスクに保持するため、スティッキーセッションまたは外部状態管理が必要です。
 
 ## バックアップと移行
 
@@ -110,34 +110,34 @@ Render Dashboard のシェルから、状態、設定、認証プロファイル
 openclaw backup create
 ```
 
-これにより、移植可能なバックアップアーカイブが作成されます。[Backup](/ja-JP/cli/backup) を参照してください。
+これにより、移植可能なバックアップアーカイブが作成されます。[バックアップ](/ja-JP/cli/backup)を参照してください。
 
 ## トラブルシューティング
 
 ### サービスが起動しない
 
-Render Dashboard のデプロイログを確認してください。よくある問題:
+Render Dashboard でデプロイログを確認してください。一般的な問題は次のとおりです。
 
-- `OPENCLAW_GATEWAY_TOKEN` がない — **Dashboard → Environment** で設定されていることを確認してください
-- ポートの不一致 — Gateway が Render の期待するポートにバインドするよう、`OPENCLAW_GATEWAY_PORT=8080` であることを確認してください
+- `OPENCLAW_GATEWAY_TOKEN` がない — **Dashboard → Environment** で設定されていることを確認します
+- ポートが一致しない — Gateway が Render の想定するポートにバインドされるように、`OPENCLAW_GATEWAY_PORT=8080` であることを確認します
 
-### コールドスタートが遅い（無料枠）
+### コールドスタートが遅い（無料プラン）
 
-無料枠のサービスは、15 分間非アクティブだとスピンダウンします。スピンダウン後の最初のリクエストでは、コンテナの起動中に数秒かかります。常時稼働にするには Starter にアップグレードしてください。
+無料プランのサービスは、15分間操作がないとスピンダウンします。スピンダウン後の最初のリクエストでは、コンテナの起動に数秒かかります。常時稼働させるには Starter にアップグレードしてください。
 
-### 再デプロイ後のデータ損失
+### 再デプロイ後のデータ消失
 
-無料枠（永続ディスクなし）で発生します。有料プランにアップグレードするか、Render シェルから `openclaw backup create` で定期的にバックアップをエクスポートしてください。
+無料プランでは永続ディスクがないため発生します。有料プランにアップグレードするか、Render のシェルから `openclaw backup create` を実行して定期的にバックアップをエクスポートしてください。
 
-### ヘルスチェック失敗
+### ヘルスチェックの失敗
 
-ビルドは成功するのにデプロイが失敗する場合、サービスの起動に時間がかかりすぎているか、`/health` に到達できない可能性があります。以下を確認してください。
+ビルドは成功するもののデプロイが失敗する場合、サービスの起動に時間がかかりすぎているか、`/health` にアクセスできない可能性があります。次を確認してください。
 
-- エラーがないかビルドログ
-- コンテナがローカルで `docker build && docker run` により実行できるかどうか
+- ビルドログにエラーがないか
+- `docker build && docker run` でコンテナがローカル実行できるか
 
 ## 次のステップ
 
-- メッセージングチャンネルを設定する: [Channels](/ja-JP/channels)
-- Gateway を設定する: [Gateway configuration](/ja-JP/gateway/configuration)
-- OpenClaw を最新に保つ: [Updating](/ja-JP/install/updating)
+- メッセージングチャンネルを設定する：[チャンネル](/ja-JP/channels)
+- Gateway を設定する：[Gateway の設定](/ja-JP/gateway/configuration)
+- OpenClaw を最新の状態に保つ：[更新](/ja-JP/install/updating)

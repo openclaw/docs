@@ -1,74 +1,63 @@
 ---
 read_when:
     - Regolazione del comportamento dell'overlay vocale
-summary: Ciclo di vita del pannello vocale in sovrimpressione quando la parola di attivazione e la modalità premi per parlare si sovrappongono
-title: Sovrapposizione vocale
+summary: Ciclo di vita dell’overlay vocale quando la parola di attivazione e la modalità push-to-talk si sovrappongono
+title: Overlay vocale
 x-i18n:
-    generated_at: "2026-05-06T09:00:24Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:14:34Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5b30f50512e557bd5a50f0e4e8b7955a847b3b554694347d56638581fcda9514
+    source_hash: eef571c3e8d41a97779537b1b373fab25b08f63575b50e5019f6c5fbcb782c52
     source_path: platforms/mac/voice-overlay.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# Ciclo di vita della sovrapposizione vocale (macOS)
+# Ciclo di vita dell'overlay vocale (macOS)
 
-Destinatari: contributori dell’app macOS. Obiettivo: mantenere prevedibile la sovrapposizione vocale quando parola di attivazione e premi-per-parlare si sovrappongono.
+Destinatari: collaboratori dell'app macOS. Obiettivo: mantenere prevedibile l'overlay vocale quando la parola di attivazione e la modalità premi per parlare si sovrappongono.
 
-## Intento attuale
+## Comportamento
 
-- Se la sovrapposizione è già visibile per la parola di attivazione e l’utente preme il tasto di scelta rapida, la sessione del tasto di scelta rapida _adotta_ il testo esistente invece di reimpostarlo. La sovrapposizione resta visibile mentre il tasto di scelta rapida è tenuto premuto. Quando l’utente rilascia: invia se c’è testo ripulito dagli spazi, altrimenti chiude.
-- La sola parola di attivazione continua a inviare automaticamente al silenzio; premi-per-parlare invia subito al rilascio.
+- Se l'overlay è già visibile per via della parola di attivazione e l'utente preme il tasto di scelta rapida, la sessione del tasto di scelta rapida acquisisce il testo esistente anziché reimpostarlo. L'overlay rimane visibile finché il tasto viene tenuto premuto. Al rilascio: invia se è presente del testo senza spazi iniziali o finali, altrimenti chiude.
+- La sola parola di attivazione continua a eseguire l'invio automatico in caso di silenzio; la modalità premi per parlare invia immediatamente al rilascio.
 
-## Implementato (9 dicembre 2025)
+## Implementazione
 
-- Le sessioni di sovrapposizione ora trasportano un token per ogni acquisizione (parola di attivazione o premi-per-parlare). Gli aggiornamenti parziali/finali/di invio/chiusura/livello vengono scartati quando il token non corrisponde, evitando callback obsolete.
-- Premi-per-parlare adotta qualsiasi testo visibile nella sovrapposizione come prefisso (quindi premere il tasto di scelta rapida mentre la sovrapposizione di attivazione è visibile mantiene il testo e aggiunge il nuovo parlato). Attende fino a 1,5 s una trascrizione finale prima di ripiegare sul testo corrente.
-- I log di segnale acustico/sovrapposizione sono emessi a livello `info` nelle categorie `voicewake.overlay`, `voicewake.ptt` e `voicewake.chime` (avvio sessione, parziale, finale, invio, chiusura, motivo del segnale acustico).
+- `VoiceSessionCoordinator` (`apps/macos/Sources/OpenClaw/VoiceSessionCoordinator.swift`) è l'unico proprietario della sessione vocale attiva. È un singleton `@MainActor @Observable`, non un actor. API: `startSession`, `updatePartial`, `finalize`, `sendNow`, `dismiss`, `updateLevel`, `snapshot`. Ogni sessione contiene un token `UUID`; le chiamate con un token obsoleto o non corrispondente vengono ignorate.
+- `VoiceWakeOverlayController` (`VoiceWakeOverlayController+Session.swift`) visualizza l'overlay e inoltra le azioni dell'utente (`requestSend`, `dismiss`) al coordinatore tramite il token della sessione. Non gestisce mai direttamente lo stato della sessione.
+- La modalità premi per parlare (`VoicePushToTalk.begin()`) acquisisce qualsiasi testo visibile nell'overlay come `adoptedPrefix` (tramite `VoiceSessionCoordinator.shared.snapshot()`), in modo che la pressione del tasto di scelta rapida mentre l'overlay di attivazione è visibile mantenga il testo e aggiunga il nuovo parlato. Al rilascio, attende fino a 1,5 secondi una trascrizione finale prima di ripiegare sul testo corrente.
+- Durante `dismiss`, l'overlay chiama `VoiceSessionCoordinator.overlayDidDismiss`, che attiva `VoiceWakeRuntime.refresh(state:)` affinché la chiusura manuale tramite X, la chiusura dovuta a testo vuoto e quella successiva all'invio riprendano tutte l'ascolto della parola di attivazione.
+- Percorso di invio unificato: se il testo senza spazi iniziali o finali è vuoto, chiude; altrimenti `sendNow` riproduce una sola volta il segnale acustico di invio, inoltra tramite `VoiceWakeForwarder`, quindi chiude.
 
-## Passaggi successivi
+## Registrazione
 
-1. **VoiceSessionCoordinator (actor)**
-   - Possiede esattamente una `VoiceSession` alla volta.
-   - API (basata su token): `beginWakeCapture`, `beginPushToTalk`, `updatePartial`, `endCapture`, `cancel`, `applyCooldown`.
-   - Scarta le callback che trasportano token obsoleti (impedisce ai vecchi riconoscitori di riaprire la sovrapposizione).
-2. **VoiceSession (modello)**
-   - Campi: `token`, `source` (wakeWord|pushToTalk), testo confermato/volatile, flag dei segnali acustici, timer (invio automatico, inattività), `overlayMode` (display|editing|sending), scadenza del cooldown.
-3. **Associazione della sovrapposizione**
-   - `VoiceSessionPublisher` (`ObservableObject`) rispecchia la sessione attiva in SwiftUI.
-   - `VoiceWakeOverlayView` renderizza solo tramite il publisher; non modifica mai direttamente singleton globali.
-   - Le azioni utente della sovrapposizione (`sendNow`, `dismiss`, `edit`) richiamano il coordinator con il token della sessione.
-4. **Percorso di invio unificato**
-   - Su `endCapture`: se il testo ripulito dagli spazi è vuoto → chiude; altrimenti `performSend(session:)` (riproduce il segnale acustico di invio una sola volta, inoltra, chiude).
-   - Premi-per-parlare: nessun ritardo; parola di attivazione: ritardo opzionale per l’invio automatico.
-   - Applica un breve cooldown al runtime di attivazione dopo la fine di premi-per-parlare, così la parola di attivazione non si riattiva immediatamente.
-5. **Logging**
-   - Il coordinator emette log `.info` nel sottosistema `ai.openclaw`, categorie `voicewake.overlay` e `voicewake.chime`.
-   - Eventi chiave: `session_started`, `adopted_by_push_to_talk`, `partial`, `finalized`, `send`, `dismiss`, `cancel`, `cooldown`.
+Il sottosistema vocale è `ai.openclaw`; ogni componente registra gli eventi nella propria categoria:
 
-## Checklist di debug
+| Categoria               | Componente                                      |
+| ----------------------- | ----------------------------------------------- |
+| `voicewake.coordinator` | `VoiceSessionCoordinator`                       |
+| `voicewake.overlay`     | `VoiceWakeOverlayController`/`VoiceWakeOverlay` |
+| `voicewake.ptt`         | Tasto di scelta rapida e acquisizione della modalità premi per parlare |
+| `voicewake.runtime`     | Runtime della parola di attivazione             |
+| `voicewake.chime`       | Riproduzione del segnale acustico               |
+| `voicewake.sync`        | Sincronizzazione delle impostazioni globali     |
+| `voicewake.forward`     | Inoltro della trascrizione                      |
+| `voicewake.meter`       | Monitoraggio del livello del microfono          |
 
-- Trasmetti i log in streaming mentre riproduci una sovrapposizione bloccata:
+## Elenco di controllo per il debug
+
+- Visualizza il flusso dei log mentre riproduci un overlay che rimane bloccato:
 
   ```bash
   sudo log stream --predicate 'subsystem == "ai.openclaw" AND category CONTAINS "voicewake"' --level info --style compact
   ```
 
-- Verifica che ci sia un solo token di sessione attivo; le callback obsolete dovrebbero essere scartate dal coordinator.
-- Assicurati che il rilascio di premi-per-parlare chiami sempre `endCapture` con il token attivo; se il testo è vuoto, aspettati `dismiss` senza segnale acustico né invio.
+- Verifica che sia attivo un solo token di sessione; i callback obsoleti vengono ignorati dal coordinatore.
+- Verifica che il rilascio della modalità premi per parlare chiami sempre `end()` con il token attivo; se il testo è vuoto, è prevista la chiusura senza segnale acustico né invio.
 
-## Passaggi di migrazione (suggeriti)
+## Contenuti correlati
 
-1. Aggiungi `VoiceSessionCoordinator`, `VoiceSession` e `VoiceSessionPublisher`.
-2. Rifattorizza `VoiceWakeRuntime` per creare/aggiornare/terminare sessioni invece di toccare direttamente `VoiceWakeOverlayController`.
-3. Rifattorizza `VoicePushToTalk` per adottare sessioni esistenti e chiamare `endCapture` al rilascio; applica il cooldown del runtime.
-4. Collega `VoiceWakeOverlayController` al publisher; rimuovi le chiamate dirette da runtime/PTT.
-5. Aggiungi test di integrazione per adozione della sessione, cooldown e chiusura con testo vuoto.
-
-## Correlati
-
-- [app macOS](/it/platforms/macos)
+- [App macOS](/it/platforms/macos)
 - [Attivazione vocale (macOS)](/it/platforms/mac/voicewake)
 - [Modalità conversazione](/it/nodes/talk)

@@ -2,34 +2,39 @@
 read_when:
     - Menerapkan OpenClaw di EasyRunner
     - Menjalankan Gateway di belakang proksi Caddy milik EasyRunner
-    - Memilih volume persisten dan autentikasi untuk Gateway yang di-host
-summary: Jalankan OpenClaw Gateway di EasyRunner dengan Podman dan Caddy
+    - Memilih volume persisten dan autentikasi untuk Gateway yang dihosting
+summary: Jalankan Gateway OpenClaw di EasyRunner dengan Podman dan Caddy
 title: EasyRunner
 x-i18n:
-    generated_at: "2026-06-27T17:41:53Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:21:04Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b6d67270e1b47ecbd67361edd018b531598d0365e2dacd594cb73c6b74c10478
+    source_hash: 80cbde016a8bf7662d4b4a056a3d122a423264179daf70b5705e8f10b0dad5cb
     source_path: platforms/easyrunner.md
     workflow: 16
 ---
 
-EasyRunner dapat menghosting Gateway OpenClaw sebagai aplikasi kecil dalam container di belakang proxy Caddy-nya. Panduan ini mengasumsikan host EasyRunner yang menjalankan aplikasi Compose kompatibel Podman dan mengekspos HTTPS melalui Caddy.
+EasyRunner menghosting Gateway OpenClaw sebagai aplikasi kecil dalam kontainer di balik proksi
+Caddy. Panduan ini mengasumsikan host EasyRunner yang menjalankan aplikasi Compose
+kompatibel dengan Podman dan mengakhiri HTTPS melalui Caddy.
 
 ## Sebelum memulai
 
-- Server EasyRunner dengan domain yang diarahkan ke server tersebut.
-- Image container OpenClaw yang sudah dibangun atau dipublikasikan.
+- Server EasyRunner dengan domain yang diarahkan kepadanya.
+- Image resmi OpenClaw (`ghcr.io/openclaw/openclaw`) atau hasil build Anda sendiri.
 - Volume konfigurasi persisten untuk `/home/node/.openclaw`.
-- Volume workspace persisten untuk `/workspace`.
+- Volume ruang kerja persisten untuk `/home/node/.openclaw/workspace`.
 - Token atau kata sandi Gateway yang kuat.
 
-Tetap aktifkan autentikasi perangkat jika memungkinkan. Jika deployment reverse proxy Anda tidak dapat membawa identitas perangkat dengan benar, perbaiki pengaturan trusted proxy terlebih dahulu; gunakan bypass autentikasi berbahaya hanya untuk jaringan yang sepenuhnya privat dan dikendalikan operator.
+Pertahankan autentikasi perangkat tetap aktif jika memungkinkan. Jika proksi balik Anda tidak dapat meneruskan
+identitas perangkat dengan benar, perbaiki terlebih dahulu pengaturan proksi tepercaya (lihat
+[Autentikasi proksi tepercaya](/id/gateway/trusted-proxy-auth)); gunakan pengabaian autentikasi
+berbahaya hanya pada jaringan yang sepenuhnya privat dan dikendalikan operator.
 
 ## Aplikasi Compose
 
-Buat aplikasi EasyRunner dengan file Compose berbentuk seperti ini:
+Buat aplikasi EasyRunner dengan berkas Compose seperti berikut:
 
 ```yaml
 services:
@@ -41,25 +46,30 @@ services:
       OPENCLAW_HOME: /home/node
       OPENCLAW_STATE_DIR: /home/node/.openclaw
       OPENCLAW_CONFIG_PATH: /home/node/.openclaw/openclaw.json
-      OPENCLAW_WORKSPACE_DIR: /workspace
+      OPENCLAW_WORKSPACE_DIR: /home/node/.openclaw/workspace
     volumes:
       - openclaw-config:/home/node/.openclaw
-      - openclaw-workspace:/workspace
+      - openclaw-workspace:/home/node/.openclaw/workspace
     labels:
       caddy: openclaw.example.com
       caddy.reverse_proxy: "{{upstreams 1455}}"
-    command: ["openclaw", "gateway", "--bind", "lan", "--port", "1455"]
+    command: ["node", "openclaw.mjs", "gateway", "--bind", "lan", "--port", "1455"]
 
 volumes:
   openclaw-config:
   openclaw-workspace:
 ```
 
-Ganti `openclaw.example.com` dengan hostname Gateway Anda. Simpan `OPENCLAW_GATEWAY_TOKEN` di pengelola secret/lingkungan EasyRunner, bukan meng-commit-nya ke definisi aplikasi.
+Ganti `openclaw.example.com` dengan nama host Gateway Anda. Simpan
+`OPENCLAW_GATEWAY_TOKEN` di pengelola rahasia/lingkungan EasyRunner, bukan
+memasukkannya ke definisi aplikasi. Secara default, image mengikat ke local loopback,
+sehingga `--bind lan --port 1455` eksplisit dalam `command` diperlukan agar Caddy dapat
+menjangkau kontainer.
 
-## Konfigurasikan OpenClaw
+## Mengonfigurasi OpenClaw
 
-Di dalam volume konfigurasi persisten, pastikan Gateway hanya dapat dijangkau melalui proxy dan mewajibkan autentikasi:
+Di dalam volume konfigurasi persisten, pastikan Gateway hanya dapat dijangkau melalui
+proksi dan wajibkan autentikasi:
 
 ```json5
 {
@@ -73,29 +83,43 @@ Di dalam volume konfigurasi persisten, pastikan Gateway hanya dapat dijangkau me
 }
 ```
 
-Jika Caddy menghentikan TLS untuk Gateway, konfigurasikan pengaturan trusted proxy untuk jalur proxy yang tepat, bukan menonaktifkan pemeriksaan autentikasi secara global. Lihat [Autentikasi proxy tepercaya](/id/gateway/trusted-proxy-auth).
+Jika Caddy mengakhiri TLS untuk Gateway, konfigurasikan pengaturan proksi tepercaya untuk
+jalur proksi yang tepat, alih-alih menonaktifkan pemeriksaan autentikasi secara global. Lihat
+[Autentikasi proksi tepercaya](/id/gateway/trusted-proxy-auth).
 
 ## Verifikasi
 
-Dari workstation Anda:
+Dari stasiun kerja Anda:
 
 ```bash
 openclaw gateway probe --url https://openclaw.example.com --token <token>
 openclaw gateway status --url https://openclaw.example.com --token <token>
 ```
 
-Dari host EasyRunner, periksa log aplikasi untuk memastikan Gateway sedang listening dan tidak ada kegagalan startup SecretRef, Plugin, atau autentikasi channel.
+Dari host EasyRunner, `GET /healthz` (keaktifan) dan `GET /readyz`
+(kesiapan) tidak memerlukan autentikasi dan mendukung pemeriksaan kesehatan kontainer
+bawaan image. Periksa juga log aplikasi untuk memastikan Gateway sedang mendengarkan dan tidak ada kegagalan
+SecretRef saat memulai, Plugin, atau autentikasi saluran.
 
-## Pembaruan dan backup
+## Pembaruan dan pencadangan
 
-- Pull atau bangun image OpenClaw baru, lalu deploy ulang aplikasi EasyRunner.
-- Backup volume `openclaw-config` sebelum pembaruan.
-- Backup `openclaw-workspace` jika agen menulis data proyek yang tahan lama di sana.
-- Jalankan `openclaw doctor` setelah pembaruan besar untuk menangkap migrasi konfigurasi dan peringatan layanan.
+- Tarik atau build image OpenClaw baru, lalu deploy ulang aplikasi EasyRunner.
+- Cadangkan volume `openclaw-config` sebelum pembaruan. Volume ini menyimpan
+  `openclaw.json`, `agents/<agentId>/agent/auth-profiles.json`, dan status paket
+  Plugin yang terinstal.
+- Cadangkan `openclaw-workspace` jika agen menulis data proyek persisten di sana.
+- Jalankan `openclaw doctor` setelah pembaruan besar untuk mendeteksi migrasi konfigurasi dan
+  peringatan layanan.
 
 ## Pemecahan masalah
 
-- `gateway probe` tidak dapat terhubung: pastikan hostname Caddy mengarah ke aplikasi dan container listening pada `0.0.0.0:1455`.
-- Autentikasi gagal: rotasi token di secret EasyRunner dan perintah klien lokal secara bersamaan.
-- File dimiliki root setelah restore: perbaiki volume yang di-mount agar pengguna container dapat menulis ke `/home/node/.openclaw` dan `/workspace`.
-- Plugin browser atau channel gagal: periksa apakah binary eksternal yang diperlukan, egress jaringan, dan kredensial yang di-mount tersedia di dalam container.
+- `gateway probe` tidak dapat terhubung: pastikan nama host Caddy mengarah ke aplikasi
+  dan kontainer mendengarkan di `0.0.0.0:1455`.
+- Autentikasi gagal: rotasikan token di rahasia EasyRunner dan perintah klien lokal
+  secara bersamaan.
+- Berkas dimiliki root setelah pemulihan: image berjalan sebagai `node` (uid 1000);
+  perbaiki volume yang dipasang agar pengguna tersebut dapat menulis ke
+  `/home/node/.openclaw` dan `/home/node/.openclaw/workspace`.
+- Plugin peramban atau saluran gagal: periksa apakah biner eksternal yang diperlukan,
+  akses keluar jaringan, dan kredensial yang dipasang tersedia di dalam
+  kontainer.

@@ -1,12 +1,12 @@
 ---
 read_when:
     - 撰寫包含權杖、API 金鑰或憑證片段的文件
-    - 更新可能被秘密偵測工具掃描的範例
-summary: 適用於文件與範例且對秘密掃描器安全的預留位置慣例
-title: 密鑰佔位符慣例
+    - 更新可能會被祕密偵測工具掃描的範例
+summary: 適用於文件與範例、可避免觸發機密掃描器的預留位置慣例
+title: 密鑰預留位置慣例
 x-i18n:
-    generated_at: "2026-07-05T11:45:10Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T21:48:28Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 0864f0fcc6fb1e4a3147b4b2ce0aac475437a19d694f3d059374782428c7f248
@@ -14,28 +14,28 @@ x-i18n:
     workflow: 16
 ---
 
-# 密鑰佔位符慣例
+# 機密資訊預留位置慣例
 
-使用人類可讀、但不會類似真實密鑰的佔位符。
+使用容易理解、但不會看似真實機密資訊的預留位置。
 
 ## 建議樣式
 
-- 偏好描述性值，例如 `example-openai-key-not-real` 或 `example-discord-bot-token`。
-- 對於 shell 片段，偏好使用 `${OPENAI_API_KEY}`，而不是內嵌看似權杖的字串。
-- 讓範例明顯為假，且限定於用途範圍內（供應商、頻道、驗證類型）。
+- 優先使用描述性值，例如 `example-openai-key-not-real` 或 `example-discord-bot-token`。
+- 在 Shell 程式碼片段中，優先使用 `${OPENAI_API_KEY}`，而非內嵌類似權杖的字串。
+- 確保範例明顯為假，且用途範圍明確（提供者、頻道、驗證類型）。
 
-## 文件中應避免這些模式
+## 文件中應避免的模式
 
-- 文字形式的 PEM 私密金鑰標頭或結尾。
+- PEM 私密金鑰標頭或頁尾的字面文字。
 - 類似有效憑證的前綴，例如 `sk-...`、`xoxb-...`、`AKIA...`。
-- 從執行階段記錄複製的、看起來逼真的 bearer 權杖。
+- 從執行階段日誌複製、外觀逼真的持有人權杖。
 
 ## 範例
 
 ```bash
-# Good
+# 良好
 export OPENAI_API_KEY="example-openai-key-not-real"
 
-# Better (when the doc is about env wiring)
+# 更佳（當文件說明環境變數的串接方式時）
 export OPENAI_API_KEY="${OPENAI_API_KEY}"
 ```

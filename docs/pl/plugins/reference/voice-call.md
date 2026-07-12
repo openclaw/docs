@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz plugin połączeń głosowych
-summary: Plugin połączeń głosowych OpenClaw dla połączeń telefonicznych Twilio, Telnyx i Plivo.
+    - Instalujesz, konfigurujesz lub przeprowadzasz audyt pluginu połączeń głosowych
+summary: Plugin połączeń głosowych OpenClaw do rozmów telefonicznych przez Twilio, Telnyx i Plivo.
 title: Plugin połączeń głosowych
 x-i18n:
-    generated_at: "2026-06-27T18:04:37Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:31:02Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: b0e298a2d8701d6fd531b761f8c14477b8c37a376af43127aa67c2fa6ff1b02d
@@ -15,17 +15,17 @@ x-i18n:
 
 # Plugin połączeń głosowych
 
-Plugin połączeń głosowych OpenClaw dla połączeń telefonicznych Twilio, Telnyx i Plivo.
+Plugin połączeń głosowych OpenClaw do obsługi połączeń telefonicznych przez Twilio, Telnyx i Plivo.
 
 ## Dystrybucja
 
 - Pakiet: `@openclaw/voice-call`
-- Ścieżka instalacji: npm; ClawHub
+- Sposób instalacji: npm; ClawHub
 
-## Powierzchnia
+## Interfejs
 
-kontrakty: narzędzia; umiejętności
+kontrakty: narzędzia; Skills
 
-## Powiązane dokumenty
+## Powiązana dokumentacja
 
-- [voice-call](/pl/plugins/voice-call)
+- [połączenia głosowe](/pl/plugins/voice-call)

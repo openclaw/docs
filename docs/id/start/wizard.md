@@ -3,52 +3,62 @@ read_when:
     - Menjalankan atau mengonfigurasi onboarding CLI
     - Menyiapkan mesin baru
 sidebarTitle: 'Onboarding: CLI'
-summary: 'Onboarding CLI: penyiapan terpandu untuk Gateway, ruang kerja, saluran, dan Skills'
-title: Orientasi (CLI)
+summary: 'Orientasi CLI: verifikasi inferensi, lalu serahkan penyiapan yang tersisa kepada Crestodian'
+title: Orientasi awal (CLI)
 x-i18n:
-    generated_at: "2026-06-28T20:44:54Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:44:12Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8abf6ac4644e0a49668cbfa1277f6eb3ac5b4fd822cd7805bb647c94ae76895f
+    source_hash: 62dd8fc2780940f738fc99f04ef0c765f5582161c55d11100fae3b4bbbb0ea15
     source_path: start/wizard.md
     workflow: 16
 ---
-
-Onboarding CLI adalah jalur penyiapan terminal yang **direkomendasikan** untuk OpenClaw di macOS, Linux, atau Windows. Pengguna desktop Windows juga dapat memulai dengan [Windows Hub](/id/platforms/windows).
-Ini mengonfigurasi Gateway lokal atau koneksi Gateway jarak jauh, ditambah saluran, Skills,
-dan default ruang kerja dalam satu alur terpandu.
 
 ```bash
 openclaw onboard
 ```
 
-QuickStart biasanya hanya membutuhkan beberapa menit, tetapi onboarding penuh dapat memakan waktu lebih lama
-ketika login penyedia, pemasangan saluran, pemasangan daemon, unduhan jaringan,
-Skills, atau Plugin opsional memerlukan penyiapan tambahan. Wizard menampilkan perkiraan waktu ini di awal,
-dan langkah opsional dapat dilewati lalu dikunjungi kembali nanti dengan
-`openclaw configure`.
+Onboarding CLI adalah jalur penyiapan terminal yang direkomendasikan di macOS, Linux, dan
+Windows (native atau WSL2). Secara default, proses ini mendeteksi akses AI yang sudah tersedia
+di mesin, memverifikasinya dengan penyelesaian nyata, lalu memulai Crestodian untuk
+mengonfigurasi ruang kerja, Gateway, dan fitur opsional. `openclaw setup` menjalankan alur yang sama ([Penyiapan](/id/cli/setup) membahas
+varian khusus konfigurasi `--baseline`). Pengguna desktop Windows juga dapat memulai
+dari [Windows Hub](/id/platforms/windows).
+
+Onboarding terpandu menyiapkan inferensi terlebih dahulu. Proses ini mendeteksi akses AI yang tersedia,
+mewajibkan penyelesaian nyata, dan baru kemudian memulai [Crestodian](/id/cli/crestodian)
+untuk mengonfigurasi bagian OpenClaw lainnya. Tidak ada jalur Crestodian sebelum inferensi atau
+jalur untuk melewati AI dalam alur terpandu.
+
+Wisaya klasik tetap tersedia untuk masuk ke penyedia, penyiapan Gateway jarak jauh,
+pemasangan kanal, kontrol daemon, Skills, dan impor. Jalankan secara eksplisit
+dengan `openclaw onboard --classic`; layar kandidat inferensi terpandu tidak
+mendelegasikan proses ke wisaya tersebut. Setelah inferensi berhasil, Crestodian dapat menggunakan `open channel
+wizard for <channel>` untuk menyerahkan penyiapan kanal yang memerlukan rahasia ke wisaya
+terminal dengan input tersamarkan. Untuk mengubah penyedia model atau autentikasinya, keluar
+dari Crestodian dan jalankan `openclaw onboard`; Crestodian tidak membuka alur penyedia
+terpandu maupun klasik.
+
+<Info>
+Cara tercepat untuk memulai percakapan pertama: selesaikan penyiapan terpandu, jalankan `openclaw dashboard`, lalu mengobrol di
+peramban melalui UI Kontrol. Dokumentasi: [Dasbor](/id/web/dashboard).
+</Info>
 
 ## Lokal
 
-Wizard CLI melokalkan teks onboarding tetap. Lokal ditentukan dari
-`OPENCLAW_LOCALE`, lalu `LC_ALL`, lalu `LC_MESSAGES`, lalu `LANG`, dan jika tidak ada
-akan kembali ke bahasa Inggris. Lokal wizard yang didukung adalah `en`, `zh-CN`, dan `zh-TW`.
+Wisaya melokalkan teks tetap onboarding. Urutan resolusi: `OPENCLAW_LOCALE`,
+`LC_ALL`, `LC_MESSAGES`, `LANG`, lalu bahasa Inggris. Lokal yang didukung: `en`,
+`zh-CN`, `zh-TW`.
 
 ```bash
 OPENCLAW_LOCALE=zh-CN openclaw onboard
 ```
 
-Nama dan pengenal stabil tetap literal: `OpenClaw`, `Gateway`, `Tailscale`,
-perintah, kunci konfigurasi, URL, ID penyedia, ID model, serta label Plugin/saluran
-tidak diterjemahkan.
+Nama produk, perintah, kunci konfigurasi, URL, ID penyedia, ID model, dan
+label plugin/kanal tetap dalam bahasa Inggris apa pun lokalnya.
 
-<Info>
-Obrolan pertama tercepat: buka Control UI (penyiapan saluran tidak diperlukan). Jalankan
-`openclaw dashboard` dan mengobrol di browser. Dokumen: [Dashboard](/id/web/dashboard).
-</Info>
-
-Untuk mengonfigurasi ulang nanti:
+Untuk mengonfigurasi ulang pengaturan noninferensi nanti:
 
 ```bash
 openclaw configure
@@ -56,77 +66,137 @@ openclaw agents add <name>
 ```
 
 <Note>
-`--json` tidak berarti mode non-interaktif. Untuk skrip, gunakan `--non-interactive`.
+`--json` tidak menyiratkan mode noninteraktif. Untuk skrip, gunakan `--non-interactive` (lihat [Otomatisasi CLI](/id/start/wizard-cli-automation)).
 </Note>
 
 <Tip>
-Onboarding CLI mencakup langkah pencarian web tempat Anda dapat memilih penyedia
-seperti Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search,
-Ollama Web Search, Perplexity, SearXNG, atau Tavily. Beberapa penyedia memerlukan
-kunci API, sedangkan yang lain tidak memerlukan kunci. Anda juga dapat mengonfigurasinya nanti dengan
-`openclaw configure --section web`. Dokumen: [Alat web](/id/tools/web).
+Wisaya klasik mencakup langkah pencarian web tempat Anda dapat memilih penyedia: Brave,
+DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Ollama Web
+Search, Perplexity, SearXNG, atau Tavily. Beberapa memerlukan kunci API; yang lainnya
+tidak memerlukan kunci. Konfigurasikan nanti dengan `openclaw configure --section web`. Dokumentasi:
+[Alat web](/id/tools/web).
 </Tip>
 
-## QuickStart vs Lanjutan
+## Alur terpandu default
 
-Onboarding dimulai dengan **QuickStart** (default) vs **Lanjutan** (kontrol penuh).
+`openclaw onboard` tanpa opsi mengikuti jalur ini:
+
+1. Terima pemberitahuan keamanan.
+2. Deteksi model yang telah dikonfigurasi, variabel lingkungan kunci API, dan CLI AI lokal
+   yang didukung.
+3. Uji kandidat pertama yang terdeteksi dengan penyelesaian nyata. Jika gagal, tampilkan
+   alasannya dan lanjutkan ke kandidat berikutnya yang dapat digunakan.
+4. Jika semua hasil deteksi telah dicoba, coba ulang kandidat yang terdeteksi atau masukkan kunci
+   API penyedia melalui prompt tersamarkan. Onboarding terpandu
+   tidak menawarkan Crestodian atau opsi keluar dengan melewati AI sebelum inferensi berfungsi.
+5. Simpan hanya rute model yang telah diverifikasi dan setiap status kredensial/plugin yang
+   diperlukannya. Pengaturan ruang kerja dan Gateway tetap tidak berubah.
+6. Mulai Crestodian dengan model yang telah diverifikasi agar dapat mengonfigurasi ruang kerja,
+   Gateway, kanal, agen, plugin, dan penyiapan opsional lainnya.
+
+Menjalankan kembali perintah pada instalasi yang telah dikonfigurasi akan menguji model default saat ini
+terlebih dahulu, sehingga alur terpandu berfungsi sebagai proses verifikasi dan perbaikan. Pemeriksaan yang gagal
+tidak pernah mengganti model yang telah dikonfigurasi secara otomatis; onboarding berhenti dan
+menanyakan cara melanjutkan. Jalankan `openclaw channels add` atau `openclaw configure` untuk
+penambahan noninferensi berikutnya; gunakan `openclaw onboard` untuk perubahan rute penyedia atau
+autentikasi.
+
+## Wisaya klasik: QuickStart vs Advanced
+
+Jalankan `openclaw onboard --classic` untuk membuka wisaya lengkap. Wisaya dimulai dengan
+pilihan antara **QuickStart** (nilai default) dan **Advanced** (kontrol penuh). Berikan
+`--flow quickstart` atau `--flow advanced` (alias `manual`) untuk memilih alur klasik
+dan melewati prompt tersebut.
 
 <Tabs>
-  <Tab title="QuickStart (default)">
-    - Gateway lokal (local loopback)
-    - Default ruang kerja (atau ruang kerja yang sudah ada)
-    - Port Gateway **18789**
-    - Autentikasi Gateway **Token** (dibuat otomatis, bahkan pada loopback)
-    - Default kebijakan alat untuk penyiapan lokal baru: `tools.profile: "coding"` (profil eksplisit yang sudah ada dipertahankan)
-    - Default isolasi DM: onboarding lokal menulis `session.dmScope: "per-channel-peer"` saat belum diatur. Detail: [Referensi Penyiapan CLI](/id/start/wizard-cli-reference#outputs-and-internals)
-    - Eksposur Tailscale **Mati**
-    - DM Telegram + WhatsApp default ke **allowlist** (Anda akan diminta memasukkan nomor telepon)
+  <Tab title="QuickStart (defaults)">
+    - Gateway lokal, pengikatan local loopback
+    - Ruang kerja default (atau ruang kerja yang sudah ada)
+    - Porta Gateway **18789**
+    - Autentikasi Gateway **Token** (dibuat otomatis, bahkan pada local loopback)
+    - Kebijakan alat: `tools.profile: "coding"` untuk penyiapan baru (profil eksplisit yang sudah ada dipertahankan)
+    - Isolasi pesan langsung: `session.dmScope: "per-channel-peer"` untuk penyiapan baru. Detail: [Referensi penyiapan CLI](/id/start/wizard-cli-reference#outputs-and-internals)
+    - Eksposur Tailscale **Off**
+    - Pesan langsung Telegram dan WhatsApp secara default menggunakan **daftar izin**: Telegram meminta ID pengguna Telegram numerik, WhatsApp meminta nomor telepon
 
   </Tab>
-  <Tab title="Lanjutan (kontrol penuh)">
-    - Mengekspos setiap langkah (mode, ruang kerja, Gateway, saluran, daemon, Skills).
+  <Tab title="Advanced (full control)">
+    - Menampilkan setiap langkah: mode, ruang kerja, Gateway, kanal, daemon, Skills
 
   </Tab>
 </Tabs>
 
-## Apa yang dikonfigurasi onboarding
+Mode jarak jauh (`--mode remote`) selalu menggunakan alur lanjutan; mode ini hanya
+mengonfigurasi mesin ini agar terhubung ke Gateway di tempat lain dan tidak pernah menginstal
+atau mengubah apa pun pada host jarak jauh.
 
-**Mode lokal (default)** memandu Anda melalui langkah-langkah ini:
+## Yang dikonfigurasi oleh onboarding klasik
 
-1. **Model/Auth** — pilih penyedia/alur autentikasi apa pun yang didukung (kunci API, OAuth, atau autentikasi manual khusus penyedia), termasuk Custom Provider
-   (kompatibel dengan OpenAI, kompatibel dengan Anthropic, atau deteksi otomatis Unknown). Pilih model default.
-   Catatan keamanan: jika agen ini akan menjalankan alat atau memproses konten Webhook/hook, pilih model generasi terbaru terkuat yang tersedia dan pertahankan kebijakan alat tetap ketat. Tingkat yang lebih lemah/lama lebih mudah terkena prompt injection.
-   Untuk eksekusi non-interaktif, `--secret-input-mode ref` menyimpan ref berbasis env di profil auth alih-alih nilai kunci API teks biasa.
-   Dalam mode non-interaktif `ref`, env var penyedia harus diatur; meneruskan flag kunci inline tanpa env var tersebut akan gagal cepat.
-   Dalam eksekusi interaktif, memilih mode referensi rahasia memungkinkan Anda menunjuk ke variabel lingkungan atau ref penyedia yang dikonfigurasi (`file` atau `exec`), dengan validasi preflight cepat sebelum menyimpan.
-   Untuk Anthropic, onboarding/konfigurasi interaktif menawarkan **Anthropic Claude CLI** sebagai jalur lokal yang disukai dan **Anthropic API key** sebagai jalur produksi yang direkomendasikan. Anthropic setup-token juga tetap tersedia sebagai jalur token-auth yang didukung.
-2. **Ruang kerja** — Lokasi untuk file agen (default `~/.openclaw/workspace`). Mengisi file bootstrap awal.
-3. **Gateway** — Port, alamat bind, mode autentikasi, eksposur Tailscale.
-   Dalam mode token interaktif, pilih penyimpanan token teks biasa default atau ikut menggunakan SecretRef.
-   Jalur SecretRef token non-interaktif: `--gateway-token-ref-env <ENV_VAR>`.
-4. **Saluran** — saluran obrolan bawaan dan Plugin resmi seperti iMessage, Discord, Feishu, Google Chat, Mattermost, Microsoft Teams, QQ Bot, Signal, Slack, Telegram, WhatsApp, dan lainnya.
-5. **Daemon** — Memasang LaunchAgent (macOS), unit pengguna systemd (Linux/WSL2), atau Windows Scheduled Task native dengan fallback folder Startup per pengguna.
-   Jika autentikasi token memerlukan token dan `gateway.auth.token` dikelola SecretRef, pemasangan daemon memvalidasinya tetapi tidak menyimpan token yang di-resolve ke metadata lingkungan layanan supervisor.
-   Jika autentikasi token memerlukan token dan SecretRef token yang dikonfigurasi belum ter-resolve, pemasangan daemon diblokir dengan panduan yang dapat ditindaklanjuti.
-   Jika `gateway.auth.token` dan `gateway.auth.password` sama-sama dikonfigurasi dan `gateway.auth.mode` belum diatur, pemasangan daemon diblokir sampai mode diatur secara eksplisit.
-6. **Pemeriksaan kesehatan** — Memulai Gateway dan memverifikasi bahwa Gateway berjalan.
-7. **Skills** — Memasang Skills yang direkomendasikan dan dependensi opsional.
+Mode lokal (default) memandu Anda melalui langkah-langkah berikut:
+
+1. **Model/Autentikasi** - pilih alur autentikasi penyedia (kunci API, OAuth, atau
+   autentikasi manual khusus penyedia), termasuk Custom Provider
+   (kompatibel dengan OpenAI, kompatibel dengan OpenAI Responses, kompatibel dengan Anthropic, atau
+   deteksi otomatis Unknown). Pilih model default.
+   Penyiapan baru dengan kunci API OpenAI secara default menggunakan `openai/gpt-5.6` (ID API langsung
+   tanpa awalan diresolusikan ke Sol); penyiapan baru ChatGPT/Codex secara default menggunakan
+   `openai/gpt-5.6-sol`. Menjalankan ulang penyiapan akan mempertahankan model eksplisit yang sudah ada,
+   termasuk `openai/gpt-5.5`. Pilih `openai/gpt-5.5` secara eksplisit jika
+   akun tidak menyediakan GPT-5.6.
+   Catatan keamanan: jika agen ini akan menjalankan alat atau memproses konten
+   Webhook/hook, utamakan model generasi terbaru terkuat yang tersedia dan pertahankan
+   kebijakan alat yang ketat—tingkatan yang lebih lemah atau lebih lama lebih mudah terkena injeksi prompt.
+   Untuk eksekusi noninteraktif, `--secret-input-mode ref` menyimpan referensi berbasis variabel lingkungan
+   alih-alih nilai kunci API berupa teks biasa; variabel lingkungan yang dirujuk harus sudah
+   ditetapkan, atau onboarding langsung gagal. Mode referensi rahasia interaktif dapat
+   menunjuk ke variabel lingkungan atau referensi penyedia yang telah dikonfigurasi (`file` atau
+   `exec`), dengan pemeriksaan awal cepat sebelum disimpan. Setelah penyiapan model/autentikasi,
+   wisaya menawarkan pengujian penyelesaian langsung opsional; jika gagal, Anda dapat kembali satu kali ke
+   penyiapan model/autentikasi atau mengabaikannya tanpa menghalangi bagian lain dari
+   wisaya klasik. Mengabaikannya tidak membuka akses ke Crestodian; penyiapan melalui percakapan
+   tetap memerlukan pemeriksaan inferensi yang berhasil.
+2. **Ruang kerja** - direktori untuk berkas agen (default `~/.openclaw/workspace`). Membuat berkas bootstrap awal.
+3. **Gateway** - porta, alamat pengikatan, mode autentikasi, eksposur Tailscale. Dalam
+   mode token interaktif, pilih penyimpanan token berupa teks biasa (default) atau pilih
+   penggunaan SecretRef. Jalur SecretRef noninteraktif: `--gateway-token-ref-env <ENV_VAR>`.
+4. **Kanal** - kanal obrolan bawaan dan plugin resmi, termasuk
+   Discord, Feishu, Google Chat, iMessage, Mattermost, Microsoft Teams,
+   QQ Bot, Signal, Slack, Telegram, WhatsApp, dan lainnya.
+5. **Daemon** - menginstal LaunchAgent (macOS), unit pengguna systemd
+   (Linux/WSL2), atau Windows Scheduled Task native dengan opsi cadangan folder
+   Startup per pengguna.
+   Jika autentikasi token diwajibkan dan `gateway.auth.token` dikelola oleh SecretRef,
+   instalasi daemon memvalidasinya tetapi tidak menyimpan token yang telah diresolusikan ke dalam
+   metadata lingkungan layanan supervisor; SecretRef yang tidak dapat diresolusikan akan menghalangi
+   instalasi dan menampilkan panduan. Jika `gateway.auth.token` dan
+   `gateway.auth.password` keduanya ditetapkan sementara `gateway.auth.mode` belum ditetapkan, instalasi
+   akan dihalangi hingga Anda menetapkan mode secara eksplisit.
+6. **Pemeriksaan kesehatan** - memulai Gateway dan memverifikasi bahwa Gateway dapat dijangkau.
+7. **Skills** - menginstal Skills yang direkomendasikan beserta dependensi opsionalnya.
 
 <Note>
-Menjalankan ulang onboarding **tidak** menghapus apa pun kecuali Anda secara eksplisit memilih **Reset** (atau meneruskan `--reset`).
-CLI `--reset` default ke konfigurasi, kredensial, dan sesi; gunakan `--reset-scope full` untuk menyertakan ruang kerja.
-Jika konfigurasi tidak valid atau berisi kunci lama, onboarding meminta Anda menjalankan `openclaw doctor` terlebih dahulu.
+Menjalankan ulang onboarding **tidak** menghapus apa pun kecuali Anda secara eksplisit memilih
+**Reset** (atau memberikan `--reset`). Opsi CLI `--reset` secara default menghapus konfigurasi, kredensial,
+dan sesi; gunakan `--reset-scope full` untuk turut menghapus ruang kerja. Jika
+konfigurasi tidak valid atau berisi kunci lama, onboarding akan meminta Anda menjalankan
+`openclaw doctor` terlebih dahulu.
 </Note>
 
-**Mode jarak jauh** hanya mengonfigurasi klien lokal untuk terhubung ke Gateway di tempat lain.
-Mode ini **tidak** memasang atau mengubah apa pun di host jarak jauh.
+`--flow import` menjalankan alur migrasi yang terdeteksi (misalnya Hermes) di dalam
+wisaya klasik sebagai pengganti penyiapan baru; lihat [Migrasi](/id/cli/migrate) dan panduan migrasi di bawah
+[Instalasi](/id/install/migrating-hermes). `openclaw onboard --modern` adalah
+alias kompatibilitas untuk [Crestodian](/id/cli/crestodian). Alias ini menggunakan
+gerbang inferensi yang sama dengan `openclaw crestodian`: inferensi yang telah diverifikasi akan memulai
+asisten, sedangkan kegagalan interaktif akan kembali ke penyiapan inferensi terpandu.
 
-## Tambahkan agen lain
+## Menambahkan agen lain
 
-Gunakan `openclaw agents add <name>` untuk membuat agen terpisah dengan ruang kerja,
-sesi, dan profil auth miliknya sendiri. Menjalankan tanpa `--workspace` akan membuka onboarding.
+Gunakan `openclaw agents add <name>` untuk membuat agen terpisah dengan
+ruang kerja, sesi, dan profil autentikasinya sendiri. Menjalankannya tanpa `--workspace` akan memulai
+alur interaktif untuk nama, ruang kerja, autentikasi, kanal, dan pengikatan—alur ini
+bukan wisaya lengkap `openclaw onboard`.
 
-Yang diaturnya:
+Yang ditetapkan:
 
 - `agents.list[].name`
 - `agents.list[].workspace`
@@ -134,21 +204,21 @@ Yang diaturnya:
 
 Catatan:
 
-- Ruang kerja default mengikuti `~/.openclaw/workspace-<agentId>`.
-- Tambahkan `bindings` untuk merutekan pesan masuk (onboarding dapat melakukannya).
-- Flag non-interaktif: `--model`, `--agent-dir`, `--bind`, `--non-interactive`.
+- Ruang kerja default: `~/.openclaw/workspace-<agentId>` (atau di bawah
+  `agents.defaults.workspace` jika nilai tersebut ditetapkan).
+- Tambahkan `bindings` untuk merutekan pesan masuk ke agen ini (onboarding dapat melakukannya untuk Anda).
+- Opsi noninteraktif: `--model`, `--agent-dir`, `--bind`, `--non-interactive`.
 
 ## Referensi lengkap
 
-Untuk uraian langkah demi langkah terperinci dan output konfigurasi, lihat
-[Referensi Penyiapan CLI](/id/start/wizard-cli-reference).
-Untuk contoh non-interaktif, lihat [Otomasi CLI](/id/start/wizard-cli-automation).
-Untuk referensi teknis yang lebih mendalam, termasuk detail RPC, lihat
-[Referensi Onboarding](/id/reference/wizard).
+Untuk perilaku terperinci langkah demi langkah dan keluaran konfigurasi, lihat
+[Referensi penyiapan CLI](/id/start/wizard-cli-reference).
+Untuk contoh noninteraktif, lihat [Otomatisasi CLI](/id/start/wizard-cli-automation).
+Untuk referensi opsi lengkap, lihat [`openclaw onboard`](/id/cli/onboard).
 
-## Dokumen terkait
+## Dokumentasi terkait
 
 - Referensi perintah CLI: [`openclaw onboard`](/id/cli/onboard)
-- Ikhtisar onboarding: [Ikhtisar Onboarding](/id/start/onboarding-overview)
+- Ringkasan onboarding: [Ringkasan onboarding](/id/start/onboarding-overview)
 - Onboarding aplikasi macOS: [Onboarding](/id/start/onboarding)
-- Ritual pertama kali agen berjalan: [Bootstrap Agen](/id/start/bootstrapping)
+- Ritual eksekusi pertama agen: [Bootstrap Agen](/id/start/bootstrapping)

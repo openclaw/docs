@@ -1,173 +1,153 @@
 ---
 read_when:
-    - إضافة أو تعديل التقاط الكاميرا على عقد iOS/Android أو macOS
-    - توسيع سير عمل ملفات MEDIA المؤقتة المتاحة للوكلاء
-summary: 'التقاط الكاميرا (عُقد iOS/Android + تطبيق macOS) لاستخدام الوكيل: صور (jpg) ومقاطع فيديو قصيرة (mp4)'
-title: التقاط الكاميرا
+    - إضافة التقاط الكاميرا أو تعديله على عُقد iOS/Android أو macOS
+    - توسيع سير عمل ملفات MEDIA المؤقتة المتاحة للوكيل
+summary: 'التقاط الصور بالكاميرا (عُقد iOS/Android + تطبيق macOS) لاستخدام الوكيل: صور (jpg) ومقاطع فيديو قصيرة (mp4)'
+title: التقاط صورة بالكاميرا
 x-i18n:
-    generated_at: "2026-06-27T17:54:38Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:01:32Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8cb02b1e0e5d68e537dc699bcabacfb48b7beaf07459bf47800810a721191795
+    source_hash: 38555c98886f6cd74ddacabc049da353cdb023e7f99aba81a272021cd8a0e33d
     source_path: nodes/camera.md
     workflow: 16
 ---
 
-يدعم OpenClaw **التقاط الكاميرا** لسير عمل الوكلاء:
+يدعم OpenClaw التقاط الكاميرا لسير عمل الوكيل على عُقد **iOS** و**Android** و**macOS** المقترنة: التقاط صورة (`jpg`) أو مقطع فيديو قصير (`mp4`، مع صوت اختياري) عبر `node.invoke` في Gateway.
 
-- **عقدة iOS** (مقترنة عبر Gateway): التقط **صورة** (`jpg`) أو **مقطع فيديو قصيرًا** (`mp4`، مع صوت اختياري) عبر `node.invoke`.
-- **عقدة Android** (مقترنة عبر Gateway): التقط **صورة** (`jpg`) أو **مقطع فيديو قصيرًا** (`mp4`، مع صوت اختياري) عبر `node.invoke`.
-- **تطبيق macOS** (عقدة عبر Gateway): التقط **صورة** (`jpg`) أو **مقطع فيديو قصيرًا** (`mp4`، مع صوت اختياري) عبر `node.invoke`.
-
-كل وصول إلى الكاميرا محمي خلف **إعدادات يتحكم بها المستخدم**.
+يخضع كل وصول إلى الكاميرا لإعداد يتحكم فيه المستخدم على كل منصة.
 
 ## عقدة iOS
 
-### إعداد المستخدم (مفعّل افتراضيًا)
+### إعداد مستخدم iOS
 
-- تبويب إعدادات iOS ← **الكاميرا** ← **السماح بالكاميرا** (`camera.enabled`)
+- علامة تبويب iOS Settings ‏→ **Camera** ‏→ **Allow Camera** ‏(`camera.enabled`).
   - الافتراضي: **مفعّل** (يُعامل المفتاح المفقود على أنه مفعّل).
-  - عند إيقافه: تعيد أوامر `camera.*` القيمة `CAMERA_DISABLED`.
+  - عند إيقافه: تُرجع أوامر `camera.*` القيمة `CAMERA_DISABLED`.
 
-### الأوامر (عبر Gateway `node.invoke`)
+### أوامر iOS (عبر `node.invoke` في Gateway)
 
 - `camera.list`
-  - حمولة الاستجابة:
-    - `devices`: مصفوفة من `{ id, name, position, deviceType }`
+  - حمولة الاستجابة: `devices` — مصفوفة من `{ id, name, position, deviceType }`.
 
 - `camera.snap`
   - المعاملات:
-    - `facing`: `front|back` (الافتراضي: `front`)
-    - `maxWidth`: رقم (اختياري؛ الافتراضي `1600` على عقدة iOS)
-    - `quality`: `0..1` (اختياري؛ الافتراضي `0.9`)
+    - `facing`:‏ `front|back` (الافتراضي: `front`)
+    - `maxWidth`: رقم (اختياري؛ الافتراضي `1600`)
+    - `quality`:‏ `0..1` (اختياري؛ الافتراضي `0.9`، ومقيّد إلى `[0.05, 1.0]`)
     - `format`: حاليًا `jpg`
-    - `delayMs`: رقم (اختياري؛ الافتراضي `0`)
+    - `delayMs`: رقم (اختياري؛ الافتراضي `0`، والحد الداخلي الأقصى `10000`)
     - `deviceId`: سلسلة نصية (اختياري؛ من `camera.list`)
-  - حمولة الاستجابة:
-    - `format: "jpg"`
-    - `base64: "<...>"`
-    - `width`, `height`
-  - حماية الحمولة: يُعاد ضغط الصور لإبقاء حمولة base64 أقل من 5 ميغابايت.
+  - حمولة الاستجابة: `format: "jpg"`، و`base64`، و`width`، و`height`.
+  - قيد الحمولة: يُعاد ضغط الصور لإبقاء الحمولة المرمّزة بنظام base64 دون 5 ميغابايت.
 
 - `camera.clip`
   - المعاملات:
-    - `facing`: `front|back` (الافتراضي: `front`)
-    - `durationMs`: رقم (الافتراضي `3000`، ومحدود بحد أقصى `60000`)
+    - `facing`:‏ `front|back` (الافتراضي: `front`)
+    - `durationMs`: رقم (الافتراضي `3000`، ومقيّد إلى `[250, 60000]`)
     - `includeAudio`: قيمة منطقية (الافتراضي `true`)
     - `format`: حاليًا `mp4`
     - `deviceId`: سلسلة نصية (اختياري؛ من `camera.list`)
-  - حمولة الاستجابة:
-    - `format: "mp4"`
-    - `base64: "<...>"`
-    - `durationMs`
-    - `hasAudio`
+  - حمولة الاستجابة: `format: "mp4"`، و`base64`، و`durationMs`، و`hasAudio`.
 
-### متطلب الواجهة الأمامية
+### اشتراط وجود iOS في الواجهة الأمامية
 
-مثل `canvas.*`، لا تسمح عقدة iOS بأوامر `camera.*` إلا في **الواجهة الأمامية**. تعيد الاستدعاءات في الخلفية `NODE_BACKGROUND_UNAVAILABLE`.
+كما هو الحال مع `canvas.*`، لا تسمح عقدة iOS بأوامر `camera.*` إلا في **الواجهة الأمامية**. تُرجع الاستدعاءات في الخلفية `NODE_BACKGROUND_UNAVAILABLE`.
 
-### مساعد CLI
+### أداة CLI المساعدة
 
-أسهل طريقة للحصول على ملفات الوسائط هي عبر مساعد CLI، الذي يكتب الوسائط المفكوكة الترميز إلى ملف مؤقت ويطبع المسار المحفوظ.
-
-أمثلة:
+أسهل طريقة للحصول على ملفات الوسائط هي استخدام أداة CLI المساعدة، التي تكتب الوسائط المفكوكة الترميز في ملف مؤقت وتطبع المسار المحفوظ.
 
 ```bash
-openclaw nodes camera snap --node <id>               # default: both front + back (2 MEDIA lines)
+openclaw nodes camera snap --node <id>                 # الافتراضي: الأمامية والخلفية معًا (سطران من MEDIA)
 openclaw nodes camera snap --node <id> --facing front
 openclaw nodes camera clip --node <id> --duration 3000
 openclaw nodes camera clip --node <id> --no-audio
 ```
 
-ملاحظات:
-
-- يستخدم `nodes camera snap` كلا الاتجاهين **معًا** افتراضيًا ليمنح الوكيل كلا المنظورين.
-- ملفات الإخراج مؤقتة (في دليل النظام المؤقت) ما لم تبنِ مغلّفك الخاص.
+يستخدم `nodes camera snap` افتراضيًا `--facing both`، فيلتقط من الكاميرتين الأمامية والخلفية لتزويد الوكيل بكلا المنظورين؛ مرّر `--device-id` مع اتجاه واحد محدد صراحةً (تُرفض القيمة `both` عند تعيين `--device-id`). تكون ملفات الإخراج مؤقتة (في دليل الملفات المؤقتة لنظام التشغيل) ما لم تنشئ غلافك الخاص.
 
 ## عقدة Android
 
-### إعداد مستخدم Android (مفعّل افتراضيًا)
+### إعداد مستخدم Android
 
-- ورقة إعدادات Android ← **الكاميرا** ← **السماح بالكاميرا** (`camera.enabled`)
-  - الافتراضي: **مفعّل** (يُعامل المفتاح المفقود على أنه مفعّل).
-  - عند إيقافه: تعيد أوامر `camera.*` القيمة `CAMERA_DISABLED`.
+- لوحة Android Settings ‏→ **Camera** ‏→ **Allow Camera** ‏(`camera.enabled`).
+  - **الإعداد الافتراضي للتثبيتات الجديدة هو الإيقاف.** تُرحّل التثبيتات الحالية التي تسبق هذا الإعداد إلى حالة **التشغيل** كي لا تفقد الترقيات بصمت إمكانية الوصول إلى الكاميرا التي كانت تعمل سابقًا.
+  - عند إيقافه: تُرجع أوامر `camera.*` القيمة `CAMERA_DISABLED: enable Camera in Settings`.
 
 ### الأذونات
 
-- يتطلب Android أذونات وقت التشغيل:
-  - `CAMERA` لكل من `camera.snap` و`camera.clip`.
-  - `RECORD_AUDIO` لـ `camera.clip` عندما تكون `includeAudio=true`.
+- يلزم `CAMERA` لكل من `camera.snap` و`camera.clip`؛ ويُرجع الإذن المفقود أو المرفوض `CAMERA_PERMISSION_REQUIRED`.
+- يلزم `RECORD_AUDIO` للأمر `camera.clip` عندما تكون `includeAudio` بالقيمة `true`؛ ويُرجع الإذن المفقود أو المرفوض `MIC_PERMISSION_REQUIRED`.
 
-إذا كانت الأذونات مفقودة، فسيطلبها التطبيق عندما يكون ذلك ممكنًا؛ وإذا رُفضت، تفشل طلبات `camera.*` بخطأ
-`*_PERMISSION_REQUIRED`.
+يطلب التطبيق أذونات وقت التشغيل عندما يكون ذلك ممكنًا.
 
-### متطلب الواجهة الأمامية في Android
+### اشتراط وجود Android في الواجهة الأمامية
 
-مثل `canvas.*`، لا تسمح عقدة Android بأوامر `camera.*` إلا في **الواجهة الأمامية**. تعيد الاستدعاءات في الخلفية `NODE_BACKGROUND_UNAVAILABLE`.
+كما هو الحال مع `canvas.*`، لا تسمح عقدة Android بأوامر `camera.*` إلا في **الواجهة الأمامية**. تُرجع الاستدعاءات في الخلفية `NODE_BACKGROUND_UNAVAILABLE: command requires foreground`.
 
-### أوامر Android (عبر Gateway `node.invoke`)
+### أوامر Android (عبر `node.invoke` في Gateway)
 
 - `camera.list`
-  - حمولة الاستجابة:
-    - `devices`: مصفوفة من `{ id, name, position, deviceType }`
+  - حمولة الاستجابة: `devices` — مصفوفة من `{ id, name, position, deviceType }`.
 
-### حماية الحمولة
+- `camera.snap`
+  - المعاملات: `facing` ‏(`front|back`، الافتراضي `front`)، و`quality` (الافتراضي `0.95`، ومقيّد إلى `[0.1, 1.0]`)، و`maxWidth` (الافتراضي `1600`)، و`deviceId` (اختياري؛ يفشل المعرّف غير المعروف بالقيمة `INVALID_REQUEST`).
+  - حمولة الاستجابة: `format: "jpg"`، و`base64`، و`width`، و`height`.
+  - قيد الحمولة: يُعاد الضغط لإبقاء base64 دون 5 ميغابايت (الحد نفسه المستخدم في iOS).
 
-يُعاد ضغط الصور لإبقاء حمولة base64 أقل من 5 ميغابايت.
+- `camera.clip`
+  - المعاملات: `facing` (الافتراضي `front`)، و`durationMs` (الافتراضي `3000`، ومقيّد إلى `[200, 60000]`)، و`includeAudio` (الافتراضي `true`)، و`deviceId` (اختياري).
+  - حمولة الاستجابة: `format: "mp4"`، و`base64`، و`durationMs`، و`hasAudio`.
+  - قيد الحمولة: يقتصر حجم MP4 الخام على 18 ميغابايت قبل ترميز base64؛ وتفشل المقاطع التي تتجاوز الحجم بالقيمة `PAYLOAD_TOO_LARGE` (قلّل `durationMs` وأعد المحاولة).
 
 ## تطبيق macOS
 
-### إعداد المستخدم (متوقف افتراضيًا)
+### إعداد مستخدم macOS
 
-يعرض التطبيق المرافق على macOS مربع اختيار:
+يعرض التطبيق المرافق لنظام macOS مربع اختيار:
 
-- **الإعدادات ← عام ← السماح بالكاميرا** (`openclaw.cameraEnabled`)
-  - الافتراضي: **متوقف**
-  - عند إيقافه: تعيد طلبات الكاميرا "Camera disabled by user".
+- **Settings → General → Allow Camera** ‏(`openclaw.cameraEnabled`).
+  - الافتراضي: **متوقف**.
+  - عند إيقافه: تُرجع طلبات الكاميرا `CAMERA_DISABLED: enable Camera in Settings`.
 
-### مساعد CLI (استدعاء العقدة)
+### أداة CLI المساعدة (استدعاء العقدة)
 
-استخدم CLI الرئيسي `openclaw` لاستدعاء أوامر الكاميرا على عقدة macOS.
-
-أمثلة:
+استخدم CLI الرئيسي لـ`openclaw` لاستدعاء أوامر الكاميرا على عقدة macOS.
 
 ```bash
-openclaw nodes camera list --node <id>            # list camera ids
-openclaw nodes camera snap --node <id>            # prints saved path
+openclaw nodes camera list --node <id>                     # يسرد معرّفات الكاميرات
+openclaw nodes camera snap --node <id>                     # يطبع المسار المحفوظ
 openclaw nodes camera snap --node <id> --max-width 1280
 openclaw nodes camera snap --node <id> --delay-ms 2000
 openclaw nodes camera snap --node <id> --device-id <id>
-openclaw nodes camera clip --node <id> --duration 10s          # prints saved path
-openclaw nodes camera clip --node <id> --duration-ms 3000      # prints saved path (legacy flag)
+openclaw nodes camera clip --node <id> --duration 10s       # يطبع المسار المحفوظ
+openclaw nodes camera clip --node <id> --duration-ms 3000   # يطبع المسار المحفوظ (علامة قديمة)
 openclaw nodes camera clip --node <id> --device-id <id>
 openclaw nodes camera clip --node <id> --no-audio
 ```
 
-ملاحظات:
-
-- يستخدم `openclaw nodes camera snap` القيمة `maxWidth=1600` افتراضيًا ما لم يتم تجاوزها.
-- على macOS، ينتظر `camera.snap` مدة `delayMs` (الافتراضي 2000ms) بعد الإحماء/استقرار التعريض قبل الالتقاط.
-- يُعاد ضغط حمولات الصور لإبقاء base64 أقل من 5 ميغابايت.
+- يستخدم `openclaw nodes camera snap` افتراضيًا `maxWidth=1600` ما لم يُتجاوز.
+- ينتظر `camera.snap` مدة `delayMs` (الافتراضي 2000 مللي ثانية، ومقيّدة إلى `[0, 10000]`) بعد استقرار الإحماء والتعريض قبل الالتقاط.
+- يُعاد ضغط حمولات الصور لإبقاء base64 دون 5 ميغابايت.
 
 ## السلامة والحدود العملية
 
-- يؤدي الوصول إلى الكاميرا والميكروفون إلى مطالبات أذونات نظام التشغيل المعتادة (ويتطلب سلاسل استخدام في Info.plist).
-- تُقيّد مقاطع الفيديو (حاليًا `<= 60s`) لتجنب حمولات العقد كبيرة الحجم (تكلفة base64 الإضافية + حدود الرسائل).
+- يؤدي الوصول إلى الكاميرا والميكروفون إلى ظهور مطالبات أذونات نظام التشغيل المعتادة (ويتطلب سلاسل استخدام في `Info.plist`).
+- تقتصر مقاطع الفيديو على 60 ثانية لتجنب حمولات العقدة المفرطة في الحجم (الزيادة الناتجة عن base64 بالإضافة إلى حدود الرسائل).
 
 ## فيديو شاشة macOS (على مستوى نظام التشغيل)
 
-بالنسبة إلى فيديو _الشاشة_ (وليس الكاميرا)، استخدم المرافق على macOS:
+لفيديو _الشاشة_ (وليس الكاميرا)، استخدم التطبيق المرافق لنظام macOS:
 
 ```bash
-openclaw nodes screen record --node <id> --duration 10s --fps 15   # prints saved path
+openclaw nodes screen record --node <id> --duration 10s --fps 15   # يطبع المسار المحفوظ
 ```
 
-ملاحظات:
+يتطلب إذن **Screen Recording** في macOS ‏(TCC).
 
-- يتطلب إذن **تسجيل الشاشة** في macOS (TCC).
-
-## ذات صلة
+## ذو صلة
 
 - [دعم الصور والوسائط](/ar/nodes/images)
 - [فهم الوسائط](/ar/nodes/media-understanding)

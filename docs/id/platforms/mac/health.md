@@ -1,45 +1,54 @@
 ---
 read_when:
-    - Men-debug indikator kesehatan aplikasi macોકે
-summary: Bagaimana aplikasi macOS melaporkan status kesehatan gateway/Baileys
+    - Men-debug indikator kesehatan aplikasi Mac
+summary: Cara aplikasi macOS melaporkan status kesehatan Gateway/saluran
 title: Pemeriksaan kesehatan (macOS)
 x-i18n:
-    generated_at: "2026-04-24T09:17:08Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: a7488b39b0eec013083f52e2798d719bec35780acad743a97f5646a6891810e5
-    source_path: platforms/mac/health.md
-    workflow: 15
+    generated_at: "2026-07-12T14:23:01Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: a086c527796dbe453bdee1cc9cbe1e0fc1157de710c8c6de186411fe9aa3bc7b
+    source_path: platforms/mac/health.md
+    workflow: 16
 ---
 
-# Pemeriksaan Kesehatan di macOS
+# Pemeriksaan kesehatan di macOS
 
-Cara melihat apakah saluran yang terhubung dalam keadaan sehat dari aplikasi menu bar.
+Cara membaca status kesehatan kanal tertaut dari aplikasi bilah menu.
 
-## Menu bar
+## Bilah menu
 
-- Titik status sekarang mencerminkan kesehatan Baileys:
-  - Hijau: tertaut + socket baru saja dibuka.
-  - Oranye: sedang menghubungkan/mencoba ulang.
-  - Merah: logout atau probe gagal.
-- Baris sekunder berbunyi "linked · auth 12m" atau menampilkan alasan kegagalan.
-- Item menu "Run Health Check" memicu probe sesuai permintaan.
+Titik status:
+
+- Hijau: tertaut + pemeriksaan sehat.
+- Oranye: tertaut, tetapi pemeriksaan kanal melaporkan kondisi menurun/tidak terhubung.
+- Merah: belum tertaut.
+
+Baris sekunder menampilkan "tertaut · autentikasi 12m" atau menunjukkan alasan kegagalan.
+"Jalankan Pemeriksaan Kesehatan Sekarang" dalam menu memicu pemeriksaan sesuai permintaan.
 
 ## Pengaturan
 
-- Tab General mendapatkan kartu Health yang menampilkan: usia auth tertaut, path/jumlah session-store, waktu pemeriksaan terakhir, error/status code terakhir, serta tombol Run Health Check / Reveal Logs.
-- Menggunakan snapshot cache sehingga UI dimuat seketika dan fallback dengan baik saat offline.
-- **Tab Channels** menampilkan status saluran + kontrol untuk WhatsApp/Telegram (QR login, logout, probe, disconnect/error terakhir).
+- Tab Umum menampilkan kartu Kesehatan: titik status, baris ringkasan (status tautan +
+  usia autentikasi), serta baris detail kegagalan opsional, dengan tombol **Coba lagi sekarang** dan
+  **Buka log**.
+- **Tab Kanal** menampilkan status dan kontrol per kanal (QR masuk,
+  keluar, pemeriksaan, pemutusan/kesalahan terakhir) untuk WhatsApp dan Telegram.
 
-## Cara kerja probe
+## Cara kerja pemeriksaan
 
-- Aplikasi menjalankan `openclaw health --json` melalui `ShellExecutor` setiap ~60 detik dan sesuai permintaan. Probe memuat kredensial dan melaporkan status tanpa mengirim pesan.
-- Cache snapshot baik terakhir dan error terakhir secara terpisah untuk menghindari flicker; tampilkan stempel waktu masing-masing.
+Aplikasi memanggil RPC `health` milik Gateway melalui koneksi WebSocket
+yang sudah ada (bukan menjalankan shell CLI) setiap ~60 detik dan sesuai permintaan. RPC memuat
+kredensial dan melaporkan status tanpa mengirim pesan. Aplikasi menyimpan cache snapshot baik terakhir
+dan kesalahan terakhir secara terpisah agar UI dimuat seketika dan
+tidak berkedip saat luring.
 
-## Saat ragu
+## Jika ragu
 
-- Anda tetap dapat menggunakan alur CLI di [Kesehatan Gateway](/id/gateway/health) (`openclaw status`, `openclaw status --deep`, `openclaw health --json`) dan melakukan tail pada `/tmp/openclaw/openclaw-*.log` untuk `web-heartbeat` / `web-reconnect`.
+Gunakan alur CLI di [Kesehatan Gateway](/id/gateway/health) (`openclaw status`,
+`openclaw status --deep`, `openclaw health --json`) dan pantau
+`/tmp/openclaw/openclaw-*.log`, dengan memfilter `web-heartbeat` / `web-reconnect`.
 
 ## Terkait
 

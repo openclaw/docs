@@ -1,64 +1,66 @@
 ---
 read_when:
     - تريد ربط OpenClaw بـ WeChat أو Weixin
-    - أنت تثبّت Plugin قناة openclaw-weixin أو تستكشف مشكلاته وتصلحها
-    - تحتاج إلى فهم كيفية تشغيل Plugins القنوات الخارجية بجانب Gateway
-summary: إعداد قناة WeChat من خلال Plugin openclaw-weixin الخارجي
-title: WeChat
+    - أنت تثبّت Plugin قناة openclaw-weixin أو تستكشف أخطاءه وإصلاحها
+    - تحتاج إلى فهم كيفية تشغيل Plugins القنوات الخارجية إلى جانب Gateway
+summary: إعداد قناة WeChat عبر Plugin الخارجي openclaw-weixin
+title: ويتشات
 x-i18n:
-    generated_at: "2026-05-06T07:45:05Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T05:36:34Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 803557a4fc92056c63053a3388100a451b2d85d4e892877707b3c2e3a677c0b0
+    source_hash: 98faf95f9fb76deedb7df9adf3092083722a77bdd793de98c41a6f715cc0d14a
     source_path: channels/wechat.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-يتصل OpenClaw بـ WeChat عبر Plugin القناة الخارجي من Tencent
+يتصل OpenClaw بـ WeChat من خلال Plugin القناة الخارجي من Tencent:
 `@tencent-weixin/openclaw-weixin`.
 
-الحالة: Plugin خارجي. المحادثات المباشرة والوسائط مدعومة. محادثات المجموعات غير
-معلنة في بيانات تعريف الإمكانات الخاصة بالـ Plugin الحالي.
+الحالة: Plugin خارجي، يتولى فريق Tencent Weixin صيانته. تُدعم المحادثات المباشرة
+والوسائط. لا تعلن البيانات الوصفية لإمكانات Plugin عن دعم المحادثات الجماعية
+(إذ تعلن عن المحادثات المباشرة فقط).
 
 ## التسمية
 
 - **WeChat** هو الاسم الظاهر للمستخدم في هذه الوثائق.
-- **Weixin** هو الاسم المستخدم في حزمة Tencent وفي معرّف الـ Plugin.
-- `openclaw-weixin` هو معرّف قناة OpenClaw.
+- **Weixin** هو الاسم الذي تستخدمه حزمة Tencent ومعرّف Plugin.
+- `openclaw-weixin` هو معرّف قناة OpenClaw (ويعمل `weixin` و`wechat` كاسمين مستعارين).
 - `@tencent-weixin/openclaw-weixin` هي حزمة npm.
 
-استخدم `openclaw-weixin` في أوامر CLI ومسارات الإعداد.
+استخدم `openclaw-weixin` في أوامر CLI ومسارات الإعدادات.
 
-## كيف يعمل
+## آلية العمل
 
-لا تعيش شيفرة WeChat في مستودع نواة OpenClaw. يوفر OpenClaw
-عقد Plugin القناة العام، ويوفر الـ Plugin الخارجي وقت التشغيل
-المخصص لـ WeChat:
+لا توجد شيفرة WeChat في مستودع OpenClaw الأساسي. يوفّر OpenClaw
+عقد Plugin العام للقنوات، بينما يوفّر Plugin الخارجي بيئة التشغيل
+الخاصة بـ WeChat:
 
 1. يثبّت `openclaw plugins install` الحزمة `@tencent-weixin/openclaw-weixin`.
-2. يكتشف Gateway بيان الـ Plugin ويحمل نقطة دخول الـ Plugin.
-3. يسجل الـ Plugin معرّف القناة `openclaw-weixin`.
+2. يكتشف Gateway بيان Plugin ويحمّل نقطة دخوله.
+3. يسجّل Plugin معرّف القناة `openclaw-weixin`.
 4. يبدأ `openclaw channels login --channel openclaw-weixin` تسجيل الدخول عبر رمز QR.
-5. يخزن الـ Plugin بيانات اعتماد الحساب ضمن دليل حالة OpenClaw.
-6. عند بدء Gateway، يبدأ الـ Plugin مراقب Weixin لكل حساب
-   مكوّن.
-7. تُطبّع رسائل WeChat الواردة عبر عقد القناة، وتُوجّه إلى
-   وكيل OpenClaw المحدد، ثم تُرسل مرة أخرى عبر مسار الخروج في الـ Plugin.
+5. يخزّن Plugin بيانات اعتماد الحساب ضمن دليل حالة OpenClaw
+   (`~/.openclaw` افتراضيًا).
+6. عند بدء Gateway، يشغّل Plugin مراقب Weixin لكل
+   حساب مُعدّ.
+7. تُوحّد رسائل WeChat الواردة عبر عقد القناة، وتُوجّه إلى
+   وكيل OpenClaw المحدد، ثم تُرسل الردود عبر مسار الإرسال الصادر في Plugin.
 
-هذا الفصل مهم: يجب أن تبقى نواة OpenClaw حيادية تجاه القنوات. تسجيل دخول WeChat،
-واستدعاءات Tencent iLink API، ورفع/تنزيل الوسائط، ورموز السياق، ومراقبة الحسابات
-كلها مملوكة للـ Plugin الخارجي.
+هذا الفصل مهم: تظل نواة OpenClaw مستقلة عن القنوات. ويتولى Plugin الخارجي
+تسجيل الدخول إلى WeChat، واستدعاءات واجهة Tencent iLink API، ورفع الوسائط وتنزيلها،
+ورموز السياق، ومراقبة الحسابات.
 
 ## التثبيت
 
-تثبيت سريع:
+التثبيت السريع:
 
 ```bash
 npx -y @tencent-weixin/openclaw-weixin-cli install
 ```
 
-تثبيت يدوي:
+التثبيت اليدوي:
 
 ```bash
 openclaw plugins install "@tencent-weixin/openclaw-weixin"
@@ -73,17 +75,17 @@ openclaw gateway restart
 
 ## تسجيل الدخول
 
-شغّل تسجيل الدخول عبر QR على الجهاز نفسه الذي يشغّل Gateway:
+شغّل تسجيل الدخول عبر رمز QR على الجهاز نفسه الذي يشغّل Gateway:
 
 ```bash
 openclaw channels login --channel openclaw-weixin
 ```
 
-امسح رمز QR باستخدام WeChat على هاتفك وأكّد تسجيل الدخول. يحفظ الـ Plugin
+امسح رمز QR باستخدام WeChat على هاتفك وأكّد تسجيل الدخول. يحفظ Plugin
 رمز الحساب محليًا بعد نجاح المسح.
 
-لإضافة حساب WeChat آخر، شغّل أمر تسجيل الدخول نفسه مرة أخرى. للحسابات المتعددة،
-اعزل جلسات الرسائل المباشرة حسب الحساب والقناة والمرسل:
+لإضافة حساب WeChat آخر، شغّل أمر تسجيل الدخول نفسه مجددًا. عند استخدام عدة
+حسابات، اعزل جلسات الرسائل المباشرة حسب الحساب والقناة والمرسل:
 
 ```bash
 openclaw config set session.dmScope per-account-channel-peer
@@ -91,43 +93,43 @@ openclaw config set session.dmScope per-account-channel-peer
 
 ## التحكم في الوصول
 
-تستخدم الرسائل المباشرة نموذج الاقتران وقائمة السماح العادي في OpenClaw للـ
-Plugins الخاصة بالقنوات.
+تستخدم الرسائل المباشرة نموذج الاقتران وقائمة السماح المعتادين في OpenClaw
+لـ Plugins القنوات.
 
-وافِق على المرسلين الجدد:
+وافق على المرسلين الجدد:
 
 ```bash
 openclaw pairing list openclaw-weixin
 openclaw pairing approve openclaw-weixin <CODE>
 ```
 
-للاطلاع على نموذج التحكم في الوصول الكامل، راجع [الاقتران](/ar/channels/pairing).
+للاطلاع على نموذج التحكم في الوصول كاملًا، راجع [الاقتران](/ar/channels/pairing).
 
 ## التوافق
 
-يتحقق الـ Plugin من إصدار OpenClaw المضيف عند بدء التشغيل.
+يتحقق Plugin من إصدار OpenClaw المضيف عند بدء التشغيل.
 
-| خط الـ Plugin | إصدار OpenClaw          | وسم npm |
-| ------------- | ----------------------- | ------- |
-| `2.x`         | `>=2026.3.22`           | `latest` |
-| `1.x`         | `>=2026.1.0 <2026.3.22` | `legacy` |
+| سلسلة Plugin | إصدار OpenClaw                                                | وسم npm  |
+| ----------- | --------------------------------------------------------------- | -------- |
+| `2.x`       | `>=2026.5.12` (الإصدار الحالي 2.4.6؛ كانت إصدارات 2.x المبكرة تقبل `>=2026.3.22`) | `latest` |
+| `1.x`       | `>=2026.1.0 <2026.3.22`                                         | `legacy` |
 
-إذا أبلغ الـ Plugin أن إصدار OpenClaw لديك قديم جدًا، فإما أن تحدّث
-OpenClaw أو تثبّت خط الـ Plugin القديم:
+إذا أبلغ Plugin بأن إصدار OpenClaw لديك قديم جدًا، فإما أن تحدّث
+OpenClaw أو تثبّت السلسلة القديمة من Plugin:
 
 ```bash
 openclaw plugins install @tencent-weixin/openclaw-weixin@legacy
 ```
 
-## عملية جانبية
+## العملية المرافقة
 
-يمكن لـ Plugin الخاص بـ WeChat تشغيل عمل مساعد إلى جانب Gateway أثناء مراقبته
-Tencent iLink API. في القضية #68451، كشف ذلك المسار المساعد عن علة في تنظيف
-Gateway العام القديم في OpenClaw: كان بإمكان عملية فرعية أن تحاول تنظيف عملية
-Gateway الأب، مما يسبب حلقات إعادة تشغيل تحت مديري العمليات مثل systemd.
+يمكن لـ Plugin WeChat تشغيل مهام مساعدة بجانب Gateway أثناء مراقبة
+واجهة Tencent iLink API. في المشكلة #68451، كشف مسار المهام المساعدة هذا خللًا في
+التنظيف العام للنسخ القديمة من Gateway في OpenClaw: كان بإمكان عملية فرعية محاولة
+تنظيف عملية Gateway الأصلية، مما تسبب في حلقات إعادة تشغيل عند استخدام مديري العمليات مثل systemd.
 
-يستثني تنظيف بدء تشغيل OpenClaw الحالي العملية الحالية وأسلافها،
-لذلك يجب ألا يقتل مساعد القناة الـ Gateway الذي أطلقه. هذا الإصلاح
+يستثني تنظيف بدء التشغيل الحالي في OpenClaw العملية الحالية وأسلافها،
+لذلك لا يمكن لمساعد القناة إنهاء Gateway الذي شغّله. هذا الإصلاح
 عام؛ وليس مسارًا خاصًا بـ WeChat في النواة.
 
 ## استكشاف الأخطاء وإصلاحها
@@ -140,16 +142,16 @@ openclaw channels status --probe
 openclaw --version
 ```
 
-إذا ظهرت القناة على أنها مثبتة لكنها لا تتصل، فتأكد من أن الـ Plugin
-مفعّل وأعد التشغيل:
+إذا ظهرت القناة على أنها مثبّتة لكنها لا تتصل، فتأكد من أن Plugin
+مفعّل ثم أعد التشغيل:
 
 ```bash
 openclaw config set plugins.entries.openclaw-weixin.enabled true
 openclaw gateway restart
 ```
 
-إذا كان Gateway يعيد التشغيل مرارًا بعد تفعيل WeChat، فحدّث كلًا من OpenClaw والـ
-Plugin:
+إذا تكررت إعادة تشغيل Gateway بعد تمكين WeChat، فحدّث كلًا من OpenClaw
+وPlugin:
 
 ```bash
 npm view @tencent-weixin/openclaw-weixin version
@@ -157,23 +159,23 @@ openclaw plugins install "@tencent-weixin/openclaw-weixin" --force
 openclaw gateway restart
 ```
 
-إذا أبلغ بدء التشغيل أن حزمة الـ Plugin المثبتة `requires compiled runtime
-output for TypeScript entry`، فهذا يعني أن حزمة npm نُشرت من دون ملفات وقت تشغيل
-JavaScript المترجمة التي يحتاجها OpenClaw. حدّث/أعد التثبيت بعد أن ينشر
-ناشر الـ Plugin حزمة مصححة، أو عطّل/أزل تثبيت الـ Plugin مؤقتًا.
+إذا أبلغ بدء التشغيل بأن حزمة Plugin المثبّتة `requires compiled runtime
+output for TypeScript entry`، فهذا يعني أن حزمة npm نُشرت دون ملفات بيئة تشغيل
+JavaScript المترجمة التي يحتاجها OpenClaw. حدّث Plugin أو أعد تثبيته بعد أن ينشر
+ناشره حزمة مصححة، أو عطّل Plugin أو ألغِ تثبيته مؤقتًا.
 
-تعطيل مؤقت:
+التعطيل المؤقت:
 
 ```bash
 openclaw config set plugins.entries.openclaw-weixin.enabled false
 openclaw gateway restart
 ```
 
-## وثائق ذات صلة
+## الوثائق ذات الصلة
 
-- نظرة عامة على القنوات: [قنوات الدردشة](/ar/channels)
+- نظرة عامة على القنوات: [قنوات المحادثة](/ar/channels)
 - الاقتران: [الاقتران](/ar/channels/pairing)
 - توجيه القنوات: [توجيه القنوات](/ar/channels/channel-routing)
-- معمارية الـ Plugin: [معمارية الـ Plugin](/ar/plugins/architecture)
-- SDK Plugin القناة: [SDK Plugin القناة](/ar/plugins/sdk-channel-plugins)
+- بنية Plugins: [بنية Plugins](/ar/plugins/architecture)
+- حزمة تطوير Plugin القناة: [حزمة تطوير Plugin القناة](/ar/plugins/sdk-channel-plugins)
 - الحزمة الخارجية: [@tencent-weixin/openclaw-weixin](https://www.npmjs.com/package/@tencent-weixin/openclaw-weixin)

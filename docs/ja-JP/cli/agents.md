@@ -1,11 +1,11 @@
 ---
 read_when:
     - 複数の分離されたエージェント（ワークスペース + ルーティング + 認証）が必要な場合
-summary: '`openclaw agents` の CLI リファレンス（list/add/delete/bindings/bind/unbind/set identity）'
+summary: '`openclaw agents` の CLI リファレンス（一覧表示/追加/削除/バインディング/バインド/バインド解除/ID の設定）'
 title: エージェント
 x-i18n:
-    generated_at: "2026-07-05T11:07:08Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:04:38Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 89b6c59a9ce0fd0514343cc3fa66ae5e6d963cdfa5c6f58ffe6b9a6b5e943f09
@@ -17,11 +17,11 @@ x-i18n:
 
 分離されたエージェント（ワークスペース + 認証 + ルーティング）を管理します。サブコマンドなしで `openclaw agents` を実行することは、`openclaw agents list` と同等です。
 
-関連:
+関連項目:
 
 - [マルチエージェントルーティング](/ja-JP/concepts/multi-agent)
 - [エージェントワークスペース](/ja-JP/concepts/agent-workspace)
-- [Skills 設定](/ja-JP/tools/skills-config): skill の可視性設定。
+- [Skills 設定](/ja-JP/tools/skills-config): Skills の可視性設定。
 
 ## 例
 
@@ -47,12 +47,12 @@ openclaw agents delete work
 
 ### `agents add [name]`
 
-オプション: `--workspace <dir>`、`--model <id>`、`--agent-dir <dir>`、`--bind <channel[:accountId]>`（繰り返し指定可）、`--non-interactive`、`--json`。
+オプション: `--workspace <dir>`、`--model <id>`、`--agent-dir <dir>`、`--bind <channel[:accountId]>`（繰り返し指定可能）、`--non-interactive`、`--json`。
 
-- 明示的な追加フラグを渡すと、コマンドは非対話パスに切り替わります。
-- 非対話モードでは、エージェント名と `--workspace` の両方が必要です。
-- `main` は予約済みで、新しいエージェント ID としては使用できません。
-- 対話モードでは、認証はポータブルな静的認証情報（`api_key` と静的な `token` プロファイル）のみをコピーしてシードします。ただし、認証情報が `copyToAgents: false` で除外している場合はコピーされません。OAuth リフレッシュトークンプロファイルは、プロバイダーが `copyToAgents: true` で明示的に許可しない限りコピーされません。コピーがない場合、OAuth は実際の `main` エージェントストアからの読み取り継承を通じてのみ利用できます。設定済みのデフォルトエージェントが `main` でない場合は、新しいエージェントで OAuth プロファイルに別途サインインしてください。
+- 明示的な追加用フラグをいずれか指定すると、コマンドは非対話パスに切り替わります。
+- 非対話モードでは、エージェント名と `--workspace` の両方が必須です。
+- `main` は予約済みであり、新しいエージェント ID として使用できません。
+- 対話モードでは、認証情報が `copyToAgents: false` でコピーを拒否していない限り、移植可能な静的認証情報（`api_key` と静的な `token` プロファイル）のみをコピーして認証を初期設定します。OAuth 更新トークンのプロファイルは、プロバイダーが `copyToAgents: true` で明示的に許可しない限りコピーされません。コピーされない場合、OAuth は実際の `main` エージェントストアからの透過的な継承を通じてのみ利用できます。設定されたデフォルトエージェントが `main` でない場合は、新しいエージェントで OAuth プロファイルごとに別途サインインしてください。
 
 ### `agents bindings`
 
@@ -60,33 +60,33 @@ openclaw agents delete work
 
 ### `agents bind`
 
-オプション: `--agent <id>`（現在のデフォルトエージェントが既定）、`--bind <channel[:accountId]>`（繰り返し指定可）、`--json`。
+オプション: `--agent <id>`（現在のデフォルトエージェントが既定値）、`--bind <channel[:accountId]>`（繰り返し指定可能）、`--json`。
 
 ### `agents unbind`
 
-オプション: `--agent <id>`（現在のデフォルトエージェントが既定）、`--bind <channel[:accountId]>`（繰り返し指定可）、`--all`、`--json`。`--all`、または 1 つ以上の `--bind` 値のどちらか一方のみを受け付けます。両方は指定できません。
+オプション: `--agent <id>`（現在のデフォルトエージェントが既定値）、`--bind <channel[:accountId]>`（繰り返し指定可能）、`--all`、`--json`。`--all` または 1 つ以上の `--bind` 値のいずれかを指定できますが、両方は指定できません。
 
 ### `agents set-identity`
 
-オプション: `--agent <id>`、`--workspace <dir>`、`--identity-file <path>`、`--from-identity`、`--name <name>`、`--theme <theme>`、`--emoji <emoji>`、`--avatar <value>`、`--json`。下の [アイデンティティを設定](#set-identity) を参照してください。
+オプション: `--agent <id>`、`--workspace <dir>`、`--identity-file <path>`、`--from-identity`、`--name <name>`、`--theme <theme>`、`--emoji <emoji>`、`--avatar <value>`、`--json`。以下の[アイデンティティの設定](#set-identity)を参照してください。
 
 ### `agents delete <id>`
 
 オプション: `--force`、`--json`。
 
 - `main` は削除できません。
-- `--force` なしでは、対話的な確認が必要です（非 TTY セッションでは失敗します。`--force` を付けて再実行してください）。
-- ワークスペース、エージェント状態、セッショントランスクリプトディレクトリは完全削除されず、ゴミ箱へ移動されます。
-- Gateway に到達できる場合、削除は Gateway 経由でルーティングされるため、設定とセッションストアのクリーンアップはランタイムトラフィックと同じ writer を共有します。Gateway に到達できない場合、CLI はオフラインのローカルパスへフォールバックします。
-- 別のエージェントのワークスペースが同じパス、このワークスペース内、またはこのワークスペースを含む場合、ワークスペースは保持され、`--json` は `workspaceRetained`、`workspaceRetainedReason`、`workspaceSharedWith` を報告します。
+- `--force` を指定しない場合は対話式の確認が必要です（非 TTY セッションでは失敗するため、`--force` を指定して再実行してください）。
+- ワークスペース、エージェントの状態、セッショントランスクリプトの各ディレクトリは完全には削除されず、ゴミ箱へ移動されます。
+- Gateway に接続できる場合、削除は Gateway 経由で処理されるため、設定とセッションストアのクリーンアップにはランタイムトラフィックと同じ書き込み処理が使用されます。Gateway に接続できない場合、CLI はオフラインのローカルパスにフォールバックします。
+- 別のエージェントのワークスペースが同じパスである、このワークスペース内にある、またはこのワークスペースを含む場合、ワークスペースは保持され、`--json` で `workspaceRetained`、`workspaceRetainedReason`、`workspaceSharedWith` が報告されます。
 
 ## ルーティングバインディング
 
-ルーティングバインディングを使用して、受信チャネルのトラフィックを特定のエージェントに固定します。
+ルーティングバインディングを使用すると、チャネルからの受信トラフィックを特定のエージェントに固定できます。
 
-エージェントごとに表示される Skills も変えたい場合は、`openclaw.json` の `agents.defaults.skills` と `agents.list[].skills` を設定してください。[Skills 設定](/ja-JP/tools/skills-config) と [設定リファレンス](/ja-JP/gateway/config-agents#agentsdefaultsskills) を参照してください。
+エージェントごとに表示される Skills も変えたい場合は、`openclaw.json` で `agents.defaults.skills` と `agents.list[].skills` を設定します。[Skills 設定](/ja-JP/tools/skills-config)および[設定リファレンス](/ja-JP/gateway/config-agents#agentsdefaultsskills)を参照してください。
 
-バインディングを一覧表示します:
+バインディングを一覧表示するには:
 
 ```bash
 openclaw agents bindings
@@ -94,55 +94,55 @@ openclaw agents bindings --agent work
 openclaw agents bindings --json
 ```
 
-バインディングを追加します:
+バインディングを追加するには:
 
 ```bash
 openclaw agents bind --agent work --bind telegram:ops --bind discord:guild-a
 ```
 
-エージェント作成時にバインディングを追加することもできます:
+エージェントの作成時にバインディングを追加することもできます:
 
 ```bash
 openclaw agents add work --workspace ~/.openclaw/workspace-work --bind telegram:* --bind discord:*
 ```
 
-`accountId`（`--bind <channel>`）を省略すると、OpenClaw は Plugin セットアップフック、強制アカウントバインディング、またはチャネルの設定済みアカウント数から解決します。
+`accountId` を省略した場合（`--bind <channel>`）、OpenClaw は Plugin のセットアップフック、強制されたアカウントバインディング、またはチャネルに設定されたアカウント数から解決します。
 
 `bind` または `unbind` で `--agent` を省略すると、OpenClaw は現在のデフォルトエージェントを対象にします。
 
-### `--bind` 形式
+### `--bind` の形式
 
-| 形式                         | 意味                                                                                               |
-| ---------------------------- | -------------------------------------------------------------------------------------------------- |
-| `--bind <channel>:*`         | チャネル上のすべてのアカウントに一致します。                                                       |
-| `--bind <channel>:<account>` | 1 つのアカウントに一致します。                                                                     |
-| `--bind <channel>`           | CLI が Plugin 固有のアカウントスコープを安全に解決できる場合を除き、デフォルトアカウントのみに一致します。 |
+| 形式                         | 意味                                                                                                               |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `--bind <channel>:*`         | チャネル上のすべてのアカウントに一致します。                                                                       |
+| `--bind <channel>:<account>` | 1 つのアカウントに一致します。                                                                                      |
+| `--bind <channel>`           | CLI が Plugin 固有のアカウントスコープを安全に解決できる場合を除き、デフォルトアカウントのみに一致します。          |
 
-### バインディングスコープの動作
+### バインディングのスコープ動作
 
 - `accountId` なしで保存されたバインディングは、チャネルのデフォルトアカウントのみに一致します。
-- `accountId: "*"` はチャネル全体のフォールバック（すべてのアカウント）であり、明示的なアカウントバインディングより具体性が低くなります。
-- 同じエージェントに `accountId` なしの一致するチャネルバインディングがすでにあり、後から明示的または解決済みの `accountId` でバインドすると、OpenClaw は重複を追加するのではなく、その既存バインディングをその場でアップグレードします。
+- `accountId: "*"` はチャネル全体のフォールバック（すべてのアカウント）であり、明示的なアカウントバインディングより優先度が低くなります。
+- 同じエージェントに `accountId` なしの一致するチャネルバインディングがすでにあり、後から明示的または解決済みの `accountId` を指定してバインドすると、OpenClaw は重複を追加せず、既存のバインディングをその場でアップグレードします。
 
 例:
 
 ```bash
-# match all accounts on the channel
+# チャネル上のすべてのアカウントに一致
 openclaw agents bind --agent work --bind telegram:*
 
-# match a specific account
+# 特定のアカウントに一致
 openclaw agents bind --agent work --bind telegram:ops
 
-# initial channel-only binding
+# 最初はチャネルのみをバインド
 openclaw agents bind --agent work --bind telegram
 
-# later upgrade to account-scoped binding
+# 後でアカウントスコープのバインディングにアップグレード
 openclaw agents bind --agent work --bind telegram:alerts
 ```
 
-アップグレード後、そのバインディングのルーティングは `telegram:alerts` にスコープされます。デフォルトアカウントのルーティングも必要な場合は、明示的に追加してください（例: `--bind telegram:default`）。
+アップグレード後、そのバインディングのルーティングは `telegram:alerts` のスコープに限定されます。デフォルトアカウントへのルーティングも必要な場合は、明示的に追加してください（例: `--bind telegram:default`）。
 
-バインディングを削除します:
+バインディングを削除するには:
 
 ```bash
 openclaw agents unbind --agent work --bind telegram:ops
@@ -151,34 +151,34 @@ openclaw agents unbind --agent work --all
 
 ## アイデンティティファイル
 
-各エージェントワークスペースは、ワークスペースルートに `IDENTITY.md` を含めることができます:
+各エージェントのワークスペースでは、ワークスペースのルートに `IDENTITY.md` を配置できます:
 
-- 例のパス: `~/.openclaw/workspace/IDENTITY.md`
-- `set-identity --from-identity` は、ワークスペースルート（または明示的な `--identity-file`）から読み取ります。
+- パスの例: `~/.openclaw/workspace/IDENTITY.md`
+- `set-identity --from-identity` は、ワークスペースのルート（または明示的に指定した `--identity-file`）から読み取ります。
 
-アバターパスはワークスペースルートからの相対として解決され、シンボリックリンク経由であってもそこから抜け出すことはできません。
+アバターのパスはワークスペースのルートを基準に解決され、シンボリックリンク経由であっても、その外部を参照することはできません。
 
-## アイデンティティを設定
+## アイデンティティの設定
 
-`set-identity` は `agents.list[].identity` にフィールドを書き込みます: `name`、`theme`、`emoji`、`avatar`（ワークスペース相対パス、http(s) URL、または data URI）。
+`set-identity` は `agents.list[].identity` に `name`、`theme`、`emoji`、`avatar`（ワークスペース相対パス、http(s) URL、またはデータ URI）の各フィールドを書き込みます。
 
-- `--agent` または `--workspace` が対象エージェントを選択します。`--workspace` が複数のエージェントに一致する場合、コマンドは失敗し、`--agent` を渡すよう求めます。
-- ローカルのワークスペース相対アバター画像ファイルは 2 MB に制限されます。HTTP(S) URL と `data:` URI は、ローカルファイルサイズ制限の対象としてチェックされません。
-- 明示的なアイデンティティフィールドが指定されていない場合、コマンドは `IDENTITY.md` からアイデンティティデータを読み取ります。
+- `--agent` または `--workspace` で対象エージェントを選択します。`--workspace` が複数のエージェントに一致する場合、コマンドは失敗し、`--agent` の指定を求めます。
+- ローカルのワークスペース相対アバター画像ファイルは 2 MB までに制限されます。HTTP(S) URL と `data:` URI にはローカルファイルサイズの上限は適用されません。
+- アイデンティティのフィールドを明示的に指定しない場合、コマンドは `IDENTITY.md` からアイデンティティデータを読み取ります。
 
-`IDENTITY.md` から読み込みます:
+`IDENTITY.md` から読み込むには:
 
 ```bash
 openclaw agents set-identity --workspace ~/.openclaw/workspace --from-identity
 ```
 
-フィールドを明示的に上書きします:
+フィールドを明示的に上書きするには:
 
 ```bash
 openclaw agents set-identity --agent main --name "OpenClaw" --emoji "🦞" --avatar avatars/openclaw.png
 ```
 
-設定サンプル:
+設定例:
 
 ```json5
 {
@@ -198,7 +198,7 @@ openclaw agents set-identity --agent main --name "OpenClaw" --emoji "🦞" --ava
 }
 ```
 
-## 関連
+## 関連項目
 
 - [CLI リファレンス](/ja-JP/cli)
 - [マルチエージェントルーティング](/ja-JP/concepts/multi-agent)

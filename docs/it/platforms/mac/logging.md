@@ -1,42 +1,40 @@
 ---
 read_when:
-    - Acquisizione dei log di macOS o analisi della registrazione nei log di dati privati
-    - Risoluzione dei problemi del ciclo di vita del risveglio vocale/sessione
-summary: 'Logging di OpenClaw: file di log diagnostico a rotazione + flag di privacy per il log unificato'
-title: Registrazione dei log di macOS
+    - Acquisizione dei log di macOS o analisi della registrazione di dati privati
+    - Debug dei problemi relativi al ciclo di vita dell'attivazione vocale e della sessione
+summary: 'Registrazione di OpenClaw: file di log diagnostico a rotazione + flag unificati per la privacy dei log'
+title: Registrazione su macOS
 x-i18n:
-    generated_at: "2026-05-06T09:00:25Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:13:57Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 76c001008311d4e3f245add4cce32bdcc3eed9d897b30f6884c0649d2f0523df
+    source_hash: ef0fd91bd7fc0a8b5f598cfe8f5de551795a4badd0f6634c5bcbd4f3916bfc64
     source_path: platforms/mac/logging.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# Logging (macOS)
+# Registrazione (macOS)
 
-## Log diagnostico su file a rotazione (pannello Debug)
+## File di registro diagnostico a rotazione (pannello Debug)
 
-OpenClaw instrada i log dell'app macOS tramite swift-log (logging unificato per impostazione predefinita) e può scrivere su disco un log locale su file, con rotazione, quando serve un'acquisizione persistente.
+L'app macOS registra gli eventi tramite swift-log (per impostazione predefinita, usando la registrazione unificata) e può anche scrivere un file di registro locale a rotazione per conservarli in modo persistente (`DiagnosticsFileLog`).
 
-- Verbosità: **pannello Debug → Log → Logging dell'app → Verbosità**
-- Abilita: **pannello Debug → Log → Logging dell'app → "Scrivi log diagnostico a rotazione (JSONL)"**
-- Posizione: `~/Library/Logs/OpenClaw/diagnostics.jsonl` (ruota automaticamente; i file vecchi hanno suffissi `.1`, `.2`, …)
-- Cancella: **pannello Debug → Log → Logging dell'app → "Cancella"**
+- Abilitazione: **Pannello Debug -> Registri -> Registrazione dell'app -> "Scrivi registro diagnostico a rotazione (JSONL)"** (disabilitato per impostazione predefinita).
+- Livello di dettaglio: selettore **Pannello Debug -> Registri -> Registrazione dell'app -> Livello di dettaglio**.
+- Posizione: `~/Library/Logs/OpenClaw/diagnostics.jsonl`.
+- Rotazione: avviene a 5 MB; vengono conservati fino a 5 backup con suffisso `.1`...`.5` (il più vecchio viene eliminato).
+- Cancellazione: **Pannello Debug -> Registri -> Registrazione dell'app -> "Cancella"** elimina il file attivo e tutti i backup.
 
-Note:
+Considera il file come sensibile; non condividerlo senza averlo esaminato.
 
-- È **disattivato per impostazione predefinita**. Abilitalo solo durante il debug attivo.
-- Tratta il file come sensibile; non condividerlo senza revisione.
+## Dati privati nella registrazione unificata su macOS
 
-## Dati privati del logging unificato su macOS
+La registrazione unificata oscura la maggior parte dei payload, a meno che un sottosistema non abiliti `privacy -off`. Questa impostazione è controllata da un plist in `/Library/Preferences/Logging/Subsystems/`, identificato dal nome del sottosistema. Solo le nuove voci di registro recepiscono l'impostazione, quindi abilitala prima di riprodurre un problema. Approfondimento: [particolarità della privacy della registrazione in macOS](https://steipete.me/posts/2025/logging-privacy-shenanigans).
 
-Il logging unificato redige la maggior parte dei payload a meno che un sottosistema non attivi `privacy -off`. Secondo l'articolo di Peter sulle [bizzarrie della privacy del logging](https://steipete.me/posts/2025/logging-privacy-shenanigans) su macOS (2025), questa impostazione è controllata da un plist in `/Library/Preferences/Logging/Subsystems/` indicizzato per nome del sottosistema. Solo le nuove voci di log recepiscono il flag, quindi abilitalo prima di riprodurre un problema.
+## Abilitazione per OpenClaw (`ai.openclaw`)
 
-## Abilitare per OpenClaw (`ai.openclaw`)
-
-- Scrivi prima il plist in un file temporaneo, poi installalo atomicamente come root:
+Scrivi prima il plist in un file temporaneo, quindi installalo atomicamente come root:
 
 ```bash
 cat <<'EOF' >/tmp/ai.openclaw.plist
@@ -55,16 +53,15 @@ EOF
 sudo install -m 644 -o root -g wheel /tmp/ai.openclaw.plist /Library/Preferences/Logging/Subsystems/ai.openclaw.plist
 ```
 
-- Non è richiesto alcun riavvio; logd rileva rapidamente il file, ma solo le nuove righe di log includeranno i payload privati.
-- Visualizza l'output più ricco con l'helper esistente, ad esempio `./scripts/clawlog.sh --category WebChat --last 5m`.
+Non è necessario riavviare; logd rileva rapidamente il file, ma solo le nuove righe di registro includono i payload privati. Visualizza l'output più dettagliato con `./scripts/clawlog.sh --category WebChat --last 5m` (`--last`/`-l` imposta l'intervallo di tempo, con valore predefinito `5m`; `--category`/`-c` filtra per categoria).
 
-## Disabilitare dopo il debug
+## Disabilitazione dopo il debug
 
-- Rimuovi l'override: `sudo rm /Library/Preferences/Logging/Subsystems/ai.openclaw.plist`.
-- Facoltativamente esegui `sudo log config --reload` per forzare logd a scartare subito l'override.
-- Ricorda che questa superficie può includere numeri di telefono e corpi dei messaggi; lascia il plist in posizione solo mentre hai attivamente bisogno del dettaglio aggiuntivo.
+- Rimuovi la sostituzione: `sudo rm /Library/Preferences/Logging/Subsystems/ai.openclaw.plist`.
+- Facoltativamente, esegui `sudo log config --reload` per forzare logd a rimuovere immediatamente la sostituzione.
+- Questo registro può includere numeri di telefono e contenuti dei messaggi; mantieni il plist installato solo mentre è effettivamente necessario.
 
-## Correlati
+## Argomenti correlati
 
-- [app macOS](/it/platforms/macos)
-- [Logging del Gateway](/it/gateway/logging)
+- [App macOS](/it/platforms/macos)
+- [Registrazione del Gateway](/it/gateway/logging)

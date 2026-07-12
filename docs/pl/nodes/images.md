@@ -1,85 +1,96 @@
 ---
 read_when:
-    - Modyfikowanie potoku przetwarzania multimediów lub załączników
-summary: Zasady obsługi obrazów i multimediów dla wysyłania, Gateway i odpowiedzi agenta
+    - Modyfikowanie potoku multimediów lub załączników
+summary: Reguły obsługi obrazów i multimediów w odpowiedziach wysyłania, Gateway oraz agenta
 title: Obsługa obrazów i multimediów
 x-i18n:
-    generated_at: "2026-06-27T17:45:02Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:17:40Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: eeee181cae2798b7d0f5dbe0331c6b09612755b4d796d98baaeaf6989955def5
+    source_hash: 41d5bbd174b4fb35b616a9e90930485fd76dc8cfbad2e178f0823e6fb40c36f8
     source_path: nodes/images.md
     workflow: 16
 ---
 
-Kanał WhatsApp działa przez **Baileys Web**. Ten dokument opisuje bieżące reguły obsługi multimediów dla wysyłania, Gateway i odpowiedzi agentów.
+Kanał WhatsApp działa na Baileys Web. Ta strona opisuje reguły obsługi multimediów podczas wysyłania, w Gateway i w odpowiedziach agenta.
 
 ## Cele
 
-- Wysyłanie multimediów z opcjonalnymi podpisami przez `openclaw message send --media`.
-- Umożliwienie automatycznym odpowiedziom ze skrzynki odbiorczej web dołączania multimediów obok tekstu.
+- Wysyłanie multimediów z opcjonalnym podpisem za pomocą `openclaw message send --media`.
+- Umożliwienie dołączania multimediów obok tekstu do automatycznych odpowiedzi ze skrzynki odbiorczej w interfejsie WWW.
 - Utrzymanie rozsądnych i przewidywalnych limitów dla poszczególnych typów.
 
 ## Interfejs CLI
 
-- `openclaw message send --media <path-or-url> [--message <caption>]`
-  - `--media` jest opcjonalne; podpis może być pusty przy wysyłaniu samych multimediów.
-  - `--dry-run` wypisuje rozwiązany ładunek; `--json` emituje `{ channel, to, messageId, mediaUrl, caption }`.
+`openclaw message send --target <dest> --media <path-or-url> [--message <caption>]`
+
+- `--media <path-or-url>` — dołącza multimedia (obraz/dźwięk/film/dokument); akceptuje ścieżki lokalne lub adresy URL. Opcjonalne; podpis może być pusty przy wysyłaniu samych multimediów.
+- `--gif-playback` — traktuje film jako animację GIF (tylko WhatsApp).
+- `--force-document` — wysyła multimedia jako dokument, aby uniknąć kompresji przez kanał (Telegram, WhatsApp); dotyczy obrazów, plików GIF i filmów.
+- `--reply-to <id>`, `--thread-id <id>`, `--pin`, `--silent` — opcje dostarczania i wątków współdzielone z wiadomościami zawierającymi tylko tekst.
+- `--dry-run` — wyświetla wynikowy ładunek i pomija wysyłanie.
+- `--json` — wyświetla wynik jako JSON: `{ action, channel, dryRun, handledBy, messageId?, payload }` (`payload` zawiera wynik wysyłania specyficzny dla kanału, w tym ewentualne odwołanie do multimediów).
 
 ## Zachowanie kanału WhatsApp Web
 
-- Dane wejściowe: lokalna ścieżka pliku **lub** adres URL HTTP(S).
-- Przepływ: wczytaj do Buffer, wykryj rodzaj multimediów i zbuduj właściwy ładunek:
-  - **Obrazy:** zmiana rozmiaru i ponowna kompresja do JPEG (maksymalny bok 2048px) z celem `channels.whatsapp.mediaMaxMb` (domyślnie: 50 MB).
-  - **Audio/Głos/Wideo:** przekazywanie bez zmian do 16 MB; audio jest wysyłane jako notatka głosowa (`ptt: true`).
-  - **Dokumenty:** wszystko inne, do 100 MB, z zachowaniem nazwy pliku, gdy jest dostępna.
-- Odtwarzanie w stylu GIF w WhatsApp: wyślij MP4 z `gifPlayback: true` (CLI: `--gif-playback`), aby klienci mobilni zapętlali je inline.
-- Wykrywanie MIME preferuje bajty magiczne, potem nagłówki, potem rozszerzenie pliku.
-- Podpis pochodzi z `--message` albo `reply.text`; pusty podpis jest dozwolony.
-- Logowanie: tryb niewerbose pokazuje `↩️`/`✅`; tryb verbose zawiera rozmiar i ścieżkę/URL źródła.
+- Dane wejściowe: lokalna ścieżka do pliku **lub** adres URL HTTP(S).
+- Przepływ: wczytanie do bufora, wykrycie rodzaju multimediów, a następnie utworzenie wychodzącego ładunku odpowiedniego dla danego rodzaju:
+  - **Obrazy:** optymalizowane tak, aby zmieściły się w limicie `channels.whatsapp.mediaMaxMb` (domyślnie 50 MB). Obrazy bez przezroczystości są ponownie kompresowane do JPEG (domyślna sekwencja rozmiarów boków zaczyna się od 2048 px i maleje przy kolejnych przekroczeniach rozmiaru); obrazy z przezroczystością pozostają w formacie PNG. Jeśli źródło jest już akceptowalnym plikiem JPEG/PNG/WebP mieszczącym się w limitach rozmiaru i długości boku, oryginalne bajty pozostają niezmienione zamiast podlegać ponownej kompresji. Animowane pliki GIF nigdy nie są ponownie kodowane — sprawdzany jest jedynie ich rozmiar.
+  - **Dźwięk/wiadomości głosowe:** jeśli dźwięk nie jest już w natywnym formacie wiadomości głosowej (`.ogg`/`.opus` albo `audio/ogg`/`audio/opus`), przed wysłaniem jako wiadomość głosowa (`ptt: true`) jest transkodowany przez `ffmpeg` do Opus/OGG (48 kHz, mono, 64 kb/s, maksymalnie 20 minut).
+  - **Filmy:** przekazywane bez zmian do 16 MB.
+  - **Dokumenty:** wszystkie pozostałe typy, do 100 MB, z zachowaniem nazwy pliku, jeśli jest dostępna.
+- Odtwarzanie w stylu GIF w WhatsApp: wysłanie pliku MP4 z `gifPlayback: true` (CLI: `--gif-playback`), aby klienci mobilni odtwarzali go w pętli bezpośrednio w wiadomości.
+- Wykrywanie typu MIME preferuje sygnaturę bajtową, następnie rozszerzenie pliku, a na końcu nagłówki odpowiedzi; ogólny wykryty kontener (`application/octet-stream`, `zip`) nigdy nie zastępuje bardziej szczegółowego mapowania rozszerzenia (na przykład XLSX zamiast ZIP).
+- Podpis pochodzi z `--message` lub `reply.text`; pusty podpis jest dozwolony.
+- Rejestrowanie: tryb bez szczegółów pokazuje `↩️`/`✅`; tryb szczegółowy obejmuje rozmiar oraz ścieżkę źródłową/adres URL.
+
+<Note>
+Podane wyżej wartości 16 MB dla dźwięku i filmu oraz 100 MB dla dokumentów są współdzielonymi domyślnymi limitami dla poszczególnych rodzajów multimediów, używanymi, gdy nie przekazano jawnego limitu bajtów. Wysyłanie przez WhatsApp ustawia jawny limit na podstawie `channels.whatsapp.mediaMaxMb` (domyślnie 50 MB), stosowany jednakowo do wszystkich rodzajów multimediów na danym koncie.
+</Note>
 
 ## Potok automatycznych odpowiedzi
 
-- `getReplyFromConfig` zwraca `{ text?, mediaUrl?, mediaUrls? }`.
-- Gdy multimedia są obecne, nadawca web rozwiązuje lokalne ścieżki lub adresy URL przy użyciu tego samego potoku co `openclaw message send`.
-- Wiele pozycji multimedialnych jest wysyłanych sekwencyjnie, jeśli zostały podane.
+- `getReplyFromConfig` zwraca ładunek odpowiedzi (lub tablicę ładunków), zawierający między innymi pola `text?`, `mediaUrl?` i `mediaUrls?`.
+- Gdy multimedia są obecne, moduł wysyłający w interfejsie WWW rozpoznaje lokalne ścieżki lub adresy URL przy użyciu tego samego potoku co `openclaw message send`.
+- Jeśli podano wiele multimediów, są one wysyłane kolejno.
 
-## Multimedia przychodzące do poleceń
+## Multimedia przychodzące w poleceniach
 
-- Gdy przychodzące wiadomości web zawierają multimedia, OpenClaw pobiera je do pliku tymczasowego i udostępnia zmienne szablonów:
-  - `{{MediaUrl}}` pseudo-URL dla przychodzących multimediów.
-  - `{{MediaPath}}` lokalna ścieżka tymczasowa zapisana przed uruchomieniem polecenia.
-- Gdy włączona jest piaskownica Docker dla sesji, przychodzące multimedia są kopiowane do obszaru roboczego piaskownicy, a `MediaPath`/`MediaUrl` są przepisywane na ścieżkę względną, taką jak `media/inbound/<filename>`.
-- Rozumienie multimediów (jeśli skonfigurowane przez `tools.media.*` lub współdzielone `tools.media.models`) działa przed szablonowaniem i może wstawiać bloki `[Image]`, `[Audio]` i `[Video]` do `Body`.
-  - Audio ustawia `{{Transcript}}` i używa transkrypcji do parsowania poleceń, aby polecenia z ukośnikiem nadal działały.
-  - Opisy wideo i obrazów zachowują dowolny tekst podpisu na potrzeby parsowania poleceń.
-  - Jeśli aktywny główny model obrazów już natywnie obsługuje widzenie, OpenClaw pomija blok podsumowania `[Image]` i zamiast tego przekazuje oryginalny obraz do modelu.
-- Domyślnie przetwarzany jest tylko pierwszy pasujący załącznik obrazu/audio/wideo; ustaw `tools.media.<cap>.attachments`, aby przetwarzać wiele załączników.
+- Gdy przychodzące wiadomości internetowe zawierają multimedia, OpenClaw pobiera je do pliku tymczasowego i udostępnia zmienne szablonu:
+  - `{{MediaUrl}}` — pseudoadres URL przychodzącego pliku multimedialnego.
+  - `{{MediaPath}}` — lokalna ścieżka tymczasowa zapisywana przed uruchomieniem polecenia.
+- Gdy włączona jest osobna piaskownica Docker dla każdej sesji, przychodzące multimedia są kopiowane do przestrzeni roboczej piaskownicy, a `MediaPath`/`MediaUrl` są przekształcane na ścieżkę względną wobec piaskownicy, na przykład `media/inbound/<filename>`.
+- Analiza multimediów (skonfigurowana za pomocą `tools.media.*` lub współdzielonego `tools.media.models`) jest wykonywana przed zastosowaniem szablonu i może wstawiać bloki `[Image]`, `[Audio]` i `[Video]` do `Body`.
+  - Dźwięk ustawia `{{Transcript}}` i używa transkrypcji do analizy poleceń, dzięki czemu polecenia z ukośnikiem nadal działają.
+  - Opisy filmów i obrazów zachowują tekst podpisu na potrzeby analizy poleceń.
+  - Jeśli aktywny model główny natywnie obsługuje już analizę obrazu, OpenClaw pomija blok podsumowania `[Image]` i zamiast niego przekazuje modelowi oryginalny obraz.
+- Domyślnie przetwarzany jest tylko pierwszy pasujący załącznik obrazu, dźwięku lub filmu; ustaw `tools.media.<capability>.attachments`, aby przetwarzać wiele załączników.
 
 ## Limity i błędy
 
-**Limity wysyłania wychodzącego (wysyłka WhatsApp web)**
+**Limity wysyłania wychodzącego (wysyłanie przez WhatsApp Web)**
 
-- Obrazy: do `channels.whatsapp.mediaMaxMb` (domyślnie: 50 MB) po ponownej kompresji.
-- Audio/głos/wideo: limit 16 MB; dokumenty: limit 100 MB.
-- Zbyt duże lub nieczytelne multimedia → czytelny błąd w logach, a odpowiedź jest pomijana.
+- Obrazy: do `channels.whatsapp.mediaMaxMb` (domyślnie 50 MB) po optymalizacji.
+- Dźwięk/film: limit 16 MB (współdzielona wartość domyślna; podczas wysyłania przez WhatsApp zastępowana przez `mediaMaxMb`).
+- Dokumenty: limit 100 MB (współdzielona wartość domyślna; podczas wysyłania przez WhatsApp zastępowana przez `mediaMaxMb`).
+- Multimedia o zbyt dużym rozmiarze lub niemożliwe do odczytania powodują wyświetlenie jednoznacznego błędu w dziennikach, a odpowiedź jest pomijana.
 
-**Limity rozumienia multimediów (transkrypcja/opis)**
+**Limity analizy multimediów (transkrypcja/opis)**
 
-- Domyślnie obraz: 10 MB (`tools.media.image.maxBytes`).
-- Domyślnie audio: 20 MB (`tools.media.audio.maxBytes`).
-- Domyślnie wideo: 50 MB (`tools.media.video.maxBytes`).
-- Zbyt duże multimedia pomijają rozumienie, ale odpowiedzi nadal przechodzą z oryginalną treścią.
+- Domyślny limit obrazu: 10 MB (`tools.media.image.maxBytes`).
+- Domyślny limit dźwięku: 20 MB (`tools.media.audio.maxBytes`).
+- Domyślny limit filmu: 50 MB (`tools.media.video.maxBytes`).
+- Multimedia o zbyt dużym rozmiarze nie są analizowane, ale odpowiedź nadal jest wysyłana z oryginalną treścią.
 
-## Uwagi do testów
+## Uwagi dotyczące testów
 
-- Obejmij przepływy wysyłania i odpowiedzi dla przypadków obrazu/audio/dokumentu.
-- Zweryfikuj ponowną kompresję obrazów (ograniczenie rozmiaru) i flagę notatki głosowej dla audio.
-- Upewnij się, że odpowiedzi z wieloma multimediami rozsyłają się jako sekwencyjne wysyłki.
+- Uwzględnij przepływy wysyłania i odpowiedzi dla obrazów, dźwięku oraz dokumentów.
+- Zweryfikuj limity rozmiaru po optymalizacji obrazu oraz flagę wiadomości głosowej dla dźwięku.
+- Upewnij się, że odpowiedzi zawierające wiele multimediów są rozdzielane na kolejne wysyłki.
 
-## Powiązane
+## Powiązane materiały
 
-- [Przechwytywanie z kamery](/pl/nodes/camera)
-- [Rozumienie multimediów](/pl/nodes/media-understanding)
-- [Audio i notatki głosowe](/pl/nodes/audio)
+- [Przechwytywanie obrazu z kamery](/pl/nodes/camera)
+- [Analiza multimediów](/pl/nodes/media-understanding)
+- [Dźwięk i wiadomości głosowe](/pl/nodes/audio)

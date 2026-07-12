@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Stai installando, configurando o verificando il Plugin raft
-summary: OpenClaw Raft channel plugin per bridge di riattivazione CLI sicuri.
+    - Stai installando, configurando o verificando il plugin raft
+summary: Plugin del canale Raft di OpenClaw per bridge di riattivazione sicuri tramite CLI.
 title: Plugin Raft
 x-i18n:
-    generated_at: "2026-06-27T17:58:48Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:19:45Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: fea04ec6a2f3e08d69fd95c8a8e368fdbc8e179b243b8f6b41b5f8ef70039efc
@@ -15,12 +15,12 @@ x-i18n:
 
 # Plugin Raft
 
-Plugin di canale OpenClaw Raft per bridge di riattivazione CLI sicuri.
+Plugin del canale Raft di OpenClaw per bridge sicuri di riattivazione della CLI.
 
 ## Distribuzione
 
 - Pacchetto: `@openclaw/raft`
-- Percorso di installazione: npm; ClawHub
+- Metodo di installazione: npm; ClawHub
 
 ## Superficie
 

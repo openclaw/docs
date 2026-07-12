@@ -1,48 +1,47 @@
 ---
 read_when:
     - Je wilt Xiaomi MiMo-modellen in OpenClaw
-    - Je hebt Xiaomi MiMo-authenticatie of Token Plan-configuratie nodig
-summary: Gebruik Xiaomi MiMo pay-as-you-go- en Token Plan-modellen met OpenClaw
+    - Je moet Xiaomi MiMo-authenticatie of een Token Plan instellen
+summary: Gebruik de pay-as-you-go- en Token Plan-modellen van Xiaomi MiMo met OpenClaw
 title: Xiaomi MiMo
 x-i18n:
-    generated_at: "2026-06-27T18:16:34Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:20:54Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 171c4b95c6ff12d4b8d75747d35fcad19c6173d670a3af65fe0a286e04199751
+    source_hash: e6b91ead3e4a32a93bca7e02476b8de11137e8a5b5fa434bad8187bc1b204856
     source_path: providers/xiaomi.md
     workflow: 16
 ---
 
-Xiaomi MiMo is het API-platform voor **MiMo**-modellen. OpenClaw bevat een gebundelde Xiaomi Plugin met twee presets voor tekstproviders:
+Xiaomi MiMo is het API-platform voor **MiMo**-modellen. De meegeleverde `xiaomi`-
+plugin (`enabledByDefault: true`, geen installatiestap) registreert twee tekstproviders
+en een spraakprovider (TTS):
 
-- `xiaomi` voor sleutels voor betalen naar gebruik (`sk-...`)
-- `xiaomi-token-plan` voor Token Plan-sleutels (`tp-...`) met regionale endpointpresets
+- `xiaomi` - sleutels met betaling naar gebruik (`sk-...`)
+- `xiaomi-token-plan` - Token Plan-sleutels (`tp-...`) met regionale vooraf ingestelde eindpunten
 
-Dezelfde Plugin registreert ook de `xiaomi`-spraakprovider (TTS).
-
-| Eigenschap        | Waarde                                                                                                                                             |
-| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Provider-id's     | `xiaomi` (betalen naar gebruik), `xiaomi-token-plan` (Token Plan)                                                                                  |
-| Plugin            | gebundeld, `enabledByDefault: true`                                                                                                                |
-| Auth-env-vars     | `XIAOMI_API_KEY`, `XIAOMI_TOKEN_PLAN_API_KEY`                                                                                                      |
-| Onboarding-vlaggen | `--auth-choice xiaomi-api-key`, `--auth-choice xiaomi-token-plan-cn`, `--auth-choice xiaomi-token-plan-sgp`, `--auth-choice xiaomi-token-plan-ams` |
-| Directe CLI-vlaggen | `--xiaomi-api-key <key>`, `--xiaomi-token-plan-api-key <key>`                                                                                    |
-| Contracten        | chatvoltooiingen + `speechProviders`                                                                                                               |
-| API               | OpenAI-compatibel (`openai-completions`)                                                                                                           |
-| Basis-URL's       | Betalen naar gebruik: `https://api.xiaomimimo.com/v1`; Token Plan-presets: `token-plan-{cn,sgp,ams}...`                                           |
-| Standaardmodellen | `xiaomi/mimo-v2-flash`, `xiaomi-token-plan/mimo-v2.5-pro`                                                                                          |
-| TTS-standaard     | `mimo-v2.5-tts`, stem `mimo_default`; voicedesign-model `mimo-v2.5-tts-voicedesign`                                                               |
+| Eigenschap          | Waarde                                                                                                                                             |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Provider-id's       | `xiaomi` (betaling naar gebruik), `xiaomi-token-plan` (Token Plan)                                                                                 |
+| Omgevingsvariabelen voor authenticatie | `XIAOMI_API_KEY`, `XIAOMI_TOKEN_PLAN_API_KEY`                                                                                         |
+| Onboardingvlaggen   | `--auth-choice xiaomi-api-key`, `--auth-choice xiaomi-token-plan-cn`, `--auth-choice xiaomi-token-plan-sgp`, `--auth-choice xiaomi-token-plan-ams` |
+| Directe CLI-vlaggen | `--xiaomi-api-key <key>`, `--xiaomi-token-plan-api-key <key>`                                                                                      |
+| API                 | OpenAI-compatibele chatvoltooiingen (`openai-completions`)                                                                                         |
+| Spraakcontract      | `speechProviders: ["xiaomi"]`                                                                                                                      |
+| Basis-URL's         | Betaling naar gebruik: `https://api.xiaomimimo.com/v1`; Token Plan: `token-plan-{cn,sgp,ams}.xiaomimimo.com/v1`                                   |
+| Standaardmodellen   | `xiaomi/mimo-v2-flash`, `xiaomi-token-plan/mimo-v2.5-pro`                                                                                          |
+| TTS-standaard       | `mimo-v2.5-tts`, stem `mimo_default`; stemontwerpmodel `mimo-v2.5-tts-voicedesign`                                                                |
 
 ## Aan de slag
 
 <Steps>
-  <Step title="Get the right key">
-    Maak een sleutel voor betalen naar gebruik aan in de [Xiaomi MiMo-console](https://platform.xiaomimimo.com/#/console/api-keys), of open je Token Plan-abonnementspagina en kopieer de regionale OpenAI-compatibele basis-URL plus de bijbehorende `tp-...`-sleutel.
+  <Step title="De juiste sleutel verkrijgen">
+    Maak een sleutel met betaling naar gebruik aan in de [Xiaomi MiMo-console](https://platform.xiaomimimo.com/#/console/api-keys), of open de abonnementspagina van je Token Plan en kopieer de regionale OpenAI-compatibele basis-URL en de bijbehorende `tp-...`-sleutel.
   </Step>
 
-  <Step title="Run onboarding">
-    Betalen naar gebruik:
+  <Step title="De onboarding uitvoeren">
+    Betaling naar gebruik:
 
     ```bash
     openclaw onboard --auth-choice xiaomi-api-key
@@ -54,7 +53,7 @@ Dezelfde Plugin registreert ook de `xiaomi`-spraakprovider (TTS).
     openclaw onboard --auth-choice xiaomi-token-plan-sgp
     ```
 
-    Of geef de sleutels direct door:
+    Je kunt de sleutels ook rechtstreeks doorgeven:
 
     ```bash
     openclaw onboard --auth-choice xiaomi-api-key --xiaomi-api-key "$XIAOMI_API_KEY"
@@ -62,7 +61,7 @@ Dezelfde Plugin registreert ook de `xiaomi`-spraakprovider (TTS).
     ```
 
   </Step>
-  <Step title="Verify the model is available">
+  <Step title="Controleren of het model beschikbaar is">
     ```bash
     openclaw models list --provider xiaomi
     openclaw models list --provider xiaomi-token-plan
@@ -70,48 +69,59 @@ Dezelfde Plugin registreert ook de `xiaomi`-spraakprovider (TTS).
   </Step>
 </Steps>
 
-## Catalogus voor betalen naar gebruik
-
-| Modelref               | Invoer      | Context   | Max. uitvoer | Redeneren | Opmerkingen      |
-| ---------------------- | ----------- | --------- | ------------- | --------- | ---------------- |
-| `xiaomi/mimo-v2-flash` | tekst       | 262,144   | 8,192         | Nee       | Standaardmodel   |
-| `xiaomi/mimo-v2-pro`   | tekst       | 1,048,576 | 32,000        | Ja        | Grote context    |
-| `xiaomi/mimo-v2-omni`  | tekst, afbeelding | 262,144   | 32,000        | Ja        | Multimodaal      |
-
 <Tip>
-De standaardmodelref is `xiaomi/mimo-v2-flash`. De provider wordt automatisch geïnjecteerd wanneer `XIAOMI_API_KEY` is ingesteld of wanneer er een auth-profiel bestaat.
+Tijdens de onboarding wordt de vorm van de sleutel gevalideerd en verschijnt er een waarschuwing wanneer een `tp-...`-sleutel wordt ingevoerd in het traject voor betaling naar gebruik, of wanneer een `sk-...`-sleutel wordt ingevoerd in het Token Plan-traject.
 </Tip>
+
+## Catalogus voor betaling naar gebruik
+
+| Modelreferentie        | Invoer      | Context   | Maximale uitvoer | Redeneren | Opmerkingen       |
+| ---------------------- | ----------- | --------- | ---------------- | --------- | ----------------- |
+| `xiaomi/mimo-v2-flash` | tekst       | 262,144   | 8,192            | Nee       | Standaardmodel    |
+| `xiaomi/mimo-v2-pro`   | tekst       | 1,048,576 | 32,000           | Ja        | Grote context     |
+| `xiaomi/mimo-v2-omni`  | tekst, afbeelding | 262,144 | 32,000      | Ja        | Multimodaal       |
 
 ## Token Plan-catalogus
 
-Kies de Token Plan-auth-keuze die overeenkomt met de regionale basis-URL die in Xiaomi's abonnements-UI wordt weergegeven:
+Kies de Token Plan-authenticatieoptie die overeenkomt met de regionale basis-URL die in de abonnementsinterface van Xiaomi wordt weergegeven:
 
-- `xiaomi-token-plan-cn` -> `https://token-plan-cn.xiaomimimo.com/v1`
-- `xiaomi-token-plan-sgp` -> `https://token-plan-sgp.xiaomimimo.com/v1`
-- `xiaomi-token-plan-ams` -> `https://token-plan-ams.xiaomimimo.com/v1`
+| Authenticatieoptie      | Basis-URL                                  |
+| ----------------------- | ------------------------------------------ |
+| `xiaomi-token-plan-cn`  | `https://token-plan-cn.xiaomimimo.com/v1`  |
+| `xiaomi-token-plan-sgp` | `https://token-plan-sgp.xiaomimimo.com/v1` |
+| `xiaomi-token-plan-ams` | `https://token-plan-ams.xiaomimimo.com/v1` |
 
-| Modelref                          | Invoer      | Context   | Max. uitvoer | Redeneren | Opmerkingen      |
-| --------------------------------- | ----------- | --------- | ------------- | --------- | ---------------- |
-| `xiaomi-token-plan/mimo-v2.5-pro` | tekst       | 1,048,576 | 131,072       | Ja        | Standaardmodel   |
-| `xiaomi-token-plan/mimo-v2.5`     | tekst, afbeelding | 1,048,576 | 131,072       | Ja        | Multimodaal      |
+| Modelreferentie                   | Invoer           | Context   | Maximale uitvoer | Redeneren | Opmerkingen    |
+| --------------------------------- | ---------------- | --------- | ---------------- | --------- | -------------- |
+| `xiaomi-token-plan/mimo-v2.5-pro` | tekst            | 1,048,576 | 131,072          | Ja        | Standaardmodel |
+| `xiaomi-token-plan/mimo-v2.5`     | tekst, afbeelding | 1,048,576 | 131,072         | Ja        | Multimodaal    |
 
-<Tip>
-Token Plan-onboarding valideert de sleutelvorm en waarschuwt wanneer een `tp-...`-sleutel wordt ingevoerd in het pad voor betalen naar gebruik, of wanneer een `sk-...`-sleutel wordt ingevoerd in het Token Plan-pad.
-</Tip>
+`xiaomi-token-plan` heeft een regionale basis-URL nodig om te kunnen worden herleid. Het ondersteunde
+traject is een meegeleverde Token Plan-onboardingoptie of een expliciet
+`models.providers.xiaomi-token-plan`-configuratieblok waarin `baseUrl` is ingesteld; de
+provider wordt zonder een van deze opties niet aangeboden.
+
+## Redeneermodellen
+
+`mimo-v2-pro`, `mimo-v2-omni`, `mimo-v2.5` en `mimo-v2.5-pro` ondersteunen
+de [`/think`-instructie](/nl/tools/thinking) van OpenClaw met de niveaus `off`,
+`minimal`, `low`, `medium`, `high`, `xhigh` en `max` (standaard `high`).
+`mimo-v2-flash` ondersteunt geen redeneren.
 
 ## Tekst-naar-spraak
 
-De gebundelde `xiaomi` Plugin registreert Xiaomi MiMo ook als spraakprovider voor
-`messages.tts`. Deze roept Xiaomi's TTS-contract voor chatvoltooiingen aan met de tekst als
-een `assistant`-bericht en optionele stijlinstructies als een `user`-bericht.
+De meegeleverde `xiaomi`-plugin registreert Xiaomi MiMo ook als spraakprovider
+voor `messages.tts`. Deze roept het TTS-contract voor chatvoltooiingen van Xiaomi aan met de
+tekst als een `assistant`-bericht en optionele stijlaanwijzingen als een `user`-
+bericht.
 
 | Eigenschap | Waarde                                   |
 | ---------- | ---------------------------------------- |
 | TTS-id     | `xiaomi` (`mimo`-alias)                  |
-| Auth       | `XIAOMI_API_KEY`                         |
+| Authenticatie | `XIAOMI_API_KEY`                      |
 | API        | `POST /v1/chat/completions` met `audio`  |
 | Standaard  | `mimo-v2.5-tts`, stem `mimo_default`     |
-| Uitvoer    | standaard MP3; WAV wanneer geconfigureerd |
+| Uitvoer    | Standaard MP3; WAV indien geconfigureerd |
 
 ```json5
 {
@@ -133,15 +143,15 @@ een `assistant`-bericht en optionele stijlinstructies als een `user`-bericht.
 }
 ```
 
-Ondersteunde ingebouwde stemmen zijn onder meer `mimo_default`, `default_zh`, `default_en`,
-`Mia`, `Chloe`, `Milo` en `Dean`. Preset-stemmodellen gebruiken `audio.voice`, dus
-OpenClaw verzendt `speakerVoice` voor `mimo-v2.5-tts` en `mimo-v2-tts`.
+Ingebouwde stemmen: `mimo_default`, `default_zh`, `default_en`, `Mia`, `Chloe`,
+`Milo`, `Dean`. Modellen met vooraf ingestelde stemmen (`mimo-v2.5-tts`, `mimo-v2-tts`) gebruiken
+`audio.voice`, waardoor OpenClaw voor deze modellen `speakerVoice` verzendt.
 
-Xiaomi's voicedesign-model, `mimo-v2.5-tts-voicedesign`, genereert de stem
-vanuit een stijlprompt in natuurlijke taal in plaats van een preset-stem-id. Configureer
-`style` met de gewenste stembeschrijving; OpenClaw verzendt deze als het `user`-
-bericht, verzendt de gesproken tekst als het `assistant`-bericht en laat
-`audio.voice` weg voor dit model.
+Het stemontwerpmodel `mimo-v2.5-tts-voicedesign` genereert de stem op basis van een
+stijlprompt in natuurlijke taal in plaats van een vooraf ingesteld stem-id. Stel `style` in op
+de gewenste stembeschrijving; OpenClaw verzendt deze als het `user`-bericht, verzendt
+de uit te spreken tekst als het `assistant`-bericht en laat `audio.voice` weg voor dit
+model.
 
 ```json5
 {
@@ -160,8 +170,9 @@ bericht, verzendt de gesproken tekst als het `assistant`-bericht en laat
 }
 ```
 
-Voor spraaknotitiedoelen zoals Feishu en Telegram transcodeert OpenClaw Xiaomi-
-uitvoer naar 48kHz Opus met `ffmpeg` vóór levering.
+Voor kanalen die een synthesedoel voor spraakberichten aanvragen (Discord, Feishu,
+Matrix, Telegram en WhatsApp), transcodeert OpenClaw de uitvoer van Xiaomi vóór aflevering
+naar 48kHz mono-Opus met `ffmpeg`.
 
 ## Configuratievoorbeeld
 
@@ -208,7 +219,7 @@ uitvoer naar 48kHz Opus met `ffmpeg` vóór levering.
 }
 ```
 
-Prijzen en compat-vlaggen komen uit het gebundelde Plugin-manifest, dus het configuratievoorbeeld laat `cost` en `compat` weg om afwijking van runtimegedrag te voorkomen.
+Prijzen en compatibiliteitsvlaggen zijn afkomstig uit het meegeleverde pluginmanifest, zodat in het configuratievoorbeeld `cost` en `compat` worden weggelaten om afwijkingen van het runtimegedrag te voorkomen.
 
 Token Plan:
 
@@ -247,33 +258,33 @@ Token Plan:
 }
 ```
 
-Prijzen komen uit het gebundelde manifest (Token Plan-modellen bevatten gelaagde prijzen voor cachelezingen), dus het configuratievoorbeeld laat `cost` weg.
+Prijzen zijn afkomstig uit het meegeleverde manifest (Token Plan-modellen bevatten gelaagde prijzen voor cacheleesbewerkingen), zodat in het configuratievoorbeeld `cost` wordt weggelaten.
 
 <AccordionGroup>
-  <Accordion title="Auto-injection behavior">
-    De `xiaomi`-provider wordt automatisch geïnjecteerd wanneer `XIAOMI_API_KEY` in je omgeving is ingesteld of wanneer er een auth-profiel bestaat. `xiaomi-token-plan` heeft een regionale basis-URL nodig, dus het ondersteunde pad is de gebundelde Token Plan-onboardingkeuze of een expliciet configuratieblok `models.providers.xiaomi-token-plan`.
+  <Accordion title="Gedrag bij automatische injectie">
+    De `xiaomi`-provider wordt automatisch ingeschakeld wanneer `XIAOMI_API_KEY` in je omgeving is ingesteld of wanneer er een authenticatieprofiel bestaat. `xiaomi-token-plan` heeft een regionale basis-URL nodig, dus het ondersteunde traject is de meegeleverde Token Plan-onboardingoptie of een expliciet `models.providers.xiaomi-token-plan`-configuratieblok.
   </Accordion>
 
-  <Accordion title="Model details">
-    - **mimo-v2-flash** — lichtgewicht en snel, ideaal voor algemene teksttaken. Geen ondersteuning voor redeneren.
-    - **mimo-v2-pro** — ondersteunt redeneren met een contextvenster van 1M tokens voor workloads met lange documenten.
-    - **mimo-v2-omni** — multimodaal model met redeneren dat zowel tekst- als afbeeldingsinvoer accepteert.
-    - **mimo-v2.5-pro** — Token Plan-standaard met Xiaomi's huidige V2.5-redeneerstack.
-    - **mimo-v2.5** — multimodale V2.5-route voor Token Plan.
+  <Accordion title="Modeldetails">
+    - **mimo-v2-flash** - lichtgewicht en snel, ideaal voor algemene teksttaken. Ondersteunt geen redeneren.
+    - **mimo-v2-pro** - ondersteunt redeneren met een contextvenster van 1 miljoen tokens voor werklasten met lange documenten.
+    - **mimo-v2-omni** - multimodaal model met ondersteuning voor redeneren dat zowel tekst- als afbeeldingsinvoer accepteert.
+    - **mimo-v2.5-pro** - het standaardmodel van Token Plan met de huidige V2.5-redeneerstack van Xiaomi.
+    - **mimo-v2.5** - de multimodale V2.5-route van Token Plan.
 
     <Note>
-    Modellen voor betalen naar gebruik gebruiken het prefix `xiaomi/`. Token Plan-modellen gebruiken het prefix `xiaomi-token-plan/`.
+    Modellen met betaling naar gebruik gebruiken het voorvoegsel `xiaomi/`. Token Plan-modellen gebruiken het voorvoegsel `xiaomi-token-plan/`.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Troubleshooting">
-    - Als modellen niet verschijnen, controleer dan of de relevante sleutel-env-var of het auth-profiel aanwezig en geldig is.
+  <Accordion title="Problemen oplossen">
+    - Als modellen niet verschijnen, controleer dan of de relevante omgevingsvariabele voor de sleutel of het authenticatieprofiel aanwezig en geldig is.
     - Controleer voor Token Plan of de gekozen onboardingregio overeenkomt met de basis-URL op de abonnementspagina en of de sleutel begint met `tp-`.
-    - Wanneer de Gateway als daemon draait, zorg er dan voor dat de sleutel beschikbaar is voor dat proces (bijvoorbeeld in `~/.openclaw/.env` of via `env.shellEnv`).
+    - Wanneer de Gateway als daemon wordt uitgevoerd, moet je ervoor zorgen dat de sleutel beschikbaar is voor dat proces (bijvoorbeeld in `~/.openclaw/.env` of via `env.shellEnv`).
 
     <Warning>
-    Sleutels die alleen in je interactieve shell zijn ingesteld, zijn niet zichtbaar voor door een daemon beheerde gatewayprocessen. Gebruik `~/.openclaw/.env` of `env.shellEnv`-configuratie voor permanente beschikbaarheid.
+    Sleutels die alleen in je interactieve shell zijn ingesteld, zijn niet zichtbaar voor Gateway-processen die als daemon worden beheerd. Gebruik de configuratie `~/.openclaw/.env` of `env.shellEnv` voor permanente beschikbaarheid.
     </Warning>
 
   </Accordion>
@@ -282,13 +293,16 @@ Prijzen komen uit het gebundelde manifest (Token Plan-modellen bevatten gelaagde
 ## Gerelateerd
 
 <CardGroup cols={2}>
-  <Card title="Model selection" href="/nl/concepts/model-providers" icon="layers">
-    Providers, modelrefs en failovergedrag kiezen.
+  <Card title="Modelselectie" href="/nl/concepts/model-providers" icon="layers">
+    Providers en modelreferenties kiezen en failovergedrag configureren.
   </Card>
-  <Card title="Configuration reference" href="/nl/gateway/configuration-reference" icon="gear">
-    Volledige OpenClaw-configuratiereferentie.
+  <Card title="Denkniveaus" href="/nl/tools/thinking" icon="brain">
+    Syntaxis van de `/think`-instructie en toewijzing van niveaus.
   </Card>
-  <Card title="Xiaomi MiMo console" href="https://platform.xiaomimimo.com" icon="arrow-up-right-from-square">
+  <Card title="Configuratiereferentie" href="/nl/gateway/configuration-reference" icon="gear">
+    Volledige configuratiereferentie voor OpenClaw.
+  </Card>
+  <Card title="Xiaomi MiMo-console" href="https://platform.xiaomimimo.com" icon="arrow-up-right-from-square">
     Xiaomi MiMo-dashboard en beheer van API-sleutels.
   </Card>
 </CardGroup>

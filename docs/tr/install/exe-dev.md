@@ -1,130 +1,131 @@
 ---
 read_when:
-    - Gateway için ucuz, her zaman açık bir Linux sunucusu istiyorsunuz
-    - Kendi VPS’inizi çalıştırmadan uzaktan Kontrol Arayüzü erişimi istiyorsunuz
+    - Gateway için ucuz ve sürekli açık bir Linux ana makinesi istiyorsunuz
+    - Kendi VPS’nizi çalıştırmadan uzaktan Kontrol Arayüzü erişimi istiyorsunuz
 summary: Uzaktan erişim için OpenClaw Gateway'i exe.dev üzerinde çalıştırın (VM + HTTPS proxy)
 title: exe.dev
 x-i18n:
-    generated_at: "2026-04-30T09:29:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:24:42Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b571f9b29bb2cca0f311db4188c922b2f70ee91cb48b233cf9922e57a7f05340
+    source_hash: a768511d2d7e4e4ec10bcdae83684417bde05286468b0534200f8dd5ec015f7b
     source_path: install/exe-dev.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Hedef: OpenClaw Gateway'in bir exe.dev VM üzerinde çalışması ve dizüstü bilgisayarınızdan şu adres üzerinden erişilebilir olması: `https://<vm-name>.exe.xyz`
+**Amaç:** OpenClaw Gateway'in bir [exe.dev](https://exe.dev) sanal makinesinde çalışması ve `https://<vm-name>.exe.xyz` adresinden erişilebilir olması.
 
-Bu sayfa, exe.dev'in varsayılan **exeuntu** imajını varsayar. Farklı bir dağıtım seçtiyseniz, paketleri buna göre eşleyin.
+Bu kılavuz, exe.dev'in varsayılan **exeuntu** kalıbını temel alır. Diğer dağıtımlarda paketleri uygun şekilde eşleştirin.
 
-## Yeni başlayanlar için hızlı yol
-
-1. [https://exe.new/openclaw](https://exe.new/openclaw)
-2. Gerektiğinde kimlik doğrulama anahtarınızı/token'ınızı girin
-3. VM'inizin yanındaki "Ajan" düğmesine tıklayın ve Shelley'nin provizyonu tamamlamasını bekleyin
-4. `https://<vm-name>.exe.xyz/` adresini açın ve yapılandırılmış paylaşılan gizli değerle kimlik doğrulaması yapın (bu kılavuz varsayılan olarak token kimlik doğrulamasını kullanır, ancak `gateway.auth.mode` değerini değiştirirseniz parola kimlik doğrulaması da çalışır)
-5. Bekleyen cihaz eşleştirme isteklerini `openclaw devices approve <requestId>` ile onaylayın
-
-## Gerekenler
+## Gereksinimler
 
 - exe.dev hesabı
-- [exe.dev](https://exe.dev) sanal makinelerine `ssh exe.dev` erişimi (isteğe bağlı)
+- exe.dev sanal makinelerine `ssh exe.dev` erişimi (manuel kurulum için isteğe bağlı)
+
+## Başlangıç için hızlı yol
+
+1. [https://exe.new/openclaw](https://exe.new/openclaw) adresini açın
+2. Gerektiği şekilde kimlik doğrulama anahtarınızı/token'ınızı girin
+3. Sanal makinenizin yanındaki "Agent" seçeneğine tıklayın ve Shelley'nin hazırlama işlemini tamamlamasını bekleyin
+4. `https://<vm-name>.exe.xyz/` adresini açın ve yapılandırılmış paylaşılan gizli anahtarla kimlik doğrulayın (varsayılan olarak token kimlik doğrulaması kullanılır; `gateway.auth.mode` ayarını değiştirirseniz parola kimlik doğrulaması da çalışır)
+5. Bekleyen cihaz eşleştirme isteklerini `openclaw devices approve <requestId>` ile onaylayın
 
 ## Shelley ile otomatik kurulum
 
-Shelley, [exe.dev](https://exe.dev)'in ajanı, istemimizle OpenClaw'ı anında kurabilir.
-Kullanılan istem aşağıdaki gibidir:
+exe.dev'in aracısı Shelley, OpenClaw'u bir istem aracılığıyla kurabilir:
 
-```
-Set up OpenClaw (https://docs.openclaw.ai/install) on this VM. Use the non-interactive and accept-risk flags for openclaw onboarding. Add the supplied auth or token as needed. Configure nginx to forward from the default port 18789 to the root location on the default enabled site config, making sure to enable Websocket support. Pairing is done by "openclaw devices list" and "openclaw devices approve <request id>". Make sure the dashboard shows that OpenClaw's health is OK. exe.dev handles forwarding from port 8000 to port 80/443 and HTTPS for us, so the final "reachable" should be <vm-name>.exe.xyz, without port specification.
+```text
+Bu sanal makinede OpenClaw'u (https://docs.openclaw.ai/install) kur. OpenClaw ilk kurulumunda etkileşimsiz ve riski kabul etme bayraklarını kullan. Sağlanan kimlik doğrulama bilgilerini veya token'ı gerektiği şekilde ekle. nginx'i, varsayılan etkin site yapılandırmasındaki kök konumda varsayılan 18789 numaralı porttan yönlendirme yapacak şekilde yapılandır ve WebSocket desteğini etkinleştirdiğinden emin ol. Eşleştirme, "openclaw devices list" ve "openclaw devices approve <request id>" komutlarıyla yapılır. Kontrol panelinde OpenClaw sağlık durumunun iyi olarak gösterildiğinden emin ol. exe.dev, 8000 numaralı porttan 80/443 numaralı portlara yönlendirmeyi ve HTTPS'i bizim için yönetir; bu nedenle nihai "erişilebilir" adres, port belirtilmeden <vm-name>.exe.xyz olmalıdır.
 ```
 
 ## Manuel kurulum
 
-## 1) VM'i oluşturun
+<Steps>
+  <Step title="Sanal makineyi oluşturun">
+    Cihazınızdan:
 
-Cihazınızdan:
+    ```bash
+    ssh exe.dev new
+    ```
 
-```bash
-ssh exe.dev new
-```
+    Ardından bağlanın:
 
-Ardından bağlanın:
+    ```bash
+    ssh <vm-name>.exe.xyz
+    ```
 
-```bash
-ssh <vm-name>.exe.xyz
-```
+    <Tip>
+    Bu sanal makineyi **durum bilgisi kalıcı** olacak şekilde tutun. OpenClaw; `openclaw.json`, aracı başına `auth-profiles.json`, oturumlar ve kanal/sağlayıcı durumunu `~/.openclaw/` altında, çalışma alanını ise `~/.openclaw/workspace/` altında saklar.
+    </Tip>
 
-<Tip>
-Bu VM'i **durum bilgili** tutun. OpenClaw, `openclaw.json`, ajan başına `auth-profiles.json`, oturumlar ve kanal/sağlayıcı durumunu `~/.openclaw/` altında, çalışma alanını ise `~/.openclaw/workspace/` altında saklar.
-</Tip>
+  </Step>
 
-## 2) Önkoşulları kurun (VM üzerinde)
+  <Step title="Ön koşulları kurun (sanal makinede)">
+    ```bash
+    sudo apt-get update
+    sudo apt-get install -y git curl jq ca-certificates openssl
+    ```
+  </Step>
 
-```bash
-sudo apt-get update
-sudo apt-get install -y git curl jq ca-certificates openssl
-```
+  <Step title="OpenClaw'u kurun">
+    ```bash
+    curl -fsSL https://openclaw.ai/install.sh | bash
+    ```
+  </Step>
 
-## 3) OpenClaw'ı kurun
+  <Step title="nginx'i 8000 numaralı porta proxy uygulayacak şekilde yapılandırın">
+    `/etc/nginx/sites-enabled/default` dosyasını düzenleyin:
 
-OpenClaw kurulum betiğini çalıştırın:
+    ```nginx
+    server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+        listen 8000;
+        listen [::]:8000;
 
-```bash
-curl -fsSL https://openclaw.ai/install.sh | bash
-```
+        server_name _;
 
-## 4) OpenClaw'ı 8000 numaralı bağlantı noktasına proxy'lemek için nginx'i ayarlayın
+        location / {
+            proxy_pass http://127.0.0.1:18789;
+            proxy_http_version 1.1;
 
-`/etc/nginx/sites-enabled/default` dosyasını şu içerikle düzenleyin
+            # WebSocket desteği
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
 
-```
-server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-    listen 8000;
-    listen [::]:8000;
+            # Standart proxy üst bilgileri
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $remote_addr;
+            proxy_set_header X-Forwarded-Proto $scheme;
 
-    server_name _;
-
-    location / {
-        proxy_pass http://127.0.0.1:18789;
-        proxy_http_version 1.1;
-
-        # WebSocket support
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-
-        # Standard proxy headers
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $remote_addr;
-        proxy_set_header X-Forwarded-Proto $scheme;
-
-        # Timeout settings for long-lived connections
-        proxy_read_timeout 86400s;
-        proxy_send_timeout 86400s;
+            # Uzun süreli bağlantılar için zaman aşımı ayarları
+            proxy_read_timeout 86400s;
+            proxy_send_timeout 86400s;
+        }
     }
-}
-```
+    ```
 
-İstemci tarafından sağlanan zincirleri korumak yerine yönlendirme başlıklarının üzerine yazın.
-OpenClaw, yönlendirilen IP meta verilerine yalnızca açıkça yapılandırılmış proxy'lerden geldiğinde güvenir
-ve ekleme tarzı `X-Forwarded-For` zincirleri sertleştirme riski olarak değerlendirilir.
+    İstemci tarafından sağlanan zincirleri korumak yerine yönlendirme üst bilgilerini üzerine yazarak değiştirin. OpenClaw, yönlendirilen IP meta verilerine yalnızca açıkça yapılandırılmış proxy'lerden geldiğinde güvenir ve ekleme tarzındaki `X-Forwarded-For` zincirleri güvenlik güçlendirmesi açısından riskli kabul edilir.
 
-## 5) OpenClaw'a erişin ve ayrıcalıkları verin
+  </Step>
 
-`https://<vm-name>.exe.xyz/` adresine erişin (onboarding çıktısındaki Kontrol UI çıktısına bakın). Kimlik doğrulaması isterse, VM'den yapılandırılmış paylaşılan gizli değeri yapıştırın. Bu kılavuz token kimlik doğrulamasını kullanır, bu yüzden `gateway.auth.token`
-değerini `openclaw config get gateway.auth.token` ile alın (veya `openclaw doctor --generate-gateway-token` ile bir tane oluşturun).
-Gateway'i parola kimlik doğrulamasına değiştirdiyseniz bunun yerine `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD` kullanın.
-Cihazları `openclaw devices list` ve `openclaw devices approve <requestId>` ile onaylayın. Emin değilseniz, tarayıcınızdan Shelley'yi kullanın!
+  <Step title="OpenClaw'a erişin ve cihazları onaylayın">
+    `https://<vm-name>.exe.xyz/` adresini açın (ilk kurulumun Kontrol Arayüzü çıktısına bakın). Kimlik doğrulaması istenirse sanal makinede yapılandırılmış paylaşılan gizli anahtarı yapıştırın.
+
+    Bu kılavuz varsayılan olarak token kimlik doğrulamasını kullanır; bu nedenle `gateway.auth.token` değerini `openclaw config get gateway.auth.token` ile alın veya `openclaw doctor --n` ile yeni bir tane oluşturun. Gateway'i parola kimlik doğrulamasına geçirdiyseniz bunun yerine `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD` kullanın.
+
+    Cihazları `openclaw devices list` ve `openclaw devices approve <requestId>` ile onaylayın. Emin değilseniz tarayıcınızdan Shelley'yi kullanın.
+
+  </Step>
+</Steps>
 
 ## Uzak kanal kurulumu
 
-Uzak ana makineler için, `config set` için çok sayıda SSH çağrısı yapmak yerine tek bir `config patch` çağrısını tercih edin. Gerçek token'ları VM ortamında veya `~/.openclaw/.env` içinde tutun ve `openclaw.json` içine yalnızca SecretRefs koyun.
+Uzak ana makinelerde, `config set` için çok sayıda SSH çağrısı yapmak yerine tek bir `config patch` çağrısını tercih edin. Gerçek token'ları sanal makine ortamında veya `~/.openclaw/.env` içinde tutun ve `openclaw.json` dosyasına yalnızca SecretRef'leri koyun. SecretRef sözleşmesinin tamamı için [Gizli anahtar yönetimi](/tr/gateway/secrets) bölümüne bakın.
 
-VM üzerinde, servis ortamının ihtiyaç duyduğu gizli değerleri içerdiğinden emin olun:
+Sanal makinede, hizmet ortamının ihtiyaç duyduğu gizli anahtarları içermesini sağlayın:
 
 ```bash
 cat >> ~/.openclaw/.env <<'EOF'
@@ -135,7 +136,7 @@ OPENAI_API_KEY=sk-...
 EOF
 ```
 
-Yerel makinenizden bir yama dosyası oluşturun ve VM'e aktarın:
+Yerel makinenizde bir yama dosyası oluşturun ve bunu sanal makineye aktarın:
 
 ```json5
 // openclaw.remote.patch.json5
@@ -164,9 +165,9 @@ Yerel makinenizden bir yama dosyası oluşturun ve VM'e aktarın:
   },
   agents: {
     defaults: {
-      model: { primary: "openai/gpt-5.5" },
+      model: { primary: "openai/gpt-5.6-sol" },
       models: {
-        "openai/gpt-5.5": { params: { fastMode: true } },
+        "openai/gpt-5.6-sol": { params: { fastMode: true } },
       },
     },
   },
@@ -179,28 +180,27 @@ ssh <vm-name>.exe.xyz 'openclaw config patch --stdin' < ./openclaw.remote.patch.
 ssh <vm-name>.exe.xyz 'openclaw gateway restart && openclaw health'
 ```
 
-İç içe bir izin listesinin tam olarak yama değeri olması gerektiğinde, örneğin bir Discord kanal izin listesini değiştirirken `--replace-path` kullanın:
+İç içe bir izin verilenler listesinin tam olarak yama değeriyle aynı olması gerektiğinde `--replace-path` kullanın; örneğin bir Discord kanalının izin verilenler listesini değiştirmek için:
 
 ```bash
 ssh <vm-name>.exe.xyz 'openclaw config patch --stdin --replace-path "channels.discord.guilds[\"123\"].channels"' < ./discord.patch.json5
 ```
 
-## Uzak erişim
+Kanal yapılandırma başvurusunun tamamı için [Discord](/tr/channels/discord) ve [Slack](/tr/channels/slack) bölümlerine bakın.
 
-Uzak erişim, [exe.dev](https://exe.dev)'in kimlik doğrulaması tarafından yönetilir. Varsayılan olarak, 8000 numaralı bağlantı noktasından gelen HTTP trafiği e-posta kimlik doğrulamasıyla `https://<vm-name>.exe.xyz` adresine yönlendirilir.
+## Uzaktan erişim
+
+exe.dev, uzaktan erişim için kimlik doğrulamasını yönetir. Varsayılan olarak 8000 numaralı porttan gelen HTTP trafiği, e-posta kimlik doğrulamasıyla `https://<vm-name>.exe.xyz` adresine yönlendirilir.
 
 ## Güncelleme
 
 ```bash
-npm i -g openclaw@latest
-openclaw doctor
-openclaw gateway restart
-openclaw health
+openclaw update
 ```
 
-Kılavuz: [Güncelleme](/tr/install/updating)
+Kanal geçişleri ve manuel kurtarma için [Güncelleme](/tr/install/updating) bölümüne bakın.
 
-## İlgili
+## İlgili konular
 
 - [Uzak Gateway](/tr/gateway/remote)
-- [Kurulum genel bakışı](/tr/install)
+- [Kuruluma genel bakış](/tr/install)

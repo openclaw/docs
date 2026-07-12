@@ -1,11 +1,11 @@
 ---
 read_when:
     - Instalujesz, konfigurujesz lub audytujesz plugin Signal
-summary: Dodaje powierzchnię kanału Signal do wysyłania i odbierania wiadomości OpenClaw.
+summary: Dodaje obsługę kanału Signal do wysyłania i odbierania wiadomości OpenClaw.
 title: Plugin Signal
 x-i18n:
-    generated_at: "2026-06-27T18:03:38Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:30:39Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 7136222af25d73d50b9a973d287b863176c58d634da4c9d7726d5cc6942135bb
@@ -15,17 +15,17 @@ x-i18n:
 
 # Plugin Signal
 
-Dodaje powierzchnię kanału Signal do wysyłania i odbierania wiadomości OpenClaw.
+Dodaje kanał Signal do wysyłania i odbierania wiadomości OpenClaw.
 
 ## Dystrybucja
 
 - Pakiet: `@openclaw/signal`
-- Ścieżka instalacji: npm; ClawHub: `clawhub:@openclaw/signal`
+- Sposób instalacji: npm; ClawHub: `clawhub:@openclaw/signal`
 
 ## Powierzchnia
 
-channels: signal
+kanały: signal
 
 ## Powiązana dokumentacja
 
-- [signal](/pl/channels/signal)
+- [Signal](/pl/channels/signal)

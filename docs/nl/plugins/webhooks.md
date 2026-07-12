@@ -1,32 +1,26 @@
 ---
 read_when:
     - Je wilt TaskFlows activeren of aansturen vanuit een extern systeem
-    - Je configureert de gebundelde webhooks-Plugin
-summary: 'Webhooks-Plugin: geauthenticeerde TaskFlow-ingress voor vertrouwde externe automatisering'
-title: Webhooks-Plugin
+    - U configureert de meegeleverde webhooks-Plugin
+summary: 'Webhooks-Plugin: geauthenticeerde TaskFlow-ingang voor vertrouwde externe automatisering'
+title: Webhooks-plugin
 x-i18n:
-    generated_at: "2026-05-06T17:59:44Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:17:00Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 9d21d96f680fa24d4a53c1ed5759f800d3cfdc3336789c42c15266edd8ce9e80
+    source_hash: 081ccbb4ca60234b20f4db7379395bdc51e7203caad4c0a88f292989ca18b28e
     source_path: plugins/webhooks.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-De Webhooks Plugin voegt geverifieerde HTTP-routes toe die externe
-automatisering aan OpenClaw TaskFlows koppelen.
+De Webhooks-Plugin voegt geauthenticeerde HTTP-routes toe, zodat een vertrouwd extern
+systeem (Zapier, n8n, een CI-taak, een interne service) beheerde OpenClaw
+TaskFlows via HTTP kan maken en aansturen, zonder een aangepaste Plugin te schrijven.
 
-Gebruik het wanneer je wilt dat een vertrouwd systeem zoals Zapier, n8n, een CI-taak of een
-interne service beheerde TaskFlows maakt en aanstuurt zonder eerst een aangepaste
-Plugin te schrijven.
-
-## Waar het draait
-
-De Webhooks Plugin draait binnen het Gateway-proces.
-
-Als je Gateway op een andere machine draait, installeer en configureer je de Plugin op
-die Gateway-host en start je daarna de Gateway opnieuw.
+De Plugin wordt uitgevoerd binnen het Gateway-proces. Installeer en
+configureer de Plugin voor een externe Gateway op die host en start vervolgens de Gateway opnieuw. De Plugin wordt
+geleverd zonder geconfigureerde routes en doet dus niets totdat u ten minste één route toevoegt.
 
 ## Routes configureren
 
@@ -61,50 +55,48 @@ Stel de configuratie in onder `plugins.entries.webhooks.config`:
 
 Routevelden:
 
-- `enabled`: optioneel, standaard `true`
-- `path`: optioneel, standaard `/plugins/webhooks/<routeId>`
-- `sessionKey`: vereiste sessie die eigenaar is van de gekoppelde TaskFlows
-- `secret`: vereist gedeeld geheim of SecretRef
-- `controllerId`: optionele controller-id voor gemaakte beheerde flows
-- `description`: optionele operatornotitie
+| Veld           | Vereist | Standaard                     | Opmerkingen                                            |
+| -------------- | -------- | ----------------------------- | ------------------------------------------------------ |
+| `enabled`      | nee      | `true`                        |                                                        |
+| `path`         | nee      | `/plugins/webhooks/<routeId>` | Moet uniek zijn voor alle routes.                      |
+| `sessionKey`   | ja       | -                             | Sessie die eigenaar is van de gekoppelde TaskFlows.    |
+| `secret`       | ja       | -                             | Platte tekenreeks of een SecretRef (hieronder).        |
+| `controllerId` | nee      | `webhooks/<routeId>`          | Gebruikt als standaardcontroller voor `create_flow`.   |
+| `description`  | nee      | -                             | Alleen een opmerking voor de beheerder.                |
 
-Ondersteunde `secret`-invoer:
+`secret` accepteert een platte tekenreeks of een SecretRef: `{ source: "env" | "file" | "exec", provider: "default", id: "..." }`.
 
-- Platte tekenreeks
-- SecretRef met `source: "env" | "file" | "exec"`
-
-Als een route met een geheim het geheim bij het opstarten niet kan ophalen, slaat de Plugin
-die route over en logt een waarschuwing in plaats van een kapot eindpunt bloot te stellen.
+Elke geconfigureerde route wordt bij het opstarten geregistreerd, ongeacht of het geheim
+op dat moment kan worden opgehaald. Een geheim dat niet kan worden opgehaald, schakelt de
+route niet uit en slaat deze niet over: aanvragen naar de route mislukken bij de authenticatie (`401`) totdat het geheim kan worden
+opgehaald. SecretRef-waarden worden bij elke aanvraag opnieuw opgehaald, zodat rotatie van het
+onderliggende geheim (omgevingsvariabele, bestand of uitvoer van `exec`) zonder herstart van de
+Gateway van kracht wordt.
 
 ## Beveiligingsmodel
 
-Elke route wordt vertrouwd om te handelen met de TaskFlow-bevoegdheid van de geconfigureerde
-`sessionKey`.
+Elke route handelt met de TaskFlow-bevoegdheden van de geconfigureerde `sessionKey`: de route
+kan elke TaskFlow waarvan die sessie eigenaar is inspecteren en wijzigen. TaskFlow-toegang
+verloopt altijd via `api.runtime.tasks.managedFlows.bindSession(...)`, zodat een
+route nooit buiten de gekoppelde sessie kan handelen. Om de potentiële impact te beperken:
 
-Dit betekent dat de route TaskFlows van die sessie kan inspecteren en wijzigen, dus
-je moet:
+- Gebruik voor elke route een sterk, uniek geheim.
+- Geef de voorkeur aan een SecretRef boven een geheim als platte tekst in de configuratie.
+- Koppel routes aan de meest beperkte sessie die geschikt is voor de workflow.
+- Stel alleen het specifieke Webhook-pad beschikbaar dat u nodig hebt.
 
-- Een sterk uniek geheim per route gebruiken
-- Geheimverwijzingen verkiezen boven inline plaintext-geheimen
-- Routes koppelen aan de smalste sessie die bij de workflow past
-- Alleen het specifieke Webhook-pad blootstellen dat je nodig hebt
+Volgorde van de verwerking van aanvragen voor elk pad: controles van de HTTP-methode (alleen `POST`) en
+`Content-Type: application/json`, vervolgens snelheidsbeperking met een vast tijdvenster (120
+aanvragen per venster van 60 seconden per combinatie van pad en IP-adres van de client, met maximaal 4.096 bijgehouden
+sleutels), daarna beperking van gelijktijdig verwerkte aanvragen (8 gelijktijdige aanvragen per sleutel, met maximaal
+4.096 bijgehouden sleutels), vervolgens authenticatie met een gedeeld geheim en ten slotte het lezen van een JSON-hoofdtekst met een limiet van 256 KB en
+15 seconden. Aanvragen die een eerdere controle niet doorstaan, bereiken
+de latere controles nooit.
 
-De Plugin past toe:
+## Aanvraagindeling
 
-- Verificatie met gedeeld geheim
-- Bewaking van grootte van requestbody en time-outs
-- Rate limiting met vast venster
-- Beperking van gelijktijdige actieve requests
-- Eigenaarsgebonden TaskFlow-toegang via `api.runtime.tasks.managedFlows.bindSession(...)`
-
-## Requestindeling
-
-Stuur `POST`-requests met:
-
-- `Content-Type: application/json`
-- `Authorization: Bearer <secret>` of `x-openclaw-webhook-secret: <secret>`
-
-Voorbeeld:
+Verzend `POST`-aanvragen met `Content-Type: application/json` en
+`Authorization: Bearer <secret>` of `x-openclaw-webhook-secret: <secret>`:
 
 ```bash
 curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
@@ -115,27 +107,27 @@ curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
 
 ## Ondersteunde acties
 
-De Plugin accepteert momenteel deze JSON-waarden voor `action`:
+| Actie              | Doel                                                                        |
+| ------------------ | --------------------------------------------------------------------------- |
+| `create_flow`      | Maak een beheerde TaskFlow voor de sessie van de route.                     |
+| `get_flow`         | Haal één TaskFlow op aan de hand van de id.                                 |
+| `list_flows`       | Vermeld de TaskFlows voor de sessie van de route.                           |
+| `find_latest_flow` | Haal de meest recent bijgewerkte TaskFlow op.                               |
+| `resolve_flow`     | Zoek een TaskFlow op aan de hand van een niet-transparant token.            |
+| `get_task_summary` | Haal het taakoverzicht voor een TaskFlow op.                                |
+| `set_waiting`      | Markeer een TaskFlow als wachtend, met optionele status-/wachtgegevens.     |
+| `resume_flow`      | Hervat een wachtende/geblokkeerde TaskFlow.                                 |
+| `finish_flow`      | Markeer een TaskFlow als voltooid.                                          |
+| `fail_flow`        | Markeer een TaskFlow als mislukt.                                           |
+| `request_cancel`   | Vraag coöperatieve annulering aan.                                          |
+| `cancel_flow`      | Annuleer een TaskFlow (kan `202` retourneren als onderliggende taken nog actief zijn). |
+| `run_task`         | Maak een beheerde onderliggende taak binnen een bestaande TaskFlow.         |
 
-- `create_flow`
-- `get_flow`
-- `list_flows`
-- `find_latest_flow`
-- `resolve_flow`
-- `get_task_summary`
-- `set_waiting`
-- `resume_flow`
-- `finish_flow`
-- `fail_flow`
-- `request_cancel`
-- `cancel_flow`
-- `run_task`
+Acties die wijzigingen aanbrengen (`set_waiting`, `resume_flow`, `finish_flow`, `fail_flow`,
+`request_cancel`) vereisen `flowId` en `expectedRevision` voor optimistische
+gelijktijdigheidscontrole; een verouderde revisie retourneert `409 revision_conflict`.
 
 ### `create_flow`
-
-Maakt een beheerde TaskFlow voor de gekoppelde sessie van de route.
-
-Voorbeeld:
 
 ```json
 {
@@ -148,14 +140,9 @@ Voorbeeld:
 
 ### `run_task`
 
-Maakt een beheerde child task binnen een bestaande beheerde TaskFlow.
-
-Toegestane runtimes zijn:
-
-- `subagent`
-- `acp`
-
-Voorbeeld:
+Toegestane waarden voor `runtime`: `subagent`, `acp`. `startedAt`, `lastEventAt` en
+`progressSummary` zijn alleen geldig wanneer `status` gelijk is aan `"running"`; als u ze
+met een andere status verzendt, wordt `400 invalid_request` geretourneerd.
 
 ```json
 {
@@ -167,9 +154,7 @@ Voorbeeld:
 }
 ```
 
-## Responsvorm
-
-Geslaagde responses retourneren:
+## Antwoordstructuur
 
 ```json
 {
@@ -178,8 +163,6 @@ Geslaagde responses retourneren:
   "result": {}
 }
 ```
-
-Geweigerde requests retourneren:
 
 ```json
 {
@@ -191,10 +174,17 @@ Geweigerde requests retourneren:
 }
 ```
 
-De Plugin verwijdert bewust eigenaars-/sessiemetadata uit Webhook-responses.
+Weergaven van flows en taken bevatten nooit metagegevens over de eigenaar of sessie, zodat antwoorden
+de aan de route gekoppelde `sessionKey` niet kunnen lekken. Waarden voor `code` zijn onder andere `not_found`,
+`not_managed`, `revision_conflict`, `persist_failed`, `cancel_requested`,
+`cancel_pending`, `terminal`, `invalid_request`, `request_rejected` en
+actiespecifieke terugvalcodes (`mutation_rejected`, `create_rejected`,
+`task_not_created`, `cancel_rejected`) wanneer een wijziging wordt geweigerd om een
+reden die niet door de hierboven genoemde codes wordt gedekt.
 
-## Gerelateerde documentatie
+## Gerelateerd
 
-- [Plugin runtime SDK](/nl/plugins/sdk-runtime)
-- [Overzicht van hooks en Webhooks](/nl/automation/hooks)
-- [CLI-Webhooks](/nl/cli/webhooks)
+- [Hooks](/nl/automation/hooks) - interne gebeurtenisgestuurde hooks tegenover deze HTTP-gebaseerde TaskFlow-koppeling
+- [Gateway-webhooks (`hooks.*`-configuratie)](/nl/automation/cron-jobs#webhooks) - afzonderlijke algemene functie voor HTTP-eindpunten van de Gateway; niet hetzelfde als de routes van deze Plugin
+- [Runtime-SDK voor Plugins](/nl/plugins/sdk-runtime)
+- [CLI-webhooks](/nl/cli/webhooks)

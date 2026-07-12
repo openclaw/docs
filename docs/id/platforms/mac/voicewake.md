@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Bekerja pada jalur bangun suara atau PTT
-summary: Mode bangun suara dan push-to-talk serta detail perutean di aplikasi Mac
-title: Pengaktifan suara (macOS)
+    - Mengerjakan jalur aktivasi suara atau PTT
+summary: Mode aktivasi suara dan tekan-untuk-bicara serta detail perutean di aplikasi Mac
+title: Pemicu suara (macOS)
 x-i18n:
-    generated_at: "2026-06-27T17:43:33Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:22:06Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 33c6132d03efb837ae06f4810ff87eb981ad742d793657bc607f4ec214bc2afa
+    source_hash: 2a0a5ac44931b578daa4f74b3728a65a1c19ab9742e2d4b9f4c6db49fa5d7b8a
     source_path: platforms/mac/voicewake.md
     workflow: 16
 ---
@@ -17,67 +17,58 @@ x-i18n:
 
 ## Persyaratan
 
-Aktivasi Suara dan tekan-untuk-bicara memerlukan macOS 26 atau yang lebih baru. Pada versi macOS yang lebih lama,
-kontrol disembunyikan dari halaman pengaturan Suara, yang menampilkan persyaratan macOS 26.
+Aktivasi Suara dan tekan-untuk-bicara memerlukan macOS 26 atau yang lebih baru. Pada macOS versi lama, kontrol disembunyikan dari halaman pengaturan Suara, yang sebagai gantinya menampilkan persyaratan macOS 26.
 
 ## Mode
 
-- **Mode kata pemicu** (default): pengenal ucapan yang selalu aktif menunggu token pemicu (`swabbleTriggerWords`). Saat cocok, ia memulai perekaman, menampilkan overlay dengan teks parsial, dan mengirim otomatis setelah hening.
-- **Tekan-untuk-bicara (tahan Option Kanan)**: tahan tombol Option kanan untuk langsung merekam—tanpa pemicu. Overlay muncul saat ditahan; melepas tombol akan menyelesaikan dan meneruskan setelah jeda singkat agar Anda dapat menyesuaikan teks.
+- **Mode kata aktivasi** (bawaan): pengenal Ucapan yang selalu aktif menunggu token pemicu (`swabbleTriggerWords`). Saat cocok, pengenal mulai merekam, menampilkan overlay dengan teks sementara, dan mengirim secara otomatis setelah hening.
+- **Tekan-untuk-bicara (tahan Option Kanan)**: tahan tombol Option kanan untuk langsung merekam tanpa memerlukan pemicu. Overlay muncul selama tombol ditahan; melepasnya menyelesaikan dan meneruskan rekaman setelah jeda singkat agar Anda dapat mengedit teks.
 
-## Perilaku runtime (kata pemicu)
+## Perilaku runtime (kata aktivasi)
 
-- Pengenal ucapan berada di `VoiceWakeRuntime`.
-- Pemicu hanya aktif ketika ada **jeda bermakna** antara kata pemicu dan kata berikutnya (jarak ~0,55 dtk). Overlay/lonceng dapat dimulai saat jeda bahkan sebelum perintah dimulai.
-- Jendela hening: 2,0 dtk saat ucapan sedang mengalir, 5,0 dtk jika hanya pemicu yang terdengar.
-- Penghentian paksa: 120 dtk untuk mencegah sesi berjalan tak terkendali.
-- Debounce antar sesi: 350 md.
-- Overlay dikendalikan melalui `VoiceWakeOverlayController` dengan pewarnaan committed/volatile.
-- Setelah dikirim, pengenal dimulai ulang dengan bersih untuk mendengarkan pemicu berikutnya.
+- Pengenal berada di `VoiceWakeRuntime`.
+- Pemicu hanya aktif jika terdapat jeda yang bermakna antara kata aktivasi dan kata berikutnya (`triggerPauseWindow` = 0.55s). Overlay/nada dapat dimulai saat jeda, bahkan sebelum perintah dimulai.
+- Rentang keheningan: 2.0 detik (`silenceWindow`) saat ucapan mengalir, 5.0 detik (`triggerOnlySilenceWindow`) jika hanya pemicu yang terdengar.
+- Penghentian paksa: 120 detik (`captureHardStop`) untuk mencegah sesi berjalan tanpa terkendali.
+- Debounce antarsesi: 350 milidetik (`debounceAfterSend`) setelah pengiriman.
+- Overlay dikendalikan melalui `VoiceWakeOverlayController`, dengan pewarnaan teks tetap/sementara.
+- Setelah pengiriman, pengenal dimulai ulang dengan bersih untuk mendengarkan pemicu berikutnya.
 
 ## Invarian siklus hidup
 
-- Jika Aktivasi Suara diaktifkan dan izin diberikan, pengenal kata pemicu seharusnya sedang mendengarkan (kecuali selama perekaman tekan-untuk-bicara eksplisit).
-- Visibilitas overlay (termasuk penutupan manual melalui tombol X) tidak boleh pernah mencegah pengenal untuk melanjutkan.
-
-## Mode kegagalan overlay lengket (sebelumnya)
-
-Sebelumnya, jika overlay macet tetap terlihat dan Anda menutupnya secara manual, Aktivasi Suara dapat terlihat "mati" karena upaya mulai ulang runtime dapat diblokir oleh visibilitas overlay dan tidak ada mulai ulang berikutnya yang dijadwalkan.
-
-Pengerasan:
-
-- Mulai ulang runtime aktivasi tidak lagi diblokir oleh visibilitas overlay.
-- Penyelesaian penutupan overlay memicu `VoiceWakeRuntime.refresh(...)` melalui `VoiceSessionCoordinator`, sehingga penutupan manual dengan X selalu melanjutkan pendengaran.
+- Jika Aktivasi Suara diaktifkan dan izin diberikan, pengenal kata aktivasi tetap mendengarkan, kecuali selama perekaman tekan-untuk-bicara aktif.
+- Penutupan overlay, termasuk penutupan manual melalui tombol X, selalu melanjutkan pengenal: `VoiceSessionCoordinator.overlayDidDismiss` memanggil `VoiceWakeRuntime.refresh(state:)` pada setiap jalur penutupan. Lihat [Overlay suara](/id/platforms/mac/voice-overlay) untuk model sesi/token.
 
 ## Detail tekan-untuk-bicara
 
-- Deteksi hotkey menggunakan monitor `.flagsChanged` global untuk **Option kanan** (`keyCode 61` + `.option`). Kami hanya mengamati peristiwa (tidak menelan).
-- Pipeline perekaman berada di `VoicePushToTalk`: memulai Speech segera, mengalirkan parsial ke overlay, dan memanggil `VoiceWakeForwarder` saat dilepas.
-- Saat tekan-untuk-bicara dimulai, kami menjeda runtime kata pemicu untuk menghindari audio tap yang saling bersaing; runtime dimulai ulang otomatis setelah dilepas.
-- Izin: memerlukan Mikrofon + Speech; melihat peristiwa memerlukan persetujuan Aksesibilitas/Pemantauan Input.
-- Keyboard eksternal: beberapa mungkin tidak mengekspos Option kanan seperti yang diharapkan—tawarkan pintasan fallback jika pengguna melaporkan ada yang terlewat.
+- Deteksi tombol pintas menggunakan pemantau global `.flagsChanged` untuk Option kanan (`keyCode 61` + `.option`). Pemantau hanya mengamati peristiwa dan tidak pernah memblokirnya.
+- Perekaman berada di `VoicePushToTalk`: langsung memulai Ucapan, mengalirkan hasil sementara ke overlay, dan memanggil `VoiceWakeForwarder` saat tombol dilepas.
+- Memulai tekan-untuk-bicara menjeda runtime kata aktivasi untuk menghindari perebutan akses audio; runtime dimulai ulang secara otomatis setelah tombol dilepas.
+- Izin: memerlukan Mikrofon + Ucapan; menerima peristiwa tombol memerlukan persetujuan Accessibility/Input Monitoring.
+- Papan ketik eksternal: beberapa tidak mengekspos Option kanan sebagaimana mestinya. Tawarkan pintasan alternatif jika pengguna melaporkan kegagalan deteksi.
 
-## Pengaturan yang terlihat pengguna
+## Pengaturan yang terlihat oleh pengguna
 
-- Toggle **Aktivasi Suara**: mengaktifkan runtime kata pemicu.
-- **Tahan Option Kanan untuk bicara**: mengaktifkan monitor tekan-untuk-bicara.
-- Pemilih bahasa & mikrofon, pengukur level langsung, tabel kata pemicu, penguji (hanya lokal; tidak meneruskan).
-- Pemilih mikrofon mempertahankan pilihan terakhir jika perangkat terputus, menampilkan petunjuk terputus, dan sementara kembali ke default sistem hingga perangkat kembali.
-- **Suara**: lonceng saat pemicu terdeteksi dan saat mengirim; default ke suara sistem macOS "Glass". Anda dapat memilih file apa pun yang dapat dimuat `NSSound` (mis. MP3/WAV/AIFF) untuk setiap peristiwa atau memilih **Tanpa Suara**.
+- Tombol alih **Aktivasi Suara**: mengaktifkan runtime kata aktivasi.
+- **Tahan Option Kanan untuk berbicara**: mengaktifkan pemantau tekan-untuk-bicara.
+- Pemilih bahasa dan mikrofon, pengukur tingkat langsung, tabel kata pemicu, dan alat penguji (hanya lokal, tidak pernah meneruskan).
+- Pemilih mikrofon mempertahankan pilihan terakhir jika perangkat terputus, menampilkan petunjuk terputus, dan untuk sementara beralih ke perangkat bawaan sistem hingga perangkat tersebut kembali.
+- **Suara**: nada saat pemicu terdeteksi dan saat pengiriman, dengan suara sistem macOS "Glass" sebagai bawaan. Pilih berkas apa pun yang dapat dimuat oleh `NSSound` (misalnya MP3/WAV/AIFF) untuk setiap peristiwa, atau pilih **Tanpa Suara**.
 
 ## Perilaku penerusan
 
-- Saat Aktivasi Suara diaktifkan, transkrip diteruskan ke Gateway/agen aktif (mode lokal vs jarak jauh yang sama dengan yang digunakan bagian lain aplikasi Mac).
-- Balasan dikirim ke **penyedia utama terakhir digunakan** (WhatsApp/Telegram/Discord/WebChat). Jika pengiriman gagal, kesalahan dicatat dan run tetap terlihat melalui WebChat/log sesi.
+- Saat meneruskan, `VoiceWakeForwarder.selectedSessionOptions` memilih kunci sesi WebChat aktif jika telah ditetapkan; jika tidak, kunci sesi utama Gateway.
+- Fungsi ini mencari sesi tersebut melalui `sessions.list` dan memperoleh saluran serta target pengiriman dari konteks pengiriman sesi (dengan cadangan ke saluran/target terakhirnya, lalu ke kunci sesi yang diurai), dengan WebChat sebagai bawaan jika tidak ada yang dapat ditentukan.
+- Jika pengiriman gagal, galat dicatat (kategori `voicewake.forward`) dan proses tetap terlihat melalui log WebChat/sesi.
 
-## Payload penerusan
+## Muatan penerusan
 
-- `VoiceWakeForwarder.prefixedTranscript(_:)` menambahkan petunjuk mesin di awal sebelum mengirim. Digunakan bersama oleh jalur kata pemicu dan tekan-untuk-bicara.
+- `VoiceWakeForwarder.prefixedTranscript(_:)` menambahkan baris petunjuk mesin (nama host yang ditentukan, dengan cadangan ke "Mac ini") sebelum transkrip, yang digunakan bersama oleh jalur kata aktivasi dan tekan-untuk-bicara.
 
 ## Verifikasi cepat
 
-- Aktifkan tekan-untuk-bicara, tahan Option Kanan, bicara, lepaskan: overlay seharusnya menampilkan parsial lalu mengirim.
-- Saat menahan, telinga di bilah menu seharusnya tetap membesar (menggunakan `triggerVoiceEars(ttl:nil)`); telinga mengecil setelah dilepas.
+- Aktifkan tekan-untuk-bicara, tahan Option Kanan, berbicara, lalu lepaskan: overlay seharusnya menampilkan hasil sementara, kemudian mengirimkannya.
+- Selama tombol ditahan, ikon telinga di bilah menu seharusnya tetap membesar (`triggerVoiceEars(ttl: nil)`); ikon mengecil setelah tombol dilepas.
 
 ## Terkait
 

@@ -1,23 +1,23 @@
 ---
 read_when:
-    - Je komt van Claude Code of Claude Desktop en wilt instructies, MCP-servers en Skills behouden
-    - U moet begrijpen wat OpenClaw automatisch importeert en wat alleen in het archief blijft
-summary: Verplaats de lokale staat van Claude Code en Claude Desktop naar OpenClaw met een vooraf bekeken import
-title: Migreren van Claude
+    - Je stapt over van Claude Code of Claude Desktop en wilt instructies, MCP-servers en Skills behouden
+    - Je moet begrijpen wat OpenClaw automatisch importeert en wat uitsluitend in het archief blijft.
+summary: Verplaats de lokale status van Claude Code en Claude Desktop naar OpenClaw met een vooraf bekeken importbewerking
+title: Migreren vanaf Claude
 x-i18n:
-    generated_at: "2026-04-29T22:55:05Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:00:16Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1b44eda85f3a3714d7d360d04fdd2c99a692fa6491f12e73847c5f08d702a62c
+    source_hash: f31088b749a1bebe39b16f519b1817ffeb71ca31e8cbf46fd59db6ff603dbe0f
     source_path: install/migrating-claude.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw importeert lokale Claude-status via de gebundelde Claude-migratieprovider. De provider toont elk item vooraf voordat de status wordt gewijzigd, redigeert geheimen in plannen en rapporten, en maakt een geverifieerde back-up vóór het toepassen.
+OpenClaw importeert de lokale Claude-status via de gebundelde Claude-migratieprovider. De provider toont een voorbeeld van elk item voordat de status wordt gewijzigd, maskeert geheimen in plannen en rapporten en maakt vóór het toepassen een geverifieerde back-up.
 
 <Note>
-Onboarding-imports vereisen een nieuwe OpenClaw-installatie. Als je al lokale OpenClaw-status hebt, reset dan eerst configuratie, referenties, sessies en de werkruimte, of gebruik `openclaw migrate` rechtstreeks met `--overwrite` nadat je het plan hebt beoordeeld.
+Voor importeren tijdens de onboarding is een nieuwe OpenClaw-installatie vereist. Als u al een lokale OpenClaw-status hebt, stelt u eerst de configuratie, aanmeldgegevens, sessies en werkruimte opnieuw in. U kunt ook rechtstreeks `openclaw migrate` gebruiken met `--overwrite`, nadat u het plan hebt gecontroleerd.
 </Note>
 
 ## Twee manieren om te importeren
@@ -30,7 +30,7 @@ Onboarding-imports vereisen een nieuwe OpenClaw-installatie. Als je al lokale Op
     openclaw onboard --flow import
     ```
 
-    Of verwijs naar een specifieke bron:
+    Of geef een specifieke bron op:
 
     ```bash
     openclaw onboard --import-from claude --import-source ~/.claude
@@ -38,14 +38,14 @@ Onboarding-imports vereisen een nieuwe OpenClaw-installatie. Als je al lokale Op
 
   </Tab>
   <Tab title="CLI">
-    Gebruik `openclaw migrate` voor gescripte of herhaalbare runs. Zie [`openclaw migrate`](/nl/cli/migrate) voor de volledige referentie.
+    Gebruik `openclaw migrate` voor gescripte of herhaalbare uitvoeringen. Zie [`openclaw migrate`](/nl/cli/migrate) voor de volledige referentie.
 
     ```bash
     openclaw migrate claude --dry-run
     openclaw migrate apply claude --yes
     ```
 
-    Voeg `--from <path>` toe om een specifieke Claude Code-home of projectroot te importeren.
+    Voeg `--from <path>` toe om een specifieke basismap van Claude Code of projecthoofdmap te importeren.
 
   </Tab>
 </Tabs>
@@ -54,50 +54,50 @@ Onboarding-imports vereisen een nieuwe OpenClaw-installatie. Als je al lokale Op
 
 <AccordionGroup>
   <Accordion title="Instructies en geheugen">
-    - Projectinhoud van `CLAUDE.md` en `.claude/CLAUDE.md` wordt gekopieerd of toegevoegd aan de OpenClaw-agentwerkruimte `AGENTS.md`.
-    - Gebruikersinhoud van `~/.claude/CLAUDE.md` wordt toegevoegd aan werkruimte `USER.md`.
+    - De inhoud van `CLAUDE.md` en `.claude/CLAUDE.md` van het project wordt gekopieerd naar of toegevoegd aan `AGENTS.md` in de OpenClaw-agentwerkruimte.
+    - De inhoud van `~/.claude/CLAUDE.md` van de gebruiker wordt toegevoegd aan `USER.md` in de werkruimte.
 
   </Accordion>
   <Accordion title="MCP-servers">
-    MCP-serverdefinities worden geïmporteerd uit project `.mcp.json`, Claude Code `~/.claude.json` en Claude Desktop `claude_desktop_config.json` wanneer aanwezig.
+    Indien aanwezig, worden MCP-serverdefinities geïmporteerd uit `.mcp.json` van het project, `~/.claude.json` van Claude Code en `claude_desktop_config.json` van Claude Desktop.
   </Accordion>
-  <Accordion title="Skills en commando's">
-    - Claude Skills met een `SKILL.md`-bestand worden gekopieerd naar de OpenClaw-werkruimte-Skills-directory.
-    - Claude Markdown-commandobestanden onder `.claude/commands/` of `~/.claude/commands/` worden omgezet naar OpenClaw Skills met `disable-model-invocation: true`.
+  <Accordion title="Skills en opdrachten">
+    - Claude-skills met een `SKILL.md`-bestand worden gekopieerd naar de Skills-map van de OpenClaw-werkruimte.
+    - Markdown-bestanden met Claude-opdrachten onder `.claude/commands/` of `~/.claude/commands/` worden geconverteerd naar OpenClaw-Skills met `disable-model-invocation: true`.
 
   </Accordion>
 </AccordionGroup>
 
-## Wat alleen archief blijft
+## Wat alleen in het archief blijft
 
-De provider kopieert deze naar het migratierapport voor handmatige beoordeling, maar laadt ze **niet** in live OpenClaw-configuratie:
+De provider kopieert het volgende naar het migratierapport voor handmatige controle, maar laadt het **niet** in de actieve OpenClaw-configuratie:
 
 - Claude-hooks
-- Claude-machtigingen en brede allowlists voor tools
-- Claude-omgevingsstandaarden
+- Claude-machtigingen en brede toestemmingslijsten voor tools
+- Standaardwaarden voor de Claude-omgeving
 - `CLAUDE.local.md`
 - `.claude/rules/`
-- Claude-subagents onder `.claude/agents/` of `~/.claude/agents/`
-- Claude Code-caches, plannen en projectgeschiedenisdirectory's
-- Claude Desktop-extensies en door het besturingssysteem opgeslagen referenties
+- Claude-subagenten onder `.claude/agents/` of `~/.claude/agents/`
+- Cache-, plan- en projectgeschiedenismappen van Claude Code
+- Claude Desktop-extensies en in het besturingssysteem opgeslagen aanmeldgegevens
 
-OpenClaw weigert hooks uit te voeren, allowlists met machtigingen te vertrouwen, of ondoorzichtige OAuth- en Desktop-referentiestatus automatisch te decoderen. Verplaats wat je nodig hebt handmatig nadat je het archief hebt beoordeeld.
+OpenClaw weigert automatisch hooks uit te voeren, toestemmingslijsten voor machtigingen te vertrouwen of ondoorzichtige OAuth- en Desktop-aanmeldgegevens te decoderen. Verplaats wat u nodig hebt handmatig nadat u het archief hebt gecontroleerd.
 
 ## Bronselectie
 
-Zonder `--from` inspecteert OpenClaw de standaard Claude Code-home op `~/.claude`, het bemonsterde Claude Code-statusbestand `~/.claude.json` en de Claude Desktop MCP-configuratie op macOS.
+Zonder `--from` inspecteert OpenClaw de standaardbasismap van Claude Code op `~/.claude`, het bemonsterde statusbestand `~/.claude.json` van Claude Code en de MCP-configuratie van Claude Desktop op macOS.
 
-Wanneer `--from` naar een projectroot verwijst, importeert OpenClaw alleen de Claude-bestanden van dat project, zoals `CLAUDE.md`, `.claude/settings.json`, `.claude/commands/`, `.claude/skills/` en `.mcp.json`. Het leest je globale Claude-home niet tijdens een projectrootimport.
+Wanneer `--from` naar een projecthoofdmap verwijst, importeert OpenClaw alleen de Claude-bestanden van dat project, zoals `CLAUDE.md`, `.claude/settings.json`, `.claude/commands/`, `.claude/skills/` en `.mcp.json`. Tijdens een import vanuit een projecthoofdmap wordt uw globale Claude-basismap niet gelezen.
 
-## Aanbevolen flow
+## Aanbevolen werkwijze
 
 <Steps>
-  <Step title="Bekijk het plan vooraf">
+  <Step title="Bekijk een voorbeeld van het plan">
     ```bash
     openclaw migrate claude --dry-run
     ```
 
-    Het plan vermeldt alles wat zal veranderen, inclusief conflicten, overgeslagen items en gevoelige waarden die zijn geredigeerd uit geneste MCP-velden `env` of `headers`.
+    Het plan vermeldt alles wat wordt gewijzigd, waaronder conflicten, overgeslagen items en gevoelige waarden die in geneste MCP-velden `env` of `headers` zijn gemaskeerd.
 
   </Step>
   <Step title="Toepassen met back-up">
@@ -105,37 +105,37 @@ Wanneer `--from` naar een projectroot verwijst, importeert OpenClaw alleen de Cl
     openclaw migrate apply claude --yes
     ```
 
-    OpenClaw maakt en verifieert een back-up voordat wijzigingen worden toegepast.
+    OpenClaw maakt en verifieert een back-up voordat de wijzigingen worden toegepast.
 
   </Step>
-  <Step title="Voer doctor uit">
+  <Step title="Doctor uitvoeren">
     ```bash
     openclaw doctor
     ```
 
-    [Doctor](/nl/gateway/doctor) controleert na de import op configuratie- of statusproblemen.
+    [Doctor](/nl/gateway/doctor) controleert na het importeren op problemen met de configuratie of status.
 
   </Step>
-  <Step title="Herstart en verifieer">
+  <Step title="Opnieuw starten en verifiëren">
     ```bash
     openclaw gateway restart
     openclaw status
     ```
 
-    Bevestig dat de Gateway gezond is en dat je geïmporteerde instructies, MCP-servers en Skills zijn geladen.
+    Controleer of de Gateway correct werkt en uw geïmporteerde instructies, MCP-servers en Skills zijn geladen.
 
   </Step>
 </Steps>
 
 ## Conflictafhandeling
 
-Toepassen weigert door te gaan wanneer het plan conflicten meldt (een bestand of configuratiewaarde bestaat al op het doel).
+Het toepassen wordt geweigerd wanneer het plan conflicten meldt (er bestaat al een bestand of configuratiewaarde op de doellocatie).
 
 <Warning>
-Voer opnieuw uit met `--overwrite` alleen wanneer het vervangen van het bestaande doel opzettelijk is. Providers kunnen nog steeds back-ups op itemniveau schrijven voor overschreven bestanden in de directory van het migratierapport.
+Voer de opdracht alleen opnieuw uit met `--overwrite` wanneer u het bestaande doel bewust wilt vervangen. Providers kunnen voor overschreven bestanden nog steeds back-ups per item opslaan in de map van het migratierapport.
 </Warning>
 
-Voor een nieuwe OpenClaw-installatie zijn conflicten ongebruikelijk. Ze verschijnen meestal wanneer je de import opnieuw uitvoert op een installatie die al gebruikersbewerkingen bevat.
+Bij een nieuwe OpenClaw-installatie zijn conflicten ongebruikelijk. Ze treden doorgaans op wanneer u de import opnieuw uitvoert op een installatie die al gebruikerswijzigingen bevat.
 
 ## JSON-uitvoer voor automatisering
 
@@ -144,30 +144,30 @@ openclaw migrate claude --dry-run --json
 openclaw migrate apply claude --json --yes
 ```
 
-Met `--json` en zonder `--yes` drukt apply het plan af en wijzigt het geen status. Dit is de veiligste modus voor CI en gedeelde scripts.
+`--yes` is vereist voor `migrate apply` buiten een interactieve terminal. Zonder deze vlag geeft OpenClaw een foutmelding in plaats van de wijzigingen toe te passen. Scripts en CI moeten `--yes` daarom expliciet doorgeven. Bekijk eerst een voorbeeld met `--dry-run --json` en pas de migratie vervolgens toe met `--json --yes` zodra het plan correct is.
 
-## Problemen oplossen
+## Probleemoplossing
 
 <AccordionGroup>
-  <Accordion title="Claude-status staat buiten ~/.claude">
+  <Accordion title="De Claude-status bevindt zich buiten ~/.claude">
     Geef `--from /actual/path` (CLI) of `--import-source /actual/path` (onboarding) door.
   </Accordion>
-  <Accordion title="Onboarding weigert te importeren op een bestaande installatie">
-    Onboarding-imports vereisen een nieuwe installatie. Reset de status en doorloop onboarding opnieuw, of gebruik `openclaw migrate apply claude` rechtstreeks, dat `--overwrite` en expliciete back-upcontrole ondersteunt.
+  <Accordion title="Onboarding weigert te importeren in een bestaande installatie">
+    Voor importeren tijdens de onboarding is een nieuwe installatie vereist. Stel de status opnieuw in en doorloop de onboarding opnieuw, of gebruik rechtstreeks `openclaw migrate apply claude`. Deze opdracht ondersteunt `--overwrite` en expliciet beheer van back-ups.
   </Accordion>
-  <Accordion title="MCP-servers uit Claude Desktop zijn niet geïmporteerd">
-    Claude Desktop leest `claude_desktop_config.json` uit een platformspecifiek pad. Verwijs `--from` naar de directory van dat bestand als OpenClaw het niet automatisch heeft gedetecteerd.
+  <Accordion title="MCP-servers van Claude Desktop zijn niet geïmporteerd">
+    Claude Desktop leest `claude_desktop_config.json` vanaf een platformspecifiek pad. Laat `--from` naar de map van dat bestand verwijzen als OpenClaw het niet automatisch heeft gedetecteerd.
   </Accordion>
-  <Accordion title="Claude-commando's werden Skills met modelaanroep uitgeschakeld">
-    Dit is zo ontworpen. Claude-commando's worden door de gebruiker geactiveerd, dus OpenClaw importeert ze als Skills met `disable-model-invocation: true`. Bewerk de frontmatter van elke Skill als je wilt dat de agent ze automatisch aanroept.
+  <Accordion title="Claude-opdrachten zijn Skills geworden waarvoor modelaanroepen zijn uitgeschakeld">
+    Dit is zo ontworpen. Claude-opdrachten worden door de gebruiker geactiveerd. Daarom importeert OpenClaw ze als Skills met `disable-model-invocation: true`. Bewerk de frontmatter van elke Skill als u wilt dat de agent ze automatisch aanroept.
   </Accordion>
 </AccordionGroup>
 
 ## Gerelateerd
 
-- [`openclaw migrate`](/nl/cli/migrate): volledige CLI-referentie, Plugin-contract en JSON-vormen.
+- [`openclaw migrate`](/nl/cli/migrate): volledige CLI-referentie, Plugin-contract en JSON-structuren.
 - [Migratiehandleiding](/nl/install/migrating): alle migratiepaden.
-- [Migreren vanaf Hermes](/nl/install/migrating-hermes): het andere importsysteem tussen systemen.
-- [Onboarding](/nl/cli/onboard): wizardflow en niet-interactieve flags.
-- [Doctor](/nl/gateway/doctor): gezondheidscontrole na migratie.
-- [Agentwerkruimte](/nl/concepts/agent-workspace): waar `AGENTS.md`, `USER.md` en Skills staan.
+- [Migreren vanuit Hermes](/nl/install/migrating-hermes): het andere importschema tussen systemen.
+- [Onboarding](/nl/cli/onboard): wizardprocedure en niet-interactieve vlaggen.
+- [Doctor](/nl/gateway/doctor): statuscontrole na de migratie.
+- [Agentwerkruimte](/nl/concepts/agent-workspace): waar `AGENTS.md`, `USER.md` en Skills zich bevinden.

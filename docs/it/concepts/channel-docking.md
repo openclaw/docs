@@ -1,24 +1,24 @@
 ---
 read_when:
-    - Vuoi spostare le risposte di una sessione attiva da Telegram a Discord, Slack, Mattermost o a un altro canale collegato
-    - Stai configurando session.identityLinks per i messaggi diretti tra canali
+    - Vuoi che le risposte di una sessione attiva vengano trasferite da Telegram a Discord, Slack, Mattermost o a un altro canale collegato
+    - Stai configurando session.identityLinks per i messaggi diretti tra canali diversi
     - Un comando /dock indica che il mittente non è collegato o che non esiste alcuna sessione attiva
-summary: Sposta l'instradamento delle risposte di una sessione OpenClaw tra canali di chat collegati
-title: Ancoraggio dei canali
+summary: Sposta il percorso di risposta di una sessione OpenClaw tra canali di chat collegati
+title: Docking del canale
 x-i18n:
-    generated_at: "2026-04-30T08:45:58Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:59:26Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b981cd177ed76194cf18667620a1f9b2f2ba50df42fe203f6f68916971ed6a61
+    source_hash: 6d7af3a59b95b2c73cb74a9529584e51caed055719db2df8aad2ba8e8c9b0593
     source_path: concepts/channel-docking.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Il docking del canale è l'inoltro delle chiamate per una sessione OpenClaw.
-
-Mantiene lo stesso contesto della conversazione, ma cambia dove vengono recapitate
-le risposte future per quella sessione.
+Il docking dei canali è l'inoltro delle chiamate per una sessione OpenClaw. Mantiene lo stesso
+contesto della conversazione, ma cambia la destinazione delle risposte future per quella sessione.
+Il docking funziona solo da una chat diretta; non può essere eseguito da una chat
+di gruppo.
 
 ## Esempio
 
@@ -34,37 +34,37 @@ Alice può inviare messaggi a OpenClaw su Telegram e Discord:
 }
 ```
 
-Se Alice invia questo da Telegram:
+Se Alice invia questo comando da una chat diretta di Telegram:
 
 ```text
 /dock_discord
 ```
 
-OpenClaw mantiene il contesto della sessione corrente e cambia il percorso di risposta:
+OpenClaw mantiene il contesto della sessione corrente e cambia il percorso delle risposte:
 
-| Prima del docking             | Dopo `/dock_discord`       |
-| ----------------------------- | -------------------------- |
-| Le risposte vanno a Telegram `123` | Le risposte vanno a Discord `456` |
+| Prima del docking                    | Dopo `/dock_discord`                  |
+| ------------------------------------ | ------------------------------------- |
+| Le risposte vanno a Telegram `123`   | Le risposte vanno a Discord `456`     |
 
-La sessione non viene ricreata. La cronologia della trascrizione resta associata alla
+La sessione non viene ricreata. La cronologia della trascrizione rimane associata alla
 stessa sessione.
 
 ## Perché usarlo
 
-Usa il docking quando un'attività inizia in un'app di chat ma le risposte successive devono arrivare
-da qualche altra parte.
+Usa il docking quando un'attività inizia in un'app di chat, ma le risposte successive devono arrivare
+altrove.
 
 Flusso comune:
 
 1. Avvia un'attività dell'agente da Telegram.
 2. Passa a Discord, dove stai coordinando il lavoro.
-3. Invia `/dock_discord` dalla sessione Telegram.
-4. Mantieni la stessa sessione OpenClaw, ma ricevi le risposte future in Discord.
+3. Invia `/dock_discord` dalla chat diretta di Telegram.
+4. Mantieni la stessa sessione OpenClaw, ma ricevi le risposte future su Discord.
 
-## Configurazione richiesta
+## Configurazione obbligatoria
 
-Il docking richiede `session.identityLinks`. Il mittente sorgente e il peer di destinazione
-devono essere nello stesso gruppo di identità:
+Il docking richiede `session.identityLinks`. Il mittente di origine e l'interlocutore di destinazione
+devono appartenere allo stesso gruppo di identità:
 
 ```json5
 {
@@ -76,22 +76,23 @@ devono essere nello stesso gruppo di identità:
 }
 ```
 
-I valori sono ID peer con prefisso del canale:
+I valori sono ID degli interlocutori con il prefisso del canale:
 
-| Valore         | Significato                  |
-| -------------- | ---------------------------- |
-| `telegram:123` | ID mittente Telegram `123`   |
-| `discord:456`  | ID peer diretto Discord `456` |
-| `slack:U123`   | ID utente Slack `U123`       |
+| Valore         | Significato                            |
+| -------------- | -------------------------------------- |
+| `telegram:123` | ID mittente Telegram `123`             |
+| `discord:456`  | ID interlocutore diretto Discord `456` |
+| `slack:U123`   | ID utente Slack `U123`                 |
 
-La chiave canonica (`alice` sopra) è solo il nome del gruppo di identità condiviso. I comandi di dock
-usano i valori con prefisso del canale per dimostrare che il mittente sorgente e
-il peer di destinazione sono la stessa persona.
+La chiave canonica (`alice` nell'esempio) è solo il nome del gruppo di identità condiviso. I comandi
+di docking usano i valori con il prefisso del canale per verificare che il mittente di origine e
+l'interlocutore di destinazione siano la stessa persona.
 
 ## Comandi
 
-I comandi di dock sono generati dai Plugin di canale caricati che supportano i comandi
-nativi. Comandi attualmente inclusi:
+OpenClaw genera un comando `/dock-<channel>` per ogni Plugin di canale caricato
+che supporta i comandi nativi, quindi l'elenco aumenta man mano che vengono aggiunti Plugin. I Plugin
+inclusi che attualmente lo supportano sono:
 
 | Canale di destinazione | Comando            | Alias              |
 | ---------------------- | ------------------ | ------------------ |
@@ -100,54 +101,59 @@ nativi. Comandi attualmente inclusi:
 | Slack                  | `/dock-slack`      | `/dock_slack`      |
 | Telegram               | `/dock-telegram`   | `/dock_telegram`   |
 
-Gli alias con trattino basso sono utili sulle superfici di comando native come Telegram.
+La forma con il trattino basso è anche il nome del comando nativo sulle piattaforme come Telegram
+che espongono direttamente i comandi slash.
 
 ## Cosa cambia
 
-Il docking aggiorna i campi di recapito della sessione attiva:
+Il docking aggiorna i campi di consegna della sessione attiva:
 
-| Campo della sessione | Esempio dopo `/dock_discord`              |
-| -------------------- | ----------------------------------------- |
-| `lastChannel`        | `discord`                                 |
-| `lastTo`             | `456`                                     |
-| `lastAccountId`      | l'account del canale di destinazione, o `default` |
+| Campo della sessione | Esempio dopo `/dock_discord`                 |
+| -------------------- | -------------------------------------------- |
+| `lastChannel`        | `discord`                                    |
+| `lastTo`             | `456`                                        |
+| `lastAccountId`      | l'account del canale di destinazione o `default` |
 
-Questi campi vengono persistiti nello store della sessione e usati dal recapito
-delle risposte successive per quella sessione.
+Questi campi vengono salvati nell'archivio delle sessioni e usati per la consegna
+delle risposte successive di quella sessione.
 
 ## Cosa non cambia
 
 Il docking non:
 
-- crea account di canale
+- crea account dei canali
 - connette un nuovo bot Discord, Telegram, Slack o Mattermost
-- concede accesso a un utente
-- aggira allowlist dei canali o criteri dei DM
+- concede l'accesso a un utente
+- aggira gli elenchi di elementi consentiti dei canali o le politiche sui messaggi diretti
 - sposta la cronologia della trascrizione in un'altra sessione
-- fa sì che utenti non correlati condividano una sessione
+- fa condividere una sessione a utenti non correlati
 
-Cambia solo il percorso di recapito per la sessione corrente.
+Cambia solo il percorso di consegna della sessione corrente.
 
 ## Risoluzione dei problemi
 
-**Il comando dice che il mittente non è collegato.**
+**Il comando indica che il mittente non è collegato.**
 
-Aggiungi sia il mittente corrente sia il peer di destinazione allo stesso gruppo
-`session.identityLinks`. Ad esempio, se il mittente Telegram `123` deve fare il dock
-verso il peer Discord `456`, includi sia `telegram:123` sia `discord:456`.
+Aggiungi sia il mittente corrente sia l'interlocutore di destinazione allo stesso gruppo
+`session.identityLinks`. Ad esempio, se il mittente Telegram `123` deve effettuare il docking
+verso l'interlocutore Discord `456`, includi sia `telegram:123` sia `discord:456`.
 
-**Il comando dice che non esiste alcuna sessione attiva.**
+**Il comando indica che il docking è disponibile solo dalle chat dirette.**
 
-Esegui il dock da una sessione di chat diretta esistente. Il comando ha bisogno di una voce di sessione
-attiva per poter persistere il nuovo percorso.
+Invia il comando di docking da una chat diretta con OpenClaw, non da una chat di gruppo.
 
-**Le risposte continuano ad andare al vecchio canale.**
+**Il comando indica che non esiste alcuna sessione attiva.**
 
-Controlla che il comando abbia risposto con un messaggio di successo e conferma che l'ID
-del peer di destinazione corrisponda all'ID usato da quel canale. Il docking cambia solo il percorso
-della sessione attiva; un'altra sessione potrebbe comunque instradare altrove.
+Esegui il docking da una sessione di chat diretta esistente. Il comando richiede una voce di sessione
+attiva per poter salvare il nuovo percorso.
 
-**Devo tornare indietro.**
+**Le risposte continuano ad arrivare al vecchio canale.**
 
-Invia il comando corrispondente per il canale originale, come `/dock_telegram` o
+Verifica che il comando abbia risposto con un messaggio di conferma e assicurati che l'ID
+dell'interlocutore di destinazione corrisponda all'ID usato da quel canale. Il docking cambia solo il
+percorso della sessione attiva; un'altra sessione potrebbe continuare a instradare le risposte altrove.
+
+**Devo tornare al canale precedente.**
+
+Invia il comando corrispondente al canale originale, ad esempio `/dock_telegram` o
 `/dock-telegram`, da un mittente collegato.

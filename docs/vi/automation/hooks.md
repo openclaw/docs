@@ -1,75 +1,83 @@
 ---
 read_when:
-    - Bạn muốn tự động hóa theo sự kiện cho /new, /reset, /stop và các sự kiện vòng đời tác tử
-    - Bạn muốn xây dựng, cài đặt hoặc gỡ lỗi hook
-summary: 'Hook: tự động hóa theo sự kiện cho lệnh và sự kiện vòng đời'
-title: Các móc nối
+    - Bạn muốn tự động hóa theo sự kiện cho /new, /reset, /stop và các sự kiện trong vòng đời của tác tử
+    - Bạn muốn xây dựng, cài đặt hoặc gỡ lỗi các hook
+summary: 'Hook: tự động hóa theo sự kiện cho các lệnh và sự kiện vòng đời'
+title: Hook
 x-i18n:
-    generated_at: "2026-06-27T17:08:52Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:41:32Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 0259739b0547ba4826b540d392c6d6b72c6bec24fd50d5e297817694fd728438
+    source_hash: ba09acf45cc09d4ce84b9dda36af2a720ccefbfaed23a1558dd36358ce56701a
     source_path: automation/hooks.md
     workflow: 16
 ---
 
-Hook là các script nhỏ chạy khi có điều gì đó xảy ra bên trong Gateway. Chúng có thể được phát hiện từ các thư mục và được kiểm tra bằng `openclaw hooks`. Gateway chỉ tải các hook nội bộ sau khi bạn bật hook hoặc cấu hình ít nhất một mục hook, gói hook, trình xử lý cũ, hoặc thư mục hook bổ sung.
+Hook là các tập lệnh nhỏ chạy bên trong Gateway khi các sự kiện của tác nhân được kích hoạt: các lệnh như `/new`, `/reset`, `/stop`, Compaction phiên, vòng đời Gateway và luồng tin nhắn. Chúng được phát hiện từ các thư mục và quản lý bằng `openclaw hooks`. Gateway chỉ tải các hook nội bộ sau khi bạn bật hook hoặc cấu hình ít nhất một mục hook, gói hook, trình xử lý cũ hoặc thư mục hook bổ sung.
 
-Có hai loại hook trong OpenClaw:
+OpenClaw có hai loại hook:
 
-- **Hook nội bộ** (trang này): chạy bên trong Gateway khi các sự kiện agent được kích hoạt, như `/new`, `/reset`, `/stop`, hoặc các sự kiện vòng đời.
-- **Webhook**: các endpoint HTTP bên ngoài cho phép hệ thống khác kích hoạt công việc trong OpenClaw. Xem [Webhook](/vi/automation/cron-jobs#webhooks).
+- **Hook nội bộ** (trang này): chạy bên trong Gateway khi các sự kiện của tác nhân được kích hoạt.
+- **Webhook**: các điểm cuối HTTP bên ngoài cho phép hệ thống khác kích hoạt công việc trong OpenClaw. Xem [Webhook](/vi/automation/cron-jobs#webhooks).
 
-Hook cũng có thể được đóng gói bên trong plugin. `openclaw hooks list` hiển thị cả hook độc lập và hook do plugin quản lý.
+Hook cũng có thể được đóng gói bên trong các plugin. `openclaw hooks list` hiển thị cả hook độc lập và hook do plugin quản lý (được hiển thị dưới dạng `plugin:<id>`).
 
-## Chọn đúng bề mặt
+## Chọn bề mặt phù hợp
 
 OpenClaw có một số bề mặt mở rộng trông tương tự nhau nhưng giải quyết các vấn đề khác nhau:
 
-| Nếu bạn muốn...                                                                                                      | Dùng...                                  | Vì sao                                                                                         |
-| --------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| Lưu snapshot khi `/new`, ghi log `/reset`, gọi API bên ngoài sau `message:sent`, hoặc thêm tự động hóa thô cho operator | Hook nội bộ (`HOOK.md`, trang này)       | Hook dựa trên tệp dành cho hiệu ứng phụ do operator quản lý và tự động hóa lệnh/vòng đời       |
-| Viết lại prompt, chặn tool, hủy tin nhắn gửi đi, hoặc thêm middleware/chính sách có thứ tự                             | Hook plugin có kiểu qua `api.on(...)`    | Hook có kiểu có hợp đồng, độ ưu tiên, quy tắc hợp nhất, và ngữ nghĩa chặn/hủy rõ ràng          |
-| Thêm xuất dữ liệu chỉ dành cho telemetry hoặc khả năng quan sát                                                       | Sự kiện chẩn đoán                        | Khả năng quan sát là một bus sự kiện riêng, không phải bề mặt hook chính sách                  |
+| Nếu bạn muốn...                                                                                                                       | Hãy dùng...                                      | Lý do                                                                                                             |
+| ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| Lưu ảnh chụp nhanh khi chạy `/new`, ghi nhật ký `/reset`, gọi API bên ngoài sau `message:sent` hoặc thêm tự động hóa thô cho người vận hành | Hook nội bộ (`HOOK.md`, trang này)                | Hook dựa trên tệp dành cho các tác dụng phụ do người vận hành quản lý và tự động hóa lệnh/vòng đời                 |
+| Viết lại lời nhắc, chặn công cụ, hủy tin nhắn gửi đi hoặc thêm middleware/chính sách có thứ tự                                         | Hook plugin có kiểu thông qua `api.on(...)`       | Hook có kiểu có hợp đồng, mức ưu tiên, quy tắc hợp nhất và ngữ nghĩa chặn/hủy rõ ràng                              |
+| Thêm chức năng xuất chỉ dành cho đo từ xa hoặc khả năng quan sát                                                                      | Sự kiện chẩn đoán                                 | Khả năng quan sát sử dụng một bus sự kiện riêng, không phải bề mặt hook chính sách                                |
 
-Dùng hook nội bộ khi bạn muốn tự động hóa hoạt động như một tích hợp nhỏ đã cài đặt. Dùng hook plugin có kiểu khi bạn cần kiểm soát vòng đời runtime.
+Dùng hook nội bộ khi bạn muốn tự động hóa hoạt động như một tích hợp nhỏ đã được cài đặt. Dùng hook plugin có kiểu khi bạn cần kiểm soát vòng đời thời gian chạy.
 
 ## Bắt đầu nhanh
 
 ```bash
-# List available hooks
+# Liệt kê các hook khả dụng
 openclaw hooks list
 
-# Enable a hook
+# Bật một hook
 openclaw hooks enable session-memory
 
-# Check hook status
+# Kiểm tra trạng thái hook
 openclaw hooks check
 
-# Get detailed information
+# Lấy thông tin chi tiết
 openclaw hooks info session-memory
 ```
 
 ## Loại sự kiện
 
-| Sự kiện                  | Khi nào kích hoạt                                         |
-| ------------------------ | ---------------------------------------------------------- |
-| `command:new`            | Lệnh `/new` được phát hành                                 |
-| `command:reset`          | Lệnh `/reset` được phát hành                               |
-| `command:stop`           | Lệnh `/stop` được phát hành                                |
-| `command`                | Bất kỳ sự kiện lệnh nào (listener chung)                   |
-| `session:compact:before` | Trước khi Compaction tóm tắt lịch sử                       |
-| `session:compact:after`  | Sau khi Compaction hoàn tất                                |
-| `session:patch`          | Khi thuộc tính phiên được sửa đổi                          |
-| `agent:bootstrap`        | Trước khi các tệp bootstrap workspace được chèn            |
-| `gateway:startup`        | Sau khi channel khởi động và hook được tải                 |
-| `gateway:shutdown`       | Khi quá trình tắt Gateway bắt đầu                          |
-| `gateway:pre-restart`    | Trước một lần khởi động lại Gateway dự kiến                |
-| `message:received`       | Tin nhắn đến từ bất kỳ channel nào                         |
-| `message:transcribed`    | Sau khi phiên âm âm thanh hoàn tất                         |
-| `message:preprocessed`   | Sau khi tiền xử lý media và liên kết hoàn tất hoặc bị bỏ qua |
-| `message:sent`           | Tin nhắn gửi đi đã được gửi                                |
+Hook đăng ký một khóa cụ thể trong bảng này hoặc một tên họ sự kiện độc lập
+(`command`, `session`, `agent`, `gateway`, `message`) để nhận mọi hành động
+trong họ đó. Lõi OpenClaw không phát ra sự kiện nào khác, vì vậy mọi tên khác hầu
+như luôn là lỗi chính tả khiến hook âm thầm không hoạt động (chỉ plugin phát ra
+sự kiện tùy chỉnh mới có thể kích hoạt nó). Trình tải hook ghi cảnh báo cho các tên
+như vậy (ví dụ `command:nwe`), còn `openclaw hooks info <name>` sẽ đánh dấu chúng,
+nên có thể chẩn đoán được hook không bao giờ chạy.
+
+| Sự kiện                  | Thời điểm kích hoạt                                         |
+| ------------------------ | ----------------------------------------------------------- |
+| `command:new`            | Lệnh `/new` được đưa ra                                     |
+| `command:reset`          | Lệnh `/reset` được đưa ra                                   |
+| `command:stop`           | Lệnh `/stop` được đưa ra                                    |
+| `command`                | Bất kỳ sự kiện lệnh nào (trình lắng nghe chung)             |
+| `session:compact:before` | Trước khi Compaction tóm tắt lịch sử                        |
+| `session:compact:after`  | Sau khi Compaction hoàn tất                                 |
+| `session:patch`          | Khi các thuộc tính phiên được sửa đổi                       |
+| `agent:bootstrap`        | Trước khi các tệp khởi tạo không gian làm việc được chèn vào |
+| `gateway:startup`        | Sau khi các kênh khởi động và hook được tải                 |
+| `gateway:shutdown`       | Khi quá trình tắt Gateway bắt đầu                           |
+| `gateway:pre-restart`    | Trước một lần khởi động lại Gateway dự kiến                 |
+| `message:received`       | Tin nhắn đến từ bất kỳ kênh nào                             |
+| `message:transcribed`    | Sau khi hoàn tất phiên âm thanh                             |
+| `message:preprocessed`   | Sau khi hoàn tất hoặc bỏ qua tiền xử lý phương tiện và liên kết |
+| `message:sent`           | Đã thử gửi đi (`context.success` chứa kết quả)              |
 
 ## Viết hook
 
@@ -77,38 +85,42 @@ openclaw hooks info session-memory
 
 Mỗi hook là một thư mục chứa hai tệp:
 
-```
+```text
 my-hook/
-├── HOOK.md          # Metadata + documentation
-└── handler.ts       # Handler implementation
+├── HOOK.md          # Siêu dữ liệu + tài liệu
+└── handler.ts       # Phần triển khai trình xử lý
 ```
+
+Tệp trình xử lý có thể là `handler.ts`, `handler.js`, `index.ts` hoặc `index.js`.
 
 ### Định dạng HOOK.md
 
 ```markdown
 ---
 name: my-hook
-description: "Short description of what this hook does"
+description: "Mô tả ngắn về chức năng của hook này"
 metadata:
   { "openclaw": { "emoji": "🔗", "events": ["command:new"], "requires": { "bins": ["node"] } } }
 ---
 
-# My Hook
+# Hook của tôi
 
-Detailed documentation goes here.
+Tài liệu chi tiết được đặt tại đây.
 ```
 
-**Trường metadata** (`metadata.openclaw`):
+**Các trường siêu dữ liệu** (`metadata.openclaw`):
 
-| Trường     | Mô tả                                                |
-| ---------- | ---------------------------------------------------- |
-| `emoji`    | Emoji hiển thị cho CLI                               |
-| `events`   | Mảng sự kiện cần lắng nghe                           |
-| `export`   | Export được đặt tên để dùng (mặc định là `"default"`) |
-| `os`       | Nền tảng bắt buộc (ví dụ: `["darwin", "linux"]`)     |
-| `requires` | Các đường dẫn `bins`, `anyBins`, `env`, hoặc `config` bắt buộc |
-| `always`   | Bỏ qua kiểm tra đủ điều kiện (boolean)               |
-| `install`  | Phương thức cài đặt                                  |
+| Trường     | Mô tả                                                         |
+| ---------- | ------------------------------------------------------------- |
+| `emoji`    | Emoji hiển thị cho CLI                                        |
+| `events`   | Mảng các sự kiện cần lắng nghe                                |
+| `export`   | Bản xuất có tên sẽ sử dụng (mặc định là `"default"`)          |
+| `os`       | Các nền tảng bắt buộc (ví dụ: `["darwin", "linux"]`)          |
+| `requires` | Các đường dẫn `bins`, `anyBins`, `env` hoặc `config` bắt buộc |
+| `always`   | Bỏ qua kiểm tra tính đủ điều kiện (giá trị boolean)           |
+| `hookKey`  | Ghi đè khóa cấu hình (mặc định là tên hook)                   |
+| `homepage` | URL tài liệu được `openclaw hooks info` hiển thị              |
+| `install`  | Các phương thức cài đặt                                       |
 
 ### Triển khai trình xử lý
 
@@ -128,39 +140,43 @@ const handler = async (event) => {
 export default handler;
 ```
 
-Mỗi sự kiện bao gồm: `type`, `action`, `sessionKey`, `timestamp`, `messages` (đẩy phản hồi vào đây chỉ trên các bề mặt có thể trả lời), và `context` (dữ liệu riêng cho sự kiện). Ngữ cảnh hook plugin agent và tool cũng có thể bao gồm `trace`, một ngữ cảnh trace chẩn đoán tương thích W3C, chỉ đọc, mà plugin có thể truyền vào log có cấu trúc để tương quan OTEL.
+Mỗi sự kiện bao gồm: `type`, `action`, `sessionKey`, `timestamp`, `messages` và `context` (dữ liệu riêng cho sự kiện). Ngữ cảnh hook plugin có kiểu dành cho hook tác nhân và công cụ cũng có thể bao gồm `trace`, một ngữ cảnh dấu vết chẩn đoán chỉ đọc tương thích với W3C mà plugin có thể chuyển vào nhật ký có cấu trúc để tương quan OTEL.
 
-`event.messages` chỉ được gửi tự động trên các bề mặt có thể trả lời như
-`command:*` và `message:received`. Các sự kiện chỉ dành cho vòng đời như
-`agent:bootstrap`, `session:*`, `gateway:*`, hoặc `message:sent` không có
-channel trả lời và bỏ qua các tin nhắn được đẩy vào.
+Các chuỗi được đẩy vào `event.messages` chỉ được gửi trở lại cuộc trò chuyện đối với
+`command:new` và `command:reset` (được định tuyến làm phản hồi cho cuộc hội thoại
+gốc), cũng như đối với `session:compact:before` / `session:compact:after`
+(được gửi dưới dạng thông báo trạng thái Compaction). Mọi sự kiện khác, bao gồm
+`command:stop`, `message:*`, `agent:bootstrap`, `session:patch` và
+`gateway:*`, đều bỏ qua các tin nhắn được đẩy vào.
 
-### Điểm nổi bật về ngữ cảnh sự kiện
+### Điểm nổi bật của ngữ cảnh sự kiện
 
-**Sự kiện lệnh** (`command:new`, `command:reset`): `context.sessionEntry`, `context.previousSessionEntry`, `context.commandSource`, `context.workspaceDir`, `context.cfg`.
+**Sự kiện lệnh** (`command:new`, `command:reset`): `context.sessionEntry`, `context.previousSessionEntry`, `context.commandSource`, `context.senderId`, `context.workspaceDir`, `context.cfg`.
 
-**Sự kiện tin nhắn** (`message:received`): `context.from`, `context.content`, `context.channelId`, `context.metadata` (dữ liệu riêng theo provider bao gồm `senderId`, `senderName`, `guildId`). `context.content` ưu tiên phần thân lệnh không trống cho các tin nhắn giống lệnh, rồi quay về phần thân đến thô và phần thân chung; nó không bao gồm phần bổ sung chỉ dành cho agent như lịch sử thread hoặc tóm tắt liên kết.
+**Sự kiện lệnh** (`command:stop`): `context.sessionEntry`, `context.sessionId`, `context.commandSource`, `context.senderId`.
 
-**Sự kiện tin nhắn** (`message:sent`): `context.to`, `context.content`, `context.success`, `context.channelId`.
+**Sự kiện tin nhắn** (`message:received`): `context.from`, `context.content`, `context.channelId`, `context.metadata` (dữ liệu riêng cho nhà cung cấp, bao gồm `senderId`, `senderName`, `guildId`). `context.content` ưu tiên phần thân lệnh không trống đối với các tin nhắn giống lệnh, sau đó dùng phần thân tin nhắn đến thô và phần thân chung làm phương án dự phòng; nó không bao gồm nội dung bổ sung chỉ dành cho tác nhân như lịch sử luồng hoặc bản tóm tắt liên kết.
+
+**Sự kiện tin nhắn** (`message:sent`): `context.to`, `context.content`, `context.success`, `context.channelId`, cùng với `context.error` khi gửi thất bại.
 
 **Sự kiện tin nhắn** (`message:transcribed`): `context.transcript`, `context.from`, `context.channelId`, `context.mediaPath`.
 
-**Sự kiện tin nhắn** (`message:preprocessed`): `context.bodyForAgent` (phần thân đã làm giàu cuối cùng), `context.from`, `context.channelId`.
+**Sự kiện tin nhắn** (`message:preprocessed`): `context.bodyForAgent` (phần thân cuối cùng đã được bổ sung), `context.from`, `context.channelId`.
 
-**Sự kiện bootstrap** (`agent:bootstrap`): `context.bootstrapFiles` (mảng có thể thay đổi), `context.agentId`.
+**Sự kiện khởi tạo** (`agent:bootstrap`): `context.bootstrapFiles` (mảng có thể thay đổi), `context.agentId`.
 
-**Sự kiện vá phiên** (`session:patch`): `context.sessionEntry`, `context.patch` (chỉ các trường đã thay đổi), `context.cfg`. Chỉ client đặc quyền mới có thể kích hoạt sự kiện patch.
+**Sự kiện vá phiên** (`session:patch`): `context.sessionEntry`, `context.patch` (chỉ các trường đã thay đổi), `context.cfg`. Chỉ ứng dụng khách có đặc quyền mới có thể kích hoạt sự kiện vá; ngữ cảnh là một bản sao, vì vậy trình xử lý không thể thay đổi mục phiên đang hoạt động.
 
-**Sự kiện Compaction**: `session:compact:before` bao gồm `messageCount`, `tokenCount`. `session:compact:after` thêm `compactedCount`, `summaryLength`, `tokensBefore`, `tokensAfter`.
+**Sự kiện Compaction**: `session:compact:before` bao gồm `messageCount`, `tokenCount`. `session:compact:after` bổ sung `compactedCount`, `summaryLength`, `tokensBefore`, `tokensAfter`.
 
-`command:stop` quan sát người dùng phát hành `/stop`; đây là vòng đời hủy/lệnh,
-không phải cổng hoàn tất agent. Plugin cần kiểm tra câu trả lời cuối tự nhiên
-và yêu cầu agent chạy thêm một lượt nên dùng hook plugin có kiểu
+`command:stop` quan sát việc người dùng đưa ra lệnh `/stop`; đây là vòng đời
+hủy/lệnh, không phải cổng hoàn tất tác nhân. Plugin cần kiểm tra câu trả lời cuối
+tự nhiên và yêu cầu tác nhân thực hiện thêm một lượt nên dùng hook plugin có kiểu
 `before_agent_finalize` thay thế. Xem [Hook plugin](/vi/plugins/hooks).
 
-**Sự kiện vòng đời Gateway**: `gateway:shutdown` bao gồm `reason` và `restartExpectedMs` và kích hoạt khi quá trình tắt Gateway bắt đầu. `gateway:pre-restart` bao gồm cùng ngữ cảnh nhưng chỉ kích hoạt khi việc tắt là một phần của lần khởi động lại dự kiến và có giá trị `restartExpectedMs` hữu hạn được cung cấp. Trong khi tắt, mỗi lần chờ hook vòng đời là nỗ lực tốt nhất và có giới hạn để quá trình tắt vẫn tiếp tục nếu trình xử lý bị treo. Ngân sách chờ mặc định là 5 giây cho `gateway:shutdown` và 10 giây cho `gateway:pre-restart`.
+**Sự kiện vòng đời Gateway**: `gateway:shutdown` bao gồm `reason` và `restartExpectedMs`, đồng thời được kích hoạt khi quá trình tắt Gateway bắt đầu. `gateway:pre-restart` bao gồm cùng ngữ cảnh nhưng chỉ được kích hoạt khi việc tắt là một phần của lần khởi động lại dự kiến và có cung cấp giá trị `restartExpectedMs` hữu hạn. Trong quá trình tắt, thời gian chờ của từng hook vòng đời được thực hiện theo khả năng tốt nhất và có giới hạn để quá trình tắt vẫn tiếp tục nếu trình xử lý bị treo. Ngân sách chờ mặc định là 5 giây cho `gateway:shutdown` và 10 giây cho `gateway:pre-restart`.
 
-Dùng `gateway:pre-restart` cho thông báo khởi động lại ngắn khi channel vẫn còn khả dụng:
+Dùng `gateway:pre-restart` cho các thông báo ngắn về việc khởi động lại khi các kênh vẫn khả dụng:
 
 ```typescript
 import { execFile } from "node:child_process";
@@ -185,42 +201,42 @@ export default async function handler(event) {
 }
 ```
 
-Giữa sự kiện `gateway:shutdown` (hoặc `gateway:pre-restart`) và phần còn lại của chuỗi tắt, gateway cũng kích hoạt hook plugin có kiểu `session_end` cho mọi phiên vẫn còn hoạt động khi tiến trình dừng. `reason` của sự kiện là `shutdown` đối với một lần dừng SIGTERM/SIGINT thông thường và `restart` khi việc đóng đã được lên lịch như một phần của lần khởi động lại dự kiến. Quá trình xả này có giới hạn để trình xử lý `session_end` chậm không thể chặn việc thoát tiến trình, và các phiên đã được hoàn tất qua replace / reset / delete / compaction sẽ bị bỏ qua để tránh kích hoạt hai lần.
+Giữa sự kiện `gateway:shutdown` (hoặc `gateway:pre-restart`) và phần còn lại của trình tự tắt, Gateway cũng kích hoạt hook plugin có kiểu `session_end` cho mọi phiên vẫn đang hoạt động khi tiến trình dừng. `reason` của sự kiện là `shutdown` đối với trường hợp dừng SIGTERM/SIGINT thông thường và là `restart` khi việc đóng đã được lên lịch như một phần của lần khởi động lại dự kiến. Quá trình xả này có giới hạn để trình xử lý `session_end` chậm không thể chặn việc thoát tiến trình, đồng thời các phiên đã được hoàn tất thông qua thay thế / đặt lại / xóa / Compaction sẽ bị bỏ qua để tránh kích hoạt hai lần.
 
 ## Phát hiện hook
 
-Hook được phát hiện từ các thư mục này, theo thứ tự mức độ ưu tiên ghi đè tăng dần:
+Hook được phát hiện từ bốn nguồn:
 
-1. **Hook đóng gói sẵn**: được phát hành cùng OpenClaw
-2. **Hook plugin**: hook được đóng gói bên trong plugin đã cài đặt
-3. **Hook được quản lý**: `~/.openclaw/hooks/` (do người dùng cài đặt, dùng chung giữa các workspace). Thư mục bổ sung từ `hooks.internal.load.extraDirs` dùng chung mức ưu tiên này.
-4. **Hook workspace**: `<workspace>/hooks/` (theo từng agent, mặc định bị tắt cho đến khi được bật rõ ràng)
+1. **Hook đi kèm**: được phân phối cùng OpenClaw
+2. **Hook plugin**: được đóng gói bên trong các plugin đã cài đặt; có thể ghi đè hook đi kèm có cùng tên
+3. **Hook được quản lý**: `~/.openclaw/hooks/` (do người dùng cài đặt, dùng chung giữa các không gian làm việc); có thể ghi đè hook đi kèm và hook plugin. Các thư mục bổ sung từ `hooks.internal.load.extraDirs` có cùng mức ưu tiên này.
+4. **Hook không gian làm việc**: `<workspace>/hooks/` (theo từng tác nhân, mặc định bị tắt cho đến khi được bật rõ ràng)
 
-Hook workspace có thể thêm tên hook mới nhưng không thể ghi đè hook đóng gói sẵn, hook được quản lý, hoặc hook do plugin cung cấp có cùng tên.
+Hook không gian làm việc có thể thêm tên hook mới nhưng không thể ghi đè hook đi kèm, được quản lý hoặc do plugin cung cấp có cùng tên.
 
-Gateway bỏ qua phát hiện hook nội bộ khi khởi động cho đến khi hook nội bộ được cấu hình. Bật hook đóng gói sẵn hoặc được quản lý bằng `openclaw hooks enable <name>`, cài đặt gói hook, hoặc đặt `hooks.internal.enabled=true` để chọn tham gia. Khi bạn bật một hook được đặt tên, Gateway chỉ tải trình xử lý của hook đó; `hooks.internal.enabled=true`, thư mục hook bổ sung, và trình xử lý cũ chọn tham gia phát hiện rộng.
+Gateway bỏ qua việc phát hiện hook nội bộ khi khởi động cho đến khi hook nội bộ được cấu hình. Bật một hook đi kèm hoặc được quản lý bằng `openclaw hooks enable <name>`, cài đặt gói hook hoặc đặt `hooks.internal.enabled=true` để tham gia. Khi bạn bật một hook có tên, Gateway chỉ tải trình xử lý của hook đó; `hooks.internal.enabled=true`, các thư mục hook bổ sung và trình xử lý cũ sẽ cho phép phát hiện trên diện rộng.
 
 ### Gói hook
 
-Gói hook là các package npm export hook qua `openclaw.hooks` trong `package.json`. Cài đặt bằng:
+Gói hook là các gói npm xuất hook thông qua `openclaw.hooks` trong `package.json`. Cài đặt bằng:
 
 ```bash
 openclaw plugins install <path-or-spec>
 ```
 
-Spec npm chỉ dùng registry (tên package + phiên bản chính xác tùy chọn hoặc dist-tag). Spec Git/URL/file và khoảng semver sẽ bị từ chối.
+Các đặc tả Npm chỉ được phép dùng registry (tên gói + phiên bản chính xác hoặc dist-tag tùy chọn). Các đặc tả Git/URL/tệp và khoảng semver sẽ bị từ chối. Các lệnh cũ `openclaw hooks install` và `openclaw hooks update` là những bí danh đã lỗi thời của `openclaw plugins install` / `openclaw plugins update`.
 
-## Hook đóng gói sẵn
+## Hook đi kèm
 
-| Hook                  | Sự kiện                                           | Chức năng                                                      |
-| --------------------- | ------------------------------------------------- | -------------------------------------------------------------- |
-| session-memory        | `command:new`, `command:reset`                    | Lưu ngữ cảnh phiên vào `<workspace>/memory/`                   |
-| bootstrap-extra-files | `agent:bootstrap`                                 | Chèn các tệp bootstrap bổ sung từ các mẫu glob                 |
-| command-logger        | `command`                                         | Ghi nhật ký tất cả lệnh vào `~/.openclaw/logs/commands.log`    |
+| Hook                  | Sự kiện                                           | Chức năng                                                       |
+| --------------------- | ------------------------------------------------- | --------------------------------------------------------------- |
+| session-memory        | `command:new`, `command:reset`                    | Lưu ngữ cảnh phiên vào `<workspace>/memory/`                    |
+| bootstrap-extra-files | `agent:bootstrap`                                 | Chèn các tệp khởi tạo bổ sung từ các mẫu glob                   |
+| command-logger        | `command`                                         | Ghi nhật ký tất cả lệnh vào `~/.openclaw/logs/commands.log`     |
 | compaction-notifier   | `session:compact:before`, `session:compact:after` | Gửi thông báo trò chuyện hiển thị khi Compaction phiên bắt đầu/kết thúc |
-| boot-md               | `gateway:startup`                                 | Chạy `BOOT.md` khi Gateway khởi động                           |
+| boot-md               | `gateway:startup`                                 | Chạy `BOOT.md` khi Gateway khởi động                            |
 
-Bật bất kỳ hook đi kèm nào:
+Bật một hook đi kèm bất kỳ:
 
 ```bash
 openclaw hooks enable <hook-name>
@@ -230,7 +246,7 @@ openclaw hooks enable <hook-name>
 
 ### Chi tiết session-memory
 
-Trích xuất 15 tin nhắn người dùng/trợ lý gần nhất và lưu vào `<workspace>/memory/YYYY-MM-DD-HHMM.md` bằng ngày cục bộ của máy chủ. Việc ghi bộ nhớ chạy trong nền để các xác nhận `/new` và `/reset` không bị chậm bởi việc đọc bản ghi hội thoại hoặc tạo slug tùy chọn. Đặt `hooks.internal.entries.session-memory.llmSlug: true` để tạo slug tên tệp mô tả bằng mô hình đã cấu hình. Yêu cầu phải cấu hình `workspace.dir`.
+Trích xuất các tin nhắn gần nhất của người dùng/trợ lý (mặc định là 15, có thể cấu hình bằng `hooks.internal.entries.session-memory.messages`) và lưu chúng vào `<workspace>/memory/YYYY-MM-DD-HHMM.md` theo ngày cục bộ của máy chủ. Việc ghi lại bộ nhớ chạy trong nền để các xác nhận `/new` và `/reset` không bị trì hoãn bởi thao tác đọc bản chép lời hoặc tạo slug tùy chọn. Đặt `hooks.internal.entries.session-memory.llmSlug: true` để tạo slug tên tệp có tính mô tả, và có thể đặt `hooks.internal.entries.session-memory.model` thành một bí danh đã cấu hình như `sonnet`, một ID mô hình thuần túy trên nhà cung cấp mặc định của tác nhân, hoặc một tham chiếu `provider/model`. Khi bỏ qua `model`, quá trình tạo slug sử dụng mô hình mặc định của tác nhân và chuyển sang slug dấu thời gian khi mô hình không khả dụng. Yêu cầu phải cấu hình `workspace.dir`.
 
 <a id="bootstrap-extra-files"></a>
 
@@ -251,39 +267,39 @@ Trích xuất 15 tin nhắn người dùng/trợ lý gần nhất và lưu vào 
 }
 ```
 
-Đường dẫn được phân giải tương đối với workspace. Chỉ các basename bootstrap được nhận diện mới được tải (`AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md`, `MEMORY.md`).
+`patterns` và `files` được chấp nhận làm bí danh của `paths`. Các đường dẫn được phân giải tương đối với không gian làm việc và phải nằm bên trong đó. Chỉ các tên cơ sở khởi tạo được nhận dạng mới được tải (`AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md`, `MEMORY.md`).
 
 <a id="command-logger"></a>
 
 ### Chi tiết command-logger
 
-Ghi nhật ký mọi lệnh slash vào `~/.openclaw/logs/commands.log`.
+Ghi nhật ký mỗi lệnh gạch chéo dưới dạng một dòng JSON (dấu thời gian, hành động, khóa phiên, ID người gửi, nguồn) vào `~/.openclaw/logs/commands.log`.
 
 <a id="compaction-notifier"></a>
 
 ### Chi tiết compaction-notifier
 
-Gửi các tin nhắn trạng thái ngắn vào cuộc trò chuyện hiện tại khi OpenClaw bắt đầu và hoàn tất Compaction bản ghi phiên. Điều này giúp các lượt dài bớt gây khó hiểu trên bề mặt trò chuyện vì người dùng có thể thấy rằng trợ lý đang tóm tắt ngữ cảnh và sẽ tiếp tục sau Compaction.
+Gửi các thông báo trạng thái ngắn vào cuộc trò chuyện hiện tại khi OpenClaw bắt đầu và hoàn tất Compaction bản chép lời phiên. Điều này giúp các lượt dài bớt khó hiểu trên các giao diện trò chuyện vì người dùng có thể thấy rằng trợ lý đang tóm tắt ngữ cảnh và sẽ tiếp tục sau khi Compaction hoàn tất.
 
 <a id="boot-md"></a>
 
 ### Chi tiết boot-md
 
-Chạy `BOOT.md` từ workspace đang hoạt động khi Gateway khởi động.
+Chạy `BOOT.md` khi Gateway khởi động cho từng phạm vi tác nhân đã cấu hình, nếu tệp tồn tại trong không gian làm việc đã phân giải của tác nhân đó.
 
-## Hook Plugin
+## Hook của Plugin
 
-Plugin có thể đăng ký các hook có kiểu thông qua Plugin SDK để tích hợp sâu hơn:
-chặn lệnh gọi công cụ, sửa đổi prompt, kiểm soát luồng tin nhắn, v.v.
-Dùng hook Plugin khi bạn cần `before_tool_call`, `before_agent_reply`,
-`before_install`, hoặc các hook vòng đời trong tiến trình khác.
+Các Plugin có thể đăng ký hook có kiểu thông qua Plugin SDK để tích hợp sâu hơn:
+chặn các lệnh gọi công cụ, sửa đổi lời nhắc, kiểm soát luồng tin nhắn và nhiều chức năng khác.
+Sử dụng hook của Plugin khi bạn cần `before_tool_call`, `before_agent_reply`,
+`before_install` hoặc các hook vòng đời trong tiến trình khác.
 
-Hook nội bộ do Plugin quản lý thì khác: chúng tham gia vào hệ thống sự kiện
-lệnh/vòng đời thô của trang này và xuất hiện trong `openclaw hooks list` dưới dạng
-`plugin:<id>`. Dùng chúng cho tác dụng phụ và khả năng tương thích với các gói hook, không phải
-cho middleware có thứ tự hoặc cổng chính sách.
+Các hook nội bộ do Plugin quản lý thì khác: chúng tham gia vào hệ thống sự kiện
+lệnh/vòng đời cấp cao của trang này và xuất hiện trong `openclaw hooks list` dưới dạng
+`plugin:<id>`. Hãy dùng chúng cho các tác dụng phụ và khả năng tương thích với các gói hook, không phải
+cho phần mềm trung gian có thứ tự hoặc các cổng chính sách.
 
-Để xem tham chiếu hook Plugin đầy đủ, hãy xem [Hook Plugin](/vi/plugins/hooks).
+Để xem tài liệu tham khảo đầy đủ về hook của Plugin, hãy xem [Hook của Plugin](/vi/plugins/hooks).
 
 ## Cấu hình
 
@@ -301,7 +317,7 @@ cho middleware có thứ tự hoặc cổng chính sách.
 }
 ```
 
-Biến môi trường theo từng hook:
+Các giá trị môi trường theo từng hook đáp ứng các bước kiểm tra tính đủ điều kiện `requires.env` của hook (cùng với môi trường tiến trình), và trình xử lý có thể đọc chúng từ mục cấu hình hook tương ứng:
 
 ```json
 {
@@ -318,7 +334,7 @@ Biến môi trường theo từng hook:
 }
 ```
 
-Thư mục hook bổ sung:
+Các thư mục hook bổ sung:
 
 ```json
 {
@@ -333,43 +349,43 @@ Thư mục hook bổ sung:
 ```
 
 <Note>
-Định dạng cấu hình mảng `hooks.internal.handlers` cũ vẫn được hỗ trợ để tương thích ngược, nhưng các hook mới nên dùng hệ thống dựa trên khám phá.
+Định dạng cấu hình mảng `hooks.internal.handlers` cũ vẫn được hỗ trợ để tương thích ngược, nhưng các hook mới nên sử dụng hệ thống dựa trên cơ chế khám phá.
 </Note>
 
-## Tham chiếu CLI
+## Tham khảo CLI
 
 ```bash
-# List all hooks (add --eligible, --verbose, or --json)
+# Liệt kê tất cả hook (thêm --eligible, --verbose hoặc --json)
 openclaw hooks list
 
-# Show detailed info about a hook
+# Hiển thị thông tin chi tiết về một hook
 openclaw hooks info <hook-name>
 
-# Show eligibility summary
+# Hiển thị tóm tắt tính đủ điều kiện
 openclaw hooks check
 
-# Enable/disable
+# Bật/tắt
 openclaw hooks enable <hook-name>
 openclaw hooks disable <hook-name>
 ```
 
 ## Thực hành tốt nhất
 
-- **Giữ handler chạy nhanh.** Hook chạy trong quá trình xử lý lệnh. Kích hoạt công việc nặng theo kiểu chạy rồi bỏ qua bằng `void processInBackground(event)`.
-- **Xử lý lỗi một cách mềm dẻo.** Bọc các thao tác rủi ro trong try/catch; đừng throw để các handler khác vẫn có thể chạy.
-- **Lọc sự kiện sớm.** Trả về ngay nếu loại/hành động sự kiện không liên quan.
-- **Dùng khóa sự kiện cụ thể.** Ưu tiên `"events": ["command:new"]` thay vì `"events": ["command"]` để giảm chi phí xử lý.
+- **Giữ cho trình xử lý hoạt động nhanh.** Hook chạy trong quá trình xử lý lệnh. Hãy chạy công việc nặng theo kiểu khởi chạy rồi không chờ kết quả bằng `void processInBackground(event)`.
+- **Xử lý lỗi hợp lý.** Bọc các thao tác có rủi ro trong try/catch; không ném lỗi để các trình xử lý khác có thể chạy.
+- **Lọc sự kiện sớm.** Trả về ngay nếu loại/hành động của sự kiện không liên quan.
+- **Sử dụng khóa sự kiện cụ thể.** Ưu tiên `"events": ["command:new"]` thay vì `"events": ["command"]` để giảm chi phí xử lý.
 
 ## Khắc phục sự cố
 
 ### Không phát hiện được hook
 
 ```bash
-# Verify directory structure
+# Xác minh cấu trúc thư mục
 ls -la ~/.openclaw/hooks/my-hook/
-# Should show: HOOK.md, handler.ts
+# Phải hiển thị: HOOK.md, handler.ts
 
-# List all discovered hooks
+# Liệt kê tất cả hook đã phát hiện
 openclaw hooks list
 ```
 
@@ -379,17 +395,17 @@ openclaw hooks list
 openclaw hooks info my-hook
 ```
 
-Kiểm tra các binary bị thiếu (PATH), biến môi trường, giá trị cấu hình hoặc khả năng tương thích hệ điều hành.
+Kiểm tra các tệp thực thi còn thiếu (PATH), biến môi trường, giá trị cấu hình hoặc khả năng tương thích với hệ điều hành.
 
 ### Hook không thực thi
 
 1. Xác minh hook đã được bật: `openclaw hooks list`
-2. Khởi động lại tiến trình Gateway để hook được tải lại.
-3. Kiểm tra nhật ký Gateway: `./scripts/clawlog.sh | grep hook`
+2. Khởi động lại tiến trình Gateway để các hook được tải lại.
+3. Kiểm tra nhật ký Gateway: `openclaw logs --follow | grep -i hook`
 
 ## Liên quan
 
-- [Tham chiếu CLI: hooks](/vi/cli/hooks)
+- [Tham khảo CLI: hook](/vi/cli/hooks)
 - [Webhook](/vi/automation/cron-jobs#webhooks)
-- [Hook Plugin](/vi/plugins/hooks) — hook vòng đời Plugin trong tiến trình
+- [Hook của Plugin](/vi/plugins/hooks) — các hook vòng đời Plugin trong tiến trình
 - [Cấu hình](/vi/gateway/configuration-reference#hooks)

@@ -1,31 +1,31 @@
 ---
 read_when:
     - Potrzebujesz ustrukturyzowanych zmian w wielu plikach
-    - Chcesz dokumentować lub debugować edycje oparte na patchach
+    - Chcesz udokumentować lub debugować edycje oparte na łatkach
 summary: Stosuj poprawki obejmujące wiele plików za pomocą narzędzia apply_patch
 title: narzędzie apply_patch
 x-i18n:
-    generated_at: "2026-05-06T09:30:58Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:39:36Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 9ff2f8e6ecd55ff1bdc553619ab3d590d0967efe7a9a90a31946ad15fd89a1dc
+    source_hash: 1c0422550ea8d9b0cb6b0ea22d7dcaecc462426f9600003f70c177746f30a3d9
     source_path: tools/apply-patch.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Zastosuj zmiany w plikach przy użyciu ustrukturyzowanego formatu łaty. Jest to idealne w przypadku edycji obejmujących wiele plików
-lub wiele fragmentów, gdzie pojedyncze wywołanie `edit` byłoby kruche.
+Wprowadzaj zmiany w plikach za pomocą ustrukturyzowanego formatu łaty. Jest to idealne rozwiązanie w przypadku edycji wielu plików
+lub wielu fragmentów, gdy pojedyncze wywołanie `edit` byłoby zawodne.
 
-Narzędzie przyjmuje pojedynczy ciąg `input`, który obejmuje jedną lub więcej operacji na plikach:
+Narzędzie przyjmuje pojedynczy ciąg `input`, który obejmuje co najmniej jedną operację na plikach:
 
-```
+```text
 *** Begin Patch
 *** Add File: path/to/file.txt
 +line 1
 +line 2
 *** Update File: src/app.ts
-@@
+@@ optional change context
 -old line
 +new line
 *** Delete File: obsolete.txt
@@ -34,19 +34,19 @@ Narzędzie przyjmuje pojedynczy ciąg `input`, który obejmuje jedną lub więce
 
 ## Parametry
 
-- `input` (wymagane): Pełna zawartość łaty, w tym `*** Begin Patch` i `*** End Patch`.
+- `input` (wymagany): Pełna zawartość łaty, włącznie z `*** Begin Patch` i `*** End Patch`.
 
 ## Uwagi
 
-- Ścieżki łaty obsługują ścieżki względne (z katalogu obszaru roboczego) i ścieżki bezwzględne.
-- `tools.exec.applyPatch.workspaceOnly` domyślnie ma wartość `true` (ograniczone do obszaru roboczego). Ustaw ją na `false` tylko wtedy, gdy celowo chcesz, aby `apply_patch` zapisywało/usuwało poza katalogiem obszaru roboczego.
-- Użyj `*** Move to:` w fragmencie `*** Update File:`, aby zmieniać nazwy plików.
-- `*** End of File` oznacza wstawienie wyłącznie na końcu pliku, gdy jest potrzebne.
-- Domyślnie dostępne dla modeli OpenAI i OpenAI Codex. Ustaw
-  `tools.exec.applyPatch.enabled: false`, aby je wyłączyć.
-- Opcjonalnie ogranicz według modelu za pomocą
-  `tools.exec.applyPatch.allowModels`.
-- Konfiguracja znajduje się tylko w `tools.exec`.
+- Ścieżki w łacie mogą być względne (względem katalogu obszaru roboczego) lub bezwzględne.
+- Domyślną wartością `tools.exec.applyPatch.workspaceOnly` jest `true` (ograniczenie do obszaru roboczego). Ustaw ją na `false` tylko wtedy, gdy celowo chcesz, aby `apply_patch` zapisywało lub usuwało pliki poza katalogiem obszaru roboczego.
+- Aby zmieniać nazwy plików, użyj `*** Move to:` we fragmencie `*** Update File:`.
+- `*** End of File` oznacza wstawienie wyłącznie na końcu pliku, gdy jest to potrzebne.
+- Funkcja jest domyślnie włączona dla każdego modelu. Ustaw `tools.exec.applyPatch.enabled: false`,
+  aby ją wyłączyć, lub ogranicz ją do określonych modeli za pomocą
+  `tools.exec.applyPatch.allowModels` (przyjmuje nieprzetworzone identyfikatory, takie jak `gpt-5.4`, lub pełne
+  identyfikatory, takie jak `openai/gpt-5.4`).
+- Konfiguracja znajduje się w `tools.exec.applyPatch.*`.
 
 ## Przykład
 
@@ -60,13 +60,13 @@ Narzędzie przyjmuje pojedynczy ciąg `input`, który obejmuje jedną lub więce
 ## Powiązane
 
 <CardGroup cols={2}>
-  <Card title="Diffs" href="/pl/tools/diffs" icon="code-compare">
-    Przeglądarka różnic tylko do odczytu służąca do prezentacji zmian.
+  <Card title="Różnice" href="/pl/tools/diffs" icon="code-compare">
+    Przeglądarka różnic tylko do odczytu, służąca do prezentowania zmian.
   </Card>
-  <Card title="Exec tool" href="/pl/tools/exec" icon="terminal">
+  <Card title="Narzędzie Exec" href="/pl/tools/exec" icon="terminal">
     Wykonywanie poleceń powłoki przez agenta.
   </Card>
-  <Card title="Code execution" href="/pl/tools/code-execution" icon="square-code">
-    Izolowana zdalna analiza w Pythonie z xAI.
+  <Card title="Wykonywanie kodu" href="/pl/tools/code-execution" icon="square-code">
+    Zdalna analiza w języku Python z użyciem xAI w środowisku izolowanym.
   </Card>
 </CardGroup>

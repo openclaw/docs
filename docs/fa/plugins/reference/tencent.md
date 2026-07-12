@@ -1,21 +1,21 @@
 ---
 read_when:
-    - شما در حال نصب، پیکربندی یا ممیزی Plugin tencent هستید.
-summary: پشتیبانی از ارائه‌دهنده مدل Tencent TokenHub را به OpenClaw اضافه می‌کند.
+    - شما در حال نصب، پیکربندی یا ممیزی Plugin تنسنت هستید
+summary: پشتیبانی از ارائه‌دهندگان مدل Tencent TokenHub و Tencent Tokenplan را به OpenClaw اضافه می‌کند.
 title: Plugin تنسنت
 x-i18n:
-    generated_at: "2026-06-27T18:29:30Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:32:32Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: bf977c889dd59aff6f106fd14c19d23f28464622047a37c292f5f7ef1a6b0551
+    source_hash: 7f7925d89feaded27708e3f31d08ed4e29650cb8ce1152011fd920ed4fb864ef
     source_path: plugins/reference/tencent.md
     workflow: 16
 ---
 
-# Plugin Tencent
+# Plugin تنسنت
 
-پشتیبانی از ارائه‌دهنده مدل Tencent TokenHub را به OpenClaw اضافه می‌کند.
+پشتیبانی از ارائه‌دهندگان مدل Tencent TokenHub و Tencent Tokenplan را به OpenClaw اضافه می‌کند.
 
 ## توزیع
 
@@ -24,8 +24,8 @@ x-i18n:
 
 ## سطح
 
-providers: tencent-tokenhub
+ارائه‌دهندگان: tencent-tokenhub، tencent-tokenplan
 
 ## مستندات مرتبط
 
-- [tencent](/fa/providers/tencent)
+- [تنسنت](/fa/providers/tencent)

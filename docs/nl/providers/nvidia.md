@@ -2,54 +2,55 @@
 read_when:
     - Je wilt gratis open modellen gebruiken in OpenClaw
     - Je moet NVIDIA_API_KEY instellen
-    - Je wilt Nemotron 3 Ultra gebruiken via NVIDIA
-summary: De OpenAI-compatibele API van NVIDIA gebruiken in OpenClaw
+    - Je wilt Nemotron 3 Ultra via NVIDIA gebruiken
+summary: Gebruik NVIDIA's met OpenAI compatibele API in OpenClaw
 title: NVIDIA
 x-i18n:
-    generated_at: "2026-07-01T20:28:38Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:20:05Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7b738746acead8dcaa74a39b13b4413171c5bf60efa5166dbc9b259d883a4e22
+    source_hash: b5ac7bcc19400a661b2f2861a1dd4d2306c94e445783929e342e9184003314e9
     source_path: providers/nvidia.md
     workflow: 16
 ---
 
-NVIDIA biedt een OpenAI-compatibele API op `https://integrate.api.nvidia.com/v1` voor
-open modellen gratis aan. Authenticeer met een API-sleutel van
+NVIDIA biedt open modellen gratis aan via een OpenAI-compatibele API op
+`https://integrate.api.nvidia.com/v1`, geverifieerd met een API-sleutel van
 [build.nvidia.com](https://build.nvidia.com/settings/api-keys). OpenClaw
-stelt de NVIDIA-provider standaard in op Nemotron 3 Ultra, NVIDIA's 550B totaal / 55B
-actieve redeneermodel voor agentisch werk met lange context.
+gebruikt standaard Nemotron 3 Ultra voor de NVIDIA-provider, NVIDIA's redeneermodel
+met in totaal 550B parameters, waarvan 55B actief, voor agentgestuurd werk met
+een lange context.
 
 ## Aan de slag
 
 <Steps>
-  <Step title="Get your API key">
+  <Step title="Haal uw API-sleutel op">
     Maak een API-sleutel aan op [build.nvidia.com](https://build.nvidia.com/settings/api-keys).
   </Step>
-  <Step title="Export the key and run onboarding">
+  <Step title="Exporteer de sleutel en voer de onboarding uit">
     ```bash
     export NVIDIA_API_KEY="nvapi-..."
     openclaw onboard --auth-choice nvidia-api-key
     ```
   </Step>
-  <Step title="Set an NVIDIA model">
+  <Step title="Stel een NVIDIA-model in">
     ```bash
     openclaw models set nvidia/nvidia/nemotron-3-ultra-550b-a55b
     ```
   </Step>
 </Steps>
 
-<Warning>
-Als je `--nvidia-api-key` doorgeeft in plaats van de env-var, komt de waarde in de shellgeschiedenis
-en `ps`-uitvoer terecht. Geef waar mogelijk de voorkeur aan de omgevingsvariabele `NVIDIA_API_KEY`.
-</Warning>
-
-Voor niet-interactieve configuratie kun je de sleutel ook rechtstreeks doorgeven:
+Geef voor een niet-interactieve configuratie de sleutel rechtstreeks door:
 
 ```bash
 openclaw onboard --auth-choice nvidia-api-key --nvidia-api-key "nvapi-..."
 ```
+
+<Warning>
+Met `--nvidia-api-key` komt de sleutel terecht in de shellgeschiedenis en de uitvoer van `ps`. Gebruik waar mogelijk bij voorkeur de omgevingsvariabele
+`NVIDIA_API_KEY`.
+</Warning>
 
 ## Configuratievoorbeeld
 
@@ -74,73 +75,92 @@ openclaw onboard --auth-choice nvidia-api-key --nvidia-api-key "nvapi-..."
 
 ## Uitgelichte catalogus
 
-Wanneer een NVIDIA API-sleutel is geconfigureerd, proberen OpenClaw-configuratie- en modelselectiepaden
-NVIDIA's openbare catalogus met uitgelichte modellen op te halen van
+Wanneer een NVIDIA API-sleutel is geconfigureerd, halen de configuratie- en modelselectiepaden
+NVIDIA's openbare catalogus met uitgelichte modellen op van
 `https://assets.ngc.nvidia.com/products/api-catalog/featured-models.json` en
-cachen ze het gerangschikte resultaat 24 uur. Nieuwe uitgelichte modellen van build.nvidia.com
-verschijnen daardoor in configuratie- en modelselectieoppervlakken zonder te wachten op een
-OpenClaw-release. Wanneer de live feed beschikbaar is, is het eerste geretourneerde model
-de standaardoptie die tijdens NVIDIA-configuratie wordt getoond.
+bewaren ze het resultaat 24 uur in de cache (de eerste 32 vermeldingen,
+geïmporteerd als rijen met vrije tekstinvoer). Nieuwe uitgelichte modellen van
+build.nvidia.com verschijnen daardoor in de configuratie- en modelselectieonderdelen
+zonder dat u op een OpenClaw-release hoeft te wachten. Wanneer de livefeed
+beschikbaar is, wordt het eerst geretourneerde model tijdens de NVIDIA-configuratie
+vooraf geselecteerd.
 
-De fetch gebruikt een vast HTTPS-hostbeleid voor `assets.ngc.nvidia.com`. Als er geen
-NVIDIA API-sleutel is geconfigureerd, of als die openbare catalogus niet beschikbaar of
-ongeldig gevormd is, valt OpenClaw terug op de gebundelde catalogus en de gebundelde standaard hieronder.
+Bij het ophalen geldt een vast HTTPS-hostbeleid voor `assets.ngc.nvidia.com`. Als
+geen NVIDIA API-sleutel is geconfigureerd, of als de feed niet beschikbaar of
+ongeldig is, valt OpenClaw terug op de hieronder vermelde ingebouwde catalogus en
+ingebouwde standaardwaarde.
 
 ## Nemotron 3 Ultra
 
-Nemotron 3 Ultra is het standaard NVIDIA-model in OpenClaw. NVIDIA's build-pagina voor
+Nemotron 3 Ultra is het standaard NVIDIA-model in OpenClaw. NVIDIA's buildpagina voor
 [`nvidia/nemotron-3-ultra-550b-a55b`](https://build.nvidia.com/nvidia/nemotron-3-ultra-550b-a55b)
-vermeldt het als een beschikbaar gratis endpoint met een contextspecificatie van 1 miljoen tokens.
-De gebundelde catalogus registreert een maximale uitvoer van 16.384 tokens om overeen te komen met NVIDIA's huidige
-OpenAI-compatibele voorbeeldaanvraag voor het gehoste endpoint.
+vermeldt het als een gratis beschikbaar eindpunt met een contextspecificatie van
+1 miljoen tokens.
 
-Gebruik Ultra voor de NVIDIA-standaard met de hoogste capaciteit. Houd Super geselecteerd wanneer
-je de kleinere Nemotron 3-optie wilt, of kies een van de modellen van derden
-die in NVIDIA's catalogus worden gehost wanneer hun context, latency of gedrag beter past.
-De gebundelde Ultra-rij verzendt standaard `chat_template_kwargs.enable_thinking: false` en
-`force_nonempty_content: true`, zodat normale chatuitvoer in het
-zichtbare antwoord blijft in plaats van redeneertekst bloot te leggen.
+De ingebouwde Ultra-rij verzendt standaard
+`chat_template_kwargs: { enable_thinking: false, force_nonempty_content: true }`,
+zodat normale chatuitvoer in het zichtbare antwoord blijft in plaats van
+redeneertekst bloot te leggen.
 
-## Gebundelde fallbackcatalogus
+Gebruik Ultra als de krachtigste standaardoptie van NVIDIA. Houd Super geselecteerd
+als u de kleinere Nemotron 3-optie wilt, of kies een van de modellen van derden
+die in NVIDIA's catalogus worden gehost als hun context, latentie of gedrag beter
+aansluit.
 
-| Modelref                                   | Naam                         | Context   | Max. uitvoer | Notities                           |
-| ------------------------------------------ | ---------------------------- | --------- | ------------ | ---------------------------------- |
-| `nvidia/nvidia/nemotron-3-ultra-550b-a55b` | NVIDIA Nemotron 3 Ultra 550B | 1,000,000 | 16,384       | Standaard                          |
-| `nvidia/nvidia/nemotron-3-super-120b-a12b` | NVIDIA Nemotron 3 Super 120B | 1,048,576 | 8,192        | Uitgelichte fallback               |
-| `nvidia/moonshotai/kimi-k2.5`              | Kimi K2.5                    | 262,144   | 8,192        | Uitgelichte fallback               |
-| `nvidia/minimaxai/minimax-m2.7`            | Minimax M2.7                 | 196,608   | 8,192        | Uitgelichte fallback               |
-| `nvidia/z-ai/glm-5.1`                      | GLM 5.1                      | 202,752   | 8,192        | Uitgelichte fallback               |
-| `nvidia/minimaxai/minimax-m2.5`            | MiniMax M2.5                 | 196,608   | 8,192        | Verouderd, upgradecompatibiliteit  |
-| `nvidia/z-ai/glm5`                         | GLM-5                        | 202,752   | 8,192        | Verouderd, upgradecompatibiliteit  |
+## Ingebouwde terugvalcatalogus
+
+De selecteerbare ingebouwde rijen zijn een momentopname van NVIDIA's catalogus met
+uitgelichte modellen. Verouderde compatibiliteitsrijen blijven via een exacte
+verwijzing beschikbaar, maar worden niet in modelkiezers weergegeven.
+
+| Modelverwijzing                             | Naam                  | Context   | Maximale uitvoer |
+| ------------------------------------------ | --------------------- | --------- | ---------------- |
+| `nvidia/nvidia/nemotron-3-ultra-550b-a55b` | Nemotron 3 Ultra 550B | 1,048,576 | 8,192            |
+| `nvidia/nvidia/nemotron-3-super-120b-a12b` | Nemotron 3 Super 120B | 1,000,000 | 8,192            |
+| `nvidia/z-ai/glm-5.2`                      | GLM 5.2               | 202,752   | 8,192            |
+| `nvidia/moonshotai/kimi-k2.6`              | Kimi K2.6             | 262,144   | 8,192            |
+| `nvidia/minimaxai/minimax-m3`              | Minimax M3            | 196,608   | 8,192            |
+| `nvidia/deepseek-ai/deepseek-v4-pro`       | DeepSeek V4 Pro       | 262,144   | 16,384           |
+| `nvidia/qwen/qwen3.5-397b-a17b`            | Qwen3.5 397B A17B     | 262,144   | 16,384           |
+
+De volledige compatibiliteitscatalogus behoudt voor bestaande configuraties ook
+deze eerder uitgebrachte verwijzingen: `nvidia/moonshotai/kimi-k2.5`,
+`nvidia/z-ai/glm-5.1`, `nvidia/minimaxai/minimax-m2.5`, `nvidia/z-ai/glm5` en
+`nvidia/minimaxai/minimax-m2.7`. Ze blijven via een exacte verwijzing beschikbaar,
+maar verschijnen nooit in de onboarding of modelkiezers.
 
 ## Geavanceerde configuratie
 
 <AccordionGroup>
-  <Accordion title="Auto-enable behavior">
-    De provider wordt automatisch ingeschakeld wanneer de omgevingsvariabele `NVIDIA_API_KEY` is ingesteld.
-    Er is naast de sleutel geen expliciete providerconfiguratie vereist.
+  <Accordion title="Automatisch inschakelen">
+    De provider wordt automatisch ingeschakeld wanneer de omgevingsvariabele
+    `NVIDIA_API_KEY` is ingesteld of tijdens de onboarding een sleutel is
+    opgeslagen. Naast de sleutel is geen expliciete providerconfiguratie vereist.
   </Accordion>
 
-  <Accordion title="Catalog and pricing">
-    OpenClaw geeft de voorkeur aan NVIDIA's openbare catalogus met uitgelichte modellen wanneer NVIDIA-authenticatie is
-    geconfigureerd en cachet deze 24 uur. De gebundelde fallbackcatalogus is statisch
-    en behoudt verouderde verzonden refs voor upgradecompatibiliteit. Kosten zijn standaard
-    `0` in de broncode, omdat NVIDIA momenteel gratis API-toegang biedt voor de
-    vermelde modellen.
+  <Accordion title="Catalogus en prijzen">
+    OpenClaw geeft de voorkeur aan NVIDIA's openbare catalogus met uitgelichte
+    modellen wanneer NVIDIA-verificatie is geconfigureerd en bewaart deze 24 uur
+    in de cache. De ingebouwde selecteerbare terugvaloptie is een statische
+    momentopname van NVIDIA's catalogus met uitgelichte modellen; verouderde
+    compatibiliteitsrijen die alleen via een exacte verwijzing beschikbaar zijn,
+    worden verborgen in modelkiezers. Kosten zijn in de broncode standaard `0`,
+    omdat NVIDIA momenteel gratis API-toegang biedt voor de vermelde modellen.
   </Accordion>
 
-  <Accordion title="OpenAI-compatible endpoint">
-    NVIDIA gebruikt het standaard `/v1` completions-endpoint. Alle OpenAI-compatibele
-    tooling zou direct moeten werken met de NVIDIA-basis-URL.
+  <Accordion title="OpenAI-compatibel eindpunt">
+    OpenClaw communiceert met NVIDIA via de adapter `openai-completions` en de
+    standaardroute voor chatvoltooiingen onder `/v1`. Alle OpenAI-compatibele
+    hulpmiddelen zouden direct met de NVIDIA-basis-URL moeten werken.
   </Accordion>
 
-  <Accordion title="Nemotron 3 Ultra reasoning params">
-    NVIDIA's Ultra-voorbeeldaanvraag gebruikt `chat_template_kwargs.enable_thinking`
-    en `reasoning_budget` voor redeneeruitvoer. OpenClaw's gebundelde Ultra-rij
-    schakelt template-denken standaard uit voor normaal chatgebruik. Als je je wilt
-    aanmelden voor NVIDIA-redeneeruitvoer of andere NVIDIA-specifieke aanvraagvelden wilt
-    afdwingen, stel dan parameters per model in en houd providerspecifieke overrides beperkt tot
-    het NVIDIA-model:
+  <Accordion title="Redeneerparameters van Nemotron 3 Ultra">
+    NVIDIA's Ultra-voorbeeldverzoek gebruikt `chat_template_kwargs.enable_thinking`
+    en `reasoning_budget` voor redeneeruitvoer. De ingebouwde Ultra-rij van
+    OpenClaw schakelt sjabloonredenering standaard uit voor normaal chatgebruik.
+    Als u NVIDIA-redeneeruitvoer wilt inschakelen of andere NVIDIA-specifieke
+    verzoekvelden wilt afdwingen, stelt u parameters per model in en beperkt u
+    providerspecifieke overschrijvingen tot het NVIDIA-model:
 
     ```json5
     {
@@ -159,15 +179,23 @@ zichtbare antwoord blijft in plaats van redeneertekst bloot te leggen.
     }
     ```
 
-    `params.extra_body` is de uiteindelijke OpenAI-compatibele request-body-override, dus
-    gebruik deze alleen voor velden die NVIDIA documenteert voor het geselecteerde endpoint.
+    `params.chat_template_kwargs` wordt samengevoegd met eventuele
+    `chat_template_kwargs` die al in het verzoek aanwezig zijn, in plaats van het
+    volledige object te vervangen. `params.extra_body` is de definitieve
+    OpenAI-compatibele overschrijving van de aanvraagbody en overschrijft
+    conflicterende payloadsleutels. Gebruik dit daarom alleen voor velden die
+    NVIDIA voor het geselecteerde eindpunt documenteert.
 
   </Accordion>
 
-  <Accordion title="Slow custom provider responses">
-    Sommige door NVIDIA gehoste aangepaste modellen kunnen langer duren dan de standaard idle-watchdog
-    van het model voordat ze een eerste responschunk uitsturen. Verhoog voor aangepaste NVIDIA-provideritems
-    de providertime-out in plaats van de time-out van de volledige agent-runtime te verhogen:
+  <Accordion title="Trage antwoorden van aangepaste providers">
+    Sommige door NVIDIA gehoste aangepaste modellen kunnen langer nodig hebben
+    dan de standaardbewaking van circa 120 seconden voor modelinactiviteit,
+    voordat ze een eerste antwoordfragment verzenden. Verhoog voor aangepaste
+    NVIDIA-providervermeldingen de providertime-out in plaats van de time-out
+    van de volledige agentruntime; `timeoutSeconds` geldt voor HTTP-verzoeken
+    van de provider en verhoogt de limiet van de inactiviteits- en
+    streambewaking voor die provider:
 
     ```json5
     {
@@ -197,18 +225,18 @@ zichtbare antwoord blijft in plaats van redeneertekst bloot te leggen.
 </AccordionGroup>
 
 <Tip>
-NVIDIA-modellen zijn momenteel gratis te gebruiken. Controleer
-[build.nvidia.com](https://build.nvidia.com/) voor de nieuwste beschikbaarheid en
-details over rate limits.
+NVIDIA-modellen zijn momenteel gratis te gebruiken. Raadpleeg
+[build.nvidia.com](https://build.nvidia.com/) voor de meest recente informatie
+over beschikbaarheid en snelheidslimieten.
 </Tip>
 
 ## Gerelateerd
 
 <CardGroup cols={2}>
-  <Card title="Model selection" href="/nl/concepts/model-providers" icon="layers">
-    Providers, modelrefs en failovergedrag kiezen.
+  <Card title="Modelselectie" href="/nl/concepts/model-providers" icon="layers">
+    Providers, modelverwijzingen en terugvalgedrag kiezen.
   </Card>
-  <Card title="Configuration reference" href="/nl/gateway/configuration-reference" icon="gear">
+  <Card title="Configuratiereferentie" href="/nl/gateway/configuration-reference" icon="gear">
     Volledige configuratiereferentie voor agents, modellen en providers.
   </Card>
 </CardGroup>

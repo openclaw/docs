@@ -1,52 +1,37 @@
 ---
 read_when:
     - Ajanlardan gelen PDF'leri analiz etmek istiyorsunuz
-    - Kesin PDF aracı parametrelerine ve sınırlarına ihtiyacınız var
-    - Yerel PDF modu ile çıkarma fallback'ini hata ayıklıyorsunuz
-summary: Yerel sağlayıcı desteği ve çıkarma yedeğiyle bir veya daha fazla PDF belgesini analiz edin
+    - Tam PDF aracı parametrelerine ve sınırlarına ihtiyacınız var
+    - Yerel PDF modu ile ayıklama geri dönüşü arasındaki farkın hatalarını ayıklıyorsunuz
+summary: Yerel sağlayıcı desteği ve ayıklama geri dönüşüyle bir veya daha fazla PDF belgesini analiz edin
 title: PDF aracı
 x-i18n:
-    generated_at: "2026-06-28T01:24:40Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:49:59Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6cce4328a7457f30b8c64abdcfa94b6a5d5649c2bcdfde3187288b11a0e154b1
+    source_hash: 54bde94a2b70fd209c70c13a1e75dc81c6cbebca7f6d56776bf37fa62cd78254
     source_path: tools/pdf.md
     workflow: 16
 ---
 
-`pdf`, bir veya daha fazla PDF belgesini analiz eder ve metin döndürür.
-
-Hızlı davranış:
-
-- Anthropic ve Google model sağlayıcıları için yerel sağlayıcı modu.
-- Diğer sağlayıcılar için çıkarma geri dönüş modu (önce metni, gerektiğinde sayfa görüntülerini çıkarır).
-- Tek (`pdf`) veya çoklu (`pdfs`) girişi destekler; çağrı başına en fazla 10 PDF.
+`pdf`, bir veya daha fazla PDF belgesini analiz eder ve metin döndürür. Anthropic ve Google modellerinde yerel belge girdisini kullanır; diğer tüm sağlayıcılarda ise metin/görüntü ayıklamaya geri döner.
 
 ## Kullanılabilirlik
 
-Araç yalnızca OpenClaw, ajan için PDF özellikli bir model yapılandırmasını çözümleyebildiğinde kaydedilir:
+Araç yalnızca OpenClaw, agent için PDF özellikli bir model çözümleyebildiğinde kaydedilir. Çözümleme sırası:
 
-1. `agents.defaults.pdfModel`
-2. `agents.defaults.imageModel` değerine geri dönüş
-3. ajanın çözümlenmiş oturum/varsayılan modeline geri dönüş
-4. yerel PDF sağlayıcıları kimlik doğrulama destekliyse, genel görüntü geri dönüş adaylarından önce onları tercih et
+1. `agents.defaults.pdfModel` (açıkça belirtilen birincil/yedek modeller)
+2. `agents.defaults.imageModel` (açıkça belirtilen birincil/yedek modeller)
+3. Sağlayıcısı yerel PDF girdisini destekliyorsa (Anthropic, Google) veya yapılandırılmış bir görsel modeli zaten varsa agent'ın çözümlenmiş oturum/varsayılan modeli
+4. Önce yerel PDF sağlayıcıları tercih edilerek, kullanılabilir kimlik doğrulamasına sahip otomatik algılanmış görüntü/görsel özellikli sağlayıcılar
 
-Kullanılabilir bir model çözümlenemezse `pdf` aracı sunulmaz.
+Her yedek aday kullanılmadan önce kimlik doğrulaması açısından denetlenir; dolayısıyla yapılandırılmış bir `provider/model`, yalnızca OpenClaw ilgili sağlayıcıda agent için kimlik doğrulaması yapabiliyorsa geçerli sayılır. Kullanılabilir bir model çözümlenemezse `pdf` aracı kullanıma sunulmaz.
 
-Kullanılabilirlik notları:
-
-- Geri dönüş zinciri kimlik doğrulamanın farkındadır. Yapılandırılmış bir `provider/model` yalnızca
-  OpenClaw o sağlayıcıda ajan için gerçekten kimlik doğrulayabiliyorsa sayılır.
-- Yerel PDF sağlayıcıları şu anda **Anthropic** ve **Google**dır.
-- Çözümlenmiş oturum/varsayılan sağlayıcının zaten yapılandırılmış bir görme/PDF
-  modeli varsa PDF aracı, diğer kimlik doğrulama destekli
-  sağlayıcılara geri dönmeden önce bunu yeniden kullanır.
-
-## Girdi referansı
+## Girdi başvurusu
 
 <ParamField path="pdf" type="string">
-Bir PDF yolu veya URL'si.
+Tek bir PDF yolu veya URL'si.
 </ParamField>
 
 <ParamField path="pdfs" type="string[]">
@@ -58,77 +43,60 @@ Analiz istemi.
 </ParamField>
 
 <ParamField path="pages" type="string">
-`1-5` veya `1,3,7-9` gibi sayfa filtresi.
+`1-5` veya `1,3,7-9` gibi sayfa filtresi. Yerel sağlayıcı modunda desteklenmez.
 </ParamField>
 
 <ParamField path="password" type="string">
-Çıkarma geri dönüş modunda şifrelenmiş PDF'ler için parola.
+Şifrelenmiş PDF'lerin parolası. İstekteki tüm PDF'lere uygulanır; yalnızca ayıklama yedek modunda kullanılır.
 </ParamField>
 
 <ParamField path="model" type="string">
-`provider/model` biçiminde isteğe bağlı model geçersiz kılması.
+`provider/model` biçiminde isteğe bağlı model geçersiz kılma değeri.
 </ParamField>
 
 <ParamField path="maxBytesMb" type="number">
-PDF başına MB cinsinden boyut sınırı. Varsayılan olarak `agents.defaults.pdfMaxBytesMb` veya `10` kullanılır.
+PDF başına MB cinsinden boyut sınırı. Varsayılan olarak `agents.defaults.pdfMaxBytesMb`, ayarlanmamışsa `10` kullanılır.
 </ParamField>
 
-Girdi notları:
+Notlar:
 
-- `pdf` ve `pdfs`, yüklemeden önce birleştirilir ve yinelenenler kaldırılır.
-- PDF girdisi sağlanmazsa araç hata verir.
-- `pages`, 1 tabanlı sayfa numaraları olarak ayrıştırılır; yinelenenler kaldırılır, sıralanır ve yapılandırılmış maksimum sayfa sayısına sınırlandırılır.
-- `password`, istekteki her PDF için geçerlidir ve yalnızca çıkarma geri dönüş modu tarafından kullanılır.
-- `maxBytesMb` varsayılan olarak `agents.defaults.pdfMaxBytesMb` veya `10` kullanır.
+- `pdf` ve `pdfs`, yüklemeden önce birleştirilir ve yinelenenler kaldırılır; en az biri gereklidir.
+- `pages`, 1 tabanlı sayfa numaraları olarak ayrıştırılır; yinelenenler kaldırılır, sıralanır ve `agents.defaults.pdfMaxPages` (varsayılan `20`) değerine göre sınırlandırılır. Sınırlar içindeki hiçbir sayfayla eşleşmeyen bir aralık, model çağrısından önce hataya neden olur.
 
-## Desteklenen PDF referansları
+## Desteklenen PDF başvuruları
 
-- yerel dosya yolu (`~` genişletmesi dahil)
+- Yerel dosya yolu (`~` genişletmesi dâhil)
 - `file://` URL'si
 - `http://` ve `https://` URL'si
-- `media://inbound/<id>` gibi OpenClaw tarafından yönetilen gelen referanslar
+- `media://inbound/<id>` gibi OpenClaw tarafından yönetilen gelen başvurular
 
-Referans notları:
+Diğer URI şemaları (örneğin `ftp://`) `details.error = "unsupported_pdf_reference"` döndürür. Araç korumalı alanda çalıştırıldığında uzak `http(s)` URL'leri reddedilir. Yalnızca çalışma alanına izin veren dosya ilkesi etkinse izin verilen köklerin dışındaki yerel yollar reddedilir; OpenClaw'ın gelen medya deposundaki yönetilen gelen başvurulara ve yeniden oynatılan yollara yine izin verilir.
 
-- Diğer URI şemaları (örneğin `ftp://`) `unsupported_pdf_reference` ile reddedilir.
-- Sandbox modunda, uzak `http(s)` URL'leri reddedilir.
-- Yalnızca çalışma alanı dosya ilkesi etkinleştirildiğinde, izin verilen köklerin dışındaki yerel dosya yolları reddedilir.
-- OpenClaw'ın gelen medya deposu altındaki yönetilen gelen referanslara ve yeniden oynatılan yollara, yalnızca çalışma alanı dosya ilkesiyle izin verilir.
-
-## Çalıştırma modları
+## Yürütme modları
 
 ### Yerel sağlayıcı modu
 
-Yerel mod, `anthropic` ve `google` sağlayıcıları için kullanılır.
-Araç, ham PDF baytlarını doğrudan sağlayıcı API'lerine gönderir.
+`anthropic` ve `google` sağlayıcıları için kullanılır (şu anda yerel PDF belgesi desteği bildiren tek sağlayıcılar). Ham PDF baytları, dosya başına yerel belge/satır içi PDF parçası olarak doğrudan sağlayıcı API'sine gönderilir.
 
-Yerel mod sınırları:
+Sınırlar:
 
-- `pages` desteklenmez. Ayarlanırsa araç hata döndürür.
-- `password` desteklenmez. Şifrelenmiş PDF'leri analiz etmek için yerel olmayan bir model kullanın.
-- Çoklu PDF girdisi desteklenir; her PDF, istemden önce yerel belge bloğu /
-  satır içi PDF parçası olarak gönderilir.
+- `pages` desteklenmez; ayarlanırsa araç `pages is not supported with native PDF providers` hatasını verir.
+- `password` desteklenmez; ayarlanırsa araç `password is not supported with native PDF providers` hatasını verir. Şifrelenmiş PDF'ler için yerel olmayan bir model kullanın.
 
-### Çıkarma geri dönüş modu
+### Ayıklama yedek modu
 
-Geri dönüş modu, yerel olmayan sağlayıcılar için kullanılır.
+Diğer tüm sağlayıcılar için kullanılır.
 
-Akış:
+1. Metin ve görüntü ayıklama amacıyla `clawpdf` paketini (PDFium WebAssembly) kullanan, paketle birlikte sunulan `document-extract` Plugin'i aracılığıyla seçili sayfalardan (`agents.defaults.pdfMaxPages` değerine kadar, varsayılan `20`) metni ayıklayın.
+2. Ayıklanan metin `200` karakterden kısaysa aynı sayfaları PNG görüntülerine dönüştürün. Görüntü oluşturma bütçesi toplam `4,000,000` pikseldir ve görüntü gerektiren tüm sayfalar arasında paylaşılır (sayfa başına değil, kalan sayfa başına orantılı olarak tahsis edilir); bu nedenle zaten yeterli metin içeren sayfalar görüntü oluşturma işlemini tamamen atlar.
+3. Ayıklanan metni (ve oluşturulan görüntüleri) istemle birlikte seçili modele gönderin.
 
-1. Seçilen sayfalardan metin çıkar (`agents.defaults.pdfMaxPages` değerine kadar, varsayılan `20`).
-2. Çıkarılan metin uzunluğu `200` karakterin altındaysa, seçilen sayfaları PNG görüntülerine dönüştür ve dahil et.
-3. Çıkarılan içeriği ve istemi seçilen modele gönder.
+Ayrıntılar:
 
-Geri dönüş ayrıntıları:
-
-- Sayfa görüntüsü çıkarma, `4,000,000` piksel bütçesi kullanır.
-- Şifrelenmiş PDF'ler üst düzey `password` parametresiyle açılabilir.
-- Hedef model görüntü girişini desteklemiyorsa ve çıkarılabilir metin yoksa araç hata verir.
-- Metin çıkarma başarılı olursa ancak görüntü çıkarma yalnızca metin destekleyen bir modelde görme gerektirirse,
-  OpenClaw oluşturulan görüntüleri bırakır ve çıkarılan metinle devam eder.
-- Çıkarma geri dönüşü, paketlenmiş `document-extract` Plugin'ini kullanır. Plugin,
-  PDFium WebAssembly aracılığıyla metin çıkarma ve görüntü oluşturma sağlayan
-  `clawpdf` öğesinin sahibidir.
+- Şifrelenmiş PDF'ler üst düzey `password` parametresiyle açılır.
+- Model görüntü girdisini desteklemiyorsa ve ayıklanabilir metin yoksa araç hata verir.
+- Görüntü oluşturma başarısız olursa OpenClaw görüntüleri çıkarır ve ayıklanan metinle devam eder.
+- Hedef model yalnızca metin destekliyorsa ve ayıklama görüntü ürettiyse OpenClaw görüntüleri çıkarır ve yalnızca metni gönderir.
 
 ## Yapılandırma
 
@@ -147,30 +115,39 @@ Geri dönüş ayrıntıları:
 }
 ```
 
-Tüm alan ayrıntıları için [Yapılandırma Referansı](/tr/gateway/configuration-reference) bölümüne bakın.
+| Anahtar                         | Varsayılan     | Anlamı                                                                                                             |
+| ------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `agents.defaults.pdfModel`      | ayarlanmamış   | Açıkça belirtilen birincil/yedek PDF modelleri; `imageModel`'e, ardından oturum modeline geri döner.                |
+| `agents.defaults.pdfMaxBytesMb` | `10`           | PDF başına MB cinsinden boyut sınırı.                                                                               |
+| `agents.defaults.pdfMaxPages`   | `20`           | PDF başına işlenen en fazla sayfa sayısı.                                                                           |
+
+Tüm alan ayrıntıları için [Yapılandırma Başvurusu](/tr/gateway/config-agents#agent-defaults) bölümüne bakın.
 
 ## Çıktı ayrıntıları
 
-Araç, metni `content[0].text` içinde ve yapılandırılmış meta verileri `details` içinde döndürür.
+Araç, `content[0].text` içinde metin ve `details` içinde yapılandırılmış meta veriler döndürür.
 
 Yaygın `details` alanları:
 
-- `model`: çözümlenmiş model referansı (`provider/model`)
-- `native`: yerel sağlayıcı modu için `true`, geri dönüş için `false`
-- `attempts`: başarıdan önce başarısız olan geri dönüş denemeleri
+- `model`: çözümlenen model başvurusu (`provider/model`)
+- `native`: yerel sağlayıcı modu için `true`, yedek mod için `false`
+- `attempts`: başarıdan önce başarısız olan yedek denemeleri
 
 Yol alanları:
 
-- tek PDF girdisi: `details.pdf`
-- birden fazla PDF girdisi: `pdf` girdileriyle `details.pdfs[]`
-- sandbox yolu yeniden yazma meta verileri (geçerli olduğunda): `rewrittenFrom`
+- Tek PDF girdisi: `details.pdf`
+- Birden fazla PDF girdisi: `pdf` girdileri içeren `details.pdfs[]`
+- Korumalı alan yolunu yeniden yazma meta verileri (uygun olduğunda): `rewrittenFrom`
 
 ## Hata davranışı
 
-- Eksik PDF girdisi: `pdf required: provide a path or URL to a PDF document` fırlatır
-- Çok fazla PDF: `details.error = "too_many_pdfs"` içinde yapılandırılmış hata döndürür
-- Desteklenmeyen referans şeması: `details.error = "unsupported_pdf_reference"` döndürür
-- `pages` ile yerel mod: açık bir `pages is not supported with native PDF providers` hatası fırlatır
+| Koşul                            | Sonuç                                                          |
+| -------------------------------- | -------------------------------------------------------------- |
+| PDF girdisi yok                  | `pdf required: provide a path or URL to a PDF document` hatasını verir |
+| 10'dan fazla PDF                 | `details.error = "too_many_pdfs"`                              |
+| Desteklenmeyen başvuru şeması    | `details.error = "unsupported_pdf_reference"`                  |
+| Yerel sağlayıcıyla `pages`       | `pages is not supported with native PDF providers` hatasını verir |
+| Yerel sağlayıcıyla `password`    | `password is not supported with native PDF providers` hatasını verir |
 
 ## Örnekler
 
@@ -192,7 +169,7 @@ Birden fazla PDF:
 }
 ```
 
-Sayfa filtreli geri dönüş modeli:
+Sayfa filtreli yedek model:
 
 ```json
 {
@@ -203,7 +180,7 @@ Sayfa filtreli geri dönüş modeli:
 }
 ```
 
-Çıkarma geri dönüşüyle şifrelenmiş PDF:
+Ayıklama yedeğiyle şifrelenmiş PDF:
 
 ```json
 {
@@ -216,5 +193,5 @@ Sayfa filtreli geri dönüş modeli:
 
 ## İlgili
 
-- [Araçlara Genel Bakış](/tr/tools) - kullanılabilir tüm ajan araçları
-- [Yapılandırma Referansı](/tr/gateway/config-agents#agent-defaults) - pdfMaxBytesMb ve pdfMaxPages yapılandırması
+- [Araçlara Genel Bakış](/tr/tools) - kullanılabilir tüm agent araçları
+- [Yapılandırma Başvurusu](/tr/gateway/config-agents#agent-defaults) - pdfMaxBytesMb ve pdfMaxPages yapılandırması

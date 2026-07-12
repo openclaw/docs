@@ -1,42 +1,42 @@
 ---
 read_when:
-    - Вам нужен синтез речи Azure для исходящих ответов
-    - Вам нужен нативный вывод голосовых заметок Ogg Opus из Azure Speech
-summary: Синтез речи Azure AI Speech для ответов OpenClaw
-title: Речь Azure
+    - Вы хотите использовать синтез речи Azure для исходящих ответов
+    - Вам нужен нативный вывод голосовых сообщений в формате Ogg Opus из Azure Speech
+summary: Преобразование текста в речь с помощью Azure AI Speech для ответов OpenClaw
+title: Azure Speech
 x-i18n:
-    generated_at: "2026-06-28T23:34:54Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:45:24Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c14b1f3c2fda9b2f820e537d7133b1dbf71573b7d735207c6a4ca19432a8d8c3
+    source_hash: 61e700724dbb7cb8c217f91485cea0eec776698e439f6c6985dac58dc4cafc01
     source_path: providers/azure-speech.md
     workflow: 16
 ---
 
-Azure Speech — это провайдер преобразования текста в речь Azure AI Speech. В OpenClaw он
-по умолчанию синтезирует аудио исходящих ответов в MP3, нативный Ogg/Opus для
-голосовых сообщений и 8 kHz mulaw-аудио для телефонных каналов, таких как голосовой вызов.
+Azure Speech — это встроенный поставщик преобразования текста в речь Azure AI Speech. OpenClaw
+напрямую вызывает REST API Azure Speech с использованием SSML, синтезируя MP3 для
+стандартных ответов, нативный Ogg/Opus для голосовых сообщений и mulaw 8 кГц для
+телефонных каналов, таких как Voice Call. В запросе принадлежащий поставщику
+формат вывода передаётся через заголовок `X-Microsoft-OutputFormat`.
 
-OpenClaw использует Azure Speech REST API напрямую с SSML и передает
-формат вывода, определяемый провайдером, через `X-Microsoft-OutputFormat`.
-
-| Сведения                | Значение                                                                                                       |
-| ----------------------- | -------------------------------------------------------------------------------------------------------------- |
-| Сайт                    | [Azure AI Speech](https://azure.microsoft.com/products/ai-services/ai-speech)                                  |
-| Документация            | [Speech REST text-to-speech](https://learn.microsoft.com/azure/ai-services/speech-service/rest-text-to-speech) |
-| Аутентификация          | `AZURE_SPEECH_KEY` плюс `AZURE_SPEECH_REGION`                                                                  |
-| Голос по умолчанию      | `en-US-JennyNeural`                                                                                            |
-| Файловый вывод по умолчанию | `audio-24khz-48kbitrate-mono-mp3`                                                                              |
-| Файл голосового сообщения по умолчанию | `ogg-24khz-16bit-mono-opus`                                                                                    |
+| Сведения                       | Значение                                                                                                       |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| Идентификатор поставщика       | `azure-speech` (псевдоним: `azure`)                                                                            |
+| Веб-сайт                       | [Azure AI Speech](https://azure.microsoft.com/products/ai-services/ai-speech)                                  |
+| Документация                   | [Преобразование текста в речь через Speech REST](https://learn.microsoft.com/azure/ai-services/speech-service/rest-text-to-speech) |
+| Аутентификация                 | `AZURE_SPEECH_KEY` и `AZURE_SPEECH_REGION`                                                                     |
+| Голос по умолчанию             | `en-US-JennyNeural`                                                                                            |
+| Формат файла по умолчанию      | `audio-24khz-48kbitrate-mono-mp3`                                                                              |
+| Формат голосового сообщения по умолчанию | `ogg-24khz-16bit-mono-opus`                                                                          |
 
 ## Начало работы
 
 <Steps>
-  <Step title="Create an Azure Speech resource">
-    В портале Azure создайте ресурс Speech. Скопируйте **KEY 1** из
-    «Управление ресурсами > Ключи и конечная точка», а также скопируйте расположение ресурса,
-    например `eastus`.
+  <Step title="Создайте ресурс Azure Speech">
+    На портале Azure создайте ресурс Speech. Скопируйте **KEY 1** из раздела
+    Resource Management > Keys and Endpoint, а также скопируйте расположение
+    ресурса, например `eastus`.
 
     ```
     AZURE_SPEECH_KEY=<speech-resource-key>
@@ -44,7 +44,7 @@ OpenClaw использует Azure Speech REST API напрямую с SSML и 
     ```
 
   </Step>
-  <Step title="Select Azure Speech in messages.tts">
+  <Step title="Выберите Azure Speech в messages.tts">
     ```json5
     {
       messages: {
@@ -53,7 +53,7 @@ OpenClaw использует Azure Speech REST API напрямую с SSML и 
           provider: "azure-speech",
           providers: {
             "azure-speech": {
-              speakerVoice: "en-US-JennyNeural",
+              voice: "en-US-JennyNeural",
               lang: "en-US",
             },
           },
@@ -62,66 +62,75 @@ OpenClaw использует Azure Speech REST API напрямую с SSML и 
     }
     ```
   </Step>
-  <Step title="Send a message">
-    Отправьте ответ через любой подключенный канал. OpenClaw синтезирует аудио
-    с помощью Azure Speech и доставляет MP3 для стандартного аудио либо Ogg/Opus, когда
-    канал ожидает голосовое сообщение.
+  <Step title="Отправьте сообщение">
+    Отправьте ответ через любой подключённый канал. OpenClaw синтезирует аудио
+    с помощью Azure Speech и доставляет MP3 для стандартного аудио или Ogg/Opus,
+    если канал ожидает голосовое сообщение.
   </Step>
 </Steps>
 
 ## Параметры конфигурации
 
-| Параметр                | Путь                                                        | Описание                                                                                              |
-| ----------------------- | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `apiKey`                | `messages.tts.providers.azure-speech.apiKey`                | Ключ ресурса Azure Speech. Использует `AZURE_SPEECH_KEY`, `AZURE_SPEECH_API_KEY` или `SPEECH_KEY` как запасной вариант. |
-| `region`                | `messages.tts.providers.azure-speech.region`                | Регион ресурса Azure Speech. Использует `AZURE_SPEECH_REGION` или `SPEECH_REGION` как запасной вариант. |
-| `endpoint`              | `messages.tts.providers.azure-speech.endpoint`              | Необязательное переопределение конечной точки/базового URL Azure Speech.                              |
-| `baseUrl`               | `messages.tts.providers.azure-speech.baseUrl`               | Необязательное переопределение базового URL Azure Speech.                                             |
-| `speakerVoice`          | `messages.tts.providers.azure-speech.speakerVoice`          | ShortName голоса Azure (по умолчанию `en-US-JennyNeural`). Устаревший псевдоним: `voice`.             |
-| `lang`                  | `messages.tts.providers.azure-speech.lang`                  | Код языка SSML (по умолчанию `en-US`).                                                               |
-| `outputFormat`          | `messages.tts.providers.azure-speech.outputFormat`          | Формат вывода аудиофайла (по умолчанию `audio-24khz-48kbitrate-mono-mp3`).                            |
-| `voiceNoteOutputFormat` | `messages.tts.providers.azure-speech.voiceNoteOutputFormat` | Формат вывода голосового сообщения (по умолчанию `ogg-24khz-16bit-mono-opus`).                        |
+Все параметры находятся в `messages.tts.providers["azure-speech"]`.
+
+| Параметр                | Описание                                                                                              |
+| ----------------------- | ----------------------------------------------------------------------------------------------------- |
+| `apiKey`                | Ключ ресурса Azure Speech. Если не задан, используется `AZURE_SPEECH_KEY`, `AZURE_SPEECH_API_KEY` или `SPEECH_KEY`. |
+| `region`                | Регион ресурса Azure Speech. Если не задан, используется `AZURE_SPEECH_REGION` или `SPEECH_REGION`.    |
+| `endpoint`              | Необязательное переопределение конечной точки Azure Speech. Если не задано, используется `AZURE_SPEECH_ENDPOINT`. |
+| `baseUrl`               | Необязательное переопределение базового URL Azure Speech.                                             |
+| `voice`                 | Значение ShortName голоса Azure (по умолчанию `en-US-JennyNeural`). Устаревший псевдоним: `voiceId`.   |
+| `lang`                  | Код языка SSML (по умолчанию `en-US`).                                                                |
+| `outputFormat`          | Формат выходного аудиофайла (по умолчанию `audio-24khz-48kbitrate-mono-mp3`).                         |
+| `voiceNoteOutputFormat` | Формат голосового сообщения (по умолчанию `ogg-24khz-16bit-mono-opus`).                               |
+| `timeoutMs`             | Переопределение времени ожидания запроса в миллисекундах. Если не задано, используется глобальное значение `messages.tts.timeoutMs`. |
+
+Поставщик считается настроенным, если задан `apiKey` и один из параметров:
+`region`, `endpoint` или `baseUrl`. Переменные окружения проверяются только как
+резервный вариант для незаданных ключей конфигурации.
 
 ## Примечания
 
 <AccordionGroup>
-  <Accordion title="Authentication">
+  <Accordion title="Аутентификация">
     Azure Speech использует ключ ресурса Speech, а не ключ Azure OpenAI. Ключ
-    отправляется как `Ocp-Apim-Subscription-Key`; OpenClaw выводит
-    `https://<region>.tts.speech.microsoft.com` из `region`, если вы не
-    укажете `endpoint` или `baseUrl`.
+    передаётся как `Ocp-Apim-Subscription-Key`; OpenClaw формирует
+    `https://<region>.tts.speech.microsoft.com` на основе `region`, если вы
+    не указали `endpoint` или `baseUrl`.
   </Accordion>
-  <Accordion title="Voice names">
+  <Accordion title="Названия голосов">
     Используйте значение `ShortName` голоса Azure Speech, например
-    `en-US-JennyNeural`. Встроенный провайдер может перечислять голоса через тот же
-    ресурс Speech и отфильтровывает голоса, помеченные как устаревшие или выведенные из эксплуатации.
+    `en-US-JennyNeural`. Встроенный поставщик может получать список голосов
+    через тот же ресурс Speech и исключает голоса, помеченные как устаревшие,
+    выведенные из эксплуатации или отключённые.
   </Accordion>
-  <Accordion title="Audio outputs">
-    Azure принимает форматы вывода, такие как `audio-24khz-48kbitrate-mono-mp3`,
+  <Accordion title="Форматы аудио">
+    Azure принимает такие форматы вывода, как `audio-24khz-48kbitrate-mono-mp3`,
     `ogg-24khz-16bit-mono-opus` и `riff-24khz-16bit-mono-pcm`. OpenClaw
-    запрашивает Ogg/Opus для целей `voice-note`, чтобы каналы могли отправлять нативные
-    голосовые сообщения без дополнительного преобразования MP3.
+    запрашивает Ogg/Opus для целей `voice-note`, чтобы каналы могли отправлять
+    нативные голосовые сообщения без дополнительного преобразования в MP3,
+    и принудительно использует `raw-8khz-8bit-mono-mulaw` для телефонных целей.
   </Accordion>
-  <Accordion title="Alias">
-    `azure` принимается как псевдоним провайдера для существующих PR и пользовательской конфигурации,
-    но новая конфигурация должна использовать `azure-speech`, чтобы избежать путаницы с
-    провайдерами моделей Azure OpenAI.
+  <Accordion title="Псевдоним">
+    `azure` принимается как псевдоним поставщика для существующей конфигурации,
+    но в новой конфигурации следует использовать `azure-speech`, чтобы избежать
+    путаницы с поставщиками моделей Azure OpenAI.
   </Accordion>
 </AccordionGroup>
 
 ## Связанные материалы
 
 <CardGroup cols={2}>
-  <Card title="Text-to-speech" href="/ru/tools/tts" icon="waveform-lines">
-    Обзор TTS, провайдеры и конфигурация `messages.tts`.
+  <Card title="Преобразование текста в речь" href="/ru/tools/tts" icon="waveform-lines">
+    Обзор TTS, поставщики и конфигурация `messages.tts`.
   </Card>
-  <Card title="Configuration" href="/ru/gateway/configuration" icon="gear">
-    Полный справочник конфигурации, включая настройки `messages.tts`.
+  <Card title="Конфигурация" href="/ru/gateway/configuration" icon="gear">
+    Полный справочник по конфигурации, включая настройки `messages.tts`.
   </Card>
-  <Card title="Providers" href="/ru/providers" icon="grid">
-    Все встроенные провайдеры OpenClaw.
+  <Card title="Поставщики" href="/ru/providers" icon="grid">
+    Все встроенные поставщики OpenClaw.
   </Card>
-  <Card title="Troubleshooting" href="/ru/help/troubleshooting" icon="wrench">
-    Распространенные проблемы и шаги отладки.
+  <Card title="Устранение неполадок" href="/ru/help/troubleshooting" icon="wrench">
+    Распространённые проблемы и шаги по отладке.
   </Card>
 </CardGroup>

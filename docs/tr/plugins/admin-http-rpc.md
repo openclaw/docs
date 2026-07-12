@@ -1,45 +1,40 @@
 ---
 read_when:
     - Gateway WebSocket RPC istemcisini kullanamayan ana makine araçları oluşturma
-    - Güvenilir özel bir girişin arkasında Gateway yönetici otomasyonunu açığa çıkarma
+    - Gateway yönetim otomasyonunu özel ve güvenilir bir giriş noktasının arkasından erişime açma
     - Gateway yöntemlerine HTTP erişimi için güvenlik modelinin denetlenmesi
-summary: Seçili Gateway kontrol düzlemi yöntemlerini paketle birlikte gelen, isteğe bağlı admin-http-rpc plugin’i üzerinden kullanıma açın
-title: Yönetici HTTP RPC plugin
+summary: Seçili Gateway kontrol düzlemi yöntemlerini, paketle birlikte sunulan ve isteğe bağlı olarak etkinleştirilen admin-http-rpc Plugin’i üzerinden kullanıma açın
+title: Yönetici HTTP RPC Plugin'i
 x-i18n:
-    generated_at: "2026-06-28T00:50:02Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:30:16Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f701ef6be7457cd518ecb80b7ec5dade61bb057d62f4ca90984a4c1aa8fdf700
+    source_hash: 0709081efd0ce65cef7edac54df9a71978cbad17e2b25df83ac9075de938376c
     source_path: plugins/admin-http-rpc.md
     workflow: 16
 ---
 
-Birlikte gelen `admin-http-rpc` Plugin'i, normal Gateway WebSocket RPC istemcisini kullanamayan güvenilir ana makine otomasyonu için seçili Gateway denetim düzlemi yöntemlerini HTTP üzerinden sunar.
+Paketle birlikte gelen `admin-http-rpc` Plugin'i, Gateway WebSocket bağlantısını açık tutamayan güvenilir ana makine otomasyonları için izin listesindeki bir Gateway denetim düzlemi yöntemi kümesini HTTP üzerinden sunar.
 
-Plugin, OpenClaw ile birlikte gelir, ancak varsayılan olarak kapalıdır. Devre dışıyken rota kaydedilmez. Etkinleştirildiğinde şunları ekler:
+OpenClaw ile birlikte gelir ancak varsayılan olarak devre dışıdır; devre dışıyken rota kaydedilmez. Etkinleştirildiğinde Gateway ile aynı dinleyiciye `POST /api/v1/admin/rpc` rotasını ekler (`http://<gateway-host>:<port>/api/v1/admin/rpc`).
 
-- `POST /api/v1/admin/rpc`
-- Gateway ile aynı dinleyici: `http://<gateway-host>:<port>/api/v1/admin/rpc`
-
-Bunu yalnızca özel ana makine araçları, tailnet otomasyonu veya güvenilir bir dahili giriş için etkinleştirin. Bu rotayı doğrudan herkese açık internete açmayın.
+Bunu yalnızca özel ana makine araçları, tailnet otomasyonu veya güvenilir bir dahili giriş için etkinleştirin. Bu rotayı hiçbir zaman doğrudan genel internete açmayın.
 
 ## Etkinleştirmeden önce
 
-Admin HTTP RPC tam bir operatör denetim düzlemi yüzeyidir. Gateway HTTP kimlik doğrulamasından geçen herhangi bir çağıran, bu sayfadaki izin listesindeki yöntemleri çağırabilir.
+Yönetici HTTP RPC, tam bir operatör denetim düzlemi yüzeyidir: Gateway HTTP kimlik doğrulamasını geçen her çağıran, aşağıdaki izin listesindeki yöntemleri çalıştırabilir. Yalnızca şu koşulların tümü karşılandığında etkinleştirin:
 
-Bunu yalnızca şunların tümü doğruysa kullanın:
+- Çağıranın Gateway'i işletmesine güveniliyor.
+- Çağıran WebSocket RPC istemcisini kullanamıyor.
+- Rotaya yalnızca geri döngü, bir tailnet veya özel ve kimliği doğrulanmış bir giriş üzerinden erişilebiliyor.
+- İzin verilen yöntemleri incelediniz ve bunlar çalıştırmayı planladığınız otomasyonla eşleşiyor.
 
-- Çağıranın Gateway'i işletmek için güvenilir olması.
-- Çağıranın WebSocket RPC istemcisini kullanamaması.
-- Rotanın yalnızca loopback, bir tailnet veya özel kimliği doğrulanmış bir giriş üzerinden erişilebilir olması.
-- İzin verilen yöntemleri gözden geçirmiş olmanız ve bunların çalıştırmayı planladığınız otomasyonla eşleşmesi.
+Gateway WebSocket bağlantısını açık tutabilen OpenClaw istemcileri ve etkileşimli araçlar için bunun yerine WebSocket RPC kullanın.
 
-OpenClaw istemcileri ve Gateway WebSocket bağlantısını açık tutabilen etkileşimli araçlar için WebSocket RPC yolunu kullanın.
+## Etkinleştirme
 
-## Etkinleştir
-
-Birlikte gelen Plugin'i etkinleştirin:
+Paketle birlikte gelen Plugin'i etkinleştirin:
 
 <Tabs>
   <Tab title="CLI">
@@ -48,7 +43,7 @@ Birlikte gelen Plugin'i etkinleştirin:
     openclaw gateway restart
     ```
   </Tab>
-  <Tab title="Config">
+  <Tab title="Yapılandırma">
     ```json5
     {
       plugins: {
@@ -61,16 +56,16 @@ Birlikte gelen Plugin'i etkinleştirin:
   </Tab>
 </Tabs>
 
-Rota, Plugin başlatma sırasında kaydedilir. Plugin yapılandırmasını değiştirdikten sonra Gateway'i yeniden başlatın.
+Rota, Plugin başlatılırken kaydedilir; bu nedenle Plugin yapılandırmasını değiştirdikten sonra Gateway'i yeniden başlatın.
 
-HTTP yüzeyine artık ihtiyacınız olmadığında devre dışı bırakın:
+HTTP yüzeyine artık ihtiyacınız kalmadığında devre dışı bırakın:
 
 ```bash
 openclaw plugins disable admin-http-rpc
 openclaw gateway restart
 ```
 
-## Rotayı doğrula
+## Rotayı doğrulama
 
 En küçük güvenli istek olarak `health` kullanın:
 
@@ -93,7 +88,7 @@ Başarılı bir yanıtta `ok: true` bulunur:
 }
 ```
 
-Plugin devre dışıyken rota kayıtlı olmadığı için `404` döndürür.
+Plugin devre dışıyken rota kaydedilmediği için `404` döndürür.
 
 ## Kimlik doğrulama
 
@@ -101,25 +96,22 @@ Plugin rotası Gateway HTTP kimlik doğrulamasını kullanır.
 
 Yaygın kimlik doğrulama yolları:
 
-- paylaşılan gizli anahtar kimlik doğrulaması (`gateway.auth.mode="token"` veya `"password"`): `Authorization: Bearer <token-or-password>`
-- güvenilir kimlik taşıyan HTTP kimlik doğrulaması (`gateway.auth.mode="trusted-proxy"`): yapılandırılmış kimlik farkındalıklı proxy üzerinden yönlendirin ve gerekli kimlik başlıklarını eklemesine izin verin
-- özel giriş açık kimlik doğrulaması (`gateway.auth.mode="none"`): kimlik doğrulama başlığı gerekmez
+- paylaşılan gizli bilgi kimlik doğrulaması (`gateway.auth.mode="token"` veya `"password"`): `Authorization: Bearer <token-or-password>`
+- güvenilir, kimlik bilgisi taşıyan HTTP kimlik doğrulaması (`gateway.auth.mode="trusted-proxy"`): isteği yapılandırılmış kimlik farkındalıklı proxy üzerinden yönlendirin ve gerekli kimlik başlıklarını eklemesini sağlayın
+- özel girişte açık kimlik doğrulama (`gateway.auth.mode="none"`): kimlik doğrulama başlığı gerekmez
 
 ## Güvenlik modeli
 
-Bu Plugin'i tam bir Gateway operatör yüzeyi olarak ele alın.
+Bu Plugin'i tam bir Gateway operatör yüzeyi olarak değerlendirin.
 
-- Plugin'i etkinleştirmek, `/api/v1/admin/rpc` adresindeki izin listesindeki admin RPC yöntemlerine kasıtlı olarak erişim sunar.
-- Plugin, Gateway kimliği doğrulanmış HTTP rotasının denetim düzlemi yöntemlerini süreç içinde yönlendirebilmesi için ayrılmış `contracts.gatewayMethodDispatch: ["authenticated-request"]` manifest sözleşmesini bildirir.
-- Paylaşılan gizli bearer kimlik doğrulaması, gateway operatör gizli anahtarına sahip olunduğunu kanıtlar.
-- `token` ve `password` kimlik doğrulaması için daha dar `x-openclaw-scopes` başlıkları yok sayılır ve normal tam operatör varsayılanları geri yüklenir.
-- Güvenilir kimlik taşıyan HTTP modları, mevcut olduğunda `x-openclaw-scopes` değerlerine uyar.
+- Plugin'in etkinleştirilmesi, izin listesindeki yönetici RPC yöntemlerine `/api/v1/admin/rpc` üzerinden erişimi bilinçli olarak açar.
+- Plugin, ayrılmış `contracts.gatewayMethodDispatch: ["authenticated-request"]` manifest sözleşmesini bildirir; bu sözleşme, Gateway tarafından kimliği doğrulanmış HTTP rotasının denetim düzlemi yöntemlerini süreç içinde yönlendirebilmesini sağlar. Bu bir korumalı alan değildir: sözleşme, ayrılmış SDK yardımcılarının yanlışlıkla kullanılmasını önler ancak güvenilir Plugin'ler yine de Gateway sürecinde çalışır.
+- Paylaşılan gizli bilgi taşıyıcı kimlik doğrulaması (`token`/`password` modları), Gateway operatör gizli bilgisinin elde bulundurulduğunu kanıtlar; bu yolda daha dar kapsamlı `x-openclaw-scopes` başlıkları yok sayılır ve normal tam operatör varsayılanları geri yüklenir.
+- Güvenilir, kimlik bilgisi taşıyan HTTP kimlik doğrulaması (`trusted-proxy` modu), mevcut olduğunda `x-openclaw-scopes` değerini dikkate alır.
 - `gateway.auth.mode="none"`, Plugin etkinse bu rotanın kimlik doğrulamasız olduğu anlamına gelir. Bunu yalnızca tamamen güvendiğiniz özel bir girişin arkasında kullanın.
-- İstekler, Plugin rota kimlik doğrulamasından geçtikten sonra WebSocket RPC ile aynı Gateway yöntem işleyicileri ve kapsam kontrolleri üzerinden yönlendirilir.
-- Bu rotayı loopback, tailnet veya özel güvenilir bir giriş üzerinde tutun. Doğrudan herkese açık internete açmayın.
-- Plugin manifest sözleşmeleri bir sandbox değildir. Ayrılmış SDK yardımcılarının yanlışlıkla kullanılmasını önlerler; güvenilir Plugin'ler yine de Gateway sürecinde çalışır.
-
-Çağıranlar güven sınırlarını aştığında ayrı gateway'ler kullanın.
+- İstekler, Plugin rotasının kimlik doğrulamasını geçtikten sonra WebSocket RPC ile aynı Gateway yöntem işleyicileri ve kapsam denetimleri üzerinden yönlendirilir.
+- Rota, hazırlanmış bir askıya alma kiralaması sırasında erişilebilir kalır. Sınırlı istek doğrulaması ve yerel `commands.list` keşif yanıtı kullanılabilir olmaya devam eder. Gateway'e yönlendirilen yöntemlerden yalnızca `gateway.suspend.prepare`, `gateway.suspend.status` ve `gateway.suspend.resume`, kabul kapalıyken çalışabilir; izin listesindeki diğer yöntemler normal, yeniden denenebilir Gateway `UNAVAILABLE` yanıtını döndürür.
+- Bu rotayı geri döngü, tailnet veya özel ve güvenilir bir giriş üzerinde tutun. Doğrudan genel internete açmayın. Çağıranlar güven sınırlarını aşıyorsa ayrı Gateway'ler kullanın.
 
 ## İstek
 
@@ -139,11 +131,11 @@ Content-Type: application/json
 
 Alanlar:
 
-- `id` (dize, isteğe bağlı): yanıta kopyalanır. Atlandığında bir UUID oluşturulur.
-- `method` (dize, zorunlu): izin verilen Gateway yöntem adı.
-- `params` (herhangi biri, isteğe bağlı): yönteme özgü parametreler.
+- `id` (dize, isteğe bağlı): yanıta kopyalanır. Belirtilmediğinde bir UUID oluşturulur.
+- `method` (dize, zorunlu): izin verilen Gateway yönteminin adı.
+- `params` (herhangi bir tür, isteğe bağlı): yönteme özgü parametreler.
 
-Varsayılan en büyük istek gövdesi boyutu 1 MB'dir.
+Varsayılan azami istek gövdesi boyutu 1 MB'dir.
 
 ## Yanıt
 
@@ -157,7 +149,7 @@ Başarılı yanıtlar Gateway RPC biçimini kullanır:
 }
 ```
 
-Gateway yöntem hataları şunu kullanır:
+Gateway yöntem hataları şu biçimi kullanır:
 
 ```json
 {
@@ -170,55 +162,72 @@ Gateway yöntem hataları şunu kullanır:
 }
 ```
 
-HTTP durumu, mümkün olduğunda Gateway hatasını izler. Örneğin, `INVALID_REQUEST` `400`, `UNAVAILABLE` ise `503` döndürür.
+HTTP durumu hata koduna göre belirlenir:
+
+| Hata kodu                  | HTTP durumu |
+| -------------------------- | ----------- |
+| `INVALID_REQUEST`          | 400         |
+| `APPROVAL_NOT_FOUND`       | 404         |
+| `NOT_LINKED`, `NOT_PAIRED` | 409         |
+| `UNAVAILABLE`              | 503         |
+| `AGENT_TIMEOUT`            | 504         |
+| diğer tüm kodlar           | 500         |
 
 ## İzin verilen yöntemler
 
 - keşif: `commands.list`
   Bu Plugin tarafından izin verilen HTTP RPC yöntem adlarını döndürür.
-- Gateway: `health`, `status`, `logs.tail`, `usage.status`, `usage.cost`, `gateway.restart.request`
+- Gateway: `health`, `status`, `logs.tail`, `usage.status`, `usage.cost`, `gateway.restart.request`, `gateway.suspend.prepare`, `gateway.suspend.status`, `gateway.suspend.resume`
 - yapılandırma: `config.get`, `config.schema`, `config.schema.lookup`, `config.set`, `config.patch`, `config.apply`
 - kanallar: `channels.status`, `channels.start`, `channels.stop`, `channels.logout`
 - web: `web.login.start`, `web.login.wait`
 - modeller: `models.list`, `models.authStatus`
-- ajanlar: `agents.list`, `agents.create`, `agents.update`, `agents.delete`
+- aracılar: `agents.list`, `agents.create`, `agents.update`, `agents.delete`
 - onaylar: `exec.approvals.get`, `exec.approvals.set`, `exec.approvals.node.get`, `exec.approvals.node.set`
 - Cron: `cron.status`, `cron.list`, `cron.get`, `cron.runs`, `cron.add`, `cron.update`, `cron.remove`, `cron.run`
 - cihazlar: `device.pair.list`, `device.pair.approve`, `device.pair.reject`, `device.pair.remove`
-- düğümler: `node.list`, `node.describe`, `node.pair.list`, `node.pair.approve`, `node.pair.reject`, `node.pair.remove`, `node.rename`
+- Node'lar: `node.list`, `node.describe`, `node.pair.list`, `node.pair.approve`, `node.pair.reject`, `node.pair.remove`, `node.rename`
 - görevler: `tasks.list`, `tasks.get`, `tasks.cancel`
 - tanılama: `doctor.memory.status`, `update.status`
 
-Diğer Gateway yöntemleri, kasıtlı olarak eklenene kadar engellenir.
+Diğer Gateway yöntemleri, bilinçli olarak eklenene kadar engellenir.
 
 ## WebSocket karşılaştırması
 
-Normal Gateway WebSocket RPC yolu, OpenClaw istemcileri için tercih edilen denetim düzlemi API'si olmaya devam eder. Admin HTTP RPC'yi yalnızca istek/yanıt HTTP yüzeyine ihtiyaç duyan ana makine araçları için kullanın.
+Normal Gateway WebSocket RPC yolu, OpenClaw istemcileri için tercih edilen denetim düzlemi API'si olmaya devam eder. Yönetici HTTP RPC'yi yalnızca istek/yanıt tabanlı bir HTTP yüzeyine ihtiyaç duyan ana makine araçları için kullanın.
 
-Güvenilir cihaz kimliği olmayan paylaşılan token WebSocket istemcileri, bağlanma sırasında admin kapsamlarını kendileri bildiremez. Admin HTTP RPC, mevcut güvenilir HTTP operatör modelini bilinçli olarak izler: Plugin etkinleştirildiğinde, paylaşılan gizli bearer kimlik doğrulaması bu admin yüzeyi için tam operatör erişimi olarak ele alınır.
+Güvenilir bir cihaz kimliği olmayan, paylaşılan token kullanan WebSocket istemcileri bağlantı sırasında yönetici kapsamlarını kendileri bildiremez. Yönetici HTTP RPC, mevcut güvenilir HTTP operatör modelini bilinçli olarak izler: Plugin etkinleştirildiğinde, paylaşılan gizli bilgi taşıyıcı kimlik doğrulaması bu yönetici yüzeyi için tam operatör erişimi olarak değerlendirilir.
 
 ## Sorun giderme
 
 `404 Not Found`
 
-: Plugin devre dışıdır, etkinleştirildikten sonra Gateway yeniden başlatılmamıştır veya istek farklı bir Gateway sürecine gidiyordur.
+: Plugin devre dışıdır, etkinleştirildikten sonra Gateway yeniden başlatılmamıştır veya istek farklı bir Gateway sürecine gönderiliyordur.
 
 `401 Unauthorized`
 
-: İstek Gateway HTTP kimlik doğrulamasını karşılamadı. Bearer token'ı veya trusted-proxy kimlik başlıklarını kontrol edin.
+: İstek Gateway HTTP kimlik doğrulamasını karşılamamıştır. Taşıyıcı token'ı veya trusted-proxy kimlik başlıklarını denetleyin.
+
+`405 Method Not Allowed`
+
+: İstek `POST` dışında bir yöntem kullanmıştır.
+
+`413 Payload Too Large`
+
+: İstek gövdesi 1 MB sınırını aşmıştır.
 
 `400 INVALID_REQUEST`
 
-: İstek gövdesi geçerli JSON değildir, `method` alanı eksiktir veya yöntem Plugin izin listesinde değildir.
+: İstek gövdesi geçerli JSON değildir, `method` alanı eksiktir, yöntem Plugin izin listesinde değildir veya askıya alma devam ettirme kimliği etkin kiralamayla eşleşmiyordur.
 
 `503 UNAVAILABLE`
 
-: Gateway yöntem işleyicisi kullanılamıyor. Gateway günlüklerini kontrol edin ve Gateway başlatmayı bitirdikten sonra yeniden deneyin.
+: Gateway yöntemi başlatılıyordur, hız sınırına takılmıştır, askıya alınmıştır veya çakışan bir askıya alma/devam ettirme işlemini bekliyordur. Mevcut olduğunda `error.details` alanını inceleyin ve yeniden denemeden önce `error.retryAfterMs` değerine uyun.
 
-## İlgili
+## İlgili konular
 
 - [Operatör kapsamları](/tr/gateway/operator-scopes)
 - [Gateway güvenliği](/tr/gateway/security)
 - [Uzaktan erişim](/tr/gateway/remote)
-- [Plugin manifesti](/tr/plugins/manifest#contracts)
+- [Plugin manifesti](/tr/plugins/manifest#contracts-reference)
 - [SDK alt yolları](/tr/plugins/sdk-subpaths)

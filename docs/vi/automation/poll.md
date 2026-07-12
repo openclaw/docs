@@ -1,20 +1,20 @@
 ---
 summary: Chuyển hướng đến /cli/message
-title: Bình chọn
+title: Cuộc thăm dò
 x-i18n:
-    generated_at: "2026-04-29T22:23:35Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:38:38Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a277212ed680b7aeb9153d003bc084d2d0c918dc53f2f469c72f7fe5a881cfae
+    source_hash: 071617c5fe910ad8a5d4a03416876ba3092d4fc67d5c206570a0456469ef73a9
     source_path: automation/poll.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Trang này đã được chuyển đến [Công cụ nhắn tin](/vi/cli/message). Xem [Công cụ nhắn tin](/vi/cli/message) để biết tài liệu về thăm dò.
+Trang này đã được chuyển. Tài liệu về cuộc thăm dò ý kiến, bao gồm các cờ của `openclaw message poll` và giới hạn theo từng kênh, nằm trong [Công cụ tin nhắn](/vi/cli/message).
 
 ## Liên quan
 
-- [Webhook](/vi/automation/cron-jobs)
+- [Webhook](/vi/automation/cron-jobs#webhooks)
 - [Tác vụ đã lên lịch](/vi/automation/cron-jobs)
 - [Tác vụ nền](/vi/automation/tasks)

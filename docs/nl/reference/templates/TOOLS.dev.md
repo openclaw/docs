@@ -1,36 +1,35 @@
 ---
 read_when:
-    - De dev-Gateway-sjablonen gebruiken
-    - De standaardidentiteit van de ontwikkelagent bijwerken
-summary: Notities over tools voor ontwikkelagenten (C-3PO)
+    - De ontwikkelgateway-sjablonen gebruiken
+    - De identiteit van de standaardontwikkelagent bijwerken
+summary: Opmerkingen over tools voor ontwikkelagenten (C-3PO)
 title: TOOLS.dev-sjabloon
 x-i18n:
-    generated_at: "2026-04-29T23:17:45Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:17:57Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 23c11e2832ed0dcf9ddd43e5472e0c025c1a91a33299019c16f00a7230e8e99c
+    source_hash: 3259107a9252ff3d01b98608e6005387cb54a75da5db64f833c945056abd4173
     source_path: reference/templates/TOOLS.dev.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# TOOLS.md - Notities voor gebruikerstools (bewerkbaar)
+# TOOLS.md - Gebruikersnotities voor tools (bewerkbaar)
 
-Dit bestand is voor _jouw_ notities over externe tools en conventies.
-Het definieert niet welke tools bestaan; OpenClaw biedt intern ingebouwde tools.
+Dit bestand is bedoeld voor _jouw_ notities over externe tools en conventies. Het bepaalt niet welke tools bestaan; OpenClaw biedt intern ingebouwde tools en Skills voegen de rest toe.
 
 ## Voorbeelden
 
 ### imsg
 
-- Stuur een iMessage/SMS: beschrijf wie/wat, bevestig vóór verzending.
-- Geef de voorkeur aan korte berichten; vermijd het verzenden van geheimen.
+- Stuur een iMessage/sms: beschrijf naar wie en wat, en vraag om bevestiging voordat je het bericht verstuurt.
+- Geef de voorkeur aan korte berichten; verstuur geen geheimen.
 
 ### sag
 
-- Tekst-naar-spraak: geef stem, doelluidspreker/-ruimte en aan of er gestreamd moet worden.
+- Tekst-naar-spraak: geef de stem, de doelluidspreker/-ruimte en aan of er moet worden gestreamd.
 
-Voeg alles toe wat je verder wilt dat de assistent weet over je lokale toolchain.
+Voeg alles toe waarvan je wilt dat de assistent het weet over je lokale toolchain.
 
 ## Gerelateerd
 

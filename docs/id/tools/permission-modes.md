@@ -6,26 +6,26 @@ read_when:
 summary: Mode izin untuk eksekusi host, persetujuan Codex Guardian, dan sesi harness ACPX
 title: Mode izin
 x-i18n:
-    generated_at: "2026-06-27T18:20:13Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:42:50Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6ce89cadb45b3b96ce9ab62b35c06610d02f0ff02f15ef7d2128c59fbebb325a
+    source_hash: f580e66508c1f69e868ed26a62d88a675f86a4d1ca738650dc5af82e967f3ac3
     source_path: tools/permission-modes.md
     workflow: 16
 ---
 
-Mode izin menentukan seberapa besar otoritas yang dimiliki agen sebelum dapat menjalankan perintah host, menulis file, atau meminta akses tambahan ke harness backend. Mulai dengan `tools.exec.mode: "auto"` saat Anda ingin OpenClaw menggunakan allowlist terlebih dahulu, lalu auto-review native Codex atau rute persetujuan manusia untuk yang tidak cocok.
+Mode izin menentukan seberapa besar kewenangan yang dimiliki agen sebelum menjalankan perintah host, menulis file, atau meminta akses tambahan kepada harness backend.
 
 <Note>
   Mode izin terpisah dari `tools.exec.host=auto`. `tools.exec.host`
-  memilih tempat perintah dijalankan. `tools.exec.mode` memilih bagaimana exec host
+  menentukan tempat perintah dijalankan. `tools.exec.mode` menentukan cara eksekusi host
   disetujui.
 </Note>
 
-## Default yang direkomendasikan
+## Default yang disarankan
 
-Gunakan `auto` untuk agen pengodean yang memerlukan akses host yang berguna tanpa menjadikan setiap ketidakcocokan sebagai prompt manusia:
+Gunakan `auto` untuk agen pengodean yang memerlukan akses host yang memadai tanpa mengubah setiap ketidakcocokan menjadi permintaan kepada manusia:
 
 ```bash
 openclaw config set tools.exec.mode auto
@@ -33,55 +33,55 @@ openclaw approvals get
 openclaw gateway restart
 ```
 
-Lalu verifikasi kebijakan efektif:
+Kemudian verifikasi kebijakan yang berlaku:
 
 ```bash
 openclaw exec-policy show
 ```
 
-Dalam mode `auto`, OpenClaw menjalankan pencocokan allowlist deterministik secara langsung. Ketidakcocokan persetujuan melewati auto reviewer native OpenClaw terlebih dahulu, lalu fallback ke rute persetujuan manusia yang dikonfigurasi saat diperlukan.
+## Mode eksekusi host OpenClaw
 
-## Mode exec host OpenClaw
+`tools.exec.mode` adalah antarmuka kebijakan yang dinormalisasi untuk `exec` host. Setiap mode ditetapkan menjadi pasangan `security` (keketatan daftar izin) dan `ask` (meminta saat tidak cocok) yang mendasarinya:
 
-`tools.exec.mode` adalah permukaan kebijakan ternormalisasi untuk `exec` host.
+| Mode        | security / ask          | Perilaku                                                                                                      | Gunakan ketika                                                   |
+| ----------- | ----------------------- | ------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `deny`      | `deny` / `off`          | Blokir eksekusi host sepenuhnya.                                                                              | Tidak ada perintah host yang diizinkan.                           |
+| `allowlist` | `allowlist` / `off`     | Jalankan hanya perintah dalam daftar izin; tolak ketidakcocokan tanpa pemberitahuan.                          | Anda memiliki kumpulan perintah yang diketahui aman.             |
+| `ask`       | `allowlist` / `on-miss` | Jalankan perintah yang cocok dengan daftar izin; tanyakan kepada manusia jika tidak cocok.                    | Manusia harus meninjau setiap perintah baru.                      |
+| `auto`      | `allowlist` / `on-miss` | Jalankan perintah yang cocok dengan daftar izin; kirim ketidakcocokan ke tinjauan otomatis sebelum meminta persetujuan manusia. | Sesi pengodean memerlukan akses praktis yang tetap terlindungi.   |
+| `full`      | `full` / `off`          | Jalankan eksekusi host tanpa permintaan persetujuan.                                                          | Host/sesi tepercaya ini tidak perlu melewati gerbang persetujuan. |
 
-| Mode        | Perilaku                                               | Gunakan saat                                                     |
-| ----------- | ------------------------------------------------------ | ---------------------------------------------------------------- |
-| `deny`      | Blokir exec host.                                      | Tidak ada perintah host yang diizinkan.                          |
-| `allowlist` | Jalankan hanya perintah yang ada di allowlist.         | Anda memiliki kumpulan perintah yang diketahui aman.             |
-| `ask`       | Jalankan pencocokan allowlist dan minta saat tidak cocok. | Manusia harus meninjau perintah baru.                         |
-| `auto`      | Jalankan pencocokan allowlist, lalu gunakan auto-review. | Sesi pengodean memerlukan akses praktis yang terlindungi.      |
-| `full`      | Jalankan exec host tanpa prompt.                       | Host/sesi tepercaya ini harus melewati gerbang persetujuan.      |
+`ask` dan `auto` menggunakan pengaturan daftar izin/permintaan yang sama; `auto` juga mengaktifkan peninjau otomatis bawaan, yang memutuskan sendiri ketidakcocokan dan hanya meneruskannya ke jalur persetujuan manusia yang dikonfigurasi jika tidak dapat memberikan persetujuan dengan aman.
 
-Untuk kebijakan exec host lengkap, file persetujuan lokal, skema allowlist, bin aman, dan perilaku penerusan, lihat [Persetujuan exec](/id/tools/exec-approvals).
+Untuk kebijakan eksekusi host lengkap, file persetujuan lokal, skema daftar izin, binari aman, dan perilaku penerusan, lihat [Persetujuan eksekusi](/id/tools/exec-approvals).
 
 ## Pemetaan Codex Guardian
 
-Untuk sesi app-server native Codex, `tools.exec.mode: "auto"` dipetakan ke persetujuan yang ditinjau Codex Guardian saat persyaratan Codex lokal mengizinkannya. OpenClaw biasanya mengirim:
+Untuk sesi app-server Codex bawaan, `tools.exec.mode: "auto"` mengarahkan Codex ke persetujuan yang ditinjau Guardian jika persyaratan Codex lokal memungkinkannya. Nilai yang biasanya dihasilkan:
 
-| Kolom Codex        | Nilai umum        |
-| ------------------ | ----------------- |
+| Bidang Codex        | Nilai umum        |
+| ------------------- | ----------------- |
 | `approvalPolicy`    | `on-request`      |
 | `approvalsReviewer` | `auto_review`     |
 | `sandbox`           | `workspace-write` |
 
-Dalam mode `auto`, OpenClaw tidak mempertahankan override Codex lama yang tidak aman seperti `approvalPolicy: "never"` atau `sandbox: "danger-full-access"`. Gunakan `tools.exec.mode: "full"` hanya saat Anda sengaja menginginkan postur tanpa persetujuan.
+Mode `auto` memaksakan kebijakan ini di atas semua penggantian sandbox/persetujuan Codex yang dikonfigurasi, sehingga tidak mempertahankan kombinasi lama yang tidak aman seperti `approvalPolicy: "never"` dengan `sandbox: "danger-full-access"`. `tools.exec.mode: "deny"` dan `"allowlist"` sepenuhnya memblokir eksekusi lokal app-server Codex. Gunakan `tools.exec.mode: "full"` hanya jika Anda memang menginginkan postur tanpa persetujuan.
 
-Untuk penyiapan app-server, urutan auth, dan detail runtime native Codex, lihat [Harness Codex](/id/plugins/codex-harness).
+Untuk penyiapan app-server, urutan autentikasi, dan detail runtime Codex bawaan, lihat [Harness Codex](/id/plugins/codex-harness).
 
 ## Izin harness ACPX
 
-Sesi ACPX bersifat non-interaktif, jadi sesi tersebut tidak dapat mengeklik prompt izin TTY. ACPX menggunakan pengaturan tingkat harness terpisah di bawah `plugins.entries.acpx.config`:
+Sesi ACPX bersifat noninteraktif, sehingga tidak dapat mengeklik permintaan izin TTY. ACPX menggunakan pengaturan tingkat harness yang terpisah di bawah `plugins.entries.acpx.config`:
 
-| Pengaturan                 | Nilai umum      | Makna                                      |
-| -------------------------- | --------------- | ------------------------------------------ |
-| `permissionMode`            | `approve-reads` | Setujui otomatis hanya pembacaan.          |
-| `permissionMode`            | `approve-all`   | Setujui otomatis penulisan dan perintah shell. |
-| `permissionMode`            | `deny-all`      | Tolak semua prompt izin.                   |
-| `nonInteractivePermissions` | `fail`          | Batalkan saat prompt akan diperlukan.      |
-| `nonInteractivePermissions` | `deny`          | Tolak prompt dan lanjutkan jika memungkinkan. |
+| Pengaturan                  | Nilai           | Arti                                                   |
+| --------------------------- | --------------- | ------------------------------------------------------ |
+| `permissionMode`            | `approve-reads` | Setujui pembacaan saja secara otomatis.                 |
+| `permissionMode`            | `approve-all`   | Setujui penulisan dan perintah shell secara otomatis.  |
+| `permissionMode`            | `deny-all`      | Tolak semua permintaan izin.                            |
+| `nonInteractivePermissions` | `fail`          | Batalkan ketika permintaan persetujuan diperlukan.      |
+| `nonInteractivePermissions` | `deny`          | Tolak permintaan dan lanjutkan jika memungkinkan.       |
 
-Atur izin ACPX secara terpisah dari persetujuan exec OpenClaw:
+Atur izin ACPX secara terpisah dari persetujuan eksekusi OpenClaw:
 
 ```bash
 openclaw config set plugins.entries.acpx.config.permissionMode approve-all
@@ -89,31 +89,31 @@ openclaw config set plugins.entries.acpx.config.nonInteractivePermissions fail
 openclaw gateway restart
 ```
 
-Gunakan `approve-all` sebagai padanan break-glass ACPX untuk sesi harness tanpa prompt. Untuk detail penyiapan dan mode kegagalan, lihat [Penyiapan agen ACP](/id/tools/acp-agents-setup#permission-configuration).
+Gunakan `approve-all` sebagai padanan prosedur darurat ACPX untuk sesi harness tanpa permintaan persetujuan. Untuk detail penyiapan dan mode kegagalan, lihat [Penyiapan agen ACP](/id/tools/acp-agents-setup#permission-configuration).
 
 ## Memilih mode
 
-| Tujuan                                        | Konfigurasi                                                |
-| --------------------------------------------- | ---------------------------------------------------------- |
-| Blokir perintah host sepenuhnya               | `tools.exec.mode: "deny"`                                  |
-| Izinkan hanya perintah yang diketahui aman berjalan | `tools.exec.mode: "allowlist"`                       |
-| Minta manusia untuk setiap bentuk perintah baru | `tools.exec.mode: "ask"`                                 |
-| Gunakan auto-review Codex/OpenClaw sebelum manusia | `tools.exec.mode: "auto"`                              |
-| Lewati persetujuan exec host sepenuhnya       | `tools.exec.mode: "full"` ditambah file persetujuan host yang cocok |
-| Buat sesi ACPX non-interaktif dapat menulis/exec | `plugins.entries.acpx.config.permissionMode: "approve-all"` |
+| Tujuan                                                   | Konfigurasi                                                        |
+| -------------------------------------------------------- | ------------------------------------------------------------------ |
+| Memblokir perintah host sepenuhnya                       | `tools.exec.mode: "deny"`                                          |
+| Hanya mengizinkan perintah yang diketahui aman          | `tools.exec.mode: "allowlist"`                                     |
+| Meminta persetujuan manusia untuk setiap bentuk perintah baru | `tools.exec.mode: "ask"`                                      |
+| Menggunakan tinjauan otomatis Codex/OpenClaw sebelum manusia | `tools.exec.mode: "auto"`                                      |
+| Melewati persetujuan eksekusi host sepenuhnya            | `tools.exec.mode: "full"` ditambah file persetujuan host yang sesuai |
+| Mengizinkan sesi ACPX noninteraktif menulis/mengeksekusi | `plugins.entries.acpx.config.permissionMode: "approve-all"`        |
 
-Jika perintah masih memunculkan prompt atau gagal setelah mengubah mode, periksa kedua lapisan:
+Jika suatu perintah masih meminta persetujuan atau gagal setelah mode diubah, periksa kedua lapisan:
 
 ```bash
 openclaw approvals get
 openclaw exec-policy show
 ```
 
-Exec host menggunakan hasil yang lebih ketat dari konfigurasi OpenClaw dan file persetujuan lokal host. Izin harness ACPX tidak melonggarkan persetujuan exec host, dan persetujuan exec host tidak melonggarkan prompt harness ACPX.
+Eksekusi host menggunakan hasil yang lebih ketat antara konfigurasi OpenClaw dan file persetujuan lokal host. Izin harness ACPX tidak melonggarkan persetujuan eksekusi host, dan persetujuan eksekusi host tidak melonggarkan permintaan izin harness ACPX.
 
 ## Terkait
 
-- [Persetujuan exec](/id/tools/exec-approvals)
-- [Persetujuan exec - lanjutan](/id/tools/exec-approvals-advanced)
+- [Persetujuan eksekusi](/id/tools/exec-approvals)
+- [Persetujuan eksekusi - lanjutan](/id/tools/exec-approvals-advanced)
 - [Harness Codex](/id/plugins/codex-harness)
 - [Penyiapan agen ACP](/id/tools/acp-agents-setup#permission-configuration)

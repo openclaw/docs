@@ -1,45 +1,45 @@
 ---
 read_when:
-    - Chcesz krótszych wyników narzędzi `exec` lub `bash` w OpenClaw
-    - Chcesz zainstalować lub włączyć Plugin Tokenjuice
-    - Musisz zrozumieć, co zmienia tokenjuice, a co pozostawia w stanie surowym
-summary: Kompaktuj zaszumione wyniki narzędzi exec i bash za pomocą opcjonalnego pluginu Tokenjuice
+    - Chcesz uzyskać krótsze wyniki narzędzi `exec` lub `bash` w OpenClaw
+    - Chcesz zainstalować lub włączyć plugin Tokenjuice
+    - Musisz zrozumieć, co tokenjuice zmienia, a co pozostawia w postaci surowej
+summary: Kompaktuj obszerne wyniki narzędzi exec i bash za pomocą opcjonalnego pluginu Tokenjuice
 title: Tokenjuice
 x-i18n:
-    generated_at: "2026-06-27T18:32:07Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:44:50Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 183ab08d2a1150b446245514423b893cff9a85581980c15600cc16aec10eeae7
+    source_hash: 96b110563a2600429dd9f0d38997cf7cc5ae4952b7f146a6ab64c96f2f202440
     source_path: tools/tokenjuice.md
     workflow: 16
 ---
 
 `tokenjuice` to opcjonalny zewnętrzny plugin, który kompaktuje zaszumione wyniki narzędzi `exec` i `bash`
-po tym, jak polecenie zostało już uruchomione.
+po wykonaniu polecenia.
 
 Zmienia zwracany `tool_result`, a nie samo polecenie. Tokenjuice nie
-przepisuje danych wejściowych powłoki, nie uruchamia poleceń ponownie ani nie zmienia kodów wyjścia.
+modyfikuje danych wejściowych powłoki, nie uruchamia ponownie poleceń ani nie zmienia kodów wyjścia.
 
-Obecnie dotyczy to osadzonych uruchomień OpenClaw oraz dynamicznych narzędzi OpenClaw w uprzęży app-server Codex.
-Tokenjuice podpina się pod middleware wyników narzędzi OpenClaw i
-przycina dane wyjściowe, zanim wrócą do aktywnej sesji uprzęży.
+Obecnie dotyczy to osadzonych uruchomień OpenClaw i dynamicznych narzędzi OpenClaw w środowisku
+app-servera Codex. Tokenjuice integruje się z warstwą pośrednią wyników narzędzi OpenClaw i
+przycina dane wyjściowe przed ich przekazaniem z powrotem do aktywnej sesji środowiska wykonawczego.
 
 ## Włącz plugin
 
-Zainstaluj raz:
+Zainstaluj jeden raz:
 
 ```bash
 openclaw plugins install clawhub:@openclaw/tokenjuice
 ```
 
-Następnie włącz go:
+Następnie go włącz:
 
 ```bash
 openclaw config set plugins.entries.tokenjuice.enabled true
 ```
 
-Odpowiednik:
+Równoważne polecenie:
 
 ```bash
 openclaw plugins enable tokenjuice
@@ -61,17 +61,17 @@ Jeśli wolisz bezpośrednio edytować konfigurację:
 
 ## Co zmienia tokenjuice
 
-- Kompaktuje zaszumione wyniki `exec` i `bash`, zanim zostaną z powrotem przekazane do sesji.
-- Pozostawia oryginalne wykonanie polecenia bez zmian.
-- Zachowuje dokładne odczyty zawartości plików i inne polecenia, które tokenjuice powinien zostawić w surowej postaci.
+- Kompaktuje zaszumione wyniki `exec` i `bash` przed ich ponownym przekazaniem do sesji.
+- Nie ingeruje w pierwotne wykonanie polecenia.
+- Stosuje bezpieczne zasady inwentaryzacji: dokładne odczyty zawartości plików pozostają niezmienione, samodzielne polecenia inwentaryzujące repozytorium mogą być kompaktowane, a niebezpieczne mieszane sekwencje poleceń pozostają niezmienione.
 - Pozostaje opcjonalny: wyłącz plugin, jeśli wszędzie chcesz otrzymywać dosłowne dane wyjściowe.
 
 ## Sprawdź, czy działa
 
 1. Włącz plugin.
-2. Rozpocznij sesję, która może wywołać `exec`.
-3. Uruchom zaszumione polecenie, takie jak `git status`.
-4. Sprawdź, czy zwrócony wynik narzędzia jest krótszy i bardziej uporządkowany niż surowe dane wyjściowe powłoki.
+2. Uruchom sesję, która może wywoływać `exec`.
+3. Uruchom generujące dużo danych polecenie, takie jak `git status`.
+4. Sprawdź, czy zwrócony wynik narzędzia jest krótszy i bardziej uporządkowany niż nieprzetworzone dane wyjściowe powłoki.
 
 ## Wyłącz plugin
 
@@ -88,5 +88,5 @@ openclaw plugins disable tokenjuice
 ## Powiązane
 
 - [Narzędzie Exec](/pl/tools/exec)
-- [Poziomy myślenia](/pl/tools/thinking)
-- [Silnik kontekstu](/pl/concepts/context-engine)
+- [Poziomy rozumowania](/pl/tools/thinking)
+- [Mechanizm kontekstu](/pl/concepts/context-engine)

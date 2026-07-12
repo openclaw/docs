@@ -1,40 +1,40 @@
 ---
 read_when:
     - Wdrażanie OpenClaw w Upstash Box
-    - Chcesz zarządzanego środowiska Linux dla OpenClaw z dostępem do pulpitu przez tunel SSH
-summary: Hostowanie OpenClaw na Upstash Box z mechanizmem keep-alive i dostępem przez tunel SSH
+    - Potrzebujesz zarządzanego środowiska Linux dla OpenClaw z dostępem do panelu przez tunel SSH
+summary: Hostuj OpenClaw na Upstash Box z mechanizmem keep-alive i dostępem przez tunel SSH
 title: Upstash Box
 x-i18n:
-    generated_at: "2026-06-27T17:44:16Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:15:17Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 06d2eb41e1beb0ab3145baa861e0bee7e3efef20324dc4e0e82ba08910937d20
+    source_hash: 29232c43e0e4940b7445ab8896c9ccd3e81d0fdbdd522d7f50cb8c8057ac18f0
     source_path: install/upstash.md
     workflow: 16
 ---
 
-Uruchom trwały OpenClaw Gateway w Upstash Box, zarządzanym środowisku Linux
-z obsługą cyklu życia keep-alive.
+Uruchom trwały Gateway OpenClaw na Upstash Box — zarządzanym środowisku Linux
+z obsługą cyklu życia typu keep-alive.
 
-Użyj tunelu SSH do dostępu do panelu. Nie wystawiaj portu Gateway bezpośrednio
-do publicznego internetu.
+Do dostępu do panelu użyj tunelu SSH. Nie udostępniaj portu Gateway bezpośrednio
+w publicznym internecie.
 
 ## Wymagania wstępne
 
 - Konto Upstash
-- Upstash Box z keep-alive
+- Upstash Box z funkcją keep-alive
 - Klient SSH na komputerze lokalnym
 
-## Utwórz Box
+## Tworzenie Box
 
-Utwórz Box z keep-alive w konsoli Upstash. Zanotuj identyfikator Box, taki jak
-`right-flamingo-14486`, oraz klucz API Box.
+Utwórz Box z funkcją keep-alive w konsoli Upstash. Zanotuj identyfikator Box (na przykład
+`right-flamingo-14486`) oraz klucz API Box.
 
-Upstash utrzymuje aktualny przewodnik OpenClaw Box pod adresem
+Upstash udostępnia aktualną instrukcję konfiguracji OpenClaw Box na stronie
 [Konfiguracja OpenClaw](https://upstash.com/docs/box/guides/openclaw-setup).
 
-## Połącz się za pomocą tunelu SSH
+## Łączenie przez tunel SSH
 
 Przekieruj port panelu OpenClaw na komputer lokalny. Gdy pojawi się monit,
 użyj klucza API Box jako hasła SSH:
@@ -43,9 +43,9 @@ użyj klucza API Box jako hasła SSH:
 ssh -o ServerAliveInterval=15 -o ServerAliveCountMax=3 -L 18789:127.0.0.1:18789 <box-id>@us-east-1.box.upstash.com
 ```
 
-Opcje keepalive ograniczają zrywanie bezczynnego tunelu podczas wdrażania.
+Opcje keep-alive ograniczają zrywanie nieaktywnego tunelu podczas konfiguracji początkowej.
 
-## Zainstaluj OpenClaw
+## Instalowanie OpenClaw
 
 Wewnątrz Box:
 
@@ -53,15 +53,15 @@ Wewnątrz Box:
 sudo npm install -g openclaw
 ```
 
-## Uruchom wdrażanie
+## Uruchamianie konfiguracji początkowej
 
 ```bash
 openclaw onboard --install-daemon
 ```
 
-Postępuj zgodnie z monitami. Skopiuj URL panelu i token po zakończeniu wdrażania.
+Postępuj zgodnie z instrukcjami. Po zakończeniu konfiguracji początkowej skopiuj adres URL panelu i token.
 
-## Uruchom Gateway
+## Uruchamianie Gateway
 
 Skonfiguruj Gateway dla sieci Box i uruchom go w tle:
 
@@ -70,7 +70,7 @@ openclaw config set gateway.bind lan
 nohup openclaw gateway > gateway.log 2>&1 &
 ```
 
-Przy aktywnym tunelu SSH otwórz lokalnie URL panelu:
+Gdy tunel SSH jest aktywny, otwórz lokalnie adres URL panelu:
 
 ```text
 http://127.0.0.1:18789/#token=<your-token>
@@ -78,8 +78,8 @@ http://127.0.0.1:18789/#token=<your-token>
 
 ## Automatyczne ponowne uruchamianie
 
-Ustaw to polecenie jako skrypt inicjalizacyjny Box, aby Gateway uruchamiał się
-ponownie przy starcie Box:
+Ustaw to polecenie jako skrypt inicjalizacyjny Box, aby Gateway uruchamiał się ponownie wraz
+z uruchomieniem Box:
 
 ```bash
 nohup openclaw gateway > gateway.log 2>&1 &
@@ -87,18 +87,18 @@ nohup openclaw gateway > gateway.log 2>&1 &
 
 ## Rozwiązywanie problemów
 
-Jeśli SSH zawiesza się podczas wdrażania, połącz się ponownie z czystą
-konfiguracją SSH i opcjami keepalive:
+Jeśli połączenie SSH zawiesza się podczas konfiguracji początkowej, połącz się ponownie, używając czystej konfiguracji SSH i
+opcji keep-alive:
 
 ```bash
 ssh -F /dev/null -o ControlMaster=no -o ServerAliveInterval=15 -o ServerAliveCountMax=3 -L 18789:127.0.0.1:18789 <box-id>@us-east-1.box.upstash.com
 ```
 
-To pomija nieaktualne lokalne ustawienia `~/.ssh/config` i utrzymuje tunel
-aktywny podczas okresów bezczynności sieci.
+Pozwala to pominąć nieaktualne ustawienia lokalnego pliku `~/.ssh/config` i utrzymuje aktywność tunelu
+w okresach bezczynności sieci.
 
 ## Powiązane
 
-- [Zdalny dostęp](/pl/gateway/remote)
+- [Dostęp zdalny](/pl/gateway/remote)
 - [Bezpieczeństwo Gateway](/pl/gateway/security)
 - [Aktualizowanie OpenClaw](/pl/install/updating)

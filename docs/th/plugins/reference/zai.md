@@ -1,14 +1,14 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin zai
-summary: เพิ่มการรองรับผู้ให้บริการโมเดล Z.AI ให้กับ OpenClaw.
-title: Z.AI Plugin
+summary: เพิ่มการรองรับผู้ให้บริการโมเดล Z.AI ใน OpenClaw
+title: Plugin Z.AI
 x-i18n:
-    generated_at: "2026-06-27T18:06:07Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:29:30Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f02339093c874b13e97cfbeaca4a5343159079a008618faac435ac80f2f935c4
+    source_hash: 47eed5f843c7659c7b4aefb06ef919b5420998609ae8d46ac5ebcd5871b0f673
     source_path: plugins/reference/zai.md
     workflow: 16
 ---
@@ -20,11 +20,11 @@ x-i18n:
 ## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/zai-provider`
-- เส้นทางการติดตั้ง: npm; ClawHub: `clawhub:@openclaw/zai-provider`
+- ช่องทางการติดตั้ง: npm; ClawHub: `clawhub:@openclaw/zai-provider`
 
-## พื้นผิว
+## ส่วนติดต่อ
 
-providers: zai; contracts: mediaUnderstandingProviders
+ผู้ให้บริการ: zai; สัญญา: mediaUnderstandingProviders, usageProviders
 
 ## เอกสารที่เกี่ยวข้อง
 

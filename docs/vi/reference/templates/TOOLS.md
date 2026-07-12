@@ -1,59 +1,48 @@
 ---
 read_when:
-    - Khởi tạo thủ công một không gian làm việc
+    - Khởi tạo không gian làm việc theo cách thủ công
 summary: Mẫu không gian làm việc cho TOOLS.md
 title: Mẫu TOOLS.md
 x-i18n:
-    generated_at: "2026-04-29T23:13:12Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:21:05Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 810b088129bfd963ffe603a7e0a07d099fd2551bf13ebcb702905e1b8135d017
+    source_hash: 20eab78b3b117566a1d33a70873e70ff2d5099543aa44e2719dc8d0797099afe
     source_path: reference/templates/TOOLS.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # TOOLS.md - Ghi chú cục bộ
 
-Skills xác định _cách_ công cụ hoạt động. Tệp này dành cho các chi tiết _của bạn_ — những thứ riêng với thiết lập của bạn.
-
-## Nội dung đặt ở đây
-
-Những thứ như:
-
-- Tên và vị trí camera
-- Máy chủ và bí danh SSH
-- Giọng ưu tiên cho TTS
-- Tên loa/phòng
-- Biệt danh thiết bị
-- Bất kỳ thứ gì dành riêng cho môi trường
+Skills xác định _cách_ các công cụ hoạt động. Tệp này dành cho các thông tin cụ thể _của bạn_ — những nội dung riêng biệt trong thiết lập của bạn: tên và vị trí camera, máy chủ và bí danh SSH, giọng TTS ưa thích, tên loa/phòng, biệt danh thiết bị và mọi thông tin riêng cho môi trường.
 
 ## Ví dụ
 
 ```markdown
-### Cameras
+### Camera
 
-- living-room → Main area, 180° wide angle
-- front-door → Entrance, motion-triggered
+- living-room → Khu vực chính, góc rộng 180°
+- front-door → Lối vào, kích hoạt khi phát hiện chuyển động
 
 ### SSH
 
-- home-server → 192.168.1.100, user: admin
+- home-server → 192.168.1.100, người dùng: admin
 
 ### TTS
 
-- Preferred voice: "Nova" (warm, slightly British)
-- Default speaker: Kitchen HomePod
+- Giọng ưa thích: "Nova" (ấm áp, hơi hướng Anh)
+- Loa mặc định: Kitchen HomePod
 ```
 
-## Vì sao tách riêng?
+## Tại sao cần tách riêng?
 
-Skills được chia sẻ. Thiết lập của bạn là của riêng bạn. Giữ chúng tách biệt nghĩa là bạn có thể cập nhật skills mà không mất ghi chú, và chia sẻ skills mà không làm lộ hạ tầng của mình.
+Skills được dùng chung. Thiết lập của bạn thuộc về bạn. Việc tách riêng chúng giúp bạn có thể cập nhật Skills mà không làm mất ghi chú, đồng thời chia sẻ Skills mà không làm lộ hạ tầng của mình.
 
 ---
 
-Thêm bất cứ điều gì giúp bạn làm việc. Đây là bảng ghi nhớ nhanh của bạn.
+Hãy thêm bất cứ nội dung nào giúp bạn thực hiện công việc. Đây là tài liệu tham khảo nhanh của bạn.
 
 ## Liên quan
 
-- [Không gian làm việc của agent](/vi/concepts/agent-workspace)
+- [Không gian làm việc của tác nhân](/vi/concepts/agent-workspace)

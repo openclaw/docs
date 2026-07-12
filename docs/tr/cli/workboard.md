@@ -1,24 +1,21 @@
 ---
 read_when:
-    - Workboard kartlarını terminalden incelemek veya oluşturmak istiyorsunuz
-    - Workboard çalışan çalıştırmalarını CLI'dan başlatmak istiyorsunuz
+    - Terminalden Workboard kartlarını incelemek veya oluşturmak istiyorsunuz
+    - CLI'dan Workboard işçi çalıştırmalarını göndermek istiyorsunuz
     - Workboard CLI veya eğik çizgi komutu davranışında hata ayıklıyorsunuz
-summary: '`openclaw workboard` kartları, gönderim ve worker çalıştırmaları için CLI referansı'
-title: Çalışma Panosu CLI
+summary: '`openclaw workboard` kartları, yönlendirme ve çalışan yürütmeleri için CLI başvurusu'
+title: Workboard CLI
 x-i18n:
-    generated_at: "2026-06-28T00:26:21Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:37:13Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: bb6f5ab36b3f1f4d0eb06e5dfa9adbbe9bb14bf2ac389630da7725811ac6f47f
+    source_hash: 3c62dd10aff146cae9f7475423148cf61fedb39983b065a9815c629349b4e233
     source_path: cli/workboard.md
     workflow: 16
 ---
 
-`openclaw workboard`, paketle gelen
-[Workboard Plugin'i](/tr/plugins/workboard) için terminal yüzeyidir. Bir operatörün kartları listelemesini, kart oluşturmasını,
-tek bir kartı incelemesini ve çalışan Gateway'den hazır işi alt ajan worker çalıştırmalarına
-dağıtmasını sağlar.
+`openclaw workboard`, paketle birlikte gelen [Workboard Plugin'i](/tr/plugins/workboard) için terminal arayüzüdür. Bir operatörün kartları listelemesine, kart oluşturmasına, tek bir kartı incelemesine ve çalışan Gateway'den hazır işleri alt ajan işçi çalıştırmalarına göndermesini istemesine olanak tanır.
 
 Komutu kullanmadan önce Plugin'i etkinleştirin:
 
@@ -36,9 +33,9 @@ openclaw workboard show <id> [--json]
 openclaw workboard dispatch [--url <url>] [--token <token>] [--timeout <ms>] [--json]
 ```
 
-Komut, dashboard ve Workboard ajan araçları tarafından kullanılan aynı Plugin'e ait
-SQLite veritabanını okur ve yazar. Kart kimlikleri, bir komut kart kimliği kabul ettiğinde tam kimlik olarak veya
-belirsiz olmayan bir önekle geçirilebilir.
+Komut, pano ve Workboard ajan araçları tarafından kullanılan, Plugin'e ait aynı SQLite veritabanını okur ve bu veritabanına yazar. Kart kimlikleri UUID'dir; kart kimliği kabul eden komutlar, belirsizlik içermeyen kimlik öneklerini de kabul eder (kompakt metin çıktısı ilk 8 karakteri gösterir).
+
+Geçerli `status` değerleri: `triage`, `backlog`, `todo`, `scheduled`, `ready`, `running`, `review`, `blocked`, `done`. Geçerli `priority` değerleri: `low`, `normal`, `high`, `urgent`.
 
 ## `list`
 
@@ -48,26 +45,22 @@ openclaw workboard list --board default --status ready
 openclaw workboard list --json
 ```
 
-Metin çıktısı kompakt olur:
+Metin çıktısı kompakttır:
 
 ```text
 7f4a2c10  ready     high    default agent-a  Fix stale worker heartbeat
 ```
 
-Sütunlar kimlik öneki, durum, öncelik, pano kimliği, isteğe bağlı ajan kimliği ve başlıktır.
+Sütunlar sırasıyla kimlik öneki, durum, öncelik, pano kimliği, isteğe bağlı ajan kimliği ve başlıktır.
 
-Bayraklar:
+| Bayrak               | Amaç                                                      |
+| -------------------- | --------------------------------------------------------- |
+| `--board <id>`       | Sonuçları tek bir pano ad alanıyla sınırlar               |
+| `--status <status>`  | Sonuçları tek bir Workboard durumuyla sınırlar            |
+| `--include-archived` | Arşivlenmiş kartları kompakt metin çıktısına dahil eder   |
+| `--json`             | Tam kart listesini makine tarafından okunabilir JSON olarak yazdırır |
 
-| Bayrak               | Amaç                                          |
-| -------------------- | --------------------------------------------- |
-| `--board <id>`       | Sonuçları tek bir pano ad alanıyla sınırla    |
-| `--status <status>`  | Sonuçları tek bir Workboard durumuyla sınırla |
-| `--include-archived` | Arşivlenmiş kartları kompakt metin çıktısına dahil et |
-| `--json`             | Tam kart listesini makine JSON'u olarak yazdır |
-
-Kompakt metin çıktısı, CLI'nin `/workboard list` komutuyla eşleşmesi için
-arşivlenmiş kartları varsayılan olarak gizler. Bunları göstermek için `--include-archived` geçirin. JSON çıktısı,
-mevcut otomasyon için arşivlenmiş kartlar dahil tam kart listesini korur.
+Kompakt metin çıktısı, CLI'ın `/workboard list` ile eşleşmesi için arşivlenmiş kartları varsayılan olarak gizler. Bunları göstermek için `--include-archived` seçeneğini geçirin. JSON çıktısı, mevcut otomasyonlar için arşivlenmiş kartlar dahil tam kart listesini her zaman korur.
 
 ## `create`
 
@@ -76,20 +69,17 @@ openclaw workboard create "Fix stale worker heartbeat" --priority high --labels 
 openclaw workboard create "Write Workboard docs" --status ready --agent docs-agent --board docs --notes "Cover CLI, slash command, dispatch, and SQLite state."
 ```
 
-Bayraklar:
+| Bayrak                  | Amaç                                           |
+| ----------------------- | ---------------------------------------------- |
+| `--notes <text>`        | İlk kart notları                               |
+| `--status <status>`     | İlk durum; varsayılan `todo`                   |
+| `--priority <priority>` | Öncelik; varsayılan `normal`                   |
+| `--agent <id>`          | Kartı bir ajana veya sahip kimliğine atar      |
+| `--board <id>`          | Kartı bir pano ad alanında saklar              |
+| `--labels <items>`      | Virgülle ayrılmış etiketler                    |
+| `--json`                | Oluşturulan kartı makine tarafından okunabilir JSON olarak yazdırır |
 
-| Bayrak                  | Amaç                                      |
-| ----------------------- | ----------------------------------------- |
-| `--notes <text>`        | İlk kart notları                          |
-| `--status <status>`     | İlk durum, varsayılan `todo`              |
-| `--priority <priority>` | Öncelik, varsayılan `normal`              |
-| `--agent <id>`          | Kartı bir ajana veya sahip kimliğine ata  |
-| `--board <id>`          | Kartı bir pano ad alanında sakla          |
-| `--labels <items>`      | Virgülle ayrılmış etiketler               |
-| `--json`                | Oluşturulan kartı makine JSON'u olarak yazdır |
-
-`create`, doğrudan Workboard SQLite durumuna yazar. Kart, Control UI Workboard sekmesinde ve Workboard araçlarında
-hemen görünür olur.
+`create`, doğrudan Workboard SQLite durumuna yazar. Kart, Control UI Workboard sekmesinde ve Workboard araçlarında anında görünür.
 
 ## `show`
 
@@ -98,9 +88,7 @@ openclaw workboard show 7f4a2c10
 openclaw workboard show 7f4a2c10 --json
 ```
 
-Metin çıktısı, kompakt kart satırını ve notları yazdırır. JSON çıktısı; yürütme metadatası, denemeler, yorumlar, bağlantılar, kanıt,
-artifact'ler, worker günlükleri, protokol durumu, tanılamalar ve otomasyon metadatası dahil olmak üzere tam
-kart kaydını döndürür.
+Metin çıktısı, kompakt kart satırını ve notları yazdırır. JSON çıktısı; yürütme meta verileri, denemeler, yorumlar, bağlantılar, kanıtlar, yapıtlar, işçi günlükleri, protokol durumu, tanılama ve otomasyon meta verileri dahil tam kart kaydını döndürür.
 
 ## `dispatch`
 
@@ -110,41 +98,25 @@ openclaw workboard dispatch --json
 openclaw workboard dispatch --url http://127.0.0.1:18789 --token "$OPENCLAW_GATEWAY_TOKEN"
 ```
 
-`dispatch` önce çalışan Gateway RPC yöntemi
-`workboard.cards.dispatch`'i çağırır. Bu yol, dashboard dağıtım eylemiyle aynı alt ajan runtime'ını kullanır; böylece hazır kartlar,
-bağlı oturum anahtarlarına sahip görev izlemeli worker çalıştırmalarına dönüşür. Atanmış ajanı olan kartlar, ajan kapsamlı alt ajan
-oturum anahtarlarını kullanır; atanmamış kartlar ise Gateway'in
-yapılandırılmış varsayılan ajanının korunması için kapsamsız bir alt ajan anahtarını korur.
+`dispatch` önce çalışan Gateway'in `workboard.cards.dispatch` RPC yöntemini çağırır. Bu yöntem, pano gönderme eylemiyle aynı alt ajan çalışma zamanını kullanır; böylece hazır kartlar, bağlantılı oturum anahtarlarına sahip ve görevlerle izlenen işçi çalıştırmalarına dönüşür. Ajan atanmış kartlar, ajan kapsamlı alt ajan oturum anahtarlarını kullanır; atanmamış kartlar ise Gateway'in yapılandırılmış varsayılan ajanının korunması için kapsamsız bir alt ajan anahtarı kullanır.
 
-Dağıtım döngüsü:
+Gönderme döngüsü:
 
-1. Bağımlılığı hazır olan çocukları `ready` durumuna yükseltir.
-2. Süresi dolmuş talepleri veya zaman aşımına uğramış worker çalıştırmalarını engeller.
-3. Hazır kartlara dağıtım metadatası kaydeder.
-4. Talep edilmemiş hazır kartlardan küçük bir toplu seçim yapar.
-5. Seçilen her kartı dağıtıcı veya atanmış ajan için talep eder.
-6. Sınırlı kart bağlamı ve kart talep token'ı ile bir alt ajan worker çalıştırması başlatır.
-7. Worker çalıştırma kimliğini, oturum anahtarını, Gateway görev
-   defteri bildirdiğinde görev bağlantısını, yürütme durumunu ve worker günlüğünü kartta saklar.
+1. Bağımlılıkları hazır olan alt kartları `ready` durumuna yükseltir.
+2. Süresi dolmuş talepleri veya zaman aşımına uğramış işçi çalıştırmalarını engeller.
+3. Hazır kartlara gönderme meta verilerini kaydeder.
+4. Talep edilmemiş hazır kartlardan oluşan küçük bir grup seçer.
+5. Seçilen her kartı gönderici veya atanmış ajan adına talep eder.
+6. Sınırlandırılmış kart bağlamı ve kart talep belirteciyle bir alt ajan işçi çalıştırması başlatır.
+7. İşçi çalıştırma kimliğini, oturum anahtarını, Gateway görev defteri bildirdiğinde görev bağlantısını, yürütme durumunu ve işçi günlüğünü kartta saklar.
 
-Seçim bilinçli olarak muhafazakardır. Bir dağıtım varsayılan olarak en fazla üç
-worker başlatır, arşivlenmiş veya zaten talep edilmiş kartları atlar ve tek bir geçişte sahip veya ajan başına yalnızca bir
-kart başlatır. Etkin çalışan
-veya inceleme işi tarafından zaten sahiplenilmiş kartlar daha sonraki bir dağıtıma bırakılır.
+Seçim ihtiyatlıdır: tek bir gönderme varsayılan olarak en fazla üç işçi başlatır, arşivlenmiş veya zaten talep edilmiş kartları atlar ve tek bir geçişte sahip ya da ajan başına yalnızca bir kart başlatır. Etkin çalışan veya inceleme aşamasındaki işlerin zaten sahip olduğu kartlar sonraki bir gönderme işlemine bırakılır.
 
-Bir kart talep edildikten sonra worker başlatma başarısız olursa Workboard o kartı engeller,
-talebi temizler ve hatayı kart yürütme ve worker günlüğü
-metadatasına kaydeder. Bu, başarısız başlatmaların kartı sessizce
-kuyruğa döndürmek yerine görünür kalmasını sağlar.
+Bir kart talep edildikten sonra işçinin başlatılması başarısız olursa Workboard bu kartı engeller, talebi temizler ve hatayı kart yürütme ve işçi günlüğü meta verilerine kaydeder. Böylece başarısız başlatmalar, kart sessizce kuyruğa döndürülmek yerine görünür kalır.
 
-Açık bir Gateway hedefi sağlanmadıysa ve yerel Gateway kullanılamıyorsa
-veya henüz Workboard dağıtım yöntemini sunmuyorsa, CLI yerel Workboard durumuna karşı
-yalnızca veri dağıtımına geri döner. Yalnızca veri dağıtımı yine de
-bağımlılıkları yükseltebilir, bayat talepleri temizleyebilir ve zaman aşımına uğramış çalıştırmaları engelleyebilir, ancak
-worker başlatmaz. Kimlik doğrulama, izin, doğrulama hataları ve açık bir `--url` veya `--token` hedefi için hatalar
-doğrudan bildirilir.
+Açık bir Gateway hedefi belirtilmemişse ve yerel Gateway kullanılamıyorsa veya henüz Workboard gönderme yöntemini sunmuyorsa CLI, yerel Workboard durumunda yalnızca veriye dayalı göndermeye geri döner. Yalnızca veriye dayalı gönderme yine de bağımlılıkları yükseltebilir, eski talepleri temizleyebilir ve zaman aşımına uğramış çalıştırmaları engelleyebilir; ancak işçi başlatmaz. Kimlik doğrulama, izin ve doğrulama hataları ile açık bir `--url` veya `--token` hedefindeki hatalar, geri dönüşü tetiklemek yerine doğrudan bildirilir.
 
-Metin çıktısı worker başlatmalarını bildirir:
+Metin çıktısı, işçi başlatmalarını bildirir:
 
 ```text
 dispatch complete: started=2 failures=0
@@ -156,17 +128,13 @@ Geri dönüş çıktısı açıktır:
 gateway unavailable; data dispatch only: promoted=1 blocked=0
 ```
 
-JSON çıktısı dağıtım sonucunu içerir. Gateway destekli dağıtım
-`started` ve `startFailures` içerebilir; yalnızca veri geri dönüşü
-`gatewayUnavailable: true` içerir. Talep token'ları kart JSON çıktısından redakte edilir.
+JSON çıktısı, gönderme sonucunu içerir. Gateway destekli gönderme `started` ve `startFailures` alanlarını içerebilir; yalnızca veriye dayalı geri dönüş ise `gatewayUnavailable: true` alanını içerir. Talep belirteçleri kart JSON çıktısından çıkarılır.
 
-Dashboard'da aynı dağıtım sonucu kısa bir özet olarak gösterilir; böylece bir
-operatör kart ayrıntılarını açmadan kaç kartın başlatıldığını, yükseltildiğini, engellendiğini, geri talep edildiğini veya
-başarısız olduğunu görebilir.
+Panoda aynı gönderme sonucu kısa bir özet olarak gösterilir; böylece operatör, kart ayrıntılarını açmadan kaç kartın başlatıldığını, yükseltildiğini, engellendiğini, yeniden talep edildiğini veya başarısız olduğunu görebilir.
 
-## Slash Komut Eşliği
+## Eğik çizgi komutlarıyla eşdeğerlik
 
-Komut kullanabilen kanallar eşleşen slash komutunu kullanabilir:
+Komut destekleyen kanallar, eşleşen eğik çizgi komutunu kullanabilir:
 
 ```text
 /workboard list
@@ -175,38 +143,29 @@ Komut kullanabilen kanallar eşleşen slash komutunu kullanabilir:
 /workboard dispatch
 ```
 
-Slash komut dağıtımı da Gateway alt ajan runtime'ını kullanır; bu nedenle dashboard ve CLI Gateway
-yoluyla aynı talep, worker başlatma ve hata davranışını izler.
+Eğik çizgi komutuyla gönderme de Gateway alt ajan çalışma zamanını kullanır; dolayısıyla pano ve CLI Gateway yolu ile aynı talep, işçi başlatma ve hata davranışını izler.
 
-`/workboard list` ve `/workboard show`, yetkili komut
-gönderenler için okuma komutlarıdır. `/workboard create` ve `/workboard dispatch` pano durumunu değiştirir ve
-sohbet yüzeylerinde sahip durumu veya `operator.write`
-ya da `operator.admin` yetkisine sahip bir Gateway istemcisi gerektirir.
+`/workboard list` ve `/workboard show`, yetkili komut gönderenler için okuma komutlarıdır. `/workboard create` ve `/workboard dispatch`, pano durumunu değiştirir ve sohbet yüzeylerinde sahip durumu ya da `operator.write` veya `operator.admin` yetkisine sahip bir Gateway istemcisi gerektirir.
 
 ## İzinler
 
-CLI dağıtım yolu, `operator.read` ve
-`operator.write` kapsamlarıyla Gateway RPC'yi çağırır. Salt okunur bir Gateway token'ı Workboard verilerini
-okuma yöntemleriyle inceleyebilir, ancak kart oluşturamaz veya worker dağıtamaz.
+CLI gönderme yolu, Gateway RPC'yi `operator.read` ve `operator.write` kapsamlarıyla çağırır. Salt okunur bir Gateway belirteci, okuma yöntemleri aracılığıyla Workboard verilerini inceleyebilir ancak kart oluşturamaz veya işçi gönderemez.
 
-Yerel `list`, `create` ve `show` komutları, geçerli profil tarafından kullanılan yerel OpenClaw durum
-dizininde çalışır. Farklı bir durum kökü gerektiğinde üst düzey
-`openclaw` komutunda `--dev` veya `--profile <name>` kullanın.
+Yerel `list`, `create` ve `show` komutları, geçerli profil tarafından kullanılan yerel OpenClaw durum dizininde çalışır. Farklı bir durum köküne ihtiyaç duyduğunuzda üst düzey `openclaw` komutunda `--dev` veya `--profile <name>` kullanın.
 
-## Sorun Giderme
+## Sorun giderme
 
-### Hiç Kart Görünmüyor
+### Hiçbir kart görünmüyor
 
-Plugin'in aynı profil ve durum kökü için etkin olduğunu doğrulayın:
+Plugin'in aynı profil ve durum kökü için etkinleştirildiğini doğrulayın:
 
 ```bash
 openclaw plugins inspect workboard --runtime --json
 ```
 
-Dashboard kartları gösteriyor ancak CLI göstermiyorsa, iki komutun da aynı
-`--dev` veya `--profile` ayarını kullandığını kontrol edin.
+Pano kartları gösteriyor ancak CLI göstermiyorsa her iki komutun da aynı `--dev` veya `--profile` ayarını kullandığını kontrol edin.
 
-### Dispatch Yalnızca Veri Diyor
+### Gönderme yalnızca veri diyor
 
 Gateway'i başlatın veya yeniden başlatın:
 
@@ -215,24 +174,21 @@ openclaw gateway restart
 openclaw gateway status --deep
 ```
 
-Ardından `openclaw workboard dispatch` komutunu yeniden deneyin. Yalnızca veri geri dönüşü yerel
-durum temizliği için kullanışlıdır, ancak worker çalıştırmaları canlı bir Gateway gerektirir.
+Ardından `openclaw workboard dispatch` komutunu yeniden deneyin. Yalnızca veriye dayalı geri dönüş, yerel durum temizliği için kullanışlıdır ancak işçi çalıştırmaları canlı bir Gateway gerektirir.
 
-### Dispatch Hiçbir Şey Başlatmıyor
+### Gönderme hiçbir şey başlatmıyor
 
-Etkin talebi olmayan en az bir `ready` kart olduğunu kontrol edin:
+Etkin talebi olmayan en az bir `ready` kart bulunduğunu kontrol edin:
 
 ```bash
 openclaw workboard list --status ready
 ```
 
-Aynı sahipte zaten çalışan veya inceleme
-işi olduğunda kartlar da atlanabilir. Tamamlanan işi `done` durumuna taşıyın, bayat talepleri Workboard
-araçlarıyla serbest bırakın veya etkin worker bittikten sonra dağıtımı yeniden çalıştırın.
+Aynı sahip zaten çalışan veya inceleme aşamasındaki bir işe sahipse kartlar da atlanabilir. Tamamlanan işleri `done` durumuna taşıyın, eski talepleri Workboard araçlarıyla serbest bırakın veya etkin işçi tamamlandıktan sonra göndermeyi yeniden çalıştırın.
 
 ## İlgili
 
 - [Workboard Plugin'i](/tr/plugins/workboard)
 - [CLI başvurusu](/tr/cli)
-- [Slash komutları](/tr/tools/slash-commands)
+- [Eğik çizgi komutları](/tr/tools/slash-commands)
 - [Control UI](/tr/web/control-ui)

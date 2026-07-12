@@ -1,140 +1,122 @@
 ---
 read_when:
     - Ви хочете отримати доступ до Gateway через Tailscale
-    - Вам потрібні браузерний Control UI і редагування конфігурації
-summary: 'Вебповерхні Gateway: Control UI, режими прив’язки та безпека'
-title: Веб
+    - Вам потрібні браузерний інтерфейс керування та редагування конфігурації
+summary: 'Вебінтерфейси Gateway: інтерфейс керування, режими прив’язки та безпека'
+title: Вебсайт
 x-i18n:
-    generated_at: "2026-06-27T18:31:34Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:55:55Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1c6b0c9f4ff53af295eb4eef7290d5d6b70c52543f57a9e83c7f8a635a2b35cd
+    source_hash: 413fb029d95241f5c6043b28825727cdee52b2fa8cbe998fbbd6e3ff7b81467b
     source_path: web/index.md
     workflow: 16
 ---
 
-Gateway надає невеликий **браузерний інтерфейс керування** (Vite + Lit) з того самого порту, що й Gateway WebSocket:
+Gateway обслуговує невеликий **браузерний інтерфейс керування** (Vite + Lit) через той самий порт, що й WebSocket Gateway:
 
-- за замовчуванням: `http://<host>:18789/`
+- типово: `http://<host>:18789/`
 - з `gateway.tls.enabled: true`: `https://<host>:18789/`
-- необов'язковий префікс: установіть `gateway.controlUi.basePath` (наприклад, `/openclaw`)
+- необов’язковий префікс: задайте `gateway.controlUi.basePath` (наприклад, `/openclaw`)
 
-Можливості описано в [інтерфейсі керування](/uk/web/control-ui). Решта цієї сторінки зосереджена на режимах прив'язування, безпеці та поверхнях, доступних через веб.
+Можливості описано в розділі [Інтерфейс керування](/uk/web/control-ui). На цій сторінці розглянуто режими прив’язки, безпеку та інші вебінтерфейси.
+
+## Конфігурація (увімкнено типово)
+
+Інтерфейс керування **увімкнено типово**, коли наявні ресурси (`dist/control-ui`):
+
+```json5
+{
+  gateway: {
+    controlUi: { enabled: true, basePath: "/openclaw" }, // basePath необов’язковий
+  },
+}
+```
 
 ## Webhook-и
 
-Коли `hooks.enabled=true`, Gateway також відкриває невелику кінцеву точку webhook на тому самому HTTP-сервері.
-Див. [конфігурацію Gateway](/uk/gateway/configuration) → `hooks` для автентифікації та корисних навантажень.
+Коли `hooks.enabled=true`, Gateway також надає кінцеву точку Webhook на тому самому HTTP-сервері. Відомості про автентифікацію і корисні навантаження див. в описі `hooks` у [довіднику з конфігурації Gateway](/uk/gateway/configuration-reference#hooks).
 
 ## Адміністративний HTTP RPC
 
-Адміністративний HTTP RPC відкриває вибрані методи площини керування Gateway на `POST /api/v1/admin/rpc`.
-За замовчуванням він вимкнений і реєструється лише тоді, коли ввімкнено plugin `admin-http-rpc`.
-Див. [адміністративний HTTP RPC](/uk/plugins/admin-http-rpc) щодо моделі автентифікації, дозволених методів і порівняння з WebSocket.
-
-## Конфігурація (увімкнено за замовчуванням)
-
-Інтерфейс керування **увімкнено за замовчуванням**, коли ресурси наявні (`dist/control-ui`).
-Ви можете керувати ним через конфігурацію:
-
-```json5
-{
-  gateway: {
-    controlUi: { enabled: true, basePath: "/openclaw" }, // basePath optional
-  },
-}
-```
+`POST /api/v1/admin/rpc` надає вибрані методи площини керування Gateway через HTTP. Типово вимкнено; реєструється лише тоді, коли ввімкнено plugin `admin-http-rpc`. Модель автентифікації, дозволені методи та порівняння з API WebSocket див. в розділі [Адміністративний HTTP RPC](/uk/plugins/admin-http-rpc).
 
 ## Доступ через Tailscale
 
-### Інтегрований Serve (рекомендовано)
+<Tabs>
+  <Tab title="Інтегрований Serve (рекомендовано)">
+    Залиште Gateway на local loopback і дозвольте Tailscale Serve проксіювати його:
 
-Тримайте Gateway на loopback і дозвольте Tailscale Serve проксувати його:
+    ```json5
+    {
+      gateway: {
+        bind: "loopback",
+        tailscale: { mode: "serve" },
+      },
+    }
+    ```
 
-```json5
-{
-  gateway: {
-    bind: "loopback",
-    tailscale: { mode: "serve" },
-  },
-}
-```
+    Запустіть Gateway:
 
-Потім запустіть gateway:
+    ```bash
+    openclaw gateway
+    ```
 
-```bash
-openclaw gateway
-```
+    Відкрийте `https://<magicdns>/` (або налаштований вами `gateway.controlUi.basePath`).
 
-Відкрийте:
+  </Tab>
+  <Tab title="Прив’язка до tailnet + токен">
+    ```json5
+    {
+      gateway: {
+        bind: "tailnet",
+        controlUi: { enabled: true },
+        auth: { mode: "token", token: "your-token" },
+      },
+    }
+    ```
 
-- `https://<magicdns>/` (або налаштований вами `gateway.controlUi.basePath`)
+    Запустіть Gateway (у цьому прикладі без local loopback використовується автентифікація за токеном зі спільним секретом):
 
-### Прив'язування до Tailnet + токен
+    ```bash
+    openclaw gateway
+    ```
 
-```json5
-{
-  gateway: {
-    bind: "tailnet",
-    controlUi: { enabled: true },
-    auth: { mode: "token", token: "your-token" },
-  },
-}
-```
+    Відкрийте `http://<tailscale-ip>:18789/` (або налаштований вами `gateway.controlUi.basePath`).
 
-Потім запустіть gateway (цей приклад не для loopback використовує автентифікацію
-токеном зі спільним секретом):
+  </Tab>
+  <Tab title="Загальнодоступний інтернет (Funnel)">
+    ```json5
+    {
+      gateway: {
+        bind: "loopback",
+        tailscale: { mode: "funnel" },
+        auth: { mode: "password" }, // або OPENCLAW_GATEWAY_PASSWORD
+      },
+    }
+    ```
 
-```bash
-openclaw gateway
-```
+    `tailscale.mode: "funnel"` вимагає `gateway.auth.mode: "password"`; і Serve, і Funnel вимагають `gateway.bind: "loopback"`.
 
-Відкрийте:
+  </Tab>
+</Tabs>
 
-- `http://<tailscale-ip>:18789/` (або налаштований вами `gateway.controlUi.basePath`)
+## Примітки щодо безпеки
 
-### Публічний інтернет (Funnel)
+- Автентифікація Gateway типово обов’язкова: токен, пароль, довірений проксі або, якщо ввімкнено, заголовки ідентичності Tailscale Serve.
+- Прив’язки не до local loopback усе одно **вимагають** автентифікації Gateway: автентифікації за токеном/паролем або зворотного проксі з підтримкою ідентичності та `gateway.auth.mode: "trusted-proxy"`.
+- Майстер початкового налаштування типово створює автентифікацію зі спільним секретом і зазвичай генерує токен Gateway, навіть на local loopback.
+- У режимі зі спільним секретом інтерфейс надсилає `connect.params.auth.token` або `connect.params.auth.password` під час установлення з’єднання WebSocket.
+- З `gateway.tls.enabled: true` локальні допоміжні засоби панелі керування та стану відображають URL-адреси `https://` і URL-адреси WebSocket `wss://`.
+- У режимах з ідентичністю (Tailscale Serve, `trusted-proxy`) перевірка автентифікації WebSocket виконується за заголовками запиту замість спільного секрету.
+- Для загальнодоступних розгортань інтерфейсу керування не на local loopback явно задайте `gateway.controlUi.allowedOrigins` (повні джерела). Приватні завантаження з того самого джерела приймаються без цього параметра для local loopback, RFC1918/локальних каналів, `.local`, `.ts.net` і хостів Tailscale CGNAT.
+- `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback: true` вмикає резервне визначення джерела за заголовком Host; це небезпечне послаблення безпеки.
+- Із Serve заголовки ідентичності Tailscale задовольняють вимоги автентифікації інтерфейсу керування/WebSocket, коли `gateway.auth.allowTailscale: true` (токен або пароль не потрібні). Кінцеві точки HTTP API не використовують заголовки ідентичності Tailscale; вони завжди дотримуються звичайного режиму HTTP-автентифікації Gateway. Задайте `gateway.auth.allowTailscale: false`, щоб вимагати явні облікові дані навіть через Serve. Цей безтокеновий процес передбачає, що самому хосту Gateway довіряють. Див. [Tailscale](/uk/gateway/tailscale) і [Безпека](/uk/gateway/security).
 
-```json5
-{
-  gateway: {
-    bind: "loopback",
-    tailscale: { mode: "funnel" },
-    auth: { mode: "password" }, // or OPENCLAW_GATEWAY_PASSWORD
-  },
-}
-```
+## Збирання інтерфейсу
 
-## Нотатки щодо безпеки
-
-- Автентифікація Gateway потрібна за замовчуванням (токен, пароль, trusted-proxy або заголовки ідентичності Tailscale Serve, коли ввімкнено).
-- Прив'язування не до loopback усе одно **потребують** автентифікації gateway. На практиці це означає автентифікацію токеном/паролем або reverse proxy з підтримкою ідентичності з `gateway.auth.mode: "trusted-proxy"`.
-- Майстер за замовчуванням створює автентифікацію зі спільним секретом і зазвичай генерує
-  токен gateway (навіть на loopback).
-- У режимі спільного секрету UI надсилає `connect.params.auth.token` або
-  `connect.params.auth.password`.
-- Коли `gateway.tls.enabled: true`, локальна панель і допоміжні засоби стану відображають
-  URL-адреси панелі з `https://` та URL-адреси WebSocket з `wss://`.
-- У режимах із передаванням ідентичності, як-от Tailscale Serve або `trusted-proxy`,
-  перевірка автентифікації WebSocket натомість задовольняється заголовками запиту.
-- Для публічних розгортань інтерфейсу керування не на loopback явно задайте `gateway.controlUi.allowedOrigins`
-  (повні origins). Приватні завантаження LAN/Tailnet із тим самим origin приймаються для loopback,
-  RFC1918/link-local, `.local`, `.ts.net` і хостів Tailscale CGNAT.
-- `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true` вмикає
-  режим fallback origin за заголовком Host, але це небезпечне зниження рівня безпеки.
-- Із Serve заголовки ідентичності Tailscale можуть задовольнити автентифікацію Control UI/WebSocket,
-  коли `gateway.auth.allowTailscale` має значення `true` (токен/пароль не потрібні).
-  Кінцеві точки HTTP API не використовують ці заголовки ідентичності Tailscale; натомість вони дотримуються
-  звичайного режиму HTTP-автентифікації gateway. Установіть
-  `gateway.auth.allowTailscale: false`, щоб вимагати явні облікові дані. Див.
-  [Tailscale](/uk/gateway/tailscale) і [Безпека](/uk/gateway/security). Цей
-  потік без токена припускає, що хост gateway є довіреним.
-- `gateway.tailscale.mode: "funnel"` потребує `gateway.auth.mode: "password"` (спільний пароль).
-
-## Збирання UI
-
-Gateway надає статичні файли з `dist/control-ui`. Зберіть їх за допомогою:
+Gateway обслуговує статичні файли з `dist/control-ui`:
 
 ```bash
 pnpm ui:build

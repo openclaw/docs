@@ -1,24 +1,21 @@
 ---
 read_when:
     - Anda ingin memeriksa atau membuat kartu Workboard dari terminal
-    - Anda ingin mengirimkan eksekusi worker Workboard dari CLI
-    - Anda sedang men-debug perilaku CLI Workboard atau perintah garis miring
-summary: Referensi CLI untuk kartu `openclaw workboard`, dispatch, dan run worker
+    - Anda ingin menjalankan pekerja Workboard dari CLI
+    - Anda sedang melakukan debug terhadap perilaku CLI Workboard atau perintah garis miring
+summary: Referensi CLI untuk kartu, pengiriman, dan eksekusi worker `openclaw workboard`
 title: CLI Papan Kerja
 x-i18n:
-    generated_at: "2026-06-27T17:22:28Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:03:50Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: bb6f5ab36b3f1f4d0eb06e5dfa9adbbe9bb14bf2ac389630da7725811ac6f47f
+    source_hash: 3c62dd10aff146cae9f7475423148cf61fedb39983b065a9815c629349b4e233
     source_path: cli/workboard.md
     workflow: 16
 ---
 
-`openclaw workboard` adalah permukaan terminal untuk [Plugin Workboard](/id/plugins/workboard)
-bawaan. Perintah ini memungkinkan operator mencantumkan kartu, membuat kartu,
-memeriksa satu kartu, dan meminta Gateway yang sedang berjalan untuk
-mengirimkan pekerjaan siap ke run pekerja subagen.
+`openclaw workboard` adalah antarmuka terminal untuk [Plugin Workboard](/id/plugins/workboard) bawaan. Perintah ini memungkinkan operator mencantumkan kartu, membuat kartu, memeriksa satu kartu, dan meminta Gateway yang sedang berjalan untuk mengirim pekerjaan yang siap ke proses pekerja subagen.
 
 Aktifkan Plugin sebelum menggunakan perintah:
 
@@ -36,10 +33,9 @@ openclaw workboard show <id> [--json]
 openclaw workboard dispatch [--url <url>] [--token <token>] [--timeout <ms>] [--json]
 ```
 
-Perintah ini membaca dan menulis database SQLite milik Plugin yang sama yang
-digunakan oleh dasbor dan alat agen Workboard. Id kartu dapat diteruskan sebagai
-id lengkap atau sebagai prefiks yang tidak ambigu saat sebuah perintah menerima
-id kartu.
+Perintah ini membaca dan menulis basis data SQLite milik Plugin yang sama dengan yang digunakan oleh dasbor dan alat agen Workboard. ID kartu adalah UUID; perintah yang menerima ID kartu juga menerima prefiks ID yang tidak ambigu (keluaran teks ringkas menampilkan 8 karakter pertama).
+
+Nilai `status` yang valid: `triage`, `backlog`, `todo`, `scheduled`, `ready`, `running`, `review`, `blocked`, `done`. Nilai `priority` yang valid: `low`, `normal`, `high`, `urgent`.
 
 ## `list`
 
@@ -49,28 +45,22 @@ openclaw workboard list --board default --status ready
 openclaw workboard list --json
 ```
 
-Output teks bersifat ringkas:
+Keluaran teks bersifat ringkas:
 
 ```text
-7f4a2c10  ready     high    default agent-a  Fix stale worker heartbeat
+7f4a2c10  ready     high    default agent-a  Perbaiki Heartbeat pekerja yang kedaluwarsa
 ```
 
-Kolomnya adalah prefiks id, status, prioritas, id board, id agen opsional, dan
-judul.
+Kolomnya adalah prefiks ID, status, prioritas, ID papan, ID agen opsional, dan judul.
 
-Flag:
+| Flag                 | Tujuan                                                    |
+| -------------------- | --------------------------------------------------------- |
+| `--board <id>`       | Batasi hasil ke satu namespace papan                      |
+| `--status <status>`  | Batasi hasil ke satu status Workboard                     |
+| `--include-archived` | Sertakan kartu yang diarsipkan dalam keluaran teks ringkas |
+| `--json`             | Cetak daftar kartu lengkap sebagai JSON untuk mesin       |
 
-| Flag                 | Tujuan                                             |
-| -------------------- | -------------------------------------------------- |
-| `--board <id>`       | Batasi hasil ke satu namespace board               |
-| `--status <status>`  | Batasi hasil ke satu status Workboard              |
-| `--include-archived` | Sertakan kartu yang diarsipkan dalam output ringkas |
-| `--json`             | Cetak daftar kartu lengkap sebagai JSON mesin      |
-
-Output teks ringkas menyembunyikan kartu yang diarsipkan secara default agar CLI
-sesuai dengan perintah `/workboard list`. Teruskan `--include-archived` untuk
-menampilkannya. Output JSON mempertahankan daftar kartu lengkap, termasuk kartu
-yang diarsipkan, untuk otomatisasi yang sudah ada.
+Secara default, keluaran teks ringkas menyembunyikan kartu yang diarsipkan agar CLI sesuai dengan `/workboard list`. Gunakan `--include-archived` untuk menampilkannya. Keluaran JSON selalu mempertahankan daftar kartu lengkap, termasuk kartu yang diarsipkan, untuk otomatisasi yang sudah ada.
 
 ## `create`
 
@@ -79,20 +69,17 @@ openclaw workboard create "Fix stale worker heartbeat" --priority high --labels 
 openclaw workboard create "Write Workboard docs" --status ready --agent docs-agent --board docs --notes "Cover CLI, slash command, dispatch, and SQLite state."
 ```
 
-Flag:
+| Flag                    | Tujuan                                            |
+| ----------------------- | ------------------------------------------------- |
+| `--notes <text>`        | Catatan awal kartu                                |
+| `--status <status>`     | Status awal, default `todo`                       |
+| `--priority <priority>` | Prioritas, default `normal`                       |
+| `--agent <id>`          | Tetapkan kartu kepada agen atau ID pemilik        |
+| `--board <id>`          | Simpan kartu dalam sebuah namespace papan         |
+| `--labels <items>`      | Label yang dipisahkan koma                        |
+| `--json`                | Cetak kartu yang dibuat sebagai JSON untuk mesin  |
 
-| Flag                    | Tujuan                                      |
-| ----------------------- | ------------------------------------------- |
-| `--notes <text>`        | Catatan awal kartu                          |
-| `--status <status>`     | Status awal, default `todo`                 |
-| `--priority <priority>` | Prioritas, default `normal`                 |
-| `--agent <id>`          | Tetapkan kartu ke agen atau id pemilik      |
-| `--board <id>`          | Simpan kartu pada namespace board           |
-| `--labels <items>`      | Label yang dipisahkan koma                  |
-| `--json`                | Cetak kartu yang dibuat sebagai JSON mesin  |
-
-`create` menulis langsung ke status SQLite Workboard. Kartu langsung terlihat di
-tab Workboard Control UI dan bagi alat Workboard.
+`create` menulis langsung ke status SQLite Workboard. Kartu tersebut langsung terlihat di tab Workboard pada Control UI dan tersedia bagi alat Workboard.
 
 ## `show`
 
@@ -101,10 +88,7 @@ openclaw workboard show 7f4a2c10
 openclaw workboard show 7f4a2c10 --json
 ```
 
-Output teks mencetak baris kartu ringkas dan catatan. Output JSON mengembalikan
-rekaman kartu lengkap, termasuk metadata eksekusi, percobaan, komentar, tautan,
-bukti, artefak, log pekerja, status protokol, diagnostik, dan metadata
-otomatisasi.
+Keluaran teks mencetak baris kartu ringkas dan catatan. Keluaran JSON mengembalikan rekaman kartu lengkap, termasuk metadata eksekusi, percobaan, komentar, tautan, bukti, artefak, log pekerja, status protokol, diagnostik, dan metadata otomatisasi.
 
 ## `dispatch`
 
@@ -114,111 +98,74 @@ openclaw workboard dispatch --json
 openclaw workboard dispatch --url http://127.0.0.1:18789 --token "$OPENCLAW_GATEWAY_TOKEN"
 ```
 
-`dispatch` terlebih dahulu memanggil metode RPC Gateway yang sedang berjalan
-`workboard.cards.dispatch`. Jalur tersebut menggunakan runtime subagen yang sama
-seperti tindakan dispatch dasbor, sehingga kartu siap menjadi run pekerja yang
-dilacak tugas dengan kunci sesi tertaut. Kartu dengan agen yang ditetapkan
-menggunakan kunci sesi subagen bercakupan agen; kartu tanpa penetapan
-mempertahankan kunci subagen tanpa cakupan sehingga agen default yang
-dikonfigurasi Gateway tetap dipertahankan.
+`dispatch` terlebih dahulu memanggil metode RPC `workboard.cards.dispatch` pada Gateway yang sedang berjalan. Metode ini menggunakan runtime subagen yang sama dengan tindakan pengiriman pada dasbor, sehingga kartu yang siap menjadi proses pekerja yang dilacak sebagai tugas dengan kunci sesi tertaut. Kartu yang telah ditetapkan kepada agen menggunakan kunci sesi subagen dalam cakupan agen; kartu yang belum ditetapkan mempertahankan kunci subagen tanpa cakupan sehingga agen default yang dikonfigurasi pada Gateway tetap digunakan.
 
-Loop dispatch:
+Perulangan pengiriman:
 
-1. Mempromosikan turunan yang dependensinya siap menjadi `ready`.
-2. Memblokir klaim yang kedaluwarsa atau run pekerja yang timeout.
-3. Merekam metadata dispatch pada kartu siap.
-4. Memilih batch kecil kartu siap yang belum diklaim.
-5. Mengklaim setiap kartu yang dipilih untuk dispatcher atau agen yang
-   ditetapkan.
-6. Memulai run pekerja subagen dengan konteks kartu terbatas dan token klaim
-   kartu.
-7. Menyimpan id run pekerja, kunci sesi, penautan tugas saat ledger tugas Gateway
-   melaporkannya, status eksekusi, dan log pekerja pada kartu.
+1. Menaikkan status anak yang dependensinya siap menjadi `ready`.
+2. Memblokir klaim yang kedaluwarsa atau proses pekerja yang kehabisan waktu.
+3. Merekam metadata pengiriman pada kartu yang siap.
+4. Memilih sekumpulan kecil kartu siap yang belum diklaim.
+5. Mengklaim setiap kartu yang dipilih untuk pengirim atau agen yang ditetapkan.
+6. Memulai proses pekerja subagen dengan konteks kartu terbatas dan token klaim kartu.
+7. Menyimpan ID proses pekerja, kunci sesi, keterkaitan tugas ketika dilaporkan oleh buku besar tugas Gateway, status eksekusi, dan log pekerja pada kartu.
 
-Pemilihan sengaja dibuat konservatif. Satu dispatch memulai paling banyak tiga
-pekerja secara default, melewati kartu yang diarsipkan atau sudah diklaim, dan
-hanya memulai satu kartu per pemilik atau agen dalam satu lintasan. Kartu yang
-sudah dimiliki oleh pekerjaan aktif yang sedang berjalan atau sedang ditinjau
-ditinggalkan untuk dispatch berikutnya.
+Pemilihannya bersifat konservatif: secara default, satu pengiriman memulai paling banyak tiga pekerja, melewati kartu yang diarsipkan atau sudah diklaim, dan hanya memulai satu kartu per pemilik atau agen dalam satu putaran. Kartu yang sudah dimiliki oleh pekerjaan aktif berstatus berjalan atau peninjauan dibiarkan untuk pengiriman berikutnya.
 
-Jika start pekerja gagal setelah kartu diklaim, Workboard memblokir kartu
-tersebut, menghapus klaim, dan mencatat kegagalan dalam metadata eksekusi kartu
-dan log pekerja. Ini membuat start yang gagal tetap terlihat alih-alih diam-diam
-mengembalikan kartu ke antrean.
+Jika pekerja gagal dimulai setelah kartu diklaim, Workboard memblokir kartu tersebut, menghapus klaim, dan mencatat kegagalan dalam metadata eksekusi kartu serta log pekerja. Dengan demikian, kegagalan memulai tetap terlihat alih-alih mengembalikan kartu ke antrean secara diam-diam.
 
-Jika tidak ada target Gateway eksplisit yang diberikan dan Gateway lokal tidak
-tersedia atau belum mengekspos metode dispatch Workboard, CLI beralih ke dispatch
-khusus data terhadap status Workboard lokal. Dispatch khusus data masih dapat
-mempromosikan dependensi, membersihkan klaim usang, dan memblokir run yang
-timeout, tetapi tidak memulai pekerja. Kegagalan autentikasi, izin, validasi,
-serta kegagalan untuk target `--url` atau `--token` eksplisit dilaporkan secara
-langsung.
+Jika tidak ada target Gateway eksplisit yang diberikan dan Gateway lokal tidak tersedia atau belum mengekspos metode pengiriman Workboard, CLI beralih ke pengiriman khusus data terhadap status Workboard lokal. Pengiriman khusus data tetap dapat menaikkan status dependensi, membersihkan klaim kedaluwarsa, dan memblokir proses yang kehabisan waktu, tetapi tidak memulai pekerja. Kegagalan autentikasi, izin, dan validasi, serta kegagalan untuk target `--url` atau `--token` eksplisit, dilaporkan secara langsung alih-alih memicu mekanisme cadangan.
 
-Output teks melaporkan start pekerja:
+Keluaran teks melaporkan pekerja yang dimulai:
 
 ```text
-dispatch complete: started=2 failures=0
+pengiriman selesai: dimulai=2 kegagalan=0
 ```
 
-Output fallback bersifat eksplisit:
+Keluaran mekanisme cadangan bersifat eksplisit:
 
 ```text
-gateway unavailable; data dispatch only: promoted=1 blocked=0
+gateway tidak tersedia; hanya pengiriman data: dinaikkan=1 diblokir=0
 ```
 
-Output JSON menyertakan hasil dispatch. Dispatch yang didukung Gateway dapat
-menyertakan `started` dan `startFailures`; fallback khusus data menyertakan
-`gatewayUnavailable: true`. Token klaim disamarkan dari output JSON kartu.
+Keluaran JSON menyertakan hasil pengiriman. Pengiriman yang didukung Gateway dapat menyertakan `started` dan `startFailures`; mekanisme cadangan khusus data menyertakan `gatewayUnavailable: true`. Token klaim disamarkan dari keluaran JSON kartu.
 
-Di dasbor, hasil dispatch yang sama ditampilkan sebagai ringkasan pendek sehingga
-operator dapat melihat berapa banyak kartu yang dimulai, dipromosikan, diblokir,
-direklaim, atau gagal tanpa membuka detail kartu.
+Di dasbor, hasil pengiriman yang sama ditampilkan sebagai ringkasan singkat agar operator dapat melihat jumlah kartu yang dimulai, dinaikkan statusnya, diblokir, diklaim kembali, atau gagal tanpa membuka detail kartu.
 
-## Kesetaraan Perintah Slash
+## Kesetaraan perintah garis miring
 
-Channel yang mendukung perintah dapat menggunakan perintah slash yang sesuai:
+Kanal yang mendukung perintah dapat menggunakan perintah garis miring yang sesuai:
 
 ```text
 /workboard list
 /workboard show 7f4a2c10
-/workboard create Fix stale worker heartbeat
+/workboard create Perbaiki Heartbeat pekerja yang kedaluwarsa
 /workboard dispatch
 ```
 
-Dispatch perintah slash juga menggunakan runtime subagen Gateway, sehingga
-mengikuti perilaku klaim, start pekerja, dan kegagalan yang sama seperti jalur
-Gateway dasbor dan CLI.
+Pengiriman melalui perintah garis miring juga menggunakan runtime subagen Gateway, sehingga mengikuti perilaku klaim, pemulaian pekerja, dan kegagalan yang sama seperti jalur Gateway pada dasbor dan CLI.
 
-`/workboard list` dan `/workboard show` adalah perintah baca untuk pengirim
-perintah yang berwenang. `/workboard create` dan `/workboard dispatch` mengubah
-status board dan memerlukan status pemilik pada permukaan chat atau klien Gateway
-dengan `operator.write` atau `operator.admin`.
+`/workboard list` dan `/workboard show` adalah perintah baca bagi pengirim perintah yang berwenang. `/workboard create` dan `/workboard dispatch` mengubah status papan dan memerlukan status pemilik pada antarmuka percakapan atau klien Gateway dengan `operator.write` atau `operator.admin`.
 
 ## Izin
 
-Jalur dispatch CLI memanggil RPC Gateway dengan cakupan `operator.read` dan
-`operator.write`. Token Gateway hanya-baca dapat memeriksa data Workboard melalui
-metode baca, tetapi tidak dapat membuat kartu atau mengirimkan pekerja.
+Jalur pengiriman CLI memanggil RPC Gateway dengan cakupan `operator.read` dan `operator.write`. Token Gateway hanya-baca dapat memeriksa data Workboard melalui metode baca, tetapi tidak dapat membuat kartu atau mengirim pekerja.
 
-Perintah lokal `list`, `create`, dan `show` beroperasi pada direktori status
-OpenClaw lokal yang digunakan oleh profil saat ini. Gunakan `--dev` atau
-`--profile <name>` pada perintah `openclaw` tingkat atas saat Anda memerlukan
-root status yang berbeda.
+Perintah lokal `list`, `create`, dan `show` beroperasi pada direktori status OpenClaw lokal yang digunakan oleh profil saat ini. Gunakan `--dev` atau `--profile <name>` pada perintah `openclaw` tingkat teratas jika Anda memerlukan akar status yang berbeda.
 
-## Pemecahan Masalah
+## Pemecahan masalah
 
-### Tidak Ada Kartu yang Muncul
+### Tidak ada kartu yang muncul
 
-Pastikan Plugin diaktifkan untuk profil dan root status yang sama:
+Pastikan Plugin diaktifkan untuk profil dan akar status yang sama:
 
 ```bash
 openclaw plugins inspect workboard --runtime --json
 ```
 
-Jika dasbor menampilkan kartu tetapi CLI tidak, periksa bahwa kedua perintah
-menggunakan pengaturan `--dev` atau `--profile` yang sama.
+Jika dasbor menampilkan kartu tetapi CLI tidak, periksa bahwa kedua perintah menggunakan pengaturan `--dev` atau `--profile` yang sama.
 
-### Dispatch Mengatakan Khusus Data
+### Pengiriman menyatakan khusus data
 
 Mulai atau mulai ulang Gateway:
 
@@ -227,25 +174,21 @@ openclaw gateway restart
 openclaw gateway status --deep
 ```
 
-Lalu coba lagi `openclaw workboard dispatch`. Fallback khusus data berguna untuk
-pembersihan status lokal, tetapi run pekerja memerlukan Gateway yang aktif.
+Kemudian coba lagi `openclaw workboard dispatch`. Mekanisme cadangan khusus data berguna untuk pembersihan status lokal, tetapi proses pekerja memerlukan Gateway yang aktif.
 
-### Dispatch Tidak Memulai Apa Pun
+### Pengiriman tidak memulai apa pun
 
-Periksa setidaknya ada satu kartu `ready` tanpa klaim aktif:
+Periksa apakah ada setidaknya satu kartu `ready` tanpa klaim aktif:
 
 ```bash
 openclaw workboard list --status ready
 ```
 
-Kartu juga dapat dilewati saat pemilik yang sama sudah memiliki pekerjaan yang
-sedang berjalan atau sedang ditinjau. Pindahkan pekerjaan selesai ke `done`,
-lepaskan klaim usang melalui alat Workboard, atau jalankan dispatch lagi setelah
-pekerja aktif selesai.
+Kartu juga dapat dilewati ketika pemilik yang sama sudah memiliki pekerjaan berstatus berjalan atau peninjauan. Pindahkan pekerjaan yang selesai ke `done`, lepaskan klaim kedaluwarsa melalui alat Workboard, atau jalankan kembali pengiriman setelah pekerja aktif selesai.
 
 ## Terkait
 
 - [Plugin Workboard](/id/plugins/workboard)
 - [Referensi CLI](/id/cli)
-- [Perintah slash](/id/tools/slash-commands)
+- [Perintah garis miring](/id/tools/slash-commands)
 - [Control UI](/id/web/control-ui)

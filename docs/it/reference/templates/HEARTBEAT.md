@@ -1,32 +1,37 @@
 ---
 read_when:
-    - Avvio manuale di un workspace
+    - Inizializzazione manuale di un'area di lavoro
 summary: Modello di area di lavoro per HEARTBEAT.md
 title: Modello HEARTBEAT.md
 x-i18n:
-    generated_at: "2026-06-27T18:15:05Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:29:50Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 44a1ea787d67110ca53d752706b62f5ce5c4df8637897dee97ce6502f6a05eb6
+    source_hash: 1605f546995e0bdcb11f9bf905173b14aca25cfad664fe2c7644d18c2b4142e2
     source_path: reference/templates/HEARTBEAT.md
     workflow: 16
 ---
 
 # Modello HEARTBEAT.md
 
-`HEARTBEAT.md` si trova nello spazio di lavoro dell’agente. Lascia il file vuoto, oppure con soli commenti e intestazioni Markdown, quando vuoi che OpenClaw salti le chiamate al modello Heartbeat.
+`HEARTBEAT.md` si trova nello spazio di lavoro dell'agente e contiene l'elenco di controllo periodico di Heartbeat. Lascialo vuoto oppure contenente solo spazi, commenti Markdown, intestazioni ATX, elementi di elenco vuoti (`- `, `* [ ]`) o delimitatori di blocchi di codice, affinché OpenClaw ignori completamente la chiamata al modello di Heartbeat (`reason=empty-heartbeat-file`).
 
-Il modello di runtime predefinito è:
+Contenuto predefinito distribuito:
 
 ```markdown
-# Keep this file empty (or with only comments) to skip heartbeat API calls.
+<!-- Modello Heartbeat; un contenuto costituito solo da commenti impedisce le chiamate pianificate all'API di Heartbeat. -->
 
-# Add tasks below when you want the agent to check something periodically.
+# Mantieni vuoto questo file (o inserisci solo commenti) per ignorare le chiamate all'API di Heartbeat.
+
+# Aggiungi attività qui sotto quando vuoi che l'agente controlli periodicamente qualcosa.
 ```
 
-Aggiungi attività brevi sotto i commenti solo quando vuoi che l’agente controlli qualcosa periodicamente. Mantieni piccole le istruzioni Heartbeat perché vengono lette durante i risvegli ricorrenti.
+Aggiungi brevi attività sotto le righe di commento solo quando desideri controlli periodici. Mantieni il contenuto ridotto: a ogni ciclo, Heartbeat legge questo file (per impostazione predefinita ogni 30 minuti), quindi istruzioni eccessive consumano token a ogni attivazione.
 
-## Correlati
+Per eseguire controlli solo quando sono previsti, invece di usare un semplice elenco, utilizza un blocco strutturato `tasks:` con i campi `interval` e `prompt` per ogni attività; consulta [HEARTBEAT.md](/it/gateway/heartbeat#heartbeatmd-optional) per il formato e il comportamento.
 
-- [Configurazione Heartbeat](/it/gateway/config-agents)
+## Contenuti correlati
+
+- [Heartbeat](/it/gateway/heartbeat)
+- [Configurazione di Heartbeat](/it/gateway/config-agents)

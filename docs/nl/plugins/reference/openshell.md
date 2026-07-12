@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Je installeert, configureert of controleert de openshell Plugin
-summary: OpenClaw-sandboxbackend voor de NVIDIA OpenShell CLI met gespiegelde lokale werkruimten en SSH-opdrachtuitvoering.
-title: Openshell Plugin
+    - U installeert, configureert of controleert de openshell-plugin
+summary: OpenClaw-sandboxbackend voor de NVIDIA OpenShell CLI met gespiegelde lokale werkruimten en opdrachtuitvoering via SSH.
+title: Openshell-Plugin
 x-i18n:
-    generated_at: "2026-06-27T18:02:58Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:14:26Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: f97a099c465df22c0dfd7a68907c1a75c99ca301ad016ceb1be46c81376793f8
@@ -13,9 +13,9 @@ x-i18n:
     workflow: 16
 ---
 
-# Openshell Plugin
+# Openshell-plugin
 
-OpenClaw-sandboxbackend voor de NVIDIA OpenShell CLI met gespiegelde lokale werkruimten en uitvoering van SSH-opdrachten.
+OpenClaw-sandboxbackend voor de NVIDIA OpenShell CLI met gespiegelde lokale werkruimten en opdrachtuitvoering via SSH.
 
 ## Distributie
 

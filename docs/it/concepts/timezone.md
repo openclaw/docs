@@ -2,31 +2,31 @@
 read_when:
     - Vuoi un modello mentale rapido per la gestione dei fusi orari
     - Stai decidendo dove impostare o sovrascrivere un fuso orario
-summary: Dove compaiono i fusi orari in OpenClaw — envelope, payload degli strumenti, prompt di sistema
+summary: Dove compaiono i fusi orari in OpenClaw — buste, payload degli strumenti, prompt di sistema
 title: Fusi orari
 x-i18n:
-    generated_at: "2026-06-27T17:28:42Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:00:58Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cc5bfe595c81b9c6ffaceac4c86b6f82b82917a506cdd7227e3e8cb1c0eb99a3
+    source_hash: 9d1620b4b2cedba89bd6ab4392018cd48d0ef92a6abc1744011d482557e2c4fc
     source_path: concepts/timezone.md
     workflow: 16
 ---
 
-OpenClaw standardizza i timestamp in modo che il modello veda un **unico orario di riferimento** invece di un insieme di orologi locali dei provider. Ci sono tre superfici in cui compaiono i fusi orari, ciascuna con il proprio scopo:
+OpenClaw standardizza i timestamp affinché il modello veda un **unico orario di riferimento** anziché una combinazione di orologi locali dei provider. Tre superfici mostrano i fusi orari, ciascuna con uno scopo specifico:
 
-## Tre superfici dei fusi orari
+## Tre superfici per i fusi orari
 
-| Superficie        | Cosa mostra                                                                                            | Predefinito                           | Configurato tramite                                     |
-| ----------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------- | ------------------------------------------------------- |
-| Involucri messaggio | Racchiude i messaggi in ingresso dai canali: `[Signal +1555 Sun 2026-01-18 00:19:42 PST] hello`       | Locale dell'host                      | `agents.defaults.envelopeTimezone`                      |
-| Payload degli strumenti | Gli strumenti di canale in stile `readMessages` restituiscono l'ora grezza del provider + `timestampMs` / `timestampUtc` normalizzati | Campi UTC sempre presenti             | Non configurabile — preserva i timestamp nativi del provider |
-| Prompt di sistema | Un piccolo blocco `Current Date & Time` con **solo il fuso orario** (nessun valore dell'orologio, per la stabilità della cache) | Fuso orario dell'host se `userTimezone` non è impostato | `agents.defaults.userTimezone`                          |
+| Superficie           | Cosa mostra                                                                                                              | Valore predefinito                                | Configurata tramite                                     |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------- | ------------------------------------------------------- |
+| Buste dei messaggi   | Racchiudono i messaggi in entrata dai canali: `[Signal +1555 Sun 2026-01-18 00:19:42 PST] hello`                          | Ora locale dell'host                              | `agents.defaults.envelopeTimezone`                      |
+| Payload degli strumenti | Gli strumenti dei canali simili a `readMessages` restituiscono l'ora grezza del provider e i valori normalizzati `timestampMs` / `timestampUtc` | I campi UTC sono sempre presenti                  | Non configurabile; mantiene i timestamp nativi del provider |
+| Prompt di sistema    | Un piccolo blocco `Data e ora correnti` con il **solo fuso orario** (senza valore dell'orologio, per la stabilità della cache) | Fuso orario dell'host se `userTimezone` non è impostato | `agents.defaults.userTimezone`                          |
 
-Il prompt di sistema omette deliberatamente l'orologio in tempo reale per mantenere stabile la cache dei prompt tra i turni. Quando l'agente ha bisogno dell'ora corrente, chiama `session_status`.
+Il prompt di sistema omette deliberatamente l'ora corrente per mantenere stabile la memorizzazione nella cache del prompt tra i turni. Quando l'agente deve conoscere l'ora corrente, chiama `session_status`.
 
-## Impostare il fuso orario dell'utente
+## Impostazione del fuso orario dell'utente
 
 ```json5
 {
@@ -38,18 +38,28 @@ Il prompt di sistema omette deliberatamente l'orologio in tempo reale per manten
 }
 ```
 
-Se `userTimezone` non è impostato, OpenClaw risolve il fuso orario dell'host in fase di esecuzione (senza scrivere configurazione). `agents.defaults.timeFormat` (`auto` | `12` | `24`) controlla il rendering a 12/24 ore negli involucri e nelle superfici a valle, non nella sezione del prompt di sistema.
+Se `userTimezone` non è impostato, OpenClaw determina il fuso orario dell'host in fase di esecuzione tramite `Intl.DateTimeFormat().resolvedOptions().timeZone` (senza scrivere nella configurazione). `agents.defaults.timeFormat` (`auto` | `12` | `24`) controlla la visualizzazione in formato 12/24 ore nelle buste e nelle superfici a valle, ma non nella sezione del prompt di sistema.
 
-## Quando eseguire l'override
+## Valori del fuso orario delle buste
 
-- **Usa involucri UTC** (`envelopeTimezone: "utc"`) quando vuoi timestamp stabili tra host in regioni diverse, o quando vuoi log allineati a UTC che corrispondano all'output di diagnostica.
-- **Usa una zona IANA fissa** (ad es. `"Europe/Vienna"`) quando l'host Gateway si trova in una zona ma l'utente in un'altra e vuoi che gli involucri siano letti nella zona dell'utente indipendentemente dalla migrazione dell'host.
-- **Imposta `envelopeTimestamp: "off"`** quando il contesto del timestamp non è utile per la conversazione. Questo rimuove i timestamp assoluti dagli involucri, dai prefissi diretti dei prompt dell'agente e dai prefissi incorporati nell'input del modello.
+`agents.defaults.envelopeTimezone` accetta:
 
-Per il riferimento completo del comportamento, esempi per provider e formattazione del tempo trascorso, consulta [Data e ora](/it/date-time).
+- `"local"` (valore predefinito) o `"host"` - il fuso orario della macchina host.
+- `"utc"` o `"gmt"` - UTC.
+- `"user"` - il valore determinato di `agents.defaults.userTimezone` (se non è impostato, usa il fuso orario dell'host).
+- Qualsiasi stringa esplicita di un fuso IANA, ad esempio `"Europe/Vienna"`.
 
-## Correlati
+## Quando sostituire il valore predefinito
 
-- [Data e ora](/it/date-time) — comportamento completo di involucri/strumenti/prompt ed esempi.
-- [Heartbeat](/it/gateway/heartbeat) — le ore attive usano il fuso orario per la pianificazione.
-- [Processi Cron](/it/automation/cron-jobs) — le espressioni Cron usano il fuso orario per la pianificazione.
+- **Usa `"utc"`** per ottenere timestamp coerenti tra host situati in regioni diverse o per uniformarli all'output di diagnostica e dei log basato su UTC.
+- **Usa `"user"`** per mantenere le buste allineate al fuso orario configurato per l'utente, indipendentemente dal fuso in cui viene eseguito l'host del Gateway.
+- **Usa un fuso IANA fisso** quando l'host del Gateway si trova in un fuso, ma la busta deve essere sempre visualizzata in un altro, indipendentemente dalla migrazione dell'host.
+- **Imposta `envelopeTimestamp: "off"`** quando il contesto temporale non è utile per la conversazione. Questa impostazione rimuove i timestamp assoluti dalle buste, dai prefissi dei prompt diretti dell'agente e dai prefissi incorporati nell'input del modello.
+
+Per il riferimento completo sul comportamento, esempi per ciascun provider e la formattazione del tempo trascorso, consulta [Data e ora](/it/date-time).
+
+## Contenuti correlati
+
+- [Data e ora](/it/date-time) - comportamento completo ed esempi per buste, strumenti e prompt.
+- [Heartbeat](/it/gateway/heartbeat) - le ore di attività usano il fuso orario per la pianificazione.
+- [Processi Cron](/it/automation/cron-jobs) - le espressioni cron usano il fuso orario per la pianificazione.

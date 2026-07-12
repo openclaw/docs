@@ -2,26 +2,25 @@
 read_when:
     - 여러 LLM에 하나의 API 키를 사용하려는 경우
     - Baidu Qianfan 설정 안내가 필요합니다
-summary: Qianfan의 통합 API를 사용하여 OpenClaw에서 다양한 모델에 액세스합니다.
+summary: Qianfan의 통합 API를 사용하여 OpenClaw에서 다양한 모델에 액세스하기
 title: Qianfan
 x-i18n:
-    generated_at: "2026-07-12T15:39:07Z"
+    generated_at: "2026-07-12T01:08:52Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 31387a53ee4472e2d20ae939ea75cea0d6f6367501becd56a8654fd97fdf0804
     source_path: providers/qianfan.md
     workflow: 16
 ---
 
-Qianfan은 Baidu의 MaaS 플랫폼으로, 단일 엔드포인트와 API 키를 통해 여러 모델로 요청을 라우팅하는 통합 OpenAI 호환 API입니다. OpenClaw는 이를 공식 외부 Plugin `@openclaw/qianfan-provider`로 제공합니다.
+Qianfan은 Baidu의 MaaS 플랫폼입니다. 단일 엔드포인트와 API 키를 통해 여러 모델로 요청을 라우팅하는 통합 OpenAI 호환 API입니다. OpenClaw는 이를 공식 외부 Plugin `@openclaw/qianfan-provider`로 제공합니다.
 
 | 속성          | 값                                       |
 | ------------- | ---------------------------------------- |
 | 제공자        | `qianfan`                                |
 | 인증          | `QIANFAN_API_KEY`                        |
-| API           | OpenAI 호환 (`openai-completions`)       |
+| API           | OpenAI 호환(`openai-completions`)        |
 | 기본 URL      | `https://qianfan.baidubce.com/v2`        |
 | 기본 모델     | `qianfan/deepseek-v3.2`                  |
 
@@ -38,7 +37,7 @@ openclaw gateway restart
 
 <Steps>
   <Step title="Baidu Cloud 계정 만들기">
-    [Qianfan Console](https://console.bce.baidu.com/qianfan/ais/console/apiKey)에서 가입하거나 로그인하고 Qianfan API 액세스가 활성화되어 있는지 확인합니다.
+    [Qianfan Console](https://console.bce.baidu.com/qianfan/ais/console/apiKey)에서 가입하거나 로그인한 후 Qianfan API 액세스가 활성화되어 있는지 확인합니다.
   </Step>
   <Step title="API 키 생성하기">
     새 애플리케이션을 만들거나 기존 애플리케이션을 선택한 다음 API 키를 생성합니다. Baidu Cloud 키는 `bce-v3/ALTAK-...` 형식을 사용합니다.
@@ -63,12 +62,12 @@ openclaw gateway restart
 
 ## 기본 제공 카탈로그
 
-| 모델 참조                            | 입력        | 컨텍스트 | 최대 출력 | 추론 | 참고         |
-| ------------------------------------ | ----------- | -------- | --------- | ---- | ------------ |
-| `qianfan/deepseek-v3.2`              | 텍스트      | 98,304   | 32,768    | 예   | 기본 모델    |
-| `qianfan/ernie-5.0-thinking-preview` | 텍스트, 이미지 | 119,000 | 64,000    | 예   | 멀티모달     |
+| 모델 참조                            | 입력         | 컨텍스트 | 최대 출력 | 추론 | 참고          |
+| ------------------------------------ | ------------ | -------- | --------- | ---- | ------------- |
+| `qianfan/deepseek-v3.2`              | 텍스트       | 98,304   | 32,768    | 예   | 기본 모델     |
+| `qianfan/ernie-5.0-thinking-preview` | 텍스트, 이미지 | 119,000  | 64,000    | 예   | 멀티모달      |
 
-카탈로그는 정적이며 실시간 모델 탐색은 없습니다.
+카탈로그는 정적이며 실시간 모델 탐색은 지원하지 않습니다.
 
 <Tip>
 사용자 지정 기본 URL이나 모델 메타데이터가 필요한 경우에만 `models.providers.qianfan`을 재정의하면 됩니다.
@@ -124,7 +123,7 @@ openclaw gateway restart
 
 <AccordionGroup>
   <Accordion title="전송 및 호환성">
-    Qianfan은 네이티브 OpenAI 요청 형식이 아니라 OpenAI 호환 전송 경로를 통해 실행됩니다. 표준 OpenAI SDK 기능은 작동하지만 제공자별 매개변수는 전달되지 않을 수 있습니다.
+    Qianfan은 네이티브 OpenAI 요청 구성 방식이 아니라 OpenAI 호환 전송 경로를 통해 실행됩니다. 표준 OpenAI SDK 기능은 작동하지만 제공자별 매개변수는 전달되지 않을 수 있습니다.
   </Accordion>
 
   <Accordion title="문제 해결">

@@ -1,141 +1,122 @@
 ---
 read_when:
-    - Kimlik doğrulama profili rotasyonunu, bekleme sürelerini veya model geri dönüş davranışını tanılama
+    - Kimlik doğrulama profili rotasyonu, bekleme süreleri veya model yedek davranışını tanılama
     - Kimlik doğrulama profilleri veya modeller için yük devretme kurallarını güncelleme
-    - Oturum model geçersiz kılmalarının yedek yeniden denemelerle nasıl etkileştiğini anlama
+    - Oturum modeli geçersiz kılmalarının yedek seçenek yeniden denemeleriyle nasıl etkileşime girdiğini anlama
 sidebarTitle: Model failover
-summary: OpenClaw kimlik doğrulama profillerini nasıl döndürür ve modeller arasında nasıl geri döner
-title: Model yük devri
+summary: OpenClaw kimlik doğrulama profillerini nasıl döndürür ve modeller arasında nasıl geri dönüş yapar
+title: Model yük devretme
 x-i18n:
-    generated_at: "2026-07-04T15:32:02Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:38:55Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1521e27c53029ead305f29b7a29b627b519adbd28ed30688c01f32542625855f
+    source_hash: 2da6399c8f5c6d9ab40486b553a41600a3c8eb64efa09e72784b81e42edbba61
     source_path: concepts/model-failover.md
     workflow: 16
 ---
 
 OpenClaw hataları iki aşamada ele alır:
 
-1. Geçerli sağlayıcı içinde **auth profili rotasyonu**.
-2. `agents.defaults.model.fallbacks` içindeki sonraki modele **model fallback**.
+1. Mevcut sağlayıcı içinde **kimlik doğrulama profili rotasyonu**.
+2. `agents.defaults.model.fallbacks` içindeki sonraki modele **model geri dönüşü**.
 
-Bu belge, runtime kurallarını ve bunları destekleyen verileri açıklar.
-
-## Runtime akışı
-
-Normal bir metin çalıştırması için OpenClaw adayları şu sırayla değerlendirir:
+## Çalışma zamanı akışı
 
 <Steps>
   <Step title="Oturum durumunu çözümle">
-    Etkin oturum modelini ve auth profili tercihini çözümle.
+    Etkin oturum modelini ve kimlik doğrulama profili tercihini çözümleyin.
   </Step>
   <Step title="Aday zincirini oluştur">
-    Geçerli model seçiminden ve o seçim kaynağına ait fallback politikasından model aday zincirini oluştur. Yapılandırılmış varsayılanlar, cron işi birincilleri ve otomatik seçilmiş fallback modeller yapılandırılmış fallback'leri kullanabilir; açık kullanıcı oturum seçimleri katıdır.
+    Model aday zincirini, mevcut model seçiminden ve bu seçim kaynağına yönelik geri dönüş politikasından oluşturun. Yapılandırılmış varsayılanlar, Cron işi birincil modelleri ve otomatik seçilen geri dönüş modelleri yapılandırılmış geri dönüşleri kullanabilir; açık kullanıcı oturumu seçimleri katıdır.
   </Step>
-  <Step title="Geçerli sağlayıcıyı dene">
-    Geçerli sağlayıcıyı auth profili rotasyonu/cooldown kurallarıyla dene.
+  <Step title="Mevcut sağlayıcıyı dene">
+    Mevcut sağlayıcıyı kimlik doğrulama profili rotasyonu/bekleme süresi kurallarıyla deneyin.
   </Step>
-  <Step title="Failover'a uygun hatalarda ilerle">
-    Bu sağlayıcı failover'a uygun bir hatayla tükenirse, sonraki model adayına geç.
+  <Step title="Yük devretmeye uygun hatalarda ilerle">
+    Bu sağlayıcının seçenekleri yük devretmeye uygun bir hatayla tükenirse sonraki model adayına geçin.
   </Step>
-  <Step title="Fallback override'ını kalıcılaştır">
-    Yeniden deneme başlamadan önce seçilen fallback override'ını kalıcılaştır; böylece diğer oturum okuyucuları, runner'ın kullanmak üzere olduğu aynı sağlayıcı/modeli görür. Kalıcılaştırılan model override'ı `modelOverrideSource: "auto"` olarak işaretlenir.
+  <Step title="Geri dönüş geçersiz kılmasını kalıcılaştır">
+    Yeniden deneme başlamadan önce seçilen geri dönüş geçersiz kılmasını kalıcılaştırın; böylece diğer oturum okuyucuları, çalıştırıcının kullanmak üzere olduğu sağlayıcı/model çiftini görür. Kalıcılaştırılan model geçersiz kılması `modelOverrideSource: "auto"` olarak işaretlenir.
   </Step>
-  <Step title="Hata durumunda dar kapsamlı geri al">
-    Fallback adayı başarısız olursa, yalnızca fallback'in sahibi olduğu oturum override alanlarını, hâlâ başarısız olan adayla eşleşiyorlarsa geri al.
+  <Step title="Hata durumunda sınırlı biçimde geri al">
+    Geri dönüş adayı başarısız olursa yalnızca geri dönüşün sahip olduğu oturum geçersiz kılma alanlarını, hâlâ başarısız adayla eşleşiyorlarsa geri alın.
   </Step>
-  <Step title="Tükenirse FallbackSummaryError fırlat">
-    Her aday başarısız olursa, deneme başına ayrıntı ve biliniyorsa en yakın cooldown bitiş zamanı içeren bir `FallbackSummaryError` fırlat.
+  <Step title="Tüm seçenekler tükenirse FallbackSummaryError fırlat">
+    Her aday başarısız olursa her denemeye ilişkin ayrıntıları ve biliniyorsa en yakın bekleme süresi bitişini içeren bir `FallbackSummaryError` fırlatın.
   </Step>
 </Steps>
 
-Bu, kasıtlı olarak "tüm oturumu kaydet ve geri yükle" yaklaşımından daha dardır. Yanıt runner'ı yalnızca fallback için sahibi olduğu model seçimi alanlarını kalıcılaştırır:
-
-- `providerOverride`
-- `modelOverride`
-- `modelOverrideSource`
-- `authProfileOverride`
-- `authProfileOverrideSource`
-- `authProfileOverrideCompactionCount`
-
-Bu, başarısız bir fallback yeniden denemesinin, deneme çalışırken gerçekleşen manuel `/model` değişiklikleri veya oturum rotasyonu güncellemeleri gibi daha yeni ve alakasız oturum mutasyonlarının üzerine yazmasını önler.
+Bu yaklaşım kasıtlı olarak "tüm oturumu kaydet ve geri yükle" yaklaşımından daha sınırlıdır. Yanıt çalıştırıcısı yalnızca geri dönüş için sahip olduğu model seçimi alanlarını kalıcılaştırır: `providerOverride`, `modelOverride`, `modelOverrideSource`, `authProfileOverride`, `authProfileOverrideSource`, `authProfileOverrideCompactionCount`. Bu, başarısız bir geri dönüş yeniden denemesinin, deneme sürerken gerçekleşen manuel bir `/model` değişikliği veya oturum rotasyonu güncellemesi gibi daha yeni ve ilgisiz oturum değişikliklerinin üzerine yazmasını önler.
 
 ## Seçim kaynağı politikası
 
-OpenClaw seçilen sağlayıcı/model ile bunun neden seçildiğini birbirinden ayırır. Bu kaynak, fallback zincirine izin verilip verilmediğini kontrol eder:
+Seçim kaynağı, geri dönüş zincirine izin verilip verilmediğini denetler:
 
-- **Yapılandırılmış varsayılan**: `agents.defaults.model.primary`, `agents.defaults.model.fallbacks` kullanır.
-- **Agent birincili**: `agents.list[].model`, bu agent model nesnesi kendi `fallbacks` listesini içermediği sürece katıdır. Katı davranışı açık yapmak için `fallbacks: []` kullanın veya bu agent'ı model fallback'e dahil etmek için boş olmayan bir liste sağlayın.
-- **Otomatik fallback override'ı**: runtime fallback, yeniden denemeden önce `providerOverride`, `modelOverride`, `modelOverrideSource: "auto"` ve seçilen kaynak modeli yazar. Bu otomatik override, her mesajda birincili denemeden yapılandırılmış fallback zincirinde ilerlemeye devam edebilir; ancak OpenClaw yapılandırılmış kaynağı periyodik olarak tekrar yoklar ve toparlandığında otomatik override'ı temizler. `/new`, `/reset` ve `sessions.reset` de otomatik kaynaklı override'ları temizler. Açık bir `heartbeat.model` olmadan çalışan Heartbeat, kaynakları artık geçerli yapılandırılmış varsayılanla eşleşmediğinde doğrudan otomatik override'ları temizler.
-- **Kullanıcı oturumu override'ı**: `/model`, model seçici, `session_status(model=...)` ve `sessions.patch`, `modelOverrideSource: "user"` yazar. Bu, kesin bir oturum seçimidir. Seçilen sağlayıcı/model yanıt üretmeden önce başarısız olursa OpenClaw, alakasız bir yapılandırılmış fallback'ten yanıt vermek yerine hatayı bildirir.
-- **Eski oturum override'ı**: eski oturum girdilerinde `modelOverrideSource` olmadan `modelOverride` olabilir. OpenClaw bunları kullanıcı override'ı olarak ele alır; böylece açık bir eski seçim sessizce fallback davranışına dönüştürülmez.
-- **Cron payload modeli**: bir cron işi `payload.model` / `--model`, kullanıcı oturumu override'ı değil, iş birincilidir. İş `payload.fallbacks` sağlamadığı sürece yapılandırılmış fallback'leri kullanır; `payload.fallbacks: []` cron çalıştırmasını katı yapar.
+- **Yapılandırılmış varsayılan**: `agents.defaults.model.primary`, `agents.defaults.model.fallbacks` değerini kullanır.
+- **Aracı birincil modeli**: `agents.list[].model`, ilgili aracının model nesnesi kendi `fallbacks` alanını içermediği sürece katıdır. Katı davranışı açıkça belirtmek için `fallbacks: []`, ilgili aracı için model geri dönüşünü etkinleştirmek üzere boş olmayan bir liste kullanın.
+- **Otomatik geri dönüş geçersiz kılması**: Çalışma zamanı geri dönüşü, yeniden denemeden önce `providerOverride`, `modelOverride`, `modelOverrideSource: "auto"` ve seçilen kaynak modeli yazar. Bu geçersiz kılma, her iletide birincil modeli yoklamadan yapılandırılmış geri dönüş zincirinde ilerlemeyi sürdürür; ancak OpenClaw yapılandırılmış kaynağı her 5 dakikada bir (yapılandırılamaz) yoklar ve kaynak düzeldiğinde geçersiz kılmayı temizler. `/new`, `/reset` ve `sessions.reset` de otomatik kaynaklı geçersiz kılmaları temizler. Açık bir `heartbeat.model` olmadan çalışan Heartbeat işlemleri, kaynakları artık geçerli yapılandırılmış varsayılanla eşleşmediğinde doğrudan otomatik geçersiz kılmaları temizler.
+- **Kullanıcı oturumu geçersiz kılması**: `/model`, model seçici, `session_status(model=...)` ve `sessions.patch`, `modelOverrideSource: "user"` değerini yazar. Bu, kesin bir oturum seçimidir. Seçilen sağlayıcı/model yanıt üretmeden önce başarısız olursa OpenClaw, ilgisiz bir yapılandırılmış geri dönüşten yanıt vermek yerine hatayı bildirir.
+- **Eski oturum geçersiz kılması**: Eski oturum girdilerinde `modelOverrideSource` olmadan `modelOverride` bulunabilir. Açık bir eski seçimin sessizce geri dönüş davranışına dönüştürülmemesi için OpenClaw bunları kullanıcı geçersiz kılmaları olarak değerlendirir.
+- **Cron yük modeli**: Bir Cron işindeki `payload.model` / `--model`, kullanıcı oturumu geçersiz kılması değil, işin birincil modelidir. İş `payload.fallbacks` sağlamadığı sürece yapılandırılmış geri dönüşleri kullanır; `payload.fallbacks: []`, Cron çalışmasını katı hâle getirir.
 
-Otomatik fallback birincil yoklama aralığı beş dakikadır ve yapılandırılamaz. OpenClaw, başarısız olan bir birincilin her turda yeniden denenmemesi için son yoklamaları oturum ve birincil model bazında hatırlar. OpenClaw, bir oturum fallback'e geçtiğinde görünür bir bildirim ve seçilen birincile döndüğünde başka bir bildirim gönderir; yapışkan fallback'in her turunda bildirimi tekrarlamaz.
+OpenClaw, başarısız bir birincil modelin her turda yeniden denenmemesi için son birincil yoklamaları oturum ve birincil model bazında hatırlar. Bir oturum geri dönüşe geçtiğinde görünür bir bildirim, seçilen birincil modele döndüğünde ise başka bir bildirim gönderir; kalıcı geri dönüşteki her turda bildirimi yinelemez.
 
-## Auth hatası atlama önbelleği
+## Kimlik doğrulama hatası atlama önbelleği
 
-Varsayılan olarak her yeni tur mevcut fallback yeniden deneme davranışını korur: OpenClaw
-yakın zamanda `auth` veya `auth_permanent` ile başarısız olmuş birincil olmayan
-adaylar dahil olmak üzere, yapılandırılmış her fallback adayını yeniden dener.
+Varsayılan olarak her yeni tur, mevcut geri dönüş yeniden deneme davranışını korur: OpenClaw, yakın zamanda `auth` veya `auth_permanent` hatasıyla başarısız olan birincil olmayan adaylar dâhil olmak üzere yapılandırılmış her geri dönüş adayını yeniden dener.
 
-Bu tekrarlanan auth hatalarını bastırmayı tercih eden operatörler şununla etkinleştirebilir:
+Yinelenen kimlik doğrulama hatalarını engellemek için şunu etkinleştirin:
 
 ```bash
 OPENCLAW_FALLBACK_SKIP_TTL_MS=60000
 ```
 
-Etkinleştirildiğinde OpenClaw, auth sınıfı bir hatadan sonra birincil olmayan
-fallback adayı için bellek içi, oturum kapsamlı bir atlama işareti kaydeder.
-İşaret, oturum id'si, sağlayıcı ve modele göre anahtarlanır. Birincil adaylar
-asla atlanmaz; böylece açık bir kullanıcı model seçimi gerçek auth hatasını yine
-gösterir. Önbellek süreç yereldir ve Gateway yeniden başlatıldığında temizlenir.
+Etkinleştirildiğinde OpenClaw, kimlik doğrulama sınıfı bir hatadan sonra birincil olmayan geri dönüş adayı için oturum kimliği, sağlayıcı ve model anahtarlarına dayalı, bellek içi ve oturum kapsamlı bir atlama işareti kaydeder. Birincil adaylar hiçbir zaman atlanmaz; böylece açık bir kullanıcı model seçimi gerçek kimlik doğrulama hatasını göstermeye devam eder. Önbellek işlem yereldir ve Gateway yeniden başlatıldığında temizlenir.
 
-Değer, milisaniye cinsinden bir TTL'dir. `0` veya ayarlanmamış değer önbelleği
-devre dışı bırakır. Pozitif değerler 1 saniye ile 10 dakika arasında sınırlandırılır.
+Değer, milisaniye cinsinden bir TTL'dir. `0` değeri veya ayarlanmamış olması önbelleği devre dışı bırakır. Pozitif değerler 1 saniye ile 10 dakika arasında sınırlandırılır.
 
-## Kullanıcıya görünür fallback bildirimleri
+## Kullanıcıya görünür geri dönüş bildirimleri
 
-Bir oturum otomatik seçilmiş bir fallback'e geçtiğinde OpenClaw aynı yanıt yüzeyinde bir durum bildirimi gönderir:
+Bir oturum otomatik seçilen bir geri dönüşe geçtiğinde OpenClaw, aynı yanıt yüzeyinde bir durum bildirimi gönderir:
 
 ```text
-↪️ Model Fallback: <fallback> (selected <primary>; <reason>)
+↪️ Model Geri Dönüşü: <fallback> (<primary> seçildi; <reason>)
 ```
 
-Daha sonraki bir yoklama başarılı olduğunda ve oturum seçilen birincile döndüğünde OpenClaw şunu gönderir:
+Daha sonraki bir yoklama başarılı olduğunda ve oturum seçilen birincil modele döndüğünde OpenClaw şunu gönderir:
 
 ```text
-↪️ Model Fallback cleared: <primary> (was <fallback>)
+↪️ Model Geri Dönüşü temizlendi: <primary> (önceki: <fallback>)
 ```
 
-Bu bildirimler operasyonel mesajlardır, assistant içeriği değildir. Uygun olduğunda yalnızca yan etkili turlar dahil olmak üzere durum değişikliği başına bir kez iletilirler; ancak yapışkan fallback turları bunları tekrarlamaz. İletim normal kaynak-yanıt bastırmasını atlar, bildirim thread'li kanallar için ilk assistant yanıt slotunu tüketmez ve text-to-speech ile commitment extraction kapsamı dışında tutulur.
+Bu bildirimler yardımcı içeriği değil, işletim iletileridir. Uygun olduğunda yalnızca yan etki içeren turlar da dâhil olmak üzere durum değişikliği başına bir kez iletilirler; ancak kalıcı geri dönüş turlarında yinelenmezler. İletim, normal kaynak yanıtı engellemesini atlar, iş parçacıklı kanallarda ilk yardımcı yanıtı yuvasını tüketmez ve metinden sese dönüştürme ile taahhüt çıkarımının dışında tutulur.
 
-## Auth depolama (anahtarlar + OAuth)
+## Kimlik doğrulama depolaması (anahtarlar + OAuth)
 
-OpenClaw hem API anahtarları hem OAuth token'ları için **auth profilleri** kullanır.
+OpenClaw hem API anahtarları hem de OAuth belirteçleri için **kimlik doğrulama profilleri** kullanır.
 
-- Gizli bilgiler ve runtime auth yönlendirme durumu `~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite` içinde yaşar.
-- `auth.profiles` / `auth.order` yapılandırması **yalnızca metadata + yönlendirme** içindir (gizli bilgi içermez).
-- Eski yalnızca içe aktarma OAuth dosyası: `~/.openclaw/credentials/oauth.json` (ilk kullanımda agent başına auth deposuna içe aktarılır).
-- Eski `auth-profiles.json`, `auth-state.json` ve agent başına `auth.json` dosyaları `openclaw doctor --fix` tarafından içe aktarılır.
+- Gizli bilgiler ve çalışma zamanı kimlik doğrulama yönlendirme durumu `~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite` içinde bulunur.
+- `auth.profiles` / `auth.order` yapılandırması **yalnızca meta veri + yönlendirme** içerir (gizli bilgi içermez).
+- Yalnızca eski içe aktarma için kullanılan OAuth dosyası: `~/.openclaw/credentials/oauth.json` (ilk kullanımda aracı başına kimlik doğrulama deposuna aktarılır).
+- Eski `auth-profiles.json`, `auth-state.json` ve aracı başına `auth.json` dosyaları `openclaw doctor --fix` tarafından içe aktarılır.
 
 Daha fazla ayrıntı: [OAuth](/tr/concepts/oauth)
 
 Kimlik bilgisi türleri:
 
 - `type: "api_key"` → `{ provider, key }`
-- `type: "oauth"` → `{ provider, access, refresh, expires, email? }` (bazı sağlayıcılar için ayrıca `projectId`/`enterpriseUrl`)
+- `type: "oauth"` → `{ provider, access, refresh, expires, email? }` (bazı sağlayıcılar için ek olarak `projectId`/`enterpriseUrl`)
+- `type: "token"` → isteğe bağlı olarak süresi dolabilen, statik taşıyıcı tarzı belirteç; OpenClaw bunu yenilemez (`aws-sdk` ve diğer kimlik bilgisi zinciri kimlik doğrulama kipleri için kullanılır)
 
-## Profil ID'leri
+## Profil kimlikleri
 
-OAuth girişleri, birden fazla hesabın birlikte var olabilmesi için ayrı profiller oluşturur.
+OAuth oturum açma işlemleri, birden fazla hesabın birlikte kullanılabilmesi için ayrı profiller oluşturur.
 
-- Varsayılan: e-posta yoksa `provider:default`.
-- E-postalı OAuth: `provider:<email>` (örneğin `google-antigravity:user@gmail.com`).
+- Varsayılan: E-posta mevcut olmadığında `provider:default`.
+- E-posta ile OAuth: `provider:<email>` (örneğin `google-antigravity:user@gmail.com`).
 
-Profiller, agent başına `openclaw-agent.sqlite` auth profil deposunda yaşar.
+Profiller, aracı başına `openclaw-agent.sqlite` kimlik doğrulama profili deposunda bulunur.
 
 ## Rotasyon sırası
 
@@ -149,35 +130,33 @@ Bir sağlayıcının birden fazla profili olduğunda OpenClaw şu şekilde bir s
     Sağlayıcıya göre filtrelenmiş `auth.profiles`.
   </Step>
   <Step title="Depolanan profiller">
-    Sağlayıcı için agent başına SQLite auth profil girdileri.
+    Sağlayıcı için aracı başına SQLite kimlik doğrulama profili girdileri.
   </Step>
 </Steps>
 
-Açık bir sıra yapılandırılmamışsa OpenClaw round-robin sıra kullanır:
+Açık bir sıra yapılandırılmamışsa OpenClaw dönüşümlü bir sıra kullanır:
 
-- **Birincil anahtar:** profil türü (**API anahtarlarından önce OAuth**).
+- **Birincil anahtar:** profil türü (**önce OAuth, ardından statik belirteç, sonra API anahtarı**).
 - **İkincil anahtar:** `usageStats.lastUsed` (her tür içinde en eski önce).
-- **Cooldown/devre dışı profiller**, en yakın bitiş zamanına göre sıralanarak sona taşınır.
+- **Bekleme süresindeki/devre dışı profiller**, en yakın süre sonu önce olacak şekilde sona taşınır.
 
-### Oturum yapışkanlığı (önbellek dostu)
+### Oturum kalıcılığı (önbellek dostu)
 
-OpenClaw, sağlayıcı önbelleklerini sıcak tutmak için **seçilen auth profilini oturum başına sabitler**. Her istekte rotasyon yapmaz. Sabitlenen profil şu ana kadar yeniden kullanılır:
+OpenClaw, sağlayıcı önbelleklerini sıcak tutmak için **seçilen kimlik doğrulama profilini oturum başına sabitler**. Her istekte rotasyon yapmaz. Sabitlenen profil şu durumlardan birine kadar yeniden kullanılır:
 
 - oturum sıfırlanır (`/new` / `/reset`)
-- bir compaction tamamlanır (compaction sayısı artar)
-- profil cooldown'dadır/devre dışıdır
+- bir Compaction tamamlanır (Compaction sayısı artar)
+- profil bekleme süresindedir/devre dışıdır
 
-`/model …@<profileId>` ile manuel seçim, o oturum için bir **kullanıcı override'ı** ayarlar ve yeni bir oturum başlayana kadar otomatik olarak döndürülmez.
+`/model …@<profileId>` aracılığıyla yapılan manuel seçim, ilgili oturum için bir **kullanıcı geçersiz kılması** ayarlar ve yeni bir oturum başlayana kadar otomatik olarak döndürülmez.
 
 <Note>
-Otomatik sabitlenen profiller (oturum yönlendiricisi tarafından seçilenler) bir **tercih** olarak ele alınır: önce onlar denenir, ancak OpenClaw hız limitlerinde/zaman aşımlarında başka bir profile dönebilir. Özgün profil tekrar kullanılabilir olduğunda, yeni çalıştırmalar seçilen modeli veya runtime'ı değiştirmeden onu yeniden tercih edebilir. Kullanıcı tarafından sabitlenen profiller o profilde kilitli kalır; başarısız olursa ve model fallback'leri yapılandırılmışsa OpenClaw profil değiştirmek yerine sonraki modele geçer.
+Otomatik sabitlenen profiller (oturum yönlendiricisi tarafından seçilenler) bir **tercih** olarak değerlendirilir: Önce bunlar denenir, ancak OpenClaw hız sınırları/zaman aşımlarında başka bir profile geçebilir. Asıl profil yeniden kullanılabilir olduğunda yeni çalışmalar, seçilen modeli veya çalışma zamanını değiştirmeden onu tekrar tercih edebilir. Kullanıcı tarafından sabitlenen profiller ilgili profile kilitli kalır; profil başarısız olur ve model geri dönüşleri yapılandırılmışsa OpenClaw profil değiştirmek yerine sonraki modele geçer.
 </Note>
 
 ### OpenAI Codex aboneliği ve API anahtarı yedeği
 
-OpenAI agent modelleri için auth ve runtime ayrıdır. `openai/gpt-*`,
-auth bir Codex abonelik profili ile bir OpenAI API anahtarı yedeği arasında
-dönebilirken Codex harness üzerinde kalır.
+OpenAI aracı modellerinde kimlik doğrulama ve çalışma zamanı ayrıdır. Kimlik doğrulama, Codex abonelik profili ile OpenAI API anahtarı yedeği arasında dönebilirken `openai/gpt-*` Codex koşumunda kalır.
 
 Kullanıcıya dönük sıra için `auth.order.openai` kullanın:
 
@@ -191,51 +170,45 @@ Kullanıcıya dönük sıra için `auth.order.openai` kullanın:
 }
 ```
 
-Hem ChatGPT/Codex OAuth profilleri hem OpenAI API anahtarı profilleri için
-`openai:*` kullanın. Abonelik bir Codex kullanım limitine ulaştığında,
-OpenClaw Codex bir zaman sağlıyorsa kesin sıfırlanma zamanını kaydeder, sıradaki
-auth profilini dener ve çalıştırmayı Codex harness içinde tutar. Sıfırlanma
-zamanı geçtikten sonra abonelik profili yeniden uygun olur ve sonraki otomatik
-seçim ona dönebilir.
+Hem ChatGPT/Codex OAuth profilleri hem de OpenAI API anahtarı profilleri için `openai:*` kullanın. Abonelik bir Codex kullanım sınırına ulaştığında OpenClaw, Codex tarafından sağlanmışsa kesin sıfırlanma zamanını kaydeder, sıradaki kimlik doğrulama profilini dener ve çalışmayı Codex koşumu içinde tutar. Sıfırlanma zamanı geçtikten sonra abonelik profili yeniden uygun hâle gelir ve sonraki otomatik seçim bu profile dönebilir.
 
-Yalnızca o oturum için tek bir hesabı/anahtarı zorlamak istediğinizde kullanıcı
-tarafından sabitlenmiş profil kullanın. Kullanıcı tarafından sabitlenmiş profiller
-kasıtlı olarak katıdır ve sessizce başka bir profile atlamaz.
+Yalnızca ilgili oturum için tek bir hesabı/anahtarı zorunlu kılmak istediğinizde kullanıcı tarafından sabitlenen bir profil kullanın. Kullanıcı tarafından sabitlenen profiller kasıtlı olarak katıdır ve sessizce başka bir profile geçmez.
 
-## Cooldown'lar
+## Bekleme süreleri
 
-Bir profil auth/hız limiti hataları (veya hız limiti gibi görünen bir zaman aşımı) nedeniyle başarısız olduğunda OpenClaw onu cooldown'a işaretler ve sonraki profile geçer.
+Bir profil kimlik doğrulama/hız sınırı hataları (veya hız sınırlamasına benzeyen bir zaman aşımı) nedeniyle başarısız olduğunda OpenClaw profili bekleme süresine alır ve sonraki profile geçer.
 
 <AccordionGroup>
-  <Accordion title="Hız limiti / zaman aşımı kovasına ne düşer">
-    Bu hız limiti kovası düz `429`'dan daha geniştir: `Too many concurrent requests`, `ThrottlingException`, `concurrency limit reached`, `workers_ai ... quota limit exceeded`, `throttled`, `resource exhausted` ve `weekly/monthly limit reached` gibi periyodik kullanım penceresi limitleri dahil sağlayıcı mesajlarını da içerir.
+  <Accordion title="Hız sınırı / zaman aşımı grubuna girenler">
+    Bu hız sınırı grubu düz `429` hatasından daha geniştir: `Too many concurrent requests`, `ThrottlingException`, `concurrency limit reached`, `workers_ai ... quota limit exceeded`, `throttled`, `resource exhausted` gibi sağlayıcı iletilerini ve `weekly limit reached` veya `monthly limit exhausted` gibi dönemsel kullanım penceresi sınırlarını da içerir.
 
-    Biçim/geçersiz istek hataları genellikle terminaldir; çünkü aynı payload'ı yeniden denemek aynı şekilde başarısız olur. Bu nedenle OpenClaw auth profillerini döndürmek yerine bunları gösterir. Bilinen yeniden deneme-onarım yolları açıkça dahil olabilir: örneğin Cloud Code Assist tool call ID doğrulama hataları sanitize edilir ve `allowFormatRetry` politikası üzerinden bir kez yeniden denenir. `Unhandled stop reason: error`, `stop reason: error` ve `reason: error` gibi OpenAI uyumlu stop-reason hataları zaman aşımı/failover sinyalleri olarak sınıflandırılır.
+    Biçim/geçersiz istek hataları genellikle sonlandırıcıdır; çünkü aynı yükü yeniden denemek aynı şekilde başarısız olur. Bu nedenle OpenClaw, kimlik doğrulama profillerini döndürmek yerine bu hataları gösterir. Bilinen yeniden deneme-onarım yolları açıkça etkinleştirilebilir: Örneğin Cloud Code Assist araç çağrısı kimliği doğrulama hataları temizlenir ve `allowFormatRetry` politikası aracılığıyla bir kez yeniden denenir. `Unhandled stop reason: error`, `stop reason: error` ve `reason: error` gibi OpenAI uyumlu durma nedeni hataları, zaman aşımı/yük devretme sinyalleri olarak sınıflandırılır.
 
-    Genel sunucu metni, kaynak bilinen bir geçici kalıpla eşleştiğinde bu zaman aşımı kovasına da düşebilir. Örneğin, yalın model runtime stream-wrapper mesajı `An unknown error occurred`, her sağlayıcı için failover'a uygun kabul edilir; çünkü paylaşılan model runtime, sağlayıcı akışları belirli ayrıntılar olmadan `stopReason: "aborted"` veya `stopReason: "error"` ile bittiğinde bunu yayar. `internal server error`, `unknown error, 520`, `upstream error` veya `backend error` gibi geçici sunucu metni içeren JSON `api_error` payload'ları da failover'a uygun zaman aşımları olarak ele alınır.
+    Kaynak bilinen geçici bir kalıpla eşleştiğinde genel sunucu metni de bu zaman aşımı grubuna girebilir. Örneğin yalın model çalışma zamanı akış sarmalayıcısı iletisi `An unknown error occurred`, paylaşılan model çalışma zamanı tarafından sağlayıcı akışları belirli ayrıntılar olmadan `stopReason: "aborted"` veya `stopReason: "error"` ile sona erdiğinde yayımlandığından her sağlayıcı için yük devretmeye uygun kabul edilir. `internal server error`, `unknown error, 520`, `upstream error` veya `backend error` gibi geçici sunucu metinleri içeren JSON `api_error` yükleri de yük devretmeye uygun zaman aşımları olarak değerlendirilir.
 
-    Yalın `Provider returned error` gibi OpenRouter'a özgü genel upstream metni, yalnızca sağlayıcı bağlamı gerçekten OpenRouter olduğunda zaman aşımı olarak ele alınır. `LLM request failed with an unknown error.` gibi genel dahili fallback metni temkinli kalır ve tek başına failover tetiklemez.
+    Yalın `Provider returned error` gibi OpenRouter'a özgü genel yukarı akış metni, yalnızca sağlayıcı bağlamı gerçekten OpenRouter olduğunda zaman aşımı olarak değerlendirilir. `LLM request failed with an unknown error.` gibi genel dâhilî geri dönüş metni ihtiyatlı biçimde ele alınır ve tek başına yük devretmeyi tetiklemez.
 
   </Accordion>
   <Accordion title="SDK retry-after üst sınırları">
-    Bazı sağlayıcı SDK'ları, denetimi OpenClaw'a geri vermeden önce uzun bir `Retry-After` penceresi boyunca bekleyebilir. Anthropic ve OpenAI gibi Stainless tabanlı SDK'lar için OpenClaw, SDK içi `retry-after-ms` / `retry-after` beklemelerini varsayılan olarak 60 saniyeyle sınırlar ve bu yük devri yolunun çalışabilmesi için daha uzun yeniden denenebilir yanıtları hemen yüzeye çıkarır. Üst sınırı `OPENCLAW_SDK_RETRY_MAX_WAIT_SECONDS` ile ayarlayın veya devre dışı bırakın; bkz. [Yeniden deneme davranışı](/tr/concepts/retry).
+    Bazı sağlayıcı SDK'ları, denetimi OpenClaw'a geri vermeden önce uzun bir `Retry-After` süresi boyunca bekleyebilir. Anthropic ve OpenAI gibi Stainless tabanlı SDK'larda OpenClaw, SDK içindeki `retry-after-ms` / `retry-after` beklemelerini varsayılan olarak 60 saniyeyle sınırlar ve bu yük devretme yolunun çalışabilmesi için daha uzun süre sonra yeniden denenebilir yanıtları hemen iletir. Üst sınırı `OPENCLAW_SDK_RETRY_MAX_WAIT_SECONDS` ile ayarlayın veya devre dışı bırakın; bkz. [Yeniden deneme davranışı](/tr/concepts/retry).
   </Accordion>
   <Accordion title="Model kapsamlı bekleme süreleri">
-    Hız sınırı bekleme süreleri model kapsamlı da olabilir:
+    Hız sınırı bekleme süreleri model kapsamında da olabilir:
 
-    - OpenClaw, başarısız olan model kimliği bilindiğinde hız sınırı hataları için `cooldownModel` kaydeder.
-    - Aynı sağlayıcıdaki kardeş bir model, bekleme süresi farklı bir modele kapsamlandıysa yine de denenebilir.
-    - Faturalandırma/devre dışı pencereleri, modeller genelinde tüm profili yine de engeller.
+    - OpenClaw, başarısız olan model kimliği bilindiğinde hız sınırı hataları için `cooldownModel` değerini kaydeder.
+    - Bekleme süresi farklı bir modelle sınırlıysa aynı sağlayıcıdaki kardeş bir model yine de denenebilir.
+    - Faturalandırma/devre dışı bırakma süreleri modeller genelinde profilin tamamını engellemeye devam eder.
 
   </Accordion>
 </AccordionGroup>
 
-Bekleme süreleri üstel geri çekilme kullanır:
+Normal (faturalandırma dışı, kalıcı kimlik doğrulama dışı) bekleme süreleri, profilin son hata sayısına göre artar:
 
-- 1 dakika
-- 5 dakika
-- 25 dakika
-- 1 saat (üst sınır)
+- 1. hata: 30 saniye
+- 2. hata: 1 dakika
+- 3. ve sonraki hatalar: 5 dakika (üst sınır)
+
+Profilin hata penceresi sona erdiğinde sayaçlar sıfırlanır (`auth.cooldowns.failureWindowHours`, varsayılan 24).
 
 Durum, ajan başına SQLite kimlik doğrulama durumunda `usageStats` altında saklanır:
 
@@ -251,15 +224,17 @@ Durum, ajan başına SQLite kimlik doğrulama durumunda `usageStats` altında sa
 }
 ```
 
-## Faturalandırma devre dışı bırakmaları
+## Faturalandırma nedeniyle devre dışı bırakma
 
-Faturalandırma/kredi hataları (örneğin "insufficient credits" / "credit balance too low") yük devrine değer kabul edilir, ancak genellikle geçici değildir. Kısa bir bekleme süresi yerine OpenClaw profili **devre dışı** olarak işaretler (daha uzun bir geri çekilmeyle) ve bir sonraki profile/sağlayıcıya geçer.
+Faturalandırma/kredi hataları (örneğin "yetersiz kredi" / "kredi bakiyesi çok düşük") yük devretmeyi gerektiren durumlar olarak değerlendirilir, ancak genellikle geçici değildir. OpenClaw, kısa bir bekleme süresi uygulamak yerine profili daha uzun bir geri çekilme süresiyle **devre dışı** olarak işaretler ve sonraki profile/sağlayıcıya geçer.
 
 <Note>
-Faturalandırma biçimindeki her yanıt `402` değildir ve her HTTP `402` buraya düşmez. Bir sağlayıcı bunun yerine `401` veya `403` döndürse bile OpenClaw açık faturalandırma metnini faturalandırma yolunda tutar, ancak sağlayıcıya özel eşleştiriciler onları sahiplenen sağlayıcıyla sınırlı kalır (örneğin OpenRouter `403 Key limit exceeded`).
+Faturalandırmayı çağrıştıran her yanıt `402` değildir ve her HTTP `402` yanıtı da buraya yönlendirilmez. Bir sağlayıcı bunun yerine `401` veya `403` döndürse bile OpenClaw, açık faturalandırma ifadelerini faturalandırma yolunda tutar; ancak sağlayıcıya özgü eşleştiriciler bunların sahibi olan sağlayıcıyla sınırlı kalır (örneğin OpenRouter `403 Key limit exceeded`).
 
-Bu sırada geçici `402` kullanım penceresi ve organizasyon/çalışma alanı harcama sınırı hataları, ileti yeniden denenebilir göründüğünde (örneğin `weekly usage limit exhausted`, `daily limit reached, resets tomorrow` veya `organization spending limit exceeded`) `rate_limit` olarak sınıflandırılır. Bunlar uzun faturalandırma devre dışı bırakma yolu yerine kısa bekleme/yük devri yolunda kalır.
+Bu arada geçici `402` kullanım penceresi ve kuruluş/çalışma alanı harcama sınırı hataları, ileti yeniden denenebilir görünüyorsa `rate_limit` olarak sınıflandırılır (örneğin `weekly usage limit exhausted`, `daily limit reached, resets tomorrow` veya `organization spending limit exceeded`). Bunlar, uzun faturalandırma nedeniyle devre dışı bırakma yolu yerine kısa bekleme/yük devretme yolunda kalır.
 </Note>
+
+Yüksek güvenilirlikli kalıcı kimlik doğrulama hataları (iptal edilmiş/devre dışı bırakılmış anahtarlar, devre dışı bırakılmış çalışma alanları) benzer bir devre dışı bırakma yoluna girer; ancak bazı sağlayıcılar olaylar sırasında geçici olarak kimlik doğrulama hatasına benzeyen yükler döndürdüğünden, faturalandırma hatalarına göre çok daha kısa sürede toparlanır.
 
 Durum, ajan başına SQLite kimlik doğrulama durumunda saklanır:
 
@@ -274,141 +249,150 @@ Durum, ajan başına SQLite kimlik doğrulama durumunda saklanır:
 }
 ```
 
-Varsayılanlar:
+Varsayılanlar (`auth.cooldowns.*`):
 
-- Faturalandırma geri çekilmesi **5 saatte** başlar, her faturalandırma hatasında ikiye katlanır ve **24 saatte** üst sınıra ulaşır.
-- Profil **24 saat** boyunca başarısız olmadıysa geri çekilme sayaçları sıfırlanır (yapılandırılabilir).
-- Aşırı yüklü yeniden denemeler, model geri dönüşünden önce **1 aynı sağlayıcı profil dönüşüne** izin verir.
-- Aşırı yüklü yeniden denemeler varsayılan olarak **0 ms geri çekilme** kullanır.
+| Anahtar                       | Varsayılan | Amaç                                                                                     |
+| ----------------------------- | ---------- | ---------------------------------------------------------------------------------------- |
+| `billingBackoffHours`         | 5          | Temel faturalandırma geri çekilme süresi; her faturalandırma hatasında iki katına çıkar   |
+| `billingMaxHours`             | 24         | Faturalandırma geri çekilme süresinin üst sınırı                                         |
+| `authPermanentBackoffMinutes` | 10         | Yüksek güvenilirlikli kalıcı kimlik doğrulama hataları için temel geri çekilme süresi     |
+| `authPermanentMaxMinutes`     | 60         | Bu geri çekilme süresinin üst sınırı                                                     |
+| `failureWindowHours`          | 24         | Bu pencere içinde hata oluşmazsa hata sayaçları sıfırlanır                               |
+| `overloadedProfileRotations`  | 1          | Aşırı yükte model yedeğine geçmeden önce izin verilen aynı sağlayıcı profil geçişleri     |
+| `overloadedBackoffMs`         | 0          | Aşırı yük nedeniyle profil geçişini yeniden denemeden önceki sabit gecikme                |
+| `rateLimitedProfileRotations` | 1          | Hız sınırında model yedeğine geçmeden önce izin verilen aynı sağlayıcı profil geçişleri   |
 
-## Model geri dönüşü
+Aşırı yük ve hız sınırı hataları, faturalandırma bekleme sürelerine göre daha agresif ele alınır: OpenClaw varsayılan olarak aynı sağlayıcıdaki kimlik doğrulama profiliyle bir kez yeniden denemeye izin verir, ardından beklemeden yapılandırılmış sonraki yedek modele geçer.
 
-Bir sağlayıcı için tüm profiller başarısız olursa OpenClaw, `agents.defaults.model.fallbacks` içindeki bir sonraki modele geçer. Bu, profil dönüşünü tüketen kimlik doğrulama hataları, hız sınırları ve zaman aşımı durumları için geçerlidir (diğer hatalar geri dönüşü ilerletmez). Yeterli ayrıntı sunmayan sağlayıcı hataları yine de geri dönüş durumunda kesin şekilde etiketlenir: `empty_response`, sağlayıcının kullanılabilir ileti veya durum döndürmediği anlamına gelir; `no_error_details`, sağlayıcının açıkça `Unknown error (no error details in response)` döndürdüğü anlamına gelir; `unclassified` ise OpenClaw'ın ham önizlemeyi koruduğu ancak henüz hiçbir sınıflandırıcının onunla eşleşmediği anlamına gelir.
+## Model yedeğine geçiş
 
-Aşırı yüklü ve hız sınırı hataları, faturalandırma bekleme sürelerinden daha agresif ele alınır. OpenClaw varsayılan olarak bir aynı sağlayıcı kimlik doğrulama profili yeniden denemesine izin verir, ardından beklemeden bir sonraki yapılandırılmış model geri dönüşüne geçer. `ModelNotReadyException` gibi sağlayıcı meşgul sinyalleri bu aşırı yüklü kovaya düşer. Bunu `auth.cooldowns.overloadedProfileRotations`, `auth.cooldowns.overloadedBackoffMs` ve `auth.cooldowns.rateLimitedProfileRotations` ile ayarlayın.
+Bir sağlayıcının tüm profilleri başarısız olursa OpenClaw, `agents.defaults.model.fallbacks` içindeki sonraki modele geçer. Bu davranış; kimlik doğrulama hataları, hız sınırları ve profil geçişlerini tüketen zaman aşımları için geçerlidir (diğer hatalar yedek modele ilerletmez). Yeterli ayrıntı sunmayan sağlayıcı hataları da yedek durumunda hassas biçimde etiketlenir: `empty_response`, sağlayıcının kullanılabilir bir ileti veya durum döndürmediği anlamına gelir; `no_error_details`, sağlayıcının açıkça `Unknown error (no error details in response)` döndürdüğü anlamına gelir; `unclassified` ise OpenClaw'ın ham önizlemeyi koruduğu ancak henüz hiçbir sınıflandırıcının eşleşmediği anlamına gelir.
 
-Bir çalıştırma yapılandırılmış varsayılan birincilden, bir cron işi birincilinden, açık geri dönüşleri olan bir ajan birincilinden veya otomatik seçilmiş bir geri dönüş geçersiz kılmasından başladığında OpenClaw, eşleşen yapılandırılmış geri dönüş zincirini izleyebilir. Açık geri dönüşleri olmayan ajan birincilleri ve açık kullanıcı seçimleri (örneğin `/model ollama/qwen3.5:27b`, model seçici, `sessions.patch` veya tek seferlik CLI sağlayıcı/model geçersiz kılmaları) katıdır: bu sağlayıcı/model erişilemezse veya yanıt üretmeden önce başarısız olursa OpenClaw, ilgisiz bir geri dönüşten yanıt vermek yerine hatayı bildirir.
+`ModelNotReadyException` gibi sağlayıcının meşgul olduğunu belirten sinyaller aşırı yük kategorisine girer ve hız sınırlarıyla aynı şekilde bir profil geçişi ardından yedeğe geçme ilkesini izler (yukarıdaki varsayılanlar tablosuna bakın).
+
+Bir çalıştırma; yapılandırılmış varsayılan birincil modelden, bir Cron işi birincil modelinden, açık yedekleri olan bir ajan birincil modelinden veya otomatik seçilmiş bir yedek geçersiz kılmasından başlatıldığında OpenClaw, eşleşen yapılandırılmış yedek zincirini izleyebilir. Açık yedekleri olmayan ajan birincil modelleri ve açık kullanıcı seçimleri (örneğin `/model ollama/qwen3.5:27b`, model seçici, `sessions.patch` veya tek seferlik CLI sağlayıcı/model geçersiz kılmaları) katıdır: söz konusu sağlayıcıya/modele erişilemiyorsa veya yanıt üretmeden önce başarısız olursa OpenClaw, ilgisiz bir yedekten yanıt vermek yerine hatayı bildirir.
 
 ### Aday zinciri kuralları
 
-OpenClaw, aday listesini şu anda istenen `provider/model` ve yapılandırılmış geri dönüşlerden oluşturur.
+OpenClaw, aday listesini o anda istenen `provider/model` ile yapılandırılmış yedeklerden oluşturur.
 
 <AccordionGroup>
   <Accordion title="Kurallar">
     - İstenen model her zaman ilk sıradadır.
-    - Açık yapılandırılmış geri dönüşler tekilleştirilir ancak model izin listesince filtrelenmez. Açık operatör niyeti olarak ele alınırlar.
-    - Geçerli çalıştırma aynı sağlayıcı ailesindeki yapılandırılmış bir geri dönüş üzerindeyse OpenClaw tam yapılandırılmış zinciri kullanmaya devam eder.
-    - Açık bir geri dönüş geçersiz kılması sağlanmadığında, istenen model farklı bir sağlayıcı kullansa bile yapılandırılmış geri dönüşler yapılandırılmış birincilden önce denenir.
-    - Geri dönüş çalıştırıcısına açık bir geri dönüş geçersiz kılması sağlanmadığında, yapılandırılmış birincil sona eklenir; böylece önceki adaylar tükendiğinde zincir normal varsayılana geri yerleşebilir.
-    - Bir çağıran `fallbacksOverride` sağladığında, çalıştırıcı tam olarak istenen modeli ve o geçersiz kılma listesini kullanır. Boş liste model geri dönüşünü devre dışı bırakır ve yapılandırılmış birincilin gizli bir yeniden deneme hedefi olarak eklenmesini önler.
+    - Açıkça yapılandırılmış yedeklerde yinelenenler kaldırılır ancak model izin listesine göre filtrelenmez. Bunlar, operatörün açık niyeti olarak değerlendirilir.
+    - Geçerli çalıştırma zaten aynı sağlayıcı ailesindeki yapılandırılmış bir yedekteyse OpenClaw, yapılandırılmış zincirin tamamını kullanmaya devam eder.
+    - Açık bir yedek geçersiz kılması sağlanmadığında, istenen model farklı bir sağlayıcı kullansa bile yapılandırılmış yedekler yapılandırılmış birincil modelden önce denenir.
+    - Yedek çalıştırıcıya açık bir yedek geçersiz kılması sağlanmadığında, önceki adaylar tükendikten sonra zincirin normal varsayılana dönebilmesi için yapılandırılmış birincil model sona eklenir.
+    - Çağıran taraf `fallbacksOverride` sağladığında çalıştırıcı yalnızca istenen modeli ve bu geçersiz kılma listesini kullanır. Boş bir liste model yedeğine geçişi devre dışı bırakır ve yapılandırılmış birincil modelin gizli bir yeniden deneme hedefi olarak eklenmesini önler.
 
   </Accordion>
 </AccordionGroup>
 
-### Hangi hatalar geri dönüşü ilerletir
+### Hangi hatalar yedeğe geçişi ilerletir?
 
 <Tabs>
-  <Tab title="Şunlarda devam eder">
+  <Tab title="Şu durumlarda devam eder">
     - kimlik doğrulama hataları
-    - hız sınırları ve bekleme süresi tükenmesi
-    - aşırı yüklü/sağlayıcı meşgul hataları
-    - zaman aşımı biçimli yük devri hataları
-    - faturalandırma devre dışı bırakmaları
-    - eski kalıcı modelin dış bir yeniden deneme döngüsü oluşturmaması için yük devri yoluna normalleştirilen `LiveSessionModelSwitchError`
-    - hâlâ kalan adaylar olduğunda diğer tanınmayan hatalar
+    - hız sınırları ve bekleme süresinin tükenmesi
+    - aşırı yük/sağlayıcı meşgul hataları
+    - zaman aşımı biçimindeki yük devretme hataları
+    - faturalandırma nedeniyle devre dışı bırakmalar
+    - kalıcı duruma kaydedilmiş eski bir modelin dış yeniden deneme döngüsü oluşturmaması için yük devretme yoluna normalleştirilen `LiveSessionModelSwitchError`
+    - hâlâ kalan adaylar varken diğer tanınmayan hatalar
 
   </Tab>
-  <Tab title="Şunlarda devam etmez">
-    - zaman aşımı/yük devri biçimli olmayan açık iptaller
-    - Compaction/yeniden deneme mantığının içinde kalması gereken bağlam taşması hataları (örneğin `request_too_large`, `INVALID_ARGUMENT: input exceeds the maximum number of tokens`, `input token count exceeds the maximum number of input tokens`, `The input is too long for the model` veya `ollama error: context length exceeded`)
-    - kalan aday olmadığında son bilinmeyen hata
-    - Claude Fable 5 güvenlik retleri; doğrudan API anahtarı istekleri bunları bunun yerine Anthropic'in `claude-opus-4-8`'e sunucu tarafı geri dönüşü aracılığıyla sağlayıcı düzeyinde ele alır (bkz. [Anthropic](/tr/providers/anthropic#safety-refusal-fallback-claude-fable-5))
+  <Tab title="Şu durumlarda devam etmez">
+    - zaman aşımı/yük devretme biçiminde olmayan açık iptaller
+    - Compaction/yeniden deneme mantığı içinde kalması gereken bağlam taşması hataları (örneğin `request_too_large`, `input token count exceeds the maximum number of input tokens`, `input exceeds the maximum number of tokens`, `input too long for the model` veya `ollama error: context length exceeded`)
+    - hiç aday kalmadığında oluşan son bilinmeyen hata
+    - Claude Fable 5 güvenlik retleri; doğrudan API anahtarı istekleri bunları bunun yerine Anthropic'in sunucu tarafında `claude-opus-4-8` modeline geçişi aracılığıyla sağlayıcı düzeyinde işler (bkz. [Anthropic](/tr/providers/anthropic#safety-refusal-fallback-claude-fable-5))
 
   </Tab>
 </Tabs>
 
-### Bekleme süresi atlama ve yoklama davranışı
+### Bekleme süresinde atlama ve yoklama davranışı
 
-Bir sağlayıcı için her kimlik doğrulama profili zaten bekleme süresindeyken OpenClaw o sağlayıcıyı otomatik olarak sonsuza dek atlamaz. Aday başına karar verir:
+Bir sağlayıcının tüm kimlik doğrulama profilleri zaten bekleme süresindeyken OpenClaw bu sağlayıcıyı otomatik olarak sonsuza dek atlamaz. Her aday için ayrı bir karar verir:
 
 <AccordionGroup>
   <Accordion title="Aday başına kararlar">
-    - Kalıcı kimlik doğrulama hataları tüm sağlayıcıyı hemen atlar.
-    - Faturalandırma devre dışı bırakmaları genellikle atlar, ancak birincil aday yeniden başlatmadan kurtarmayı mümkün kılmak için bir kısıtlama altında yine de yoklanabilir.
-    - Birincil aday, sağlayıcı başına kısıtlamayla bekleme süresi bitimine yakın yoklanabilir.
-    - Aynı sağlayıcı geri dönüş kardeşleri, hata geçici göründüğünde (`rate_limit`, `overloaded` veya bilinmeyen) bekleme süresine rağmen denenebilir. Bu, özellikle hız sınırı model kapsamlı olduğunda ve bir kardeş model hâlâ hemen toparlanabileceğinde önemlidir.
-    - Geçici bekleme süresi yoklamaları, tek bir sağlayıcının sağlayıcılar arası geri dönüşü durdurmaması için geri dönüş çalıştırması başına sağlayıcı başına birle sınırlıdır.
+    - Kalıcı kimlik doğrulama hataları sağlayıcının tamamının hemen atlanmasına neden olur.
+    - Faturalandırma nedeniyle devre dışı bırakmalar genellikle atlanır ancak yeniden başlatma gerektirmeden kurtarmayı mümkün kılmak için birincil aday belirli aralıklarla yine de yoklanabilir.
+    - Birincil aday, sağlayıcı başına sıklık sınırlamasıyla bekleme süresinin bitimine yakın yoklanabilir.
+    - Hata geçici görünüyorsa (`rate_limit`, `overloaded` veya bilinmeyen), aynı sağlayıcıdaki kardeş yedekler bekleme süresine rağmen denenebilir. Bu özellikle hız sınırı model kapsamında olduğunda ve kardeş bir modelin hemen toparlanabilmesi durumunda önemlidir.
+    - Tek bir sağlayıcının sağlayıcılar arası yedeğe geçişi geciktirmemesi için geçici bekleme süresi yoklamaları, her yedek çalıştırmasında sağlayıcı başına bir kezle sınırlıdır.
 
   </Accordion>
 </AccordionGroup>
 
 ## Oturum geçersiz kılmaları ve canlı model değiştirme
 
-Oturum model değişiklikleri paylaşılan durumdur. Etkin çalıştırıcı, `/model` komutu, Compaction/oturum güncellemeleri ve canlı oturum uzlaştırması aynı oturum girdisinin parçalarını okur veya yazar.
+Oturum modeli değişiklikleri paylaşılan durumdur. Etkin çalıştırıcı, `/model` komutu, Compaction/oturum güncellemeleri ve canlı oturum uzlaştırması aynı oturum girdisinin farklı bölümlerini okur veya yazar.
 
-Bu, geri dönüş yeniden denemelerinin canlı model değiştirmeyle koordine olması gerektiği anlamına gelir:
+Bu nedenle yedek yeniden denemelerinin canlı model değiştirmeyle koordineli çalışması gerekir:
 
-- Yalnızca açık kullanıcı güdümlü model değişiklikleri bekleyen bir canlı değiştirmeyi işaretler. Buna `/model`, `session_status(model=...)` ve `sessions.patch` dahildir.
-- Geri dönüş dönüşü, Heartbeat geçersiz kılmaları veya Compaction gibi sistem güdümlü model değişiklikleri kendi başlarına bekleyen canlı değiştirmeyi asla işaretlemez.
-- Kullanıcı güdümlü model geçersiz kılmaları, geri dönüş politikası için kesin seçimler olarak ele alınır; bu nedenle erişilemeyen seçilmiş bir sağlayıcı, `agents.defaults.model.fallbacks` tarafından maskelenmek yerine hata olarak yüzeye çıkar.
-- Bir geri dönüş yeniden denemesi başlamadan önce yanıt çalıştırıcısı, seçilen geri dönüş geçersiz kılma alanlarını oturum girdisine kalıcı olarak yazar.
-- Otomatik geri dönüş geçersiz kılmaları sonraki turlarda seçili kalır; böylece OpenClaw bilinen kötü birincili her iletide yoklamaz. OpenClaw yapılandırılmış kaynağı periyodik olarak yeniden yoklar ve toparlandığında otomatik geçersiz kılmayı temizler; `/new`, `/reset` ve `sessions.reset` otomatik kaynaklı geçersiz kılmaları hemen temizler.
-- Kullanıcı yanıtları, geri dönüş geçişlerini ve geri dönüş temizlenmiş toparlanmayı durum değişikliği başına bir kez duyurur. Yapışkan geri dönüş turları bildirimi yinelemez.
-- `/status` seçilen modeli ve geri dönüş durumu farklı olduğunda etkin geri dönüş modelini ve nedeni gösterir.
-- Canlı oturum uzlaştırması, eski runtime model alanları yerine kalıcı oturum geçersiz kılmalarını tercih eder.
-- Bir canlı değiştirme hatası etkin geri dönüş zincirindeki daha sonraki bir adayı işaret ediyorsa OpenClaw önce ilgisiz adaylar arasında yürümek yerine doğrudan o seçili modele atlar.
-- Geri dönüş denemesi başarısız olursa çalıştırıcı yalnızca yazdığı geçersiz kılma alanlarını ve yalnızca hâlâ o başarısız adayla eşleşiyorlarsa geri alır.
+- Yalnızca kullanıcı tarafından açıkça gerçekleştirilen model değişiklikleri, bekleyen bir canlı geçişi işaretler. Buna `/model`, `session_status(model=...)` ve `sessions.patch` dahildir.
+- Yedek geçişi, Heartbeat geçersiz kılmaları veya Compaction gibi sistem kaynaklı model değişiklikleri kendi başlarına bekleyen bir canlı geçişi işaretlemez.
+- Kullanıcı kaynaklı model geçersiz kılmaları, yedek ilkesi açısından kesin seçimler olarak değerlendirilir; bu nedenle erişilemeyen seçili bir sağlayıcı, `agents.defaults.model.fallbacks` tarafından gizlenmek yerine hata olarak gösterilir.
+- Yedek yeniden denemesi başlamadan önce yanıt çalıştırıcısı, seçilen yedek geçersiz kılma alanlarını oturum girdisine kalıcı olarak yazar.
+- Otomatik yedek geçersiz kılmaları sonraki turlarda seçili kalır; böylece OpenClaw her iletide hatalı olduğu bilinen birincil modeli yoklamaz. OpenClaw, yapılandırılmış kaynağı düzenli olarak yeniden yoklar ve kaynak toparlandığında otomatik geçersiz kılmayı temizler; `/new`, `/reset` ve `sessions.reset`, otomatik kaynaklı geçersiz kılmaları hemen temizler.
+- Kullanıcı yanıtları, her durum değişikliğinde yedeğe geçişleri ve yedeğin kaldırılmasıyla gerçekleşen toparlanmayı bir kez bildirir. Kalıcı yedek turları bildirimi tekrarlamaz.
+- `/status`, seçilen modeli; yedek durumu farklı olduğunda ise etkin yedek modeli ve nedenini gösterir.
+- Canlı oturum uzlaştırması, eski çalışma zamanı model alanları yerine kalıcı oturum geçersiz kılmalarını tercih eder.
+- Bir canlı geçiş hatası etkin yedek zincirindeki sonraki bir adayı işaret ediyorsa OpenClaw, önce ilgisiz adayları dolaşmak yerine doğrudan seçilen modele atlar.
+- Yedek denemesi başarısız olursa çalıştırıcı yalnızca kendisinin yazdığı geçersiz kılma alanlarını ve yalnızca hâlâ başarısız adayla eşleşiyorlarsa geri alır.
 
-Bu klasik yarışı önler:
+Bu, klasik yarış durumunu önler:
 
 <Steps>
-  <Step title="Birincil başarısız olur">
+  <Step title="Birincil model başarısız olur">
     Seçilen birincil model başarısız olur.
   </Step>
-  <Step title="Geri dönüş bellekte seçilir">
-    Geri dönüş adayı bellekte seçilir.
+  <Step title="Yedek bellekte seçilir">
+    Yedek aday bellekte seçilir.
   </Step>
-  <Step title="Oturum deposu hâlâ eski birincili söyler">
-    Oturum deposu hâlâ eski birincili yansıtır.
+  <Step title="Oturum deposu hâlâ eski birincil modeli gösterir">
+    Oturum deposu hâlâ eski birincil modeli yansıtır.
   </Step>
   <Step title="Canlı uzlaştırma eski durumu okur">
     Canlı oturum uzlaştırması eski oturum durumunu okur.
   </Step>
-  <Step title="Yeniden deneme geri çekilir">
-    Yeniden deneme, geri dönüş denemesi başlamadan önce eski modele geri çekilir.
+  <Step title="Yeniden deneme eski modele döner">
+    Yedek denemesi başlamadan önce yeniden deneme eski modele geri döndürülür.
   </Step>
 </Steps>
 
-Kalıcı geri dönüş geçersiz kılması bu pencereyi kapatır ve dar geri alma, daha yeni manuel veya runtime oturum değişikliklerini olduğu gibi tutar.
+Kalıcı olarak yazılan yedek geçersiz kılması bu pencereyi kapatır; dar kapsamlı geri alma ise daha yeni manuel veya çalışma zamanı oturum değişikliklerini korur.
 
 ## Gözlemlenebilirlik ve hata özetleri
 
-`runWithModelFallback(...)`, günlükleri ve kullanıcıya dönük bekleme süresi mesajlaşmasını besleyen deneme başına ayrıntıları kaydeder:
+`runWithModelFallback(...)`, günlükleri ve kullanıcıya gösterilen bekleme süresi iletilerini besleyen deneme başına ayrıntıları kaydeder:
 
 - denenen sağlayıcı/model
-- neden (`rate_limit`, `overloaded`, `billing`, `auth`, `model_not_found` ve benzer yük devri nedenleri)
+- neden (`rate_limit`, `overloaded`, `billing`, `auth`, `model_not_found` ve benzer yük devretme nedenleri)
 - isteğe bağlı durum/kod
 - insan tarafından okunabilir hata özeti
 
-Yapılandırılmış `model_fallback_decision` günlükleri, bir aday başarısız olduğunda, atlandığında veya daha sonraki bir geri dönüş başarılı olduğunda düz `fallbackStep*` alanlarını da içerir. Bu alanlar denenen geçişi açık hale getirir (`fallbackStepFromModel`, `fallbackStepToModel`, `fallbackStepFromFailureReason`, `fallbackStepFromFailureDetail`, `fallbackStepFinalOutcome`); böylece günlük ve tanılama dışa aktarıcıları, son geri dönüş de başarısız olsa bile birincil hatayı yeniden oluşturabilir.
+Yapılandırılmış `model_fallback_decision` günlükleri ayrıca bir aday başarısız olduğunda, atlandığında veya sonraki bir yük devretme başarılı olduğunda düz `fallbackStep*` alanlarını içerir. Bu alanlar, denenen geçişi açıkça belirtir (`fallbackStepFromModel`, `fallbackStepToModel`, `fallbackStepFromFailureReason`, `fallbackStepFromFailureDetail`, `fallbackStepFinalOutcome); böylece günlük ve tanılama dışa aktarıcıları, son yük devretme de başarısız olsa bile birincil hatayı yeniden oluşturabilir.
 
-Her aday başarısız olduğunda OpenClaw `FallbackSummaryError` fırlatır. Dış yanıt çalıştırıcısı bunu, "tüm modeller geçici olarak hız sınırında" gibi daha belirli bir ileti oluşturmak ve biliniyorsa en yakın bekleme süresi bitimini eklemek için kullanabilir.
+Tüm adaylar başarısız olduğunda OpenClaw, `FallbackSummaryError` hatasını oluşturur. Dış yanıt çalıştırıcısı bunu kullanarak "tüm modeller geçici olarak hız sınırına tabi" gibi daha özel bir mesaj oluşturabilir ve biliniyorsa en yakın bekleme süresi bitişini ekleyebilir.
 
-Bu bekleme süresi özeti model farkındadır:
+Bu bekleme süresi özeti modeli dikkate alır:
 
-- ilgisiz model kapsamlı hız sınırları, denenen sağlayıcı/model zinciri için yok sayılır
-- kalan engel eşleşen model kapsamlı bir hız sınırıysa OpenClaw, o modeli hâlâ engelleyen son eşleşen bitiş zamanını bildirir
+- denenen sağlayıcı/model zinciriyle ilgisi olmayan model kapsamlı hız sınırları yok sayılır
+- kalan engel, eşleşen model kapsamlı bir hız sınırıysa OpenClaw, söz konusu modeli hâlâ engelleyen son eşleşen bitiş zamanını bildirir
 
 ## İlgili yapılandırma
 
-Şunun için bkz. [Gateway yapılandırması](/tr/gateway/configuration):
+Şunlar için [Gateway yapılandırması](/gateway/configuration) bölümüne bakın:
 
 - `auth.profiles` / `auth.order`
 - `auth.cooldowns.billingBackoffHours` / `auth.cooldowns.billingBackoffHoursByProvider`
 - `auth.cooldowns.billingMaxHours` / `auth.cooldowns.failureWindowHours`
+- `auth.cooldowns.authPermanentBackoffMinutes` / `auth.cooldowns.authPermanentMaxMinutes`
 - `auth.cooldowns.overloadedProfileRotations` / `auth.cooldowns.overloadedBackoffMs`
 - `auth.cooldowns.rateLimitedProfileRotations`
 - `agents.defaults.model.primary` / `agents.defaults.model.fallbacks`
 - `agents.defaults.imageModel` yönlendirmesi
 
-Daha kapsamlı model seçimi ve yedek davranışı özeti için [Modeller](/tr/concepts/models) bölümüne bakın.
+Daha kapsamlı model seçimi ve yük devretme genel bakışı için [Modeller](/tr/concepts/models) bölümüne bakın.

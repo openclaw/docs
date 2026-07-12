@@ -1,45 +1,40 @@
 ---
 read_when:
-    - بناء أدوات المضيف التي لا يمكنها استخدام عميل RPC عبر WebSocket الخاص بـ Gateway
-    - كشف أتمتة إدارة Gateway خلف مدخل خاص موثوق
+    - إنشاء أدوات للمضيف لا يمكنها استخدام عميل RPC عبر WebSocket الخاص بـ Gateway
+    - إتاحة أتمتة إدارة Gateway خلف نقطة دخول خاصة وموثوقة
     - تدقيق نموذج الأمان للوصول عبر HTTP إلى أساليب Gateway
-summary: إتاحة طرق محددة من مستوى تحكم Gateway عبر Plugin admin-http-rpc المضمّن والاختياري
-title: Plugin RPC عبر HTTP للإدارة
+summary: إتاحة أساليب مختارة من مستوى تحكم Gateway عبر Plugin ‏admin-http-rpc المضمّن والاختياري تفعيله
+title: Plugin لاستدعاء الإجراءات البعيدة الإدارية عبر HTTP
 x-i18n:
-    generated_at: "2026-06-27T18:00:11Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:11:50Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f701ef6be7457cd518ecb80b7ec5dade61bb057d62f4ca90984a4c1aa8fdf700
+    source_hash: 0709081efd0ce65cef7edac54df9a71978cbad17e2b25df83ac9075de938376c
     source_path: plugins/admin-http-rpc.md
     workflow: 16
 ---
 
-يعرض Plugin المضمّن `admin-http-rpc` طرقًا مختارة من مستوى تحكم Gateway عبر HTTP لأتمتة المضيفات الموثوقة التي لا يمكنها استخدام عميل Gateway WebSocket RPC العادي.
+تعرض إضافة `admin-http-rpc` المضمّنة مجموعة مسموحًا بها من أساليب مستوى تحكم Gateway عبر HTTP، لأتمتة المضيف الموثوقة التي لا يمكنها إبقاء اتصال Gateway عبر WebSocket مفتوحًا.
 
-يأتي هذا Plugin مضمنًا مع OpenClaw، لكنه معطّل افتراضيًا. عند تعطيله، لا يُسجَّل المسار. عند تفعيله، يضيف:
+تأتي هذه الإضافة مع OpenClaw، لكنها معطّلة افتراضيًا؛ وعندما تكون معطّلة، لا يُسجَّل المسار. وعند تمكينها، تضيف `POST /api/v1/admin/rpc` إلى المستمع نفسه الخاص بـ Gateway (`http://<gateway-host>:<port>/api/v1/admin/rpc`).
 
-- `POST /api/v1/admin/rpc`
-- نفس المستمع مثل Gateway: `http://<gateway-host>:<port>/api/v1/admin/rpc`
+مكّنها فقط لأدوات المضيف الخاصة، أو أتمتة الشبكة الطرفية، أو نقطة دخول داخلية موثوقة. لا تكشف هذا المسار مباشرةً للإنترنت العام مطلقًا.
 
-فعّله فقط لأدوات المضيف الخاصة، أو أتمتة شبكة tailnet، أو مدخل داخلي موثوق. لا تعرض هذا المسار مباشرةً للإنترنت العام.
+## قبل تمكينها
 
-## قبل تفعيله
-
-Admin HTTP RPC هو سطح كامل لمستوى تحكم المشغّل. يمكن لأي مستدعٍ يجتاز مصادقة Gateway عبر HTTP استدعاء الطرق المدرجة في قائمة السماح في هذه الصفحة.
-
-استخدمه عندما تكون كل الشروط التالية صحيحة:
+يُعد Admin HTTP RPC سطحًا كاملًا لمستوى تحكم المشغّل: يمكن لأي مستدعٍ يجتاز مصادقة HTTP الخاصة بـ Gateway استدعاء الأساليب المسموح بها أدناه. مكّنه فقط عند تحقق جميع الشروط التالية:
 
 - المستدعي موثوق لتشغيل Gateway.
-- المستدعي لا يمكنه استخدام عميل WebSocket RPC.
-- المسار قابل للوصول فقط عبر loopback، أو شبكة tailnet، أو مدخل خاص موثّق.
-- راجعت الطرق المسموح بها وهي تطابق الأتمتة التي تخطط لتشغيلها.
+- لا يستطيع المستدعي استخدام عميل RPC عبر WebSocket.
+- لا يمكن الوصول إلى المسار إلا عبر local loopback، أو شبكة طرفية، أو نقطة دخول خاصة خاضعة للمصادقة.
+- راجعت الأساليب المسموح بها، وهي تطابق الأتمتة التي تخطط لتشغيلها.
 
-استخدم مسار WebSocket RPC لعملاء OpenClaw والأدوات التفاعلية التي يمكنها إبقاء اتصال Gateway WebSocket مفتوحًا.
+بالنسبة إلى عملاء OpenClaw والأدوات التفاعلية التي يمكنها إبقاء اتصال Gateway عبر WebSocket مفتوحًا، استخدم RPC عبر WebSocket بدلًا من ذلك.
 
-## التفعيل
+## التمكين
 
-فعّل Plugin المضمّن:
+مكّن Plugin المضمّنة:
 
 <Tabs>
   <Tab title="CLI">
@@ -48,7 +43,7 @@ Admin HTTP RPC هو سطح كامل لمستوى تحكم المشغّل. يمك
     openclaw gateway restart
     ```
   </Tab>
-  <Tab title="التكوين">
+  <Tab title="الإعداد">
     ```json5
     {
       plugins: {
@@ -61,9 +56,9 @@ Admin HTTP RPC هو سطح كامل لمستوى تحكم المشغّل. يمك
   </Tab>
 </Tabs>
 
-يُسجَّل المسار أثناء بدء تشغيل Plugin. أعد تشغيل Gateway بعد تغيير تكوين Plugin.
+يُسجَّل المسار أثناء بدء تشغيل Plugin، لذا أعد تشغيل Gateway بعد تغيير إعداد Plugin.
 
-عطّله عندما لا تعود بحاجة إلى سطح HTTP:
+عطّلها عندما لا تعود بحاجة إلى سطح HTTP:
 
 ```bash
 openclaw plugins disable admin-http-rpc
@@ -72,7 +67,7 @@ openclaw gateway restart
 
 ## التحقق من المسار
 
-استخدم `health` كأصغر طلب آمن:
+استخدم `health` بوصفه أصغر طلب آمن:
 
 ```bash
 curl -sS http://<gateway-host>:<port>/api/v1/admin/rpc \
@@ -81,7 +76,7 @@ curl -sS http://<gateway-host>:<port>/api/v1/admin/rpc \
   -d '{"method":"health","params":{}}'
 ```
 
-تحتوي الاستجابة الناجحة على `ok: true`:
+تتضمن الاستجابة الناجحة `ok: true`:
 
 ```json
 {
@@ -93,33 +88,30 @@ curl -sS http://<gateway-host>:<port>/api/v1/admin/rpc \
 }
 ```
 
-عند تعطيل Plugin، يعيد المسار `404` لأنه غير مسجّل.
+عندما تكون Plugin معطّلة، يعيد المسار `404` لأنه غير مسجّل.
 
 ## المصادقة
 
-يستخدم مسار Plugin مصادقة Gateway عبر HTTP.
+يستخدم مسار Plugin مصادقة HTTP الخاصة بـ Gateway.
 
 مسارات المصادقة الشائعة:
 
-- مصادقة السر المشترك (`gateway.auth.mode="token"` أو `"password"`): `Authorization: Bearer <token-or-password>`
-- مصادقة HTTP موثوقة حاملة للهوية (`gateway.auth.mode="trusted-proxy"`): مرّر المسار عبر الوكيل المكوّن والواعي بالهوية ودعه يحقن ترويسات الهوية المطلوبة
-- مصادقة مفتوحة عبر مدخل خاص (`gateway.auth.mode="none"`): لا يلزم ترويسة مصادقة
+- مصادقة السر المشترك (`gateway.auth.mode="token"` أو `"password"`):‏ `Authorization: Bearer <token-or-password>`
+- مصادقة HTTP الموثوقة الحاملة للهوية (`gateway.auth.mode="trusted-proxy"`): مرّر الطلب عبر الوكيل المُعدّ والمدرك للهوية، ودعه يحقن ترويسات الهوية المطلوبة
+- المصادقة المفتوحة عبر نقطة دخول خاصة (`gateway.auth.mode="none"`): لا يلزم ترويسة مصادقة
 
 ## نموذج الأمان
 
-تعامل مع هذا Plugin كسطح كامل لمشغّل Gateway.
+تعامل مع هذه Plugin بوصفها سطحًا كاملًا لمشغّل Gateway.
 
-- يتيح تفعيل Plugin عمدًا الوصول إلى طرق admin RPC المدرجة في قائمة السماح عند `/api/v1/admin/rpc`.
-- يعلن Plugin عقد البيان المحجوز `contracts.gatewayMethodDispatch: ["authenticated-request"]` حتى يتمكن مسار HTTP المصادق عليه من Gateway من إرسال طرق مستوى التحكم داخل العملية.
-- تثبت مصادقة الحامل بالسر المشترك امتلاك سر مشغّل gateway.
-- بالنسبة إلى مصادقة `token` و`password`، تُتجاهل ترويسات `x-openclaw-scopes` الأضيق وتُستعاد الإعدادات الافتراضية الكاملة العادية للمشغّل.
-- تحترم أوضاع HTTP الموثوقة الحاملة للهوية `x-openclaw-scopes` عند وجودها.
-- يعني `gateway.auth.mode="none"` أن هذا المسار غير موثّق إذا كان Plugin مفعّلًا. استخدم ذلك فقط خلف مدخل خاص تثق به بالكامل.
-- تُرسَل الطلبات عبر معالجات طرق Gateway نفسها وفحوصات النطاق نفسها مثل WebSocket RPC بعد اجتياز مصادقة مسار Plugin.
-- أبقِ هذا المسار على loopback، أو شبكة tailnet، أو مدخل خاص موثوق. لا تعرضه مباشرةً للإنترنت العام.
-- عقود بيان Plugin ليست صندوقًا رمليًا. فهي تمنع الاستخدام العرضي لمساعدات SDK المحجوزة؛ ولا تزال Plugins الموثوقة تعمل داخل عملية Gateway.
-
-استخدم بوابات منفصلة عندما يعبر المستدعون حدود الثقة.
+- يتيح تمكين Plugin عمدًا الوصول إلى أساليب RPC الإدارية المسموح بها عند `/api/v1/admin/rpc`.
+- تعلن Plugin عقد البيان المحجوز `contracts.gatewayMethodDispatch: ["authenticated-request"]`، وهو ما يتيح لمسار HTTP الخاضع لمصادقة Gateway إرسال أساليب مستوى التحكم داخل العملية. هذه ليست بيئة معزولة: يمنع العقد الاستخدام العرضي لأدوات SDK المساعدة المحجوزة، لكن الإضافات الموثوقة تظل تعمل داخل عملية Gateway.
+- تثبت مصادقة حامل السر المشترك (وضعا `token` و`password`) حيازة سر مشغّل Gateway؛ وتُتجاهل ترويسات `x-openclaw-scopes` الأضيق في هذا المسار، وتُستعاد الإعدادات الافتراضية الكاملة المعتادة للمشغّل.
+- تحترم مصادقة HTTP الموثوقة الحاملة للهوية (وضع `trusted-proxy`) ترويسة `x-openclaw-scopes` عند وجودها.
+- يعني `gateway.auth.mode="none"` أن هذا المسار لا يخضع للمصادقة إذا كانت Plugin ممكّنة. استخدم ذلك فقط خلف نقطة دخول خاصة تثق بها ثقة كاملة.
+- تُرسل الطلبات عبر معالجات أساليب Gateway وفحوص النطاق نفسها المستخدمة في RPC عبر WebSocket، بعد اجتياز مصادقة مسار Plugin.
+- يظل المسار قابلًا للوصول أثناء مدة تعليق مُحضّرة. ويظل التحقق المحدود من الطلب واستجابة الاكتشاف المحلية `commands.list` متاحين. ومن بين الأساليب المُرسلة إلى Gateway، لا يجوز أثناء إغلاق القبول تشغيل سوى `gateway.suspend.prepare` و`gateway.suspend.status` و`gateway.suspend.resume`؛ أما الأساليب الأخرى المسموح بها فتعيد استجابة Gateway العادية القابلة لإعادة المحاولة `UNAVAILABLE`.
+- أبقِ هذا المسار على local loopback، أو شبكة طرفية، أو نقطة دخول خاصة موثوقة. لا تكشفه مباشرةً للإنترنت العام. استخدم بوابات منفصلة عندما يعبر المستدعون حدود الثقة.
 
 ## الطلب
 
@@ -139,15 +131,15 @@ Content-Type: application/json
 
 الحقول:
 
-- `id` (سلسلة، اختياري): يُنسخ إلى الاستجابة. يُنشأ UUID عند حذفه.
-- `method` (سلسلة، مطلوب): اسم طريقة Gateway المسموح بها.
-- `params` (أي نوع، اختياري): معاملات خاصة بالطريقة.
+- `id` (سلسلة نصية، اختياري): يُنسخ إلى الاستجابة. يُنشأ UUID عند حذفه.
+- `method` (سلسلة نصية، مطلوب): اسم أسلوب Gateway المسموح به.
+- `params` (أي نوع، اختياري): معاملات خاصة بالأسلوب.
 
-الحجم الأقصى الافتراضي لجسم الطلب هو 1 MB.
+الحجم الأقصى الافتراضي لمتن الطلب هو 1 ميغابايت.
 
 ## الاستجابة
 
-تستخدم استجابات النجاح شكل Gateway RPC:
+تستخدم الاستجابات الناجحة بنية RPC الخاصة بـ Gateway:
 
 ```json
 {
@@ -157,7 +149,7 @@ Content-Type: application/json
 }
 ```
 
-تستخدم أخطاء طرق Gateway:
+تستخدم أخطاء أساليب Gateway البنية التالية:
 
 ```json
 {
@@ -170,55 +162,72 @@ Content-Type: application/json
 }
 ```
 
-تتبع حالة HTTP خطأ Gateway عندما يكون ذلك ممكنًا. على سبيل المثال، يعيد `INVALID_REQUEST` الحالة `400`، ويعيد `UNAVAILABLE` الحالة `503`.
+تتبع حالة HTTP رمز الخطأ:
 
-## الطرق المسموح بها
+| رمز الخطأ                  | حالة HTTP |
+| -------------------------- | --------- |
+| `INVALID_REQUEST`          | 400       |
+| `APPROVAL_NOT_FOUND`       | 404       |
+| `NOT_LINKED`, `NOT_PAIRED` | 409       |
+| `UNAVAILABLE`              | 503       |
+| `AGENT_TIMEOUT`            | 504       |
+| أي رمز آخر                 | 500       |
+
+## الأساليب المسموح بها
 
 - الاكتشاف: `commands.list`
-  يعيد أسماء طرق HTTP RPC المسموح بها بواسطة هذا Plugin.
-- البوابة: `health`, `status`, `logs.tail`, `usage.status`, `usage.cost`, `gateway.restart.request`
-- التكوين: `config.get`, `config.schema`, `config.schema.lookup`, `config.set`, `config.patch`, `config.apply`
-- القنوات: `channels.status`, `channels.start`, `channels.stop`, `channels.logout`
-- الويب: `web.login.start`, `web.login.wait`
-- النماذج: `models.list`, `models.authStatus`
-- الوكلاء: `agents.list`, `agents.create`, `agents.update`, `agents.delete`
-- الموافقات: `exec.approvals.get`, `exec.approvals.set`, `exec.approvals.node.get`, `exec.approvals.node.set`
-- Cron: `cron.status`, `cron.list`, `cron.get`, `cron.runs`, `cron.add`, `cron.update`, `cron.remove`, `cron.run`
-- الأجهزة: `device.pair.list`, `device.pair.approve`, `device.pair.reject`, `device.pair.remove`
-- العقد: `node.list`, `node.describe`, `node.pair.list`, `node.pair.approve`, `node.pair.reject`, `node.pair.remove`, `node.rename`
-- المهام: `tasks.list`, `tasks.get`, `tasks.cancel`
-- التشخيصات: `doctor.memory.status`, `update.status`
+  يعيد أسماء أساليب HTTP RPC التي تسمح بها هذه Plugin.
+- Gateway:‏ `health`، و`status`، و`logs.tail`، و`usage.status`، و`usage.cost`، و`gateway.restart.request`، و`gateway.suspend.prepare`، و`gateway.suspend.status`، و`gateway.suspend.resume`
+- الإعداد: `config.get`، و`config.schema`، و`config.schema.lookup`، و`config.set`، و`config.patch`، و`config.apply`
+- القنوات: `channels.status`، و`channels.start`، و`channels.stop`، و`channels.logout`
+- الويب: `web.login.start`، و`web.login.wait`
+- النماذج: `models.list`، و`models.authStatus`
+- الوكلاء: `agents.list`، و`agents.create`، و`agents.update`، و`agents.delete`
+- الموافقات: `exec.approvals.get`، و`exec.approvals.set`، و`exec.approvals.node.get`، و`exec.approvals.node.set`
+- Cron:‏ `cron.status`، و`cron.list`، و`cron.get`، و`cron.runs`، و`cron.add`، و`cron.update`، و`cron.remove`، و`cron.run`
+- الأجهزة: `device.pair.list`، و`device.pair.approve`، و`device.pair.reject`، و`device.pair.remove`
+- العُقد: `node.list`، و`node.describe`، و`node.pair.list`، و`node.pair.approve`، و`node.pair.reject`، و`node.pair.remove`، و`node.rename`
+- المهام: `tasks.list`، و`tasks.get`، و`tasks.cancel`
+- التشخيصات: `doctor.memory.status`، و`update.status`
 
-تُحظر طرق Gateway الأخرى إلى أن تُضاف عمدًا.
+تُحظر أساليب Gateway الأخرى إلى أن تُضاف عمدًا.
 
-## مقارنة WebSocket
+## المقارنة مع WebSocket
 
-يبقى مسار Gateway WebSocket RPC العادي واجهة API المفضلة لمستوى التحكم لعملاء OpenClaw. استخدم Admin HTTP RPC فقط لأدوات المضيف التي تحتاج إلى سطح HTTP بنمط طلب/استجابة.
+يظل مسار RPC المعتاد لـ Gateway عبر WebSocket هو واجهة برمجة التطبيقات المفضلة لمستوى التحكم لدى عملاء OpenClaw. استخدم Admin HTTP RPC فقط لأدوات المضيف التي تحتاج إلى سطح طلب/استجابة عبر HTTP.
 
-لا يمكن لعملاء WebSocket ذوي الرمز المشترك من دون هوية جهاز موثوقة إعلان نطاقات المسؤول ذاتيًا أثناء الاتصال. يتبع Admin HTTP RPC عمدًا نموذج مشغّل HTTP الموثوق الحالي: عند تفعيل Plugin، تُعامل مصادقة الحامل بالسر المشترك كصلاحية وصول كاملة للمشغّل لهذا السطح الإداري.
+لا يمكن لعملاء WebSocket ذوي الرمز المشترك الذين لا يملكون هوية جهاز موثوقة التصريح ذاتيًا بنطاقات الإدارة أثناء الاتصال. يتبع Admin HTTP RPC عمدًا نموذج مشغّل HTTP الموثوق الحالي: عندما تكون Plugin ممكّنة، تُعامل مصادقة حامل السر المشترك على أنها وصول كامل للمشغّل إلى هذا السطح الإداري.
 
 ## استكشاف الأخطاء وإصلاحها
 
 `404 Not Found`
 
-: Plugin معطّل، أو لم يُعد تشغيل Gateway منذ تفعيله، أو أن الطلب يُرسل إلى عملية Gateway مختلفة.
+: Plugin معطّلة، أو لم يُعد تشغيل Gateway منذ تمكينها، أو يُرسل الطلب إلى عملية Gateway مختلفة.
 
 `401 Unauthorized`
 
-: لم يستوفِ الطلب مصادقة Gateway عبر HTTP. تحقق من رمز الحامل أو ترويسات هوية trusted-proxy.
+: لم يستوفِ الطلب مصادقة HTTP الخاصة بـ Gateway. تحقق من رمز الحامل أو ترويسات هوية الوكيل الموثوق.
+
+`405 Method Not Allowed`
+
+: استخدم الطلب شيئًا غير `POST`.
+
+`413 Payload Too Large`
+
+: تجاوز متن الطلب حد 1 ميغابايت.
 
 `400 INVALID_REQUEST`
 
-: جسم الطلب ليس JSON صالحًا، أو حقل `method` مفقود، أو الطريقة غير موجودة في قائمة السماح الخاصة بـ Plugin.
+: متن الطلب ليس JSON صالحًا، أو حقل `method` مفقود، أو الأسلوب غير موجود في قائمة Plugin المسموح بها، أو معرّف استئناف التعليق لا يطابق المدة النشطة.
 
 `503 UNAVAILABLE`
 
-: معالج طريقة Gateway غير متاح. تحقق من سجلات Gateway وأعد المحاولة بعد انتهاء Gateway من بدء التشغيل.
+: أسلوب Gateway قيد البدء، أو خاضع لتحديد المعدّل، أو معلّق، أو ينتظر عملية تعليق/استئناف متنافسة. افحص `error.details` عند وجوده، والتزم بـ `error.retryAfterMs` قبل إعادة المحاولة.
 
-## ذات صلة
+## ذو صلة
 
 - [نطاقات المشغّل](/ar/gateway/operator-scopes)
 - [أمان Gateway](/ar/gateway/security)
 - [الوصول عن بُعد](/ar/gateway/remote)
-- [بيان Plugin](/ar/plugins/manifest#contracts)
+- [بيان Plugin](/ar/plugins/manifest#contracts-reference)
 - [المسارات الفرعية لـ SDK](/ar/plugins/sdk-subpaths)

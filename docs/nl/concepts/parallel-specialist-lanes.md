@@ -1,63 +1,65 @@
 ---
 read_when:
-    - Je routeert groepschats naar toegewezen agents
-    - Je wilt parallel werk zonder dat één lange taak elke chat blokkeert
-    - Je ontwerpt een operationele multi-agentopzet
+    - Je routeert groepschats naar speciale agents
+    - Je wilt parallel werken zonder dat één langdurige taak elke chat blokkeert
+    - U ontwerpt een operationele opzet met meerdere agents
 sidebarTitle: Specialist lanes
 status: active
-summary: Voer parallelle gespecialiseerde agents uit zonder gedeelde model- en toolcapaciteit te blokkeren
-title: Parallelle specialistische sporen
+summary: Voer gespecialiseerde agents parallel uit zonder gedeelde model- en toolcapaciteit te overbelasten
+title: Parallelle specialistische trajecten
 x-i18n:
-    generated_at: "2026-05-10T19:33:13Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:46:53Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8721056fbe08822ac92d4bc14c8c2b0977e93eaa58c2849f83b3c0f310992f93
+    source_hash: 09852b6cf5a790e98fb5e0805b0df57b2f3719b1387ecfacfb4973bb6841abb4
     source_path: concepts/parallel-specialist-lanes.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 Parallelle specialistische lanes laten één Gateway verschillende chats of ruimtes naar
-verschillende agents routeren, terwijl de gebruikerservaring snel blijft. De kunst is om
-parallelisme te behandelen als een ontwerpprobleem rond schaarse resources, niet alleen als "meer agents".
+verschillende agents routeren, terwijl de gebruikerservaring snel blijft. Beschouw parallellisme als
+een ontwerpprobleem rond schaarse middelen, niet alleen als "meer agents".
 
 ## Basisprincipes
 
-Een specialistische lane verbetert de doorvoer alleen wanneer die de concurrentie om de
-echte knelpunten vermindert:
+Een specialistische lane verbetert de doorvoer alleen wanneer deze de concurrentie om de
+werkelijke knelpunten vermindert:
 
-- **Sessievergrendelingen**: slechts één run mag een bepaalde sessie tegelijk wijzigen.
-- **Globale modelcapaciteit**: alle zichtbare chatruns delen nog steeds providerlimieten.
-- **Toolcapaciteit**: shell-, browser-, netwerk- en repositorywerk kan trager zijn
+- **Sessievergrendelingen**: slechts één uitvoering mag een bepaalde sessie tegelijk wijzigen.
+- **Globale modelcapaciteit**: alle zichtbare chatuitvoeringen delen nog steeds de limieten van de provider.
+- **Toolcapaciteit**: werk met de shell, browser, het netwerk en repository's kan trager zijn
   dan de modelbeurt zelf.
 - **Contextbudget**: lange transcripties maken elke toekomstige beurt trager en minder
   gericht.
-- **Onduidelijkheid over eigenaarschap**: dubbele agents die hetzelfde werk doen verspillen capaciteit.
+- **Onduidelijk eigenaarschap**: dubbele agents die hetzelfde werk doen, verspillen capaciteit.
 
-OpenClaw serialiseert runs al per sessie en begrenst globale paralleliteit via
-de [opdrachtwachtrij](/nl/concepts/queue). Specialistische lanes voegen daar beleid bovenop toe:
-welke agent eigenaar is van welk werk, wat in chat blijft, en wat achtergrondwerk wordt.
+OpenClaw voert uitvoeringen per sessie al serieel uit en begrenst globale parallelliteit
+via de [opdrachtwachtrij](/nl/concepts/queue). Specialistische lanes voegen daar beleid aan
+toe: welke agent welk werk beheert, wat in de chat blijft en wat
+achtergrondwerk wordt.
 
 ## Aanbevolen uitrol
 
 ### Fase 1: lane-contracten + zwaar achtergrondwerk
 
-Geef elke lane een geschreven contract in de workspace en systeemprompt:
+Geef elke lane een schriftelijk contract in de werkruimte en systeemprompt:
 
-- **Doel**: het werk waarvan deze lane eigenaar is.
-- **Niet-doelen**: werk dat deze lane moet overdragen in plaats van proberen uit te voeren.
-- **Chatbudget**: snelle antwoorden blijven in chat; lange taken moeten kort worden bevestigd
-  en daarna in een achtergrond-sub-agent of taak worden uitgevoerd.
-- **Overdrachtsregel**: wanneer een andere lane eigenaar is van het werk, zeg waar het heen moet en
+- **Doel**: het werk waarvoor deze lane verantwoordelijk is.
+- **Niet-doelen**: werk dat de lane moet overdragen in plaats van zelf uit te voeren.
+- **Chatbudget**: snelle antwoorden blijven in de chat; bij langdurige taken volgt een korte bevestiging,
+  waarna ze worden uitgevoerd in een sub-agent of taak op de achtergrond.
+- **Overdrachtsregel**: wanneer een andere lane verantwoordelijk is voor het werk, vermeld dan waar het naartoe moet en
   geef een compacte overdrachtssamenvatting.
-- **Toolrisicoregel**: geef de voorkeur aan het kleinste tool-oppervlak dat de taak kan uitvoeren.
+- **Toolrisicoregel**: geef de voorkeur aan het kleinste tooloppervlak waarmee de taak kan worden uitgevoerd.
 
-Dit is de goedkoopste fase en lost de meeste verstopping op: één codeertaak verandert de
-onderzoekslane niet langer in stroop, en elke chat houdt zijn eigen context schoon.
+Dit is de goedkoopste fase en verhelpt de meeste verstoppingen: één codeertaak verandert
+de onderzoekslane niet langer in stroop en elke chat houdt zijn eigen context
+schoon.
 
 ### Fase 2: prioriteits- en gelijktijdigheidsregelingen
 
-Stem wachtrij- en modelcapaciteit af op de bedrijfswaarde van elke lane:
+Stem de capaciteit van de wachtrij en het model af op de bedrijfswaarde van elke lane:
 
 ```json5
 {
@@ -78,57 +80,57 @@ Stem wachtrij- en modelcapaciteit af op de bedrijfswaarde van elke lane:
 }
 ```
 
-Gebruik directe/persoonlijke chats en agents voor productiebeheer voor werk met hoge prioriteit. Laat
-onderzoek, conceptschrijven en batchgewijs coderen naar achtergrondtaken verplaatsen wanneer het systeem
+Gebruik directe/persoonlijke chats en agents voor productieactiviteiten voor werk met hoge prioriteit. Laat
+onderzoek, conceptwerk en codeerwerk in batches naar achtergrondtaken verplaatsen wanneer het systeem
 druk is.
 
 ### Fase 3: coördinator / verkeersregelaar
 
 Voeg een klein coördinatorpatroon toe zodra meerdere lanes actief zijn:
 
-- Houd actieve lane-taken en eigenaars bij.
+- Houd actieve lanetaken en verantwoordelijken bij.
 - Detecteer dubbele verzoeken tussen groepen.
 - Routeer overdrachtssamenvattingen tussen lanes.
 - Toon alleen blokkades, voltooide resultaten en beslissingen die de mens moet nemen.
 
-Begin hier niet. Een coördinator zonder lane-contracten coördineert alleen chaos.
+Begin hier niet mee. Een coördinator zonder lane-contracten coördineert alleen chaos.
 
-## Minimale template voor lane-contract
+## Minimale sjabloon voor een lane-contract
 
 ```md
-# Lane contract
+# Lane-contract
 
-## Owns
+## Verantwoordelijk voor
 
-- <job this lane is responsible for>
+- <taak waarvoor deze lane verantwoordelijk is>
 
-## Does not own
+## Niet verantwoordelijk voor
 
-- <work to hand off>
+- <werk om over te dragen>
 
-## Chat budget
+## Chatbudget
 
-- Answer quick questions directly.
-- For multi-step, slow, or tool-heavy work: acknowledge briefly, spawn/background
-  the work, then return the result when complete.
+- Beantwoord snelle vragen direct.
+- Voor werk met meerdere stappen, dat traag is of veel tools gebruikt: bevestig het kort, start/voer
+  het werk op de achtergrond uit en geef vervolgens het resultaat terug wanneer het voltooid is.
 
-## Handoff
+## Overdracht
 
-If another lane owns the request, reply with:
+Als een andere lane verantwoordelijk is voor het verzoek, antwoord dan met:
 
-- target lane
-- objective
-- relevant context
-- exact next action
+- doellane
+- doelstelling
+- relevante context
+- exacte volgende actie
 
-## Tool posture
+## Toolbeleid
 
-Use the smallest tool surface that can complete the task. Avoid broad shell or
-network work unless this lane explicitly owns it.
+Gebruik het kleinste tooloppervlak waarmee de taak kan worden voltooid. Vermijd uitgebreid shell- of
+netwerkwerk, tenzij deze lane daar expliciet verantwoordelijk voor is.
 ```
 
 ## Gerelateerd
 
-- [Routering voor meerdere agents](/nl/concepts/multi-agent)
+- [Routering met meerdere agents](/nl/concepts/multi-agent)
 - [Opdrachtwachtrij](/nl/concepts/queue)
 - [Sub-agents](/nl/tools/subagents)

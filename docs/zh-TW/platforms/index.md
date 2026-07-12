@@ -5,8 +5,8 @@ read_when:
 summary: 平台支援概覽（閘道 + 配套應用程式）
 title: 平台
 x-i18n:
-    generated_at: "2026-07-05T11:26:22Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T21:30:50Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 6c91bf7fd41bf5433b9f1efb768a44dcf5fa55917cfc45f463688d00f23e725d
@@ -14,16 +14,14 @@ x-i18n:
     workflow: 16
 ---
 
-OpenClaw 核心以 TypeScript 撰寫。**節點是建議的執行階段**。
-不建議將 Bun 用於閘道 — WhatsApp 和 Telegram 頻道有已知問題；
+OpenClaw 核心以 TypeScript 撰寫。**建議使用節點執行環境**。
+不建議將 Bun 用於閘道——WhatsApp 和 Telegram 頻道存在已知問題；
 詳情請參閱 [Bun（實驗性）](/zh-TW/install/bun)。
 
-Windows Hub、macOS（選單列應用程式）和行動節點
-（iOS/Android）都有配套應用程式。Linux 配套應用程式已在規劃中，但閘道目前已完全
-支援。在 Windows 上，若要使用桌面應用程式，請選擇 Windows Hub；若偏好終端機優先使用，
-請選擇原生 PowerShell 安裝；若需要最相容 Linux 的閘道執行階段，請選擇 WSL2。
+Windows Hub、macOS（選單列應用程式）與行動節點（iOS/Android）均有配套應用程式。
+Linux 配套應用程式仍在規劃中，但閘道目前已獲完整支援。在 Windows 上，若要使用桌面應用程式，請選擇 Windows Hub；若偏好以終端機操作，請選擇原生 PowerShell 安裝；若需要與 Linux 相容性最高的閘道執行環境，請選擇 WSL2。
 
-## 選擇你的作業系統
+## 選擇您的作業系統
 
 - macOS：[macOS](/zh-TW/platforms/macos)
 - iOS：[iOS](/zh-TW/platforms/ios)
@@ -38,7 +36,7 @@ Windows Hub、macOS（選單列應用程式）和行動節點
 - Hetzner（Docker）：[Hetzner](/zh-TW/install/hetzner)
 - GCP（Compute Engine）：[GCP](/zh-TW/install/gcp)
 - Azure（Linux VM）：[Azure](/zh-TW/install/azure)
-- exe.dev（VM + HTTPS proxy）：[exe.dev](/zh-TW/install/exe-dev)
+- exe.dev（VM + HTTPS Proxy）：[exe.dev](/zh-TW/install/exe-dev)
 - EasyRunner（Podman + Caddy）：[EasyRunner](/zh-TW/platforms/easyrunner)
 
 ## 常用連結
@@ -49,22 +47,22 @@ Windows Hub、macOS（選單列應用程式）和行動節點
 - 閘道設定：[設定](/zh-TW/gateway/configuration)
 - 服務狀態：`openclaw gateway status`
 
-## 閘道服務安裝（命令列介面）
+## 安裝閘道服務（命令列介面）
 
-使用以下任一方式（皆受支援）：
+請使用下列任一方式（皆受支援）：
 
 - 精靈（建議）：`openclaw onboard --install-daemon`
 - 直接安裝：`openclaw gateway install`
-- 設定流程：`openclaw configure` → 選取 **閘道服務**
-- 修復/遷移：`openclaw doctor`（會提供安裝或修復服務的選項）
+- 設定流程：`openclaw configure` → 選取 **Gateway service**
+- 修復／遷移：`openclaw doctor`（會提供安裝或修復服務的選項）
 
 服務目標取決於作業系統：
 
-- macOS：LaunchAgent（`ai.openclaw.gateway`，或命名設定檔使用 `ai.openclaw.<profile>`）
+- macOS：LaunchAgent（`ai.openclaw.gateway`；具名設定檔則為 `ai.openclaw.<profile>`）
 - Linux/WSL2：systemd 使用者服務（`openclaw-gateway[-<profile>].service`）
-- 原生 Windows：排程工作（`OpenClaw Gateway` 或 `OpenClaw Gateway (<profile>)`），若工作建立遭拒，則退回使用每位使用者的 Startup 資料夾登入項目
+- 原生 Windows：排程工作（`OpenClaw Gateway` 或 `OpenClaw Gateway (<profile>)`）；若建立工作遭拒，則改用每位使用者「啟動」資料夾中的登入項目
 
-## 相關
+## 相關內容
 
 - [安裝概覽](/zh-TW/install)
 - [Windows Hub](/zh-TW/platforms/windows)

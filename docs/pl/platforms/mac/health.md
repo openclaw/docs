@@ -1,47 +1,56 @@
 ---
 read_when:
-    - Debugowanie wskaźników health aplikacji Mac.
-summary: Jak aplikacja macOS raportuje stany health gateway/Baileys
-title: Health checks (macOS)
+    - Debugowanie wskaźników kondycji aplikacji na Maca
+summary: Jak aplikacja na macOS zgłasza stany kondycji Gateway i kanałów
+title: Kontrole kondycji (macOS)
 x-i18n:
-    generated_at: "2026-04-24T09:20:58Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: a7488b39b0eec013083f52e2798d719bec35780acad743a97f5646a6891810e5
-    source_path: platforms/mac/health.md
-    workflow: 15
+    generated_at: "2026-07-12T15:20:15Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: a086c527796dbe453bdee1cc9cbe1e0fc1157de710c8c6de186411fe9aa3bc7b
+    source_path: platforms/mac/health.md
+    workflow: 16
 ---
 
-# Health Checks na macOS
+# Kontrole stanu na macOS
 
-Jak sprawdzić w aplikacji paska menu, czy powiązany kanał jest zdrowy.
+Jak odczytywać stan kondycji połączonego kanału w aplikacji na pasku menu.
 
 ## Pasek menu
 
-- Kropka statusu odzwierciedla teraz health Baileys:
-  - Zielona: połączony + socket został niedawno otwarty.
-  - Pomarańczowa: trwa łączenie/ponawianie.
-  - Czerwona: wylogowano albo probe zakończył się błędem.
-- Druga linia pokazuje „linked · auth 12m” albo wyświetla powód błędu.
-- Pozycja menu „Run Health Check” uruchamia probe na żądanie.
+Kropka stanu:
+
+- Zielona: połączono + sonda działa prawidłowo.
+- Pomarańczowa: połączono, ale sonda kanału zgłasza obniżoną sprawność/brak połączenia.
+- Czerwona: jeszcze nie połączono.
+
+W drugim wierszu widnieje „połączono · uwierzytelnienie 12 min” albo powód błędu.
+Opcja „Uruchom kontrolę stanu teraz” w menu uruchamia sondę na żądanie.
 
 ## Ustawienia
 
-- Karta General zyskuje kartę Health pokazującą: wiek powiązanego auth, ścieżkę/liczbę wpisów magazynu sesji, czas ostatniej kontroli, ostatni błąd/kod statusu oraz przyciski Run Health Check / Reveal Logs.
-- Używa cache'owanego snapshotu, więc UI ładuje się natychmiast i działa z łagodnym fallbackiem offline.
-- **Karta Channels** pokazuje status kanałów + kontrolki dla WhatsApp/Telegram (QR logowania, wylogowanie, probe, ostatnie rozłączenie/błąd).
+- Karta Ogólne zawiera panel kondycji: kropkę stanu, wiersz podsumowania (stan połączenia +
+  czas od uwierzytelnienia) oraz opcjonalny wiersz ze szczegółami błędu, a także przyciski **Spróbuj ponownie teraz** i
+  **Otwórz dzienniki**.
+- **Karta Kanały** przedstawia stan i elementy sterujące poszczególnych kanałów (kod QR
+  logowania, wylogowanie, sonda, ostatnie rozłączenie/błąd) dla WhatsApp i Telegram.
 
-## Jak działa probe
+## Jak działa sonda
 
-- Aplikacja uruchamia `openclaw health --json` przez `ShellExecutor` co około 60 s i na żądanie. Probe ładuje poświadczenia i raportuje status bez wysyłania wiadomości.
-- Cache'uj osobno ostatni dobry snapshot i ostatni błąd, aby uniknąć migotania; pokazuj znacznik czasu każdego z nich.
+Aplikacja wywołuje RPC `health` Gateway przez istniejące połączenie WebSocket
+(a nie przez uruchomienie polecenia CLI w powłoce) co około 60 s i na żądanie. RPC wczytuje
+dane uwierzytelniające i zgłasza stan bez wysyłania wiadomości. Aplikacja osobno buforuje ostatnią
+prawidłową migawkę i ostatni błąd, dzięki czemu interfejs użytkownika wczytuje się natychmiast i
+nie migocze w trybie offline.
 
-## Gdy masz wątpliwości
+## W razie wątpliwości
 
-- Nadal możesz używać przepływu CLI opisanego w [health Gateway](/pl/gateway/health) (`openclaw status`, `openclaw status --deep`, `openclaw health --json`) i śledzić `/tmp/openclaw/openclaw-*.log` pod kątem `web-heartbeat` / `web-reconnect`.
+Użyj procedury CLI opisanej w sekcji [Kondycja Gateway](/pl/gateway/health) (`openclaw status`,
+`openclaw status --deep`, `openclaw health --json`) i śledź
+`/tmp/openclaw/openclaw-*.log`, filtrując wpisy `web-heartbeat` / `web-reconnect`.
 
 ## Powiązane
 
-- [Health Gateway](/pl/gateway/health)
-- [Aplikacja macOS](/pl/platforms/macos)
+- [Kondycja Gateway](/pl/gateway/health)
+- [Aplikacja na macOS](/pl/platforms/macos)

@@ -1,33 +1,33 @@
 ---
 read_when:
-    - Je wilt Fireworks gebruiken met OpenClaw
-    - Je hebt de env-var voor de Fireworks-API-sleutel of de standaardmodel-id nodig
-    - Je debugt Kimi-gedrag met denken uitgeschakeld op Fireworks
-summary: Fireworks-installatie (authenticatie + modelselectie)
+    - U wilt Fireworks gebruiken met OpenClaw
+    - Je hebt de omgevingsvariabele voor de Fireworks-API-sleutel of de standaardmodel-ID nodig
+    - Je debugt het gedrag van Kimi met uitgeschakelde denkmodus op Fireworks
+summary: Fireworks-configuratie (authenticatie + modelselectie)
 title: Vuurwerk
 x-i18n:
-    generated_at: "2026-06-27T18:11:56Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:18:30Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7413ec9ea192921ce9b9ec51da5b0b9ff1030feeef192afbefc938ed200e192e
+    source_hash: 15feed0730ec65d943f103824468490be6616478ece80bedfeb9ad8137506180
     source_path: providers/fireworks.md
     workflow: 16
 ---
 
-[Fireworks](https://fireworks.ai) biedt open-weight en gerouteerde modellen aan via een OpenAI-compatibele API. Installeer de officiële Fireworks-providerplugin om twee vooraf gecatalogiseerde Kimi-modellen en elke Fireworks-model- of router-id tijdens runtime te gebruiken.
+[Fireworks](https://fireworks.ai) biedt open-weight- en gerouteerde modellen aan via een OpenAI-compatibele API. Installeer de officiële Fireworks-providerplugin om tijdens runtime twee vooraf gecatalogiseerde Kimi-modellen en elk Fireworks-model of elke router-id te gebruiken.
 
-| Eigenschap      | Waarde                                                 |
-| --------------- | ------------------------------------------------------ |
-| Provider-id     | `fireworks` (alias: `fireworks-ai`)                    |
-| Pakket          | `@openclaw/fireworks-provider`                         |
-| Auth-env-var    | `FIREWORKS_API_KEY`                                    |
-| Onboarding-flag | `--auth-choice fireworks-api-key`                      |
-| Directe CLI-flag | `--fireworks-api-key <key>`                           |
-| API             | OpenAI-compatibel (`openai-completions`)               |
-| Basis-URL       | `https://api.fireworks.ai/inference/v1`                |
-| Standaardmodel  | `fireworks/accounts/fireworks/routers/kimi-k2p5-turbo` |
-| Standaardalias  | `Kimi K2.5 Turbo`                                      |
+| Eigenschap              | Waarde                                                 |
+| ----------------------- | ------------------------------------------------------ |
+| Provider-id             | `fireworks` (alias: `fireworks-ai`)                    |
+| Pakket                  | `@openclaw/fireworks-provider`                         |
+| Omgevingsvariabele voor authenticatie | `FIREWORKS_API_KEY`                       |
+| Onboardingvlag          | `--auth-choice fireworks-api-key`                      |
+| Rechtstreekse CLI-vlag  | `--fireworks-api-key <key>`                            |
+| API                     | OpenAI-compatibel (`openai-completions`)               |
+| Basis-URL               | `https://api.fireworks.ai/inference/v1`                |
+| Standaardmodel          | `fireworks/accounts/fireworks/routers/kimi-k2p5-turbo` |
+| Standaardalias          | `Kimi K2.5 Turbo`                                      |
 
 ## Aan de slag
 
@@ -37,7 +37,7 @@ x-i18n:
     openclaw plugins install @openclaw/fireworks-provider
     ```
   </Step>
-  <Step title="Stel de Fireworks API-sleutel in">
+  <Step title="Stel de Fireworks-API-sleutel in">
     <CodeGroup>
 
 ```bash Onboarding
@@ -56,7 +56,7 @@ export FIREWORKS_API_KEY=fw-...
 
     </CodeGroup>
 
-    Onboarding slaat de sleutel op voor de `fireworks`-provider in je auth-profielen en stelt de **Fire Pass** Kimi K2.5 Turbo-router in als standaardmodel.
+    Tijdens de onboarding wordt de sleutel voor de provider `fireworks` in uw authenticatieprofielen opgeslagen en wordt de **Fire Pass** Kimi K2.5 Turbo-router als standaardmodel ingesteld.
 
   </Step>
   <Step title="Controleer of het model beschikbaar is">
@@ -64,14 +64,14 @@ export FIREWORKS_API_KEY=fw-...
     openclaw models list --provider fireworks
     ```
 
-    De lijst moet `Kimi K2.6` en `Kimi K2.5 Turbo (Fire Pass)` bevatten. Als `FIREWORKS_API_KEY` niet kan worden opgelost, rapporteert `openclaw models status --json` de ontbrekende referentie onder `auth.unusableProfiles`.
+    De lijst moet `Kimi K2.6` en `Kimi K2.5 Turbo (Fire Pass)` bevatten. Als `FIREWORKS_API_KEY` niet kan worden opgelost, meldt `openclaw models status --json` de ontbrekende referentie onder `auth.unusableProfiles`.
 
   </Step>
 </Steps>
 
-## Niet-interactieve setup
+## Niet-interactieve configuratie
 
-Geef voor scripted of CI-installaties alles op de opdrachtregel door:
+Geef voor installaties via scripts of CI alles mee op de opdrachtregel:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -84,18 +84,18 @@ openclaw onboard --non-interactive \
 
 ## Ingebouwde catalogus
 
-| Model-ref                                              | Naam                        | Invoer       | Context | Max. uitvoer | Thinking             |
-| ------------------------------------------------------ | --------------------------- | ------------ | ------- | ------------ | -------------------- |
-| `fireworks/accounts/fireworks/models/kimi-k2p6`        | Kimi K2.6                   | tekst + afbeelding | 262,144 | 262,144      | Gedwongen uit        |
-| `fireworks/accounts/fireworks/routers/kimi-k2p5-turbo` | Kimi K2.5 Turbo (Fire Pass) | tekst + afbeelding | 256,000 | 256,000      | Gedwongen uit (standaard) |
+| Modelreferentie                                        | Naam                        | Invoer            | Context | Maximale uitvoer | Denkmodus                    |
+| ------------------------------------------------------ | --------------------------- | ----------------- | ------- | ---------------- | ---------------------------- |
+| `fireworks/accounts/fireworks/models/kimi-k2p6`        | Kimi K2.6                   | tekst + afbeelding | 262,144 | 262,144          | Verplicht uit                 |
+| `fireworks/accounts/fireworks/routers/kimi-k2p5-turbo` | Kimi K2.5 Turbo (Fire Pass) | tekst + afbeelding | 256,000 | 256,000          | Verplicht uit (standaard)     |
 
 <Note>
-  OpenClaw zet alle Fireworks Kimi-modellen vast op `thinking: off`, omdat Fireworks Kimi-thinkingparameters in productie weigert. Hetzelfde model rechtstreeks via [Moonshot](/nl/providers/moonshot) routeren behoudt Kimi-redeneeruitvoer. Zie [thinking-modi](/nl/tools/thinking) om tussen providers te wisselen.
+  OpenClaw zet alle Fireworks Kimi-modellen vast op `thinking: off`, omdat Kimi op Fireworks de redeneerketen in het zichtbare antwoord kan laten uitlekken, tenzij het verzoek de denkmodus expliciet uitschakelt. Als hetzelfde model rechtstreeks via [Moonshot](/nl/providers/moonshot) wordt gerouteerd, blijft de redeneeruitvoer van Kimi behouden. Zie [denkmodi](/nl/tools/thinking) voor het wisselen tussen providers.
 </Note>
 
 ## Aangepaste Fireworks-model-id's
 
-OpenClaw accepteert elke Fireworks-model- of router-id tijdens runtime. Gebruik de exacte id die Fireworks toont en voeg er het voorvoegsel `fireworks/` aan toe. Dynamische resolutie kloont de Fire Pass-template (tekst + afbeeldingsinvoer, OpenAI-compatibele API, standaardkosten nul) en schakelt thinking automatisch uit wanneer de id overeenkomt met het Kimi-patroon. Dynamische GLM-id's worden gemarkeerd als alleen tekst, tenzij je een aangepaste modelvermelding met afbeeldingsinvoer configureert.
+OpenClaw accepteert tijdens runtime elke Fireworks-model- of router-id. Gebruik de exacte id die Fireworks toont en zet er `fireworks/` voor. Dynamische omzetting kloont de Fire Pass-sjabloon (tekst- en afbeeldingsinvoer, OpenAI-compatibele API, standaardkosten nul) en schakelt de denkmodus automatisch uit wanneer de id overeenkomt met het Kimi-patroon. Dynamische GLM-id's worden gemarkeerd als uitsluitend geschikt voor tekst, tenzij u een aangepaste modelvermelding met afbeeldingsinvoer configureert.
 
 ```json5
 {
@@ -110,31 +110,31 @@ OpenClaw accepteert elke Fireworks-model- of router-id tijdens runtime. Gebruik 
 ```
 
 <AccordionGroup>
-  <Accordion title="Hoe model-id-voorvoegsels werken">
-    Elke Fireworks-model-ref in OpenClaw begint met `fireworks/`, gevolgd door de exacte id of het routerpad van het Fireworks-platform. Bijvoorbeeld:
+  <Accordion title="Hoe voorvoeging van model-id's werkt">
+    Elke Fireworks-modelreferentie in OpenClaw begint met `fireworks/`, gevolgd door de exacte id of het routerpad van het Fireworks-platform. Bijvoorbeeld:
 
     - Routermodel: `fireworks/accounts/fireworks/routers/kimi-k2p5-turbo`
-    - Direct model: `fireworks/accounts/fireworks/models/<model-name>`
+    - Rechtstreeks model: `fireworks/accounts/fireworks/models/<model-name>`
 
-    OpenClaw verwijdert het voorvoegsel `fireworks/` bij het construeren van de API-aanvraag en stuurt het resterende pad naar het Fireworks-eindpunt als het OpenAI-compatibele `model`-veld.
-
-  </Accordion>
-
-  <Accordion title="Waarom thinking voor Kimi gedwongen uit staat">
-    Fireworks K2.6 retourneert een 400 als de aanvraag `reasoning_*`-parameters bevat, ook al ondersteunt Kimi thinking via Moonshots eigen API. Het providerbeleid (`extensions/fireworks/thinking-policy.ts`) adverteert alleen het `off`-thinkingniveau voor Kimi-model-id's, zodat handmatige `/think`-schakelingen en providerbeleidoppervlakken afgestemd blijven op het runtimecontract.
-
-    Configureer de [Moonshot-provider](/nl/providers/moonshot) en routeer hetzelfde model via die provider om Kimi-reasoning end-to-end te gebruiken.
+    OpenClaw verwijdert het voorvoegsel `fireworks/` bij het opstellen van het API-verzoek en verzendt het resterende pad als het OpenAI-compatibele veld `model` naar het Fireworks-eindpunt.
 
   </Accordion>
 
-  <Accordion title="Omgevingsbeschikbaarheid voor de daemon">
-    Als de Gateway als beheerde service draait (launchd, systemd, Docker), moet de Fireworks-sleutel zichtbaar zijn voor dat proces, niet alleen voor je interactieve shell.
+  <Accordion title="Waarom de denkmodus voor Kimi verplicht is uitgeschakeld">
+    Fireworks biedt Kimi aan zonder afzonderlijk redeneerkanaal, waardoor de redeneerketen zichtbaar kan worden in de `content`-stream. Bij elk Fireworks Kimi-verzoek verzendt OpenClaw `thinking: { type: "disabled" }` en verwijdert het `reasoning`, `reasoning_effort` en `reasoningEffort` uit de payload (`extensions/fireworks/stream.ts`). Het providerbeleid (`extensions/fireworks/thinking-policy.ts`) maakt voor Kimi-model-id's alleen het denkniveau `off` beschikbaar, zodat handmatige `/think`-wisselingen en providerbeleidsonderdelen in overeenstemming blijven met het runtimecontract.
+
+    Als u de redeneermogelijkheden van Kimi van begin tot eind wilt gebruiken, configureert u de [Moonshot-provider](/nl/providers/moonshot) en routeert u hetzelfde model via deze provider.
+
+  </Accordion>
+
+  <Accordion title="Beschikbaarheid van de omgeving voor de daemon">
+    Als de Gateway als beheerde service wordt uitgevoerd (launchd, systemd, Docker), moet de Fireworks-sleutel zichtbaar zijn voor dat proces, niet alleen voor uw interactieve shell.
 
     <Warning>
-      Een sleutel die alleen in een interactieve shell is geëxporteerd, helpt een launchd- of systemd-daemon niet, tenzij die omgeving daar ook wordt geïmporteerd. Stel de sleutel in `~/.openclaw/.env` in of via `env.shellEnv` om hem leesbaar te maken vanuit het gatewayproces.
+      Een sleutel die alleen in een interactieve shell is geëxporteerd, helpt een launchd- of systemd-daemon niet, tenzij die omgeving daar ook wordt geïmporteerd. Stel de sleutel in `~/.openclaw/.env` of via `env.shellEnv` in om deze leesbaar te maken voor het Gateway-proces.
     </Warning>
 
-    Op macOS koppelt `openclaw gateway install` `~/.openclaw/.env` al aan het LaunchAgent-omgevingsbestand. Voer install opnieuw uit (of `openclaw doctor --fix`) nadat je de sleutel hebt geroteerd.
+    OpenClaw laadt `~/.openclaw/.env` bij het laden van de configuratie, zodat sleutels die daar zijn opgeslagen op elk platform beschikbaar zijn voor beheerde Gateway-services. Start de Gateway opnieuw (of voer `openclaw doctor --fix` opnieuw uit) nadat u de sleutel hebt vervangen.
 
   </Accordion>
 </AccordionGroup>
@@ -143,15 +143,15 @@ OpenClaw accepteert elke Fireworks-model- of router-id tijdens runtime. Gebruik 
 
 <CardGroup cols={2}>
   <Card title="Modelproviders" href="/nl/concepts/model-providers" icon="layers">
-    Providers, model-refs en failovergedrag kiezen.
+    Providers, modelreferenties en failovergedrag kiezen.
   </Card>
-  <Card title="Thinking-modi" href="/nl/tools/thinking" icon="brain">
-    `/think`-niveaus, providerbeleid en routering van reasoning-geschikte modellen.
+  <Card title="Denkmodi" href="/nl/tools/thinking" icon="brain">
+    `/think`-niveaus, providerbeleid en het routeren van modellen met redeneermogelijkheden.
   </Card>
   <Card title="Moonshot" href="/nl/providers/moonshot" icon="moon">
-    Voer Kimi uit met native thinking-uitvoer via Moonshots eigen API.
+    Voer Kimi met native denkuitvoer uit via de eigen API van Moonshot.
   </Card>
-  <Card title="Probleemoplossing" href="/nl/help/troubleshooting" icon="wrench">
+  <Card title="Problemen oplossen" href="/nl/help/troubleshooting" icon="wrench">
     Algemene probleemoplossing en veelgestelde vragen.
   </Card>
 </CardGroup>

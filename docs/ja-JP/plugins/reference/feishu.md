@@ -1,11 +1,11 @@
 ---
 read_when:
-    - feishu plugin のインストール、設定、または監査を行っている
-summary: OpenClaw Feishu/Lark チャネルPlugin。チャットと職場ツール向け（@m1heng によるコミュニティ保守）。
+    - feishu Plugin のインストール、設定、または監査を行っています
+summary: チャットおよびワークプレイスツール向けの OpenClaw Feishu/Lark チャネル Plugin（@m1heng によるコミュニティメンテナンス）。
 title: Feishu Plugin
 x-i18n:
-    generated_at: "2026-06-27T12:24:00Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:29:59Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: d55792e08be92877a8b86548b725b59aee149b352bba8a5e51ed590a59e0dbc9
@@ -13,18 +13,18 @@ x-i18n:
     workflow: 16
 ---
 
-# Feishu プラグイン
+# Feishu Plugin
 
-チャットとワークプレイスツール向けの OpenClaw Feishu/Lark チャネルプラグイン（@m1heng によりコミュニティメンテナンス）。
+チャットおよび職場向けツールのためのOpenClaw Feishu/LarkチャンネルPlugin（@m1hengがコミュニティで保守）。
 
 ## 配布
 
 - パッケージ: `@openclaw/feishu`
-- インストール経路: npm; ClawHub
+- インストール経路: npm、ClawHub
 
-## サーフェス
+## 提供機能
 
-チャネル: feishu; コントラクト: tools; スキル
+チャンネル: feishu、コントラクト: ツール、Skills
 
 ## 関連ドキュメント
 

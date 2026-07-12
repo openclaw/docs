@@ -1,11 +1,11 @@
 ---
 read_when:
-    - diffs Plugin을 설치, 구성 또는 감사하고 있습니다
-summary: OpenClaw 에이전트용 읽기 전용 diff 뷰어 Plugin 및 파일 렌더러.
+    - diffs Plugin을 설치, 구성 또는 감사하고 있습니다.
+summary: 에이전트용 OpenClaw 읽기 전용 diff 뷰어 Plugin 및 파일 렌더러.
 title: Diffs Plugin
 x-i18n:
-    generated_at: "2026-06-27T17:50:26Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T01:01:27Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 836ed7a32a0868ee24eacf8f72e8c7888ebbd5d07ca62b2b6170d6a1919f7382
@@ -15,13 +15,13 @@ x-i18n:
 
 # Diffs Plugin
 
-에이전트를 위한 OpenClaw 읽기 전용 diff 뷰어 Plugin 및 파일 렌더러입니다.
+에이전트용 OpenClaw 읽기 전용 diff 뷰어 Plugin 및 파일 렌더러입니다.
 
 ## 배포
 
 - 패키지: `@openclaw/diffs`
 - 설치 경로: npm; ClawHub
 
-## 노출 영역
+## 제공 기능
 
 계약: 도구; Skills

@@ -4,28 +4,28 @@ read_when:
     - Bepalen welke mediaprovider u wilt configureren
     - Begrijpen hoe asynchrone mediageneratie werkt
 sidebarTitle: Media overview
-summary: Mogelijkheden voor beeld, video, muziek, spraak en mediabegrip in één oogopslag
+summary: Mogelijkheden voor afbeeldingen, video, muziek, spraak en mediabegrip in één oogopslag
 title: Mediaoverzicht
 x-i18n:
-    generated_at: "2026-06-27T18:27:50Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:23:50Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c04beb60abbd06d1503302be144e633b526ae55435f061fbb94f6fef85ca9d66
+    source_hash: f7d7bf8bd2052cdba088d7a612bb89b0fc3a95b3635c7fcd2138eb731121b85f
     source_path: tools/media-overview.md
     workflow: 16
 ---
 
 OpenClaw genereert afbeeldingen, video's en muziek, begrijpt inkomende media
 (afbeeldingen, audio, video) en spreekt antwoorden hardop uit met tekst-naar-spraak. Alle
-mediamogelijkheden zijn toolgestuurd: de agent beslist op basis van het gesprek
-wanneer ze worden gebruikt, en elke tool verschijnt alleen wanneer ten minste één
-ondersteunende provider is geconfigureerd.
+mediamogelijkheden worden via tools aangestuurd: de agent bepaalt op basis
+van het gesprek wanneer deze worden gebruikt en elke tool verschijnt alleen wanneer ten minste één
+onderliggende provider is geconfigureerd.
 
-Live spraak gebruikt het Talk-sessiecontract in plaats van het eenmalige
-mediatoolpad. Talk heeft drie modi: provider-native `realtime`, lokale of
-streaming `stt-tts`, en `transcription` voor spraakopname die alleen observeert. Deze modi
-delen providercatalogi, event-enveloppen en annuleringssemantiek met
+Live spraak gebruikt het Talk-sessiecontract in plaats van het pad voor eenmalige mediatools.
+Talk heeft drie modi: provider-native `realtime`, lokale of streamende
+`stt-tts` en `transcription` voor het uitsluitend observerend vastleggen van spraak. Deze modi
+delen providercatalogi, gebeurtenisenveloppen en annuleringssemantiek met
 telefonie, vergaderingen, browser-realtime en native push-to-talk-clients.
 
 ## Mogelijkheden
@@ -33,136 +33,150 @@ telefonie, vergaderingen, browser-realtime en native push-to-talk-clients.
 <CardGroup cols={2}>
   <Card title="Afbeeldingen genereren" href="/nl/tools/image-generation" icon="image">
     Maak en bewerk afbeeldingen op basis van tekstprompts of referentieafbeeldingen via
-    `image_generate`. Asynchroon in chatsessies — draait op de achtergrond en
-    plaatst het resultaat zodra het klaar is.
+    `image_generate`. Asynchroon in chatsessies — wordt op de achtergrond uitgevoerd en
+    plaatst het resultaat wanneer het gereed is.
   </Card>
-  <Card title="Video genereren" href="/nl/tools/video-generation" icon="video">
+  <Card title="Video's genereren" href="/nl/tools/video-generation" icon="video">
     Tekst-naar-video, afbeelding-naar-video en video-naar-video via `video_generate`.
-    Asynchroon — draait op de achtergrond en plaatst het resultaat zodra het klaar is.
+    Asynchroon — wordt op de achtergrond uitgevoerd en plaatst het resultaat wanneer het gereed is.
   </Card>
   <Card title="Muziek genereren" href="/nl/tools/music-generation" icon="music">
     Genereer muziek of audiotracks via `music_generate`. Asynchroon in
-    chatsessies op de gedeelde taaklevenscyclus voor mediageneratie.
+    chatsessies binnen de gedeelde taaklevenscyclus voor mediageneratie.
   </Card>
   <Card title="Tekst-naar-spraak" href="/nl/tools/tts" icon="microphone">
-    Zet uitgaande antwoorden om naar gesproken audio via de tool `tts` plus
-    de configuratie `messages.tts`. Synchroon.
+    Zet uitgaande antwoorden om in gesproken audio via de tool `tts` en de
+    configuratie `messages.tts`. Synchroon.
   </Card>
   <Card title="Mediabegrip" href="/nl/nodes/media-understanding" icon="eye">
-    Vat inkomende afbeeldingen, audio en video samen met modelproviders die
-    vision ondersteunen en speciale plugins voor mediabegrip.
+    Vat inkomende afbeeldingen, audio en video samen met modelproviders
+    die beeld ondersteunen en speciale plugins voor mediabegrip.
   </Card>
   <Card title="Spraak-naar-tekst" href="/nl/nodes/audio" icon="ear-listen">
-    Transcribeer inkomende spraakberichten via batch-STT of streaming-STT-providers
-    voor Spraakoproepen.
+    Transcribeer inkomende spraakberichten via batch-STT of providers voor
+    streamende STT van Voice Call.
   </Card>
 </CardGroup>
 
-## Matrix met providermogelijkheden
+## Mogelijkhedenmatrix voor providers
+
+<Note>
+Deze tabel behandelt de speciale plugins voor mediageneratie, TTS en STT. Veel
+providers van chatmodellen (Anthropic, Google, OpenAI en andere) begrijpen
+inkomende media ook via hun antwoordmodel; bekijk de volledige providerlijst in
+[Mediabegrip](/nl/nodes/media-understanding#provider-support-matrix).
+</Note>
 
 | Provider          | Afbeelding | Video | Muziek | TTS | STT | Realtime spraak | Mediabegrip |
 | ----------------- | :--------: | :---: | :----: | :-: | :-: | :-------------: | :---------: |
 | Alibaba           |            |   ✓   |        |     |     |                 |             |
+| Azure Speech      |            |       |        |  ✓  |     |                 |             |
 | BytePlus          |            |   ✓   |        |     |     |                 |             |
 | ComfyUI           |     ✓      |   ✓   |   ✓    |     |     |                 |             |
+| Deepgram          |            |       |        |     |  ✓  |                 |             |
 | DeepInfra         |     ✓      |   ✓   |        |  ✓  |  ✓  |                 |      ✓      |
-| Deepgram          |            |       |        |     |  ✓  |        ✓        |             |
 | ElevenLabs        |            |       |        |  ✓  |  ✓  |                 |             |
 | fal               |     ✓      |   ✓   |   ✓    |     |     |                 |             |
-| Google            |     ✓      |   ✓   |   ✓    |  ✓  |     |        ✓        |      ✓      |
+| Google            |     ✓      |   ✓   |   ✓    |  ✓  |  ✓  |        ✓        |      ✓      |
 | Gradium           |            |       |        |  ✓  |     |                 |             |
-| Local CLI         |            |       |        |  ✓  |     |                 |             |
+| Inworld           |            |       |        |  ✓  |     |                 |             |
+| LiteLLM           |     ✓      |       |        |     |     |                 |             |
+| Lokale CLI        |            |       |        |  ✓  |     |                 |             |
 | Microsoft         |            |       |        |  ✓  |     |                 |             |
 | Microsoft Foundry |     ✓      |       |        |     |     |                 |             |
 | MiniMax           |     ✓      |   ✓   |   ✓    |  ✓  |     |                 |             |
 | Mistral           |            |       |        |     |  ✓  |                 |             |
 | OpenAI            |     ✓      |   ✓   |        |  ✓  |  ✓  |        ✓        |      ✓      |
 | OpenRouter        |     ✓      |   ✓   |   ✓    |  ✓  |  ✓  |                 |      ✓      |
-| Qwen              |            |   ✓   |        |     |     |                 |             |
+| PixVerse          |            |   ✓   |        |     |     |                 |             |
+| Qwen              |            |   ✓   |        |     |     |                 |      ✓      |
 | Runway            |            |   ✓   |        |     |     |                 |             |
 | SenseAudio        |            |       |        |     |  ✓  |                 |             |
 | Together          |            |   ✓   |        |     |     |                 |             |
+| Volcengine        |            |       |        |  ✓  |     |                 |             |
 | Vydra             |     ✓      |   ✓   |        |  ✓  |     |                 |             |
 | xAI               |     ✓      |   ✓   |        |  ✓  |  ✓  |                 |      ✓      |
-| Xiaomi MiMo       |     ✓      |       |        |  ✓  |     |                 |      ✓      |
+| Xiaomi MiMo       |            |       |        |  ✓  |     |                 |             |
 
 <Note>
-Mediabegrip gebruikt elk vision-geschikt of audio-geschikt model dat in
-je providerconfiguratie is geregistreerd. De matrix hierboven vermeldt providers met
-speciale ondersteuning voor mediabegrip; de meeste multimodale LLM-providers
-(Anthropic, Google, OpenAI, enz.) kunnen ook inkomende media begrijpen wanneer ze zijn
-geconfigureerd als het actieve antwoordmodel.
+**Realtime spraak** betekent hier provider-native bidirectionele realtime (Talk-modus
+`realtime`, bijvoorbeeld Gemini Live of de OpenAI Realtime API) — momenteel registreren alleen Google
+en OpenAI dit. Deepgram, ElevenLabs, Mistral, OpenAI en xAI
+registreren afzonderlijk streamende STT voor Voice Call (eenrichtingsaudio-naar-tekst); zie
+[Spraak-naar-tekst en Voice Call](#speech-to-text-and-voice-call) hieronder.
+Realtime spraak van xAI is een bovenstroomse mogelijkheid, maar wordt niet geregistreerd in
+OpenClaw totdat het gedeelde contract voor realtime spraak deze kan vertegenwoordigen.
 </Note>
 
 ## Asynchroon versus synchroon
 
-| Mogelijkheid    | Modus        | Waarom                                                                                               |
-| --------------- | ------------ | ---------------------------------------------------------------------------------------------------- |
-| Afbeelding      | Asynchroon   | Providerverwerking kan langer duren dan een chatbeurt; gegenereerde bijlagen gebruiken het gedeelde voltooiingspad. |
-| Tekst-naar-spraak | Synchroon  | Providerantwoorden komen binnen enkele seconden terug; gekoppeld aan de antwoordaudio.               |
-| Video           | Asynchroon   | Providerverwerking duurt 30 s tot enkele minuten; trage wachtrijen kunnen doorlopen tot de geconfigureerde time-out. |
-| Muziek          | Asynchroon   | Dezelfde providerverwerkingskenmerken als video.                                                     |
+| Mogelijkheid     | Modus        | Reden                                                                                                             |
+| ---------------- | ------------ | ----------------------------------------------------------------------------------------------------------------- |
+| Afbeelding       | Asynchroon   | Providerverwerking kan langer duren dan een chatbeurt; gegenereerde bijlagen gebruiken het gedeelde voltooiingspad. |
+| Tekst-naar-spraak | Synchroon   | Providerantwoorden worden binnen enkele seconden geretourneerd en aan de audio van het antwoord toegevoegd.       |
+| Video            | Asynchroon   | Providerverwerking duurt 30 s tot enkele minuten; trage wachtrijen kunnen tot de geconfigureerde time-out doorgaan. |
+| Muziek           | Asynchroon   | Heeft dezelfde kenmerken voor providerverwerking als video.                                                       |
 
-Voor asynchrone tools dient OpenClaw de aanvraag in bij de provider, retourneert
-direct een taak-id en volgt de job in het taakregister. De agent blijft
-op andere berichten reageren terwijl de job draait. Wanneer de provider klaar is,
-wekt OpenClaw de agent met de gegenereerde mediapaden, zodat die de gebruiker
-kan informeren via de normale zichtbare-antwoordmodus van de sessie: automatische
-levering van het definitieve antwoord wanneer geconfigureerd, of `message(action="send")`
-wanneer de sessie de berichttool vereist. Als de sessie van de aanvrager inactief is
-of de actieve wake mislukt, en er nog gegenereerde media ontbreken in het
-voltooiingsantwoord, stuurt OpenClaw een idempotente directe fallback met alleen
-de ontbrekende media. Media die al door het voltooiingsantwoord zijn geleverd,
-worden niet opnieuw geplaatst.
+Voor asynchrone tools dient OpenClaw de aanvraag in bij de provider, retourneert het onmiddellijk
+een taak-ID en volgt het de taak in het taakregister. De agent blijft
+andere berichten beantwoorden terwijl de taak wordt uitgevoerd. Wanneer de provider klaar is,
+wekt OpenClaw de agent met de paden van de gegenereerde media, zodat deze de
+gebruiker via de normale zichtbare antwoordmodus van de sessie kan informeren: automatische bezorging
+van het definitieve antwoord wanneer dit is geconfigureerd, of `message(action="send")` wanneer de sessie
+de berichtentool vereist. Als de sessie van de aanvrager inactief is of het actief wekken
+mislukt, en er nog gegenereerde media in het voltooiingsantwoord ontbreken,
+stuurt OpenClaw een idempotente directe terugval met alleen de ontbrekende media. Media
+die al via het voltooiingsantwoord zijn bezorgd, worden niet opnieuw geplaatst.
 
-## Spraak-naar-tekst en Spraakoproep
+## Spraak-naar-tekst en Voice Call
 
-Deepgram, DeepInfra, ElevenLabs, Mistral, OpenAI, OpenRouter, SenseAudio en xAI kunnen allemaal
-inkomende audio transcriberen via het batchpad `tools.media.audio` wanneer ze zijn geconfigureerd.
-Kanaalplugins die vooraf een spraaknotitie controleren voor vermeldingsgating of
-commando-parsering markeren de getranscribeerde bijlage op de inkomende context, zodat de gedeelde
-mediabegripspass die transcriptie hergebruikt in plaats van een tweede
-STT-aanroep te doen voor dezelfde audio.
+Deepgram, DeepInfra, ElevenLabs, Google, Groq, Mistral, OpenAI, OpenRouter,
+SenseAudio en xAI kunnen allemaal inkomende audio transcriberen via het batchpad
+`tools.media.audio` wanneer dit is geconfigureerd. Kanaalplugins die vooraf een
+spraaknotitie controleren voor vermeldingsfiltering of opdrachtanalyse markeren de getranscribeerde
+bijlage in de inkomende context, zodat de gedeelde verwerking voor mediabegrip
+dat transcript hergebruikt in plaats van een tweede STT-aanroep voor dezelfde
+audio uit te voeren.
 
-Deepgram, ElevenLabs, Mistral, OpenAI en xAI registreren ook streaming-STT-providers
-voor Spraakoproepen, zodat live telefoonaudio naar de geselecteerde leverancier kan worden doorgestuurd
-zonder te wachten op een voltooide opname.
+Deepgram, ElevenLabs, Mistral, OpenAI en xAI registreren ook providers voor
+streamende STT van Voice Call, zodat live telefoonaudio naar de geselecteerde
+leverancier kan worden doorgestuurd zonder op een voltooide opname te wachten.
 
-Gebruik voor live gebruikersgesprekken bij voorkeur [Talk-modus](/nl/nodes/talk). Batch-audiobijlagen
-blijven op het mediapad; browser-realtime, native push-to-talk,
-telefonie en vergaderaudio moeten Talk-events en de sessiegebonden
+Geef voor live gesprekken met gebruikers de voorkeur aan de [Talk-modus](/nl/nodes/talk). Batchaudio-
+bijlagen blijven op het mediapad; browser-realtime, native push-to-talk,
+telefonie en vergaderaudio moeten Talk-gebeurtenissen en de sessiegebonden
 catalogi gebruiken die door de Gateway worden geretourneerd.
 
 ## Providertoewijzingen (hoe leveranciers over oppervlakken zijn verdeeld)
 
 <AccordionGroup>
   <Accordion title="Google">
-    Oppervlakken voor afbeeldingen, video, muziek, batch-TTS, backend-realtime spraak en
-    mediabegrip.
+    Oppervlakken voor afbeeldingen, video, muziek, batch-TTS, batch-STT, realtime spraak
+    in de backend en mediabegrip.
   </Accordion>
   <Accordion title="OpenAI">
-    Oppervlakken voor afbeeldingen, video, batch-TTS, batch-STT, streaming-STT voor Spraakoproepen,
-    backend-realtime spraak en geheugen-embeddings.
+    Oppervlakken voor afbeeldingen, video, batch-TTS, batch-STT, streamende STT voor Voice Call,
+    realtime spraak in de backend en geheugeninsluitingen.
   </Accordion>
   <Accordion title="DeepInfra">
-    Chat-/modelroutering, afbeeldingen genereren/bewerken, tekst-naar-video, batch-TTS,
-    batch-STT, mediabegrip voor afbeeldingen en geheugen-embeddings.
-    DeepInfra-native modellen voor reranking/classificatie/objectdetectie worden pas
-    geregistreerd wanneer OpenClaw speciale providercontracten voor die
-    categorieën heeft.
+    Oppervlakken voor chat-/modelroutering, het genereren/bewerken van afbeeldingen, tekst-naar-video,
+    batch-TTS, batch-STT, mediabegrip van afbeeldingen en geheugeninsluitingen.
+    DeepInfra biedt ook herrangschikking, classificatie, objectdetectie en
+    andere native modeltypen; OpenClaw heeft nog geen providercontract voor die
+    categorieën, dus deze plugin registreert ze niet.
   </Accordion>
   <Accordion title="xAI">
-    Afbeeldingen, video, zoeken, code-uitvoering, batch-TTS, batch-STT en streaming-STT
-    voor Spraakoproepen. xAI Realtime spraak is een upstreammogelijkheid, maar wordt
-    niet in OpenClaw geregistreerd totdat het gedeelde contract voor realtime spraak dit
-    kan vertegenwoordigen.
+    Afbeeldingen, video, zoeken, code-uitvoering, batch-TTS, batch-STT en streamende
+    STT voor Voice Call. Realtime spraak van xAI is een bovenstroomse mogelijkheid, maar wordt
+    niet geregistreerd in OpenClaw totdat het gedeelde contract voor realtime spraak deze kan
+    vertegenwoordigen.
   </Accordion>
 </AccordionGroup>
 
 ## Gerelateerd
 
 - [Afbeeldingen genereren](/nl/tools/image-generation)
-- [Video genereren](/nl/tools/video-generation)
+- [Video's genereren](/nl/tools/video-generation)
 - [Muziek genereren](/nl/tools/music-generation)
 - [Tekst-naar-spraak](/nl/tools/tts)
 - [Mediabegrip](/nl/nodes/media-understanding)

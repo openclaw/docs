@@ -1,32 +1,37 @@
 ---
 read_when:
-    - راه‌اندازی دستی یک فضای کاری
+    - راه‌اندازی اولیهٔ دستی یک فضای کاری
 summary: الگوی فضای کاری برای HEARTBEAT.md
-title: قالب HEARTBEAT.md
+title: الگوی HEARTBEAT.md
 x-i18n:
-    generated_at: "2026-06-27T18:50:54Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:50:15Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 44a1ea787d67110ca53d752706b62f5ce5c4df8637897dee97ce6502f6a05eb6
+    source_hash: 1605f546995e0bdcb11f9bf905173b14aca25cfad664fe2c7644d18c2b4142e2
     source_path: reference/templates/HEARTBEAT.md
     workflow: 16
 ---
 
-# قالب HEARTBEAT.md
+# الگوی HEARTBEAT.md
 
-`HEARTBEAT.md` در فضای کاری عامل قرار دارد. وقتی می‌خواهید OpenClaw فراخوانی‌های مدل Heartbeat را نادیده بگیرد، فایل را خالی نگه دارید، یا فقط با توضیحات و سرفصل‌های Markdown نگه دارید.
+فایل `HEARTBEAT.md` در فضای کاری عامل قرار دارد و فهرست بررسی دوره‌ای Heartbeat را نگه می‌دارد. برای اینکه OpenClaw فراخوانی مدل Heartbeat را کاملاً نادیده بگیرد (`reason=empty-heartbeat-file`)، این فایل را خالی نگه دارید یا فقط فضای خالی، توضیحات Markdown، عنوان‌های ATX، جای‌نگهدارهای فهرست خالی (`- `، `* [ ]`) یا نشانگرهای حصار در آن قرار دهید.
 
-قالب پیش‌فرض زمان اجرا این است:
+محتوای پیش‌فرض ارائه‌شده:
 
 ```markdown
-# Keep this file empty (or with only comments) to skip heartbeat API calls.
+<!-- الگوی Heartbeat؛ محتوای صرفاً شامل توضیحات، از فراخوانی‌های زمان‌بندی‌شده API برای Heartbeat جلوگیری می‌کند. -->
 
-# Add tasks below when you want the agent to check something periodically.
+# برای نادیده گرفتن فراخوانی‌های API مربوط به Heartbeat، این فایل را خالی نگه دارید (یا فقط توضیحات در آن قرار دهید).
+
+# هنگامی که می‌خواهید عامل چیزی را به‌صورت دوره‌ای بررسی کند، وظایف را در زیر اضافه کنید.
 ```
 
-فقط زمانی زیر توضیحات وظایف کوتاه اضافه کنید که می‌خواهید عامل چیزی را به‌صورت دوره‌ای بررسی کند. دستورالعمل‌های Heartbeat را کوتاه نگه دارید، چون در بیدارشدن‌های تکرارشونده خوانده می‌شوند.
+فقط هنگامی که بررسی‌های دوره‌ای می‌خواهید، وظایف کوتاهی را زیر خطوط توضیحات اضافه کنید. آن را مختصر نگه دارید: اجراهای Heartbeat در هر تیک این فایل را می‌خوانند (پیش‌فرض هر ۳۰ دقیقه است)، بنابراین دستورالعمل‌های حجیم در هر بار فعال‌شدن توکن مصرف می‌کنند.
+
+برای بررسی‌هایی که فقط در زمان سررسید انجام می‌شوند، به‌جای یک فهرست بررسی ساده، از یک بلوک ساخت‌یافته `tasks:` با فیلدهای `interval` و `prompt` برای هر وظیفه استفاده کنید؛ برای قالب و نحوهٔ رفتار، به [HEARTBEAT.md](/fa/gateway/heartbeat#heartbeatmd-optional) مراجعه کنید.
 
 ## مرتبط
 
+- [Heartbeat](/fa/gateway/heartbeat)
 - [پیکربندی Heartbeat](/fa/gateway/config-agents)

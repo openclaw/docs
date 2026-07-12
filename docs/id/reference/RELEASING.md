@@ -2,94 +2,60 @@
 read_when:
     - Mencari definisi kanal rilis publik
     - Menjalankan validasi rilis atau penerimaan paket
-    - Mencari penamaan versi dan ritme rilis
-summary: Jalur rilis, daftar periksa operator, kotak validasi, penamaan versi, dan ritme rilis
+    - Mencari penamaan versi dan siklus rilis
+summary: Jalur rilis, daftar periksa operator, kotak validasi, penamaan versi, dan irama rilis
 title: Kebijakan rilis
 x-i18n:
-    generated_at: "2026-07-04T18:24:24Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:39:15Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d00772c1a2ad62eb7138b1eda581786390835add0a96996114cac2fd77edb367
+    source_hash: 4270a96560ee908c09d26782ffa75dbc695f4ab83c5a80dfb7abe5befd8ca686
     source_path: reference/RELEASING.md
     workflow: 16
 ---
 
-OpenClaw saat ini mengekspos tiga kanal pembaruan yang menghadap pengguna:
+OpenClaw saat ini menyediakan tiga kanal pembaruan yang ditujukan bagi pengguna:
 
-- stable: kanal rilis promosi yang sudah ada, yang masih diselesaikan melalui
-  npm `latest` sampai milestone CLI/kanal terpisah selesai
+- stable: kanal rilis yang sudah dipromosikan, yang masih diresolusikan melalui npm `latest` hingga pencapaian CLI/kanal terpisah tersedia
 - beta: tag prarilis yang dipublikasikan ke npm `beta`
-- dev: head bergerak dari `main`
+- dev: posisi terbaru yang terus bergerak dari `main`
 
-Secara terpisah, operator rilis dapat memublikasikan paket inti bulan selesai
-sebelumnya ke npm `extended-stable`, dimulai pada patch `33`. Lini final reguler
-bulan berjalan tetap berlanjut di npm `latest`; pemisahan publikasi di sisi
-operator ini tidak dengan sendirinya mengubah resolusi kanal pembaruan CLI.
+Secara terpisah, operator rilis dapat memublikasikan paket inti dari bulan terakhir yang telah selesai ke npm `extended-stable`, dimulai pada patch `33`. Jalur final reguler bulan berjalan tetap berlanjut di npm `latest`; pemisahan publikasi di sisi operator ini tidak dengan sendirinya mengubah resolusi kanal pembaruan CLI.
+
+Build alfa Tideclaw merupakan jalur prarilis internal yang terpisah (dist-tag npm `alpha`), yang dibahas dalam [Input alur kerja NPM](#npm-workflow-inputs) dan [Kotak pengujian rilis](#release-test-boxes).
 
 ## Penamaan versi
 
-- Versi rilis npm extended-stable bulanan: `YYYY.M.PATCH`, dengan `PATCH >= 33`
-  - Tag Git: `vYYYY.M.PATCH`
-- Versi rilis final harian/reguler: `YYYY.M.PATCH`, dengan `PATCH < 33`
-  - Tag Git: `vYYYY.M.PATCH`
-- Versi rilis koreksi fallback reguler: `YYYY.M.PATCH-N`
-  - Tag Git: `vYYYY.M.PATCH-N`
-- Versi prarilis beta: `YYYY.M.PATCH-beta.N`
-  - Tag Git: `vYYYY.M.PATCH-beta.N`
-- Jangan beri nol di depan bulan atau patch
-- Mulai pembaruan proses rilis Juni 2026, komponen ketiga adalah nomor
-  rangkaian rilis bulanan berurutan, bukan hari kalender. Rilis stable dan beta
-  menentukan rangkaian saat ini; tag khusus alpha tidak memakai atau memajukan
-  nomor patch beta/stable. Tag dan versi npm sebelum pembaruan mempertahankan
-  nama yang sudah ada dan tetap valid; otomasi rilis terus membandingkannya
-  berdasarkan tahun, bulan, patch, kanal, dan nomor prarilis atau koreksi.
-- Build alpha/nightly menggunakan rangkaian patch berikutnya yang belum dirilis
-  dan hanya menaikkan `alpha.N` untuk build berulang. Setelah patch tersebut
-  memiliki beta, build alpha baru pindah ke patch berikutnya. Abaikan tag lama
-  khusus alpha dengan nomor patch lebih tinggi saat memilih rangkaian beta atau
-  stable.
-- Versi npm tidak dapat diubah. Jika tag beta sudah dipublikasikan, jangan
-  menghapus, memublikasikan ulang, atau menggunakannya kembali; buat nomor beta
-  berikutnya atau patch bulanan berikutnya. Karena `2026.6.5-beta.1` sudah
-  dipublikasikan selama transisi, rangkaian rilis Juni 2026 harus menggunakan
-  patch `5` atau lebih tinggi. Jangan publikasikan rangkaian stable atau beta
-  Juni 2026 baru sebagai `2026.6.2`, `2026.6.3`, atau `2026.6.4`.
-- Setelah final reguler `2026.6.5`, rangkaian beta baru berikutnya adalah
-  `2026.6.6-beta.1`, meskipun
-  tag otomatis khusus alpha dengan nomor patch lebih tinggi sudah ada.
-- `latest` tetap mengikuti lini npm reguler/harian saat ini
-- `beta` berarti target instalasi beta saat ini
-- `extended-stable` berarti paket npm bulan sebelumnya yang didukung, dimulai pada patch
-  `33`; patch `34` dan seterusnya adalah rilis pemeliharaan pada lini bulanan tersebut
-- Jalur khusus extended-stable bulanan hanya memublikasikan paket npm inti. Jalur ini
-  tidak memublikasikan plugin, artefak macOS atau Windows, GitHub Release,
-  dist-tag repositori privat, image Docker, artefak mobile, atau unduhan situs web.
+- Versi rilis extended-stable npm bulanan: `YYYY.M.PATCH`, dengan `PATCH >= 33`, tag git `vYYYY.M.PATCH`
+- Versi rilis final harian/reguler: `YYYY.M.PATCH`, dengan `PATCH < 33`, tag git `vYYYY.M.PATCH`
+- Versi rilis koreksi fallback reguler: `YYYY.M.PATCH-N`, tag git `vYYYY.M.PATCH-N`
+- Versi prarilis beta: `YYYY.M.PATCH-beta.N`, tag git `vYYYY.M.PATCH-beta.N`
+- Versi prarilis alfa: `YYYY.M.PATCH-alpha.N`, tag git `vYYYY.M.PATCH-alpha.N`
+- Jangan pernah menambahkan nol di depan angka bulan atau patch
+- `PATCH` adalah nomor urut rangkaian rilis bulanan, bukan hari kalender. Rilis final reguler dan beta memajukan rangkaian saat ini; tag khusus alfa tidak pernah menggunakan atau memajukan nomor patch beta/reguler, jadi abaikan tag lama khusus alfa dengan nomor patch lebih tinggi saat memilih rangkaian beta atau reguler.
+- Build alfa/nightly menggunakan rangkaian patch berikutnya yang belum dirilis dan hanya menaikkan `alpha.N` untuk build berulang. Setelah patch tersebut memiliki versi beta, build alfa baru berpindah ke patch berikutnya.
+- Versi npm tidak dapat diubah: jangan pernah menghapus, memublikasikan ulang, atau menggunakan kembali tag yang telah dipublikasikan. Buat nomor prarilis berikutnya atau patch bulanan berikutnya.
+- `latest` tetap mengikuti jalur npm reguler/harian saat ini; `beta` adalah target instalasi beta saat ini
+- `extended-stable` berarti paket npm bulan sebelumnya yang didukung, dimulai pada patch `33`; patch `34` dan seterusnya merupakan rilis pemeliharaan pada jalur bulanan tersebut
+- Rilis final reguler dan koreksi reguler secara default dipublikasikan ke npm `beta`; operator rilis dapat secara eksplisit menargetkan `latest`, atau mempromosikan build beta yang telah diperiksa kemudian
+- Jalur extended-stable bulanan khusus memublikasikan paket npm inti dan setiap plugin resmi yang dapat dipublikasikan ke npm pada versi yang sama persis. Jalur ini tidak memublikasikan plugin ke ClawHub maupun memublikasikan artefak macOS atau Windows, GitHub Release, dist-tag repositori privat, image Docker, artefak seluler, atau unduhan situs web.
+- Setiap rilis final reguler mengirimkan paket npm, aplikasi macOS, APK Android mandiri yang ditandatangani, dan penginstal Windows Hub yang ditandatangani secara bersamaan. Rilis beta biasanya memvalidasi dan memublikasikan jalur npm/paket terlebih dahulu, sedangkan build/penandatanganan/notarisasi/promosi aplikasi native dikhususkan untuk rilis final reguler kecuali diminta secara eksplisit.
 
-## Irama rilis
+## Jadwal rilis
 
-- Rilis bergerak dengan beta lebih dahulu
-- Stable mengikuti hanya setelah beta terbaru divalidasi
-- Maintainer biasanya membuat rilis dari branch `release/YYYY.M.PATCH` yang dibuat
-  dari `main` saat ini, sehingga validasi rilis dan perbaikan tidak memblokir
-  pengembangan baru di `main`
-- Jika tag beta sudah di-push atau dipublikasikan dan memerlukan perbaikan, maintainer membuat
-  tag `-beta.N` berikutnya alih-alih menghapus atau membuat ulang tag beta lama
-- Prosedur rilis terperinci, persetujuan, kredensial, dan catatan pemulihan
-  hanya untuk maintainer
+- Rilis bergerak dengan beta terlebih dahulu; stable menyusul hanya setelah beta terbaru divalidasi
+- Pengelola biasanya membuat rilis dari cabang `release/YYYY.M.PATCH` yang dibuat dari `main` saat ini, sehingga validasi dan perbaikan rilis tidak menghambat pengembangan baru di `main`
+- Jika tag beta telah didorong atau dipublikasikan dan memerlukan perbaikan, pengelola membuat tag `-beta.N` berikutnya alih-alih menghapus atau membuat ulang tag lama
+- Prosedur rilis terperinci, persetujuan, kredensial, dan catatan pemulihan hanya tersedia bagi pengelola
 
 ## Publikasi extended-stable bulanan khusus npm
 
-Ini adalah pengecualian khusus terhadap prosedur rilis reguler di bawah. Untuk
-bulan selesai `YYYY.M`, buat `extended-stable/YYYY.M.33`; publikasikan `vYYYY.M.33` dan
-patch pemeliharaan berikutnya dari branch yang sama. Tag rilis, ujung branch,
-checkout, versi paket, preflight npm, dan proses Validasi Rilis Lengkap harus
-semuanya mengidentifikasi commit yang sama. `main` yang dilindungi harus sudah
-memuat versi final bulan kalender yang benar-benar lebih baru di bawah patch `33`;
-patch pemeliharaan tetap memenuhi syarat setelah `main` maju lebih dari satu bulan.
+Ini adalah pengecualian khusus dari prosedur rilis reguler di bawah. Untuk bulan yang telah selesai `YYYY.M`, buat `extended-stable/YYYY.M.33`; publikasikan `vYYYY.M.33` dan patch pemeliharaan berikutnya dari cabang yang sama. Tag rilis, ujung cabang, checkout, versi paket, pemeriksaan awal npm, dan proses Validasi Rilis Lengkap semuanya harus mengidentifikasi commit yang sama. `main` yang dilindungi harus sudah memuat versi final dari bulan kalender yang lebih baru secara ketat dengan patch di bawah `33`; patch pemeliharaan tetap memenuhi syarat setelah `main` maju lebih dari satu bulan.
 
-Jalankan preflight npm dan Validasi Rilis Lengkap dari branch extended-stable yang tepat,
-lalu simpan kedua ID proses:
+Pada cabang extended-stable yang tepat, naikkan versi paket root menjadi `YYYY.M.P`, jalankan `pnpm release:prep`, dan verifikasi bahwa setiap paket ekstensi yang dapat dipublikasikan memiliki versi yang sama. Commit dan dorong semua perubahan yang dihasilkan, buat dan dorong tag permanen `vYYYY.M.P` pada commit tersebut, lalu catat SHA lengkap yang dihasilkan. Alur kerja menggunakan pohon yang telah disiapkan ini; alur kerja tidak menaikkan atau menyinkronkan versi untuk Anda.
+
+Jalankan pemeriksaan awal npm dan Validasi Rilis Lengkap dari ujung cabang yang telah disiapkan tersebut, lalu simpan kedua ID proses dan percobaan proses Validasi Rilis Lengkap yang berhasil:
 
 ```bash
 gh workflow run openclaw-npm-release.yml \
@@ -104,11 +70,22 @@ gh workflow run full-release-validation.yml \
   -f release_profile=stable
 ```
 
-`release_profile=stable` adalah profil kedalaman validasi yang sudah ada; ini
-terpisah dari dist-tag npm `extended-stable` dan sengaja tidak diubah.
+`release_profile=stable` adalah profil kedalaman validasi yang sudah ada; profil ini terpisah dari dist-tag npm `extended-stable` dan sengaja tidak diubah.
 
-Setelah kedua proses berhasil dan environment rilis npm siap, promosikan
-tarball preflight yang tepat. Patch `P` harus `33` atau lebih besar:
+Setelah kedua proses berhasil, publikasikan setiap plugin resmi yang dapat dipublikasikan ke npm dari ujung cabang yang sama persis. Patch `P` harus bernilai `33` atau lebih besar. Teruskan SHA rilis lengkap sebagai `ref`, tunggu hingga seluruh matriks dan pembacaan balik registri selesai, lalu simpan ID proses Rilis NPM Plugin yang berhasil:
+
+```bash
+RELEASE_SHA="$(git rev-parse HEAD)"
+gh workflow run plugin-npm-release.yml \
+  --ref extended-stable/YYYY.M.33 \
+  -f publish_scope=all-publishable \
+  -f ref="$RELEASE_SHA" \
+  -f npm_dist_tag=extended-stable
+```
+
+Alur kerja menggunakan inventaris paket `all-publishable` reguler yang telah disiapkan, termasuk paket yang sumbernya tidak berubah. Alur kerja memverifikasi setiap paket yang tepat dan setiap tag plugin `extended-stable` sebelum dinyatakan berhasil. Jika proses parsial gagal, jalankan ulang perintah yang sama: paket yang telah dipublikasikan akan digunakan kembali, tag plugin yang hilang atau kedaluwarsa akan direkonsiliasi dalam lingkungan rilis npm, dan pembacaan balik akhir tetap mencakup seluruh kumpulan paket.
+
+Setelah alur kerja plugin berhasil dan lingkungan rilis npm siap, publikasikan tarball pemeriksaan awal inti yang tepat. Publikasi inti memverifikasi bahwa proses plugin yang dirujuk berstatus `completed/success` pada cabang kanonis dan SHA sumber yang sama persis:
 
 ```bash
 gh workflow run openclaw-npm-release.yml \
@@ -117,421 +94,153 @@ gh workflow run openclaw-npm-release.yml \
   -f preflight_only=false \
   -f npm_dist_tag=extended-stable \
   -f preflight_run_id=<npm-preflight-run-id> \
-  -f full_release_validation_run_id=<full-validation-run-id>
+  -f full_release_validation_run_id=<full-validation-run-id> \
+  -f full_release_validation_run_attempt=<full-validation-run-attempt> \
+  -f plugin_npm_run_id=<plugin-npm-run-id>
 ```
 
-Untuk fork atau latihan non-produksi yang sengaja tidak dapat memenuhi
-kebijakan bulan `.33` atau `main` dilindungi bulanan, tambahkan
-`-f bypass_extended_stable_guard=true` ke dispatch preflight npm dan publish. Nilai
-default adalah `false`. Bypass diterima hanya dengan `npm_dist_tag=extended-stable` dan
-dicatat dalam ringkasan workflow. Ini tidak melewati ref workflow kanonis
-`extended-stable/YYYY.M.33`, kesetaraan ujung branch/tag/checkout, sintaks tag final,
-kesetaraan versi paket/tag, identitas proses dan manifes yang dirujuk,
-provenans tarball, persetujuan environment, pembacaan balik registry, atau bukti
-perbaikan selector.
+Untuk fork atau simulasi nonproduksi yang sengaja tidak dapat memenuhi kebijakan bulanan `.33` atau kebijakan bulan pada `main` yang dilindungi, tambahkan `-f bypass_extended_stable_guard=true` ke dispatch pemeriksaan awal dan publikasi npm. Nilai default-nya adalah `false`. Bypass hanya diterima dengan `npm_dist_tag=extended-stable` dan dicatat dalam ringkasan alur kerja. Bypass ini tidak melewati ref alur kerja kanonis `extended-stable/YYYY.M.33`, kesetaraan ujung cabang/tag/checkout, sintaks tag final, kesetaraan versi paket/tag, identitas proses dan manifes yang dirujuk, asal tarball, persetujuan lingkungan, pembacaan balik registri, atau bukti perbaikan selektor.
 
-Workflow publish memverifikasi identitas proses yang dirujuk, digest tarball
-yang disiapkan, dan kedua selector registry npm. Konfirmasikan hasilnya secara
-independen setelah workflow berhasil:
+Alur kerja publikasi memverifikasi identitas pemeriksaan awal, validasi, dan proses plugin yang dirujuk, digest tarball yang telah disiapkan, serta selektor registri inti. Konfirmasikan hasil secara terpisah setelah alur kerja berhasil:
 
 ```bash
 npm view openclaw@YYYY.M.P version --userconfig "$(mktemp)"
 npm view openclaw@extended-stable version --userconfig "$(mktemp)"
 ```
 
-Kedua perintah harus mengembalikan `YYYY.M.P`. Jika publish berhasil tetapi pembacaan balik
-selector gagal, jangan publikasikan ulang versi paket yang tidak dapat diubah. Gunakan satu
-perintah perbaikan `npm dist-tag add openclaw@YYYY.M.P extended-stable` yang dicetak di
-ringkasan always-run workflow yang gagal, lalu ulangi kedua pembacaan balik independen.
-Rollback ke selector sebelumnya adalah keputusan operator terpisah, bukan
-jalur perbaikan pembacaan balik.
+Kedua perintah harus mengembalikan `YYYY.M.P`. Jika publikasi berhasil tetapi pembacaan balik selektor gagal, jangan memublikasikan ulang versi paket yang permanen. Gunakan satu perintah perbaikan `npm dist-tag add openclaw@YYYY.M.P extended-stable` yang dicetak dalam ringkasan yang selalu dijalankan dari alur kerja yang gagal, lalu ulangi kedua pembacaan balik independen. Pengembalian ke selektor sebelumnya merupakan keputusan operator yang terpisah, bukan jalur perbaikan pembacaan balik.
 
-Checklist reguler di bawah tetap memiliki beta, `latest`, GitHub Release,
-plugin, macOS, Windows, dan publikasi platform lain. Jangan jalankan langkah-langkah tersebut
-untuk jalur extended-stable khusus npm ini.
+Dokumentasi dukungan publik pada awalnya menetapkan Slack, Discord, dan Codex sebagai permukaan plugin extended-stable yang tercakup. Daftar tersebut merupakan pernyataan dukungan, bukan daftar izin kode rilis: setiap plugin resmi yang dapat dipublikasikan ke npm mengikuti jalur publikasi versi yang sama persis.
 
-## Checklist operator rilis reguler
+Daftar periksa reguler di bawah tetap mencakup publikasi beta, `latest`, GitHub Release, plugin, macOS, Windows, dan platform lainnya. Jangan jalankan langkah-langkah tersebut untuk jalur extended-stable khusus npm ini.
 
-Checklist ini adalah bentuk publik dari alur rilis. Kredensial privat,
-penandatanganan, notarization, pemulihan dist-tag, dan detail rollback darurat tetap berada di
-runbook rilis khusus maintainer.
+## Daftar periksa operator rilis reguler
 
-1. Mulai dari `main` saat ini: tarik yang terbaru, konfirmasi commit target sudah di-push,
-   dan konfirmasi CI `main` saat ini cukup hijau untuk membuat cabang darinya.
-2. Hasilkan bagian teratas `CHANGELOG.md` dari PR yang sudah digabungkan dan semua commit
-   langsung sejak tag rilis terakhir yang dapat dijangkau. Buat entri berorientasi pengguna,
-   hapus duplikasi entri PR/commit-langsung yang tumpang tindih, commit penulisan ulangnya, push,
-   lalu rebase/pull sekali lagi sebelum membuat cabang.
-3. Tinjau catatan kompatibilitas rilis di
-   `src/plugins/compat/registry.ts` dan
-   `src/commands/doctor/shared/deprecation-compat.ts`. Hapus kompatibilitas
-   yang kedaluwarsa hanya ketika jalur upgrade tetap tercakup, atau catat mengapa
-   kompatibilitas itu sengaja dipertahankan.
-4. Buat `release/YYYY.M.PATCH` dari `main` saat ini; jangan lakukan pekerjaan rilis normal
-   langsung di `main`.
-5. Naikkan setiap lokasi versi yang diperlukan untuk tag yang dituju, lalu jalankan
-   `pnpm release:prep`. Perintah ini menyegarkan versi Plugin, inventaris Plugin, skema config,
-   metadata config kanal bundel, baseline docs config, ekspor SDK Plugin,
-   dan baseline API SDK Plugin dalam urutan yang benar. Commit setiap drift yang dihasilkan
-   sebelum membuat tag. Lalu jalankan preflight deterministik lokal:
-   `pnpm check:test-types`, `pnpm check:architecture`,
-   `pnpm build && pnpm ui:build`, dan `pnpm release:check`.
-6. Jalankan `OpenClaw NPM Release` dengan `preflight_only=true`. Sebelum tag ada,
-   SHA cabang rilis 40 karakter penuh diperbolehkan untuk preflight khusus validasi.
-   Preflight menghasilkan bukti rilis dependensi untuk graf dependensi yang tepat
-   sedang di-checkout dan menyimpannya di artefak preflight npm. Simpan
-   `preflight_run_id` yang berhasil.
-7. Mulai semua pengujian pra-rilis dengan `Full Release Validation` untuk cabang rilis,
-   tag, atau SHA commit penuh. Ini adalah satu entrypoint manual untuk empat kotak pengujian
-   rilis besar: Vitest, Docker, QA Lab, dan Package.
-8. Jika validasi gagal, perbaiki di cabang rilis dan jalankan ulang file, lane,
-   job workflow, profil package, provider, atau allowlist model terkecil yang gagal
-   yang membuktikan perbaikan. Jalankan ulang payung penuh hanya ketika permukaan yang berubah
-   membuat bukti sebelumnya menjadi usang.
-9. Untuk kandidat beta bertag, jalankan
-   `pnpm release:candidate -- --tag vYYYY.M.PATCH-beta.N` dari cabang
-   `release/YYYY.M.PATCH` yang cocok. Untuk stabil, sertakan juga rilis sumber Windows
-   yang diperlukan:
-   `pnpm release:candidate -- --tag vYYYY.M.PATCH --windows-node-tag vX.Y.Z`.
-   Helper ini menjalankan pemeriksaan rilis-terhasilkan lokal, mengirim atau memverifikasi
-   bukti validasi rilis penuh dan preflight npm, menjalankan bukti fresh/update Parallels
-   terhadap tarball yang disiapkan secara tepat plus bukti package Telegram,
-   mencatat rencana npm Plugin dan ClawHub, serta mencetak perintah
-   `OpenClaw Release Publish` yang tepat hanya setelah bundle bukti hijau.
-   `OpenClaw Release Publish` mengirim package Plugin yang dipilih atau semua yang dapat dipublikasikan
-   ke npm dan set yang sama ke ClawHub secara paralel, lalu mempromosikan
-   artefak preflight npm OpenClaw yang disiapkan dengan dist-tag yang cocok segera setelah
-   publikasi npm Plugin berhasil.
-   Setelah child publikasi npm OpenClaw berhasil, workflow membuat atau memperbarui
-   halaman rilis/prarilis GitHub yang cocok dari bagian `CHANGELOG.md` yang lengkap dan sesuai.
-   Rilis stabil yang dipublikasikan ke npm `latest` menjadi rilis terbaru GitHub;
-   rilis maintenance stabil yang tetap di npm `beta` dibuat dengan GitHub `latest=false`.
-   Workflow ini juga mengunggah bukti dependensi preflight, manifest validasi penuh,
-   dan bukti verifikasi registry pascapublikasi ke rilis GitHub untuk respons insiden
-   pasca-rilis. Workflow publikasi mencetak ID run child segera, menyetujui otomatis
-   gate environment rilis yang boleh disetujui token workflow, merangkum
-   job child yang gagal dengan ekor log, menutup rilis GitHub dan bukti dependensi
-   segera setelah publikasi npm OpenClaw berhasil, menunggu ClawHub setiap kali
-   npm OpenClaw sedang dipublikasikan, lalu menjalankan `pnpm release:verify-beta` dan
-   mengunggah bukti pascapublikasi untuk rilis GitHub, package npm, package npm Plugin
-   terpilih, package ClawHub terpilih, ID run workflow child, dan ID run NPM Telegram
-   opsional. Jalur ClawHub mencoba ulang kegagalan instalasi dependensi CLI yang sementara,
-   memublikasikan Plugin yang lolos preview bahkan ketika satu sel preview flake,
-   dan berakhir dengan verifikasi registry untuk setiap versi Plugin yang diharapkan
-   agar publikasi parsial tetap terlihat dan dapat dicoba ulang. Lalu jalankan acceptance package
-   pascapublikasi terhadap package
-   `openclaw@YYYY.M.PATCH-beta.N` atau
-   `openclaw@beta` yang sudah dipublikasikan. Jika prarilis yang sudah di-push atau dipublikasikan
-   memerlukan perbaikan, buat nomor prarilis berikutnya yang cocok; jangan hapus atau tulis ulang
-   prarilis lama.
-10. Untuk stabil, lanjutkan hanya setelah beta atau kandidat rilis yang sudah diperiksa memiliki
-    bukti validasi yang diperlukan. Publikasi npm stabil juga melalui
-    `OpenClaw Release Publish`, menggunakan kembali artefak preflight yang berhasil melalui
-    `preflight_run_id`; kesiapan rilis macOS stabil juga memerlukan
-    `.zip`, `.dmg`, `.dSYM.zip` yang sudah dipaketkan, dan `appcast.xml` yang diperbarui di `main`.
-    Workflow publikasi macOS memublikasikan appcast bertanda tangan ke `main` publik
-    secara otomatis setelah aset rilis diverifikasi; jika proteksi cabang memblokir
-    push langsung, workflow membuka atau memperbarui PR appcast. Kesiapan Windows Hub stabil
-    memerlukan aset `OpenClawCompanion-Setup-x64.exe`,
-    `OpenClawCompanion-Setup-arm64.exe`, dan
-    `OpenClawCompanion-SHA256SUMS.txt` bertanda tangan di rilis GitHub OpenClaw.
-    Teruskan tag rilis `openclaw/openclaw-windows-node` bertanda tangan yang tepat sebagai
-    `windows_node_tag` dan peta digest installer yang disetujui kandidatnya sebagai
-    `windows_node_installer_digests`; `OpenClaw Release Publish` mempertahankan
-    draft rilis, mengirim `Windows Node Release`, dan memverifikasi ketiga
-    aset sebelum publikasi.
-11. Setelah publikasi, jalankan verifier npm pascapublikasi, E2E Telegram npm-terpublikasi
-    mandiri opsional ketika Anda memerlukan bukti kanal pascapublikasi,
-    promosi dist-tag saat diperlukan, verifikasi halaman rilis GitHub yang dihasilkan,
-    jalankan langkah pengumuman rilis, lalu selesaikan [Penutupan main
-    stabil](#stable-main-closeout) sebelum menyebut rilis stabil selesai.
+Daftar periksa ini merupakan bentuk publik dari alur rilis. Kredensial privat, penandatanganan, notarisasi, pemulihan dist-tag, dan detail rollback darurat tetap berada dalam panduan pelaksanaan rilis khusus pengelola.
+
+1. Mulai dari `main` terkini: tarik perubahan terbaru, konfirmasikan bahwa commit target telah didorong, dan konfirmasikan bahwa CI `main` cukup hijau untuk dijadikan dasar cabang.
+2. Hasilkan bagian teratas `CHANGELOG.md` dari PR yang telah digabungkan dan semua commit langsung sejak tag rilis terakhir yang dapat dijangkau. Pastikan entri berorientasi kepada pengguna, hapus duplikasi antara entri PR dan commit langsung yang tumpang tindih, lakukan commit, dorong, lalu lakukan rebase/tarik sekali lagi sebelum membuat cabang. Ketika tag terkirim yang menyimpang atau forward-port berikutnya mengaitkan kembali PR yang sudah dirilis, teruskan tag tersebut secara eksplisit sebagai `--shipped-ref`; pemverifikasi menggunakan baris PR eksplisit dari catatan kontribusi lengkap dalam bagian bernomor pada snapshot tag, mengabaikan `Unreleased`, serta mencatat inventaris dan jumlah persis PR yang dikecualikan.
+3. Tinjau catatan kompatibilitas rilis di `src/plugins/compat/registry.ts` dan `src/commands/doctor/shared/deprecation-compat.ts`. Hapus kompatibilitas yang kedaluwarsa hanya jika jalur peningkatan tetap tercakup, atau catat alasan kompatibilitas tersebut sengaja dipertahankan.
+4. Buat `release/YYYY.M.PATCH` dari `main` terkini. Jangan lakukan pekerjaan rilis normal secara langsung di `main`.
+5. Naikkan setiap lokasi versi yang diwajibkan untuk tag tersebut, lalu jalankan `pnpm release:prep`. Perintah ini memperbarui secara berurutan versi plugin, shrinkwrap npm, inventaris plugin, skema konfigurasi dasar, metadata konfigurasi kanal bawaan, baseline dokumentasi konfigurasi, ekspor SDK plugin, dan baseline API SDK plugin. Commit setiap penyimpangan yang dihasilkan sebelum membuat tag, lalu jalankan prapemeriksaan lokal deterministik: `pnpm check:test-types`, `pnpm check:architecture`, `pnpm build && pnpm ui:build`, dan `pnpm release:check`.
+6. Jalankan `OpenClaw NPM Release` dengan `preflight_only=true`. Sebelum tag tersedia, SHA cabang rilis lengkap sepanjang 40 karakter diizinkan untuk prapemeriksaan khusus validasi. Prapemeriksaan menghasilkan bukti rilis dependensi untuk grafik dependensi persis yang sedang diperiksa dan menyimpannya dalam artefak prapemeriksaan npm. Simpan `preflight_run_id` yang berhasil.
+7. Mulai semua pengujian prarilis dengan `Full Release Validation` untuk cabang rilis, tag, atau SHA commit lengkap. Ini merupakan satu-satunya titik masuk manual untuk empat kotak pengujian rilis besar: Vitest, Docker, QA Lab, dan Package. Simpan `full_release_validation_run_id` dan `full_release_validation_run_attempt` yang persis; keduanya merupakan input wajib untuk `OpenClaw NPM Release` dan `OpenClaw Release Publish`.
+8. Jika validasi gagal, perbaiki di cabang rilis dan jalankan kembali file, jalur, pekerjaan alur kerja, profil paket, penyedia, atau daftar izin model gagal terkecil yang membuktikan perbaikan. Jalankan kembali keseluruhan payung validasi hanya jika permukaan yang diubah membuat bukti sebelumnya kedaluwarsa.
+9. Untuk kandidat beta bertag, jalankan `pnpm release:candidate -- --tag vYYYY.M.PATCH-beta.N` dari cabang `release/YYYY.M.PATCH` yang sesuai. Untuk stabil, teruskan juga rilis sumber Windows yang diwajibkan: `pnpm release:candidate -- --tag vYYYY.M.PATCH --windows-node-tag vX.Y.Z`. Pembantu menggunakan `main` tepercaya sebagai sumber alur kerja sementara setiap alur kerja menargetkan tag yang persis. Pembantu membuat titik pemeriksaan identitas kandidat/peralatan yang tidak dapat diubah dan ID eksekusi yang dikirim di `.artifacts/release-candidate/<tag>/release-candidate-state.json`; menjalankan kembali perintah yang sama akan melanjutkan eksekusi persis tersebut, sedangkan setiap penyimpangan kandidat, peralatan, profil, atau opsi akan gagal secara tertutup. Sebelum mengirim matriks validasi lengkap, pembantu merender secara deterministik isi rilis GitHub untuk tag yang persis dan menolak judul versi yang hilang, isi yang melampaui batas dan tidak dapat menggunakan bentuk ringkas kanonis, atau asal-usul dasar/target catatan kontribusi yang tidak dapat dijangkau dari tag. Pembantu juga memvalidasi setiap metadata pengecualian baseline terkirim eksplisit terhadap catatan tag kumulatif yang dirujuk. Kemudian pembantu menjalankan pemeriksaan rilis yang dihasilkan secara lokal, mengirim atau memverifikasi validasi rilis lengkap dan bukti prapemeriksaan npm, menjalankan bukti pemasangan baru/pembaruan Parallels terhadap tarball yang disiapkan secara persis beserta bukti paket Telegram, mencatat rencana npm plugin dan ClawHub, serta mencetak perintah `OpenClaw Release Publish` yang persis hanya setelah bundel bukti berstatus hijau.
+
+   `OpenClaw Release Publish` mengirim paket plugin yang dipilih atau seluruh paket yang dapat dipublikasikan ke npm dan kumpulan yang sama ke ClawHub secara paralel, lalu mempromosikan artefak prapemeriksaan npm OpenClaw yang telah disiapkan dengan dist-tag yang sesuai setelah publikasi npm plugin berhasil. Checkout rilis tetap menjadi akar produk/data, sedangkan perencanaan dan verifikasi akhir dijalankan dari checkout sumber alur kerja tepercaya yang persis agar commit rilis lama tidak dapat secara diam-diam menggunakan peralatan rilis usang. Sebelum proses publikasi turunan dimulai, perintah ini merender dan menyimpan dalam cache isi rilis GitHub yang persis. Ketika bagian `CHANGELOG.md` lengkap yang sesuai muat dalam batas 125.000 karakter GitHub dan batas aman 125.000 byte yang sesuai milik perender, halaman memuat bagian `## YYYY.M.PATCH` tersebut secara persis, termasuk judulnya. Ketika bagian sumber tidak muat, halaman mempertahankan catatan editorial berkelompok yang persis dan mengganti catatan kontribusi yang terlalu besar dengan tautan stabil ke catatan lengkap dalam `CHANGELOG.md` yang dipatok ke tag; catatan parsial dan butir yang terpotong tidak pernah dipublikasikan. Alur kerja memilih isi lengkap atau ringkas tersebut sebelum menambahkan `### Verifikasi rilis`; jika bagian akhir bukti akan melampaui batas, alur kerja mempertahankan isi kanonis dan mengandalkan bukti terlampir yang tidak dapat diubah. Rilis stabil yang dipublikasikan ke npm `latest` menjadi rilis terbaru GitHub, sedangkan rilis pemeliharaan stabil yang tetap menggunakan npm `beta` dibuat dengan GitHub `latest=false`. Alur kerja juga mengunggah bukti dependensi prapemeriksaan, manifes validasi lengkap, dan bukti verifikasi registri pascapublikasi ke rilis GitHub untuk penanganan insiden pascarilis. Alur kerja segera mencetak ID eksekusi turunan, menyetujui otomatis gerbang lingkungan rilis yang diizinkan untuk disetujui oleh token alur kerja, meringkas pekerjaan turunan yang gagal beserta bagian akhir log, membuat halaman rilis GitHub draf sejak awal dan mempromosikan aset Windows serta Android secara bersamaan dengan publikasi npm OpenClaw, menyelesaikan halaman rilis dan bukti dependensi setelah tahap-tahap tersebut berhasil, menunggu ClawHub setiap kali npm OpenClaw sedang dipublikasikan, lalu menjalankan pemverifikasi beta dari main tepercaya dan mengunggah bukti pascapublikasi untuk rilis GitHub, paket npm, paket npm plugin yang dipilih, paket ClawHub yang dipilih, ID eksekusi alur kerja turunan, dan ID eksekusi NPM Telegram opsional. Pemverifikasi bootstrap ClawHub mewajibkan jalur dan SHA alur kerja main tepercaya yang persis, percobaan eksekusi produsen dan terminal, SHA rilis, kumpulan paket yang diminta, tuple artefak paket yang tidak dapat diubah, serta artefak pembacaan balik registri terminal; eksekusi referensi rilis lama yang berhasil tidak diterima.
+
+   Kemudian jalankan penerimaan paket pascapublikasi terhadap paket `openclaw@YYYY.M.PATCH-beta.N` atau `openclaw@beta` yang telah dipublikasikan. Jika prarilis yang telah didorong atau dipublikasikan memerlukan perbaikan, buat nomor prarilis berikutnya yang sesuai; jangan pernah menghapus atau menulis ulang nomor lama.
+
+10. Untuk stabil, lanjutkan hanya setelah kandidat beta atau kandidat rilis yang telah diperiksa memiliki bukti validasi yang diwajibkan. Publikasi npm stabil juga dilakukan melalui `OpenClaw Release Publish`, dengan menggunakan kembali artefak prapemeriksaan yang berhasil melalui `preflight_run_id`. Kesiapan rilis macOS stabil juga mewajibkan `.zip`, `.dmg`, `.dSYM.zip` yang telah dipaketkan, dan `appcast.xml` yang diperbarui di `main`; alur kerja publikasi macOS secara otomatis memublikasikan appcast bertanda tangan ke `main` publik setelah aset rilis terverifikasi, atau membuka/memperbarui PR appcast jika perlindungan cabang memblokir dorongan langsung. Kesiapan Windows Hub stabil mewajibkan aset `OpenClawCompanion-Setup-x64.exe`, `OpenClawCompanion-Setup-arm64.exe`, dan `OpenClawCompanion-SHA256SUMS.txt` yang telah ditandatangani pada rilis GitHub OpenClaw. Teruskan tag rilis `openclaw/openclaw-windows-node` bertanda tangan yang persis sebagai `windows_node_tag` dan peta digest penginstalnya yang disetujui kandidat sebagai `windows_node_installer_digests`; `OpenClaw Release Publish` mempertahankan draf rilis, mengirim `Windows Node Release`, dan memverifikasi ketiga aset sebelum publikasi.
+11. Setelah publikasi, jalankan pemverifikasi pascapublikasi npm, E2E Telegram npm-terpublikasi mandiri opsional ketika Anda memerlukan bukti kanal pascapublikasi, promosi dist-tag jika diperlukan, verifikasi halaman rilis GitHub yang dihasilkan, jalankan langkah pengumuman rilis, lalu selesaikan [Penutupan main stabil](#stable-main-closeout) sebelum menyatakan rilis stabil selesai.
 
 ## Penutupan main stabil
 
-Publikasi stabil belum lengkap sampai `main` membawa status rilis yang benar-benar dikirim.
+Publikasi stabil belum selesai sampai `main` memuat keadaan rilis terkirim yang sebenarnya.
 
-1. Mulai dari `main` terbaru yang segar. Audit `release/YYYY.M.PATCH` terhadapnya dan
-   forward-port perbaikan nyata yang tidak ada di `main`. Jangan menggabungkan secara membabi buta
-   adapter kompatibilitas, pengujian, atau validasi khusus rilis ke `main` yang lebih baru.
-2. Set `main` ke versi stabil yang dikirim, bukan train berikutnya yang spekulatif. Jalankan
-   `pnpm release:prep` setelah perubahan versi root, lalu
-   `pnpm deps:shrinkwrap:generate`.
-3. Buat bagian `## YYYY.M.PATCH` di `CHANGELOG.md` pada `main` sama persis dengan
-   cabang rilis bertag. Sertakan pembaruan `appcast.xml` stabil ketika rilis mac
-   memublikasikannya.
-4. Jangan tambahkan `YYYY.M.PATCH+1`, versi beta, atau bagian changelog masa depan kosong
-   ke `main` sampai operator secara eksplisit memulai train rilis itu.
-5. Jalankan `pnpm release:generated:check`, `pnpm deps:shrinkwrap:check`, dan
-   `OPENCLAW_TESTBOX=1 pnpm check:changed`. Push, lalu verifikasi `origin/main`
-   berisi versi dan changelog yang dikirim sebelum menyebut rilis stabil
-   selesai.
-6. Jaga variabel repository `RELEASE_ROLLBACK_DRILL_ID` dan
-   `RELEASE_ROLLBACK_DRILL_DATE` tetap terkini setelah setiap drill rollback privat.
-   `OpenClaw Stable Main Closeout` dimulai dari push `main` yang membawa
-   versi, changelog, dan appcast yang dikirim setelah publikasi stabil. Workflow ini membaca
-   bukti pascapublikasi immutable untuk mengikat tag yang dikirim ke run Full Release
-   Validation dan Publish-nya, lalu memverifikasi status main stabil, rilis,
-   soak stabil wajib, dan bukti performa pemblokir. Workflow ini melampirkan
-   manifest closeout immutable dan checksum ke rilis GitHub. Trigger push otomatis
-   melewati rilis legacy yang mendahului bukti pascapublikasi immutable; workflow tidak pernah
-   memperlakukan skip itu sebagai closeout yang selesai. Closeout lengkap memerlukan kedua
-   aset dan checksum yang cocok. Manifest parsial memutar ulang SHA `main` dan drill rollback
-   yang tercatat untuk menghasilkan ulang byte identik, lalu melampirkan checksum yang hilang;
-   pasangan yang tidak valid, atau checksum tanpa manifest, tetap memblokir. Run yang dipicu push
-   tanpa variabel repository drill rollback melewati tanpa menyelesaikan closeout; catatan drill
-   yang hilang atau berusia lebih dari 90 hari masih memblokir closeout manual berbasis bukti.
-   Perintah pemulihan privat tetap berada di runbook khusus maintainer.
-   Gunakan pengiriman manual hanya untuk memperbaiki atau memutar ulang closeout stabil berbasis bukti.
-   Tag koreksi fallback legacy dapat menggunakan kembali bukti package dasar hanya ketika
-   tag koreksi resolve ke commit sumber yang sama dengan tag stabil dasar.
-   Koreksi dengan sumber berbeda harus memublikasikan dan memverifikasi bukti package-nya sendiri.
+1. Mulai dari `main` terbaru yang baru ditarik. Audit `release/YYYY.M.PATCH` terhadapnya dan lakukan forward-port untuk perbaikan nyata yang belum ada di `main`. Jangan menggabungkan secara membabi buta adaptor kompatibilitas, pengujian, atau validasi khusus rilis ke `main` yang lebih baru.
+2. Atur `main` ke versi stabil terkirim, bukan rangkaian berikutnya yang masih spekulatif. Jalankan `pnpm release:prep` setelah perubahan versi akar, lalu `pnpm deps:shrinkwrap:generate`.
+3. Buat bagian `## YYYY.M.PATCH` pada `CHANGELOG.md` di `main` sama persis dengan cabang rilis bertag. Sertakan pembaruan `appcast.xml` stabil ketika rilis Mac memublikasikannya.
+4. Jangan tambahkan `YYYY.M.PATCH+1`, versi beta, atau bagian catatan perubahan masa depan yang kosong ke `main` sampai operator secara eksplisit memulai rangkaian rilis tersebut.
+5. Jalankan `pnpm release:generated:check`, `pnpm deps:shrinkwrap:check`, dan `OPENCLAW_TESTBOX=1 pnpm check:changed`. Dorong, lalu verifikasi bahwa `origin/main` memuat versi terkirim dan catatan perubahan sebelum menyatakan rilis stabil selesai.
+6. Selalu perbarui variabel repositori `RELEASE_ROLLBACK_DRILL_ID` dan `RELEASE_ROLLBACK_DRILL_DATE` setelah setiap latihan rollback privat.
 
-## Preflight rilis
+`OpenClaw Stable Main Closeout` dimulai dari dorongan `main` yang memuat versi terkirim, catatan perubahan, dan appcast setelah publikasi stabil. Proses ini membaca bukti pascapublikasi yang tidak dapat diubah untuk mengikat tag terkirim ke eksekusi Full Release Validation dan Publish, lalu memverifikasi keadaan main stabil, rilis, masa pemantauan stabil wajib, dan bukti performa yang memblokir. Proses ini melampirkan manifes penutupan yang tidak dapat diubah beserta checksum ke rilis GitHub. Pemicu dorongan otomatis melewati rilis lama yang mendahului bukti pascapublikasi yang tidak dapat diubah dan tidak pernah menganggap pelewatan tersebut sebagai penutupan yang selesai.
 
-- Jalankan `pnpm check:test-types` sebelum preflight rilis agar TypeScript pengujian tetap
-  tercakup di luar gate lokal `pnpm check` yang lebih cepat
-- Jalankan `pnpm check:architecture` sebelum preflight rilis agar pemeriksaan siklus
-  impor yang lebih luas dan batas arsitektur hijau di luar gate lokal yang lebih cepat
-- Jalankan `pnpm build && pnpm ui:build` sebelum `pnpm release:check` agar artefak
-  rilis `dist/*` yang diharapkan dan bundle Control UI tersedia untuk langkah
-  validasi pack
-- Jalankan `pnpm release:prep` setelah bump versi root dan sebelum tagging. Perintah ini
-  menjalankan setiap generator rilis deterministik yang umum bergeser setelah perubahan
-  versi/konfigurasi/API: versi plugin, inventaris plugin, skema konfigurasi dasar,
-  metadata konfigurasi channel bawaan, baseline dokumen konfigurasi, ekspor SDK plugin,
-  dan baseline API SDK plugin. `pnpm release:check` menjalankan ulang guard tersebut
-  dalam mode pemeriksaan dan melaporkan setiap kegagalan drift yang dihasilkan dalam satu
-  lintasan sebelum menjalankan pemeriksaan rilis paket.
-- Sinkronisasi versi plugin memperbarui versi paket plugin resmi dan floor
-  `openclaw.compat.pluginApi` yang ada ke versi rilis OpenClaw secara default.
-  Perlakukan field itu sebagai floor API SDK/runtime plugin, bukan sekadar salinan
-  versi paket: untuk rilis khusus plugin yang sengaja tetap kompatibel dengan host
-  OpenClaw yang lebih lama, pertahankan floor pada API host tertua yang didukung
-  dan dokumentasikan pilihan itu dalam bukti rilis plugin.
-- Jalankan workflow manual `Full Release Validation` sebelum persetujuan rilis untuk
-  memulai semua kotak pengujian pra-rilis dari satu entrypoint. Workflow ini menerima branch,
-  tag, atau SHA commit lengkap, men-dispatch `CI` manual, dan men-dispatch
-  `OpenClaw Release Checks` untuk smoke instalasi, penerimaan paket, pemeriksaan paket
-  lintas-OS, paritas QA Lab, Matrix, dan jalur Telegram. Run stable dan full
-  selalu menyertakan live/E2E menyeluruh dan soak jalur rilis Docker;
-  `run_release_soak=true` dipertahankan untuk soak beta eksplisit. Package
-  Acceptance menyediakan Telegram E2E paket kanonis selama validasi kandidat,
-  sehingga menghindari poller live kedua yang berjalan bersamaan.
-  Berikan `release_package_spec` setelah memublikasikan beta untuk menggunakan ulang
-  paket npm yang sudah dikirim di seluruh pemeriksaan rilis, Package Acceptance, dan
-  Telegram E2E paket tanpa membangun ulang tarball rilis. Berikan
-  `npm_telegram_package_spec` hanya ketika Telegram harus menggunakan paket yang
-  dipublikasikan berbeda dari validasi rilis lainnya. Berikan
-  `package_acceptance_package_spec` ketika Package Acceptance harus menggunakan paket
-  yang dipublikasikan berbeda dari spec paket rilis. Berikan
-  `evidence_package_spec` ketika laporan bukti rilis harus membuktikan bahwa
-  validasi cocok dengan paket npm yang dipublikasikan tanpa memaksa Telegram E2E.
+Penutupan lengkap mewajibkan kedua aset dan checksum yang sesuai. Manifes parsial menjalankan ulang SHA `main` dan latihan rollback yang tercatat untuk menghasilkan kembali byte yang identik, lalu melampirkan checksum yang hilang; pasangan yang tidak valid, atau checksum tanpa manifes, tetap memblokir. Eksekusi yang dipicu oleh dorongan tanpa variabel repositori latihan rollback akan dilewati tanpa menyelesaikan penutupan; catatan latihan yang hilang atau berusia lebih dari 90 hari tetap memblokir penutupan manual berbasis bukti. Perintah pemulihan privat tetap berada dalam panduan operasional khusus pengelola. Gunakan pengiriman manual hanya untuk memperbaiki atau menjalankan ulang penutupan stabil berbasis bukti.
+
+Tag koreksi fallback lama dapat menggunakan kembali bukti paket dasar hanya ketika tag koreksi tersebut merujuk ke commit sumber yang sama dengan tag stabil dasar. Rilis Android-nya menggunakan kembali APK terverifikasi milik tag dasar dan menambahkan asal-usul untuk tag koreksi. Koreksi dengan sumber berbeda harus memublikasikan dan memverifikasi bukti paketnya sendiri serta menggunakan `versionCode` Android yang lebih tinggi.
+
+## Prapemeriksaan rilis
+
+- Jalankan `pnpm check:test-types` sebelum pemeriksaan awal rilis agar TypeScript pengujian tetap tercakup di luar gerbang lokal `pnpm check` yang lebih cepat.
+- Jalankan `pnpm check:architecture` sebelum pemeriksaan awal rilis agar pemeriksaan siklus impor dan batas arsitektur yang lebih luas berhasil di luar gerbang lokal yang lebih cepat.
+- Jalankan `pnpm build && pnpm ui:build` sebelum `pnpm release:check` agar artefak rilis `dist/*` yang diharapkan dan bundel UI Kontrol tersedia untuk langkah validasi paket.
+- Jalankan `pnpm release:prep` setelah menaikkan versi root dan sebelum membuat tag. Perintah ini menjalankan setiap generator rilis deterministik yang biasanya mengalami penyimpangan setelah perubahan versi/konfigurasi/API: versi plugin, shrinkwrap npm, inventaris plugin, skema konfigurasi dasar, metadata konfigurasi kanal yang dibundel, garis dasar dokumentasi konfigurasi, ekspor SDK plugin, dan garis dasar API SDK plugin. `pnpm release:check` menjalankan ulang pemeriksaan tersebut dalam mode pemeriksaan (ditambah pemeriksaan batas permukaan SDK plugin) dan melaporkan setiap kegagalan penyimpangan hasil generasi dalam satu kali proses sebelum menjalankan pemeriksaan rilis paket.
+- Sinkronisasi versi plugin secara default memperbarui paket runtime `@openclaw/ai` yang dapat dipublikasikan, versi paket plugin resmi, dan batas bawah `openclaw.compat.pluginApi` yang ada ke versi rilis OpenClaw. Perlakukan bidang tersebut sebagai batas bawah API SDK/runtime plugin, bukan sekadar salinan versi paket: untuk rilis khusus plugin yang sengaja tetap kompatibel dengan host OpenClaw lama, pertahankan batas bawah pada API host tertua yang didukung dan dokumentasikan pilihan tersebut dalam bukti rilis plugin.
+- Jalankan alur kerja manual `Full Release Validation` sebelum persetujuan rilis untuk memulai semua kotak pengujian prarilis dari satu titik masuk. Alur kerja ini menerima cabang, tag, atau SHA commit lengkap, memicu `CI` manual, serta memicu `OpenClaw Release Checks` untuk pemeriksaan singkat instalasi, penerimaan paket, pemeriksaan paket lintas OS, kesetaraan Lab QA, Matrix, dan jalur Telegram. Proses stabil dan lengkap selalu menyertakan pengujian live/E2E menyeluruh serta pengujian ketahanan jalur rilis Docker; `run_release_soak=true` dipertahankan untuk pengujian ketahanan beta secara eksplisit. Penerimaan Paket menyediakan E2E Telegram paket kanonis selama validasi kandidat, sehingga tidak memerlukan pemantau polling live kedua yang berjalan bersamaan.
+
+  Berikan `release_package_spec` setelah memublikasikan versi beta untuk menggunakan kembali paket npm yang telah dirilis di seluruh pemeriksaan rilis, Penerimaan Paket, dan E2E Telegram paket tanpa membangun ulang tarball rilis. Berikan `npm_telegram_package_spec` hanya ketika Telegram harus menggunakan paket terpublikasi yang berbeda dari bagian validasi rilis lainnya. Berikan `package_acceptance_package_spec` ketika Penerimaan Paket harus menggunakan paket terpublikasi yang berbeda dari spesifikasi paket rilis. Berikan `evidence_package_spec` ketika laporan bukti rilis harus membuktikan bahwa validasi cocok dengan paket npm terpublikasi tanpa memaksa E2E Telegram.
+
+  ```bash
+  gh workflow run full-release-validation.yml --ref main -f ref=release/YYYY.M.PATCH
+  ```
+
+- Jalankan alur kerja manual `Package Acceptance` ketika Anda menginginkan bukti melalui jalur samping untuk kandidat paket sementara pekerjaan rilis berlanjut. Gunakan `source=npm` untuk `openclaw@beta`, `openclaw@latest`, atau versi rilis yang tepat; `source=ref` untuk mengemas cabang/tag/SHA `package_ref` tepercaya dengan harness `workflow_ref` saat ini; `source=url` untuk tarball HTTPS publik dengan SHA-256 wajib dan kebijakan URL publik yang ketat; `source=trusted-url` untuk kebijakan sumber tepercaya bernama yang menggunakan `trusted_source_id` dan SHA-256 wajib; atau `source=artifact` untuk tarball yang diunggah oleh proses GitHub Actions lain.
+
+  Alur kerja ini menetapkan kandidat sebagai `package-under-test`, menggunakan kembali penjadwal rilis E2E Docker terhadap tarball tersebut, dan dapat menjalankan QA Telegram terhadap tarball yang sama dengan `telegram_mode=mock-openai` atau `telegram_mode=live-frontier`. Ketika jalur Docker yang dipilih menyertakan `published-upgrade-survivor`, artefak paket menjadi kandidat dan `published_upgrade_survivor_baseline` memilih garis dasar terpublikasi. `update-restart-auth` menggunakan paket kandidat sebagai CLI yang terinstal sekaligus paket yang diuji agar menjalankan jalur mulai ulang terkelola milik perintah pembaruan kandidat.
+
   Contoh:
-  `gh workflow run full-release-validation.yml --ref main -f ref=release/YYYY.M.PATCH`
-- Jalankan workflow manual `Package Acceptance` ketika Anda menginginkan bukti
-  side-channel untuk kandidat paket sementara pekerjaan rilis berlanjut. Gunakan `source=npm` untuk
-  `openclaw@beta`, `openclaw@latest`, atau versi rilis persis; `source=ref`
-  untuk mengemas branch/tag/SHA `package_ref` tepercaya dengan harness
-  `workflow_ref` saat ini; `source=url` untuk tarball HTTPS publik dengan
-  SHA-256 wajib dan kebijakan URL publik yang ketat; `source=trusted-url` untuk
-  kebijakan sumber tepercaya bernama menggunakan `trusted_source_id` dan SHA-256 wajib; atau
-  `source=artifact` untuk tarball yang diunggah oleh run GitHub Actions lain. Workflow ini
-  menyelesaikan kandidat menjadi
-  `package-under-test`, menggunakan ulang scheduler rilis Docker E2E terhadap
-  tarball tersebut, dan dapat menjalankan QA Telegram terhadap tarball yang sama dengan
-  `telegram_mode=mock-openai` atau `telegram_mode=live-frontier`. Ketika
-  jalur Docker yang dipilih menyertakan `published-upgrade-survivor`, artefak
-  paket adalah kandidat dan `published_upgrade_survivor_baseline` memilih
-  baseline yang dipublikasikan. `update-restart-auth` menggunakan paket kandidat sebagai
-  CLI yang diinstal dan package-under-test sehingga menguji jalur restart terkelola
-  dari perintah update kandidat.
-  Contoh: `gh workflow run package-acceptance.yml --ref main -f workflow_ref=main -f source=npm -f package_spec=openclaw@beta -f suite_profile=product -f published_upgrade_survivor_baseline=openclaw@2026.4.26 -f telegram_mode=mock-openai`
+
+  ```bash
+  gh workflow run package-acceptance.yml --ref main -f workflow_ref=main -f source=npm -f package_spec=openclaw@beta -f suite_profile=product -f published_upgrade_survivor_baseline=openclaw@2026.4.26 -f telegram_mode=mock-openai
+  ```
+
   Profil umum:
-  - `smoke`: jalur instalasi/channel/agent, jaringan gateway, dan reload konfigurasi
-  - `package`: jalur paket/update/restart/plugin yang native-artefak tanpa OpenWebUI atau ClawHub live
-  - `product`: profil paket ditambah channel MCP, pembersihan cron/subagent,
-    pencarian web OpenAI, dan OpenWebUI
-  - `full`: chunk jalur rilis Docker dengan OpenWebUI
-  - `custom`: pilihan `docker_lanes` persis untuk rerun terfokus
-- Jalankan workflow manual `CI` secara langsung ketika Anda hanya memerlukan cakupan CI normal
-  deterministik untuk kandidat rilis. Dispatch CI manual melewati cakupan changed
-  dan memaksa shard Linux Node, shard plugin bawaan, shard kontrak plugin dan
-  channel, kompatibilitas Node 22, `check-*`, `check-additional-*`,
-  pemeriksaan smoke artefak terbangun, pemeriksaan dokumen, Python skills, Windows, macOS, dan
-  jalur i18n Control UI. Run CI manual standalone menjalankan Android hanya ketika di-dispatch
-  dengan `include_android=true`; `Full Release Validation` meneruskan input itu untuk
-  child CI-nya.
-  Contoh dengan Android: `gh workflow run ci.yml --ref release/YYYY.M.PATCH -f include_android=true`
-- Jalankan `pnpm qa:otel:smoke` ketika memvalidasi telemetri rilis. Perintah ini menguji
-  QA-lab melalui receiver OTLP/HTTP lokal dan memverifikasi ekspor trace, metrik, dan log
-  plus atribut trace terbatas serta redaksi konten/identifier tanpa
-  memerlukan Opik, Langfuse, atau collector eksternal lain.
-- Jalankan `pnpm qa:otel:collector-smoke` ketika memvalidasi kompatibilitas collector.
-  Perintah ini merutekan ekspor OTLP QA-lab yang sama melalui container Docker OpenTelemetry Collector
-  nyata sebelum assertion receiver lokal.
-- Jalankan `pnpm qa:prometheus:smoke` ketika memvalidasi scraping Prometheus yang dilindungi.
-  Perintah ini menguji QA-lab, menolak scrape yang tidak terautentikasi, dan memverifikasi
-  keluarga metrik kritis-rilis tetap bebas dari konten prompt, identifier mentah,
-  token auth, dan path lokal.
-- Jalankan `pnpm qa:observability:smoke` ketika Anda menginginkan jalur smoke
-  OpenTelemetry dan Prometheus checkout sumber berjalan berurutan.
-- Jalankan `pnpm release:check` sebelum setiap rilis bertag
-- Preflight `OpenClaw NPM Release` menghasilkan bukti rilis dependensi sebelum
-  mengemas tarball npm. Gate kerentanan advisory npm bersifat
-  pemblokir rilis. Risiko manifes transitif, permukaan kepemilikan/instalasi dependensi,
-  dan laporan perubahan dependensi hanya merupakan bukti rilis. Laporan
-  perubahan dependensi membandingkan kandidat rilis dengan tag rilis terjangkau
-  sebelumnya.
-- Preflight mengunggah bukti dependensi sebagai
-  `openclaw-release-dependency-evidence-<tag>` dan juga menyematkannya di bawah
-  `dependency-evidence/` di dalam artefak preflight npm yang disiapkan. Jalur publish
-  nyata menggunakan ulang artefak preflight itu, lalu melampirkan bukti yang sama
-  ke rilis GitHub sebagai `openclaw-<version>-dependency-evidence.zip`.
-- Jalankan `OpenClaw Release Publish` untuk urutan publish yang memutasi setelah
-  tag ada. Dispatch dari `release/YYYY.M.PATCH` (atau `main` ketika memublikasikan
-  tag yang terjangkau dari main), berikan tag rilis, `preflight_run_id` npm
-  OpenClaw yang berhasil, dan `full_release_validation_run_id` yang berhasil, serta pertahankan
-  cakupan publish plugin default `all-publishable` kecuali Anda sengaja
-  menjalankan perbaikan terfokus. Workflow menserialkan publish npm plugin, publish
-  ClawHub plugin, dan publish npm OpenClaw sehingga paket core tidak dipublikasikan
-  sebelum plugin yang dieksternalisasi.
-- `OpenClaw Release Publish` stable memerlukan `windows_node_tag` persis setelah
-  rilis `openclaw/openclaw-windows-node` non-prerelease yang cocok ada.
-  Workflow ini juga memerlukan map `windows_node_installer_digests` yang disetujui kandidat.
-  Sebelum men-dispatch child publish apa pun, workflow memverifikasi bahwa rilis sumber
-  sudah dipublikasikan, non-prerelease, berisi installer x64/ARM64 yang diperlukan, dan
-  masih cocok dengan map yang disetujui itu. Lalu workflow men-dispatch `Windows Node Release`
-  saat rilis OpenClaw masih berupa draf, membawa map digest installer yang dipin tanpa perubahan.
-  Workflow child
-  mengunduh installer Windows Hub bertanda tangan dari tag persis itu,
-  mencocokkannya dengan digest yang dipin, memverifikasi tanda tangan Authenticode-nya
-  menggunakan signer OpenClaw Foundation yang diharapkan pada runner Windows,
-  menulis manifes SHA-256, dan mengunggah installer plus manifes ke
-  rilis GitHub OpenClaw kanonis, lalu mengunduh ulang aset yang dipromosikan dan
-  memverifikasi keanggotaan manifes serta hash. Parent memverifikasi kontrak aset
-  x64, ARM64, dan checksum saat ini sebelum publikasi. Pemulihan langsung
-  menolak nama aset `OpenClawCompanion-*` yang tidak diharapkan sebelum mengganti
-  aset kontrak yang diharapkan dengan byte sumber yang dipin. Dispatch manual
-  `Windows Node Release` hanya untuk pemulihan, dan selalu berikan tag persis, jangan pernah
-  `latest`, plus map JSON `expected_installer_digests` eksplisit dari rilis sumber
-  yang disetujui. Tautan unduhan situs web harus menargetkan URL aset rilis OpenClaw
-  persis untuk rilis stable saat ini, atau
-  `releases/latest/download/...` hanya setelah memverifikasi redirect latest GitHub
-  mengarah ke rilis yang sama; jangan hanya menautkan ke halaman rilis repo companion.
-- Pemeriksaan rilis sekarang berjalan dalam workflow manual terpisah:
-  `OpenClaw Release Checks`
-- `OpenClaw Release Checks` juga menjalankan jalur paritas mock QA Lab plus profil
-  Matrix live cepat dan jalur QA Telegram sebelum persetujuan rilis. Jalur live
-  menggunakan environment `qa-live-shared`; Telegram juga menggunakan lease kredensial
-  Convex CI. Jalankan workflow manual `QA-Lab - All Lanes` dengan
-  `matrix_profile=all` dan `matrix_shards=true` ketika Anda menginginkan inventaris
-  transport, media, dan E2EE Matrix penuh secara paralel.
-- Validasi runtime instalasi dan upgrade lintas-OS adalah bagian dari
-  `OpenClaw Release Checks` dan `Full Release Validation` publik, yang memanggil
-  workflow reusable
-  `.github/workflows/openclaw-cross-os-release-checks-reusable.yml` secara langsung
-- Pemisahan ini disengaja: jaga agar jalur rilis npm nyata tetap singkat,
-  deterministik, dan berfokus pada artefak, sementara pemeriksaan live yang lebih lambat tetap berada
-  di jalurnya sendiri agar tidak menahan atau memblokir publish
-- Pemeriksaan rilis yang membawa secret harus di-dispatch melalui `Full Release
-Validation` atau dari ref workflow `main`/release agar logika workflow dan
-  secret tetap terkendali
-- `OpenClaw Release Checks` menerima branch, tag, atau SHA commit lengkap selama
-  commit yang diselesaikan dapat dijangkau dari branch OpenClaw atau tag rilis
-- Preflight khusus-validasi `OpenClaw NPM Release` juga menerima SHA commit
-  branch workflow 40 karakter penuh saat ini tanpa memerlukan tag yang sudah di-push
-- Jalur SHA itu hanya untuk validasi dan tidak dapat dipromosikan menjadi publish nyata
-- Dalam mode SHA, workflow menyintesis `v<package.json version>` hanya untuk
-  pemeriksaan metadata paket; publish nyata tetap memerlukan tag rilis nyata
-- Kedua workflow mempertahankan jalur publish dan promosi nyata di runner yang di-host GitHub,
-  sementara jalur validasi non-mutasi dapat menggunakan runner Linux Blacksmith yang lebih besar
-- Workflow itu menjalankan
-  `OPENCLAW_LIVE_TEST=1 OPENCLAW_LIVE_CACHE_TEST=1 pnpm test:live:cache`
-  menggunakan secret workflow `OPENAI_API_KEY` dan `ANTHROPIC_API_KEY`
-- Preflight rilis npm tidak lagi menunggu jalur pemeriksaan rilis terpisah
-- Sebelum men-tag kandidat rilis secara lokal, jalankan
-  `RELEASE_TAG=vYYYY.M.PATCH-beta.N pnpm release:fast-pretag-check`. Helper ini
-  menjalankan guardrail rilis cepat, pemeriksaan rilis npm/ClawHub plugin, build,
-  build UI, dan `release:openclaw:npm:check` dalam urutan yang menangkap kesalahan
-  umum yang memblokir persetujuan sebelum workflow publish GitHub dimulai.
-- Jalankan `RELEASE_TAG=vYYYY.M.PATCH node --import tsx scripts/openclaw-npm-release-check.ts`
-  (atau tag beta/koreksi yang cocok) sebelum persetujuan
-- Setelah npm publish, jalankan
-  `node --import tsx scripts/openclaw-npm-postpublish-verify.ts YYYY.M.PATCH`
-  (atau versi beta/koreksi yang sesuai) untuk memverifikasi jalur instalasi registry
-  yang telah dipublikasikan dalam prefiks sementara baru
-- Setelah publikasi beta, jalankan `OPENCLAW_NPM_TELEGRAM_PACKAGE_SPEC=openclaw@YYYY.M.PATCH-beta.N OPENCLAW_NPM_TELEGRAM_CREDENTIAL_SOURCE=convex OPENCLAW_NPM_TELEGRAM_CREDENTIAL_ROLE=ci pnpm test:docker:npm-telegram-live`
-  untuk memverifikasi onboarding paket terinstal, penyiapan Telegram, dan E2E Telegram nyata
-  terhadap paket npm yang telah dipublikasikan menggunakan kumpulan kredensial Telegram
-  sewaan bersama. One-off maintainer lokal dapat menghilangkan variabel Convex dan meneruskan tiga
-  kredensial env `OPENCLAW_QA_TELEGRAM_*` secara langsung.
-- Untuk menjalankan smoke beta pascapublikasi penuh dari mesin maintainer, gunakan `pnpm release:beta-smoke -- --beta betaN`. Helper menjalankan validasi pembaruan npm Parallels/target baru, memicu `NPM Telegram Beta E2E`, melakukan polling pada run workflow yang tepat, mengunduh artefak, dan mencetak laporan Telegram.
-- Maintainer dapat menjalankan pemeriksaan pascapublikasi yang sama dari GitHub Actions melalui workflow
-  manual `NPM Telegram Beta E2E`. Ini sengaja hanya manual dan
-  tidak berjalan pada setiap merge.
-- Otomasi rilis maintainer sekarang menggunakan preflight-lalu-promote:
-  - publikasi npm nyata harus lulus npm `preflight_run_id` yang berhasil
-  - publikasi npm nyata harus dipicu dari branch `main` atau
-    `release/YYYY.M.PATCH` yang sama dengan run preflight yang berhasil
-  - rilis npm stable secara default menggunakan `beta`
-  - publikasi npm stable dapat menargetkan `latest` secara eksplisit melalui input workflow
-  - mutasi dist-tag npm berbasis token sekarang berada di
-    `openclaw/releases/.github/workflows/openclaw-npm-dist-tags.yml` karena
-    `npm dist-tag add` masih memerlukan `NPM_TOKEN` sementara repo sumber tetap menggunakan
-    publikasi hanya OIDC
-  - `macOS Release` publik bersifat hanya validasi; ketika tag hanya berada pada
-    branch rilis tetapi workflow dipicu dari `main`, setel
-    `public_release_branch=release/YYYY.M.PATCH`
-  - publikasi macOS nyata harus lulus macOS `preflight_run_id` dan
-    `validate_run_id` yang berhasil
-  - jalur publikasi nyata mempromosikan artefak yang telah disiapkan alih-alih membangunnya
-    lagi
-- Untuk rilis koreksi stable seperti `YYYY.M.PATCH-N`, verifier pascapublikasi
-  juga memeriksa jalur upgrade prefiks sementara yang sama dari `YYYY.M.PATCH` ke `YYYY.M.PATCH-N`
-  sehingga koreksi rilis tidak dapat secara diam-diam membiarkan instalasi global lama tetap pada
-  payload stable dasar
-- Preflight rilis npm gagal tertutup kecuali tarball menyertakan keduanya
-  `dist/control-ui/index.html` dan payload `dist/control-ui/assets/` yang tidak kosong
-  sehingga kita tidak mengirim dashboard browser kosong lagi
-- Verifikasi pascapublikasi juga memeriksa bahwa entrypoint plugin yang dipublikasikan dan
-  metadata paket ada dalam tata letak registry yang terinstal. Rilis yang
-  mengirim payload runtime plugin yang hilang akan gagal pada verifier pascapublikasi dan
-  tidak dapat dipromosikan ke `latest`.
-- `pnpm test:install:smoke` juga memberlakukan batas `unpackedSize` npm pack pada
-  tarball pembaruan kandidat, sehingga e2e installer menangkap pembengkakan pack yang tidak disengaja
-  sebelum jalur publikasi rilis
-- Jika pekerjaan rilis menyentuh perencanaan CI, manifes timing plugin, atau
-  matriks pengujian plugin, regenerasikan dan tinjau output matriks milik planner
-  `plugin-prerelease-extension-shard` dari
-  `.github/workflows/plugin-prerelease.yml` sebelum persetujuan sehingga catatan rilis tidak
-  menggambarkan tata letak CI yang usang
-- Kesiapan rilis macOS stable juga mencakup permukaan updater:
-  - rilis GitHub harus berakhir dengan `.zip`, `.dmg`, dan `.dSYM.zip` yang dipaketkan
-  - `appcast.xml` pada `main` harus menunjuk ke zip stable baru setelah publikasi; workflow
-    publikasi macOS meng-commit-nya secara otomatis, atau membuka PR appcast
-    ketika push langsung diblokir
-  - aplikasi yang dipaketkan harus mempertahankan bundle id non-debug, URL feed Sparkle
-    yang tidak kosong, dan `CFBundleVersion` pada atau di atas batas bawah build Sparkle kanonis
-    untuk versi rilis tersebut
+  - `smoke`: jalur instalasi/kanal/agen, jaringan gateway, dan pemuatan ulang konfigurasi
+  - `package`: jalur paket/pembaruan/mulai ulang/plugin berbasis artefak tanpa OpenWebUI atau ClawHub live
+  - `product`: profil paket ditambah kanal MCP, pembersihan cron/subagen, pencarian web OpenAI, dan OpenWebUI
+  - `full`: bagian jalur rilis Docker dengan OpenWebUI
+  - `custom`: pemilihan `docker_lanes` yang tepat untuk menjalankan ulang secara terfokus
 
-## Kotak uji rilis
+- Jalankan alur kerja manual `CI` secara langsung ketika Anda hanya memerlukan cakupan CI normal yang deterministik untuk kandidat rilis. Pemicu CI manual mengabaikan pembatasan berdasarkan perubahan dan memaksa shard Node Linux, shard plugin yang dibundel, shard kontrak plugin dan kanal, kompatibilitas Node 22, `check-*`, `check-additional-*`, pemeriksaan singkat artefak hasil build, pemeriksaan dokumentasi, Skills Python, Windows, macOS, dan jalur i18n UI Kontrol. Proses CI manual mandiri menjalankan Android hanya ketika dipicu dengan `include_android=true`; `Full Release Validation` meneruskan masukan tersebut kepada proses CI turunannya.
 
-`Full Release Validation` adalah cara operator memulai semua pengujian pra-rilis dari
-satu titik masuk. Untuk bukti commit yang dipatok pada branch yang bergerak cepat, gunakan
-helper agar setiap workflow anak berjalan dari branch sementara yang ditetapkan pada target
-SHA:
+  ```bash
+  gh workflow run ci.yml --ref release/YYYY.M.PATCH -f include_android=true
+  ```
+
+- Jalankan `pnpm qa:otel:smoke` saat memvalidasi telemetri rilis. Perintah ini menjalankan Lab QA melalui penerima OTLP/HTTP lokal dan memverifikasi ekspor jejak, metrik, dan log serta atribut jejak yang dibatasi dan penyamaran konten/pengidentifikasi tanpa memerlukan Opik, Langfuse, atau pengumpul eksternal lainnya.
+- Jalankan `pnpm qa:otel:collector-smoke` saat memvalidasi kompatibilitas pengumpul. Perintah ini merutekan ekspor OTLP Lab QA yang sama melalui kontainer Docker OpenTelemetry Collector nyata sebelum menjalankan pemeriksaan penerima lokal.
+- Jalankan `pnpm qa:prometheus:smoke` saat memvalidasi pengambilan data Prometheus yang dilindungi. Perintah ini menjalankan Lab QA, menolak pengambilan data tanpa autentikasi, dan memverifikasi bahwa keluarga metrik yang sangat penting bagi rilis tetap bebas dari konten prompt, pengidentifikasi mentah, token autentikasi, dan jalur lokal.
+- Jalankan `pnpm qa:observability:smoke` untuk menjalankan jalur pemeriksaan singkat OpenTelemetry dan Prometheus dari checkout sumber secara berurutan.
+- Jalankan `pnpm release:check` sebelum setiap rilis bertag.
+- Pemeriksaan awal `OpenClaw NPM Release` menghasilkan bukti rilis dependensi sebelum mengemas tarball npm. Gerbang kerentanan advisori npm memblokir rilis jika gagal. Risiko manifes transitif, permukaan kepemilikan/instalasi dependensi, dan laporan perubahan dependensi hanya merupakan bukti rilis. Laporan perubahan dependensi membandingkan kandidat rilis dengan tag rilis sebelumnya yang dapat dijangkau. Pemeriksaan awal mengunggah bukti dependensi sebagai `openclaw-release-dependency-evidence-<tag>` dan juga menyematkannya di bawah `dependency-evidence/` dalam artefak pemeriksaan awal npm yang telah disiapkan. Jalur publikasi sebenarnya menggunakan kembali artefak pemeriksaan awal tersebut, lalu melampirkan bukti yang sama ke rilis GitHub sebagai `openclaw-<version>-dependency-evidence.zip`.
+- Jalankan `OpenClaw Release Publish` untuk urutan publikasi yang mengubah keadaan setelah tag tersedia. Picu publikasi beta dan stabil biasa dari `main` tepercaya; tag rilis tetap memilih commit target yang tepat dan dapat menunjuk ke `release/YYYY.M.PATCH`. Publikasi alfa Tideclaw tetap berada di cabang alfa yang sesuai. Teruskan `preflight_run_id` npm OpenClaw yang berhasil, `full_release_validation_run_id` yang berhasil, dan `full_release_validation_run_attempt` yang tepat, serta pertahankan cakupan publikasi plugin bawaan `all-publishable` kecuali Anda sengaja menjalankan perbaikan terfokus. Alur kerja menserialkan publikasi npm plugin, publikasi ClawHub plugin, dan publikasi npm OpenClaw agar paket inti tidak dipublikasikan sebelum plugin yang dieksternalisasi; promosi Windows dan Android berjalan bersamaan dengan publikasi npm inti terhadap halaman draf rilis. Proses ulang publikasi dapat dilanjutkan: versi npm inti yang sudah dipublikasikan akan melewati pemicu inti setelah alur kerja membuktikan bahwa tarball registri cocok dengan artefak pemeriksaan awal milik tag, dan promosi Windows/Android dilewati ketika rilis sudah memiliki kontrak aset yang terverifikasi, sehingga percobaan ulang hanya mengulangi tahap yang gagal. Perbaikan terfokus khusus plugin memerlukan `plugin_publish_scope=selected` dan daftar plugin yang tidak kosong. Proses khusus plugin dengan `all-publishable` memerlukan bukti pemeriksaan awal lengkap yang tidak dapat diubah dan bukti Validasi Rilis Lengkap; bukti parsial ditolak.
+- `OpenClaw Release Publish` stabil memerlukan `windows_node_tag` yang tepat setelah tersedia rilis non-prarilis `openclaw/openclaw-windows-node` yang sesuai, beserta peta `windows_node_installer_digests` yang disetujui untuk kandidat. Sebelum memicu turunan publikasi apa pun, alur kerja memverifikasi bahwa rilis sumber tersebut telah dipublikasikan, bukan prarilis, berisi penginstal x64/ARM64 yang diwajibkan, dan masih cocok dengan peta yang disetujui tersebut. Kemudian alur kerja memicu `Windows Node Release` selagi rilis OpenClaw masih berupa draf, dengan meneruskan peta digest penginstal yang disematkan tanpa perubahan. Alur kerja turunan mengunduh penginstal Windows Hub yang telah ditandatangani dari tag tersebut secara tepat, mencocokkannya dengan digest yang disematkan, memverifikasi bahwa tanda tangan Authenticode-nya menggunakan penanda tangan OpenClaw Foundation yang diharapkan pada runner Windows, menulis manifes SHA-256, dan mengunggah penginstal beserta manifes ke rilis GitHub OpenClaw kanonis, lalu mengunduh ulang aset yang dipromosikan dan memverifikasi keanggotaan serta hash manifes. Alur kerja induk memverifikasi kontrak aset x64, ARM64, dan checksum saat ini sebelum publikasi. Pemulihan langsung menolak nama aset `OpenClawCompanion-*` yang tidak diharapkan sebelum mengganti aset kontrak yang diharapkan dengan byte sumber yang disematkan.
+
+  Picu `Windows Node Release` secara manual hanya untuk pemulihan, dan selalu teruskan tag yang tepat, jangan pernah `latest`, beserta peta JSON `expected_installer_digests` eksplisit dari rilis sumber yang disetujui. Tautan unduhan situs web harus mengarah ke URL aset rilis OpenClaw yang tepat untuk rilis stabil saat ini, atau `releases/latest/download/...` hanya setelah memverifikasi bahwa pengalihan terbaru GitHub mengarah ke rilis yang sama; jangan hanya menautkan ke halaman rilis repositori pendamping.
+
+- Pemeriksaan rilis kini berjalan dalam alur kerja manual terpisah: `OpenClaw Release Checks`. Alur ini juga menjalankan jalur paritas mock QA Lab serta profil Matrix live cepat dan jalur QA Telegram sebelum persetujuan rilis. Jalur live menggunakan lingkungan `qa-live-shared`; Telegram juga menggunakan penyewaan kredensial CI Convex. Jalankan alur kerja manual `QA-Lab - All Lanes` dengan `matrix_profile=all` dan `matrix_shards=true` ketika Anda ingin menjalankan inventaris lengkap transportasi, media, dan E2EE Matrix secara paralel.
+- Validasi runtime instalasi dan peningkatan lintas-OS merupakan bagian dari `OpenClaw Release Checks` dan `Full Release Validation` publik, yang memanggil alur kerja yang dapat digunakan kembali `.github/workflows/openclaw-cross-os-release-checks-reusable.yml` secara langsung. Pemisahan ini disengaja: menjaga jalur rilis npm yang sebenarnya tetap singkat, deterministik, dan berfokus pada artefak, sementara pemeriksaan live yang lebih lambat tetap berada di jalurnya sendiri agar tidak menunda atau memblokir publikasi.
+- Pemeriksaan rilis yang memuat rahasia harus dipicu melalui `Full Release Validation` atau dari referensi alur kerja `main`/rilis agar logika alur kerja dan rahasia tetap terkendali.
+- `OpenClaw Release Checks` menerima cabang, tag, atau SHA commit lengkap selama commit yang dihasilkan dapat dijangkau dari cabang OpenClaw atau tag rilis.
+- Pra-pemeriksaan khusus validasi `OpenClaw NPM Release` juga menerima SHA commit lengkap 40 karakter dari cabang alur kerja saat ini tanpa memerlukan tag yang telah didorong. Jalur SHA tersebut hanya untuk validasi dan tidak dapat dipromosikan menjadi publikasi sebenarnya. Dalam mode SHA, alur kerja menyintesis `v<package.json version>` hanya untuk pemeriksaan metadata paket; publikasi sebenarnya tetap memerlukan tag rilis yang nyata.
+- Kedua alur kerja mempertahankan jalur publikasi dan promosi sebenarnya pada runner yang dihosting GitHub, sedangkan jalur validasi yang tidak melakukan mutasi dapat menggunakan runner Linux Blacksmith yang lebih besar.
+- Alur kerja tersebut menjalankan `OPENCLAW_LIVE_TEST=1 OPENCLAW_LIVE_CACHE_TEST=1 pnpm test:live:cache` menggunakan rahasia alur kerja `OPENAI_API_KEY` dan `ANTHROPIC_API_KEY`.
+- Pra-pemeriksaan rilis npm tidak lagi menunggu jalur pemeriksaan rilis yang terpisah.
+- Sebelum menandai kandidat rilis secara lokal, jalankan `RELEASE_TAG=vYYYY.M.PATCH-beta.N pnpm release:fast-pretag-check`. Pembantu tersebut menjalankan pembatas pengaman rilis cepat, pemeriksaan rilis npm/ClawHub Plugin, build, build UI, dan `release:openclaw:npm:check` dalam urutan yang mendeteksi kesalahan umum yang memblokir persetujuan sebelum alur kerja publikasi GitHub dimulai.
+- Jalankan `RELEASE_TAG=vYYYY.M.PATCH node --import tsx scripts/openclaw-npm-release-check.ts` (atau tag prarilis/koreksi yang sesuai) sebelum persetujuan.
+- Setelah publikasi npm, jalankan `node --import tsx scripts/openclaw-npm-postpublish-verify.ts YYYY.M.PATCH` (atau versi beta/koreksi yang sesuai) untuk memverifikasi jalur instalasi registri yang telah dipublikasikan dalam prefiks sementara yang baru.
+- Setelah publikasi beta, jalankan `OPENCLAW_NPM_TELEGRAM_PACKAGE_SPEC=openclaw@YYYY.M.PATCH-beta.N OPENCLAW_NPM_TELEGRAM_CREDENTIAL_SOURCE=convex OPENCLAW_NPM_TELEGRAM_CREDENTIAL_ROLE=ci pnpm test:docker:npm-telegram-live` untuk memverifikasi orientasi paket terinstal, penyiapan Telegram, dan E2E Telegram nyata terhadap paket npm yang dipublikasikan menggunakan kumpulan kredensial Telegram sewaan bersama. Untuk proses satu kali lokal, pengelola dapat menghilangkan variabel Convex dan meneruskan tiga kredensial lingkungan `OPENCLAW_QA_TELEGRAM_*` secara langsung.
+- Untuk menjalankan smoke beta pascapublikasi lengkap dari mesin pengelola, gunakan `pnpm release:beta-smoke -- --beta betaN`. Pembantu tersebut menjalankan validasi pembaruan npm Parallels/target baru, memicu `NPM Telegram Beta E2E`, memantau proses alur kerja yang tepat, mengunduh artefak, dan mencetak laporan Telegram.
+- Pengelola dapat menjalankan pemeriksaan pascapublikasi yang sama dari GitHub Actions melalui alur kerja manual `NPM Telegram Beta E2E`. Alur ini sengaja hanya bersifat manual dan tidak berjalan pada setiap penggabungan.
+- Otomatisasi rilis pengelola menggunakan pra-pemeriksaan-lalu-promosi:
+  - Publikasi npm sebenarnya harus lulus `preflight_run_id` npm yang berhasil.
+  - Orkestrasi dan pra-pemeriksaan publikasi beta reguler serta stabil menggunakan `main` tepercaya terhadap tag target yang tepat. Publikasi dan pra-pemeriksaan alfa Tideclaw menggunakan cabang alfa yang sesuai.
+  - Rilis npm stabil menggunakan `beta` secara default; publikasi npm stabil dapat menargetkan `latest` secara eksplisit melalui masukan alur kerja.
+  - Mutasi dist-tag npm berbasis token berada di `openclaw/releases/.github/workflows/openclaw-npm-dist-tags.yml` karena `npm dist-tag add` masih memerlukan `NPM_TOKEN`, sementara repositori sumber mempertahankan publikasi khusus OIDC.
+  - `macOS Release` publik hanya untuk validasi; ketika sebuah tag hanya berada pada cabang rilis tetapi alur kerja dipicu dari `main`, tetapkan `public_release_branch=release/YYYY.M.PATCH`.
+  - Publikasi macOS sebenarnya harus lulus `preflight_run_id` dan `validate_run_id` macOS yang berhasil.
+  - Jalur publikasi sebenarnya mempromosikan artefak yang telah disiapkan alih-alih membangunnya kembali.
+- Untuk rilis koreksi stabil seperti `YYYY.M.PATCH-N`, pemverifikasi pascapublikasi juga memeriksa jalur peningkatan prefiks sementara yang sama dari `YYYY.M.PATCH` ke `YYYY.M.PATCH-N` agar koreksi rilis tidak secara diam-diam membiarkan instalasi global lama tetap menggunakan payload stabil dasar.
+- Pra-pemeriksaan rilis npm gagal secara tertutup kecuali tarball menyertakan `dist/control-ui/index.html` dan payload `dist/control-ui/assets/` yang tidak kosong, agar kita tidak kembali mengirim dasbor peramban kosong.
+- Verifikasi pascapublikasi juga memeriksa bahwa titik masuk Plugin yang dipublikasikan dan metadata paket tersedia dalam tata letak registri yang terinstal. Rilis yang dikirim tanpa payload runtime Plugin akan gagal pada pemverifikasi pascapublikasi dan tidak dapat dipromosikan ke `latest`.
+- `pnpm test:install:smoke` juga memberlakukan anggaran `unpackedSize` paket npm pada tarball pembaruan kandidat, sehingga E2E penginstal mendeteksi pembengkakan paket yang tidak disengaja sebelum jalur publikasi rilis.
+- Jika pekerjaan rilis menyentuh perencanaan CI, manifes waktu ekstensi, atau matriks pengujian ekstensi, buat ulang dan tinjau keluaran matriks `plugin-prerelease-extension-shard` milik perencana dari `.github/workflows/plugin-prerelease.yml` sebelum persetujuan agar catatan rilis tidak menjelaskan tata letak CI yang usang.
+- Kesiapan rilis macOS stabil juga mencakup permukaan pembaru: rilis GitHub pada akhirnya harus memiliki paket `.zip`, `.dmg`, dan `.dSYM.zip`; `appcast.xml` pada `main` harus menunjuk ke zip stabil baru setelah publikasi (alur kerja publikasi macOS meng-commit-nya secara otomatis, atau membuka PR appcast ketika pendorongan langsung diblokir); aplikasi yang dipaketkan harus mempertahankan id bundel non-debug, URL umpan Sparkle yang tidak kosong, dan `CFBundleVersion` yang sama dengan atau lebih tinggi dari batas minimum build Sparkle kanonis untuk versi rilis tersebut.
+
+## Kotak pengujian rilis
+
+`Full Release Validation` adalah cara operator memulai semua pengujian prarilis dari satu titik masuk. Untuk pembuktian commit yang disematkan pada cabang yang bergerak cepat, gunakan pembantu agar setiap alur kerja anak berjalan dari cabang sementara yang ditetapkan pada satu SHA alur kerja `main` tepercaya, sementara commit yang diminta tetap menjadi kandidat yang diuji:
 
 ```bash
 pnpm ci:full-release --sha <full-sha>
 ```
 
-Helper tersebut mendorong `release-ci/<sha>-...`, menjalankan `Full Release Validation`
-dari branch itu dengan `ref=<sha>`, memverifikasi setiap workflow anak `headSha`
-cocok dengan target, lalu menghapus branch sementara. Ini menghindari pembuktian
-run anak `main` yang lebih baru secara tidak sengaja.
+Pembantu tersebut mengambil `origin/main` saat ini, mendorong `release-ci/<workflow-sha>-...` pada commit alur kerja tepercaya tersebut, memicu `Full Release Validation` dari cabang sementara dengan `ref=<target-sha>`, menggunakan kembali bukti target persis yang ketat jika tersedia, memverifikasi bahwa setiap `headSha` alur kerja anak cocok dengan SHA alur kerja induk yang disematkan, lalu menghapus cabang sementara. Teruskan `-f reuse_evidence=false` untuk memaksa proses baru atau `--workflow-sha <trusted-main-sha>` untuk menyematkan commit lama yang masih dapat dijangkau dari `origin/main` saat ini. Alur kerja itu sendiri tidak pernah menulis referensi repositori. Hal ini menjaga perkakas rilis khusus-main tetap tersedia tanpa menambahkan commit perkakas ke kandidat dan menghindari pembuktian proses anak `main` yang lebih baru secara tidak sengaja.
 
-Untuk validasi branch rilis atau tag, jalankan dari ref workflow `main` yang tepercaya
-dan berikan branch rilis atau tag sebagai `ref`:
+Untuk validasi cabang atau tag rilis, jalankan dari referensi alur kerja `main` tepercaya dan teruskan cabang atau tag rilis sebagai `ref`:
 
 ```bash
 gh workflow run full-release-validation.yml \
@@ -543,61 +252,33 @@ gh workflow run full-release-validation.yml \
   -f evidence_package_spec=openclaw@YYYY.M.PATCH-beta.N
 ```
 
-Workflow menyelesaikan ref target, menjalankan `CI` manual dengan
-`target_ref=<release-ref>`, lalu menjalankan `OpenClaw Release Checks`.
-`OpenClaw Release Checks` menyebar ke install smoke, pemeriksaan rilis lintas-OS,
-cakupan jalur rilis Docker live/E2E saat soak diaktifkan, Package Acceptance
-dengan E2E paket Telegram kanonis, paritas QA Lab, Matrix live, dan Telegram
-live. Run penuh/semua hanya dapat diterima ketika ringkasan `Full Release Validation`
-menampilkan `normal_ci`, `plugin_prerelease`, dan `release_checks` sebagai
-berhasil, kecuali rerun terfokus sengaja melewati anak `Plugin
-Prerelease` terpisah. Gunakan anak mandiri `npm-telegram` hanya untuk rerun
-paket-terbit terfokus dengan `release_package_spec` atau
-`npm_telegram_package_spec`. Ringkasan verifier akhir menyertakan tabel job
-paling lambat untuk setiap run anak, sehingga manajer rilis dapat melihat jalur
-kritis saat ini tanpa mengunduh log.
-Lihat [Validasi rilis penuh](/id/reference/full-release-validation) untuk matriks
-tahap lengkap, nama job workflow yang tepat, perbedaan profil stable versus full,
-artefak, dan handle rerun terfokus.
-Workflow anak dijalankan dari ref tepercaya yang menjalankan `Full Release
-Validation`, biasanya `--ref main`, bahkan ketika target `ref` menunjuk ke
-branch rilis atau tag yang lebih lama. Tidak ada input ref workflow Full Release
-Validation yang terpisah; pilih harness tepercaya dengan memilih ref run workflow.
-Jangan gunakan `--ref main -f ref=<sha>` untuk bukti commit tepat pada `main` yang bergerak;
-SHA commit mentah tidak dapat menjadi ref workflow dispatch, jadi gunakan
-`pnpm ci:full-release --sha <sha>` untuk membuat branch sementara yang dipatok.
+Alur kerja menyelesaikan referensi target, memicu `CI` manual dengan `target_ref=<release-ref>`, lalu memicu `OpenClaw Release Checks`. `OpenClaw Release Checks` menyebarkan smoke instalasi, pemeriksaan rilis lintas-OS, cakupan jalur rilis Docker live/E2E ketika soak diaktifkan, Penerimaan Paket dengan E2E paket Telegram kanonis, paritas QA Lab, Matrix live, dan Telegram live. Proses lengkap/semua hanya dapat diterima ketika ringkasan `Full Release Validation` menunjukkan `normal_ci`, `plugin_prerelease`, dan `release_checks` berhasil, kecuali proses ulang terfokus sengaja melewati anak `Plugin Prerelease` yang terpisah. Gunakan anak mandiri `npm-telegram` hanya untuk proses ulang terfokus paket yang dipublikasikan dengan `release_package_spec` atau `npm_telegram_package_spec`. Ringkasan pemverifikasi akhir menyertakan tabel pekerjaan paling lambat untuk setiap proses anak, sehingga pengelola rilis dapat melihat jalur kritis saat ini tanpa mengunduh log.
 
-Gunakan `release_profile` untuk memilih keluasan live/provider:
+Anak kinerja produk hanya menghasilkan artefak dalam jalur rilis ini. Alur
+payung memicunya dengan `publish_reports=false`, dan validasi ditolak
+kecuali pembatas khusus artefaknya membuktikan bahwa penerbit laporan Clawgrit tetap
+dilewati.
 
-- `minimum`: jalur Docker dan live OpenAI/core yang paling cepat dan kritis untuk rilis
-- `stable`: minimum plus cakupan provider/backend stable untuk persetujuan rilis
-- `full`: stable plus cakupan provider/media advisory yang luas
+Lihat [Validasi rilis lengkap](/id/reference/full-release-validation) untuk matriks tahapan lengkap, nama pekerjaan alur kerja yang tepat, perbedaan profil stabil dan lengkap, artefak, serta pengendali proses ulang terfokus.
 
-Validasi stable dan full selalu menjalankan sweep live/E2E, Docker jalur rilis,
-dan upgrade-survivor paket terbit terbatas yang menyeluruh sebelum promosi.
-Gunakan `run_release_soak=true` untuk meminta sweep yang sama untuk beta. Sweep tersebut mencakup
-empat paket stable terbaru plus baseline `2026.4.23` dan `2026.5.2` yang dipatok
-plus cakupan `2026.4.15` yang lebih lama, dengan baseline duplikat dihapus dan
-setiap baseline di-shard ke job runner Docker tersendiri.
+Alur kerja anak dipicu dari referensi tepercaya yang menjalankan `Full Release Validation`, biasanya `--ref main`, bahkan ketika `ref` target menunjuk ke cabang atau tag rilis yang lebih lama. Setiap proses anak harus menggunakan SHA alur kerja induk yang tepat; jika `main` bergerak maju sebelum pemicuan anak diselesaikan, alur payung akan gagal secara tertutup. Tidak ada masukan referensi alur kerja Full Release Validation yang terpisah; pilih perangkat uji tepercaya dengan memilih referensi proses alur kerja. Jangan gunakan `--ref main -f ref=<sha>` untuk pembuktian commit persis pada `main` yang bergerak; SHA commit mentah tidak dapat menjadi referensi pemicuan alur kerja, jadi gunakan `pnpm ci:full-release --sha <target-sha>` untuk membuat cabang sementara pada `origin/main` tepercaya sambil mempertahankan SHA target sebagai masukan kandidat.
 
-`OpenClaw Release Checks` menggunakan ref workflow tepercaya untuk menyelesaikan ref target
-sekali sebagai `release-package-under-test` dan menggunakan kembali artefak tersebut di
-pemeriksaan lintas-OS, Package Acceptance, dan Docker jalur rilis saat soak berjalan. Ini menjaga
-semua kotak yang berhadapan dengan paket pada byte yang sama dan menghindari build paket berulang.
-Setelah beta sudah ada di npm, setel `release_package_spec=openclaw@YYYY.M.PATCH-beta.N`
-agar pemeriksaan rilis mengunduh paket yang dikirim sekali, mengekstrak SHA sumber build-nya
-dari `dist/build-info.json`, dan menggunakan kembali artefak tersebut untuk lintas-OS,
-Package Acceptance, Docker jalur rilis, dan lane Telegram paket.
-Install smoke OpenAI lintas-OS menggunakan `OPENCLAW_CROSS_OS_OPENAI_MODEL` ketika
-variabel repo/org disetel, jika tidak `openai/gpt-5.4`, karena lane ini
-membuktikan instalasi paket, onboarding, startup Gateway, dan satu giliran agen live
-alih-alih melakukan benchmark model default paling lambat. Matriks provider live yang lebih luas
-tetap menjadi tempat untuk cakupan spesifik model.
+Gunakan `release_profile` untuk memilih cakupan live/penyedia:
 
-Gunakan varian ini tergantung tahap rilis:
+- `minimum`: jalur live dan Docker OpenAI/inti yang paling cepat dan kritis bagi rilis
+- `stable`: minimum ditambah cakupan penyedia/backend stabil untuk persetujuan rilis
+- `full`: stabil ditambah cakupan saran penyedia/media yang luas
+
+Validasi stabil dan lengkap selalu menjalankan pengujian lengkap live/E2E, jalur rilis Docker, dan penyisiran terbatas kemampuan bertahan terhadap peningkatan paket yang dipublikasikan sebelum promosi. Gunakan `run_release_soak=true` untuk meminta penyisiran yang sama bagi beta. Penyisiran tersebut mencakup empat paket stabil terbaru ditambah acuan dasar `2026.4.23` dan `2026.5.2` yang disematkan serta cakupan `2026.4.15` yang lebih lama, dengan acuan dasar duplikat dihapus dan setiap acuan dasar dibagi menjadi pekerjaan runner Docker tersendiri.
+
+`OpenClaw Release Checks` menggunakan referensi alur kerja tepercaya untuk menyelesaikan referensi target satu kali sebagai `release-package-under-test` dan menggunakan kembali artefak tersebut dalam pemeriksaan lintas-OS, Penerimaan Paket, dan Docker jalur rilis ketika soak berjalan. Hal ini menjaga semua kotak yang berhadapan dengan paket tetap menggunakan byte yang sama dan menghindari build paket berulang. Setelah beta tersedia di npm, tetapkan `release_package_spec=openclaw@YYYY.M.PATCH-beta.N` agar pemeriksaan rilis mengunduh paket yang dikirim satu kali, mengekstrak SHA sumber build-nya dari `dist/build-info.json`, dan menggunakan kembali artefak tersebut untuk jalur lintas-OS, Penerimaan Paket, Docker jalur rilis, dan Telegram paket.
+
+Smoke instalasi OpenAI lintas-OS menggunakan `OPENCLAW_CROSS_OS_OPENAI_MODEL` ketika variabel repositori/organisasi ditetapkan, atau `openai/gpt-5.6-luna` jika tidak, karena jalur ini membuktikan instalasi paket, orientasi, startup Gateway, dan satu giliran agen live, bukan menguji tolok ukur model yang paling mumpuni. Matriks penyedia live yang lebih luas tetap menjadi tempat untuk cakupan khusus model.
+
+Gunakan varian berikut sesuai tahapan rilis:
 
 ```bash
-# Validate an unpublished release candidate branch.
+# Validasi cabang kandidat rilis yang belum dipublikasikan.
 gh workflow run full-release-validation.yml \
   --ref main \
   -f ref=release/YYYY.M.PATCH \
@@ -605,14 +286,14 @@ gh workflow run full-release-validation.yml \
   -f mode=both \
   -f release_profile=stable
 
-# Validate an exact pushed commit.
+# Validasi commit yang telah didorong secara persis.
 gh workflow run full-release-validation.yml \
   --ref main \
   -f ref=<40-char-sha> \
   -f provider=openai \
   -f mode=both
 
-# After publishing a beta, add published-package Telegram E2E.
+# Setelah memublikasikan beta, tambahkan E2E Telegram paket yang dipublikasikan.
 gh workflow run full-release-validation.yml \
   --ref main \
   -f ref=release/YYYY.M.PATCH \
@@ -624,55 +305,24 @@ gh workflow run full-release-validation.yml \
   -f npm_telegram_provider_mode=mock-openai
 ```
 
-Jangan gunakan payung penuh sebagai rerun pertama setelah perbaikan terfokus. Jika satu kotak
-gagal, gunakan workflow anak, job, lane Docker, profil paket, provider model,
-atau lane QA yang gagal untuk bukti berikutnya. Jalankan kembali payung penuh hanya ketika
-perbaikan mengubah orkestrasi rilis bersama atau membuat bukti semua-kotak sebelumnya
-usang. Verifier akhir payung memeriksa ulang id run workflow anak yang direkam,
-jadi setelah workflow anak berhasil dijalankan ulang, rerun hanya job induk
-`Verify full validation` yang gagal.
+Jangan gunakan payung lengkap sebagai pengulangan pertama setelah perbaikan terfokus. Jika satu kotak gagal, gunakan alur kerja turunan, tugas, lajur Docker, profil paket, penyedia model, atau lajur QA yang gagal untuk bukti berikutnya. Jalankan kembali payung lengkap hanya ketika perbaikan mengubah orkestrasi rilis bersama atau membuat bukti semua kotak sebelumnya kedaluwarsa. Pemverifikasi akhir payung memeriksa ulang ID eksekusi alur kerja turunan yang tercatat, jadi setelah alur kerja turunan berhasil dijalankan ulang, jalankan ulang hanya tugas induk `Verify full validation` yang gagal.
 
-Untuk pemulihan terbatas, berikan `rerun_group` ke payung. `all` adalah run
-kandidat rilis yang sesungguhnya, `ci` hanya menjalankan anak CI normal, `plugin-prerelease`
-hanya menjalankan anak plugin khusus rilis, `release-checks` menjalankan setiap kotak rilis,
-dan grup rilis yang lebih sempit adalah `install-smoke`, `cross-os`,
-`live-e2e`, `package`, `qa`, `qa-parity`, `qa-live`, dan `npm-telegram`.
-Rerun `npm-telegram` terfokus memerlukan `release_package_spec` atau
-`npm_telegram_package_spec`; run penuh/semua menggunakan E2E Telegram paket kanonis
-di dalam Package Acceptance. Rerun lintas-OS terfokus dapat menambahkan
-`cross_os_suite_filter=windows/packaged-upgrade` atau filter OS/suite lain.
-Kegagalan QA release-check memblokir validasi rilis normal, termasuk drift tool
-dinamis OpenClaw yang wajib di tingkat standar. Run alpha Tideclaw masih dapat
-memperlakukan lane release-check non-keamanan-paket sebagai advisory. Ketika
-`live_suite_filter` secara eksplisit meminta lane live QA berpagar seperti
-Discord, WhatsApp, atau Slack, variabel repo
-`OPENCLAW_RELEASE_QA_*_LIVE_CI_ENABLED` yang sesuai harus diaktifkan; jika tidak,
-pengambilan input gagal alih-alih diam-diam melewati lane.
+`rerun_group=all` dapat menggunakan kembali eksekusi payung hijau sebelumnya hanya ketika eksekusi tersebut memvalidasi SHA target, profil rilis, pengaturan soak efektif, dan masukan validasi yang sama persis. Ini adalah pemulihan terbatas untuk menjalankan ulang kandidat yang sama, bukan penggunaan kembali bukti lintas-SHA. Untuk kandidat yang berubah, termasuk commit yang hanya mengubah catatan perubahan atau versi, jalankan ulang setiap gerbang paket, artefak, instalasi, Docker, atau penyedia yang terpengaruh oleh jalur yang berubah atau hash artefak. Eksekusi payung yang lebih baru untuk ref `release/*` dan grup pengulangan yang sama secara otomatis menggantikan eksekusi yang sedang berlangsung. Teruskan `reuse_evidence=false` untuk memaksa eksekusi lengkap yang baru.
+
+Untuk pemulihan terbatas, teruskan `rerun_group` ke payung. `all` adalah eksekusi kandidat rilis sebenarnya, `ci` hanya menjalankan turunan CI normal, `plugin-prerelease` hanya menjalankan turunan Plugin khusus rilis, `release-checks` menjalankan setiap kotak rilis, dan grup rilis yang lebih sempit adalah `install-smoke`, `cross-os`, `live-e2e`, `package`, `qa`, `qa-parity`, `qa-live`, serta `npm-telegram`. Pengulangan `npm-telegram` terfokus memerlukan `release_package_spec` atau `npm_telegram_package_spec`; eksekusi lengkap/semua menggunakan E2E Telegram paket kanonis di dalam Package Acceptance. Pengulangan lintas-OS terfokus dapat menambahkan `cross_os_suite_filter=windows/packaged-upgrade` atau filter OS/rangkaian lainnya. Kegagalan pemeriksaan rilis QA memblokir validasi rilis normal, termasuk penyimpangan alat dinamis OpenClaw yang diwajibkan pada tingkat standar. Eksekusi alfa Tideclaw masih dapat memperlakukan lajur pemeriksaan rilis yang tidak terkait keamanan paket sebagai saran. Dengan `release_profile=beta`, rangkaian penyedia langsung `Run repo/live E2E validation` bersifat saran (peringatan, bukan pemblokir); profil stabil dan lengkap tetap menjadikannya pemblokir. Ketika `live_suite_filter` secara eksplisit meminta lajur langsung QA yang diberi gerbang seperti Discord, WhatsApp, atau Slack, variabel repo `OPENCLAW_RELEASE_QA_*_LIVE_CI_ENABLED` yang sesuai harus diaktifkan; jika tidak, pengambilan masukan akan gagal alih-alih melewati lajur secara diam-diam.
 
 ### Vitest
 
-Kotak Vitest adalah workflow anak `CI` manual. CI manual sengaja melewati
-scoping perubahan dan memaksa grafik pengujian normal untuk kandidat rilis:
-shard Linux Node, shard plugin bawaan, shard kontrak plugin dan channel,
-kompatibilitas Node 22, `check-*`, `check-additional-*`,
-pemeriksaan smoke artefak build, pemeriksaan docs, Skills Python, Windows, macOS,
-dan i18n Control UI. Android disertakan ketika `Full Release Validation` menjalankan
-kotak tersebut karena payung meneruskan `include_android=true`; CI manual mandiri
-memerlukan `include_android=true` untuk cakupan Android.
+Kotak Vitest adalah alur kerja turunan `CI` manual. CI manual sengaja mengabaikan pembatasan berdasarkan perubahan dan memaksa grafik pengujian normal untuk kandidat rilis: shard Node Linux, shard Plugin yang dibundel, shard kontrak Plugin dan saluran, kompatibilitas Node 22, `check-*`, `check-additional-*`, pemeriksaan asap artefak hasil build, pemeriksaan dokumentasi, Skills Python, Windows, macOS, dan i18n Control UI. Android disertakan ketika `Full Release Validation` menjalankan kotak tersebut karena payung meneruskan `include_android=true`; CI manual mandiri memerlukan `include_android=true` untuk cakupan Android.
 
-Gunakan kotak ini untuk menjawab "apakah source tree lulus suite pengujian normal penuh?"
-Ini tidak sama dengan validasi produk jalur rilis. Bukti yang perlu disimpan:
+Gunakan kotak ini untuk menjawab "apakah pohon sumber lulus seluruh rangkaian pengujian normal?" Ini tidak sama dengan validasi produk jalur rilis. Bukti yang perlu disimpan:
 
-- ringkasan `Full Release Validation` yang menampilkan URL run `CI` yang dijalankan
-- run `CI` hijau pada SHA target yang tepat
-- nama shard yang gagal atau lambat dari job CI saat menyelidiki regresi
-- artefak timing Vitest seperti `.artifacts/vitest-shard-timings.json` ketika
-  sebuah run membutuhkan analisis performa
+- Ringkasan `Full Release Validation` yang menampilkan URL eksekusi `CI` yang dijalankan
+- Eksekusi `CI` hijau pada SHA target yang tepat
+- Nama shard yang gagal atau lambat dari tugas CI saat menyelidiki regresi
+- Artefak waktu Vitest seperti `.artifacts/vitest-shard-timings.json` ketika suatu eksekusi memerlukan analisis kinerja
 
-Jalankan CI manual secara langsung hanya ketika rilis membutuhkan CI normal deterministik tetapi
-bukan kotak Docker, QA Lab, live, lintas-OS, atau paket. Gunakan perintah pertama
-untuk CI langsung non-Android. Tambahkan `include_android=true` ketika CI
-kandidat rilis langsung harus mencakup Android:
+Jalankan CI manual secara langsung hanya ketika rilis memerlukan CI normal deterministik, tetapi tidak memerlukan kotak Docker, QA Lab, langsung, lintas-OS, atau paket. Gunakan perintah pertama untuk CI langsung non-Android. Tambahkan `include_android=true` ketika CI kandidat rilis langsung harus mencakup Android:
 
 ```bash
 gh workflow run ci.yml --ref main -f target_ref=release/YYYY.M.PATCH
@@ -681,120 +331,54 @@ gh workflow run ci.yml --ref main -f target_ref=release/YYYY.M.PATCH -f include_
 
 ### Docker
 
-Kotak Docker berada di `OpenClaw Release Checks` melalui
-`openclaw-live-and-e2e-checks-reusable.yml`, plus workflow `install-smoke`
-mode rilis. Ini memvalidasi kandidat rilis melalui lingkungan Docker terpaket
-alih-alih hanya pengujian tingkat sumber.
+Kotak Docker berada di `OpenClaw Release Checks` melalui `openclaw-live-and-e2e-checks-reusable.yml`, ditambah alur kerja `install-smoke` mode rilis. Kotak ini memvalidasi kandidat rilis melalui lingkungan Docker terpaket, bukan hanya pengujian tingkat sumber.
 
 Cakupan Docker rilis mencakup:
 
-- install smoke penuh dengan smoke instal global Bun yang lambat diaktifkan
-- persiapan/penggunaan ulang image smoke Dockerfile root berdasarkan SHA target, dengan job smoke QR,
-  root/gateway, dan installer/Bun berjalan sebagai shard install-smoke terpisah
-- lane E2E repositori
-- chunk Docker jalur rilis: `core`, `package-update-openai`,
-  `package-update-anthropic`, `package-update-core`, `plugins-runtime-plugins`,
-  `plugins-runtime-services`,
-  `plugins-runtime-install-a`, `plugins-runtime-install-b`,
-  `plugins-runtime-install-c`, `plugins-runtime-install-d`,
-  `plugins-runtime-install-e`, `plugins-runtime-install-f`,
-  `plugins-runtime-install-g`, dan `plugins-runtime-install-h`
-- cakupan OpenWebUI di dalam chunk `plugins-runtime-services` saat diminta
-- lane install/uninstall plugin bawaan yang dipisah
-  `bundled-plugin-install-uninstall-0` hingga
-  `bundled-plugin-install-uninstall-23`
-- suite provider live/E2E dan cakupan model live Docker ketika pemeriksaan rilis
-  menyertakan suite live
+- pemeriksaan asap instalasi lengkap dengan pemeriksaan asap instalasi global Bun yang lambat diaktifkan
+- persiapan/penggunaan kembali citra pemeriksaan asap Dockerfile akar berdasarkan SHA target, dengan tugas pemeriksaan asap QR, akar/Gateway, dan pemasang/Bun berjalan sebagai shard install-smoke terpisah
+- lajur E2E repositori
+- potongan Docker jalur rilis: `core`, `package-update-openai`, `package-update-anthropic`, `package-update-core`, `plugins-runtime-plugins`, `plugins-runtime-services`, `plugins-runtime-install-a` hingga `plugins-runtime-install-h`, dan `openwebui`
+- cakupan OpenWebUI pada runner khusus dengan disk besar ketika diminta
+- lajur instalasi/pencopotan Plugin terbundel yang dipisah, dari `bundled-plugin-install-uninstall-0` hingga `bundled-plugin-install-uninstall-23`
+- rangkaian penyedia langsung/E2E dan cakupan model langsung Docker ketika pemeriksaan rilis menyertakan rangkaian langsung
 
-Gunakan artefak Docker sebelum menjalankan ulang. Scheduler jalur rilis mengunggah
-`.artifacts/docker-tests/` dengan log lane, `summary.json`, `failures.json`,
-timing fase, JSON rencana scheduler, dan perintah rerun. Untuk pemulihan terfokus,
-gunakan `docker_lanes=<lane[,lane]>` pada workflow live/E2E reusable alih-alih
-menjalankan ulang semua chunk rilis. Perintah rerun yang dihasilkan menyertakan
-`package_artifact_run_id` sebelumnya dan input image Docker yang disiapkan saat tersedia, sehingga
-lane yang gagal dapat menggunakan ulang tarball dan image GHCR yang sama.
+Gunakan artefak Docker sebelum menjalankan ulang. Penjadwal jalur rilis mengunggah `.artifacts/docker-tests/` yang berisi log lajur, `summary.json`, `failures.json`, waktu fase, JSON rencana penjadwal, dan perintah pengulangan. Untuk pemulihan terfokus, gunakan `docker_lanes=<lane[,lane]>` pada alur kerja langsung/E2E yang dapat digunakan kembali, alih-alih menjalankan ulang semua potongan rilis. Perintah pengulangan yang dihasilkan menyertakan `package_artifact_run_id` sebelumnya dan masukan citra Docker yang telah disiapkan jika tersedia, sehingga lajur yang gagal dapat menggunakan kembali tarball dan citra GHCR yang sama.
 
 ### QA Lab
 
-Kotak QA Lab juga merupakan bagian dari `OpenClaw Release Checks`. Ini adalah gate rilis
-perilaku agentik dan tingkat channel, terpisah dari mekanik paket Vitest dan Docker.
+Kotak QA Lab juga merupakan bagian dari `OpenClaw Release Checks`. Kotak ini adalah gerbang rilis perilaku agen dan tingkat saluran, terpisah dari Vitest dan mekanisme paket Docker.
 
 Cakupan QA Lab rilis mencakup:
 
-- lane paritas mock yang membandingkan lane kandidat OpenAI dengan baseline Opus 4.6
-  menggunakan paket paritas agentik
-- profil QA Matrix live cepat menggunakan lingkungan `qa-live-shared`
-- lane QA Telegram live menggunakan lease kredensial CI Convex
-- `pnpm qa:otel:smoke`, `pnpm qa:otel:collector-smoke`,
-  `pnpm qa:prometheus:smoke`, atau
-  `pnpm qa:observability:smoke` ketika telemetri rilis membutuhkan bukti lokal eksplisit
+- lajur paritas tiruan yang membandingkan lajur kandidat OpenAI dengan garis dasar `anthropic/claude-opus-4-8` menggunakan paket paritas agen
+- profil QA Matrix langsung cepat yang menggunakan lingkungan `qa-live-shared`
+- lajur QA Telegram langsung yang menggunakan penyewaan kredensial CI Convex
+- `pnpm qa:otel:smoke`, `pnpm qa:otel:collector-smoke`, `pnpm qa:prometheus:smoke`, atau `pnpm qa:observability:smoke` ketika telemetri rilis memerlukan bukti lokal eksplisit
 
-Gunakan kotak ini untuk menjawab "apakah rilis berperilaku benar dalam skenario QA dan
-alur channel live?" Simpan URL artefak untuk lane paritas, Matrix, dan Telegram
-saat menyetujui rilis. Cakupan Matrix penuh tetap tersedia sebagai run QA-Lab
-manual yang di-shard alih-alih lane kritis rilis default.
+Gunakan kotak ini untuk menjawab "apakah rilis berperilaku benar dalam skenario QA dan alur saluran langsung?" Simpan URL artefak untuk lajur paritas, Matrix, dan Telegram saat menyetujui rilis. Cakupan Matrix lengkap tetap tersedia sebagai eksekusi QA-Lab bershard manual, bukan sebagai lajur kritis rilis bawaan.
 
 ### Paket
 
-Kotak Package adalah gate produk yang dapat diinstal. Ini didukung oleh
-`Package Acceptance` dan resolver
-`scripts/resolve-openclaw-package-candidate.mjs`. Resolver menormalkan
-kandidat menjadi tarball `package-under-test` yang dikonsumsi oleh Docker E2E, memvalidasi
-inventaris paket, mencatat versi paket dan SHA-256, serta menjaga ref harness
-workflow terpisah dari ref sumber paket.
+Kotak Paket adalah gerbang produk yang dapat diinstal. Kotak ini didukung oleh `Package Acceptance` dan resolver `scripts/resolve-openclaw-package-candidate.mjs`. Resolver menormalkan kandidat menjadi tarball `package-under-test` yang digunakan oleh E2E Docker, memvalidasi inventaris paket, mencatat versi paket dan SHA-256, serta menjaga ref harness alur kerja tetap terpisah dari ref sumber paket.
 
 Sumber kandidat yang didukung:
 
-- `source=npm`: `openclaw@beta`, `openclaw@latest`, atau versi rilis OpenClaw
-  yang persis
-- `source=ref`: kemas branch `package_ref`, tag, atau SHA commit penuh yang tepercaya
-  dengan harness `workflow_ref` yang dipilih
-- `source=url`: unduh `.tgz` HTTPS publik dengan `package_sha256` yang wajib;
-  kredensial URL, port HTTPS non-default, hostname atau alamat terselesaikan
-  privat/internal/penggunaan-khusus, dan pengalihan tidak aman ditolak
-- `source=trusted-url`: unduh `.tgz` HTTPS dengan
-  `package_sha256` dan `trusted_source_id` yang wajib dari kebijakan bernama di
-  `.github/package-trusted-sources.json`; gunakan ini untuk mirror enterprise
-  milik maintainer atau repositori paket privat alih-alih menambahkan bypass
-  jaringan privat tingkat input ke `source=url`
-- `source=artifact`: gunakan kembali `.tgz` yang diunggah oleh run GitHub Actions lain
+- `source=npm`: `openclaw@beta`, `openclaw@latest`, atau versi rilis OpenClaw yang tepat
+- `source=ref`: mengemas cabang `package_ref`, tag, atau SHA commit lengkap yang tepercaya dengan harness `workflow_ref` yang dipilih
+- `source=url`: mengunduh `.tgz` HTTPS publik dengan `package_sha256` yang diwajibkan; kredensial URL, port HTTPS nonbawaan, nama host atau alamat teresolusi privat/internal/penggunaan khusus, dan pengalihan yang tidak aman ditolak
+- `source=trusted-url`: mengunduh `.tgz` HTTPS dengan `package_sha256` dan `trusted_source_id` yang diwajibkan dari kebijakan bernama di `.github/package-trusted-sources.json`; gunakan ini untuk cermin perusahaan milik pengelola atau repositori paket privat, alih-alih menambahkan pengabaian jaringan privat tingkat masukan ke `source=url`
+- `source=artifact`: menggunakan kembali `.tgz` yang diunggah oleh eksekusi GitHub Actions lain
 
-`OpenClaw Release Checks` menjalankan Package Acceptance dengan `source=artifact`,
-artefak paket rilis yang disiapkan, `suite_profile=custom`,
-`docker_lanes=doctor-switch update-channel-switch skill-install update-corrupt-plugin upgrade-survivor published-upgrade-survivor update-restart-auth plugins-offline plugin-update`,
-`telegram_mode=mock-openai`. Package Acceptance mempertahankan QA paket migrasi, pembaruan,
-restart pembaruan auth terkonfigurasi, instalasi skill ClawHub live, pembersihan dependensi Plugin usang, fixture Plugin offline, pembaruan Plugin, dan Telegram terhadap tarball
-terselesaikan yang sama. Pemeriksaan rilis pemblokir menggunakan baseline paket
-terpublikasi terbaru default; profil beta dengan `run_release_soak=true`, `release_profile=stable`, atau
-`release_profile=full` diperluas ke setiap baseline stabil yang dipublikasikan npm dari
-`2026.4.23` hingga `latest` plus fixture masalah yang dilaporkan. Gunakan
-Package Acceptance dengan `source=npm` untuk kandidat yang sudah dikirim,
-`source=ref` untuk tarball npm lokal berbasis SHA sebelum publikasi,
-`source=trusted-url` untuk mirror enterprise/privat milik maintainer, atau
-`source=artifact` untuk tarball yang disiapkan dan diunggah oleh run GitHub Actions lain.
-Ini adalah pengganti native GitHub untuk sebagian besar cakupan paket/pembaruan yang
-sebelumnya memerlukan Parallels. Pemeriksaan rilis lintas OS tetap penting untuk onboarding,
-installer, dan perilaku platform spesifik OS, tetapi validasi produk paket/pembaruan sebaiknya
-mengutamakan Package Acceptance.
+`OpenClaw Release Checks` menjalankan Package Acceptance dengan `source=artifact`, artefak paket rilis yang telah disiapkan, `suite_profile=custom`, `docker_lanes=doctor-switch update-channel-switch skill-install update-corrupt-plugin upgrade-survivor published-upgrade-survivor root-managed-vps-upgrade update-restart-auth plugins-offline plugin-update plugin-binding-command-escape`, `telegram_mode=mock-openai`. Package Acceptance mempertahankan migrasi, pembaruan, peningkatan VPS yang dikelola akar, mulai ulang pembaruan autentikasi terkonfigurasi, instalasi Skills ClawHub langsung, pembersihan dependensi Plugin usang, fixture Plugin luring, pembaruan Plugin, penguatan pelepasan pengikatan perintah Plugin, dan QA paket Telegram terhadap tarball teresolusi yang sama. Pemeriksaan rilis pemblokir menggunakan garis dasar paket terbaru yang dipublikasikan secara bawaan; profil beta dengan `run_release_soak=true`, `release_profile=stable`, atau `release_profile=full` memperluas sapuan published-upgrade-survivor ke `last-stable-4` ditambah garis dasar `2026.4.23`, `2026.5.2`, dan `2026.4.15` yang disematkan dengan skenario `reported-issues`. Gunakan Package Acceptance dengan `source=npm` untuk kandidat yang sudah dirilis, `source=ref` untuk tarball npm lokal berbasis SHA sebelum publikasi, `source=trusted-url` untuk cermin perusahaan/privat milik pengelola, atau `source=artifact` untuk tarball yang telah disiapkan dan diunggah oleh eksekusi GitHub Actions lain.
 
-Checklist kanonis untuk validasi pembaruan dan Plugin adalah
-[Menguji pembaruan dan Plugin](/id/help/testing-updates-plugins). Gunakan saat
-memutuskan lane lokal, Docker, Package Acceptance, atau pemeriksaan rilis mana yang membuktikan
-perubahan instalasi/pembaruan Plugin, pembersihan doctor, atau migrasi paket terpublikasi.
-Migrasi pembaruan terpublikasi yang menyeluruh dari setiap paket stabil `2026.4.23+`
-adalah workflow manual `Update Migration` yang terpisah, bukan bagian dari Full Release CI.
+Kotak ini adalah pengganti asli GitHub untuk sebagian besar cakupan paket/pembaruan yang sebelumnya memerlukan Parallels. Pemeriksaan rilis lintas-OS tetap penting untuk orientasi, pemasang, dan perilaku khusus platform, tetapi validasi produk paket/pembaruan sebaiknya mengutamakan Package Acceptance.
 
-Kelonggaran package-acceptance lama sengaja dibatasi waktu. Paket hingga
-`2026.4.25` dapat menggunakan jalur kompatibilitas untuk celah metadata yang sudah dipublikasikan
-ke npm: entri inventaris QA privat yang hilang dari tarball, `gateway install --wrapper` yang hilang, file patch yang hilang di fixture git turunan tarball,
-`update.channel` tersimpan yang hilang, lokasi install-record Plugin lama,
-persistensi install-record marketplace yang hilang, dan migrasi metadata config
-selama `plugins update`. Paket `2026.4.26` yang dipublikasikan dapat memberi peringatan
-untuk file stamp metadata build lokal yang sudah dikirim. Paket berikutnya
-harus memenuhi kontrak paket modern; celah yang sama menggagalkan validasi rilis.
+Daftar periksa kanonis untuk validasi pembaruan dan Plugin adalah [Menguji pembaruan dan Plugin](/id/help/testing-updates-plugins). Gunakan daftar ini saat menentukan lajur lokal, Docker, Package Acceptance, atau pemeriksaan rilis yang membuktikan perubahan instalasi/pembaruan Plugin, pembersihan doctor, atau migrasi paket yang dipublikasikan. Migrasi pembaruan terpublikasi menyeluruh dari setiap paket stabil `2026.4.23+` adalah alur kerja manual `Update Migration` yang terpisah, bukan bagian dari Full Release CI.
 
-Gunakan profil Package Acceptance yang lebih luas ketika pertanyaan rilis adalah tentang
-paket yang benar-benar dapat diinstal:
+Kelonggaran package-acceptance lama sengaja dibatasi waktunya. Paket hingga `2026.4.25` dapat menggunakan jalur kompatibilitas untuk kesenjangan metadata yang sudah dipublikasikan ke npm: entri inventaris QA privat yang hilang dari tarball, `gateway install --wrapper` yang hilang, berkas tambalan yang hilang dalam fixture git turunan tarball, `update.channel` tersimpan yang hilang, lokasi catatan instalasi Plugin lama, persistensi catatan instalasi marketplace yang hilang, dan migrasi metadata konfigurasi selama `plugins update`. Paket `2026.4.26` yang dipublikasikan dapat memberikan peringatan untuk berkas stempel metadata build lokal yang sudah dirilis. Paket yang lebih baru harus memenuhi kontrak paket modern; kesenjangan yang sama akan menggagalkan validasi rilis.
+
+Gunakan profil Package Acceptance yang lebih luas ketika pertanyaan rilis berkaitan dengan paket aktual yang dapat diinstal:
 
 ```bash
 gh workflow run package-acceptance.yml \
@@ -808,49 +392,38 @@ gh workflow run package-acceptance.yml \
 
 Profil paket umum:
 
-- `smoke`: lane instalasi paket/channel/agent cepat, jaringan Gateway, dan reload
-  config
-- `package`: kontrak instalasi/pembaruan/restart/paket Plugin plus bukti instalasi
-  skill ClawHub live; ini adalah default pemeriksaan rilis
-- `product`: `package` plus channel MCP, pembersihan cron/subagent, pencarian web OpenAI,
-  dan OpenWebUI
-- `full`: potongan release-path Docker dengan OpenWebUI
-- `custom`: daftar `docker_lanes` persis untuk rerun terfokus
+- `smoke`: jalur instalasi paket/channel/agen cepat, jaringan Gateway, dan pemuatan ulang konfigurasi
+- `package`: kontrak instalasi/pembaruan/mulai ulang/paket Plugin serta bukti instalasi Skills ClawHub langsung; ini adalah default pemeriksaan rilis
+- `product`: `package` ditambah channel MCP, pembersihan cron/subagen, pencarian web OpenAI, dan OpenWebUI
+- `full`: bagian jalur rilis Docker dengan OpenWebUI
+- `custom`: daftar `docker_lanes` persis untuk pengulangan eksekusi terfokus
 
-Untuk bukti Telegram kandidat paket, aktifkan `telegram_mode=mock-openai` atau
-`telegram_mode=live-frontier` pada Package Acceptance. Workflow meneruskan tarball
-`package-under-test` yang terselesaikan ke lane Telegram; workflow Telegram mandiri
-tetap menerima spec npm terpublikasi untuk pemeriksaan pascapublikasi.
+Untuk bukti Telegram kandidat paket, aktifkan `telegram_mode=mock-openai` atau `telegram_mode=live-frontier` pada Package Acceptance. Alur kerja meneruskan tarball `package-under-test` yang telah ditentukan ke jalur Telegram; alur kerja Telegram mandiri tetap menerima spesifikasi npm yang telah dipublikasikan untuk pemeriksaan pascapublikasi.
 
-## Otomasi publikasi rilis reguler
+## Otomatisasi publikasi rilis reguler
 
 Untuk publikasi beta, `latest`, Plugin, GitHub Release, dan platform,
-`OpenClaw Release Publish` adalah entrypoint mutasi normal. Jalur extended-stable bulanan
-`.33+` khusus npm tidak menggunakan orkestrator ini. Workflow reguler
-mengorkestrasi workflow trusted-publisher sesuai urutan yang dibutuhkan rilis:
+`OpenClaw Release Publish` adalah titik masuk mutasi normal. Jalur extended-stable
+khusus npm bulanan `.33+` tidak menggunakan orkestrator ini. Alur kerja reguler
+mengorkestrasi alur kerja penerbit tepercaya dalam urutan yang diperlukan rilis:
 
-1. Check out tag rilis dan selesaikan SHA commit-nya.
-2. Verifikasi bahwa tag dapat dijangkau dari `main` atau `release/*`.
+1. Checkout tag rilis dan tentukan SHA commit-nya.
+2. Verifikasi bahwa tag dapat dijangkau dari `main` atau `release/*` (atau cabang alfa Tideclaw untuk prarilis alfa).
 3. Jalankan `pnpm plugins:sync:check`.
-4. Dispatch `Plugin NPM Release` dengan `publish_scope=all-publishable` dan
-   `ref=<release-sha>`.
-5. Dispatch `Plugin ClawHub Release` dengan scope dan SHA yang sama.
-6. Dispatch `OpenClaw NPM Release` dengan tag rilis, dist-tag npm, dan
-   `preflight_run_id` tersimpan setelah memverifikasi
-   `full_release_validation_run_id` tersimpan.
-7. Untuk rilis stabil, buat atau perbarui GitHub release sebagai draft, dispatch
-   `Windows Node Release` dengan `windows_node_tag` eksplisit dan
-   `windows_node_installer_digests` yang disetujui kandidat, lalu verifikasi aset
-   installer/checksum kanonis sebelum memublikasikan draft.
+4. Picu `Plugin NPM Release` dengan `publish_scope=all-publishable` dan `ref=<release-sha>`.
+5. Picu `Plugin ClawHub Release` dengan cakupan dan SHA yang sama.
+6. Picu `OpenClaw NPM Release` dengan tag rilis, dist-tag npm, dan `preflight_run_id` tersimpan setelah memverifikasi `full_release_validation_run_id` tersimpan serta percobaan eksekusi yang persis.
+7. Untuk rilis stabil, buat atau perbarui rilis GitHub sebagai draf, picu `Windows Node Release` dengan `windows_node_tag` eksplisit dan `windows_node_installer_digests` yang disetujui kandidat, lalu verifikasi aset penginstal/checksum Windows kanonis. Picu juga `Android Release` untuk membangun APK bertanda tangan dengan tag persis beserta checksum dan asal-usulnya. Verifikasi kedua kontrak aset native sebelum memublikasikan draf.
 
 Contoh publikasi beta:
 
 ```bash
 gh workflow run openclaw-release-publish.yml \
-  --ref release/YYYY.M.PATCH \
+  --ref main \
   -f tag=vYYYY.M.PATCH-beta.N \
   -f preflight_run_id=<successful-openclaw-npm-preflight-run-id> \
   -f full_release_validation_run_id=<successful-full-release-validation-run-id> \
+  -f full_release_validation_run_attempt=<successful-full-release-validation-run-attempt> \
   -f npm_dist_tag=beta
 ```
 
@@ -858,149 +431,159 @@ Publikasi stabil ke dist-tag beta default:
 
 ```bash
 gh workflow run openclaw-release-publish.yml \
-  --ref release/YYYY.M.PATCH \
+  --ref main \
   -f tag=vYYYY.M.PATCH \
   -f windows_node_tag=vX.Y.Z \
   -f windows_node_installer_digests='{"OpenClawCompanion-Setup-x64.exe":"sha256:<approved-x64-sha256>","OpenClawCompanion-Setup-arm64.exe":"sha256:<approved-arm64-sha256>"}' \
   -f preflight_run_id=<successful-openclaw-npm-preflight-run-id> \
   -f full_release_validation_run_id=<successful-full-release-validation-run-id> \
+  -f full_release_validation_run_attempt=<successful-full-release-validation-run-attempt> \
   -f npm_dist_tag=beta
 ```
 
-Promosi stabil langsung ke `latest` bersifat eksplisit:
+Promosi stabil langsung ke `latest` harus dinyatakan secara eksplisit:
 
 ```bash
 gh workflow run openclaw-release-publish.yml \
-  --ref release/YYYY.M.PATCH \
+  --ref main \
   -f tag=vYYYY.M.PATCH \
   -f windows_node_tag=vX.Y.Z \
   -f windows_node_installer_digests='{"OpenClawCompanion-Setup-x64.exe":"sha256:<approved-x64-sha256>","OpenClawCompanion-Setup-arm64.exe":"sha256:<approved-arm64-sha256>"}' \
   -f preflight_run_id=<successful-openclaw-npm-preflight-run-id> \
   -f full_release_validation_run_id=<successful-full-release-validation-run-id> \
+  -f full_release_validation_run_attempt=<successful-full-release-validation-run-attempt> \
   -f npm_dist_tag=latest
 ```
 
-Gunakan workflow tingkat lebih rendah `Plugin NPM Release` dan `Plugin ClawHub Release`
-hanya untuk pekerjaan perbaikan atau publikasi ulang yang terfokus. `OpenClaw Release Publish` menolak
-`plugin_publish_scope=selected` ketika `publish_openclaw_npm=true` sehingga paket core
-tidak dapat dikirim tanpa setiap Plugin resmi yang dapat dipublikasikan, termasuk
-`@openclaw/diffs-language-pack`. Untuk perbaikan Plugin terpilih, setel
-`publish_openclaw_npm=false` dengan `plugin_publish_scope=selected` dan
-`plugins=@openclaw/name`, atau dispatch workflow anak secara langsung.
+Gunakan alur kerja tingkat rendah `Plugin NPM Release` dan `Plugin ClawHub Release` hanya untuk pekerjaan perbaikan atau publikasi ulang yang terfokus. `OpenClaw Release Publish` menolak `plugin_publish_scope=selected` ketika `publish_openclaw_npm=true` agar paket inti tidak dapat dirilis tanpa semua Plugin resmi yang dapat dipublikasikan, termasuk `@openclaw/diffs-language-pack`. Untuk perbaikan Plugin tertentu, tetapkan `publish_openclaw_npm=false` dengan `plugin_publish_scope=selected` dan `plugins=@openclaw/name`, atau picu alur kerja anak secara langsung.
 
-## Input workflow NPM
+Bootstrap publikasi pertama ClawHub adalah pengecualian: picu `Plugin ClawHub New`
+dari `main` tepercaya dan teruskan SHA rilis target lengkap melalui `ref`.
+Jangan pernah menjalankan alur kerja bootstrap itu sendiri dari tag atau cabang rilis:
 
-`OpenClaw NPM Release` menerima input yang dikendalikan operator ini:
+```bash
+gh workflow run plugin-clawhub-new.yml \
+  --ref main \
+  -f plugins=@openclaw/name \
+  -f ref=<full-40-character-release-sha> \
+  -f pretag_validation=true \
+  -f dry_run=true
+```
 
-- `tag`: tag rilis wajib seperti `v2026.4.2`, `v2026.4.2-1`, atau
-  `v2026.4.2-beta.1`; ketika `preflight_only=true`, ini juga dapat berupa
-  SHA commit branch workflow penuh 40 karakter saat ini untuk preflight khusus validasi
-- `preflight_only`: `true` hanya untuk validasi/build/paket, `false` untuk
-  jalur publikasi sebenarnya
-- `preflight_run_id`: wajib pada jalur publikasi sebenarnya agar workflow menggunakan kembali
-  tarball yang disiapkan dari run preflight yang berhasil
-- `full_release_validation_run_id`: wajib untuk publikasi monthly extended-stable dan reguler
-  non-beta sebenarnya agar workflow mengautentikasi run validasi yang persis
-- `npm_dist_tag`: tag target npm untuk jalur publikasi; menerima `alpha`, `beta`,
-  `latest`, atau `extended-stable` dan default ke `beta`. Patch final `33` dan setelahnya harus
-  menggunakan `extended-stable`; secara default, `extended-stable` menolak patch lebih awal, dan selalu
-  menolak tag non-final.
-- `bypass_extended_stable_guard`: boolean khusus pengujian, default `false`; dengan
-  `npm_dist_tag=extended-stable`, melewati kelayakan monthly extended-stable sambil mempertahankan
-  identitas rilis, artefak, persetujuan, dan pemeriksaan readback.
+Validasi pratanda memerlukan `dry_run=true`, menolak input tag rilis dan eksekusi
+induk, serta hanya menerima target persis yang dapat dijangkau dari `main` atau
+`release/*`. Validasi ini tidak memuat kredensial ClawHub, memublikasikan byte
+paket, atau mengubah konfigurasi penerbit tepercaya. Alur kerja tetap menentukan
+rencana registri langsung, melakukan checkout dan pengemasan target hanya dalam
+pekerjaan tanpa rahasia, mewujudkan toolchain ClawHub yang dikunci, serta
+memvalidasi artefak yang tidak dapat diubah dan slug/identitas paket sebelum tag
+rilis tersedia. Setujui lingkungan `clawhub-plugin-bootstrap` hanya setelah
+pekerjaan pengemasan tanpa rahasia selesai; pekerjaan validasi terlindungi ini
+tidak memiliki kredensial atau perintah mutasi.
 
-`OpenClaw Release Publish` menerima input yang dikendalikan operator ini:
+Eksekusi uji coba yang disetujui atau bootstrap nyata setelah pemberian tag harus
+menyertakan tag rilis yang persis serta ID eksekusi, percobaan, dan cabang induk
+`OpenClaw Release Publish`. Induk mengesahkan SHA alur kerjanya sendiri dan SHA
+`main` tepercaya terpisah yang persis untuk `Plugin ClawHub New`; eksekusi anak
+dan setiap persetujuan lingkungan terlindungi harus cocok dengan SHA anak yang
+disetujui tersebut. Tag rilis diperiksa ulang sebelum setiap upaya publikasi dan
+mutasi penerbit tepercaya.
 
-- `tag`: tag rilis wajib; harus sudah ada
-- `preflight_run_id`: id run preflight `OpenClaw NPM Release` yang berhasil;
-  wajib ketika `publish_openclaw_npm=true`
-- `full_release_validation_run_id`: id run `Full Release Validation` yang berhasil;
-  wajib ketika `publish_openclaw_npm=true`
-- `windows_node_tag`: tag rilis `openclaw/openclaw-windows-node`
-  non-prerelease yang persis; wajib untuk publikasi OpenClaw stabil
-- `windows_node_installer_digests`: map JSON ringkas yang disetujui kandidat dari
-  nama installer Windows saat ini ke digest `sha256:` yang dipatok; wajib
-  untuk publikasi OpenClaw stabil
-- `npm_dist_tag`: tag target npm untuk paket OpenClaw
-- `plugin_publish_scope`: default ke `all-publishable`; gunakan `selected` hanya
-  untuk pekerjaan perbaikan khusus Plugin yang terfokus dengan `publish_openclaw_npm=false`
-- `plugins`: nama paket `@openclaw/*` yang dipisahkan koma ketika
-  `plugin_publish_scope=selected`
-- `publish_openclaw_npm`: default ke `true`; setel `false` hanya ketika menggunakan workflow
-  sebagai orkestrator perbaikan khusus Plugin
-- `wait_for_clawhub`: default ke `false` sehingga ketersediaan npm tidak diblokir oleh
-  sidecar ClawHub; setel `true` hanya ketika penyelesaian workflow harus mencakup
-  penyelesaian ClawHub
+Pekerjaan pengemasan
+mengunggah satu artefak yang tidak dapat diubah, yang nama, ID/digest artefak
+Actions, eksekusi/percobaan produsen, SHA target, serta SHA-256/ukuran tarball
+per paketnya diteruskan ke pekerjaan validasi dan terlindungi. Pekerjaan
+terlindungi hanya melakukan checkout perkakas `main` tepercaya, memvalidasi
+tuple artefak melalui API GitHub, mengunduh berdasarkan ID artefak yang persis,
+menghitung ulang hash setiap tarball, serta memvalidasi jalur TAR lokal dan
+identitas paket menggunakan aturan kanonisasi USTAR milik CLI yang disematkan.
+Setiap kandidat kemudian melewati uji coba publikasi CLI yang disematkan, yang
+berhenti sebelum pencarian registri atau autentikasi. Prapenyaring pekerjaan
+kredensial membatasi ClawPack terkompresi hingga 120 MiB, total muatan berkas
+hingga 50 MiB, data TAR yang diekspansi hingga 64 MiB, dan jumlah entri TAR
+hingga 10.000. Perbaikan penerbit tepercaya untuk paket yang sudah ada tetap
+hanya melakukan konfigurasi, tetapi masih mengemas target dan mewajibkan tag
+yang diminta serta kesetaraan persis byte registri dan metadata sebelum mengubah
+konfigurasi penerbit tepercaya. Verifikasi pascapublikasi mengunduh artefak
+ClawHub dan mewajibkan SHA-256 serta ukuran yang sama. Pemulihan pengulangan
+eksekusi yang gagal dapat menggunakan kembali artefak paket dari percobaan
+sebelumnya hanya ketika pekerjaan produsen yang persis selesai dengan sukses.
+Bukti akhir juga mengikat versi ClawHub yang dikunci, SHA-256 kunci, dan
+integritas npm. Ketidakcocokan memerlukan versi paket baru.
 
-`OpenClaw Release Checks` menerima input yang dikendalikan operator ini:
+## Input alur kerja NPM
 
-- `ref`: branch, tag, atau SHA commit penuh untuk divalidasi. Pemeriksaan yang membawa secret
-  mengharuskan commit terselesaikan dapat dijangkau dari branch OpenClaw atau
-  tag rilis.
-- `run_release_soak`: ikut serta dalam live/E2E menyeluruh, release-path Docker, dan
-  soak upgrade-survivor semua-sejak untuk pemeriksaan rilis beta. Ini dipaksa aktif oleh
-  `release_profile=stable` dan `release_profile=full`.
+`OpenClaw NPM Release` menerima input yang dikendalikan operator berikut:
+
+- `tag`: tag rilis wajib seperti `v2026.4.2`, `v2026.4.2-1`, `v2026.4.2-beta.1`, atau `v2026.4.2-alpha.1`; ketika `preflight_only=true`, nilainya juga dapat berupa SHA commit 40 karakter lengkap saat ini dari cabang alur kerja untuk preflight khusus validasi
+- `preflight_only`: `true` hanya untuk validasi/build/paket, `false` untuk jalur publikasi nyata
+- `preflight_run_id`: ID eksekusi preflight berhasil yang sudah ada, wajib pada jalur publikasi nyata agar alur kerja menggunakan kembali tarball yang telah disiapkan alih-alih membangunnya kembali
+- `full_release_validation_run_id`: ID eksekusi `Full Release Validation` yang berhasil untuk tag/SHA ini, wajib untuk publikasi nyata. Publikasi beta dapat dilanjutkan hanya dengan preflight disertai peringatan, tetapi promosi stabil/`latest` tetap memerlukannya.
+- `full_release_validation_run_attempt`: percobaan eksekusi positif yang persis dan dipasangkan dengan `full_release_validation_run_id`; wajib setiap kali ID eksekusi diberikan agar pengulangan eksekusi tidak dapat mengubah bukti otorisasi selama publikasi.
+- `release_publish_run_id`: ID eksekusi `OpenClaw Release Publish` yang disetujui; wajib ketika alur kerja ini dipicu oleh induk tersebut (panggilan publikasi nyata oleh aktor bot)
+- `plugin_npm_run_id`: ID eksekusi `Plugin NPM Release` exact-head yang berhasil; wajib untuk publikasi inti `extended-stable` nyata
+- `npm_dist_tag`: tag target npm untuk jalur publikasi; menerima `alpha`, `beta`, `latest`, atau `extended-stable` dan default-nya adalah `beta`. Patch final `33` dan seterusnya harus menggunakan `extended-stable`; secara default, `extended-stable` menolak patch sebelumnya, dan selalu menolak tag nonfinal.
+- `bypass_extended_stable_guard`: boolean khusus pengujian, default `false`; dengan `npm_dist_tag=extended-stable`, melewati kelayakan extended-stable bulanan sambil mempertahankan pemeriksaan identitas rilis, artefak, persetujuan, dan pembacaan balik.
+
+`Plugin NPM Release` menerima `npm_dist_tag=default` untuk perilaku rilis yang
+sudah ada atau `npm_dist_tag=extended-stable` untuk jalur bulanan yang dijaga.
+Opsi extended-stable memerlukan `publish_scope=all-publishable`, input `plugins`
+kosong, patch final `33` atau lebih tinggi, dan cabang kanonis
+`extended-stable/YYYY.M.33` tepat di ujungnya. Opsi ini tidak pernah memindahkan
+`latest` atau `beta` milik Plugin. Versi paket baru menerima `extended-stable`
+secara atomik melalui publikasi tepercaya OIDC (`npm publish --tag extended-stable`);
+alur kerja sumber ini tidak menggunakan `npm dist-tag add` yang diautentikasi
+dengan token. Percobaan ulang melewati versi persis yang sudah tersedia di npm,
+lalu berhenti secara tertutup kecuali pembacaan balik lengkap mengonfirmasi bahwa
+setiap paket persis dan tag `extended-stable` telah konvergen.
+
+`OpenClaw Release Publish` menerima input yang dikendalikan operator berikut:
+
+- `tag`: tag rilis wajib; harus sudah tersedia
+- `preflight_run_id`: ID eksekusi preflight `OpenClaw NPM Release` yang berhasil; wajib ketika `publish_openclaw_npm=true` atau `plugin_publish_scope=all-publishable`
+- `full_release_validation_run_id`: ID eksekusi `Full Release Validation` yang berhasil; wajib ketika `publish_openclaw_npm=true` atau `plugin_publish_scope=all-publishable`
+- `full_release_validation_run_attempt`: percobaan positif yang persis dan dipasangkan dengan `full_release_validation_run_id`; wajib setiap kali ID eksekusi diberikan
+- `windows_node_tag`: tag rilis `openclaw/openclaw-windows-node` nonprarilis yang persis; wajib untuk publikasi OpenClaw stabil
+- `windows_node_installer_digests`: peta JSON ringkas yang disetujui kandidat dari nama penginstal Windows saat ini ke digest `sha256:` yang disematkan; wajib untuk publikasi OpenClaw stabil
+- `npm_telegram_run_id`: ID eksekusi `NPM Telegram Beta E2E` berhasil yang opsional untuk disertakan dalam bukti rilis akhir
+- `npm_dist_tag`: tag target npm untuk paket OpenClaw, salah satu dari `alpha`, `beta`, atau `latest`
+- `plugin_publish_scope`: default-nya `all-publishable`; gunakan `selected` hanya untuk pekerjaan perbaikan khusus Plugin yang terfokus dengan `publish_openclaw_npm=false`
+- `plugins`: nama paket `@openclaw/*` yang dipisahkan koma ketika `plugin_publish_scope=selected`
+- `publish_openclaw_npm`: default-nya `true`; tetapkan `false` hanya ketika menggunakan alur kerja sebagai orkestrator perbaikan khusus Plugin
+- `release_profile`: profil cakupan rilis yang digunakan untuk ringkasan bukti rilis; default-nya `from-validation`, yang membacanya dari manifes validasi, atau timpa dengan `beta`, `stable`, atau `full`
+- `wait_for_clawhub`: default-nya `false` agar ketersediaan npm tidak diblokir oleh sidecar ClawHub; tetapkan `true` hanya ketika penyelesaian alur kerja harus mencakup penyelesaian ClawHub
+
+`OpenClaw Release Checks` menerima input yang dikendalikan operator berikut:
+
+- `ref`: cabang, tag, atau SHA commit lengkap untuk divalidasi. Pemeriksaan yang membawa rahasia mengharuskan commit yang ditentukan dapat dijangkau dari cabang atau tag rilis OpenClaw.
+- `run_release_soak`: ikut serta dalam soak langsung/E2E menyeluruh, jalur rilis Docker, dan penyintas peningkatan semua versi sejak awal untuk pemeriksaan rilis beta. Ini dipaksa aktif oleh `release_profile=stable` dan `release_profile=full`.
 
 Aturan:
 
-- Versi final reguler dan koreksi di bawah patch `33` dapat dipublikasikan ke
-  `beta` atau `latest`. Versi final pada patch `33` atau lebih tinggi harus dipublikasikan ke
-  `extended-stable`, dan versi bersufiks koreksi pada batas itu ditolak.
-- Tag prerelease beta hanya dapat dipublikasikan ke `beta`
-- Untuk `OpenClaw NPM Release`, input SHA commit penuh hanya diizinkan ketika
-  `preflight_only=true`
-- `OpenClaw Release Checks` dan `Full Release Validation` selalu
-  khusus validasi
-- Jalur publikasi sebenarnya harus menggunakan `npm_dist_tag` yang sama dengan yang digunakan selama preflight;
-  workflow memverifikasi metadata itu sebelum publikasi berlanjut
+- Versi final reguler dan versi koreksi di bawah patch `33` dapat dipublikasikan ke `beta` atau `latest`. Versi final pada patch `33` atau lebih tinggi harus dipublikasikan ke `extended-stable`, dan versi dengan sufiks koreksi pada batas tersebut ditolak.
+- Tag prarilis beta hanya dapat dipublikasikan ke `beta`; tag prarilis alfa hanya dapat dipublikasikan ke `alpha`
+- Untuk `OpenClaw NPM Release`, input SHA commit lengkap hanya diizinkan saat `preflight_only=true`
+- `OpenClaw Release Checks` dan `Full Release Validation` selalu hanya untuk validasi
+- Jalur publikasi sebenarnya harus menggunakan `npm_dist_tag` yang sama dengan yang digunakan selama prapemeriksaan; alur kerja memverifikasi metadata tersebut sebelum publikasi dilanjutkan
 
 ## Urutan rilis stabil beta/latest reguler
 
-Urutan lama ini ditujukan untuk rilis terorkestrasi reguler yang juga memiliki
-Plugin, GitHub Release, Windows, dan pekerjaan platform lain. Ini bukan jalur
-monthly `.33+` npm-only extended-stable yang didokumentasikan di bagian atas halaman ini.
+Urutan lama ini digunakan untuk rilis reguler yang diorkestrasi, yang juga menangani plugin, Rilis GitHub, Windows, dan pekerjaan platform lainnya. Ini bukan jalur extended-stable khusus npm bulanan `.33+` yang didokumentasikan di bagian atas halaman ini.
 
-Saat memotong rilis stabil terorkestrasi reguler:
+Saat membuat rilis stabil reguler yang diorkestrasi:
 
-1. Jalankan `OpenClaw NPM Release` dengan `preflight_only=true`
-   - Sebelum tag ada, Anda dapat menggunakan SHA commit branch workflow lengkap saat ini
-     untuk dry run khusus validasi pada workflow preflight
-2. Pilih `npm_dist_tag=beta` untuk alur normal beta-terlebih-dahulu, atau `latest` hanya
-   ketika Anda sengaja menginginkan publikasi stabil langsung
-3. Jalankan `Full Release Validation` pada branch rilis, tag rilis, atau SHA commit
-   lengkap ketika Anda menginginkan CI normal plus cakupan live prompt cache,
-   Docker, QA Lab, Matrix, dan Telegram dari satu workflow manual
-4. Jika Anda sengaja hanya membutuhkan grafik pengujian normal yang deterministik, jalankan
-   workflow manual `CI` pada ref rilis sebagai gantinya
-5. Pilih tag rilis `openclaw/openclaw-windows-node` non-prarilis yang tepat
-   yang installer x64 dan ARM64 bertanda tangannya harus dikirimkan. Simpan sebagai
-   `windows_node_tag`, dan simpan peta digest tervalidasi mereka sebagai
-   `windows_node_installer_digests`. Helper release-candidate mencatat keduanya
-   dan menyertakannya dalam perintah publish yang dihasilkannya.
-6. Simpan `preflight_run_id` dan `full_release_validation_run_id` yang berhasil
-7. Jalankan `OpenClaw Release Publish` dengan `tag` yang sama, `npm_dist_tag` yang sama,
-   `windows_node_tag` yang dipilih, `windows_node_installer_digests` yang tersimpan,
-   `preflight_run_id` yang tersimpan, dan `full_release_validation_run_id` yang tersimpan;
-   workflow ini memublikasikan Plugin yang dieksternalkan ke npm dan ClawHub sebelum mempromosikan
-   paket npm OpenClaw
-8. Jika rilis mendarat di `beta`, gunakan workflow
-   `openclaw/releases/.github/workflows/openclaw-npm-dist-tags.yml`
-   untuk mempromosikan versi stabil tersebut dari `beta` ke `latest`
-9. Jika rilis sengaja dipublikasikan langsung ke `latest` dan `beta`
-   harus segera mengikuti build stabil yang sama, gunakan workflow rilis yang sama
-   untuk mengarahkan kedua dist-tag ke versi stabil, atau biarkan sinkronisasi
-   self-healing terjadwalnya memindahkan `beta` nanti
+1. Jalankan `OpenClaw NPM Release` dengan `preflight_only=true`. Sebelum tag tersedia, Anda dapat menggunakan SHA commit lengkap dari cabang alur kerja saat ini untuk uji coba kering khusus validasi terhadap alur kerja prapemeriksaan.
+2. Pilih `npm_dist_tag=beta` untuk alur normal yang mendahulukan beta, atau `latest` hanya jika Anda memang menginginkan publikasi stabil langsung.
+3. Jalankan `Full Release Validation` pada cabang rilis, tag rilis, atau SHA commit lengkap jika Anda menginginkan CI normal beserta cakupan cache prompt langsung, Docker, QA Lab, Matrix, dan Telegram dari satu alur kerja manual. Jika Anda memang hanya memerlukan grafik pengujian normal yang deterministik, jalankan alur kerja manual `CI` pada referensi rilis sebagai gantinya.
+4. Pilih tag rilis non-prarilis `openclaw/openclaw-windows-node` yang tepat, yang penginstal x64 dan ARM64 bertanda tangannya akan dirilis. Simpan tag tersebut sebagai `windows_node_tag`, lalu simpan peta digest yang telah divalidasi sebagai `windows_node_installer_digests`. Pembantu kandidat rilis mencatat keduanya dan menyertakannya dalam perintah publikasi yang dihasilkan.
+5. Simpan `preflight_run_id`, `full_release_validation_run_id`, dan `full_release_validation_run_attempt` yang tepat dari proses yang berhasil.
+6. Jalankan `OpenClaw Release Publish` dari `main` tepercaya dengan `tag` yang sama, `npm_dist_tag` yang sama, `windows_node_tag` yang dipilih, `windows_node_installer_digests` yang telah disimpan, serta `preflight_run_id`, `full_release_validation_run_id`, dan `full_release_validation_run_attempt` yang telah disimpan. Proses ini memublikasikan plugin yang telah dieksternalisasi ke npm dan ClawHub sebelum mempromosikan paket npm OpenClaw.
+7. Jika rilis diterbitkan pada `beta`, gunakan alur kerja `openclaw/releases/.github/workflows/openclaw-npm-dist-tags.yml` untuk mempromosikan versi stabil tersebut dari `beta` ke `latest`.
+8. Jika rilis sengaja dipublikasikan langsung ke `latest` dan `beta` harus segera mengikuti build stabil yang sama, gunakan alur kerja rilis yang sama untuk mengarahkan kedua dist-tag ke versi stabil tersebut, atau biarkan sinkronisasi pemulihan mandiri terjadwal memindahkan `beta` nanti.
 
-Mutasi dist-tag berada di repositori ledger rilis karena masih memerlukan
-`NPM_TOKEN`, sementara repositori sumber mempertahankan publish hanya dengan OIDC.
+Mutasi dist-tag berada di repositori buku besar rilis karena masih memerlukan `NPM_TOKEN`, sedangkan repositori sumber mempertahankan publikasi khusus OIDC. Dengan demikian, jalur publikasi langsung dan jalur promosi yang mendahulukan beta tetap terdokumentasi serta terlihat oleh operator.
 
-Itu membuat jalur publish langsung dan jalur promosi beta-terlebih-dahulu
-sama-sama terdokumentasi dan terlihat oleh operator.
-
-Jika maintainer harus kembali ke autentikasi npm lokal, jalankan perintah
-CLI (`op`) 1Password apa pun hanya di dalam sesi tmux khusus. Jangan panggil `op`
-langsung dari shell agen utama; menyimpannya di dalam tmux membuat prompt,
-peringatan, dan penanganan OTP dapat diamati serta mencegah peringatan host berulang.
+Jika pengelola harus kembali menggunakan autentikasi npm lokal, jalankan semua perintah CLI 1Password (`op`) hanya di dalam sesi tmux khusus. Jangan panggil `op` secara langsung dari shell agen utama; menjalankannya di dalam tmux membuat prompt, peringatan, dan penanganan OTP dapat diamati serta mencegah peringatan host berulang.
 
 ## Referensi publik
 
@@ -1014,10 +597,8 @@ peringatan, dan penanganan OTP dapat diamati serta mencegah peringatan host beru
 - [`scripts/package-mac-dist.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-dist.sh)
 - [`scripts/make_appcast.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/make_appcast.sh)
 
-Maintainer menggunakan dokumen rilis privat di
-[`openclaw/maintainers/release/README.md`](https://github.com/openclaw/maintainers/blob/main/release/README.md)
-untuk runbook sebenarnya.
+Pengelola menggunakan dokumentasi rilis privat di [`openclaw/maintainers/release/README.md`](https://github.com/openclaw/maintainers/blob/main/release/README.md) sebagai panduan operasional sebenarnya.
 
 ## Terkait
 
-- [Kanal rilis](/id/install/development-channels)
+- [Saluran rilis](/id/install/development-channels)

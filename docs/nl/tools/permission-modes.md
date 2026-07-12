@@ -1,31 +1,31 @@
 ---
 read_when:
-    - auto, ask, allowlist, full of deny kiezen voor commandomachtigingen
-    - Codex Guardian-beoordeelde goedkeuringen configureren via tools.exec.mode
-    - OpenClaw exec-goedkeuringen vergelijken met ACPX-harnessmachtigingen
-summary: Machtigingsmodi voor host-exec, Codex Guardian-goedkeuringen en ACPX-harnesssessies
+    - Kiezen tussen auto, ask, allowlist, full en deny voor opdrachtmachtigingen
+    - Door Codex Guardian beoordeelde goedkeuringen configureren via tools.exec.mode
+    - Vergelijking van OpenClaw-uitvoeringsgoedkeuringen met ACPX-harnasmachtigingen
+summary: Toestemmingsmodi voor uitvoering op de host, goedkeuringen door Codex Guardian en ACPX-harness-sessies
 title: Toestemmingsmodi
 x-i18n:
-    generated_at: "2026-06-27T18:28:45Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:30:21Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6ce89cadb45b3b96ce9ab62b35c06610d02f0ff02f15ef7d2128c59fbebb325a
+    source_hash: f580e66508c1f69e868ed26a62d88a675f86a4d1ca738650dc5af82e967f3ac3
     source_path: tools/permission-modes.md
     workflow: 16
 ---
 
-Machtigingsmodi bepalen hoeveel bevoegdheid een agent heeft voordat deze hostopdrachten mag uitvoeren, bestanden mag schrijven of een backend-harness om extra toegang mag vragen. Begin met `tools.exec.mode: "auto"` wanneer je wilt dat OpenClaw eerst toelatingslijsten gebruikt, en daarna native automatische Codex-review of een menselijke goedkeuringsroute voor missers.
+Toestemmingsmodi bepalen hoeveel bevoegdheden een agent heeft voordat deze hostopdrachten uitvoert, bestanden schrijft of een backend-harnas om extra toegang vraagt.
 
 <Note>
-  De machtigingsmodus staat los van `tools.exec.host=auto`. `tools.exec.host`
-  kiest waar een opdracht wordt uitgevoerd. `tools.exec.mode` kiest hoe host-exec
-  wordt goedgekeurd.
+  De toestemmingsmodus staat los van `tools.exec.host=auto`. `tools.exec.host`
+  bepaalt waar een opdracht wordt uitgevoerd. `tools.exec.mode` bepaalt hoe
+  uitvoering op de host wordt goedgekeurd.
 </Note>
 
-## Aanbevolen standaard
+## Aanbevolen standaardinstelling
 
-Gebruik `auto` voor coding-agents die nuttige hosttoegang nodig hebben zonder van elke misser een menselijke prompt te maken:
+Gebruik `auto` voor codeeragents die nuttige hosttoegang nodig hebben zonder van elke niet-overeenkomende opdracht een vraag aan een mens te maken:
 
 ```bash
 openclaw config set tools.exec.mode auto
@@ -39,49 +39,49 @@ Controleer daarna het effectieve beleid:
 openclaw exec-policy show
 ```
 
-In de modus `auto` voert OpenClaw deterministische overeenkomsten met de toelatingslijst rechtstreeks uit. Goedkeuringsmissers gaan eerst via de native automatische reviewer van OpenClaw en vallen daarna zo nodig terug op de geconfigureerde menselijke goedkeuringsroute.
+## OpenClaw-modi voor uitvoering op de host
 
-## OpenClaw host-exec-modi
+`tools.exec.mode` is het genormaliseerde beleidsoppervlak voor `exec` op de host. Elke modus wordt omgezet in een onderliggend paar van `security` (strengheid van de toelatingslijst) en `ask` (vragen bij geen overeenkomst):
 
-`tools.exec.mode` is het genormaliseerde beleidsoppervlak voor host-`exec`.
+| Modus       | security / ask          | Gedrag                                                                                                                   | Gebruiken wanneer                                                   |
+| ----------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------- |
+| `deny`      | `deny` / `off`          | Uitvoering op de host volledig blokkeren.                                                                                | Er zijn geen hostopdrachten toegestaan.                             |
+| `allowlist` | `allowlist` / `off`     | Alleen opdrachten op de toelatingslijst uitvoeren; niet-overeenkomende opdrachten stilzwijgend weigeren.                | U een bekende, veilige verzameling opdrachten hebt.                 |
+| `ask`       | `allowlist` / `on-miss` | Overeenkomsten met de toelatingslijst uitvoeren; bij geen overeenkomst een mens om toestemming vragen.                  | Een mens elke nieuwe opdracht moet beoordelen.                      |
+| `auto`      | `allowlist` / `on-miss` | Overeenkomsten met de toelatingslijst uitvoeren; overige opdrachten automatisch laten beoordelen en anders een mens vragen. | Codeersessies praktische, bewaakte toegang nodig hebben.         |
+| `full`      | `full` / `off`          | Opdrachten op de host zonder vragen uitvoeren.                                                                           | Deze vertrouwde host/sessie goedkeuringscontroles moet overslaan.   |
 
-| Modus       | Gedrag                                           | Gebruik wanneer                                       |
-| ----------- | ------------------------------------------------ | ----------------------------------------------------- |
-| `deny`      | Blokkeer host-exec.                              | Er zijn geen hostopdrachten toegestaan.               |
-| `allowlist` | Voer alleen toegelaten opdrachten uit.           | Je hebt een bekende veilige set opdrachten.           |
-| `ask`       | Voer overeenkomsten uit en vraag bij missers.    | Een mens moet nieuwe opdrachten beoordelen.           |
-| `auto`      | Voer overeenkomsten uit en gebruik auto-review.  | Codingsessies hebben praktische bewaakte toegang nodig. |
-| `full`      | Voer host-exec uit zonder prompts.               | Deze vertrouwde host/sessie moet goedkeuringspoorten overslaan. |
+`ask` en `auto` gebruiken dezelfde instellingen voor de toelatingslijst en vragen; `auto` schakelt daarnaast de ingebouwde automatische beoordelaar in, die niet-overeenkomende opdrachten zelf beoordeelt en alleen terugvalt op de geconfigureerde route voor menselijke goedkeuring wanneer veilige goedkeuring niet mogelijk is.
 
-Zie [Exec-goedkeuringen](/nl/tools/exec-approvals) voor het volledige host-exec-beleid, het lokale goedkeuringsbestand, het schema voor toelatingslijsten, veilige binaries en doorstuurgedrag.
+Zie [Uitvoeringsgoedkeuringen](/nl/tools/exec-approvals) voor het volledige beleid voor uitvoering op de host, het lokale goedkeuringsbestand, het schema van de toelatingslijst, veilige programma's en het doorstuurgedrag.
 
-## Codex Guardian-toewijzing
+## Toewijzing van Codex Guardian
 
-Voor native Codex app-server-sessies wordt `tools.exec.mode: "auto"` toegewezen aan door Codex Guardian beoordeelde goedkeuringen wanneer de lokale Codex-vereisten dit toestaan. OpenClaw verzendt meestal:
+Voor sessies met de ingebouwde Codex-appserver stuurt `tools.exec.mode: "auto"` Codex in de richting van door Guardian beoordeelde goedkeuringen wanneer de lokale Codex-vereisten dit toestaan. Dit levert doorgaans de volgende waarden op:
 
-| Codex-veld         | Typische waarde  |
-| ------------------ | ---------------- |
-| `approvalPolicy`   | `on-request`     |
-| `approvalsReviewer` | `auto_review`   |
-| `sandbox`          | `workspace-write` |
+| Codex-veld          | Gebruikelijke waarde |
+| ------------------- | -------------------- |
+| `approvalPolicy`    | `on-request`         |
+| `approvalsReviewer` | `auto_review`        |
+| `sandbox`           | `workspace-write`    |
 
-In de modus `auto` behoudt OpenClaw geen verouderde onveilige Codex-overschrijvingen zoals `approvalPolicy: "never"` of `sandbox: "danger-full-access"`. Gebruik `tools.exec.mode: "full"` alleen wanneer je bewust de houding zonder goedkeuring wilt.
+De modus `auto` dwingt dit beleid af boven alle geconfigureerde Codex-overschrijvingen voor sandbox en goedkeuringen. Daardoor blijven verouderde, onveilige combinaties zoals `approvalPolicy: "never"` met `sandbox: "danger-full-access"` niet behouden. `tools.exec.mode: "deny"` en `"allowlist"` blokkeren lokale uitvoering via de Codex-appserver volledig. Gebruik `tools.exec.mode: "full"` alleen wanneer u bewust zonder goedkeuringen wilt werken.
 
-Zie [Codex-harness](/nl/plugins/codex-harness) voor app-server-installatie, auth-volgorde en native Codex-runtime-details.
+Zie [Codex-harnas](/nl/plugins/codex-harness) voor de configuratie van de appserver, de authenticatievolgorde en details over de ingebouwde Codex-runtime.
 
-## ACPX-harness-machtigingen
+## ACPX-harnastoestemmingen
 
-ACPX-sessies zijn niet-interactief, dus ze kunnen niet op een TTY-machtigingsprompt klikken. ACPX gebruikt afzonderlijke instellingen op harness-niveau onder `plugins.entries.acpx.config`:
+ACPX-sessies zijn niet-interactief en kunnen daarom niet op een TTY-toestemmingsvraag klikken. ACPX gebruikt afzonderlijke instellingen op harnasniveau onder `plugins.entries.acpx.config`:
 
-| Instelling                  | Veelgebruikte waarde | Betekenis                                  |
-| --------------------------- | -------------------- | ------------------------------------------ |
-| `permissionMode`            | `approve-reads`      | Keur alleen leesbewerkingen automatisch goed. |
-| `permissionMode`            | `approve-all`        | Keur schrijfbewerkingen en shellopdrachten automatisch goed. |
-| `permissionMode`            | `deny-all`           | Weiger alle machtigingsprompts.            |
-| `nonInteractivePermissions` | `fail`               | Breek af wanneer een prompt vereist zou zijn. |
-| `nonInteractivePermissions` | `deny`               | Weiger de prompt en ga door wanneer mogelijk. |
+| Instelling                  | Waarden         | Betekenis                                                   |
+| --------------------------- | --------------- | ----------------------------------------------------------- |
+| `permissionMode`            | `approve-reads` | Alleen leesbewerkingen automatisch goedkeuren.              |
+| `permissionMode`            | `approve-all`   | Schrijfbewerkingen en shellopdrachten automatisch goedkeuren. |
+| `permissionMode`            | `deny-all`      | Alle toestemmingsvragen weigeren.                           |
+| `nonInteractivePermissions` | `fail`          | Afbreken wanneer een vraag vereist zou zijn.                |
+| `nonInteractivePermissions` | `deny`          | De vraag weigeren en waar mogelijk doorgaan.                |
 
-Stel ACPX-machtigingen afzonderlijk in van OpenClaw exec-goedkeuringen:
+Stel ACPX-toestemmingen afzonderlijk in van OpenClaw-uitvoeringsgoedkeuringen:
 
 ```bash
 openclaw config set plugins.entries.acpx.config.permissionMode approve-all
@@ -89,31 +89,31 @@ openclaw config set plugins.entries.acpx.config.nonInteractivePermissions fail
 openclaw gateway restart
 ```
 
-Gebruik `approve-all` als het ACPX-nood-equivalent van een harness-sessie zonder prompts. Zie [ACP agents instellen](/nl/tools/acp-agents-setup#permission-configuration) voor installatiedetails en foutmodi.
+Gebruik `approve-all` als ACPX-noodoptie die overeenkomt met een harnassessie zonder vragen. Zie [Configuratie van ACP-agents](/nl/tools/acp-agents-setup#permission-configuration) voor configuratiedetails en foutscenario's.
 
 ## Een modus kiezen
 
-| Doel                                          | Configureren                                                |
-| --------------------------------------------- | ----------------------------------------------------------- |
-| Hostopdrachten volledig blokkeren             | `tools.exec.mode: "deny"`                                   |
-| Alleen bekende veilige opdrachten laten uitvoeren | `tools.exec.mode: "allowlist"`                          |
-| Een mens vragen voor elke nieuwe opdrachtvorm | `tools.exec.mode: "ask"`                                    |
-| Codex/OpenClaw auto-review gebruiken vóór mensen | `tools.exec.mode: "auto"`                                |
-| Host-exec-goedkeuringen volledig overslaan    | `tools.exec.mode: "full"` plus bijpassend host-goedkeuringsbestand |
-| Niet-interactieve ACPX-sessies laten schrijven/exec uitvoeren | `plugins.entries.acpx.config.permissionMode: "approve-all"` |
+| Doel                                                    | Configuratie                                                  |
+| ------------------------------------------------------- | ------------------------------------------------------------- |
+| Hostopdrachten volledig blokkeren                       | `tools.exec.mode: "deny"`                                     |
+| Alleen bekende, veilige opdrachten laten uitvoeren      | `tools.exec.mode: "allowlist"`                                |
+| Voor elke nieuwe opdrachtvorm een mens om toestemming vragen | `tools.exec.mode: "ask"`                                 |
+| Automatische beoordeling door Codex/OpenClaw vóór mensen gebruiken | `tools.exec.mode: "auto"`                            |
+| Goedkeuringen voor uitvoering op de host volledig overslaan | `tools.exec.mode: "full"` plus een overeenkomend hostgoedkeuringsbestand |
+| Niet-interactieve ACPX-sessies laten schrijven/uitvoeren | `plugins.entries.acpx.config.permissionMode: "approve-all"`  |
 
-Als een opdracht nog steeds een prompt toont of mislukt nadat je de modus hebt gewijzigd, inspecteer dan beide lagen:
+Als een opdracht na het wijzigen van de modus nog steeds om toestemming vraagt of mislukt, controleert u beide lagen:
 
 ```bash
 openclaw approvals get
 openclaw exec-policy show
 ```
 
-Host-exec gebruikt het strengere resultaat van de OpenClaw-configuratie en het host-lokale goedkeuringsbestand. ACPX-harness-machtigingen versoepelen host-exec-goedkeuringen niet, en host-exec-goedkeuringen versoepelen ACPX-harness-prompts niet.
+Voor uitvoering op de host geldt het strengste resultaat van de OpenClaw-configuratie en het lokale goedkeuringsbestand van de host. ACPX-harnastoestemmingen versoepelen de goedkeuringen voor uitvoering op de host niet, en goedkeuringen voor uitvoering op de host versoepelen de ACPX-harnasvragen niet.
 
 ## Gerelateerd
 
-- [Exec-goedkeuringen](/nl/tools/exec-approvals)
-- [Exec-goedkeuringen - geavanceerd](/nl/tools/exec-approvals-advanced)
-- [Codex-harness](/nl/plugins/codex-harness)
-- [ACP agents instellen](/nl/tools/acp-agents-setup#permission-configuration)
+- [Uitvoeringsgoedkeuringen](/nl/tools/exec-approvals)
+- [Uitvoeringsgoedkeuringen - geavanceerd](/nl/tools/exec-approvals-advanced)
+- [Codex-harnas](/nl/plugins/codex-harness)
+- [Configuratie van ACP-agents](/nl/tools/acp-agents-setup#permission-configuration)

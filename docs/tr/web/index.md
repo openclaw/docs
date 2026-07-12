@@ -1,15 +1,15 @@
 ---
 read_when:
-    - Tailscale üzerinden Gateway'e erişmek istiyorsunuz
-    - Tarayıcı Control UI'sini ve yapılandırma düzenlemeyi istiyorsunuz
-summary: 'Gateway web yüzeyleri: Kontrol kullanıcı arayüzü, bağlama modları ve güvenlik'
+    - Gateway'e Tailscale üzerinden erişmek istiyorsunuz
+    - Tarayıcı Denetim Arayüzü'nü ve yapılandırma düzenlemeyi istiyorsunuz
+summary: 'Gateway web yüzeyleri: Denetim Arayüzü, bağlama modları ve güvenlik'
 title: Web
 x-i18n:
-    generated_at: "2026-06-28T01:27:57Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:55:24Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1c6b0c9f4ff53af295eb4eef7290d5d6b70c52543f57a9e83c7f8a635a2b35cd
+    source_hash: 413fb029d95241f5c6043b28825727cdee52b2fa8cbe998fbbd6e3ff7b81467b
     source_path: web/index.md
     workflow: 16
 ---
@@ -18,123 +18,105 @@ Gateway, Gateway WebSocket ile aynı porttan küçük bir **tarayıcı Denetim A
 
 - varsayılan: `http://<host>:18789/`
 - `gateway.tls.enabled: true` ile: `https://<host>:18789/`
-- isteğe bağlı önek: `gateway.controlUi.basePath` ayarını belirleyin (örn. `/openclaw`)
+- isteğe bağlı önek: `gateway.controlUi.basePath` değerini ayarlayın (ör. `/openclaw`)
 
-Yetenekler [Denetim Arayüzü](/tr/web/control-ui) içinde yer alır. Bu sayfanın geri kalanı bağlama kiplerine, güvenliğe ve web'e açık yüzeylere odaklanır.
-
-## Webhook'lar
-
-`hooks.enabled=true` olduğunda Gateway, aynı HTTP sunucusunda küçük bir Webhook uç noktası da sunar.
-Kimlik doğrulama + yükler için [Gateway yapılandırması](/tr/gateway/configuration) → `hooks` bölümüne bakın.
-
-## Yönetici HTTP RPC
-
-Yönetici HTTP RPC, seçili Gateway denetim düzlemi yöntemlerini `POST /api/v1/admin/rpc` üzerinde sunar.
-Varsayılan olarak kapalıdır ve yalnızca `admin-http-rpc` plugin'i etkinleştirildiğinde kaydedilir.
-Kimlik doğrulama modeli, izin verilen yöntemler ve WebSocket karşılaştırması için [Yönetici HTTP RPC](/tr/plugins/admin-http-rpc) bölümüne bakın.
+Yetenekler [Denetim Arayüzü](/tr/web/control-ui) bölümünde açıklanır. Bu sayfa bağlama modlarını, güvenliği ve web'e yönelik diğer yüzeyleri ele alır.
 
 ## Yapılandırma (varsayılan olarak açık)
 
-Denetim Arayüzü, varlıklar mevcut olduğunda (`dist/control-ui`) **varsayılan olarak etkindir**.
-Bunu yapılandırma üzerinden denetleyebilirsiniz:
+Varlıklar (`dist/control-ui`) mevcut olduğunda Denetim Arayüzü **varsayılan olarak etkindir**:
 
 ```json5
 {
   gateway: {
-    controlUi: { enabled: true, basePath: "/openclaw" }, // basePath optional
+    controlUi: { enabled: true, basePath: "/openclaw" }, // basePath isteğe bağlı
   },
 }
 ```
+
+## Webhook'lar
+
+`hooks.enabled=true` olduğunda Gateway, aynı HTTP sunucusunda bir Webhook uç noktası da sunar. Kimlik doğrulama ve yükler için [Gateway yapılandırma başvurusu](/tr/gateway/configuration-reference#hooks) içindeki `hooks` bölümüne bakın.
+
+## Yönetici HTTP RPC'si
+
+`POST /api/v1/admin/rpc`, seçili Gateway denetim düzlemi yöntemlerini HTTP üzerinden sunar. Varsayılan olarak kapalıdır; yalnızca `admin-http-rpc` Plugin'i etkinleştirildiğinde kaydedilir. Kimlik doğrulama modeli, izin verilen yöntemler ve WebSocket API ile karşılaştırma için [Yönetici HTTP RPC'si](/tr/plugins/admin-http-rpc) bölümüne bakın.
 
 ## Tailscale erişimi
 
-### Tümleşik Serve (önerilir)
+<Tabs>
+  <Tab title="Tümleşik Serve (önerilen)">
+    Gateway'i local loopback üzerinde tutun ve Tailscale Serve'ün buna proxy görevi görmesini sağlayın:
 
-Gateway'i loopback üzerinde tutun ve Tailscale Serve'ün bunu proxy üzerinden aktarmasına izin verin:
+    ```json5
+    {
+      gateway: {
+        bind: "loopback",
+        tailscale: { mode: "serve" },
+      },
+    }
+    ```
 
-```json5
-{
-  gateway: {
-    bind: "loopback",
-    tailscale: { mode: "serve" },
-  },
-}
-```
+    Gateway'i başlatın:
 
-Ardından gateway'i başlatın:
+    ```bash
+    openclaw gateway
+    ```
 
-```bash
-openclaw gateway
-```
+    `https://<magicdns>/` adresini (veya yapılandırdığınız `gateway.controlUi.basePath` yolunu) açın.
 
-Açın:
+  </Tab>
+  <Tab title="Tailnet bağlama + token">
+    ```json5
+    {
+      gateway: {
+        bind: "tailnet",
+        controlUi: { enabled: true },
+        auth: { mode: "token", token: "your-token" },
+      },
+    }
+    ```
 
-- `https://<magicdns>/` (veya yapılandırdığınız `gateway.controlUi.basePath`)
+    Gateway'i başlatın (bu local loopback dışı örnek, paylaşılan gizli anahtar token kimlik doğrulamasını kullanır):
 
-### Tailnet bağlama + belirteç
+    ```bash
+    openclaw gateway
+    ```
 
-```json5
-{
-  gateway: {
-    bind: "tailnet",
-    controlUi: { enabled: true },
-    auth: { mode: "token", token: "your-token" },
-  },
-}
-```
+    `http://<tailscale-ip>:18789/` adresini (veya yapılandırdığınız `gateway.controlUi.basePath` yolunu) açın.
 
-Ardından gateway'i başlatın (bu loopback olmayan örnek, paylaşılan gizli anahtar belirteci
-kimlik doğrulamasını kullanır):
+  </Tab>
+  <Tab title="Genel internet (Funnel)">
+    ```json5
+    {
+      gateway: {
+        bind: "loopback",
+        tailscale: { mode: "funnel" },
+        auth: { mode: "password" }, // veya OPENCLAW_GATEWAY_PASSWORD
+      },
+    }
+    ```
 
-```bash
-openclaw gateway
-```
+    `tailscale.mode: "funnel"` için `gateway.auth.mode: "password"` gerekir; hem Serve hem de Funnel için `gateway.bind: "loopback"` gerekir.
 
-Açın:
-
-- `http://<tailscale-ip>:18789/` (veya yapılandırdığınız `gateway.controlUi.basePath`)
-
-### Herkese açık internet (Funnel)
-
-```json5
-{
-  gateway: {
-    bind: "loopback",
-    tailscale: { mode: "funnel" },
-    auth: { mode: "password" }, // or OPENCLAW_GATEWAY_PASSWORD
-  },
-}
-```
+  </Tab>
+</Tabs>
 
 ## Güvenlik notları
 
-- Gateway kimlik doğrulaması varsayılan olarak gereklidir (belirteç, parola, trusted-proxy veya etkinleştirildiğinde Tailscale Serve kimlik başlıkları).
-- Loopback olmayan bağlamalar yine de gateway kimlik doğrulaması **gerektirir**. Pratikte bu, belirteç/parola kimlik doğrulaması veya `gateway.auth.mode: "trusted-proxy"` kullanan kimlik farkındalığına sahip bir ters proxy anlamına gelir.
-- Sihirbaz varsayılan olarak paylaşılan gizli anahtar kimlik doğrulaması oluşturur ve genellikle bir
-  gateway belirteci üretir (loopback üzerinde bile).
-- Paylaşılan gizli anahtar kipinde, kullanıcı arayüzü `connect.params.auth.token` veya
-  `connect.params.auth.password` gönderir.
-- `gateway.tls.enabled: true` olduğunda, yerel pano ve durum yardımcıları
-  `https://` pano URL'lerini ve `wss://` WebSocket URL'lerini işler.
-- Tailscale Serve veya `trusted-proxy` gibi kimlik taşıyan kiplerde,
-  WebSocket kimlik doğrulama denetimi bunun yerine istek başlıklarından karşılanır.
-- Herkese açık loopback olmayan Denetim Arayüzü dağıtımları için `gateway.controlUi.allowedOrigins`
-  değerini açıkça (tam kaynaklar olarak) ayarlayın. Özel aynı kaynaklı LAN/Tailnet yüklemeleri; loopback,
-  RFC1918/link-local, `.local`, `.ts.net` ve Tailscale CGNAT ana makineleri için kabul edilir.
-- `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true`, Host başlığı kaynak geri dönüş kipini
-  etkinleştirir, ancak bu tehlikeli bir güvenlik zayıflatmasıdır.
-- Serve ile, `gateway.auth.allowTailscale` `true` olduğunda Tailscale kimlik başlıkları
-  Denetim Arayüzü/WebSocket kimlik doğrulamasını karşılayabilir (belirteç/parola gerekmez).
-  HTTP API uç noktaları bu Tailscale kimlik başlıklarını kullanmaz; bunun yerine
-  gateway'in normal HTTP kimlik doğrulama kipini izler. Açık kimlik bilgileri gerektirmek için
-  `gateway.auth.allowTailscale: false` ayarını belirleyin. [Tailscale](/tr/gateway/tailscale) ve
-  [Güvenlik](/tr/gateway/security) bölümlerine bakın. Bu belirteçsiz akış,
-  gateway ana makinesinin güvenilir olduğunu varsayar.
-- `gateway.tailscale.mode: "funnel"`, `gateway.auth.mode: "password"` (paylaşılan parola) gerektirir.
+- Gateway kimlik doğrulaması varsayılan olarak gereklidir: etkinleştirildiğinde token, parola, güvenilir proxy veya Tailscale Serve kimlik üstbilgileri.
+- Local loopback dışı bağlamalar yine de Gateway kimlik doğrulaması **gerektirir**: token/parola kimlik doğrulaması veya `gateway.auth.mode: "trusted-proxy"` kullanan, kimlik bilincine sahip bir ters proxy.
+- İlk katılım sihirbazı varsayılan olarak paylaşılan gizli anahtar kimlik doğrulaması oluşturur ve local loopback üzerinde bile genellikle bir Gateway token'ı üretir.
+- Paylaşılan gizli anahtar modunda arayüz, WebSocket el sıkışması sırasında `connect.params.auth.token` veya `connect.params.auth.password` gönderir.
+- `gateway.tls.enabled: true` olduğunda yerel pano/durum yardımcıları `https://` URL'lerini ve `wss://` WebSocket URL'lerini oluşturur.
+- Kimlik taşıyan modlarda (Tailscale Serve, `trusted-proxy`) WebSocket kimlik doğrulama denetimi, paylaşılan gizli anahtar yerine istek üstbilgileriyle karşılanır.
+- Genel kullanıma açık, local loopback dışı Denetim Arayüzü dağıtımlarında `gateway.controlUi.allowedOrigins` değerini açıkça ayarlayın (tam kaynaklar). Aynı kaynaktan yapılan özel yüklemeler; local loopback, RFC1918/bağlantı yerel, `.local`, `.ts.net` ve Tailscale CGNAT ana makineleri için bu ayar olmadan kabul edilir.
+- `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback: true`, Host üstbilgisi kaynak geri dönüşünü etkinleştirir; bu, tehlikeli bir güvenlik düşürmesidir.
+- Serve ile `gateway.auth.allowTailscale: true` olduğunda Tailscale kimlik üstbilgileri, Denetim Arayüzü/WebSocket kimlik doğrulamasını karşılar (token/parola gerekmez). HTTP API uç noktaları Tailscale kimlik üstbilgilerini kullanmaz; her zaman Gateway'in normal HTTP kimlik doğrulama modunu izler. Serve üzerinden bile açık kimlik bilgileri gerektirmek için `gateway.auth.allowTailscale: false` olarak ayarlayın. Bu tokensız akış, Gateway ana makinesinin güvenilir olduğunu varsayar. [Tailscale](/tr/gateway/tailscale) ve [Güvenlik](/tr/gateway/security) bölümlerine bakın.
 
-## Kullanıcı arayüzünü derleme
+## Arayüzü derleme
 
-Gateway, statik dosyaları `dist/control-ui` konumundan sunar. Bunları şu komutla derleyin:
+Gateway, `dist/control-ui` konumundaki statik dosyaları sunar:
 
 ```bash
 pnpm ui:build

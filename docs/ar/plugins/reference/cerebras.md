@@ -1,11 +1,11 @@
 ---
 read_when:
-    - أنت تثبّت Plugin cerebras أو تهيئه أو تدقّقه
+    - أنت تثبّت Plugin ‏cerebras أو تهيئه أو تدقّق فيه
 summary: يضيف دعم موفّر نماذج Cerebras إلى OpenClaw.
 title: Plugin Cerebras
 x-i18n:
-    generated_at: "2026-06-27T18:10:44Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:20:07Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 272a592b6099b7dc30c48e40e004ca01c1113a1fcf65917ac6266987a63ec01f
@@ -24,8 +24,8 @@ x-i18n:
 
 ## الواجهة
 
-providers: cerebras
+الموفّرون: cerebras
 
-## المستندات ذات الصلة
+## الوثائق ذات الصلة
 
-- [cerebras](/ar/providers/cerebras)
+- [Cerebras](/ar/providers/cerebras)

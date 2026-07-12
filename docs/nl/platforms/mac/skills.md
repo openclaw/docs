@@ -1,51 +1,43 @@
 ---
 read_when:
-    - De macOS Skills-instellingen-UI bijwerken
-    - Installatiegedrag of gating van Skills wijzigen
-summary: macOS Skills-instellingeninterface en gateway-ondersteunde status
+    - De gebruikersinterface voor Skills-instellingen in macOS bijwerken
+    - Gating of installatiegedrag van Skills wijzigen
+summary: macOS-instellingeninterface voor Skills en Gateway-ondersteunde status
 title: Skills (macOS)
 x-i18n:
-    generated_at: "2026-06-27T17:48:57Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:06:43Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5ecc470f1645051e03ab4f51bcb4972da4853c690354bc8ea18a89fcd387d413
+    source_hash: fd9d8f1190320889029335e008c3605bd4bf0194f83398cedd4ae658fd90065c
     source_path: platforms/mac/skills.md
     workflow: 16
 ---
 
-De macOS-app toont OpenClaw Skills via de Gateway; de app parseert Skills niet lokaal.
+De macOS-app biedt OpenClaw Skills aan via de Gateway; Skills worden niet lokaal geparseerd.
 
 ## Gegevensbron
 
-- `skills.status` (Gateway) retourneert alle Skills plus geschiktheid en ontbrekende vereisten
-  (inclusief allowlist-blokkades voor gebundelde Skills).
-- Vereisten worden afgeleid van `metadata.openclaw.requires` in elke `SKILL.md`.
+- `skills.status` (Gateway) retourneert alle Skills, inclusief geschiktheid en ontbrekende vereisten, waaronder blokkeringen via de toelatingslijst voor meegeleverde Skills.
+- Vereisten zijn afkomstig uit `metadata.openclaw.requires` in elk `SKILL.md`.
 
 ## Installatieacties
 
-- `metadata.openclaw.install` definieert installatieopties (brew/node/go/uv).
-- De app roept `skills.install` aan om installers op de Gateway-host uit te voeren.
-- Door de operator beheerde `security.installPolicy` kan door de Gateway ondersteunde Skill-
-  installaties blokkeren voordat installermetadata wordt uitgevoerd. Ingebouwde blokkering
-  van gevaarlijke code tijdens installatie maakt geen deel uit van de Skill-installatiestroom.
-- Als elke installatieoptie `download` is, toont de Gateway alle download-
-  keuzes.
-- Anders kiest de Gateway één voorkeursinstaller op basis van de huidige
-  installatievoorkeuren en hostbinaries: Homebrew eerst wanneer
-  `skills.install.preferBrew` is ingeschakeld en `brew` bestaat, daarna `uv`, daarna de
-  geconfigureerde Node-manager uit `skills.install.nodeManager`, en daarna latere
-  fallbacks zoals `go` of `download`.
-- Node-installatielabels weerspiegelen de geconfigureerde Node-manager, inclusief `yarn`.
+- `metadata.openclaw.install` definieert installatieopties (brew/node/go/uv/download).
+- De app roept `skills.install` aan om installatieprogramma's op de Gateway-host uit te voeren.
+- Het door de beheerder beheerde `security.installPolicy` (`enabled`, `targets`, `exec`) kan door de Gateway ondersteunde installaties van Skills blokkeren voordat de metagegevens van het installatieprogramma worden verwerkt. De ingebouwde scan op gevaarlijke code (gebruikt voor installaties van Plugins) is niet gekoppeld aan het installatieproces voor Skills.
+- Als elke installatieoptie `download` is, biedt de Gateway alle downloadopties aan.
+- Anders kiest de Gateway één voorkeursinstallatieprogramma op basis van de huidige installatievoorkeuren (`skills.install.preferBrew`, `skills.install.nodeManager`) en binaire bestanden op de host: eerst Homebrew wanneer `preferBrew` is ingeschakeld en `brew` aanwezig is, daarna `uv`, vervolgens het geconfigureerde Node-beheerprogramma, daarna opnieuw Homebrew als dit beschikbaar is (zelfs zonder `preferBrew`), vervolgens `go` en ten slotte `download`.
+- Labels voor Node-installaties geven het geconfigureerde Node-beheerprogramma weer, waaronder `yarn`.
 
-## Omgevings-/API-sleutels
+## Omgevingsvariabelen/API-sleutels
 
 - De app slaat sleutels op in `~/.openclaw/openclaw.json` onder `skills.entries.<skillKey>`.
-- `skills.update` patcht `enabled`, `apiKey` en `env`.
+- `skills.update` werkt `enabled`, `apiKey` en `env` gedeeltelijk bij.
 
 ## Externe modus
 
-- Installatie- en configuratie-updates gebeuren op de Gateway-host (niet op de lokale Mac).
+- Installatie- en configuratie-updates vinden plaats op de Gateway-host, niet op de lokale Mac.
 
 ## Gerelateerd
 

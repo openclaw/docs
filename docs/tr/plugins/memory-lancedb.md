@@ -1,37 +1,43 @@
 ---
 read_when:
-    - memory-lancedb Plugin'ini yapılandırıyorsunuz
-    - Otomatik geri çağırma veya otomatik yakalama özellikli LanceDB destekli uzun süreli bellek istiyorsunuz
+    - memory-lancedb Plugin’ini yapılandırıyorsunuz
+    - Otomatik hatırlama veya otomatik yakalama özellikli LanceDB destekli uzun süreli bellek istiyorsunuz
     - Ollama gibi yerel OpenAI uyumlu gömmeler kullanıyorsunuz
 sidebarTitle: Memory LanceDB
-summary: Resmi harici LanceDB bellek plugin'ini yerel Ollama uyumlu embedding'ler dahil yapılandırın
-title: Bellek LanceDB
+summary: Yerel Ollama uyumlu gömmeler de dahil olmak üzere resmi harici LanceDB bellek Plugin'ini yapılandırın
+title: Belleк LanceDB
 x-i18n:
-    generated_at: "2026-06-28T00:55:29Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:30:54Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4142a755e788418a8b9c64a6ff3a8ce3c520bd6be09b685929478ae0754f7d39
+    source_hash: cdcf5ef7b7fbb8bf6055363d86782cfa36df193fc724406dba06c1380fd9f434
     source_path: plugins/memory-lancedb.md
     workflow: 16
 ---
 
-`memory-lancedb`, uzun süreli belleği LanceDB içinde depolayan ve geri çağırma için gömmeler kullanan resmi bir harici bellek Plugin'idir. Bir model turundan önce ilgili anıları otomatik olarak geri çağırabilir ve bir yanıttan sonra önemli bilgileri yakalayabilir.
+`memory-lancedb`, uzun süreli belleği vektör aramasıyla LanceDB'de depolayan
+resmî bir harici plugindir. Bir model sırasından önce ilgili anıları otomatik
+olarak hatırlayabilir ve bir yanıttan sonra önemli bilgileri otomatik olarak
+yakalayabilir.
 
-Bellek için yerel bir vektör veritabanı istediğinizde, OpenAI uyumlu bir gömme uç noktasına ihtiyaç duyduğunuzda veya bellek veritabanını varsayılan yerleşik bellek deposunun dışında tutmak istediğinizde kullanın.
+Yerel bir vektör veritabanı, OpenAI uyumlu bir gömme uç noktası veya varsayılan
+yerleşik bellek arka ucunun dışında bir bellek deposu için kullanın.
 
 ## Kurulum
-
-`plugins.slots.memory = "memory-lancedb"` ayarını yapmadan önce `memory-lancedb` kurun:
 
 ```bash
 openclaw plugins install @openclaw/memory-lancedb
 ```
 
-Plugin npm'de yayımlanır ve OpenClaw çalışma zamanı imajına dahil edilmez. Yükleyici Plugin girişini yazar ve başka bir Plugin sahiplenmemişse bellek yuvasını değiştirir.
+Plugin npm'de yayımlanır; OpenClaw çalışma zamanı imajına dahil değildir. Kurulum,
+plugin girdisini yazar, etkinleştirir ve `plugins.slots.memory` değerini
+`memory-lancedb` olarak değiştirir. Bellek yuvası o anda başka bir plugine aitse,
+bu plugin bir uyarıyla devre dışı bırakılır.
 
 <Note>
-`memory-lancedb` bir aktif bellek Plugin'idir. `plugins.slots.memory = "memory-lancedb"` ile bellek yuvasını seçerek etkinleştirin. `memory-wiki` gibi eşlik eden Plugin'ler yanında çalışabilir, ancak aktif bellek yuvasına yalnızca bir Plugin sahip olur.
+`memory-wiki` gibi tamamlayıcı pluginler `memory-lancedb` ile birlikte
+çalışabilir, ancak etkin bellek yuvası aynı anda yalnızca bir plugine ait olabilir.
 </Note>
 
 ## Hızlı başlangıç
@@ -59,52 +65,51 @@ Plugin npm'de yayımlanır ve OpenClaw çalışma zamanı imajına dahil edilmez
 }
 ```
 
-Plugin yapılandırmasını değiştirdikten sonra Gateway'i yeniden başlatın:
+Plugin yapılandırmasını değiştirdikten sonra Gateway'i yeniden başlatın ve
+yüklendiğini doğrulayın:
 
 ```bash
 openclaw gateway restart
-```
-
-Ardından Plugin'in yüklendiğini doğrulayın:
-
-```bash
 openclaw plugins list
 ```
 
-## Sağlayıcı destekli gömmeler
+## Gömme yapılandırması
 
-`memory-lancedb`, `memory-core` ile aynı bellek gömme sağlayıcı adaptörlerini kullanabilir. Sağlayıcının yapılandırılmış kimlik doğrulama profilini, ortam değişkenini veya `models.providers.<provider>.apiKey` değerini kullanmak için `embedding.provider` ayarını yapın ve `embedding.apiKey` değerini atlayın.
+`embedding` zorunludur ve en az bir alan içermelidir. `provider` varsayılan olarak
+`openai`, `model` ise `text-embedding-3-small` değerini kullanır.
+
+| Alan                   | Tür             | Notlar                                                                    |
+| ---------------------- | --------------- | ------------------------------------------------------------------------- |
+| `embedding.provider`   | dize            | Bağdaştırıcı kimliği; ör. `openai`, `github-copilot`, `ollama`. Varsayılan: `openai`. |
+| `embedding.model`      | dize            | Varsayılan: `text-embedding-3-small`.                                     |
+| `embedding.apiKey`     | dize            | İsteğe bağlıdır; `${ENV_VAR}` genişletmesini destekler.                    |
+| `embedding.baseUrl`    | dize            | İsteğe bağlıdır; `${ENV_VAR}` genişletmesini destekler.                    |
+| `embedding.dimensions` | tamsayı (>=1)   | Yerleşik tabloda bulunmayan modeller için zorunludur (aşağıya bakın).      |
+
+İki istek yolu vardır:
+
+- **Sağlayıcı bağdaştırıcısı yolu** (varsayılan): `embedding.provider` değerini
+  ayarlayın ve `embedding.apiKey`/`embedding.baseUrl` alanlarını atlayın. Plugin,
+  sağlayıcının yapılandırılmış kimlik doğrulama profilini, ortam değişkenini veya
+  `models.providers.<provider>.apiKey` değerini `memory-core` tarafından
+  kullanılan bellek gömme bağdaştırıcıları üzerinden çözümler. Bu yol,
+  `github-copilot`, `ollama` ve gömme desteğine sahip diğer tüm paketlenmiş
+  sağlayıcılar içindir.
+- **Doğrudan OpenAI uyumlu istemci yolu**: `embedding.provider` değerini
+  ayarlamadan bırakın (veya `"openai"` olarak ayarlayın) ve
+  `embedding.apiKey` ile `embedding.baseUrl` değerlerini belirleyin. Paketlenmiş
+  bir sağlayıcı bağdaştırıcısı olmayan ham bir OpenAI uyumlu gömme uç noktası
+  için bunu kullanın.
+
+OpenAI Codex / ChatGPT OAuth, OpenAI Platform gömme kimlik bilgisi değildir.
+OpenAI gömmeleri için bir OpenAI API anahtarı kimlik doğrulama profili,
+`OPENAI_API_KEY` veya `models.providers.openai.apiKey` kullanın. Yalnızca OAuth
+kullanan kullanıcılar `github-copilot` veya `ollama` gibi gömme özelliğine sahip
+başka bir sağlayıcı seçmelidir.
 
 ```json5
 {
   plugins: {
-    slots: {
-      memory: "memory-lancedb",
-    },
-    entries: {
-      "memory-lancedb": {
-        enabled: true,
-        config: {
-          embedding: {
-            provider: "openai",
-            model: "text-embedding-3-small",
-          },
-          autoRecall: true,
-        },
-      },
-    },
-  },
-}
-```
-
-Bu yol, gömme kimlik bilgilerini açığa çıkaran sağlayıcı kimlik doğrulama profilleriyle çalışır. Örneğin Copilot profili/planı gömmeleri desteklediğinde GitHub Copilot kullanılabilir:
-
-```json5
-{
-  plugins: {
-    slots: {
-      memory: "memory-lancedb",
-    },
     entries: {
       "memory-lancedb": {
         enabled: true,
@@ -120,11 +125,46 @@ Bu yol, gömme kimlik bilgilerini açığa çıkaran sağlayıcı kimlik doğrul
 }
 ```
 
-OpenAI Codex / ChatGPT OAuth, OpenAI Platform gömme kimlik bilgisi değildir. OpenAI gömmeleri için bir OpenAI API anahtarı kimlik doğrulama profili, `OPENAI_API_KEY` veya `models.providers.openai.apiKey` kullanın. Yalnızca OAuth kullanan kullanıcılar GitHub Copilot veya Ollama gibi gömme destekli başka bir sağlayıcı kullanabilir.
+Bazı OpenAI uyumlu gömme uç noktaları `encoding_format` parametresini reddeder;
+diğerleri bunu yok sayar ve her zaman `number[]` döndürür. `memory-lancedb`,
+isteklerde `encoding_format` alanını atlar ve hem kayan noktalı sayı dizisi hem
+de base64 kodlu float32 yanıtlarını kabul eder; böylece her iki yanıt biçimi de
+yapılandırma gerektirmeden çalışır.
+
+### Boyutlar
+
+OpenClaw yalnızca `text-embedding-3-small` (1536) ve
+`text-embedding-3-large` (3072) için yerleşik boyut bilgisine sahiptir. Diğer
+tüm modellerde LanceDB'nin vektör sütununu oluşturabilmesi için açık bir
+`embedding.dimensions` değeri gerekir; örneğin 2048 boyutlu ZhiPu
+`embedding-3`:
+
+```json5
+{
+  plugins: {
+    entries: {
+      "memory-lancedb": {
+        enabled: true,
+        config: {
+          embedding: {
+            apiKey: "${ZHIPU_API_KEY}",
+            baseUrl: "https://open.bigmodel.cn/api/paas/v4",
+            model: "embedding-3",
+            dimensions: 2048,
+          },
+        },
+      },
+    },
+  },
+}
+```
 
 ## Ollama gömmeleri
 
-Ollama gömmeleri için paketle gelen Ollama gömme sağlayıcısını tercih edin. Yerel Ollama `/api/embed` uç noktasını kullanır ve [Ollama](/tr/providers/ollama) içinde belgelenen Ollama sağlayıcısıyla aynı kimlik doğrulama/temel URL kurallarını izler.
+Paketlenmiş Ollama sağlayıcı bağdaştırıcısı yolunu
+(`embedding.provider: "ollama"`) kullanın. Bu yol, Ollama'nın yerel `/api/embed`
+uç noktasını çağırır ve [Ollama](/tr/providers/ollama) sağlayıcısıyla aynı kimlik
+doğrulama/temel URL kurallarını izler.
 
 ```json5
 {
@@ -152,85 +192,77 @@ Ollama gömmeleri için paketle gelen Ollama gömme sağlayıcısını tercih ed
 }
 ```
 
-Standart dışı gömme modelleri için `dimensions` ayarını yapın. OpenClaw, `text-embedding-3-small` ve `text-embedding-3-large` boyutlarını bilir; özel modellerde LanceDB'nin vektör sütununu oluşturabilmesi için değerin yapılandırmada belirtilmesi gerekir.
+`mxbai-embed-large` yerleşik boyut tablosunda bulunmadığından `dimensions`
+zorunludur. Küçük yerel gömme modellerinde, yerel sunucu bağlam uzunluğu hataları
+döndürürse `recallMaxChars` değerini düşürün.
 
-Küçük yerel gömme modellerinde, yerel sunucudan bağlam uzunluğu hataları görürseniz `recallMaxChars` değerini düşürün.
+## Hatırlama ve yakalama sınırları
 
-## OpenAI uyumlu sağlayıcılar
+| Ayar              | Varsayılan | Aralık                       | Uygulandığı alan                                             |
+| ----------------- | ---------- | ---------------------------- | ------------------------------------------------------------ |
+| `recallMaxChars`  | `1000`     | 100-10000                    | Hatırlama için gömme API'sine gönderilen metin.              |
+| `captureMaxChars` | `500`      | 100-10000                    | Otomatik yakalamaya uygun ileti uzunluğu.                     |
+| `customTriggers`  | `[]`       | 0-50 öğe, her biri <=100 karakter | Otomatik yakalamanın bir iletiyi değerlendirmesini sağlayan değişmez ifadeler. |
 
-Bazı OpenAI uyumlu gömme sağlayıcıları `encoding_format` parametresini reddederken, bazıları bunu yok sayar ve her zaman `number[]` vektörleri döndürür. Bu nedenle `memory-lancedb`, gömme isteklerinde `encoding_format` parametresini atlar ve hem kayan nokta dizisi yanıtlarını hem de base64 ile kodlanmış float32 yanıtlarını kabul eder.
+`recallMaxChars`; `before_prompt_build` otomatik hatırlama sorgusunu,
+`memory_recall` aracını, `memory_forget` sorgu yolunu ve `openclaw ltm
+search` komutunu sınırlar. Otomatik hatırlama, sıradaki en son kullanıcı
+iletisini gömer ve yalnızca kullanıcı iletisi yoksa tam isteme geri döner;
+böylece kanal meta verileri ile büyük istem blokları gömme isteğinin dışında
+tutulur.
 
-Paketle gelen bir sağlayıcı adaptörü olmayan ham bir OpenAI uyumlu gömme uç noktanız varsa, `embedding.provider` değerini atlayın (veya `openai` olarak bırakın) ve `embedding.apiKey` ile `embedding.baseUrl` değerlerini ayarlayın. Bu, doğrudan OpenAI uyumlu istemci yolunu korur.
+`captureMaxChars`, sıranın `agent_end` olayındaki bir kullanıcı iletisinin
+otomatik yakalama için değerlendirilebilecek kadar kısa olup olmadığını
+belirler; hatırlama sorgularını etkilemez.
 
-Model boyutları yerleşik olmayan sağlayıcılar için `embedding.dimensions` ayarını yapın. Örneğin ZhiPu `embedding-3`, `2048` boyut kullanır:
+`customTriggers`, düzenli ifade kullanmadan değişmez otomatik yakalama ifadeleri
+ekler. Yerleşik tetikleyiciler İngilizce, Çekçe, Çince, Japonca ve Korecedeki
+yaygın bellek ifadelerini (`remember`, `prefer`, `记住`, `覚えて`, `기억해` ve
+benzerlerini) kapsar.
 
-```json5
-{
-  plugins: {
-    entries: {
-      "memory-lancedb": {
-        enabled: true,
-        config: {
-          embedding: {
-            apiKey: "${ZHIPU_API_KEY}",
-            baseUrl: "https://open.bigmodel.cn/api/paas/v4",
-            model: "embedding-3",
-            dimensions: 2048,
-          },
-        },
-      },
-    },
-  },
-}
-```
-
-## Geri çağırma ve yakalama sınırları
-
-`memory-lancedb` iki ayrı metin sınırına sahiptir:
-
-| Ayar              | Varsayılan | Aralık    | Uygulandığı yer                                                        |
-| ----------------- | ---------- | --------- | ---------------------------------------------------------------------- |
-| `recallMaxChars`  | `1000`     | 100-10000 | geri çağırma için gömme API'sine gönderilen metin                      |
-| `captureMaxChars` | `500`      | 100-10000 | otomatik yakalama için uygun mesaj uzunluğu                            |
-| `customTriggers`  | `[]`       | 0-50      | otomatik yakalamanın bir mesajı değerlendirmesini sağlayan düz ifadeler |
-
-`recallMaxChars`, otomatik geri çağırmayı, `memory_recall` aracını, `memory_forget` sorgu yolunu ve `openclaw ltm search` komutunu denetler. Otomatik geri çağırma, turdaki en son kullanıcı mesajını tercih eder ve yalnızca kullanıcı mesajı yoksa tam isteme geri döner. Bu, kanal meta verilerini ve büyük istem bloklarını gömme isteğinin dışında tutar.
-
-`captureMaxChars`, bir yanıtın otomatik yakalama için değerlendirilecek kadar kısa olup olmadığını denetler. Geri çağırma sorgusu gömmelerini sınırlamaz.
-
-`customTriggers`, düzenli ifadeler yazmadan düz otomatik yakalama ifadeleri eklemenizi sağlar. Yerleşik tetikleyiciler yaygın İngilizce, Çekçe, Çince, Japonca ve Korece bellek ifadelerini içerir.
+Otomatik yakalama ayrıca zarf/taşıma meta verilerine, istem enjeksiyonu yüklerine
+veya önceden eklenmiş `<relevant-memories>` bağlamına benzeyen metinleri reddeder
+ve her ajan sırasında en fazla 3 anı yakalar.
 
 ## Komutlar
 
-`memory-lancedb` aktif bellek Plugin'i olduğunda `ltm` CLI ad alanını kaydeder:
+`memory-lancedb`, etkin bellek yuvasına yalnızca sahip olduğunda değil,
+kurulu olduğu her durumda `ltm` CLI ad alanını kaydeder:
 
 ```bash
-openclaw ltm list
-openclaw ltm search "project preferences"
+openclaw ltm list [--limit <n>] [--order-by-created-at]
+openclaw ltm search <query> [--limit <n>]
 openclaw ltm stats
 ```
 
-`query` alt komutu, LanceDB tablosuna karşı doğrudan vektör olmayan bir sorgu çalıştırır:
+`ltm query`, doğrudan LanceDB tablosunda vektör dışı bir sorgu çalıştırır:
 
 ```bash
 openclaw ltm query --cols id,text,createdAt --limit 20
 openclaw ltm query --filter "category = 'preference'" --order-by createdAt:desc
 ```
 
-- `--cols <columns>`: virgülle ayrılmış sütun izin listesi (varsayılan olarak `id`, `text`, `importance`, `category`, `createdAt`).
-- `--filter <condition>`: SQL tarzı WHERE yan tümcesi; 200 karakterle sınırlıdır ve alfasayısal karakterler, karşılaştırma işleçleri, tırnak işaretleri, parantezler ve küçük bir güvenli noktalama kümesiyle kısıtlanır.
-- `--limit <n>`: pozitif tamsayı; varsayılan `10`.
-- `--order-by <column>:<asc|desc>`: filtreden sonra uygulanan bellek içi sıralama; sıralama sütunu projeksiyona otomatik olarak dahil edilir.
+| Bayrak                            | Varsayılan                              | Notlar                                                                                                                                                   |
+| --------------------------------- | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--cols <columns>`                | `id,text,importance,category,createdAt` | Virgülle ayrılmış sütun izin listesi.                                                                                                                     |
+| `--filter <condition>`            | yok                                     | SQL tarzı WHERE yan tümcesi. En fazla 200 karakterdir; yalnızca alfasayısal karakterlere, `_-`, boşluklara ve `='"<>!.,()%*` karakterlerine izin verilir. |
+| `--limit <n>`                     | `10`                                    | Pozitif tamsayı.                                                                                                                                         |
+| `--order-by <column>:<asc\|desc>` | yok                                     | Filtre çalıştıktan sonra bellekte sıralanır; sıralama sütunu izdüşüme otomatik olarak eklenir ve istenmemişse çıktıdan kaldırılır.                         |
 
-Ajanlar ayrıca aktif bellek Plugin'inden LanceDB bellek araçlarını alır:
+Ajanlar, etkin bellek plugininden üç araç alır:
 
-- LanceDB destekli geri çağırma için `memory_recall`
-- önemli bilgileri, tercihleri, kararları ve varlıkları kaydetmek için `memory_store`
-- eşleşen anıları kaldırmak için `memory_forget`
+- `memory_recall`: depolanan anılar üzerinde vektör araması.
+- `memory_store`: bir bilgiyi, tercihi, kararı veya varlığı kaydeder (istem
+  enjeksiyonu yüküne benzeyen metinleri reddeder; neredeyse yinelenen kayıtları
+  atlar).
+- `memory_forget`: `memoryId` ile veya `query` aracılığıyla siler (%90 puanın
+  üzerindeki tek bir eşleşmeyi otomatik olarak siler; aksi hâlde belirsizliği
+  gidermek için aday kimlikleri listeler).
 
 ## Depolama
 
-Varsayılan olarak LanceDB verileri `~/.openclaw/memory/lancedb` altında bulunur. Yolu `dbPath` ile geçersiz kılın:
+LanceDB verileri varsayılan olarak `~/.openclaw/memory/lancedb` konumunda
+saklanır. `dbPath` ile geçersiz kılın:
 
 ```json5
 {
@@ -251,7 +283,9 @@ Varsayılan olarak LanceDB verileri `~/.openclaw/memory/lancedb` altında bulunu
 }
 ```
 
-`storageOptions`, LanceDB depolama arka uçları için dize anahtar/değer çiftlerini kabul eder ve `${ENV_VAR}` genişletmesini destekler:
+`storageOptions`, LanceDB depolama arka uçları (ör. S3 uyumlu nesne depolama)
+için dize anahtar/değer çiftlerini kabul eder ve `${ENV_VAR}` genişletmesini
+destekler:
 
 ```json5
 {
@@ -277,25 +311,30 @@ Varsayılan olarak LanceDB verileri `~/.openclaw/memory/lancedb` altında bulunu
 }
 ```
 
-## Çalışma zamanı bağımlılıkları
+## Çalışma zamanı bağımlılıkları ve platform desteği
 
-`memory-lancedb`, yerel `@lancedb/lancedb` paketine bağlıdır. Paketlenmiş OpenClaw, bu paketi Plugin paketinin parçası olarak ele alır. Gateway başlangıcı Plugin bağımlılıklarını onarmaz; bağımlılık eksikse Plugin paketini yeniden kurun veya güncelleyin ve Gateway'i yeniden başlatın.
+`memory-lancedb`, plugin paketine ait olan (OpenClaw çekirdek dağıtımına ait
+olmayan) yerel `@lancedb/lancedb` paketine bağlıdır. Gateway başlangıcı plugin
+bağımlılıklarını onarmaz; yerel bağımlılık eksikse veya yüklenemezse plugin
+paketini yeniden kurun ya da güncelleyin ve Gateway'i yeniden başlatın.
 
-Daha eski bir kurulum, Plugin yüklenirken eksik `dist/package.json` veya eksik `@lancedb/lancedb` hatası kaydederse OpenClaw'ı yükseltin ve Gateway'i yeniden başlatın.
-
-Plugin, LanceDB'nin `darwin-x64` üzerinde kullanılamadığını kaydederse bu makinede varsayılan bellek arka ucunu kullanın, Gateway'i desteklenen bir platforma taşıyın veya `memory-lancedb` devre dışı bırakın.
+`@lancedb/lancedb`, `darwin-x64` (Intel Mac) için yerel bir derleme yayımlamaz.
+Bu platformda plugin, yükleme sırasında LanceDB'nin kullanılamadığını günlüğe
+kaydeder; varsayılan bellek arka ucunu kullanın, Gateway'i desteklenen bir
+platformda/mimaride çalıştırın veya `memory-lancedb` pluginini devre dışı
+bırakın.
 
 ## Sorun giderme
 
 ### Girdi uzunluğu bağlam uzunluğunu aşıyor
 
-Bu genellikle gömme modelinin geri çağırma sorgusunu reddettiği anlamına gelir:
+Gömme modeli hatırlama sorgusunu reddetti:
 
 ```text
 memory-lancedb: recall failed: Error: 400 the input length exceeds the context length
 ```
 
-Daha düşük bir `recallMaxChars` değeri ayarlayın, ardından Gateway'i yeniden başlatın:
+`recallMaxChars` değerini düşürün, ardından Gateway'i yeniden başlatın:
 
 ```json5
 {
@@ -311,33 +350,39 @@ Daha düşük bir `recallMaxChars` değeri ayarlayın, ardından Gateway'i yenid
 }
 ```
 
-Ollama için, gömme sunucusuna Gateway ana makinesinden erişilebildiğini de doğrulayın:
+Ollama için ayrıca yerel gömme uç noktasını kullanarak gömme sunucusuna Gateway
+ana makinesinden erişilebildiğini doğrulayın:
 
 ```bash
-curl http://127.0.0.1:11434/v1/embeddings \
+curl http://127.0.0.1:11434/api/embed \
   -H "Content-Type: application/json" \
   -d '{"model":"mxbai-embed-large","input":"hello"}'
 ```
 
 ### Desteklenmeyen gömme modeli
 
-`dimensions` olmadan yalnızca yerleşik OpenAI gömme boyutları bilinir. Yerel veya özel gömme modelleri için `embedding.dimensions` değerini o model tarafından bildirilen vektör boyutuna ayarlayın.
+`embedding.dimensions` olmadan yalnızca yerleşik OpenAI gömme boyutları
+(`text-embedding-3-small`, `text-embedding-3-large`) bilinir. Diğer tüm modeller
+için `embedding.dimensions` değerini modelin bildirdiği vektör boyutuna
+ayarlayın.
 
-### Plugin yükleniyor ancak hiç anı görünmüyor
+### Plugin yükleniyor ancak hiçbir anı görünmüyor
 
-`plugins.slots.memory` değerinin `memory-lancedb` öğesini işaret ettiğini kontrol edin, ardından şunu çalıştırın:
+`plugins.slots.memory` değerinin `memory-lancedb` öğesini gösterdiğini doğrulayın, ardından şunları çalıştırın:
 
 ```bash
 openclaw ltm stats
 openclaw ltm search "recent preference"
 ```
 
-`autoCapture` devre dışıysa Plugin mevcut anıları geri çağırır ancak yenilerini otomatik olarak depolamaz. Otomatik yakalama istiyorsanız `memory_store` aracını kullanın veya `autoCapture` etkinleştirin.
+`autoCapture` devre dışıysa Plugin mevcut anıları yine hatırlar ancak
+yenilerini otomatik olarak saklamaz. `memory_store` aracını kullanın veya
+`autoCapture` özelliğini etkinleştirin.
 
 ## İlgili
 
 - [Belleğe genel bakış](/tr/concepts/memory)
 - [Active Memory](/tr/concepts/active-memory)
 - [Bellek araması](/tr/concepts/memory-search)
-- [Memory Wiki](/tr/plugins/memory-wiki)
+- [Bellek Wiki'si](/tr/plugins/memory-wiki)
 - [Ollama](/tr/providers/ollama)

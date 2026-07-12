@@ -1,57 +1,41 @@
 ---
 read_when:
     - تريد توجيه OpenClaw عبر وكيل LiteLLM
-    - تحتاج إلى تتبّع التكاليف أو التسجيل أو توجيه النماذج عبر LiteLLM
+    - تحتاج إلى تتبّع التكلفة أو التسجيل أو توجيه النماذج عبر LiteLLM
 summary: شغّل OpenClaw عبر LiteLLM Proxy للوصول الموحّد إلى النماذج وتتبع التكاليف
 title: LiteLLM
 x-i18n:
-    generated_at: "2026-04-30T08:21:12Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:29:44Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 26b5150cfca92c9cd425c864c711efb3ab62ef94377b9d1e5d6476b07bf4c800
+    source_hash: 797b7d02a80a4cd37b92553665e260532af49e011398202d3504a28c511cee2f
     source_path: providers/litellm.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-[LiteLLM](https://litellm.ai) هي بوابة LLM مفتوحة المصدر توفر API موحدًا لأكثر من 100 موفر نماذج. مرّر OpenClaw عبر LiteLLM للحصول على تتبع مركزي للتكلفة، وتسجيل السجلات، ومرونة تبديل الخلفيات دون تغيير إعدادات OpenClaw.
-
-<Tip>
-**لماذا تستخدم LiteLLM مع OpenClaw؟**
-
-- **تتبع التكلفة** — اعرف بدقة ما ينفقه OpenClaw عبر جميع النماذج
-- **توجيه النماذج** — بدّل بين Claude وGPT-4 وGemini وBedrock دون تغييرات في الإعدادات
-- **مفاتيح افتراضية** — أنشئ مفاتيح بحدود إنفاق لـ OpenClaw
-- **تسجيل السجلات** — سجلات كاملة للطلبات/الاستجابات من أجل التصحيح
-- **البدائل الاحتياطية** — تحويل تلقائي عند تعطل الموفر الأساسي
-
-</Tip>
+[LiteLLM](https://litellm.ai) هو Gateway مفتوح المصدر لنماذج LLM، ويوفّر واجهة API موحّدة لأكثر من 100 مزوّد
+للنماذج. وجّه OpenClaw عبر LiteLLM لتتبّع التكاليف وتسجيل السجلات مركزيًا، واستخدام مفاتيح افتراضية ذات
+حدود للإنفاق، والتبديل الاحتياطي بين الواجهات الخلفية دون تغيير إعدادات OpenClaw.
 
 ## البدء السريع
 
 <Tabs>
   <Tab title="Onboarding (recommended)">
-    **الأفضل لـ:** أسرع مسار إلى إعداد LiteLLM عامل.
+    ```bash
+    openclaw onboard --auth-choice litellm-api-key
+    ```
 
-    <Steps>
-      <Step title="Run onboarding">
-        ```bash
-        openclaw onboard --auth-choice litellm-api-key
-        ```
+    للإعداد غير التفاعلي باستخدام وكيل بعيد، مرّر عنوان URL للوكيل صراحةً:
 
-        للإعداد غير التفاعلي مع وكيل بعيد، مرّر عنوان URL للوكيل صراحةً:
-
-        ```bash
-        openclaw onboard --non-interactive --auth-choice litellm-api-key --litellm-api-key "$LITELLM_API_KEY" --custom-base-url "https://litellm.example/v1"
-        ```
-      </Step>
-    </Steps>
+    ```bash
+    openclaw onboard --non-interactive --accept-risk --auth-choice litellm-api-key \
+      --litellm-api-key "$LITELLM_API_KEY" --custom-base-url "https://litellm.example/v1"
+    ```
 
   </Tab>
 
   <Tab title="Manual setup">
-    **الأفضل لـ:** تحكم كامل في التثبيت والإعدادات.
-
     <Steps>
       <Step title="Start LiteLLM Proxy">
         ```bash
@@ -62,26 +46,14 @@ x-i18n:
       <Step title="Point OpenClaw to LiteLLM">
         ```bash
         export LITELLM_API_KEY="your-litellm-key"
-
         openclaw
         ```
-
-        هذا كل شيء. يمرّر OpenClaw الآن عبر LiteLLM.
       </Step>
     </Steps>
-
   </Tab>
 </Tabs>
 
-## الإعدادات
-
-### متغيرات البيئة
-
-```bash
-export LITELLM_API_KEY="sk-litellm-key"
-```
-
-### ملف الإعدادات
+## الإعداد
 
 ```json5
 {
@@ -120,13 +92,13 @@ export LITELLM_API_KEY="sk-litellm-key"
 }
 ```
 
-## الإعدادات المتقدمة
+النموذج الافتراضي الذي تكتبه عملية الإعداد الأولي هو `litellm/claude-opus-4-6`.
 
-### إنشاء الصور
+## إنشاء الصور
 
-يمكن لـ LiteLLM أيضًا دعم أداة `image_generate` من خلال مسارات متوافقة مع OpenAI
-مثل `/images/generations` و`/images/edits`. اضبط نموذج صور LiteLLM
-ضمن `agents.defaults.imageGenerationModel`:
+يمكن لـ LiteLLM دعم أداة `image_generate` عبر مساري `/images/generations` و
+`/images/edits` المتوافقين مع OpenAI. نموذج الصور الافتراضي هو `gpt-image-2`؛ ويمكن إعداد نموذج مختلف ضمن
+`agents.defaults.imageGenerationModel`:
 
 ```json5
 {
@@ -149,14 +121,15 @@ export LITELLM_API_KEY="sk-litellm-key"
 }
 ```
 
-تعمل عناوين URL الخاصة بـ LiteLLM على حلقة الرجوع مثل `http://localhost:4000` دون تجاوز عام
-للشبكة الخاصة. بالنسبة إلى وكيل مستضاف على شبكة LAN، اضبط
-`models.providers.litellm.request.allowPrivateNetwork: true` لأن مفتاح API
-سيُرسل إلى مضيف الوكيل المضبوط.
+تعمل عناوين URL الخاصة بـ LiteLLM على local loopback (`http://localhost:4000` و`127.0.0.1` و`::1` و`host.docker.internal`)
+من دون تجاوز عام لإعدادات الشبكة الخاصة. بالنسبة إلى وكيل مستضاف على شبكة LAN، عيّن
+`models.providers.litellm.request.allowPrivateNetwork: true` لأن مفتاح API يُرسل إلى ذلك المضيف.
+
+## خيارات متقدمة
 
 <AccordionGroup>
   <Accordion title="Virtual keys">
-    أنشئ مفتاحًا مخصصًا لـ OpenClaw مع حدود إنفاق:
+    أنشئ مفتاحًا مخصصًا لـ OpenClaw مع حدود للإنفاق:
 
     ```bash
     curl -X POST "http://localhost:4000/key/generate" \
@@ -169,12 +142,12 @@ export LITELLM_API_KEY="sk-litellm-key"
       }'
     ```
 
-    استخدم المفتاح المُنشأ كـ `LITELLM_API_KEY`.
+    استخدم المفتاح الذي تم إنشاؤه بوصفه `LITELLM_API_KEY`.
 
   </Accordion>
 
   <Accordion title="Model routing">
-    يمكن لـ LiteLLM توجيه طلبات النماذج إلى خلفيات مختلفة. اضبط ذلك في `config.yaml` الخاص بـ LiteLLM:
+    يمكن لـ LiteLLM توجيه طلبات النماذج إلى واجهات خلفية مختلفة. أجرِ الإعداد في ملف `config.yaml` الخاص بـ LiteLLM:
 
     ```yaml
     model_list:
@@ -189,13 +162,11 @@ export LITELLM_API_KEY="sk-litellm-key"
           api_key: os.environ/OPENAI_API_KEY
     ```
 
-    يواصل OpenClaw طلب `claude-opus-4-6` — ويتولى LiteLLM التوجيه.
+    يستمر OpenClaw في طلب `claude-opus-4-6`، بينما يتولى LiteLLM عملية التوجيه.
 
   </Accordion>
 
   <Accordion title="Viewing usage">
-    تحقق من لوحة معلومات LiteLLM أو API:
-
     ```bash
     # Key info
     curl "http://localhost:4000/key/info" \
@@ -209,33 +180,33 @@ export LITELLM_API_KEY="sk-litellm-key"
   </Accordion>
 
   <Accordion title="Proxy behavior notes">
-    - يعمل LiteLLM على `http://localhost:4000` افتراضيًا
-    - يتصل OpenClaw عبر نقطة نهاية `/v1` المتوافقة مع OpenAI وبنمط الوكيل في LiteLLM
-    - لا ينطبق تشكيل الطلبات الأصلي الخاص بـ OpenAI فقط عبر LiteLLM:
-      لا `service_tier`، ولا `store` في Responses، ولا تلميحات لذاكرة التخزين المؤقت للمطالبات، ولا
-      تشكيل حمولات متوافق مع استدلال OpenAI
-    - لا تُحقن ترويسات الإسناد المخفية الخاصة بـ OpenClaw (`originator` و`version` و`User-Agent`)
-      على عناوين URL الأساسية المخصصة لـ LiteLLM
+    - يعمل LiteLLM افتراضيًا على `http://localhost:4000`.
+    - يتصل OpenClaw عبر نقطة النهاية `/v1` المتوافقة مع OpenAI، بنمط الوكيل الخاص بـ LiteLLM.
+    - لا تنطبق تهيئة الطلبات المخصصة لنقاط نهاية OpenAI الأصلية فقط عند استخدام عنوان URL أساسي مُعدّ لـ LiteLLM:
+      فلا يُستخدم `service_tier`، ولا `store` في Responses، ولا تلميحات ذاكرة التخزين المؤقت للموجّهات، ولا
+      تهيئة حمولة مستوى جهد الاستدلال في OpenAI.
+    - لا تُرسل ترويسات الإسناد المخفية الخاصة بـ OpenClaw (`originator` و`version` و`User-Agent`) إلا إلى
+      نقاط نهاية OpenAI الأصلية التي تم التحقق منها، ولذلك لا تُضاف إلى عنوان URL أساسي مخصص لـ LiteLLM.
   </Accordion>
 </AccordionGroup>
 
 <Note>
-لإعدادات الموفر العامة وسلوك التحويل الاحتياطي، راجع [موفرو النماذج](/ar/concepts/model-providers).
+للتعرّف على الإعداد العام للمزوّد وسلوك التبديل الاحتياطي، راجع [مزوّدي النماذج](/ar/concepts/model-providers).
 </Note>
 
-## ذات صلة
+## ذو صلة
 
 <CardGroup cols={2}>
   <Card title="LiteLLM Docs" href="https://docs.litellm.ai" icon="book">
-    وثائق LiteLLM الرسمية ومرجع API.
+    الوثائق الرسمية لـ LiteLLM ومرجع API.
   </Card>
   <Card title="Model selection" href="/ar/concepts/model-providers" icon="layers">
-    نظرة عامة على جميع الموفرين، ومراجع النماذج، وسلوك التحويل الاحتياطي.
+    نظرة عامة على جميع المزوّدين ومراجع النماذج وسلوك التبديل الاحتياطي.
   </Card>
   <Card title="Configuration" href="/ar/gateway/configuration" icon="gear">
-    مرجع الإعدادات الكامل.
+    المرجع الكامل للإعداد.
   </Card>
-  <Card title="Model selection" href="/ar/concepts/models" icon="brain">
-    كيفية اختيار النماذج وضبطها.
+  <Card title="Models" href="/ar/concepts/models" icon="brain">
+    كيفية اختيار النماذج وإعدادها.
   </Card>
 </CardGroup>

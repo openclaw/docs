@@ -1,41 +1,39 @@
 ---
 read_when:
-    - Вам потрібна передісторія проєкту або подяки учасникам
+    - Ви хочете дізнатися передісторію проєкту або переглянути список учасників, які зробили внесок
 summary: Походження проєкту, учасники та ліцензія.
 title: Подяки
 x-i18n:
-    generated_at: "2026-05-06T05:00:56Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:45:06Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4cda0d96a66d4a6fcf81553d39315ebe01e7ebb4a21bb2994e9a503825bc7fb6
+    source_hash: d0030d36d04ce73e4c87f3d973ca3e729485f87c4b4b454e957dd6615d096ec9
     source_path: reference/credits.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-## Назва
-
-OpenClaw = CLAW + TARDIS, бо кожному космічному омару потрібна машина часу й простору.
+OpenClaw = CLAW + TARDIS: кожному космічному лобстеру потрібна машина часу й простору.
 
 ## Подяки
 
-- **Peter Steinberger** ([@steipete](https://x.com/steipete)) - Творець, заклинач омарів
-- **Mario Zechner** ([@badlogicc](https://x.com/badlogicgames)) - Творець Pi, пентестер безпеки
-- **Clawd** - Космічний омар, який вимагав кращої назви
+- **Peter Steinberger** ([@steipete](https://x.com/steipete)) — творець, приборкувач лобстерів
+- **Mario Zechner** ([@badlogicc](https://x.com/badlogicgames)) — творець Pi, фахівець із тестування безпеки на проникнення
+- **Clawd** — космічний лобстер, який зажадав кращого імені
 
 ## Основні учасники
 
-- **Maxim Vovshin** (@Hyaxia, [36747317+Hyaxia@users.noreply.github.com](mailto:36747317+Hyaxia@users.noreply.github.com)) - навичка Blogwatcher
-- **Nacho Iacovino** (@nachoiacovino, [nacho.iacovino@gmail.com](mailto:nacho.iacovino@gmail.com)) - Розбір місцезнаходження (Telegram і WhatsApp)
-- **Vincent Koc** ([@vincentkoc](https://github.com/vincentkoc), [@vincent_koc](https://x.com/vincent_koc)) - Агенти, телеметрія, хуки, безпека
+- **Maxim Vovshin** (@Hyaxia, [36747317+Hyaxia@users.noreply.github.com](mailto:36747317+Hyaxia@users.noreply.github.com)) — навичка відстеження блогів
+- **Nacho Iacovino** (@nachoiacovino, [nacho.iacovino@gmail.com](mailto:nacho.iacovino@gmail.com)) — обробка даних про місцезнаходження (Telegram і WhatsApp)
+- **Vincent Koc** ([@vincentkoc](https://github.com/vincentkoc), [@vincent_koc](https://x.com/vincent_koc)) — агенти, телеметрія, перехоплювачі, безпека
 
 ## Ліцензія
 
-MIT - Вільний, як омар в океані.
+MIT, авторські права належать OpenClaw Foundation. Повідомлення третіх сторін щодо включеного або адаптованого коду містяться у файлі `THIRD_PARTY_NOTICES.md`.
 
-> "Ми всі просто граємося зі своїми власними промптами." (ШІ, мабуть, під кайфом від токенів)
+> «Ми всі просто граємося з власними промптами». (Штучний інтелект, імовірно, під дією токенів)
 
-## Пов’язане
+## Пов’язані матеріали
 
 - [Використання токенів і витрати](/uk/reference/token-use)
 - [Політика випусків](/uk/reference/RELEASING)

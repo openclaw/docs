@@ -1,163 +1,156 @@
 ---
 read_when:
     - تريد نشرًا آليًا للخادم مع تعزيز الأمان
-    - تحتاج إلى إعداد معزول بجدار ناري مع وصول عبر VPN
-    - أنت تنشر إلى خوادم Debian/Ubuntu بعيدة
-summary: تثبيت OpenClaw مؤتمت ومحصّن باستخدام Ansible وTailscale VPN وعزل جدار الحماية
-title: Ansible
+    - تحتاج إلى إعداد معزول بجدار حماية مع إمكانية الوصول عبر VPN
+    - أنت تنشر على خوادم Debian/Ubuntu بعيدة
+summary: تثبيت OpenClaw مؤتمت ومُحصّن باستخدام Ansible وشبكة Tailscale VPN وعزل جدار الحماية
+title: أنسيبل
 x-i18n:
-    generated_at: "2026-06-27T17:49:32Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T05:58:16Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 03eb6f40139d7e154eee92a7a1a67471da90b128cc90daf86fbc87e383a5297c
+    source_hash: 8d3626ab364169609f92f636cb6b86cb980dca2b235500e748296128765444ae
     source_path: install/ansible.md
     workflow: 16
 ---
 
-انشر OpenClaw على خوادم الإنتاج باستخدام **[openclaw-ansible](https://github.com/openclaw/openclaw-ansible)** -- مثبّت آلي ببنية تعطي الأولوية للأمان.
+انشر OpenClaw على خوادم الإنتاج باستخدام **[openclaw-ansible](https://github.com/openclaw/openclaw-ansible)**، وهو مُثبّت آلي ذو بنية تضع الأمان في المقام الأول.
 
 <Info>
-مستودع [openclaw-ansible](https://github.com/openclaw/openclaw-ansible) هو مصدر الحقيقة لنشر Ansible. هذه الصفحة نظرة عامة سريعة.
+يُعد مستودع [openclaw-ansible](https://github.com/openclaw/openclaw-ansible) المصدر الموثوق لنشر Ansible. تقدم هذه الصفحة نظرة عامة سريعة.
 </Info>
 
 ## المتطلبات الأساسية
 
-| المتطلب | التفاصيل                                                   |
-| ----------- | --------------------------------------------------------- |
-| **نظام التشغيل**      | Debian 11+ أو Ubuntu 20.04+                               |
-| **الوصول**  | صلاحيات root أو sudo                                   |
-| **الشبكة** | اتصال بالإنترنت لتثبيت الحزم              |
-| **Ansible** | 2.14+ (يثبّته سكربت البدء السريع تلقائيا) |
+| المتطلب     | التفاصيل                                                        |
+| ----------- | --------------------------------------------------------------- |
+| نظام التشغيل | Debian 11+ أو Ubuntu 20.04+                                     |
+| الوصول      | صلاحيات الجذر أو `sudo`                                         |
+| الشبكة      | اتصال بالإنترنت لتثبيت الحزم                                    |
+| Ansible     | الإصدار 2.14+ (يثبّته تلقائيًا برنامج البدء السريع النصي)        |
 
-## ما الذي تحصل عليه
+## ما الذي ستحصل عليه
 
-- **أمان يبدأ بجدار الحماية** -- عزل UFW + Docker (يمكن الوصول إلى SSH + Tailscale فقط)
-- **Tailscale VPN** -- وصول آمن عن بعد من دون كشف الخدمات علنا
-- **Docker** -- حاويات عزل منفصلة، وروابط إلى localhost فقط
-- **دفاع متعدد الطبقات** -- بنية أمان من 4 طبقات
-- **تكامل Systemd** -- بدء تلقائي عند الإقلاع مع التقوية الأمنية
-- **إعداد بأمر واحد** -- نشر كامل في دقائق
+- أمان يبدأ بجدار الحماية: عزل UFW وDocker (لا يمكن الوصول إلا إلى SSH وTailscale)
+- شبكة Tailscale الافتراضية الخاصة للوصول عن بُعد دون تعريض الخدمات للعامة
+- Docker لحاويات بيئة الاختبار المعزولة ذات الارتباطات المحلية فقط
+- تكامل مع systemd يتضمن تعزيز الأمان وبدء التشغيل تلقائيًا عند إقلاع النظام
+- إعداد بأمر واحد
 
 ## البدء السريع
-
-تثبيت بأمر واحد:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/openclaw/openclaw-ansible/main/install.sh | bash
 ```
 
-## ما الذي يتم تثبيته
+## ما الذي يُثبَّت
 
-يثبّت دليل تشغيل Ansible ويضبط ما يلي:
-
-1. **Tailscale** -- شبكة VPN شبكية للوصول الآمن عن بعد
-2. **جدار حماية UFW** -- منافذ SSH + Tailscale فقط
-3. **Docker CE + Compose V2** -- للواجهة الخلفية الافتراضية لعزل الوكيل
-4. **Node.js 24 + pnpm** -- تبعيات وقت التشغيل (يبقى Node 22 LTS، حاليا `22.19+`، مدعوما)
-5. **OpenClaw** -- مستند إلى المضيف، وليس داخل حاوية
-6. **خدمة Systemd** -- بدء تلقائي مع تقوية أمنية
+1. Tailscale (شبكة افتراضية خاصة شبكية للوصول الآمن عن بُعد)
+2. جدار حماية UFW (منافذ SSH وTailscale فقط)
+3. Docker CE وCompose V2 (الواجهة الخلفية الافتراضية لبيئة اختبار الوكيل المعزولة)
+4. Node.js وpnpm (يتطلب OpenClaw الإصدار Node 22.19+ أو 23.11+؛ ويوصى بالإصدار Node 24)
+5. OpenClaw، مُثبّتًا مباشرةً على المضيف وليس داخل حاوية
+6. خدمة systemd مع تعزيزات أمنية
 
 <Note>
-يعمل Gateway مباشرة على المضيف (وليس في Docker). عزل الوكلاء
-اختياري؛ يثبّت دليل التشغيل هذا Docker لأنه واجهة العزل الخلفية
-الافتراضية. راجع [العزل](/ar/gateway/sandboxing) للتفاصيل والواجهات الخلفية الأخرى.
+يعمل Gateway مباشرةً على المضيف، وليس داخل Docker. عزل الوكيل في بيئة اختبار
+اختياري؛ يثبّت دليل التشغيل هذا Docker لأنه الواجهة الخلفية الافتراضية لبيئة
+الاختبار المعزولة. راجع [العزل في بيئة اختبار](/ar/gateway/sandboxing) للتعرف على الواجهات الخلفية الأخرى.
 </Note>
 
-## إعداد ما بعد التثبيت
+## الإعداد بعد التثبيت
 
 <Steps>
-  <Step title="Switch to the openclaw user">
+  <Step title="التبديل إلى مستخدم openclaw">
     ```bash
     sudo -i -u openclaw
     ```
   </Step>
-  <Step title="Run the onboarding wizard">
-    يرشدك سكربت ما بعد التثبيت خلال ضبط إعدادات OpenClaw.
+  <Step title="تشغيل معالج الإعداد الأولي">
+    يرشدك البرنامج النصي لما بعد التثبيت خلال تهيئة OpenClaw.
   </Step>
-  <Step title="Connect messaging providers">
+  <Step title="ربط قنوات المراسلة">
     سجّل الدخول إلى WhatsApp أو Telegram أو Discord أو Signal:
     ```bash
-    openclaw channels login
+    openclaw channels login --channel <name>
     ```
   </Step>
-  <Step title="Verify the installation">
+  <Step title="التحقق من التثبيت">
     ```bash
     sudo systemctl status openclaw
     sudo journalctl -u openclaw -f
     ```
   </Step>
-  <Step title="Connect to Tailscale">
-    انضم إلى شبكة VPN الشبكية الخاصة بك للوصول الآمن عن بعد.
+  <Step title="الاتصال بـ Tailscale">
+    انضم إلى شبكة VPN الشبكية للوصول الآمن عن بُعد.
   </Step>
 </Steps>
 
 ### أوامر سريعة
 
 ```bash
-# Check service status
+# التحقق من حالة الخدمة
 sudo systemctl status openclaw
 
-# View live logs
+# عرض السجلات المباشرة
 sudo journalctl -u openclaw -f
 
-# Restart gateway
+# إعادة تشغيل Gateway
 sudo systemctl restart openclaw
 
-# Provider login (run as openclaw user)
+# تسجيل الدخول إلى قناة (شغّله بصفة مستخدم openclaw)
 sudo -i -u openclaw
-openclaw channels login
+openclaw channels login --channel <name>
 ```
 
-## بنية الأمان
+## البنية الأمنية
 
-يستخدم النشر نموذج دفاع من 4 طبقات:
+نموذج دفاع مكوّن من أربع طبقات:
 
-1. **جدار الحماية (UFW)** -- لا يُكشف علنا إلا SSH (22) + Tailscale (41641/udp)
-2. **VPN (Tailscale)** -- لا يمكن الوصول إلى Gateway إلا عبر شبكة VPN الشبكية
-3. **عزل Docker** -- تمنع سلسلة iptables باسم DOCKER-USER كشف المنافذ الخارجية
-4. **تقوية Systemd** -- NoNewPrivileges وPrivateTmp ومستخدم بلا امتيازات
+1. جدار الحماية (UFW): لا يُعرَّض للعامة إلا SSH ‏(22) وTailscale ‏(41641/udp)
+2. الشبكة الافتراضية الخاصة (Tailscale): لا يمكن الوصول إلى Gateway إلا عبر شبكة VPN الشبكية
+3. عزل Docker: تمنع سلسلة iptables المسماة `DOCKER-USER` تعريض المنافذ خارجيًا
+4. تعزيز أمان systemd: ‏`NoNewPrivileges` و`PrivateTmp` ومستخدم غير ذي امتيازات
 
-للتحقق من سطح الهجوم الخارجي لديك:
+تحقق من سطح الهجوم الخارجي لخادمك:
 
 ```bash
 nmap -p- YOUR_SERVER_IP
 ```
 
-يجب أن يكون المنفذ 22 (SSH) فقط مفتوحا. جميع الخدمات الأخرى (Gateway وDocker) مقفلة.
+يجب ألا يكون مفتوحًا سوى المنفذ 22 ‏(SSH). يظل Gateway وDocker محميَّين من الوصول.
 
-يُثبّت Docker لعزل الوكلاء (تنفيذ الأدوات في بيئة معزولة)، وليس لتشغيل Gateway نفسه. راجع [عزل متعدد الوكلاء والأدوات](/ar/tools/multi-agent-sandbox-tools) لضبط العزل.
+يُثبَّت Docker لبيئات اختبار الوكلاء المعزولة (تنفيذ الأدوات في بيئة معزولة)، وليس لتشغيل Gateway. راجع [بيئة الاختبار المعزولة متعددة الوكلاء والأدوات](/ar/tools/multi-agent-sandbox-tools) لتهيئة بيئة الاختبار المعزولة.
 
 ## التثبيت اليدوي
 
-إذا كنت تفضّل التحكم اليدوي بدلا من الأتمتة:
-
 <Steps>
-  <Step title="Install prerequisites">
+  <Step title="تثبيت المتطلبات الأساسية">
     ```bash
     sudo apt update && sudo apt install -y ansible git
     ```
   </Step>
-  <Step title="Clone the repository">
+  <Step title="استنساخ المستودع">
     ```bash
     git clone https://github.com/openclaw/openclaw-ansible.git
     cd openclaw-ansible
     ```
   </Step>
-  <Step title="Install Ansible collections">
+  <Step title="تثبيت مجموعات Ansible">
     ```bash
     ansible-galaxy collection install -r requirements.yml
     ```
   </Step>
-  <Step title="Run the playbook">
+  <Step title="تشغيل دليل التشغيل">
     ```bash
     ./run-playbook.sh
     ```
 
-    بدلا من ذلك، شغّله مباشرة ثم نفّذ سكربت الإعداد يدويا بعد ذلك:
+    أو شغّل دليل التشغيل مباشرةً ثم شغّل برنامج الإعداد النصي يدويًا:
     ```bash
     ansible-playbook playbook.yml --ask-become-pass
-    # Then run: /tmp/openclaw-setup.sh
+    # ثم شغّل: /tmp/openclaw-setup.sh
     ```
 
   </Step>
@@ -165,77 +158,76 @@ nmap -p- YOUR_SERVER_IP
 
 ## التحديث
 
-يضبط مثبّت Ansible OpenClaw للتحديثات اليدوية. راجع [التحديث](/ar/install/updating) لتدفق التحديث القياسي.
+يُعِد مُثبّت Ansible نظام OpenClaw للتحديثات اليدوية؛ راجع [التحديث](/ar/install/updating) للاطلاع على المسار القياسي.
 
-لإعادة تشغيل دليل تشغيل Ansible (على سبيل المثال، لتغييرات الضبط):
+لإعادة تشغيل دليل التشغيل (على سبيل المثال، بعد تغييرات التهيئة):
 
 ```bash
 cd openclaw-ansible
 ./run-playbook.sh
 ```
 
-هذا التكرار آمن ولا يغير إلا ما يلزم، ويمكن تشغيله عدة مرات.
+هذه العملية متكررة النتائج وآمنة للتشغيل عدة مرات.
 
 ## استكشاف الأخطاء وإصلاحها
 
 <AccordionGroup>
-  <Accordion title="Firewall blocks my connection">
-    - تأكد أولا من إمكانية الوصول عبر Tailscale VPN
-    - الوصول عبر SSH (المنفذ 22) مسموح به دائما
-    - لا يمكن الوصول إلى Gateway إلا عبر Tailscale حسب التصميم
+  <Accordion title="جدار الحماية يحظر اتصالي">
+    - اتصل أولًا عبر شبكة Tailscale الافتراضية الخاصة؛ فبحسب التصميم لا يمكن الوصول إلى Gateway إلا بهذه الطريقة.
+    - يُسمح دائمًا باتصال SSH (المنفذ 22).
 
   </Accordion>
-  <Accordion title="Service will not start">
+  <Accordion title="الخدمة لا تبدأ">
     ```bash
-    # Check logs
+    # التحقق من السجلات
     sudo journalctl -u openclaw -n 100
 
-    # Verify permissions
+    # التحقق من الأذونات
     sudo ls -la /opt/openclaw
 
-    # Test manual start
+    # اختبار التشغيل اليدوي
     sudo -i -u openclaw
     cd ~/openclaw
     openclaw gateway run
     ```
 
   </Accordion>
-  <Accordion title="Docker sandbox issues">
+  <Accordion title="مشكلات بيئة اختبار Docker المعزولة">
     ```bash
-    # Verify Docker is running
+    # التحقق من أن Docker قيد التشغيل
     sudo systemctl status docker
 
-    # Check sandbox image
+    # التحقق من صورة بيئة الاختبار المعزولة
     sudo docker images | grep openclaw-sandbox
 
-    # Build sandbox image if missing (requires source checkout)
+    # بناء صورة بيئة الاختبار المعزولة إذا كانت مفقودة (يتطلب نسخة عمل من المصدر)
     cd /opt/openclaw/openclaw
     sudo -u openclaw ./scripts/sandbox-setup.sh
-    # For npm installs without a source checkout, see
+    # بالنسبة إلى عمليات تثبيت npm دون نسخة عمل من المصدر، راجع
     # https://docs.openclaw.ai/gateway/sandboxing#images-and-setup
     ```
 
   </Accordion>
-  <Accordion title="Provider login fails">
-    تأكد من أنك تعمل كمستخدم `openclaw`:
+  <Accordion title="فشل تسجيل الدخول إلى القناة">
+    تأكد من أنك تشغّل الأوامر بصفة مستخدم `openclaw`:
     ```bash
     sudo -i -u openclaw
-    openclaw channels login
+    openclaw channels login --channel <name>
     ```
   </Accordion>
 </AccordionGroup>
 
-## الضبط المتقدم
+## التهيئة المتقدمة
 
-للحصول على بنية الأمان التفصيلية واستكشاف الأخطاء وإصلاحها، راجع مستودع openclaw-ansible:
+للاطلاع على تفاصيل البنية الأمنية واستكشاف الأخطاء وإصلاحها، راجع مستودع openclaw-ansible:
 
-- [بنية الأمان](https://github.com/openclaw/openclaw-ansible/blob/main/docs/security.md)
+- [البنية الأمنية](https://github.com/openclaw/openclaw-ansible/blob/main/docs/security.md)
 - [التفاصيل التقنية](https://github.com/openclaw/openclaw-ansible/blob/main/docs/architecture.md)
 - [دليل استكشاف الأخطاء وإصلاحها](https://github.com/openclaw/openclaw-ansible/blob/main/docs/troubleshooting.md)
 
-## ذات صلة
+## موضوعات ذات صلة
 
-- [openclaw-ansible](https://github.com/openclaw/openclaw-ansible) -- دليل النشر الكامل
-- [Docker](/ar/install/docker) -- إعداد Gateway داخل حاوية
-- [العزل](/ar/gateway/sandboxing) -- ضبط عزل الوكيل
-- [عزل متعدد الوكلاء والأدوات](/ar/tools/multi-agent-sandbox-tools) -- عزل لكل وكيل
+- [openclaw-ansible](https://github.com/openclaw/openclaw-ansible): دليل النشر الكامل
+- [Docker](/ar/install/docker): إعداد Gateway داخل حاوية
+- [العزل في بيئة اختبار](/ar/gateway/sandboxing): تهيئة بيئة اختبار الوكيل المعزولة
+- [بيئة الاختبار المعزولة متعددة الوكلاء والأدوات](/ar/tools/multi-agent-sandbox-tools): عزل كل وكيل على حدة

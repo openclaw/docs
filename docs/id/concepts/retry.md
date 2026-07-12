@@ -1,60 +1,53 @@
 ---
 read_when:
-    - Memperbarui perilaku percobaan ulang penyedia atau nilai bawaan
+    - Memperbarui perilaku atau nilai default percobaan ulang penyedia
     - Men-debug kesalahan pengiriman penyedia atau batas laju
-summary: Kebijakan percobaan ulang untuk panggilan keluar ke penyedia
+summary: Kebijakan percobaan ulang untuk panggilan penyedia keluar
 title: Kebijakan percobaan ulang
 x-i18n:
-    generated_at: "2026-05-02T09:19:04Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:11:37Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7720092499effdfa011fc0a0310adb2ecddca9e94f57f749794eab1c9ab4c922
+    source_hash: 9be2bcb5af829b90042bfcbc5c0e5f5cc5a3cb03dd5472737c80fa0f15803361
     source_path: concepts/retry.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 ## Tujuan
 
-- Coba ulang per permintaan HTTP, bukan per alur multi-langkah.
-- Pertahankan urutan dengan hanya mencoba ulang langkah saat ini.
-- Hindari menggandakan operasi yang tidak idempoten.
+- Mencoba ulang per permintaan HTTP, bukan per alur multilangkah.
+- Mempertahankan urutan dengan hanya mencoba ulang langkah saat ini.
+- Menghindari duplikasi operasi yang tidak idempoten.
 
-## Default
+## Bawaan
 
-- Percobaan: 3
-- Batas jeda maksimum: 30000 ms
-- Jitter: 0.1 (10 persen)
-- Default penyedia:
-  - Jeda minimum Telegram: 400 ms
-  - Jeda minimum Discord: 500 ms
+| Pengaturan               | Bawaan    |
+| ------------------------ | --------- |
+| Jumlah percobaan         | 3         |
+| Batas penundaan maksimum | 30000 ms  |
+| Jitter                   | 0.1 (10%) |
+| Penundaan minimum Telegram | 400 ms  |
+| Penundaan minimum Discord  | 500 ms  |
 
 ## Perilaku
 
 ### Penyedia model
 
 - OpenClaw membiarkan SDK penyedia menangani percobaan ulang singkat yang normal.
-- Untuk SDK berbasis Stainless seperti Anthropic dan OpenAI, respons yang dapat dicoba ulang
-  (`408`, `409`, `429`, dan `5xx`) dapat menyertakan `retry-after-ms` atau
-  `retry-after`. Ketika waktu tunggu itu lebih dari 60 detik, OpenClaw menyisipkan
-  `x-should-retry: false` agar SDK segera memunculkan kesalahan dan failover model
-  dapat beralih ke profil autentikasi lain atau model fallback.
-- Timpa batas dengan `OPENCLAW_SDK_RETRY_MAX_WAIT_SECONDS=<seconds>`.
-  Atur ke `0`, `false`, `off`, `none`, atau `disabled` agar SDK mematuhi jeda
-  `Retry-After` yang panjang secara internal.
+- Untuk SDK berbasis Stainless seperti Anthropic dan OpenAI, respons yang dapat dicoba ulang (`408`, `409`, `429`, dan `5xx`) dapat menyertakan `retry-after-ms` atau `retry-after`. Ketika waktu tunggu tersebut lebih dari 60 detik, OpenClaw menyisipkan `x-should-retry: false` agar SDK segera memunculkan galat dan failover model dapat beralih ke profil autentikasi lain atau model cadangan.
+- Ganti batas tersebut dengan `OPENCLAW_SDK_RETRY_MAX_WAIT_SECONDS=<seconds>`. Atur ke `0`, `false`, `off`, `none`, atau `disabled` agar SDK menangani waktu tunggu `Retry-After` yang panjang secara internal.
 
 ### Discord
 
-- Mencoba ulang pada kesalahan batas laju (HTTP 429), timeout permintaan, respons HTTP 5xx,
-  dan kegagalan transport sementara seperti kegagalan pencarian DNS, reset koneksi,
-  penutupan socket, dan kegagalan fetch.
-- Menggunakan `retry_after` Discord jika tersedia, jika tidak menggunakan backoff eksponensial.
+- Mencoba ulang saat terjadi galat batas laju (HTTP 429), batas waktu permintaan, respons HTTP 5xx, dan kegagalan transportasi sementara seperti kegagalan pencarian DNS, pengaturan ulang koneksi, penutupan soket, dan kegagalan pengambilan.
+- Menggunakan `retry_after` Discord jika tersedia; jika tidak, menggunakan backoff eksponensial.
 
 ### Telegram
 
-- Mencoba ulang pada kesalahan sementara (429, timeout, connect/reset/closed, sementara tidak tersedia).
-- Menggunakan `retry_after` jika tersedia, jika tidak menggunakan backoff eksponensial.
-- Kesalahan parsing Markdown tidak dicoba ulang; kesalahan tersebut fallback ke teks biasa.
+- Mencoba ulang saat terjadi galat sementara (429, batas waktu, koneksi/pengaturan ulang/penutupan, tidak tersedia untuk sementara).
+- Menggunakan `retry_after` jika tersedia; jika tidak, menggunakan backoff eksponensial.
+- Galat penguraian HTML/Markdown tidak dicoba ulang; pada percobaan pertama, sistem beralih ke teks biasa.
 
 ## Konfigurasi
 
@@ -85,8 +78,8 @@ Tetapkan kebijakan percobaan ulang per penyedia di `~/.openclaw/openclaw.json`:
 
 ## Catatan
 
-- Percobaan ulang berlaku per permintaan (pengiriman pesan, unggahan media, reaksi, jajak pendapat, stiker).
-- Alur komposit tidak mencoba ulang langkah yang telah selesai.
+- Percobaan ulang berlaku per permintaan (pengiriman pesan, pengunggahan media, reaksi, jajak pendapat, stiker).
+- Alur gabungan tidak mencoba ulang langkah yang telah selesai.
 
 ## Terkait
 

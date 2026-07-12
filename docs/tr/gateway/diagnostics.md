@@ -1,27 +1,26 @@
 ---
 read_when:
-    - Hata raporu veya destek isteği hazırlama
-    - Gateway çökmelerini, yeniden başlatmaları, bellek baskısını veya aşırı büyük yükleri hata ayıklama
-    - Kaydedilen veya redakte edilen tanılama verilerini gözden geçirme
-summary: Bug raporları için paylaşılabilir Gateway tanılama paketleri oluşturun
+    - Hata raporu veya destek talebi hazırlama
+    - Gateway çökmeleri, yeniden başlatmaları, bellek baskısı veya aşırı büyük yüklerde hata ayıklama
+    - Kaydedilen veya sansürlenen tanılama verilerini inceleme
+summary: Hata raporları için paylaşılabilir Gateway tanılama paketleri oluşturun
 title: Tanılama dışa aktarımı
 x-i18n:
-    generated_at: "2026-06-28T00:33:51Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:43:36Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ce431bafa51a245f2a3829074b0ca92e2d30ddfc1ae9738eed46a4e51ae98208
+    source_hash: ee9014da15368971d8257f62707f013b579e607fa0d8413db51253612f0c0957
     source_path: gateway/diagnostics.md
     workflow: 16
 ---
 
-OpenClaw hata raporları için yerel bir tanılama zip dosyası oluşturabilir. Bu dosya
-temizlenmiş Gateway durumunu, sağlığını, günlüklerini, yapılandırma şeklini ve yakın tarihli yük içermeyen
-kararlılık olaylarını birleştirir.
+OpenClaw, hata raporları için yerel bir tanılama `.zip` dosyası oluşturabilir: arındırılmış Gateway
+durumu, sistem sağlığı, günlükler, yapılandırma yapısı ve yakın zamandaki yük içermeyen kararlılık olayları.
 
-Tanılama paketlerini inceleyene kadar sır gibi ele alın. Bunlar
-yükleri ve kimlik bilgilerini atlamak veya maskelemek üzere tasarlanmıştır, ancak yine de
-yerel Gateway günlüklerini ve ana makine düzeyindeki çalışma zamanı durumunu özetler.
+İncelenene kadar tanılama paketlerini gizli bilgiler gibi değerlendirin. Yükler ve kimlik bilgileri
+tasarım gereği karartılır, ancak paket yine de yerel Gateway günlüklerini ve
+ana makine düzeyindeki çalışma zamanı durumunu özetler.
 
 ## Hızlı başlangıç
 
@@ -29,7 +28,7 @@ yerel Gateway günlüklerini ve ana makine düzeyindeki çalışma zamanı durum
 openclaw gateway diagnostics export
 ```
 
-Komut yazılan zip yolunu yazdırır. Bir yol seçmek için:
+Yazılan zip dosyasının yolunu görüntüler. Bir çıktı yolu seçin:
 
 ```bash
 openclaw gateway diagnostics export --output openclaw-diagnostics.zip
@@ -43,99 +42,87 @@ openclaw gateway diagnostics export --json
 
 ## Sohbet komutu
 
-Sahipler yerel Gateway dışa aktarımı istemek için sohbette `/diagnostics [note]` kullanabilir.
-Bunu hata gerçek bir konuşmada gerçekleştiğinde ve destek için
-kopyalanıp yapıştırılabilir tek bir rapor istediğinizde kullanın:
+Sahipler, kopyalanıp yapıştırılabilir tek bir destek raporu olarak yerel bir
+Gateway dışa aktarımı istemek için herhangi bir konuşmada `/diagnostics [note]` çalıştırabilir:
 
-1. Sorunu fark ettiğiniz konuşmada `/diagnostics` gönderin. Yardımcı olacaksa
-   kısa bir not ekleyin, örneğin `/diagnostics bad tool choice`.
-2. OpenClaw tanılama giriş metnini gönderir ve bir açık çalıştırma
-   onayı ister. Onay `openclaw gateway diagnostics export --json` komutunu çalıştırır.
-   Tanılamayı tümüne izin verme kuralı üzerinden onaylamayın.
-3. Onaydan sonra OpenClaw yerel paket yolunu, manifest özetini, gizlilik notlarını
-   ve ilgili oturum kimliklerini içeren yapıştırılabilir bir raporla yanıt verir.
+1. İsteğe bağlı kısa bir notla birlikte `/diagnostics` gönderin (`/diagnostics hatalı araç seçimi`).
+2. OpenClaw bir giriş mesajı gönderir ve
+   `openclaw gateway diagnostics export --json` komutunu çalıştıracak tek bir açık yürütme onayı ister. Tanılamaya
+   tümüne izin veren bir kuralla onay vermeyin.
+3. Onayın ardından OpenClaw; yerel paket yolu, bildirim
+   özeti, gizlilik notları ve ilgili oturum kimlikleriyle yanıt verir.
 
-Grup sohbetlerinde bir sahip yine `/diagnostics` çalıştırabilir, ancak OpenClaw
-tanılama ayrıntılarını paylaşılan sohbete geri göndermez. Giriş metnini,
-onay istemlerini, Gateway dışa aktarma sonucunu ve Codex oturum/iş parçacığı dökümünü
-özel onay yolu üzerinden sahibine gönderir. Grup yalnızca tanılama akışının özel olarak
-gönderildiğine dair kısa bir bildirim alır. OpenClaw özel bir sahip yolu bulamazsa,
-komut güvenli şekilde başarısız olur ve sahibinden bunu bir DM üzerinden çalıştırmasını ister.
+Grup sohbetlerinde sahip yine `/diagnostics` çalıştırabilir, ancak OpenClaw
+dışa aktarma sonucunu, onay istemlerini ve Codex oturum/ileti dizisi dökümünü
+sahibe özel olarak gönderir. Grup yalnızca tanılamanın özel olarak gönderildiğini
+belirten kısa bir bildirim görür. Sahibe ulaşan özel bir yol yoksa komut güvenli biçimde
+başarısız olur ve sahibin komutu bir DM üzerinden çalıştırmasını ister.
 
-Etkin OpenClaw oturumu yerel OpenAI Codex harness kullanıyorsa,
-aynı çalıştırma onayı OpenClaw'ın bildiği Codex çalışma zamanı iş parçacıkları için
-bir OpenAI geri bildirim yüklemesini de kapsar. Bu yükleme yerel
-Gateway zip dosyasından ayrıdır ve yalnızca Codex harness oturumları için görünür. Onaydan önce istem,
-tanılamayı onaylamanın Codex geri bildirimi de göndereceğini açıklar, ancak
-Codex oturum veya iş parçacığı kimliklerini listelemez. Onaydan sonra sohbet yanıtı,
-OpenAI sunucularına gönderilen iş parçacıkları için kanalları, OpenClaw oturum kimliklerini,
-Codex iş parçacığı kimliklerini ve yerel sürdürme komutlarını listeler. Onayı reddeder veya yok sayarsanız,
-OpenClaw dışa aktarımı çalıştırmaz, Codex geri bildirimi göndermez ve
-Codex kimliklerini yazdırmaz.
+Etkin oturum yerel OpenAI Codex çalıştırma altyapısını kullandığında aynı yürütme
+onayı, OpenClaw'ın bildiği Codex ileti dizileri için OpenAI'a geri bildirim yüklemesini de
+kapsar. Bu yükleme yerel Gateway zip dosyasından ayrıdır ve yalnızca
+Codex çalıştırma altyapısı oturumlarında gerçekleşir. Onay istemi, onay vermenin
+Codex oturum veya ileti dizisi kimliklerini listelemeden Codex geri bildirimi de gönderdiğini belirtir. Onayın
+ardından yanıt; kanalları, OpenClaw oturum kimliklerini, Codex ileti dizisi kimliklerini ve
+OpenAI'a gönderilen ileti dizileri için yerel sürdürme komutlarını listeler. Onayı reddetmek veya
+yok saymak; dışa aktarımı, Codex geri bildirim yüklemesini ve
+Codex kimlik listesini atlar.
 
-Bu, yaygın Codex hata ayıklama döngüsünü kısaltır: Telegram, Discord veya başka bir kanalda
-kötü davranışı fark edin, `/diagnostics` çalıştırın, bir kez onaylayın, raporu
-destekle paylaşın, ardından yerel Codex iş parçacığını kendiniz incelemek istiyorsanız
-yazdırılan `codex resume <thread-id>` komutunu yerel olarak çalıştırın. Bu inceleme iş akışı için
-[Codex harness](/tr/plugins/codex-harness#inspect-codex-threads-locally) bölümüne bakın.
+Bu, Codex hata ayıklama döngüsünü kısaltır: bir kanalda hatalı davranışı fark edin,
+`/diagnostics` çalıştırın, bir kez onaylayın, raporu paylaşın ve ardından ileti dizisini
+kendiniz incelemek istiyorsanız görüntülenen
+`codex resume <thread-id>` komutunu yerel olarak çalıştırın. Bkz. [Codex çalıştırma altyapısı](/tr/plugins/codex-harness#inspect-codex-threads-locally).
 
-## Dışa aktarımın içerikleri
-
-Zip şunları içerir:
+## Dışa aktarımın içeriği
 
 - `summary.md`: destek için insan tarafından okunabilir genel bakış.
-- `diagnostics.json`: yapılandırma, günlükler, durum, sağlık ve kararlılık verilerinin
-  makine tarafından okunabilir özeti.
+- `diagnostics.json`: yapılandırma, günlükler, durum, sistem sağlığı
+  ve kararlılık verilerinin makine tarafından okunabilir özeti.
 - `manifest.json`: dışa aktarma meta verileri ve dosya listesi.
-- Temizlenmiş yapılandırma şekli ve gizli olmayan yapılandırma ayrıntıları.
-- Temizlenmiş günlük özetleri ve yakın tarihli maskelemiş günlük satırları.
-- En iyi çabayla alınan Gateway durum ve sağlık anlık görüntüleri.
-- `stability/latest.json`: kullanılabilir olduğunda en yeni kalıcı kararlılık paketi.
+- Arındırılmış yapılandırma yapısı ve gizli olmayan yapılandırma ayrıntıları.
+- Arındırılmış günlük özetleri ve yakın zamandaki karartılmış günlük satırları.
+- En iyi çabayla alınan Gateway durum ve sistem sağlığı anlık görüntüleri.
+- `stability/latest.json`: mevcut olduğunda en yeni kalıcı kararlılık paketi.
 
-Dışa aktarım Gateway sağlıksız olduğunda bile yararlıdır. Gateway durum veya sağlık
-isteklerine yanıt veremezse, yerel günlükler, yapılandırma şekli ve en son
-kararlılık paketi kullanılabilir olduğunda yine de toplanır.
+Dışa aktarım, Gateway sağlıksız olduğunda da kullanışlıdır: durum/sistem sağlığı
+istekleri başarısız olursa yerel günlükler, yapılandırma yapısı ve en son kararlılık paketi
+mevcut olduklarında yine toplanır.
 
 ## Gizlilik modeli
 
-Tanılamalar paylaşılabilir olacak şekilde tasarlanmıştır. Dışa aktarım hata ayıklamaya
-yardım eden operasyonel verileri korur, örneğin:
+Saklananlar: alt sistem adları, plugin kimlikleri, sağlayıcı kimlikleri, kanal kimlikleri, yapılandırılmış
+modlar, durum kodları, süreler, bayt sayıları, kuyruk durumu, bellek ölçümleri,
+arındırılmış günlük meta verileri, karartılmış operasyonel mesajlar, yapılandırma yapısı ve
+gizli olmayan özellik ayarları.
 
-- alt sistem adları, plugin kimlikleri, sağlayıcı kimlikleri, kanal kimlikleri ve yapılandırılmış modlar
-- durum kodları, süreler, bayt sayıları, kuyruk durumu ve bellek okumaları
-- temizlenmiş günlük meta verileri ve maskelemiş operasyonel mesajlar
-- yapılandırma şekli ve gizli olmayan özellik ayarları
+Atlanan veya karartılanlar: sohbet metni, istemler, talimatlar, webhook gövdeleri, araç
+çıktıları, kimlik bilgileri, API anahtarları, belirteçler, çerezler, gizli değerler, ham
+istek/yanıt gövdeleri, hesap kimlikleri, mesaj kimlikleri, ham oturum kimlikleri,
+ana makine adları ve yerel kullanıcı adları.
 
-Dışa aktarım şunları atlar veya maskeler:
+Bir günlük mesajı kullanıcı, sohbet, istem veya araç yükü metnine benzediğinde
+dışa aktarım yalnızca bir mesajın atlandığı bilgisini ve bayt sayısını saklar.
 
-- sohbet metni, istemler, talimatlar, webhook gövdeleri ve araç çıktıları
-- kimlik bilgileri, API anahtarları, token'lar, çerezler ve gizli değerler
-- ham istek veya yanıt gövdeleri
-- hesap kimlikleri, mesaj kimlikleri, ham oturum kimlikleri, ana makine adları ve yerel kullanıcı adları
+## Kararlılık kaydedicisi
 
-Bir günlük mesajı kullanıcı, sohbet, istem veya araç yükü metni gibi göründüğünde,
-dışa aktarım yalnızca bir mesajın atlandığını ve bayt sayısını korur.
+Gateway, tanılama etkin olduğunda varsayılan olarak sınırlı ve yük içermeyen bir kararlılık akışı
+kaydeder. İçeriği değil, operasyonel olguları yakalar.
 
-## Kararlılık kaydedici
+Aynı Heartbeat, olay döngüsü veya CPU doygun göründüğünde canlılığı da
+örnekleyerek olay döngüsü gecikmesi, olay döngüsü kullanımı,
+CPU çekirdeği oranı, etkin/bekleyen/kuyruktaki oturum sayıları, geçerli
+başlatma/çalışma zamanı aşaması (biliniyorsa), son aşama aralıkları ve
+sınırlı iş etiketleriyle `diagnostic.liveness.warning` olayları yayar. Bunlar yalnızca
+iş beklerken veya kuyruktayken ya da etkin iş, devamlı olay döngüsü
+gecikmesiyle çakıştığında Gateway `warn` düzeyinde günlük satırlarına dönüşür;
+aksi takdirde `debug` düzeyinde günlüğe kaydedilir. Boşta canlılık örnekleri yine tanılama
+olayları olarak kaydedilir, ancak kendi başlarına hiçbir zaman uyarıya yükseltilmez.
 
-Gateway, tanılama etkinleştirildiğinde varsayılan olarak sınırlandırılmış, yük içermeyen bir
-kararlılık akışı kaydeder. Bu, içerik için değil operasyonel olgular içindir.
-
-Aynı tanılama heartbeat, Gateway çalışmaya devam ederken ancak Node.js olay döngüsü
-veya CPU doygun göründüğünde canlılık örnekleri kaydeder. Bu
-`diagnostic.liveness.warning` olayları olay döngüsü gecikmesini, olay döngüsü
-kullanımını, CPU çekirdeği oranını, etkin/bekleyen/kuyrukta oturum sayılarını, biliniyorsa geçerli
-başlatma/çalışma zamanı aşamasını, yakın tarihli aşama aralıklarını ve sınırlandırılmış etkin/kuyrukta
-iş etiketlerini içerir. Boşta örnekleri telemetride `info` düzeyinde kalır. Canlılık örnekleri
-yalnızca iş beklerken veya kuyruktayken ya da etkin iş sürekli olay döngüsü gecikmesiyle
-çakıştığında Gateway uyarılarına dönüşür. Aksi halde sağlıklı arka plan işi sırasında oluşan
-geçici en yüksek gecikme sıçramaları hata ayıklama günlüklerinde kalır. Bunlar Gateway'i
-kendiliğinden yeniden başlatmaz.
-
-Başlatma aşamaları ayrıca duvar saati ve CPU zamanlamasıyla `diagnostic.phase.completed`
-olayları yayar. Takılmış gömülü çalıştırma tanılamaları, son köprü ilerlemesi ham yanıt öğesi veya
-yanıt tamamlama olayı gibi terminal göründüğünde, ancak Gateway gömülü çalıştırmayı hâlâ etkin
-kabul ettiğinde `terminalProgressStale=true` olarak işaretler.
+Başlatma aşamaları, duvar saati ve CPU zamanlamasıyla birlikte
+`diagnostic.phase.completed` olayları yayar. Takılmış gömülü çalıştırma tanılaması, son köprü
+ilerlemesi sonlandırıcı göründüğünde (örneğin ham bir yanıt
+öğesi veya yanıt tamamlama olayı) ancak Gateway gömülü çalıştırmayı hâlâ
+etkin kabul ettiğinde `terminalProgressStale=true` olarak işaretler.
 
 Canlı kaydediciyi inceleyin:
 
@@ -145,8 +132,8 @@ openclaw gateway stability --type payload.large
 openclaw gateway stability --json
 ```
 
-Ölümcül çıkış, kapatma zaman aşımı veya yeniden başlatma başlatma hatasından sonra en yeni
-kalıcı kararlılık paketini inceleyin:
+Önemli bir çıkış, kapatma zaman aşımı veya yeniden başlatma sırasında başlatma hatasından sonra
+en yeni kalıcı paketi inceleyin:
 
 ```bash
 openclaw gateway stability --bundle latest
@@ -158,9 +145,9 @@ En yeni kalıcı paketten bir tanılama zip dosyası oluşturun:
 openclaw gateway stability --bundle latest --export
 ```
 
-Kalıcı paketler, olaylar mevcut olduğunda `~/.openclaw/logs/stability/` altında bulunur.
+Olaylar mevcut olduğunda kalıcı paketler `~/.openclaw/logs/stability/` altında bulunur.
 
-## Kullanışlı seçenekler
+## Yararlı seçenekler
 
 ```bash
 openclaw gateway diagnostics export \
@@ -169,19 +156,21 @@ openclaw gateway diagnostics export \
   --log-bytes 1000000
 ```
 
-- `--output <path>`: belirli bir zip yoluna yaz.
-- `--log-lines <count>`: eklenecek en fazla temizlenmiş günlük satırı sayısı.
-- `--log-bytes <bytes>`: incelenecek en fazla günlük baytı.
-- `--url <url>`: durum ve sağlık anlık görüntüleri için Gateway WebSocket URL'si.
-- `--token <token>`: durum ve sağlık anlık görüntüleri için Gateway token'ı.
-- `--password <password>`: durum ve sağlık anlık görüntüleri için Gateway parolası.
-- `--timeout <ms>`: durum ve sağlık anlık görüntüsü zaman aşımı.
-- `--no-stability-bundle`: kalıcı kararlılık paketi aramasını atla.
-- `--json`: makine tarafından okunabilir dışa aktarma meta verilerini yazdır.
+| Bayrak                  | Varsayılan                                                                    | Açıklama                                                   |
+| ----------------------- | ----------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| `--output <path>`       | `$OPENCLAW_STATE_DIR/logs/support/openclaw-diagnostics-<timestamp>-<pid>.zip` | Belirli bir zip yoluna (veya dizine) yaz.                   |
+| `--log-lines <count>`   | `5000`                                                                        | Dahil edilecek en fazla arındırılmış günlük satırı sayısı.  |
+| `--log-bytes <bytes>`   | `1000000`                                                                     | İncelenecek en fazla günlük baytı.                          |
+| `--url <url>`           | -                                                                             | Durum/sistem sağlığı anlık görüntüleri için Gateway WebSocket URL'si. |
+| `--token <token>`       | -                                                                             | Durum/sistem sağlığı anlık görüntüleri için Gateway belirteci. |
+| `--password <password>` | -                                                                             | Durum/sistem sağlığı anlık görüntüleri için Gateway parolası. |
+| `--timeout <ms>`        | `3000`                                                                        | Durum/sistem sağlığı anlık görüntüsü zaman aşımı.           |
+| `--no-stability-bundle` | kapalı                                                                        | Kalıcı kararlılık paketi aramasını atla.                    |
+| `--json`                | kapalı                                                                        | Makine tarafından okunabilir dışa aktarma meta verilerini görüntüle. |
 
 ## Tanılamayı devre dışı bırakma
 
-Tanılama varsayılan olarak etkindir. Kararlılık kaydediciyi ve
+Tanılama varsayılan olarak etkindir. Kararlılık kaydedicisini ve
 tanılama olayı toplamayı devre dışı bırakmak için:
 
 ```json5
@@ -192,11 +181,11 @@ tanılama olayı toplamayı devre dışı bırakmak için:
 }
 ```
 
-Tanılamayı devre dışı bırakmak hata raporu ayrıntısını azaltır. Normal
+Tanılamayı devre dışı bırakmak hata raporu ayrıntılarını azaltır; normal
 Gateway günlük kaydını etkilemez.
 
-Kritik bellek baskısı anlık görüntüleri varsayılan olarak kapalıdır. Tanılama
-olaylarını korumak ve ayrıca OOM öncesi kararlılık anlık görüntüsünü yakalamak için:
+Kritik bellek baskısı anlık görüntüleri varsayılan olarak kapalıdır. Normal tanılama
+olaylarına ek olarak OOM öncesi kararlılık anlık görüntüsünü yakalamak için:
 
 ```json5
 {
@@ -206,14 +195,15 @@ olaylarını korumak ve ayrıca OOM öncesi kararlılık anlık görüntüsünü
 }
 ```
 
-Bunu yalnızca kritik bellek baskısı sırasında ek dosya sistemi taramasını ve anlık görüntü
-yazımını tolere edebilen ana makinelerde kullanın. Normal bellek baskısı olayları,
-anlık görüntü kapalıyken de RSS, heap, eşik ve büyüme olgularını kaydetmeye devam eder.
+Bunu yalnızca kritik bellek baskısı sırasında ek dosya sistemi taramasını ve
+anlık görüntü yazımını kaldırabilecek ana makinelerde kullanın. Anlık görüntü kapalıyken de
+normal bellek baskısı olayları RSS, heap, eşik ve büyüme olgularını (`rss_threshold`,
+`heap_threshold`, `rss_growth`) kaydeder.
 
 ## İlgili
 
-- [Sağlık denetimleri](/tr/gateway/health)
+- [Sistem sağlığı denetimleri](/tr/gateway/health)
 - [Gateway CLI](/tr/cli/gateway#gateway-diagnostics-export)
-- [Gateway protokolü](/tr/gateway/protocol#system-and-identity)
+- [Gateway protokolü](/tr/gateway/protocol#rpc-method-families)
 - [Günlük kaydı](/tr/logging)
-- [OpenTelemetry dışa aktarma](/tr/gateway/opentelemetry) — tanılamaları bir toplayıcıya akışla göndermek için ayrı akış
+- [OpenTelemetry dışa aktarımı](/tr/gateway/opentelemetry) - tanılamayı bir toplayıcıya akışla göndermek için ayrı süreç

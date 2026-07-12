@@ -1,11 +1,11 @@
 ---
 read_when:
-    - شما در حال نصب، پیکربندی یا ممیزی Plugin سیگنال هستید
+    - در حال نصب، پیکربندی یا ممیزی Plugin سیگنال هستید
 summary: سطح کانال Signal را برای ارسال و دریافت پیام‌های OpenClaw اضافه می‌کند.
-title: Signal Plugin
+title: Plugin سیگنال
 x-i18n:
-    generated_at: "2026-06-27T18:29:15Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:38:22Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 7136222af25d73d50b9a973d287b863176c58d634da4c9d7726d5cc6942135bb
@@ -20,7 +20,7 @@ x-i18n:
 ## توزیع
 
 - بسته: `@openclaw/signal`
-- مسیر نصب: npm؛ ClawHub: `clawhub:@openclaw/signal`
+- روش نصب: npm؛ ClawHub: `clawhub:@openclaw/signal`
 
 ## سطح
 
@@ -28,4 +28,4 @@ x-i18n:
 
 ## مستندات مرتبط
 
-- [signal](/fa/channels/signal)
+- [Signal](/fa/channels/signal)

@@ -1,22 +1,22 @@
 ---
 read_when:
     - تريد ربط أحداث Gmail Pub/Sub بـ OpenClaw
-    - تحتاج إلى القائمة الكاملة للخيارات وقيمها الافتراضية
-summary: مرجع CLI لـ `openclaw webhooks` (إعداد Gmail Pub/Sub والمشغّل)
+    - تحتاج إلى القائمة الكاملة للأعلام وقيمها الافتراضية
+summary: مرجع CLI لـ `openclaw webhooks` (إعداد Gmail Pub/Sub والمُشغِّل)
 title: Webhooks
 x-i18n:
-    generated_at: "2026-05-10T19:32:46Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T05:48:22Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b9ce17ca78bbe9836edd4643a262833e52cceb27f441d5922c036777e47a6f74
+    source_hash: 83fff0ac2ce247402f45523eda0b5cdd551bd65212636118698e45cb8740236c
     source_path: cli/webhooks.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw webhooks`
 
-مساعدات Webhook وتكاملاته. حاليًا يقتصر هذا السطح على تدفقات Gmail Pub/Sub التي تتكامل مع مراقب `gog` المضمّن.
+أدوات مساعدة وتكاملات Webhook. يقتصر هذا السطح حاليًا على تدفقات Gmail Pub/Sub المبنية على مراقب `gog` المضمّن.
 
 ## الأوامر الفرعية
 
@@ -25,14 +25,16 @@ openclaw webhooks gmail setup --account <email> [...]
 openclaw webhooks gmail run   [--account <email>] [...]
 ```
 
-| الأمر الفرعي | الوصف |
-| ------------- | -------------------------------------------------------------------------------------------- |
-| `gmail setup` | تكوين مراقبة Gmail، وموضوع/اشتراك Pub/Sub، وهدف تسليم Webhook في OpenClaw. |
-| `gmail run`   | تشغيل `gog watch serve` بالإضافة إلى حلقة التجديد التلقائي للمراقبة. |
+| الأمر الفرعي   | الوصف                                                                                  |
+| -------------- | -------------------------------------------------------------------------------------- |
+| `gmail setup`  | معالج إعداد لمرة واحدة: مراقبة Gmail وموضوع Pub/Sub واشتراكه وتسليم خطاف OpenClaw.     |
+| `gmail run`    | تشغيل `gog watch serve` مع حلقة التجديد التلقائي للمراقبة في الواجهة الأمامية.         |
+
+<Note>
+يشغّل Gateway أيضًا `gog gmail watch serve` تلقائيًا عند بدء التشغيل بعد تعيين `hooks.enabled=true` و`hooks.gmail.account` (يعيّنهما `gmail setup`). يستخدم `gmail run` المنطق نفسه في الواجهة الأمامية، وهو مفيد لتصحيح الأخطاء أو عند تعطيل مراقب Gateway. راجع [تكامل Gmail Pub/Sub](/ar/automation/cron-jobs#gmail-pubsub-integration) لمعرفة تفاصيل التشغيل التلقائي وخيار إلغاء الاشتراك `OPENCLAW_SKIP_GMAIL_WATCHER`.
+</Note>
 
 ## `webhooks gmail setup`
-
-تكوين مراقبة Gmail وPub/Sub وتسليم Webhook في OpenClaw.
 
 ```bash
 openclaw webhooks gmail setup --account you@example.com
@@ -40,86 +42,84 @@ openclaw webhooks gmail setup --account you@example.com --project my-gcp-project
 openclaw webhooks gmail setup --account you@example.com --hook-url https://gateway.example.com/hooks/gmail
 ```
 
+يثبّت `gcloud` و`gog` إذا لم يكونا متوفرين، ويصادق `gcloud`، وينشئ موضوع Pub/Sub والاشتراك، ويبدأ مراقبة Gmail، ويكتب إعدادات `hooks.gmail` مع `hooks.enabled=true`. يطبع `Next: openclaw webhooks gmail run`.
+
 ### مطلوب
 
-| العلم | الوصف |
-| ------------------- | ----------------------- |
-| `--account <email>` | حساب Gmail المراد مراقبته. |
+| العلامة              | الوصف                       |
+| -------------------- | --------------------------- |
+| `--account <email>`  | حساب Gmail المراد مراقبته.  |
 
 ### خيارات Pub/Sub
 
-| العلم | الافتراضي | الوصف |
-| ----------------------- | ---------------------- | ---------------------------------------------------- |
-| `--project <id>`        | (لا شيء)               | معرّف مشروع GCP (مالك عميل OAuth). |
-| `--topic <name>`        | `gog-gmail-watch`      | اسم موضوع Pub/Sub. |
-| `--subscription <name>` | `gog-gmail-watch-push` | اسم اشتراك Pub/Sub. |
-| `--label <label>`       | `INBOX`                | تصنيف Gmail المراد مراقبته. |
-| `--push-endpoint <url>` | (لا شيء)               | نقطة نهاية دفع Pub/Sub صريحة. يتجاوز Tailscale. |
+| العلامة                 | القيمة الافتراضية      | الوصف                                                                                                                                             |
+| ----------------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--project <id>`        | (لا توجد)               | معرّف مشروع GCP (مالك عميل OAuth). يعود إلى معرّف مشروع الموضوع نفسه، ثم إلى المشروع المستخرج من بيانات اعتماد `gog`.                           |
+| `--topic <name>`        | `gog-gmail-watch`       | اسم موضوع Pub/Sub.                                                                                                                               |
+| `--subscription <name>` | `gog-gmail-watch-push`  | اسم اشتراك Pub/Sub.                                                                                                                              |
+| `--label <label>`       | `INBOX`                 | تصنيف Gmail المراد مراقبته.                                                                                                                      |
+| `--push-endpoint <url>` | (لا توجد)               | نقطة نهاية دفع Pub/Sub صريحة. تتجاوز Tailscale.                                                                                                  |
 
 ### خيارات تسليم OpenClaw
 
-| العلم | الافتراضي | الوصف |
-| ---------------------- | ------- | ------------------------------------------ |
-| `--hook-url <url>`     | (لا شيء) | عنوان URL لـ Webhook في OpenClaw. |
-| `--hook-token <token>` | (لا شيء) | رمز Webhook في OpenClaw. |
-| `--push-token <token>` | (لا شيء) | رمز الدفع المُمرَّر إلى `gog watch serve`. |
+| العلامة                | القيمة الافتراضية                                  | الوصف                       |
+| ---------------------- | -------------------------------------------------- | --------------------------- |
+| `--hook-url <url>`     | يُنشأ من `hooks.path` ومنفذ Gateway                | عنوان URL لـ Webhook الخاص بـ OpenClaw. |
+| `--hook-token <token>` | `hooks.token`، أو رمز مميز مُنشأ                   | الرمز المميز لـ Webhook الخاص بـ OpenClaw. |
+| `--push-token <token>` | رمز مميز مُنشأ                                     | رمز الدفع الممرّر إلى `gog watch serve`. |
 
 ### خيارات `gog watch serve`
 
-| العلم | الافتراضي | الوصف |
-| --------------------- | --------------- | ----------------------------------------------------------------- |
-| `--bind <host>`       | `127.0.0.1`     | مضيف الربط لـ `gog watch serve`. |
-| `--port <port>`       | `8788`          | منفذ `gog watch serve`. |
-| `--path <path>`       | `/gmail-pubsub` | مسار `gog watch serve`. |
-| `--include-body`      | `true`          | تضمين مقتطفات متن البريد الإلكتروني. مرّر `--no-include-body` للتعطيل. |
-| `--max-bytes <n>`     | `20000`         | الحد الأقصى للبايتات لكل مقتطف متن. |
-| `--renew-minutes <n>` | `720` (12h)     | تجديد مراقبة Gmail كل N دقيقة. |
+| العلامة                 | القيمة الافتراضية | الوصف                                                                                                                                                                |
+| ----------------------- | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--bind <host>`         | `127.0.0.1`       | مضيف الربط لـ `gog watch serve`.                                                                                                                                     |
+| `--port <port>`         | `8788`            | منفذ `gog watch serve`.                                                                                                                                              |
+| `--path <path>`         | `/gmail-pubsub`   | مسار `gog watch serve`. يُفرض على `/` عند تمكين Tailscale من دون هدف صريح، لأن Tailscale يزيل المسار قبل تمريره عبر الوكيل.                                        |
+| `--include-body`        | `true`            | تضمين مقتطفات من نص الرسالة. لا توجد علامة CLI لتعطيل ذلك؛ عيّن بدلًا منها `hooks.gmail.includeBody: false` في الإعدادات.                                          |
+| `--max-bytes <n>`       | `20000`           | الحد الأقصى لعدد البايتات لكل مقتطف من النص.                                                                                                                         |
+| `--renew-minutes <n>`   | `720` (12 ساعة)   | تجديد مراقبة Gmail كل N دقيقة.                                                                                                                                       |
 
-### كشف Tailscale
+### الإتاحة عبر Tailscale
 
-| العلم | الافتراضي | الوصف |
-| ------------------------- | -------- | ---------------------------------------------------------------- |
-| `--tailscale <mode>`      | `funnel` | كشف نقطة نهاية الدفع عبر tailscale: `funnel` أو `serve` أو `off`. |
-| `--tailscale-path <path>` | (لا شيء) | مسار tailscale serve/funnel. |
-| `--tailscale-target <t>`  | (لا شيء) | هدف Tailscale serve/funnel (منفذ، أو `host:port`، أو URL). |
+| العلامة                    | القيمة الافتراضية | الوصف                                                                  |
+| -------------------------- | ----------------- | ---------------------------------------------------------------------- |
+| `--tailscale <mode>`       | `funnel`          | إتاحة نقطة نهاية الدفع عبر Tailscale:‏ `funnel` أو `serve` أو `off`.   |
+| `--tailscale-path <path>`  | (لا توجد)         | مسار خدمة/نفق Tailscale.                                               |
+| `--tailscale-target <t>`   | (لا توجد)         | هدف خدمة/نفق Tailscale (منفذ أو `host:port` أو عنوان URL).             |
 
-### الإخراج
+### المخرجات
 
-| العلم | الوصف |
-| -------- | ------------------------------------------------- |
-| `--json` | طباعة ملخص قابل للقراءة آليًا بدلًا من النص. |
+| العلامة  | الوصف                                                |
+| -------- | ---------------------------------------------------- |
+| `--json` | طباعة ملخص قابل للقراءة آليًا بدلًا من النص.        |
 
 ## `webhooks gmail run`
-
-تشغيل `gog watch serve` بالإضافة إلى حلقة التجديد التلقائي للمراقبة في المقدمة.
 
 ```bash
 openclaw webhooks gmail run --account you@example.com
 ```
 
-يقبل `run` أعلام `gog watch serve` نفسها، وتسليم OpenClaw، وPub/Sub، وTailscale مثل `setup`، باستثناء:
+يشغّل `gog watch serve` مع حلقة التجديد التلقائي للمراقبة في الواجهة الأمامية، ويعيد تشغيل `gog watch serve` بعد تأخير قدره ثانيتان إذا توقف بشكل غير متوقع.
 
-- `--account` **اختياري** في `run` (يرجع إلى الحساب المكوّن).
-- لا يقبل `run` الأعلام `--project` أو `--push-endpoint` أو `--json`.
-- لا تحتوي أعلام `run` على افتراضيات مدمجة؛ تعود القيم المفقودة إلى القيم التي كتبها `setup`.
+يقبل `run` علامات Pub/Sub وتسليم OpenClaw و`gog watch serve` وTailscale نفسها التي يقبلها `setup`، باستثناء ما يلي:
 
-| الفئة | الأعلام |
-| ----------------- | -------------------------------------------------------------------------------- |
-| Pub/Sub           | `--account`, `--topic`, `--subscription`, `--label`                              |
-| تسليم OpenClaw | `--hook-url`, `--hook-token`, `--push-token`                                     |
-| `gog watch serve` | `--bind`, `--port`, `--path`, `--include-body`, `--max-bytes`, `--renew-minutes` |
-| Tailscale         | `--tailscale`, `--tailscale-path`, `--tailscale-target`                          |
+- تكون `--account` **اختيارية** مع `run`؛ ويعود إلى `hooks.gmail.account`.
+- لا يقبل `run` الخيارات `--project` أو `--push-endpoint` أو `--json`.
+- تعود كل علامة إلى قيمة إعدادات `hooks.gmail.*` المطابقة (التي يكتبها `setup`)، ثم إلى القيمة الافتراضية المضمّنة نفسها التي يستخدمها `setup`، مع استثناء واحد: تكون القيمة الافتراضية لـ `--tailscale` هي `off` مع `run` (وليست `funnel`) عندما لا تكون العلامة ولا `hooks.gmail.tailscale.mode` معيّنة.
+
+| الفئة                 | العلامات                                                                         |
+| --------------------- | -------------------------------------------------------------------------------- |
+| Pub/Sub               | `--account`، `--topic`، `--subscription`، `--label`                              |
+| تسليم OpenClaw        | `--hook-url`، `--hook-token`، `--push-token`                                     |
+| `gog watch serve`     | `--bind`، `--port`، `--path`، `--include-body`، `--max-bytes`، `--renew-minutes` |
+| Tailscale             | `--tailscale`، `--tailscale-path`، `--tailscale-target`                          |
 
 <Note>
-بالنسبة إلى `run`، تكون قيمة `--topic` هي مسار موضوع Pub/Sub الكامل (`projects/.../topics/...`)، وليس اسم الموضوع القصير فقط.
+بالنسبة إلى `run`، تكون قيمة `--topic` هي المسار الكامل لموضوع Pub/Sub ‏(`projects/.../topics/...`)، وليست مجرد اسم الموضوع المختصر.
 </Note>
 
-## التدفق من البداية إلى النهاية
-
-راجع [تكامل Gmail Pub/Sub](/ar/automation/cron-jobs#gmail-pubsub-integration) لإعداد مشروع GCP وOAuth وجانب Gateway الذي يقترن بأوامر CLI هذه.
-
-## ذات صلة
+## ذو صلة
 
 - [مرجع CLI](/ar/cli)
 - [أتمتة Webhook](/ar/automation/cron-jobs)
-- [Gmail Pub/Sub](/ar/automation/cron-jobs#gmail-pubsub-integration)
+- [تكامل Gmail Pub/Sub](/ar/automation/cron-jobs#gmail-pubsub-integration)

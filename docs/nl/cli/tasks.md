@@ -1,23 +1,24 @@
 ---
 read_when:
-    - Je wilt records van achtergrondtaken inspecteren, auditen of annuleren
-    - Je documenteert Task Flow-opdrachten onder `openclaw tasks flow`
-summary: CLI-referentie voor `openclaw tasks` (achtergrondtaaklogboek en TaskFlow-status)
+    - U wilt records van achtergrondtaken inspecteren, controleren of annuleren
+    - Je documenteert TaskFlow-opdrachten onder `openclaw tasks flow`
+summary: CLI-referentie voor `openclaw tasks` (register voor achtergrondtaken en TaskFlow-status)
 title: '`openclaw tasks`'
 x-i18n:
-    generated_at: "2026-05-10T19:30:27Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:47:27Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7bbb97690124a8e59ec5e6a517f33166ad449ee6268894ab132ad9cb69dcaa81
+    source_hash: b03a4aa9fab12b6e5773259a76a1e89fd6e6398c73e5b0533a31e5e3a3894f9c
     source_path: cli/tasks.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Inspecteer duurzame achtergrondtaken en Task Flow-status. Zonder subcommando is
+Inspecteer duurzame achtergrondtaken en de TaskFlow-status. Zonder subopdracht is
 `openclaw tasks` gelijk aan `openclaw tasks list`.
 
-Zie [Achtergrondtaken](/nl/automation/tasks) voor de levenscyclus en het bezorgmodel.
+Zie [Achtergrondtaken](/nl/automation/tasks) voor het levenscyclus- en afleveringsmodel
+en de sectie `tasks audit` daarin voor volledige beschrijvingen van bevindingen.
 
 ## Gebruik
 
@@ -39,11 +40,13 @@ openclaw tasks flow cancel <lookup>
 
 ## Hoofdopties
 
-- `--json`: voert JSON uit.
-- `--runtime <name>`: filter op soort: `subagent`, `acp`, `cron` of `cli`.
-- `--status <name>`: filter op status: `queued`, `running`, `succeeded`, `failed`, `timed_out`, `cancelled` of `lost`.
+| Vlag               | Beschrijving                                                                                       |
+| ------------------ | -------------------------------------------------------------------------------------------------- |
+| `--json`           | Voer JSON uit.                                                                                     |
+| `--runtime <name>` | Filter op type: `subagent`, `acp`, `cron` of `cli`.                                                |
+| `--status <name>`  | Filter op status: `queued`, `running`, `succeeded`, `failed`, `timed_out`, `cancelled` of `lost`.  |
 
-## Subcommando's
+## Subopdrachten
 
 ### `list`
 
@@ -51,7 +54,7 @@ openclaw tasks flow cancel <lookup>
 openclaw tasks list [--runtime <name>] [--status <name>] [--json]
 ```
 
-Geeft bijgehouden achtergrondtaken weer, nieuwste eerst.
+Toont bijgehouden achtergrondtaken, met de nieuwste eerst.
 
 ### `show`
 
@@ -59,7 +62,7 @@ Geeft bijgehouden achtergrondtaken weer, nieuwste eerst.
 openclaw tasks show <lookup> [--json]
 ```
 
-Toont één taak op taak-ID, run-ID of sessiesleutel.
+Toont één taak op taak-ID, uitvoerings-ID of sessiesleutel.
 
 ### `notify`
 
@@ -83,7 +86,16 @@ Annuleert een actieve achtergrondtaak.
 openclaw tasks audit [--severity <warn|error>] [--code <name>] [--limit <n>] [--json]
 ```
 
-Brengt verouderde, verloren, met mislukte bezorging of anderszins inconsistente taak- en Task Flow-records naar voren. Verloren taken die tot `cleanupAfter` worden bewaard, zijn waarschuwingen; verlopen of niet-gestempelde verloren taken zijn fouten.
+Brengt verouderde, verloren, niet-afgeleverde of anderszins inconsistente taak- en
+TaskFlow-records aan het licht. Verloren taken die tot `cleanupAfter` worden bewaard, zijn waarschuwingen;
+verlopen of niet van een tijdstempel voorziene verloren taken zijn fouten.
+
+`--code` accepteert taakcodes (`stale_queued`, `stale_running`, `lost`,
+`delivery_failed`, `missing_cleanup`, `inconsistent_timestamps`) en TaskFlow-codes
+(`restore_failed`, `stale_waiting`, `stale_blocked`,
+`cancel_stuck`, `missing_linked_tasks`, `blocked_task_missing`). Zie
+[Achtergrondtaken](/nl/automation/tasks) voor details over de ernst en activering per
+code.
 
 ### `maintenance`
 
@@ -91,17 +103,20 @@ Brengt verouderde, verloren, met mislukte bezorging of anderszins inconsistente 
 openclaw tasks maintenance [--apply] [--json]
 ```
 
-Geeft een voorvertoning van taak- en Task Flow-reconciliatie, opruimstempeling, snoeien
-en opschoning van het sessieregister voor verouderde cron-runs, of past deze toe.
-Voor cron-taken gebruikt reconciliatie permanente runlogs/taakstatus voordat een
-oude actieve taak als `lost` wordt gemarkeerd, zodat voltooide cron-runs geen valse auditfouten worden
-alleen omdat de in-memory Gateway-runtime-status verdwenen is. Offline CLI-audit is
-niet gezaghebbend voor de proceslokale actieve-taakset van cron in de Gateway. CLI-taken
-met een run-ID/bron-ID worden als `lost` gemarkeerd wanneer hun live Gateway-runcontext
-verdwenen is, zelfs als er nog een oude onderliggende sessierij bestaat.
-Wanneer toegepast, snoeit onderhoud ook `cron:<jobId>:run:<uuid>`-sessieregisterrijen
-die ouder zijn dan 7 dagen, terwijl momenteel actieve cron-taken behouden blijven en
-niet-cron-sessierijen onaangeroerd blijven.
+Geeft een voorbeeld van of past afstemming van taken en TaskFlow, markering voor
+opschoning, verwijdering en opschoning van het register van verouderde Cron-uitvoeringssessies toe.
+
+Voor Cron-taken gebruikt de afstemming opgeslagen uitvoeringslogboeken en taakstatussen voordat
+een oude actieve taak als `lost` wordt gemarkeerd, zodat voltooide Cron-uitvoeringen geen
+onterechte auditfouten worden alleen omdat de Gateway-runtimestatus in het geheugen verdwenen is.
+Offline CLI-audit is niet gezaghebbend voor de proceslokale verzameling actieve Cron-taken
+van de Gateway. CLI-taken met een uitvoerings-ID/bron-ID worden als `lost` gemarkeerd wanneer
+hun actieve Gateway-uitvoeringscontext verdwenen is, zelfs als er nog een oude rij voor een
+onderliggende sessie bestaat.
+
+Wanneer toegepast, verwijdert onderhoud ook rijen uit het sessieregister met het patroon
+`cron:<jobId>:run:<uuid>` die ouder zijn dan 7 dagen, terwijl momenteel actieve Cron-taken
+behouden blijven en rijen van niet-Cron-sessies ongewijzigd blijven.
 
 ### `flow`
 
@@ -111,7 +126,9 @@ openclaw tasks flow show <lookup> [--json]
 openclaw tasks flow cancel <lookup>
 ```
 
-Inspecteert of annuleert duurzame Task Flow-status onder het taakregister.
+Inspecteert of annuleert de duurzame TaskFlow-status in het takenlogboek.
+`flow list --status` accepteert `queued`, `running`, `waiting`, `blocked`,
+`succeeded`, `failed`, `cancelled` of `lost`.
 
 ## Gerelateerd
 

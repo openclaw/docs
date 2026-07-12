@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Vous installez, configurez ou auditez le Plugin irc
-summary: Ajoute la surface de canal IRC pour envoyer et recevoir des messages OpenClaw.
+    - Vous installez, configurez ou auditez le plugin IRC
+summary: Ajoute l’interface du canal IRC pour envoyer et recevoir des messages OpenClaw.
 title: Plugin IRC
 x-i18n:
-    generated_at: "2026-06-27T17:54:55Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T02:57:12Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: ef4c5df880542d4d3554320f4d183a2464ef8b31d0e86edc1b6c63e1e41f35d3
@@ -15,17 +15,17 @@ x-i18n:
 
 # Plugin IRC
 
-Ajoute la surface de canal IRC pour envoyer et recevoir des messages OpenClaw.
+Ajoute l’interface du canal IRC pour envoyer et recevoir des messages OpenClaw.
 
 ## Distribution
 
-- Package : `@openclaw/irc`
-- Voie d’installation : npm ; ClawHub : `clawhub:@openclaw/irc`
+- Paquet : `@openclaw/irc`
+- Méthode d’installation : npm ; ClawHub : `clawhub:@openclaw/irc`
 
-## Surface
+## Interface
 
-channels: irc
+canaux : irc
 
-## Documentation associée
+## Documentation connexe
 
 - [irc](/fr/channels/irc)

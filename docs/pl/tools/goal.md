@@ -4,222 +4,233 @@ read_when:
     - Chcesz, aby OpenClaw utrzymywał jeden cel widoczny przez całą długą sesję
     - Musisz wstrzymać, wznowić, zablokować, ukończyć lub wyczyścić cel sesji
     - Chcesz zrozumieć narzędzia get_goal, create_goal i update_goal
-    - Chcesz zobaczyć, jak cele pojawiają się w TUI
-summary: 'Cele sesji: trwałe cele na sesję, kontrolki /goal, narzędzia celów modelu, budżety tokenów i status TUI'
+    - Chcesz zobaczyć, jak cele są wyświetlane w TUI
+summary: 'Cele sesji: trwałe cele dla poszczególnych sesji, elementy sterujące `/goal`, narzędzia modelu do obsługi celów, budżety tokenów i stan TUI'
 title: Cel
 x-i18n:
-    generated_at: "2026-06-27T18:27:42Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:39:32Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4313983dff7f37496f6c996303cace75f6863a71c8a9cd5367fdafbcc3f459c4
+    source_hash: 046356770522dc8a5584a59f3322b4502554a4b7f129b074da633861050ee5fd
     source_path: tools/goal.md
     workflow: 16
 ---
 
 # Cel
 
-**Cel** to jeden trwały zamiar przypięty do bieżącej sesji OpenClaw.
-Daje agentowi i operatorowi wspólny punkt odniesienia dla długotrwałej pracy,
-bez przekształcania go w zadanie w tle, przypomnienie, zadanie cron ani
-stałe polecenie.
+**Cel** to jeden trwały zamiar przypisany do bieżącej sesji OpenClaw.
+Zapewnia agentowi i operatorowi wspólny punkt docelowy dla długotrwałej pracy,
+bez przekształcania go w zadanie działające w tle, przypomnienie, zadanie Cron ani
+stałe zlecenie.
 
-Cele są stanem sesji. Przenoszą się wraz z kluczem sesji, przetrwają ponowne
-uruchomienie procesu, pojawiają się w `/goal`, są dostępne dla modelu przez
-narzędzia celu i są widoczne w stopce TUI, gdy aktywna sesja ma cel.
+Cele są stanem sesji: są powiązane z kluczem sesji, zachowują się po ponownym
+uruchomieniu procesu i pojawiają się w `/goal`, narzędziach celów dostępnych
+dla modelu oraz w stopce TUI.
 
 ## Szybki start
 
-Ustaw cel:
-
 ```text
-/goal start get CI green for PR 87469 and push the fix
-```
-
-Sprawdź go:
-
-```text
+/goal start doprowadź CI do stanu poprawnego dla PR 87469 i wypchnij poprawkę
 /goal
-```
-
-Wstrzymaj go, gdy praca celowo czeka:
-
-```text
-/goal pause waiting for CI
-```
-
-Wznów go:
-
-```text
+/goal edit doprowadź CI do stanu poprawnego dla PR 87469, wypchnij poprawkę i zaktualizuj dokumentację
+/goal pause oczekiwanie na CI
 /goal resume
-```
-
-Oznacz jako ukończony:
-
-```text
-/goal complete pushed and verified
-```
-
-Wyczyść go:
-
-```text
+/goal complete wypchnięto i zweryfikowano
 /goal clear
 ```
 
+`start` jest opcjonalne: `/goal doprowadź CI do stanu poprawnego dla PR 87469`
+również tworzy cel, ponieważ każdy tekst po `/goal`, który nie jest rozpoznanym
+słowem akcji, jest traktowany jako nowy zamiar.
+
 ## Do czego służą cele
 
-Użyj celu, gdy sesja ma konkretny wynik, który powinien pozostać widoczny
+Użyj celu, gdy sesja ma konkretny rezultat, który powinien pozostawać widoczny
 przez wiele tur:
 
-- Domknięcie PR: napraw, zweryfikuj, uruchom autoreview, wypchnij oraz otwórz lub zaktualizuj PR.
-- Przebieg debugowania: odtwórz błąd, wskaż odpowiedzialny obszar, popraw go i udowodnij
-  naprawę.
-- Przejście przez dokumentację: przeczytaj odpowiednią dokumentację, napisz nową stronę, dodaj linki krzyżowe i
-  zweryfikuj kompilację dokumentacji.
-- Zadanie utrzymaniowe: sprawdź bieżący stan, wprowadź ograniczone zmiany, uruchom właściwe
-  kontrole i zgłoś, co się zmieniło.
+- Finalizacja PR: poprawienie, zweryfikowanie, automatyczny przegląd, wypchnięcie
+  oraz otwarcie lub zaktualizowanie PR.
+- Sesja debugowania: odtworzenie błędu, zidentyfikowanie odpowiedzialnego obszaru,
+  wprowadzenie poprawki i potwierdzenie jej działania.
+- Prace nad dokumentacją: przeczytanie odpowiedniej dokumentacji, napisanie nowej
+  strony, dodanie odsyłaczy i zweryfikowanie kompilacji dokumentacji.
+- Zadanie konserwacyjne: sprawdzenie bieżącego stanu, wprowadzenie ograniczonych
+  zmian, uruchomienie odpowiednich kontroli i opisanie zmian.
 
-Cel nie jest kolejką zadań. Użyj [Przepływu zadań](/pl/automation/taskflow),
-[zadań](/pl/automation/tasks), [zadań cron](/pl/automation/cron-jobs) lub
-[stałych poleceń](/pl/automation/standing-orders), gdy praca ma działać odłączona,
-powtarzać się według harmonogramu, rozgałęziać się na zarządzane podprace albo utrzymywać się jako zasada.
+Cel nie jest kolejką zadań. Użyj [Task Flow](/pl/automation/taskflow),
+[zadań](/pl/automation/tasks), [zadań Cron](/pl/automation/cron-jobs) lub
+[stałych zleceń](/pl/automation/standing-orders), gdy praca ma działać niezależnie,
+powtarzać się zgodnie z harmonogramem, rozdzielać się na zarządzane podzadania
+lub być utrwalona jako zasada.
 
 ## Dokumentacja poleceń
 
-`/goal` bez argumentów wypisuje podsumowanie bieżącego celu:
+`/goal` bez argumentów wyświetla podsumowanie bieżącego celu:
 
 ```text
-Goal
-Status: active
-Objective: get CI green for PR 87469 and push the fix
-Tokens used: 12k
-Token budget: 12k/50k
+Cel
+Stan: aktywny
+Zamiar: doprowadź CI do stanu poprawnego dla PR 87469 i wypchnij poprawkę
+Użyte tokeny: 12k
+Budżet tokenów: 12k/50k
 
-Commands: /goal pause, /goal complete, /goal clear
+Polecenia: /goal edit <zamiar>, /goal pause, /goal complete, /goal clear
 ```
 
-Polecenia:
+| Polecenie                                           | Działanie                                                                       |
+| --------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `/goal` lub `/goal status`                          | Wyświetla bieżący cel.                                                          |
+| `/goal start <objective>`                           | Tworzy nowy cel dla bieżącej sesji.                                             |
+| `/goal set <objective>`, `/goal create <objective>` | Aliasy polecenia `start`.                                                       |
+| `/goal <objective>`                                 | Również tworzy nowy cel (dowolny tekst, który nie jest rozpoznanym słowem akcji). |
+| `/goal edit <objective>`                            | Zmienia sformułowanie bieżącego zamiaru; stan i rozliczenie tokenów pozostają bez zmian. |
+| `/goal pause [note]`                                | Wstrzymuje aktywny cel.                                                         |
+| `/goal resume [note]`                               | Wznawia cel wstrzymany, zablokowany albo ograniczony użyciem lub budżetem.      |
+| `/goal complete [note]`                             | Oznacza cel jako osiągnięty.                                                    |
+| `/goal done [note]`                                 | Alias polecenia `complete`.                                                     |
+| `/goal block [note]`                                | Oznacza cel jako zablokowany.                                                   |
+| `/goal blocked [note]`                              | Alias polecenia `block`.                                                        |
+| `/goal clear`                                       | Usuwa cel z sesji.                                                              |
 
-- `/goal` lub `/goal status` pokazuje bieżący cel.
-- `/goal start <objective>` tworzy nowy cel dla bieżącej sesji.
-- `/goal set <objective>` i `/goal create <objective>` są aliasami
-  `start`.
-- `/goal pause [note]` wstrzymuje aktywny cel.
-- `/goal resume [note]` wznawia cel wstrzymany, zablokowany, ograniczony użyciem albo
-  ograniczony budżetem.
-- `/goal complete [note]` oznacza cel jako osiągnięty.
-- `/goal done [note]` jest aliasem `complete`.
-- `/goal block [note]` oznacza cel jako zablokowany.
-- `/goal blocked [note]` jest aliasem `block`.
-- `/goal clear` usuwa cel z sesji.
+W danej sesji może istnieć tylko jeden cel naraz. Próba rozpoczęcia drugiego
+celu kończy się błędem `Goal error: goal already exists`, dopóki bieżący cel
+nie zostanie usunięty.
 
-W sesji może istnieć tylko jeden cel naraz. Rozpoczęcie drugiego celu kończy się niepowodzeniem,
-dopóki bieżący nie zostanie wyczyszczony.
+`/goal start` nie przyjmuje flagi budżetu tokenów; budżet można ustawić wyłącznie
+za pomocą dostępnego dla modelu narzędzia `create_goal`.
 
-## Statusy
+## Stany
 
-Cele używają małego zestawu statusów:
-
-- `active`: sesja realizuje cel.
+- `active`: sesja dąży do osiągnięcia celu.
 - `paused`: operator wstrzymał cel; `/goal resume` ponownie go aktywuje.
-- `blocked`: agent lub operator zgłosił rzeczywistą blokadę; `/goal resume`
-  ponownie go aktywuje, gdy będą dostępne nowe informacje lub nowy stan.
-- `budget_limited`: skonfigurowany budżet tokenów został osiągnięty; `/goal resume`
-  wznawia realizację tego samego zamiaru.
-- `usage_limited`: zarezerwowane dla stanów zatrzymania z powodu limitów użycia; `/goal resume`
-  wznawia realizację, gdy jest dozwolona.
-- `complete`: cel został osiągnięty. Ukończone cele są terminalne; użyj
-  `/goal clear` przed rozpoczęciem kolejnego celu.
+- `blocked`: agent lub operator zgłosił rzeczywistą przeszkodę; `/goal resume`
+  ponownie aktywuje cel, gdy pojawią się nowe informacje lub zmieni się stan.
+- `budget_limited`: skonfigurowany budżet tokenów został wyczerpany; `/goal resume`
+  wznawia dążenie do tego samego zamiaru z nowym oknem budżetu.
+- `usage_limited`: stan zarezerwowany na potrzeby przyszłego zatrzymania z powodu
+  limitu użycia; `/goal resume` wznawia dążenie w ten sam sposób.
+- `complete`: cel został osiągnięty. Ukończone cele są stanem końcowym; przed
+  rozpoczęciem kolejnego celu użyj `/goal clear`.
 
-`/new` i `/reset` czyszczą cel bieżącej sesji, ponieważ celowo
-rozpoczynają świeży kontekst sesji.
+`/new` i `/reset` usuwają bieżący cel sesji, ponieważ celowo rozpoczynają nowy
+kontekst sesji.
 
 ## Budżety tokenów
 
-Cele mogą mieć opcjonalny dodatni budżet tokenów. Budżet jest przechowywany z
-celem i mierzony od świeżej liczby tokenów sesji w chwili utworzenia. Jeśli
-bieżąca sesja ma tylko nieaktualne lub nieznane użycie tokenów, gdy cel startuje,
-OpenClaw czeka na następną świeżą migawkę tokenów sesji i używa jej jako
-punktu bazowego, więc tokeny wydane przed istnieniem celu nie są doliczane do celu.
+Cele mogą mieć opcjonalny dodatni budżet tokenów, ustawiany za pomocą parametru
+`token_budget` narzędzia `create_goal`. Budżet jest mierzony od aktualnej liczby
+tokenów sesji w chwili utworzenia celu. Jeśli podczas rozpoczynania celu sesja
+ma jedynie nieaktualny lub nieznany stan tokenów, OpenClaw czeka na kolejny
+aktualny stan i używa go jako wartości bazowej, dzięki czemu tokeny wykorzystane
+przed utworzeniem celu nie są do niego zaliczane.
 
-Gdy użycie tokenów osiągnie budżet, cel zmienia się na `budget_limited`. To
-nie usuwa celu ani nie kasuje zamiaru. Informuje operatora i
-agenta, że cel nie jest już aktywnie realizowany, dopóki nie zostanie wznowiony lub
-wyczyszczony.
+Gdy użycie osiągnie budżet, cel przechodzi do stanu `budget_limited`. Nie usuwa
+to celu ani zamiaru; informuje operatora i agenta, że cel nie jest już aktywnie
+realizowany, dopóki nie zostanie wznowiony lub usunięty. Wznowienie rozpoczyna
+nowe okno budżetu od bieżącej aktualnej liczby tokenów.
 
-Budżety tokenów są zabezpieczeniem celu sesji, a nie limitem rozliczeniowym. Limity dostawcy,
-raportowanie kosztów i zachowanie okna kontekstu nadal używają normalnych
-kontroli użycia i modelu OpenClaw.
+Budżety tokenów są zabezpieczeniem celu sesji, a nie limitem rozliczeniowym.
+Limity dostawcy, raportowanie kosztów i działanie okna kontekstu nadal korzystają
+ze standardowych mechanizmów użycia i sterowania modelem w OpenClaw.
 
 ## Narzędzia modelu
 
-OpenClaw udostępnia harnessom agentów trzy podstawowe narzędzia celu:
+OpenClaw udostępnia środowiskom agentów trzy narzędzia celów:
 
-- `get_goal`: odczytuje cel bieżącej sesji, w tym status, zamiar, użycie
-  tokenów i budżet tokenów.
-- `create_goal`: tworzy cel tylko wtedy, gdy instrukcje użytkownika, systemowe lub deweloperskie
-  jawnie o to proszą. Kończy się niepowodzeniem, jeśli sesja ma już
-  cel.
-- `update_goal`: oznacza cel jako `complete` albo `blocked`.
+| Narzędzie     | Przeznaczenie                                                                                                            |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `get_goal`    | Odczytuje bieżący cel sesji: stan, zamiar, użycie tokenów i budżet tokenów.                                               |
+| `create_goal` | Tworzy cel tylko wtedy, gdy użytkownik lub instrukcje systemowe wyraźnie tego wymagają. Zwraca błąd, jeśli sesja ma już cel. |
+| `update_goal` | Oznacza cel jako `complete` lub `blocked`.                                                                               |
 
-Model nie może po cichu wstrzymać, wznowić, wyczyścić ani zastąpić celu. To są
-kontrole operatora/sesji przez `/goal` i polecenia resetowania. Dzięki temu
-agent nie przesuwa po cichu celu, zachowując czystą ścieżkę dla
-agenta do zgłoszenia osiągnięcia albo rzeczywistej blokady.
+Model nie może niejawnie wstrzymać, wznowić, usunąć ani zastąpić celu. Operacje
+te pozostają mechanizmami sterowania operatora i sesji dostępnymi przez `/goal`
+oraz polecenia resetowania, dzięki czemu agent może zgłosić osiągnięcie celu lub
+rzeczywistą przeszkodę bez potajemnej zmiany zamiaru.
 
-Narzędzie `update_goal` powinno oznaczyć cel jako `complete` tylko wtedy, gdy zamiar jest
-faktycznie osiągnięty. Powinno oznaczyć cel jako `blocked` tylko wtedy, gdy ten sam warunek
-blokujący się powtórzył, a agent nie może poczynić znaczącego postępu bez
-nowych danych od użytkownika albo zmiany stanu zewnętrznego.
+`update_goal` powinno oznaczyć cel jako `complete` tylko wtedy, gdy zamiar został
+rzeczywiście osiągnięty. Powinno oznaczyć cel jako `blocked` dopiero wtedy, gdy
+ta sama przeszkoda wystąpi w co najmniej trzech kolejnych turach celu, a nie
+z powodu zwykłych trudności lub braku ostatecznych poprawek.
+
+## Kontekst celu w każdej turze
+
+Każda tura użytkownika lub czatu z aktywnym celem zawiera następujący wiersz
+kontekstu w roli użytkownika:
+
+```text
+Aktywny cel: <zamiar> — realizuj go lub zaktualizuj jego stan (get_goal/update_goal).
+```
+
+OpenClaw zachowuje zwięzłość wiersza, skracając długie zamiary. Cele wstrzymane,
+zablokowane, ograniczone budżetem lub użyciem oraz ukończone nie są wstawiane,
+dzięki czemu zatrzymanie przez operatora obowiązuje do czasu wznowienia celu.
+
+## Interfejs sterowania
+
+Internetowy interfejs sterowania wyświetla cel jako zwartą etykietę nad polem
+tworzenia wiadomości czatu: ikonę stanu, etykietę stanu (na przykład
+`Realizowanie celu`), skrócony zamiar oraz aktualizowany na żywo licznik czasu.
+
+Etykieta zawiera wbudowane elementy sterujące:
+
+- **Ołówek** wstępnie wypełnia pole tworzenia wiadomości tekstem
+  `/goal edit <objective>`, aby można było przeformułować i przesłać zamiar.
+- **Wstrzymaj / wznów** przełącza między `/goal pause` i `/goal resume`
+  zależnie od bieżącego stanu.
+- **Kosz** wysyła `/goal clear`.
+- **Szewron** rozwija etykietę, aby wyświetlić pełny zamiar, najnowszą notatkę
+  o stanie, użycie tokenów i czas, który upłynął.
+
+Przyciski akcji są ukryte, gdy pole tworzenia wiadomości nie może wysyłać
+(na przykład gdy połączenie z Gateway jest niedostępne); szewron rozwijania
+nadal działa.
 
 ## TUI
 
-TUI utrzymuje cel aktywnej sesji widoczny w stopce obok
-agenta, sesji, modelu, kontrolek uruchomienia i liczników tokenów.
+Stopka TUI wyświetla cel aktywnej sesji obok pól agenta, sesji i modelu, przed
+wskaźnikami tokenów i trybu.
 
-Przykłady stopki:
+Przykłady stopek:
 
-- `Pursuing goal (12k/50k)` dla aktywnego celu z budżetem tokenów.
-- `Goal paused (/goal resume)` dla wstrzymanego celu.
-- `Goal blocked (/goal resume)` dla zablokowanego celu.
-- `Goal hit usage limits (/goal resume)` dla celu ograniczonego użyciem.
-- `Goal unmet (50k/50k)` dla celu ograniczonego budżetem.
-- `Goal achieved (42k)` dla ukończonego celu.
+- `Realizowanie celu (12k/50k)` dla aktywnego celu z budżetem tokenów.
+- `Cel wstrzymany (/goal resume)` dla wstrzymanego celu.
+- `Cel zablokowany (/goal resume)` dla zablokowanego celu.
+- `Cel osiągnął limity użycia (/goal resume)` dla celu ograniczonego użyciem.
+- `Cel niezrealizowany (50k/50k)` dla celu ograniczonego budżetem.
+- `Cel osiągnięty (42k)` dla ukończonego celu.
 
-Stopka jest celowo zwięzła. Użyj `/goal`, aby zobaczyć pełny zamiar, notatkę,
+Stopka jest celowo zwięzła. Użyj `/goal`, aby wyświetlić pełny zamiar, notatkę,
 budżet tokenów i dostępne polecenia.
 
-## Zachowanie kanałów
+## Działanie w kanałach
 
-Polecenie `/goal` działa w sesjach OpenClaw obsługujących polecenia, w tym w
-TUI i powierzchniach czatu, które pozwalają na polecenia tekstowe. Stan celu jest przypięty do
-klucza sesji, a nie do transportu. Jeśli dwie powierzchnie używają tej samej sesji, widzą
-ten sam cel.
+`/goal` działa w sesjach OpenClaw obsługujących polecenia, w tym w TUI oraz
+interfejsach czatu, które zezwalają na polecenia tekstowe. Stan celu jest
+przypisany do klucza sesji, a nie do mechanizmu transportowego, dlatego dwa
+interfejsy współdzielące klucz sesji widzą ten sam cel.
 
-Stan celu nie jest dyrektywą dostarczania. Nie wymusza odpowiedzi przez
-kanał, nie zmienia zachowania kolejki, nie zatwierdza narzędzi ani nie planuje pracy.
+Stan celu nie jest dyrektywą dostarczania: nie wymusza odpowiedzi przez kanał,
+nie zmienia działania kolejki, nie zatwierdza narzędzi ani nie planuje pracy.
 
 ## Rozwiązywanie problemów
 
-`Goal error: goal already exists` oznacza, że sesja ma już cel. Użyj
-`/goal`, aby go sprawdzić, `/goal complete`, jeśli jest wykonany, albo `/goal clear` przed
-rozpoczęciem innego zamiaru.
+| Komunikat                              | Znaczenie                                                                                                                                   |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Goal error: goal already exists`      | Sesja ma już cel. Użyj `/goal`, aby go sprawdzić, `/goal complete`, jeśli został osiągnięty, lub `/goal clear` przed rozpoczęciem innego zamiaru. |
+| `Goal error: goal not found`           | Sesja nie ma jeszcze celu. Rozpocznij go za pomocą `/goal start <objective>`.                                                               |
+| `Goal error: goal is already complete` | Cel jest w stanie końcowym. Usuń go przed rozpoczęciem lub wznowieniem innego zamiaru.                                                       |
 
-`Goal error: goal not found` oznacza, że sesja nie ma jeszcze celu. Rozpocznij go poleceniem
-`/goal start <objective>`.
-
-`Goal error: goal is already complete` oznacza, że cel jest terminalny. Wyczyść go
-przed rozpoczęciem lub wznowieniem innego zamiaru.
-
-Jeśli użycie tokenów wygląda jak `0` albo jest nieaktualne, aktywna sesja może jeszcze nie mieć świeżej
-migawki tokenów. Użycie odświeża się, gdy OpenClaw zapisuje użycie sesji i
-sumy pochodzące z transkrypcji.
+Jeśli użycie tokenów wynosi `0` lub wygląda na nieaktualne, aktywna sesja może
+jeszcze nie mieć aktualnego stanu tokenów. Użycie jest odświeżane, gdy OpenClaw
+rejestruje użycie sesji i sumy wyprowadzone z transkrypcji.
 
 ## Powiązane
 
-- [Polecenia ukośnikowe](/pl/tools/slash-commands)
+- [Polecenia z ukośnikiem](/pl/tools/slash-commands)
 - [TUI](/pl/web/tui)
 - [Narzędzie sesji](/pl/concepts/session-tool)
 - [Compaction](/pl/concepts/compaction)
-- [Przepływ zadań](/pl/automation/taskflow)
-- [Stałe polecenia](/pl/automation/standing-orders)
+- [Task Flow](/pl/automation/taskflow)
+- [Stałe zlecenia](/pl/automation/standing-orders)

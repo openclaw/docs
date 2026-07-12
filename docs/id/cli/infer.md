@@ -1,64 +1,38 @@
 ---
 read_when:
     - Menambahkan atau memodifikasi perintah `openclaw infer`
-    - Merancang otomatisasi kemampuan headless yang stabil
-summary: CLI infer-first untuk alur kerja model, gambar, audio, TTS, video, web, dan embedding yang didukung penyedia
+    - Merancang otomatisasi kapabilitas headless yang stabil
+summary: CLI berbasis inferensi untuk alur kerja model, gambar, audio, TTS, video, web, dan embedding yang didukung penyedia
 title: CLI Inferensi
 x-i18n:
-    generated_at: "2026-07-01T08:31:39Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:04:53Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: bb63996dd1364bffba58d4b132849ac4157fb612555c009da795c963142f9368
+    source_hash: ec90377d3fb6049e63f5eb1dddfb085562982152b1b2ba7bd4e4d2535ab3c06f
     source_path: cli/infer.md
     workflow: 16
 ---
 
-`openclaw infer` adalah permukaan headless kanonis untuk alur kerja inferensi yang didukung penyedia.
+`openclaw infer` adalah antarmuka headless kanonis untuk inferensi yang didukung penyedia. Antarmuka ini mengekspos kelompok kemampuan (`model`, `image`, `audio`, `tts`, `video`, `web`, `embedding`), bukan nama RPC Gateway mentah atau id alat agen. `openclaw capability ...` adalah alias untuk pohon perintah yang sama.
 
-Ini sengaja mengekspos keluarga kapabilitas, bukan nama RPC gateway mentah dan bukan id tool agen mentah.
+Alasan untuk memilihnya daripada pembungkus penyedia sekali pakai:
 
-## Ubah infer menjadi Skill
+- Menggunakan kembali penyedia dan model yang sudah dikonfigurasi di OpenClaw.
+- Selubung `--json` yang stabil untuk skrip dan otomatisasi berbasis agen (lihat [keluaran JSON](#json-output)).
+- Menjalankan jalur lokal normal tanpa Gateway untuk sebagian besar subperintah.
+- Untuk pemeriksaan penyedia menyeluruh, perintah ini menguji CLI yang didistribusikan, pemuatan konfigurasi, resolusi agen bawaan, aktivasi plugin bawaan, dan runtime kemampuan bersama sebelum permintaan penyedia dikirim.
 
-Salin dan tempel ini ke agen:
+## Ubah infer menjadi sebuah skill
+
+Salin dan tempelkan ini ke agen:
 
 ```text
-Read https://docs.openclaw.ai/cli/infer, then create a skill that routes my common workflows to `openclaw infer`.
-Focus on model runs, image generation, video generation, audio transcription, TTS, web search, and embeddings.
+Baca https://docs.openclaw.ai/cli/infer, lalu buat skill yang mengarahkan alur kerja umum saya ke `openclaw infer`.
+Fokus pada eksekusi model, pembuatan gambar, pembuatan video, transkripsi audio, TTS, pencarian web, dan embedding.
 ```
 
-Skill berbasis infer yang baik sebaiknya:
-
-- memetakan niat umum pengguna ke subperintah infer yang benar
-- menyertakan beberapa contoh infer kanonis untuk alur kerja yang dicakupnya
-- mengutamakan `openclaw infer ...` dalam contoh dan saran
-- menghindari pendokumentasian ulang seluruh permukaan infer di dalam isi Skill
-
-Cakupan Skill yang biasanya berfokus pada infer:
-
-- `openclaw infer model run`
-- `openclaw infer image generate`
-- `openclaw infer audio transcribe`
-- `openclaw infer tts convert`
-- `openclaw infer web search`
-- `openclaw infer embedding create`
-
-## Mengapa menggunakan infer
-
-`openclaw infer` menyediakan satu CLI yang konsisten untuk tugas inferensi yang didukung penyedia di dalam OpenClaw.
-
-Manfaat:
-
-- Gunakan penyedia dan model yang sudah dikonfigurasi di OpenClaw alih-alih merangkai wrapper sekali pakai untuk setiap backend.
-- Pertahankan alur kerja model, gambar, transkripsi audio, TTS, video, web, dan embedding di bawah satu pohon perintah.
-- Gunakan bentuk keluaran `--json` yang stabil untuk skrip, otomatisasi, dan alur kerja yang digerakkan agen.
-- Utamakan permukaan pihak pertama OpenClaw saat tugasnya pada dasarnya adalah "menjalankan inferensi."
-- Gunakan jalur lokal normal tanpa memerlukan gateway untuk sebagian besar perintah infer.
-
-Untuk pemeriksaan penyedia end-to-end, utamakan `openclaw infer ...` setelah pengujian
-penyedia tingkat lebih rendah sudah hijau. Ini menguji CLI yang dikirimkan, pemuatan konfigurasi,
-resolusi agen default, aktivasi Plugin bawaan, dan runtime kapabilitas bersama
-sebelum permintaan penyedia dibuat.
+Skill berbasis infer yang baik memetakan maksud umum pengguna ke subperintah yang tepat, menyertakan beberapa contoh kanonis per alur kerja, mengutamakan `openclaw infer ...` daripada alternatif tingkat rendah, dan tidak mendokumentasikan ulang seluruh antarmuka infer dalam isi skill.
 
 ## Pohon perintah
 
@@ -91,10 +65,12 @@ sebelum permintaan penyedia dibuat.
     convert
     voices
     providers
+    personas
     status
     enable
     disable
     set-provider
+    set-persona
 
   video
     generate
@@ -111,46 +87,41 @@ sebelum permintaan penyedia dibuat.
     providers
 ```
 
+`infer list` / `infer inspect --name <capability>` menampilkan pohon ini sebagai data (id kemampuan, transportasi, deskripsi).
+
 ## Tugas umum
 
-Tabel ini memetakan tugas inferensi umum ke perintah infer yang sesuai.
-
-| Tugas                         | Perintah                                                                                      | Catatan                                               |
-| ----------------------------- | --------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| Jalankan prompt teks/model    | `openclaw infer model run --prompt "..." --json`                                              | Menggunakan jalur lokal normal secara default         |
-| Jalankan prompt model pada gambar | `openclaw infer model run --prompt "Describe this" --file ./image.png --model provider/model` | Ulangi `--file` untuk beberapa input gambar           |
-| Hasilkan gambar               | `openclaw infer image generate --prompt "..." --json`                                         | Gunakan `image edit` saat memulai dari file yang ada  |
-| Deskripsikan file gambar atau URL | `openclaw infer image describe --file ./image.png --prompt "..." --json`                      | `--model` harus berupa `<provider/model>` yang mendukung gambar |
-| Transkripsikan audio          | `openclaw infer audio transcribe --file ./memo.m4a --json`                                    | `--model` harus berupa `<provider/model>`             |
-| Sintesis ucapan               | `openclaw infer tts convert --text "..." --output ./speech.mp3 --json`                        | `tts status` berorientasi Gateway                     |
-| Hasilkan video                | `openclaw infer video generate --prompt "..." --json`                                         | Mendukung petunjuk penyedia seperti `--resolution`    |
-| Deskripsikan file video       | `openclaw infer video describe --file ./clip.mp4 --json`                                      | `--model` harus berupa `<provider/model>`             |
-| Cari di web                   | `openclaw infer web search --query "..." --json`                                              |                                                       |
-| Ambil halaman web             | `openclaw infer web fetch --url https://example.com --json`                                   |                                                       |
-| Buat embedding                | `openclaw infer embedding create --text "..." --json`                                         |                                                       |
+| Tugas                              | Perintah                                                                                      | Catatan                                                       |
+| ---------------------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| Jalankan prompt teks/model         | `openclaw infer model run --prompt "..." --json`                                              | Lokal secara bawaan                                           |
+| Jalankan prompt model pada gambar  | `openclaw infer model run --prompt "Describe this" --file ./image.png --model provider/model` | Ulangi `--file` untuk beberapa gambar                          |
+| Buat gambar                        | `openclaw infer image generate --prompt "..." --json`                                         | Gunakan `image edit` saat memulai dari berkas yang sudah ada   |
+| Deskripsikan berkas atau URL gambar | `openclaw infer image describe --file ./image.png --prompt "..." --json`                      | `--model` harus berupa `<provider/model>` berkemampuan gambar  |
+| Transkripsikan audio               | `openclaw infer audio transcribe --file ./memo.m4a --json`                                    | `--model` harus berupa `<provider/model>`                      |
+| Sintesis ucapan                    | `openclaw infer tts convert --text "..." --output ./speech.mp3 --json`                        | `tts status` hanya berjalan melalui Gateway                   |
+| Buat video                         | `openclaw infer video generate --prompt "..." --json`                                         | Mendukung petunjuk penyedia seperti `--resolution`             |
+| Deskripsikan berkas video          | `openclaw infer video describe --file ./clip.mp4 --json`                                      | `--model` harus berupa `<provider/model>`                      |
+| Cari di web                        | `openclaw infer web search --query "..." --json`                                              |                                                               |
+| Ambil halaman web                  | `openclaw infer web fetch --url https://example.com --json`                                   |                                                               |
+| Buat embedding                     | `openclaw infer embedding create --text "..." --json`                                         |                                                               |
 
 ## Perilaku
 
-- `openclaw infer ...` adalah permukaan CLI utama untuk alur kerja ini.
-- Gunakan `--json` saat keluaran akan dikonsumsi oleh perintah atau skrip lain.
-- Gunakan `--provider` atau `--model provider/model` saat backend tertentu diperlukan.
-- Gunakan `model run --thinking <level>` untuk meneruskan tingkat thinking/reasoning sekali jalan (`off`, `minimal`, `low`, `medium`, `high`, `adaptive`, `xhigh`, atau `max`) sambil mempertahankan run tetap mentah.
+- Gunakan `--json` saat keluaran diteruskan ke perintah atau skrip lain; gunakan keluaran teks jika tidak.
+- Gunakan `--provider` atau `--model provider/model` untuk menetapkan backend tertentu.
+- Gunakan `model run --thinking <level>` untuk penggantian pengaturan berpikir/penalaran sekali jalan: `off`, `minimal`, `low`, `medium`, `high`, `adaptive`, `xhigh`, atau `max`.
 - Untuk `image describe`, `audio transcribe`, dan `video describe`, `--model` harus menggunakan bentuk `<provider/model>`.
-- Untuk `image describe`, `--file` menerima path lokal dan URL gambar HTTP(S). URL jarak jauh menggunakan kebijakan SSRF pengambilan media normal.
-- Untuk `image describe`, `--model` eksplisit menjalankan provider/model tersebut lebih dulu, lalu mencoba `agents.defaults.imageModel.fallbacks` yang dikonfigurasi saat panggilan model gagal. Error persiapan input, seperti file yang hilang atau URL yang tidak didukung, gagal sebelum percobaan fallback. Model harus mendukung gambar di katalog model atau konfigurasi penyedia. `codex/<model>` menjalankan turn pemahaman gambar server aplikasi Codex yang dibatasi; `openai/<model>` menggunakan jalur penyedia OpenAI dengan auth API-key atau ChatGPT/Codex OAuth.
-- Perintah eksekusi stateless default ke lokal.
-- Perintah state yang dikelola Gateway default ke gateway.
-- Jalur lokal normal tidak memerlukan gateway berjalan.
-- `model run` lokal adalah penyelesaian penyedia sekali jalan yang ramping. Ini menyelesaikan model agen dan auth yang dikonfigurasi, tetapi tidak memulai turn chat-agent, memuat tool, atau membuka server MCP bawaan.
-- `model run --file` menerima file gambar, mendeteksi tipe MIME-nya, dan mengirimkannya bersama prompt yang diberikan ke model terpilih. Ulangi `--file` untuk beberapa gambar.
-- `model run --file` menolak input non-gambar. Gunakan `infer audio transcribe` untuk file audio dan `infer video describe` untuk file video.
-- `model run --gateway` menguji routing Gateway, auth tersimpan, pemilihan penyedia, dan runtime tertanam, tetapi tetap berjalan sebagai probe model mentah: ini mengirim prompt yang diberikan dan lampiran gambar apa pun tanpa transkrip sesi sebelumnya, konteks bootstrap/AGENTS, perakitan context-engine, tool, atau server MCP bawaan.
-- `model run --gateway --model <provider/model>` memerlukan kredensial gateway operator tepercaya karena permintaan meminta Gateway menjalankan override provider/model sekali pakai.
-- `model run --thinking` lokal menggunakan jalur penyelesaian penyedia yang ramping; tingkat khusus penyedia seperti `adaptive` dan `max` dipetakan ke tingkat penyelesaian sederhana portabel terdekat.
+- Untuk `image describe`, `--file` menerima jalur lokal dan URL HTTP(S); URL jarak jauh melewati kebijakan SSRF pengambilan media yang normal.
+- Perintah eksekusi tanpa status (`model run`, `image *`, `audio *`, `video *`, `web *`, `embedding *`) secara bawaan berjalan secara lokal. Perintah status yang dikelola Gateway (`tts status`) secara bawaan berjalan melalui Gateway.
+- Jalur lokal tidak pernah mengharuskan Gateway berjalan.
+- `model run` lokal adalah penyelesaian penyedia sekali jalan yang ringkas: perintah ini menyelesaikan model agen dan autentikasi yang dikonfigurasi, tetapi tidak memulai giliran agen obrolan, memuat alat, atau membuka server MCP bawaan.
+- `model run --file` melampirkan berkas gambar (jenis MIME terdeteksi otomatis) ke prompt; ulangi `--file` untuk beberapa gambar. Berkas non-gambar ditolak — gunakan `infer audio transcribe` atau `infer video describe` sebagai gantinya.
+- `model run --gateway` menguji perutean Gateway, autentikasi tersimpan, pemilihan penyedia, dan runtime tertanam, tetapi tetap menjadi pemeriksaan model mentah: tanpa transkrip sesi sebelumnya, konteks bootstrap/AGENTS, alat, atau server MCP bawaan.
+- `model run --gateway --model <provider/model>` memerlukan kredensial Gateway operator tepercaya karena perintah ini meminta Gateway menjalankan penggantian penyedia/model sekali pakai.
 
 ## Model
 
-Gunakan `model` untuk inferensi teks yang didukung penyedia serta inspeksi model/penyedia.
+Inferensi teks dan pemeriksaan model/penyedia.
 
 ```bash
 openclaw infer model run --prompt "Reply with exactly: smoke-ok" --json
@@ -158,11 +129,10 @@ openclaw infer model run --prompt "Summarize this changelog entry" --model opena
 openclaw infer model run --prompt "Describe this image in one sentence" --file ./photo.jpg --model google/gemini-2.5-flash --json
 openclaw infer model run --prompt "Use more reasoning here" --thinking high --json
 openclaw infer model providers --json
-openclaw infer model inspect --name gpt-5.5 --json
+openclaw infer model inspect --model gpt-5.6-sol --json
 ```
 
-Gunakan ref lengkap `<provider/model>` untuk smoke-test penyedia tertentu tanpa
-memulai Gateway atau memuat permukaan tool agen penuh:
+Gunakan referensi `<provider/model>` lengkap dengan `--local` untuk menguji cepat satu penyedia tanpa memulai Gateway atau memuat antarmuka alat agen:
 
 ```bash
 openclaw infer model run --local --model anthropic/claude-sonnet-4-6 --prompt "Reply with exactly: pong" --json
@@ -171,27 +141,27 @@ openclaw infer model run --local --model google/gemini-2.5-flash --prompt "Reply
 openclaw infer model run --local --model groq/llama-3.1-8b-instant --prompt "Reply with exactly: pong" --json
 openclaw infer model run --local --model mistral/mistral-medium-3-5 --prompt "Reply with exactly: pong" --json
 openclaw infer model run --local --model mistral/mistral-small-latest --prompt "Reply with exactly: pong" --json
-openclaw infer model run --local --model openai/gpt-5.5 --prompt "Reply with exactly: pong" --json
+openclaw infer model run --local --model openai/gpt-5.6-luna --prompt "Reply with exactly: pong" --json
 openclaw infer model run --local --model ollama/qwen2.5vl:7b --prompt "Describe this image." --file ./photo.jpg --json
 ```
 
 Catatan:
 
-- `model run` lokal adalah smoke CLI paling sempit untuk kesehatan provider/model/auth karena, untuk penyedia non-Codex, ini hanya mengirim prompt yang diberikan ke model terpilih.
-- `model run --model <provider/model>` lokal dapat menggunakan baris katalog statis bawaan persis dari `models list --all` sebelum penyedia tersebut ditulis ke konfigurasi. Auth penyedia tetap diperlukan; kredensial yang hilang gagal sebagai error auth, bukan `Unknown model`.
-- Untuk probe reasoning Mistral Medium 3.5, biarkan temperature tidak disetel/default. Mistral menolak `reasoning_effort="high"` ditambah `temperature: 0`; gunakan `mistral/mistral-medium-3-5` dengan temperature default atau nilai mode reasoning non-nol seperti `0.7`.
-- Probe lokal Codex Responses adalah pengecualian sempit: OpenClaw menambahkan instruksi sistem minimal agar transport dapat mengisi field `instructions` yang diperlukan, tanpa menambahkan konteks agen penuh, tool, memori, atau transkrip sesi.
-- `model run --file` lokal mempertahankan jalur ramping itu dan melampirkan konten gambar langsung ke satu pesan pengguna. File gambar umum seperti PNG, JPEG, dan WebP berfungsi saat tipe MIME-nya terdeteksi sebagai `image/*`; file yang tidak didukung atau tidak dikenali gagal sebelum penyedia dipanggil.
-- `model run --file` paling tepat saat Anda ingin menguji model teks multimodal terpilih secara langsung. Gunakan `infer image describe` saat Anda menginginkan pemilihan penyedia pemahaman gambar OpenClaw dan routing model gambar default.
-- Model terpilih harus mendukung input gambar; model hanya teks dapat menolak permintaan di lapisan penyedia.
-- `model run --prompt` harus berisi teks non-whitespace; prompt kosong ditolak sebelum penyedia lokal atau Gateway dipanggil.
-- `model run` lokal keluar non-nol saat penyedia tidak mengembalikan keluaran teks, sehingga penyedia lokal yang tidak terjangkau dan penyelesaian kosong tidak terlihat seperti probe yang berhasil.
-- Gunakan `model run --gateway` saat Anda perlu menguji routing Gateway, penyiapan runtime agen, atau state penyedia yang dikelola Gateway sambil mempertahankan input model tetap mentah. Gunakan `openclaw agent` atau permukaan chat saat Anda menginginkan konteks agen penuh, tool, memori, dan transkrip sesi.
-- `model auth login`, `model auth logout`, dan `model auth status` mengelola state auth penyedia tersimpan.
+- `model run` lokal adalah pemeriksaan CLI paling sempit untuk kesehatan penyedia/model/autentikasi: untuk penyedia selain ChatGPT-Codex, perintah ini hanya mengirim prompt yang diberikan.
+- `model run --model <provider/model>` lokal dapat menyelesaikan baris katalog statis bawaan yang tepat (baris yang sama dengan yang ditampilkan `openclaw models list --all`) sebelum penyedia tersebut ditulis ke konfigurasi. Autentikasi penyedia tetap diperlukan; kredensial yang tidak ada gagal sebagai galat autentikasi, bukan `Unknown model`.
+- Untuk pemeriksaan penalaran Mistral Medium 3.5, biarkan suhu tidak disetel/menggunakan nilai bawaan. Mistral menolak `reasoning_effort="high"` dengan `temperature: 0`; gunakan suhu bawaan atau nilai bukan nol seperti `0.7`.
+- Pemeriksaan lokal OAuth OpenAI ChatGPT/Codex (API `openai-chatgpt-responses`) menambahkan instruksi sistem minimal agar transportasi dapat mengisi bidang `instructions` yang diwajibkan — tanpa konteks agen lengkap, alat, memori, atau transkrip sesi.
+- `model run --file` melampirkan konten gambar langsung ke satu pesan pengguna. Format umum (PNG, JPEG, WebP) berfungsi saat jenis MIME terdeteksi sebagai `image/*`; berkas yang tidak didukung atau tidak dikenali gagal sebelum penyedia dipanggil. Gunakan `infer image describe` sebagai gantinya jika Anda menginginkan perutean model gambar dan fallback OpenClaw, bukan pemeriksaan model multimodal langsung.
+- Model yang dipilih harus mendukung masukan gambar; model khusus teks dapat menolak permintaan pada lapisan penyedia.
+- `model run --prompt` harus berisi teks selain spasi kosong; prompt kosong ditolak sebelum panggilan penyedia atau Gateway apa pun.
+- `model run` lokal keluar dengan kode bukan nol saat penyedia tidak mengembalikan keluaran teks, sehingga penyedia yang tidak dapat dijangkau dan penyelesaian kosong tidak tampak sebagai pemeriksaan yang berhasil.
+- Gunakan `model run --gateway` untuk menguji perutean Gateway atau penyiapan runtime agen sambil mempertahankan masukan model mentah. Gunakan `openclaw agent` atau antarmuka obrolan untuk konteks agen lengkap, alat, memori, dan transkrip sesi.
+- `--thinking adaptive` dipetakan ke tingkat runtime penyelesaian `medium`; `--thinking max` dipetakan ke `max` untuk model OpenAI yang mendukung upaya maksimum native, atau `xhigh` jika tidak.
+- `model auth login`, `model auth logout`, dan `model auth status` mengelola status autentikasi penyedia yang tersimpan.
 
 ## Gambar
 
-Gunakan `image` untuk pembuatan, pengeditan, dan deskripsi.
+Pembuatan, pengeditan, dan deskripsi.
 
 ```bash
 openclaw infer image generate --prompt "friendly lobster illustration" --json
@@ -211,21 +181,11 @@ openclaw infer image describe --file ./photo.jpg --model ollama/qwen2.5vl:7b --p
 
 Catatan:
 
-- Gunakan `image edit` saat memulai dari file input yang sudah ada.
-- Gunakan `--size`, `--aspect-ratio`, atau `--resolution` dengan `image edit` untuk
-  penyedia/model yang mendukung petunjuk geometri pada pengeditan gambar referensi.
-- Gunakan `--output-format png --background transparent` dengan
-  `--model openai/gpt-image-1.5` untuk output PNG OpenAI dengan latar belakang transparan;
-  `--openai-background` tetap tersedia sebagai alias khusus OpenAI. Penyedia
-  yang tidak mendeklarasikan dukungan latar belakang melaporkan petunjuk tersebut sebagai override yang diabaikan.
-- Gunakan `--quality low|medium|high|auto` untuk penyedia yang mendukung petunjuk kualitas gambar,
-  termasuk OpenAI. OpenAI juga menerima `--openai-moderation low|auto` untuk
-  petunjuk moderasi khusus penyedia.
-- Gunakan `image providers --json` untuk memverifikasi penyedia gambar bawaan mana yang
-  dapat ditemukan, dikonfigurasi, dipilih, dan kapabilitas pembuatan/pengeditan apa yang
-  diekspos setiap penyedia.
-- Gunakan `image generate --model <provider/model> --json` sebagai smoke CLI live
-  tersempit untuk perubahan pembuatan gambar. Contoh:
+- Gunakan `image edit` saat memulai dari berkas masukan yang sudah ada; `--size`, `--aspect-ratio`, atau `--resolution` menambahkan petunjuk geometri pada penyedia/model yang mendukungnya.
+- `--output-format png --background transparent` dengan `--model openai/gpt-image-1.5` menghasilkan keluaran PNG OpenAI dengan latar belakang transparan; `--openai-background` adalah alias khusus OpenAI untuk petunjuk yang sama. Penyedia yang tidak menyatakan dukungan latar belakang akan melaporkannya sebagai penggantian yang diabaikan (lihat `ignoredOverrides` dalam [amplop JSON](#json-output)).
+- `--quality low|medium|high|auto` berfungsi untuk penyedia yang mendukung petunjuk kualitas gambar, termasuk OpenAI. OpenAI juga menerima `--openai-moderation low|auto`.
+- `image providers --json` mencantumkan penyedia gambar bawaan yang dapat ditemukan, dikonfigurasi, dipilih, serta kemampuan pembuatan/penyuntingan yang disediakan masing-masing.
+- `image generate --model <provider/model> --json` adalah pengujian langsung paling terfokus untuk perubahan pembuatan gambar:
 
   ```bash
   openclaw infer image providers --json
@@ -236,20 +196,16 @@ Catatan:
     --json
   ```
 
-  Respons JSON melaporkan `ok`, `provider`, `model`, `attempts`, dan jalur output
-  yang ditulis. Saat `--output` ditetapkan, ekstensi akhir dapat mengikuti tipe MIME
-  yang dikembalikan penyedia.
+  Respons melaporkan `ok`, `provider`, `model`, `attempts`, dan jalur keluaran yang ditulis. Saat `--output` ditetapkan, ekstensi akhir dapat mengikuti jenis MIME yang dikembalikan penyedia.
 
-- Untuk `image describe` dan `image describe-many`, gunakan `--prompt` untuk memberikan instruksi khusus tugas kepada model vision seperti OCR, perbandingan, inspeksi UI, atau pembuatan keterangan singkat.
-- Gunakan `--timeout-ms` dengan model vision lokal yang lambat atau start dingin Ollama.
-- Untuk `image describe`, `--model` harus berupa `<provider/model>` yang mendukung gambar.
-  Saat ditetapkan, OpenClaw mencoba model eksplisit tersebut terlebih dahulu lalu fallback
-  model gambar yang dikonfigurasi jika panggilan model gagal.
-- Untuk model vision Ollama lokal, pull model terlebih dahulu dan tetapkan `OLLAMA_API_KEY` ke nilai placeholder apa pun, misalnya `ollama-local`. Lihat [Ollama](/id/providers/ollama#vision-and-image-description).
+- Untuk `image describe` dan `image describe-many`, gunakan `--prompt` untuk instruksi khusus tugas (OCR, perbandingan, pemeriksaan UI, pemberian keterangan singkat).
+- Gunakan `--timeout-ms` untuk model penglihatan lokal yang lambat atau proses awal Ollama yang dingin.
+- Untuk `image describe`, `--model` eksplisit (harus berupa `<provider/model>` yang mendukung gambar) dijalankan terlebih dahulu, lalu mencoba `agents.defaults.imageModel.fallbacks` yang dikonfigurasi jika pemanggilan tersebut gagal. Kesalahan penyiapan masukan (berkas tidak ditemukan, URL tidak didukung) akan gagal sebelum upaya fallback apa pun, dan model harus mendukung gambar dalam katalog model atau konfigurasi penyedia.
+- Untuk model penglihatan Ollama lokal, tarik model terlebih dahulu dan tetapkan `OLLAMA_API_KEY` ke nilai placeholder apa pun, misalnya `ollama-local`. Lihat [Ollama](/id/providers/ollama#vision-and-image-description).
 
 ## Audio
 
-Gunakan `audio` untuk transkripsi file.
+Transkripsi berkas (bukan pengelolaan sesi waktu nyata).
 
 ```bash
 openclaw infer audio transcribe --file ./memo.m4a --json
@@ -257,30 +213,28 @@ openclaw infer audio transcribe --file ./team-sync.m4a --language en --prompt "F
 openclaw infer audio transcribe --file ./memo.m4a --model openai/whisper-1 --json
 ```
 
-Catatan:
-
-- `audio transcribe` adalah untuk transkripsi file, bukan manajemen sesi realtime.
-- `--model` harus berupa `<provider/model>`.
+`--model` harus berupa `<provider/model>`.
 
 ## TTS
 
-Gunakan `tts` untuk sintesis suara dan status penyedia TTS.
+Sintesis ucapan serta status penyedia/persona TTS.
 
 ```bash
 openclaw infer tts convert --text "hello from openclaw" --output ./hello.mp3 --json
 openclaw infer tts convert --text "Your build is complete" --output ./build-complete.mp3 --json
 openclaw infer tts providers --json
+openclaw infer tts personas --json
 openclaw infer tts status --json
 ```
 
 Catatan:
 
-- `tts status` default ke gateway karena mencerminkan status TTS yang dikelola gateway.
-- Gunakan `tts providers`, `tts voices`, dan `tts set-provider` untuk memeriksa dan mengonfigurasi perilaku TTS.
+- `tts status` hanya mendukung `--gateway` (perintah ini mencerminkan status TTS yang dikelola Gateway).
+- Gunakan `tts providers`, `tts voices`, `tts personas`, `tts set-provider`, dan `tts set-persona` untuk memeriksa serta mengonfigurasi perilaku TTS.
 
 ## Video
 
-Gunakan `video` untuk pembuatan dan deskripsi.
+Pembuatan dan deskripsi.
 
 ```bash
 openclaw infer video generate --prompt "cinematic sunset over the ocean" --json
@@ -291,12 +245,12 @@ openclaw infer video describe --file ./clip.mp4 --model openai/gpt-5.4-mini --js
 
 Catatan:
 
-- `video generate` menerima `--size`, `--aspect-ratio`, `--resolution`, `--duration`, `--audio`, `--watermark`, dan `--timeout-ms` lalu meneruskannya ke runtime pembuatan video.
+- `video generate` menerima `--size`, `--aspect-ratio`, `--resolution`, `--duration`, `--audio`, `--watermark`, dan `--timeout-ms`, yang diteruskan ke runtime pembuatan video.
 - `--model` harus berupa `<provider/model>` untuk `video describe`.
 
 ## Web
 
-Gunakan `web` untuk alur kerja pencarian dan fetch.
+Pencarian dan pengambilan.
 
 ```bash
 openclaw infer web search --query "OpenClaw docs" --json
@@ -305,13 +259,11 @@ openclaw infer web fetch --url https://docs.openclaw.ai/cli/infer --json
 openclaw infer web providers --json
 ```
 
-Catatan:
-
-- Gunakan `web providers` untuk memeriksa penyedia yang tersedia, dikonfigurasi, dan dipilih.
+`web providers` mencantumkan penyedia yang tersedia, dikonfigurasi, dan dipilih untuk pencarian serta pengambilan.
 
 ## Embedding
 
-Gunakan `embedding` untuk pembuatan vektor dan inspeksi penyedia embedding.
+Pembuatan vektor dan pemeriksaan penyedia embedding.
 
 ```bash
 openclaw infer embedding create --text "friendly lobster" --json
@@ -319,9 +271,9 @@ openclaw infer embedding create --text "customer support ticket: delayed shipmen
 openclaw infer embedding providers --json
 ```
 
-## Output JSON
+## Keluaran JSON
 
-Perintah infer menormalkan output JSON di bawah envelope bersama:
+Perintah Infer menormalkan keluaran JSON dalam amplop bersama:
 
 ```json
 {
@@ -335,7 +287,7 @@ Perintah infer menormalkan output JSON di bawah envelope bersama:
 }
 ```
 
-Field tingkat atas stabil:
+Kolom tingkat teratas yang stabil:
 
 - `ok`
 - `capability`
@@ -343,14 +295,14 @@ Field tingkat atas stabil:
 - `provider`
 - `model`
 - `attempts`
+- `inputs` (lampiran gambar yang dikirim bersama permintaan, jika berlaku)
 - `outputs`
+- `ignoredOverrides` (kunci petunjuk yang tidak didukung penyedia, jika berlaku)
 - `error`
 
-Untuk perintah media yang dihasilkan, `outputs` berisi file yang ditulis oleh OpenClaw. Gunakan
-`path`, `mimeType`, `size`, dan dimensi khusus media apa pun dalam array tersebut
-untuk otomatisasi alih-alih mengurai stdout yang mudah dibaca manusia.
+Untuk perintah media yang dihasilkan, `outputs` berisi berkas yang ditulis oleh OpenClaw. Gunakan `path`, `mimeType`, `size`, dan dimensi khusus media apa pun dalam larik tersebut untuk otomatisasi, alih-alih mengurai stdout yang dapat dibaca manusia.
 
-## Kesalahan umum
+## Kendala umum
 
 ```bash
 # Bad
@@ -367,10 +319,6 @@ openclaw infer audio transcribe --file ./memo.m4a --model whisper-1 --json
 # Good
 openclaw infer audio transcribe --file ./memo.m4a --model openai/whisper-1 --json
 ```
-
-## Catatan
-
-- `openclaw capability ...` adalah alias untuk `openclaw infer ...`.
 
 ## Terkait
 

@@ -1,11 +1,11 @@
 ---
 read_when:
     - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin clickclack
-summary: Thêm bề mặt kênh Clickclack để gửi và nhận tin nhắn OpenClaw.
+summary: Bổ sung giao diện kênh Clickclack để gửi và nhận tin nhắn OpenClaw.
 title: Plugin Clickclack
 x-i18n:
-    generated_at: "2026-06-27T17:51:00Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:14:51Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: d939f5291de0510eaac361732f93fb79cac94656ac56a653f3c9e97394c6a9ae
@@ -15,7 +15,7 @@ x-i18n:
 
 # Plugin Clickclack
 
-Thêm bề mặt kênh Clickclack để gửi và nhận tin nhắn OpenClaw.
+Thêm kênh Clickclack để gửi và nhận tin nhắn OpenClaw.
 
 ## Phân phối
 

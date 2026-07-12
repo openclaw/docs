@@ -1,11 +1,11 @@
 ---
 read_when:
-    - أنت تثبّت أو تضبط أو تدقّق Plugin nextcloud-talk
+    - أنت تثبّت Plugin ‏nextcloud-talk أو تهيّئه أو تدقّق فيه
 summary: Plugin قناة Nextcloud Talk في OpenClaw للمحادثات.
 title: Plugin Nextcloud Talk
 x-i18n:
-    generated_at: "2026-06-27T18:14:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:15:53Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: ce8dd648fcc2226e6b365f092eb3dc54062d2c9d8d5c613cb0c2d5e9f237c720
@@ -24,7 +24,7 @@ Plugin قناة Nextcloud Talk في OpenClaw للمحادثات.
 
 ## السطح
 
-channels: nextcloud-talk
+القنوات: nextcloud-talk
 
 ## الوثائق ذات الصلة
 

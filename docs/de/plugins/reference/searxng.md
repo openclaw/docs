@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder prüfen das searxng-Plugin
+    - Sie installieren, konfigurieren oder überprüfen das searxng-Plugin
 summary: Fügt Unterstützung für Websuche-Provider hinzu.
 title: SearXNG-Plugin
 x-i18n:
-    generated_at: "2026-06-27T17:56:34Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T02:00:45Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 96d320ccd6ec69e380edfcfa33b498569058be6953257b5770cd4eea95cb401a
@@ -22,6 +22,6 @@ Fügt Unterstützung für Websuch-Provider hinzu.
 - Paket: `@openclaw/searxng-plugin`
 - Installationsweg: npm; ClawHub: `clawhub:@openclaw/searxng-plugin`
 
-## Schnittstelle
+## Oberfläche
 
 Verträge: webSearchProviders

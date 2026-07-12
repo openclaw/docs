@@ -4,10 +4,9 @@ read_when:
 summary: Origem do projeto, colaboradores e licença.
 title: Créditos
 x-i18n:
-    generated_at: "2026-07-12T15:35:07Z"
+    generated_at: "2026-07-12T00:21:45Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: d0030d36d04ce73e4c87f3d973ca3e729485f87c4b4b454e957dd6615d096ec9
     source_path: reference/credits.md
@@ -19,7 +18,7 @@ OpenClaw = CLAW + TARDIS: toda lagosta espacial precisa de uma máquina do tempo
 ## Créditos
 
 - **Peter Steinberger** ([@steipete](https://x.com/steipete)) - Criador, encantador de lagostas
-- **Mario Zechner** ([@badlogicc](https://x.com/badlogicgames)) - Criador do Pi, pentester de segurança
+- **Mario Zechner** ([@badlogicc](https://x.com/badlogicgames)) - Criador do Pi, testador de intrusão de segurança
 - **Clawd** - A lagosta espacial que exigiu um nome melhor
 
 ## Principais colaboradores

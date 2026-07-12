@@ -1,20 +1,20 @@
 ---
 summary: Alihkan ke /cli/message
-title: Polling
+title: Jajak pendapat
 x-i18n:
-    generated_at: "2026-04-24T08:57:10Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: a277212ed680b7aeb9153d003bc084d2d0c918dc53f2f469c72f7fe5a881cfae
-    source_path: automation/poll.md
-    workflow: 15
+    generated_at: "2026-07-12T13:55:07Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 071617c5fe910ad8a5d4a03416876ba3092d4fc67d5c206570a0456469ef73a9
+    source_path: automation/poll.md
+    workflow: 16
 ---
 
-Halaman ini dipindahkan ke [Message tool](/id/cli/message). Lihat [Message tool](/id/cli/message) untuk dokumentasi polling.
+Halaman ini telah dipindahkan. Dokumentasi jajak pendapat, termasuk flag `openclaw message poll` dan batas per kanal, tersedia di [Alat pesan](/id/cli/message).
 
 ## Terkait
 
-- [Webhook](/id/automation/cron-jobs)
+- [Webhook](/id/automation/cron-jobs#webhooks)
 - [Tugas terjadwal](/id/automation/cron-jobs)
 - [Tugas latar belakang](/id/automation/tasks)

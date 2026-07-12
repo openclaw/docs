@@ -1,13 +1,13 @@
 ---
 read_when:
     - Quieres saber qué significa npm shrinkwrap en una versión de OpenClaw
-    - Estás revisando archivos de bloqueo de paquetes, cambios de dependencias o riesgos de la cadena de suministro
-    - Estás validando paquetes npm raíz o de Plugin antes de publicarlos
-summary: Explicación técnica y en lenguaje sencillo de npm shrinkwrap en las versiones de OpenClaw
-title: npm shrinkwrap
+    - Estás revisando archivos de bloqueo de paquetes, cambios en las dependencias o riesgos de la cadena de suministro
+    - Estás validando paquetes npm raíz o de plugins antes de publicarlos
+summary: Explicación sencilla y técnica del archivo shrinkwrap de npm en las versiones de OpenClaw
+title: shrinkwrap de npm
 x-i18n:
-    generated_at: "2026-07-05T11:22:56Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T23:08:38Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: d1e6c0d4541da9220d50cde0b9db064e5a91b81d6562cb16ac697de7d4017098
@@ -15,59 +15,59 @@ x-i18n:
     workflow: 16
 ---
 
-OpenClaw source checkouts usan `pnpm-lock.yaml`. Los paquetes npm publicados de OpenClaw usan `npm-shrinkwrap.json`, el lockfile de dependencias publicable de npm, para que las instalaciones de paquetes usen el grafo de dependencias revisado durante la release.
+Los repositorios de código fuente de OpenClaw usan `pnpm-lock.yaml`. Los paquetes npm publicados de OpenClaw usan `npm-shrinkwrap.json`, el archivo de bloqueo de dependencias publicable de npm, para que las instalaciones de paquetes utilicen el grafo de dependencias revisado durante el lanzamiento.
 
-## Por qué importa
+## Por qué es importante
 
-Shrinkwrap es un recibo del árbol de dependencias que se distribuye con un paquete npm: le indica a npm qué versiones transitivas exactas instalar.
+Shrinkwrap es un comprobante del árbol de dependencias que se distribuye con un paquete npm: indica a npm qué versiones transitivas exactas debe instalar.
 
-| Archivo               | Dónde importa           | Qué significa                         |
-| --------------------- | ----------------------- | ------------------------------------- |
-| `pnpm-lock.yaml`      | Checkout fuente de OpenClaw | Grafo de dependencias del mantenedor |
-| `npm-shrinkwrap.json` | Paquete npm publicado   | Grafo de instalación npm para usuarios |
-| `package-lock.json`   | Apps npm locales        | No es el contrato de publicación de OpenClaw |
+| Archivo               | Dónde es importante                  | Qué significa                                  |
+| --------------------- | ------------------------------------ | ---------------------------------------------- |
+| `pnpm-lock.yaml`      | Repositorio de código fuente de OpenClaw | Grafo de dependencias de los mantenedores      |
+| `npm-shrinkwrap.json` | Paquete npm publicado                | Grafo de instalación de npm para los usuarios  |
+| `package-lock.json`   | Aplicaciones npm locales             | No es el contrato de publicación de OpenClaw   |
 
-Para las releases de OpenClaw, esto significa:
+Para los lanzamientos de OpenClaw, esto significa:
 
-- el paquete publicado no le pide a npm que invente un grafo de dependencias nuevo en el momento de la instalación;
-- los cambios de dependencias son revisables porque aterrizan en una diff de lockfile;
-- la validación de release prueba el mismo grafo que instalarán los usuarios;
-- las sorpresas de tamaño de paquete o dependencias nativas aparecen antes de publicar.
+- el paquete publicado no pide a npm que genere un nuevo grafo de dependencias durante la instalación;
+- los cambios de dependencias se pueden revisar porque aparecen en la diferencia de un archivo de bloqueo;
+- la validación del lanzamiento prueba el mismo grafo que instalarán los usuarios;
+- las sorpresas relacionadas con el tamaño del paquete o las dependencias nativas salen a la luz antes de la publicación.
 
-Shrinkwrap no es un sandbox. No hace que una dependencia sea segura por sí sola, y no reemplaza el aislamiento del host, `openclaw security audit`, la procedencia del paquete ni las pruebas smoke de instalación.
+Shrinkwrap no es un entorno aislado. No hace que una dependencia sea segura por sí solo ni sustituye el aislamiento del host, `openclaw security audit`, la procedencia de los paquetes ni las pruebas básicas de instalación.
 
-OpenClaw es un gateway, host de plugins, enrutador de modelos y runtime de agentes, por lo que una instalación predeterminada afecta el tiempo de arranque, el uso de disco, las descargas de paquetes nativos y la exposición de la cadena de suministro. Shrinkwrap da a la revisión de release un límite estable: los revisores ven el movimiento de dependencias transitivas, los validadores rechazan desviaciones inesperadas del lockfile y los paquetes de plugins llevan su propio grafo de dependencias bloqueado en lugar de depender del paquete raíz.
+OpenClaw es un Gateway, un host de plugins, un enrutador de modelos y un entorno de ejecución de agentes, por lo que una instalación predeterminada afecta al tiempo de inicio, el uso del disco, las descargas de paquetes nativos y la exposición a la cadena de suministro. Shrinkwrap proporciona a la revisión del lanzamiento un límite estable: los revisores ven los cambios en las dependencias transitivas, los validadores rechazan desviaciones inesperadas del archivo de bloqueo y los paquetes de plugins incluyen su propio grafo de dependencias bloqueado en lugar de depender del paquete raíz.
 
 ## Generación y comprobación
 
-El paquete npm raíz `openclaw`, los paquetes de plugins npm propiedad de OpenClaw (por ejemplo, `@openclaw/discord`) y los paquetes publicables del workspace como [`@openclaw/ai`](/reference/openclaw-ai) incluyen `npm-shrinkwrap.json` cuando se publican. Las dependencias de workspace se omiten del shrinkwrap raíz porque se publican junto al paquete raíz; en su lugar, cada paquete publicable del workspace fija su propio árbol transitivo. Los paquetes de plugins adecuados también pueden publicarse con `bundledDependencies` explícitas, llevando sus archivos de dependencias de runtime en el tarball del plugin en lugar de depender solo de la resolución en tiempo de instalación.
+El paquete npm raíz `openclaw`, los paquetes npm de plugins propiedad de OpenClaw (por ejemplo, `@openclaw/discord`) y los paquetes publicables del espacio de trabajo, como [`@openclaw/ai`](/es/reference/openclaw-ai), incluyen `npm-shrinkwrap.json` cuando se publican. Las dependencias del espacio de trabajo se omiten del shrinkwrap raíz porque se publican junto con el paquete raíz; en su lugar, cada paquete publicable del espacio de trabajo fija su propio árbol transitivo. Los paquetes de plugins adecuados también pueden publicarse con `bundledDependencies` explícitas, incluyendo sus archivos de dependencias de ejecución en el archivo tar del plugin en vez de depender únicamente de la resolución durante la instalación.
 
 ```bash
-# All shrinkwrap-managed packages (root + publishable plugins)
+# Todos los paquetes gestionados mediante shrinkwrap (raíz + plugins publicables)
 pnpm deps:shrinkwrap:generate
 pnpm deps:shrinkwrap:check
 
-# Root package only
+# Solo el paquete raíz
 pnpm deps:shrinkwrap:root:generate
 pnpm deps:shrinkwrap:root:check
 
-# Only packages affected by the current changeset
+# Solo los paquetes afectados por el conjunto de cambios actual
 pnpm deps:shrinkwrap:changed:generate
 pnpm deps:shrinkwrap:changed:check
 ```
 
-El generador resuelve el formato de lock publicable de npm, pero rechaza las versiones de paquetes generadas que no estén ya presentes en `pnpm-lock.yaml`. Eso mantiene intacto el límite de antigüedad, override y revisión de parches de dependencias de pnpm.
+El generador resuelve el formato de bloqueo publicable de npm, pero rechaza las versiones de paquetes generadas que aún no estén presentes en `pnpm-lock.yaml`. Esto mantiene intactos los límites de revisión de antigüedad, sustituciones y parches de las dependencias de pnpm.
 
-Revisa estos como sensibles para la seguridad:
+Revise los siguientes elementos como sensibles para la seguridad:
 
 - `pnpm-lock.yaml`
 - `npm-shrinkwrap.json`
-- cargas de dependencias de plugins empaquetados
-- cualquier diff de `package-lock.json`
+- las cargas útiles de dependencias incluidas en los plugins
+- cualquier diferencia de `package-lock.json`
 
-Los validadores de paquetes de OpenClaw requieren shrinkwrap en los tarballs nuevos del paquete raíz y rechazan `package-lock.json` para paquetes publicados. La ruta de publicación npm de plugins comprueba el shrinkwrap local del plugin, instala las dependencias empaquetadas locales del paquete y luego empaqueta o publica.
+Los validadores de paquetes de OpenClaw exigen shrinkwrap en los nuevos archivos tar del paquete raíz y rechazan `package-lock.json` para los paquetes publicados. La ruta de publicación npm de plugins comprueba el shrinkwrap local del plugin, instala las dependencias incluidas locales del paquete y, a continuación, empaqueta o publica.
 
-## Inspeccionar un paquete publicado
+## Inspección de un paquete publicado
 
 Paquete raíz:
 
@@ -84,4 +84,4 @@ tar -tf /tmp/openclaw-plugin-pack/openclaw-discord-<version>.tgz | grep '^packag
 tar -tf /tmp/openclaw-plugin-pack/openclaw-discord-<version>.tgz | grep '^package/node_modules/'
 ```
 
-Contexto: [npm-shrinkwrap.json](https://docs.npmjs.com/cli/v11/configuring-npm/npm-shrinkwrap-json).
+Información general: [npm-shrinkwrap.json](https://docs.npmjs.com/cli/v11/configuring-npm/npm-shrinkwrap-json).

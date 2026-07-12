@@ -1,26 +1,26 @@
 ---
 read_when:
-    - senseaudio Plugin'ini yüklüyor, yapılandırıyor veya denetliyorsunuz
+    - senseaudio pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
 summary: Medya anlama sağlayıcısı desteği ekler.
-title: Senseaudio Plugin
+title: Senseaudio Plugin'i
 x-i18n:
-    generated_at: "2026-05-02T20:56:52Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:34:50Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: b1566a7e33b2f3d367c0fafc364b701aff60587204bb585af1cf15786e5ed330
     source_path: plugins/reference/senseaudio.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# Senseaudio Plugin
+# Senseaudio Plugin'i
 
 Medya anlama sağlayıcısı desteği ekler.
 
 ## Dağıtım
 
 - Paket: `@openclaw/senseaudio-provider`
-- Kurulum yolu: OpenClaw içinde yer alır
+- Kurulum yolu: OpenClaw'a dahildir
 
 ## Yüzey
 

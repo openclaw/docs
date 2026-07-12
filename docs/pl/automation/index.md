@@ -1,24 +1,26 @@
 ---
 doc-schema-version: 1
 read_when:
-    - Wybór sposobu automatyzacji pracy z OpenClaw
-    - Wybór między Heartbeat, Cron, zobowiązaniami, hookami i stałymi poleceniami
-    - Szukasz właściwego punktu wejścia automatyzacji
-summary: 'Przegląd mechanizmów automatyzacji: zadania, Cron, hooki, stałe polecenia i przepływ zadań'
+    - Wybór sposobu automatyzacji pracy za pomocą OpenClaw
+    - Wybór między Heartbeat, Cron, zobowiązaniami, hookami a stałymi poleceniami
+    - Wybór właściwego punktu wejścia automatyzacji
+summary: 'Przegląd mechanizmów automatyzacji: zadania, Cron, hooki, stałe zlecenia i TaskFlow'
 title: Automatyzacja
 x-i18n:
-    generated_at: "2026-05-12T23:29:18Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:52:10Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 311ebbd557e40e38cd25b2f11b887baa4576657095d5a0841d4cb7f71898927d
+    source_hash: 210f2a33012e854e48aa145c665e16e7ffe861c91a2566507e81d809bb2b955c
     source_path: automation/index.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw wykonuje pracę w tle za pomocą zadań, zaplanowanych zadań, wywnioskowanych zobowiązań, hooków zdarzeń i stałych poleceń. Ta strona pomaga wybrać właściwy mechanizm i zrozumieć, jak pasują do siebie.
+OpenClaw wykonuje pracę w tle za pomocą zadań, zaplanowanych zadań, wywnioskowanych
+zobowiązań, hooków zdarzeń i stałych instrukcji. Ta strona pomoże wybrać
+odpowiedni mechanizm.
 
-## Szybki przewodnik decyzyjny
+## Krótki przewodnik wyboru
 
 ```mermaid
 flowchart TD
@@ -40,95 +42,102 @@ flowchart TD
     Q6 -->|Yes| COMMITMENTS[Inferred Commitments]
 ```
 
-| Przypadek użycia                                  | Zalecane                         | Dlaczego                                                  |
-| ------------------------------------------------- | -------------------------------- | --------------------------------------------------------- |
-| Wyślij dzienny raport punktualnie o 9:00          | Zaplanowane zadania (Cron)       | Dokładny czas, izolowane wykonanie                        |
-| Przypomnij mi za 20 minut                         | Zaplanowane zadania (Cron)       | Jednorazowe zadanie z precyzyjnym czasem (`--at`)         |
-| Uruchom cotygodniową głęboką analizę              | Zaplanowane zadania (Cron)       | Samodzielne zadanie, może używać innego modelu            |
-| Sprawdzaj skrzynkę co 30 min                      | Heartbeat                        | Grupuje się z innymi kontrolami, uwzględnia kontekst      |
-| Monitoruj kalendarz pod kątem nadchodzących wydarzeń | Heartbeat                     | Naturalne dopasowanie do okresowej świadomości            |
-| Odezwij się po wspomnianej rozmowie kwalifikacyjnej | Wywnioskowane zobowiązania      | Dalsze działanie podobne do pamięci, bez prośby o dokładne przypomnienie |
-| Delikatny kontakt kontrolny wynikający z kontekstu użytkownika | Wywnioskowane zobowiązania | Ograniczone do tego samego agenta i kanału                |
-| Sprawdź status subagenta lub uruchomienia ACP     | Zadania w tle                    | Rejestr zadań śledzi całą odłączoną pracę                 |
-| Audytuj, co zostało uruchomione i kiedy           | Zadania w tle                    | `openclaw tasks list` i `openclaw tasks audit`            |
-| Wieloetapowe badanie, a potem podsumowanie        | Przepływ zadań                   | Trwała orkiestracja ze śledzeniem rewizji                 |
-| Uruchom skrypt przy resecie sesji                 | Hooki                            | Sterowane zdarzeniami, uruchamiane przy zdarzeniach cyklu życia |
-| Wykonuj kod przy każdym wywołaniu narzędzia       | Hooki Plugin                     | Hooki wewnątrz procesu mogą przechwytywać wywołania narzędzi |
-| Zawsze sprawdzaj zgodność przed odpowiedzią       | Stałe polecenia                  | Automatycznie wstrzykiwane do każdej sesji                |
+| Przypadek użycia                                          | Zalecany mechanizm       | Dlaczego                                                |
+| --------------------------------------------------------- | ------------------------ | ------------------------------------------------------- |
+| Wysyłanie codziennego raportu punktualnie o 9:00          | Zaplanowane zadania (Cron) | Dokładny czas, izolowane wykonanie                     |
+| Przypomnienie za 20 minut                                 | Zaplanowane zadania (Cron) | Jednorazowe wykonanie o precyzyjnej porze (`--at`)     |
+| Cotygodniowa pogłębiona analiza                           | Zaplanowane zadania (Cron) | Samodzielne zadanie, może używać innego modelu         |
+| Sprawdzanie skrzynki odbiorczej co 30 minut               | Heartbeat                | Grupowanie z innymi kontrolami, uwzględnianie kontekstu |
+| Monitorowanie kalendarza pod kątem nadchodzących wydarzeń | Heartbeat                | Naturalne rozwiązanie do okresowego monitorowania       |
+| Kontakt po wspomnianej rozmowie kwalifikacyjnej           | Wywnioskowane zobowiązania | Dalszy kontakt przypominający pamięć, bez żądania przypomnienia o dokładnej porze |
+| Dyskretne sprawdzenie samopoczucia na podstawie kontekstu użytkownika | Wywnioskowane zobowiązania | Ograniczenie do tego samego agenta i kanału |
+| Sprawdzanie stanu subagenta lub uruchomienia ACP           | Zadania w tle            | Rejestr zadań śledzi wszystkie odłączone prace           |
+| Audyt wykonanych działań i czasu ich wykonania             | Zadania w tle            | `openclaw tasks list` i `openclaw tasks audit`           |
+| Wieloetapowe badanie zakończone podsumowaniem              | Przepływ zadań           | Trwała orkiestracja ze śledzeniem wersji                 |
+| Uruchamianie skryptu po zresetowaniu sesji                 | Hooki                    | Działanie sterowane zdarzeniami cyklu życia              |
+| Wykonywanie kodu przy każdym wywołaniu narzędzia           | Hooki Pluginu            | Hooki wewnątrz procesu mogą przechwytywać wywołania narzędzi |
+| Sprawdzanie zgodności przed każdą odpowiedzią              | Stałe polecenia          | Automatyczne wstrzykiwanie do każdej sesji               |
 
 ### Zaplanowane zadania (Cron) a Heartbeat
 
-| Wymiar          | Zaplanowane zadania (Cron)           | Heartbeat                              |
-| --------------- | ------------------------------------ | -------------------------------------- |
-| Czas uruchomienia | Dokładny (wyrażenia Cron, jednorazowe) | Przybliżony (domyślnie co 30 min)    |
-| Kontekst sesji  | Nowy (izolowany) lub współdzielony   | Pełny kontekst sesji głównej           |
-| Rekordy zadań   | Zawsze tworzone                      | Nigdy nie są tworzone                  |
-| Dostarczenie    | Kanał, Webhook lub tryb cichy        | W treści sesji głównej                 |
-| Najlepsze do    | Raportów, przypomnień, zadań w tle   | Kontroli skrzynki, kalendarza, powiadomień |
+| Wymiar           | Zaplanowane zadania (Cron)          | Heartbeat                                  |
+| ---------------- | ----------------------------------- | ------------------------------------------ |
+| Czas             | Dokładny (wyrażenia cron, jednorazowo) | Przybliżony (domyślnie co 30 minut)      |
+| Kontekst sesji   | Nowy (izolowany) lub współdzielony  | Pełny kontekst sesji głównej               |
+| Rekordy zadań    | Zawsze tworzone                     | Nigdy nietworzone                          |
+| Dostarczanie     | Kanał, webhook lub bez powiadomienia | Bezpośrednio w sesji głównej              |
+| Najlepsze do     | Raportów, przypomnień i zadań w tle | Sprawdzania skrzynki, kalendarza i powiadomień |
 
-Używaj Zaplanowanych zadań (Cron), gdy potrzebujesz precyzyjnego czasu lub izolowanego wykonania. Używaj Heartbeat, gdy praca korzysta z pełnego kontekstu sesji, a przybliżony harmonogram jest wystarczający.
+Używaj zaplanowanych zadań (Cron), gdy potrzebujesz precyzyjnego czasu lub izolowanego wykonania. Używaj Heartbeat, gdy praca korzysta z pełnego kontekstu sesji i wystarczy przybliżony czas wykonania.
 
 ## Podstawowe pojęcia
 
 ### Zaplanowane zadania (Cron)
 
-Cron to wbudowany harmonogram Gateway do precyzyjnego ustalania czasu. Utrwala zadania, wybudza agenta we właściwym momencie i może dostarczać wynik do kanału czatu lub punktu końcowego Webhook. Obsługuje jednorazowe przypomnienia, powtarzalne wyrażenia i przychodzące wyzwalacze Webhook.
+Cron to wbudowany w Gateway harmonogram zapewniający precyzyjne wykonywanie zadań. Trwale przechowuje zadania, aktywuje agenta we właściwym czasie i może dostarczać wyniki do kanału czatu lub punktu końcowego webhooka. Obsługuje jednorazowe przypomnienia, cykliczne wyrażenia i wyzwalacze przychodzących webhooków.
 
 Zobacz [Zaplanowane zadania](/pl/automation/cron-jobs).
 
 ### Zadania
 
-Rejestr zadań w tle śledzi całą odłączoną pracę: uruchomienia ACP, utworzenia subagentów, izolowane wykonania Cron i operacje CLI. Zadania są rekordami, a nie harmonogramami. Używaj `openclaw tasks list` i `openclaw tasks audit`, aby je sprawdzać.
+Rejestr zadań w tle śledzi wszystkie odłączone prace: uruchomienia ACP, tworzenie subagentów, izolowane wykonania Cron i operacje CLI. Zadania są rekordami, a nie harmonogramami. Do ich sprawdzania używaj poleceń `openclaw tasks list` i `openclaw tasks audit`.
 
 Zobacz [Zadania w tle](/pl/automation/tasks).
 
 ### Wywnioskowane zobowiązania
 
-Zobowiązania to opcjonalne, krótkotrwałe pamięci działań następczych. OpenClaw wywnioskuje je ze zwykłych rozmów, ogranicza ich zakres do tego samego agenta i kanału oraz dostarcza należne kontakty kontrolne przez Heartbeat. Dokładne przypomnienia żądane przez użytkownika nadal należą do Cron.
+Zobowiązania to opcjonalne, krótkotrwałe wspomnienia o konieczności dalszego kontaktu. OpenClaw wywnioskuje je
+ze zwykłych rozmów, ogranicza do tego samego agenta i kanału oraz
+dostarcza zaplanowane sprawdzenia za pośrednictwem Heartbeat. Przypomnienia, o które użytkownik poprosił na konkretną porę, nadal
+należą do Cron.
 
 Zobacz [Wywnioskowane zobowiązania](/pl/concepts/commitments).
 
 ### Przepływ zadań
 
-Przepływ zadań to warstwa orkiestracji przepływów ponad zadaniami w tle. Zarządza trwałymi przepływami wieloetapowymi z zarządzanymi i lustrzanymi trybami synchronizacji, śledzeniem rewizji oraz `openclaw tasks flow list|show|cancel` do sprawdzania.
+Przepływ zadań to warstwa orkiestracji przepływów działająca nad zadaniami w tle. Zarządza trwałymi, wieloetapowymi przepływami z zarządzanymi i lustrzanymi trybami synchronizacji, śledzeniem wersji oraz poleceniami `openclaw tasks flow list|show|cancel` służącymi do ich sprawdzania.
 
 Zobacz [Przepływ zadań](/pl/automation/taskflow).
 
 ### Stałe polecenia
 
-Stałe polecenia nadają agentowi stałe uprawnienia operacyjne dla zdefiniowanych programów. Są przechowywane w plikach obszaru roboczego (zwykle `AGENTS.md`) i wstrzykiwane do każdej sesji. Łącz je z Cron, aby egzekwować je na podstawie czasu.
+Stałe polecenia przyznają agentowi trwałe uprawnienia operacyjne w ramach określonych programów. Znajdują się w plikach przestrzeni roboczej (zwykle `AGENTS.md`) i są wstrzykiwane do każdej sesji. Połącz je z Cron, aby wymuszać działania zależne od czasu.
 
 Zobacz [Stałe polecenia](/pl/automation/standing-orders).
 
 ### Hooki
 
-Wewnętrzne hooki to skrypty sterowane zdarzeniami, wyzwalane przez zdarzenia cyklu życia agenta (`/new`, `/reset`, `/stop`), Compaction sesji, uruchomienie Gateway i przepływ wiadomości. Są automatycznie wykrywane w katalogach i można nimi zarządzać za pomocą `openclaw hooks`. Do przechwytywania wywołań narzędzi wewnątrz procesu użyj [hooków Plugin](/pl/plugins/hooks).
+Wewnętrzne hooki to skrypty sterowane zdarzeniami, uruchamiane przez zdarzenia cyklu życia agenta
+(`/new`, `/reset`, `/stop`), Compaction sesji, uruchomienie Gateway i przepływ
+wiadomości. Są wykrywane w katalogach hooków i zarządzane za pomocą
+`openclaw hooks`. Do przechwytywania wywołań narzędzi wewnątrz procesu używaj
+[hooków Pluginu](/pl/plugins/hooks).
 
 Zobacz [Hooki](/pl/automation/hooks).
 
 ### Heartbeat
 
-Heartbeat to okresowa tura sesji głównej (domyślnie co 30 minut). Grupuje wiele kontroli (skrzynka, kalendarz, powiadomienia) w jednej turze agenta z pełnym kontekstem sesji. Tury Heartbeat nie tworzą rekordów zadań i nie odświeżają ważności codziennego resetu sesji ani resetu po bezczynności. Użyj `HEARTBEAT.md` jako małej listy kontrolnej albo bloku `tasks:`, gdy chcesz wykonywać w samym Heartbeat okresowe kontrole tylko wtedy, gdy są należne. Puste pliki Heartbeat są pomijane jako `empty-heartbeat-file`; tryb zadań tylko po terminie jest pomijany jako `no-tasks-due`. Działania Heartbeat są odraczane, gdy praca Cron jest aktywna lub w kolejce, a `heartbeat.skipWhenBusy` może też odroczyć agenta, gdy subagent tego samego agenta powiązany kluczem sesji albo zagnieżdżone ścieżki są zajęte.
+Heartbeat to okresowa tura sesji głównej (domyślnie co 30 minut). Grupuje wiele kontroli (skrzynki odbiorczej, kalendarza i powiadomień) w jednej turze agenta z pełnym kontekstem sesji. Tury Heartbeat nie tworzą rekordów zadań ani nie przedłużają okresu świeżości przed dziennym resetem sesji lub resetem z powodu bezczynności. Użyj pliku `HEARTBEAT.md` jako krótkiej listy kontrolnej albo bloku `tasks:`, jeśli w samym Heartbeat chcesz wykonywać tylko okresowe kontrole, których termin już nadszedł. Puste pliki Heartbeat powodują pominięcie z kodem `empty-heartbeat-file`, a tryb zadań wykonywanych wyłącznie w terminie — z kodem `no-tasks-due`. Heartbeat jest odraczany, gdy praca Cron jest aktywna lub oczekuje w kolejce, a opcja `heartbeat.skipWhenBusy` może również odroczyć agenta, gdy powiązany z kluczem sesji subagent tego samego agenta lub jego zagnieżdżone ścieżki są zajęte.
 
 Zobacz [Heartbeat](/pl/gateway/heartbeat).
 
-## Jak działają razem
+## Jak współpracują
 
-- **Cron** obsługuje precyzyjne harmonogramy (dzienne raporty, cotygodniowe przeglądy) i jednorazowe przypomnienia. Wszystkie wykonania Cron tworzą rekordy zadań.
-- **Heartbeat** obsługuje rutynowe monitorowanie (skrzynka, kalendarz, powiadomienia) w jednej zgrupowanej turze co 30 minut.
-- **Hooki** reagują na konkretne zdarzenia (resety sesji, Compaction, przepływ wiadomości) za pomocą własnych skryptów. Hooki Plugin obejmują wywołania narzędzi.
-- **Stałe polecenia** dają agentowi trwały kontekst i granice uprawnień.
+- **Cron** obsługuje precyzyjne harmonogramy (codzienne raporty, cotygodniowe przeglądy) i jednorazowe przypomnienia. Wszystkie wykonania Cron tworzą rekordy zadań.
+- **Heartbeat** obsługuje rutynowe monitorowanie (skrzynki odbiorczej, kalendarza i powiadomień) w jednej zbiorczej turze co 30 minut.
+- **Hooki** reagują na konkretne zdarzenia (resetowanie sesji, Compaction, przepływ wiadomości) za pomocą niestandardowych skryptów. Hooki Pluginu obejmują wywołania narzędzi.
+- **Stałe polecenia** zapewniają agentowi trwały kontekst i granice uprawnień.
 - **Przepływ zadań** koordynuje wieloetapowe przepływy ponad pojedynczymi zadaniami.
-- **Zadania** automatycznie śledzą całą odłączoną pracę, aby można było ją sprawdzać i audytować.
+- **Zadania** automatycznie śledzą wszystkie odłączone prace, umożliwiając ich sprawdzanie i audytowanie.
 
 ## Powiązane
 
 - [Zaplanowane zadania](/pl/automation/cron-jobs) — precyzyjne planowanie i jednorazowe przypomnienia
-- [Wywnioskowane zobowiązania](/pl/concepts/commitments) — kontakty kontrolne działań następczych podobne do pamięci
-- [Zadania w tle](/pl/automation/tasks) — rejestr zadań dla całej odłączonej pracy
-- [Przepływ zadań](/pl/automation/taskflow) — trwała orkiestracja przepływów wieloetapowych
-- [Hooki](/pl/automation/hooks) — skrypty cyklu życia sterowane zdarzeniami
-- [Hooki Plugin](/pl/plugins/hooks) — wewnątrzprocesowe hooki narzędzi, promptów, wiadomości i cyklu życia
+- [Wywnioskowane zobowiązania](/pl/concepts/commitments) — dalsze kontakty przypominające działanie pamięci
+- [Zadania w tle](/pl/automation/tasks) — rejestr wszystkich odłączonych prac
+- [Przepływ zadań](/pl/automation/taskflow) — trwała orkiestracja wieloetapowych przepływów
+- [Hooki](/pl/automation/hooks) — sterowane zdarzeniami skrypty cyklu życia
+- [Hooki Pluginu](/pl/plugins/hooks) — działające wewnątrz procesu hooki narzędzi, promptów, wiadomości i cyklu życia
 - [Stałe polecenia](/pl/automation/standing-orders) — trwałe instrukcje agenta
 - [Heartbeat](/pl/gateway/heartbeat) — okresowe tury sesji głównej
-- [Referencja konfiguracji](/pl/gateway/configuration-reference) — wszystkie klucze konfiguracji
+- [Dokumentacja konfiguracji](/pl/gateway/configuration-reference) — wszystkie klucze konfiguracji

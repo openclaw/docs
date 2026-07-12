@@ -1,24 +1,24 @@
 ---
 read_when:
-    - Bạn muốn các phản hồi cho một phiên đang hoạt động chuyển từ Telegram sang Discord, Slack, Mattermost hoặc một kênh đã liên kết khác
-    - Bạn đang cấu hình session.identityLinks cho tin nhắn trực tiếp liên kênh
+    - Bạn muốn chuyển các phản hồi của một phiên đang hoạt động từ Telegram sang Discord, Slack, Mattermost hoặc một kênh được liên kết khác
+    - Bạn đang cấu hình `session.identityLinks` cho tin nhắn trực tiếp xuyên kênh
     - Lệnh /dock cho biết người gửi chưa được liên kết hoặc không có phiên hoạt động nào tồn tại
-summary: Chuyển tuyến trả lời của một phiên OpenClaw giữa các kênh trò chuyện được liên kết
-title: Gắn kênh
+summary: Chuyển tuyến trả lời của một phiên OpenClaw giữa các kênh trò chuyện đã liên kết
+title: Ghép nối kênh
 x-i18n:
-    generated_at: "2026-04-29T22:36:14Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:52:59Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b981cd177ed76194cf18667620a1f9b2f2ba50df42fe203f6f68916971ed6a61
+    source_hash: 6d7af3a59b95b2c73cb74a9529584e51caed055719db2df8aad2ba8e8c9b0593
     source_path: concepts/channel-docking.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Ghép nối kênh là chuyển tiếp cuộc gọi cho một phiên OpenClaw.
-
-Nó giữ nguyên ngữ cảnh hội thoại, nhưng thay đổi nơi các phản hồi trong tương lai cho
-phiên đó được gửi đến.
+Gắn kênh là hình thức chuyển tiếp cuộc gọi cho một phiên OpenClaw. Tính năng này giữ nguyên
+ngữ cảnh hội thoại nhưng thay đổi nơi nhận các phản hồi tiếp theo của phiên đó.
+Việc gắn kênh chỉ hoạt động từ cuộc trò chuyện trực tiếp; không hoạt động từ cuộc
+trò chuyện nhóm.
 
 ## Ví dụ
 
@@ -34,36 +34,36 @@ Alice có thể nhắn tin cho OpenClaw trên Telegram và Discord:
 }
 ```
 
-Nếu Alice gửi nội dung này từ Telegram:
+Nếu Alice gửi lệnh này từ cuộc trò chuyện trực tiếp trên Telegram:
 
 ```text
 /dock_discord
 ```
 
-OpenClaw giữ ngữ cảnh phiên hiện tại và thay đổi tuyến phản hồi:
+OpenClaw giữ nguyên ngữ cảnh phiên hiện tại và thay đổi tuyến phản hồi:
 
-| Trước khi ghép nối            | Sau `/dock_discord`           |
-| ----------------------------- | ----------------------------- |
-| Phản hồi đi tới Telegram `123` | Phản hồi đi tới Discord `456` |
+| Trước khi gắn kênh                | Sau `/dock_discord`           |
+| --------------------------------- | ----------------------------- |
+| Phản hồi được gửi đến Telegram `123` | Phản hồi được gửi đến Discord `456` |
 
 Phiên không được tạo lại. Lịch sử bản ghi hội thoại vẫn được gắn với
-cùng một phiên.
+chính phiên đó.
 
 ## Lý do sử dụng
 
-Dùng ghép nối khi một tác vụ bắt đầu trong một ứng dụng chat nhưng các phản hồi tiếp theo nên được gửi tới
-nơi khác.
+Sử dụng tính năng gắn kênh khi một tác vụ bắt đầu trong một ứng dụng trò chuyện nhưng các phản hồi tiếp theo
+cần được gửi đến nơi khác.
 
-Luồng thường gặp:
+Quy trình thường gặp:
 
-1. Bắt đầu một tác vụ agent từ Telegram.
-2. Chuyển sang Discord nơi bạn đang phối hợp công việc.
-3. Gửi `/dock_discord` từ phiên Telegram.
-4. Giữ nguyên phiên OpenClaw, nhưng nhận các phản hồi trong tương lai ở Discord.
+1. Bắt đầu một tác vụ tác nhân từ Telegram.
+2. Chuyển sang Discord, nơi bạn đang điều phối công việc.
+3. Gửi `/dock_discord` từ cuộc trò chuyện trực tiếp trên Telegram.
+4. Giữ nguyên phiên OpenClaw nhưng nhận các phản hồi tiếp theo trong Discord.
 
 ## Cấu hình bắt buộc
 
-Ghép nối yêu cầu `session.identityLinks`. Người gửi nguồn và peer đích
+Tính năng gắn kênh yêu cầu `session.identityLinks`. Người gửi nguồn và đối tượng đích
 phải nằm trong cùng một nhóm danh tính:
 
 ```json5
@@ -76,22 +76,23 @@ phải nằm trong cùng một nhóm danh tính:
 }
 ```
 
-Các giá trị là ID peer có tiền tố kênh:
+Các giá trị là mã định danh đối tượng có tiền tố kênh:
 
-| Giá trị        | Ý nghĩa                        |
-| -------------- | ------------------------------ |
-| `telegram:123` | ID người gửi Telegram `123`    |
-| `discord:456`  | ID peer trực tiếp Discord `456` |
-| `slack:U123`   | ID người dùng Slack `U123`     |
+| Giá trị        | Ý nghĩa                              |
+| -------------- | ------------------------------------ |
+| `telegram:123` | Mã định danh người gửi Telegram `123` |
+| `discord:456`  | Mã định danh đối tượng trực tiếp Discord `456` |
+| `slack:U123`   | Mã định danh người dùng Slack `U123` |
 
-Khóa chuẩn (`alice` ở trên) chỉ là tên nhóm danh tính dùng chung. Các lệnh ghép nối
-dùng giá trị có tiền tố kênh để chứng minh rằng người gửi nguồn và
-peer đích là cùng một người.
+Khóa chính tắc (`alice` ở trên) chỉ là tên nhóm danh tính dùng chung. Các lệnh
+gắn kênh sử dụng những giá trị có tiền tố kênh để xác minh rằng người gửi nguồn và
+đối tượng đích là cùng một người.
 
 ## Lệnh
 
-Các lệnh ghép nối được tạo từ những plugin kênh đã tải có hỗ trợ
-lệnh gốc. Các lệnh được đóng gói hiện tại:
+OpenClaw tạo một lệnh `/dock-<channel>` cho mỗi Plugin kênh đã tải
+có hỗ trợ lệnh gốc, vì vậy danh sách sẽ dài thêm khi các Plugin được thêm vào. Các
+Plugin đi kèm hiện hỗ trợ tính năng này:
 
 | Kênh đích  | Lệnh               | Bí danh            |
 | ---------- | ------------------ | ------------------ |
@@ -100,54 +101,59 @@ lệnh gốc. Các lệnh được đóng gói hiện tại:
 | Slack      | `/dock-slack`      | `/dock_slack`      |
 | Telegram   | `/dock-telegram`   | `/dock_telegram`   |
 
-Các bí danh dùng dấu gạch dưới hữu ích trên những bề mặt lệnh gốc như Telegram.
+Dạng dùng dấu gạch dưới cũng là tên lệnh gốc trên các nền tảng như Telegram,
+nơi cung cấp trực tiếp các lệnh dấu gạch chéo.
 
-## Nội dung thay đổi
+## Những gì thay đổi
 
-Ghép nối cập nhật các trường gửi của phiên đang hoạt động:
+Việc gắn kênh cập nhật các trường phân phối của phiên đang hoạt động:
 
-| Trường phiên   | Ví dụ sau `/dock_discord`              |
-| -------------- | -------------------------------------- |
-| `lastChannel`  | `discord`                              |
-| `lastTo`       | `456`                                  |
-| `lastAccountId` | tài khoản kênh đích, hoặc `default`  |
+| Trường phiên    | Ví dụ sau `/dock_discord`               |
+| --------------- | --------------------------------------- |
+| `lastChannel`   | `discord`                               |
+| `lastTo`        | `456`                                   |
+| `lastAccountId` | tài khoản của kênh đích hoặc `default`  |
 
-Các trường đó được lưu bền trong kho phiên và được dùng cho việc gửi phản hồi
-sau này của phiên đó.
+Các trường này được lưu bền vững trong kho phiên và được sử dụng để phân phối
+các phản hồi sau đó cho phiên đó.
 
-## Nội dung không thay đổi
+## Những gì không thay đổi
 
-Ghép nối không:
+Việc gắn kênh không:
 
 - tạo tài khoản kênh
-- kết nối một bot Discord, Telegram, Slack hoặc Mattermost mới
+- kết nối bot Discord, Telegram, Slack hoặc Mattermost mới
 - cấp quyền truy cập cho người dùng
 - bỏ qua danh sách cho phép của kênh hoặc chính sách tin nhắn trực tiếp
-- di chuyển lịch sử bản ghi hội thoại sang phiên khác
+- chuyển lịch sử bản ghi hội thoại sang phiên khác
 - khiến những người dùng không liên quan dùng chung một phiên
 
-Nó chỉ thay đổi tuyến gửi cho phiên hiện tại.
+Tính năng này chỉ thay đổi tuyến phân phối của phiên hiện tại.
 
 ## Khắc phục sự cố
 
-**Lệnh báo rằng người gửi chưa được liên kết.**
+**Lệnh thông báo người gửi chưa được liên kết.**
 
-Thêm cả người gửi hiện tại và peer đích vào cùng một nhóm
-`session.identityLinks`. Ví dụ, nếu người gửi Telegram `123` cần ghép nối
-tới peer Discord `456`, hãy bao gồm cả `telegram:123` và `discord:456`.
+Thêm cả người gửi hiện tại và đối tượng đích vào cùng một nhóm
+`session.identityLinks`. Ví dụ: nếu người gửi Telegram `123` cần gắn kênh
+với đối tượng Discord `456`, hãy bao gồm cả `telegram:123` và `discord:456`.
 
-**Lệnh báo rằng không có phiên đang hoạt động.**
+**Lệnh thông báo tính năng gắn kênh chỉ khả dụng từ cuộc trò chuyện trực tiếp.**
 
-Ghép nối từ một phiên chat trực tiếp hiện có. Lệnh cần một mục phiên đang hoạt động
-để có thể lưu bền tuyến mới.
+Gửi lệnh gắn kênh từ cuộc trò chuyện trực tiếp với OpenClaw, không phải từ cuộc trò chuyện nhóm.
 
-**Phản hồi vẫn đi tới kênh cũ.**
+**Lệnh thông báo không có phiên đang hoạt động.**
 
-Kiểm tra rằng lệnh đã trả lời bằng thông báo thành công, và xác nhận ID
-peer đích khớp với ID mà kênh đó sử dụng. Ghép nối chỉ thay đổi tuyến
-phiên đang hoạt động; một phiên khác vẫn có thể định tuyến tới nơi khác.
+Thực hiện gắn kênh từ một phiên trò chuyện trực tiếp hiện có. Lệnh cần một mục phiên đang hoạt động
+để có thể lưu bền vững tuyến mới.
+
+**Phản hồi vẫn được gửi đến kênh cũ.**
+
+Kiểm tra xem lệnh có phản hồi bằng thông báo thành công hay không, đồng thời xác nhận mã định danh
+đối tượng đích khớp với mã định danh mà kênh đó sử dụng. Việc gắn kênh chỉ thay đổi tuyến của
+phiên đang hoạt động; một phiên khác vẫn có thể định tuyến đến nơi khác.
 
 **Tôi cần chuyển lại.**
 
-Gửi lệnh tương ứng cho kênh ban đầu, chẳng hạn `/dock_telegram` hoặc
-`/dock-telegram`, từ một người gửi đã liên kết.
+Gửi lệnh tương ứng với kênh ban đầu, chẳng hạn như `/dock_telegram` hoặc
+`/dock-telegram`, từ một người gửi đã được liên kết.

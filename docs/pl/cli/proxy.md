@@ -1,37 +1,28 @@
 ---
 read_when:
-    - Przed wdrożeniem musisz zweryfikować routing proxy zarządzany przez operatora
-    - Musisz przechwycić lokalnie ruch transportowy OpenClaw na potrzeby debugowania
-    - Chcesz sprawdzać sesje debug proxy, bloby lub wbudowane presety zapytań
-summary: Dokumentacja CLI dla `openclaw proxy`, obejmująca walidację proxy zarządzanego przez operatora oraz lokalny inspektor przechwytywania proxy debugowania
-title: Proxy
+    - Przed wdrożeniem należy zweryfikować routing przez serwer proxy zarządzany przez operatora
+    - Musisz lokalnie przechwycić ruch transportowy OpenClaw na potrzeby debugowania
+    - Chcesz sprawdzić sesje debugowania proxy, obiekty blob lub wbudowane ustawienia wstępne zapytań
+summary: Dokumentacja CLI dla `openclaw proxy`, obejmująca walidację serwera proxy zarządzanego przez operatora oraz lokalny inspektor przechwyconych danych serwera proxy do debugowania
+title: Serwer proxy
 x-i18n:
-    generated_at: "2026-06-27T17:22:55Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:00:51Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c3883373f2aa6d365ed93bcb9f7da2bb9281b8bd061d1842bc5bef0f43b7ccb9
+    source_hash: 91583f785032bfffe455a1963804108550f6fbb735ac4de1dd91d0ca5ae0df35
     source_path: cli/proxy.md
     workflow: 16
 ---
 
 # `openclaw proxy`
 
-Weryfikuj routing proxy zarządzany przez operatora albo uruchom lokalne jawne debugujące proxy
-i sprawdź przechwycony ruch.
-
-Użyj `validate`, aby wykonać preflight proxy przekazującego zarządzanego przez operatora przed włączeniem
-routingu proxy OpenClaw. Pozostałe polecenia to narzędzia debugowania do
-badania na poziomie transportu: mogą uruchomić lokalne proxy, uruchomić polecenie podrzędne
-z włączonym przechwytywaniem, wyświetlić sesje przechwytywania, zapytać o typowe wzorce ruchu, odczytać
-przechwycone bloby oraz wyczyścić lokalne dane przechwytywania.
-
-## Polecenia
+Sprawdź routing przez serwer proxy zarządzany przez operatora albo uruchom lokalny, jawnie skonfigurowany serwer proxy do debugowania i przeanalizuj przechwycony ruch.
 
 ```bash
+openclaw proxy validate [--json] [--proxy-url <url>] [--proxy-ca-file <path>] [--allowed-url <url>] [--denied-url <url>] [--apns-reachable] [--apns-authority <url>] [--timeout-ms <ms>]
 openclaw proxy start [--host <host>] [--port <port>]
 openclaw proxy run [--host <host>] [--port <port>] -- <cmd...>
-openclaw proxy validate [--json] [--proxy-url <url>] [--proxy-ca-file <path>] [--allowed-url <url>] [--denied-url <url>] [--apns-reachable] [--apns-authority <url>] [--timeout-ms <ms>]
 openclaw proxy coverage
 openclaw proxy sessions [--limit <count>]
 openclaw proxy query --preset <name> [--session <id>]
@@ -39,40 +30,53 @@ openclaw proxy blob --id <blobId>
 openclaw proxy purge
 ```
 
-## Weryfikacja
+Polecenie `validate` wykonuje wstępną kontrolę serwera proxy przekazującego zarządzanego przez operatora. Pozostałe polecenia to narzędzia do debugowania na poziomie transportu: uruchamiają lokalny serwer proxy przechwytujący ruch, wykonują polecenie podrzędne za jego pośrednictwem, wyświetlają listę sesji przechwytywania, analizują wzorce ruchu, odczytują przechwycone obiekty binarne i usuwają lokalne dane przechwytywania.
 
-`openclaw proxy validate` sprawdza efektywny adres URL proxy zarządzanego przez operatora z
-`--proxy-url`, konfiguracji albo `OPENCLAW_PROXY_URL`. Adresy URL zarządzanych proxy mogą używać
-`http://` dla zwykłego listenera forward proxy albo `https://`, gdy OpenClaw musi
-otworzyć TLS do punktu końcowego proxy przed wysłaniem żądań proxy. Zgłasza
-problem z konfiguracją, gdy żadne proxy nie jest włączone i skonfigurowane; użyj `--proxy-url` do
-jednorazowego preflightu przed zmianą konfiguracji. Dodaj `--proxy-ca-file`, aby zaufać
-prywatnemu CA dla połączenia TLS z punktem końcowym proxy HTTPS. Domyślnie
-weryfikuje, że publiczne miejsce docelowe działa przez proxy oraz że proxy
-nie może dotrzeć do tymczasowego kanarka loopback. Niestandardowe zablokowane miejsca docelowe są
-fail-closed: odpowiedzi HTTP i niejednoznaczne błędy transportu powodują niepowodzenie, chyba że
-możesz osobno zweryfikować sygnał odmowy specyficzny dla wdrożenia. Dodaj
-`--apns-reachable`, aby także otworzyć tunel APNs HTTP/2 CONNECT przez proxy
-i potwierdzić, że sandbox APNs odpowiada; sonda używa celowo nieprawidłowego
-tokenu dostawcy, więc odpowiedź APNs `403 InvalidProviderToken` jest pomyślnym
-sygnałem osiągalności.
+## Sprawdzanie poprawności
 
-Opcje:
+Sprawdza obowiązujący adres URL serwera proxy zarządzanego przez operatora, pobierany kolejno z `--proxy-url`, konfiguracji (`proxy.proxyUrl`) lub `OPENCLAW_PROXY_URL`, zgodnie z tą kolejnością pierwszeństwa. Zgłasza problem z konfiguracją, jeśli serwer proxy nie jest włączony i skonfigurowany. Przekaż `--proxy-url`, aby przeprowadzić jednorazową kontrolę wstępną bez modyfikowania konfiguracji.
 
-- `--json`: wypisz JSON czytelny maszynowo.
-- `--proxy-url <url>`: zweryfikuj ten adres URL proxy `http://` lub `https://` zamiast konfiguracji albo env.
-- `--proxy-ca-file <path>`: zaufaj temu plikowi CA PEM na potrzeby weryfikacji TLS punktu końcowego proxy HTTPS.
-- `--allowed-url <url>`: dodaj miejsce docelowe, które ma działać przez proxy. Powtórz, aby sprawdzić wiele miejsc docelowych.
-- `--denied-url <url>`: dodaj miejsce docelowe, które ma być blokowane przez proxy. Powtórz, aby sprawdzić wiele miejsc docelowych.
-- `--apns-reachable`: zweryfikuj także, że sandbox APNs HTTP/2 jest osiągalny przez proxy.
-- `--apns-authority <url>`: authority APNs do sondowania z `--apns-reachable` (domyślnie `https://api.sandbox.push.apple.com`; produkcja to `https://api.push.apple.com`).
-- `--timeout-ms <ms>`: limit czasu dla każdego żądania w milisekundach.
+Adresy URL zarządzanych serwerów proxy używają `http://` w przypadku zwykłego nasłuchiwania serwera proxy przekazującego lub `https://`, gdy OpenClaw musi najpierw nawiązać połączenie TLS z punktem końcowym serwera proxy, zanim wyśle żądania proxy. Użyj `--proxy-ca-file`, aby zaufać prywatnemu urzędowi certyfikacji dla tego połączenia TLS.
 
-Zobacz [Proxy sieciowe](/pl/security/network-proxy), aby uzyskać wskazówki dotyczące wdrożenia i semantyki odmowy.
+Domyślnie wykonywane są:
 
-## Presety zapytań
+- jedna kontrola **dozwolonego** adresu `https://example.com/` (można ją zastąpić lub dodać kolejne za pomocą powtarzalnej opcji `--allowed-url`)
+- jedna kontrola **zablokowanego** adresu tymczasowego wzorca kontrolnego local loopback (można ją zastąpić za pomocą powtarzalnej opcji `--denied-url`)
 
-`openclaw proxy query --preset <name>` akceptuje:
+Niestandardowe cele `--denied-url` działają w trybie bezpiecznej odmowy: zarówno odpowiedzi HTTP, jak i niejednoznaczne błędy transportu są uznawane za niepowodzenie, chyba że można niezależnie zweryfikować sygnał odmowy właściwy dla danego wdrożenia. Wbudowany wzorzec kontrolny local loopback jest jedynym celem, dla którego błąd transportu jest uznawany za dowód zablokowania.
+
+Dodaj `--apns-reachable`, aby również otworzyć przez serwer proxy tunel HTTP/2 CONNECT do APNs i potwierdzić odpowiedź środowiska testowego APNs. Test wysyła celowo nieprawidłowy token dostawcy, dlatego odpowiedź APNs `403 InvalidProviderToken` jest uznawana za pomyślny sygnał osiągalności, a nie za błąd.
+
+### Opcje
+
+| Flaga                    | Działanie                                                                                                                   |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| `--json`                 | wyświetla kod JSON przeznaczony do odczytu maszynowego                                                                      |
+| `--proxy-url <url>`      | sprawdza podany adres URL serwera proxy `http://`/`https://` zamiast wartości z konfiguracji lub zmiennej środowiskowej      |
+| `--proxy-ca-file <path>` | ufa podanemu plikowi urzędu certyfikacji PEM podczas weryfikacji TLS punktu końcowego serwera proxy HTTPS                    |
+| `--allowed-url <url>`    | miejsce docelowe, do którego połączenie przez serwer proxy powinno się powieść (opcja powtarzalna)                           |
+| `--denied-url <url>`     | miejsce docelowe, które powinno zostać zablokowane przez serwer proxy (opcja powtarzalna)                                    |
+| `--apns-reachable`       | dodatkowo sprawdza, czy środowisko testowe APNs HTTP/2 jest osiągalne przez serwer proxy                                     |
+| `--apns-authority <url>` | punkt APNs do sprawdzenia (domyślnie `https://api.sandbox.push.apple.com`; środowisko produkcyjne: `https://api.push.apple.com`) |
+| `--timeout-ms <ms>`      | limit czasu dla pojedynczego żądania                                                                                        |
+
+Kończy działanie z kodem 1, gdy konfiguracja serwera proxy lub kontrole miejsc docelowych zakończą się niepowodzeniem.
+
+Wskazówki dotyczące wdrażania i semantyki odmowy zawiera dokument [Serwer proxy sieci](/pl/security/network-proxy).
+
+## Serwer proxy do debugowania
+
+Polecenie `start` uruchamia lokalny serwer proxy przechwytujący ruch oraz wyświetla jego adres URL, ścieżkę certyfikatu urzędu certyfikacji i ścieżkę bazy danych przechwytywania. Zatrzymaj go za pomocą Ctrl+C. Domyślnie nasłuchuje pod adresem `127.0.0.1`, chyba że ustawiono `--host`.
+
+Polecenie `run` uruchamia lokalny serwer proxy do debugowania, a następnie wykonuje `<cmd...>` (po `--`) z zastosowanymi zmiennymi środowiskowymi serwera proxy, we własnej sesji przechwytywania.
+
+Bezpośrednie przekazywanie ruchu do serwerów nadrzędnych przez serwer proxy do debugowania otwiera gniazda nadrzędne do celów diagnostycznych. Gdy aktywny jest tryb zarządzanego serwera proxy OpenClaw, bezpośrednie przekazywanie żądań proxy i tuneli CONNECT jest domyślnie wyłączone. Ustaw `OPENCLAW_DEBUG_PROXY_ALLOW_DIRECT_CONNECT_WITH_MANAGED_PROXY=1` wyłącznie na potrzeby zatwierdzonej diagnostyki lokalnej.
+
+Polecenie `coverage` wyświetla raport JSON (`summary` oraz `entries` dla poszczególnych transportów) wskazujący, które transporty są przechwytywane, obsługiwane wyłącznie przez serwer proxy lub nieobjęte przechwytywaniem.
+
+Polecenie `sessions` wyświetla listę ostatnich sesji przechwytywania (`--limit`, domyślnie 20).
+
+Polecenie `query --preset <name>` wykonuje wbudowane zapytanie dotyczące przechwyconego ruchu, opcjonalnie ograniczone do `--session <id>`. Dostępne ustawienia:
 
 - `double-sends`
 - `retry-storms`
@@ -81,16 +85,12 @@ Zobacz [Proxy sieciowe](/pl/security/network-proxy), aby uzyskać wskazówki dot
 - `missing-ack`
 - `error-bursts`
 
-## Uwagi
+Polecenie `blob --id <blobId>` wyświetla nieprzetworzoną zawartość przechwyconego obiektu binarnego ładunku.
 
-- `start` domyślnie używa `127.0.0.1`, chyba że ustawiono `--host`.
-- `run` uruchamia lokalne debugujące proxy, a następnie uruchamia polecenie po `--`.
-- Bezpośrednie przekazywanie upstream przez debugujące proxy otwiera gniazda upstream do diagnostyki. Gdy aktywny jest tryb zarządzanego proxy OpenClaw, bezpośrednie przekazywanie żądań proxy i tuneli CONNECT jest domyślnie wyłączone; ustaw `OPENCLAW_DEBUG_PROXY_ALLOW_DIRECT_CONNECT_WITH_MANAGED_PROXY=1` tylko dla zatwierdzonej lokalnej diagnostyki.
-- `validate` kończy działanie z kodem 1, gdy konfiguracja proxy lub sprawdzenia miejsc docelowych się nie powiodą.
-- Przechwycenia są lokalnymi danymi debugowania; użyj `openclaw proxy purge` po zakończeniu.
+Polecenie `purge` usuwa wszystkie metadane i obiekty binarne przechwyconego ruchu. Przechwycone dane służą do lokalnego debugowania; usuń je po zakończeniu pracy.
 
-## Powiązane
+## Powiązane materiały
 
 - [Dokumentacja CLI](/pl/cli)
-- [Proxy sieciowe](/pl/security/network-proxy)
-- [Zaufane uwierzytelnianie proxy](/pl/gateway/trusted-proxy-auth)
+- [Serwer proxy sieci](/pl/security/network-proxy)
+- [Uwierzytelnianie zaufanego serwera proxy](/pl/gateway/trusted-proxy-auth)

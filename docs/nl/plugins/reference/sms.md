@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Je installeert, configureert of controleert de sms-plugin
-summary: Twilio SMS-kanaal-Plugin voor OpenClaw-tekstberichten.
+    - U installeert, configureert of controleert de sms-Plugin
+summary: Twilio-sms-kanaalplugin voor OpenClaw-tekstberichten.
 title: Sms-Plugin
 x-i18n:
-    generated_at: "2026-06-27T18:04:06Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:13:54Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 2e0da43b962f03693599043ea61a6fedbc3e40d562c1c3374c840e952c8aa12d
@@ -15,7 +15,7 @@ x-i18n:
 
 # Sms-Plugin
 
-Twilio-SMS-kanaalplugin voor OpenClaw-tekstberichten.
+Twilio-sms-kanaalplugin voor OpenClaw-tekstberichten.
 
 ## Distributie
 

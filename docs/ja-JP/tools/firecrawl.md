@@ -1,15 +1,15 @@
 ---
 read_when:
-    - Firecrawl バックの Web 抽出を使いたい
-    - 鍵なしの Firecrawl web_fetch を使いたい
+    - Firecrawl を利用した Web 抽出を行いたい場合
+    - キー不要の Firecrawl `web_fetch` を使用する
     - 検索または上限の引き上げには Firecrawl API キーが必要です
-    - Firecrawl を `web_search` プロバイダーとして使いたい
-    - web_fetch にアンチボット抽出を使いたい場合
-summary: Firecrawl 検索、スクレイプ、および web_fetch フォールバック
+    - web_search プロバイダーとして Firecrawl を使用したい場合
+    - web_fetch のボット対策回避抽出が必要です
+summary: Firecrawl の検索、スクレイピング、web_fetch フォールバック
 title: Firecrawl
 x-i18n:
-    generated_at: "2026-07-05T11:53:52Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:46:47Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 2481548681f05e5e45cc1925ca1a261b60ddb2db430b09706fa85a346bcdc5a0
@@ -17,13 +17,13 @@ x-i18n:
     workflow: 16
 ---
 
-OpenClaw は **Firecrawl** を 3 つの方法で使用できます。
+OpenClaw は **Firecrawl** を3つの方法で使用できます。
 
 - `web_search` プロバイダーとして
-- 明示的な Plugin ツールとして: `firecrawl_search` と `firecrawl_scrape`
-- `web_fetch` のフォールバック抽出器として
+- 明示的な Plugin ツールとして：`firecrawl_search` と `firecrawl_scrape`
+- `web_fetch` のフォールバック抽出機能として
 
-これは、Bot 回避とキャッシュをサポートするホスト型の抽出/検索サービスです。JS の多いサイトや、通常の HTTP fetch をブロックするページで役立ちます。
+これは、ボット回避とキャッシュに対応するホステッド型の抽出／検索サービスです。JavaScript を多用するサイトや、通常の HTTP フェッチをブロックするページで役立ちます。
 
 ## Plugin のインストール
 
@@ -34,9 +34,9 @@ openclaw plugins install @openclaw/firecrawl-plugin
 openclaw gateway restart
 ```
 
-## キーなし web_fetch と API キー
+## API キーなしの web_fetch と API キー
 
-明示的に選択されたホスト型 Firecrawl の `web_fetch` フォールバックは、API キーなしのスターターアクセスをサポートします。より高い制限が必要な場合は、Gateway 環境に `FIRECRAWL_API_KEY` を追加するか、設定してください。Firecrawl `web_search` と `firecrawl_scrape` には API キーが必要です。
+明示的に選択したホステッド Firecrawl の `web_fetch` フォールバックでは、API キーなしでスターターアクセスを利用できます。より高い上限が必要な場合は、Gateway 環境に `FIRECRAWL_API_KEY` を追加するか、設定で指定します。Firecrawl の `web_search` と `firecrawl_scrape` には API キーが必要です。
 
 ## Firecrawl 検索の設定
 
@@ -65,23 +65,23 @@ openclaw gateway restart
 }
 ```
 
-注:
+注：
 
 - オンボーディングまたは `openclaw configure --section web` で Firecrawl を選択すると、インストール済みの Firecrawl Plugin が自動的に有効になります。
-- Firecrawl を使用する `web_search` は `query` と `count` をサポートします。
-- `sources`、`categories`、結果のスクレイピングなど、Firecrawl 固有の制御には `firecrawl_search` を使用してください。
-- `baseUrl` のデフォルトは `https://api.firecrawl.dev` のホスト型 Firecrawl です。セルフホストの上書きはプライベート/内部エンドポイントでのみ許可されます。HTTP はそれらのプライベートターゲットでのみ受け入れられます。
-- `FIRECRAWL_BASE_URL` は、Firecrawl の検索およびスクレイプのベース URL に対する共有環境フォールバックです。
-- Firecrawl 検索リクエストのデフォルトタイムアウトは 30 秒です。`firecrawl_search` の `timeoutSeconds` パラメーターで呼び出しごとに上書きできます。
+- Firecrawl を使用する `web_search` は、`query` と `count` に対応しています。
+- `sources`、`categories`、検索結果のスクレイピングなど、Firecrawl 固有の制御には `firecrawl_search` を使用します。
+- `baseUrl` のデフォルトは、`https://api.firecrawl.dev` のホステッド Firecrawl です。セルフホストのオーバーライドはプライベート／内部エンドポイントにのみ許可され、HTTP もそれらのプライベートな接続先にのみ使用できます。
+- `FIRECRAWL_BASE_URL` は、Firecrawl の検索およびスクレイピングのベース URL に共通して使用される環境変数のフォールバックです。
+- Firecrawl の検索リクエストのデフォルトタイムアウトは30秒です。`firecrawl_search` の `timeoutSeconds` パラメーターを指定すると、呼び出しごとに上書きできます。
 
-## Firecrawl web_fetch フォールバックの設定
+## Firecrawl の web_fetch フォールバックの設定
 
 ```json5
 {
   tools: {
     web: {
       fetch: {
-        provider: "firecrawl", // explicit selection enables keyless fallback
+        provider: "firecrawl", // 明示的に選択すると、API キーなしのフォールバックが有効になります
       },
     },
   },
@@ -103,30 +103,30 @@ openclaw gateway restart
 }
 ```
 
-注:
+注：
 
-- 明示的に選択された Firecrawl の `web_fetch` フォールバックは、API キーなしで動作します。設定されている場合、OpenClaw はより高い制限のために `plugins.entries.firecrawl.config.webFetch.apiKey` または `FIRECRAWL_API_KEY` を送信します。
-- オンボーディング中または `openclaw configure --section web` で Firecrawl を選択すると、Plugin が有効になり、別の fetch プロバイダーがすでに設定されていない限り、`web_fetch` に Firecrawl が選択されます。
+- 明示的に選択した Firecrawl の `web_fetch` フォールバックは、API キーなしで動作します。設定されている場合、OpenClaw はより高い上限を利用するために `plugins.entries.firecrawl.config.webFetch.apiKey` または `FIRECRAWL_API_KEY` を送信します。
+- オンボーディング中または `openclaw configure --section web` で Firecrawl を選択すると、Plugin が有効になり、別のフェッチプロバイダーがすでに設定されていない限り、`web_fetch` に Firecrawl が選択されます。
 - `firecrawl_scrape` には API キーが必要です。
-- `maxAgeMs` は、キャッシュ済み結果をどれだけ古くできるかを制御します (ms)。デフォルトは 172,800,000 ms (2 日) です。
-- `onlyMainContent` のデフォルトは `true` です。`timeoutSeconds` のデフォルトは 60 です。
-- 従来の `tools.web.fetch.firecrawl.*` と `tools.web.search.firecrawl.*` 設定は、`openclaw doctor --fix` によって自動移行されます。
-- Firecrawl のスクレイプ/ベース URL の上書きは、検索と同じホスト型/プライベートのルールに従います。公開ホスト型トラフィックは `https://api.firecrawl.dev` を使用します。セルフホストの上書きはプライベート/内部エンドポイントに解決される必要があります。
-- `firecrawl_scrape` は、明らかなプライベート、ループバック、メタデータ、および非 HTTP(S) のターゲット URL を、Firecrawl に転送する前に拒否します。これは、明示的な Firecrawl スクレイプ呼び出しに対する `web_fetch` のターゲット安全性契約と一致します。
+- `maxAgeMs` は、キャッシュされた結果をどの程度古くまで使用できるかをミリ秒単位で制御します。デフォルトは 172,800,000 ミリ秒（2日間）です。
+- `onlyMainContent` のデフォルトは `true`、`timeoutSeconds` のデフォルトは 60 です。
+- 旧形式の `tools.web.fetch.firecrawl.*` および `tools.web.search.firecrawl.*` の設定は、`openclaw doctor --fix` によって自動的に移行されます。
+- Firecrawl のスクレイピング／ベース URL のオーバーライドには、検索と同じホステッド／プライベート規則が適用されます。公開ホステッドトラフィックでは `https://api.firecrawl.dev` を使用し、セルフホストのオーバーライドはプライベート／内部エンドポイントに解決される必要があります。
+- `firecrawl_scrape` は、Firecrawl に転送する前に、明らかなプライベート、ループバック、メタデータ、および HTTP(S) 以外の接続先 URL を拒否します。これは、明示的な Firecrawl スクレイピング呼び出しに対する `web_fetch` の接続先安全性契約と一致します。
 
 `firecrawl_scrape` は、必須の API キーを含め、同じ `plugins.entries.firecrawl.config.webFetch.*` 設定と環境変数を再利用します。
 
 ### セルフホスト Firecrawl
 
-Firecrawl を自分で実行する場合は、`plugins.entries.firecrawl.config.webSearch.baseUrl`、`plugins.entries.firecrawl.config.webFetch.baseUrl`、または `FIRECRAWL_BASE_URL` を設定します。OpenClaw は、ループバック、プライベートネットワーク、`.local`、`.internal`、または `.localhost` ターゲットに対してのみ `http://` を受け入れます。Firecrawl API キーが任意のエンドポイントへ誤って送信されないように、公開カスタムホストは拒否されます。
+Firecrawl を自分で実行する場合は、`plugins.entries.firecrawl.config.webSearch.baseUrl`、`plugins.entries.firecrawl.config.webFetch.baseUrl`、または `FIRECRAWL_BASE_URL` を設定します。OpenClaw は、ループバック、プライベートネットワーク、`.local`、`.internal`、または `.localhost` の接続先に限り、`http://` を許可します。Firecrawl の API キーが誤って任意のエンドポイントへ送信されないよう、公開カスタムホストは拒否されます。
 
 ## Firecrawl Plugin ツール
 
 ### `firecrawl_search`
 
-汎用の `web_search` ではなく Firecrawl 固有の検索制御が必要な場合に使用します。
+汎用の `web_search` ではなく、Firecrawl 固有の検索制御を使用する場合に使用します。
 
-パラメーター:
+パラメーター：
 
 - `query`
 - `count`
@@ -137,9 +137,9 @@ Firecrawl を自分で実行する場合は、`plugins.entries.firecrawl.config.
 
 ### `firecrawl_scrape`
 
-通常の `web_fetch` が弱い、JS の多いページや Bot 保護されたページに使用します。
+通常の `web_fetch` では十分に処理できない、JavaScript を多用するページやボット対策されたページに使用します。
 
-パラメーター:
+パラメーター：
 
 - `url`
 - `extractMode`
@@ -150,24 +150,24 @@ Firecrawl を自分で実行する場合は、`plugins.entries.firecrawl.config.
 - `storeInCache`
 - `timeoutSeconds`
 
-## ステルス / Bot 回避
+## ステルス／ボット回避
 
-`firecrawl_scrape` と `web_fetch` の Firecrawl フォールバックは、呼び出し元がこれらのパラメーターを上書きしない限り、デフォルトで `proxy: "auto"` と `storeInCache: true` を使用します。`firecrawl_search` と `web_search` の Firecrawl プロバイダーには `proxy`/`storeInCache` 制御はありません。ステルスプロキシモードはスクレイプ/fetch リクエストにのみ適用されます。
+呼び出し元がこれらのパラメーターを上書きしない限り、`firecrawl_scrape` と `web_fetch` の Firecrawl フォールバックでは、デフォルトで `proxy: "auto"` と `storeInCache: true` が使用されます。`firecrawl_search` と `web_search` の Firecrawl プロバイダーには `proxy`／`storeInCache` の制御はありません。ステルスプロキシモードは、スクレイピング／フェッチリクエストにのみ適用されます。
 
-Firecrawl の `proxy` モードは Bot 回避 (`basic`、`stealth`、または `auto`) を制御します。`auto` は、基本的な試行が失敗した場合にステルスプロキシで再試行します。そのため、basic のみのスクレイピングよりも多くのクレジットを使用する場合があります。
+Firecrawl の `proxy` モードは、ボット回避を制御します（`basic`、`stealth`、または `auto`）。`auto` は基本的な試行が失敗するとステルスプロキシで再試行するため、基本スクレイピングのみの場合より多くのクレジットを使用する可能性があります。
 
-## `web_fetch` が Firecrawl を使用する方法
+## `web_fetch` での Firecrawl の使用方法
 
-`web_fetch` の抽出順序:
+`web_fetch` の抽出順序：
 
-1. Readability (ローカル)
-2. Firecrawl などの設定済み fetch プロバイダー (選択されている場合、または設定済み認証情報から自動検出された場合)
-3. 基本的な HTML クリーンアップ (最後のフォールバック)
+1. Readability（ローカル）
+2. Firecrawl など、設定済みのフェッチプロバイダー（選択されている場合、または設定済みの認証情報から自動検出された場合）
+3. 基本的な HTML クリーンアップ（最後のフォールバック）
 
-選択ノブは `tools.web.fetch.provider` です。省略すると、OpenClaw は利用可能な認証情報から最初に準備完了の web-fetch プロバイダーを自動検出します。公式 Firecrawl Plugin がそのフォールバックを提供します。
+選択に使用する設定は `tools.web.fetch.provider` です。省略した場合、OpenClaw は利用可能な認証情報から、準備が整っている最初の Web フェッチプロバイダーを自動検出します。公式 Firecrawl Plugin がそのフォールバックを提供します。
 
-## 関連
+## 関連項目
 
-- [Web Search の概要](/ja-JP/tools/web) -- すべてのプロバイダーと自動検出
-- [Web Fetch](/ja-JP/tools/web-fetch) -- Firecrawl フォールバック付きの web_fetch ツール
-- [Tavily](/ja-JP/tools/tavily) -- 検索 + 抽出ツール
+- [Web 検索の概要](/ja-JP/tools/web) -- すべてのプロバイダーと自動検出
+- [Web フェッチ](/ja-JP/tools/web-fetch) -- Firecrawl フォールバックを備えた `web_fetch` ツール
+- [Tavily](/ja-JP/tools/tavily) -- 検索＋抽出ツール

@@ -1,17 +1,17 @@
 ---
 read_when:
-    - คุณพบ `openclaw flows` ในเอกสารหรือบันทึกประจำรุ่นเก่า
-    - คุณต้องการข้อมูลอ้างอิงฉบับย่อสำหรับการตรวจสอบ TaskFlow
-summary: 'เปลี่ยนเส้นทาง: คำสั่ง flow อยู่ภายใต้ `openclaw tasks flow`'
-title: โฟลว์ (เปลี่ยนเส้นทาง)
+    - คุณพบ `openclaw flows` ในเอกสารเก่าหรือบันทึกประจำรุ่น
+    - คุณต้องการเอกสารอ้างอิงสำหรับตรวจสอบ TaskFlow อย่างรวดเร็ว
+summary: 'การเปลี่ยนเส้นทาง: คำสั่งโฟลว์อยู่ภายใต้ `openclaw tasks flow`'
+title: โฟลว์ (การเปลี่ยนเส้นทาง)
 x-i18n:
-    generated_at: "2026-05-10T19:29:40Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:53:47Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b41e8a911cfbba32f3a1af059df34f73443ea7649bce46a5926cdf26c8399c12
+    source_hash: 05d27154190d6087649612d81ce15f0cbc9459aa89ab22211582c18f4fc2943c
     source_path: cli/flows.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw tasks flow`
@@ -26,19 +26,17 @@ openclaw tasks flow show   <lookup> [--json]
 openclaw tasks flow cancel <lookup>
 ```
 
-| คำสั่งย่อย | คำอธิบาย                    | อาร์กิวเมนต์ / ตัวเลือก                                                                 |
-| ---------- | -------------------------- | ------------------------------------------------------------------------------------- |
-| `list`     | แสดงรายการ TaskFlow ที่ติดตามอยู่ | เอาต์พุตที่เครื่องอ่านได้ `--json`; ตัวกรอง `--status <name>` (ดูค่าสถานะด้านล่าง) |
-| `show`     | แสดง TaskFlow หนึ่งรายการ         | id ของ flow หรือคีย์เจ้าของ `<lookup>`; เอาต์พุตที่เครื่องอ่านได้ `--json`          |
-| `cancel`   | ยกเลิก TaskFlow ที่กำลังทำงานอยู่ | id ของ flow หรือคีย์เจ้าของ `<lookup>`                                                |
+| คำสั่งย่อย | คำอธิบาย                         | อาร์กิวเมนต์ / ตัวเลือก                                                                                  |
+| ---------- | -------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `list`     | แสดงรายการ TaskFlow ที่ติดตามอยู่ | `--json` แสดงผลในรูปแบบที่เครื่องอ่านได้; ตัวกรอง `--status <name>` (ดูค่าสถานะด้านล่าง)                 |
+| `show`     | แสดง TaskFlow หนึ่งรายการ         | `<lookup>` คือรหัสโฟลว์หรือคีย์เจ้าของ; `--json` แสดงผลในรูปแบบที่เครื่องอ่านได้                         |
+| `cancel`   | ยกเลิก TaskFlow ที่กำลังทำงาน     | `<lookup>` คือรหัสโฟลว์หรือคีย์เจ้าของ                                                                  |
 
-`<lookup>` ยอมรับได้ทั้ง id ของ flow (ที่ส่งกลับโดย `list` / `show`) หรือคีย์เจ้าของของ flow (ตัวระบุที่เสถียรซึ่งระบบย่อยที่เป็นเจ้าของใช้เพื่อติดตาม flow)
+`<lookup>` รับได้ทั้งรหัสโฟลว์ (ที่ส่งคืนโดย `list` / `show`) หรือคีย์เจ้าของของโฟลว์ (ตัวระบุแบบคงที่ที่ระบบย่อยซึ่งเป็นเจ้าของใช้ติดตามโฟลว์)
 
 ### ค่าตัวกรองสถานะ
 
-`--status` บน `list` ยอมรับค่าใดค่าหนึ่งต่อไปนี้:
-
-`queued`, `running`, `waiting`, `blocked`, `succeeded`, `failed`, `cancelled`, `lost`
+`--status` ใน `list` รับค่าใดค่าหนึ่งต่อไปนี้: `queued`, `running`, `waiting`, `blocked`, `succeeded`, `failed`, `cancelled`, `lost`
 
 ## ตัวอย่าง
 
@@ -51,9 +49,9 @@ openclaw tasks flow show flow_abc123 --json
 openclaw tasks flow cancel flow_abc123
 ```
 
-สำหรับแนวคิดและการเขียน TaskFlow แบบเต็ม โปรดดู [TaskFlow](/th/automation/taskflow) สำหรับคำสั่งแม่ `tasks` โปรดดู [เอกสารอ้างอิง CLI ของ tasks](/th/cli/tasks)
+สำหรับแนวคิดและการเขียน TaskFlow โปรดดู [TaskFlow](/th/automation/taskflow) สำหรับคำสั่งแม่ `tasks` โปรดดู [เอกสารอ้างอิง CLI ของ tasks](/th/cli/tasks)
 
-## ที่เกี่ยวข้อง
+## เนื้อหาที่เกี่ยวข้อง
 
 - [เอกสารอ้างอิง CLI](/th/cli)
 - [ระบบอัตโนมัติ](/th/automation)

@@ -1,50 +1,50 @@
 ---
 read_when:
     - Menambahkan atau mengubah integrasi CLI eksternal
-    - Menelusuri kesalahan adaptor RPC (signal-cli, imsg)
-summary: Adapter RPC untuk CLI eksternal (signal-cli, imsg) dan pola Gateway
-title: Adapter RPC
+    - Men-debug adaptor RPC (signal-cli, imsg)
+summary: Adaptor RPC untuk CLI eksternal (signal-cli, imsg) dan pola Gateway
+title: Adaptor RPC
 x-i18n:
-    generated_at: "2026-05-10T19:51:49Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:37:22Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 63556f140bee55821fa0a09ff9808e163728049f8db4c58f7bb4ceca6e1cac1a
+    source_hash: 6ddb3fb741c90fe7b01ba35376b71865584b1e507cf610705392452790fb76f5
     source_path: reference/rpc.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw mengintegrasikan CLI eksternal melalui JSON-RPC. Dua pola digunakan saat ini.
+OpenClaw mengintegrasikan CLI eksternal melalui JSON-RPC. Saat ini, ada dua pola yang digunakan.
 
 ## Pola A: daemon HTTP (signal-cli)
 
 - `signal-cli` berjalan sebagai daemon dengan JSON-RPC melalui HTTP.
-- Aliran peristiwa adalah SSE (`/api/v1/events`).
-- Probe kesehatan: `/api/v1/check`.
-- OpenClaw mengelola siklus hidup saat `channels.signal.autoStart=true`.
+- Aliran peristiwa menggunakan SSE (`/api/v1/events`).
+- Pemeriksaan kesehatan: `/api/v1/check`.
+- OpenClaw mengelola siklus hidup ketika `channels.signal.autoStart=true`.
 
 Lihat [Signal](/id/channels/signal) untuk penyiapan dan endpoint.
 
 ## Pola B: proses anak stdio (imsg)
 
 - OpenClaw menjalankan `imsg rpc` sebagai proses anak untuk [iMessage](/id/channels/imessage).
-- JSON-RPC dibatasi baris melalui stdin/stdout (satu objek JSON per baris).
-- Tidak ada port TCP, tidak diperlukan daemon.
+- JSON-RPC dipisahkan per baris melalui stdin/stdout (satu objek JSON per baris).
+- Tidak ada port TCP dan tidak memerlukan daemon.
 
 Metode inti yang digunakan:
 
 - `watch.subscribe` → notifikasi (`method: "message"`)
 - `watch.unsubscribe`
 - `send`
-- `chats.list` (probe/diagnostik)
+- `chats.list` (pemeriksaan/diagnostik)
 
-Lihat [iMessage](/id/channels/imessage) untuk penyiapan legacy dan pengalamatan (`chat_id` lebih disukai).
+Lihat [iMessage](/id/channels/imessage) untuk penyiapan dan pengalamatan (`chat_id` lebih disarankan daripada string tampilan).
 
-## Panduan adapter
+## Pedoman adaptor
 
-- Gateway mengelola proses (start/stop terkait dengan siklus hidup provider).
-- Jaga agar klien RPC tetap tangguh: timeout, mulai ulang saat keluar.
-- Lebih pilih ID stabil (misalnya, `chat_id`) daripada string tampilan.
+- Gateway mengelola proses (mulai/berhenti terkait dengan siklus hidup penyedia).
+- Pastikan klien RPC tetap tangguh: gunakan batas waktu dan mulai ulang saat proses berhenti.
+- Utamakan ID stabil (misalnya, `chat_id`) daripada string tampilan.
 
 ## Terkait
 

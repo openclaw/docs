@@ -1,27 +1,26 @@
 ---
 read_when:
     - Bạn muốn kết nối OpenClaw với QQ
-    - Bạn cần thiết lập thông tin xác thực QQ Bot
-    - Bạn muốn hỗ trợ trò chuyện nhóm hoặc riêng tư cho QQ Bot
-summary: Thiết lập, cấu hình và cách sử dụng QQ Bot
-title: Bot QQ
+    - Bạn cần thiết lập thông tin xác thực cho QQ Bot
+    - Bạn muốn hỗ trợ trò chuyện nhóm hoặc riêng tư với QQ Bot
+summary: Thiết lập, cấu hình và sử dụng QQ Bot
+title: bot QQ
 x-i18n:
-    generated_at: "2026-06-27T17:11:50Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:45:23Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: eb452e331ce196d1517af2f87a5187cb4b2cb53aee2bbff47cbdf73e2b3e7dee
+    source_hash: e654d1a3e501ef825e857cf0fdd780401c6dc0012d729db0aa1ae72a8a6871ed
     source_path: channels/qqbot.md
     workflow: 16
 ---
 
-QQ Bot kết nối với OpenClaw qua QQ Bot API chính thức (WebSocket gateway). Plugin hỗ trợ trò chuyện riêng C2C, @messages trong nhóm, và tin nhắn kênh guild với đa phương tiện phong phú (hình ảnh, thoại, video, tệp).
+QQ Bot kết nối với OpenClaw qua API QQ Bot chính thức (Gateway WebSocket).
+Trò chuyện riêng C2C và lượt nhắc `@` trong nhóm là các loại trò chuyện chính, hỗ trợ nội dung đa phương tiện phong phú (hình ảnh, giọng nói, video, tệp). Tin nhắn kênh guild chỉ hỗ trợ văn bản và hình ảnh từ URL từ xa; giọng nói, video, tải tệp lên và hình ảnh cục bộ/Base64 không khả dụng trong các kênh guild. Không hỗ trợ cảm xúc và luồng thảo luận ở bất kỳ đâu.
 
-Trạng thái: Plugin có thể tải xuống. Tin nhắn trực tiếp, trò chuyện nhóm, kênh guild và phương tiện được hỗ trợ. Reaction và thread không được hỗ trợ.
+Trạng thái: plugin chính thức có thể tải xuống.
 
 ## Cài đặt
-
-Cài đặt QQ Bot trước khi thiết lập:
 
 ```bash
 openclaw plugins install @openclaw/qqbot
@@ -29,12 +28,13 @@ openclaw plugins install @openclaw/qqbot
 
 ## Thiết lập
 
-1. Truy cập [QQ Open Platform](https://q.qq.com/) và quét mã QR bằng QQ trên điện thoại của bạn để đăng ký / đăng nhập.
-2. Nhấp vào **Create Bot** để tạo bot QQ mới.
+1. Truy cập [Nền tảng mở QQ](https://q.qq.com/) và dùng ứng dụng QQ trên điện thoại quét mã QR để đăng ký / đăng nhập.
+2. Nhấp vào **Create Bot** để tạo QQ bot mới.
 3. Tìm **AppID** và **AppSecret** trên trang cài đặt của bot rồi sao chép chúng.
 
-> AppSecret không được lưu dưới dạng văn bản thuần túy — nếu bạn rời khỏi trang mà không lưu,
-> bạn sẽ phải tạo lại một AppSecret mới.
+<Note>
+AppSecret không được lưu dưới dạng văn bản thuần túy. Nếu rời khỏi trang mà không lưu, bạn sẽ phải tạo lại một AppSecret mới.
+</Note>
 
 4. Thêm kênh:
 
@@ -44,12 +44,13 @@ openclaw channels add --channel qqbot --token "AppID:AppSecret"
 
 5. Khởi động lại Gateway.
 
-Các đường dẫn thiết lập tương tác:
+Thiết lập tương tác:
 
 ```bash
 openclaw channels add
-openclaw configure --section channels
 ```
+
+Trình hướng dẫn cũng cung cấp phương thức liên kết bằng mã QR thay cho việc nhập AppID/AppSecret theo cách thủ công: quét mã bằng ứng dụng điện thoại được liên kết với QQ Bot đích để hoàn tất liên kết. OpenClaw lưu thông tin xác thực được trả về trong phạm vi cấu hình của tài khoản.
 
 ## Cấu hình
 
@@ -67,12 +68,12 @@ Cấu hình tối thiểu:
 }
 ```
 
-Biến môi trường cho tài khoản mặc định:
+Các biến môi trường của tài khoản mặc định (chỉ tài khoản cấp cao nhất):
 
 - `QQBOT_APP_ID`
 - `QQBOT_CLIENT_SECRET`
 
-AppSecret dựa trên tệp:
+AppSecret được lưu trong tệp:
 
 ```json5
 {
@@ -86,7 +87,7 @@ AppSecret dựa trên tệp:
 }
 ```
 
-AppSecret Env SecretRef:
+AppSecret SecretRef từ môi trường:
 
 ```json5
 {
@@ -100,17 +101,20 @@ AppSecret Env SecretRef:
 }
 ```
 
-Ghi chú:
+Lưu ý:
 
-- Fallback môi trường chỉ áp dụng cho tài khoản QQ Bot mặc định.
-- `openclaw channels add --channel qqbot --token-file ...` chỉ cung cấp AppSecret; AppID phải đã được đặt trong cấu hình hoặc `QQBOT_APP_ID`.
-- `clientSecret` cũng chấp nhận đầu vào SecretRef, không chỉ chuỗi văn bản thuần túy.
-- Các chuỗi đánh dấu `secretref:/...` cũ không phải là giá trị `clientSecret` hợp lệ;
-  hãy dùng các đối tượng SecretRef có cấu trúc như ví dụ ở trên.
+- `openclaw channels add --channel qqbot --token-file ...` chỉ đặt AppSecret; `appId` phải được đặt sẵn trong cấu hình hoặc `QQBOT_APP_ID`.
+- `clientSecret` chấp nhận chuỗi văn bản thuần túy, đường dẫn tệp (`clientSecretFile`) hoặc đối tượng SecretRef có cấu trúc.
+- Các chuỗi đánh dấu `secretref:...` / `secretref-env:...` cũ bị từ chối đối với `clientSecret`; hãy dùng đối tượng SecretRef có cấu trúc thay thế.
+
+### Chính sách truy cập
+
+- `allowFrom` / `groupAllowFrom` kiểm soát ai có thể trò chuyện với bot trong ngữ cảnh C2C / nhóm. `dmPolicy` / `groupPolicy` (`open` | `allowlist` | `disabled`) kiểm soát chế độ thực thi. `dmPolicy` mặc định là `allowlist` khi `allowFrom` có một mục cụ thể (không phải ký tự đại diện), nếu không thì là `open`. `groupPolicy` mặc định là `allowlist` khi `groupAllowFrom` hoặc `allowFrom` có một mục cụ thể, nếu không thì là `open`.
+- Các lệnh dấu gạch chéo có "Xác thực: danh sách cho phép" yêu cầu một mục tường minh không phải ký tự đại diện trong `allowFrom` (hoặc `groupAllowFrom` đối với lệnh gọi từ nhóm), bất kể `dmPolicy` / `groupPolicy` — xem [Lệnh dấu gạch chéo](#slash-commands).
 
 ### Thiết lập nhiều tài khoản
 
-Chạy nhiều bot QQ trong một phiên bản OpenClaw duy nhất:
+Chạy nhiều QQ bot trong một phiên bản OpenClaw duy nhất:
 
 ```json5
 {
@@ -131,7 +135,7 @@ Chạy nhiều bot QQ trong một phiên bản OpenClaw duy nhất:
 }
 ```
 
-Mỗi tài khoản khởi chạy kết nối WebSocket riêng và duy trì bộ nhớ đệm token độc lập (được cô lập theo `appId`).
+Mỗi tài khoản sở hữu một kết nối WebSocket, máy khách API và bộ nhớ đệm token biệt lập, được định danh bằng `appId`. Các dòng nhật ký được gắn thẻ bằng mã định danh của tài khoản sở hữu để dữ liệu chẩn đoán vẫn có thể tách biệt khi bạn chạy nhiều bot trong một Gateway.
 
 Thêm bot thứ hai qua CLI:
 
@@ -141,7 +145,7 @@ openclaw channels add --channel qqbot --account bot2 --token "222222222:secret-o
 
 ### Trò chuyện nhóm
 
-Hỗ trợ trò chuyện nhóm của QQ Bot dùng OpenID nhóm QQ, không dùng tên hiển thị. Thêm bot vào một nhóm, rồi nhắc đến nó hoặc cấu hình nhóm để chạy mà không cần nhắc đến.
+Tính năng hỗ trợ nhóm sử dụng OpenID của nhóm QQ, không dùng tên hiển thị. Thêm bot vào một nhóm, sau đó nhắc đến bot hoặc cấu hình nhóm để hoạt động mà không cần lượt nhắc.
 
 ```json5
 {
@@ -170,46 +174,41 @@ Hỗ trợ trò chuyện nhóm của QQ Bot dùng OpenID nhóm QQ, không dùng 
 }
 ```
 
-`groups["*"]` đặt mặc định cho mọi nhóm, và một mục
-`groups.GROUP_OPENID` cụ thể sẽ ghi đè các mặc định đó cho một nhóm. Cài đặt nhóm bao gồm:
+`groups["*"]` đặt giá trị mặc định cho mọi nhóm; một mục `groups.GROUP_OPENID` cụ thể sẽ ghi đè các giá trị mặc định đó cho một nhóm. Cài đặt nhóm:
 
-- `requireMention`: yêu cầu @mention trước khi bot trả lời. Mặc định: `true`.
-- `commandLevel`: kiểm soát những lệnh slash tích hợp nào có thể chạy trong nhóm.
-  Mặc định: `all`, giữ nguyên hành vi nhóm QQBot đã có trước đó khi bỏ qua cài đặt này.
-- `ignoreOtherMentions`: bỏ qua tin nhắn nhắc đến người khác nhưng không nhắc đến bot.
-- `historyLimit`: giữ các tin nhắn nhóm gần đây không có nhắc đến làm ngữ cảnh cho lượt được nhắc đến tiếp theo. Đặt `0` để tắt.
-- `tools`: cho phép/từ chối công cụ cho toàn bộ nhóm.
-- `toolsBySender`: các ghi đè công cụ nhóm theo từng người gửi; xem [Nhóm](/vi/channels/groups#groupchannel-tool-restrictions-optional).
-- `name`: nhãn thân thiện dùng trong log và ngữ cảnh nhóm.
-- `prompt`: prompt hành vi theo từng nhóm được thêm vào ngữ cảnh agent.
+| Trường                | Mặc định          | Mô tả                                                                                                              |
+| --------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `requireMention`      | `true`            | Yêu cầu một lượt nhắc `@` trước khi bot phản hồi.                                                                  |
+| `commandLevel`        | `all`             | Các lệnh dấu gạch chéo tích hợp nào có thể chạy trong nhóm (xem bên dưới).                                         |
+| `ignoreOtherMentions` | `false`           | Loại bỏ các tin nhắn nhắc đến người khác nhưng không nhắc đến bot.                                                 |
+| `historyLimit`        | `50`              | Các tin nhắn gần đây không nhắc đến bot được giữ làm ngữ cảnh cho lượt có nhắc tiếp theo. `0` sẽ tắt lịch sử.      |
+| `tools`               | —                 | Cho phép/từ chối công cụ cho toàn bộ nhóm.                                                                         |
+| `toolsBySender`       | —                 | Ghi đè công cụ theo từng người gửi; xem [Nhóm](/vi/channels/groups#groupchannel-tool-restrictions-optional).          |
+| `name`                | tiền tố openid    | Nhãn thân thiện được dùng trong nhật ký và ngữ cảnh nhóm.                                                          |
+| `prompt`              | mặc định tích hợp | Lời nhắc hành vi theo từng nhóm được nối thêm vào ngữ cảnh của tác nhân.                                           |
 
 `commandLevel` chấp nhận:
 
-- `all`: giữ các lệnh tích hợp được nhận diện ở trạng thái khả dụng như trước. Một số lệnh có thể
-  vẫn bị ẩn khỏi menu, nhưng người dùng được ủy quyền vẫn có thể chạy chúng trong nhóm.
-- `safety`: cho phép các lệnh cộng tác phổ biến như `/help`, `/btw`, và
-  `/stop`; yêu cầu người dùng chạy các lệnh nhạy cảm như `/config`, `/tools`, và
-  `/bash` trong trò chuyện riêng.
-- `strict`: chỉ cho phép các điều khiển phiên nhóm cần thiết cho hoạt động nhóm nghiêm ngặt. `/stop` vẫn giữ tính khẩn cấp để người gửi được ủy quyền có thể ngắt một lần chạy đang hoạt động.
+| Cấp độ  | Hành vi                                                                                                                                                                  |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `all`   | Các lệnh tích hợp hiện có vẫn khả dụng. Một số lệnh vẫn bị ẩn khỏi trình đơn nhưng người dùng được ủy quyền vẫn có thể chạy chúng trong nhóm.                             |
+| `safety` | `/help`, `/btw`, `/stop` vẫn hiển thị trong nhóm; các lệnh nhạy cảm (`/config`, `/tools`, `/bash`, v.v.) phải được chạy trong trò chuyện riêng.                          |
+| `strict` | Chỉ cho phép các điều khiển phiên nhóm cần thiết cho chế độ vận hành nghiêm ngặt. `/stop` vẫn hoạt động để người gửi được ủy quyền có thể ngắt một lượt chạy đang hoạt động. |
 
-Các mục `toolPolicy` cũ của QQBot đã bị ngừng dùng. Chạy `openclaw doctor --fix` để di chuyển chúng sang `tools`.
+Các mục `toolPolicy` cũ của QQBot đã ngừng sử dụng. Chạy `openclaw doctor --fix` để di chuyển chúng sang `tools`.
 
-Các chế độ kích hoạt là `mention` và `always`. `requireMention: true` ánh xạ sang
-`mention`; `requireMention: false` ánh xạ sang `always`. Ghi đè kích hoạt ở cấp phiên,
-nếu có, sẽ thắng cấu hình.
+Các chế độ kích hoạt là `mention` và `always`. `requireMention: true` ánh xạ tới `mention`; `requireMention: false` ánh xạ tới `always`. Nếu có ghi đè kích hoạt ở cấp phiên, ghi đè đó sẽ được ưu tiên hơn cấu hình.
 
-Hàng đợi đầu vào là theo từng peer. Peer nhóm có giới hạn hàng đợi lớn hơn, giữ tin nhắn
-của con người trước các đoạn trò chuyện do bot tạo khi đầy, và gộp các đợt tin nhắn
-nhóm bình thường thành một lượt có gán nguồn. Lệnh slash vẫn chạy lần lượt từng lệnh.
+Hàng đợi tin nhắn đến được duy trì theo từng đối tượng ngang hàng. Đối tượng ngang hàng trong nhóm có giới hạn hàng đợi lớn hơn (50 so với 20 đối với đối tượng trực tiếp), loại bỏ tin nhắn do bot tạo trước tin nhắn của con người khi đầy và hợp nhất các đợt tin nhắn nhóm thông thường thành một lượt có ghi nhận nguồn gửi. Các lệnh dấu gạch chéo chạy lần lượt, độc lập với mọi lô hợp nhất.
 
-### Thoại (STT / TTS)
+### Giọng nói (STT / TTS)
 
-STT và TTS hỗ trợ cấu hình hai cấp với fallback ưu tiên:
+STT và TTS hỗ trợ cấu hình hai cấp với cơ chế dự phòng theo mức ưu tiên:
 
-| Cài đặt | Riêng cho Plugin                                        | Fallback framework            |
-| ------- | -------------------------------------------------------- | ----------------------------- |
-| STT     | `channels.qqbot.stt`                                     | `tools.media.audio.models[0]` |
-| TTS     | `channels.qqbot.tts`, `channels.qqbot.accounts.<id>.tts` | `messages.tts`                |
+| Cài đặt | Dành riêng cho plugin                                    | Dự phòng của framework         |
+| ------- | -------------------------------------------------------- | ------------------------------ |
+| STT     | `channels.qqbot.stt`                                     | `tools.media.audio.models[0]`  |
+| TTS     | `channels.qqbot.tts`, `channels.qqbot.accounts.<id>.tts` | `messages.tts`                 |
 
 ```json5
 {
@@ -238,16 +237,13 @@ STT và TTS hỗ trợ cấu hình hai cấp với fallback ưu tiên:
 }
 ```
 
-Đặt `enabled: false` trên một trong hai để tắt.
-Các ghi đè TTS cấp tài khoản dùng cùng cấu trúc với `messages.tts` và deep-merge
-lên trên cấu hình TTS cấp kênh/toàn cục.
+Đặt `enabled: false` trên một trong hai để tắt. Các ghi đè TTS cấp tài khoản sử dụng cùng cấu trúc với `messages.tts` và được hợp nhất sâu lên trên cấu hình TTS của kênh/toàn cục.
 
-Tệp đính kèm thoại QQ đầu vào được hiển thị cho agent dưới dạng metadata phương tiện âm thanh trong khi
-giữ các tệp thoại thô khỏi `MediaPaths` chung. Các phản hồi văn bản thuần túy `[[audio_as_voice]]`
-sẽ tổng hợp TTS và gửi tin nhắn thoại QQ gốc khi TTS được cấu hình.
+Theo mặc định, yêu cầu STT hết thời gian chờ sau 60 giây. STT dành riêng cho plugin sử dụng giá trị ghi đè `models.providers.<id>.timeoutSeconds` của mô hình được chọn. STT âm thanh của framework lần lượt sử dụng `tools.media.audio.models[0].timeoutSeconds`, sau đó là `tools.media.audio.timeoutSeconds`, rồi đến giá trị ghi đè của nhà cung cấp được chọn.
 
-Hành vi tải lên/chuyển mã âm thanh đầu ra cũng có thể được tinh chỉnh bằng
-`channels.qqbot.audioFormatPolicy`:
+Các tệp đính kèm giọng nói QQ đến được cung cấp cho tác nhân dưới dạng siêu dữ liệu phương tiện âm thanh, đồng thời giữ các tệp giọng nói thô bên ngoài `MediaPaths` dùng chung. `[[audio_as_voice]]` trong phản hồi văn bản thuần túy sẽ tổng hợp TTS và gửi tin nhắn thoại QQ nguyên bản khi TTS được cấu hình.
+
+Cũng có thể tinh chỉnh hành vi tải lên/chuyển mã âm thanh đi bằng `channels.qqbot.audioFormatPolicy`:
 
 - `sttDirectFormats`
 - `uploadDirectFormats`
@@ -255,72 +251,76 @@ Hành vi tải lên/chuyển mã âm thanh đầu ra cũng có thể được ti
 
 ## Định dạng đích
 
-| Định dạng                  | Mô tả                |
-| -------------------------- | -------------------- |
+| Định dạng                  | Mô tả                  |
+| -------------------------- | ---------------------- |
 | `qqbot:c2c:OPENID`         | Trò chuyện riêng (C2C) |
-| `qqbot:group:GROUP_OPENID` | Trò chuyện nhóm      |
-| `qqbot:channel:CHANNEL_ID` | Kênh guild           |
+| `qqbot:group:GROUP_OPENID` | Trò chuyện nhóm        |
+| `qqbot:channel:CHANNEL_ID` | Kênh guild             |
 
-> Mỗi bot có tập OpenID người dùng riêng. Một OpenID nhận được bởi Bot A **không thể**
-> được dùng để gửi tin nhắn qua Bot B.
+<Note>
+Mỗi bot có một tập OpenID người dùng riêng. OpenID nhận được bởi Bot A **không thể** được dùng để gửi tin nhắn qua Bot B.
+</Note>
 
-## Lệnh slash
+## Lệnh dấu gạch chéo
 
 Các lệnh tích hợp được chặn trước hàng đợi AI:
 
-| Lệnh           | Mô tả                                                                                                      |
-| -------------- | ---------------------------------------------------------------------------------------------------------- |
-| `/bot-ping`    | Kiểm tra độ trễ                                                                                            |
-| `/bot-version` | Hiển thị phiên bản framework OpenClaw                                                                      |
-| `/bot-help`    | Liệt kê tất cả lệnh                                                                                        |
-| `/bot-me`      | Hiển thị ID người dùng QQ của người gửi (openid) cho thiết lập `allowFrom`/`groupAllowFrom`                |
-| `/bot-upgrade` | Hiển thị liên kết hướng dẫn nâng cấp QQBot                                                                 |
-| `/bot-logs`    | Xuất log gateway gần đây dưới dạng tệp                                                                     |
-| `/bot-approve` | Phê duyệt một hành động QQ Bot đang chờ xử lý (ví dụ, xác nhận tải lên C2C hoặc nhóm) qua luồng gốc. |
+| Lệnh                 | Xác thực           | Phạm vi             | Mô tả                                                                                           |
+| -------------------- | ------------------- | ------------------- | ----------------------------------------------------------------------------------------------- |
+| `/bot-ping`          | —                   | bất kỳ              | Kiểm tra độ trễ                                                                                 |
+| `/bot-help`          | —                   | bất kỳ              | Liệt kê tất cả các lệnh                                                                         |
+| `/bot-me`            | —                   | chỉ trò chuyện riêng | Hiển thị mã người dùng QQ (openid) của người gửi để thiết lập `allowFrom` / `groupAllowFrom`     |
+| `/bot-version`       | —                   | chỉ trò chuyện riêng | Hiển thị phiên bản framework OpenClaw và phiên bản plugin                                        |
+| `/bot-upgrade`       | —                   | chỉ trò chuyện riêng | Hiển thị liên kết hướng dẫn nâng cấp QQBot                                                       |
+| `/bot-approve`       | danh sách cho phép | chỉ trò chuyện riêng | Quản lý cấu hình phê duyệt thực thi lệnh (bật / tắt / luôn luôn / đặt lại / trạng thái)          |
+| `/bot-logs`          | danh sách cho phép | chỉ trò chuyện riêng | Xuất nhật ký Gateway gần đây dưới dạng tệp                                                       |
+| `/bot-clear-storage` | danh sách cho phép | chỉ trò chuyện riêng | Xóa các tệp tải xuống được lưu đệm trong thư mục phương tiện QQBot                               |
+| `/bot-streaming`     | danh sách cho phép | chỉ trò chuyện riêng | Bật/tắt phản hồi truyền trực tiếp C2C                                                            |
+| `/bot-group-allways` | danh sách cho phép | chỉ trò chuyện riêng | Chuyển đổi chế độ kích hoạt nhóm mặc định (yêu cầu lượt nhắc hoặc luôn bật)                      |
 
-Thêm `?` vào bất kỳ lệnh nào để xem trợ giúp sử dụng (ví dụ `/bot-upgrade ?`).
+Nối thêm `?` vào bất kỳ lệnh nào để xem trợ giúp sử dụng (ví dụ `/bot-upgrade ?`).
 
-Các lệnh quản trị (`/bot-me`, `/bot-upgrade`, `/bot-logs`, `/bot-clear-storage`, `/bot-streaming`, `/bot-approve`) chỉ dùng trong tin nhắn trực tiếp và yêu cầu openid của người gửi nằm trong danh sách `allowFrom` rõ ràng, không có ký tự đại diện. Ký tự đại diện `allowFrom: ["*"]` cho phép trò chuyện nhưng không cấp quyền truy cập lệnh quản trị. Tin nhắn nhóm được khớp với `groupAllowFrom` trước rồi fallback về `allowFrom`. Chạy lệnh quản trị trong nhóm sẽ trả về gợi ý thay vì âm thầm bỏ qua.
+Các lệnh "Xác thực: danh sách cho phép" còn yêu cầu openid của người gửi nằm trong danh sách `allowFrom` tường minh không có ký tự đại diện (`groupAllowFrom` được ưu tiên đối với các lệnh được gọi từ nhóm, sau đó dự phòng về `allowFrom`). Ký tự đại diện `allowFrom: ["*"]` cho phép trò chuyện nhưng không cho phép các lệnh này. Việc chạy một trong các lệnh đó bên ngoài trò chuyện riêng hoặc khi không được ủy quyền sẽ trả về gợi ý thay vì âm thầm loại bỏ tin nhắn.
 
-Khi phê duyệt exec của QQ Bot dùng fallback cùng cuộc trò chuyện mặc định, lượt nhấp
-nút phê duyệt gốc tuân theo cùng danh sách cho phép lệnh rõ ràng không có ký tự đại diện. Để cấp
-quyền chỉ phê duyệt mà không có quyền lệnh rộng hơn, hãy cấu hình
-`channels.qqbot.execApprovals.approvers`.
+`/bot-me`, `/bot-version` và `/bot-upgrade` chỉ dùng được trong cuộc trò chuyện riêng tư nhưng không
+yêu cầu danh sách cho phép — bất kỳ người gửi C2C nào cũng có thể chạy chúng.
 
-## Kiến trúc engine
+Khi phê duyệt thực thi của QQ Bot sử dụng cơ chế dự phòng mặc định trong cùng cuộc trò chuyện, các lượt nhấp vào
+nút phê duyệt gốc cũng tuân theo cùng danh sách cho phép lệnh tường minh, không có ký tự đại diện. Để
+cấp quyền chỉ phê duyệt mà không mở rộng quyền truy cập lệnh, hãy cấu hình
+`channels.qqbot.execApprovals.approvers`. Phê duyệt thực thi gốc được bật theo
+mặc định.
 
-QQ Bot được phân phối dưới dạng engine khép kín bên trong Plugin:
+## Phương tiện và lưu trữ
 
-- Mỗi tài khoản sở hữu một ngăn xếp tài nguyên cô lập (kết nối WebSocket, API client, bộ nhớ đệm token, gốc lưu trữ phương tiện) được khóa theo `appId`. Các tài khoản không bao giờ chia sẻ trạng thái đầu vào/đầu ra.
-- Logger nhiều tài khoản gắn thẻ các dòng log bằng tài khoản sở hữu để chẩn đoán luôn tách biệt khi bạn chạy nhiều bot dưới một gateway.
-- Các đường dẫn đầu vào, đầu ra, và cầu nối gateway chia sẻ một gốc payload phương tiện duy nhất dưới `~/.openclaw/media`, để các tải lên, tải xuống, và bộ nhớ đệm chuyển mã nằm dưới một thư mục được bảo vệ thay vì cây theo từng hệ thống con.
-- Phân phối đa phương tiện phong phú đi qua một đường dẫn `sendMedia` duy nhất cho đích C2C và nhóm. Tệp cục bộ và bộ đệm vượt ngưỡng tệp lớn dùng endpoint tải lên theo khối của QQ, trong khi payload nhỏ hơn dùng API phương tiện một lần.
-- Thông tin xác thực có thể được sao lưu và khôi phục như một phần của snapshot thông tin xác thực OpenClaw tiêu chuẩn; engine gắn lại ngăn xếp tài nguyên của từng tài khoản khi khôi phục mà không yêu cầu cặp mã QR mới.
-
-## Onboarding bằng mã QR
-
-Thay cho việc dán `AppID:AppSecret` thủ công, engine hỗ trợ luồng onboarding bằng mã QR để liên kết QQ Bot với OpenClaw:
-
-1. Chạy đường dẫn thiết lập QQ Bot (ví dụ `openclaw channels add --channel qqbot`) và chọn luồng mã QR khi được nhắc.
-2. Quét mã QR đã tạo bằng ứng dụng điện thoại được liên kết với QQ Bot mục tiêu.
-3. Phê duyệt ghép cặp trên điện thoại. OpenClaw lưu thông tin xác thực được trả về vào `credentials/` trong phạm vi tài khoản đúng.
-
-Các prompt phê duyệt do chính bot tạo ra (ví dụ, các luồng "cho phép hành động này?" được QQ Bot API cung cấp) hiển thị dưới dạng prompt OpenClaw gốc mà bạn có thể chấp nhận bằng `/bot-approve` thay vì trả lời qua client QQ thô.
+- Phương tiện đến, đi và qua cầu nối Gateway dùng chung một thư mục gốc dữ liệu tại
+  `~/.openclaw/media/qqbot` (tuân theo `OPENCLAW_HOME` khi được đặt), nhờ đó các tệp tải lên,
+  tải xuống và bộ nhớ đệm chuyển mã nằm trong cùng một thư mục được bảo vệ.
+- Việc gửi nội dung đa phương tiện phong phú đến các đích C2C và nhóm đi qua một đường dẫn `sendMedia`
+  duy nhất. Tệp cục bộ và bộ đệm trong bộ nhớ có kích thước từ 5&nbsp;MiB trở lên sử dụng các
+  điểm cuối tải lên theo từng phần của QQ; dữ liệu nhỏ hơn và nguồn URL từ xa/Base64 sử dụng
+  API tải lên một lần.
+- Nếu một bản nâng cấp nóng làm gián đoạn Gateway trước khi ghi xong
+  `openclaw.json`, ở lần khởi động tiếp theo, Plugin sẽ khôi phục `appId` / `clientSecret`
+  đã biết gần nhất cho tài khoản đó từ một bản chụp nhanh nội bộ (không bao giờ
+  ghi đè một thay đổi cấu hình có chủ ý), nên không cần quét lại mã QR.
 
 ## Khắc phục sự cố
 
-- **Bot trả lời "gone to Mars":** thông tin xác thực chưa được cấu hình hoặc Gateway chưa được khởi động.
-- **Không có tin nhắn đến:** xác minh `appId` và `clientSecret` là chính xác, và
-  bot đã được bật trên QQ Open Platform.
-- **Tự trả lời lặp lại:** OpenClaw ghi nhận các chỉ mục tham chiếu gửi đi của QQ là
-  do bot tạo và bỏ qua các sự kiện đến có `msgIdx` hiện tại khớp với
-  cùng tài khoản bot đó. Điều này ngăn các vòng lặp echo của nền tảng trong khi vẫn cho phép người dùng
-  trích dẫn hoặc trả lời các tin nhắn bot trước đó.
-- **Thiết lập với `--token-file` vẫn hiển thị chưa cấu hình:** `--token-file` chỉ đặt
-  AppSecret. Bạn vẫn cần `appId` trong cấu hình hoặc `QQBOT_APP_ID`.
-- **Tin nhắn chủ động không đến:** QQ có thể chặn các tin nhắn do bot khởi tạo nếu
-  người dùng chưa tương tác gần đây.
-- **Giọng nói không được chép lời:** đảm bảo STT đã được cấu hình và nhà cung cấp có thể truy cập được.
+- **Gateway không khởi động / không có tin nhắn đến:** xác minh `appId` và
+  `clientSecret` là chính xác và bot đã được bật trên QQ Open Platform.
+  Thông tin xác thực bị thiếu sẽ hiển thị dưới dạng "QQBot chưa được cấu hình (thiếu appId hoặc
+  clientSecret)".
+- **Thiết lập bằng `--token-file` vẫn hiển thị chưa được cấu hình:** `--token-file` chỉ
+  đặt AppSecret. `appId` vẫn phải được đặt trong cấu hình hoặc `QQBOT_APP_ID`.
+- **Các phản hồi nhóm dồn dập xung đột:** khi hàng đợi của một bên ngang hàng bị đầy, hàng đợi tin nhắn đến sẽ loại bỏ
+  tin nhắn do bot gửi trước tin nhắn của con người và gộp
+  các đợt tin nhắn nhóm thông thường (không phải lệnh) thành một lượt có ghi rõ nguồn gửi, vì vậy
+  một luồng trò chuyện dồn dập từ bot sẽ không làm gián đoạn tin nhắn của con người.
+- **Tin nhắn chủ động không đến:** QQ có thể chặn tin nhắn do bot khởi tạo nếu
+  người dùng không tương tác gần đây.
+- **Giọng nói không được phiên âm:** hãy bảo đảm STT đã được cấu hình và có thể
+  kết nối đến nhà cung cấp.
 
 ## Liên quan
 

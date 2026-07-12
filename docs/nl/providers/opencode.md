@@ -1,15 +1,15 @@
 ---
 read_when:
-    - Je wilt door OpenCode gehoste modeltoegang
+    - Je wilt toegang tot modellen die door OpenCode worden gehost
     - Je wilt kiezen tussen de Zen- en Go-catalogi
-summary: OpenCode Zen- en Go-catalogi gebruiken met OpenClaw
+summary: Gebruik de OpenCode Zen- en Go-catalogi met OpenClaw
 title: OpenCode
 x-i18n:
-    generated_at: "2026-06-28T20:45:17Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:14:38Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1d777563b82aafbe83a5256c11f1a9cd330e782f08dd467583368a77ebca4fc4
+    source_hash: de287eb8a349f26c265f95b8b1de3af4035aa2bdc3501c7279f714d297bb8b9b
     source_path: providers/opencode.md
     workflow: 16
 ---
@@ -21,34 +21,36 @@ OpenCode biedt twee gehoste catalogi in OpenClaw:
 | **Zen**   | `opencode/...`    | `opencode`      |
 | **Go**    | `opencode-go/...` | `opencode-go`   |
 
-Beide catalogi gebruiken dezelfde OpenCode-API-sleutel. OpenClaw houdt de runtimeprovider-id's
-gescheiden zodat upstream-routering per model correct blijft, maar onboarding en documentatie behandelen ze
-als één OpenCode-configuratie.
+Beide catalogi delen één OpenCode-API-sleutel (`OPENCODE_API_KEY`, alias
+`OPENCODE_ZEN_API_KEY`). OpenClaw houdt de runtimeprovider-ID's gescheiden zodat
+de upstreamroutering per model correct blijft, maar behandelt ze tijdens de
+onboarding en in de documentatie als één OpenCode-configuratie.
 
 ## Aan de slag
 
 <Tabs>
-  <Tab title="Zen catalog">
-    **Beste voor:** de samengestelde OpenCode-proxy voor meerdere modellen (Claude, GPT, Gemini, GLM).
+  <Tab title="Zen-catalogus">
+    **Het meest geschikt voor:** de samengestelde OpenCode-proxy voor meerdere modellen (Claude, GPT, Gemini, GLM,
+    DeepSeek, Kimi, MiniMax, Qwen).
 
     <Steps>
-      <Step title="Run onboarding">
+      <Step title="Voer de onboarding uit">
         ```bash
         openclaw onboard --auth-choice opencode-zen
         ```
 
-        Of geef de sleutel direct door:
+        Of geef de sleutel rechtstreeks door:
 
         ```bash
         openclaw onboard --opencode-zen-api-key "$OPENCODE_API_KEY"
         ```
       </Step>
-      <Step title="Set a Zen model as the default">
+      <Step title="Stel een Zen-model in als standaardmodel">
         ```bash
         openclaw config set agents.defaults.model.primary "opencode/claude-opus-4-6"
         ```
       </Step>
-      <Step title="Verify models are available">
+      <Step title="Controleer of modellen beschikbaar zijn">
         ```bash
         openclaw models list --provider opencode
         ```
@@ -57,27 +59,27 @@ als één OpenCode-configuratie.
 
   </Tab>
 
-  <Tab title="Go catalog">
-    **Beste voor:** de door OpenCode gehoste reeks van Kimi, GLM en MiniMax.
+  <Tab title="Go-catalogus">
+    **Het meest geschikt voor:** het door OpenCode gehoste aanbod van Kimi, GLM, MiniMax, Qwen en DeepSeek.
 
     <Steps>
-      <Step title="Run onboarding">
+      <Step title="Voer de onboarding uit">
         ```bash
         openclaw onboard --auth-choice opencode-go
         ```
 
-        Of geef de sleutel direct door:
+        Of geef de sleutel rechtstreeks door:
 
         ```bash
         openclaw onboard --opencode-go-api-key "$OPENCODE_API_KEY"
         ```
       </Step>
-      <Step title="Set a Go model as the default">
+      <Step title="Stel een Go-model in als standaardmodel">
         ```bash
         openclaw config set agents.defaults.model.primary "opencode-go/kimi-k2.6"
         ```
       </Step>
-      <Step title="Verify models are available">
+      <Step title="Controleer of modellen beschikbaar zijn">
         ```bash
         openclaw models list --provider opencode-go
         ```
@@ -105,52 +107,58 @@ als één OpenCode-configuratie.
 | Runtimeprovider  | `opencode`                                                                                    |
 | Voorbeeldmodellen | `opencode/claude-opus-4-6`, `opencode/gpt-5.5`, `opencode/gemini-3.1-pro`, `opencode/glm-5.2` |
 
+Voer `openclaw models list --provider opencode` uit voor de volledige actuele lijst, die
+ook vermeldingen uit het gratis niveau bevat, zoals `opencode/big-pickle` en
+`opencode/deepseek-v4-flash-free`.
+
 ### Go
 
-| Eigenschap       | Waarde                                                                   |
-| ---------------- | ------------------------------------------------------------------------ |
-| Runtimeprovider  | `opencode-go`                                                            |
+| Eigenschap        | Waarde                                                                   |
+| ----------------- | ------------------------------------------------------------------------ |
+| Runtimeprovider   | `opencode-go`                                                            |
 | Voorbeeldmodellen | `opencode-go/kimi-k2.6`, `opencode-go/glm-5`, `opencode-go/minimax-m2.5` |
+
+Zie [OpenCode Go](/nl/providers/opencode-go) voor de volledige tabel met Go-modellen.
 
 ## Geavanceerde configuratie
 
 <AccordionGroup>
-  <Accordion title="API key aliases">
-    `OPENCODE_ZEN_API_KEY` wordt ook ondersteund als alias voor `OPENCODE_API_KEY`.
+  <Accordion title="Aliassen voor API-sleutels">
+    `OPENCODE_ZEN_API_KEY` wordt ook geaccepteerd als alias voor `OPENCODE_API_KEY`.
   </Accordion>
 
-  <Accordion title="Shared credentials">
-    Als je tijdens de configuratie één OpenCode-sleutel invoert, worden referenties voor beide runtimeproviders
-    opgeslagen. Je hoeft niet elke catalogus afzonderlijk te onboarden.
+  <Accordion title="Gedeelde referenties">
+    Als u tijdens de configuratie één OpenCode-sleutel invoert, worden referenties voor beide
+    runtimeproviders opgeslagen. U hoeft de onboarding niet voor elke catalogus afzonderlijk uit te voeren.
   </Accordion>
 
-  <Accordion title="Billing and dashboard">
-    Je meldt je aan bij OpenCode, voegt factureringsgegevens toe en kopieert je API-sleutel. Facturering
-    en catalogusbeschikbaarheid worden beheerd vanuit het OpenCode-dashboard.
+  <Accordion title="Een API-sleutel verkrijgen">
+    Maak een OpenCode-account aan en genereer een API-sleutel via
+    [opencode.ai/auth](https://opencode.ai/auth). Facturering en beschikbaarheid
+    van catalogi worden beheerd vanuit het OpenCode-dashboard.
   </Accordion>
 
-  <Accordion title="Gemini replay behavior">
-    Door Gemini ondersteunde OpenCode-refs blijven op het proxy-Gemini-pad, zodat OpenClaw daar
-    opschoning van Gemini-gedachtesignaturen behoudt zonder native Gemini-replayvalidatie of bootstrap-herschrijvingen in te schakelen.
+  <Accordion title="Afspeelgedrag van Gemini">
+    OpenCode-verwijzingen die op Gemini zijn gebaseerd, blijven het proxy-Gemini-pad gebruiken, zodat OpenClaw
+    daar Gemini-gedachtehandtekeningen blijft opschonen zonder native
+    Gemini-afspeelvalidatie of herschrijvingen van de bootstrap in te schakelen.
   </Accordion>
 
-  <Accordion title="Non-Gemini replay behavior">
-    Niet-Gemini OpenCode-refs behouden het minimale OpenAI-compatibele replaybeleid.
+  <Accordion title="Afspeelgedrag van andere modellen dan Gemini">
+    OpenCode-verwijzingen voor andere modellen dan Gemini behouden het minimale OpenAI-compatibele afspeelbeleid.
   </Accordion>
 </AccordionGroup>
-
-<Tip>
-Als je tijdens de configuratie één OpenCode-sleutel invoert, worden referenties voor zowel de Zen- als
-Go-runtimeproviders opgeslagen, zodat je maar één keer hoeft te onboarden.
-</Tip>
 
 ## Gerelateerd
 
 <CardGroup cols={2}>
-  <Card title="Model selection" href="/nl/concepts/model-providers" icon="layers">
-    Providers, model-refs en failovergedrag kiezen.
+  <Card title="OpenCode Go" href="/nl/providers/opencode-go" icon="server">
+    Volledige naslaginformatie voor de Go-catalogus.
   </Card>
-  <Card title="Configuration reference" href="/nl/gateway/configuration-reference" icon="gear">
-    Volledige configuratiereferentie voor agents, modellen en providers.
+  <Card title="Modelselectie" href="/nl/concepts/model-providers" icon="layers">
+    Providers en modelverwijzingen kiezen en failovergedrag instellen.
+  </Card>
+  <Card title="Configuratienaslag" href="/nl/gateway/configuration-reference" icon="gear">
+    Volledige configuratienaslag voor agents, modellen en providers.
   </Card>
 </CardGroup>

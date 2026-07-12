@@ -1,54 +1,61 @@
 ---
 read_when: Browser control fails on Linux, especially with snap Chromium
 summary: Виправлення проблем запуску CDP у Chrome/Brave/Edge/Chromium для керування браузером OpenClaw у Linux
-title: Усунення несправностей браузера
+title: Усунення проблем із браузером
 x-i18n:
-    generated_at: "2026-04-27T07:09:57Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: d9a91ea42a8a600163bcf66ad398677175bd0c5186d3e1dddb629a55c2ea66ed
-    source_path: tools/browser-linux-troubleshooting.md
-    workflow: 15
+    generated_at: "2026-07-12T13:44:10Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: e0256e8ee441802086cd486923060be54f8966b423e5dcb71fc8961bbab5d729
+    source_path: tools/browser-linux-troubleshooting.md
+    workflow: 16
 ---
 
-## Проблема: "Failed to start Chrome CDP on port 18800"
+## Проблема: не вдалося запустити Chrome CDP на порту 18800
 
-Сервер керування браузером OpenClaw не може запустити Chrome/Brave/Edge/Chromium і показує помилку:
-
-```
-{"error":"Error: Failed to start Chrome CDP on port 18800 for profile \"openclaw\"."}
+```json
+{ "error": "Error: Failed to start Chrome CDP on port 18800 for profile \"openclaw\"." }
 ```
 
-### Коренева причина
+### Основна причина
 
-В Ubuntu (і багатьох дистрибутивах Linux) типовим встановленням Chromium є **snap-пакет**. Ізоляція AppArmor у snap заважає тому, як OpenClaw запускає та відстежує процес браузера.
+В Ubuntu та більшості дистрибутивів Linux команда `apt install chromium` встановлює
+обгортку snap, а не справжній браузер:
 
-Команда `apt install chromium` встановлює пакет-заглушку, який перенаправляє до snap:
-
-```
+```text
 Note, selecting 'chromium-browser' instead of 'chromium'
 chromium-browser is already the newest version (2:1snap1-0ubuntu2).
 ```
 
-Це НЕ справжній браузер — це лише обгортка.
+Обмеження AppArmor у snap перешкоджають OpenClaw запускати та відстежувати
+процес браузера.
 
-Інші поширені збої запуску в Linux:
+Інші поширені помилки запуску в Linux:
 
-- `The profile appears to be in use by another Chromium process` означає, що Chrome знайшов застарілі lock-файли `Singleton*` у каталозі керованого профілю. OpenClaw видаляє ці блокування і повторює спробу один раз, якщо блокування вказує на мертвий процес або процес з іншого хоста.
-- `Missing X server or $DISPLAY` означає, що було явно запитано видимий браузер на хості без сесії робочого столу. За замовчуванням локальні керовані профілі в Linux тепер переходять у headless-режим, коли `DISPLAY` і `WAYLAND_DISPLAY` обидва не задані. Якщо ви встановили `OPENCLAW_BROWSER_HEADLESS=0`, `browser.headless: false` або `browser.profiles.<name>.headless: false`, приберіть це перевизначення headed-режиму, задайте `OPENCLAW_BROWSER_HEADLESS=1`, запустіть `Xvfb`, виконайте `openclaw browser start --headless` для одноразового керованого запуску або запускайте OpenClaw у справжній сесії робочого столу.
+- `The profile appears to be in use by another Chromium process`: застарілі
+  файли блокування `Singleton*` у каталозі керованого профілю. OpenClaw видаляє
+  ці блокування та повторює спробу один раз, якщо блокування вказує на завершений
+  процес або процес на іншому хості.
+- `Missing X server or $DISPLAY`: на хості без сеансу робочого столу було явно
+  запитано браузер із видимим інтерфейсом. Локальні керовані профілі в Linux
+  переходять у безголовий режим, коли не задано ані `DISPLAY`, ані
+  `WAYLAND_DISPLAY`. Якщо ви встановили `OPENCLAW_BROWSER_HEADLESS=0`,
+  `browser.headless: false` або `browser.profiles.<name>.headless: false`,
+  видаліть це перевизначення режиму з інтерфейсом, установіть
+  `OPENCLAW_BROWSER_HEADLESS=1`, запустіть `Xvfb`, виконайте
+  `openclaw browser start --headless` для одноразового керованого запуску або
+  запустіть OpenClaw у справжньому сеансі робочого столу.
 
-### Рішення 1: Встановіть Google Chrome (рекомендовано)
-
-Встановіть офіційний `.deb`-пакет Google Chrome, який не ізольований через snap:
+### Рішення 1: установіть Google Chrome (рекомендовано)
 
 ```bash
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 sudo dpkg -i google-chrome-stable_current_amd64.deb
-sudo apt --fix-broken install -y  # if there are dependency errors
+sudo apt --fix-broken install -y  # якщо виникають помилки залежностей
 ```
 
-Потім оновіть конфігурацію OpenClaw (`~/.openclaw/openclaw.json`):
+Оновіть `~/.openclaw/openclaw.json`:
 
 ```json
 {
@@ -61,11 +68,10 @@ sudo apt --fix-broken install -y  # if there are dependency errors
 }
 ```
 
-### Рішення 2: Використовуйте snap Chromium у режимі лише приєднання
+### Рішення 2: використовуйте snap Chromium у режимі лише підключення
 
-Якщо вам обов’язково потрібен snap Chromium, налаштуйте OpenClaw на приєднання до браузера, запущеного вручну:
-
-1. Оновіть конфігурацію:
+Якщо вам потрібно залишити snap Chromium, налаштуйте OpenClaw для підключення
+до браузера, запущеного вручну, замість його самостійного запуску:
 
 ```json
 {
@@ -78,7 +84,7 @@ sudo apt --fix-broken install -y  # if there are dependency errors
 }
 ```
 
-2. Запустіть Chromium вручну:
+Запустіть Chromium вручну:
 
 ```bash
 chromium-browser --headless --no-sandbox --disable-gpu \
@@ -87,7 +93,7 @@ chromium-browser --headless --no-sandbox --disable-gpu \
   about:blank &
 ```
 
-3. За бажанням створіть systemd user service для автоматичного запуску Chrome:
+За потреби налаштуйте його автоматичний запуск за допомогою користувацької служби systemd:
 
 ```ini
 # ~/.config/systemd/user/openclaw-browser.service
@@ -104,65 +110,69 @@ RestartSec=5
 WantedBy=default.target
 ```
 
-Увімкнення: `systemctl --user enable --now openclaw-browser.service`
+```bash
+systemctl --user enable --now openclaw-browser.service
+```
 
-### Перевірка, чи браузер працює
-
-Перевірте стан:
+### Перевірте роботу браузера
 
 ```bash
 curl -s http://127.0.0.1:18791/ | jq '{running, pid, chosenBrowser}'
-```
-
-Протестуйте перегляд:
-
-```bash
 curl -s -X POST http://127.0.0.1:18791/start
 curl -s http://127.0.0.1:18791/tabs
 ```
 
 ### Довідник із конфігурації
 
-| Опція                            | Опис                                                                 | Типове значення                                              |
-| -------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------ |
-| `browser.enabled`                | Увімкнути керування браузером                                        | `true`                                                       |
-| `browser.executablePath`         | Шлях до двійкового файла браузера на базі Chromium (Chrome/Brave/Edge/Chromium) | визначається автоматично (надає перевагу типовому браузеру, якщо він на базі Chromium) |
-| `browser.headless`               | Запуск без GUI                                                       | `false`                                                      |
-| `OPENCLAW_BROWSER_HEADLESS`      | Перевизначення на рівні процесу для headless-режиму локального керованого браузера | не задано                                                    |
-| `browser.noSandbox`              | Додати прапорець `--no-sandbox` (потрібно для деяких конфігурацій Linux) | `false`                                                      |
-| `browser.attachOnly`             | Не запускати браузер, лише приєднуватися до наявного                 | `false`                                                      |
-| `browser.cdpPort`                | Порт Chrome DevTools Protocol                                        | `18800`                                                      |
-| `browser.localLaunchTimeoutMs`   | Тайм-аут виявлення локального керованого Chrome                      | `15000`                                                      |
-| `browser.localCdpReadyTimeoutMs` | Тайм-аут готовності CDP після запуску локального керованого браузера | `8000`                                                       |
+| Параметр                         | Опис                                                                 | Значення за замовчуванням                                           |
+| -------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `browser.enabled`                | Увімкнути керування браузером                                        | `true`                                                              |
+| `browser.executablePath`         | Шлях до виконуваного файла браузера на основі Chromium (Chrome/Brave/Edge/Chromium) | визначається автоматично (перевага надається типовому браузеру ОС, якщо він базується на Chromium) |
+| `browser.headless`               | Запускати без графічного інтерфейсу                                   | `false`                                                             |
+| `OPENCLAW_BROWSER_HEADLESS`      | Перевизначення безголового режиму локального керованого браузера для окремого процесу | не задано                                                           |
+| `browser.noSandbox`              | Додати прапорець `--no-sandbox` (потрібно для деяких конфігурацій Linux) | `false`                                                          |
+| `browser.attachOnly`             | Не запускати браузер; лише підключатися до наявного                   | `false`                                                             |
+| `browser.cdpPortRangeStart`      | Початковий локальний порт CDP для автоматично призначених профілів    | `18800` (визначається на основі порту Gateway)                       |
+| `browser.localLaunchTimeoutMs`   | Час очікування виявлення локального керованого Chrome, до `120000`    | `15000`                                                             |
+| `browser.localCdpReadyTimeoutMs` | Час очікування готовності CDP після локального керованого запуску, до `120000` | `8000`                                                       |
 
-На Raspberry Pi, старих VPS-хостах або повільних носіях збільшуйте
-`browser.localLaunchTimeoutMs`, коли Chrome потребує більше часу, щоб відкрити свій HTTP-ендпоїнт CDP. Збільшуйте `browser.localCdpReadyTimeoutMs`, коли запуск успішний, але
-`openclaw browser start` усе ще повідомляє `not reachable after start`. Значення мають бути додатними цілими числами до `120000` мс; некоректні значення конфігурації відхиляються.
+Обидва значення часу очікування мають бути додатними цілими числами до
+`120000` мс; інші значення відхиляються під час завантаження конфігурації.
+На Raspberry Pi, старіших хостах VPS або повільних сховищах збільште
+`browser.localLaunchTimeoutMs`, якщо Chrome потребує більше часу, щоб відкрити
+свою кінцеву точку HTTP CDP. Збільште `browser.localCdpReadyTimeoutMs`, якщо
+запуск завершується успішно, але `openclaw browser start` усе одно повідомляє
+`not reachable after start`.
 
-### Проблема: "No Chrome tabs found for profile=\"user\""
+### Проблема: не знайдено вкладок Chrome для profile="user"
 
-Ви використовуєте профіль `existing-session` / Chrome MCP. OpenClaw бачить локальний Chrome,
-але немає відкритих вкладок, до яких можна приєднатися.
+Ви використовуєте профіль `user` (`existing-session` / Chrome MCP), але немає
+відкритих вкладок, до яких можна підключитися.
 
 Варіанти виправлення:
 
-1. **Використовуйте керований браузер:** `openclaw browser start --browser-profile openclaw`
-   (або задайте `browser.defaultProfile: "openclaw"`).
-2. **Використовуйте Chrome MCP:** переконайтеся, що локальний Chrome запущений і має принаймні одну відкриту вкладку, а потім повторіть спробу з `--browser-profile user`.
+1. Натомість використовуйте керований браузер:
+   `openclaw browser --browser-profile openclaw start` (або встановіть
+   `browser.defaultProfile: "openclaw"`).
+2. Залиште локальний Chrome запущеним із принаймні однією відкритою вкладкою,
+   а потім повторіть спробу з `--browser-profile user`.
 
 Примітки:
 
-- `user` доступний лише на хості. Для серверів Linux, контейнерів або віддалених хостів надавайте перевагу профілям CDP.
-- `user` / інші профілі `existing-session` зберігають поточні обмеження Chrome MCP:
-  дії на основі ref, хуки завантаження одного файла, без перевизначення тайм-аутів діалогів, без
-  `wait --load networkidle`, а також без `responsebody`, експорту PDF, перехоплення завантажень чи пакетних дій.
-- Локальні профілі `openclaw` автоматично призначають `cdpPort`/`cdpUrl`; задавайте їх лише для віддаленого CDP.
+- `user` працює лише на хості. На серверах Linux, у контейнерах або на
+  віддалених хостах натомість використовуйте профілі CDP.
+- `user` та інші профілі `existing-session` мають поточні обмеження Chrome MCP:
+  лише дії за посиланнями, один файл на одне завантаження, без перевизначень
+  `timeoutMs` для діалогових вікон, без `wait --load networkidle`, а також без
+  `responsebody`, експорту PDF, перехоплення завантажень і пакетних дій.
+- Локальні профілі драйвера `openclaw` автоматично призначають `cdpPort`/`cdpUrl`;
+  установлюйте їх вручну лише для віддаленого CDP.
 - Віддалені профілі CDP приймають `http://`, `https://`, `ws://` і `wss://`.
-  Використовуйте HTTP(S) для виявлення через `/json/version`, або WS(S), коли ваш сервіс браузера
-  надає прямий URL сокета DevTools.
+  Використовуйте HTTP(S) для виявлення через `/json/version` або WS(S), якщо
+  служба браузера надає пряму URL-адресу сокета DevTools.
 
 ## Пов’язані матеріали
 
-- [Browser](/uk/tools/browser)
-- [Browser login](/uk/tools/browser-login)
-- [Browser WSL2 troubleshooting](/uk/tools/browser-wsl2-windows-remote-cdp-troubleshooting)
+- [Браузер](/uk/tools/browser)
+- [Вхід у браузері](/uk/tools/browser-login)
+- [Усунення несправностей браузера у WSL2](/uk/tools/browser-wsl2-windows-remote-cdp-troubleshooting)

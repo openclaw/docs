@@ -1,38 +1,40 @@
 ---
 read_when:
-    - Bạn muốn dùng Qwen với OpenClaw
-    - Trước đây bạn đã dùng Qwen OAuth
-summary: Sử dụng Qwen Cloud thông qua Plugin OpenClaw của Qwen Cloud
+    - Bạn muốn sử dụng Qwen với OpenClaw
+    - Bạn có gói đăng ký Alibaba Cloud Token Plan
+    - Trước đây bạn đã sử dụng Qwen OAuth
+summary: Sử dụng Qwen Cloud thông qua plugin OpenClaw của dịch vụ này
 title: Qwen
 x-i18n:
-    generated_at: "2026-06-27T18:06:09Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:19:19Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4e42a38f3e7f2db54092886f2ef8c3ab27163c3c3d0f9b4d95affd58555f58d3
+    source_hash: 18030a70c024cd5c0713262874f5353bac50576e850f68a61bef4fa73ccf9b9c
     source_path: providers/qwen.md
     workflow: 16
 ---
 
-OpenClaw hiện coi Qwen là một Plugin nhà cung cấp hạng nhất với id chính thức
-`qwen`. Plugin nhà cung cấp này nhắm đến các điểm cuối Qwen Cloud / Alibaba DashScope và
-Coding Plan, giữ cho các id `modelstudio` cũ tiếp tục hoạt động dưới dạng bí danh tương thích,
-và cũng cung cấp luồng mã thông báo Qwen Portal dưới nhà cung cấp `qwen-oauth`.
+Qwen Cloud là Plugin nhà cung cấp OpenClaw bên ngoài chính thức với id chuẩn `qwen`. Plugin này nhắm đến các điểm cuối Qwen Cloud / Alibaba DashScope Standard và Coding Plan, cung cấp Token Plan dưới dạng `qwen-token-plan`, giữ `modelstudio` làm bí danh tương thích, sở hữu độc lập id nhà cung cấp tùy chỉnh `bailian-token-plan` được Alibaba ghi nhận trong tài liệu và cung cấp luồng token Qwen Portal dưới dạng [`qwen-oauth`](/vi/providers/qwen-oauth).
 
-- Nhà cung cấp: `qwen`
-- Nhà cung cấp Portal: [`qwen-oauth`](/vi/providers/qwen-oauth)
-- Biến môi trường ưu tiên: `QWEN_API_KEY`
-- Cũng được chấp nhận để tương thích: `MODELSTUDIO_API_KEY`, `DASHSCOPE_API_KEY`
-- Kiểu API: tương thích với OpenAI
+| Thuộc tính                       | Giá trị                                    |
+| -------------------------------- | ------------------------------------------ |
+| Nhà cung cấp                     | `qwen`                                     |
+| Nhà cung cấp Token Plan          | `qwen-token-plan`                          |
+| Nhà cung cấp Portal              | [`qwen-oauth`](/vi/providers/qwen-oauth)      |
+| Biến môi trường ưu tiên          | `QWEN_API_KEY`                             |
+| Biến môi trường Token Plan       | `QWEN_TOKEN_PLAN_API_KEY`                  |
+| Cũng được chấp nhận (tương thích) | `MODELSTUDIO_API_KEY`, `DASHSCOPE_API_KEY` |
+| Kiểu API                         | Tương thích OpenAI                         |
 
 <Tip>
-Nếu bạn muốn dùng `qwen3.6-plus`, hãy ưu tiên điểm cuối **Tiêu chuẩn (trả theo mức sử dụng)**.
-Hỗ trợ Coding Plan có thể chậm hơn danh mục công khai.
+`qwen3.7-plus` và `qwen3.6-plus` hoạt động với các điểm cuối Coding Plan và Standard.
+Đối với `qwen3.7-max` hoặc `qwen3.6-flash`, hãy sử dụng điểm cuối **Standard (trả phí theo mức sử dụng)**.
 </Tip>
 
 ## Cài đặt Plugin
 
-Cài đặt Plugin chính thức, sau đó khởi động lại Gateway:
+`qwen` được phân phối dưới dạng Plugin bên ngoài chính thức, không được đóng gói kèm lõi. Hãy cài đặt Plugin và khởi động lại Gateway:
 
 ```bash
 openclaw plugins install @openclaw/qwen-provider
@@ -44,27 +46,27 @@ openclaw gateway restart
 Chọn loại gói của bạn và làm theo các bước thiết lập.
 
 <Tabs>
-  <Tab title="Coding Plan (subscription)">
-    **Phù hợp nhất cho:** quyền truy cập theo gói đăng ký thông qua Qwen Coding Plan.
+  <Tab title="Coding Plan (gói đăng ký)">
+    **Phù hợp nhất cho:** quyền truy cập dựa trên gói đăng ký thông qua Qwen Coding Plan.
 
     <Steps>
-      <Step title="Get your API key">
+      <Step title="Lấy khóa API">
         Tạo hoặc sao chép khóa API từ [home.qwencloud.com/api-keys](https://home.qwencloud.com/api-keys).
       </Step>
-      <Step title="Run onboarding">
-        Với điểm cuối **Toàn cầu**:
+      <Step title="Chạy quy trình thiết lập ban đầu">
+        Đối với điểm cuối **Toàn cầu**:
 
         ```bash
         openclaw onboard --auth-choice qwen-api-key
         ```
 
-        Với điểm cuối **Trung Quốc**:
+        Đối với điểm cuối **Trung Quốc**:
 
         ```bash
         openclaw onboard --auth-choice qwen-api-key-cn
         ```
       </Step>
-      <Step title="Set a default model">
+      <Step title="Đặt mô hình mặc định">
         ```json5
         {
           agents: {
@@ -75,7 +77,7 @@ Chọn loại gói của bạn và làm theo các bước thiết lập.
         }
         ```
       </Step>
-      <Step title="Verify the model is available">
+      <Step title="Xác minh mô hình có sẵn">
         ```bash
         openclaw models list --provider qwen
         ```
@@ -83,37 +85,37 @@ Chọn loại gói của bạn và làm theo các bước thiết lập.
     </Steps>
 
     <Note>
-    Các id lựa chọn xác thực `modelstudio-*` cũ và tham chiếu mô hình `modelstudio/...` vẫn
-    hoạt động dưới dạng bí danh tương thích, nhưng các luồng thiết lập mới nên ưu tiên các id
-    lựa chọn xác thực chính thức `qwen-*` và tham chiếu mô hình `qwen/...`. Nếu bạn định nghĩa một mục
-    `models.providers.modelstudio` tùy chỉnh chính xác với một giá trị `api` khác, thì
-    nhà cung cấp tùy chỉnh đó sở hữu các tham chiếu `modelstudio/...` thay vì bí danh tương thích
-    Qwen.
+    Các id lựa chọn xác thực `modelstudio-*` cũ và tham chiếu mô hình `modelstudio/...`
+    vẫn hoạt động dưới dạng bí danh tương thích, nhưng các luồng thiết lập mới nên ưu tiên
+    id lựa chọn xác thực `qwen-*` chuẩn và tham chiếu mô hình `qwen/...`. Nếu bạn định nghĩa
+    chính xác một mục tùy chỉnh `models.providers.modelstudio` với giá trị `api` khác,
+    nhà cung cấp tùy chỉnh đó sẽ sở hữu các tham chiếu `modelstudio/...` thay vì bí danh
+    tương thích Qwen.
     </Note>
 
   </Tab>
 
-  <Tab title="Standard (pay-as-you-go)">
-    **Phù hợp nhất cho:** quyền truy cập trả theo mức sử dụng thông qua điểm cuối Standard Model Studio, bao gồm các mô hình như `qwen3.6-plus` có thể chưa có trên Coding Plan.
+  <Tab title="Standard (trả phí theo mức sử dụng)">
+    **Phù hợp nhất cho:** quyền truy cập trả phí theo mức sử dụng thông qua điểm cuối Standard Model Studio, bao gồm `qwen3.7-max` và `qwen3.6-flash`, vốn không có trong Coding Plan.
 
     <Steps>
-      <Step title="Get your API key">
+      <Step title="Lấy khóa API">
         Tạo hoặc sao chép khóa API từ [home.qwencloud.com/api-keys](https://home.qwencloud.com/api-keys).
       </Step>
-      <Step title="Run onboarding">
-        Với điểm cuối **Toàn cầu**:
+      <Step title="Chạy quy trình thiết lập ban đầu">
+        Đối với điểm cuối **Toàn cầu**:
 
         ```bash
         openclaw onboard --auth-choice qwen-standard-api-key
         ```
 
-        Với điểm cuối **Trung Quốc**:
+        Đối với điểm cuối **Trung Quốc**:
 
         ```bash
         openclaw onboard --auth-choice qwen-standard-api-key-cn
         ```
       </Step>
-      <Step title="Set a default model">
+      <Step title="Đặt mô hình mặc định">
         ```json5
         {
           agents: {
@@ -124,7 +126,7 @@ Chọn loại gói của bạn và làm theo các bước thiết lập.
         }
         ```
       </Step>
-      <Step title="Verify the model is available">
+      <Step title="Xác minh mô hình có sẵn">
         ```bash
         openclaw models list --provider qwen
         ```
@@ -132,29 +134,73 @@ Chọn loại gói của bạn và làm theo các bước thiết lập.
     </Steps>
 
     <Note>
-    Các id lựa chọn xác thực `modelstudio-*` cũ và tham chiếu mô hình `modelstudio/...` vẫn
-    hoạt động dưới dạng bí danh tương thích, nhưng các luồng thiết lập mới nên ưu tiên các id
-    lựa chọn xác thực chính thức `qwen-*` và tham chiếu mô hình `qwen/...`. Nếu bạn định nghĩa một mục
-    `models.providers.modelstudio` tùy chỉnh chính xác với một giá trị `api` khác, thì
-    nhà cung cấp tùy chỉnh đó sở hữu các tham chiếu `modelstudio/...` thay vì bí danh tương thích
-    Qwen.
+    Các id lựa chọn xác thực `modelstudio-*` cũ và tham chiếu mô hình `modelstudio/...`
+    vẫn hoạt động dưới dạng bí danh tương thích, nhưng các luồng thiết lập mới nên ưu tiên
+    id lựa chọn xác thực `qwen-*` chuẩn và tham chiếu mô hình `qwen/...`. Nếu bạn định nghĩa
+    chính xác một mục tùy chỉnh `models.providers.modelstudio` với giá trị `api` khác,
+    nhà cung cấp tùy chỉnh đó sẽ sở hữu các tham chiếu `modelstudio/...` thay vì bí danh
+    tương thích Qwen.
     </Note>
 
   </Tab>
 
-  <Tab title="Qwen OAuth / Portal">
-    **Phù hợp nhất cho:** mã thông báo Qwen Portal dùng với `https://portal.qwen.ai/v1`.
-
-    Xem [Qwen OAuth / Portal](/vi/providers/qwen-oauth) để biết trang nhà cung cấp chuyên biệt
-    và ghi chú di chuyển.
+  <Tab title="Token Plan (Phiên bản dành cho nhóm)">
+    **Phù hợp nhất cho:** quyền truy cập bằng gói đăng ký nhóm dựa trên tín dụng vào Qwen và các mô hình bên thứ ba được hỗ trợ thông qua Alibaba Cloud Model Studio.
 
     <Steps>
-      <Step title="Provide your portal token">
+      <Step title="Lấy khóa chuyên dụng">
+        Chỉ định một suất Token Plan và tạo khóa `sk-sp-...` chuyên dụng cho suất đó. Khóa Token Plan, Coding Plan và khóa trả phí theo mức sử dụng không thể dùng thay thế cho nhau. Xem [tổng quan Token Plan Toàn cầu](https://www.alibabacloud.com/help/en/model-studio/token-plan-overview) hoặc [tổng quan Token Plan Trung Quốc](https://help.aliyun.com/zh/model-studio/token-plan-overview).
+      </Step>
+      <Step title="Chạy quy trình thiết lập ban đầu">
+        Đối với điểm cuối **Toàn cầu / Quốc tế** tại Singapore:
+
+        ```bash
+        openclaw onboard --auth-choice qwen-token-plan
+        ```
+
+        Đối với điểm cuối **Trung Quốc** tại Bắc Kinh:
+
+        ```bash
+        openclaw onboard --auth-choice qwen-token-plan-cn
+        ```
+      </Step>
+      <Step title="Xác minh nhà cung cấp">
+        ```bash
+        openclaw models list --provider qwen-token-plan
+        openclaw agent --model qwen-token-plan/qwen3.7-plus --message "Reply with: token plan ready"
+        ```
+      </Step>
+    </Steps>
+
+    <Note>
+    Hướng dẫn OpenClaw của Alibaba sử dụng `bailian-token-plan` cho một nhà cung cấp
+    tùy chỉnh thủ công. Plugin đăng ký id đó với vai trò chủ sở hữu tương thích, nhưng
+    cấu hình mới nên sử dụng `qwen-token-plan`. Một mục tùy chỉnh chính xác
+    `models.providers.bailian-token-plan` vẫn giữ quyền sở hữu phương thức truyền tải
+    và danh mục đã cấu hình; mục này không bao giờ được hợp nhất vào danh mục OpenAI chuẩn.
+    </Note>
+
+    <Warning>
+    Chỉ sử dụng Token Plan cho các phiên OpenClaw tương tác. Không chọn gói này cho
+    tác vụ Cron, tập lệnh không có người giám sát hoặc phần phụ trợ ứng dụng. Alibaba cho biết
+    việc sử dụng không tương tác có thể khiến gói đăng ký bị đình chỉ hoặc khóa API bị thu hồi.
+    </Warning>
+
+  </Tab>
+
+  <Tab title="Qwen OAuth / Portal">
+    **Phù hợp nhất cho:** token Qwen Portal dùng với `https://portal.qwen.ai/v1`.
+
+    Xem [Qwen OAuth / Portal](/vi/providers/qwen-oauth) để biết trang dành riêng cho nhà cung cấp
+    và các ghi chú di chuyển.
+
+    <Steps>
+      <Step title="Cung cấp token Portal">
         ```bash
         openclaw onboard --auth-choice qwen-oauth
         ```
       </Step>
-      <Step title="Set a default model">
+      <Step title="Đặt mô hình mặc định">
         ```json5
         {
           agents: {
@@ -165,7 +211,7 @@ Chọn loại gói của bạn và làm theo các bước thiết lập.
         }
         ```
       </Step>
-      <Step title="Verify the model is available">
+      <Step title="Xác minh mô hình có sẵn">
         ```bash
         openclaw models list --provider qwen-oauth
         ```
@@ -173,27 +219,29 @@ Chọn loại gói của bạn và làm theo các bước thiết lập.
     </Steps>
 
     <Note>
-    `qwen-oauth` dùng cùng tên biến môi trường `QWEN_API_KEY` như nhà cung cấp
-    DashScope, nhưng lưu xác thực dưới id nhà cung cấp `qwen-oauth` khi được cấu hình
-    thông qua quy trình giới thiệu của OpenClaw.
+    `qwen-oauth` sử dụng cùng tên biến môi trường `QWEN_API_KEY` với nhà cung cấp
+    Qwen Cloud, nhưng lưu thông tin xác thực dưới id nhà cung cấp `qwen-oauth` khi được
+    cấu hình thông qua quy trình thiết lập ban đầu của OpenClaw.
     </Note>
 
   </Tab>
 </Tabs>
 
-## Loại gói và điểm cuối
+## Các loại gói và điểm cuối
 
-| Gói                        | Khu vực | Lựa chọn xác thực         | Điểm cuối                                        |
-| -------------------------- | ------ | -------------------------- | ------------------------------------------------ |
-| Tiêu chuẩn (trả theo mức sử dụng) | Trung Quốc | `qwen-standard-api-key-cn` | `dashscope.aliyuncs.com/compatible-mode/v1`      |
-| Tiêu chuẩn (trả theo mức sử dụng) | Toàn cầu | `qwen-standard-api-key`    | `dashscope-intl.aliyuncs.com/compatible-mode/v1` |
-| Coding Plan (gói đăng ký) | Trung Quốc | `qwen-api-key-cn`          | `coding.dashscope.aliyuncs.com/v1`               |
-| Coding Plan (gói đăng ký) | Toàn cầu | `qwen-api-key`             | `coding-intl.dashscope.aliyuncs.com/v1`          |
-| Qwen Portal                | Toàn cầu | `qwen-oauth`               | `portal.qwen.ai/v1`                              |
+| Gói                         | Khu vực    | Lựa chọn xác thực          | Điểm cuối                                                        |
+| --------------------------- | ---------- | -------------------------- | ---------------------------------------------------------------- |
+| Coding Plan (gói đăng ký)   | Trung Quốc | `qwen-api-key-cn`          | `coding.dashscope.aliyuncs.com/v1`                               |
+| Coding Plan (gói đăng ký)   | Toàn cầu   | `qwen-api-key`             | `coding-intl.dashscope.aliyuncs.com/v1`                          |
+| Qwen Portal                 | Toàn cầu   | `qwen-oauth`               | `portal.qwen.ai/v1`                                              |
+| Standard (trả phí theo mức sử dụng) | Trung Quốc | `qwen-standard-api-key-cn` | `dashscope.aliyuncs.com/compatible-mode/v1`                      |
+| Standard (trả phí theo mức sử dụng) | Toàn cầu   | `qwen-standard-api-key`    | `dashscope-intl.aliyuncs.com/compatible-mode/v1`                 |
+| Token Plan (Phiên bản dành cho nhóm) | Trung Quốc | `qwen-token-plan-cn`       | `token-plan.cn-beijing.maas.aliyuncs.com/compatible-mode/v1`     |
+| Token Plan (Phiên bản dành cho nhóm) | Toàn cầu   | `qwen-token-plan`          | `token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1` |
 
-Nhà cung cấp tự động chọn điểm cuối dựa trên lựa chọn xác thực của bạn. Các
-lựa chọn chính thức dùng họ `qwen-*`; `modelstudio-*` chỉ còn dành cho tương thích.
-Bạn có thể ghi đè bằng `baseUrl` tùy chỉnh trong cấu hình.
+Nhà cung cấp tự động chọn điểm cuối dựa trên lựa chọn xác thực của bạn. Các lựa chọn
+chuẩn sử dụng họ `qwen-*`; `modelstudio-*` chỉ được giữ lại để tương thích.
+Ghi đè bằng `baseUrl` tùy chỉnh trong cấu hình.
 
 <Tip>
 **Quản lý khóa:** [home.qwencloud.com/api-keys](https://home.qwencloud.com/api-keys) |
@@ -202,44 +250,83 @@ Bạn có thể ghi đè bằng `baseUrl` tùy chỉnh trong cấu hình.
 
 ## Danh mục tích hợp sẵn
 
-OpenClaw hiện phát hành danh mục tĩnh Qwen này. Danh mục được cấu hình có
-nhận biết điểm cuối: cấu hình Coding Plan bỏ qua các mô hình chỉ được biết là hoạt động trên
-điểm cuối Tiêu chuẩn.
+OpenClaw phân phối danh mục Qwen tĩnh này. Danh mục nhận biết điểm cuối: các cấu hình
+Coding Plan sẽ bỏ qua những mô hình chỉ hoạt động trên điểm cuối Standard.
 
-| Tham chiếu mô hình          | Đầu vào     | Ngữ cảnh  | Ghi chú                                            |
-| --------------------------- | ----------- | --------- | -------------------------------------------------- |
-| `qwen/qwen3.5-plus`         | văn bản, hình ảnh | 1,000,000 | Mô hình mặc định                                   |
-| `qwen/qwen3.6-plus`         | văn bản, hình ảnh | 1,000,000 | Ưu tiên điểm cuối Tiêu chuẩn khi bạn cần mô hình này |
-| `qwen/qwen3-max-2026-01-23` | văn bản     | 262,144   | Dòng Qwen Max                                      |
-| `qwen/qwen3-coder-next`     | văn bản     | 262,144   | Lập trình                                          |
-| `qwen/qwen3-coder-plus`     | văn bản     | 1,000,000 | Lập trình                                          |
-| `qwen/MiniMax-M2.5`         | văn bản     | 1,000,000 | Đã bật suy luận                                    |
-| `qwen/glm-5`                | văn bản     | 202,752   | GLM                                                |
-| `qwen/glm-4.7`              | văn bản     | 202,752   | GLM                                                |
-| `qwen/kimi-k2.5`            | văn bản, hình ảnh | 262,144   | Moonshot AI qua Alibaba                            |
-| `qwen-oauth/qwen3.5-plus`   | văn bản, hình ảnh | 1,000,000 | Mặc định của Qwen Portal                           |
+| Tham chiếu mô hình           | Đầu vào       | Ngữ cảnh  | Ghi chú                              |
+| ---------------------------- | ------------- | --------- | ------------------------------------ |
+| `qwen/qwen3.5-plus`          | văn bản, hình ảnh | 1,000,000 | Mô hình mặc định                     |
+| `qwen/qwen3.6-flash`         | văn bản, hình ảnh | 1,000,000 | Chỉ các điểm cuối Standard           |
+| `qwen/qwen3.6-plus`          | văn bản, hình ảnh | 1,000,000 | Coding Plan + Standard               |
+| `qwen/qwen3.7-max`           | văn bản       | 1,000,000 | Chỉ các điểm cuối Standard           |
+| `qwen/qwen3.7-plus`          | văn bản, hình ảnh | 1,000,000 | Coding Plan + Standard               |
+| `qwen/qwen3-max-2026-01-23`  | văn bản       | 262,144   | Dòng Qwen Max                        |
+| `qwen/qwen3-coder-next`      | văn bản       | 262,144   | Lập trình                            |
+| `qwen/qwen3-coder-plus`      | văn bản       | 1,000,000 | Lập trình                            |
+| `qwen/MiniMax-M2.5`          | văn bản       | 1,000,000 | Đã bật suy luận                      |
+| `qwen/glm-5`                 | văn bản       | 202,752   | GLM                                  |
+| `qwen/glm-4.7`               | văn bản       | 202,752   | GLM                                  |
+| `qwen/kimi-k2.5`             | văn bản, hình ảnh | 262,144   | Moonshot AI thông qua Alibaba        |
+| `qwen-oauth/qwen3.5-plus`    | văn bản, hình ảnh | 1,000,000 | Mặc định của Qwen Portal             |
 
 <Note>
-Tính khả dụng vẫn có thể thay đổi theo điểm cuối và gói thanh toán ngay cả khi một mô hình
-có mặt trong danh mục tĩnh.
+Tính khả dụng vẫn có thể khác nhau tùy theo điểm cuối và gói thanh toán, ngay cả khi
+một mô hình có trong danh mục tĩnh.
 </Note>
 
-## Điều khiển suy luận
+### Danh mục Token Plan
 
-Với các mô hình Qwen Cloud hỗ trợ suy luận, nhà cung cấp ánh xạ các mức
-suy luận của OpenClaw sang cờ yêu cầu cấp cao nhất `enable_thinking` của DashScope. Khi tắt
-suy luận, gửi `enable_thinking: false`; các mức suy luận khác gửi
-`enable_thinking: true`.
+Token Plan sử dụng một danh sách cho phép riêng biệt, khớp chính xác theo chuỗi. Các mô hình
+của gói chỉ dành cho tạo hình ảnh không được đưa vào đây vì chúng sử dụng API khác.
 
-## Tiện ích đa phương thức bổ sung
+| Tham chiếu mô hình                   | Đầu vào       | Ngữ cảnh  |
+| ------------------------------------ | ------------- | --------- |
+| `qwen-token-plan/qwen3.7-max`        | văn bản       | 1,000,000 |
+| `qwen-token-plan/qwen3.7-plus`       | văn bản, hình ảnh | 1,000,000 |
+| `qwen-token-plan/qwen3.6-plus`       | văn bản, hình ảnh | 1,000,000 |
+| `qwen-token-plan/qwen3.6-flash`      | văn bản, hình ảnh | 1,000,000 |
+| `qwen-token-plan/deepseek-v4-pro`    | văn bản       | 1,000,000 |
+| `qwen-token-plan/deepseek-v4-flash`  | văn bản       | 1,000,000 |
+| `qwen-token-plan/deepseek-v3.2`      | văn bản       | 131,072   |
+| `qwen-token-plan/kimi-k2.7-code`     | văn bản, hình ảnh | 262,144   |
+| `qwen-token-plan/kimi-k2.6`          | văn bản, hình ảnh | 262,144   |
+| `qwen-token-plan/kimi-k2.5`          | văn bản, hình ảnh | 262,144   |
+| `qwen-token-plan/glm-5.2`            | văn bản       | 1,000,000 |
+| `qwen-token-plan/glm-5.1`            | văn bản       | 202,752   |
+| `qwen-token-plan/glm-5`              | văn bản       | 202,752   |
+| `qwen-token-plan/MiniMax-M2.5`       | văn bản       | 196,608   |
 
-Plugin `qwen` cũng cung cấp khả năng đa phương thức trên các điểm cuối DashScope **Tiêu chuẩn**
-(không phải các điểm cuối Coding Plan):
+## Các tùy chọn kiểm soát suy luận
 
-- **Hiểu video** qua `qwen-vl-max-latest`
-- **Tạo video Wan** qua `wan2.6-t2v` (mặc định), `wan2.6-i2v`, `wan2.6-r2v`, `wan2.6-r2v-flash`, `wan2.7-r2v`
+`qwen3.7-max`, `qwen3.7-plus`, `qwen3.6-flash` và `qwen3.6-plus` được
+bật khả năng suy luận trong danh mục tích hợp sẵn. Đối với các mô hình suy luận thuộc
+họ `qwen`, nhà cung cấp ánh xạ các mức độ tư duy của OpenClaw sang cờ yêu cầu cấp cao nhất
+`enable_thinking` của DashScope: khi tắt tư duy, hệ thống gửi `enable_thinking: false`;
+với mọi mức độ khác, hệ thống gửi `enable_thinking: true`. Các mô hình tùy chỉnh có thể chọn dùng
+tải trọng tư duy theo mẫu trò chuyện thay thế bằng cách đặt
+`compat.thinkingFormat: "qwen-chat-template"` trong mục nhập của mô hình.
 
-Để dùng Qwen làm nhà cung cấp video mặc định:
+Các mô hình Token Plan cũng được đánh dấu là có khả năng suy luận. `kimi-k2.7-code` và
+`MiniMax-M2.5` chỉ hoạt động khi bật tư duy, vì vậy OpenClaw vẫn bật tư duy ngay cả khi
+phiên yêu cầu `/think off`. DeepSeek V4 ánh xạ các mức từ `minimal` đến `high` thành
+mức nỗ lực `high` của dịch vụ và ánh xạ `xhigh` hoặc `max` thành `max`. GLM 5.2 chấp nhận
+toàn bộ dải từ `minimal` đến `max`; GLM 5.1 và GLM 5 chấp nhận đến
+`xhigh`, và cả ba đều mặc định là `high`. Các mô hình lai khác tuân theo
+trạng thái bật/tắt được yêu cầu.
+
+## Tiện ích bổ sung đa phương thức
+
+Plugin `qwen` chỉ cung cấp các khả năng đa phương thức trên các điểm cuối DashScope
+**Standard**, không cung cấp trên các điểm cuối Coding Plan:
+
+- **Hiểu hình ảnh và video** qua `qwen-vl-max-latest`
+- **Tạo video bằng Wan** qua `wan2.6-t2v` (mặc định), `wan2.6-i2v`, `wan2.6-r2v`, `wan2.6-r2v-flash`, `wan2.7-r2v`
+
+Khả năng hiểu nội dung đa phương tiện được tự động phân giải từ thông tin xác thực Qwen đã cấu hình;
+không cần cấu hình bổ sung. Hãy đảm bảo bạn đang sử dụng điểm cuối Standard (trả phí theo mức dùng)
+để khả năng hiểu nội dung đa phương tiện hoạt động.
+
+Để đặt Qwen làm nhà cung cấp video mặc định:
 
 ```json5
 {
@@ -251,130 +338,95 @@ Plugin `qwen` cũng cung cấp khả năng đa phương thức trên các điể
 }
 ```
 
+Giới hạn tạo video: mỗi yêu cầu tạo 1 video đầu ra, tối đa 1 hình ảnh đầu vào
+(chuyển hình ảnh thành video), tối đa 4 video đầu vào (chuyển video thành video), thời lượng
+tối đa 10 giây. Hỗ trợ `size`, `aspectRatio`, `resolution`, `audio` và
+`watermark`. Đầu vào hình ảnh/video tham chiếu yêu cầu URL http(s) từ xa; đường dẫn
+tệp cục bộ bị từ chối ngay từ đầu vì điểm cuối video DashScope không
+chấp nhận bộ đệm cục bộ được tải lên cho các nội dung tham chiếu đó.
+
 <Note>
-Xem [Tạo video](/vi/tools/video-generation) để biết các tham số công cụ dùng chung, lựa chọn nhà cung cấp và hành vi chuyển dự phòng.
+Xem [Tạo video](/vi/tools/video-generation) để biết các tham số công cụ dùng chung, cách chọn nhà cung cấp và hành vi chuyển đổi dự phòng.
 </Note>
 
 ## Cấu hình nâng cao
 
 <AccordionGroup>
-  <Accordion title="Image and video understanding">
-    Plugin Qwen đăng ký khả năng hiểu phương tiện cho hình ảnh và video
-    trên các điểm cuối DashScope **Tiêu chuẩn** (không phải các điểm cuối Coding Plan).
-
-    | Thuộc tính    | Giá trị               |
-    | ------------- | --------------------- |
-    | Mô hình       | `qwen-vl-max-latest`  |
-    | Đầu vào được hỗ trợ | Hình ảnh, video       |
-
-    Khả năng hiểu phương tiện được tự động phân giải từ xác thực Qwen đã cấu hình — không
-    cần cấu hình bổ sung. Hãy đảm bảo bạn đang dùng điểm cuối Tiêu chuẩn (trả theo mức sử dụng)
-    để được hỗ trợ hiểu phương tiện.
-
-  </Accordion>
-
-  <Accordion title="Qwen 3.6 Plus availability">
-    `qwen3.6-plus` có sẵn trên các điểm cuối Standard (pay-as-you-go) Model Studio:
+  <Accordion title="Tính khả dụng của Qwen 3.6 và 3.7">
+    `qwen3.7-plus` và `qwen3.6-plus` có trên các điểm cuối Coding Plan và Standard. `qwen3.7-max` và `qwen3.6-flash` chỉ có trên Standard. Các điểm cuối Standard (trả phí theo mức dùng) là:
 
     - Trung Quốc: `dashscope.aliyuncs.com/compatible-mode/v1`
     - Toàn cầu: `dashscope-intl.aliyuncs.com/compatible-mode/v1`
 
-    Nếu các điểm cuối Coding Plan trả về lỗi "unsupported model" cho
-    `qwen3.6-plus`, hãy chuyển sang Tiêu chuẩn (trả theo mức sử dụng) thay vì cặp
-    điểm cuối/khóa Coding Plan.
-
-    Danh mục tĩnh Qwen của OpenClaw không quảng bá `qwen3.6-plus` trên các điểm cuối Coding
-    Plan, nhưng các mục `qwen/qwen3.6-plus` được cấu hình rõ ràng trong
-    `models.providers.qwen.models` vẫn được tôn trọng trên các baseUrl Coding Plan để bạn
-    có thể chọn dùng mô hình đó nếu Aliyun bật nó trên gói đăng ký của bạn. API
-    thượng nguồn vẫn quyết định liệu lệnh gọi có thành công hay không.
+    OpenClaw loại `qwen3.7-max` và `qwen3.6-flash` khỏi các danh mục Coding Plan.
+    Nếu điểm cuối Coding Plan trả về lỗi "mô hình không được hỗ trợ" cho một trong hai mô hình,
+    hãy chuyển sang điểm cuối Standard và khóa tương ứng.
 
   </Accordion>
 
-  <Accordion title="Capability plan">
-    Plugin `qwen` đang được định vị làm nơi quản lý của nhà cung cấp cho toàn bộ bề mặt
-    Qwen Cloud, không chỉ các mô hình lập trình/văn bản.
-
-    - **Mô hình văn bản/chat:** có sẵn thông qua Plugin
-    - **Gọi công cụ, đầu ra có cấu trúc, suy luận:** kế thừa từ lớp truyền tải tương thích OpenAI
-    - **Tạo hình ảnh:** được lên kế hoạch ở lớp Plugin nhà cung cấp
-    - **Hiểu hình ảnh/video:** có sẵn thông qua Plugin trên điểm cuối Tiêu chuẩn
-    - **Giọng nói/âm thanh:** được lên kế hoạch ở lớp Plugin nhà cung cấp
-    - **Embedding/reranking bộ nhớ:** được lên kế hoạch thông qua bề mặt bộ chuyển đổi embedding
-    - **Tạo video:** có sẵn thông qua Plugin qua khả năng tạo video dùng chung
-
-  </Accordion>
-
-  <Accordion title="Video generation details">
-    Với tạo video, OpenClaw ánh xạ khu vực Qwen đã cấu hình sang máy chủ
-    DashScope AIGC tương ứng trước khi gửi tác vụ:
+  <Accordion title="Định tuyến khu vực cho việc tạo video">
+    OpenClaw ánh xạ khu vực Qwen đã cấu hình sang máy chủ DashScope AIGC tương ứng
+    trước khi gửi tác vụ video:
 
     - Toàn cầu/Quốc tế: `https://dashscope-intl.aliyuncs.com`
     - Trung Quốc: `https://dashscope.aliyuncs.com`
 
-    Điều đó có nghĩa là một `models.providers.qwen.baseUrl` thông thường trỏ đến một trong hai
-    máy chủ Qwen Coding Plan hoặc Tiêu chuẩn vẫn giữ việc tạo video trên đúng
-    điểm cuối video DashScope theo khu vực.
-
-    Các giới hạn tạo video Qwen hiện tại:
-
-    - Tối đa **1** video đầu ra cho mỗi yêu cầu
-    - Tối đa **1** hình ảnh đầu vào
-    - Tối đa **4** video đầu vào
-    - Thời lượng tối đa **10 giây**
-    - Hỗ trợ `size`, `aspectRatio`, `resolution`, `audio` và `watermark`
-    - Chế độ hình ảnh/video tham chiếu hiện yêu cầu **URL http(s) từ xa**. Đường dẫn
-      tệp cục bộ bị từ chối ngay từ đầu vì điểm cuối video DashScope không
-      chấp nhận bộ đệm cục bộ đã tải lên cho các tham chiếu đó.
+    Một `models.providers.qwen.baseUrl` thông thường trỏ đến máy chủ Qwen của Coding Plan
+    hoặc Standard vẫn định tuyến việc tạo video đến điểm cuối video DashScope
+    tương ứng với khu vực.
 
   </Accordion>
 
-  <Accordion title="Khả năng tương thích thông tin sử dụng khi streaming">
-    Các điểm cuối Model Studio gốc quảng bá khả năng tương thích thông tin sử dụng khi streaming trên
-    cơ chế truyền tải `openai-completions` dùng chung. OpenClaw hiện dựa vào
-    khả năng của điểm cuối cho việc đó, vì vậy các id nhà cung cấp tùy chỉnh tương thích với DashScope nhắm tới
-    cùng các máy chủ gốc sẽ kế thừa cùng hành vi thông tin sử dụng khi streaming thay vì
-    yêu cầu riêng id nhà cung cấp `qwen` tích hợp sẵn.
-
-    Khả năng tương thích thông tin sử dụng native-streaming áp dụng cho cả các máy chủ Coding Plan và
-    các máy chủ Standard tương thích với DashScope:
+  <Accordion title="Khả năng tương thích với mức sử dụng khi truyền phát">
+    Các điểm cuối Qwen gốc công bố khả năng tương thích với thông tin mức sử dụng khi truyền phát trên
+    phương thức truyền tải `openai-completions` dùng chung, vì vậy các mã định danh nhà cung cấp tùy chỉnh
+    tương thích với DashScope và nhắm đến cùng các máy chủ gốc sẽ kế thừa hành vi tương tự mà không cần
+    sử dụng riêng mã định danh nhà cung cấp tích hợp sẵn `qwen`. Điều này áp dụng cho các điểm cuối Coding Plan,
+    Standard và Token Plan:
 
     - `https://coding.dashscope.aliyuncs.com/v1`
     - `https://coding-intl.dashscope.aliyuncs.com/v1`
     - `https://dashscope.aliyuncs.com/compatible-mode/v1`
     - `https://dashscope-intl.aliyuncs.com/compatible-mode/v1`
+    - `https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1`
+    - `https://token-plan.cn-beijing.maas.aliyuncs.com/compatible-mode/v1`
 
   </Accordion>
 
-  <Accordion title="Khu vực điểm cuối đa phương thức">
-    Các bề mặt đa phương thức (hiểu video và tạo video Wan) sử dụng các
-    điểm cuối DashScope **Standard**, không phải các điểm cuối Coding Plan:
+  <Accordion title="Kế hoạch năng lực">
+    Plugin `qwen` đang được định vị là nơi tập trung của nhà cung cấp cho toàn bộ
+    bề mặt Qwen Cloud, không chỉ các mô hình lập trình/văn bản.
 
-    - URL cơ sở Standard Global/Intl: `https://dashscope-intl.aliyuncs.com/compatible-mode/v1`
-    - URL cơ sở Standard Trung Quốc: `https://dashscope.aliyuncs.com/compatible-mode/v1`
+    - **Mô hình văn bản/trò chuyện:** khả dụng qua Plugin
+    - **Gọi công cụ, đầu ra có cấu trúc, tư duy:** kế thừa từ phương thức truyền tải tương thích với OpenAI
+    - **Tạo hình ảnh:** được lên kế hoạch ở lớp Plugin của nhà cung cấp
+    - **Hiểu hình ảnh/video:** khả dụng qua Plugin trên điểm cuối Standard
+    - **Giọng nói/âm thanh:** được lên kế hoạch ở lớp Plugin của nhà cung cấp
+    - **Embedding/tái xếp hạng bộ nhớ:** được lên kế hoạch qua bề mặt bộ điều hợp embedding
+    - **Tạo video:** khả dụng qua Plugin thông qua khả năng tạo video dùng chung
 
   </Accordion>
 
-  <Accordion title="Thiết lập môi trường và daemon">
-    Nếu Gateway chạy dưới dạng daemon (launchd/systemd), hãy đảm bảo `QWEN_API_KEY`
-    có sẵn cho tiến trình đó (ví dụ, trong `~/.openclaw/.env` hoặc qua
-    `env.shellEnv`).
+  <Accordion title="Thiết lập môi trường và tiến trình nền">
+    Nếu Gateway chạy dưới dạng tiến trình nền (launchd/systemd), hãy đảm bảo `QWEN_API_KEY`
+    hoặc `QWEN_TOKEN_PLAN_API_KEY` khả dụng cho tiến trình đó (ví dụ: trong
+    `~/.openclaw/.env` hoặc qua `env.shellEnv`).
   </Accordion>
 </AccordionGroup>
 
-## Liên quan
+## Nội dung liên quan
 
 <CardGroup cols={2}>
-  <Card title="Chọn mô hình" href="/vi/concepts/model-providers" icon="layers">
+  <Card title="Lựa chọn mô hình" href="/vi/concepts/model-providers" icon="layers">
     Chọn nhà cung cấp, tham chiếu mô hình và hành vi chuyển đổi dự phòng.
   </Card>
   <Card title="Tạo video" href="/vi/tools/video-generation" icon="video">
-    Tham số công cụ video dùng chung và lựa chọn nhà cung cấp.
+    Các tham số công cụ video dùng chung và cách chọn nhà cung cấp.
   </Card>
-  <Card title="Alibaba (ModelStudio)" href="/vi/providers/alibaba" icon="cloud">
-    Nhà cung cấp ModelStudio cũ và ghi chú di chuyển.
+  <Card title="Alibaba Model Studio" href="/vi/providers/alibaba" icon="cloud">
+    Nhà cung cấp tạo video Wan được đóng gói sẵn trên cùng nền tảng DashScope.
   </Card>
   <Card title="Khắc phục sự cố" href="/vi/help/troubleshooting" icon="wrench">
-    Khắc phục sự cố chung và câu hỏi thường gặp.
+    Hướng dẫn khắc phục sự cố chung và câu hỏi thường gặp.
   </Card>
 </CardGroup>

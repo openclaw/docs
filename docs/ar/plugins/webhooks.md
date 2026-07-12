@@ -1,32 +1,30 @@
 ---
 read_when:
     - تريد تشغيل TaskFlows أو التحكم فيها من نظام خارجي
-    - أنت تقوم بتهيئة Plugin Webhooks المضمّن
-summary: 'Plugin Webhooks: نقطة دخول TaskFlow مصادَق عليها للأتمتة الخارجية الموثوقة'
-title: Plugin Webhooks
+    - أنت تقوم بإعداد Plugin خطافات الويب المضمّن
+summary: 'Plugin Webhooks: إدخال TaskFlow مُصادَق عليه للأتمتة الخارجية الموثوقة'
+title: Plugin خطافات الويب
 x-i18n:
-    generated_at: "2026-05-06T18:02:08Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:25:19Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 9d21d96f680fa24d4a53c1ed5759f800d3cfdc3336789c42c15266edd8ce9e80
+    source_hash: 081ccbb4ca60234b20f4db7379395bdc51e7203caad4c0a88f292989ca18b28e
     source_path: plugins/webhooks.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-يضيف Plugin Webhooks مسارات HTTP موثقة تربط الأتمتة الخارجية بـ OpenClaw TaskFlows.
+تضيف إضافة Webhooks مسارات HTTP مصادقًا عليها بحيث يمكن لنظام خارجي موثوق
+(Zapier أو n8n أو مهمة CI أو خدمة داخلية) إنشاء TaskFlows مُدارة في OpenClaw
+والتحكم فيها عبر HTTP، من دون كتابة إضافة مخصصة.
 
-استخدمه عندما تريد من نظام موثوق مثل Zapier أو n8n أو مهمة CI أو خدمة داخلية إنشاء TaskFlows مُدارة وتشغيلها دون كتابة Plugin مخصص أولاً.
-
-## أين يعمل
-
-يعمل Plugin Webhooks داخل عملية Gateway.
-
-إذا كان Gateway لديك يعمل على جهاز آخر، فثبّت Plugin واضبطه على مضيف Gateway ذلك، ثم أعد تشغيل Gateway.
+تعمل الإضافة داخل عملية Gateway. إذا كان Gateway بعيدًا، فثبّتها واضبطها على
+ذلك المضيف، ثم أعد تشغيل Gateway. تأتي من دون أي مسارات مضبوطة، لذا لا تنفّذ
+شيئًا حتى تضيف مسارًا واحدًا على الأقل.
 
 ## ضبط المسارات
 
-اضبط التكوين ضمن `plugins.entries.webhooks.config`:
+عيّن الإعدادات ضمن `plugins.entries.webhooks.config`:
 
 ```json5
 {
@@ -57,47 +55,47 @@ x-i18n:
 
 حقول المسار:
 
-- `enabled`: اختياري، والقيمة الافتراضية هي `true`
-- `path`: اختياري، والقيمة الافتراضية هي `/plugins/webhooks/<routeId>`
-- `sessionKey`: الجلسة المطلوبة التي تملك TaskFlows المرتبطة
-- `secret`: السر المشترك المطلوب أو SecretRef
-- `controllerId`: معرّف المتحكم الاختياري للتدفقات المُدارة المنشأة
-- `description`: ملاحظة اختيارية للمشغّل
+| الحقل          | مطلوب | القيمة الافتراضية             | ملاحظات                                      |
+| -------------- | ----- | ----------------------------- | -------------------------------------------- |
+| `enabled`      | لا    | `true`                        |                                              |
+| `path`         | لا    | `/plugins/webhooks/<routeId>` | يجب أن يكون فريدًا بين المسارات.             |
+| `sessionKey`   | نعم   | -                             | الجلسة المالكة لـ TaskFlows المرتبطة.        |
+| `secret`       | نعم   | -                             | سلسلة نصية عادية أو SecretRef (أدناه).       |
+| `controllerId` | لا    | `webhooks/<routeId>`          | يُستخدم كوحدة تحكم `create_flow` الافتراضية. |
+| `description`  | لا    | -                             | ملاحظة للمشغّل فقط.                           |
 
-مدخلات `secret` المدعومة:
+يقبل `secret` سلسلة نصية عادية أو SecretRef: ‏`{ source: "env" | "file" | "exec", provider: "default", id: "..." }`.
 
-- سلسلة نصية عادية
-- SecretRef مع `source: "env" | "file" | "exec"`
-
-إذا تعذّر على مسار يعتمد على سر حلّ سره عند بدء التشغيل، يتخطى Plugin ذلك المسار ويسجّل تحذيراً بدلاً من كشف نقطة نهاية معطلة.
+يُسجَّل كل مسار مضبوط عند بدء التشغيل بغض النظر عما إذا كان سرّه قابلًا للحل
+حاليًا. لا يؤدي تعذّر حل السر إلى تعطيل المسار أو تخطيه؛ إذ تفشل مصادقة
+الطلبات إليه (`401`) إلى أن يصبح حل السر ممكنًا. يُعاد حل قيم SecretRef مع كل
+طلب، لذا يسري تدوير السر الأساسي (متغير بيئة أو ملف أو مخرجات تنفيذ) من دون
+إعادة تشغيل Gateway.
 
 ## نموذج الأمان
 
-كل مسار موثوق به للتصرف بصلاحية TaskFlow الخاصة بـ `sessionKey` المضبوطة له.
+يعمل كل مسار بصلاحيات TaskFlow الخاصة بـ `sessionKey` المضبوط له: ويمكنه فحص
+أي TaskFlow تملكها تلك الجلسة وتعديلها. يمر الوصول إلى TaskFlow دائمًا عبر
+`api.runtime.tasks.managedFlows.bindSession(...)`، لذلك لا يمكن للمسار مطلقًا
+العمل خارج جلسته المرتبطة. للحد من نطاق الضرر:
 
-هذا يعني أن المسار يستطيع فحص وتعديل TaskFlows التي تملكها تلك الجلسة، لذلك ينبغي عليك:
+- استخدم سرًا قويًا وفريدًا لكل مسار.
+- فضّل SecretRef على سر نصي صريح مضمن.
+- اربط المسارات بأضيق جلسة تلائم سير العمل.
+- اكشف فقط مسار Webhook المحدد الذي تحتاج إليه.
 
-- استخدام سر قوي وفريد لكل مسار
-- تفضيل مراجع الأسرار على الأسرار النصية الصريحة المضمنة
-- ربط المسارات بأضيق جلسة تناسب سير العمل
-- كشف مسار Webhook المحدد الذي تحتاج إليه فقط
+ترتيب معالجة الطلبات لكل مسار: التحقق من طريقة HTTP (`POST` فقط) ومن
+`Content-Type: application/json`، ثم تحديد المعدل بنافذة ثابتة (120 طلبًا لكل
+نافذة مدتها 60 ثانية لكل مفتاح مؤلف من المسار وعنوان IP للعميل، مع تتبع ما يصل
+إلى 4,096 مفتاحًا)، ثم تحديد الطلبات قيد التنفيذ (8 طلبات متزامنة لكل مفتاح،
+مع تتبع ما يصل إلى 4,096 مفتاحًا)، ثم المصادقة بالسر المشترك، ثم قراءة نص JSON
+بحد أقصى 256 كيلوبايت وخلال 15 ثانية. الطلبات التي تفشل في تحقق مبكر لا تصل
+مطلقًا إلى عمليات التحقق اللاحقة.
 
-يطبّق Plugin ما يلي:
+## تنسيق الطلب
 
-- مصادقة بالسر المشترك
-- ضوابط لحجم نص الطلب والمهلة
-- تحديد معدل بنافذة ثابتة
-- تحديد الطلبات قيد التنفيذ
-- وصول TaskFlow مقيّد بالمالك عبر `api.runtime.tasks.managedFlows.bindSession(...)`
-
-## صيغة الطلب
-
-أرسل طلبات `POST` مع:
-
-- `Content-Type: application/json`
-- `Authorization: Bearer <secret>` أو `x-openclaw-webhook-secret: <secret>`
-
-مثال:
+أرسل طلبات `POST` مع `Content-Type: application/json` وأحد الترويسَتين
+`Authorization: Bearer <secret>` أو `x-openclaw-webhook-secret: <secret>`:
 
 ```bash
 curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
@@ -108,27 +106,27 @@ curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
 
 ## الإجراءات المدعومة
 
-يقبل Plugin حالياً قيم `action` التالية بصيغة JSON:
+| الإجراء            | الغرض                                                                    |
+| ------------------ | ------------------------------------------------------------------------ |
+| `create_flow`      | إنشاء TaskFlow مُدارة لجلسة المسار.                                      |
+| `get_flow`         | جلب TaskFlow واحدة حسب المعرّف.                                          |
+| `list_flows`       | سرد TaskFlows الخاصة بجلسة المسار.                                       |
+| `find_latest_flow` | جلب أحدث TaskFlow تحديثًا.                                               |
+| `resolve_flow`     | حل TaskFlow بواسطة رمز مبهم.                                             |
+| `get_task_summary` | جلب ملخص المهمة لـ TaskFlow.                                             |
+| `set_waiting`      | تعليم TaskFlow بأنها قيد الانتظار، مع بيانات اختيارية للحالة/الانتظار.  |
+| `resume_flow`      | استئناف TaskFlow قيد الانتظار/محظورة.                                    |
+| `finish_flow`      | تعليم TaskFlow بأنها منتهية.                                             |
+| `fail_flow`        | تعليم TaskFlow بأنها فشلت.                                               |
+| `request_cancel`   | طلب إلغاء تعاوني.                                                         |
+| `cancel_flow`      | إلغاء TaskFlow (قد يعيد `202` إذا ظلت المهام الفرعية نشطة).              |
+| `run_task`         | إنشاء مهمة فرعية مُدارة داخل TaskFlow موجودة.                            |
 
-- `create_flow`
-- `get_flow`
-- `list_flows`
-- `find_latest_flow`
-- `resolve_flow`
-- `get_task_summary`
-- `set_waiting`
-- `resume_flow`
-- `finish_flow`
-- `fail_flow`
-- `request_cancel`
-- `cancel_flow`
-- `run_task`
+تتطلب إجراءات التعديل (`set_waiting` و`resume_flow` و`finish_flow` و`fail_flow`
+و`request_cancel`) الحقلين `flowId` و`expectedRevision` للتحكم المتفائل في
+التزامن؛ وتعيد المراجعة القديمة `409 revision_conflict`.
 
 ### `create_flow`
-
-ينشئ TaskFlow مُداراً للجلسة المرتبطة بالمسار.
-
-مثال:
 
 ```json
 {
@@ -141,14 +139,9 @@ curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
 
 ### `run_task`
 
-ينشئ مهمة فرعية مُدارة داخل TaskFlow مُدار موجود.
-
-أزمنة التشغيل المسموح بها هي:
-
-- `subagent`
-- `acp`
-
-مثال:
+قيم `runtime` المسموح بها: `subagent` و`acp`. لا تكون `startedAt` و`lastEventAt`
+و`progressSummary` صالحة إلا عندما تكون `status` هي `"running"`؛ ويؤدي إرسالها
+مع أي حالة أخرى إلى إرجاع `400 invalid_request`.
 
 ```json
 {
@@ -160,9 +153,7 @@ curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
 }
 ```
 
-## شكل الاستجابة
-
-تعيد الاستجابات الناجحة:
+## بنية الاستجابة
 
 ```json
 {
@@ -171,8 +162,6 @@ curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
   "result": {}
 }
 ```
-
-تعيد الطلبات المرفوضة:
 
 ```json
 {
@@ -184,10 +173,17 @@ curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
 }
 ```
 
-يزيل Plugin عمداً بيانات تعريف المالك/الجلسة من استجابات Webhook.
+لا تتضمن عروض التدفقات والمهام مطلقًا بيانات وصفية عن المالك/الجلسة، ولذلك لا
+يمكن للاستجابات تسريب `sessionKey` المرتبط بالمسار. تتضمن قيم `code`:
+`not_found` و`not_managed` و`revision_conflict` و`persist_failed`
+و`cancel_requested` و`cancel_pending` و`terminal` و`invalid_request`
+و`request_rejected`، بالإضافة إلى رموز احتياطية خاصة بالإجراء
+(`mutation_rejected` و`create_rejected` و`task_not_created`
+و`cancel_rejected`) عندما يُرفض تعديل لسبب لا تغطيه الرموز المسماة أعلاه.
 
-## الوثائق ذات الصلة
+## ذو صلة
 
-- [Plugin runtime SDK](/ar/plugins/sdk-runtime)
-- [نظرة عامة على الخطافات وwebhooks](/ar/automation/hooks)
-- [CLI webhooks](/ar/cli/webhooks)
+- [الخطافات](/ar/automation/hooks) - الخطافات الداخلية المستندة إلى الأحداث مقارنةً بجسر TaskFlow هذا المستند إلى HTTP
+- [Webhooks الخاصة بـ Gateway (إعداد `hooks.*`)](/ar/automation/cron-jobs#webhooks) - ميزة منفصلة لنقطة نهاية HTTP عامة في Gateway؛ وليست مماثلة لمسارات هذه الإضافة
+- [حزمة SDK لوقت تشغيل الإضافة](/ar/plugins/sdk-runtime)
+- [Webhooks في CLI](/ar/cli/webhooks)

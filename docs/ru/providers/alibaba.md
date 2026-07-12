@@ -2,56 +2,56 @@
 read_when:
     - Вы хотите использовать генерацию видео Alibaba Wan в OpenClaw
     - Для генерации видео необходимо настроить API-ключ Model Studio или DashScope
-summary: Генерация видео Alibaba Model Studio Wan в OpenClaw
+summary: Генерация видео с помощью Alibaba Model Studio Wan в OpenClaw
 title: Alibaba Model Studio
 x-i18n:
-    generated_at: "2026-06-28T23:34:18Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:45:16Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c390da201e2c8685fafa6171a6028bf18fc676b2d46f784651f91cdc6137fdf2
+    source_hash: cb74e2361500ccfbc5d3c4f2d08c3b62aacba8c79c704570952e2181abacf9fb
     source_path: providers/alibaba.md
     workflow: 16
 ---
 
-OpenClaw поставляется со встроенным plugin `alibaba`, который регистрирует провайдера генерации видео для моделей Wan в Alibaba Model Studio (международное название DashScope). Plugin включен по умолчанию; вам нужно только задать API-ключ.
+Встроенный Plugin `alibaba` регистрирует провайдера генерации видео для моделей Wan в Alibaba Model Studio (международное название DashScope). Он включён по умолчанию; требуется только ключ API.
 
-| Свойство               | Значение                                                                        |
-| ---------------------- | ------------------------------------------------------------------------------- |
-| Идентификатор провайдера | `alibaba`                                                                       |
-| Plugin                 | встроенный, `enabledByDefault: true`                                            |
-| Env vars для авторизации | `MODELSTUDIO_API_KEY` → `DASHSCOPE_API_KEY` → `QWEN_API_KEY` (используется первое совпадение) |
-| Флаг онбординга        | `--auth-choice alibaba-model-studio-api-key`                                    |
-| Прямой флаг CLI        | `--alibaba-model-studio-api-key <key>`                                          |
-| Модель по умолчанию    | `alibaba/wan2.6-t2v`                                                            |
-| Базовый URL по умолчанию | `https://dashscope-intl.aliyuncs.com`                                           |
+| Свойство                    | Значение                                                                        |
+| --------------------------- | ------------------------------------------------------------------------------- |
+| Идентификатор провайдера    | `alibaba`                                                                       |
+| Plugin                      | встроенный, `enabledByDefault: true`                                             |
+| Переменные окружения аутентификации | `MODELSTUDIO_API_KEY` → `DASHSCOPE_API_KEY` → `QWEN_API_KEY` (используется первое совпадение) |
+| Флаг первоначальной настройки | `--auth-choice alibaba-model-studio-api-key`                                   |
+| Прямой флаг CLI             | `--alibaba-model-studio-api-key <key>`                                           |
+| Модель по умолчанию         | `alibaba/wan2.6-t2v`                                                             |
+| Базовый URL по умолчанию    | `https://dashscope-intl.aliyuncs.com`                                            |
 
 ## Начало работы
 
 <Steps>
-  <Step title="Set an API key">
-    Используйте онбординг, чтобы сохранить ключ для провайдера `alibaba`:
+  <Step title="Задайте ключ API">
+    Сохраните ключ для провайдера `alibaba` при первоначальной настройке:
 
     ```bash
     openclaw onboard --auth-choice alibaba-model-studio-api-key
     ```
 
-    Или передайте ключ напрямую во время установки/онбординга:
+    Или передайте ключ напрямую:
 
     ```bash
     openclaw onboard --alibaba-model-studio-api-key <your-key>
     ```
 
-    Или экспортируйте любую из поддерживаемых env vars перед запуском Gateway:
+    Либо экспортируйте одну из поддерживаемых переменных окружения перед запуском Gateway:
 
     ```bash
     export MODELSTUDIO_API_KEY=sk-...
-    # or DASHSCOPE_API_KEY=...
-    # or QWEN_API_KEY=...
+    # или DASHSCOPE_API_KEY=...
+    # или QWEN_API_KEY=...
     ```
 
   </Step>
-  <Step title="Set a default video model">
+  <Step title="Задайте модель генерации видео по умолчанию">
     ```json5
     {
       agents: {
@@ -64,51 +64,51 @@ OpenClaw поставляется со встроенным plugin `alibaba`, к
     }
     ```
   </Step>
-  <Step title="Verify the provider is configured">
+  <Step title="Проверьте настройку провайдера">
     ```bash
     openclaw models list --provider alibaba
     ```
 
-    Список должен включать все пять встроенных моделей Wan. Если `MODELSTUDIO_API_KEY` не разрешается, `openclaw models status --json` сообщает об отсутствующих учетных данных в `auth.unusableProfiles`.
+    Список включает все пять встроенных моделей Wan. Если значение `MODELSTUDIO_API_KEY` определить не удаётся, команда `openclaw models status --json` сообщает об отсутствующих учётных данных в `auth.unusableProfiles`.
 
   </Step>
 </Steps>
 
 <Note>
-  Plugin Alibaba и [Plugin Qwen](/ru/providers/qwen) оба проходят авторизацию через DashScope и принимают пересекающиеся env vars. Используйте идентификаторы моделей `alibaba/...` для выделенной поверхности видео Wan; используйте идентификаторы `qwen/...`, когда вам нужна поверхность чата, эмбеддингов или понимания медиа Qwen.
+  Plugin Alibaba и [Plugin Qwen](/ru/providers/qwen) используют аутентификацию через DashScope и принимают частично совпадающие переменные окружения. Используйте идентификаторы моделей `alibaba/...` для специализированного интерфейса генерации видео Wan, а идентификаторы `qwen/...` — для чата Qwen, создания эмбеддингов или анализа медиаматериалов.
 </Note>
 
 ## Встроенные модели Wan
 
-| Ссылка на модель          | Режим                     |
-| ------------------------- | ------------------------- |
-| `alibaba/wan2.6-t2v`      | Текст-в-видео (по умолчанию) |
-| `alibaba/wan2.6-i2v`      | Изображение-в-видео       |
-| `alibaba/wan2.6-r2v`      | Референс-в-видео          |
-| `alibaba/wan2.6-r2v-flash` | Референс-в-видео (быстро) |
-| `alibaba/wan2.7-r2v`      | Референс-в-видео          |
+| Ссылка на модель            | Режим                              |
+| --------------------------- | ---------------------------------- |
+| `alibaba/wan2.6-t2v`        | Текст в видео (по умолчанию)       |
+| `alibaba/wan2.6-i2v`        | Изображение в видео                |
+| `alibaba/wan2.6-r2v`        | Референс в видео                   |
+| `alibaba/wan2.6-r2v-flash`  | Референс в видео (быстрый режим)   |
+| `alibaba/wan2.7-r2v`        | Референс в видео                   |
 
 ## Возможности и ограничения
 
-Встроенный провайдер отражает ограничения видео API Wan в DashScope. У всех трех режимов одинаковые лимиты количества видео и длительности на запрос; отличается только форма входных данных.
+Во всех трёх режимах действуют одинаковые ограничения на количество и длительность видео в одном запросе; различается только формат входных данных.
 
-| Режим              | Макс. выходных видео | Макс. входных изображений | Макс. входных видео | Макс. длительность | Поддерживаемые элементы управления                         |
-| ------------------ | -------------------- | -------------------------- | ------------------- | ------------------ | ---------------------------------------------------------- |
-| Текст-в-видео      | 1                    | n/a                        | n/a                 | 10 s               | `size`, `aspectRatio`, `resolution`, `audio`, `watermark` |
-| Изображение-в-видео | 1                    | 1                          | n/a                 | 10 s               | `size`, `aspectRatio`, `resolution`, `audio`, `watermark` |
-| Референс-в-видео   | 1                    | n/a                        | 4                   | 10 s               | `size`, `aspectRatio`, `resolution`, `audio`, `watermark` |
+| Режим              | Макс. выходных видео | Макс. входных изображений | Макс. входных видео | Макс. длительность | Поддерживаемые параметры                                    |
+| ------------------ | -------------------- | ------------------------- | ------------------ | ------------------ | ----------------------------------------------------------- |
+| Текст в видео      | 1                    | неприменимо                | неприменимо        | 10 с               | `size`, `aspectRatio`, `resolution`, `audio`, `watermark`   |
+| Изображение в видео | 1                   | 1                         | неприменимо        | 10 с               | `size`, `aspectRatio`, `resolution`, `audio`, `watermark`   |
+| Референс в видео   | 1                    | неприменимо                | 4                  | 10 с               | `size`, `aspectRatio`, `resolution`, `audio`, `watermark`   |
 
-Когда в запросе не указано `durationSeconds`, провайдер отправляет принятое в DashScope значение по умолчанию — **5 секунд**. Задайте `durationSeconds` явно в [инструменте генерации видео](/ru/tools/video-generation), чтобы увеличить длительность до 10 s.
+Если в запросе отсутствует `durationSeconds`, используется допустимое в DashScope значение по умолчанию — **5 секунд**. Чтобы увеличить длительность до 10 с, явно задайте `durationSeconds` в [инструменте генерации видео](/ru/tools/video-generation).
 
 <Warning>
-  Входные референсные изображения и видео должны быть удаленными URL `http(s)`. Локальные пути к файлам не принимаются референсными режимами DashScope; сначала загрузите их в объектное хранилище или используйте поток [инструмента медиа](/ru/tools/media-overview), который уже создает публичный URL.
+  Входные референсные изображения и видео должны быть доступны по удалённым URL-адресам `http(s)`; референсные режимы DashScope отклоняют пути к локальным файлам. Сначала загрузите файлы в объектное хранилище или воспользуйтесь сценарием [инструмента работы с медиа](/ru/tools/media-overview), который уже создаёт общедоступный URL.
 </Warning>
 
-## Расширенная конфигурация
+## Расширенная настройка
 
 <AccordionGroup>
-  <Accordion title="Override the DashScope base URL">
-    По умолчанию провайдер использует международный endpoint DashScope. Чтобы выбрать endpoint региона China, задайте:
+  <Accordion title="Переопределите базовый URL DashScope">
+    По умолчанию провайдер использует международную конечную точку DashScope. Чтобы использовать конечную точку китайского региона:
 
     ```json5
     {
@@ -122,28 +122,28 @@ OpenClaw поставляется со встроенным plugin `alibaba`, к
     }
     ```
 
-    Провайдер удаляет завершающие косые черты перед построением URL задач AIGC.
+    Перед формированием URL задач AIGC провайдер удаляет завершающие косые черты.
 
   </Accordion>
 
-  <Accordion title="Auth env priority">
-    OpenClaw разрешает API-ключ Alibaba из переменных окружения в таком порядке, выбирая первое непустое значение:
+  <Accordion title="Приоритет переменных окружения аутентификации">
+    OpenClaw определяет ключ API Alibaba из переменных окружения в следующем порядке, используя первое непустое значение:
 
     1. `MODELSTUDIO_API_KEY`
     2. `DASHSCOPE_API_KEY`
     3. `QWEN_API_KEY`
 
-    Настроенные записи `auth.profiles` (заданные через `openclaw models auth login`) переопределяют разрешение env-var. См. [профили авторизации в FAQ по моделям](/ru/help/faq-models#what-is-an-auth-profile) для механики ротации профилей, cooldown и переопределения.
+    Настроенные записи `auth.profiles` (заданные с помощью `openclaw models auth login`) имеют приоритет над определением значения из переменных окружения. Сведения о ротации профилей, периоде ожидания и механизме переопределения см. в разделе [«Профили аутентификации» в ответах на вопросы о моделях](/ru/help/faq-models#auth-profiles-what-they-are-and-how-to-manage-them).
 
   </Accordion>
 
-  <Accordion title="Relationship to the Qwen plugin">
-    Оба встроенных plugin взаимодействуют с DashScope и принимают пересекающиеся API-ключи. Используйте:
+  <Accordion title="Связь с Plugin Qwen">
+    Оба встроенных Plugin взаимодействуют с DashScope и принимают частично совпадающие ключи API. Используйте:
 
-    - идентификаторы `alibaba/wan*.*` для выделенного провайдера видео Wan, описанного на этой странице.
-    - идентификаторы `qwen/*` для чата, эмбеддингов и понимания медиа Qwen (см. [Qwen](/ru/providers/qwen)).
+    - идентификаторы `alibaba/wan*.*` для специализированного провайдера видео Wan, описанного на этой странице;
+    - идентификаторы `qwen/*` для чата Qwen, создания эмбеддингов и анализа медиаматериалов (см. [Qwen](/ru/providers/qwen)).
 
-    Однократная настройка `MODELSTUDIO_API_KEY` авторизует оба plugin, потому что список auth env var намеренно пересекается; вам не нужно выполнять онбординг каждого plugin отдельно.
+    Однократная настройка `MODELSTUDIO_API_KEY` обеспечивает аутентификацию обоих Plugin, поскольку списки переменных окружения аутентификации намеренно пересекаются; выполнять первоначальную настройку каждого Plugin отдельно не требуется.
 
   </Accordion>
 </AccordionGroup>
@@ -151,16 +151,16 @@ OpenClaw поставляется со встроенным plugin `alibaba`, к
 ## Связанные материалы
 
 <CardGroup cols={2}>
-  <Card title="Video generation" href="/ru/tools/video-generation" icon="video">
-    Общие параметры инструмента видео и выбор провайдера.
+  <Card title="Генерация видео" href="/ru/tools/video-generation" icon="video">
+    Общие параметры инструмента генерации видео и выбор провайдера.
   </Card>
   <Card title="Qwen" href="/ru/providers/qwen" icon="microchip">
-    Настройка чата, эмбеддингов и понимания медиа Qwen с той же авторизацией DashScope.
+    Настройка чата Qwen, создания эмбеддингов и анализа медиаматериалов с той же аутентификацией DashScope.
   </Card>
-  <Card title="Configuration reference" href="/ru/gateway/config-agents#agent-defaults" icon="gear">
-    Значения агентов по умолчанию и конфигурация моделей.
+  <Card title="Справочник по настройке" href="/ru/gateway/config-agents#agent-defaults" icon="gear">
+    Настройки агентов по умолчанию и конфигурация моделей.
   </Card>
-  <Card title="Models FAQ" href="/ru/help/faq-models" icon="circle-question">
-    Профили авторизации, переключение моделей и устранение ошибок "no profile".
+  <Card title="Ответы на вопросы о моделях" href="/ru/help/faq-models" icon="circle-question">
+    Профили аутентификации, переключение моделей и устранение ошибок «профиль отсутствует».
   </Card>
 </CardGroup>

@@ -1,17 +1,17 @@
 ---
 read_when:
     - Gateway için bir terminal kullanıcı arayüzü istiyorsunuz (uzaktan kullanıma uygun)
-    - url/token/session değerlerini betiklerden geçirmek istiyorsunuz
-    - TUI'yi Gateway olmadan yerel gömülü modda çalıştırmak istiyorsunuz
-    - Openclaw chat veya openclaw tui --local kullanmak istiyorsunuz
-summary: '`openclaw tui` için CLI referansı (Gateway destekli veya yerel gömülü terminal kullanıcı arayüzü)'
+    - Betiklerden url/token/session geçirmek istiyorsunuz
+    - Gateway olmadan TUI'yi yerel gömülü modda çalıştırmak istiyorsunuz
+    - openclaw chat veya openclaw tui --local kullanmak istiyorsunuz
+summary: '`openclaw tui` için CLI başvurusu (Gateway destekli veya yerel gömülü terminal kullanıcı arayüzü)'
 title: TUI
 x-i18n:
-    generated_at: "2026-06-28T00:25:37Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:36:49Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 514bbbcd0b695e8d4ccc87d1e242d816e264ac1f8b137f2bd891803ef7f48d5a
+    source_hash: 3e7b4a067e957c72836b22688f7446861b64fb7078b43e206bbe765ea0d62e57
     source_path: cli/tui.md
     workflow: 16
 ---
@@ -21,38 +21,48 @@ x-i18n:
 Gateway'e bağlı terminal kullanıcı arayüzünü açın veya yerel gömülü
 modda çalıştırın.
 
-İlgili:
-
-- TUI kılavuzu: [TUI](/tr/web/tui)
+İlgili kılavuz: [TUI](/tr/web/tui)
 
 ## Seçenekler
 
-| Bayrak                | Varsayılan                               | Açıklama                                                                                   |
-| --------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------ |
-| `--local`             | `false`                                  | Gateway yerine yerel gömülü agent çalışma zamanına karşı çalıştırın.                      |
-| `--url <url>`         | yapılandırmadan `gateway.remote.url`     | Gateway WebSocket URL'si.                                                                  |
-| `--token <token>`     | (yok)                                    | Gerekirse Gateway token'ı.                                                                 |
-| `--password <pass>`   | (yok)                                    | Gerekirse Gateway parolası.                                                                |
-| `--session <key>`     | `main` (veya kapsam global olduğunda `global`) | Oturum anahtarı. Bir agent çalışma alanının içindeyken, önek eklenmedikçe o agent'ı otomatik seçer. |
-| `--deliver`           | `false`                                  | Asistan yanıtlarını yapılandırılmış kanallar üzerinden iletin.                             |
-| `--thinking <level>`  | (model varsayılanı)                      | Düşünme düzeyi geçersiz kılması.                                                           |
-| `--message <text>`    | (yok)                                    | Bağlandıktan sonra başlangıç mesajı gönderin.                                              |
-| `--timeout-ms <ms>`   | `agents.defaults.timeoutSeconds`         | Agent zaman aşımı. Geçersiz değerler bir uyarı günlüğe yazar ve yok sayılır.               |
-| `--history-limit <n>` | `200`                                    | Bağlanırken yüklenecek geçmiş girdileri.                                                   |
+| Bayrak                       | Varsayılan                                | Açıklama                                                                           |
+| ---------------------------- | ----------------------------------------- | ---------------------------------------------------------------------------------- |
+| `--local`                    | `false`                                   | Gateway yerine yerel gömülü aracı çalışma zamanında çalıştırın.                    |
+| `--url <url>`                | yapılandırmadaki `gateway.remote.url`      | Gateway WebSocket URL'si.                                                          |
+| `--token <token>`            | (yok)                                     | Gerekiyorsa Gateway belirteci.                                                      |
+| `--password <pass>`          | (yok)                                     | Gerekiyorsa Gateway parolası.                                                       |
+| `--tls-fingerprint <sha256>` | `gateway.remote.tlsFingerprint`           | Sabitlenmiş bir `wss://` Gateway için beklenen TLS sertifikası parmak izi.          |
+| `--session <key>`            | `main` (kapsam genelse `global`)           | Oturum anahtarı. Bir aracı çalışma alanında, ön ek belirtilmedikçe o aracıyı otomatik olarak seçer. |
+| `--deliver`                  | `false`                                   | Asistan yanıtlarını yapılandırılmış kanallar üzerinden iletin.                     |
+| `--thinking <level>`         | (model varsayılanı)                        | Düşünme düzeyi geçersiz kılması.                                                    |
+| `--message <text>`           | (yok)                                     | Bağlandıktan sonra bir başlangıç iletisi gönderin.                                  |
+| `--timeout-ms <ms>`          | `agents.defaults.timeoutSeconds`          | Aracı zaman aşımı. Geçersiz değerler bir uyarı olarak günlüğe kaydedilir ve yok sayılır. |
+| `--history-limit <n>`        | `200`                                     | Bağlanırken yüklenecek geçmiş girdileri.                                            |
 
-Takma adlar: `openclaw chat` ve `openclaw terminal`, aynı komutu `--local` varsayılmış olarak çağırır.
+Takma adlar: `openclaw chat` ve `openclaw terminal`, örtük olarak
+`--local` kullanarak bu komutu çağırır.
 
-Notlar:
+## Notlar
 
-- `chat` ve `terminal`, `openclaw tui --local` için takma adlardır.
-- `--local`, `--url`, `--token` veya `--password` ile birlikte kullanılamaz.
-- `tui`, mümkün olduğunda token/parola kimlik doğrulaması için yapılandırılmış gateway kimlik doğrulama SecretRefs değerlerini çözümler (`env`/`file`/`exec` sağlayıcıları).
-- Yapılandırılmış bir agent çalışma alanı dizininin içinden başlatıldığında, TUI oturum anahtarı varsayılanı için o agent'ı otomatik seçer (`--session` açıkça `agent:<id>:...` olmadığı sürece).
-- Yerel olmayan URL destekli bağlantılar için alt bilgide Gateway ana makine adını göstermek üzere `openclaw config set tui.footer.showRemoteHost true` çalıştırın. Ana makine etiketi varsayılan olarak kapalıdır ve loopback veya gömülü yerel bağlantılar için hiçbir zaman görünmez.
-- Yerel mod, gömülü agent çalışma zamanını doğrudan kullanır. Çoğu yerel araç çalışır, ancak yalnızca Gateway'e özgü özellikler kullanılamaz.
-- Yerel mod, TUI komut yüzeyinin içine `/auth [provider]` ekler.
-- Plugin onay kapıları yerel modda da geçerlidir. Onay gerektiren araçlar terminalde karar ister; Gateway dahil olmadığı için hiçbir şey sessizce otomatik onaylanmaz.
-- Oturum [hedefleri](/tr/tools/goal) alt bilgide görünür ve `/goal` ile yönetilebilir.
+- `--local`; `--url`, `--token`, `--password` veya `--tls-fingerprint` ile birlikte kullanılamaz.
+- `tui`, mümkün olduğunda belirteç/parola kimlik doğrulaması için yapılandırılmış
+  Gateway kimlik doğrulama SecretRef'lerini çözümler (`env`/`file`/`exec` sağlayıcıları).
+- Açıkça bir URL veya bağlantı noktası belirtilmediğinde `tui`, çalışan Gateway
+  tarafından kaydedilen etkin yerel Gateway bağlantı noktasını izler. Açıkça belirtilen `--url`,
+  `OPENCLAW_GATEWAY_URL`, `OPENCLAW_GATEWAY_PORT` ve uzak Gateway yapılandırması önceliğini korur.
+- Yapılandırılmış bir aracı çalışma alanı dizininin içinden başlatıldığında TUI,
+  oturum anahtarı varsayılanı için o aracıyı otomatik olarak seçer (`--session` açıkça
+  `agent:<id>:...` olarak belirtilmedikçe).
+- Yerel olmayan, URL destekli bağlantılarda Gateway ana bilgisayar adını alt bilgide
+  göstermek için `openclaw config set tui.footer.showRemoteHost true` komutunu çalıştırın.
+  Varsayılan olarak kapalıdır; local loopback veya gömülü yerel bağlantılarda hiçbir zaman gösterilmez.
+- Yerel mod, gömülü aracı çalışma zamanını doğrudan kullanır. Yerel araçların çoğu çalışır,
+  ancak yalnızca Gateway'e özgü özellikler kullanılamaz.
+- Yerel mod, TUI komut yüzeyine `/auth [provider]` ekler.
+- Plugin onay kapıları yerel modda da geçerlidir: onay gerektiren araçlar
+  terminalde bir karar istemi gösterir; hiçbir şey sessizce otomatik olarak onaylanmaz.
+- Oturum [hedefleri](/tr/tools/goal) alt bilgide görünür ve
+  `/goal` ile yönetilebilir.
 
 ## Örnekler
 
@@ -62,20 +72,19 @@ openclaw tui --local
 openclaw tui
 openclaw tui --url ws://127.0.0.1:18789 --token <token>
 openclaw tui --session main --deliver
-openclaw chat --message "Compare my config to the docs and tell me what to fix"
-# when run inside an agent workspace, infers that agent automatically
+openclaw chat --message "Yapılandırmamı belgelerle karşılaştır ve neleri düzeltmem gerektiğini söyle"
+# bir aracı çalışma alanında çalıştırıldığında bu aracıyı otomatik olarak çıkarır
 openclaw tui --session bugfix
 ```
 
 ## Yapılandırma onarım döngüsü
 
-Geçerli yapılandırma zaten doğrulanıyorsa ve gömülü agent'ın bunu incelemesini,
-dokümanlarla karşılaştırmasını ve aynı terminalden onarmaya yardımcı olmasını
-istiyorsanız yerel modu kullanın:
+Gömülü aracının mevcut yapılandırmayı incelemesi, belgelerle karşılaştırması
+ve aynı terminalden onarılmasına yardımcı olması için yerel modu kullanın.
 
-`openclaw config validate` zaten başarısız oluyorsa önce `openclaw configure`
-veya `openclaw doctor --fix` kullanın. `openclaw chat`, geçersiz yapılandırma
-korumasını atlamaz.
+`openclaw config validate` zaten başarısız oluyorsa önce `openclaw configure` veya
+`openclaw doctor --fix` komutunu çalıştırın; `openclaw chat`,
+geçersiz yapılandırma korumasını atlamaz.
 
 ```bash
 openclaw chat
@@ -90,10 +99,11 @@ Ardından TUI içinde:
 !openclaw doctor
 ```
 
-Hedefli düzeltmeleri `openclaw config set` veya `openclaw configure` ile
-uygulayın, ardından `openclaw config validate` komutunu yeniden çalıştırın. Bkz. [TUI](/tr/web/tui) ve [Yapılandırma](/tr/cli/config).
+`openclaw config set` veya `openclaw configure` ile hedefli düzeltmeler uygulayın,
+ardından `openclaw config validate` komutunu yeniden çalıştırın. Bkz.
+[TUI](/tr/web/tui) ve [Yapılandırma](/tr/cli/config).
 
-## İlgili
+## İlgili içerikler
 
 - [CLI başvurusu](/tr/cli)
 - [TUI](/tr/web/tui)

@@ -1,11 +1,11 @@
 ---
 read_when:
-    - firecrawl eklentisini kuruyor, yapılandırıyor veya denetliyorsunuz
-summary: Ajan tarafından çağrılabilir araçlar ekler. Web fetch sağlayıcı desteği ekler. Web arama sağlayıcı desteği ekler.
-title: Firecrawl Plugin
+    - firecrawl pluginini kuruyor, yapılandırıyor veya denetliyorsunuz
+summary: Aracı tarafından çağrılabilen araçlar ekler. Web içeriği getirme sağlayıcısı desteği ekler. Web arama sağlayıcısı desteği ekler.
+title: Firecrawl Plugin'i
 x-i18n:
-    generated_at: "2026-06-28T00:59:57Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:37:15Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: ca5577e6e850d947a3714e3dc62c7756faae8471e150d3cdb320a85efe3fe4f5
@@ -13,18 +13,18 @@ x-i18n:
     workflow: 16
 ---
 
-# Firecrawl Plugin
+# Firecrawl plugin'i
 
-Ajan tarafından çağrılabilir araçlar ekler. Web getirme sağlayıcısı desteği ekler. Web arama sağlayıcısı desteği ekler.
+Aracı tarafından çağrılabilen araçlar ekler. Web getirme sağlayıcısı desteği ekler. Web arama sağlayıcısı desteği ekler.
 
 ## Dağıtım
 
 - Paket: `@openclaw/firecrawl-plugin`
-- Kurulum rotası: npm; ClawHub: `clawhub:@openclaw/firecrawl-plugin`
+- Kurulum yolu: npm; ClawHub: `clawhub:@openclaw/firecrawl-plugin`
 
 ## Yüzey
 
-sözleşmeler: tools, webFetchProviders, webSearchProviders
+sözleşmeler: araçlar, web getirme sağlayıcıları, web arama sağlayıcıları
 
 ## İlgili belgeler
 

@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Vous installez, configurez ou auditez le plugin tavily
-summary: Ajoute des outils appelables par l’agent. Ajoute la prise en charge du fournisseur de recherche web.
+    - Vous installez, configurez ou auditez le plugin Tavily
+summary: Ajoute des outils pouvant être appelés par les agents. Ajoute la prise en charge des fournisseurs de recherche web.
 title: Plugin Tavily
 x-i18n:
-    generated_at: "2026-06-27T17:57:12Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T02:58:32Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 409da2bdfca9c2dd5a2c64565787175b57f2d43f09b1fa484ac54dd1f528c9fb
@@ -15,16 +15,16 @@ x-i18n:
 
 # Plugin Tavily
 
-Ajoute des outils appelables par agent. Ajoute la prise en charge du fournisseur de recherche web.
+Ajoute des outils pouvant être appelés par les agents. Ajoute la prise en charge d’un fournisseur de recherche web.
 
 ## Distribution
 
-- Package : `@openclaw/tavily-plugin`
-- Route d’installation : npm ; ClawHub : `clawhub:@openclaw/tavily-plugin`
+- Paquet : `@openclaw/tavily-plugin`
+- Méthode d’installation : npm ; ClawHub : `clawhub:@openclaw/tavily-plugin`
 
 ## Surface
 
-contrats : outils, webSearchProviders ; skills
+contrats : outils, fournisseurs de recherche web ; Skills
 
 ## Documentation associée
 

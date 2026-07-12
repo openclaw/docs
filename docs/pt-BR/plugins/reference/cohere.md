@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Você está instalando, configurando ou auditando o Plugin cohere
+    - Você está instalando, configurando ou auditando o plugin cohere
 summary: Plugin de provedor Cohere do OpenClaw.
 title: Plugin da Cohere
 x-i18n:
-    generated_at: "2026-06-27T17:52:18Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T00:13:15Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 08bdb32e07d1b28d19a89c2eb082348b4b04ddb42d0b7f145aa3513287bb72d9
@@ -13,18 +13,18 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin Cohere
+# Plugin da Cohere
 
-Plugin de provedor Cohere do OpenClaw.
+Plugin de provedor da Cohere para o OpenClaw.
 
 ## Distribuição
 
 - Pacote: `@openclaw/cohere-provider`
-- Rota de instalação: incluído no OpenClaw; npm; ClawHub: `clawhub:@openclaw/cohere-provider`
+- Forma de instalação: incluído no OpenClaw; npm; ClawHub: `clawhub:@openclaw/cohere-provider`
 
 ## Superfície
 
-providers: cohere
+provedores: cohere
 
 ## Documentação relacionada
 

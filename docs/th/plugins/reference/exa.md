@@ -2,10 +2,10 @@
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin exa
 summary: เพิ่มการรองรับผู้ให้บริการค้นหาเว็บ
-title: Exa Plugin
+title: Plugin Exa
 x-i18n:
-    generated_at: "2026-06-27T18:01:48Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:29:38Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 6170d70f03913f87b62f7a85647b4748032b7d01c56e909826e10e261e58160f
@@ -13,16 +13,16 @@ x-i18n:
     workflow: 16
 ---
 
-# Exa Plugin
+# Plugin Exa
 
 เพิ่มการรองรับผู้ให้บริการค้นหาเว็บ
 
 ## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/exa-plugin`
-- เส้นทางการติดตั้ง: npm; ClawHub: `clawhub:@openclaw/exa-plugin`
+- ช่องทางการติดตั้ง: npm; ClawHub: `clawhub:@openclaw/exa-plugin`
 
-## พื้นผิวการใช้งาน
+## ส่วนเชื่อมต่อ
 
 สัญญา: webSearchProviders
 

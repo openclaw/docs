@@ -1,11 +1,11 @@
 ---
 read_when:
-    - شما در حال نصب، پیکربندی یا ممیزی Plugin nextcloud-talk هستید
+    - در حال نصب، پیکربندی یا ممیزی Plugin ‏nextcloud-talk هستید
 summary: Plugin کانال Nextcloud Talk در OpenClaw برای مکالمات.
-title: Plugin Nextcloud Talk
+title: Plugin گفت‌وگوی Nextcloud
 x-i18n:
-    generated_at: "2026-06-27T18:27:41Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T10:30:52Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: ce8dd648fcc2226e6b365f092eb3dc54062d2c9d8d5c613cb0c2d5e9f237c720
@@ -13,19 +13,19 @@ x-i18n:
     workflow: 16
 ---
 
-# Plugin ‏Nextcloud Talk
+# Plugin گفت‌وگوی Nextcloud
 
-Plugin کانال Nextcloud Talk در OpenClaw برای مکالمه‌ها.
+Plugin کانال گفت‌وگوی Nextcloud برای مکالمات در OpenClaw.
 
 ## توزیع
 
 - بسته: `@openclaw/nextcloud-talk`
-- مسیر نصب: npm؛ ClawHub
+- روش نصب: npm؛ ClawHub
 
 ## سطح
 
-channels: nextcloud-talk
+کانال‌ها: nextcloud-talk
 
 ## مستندات مرتبط
 
-- [nextcloud-talk](/fa/channels/nextcloud-talk)
+- [گفت‌وگوی Nextcloud](/fa/channels/nextcloud-talk)

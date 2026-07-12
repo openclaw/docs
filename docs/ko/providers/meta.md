@@ -1,14 +1,13 @@
 ---
 read_when:
-    - OpenClaw에서 Meta를 사용하려고 합니다
-    - MODEL_API_KEY 환경 변수 또는 CLI 인증 선택 항목이 필요합니다.
+    - OpenClaw에서 Meta를 사용하려는 경우
+    - MODEL_API_KEY 환경 변수 또는 CLI 인증 선택이 필요합니다.
 summary: Meta 설정(인증 + muse-spark-1.1 모델 선택)
-title: Meta
+title: 메타
 x-i18n:
-    generated_at: "2026-07-12T15:36:47Z"
+    generated_at: "2026-07-12T01:08:10Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: f2ce7616d9abc14a2d15ee53ea7725d3e70059af1a38bb61dbfe5b3969106432
     source_path: providers/meta.md
@@ -57,9 +56,7 @@ export MODEL_API_KEY=<key>
     openclaw models list --provider meta
     ```
 
-    정적 `muse-spark-1.1` 카탈로그 항목을 나열합니다. `MODEL_API_KEY`가 확인되지 않으면
-    `openclaw models status --json`은 누락된 자격 증명을
-    `auth.unusableProfiles` 아래에 보고합니다.
+    정적 `muse-spark-1.1` 카탈로그 항목을 나열합니다. `MODEL_API_KEY`를 확인할 수 없으면 `openclaw models status --json`이 `auth.unusableProfiles` 아래에 누락된 자격 증명을 보고합니다.
 
   </Step>
 </Steps>
@@ -87,8 +84,7 @@ openclaw onboard --non-interactive --accept-risk \
 - 상태 비저장 암호화 추론 재생(`store: false`, `include: ["reasoning.encrypted_content"]`)
 
 <Warning>
-`muse-spark-1.1`은 `reasoning.effort: "none"`을 허용하지 않습니다. OpenClaw는
-이 제공자에서 `--thinking off`를 `minimal`로 매핑합니다.
+`muse-spark-1.1`은 `reasoning.effort: "none"`을 허용하지 않습니다. OpenClaw는 이 제공자에서 `--thinking off`를 `minimal`로 매핑합니다.
 </Warning>
 
 ## 수동 구성
@@ -108,10 +104,7 @@ openclaw onboard --non-interactive --accept-risk \
 ```
 
 <Note>
-Gateway가 데몬(launchd, systemd, Docker)으로 실행되는 경우
-`MODEL_API_KEY`를 해당 프로세스에서 사용할 수 있는지 확인하십시오. 예를 들어
-`~/.openclaw/.env` 또는 `env.shellEnv`를 통해 제공할 수 있습니다. 대화형 셸에서만
-내보낸 키는 환경을 별도로 가져오지 않는 한 관리형 서비스에 적용되지 않습니다.
+Gateway가 데몬(launchd, systemd, Docker)으로 실행되는 경우 해당 프로세스에서 `MODEL_API_KEY`를 사용할 수 있는지 확인하세요. 예를 들어 `~/.openclaw/.env` 또는 `env.shellEnv`를 사용할 수 있습니다. 대화형 셸에서만 내보낸 키는 환경을 별도로 가져오지 않는 한 관리형 서비스에 적용되지 않습니다.
 </Note>
 
 ## 스모크 테스트
@@ -123,7 +116,7 @@ pnpm test:live -- extensions/meta/meta.live.test.ts
 
 라이브 테스트는 `POST /v1/responses`에 대해 `muse-spark-1.1`을 사용합니다.
 
-## 관련 문서
+## 관련 항목
 
 <CardGroup cols={2}>
   <Card title="모델 제공자" href="/ko/concepts/model-providers" icon="layers">

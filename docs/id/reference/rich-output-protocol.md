@@ -1,65 +1,51 @@
 ---
 read_when:
-    - Mengubah perenderan output asisten di Control UI
-    - Men-debug `[embed ...]`, media terstruktur, balasan, atau direktif presentasi audio
+    - Mengubah perenderan keluaran asisten di UI Kontrol
+    - Men-debug arahan penyajian `[embed ...]`, media terstruktur, balasan, atau audio
 summary: Protokol keluaran kaya untuk media terstruktur, sematan, petunjuk audio, dan balasan
-title: Protokol output kaya
+title: Protokol keluaran kaya
 x-i18n:
-    generated_at: "2026-06-27T18:11:10Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:38:56Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f5915f0ba29e6b0d27c99b1c7fdc632f1b58a4d96eae26bf6670205bd4fb88b1
+    source_hash: cbfe68f38c871f5f6d2811eb52b18d0143606f30283023ae96db64543eed95a1
     source_path: reference/rich-output-protocol.md
     workflow: 16
 ---
 
-Output asisten dapat membawa sekumpulan kecil direktif pengiriman/perenderan:
+Keluaran asisten membawa direktif pengiriman/render melalui beberapa saluran khusus:
 
-- field terstruktur `mediaUrl` / `mediaUrls` untuk pengiriman lampiran
-- `[[audio_as_voice]]` untuk petunjuk presentasi audio
-- `[[reply_to_current]]` / `[[reply_to:<id>]]` untuk metadata balasan
-- `[embed ...]` untuk rendering kaya Control UI
+- Kolom terstruktur `mediaUrl` / `mediaUrls` untuk pengiriman lampiran.
+- `[[audio_as_voice]]` untuk petunjuk penyajian audio.
+- `[[reply_to_current]]` / `[[reply_to:<id>]]` untuk metadata balasan.
+- `[embed ...]` untuk rendering kaya pada Antarmuka Kontrol.
 
-Lampiran media jarak jauh harus berupa URL `https:` publik. `http:` biasa,
-loopback, link-local, privat, dan hostname internal diabaikan sebagai direktif
-lampiran; pengambil media sisi server tetap menerapkan penjaga jaringannya sendiri.
+Kolom media terstruktur dan tag `[[...]]` merupakan metadata pengiriman. `[embed ...]` adalah jalur rendering kaya terpisah yang hanya tersedia di web; ini bukan alias media.
 
-Lampiran media lokal dapat menggunakan path absolut, path relatif terhadap workspace, atau
-path `~/` relatif terhadap home. Lampiran tersebut tetap melewati kebijakan baca-file agen dan
-pemeriksaan jenis media sebelum pengiriman.
+## Lampiran media
+
+Lampiran jarak jauh harus berupa URL `https:` publik. Nama host `http:`, loopback, link-local, privat, dan internal ditolak sebagai direktif lampiran; pengambil media sisi server menerapkan pengamanan jaringannya sendiri sebagai perlindungan tambahan.
+
+Lampiran lokal menerima jalur absolut, jalur relatif terhadap ruang kerja, atau jalur `~/` yang relatif terhadap direktori beranda. Lampiran tersebut tetap harus melewati kebijakan pembacaan berkas agen dan pemeriksaan jenis media sebelum dikirim.
 
 <Warning>
-Jangan mengeluarkan perintah teks untuk lampiran dari alat, plugin, blok streaming,
-output browser, atau aksi pesan. Gunakan field media terstruktur sebagai gantinya.
-
-Payload message-tool yang valid:
+Jangan menghasilkan perintah teks untuk lampiran dari alat, plugin, blok streaming, keluaran peramban, atau tindakan pesan. Gunakan kolom media terstruktur sebagai gantinya:
 
 ```json
-{ "message": "Here is your image.", "mediaUrl": "/workspace/image.png" }
+{ "message": "Berikut gambar Anda.", "mediaUrl": "/workspace/image.png" }
 ```
 
-Teks balasan akhir asisten lama mungkin masih dinormalisasi untuk kompatibilitas, tetapi
-itu bukan protokol plugin/alat umum.
+Teks balasan akhir lama mungkin masih dinormalisasi untuk kompatibilitas, tetapi ini bukan protokol umum untuk plugin/alat.
 </Warning>
 
-Sintaks gambar Markdown biasa tetap berupa teks secara default. Saluran yang secara sengaja
-memetakan balasan gambar Markdown ke lampiran media ikut serta di adaptor keluar
-mereka; Telegram melakukan ini sehingga `![alt](url)` tetap dapat menjadi balasan media.
+Sintaks gambar Markdown biasa (`![alt](url)`) secara default tetap menjadi teks. Saluran yang ingin memperlakukan gambar Markdown sebagai balasan media dapat mengaktifkannya pada adaptor keluar; Telegram melakukan ini sehingga `![alt](url)` menjadi lampiran media.
 
-Direktif ini terpisah. Field media terstruktur dan tag balasan/suara adalah
-metadata pengiriman; `[embed ...]` adalah jalur render kaya khusus web.
-
-Saat streaming blok diaktifkan, media harus dibawa pada field payload terstruktur.
-Jika URL media yang sama dikirim dalam blok yang di-streaming dan diulang dalam
-payload akhir asisten, OpenClaw mengirim lampiran sekali dan menghapus duplikat
-dari payload akhir.
+Saat streaming blok diaktifkan, media harus dikirim melalui kolom muatan terstruktur. Jika URL media yang sama muncul dalam blok yang dialirkan dan muncul lagi dalam muatan akhir asisten, OpenClaw mengirimkannya sekali dan menghapus duplikatnya dari muatan akhir.
 
 ## `[embed ...]`
 
-`[embed ...]` adalah satu-satunya sintaks render kaya yang menghadap agen untuk Control UI.
-
-Contoh self-closing:
+`[embed ...]` adalah satu-satunya sintaks rendering kaya yang dapat digunakan agen untuk Antarmuka Kontrol. Contoh yang menutup sendiri:
 
 ```text
 [embed ref="cv_123" title="Status" /]
@@ -67,16 +53,15 @@ Contoh self-closing:
 
 Aturan:
 
-- `[view ...]` tidak lagi valid untuk output baru.
-- Shortcode embed dirender hanya di permukaan pesan asisten.
-- Hanya embed yang didukung URL yang dirender. Gunakan `ref="..."` atau `url="..."`.
-- Shortcode embed HTML inline berbentuk blok tidak dirender.
-- UI web menghapus shortcode dari teks yang terlihat dan merender embed secara inline.
-- Media terstruktur bukan alias embed dan tidak boleh digunakan untuk rendering embed kaya.
+- `[view ...]` tidak lagi valid untuk keluaran baru.
+- Kode pendek sematan hanya dirender pada permukaan pesan asisten.
+- Hanya sematan berbasis URL yang dirender; gunakan `ref="..."` atau `url="..."`.
+- Kode pendek sematan HTML sebaris berbentuk blok tidak dirender.
+- Antarmuka web menghapus kode pendek dari teks yang terlihat dan merender sematan secara sebaris.
 
 ## Bentuk rendering tersimpan
 
-Blok konten asisten yang dinormalisasi/disimpan adalah item `canvas` terstruktur:
+Blok konten asisten yang telah dinormalisasi/disimpan merupakan item `canvas` terstruktur:
 
 ```json
 {
@@ -93,7 +78,7 @@ Blok konten asisten yang dinormalisasi/disimpan adalah item `canvas` terstruktur
 }
 ```
 
-Blok kaya yang disimpan/dirender menggunakan bentuk `canvas` ini secara langsung. `present_view` tidak dikenali.
+`present_view` tidak dikenali; blok kaya yang disimpan/dirender selalu menggunakan bentuk `canvas` ini.
 
 ## Terkait
 

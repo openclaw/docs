@@ -1,28 +1,26 @@
 ---
 read_when:
-    - モデルプロバイダーを選択する場合
-    - サポートされている LLM バックエンドの概要をすぐに確認する必要がある場合
+    - モデルプロバイダーを選択したい場合
+    - サポートされている LLM バックエンドの概要をすばやく確認したい場合
 summary: OpenClaw がサポートするモデルプロバイダー（LLM）
 title: プロバイダーディレクトリ
 x-i18n:
-    generated_at: "2026-07-12T14:47:18Z"
+    generated_at: "2026-07-11T22:37:23Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: b59843b53265500866e87ee8d888892dacd6045bdb9401a1e7ec08ad4f364090
     source_path: providers/index.md
     workflow: 16
 ---
 
-OpenClaw は多くの LLM プロバイダーを利用できます。プロバイダーを選択して認証し、
-デフォルトモデルを `provider/model` として設定します。
+OpenClaw は多くの LLM プロバイダーを利用できます。プロバイダーを選択して認証し、デフォルトモデルを `provider/model` として設定します。
 
-チャットチャネルのドキュメント（WhatsApp/Telegram/Discord/Slack/Mattermost（Plugin）など）をお探しですか？[チャネル](/ja-JP/channels)を参照してください。
+チャットチャンネルのドキュメント（WhatsApp/Telegram/Discord/Slack/Mattermost（Plugin）など）をお探しですか？[チャンネル](/ja-JP/channels)を参照してください。
 
 ## クイックスタート
 
-1. プロバイダーで認証します（通常は `openclaw onboard` を使用）。
+1. プロバイダーで認証します（通常は `openclaw onboard` を使用します）。
 2. デフォルトモデルを設定します。
 
 ```json5
@@ -42,7 +40,7 @@ OpenClaw は多くの LLM プロバイダーを利用できます。プロバイ
 - [BytePlus（国際版）](/ja-JP/concepts/model-providers#byteplus-international)
 - [Cerebras](/ja-JP/providers/cerebras)
 - [Chutes](/ja-JP/providers/chutes)
-- [ClawRouter（マネージド型マルチプロバイダールーティング）](/ja-JP/providers/clawrouter)
+- [ClawRouter（マネージドマルチプロバイダールーティング）](/ja-JP/providers/clawrouter)
 - [Cloudflare AI Gateway](/ja-JP/providers/cloudflare-ai-gateway)
 - [Cohere](/ja-JP/providers/cohere)
 - [ComfyUI](/ja-JP/providers/comfy)
@@ -96,7 +94,7 @@ OpenClaw は多くの LLM プロバイダーを利用できます。プロバイ
 
 ## 共通の概要ページ
 
-- [追加のプロバイダーバリエーション](/ja-JP/providers/models#additional-provider-variants) - Anthropic Vertex、Copilot Proxy、Gemini CLI OAuth
+- [その他のプロバイダーバリアント](/ja-JP/providers/models#additional-provider-variants) - Anthropic Vertex、Copilot Proxy、Gemini CLI OAuth
 - [画像生成](/ja-JP/tools/image-generation) - 共通の `image_generate` ツール、プロバイダーの選択、フェイルオーバー
 - [音楽生成](/ja-JP/tools/music-generation) - 共通の `music_generate` ツール、プロバイダーの選択、フェイルオーバー
 - [動画生成](/ja-JP/tools/video-generation) - 共通の `video_generate` ツール、プロバイダーの選択、フェイルオーバー
@@ -112,7 +110,6 @@ OpenClaw は多くの LLM プロバイダーを利用できます。プロバイ
 
 ## コミュニティツール
 
-- [Claude Max API Proxy](/ja-JP/providers/claude-max-api-proxy) - Claude サブスクリプション認証情報用のコミュニティプロキシ（使用前に Anthropic のポリシーおよび利用規約を確認してください）
+- [Claude Max API Proxy](/ja-JP/providers/claude-max-api-proxy) - Claude サブスクリプションの認証情報を使用するコミュニティプロキシ（使用前に Anthropic のポリシーと利用規約を確認してください）
 
-プロバイダーの完全なカタログ（xAI、Groq、Mistral など）と高度な設定については、
-[モデルプロバイダー](/ja-JP/concepts/model-providers)を参照してください。
+プロバイダーの完全なカタログ（xAI、Groq、Mistral など）と高度な設定については、[モデルプロバイダー](/ja-JP/concepts/model-providers)を参照してください。

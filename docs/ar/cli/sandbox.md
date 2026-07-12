@@ -1,41 +1,61 @@
 ---
 read_when: You are managing sandbox runtimes or debugging sandbox/tool-policy behavior.
 status: active
-summary: إدارة بيئات تشغيل العزل وفحص سياسة العزل الفعلية
-title: Sandbox CLI
+summary: إدارة بيئات تشغيل وضع الحماية وفحص سياسة وضع الحماية الفعلية
+title: CLI لصندوق العزل
 x-i18n:
-    generated_at: "2026-06-27T17:24:28Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T05:43:50Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: eeba1a5530bb946b334cfe399b7a0c862694ae47c55b2341d7146333e112602a
+    source_hash: d41d81971b673d814697a4bf800d6973180c58e4cc5e69748614501dca3a6b6d
     source_path: cli/sandbox.md
     workflow: 16
 ---
 
-إدارة بيئات تشغيل صندوق الحماية لتنفيذ الوكلاء بمعزل.
-
-## نظرة عامة
-
-يمكن لـ OpenClaw تشغيل الوكلاء في بيئات تشغيل صندوق حماية معزولة من أجل الأمان. تساعدك أوامر `sandbox` على فحص تلك البيئات وإعادة إنشائها بعد التحديثات أو تغييرات التكوين.
-
-يعني ذلك اليوم عادة:
-
-- حاويات صندوق حماية Docker
-- بيئات تشغيل صندوق حماية SSH عندما تكون `agents.defaults.sandbox.backend = "ssh"`
-- بيئات تشغيل صندوق حماية OpenShell عندما تكون `agents.defaults.sandbox.backend = "openshell"`
-
-بالنسبة إلى `ssh` و OpenShell `remote`، تكون إعادة الإنشاء أكثر أهمية مقارنة بـ Docker:
-
-- مساحة العمل البعيدة هي المصدر المعتمد بعد البذر الأولي
-- يحذف `openclaw sandbox recreate` مساحة العمل البعيدة المعتمدة لذلك النطاق المحدد
-- يعيد الاستخدام التالي بذرها من مساحة العمل المحلية الحالية
+إدارة بيئات تشغيل العزل لتنفيذ الوكيل بشكل معزول: حاويات Docker، أو وجهات SSH، أو خلفيات OpenShell.
 
 ## الأوامر
 
+### `openclaw sandbox list`
+
+اعرض بيئات تشغيل العزل مع الحالة، والخلفية، ومدى تطابق الإعداد، والعمر، ومدة الخمول، والجلسة/الوكيل المرتبط.
+
+```bash
+openclaw sandbox list
+openclaw sandbox list --browser  # حاويات المتصفح فقط
+openclaw sandbox list --json
+```
+
+### `openclaw sandbox recreate`
+
+أزل بيئات تشغيل العزل لفرض إعادة إنشائها بالإعداد الحالي. تُعاد إنشاء بيئات التشغيل تلقائيًا في المرة التالية التي يُستخدم فيها الوكيل.
+
+```bash
+openclaw sandbox recreate --all
+openclaw sandbox recreate --agent mybot        # يتضمن الجلسات الفرعية agent:mybot:*
+openclaw sandbox recreate --session "agent:main:main"
+openclaw sandbox recreate --browser --all      # حاويات المتصفح فقط
+openclaw sandbox recreate --all --force        # تجاوز التأكيد
+```
+
+الخيارات:
+
+- `--all`: إعادة إنشاء جميع حاويات العزل
+- `--session <key>`: إعادة إنشاء بيئة التشغيل ذات مفتاح النطاق المطابق تمامًا (كما يظهر في `sandbox list`)؛ من دون توسيع الاسم المختصر
+- `--agent <id>`: إعادة إنشاء بيئات التشغيل لوكيل واحد (يطابق `agent:<id>` و`agent:<id>:*`)
+- `--browser`: التأثير في حاويات المتصفح فقط
+- `--force`: تجاوز مطالبة التأكيد
+
+مرّر خيارًا واحدًا فقط من `--all` أو `--session` أو `--agent`.
+
+بالنسبة إلى `ssh` و`remote` في OpenShell، تكون إعادة الإنشاء أكثر أهمية مما هي عليه مع Docker: تصبح مساحة العمل البعيدة هي النسخة المرجعية بعد التهيئة الأولية، ويحذف `recreate` مساحة العمل البعيدة المرجعية تلك للنطاق المحدد، ثم تعيد عملية التشغيل التالية تهيئتها انطلاقًا من مساحة العمل المحلية الحالية.
+
 ### `openclaw sandbox explain`
 
-افحص وضع/نطاق/وصول مساحة عمل صندوق الحماية **الفعلي**، وسياسة أدوات صندوق الحماية، وبوابات التصعيد (مع مسارات مفاتيح التكوين للإصلاح).
+افحص وضع العزل ونطاقه والوصول إلى مساحة العمل الفعّالة، وسياسة أدوات العزل، وبوابات الأدوات ذات الصلاحيات المرتفعة (مع مسارات مفاتيح الإعداد اللازمة للإصلاح).
+
+يُبقي التقرير `workspaceRoot` بوصفه جذر العزل المُعدّ، ويعرض بشكل منفصل مساحة عمل المضيف الفعّالة، ودليل العمل لبيئة تشغيل الخلفية، وجدول عمليات الربط في Docker. عند استخدام `workspaceAccess: "rw"`، تكون مساحة عمل المضيف الفعّالة هي مساحة عمل الوكيل بدلًا من دليل يقع تحت `workspaceRoot`.
 
 ```bash
 openclaw sandbox explain
@@ -44,163 +64,60 @@ openclaw sandbox explain --agent work
 openclaw sandbox explain --json
 ```
 
-### `openclaw sandbox list`
+بخلاف `recreate --session`، يقبل هذا الأمر أسماء الجلسات المختصرة (مثل `main`) ويوسّعها وفقًا للوكيل الذي جرى تحديده.
 
-اسرد كل بيئات تشغيل صندوق الحماية مع حالتها وتكوينها.
+## لماذا يلزم إجراء إعادة الإنشاء
 
-```bash
-openclaw sandbox list
-openclaw sandbox list --browser  # List only browser containers
-openclaw sandbox list --json     # JSON output
-```
-
-**يتضمن الإخراج:**
-
-- اسم بيئة التشغيل وحالتها
-- الخلفية (`docker`، `openshell`، إلخ)
-- تسمية التكوين وما إذا كانت تطابق التكوين الحالي
-- العمر (الوقت منذ الإنشاء)
-- وقت الخمول (الوقت منذ آخر استخدام)
-- الجلسة/الوكيل المرتبط
-
-### `openclaw sandbox recreate`
-
-أزل بيئات تشغيل صندوق الحماية لفرض إعادة إنشائها بالتكوين المحدّث.
-
-```bash
-openclaw sandbox recreate --all                # Recreate all containers
-openclaw sandbox recreate --session main       # Specific session
-openclaw sandbox recreate --agent mybot        # Specific agent
-openclaw sandbox recreate --browser            # Only browser containers
-openclaw sandbox recreate --all --force        # Skip confirmation
-```
-
-**الخيارات:**
-
-- `--all`: إعادة إنشاء كل حاويات صندوق الحماية
-- `--session <key>`: إعادة إنشاء الحاوية لجلسة محددة
-- `--agent <id>`: إعادة إنشاء الحاويات لوكيل محدد
-- `--browser`: إعادة إنشاء حاويات المتصفح فقط
-- `--force`: تخطي مطالبة التأكيد
-
-<Note>
-تُعاد إنشاء بيئات التشغيل تلقائيا عند استخدام الوكيل في المرة التالية.
-</Note>
-
-## حالات الاستخدام
-
-### بعد تحديث صورة Docker
-
-```bash
-# Pull new image
-docker pull openclaw-sandbox:latest
-docker tag openclaw-sandbox:latest openclaw-sandbox:bookworm-slim
-
-# Update config to use new image
-# Edit config: agents.defaults.sandbox.docker.image (or agents.list[].sandbox.docker.image)
-
-# Recreate containers
-openclaw sandbox recreate --all
-```
-
-### بعد تغيير تكوين صندوق الحماية
-
-```bash
-# Edit config: agents.defaults.sandbox.* (or agents.list[].sandbox.*)
-
-# Recreate to apply new config
-openclaw sandbox recreate --all
-```
-
-### بعد تغيير هدف SSH أو مواد مصادقة SSH
-
-```bash
-# Edit config:
-# - agents.defaults.sandbox.backend
-# - agents.defaults.sandbox.ssh.target
-# - agents.defaults.sandbox.ssh.workspaceRoot
-# - agents.defaults.sandbox.ssh.identityFile / certificateFile / knownHostsFile
-# - agents.defaults.sandbox.ssh.identityData / certificateData / knownHostsData
-
-openclaw sandbox recreate --all
-```
-
-بالنسبة إلى خلفية `ssh` الأساسية، تحذف إعادة الإنشاء جذر مساحة العمل البعيدة لكل نطاق
-على هدف SSH. يعيد التشغيل التالي بذرها من مساحة العمل المحلية.
-
-### بعد تغيير مصدر OpenShell أو سياسته أو وضعه
-
-```bash
-# Edit config:
-# - agents.defaults.sandbox.backend
-# - plugins.entries.openshell.config.from
-# - plugins.entries.openshell.config.mode
-# - plugins.entries.openshell.config.policy
-
-openclaw sandbox recreate --all
-```
-
-بالنسبة إلى وضع OpenShell `remote`، تحذف إعادة الإنشاء مساحة العمل البعيدة المعتمدة
-لذلك النطاق. يعيد التشغيل التالي بذرها من مساحة العمل المحلية.
-
-### بعد تغيير setupCommand
-
-```bash
-openclaw sandbox recreate --all
-# or just one agent:
-openclaw sandbox recreate --agent family
-```
-
-### لوكيل محدد فقط
-
-```bash
-# Update only one agent's containers
-openclaw sandbox recreate --agent alfred
-```
-
-## لماذا يلزم ذلك
-
-عند تحديث تكوين صندوق الحماية:
-
-- تستمر بيئات التشغيل الحالية بالعمل بالإعدادات القديمة.
-- لا تُزال بيئات التشغيل إلا بعد 24 ساعة من عدم النشاط.
-- الوكلاء المستخدمون بانتظام يبقون بيئات التشغيل القديمة نشطة إلى أجل غير مسمى.
-
-استخدم `openclaw sandbox recreate` لفرض إزالة بيئات التشغيل القديمة. تُعاد إنشاؤها تلقائيا بالإعدادات الحالية عند الحاجة إليها في المرة التالية.
+لا يؤثر تحديث إعداد العزل في الحاويات قيد التشغيل: تحتفظ بيئات التشغيل الحالية بإعداداتها القديمة، ولا تُحذف بيئات التشغيل الخاملة إلا بعد `prune.idleHours` (القيمة الافتراضية 24 ساعة). يمكن للوكلاء المستخدمين بانتظام إبقاء بيئات التشغيل القديمة قائمة إلى أجل غير مسمى. يزيل `openclaw sandbox recreate` بيئة التشغيل القديمة كي يُعاد بناؤها من الإعداد الحالي عند الاستخدام التالي.
 
 <Tip>
-فضّل `openclaw sandbox recreate` على التنظيف اليدوي الخاص بالخلفية. فهو يستخدم سجل بيئات تشغيل Gateway ويتجنب عدم التطابق عند تغيير مفاتيح النطاق أو الجلسة.
+فضّل `openclaw sandbox recreate` على التنظيف اليدوي الخاص بكل خلفية. فهو يستخدم سجل بيئات التشغيل الخاص بـ Gateway ويتجنب حالات عدم التطابق عند تغيّر مفاتيح النطاق أو الجلسة.
 </Tip>
+
+## الأسباب الشائعة
+
+| التغيير                                                                                                                                                        | الأمر                                                                  |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| تحديث صورة Docker ‏(`agents.defaults.sandbox.docker.image`)                                                                                                   | `openclaw sandbox recreate --all`                                      |
+| إعداد العزل (`agents.defaults.sandbox.*`)                                                                                                                      | `openclaw sandbox recreate --all`                                      |
+| وجهة/مصادقة SSH ‏(`agents.defaults.sandbox.ssh.{target,workspaceRoot,identityFile,certificateFile,knownHostsFile,identityData,certificateData,knownHostsData}`) | `openclaw sandbox recreate --all`                                      |
+| مصدر/سياسة/وضع OpenShell ‏(`plugins.entries.openshell.config.{from,mode,policy}`)                                                                              | `openclaw sandbox recreate --all`                                      |
+| `setupCommand`                                                                                                                                                 | `openclaw sandbox recreate --all` (أو `--agent <id>` لوكيل واحد)      |
+
+<Note>
+تُعاد إنشاء بيئات التشغيل تلقائيًا عند استخدام الوكيل في المرة التالية.
+</Note>
 
 ## ترحيل السجل
 
-يخزن OpenClaw بيانات تعريف بيئات تشغيل صندوق الحماية في قاعدة بيانات حالة SQLite المشتركة. قد تظل لدى التثبيتات الأقدم ملفات سجل صندوق حماية قديمة:
+توجد البيانات الوصفية لبيئات تشغيل العزل في قاعدة بيانات حالة SQLite المشتركة. قد تحتوي عمليات التثبيت القديمة على ملفات سجل قديمة لم تعد عمليات القراءة العادية تعيد كتابتها:
 
 - `~/.openclaw/sandbox/containers.json`
 - `~/.openclaw/sandbox/browsers.json`
+- جزء JSON واحد لكل حاوية/متصفح ضمن `~/.openclaw/sandbox/containers/` أو `~/.openclaw/sandbox/browsers/`
 
-قد تحتوي بعض الترقيات أيضا على جزء JSON واحد لكل حاوية/متصفح ضمن `~/.openclaw/sandbox/containers/` أو `~/.openclaw/sandbox/browsers/`. لا تعيد قراءات بيئات تشغيل صندوق الحماية العادية كتابة تلك المصادر القديمة. شغّل `openclaw doctor --fix` لترحيل الإدخالات القديمة الصالحة إلى SQLite. تُعزل الملفات القديمة غير الصالحة بحيث لا يستطيع سجل قديم واحد تالف إخفاء إدخالات بيئات التشغيل الحالية.
+شغّل `openclaw doctor --fix` لترحيل الإدخالات القديمة الصالحة إلى SQLite. تُعزل الملفات القديمة غير الصالحة كي لا يتمكن سجل قديم تالف من إخفاء إدخالات بيئات التشغيل الحالية.
 
-## التكوين
+## الإعداد
 
-توجد إعدادات صندوق الحماية في `~/.openclaw/openclaw.json` ضمن `agents.defaults.sandbox` (توضع التجاوزات الخاصة بكل وكيل في `agents.list[].sandbox`):
+توجد إعدادات العزل في `~/.openclaw/openclaw.json` ضمن `agents.defaults.sandbox` (توضع التجاوزات الخاصة بكل وكيل في `agents.list[].sandbox`):
 
 ```jsonc
 {
   "agents": {
     "defaults": {
       "sandbox": {
-        "mode": "all", // off, non-main, all
-        "backend": "docker", // docker, ssh, openshell
-        "scope": "agent", // session, agent, shared
+        "mode": "all", // معطل، غير رئيسي، الكل
+        "backend": "docker", // docker، ssh، openshell (يوفره Plugin)
+        "scope": "agent", // جلسة، وكيل، مشترك
         "docker": {
           "image": "openclaw-sandbox:bookworm-slim",
           "containerPrefix": "openclaw-sbx-",
-          // ... more Docker options
+          // ... مزيد من خيارات Docker
         },
         "prune": {
-          "idleHours": 24, // Auto-prune after 24h idle
-          "maxAgeDays": 7, // Auto-prune after 7 days
+          "idleHours": 24, // حذف تلقائي بعد 24 ساعة من الخمول
+          "maxAgeDays": 7, // حذف تلقائي بعد 7 أيام
         },
       },
     },
@@ -211,6 +128,6 @@ openclaw sandbox recreate --agent alfred
 ## ذو صلة
 
 - [مرجع CLI](/ar/cli)
-- [وضع صندوق الحماية](/ar/gateway/sandboxing)
+- [العزل](/ar/gateway/sandboxing)
 - [مساحة عمل الوكيل](/ar/concepts/agent-workspace)
-- [Doctor](/ar/gateway/doctor): يتحقق من إعداد صندوق الحماية.
+- [أداة التشخيص](/ar/gateway/doctor): تتحقق من إعداد العزل.

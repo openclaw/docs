@@ -1,11 +1,11 @@
 ---
 read_when:
-    - memory-core Plugin のインストール、設定、または監査を行っています
-summary: エージェントが呼び出し可能なツールを追加します。
-title: Memory Core plugin
+    - memory-core Pluginをインストール、設定、または監査しています
+summary: エージェントから呼び出せるツールを追加します。
+title: Memory Core Plugin
 x-i18n:
-    generated_at: "2026-06-27T12:26:02Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:30:49Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: cda6ebb02b0e4c1616f68c3c9636b269248b4c63ca5f778d7f8c48152b27f303
@@ -20,8 +20,8 @@ x-i18n:
 ## 配布
 
 - パッケージ: `@openclaw/memory-core`
-- インストール経路: OpenClaw に含まれています
+- インストール経路: OpenClaw に同梱
 
-## サーフェス
+## 提供機能
 
 コントラクト: ツール

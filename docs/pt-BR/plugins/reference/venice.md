@@ -1,13 +1,12 @@
 ---
 read_when:
-    - Você está instalando, configurando ou auditando o plugin venice
+    - Você está instalando, configurando ou auditando o plugin Venice
 summary: Adiciona suporte ao provedor de modelos Venice no OpenClaw.
-title: Plugin Venice
+title: Plugin do Venice
 x-i18n:
-    generated_at: "2026-07-12T15:27:28Z"
+    generated_at: "2026-07-12T00:15:53Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 18324266b1b8434f6d31616ce81da8ea3ec15f5bddf429a3938d5df4665d01cb
     source_path: plugins/reference/venice.md
@@ -16,7 +15,7 @@ x-i18n:
 
 # Plugin Venice
 
-Adiciona suporte ao provedor de modelos Venice ao OpenClaw.
+Adiciona compatibilidade com o provedor de modelos Venice ao OpenClaw.
 
 ## Distribuição
 
@@ -29,4 +28,4 @@ provedores: venice; contratos: usageProviders
 
 ## Documentação relacionada
 
-- [venice](/pt-BR/providers/venice)
+- [Venice](/pt-BR/providers/venice)

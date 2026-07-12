@@ -1,41 +1,41 @@
 ---
 read_when:
     - Bạn muốn vòng lặp phát triển cục bộ nhanh nhất (bun + watch)
-    - Bạn gặp sự cố với script cài đặt/bản vá/vòng đời của Bun
-summary: 'Quy trình làm việc với Bun (thử nghiệm): cài đặt và các lưu ý so với pnpm'
+    - Bạn gặp sự cố với các tập lệnh cài đặt/vá/vòng đời của Bun
+summary: 'Quy trình làm việc với Bun (thử nghiệm): cài đặt và những điểm cần lưu ý so với pnpm'
 title: Bun (thử nghiệm)
 x-i18n:
-    generated_at: "2026-06-27T17:36:51Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:02:55Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1c31f2c09f3c1f99ae1a306184a86f2240b0c0f4f655c2759f5aeb6bac6b745a
+    source_hash: b836be354166ceb073d170e472e8b69c3f517e754fe71417df1d85d27a18ae94
     source_path: install/bun.md
     workflow: 16
 ---
 
 <Warning>
-Bun **không được khuyến nghị cho runtime Gateway** (các vấn đề đã biết với WhatsApp và Telegram). Dùng Node cho môi trường production.
+Không khuyến nghị dùng Bun cho môi trường chạy Gateway (do các vấn đề đã biết với WhatsApp và Telegram). Hãy dùng Node cho môi trường production.
 </Warning>
 
-Bun là runtime cục bộ tùy chọn để chạy TypeScript trực tiếp (`bun run ...`, `bun --watch ...`). Trình quản lý gói mặc định vẫn là `pnpm`, được hỗ trợ đầy đủ và được công cụ tài liệu sử dụng. Bun không thể dùng `pnpm-lock.yaml` và sẽ bỏ qua tệp này.
+Bun là môi trường chạy cục bộ tùy chọn để chạy trực tiếp TypeScript (`bun run ...`, `bun --watch ...`). Trình quản lý gói mặc định vẫn là `pnpm`, được hỗ trợ đầy đủ và được bộ công cụ tài liệu sử dụng. Bun không thể sử dụng `pnpm-lock.yaml` và sẽ bỏ qua tệp này.
 
 ## Cài đặt
 
 <Steps>
-  <Step title="Cài đặt phụ thuộc">
+  <Step title="Cài đặt các phần phụ thuộc">
     ```sh
     bun install
     ```
 
-    `bun.lock` / `bun.lockb` đã được gitignore, nên sẽ không gây thay đổi trong repo. Để bỏ qua hoàn toàn việc ghi lockfile:
+    `bun.lock` / `bun.lockb` bị git bỏ qua, nên kho mã nguồn không phát sinh thay đổi. Để hoàn toàn không ghi tệp khóa:
 
     ```sh
     bun install --no-save
     ```
 
   </Step>
-  <Step title="Build và kiểm thử">
+  <Step title="Xây dựng và kiểm thử">
     ```sh
     bun run build
     bun run vitest run
@@ -43,14 +43,14 @@ Bun là runtime cục bộ tùy chọn để chạy TypeScript trực tiếp (`b
   </Step>
 </Steps>
 
-## Script vòng đời
+## Các tập lệnh vòng đời
 
-Bun chặn các script vòng đời của phụ thuộc trừ khi được tin cậy rõ ràng. Với repo này, các script thường bị chặn không bắt buộc:
+Bun chặn các tập lệnh vòng đời của phần phụ thuộc trừ khi chúng được tin cậy rõ ràng. Đối với kho mã nguồn này, các tập lệnh thường bị chặn sau đây không bắt buộc:
 
-- `baileys` `preinstall` -- kiểm tra phiên bản chính của Node >= 20 (OpenClaw mặc định dùng Node 24 và vẫn hỗ trợ Node 22 LTS, hiện là `22.19+`)
-- `protobufjs` `postinstall` -- phát cảnh báo về quy ước phiên bản không tương thích (không có artifact build)
+- `baileys` `preinstall`: kiểm tra phiên bản chính của Node >= 20 (OpenClaw yêu cầu Node 22.19+ hoặc 23.11+, khuyến nghị dùng Node 24)
+- `protobufjs` `postinstall`: đưa ra cảnh báo về các quy ước phiên bản không tương thích (không có sản phẩm tạo tác của quá trình xây dựng)
 
-Nếu bạn gặp vấn đề runtime yêu cầu các script này, hãy tin cậy chúng rõ ràng:
+Nếu gặp sự cố trong môi trường chạy cần các tập lệnh này, hãy tin cậy chúng một cách rõ ràng:
 
 ```sh
 bun pm trust baileys protobufjs
@@ -58,10 +58,10 @@ bun pm trust baileys protobufjs
 
 ## Lưu ý
 
-Một số script vẫn hardcode pnpm (ví dụ `check:docs`, `ui:*`, `protocol:check`). Hiện tại hãy chạy các script đó qua pnpm.
+Một số tập lệnh gói mã hóa cứng `pnpm` ở bên trong (ví dụ: `check:docs`, `ui:*`, `protocol:check`). Khi chạy chúng qua `bun run`, hệ thống vẫn gọi `pnpm` bằng shell, vì vậy hãy chạy trực tiếp các tập lệnh đó bằng `pnpm`.
 
 ## Liên quan
 
-- [Tổng quan cài đặt](/vi/install)
+- [Tổng quan về cài đặt](/vi/install)
 - [Node.js](/vi/install/node)
 - [Cập nhật](/vi/install/updating)

@@ -1,39 +1,54 @@
 ---
 read_when:
-    - Bạn muốn kiểm tra cài đặt OpenClaw theo một policy.jsonc đã được biên soạn
-    - Bạn muốn các phát hiện về chính sách trong lint của doctor
-    - Bạn cần hàm băm chứng thực chính sách cho bằng chứng kiểm toán
-summary: Tài liệu tham chiếu CLI cho các kiểm tra tuân thủ `openclaw policy`
+    - Bạn muốn kiểm tra các cài đặt OpenClaw theo tệp policy.jsonc đã soạn thảo
+    - Bạn muốn các phát hiện về chính sách xuất hiện trong bước kiểm tra lint của doctor
+    - Bạn cần một mã băm chứng thực chính sách để làm bằng chứng kiểm toán
+summary: Tài liệu tham chiếu CLI cho các bước kiểm tra tuân thủ `openclaw policy`
 title: Chính sách
 x-i18n:
-    generated_at: "2026-06-27T17:19:56Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:46:05Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5af65bb34aeed72bbb348a56195d65152dce1e8d0e7236da8d8681e56c9b32f4
+    source_hash: 280f9ed1e741786f85dfed978690eb18a03c8fbde20e0d01e31a9d215ae0a128
     source_path: cli/policy.md
     workflow: 16
 ---
 
 # `openclaw policy`
 
-`openclaw policy` được cung cấp bởi Policy plugin đi kèm. Chính sách là một lớp tuân thủ doanh nghiệp trên các thiết lập OpenClaw hiện có. Nó không thêm hệ thống cấu hình thứ hai. `policy.jsonc` định nghĩa các yêu cầu do tác giả đặt ra, OpenClaw quan sát workspace đang hoạt động làm bằng chứng, và các kiểm tra sức khỏe chính sách báo cáo độ lệch qua `doctor --lint`. Tín hiệu tuân thủ cuối cùng là một lần chạy `doctor --lint` sạch; chính sách đóng góp phát hiện vào bề mặt lint dùng chung đó thay vì tạo một cổng sức khỏe riêng.
+`openclaw policy` được cung cấp bởi Plugin Policy đi kèm. Đây là một lớp tuân thủ
+dành cho doanh nghiệp áp dụng trên các thiết lập OpenClaw hiện có, không phải một
+hệ thống cấu hình thứ hai. Bạn soạn các yêu cầu trong `policy.jsonc`; OpenClaw
+quan sát không gian làm việc đang hoạt động để làm bằng chứng; policy báo cáo sai
+lệch thông qua `doctor --lint`. Policy không thực thi bắt buộc các lệnh gọi công
+cụ hoặc viết lại hành vi thời gian chạy tại thời điểm yêu cầu, và không chứng
+thực các kho thông tin xác thực riêng của từng tác nhân như `auth-profiles.json`.
 
-Chính sách hiện quản lý các kênh đã cấu hình, máy chủ MCP, nhà cung cấp mô hình, trạng thái SSRF mạng, trạng thái truy cập ingress/kênh, trạng thái phơi bày Gateway, trạng thái workspace của agent, trạng thái xử lý dữ liệu, trạng thái nhà cung cấp bí mật/hồ sơ xác thực trong cấu hình OpenClaw, và các khai báo công cụ được quản trị. Ví dụ, bộ phận IT hoặc người vận hành workspace có thể ghi nhận rằng Telegram không phải là nhà cung cấp kênh được phê duyệt, giới hạn máy chủ MCP và tham chiếu mô hình vào các mục được phê duyệt, yêu cầu quyền truy cập fetch/browser vào mạng riêng tiếp tục bị tắt, yêu cầu cô lập phiên tin nhắn trực tiếp và trạng thái ingress kênh nằm trong giới hạn đã được rà soát, yêu cầu bind/xác thực/phơi bày HTTP của Gateway nằm trong giới hạn đã được rà soát, yêu cầu quyền truy cập workspace của agent và các lệnh chặn công cụ duy trì trong trạng thái đã được rà soát, yêu cầu SecretRefs trong cấu hình OpenClaw dùng nhà cung cấp được quản lý, yêu cầu hồ sơ xác thực cấu hình mang siêu dữ liệu nhà cung cấp/chế độ, yêu cầu công cụ được quản trị mang siêu dữ liệu rủi ro và độ nhạy cảm, yêu cầu biên tập lại nhật ký nhạy cảm, từ chối thu thập nội dung telemetry, yêu cầu bảo trì lưu giữ phiên, từ chối lập chỉ mục bộ nhớ bản ghi phiên, rồi dùng `doctor --lint` làm cổng tuân thủ dùng chung.
-
-Dùng chính sách khi workspace cần một tuyên bố bền vững như "các kênh này không được bật" hoặc "công cụ được quản trị phải khai báo siêu dữ liệu phê duyệt" và một cách lặp lại được để chứng minh OpenClaw vẫn tuân thủ tuyên bố đó. Chỉ dùng cấu hình thông thường và tài liệu workspace khi bạn chỉ cần hành vi cục bộ và không cần phát hiện chính sách hoặc đầu ra chứng thực.
+Policy kiểm tra các kênh đã cấu hình, máy chủ MCP, nhà cung cấp mô hình, trạng
+thái bảo vệ SSRF mạng, quyền truy cập đầu vào/kênh, mức độ phơi bày của Gateway
+và trạng thái lệnh Node, quyền truy cập không gian làm việc của tác nhân, trạng
+thái sandbox, trạng thái xử lý dữ liệu, trạng thái nhà cung cấp bí mật/hồ sơ xác
+thực và siêu dữ liệu công cụ chịu quản trị (`TOOLS.md`). Hãy sử dụng tính năng
+này khi một không gian làm việc cần một tuyên bố lâu dài, có thể kiểm tra, chẳng
+hạn như "Không được bật Telegram" hoặc "các công cụ chịu quản trị phải khai báo
+siêu dữ liệu về rủi ro và chủ sở hữu." Nếu bạn chỉ cần hành vi cục bộ mà không
+cần chứng thực hoặc phát hiện sai lệch, cấu hình thông thường là đủ.
 
 ## Bắt đầu nhanh
-
-Bật Policy plugin đi kèm trước lần dùng đầu tiên:
 
 ```bash
 openclaw plugins enable policy
 ```
 
-Khi chính sách được bật, doctor có thể tải các kiểm tra sức khỏe chính sách mà không kích hoạt các plugin tùy ý. Plugin vẫn được bật nếu thiếu `policy.jsonc`, để doctor có thể báo cáo artifact bị thiếu.
+Plugin vẫn được bật ngay cả khi thiếu `policy.jsonc`, nhờ đó doctor có thể báo
+cáo thành phần bị thiếu thay vì âm thầm bỏ qua các bước kiểm tra.
 
-Chính sách được tác giả viết, không được tạo từ các thiết lập hiện tại của người dùng. Một chính sách tối thiểu cho kênh, máy chủ MCP, nhà cung cấp mô hình, trạng thái mạng, truy cập ingress/kênh, phơi bày Gateway, trạng thái workspace của agent, trạng thái runtime sandbox đã cấu hình, trạng thái xử lý dữ liệu OpenClaw, trạng thái nhà cung cấp bí mật/hồ sơ xác thực trong cấu hình, trạng thái tệp phê duyệt exec, và siêu dữ liệu công cụ trông như sau:
+Hãy tự soạn `policy.jsonc`; tệp này không được tạo từ các thiết lập hiện tại. Mỗi
+phần cấp cao nhất là một không gian tên quy tắc: một bước kiểm tra chỉ chạy khi
+có quy tắc cụ thể bên trong phần đó (các phần hoặc khóa không được hỗ trợ sẽ gây
+lỗi `policy/policy-jsonc-invalid` thay vì bị âm thầm bỏ qua). Ví dụ tối thiểu bao
+quát mọi phần được hỗ trợ:
 
 ```jsonc
 {
@@ -91,6 +106,9 @@ Chính sách được tác giả viết, không được tạo từ các thiết
     "http": {
       "denyEndpoints": ["chatCompletions", "responses"],
       "requireUrlAllowlists": true,
+    },
+    "nodes": {
+      "denyCommands": ["system.run"],
     },
   },
   "agents": {
@@ -154,18 +172,54 @@ Chính sách được tác giả viết, không được tạo từ các thiết
 }
 ```
 
-Các quy tắc là nguồn thẩm quyền. Một khối danh mục chỉ là namespace; kiểm tra chạy khi có quy tắc cụ thể. OpenClaw đọc các thiết lập `channels.*` hiện tại, `mcp.servers.*`, `models.providers.*`, các tham chiếu mô hình agent đã chọn, thiết lập SSRF mạng, phạm vi phiên tin nhắn trực tiếp, chính sách DM của kênh, chính sách nhóm của kênh, cổng yêu cầu nhắc đến trong kênh/nhóm, trạng thái bind/xác thực/Control UI/Tailscale/remote/HTTP của Gateway, quyền truy cập workspace sandbox agent trong cấu hình OpenClaw và trạng thái chặn công cụ, trạng thái cấu hình xử lý dữ liệu, nguồn gốc nhà cung cấp bí mật cấu hình và SecretRef, siêu dữ liệu hồ sơ xác thực cấu hình, trạng thái công cụ toàn cục/theo agent đã cấu hình, và các khai báo `TOOLS.md` làm bằng chứng, rồi báo cáo trạng thái quan sát được không tuân thủ. Nếu một chính sách từ chối bind Gateway không phải local loopback, chỉ bỏ qua `gateway.bind` khi bạn sẵn sàng rà soát mặc định runtime; đặt `gateway.bind=loopback` để tuân thủ cấu hình nghiêm ngặt. Với trạng thái agent chỉ đọc, cấu hình chế độ sandbox trên mặc định hoặc agent áp dụng và đặt `workspaceAccess` thành `none` hoặc `ro`; chế độ sandbox bị bỏ qua hoặc `off` không thỏa mãn chính sách chỉ đọc/không ghi. `agents.workspace.denyTools` hỗ trợ `exec`, `process`, `write`, `edit`, và `apply_patch`; cấu hình OpenClaw `group:fs` bao gồm các công cụ thay đổi tệp và `group:runtime` bao gồm các công cụ shell/process. Chính sách trạng thái công cụ quan sát `tools.profile`, `tools.allow`, `tools.alsoAllow`, `tools.deny`, `tools.fs.workspaceOnly`, `tools.exec.security`, `tools.exec.ask`, `tools.exec.host`, `tools.elevated.enabled`, và các ghi đè theo agent tương tự trong `agents.list[].tools.*`. Chính sách phê duyệt exec chỉ đọc artifact sản phẩm `exec-approvals.json` được đặt tên khi có quy tắc `execApprovals`; bằng chứng ghi lại mặc định, trạng thái theo agent, và mẫu allowlist mà không có token socket hoặc văn bản lệnh dùng lần cuối. Chính sách không thực thi lời gọi công cụ trong runtime. Bằng chứng bí mật ghi lại trạng thái nhà cung cấp/nguồn và siêu dữ liệu SecretRef, không bao giờ ghi giá trị bí mật thô. Chính sách không đọc hoặc chứng thực các kho thông tin xác thực theo agent như `auth-profiles.json`; các kho đó vẫn thuộc sở hữu của các luồng xác thực và thông tin xác thực hiện có. Bằng chứng xử lý dữ liệu chỉ là trạng thái cấp cấu hình: nó kiểm tra chế độ biên tập lại đã cấu hình, nút bật/tắt thu thập nội dung telemetry, chế độ bảo trì phiên, và thiết lập lập chỉ mục bộ nhớ bản ghi phiên. Nó không kiểm tra nhật ký thô, bản xuất telemetry, nội dung bản ghi, tệp bộ nhớ, hoặc chứng minh rằng không tồn tại dữ liệu cá nhân hay bí mật.
+Các lưu ý xuyên suốt không thể hiện rõ trong những bảng quy tắc bên dưới:
 
-### Tham chiếu quy tắc chính sách
+- Việc bỏ qua `gateway.bind` trong khi cấm liên kết không phải local loopback có
+  nghĩa là bạn chấp nhận giá trị mặc định của thời gian chạy; hãy đặt
+  `gateway.bind: "loopback"` để tuân thủ nghiêm ngặt.
+- Đối với tác nhân chỉ đọc, hãy đặt `mode` của sandbox thành `all` hoặc
+  `non-main` trong phần mặc định/tác nhân áp dụng, đồng thời đặt
+  `workspaceAccess` thành `none` hoặc `ro`. Chế độ sandbox bị thiếu hoặc là
+  `off` không đáp ứng policy chỉ đọc.
+- `agents.workspace.denyTools` chấp nhận `exec`, `process`, `write`, `edit`,
+  `apply_patch`. Các nhóm từ chối công cụ trong cấu hình là `group:fs` (thay đổi
+  tệp) và `group:runtime` (shell/tiến trình) đáp ứng trạng thái tương đương.
+- Các bước kiểm tra phê duyệt thực thi chỉ đọc thành phần `exec-approvals.json`
+  đang hoạt động khi có quy tắc `execApprovals`; thành phần bị thiếu hoặc không
+  hợp lệ là bằng chứng không thể quan sát, không phải kết quả đạt được tạo ra
+  nhân tạo.
+- Bằng chứng về bí mật và hồ sơ xác thực chỉ ghi lại trạng thái nhà cung
+  cấp/nguồn và siêu dữ liệu SecretRef, tuyệt đối không ghi lại giá trị thô.
+  Policy không đọc hoặc chứng thực các kho thông tin xác thực riêng của từng tác
+  nhân như `auth-profiles.json`.
+- Bằng chứng xử lý dữ liệu chỉ là trạng thái ở cấp cấu hình (chế độ biên tập,
+  nút bật/tắt thu thập dữ liệu đo từ xa, chế độ bảo trì phiên, thiết lập lập chỉ
+  mục bản chép lời phiên). Bằng chứng này không kiểm tra nhật ký, dữ liệu đo từ
+  xa đã xuất, bản chép lời hoặc tệp bộ nhớ, và kết quả sạch không chứng minh
+  rằng chúng không chứa dữ liệu cá nhân hoặc bí mật.
 
-Mỗi trường chính sách bên dưới là tùy chọn. Kiểm tra chỉ chạy khi quy tắc khớp có trong `policy.jsonc`. Trạng thái quan sát được là cấu hình OpenClaw hiện có hoặc siêu dữ liệu workspace; chính sách báo cáo độ lệch nhưng không ghi lại hành vi runtime trừ khi có đường sửa chữa rõ ràng và được bật.
-Tệp chính sách có tính nghiêm ngặt: các phần hoặc khóa quy tắc không được hỗ trợ được báo cáo là `policy/policy-jsonc-invalid` thay vì bị bỏ qua.
+### Tham chiếu quy tắc policy
 
-Lớp phủ chính sách giữ các quy tắc cấp cao rộng ở phạm vi toàn cục, rồi cho các khối phạm vi có tên thêm các phần chính sách thông thường nghiêm ngặt hơn cho bộ chọn rõ ràng. Tên phạm vi chỉ là một nhóm mô tả; việc khớp dùng các giá trị bộ chọn bên trong phạm vi. Lớp phủ có tính cộng thêm: các khẳng định toàn cục vẫn chạy, và một khẳng định có phạm vi có thể phát ra phát hiện riêng của nó trên cùng cấu hình quan sát được.
+Mọi quy tắc bên dưới đều là tùy chọn; một bước kiểm tra chỉ chạy khi có quy tắc
+đó. Trạng thái được quan sát là cấu hình OpenClaw hoặc siêu dữ liệu không gian
+làm việc hiện có.
 
-#### Lớp phủ có phạm vi
+#### Lớp phủ theo phạm vi
 
-Dùng `scopes.<scopeName>` khi một tập hợp agent hoặc kênh cần chính sách nghiêm ngặt hơn đường cơ sở cấp cao nhất. Các phần theo phạm vi agent dùng `agentIds`, hỗ trợ `tools.*`, `agents.workspace.*`, `sandbox.*`, `dataHandling.memory.*`, và `execApprovals.*`. Ingress theo phạm vi kênh dùng `channelIds`, hỗ trợ `ingress.channels.*`. Các phần không được hỗ trợ bị từ chối thay vì bị bỏ qua. Nếu một mục `agentIds` không có trong `agents.list[]`, OpenClaw đánh giá quy tắc có phạm vi dựa trên trạng thái toàn cục/mặc định được kế thừa cho id agent runtime đó.
+Sử dụng `scopes.<scopeName>` khi các tác nhân hoặc kênh cụ thể cần policy nghiêm
+ngặt hơn đường cơ sở cấp cao nhất. Tên phạm vi chỉ là một nhãn; việc đối sánh sử
+dụng bộ chọn bên trong phạm vi. Các lớp phủ mang tính cộng dồn: quy tắc toàn cục
+vẫn chạy và quy tắc theo phạm vi có thể thêm phát hiện riêng đối với cùng một
+bằng chứng.
+
+| Bộ chọn      | Các phần được hỗ trợ                                                          | Sử dụng khi                                                     |
+| ------------ | ----------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| `agentIds`   | `tools`, `agents.workspace`, `sandbox`, `dataHandling.memory`, `execApprovals` | Một hoặc nhiều tác nhân thời gian chạy cần quy tắc nghiêm ngặt hơn. |
+| `channelIds` | `ingress.channels`                                                            | Một hoặc nhiều kênh cần quy tắc đầu vào nghiêm ngặt hơn.         |
+
+Nếu một mục `agentIds` không có trong `agents.list[]`, OpenClaw đánh giá quy tắc
+theo phạm vi dựa trên trạng thái toàn cục/mặc định được kế thừa cho mã định danh
+tác nhân thời gian chạy đó thay vì bỏ qua.
 
 ```jsonc
 {
@@ -229,144 +283,154 @@ Dùng `scopes.<scopeName>` khi một tập hợp agent hoặc kênh cần chính
 }
 ```
 
-Cùng một agent có thể xuất hiện trong nhiều phạm vi khi mỗi phạm vi quản trị các trường khác nhau, như minh họa ở trên. Một trường có phạm vi lặp lại cho cùng agent phải nghiêm ngặt tương đương hoặc hơn theo siêu dữ liệu chính sách; các khẳng định trùng lặp yếu hơn sẽ bị từ chối. Siêu dữ liệu độ nghiêm ngặt coi danh sách cho phép là tập con, danh sách từ chối là tập cha, và boolean bắt buộc là yêu cầu cố định.
+Cùng một tác nhân có thể xuất hiện trong nhiều phạm vi nếu mỗi phạm vi quản lý
+một trường khác nhau, như trên. Trường theo phạm vi lặp lại cho cùng một tác
+nhân phải có mức hạn chế tương đương hoặc cao hơn; khai báo trùng lặp ít hạn chế
+hơn sẽ bị từ chối (danh sách cho phép phải là tập con, danh sách từ chối phải là
+tập cha, các giá trị Boolean bắt buộc phải cố định).
 
-Chính sách trạng thái container chỉ được đánh giá dựa trên bằng chứng OpenClaw có thể quan sát cho agent khớp. Nếu một quy tắc `sandbox.containers.*` đã bật áp dụng cho agent có backend sandbox không thể phơi bày trường đó, chính sách báo cáo `policy/sandbox-container-posture-unobservable` thay vì coi khẳng định là đạt. Dùng các phạm vi `agentIds` riêng cho các nhóm agent dùng backend sandbox khác nhau, và để các quy tắc container không được hỗ trợ ở trạng thái chưa đặt hoặc false cho các nhóm mà những trường đó không thể được quan sát.
+Các quy tắc trạng thái vùng chứa (`sandbox.containers.*`) chỉ được kiểm tra dựa
+trên bằng chứng mà phần phụ trợ sandbox của tác nhân được đối sánh có thể cung
+cấp. Nếu phần phụ trợ không thể quan sát một quy tắc mà bạn đã bật cho nó,
+policy sẽ báo cáo `policy/sandbox-container-posture-unobservable` thay vì coi là
+đạt; hãy giới hạn phạm vi các quy tắc vùng chứa cho những nhóm tác nhân sử dụng
+phần phụ trợ có khả năng cung cấp bằng chứng đó.
 
-`ingress.session.requireDmScope` cấp cao nhất vẫn là toàn cục vì `session.dmScope` không phải là bằng chứng có thể gán cho kênh.
-
-| Bộ chọn      | Phần được hỗ trợ                                                                | Dùng khi                                                    |
-| ------------ | ---------------------------------------------------------------------------------- | ------------------------------------------------- |
-| `agentIds`   | `tools`, `agents.workspace`, `sandbox`, `dataHandling.memory`, và `execApprovals` | Một hoặc nhiều tác nhân runtime cần quy tắc nghiêm ngặt hơn. |
-| `channelIds` | `ingress.channels`                                                                 | Một hoặc nhiều kênh cần quy tắc ingress nghiêm ngặt hơn. |
+`ingress.session.requireDmScope` cấp cao nhất vẫn mang tính toàn cục;
+`session.dmScope` không phải bằng chứng có thể quy cho kênh, vì vậy không thể
+giới hạn phạm vi bằng `channelIds`.
 
 Mọi phạm vi có trong `policy.jsonc` đều phải hợp lệ và có thể thực thi.
 
 #### Kênh
 
-| Trường chính sách                    | Trạng thái quan sát được                  | Dùng khi                                                     |
-| ------------------------------------ | --------------------------------------- | ------------------------------------------------------------ |
-| `channels.denyRules[].when.provider` | Nhà cung cấp `channels.*` và trạng thái bật | Từ chối các kênh đã cấu hình từ một nhà cung cấp như `telegram`. |
-| `channels.denyRules[].reason`        | Thông báo phát hiện và ngữ cảnh gợi ý sửa chữa | Giải thích lý do nhà cung cấp bị từ chối.                    |
+| Trường policy                         | Trạng thái được quan sát                 | Sử dụng khi                                                       |
+| ------------------------------------- | ---------------------------------------- | ----------------------------------------------------------------- |
+| `channels.denyRules[].when.provider`  | Nhà cung cấp và trạng thái bật của `channels.*` | Cấm các kênh đã cấu hình từ một nhà cung cấp như `telegram`. |
+| `channels.denyRules[].reason`         | Thông báo phát hiện và ngữ cảnh gợi ý khắc phục | Giải thích lý do nhà cung cấp bị cấm.                        |
 
 #### Máy chủ MCP
 
-| Trường chính sách    | Trạng thái quan sát được | Dùng khi                                                   |
-| ------------------- | ------------------- | ---------------------------------------------------------- |
-| `mcp.servers.allow` | id `mcp.servers.*` | Yêu cầu mọi máy chủ MCP đã cấu hình phải nằm trong danh sách cho phép. |
-| `mcp.servers.deny`  | id `mcp.servers.*` | Từ chối các id máy chủ MCP đã cấu hình cụ thể.             |
+| Trường policy        | Trạng thái được quan sát | Sử dụng khi                                                        |
+| -------------------- | ------------------------ | ------------------------------------------------------------------ |
+| `mcp.servers.allow`  | Mã định danh `mcp.servers.*` | Yêu cầu mọi máy chủ MCP đã cấu hình phải nằm trong danh sách cho phép. |
+| `mcp.servers.deny`   | Mã định danh `mcp.servers.*` | Cấm các mã định danh máy chủ MCP cụ thể đã được cấu hình.            |
 
 #### Nhà cung cấp mô hình
 
-| Trường chính sách         | Trạng thái quan sát được                              | Dùng khi                                                                        |
-| ------------------------ | ------------------------------------------------ | ------------------------------------------------------------------------------- |
-| `models.providers.allow` | id `models.providers.*` và tham chiếu mô hình đã chọn | Yêu cầu các nhà cung cấp đã cấu hình và tham chiếu mô hình đã chọn dùng nhà cung cấp được phê duyệt. |
-| `models.providers.deny`  | id `models.providers.*` và tham chiếu mô hình đã chọn | Từ chối các nhà cung cấp đã cấu hình và tham chiếu mô hình đã chọn theo id nhà cung cấp. |
+| Trường policy             | Trạng thái được quan sát                              | Sử dụng khi                                                                                   |
+| ------------------------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `models.providers.allow`  | Mã định danh `models.providers.*` và tham chiếu mô hình đã chọn | Yêu cầu các nhà cung cấp đã cấu hình và tham chiếu mô hình đã chọn sử dụng nhà cung cấp được phê duyệt. |
+| `models.providers.deny`   | Mã định danh `models.providers.*` và tham chiếu mô hình đã chọn | Cấm các nhà cung cấp đã cấu hình và tham chiếu mô hình đã chọn theo mã định danh nhà cung cấp.          |
 
 #### Mạng
 
-| Trường chính sách              | Trạng thái quan sát được         | Dùng khi                                                           |
-| ------------------------------ | ----------------------------------- | ------------------------------------------------------------------ |
-| `network.privateNetwork.allow` | Lối thoát SSRF mạng riêng | Đặt thành `false` để yêu cầu quyền truy cập mạng riêng luôn bị tắt. |
+| Trường policy                    | Trạng thái được quan sát                  | Sử dụng khi                                                              |
+| -------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------ |
+| `network.privateNetwork.allow`   | Các lối thoát kiểm soát SSRF mạng riêng   | Đặt thành `false` để yêu cầu quyền truy cập mạng riêng luôn bị vô hiệu hóa. |
 
-#### Truy nhập ingress và kênh
+#### Quyền truy cập đầu vào và kênh
 
-| Trường chính sách                         | Trạng thái quan sát được                                         | Dùng khi                                                           |
-| ----------------------------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------ |
-| `ingress.session.requireDmScope`          | `session.dmScope`                                              | Yêu cầu phạm vi cô lập tin nhắn trực tiếp đã được rà soát.         |
-| `ingress.channels.allowDmPolicies`        | `channels.*.dmPolicy` và các trường chính sách DM kênh cũ      | Chỉ cho phép các chính sách kênh tin nhắn trực tiếp đã được rà soát. |
-| `ingress.channels.denyOpenGroups`         | Chính sách ingress kênh, tài khoản và nhóm                     | Từ chối ingress nhóm mở cho các kênh và tài khoản đã cấu hình.     |
-| `ingress.channels.requireMentionInGroups` | Cấu hình cổng mention cho kênh, tài khoản, nhóm, guild và lồng nhau | Yêu cầu cổng mention khi ingress nhóm đang mở hoặc được kiểm soát bằng mention. |
+| Trường chính sách                           | Trạng thái quan sát được                                          | Sử dụng khi                                                                    |
+| ------------------------------------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `ingress.session.requireDmScope`            | `session.dmScope`                                                 | Yêu cầu phạm vi cô lập tin nhắn trực tiếp đã được xem xét.                     |
+| `ingress.channels.allowDmPolicies`          | `channels.*.dmPolicy` và các trường chính sách DM kênh cũ         | Chỉ cho phép các chính sách kênh tin nhắn trực tiếp đã được xem xét.           |
+| `ingress.channels.denyOpenGroups`           | Chính sách lưu lượng vào của kênh, tài khoản và nhóm              | Từ chối lưu lượng vào nhóm mở đối với các kênh và tài khoản đã cấu hình.       |
+| `ingress.channels.requireMentionInGroups`   | Cấu hình cổng đề cập của kênh, tài khoản, nhóm, guild và lồng nhau | Yêu cầu cổng đề cập khi lưu lượng vào nhóm được mở hoặc yêu cầu đề cập.         |
 
 #### Gateway
 
-| Trường chính sách                       | Trạng thái quan sát được                    | Dùng khi                                                     |
-| --------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------ |
-| `gateway.exposure.allowNonLoopbackBind` | `gateway.bind`                                 | Đặt thành `false` để yêu cầu Gateway liên kết loopback.      |
-| `gateway.exposure.allowTailscaleFunnel` | Tư thế Tailscale serve/funnel của Gateway      | Đặt thành `false` để từ chối phơi bày Tailscale Funnel.      |
-| `gateway.auth.requireAuth`              | `gateway.auth.mode`                            | Đặt thành `true` để từ chối xác thực Gateway bị tắt.         |
-| `gateway.auth.requireExplicitRateLimit` | `gateway.auth.rateLimit`                       | Đặt thành `true` để yêu cầu cấu hình giới hạn tốc độ xác thực tường minh. |
-| `gateway.controlUi.allowInsecure`       | Các công tắc xác thực/thiết bị/nguồn gốc không an toàn của Giao diện điều khiển | Đặt thành `false` để từ chối các công tắc phơi bày Giao diện điều khiển không an toàn. |
-| `gateway.remote.allow`                  | Chế độ/cấu hình Gateway từ xa                  | Đặt thành `false` để từ chối chế độ Gateway từ xa.           |
-| `gateway.http.denyEndpoints`            | Endpoint API HTTP của Gateway                  | Từ chối các id endpoint như `chatCompletions` hoặc `responses`. |
-| `gateway.http.requireUrlAllowlists`     | Đầu vào tìm nạp URL qua HTTP của Gateway       | Đặt thành `true` để yêu cầu danh sách cho phép URL trên đầu vào tìm nạp URL. |
+| Trường chính sách                         | Trạng thái quan sát được                                      | Sử dụng khi                                                                                       |
+| ----------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `gateway.exposure.allowNonLoopbackBind`   | `gateway.bind`                                                | Đặt thành `false` để yêu cầu Gateway liên kết với loopback.                                       |
+| `gateway.exposure.allowTailscaleFunnel`   | Trạng thái phục vụ/Funnel của Tailscale cho Gateway           | Đặt thành `false` để từ chối việc công khai qua Tailscale Funnel.                                 |
+| `gateway.auth.requireAuth`                | `gateway.auth.mode`                                           | Đặt thành `true` để từ chối xác thực Gateway bị vô hiệu hóa.                                      |
+| `gateway.auth.requireExplicitRateLimit`   | `gateway.auth.rateLimit`                                      | Đặt thành `true` để yêu cầu cấu hình giới hạn tốc độ xác thực rõ ràng.                            |
+| `gateway.controlUi.allowInsecure`         | Các tùy chọn bật/tắt không an toàn về xác thực/thiết bị/nguồn của giao diện điều khiển | Đặt thành `false` để từ chối các tùy chọn công khai giao diện điều khiển không an toàn.            |
+| `gateway.remote.allow`                    | Chế độ/cấu hình Gateway từ xa                                 | Đặt thành `false` để từ chối chế độ Gateway từ xa.                                                |
+| `gateway.http.denyEndpoints`              | Các điểm cuối API HTTP của Gateway                            | Từ chối các mã định danh điểm cuối như `chatCompletions` hoặc `responses`.                        |
+| `gateway.http.requireUrlAllowlists`       | Đầu vào tìm nạp URL qua HTTP của Gateway                      | Đặt thành `true` để yêu cầu danh sách URL cho phép trên các đầu vào tìm nạp URL.                  |
+| `gateway.nodes.denyCommands`              | `gateway.nodes.denyCommands`                                  | Yêu cầu các mã định danh lệnh node chính xác như `system.run` bị từ chối trong cấu hình OpenClaw. |
+
+`gateway.nodes.denyCommands` là quy tắc tập bao từ chối chính xác, phân biệt chữ hoa chữ thường.
+Sử dụng quy tắc này khi chính sách phải chứng minh rằng các lệnh node đặc quyền bị
+từ chối rõ ràng trong cấu hình OpenClaw. Một bản triển khai chủ ý cho phép lệnh
+node đặc quyền nên cập nhật `policy.jsonc` sau khi xem xét thay vì chỉ dựa vào
+`gateway.nodes.allowCommands`.
 
 #### Không gian làm việc của tác nhân
 
-| Trường chính sách                | Trạng thái quan sát được                                                            | Dùng khi                                                                                                            |
-| -------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `agents.workspace.allowedAccess` | `agents.defaults.sandbox.workspaceAccess` và `agents.list[].sandbox.workspaceAccess` | Chỉ cho phép các giá trị truy cập không gian làm việc sandbox như `none` hoặc `ro`.                                 |
-| `agents.workspace.denyTools`     | Cấu hình từ chối công cụ toàn cục và theo từng tác nhân                              | Yêu cầu các công cụ sửa đổi không gian làm việc/runtime như `exec`, `process`, `write`, `edit`, hoặc `apply_patch` bị từ chối. |
+| Trường chính sách                 | Trạng thái quan sát được                                                               | Sử dụng khi                                                                                             |
+| --------------------------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `agents.workspace.allowedAccess` | `agents.defaults.sandbox.workspaceAccess` và `agents.list[].sandbox.workspaceAccess`   | Chỉ cho phép các giá trị truy cập không gian làm việc sandbox như `none` hoặc `ro`.                     |
+| `agents.workspace.denyTools`     | Cấu hình từ chối công cụ toàn cục và theo từng tác nhân                                | Yêu cầu từ chối các công cụ thay đổi (`exec`, `process`, `write`, `edit`, `apply_patch`).               |
 
-#### Tư thế sandbox
+#### Trạng thái sandbox
 
-| Trường chính sách                                   | Trạng thái quan sát được                                 | Dùng khi                                                       |
-| ----------------------------------------------------- | ------------------------------------------------------- | -------------------------------------------------------------- |
-| `sandbox.requireMode`                                 | `agents.defaults.sandbox.mode` và chế độ theo từng tác nhân | Chỉ cho phép các chế độ sandbox đã được rà soát như `all` hoặc `non-main`. |
-| `sandbox.allowBackends`                               | `agents.defaults.sandbox.backend` và backend theo từng tác nhân | Chỉ cho phép các backend sandbox đã được rà soát như `docker`. |
-| `sandbox.containers.denyHostNetwork`                  | Chế độ mạng sandbox/trình duyệt dựa trên container      | Từ chối chế độ mạng máy chủ.                                   |
-| `sandbox.containers.denyContainerNamespaceJoin`       | Chế độ mạng sandbox/trình duyệt dựa trên container      | Từ chối tham gia namespace mạng của container khác.            |
-| `sandbox.containers.requireReadOnlyMounts`            | Chế độ mount sandbox/trình duyệt dựa trên container     | Yêu cầu các mount ở chế độ chỉ đọc.                            |
-| `sandbox.containers.denyContainerRuntimeSocketMounts` | Mục tiêu mount sandbox/trình duyệt dựa trên container   | Từ chối mount socket runtime container.                        |
-| `sandbox.containers.denyUnconfinedProfiles`           | Tư thế hồ sơ bảo mật container                          | Từ chối các hồ sơ bảo mật container không giới hạn.            |
-| `sandbox.browser.requireCdpSourceRange`               | Phạm vi nguồn CDP của trình duyệt sandbox               | Yêu cầu phơi bày CDP của trình duyệt khai báo phạm vi nguồn.   |
+| Trường chính sách                                    | Trạng thái quan sát được                                   | Sử dụng khi                                                            |
+| ---------------------------------------------------- | ---------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `sandbox.requireMode`                                | `agents.defaults.sandbox.mode` và chế độ theo từng tác nhân | Chỉ cho phép các chế độ sandbox đã được xem xét như `all` hoặc `non-main`. |
+| `sandbox.allowBackends`                              | `agents.defaults.sandbox.backend` và backend theo từng tác nhân | Chỉ cho phép các backend sandbox đã được xem xét như `docker`.         |
+| `sandbox.containers.denyHostNetwork`                 | Chế độ mạng của sandbox/trình duyệt dựa trên container     | Từ chối chế độ mạng máy chủ.                                           |
+| `sandbox.containers.denyContainerNamespaceJoin`      | Chế độ mạng của sandbox/trình duyệt dựa trên container     | Từ chối tham gia không gian tên mạng của container khác.               |
+| `sandbox.containers.requireReadOnlyMounts`           | Chế độ gắn kết của sandbox/trình duyệt dựa trên container  | Yêu cầu các điểm gắn kết ở chế độ chỉ đọc.                             |
+| `sandbox.containers.denyContainerRuntimeSocketMounts` | Đích gắn kết của sandbox/trình duyệt dựa trên container   | Từ chối gắn kết socket thời gian chạy container.                       |
+| `sandbox.containers.denyUnconfinedProfiles`          | Trạng thái hồ sơ bảo mật container                         | Từ chối các hồ sơ bảo mật container không bị giới hạn.                 |
+| `sandbox.browser.requireCdpSourceRange`              | Dải nguồn CDP của trình duyệt sandbox                      | Yêu cầu việc công khai CDP của trình duyệt phải khai báo dải nguồn.    |
 
-Chính sách xem `sandbox.mode` bị thiếu là mặc định ngầm định `off`, vì vậy
-`sandbox.requireMode` báo cáo một sandbox mới hoặc chưa được cấu hình là nằm ngoài
+Chính sách coi `sandbox.mode` bị thiếu là giá trị mặc định ngầm định `off`, vì vậy
+`sandbox.requireMode` báo cáo sandbox mới hoặc chưa được cấu hình là nằm ngoài
 danh sách cho phép như `["all"]`.
 
 #### Xử lý dữ liệu
 
-| Trường chính sách                                   | Trạng thái quan sát được                                                          | Dùng khi                                                               |
-| --------------------------------------------------- | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------- |
-| `dataHandling.sensitiveLogging.requireRedaction`    | `logging.redactSensitive`                                                            | Đặt thành `true` để từ chối `logging.redactSensitive: "off"`.          |
-| `dataHandling.telemetry.denyContentCapture`         | `diagnostics.otel.captureContent`                                                    | Đặt thành `true` để từ chối thu thập nội dung telemetry.               |
-| `dataHandling.retention.requireSessionMaintenance`  | `session.maintenance.mode`                                                           | Đặt thành `true` để yêu cầu chế độ bảo trì phiên hiệu lực là `enforce`. |
-| `dataHandling.memory.denySessionTranscriptIndexing` | `memory.qmd.sessions.enabled` và `agents.*.memorySearch.experimental.sessionMemory` | Đặt thành `true` để từ chối lập chỉ mục bản ghi phiên vào bộ nhớ.      |
+| Trường chính sách                                     | Trạng thái quan sát được                                                              | Sử dụng khi                                                                    |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `dataHandling.sensitiveLogging.requireRedaction`      | `logging.redactSensitive`                                                             | Đặt thành `true` để từ chối `logging.redactSensitive: "off"`.                  |
+| `dataHandling.telemetry.denyContentCapture`           | `diagnostics.otel.captureContent`                                                      | Đặt thành `true` để từ chối việc thu thập nội dung đo từ xa.                   |
+| `dataHandling.retention.requireSessionMaintenance`    | `session.maintenance.mode`                                                            | Đặt thành `true` để yêu cầu chế độ bảo trì phiên có hiệu lực là `enforce`.     |
+| `dataHandling.memory.denySessionTranscriptIndexing`   | `memory.qmd.sessions.enabled` và `agents.*.memorySearch.experimental.sessionMemory`    | Đặt thành `true` để từ chối lập chỉ mục bản ghi phiên vào bộ nhớ.              |
 
 #### Bí mật
 
-| Trường chính sách                 | Trạng thái quan sát được                                      | Dùng khi                                                                |
-| --------------------------------- | -------------------------------------------------------- | ----------------------------------------------------------------------- |
-| `secrets.requireManagedProviders` | SecretRefs trong cấu hình và khai báo `secrets.providers.*` | Đặt thành `true` để yêu cầu SecretRefs trỏ đến các nhà cung cấp đã khai báo. |
-| `secrets.denySources`             | Nguồn nhà cung cấp bí mật và nguồn SecretRef             | Từ chối các nguồn như `exec`, `file`, hoặc tên nguồn đã cấu hình khác. |
-| `secrets.allowInsecureProviders`  | Cờ tư thế nhà cung cấp bí mật không an toàn              | Đặt thành `false` để từ chối các nhà cung cấp chọn tham gia tư thế không an toàn. |
+| Trường chính sách                    | Trạng thái quan sát được                                      | Sử dụng khi                                                                    |
+| ------------------------------------ | ------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `secrets.requireManagedProviders`    | Các SecretRef cấu hình và khai báo `secrets.providers.*`      | Đặt thành `true` để yêu cầu SecretRef trỏ đến các nhà cung cấp đã khai báo.    |
+| `secrets.denySources`                | Nguồn nhà cung cấp bí mật và nguồn SecretRef                  | Từ chối các nguồn như `exec`, `file` hoặc tên nguồn đã cấu hình khác.          |
+| `secrets.allowInsecureProviders`     | Cờ trạng thái không an toàn của nhà cung cấp bí mật           | Đặt thành `false` để từ chối các nhà cung cấp chọn trạng thái không an toàn.   |
 
-#### Phê duyệt exec
+#### Phê duyệt thực thi
 
-Chính sách phê duyệt exec quan sát artifact `exec-approvals.json` của runtime đang hoạt động.
-Theo mặc định, đây là `~/.openclaw/exec-approvals.json`; khi
-`OPENCLAW_STATE_DIR` được đặt, Chính sách đọc
-`$OPENCLAW_STATE_DIR/exec-approvals.json`. Các quy tắc tư thế thực tế như
-`execApprovals.defaults.*` hoặc `execApprovals.agents.*` yêu cầu bằng chứng artifact
-có thể đọc được; artifact bị thiếu hoặc không hợp lệ được báo cáo là bằng chứng
-không quan sát được thay vì trở thành một lần đạt theo kiểu nỗ lực tối đa so với
-các mặc định runtime tổng hợp. Khi artifact có thể đọc được, các trường phê duyệt
-bị bỏ qua kế thừa mặc định runtime: `defaults.security` bị thiếu là `full`, và
-bảo mật tác nhân bị thiếu kế thừa mặc định đó. Bằng chứng bao gồm `defaults`,
-`agents.*`, và `agents.*.allowlist[].pattern` cùng với `argPattern` tùy chọn,
-tư thế `autoAllowSkills` hiệu lực và nguồn mục nhập. Bằng chứng không bao gồm
-đường dẫn/token socket, `commandText`, `lastUsedCommand`, đường dẫn đã phân giải,
-hoặc dấu thời gian.
+Các kiểm tra phê duyệt thực thi đọc cấu phần `exec-approvals.json` thời gian chạy:
+mặc định là `~/.openclaw/exec-approvals.json`, hoặc
+`$OPENCLAW_STATE_DIR/exec-approvals.json` khi `OPENCLAW_STATE_DIR` được đặt.
+Các quy tắc trạng thái trong `execApprovals.defaults.*` hoặc `execApprovals.agents.*`
+yêu cầu bằng chứng cấu phần có thể đọc được; cấu phần bị thiếu hoặc không hợp lệ được báo cáo là
+bằng chứng không thể quan sát thay vì được thông qua theo nguyên tắc nỗ lực tối đa. Sau khi có thể đọc,
+các trường bị bỏ qua sẽ kế thừa giá trị mặc định thời gian chạy: thiếu `defaults.security` sẽ là `full`, và
+bảo mật tác nhân bị thiếu sẽ kế thừa giá trị mặc định đó. Bằng chứng bao gồm `defaults`,
+`agents.*`, `agents.*.allowlist[].pattern`, `argPattern` tùy chọn, trạng thái
+`autoAllowSkills` có hiệu lực và nguồn mục nhập — tuyệt đối không bao gồm đường dẫn socket/token,
+`commandText`, `lastUsedCommand`, đường dẫn đã phân giải hoặc dấu thời gian.
 
-| Trường chính sách                         | Trạng thái quan sát được                                                           | Dùng khi                                                                                |
-| ------------------------------------------- | -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| `execApprovals.requireFile`                 | Đường dẫn `exec-approvals.json` của runtime đang hoạt động                                              | Đặt thành `true` để yêu cầu hiện vật phê duyệt tồn tại và phân tích được.                     |
-| `execApprovals.defaults.allowSecurity`      | `defaults.security`, mặc định là `full`                                              | Chỉ cho phép các chế độ bảo mật phê duyệt mặc định đã được chấp thuận.                                    |
-| `execApprovals.agents.allowSecurity`        | `agents.*.security`, kế thừa giá trị mặc định                                               | Chỉ cho phép các chế độ bảo mật phê duyệt hiệu dụng theo từng agent đã được chấp thuận.                        |
-| `execApprovals.agents.allowAutoAllowSkills` | `defaults.autoAllowSkills` và `agents.*.autoAllowSkills`, kế thừa giá trị mặc định của runtime | Đặt thành `false` để yêu cầu danh sách cho phép thủ công nghiêm ngặt mà không có phê duyệt CLI Skills ngầm định. |
-| `execApprovals.agents.allowlist.expected`   | Tổng hợp mẫu `agents.*.allowlist[]` và các mục argPattern tùy chọn               | Yêu cầu danh sách cho phép phê duyệt khớp với tập mẫu đã được rà soát.                      |
+| Trường chính sách                              | Trạng thái quan sát được                                                               | Sử dụng khi                                                                                         |
+| ---------------------------------------------- | -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `execApprovals.requireFile`                    | Đường dẫn `exec-approvals.json` thời gian chạy đang hoạt động                          | Đặt thành `true` để yêu cầu cấu phần phê duyệt tồn tại và có thể phân tích cú pháp.                  |
+| `execApprovals.defaults.allowSecurity`         | `defaults.security`, mặc định là `full`                                                | Chỉ cho phép các chế độ bảo mật phê duyệt mặc định đã được chấp thuận.                              |
+| `execApprovals.agents.allowSecurity`           | `agents.*.security`, kế thừa giá trị mặc định                                          | Chỉ cho phép các chế độ bảo mật phê duyệt có hiệu lực theo từng tác nhân đã được chấp thuận.        |
+| `execApprovals.agents.allowAutoAllowSkills`    | `defaults.autoAllowSkills` và `agents.*.autoAllowSkills`, kế thừa giá trị mặc định thời gian chạy | Đặt thành `false` để yêu cầu danh sách cho phép thủ công nghiêm ngặt mà không ngầm phê duyệt CLI của Skills. |
+| `execApprovals.agents.allowlist.expected`      | Tập hợp các mục mẫu `agents.*.allowlist[]` và `argPattern` tùy chọn                    | Yêu cầu danh sách phê duyệt cho phép khớp với tập mẫu đã được xem xét.                              |
 
-Ví dụ: yêu cầu hiện vật phê duyệt, từ chối các giá trị mặc định dễ dãi, và
-chỉ cho phép trạng thái phê duyệt exec đã được rà soát cho các agent được chọn:
+Ví dụ: yêu cầu cấu phần phê duyệt, từ chối các giá trị mặc định dễ dãi và chỉ cho phép
+trạng thái phê duyệt thực thi đã được xem xét cho các tác nhân được chọn.
 
 ```jsonc
 {
   "execApprovals": {
     "requireFile": true,
     "defaults": {
-      // Security modes: "deny", "allowlist", or "full".
-      // This default permits only the locked-down deny posture.
+      // Chế độ bảo mật: "deny", "allowlist" hoặc "full".
+      // Giá trị mặc định này chỉ cho phép tư thế từ chối được khóa chặt.
       "allowSecurity": ["deny"],
     },
   },
@@ -375,16 +439,16 @@ chỉ cho phép trạng thái phê duyệt exec đã được rà soát cho các
       "agentIds": ["family-agent", "groups-agent"],
       "execApprovals": {
         "agents": {
-          // Selected agents may use reviewed allowlist posture, but not "full".
+          // Các tác nhân được chọn có thể sử dụng tư thế danh sách cho phép đã qua xét duyệt, nhưng không được dùng "full".
           "allowSecurity": ["allowlist"],
-          // false means skill CLIs must appear in the reviewed allowlist instead of
-          // being implicitly approved by autoAllowSkills.
+          // false có nghĩa là các CLI của skill phải xuất hiện trong danh sách cho phép đã qua xét duyệt thay vì
+          // được autoAllowSkills phê duyệt ngầm.
           "allowAutoAllowSkills": false,
           "allowlist": {
             "expected": [
-              // Simple entry: exact reviewed executable pattern with no argPattern.
+              // Mục đơn giản: mẫu tệp thực thi chính xác đã qua xét duyệt, không có argPattern.
               "travel-hub",
-              // Constrained entry: pattern plus reviewed argument regex.
+              // Mục bị ràng buộc: mẫu cùng biểu thức chính quy đối số đã qua xét duyệt.
               { "pattern": "calendar-cli", "argPattern": "^sync\\b" },
               "/bin/date",
             ],
@@ -398,31 +462,33 @@ chỉ cho phép trạng thái phê duyệt exec đã được rà soát cho các
 
 #### Hồ sơ xác thực
 
-| Trường chính sách                    | Trạng thái quan sát được                               | Dùng khi                                                                                   |
-| ------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| `auth.profiles.requireMetadata` | Metadata nhà cung cấp và chế độ `auth.profiles.*` | Yêu cầu các khóa metadata như `provider` và `mode` trên hồ sơ xác thực cấu hình.               |
-| `auth.profiles.allowModes`      | `auth.profiles.*.mode`                       | Chỉ cho phép các chế độ hồ sơ xác thực được hỗ trợ như `api_key`, `aws-sdk`, `oauth`, hoặc `token`. |
+| Trường chính sách                | Trạng thái quan sát được                     | Sử dụng khi                                                                                         |
+| ------------------------------- | -------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `auth.profiles.requireMetadata` | Siêu dữ liệu nhà cung cấp và chế độ của `auth.profiles.*` | Yêu cầu các khóa siêu dữ liệu như `provider` và `mode` trên hồ sơ xác thực trong cấu hình.          |
+| `auth.profiles.allowModes`      | `auth.profiles.*.mode`                       | Chỉ cho phép các chế độ hồ sơ xác thực được hỗ trợ như `api_key`, `aws-sdk`, `oauth` hoặc `token`. |
 
-#### Metadata công cụ
+#### Siêu dữ liệu công cụ
 
-| Trường chính sách            | Trạng thái quan sát được                   | Dùng khi                                                                                   |
-| ----------------------- | -------------------------------- | ------------------------------------------------------------------------------------------ |
-| `tools.requireMetadata` | Khai báo `TOOLS.md` được quản trị | Yêu cầu các công cụ được quản trị khai báo các khóa metadata như `risk`, `sensitivity`, hoặc `owner`. |
+| Trường chính sách        | Trạng thái quan sát được          | Sử dụng khi                                                                                      |
+| ----------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `tools.requireMetadata` | Các khai báo `TOOLS.md` được quản trị | Yêu cầu các công cụ được quản trị khai báo các khóa siêu dữ liệu như `risk`, `sensitivity` hoặc `owner`. |
 
-#### Trạng thái công cụ
+#### Tư thế công cụ
 
-| Trường chính sách                    | Trạng thái quan sát được                                              | Dùng khi                                                                                                 |
-| ------------------------------- | ----------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `tools.profiles.allow`          | `tools.profile` và `agents.list[].tools.profile`           | Chỉ cho phép các id hồ sơ công cụ như `minimal`, `messaging`, hoặc `coding`.                                 |
-| `tools.fs.requireWorkspaceOnly` | `tools.fs.workspaceOnly` và ghi đè `tools.fs` theo từng agent | Đặt thành `true` để yêu cầu trạng thái công cụ hệ thống tệp chỉ trong workspace.                                         |
-| `tools.exec.allowSecurity`      | `tools.exec.security` và bảo mật exec theo từng agent           | Chỉ cho phép các chế độ bảo mật exec như `deny` hoặc `allowlist`.                                            |
-| `tools.exec.requireAsk`         | `tools.exec.ask` và chế độ hỏi exec theo từng agent                | Yêu cầu trạng thái phê duyệt như `always`.                                                               |
-| `tools.exec.allowHosts`         | `tools.exec.host` và định tuyến máy chủ exec theo từng agent           | Chỉ cho phép các chế độ định tuyến máy chủ exec như `sandbox`.                                                    |
-| `tools.elevated.allow`          | `tools.elevated.enabled` và trạng thái nâng quyền theo từng agent     | Đặt thành `false` để yêu cầu chế độ công cụ nâng quyền luôn tắt.                                           |
-| `tools.alsoAllow.expected`      | `tools.alsoAllow` và `tools.alsoAllow` theo từng agent           | Yêu cầu các mục `alsoAllow` chính xác và báo cáo các quyền công cụ bổ sung bị thiếu hoặc không mong muốn.                 |
-| `tools.denyTools`               | `tools.deny` và `agents.list[].tools.deny`                 | Yêu cầu các danh sách từ chối công cụ đã cấu hình bao gồm id hoặc nhóm công cụ như `group:runtime` và `group:fs`. |
+| Trường chính sách                | Trạng thái quan sát được                                     | Sử dụng khi                                                                                                          |
+| ------------------------------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| `tools.profiles.allow`          | `tools.profile` và `agents.list[].tools.profile`             | Chỉ cho phép các mã định danh hồ sơ công cụ như `minimal`, `messaging` hoặc `coding`.                                |
+| `tools.fs.requireWorkspaceOnly` | `tools.fs.workspaceOnly` và các giá trị ghi đè `tools.fs` theo từng tác nhân | Đặt thành `true` để yêu cầu tư thế công cụ hệ thống tệp chỉ giới hạn trong không gian làm việc.                       |
+| `tools.exec.allowSecurity`      | `tools.exec.security` và bảo mật thực thi theo từng tác nhân | Chỉ cho phép các chế độ bảo mật thực thi như `deny` hoặc `allowlist`.                                                 |
+| `tools.exec.requireAsk`         | `tools.exec.ask` và chế độ yêu cầu thực thi theo từng tác nhân | Yêu cầu tư thế phê duyệt như `always`.                                                                                |
+| `tools.exec.allowHosts`         | `tools.exec.host` và định tuyến máy chủ thực thi theo từng tác nhân | Chỉ cho phép các chế độ định tuyến máy chủ thực thi như `sandbox`.                                                    |
+| `tools.elevated.allow`          | `tools.elevated.enabled` và tư thế nâng quyền theo từng tác nhân | Đặt thành `false` để yêu cầu chế độ công cụ nâng quyền luôn bị vô hiệu hóa.                                           |
+| `tools.alsoAllow.expected`      | `tools.alsoAllow` và `tools.alsoAllow` theo từng tác nhân    | Yêu cầu các mục `alsoAllow` khớp chính xác và báo cáo các quyền cấp công cụ bổ sung bị thiếu hoặc không mong đợi.     |
+| `tools.denyTools`               | `tools.deny` và `agents.list[].tools.deny`                   | Yêu cầu danh sách từ chối công cụ đã cấu hình bao gồm mã định danh hoặc nhóm công cụ như `group:runtime` và `group:fs`. |
 
-Chạy các kiểm tra chỉ chính sách trong khi biên soạn:
+## Chạy kiểm tra
+
+Chỉ chạy các kiểm tra chính sách trong quá trình biên soạn:
 
 ```bash
 openclaw policy check
@@ -430,32 +496,29 @@ openclaw policy check --json
 openclaw policy check --severity-min error
 ```
 
-`policy check` chỉ chạy tập kiểm tra chính sách và phát ra bằng chứng, phát hiện, và
-hash chứng thực. Các phát hiện tương tự cũng xuất hiện trong `openclaw doctor --lint`
-khi Plugin Policy được bật.
+`policy check` chỉ chạy tập kiểm tra chính sách và xuất ra bằng chứng, phát hiện
+và hàm băm chứng thực. Các phát hiện tương tự cũng xuất hiện trong
+`openclaw doctor --lint` khi Plugin Policy được bật.
 
-So sánh tệp chính sách của operator với tệp chính sách đường cơ sở đã biên soạn:
+So sánh tệp chính sách của đơn vị vận hành với đường cơ sở đã biên soạn:
 
 ```bash
 openclaw policy compare --baseline official.policy.jsonc
 openclaw policy compare --baseline official.policy.jsonc --policy policy.jsonc --json
 ```
 
-`policy compare` so sánh cú pháp tệp chính sách với cú pháp tệp chính sách. Nó không
-kiểm tra trạng thái runtime OpenClaw, bằng chứng, thông tin xác thực, hoặc bí mật. Lệnh
-sử dụng cùng metadata quy tắc chính sách quản trị các lớp phủ theo phạm vi: danh sách cho phép phải
-giữ nguyên hoặc hẹp hơn, danh sách từ chối phải giữ nguyên hoặc rộng hơn, boolean bắt buộc
-phải giữ giá trị bắt buộc của chúng, chuỗi có thứ tự chỉ được di chuyển về đầu
-hạn chế hơn trong thứ tự đã cấu hình, và danh sách chính xác phải khớp.
+`policy compare` kiểm tra cú pháp tệp chính sách so với cú pháp tệp chính sách; lệnh này
+không kiểm tra trạng thái thời gian chạy, bằng chứng, thông tin xác thực hoặc bí mật. Lệnh sử dụng cùng
+siêu dữ liệu quy tắc chi phối các lớp phủ theo phạm vi: danh sách cho phép phải giữ nguyên hoặc
+hẹp hơn, danh sách từ chối phải giữ nguyên hoặc rộng hơn, các giá trị boolean bắt buộc phải giữ
+nguyên giá trị, chuỗi có thứ tự chỉ có thể di chuyển về phía nghiêm ngặt hơn trong
+thứ tự đã cấu hình và các danh sách chính xác phải khớp. Đường cơ sở có thể là
+chính sách do tổ chức biên soạn; chính sách được kiểm tra có thể thêm các giá trị nghiêm ngặt hơn hoặc
+các quy tắc bổ sung. Một quy tắc cấp cao nhất được kiểm tra có thể đáp ứng quy tắc đường cơ sở theo phạm vi khi
+nó có mức hạn chế tương đương hoặc cao hơn. Tên phạm vi không cần phải khớp giữa
+các tệp; phép so sánh được định khóa theo bộ chọn (`agentIds`/`channelIds`) và trường.
 
-Tệp đường cơ sở có thể là chính sách do tổ chức biên soạn. Chính sách được kiểm tra có thể
-dùng các giá trị nghiêm ngặt hơn hoặc thêm quy tắc chính sách bổ sung. Một quy tắc được kiểm tra ở cấp cao nhất cũng có thể
-thỏa mãn quy tắc đường cơ sở theo phạm vi khi nó nghiêm ngặt bằng hoặc hơn vì
-chính sách cấp cao nhất áp dụng rộng rãi. Tên phạm vi không cần khớp; so sánh
-theo phạm vi được khóa theo giá trị bộ chọn như `agentIds` hoặc `channelIds` và theo
-trường chính sách đang được kiểm tra.
-
-Ví dụ đầu ra JSON so sánh sạch chỉ báo cáo trạng thái so sánh tệp chính sách:
+Kết quả so sánh sạch (`--json`):
 
 ```json
 {
@@ -467,8 +530,8 @@ Ví dụ đầu ra JSON so sánh sạch chỉ báo cáo trạng thái so sánh t
 }
 ```
 
-Ví dụ đầu ra sạch của `policy check --json` bao gồm các hash ổn định có thể được
-operator hoặc supervisor ghi lại:
+Đầu ra sạch của `policy check --json` bao gồm các hàm băm ổn định mà đơn vị vận hành hoặc
+bộ giám sát có thể ghi lại:
 
 ```json
 {
@@ -493,7 +556,7 @@ operator hoặc supervisor ghi lại:
 
 ## Cấu hình chính sách
 
-Cấu hình chính sách nằm dưới `plugins.entries.policy.config`.
+Cấu hình chính sách nằm trong `plugins.entries.policy.config`.
 
 ```jsonc
 {
@@ -514,19 +577,16 @@ Cấu hình chính sách nằm dưới `plugins.entries.policy.config`.
 }
 ```
 
-| Cài đặt                   | Mục đích                                                         |
-| ------------------------- | --------------------------------------------------------------- |
-| `enabled`                 | Bật kiểm tra chính sách ngay cả trước khi `policy.jsonc` tồn tại.         |
-| `workspaceRepairs`        | Cho phép `doctor --fix` chỉnh sửa các cài đặt workspace do chính sách quản lý. |
-| `expectedHash`            | Khóa hash tùy chọn cho hiện vật chính sách đã được phê duyệt.            |
-| `expectedAttestationHash` | Khóa hash tùy chọn cho lần kiểm tra chính sách sạch được chấp nhận gần nhất.    |
-| `path`                    | Vị trí của hiện vật chính sách tương đối với workspace.             |
+| Thiết lập                  | Mục đích                                                                  |
+| ------------------------- | ------------------------------------------------------------------------- |
+| `enabled`                 | Bật kiểm tra chính sách ngay cả trước khi `policy.jsonc` tồn tại.          |
+| `workspaceRepairs`        | Cho phép `doctor --fix` chỉnh sửa các thiết lập không gian làm việc do chính sách quản lý. |
+| `expectedHash`            | Khóa hàm băm tùy chọn cho hiện vật chính sách đã được phê duyệt.           |
+| `expectedAttestationHash` | Khóa hàm băm tùy chọn cho lần kiểm tra chính sách sạch được chấp nhận gần nhất. |
+| `path`                    | Vị trí của hiện vật chính sách tương đối với không gian làm việc.          |
 
-Đặt `plugins.entries.policy.config.enabled` thành `false` để tắt kiểm tra chính sách
-cho một workspace trong khi vẫn giữ Plugin đã cài đặt.
-
-Yêu cầu metadata công cụ được biên soạn trong `policy.jsonc` với
-`tools.requireMetadata`, ví dụ `["risk", "sensitivity", "owner"]`.
+Đặt `plugins.entries.policy.config.enabled` thành `false` để vô hiệu hóa các kiểm tra
+chính sách cho một không gian làm việc trong khi vẫn giữ Plugin được cài đặt.
 
 ## Chấp nhận trạng thái chính sách
 
@@ -573,9 +633,9 @@ Ví dụ đầu ra JSON:
     ],
     "modelRefs": [
       {
-        "ref": "openai/gpt-5.5",
+        "ref": "openai/gpt-5.6-sol",
         "provider": "openai",
-        "model": "gpt-5.5",
+        "model": "gpt-5.6-sol",
         "source": "oc://openclaw.config/agents/defaults/model"
       }
     ],
@@ -660,130 +720,115 @@ Ví dụ đầu ra JSON:
 }
 ```
 
-Hàm băm chính sách xác định tạo tác quy tắc đã được soạn thảo. Khối bằng chứng
-ghi lại trạng thái OpenClaw đã quan sát được dùng bởi các bước kiểm tra chính sách. Giá trị
-`workspace.hash` xác định tải dữ liệu bằng chứng đó cho phạm vi được kiểm tra.
-Hàm băm phát hiện xác định chính xác tập phát hiện mà bước kiểm tra trả về.
-`checkedAt` ghi lại thời điểm quá trình đánh giá đã chạy. Hàm băm chứng thực xác định
-tuyên bố ổn định: hàm băm chính sách, hàm băm bằng chứng, hàm băm phát hiện và liệu
-kết quả có sạch hay không. Nó cố ý không bao gồm `checkedAt`, để cùng một
-trạng thái chính sách tạo ra cùng một chứng thực qua các lần kiểm tra lặp lại. Kết hợp lại,
-chúng tạo thành bộ giá trị kiểm toán cho bước kiểm tra chính sách này.
+`attestation.policy.hash` xác định hiện vật quy tắc đã biên soạn. `evidence`
+ghi lại trạng thái OpenClaw quan sát được mà các kiểm tra sử dụng và
+`workspace.hash` xác định tải trọng bằng chứng đó. `findingsHash` xác định
+chính xác tập phát hiện. `checkedAt` ghi lại thời điểm kiểm tra được chạy.
+`attestationHash` xác định tuyên bố ổn định (hàm băm chính sách, hàm băm bằng chứng,
+hàm băm phát hiện và trạng thái sạch/bẩn) và chủ ý loại trừ `checkedAt`,
+vì vậy cùng một trạng thái chính sách luôn tạo ra cùng một hàm băm chứng thực. Khi kết hợp,
+bốn giá trị này tạo thành bộ kiểm toán cho một lần kiểm tra chính sách.
 
-Nếu một Gateway hoặc bộ giám sát sau này dùng chính sách để chặn, phê duyệt hoặc chú thích một
-hành động lúc chạy, nó nên ghi lại hàm băm chứng thực từ lần kiểm tra chính sách sạch gần nhất.
-`checkedAt` vẫn nằm trong đầu ra JSON cho nhật ký kiểm toán, nhưng không phải là một phần của
-hàm băm chứng thực ổn định.
+Nếu Gateway hoặc bộ giám sát sử dụng chính sách để chặn, phê duyệt hoặc chú giải một
+hành động thời gian chạy, thành phần đó nên ghi lại hàm băm chứng thực từ lần kiểm tra sạch
+gần nhất. `checkedAt` vẫn nằm trong đầu ra JSON dành cho nhật ký kiểm toán nhưng không phải là
+một phần của hàm băm ổn định.
 
-Dùng vòng đời này khi chấp nhận trạng thái chính sách:
+Vòng đời chấp nhận trạng thái chính sách:
 
-1. Soạn thảo hoặc xem xét `policy.jsonc`.
+1. Biên soạn hoặc xét duyệt `policy.jsonc`.
 2. Chạy `openclaw policy check --json`.
-3. Nếu kết quả sạch, ghi lại `attestation.policy.hash` làm `expectedHash`.
+3. Nếu sạch, ghi lại `attestation.policy.hash` làm `expectedHash`.
 4. Ghi lại `attestation.attestationHash` làm `expectedAttestationHash`.
 5. Chạy lại `openclaw doctor --lint` trong CI hoặc các cổng phát hành.
 
-Nếu các quy tắc chính sách thay đổi có chủ ý, hãy cập nhật cả hai hàm băm được chấp nhận từ một
-lần kiểm tra sạch. Nếu thiết lập không gian làm việc thay đổi có chủ ý nhưng chính sách vẫn giữ nguyên,
-thường chỉ `expectedAttestationHash` thay đổi.
+Nếu các quy tắc chính sách được thay đổi có chủ đích, hãy cập nhật cả hai hàm băm được chấp nhận từ một lần kiểm tra sạch. Nếu chỉ các thiết lập không gian làm việc thay đổi (chính sách không đổi), thông thường chỉ `expectedAttestationHash` thay đổi.
 
-Bật hoặc nâng cấp các quy tắc `agents.workspace` sẽ thêm bằng chứng `agentWorkspace` vào
-hàm băm không gian làm việc và hàm băm chứng thực. Người vận hành nên xem xét bằng chứng mới
-và làm mới các hàm băm chứng thực đã chấp nhận sau khi bật các quy tắc này.
-Bật hoặc nâng cấp các quy tắc trạng thái công cụ sẽ thêm bằng chứng `toolPosture` theo
-cùng cách.
+Việc bật hoặc nâng cấp các quy tắc `agents.workspace` sẽ thêm bằng chứng `agentWorkspace` vào hàm băm không gian làm việc và hàm băm chứng thực; hãy xem xét bằng chứng mới và làm mới các hàm băm chứng thực được chấp nhận sau khi bật. Việc bật hoặc nâng cấp các quy tắc trạng thái công cụ cũng thêm bằng chứng `toolPosture` theo cách tương tự.
 
-`openclaw policy watch` chạy lặp lại cùng một bước kiểm tra và báo cáo khi
-bằng chứng hiện tại không còn khớp với `expectedAttestationHash`:
+`openclaw policy watch` chạy lại bước kiểm tra và báo cáo khi bằng chứng hiện tại không còn khớp với `expectedAttestationHash`:
 
 ```bash
 openclaw policy watch --json
 ```
 
-Dùng `--once` trong CI hoặc các script chỉ cần một lần đánh giá độ lệch. Khi không có
-`--once`, lệnh thăm dò mặc định hai giây một lần; dùng `--interval-ms` để
-chọn một khoảng thời gian khác.
+Sử dụng `--once` trong CI hoặc các tập lệnh cần đánh giá độ lệch một lần. Nếu không có `--once`, theo mặc định lệnh sẽ thăm dò mỗi hai giây; sử dụng `--interval-ms` để thay đổi khoảng thời gian.
 
-## Phát hiện
+## Các phát hiện
 
-Chính sách hiện xác minh:
+| ID kiểm tra                                              | Phát hiện                                                                                              |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `policy/policy-jsonc-missing`                            | Chính sách đã được bật nhưng thiếu `policy.jsonc`.                                                     |
+| `policy/policy-jsonc-invalid`                            | Không thể phân tích cú pháp chính sách hoặc chính sách chứa các mục quy tắc không đúng định dạng.       |
+| `policy/policy-hash-mismatch`                            | Chính sách không khớp với `expectedHash` đã cấu hình.                                                  |
+| `policy/attestation-hash-mismatch`                       | Bằng chứng chính sách hiện tại không còn khớp với chứng thực được chấp nhận.                            |
+| `policy/policy-conformance-invalid`                      | Tệp chính sách cơ sở hoặc tệp chính sách được kiểm tra có cú pháp so sánh không hợp lệ.                 |
+| `policy/policy-conformance-missing`                      | Tệp chính sách được kiểm tra thiếu một quy tắc mà tệp chính sách cơ sở yêu cầu.                         |
+| `policy/policy-conformance-weaker`                       | Tệp chính sách được kiểm tra có giá trị yếu hơn tệp chính sách cơ sở.                                  |
+| `policy/channels-denied-provider`                        | Một kênh đã bật khớp với quy tắc từ chối kênh.                                                         |
+| `policy/mcp-denied-server`                               | Một máy chủ MCP đã cấu hình bị chính sách từ chối.                                                     |
+| `policy/mcp-unapproved-server`                           | Một máy chủ MCP đã cấu hình nằm ngoài danh sách cho phép.                                              |
+| `policy/models-denied-provider`                          | Một nhà cung cấp mô hình hoặc tham chiếu mô hình đã cấu hình sử dụng nhà cung cấp bị từ chối.           |
+| `policy/models-unapproved-provider`                      | Một nhà cung cấp mô hình hoặc tham chiếu mô hình đã cấu hình nằm ngoài danh sách cho phép.              |
+| `policy/network-private-access-enabled`                  | Một cơ chế thoát SSRF vào mạng riêng được bật trong khi chính sách từ chối cơ chế đó.                   |
+| `policy/ingress-dm-policy-unapproved`                    | Chính sách tin nhắn trực tiếp của một kênh nằm ngoài danh sách cho phép của chính sách.                 |
+| `policy/ingress-dm-scope-unapproved`                     | `session.dmScope` không khớp với phạm vi cô lập tin nhắn trực tiếp mà chính sách yêu cầu.               |
+| `policy/ingress-open-groups-denied`                      | Chính sách nhóm của một kênh là `open` trong khi chính sách từ chối lưu lượng nhóm mở đi vào.           |
+| `policy/ingress-group-mention-required`                  | Một mục kênh hoặc nhóm tắt cổng yêu cầu nhắc tên trong khi chính sách yêu cầu bật cổng này.             |
+| `policy/gateway-non-loopback-bind`                       | Trạng thái liên kết của Gateway cho phép phơi bày ngoài local loopback trong khi chính sách từ chối.    |
+| `policy/gateway-auth-disabled`                           | Xác thực Gateway bị tắt trong khi chính sách yêu cầu xác thực.                                         |
+| `policy/gateway-rate-limit-missing`                      | Trạng thái giới hạn tốc độ xác thực Gateway không được khai báo rõ trong khi chính sách yêu cầu.        |
+| `policy/gateway-control-ui-insecure`                     | Các tùy chọn bật phơi bày không an toàn của giao diện điều khiển Gateway đang được bật.                 |
+| `policy/gateway-tailscale-funnel`                        | Phơi bày Gateway qua Tailscale Funnel được bật trong khi chính sách từ chối.                            |
+| `policy/gateway-remote-enabled`                          | Chế độ từ xa của Gateway đang hoạt động trong khi chính sách từ chối.                                  |
+| `policy/gateway-http-endpoint-enabled`                   | Một điểm cuối API HTTP của Gateway được bật trong khi bị chính sách từ chối.                            |
+| `policy/gateway-http-url-fetch-unrestricted`             | Đầu vào tìm nạp URL qua HTTP của Gateway thiếu danh sách URL cho phép bắt buộc.                         |
+| `policy/gateway-node-command-denied`                     | Một lệnh Node bị chính sách từ chối nhưng không bị cấu hình OpenClaw từ chối.                            |
+| `policy/agents-workspace-access-denied`                  | Chế độ hộp cát hoặc quyền truy cập không gian làm việc của tác nhân nằm ngoài danh sách cho phép.       |
+| `policy/agents-tool-not-denied`                          | Cấu hình tác nhân hoặc cấu hình mặc định không từ chối một công cụ mà chính sách yêu cầu phải từ chối.  |
+| `policy/tools-profile-unapproved`                        | Hồ sơ công cụ toàn cục hoặc theo tác nhân đã cấu hình nằm ngoài danh sách cho phép.                     |
+| `policy/tools-fs-workspace-only-required`                | Các công cụ hệ thống tệp chưa được cấu hình với trạng thái đường dẫn chỉ dành cho không gian làm việc.  |
+| `policy/tools-exec-security-unapproved`                  | Chế độ bảo mật thực thi nằm ngoài danh sách cho phép của chính sách.                                   |
+| `policy/tools-exec-ask-unapproved`                       | Chế độ yêu cầu xác nhận thực thi nằm ngoài danh sách cho phép của chính sách.                           |
+| `policy/tools-exec-host-unapproved`                      | Định tuyến máy chủ thực thi nằm ngoài danh sách cho phép của chính sách.                               |
+| `policy/tools-elevated-enabled`                          | Chế độ công cụ đặc quyền được bật trong khi chính sách từ chối.                                        |
+| `policy/tools-also-allow-missing`                        | Danh sách `alsoAllow` đã cấu hình thiếu một mục mà chính sách yêu cầu.                                 |
+| `policy/tools-also-allow-unexpected`                     | Danh sách `alsoAllow` đã cấu hình chứa một mục mà chính sách không cho phép.                            |
+| `policy/tools-required-deny-missing`                     | Danh sách từ chối công cụ toàn cục hoặc theo tác nhân không chứa một công cụ bắt buộc phải từ chối.     |
+| `policy/sandbox-mode-unapproved`                         | Chế độ hộp cát nằm ngoài danh sách cho phép của chính sách.                                            |
+| `policy/sandbox-backend-unapproved`                      | Phần phụ trợ hộp cát nằm ngoài danh sách cho phép của chính sách.                                      |
+| `policy/sandbox-container-posture-unobservable`          | Một quy tắc trạng thái vùng chứa được bật cho phần phụ trợ không thể quan sát trạng thái đó.            |
+| `policy/sandbox-container-host-network-denied`           | Hộp cát hoặc trình duyệt dựa trên vùng chứa sử dụng chế độ mạng máy chủ.                                |
+| `policy/sandbox-container-namespace-join-denied`         | Hộp cát hoặc trình duyệt dựa trên vùng chứa tham gia không gian tên của vùng chứa khác.                 |
+| `policy/sandbox-container-mount-mode-required`           | Điểm gắn kết của hộp cát hoặc trình duyệt dựa trên vùng chứa không ở chế độ chỉ đọc.                    |
+| `policy/sandbox-container-runtime-socket-mount`          | Điểm gắn kết của hộp cát hoặc trình duyệt dựa trên vùng chứa làm lộ socket thời gian chạy vùng chứa.    |
+| `policy/sandbox-container-unconfined-profile`            | Hồ sơ hộp cát vùng chứa không bị giới hạn trong khi chính sách từ chối trạng thái này.                  |
+| `policy/sandbox-browser-cdp-source-range-missing`        | Thiếu dải nguồn CDP của trình duyệt hộp cát trong khi chính sách yêu cầu.                               |
+| `policy/data-handling-redaction-disabled`                | Việc che dữ liệu nhạy cảm trong nhật ký bị tắt trong khi chính sách yêu cầu.                            |
+| `policy/data-handling-telemetry-content-capture`         | Việc thu thập nội dung đo từ xa được bật trong khi chính sách từ chối.                                 |
+| `policy/data-handling-session-retention-not-enforced`    | Việc duy trì thời hạn lưu giữ phiên không được thực thi trong khi chính sách yêu cầu.                   |
+| `policy/data-handling-session-transcript-memory-enabled` | Việc lập chỉ mục bộ nhớ bản ghi phiên được bật trong khi chính sách từ chối.                            |
+| `policy/secrets-unmanaged-provider`                      | Một SecretRef trong cấu hình tham chiếu đến nhà cung cấp không được khai báo trong `secrets.providers`. |
+| `policy/secrets-denied-provider-source`                  | Một nhà cung cấp bí mật hoặc SecretRef trong cấu hình sử dụng nguồn bị chính sách từ chối.              |
+| `policy/secrets-insecure-provider`                       | Một nhà cung cấp bí mật chọn sử dụng trạng thái không an toàn trong khi chính sách từ chối.             |
+| `policy/auth-profile-invalid-metadata`                   | Hồ sơ xác thực trong cấu hình thiếu siêu dữ liệu hợp lệ về nhà cung cấp hoặc chế độ.                    |
+| `policy/auth-profile-unapproved-mode`                    | Chế độ hồ sơ xác thực trong cấu hình nằm ngoài danh sách cho phép của chính sách.                       |
+| `policy/exec-approvals-missing`                          | Chính sách yêu cầu `exec-approvals.json`, nhưng thiếu hiện vật này.                                    |
+| `policy/exec-approvals-invalid`                          | Không thể phân tích cú pháp hiện vật phê duyệt thực thi đã cấu hình.                                   |
+| `policy/exec-approvals-default-security-unapproved`      | Mặc định phê duyệt thực thi sử dụng chế độ bảo mật nằm ngoài danh sách cho phép của chính sách.         |
+| `policy/exec-approvals-agent-security-unapproved`        | Chế độ bảo mật phê duyệt thực thi có hiệu lực theo tác nhân nằm ngoài danh sách cho phép.               |
+| `policy/exec-approvals-auto-allow-skills-enabled`        | Một tác nhân phê duyệt thực thi ngầm tự động cho phép CLI của Skills trong khi chính sách từ chối.      |
+| `policy/exec-approvals-allowlist-missing`                | Danh sách phê duyệt cho phép thiếu một mẫu mà chính sách yêu cầu.                                      |
+| `policy/exec-approvals-allowlist-unexpected`             | Danh sách phê duyệt cho phép chứa một mẫu mà chính sách không cho phép.                                |
+| `policy/tools-missing-risk-level`                        | Khai báo công cụ chịu quản trị thiếu siêu dữ liệu rủi ro.                                              |
+| `policy/tools-unknown-risk-level`                        | Khai báo công cụ chịu quản trị sử dụng giá trị rủi ro không xác định.                                  |
+| `policy/tools-missing-sensitivity-token`                 | Khai báo công cụ chịu quản trị thiếu siêu dữ liệu về độ nhạy cảm.                                      |
+| `policy/tools-missing-owner`                             | Khai báo công cụ chịu quản trị thiếu siêu dữ liệu về chủ sở hữu.                                       |
+| `policy/tools-unknown-sensitivity-token`                 | Khai báo công cụ chịu quản trị sử dụng giá trị độ nhạy cảm không xác định.                              |
 
-| Check id                                                 | Phát hiện                                                                          |
-| -------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| `policy/policy-jsonc-missing`                            | Chính sách được bật nhưng thiếu `policy.jsonc`.                                   |
-| `policy/policy-jsonc-invalid`                            | Không thể phân tích chính sách hoặc chính sách chứa các mục quy tắc sai định dạng. |
-| `policy/policy-hash-mismatch`                            | Chính sách không khớp với `expectedHash` đã cấu hình.                             |
-| `policy/attestation-hash-mismatch`                       | Bằng chứng chính sách hiện tại không còn khớp với chứng thực đã chấp nhận.         |
-| `policy/policy-conformance-invalid`                      | Tệp chính sách nền tảng hoặc tệp chính sách được kiểm tra có cú pháp so sánh không hợp lệ. |
-| `policy/policy-conformance-missing`                      | Tệp chính sách được kiểm tra thiếu một quy tắc do tệp chính sách nền tảng yêu cầu. |
-| `policy/policy-conformance-weaker`                       | Tệp chính sách được kiểm tra có giá trị yếu hơn tệp chính sách nền tảng.           |
-| `policy/channels-denied-provider`                        | Một kênh đã bật khớp với quy tắc từ chối kênh.                                    |
-| `policy/mcp-denied-server`                               | Một máy chủ MCP đã cấu hình bị chính sách từ chối.                                |
-| `policy/mcp-unapproved-server`                           | Một máy chủ MCP đã cấu hình nằm ngoài danh sách cho phép.                         |
-| `policy/models-denied-provider`                          | Một nhà cung cấp mô hình hoặc tham chiếu mô hình đã cấu hình dùng nhà cung cấp bị từ chối. |
-| `policy/models-unapproved-provider`                      | Một nhà cung cấp mô hình hoặc tham chiếu mô hình đã cấu hình nằm ngoài danh sách cho phép. |
-| `policy/network-private-access-enabled`                  | Cửa thoát SSRF mạng riêng được bật trong khi chính sách từ chối nó.               |
-| `policy/ingress-dm-policy-unapproved`                    | Chính sách DM của kênh nằm ngoài danh sách cho phép của chính sách.               |
-| `policy/ingress-dm-scope-unapproved`                     | `session.dmScope` không khớp với phạm vi cô lập DM mà chính sách yêu cầu.         |
-| `policy/ingress-open-groups-denied`                      | Chính sách nhóm của kênh là `open` trong khi chính sách từ chối ingress nhóm mở.  |
-| `policy/ingress-group-mention-required`                  | Một mục kênh hoặc nhóm tắt cổng nhắc đến trong khi chính sách yêu cầu chúng.      |
-| `policy/gateway-non-loopback-bind`                       | Tư thế liên kết Gateway cho phép phơi bày không phải loopback khi chính sách từ chối nó. |
-| `policy/gateway-auth-disabled`                           | Xác thực Gateway bị tắt khi chính sách yêu cầu xác thực.                          |
-| `policy/gateway-rate-limit-missing`                      | Tư thế giới hạn tốc độ xác thực Gateway không được nêu rõ khi chính sách yêu cầu. |
-| `policy/gateway-control-ui-insecure`                     | Các công tắc phơi bày không an toàn của Gateway Control UI được bật.              |
-| `policy/gateway-tailscale-funnel`                        | Phơi bày Gateway Tailscale Funnel được bật khi chính sách từ chối nó.             |
-| `policy/gateway-remote-enabled`                          | Chế độ từ xa của Gateway đang hoạt động khi chính sách từ chối nó.                |
-| `policy/gateway-http-endpoint-enabled`                   | Một điểm cuối API HTTP của Gateway được bật dù bị chính sách từ chối.             |
-| `policy/gateway-http-url-fetch-unrestricted`             | Đầu vào tìm nạp URL HTTP của Gateway thiếu danh sách URL cho phép bắt buộc.       |
-| `policy/agents-workspace-access-denied`                  | Chế độ sandbox của tác nhân hoặc quyền truy cập workspace nằm ngoài danh sách cho phép của chính sách. |
-| `policy/agents-tool-not-denied`                          | Một tác nhân hoặc cấu hình mặc định không từ chối một công cụ mà chính sách yêu cầu. |
-| `policy/tools-profile-unapproved`                        | Hồ sơ công cụ toàn cục hoặc theo tác nhân đã cấu hình nằm ngoài danh sách cho phép. |
-| `policy/tools-fs-workspace-only-required`                | Công cụ hệ thống tệp không được cấu hình với tư thế đường dẫn chỉ trong workspace. |
-| `policy/tools-exec-security-unapproved`                  | Chế độ bảo mật exec nằm ngoài danh sách cho phép của chính sách.                  |
-| `policy/tools-exec-ask-unapproved`                       | Chế độ hỏi exec nằm ngoài danh sách cho phép của chính sách.                      |
-| `policy/tools-exec-host-unapproved`                      | Định tuyến máy chủ exec nằm ngoài danh sách cho phép của chính sách.              |
-| `policy/tools-elevated-enabled`                          | Chế độ công cụ nâng quyền được bật khi chính sách từ chối nó.                     |
-| `policy/tools-also-allow-missing`                        | Danh sách `alsoAllow` đã cấu hình thiếu một mục mà chính sách yêu cầu.            |
-| `policy/tools-also-allow-unexpected`                     | Danh sách `alsoAllow` đã cấu hình bao gồm một mục không được chính sách mong đợi. |
-| `policy/tools-required-deny-missing`                     | Danh sách từ chối công cụ toàn cục hoặc theo tác nhân không bao gồm một công cụ bị từ chối bắt buộc. |
-| `policy/sandbox-mode-unapproved`                         | Chế độ sandbox nằm ngoài danh sách cho phép của chính sách.                       |
-| `policy/sandbox-backend-unapproved`                      | Backend sandbox nằm ngoài danh sách cho phép của chính sách.                      |
-| `policy/sandbox-container-posture-unobservable`          | Quy tắc tư thế container được bật cho một backend không thể quan sát nó.          |
-| `policy/sandbox-container-host-network-denied`           | Sandbox hoặc trình duyệt dựa trên container dùng chế độ mạng máy chủ.             |
-| `policy/sandbox-container-namespace-join-denied`         | Sandbox hoặc trình duyệt dựa trên container tham gia namespace của container khác. |
-| `policy/sandbox-container-mount-mode-required`           | Mount của sandbox hoặc trình duyệt dựa trên container không ở chế độ chỉ đọc.     |
-| `policy/sandbox-container-runtime-socket-mount`          | Mount của sandbox hoặc trình duyệt dựa trên container phơi bày socket runtime container. |
-| `policy/sandbox-container-unconfined-profile`            | Hồ sơ sandbox container không bị giới hạn khi chính sách từ chối điều đó.         |
-| `policy/sandbox-browser-cdp-source-range-missing`        | Dải nguồn CDP của trình duyệt sandbox bị thiếu khi chính sách yêu cầu một dải.    |
-| `policy/data-handling-redaction-disabled`                | Việc biên tập nhật ký nhạy cảm bị tắt khi chính sách yêu cầu.                     |
-| `policy/data-handling-telemetry-content-capture`         | Ghi lại nội dung telemetry được bật khi chính sách từ chối nó.                    |
-| `policy/data-handling-session-retention-not-enforced`    | Bảo trì lưu giữ phiên không được thực thi khi chính sách yêu cầu.                 |
-| `policy/data-handling-session-transcript-memory-enabled` | Lập chỉ mục bộ nhớ bản ghi phiên được bật khi chính sách từ chối nó.              |
-| `policy/secrets-unmanaged-provider`                      | Một SecretRef cấu hình tham chiếu đến nhà cung cấp không được khai báo trong `secrets.providers`. |
-| `policy/secrets-denied-provider-source`                  | Một nhà cung cấp bí mật cấu hình hoặc SecretRef dùng nguồn bị chính sách từ chối. |
-| `policy/secrets-insecure-provider`                       | Một nhà cung cấp bí mật chọn tư thế không an toàn khi chính sách từ chối nó.      |
-| `policy/auth-profile-invalid-metadata`                   | Hồ sơ xác thực cấu hình thiếu metadata nhà cung cấp hoặc chế độ hợp lệ.           |
-| `policy/auth-profile-unapproved-mode`                    | Chế độ hồ sơ xác thực cấu hình nằm ngoài danh sách cho phép của chính sách.       |
-| `policy/exec-approvals-missing`                          | Chính sách yêu cầu `exec-approvals.json`, nhưng thiếu artifact.                   |
-| `policy/exec-approvals-invalid`                          | Không thể phân tích artifact phê duyệt exec đã cấu hình.                          |
-| `policy/exec-approvals-default-security-unapproved`      | Mặc định phê duyệt exec dùng chế độ bảo mật nằm ngoài danh sách cho phép của chính sách. |
-| `policy/exec-approvals-agent-security-unapproved`        | Chế độ bảo mật phê duyệt exec hiệu lực theo tác nhân nằm ngoài danh sách cho phép. |
-| `policy/exec-approvals-auto-allow-skills-enabled`        | Một tác nhân phê duyệt exec ngầm tự động cho phép CLI của Skills khi chính sách từ chối điều đó. |
-| `policy/exec-approvals-allowlist-missing`                | Danh sách cho phép phê duyệt thiếu một mẫu mà chính sách yêu cầu.                 |
-| `policy/exec-approvals-allowlist-unexpected`             | Danh sách cho phép phê duyệt bao gồm một mẫu không được chính sách mong đợi.      |
-| `policy/tools-missing-risk-level`                        | Khai báo công cụ được quản trị thiếu metadata rủi ro.                             |
-| `policy/tools-unknown-risk-level`                        | Khai báo công cụ được quản trị dùng giá trị rủi ro không xác định.                |
-| `policy/tools-missing-sensitivity-token`                 | Khai báo công cụ được quản trị thiếu metadata độ nhạy.                            |
-| `policy/tools-missing-owner`                             | Khai báo công cụ được quản trị thiếu metadata chủ sở hữu.                         |
-| `policy/tools-unknown-sensitivity-token`                 | Khai báo công cụ được quản trị dùng giá trị độ nhạy không xác định.               |
+Một phát hiện có thể bao gồm cả `target` (thành phần được quan sát trong không gian làm việc không tuân thủ) và `requirement` (quy tắc được soạn thảo khiến thành phần đó trở thành một phát hiện). Hiện tại cả hai đều là chuỗi địa chỉ `oc://`, nhưng tên trường mô tả vai trò trong chính sách thay vì định dạng địa chỉ.
 
-Các phát hiện chính sách có thể bao gồm cả `target` và `requirement`. `target` là
-đối tượng workspace được quan sát nhưng không tuân thủ. `requirement` là quy tắc
-chính sách đã được soạn khiến nó trở thành một phát hiện. Cả hai giá trị hiện là địa chỉ, thường là
-đường dẫn `oc://`, nhưng tên trường mô tả vai trò chính sách của chúng thay vì
-định dạng địa chỉ.
-
-Ví dụ phát hiện JSON:
+Ví dụ về các phát hiện:
 
 ```json
 {
@@ -799,8 +844,6 @@ Ví dụ phát hiện JSON:
 }
 ```
 
-Ví dụ phát hiện công cụ:
-
 ```json
 {
   "checkId": "policy/tools-missing-risk-level",
@@ -815,75 +858,79 @@ Ví dụ phát hiện công cụ:
 }
 ```
 
-Ví dụ phát hiện MCP:
-
 ```json
 {
   "checkId": "policy/mcp-unapproved-server",
   "severity": "error",
-  "message": "MCP server 'remote' is not in the policy allowlist.",
+  "message": "Máy chủ MCP 'remote' không nằm trong danh sách cho phép của chính sách.",
   "source": "policy",
-  "path": "openclaw config",
+  "path": "cấu hình openclaw",
   "ocPath": "oc://openclaw.config/mcp/servers/remote",
   "target": "oc://openclaw.config/mcp/servers/remote",
   "requirement": "oc://policy.jsonc/mcp/servers/allow"
 }
 ```
 
-Ví dụ phát hiện nhà cung cấp mô hình:
-
 ```json
 {
   "checkId": "policy/models-unapproved-provider",
   "severity": "error",
-  "message": "Model ref 'anthropic/claude-sonnet-4.7' uses unapproved provider 'anthropic'.",
+  "message": "Tham chiếu mô hình 'anthropic/claude-sonnet-4.7' sử dụng nhà cung cấp chưa được phê duyệt 'anthropic'.",
   "source": "policy",
-  "path": "openclaw config",
+  "path": "cấu hình openclaw",
   "ocPath": "oc://openclaw.config/agents/defaults/model/fallbacks/#0",
   "target": "oc://openclaw.config/agents/defaults/model/fallbacks/#0",
   "requirement": "oc://policy.jsonc/models/providers/allow"
 }
 ```
 
-Ví dụ phát hiện mạng:
-
 ```json
 {
   "checkId": "policy/network-private-access-enabled",
   "severity": "error",
-  "message": "Network setting 'browser-private-network' allows private-network access.",
+  "message": "Thiết lập mạng 'browser-private-network' cho phép truy cập mạng riêng.",
   "source": "policy",
-  "path": "openclaw config",
+  "path": "cấu hình openclaw",
   "ocPath": "oc://openclaw.config/browser/ssrfPolicy/dangerouslyAllowPrivateNetwork",
   "target": "oc://openclaw.config/browser/ssrfPolicy/dangerouslyAllowPrivateNetwork",
   "requirement": "oc://policy.jsonc/network/privateNetwork/allow"
 }
 ```
 
-Ví dụ về phát hiện phơi lộ Gateway:
-
 ```json
 {
   "checkId": "policy/gateway-non-loopback-bind",
   "severity": "error",
-  "message": "Gateway bind setting 'gateway-bind' permits non-loopback exposure.",
+  "message": "Thiết lập liên kết Gateway 'gateway-bind' cho phép công khai qua địa chỉ không phải local loopback.",
   "source": "policy",
-  "path": "openclaw config",
+  "path": "cấu hình openclaw",
   "ocPath": "oc://openclaw.config/gateway/bind",
   "target": "oc://openclaw.config/gateway/bind",
   "requirement": "oc://policy.jsonc/gateway/exposure/allowNonLoopbackBind"
 }
 ```
 
-Ví dụ về phát hiện không gian làm việc của tác tử:
+```json
+{
+  "checkId": "policy/gateway-node-command-denied",
+  "severity": "error",
+  "message": "Lệnh Node Gateway 'system.run' bị chính sách từ chối nhưng không bị cấu hình OpenClaw từ chối.",
+  "source": "policy",
+  "path": "cấu hình openclaw",
+  "ocPath": "oc://openclaw.config/gateway/nodes/denyCommands",
+  "target": "oc://openclaw.config/gateway/nodes/denyCommands",
+  "requirement": "oc://policy.jsonc/gateway/nodes/denyCommands",
+  "fixHint": "Thêm 'system.run' vào gateway.nodes.denyCommands hoặc cập nhật chính sách sau khi xem xét."
+}
+```
 
 ```json
 {
   "checkId": "policy/agents-workspace-access-denied",
   "severity": "error",
-  "message": "agents.defaults sandbox workspaceAccess 'rw' is not allowed by policy.",
+  "message": "Quyền workspaceAccess 'rw' của hộp cát agents.defaults không được chính sách cho phép.",
   "source": "policy",
-  "path": "openclaw config",
+  "path": "cấu hình openclaw",
   "ocPath": "oc://openclaw.config/agents/defaults/sandbox/workspaceAccess",
   "target": "oc://openclaw.config/agents/defaults/sandbox/workspaceAccess",
   "requirement": "oc://policy.jsonc/agents/workspace/allowedAccess"
@@ -892,16 +939,55 @@ Ví dụ về phát hiện không gian làm việc của tác tử:
 
 ## Sửa chữa
 
-`doctor --lint` và `policy check` là chỉ đọc.
+`doctor --lint` và `policy check` chỉ đọc.
 
 `doctor --fix` chỉ chỉnh sửa các thiết lập không gian làm việc do chính sách quản lý khi
-`workspaceRepairs` được bật rõ ràng. Nếu không có lựa chọn bật đó, các bước kiểm tra chính sách
-sẽ báo cáo những gì chúng sẽ sửa chữa và giữ nguyên các thiết lập.
+`workspaceRepairs` được bật rõ ràng; nếu không, các lượt kiểm tra sẽ báo cáo những gì
+chúng sẽ sửa chữa và giữ nguyên các thiết lập.
 
-Trong phiên bản này, sửa chữa có thể tắt các kênh đang được bật trong cấu hình OpenClaw
-nhưng bị `channels.denyRules` từ chối. Chỉ bật `workspaceRepairs` sau khi
-tệp chính sách đã được xem xét, vì một quy tắc từ chối hợp lệ có thể tắt một
-kênh đã cấu hình:
+Trong phiên bản này, chức năng sửa chữa có thể vô hiệu hóa các kênh bị `channels.denyRules`
+từ chối và áp dụng các biện pháp tự động thu hẹp quyền được liệt kê bên dưới. Chỉ bật
+`workspaceRepairs` sau khi đã xem xét tệp chính sách, vì một quy tắc hợp lệ có thể thay đổi
+cấu hình không gian làm việc:
+
+- đặt `tools.elevated.enabled=false` khi chính sách toàn cục cấm các công cụ có đặc quyền nâng cao
+- thêm các mã định danh công cụ bắt buộc phải từ chối còn thiếu vào `tools.deny` hoặc
+  `agents.list[].tools.deny` khi chính sách yêu cầu từ chối các công cụ đó
+- đặt các tùy chọn bật/tắt `gateway.controlUi.*` không an toàn thành `false`
+- đặt `gateway.mode=local` khi chính sách từ chối chế độ Gateway từ xa
+- đặt các đường dẫn `gateway.http.endpoints.*.enabled` được báo cáo thành `false` khi chính sách
+  từ chối các điểm cuối API HTTP của Gateway
+- đặt các đường dẫn `groupPolicy` tiếp nhận kênh được báo cáo thành `allowlist` khi chính sách
+  từ chối tiếp nhận nhóm mở
+- đặt các đường dẫn `requireMention` tiếp nhận kênh được báo cáo thành `true` khi chính sách
+  yêu cầu đề cập trong nhóm
+- đặt `logging.redactSensitive=tools` khi chính sách yêu cầu che thông tin nhạy cảm trong nhật ký
+- đặt `diagnostics.otel.captureContent=false`, hoặc
+  `diagnostics.otel.captureContent.enabled=false` đối với các thiết lập thu thập dữ liệu đo từ xa
+  ở dạng đối tượng, khi chính sách từ chối thu thập nội dung dữ liệu đo từ xa
+
+Các biện pháp sửa chữa công cụ có đặc quyền nâng cao theo phạm vi chỉ được phát hiện, không được áp dụng. Các biện pháp sửa chữa xử lý dữ liệu theo phạm vi
+cũng bị bỏ qua khi phát hiện báo cáo cấu hình ghi nhật ký hoặc dữ liệu đo từ xa dùng chung,
+vì việc thay đổi thiết lập dùng chung sẽ ảnh hưởng đến nhiều đối tượng hơn mục tiêu chính sách
+theo phạm vi.
+
+Các biện pháp sửa chữa bắt buộc từ chối theo phạm vi bị bỏ qua khi phát hiện báo cáo
+`tools.deny` gốc được kế thừa, vì việc thêm công cụ bắt buộc vào cấu hình gốc sẽ ảnh hưởng
+đến nhiều đối tượng hơn mục tiêu chính sách theo phạm vi. Các biện pháp sửa chữa bắt buộc từ chối cục bộ cho tác nhân có thể cập nhật
+đường dẫn `agents.list[].tools.deny` được báo cáo.
+
+Các biện pháp sửa chữa tiếp nhận kênh theo phạm vi bị bỏ qua khi phát hiện báo cáo
+`channels.defaults.*` được kế thừa, vì việc thay đổi giá trị mặc định dùng chung của kênh sẽ ảnh hưởng
+đến nhiều đối tượng hơn mục tiêu chính sách theo phạm vi. Các phát hiện về danh sách cho phép tìm nạp URL qua HTTP của Gateway
+vẫn cần xử lý thủ công vì chức năng sửa chữa tự động không thể chọn đúng các giá trị
+danh sách URL cho phép của điểm cuối.
+
+Các phát hiện về liên kết Gateway và lệnh Node vẫn yêu cầu xem xét. Khi
+`policy/gateway-non-loopback-bind` hoặc `policy/gateway-node-command-denied`
+có thể được ánh xạ tới một đường dẫn cấu hình, `doctor --fix` sẽ báo cáo thay đổi
+`gateway.bind` hoặc `gateway.nodes.denyCommands` được đề xuất dưới dạng hướng dẫn xem trước
+đã bỏ qua. Lệnh không áp dụng thay đổi và phát hiện không được tính là
+đã sửa chữa cho đến khi người vận hành xem xét và cập nhật cấu hình hoặc chính sách.
 
 ```jsonc
 {
@@ -919,13 +1005,13 @@ kênh đã cấu hình:
 
 ## Mã thoát
 
-| Lệnh             | `0`                                                    | `1`                                                                        | `2`                                |
-| ---------------- | ------------------------------------------------------ | -------------------------------------------------------------------------- | ---------------------------------- |
-| `policy check`   | Không có phát hiện nào ở ngưỡng.                       | Một hoặc nhiều phát hiện đã đạt ngưỡng.                                    | Lỗi đối số hoặc lỗi thời gian chạy. |
-| `policy compare` | Tệp chính sách ít nhất cũng nghiêm ngặt như baseline.  | Tệp chính sách không hợp lệ, bị thiếu hoặc yếu hơn các quy tắc baseline.   | Lỗi đối số hoặc lỗi thời gian chạy. |
-| `policy watch`   | Không có phát hiện nào và hàm băm đã chấp nhận là mới. | Có phát hiện hoặc chứng thực đã chấp nhận đã cũ.                           | Lỗi đối số hoặc lỗi thời gian chạy. |
+| Lệnh             | `0`                                                        | `1`                                                                        | `2`                              |
+| ---------------- | ---------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------- |
+| `policy check`   | Không có phát hiện nào đạt ngưỡng.                          | Một hoặc nhiều phát hiện đạt ngưỡng.                                       | Lỗi đối số hoặc lỗi khi chạy.     |
+| `policy compare` | Tệp chính sách ít nhất nghiêm ngặt ngang với đường cơ sở.   | Tệp chính sách không hợp lệ, bị thiếu hoặc yếu hơn các quy tắc đường cơ sở. | Lỗi đối số hoặc lỗi khi chạy.     |
+| `policy watch`   | Không có phát hiện và hàm băm được chấp nhận vẫn hiện hành. | Có phát hiện hoặc chứng thực được chấp nhận đã lỗi thời.                    | Lỗi đối số hoặc lỗi khi chạy.     |
 
 ## Liên quan
 
 - [Chế độ lint của Doctor](/vi/cli/doctor#lint-mode)
-- [Path CLI](/vi/cli/path)
+- [CLI đường dẫn](/vi/cli/path)

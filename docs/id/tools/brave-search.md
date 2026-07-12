@@ -5,13 +5,13 @@ read_when:
 summary: Penyiapan Brave Search API untuk web_search
 title: Pencarian Brave
 x-i18n:
-    generated_at: "2026-05-06T09:29:03Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:40:09Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d2bff7589ddb54d002853898c6fc37e613fd32b0fa69cb0d712d5955973efb39
+    source_hash: 35e4bc2d24769f25cac79c36607e1dfe2c6ca2078715edfaed92add070817e46
     source_path: tools/brave-search.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 OpenClaw mendukung Brave Search API sebagai penyedia `web_search`.
@@ -20,7 +20,7 @@ OpenClaw mendukung Brave Search API sebagai penyedia `web_search`.
 
 1. Buat akun Brave Search API di [https://brave.com/search/api/](https://brave.com/search/api/)
 2. Di dasbor, pilih paket **Search** dan buat kunci API.
-3. Simpan kunci di konfigurasi atau atur `BRAVE_API_KEY` di lingkungan Gateway.
+3. Simpan kunci dalam konfigurasi atau tetapkan `BRAVE_API_KEY` di lingkungan Gateway.
 
 ## Contoh konfigurasi
 
@@ -32,8 +32,8 @@ OpenClaw mendukung Brave Search API sebagai penyedia `web_search`.
         config: {
           webSearch: {
             apiKey: "BRAVE_API_KEY_HERE",
-            mode: "web", // or "llm-context"
-            baseUrl: "https://api.search.brave.com", // optional proxy/base URL override
+            mode: "web", // atau "llm-context"
+            baseUrl: "https://api.search.brave.com", // penggantian URL proksi/dasar opsional
           },
         },
       },
@@ -51,18 +51,17 @@ OpenClaw mendukung Brave Search API sebagai penyedia `web_search`.
 }
 ```
 
-Pengaturan pencarian Brave khusus penyedia kini berada di bawah `plugins.entries.brave.config.webSearch.*`.
-`tools.web.search.apiKey` lama masih dimuat melalui shim kompatibilitas, tetapi itu bukan lagi jalur konfigurasi kanonis.
+Pengaturan pencarian khusus penyedia Brave berada di bawah `plugins.entries.brave.config.webSearch.*`; ini adalah jalur konfigurasi kanonis. `tools.web.search.apiKey` tingkat atas bersama dan `tools.web.search.brave.*` yang tercakup masih dimuat melalui penggabungan kompatibilitas, tetapi konfigurasi baru harus menggunakan jalur dengan cakupan plugin di atas.
 
-`webSearch.mode` mengontrol transport Brave:
+`webSearch.mode` mengontrol transportasi Brave:
 
-- `web` (default): pencarian web Brave normal dengan judul, URL, dan cuplikan
-- `llm-context`: Brave LLM Context API dengan potongan teks dan sumber yang sudah diekstrak untuk grounding
+- `web` (bawaan): pencarian web Brave normal dengan judul, URL, dan cuplikan
+- `llm-context`: Brave LLM Context API dengan potongan teks dan sumber yang telah diekstrak untuk landasan
 
-`webSearch.baseUrl` dapat mengarahkan permintaan Brave ke proxy atau gateway
-kompatibel Brave yang tepercaya. OpenClaw menambahkan `/res/v1/web/search` atau `/res/v1/llm/context` ke
-URL dasar yang dikonfigurasi dan menyimpan URL dasar di kunci cache. Endpoint
-publik harus menggunakan `https://`; `http://` hanya diterima untuk host proxy loopback
+`webSearch.baseUrl` dapat mengarahkan permintaan Brave ke proksi
+atau gateway tepercaya yang kompatibel dengan Brave. OpenClaw menambahkan `/res/v1/web/search` atau `/res/v1/llm/context` ke
+URL dasar yang dikonfigurasi dan menyertakan URL dasar dalam kunci cache. Titik akhir
+publik harus menggunakan `https://`; `http://` hanya diterima untuk host proksi local loopback
 atau jaringan privat yang tepercaya.
 
 ## Parameter alat
@@ -72,23 +71,23 @@ Kueri pencarian.
 </ParamField>
 
 <ParamField path="count" type="number" default="5">
-Jumlah hasil yang akan dikembalikan (1–10).
+Jumlah hasil yang dikembalikan (1–10).
 </ParamField>
 
 <ParamField path="country" type="string">
-Kode negara ISO 2 huruf (mis. `US`, `DE`).
+Kode negara ISO 2 huruf (misalnya `US`, `DE`).
 </ParamField>
 
 <ParamField path="language" type="string">
-Kode bahasa ISO 639-1 untuk hasil pencarian (mis. `en`, `de`, `fr`).
+Kode bahasa ISO 639-1 untuk hasil pencarian (misalnya `en`, `de`, `fr`).
 </ParamField>
 
 <ParamField path="search_lang" type="string">
-Kode bahasa pencarian Brave (mis. `en`, `en-gb`, `zh-hans`).
+Kode bahasa pencarian Brave (misalnya `en`, `en-gb`, `zh-hans`).
 </ParamField>
 
 <ParamField path="ui_lang" type="string">
-Kode bahasa ISO untuk elemen UI.
+Kode bahasa ISO untuk elemen antarmuka pengguna.
 </ParamField>
 
 <ParamField path="freshness" type="'day' | 'week' | 'month' | 'year'">
@@ -106,20 +105,20 @@ Hanya hasil yang diterbitkan sebelum tanggal ini (`YYYY-MM-DD`).
 **Contoh:**
 
 ```javascript
-// Country and language-specific search
+// Pencarian khusus negara dan bahasa
 await web_search({
   query: "renewable energy",
   country: "DE",
   language: "de",
 });
 
-// Recent results (past week)
+// Hasil terbaru (seminggu terakhir)
 await web_search({
   query: "AI news",
   freshness: "week",
 });
 
-// Date range search
+// Pencarian rentang tanggal
 await web_search({
   query: "AI developments",
   date_after: "2024-01-01",
@@ -129,19 +128,19 @@ await web_search({
 
 ## Catatan
 
-- OpenClaw menggunakan paket Brave **Search**. Jika Anda memiliki langganan lama (mis. paket Free asli dengan 2.000 kueri/bulan), langganan itu tetap valid tetapi tidak menyertakan fitur yang lebih baru seperti LLM Context atau batas laju yang lebih tinggi.
-- Setiap paket Brave menyertakan **kredit gratis \$5/bulan** (diperbarui). Paket Search berbiaya \$5 per 1.000 permintaan, sehingga kredit tersebut mencakup 1.000 kueri/bulan. Atur batas penggunaan Anda di dasbor Brave untuk menghindari biaya tak terduga. Lihat [portal API Brave](https://brave.com/search/api/) untuk paket saat ini.
-- Paket Search menyertakan endpoint LLM Context dan hak inferensi AI. Menyimpan hasil untuk melatih atau menyetel model memerlukan paket dengan hak penyimpanan eksplisit. Lihat [Ketentuan Layanan](https://api-dashboard.search.brave.com/terms-of-service) Brave.
-- Mode `llm-context` mengembalikan entri sumber ber-grounding, bukan bentuk cuplikan pencarian web normal.
-- Mode `llm-context` mendukung `freshness` dan rentang `date_after` + `date_before` terbatas. Mode ini tidak mendukung `ui_lang`; `date_before` tanpa `date_after` ditolak karena Brave mengharuskan rentang freshness khusus menyertakan tanggal mulai dan akhir.
-- `ui_lang` harus menyertakan subtag wilayah seperti `en-US`.
-- Hasil di-cache selama 15 menit secara default (dapat dikonfigurasi melalui `cacheTtlMinutes`).
-- Nilai `webSearch.baseUrl` khusus disertakan dalam identitas cache Brave, sehingga
-  respons khusus proxy tidak bertabrakan.
-- Aktifkan flag diagnostik `brave.http` untuk mencatat URL/parameter kueri permintaan Brave, status/waktu respons, serta peristiwa hit/miss/write cache pencarian saat memecahkan masalah. Flag ini tidak pernah mencatat kunci API atau isi respons, tetapi kueri pencarian bisa bersifat sensitif.
+- OpenClaw menggunakan paket **Search** Brave. Jika Anda memiliki langganan lama (misalnya paket Free asli dengan 2.000 kueri/bulan), langganan tersebut tetap berlaku, tetapi tidak mencakup fitur yang lebih baru seperti LLM Context atau batas laju yang lebih tinggi.
+- Setiap paket Brave mencakup **kredit gratis \$5/bulan** (diperbarui). Paket Search berbiaya \$5 per 1.000 permintaan, sehingga kredit tersebut mencakup 1.000 kueri/bulan. Tetapkan batas penggunaan Anda di dasbor Brave untuk menghindari biaya tak terduga. Lihat [portal API Brave](https://brave.com/search/api/) untuk paket saat ini.
+- Paket Search mencakup titik akhir LLM Context dan hak inferensi AI. Penyimpanan hasil untuk melatih atau menyetel model memerlukan paket dengan hak penyimpanan eksplisit. Lihat [Ketentuan Layanan](https://api-dashboard.search.brave.com/terms-of-service) Brave.
+- Mode `llm-context` mengembalikan entri sumber berlandasan, bukan bentuk cuplikan pencarian web normal.
+- Mode `llm-context` mendukung `freshness` dan rentang terbatas `date_after` + `date_before`. Mode ini tidak mendukung `ui_lang`; `date_before` tanpa `date_after` ditolak karena Brave mengharuskan rentang kebaruan khusus mencakup tanggal mulai dan akhir.
+- `ui_lang` harus mencakup subtag wilayah seperti `en-US`.
+- Hasil disimpan dalam cache selama 15 menit secara bawaan (dapat dikonfigurasi melalui `cacheTtlMinutes`).
+- Nilai khusus `webSearch.baseUrl` disertakan dalam identitas cache Brave, sehingga
+  respons khusus proksi tidak bertabrakan.
+- Aktifkan flag diagnostik `brave.http` untuk mencatat URL/parameter kueri permintaan Brave, status/waktu respons, serta peristiwa hit/miss/penulisan cache pencarian saat memecahkan masalah. Flag tersebut tidak pernah mencatat kunci API atau isi respons, tetapi kueri pencarian dapat bersifat sensitif.
 
 ## Terkait
 
-- [Gambaran umum Web Search](/id/tools/web) -- semua penyedia dan deteksi otomatis
-- [Perplexity Search](/id/tools/perplexity-search) -- hasil terstruktur dengan pemfilteran domain
-- [Exa Search](/id/tools/exa-search) -- pencarian neural dengan ekstraksi konten
+- [Ikhtisar Pencarian Web](/id/tools/web) -- semua penyedia dan deteksi otomatis
+- [Pencarian Perplexity](/id/tools/perplexity-search) -- hasil terstruktur dengan pemfilteran domain
+- [Pencarian Exa](/id/tools/exa-search) -- pencarian neural dengan ekstraksi konten

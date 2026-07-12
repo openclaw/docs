@@ -1,30 +1,30 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin opencode
-summary: เพิ่มการรองรับผู้ให้บริการโมเดล OpenCode ให้กับ OpenClaw.
-title: Plugin ของ OpenCode
+summary: เพิ่มการรองรับผู้ให้บริการโมเดล OpenCode ให้กับ OpenClaw
+title: Plugin OpenCode
 x-i18n:
-    generated_at: "2026-05-02T20:55:10Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:31:17Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: 8c1c1264da52e8f362e83b2733390ccc3b2fc1dd62f14f8e5211bbb8fa47e95f
     source_path: plugins/reference/opencode.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Plugin OpenCode
 
 เพิ่มการรองรับผู้ให้บริการโมเดล OpenCode ให้กับ OpenClaw
 
-## การแจกจ่าย
+## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/opencode-provider`
-- เส้นทางการติดตั้ง: รวมอยู่ใน OpenClaw
+- วิธีติดตั้ง: รวมอยู่ใน OpenClaw
 
-## ส่วนที่เปิดเผย
+## ส่วนเชื่อมต่อ
 
-providers: opencode; contracts: mediaUnderstandingProviders
+ผู้ให้บริการ: opencode; สัญญา: mediaUnderstandingProviders
 
 ## เอกสารที่เกี่ยวข้อง
 

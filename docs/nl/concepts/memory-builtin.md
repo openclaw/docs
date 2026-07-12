@@ -1,35 +1,36 @@
 ---
 read_when:
-    - U wilt de standaardgeheugenbackend begrijpen
-    - Je wilt embeddingproviders of hybride zoekfunctie configureren
-summary: De standaard op SQLite gebaseerde geheugenbackend met zoeken op trefwoord, vectorzoeken en hybride zoeken
+    - Je wilt de standaardbackend voor het geheugen begrijpen
+    - Je wilt embeddingproviders of hybride zoekopdrachten configureren
+summary: De standaard op SQLite gebaseerde geheugenbackend met zoeken op trefwoorden, vectoren en een hybride zoekfunctie
 title: Ingebouwde geheugenengine
 x-i18n:
-    generated_at: "2026-06-27T17:26:41Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:46:13Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a867bd295778f81109b258a63a35a1683d652d4564e44335053af4d86f90584e
+    source_hash: e8cbe2bae73b1d393ac158edb67fc442e76d1e5ff93e5201dbb7e7216801aa85
     source_path: concepts/memory-builtin.md
     workflow: 16
 ---
 
-De ingebouwde engine is de standaard geheugenbackend. Deze slaat je geheugenindex op in
-een SQLite-database per agent en heeft geen extra afhankelijkheden nodig om te beginnen.
+De ingebouwde engine is de standaardbackend voor geheugen. Deze slaat je geheugenindex op
+in een SQLite-database per agent en vereist geen extra afhankelijkheden om
+aan de slag te gaan.
 
 ## Wat deze biedt
 
-- **Zoeken op trefwoorden** via FTS5-full-textindexering (BM25-score).
+- **Zoeken op trefwoorden** via FTS5-indexering van volledige tekst (BM25-score).
 - **Vectorzoekopdrachten** via embeddings van elke ondersteunde provider.
 - **Hybride zoekopdrachten** die beide combineren voor de beste resultaten.
-- **CJK-ondersteuning** via trigram-tokenisatie voor Chinees, Japans en Koreaans.
-- **sqlite-vec-versnelling** voor vectorkueries binnen de database (optioneel).
+- **Ondersteuning voor CJK** via trigramtokenisatie voor Chinees, Japans en Koreaans.
+- **sqlite-vec-versnelling** voor vectorquery's in de database (optioneel).
 
 ## Aan de slag
 
-Standaard gebruikt de ingebouwde engine OpenAI-embeddings. Als je
-`OPENAI_API_KEY` of `models.providers.openai.apiKey` al hebt geconfigureerd, werkt
-vectorzoekfunctionaliteit zonder extra geheugenconfiguratie.
+Standaard gebruikt de ingebouwde engine OpenAI-embeddings. Als `OPENAI_API_KEY` of
+`models.providers.openai.apiKey` al is geconfigureerd, werken vectorzoekopdrachten
+zonder extra geheugenconfiguratie.
 
 Een provider expliciet instellen:
 
@@ -45,10 +46,10 @@ Een provider expliciet instellen:
 }
 ```
 
-Zonder embeddingprovider is alleen zoeken op trefwoorden beschikbaar.
+Zonder een embeddingprovider zijn alleen zoekopdrachten op trefwoorden beschikbaar.
 
-Om lokale GGUF-embeddings af te dwingen, installeer je de officiële llama.cpp-provider-Plugin
-en wijs je `local.modelPath` daarna naar een GGUF-bestand:
+Om lokale GGUF-embeddings af te dwingen, installeer je de officiële
+llama.cpp-providerplugin en laat je `local.modelPath` verwijzen naar een GGUF-bestand:
 
 ```bash
 openclaw plugins install @openclaw/llama-cpp-provider
@@ -72,89 +73,92 @@ openclaw plugins install @openclaw/llama-cpp-provider
 
 ## Ondersteunde embeddingproviders
 
-| Provider          | ID                  | Opmerkingen                         |
-| ----------------- | ------------------- | ----------------------------------- |
-| Bedrock           | `bedrock`           | Gebruikt de AWS-referentieketen     |
-| DeepInfra         | `deepinfra`         | Standaard: `BAAI/bge-m3`            |
-| Gemini            | `gemini`            | Ondersteunt multimodaal (afbeelding + audio) |
-| GitHub Copilot    | `github-copilot`    | Gebruikt Copilot-abonnement         |
-| Lokaal            | `local`             | `@openclaw/llama-cpp-provider`      |
-| Mistral           | `mistral`           |                                     |
-| Ollama            | `ollama`            | Lokaal/zelf gehost                  |
-| OpenAI            | `openai`            | Standaard: `text-embedding-3-small` |
-| OpenAI-compatibel | `openai-compatible` | Generiek `/v1/embeddings`-endpoint  |
-| Voyage            | `voyage`            |                                     |
+| Provider          | ID                  | Opmerkingen                                  |
+| ----------------- | ------------------- | -------------------------------------------- |
+| Bedrock           | `bedrock`           | Gebruikt de AWS-referentieketen              |
+| DeepInfra         | `deepinfra`         | Standaard: `BAAI/bge-m3`                     |
+| Gemini            | `gemini`            | Ondersteunt multimodale invoer (beeld + audio) |
+| GitHub Copilot    | `github-copilot`    | Gebruikt je Copilot-abonnement               |
+| LM Studio         | `lmstudio`          | Lokaal/zelf gehost                           |
+| Lokaal            | `local`             | `@openclaw/llama-cpp-provider`               |
+| Mistral           | `mistral`           |                                              |
+| Ollama            | `ollama`            | Lokaal/zelf gehost                           |
+| OpenAI            | `openai`            | Standaard: `text-embedding-3-small`          |
+| OpenAI-compatibel | `openai-compatible` | Algemeen `/v1/embeddings`-eindpunt           |
+| Voyage            | `voyage`            |                                              |
 
 Stel `memorySearch.provider` in om van OpenAI over te schakelen.
 
 ## Hoe indexering werkt
 
-OpenClaw indexeert `MEMORY.md` en `memory/*.md` in chunks (~400 tokens met
-80 tokens overlap) en slaat ze op in een SQLite-database per agent.
+OpenClaw indexeert `MEMORY.md` en `memory/*.md` in segmenten (standaard 400 tokens met
+een overlap van 80 tokens) en slaat deze op in een SQLite-database per agent.
 
-- **Indexlocatie:** de database van de eigenaaragent op
+- **Indexlocatie:** de database van de beherende agent op
   `~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite`
-- **Opslagonderhoud:** SQLite WAL-sidecarbestanden worden begrensd met periodieke
-  checkpoints en checkpoints bij afsluiten.
-- **Bestandsbewaking:** wijzigingen in geheugenbestanden activeren een gedebouncete herindexering (1,5 s).
-- **Automatisch herindexeren:** wanneer de embeddingprovider, het model of de chunkingconfiguratie
-  verandert, wordt de volledige index automatisch opnieuw opgebouwd.
-- **Herindexeren op aanvraag:** `openclaw memory index --force`
+- **Opslagonderhoud:** de WAL-nevenbestanden van SQLite worden begrensd met periodieke
+  controlepunten en controlepunten bij het afsluiten.
+- **Bestandsbewaking:** wijzigingen in geheugenbestanden activeren met vertraging een
+  herindexering (standaard 1,5 s).
+- **Automatische herindexering:** de index wordt automatisch opnieuw opgebouwd wanneer de
+  embeddingprovider, het model, de segmentatieconfiguratie, de geconfigureerde bronnen of het bereik veranderen.
+- **Herindexering op aanvraag:** `openclaw memory index --force`
 
 <Info>
-Je kunt ook Markdown-bestanden buiten de werkruimte indexeren met
-`memorySearch.extraPaths`. Zie de
+Je kunt met `memorySearch.extraPaths` ook Markdown-bestanden buiten de werkruimte
+indexeren. Zie de
 [configuratiereferentie](/nl/reference/memory-config#additional-memory-paths).
 </Info>
 
 ## Wanneer te gebruiken
 
-De ingebouwde engine is de juiste keuze voor de meeste gebruikers:
+De ingebouwde engine is voor de meeste gebruikers de juiste keuze:
 
-- Werkt direct, zonder extra afhankelijkheden.
-- Verwerkt zoeken op trefwoorden en vectorzoekopdrachten goed.
+- Werkt direct zonder extra afhankelijkheden.
+- Verwerkt zoekopdrachten op trefwoorden en vectorzoekopdrachten goed.
 - Ondersteunt alle embeddingproviders.
-- Hybride zoekopdrachten combineren het beste van beide retrieval-benaderingen.
+- Hybride zoekopdrachten combineren het beste van beide opvraagmethoden.
 
-Overweeg over te schakelen naar [QMD](/nl/concepts/memory-qmd) als je reranking, query-uitbreiding
-nodig hebt of mappen buiten de werkruimte wilt indexeren.
+Overweeg over te schakelen naar [QMD](/nl/concepts/memory-qmd) als je herrangschikking,
+query-uitbreiding of indexering van mappen buiten de werkruimte nodig hebt.
 
-Overweeg [Honcho](/nl/concepts/memory-honcho) als je sessie-overstijgend geheugen met
-automatische gebruikersmodellering wilt.
+Overweeg [Honcho](/nl/concepts/memory-honcho) als je geheugen over meerdere sessies heen
+met automatische gebruikersmodellering wilt.
 
-## Probleemoplossing
+## Problemen oplossen
 
-**Geheugenzoekfunctie uitgeschakeld?** Controleer `openclaw memory status`. Als er geen provider wordt
-gedetecteerd, stel er dan expliciet een in of voeg een API-sleutel toe.
+**Geheugenzoekfunctie uitgeschakeld?** Controleer `openclaw memory status`. Als er geen provider
+wordt gedetecteerd, stel er dan expliciet een in of voeg een API-sleutel toe.
 
-**Lokale provider niet gedetecteerd?** Bevestig dat het lokale pad bestaat en voer uit:
+**Lokale provider niet gedetecteerd?** Controleer of het lokale pad bestaat en voer het volgende uit:
 
 ```bash
 openclaw memory status --deep --agent main
 openclaw memory index --force --agent main
 ```
 
-Zowel zelfstandige CLI-opdrachten als de Gateway gebruiken dezelfde `local`-provider-id.
-Stel `memorySearch.provider: "local"` in wanneer je lokale embeddings wilt.
+Zowel zelfstandige CLI-opdrachten als de Gateway gebruiken dezelfde `local`-provider-ID.
+Stel `memorySearch.provider: "local"` in wanneer je lokale embeddings wilt gebruiken.
 
-**Verouderde resultaten?** Voer `openclaw memory index --force` uit om opnieuw op te bouwen. De watcher
+**Verouderde resultaten?** Voer `openclaw memory index --force` uit om de index opnieuw op te bouwen. De bewaker
 kan in zeldzame randgevallen wijzigingen missen.
 
-**sqlite-vec wordt niet geladen?** OpenClaw valt automatisch terug op in-process cosinusovereenkomst.
-`openclaw memory status --deep` rapporteert de lokale vectoropslag
-apart van de embeddingprovider, dus `Vector store: unavailable` wijst
-op het laden van sqlite-vec, terwijl `Embeddings: unavailable` wijst op provider/auth
-of modelgereedheid. Controleer de logs voor de specifieke laadfout.
+**Wordt sqlite-vec niet geladen?** OpenClaw valt automatisch terug op cosinusgelijkenis
+binnen het proces. `openclaw memory status --deep` rapporteert de lokale
+vectoropslag afzonderlijk van de embeddingprovider, dus `Vector store:
+unavailable` wijst op het laden van sqlite-vec, terwijl `Embeddings: unavailable`
+wijst op de gereedheid van de provider/authenticatie of het model. Controleer de logboeken op de specifieke
+laadfout.
 
 ## Configuratie
 
-Voor het instellen van embeddingproviders, het afstemmen van hybride zoekopdrachten (gewichten, MMR, temporeel
-verval), batchindexering, multimodaal geheugen, sqlite-vec, extra paden en alle
-andere configuratieknoppen, zie de
+Zie voor het instellen van embeddingproviders, het afstemmen van hybride zoekopdrachten
+(gewichten, MMR, tijdsverval), batchindexering, multimodaal geheugen, sqlite-vec,
+extra paden en alle overige configuratieopties de
 [referentie voor geheugenconfiguratie](/nl/reference/memory-config).
 
 ## Gerelateerd
 
-- [Geheugenoverzicht](/nl/concepts/memory)
-- [Geheugenzoekfunctie](/nl/concepts/memory-search)
+- [Overzicht van geheugen](/nl/concepts/memory)
+- [Geheugen doorzoeken](/nl/concepts/memory-search)
 - [Active Memory](/nl/concepts/active-memory)

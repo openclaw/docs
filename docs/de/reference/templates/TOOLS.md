@@ -1,13 +1,12 @@
 ---
 read_when:
-    - Manuelles Initialisieren eines Arbeitsbereichs
-summary: Workspace-Vorlage für TOOLS.md
+    - Manuelles Einrichten eines Arbeitsbereichs
+summary: Arbeitsbereichsvorlage für TOOLS.md
 title: TOOLS.md-Vorlage
 x-i18n:
-    generated_at: "2026-07-12T16:00:13Z"
+    generated_at: "2026-07-12T02:09:37Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: 20eab78b3b117566a1d33a70873e70ff2d5099543aa44e2719dc8d0797099afe
     source_path: reference/templates/TOOLS.md
@@ -16,7 +15,7 @@ x-i18n:
 
 # TOOLS.md – Lokale Notizen
 
-Skills definieren, _wie_ Werkzeuge funktionieren. Diese Datei ist für _Ihre_ Besonderheiten bestimmt – alles, was nur für Ihre Einrichtung gilt: Kameranamen und -standorte, SSH-Hosts und -Aliasse, bevorzugte TTS-Stimmen, Lautsprecher-/Raumnamen, Gerätenamen und alles Umgebungsspezifische.
+Skills definieren, _wie_ Werkzeuge funktionieren. Diese Datei ist für _Ihre_ Besonderheiten vorgesehen – alles, was für Ihre Einrichtung spezifisch ist: Kameranamen und -standorte, SSH-Hosts und -Aliasse, bevorzugte TTS-Stimmen, Lautsprecher-/Raumnamen, Gerätenamen und alle anderen umgebungsspezifischen Angaben.
 
 ## Beispiele
 
@@ -38,7 +37,7 @@ Skills definieren, _wie_ Werkzeuge funktionieren. Diese Datei ist für _Ihre_ Be
 
 ## Warum getrennt?
 
-Skills werden gemeinsam genutzt. Ihre Einrichtung gehört Ihnen. Wenn Sie beides getrennt halten, können Sie Skills aktualisieren, ohne Ihre Notizen zu verlieren, und Skills teilen, ohne Informationen über Ihre Infrastruktur preiszugeben.
+Skills werden gemeinsam genutzt. Ihre Einrichtung gehört Ihnen. Durch die Trennung können Sie Skills aktualisieren, ohne Ihre Notizen zu verlieren, und Skills weitergeben, ohne Ihre Infrastruktur offenzulegen.
 
 ---
 

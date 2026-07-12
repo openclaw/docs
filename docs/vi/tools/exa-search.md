@@ -1,27 +1,25 @@
 ---
 read_when:
     - Bạn muốn sử dụng Exa cho web_search
-    - Bạn cần một EXA_API_KEY
+    - Bạn cần có `EXA_API_KEY`
     - Bạn muốn tìm kiếm bằng mạng nơ-ron hoặc trích xuất nội dung
-summary: Exa AI search -- tìm kiếm thần kinh và tìm kiếm theo từ khóa kèm trích xuất nội dung
+summary: Tìm kiếm Exa AI -- tìm kiếm ngữ nghĩa và từ khóa kèm trích xuất nội dung
 title: Tìm kiếm Exa
 x-i18n:
-    generated_at: "2026-06-27T18:15:05Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:23:51Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ffbf61b6cb7768898842e27805acc34334544b327d010246da12513218aa465f
+    source_hash: 3ddfd6fb471f92e705facf5a2d02361c1a343b9032fa8e0a7b135af634df65b7
     source_path: tools/exa-search.md
     workflow: 16
 ---
 
-OpenClaw hỗ trợ [Exa AI](https://exa.ai/) làm nhà cung cấp `web_search`. Exa
-cung cấp các chế độ tìm kiếm neural, từ khóa và kết hợp, kèm khả năng trích
-xuất nội dung tích hợp sẵn (đoạn nổi bật, văn bản, bản tóm tắt).
+[Exa AI](https://exa.ai/) là nhà cung cấp `web_search` với các chế độ tìm kiếm
+nơ-ron, từ khóa và kết hợp, cùng khả năng trích xuất nội dung tích hợp sẵn
+(phần nổi bật, văn bản, bản tóm tắt).
 
 ## Cài đặt Plugin
-
-Cài đặt Plugin chính thức, rồi khởi động lại Gateway:
 
 ```bash
 openclaw plugins install @openclaw/exa-plugin
@@ -36,7 +34,7 @@ openclaw gateway restart
     của bạn.
   </Step>
   <Step title="Lưu khóa">
-    Đặt `EXA_API_KEY` trong môi trường Gateway, hoặc cấu hình qua:
+    Đặt `EXA_API_KEY` trong môi trường Gateway hoặc cấu hình bằng:
 
     ```bash
     openclaw configure --section web
@@ -54,8 +52,8 @@ openclaw gateway restart
       exa: {
         config: {
           webSearch: {
-            apiKey: "exa-...", // optional if EXA_API_KEY is set
-            baseUrl: "https://api.exa.ai", // optional; OpenClaw appends /search
+            apiKey: "exa-...", // không bắt buộc nếu đã đặt EXA_API_KEY
+            baseUrl: "https://api.exa.ai", // không bắt buộc; OpenClaw nối thêm /search
           },
         },
       },
@@ -71,17 +69,17 @@ openclaw gateway restart
 }
 ```
 
-**Phương án môi trường thay thế:** đặt `EXA_API_KEY` trong môi trường Gateway.
-Với bản cài đặt gateway, hãy đặt khóa trong `~/.openclaw/.env`.
+**Phương án thay thế bằng biến môi trường:** đặt `EXA_API_KEY` trong môi trường Gateway. Đối với
+bản cài đặt Gateway, hãy đặt biến này trong `~/.openclaw/.env`. Xem
+[Biến môi trường](/vi/help/faq#env-vars-and-env-loading).
 
 ## Ghi đè URL cơ sở
 
-Đặt `plugins.entries.exa.config.webSearch.baseUrl` khi các yêu cầu tìm kiếm Exa
-cần đi qua một proxy tương thích hoặc điểm cuối Exa thay thế. OpenClaw chuẩn
-hóa máy chủ trần bằng cách thêm `https://` vào trước và thêm `/search` trừ khi
-đường dẫn đã kết thúc bằng phần đó. Điểm cuối đã phân giải được đưa vào khóa
-bộ nhớ đệm tìm kiếm, nên kết quả từ các điểm cuối Exa khác nhau sẽ không được
-dùng chung.
+Đặt `plugins.entries.exa.config.webSearch.baseUrl` để định tuyến các yêu cầu
+tìm kiếm Exa qua một proxy tương thích hoặc điểm cuối thay thế. OpenClaw
+chuẩn hóa các máy chủ không có giao thức bằng cách thêm `https://` vào đầu và nối thêm `/search`, trừ khi
+đường dẫn đã kết thúc bằng phần này. Điểm cuối đã phân giải là một phần của khóa bộ nhớ đệm
+tìm kiếm, vì vậy kết quả từ các điểm cuối khác nhau không bao giờ được dùng chung.
 
 ## Tham số công cụ
 
@@ -89,8 +87,8 @@ dùng chung.
 Truy vấn tìm kiếm.
 </ParamField>
 
-<ParamField path="count" type="number">
-Số kết quả cần trả về (1–100).
+<ParamField path="count" type="number" default="5">
+Số kết quả trả về (1-100, tùy thuộc vào giới hạn của loại tìm kiếm Exa).
 </ParamField>
 
 <ParamField path="type" type="'auto' | 'neural' | 'fast' | 'deep' | 'deep-reasoning' | 'instant'">
@@ -98,73 +96,70 @@ Chế độ tìm kiếm.
 </ParamField>
 
 <ParamField path="freshness" type="'day' | 'week' | 'month' | 'year'">
-Bộ lọc thời gian.
+Bộ lọc thời gian. Không thể kết hợp với `date_after`/`date_before`.
 </ParamField>
 
 <ParamField path="date_after" type="string">
-Kết quả sau ngày này (`YYYY-MM-DD`).
+Các kết quả sau ngày này (`YYYY-MM-DD`).
 </ParamField>
 
 <ParamField path="date_before" type="string">
-Kết quả trước ngày này (`YYYY-MM-DD`).
+Các kết quả trước ngày này (`YYYY-MM-DD`).
 </ParamField>
 
 <ParamField path="contents" type="object">
-Tùy chọn trích xuất nội dung (xem bên dưới).
+Các tùy chọn trích xuất nội dung (xem bên dưới).
 </ParamField>
 
 ### Trích xuất nội dung
 
-Exa có thể trả về nội dung đã trích xuất cùng với kết quả tìm kiếm. Truyền một
-đối tượng `contents` để bật:
+Truyền một đối tượng `contents` để kiểm soát nội dung được trích xuất trong kết quả:
 
 ```javascript
 await web_search({
   query: "transformer architecture explained",
   type: "neural",
   contents: {
-    text: true, // full page text
-    highlights: { numSentences: 3 }, // key sentences
-    summary: true, // AI summary
+    text: true, // toàn bộ văn bản của trang
+    highlights: { numSentences: 3 }, // các câu chính
+    summary: true, // bản tóm tắt bằng AI
   },
 });
 ```
 
-| Tùy chọn nội dung | Kiểu                                                                  | Mô tả                         |
-| --------------- | --------------------------------------------------------------------- | ---------------------- |
-| `text`          | `boolean \| { maxCharacters }`                                        | Trích xuất toàn bộ văn bản trang |
-| `highlights`    | `boolean \| { maxCharacters, query, numSentences, highlightsPerUrl }` | Trích xuất các câu chính  |
-| `summary`       | `boolean \| { query }`                                                | Bản tóm tắt do AI tạo   |
+| Tùy chọn nội dung | Kiểu                                                                  | Mô tả                    |
+| ----------------- | --------------------------------------------------------------------- | ------------------------ |
+| `text`            | `boolean \| { maxCharacters }`                                        | Trích xuất toàn bộ văn bản của trang |
+| `highlights`      | `boolean \| { maxCharacters, query, numSentences, highlightsPerUrl }` | Trích xuất các câu chính |
+| `summary`         | `boolean \| { query }`                                                | Bản tóm tắt do AI tạo    |
+
+Nếu bỏ qua `contents`, Exa mặc định sử dụng `{ highlights: true }` để kết quả
+bao gồm các đoạn trích chứa câu chính. Phần mô tả kết quả được lấy lần lượt từ phần nổi bật,
+sau đó là bản tóm tắt, rồi toàn bộ văn bản -- tùy nội dung nào khả dụng trước. Kết quả
+cũng giữ nguyên các trường `highlightScores` và `summary` thô từ phản hồi API Exa
+khi có.
 
 ### Chế độ tìm kiếm
 
-| Chế độ             | Mô tả                       |
-| ---------------- | --------------------------------- |
-| `auto`           | Exa chọn chế độ tốt nhất (mặc định) |
-| `neural`         | Tìm kiếm theo ngữ nghĩa/ý nghĩa     |
-| `fast`           | Tìm kiếm từ khóa nhanh              |
-| `deep`           | Tìm kiếm sâu kỹ lưỡng              |
-| `deep-reasoning` | Tìm kiếm sâu có suy luận        |
-| `instant`        | Kết quả nhanh nhất                   |
+| Chế độ           | Mô tả                                      |
+| ---------------- | ------------------------------------------ |
+| `auto`           | Exa chọn chế độ tốt nhất (mặc định)        |
+| `neural`         | Tìm kiếm theo ngữ nghĩa/ý nghĩa            |
+| `fast`           | Tìm kiếm nhanh theo từ khóa                 |
+| `deep`           | Tìm kiếm sâu và toàn diện                   |
+| `deep-reasoning` | Tìm kiếm sâu có suy luận                    |
+| `instant`        | Kết quả nhanh nhất                          |
 
-## Ghi chú
+## Lưu ý
 
-- Nếu không cung cấp tùy chọn `contents`, Exa mặc định dùng `{ highlights: true }`
-  để kết quả bao gồm các đoạn trích câu chính
-- Kết quả giữ nguyên các trường `highlightScores` và `summary` từ phản hồi API
-  của Exa khi có
-- Mô tả kết quả được xác định từ đoạn nổi bật trước, rồi đến bản tóm tắt, rồi
-  đến toàn văn — tùy nội dung nào có sẵn
-- Không thể kết hợp `freshness` với `date_after`/`date_before` — hãy dùng một
-  chế độ lọc thời gian
-- Có thể trả về tối đa 100 kết quả cho mỗi truy vấn (tùy thuộc vào giới hạn
-  loại tìm kiếm của Exa)
-- Kết quả được lưu trong bộ nhớ đệm trong 15 phút theo mặc định (có thể cấu hình
-  qua `cacheTtlMinutes`)
-- Exa là một tích hợp API chính thức với phản hồi JSON có cấu trúc
+- `count` chấp nhận tối đa 100, tùy thuộc vào giới hạn của loại tìm kiếm Exa.
+- Theo mặc định, kết quả được lưu vào bộ nhớ đệm trong 15 phút. Cấu hình các tùy chọn dùng chung
+  `tools.web.search.cacheTtlMinutes` (phút) và
+  `tools.web.search.timeoutSeconds` (mặc định 30 giây) để thay đổi thời gian lưu vào bộ nhớ đệm và
+  thời gian chờ yêu cầu cho tất cả nhà cung cấp `web_search`, bao gồm Exa.
 
 ## Liên quan
 
-- [Tổng quan Web Search](/vi/tools/web) -- tất cả nhà cung cấp và tính năng tự động phát hiện
+- [Tổng quan về tìm kiếm trên web](/vi/tools/web) -- tất cả nhà cung cấp và khả năng tự động phát hiện
 - [Brave Search](/vi/tools/brave-search) -- kết quả có cấu trúc với bộ lọc quốc gia/ngôn ngữ
 - [Perplexity Search](/vi/tools/perplexity-search) -- kết quả có cấu trúc với bộ lọc miền

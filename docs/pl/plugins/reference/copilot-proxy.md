@@ -1,27 +1,27 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz Plugin copilot-proxy
-summary: Dodaje obsługę dostawcy modeli Copilot Proxy do OpenClaw.
+    - Instalujesz, konfigurujesz lub audytujesz plugin copilot-proxy
+summary: Dodaje do OpenClaw obsługę dostawcy modeli Copilot Proxy.
 title: Plugin Copilot Proxy
 x-i18n:
-    generated_at: "2026-05-02T20:50:59Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:22:36Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: 454c4a36d606ce1e07c3801a3dede590c4033e80051d5c2e5a20f0767ca2573e
     source_path: plugins/reference/copilot-proxy.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Plugin Copilot Proxy
 
-Dodaje obsługę dostawcy modeli Copilot Proxy do OpenClaw.
+Dodaje do OpenClaw obsługę dostawcy modeli Copilot Proxy.
 
 ## Dystrybucja
 
 - Pakiet: `@openclaw/copilot-proxy`
-- Ścieżka instalacji: dołączony do OpenClaw
+- Sposób instalacji: dołączony do OpenClaw
 
-## Powierzchnia
+## Interfejs
 
-providers: copilot-proxy
+dostawcy: copilot-proxy

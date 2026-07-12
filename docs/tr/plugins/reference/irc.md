@@ -1,11 +1,11 @@
 ---
 read_when:
-    - irc Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
+    - irc pluginini kuruyor, yapılandırıyor veya denetliyorsunuz.
 summary: OpenClaw mesajlarını göndermek ve almak için IRC kanal yüzeyini ekler.
-title: IRC Plugin
+title: IRC plugin'i
 x-i18n:
-    generated_at: "2026-06-28T01:00:34Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:37:32Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: ef4c5df880542d4d3554320f4d183a2464ef8b31d0e86edc1b6c63e1e41f35d3
@@ -13,7 +13,7 @@ x-i18n:
     workflow: 16
 ---
 
-# IRC Plugin
+# IRC Plugin’i
 
 OpenClaw mesajlarını göndermek ve almak için IRC kanal yüzeyini ekler.
 
@@ -24,7 +24,7 @@ OpenClaw mesajlarını göndermek ve almak için IRC kanal yüzeyini ekler.
 
 ## Yüzey
 
-channels: irc
+kanallar: irc
 
 ## İlgili belgeler
 

@@ -1,147 +1,124 @@
 ---
 read_when:
-    - Je wijzigt Markdown-opmaak of opdeling voor uitgaande kanalen
+    - Je wijzigt de Markdown-opmaak of segmentering voor uitgaande kanalen
     - Je voegt een nieuwe kanaalformatter of stijltoewijzing toe
-    - Je debugt opmaakregressies in verschillende kanalen
+    - Je spoort opmaakregressies in verschillende kanalen op
 summary: Markdown-opmaakpipeline voor uitgaande kanalen
 title: Markdown-opmaak
 x-i18n:
-    generated_at: "2026-05-12T12:50:29Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:49:24Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8db92aaf1063ebcbd8630dfcb8ca0a4e9eeb1c64f5b8868bf11c836777180515
+    source_hash: f9a35fd9a6386068e1e3bec73ec6e692f49239b468f42dd737f919b1c6a88e41
     source_path: concepts/markdown-formatting.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw formatteert uitgaande Markdown door deze om te zetten naar een gedeelde tussenrepresentatie
-(IR) voordat kanaalspecifieke uitvoer wordt gerenderd. De IR houdt de
-brontekst intact terwijl stijl-/linkspans worden meegenomen, zodat chunking en rendering
-consistent kunnen blijven tussen kanalen.
+OpenClaw zet uitgaande Markdown vóór het renderen van kanaalspecifieke uitvoer om in een gedeelde tussenrepresentatie
+(IR). De IR bevat platte tekst plus
+stijl-/linkbereiken, zodat één parseerstap elk kanaal bedient en het opdelen
+de opmaak nooit midden in een bereik splitst.
 
-## Doelen
+## Pijplijn
 
-- **Consistentie:** één parseerstap, meerdere renderers.
-- **Veilige chunking:** splits tekst vóór rendering zodat inline-opmaak nooit
-  over chunks heen breekt.
-- **Kanaalgeschiktheid:** zet dezelfde IR om naar Slack mrkdwn, Telegram HTML en Signal
-  stijlbereiken zonder Markdown opnieuw te parsen.
+1. **Markdown naar IR parseren** (`markdownToIR`) - platte tekst plus stijlbereiken
+   (vet, cursief, doorgestreept, code, codeblok, spoiler, blokcitaat,
+   kopniveau 1-6) en linkbereiken. Posities zijn UTF-16-code-eenheden, zodat de stijlbereiken van Signal
+   rechtstreeks aansluiten op de API. Tabellen worden alleen geparseerd wanneer het kanaal
+   een tabelmodus inschakelt.
+2. **De IR opdelen** (`chunkMarkdownIR` / `renderMarkdownIRChunksWithinLimit`)
+   - het splitsen gebeurt vóór het renderen op de IR-tekst, zodat inline stijlen en
+     links per deel worden gesplitst in plaats van over een grens te worden afgebroken.
+3. **Per kanaal renderen** (`renderMarkdownWithMarkers`) - een toewijzing van stijlmarkeringen
+   zet bereiken om in de systeemeigen opmaak van het kanaal.
 
-## Pipeline
-
-1. **Markdown parsen -> IR**
-   - IR is platte tekst plus stijlspans (vet/cursief/doorhalen/code/spoiler) en linkspans.
-   - Offsets zijn UTF-16-code-eenheden zodat Signal-stijlbereiken overeenkomen met de API.
-   - Tabellen worden alleen geparseerd wanneer een kanaal zich aanmeldt voor tabelconversie.
-2. **IR opdelen in chunks (format-first)**
-   - Chunking gebeurt op de IR-tekst vóór rendering.
-   - Inline-opmaak wordt niet over chunks gesplitst; spans worden per chunk uitgesneden.
-3. **Per kanaal renderen**
-   - **Slack:** mrkdwn-tokens (vet/cursief/doorhalen/code), links als `<url|label>`.
-   - **Telegram:** HTML-tags (`<b>`, `<i>`, `<s>`, `<code>`, `<pre><code>`, `<a href>`).
-   - **Signal:** platte tekst + `text-style`-bereiken; links worden `label (url)` wanneer het label verschilt.
+| Kanaal                                                           | Renderer                                                                             | Opmerkingen                                                                                         |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- |
+| Slack                                                            | mrkdwn-tokens (`*bold*`, `_italic_`, `` `code` ``, codeblokken met hekken)            | Links worden `<url\|label>`; automatische links zijn tijdens het parseren uitgeschakeld om dubbele links te voorkomen |
+| Telegram                                                         | HTML-tags (`<b>`, `<i>`, `<s>`, `<code>`, `<pre><code>`, `<a href>`, `<tg-spoiler>`) | Ondersteunt ook tabellen en koppen (`<h1>`-`<h6>`) in uitgebreide berichten wanneer `richMessages` is ingeschakeld |
+| Signal                                                           | platte tekst + `text-style`-bereiken                                                 | Links worden als `label (url)` weergegeven wanneer het label afwijkt van de URL                     |
+| Discord, WhatsApp, iMessage, Microsoft Teams en andere kanalen   | platte tekst                                                                         | Geen op IR gebaseerde stijl; Markdown-tabellen worden nog steeds omgezet via `convertMarkdownTables` |
 
 ## IR-voorbeeld
 
 Invoer-Markdown:
-
-```markdown
-Hello **world** - see [docs](https://docs.openclaw.ai).
-```
-
+__OC_I18N_900000__
 IR (schematisch):
+__OC_I18N_900001__
+## Tabelverwerking
 
-```json
-{
-  "text": "Hello world - see docs.",
-  "styles": [{ "start": 6, "end": 11, "style": "bold" }],
-  "links": [{ "start": 19, "end": 23, "href": "https://docs.openclaw.ai" }]
-}
-```
+`markdown.tables` bepaalt hoe een kanaal Markdown-tabellen omzet, per
+kanaal en optioneel per account:
 
-## Waar het wordt gebruikt
+| Modus     | Gedrag                                                                                             |
+| --------- | -------------------------------------------------------------------------------------------------- |
+| `code`    | Renderen als een uitgelijnde ASCII-tabel in een codeblok (standaardterugval)                        |
+| `bullets` | Elke rij omzetten in opsommingstekens met `label: value`                                           |
+| `block`   | Systeemeigen tabellen behouden waar het transport die ondersteunt; anders terugvallen op `code`    |
+| `off`     | Het parseren van tabellen uitschakelen; de onbewerkte tabeltekst ongewijzigd doorgeven              |
 
-- Slack-, Telegram- en Signal-adapters voor uitgaande berichten renderen vanuit de IR.
-- Andere kanalen (WhatsApp, iMessage, Microsoft Teams, Discord) gebruiken nog steeds platte tekst of
-  hun eigen opmaakregels, waarbij Markdown-tabelconversie vóór
-  chunking wordt toegepast wanneer deze is ingeschakeld.
+Standaardwaarden van Plugins per kanaal: Signal, WhatsApp en Matrix gebruiken standaard
+`bullets`; Mattermost gebruikt standaard `off`; Telegram gebruikt standaard `block` (wat
+wordt omgezet naar `code`, tenzij voor het account `richMessages` is ingeschakeld). Elk
+kanaal zonder expliciete standaardwaarde van de Plugin valt terug op `code`.
+__OC_I18N_900002__
+## Regels voor opdelen
 
-## Tabelafhandeling
+- Deellimieten komen uit kanaaladapters/configuratie en gelden voor IR-tekst, niet voor
+  gerenderde uitvoer.
+- Codeblokken met hekken worden als één blok behouden, met een afsluitende nieuwe regel zodat
+  kanalen het afsluitende hek correct renderen.
+- Voorvoegsels van lijsten en blokcitaten maken deel uit van de IR-tekst, zodat het opdelen
+  nooit midden in een voorvoegsel splitst.
+- Inline stijlen worden nooit over delen gesplitst; de renderer opent een nog geopende
+  stijl opnieuw aan het begin van het volgende deel.
 
-Markdown-tabellen worden niet consistent ondersteund door chatclients. Gebruik
-`markdown.tables` om conversie per kanaal (en per account) te beheren.
-
-- `code`: render tabellen als codeblokken (standaard voor de meeste kanalen).
-- `bullets`: converteer elke rij naar opsommingstekens (standaard voor Matrix, Signal en WhatsApp).
-- `off`: schakel tabelparsing en -conversie uit; ruwe tabeltekst wordt doorgegeven.
-
-Configuratiesleutels:
-
-```yaml
-channels:
-  discord:
-    markdown:
-      tables: code
-    accounts:
-      work:
-        markdown:
-          tables: off
-```
-
-## Chunking-regels
-
-- Chunklimieten komen uit kanaaladapters/configuratie en worden toegepast op de IR-tekst.
-- Code fences blijven behouden als één blok met een afsluitende nieuwe regel, zodat kanalen
-  ze correct renderen.
-- Lijstprefixen en blockquote-prefixen maken deel uit van de IR-tekst, zodat chunking
-  niet midden in een prefix splitst.
-- Inline-stijlen (vet/cursief/doorhalen/inline-code/spoiler) worden nooit over
-  chunks gesplitst; de renderer opent stijlen opnieuw binnen elke chunk.
-
-Als je meer nodig hebt over chunking-gedrag tussen kanalen, zie
-[Streaming + chunking](/nl/concepts/streaming).
+Zie [Streamen en opdelen](/concepts/streaming) voor gedrag rond deelgrenzen en
+bezorging via kanalen.
 
 ## Linkbeleid
 
-- **Slack:** `[label](url)` -> `<url|label>`; kale URL's blijven kaal. Autolink
-  is uitgeschakeld tijdens het parsen om dubbele links te voorkomen.
-- **Telegram:** `[label](url)` -> `<a href="url">label</a>` (HTML-parsemodus).
-- **Signal:** `[label](url)` -> `label (url)`, tenzij het label overeenkomt met de URL.
+- **Slack:** `[label](url)` -> `<url|label>`; kale URL's blijven kaal.
+- **Telegram:** `[label](url)` -> `<a href="url">label</a>` (HTML-parseermodus).
+- **Signal:** `[label](url)` -> `label (url)`, tenzij het label al
+  overeenkomt met de URL.
 
 ## Spoilers
 
-Spoilermarkeringen (`||spoiler||`) worden alleen geparseerd voor Signal, waar ze worden omgezet naar
-SPOILER-stijlbereiken. Andere kanalen behandelen ze als platte tekst.
+Spoilermarkeringen (`||spoiler||`) worden geparseerd voor Signal (toegewezen aan
+stijlbereiken van `SPOILER`) en Telegram (toegewezen aan `<tg-spoiler>`). Andere kanalen behandelen
+`||...||` als platte tekst.
 
 ## Een kanaalformatter toevoegen of bijwerken
 
-1. **Eén keer parsen:** gebruik de gedeelde helper `markdownToIR(...)` met kanaalgeschikte
-   opties (autolink, kopstijl, blockquote-prefix).
-2. **Renderen:** implementeer een renderer met `renderMarkdownWithMarkers(...)` en een
-   stijlmarkeringsmap (of Signal-stijlbereiken).
-3. **Chunking:** roep `chunkMarkdownIR(...)` aan vóór rendering; render elke chunk.
-4. **Adapter aansluiten:** werk de uitgaande kanaaladapter bij om de nieuwe chunker
-   en renderer te gebruiken.
-5. **Testen:** voeg formaattests toe of werk ze bij, en voeg een test voor uitgaande levering toe als het
-   kanaal chunking gebruikt.
+1. **Eén keer parseren** met `markdownToIR(...)`, waarbij kanaalgeschikte
+   opties worden doorgegeven (`autolink`, `headingStyle`, `blockquotePrefix`, `tableMode`).
+2. **Renderen** met `renderMarkdownWithMarkers(...)` en een toewijzing van stijlmarkeringen (of
+   aangepaste logica voor stijlbereiken voor transporten zoals Signal).
+3. **Opdelen** met `chunkMarkdownIR(...)` of
+   `renderMarkdownIRChunksWithinLimit(...)` voordat elk deel wordt gerenderd.
+4. **De adapter koppelen** zodat de nieuwe opdeler en renderer worden aangeroepen vanuit het
+   uitgaande verzendpad.
+5. **Testen** met opmaaktests plus een test voor uitgaande bezorging als het kanaal
+   berichten opdeelt.
 
 ## Veelvoorkomende valkuilen
 
-- Slack-tokens met punthaken (`<@U123>`, `<#C123>`, `<https://...>`) moeten worden
-  behouden; escape ruwe HTML veilig.
-- Telegram HTML vereist escaping van tekst buiten tags om kapotte markup te voorkomen.
-- Signal-stijlbereiken zijn afhankelijk van UTF-16-offsets; gebruik geen codepoint-offsets.
-- Behoud afsluitende nieuwe regels voor fenced codeblokken, zodat sluitmarkeringen op
-  hun eigen regel terechtkomen.
+- Slack-tokens tussen punthaken (`<@U123>`, `<#C123>`, `<https://...>`) moeten
+  het escapen overleven; onbewerkte HTML moet nog steeds veilig worden geëscapet.
+- Telegram-HTML vereist dat tekst buiten tags wordt geëscapet om ongeldige opmaak te voorkomen.
+- Signal-stijlbereiken gebruiken UTF-16-posities, geen codepuntposities.
+- Behoud afsluitende nieuwe regels bij codeblokken met hekken, zodat de afsluitende markering
+  op een eigen regel terechtkomt.
 
 ## Gerelateerd
 
 <CardGroup cols={2}>
-  <Card title="Streaming and chunking" href="/nl/concepts/streaming" icon="bars-staggered">
-    Gedrag van uitgaande streaming, chunkgrenzen en kanaalspecifieke levering.
+  <Card title="Streamen en opdelen" href="/nl/concepts/streaming" icon="bars-staggered">
+    Gedrag voor uitgaand streamen, deelgrenzen en kanaalspecifieke bezorging.
   </Card>
-  <Card title="System prompt" href="/nl/concepts/system-prompt" icon="message-lines">
-    Wat het model ziet vóór het gesprek, inclusief geïnjecteerde workspace-bestanden.
+  <Card title="Systeemprompt" href="/nl/concepts/system-prompt" icon="message-lines">
+    Wat het model vóór het gesprek ziet, inclusief geïnjecteerde werkruimtebestanden.
   </Card>
 </CardGroup>

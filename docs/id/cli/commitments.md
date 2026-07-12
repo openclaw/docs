@@ -2,26 +2,26 @@
 read_when:
     - Anda ingin memeriksa komitmen tindak lanjut yang disimpulkan
     - Anda ingin mengabaikan check-in yang tertunda
-    - Anda sedang mengaudit apa yang dapat dikirimkan oleh Heartbeat
+    - Anda sedang mengaudit apa yang mungkin dikirimkan oleh Heartbeat
 summary: Referensi CLI untuk `openclaw commitments` (periksa dan abaikan tindak lanjut yang disimpulkan)
 title: '`openclaw commitments`'
 x-i18n:
-    generated_at: "2026-04-30T09:38:46Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:04:51Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 37d5e5dca25cf649a5069360aa4e41fcc33d042dea99f643b98c07189c58f21c
+    source_hash: 4323273a5d73975532f4728dc5e40c5d59e0c6d2e31a538f96bf3451e3fdf4d9
     source_path: cli/commitments.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Cantumkan dan kelola komitmen tindak lanjut yang diinferensi.
+Mencantumkan dan mengelola komitmen tindak lanjut yang disimpulkan.
 
-Komitmen bersifat opt-in, berupa memori tindak lanjut berumur pendek yang dibuat dari
-konteks percakapan. Lihat [Komitmen yang diinferensi](/id/concepts/commitments) untuk
-panduan konseptual.
+Komitmen bersifat opsional (`commitments.enabled`), berupa memori tindak lanjut berumur pendek
+yang dibuat dari konteks percakapan dan disampaikan melalui Heartbeat. Lihat
+[Komitmen yang disimpulkan](/id/concepts/commitments) untuk panduan konseptual dan konfigurasi.
 
-Tanpa subperintah, `openclaw commitments` mencantumkan komitmen tertunda.
+Tanpa subperintah, `openclaw commitments` mencantumkan komitmen yang tertunda.
 
 ## Penggunaan
 
@@ -33,15 +33,18 @@ openclaw commitments dismiss <id...> [--json]
 
 ## Opsi
 
-- `--all`: tampilkan semua status alih-alih hanya komitmen tertunda.
-- `--agent <id>`: filter ke satu id agen.
-- `--status <status>`: filter menurut status. Nilai: `pending`, `sent`,
-  `dismissed`, `snoozed`, atau `expired`.
+- `--all`: tampilkan semua status, bukan hanya komitmen yang tertunda.
+- `--agent <id>`: filter berdasarkan satu ID agen.
+- `--status <status>`: filter berdasarkan status. Nilai: `pending`, `sent`,
+  `dismissed`, `snoozed`, atau `expired`. Nilai yang tidak dikenal menyebabkan proses keluar dengan kesalahan.
 - `--json`: keluarkan JSON yang dapat dibaca mesin.
+
+`dismiss` menandai ID komitmen yang diberikan sebagai `dismissed` agar Heartbeat tidak
+menyampaikannya.
 
 ## Contoh
 
-Cantumkan komitmen tertunda:
+Cantumkan komitmen yang tertunda:
 
 ```bash
 openclaw commitments
@@ -53,7 +56,7 @@ Cantumkan setiap komitmen yang tersimpan:
 openclaw commitments --all
 ```
 
-Filter ke satu agen:
+Filter berdasarkan satu agen:
 
 ```bash
 openclaw commitments --agent main
@@ -79,20 +82,22 @@ openclaw commitments --all --json
 
 ## Keluaran
 
-Keluaran teks mencakup:
+Keluaran teks mencetak jumlah komitmen, jalur penyimpanan, semua filter aktif,
+dan satu baris per komitmen:
 
-- id komitmen
+- ID komitmen
 - status
-- jenis
+- jenis (`event_check_in`, `deadline_check`, `care_check_in`, atau `open_loop`)
 - waktu jatuh tempo paling awal
-- cakupan
-- teks check-in yang disarankan
+- cakupan (agen/saluran/target)
+- teks tindak lanjut yang disarankan
 
-Keluaran JSON juga mencakup jalur penyimpanan komitmen dan rekaman tersimpan lengkap.
+Keluaran JSON mencakup jumlah, filter status dan agen yang aktif, jalur
+penyimpanan komitmen, serta rekaman tersimpan lengkap.
 
 ## Terkait
 
-- [Komitmen yang diinferensi](/id/concepts/commitments)
+- [Komitmen yang disimpulkan](/id/concepts/commitments)
 - [Ikhtisar memori](/id/concepts/memory)
 - [Heartbeat](/id/gateway/heartbeat)
 - [Tugas terjadwal](/id/automation/cron-jobs)

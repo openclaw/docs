@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Gebruik van /steer of /tell terwijl er al een agent actief is
-    - Vergelijking van de modi /steer en /queue
-    - Beslissen of je de huidige run of een ACP-sessie wilt sturen
+    - /steer of /tell gebruiken terwijl er al een agent actief is
+    - /steer vergelijken met /queue-modi
+    - Bepalen of de huidige uitvoering of een ACP-sessie moet worden bijgestuurd
 sidebarTitle: Steer
-summary: Stuur een actieve run aan zonder de wachtrijmodus te wijzigen
-title: Sturen
+summary: Stuur een actieve run bij zonder de wachtrijmodus te wijzigen
+title: Bijsturen
 x-i18n:
-    generated_at: "2026-06-27T18:30:07Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:31:08Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 2e73f3f2fd938ee9dbdd14d183abe7f8676dbc7bb7382e6ad2c1fd41034fa09c
@@ -16,69 +16,70 @@ x-i18n:
     workflow: 16
 ---
 
-`/steer` probeert eerst begeleiding naar een al actieve uitvoering te sturen. Het is bedoeld voor momenten als
-"pas deze uitvoering aan terwijl die nog bezig is". Als de huidige runtime
-geen sturing kan accepteren, stuurt OpenClaw het bericht in plaats daarvan als
-een normale prompt, in plaats van het te laten vallen.
+`/steer` probeert eerst instructies naar een al actieve uitvoering te sturen. Het is bedoeld voor
+momenten waarop u „deze uitvoering wilt bijsturen terwijl deze nog bezig is”. Als de huidige runtime
+geen bijsturing kan verwerken, verzendt OpenClaw het bericht in plaats daarvan als een normale prompt,
+zodat het niet verloren gaat.
 
 ## Huidige sessie
 
-Gebruik `/steer` op hoofdniveau om de actieve uitvoering voor de huidige sessie te targeten:
+Gebruik `/steer` op het hoogste niveau om de actieve uitvoering voor de huidige sessie aan te sturen:
 
 ```text
-/steer prefer the smaller patch and keep the tests focused
-/tell summarize before making the next tool call
+/steer geef de voorkeur aan de kleinere patch en houd de tests gericht
+/tell vat samen voordat je de volgende toolaanroep uitvoert
 ```
 
 Gedrag:
 
-- Target alleen de actieve uitvoering van de huidige sessie.
+- Richt zich uitsluitend op de actieve uitvoering van de huidige sessie.
 - Werkt onafhankelijk van de `/queue`-modus van de sessie.
 - Start een normale beurt met hetzelfde bericht wanneer de sessie inactief is of de
-  actieve uitvoering geen sturing kan accepteren.
-- Gebruikt het sturingspad van de actieve runtime, zodat het model de begeleiding ziet bij
-  de volgende ondersteunde runtimegrens.
+  actieve uitvoering geen bijsturing kan verwerken.
+- Gebruikt het bijsturingspad van de actieve runtime, zodat het model de instructies bij
+  de volgende ondersteunde runtimegrens ontvangt.
 
-## Sturen versus wachtrij
+## Bijsturen versus wachtrij
 
-`/queue steer` zorgt ervoor dat normale inkomende berichten proberen de actieve uitvoering te sturen wanneer
+`/queue steer` zorgt ervoor dat normale inkomende berichten de actieve uitvoering proberen bij te sturen wanneer
 ze binnenkomen terwijl een uitvoering actief is. `/steer <message>` is een expliciete opdracht
-die probeert het bericht van die opdracht in de actieve uitvoering te injecteren bij de volgende
-ondersteunde runtimegrens, ongeacht de opgeslagen `/queue`-instelling. Wanneer
+die probeert het bericht van die opdracht bij de volgende ondersteunde runtimegrens in de actieve
+uitvoering te injecteren, ongeacht de opgeslagen `/queue`-instelling. Wanneer
 die injectie niet beschikbaar is, wordt het opdrachtvoorvoegsel verwijderd en gaat `<message>`
-door als een normale prompt.
+verder als een normale prompt.
 
 Gebruik:
 
-- `/steer <message>` wanneer je de actieve uitvoering nu wilt sturen.
-- `/queue steer` wanneer je wilt dat toekomstige normale berichten actieve uitvoeringen standaard
-  sturen.
-- `/queue collect` of `/queue followup` wanneer toekomstige normale berichten moeten wachten
-  op een latere beurt in plaats van de actieve uitvoering te sturen.
+- `/steer <message>` wanneer u de actieve uitvoering direct wilt bijsturen.
+- `/queue steer` wanneer u wilt dat toekomstige normale berichten actieve uitvoeringen
+  standaard bijsturen.
+- `/queue collect` of `/queue followup` wanneer toekomstige normale berichten op
+  een latere beurt moeten wachten in plaats van de actieve uitvoering bij te sturen.
 - `/queue interrupt` wanneer het nieuwste bericht de actieve uitvoering moet vervangen
-  in plaats van die te sturen.
+  in plaats van deze bij te sturen.
 
-Zie [Opdrachtenwachtrij](/nl/concepts/queue) en
-[Sturingswachtrij](/nl/concepts/queue-steering) voor wachtrijmodi en sturingsgrenzen.
+Zie voor wachtrijmodi en bijsturingsgrenzen [Opdrachtwachtrij](/nl/concepts/queue) en
+[Bijsturingswachtrij](/nl/concepts/queue-steering).
 
 ## Subagents
 
-`/steer` op hoofdniveau target de actieve uitvoering van de huidige sessie. Subagents rapporteren
-terug naar hun bovenliggende/aanvragende sessie; `/subagents` is alleen voor zichtbaarheid.
+`/steer` op het hoogste niveau richt zich op de actieve uitvoering van de huidige sessie. Subagents rapporteren
+terug aan hun bovenliggende/aanvragende sessie; `/subagents` is uitsluitend bedoeld voor inzicht.
 
 ## ACP-sessies
 
 Gebruik `/acp steer` wanneer het doel een ACP-harnesssessie is:
 
 ```text
-/acp steer --session agent:main:acp:codex tighten the repro
+/acp steer --session agent:main:acp:codex maak de reproductie nauwkeuriger
 ```
 
-Zie [ACP-agents](/nl/tools/acp-agents) voor ACP-sessieselectie en runtimegedrag.
+Zie [ACP-agents](/nl/tools/acp-agents) voor de selectie van ACP-sessies en het
+runtimegedrag.
 
 ## Gerelateerd
 
 - [Slash-opdrachten](/nl/tools/slash-commands)
-- [Opdrachtenwachtrij](/nl/concepts/queue)
-- [Sturingswachtrij](/nl/concepts/queue-steering)
+- [Opdrachtwachtrij](/nl/concepts/queue)
+- [Bijsturingswachtrij](/nl/concepts/queue-steering)
 - [Subagents](/nl/tools/subagents)

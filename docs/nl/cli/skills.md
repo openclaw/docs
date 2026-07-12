@@ -1,30 +1,30 @@
 ---
 read_when:
-    - Je wilt zien welke Skills beschikbaar zijn en klaar zijn om uit te voeren
+    - Je wilt zien welke Skills beschikbaar en klaar voor gebruik zijn
     - Je wilt ClawHub doorzoeken of Skills installeren vanuit ClawHub, Git of lokale mappen
-    - Je wilt een ClawHub-skill verifiëren met ClawHub
-    - Je wilt ontbrekende binaries/env/config voor Skills debuggen
-summary: CLI-referentie voor `openclaw skills` (zoeken/installeren/bijwerken/verifiëren/lijst/info/controleren/workshop)
+    - U wilt een ClawHub-skill verifiëren met ClawHub
+    - Je wilt ontbrekende binaire bestanden, omgevingsvariabelen of configuratie voor Skills opsporen
+summary: CLI-referentie voor `openclaw skills` (zoeken/installeren/bijwerken/verifiëren/weergeven/informatie/controleren/workshop)
 title: Skills
 x-i18n:
-    generated_at: "2026-06-27T17:23:21Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:47:05Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8f76c49e04559362cac9c0d12ce86cd422b46653242212c7611cc1033941ac43
+    source_hash: 3eafd40704b666e6be185aa8148b60613c861a2899fb9b0cc3353212e8e4d678
     source_path: cli/skills.md
     workflow: 16
 ---
 
 # `openclaw skills`
 
-Inspecteer lokale Skills, zoek in ClawHub, installeer Skills vanuit ClawHub/Git/lokale
-mappen, verifieer ClawHub-Skills en werk door ClawHub gevolgde installaties bij.
+Inspecteer lokale Skills, doorzoek ClawHub, installeer Skills vanuit ClawHub/Git/lokale
+mappen, verifieer ClawHub-Skills en werk door ClawHub bijgehouden installaties bij.
 
 Gerelateerd:
 
-- Skillssysteem: [Skills](/nl/tools/skills)
-- Skillworkshop: [Skillworkshop](/nl/tools/skill-workshop)
+- Skills-systeem: [Skills](/nl/tools/skills)
+- Skill Workshop: [Skill Workshop](/nl/tools/skill-workshop)
 - Skills-configuratie: [Skills-configuratie](/nl/tools/skills-config)
 - ClawHub-installaties: [ClawHub](/nl/clawhub/cli)
 
@@ -39,10 +39,12 @@ openclaw skills install git:owner/repo
 openclaw skills install git:owner/repo@main
 openclaw skills install ./path/to/skill --as custom-name
 openclaw skills install @owner/<slug> --force
+openclaw skills install @owner/<slug> --force-install
 openclaw skills install @owner/<slug> --acknowledge-clawhub-risk
 openclaw skills install @owner/<slug> --agent <id>
 openclaw skills install @owner/<slug> --global
 openclaw skills update @owner/<slug>
+openclaw skills update @owner/<slug> --force-install
 openclaw skills update @owner/<slug> --acknowledge-clawhub-risk
 openclaw skills update @owner/<slug> --global
 openclaw skills update --all
@@ -75,104 +77,92 @@ openclaw skills workshop quarantine <proposal-id> --reason "Needs security revie
 ```
 
 `search`, `update` en `verify` gebruiken ClawHub rechtstreeks. `install @owner/<slug>`
-installeert een ClawHub-Skill, `install git:owner/repo[@ref]` kloont een Git-Skill en
-`install ./path` kopieert een lokale Skill-map. Standaard richten `install`, `update`
-en `verify` zich op de actieve workspace-map `skills/`; met `--global`
-richten ze zich op de gedeelde beheerde Skills-map. `list`/`info`/`check` blijven
-de lokale Skills inspecteren die zichtbaar zijn voor de huidige workspace en configuratie.
-Op workspace gebaseerde opdrachten bepalen de doelworkspace via `--agent <id>`, daarna
-de huidige werkmap wanneer die zich binnen een geconfigureerde agent-workspace bevindt,
-en daarna de standaardagent.
+installeert een ClawHub-Skill, `install git:owner/repo[@ref]` kloont een Git-Skill
+en `install ./path` kopieert een lokale Skill-map. Standaard richten `install`,
+`update` en `verify` zich op de map `skills/` van de actieve werkruimte; met
+`--global` richten ze zich op de gedeelde beheerde Skills-map. `list`/`info`/`check`
+inspecteren nog steeds de lokale Skills die zichtbaar zijn voor de huidige werkruimte en configuratie.
+Op werkruimten gebaseerde opdrachten bepalen de doelwerkruimte eerst via `--agent <id>`,
+vervolgens via de huidige werkmap wanneer die zich in een geconfigureerde agentwerkruimte
+bevindt, en daarna via de standaardagent.
 
-Git- en lokale-mapinstallaties verwachten `SKILL.md` in de bronroot. De
-installatieslug komt uit de frontmatterwaarde `name` in `SKILL.md` wanneer die geldig is, daarna uit de
-bronmap- of repositorynaam; gebruik `--as <slug>` om deze te overschrijven. `--version`
-is alleen voor ClawHub. Skill-installaties ondersteunen geen npm-pakketspecificaties of zip-/archiefpaden,
-en `openclaw skills update` werkt alleen door ClawHub gevolgde installaties bij.
+Voor installaties vanuit Git en lokale mappen moet `SKILL.md` in de hoofdmap van de bron
+staan. De installatieslug is afkomstig uit de frontmatterwaarde `name` van `SKILL.md`
+wanneer die geldig is, en anders uit de naam van de bronmap of repository; gebruik
+`--as <slug>` om deze te overschrijven. `--version` is alleen voor ClawHub. Skill-installaties
+ondersteunen geen npm-pakketspecificaties of paden naar zip-/archiefbestanden, en
+`openclaw skills update` werkt alleen door ClawHub bijgehouden installaties bij.
 
-Door Gateway ondersteunde installaties van Skill-afhankelijkheden die vanuit onboarding of Skills-instellingen
-worden geactiveerd, gebruiken in plaats daarvan het afzonderlijke aanvraagpad `skills.install`.
+Door de Gateway ondersteunde installaties van Skill-afhankelijkheden die vanuit onboarding
+of de Skills-instellingen worden geactiveerd, gebruiken in plaats daarvan het afzonderlijke
+aanvraagpad `skills.install`.
 
 Opmerkingen:
 
-- `search [query...]` accepteert een optionele query; laat deze weg om door de standaard
-  ClawHub-zoekfeed te bladeren.
-- `search --limit <n>` begrenst het aantal teruggegeven resultaten.
-- `install git:owner/repo[@ref]` installeert een Git-Skill. Branchrefs mogen
-  schuine strepen bevatten, zoals `git:owner/repo@feature/foo`.
-- `install ./path/to/skill` installeert een lokale map waarvan de root
-  `SKILL.md` bevat.
-- `install --as <slug>` overschrijft de afgeleide slug voor Git- en lokale-mapinstallaties.
-- `install --version <version>` is alleen van toepassing op ClawHub-Skillrefs.
-- `install --force` overschrijft een bestaande workspace-Skillmap voor dezelfde
-  slug.
-- Installaties en updates van community-ClawHub-Skills controleren vertrouwen vóór het downloaden.
-  Community-archiefreleases met versie gebruiken vertrouwensmetadata voor de exacte release.
-  Door een resolver ondersteunde GitHub-Skills vertrouwen op de installatieresolver van ClawHub om
-  scan- en geforceerde-installatiebeleid af te dwingen voordat deze een vastgezette commit teruggeeft. Kwaadaardige of
-  geblokkeerde community-releases worden geweigerd. Risicovolle community-releases vereisen
-  beoordeling en `--acknowledge-clawhub-risk` wanneer een niet-interactieve opdracht na
-  die beoordeling moet doorgaan. Officiële ClawHub-Skill-uitgevers en gebundelde
-  OpenClaw-Skillbronnen slaan deze release-vertrouwensprompt over.
-- `--global` richt zich op de gedeelde beheerde Skills-map en kan niet worden gecombineerd
-  met `--agent <id>`.
-- `--agent <id>` richt zich op één geconfigureerde agent-workspace en overschrijft afleiding uit de
-  huidige werkmap.
-- `update @owner/<slug>` werkt één gevolgde Skill bij. Voeg `--global` toe om
-  de gedeelde beheerde Skills-map te gebruiken in plaats van de workspace.
-- `update --all` werkt gevolgde ClawHub-installaties bij in de geselecteerde workspace, of
-  in de gedeelde beheerde Skills-map wanneer gecombineerd met `--global`.
-- `verify @owner/<slug>` print standaard de JSON-envelope `clawhub.skill.verify.v1`
-  van ClawHub. Er is geen vlag `--json`, omdat JSON al de
-  standaard is. Kale slugs blijven om compatibiliteit geaccepteerd wanneer de Skill
-  al is geïnstalleerd of ondubbelzinnig is, maar refs met eigenaar vermijden
-  onduidelijkheid over de uitgever.
-- Wanneer ClawHub door de server bepaalde bronherkomst teruggeeft, bevat verificatie-JSON ook
-  een commit-vastgezette `openclaw.verifiedSourceUrl`. Niet-beschikbare of
-  zelfverklaarde bron-URL's blijven alleen in de ruwe herkomst-envelope en worden niet
-  gepromoveerd.
-- `verify` gebruikt `.clawhub/origin.json` voor geïnstalleerde ClawHub-Skills, zodat het
-  de geïnstalleerde versie verifieert tegen het register waaruit die kwam. `--version`
-  en `--tag` overschrijven de versieselector, maar behouden dat geïnstalleerde register
-  wanneer herkomstmetadata bestaat.
-- `verify --card` print de gegenereerde Skill Card-Markdown in plaats van JSON. De
-  opdracht sluit af met een niet-nulwaarde wanneer ClawHub `ok: false` of `decision: "fail"` teruggeeft;
-  niet-ondertekende handtekeningen zijn informatief tenzij het ClawHub-beleid verandert.
-- Geïnstalleerde ClawHub-bundels kunnen een gegenereerde `skill-card.md` bevatten. OpenClaw
-  behandelt verificatie als een ClawHub-serverbeslissing en weigert een
-  geïnstalleerde Skill niet alleen omdat die gegenereerde kaart de bundelvingerafdruk
-  wijzigt.
-- `check --agent <id>` controleert de workspace van de geselecteerde agent en rapporteert welke
-  gereedstaande Skills daadwerkelijk zichtbaar zijn voor de prompt of opdrachtinterface van die agent.
-- `list` is de standaardactie wanneer er geen subopdracht is opgegeven.
-- `list`, `info` en `check` schrijven hun gerenderde uitvoer naar stdout. Met
-  `--json` betekent dit dat de machineleesbare payload op stdout blijft voor pipes
-  en scripts.
+| Vlag/gedrag                      | Beschrijving                                                                                                                                                                                                                                                                       |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `search [query...]`              | Optionele zoekopdracht; laat deze weg om door de standaardzoekfeed van ClawHub te bladeren.                                                                                                                                                                                        |
+| `search --limit <n>`             | Beperkt het aantal geretourneerde resultaten.                                                                                                                                                                                                                                      |
+| `install git:owner/repo[@ref]`   | Installeert een Git-Skill. Branchverwijzingen mogen schuine strepen bevatten, zoals `git:owner/repo@feature/foo`.                                                                                                                                                                  |
+| `install ./path/to/skill`        | Installeert een lokale map waarvan de hoofdmap `SKILL.md` bevat.                                                                                                                                                                                                                   |
+| `install --as <slug>`            | Overschrijft de afgeleide slug voor installaties vanuit Git en lokale mappen.                                                                                                                                                                                                      |
+| `install --version <version>`    | Geldt alleen voor ClawHub-Skill-verwijzingen.                                                                                                                                                                                                                                      |
+| `install --force`                | Overschrijft een bestaande Skill-map in de werkruimte met dezelfde slug.                                                                                                                                                                                                           |
+| `install/update --force-install` | Installeert een wachtende, door GitHub ondersteunde ClawHub-Skill voordat de scan van ClawHub is voltooid.                                                                                                                                                                         |
+| `--global`                       | Richt zich op de gedeelde beheerde Skills-map; kan niet worden gecombineerd met `--agent <id>`.                                                                                                                                                                                    |
+| `--agent <id>`                   | Richt zich op één geconfigureerde agentwerkruimte; overschrijft de afleiding op basis van de huidige werkmap.                                                                                                                                                                      |
+| `update @owner/<slug>`           | Werkt één bijgehouden Skill bij. Voeg `--global` toe om de gedeelde beheerde Skills-map te gebruiken in plaats van de werkruimte.                                                                                                                                                   |
+| `update --all`                   | Werkt bijgehouden ClawHub-installaties bij in de geselecteerde werkruimte, of in de gedeelde beheerde Skills-map met `--global`.                                                                                                                                                    |
+| `verify @owner/<slug>`           | Geeft standaard de JSON-envelop `clawhub.skill.verify.v1` van ClawHub weer. Er is geen vlag `--json`, omdat JSON al de standaard is. Kale slugs worden voor compatibiliteit geaccepteerd wanneer de Skill al is geïnstalleerd of ondubbelzinnig is; verwijzingen met een eigenaar voorkomen onduidelijkheid over de uitgever. |
+| Herkomst van `verify`            | Wanneer ClawHub door de server bepaalde bronherkomst retourneert, bevat de verificatie-JSON ook een aan een commit vastgezette `openclaw.verifiedSourceUrl`. Niet-beschikbare of zelf opgegeven bron-URL's blijven alleen in de onbewerkte herkomstenvelop en worden niet gepromoveerd. |
+| Versieselector van `verify`      | `verify` gebruikt `.clawhub/origin.json` voor geïnstalleerde ClawHub-Skills en verifieert daardoor de geïnstalleerde versie aan de hand van het register waaruit deze afkomstig is. `--version` en `--tag` overschrijven de versieselector, maar behouden dat geïnstalleerde register wanneer herkomstmetadata aanwezig zijn. |
+| `verify --card`                  | Geeft de gegenereerde Markdown van de Skill-kaart weer in plaats van JSON. Eindigt met een niet-nulstatus wanneer ClawHub `ok: false` of `decision: "fail"` retourneert; niet-ondertekende handtekeningen zijn informatief, tenzij het ClawHub-beleid verandert. |
+| Vingerafdruk van de Skill-kaart  | Geïnstalleerde ClawHub-bundels kunnen een gegenereerd bestand `skill-card.md` bevatten. OpenClaw behandelt verificatie als een serverbeslissing van ClawHub en weigert een geïnstalleerde Skill niet alleen omdat die gegenereerde kaart de vingerafdruk van de bundel wijzigt. |
+| `check --agent <id>`             | Controleert de werkruimte van de geselecteerde agent en rapporteert welke gereedstaande Skills daadwerkelijk zichtbaar zijn in de prompt of het opdrachtoppervlak van die agent.                                                                                                   |
+| `list`                           | Standaardactie wanneer geen subopdracht is opgegeven.                                                                                                                                                                                                                              |
+| Uitvoer van `list`/`info`/`check` | Opgemaakte uitvoer gaat naar stdout. Met `--json` blijft de machineleesbare nettolading op stdout voor pipes en scripts.                                                                                                                                                           |
 
-## Skillworkshop
+Bij installaties en updates van community-Skills uit ClawHub wordt vóór het downloaden
+de betrouwbaarheid gecontroleerd. Versiegebonden community-archiefreleases gebruiken
+betrouwbaarheidsmetadata voor de exacte release. Door de resolver ondersteunde GitHub-Skills
+vertrouwen op de installatieresolver van ClawHub om het scan- en gedwongen-installatiebeleid
+af te dwingen voordat deze een vastgezette commit retourneert; gebruik `--force-install`
+om een wachtende, door GitHub ondersteunde Skill te installeren voordat die scan is voltooid.
+Schadelijke of geblokkeerde community-releases worden geweigerd. Risicovolle
+community-releases vereisen beoordeling en `--acknowledge-clawhub-risk` wanneer een
+niet-interactieve opdracht na die beoordeling moet doorgaan. Officiële uitgevers van
+ClawHub-Skills en gebundelde OpenClaw-Skill-bronnen slaan deze vraag over
+releasebetrouwbaarheid over.
+
+## Skill Workshop
 
 `openclaw skills workshop` beheert wachtende Skill-voorstellen in de geselecteerde
-workspace. Voorstellen zijn geen actieve Skills totdat ze zijn toegepast. Zie
-[Skillworkshop](/nl/tools/skill-workshop) voor opslag van voorstellen,
-beveiligingen voor ondersteuningsbestanden, Gateway-methoden en goedkeuringsbeleid.
+werkruimte. Voorstellen zijn pas actieve Skills nadat ze zijn toegepast. Zie
+[Skill Workshop](/nl/tools/skill-workshop) voor de opslag van voorstellen,
+beveiligingsmaatregelen voor ondersteunende bestanden, Gateway-methoden en het
+goedkeuringsbeleid.
 
 ```bash
 openclaw skills workshop propose-create \
   --name "qa-check" \
-  --description "Repeatable QA checklist" \
+  --description "Herhaalbare QA-checklist" \
   --proposal ./PROPOSAL.md
 openclaw skills workshop propose-create \
   --name "qa-check" \
-  --description "Repeatable QA checklist" \
+  --description "Herhaalbare QA-checklist" \
   --proposal-dir ./qa-check-proposal
 openclaw skills workshop propose-update qa-check --proposal ./PROPOSAL.md
 openclaw skills workshop list
 openclaw skills workshop inspect <proposal-id>
 openclaw skills workshop revise <proposal-id> --proposal ./PROPOSAL.md
 openclaw skills workshop apply <proposal-id>
-openclaw skills workshop reject <proposal-id> --reason "Duplicate"
-openclaw skills workshop quarantine <proposal-id> --reason "Needs security review"
+openclaw skills workshop reject <proposal-id> --reason "Duplicaat"
+openclaw skills workshop quarantine <proposal-id> --reason "Beveiligingsbeoordeling vereist"
 ```
+
+`propose-create`, `propose-update` en `revise` accepteren ook `--goal <text>`
+en `--evidence <text>` om de motivatie en ondersteunende notities van het voorstel
+naast de inhoud van `--proposal`/`--proposal-dir` vast te leggen.
 
 ## Gerelateerd
 

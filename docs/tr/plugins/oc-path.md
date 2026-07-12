@@ -1,97 +1,62 @@
 ---
 read_when:
-    - Çalışma alanı dosyasındaki tek bir yaprak düğümünü terminalden incelemek veya düzenlemek istiyorsunuz
-    - Çalışma alanı durumuna karşı betik yazıyorsunuz ve kararlı, türden bağımsız bir adresleme şemasına ihtiyacınız var.
-    - Kendi barındırdığınız Gateway üzerinde isteğe bağlı `oc-path` Plugin'ini etkinleştirip etkinleştirmemeye karar veriyorsunuz
-summary: 'Birlikte gelen `oc-path` Plugin: `oc://` çalışma alanı dosyası adresleme şeması için `openclaw path` CLI’ını gönderir'
-title: OC Path plugin
+    - Terminalden bir çalışma alanı dosyasındaki tek bir uç öğeyi incelemek veya düzenlemek istiyorsunuz
+    - Çalışma alanı durumuna yönelik betik yazıyorsunuz ve türden bağımsız, kararlı bir adresleme düzenine ihtiyacınız var
+    - Kendi barındırdığınız bir Gateway üzerinde isteğe bağlı `oc-path` Plugin'ini etkinleştirip etkinleştirmemeye karar veriyorsunuz
+summary: 'Paketlenmiş `oc-path` Plugin''i: `oc://` çalışma alanı dosyası adresleme şeması için `openclaw path` CLI''sini içerir'
+title: OC Path Plugin'i
 x-i18n:
-    generated_at: "2026-06-28T00:56:07Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:31:34Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: afb8ab86d04ef783986d05203f2c06b9cb718ad44ec31c797159ed49d9e1d5e3
+    source_hash: eb7bb1aacd37e5cc9c391372b871dc519f4048232d93a0016138ae00a6985a59
     source_path: plugins/oc-path.md
     workflow: 16
 ---
 
-Paketle gelen `oc-path` plugin'i, `oc://` çalışma alanı dosyası adresleme
-şeması için [`openclaw path`](/tr/cli/path) CLI'sini ekler. OpenClaw deposunda
-`extensions/oc-path/` altında gelir ancak isteğe bağlıdır; kurulum/derleme,
-siz etkinleştirene kadar onu pasif bırakır.
+Paketle birlikte gelen `oc-path` Plugin’i, `oc://` çalışma alanı dosyası adresleme şeması için [`openclaw path`](/tr/cli/path) CLI’sini ekler. OpenClaw deposunda `extensions/oc-path/` altında sunulur ancak isteğe bağlıdır: kurulum/derleme sonrasında siz etkinleştirene kadar devre dışı kalır.
 
-`oc://` adresleri, bir çalışma alanı dosyasının içindeki tek bir yaprağa (veya
-joker karakterli bir yaprak kümesine) işaret eder. Plugin bugün dört tür dosyayı
-anlar:
+`oc://` adresleri, bir çalışma alanı dosyasındaki tek bir yaprak öğeyi (veya joker karakterle belirtilen bir yaprak kümesini) gösterir. Plugin dört dosya türünü destekler:
 
-- **markdown** (`.md`, `.mdx`): frontmatter, bölümler, öğeler, alanlar
-- **jsonc** (`.jsonc`, `.json5`, `.json`): yorumlar ve biçimlendirme korunur
+- **markdown** (`.md`): ön bilgiler, bölümler, öğeler, alanlar
+- **jsonc** (`.jsonc`, `.json`): yorumlar ve biçimlendirme korunur
 - **jsonl** (`.jsonl`, `.ndjson`): satır odaklı kayıtlar
-- **yaml** (`.yaml`, `.yml`, `.lobster`): YAML belge API'si üzerinden
-  eşleme/dizi/skaler düğümleri
+- **yaml** (`.yaml`, `.yml`, `.lobster`): `yaml` paketinin `Document` API’si üzerinden eşleme/dizi/skaler düğümleri
 
-Kendi barındıranlar ve düzenleyici uzantıları, SDK'ye doğrudan betik yazmadan
-tek bir yaprağı okumak veya yazmak için CLI'yi kullanır; ajanlar ve kancalar ise
-onu deterministik bir zemin olarak ele alır, böylece bayt sadakatli gidiş
-dönüşler ve redaksiyon sentinel koruması türler arasında tekdüze uygulanır.
+Kendi sisteminde barındıranlar ve düzenleyici uzantıları, doğrudan SDK’ye yönelik betik yazmadan tek bir yaprak öğeyi okumak veya yazmak için CLI’yi kullanır; ajanlar ve kancalar ise bayt düzeyinde aslına uygun gidiş-dönüş işlemlerinin ve redaksiyon belirteci korumasının tüm türlerde tutarlı şekilde uygulanması için bunu belirlenimci bir altyapı olarak kullanır. Tam dil bilgisi, her komuta özgü bayrak listesi ve dosya türü başına uygulamalı örnekler için [CLI başvurusuna](/tr/cli/path) bakın; bu sayfa Plugin’in neden ve nasıl etkinleştirileceğini açıklar.
 
-## Neden etkinleştirmeli
+## Neden etkinleştirmelisiniz?
 
-Betiklerin, kancaların veya yerel ajan araçlarının her dosya biçimi için bir
-ayrıştırıcı icat etmeden çalışma alanı durumunun kesin bir parçasına işaret
-etmesini istediğinizde `oc-path`'i etkinleştirin. Tek bir `oc://` adresi bir
-markdown frontmatter anahtarını, bir bölüm öğesini, bir JSONC yapılandırma
-yaprağını, bir JSONL olay alanını veya bir YAML iş akışı adımını adlandırabilir.
+Betiklerin, kancaların veya yerel ajan araçlarının her dosya biçimi için özel bir ayrıştırıcı kullanmadan çalışma alanı durumunun belirli bir parçasını göstermesi gerektiğinde `oc-path`’i etkinleştirin. Tek bir `oc://` adresi; bir markdown ön bilgi anahtarını, bölüm öğesini, JSONC yapılandırma yaprağını, JSONL olay alanını veya YAML iş akışı adımını adlandırabilir.
 
-Bu, değişikliğin küçük, denetlenebilir ve tekrarlanabilir olması gereken
-bakımcı iş akışları için önemlidir: tek bir değeri inceleyin, eşleşen kayıtları
-bulun, bir yazmayı dry-run ile deneyin, ardından yorumları, satır sonlarını ve
-yakındaki biçimlendirmeyi olduğu gibi bırakarak yalnızca o yaprağı uygulayın.
-Bunu isteğe bağlı bir Plugin olarak tutmak, hiç ihtiyaç duymayan kurulumlarda
-ayrıştırıcı bağımlılıklarını veya CLI yüzeyini çekirdeğe koymadan güçlü
-kullanıcılara adresleme zeminini sağlar.
+Bu, değişikliğin küçük, denetlenebilir ve tekrarlanabilir kalması gereken bakımcı iş akışları için önemlidir: tek bir değeri inceleyin, eşleşen kayıtları bulun, bir yazma işlemini deneme modunda çalıştırın ve ardından yorumlara, satır sonlarına ve yakındaki biçimlendirmeye dokunmadan yalnızca o yaprak öğeyi uygulayın.
 
 Etkinleştirmenin yaygın nedenleri:
 
-- **Yerel otomasyon**: kabuk betikleri, ayrı markdown, JSONC, JSONL ve YAML
-  ayrıştırma kodu taşımak yerine `openclaw path … --json` ile tek bir çalışma
-  alanı değerini çözümleyebilir veya güncelleyebilir.
-- **Ajan tarafından görülebilen düzenlemeler**: bir ajan, yazmadan önce
-  adreslenen tek bir yaprak için dry-run farkını gösterebilir; bu, serbest
-  biçimli bir dosya yeniden yazımından daha kolay incelenir.
-- **Düzenleyici entegrasyonları**: bir düzenleyici, başlık metninden tahmin
-  yürütmeden `oc://AGENTS.md/tools/gh` adresini kesin markdown düğümüne ve satır
-  numarasına eşleyebilir.
-- **Tanılama**: `emit`, bir dosyayı ayrıştırıcı ve yayıcı üzerinden gidiş
-  dönüşe sokar; böylece otomatik düzenlemelere güvenmeden önce bir dosya türünün
-  bayt düzeyinde kararlı olup olmadığını kontrol edebilirsiniz.
-
-Somut örnekler:
+- **Yerel otomasyon**: kabuk betikleri, ayrı markdown, JSONC, JSONL ve YAML ayrıştırma kodları taşımak yerine `openclaw path … --json` ile tek bir çalışma alanı değerini çözümler veya günceller.
+- **Ajan tarafından görülebilen düzenlemeler**: bir ajan, yazmadan önce adreslenmiş tek bir yaprak öğe için deneme modu farkını gösterir; bunu incelemek serbest biçimli bir dosya yeniden yazımını incelemekten daha kolaydır.
+- **Düzenleyici entegrasyonları**: bir düzenleyici, başlık metninden tahminde bulunmadan `oc://AGENTS.md/tools/gh` adresini tam markdown düğümü ve satır numarasıyla eşler.
+- **Tanılama**: `emit`, bir dosyayı ayrıştırıcı ve çıktı üretici üzerinden gidiş-dönüş işlemine tabi tutar; böylece otomatik düzenlemelere güvenmeden önce dosya türünün bayt düzeyinde kararlı olup olmadığını denetleyebilirsiniz.
 
 ```bash
-# Is the GitHub plugin enabled in this config?
+# GitHub Plugin’i bu yapılandırmada etkin mi?
 openclaw path resolve 'oc://config.jsonc/plugins/github/enabled' --json
 
-# Which tool-call names appear in this session log?
+# Bu oturum günlüğünde hangi araç çağrısı adları görünüyor?
 openclaw path find 'oc://session.jsonl/[event=tool_call]/name' --json
 
-# What bytes would this tiny config edit write?
+# Bu küçük yapılandırma düzenlemesi hangi baytları yazar?
 openclaw path set 'oc://config.jsonc/plugins/github/enabled' 'true' --dry-run
 ```
 
-Plugin, bilinçli olarak daha üst düzey semantiklerin sahibi değildir. Bellek
-plugin'leri hâlâ bellek yazmalarının sahibidir, yapılandırma komutları hâlâ tam
-yapılandırma yönetiminin sahibidir ve LKG mantığı hâlâ geri yükleme/yükseltme
-işlemlerinin sahibidir. `oc-path`, bu üst düzey araçların etrafında
-kurulabileceği dar adresleme ve bayt koruyan dosya işlemi katmanıdır.
+`oc-path`, kasıtlı olarak daha üst düzey anlamların sahibi değildir. Bellek Plugin’leri bellek yazma işlemlerinin, yapılandırma komutları tam yapılandırma yönetiminin ve bilinen son iyi (LKG) yapılandırma kurtarma mekanizması da geri yükleme/yükseltme işlemlerinin sahibi olmaya devam eder. `oc-path`, bu üst düzey araçların çevresinde oluşturulabileceği dar kapsamlı adresleme ve bayt korumalı dosya işlemi katmanıdır.
 
-## Nerede çalışır
+## Nerede çalışır?
 
-Plugin, komutu çağırdığınız ana makinede **`openclaw` CLI'sinin içinde süreç içi
-olarak** çalışır. Çalışan bir Gateway gerektirmez ve herhangi bir ağ soketi
-açmaz; her fiil, işaret ettiğiniz bir dosya üzerinde saf bir dönüşümdür.
+Plugin, komutu çağırdığınız ana makinedeki `openclaw` CLI’sinin **işlem içi ortamında** çalışır. Çalışan bir Gateway gerektirmez ve herhangi bir ağ soketi açmaz; her komut, gösterdiğiniz dosya üzerinde gerçekleştirilen saf bir dönüşümdür.
 
-Plugin metaverisi `extensions/oc-path/openclaw.plugin.json` içinde bulunur:
+Plugin meta verileri `extensions/oc-path/openclaw.plugin.json` içinde bulunur:
 
 ```json
 {
@@ -105,20 +70,15 @@ Plugin metaverisi `extensions/oc-path/openclaw.plugin.json` içinde bulunur:
 }
 ```
 
-`onStartup: false`, Plugin'i Gateway sıcak yolunun dışında tutar. `onCommands:
-["path"]`, CLI'ye `openclaw path …` komutunu ilk kez çalıştırdığınızda Plugin'i
-tembel olarak yüklemesini söyler; böylece fiili hiç kullanmayan kurulumlar
-herhangi bir maliyet ödemez.
+`onStartup: false`, Plugin’i Gateway başlatma yolunun dışında tutar. `commandAliases` ve `activation.onCommands`, `openclaw path …` komutunu ilk kez çalıştırdığınızda CLI’ye Plugin’i gecikmeli olarak yüklemesini bildirir; böylece komutu hiç kullanmayan kurulumlarda herhangi bir maliyet oluşmaz.
 
-## Etkinleştir
+## Etkinleştirme
 
 ```bash
 openclaw plugins enable oc-path
 ```
 
-Yeni durumun manifest anlık görüntüsüne yansıması için Gateway'i (çalıştırıyorsanız)
-yeniden başlatın. Yalın `openclaw path` çağrıları aynı ana makinede hemen
-çalışır; CLI, Plugin'i ihtiyaç üzerine yükler.
+Bildirim anlık görüntüsünün yeni durumu algılaması için Gateway’i (çalıştırıyorsanız) yeniden başlatın. Aynı ana makinedeki yalın `openclaw path` çağrıları hemen çalışır; CLI, Plugin’i talep üzerine yükler.
 
 Şununla devre dışı bırakın:
 
@@ -128,55 +88,40 @@ openclaw plugins disable oc-path
 
 ## Bağımlılıklar
 
-Tüm ayrıştırıcı bağımlılıkları Plugin'e yereldir; `oc-path`'i etkinleştirmek,
-çekirdek çalışma zamanına yeni paketler çekmez:
+Tüm ayrıştırıcı bağımlılıkları Plugin’e özeldir; `oc-path`’i etkinleştirmek çekirdek çalışma zamanına yeni paketler eklemez:
 
-| Bağımlılık     | Amaç                                                                 |
-| -------------- | -------------------------------------------------------------------- |
-| `commander`    | `resolve`, `find`, `set`, `validate`, `emit` için alt komut bağlama. |
-| `jsonc-parser` | Yorumlar ve sondaki virgüller korunarak JSONC ayrıştırma + yaprak düzenlemeleri. |
-| `markdown-it`  | Bölüm / öğe / alan modeli için Markdown tokenizasyonu.               |
-| `yaml`         | Yorumlar ve akış stili korunarak YAML `Document` ayrıştırma / yayma / düzenleme. |
+| Bağımlılık     | Amaç                                                                                      |
+| -------------- | ----------------------------------------------------------------------------------------- |
+| `commander`    | `resolve`, `find`, `set`, `validate`, `emit` alt komutlarının bağlanması.                  |
+| `jsonc-parser` | Yorumları ve sondaki virgülleri koruyarak JSONC ayrıştırma ve yaprak düzenlemeleri.        |
+| `markdown-it`  | Bölüm / öğe / alan modeli için Markdown belirteçlerine ayırma.                             |
+| `yaml`         | Yorumları ve akış stilini koruyarak YAML `Document` ayrıştırma / üretme / düzenleme.       |
 
-JSONL elle yazılmış olarak kalır; satır odaklı ayrıştırma herhangi bir
-bağımlılıktan daha basittir ve satır başına JSONC ayrıştırması zaten
-`jsonc-parser` üzerinden geçer.
+JSONL elle gerçekleştirilmiş olarak kalır: satır odaklı ayrıştırma herhangi bir bağımlılığı kullanmaktan daha basittir ve satır başına ayrıştırma zaten `jsonc-parser` üzerinden geçer.
 
-## Ne sağlar
+## Sağladıkları
 
 | Yüzey                          | Sağlayan                                                |
 | ------------------------------ | ------------------------------------------------------- |
 | `openclaw path` CLI            | `extensions/oc-path/cli-registration.ts`                |
-| `oc://` ayrıştırıcı / biçimleyici | `extensions/oc-path/src/oc-path/oc-path.ts`             |
-| Tür başına ayrıştırma / yayma / düzenleme | `extensions/oc-path/src/oc-path/{md,jsonc,jsonl,yaml}`  |
-| Evrensel resolve / find / set  | `extensions/oc-path/src/oc-path/{resolve,find,edit}.ts` |
-| Redaksiyon sentinel koruması   | `extensions/oc-path/src/oc-path/sentinel.ts`            |
+| `oc://` ayrıştırıcı / biçimleyici | `extensions/oc-path/src/oc-path/oc-path.ts`          |
+| Türe göre ayrıştırma / üretme / düzenleme | `extensions/oc-path/src/oc-path/{md,jsonc,jsonl,yaml}` |
+| Evrensel çözümleme / bulma / ayarlama | `extensions/oc-path/src/oc-path/{resolve,find,edit}.ts` |
+| Redaksiyon belirteci koruması  | `extensions/oc-path/src/oc-path/sentinel.ts`            |
 
-CLI bugün tek genel yüzeydir. Zemin fiilleri Plugin'e özeldir; tüketiciler CLI'yi
-kullanır (veya SDK'ye karşı kendi Plugin'lerini oluşturur).
+Günümüzde tek genel kullanıma açık yüzey CLI’dir. Altyapı komutları Plugin’e özeldir; tüketiciler CLI’yi kullanır (veya SDK’ye karşı kendi Plugin’lerini oluşturur).
 
-## Diğer plugin'lerle ilişki
+## Diğer Plugin’lerle ilişkisi
 
-- **`memory-*`**: bellek yazmaları `oc-path` üzerinden değil, bellek plugin'leri
-  üzerinden geçer. `oc-path` genel amaçlı bir dosya zeminidir; bellek
-  plugin'leri kendi semantiklerini bunun üzerine katmanlar.
-- **LKG**: `path`, Last-Known-Good yapılandırma geri yüklemesi hakkında bilgi
-  sahibi değildir. Bir dosya LKG tarafından izleniyorsa, yükseltme mi yoksa
-  kurtarma mı yapılacağına bir sonraki `observe` çağrısı karar verir; LKG
-  yükseltme/kurtarma yaşam döngüsü üzerinden atomik çoklu set için `set --batch`,
-  LKG kurtarma zeminiyle birlikte planlanmaktadır.
+- **`memory-*`**: bellek yazma işlemleri `oc-path` üzerinden değil, bellek Plugin’leri üzerinden gerçekleştirilir. `oc-path` genel amaçlı bir dosya altyapısıdır; bellek Plugin’leri kendi anlamlarını bunun üzerine katmanlar.
+- **LKG**: `path`, bilinen son iyi yapılandırmanın geri yüklenmesi hakkında bilgi sahibi değildir. `path` üzerinden düzenlediğiniz bir dosya LKG tarafından da izleniyorsa bir sonraki yapılandırma gözlem döngüsü dosyanın yükseltilmesine veya kurtarılmasına karar verir; bir `path` düzenlemesini o dosyaya yapılan diğer tüm doğrudan yazma işlemleriyle aynı şekilde değerlendirin.
 
 ## Güvenlik
 
-`set`, ham baytları zeminin yayma yolu üzerinden yazar; bu yol redaksiyon
-sentinel korumasını otomatik olarak uygular. `__OPENCLAW_REDACTED__` taşıyan
-(verbatim veya alt dize olarak) bir yaprak, yazma zamanında `OC_EMIT_SENTINEL`
-ile reddedilir. CLI ayrıca yazdırdığı insan veya JSON çıktılarından gerçek
-sentinel değerini temizler ve onu `[REDACTED]` ile değiştirir; böylece terminal
-kayıtları ve işlem hatları işaretçiyi asla sızdırmaz.
+`set`, redaksiyon belirteci korumasını otomatik olarak uygulayan altyapının çıktı üretme yolu üzerinden ham baytlar yazar. `__OPENCLAW_REDACTED__` değerini (aynen veya bir alt dize olarak) taşıyan bir yaprak öğenin yazılması, yazma sırasında `OC_EMIT_SENTINEL` hatasıyla reddedilir. CLI ayrıca yazdırdığı insan tarafından okunabilir veya JSON biçimindeki tüm çıktılardan değişmez belirteci temizleyerek `[REDACTED]` ile değiştirir; böylece terminal kayıtları ve işlem hatları belirteci hiçbir zaman sızdırmaz.
 
-## İlgili
+## İlgili içerikler
 
 - [`openclaw path` CLI başvurusu](/tr/cli/path)
-- [Plugin'leri yönetme](/tr/plugins/manage-plugins)
+- [Plugin’leri yönetme](/tr/plugins/manage-plugins)
 - [Plugin oluşturma](/tr/plugins/building-plugins)

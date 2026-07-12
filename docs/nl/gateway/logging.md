@@ -1,155 +1,124 @@
 ---
 read_when:
-    - Loguitvoer of -indelingen wijzigen
+    - Logboekuitvoer of -indelingen wijzigen
     - CLI- of Gateway-uitvoer debuggen
-summary: Loggingsoppervlakken, bestandslogs, WS-logstijlen en console-opmaak
+summary: Logboekoppervlakken, bestandslogboeken, WS-logboekstijlen en consoleopmaak
 title: Gateway-logboekregistratie
 x-i18n:
-    generated_at: "2026-06-27T17:35:04Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:54:22Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: dde5e589bb48cd8c41ac6dd0d74780fec1cc1ee79d82d433b4e7c7450dc5c8b6
+    source_hash: 6717be5eac3dfc1acf36b2f21b049d46c7fc3678945295b10ae69781d89d35ad
     source_path: gateway/logging.md
     workflow: 16
 ---
 
-# Logging
+# Logboekregistratie
 
-Voor een gebruikersgericht overzicht (CLI + Control UI + configuratie), zie [/logging](/nl/logging).
+Zie [/logging](/nl/logging) voor een gebruikersgericht overzicht (CLI + Control UI + configuratie).
 
-OpenClaw heeft twee log-"oppervlakken":
+OpenClaw heeft twee logboekoppervlakken:
 
-- **Console-uitvoer** (wat je ziet in de terminal / Debug UI).
-- **Bestandslogs** (JSON-regels) geschreven door de Gateway logger.
+- **Console-uitvoer** - wat u in de terminal/Debug UI ziet.
+- **Bestandslogboeken** - JSON-regels die door de Gateway-logger worden geschreven.
 
-Bij het opstarten logt de Gateway het opgeloste standaardmodel voor de agent samen met de
-modusstandaarden die nieuwe sessies beinvloeden, bijvoorbeeld:
+Bij het opstarten registreert de Gateway het bepaalde standaardmodel van de agent plus de modusstandaarden die van invloed zijn op nieuwe sessies:
 
 ```text
-agent model: openai/gpt-5.5 (thinking=medium, fast=on)
+agent model: openai/gpt-5.6-sol (thinking=medium, fast=on)
 ```
 
-`thinking` komt uit de standaardagent, modelparameters of globale agentstandaard;
-wanneer dit niet is ingesteld, toont de opstartsamenvatting `medium`. `fast` komt uit de
-standaardagent of modelparameters voor `fastMode`.
+`thinking` is afkomstig van de standaardagent, modelparameters of de algemene agentstandaard; als dit niet is ingesteld, wordt `medium` weergegeven. `fast` is afkomstig van de standaardagent of de `fastMode`-parameters van het model.
 
-## Logger op basis van bestanden
+## Bestandslogger
 
-- Het standaard roterende logbestand staat onder `/tmp/openclaw/` (een bestand per dag): `openclaw-YYYY-MM-DD.log`
-  - De datum gebruikt de lokale tijdzone van de Gateway host.
-- Actieve logbestanden roteren bij `logging.maxFileBytes` (standaard: 100 MB), waarbij
-  maximaal vijf genummerde archieven worden bewaard en er naar een nieuw actief bestand wordt geschreven.
-- Het pad en niveau van het logbestand kunnen worden geconfigureerd via `~/.openclaw/openclaw.json`:
-  - `logging.file`
-  - `logging.level`
+- Het standaard roterende logbestand staat onder `/tmp/openclaw/` (één bestand per dag): `openclaw-YYYY-MM-DD.log`, gedateerd volgens de lokale tijdzone van de Gateway-host. Als die map onveilig of niet beschrijfbaar is (verkeerde eigenaar, door iedereen beschrijfbaar of een symbolische koppeling), valt OpenClaw terug op een gebruikersspecifiek pad `os.tmpdir()/openclaw-<uid>`; op Windows wordt altijd deze terugvaloptie voor de tijdelijke OS-map gebruikt.
+- Actieve logbestanden roteren bij `logging.maxFileBytes` (standaard: 100 MB), waarbij maximaal vijf genummerde archieven (`.1` tot en met `.5`) worden bewaard en het schrijven wordt voortgezet in een nieuw actief bestand.
+- Configureer het pad en niveau van het logbestand via `~/.openclaw/openclaw.json`: `logging.file`, `logging.level`.
+- De bestandsindeling is één JSON-object per regel.
 
-De bestandsindeling is een JSON-object per regel.
+Codepaden voor gesprekken, realtime spraak en beheerde ruimten gebruiken de gedeelde bestandslogger voor begrensde levenscyclusregistraties die bedoeld zijn voor operationele foutopsporing en export van OTLP-logboekregistraties. Transcripttekst, audiopayloads, beurt-ID's, oproep-ID's en item-ID's van providers worden nooit naar de logboekregistratie gekopieerd.
 
-Codepaden voor Talk, realtime spraak en beheerde ruimtes gebruiken de gedeelde bestandslogger voor
-begrensde levenscyclusrecords. Deze records zijn bedoeld voor operationele debugging
-en OTLP-logexport; transcripttekst, audiopayloads, turn-id's, call-id's en
-provider item-id's worden niet naar het logrecord gekopieerd.
-
-Het tabblad Logs in de Control UI volgt dit bestand via de Gateway (`logs.tail`).
-De CLI kan hetzelfde doen:
+Het tabblad Logs van de Control UI volgt dit bestand via de Gateway (`logs.tail`). De CLI doet hetzelfde:
 
 ```bash
 openclaw logs --follow
 ```
 
-**Verbose versus logniveaus**
+### Uitgebreide uitvoer versus logboekniveaus
 
-- **Bestandslogs** worden uitsluitend beheerd door `logging.level`.
-- `--verbose` beinvloedt alleen **console-uitgebreidheid** (en WS-logstijl); het verhoogt het bestandslogniveau **niet**.
-- Stel `logging.level` in op `debug` of `trace` om details die alleen in verbose-modus verschijnen in bestandslogs vast te leggen.
-- Trace-logging bevat ook diagnostische timingsamenvattingen voor geselecteerde kritieke paden,
-  zoals de voorbereiding van plugin-toolfactories. Zie
-  [/tools/plugin#slow-plugin-tool-setup](/nl/tools/plugin#slow-plugin-tool-setup).
+- **Bestandslogboeken** worden uitsluitend beheerd door `logging.level`.
+- `--verbose` beïnvloedt alleen de **uitvoerigheid van de console** (en de WS-logboekstijl) - het verhoogt het niveau van het bestandslogboek **niet**.
+- Stel `logging.level` in op `debug` of `trace` om details die alleen bij uitgebreide uitvoer beschikbaar zijn in bestandslogboeken vast te leggen.
+- Trace-logboekregistratie bevat ook diagnostische tijdsamenvattingen voor geselecteerde intensief gebruikte codepaden, zoals de voorbereiding van de toolfactory van een Plugin. Zie [/tools/plugin#slow-plugin-tool-setup](/nl/tools/plugin#slow-plugin-tool-setup).
 
-## Consolevastlegging
+## Console vastleggen
 
-De CLI legt `console.log/info/warn/error/debug/trace` vast en schrijft deze naar bestandslogs,
-terwijl ze nog steeds naar stdout/stderr worden afgedrukt.
+De CLI legt `console.log/info/warn/error/debug/trace` vast, schrijft deze naar bestandslogboeken en drukt ze ook af naar stdout/stderr.
 
-Je kunt de uitgebreidheid van de console onafhankelijk afstemmen via:
+Stel de uitvoerigheid van de console onafhankelijk in:
 
 - `logging.consoleLevel` (standaard `info`)
-- `logging.consoleStyle` (`pretty` | `compact` | `json`)
+- `logging.consoleStyle` (`pretty` | `compact` | `json`; standaard `pretty` op een TTY, anders `compact`)
 
 ## Redactie
 
-OpenClaw kan gevoelige tokens maskeren voordat log- of transcriptuitvoer het
-proces verlaat. Dit redactiebeleid voor logging wordt toegepast op console-, bestandslog-, OTLP-
-logrecord- en sessietranscript-tekstuitgangen, zodat overeenkomende geheime waarden worden
-gemaskeerd voordat JSONL-regels of berichten naar schijf worden geschreven.
+OpenClaw maskeert gevoelige tokens voordat logboek- of transcriptuitvoer het proces verlaat. Dit redactiebeleid is van toepassing op tekstuitvoer naar de console, bestandslogboeken, OTLP-logboekregistraties en sessietranscripten, zodat overeenkomende geheime waarden worden gemaskeerd voordat JSONL-regels of berichten naar schijf worden geschreven.
 
 - `logging.redactSensitive`: `off` | `tools` (standaard: `tools`)
-- `logging.redactPatterns`: array van regex-strings (overschrijft standaarden)
-  - Gebruik ruwe regex-strings (automatisch `gi`), of `/pattern/flags` als je aangepaste flags nodig hebt.
-  - Overeenkomsten worden gemaskeerd door de eerste 6 + laatste 4 tekens te behouden (lengte >= 18), anders `***`.
-  - Standaarden dekken gangbare sleuteltoewijzingen, CLI-flags, JSON-velden, bearer-headers, PEM-blokken, populaire tokenprefixen en veldnamen voor betaalgegevens zoals kaartnummer, CVC/CVV, gedeeld betalingstoken en betaalreferentie.
+- `logging.redactPatterns`: matrix met regex-tekenreeksen (overschrijft de standaardwaarden)
+  - Gebruik onbewerkte regex-tekenreeksen (automatisch `gi`) of `/pattern/flags` voor aangepaste vlaggen.
+  - Overeenkomsten worden gemaskeerd met behoud van de eerste 6 en laatste 4 tekens (waarden van 18 tekens of langer); kortere waarden worden `***`.
+  - De standaardwaarden omvatten veelvoorkomende sleuteltoewijzingen, CLI-vlaggen, JSON-velden, bearer-headers, PEM-blokken, populaire tokenvoorvoegsels van leveranciers en veldnamen voor betaalreferenties (kaartnummer, CVC/CVV, gedeeld betalingstoken, betaalreferentie).
 
-Sommige veiligheidsgrenzen redigeren altijd, ongeacht `logging.redactSensitive`.
-Dat omvat tool-call-events van de Control UI, tooluitvoer van `sessions_history`,
-diagnostische supportexports, providerfoutobservaties, weergave van exec-goedkeuringsopdrachten
-en Gateway WebSocket-protocollogs. Deze oppervlakken kunnen nog steeds
-`logging.redactPatterns` als aanvullende patronen gebruiken, maar `redactSensitive: "off"`
-zorgt er niet voor dat ze ruwe geheimen uitsturen.
+Sommige veiligheidsgrenzen redigeren altijd, ongeacht `logging.redactSensitive`: toolaanroepgebeurtenissen van de Control UI, tooluitvoer van `sessions_history`, diagnostische ondersteuningsexports, waarnemingen van providerfouten, weergave van opdrachten voor uitvoeringsgoedkeuring en WebSocket-protocollogboeken van de Gateway. Deze oppervlakken respecteren `logging.redactPatterns` nog steeds als aanvullende patronen, maar `redactSensitive: "off"` zorgt er niet voor dat ze onbewerkte geheimen uitvoeren.
 
-## Gateway WebSocket-logs
+## WebSocket-logboeken van de Gateway
 
-De Gateway drukt WebSocket-protocollogs af in twee modi:
+De Gateway drukt WebSocket-protocollogboeken in twee modi af:
 
-- **Normale modus (geen `--verbose`)**: alleen "interessante" RPC-resultaten worden afgedrukt:
-  - fouten (`ok=false`)
-  - trage calls (standaarddrempel: `>= 50ms`)
-  - parseerfouten
-- **Verbose-modus (`--verbose`)**: drukt al het WS-aanvraag-/antwoordverkeer af.
+- **Normale modus (zonder `--verbose`)**: alleen ‘interessante’ RPC-resultaten worden afgedrukt - fouten (`ok=false`), trage aanroepen (standaarddrempel: `>= 50ms`) en parseringsfouten.
+- **Uitgebreide modus (`--verbose`)**: drukt al het WS-aanvraag-/antwoordverkeer af.
 
-### WS-logstijl
+### WS-logboekstijl
 
-`openclaw gateway` ondersteunt een stijlschakelaar per Gateway:
+`openclaw gateway` ondersteunt een stijloptie per Gateway:
 
-- `--ws-log auto` (standaard): normale modus is geoptimaliseerd; verbose-modus gebruikt compacte uitvoer
-- `--ws-log compact`: compacte uitvoer (gekoppeld verzoek/antwoord) wanneer verbose
-- `--ws-log full`: volledige uitvoer per frame wanneer verbose
-- `--compact`: alias voor `--ws-log compact`
-
-Voorbeelden:
+- `--ws-log auto` (standaard): de normale modus is geoptimaliseerd; de uitgebreide modus gebruikt compacte uitvoer.
+- `--ws-log compact`: compacte uitvoer (gekoppelde aanvraag/antwoord) in de uitgebreide modus.
+- `--ws-log full`: volledige uitvoer per frame in de uitgebreide modus.
+- `--compact`: alias voor `--ws-log compact`.
 
 ```bash
-# optimized (only errors/slow)
+# geoptimaliseerd (alleen fouten/traag)
 openclaw gateway
 
-# show all WS traffic (paired)
+# al het WS-verkeer tonen (gekoppeld)
 openclaw gateway --verbose --ws-log compact
 
-# show all WS traffic (full meta)
+# al het WS-verkeer tonen (volledige metagegevens)
 openclaw gateway --verbose --ws-log full
 ```
 
-## Consoleopmaak (subsysteemlogging)
+## Consoleopmaak (logboekregistratie per subsysteem)
 
-De consoleformatter is **TTY-bewust** en drukt consistente, geprefixte regels af.
-Subsysteemloggers houden uitvoer gegroepeerd en scanbaar.
+De consoleformatter is **TTY-bewust** en drukt consistente regels met voorvoegsels af. Loggers voor subsysteem houden de uitvoer gegroepeerd en overzichtelijk:
 
-Gedrag:
+- **Voorvoegsels voor subsysteem** op elke regel (bijvoorbeeld `[gateway]`, `[canvas]`, `[tailscale]`).
+- **Kleuren voor subsysteem** (stabiel per subsysteem, gehasht op basis van de naam) plus niveaukleuren.
+- **Kleur wanneer de uitvoer een TTY is** of de omgeving op een uitgebreide terminal lijkt (`TERM`/`COLORTERM`/`TERM_PROGRAM`); respecteert `NO_COLOR` en `FORCE_COLOR`.
+- **Verkorte voorvoegsels voor subsysteem**: verwijdert een vooraanstaand segment `gateway/`, `channels/` of `providers/` en behoudt daarna maximaal de laatste 2 resterende segmenten (bijvoorbeeld `channels/turn/kernel` wordt weergegeven als `turn/kernel`). Bekende kanaalsubsystemen (`telegram`, `whatsapp`, `slack`, enzovoort) worden altijd beperkt tot alleen de kanaalnaam.
+- **Subloggers per subsysteem** (automatisch voorvoegsel + gestructureerd veld `{ subsystem }`).
+- **`logRaw()`** voor QR-/UX-uitvoer (geen voorvoegsel, geen opmaak).
+- **Consolestijlen**: `pretty` | `compact` | `json`.
+- **Het niveau voor consolelogboeken** staat los van het niveau voor bestandslogboeken (het bestand behoudt alle details wanneer `logging.level` `debug`/`trace` is).
+- **WhatsApp-berichtinhoud** wordt geregistreerd op `debug`-niveau (gebruik `--verbose` om deze te zien).
 
-- **Subsysteemprefixen** op elke regel (bijv. `[gateway]`, `[canvas]`, `[tailscale]`)
-- **Subsysteemkleuren** (stabiel per subsysteem) plus niveaukleuren
-- **Kleur wanneer uitvoer een TTY is of de omgeving op een rijke terminal lijkt** (`TERM`/`COLORTERM`/`TERM_PROGRAM`), respecteert `NO_COLOR`
-- **Verkorte subsysteemprefixen**: laat voorloop `gateway/` + `channels/` vallen, behoudt de laatste 2 segmenten (bijv. `whatsapp/outbound`)
-- **Subloggers per subsysteem** (automatisch prefix + gestructureerd veld `{ subsystem }`)
-- **`logRaw()`** voor QR/UX-uitvoer (geen prefix, geen opmaak)
-- **Consolestijlen** (bijv. `pretty | compact | json`)
-- **Consolelogniveau** los van bestandslogniveau (bestand behoudt volledige details wanneer `logging.level` is ingesteld op `debug`/`trace`)
-- **WhatsApp-berichtinhoud** wordt gelogd op `debug` (gebruik `--verbose` om deze te zien)
-
-Dit houdt bestaande bestandslogs stabiel terwijl interactieve uitvoer scanbaar wordt.
+Hierdoor blijven bestandslogboeken stabiel, terwijl interactieve uitvoer overzichtelijk blijft.
 
 ## Gerelateerd
 
-- [Logging](/nl/logging)
+- [Logboekregistratie](/nl/logging)
 - [OpenTelemetry-export](/nl/gateway/opentelemetry)
 - [Diagnostische export](/nl/gateway/diagnostics)

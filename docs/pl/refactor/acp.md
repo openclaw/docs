@@ -1,66 +1,65 @@
 ---
 read_when:
-    - Refaktoryzacja cyklu życia sesji ACP lub czyszczenia procesu ACPX
-    - Debugowanie osieroconych procesów ACPX, ponownego użycia PID lub bezpieczeństwa czyszczenia w konfiguracji z wieloma Gateway
-    - Zmiana widoczności sessions_list dla utworzonych sesji ACP lub sesji podagentów
-    - Projektowanie metadanych własności dla zadań w tle, sesji ACP lub dzierżaw procesów
+    - Refaktoryzacja cyklu życia sesji ACP lub czyszczenia procesów ACPX
+    - Debugowanie osieroconych procesów ACPX, ponownego użycia PID-ów oraz bezpieczeństwa czyszczenia w środowisku z wieloma Gatewayami
+    - Zmiana widoczności sessions_list dla utworzonych sesji ACP lub podagentów
+    - Projektowanie metadanych własności dla zadań działających w tle, sesji ACP lub dzierżaw procesów
 sidebarTitle: ACP lifecycle refactor
-summary: Plan migracji mający na celu jawne określenie własności sesji ACP i procesu ACPX
+summary: Plan migracji w celu jawnego określenia własności sesji ACP i procesu ACPX
 title: Refaktoryzacja cyklu życia ACP
 x-i18n:
-    generated_at: "2026-05-07T13:25:18Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:32:55Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: b7f4ee447e0b436601c68251c26c1b897a642f6a8b1886d18647b62817996792
     source_path: refactor/acp.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Cykl życia ACP obecnie działa, ale zbyt wiele jego elementów jest wnioskowanych po fakcie.
-Czyszczenie procesów odtwarza własność z PID-ów, ciągów poleceń, ścieżek
-wrapperów i aktywnej tabeli procesów. Widoczność sesji odtwarza własność
-z ciągów kluczy sesji oraz dodatkowych odpytań `sessions.list({ spawnedBy })`.
-To umożliwia wąskie poprawki, ale sprawia też, że łatwo przeoczyć przypadki brzegowe:
-ponowne użycie PID-u, polecenia w cudzysłowach, wnuki adapterów, korzenie stanu wielu Gatewayów,
-`cancel` kontra `close` oraz widoczność `tree` kontra `all` stają się osobnymi
-miejscami do ponownego odkrywania tych samych reguł własności.
+Cykl życia ACP obecnie działa, ale zbyt wiele jego aspektów jest wnioskowanych dopiero po fakcie.
+Oczyszczanie procesów odtwarza własność na podstawie PID-ów, ciągów poleceń, ścieżek
+skryptów opakowujących i bieżącej tabeli procesów. Widoczność sesji odtwarza własność
+na podstawie ciągów kluczy sesji oraz dodatkowych wywołań `sessions.list({ spawnedBy })`.
+Pozwala to wprowadzać precyzyjne poprawki, ale ułatwia też przeoczenie przypadków brzegowych:
+ponowne użycie PID-u, polecenia w cudzysłowach, procesy potomne dalszego stopnia adaptera, katalogi główne stanu wielu Gatewayów,
+`cancel` w porównaniu z `close` oraz widoczność `tree` w porównaniu z `all` stają się osobnymi
+miejscami, w których trzeba na nowo ustalać te same reguły własności.
 
-Ta refaktoryzacja czyni własność pojęciem pierwszorzędnym. Celem nie jest nowa
-powierzchnia produktu ACP; jest nim bezpieczniejszy kontrakt wewnętrzny dla
-istniejących zachowań ACP i ACPX.
+Ta refaktoryzacja nadaje własności pierwszorzędny charakter. Celem nie jest nowy obszar produktu ACP,
+lecz bezpieczniejszy kontrakt wewnętrzny dla istniejącego zachowania ACP i ACPX.
 
 ## Cele
 
-- Czyszczenie nigdy nie wysyła sygnału do procesu, chyba że bieżące dowody z działającego systemu pasują do
-  dzierżawy należącej do OpenClaw.
-- `cancel`, `close` i zbieranie osieroconych procesów przy starcie mają odrębne intencje cyklu życia.
-- `sessions_list`, `sessions_history`, `sessions_send` i kontrole statusu używają
-  tego samego modelu sesji należącej do żądającego.
-- Instalacje z wieloma Gatewayami nie mogą zbierać nawzajem swoich wrapperów ACPX.
+- Oczyszczanie nigdy nie wysyła sygnału do procesu, chyba że bieżące dane z działającego procesu odpowiadają
+  dzierżawie należącej do OpenClaw.
+- `cancel`, `close` i oczyszczanie podczas uruchamiania mają odrębne intencje dotyczące cyklu życia.
+- `sessions_list`, `sessions_history`, `sessions_send` i kontrole stanu używają
+  tego samego modelu sesji należących do żądającego.
+- Instalacje z wieloma Gatewayami nie mogą oczyszczać nawzajem swoich skryptów opakowujących ACPX.
 - Stare rekordy sesji ACPX nadal działają podczas migracji.
-- Runtime pozostaje własnością Pluginu; core nie poznaje szczegółów pakietu ACPX.
+- Środowisko uruchomieniowe pozostaje własnością Pluginu; rdzeń nie poznaje szczegółów pakietu ACPX.
 
 ## Poza zakresem
 
-- Zastąpienie ACPX lub zmiana publicznej powierzchni polecenia `/acp`.
-- Przenoszenie specyficznego dla dostawcy zachowania adaptera ACP do core.
-- Wymaganie od użytkowników ręcznego czyszczenia stanu przed aktualizacją.
-- Sprawienie, aby `cancel` zamykał sesje ACP wielokrotnego użytku.
+- Zastąpienie ACPX lub zmiana publicznego interfejsu polecenia `/acp`.
+- Przenoszenie specyficznego dla dostawcy zachowania adaptera ACP do rdzenia.
+- Wymaganie od użytkowników ręcznego oczyszczenia stanu przed aktualizacją.
+- Powodowanie, że `cancel` zamyka sesje ACP wielokrotnego użytku.
 
 ## Model docelowy
 
 ### Tożsamość instancji Gatewaya
 
-Każdy proces Gateway powinien mieć stabilny identyfikator instancji runtime:
+Każdy proces Gatewaya powinien mieć stabilny identyfikator instancji środowiska uruchomieniowego:
 
 ```ts
 type GatewayInstanceId = string;
 ```
 
-Może być generowany przy starcie Gatewaya i utrwalany w stanie przez okres życia
-tej instalacji. Nie jest sekretem bezpieczeństwa; to dyskryminator własności używany
-do uniknięcia pomylenia procesów ACP jednego Gatewaya z procesami innego Gatewaya.
+Może być generowany podczas uruchamiania Gatewaya i utrwalany w stanie przez cały okres działania
+danej instalacji. Nie jest sekretem bezpieczeństwa; jest wyróżnikiem własności używanym
+w celu uniknięcia pomylenia procesów ACP jednego Gatewaya z procesami innego Gatewaya.
 
 ### Własność sesji ACP
 
@@ -79,8 +78,8 @@ type AcpSessionOwner = {
 };
 ```
 
-Gateway powinien zwracać te pola w wierszach sesji, w których są znane.
-Filtrowanie widoczności powinno być czystą kontrolą na metadanych wiersza:
+Gateway powinien zwracać te pola w wierszach sesji, gdy są znane.
+Filtrowanie widoczności powinno być czystym sprawdzeniem metadanych wiersza:
 
 ```ts
 canSeeSessionRow({
@@ -91,13 +90,13 @@ canSeeSessionRow({
 });
 ```
 
-Usuwa to ukryte dodatkowe wywołania `sessions.list({ spawnedBy })` z kontroli
-widoczności. Uruchomione międzyagentowe dziecko ACP należy do żądającego, ponieważ
-wiersz tak mówi, a nie dlatego, że drugie zapytanie akurat je znajduje.
+Usuwa to ukryte dodatkowe wywołania `sessions.list({ spawnedBy })` z
+kontroli widoczności. Uruchomiona między agentami sesja potomna ACP należy do żądającego, ponieważ
+tak wskazuje wiersz, a nie dlatego, że drugie zapytanie przypadkowo ją odnajduje.
 
 ### Dzierżawy procesów ACPX
 
-Każde uruchomienie wygenerowanego wrappera powinno utworzyć rekord dzierżawy:
+Każde uruchomienie wygenerowanego skryptu opakowującego powinno utworzyć rekord dzierżawy:
 
 ```ts
 type AcpxProcessLease = {
@@ -114,29 +113,29 @@ type AcpxProcessLease = {
 };
 ```
 
-Proces wrappera powinien otrzymać identyfikator dzierżawy i identyfikator instancji Gatewaya
-w swoim środowisku:
+Proces skryptu opakowującego powinien otrzymywać identyfikator dzierżawy i identyfikator instancji Gatewaya w swoim
+środowisku:
 
 ```sh
 OPENCLAW_ACPX_LEASE_ID=...
 OPENCLAW_GATEWAY_INSTANCE_ID=...
 ```
 
-Gdy platforma na to pozwala, weryfikacja powinna preferować metadane działającego procesu,
-których nie można pomylić przez cytowanie polecenia:
+Jeśli platforma na to pozwala, weryfikacja powinna preferować bieżące metadane procesu,
+których nie można pomylić z powodu cudzysłowów w poleceniu:
 
 - główny PID nadal istnieje
-- ścieżka aktywnego wrappera znajduje się pod `wrapperRoot`
-- grupa procesów pasuje do dzierżawy, gdy jest dostępna
-- środowisko zawiera oczekiwany identyfikator dzierżawy, gdy można je odczytać
-- hash polecenia lub ścieżka pliku wykonywalnego pasuje do dzierżawy
+- bieżąca ścieżka skryptu opakowującego znajduje się w `wrapperRoot`
+- grupa procesów odpowiada dzierżawie, jeśli jest dostępna
+- środowisko zawiera oczekiwany identyfikator dzierżawy, jeśli można je odczytać
+- skrót polecenia lub ścieżka pliku wykonywalnego odpowiada dzierżawie
 
-Jeśli działającego procesu nie można zweryfikować, czyszczenie kończy się bez działania.
+Jeśli nie można zweryfikować działającego procesu, oczyszczanie bezpiecznie odmawia działania.
 
 ## Kontroler cyklu życia
 
-Wprowadź jeden kontroler cyklu życia ACPX, który posiada dzierżawy procesów i politykę
-czyszczenia:
+Należy wprowadzić jeden kontroler cyklu życia ACPX, który jest właścicielem dzierżaw procesów i zasad
+oczyszczania:
 
 ```ts
 interface AcpxLifecycleController {
@@ -152,31 +151,31 @@ interface AcpxLifecycleController {
 }
 ```
 
-`cancelTurn` żąda wyłącznie anulowania tury. Nie może zbierać wrapperów ani
-procesów adapterów wielokrotnego użytku.
+`cancelTurn` żąda wyłącznie anulowania tury. Nie może oczyszczać procesów skryptów opakowujących
+ani adapterów wielokrotnego użytku.
 
-`closeSession` może zbierać procesy, ale dopiero po wczytaniu rekordu sesji,
-wczytaniu dzierżawy i zweryfikowaniu, że aktywne drzewo procesów nadal należy do tej
+`closeSession` może przeprowadzać oczyszczanie, ale dopiero po wczytaniu rekordu sesji,
+wczytaniu dzierżawy i zweryfikowaniu, że bieżące drzewo procesów nadal należy do tej
 dzierżawy.
 
-`reapStartupOrphans` zaczyna od otwartych dzierżaw w stanie. Może użyć tabeli procesów
-do znalezienia potomków, ale nie powinien najpierw skanować dowolnych poleceń
-wyglądających jak ACP, a potem decydować, że prawdopodobnie są nasze.
+`reapStartupOrphans` rozpoczyna od otwartych dzierżaw w stanie. Może używać tabeli
+procesów do znajdowania procesów potomnych, ale nie powinien najpierw skanować dowolnych poleceń
+przypominających ACP, a następnie uznawać, że prawdopodobnie należą do nas.
 
-## Kontrakt wrappera
+## Kontrakt skryptu opakowującego
 
-Wygenerowane wrappery powinny pozostać małe. Powinny:
+Generowane skrypty opakowujące powinny pozostać niewielkie. Powinny:
 
-- uruchamiać adapter w grupie procesów, gdy jest to obsługiwane
+- uruchamiać adapter w grupie procesów, jeśli jest to obsługiwane
 - przekazywać zwykłe sygnały zakończenia do grupy procesów
-- wykrywać śmierć rodzica
-- po śmierci rodzica wysłać SIGTERM, a następnie utrzymać wrapper przy życiu do czasu uruchomienia
-  awaryjnego SIGKILL
-- raportować główny PID i identyfikator grupy procesów z powrotem do kontrolera cyklu życia, gdy
-  jest to dostępne
+- wykrywać śmierć procesu nadrzędnego
+- po śmierci procesu nadrzędnego wysyłać SIGTERM, a następnie utrzymywać skrypt opakowujący przy życiu do czasu
+  uruchomienia awaryjnego SIGKILL
+- przekazywać główny PID i identyfikator grupy procesów z powrotem do kontrolera cyklu życia, gdy
+  są dostępne
 
-Wrappery nie powinny decydować o polityce sesji. Wymuszają tylko lokalne czyszczenie
-drzewa procesów dla własnej grupy adaptera.
+Skrypty opakowujące nie powinny decydować o zasadach sesji. Egzekwują jedynie lokalne
+oczyszczanie drzewa procesów własnej grupy adaptera.
 
 ## Kontrakt widoczności sesji
 
@@ -201,107 +200,107 @@ Reguły:
 
 - `self`: tylko sesja żądającego.
 - `tree`: sesja żądającego oraz wiersze należące do żądającego lub uruchomione z jego sesji.
-- `all`: wszystkie wiersze tego samego agenta, międzyagentowe wiersze dozwolone przez a2a oraz należące do żądającego
-  uruchomione międzyagentowe wiersze, nawet gdy ogólne a2a jest wyłączone.
-- `agent`: tylko ten sam agent, chyba że jawna relacja własności mówi, że wiersz
+- `all`: wszystkie wiersze tego samego agenta, wiersze między agentami dozwolone przez a2a oraz należące do żądającego
+  uruchomione wiersze między agentami, nawet gdy ogólne a2a jest wyłączone.
+- `agent`: tylko ten sam agent, chyba że jawna relacja własności wskazuje, że wiersz
   należy do żądającego.
 
-Dzięki temu `tree` i `all` są monotoniczne: `all` nie może ukrywać należącego dziecka,
-które pokazałoby `tree`.
+Dzięki temu `tree` i `all` są monotoniczne: `all` nie może ukrywać należącej do żądającego sesji potomnej, którą
+pokazałoby `tree`.
 
 ## Plan migracji
 
-### Faza 1: Dodanie tożsamości i dzierżaw
+### Etap 1: Dodanie tożsamości i dzierżaw
 
 - Dodaj `gatewayInstanceId` do stanu Gatewaya.
-- Dodaj magazyn dzierżaw ACPX pod katalogiem stanu ACPX.
-- Zapisz dzierżawę przed uruchomieniem wygenerowanego wrappera.
+- Dodaj magazyn dzierżaw ACPX w katalogu stanu ACPX.
+- Zapisuj dzierżawę przed uruchomieniem wygenerowanego skryptu opakowującego.
 - Zapisuj `leaseId` w nowych rekordach sesji ACPX.
-- Zachowaj istniejące pola PID i polecenia dla starych rekordów.
+- Zachowaj istniejące pola PID-u i polecenia dla starych rekordów.
 
-### Faza 2: Czyszczenie oparte najpierw na dzierżawie
+### Etap 2: Oczyszczanie oparte przede wszystkim na dzierżawach
 
-- Zmień czyszczenie przy zamykaniu tak, aby najpierw wczytywało `leaseId`.
-- Zweryfikuj własność działającego procesu względem dzierżawy przed wysłaniem sygnału.
-- Zachowaj bieżący główny PID i awaryjną ścieżkę korzenia wrappera tylko dla rekordów legacy.
-- Oznacz dzierżawy jako `closed` po zweryfikowanym czyszczeniu.
-- Oznacz dzierżawy jako `lost`, gdy proces zniknął przed czyszczeniem.
+- Zmień oczyszczanie przy zamykaniu tak, aby najpierw wczytywało `leaseId`.
+- Przed wysłaniem sygnału zweryfikuj własność działającego procesu względem dzierżawy.
+- Zachowaj bieżący główny PID i mechanizm awaryjny oparty na katalogu głównym skryptów opakowujących tylko dla starszych rekordów.
+- Po zweryfikowanym oczyszczeniu oznacz dzierżawy jako `closed`.
+- Oznacz dzierżawy jako `lost`, gdy proces zniknął przed oczyszczeniem.
 
-### Faza 3: Zbieranie przy starcie oparte najpierw na dzierżawie
+### Etap 3: Oczyszczanie przy uruchamianiu oparte przede wszystkim na dzierżawach
 
-- Zbieranie przy starcie skanuje otwarte dzierżawy.
-- Dla każdej dzierżawy zweryfikuj proces główny i zbierz potomków.
-- Zbieraj zweryfikowane drzewa od dzieci do rodziców.
-- Wygaszaj stare dzierżawy `closed` i `lost` z ograniczonym oknem retencji.
-- Zachowaj skanowanie markerów poleceń tylko jako tymczasową awaryjną ścieżkę legacy, chronioną
-  przez korzeń wrappera i instancję Gatewaya, gdy to możliwe.
+- Oczyszczanie przy uruchamianiu skanuje otwarte dzierżawy.
+- Dla każdej dzierżawy zweryfikuj proces główny i zbierz procesy potomne.
+- Oczyszczaj zweryfikowane drzewa, zaczynając od procesów potomnych.
+- Usuwaj stare dzierżawy `closed` i `lost` po upływie ograniczonego okresu przechowywania.
+- Zachowaj skanowanie znaczników poleceń wyłącznie jako tymczasowy mechanizm awaryjny dla starszych wersji, chroniony w miarę możliwości przez
+  katalog główny skryptów opakowujących i instancję Gatewaya.
 
-### Faza 4: Wiersze własności sesji
+### Etap 4: Wiersze własności sesji
 
 - Dodaj metadane własności do wierszy sesji Gatewaya.
-- Naucz autorów ACPX, subagentów, zadań w tle i magazynu sesji wypełniać
+- Dostosuj komponenty zapisujące ACPX, podagentów, zadania w tle i magazyn sesji, aby uzupełniały
   `ownerSessionKey` lub `spawnedBy`.
 - Przekształć kontrole widoczności sesji tak, aby używały metadanych wierszy.
-- Usuń dodatkowe odpytywania `sessions.list({ spawnedBy })` wykonywane w czasie kontroli widoczności.
+- Usuń dodatkowe wywołania `sessions.list({ spawnedBy })` wykonywane podczas sprawdzania widoczności.
 
-### Faza 5: Usunięcie heurystyk legacy
+### Etap 5: Usunięcie starszych heurystyk
 
-Po jednym oknie wydania:
+Po upływie okresu jednego wydania:
 
-- przestań polegać na zapisanych ciągach poleceń głównych dla czyszczenia ACPX niebędącego legacy
-- usuń skany markerów poleceń przy starcie
-- usuń awaryjne odpytywania list w widoczności
-- zachowaj defensywne zachowanie bez działania dla brakujących lub niemożliwych do zweryfikowania dzierżaw
+- przestań polegać na zapisanych ciągach poleceń procesu głównego przy oczyszczaniu rekordów ACPX, które nie są starszego typu
+- usuń skanowanie znaczników poleceń podczas uruchamiania
+- usuń awaryjne wywołania listy podczas sprawdzania widoczności
+- zachowaj defensywne, bezpiecznie odmawiające działania zachowanie w przypadku brakujących lub niemożliwych do zweryfikowania dzierżaw
 
 ## Testy
 
-Dodaj dwa zestawy sterowane tabelami.
+Dodaj dwa zestawy testów sterowane tabelami.
 
-Symulator cyklu życia procesu:
+Symulator cyklu życia procesów:
 
 - PID ponownie użyty przez niepowiązany proces
-- PID ponownie użyty przez korzeń wrappera innego Gatewaya
-- zapisane polecenie wrappera jest cytowane przez shell, aktywne polecenie `ps` nie jest
-- dziecko adaptera kończy działanie, wnuk pozostaje w grupie procesów
-- awaryjne SIGTERM po śmierci rodzica dochodzi do SIGKILL
-- lista procesów niedostępna
-- nieaktualna dzierżawa z brakującym procesem
-- osierocony proces przy starcie z wrapperem, dzieckiem adaptera i wnukiem
+- PID ponownie użyty przez katalog główny skryptów opakowujących innego Gatewaya
+- zapisane polecenie skryptu opakowującego jest ujęte w cudzysłowy powłoki, a bieżące polecenie `ps` nie
+- proces potomny adaptera kończy działanie, ale proces potomny dalszego stopnia pozostaje w grupie procesów
+- mechanizm awaryjny SIGTERM po śmierci procesu nadrzędnego dochodzi do SIGKILL
+- lista procesów jest niedostępna
+- nieaktualna dzierżawa bez procesu
+- osierocony proces przy uruchamianiu ze skryptem opakowującym, procesem potomnym adaptera i procesem potomnym dalszego stopnia
 
 Macierz widoczności sesji:
 
 - `self`, `tree`, `agent`, `all`
 - a2a włączone i wyłączone
 - wiersz tego samego agenta
-- wiersz międzyagentowy
-- należący do żądającego uruchomiony międzyagentowy wiersz ACP
-- żądający w piaskownicy ograniczony do `tree`
-- akcje list, history, send i status
+- wiersz między agentami
+- należący do żądającego uruchomiony wiersz ACP między agentami
+- żądający działający w piaskownicy, ograniczony do `tree`
+- działania listy, historii, wysyłania i stanu
 
-Ważny niezmiennik: należące do żądającego uruchomione dziecko jest widoczne wszędzie tam,
+Ważny niezmiennik: uruchomiona sesja potomna należąca do żądającego jest widoczna wszędzie tam,
 gdzie skonfigurowana widoczność obejmuje drzewo sesji żądającego, a `all` nie jest
-mniej zdolne niż `tree`.
+mniej funkcjonalne niż `tree`.
 
 ## Uwagi dotyczące zgodności
 
-Stare rekordy sesji mogą nie mieć `leaseId`. Powinny używać ścieżki czyszczenia legacy
-bez działania przy braku pewności:
+Stare rekordy sesji mogą nie mieć `leaseId`. Powinny używać starszej
+ścieżki oczyszczania bezpiecznie odmawiającej działania:
 
 - wymagaj działającego procesu głównego
-- wymagaj własności korzenia wrappera, gdy oczekiwany jest wygenerowany wrapper
-- wymagaj zgodności poleceń dla korzeni niebędących wrapperami
-- nigdy nie wysyłaj sygnału wyłącznie na podstawie nieaktualnych zapisanych metadanych PID
+- wymagaj własności katalogu głównego skryptów opakowujących, gdy oczekiwany jest wygenerowany skrypt opakowujący
+- wymagaj zgodności poleceń w przypadku procesów głównych bez skryptów opakowujących
+- nigdy nie wysyłaj sygnału wyłącznie na podstawie nieaktualnych zapisanych metadanych PID-u
 
-Jeśli rekordu legacy nie można zweryfikować, zostaw go bez zmian. Czyszczenie dzierżaw przy starcie i
-następne okno wydania powinny ostatecznie wycofać awaryjną ścieżkę.
+Jeśli starszego rekordu nie można zweryfikować, pozostaw go bez zmian. Oczyszczanie dzierżaw przy uruchamianiu i
+kolejny okres wydania powinny ostatecznie umożliwić wycofanie tego mechanizmu awaryjnego.
 
 ## Kryteria sukcesu
 
-- Zamknięcie starej lub nieaktualnej sesji ACPX nie może zabić procesu innego Gatewaya.
-- Śmierć rodzica nie zostawia uruchomionych uporczywych wnuków adaptera.
+- Zamknięcie starej lub nieaktualnej sesji ACPX nie może zakończyć procesu innego Gatewaya.
+- Śmierć procesu nadrzędnego nie pozostawia uporczywie działających procesów potomnych dalszego stopnia adaptera.
 - `cancel` przerywa aktywną turę bez zamykania sesji wielokrotnego użytku.
-- `sessions_list` może pokazywać należące do żądającego międzyagentowe dzieci ACP zarówno przy
+- `sessions_list` może wyświetlać należące do żądającego sesje potomne ACP między agentami zarówno w trybie
   `tree`, jak i `all`.
-- Czyszczenie przy starcie jest napędzane dzierżawami, a nie szerokimi skanami ciągów poleceń.
-- Skoncentrowane testy macierzy procesów i widoczności obejmują każdy przypadek brzegowy, który
-  wcześniej wymagał jednorazowych poprawek po przeglądzie.
+- Oczyszczanie przy uruchamianiu jest sterowane dzierżawami, a nie szerokim skanowaniem ciągów poleceń.
+- Ukierunkowane testy macierzy procesów i widoczności obejmują każdy przypadek brzegowy, który
+  wcześniej wymagał doraźnych poprawek podczas przeglądu.

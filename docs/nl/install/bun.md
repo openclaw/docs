@@ -1,26 +1,26 @@
 ---
 read_when:
-    - Je wilt de snelste lokale ontwikkelcyclus (`bun` + watch)
-    - Je loopt tegen problemen met Bun-installatie-, patch- en levenscyclusscripts aan
-summary: 'Bun-workflow (experimenteel): installatie en aandachtspunten vergeleken met pnpm'
+    - Je wilt de snelste lokale ontwikkelcyclus (bun + watch)
+    - Je ondervindt problemen met installatie-, patch- of levenscyclusscripts van Bun
+summary: 'Bun-workflow (experimenteel): installatie en aandachtspunten ten opzichte van pnpm'
 title: Bun (experimenteel)
 x-i18n:
-    generated_at: "2026-06-27T17:41:47Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:59:33Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1c31f2c09f3c1f99ae1a306184a86f2240b0c0f4f655c2759f5aeb6bac6b745a
+    source_hash: b836be354166ceb073d170e472e8b69c3f517e754fe71417df1d85d27a18ae94
     source_path: install/bun.md
     workflow: 16
 ---
 
 <Warning>
-Bun wordt **niet aanbevolen voor Gateway-runtime** (bekende problemen met WhatsApp en Telegram). Gebruik Node voor productie.
+Bun wordt niet aanbevolen voor de Gateway-runtime (bekende problemen met WhatsApp en Telegram). Gebruik Node voor productie.
 </Warning>
 
-Bun is een optionele lokale runtime om TypeScript direct uit te voeren (`bun run ...`, `bun --watch ...`). De standaard pakketbeheerder blijft `pnpm`, dat volledig wordt ondersteund en door documentatietooling wordt gebruikt. Bun kan `pnpm-lock.yaml` niet gebruiken en zal het negeren.
+Bun is een optionele lokale runtime om TypeScript rechtstreeks uit te voeren (`bun run ...`, `bun --watch ...`). De standaardpakketbeheerder blijft `pnpm`, die volledig wordt ondersteund en door de documentatiehulpmiddelen wordt gebruikt. Bun kan `pnpm-lock.yaml` niet gebruiken en negeert dit bestand.
 
-## Installeren
+## Installatie
 
 <Steps>
   <Step title="Afhankelijkheden installeren">
@@ -28,7 +28,7 @@ Bun is een optionele lokale runtime om TypeScript direct uit te voeren (`bun run
     bun install
     ```
 
-    `bun.lock` / `bun.lockb` worden door git genegeerd, dus er is geen repo-ruis. Om het schrijven van lockfiles volledig over te slaan:
+    `bun.lock` / `bun.lockb` worden door Git genegeerd, zodat er geen onnodige wijzigingen in de repository ontstaan. Om het schrijven van lockbestanden volledig over te slaan:
 
     ```sh
     bun install --no-save
@@ -45,23 +45,23 @@ Bun is een optionele lokale runtime om TypeScript direct uit te voeren (`bun run
 
 ## Levenscyclusscripts
 
-Bun blokkeert levenscyclusscripts van afhankelijkheden tenzij ze expliciet worden vertrouwd. Voor deze repo zijn de scripts die vaak worden geblokkeerd niet vereist:
+Bun blokkeert levenscyclusscripts van afhankelijkheden, tenzij ze expliciet worden vertrouwd. Voor deze repository zijn de scripts die doorgaans worden geblokkeerd niet vereist:
 
-- `baileys` `preinstall` -- controleert of Node major >= 20 (OpenClaw gebruikt standaard Node 24 en ondersteunt nog steeds Node 22 LTS, momenteel `22.19+`)
-- `protobufjs` `postinstall` -- geeft waarschuwingen over incompatibele versieschema's (geen buildartefacten)
+- `baileys` `preinstall`: controleert of de hoofdversie van Node >= 20 is (OpenClaw vereist Node 22.19+ of 23.11+, waarbij Node 24 wordt aanbevolen)
+- `protobufjs` `postinstall`: geeft waarschuwingen weer over incompatibele versieschema's (geen buildartefacten)
 
-Als je een runtimeprobleem tegenkomt waarvoor deze scripts nodig zijn, vertrouw ze dan expliciet:
+Als u een runtimeprobleem tegenkomt waarvoor deze scripts nodig zijn, vertrouw ze dan expliciet:
 
 ```sh
 bun pm trust baileys protobufjs
 ```
 
-## Kanttekeningen
+## Aandachtspunten
 
-Sommige scripts hardcoderen pnpm nog steeds (bijvoorbeeld `check:docs`, `ui:*`, `protocol:check`). Voer die voorlopig uit via pnpm.
+Sommige pakketscripts bevatten intern een hardgecodeerde verwijzing naar `pnpm` (bijvoorbeeld `check:docs`, `ui:*`, `protocol:check`). Als u deze via `bun run` uitvoert, wordt alsnog `pnpm` aangeroepen. Voer deze scripts daarom rechtstreeks via `pnpm` uit.
 
 ## Gerelateerd
 
-- [Installatieoverzicht](/nl/install)
+- [Overzicht van de installatie](/nl/install)
 - [Node.js](/nl/install/node)
 - [Bijwerken](/nl/install/updating)

@@ -1,103 +1,85 @@
 ---
 read_when:
-    - Membangun atau men-debug klien node (mode node iOS/Android/macOS)
-    - Menyelidiki kegagalan autentikasi pairing atau bridge
-    - Mengaudit permukaan node yang diekspos oleh gateway
-summary: 'Protokol bridge historis (node lama): TCP JSONL, pairing, RPC terbatas'
-title: Protokol bridge
+    - Menyelidiki kode klien Node lama atau log pemasangan yang diarsipkan
+    - Mengaudit apa saja yang dahulu diekspos oleh antarmuka Node lama
+summary: 'Protokol bridge historis (node lama): JSONL TCP, pemasangan, RPC bercakupan'
+title: Protokol jembatan
 x-i18n:
-    generated_at: "2026-06-27T17:28:11Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:12:28Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 485d18f94b731018c6e0df493068b0b6aceff9afba6bebf1350db63c04cee98c
+    source_hash: 6e8b69c59f2170439f0e7b139bf5bbdb429d7c9d8dde7b36cd64aab63939c95d
     source_path: gateway/bridge-protocol.md
     workflow: 16
 ---
 
 <Warning>
-Jembatan TCP telah **dihapus**. Build OpenClaw saat ini tidak menyertakan listener jembatan dan kunci konfigurasi `bridge.*` tidak lagi ada di skema. Halaman ini dipertahankan hanya sebagai referensi historis. Gunakan [Protokol Gateway](/id/gateway/protocol) untuk semua klien Node/operator.
+Bridge TCP telah **dihapus**. Build OpenClaw saat ini tidak menyertakan listener bridge, dan kunci konfigurasi `bridge.*` tidak lagi ada dalam skema. Halaman ini hanya merupakan referensi historis. Gunakan [protokol Gateway](/id/gateway/protocol) untuk semua klien node/operator.
 </Warning>
 
-## Mengapa ini pernah ada
+## Alasan keberadaannya
 
-- **Batas keamanan**: jembatan mengekspos allowlist kecil alih-alih
-  seluruh permukaan API Gateway.
-- **Pairing + identitas Node**: penerimaan Node dimiliki oleh Gateway dan terikat
-  ke token per Node.
-- **UX penemuan**: Node dapat menemukan Gateway melalui Bonjour di LAN, atau terhubung
-  langsung melalui tailnet.
-- **Loopback WS**: control plane WS penuh tetap lokal kecuali ditunnel melalui SSH.
+- **Batas keamanan**: mengekspos daftar izin terbatas alih-alih seluruh permukaan API Gateway.
+- **Pemasangan + identitas node**: penerimaan node dikelola oleh Gateway dan dikaitkan dengan token per node.
+- **Pengalaman pengguna penemuan**: node dapat menemukan Gateway melalui Bonjour di LAN, atau terhubung langsung melalui tailnet.
+- **WS loopback**: seluruh bidang kendali WS tetap lokal kecuali diteruskan melalui tunnel SSH.
 
-## Transport
+## Transportasi
 
 - TCP, satu objek JSON per baris (JSONL).
-- TLS opsional (ketika `bridge.tls.enabled` bernilai true).
-- Port listener default historis adalah `18790` (build saat ini tidak memulai
-  jembatan TCP).
+- TLS opsional (`bridge.tls.enabled: true`).
+- Port listener bawaannya adalah `18790`.
 
-Ketika TLS diaktifkan, record TXT penemuan menyertakan `bridgeTls=1` plus
-`bridgeTlsSha256` sebagai petunjuk non-rahasia. Perhatikan bahwa record TXT Bonjour/mDNS
-tidak diautentikasi; klien tidak boleh memperlakukan fingerprint yang diiklankan sebagai
-pin otoritatif tanpa niat pengguna yang eksplisit atau verifikasi out-of-band lainnya.
+Saat TLS diaktifkan, rekaman TXT penemuan menyertakan `bridgeTls=1` beserta `bridgeTlsSha256` sebagai petunjuk nonrahasia. Rekaman TXT Bonjour/mDNS tidak diautentikasi; klien tidak dapat memperlakukan sidik jari yang diumumkan sebagai pin otoritatif tanpa verifikasi luar jalur lainnya.
 
-## Handshake + pairing
+## Handshake dan pemasangan
 
-1. Klien mengirim `hello` dengan metadata Node + token (jika sudah dipairing).
-2. Jika belum dipairing, Gateway membalas `error` (`NOT_PAIRED`/`UNAUTHORIZED`).
+1. Klien mengirim `hello` dengan metadata node beserta token (jika sudah dipasangkan).
+2. Jika belum dipasangkan, Gateway membalas `error` (`NOT_PAIRED` / `UNAUTHORIZED`).
 3. Klien mengirim `pair-request`.
 4. Gateway menunggu persetujuan, lalu mengirim `pair-ok` dan `hello-ok`.
 
-Secara historis, `hello-ok` mengembalikan `serverName`; permukaan Plugin yang dihosting kini
-diiklankan melalui `pluginSurfaceUrls`. Canvas/A2UI menggunakan
-`pluginSurfaceUrls.canvas`; alias usang `canvasHostUrl` bukan bagian dari
-protokol yang telah direfaktor.
+`hello-ok` sebelumnya mengembalikan `serverName`; permukaan Plugin yang dihosting kini diumumkan melalui `pluginSurfaceUrls` pada protokol Gateway saat ini (Canvas/A2UI menggunakan `pluginSurfaceUrls.canvas`).
 
-## Frame
+## Bingkai
 
-Klien → Gateway:
+Klien ke Gateway:
 
-- `req` / `res`: RPC Gateway berskop (chat, sesi, konfigurasi, kesehatan, voicewake, skills.bins)
-- `event`: sinyal Node (transkrip suara, permintaan agen, berlangganan chat, siklus hidup exec)
+- `req` / `res`: RPC Gateway dengan cakupan terbatas (obrolan, sesi, konfigurasi, kesehatan, voicewake, skills.bins).
+- `event`: sinyal node (transkrip suara, permintaan agen, langganan obrolan, siklus hidup eksekusi).
 
-Gateway → Klien:
+Gateway ke klien:
 
-- `invoke` / `invoke-res`: perintah Node (`canvas.*`, `camera.*`, `screen.record`,
-  `location.get`, `sms.send`)
-- `event`: pembaruan chat untuk sesi yang dilanggan
-- `ping` / `pong`: keepalive
+- `invoke` / `invoke-res`: perintah node (`canvas.*`, `camera.*`, `screen.record`, `location.get`, `sms.send`).
+- `event`: pembaruan obrolan untuk sesi yang dilanggani.
+- `ping` / `pong`: penjaga koneksi.
 
-Penegakan allowlist lama berada di `src/gateway/server-bridge.ts` (dihapus).
+Pemberlakuan daftar izin berada di `src/gateway/server-bridge.ts` (telah dihapus).
 
-## Peristiwa siklus hidup exec
+## Peristiwa siklus hidup eksekusi
 
-Node dapat memancarkan peristiwa `exec.finished` untuk menampilkan aktivitas `system.run` yang selesai.
-Ini dipetakan ke peristiwa sistem di Gateway. (Node lama mungkin masih memancarkan `exec.started`.)
-Node dapat memancarkan `exec.denied` untuk percobaan `system.run` yang ditolak; Gateway menerima
-peristiwa tersebut sebagai penolakan terminal dan tidak mengantrekan peristiwa sistem atau membangunkan pekerjaan agen.
+Node memancarkan `exec.finished` untuk menampilkan aktivitas `system.run` yang telah selesai, yang dipetakan menjadi peristiwa sistem oleh Gateway (node lama juga dapat memancarkan `exec.started`). `exec.denied` menandai upaya `system.run` yang ditolak sebagai penolakan terminal tanpa mengantrekan peristiwa sistem atau membangunkan pekerjaan agen.
 
-Field payload (semua opsional kecuali disebutkan):
+Kolom muatan (semuanya opsional kecuali dinyatakan lain):
 
-- `sessionKey` (wajib): sesi agen untuk korelasi peristiwa dan, untuk
-  `exec.finished`, pengiriman peristiwa sistem.
-- `runId`: id exec unik untuk pengelompokan.
-- `command`: string perintah mentah atau terformat.
-- `exitCode`, `timedOut`, `success`, `output`: detail penyelesaian (hanya selesai).
-- `reason`: alasan penolakan (hanya ditolak).
+| Kolom                            | Catatan                                                                                                                  |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `sessionKey`                     | Wajib. Sesi agen untuk korelasi peristiwa dan, untuk `exec.finished`, pengiriman peristiwa sistem.                        |
+| `runId`                          | ID eksekusi unik untuk pengelompokan.                                                                                    |
+| `command`                        | String perintah mentah atau yang telah diformat.                                                                         |
+| `exitCode`, `timedOut`, `output` | Detail penyelesaian (hanya untuk yang selesai).                                                                          |
+| `reason`                         | Alasan penolakan (hanya untuk yang ditolak).                                                                             |
 
 ## Penggunaan tailnet historis
 
-- Bind jembatan ke IP tailnet: `bridge.bind: "tailnet"` di
-  `~/.openclaw/openclaw.json` (hanya historis; `bridge.*` tidak lagi valid).
-- Klien terhubung melalui nama MagicDNS atau IP tailnet.
-- Bonjour **tidak** melintasi jaringan; gunakan host/port manual atau DNS-SD area luas
-  saat diperlukan.
+- Ikat bridge ke alamat IP tailnet: `bridge.bind: "tailnet"` dalam `~/.openclaw/openclaw.json` (hanya historis; `bridge.*` tidak lagi merupakan konfigurasi yang valid).
+- Klien terhubung melalui nama MagicDNS atau alamat IP tailnet.
+- Bonjour tidak melintasi jaringan; jika tidak, DNS-SD area luas atau host/port manual diperlukan.
 
-## Versioning
+## Pembuatan versi
 
-Jembatan adalah **v1 implisit** (tanpa negosiasi min/maks). Bagian ini adalah
-referensi historis saja; klien Node/operator saat ini menggunakan WebSocket
-[Protokol Gateway](/id/gateway/protocol).
+Bridge menggunakan v1 implisit, tanpa negosiasi minimum/maksimum. Klien node/operator saat ini menggunakan [protokol Gateway](/id/gateway/protocol) WebSocket, yang menegosiasikan rentang versi protokol.
 
 ## Terkait
 

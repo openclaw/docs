@@ -2,18 +2,19 @@
 summary: Chuyển hướng đến /automation
 title: Cron so với Heartbeat
 x-i18n:
-    generated_at: "2026-05-12T00:56:07Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:41:37Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a93d407245c1dcf2632198c5f1c53406e6b8fc419250ff9901d55e59716c7f0d
+    source_hash: bd1f5b2ee3b965b5788769d4fe1a9c8f1926bbafbc0abc77f15d59cdc00d3c28
     source_path: automation/cron-vs-heartbeat.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Hướng dẫn lựa chọn giữa Cron và Heartbeat nằm trong mục [Tự động hóa](/vi/automation).
+Trang này đã được chuyển. Xem [Tác vụ đã lên lịch (Cron) so với Heartbeat](/vi/automation#scheduled-tasks-cron-vs-heartbeat) để tham khảo bảng quyết định.
 
 ## Liên quan
 
 - [Tác vụ đã lên lịch](/vi/automation/cron-jobs)
+- [Heartbeat](/vi/gateway/heartbeat)
 - [Tác vụ nền](/vi/automation/tasks)

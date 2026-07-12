@@ -1,66 +1,65 @@
 ---
 read_when:
     - Gateway'i LAN, tailnet, Tailscale Serve, Funnel veya ters proxy üzerinden erişime açma
-    - Gerçek mesajlaşma kullanıcılarına izin vermeden önce bir dağıtımı gözden geçirme
-    - Riskli bir uzaktan erişim veya DM yapılandırmasını geri alma
+    - Gerçek mesajlaşma kullanıcılarına izin vermeden önce bir dağıtımın incelenmesi
+    - Riskli bir uzaktan erişim veya doğrudan mesaj yapılandırmasını geri alma
 sidebarTitle: Exposure runbook
-summary: OpenClaw Gateway'i loopback'in ötesine açmadan önce ön kontrol ve geri alma kontrol listesi
-title: Gateway açığa sunma runbook’u
+summary: Bir OpenClaw Gateway'i loopback dışına açmadan önce ön kontrol ve geri alma kontrol listesi
+title: Gateway erişime açma operasyon kılavuzu
 x-i18n:
-    generated_at: "2026-06-28T00:39:08Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T11:48:11Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c5e94cc03b9d79a03eb16aa04bad0fd311b72f27f14182c036832382dbce3d0f
+    source_hash: fb8e66af57e804325afc91281122b822183337177c734efe065c5fc18b175e72
     source_path: gateway/security/exposure-runbook.md
     workflow: 16
 ---
 
 <Warning>
-Gateway'i yalnızca ona kimlerin erişebileceğini, nasıl kimlik doğruladıklarını,
-hangi aracıları tetikleyebileceklerini ve bu aracıların hangi araçları
-kullanabileceğini açıklayabildiğinizde açığa çıkarın. Emin değilseniz,
-yalnızca loopback erişimine dönün ve denetimi yeniden çalıştırın.
+Gateway'i yalnızca ona kimlerin erişebildiğini, bu kişilerin kimliğinin nasıl
+doğrulandığını, hangi ajanları tetikleyebildiklerini ve bu ajanların hangi araçları
+kullanabildiğini açıklayabildikten sonra dış erişime açın. Şüphe durumunda yalnızca
+local loopback erişimine dönün ve denetimi yeniden çalıştırın.
 </Warning>
 
-Bu runbook, daha kapsamlı [Güvenlik](/tr/gateway/security) kılavuzunu uzaktan
-erişim ve mesajlaşma açığa çıkarımı için bir operatör kontrol listesine dönüştürür.
+Bu çalışma kılavuzu, daha kapsamlı [Güvenlik](/tr/gateway/security) rehberini uzaktan erişim ve mesajlaşma dışa açıklığı için bir operatör kontrol listesine dönüştürür.
 
-## Açığa çıkarma desenini seçin
+## Dışa açıklık modelini seçin
 
-İş akışını karşılayan en dar deseni tercih edin.
+İş akışını karşılayan en dar kapsamlı modeli tercih edin.
 
-| Desen                      | Ne zaman önerilir                              | Gerekli kontroller                                                                                  |
-| -------------------------- | --------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| Loopback + SSH tüneli      | Kişisel kullanım, yönetici erişimi, hata ayıklama | `gateway.bind: "loopback"` ayarını koruyun ve `127.0.0.1:18789` için tünel açın                     |
-| Loopback + Tailscale Serve | Control UI/WebSocket için kişisel tailnet erişimi | Gateway'i yalnızca loopback olarak tutun; Tailscale kimlik başlıklarına yalnızca desteklenen yüzeylerde güvenin |
-| Tailnet/LAN bind           | Bilinen cihazlara sahip ayrılmış özel ağ       | Gateway kimlik doğrulaması, güvenlik duvarı izin listesi, herkese açık port yönlendirme yok         |
-| Güvenilir ters proxy       | Gateway önünde kuruluş SSO/OIDC               | `trusted-proxy` kimlik doğrulaması, katı `trustedProxies`, başlık üzerine yazma/sıyırma kuralları, açıkça izin verilen kullanıcılar |
-| Herkese açık internet      | Nadir, yüksek riskli dağıtımlar               | Kimlik farkındalıklı proxy, TLS, hız sınırları, katı izin listeleri, sandbox içindeki non-main oturumlar |
+| Model                      | Önerildiği durum                                 | Gerekli denetimler                                                                                                                          |
+| -------------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Loopback + SSH tüneli      | Kişisel kullanım, yönetici erişimi, hata ayıklama | `gateway.bind: "loopback"` ayarını koruyun ve `127.0.0.1:18789` adresine tünel açın                                                         |
+| Loopback + Tailscale Serve | Control UI/WebSocket'a kişisel tailnet erişimi    | Gateway'i yalnızca loopback üzerinde tutun; Tailscale kimlik üstbilgileri diğer kimlik doğrulama yollarını değil, yalnızca Control UI WebSocket yüzeyini doğrular |
+| Tailnet/LAN bağlama        | Bilinen cihazların bulunduğu özel ağ              | Gateway kimlik doğrulaması, güvenlik duvarı izin listesi, genel bağlantı noktası yönlendirmesi olmaması                                     |
+| Güvenilir ters proxy       | Gateway'in önünde kuruluş SSO/OIDC'si             | `trusted-proxy` kimlik doğrulaması, sıkı `trustedProxies`, üstbilgi üzerine yazma/kaldırma kuralları, açıkça belirtilmiş izinli kullanıcılar |
+| Genel internet             | Nadir, yüksek riskli dağıtımlar                   | Kimlik duyarlı proxy, TLS, hız sınırları, sıkı izin listeleri, korumalı alan içindeki ana olmayan oturumlar                                 |
 
-Gateway'e doğrudan herkese açık port yönlendirmesinden kaçının. Herkese açık
-erişim gerekiyorsa, önüne kimlik farkındalıklı bir proxy koyun ve proxy'yi
-Gateway'e giden tek ağ yolu yapın.
+Gateway'e doğrudan genel bağlantı noktası yönlendirmesinden kaçının. Genel erişim
+gerekiyorsa önüne kimlik duyarlı bir proxy yerleştirin ve Gateway'e giden tek ağ
+yolunun bu proxy olmasını sağlayın.
 
-## Ön uçuş envanteri
+## Ön kontrol envanteri
 
-Bind, proxy, Tailscale veya kanal politikasını değiştirmeden önce bunları kaydedin:
+Bağlama, proxy, Tailscale veya kanal politikasını değiştirmeden önce şunları kaydedin:
 
-- Gateway ana makinesi, OS kullanıcısı ve durum dizini.
-- Gateway URL'si ve bind modu.
-- Kimlik doğrulama modu, token/parola kaynağı veya güvenilir proxy kimlik kaynağı.
-- Etkin tüm kanallar ve DM'leri, grupları veya Webhook'ları kabul edip etmedikleri.
-- Yerel olmayan göndericilerden erişilebilen aracılar.
-- Erişilebilen her aracı için araç profili, sandbox modu ve yükseltilmiş araç politikası.
-- Bu aracıların erişebildiği harici kimlik bilgileri.
-- `~/.openclaw/openclaw.json` ve kimlik bilgileri için yedekleme konumu.
+- Gateway ana makinesi, işletim sistemi kullanıcısı ve durum dizini (varsayılan `~/.openclaw`).
+- Gateway URL'si ve bağlama modu (`gateway.bind`; varsayılan bağlantı noktası `18789`).
+- Kimlik doğrulama modu, belirteç/parola kaynağı veya güvenilir proxy kimlik kaynağı.
+- Etkinleştirilmiş her kanal ve doğrudan mesajları, grupları ya da Webhook'ları kabul edip etmediği.
+- Yerel olmayan göndericilerin erişebildiği ajanlar.
+- Erişilebilir her ajan için araç profili, korumalı alan modu ve yükseltilmiş araç politikası.
+- Bu ajanların erişebildiği harici kimlik bilgileri.
+- `~/.openclaw/openclaw.json` ve kimlik bilgilerinin yedek konumu.
 
-Bot'a birden fazla kişi mesaj gönderebiliyorsa, bunu kullanıcı başına ana makine
-izolasyonu olarak değil, paylaşılan devredilmiş araç yetkisi olarak ele alın.
+Bota birden fazla kişi mesaj gönderebiliyorsa bunu kullanıcı başına ana makine
+yalıtımı olarak değil, paylaşılan ve devredilmiş araç yetkisi olarak değerlendirin.
 
 ## Temel kontroller
 
-Erişimi açmadan önce bunları çalıştırın:
+Erişimi açmadan önce çalıştırın:
 
 ```bash
 openclaw doctor
@@ -69,8 +68,9 @@ openclaw security audit --deep
 openclaw health
 ```
 
-Önce kritik bulguları çözün. Uyarılar yalnızca dağıtım için kasıtlı ve
-belgelenmiş olduklarında kabul edilebilir.
+Önce kritik bulguları giderin. Uyarıları yalnızca dağıtım açısından kasıtlı ve
+belgelenmiş olduklarında kabul edin. Her `checkId` değerinin anlamı ve düzeltme
+anahtarı için [Güvenlik denetimi kontrolleri](/tr/gateway/security/audit-checks) bölümüne bakın.
 
 Uzaktan CLI doğrulaması için kimlik bilgilerini açıkça iletin:
 
@@ -78,11 +78,12 @@ Uzaktan CLI doğrulaması için kimlik bilgilerini açıkça iletin:
 openclaw gateway probe --url ws://127.0.0.1:18789 --token "$OPENCLAW_GATEWAY_TOKEN"
 ```
 
-Yerel yapılandırma kimlik bilgilerinin açık bir uzak URL için geçerli olduğunu varsaymayın.
+Yerel yapılandırmadaki kimlik bilgilerinin açıkça belirtilmiş bir uzak URL için
+geçerli olduğunu varsaymayın.
 
-## Minimum güvenli temel
+## Asgari güvenli temel yapılandırma
 
-Açığa çıkarılmış dağıtımlar için başlangıç noktası olarak bu şekli kullanın:
+Dış erişime açık dağıtımlarda başlangıç noktası olarak bu yapıyı kullanın:
 
 ```json5
 {
@@ -109,75 +110,80 @@ Açığa çıkarılmış dağıtımlar için başlangıç noktası olarak bu şe
 }
 ```
 
-Ardından kontrolleri teker teker genişletin. Örneğin, yazma yetkili araçları
-etkinleştirmeden önce belirli bir kanal izin listesi ekleyin veya uzak Control UI
-trafiğini kabul etmeden önce bir ters proxy etkinleştirin.
+Her seferinde yalnızca bir denetimi genişletin: yazma yeteneğine sahip araçları
+etkinleştirmeden önce belirli bir kanal izin listesi ekleyin veya uzaktaki
+Control UI trafiğini kabul etmeden önce ters proxy'yi etkinleştirin.
 
-Katı `exec.security: "deny"` temeli, zararsız tanılamalar dahil tüm exec
-çağrılarını engeller. Tanılama veya düşük riskli komutlar gerekiyorsa, bunu
-yalnızca tehdit modelinizle eşleşen belirli göndericileri, aracıları, komutları
+`tools.exec.security: "deny"`, zararsız tanılama işlemleri dâhil olmak üzere tüm
+exec çağrılarını engeller. Tanılama veya düşük riskli komutlar gerekiyorsa bu
+ayarı yalnızca tehdit modelinize uygun belirli göndericileri, ajanları, komutları
 ve onay modunu seçtikten sonra gevşetin.
 
-## DM ve grup açığa çıkarımı
+## Doğrudan mesaj ve grup dışa açıklığı
 
-Mesajlaşma kanalları güvenilmeyen giriş yüzeyleridir. DM'lere veya gruplara izin vermeden önce:
+Mesajlaşma kanalları güvenilmeyen girdi yüzeyleridir. Doğrudan mesajlara veya
+gruplara izin vermeden önce:
 
-- `dmPolicy: "pairing"` veya katı `allowFrom` listelerini tercih edin.
-- Her gönderici güvenilir değilse `dmPolicy: "open"` kullanmaktan kaçının.
+- `dmPolicy: "open"` yerine `dmPolicy: "pairing"` veya sıkı bir `allowFrom` listesi tercih edin.
 - `"*"` izin listelerini geniş araç erişimiyle birleştirmeyin.
-- Oda sıkı şekilde denetlenmiyorsa gruplarda bahsetme şartı koyun.
-- Birden fazla kişi bot'a DM gönderebiliyorsa `session.dmScope: "per-channel-peer"` kullanın.
-- Paylaşılan kanalları minimum araçlara ve kişisel kimlik bilgisi olmayan aracılara yönlendirin.
+- Oda sıkı biçimde denetlenmiyorsa gruplarda bahsetme zorunluluğu getirin.
+- Birden fazla kişi bota doğrudan mesaj gönderebiliyorsa doğrudan mesaj
+  oturumlarının bağlam paylaşmaması için `session.dmScope: "per-channel-peer"`
+  (veya çok hesaplı kanallarda `"per-account-channel-peer"`) ayarını kullanın.
+- Paylaşılan kanalları asgari araçlara sahip ve kişisel kimlik bilgileri
+  bulunmayan ajanlara yönlendirin.
 
-Eşleştirme, göndericinin bot'u tetiklemesini onaylar. Bu, o göndericiyi ayrı
-bir ana makine güvenlik sınırı yapmaz.
+Eşleştirme, göndericinin botu tetiklemesine onay verir. Göndericiyi ayrı bir ana
+makine güvenlik sınırı hâline getirmez.
 
 ## Ters proxy kontrolleri
 
-Kimlik farkındalıklı proxy'ler için:
+Kimlik duyarlı proxy'ler için:
 
-- Proxy, Gateway'e iletmeden önce kullanıcıların kimliğini doğrulamalıdır.
-- Gateway portuna doğrudan erişim güvenlik duvarı veya ağ politikasıyla engellenmelidir.
-- `gateway.trustedProxies` yalnızca proxy kaynak IP'lerini içermelidir.
-- Proxy, istemci tarafından sağlanan kimlik ve yönlendirme başlıklarını sıyırmalı veya üzerine yazmalıdır.
-- Proxy birden fazla kitleye hizmet veriyorsa `gateway.auth.trustedProxy.allowUsers` beklenen kullanıcıları listelemelidir.
-- Aynı ana makinedeki loopback proxy modu, `allowLoopback` ayarını yalnızca yerel süreçler güvenilir olduğunda ve proxy kimlik başlıklarının sahibi olduğunda kullanmalıdır.
+- Proxy, Gateway'e yönlendirmeden önce kullanıcıların kimliğini doğrulamalıdır.
+- Güvenlik duvarı veya ağ politikası, Gateway bağlantı noktasına doğrudan erişimi engellemelidir.
+- `gateway.trustedProxies` yalnızca proxy kaynak IP'lerini listelemelidir.
+- Proxy, istemci tarafından sağlanan kimlik ve yönlendirme üstbilgilerini kaldırmalı veya bunların üzerine yazmalıdır.
+- Proxy birden fazla hedef kitleye hizmet veriyorsa `gateway.auth.trustedProxy.allowUsers` ayarını belirleyin.
+- `gateway.auth.trustedProxy.allowLoopback` ayarını yalnızca yerel süreçlere
+  güvenilen ve kimlik üstbilgilerinin proxy tarafından yönetildiği aynı ana
+  makinedeki proxy için kullanın.
 
-Proxy değişikliklerinden sonra `openclaw security audit --deep` çalıştırın.
-Güvenilir proxy bulguları kasıtlı olarak yüksek sinyallidir, çünkü proxy kimlik
-doğrulama sınırı haline gelir.
+Proxy değişikliklerinden sonra `openclaw security audit --deep` komutunu
+çalıştırın. Proxy kimlik doğrulama sınırı hâline geldiği için güvenilir proxy
+bulguları güçlü sinyallerdir.
 
-## Araç ve sandbox incelemesi
+## Araç ve korumalı alan incelemesi
 
-Bir aracıyı uzak göndericilere açığa çıkarmadan önce:
+Bir ajanı uzak göndericilere açmadan önce:
 
-- Hangi oturumların ana makinede, hangilerinin sandbox içinde çalıştığını doğrulayın.
-- Ana makine exec işlemini reddedin veya onay gerektirin.
-- Belirli, güvenilir bir göndericinin ihtiyacı olmadıkça yükseltilmiş araçları devre dışı tutun.
-- Açık veya yarı açık mesajlaşma yüzeyleri için tarayıcı, canvas, node, cron, gateway ve oturum başlatma araçlarından kaçının.
-- Bind mount'ları dar tutun ve kimlik bilgisi, home, Docker socket ve sistem yollarından kaçının.
-- Maddi olarak farklı güven sınırları için ayrı Gateway'ler, OS kullanıcıları veya ana makineler kullanın.
+- Hangi oturumların ana makinede, hangilerinin korumalı alanda çalıştığını doğrulayın.
+- Ana makinede exec kullanımını reddedin veya onaya tabi tutun.
+- Belirli ve güvenilir bir gönderici ihtiyaç duymadıkça yükseltilmiş araçları devre dışı tutun.
+- Açık veya yarı açık mesajlaşma yüzeylerinde tarayıcı, canvas, Node, Cron, Gateway ve oturum oluşturma araçlarından kaçının.
+- Bağlama noktalarını dar kapsamlı tutun; kimlik bilgisi, ev dizini, Docker soketi ve sistem yollarından kaçının.
+- Önemli ölçüde farklı güven sınırları için ayrı Gateway'ler, işletim sistemi kullanıcıları veya ana makineler kullanın.
 
-Uzak kullanıcılar tamamen güvenilir değilse, izolasyon yalnızca prompt'lardan
-veya oturum etiketlerinden değil, ayrı dağıtımlardan gelmelidir.
+Uzak kullanıcılar tamamen güvenilir değilse yalıtım yalnızca istemlerden veya
+oturum etiketlerinden değil, ayrı dağıtımlardan sağlanmalıdır.
 
 ## Değişiklik sonrası doğrulama
 
-Her açığa çıkarma değişikliğinden sonra:
+Her dışa açıklık değişikliğinden sonra:
 
 1. `openclaw security audit --deep` komutunu yeniden çalıştırın.
-2. Başarılı bir yetkili bağlantıyı test edin.
-3. Yetkisiz bir göndericinin veya tarayıcı oturumunun reddedildiğini test edin.
-4. Günlüklerin sırları redakte ettiğini doğrulayın.
-5. DM/grup yönlendirmesinin yalnızca amaçlanan aracıya ulaştığını doğrulayın.
+2. Yetkilendirilmiş bir bağlantının başarıyla kurulduğunu doğrulayın.
+3. Yetkisiz bir göndericinin veya tarayıcı oturumunun reddedildiğini doğrulayın.
+4. Günlüklerin gizli bilgileri maskelediğini doğrulayın.
+5. Doğrudan mesaj/grup yönlendirmesinin yalnızca amaçlanan ajana ulaştığını doğrulayın.
 6. Yüksek etkili araçların onay istediğini veya reddedildiğini doğrulayın.
 7. Kabul edilen kalan uyarıları belgeleyin.
 
-Geçerli değişiklik anlaşılmadan bir sonraki açığa çıkarma değişikliğine geçmeyin.
+Mevcut dışa açıklık değişikliği anlaşılmadan bir sonraki değişikliğe geçmeyin.
 
 ## Geri alma planı
 
-Gateway fazla açığa çıkarılmış olabilir ise:
+Gateway gerekenden fazla dışa açılmış olabilecekse:
 
 ```json5
 {
@@ -199,23 +205,23 @@ Gateway fazla açığa çıkarılmış olabilir ise:
 
 Ardından:
 
-1. Herkese açık yönlendirmeyi, Tailscale Funnel'ı veya ters proxy rotalarını durdurun.
-2. Gateway token'larını/parolalarını ve etkilenen entegrasyon kimlik bilgilerini döndürün.
-3. `"*"` ve beklenmeyen göndericileri izin listelerinden kaldırın.
-4. Son denetim günlüklerini, çalışma geçmişini, araç çağrılarını ve yapılandırma değişikliklerini inceleyin.
+1. Genel yönlendirmeyi, Tailscale Funnel'ı veya ters proxy yollarını durdurun.
+2. Gateway belirteçlerini/parolalarını ve etkilenen entegrasyon kimlik bilgilerini yenileyin.
+3. İzin listelerinden `"*"` değerini ve beklenmeyen göndericileri kaldırın.
+4. Son denetim günlüklerini, çalıştırma geçmişini, araç çağrılarını ve yapılandırma değişikliklerini inceleyin.
 5. `openclaw security audit --deep` komutunu yeniden çalıştırın.
-6. İş akışını karşılayan en dar desenle erişimi yeniden etkinleştirin.
+6. İş akışını karşılayan en dar kapsamlı modelle erişimi yeniden etkinleştirin.
 
 ## İnceleme kontrol listesi
 
-- Belgelenmiş bir neden olmadıkça Gateway yalnızca loopback olarak kalır.
-- Loopback dışı erişimde kimlik doğrulama, güvenlik duvarı ve herkese açık doğrudan rota yoktur.
-- Güvenilir proxy dağıtımlarında katı proxy IP'leri ve başlık kontrolleri vardır.
-- DM'ler varsayılan olarak açık erişim değil, eşleştirme veya izin listeleri kullanır.
+- Belgelenmiş bir neden bulunmadıkça Gateway yalnızca loopback üzerinde kalır.
+- Loopback dışı erişimde kimlik doğrulama ve güvenlik duvarı vardır; doğrudan genel erişim yolu yoktur.
+- Güvenilir proxy dağıtımlarında sıkı proxy IP'leri ve üstbilgi denetimleri vardır.
+- Doğrudan mesajlar varsayılan olarak açık erişim yerine eşleştirme veya izin listeleri kullanır.
 - Gruplar bahsetme veya açık izin listeleri gerektirir.
-- Paylaşılan kanallar kişisel kimlik bilgilerine ulaşmaz.
-- Non-main oturumlar sandbox modunda çalışır.
-- Ana makine exec ve yükseltilmiş araçlar reddedilir veya onaya bağlanır.
-- Günlükler sırları redakte eder.
-- Kritik denetim bulguları çözülmüştür.
+- Paylaşılan kanallar kişisel kimlik bilgilerine erişmez.
+- Ana olmayan oturumlar korumalı alan modunda çalışır.
+- Ana makinede exec kullanımı ve yükseltilmiş araçlar reddedilir veya onaya tabidir.
+- Günlükler gizli bilgileri maskeler.
+- Kritik denetim bulguları giderilmiştir.
 - Geri alma adımları test edilmiş ve belgelenmiştir.

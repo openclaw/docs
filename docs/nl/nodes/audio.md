@@ -1,52 +1,66 @@
 ---
 read_when:
     - Audiotranscriptie of mediaverwerking wijzigen
-summary: Hoe inkomende audio-/spraaknotities worden gedownload, getranscribeerd en in antwoorden worden ingevoegd
-title: Audio en spraaknotities
+summary: Hoe binnenkomende audio-/spraakberichten worden gedownload, getranscribeerd en in antwoorden worden ingevoegd
+title: Audio- en spraaknotities
 x-i18n:
-    generated_at: "2026-06-27T17:44:30Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:01:25Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 90e66cf76537b090afdcd3a7791b40107ae51d6be89c84fcb14c034e38df875e
+    source_hash: cb382f4219620d906bfa76ebddc690b174a3b24f80f815be92e915b363d17792
     source_path: nodes/audio.md
     workflow: 16
 ---
 
-## Wat werkt
+## Wat het doet
 
-- **Mediabegrip (audio)**: Als audiobegrip is ingeschakeld (of automatisch wordt gedetecteerd), doet OpenClaw het volgende:
-  1. Vindt de eerste audiobijlage (lokaal pad of URL) en downloadt die indien nodig.
-  2. Handhaaft `maxBytes` voordat naar elk model-item wordt verzonden.
-  3. Voert het eerste geschikte model-item op volgorde uit (provider of CLI).
-  4. Als dit mislukt of wordt overgeslagen (grootte/time-out), probeert het het volgende item.
-  5. Bij succes vervangt het `Body` door een `[Audio]`-blok en stelt het `{{Transcript}}` in.
-- **Commandoparsing**: Wanneer transcriptie slaagt, worden `CommandBody`/`RawBody` ingesteld op het transcript, zodat slash-commando's blijven werken.
-- **Uitgebreide logging**: In `--verbose` loggen we wanneer transcriptie wordt uitgevoerd en wanneer die de body vervangt.
+Wanneer audiobegrip is ingeschakeld (of automatisch wordt gedetecteerd), doet OpenClaw het volgende:
+
+1. Zoekt de eerste audiobijlage (lokaal pad of URL) en downloadt deze indien nodig.
+2. Past `maxBytes` toe voordat de bijlage naar elke modelvermelding wordt verzonden.
+3. Voert de eerste geschikte modelvermelding op volgorde uit (provider of CLI); als een vermelding mislukt of wordt overgeslagen (grootte/time-out), wordt de volgende geprobeerd.
+4. Vervangt bij succes `Body` door een `[Audio]`-blok en stelt `{{Transcript}}` in.
+
+Wanneer de transcriptie slaagt, worden `CommandBody`/`RawBody` eveneens ingesteld op het transcript, zodat slash-opdrachten blijven werken. Met `--verbose` tonen de logboeken wanneer de transcriptie wordt uitgevoerd en wanneer deze de berichttekst vervangt.
 
 ## Automatische detectie (standaard)
 
-Als je **geen modellen configureert** en `tools.media.audio.enabled` **niet** is ingesteld op `false`,
-detecteert OpenClaw automatisch in deze volgorde en stopt het bij de eerste werkende optie:
+Als u geen modellen hebt geconfigureerd en `tools.media.audio.enabled` niet `false` is, detecteert OpenClaw de volgende opties in deze volgorde en stopt het bij de eerste werkende optie:
 
-1. **Actief antwoordmodel** wanneer de provider audiobegrip ondersteunt.
-2. **Lokale CLI's** (indien geïnstalleerd)
-   - `sherpa-onnx-offline` (vereist `SHERPA_ONNX_MODEL_DIR` met encoder/decoder/joiner/tokens)
-   - `whisper-cli` (van `whisper-cpp`; gebruikt `WHISPER_CPP_MODEL` of het meegeleverde tiny-model)
+1. **Actief antwoordmodel**, wanneer de provider daarvan audiobegrip ondersteunt.
+2. **Geconfigureerde providerauthenticatie** — elke `models.providers.*`-vermelding waarvoor authenticatie beschikbaar is voor een provider die audiotranscriptie ondersteunt. Dit wordt vóór lokale CLI's gecontroleerd, zodat een geconfigureerde API-sleutel altijd voorrang krijgt op een lokaal binair bestand in `PATH`.
+   Providervolgorde wanneer er meerdere zijn geconfigureerd: Groq, OpenAI, xAI, Deepgram, Google, SenseAudio, ElevenLabs, Mistral.
+3. **Lokale CLI's** (alleen als geen providerauthenticatie is gevonden). OpenClaw stelt een geordende lijst met terugvalopties samen:
+   - `whisper-cli`, vóór CPU-standaardopties, uitsluitend wanneer bij een eerdere modelaanroep in het huidige proces Metal of CUDA is waargenomen
+   - `sherpa-onnx-offline` met de standaard-CPU-provider (vereist `SHERPA_ONNX_MODEL_DIR` met `tokens.txt`, `encoder.onnx`, `decoder.onnx` en `joiner.onnx`)
+   - `whisper-cli` wanneer Metal/CUDA alleen tijdens het bouwen kan worden ondersteund of de geselecteerde backend anderszins niet is waargenomen
+   - `parakeet-mlx` op Apple Silicon (geschikt voor MLX; apparaatgebruik blijft niet waargenomen)
    - `whisper` (Python-CLI; downloadt modellen automatisch)
-3. **Provider-authenticatie**
-   - Geconfigureerde `models.providers.*`-items die audio ondersteunen, worden eerst geprobeerd
-   - Provider-terugvalvolgorde: OpenAI → Groq → xAI → Deepgram → Google → SenseAudio → ElevenLabs → Mistral
 
-Vanaf 2026-05-22 wordt automatische detectie van Gemini CLI niet meer ondersteund voor mediabegrip. Google zet Gemini CLI-gebruikers over naar Antigravity CLI; audio moet lokale transcriptie of provider-transcriptie gebruiken, terwijl image/video-CLI-terugval naar Antigravity CLI (`agy`) moet verhuizen.
+De herkomst van installatie/koppeling is bewijs van functionaliteit, niet van uitvoering. Hierdoor komt een kandidaat op zichzelf nooit vóór CPU-sherpa te staan. OpenClaw laadt tijdens de installatie of statuscontroles geen model alleen om een backend te testen.
+Automatisch gedetecteerde whisper.cpp behoudt de normale logboeken van modeluitvoeringen, zodat OpenClaw de upstreamregel `using … backend` kan vastleggen. Expliciete CLI-vermeldingen behouden hun geconfigureerde uitvoervlaggen.
 
-Stel `tools.media.audio.enabled: false` in om automatische detectie uit te schakelen.
-Stel `tools.media.audio.models` in om dit aan te passen.
-Opmerking: detectie van binaries is best-effort op macOS/Linux/Windows; zorg dat de CLI op `PATH` staat (we breiden `~` uit), of stel een expliciet CLI-model in met een volledig commandopad.
+Automatische detectie van de Gemini CLI voor mediabegrip is vervangen door een terugvaloptie met de gesandboxte Antigravity CLI (`agy`) voor afbeeldingen/video; voor audio wordt buiten de bovenstaande lokale binaire bestanden geen CLI-terugvaloptie gebruikt.
+
+Stel `tools.media.audio.enabled: false` in om automatische detectie uit te schakelen. Stel `tools.media.audio.models` in om deze aan te passen.
+
+<Note>
+Detectie van binaire bestanden werkt op basis van beste inspanning op macOS/Linux/Windows. Zorg ervoor dat de CLI in `PATH` staat (`~` wordt uitgevouwen), of stel een expliciet CLI-model in met een volledig opdrachtpad.
+</Note>
+
+Inspecteer de lokale selectie zonder audio te transcriberen:
+
+```bash
+openclaw capability audio providers
+openclaw doctor --lint --only core/doctor/local-audio-acceleration --severity-min info
+```
+
+De providerinventaris rapporteert de winnaar van de lokale terugvalopties afzonderlijk van de algemene providerselectie, evenals de velden voor geschikte, aangevraagde en waargenomen backends. Nadat de transcriptie is uitgevoerd, rapporteert `/status` de aangevraagde of waargenomen backend in de mediaregel. Expliciete CLI-vermeldingen in `tools.media.audio.models` omzeilen nog steeds de automatische selectie; gebruik hun backendspecifieke vlaggen, zoals `--provider=cuda` voor sherpa of `--no-gpu`/`--device` voor whisper.cpp.
 
 ## Configuratievoorbeelden
 
-### Provider + CLI-terugval (OpenAI + Whisper CLI)
+### Provider met CLI-terugvaloptie (OpenAI + Whisper CLI)
 
 ```json5
 {
@@ -56,7 +70,7 @@ Opmerking: detectie van binaries is best-effort op macOS/Linux/Windows; zorg dat
         enabled: true,
         maxBytes: 20971520,
         models: [
-          { provider: "openai", model: "gpt-4o-mini-transcribe" },
+          { provider: "openai", model: "gpt-4o-transcribe" },
           {
             type: "cli",
             command: "whisper",
@@ -70,7 +84,7 @@ Opmerking: detectie van binaries is best-effort op macOS/Linux/Windows; zorg dat
 }
 ```
 
-### Alleen provider met scope-afscherming
+### Alleen provider met bereikbeperking
 
 ```json5
 {
@@ -82,7 +96,7 @@ Opmerking: detectie van binaries is best-effort op macOS/Linux/Windows; zorg dat
           default: "allow",
           rules: [{ action: "deny", match: { chatType: "group" } }],
         },
-        models: [{ provider: "openai", model: "gpt-4o-mini-transcribe" }],
+        models: [{ provider: "openai", model: "gpt-4o-transcribe" }],
       },
     },
   },
@@ -134,7 +148,7 @@ Opmerking: detectie van binaries is best-effort op macOS/Linux/Windows; zorg dat
 }
 ```
 
-### Transcript naar chat echoën (opt-in)
+### Transcript naar de chat terugsturen (optioneel)
 
 ```json5
 {
@@ -142,83 +156,80 @@ Opmerking: detectie van binaries is best-effort op macOS/Linux/Windows; zorg dat
     media: {
       audio: {
         enabled: true,
-        echoTranscript: true, // default is false
-        echoFormat: '📝 "{transcript}"', // optional, supports {transcript}
-        models: [{ provider: "openai", model: "gpt-4o-mini-transcribe" }],
+        echoTranscript: true, // standaard is false
+        echoFormat: '📝 "{transcript}"', // optioneel, ondersteunt {transcript}
+        models: [{ provider: "openai", model: "gpt-4o-transcribe" }],
       },
     },
   },
 }
 ```
 
-## Opmerkingen en limieten
+## Opmerkingen en beperkingen
 
-- Provider-authenticatie volgt de standaard authenticatievolgorde voor modellen (auth-profielen, env-vars, `models.providers.*.apiKey`).
-- Groq-installatiedetails: [Groq](/nl/providers/groq).
-- Deepgram pikt `DEEPGRAM_API_KEY` op wanneer `provider: "deepgram"` wordt gebruikt.
-- Deepgram-installatiedetails: [Deepgram (audiotranscriptie)](/nl/providers/deepgram).
-- Mistral-installatiedetails: [Mistral](/nl/providers/mistral).
-- SenseAudio pikt `SENSEAUDIO_API_KEY` op wanneer `provider: "senseaudio"` wordt gebruikt.
-- SenseAudio-installatiedetails: [SenseAudio](/nl/providers/senseaudio).
-- Audioproviders kunnen `baseUrl`, `headers` en `providerOptions` overschrijven via `tools.media.audio`.
-- De standaard maximale grootte is 20 MB (`tools.media.audio.maxBytes`). Te grote audio wordt voor dat model overgeslagen en het volgende item wordt geprobeerd.
-- Kleine/lege audiobestanden kleiner dan 1024 bytes worden overgeslagen vóór provider-/CLI-transcriptie.
-- De standaardwaarde voor `maxChars` voor audio is **niet ingesteld** (volledig transcript). Stel `tools.media.audio.maxChars` of `maxChars` per item in om uitvoer in te korten.
-- De automatische standaard voor OpenAI is `gpt-4o-mini-transcribe`; stel `model: "gpt-4o-transcribe"` in voor hogere nauwkeurigheid.
-- Gebruik `tools.media.audio.attachments` om meerdere spraaknotities te verwerken (`mode: "all"` + `maxAttachments`).
-- Het transcript is beschikbaar voor sjablonen als `{{Transcript}}`.
-- `tools.media.audio.echoTranscript` staat standaard uit; schakel dit in om transcriptbevestiging terug te sturen naar de oorspronkelijke chat voordat agentverwerking begint.
-- `tools.media.audio.echoFormat` past de echotekst aan (placeholder: `{transcript}`).
-- CLI-stdout is begrensd (5 MB); houd CLI-uitvoer beknopt.
-- CLI-`args` moeten `{{MediaPath}}` gebruiken voor het lokale audiobestandspad. Voer `openclaw doctor --fix` uit om verouderde `{input}`-placeholders uit oudere `audio.transcription.command`-configuraties te migreren.
+- Providerauthenticatie volgt de standaardvolgorde voor modelauthenticatie (authenticatieprofielen, omgevingsvariabelen, `models.providers.*.apiKey`).
+- Installatiedetails voor Groq: [Groq](/nl/providers/groq).
+- Deepgram gebruikt `DEEPGRAM_API_KEY` wanneer `provider: "deepgram"` wordt gebruikt. Installatiedetails: [Deepgram](/nl/providers/deepgram).
+- Installatiedetails voor Mistral: [Mistral](/nl/providers/mistral).
+- SenseAudio gebruikt `SENSEAUDIO_API_KEY` wanneer `provider: "senseaudio"` wordt gebruikt. Installatiedetails: [SenseAudio](/nl/providers/senseaudio).
+- Audioproviders kunnen `baseUrl`, `headers` en `providerOptions` via `tools.media.audio` overschrijven.
+- De standaardlimiet voor de grootte is 20 MB (`tools.media.audio.maxBytes`). Te grote audio wordt voor dat model overgeslagen en de volgende vermelding wordt geprobeerd.
+- Audiobestanden kleiner dan 1024 bytes worden vóór transcriptie door de provider/CLI overgeslagen.
+- De standaardwaarde van `maxChars` voor audio is **niet ingesteld** (volledig transcript). Stel `tools.media.audio.maxChars` of een `maxChars` per vermelding in om de uitvoer in te korten.
+- De standaardwaarde voor automatische detectie van OpenAI is `gpt-4o-transcribe`; stel `model: "gpt-4o-mini-transcribe"` in voor een goedkopere/snellere optie.
+- Gebruik `tools.media.audio.attachments` om meerdere spraaknotities te verwerken (`mode: "all"` plus `maxAttachments`, standaard 1).
+- Het transcript is voor sjablonen beschikbaar als `{{Transcript}}`.
+- `tools.media.audio.echoTranscript` is standaard uitgeschakeld; schakel dit in om vóór verwerking door de agent een transcriptbevestiging terug te sturen naar de oorspronkelijke chat.
+- `tools.media.audio.echoFormat` past de teruggestuurde tekst aan (tijdelijke aanduiding: `{transcript}`; standaard `📝 "{transcript}"`).
+- De standaarduitvoer van de CLI is beperkt tot 5 MB; houd de CLI-uitvoer beknopt.
+- CLI-`args` moeten `{{MediaPath}}` gebruiken voor het lokale pad naar het audiobestand. Voer `openclaw doctor --fix` uit om verouderde tijdelijke aanduidingen `{input}` uit oudere configuraties van `audio.transcription.command` te migreren (ingetrokken sleutel: `audio.transcription`, vervangen door `tools.media.audio.models`).
+- `tools.media.concurrency` begrenst mediataken; het is geen GPU-planner.
 
-### Ondersteuning voor proxy-omgevingen
+### Permanente lokale spraak-naar-tekst
 
-Providergebaseerde audiotranscriptie respecteert standaard env-vars voor uitgaande proxy's:
+Automatisch gedetecteerde lokale spraak-naar-tekst blijft voor elke aanvraag een afzonderlijk proces gebruiken. OpenClaw beheert momenteel geen permanente whisper.cpp-server, omdat het standaardpakket `whisper-cpp` van Homebrew die server uitschakelt, terwijl het upstreamvoorbeeld geen geconfigureerde begrensde toelatingswachtrij heeft. Een door een Plugin beheerde permanente levenscyclus vereist een onderhouden, verpakte worker met gezondheids- en opstartcontroles, modelresidentie, begrensde wachtrijen, annulering/time-out, werking zonder authenticatie die uitsluitend via local loopback bereikbaar is, en geen terugval naar de cloud voordat deze veilig kan worden ingeschakeld.
 
-- `HTTPS_PROXY`
-- `HTTP_PROXY`
-- `ALL_PROXY`
-- `https_proxy`
-- `http_proxy`
-- `all_proxy`
+### Ondersteuning voor proxyomgevingen
 
-Als er geen proxy-env-vars zijn ingesteld, wordt directe egress gebruikt. Als de proxyconfiguratie onjuist gevormd is, logt OpenClaw een waarschuwing en valt het terug op directe fetch.
+Providergebaseerde audiotranscriptie respecteert standaardomgevingsvariabelen voor uitgaande proxy's, overeenkomstig de semantiek van `EnvHttpProxyAgent` van undici:
+
+- `HTTPS_PROXY` / `https_proxy`
+- `HTTP_PROXY` / `http_proxy`
+- `ALL_PROXY` / `all_proxy`
+
+Variabelen in kleine letters hebben voorrang op die in hoofdletters; vermeldingen in `NO_PROXY`/`no_proxy` (hostnamen, `*.suffix` of `host:port`) omzeilen de proxy. Als er geen proxyomgevingsvariabelen zijn ingesteld, wordt een directe uitgaande verbinding gebruikt. Als het instellen van de proxy mislukt (ongeldige URL), registreert OpenClaw een waarschuwing en valt het terug op rechtstreeks ophalen.
 
 ## Vermeldingsdetectie in groepen
 
-Wanneer `requireMention: true` is ingesteld voor een groepschat, transcribeert OpenClaw audio nu **voordat** op vermeldingen wordt gecontroleerd. Hierdoor kunnen spraaknotities worden verwerkt, zelfs wanneer ze vermeldingen bevatten.
+Op kanalen die een audiovoorcontrole ondersteunen, transcribeert OpenClaw audio **voordat** het op vermeldingen controleert wanneer `requireMention: true` voor een groepschat is ingesteld. Hierdoor kan een spraaknotitie zonder bijschrift de vermeldingscontrole doorstaan wanneer het transcript een geconfigureerd vermeldingspatroon bevat. Kanaalspecifieke documentatie beschrijft transporten die in plaats daarvan een getypte vermelding vereisen.
 
-**Hoe het werkt:**
+**Zo werkt het:**
 
-1. Als een spraakbericht geen tekstbody heeft en de groep vermeldingen vereist, voert OpenClaw een "preflight"-transcriptie uit.
-2. Het transcript wordt gecontroleerd op vermeldingspatronen (bijv. `@BotName`, emoji-triggers).
-3. Als een vermelding wordt gevonden, gaat het bericht door de volledige antwoordpipeline.
-4. Het transcript wordt gebruikt voor vermeldingsdetectie, zodat spraaknotities de vermeldingspoort kunnen passeren.
+1. Als een spraakbericht geen tekst bevat en de groep vermeldingen vereist, voert OpenClaw een voorcontroletranscriptie uit op de eerste audiobijlage.
+2. Het transcript wordt gecontroleerd op vermeldingspatronen (bijvoorbeeld `@BotName`, emoji-triggers).
+3. Als een vermelding wordt gevonden, doorloopt het bericht de volledige antwoordpijplijn.
 
-**Terugvalgedrag:**
+**Terugvalgedrag:** als de voorcontroletranscriptie mislukt (time-out, API-fout enzovoort), valt het bericht terug op vermeldingsdetectie op basis van alleen tekst, zodat gemengde berichten (tekst + audio) nooit verloren gaan.
 
-- Als transcriptie tijdens preflight mislukt (time-out, API-fout, enz.), wordt het bericht verwerkt op basis van vermeldingsdetectie op alleen tekst.
-- Dit zorgt ervoor dat gemengde berichten (tekst + audio) nooit ten onrechte worden genegeerd.
+**Uitschakelen per Telegram-groep/-onderwerp:**
 
-**Opt-out per Telegram-groep/topic:**
+- Stel `channels.telegram.groups.<chatId>.disableAudioPreflight: true` in om vermeldingscontroles via voorcontroletranscriptie voor die groep over te slaan.
+- Stel `channels.telegram.groups.<chatId>.topics.<threadId>.disableAudioPreflight` in om dit per onderwerp te overschrijven (`true` om over te slaan, `false` om geforceerd in te schakelen).
+- De standaardwaarde is `false` (voorcontrole ingeschakeld wanneer aan de voorwaarden voor verplichte vermeldingen wordt voldaan).
 
-- Stel `channels.telegram.groups.<chatId>.disableAudioPreflight: true` in om preflight-transcriptvermeldingscontroles voor die groep over te slaan.
-- Stel `channels.telegram.groups.<chatId>.topics.<threadId>.disableAudioPreflight` in om per topic te overschrijven (`true` om over te slaan, `false` om geforceerd in te schakelen).
-- De standaardwaarde is `false` (preflight ingeschakeld wanneer aan voorwaarden voor vermeldingsafscherming wordt voldaan).
+**Voorbeeld:** een gebruiker stuurt in een Telegram-groep met `requireMention: true` een spraaknotitie waarin diegene zegt: "Hé @Claude, wat voor weer is het?" De spraaknotitie wordt getranscribeerd, de vermelding wordt gedetecteerd en de agent antwoordt.
 
-**Voorbeeld:** Een gebruiker stuurt een spraaknotitie met "Hey @Claude, what's the weather?" in een Telegram-groep met `requireMention: true`. De spraaknotitie wordt getranscribeerd, de vermelding wordt gedetecteerd en de agent antwoordt.
+## Aandachtspunten
 
-## Valkuilen
-
-- Scoperegels gebruiken first-match wins. `chatType` wordt genormaliseerd naar `direct`, `group` of `room`.
-- Zorg dat je CLI afsluit met 0 en platte tekst print; JSON moet worden bewerkt via `jq -r .text`.
-- Voor `parakeet-mlx`: als je `--output-dir` meegeeft, leest OpenClaw `<output-dir>/<media-basename>.txt` wanneer `--output-format` `txt` is (of is weggelaten); niet-`txt`-uitvoerformaten vallen terug op stdout-parsing.
-- Houd time-outs redelijk (`timeoutSeconds`, standaard 60s) om blokkeren van de antwoordwachtrij te voorkomen.
-- Preflight-transcriptie verwerkt alleen de **eerste** audiobijlage voor vermeldingsdetectie. Extra audio wordt verwerkt tijdens de hoofdmediabegripfase.
+- Bereikregels gebruiken de eerste overeenkomst; `chatType` wordt genormaliseerd naar `direct`, `group` of `channel`.
+- Zorg ervoor dat uw CLI afsluit met code 0 en platte tekst afdrukt; JSON-uitvoer moet worden bewerkt met `jq -r .text`.
+- Bekende bestandsuitvoermodi zijn gezaghebbend: een leeg of ontbrekend afgeleid transcriptbestand levert geen transcript op in plaats van terug te vallen op voortgangsuitvoer van de CLI.
+- Gebruik voor `parakeet-mlx` `--output-format txt` (of `all`) met `--output-dir` en de standaarduitvoersjabloon `{filename}`. De upstream-omgevingsvariabelen `PARAKEET_OUTPUT_FORMAT` en `PARAKEET_OUTPUT_TEMPLATE` worden eveneens gerespecteerd. OpenClaw leest `<output-dir>/<media-basename>.txt`; de standaardindeling `srt`, andere indelingen en aangepaste uitvoersjablonen blijven de standaarduitvoer gebruiken.
+- Houd time-outs redelijk (`timeoutSeconds`, standaard 60 s) om blokkering van de antwoordwachtrij te voorkomen.
+- Voorcontroletranscriptie verwerkt alleen de **eerste** audiobijlage voor vermeldingsdetectie. Aanvullende audiobijlagen worden tijdens de hoofdfase voor mediabegrip verwerkt.
 
 ## Gerelateerd
 
 - [Mediabegrip](/nl/nodes/media-understanding)
-- [Praatmodus](/nl/nodes/talk)
-- [Voice wake](/nl/nodes/voicewake)
+- [Gespreksmodus](/nl/nodes/talk)
+- [Spraakactivering](/nl/nodes/voicewake)

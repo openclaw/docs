@@ -1,62 +1,53 @@
 ---
 read_when:
-    - กำลังทำงานกับฟีเจอร์ของช่องทาง Nextcloud Talk
-summary: สถานะการรองรับ ความสามารถ และการกำหนดค่าของ Nextcloud Talk
+    - การพัฒนาฟีเจอร์ช่องทาง Nextcloud Talk
+summary: สถานะการรองรับ ความสามารถ และการกำหนดค่า Nextcloud Talk
 title: Nextcloud Talk
 x-i18n:
-    generated_at: "2026-05-10T19:23:15Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:47:11Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e4b3b2d074cc8d3c19223dbb0c306c6861717d0f35e638e3aab04b03647fd248
+    source_hash: 234981d21df12eafabfef60822f2a145d37257689511efc6104451a735346d09
     source_path: channels/nextcloud-talk.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-สถานะ: Plugin ที่รวมมาให้ (บอต Webhook) รองรับข้อความโดยตรง ห้อง ปฏิกิริยา และข้อความ Markdown
+Nextcloud Talk เป็น Plugin ช่องทางที่ดาวน์โหลดได้ (`@openclaw/nextcloud-talk`) ซึ่งเชื่อมต่อ OpenClaw กับอินสแตนซ์ Nextcloud ที่โฮสต์เองผ่านบอต Webhook ของ Talk รองรับข้อความส่วนตัว ห้อง การแสดงความรู้สึก และข้อความ Markdown ส่วนสื่อขาออกจะส่งเป็น URL
 
-## Plugin ที่รวมมาให้
-
-Nextcloud Talk จัดส่งมาเป็น Plugin ที่รวมมาให้ใน OpenClaw รุ่นปัจจุบัน ดังนั้น
-บิลด์ที่แพ็กเกจตามปกติจึงไม่จำเป็นต้องติดตั้งแยกต่างหาก
-
-หากคุณใช้บิลด์เก่ากว่าหรือการติดตั้งแบบกำหนดเองที่ไม่รวม Nextcloud Talk
-ให้ติดตั้งแพ็กเกจ npm โดยตรง:
-
-ติดตั้งผ่าน CLI (รีจิสทรี npm):
+## ติดตั้ง
 
 ```bash
 openclaw plugins install @openclaw/nextcloud-talk
 ```
 
-ใช้แพ็กเกจเปล่าเพื่อติดตามแท็กรุ่นทางการปัจจุบัน ปักหมุดเวอร์ชันที่แน่นอน
-เฉพาะเมื่อคุณต้องการการติดตั้งที่ทำซ้ำได้เท่านั้น
+ใช้ข้อกำหนดแพ็กเกจแบบไม่มีเวอร์ชันเพื่อติดตามแท็กรีลีสทางการปัจจุบัน ตรึงเวอร์ชันที่แน่นอนเฉพาะเมื่อต้องการให้การติดตั้งทำซ้ำได้
 
-เช็กเอาต์ในเครื่อง (เมื่อรันจาก git repo):
+จากเช็กเอาต์ภายในเครื่อง (เวิร์กโฟลว์การพัฒนา):
 
 ```bash
 openclaw plugins install ./path/to/local/nextcloud-talk-plugin
 ```
 
-รายละเอียด: [Plugins](/th/tools/plugin)
+รีสตาร์ต Gateway หลังติดตั้ง รายละเอียด: [Plugin](/th/tools/plugin)
 
-## การตั้งค่าอย่างรวดเร็ว (ผู้เริ่มต้น)
+## การตั้งค่าด่วน (สำหรับผู้เริ่มต้น)
 
-1. ตรวจสอบให้แน่ใจว่า Plugin Nextcloud Talk พร้อมใช้งาน
-   - OpenClaw รุ่นแพ็กเกจปัจจุบันรวมไว้แล้ว
-   - การติดตั้งรุ่นเก่า/แบบกำหนดเองสามารถเพิ่มเองได้ด้วยคำสั่งด้านบน
-2. บนเซิร์ฟเวอร์ Nextcloud ของคุณ ให้สร้างบอต:
+1. ติดตั้ง Plugin (ตามด้านบน)
+2. สร้างบอตบนเซิร์ฟเวอร์ Nextcloud ของคุณ:
 
    ```bash
    ./occ talk:bot:install "OpenClaw" "<shared-secret>" "<webhook-url>" --feature webhook --feature response --feature reaction
    ```
 
-3. เปิดใช้บอตในการตั้งค่าห้องเป้าหมาย
+   คง `--feature response` ไว้ หากไม่มีฟีเจอร์นี้ การตอบกลับขาออกจะล้มเหลวด้วย 401 ซ่อมแซมบอตที่มีอยู่ด้วย `./occ talk:bot:state --feature webhook --feature response --feature reaction <botId> 1`
+
+3. เปิดใช้งานบอตในการตั้งค่าห้องเป้าหมาย
 4. กำหนดค่า OpenClaw:
    - การกำหนดค่า: `channels.nextcloud-talk.baseUrl` + `channels.nextcloud-talk.botSecret`
-   - หรือ env: `NEXTCLOUD_TALK_BOT_SECRET` (เฉพาะบัญชีค่าเริ่มต้น)
+   - หรือตัวแปรสภาพแวดล้อม: `NEXTCLOUD_TALK_BOT_SECRET` (เฉพาะบัญชีเริ่มต้น)
 
-   การตั้งค่าผ่าน CLI:
+   การตั้งค่าผ่าน CLI (`--url`/`--token` เป็นนามแฝงของฟิลด์แบบระบุชัดเจน ส่วน `nc-talk` และ `nc` ใช้เป็นนามแฝงของช่องทางได้):
 
    ```bash
    openclaw channels add --channel nextcloud-talk \
@@ -64,7 +55,7 @@ openclaw plugins install ./path/to/local/nextcloud-talk-plugin
      --token "<shared-secret>"
    ```
 
-   ฟิลด์แบบระบุชัดเจนที่เทียบเท่า:
+   ฟิลด์แบบระบุชัดเจนที่เทียบเท่ากัน:
 
    ```bash
    openclaw channels add --channel nextcloud-talk \
@@ -72,7 +63,7 @@ openclaw plugins install ./path/to/local/nextcloud-talk-plugin
      --secret "<shared-secret>"
    ```
 
-   ความลับที่อิงจากไฟล์:
+   ข้อมูลลับที่เก็บในไฟล์:
 
    ```bash
    openclaw channels add --channel nextcloud-talk \
@@ -80,7 +71,7 @@ openclaw plugins install ./path/to/local/nextcloud-talk-plugin
      --secret-file /path/to/nextcloud-talk-secret
    ```
 
-5. รีสตาร์ท Gateway (หรือทำการตั้งค่าให้เสร็จ)
+5. รีสตาร์ต Gateway (หรือตั้งค่าให้เสร็จสิ้น)
 
 การกำหนดค่าขั้นต่ำ:
 
@@ -99,24 +90,26 @@ openclaw plugins install ./path/to/local/nextcloud-talk-plugin
 
 ## หมายเหตุ
 
-- บอตไม่สามารถเริ่ม DM ได้ ผู้ใช้ต้องส่งข้อความหาบอตก่อน
-- URL ของ Webhook ต้องเข้าถึงได้โดย Gateway; ตั้งค่า `webhookPublicUrl` หากอยู่หลังพร็อกซี
-- การอัปโหลดสื่อไม่รองรับโดย API ของบอต; สื่อจะถูกส่งเป็น URL
-- เพย์โหลด Webhook ไม่แยกความแตกต่างระหว่าง DM กับห้อง; ตั้งค่า `apiUser` + `apiPassword` เพื่อเปิดใช้การค้นหาประเภทห้อง (ไม่เช่นนั้น DM จะถูกปฏิบัติเหมือนห้อง)
+- บอตไม่สามารถเริ่มข้อความส่วนตัวได้ ผู้ใช้ต้องส่งข้อความถึงบอตก่อน
+- URL ของ Webhook ต้องเข้าถึงได้จากเซิร์ฟเวอร์ Nextcloud ให้ตั้งค่า `webhookPublicUrl` เมื่อ Gateway อยู่หลังพร็อกซี คำขอ Webhook จะลงนามด้วย HMAC-SHA256 โดยใช้ข้อมูลลับของบอต ลายเซ็นที่ไม่ถูกต้องจะถูกปฏิเสธและจำกัดอัตรา
+- API ของบอตไม่รองรับการอัปโหลดสื่อ สื่อขาออกจะถูกต่อท้ายเป็นบรรทัด `Attachment: <url>`
+- เพย์โหลดของ Webhook ไม่แยกความแตกต่างระหว่างข้อความส่วนตัวกับห้อง ให้ตั้งค่า `apiUser` + `apiPassword` เพื่อเปิดใช้การค้นหาประเภทห้อง (แคชประมาณ 5 นาที) หากไม่ตั้งค่า การสนทนาทั้งหมดจะถือว่าเป็นห้อง
+- คำขอขาออกจะผ่านตัวป้องกัน SSRF สำหรับโฮสต์ Nextcloud บนเครือข่ายส่วนตัว/ภายในที่เชื่อถือได้ ให้เลือกเปิดใช้ด้วย `channels.nextcloud-talk.network.dangerouslyAllowPrivateNetwork: true`
+- เมื่อตั้งค่า `apiUser`/`apiPassword` และ `webhookPublicUrl` แล้ว `openclaw channels status` จะตรวจสอบบอตและเตือนเมื่อไม่มีฟีเจอร์ `response`
 
-## การควบคุมการเข้าถึง (DM)
+## การควบคุมการเข้าถึง (ข้อความส่วนตัว)
 
-- ค่าเริ่มต้น: `channels.nextcloud-talk.dmPolicy = "pairing"` ผู้ส่งที่ไม่รู้จักจะได้รับรหัสการจับคู่
+- ค่าเริ่มต้น: `channels.nextcloud-talk.dmPolicy = "pairing"` ผู้ส่งที่ไม่รู้จักจะได้รับรหัสจับคู่
 - อนุมัติผ่าน:
   - `openclaw pairing list nextcloud-talk`
   - `openclaw pairing approve nextcloud-talk <CODE>`
-- DM สาธารณะ: `channels.nextcloud-talk.dmPolicy="open"` รวมกับ `channels.nextcloud-talk.allowFrom=["*"]`
-- `allowFrom` จับคู่เฉพาะ ID ผู้ใช้ Nextcloud เท่านั้น; ชื่อที่แสดงจะถูกละเว้น
+- ข้อความส่วนตัวแบบสาธารณะ: `channels.nextcloud-talk.dmPolicy="open"` ร่วมกับ `channels.nextcloud-talk.allowFrom=["*"]`
+- `allowFrom` จับคู่เฉพาะ ID ผู้ใช้ Nextcloud เท่านั้น (แปลงเป็นตัวพิมพ์เล็ก) โดยไม่พิจารณาชื่อที่แสดง
 
 ## ห้อง (กลุ่ม)
 
-- ค่าเริ่มต้น: `channels.nextcloud-talk.groupPolicy = "allowlist"` (ควบคุมด้วยการกล่าวถึง)
-- อนุญาตห้องด้วย `channels.nextcloud-talk.rooms`:
+- ค่าเริ่มต้น: `channels.nextcloud-talk.groupPolicy = "allowlist"` (ต้องมีการกล่าวถึง)
+- อนุญาตห้องด้วย `channels.nextcloud-talk.rooms` โดยใช้โทเค็นห้องเป็นคีย์ ส่วน `"*"` ใช้กำหนดค่าเริ่มต้นแบบไวลด์การ์ด:
 
 ```json5
 {
@@ -130,55 +123,60 @@ openclaw plugins install ./path/to/local/nextcloud-talk-plugin
 }
 ```
 
+- คีย์ต่อห้อง: `requireMention` (ค่าเริ่มต้นคือ true), `enabled` (false ปิดใช้งานห้อง), `allowFrom` (รายการอนุญาตผู้ส่งเฉพาะห้อง), `tools` (เขียนทับการอนุญาต/ปฏิเสธเครื่องมือ), `skills` (จำกัด Skills ที่โหลด), `systemPrompt`
 - หากไม่ต้องการอนุญาตห้องใด ให้ปล่อยรายการอนุญาตว่างไว้หรือตั้งค่า `channels.nextcloud-talk.groupPolicy="disabled"`
 
 ## ความสามารถ
 
-| ฟีเจอร์          | สถานะ             |
-| --------------- | ------------- |
-| ข้อความโดยตรง | รองรับ     |
-| ห้อง           | รองรับ     |
-| เธรด         | ไม่รองรับ |
-| สื่อ           | เฉพาะ URL      |
-| ปฏิกิริยา       | รองรับ     |
-| คำสั่งแบบเนทีฟ | ไม่รองรับ |
+| ฟีเจอร์          | สถานะ                 |
+| --------------- | --------------------- |
+| ข้อความส่วนตัว   | รองรับ                 |
+| ห้อง             | รองรับ                 |
+| เธรด             | ไม่รองรับ              |
+| สื่อ              | เฉพาะ URL              |
+| การแสดงความรู้สึก | รองรับ                 |
+| คำสั่งแบบเนทีฟ    | ไม่รองรับ              |
 
-## อ้างอิงการกำหนดค่า (Nextcloud Talk)
+## ข้อมูลอ้างอิงการกำหนดค่า (Nextcloud Talk)
 
-การกำหนดค่าแบบเต็ม: [การกำหนดค่า](/th/gateway/configuration)
+การกำหนดค่าทั้งหมด: [การกำหนดค่า](/th/gateway/configuration)
 
-ตัวเลือกผู้ให้บริการ:
+ตัวเลือกของผู้ให้บริการ:
 
-- `channels.nextcloud-talk.enabled`: เปิด/ปิดการเริ่มต้นช่องทาง
+- `channels.nextcloud-talk.enabled`: เปิด/ปิดการเริ่มทำงานของช่องทาง
 - `channels.nextcloud-talk.baseUrl`: URL ของอินสแตนซ์ Nextcloud
-- `channels.nextcloud-talk.botSecret`: ความลับร่วมของบอต
-- `channels.nextcloud-talk.botSecretFile`: พาธความลับแบบไฟล์ปกติ Symlink จะถูกปฏิเสธ
-- `channels.nextcloud-talk.apiUser`: ผู้ใช้ API สำหรับค้นหาห้อง (การตรวจจับ DM)
+- `channels.nextcloud-talk.botSecret`: ข้อมูลลับที่ใช้ร่วมกันของบอต (สตริงหรือข้อมูลอ้างอิงข้อมูลลับ)
+- `channels.nextcloud-talk.botSecretFile`: พาธข้อมูลลับที่เป็นไฟล์ปกติ ระบบจะปฏิเสธลิงก์สัญลักษณ์
+- `channels.nextcloud-talk.apiUser`: ผู้ใช้ API สำหรับค้นหาห้อง (ตรวจจับข้อความส่วนตัว) และตรวจสอบสถานะ
 - `channels.nextcloud-talk.apiPassword`: รหัสผ่าน API/แอปสำหรับค้นหาห้อง
 - `channels.nextcloud-talk.apiPasswordFile`: พาธไฟล์รหัสผ่าน API
 - `channels.nextcloud-talk.webhookPort`: พอร์ตตัวรับฟัง Webhook (ค่าเริ่มต้น: 8788)
 - `channels.nextcloud-talk.webhookHost`: โฮสต์ Webhook (ค่าเริ่มต้น: 0.0.0.0)
 - `channels.nextcloud-talk.webhookPath`: พาธ Webhook (ค่าเริ่มต้น: /nextcloud-talk-webhook)
 - `channels.nextcloud-talk.webhookPublicUrl`: URL ของ Webhook ที่เข้าถึงได้จากภายนอก
-- `channels.nextcloud-talk.dmPolicy`: `pairing | allowlist | open | disabled`
-- `channels.nextcloud-talk.allowFrom`: รายการอนุญาต DM (ID ผู้ใช้) `open` ต้องใช้ `"*"`
-- `channels.nextcloud-talk.groupPolicy`: `allowlist | open | disabled`
-- `channels.nextcloud-talk.groupAllowFrom`: รายการอนุญาตกลุ่ม (ID ผู้ใช้)
-- `channels.nextcloud-talk.rooms`: การตั้งค่าและรายการอนุญาตต่อห้อง
-- กลุ่มการเข้าถึงผู้ส่งแบบคงที่สามารถอ้างอิงจาก `allowFrom` และ `groupAllowFrom` ด้วย `accessGroup:<name>`
-- `channels.nextcloud-talk.historyLimit`: ขีดจำกัดประวัติกลุ่ม (0 ปิดใช้งาน)
-- `channels.nextcloud-talk.dmHistoryLimit`: ขีดจำกัดประวัติ DM (0 ปิดใช้งาน)
-- `channels.nextcloud-talk.dms`: การแทนที่ต่อ DM (historyLimit)
-- `channels.nextcloud-talk.textChunkLimit`: ขนาดชังก์ข้อความขาออก (อักขระ)
-- `channels.nextcloud-talk.chunkMode`: `length` (ค่าเริ่มต้น) หรือ `newline` เพื่อแยกตามบรรทัดว่าง (ขอบเขตย่อหน้า) ก่อนแบ่งชังก์ตามความยาว
-- `channels.nextcloud-talk.blockStreaming`: ปิดใช้งานการสตรีมบล็อกสำหรับช่องทางนี้
-- `channels.nextcloud-talk.blockStreamingCoalesce`: การปรับแต่งการรวมการสตรีมบล็อก
+- `channels.nextcloud-talk.dmPolicy`: `pairing | allowlist | open | disabled` (ค่าเริ่มต้น: pairing) `open` ต้องใช้ `allowFrom=["*"]`
+- `channels.nextcloud-talk.allowFrom`: รายการอนุญาตข้อความส่วนตัว (ID ผู้ใช้)
+- `channels.nextcloud-talk.groupPolicy`: `allowlist | open | disabled` (ค่าเริ่มต้น: allowlist)
+- `channels.nextcloud-talk.groupAllowFrom`: รายการอนุญาตผู้ส่งในห้อง (ID ผู้ใช้) หากไม่ได้ตั้งค่า จะย้อนกลับไปใช้ `allowFrom`
+- `channels.nextcloud-talk.rooms`: การตั้งค่าและรายการอนุญาตต่อห้อง (ดูด้านบน)
+- สามารถอ้างอิงกลุ่มการเข้าถึงแบบคงที่จาก `allowFrom` และ `groupAllowFrom` ด้วย `accessGroup:<name>`
+- `channels.nextcloud-talk.historyLimit`: ขีดจำกัดประวัติกลุ่ม (0 คือปิดใช้งาน)
+- `channels.nextcloud-talk.dmHistoryLimit`: ขีดจำกัดประวัติข้อความส่วนตัว (0 คือปิดใช้งาน)
+- `channels.nextcloud-talk.dms`: การเขียนทับเฉพาะข้อความส่วนตัวโดยใช้ ID ผู้ใช้เป็นคีย์ (`historyLimit`)
+- `channels.nextcloud-talk.textChunkLimit`: ขนาดส่วนข้อความขาออกเป็นจำนวนอักขระ (ค่าเริ่มต้น: 4000)
+- `channels.nextcloud-talk.chunkMode`: `length` (ค่าเริ่มต้น) หรือ `newline` เพื่อแบ่งตามบรรทัดว่าง (ขอบเขตย่อหน้า) ก่อนแบ่งตามความยาว
+- `channels.nextcloud-talk.blockStreaming`: ปิดใช้งานการสตรีมแบบบล็อกสำหรับช่องทางนี้
+- `channels.nextcloud-talk.blockStreamingCoalesce`: การปรับแต่งการรวมการสตรีมแบบบล็อก
+- `channels.nextcloud-talk.responsePrefix`: คำนำหน้าการตอบกลับขาออก
+- `channels.nextcloud-talk.markdown.tables`: โหมดแสดงผลตาราง Markdown (`off | bullets | code | block`)
 - `channels.nextcloud-talk.mediaMaxMb`: ขีดจำกัดสื่อขาเข้า (MB)
+- `channels.nextcloud-talk.network.dangerouslyAllowPrivateNetwork`: อนุญาตให้โฮสต์ Nextcloud ส่วนตัว/ภายในผ่านตัวป้องกัน SSRF
+- `channels.nextcloud-talk.accounts.<id>`: การเขียนทับเฉพาะบัญชี (ใช้คีย์เดียวกัน) โดย `defaultAccount` เลือกบัญชีเริ่มต้น ตัวแปรสภาพแวดล้อม `NEXTCLOUD_TALK_BOT_SECRET` / `NEXTCLOUD_TALK_API_PASSWORD` ใช้กับบัญชีเริ่มต้นเท่านั้น
 
 ## ที่เกี่ยวข้อง
 
 - [ภาพรวมช่องทาง](/th/channels) — ช่องทางทั้งหมดที่รองรับ
-- [การจับคู่](/th/channels/pairing) — การยืนยันตัวตน DM และโฟลว์การจับคู่
-- [กลุ่ม](/th/channels/groups) — พฤติกรรมแชตกลุ่มและการควบคุมด้วยการกล่าวถึง
+- [การจับคู่](/th/channels/pairing) — การยืนยันตัวตนสำหรับข้อความส่วนตัวและขั้นตอนการจับคู่
+- [กลุ่ม](/th/channels/groups) — ลักษณะการทำงานของแชตกลุ่มและการกำหนดให้ต้องกล่าวถึง
 - [การกำหนดเส้นทางช่องทาง](/th/channels/channel-routing) — การกำหนดเส้นทางเซสชันสำหรับข้อความ
 - [ความปลอดภัย](/th/gateway/security) — โมเดลการเข้าถึงและการเสริมความแข็งแกร่ง

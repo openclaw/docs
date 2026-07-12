@@ -1,21 +1,20 @@
 ---
 read_when:
     - Ви хочете, щоб Claude Code використовував MCP-інструменти OpenClaw Gateway
-    - Вам потрібен тимчасовий, прив’язаний до сеансу дозвіл MCP для зовнішнього стенда
-summary: Довідник CLI для `openclaw attach` (запуск Claude Code з обмеженим за областю дії дозволом Gateway MCP)
-title: Підключення CLI
+    - Вам потрібен тимчасовий дозвіл MCP, прив’язаний до сеансу, для зовнішнього тестового середовища
+summary: Довідник CLI для `openclaw attach` (запуск Claude Code з обмеженим дозволом Gateway MCP)
+title: Підключити CLI
 x-i18n:
-    generated_at: "2026-07-02T01:14:35Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T13:06:06Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1445c9bbf28e5365d070f69bf8f53e249d70ac6e8690ed68831404d041e41e86
+    source_hash: 0d8ac60724adef1439af09179806af537b8f2925f06b3715850e4dd3b83b080f
     source_path: cli/attach.md
     workflow: 16
 ---
 
-`openclaw attach` запускає Claude Code зі суворою тимчасовою конфігурацією MCP, привʼязаною
-до одного сеансу Gateway.
+`openclaw attach` запускає Claude Code із суворою тимчасовою конфігурацією MCP, прив’язаною до одного сеансу Gateway.
 
 ```sh
 openclaw attach
@@ -25,14 +24,11 @@ openclaw attach --print-config
 
 Параметри:
 
-- `--session <key>` привʼязує дозвіл до сеансу Gateway. За замовчуванням використовується основний сеанс.
-- `--ttl <ms>` запитує додатний TTL дозволу в мілісекундах. Gateway застосовує власну верхню межу.
-- `--bin <path>` вибирає бінарний файл Claude Code. За замовчуванням використовується `claude`.
-- `--print-config` записує тимчасовий `.mcp.json`, виводить команду запуску й змінні середовища та залишає дозвіл активним до завершення TTL.
+- `--session <key>` прив’язує дозвіл до сеансу Gateway. Типово використовується основний сеанс.
+- `--ttl <ms>` запитує додатний строк дії дозволу в мілісекундах. Gateway застосовує власне максимальне обмеження.
+- `--bin <path>` вибирає виконуваний файл Claude Code. Типове значення: `claude`.
+- `--print-config` записує тимчасовий файл `.mcp.json`, виводить команду запуску та змінні середовища й залишає дозвіл чинним до завершення строку дії (не запускає Claude Code і не відкликає дозвіл).
 
-Bearer-токен передається через змінні середовища, а не через argv. OpenClaw
-запускає Claude Code з `--strict-mcp-config --mcp-config <path>`, щоб навколишні
-сервери Claude MCP не приєднувалися до прикріпленого сеансу. Звичайні запуски відкликають
-дозвіл, коли процес Claude Code завершується.
+Токен пред’явника передається через змінні середовища, а не через argv. OpenClaw запускає Claude Code з параметрами `--strict-mcp-config --mcp-config <path>`, щоб наявні в середовищі сервери Claude MCP не приєднувалися до підключеного сеансу. За звичайного запуску (без `--print-config`) дозвіл відкликається після завершення процесу Claude Code.
 
-Див. також: [Gateway CLI](/uk/cli/gateway), [MCP CLI](/uk/cli/mcp) і [ACP CLI](/uk/cli/acp).
+Див. також: [CLI Gateway](/uk/cli/gateway), [CLI MCP](/uk/cli/mcp) і [CLI ACP](/uk/cli/acp).

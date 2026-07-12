@@ -4,13 +4,13 @@ read_when:
 summary: メディア理解プロバイダーのサポートを追加します。リアルタイム文字起こしプロバイダーのサポートを追加します。
 title: Deepgram Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:56:12Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:28:48Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: 93383c01d5a5e1e1d412d396ec1def12f388fc7c5da102573373dbc8180497a3
     source_path: plugins/reference/deepgram.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Deepgram Plugin
@@ -20,12 +20,12 @@ x-i18n:
 ## 配布
 
 - パッケージ: `@openclaw/deepgram-provider`
-- インストール経路: OpenClaw に含まれています
+- インストール方法: OpenClaw に同梱
 
-## サーフェス
+## 提供インターフェース
 
 コントラクト: mediaUnderstandingProviders, realtimeTranscriptionProviders
 
 ## 関連ドキュメント
 
-- [deepgram](/ja-JP/providers/deepgram)
+- [Deepgram](/ja-JP/providers/deepgram)

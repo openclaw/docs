@@ -1,103 +1,87 @@
 ---
 read_when:
-    - Je wilt wisselen tussen stable/beta/dev
+    - Je wilt schakelen tussen stable/extended-stable/beta/dev
     - Je wilt een specifieke versie, tag of SHA vastzetten
-    - Je tagt of publiceert prereleases
+    - U tagt of publiceert prereleases
 sidebarTitle: Release Channels
-summary: 'Stabiele, bèta- en dev-kanalen: semantiek, overschakelen, vastzetten en taggen'
+summary: 'Stable-, extended-stable-, bèta- en dev-kanalen: semantiek, wisselen, vastzetten en taggen'
 title: Releasekanalen
 x-i18n:
-    generated_at: "2026-06-27T17:42:16Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:02:42Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7b5b0b8b43dd15b3fdd83d28c5d0292d260594325ad6e6e95533720ba3e59277
+    source_hash: a99e31f5121c0ab8696e638cb10a7ce16e8f32c81e4b2bef1f703eef71191494
     source_path: install/development-channels.md
     workflow: 16
 ---
 
-OpenClaw levert drie updatekanalen:
+OpenClaw wordt via vier updatekanalen uitgebracht:
 
-- **stable**: npm dist-tag `latest`. Aanbevolen voor de meeste gebruikers.
-- **beta**: npm dist-tag `beta` wanneer die actueel is; als beta ontbreekt of ouder is dan
-  de nieuwste stabiele release, valt de updateflow terug op `latest`.
-- **dev**: bewegende head van `main` (git). npm dist-tag: `dev` (wanneer gepubliceerd).
-  De `main`-branch is bedoeld voor experimenten en actieve ontwikkeling. Deze kan
-  onvolledige functies of breaking changes bevatten. Gebruik deze niet voor productie-gateways.
+- **stable**: npm-dist-tag `latest`. Aanbevolen voor de meeste gebruikers.
+- **extended-stable**: npm-dist-tag `extended-stable`. Een volledig nieuw pakketkanaal voor een eerdere, nog ondersteunde maand. Het is uitsluitend beschikbaar als pakket en installatie vindt alleen op de voorgrond plaats. Een opgeslagen selectie ontvangt alleen-lezen updatehints wanneer `update.checkOnStart` is ingeschakeld, maar past updates nooit automatisch toe.
+- **beta**: npm-dist-tag `beta`. Valt terug op `latest` wanneer `beta` ontbreekt of ouder is dan de huidige stabiele release.
+- **dev**: de verplaatsende kop van `main` (git). npm-dist-tag `dev` wanneer gepubliceerd. `main` is bedoeld voor experimenten en actieve ontwikkeling; deze kan onvolledige functies of ingrijpende wijzigingen bevatten. Gebruik deze niet voor Gateways in productie.
 
-We leveren stabiele builds meestal eerst naar **beta**, testen ze daar en voeren daarna een
-expliciete promotiestap uit die de gecontroleerde build naar `latest` verplaatst zonder
-het versienummer te wijzigen. Maintainers kunnen indien nodig ook een stabiele release
-rechtstreeks naar `latest` publiceren. Dist-tags zijn de bron van waarheid voor npm-
-installaties.
+Stabiele builds worden doorgaans eerst via **beta** uitgebracht, daar gevalideerd en vervolgens zonder versieverhoging naar **latest** gepromoveerd. Onderhouders kunnen ook rechtstreeks naar `latest` publiceren. Dist-tags zijn de gezaghebbende bron voor npm-installaties.
 
 ## Van kanaal wisselen
 
 ```bash
 openclaw update --channel stable
+openclaw update --channel extended-stable
 openclaw update --channel beta
 openclaw update --channel dev
 ```
 
-`--channel` bewaart je keuze in de configuratie (`update.channel`) en stemt de
-installatiemethode daarop af:
+`--channel` slaat de keuze permanent op in `update.channel` in de configuratie en stuurt beide installatiepaden aan:
 
-- **`stable`** (pakketinstallaties): updates via npm dist-tag `latest`.
-- **`beta`** (pakketinstallaties): geeft de voorkeur aan npm dist-tag `beta`, maar valt terug op
-  `latest` wanneer `beta` ontbreekt of ouder is dan de huidige stabiele tag.
-- **`stable`** (git-installaties): checkt de nieuwste stabiele git-tag uit, met uitsluiting van
-  semver-prerelease-tags zoals `-alpha.N`, `-beta.N`, `-rc.N`, `-dev.N`,
-  `-next.N`, `-preview.N`, `-canary.N`, `-nightly.N` en andere prerelease-
-  suffixen.
-- **`beta`** (git-installaties): geeft de voorkeur aan de nieuwste beta-git-tag, maar valt terug op
-  de nieuwste stabiele git-tag wanneer beta ontbreekt of ouder is.
-- **`dev`**: zorgt voor een git-checkout (standaard `~/openclaw`, of
-  `$OPENCLAW_HOME/openclaw` wanneer `OPENCLAW_HOME` is ingesteld; overschrijf met
-  `OPENCLAW_GIT_DIR`), schakelt over naar `main`, rebaset op upstream, bouwt en
-  installeert de globale CLI vanuit die checkout.
+| Kanaal            | npm-/pakketinstallaties                                                                                                                                                                                                     | git-installaties                                                                                                                                                                                  |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `stable`          | dist-tag `latest`                                                                                                                                                                                                            | nieuwste stabiele git-tag (sluit `-alpha.N`, `-beta.N`, `-rc.N`, `-dev.N`, `-next.N`, `-preview.N`, `-canary.N`, `-nightly.N` en andere benoemde prerelease-achtervoegsels uit)                    |
+| `extended-stable` | verwerkt de openbare npm-selector `extended-stable`, verifieert het exact geselecteerde pakket en installeert die exacte versie. Stopt bij fouten zonder terugval op `latest`, `beta` of `dev`.                              | niet ondersteund: OpenClaw laat de checkout ongewijzigd en vraagt u een pakketinstallatie te gebruiken                                                                                             |
+| `beta`            | dist-tag `beta`, met terugval op `latest` wanneer `beta` ontbreekt of ouder is                                                                                                                                               | nieuwste bèta-git-tag, met terugval op de nieuwste stabiele git-tag wanneer de bèta ontbreekt of ouder is                                                                                          |
+| `dev`             | dist-tag `dev` (zeldzaam; de meeste dev-gebruikers gebruiken git-installaties)                                                                                                                                               | haalt wijzigingen op, rebaset de checkout op de upstream-branch `main`, bouwt en installeert de globale CLI opnieuw                                                                               |
+
+Voor `dev`-git-installaties is de standaardcheckout `~/openclaw` (of `$OPENCLAW_HOME/openclaw` wanneer `OPENCLAW_HOME` is ingesteld); overschrijf dit met `OPENCLAW_GIT_DIR`.
 
 <Tip>
-Als je stable en dev parallel wilt gebruiken, houd dan twee clones aan en wijs je gateway naar de stabiele.
+Gebruik twee afzonderlijke checkouts om stable en dev parallel te behouden en wijs elke Gateway naar zijn eigen checkout.
 </Tip>
 
-## Eenmalig een versie of tag targeten
+## Eenmalig een versie of tag kiezen
 
-Gebruik `--tag` om een specifieke dist-tag, versie of pakketspecificatie te targeten voor één
-update **zonder** je opgeslagen kanaal te wijzigen:
+Gebruik `--tag` om voor één update een specifieke dist-tag, versie of pakketspecificatie te kiezen, **zonder** het opgeslagen kanaal te wijzigen:
 
 ```bash
-# Install a specific version
+# Een specifieke versie installeren
 openclaw update --tag 2026.4.1-beta.1
 
-# Install from the beta dist-tag (one-off, does not persist)
+# Installeren vanaf de beta-dist-tag (eenmalig, wordt niet opgeslagen)
 openclaw update --tag beta
 
-# Switch to the moving GitHub main checkout
+# Overschakelen naar de verplaatsende GitHub-main-checkout (permanent)
 openclaw update --channel dev
 
-# Install a specific npm package spec
+# Een specifieke npm-pakketspecificatie installeren
 openclaw update --tag openclaw@2026.4.1-beta.1
 
-# Install from GitHub main once without persisting the channel
+# Eenmalig installeren vanaf GitHub main zonder het kanaal op te slaan
 openclaw update --tag main
 ```
 
 Opmerkingen:
 
-- `--tag` is alleen van toepassing op **pakketinstallaties (npm)**. Git-installaties negeren dit.
-- De tag wordt niet opgeslagen. Je volgende `openclaw update` gebruikt zoals gebruikelijk
-  je geconfigureerde kanaal.
-- Voor pakketinstallaties verpakt OpenClaw GitHub/git-bronspecificaties vooraf in een
-  tijdelijke tarball vóór de gefaseerde npm-installatie. Gebruik `--channel dev` of
-  `--install-method git --version main` wanneer je de bewegende `main`-
-  checkout als je permanente installatie wilt.
-- Downgradebescherming: als de doelversie ouder is dan je huidige versie,
-  vraagt OpenClaw om bevestiging (sla over met `--yes`).
-- `--channel beta` verschilt van `--tag beta`: de kanaalflow kan terugvallen op
-  stable/latest wanneer beta ontbreekt of ouder is, terwijl `--tag beta` de
-  ruwe `beta`-dist-tag target voor die ene run.
+- `--tag` is **alleen van toepassing op pakketinstallaties (npm)**; git-installaties negeren deze optie.
+- De tag wordt niet opgeslagen; de volgende `openclaw update` gebruikt het geconfigureerde kanaal.
+- `--tag main` wordt voor die ene uitvoering toegewezen aan de npm-compatibele specificatie `github:openclaw/openclaw#main`. Gebruik voor een permanente, verplaatsende `main`-installatie `openclaw update --channel dev` (pakketinstallaties schakelen over naar een git-checkout), of installeer opnieuw met de git-methode van het installatieprogramma:
+  `curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method git --version main`.
+  Het npm-installatiepad weigert GitHub-/git-brondoelen volledig en verwijst u in plaats daarvan naar de git-methode.
+- Bescherming tegen downgraden: als de doelversie ouder is dan de huidige versie, vraagt OpenClaw om bevestiging (sla dit over met `--yes`).
+- Extended-stable gebruikt altijd zijn geverifieerde, exacte pakketdoel. Het is geen eenmalige alias voor `--tag extended-stable` en `--tag` kan niet worden gecombineerd met een effectief extended-stable-kanaal.
+- `--channel beta` verschilt van `--tag beta`: de kanaalprocedure kan terugvallen op stable/latest wanneer beta ontbreekt of ouder is, terwijl `--tag beta` voor die ene uitvoering altijd rechtstreeks de dist-tag `beta` kiest.
 
-## Dry run
+## Proefuitvoering
 
 Bekijk vooraf wat `openclaw update` zou doen zonder wijzigingen aan te brengen:
 
@@ -108,17 +92,16 @@ openclaw update --tag 2026.4.1-beta.1 --dry-run
 openclaw update --dry-run --json
 ```
 
-De dry run toont het effectieve kanaal, de doelversie, geplande acties en
-of bevestiging voor een downgrade vereist zou zijn.
+De proefuitvoering meldt het effectieve kanaal, de doelversie, de geplande acties en of bevestiging voor een downgrade vereist zou zijn.
 
 ## Plugins en kanalen
 
-Wanneer je met `openclaw update` van kanaal wisselt, synchroniseert OpenClaw ook Plugin-
-bronnen:
+Wanneer u met `openclaw update` van kanaal wisselt, worden ook de Plugin-bronnen gesynchroniseerd:
 
-- `dev` geeft de voorkeur aan gebundelde Plugins uit de git-checkout.
-- `stable` en `beta` herstellen via npm geïnstalleerde Plugin-pakketten.
-- Via npm geïnstalleerde Plugins worden bijgewerkt nadat de core-update is voltooid.
+- `dev` schakelt geïnstalleerde Plugins met een gebundelde tegenhanger terug naar hun gebundelde bron (git-checkout).
+- `stable` en `beta` herstellen via npm of ClawHub geïnstalleerde Plugin-pakketten.
+- `extended-stable` koppelt in aanmerking komende officiële npm-Plugins met kale/standaard- of `latest`-intentie aan de exact geïnstalleerde kernversie. Tijdens runtime worden geen `@extended-stable`-tags van Plugins opgevraagd.
+- Via npm geïnstalleerde Plugins worden bijgewerkt nadat de kernupdate is voltooid.
 
 ## Huidige status controleren
 
@@ -126,31 +109,28 @@ bronnen:
 openclaw update status
 ```
 
-Toont het actieve kanaal, installatietype (git of pakket), huidige versie en
-bron (configuratie, git-tag, git-branch of standaard).
+Toont het actieve kanaal (met de bron die dit heeft bepaald: configuratie, git-tag, git-branch, geïnstalleerde versie of standaardwaarde), het installatietype (git of pakket), de huidige versie en de beschikbaarheid van updates.
 
-## Best practices voor taggen
+## Aanbevolen werkwijzen voor tags
 
-- Tag releases waarop je git-checkouts wilt laten landen (`vYYYY.M.PATCH` voor stable,
-  `vYYYY.M.PATCH-beta.N` voor beta; benoemde semver-prerelease-suffixen zoals
-  `-alpha.N`, `-rc.N` en `-next.N` zijn geen stabiele doelen).
-- Legacy numerieke stabiele tags zoals `vYYYY.M.PATCH-1` en `v1.0.1-1` worden nog steeds
-  herkend als stabiele git-tags voor compatibiliteit.
-- `vYYYY.M.PATCH.beta.N` wordt ook herkend voor compatibiliteit, maar geef de voorkeur aan `-beta.N`.
-- Houd tags onveranderlijk: verplaats of hergebruik nooit een tag.
-- npm dist-tags blijven de bron van waarheid voor npm-installaties:
+- Tag releases waarop git-checkouts moeten uitkomen: `vYYYY.M.PATCH` voor stable en `vYYYY.M.PATCH-beta.N` voor beta. Benoemde prerelease-achtervoegsels zoals `-alpha.N`, `-rc.N` en `-next.N` zijn geen doelen voor stable of beta.
+- Verouderde numerieke stable-tags zoals `vYYYY.M.PATCH-1` en `v1.0.1-1` worden voor compatibiliteit nog steeds als stabiele git-tags herkend.
+- `vYYYY.M.PATCH.beta.N` (gescheiden door punten) wordt eveneens voor compatibiliteit herkend; geef de voorkeur aan `-beta.N`.
+- Houd tags onveranderlijk: verplaats of hergebruik een tag nooit.
+- npm-dist-tags blijven de gezaghebbende bron voor npm-installaties:
   - `latest` -> stable
-  - `beta` -> kandidaat-build of beta-eerst stabiele build
-  - `dev` -> main-snapshot (optioneel)
+  - `extended-stable` -> pakketrelease van een eerdere, nog ondersteunde maand
+  - `beta` -> kandidaatbuild of stabiele build die eerst via beta wordt uitgebracht
+  - `dev` -> momentopname van main (optioneel)
 
 ## Beschikbaarheid van de macOS-app
 
-Beta- en dev-builds bevatten mogelijk **geen** macOS-apprelease. Dat is OK:
+Beta- en dev-builds bevatten mogelijk **geen** release van de macOS-app. Dat is geen probleem:
 
-- De git-tag en npm dist-tag kunnen nog steeds worden gepubliceerd.
-- Vermeld "geen macOS-build voor deze beta" in release notes of changelog.
+- De git-tag en npm-dist-tag kunnen nog steeds afzonderlijk worden gepubliceerd.
+- Vermeld "geen macOS-build voor deze beta" in de releaseopmerkingen of changelog.
 
 ## Gerelateerd
 
 - [Bijwerken](/nl/install/updating)
-- [Installer-internals](/nl/install/installer)
+- [Interne werking van het installatieprogramma](/nl/install/installer)

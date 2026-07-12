@@ -4,21 +4,28 @@ read_when:
 summary: Werkruimtesjabloon voor BOOT.md
 title: BOOT.md-sjabloon
 x-i18n:
-    generated_at: "2026-04-29T23:16:55Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:23:17Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 78c31ef770af20fee60c5d9998c7b2eefb0e2139076f26707ee4cf84502b59f8
+    source_hash: 1adfb4d71f1f03716a1ddc4774a4cb6ead4b8be65bd9bb34066a9e1929a36b21
     source_path: reference/templates/BOOT.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # BOOT.md
 
-Voeg korte, expliciete instructies toe voor wat OpenClaw bij het opstarten moet doen (schakel `hooks.internal.enabled` in).
-Als de taak een bericht verstuurt, gebruik dan de berichttool en antwoord daarna met de exacte
-stille token `NO_REPLY` / `no_reply`.
+Voeg hier korte, expliciete opstartinstructies toe. De meegeleverde `boot-md`-hook voert dit bestand eenmaal per agentwerkruimte uit telkens wanneer de Gateway start, mits het bestand bestaat en inhoud bevat die niet uitsluitend uit witruimte bestaat. Meerdere agents die een werkruimte delen, activeren samen slechts één uitvoering.
+
+De hook wordt standaard uitgeschakeld geleverd. Schakel deze eerst in:
+
+```bash
+openclaw hooks enable boot-md
+```
+
+Als een checklistitem een bericht verzendt, gebruik dan de berichtentool en antwoord vervolgens met exact het stille token `NO_REPLY` (hoofdletterongevoelig).
 
 ## Gerelateerd
 
 - [Agentwerkruimte](/nl/concepts/agent-workspace)
+- [Hooks](/nl/automation/hooks#boot-md)

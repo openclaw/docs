@@ -1,32 +1,30 @@
 ---
 read_when:
     - De macOS-ontwikkelomgeving instellen
-summary: Installatiehandleiding voor ontwikkelaars die aan de OpenClaw macOS-app werken
-title: macOS-ontwikkelomgeving
+summary: Installatiehandleiding voor ontwikkelaars die aan de OpenClaw-app voor macOS werken
+title: macOS-ontwikkelomgeving instellen
 x-i18n:
-    generated_at: "2026-07-04T06:40:58Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:06:04Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5438de16d6d796f4c3df5d896f288ee3dfaba16471a4abb932d277cd8e8b84f8
+    source_hash: bd7d556af92892d3deea3f5d8238a33cd413e10b0b377468396221e174ace8fe
     source_path: platforms/mac/dev-setup.md
     workflow: 16
 ---
 
-# macOS-ontwikkelaarssetup
+# macOS-ontwikkelaarsconfiguratie
 
-Bouw en voer de OpenClaw macOS-applicatie uit vanaf de broncode.
+Bouw de OpenClaw-macOS-app vanuit de broncode en voer deze uit.
 
 ## Vereisten
 
-Controleer voordat je de app bouwt of je het volgende hebt geïnstalleerd:
-
-1. **Xcode 26.2+**: Vereist voor Swift-ontwikkeling.
-2. **Node.js 24 & pnpm**: Aanbevolen voor de Gateway, CLI en verpakkingsscripts. Node 22 LTS, momenteel `22.19+`, blijft ondersteund voor compatibiliteit.
+- **Xcode 26.2+** (Swift 6.2-toolchain), op de nieuwste macOS-versie die
+  beschikbaar is via Software Update.
+- **Node.js 24 en pnpm** voor de Gateway, CLI en verpakkingsscripts. Node
+  22.19+ werkt ook.
 
 ## 1. Afhankelijkheden installeren
-
-Installeer de projectbrede afhankelijkheden:
 
 ```bash
 pnpm install
@@ -34,81 +32,81 @@ pnpm install
 
 ## 2. De app bouwen en verpakken
 
-Voer het volgende uit om de macOS-app te bouwen en te verpakken naar `dist/OpenClaw.app`:
-
 ```bash
 ./scripts/package-mac-app.sh
 ```
 
-Als je geen Apple Developer ID-certificaat hebt, gebruikt het script automatisch **ad-hoc-ondertekening** (`-`).
+Dit levert `dist/OpenClaw.app` op. Zonder een Apple Developer ID-certificaat
+valt het script terug op ad-hocondertekening.
 
-Zie de README van de macOS-app voor ontwikkelmodi, ondertekeningsvlaggen en probleemoplossing voor Team ID:
-[https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md](https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md)
+Zie voor ontwikkelmodi, ondertekeningsvlaggen en het oplossen van problemen met de Team ID
+[apps/macos/README.md](https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md).
+Snelle ontwikkelcyclus vanuit de hoofdmap van de repository: `scripts/restart-mac.sh` (voeg `--no-sign` toe voor
+ad-hocondertekening; TCC-machtigingen blijven niet behouden met `--no-sign`).
 
-> **Opmerking**: Ad-hoc ondertekende apps kunnen beveiligingsmeldingen veroorzaken. Als de app direct crasht met "Abort trap 6", zie de sectie [Probleemoplossing](#troubleshooting).
+<Note>
+Ad-hocondertekende apps kunnen beveiligingsmeldingen activeren. Als de app
+onmiddellijk vastloopt met "Abort trap 6", raadpleeg dan [Probleemoplossing](#troubleshooting).
+</Note>
 
 ## 3. De CLI en Gateway installeren
 
-De verpakte app bevat het canonieke installatieprogramma `scripts/install-cli.sh`. Kies op een
-nieuw profiel tijdens onboarding **This Mac**; de app installeert de
-bijbehorende CLI en runtime in de gebruikersruimte voordat de Gateway-wizard wordt gestart.
+De verpakte app bevat het canonieke installatieprogramma `scripts/install-cli.sh`. Kies bij een
+nieuw profiel tijdens de eerste configuratie **This Mac**; de app installeert de
+bijbehorende CLI en runtime in de gebruikersomgeving voordat de Gateway-wizard wordt gestart.
 
-Installeer voor handmatig herstel tijdens ontwikkeling zelf de bijbehorende CLI:
+Installeer voor handmatig herstel tijdens de ontwikkeling zelf de bijbehorende CLI:
 
 ```bash
 npm install -g openclaw@<version>
 ```
 
-`pnpm add -g openclaw@<version>` en `bun add -g openclaw@<version>` werken ook.
-Voor de Gateway-runtime blijft Node de aanbevolen route.
+`pnpm add -g openclaw@<version>` en `bun add -g openclaw@<version>` werken
+ook. Node blijft de aanbevolen runtime voor de Gateway zelf.
 
 ## Probleemoplossing
 
-### Build mislukt: toolchain- of SDK-mismatch
+### Bouwen mislukt: toolchain of SDK komt niet overeen
 
-De build van de macOS-app verwacht de nieuwste macOS-SDK en Swift 6.2-toolchain.
-
-**Systeemafhankelijkheden (vereist):**
-
-- **Nieuwste macOS-versie beschikbaar in Software-update** (vereist door Xcode 26.2-SDK's)
-- **Xcode 26.2** (Swift 6.2-toolchain)
-
-**Controles:**
+Voor het bouwen van de macOS-app zijn de nieuwste macOS-SDK en de Swift 6.2-toolchain
+(Xcode 26.2+) vereist.
 
 ```bash
 xcodebuild -version
 xcrun swift --version
 ```
 
-Als de versies niet overeenkomen, werk macOS/Xcode bij en voer de build opnieuw uit.
+Als de versies niet overeenkomen, werk macOS/Xcode dan bij en voer de build opnieuw uit.
 
-### App crasht bij het verlenen van toestemming
+### App loopt vast bij het verlenen van machtigingen
 
-Als de app crasht wanneer je toegang tot **Spraakherkenning** of **Microfoon** probeert toe te staan, kan dit komen door een beschadigde TCC-cache of een handtekeningmismatch.
+Als de app vastloopt wanneer u toegang tot **Speech Recognition** of
+**Microphone** probeert toe te staan, kan dit worden veroorzaakt door een beschadigde TCC-cache of een niet-overeenkomende ondertekening.
 
-**Oplossing:**
-
-1. Reset de TCC-machtigingen:
+1. Stel de TCC-machtigingen voor de bundel-ID voor foutopsporing opnieuw in:
 
    ```bash
    tccutil reset All ai.openclaw.mac.debug
    ```
 
-2. Als dat mislukt, wijzig dan tijdelijk de `BUNDLE_ID` in [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) om macOS een "schone lei" te laten gebruiken.
+2. Als dat niet werkt, wijzig dan tijdelijk `BUNDLE_ID` in
+   [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh)
+   om macOS met een schone lei te laten beginnen.
 
-### Gateway blijft oneindig op "Starting..."
+### Gateway blijft onbeperkt op "Starting..." staan
 
-Als de gatewaystatus op "Starting..." blijft staan, controleer dan of een zombieproces de poort bezet houdt:
+Controleer of een zombieproces de poort bezet houdt:
 
 ```bash
 openclaw gateway status
 openclaw gateway stop
 
-# Als je geen LaunchAgent gebruikt (ontwikkelmodus / handmatige runs), zoek dan de listener:
+# Als u geen LaunchAgent gebruikt (ontwikkelmodus / handmatige uitvoeringen), zoek dan het luisterende proces:
 lsof -nP -iTCP:18789 -sTCP:LISTEN
 ```
 
-Als een handmatige run de poort bezet houdt, stop dat proces dan (Ctrl+C). Als laatste redmiddel kun je de PID beëindigen die je hierboven hebt gevonden.
+Als een handmatige uitvoering de poort bezet houdt, stop deze dan (Ctrl+C) of beëindig als
+laatste redmiddel de hierboven gevonden PID.
 
 ## Gerelateerd
 

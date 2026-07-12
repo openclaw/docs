@@ -1,50 +1,50 @@
 ---
 read_when:
-    - Anda menginginkan instalasi yang dapat direproduksi dan dapat dikembalikan ke versi sebelumnya
+    - Anda menginginkan instalasi yang dapat direproduksi dan dibatalkan kembali
     - Anda sudah menggunakan Nix/NixOS/Home Manager
-    - Anda ingin semuanya dikunci dan dikelola secara deklaratif
+    - Anda ingin semuanya dipatok dan dikelola secara deklaratif
 summary: Instal OpenClaw secara deklaratif dengan Nix
 title: Nix
 x-i18n:
-    generated_at: "2026-05-06T17:57:21Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:19:45Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1b4c2eca298ac7ae60baea4d06855edb73c0b8bfe253a3f478d93e934b31253b
+    source_hash: 6f74e259ec3d909c73d9184db24d236135db04c29c2e7fab9be9e6fa7f98ba91
     source_path: install/nix.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Instal OpenClaw secara deklaratif dengan **[nix-openclaw](https://github.com/openclaw/nix-openclaw)** - modul Home Manager pihak pertama yang sudah lengkap.
+Instal OpenClaw secara deklaratif dengan **[nix-openclaw](https://github.com/openclaw/nix-openclaw)**, modul Home Manager resmi dengan semua komponen yang diperlukan.
 
 <Info>
-Repo [nix-openclaw](https://github.com/openclaw/nix-openclaw) adalah sumber kebenaran untuk instalasi Nix. Halaman ini adalah ikhtisar singkat.
+Repositori [nix-openclaw](https://github.com/openclaw/nix-openclaw) adalah sumber acuan untuk instalasi Nix. Halaman ini merupakan ikhtisar singkat.
 </Info>
 
 ## Yang Anda dapatkan
 
-- Gateway + aplikasi macOS + alat (whisper, spotify, cameras) -- semuanya dipin
-- Layanan launchd yang tetap berjalan setelah reboot
-- Sistem Plugin dengan config deklaratif
-- Rollback instan: `home-manager switch --rollback`
+- Gateway + aplikasi macOS + alat (whisper, spotify, kamera), semuanya dikunci ke versi tertentu
+- Layanan launchd yang tetap berjalan setelah sistem dimulai ulang
+- Sistem Plugin dengan konfigurasi deklaratif
+- Pengembalian instan: `home-manager switch --rollback`
 
 ## Mulai cepat
 
 <Steps>
   <Step title="Instal Determinate Nix">
-    Jika Nix belum terinstal, ikuti instruksi [Determinate Nix installer](https://github.com/DeterminateSystems/nix-installer).
+    Jika Nix belum terinstal, ikuti petunjuk [penginstal Determinate Nix](https://github.com/DeterminateSystems/nix-installer).
   </Step>
   <Step title="Buat flake lokal">
-    Gunakan templat agent-first dari repo nix-openclaw:
+    Gunakan templat yang mengutamakan agen dari repositori nix-openclaw:
     ```bash
     mkdir -p ~/code/openclaw-local
-    # Copy templates/agent-first/flake.nix from the nix-openclaw repo
+    # Salin templates/agent-first/flake.nix dari repositori nix-openclaw
     ```
   </Step>
   <Step title="Konfigurasikan rahasia">
-    Siapkan token bot perpesanan dan kunci API penyedia model Anda. File polos di `~/.secrets/` sudah cukup.
+    Siapkan token bot perpesanan dan kunci API penyedia model Anda. Berkas biasa di `~/.secrets/` dapat digunakan.
   </Step>
-  <Step title="Isi placeholder templat dan beralih">
+  <Step title="Isi placeholder templat dan terapkan">
     ```bash
     home-manager switch
     ```
@@ -54,11 +54,11 @@ Repo [nix-openclaw](https://github.com/openclaw/nix-openclaw) adalah sumber kebe
   </Step>
 </Steps>
 
-Lihat [README nix-openclaw](https://github.com/openclaw/nix-openclaw) untuk opsi modul dan contoh lengkap.
+Lihat [README nix-openclaw](https://github.com/openclaw/nix-openclaw) untuk opsi dan contoh modul lengkap.
 
 ## Perilaku runtime mode Nix
 
-Saat `OPENCLAW_NIX_MODE=1` ditetapkan (otomatis dengan nix-openclaw), OpenClaw masuk ke mode deterministik untuk instalasi yang dikelola Nix. Paket Nix lain dapat menetapkan mode yang sama; nix-openclaw adalah referensi pihak pertama.
+Saat `OPENCLAW_NIX_MODE=1` ditetapkan (otomatis dengan nix-openclaw), OpenClaw memasuki mode deterministik untuk instalasi yang dikelola Nix. Paket Nix lainnya dapat menetapkan mode yang sama; nix-openclaw adalah acuan resmi.
 
 Anda juga dapat menetapkannya secara manual:
 
@@ -66,23 +66,23 @@ Anda juga dapat menetapkannya secara manual:
 export OPENCLAW_NIX_MODE=1
 ```
 
-Di macOS, aplikasi GUI tidak otomatis mewarisi variabel lingkungan shell. Aktifkan mode Nix melalui defaults sebagai gantinya:
+Di macOS, aplikasi GUI tidak mewarisi variabel lingkungan shell. Aktifkan mode Nix melalui `defaults` sebagai gantinya:
 
 ```bash
 defaults write ai.openclaw.mac openclaw.nixMode -bool true
 ```
 
-### Yang berubah dalam mode Nix
+### Perubahan dalam mode Nix
 
-- Alur auto-install dan mutasi mandiri dinonaktifkan
-- `openclaw.json` diperlakukan sebagai immutable. Default turunan startup tetap hanya runtime, dan penulis config seperti setup, onboarding, `openclaw update` yang memutasi, install/update/uninstall/enable Plugin, `doctor --fix`, `doctor --generate-gateway-token`, dan `openclaw config set` menolak mengedit file tersebut.
-- Agent sebaiknya mengedit sumber Nix sebagai gantinya. Untuk nix-openclaw, gunakan [Mulai Cepat](https://github.com/openclaw/nix-openclaw#quick-start) agent-first dan tetapkan config di bawah `programs.openclaw.config` atau `instances.<name>.config`.
-- Dependency yang hilang menampilkan pesan remediasi khusus Nix
-- UI menampilkan banner mode Nix read-only
+- Alur instalasi otomatis dan modifikasi mandiri dinonaktifkan.
+- `openclaw.json` diperlakukan sebagai berkas yang tidak dapat diubah. Nilai default yang diturunkan saat startup hanya berlaku saat runtime, dan penulis konfigurasi (penyiapan, orientasi awal, `openclaw update` yang melakukan perubahan, instalasi/pembaruan/penghapusan/pengaktifan Plugin, `doctor --fix`, `doctor --generate-gateway-token`, `openclaw config set`) tidak akan mengedit berkas tersebut.
+- Edit sumber Nix sebagai gantinya. Untuk nix-openclaw, gunakan [Mulai Cepat](https://github.com/openclaw/nix-openclaw#quick-start) yang mengutamakan agen dan tetapkan konfigurasi di `programs.openclaw.config` atau `instances.<name>.config`.
+- Dependensi yang tidak tersedia akan menampilkan pesan perbaikan khusus Nix.
+- UI menampilkan banner mode Nix hanya-baca.
 
-### Jalur config dan state
+### Jalur konfigurasi dan status
 
-OpenClaw membaca config JSON5 dari `OPENCLAW_CONFIG_PATH` dan menyimpan data yang dapat diubah di `OPENCLAW_STATE_DIR`. Saat berjalan di bawah Nix, tetapkan ini secara eksplisit ke lokasi yang dikelola Nix agar state runtime dan config tetap berada di luar store immutable.
+OpenClaw membaca konfigurasi JSON5 dari `OPENCLAW_CONFIG_PATH` dan menyimpan data yang dapat diubah di `OPENCLAW_STATE_DIR`. Di bawah Nix, tetapkan keduanya secara eksplisit ke lokasi yang dikelola Nix agar status runtime dan konfigurasi tetap berada di luar penyimpanan yang tidak dapat diubah.
 
 | Variabel               | Default                                 |
 | ---------------------- | --------------------------------------- |
@@ -92,29 +92,26 @@ OpenClaw membaca config JSON5 dari `OPENCLAW_CONFIG_PATH` dan menyimpan data yan
 
 ### Penemuan PATH layanan
 
-Layanan Gateway launchd/systemd otomatis menemukan biner profil Nix sehingga
-Plugin dan alat yang melakukan shell out ke executable yang diinstal `nix` berfungsi tanpa
-penyiapan PATH manual:
+Layanan gateway launchd/systemd secara otomatis menemukan biner profil Nix sehingga Plugin dan alat yang menjalankan berkas yang dapat dieksekusi hasil instalasi `nix` melalui shell dapat berfungsi tanpa penyiapan PATH secara manual:
 
-- Saat `NIX_PROFILES` ditetapkan, setiap entri ditambahkan ke PATH layanan dengan
-  prioritas kanan-ke-kiri (sesuai prioritas shell Nix - yang paling kanan menang).
-- Saat `NIX_PROFILES` tidak ditetapkan, `~/.nix-profile/bin` ditambahkan sebagai fallback.
+- Saat `NIX_PROFILES` ditetapkan, setiap entri ditambahkan ke PATH layanan dengan urutan prioritas dari kanan ke kiri (sesuai dengan prioritas shell Nix: yang paling kanan diprioritaskan).
+- Saat `NIX_PROFILES` tidak ditetapkan, `~/.nix-profile/bin` ditambahkan sebagai cadangan.
 
-Ini berlaku untuk lingkungan layanan launchd macOS maupun systemd Linux.
+Hal ini berlaku untuk lingkungan layanan launchd macOS dan systemd Linux.
 
 ## Terkait
 
 <CardGroup cols={2}>
   <Card title="nix-openclaw" href="https://github.com/openclaw/nix-openclaw" icon="arrow-up-right-from-square">
-    Modul Home Manager sumber kebenaran dan panduan penyiapan lengkap.
+    Modul Home Manager sumber acuan dan panduan penyiapan lengkap.
   </Card>
   <Card title="Wizard penyiapan" href="/id/start/wizard" icon="wand-magic-sparkles">
-    Panduan penyiapan CLI non-Nix.
+    Panduan langkah demi langkah penyiapan CLI non-Nix.
   </Card>
   <Card title="Docker" href="/id/install/docker" icon="docker">
-    Penyiapan berbasis container sebagai alternatif non-Nix.
+    Penyiapan dalam kontainer sebagai alternatif non-Nix.
   </Card>
-  <Card title="Memperbarui" href="/id/install/updating" icon="arrow-up-right-from-square">
+  <Card title="Pembaruan" href="/id/install/updating" icon="arrow-up-right-from-square">
     Memperbarui instalasi yang dikelola Home Manager bersama paketnya.
   </Card>
 </CardGroup>

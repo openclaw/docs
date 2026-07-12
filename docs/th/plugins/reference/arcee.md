@@ -1,11 +1,11 @@
 ---
 read_when:
-    - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ plugin arcee
-summary: เพิ่มการรองรับผู้ให้บริการโมเดล Arcee ให้กับ OpenClaw
-title: Arcee Plugin
+    - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin arcee
+summary: เพิ่มการรองรับผู้ให้บริการโมเดล Arcee ใน OpenClaw
+title: Plugin Arcee
 x-i18n:
-    generated_at: "2026-06-27T17:59:50Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:26:20Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 9d4880c859c2498ce3708834cdc62a8ff6babb0571672b99d62cc5c2c7299f8e
@@ -17,14 +17,14 @@ x-i18n:
 
 เพิ่มการรองรับผู้ให้บริการโมเดล Arcee ให้กับ OpenClaw
 
-## การแจกจ่าย
+## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/arcee-provider`
-- เส้นทางการติดตั้ง: npm; ClawHub: `clawhub:@openclaw/arcee-provider`
+- ช่องทางการติดตั้ง: npm; ClawHub: `clawhub:@openclaw/arcee-provider`
 
 ## พื้นผิว
 
-providers: arcee
+ผู้ให้บริการ: arcee
 
 ## เอกสารที่เกี่ยวข้อง
 

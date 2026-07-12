@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Vous installez, configurez ou auditez le Plugin fireworks
+    - Vous installez, configurez ou auditez le plugin fireworks
 summary: Ajoute la prise en charge du fournisseur de modèles Fireworks à OpenClaw.
 title: Plugin Fireworks
 x-i18n:
-    generated_at: "2026-06-27T17:54:29Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T03:08:09Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 1750e345f485fa7d8735a16278422188ad761b0c682cd5f09227f4407d502203
@@ -15,17 +15,17 @@ x-i18n:
 
 # Plugin Fireworks
 
-Ajoute la prise en charge du fournisseur de modèles Fireworks à OpenClaw.
+Ajoute à OpenClaw la prise en charge du fournisseur de modèles Fireworks.
 
 ## Distribution
 
-- Package : `@openclaw/fireworks-provider`
-- Route d’installation : npm ; ClawHub : `clawhub:@openclaw/fireworks-provider`
+- Paquet : `@openclaw/fireworks-provider`
+- Méthode d’installation : npm ; ClawHub : `clawhub:@openclaw/fireworks-provider`
 
-## Surface
+## Interface
 
-providers: fireworks
+fournisseurs : fireworks
 
 ## Documentation associée
 
-- [fireworks](/fr/providers/fireworks)
+- [Fireworks](/fr/providers/fireworks)

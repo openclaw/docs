@@ -1,25 +1,23 @@
 ---
 read_when:
-    - إنشاء أو مراجعة خطط `openclaw secrets apply`
-    - استكشاف أخطاء `Invalid plan target path` وإصلاحها
-    - فهم نوع الهدف وسلوك التحقق من صحة المسار
-summary: 'عقد خطط `secrets apply`: التحقق من الهدف، ومطابقة المسار، ونطاق هدف `auth-profiles.json`'
+    - إنشاء خطط `openclaw secrets apply` أو مراجعتها
+    - تصحيح أخطاء `Invalid plan target path`
+    - فهم سلوك التحقق من نوع الهدف والمسار
+summary: 'عقد خطط `secrets apply`: التحقق من الأهداف، ومطابقة المسارات، ونطاق هدف `auth-profiles.json`'
 title: عقد خطة تطبيق الأسرار
 x-i18n:
-    generated_at: "2026-06-27T17:43:24Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T06:00:56Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 03f0ca9b433553a2f6d86d01b8c227a24b6f53ef7034a94bd648fbf04c81f13e
+    source_hash: ddaf3df7f0be326fa1c8dc8c360b03697fb58329d03c4eb8106a8740ddf6c47a
     source_path: gateway/secrets-plan-contract.md
     workflow: 16
 ---
 
-تحدد هذه الصفحة العقد الصارم الذي يفرضه `openclaw secrets apply`.
+تحدد هذه الصفحة العقد الصارم الذي يفرضه `openclaw secrets apply`. إذا لم يطابق هدفٌ ما هذه القواعد، تفشل عملية التطبيق قبل تعديل أي ملف.
 
-إذا لم يطابق هدف هذه القواعد، يفشل التطبيق قبل تعديل الإعدادات.
-
-## شكل ملف الخطة
+## بنية ملف الخطة
 
 يتوقع `openclaw secrets apply --from <plan.json>` مصفوفة `targets` من أهداف الخطة:
 
@@ -46,21 +44,16 @@ x-i18n:
 }
 ```
 
-## إدراجات الموفّرين وتحديثاتهم وحذفهم
+ينشئ `openclaw secrets configure` الخطط بهذه البنية. ويمكنك أيضًا كتابة خطة أو تعديلها يدويًا.
 
-قد تتضمن الخطط أيضًا حقلين اختياريين في المستوى الأعلى يعدّلان خريطة
-`secrets.providers` إلى جانب الكتابات لكل هدف:
+## إدراج المزوّدين أو تحديثهم وحذفهم
 
-- `providerUpserts` — كائن مفهرس بالاسم المستعار للموفّر. كل قيمة هي
-  تعريف موفّر (بالشكل نفسه المقبول ضمن
-  `secrets.providers.<alias>` في `openclaw.json`، مثل موفّر `exec` أو `file`).
-- `providerDeletes` — مصفوفة من الأسماء المستعارة للموفّرين المطلوب إزالتها.
+قد تتضمن الخطط أيضًا حقلين اختياريين في المستوى الأعلى يعدّلان خريطة `secrets.providers` إلى جانب عمليات الكتابة الخاصة بكل هدف:
 
-يعمل `providerUpserts` قبل `targets`، لذلك يمكن أن يشير `target.ref.provider`
-إلى اسم مستعار لموفّر تقدمه الخطة نفسها في
-`providerUpserts`. من دون ذلك، تفشل الخطط التي تشير إلى اسم مستعار لم تتم
-تهيئته بعد في `openclaw.json` مع `provider "<alias>" is not
-configured`.
+- `providerUpserts` -- كائن مفهرس بالاسم البديل للمزوّد. كل قيمة هي تعريف لمزوّد (بالبنية نفسها المقبولة ضمن `secrets.providers.<alias>` في `openclaw.json`، مثل مزوّد `exec` أو `file`).
+- `providerDeletes` -- مصفوفة من الأسماء البديلة للمزوّدين المراد إزالتها.
+
+تُنفّذ `providerUpserts` قبل `targets`، لذا يمكن أن يشير `target.ref.provider` إلى اسم بديل لمزوّد تضيفه الخطة نفسها في `providerUpserts`. من دون هذا الترتيب، تفشل الخطط التي تشير إلى اسم بديل لم يُضبط بعد في `openclaw.json` بالخطأ `provider "<alias>" is not configured`.
 
 ```json5
 {
@@ -86,80 +79,77 @@ configured`.
 }
 ```
 
-تظل موفّرات Exec المقدمة عبر `providerUpserts` خاضعة لقواعد موافقة exec في [سلوك موافقة موفّر Exec](#exec-provider-consent-behavior):
-تتطلب الخطط التي تحتوي على موفّري exec الخيار `--allow-exec` في وضع الكتابة.
+تظل مزوّدات Exec المُضافة عبر `providerUpserts` خاضعة لقواعد الموافقة على Exec الواردة في [سلوك الموافقة على مزوّد Exec](#exec-provider-consent-behavior): تتطلب الخطط التي تحتوي على مزوّدات Exec الخيار `--allow-exec` في وضع الكتابة.
 
 ## نطاق الأهداف المدعوم
 
-تُقبل أهداف الخطة لمسارات بيانات الاعتماد المدعومة في:
-
-- [سطح بيانات اعتماد SecretRef](/ar/reference/secretref-credential-surface)
+تُقبل أهداف الخطة لمسارات بيانات الاعتماد المدعومة في [نطاق بيانات اعتماد SecretRef](/ar/reference/secretref-credential-surface).
 
 ## سلوك نوع الهدف
 
-القاعدة العامة:
+يجب أن يكون `target.type` نوع هدف معروفًا، ويجب أن يطابق `target.path` بعد تسويته بنية المسار المسجلة لذلك النوع.
 
-- يجب أن يكون `target.type` معروفًا وأن يطابق شكل `target.path` بعد التطبيع.
+تقبل بعض أنواع الأهداف اسمًا بديلًا للتوافق في `target.type` للخطط الحالية، بالإضافة إلى اسم النوع الأساسي:
 
-تبقى الأسماء المستعارة للتوافق مقبولة للخطط الحالية:
+| النوع الأساسي                         | الاسم البديل المقبول                            |
+| ------------------------------------ | ----------------------------------------------- |
+| `models.providers.apiKey`            | `models.providers.*.apiKey`                     |
+| `skills.entries.apiKey`              | `skills.entries.*.apiKey`                       |
+| `channels.googlechat.serviceAccount` | `channels.googlechat.accounts.*.serviceAccount` |
 
-- `models.providers.apiKey`
-- `skills.entries.apiKey`
-- `channels.googlechat.serviceAccount`
+## قواعد التحقق من صحة المسار
 
-## قواعد التحقق من المسار
-
-يتم التحقق من كل هدف وفق كل ما يلي:
+يُتحقق من كل هدف وفق جميع القواعد الآتية:
 
 - يجب أن يكون `type` نوع هدف معروفًا.
 - يجب أن يكون `path` مسارًا نقطيًا غير فارغ.
-- يمكن حذف `pathSegments`. إذا قُدم، فيجب أن يُطبّع إلى المسار نفسه تمامًا مثل `path`.
-- تُرفض المقاطع المحظورة: `__proto__`، `prototype`، `constructor`.
-- يجب أن يطابق المسار بعد التطبيع شكل المسار المسجل لنوع الهدف.
-- إذا تم تعيين `providerId` أو `accountId`، فيجب أن يطابق المعرّف المرمّز في المسار.
+- يمكن حذف `pathSegments`. وإذا قُدّم، فيجب أن ينتج بعد التسوية المسار نفسه تمامًا الذي ينتجه `path`.
+- تُرفض المقاطع المحظورة: `__proto__` و`prototype` و`constructor`.
+- يجب أن يطابق المسار بعد التسوية بنية المسار المسجلة لنوع الهدف.
+- إذا ضُبط `providerId` أو `accountId`، فيجب أن يطابق المعرّف المضمّن في المسار.
 - تتطلب أهداف `auth-profiles.json` وجود `agentId`.
-- عند إنشاء ربط جديد في `auth-profiles.json`، ضمّن `authProfileProvider`.
+- عند إنشاء تعيين جديد في `auth-profiles.json`، ضمّن `authProfileProvider`.
 
 ## سلوك الفشل
 
-إذا فشل التحقق من هدف، يخرج التطبيق بخطأ مثل:
+إذا فشل التحقق من صحة هدف، تنتهي عملية التطبيق بخطأ مثل:
 
 ```text
 Invalid plan target path for models.providers.apiKey: models.providers.openai.baseUrl
 ```
 
-لا تُنفذ أي كتابات لخطة غير صالحة.
+لا تُثبّت أي عمليات كتابة لخطة غير صالحة: تُجرى عملية حلّ الأهداف والتحقق من صحة المسارات قبل لمس أي ملف. وبشكل منفصل، بمجرد أن تبدأ خطة صالحة في الكتابة، تنشئ عملية التطبيق أولًا لقطة لكل ملف تمسه، وتستعيد تلك اللقطات إذا فشلت عملية كتابة لاحقة ضمن التشغيل نفسه، لذلك لا تتسبب أي كتابة جزئية في عدم تزامن حالة الإعدادات أو ملفات تعريف المصادقة أو متغيرات البيئة.
 
-## سلوك موافقة موفّر Exec
+## سلوك الموافقة على مزوّد Exec
 
-- يتجاوز `--dry-run` فحوصات SecretRef من نوع exec افتراضيًا.
-- تُرفض الخطط التي تحتوي على SecretRefs/موفّرين من نوع exec في وضع الكتابة ما لم يتم تعيين `--allow-exec`.
-- عند التحقق من الخطط التي تحتوي على exec أو تطبيقها، مرّر `--allow-exec` في أوامر dry-run والكتابة معًا.
+- يتخطى `--dry-run` عمليات التحقق من مراجع الأسرار SecretRef من نوع Exec افتراضيًا.
+- تُرفض الخطط التي تحتوي على مراجع أسرار SecretRef أو مزوّدات من نوع Exec في وضع الكتابة ما لم يُضبط `--allow-exec`.
+- عند التحقق من الخطط التي تحتوي على Exec أو تطبيقها، مرّر `--allow-exec` في أوامر التشغيل التجريبي والكتابة معًا.
 
-## ملاحظات نطاق وقت التشغيل والتدقيق
+## ملاحظات حول نطاق وقت التشغيل والتدقيق
 
-- تُضمّن إدخالات `auth-profiles.json` المرجعية فقط (`keyRef`/`tokenRef`) في حل وقت التشغيل وتغطية التدقيق.
-- يكتب `secrets apply` أهداف `openclaw.json` المدعومة، وأهداف `auth-profiles.json` المدعومة، وأهداف التنظيف الاختيارية.
+- تُضمَّن إدخالات `auth-profiles.json` التي تحتوي على مراجع فقط (`keyRef`/`tokenRef`) في حل بيانات الاعتماد في وقت التشغيل وفي تغطية التدقيق.
+- يكتب `secrets apply` أهداف `openclaw.json` المدعومة وأهداف `auth-profiles.json` المدعومة، وينفّذ ثلاث عمليات تنظيف اختيارية مفعّلة افتراضيًا: `scrubEnv` (تزيل قيم النص الصريح التي رُحّلت من `.env`)، و`scrubAuthProfilesForProviderTargets` (تمحو بقايا النص الصريح أو المراجع غير المستخدمة في `auth-profiles.json` للمزوّدين الذين رحّلتهم الخطة للتو)، و`scrubLegacyAuthJson` (تحذف إدخالات `api_key` المُرحّلة من مخازن `auth.json` القديمة). اضبط أيًا من `options.scrubEnv` أو `options.scrubAuthProfilesForProviderTargets` أو `options.scrubLegacyAuthJson` على `false` في الخطة لتخطي تلك العملية.
 
 ## فحوصات المشغّل
 
 ```bash
-# Validate plan without writes
+# التحقق من صحة الخطة من دون كتابة
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run
 
-# Then apply for real
+# ثم التطبيق فعليًا
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json
 
-# For exec-containing plans, opt in explicitly in both modes
+# للخطط التي تحتوي على exec، وافق صراحةً في كلا الوضعين
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run --allow-exec
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --allow-exec
 ```
 
-إذا فشل التطبيق برسالة مسار هدف غير صالح، فأعد توليد الخطة باستخدام `openclaw secrets configure` أو أصلح مسار الهدف إلى شكل مدعوم أعلاه.
+إذا فشلت عملية التطبيق برسالة تفيد بأن مسار الهدف غير صالح، فأعِد إنشاء الخطة باستخدام `openclaw secrets configure` أو صحّح مسار الهدف ليتوافق مع إحدى البنى المدعومة أعلاه.
 
-## مستندات ذات صلة
+## وثائق ذات صلة
 
 - [إدارة الأسرار](/ar/gateway/secrets)
-- [CLI `secrets`](/ar/cli/secrets)
-- [سطح بيانات اعتماد SecretRef](/ar/reference/secretref-credential-surface)
+- [CLI ‏`secrets`](/ar/cli/secrets)
+- [نطاق بيانات اعتماد SecretRef](/ar/reference/secretref-credential-surface)
 - [مرجع الإعدادات](/ar/gateway/configuration-reference)

@@ -1,30 +1,30 @@
 ---
 read_when:
-    - Çalışan Gateway'in sağlığını hızlıca kontrol etmek istiyorsunuz
-summary: '`openclaw health` için CLI referansı (RPC üzerinden Gateway sağlık anlık görüntüsü)'
+    - Çalışan Gateway'in durumunu hızlıca kontrol etmek istiyorsunuz
+summary: '`openclaw health` için CLI başvurusu (RPC üzerinden Gateway durum anlık görüntüsü)'
 title: Sağlık
 x-i18n:
-    generated_at: "2026-05-10T19:29:31Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:09:18Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 26be7bbbf75c2eca1213fe145fdeeab6fee96798dff457278ac69a20145bf75d
+    source_hash: a26ce5ade9ab56c9751c3dde814c38a1e01e74d91c2fd57e56d3c44ca529d0d8
     source_path: cli/health.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # `openclaw health`
 
-Çalışan Gateway'den sağlık durumunu getirir.
+Çalışan Gateway'den WebSocket RPC üzerinden bir sistem durumu anlık görüntüsü alın (CLI'dan doğrudan kanal soketleri kullanılmaz).
 
 ## Seçenekler
 
-| Bayrak           | Varsayılan | Açıklama                                                            |
-| ---------------- | ---------- | ------------------------------------------------------------------- |
-| `--json`         | `false`    | Metin yerine makine tarafından okunabilir JSON yazdırır.            |
-| `--timeout <ms>` | `10000`    | Milisaniye cinsinden bağlantı zaman aşımı.                          |
-| `--verbose`      | `false`    | Ayrıntılı günlükleme. Canlı bir yoklamayı zorunlu kılar ve ajan başına çıktıyı genişletir. |
-| `--debug`        | `false`    | `--verbose` için takma ad.                                          |
+| Bayrak           | Varsayılan | Açıklama                                                                                                  |
+| ---------------- | ----------- | --------------------------------------------------------------------------------------------------------- |
+| `--json`         | `false`     | Metin yerine makine tarafından okunabilir JSON çıktısı verir.                                             |
+| `--timeout <ms>` | `10000`     | Milisaniye cinsinden bağlantı zaman aşımı.                                                                 |
+| `--verbose`      | `false`     | Canlı yoklamayı zorunlu kılar ve çıktıyı yapılandırılmış tüm hesapları ve aracıları kapsayacak şekilde genişletir. |
+| `--debug`        | `false`     | `--verbose` için takma ad.                                                                                 |
 
 Örnekler:
 
@@ -36,16 +36,14 @@ openclaw health --verbose
 openclaw health --debug
 ```
 
-Notlar:
+## Davranış
 
-- Varsayılan `openclaw health`, çalışan Gateway'den sağlık anlık görüntüsünü ister. Gateway'in
-  zaten taze ve önbelleğe alınmış bir anlık görüntüsü varsa, bu önbelleğe alınmış yükü döndürebilir ve
-  arka planda yenileyebilir.
-- `--verbose` canlı bir yoklamayı zorunlu kılar, Gateway bağlantı ayrıntılarını yazdırır ve
-  insan tarafından okunabilir çıktıyı yapılandırılmış tüm hesaplar ve ajanlar genelinde genişletir.
-- Birden fazla ajan yapılandırıldığında çıktı, ajan başına oturum depolarını içerir.
+- `--verbose` olmadan Gateway, önbelleğe alınmış bir anlık görüntü döndürebilir (en fazla 60 saniye günceldir ve canlı kanal çalışma zamanı durumuyla aynıdır) ve bunu bir sonraki çağıran için arka planda yenileyebilir.
+- `--verbose`, canlı yoklamayı (kanal başına hesap yoklamaları) zorunlu kılar, Gateway bağlantı ayrıntılarını yazdırır ve insan tarafından okunabilir çıktıyı yalnızca varsayılan aracı yerine yapılandırılmış tüm hesapları ve aracıları kapsayacak şekilde genişletir.
+- `--json` her zaman tam anlık görüntüyü döndürür: kanallar, hesap başına yoklamalar, Plugin yükleme durumu, bağlam motoru karantina durumu, model fiyatlandırma önbelleği durumu, olay döngüsü sistem durumu ve aracı başına oturum depoları.
 
 ## İlgili
 
 - [CLI başvurusu](/tr/cli)
-- [Gateway sağlık durumu](/tr/gateway/health)
+- [`openclaw status`](/tr/cli/status) — tam bir sistem durumu anlık görüntüsü olmadan yerel tanılama ve kanal yoklamaları
+- [Gateway sistem durumu](/tr/gateway/health)

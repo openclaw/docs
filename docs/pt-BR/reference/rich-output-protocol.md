@@ -5,30 +5,29 @@ read_when:
 summary: Protocolo de saída avançada para mídia estruturada, incorporações, indicações de áudio e respostas
 title: Protocolo de saída avançada
 x-i18n:
-    generated_at: "2026-07-12T15:44:18Z"
+    generated_at: "2026-07-12T00:20:49Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: cbfe68f38c871f5f6d2811eb52b18d0143606f30283023ae96db64543eed95a1
     source_path: reference/rich-output-protocol.md
     workflow: 16
 ---
 
-A saída do assistente transporta diretivas de entrega/renderização por meio de alguns canais dedicados:
+A saída do assistente transmite diretivas de entrega/renderização por meio de alguns canais dedicados:
 
 - Campos estruturados `mediaUrl` / `mediaUrls` para entrega de anexos.
-- `[[audio_as_voice]]` para dicas de apresentação de áudio.
+- `[[audio_as_voice]]` para indicações de apresentação de áudio.
 - `[[reply_to_current]]` / `[[reply_to:<id>]]` para metadados de resposta.
 - `[embed ...]` para renderização avançada na interface de controle.
 
-Os campos estruturados de mídia e as tags `[[...]]` são metadados de entrega. `[embed ...]` é o caminho separado de renderização avançada exclusivo para a Web; não é um alias de mídia.
+Os campos estruturados de mídia e as tags `[[...]]` são metadados de entrega. `[embed ...]` é o caminho separado de renderização avançada exclusivo para a Web; ele não é um alias de mídia.
 
 ## Anexos de mídia
 
-Anexos remotos devem ser URLs `https:` públicas. `http:`, loopback, link-local e nomes de host privados e internos são rejeitados como diretivas de anexo; os buscadores de mídia do lado do servidor aplicam suas próprias proteções de rede adicionalmente.
+Os anexos remotos devem ser URLs `https:` públicas. URLs `http:`, de local loopback, link-local e privadas, assim como nomes de host internos, são rejeitados como diretivas de anexo; os mecanismos de busca de mídia no servidor aplicam suas próprias proteções de rede adicionalmente.
 
-Anexos locais aceitam caminhos absolutos, caminhos relativos ao espaço de trabalho ou caminhos `~/` relativos ao diretório inicial. Eles ainda passam pela política de leitura de arquivos do agente e pelas verificações de tipo de mídia antes da entrega.
+Os anexos locais aceitam caminhos absolutos, caminhos relativos ao espaço de trabalho ou caminhos `~/` relativos ao diretório pessoal. Eles ainda passam pela política de leitura de arquivos do agente e pelas verificações de tipo de mídia antes da entrega.
 
 <Warning>
 Não emita comandos de texto para anexos provenientes de ferramentas, plugins, blocos de streaming, saída do navegador ou ações de mensagem. Em vez disso, use campos estruturados de mídia:
@@ -37,16 +36,16 @@ Não emita comandos de texto para anexos provenientes de ferramentas, plugins, b
 { "message": "Aqui está sua imagem.", "mediaUrl": "/workspace/image.png" }
 ```
 
-O texto legado de resposta final ainda pode ser normalizado para compatibilidade, mas esse não é um protocolo geral para plugins/ferramentas.
+O texto legado da resposta final ainda pode ser normalizado para compatibilidade, mas isso não constitui um protocolo geral de plugin/ferramenta.
 </Warning>
 
-A sintaxe simples de imagem em Markdown (`![alt](url)`) permanece como texto por padrão. Os canais que desejam tratar imagens Markdown como respostas de mídia habilitam essa opção em seu adaptador de saída; o Telegram faz isso para que `![alt](url)` se torne um anexo de mídia.
+A sintaxe simples de imagem em Markdown (`![alt](url)`) permanece como texto por padrão. Os canais que desejam tratar imagens Markdown como respostas de mídia habilitam essa opção no adaptador de saída; o Telegram faz isso para que `![alt](url)` se torne um anexo de mídia.
 
-Quando o streaming em blocos está habilitado, a mídia deve ser transportada em campos estruturados do payload. Se a mesma URL de mídia aparecer em um bloco transmitido e novamente no payload final do assistente, o OpenClaw a entrega uma vez e remove a duplicata do payload final.
+Quando o streaming em blocos está habilitado, a mídia deve ser transmitida nos campos estruturados da carga útil. Se a mesma URL de mídia aparecer em um bloco transmitido e novamente na carga útil final do assistente, o OpenClaw a entregará uma vez e removerá a duplicata da carga útil final.
 
 ## `[embed ...]`
 
-`[embed ...]` é a única sintaxe de renderização avançada voltada ao agente para a interface de controle. Exemplo autocontido:
+`[embed ...]` é a única sintaxe de renderização avançada voltada ao agente para a interface de controle. Exemplo de fechamento automático:
 
 ```text
 [embed ref="cv_123" title="Status" /]
@@ -55,14 +54,14 @@ Quando o streaming em blocos está habilitado, a mídia deve ser transportada em
 Regras:
 
 - `[view ...]` não é mais válido para novas saídas.
-- Shortcodes de incorporação são renderizados apenas na superfície de mensagens do assistente.
+- Os códigos curtos de incorporação são renderizados apenas na superfície de mensagens do assistente.
 - Somente incorporações vinculadas a URLs são renderizadas; use `ref="..."` ou `url="..."`.
-- Shortcodes de incorporação em HTML embutido no formato de bloco não são renderizados.
-- A interface Web remove o shortcode do texto visível e renderiza a incorporação em linha.
+- Códigos curtos de incorporação em HTML embutido no formato de bloco não são renderizados.
+- A interface Web remove o código curto do texto visível e renderiza a incorporação em linha.
 
-## Estrutura de renderização armazenada
+## Formato de renderização armazenado
 
-O bloco de conteúdo do assistente normalizado/armazenado é um item estruturado `canvas`:
+O bloco normalizado/armazenado de conteúdo do assistente é um item `canvas` estruturado:
 
 ```json
 {
@@ -79,7 +78,7 @@ O bloco de conteúdo do assistente normalizado/armazenado é um item estruturado
 }
 ```
 
-`present_view` não é reconhecido; os blocos avançados armazenados/renderizados sempre usam essa estrutura `canvas`.
+`present_view` não é reconhecido; os blocos avançados armazenados/renderizados sempre usam esse formato `canvas`.
 
 ## Relacionado
 

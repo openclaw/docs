@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Aprende a configurar OpenClaw
+    - Aprender a configurar OpenClaw
     - Buscando ejemplos de configuración
     - Configurar OpenClaw por primera vez
-summary: Ejemplos de configuración precisos según el esquema para configuraciones comunes de OpenClaw
+summary: Ejemplos de configuración conformes al esquema para configuraciones comunes de OpenClaw
 title: Ejemplos de configuración
 x-i18n:
-    generated_at: "2026-07-05T11:17:15Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T23:03:16Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: c3ad82ccce62e0c8dbb72f81b0de62d60d8a6282f0a327ed1cbda7ffa3e47969
@@ -15,7 +15,7 @@ x-i18n:
     workflow: 16
 ---
 
-Ejemplos a continuación están alineados con el esquema de configuración actual. Para la referencia exhaustiva y notas por campo, consulta [Configuración](/es/gateway/configuration).
+Los ejemplos siguientes están alineados con el esquema de configuración actual. Para consultar la referencia completa y las notas de cada campo, consulta [Configuración](/es/gateway/configuration).
 
 ## Inicio rápido
 
@@ -28,9 +28,9 @@ Ejemplos a continuación están alineados con el esquema de configuración actua
 }
 ```
 
-Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar un DM al bot desde ese número.
+Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar mensajes directos al bot desde ese número.
 
-### Inicio recomendado
+### Configuración inicial recomendada
 
 ```json5
 {
@@ -68,7 +68,7 @@ Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar un DM al bot desde ese
 
 ## Ejemplo ampliado (opciones principales)
 
-> JSON5 te permite usar comentarios y comas finales. JSON normal también funciona.
+> JSON5 permite usar comentarios y comas finales. El JSON convencional también funciona.
 
 ```json5
 {
@@ -482,10 +482,10 @@ Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar un DM al bot desde ese
 }
 ```
 
-### Repositorio de habilidades hermano con enlace simbólico
+### Repositorio de habilidades hermano enlazado simbólicamente
 
-Usa esto cuando una raíz de habilidad incorporada contenga un enlace simbólico a un repositorio hermano, por
-ejemplo `~/.agents/skills/manager -> ~/Projects/manager/skills`.
+Utilice esta configuración cuando la raíz de una habilidad integrada contenga un enlace simbólico hacia un repositorio hermano, por
+ejemplo, `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 
 ```json5
 {
@@ -498,15 +498,15 @@ ejemplo `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 }
 ```
 
-- `extraDirs` examina el repositorio hermano como una raíz de habilidad explícita.
-- `allowSymlinkTargets` permite que las carpetas de habilidades con enlaces simbólicos se resuelvan hacia esa raíz
-  de destino real y de confianza sin permitir escapes arbitrarios por enlaces simbólicos.
-- Para permitir que Skill Workshop aplique escrituras mediante el mismo destino de enlace simbólico de confianza,
-  establece `skills.workshop.allowSymlinkTargetWrites: true`.
+- `extraDirs` examina el repositorio hermano como una raíz de habilidades explícita.
+- `allowSymlinkTargets` permite que las carpetas de habilidades enlazadas simbólicamente se resuelvan en esa raíz de destino
+  real y de confianza sin permitir escapes arbitrarios mediante enlaces simbólicos.
+- Para permitir que Skill Workshop escriba a través del mismo destino de enlace simbólico de confianza,
+  establezca `skills.workshop.allowSymlinkTargetWrites: true`.
 
 ## Patrones comunes
 
-### Línea base de habilidades compartida con una anulación
+### Conjunto base de habilidades compartidas con una sobrescritura
 
 ```json5
 {
@@ -523,9 +523,9 @@ ejemplo `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 }
 ```
 
-- `agents.defaults.skills` es la línea base compartida.
-- `agents.list[].skills` reemplaza esa línea base para un agente.
-- Usa `skills: []` cuando un agente no deba ver Skills.
+- `agents.defaults.skills` es la base compartida.
+- `agents.list[].skills` reemplaza esa base para un agente.
+- Usa `skills: []` cuando un agente no deba ver ninguna Skills.
 
 ### Configuración multiplataforma
 
@@ -548,11 +548,11 @@ ejemplo `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 }
 ```
 
-### Aprobación automática de red de nodos de confianza
+### Aprobación automática en redes de Node de confianza
 
-Mantén el emparejamiento de dispositivos manual salvo que controles la ruta de red. Para un laboratorio dedicado
-o una subred tailnet, puedes aceptar la aprobación automática de dispositivos de nodo por primera vez
-con CIDR o IP exactos:
+Mantén manual el emparejamiento de dispositivos, a menos que controles la ruta de red. Para una
+subred de laboratorio dedicada o de la red Tailscale, puedes habilitar la aprobación automática
+del dispositivo Node en su primer emparejamiento mediante CIDR o IP exactas:
 
 ```json5
 {
@@ -566,27 +566,27 @@ con CIDR o IP exactos:
 }
 ```
 
-Esto permanece desactivado cuando no está configurado. Solo se aplica al emparejamiento nuevo de `role: node` sin
-ámbitos solicitados. Los clientes de operador/navegador y las actualizaciones de rol, ámbito, metadatos o
+Esta opción permanece desactivada si no se configura. Solo se aplica al emparejamiento nuevo con `role: node`
+sin ámbitos solicitados. Los clientes de operador/navegador y las actualizaciones de rol, ámbito, metadatos o
 clave pública siguen requiriendo aprobación manual.
 
-### Modo DM seguro (bandeja compartida / DM multiusuario)
+### Modo seguro de mensajes directos (bandeja de entrada compartida / mensajes directos multiusuario)
 
-Si más de una persona puede enviar DM a tu bot (varias entradas en `allowFrom`, aprobaciones de emparejamiento para varias personas o `dmPolicy: "open"`), habilita el **modo DM seguro** para que los DM de distintos remitentes no compartan un mismo contexto de forma predeterminada:
+Si más de una persona puede enviar mensajes directos a tu bot (varias entradas en `allowFrom`, aprobaciones de emparejamiento para varias personas o `dmPolicy: "open"`), habilita el **modo seguro de mensajes directos** para que los mensajes directos de distintos remitentes no compartan un mismo contexto de forma predeterminada:
 
 ```json5
 {
-  // Secure DM mode (recommended for multi-user or sensitive DM agents)
+  // Modo seguro de mensajes directos (recomendado para agentes de mensajes directos multiusuario o confidenciales)
   session: { dmScope: "per-channel-peer" },
 
   channels: {
-    // Example: WhatsApp multi-user inbox
+    // Ejemplo: bandeja de entrada multiusuario de WhatsApp
     whatsapp: {
       dmPolicy: "allowlist",
       allowFrom: ["+15555550123", "+15555550124"],
     },
 
-    // Example: Discord multi-user inbox
+    // Ejemplo: bandeja de entrada multiusuario de Discord
     discord: {
       enabled: true,
       token: "YOUR_DISCORD_BOT_TOKEN",
@@ -596,10 +596,10 @@ Si más de una persona puede enviar DM a tu bot (varias entradas en `allowFrom`,
 }
 ```
 
-Para Discord/Google Chat/IRC/Mattermost/Microsoft Teams/Slack, la autorización de remitente se basa en el ID de forma predeterminada.
-Habilita la coincidencia directa mutable de nombre/correo electrónico/apodo con `dangerouslyAllowNameMatching: true` de cada canal solo si aceptas explícitamente ese riesgo.
+Para Discord/Google Chat/IRC/Mattermost/Microsoft Teams/Slack, la autorización del remitente se basa de forma predeterminada primero en el identificador.
+Habilita la coincidencia directa mediante nombres, correos electrónicos o apodos modificables con `dangerouslyAllowNameMatching: true` en cada canal solo si aceptas explícitamente ese riesgo.
 
-### Clave de API de Anthropic + respaldo de MiniMax
+### Clave de API de Anthropic + alternativa MiniMax
 
 ```json5
 {
@@ -704,11 +704,11 @@ Habilita la coincidencia directa mutable de nombre/correo electrónico/apodo con
 ## Consejos
 
 - Si configuras `dmPolicy: "open"`, la lista `allowFrom` correspondiente debe incluir `"*"`.
-- Los ID de proveedores difieren (números de teléfono, ID de usuario, ID de canal). Usa la documentación del proveedor para confirmar el formato.
-- Secciones opcionales para agregar más adelante: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
-- Consulta [Proveedores](/es/providers) y [Solución de problemas](/es/gateway/troubleshooting) para ver notas de configuración más detalladas.
+- Los identificadores de los proveedores varían (números de teléfono, identificadores de usuario e identificadores de canal). Consulta la documentación del proveedor para confirmar el formato.
+- Secciones opcionales que puedes añadir más adelante: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
+- Consulta [Proveedores](/es/providers) y [Solución de problemas](/es/gateway/troubleshooting) para obtener notas de configuración más detalladas.
 
-## Relacionado
+## Contenido relacionado
 
 - [Referencia de configuración](/es/gateway/configuration-reference)
 - [Configuración](/es/gateway/configuration)

@@ -1,16 +1,16 @@
 ---
 read_when:
-    - Anda sedang menginstal, mengonfigurasi, atau mengaudit Plugin google
+    - Anda sedang memasang, mengonfigurasi, atau mengaudit plugin Google
 summary: Menambahkan dukungan penyedia model Google, Google Gemini CLI, dan Google Vertex ke OpenClaw.
 title: Plugin Google
 x-i18n:
-    generated_at: "2026-05-02T20:52:54Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:26:50Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 24246ba7ebfd5c62a6f02ded8c555a5dbdeec3df128bf5863923d32f6424ea57
+    source_hash: 4228126f246fd09d996c9f76dd10d79ad29f578788a0284abfc7107450a8bf62
     source_path: plugins/reference/google.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # Plugin Google
@@ -20,11 +20,11 @@ Menambahkan dukungan penyedia model Google, Google Gemini CLI, dan Google Vertex
 ## Distribusi
 
 - Paket: `@openclaw/google-plugin`
-- Rute instalasi: disertakan dalam OpenClaw
+- Jalur instalasi: disertakan dalam OpenClaw
 
 ## Permukaan
 
-providers: google, google-gemini-cli, google-vertex; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, musicGenerationProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders, webSearchProviders
+penyedia: google, google-gemini-cli, google-vertex; kontrak: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, musicGenerationProviders, realtimeVoiceProviders, speechProviders, usageProviders, videoGenerationProviders, webSearchProviders
 
 ## Dokumentasi terkait
 

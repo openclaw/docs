@@ -1,21 +1,21 @@
 ---
 read_when:
-    - Je installeert, configureert of auditeert de xiaomi-plugin
-summary: Voegt ondersteuning voor Xiaomi- en Xiaomi Token Plan-modelproviders toe aan OpenClaw.
+    - U installeert, configureert of controleert de xiaomi-plugin
+summary: Voegt ondersteuning voor Xiaomi en de modelprovider Xiaomi Token Plan toe aan OpenClaw.
 title: Xiaomi-plugin
 x-i18n:
-    generated_at: "2026-06-27T18:05:05Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:09:27Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cd7918f5f372158fbf033381b6977fd98ec193f120797bb0eee7095a6a293b86
+    source_hash: 5999659d0a5abf287b8ce44f573f7f9d2e46b23b5ee21edb613e38a91489a7c7
     source_path: plugins/reference/xiaomi.md
     workflow: 16
 ---
 
-# Xiaomi-Plugin
+# Xiaomi-plugin
 
-Voegt ondersteuning voor Xiaomi- en Xiaomi Token Plan-modelproviders toe aan OpenClaw.
+Voegt ondersteuning voor de Xiaomi- en Xiaomi Token Plan-modelproviders toe aan OpenClaw.
 
 ## Distributie
 
@@ -24,8 +24,8 @@ Voegt ondersteuning voor Xiaomi- en Xiaomi Token Plan-modelproviders toe aan Ope
 
 ## Oppervlak
 
-providers: xiaomi, xiaomi-token-plan; contracten: speechProviders
+providers: xiaomi, xiaomi-token-plan; contracten: speechProviders, usageProviders
 
-## Gerelateerde docs
+## Gerelateerde documentatie
 
 - [xiaomi](/nl/providers/xiaomi)

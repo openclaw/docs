@@ -1,10 +1,10 @@
 ---
 description: Browse polished OpenClaw release notes with highlights, reader-facing context, source links, and contributor credits.
-summary: Ghi chú phát hành OpenClaw được tuyển chọn dành cho những người muốn nắm câu chuyện sản phẩm, không phải changelog thô.
+summary: Ghi chú phát hành OpenClaw được tuyển chọn dành cho những người muốn tìm hiểu câu chuyện sản phẩm, thay vì bản nhật ký thay đổi thô.
 title: Ghi chú phát hành
 x-i18n:
-    generated_at: "2026-07-01T08:17:24Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:22:24Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: f0528fd717dbd98f1191e24b640866735f4b32d3c1421deac9324115e6059903
@@ -14,19 +14,19 @@ x-i18n:
 
 # Ghi chú phát hành
 
-Các trang này sẽ là phiên bản hướng tới người đọc của các bản phát hành OpenClaw. Chúng giữ
-câu chuyện chính, tác động thực tế, liên kết nguồn và ghi nhận người đóng góp cùng nhau
-mà không buộc bạn phải đọc changelog thô trước.
+Các trang này là phiên bản dành cho người đọc về các bản phát hành OpenClaw. Chúng tập hợp
+câu chuyện chính, tác động thực tế, liên kết nguồn và ghi nhận người đóng góp
+mà không yêu cầu bạn phải xem nhật ký thay đổi thô trước.
 
-## Bản phát hành
+## Các bản phát hành
 
-- [v2026.6.11](/releases/2026.6.11) - Các bản sửa lỗi về độ tin cậy cho phản hồi, gửi,
-  kết nối lại, thiết lập mô hình, phiên và các mặc định quản trị an toàn hơn.
+- [v2026.6.11](/vi/releases/2026.6.11) - Các bản sửa lỗi về độ tin cậy cho thao tác trả lời, gửi,
+  kết nối lại, thiết lập mô hình, phiên và các giá trị mặc định quản trị an toàn hơn.
 
 ## Lịch sử phát hành thô
 
-Dùng ghi chú đã biên tập khi bạn muốn nắm câu chuyện sản phẩm. Dùng lịch sử thô khi
-bạn cần phần ghi nhận ngắn gọn cho maintainer:
+Sử dụng ghi chú đã biên soạn khi bạn muốn tìm hiểu câu chuyện về sản phẩm. Sử dụng lịch sử thô khi
+bạn cần bản tổng hợp ngắn gọn dành cho người bảo trì:
 
-- [Bản phát hành GitHub](https://github.com/openclaw/openclaw/releases)
+- [Các bản phát hành trên GitHub](https://github.com/openclaw/openclaw/releases)
 - [CHANGELOG.md](https://github.com/openclaw/openclaw/blob/main/CHANGELOG.md)

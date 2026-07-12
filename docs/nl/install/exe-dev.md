@@ -1,131 +1,131 @@
 ---
 read_when:
-    - Je wilt een goedkope Linux-host die altijd aan staat voor de Gateway
-    - Je wilt externe toegang tot de Control UI zonder je eigen VPS te draaien
-summary: OpenClaw Gateway uitvoeren op exe.dev (VM + HTTPS-proxy) voor externe toegang
+    - Je wilt een goedkope Linux-host die altijd actief is voor de Gateway
+    - Je wilt externe toegang tot de Control UI zonder je eigen VPS te beheren
+summary: Voer OpenClaw Gateway uit op exe.dev (VM + HTTPS-proxy) voor externe toegang
 title: exe.dev
 x-i18n:
-    generated_at: "2026-04-29T22:53:35Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:59:49Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b571f9b29bb2cca0f311db4188c922b2f70ee91cb48b233cf9922e57a7f05340
+    source_hash: a768511d2d7e4e4ec10bcdae83684417bde05286468b0534200f8dd5ec015f7b
     source_path: install/exe-dev.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Doel: OpenClaw Gateway draait op een exe.dev-VM en is bereikbaar vanaf je laptop via: `https://<vm-name>.exe.xyz`
+**Doel:** OpenClaw Gateway draaiend op een [exe.dev](https://exe.dev)-VM, bereikbaar via `https://<vm-name>.exe.xyz`.
 
-Deze pagina gaat uit van de standaard **exeuntu**-image van exe.dev. Als je een andere distro hebt gekozen, koppel de pakketten dan dienovereenkomstig.
+Deze handleiding gaat uit van de standaardimage **exeuntu** van exe.dev. Pas de pakketten voor andere distributies dienovereenkomstig aan.
 
-## Snelle route voor beginners
-
-1. [https://exe.new/openclaw](https://exe.new/openclaw)
-2. Vul je auth-sleutel/token in waar nodig
-3. Klik op "Agent" naast je VM en wacht tot Shelley klaar is met provisioneren
-4. Open `https://<vm-name>.exe.xyz/` en authenticeer met het geconfigureerde gedeelde geheim (deze handleiding gebruikt standaard tokenauthenticatie, maar wachtwoordauthenticatie werkt ook als je `gateway.auth.mode` wijzigt)
-5. Keur eventuele wachtende apparaatkoppelingsverzoeken goed met `openclaw devices approve <requestId>`
-
-## Wat je nodig hebt
+## Wat u nodig hebt
 
 - exe.dev-account
-- `ssh exe.dev`-toegang tot virtuele machines van [exe.dev](https://exe.dev) (optioneel)
+- `ssh exe.dev`-toegang tot exe.dev-VM's (optioneel, voor handmatige configuratie)
+
+## Snelstart voor beginners
+
+1. Open [https://exe.new/openclaw](https://exe.new/openclaw)
+2. Vul indien nodig uw authenticatiesleutel/-token in
+3. Klik naast uw VM op "Agent" en wacht tot Shelley de inrichting heeft voltooid
+4. Open `https://<vm-name>.exe.xyz/` en authenticeer u met het geconfigureerde gedeelde geheim (standaard tokenauthenticatie; wachtwoordauthenticatie werkt ook als u `gateway.auth.mode` wijzigt)
+5. Keur wachtende aanvragen voor apparaatkoppeling goed met `openclaw devices approve <requestId>`
 
 ## Geautomatiseerde installatie met Shelley
 
-Shelley, de agent van [exe.dev](https://exe.dev), kan OpenClaw direct installeren met onze
-prompt. De gebruikte prompt staat hieronder:
+Shelley, de agent van exe.dev, kan OpenClaw installeren via een prompt:
 
-```
+```text
 Set up OpenClaw (https://docs.openclaw.ai/install) on this VM. Use the non-interactive and accept-risk flags for openclaw onboarding. Add the supplied auth or token as needed. Configure nginx to forward from the default port 18789 to the root location on the default enabled site config, making sure to enable Websocket support. Pairing is done by "openclaw devices list" and "openclaw devices approve <request id>". Make sure the dashboard shows that OpenClaw's health is OK. exe.dev handles forwarding from port 8000 to port 80/443 and HTTPS for us, so the final "reachable" should be <vm-name>.exe.xyz, without port specification.
 ```
 
 ## Handmatige installatie
 
-## 1) Maak de VM aan
+<Steps>
+  <Step title="De VM maken">
+    Vanaf uw apparaat:
 
-Vanaf je apparaat:
+    ```bash
+    ssh exe.dev new
+    ```
 
-```bash
-ssh exe.dev new
-```
+    Maak vervolgens verbinding:
 
-Maak daarna verbinding:
+    ```bash
+    ssh <vm-name>.exe.xyz
+    ```
 
-```bash
-ssh <vm-name>.exe.xyz
-```
+    <Tip>
+    Houd deze VM **stateful**. OpenClaw bewaart `openclaw.json`, `auth-profiles.json` per agent, sessies en kanaal-/providerstatus onder `~/.openclaw/`, en de werkruimte onder `~/.openclaw/workspace/`.
+    </Tip>
 
-<Tip>
-Houd deze VM **stateful**. OpenClaw slaat `openclaw.json`, per-agent `auth-profiles.json`, sessies en kanaal-/providerstatus op onder `~/.openclaw/`, plus de werkruimte onder `~/.openclaw/workspace/`.
-</Tip>
+  </Step>
 
-## 2) Installeer vereisten (op de VM)
+  <Step title="Vereisten installeren (op de VM)">
+    ```bash
+    sudo apt-get update
+    sudo apt-get install -y git curl jq ca-certificates openssl
+    ```
+  </Step>
 
-```bash
-sudo apt-get update
-sudo apt-get install -y git curl jq ca-certificates openssl
-```
+  <Step title="OpenClaw installeren">
+    ```bash
+    curl -fsSL https://openclaw.ai/install.sh | bash
+    ```
+  </Step>
 
-## 3) Installeer OpenClaw
+  <Step title="nginx configureren als proxy naar poort 8000">
+    Bewerk `/etc/nginx/sites-enabled/default`:
 
-Voer het OpenClaw-installatiescript uit:
+    ```nginx
+    server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+        listen 8000;
+        listen [::]:8000;
 
-```bash
-curl -fsSL https://openclaw.ai/install.sh | bash
-```
+        server_name _;
 
-## 4) Stel nginx in om OpenClaw naar poort 8000 te proxyen
+        location / {
+            proxy_pass http://127.0.0.1:18789;
+            proxy_http_version 1.1;
 
-Bewerk `/etc/nginx/sites-enabled/default` met
+            # WebSocket support
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
 
-```
-server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-    listen 8000;
-    listen [::]:8000;
+            # Standard proxy headers
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $remote_addr;
+            proxy_set_header X-Forwarded-Proto $scheme;
 
-    server_name _;
-
-    location / {
-        proxy_pass http://127.0.0.1:18789;
-        proxy_http_version 1.1;
-
-        # WebSocket support
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-
-        # Standard proxy headers
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $remote_addr;
-        proxy_set_header X-Forwarded-Proto $scheme;
-
-        # Timeout settings for long-lived connections
-        proxy_read_timeout 86400s;
-        proxy_send_timeout 86400s;
+            # Timeout settings for long-lived connections
+            proxy_read_timeout 86400s;
+            proxy_send_timeout 86400s;
+        }
     }
-}
-```
+    ```
 
-Overschrijf forwardingheaders in plaats van door clients aangeleverde ketens te behouden.
-OpenClaw vertrouwt doorgestuurde IP-metadata alleen van expliciet geconfigureerde proxy's,
-en append-achtige `X-Forwarded-For`-ketens worden behandeld als een hardeningsrisico.
+    Overschrijf doorstuurheaders in plaats van door de client aangeleverde ketens te behouden. OpenClaw vertrouwt doorgestuurde IP-metagegevens alleen van expliciet geconfigureerde proxy's, en `X-Forwarded-For`-ketens waaraan waarden worden toegevoegd, worden beschouwd als een beveiligingsrisico.
 
-## 5) Open OpenClaw en verleen rechten
+  </Step>
 
-Open `https://<vm-name>.exe.xyz/` (zie de Control UI-uitvoer van onboarding). Als er om authenticatie wordt gevraagd, plak dan het
-geconfigureerde gedeelde geheim van de VM. Deze handleiding gebruikt tokenauthenticatie, dus haal `gateway.auth.token`
-op met `openclaw config get gateway.auth.token` (of genereer er een met `openclaw doctor --generate-gateway-token`).
-Als je de Gateway hebt gewijzigd naar wachtwoordauthenticatie, gebruik dan in plaats daarvan `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD`.
-Keur apparaten goed met `openclaw devices list` en `openclaw devices approve <requestId>`. Gebruik bij twijfel Shelley vanuit je browser!
+  <Step title="Toegang krijgen tot OpenClaw en apparaten goedkeuren">
+    Open `https://<vm-name>.exe.xyz/` (zie de uitvoer van de Control UI tijdens de onboarding). Als om authenticatie wordt gevraagd, plakt u het geconfigureerde gedeelde geheim van de VM.
 
-## Externe kanaalinstelling
+    Deze handleiding gebruikt standaard tokenauthenticatie. Haal daarom `gateway.auth.token` op met `openclaw config get gateway.auth.token` of genereer een nieuw token met `openclaw doctor --n`. Als u de Gateway hebt overgeschakeld op wachtwoordauthenticatie, gebruikt u in plaats daarvan `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD`.
 
-Gebruik voor externe hosts liever één `config patch`-aanroep dan veel SSH-aanroepen naar `config set`. Bewaar echte tokens in de VM-omgeving of `~/.openclaw/.env`, en zet alleen SecretRefs in `openclaw.json`.
+    Keur apparaten goed met `openclaw devices list` en `openclaw devices approve <requestId>`. Gebruik bij twijfel Shelley vanuit uw browser.
 
-Zorg er op de VM voor dat de serviceomgeving de geheimen bevat die deze nodig heeft:
+  </Step>
+</Steps>
+
+## Externe kanaalconfiguratie
+
+Geef voor externe hosts de voorkeur aan één aanroep van `config patch` boven veel SSH-aanroepen van `config set`. Bewaar echte tokens in de VM-omgeving of in `~/.openclaw/.env` en plaats alleen SecretRefs in `openclaw.json`. Zie [Geheimenbeheer](/nl/gateway/secrets) voor het volledige SecretRef-contract.
+
+Zorg er op de VM voor dat de serviceomgeving de benodigde geheimen bevat:
 
 ```bash
 cat >> ~/.openclaw/.env <<'EOF'
@@ -136,7 +136,7 @@ OPENAI_API_KEY=sk-...
 EOF
 ```
 
-Maak vanaf je lokale machine een patchbestand en pipe dit naar de VM:
+Maak op uw lokale machine een patchbestand en stuur dit via een pipe naar de VM:
 
 ```json5
 // openclaw.remote.patch.json5
@@ -165,9 +165,9 @@ Maak vanaf je lokale machine een patchbestand en pipe dit naar de VM:
   },
   agents: {
     defaults: {
-      model: { primary: "openai/gpt-5.5" },
+      model: { primary: "openai/gpt-5.6-sol" },
       models: {
-        "openai/gpt-5.5": { params: { fastMode: true } },
+        "openai/gpt-5.6-sol": { params: { fastMode: true } },
       },
     },
   },
@@ -180,30 +180,27 @@ ssh <vm-name>.exe.xyz 'openclaw config patch --stdin' < ./openclaw.remote.patch.
 ssh <vm-name>.exe.xyz 'openclaw gateway restart && openclaw health'
 ```
 
-Gebruik `--replace-path` wanneer een geneste allowlist exact de patchwaarde moet worden, bijvoorbeeld bij het vervangen van een Discord-kanaalallowlist:
+Gebruik `--replace-path` wanneer een geneste toelatingslijst exact de patchwaarde moet krijgen, bijvoorbeeld bij het vervangen van een toelatingslijst voor een Discord-kanaal:
 
 ```bash
 ssh <vm-name>.exe.xyz 'openclaw config patch --stdin --replace-path "channels.discord.guilds[\"123\"].channels"' < ./discord.patch.json5
 ```
 
+Zie [Discord](/nl/channels/discord) en [Slack](/nl/channels/slack) voor de volledige naslag voor kanaalconfiguratie.
+
 ## Externe toegang
 
-Externe toegang wordt afgehandeld door de authenticatie van [exe.dev](https://exe.dev). Standaard
-wordt HTTP-verkeer vanaf poort 8000 doorgestuurd naar `https://<vm-name>.exe.xyz`
-met e-mailauthenticatie.
+exe.dev verzorgt de authenticatie voor externe toegang. Standaard wordt HTTP-verkeer van poort 8000 doorgestuurd naar `https://<vm-name>.exe.xyz` met e-mailauthenticatie.
 
 ## Bijwerken
 
 ```bash
-npm i -g openclaw@latest
-openclaw doctor
-openclaw gateway restart
-openclaw health
+openclaw update
 ```
 
-Handleiding: [Bijwerken](/nl/install/updating)
+Zie [Bijwerken](/nl/install/updating) voor het wisselen van kanalen en handmatig herstel.
 
 ## Gerelateerd
 
-- [Externe gateway](/nl/gateway/remote)
+- [Externe Gateway](/nl/gateway/remote)
 - [Installatieoverzicht](/nl/install)

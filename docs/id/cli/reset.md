@@ -1,34 +1,24 @@
 ---
 read_when:
-    - Anda ingin menghapus status lokal sambil tetap mempertahankan CLI terpasang
-    - Anda menginginkan dry-run tentang apa yang akan dihapus
-summary: Referensi CLI untuk `openclaw reset` (reset status/config lokal)
-title: Reset
+    - Anda ingin menghapus status lokal sambil tetap mempertahankan CLI terinstal
+    - Anda ingin melakukan uji coba untuk melihat apa saja yang akan dihapus
+summary: Referensi CLI untuk `openclaw reset` (mengatur ulang status/konfigurasi lokal)
+title: Atur Ulang
 x-i18n:
-    generated_at: "2026-04-24T09:02:49Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: e4a4aba32fb44905d079bf2a22e582a3affbe9809eac9af237ce3e48da72b42c
-    source_path: cli/reset.md
-    workflow: 15
+    generated_at: "2026-07-12T14:07:29Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: f18af9c5e187217de4c02f4b55de9a1c94f7246b74056dc660aa172168edcef9
+    source_path: cli/reset.md
+    workflow: 16
 ---
 
 # `openclaw reset`
 
-Reset config/status lokal (CLI tetap terpasang).
-
-Opsi:
-
-- `--scope <scope>`: `config`, `config+creds+sessions`, atau `full`
-- `--yes`: lewati prompt konfirmasi
-- `--non-interactive`: nonaktifkan prompt; memerlukan `--scope` dan `--yes`
-- `--dry-run`: cetak tindakan tanpa menghapus file
-
-Contoh:
+Atur ulang konfigurasi/status lokal (CLI tetap terinstal).
 
 ```bash
-openclaw backup create
 openclaw reset
 openclaw reset --dry-run
 openclaw reset --scope config --yes --non-interactive
@@ -36,11 +26,29 @@ openclaw reset --scope config+creds+sessions --yes --non-interactive
 openclaw reset --scope full --yes --non-interactive
 ```
 
-Catatan:
+## Opsi
 
-- Jalankan `openclaw backup create` terlebih dahulu jika Anda menginginkan snapshot yang dapat dipulihkan sebelum menghapus status lokal.
-- Jika Anda tidak memberikan `--scope`, `openclaw reset` menggunakan prompt interaktif untuk memilih apa yang akan dihapus.
-- `--non-interactive` hanya valid saat `--scope` dan `--yes` sama-sama diatur.
+- `--scope <scope>`: `config`, `config+creds+sessions`, atau `full`
+- `--yes`: lewati permintaan konfirmasi
+- `--non-interactive`: nonaktifkan permintaan input; memerlukan `--scope` dan `--yes`
+- `--dry-run`: tampilkan tindakan tanpa menghapus berkas
+
+## Cakupan
+
+| Cakupan                 | Yang dihapus                                                                                                         | Menghentikan Gateway terlebih dahulu |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| `config`                | hanya berkas konfigurasi                                                                                             | tidak                                |
+| `config+creds+sessions` | berkas konfigurasi, direktori OAuth/kredensial, direktori sesi per agen                                              | ya                                   |
+| `full`                  | direktori status (termasuk konfigurasi/kredensial jika berada di dalamnya), direktori ruang kerja, dan atestasi ruang kerja | ya                             |
+
+`config+creds+sessions` dan `full` menghentikan layanan Gateway terkelola yang sedang berjalan sebelum menghapus status.
+
+## Catatan
+
+- Jalankan `openclaw backup create` terlebih dahulu untuk membuat snapshot yang dapat dipulihkan sebelum menghapus status lokal.
+- Tanpa `--scope`, `openclaw reset` meminta cakupan yang akan dihapus secara interaktif.
+- `--non-interactive` hanya valid jika `--scope` dan `--yes` telah ditetapkan.
+- `config+creds+sessions` dan `full` menampilkan `Next: openclaw onboard --install-daemon` setelah selesai.
 
 ## Terkait
 

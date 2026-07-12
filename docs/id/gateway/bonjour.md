@@ -1,64 +1,56 @@
 ---
 read_when:
-    - Mendiagnosis masalah penemuan Bonjour di macOS/iOS
-    - Mengubah jenis layanan mDNS, catatan TXT, atau UX penemuan
-summary: Penemuan Bonjour/mDNS + pemecahan masalah (suar Gateway, klien, dan mode kegagalan umum)
+    - Men-debug masalah penemuan Bonjour di macOS/iOS
+    - Mengubah jenis layanan mDNS, rekaman TXT, atau UX penemuan
+summary: Penemuan + penelusuran kesalahan Bonjour/mDNS (beacon Gateway, klien, dan mode kegagalan umum)
 title: Penemuan Bonjour
 x-i18n:
-    generated_at: "2026-05-12T12:50:45Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:08:10Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 05892ee8f0dc880f68f7cf024de9452b8d999ff1af3c7ca9850fb4f2d732af0c
+    source_hash: c0526c9e20dd02d143ae7aa4c8e1e6830763763e95c9a74c4d73332c5e5e155e
     source_path: gateway/bonjour.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw dapat menggunakan Bonjour (mDNS / DNS-SD) untuk menemukan Gateway aktif (endpoint WebSocket).
-Penelusuran multicast `local.` adalah **kemudahan khusus LAN**. Plugin `bonjour`
-bawaan memiliki kepemilikan atas iklan LAN. Plugin ini mulai otomatis pada host macOS dan bersifat opsional pada
-Linux, Windows, dan deployment Gateway terkontainerisasi. Untuk penemuan lintas jaringan, beacon yang sama
-juga dapat dipublikasikan melalui domain DNS-SD area-luas yang dikonfigurasi. Penemuan
-tetap bersifat best-effort dan **tidak** menggantikan konektivitas berbasis SSH atau Tailnet.
+OpenClaw dapat menggunakan Bonjour (mDNS/DNS-SD) untuk menemukan Gateway aktif (titik akhir WebSocket). Penelusuran multicast `local.` merupakan **kemudahan khusus LAN**: Plugin `bonjour` bawaan menangani pengiklanan LAN, dimulai otomatis pada host macOS dan harus diaktifkan secara manual pada Linux, Windows, serta penerapan Gateway dalam kontainer. Suar yang sama juga dapat dipublikasikan melalui domain DNS-SD area luas yang dikonfigurasi untuk penemuan lintas jaringan. Penemuan bersifat upaya terbaik dan **tidak** menggantikan konektivitas berbasis SSH atau Tailnet.
 
-## Bonjour area-luas (Unicast DNS-SD) melalui Tailscale
+## Bonjour area luas (DNS-SD unicast) melalui Tailscale
 
-Jika node dan gateway berada di jaringan berbeda, multicast mDNS tidak akan melewati
-batas tersebut. Anda dapat mempertahankan UX penemuan yang sama dengan beralih ke **unicast DNS-SD**
-("Wide-Area Bonjour") melalui Tailscale.
+Jika Node dan Gateway berada di jaringan yang berbeda, mDNS multicast tidak dapat melintasi batas tersebut. Pertahankan pengalaman pengguna penemuan yang sama dengan beralih ke **DNS-SD unicast** ("Bonjour Area Luas") melalui Tailscale:
 
-Langkah tingkat tinggi:
+1. Jalankan server DNS pada host Gateway yang dapat dijangkau melalui Tailnet.
+2. Publikasikan rekaman DNS-SD untuk `_openclaw-gw._tcp` di bawah zona khusus (contoh: `openclaw.internal.`).
+3. Konfigurasikan **split DNS** Tailscale agar domain pilihan Anda diresolusikan melalui server DNS tersebut untuk klien, termasuk iOS.
 
-1. Jalankan server DNS pada host gateway (dapat dijangkau melalui Tailnet).
-2. Publikasikan record DNS-SD untuk `_openclaw-gw._tcp` di bawah zona khusus
-   (contoh: `openclaw.internal.`).
-3. Konfigurasikan **split DNS** Tailscale agar domain pilihan Anda di-resolve melalui
-   server DNS tersebut untuk klien (termasuk iOS).
+`openclaw.internal.` di atas hanyalah contoh — OpenClaw mendukung domain penemuan apa pun. Node iOS/Android menelusuri `local.` dan domain area luas yang Anda konfigurasikan.
 
-OpenClaw mendukung domain penemuan apa pun; `openclaw.internal.` hanyalah contoh.
-Node iOS/Android menelusuri `local.` dan domain area-luas yang Anda konfigurasi.
-
-### Konfigurasi Gateway (direkomendasikan)
+### Konfigurasi Gateway
 
 ```json5
 {
-  gateway: { bind: "tailnet" }, // tailnet-only (recommended)
-  discovery: { wideArea: { enabled: true } }, // enables wide-area DNS-SD publishing
+  gateway: { bind: "tailnet" }, // khusus tailnet (disarankan)
+  discovery: { wideArea: { enabled: true, domain: "openclaw.internal" } },
 }
 ```
 
-### Penyiapan server DNS satu kali (host gateway)
+`discovery.wideArea.domain` juga menerima variabel lingkungan `OPENCLAW_WIDE_AREA_DOMAIN` sebagai nilai cadangan ketika belum diatur.
+
+### Penyiapan server DNS satu kali (host Gateway, khusus macOS)
 
 ```bash
 openclaw dns setup --apply
 ```
 
-Ini memasang CoreDNS dan mengonfigurasinya untuk:
+Perintah ini hanya tersedia di macOS serta memerlukan Homebrew dan koneksi Tailscale yang aktif. Perintah ini memasang CoreDNS (`brew install coredns`) dan mengonfigurasinya untuk:
 
-- mendengarkan pada port 53 hanya pada antarmuka Tailscale milik gateway
-- menyajikan domain pilihan Anda (contoh: `openclaw.internal.`) dari `~/.openclaw/dns/<domain>.db`
+- mendengarkan pada porta 53 hanya di antarmuka Tailscale milik Gateway
+- melayani domain pilihan Anda (contoh: `openclaw.internal.`) dari `~/.openclaw/dns/<domain>.db`
 
-Validasi dari mesin yang terhubung ke tailnet:
+Jalankan terlebih dahulu tanpa `--apply` untuk meninjau rencana (domain, jalur berkas zona, IP Tailnet yang terdeteksi, konfigurasi yang disarankan) tanpa memasang apa pun.
+
+Validasikan dari mesin yang terhubung ke Tailnet:
 
 ```bash
 dns-sd -B _openclaw-gw._tcp openclaw.internal.
@@ -69,79 +61,65 @@ dig @<TAILNET_IPV4> -p 53 _openclaw-gw._tcp.openclaw.internal PTR +short
 
 Di konsol admin Tailscale:
 
-- Tambahkan nameserver yang menunjuk ke IP tailnet gateway (UDP/TCP 53).
-- Tambahkan split DNS agar domain penemuan Anda menggunakan nameserver tersebut.
+- Tambahkan server nama yang mengarah ke IP Tailnet milik Gateway (UDP/TCP 53).
+- Tambahkan split DNS agar domain penemuan Anda menggunakan server nama tersebut.
 
-Setelah klien menerima DNS tailnet, node iOS dan penemuan CLI dapat menelusuri
-`_openclaw-gw._tcp` di domain penemuan Anda tanpa multicast.
+Setelah klien menerima DNS Tailnet, Node iOS dan penemuan CLI dapat menelusuri `_openclaw-gw._tcp` dalam domain penemuan Anda tanpa multicast.
 
-### Keamanan listener Gateway (direkomendasikan)
+### Keamanan pendengar Gateway
 
-Port WS Gateway (default `18789`) secara default terikat ke loopback. Untuk akses LAN/tailnet,
-ikat secara eksplisit dan tetap aktifkan auth.
+Porta WS Gateway (bawaan `18789`) secara bawaan terikat ke local loopback. Untuk akses LAN/Tailnet, tetapkan pengikatan secara eksplisit dan biarkan autentikasi tetap aktif. Untuk penyiapan khusus Tailnet, atur `gateway.bind: "tailnet"` dalam `~/.openclaw/openclaw.json` dan mulai ulang Gateway (atau aplikasi bilah menu macOS).
 
-Untuk penyiapan khusus tailnet:
+## Yang diiklankan
 
-- Atur `gateway.bind: "tailnet"` di `~/.openclaw/openclaw.json`.
-- Mulai ulang Gateway (atau mulai ulang aplikasi menubar macOS).
+Hanya Gateway yang mengiklankan `_openclaw-gw._tcp`. Pengiklanan multicast LAN berasal dari Plugin `bonjour` bawaan ketika diaktifkan; publikasi DNS-SD area luas tetap menjadi tanggung jawab Gateway.
 
-## Yang mengiklankan
+## Jenis layanan
 
-Hanya Gateway yang mengiklankan `_openclaw-gw._tcp`. Iklan multicast LAN
-disediakan oleh Plugin `bonjour` bawaan saat Plugin diaktifkan; publikasi
-DNS-SD area-luas tetap dimiliki Gateway.
+- `_openclaw-gw._tcp` - suar transportasi Gateway, digunakan oleh Node macOS/iOS/Android.
 
-## Tipe layanan
+## Kunci TXT (petunjuk nonrahasia)
 
-- `_openclaw-gw._tcp` - beacon transport gateway (digunakan oleh node macOS/iOS/Android).
-
-## Kunci TXT (petunjuk non-rahasia)
-
-Gateway mengiklankan petunjuk kecil non-rahasia agar alur UI lebih mudah:
-
-- `role=gateway`
-- `displayName=<friendly name>`
-- `lanHost=<hostname>.local`
-- `gatewayPort=<port>` (Gateway WS + HTTP)
-- `gatewayTls=1` (hanya saat TLS diaktifkan)
-- `gatewayTlsSha256=<sha256>` (hanya saat TLS diaktifkan dan fingerprint tersedia)
-- `canvasPort=<port>` (hanya saat host canvas diaktifkan; saat ini sama dengan `gatewayPort`)
-- `transport=gateway`
-- `tailnetDns=<magicdns>` (hanya mode mDNS penuh, petunjuk opsional saat Tailnet tersedia)
-- `sshPort=<port>` (hanya mode penuh; dihilangkan dalam mode minimal dan off)
-- `cliPath=<path>` (hanya mode penuh; dihilangkan dalam mode minimal dan off)
+| Kunci                         | Saat tersedia                                                                  |
+| ----------------------------- | ------------------------------------------------------------------------------ |
+| `role=gateway`                | Selalu.                                                                        |
+| `displayName=<friendly name>` | Selalu.                                                                        |
+| `lanHost=<hostname>.local`    | Selalu.                                                                        |
+| `gatewayPort=<port>`          | Selalu (WS + HTTP Gateway).                                                     |
+| `transport=gateway`           | Selalu.                                                                        |
+| `gatewayTls=1`                | Hanya saat TLS diaktifkan.                                                      |
+| `gatewayTlsSha256=<sha256>`   | Hanya saat TLS diaktifkan dan sidik jari tersedia.                              |
+| `gatewayDirectReachable=1`    | Hanya saat Gateway dapat dijangkau langsung (bukan hanya melalui jalur relai/proksi). |
+| `canvasPort=<port>`           | Hanya saat host kanvas diaktifkan; saat ini sama dengan `gatewayPort`.          |
+| `tailnetDns=<magicdns>`       | Hanya mode lengkap mDNS; petunjuk opsional saat Tailnet tersedia.               |
+| `sshPort=<port>`              | Hanya mode lengkap; dihilangkan dalam mode minimal dan nonaktif.                |
+| `cliPath=<path>`              | Hanya mode lengkap; dihilangkan dalam mode minimal dan nonaktif.                |
 
 Catatan keamanan:
 
-- Record TXT Bonjour/mDNS **tidak diautentikasi**. Klien tidak boleh memperlakukan TXT sebagai routing otoritatif.
-- Klien sebaiknya melakukan routing menggunakan endpoint layanan yang di-resolve (SRV + A/AAAA). Perlakukan `lanHost`, `tailnetDns`, `gatewayPort`, dan `gatewayTlsSha256` hanya sebagai petunjuk.
-- Penargetan otomatis SSH juga sebaiknya menggunakan host layanan yang di-resolve, bukan petunjuk khusus TXT.
-- TLS pinning tidak boleh pernah mengizinkan `gatewayTlsSha256` yang diiklankan untuk menimpa pin yang sebelumnya disimpan.
-- Node iOS/Android sebaiknya memperlakukan koneksi langsung berbasis penemuan sebagai **hanya TLS** dan mewajibkan konfirmasi pengguna eksplisit sebelum memercayai fingerprint pertama kali.
+- Rekaman TXT Bonjour/mDNS **tidak diautentikasi**. Klien tidak boleh menganggap TXT sebagai perutean otoritatif.
+- Klien sebaiknya melakukan perutean menggunakan titik akhir layanan yang diresolusikan (SRV + A/AAAA). Perlakukan `lanHost`, `tailnetDns`, `gatewayPort`, dan `gatewayTlsSha256` hanya sebagai petunjuk.
+- Penentuan target SSH otomatis juga harus menggunakan host layanan yang diresolusikan, bukan petunjuk yang hanya berasal dari TXT.
+- Penyematan TLS tidak boleh membiarkan `gatewayTlsSha256` yang diiklankan menggantikan sematan yang telah disimpan sebelumnya.
+- Node iOS/Android harus memperlakukan koneksi langsung berbasis penemuan sebagai **khusus TLS** dan mewajibkan konfirmasi pengguna secara eksplisit sebelum memercayai sidik jari untuk pertama kalinya.
 
-## Debugging di macOS
+## Penelusuran kesalahan di macOS
 
-Alat bawaan yang berguna:
+Alat bawaan:
 
-- Telusuri instans:
+```bash
+# Telusuri instans
+dns-sd -B _openclaw-gw._tcp local.
 
-  ```bash
-  dns-sd -B _openclaw-gw._tcp local.
-  ```
+# Resolusikan satu instans (ganti <instance>)
+dns-sd -L "<instance>" _openclaw-gw._tcp local.
+```
 
-- Resolve satu instans (ganti `<instance>`):
+Jika penelusuran berhasil tetapi resolusi gagal, biasanya masalahnya berasal dari kebijakan LAN atau resolver mDNS.
 
-  ```bash
-  dns-sd -L "<instance>" _openclaw-gw._tcp local.
-  ```
+## Penelusuran kesalahan dalam log Gateway
 
-Jika penelusuran berfungsi tetapi resolve gagal, Anda biasanya menghadapi kebijakan LAN atau
-masalah resolver mDNS.
-
-## Debugging di log Gateway
-
-Gateway menulis file log bergulir (dicetak saat startup sebagai
-`gateway log file: ...`). Cari baris `bonjour:`, terutama:
+Gateway menulis berkas log bergulir (dicetak saat dimulai sebagai `gateway log file: ...`). Cari baris `bonjour:`, khususnya:
 
 - `bonjour: advertise failed ...`
 - `bonjour: suppressing ciao cancellation ...`
@@ -149,163 +127,121 @@ Gateway menulis file log bergulir (dicetak saat startup sebagai
 - `bonjour: watchdog detected non-announced service ...`
 - `bonjour: disabling advertiser after ... failed restarts ...`
 
-Watchdog memperlakukan `probing`, `announcing`, dan penggantian nama konflik yang baru
-sebagai status yang sedang berlangsung. Jika layanan tidak pernah mencapai `announced`, OpenClaw pada akhirnya
-membuat ulang advertiser dan, setelah kegagalan berulang, menonaktifkan Bonjour untuk
-proses Gateway tersebut alih-alih terus mengiklankan ulang tanpa henti.
+Pengawas memperlakukan `probing`, `announcing`, dan penggantian nama baru akibat konflik yang aktif sebagai status sedang berlangsung. Jika layanan tidak pernah mencapai `announced`, OpenClaw membuat ulang pengiklan dan, setelah kegagalan berulang, menonaktifkan Bonjour untuk proses Gateway tersebut alih-alih terus mengiklankan ulang tanpa henti.
 
-Bonjour menggunakan hostname sistem untuk host `.local` yang diiklankan saat hostname tersebut adalah
-label DNS yang valid. Jika hostname sistem berisi spasi, garis bawah, atau karakter
-label DNS lain yang tidak valid, OpenClaw fallback ke `openclaw.local`. Atur
-`OPENCLAW_MDNS_HOSTNAME=<name>` sebelum memulai Gateway saat Anda membutuhkan
-label host eksplisit.
+Bonjour menggunakan nama host sistem untuk host `.local` yang diiklankan jika nama tersebut merupakan label DNS yang valid. Jika nama host sistem memuat spasi, garis bawah, atau karakter lain yang tidak valid untuk label DNS, OpenClaw menggunakan `openclaw.local` sebagai nilai cadangan. Atur `OPENCLAW_MDNS_HOSTNAME=<name>` sebelum memulai Gateway jika Anda memerlukan label host yang eksplisit.
 
-## Debugging pada node iOS
+## Penelusuran kesalahan pada Node iOS
 
 Node iOS menggunakan `NWBrowser` untuk menemukan `_openclaw-gw._tcp`.
 
-Untuk menangkap log:
-
-- Settings → Gateway → Advanced → **Discovery Debug Logs**
-- Settings → Gateway → Advanced → **Discovery Logs** → reproduksi → **Copy**
-
-Log menyertakan transisi status browser dan perubahan set hasil.
+Untuk merekam log: Settings -> Gateway -> Advanced -> **Discovery Debug Logs**, lalu Settings -> Gateway -> Advanced -> **Discovery Logs** -> reproduksi -> **Copy**. Log tersebut mencakup transisi status peramban dan perubahan kumpulan hasil.
 
 ## Kapan mengaktifkan Bonjour
 
-Bonjour mulai otomatis untuk startup Gateway dengan konfigurasi kosong pada host macOS karena
-aplikasi lokal dan node iOS/Android terdekat umumnya mengandalkan penemuan dalam LAN yang sama.
+Bonjour dimulai otomatis saat Gateway dijalankan dengan konfigurasi kosong pada host macOS karena aplikasi lokal dan Node iOS/Android di sekitar umumnya mengandalkan penemuan dalam LAN yang sama.
 
-Aktifkan Bonjour secara eksplisit saat penemuan otomatis dalam LAN yang sama berguna pada Linux,
-Windows, atau host non-macOS lain:
+Aktifkan secara eksplisit ketika penemuan otomatis dalam LAN yang sama berguna di Linux, Windows, atau host non-macOS lainnya:
 
 ```bash
 openclaw plugins enable bonjour
 ```
 
-Saat diaktifkan, Bonjour menggunakan `discovery.mdns.mode` untuk menentukan seberapa banyak metadata TXT
-yang dipublikasikan. Mode yang sama mengontrol petunjuk TXT opsional dalam record DNS-SD area-luas.
-Mode default adalah `minimal`; gunakan `full` hanya saat klien membutuhkan petunjuk `cliPath` atau
-`sshPort`. Gunakan `off` untuk menekan multicast LAN tanpa mengubah pengaktifan Plugin;
-DNS-SD area-luas masih dapat memublikasikan beacon Gateway minimal saat
-`discovery.wideArea.enabled` bernilai true.
+Saat diaktifkan, Bonjour menggunakan `discovery.mdns.mode` untuk menentukan jumlah metadata TXT yang akan dipublikasikan; mode yang sama mengendalikan petunjuk TXT opsional dalam rekaman DNS-SD area luas. Mode:
+
+| Mode                | Perilaku                                                                                                                                                      |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `minimal` (bawaan)  | Hanya kunci TXT inti; menghilangkan `sshPort`, `cliPath`, `tailnetDns`.                                                                                        |
+| `full`              | Menambahkan `sshPort`, `cliPath`, `tailnetDns` — gunakan saat klien memerlukan petunjuk tersebut.                                                              |
+| `off`               | Menekan multicast LAN tanpa mengubah status pengaktifan Plugin; DNS-SD area luas masih dapat memublikasikan suar minimal saat `discovery.wideArea.enabled` bernilai true. |
 
 ## Kapan menonaktifkan Bonjour
 
-Biarkan Bonjour dinonaktifkan saat iklan multicast LAN tidak diperlukan, tidak tersedia,
-atau merugikan. Kasus umum adalah server non-macOS, jaringan bridge Docker,
-WSL, atau kebijakan jaringan yang memblokir multicast mDNS. Di lingkungan tersebut,
-Gateway masih dapat dijangkau melalui URL yang dipublikasikan, SSH, Tailnet, atau DNS-SD
-area-luas, tetapi penemuan otomatis LAN tidak andal.
+Biarkan Bonjour dinonaktifkan ketika pengiklanan multicast LAN tidak diperlukan, tidak tersedia, atau merugikan — kasus yang umum meliputi server non-macOS, jaringan jembatan Docker, WSL, atau kebijakan jaringan yang membuang multicast mDNS. Gateway tetap dapat dijangkau melalui URL yang dipublikasikan, SSH, Tailnet, atau DNS-SD area luas; hanya penemuan otomatis LAN yang menjadi tidak andal.
 
-Pilih override lingkungan yang ada saat masalahnya terkait deployment:
+Gunakan penggantian melalui variabel lingkungan untuk masalah yang terbatas pada penerapan (aman untuk citra Docker, berkas layanan, skrip peluncuran, dan penelusuran kesalahan sesekali — pengaturan ini hilang saat lingkungannya tidak ada):
 
 ```bash
 OPENCLAW_DISABLE_BONJOUR=1
 ```
 
-Itu menonaktifkan iklan multicast LAN tanpa mengubah konfigurasi Plugin.
-Ini aman untuk image Docker, file layanan, skrip launch, dan debugging sekali jalan
-karena pengaturan tersebut hilang saat lingkungan hilang.
-
-Gunakan konfigurasi Plugin saat Anda memang ingin mematikan Plugin penemuan LAN
-bawaan untuk konfigurasi OpenClaw tersebut:
+Gunakan konfigurasi Plugin jika Anda sengaja ingin menonaktifkan Plugin penemuan LAN bawaan untuk konfigurasi OpenClaw tersebut:
 
 ```bash
 openclaw plugins disable bonjour
 ```
 
-## Catatan penting Docker
+## Hal-hal yang perlu diperhatikan pada Docker
 
-Plugin Bonjour bawaan menonaktifkan otomatis iklan multicast LAN dalam container yang terdeteksi
-saat `OPENCLAW_DISABLE_BONJOUR` tidak disetel. Jaringan bridge Docker
-biasanya tidak meneruskan multicast mDNS (`224.0.0.251:5353`) antara container
-dan LAN, sehingga iklan dari container jarang membuat penemuan berfungsi.
+Plugin Bonjour bawaan secara otomatis menonaktifkan pengiklanan multicast LAN dalam kontainer yang terdeteksi ketika `OPENCLAW_DISABLE_BONJOUR` belum diatur. Jaringan jembatan Docker biasanya tidak meneruskan multicast mDNS (`224.0.0.251:5353`) antara kontainer dan LAN, sehingga pengiklanan dari kontainer jarang membuat penemuan berfungsi.
 
-Catatan penting:
+Hal-hal yang perlu diperhatikan:
 
-- Bonjour mulai otomatis pada host macOS dan bersifat opt-in di tempat lain. Membiarkannya
-  dinonaktifkan tidak menghentikan Gateway; itu hanya melewati iklan multicast LAN.
-- Menonaktifkan Bonjour tidak mengubah `gateway.bind`; Docker tetap default ke
-  `OPENCLAW_GATEWAY_BIND=lan` agar port host yang dipublikasikan dapat berfungsi.
-- Menonaktifkan Bonjour tidak menonaktifkan DNS-SD area-luas. Gunakan penemuan area-luas
-  atau Tailnet saat Gateway dan node tidak berada di LAN yang sama.
-- Menggunakan ulang `OPENCLAW_CONFIG_DIR` yang sama di luar Docker tidak mempertahankan
-  kebijakan penonaktifan otomatis container.
-- Atur `OPENCLAW_DISABLE_BONJOUR=0` hanya untuk host networking, macvlan, atau jaringan lain
-  yang diketahui dapat melewatkan multicast mDNS; atur ke `1` untuk menonaktifkan paksa.
+- Bonjour dimulai otomatis pada host macOS dan harus diaktifkan secara manual di tempat lain. Membiarkannya dinonaktifkan tidak menghentikan Gateway — tindakan ini hanya melewati pengiklanan multicast LAN.
+- Menonaktifkan Bonjour tidak mengubah `gateway.bind`; Docker tetap menggunakan `OPENCLAW_GATEWAY_BIND=lan` secara bawaan agar porta host yang dipublikasikan berfungsi.
+- Menonaktifkan Bonjour tidak menonaktifkan DNS-SD area luas. Gunakan penemuan area luas atau Tailnet ketika Gateway dan Node tidak berada di LAN yang sama.
+- Menggunakan kembali `OPENCLAW_CONFIG_DIR` yang sama di luar Docker tidak mempertahankan kebijakan penonaktifan otomatis kontainer.
+- Atur `OPENCLAW_DISABLE_BONJOUR=0` hanya untuk jaringan host, macvlan, atau jaringan lain yang diketahui meneruskan multicast mDNS; atur ke `1` untuk memaksa penonaktifan.
 
 ## Pemecahan masalah Bonjour yang dinonaktifkan
 
-Jika sebuah node tidak lagi menemukan Gateway secara otomatis setelah penyiapan Docker:
+Jika Node tidak lagi menemukan Gateway secara otomatis setelah penyiapan Docker:
 
-1. Konfirmasi apakah Gateway berjalan dalam mode otomatis, dipaksa aktif, atau dipaksa nonaktif:
+1. Pastikan apakah Gateway berjalan dalam mode otomatis, dipaksa aktif, atau dipaksa nonaktif:
 
    ```bash
    docker compose config | grep OPENCLAW_DISABLE_BONJOUR
    ```
 
-2. Konfirmasi Gateway itu sendiri dapat dijangkau melalui port yang dipublikasikan:
+2. Pastikan Gateway itu sendiri dapat dijangkau melalui porta yang dipublikasikan:
 
    ```bash
    curl -fsS http://127.0.0.1:18789/healthz
    ```
 
 3. Gunakan target langsung saat Bonjour dinonaktifkan:
-   - UI kontrol atau alat lokal: `http://127.0.0.1:18789`
+   - UI Kontrol atau alat lokal: `http://127.0.0.1:18789`
    - Klien LAN: `http://<gateway-host>:18789`
-   - Klien lintas jaringan: Tailnet MagicDNS, IP Tailnet, tunnel SSH, atau
-     DNS-SD area-luas
+   - Klien lintas jaringan: MagicDNS Tailnet, IP Tailnet, terowongan SSH, atau DNS-SD area luas
 
-4. Jika Anda sengaja mengaktifkan Plugin Bonjour di Docker dan memaksa iklan
-   dengan `OPENCLAW_DISABLE_BONJOUR=0`, uji multicast dari host:
+4. Jika Anda sengaja mengaktifkan Plugin Bonjour di Docker dan memaksa pengiklanan dengan `OPENCLAW_DISABLE_BONJOUR=0`, uji multicast dari host:
 
    ```bash
    dns-sd -B _openclaw-gw._tcp local.
    ```
 
-   Jika penelusuran kosong atau log Gateway menunjukkan pembatalan watchdog ciao
-   berulang, pulihkan `OPENCLAW_DISABLE_BONJOUR=1` dan gunakan rute langsung atau
-   Tailnet.
+   Jika hasil penelusuran kosong atau log Gateway menunjukkan pembatalan pengawas ciao secara berulang, pulihkan `OPENCLAW_DISABLE_BONJOUR=1` dan gunakan rute langsung atau Tailnet.
 
 ## Mode kegagalan umum
 
-- **Bonjour tidak melewati jaringan**: gunakan Tailnet atau SSH.
+- **Bonjour tidak melintasi jaringan**: gunakan Tailnet atau SSH.
 - **Multicast diblokir**: beberapa jaringan Wi-Fi menonaktifkan mDNS.
-- **Advertiser macet dalam probing/announcing**: host dengan multicast yang diblokir,
-  bridge container, WSL, atau perubahan antarmuka dapat membuat advertiser ciao berada dalam
-  status non-announced. OpenClaw mencoba ulang beberapa kali lalu menonaktifkan Bonjour
-  untuk proses Gateway saat ini alih-alih memulai ulang advertiser tanpa henti.
-- **Jaringan bridge Docker**: Bonjour menonaktifkan otomatis dalam container yang terdeteksi.
-  Atur `OPENCLAW_DISABLE_BONJOUR=0` hanya untuk host, macvlan, atau jaringan lain
-  yang mendukung mDNS.
-- **Sleep / perubahan antarmuka**: macOS dapat sementara kehilangan hasil mDNS; coba lagi.
-- **Penelusuran berfungsi tetapi resolve gagal**: jaga nama mesin tetap sederhana (hindari emoji atau
-  tanda baca), lalu mulai ulang Gateway. Nama instans layanan diturunkan dari
-  nama host, sehingga nama yang terlalu kompleks dapat membingungkan sebagian resolver.
+- **Pengiklan macet dalam tahap pemeriksaan/pengumuman**: host dengan multicast yang diblokir, bridge kontainer, WSL, atau perubahan antarmuka dapat menyebabkan pengiklan ciao berada dalam status belum diumumkan. OpenClaw mencoba kembali beberapa kali, lalu menonaktifkan Bonjour untuk proses Gateway saat ini alih-alih memulai ulang pengiklan tanpa henti.
+- **Jaringan bridge Docker**: Bonjour dinonaktifkan otomatis dalam kontainer yang terdeteksi. Atur `OPENCLAW_DISABLE_BONJOUR=0` hanya untuk jaringan host, macvlan, atau jaringan lain yang mendukung mDNS.
+- **Perubahan akibat mode tidur/antarmuka**: macOS mungkin kehilangan hasil mDNS untuk sementara; coba lagi.
+- **Penelusuran berfungsi tetapi resolusi gagal**: gunakan nama mesin yang sederhana (hindari emoji atau tanda baca), lalu mulai ulang Gateway. Nama instans layanan berasal dari nama host, sehingga nama yang terlalu kompleks dapat membingungkan beberapa resolver.
 
 ## Nama instans yang di-escape (`\032`)
 
-Bonjour/DNS-SD sering meng-escape byte dalam nama instans layanan sebagai urutan desimal `\DDD`
-(misalnya spasi menjadi `\032`).
-
-- Ini normal pada level protokol.
-- UI sebaiknya mendekode untuk tampilan (iOS menggunakan `BonjourEscapes.decode`).
+Bonjour/DNS-SD sering meng-escape byte dalam nama instans layanan sebagai urutan desimal `\DDD` (spasi menjadi `\032`). Hal ini normal pada tingkat protokol; UI harus mendekodenya untuk ditampilkan (iOS menggunakan `BonjourEscapes.decode`).
 
 ## Mengaktifkan / menonaktifkan / konfigurasi
 
-- Host macOS memulai otomatis plugin penemuan LAN bawaan secara default.
-- `openclaw plugins enable bonjour` mengaktifkan plugin penemuan LAN bawaan pada host yang tidak mengaktifkannya secara default.
-- `openclaw plugins disable bonjour` menonaktifkan pengiklanan multicast LAN dengan menonaktifkan plugin bawaan.
-- `OPENCLAW_DISABLE_BONJOUR=1` menonaktifkan pengiklanan multicast LAN tanpa mengubah konfigurasi plugin; nilai truthy yang diterima adalah `1`, `true`, `yes`, dan `on` (lama: `OPENCLAW_DISABLE_BONJOUR`).
-- `OPENCLAW_DISABLE_BONJOUR=0` memaksa pengiklanan multicast LAN aktif, termasuk di dalam kontainer yang terdeteksi; nilai falsy yang diterima adalah `0`, `false`, `no`, dan `off`.
-- Saat Plugin Bonjour diaktifkan dan `OPENCLAW_DISABLE_BONJOUR` tidak disetel, Bonjour mengiklankan pada host normal dan menonaktifkan diri secara otomatis di dalam kontainer yang terdeteksi.
-- `gateway.bind` di `~/.openclaw/openclaw.json` mengontrol mode bind Gateway.
-- `OPENCLAW_SSH_PORT` mengganti port SSH saat `sshPort` diiklankan (lama: `OPENCLAW_SSH_PORT`).
-- `OPENCLAW_TAILNET_DNS` menerbitkan petunjuk MagicDNS di TXT saat mode penuh mDNS diaktifkan (lama: `OPENCLAW_TAILNET_DNS`).
-- `OPENCLAW_CLI_PATH` mengganti path CLI yang diiklankan (lama: `OPENCLAW_CLI_PATH`).
+| Pengaturan                                           | Efek                                                                                                  |
+| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `openclaw plugins enable bonjour`                    | Mengaktifkan Plugin penemuan LAN bawaan pada host yang tidak mengaktifkannya secara default.           |
+| `openclaw plugins disable bonjour`                   | Menonaktifkan pengiklanan multicast LAN dengan menonaktifkan Plugin bawaan.                            |
+| `OPENCLAW_DISABLE_BONJOUR=1` (atau `true`/`yes`/`on`)  | Menonaktifkan pengiklanan multicast LAN tanpa mengubah konfigurasi Plugin.                             |
+| `OPENCLAW_DISABLE_BONJOUR=0` (atau `false`/`no`/`off`) | Memaksa pengiklanan multicast LAN aktif, termasuk di dalam kontainer yang terdeteksi.                  |
+| `discovery.mdns.mode`                                | `off` \| `minimal` (default) \| `full` — lihat mode di atas.                                           |
+| `gateway.bind`                                       | Mengontrol mode pengikatan Gateway dalam `~/.openclaw/openclaw.json`.                                  |
+| `OPENCLAW_SSH_PORT`                                  | Mengganti port SSH saat `sshPort` diiklankan (mode penuh).                                             |
+| `OPENCLAW_TAILNET_DNS`                               | Menerbitkan petunjuk MagicDNS dalam TXT saat mode penuh mDNS diaktifkan.                               |
+| `OPENCLAW_CLI_PATH`                                  | Mengganti jalur CLI yang diiklankan (mode penuh).                                                      |
 
-## Dokumen terkait
+Host macOS secara default memulai otomatis Plugin penemuan LAN bawaan. Saat Plugin Bonjour diaktifkan dan `OPENCLAW_DISABLE_BONJOUR` tidak ditetapkan, Bonjour beriklan pada host normal dan dinonaktifkan otomatis di dalam kontainer yang terdeteksi (Docker, mesin Fly.io, dan runtime kontainer umum).
 
-- Kebijakan penemuan dan pemilihan transport: [Penemuan](/id/gateway/discovery)
+## Dokumentasi terkait
+
+- Kebijakan penemuan dan pemilihan transportasi: [Penemuan](/id/gateway/discovery)
 - Penyandingan Node + persetujuan: [Penyandingan Gateway](/id/gateway/pairing)

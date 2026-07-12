@@ -1,30 +1,30 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin comfy
-summary: เพิ่มการรองรับผู้ให้บริการโมเดล ComfyUI ให้กับ OpenClaw.
-title: Plugin ของ ComfyUI
+summary: เพิ่มการรองรับผู้ให้บริการโมเดล ComfyUI ให้กับ OpenClaw
+title: Plugin ComfyUI
 x-i18n:
-    generated_at: "2026-05-02T20:50:26Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:29:04Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: cf099e744fc11e302995d0df9f0cbc543702b92c54424aab11502ac2552f642e
     source_path: plugins/reference/comfy.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# ComfyUI Plugin
+# Plugin ComfyUI
 
 เพิ่มการรองรับผู้ให้บริการโมเดล ComfyUI ให้กับ OpenClaw
 
-## การแจกจ่าย
+## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/comfy-provider`
-- เส้นทางการติดตั้ง: รวมอยู่ใน OpenClaw
+- ช่องทางการติดตั้ง: รวมอยู่ใน OpenClaw
 
-## พื้นผิว
+## ส่วนเชื่อมต่อ
 
-providers: comfy; contracts: imageGenerationProviders, musicGenerationProviders, videoGenerationProviders
+ผู้ให้บริการ: comfy; สัญญา: imageGenerationProviders, musicGenerationProviders, videoGenerationProviders
 
 ## เอกสารที่เกี่ยวข้อง
 

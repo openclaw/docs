@@ -3,54 +3,53 @@ read_when:
     - Hosting di PeekabooBridge in OpenClaw.app
     - Integrazione di Peekaboo tramite Swift Package Manager
     - Modifica del protocollo/dei percorsi di PeekabooBridge
-    - Decidere tra PeekabooBridge, Codex Computer Use e cua-driver MCP
-summary: Integrazione di PeekabooBridge per l’automazione dell’interfaccia utente su macOS
-title: Ponte cucù
+    - Scegliere tra PeekabooBridge, Codex Computer Use e cua-driver MCP
+summary: Integrazione di PeekabooBridge per l'automazione dell'interfaccia utente di macOS
+title: Bridge Peekaboo
 x-i18n:
-    generated_at: "2026-06-27T17:45:30Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:12:07Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2343f90e500664b302236a6dabadfe64a24cedd13e57b4e234e70d4fad640c21
+    source_hash: 030b5017f6a43df58e6843e8a4c37448bdaaa41ac7d7d7ab2a46cce05fa9f893
     source_path: platforms/mac/peekaboo.md
     workflow: 16
 ---
 
-OpenClaw può ospitare **PeekabooBridge** come broker locale di automazione dell'interfaccia utente consapevole delle autorizzazioni. Questo consente alla CLI `peekaboo` di pilotare l'automazione dell'interfaccia utente riutilizzando le autorizzazioni TCC dell'app macOS.
+OpenClaw può ospitare **PeekabooBridge** come broker locale per l'automazione dell'interfaccia utente, sensibile alle autorizzazioni (`PeekabooBridgeHostCoordinator`, basato sul pacchetto Swift `steipete/Peekaboo`). Ciò consente alla CLI `peekaboo` di gestire l'automazione dell'interfaccia utente riutilizzando le autorizzazioni TCC dell'app macOS.
 
 ## Che cos'è (e che cosa non è)
 
-- **Host**: OpenClaw.app può agire da host PeekabooBridge.
-- **Client**: usa la CLI `peekaboo` (nessuna superficie `openclaw ui ...` separata).
-- **UI**: gli overlay visivi restano in Peekaboo.app; OpenClaw è un host broker leggero.
+- **Host**: OpenClaw.app può fungere da host PeekabooBridge.
+- **Client**: la CLI `peekaboo` (non esiste un'interfaccia separata `openclaw ui ...`).
+- **Interfaccia utente**: le sovrimpressioni visive rimangono in Peekaboo.app; OpenClaw funge da host broker minimale.
 
-## Relazione con l'uso del computer
+## Relazione con gli altri metodi di controllo del desktop
 
-OpenClaw ha tre percorsi di controllo del desktop, e restano intenzionalmente separati:
+OpenClaw dispone di quattro metodi di controllo del desktop che rimangono intenzionalmente separati:
 
-- **Host PeekabooBridge**: OpenClaw.app può ospitare il socket PeekabooBridge locale. La CLI `peekaboo` resta il client e usa le autorizzazioni macOS di OpenClaw.app per primitive di automazione Peekaboo come screenshot, clic, menu, finestre di dialogo, azioni Dock e gestione delle finestre.
-- **Uso del computer Codex**: il plugin `codex` incluso prepara il server app Codex, verifica che il server MCP `computer-use` di Codex sia disponibile e poi lascia che Codex possieda le chiamate agli strumenti nativi di controllo del desktop durante i turni in modalità Codex. OpenClaw non inoltra quelle azioni tramite PeekabooBridge.
-- **MCP diretto `cua-driver`**: OpenClaw può registrare il server upstream `cua-driver mcp` di TryCua come normale server MCP. Questo fornisce agli agenti gli schemi propri del driver CUA e il flusso di lavoro pid/finestra/indice-elemento senza passare dal marketplace Codex o dal socket PeekabooBridge.
+- **Host PeekabooBridge**: OpenClaw.app ospita il socket PeekabooBridge locale. La CLI `peekaboo` è il client e usa le autorizzazioni macOS di OpenClaw.app per acquisire schermate, fare clic, interagire con menu e finestre di dialogo, eseguire azioni nel Dock e gestire le finestre.
+- **Uso del computer gestito dall'agente (`computer.act`)**: lo strumento `computer` integrato nell'agente del Gateway acquisisce schermate tramite `screen.snapshot` e controlla il puntatore e la tastiera mediante il comando Node pericoloso `computer.act`. Un Node macOS esegue `computer.act` nello stesso processo usando i servizi di automazione Peekaboo incorporati esposti da questo bridge, insieme a primitive CoreGraphics specifiche, senza passare dal socket PeekabooBridge né dalla CLI `peekaboo`. Consulta [Uso del computer](/nodes/computer-use).
+- **Uso del computer con Codex**: il Plugin `codex` incluso verifica e può installare il Plugin MCP `computer-use` di Codex (`extensions/codex/src/app-server/computer-use.ts`), consentendo quindi a Codex di gestire le chiamate native agli strumenti di controllo del desktop durante le interazioni in modalità Codex. OpenClaw non inoltra tali azioni tramite PeekabooBridge.
+- **MCP `cua-driver` diretto**: OpenClaw può registrare il server `cua-driver mcp` upstream di TryCua come un normale server MCP, fornendo agli agenti gli schemi del driver CUA e il relativo flusso di lavoro basato su pid/finestra/indice degli elementi, senza passare dal marketplace di Codex né dal socket PeekabooBridge.
 
-Usa Peekaboo quando vuoi l'ampia superficie di automazione macOS e l'host bridge consapevole delle autorizzazioni di OpenClaw.app. Usa l'uso del computer Codex quando un agente in modalità Codex deve basarsi sul plugin nativo di uso del computer di Codex. Usa `cua-driver mcp` diretto quando vuoi esporre il driver CUA a qualsiasi runtime gestito da OpenClaw come normale server MCP.
+Usa Peekaboo per l'ampia gamma di funzionalità di automazione macOS tramite l'host bridge sensibile alle autorizzazioni di OpenClaw.app. Usa l'uso del computer gestito dall'agente quando l'agente del Gateway deve vedere e controllare il desktop tramite un comando Node uniforme `computer.act`, utilizzabile da qualsiasi modello con capacità visive. Usa l'uso del computer con Codex quando un agente in modalità Codex deve affidarsi al Plugin nativo di Codex. Usa direttamente `cua-driver mcp` per esporre il driver CUA a qualsiasi ambiente di esecuzione gestito da OpenClaw come un normale server MCP.
 
 ## Abilitare il bridge
 
-Nell'app macOS:
+Nell'app macOS: **Settings -> Enable Peekaboo Bridge**.
 
-- Impostazioni → **Abilita Peekaboo Bridge**
+Quando è abilitato, OpenClaw avvia un server socket UNIX locale in `~/Library/Application Support/OpenClaw/<socket-name>`. Se è disabilitato, l'host si arresta e `peekaboo` ricorre agli altri host disponibili. Il coordinatore mantiene inoltre i collegamenti simbolici dei socket legacy (`clawdbot`, `clawdis`, `moltbot` in Application Support), indirizzandoli al socket corrente per le installazioni meno recenti di `peekaboo`.
 
-Quando è abilitato, OpenClaw avvia un server socket UNIX locale. Se è disabilitato, l'host viene arrestato e `peekaboo` userà come fallback altri host disponibili.
+## Ordine di rilevamento dei client
 
-## Ordine di rilevamento del client
+I client Peekaboo in genere provano gli host nel seguente ordine:
 
-I client Peekaboo in genere provano gli host in questo ordine:
-
-1. Peekaboo.app (UX completa)
+1. Peekaboo.app (esperienza utente completa)
 2. Claude.app (se installata)
-3. OpenClaw.app (broker leggero)
+3. OpenClaw.app (broker minimale)
 
-Usa `peekaboo bridge status --verbose` per vedere quale host è attivo e quale percorso socket è in uso. Puoi sovrascriverlo con:
+Usa `peekaboo bridge status --verbose` per vedere quale host è attivo e quale percorso del socket è in uso. Esegui l'override con:
 
 ```bash
 export PEEKABOO_BRIDGE_SOCKET=/path/to/bridge.sock
@@ -58,21 +57,21 @@ export PEEKABOO_BRIDGE_SOCKET=/path/to/bridge.sock
 
 ## Sicurezza e autorizzazioni
 
-- Il bridge convalida le **firme del codice del chiamante**; viene applicata una allowlist di TeamID (TeamID dell'host Peekaboo + TeamID dell'app OpenClaw).
-- Preferisci l'identità firmata del bridge/app rispetto a un runtime `node` generico per Accessibilità. Concedere Accessibilità a `node` consente a qualsiasi pacchetto avviato da quell'eseguibile Node di ereditare l'accesso all'automazione della GUI; vedi [autorizzazioni macOS](/it/platforms/mac/permissions#accessibility-grants-for-node-and-cli-runtimes).
-- Le richieste scadono dopo circa 10 secondi.
-- Se mancano autorizzazioni richieste, il bridge restituisce un messaggio di errore chiaro invece di avviare Impostazioni di Sistema.
+- Il bridge convalida le **firme del codice del chiamante**; viene applicato un elenco di TeamID consentiti (il TeamID dell'host Peekaboo e il TeamID dell'app in esecuzione).
+- Per Accessibilità, preferisci l'identità firmata del bridge o dell'app a un ambiente di esecuzione `node` generico. Concedere l'accesso ad Accessibilità a `node` consente a qualsiasi pacchetto avviato da tale eseguibile Node di ereditare l'accesso all'automazione dell'interfaccia grafica; consulta [Autorizzazioni macOS](/it/platforms/mac/permissions#accessibility-grants-for-node-and-cli-runtimes).
+- Le richieste scadono dopo 10 secondi (`requestTimeoutSec: 10`).
+- Se mancano le autorizzazioni necessarie, il bridge restituisce un messaggio di errore chiaro anziché avviare Impostazioni di Sistema.
 
-## Comportamento degli snapshot (automazione)
+## Comportamento delle istantanee (automazione)
 
-Gli snapshot vengono archiviati in memoria e scadono automaticamente dopo una breve finestra temporale. Se hai bisogno di conservarli più a lungo, acquisiscili di nuovo dal client.
+Le istantanee vengono archiviate in memoria con una finestra di validità di 10 minuti e un limite di 50 istantanee (`InMemorySnapshotManager`); gli artefatti non vengono eliminati durante la pulizia. Se occorre conservarli più a lungo, esegui una nuova acquisizione dal client.
 
 ## Risoluzione dei problemi
 
-- Se `peekaboo` segnala "il client bridge non è autorizzato", assicurati che il client sia firmato correttamente oppure esegui l'host con `PEEKABOO_ALLOW_UNSIGNED_SOCKET_CLIENTS=1` solo in modalità **debug**.
-- Se non viene trovato alcun host, apri una delle app host (Peekaboo.app o OpenClaw.app) e conferma che le autorizzazioni siano state concesse.
+- Se `peekaboo` segnala "bridge client is not authorized", assicurati che il client sia firmato correttamente oppure esegui l'host con `PEEKABOO_ALLOW_UNSIGNED_SOCKET_CLIENTS=1` esclusivamente in modalità **debug**.
+- Se non viene trovato alcun host, apri una delle app host (Peekaboo.app o OpenClaw.app) e verifica che siano state concesse le autorizzazioni.
 
-## Correlati
+## Contenuti correlati
 
-- [app macOS](/it/platforms/macos)
-- [autorizzazioni macOS](/it/platforms/mac/permissions)
+- [App macOS](/it/platforms/macos)
+- [Autorizzazioni macOS](/it/platforms/mac/permissions)

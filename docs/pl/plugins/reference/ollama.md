@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz plugin ollama
-summary: Dodaje obsługę dostawcy modeli Ollama i Ollama Cloud w OpenClaw.
-title: Wtyczka Ollama
+    - Instalujesz, konfigurujesz lub przeprowadzasz audyt pluginu ollama
+summary: Dodaje do OpenClaw obsługę dostawców modeli Ollama i Ollama Cloud.
+title: Plugin Ollama
 x-i18n:
-    generated_at: "2026-07-04T04:10:02Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T15:30:07Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 2d37136b5bcc8e6f9efb2cfcae52836546e62a5526215118490598e2c4152810
@@ -20,9 +20,9 @@ Dodaje do OpenClaw obsługę dostawców modeli Ollama i Ollama Cloud.
 ## Dystrybucja
 
 - Pakiet: `@openclaw/ollama-provider`
-- Ścieżka instalacji: zawarte w OpenClaw
+- Sposób instalacji: dołączony do OpenClaw
 
-## Interfejs
+## Zakres
 
 dostawcy: ollama, ollama-cloud; kontrakty: memoryEmbeddingProviders, tools, webSearchProviders
 

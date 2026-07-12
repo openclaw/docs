@@ -1,45 +1,67 @@
 ---
 read_when:
     - Chạy hoặc gỡ lỗi tiến trình Gateway
-    - Đang điều tra cơ chế đảm bảo chỉ một phiên bản
-summary: Cơ chế bảo vệ singleton của Gateway bằng cách liên kết trình lắng nghe WebSocket
+    - Điều tra cơ chế thực thi chỉ một phiên bản đang chạy
+summary: 'Cơ chế bảo vệ Gateway đơn thể: khóa tệp kết hợp với liên kết WebSocket/HTTP'
 title: Khóa Gateway
 x-i18n:
-    generated_at: "2026-04-30T16:29:02Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:57:32Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 85a1cb55f08d47d36fde25900e4247ef01c9a6800bf017fbff44a337f299ce13
+    source_hash: 8c3ba4e8c12d6aadd089cb05722444eaa99d4b573553ac52a21c5c91e5ce1c09
     source_path: gateway/gateway-lock.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-## Lý do
+## Tại sao
 
-- Đảm bảo chỉ một phiên bản Gateway chạy trên mỗi cổng cơ sở trên cùng một máy chủ; các Gateway bổ sung phải dùng hồ sơ biệt lập và cổng duy nhất.
-- Chịu được sự cố/SIGKILL mà không để lại tệp khóa lỗi thời.
-- Thất bại nhanh với lỗi rõ ràng khi cổng điều khiển đã bị chiếm.
+- Chỉ một tiến trình Gateway nên sở hữu một cấu hình + cổng nhất định trên một máy chủ; hãy chạy các Gateway bổ sung với hồ sơ biệt lập và cổng riêng biệt.
+- Vẫn hoạt động sau sự cố/SIGKILL mà không để lại các tệp khóa cũ.
+- Thất bại ngay với lỗi rõ ràng khi một Gateway khác đã sở hữu cổng.
 
-## Cơ chế
+## Hai lớp
 
-- Trước tiên Gateway lấy một tệp khóa theo từng cấu hình trong thư mục khóa trạng thái và dò cổng đã cấu hình để tìm trình lắng nghe hiện có.
-- Nếu chủ sở hữu khóa đã ghi nhận không còn tồn tại, cổng đang trống, hoặc khóa đã lỗi thời, quá trình khởi động sẽ giành lại khóa và tiếp tục.
-- Sau đó Gateway liên kết trình lắng nghe HTTP/WebSocket (mặc định `ws://127.0.0.1:18789`) bằng một trình lắng nghe TCP độc quyền.
-- Nếu liên kết thất bại với `EADDRINUSE`, quá trình khởi động ném `GatewayLockError("another gateway instance is already listening on ws://127.0.0.1:<port>")`.
-- Khi tắt, Gateway đóng máy chủ HTTP/WebSocket và xóa tệp khóa.
+Quá trình khởi động thực thi quyền sở hữu một phiên bản duy nhất qua hai bước độc lập, theo thứ tự:
 
-## Bề mặt lỗi
+1. **Khóa tệp** lấy một tệp khóa riêng cho từng cấu hình trong thư mục khóa trạng thái. Trong quá trình lấy khóa, bước khởi động thăm dò cổng đã cấu hình để tìm trình lắng nghe đang hoạt động nhằm phát hiện chủ sở hữu khóa cũ (đã gặp sự cố).
+2. **Liên kết socket** liên kết trình lắng nghe HTTP/WebSocket (mặc định là `ws://127.0.0.1:18789`) dưới dạng trình lắng nghe TCP độc quyền.
 
-- Nếu một tiến trình khác giữ cổng, quá trình khởi động ném `GatewayLockError("another gateway instance is already listening on ws://127.0.0.1:<port>")`.
-- Các lỗi liên kết khác hiển thị dưới dạng `GatewayLockError("failed to bind gateway socket on ws://127.0.0.1:<port>: …")`.
+Mỗi lớp có thể thất bại độc lập và ném ra `GatewayLockError` riêng.
+
+### Khóa tệp
+
+- Nếu thiếu tệp khóa, tiến trình chủ sở hữu đã ghi nhận không còn tồn tại hoặc phép thăm dò cổng của chủ sở hữu cho thấy không có trình lắng nghe đang hoạt động, quá trình khởi động sẽ thu hồi khóa và tiếp tục.
+- Nếu khóa đang được giữ và không có điều kiện nào nêu trên áp dụng, quá trình khởi động sẽ thử lại trong tối đa 5 giây (mặc định) trước khi bỏ cuộc:
+
+  ```text
+  GatewayLockError("gateway already running (pid <pid>); lock timeout after <ms>ms")
+  ```
+
+### Liên kết socket
+
+- Khi gặp `EADDRINUSE`, quá trình khởi động thử liên kết lại tối đa 20 lần, cách nhau 500ms (tổng cộng khoảng 10 giây) để chờ hết khoảng thời gian `TIME_WAIT` sau khi một tiến trình vừa thoát.
+- Nếu cổng vẫn đang được sử dụng sau khi thử lại:
+
+  ```text
+  GatewayLockError("another gateway instance is already listening on ws://127.0.0.1:<port>")
+  ```
+
+- Các lỗi liên kết khác:
+
+  ```text
+  GatewayLockError("failed to bind gateway socket on ws://127.0.0.1:<port>: <cause>")
+  ```
+
+Khi tắt, Gateway đóng máy chủ HTTP/WebSocket và xóa tệp khóa.
 
 ## Ghi chú vận hành
 
-- Nếu cổng bị _một_ tiến trình khác chiếm, lỗi vẫn giống nhau; hãy giải phóng cổng hoặc chọn cổng khác bằng `openclaw gateway --port <port>`.
-- Dưới một trình giám sát dịch vụ, tiến trình Gateway mới thấy một bộ phản hồi `/healthz` khỏe mạnh hiện có sẽ để tiến trình đó tiếp tục nắm quyền điều khiển. Trên systemd, tiến trình khởi chạy trùng lặp thoát với mã 78 để `RestartPreventExitStatus=78` mặc định ngăn `Restart=always` lặp lại khi có xung đột khóa hoặc `EADDRINUSE`. Nếu tiến trình hiện có không bao giờ trở nên khỏe mạnh, các lần thử lại sẽ bị giới hạn và quá trình khởi động thất bại với lỗi khóa rõ ràng thay vì lặp mãi mãi.
-- Ứng dụng macOS vẫn duy trì cơ chế bảo vệ PID nhẹ của riêng nó trước khi sinh Gateway; khóa runtime được thực thi bằng tệp khóa cộng với liên kết HTTP/WebSocket.
+- Nếu cổng đang bị một tiến trình khác không phải Gateway chiếm dụng, lỗi vẫn giống nhau; hãy giải phóng cổng hoặc chọn cổng khác bằng `openclaw gateway --port <port>`.
+- Khi chạy dưới trình giám sát dịch vụ, một tiến trình Gateway mới gặp một trong hai lỗi trên trước tiên sẽ thăm dò `/healthz` trên tiến trình hiện có. Nếu tiến trình đó hoạt động bình thường, tiến trình mới sẽ để nó tiếp tục kiểm soát thay vì thất bại. Trên systemd, tiến trình thoát với mã `78`; `RestartPreventExitStatus=78` của đơn vị ngăn `Restart=always` lặp lại do xung đột khóa hoặc `EADDRINUSE`. Nếu tiến trình hiện có không bao giờ đạt trạng thái hoạt động bình thường, việc thử lại phép thăm dò tình trạng sẽ bị giới hạn thời gian, sau đó quá trình khởi động thất bại với lỗi khóa nêu trên thay vì lặp vô hạn.
+- Ứng dụng macOS duy trì cơ chế bảo vệ PID nhẹ riêng trước khi khởi tạo Gateway; khóa tệp và liên kết socket nêu trên mới là cơ chế thực thi thực tế khi chạy.
 
 ## Liên quan
 
-- [Nhiều Gateway](/vi/gateway/multiple-gateways) — chạy nhiều phiên bản với các cổng duy nhất
-- [Khắc phục sự cố](/vi/gateway/troubleshooting) — chẩn đoán `EADDRINUSE` và xung đột cổng
+- [Nhiều Gateway](/vi/gateway/multiple-gateways) - chạy nhiều phiên bản với các cổng riêng biệt
+- [Khắc phục sự cố](/vi/gateway/troubleshooting) - chẩn đoán `EADDRINUSE` và xung đột cổng

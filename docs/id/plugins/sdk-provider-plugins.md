@@ -1,36 +1,35 @@
 ---
 read_when:
     - Anda sedang membangun plugin penyedia model baru
-    - Anda ingin menambahkan proksi yang kompatibel dengan OpenAI atau LLM kustom ke OpenClaw
+    - Anda ingin menambahkan proksi yang kompatibel dengan OpenAI atau LLM khusus ke OpenClaw
     - Anda perlu memahami autentikasi penyedia, katalog, dan hook runtime
 sidebarTitle: Provider plugins
-summary: Panduan langkah demi langkah untuk membangun Plugin penyedia model untuk OpenClaw
+summary: Panduan langkah demi langkah untuk membuat plugin penyedia model bagi OpenClaw
 title: Membangun plugin penyedia
 x-i18n:
-    generated_at: "2026-06-27T17:58:58Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:31:59Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 05ac4d08eae00e7e0fcf03edea691dc9ced7309421dd19a31edf69cee1e01f0b
+    source_hash: ebbe59b4487a93c6fec3624251eff7394197e249bb8fc7899f1fc88162510d1c
     source_path: plugins/sdk-provider-plugins.md
     workflow: 16
 ---
 
-Panduan ini menjelaskan cara membangun Plugin penyedia yang menambahkan penyedia model
-(LLM) ke OpenClaw. Pada akhirnya Anda akan memiliki penyedia dengan katalog model,
-autentikasi kunci API, dan resolusi model dinamis.
+Bangun Plugin penyedia untuk menambahkan penyedia model (LLM) ke OpenClaw: katalog
+model, autentikasi kunci API, dan resolusi model dinamis.
 
 <Info>
-  Jika Anda belum pernah membangun Plugin OpenClaw sebelumnya, baca
-  [Memulai](/id/plugins/building-plugins) terlebih dahulu untuk struktur paket
-  dasar dan penyiapan manifes.
+  Baru mengenal Plugin OpenClaw? Baca [Memulai](/id/plugins/building-plugins)
+  terlebih dahulu untuk mengetahui struktur paket dan penyiapan manifes.
 </Info>
 
 <Tip>
-  Plugin penyedia menambahkan model ke loop inferensi normal OpenClaw. Jika model
-  harus berjalan melalui daemon agen native yang memiliki thread, compaction, atau event
-  alat, pasangkan penyedia dengan [harness agen](/id/plugins/sdk-agent-harness)
-  alih-alih menaruh detail protokol daemon di core.
+  Plugin penyedia menambahkan model ke loop inferensi normal OpenClaw. Jika
+  model harus dijalankan melalui daemon agen native yang mengelola utas, Compaction,
+  atau peristiwa alat, pasangkan penyedia dengan [harness
+  agen](/id/plugins/sdk-agent-harness), alih-alih menempatkan detail protokol daemon
+  di inti.
 </Tip>
 
 ## Panduan langkah demi langkah
@@ -101,20 +100,22 @@ autentikasi kunci API, dan resolusi model dinamis.
     ```
     </CodeGroup>
 
-    Manifes mendeklarasikan `setup.providers[].envVars` agar OpenClaw dapat mendeteksi
-    kredensial tanpa memuat runtime Plugin Anda. Tambahkan `providerAuthAliases`
-    saat varian penyedia harus menggunakan ulang autentikasi milik id penyedia lain. `modelSupport`
+    `setup.providers[].envVars` memungkinkan OpenClaw mendeteksi kredensial tanpa
+    memuat runtime Plugin Anda. Tambahkan `providerAuthAliases` ketika suatu varian
+    penyedia perlu menggunakan kembali autentikasi milik id penyedia lain. `modelSupport`
     bersifat opsional dan memungkinkan OpenClaw memuat otomatis Plugin penyedia Anda dari
-    id model singkat seperti `acme-large` sebelum hook runtime tersedia. Jika Anda menerbitkan
-    penyedia di ClawHub, kolom `openclaw.compat` dan `openclaw.build` tersebut
-    wajib ada di `package.json`.
+    id model singkat seperti `acme-large` sebelum hook runtime tersedia. `openclaw.compat`
+    dan `openclaw.build` dalam `package.json` diwajibkan untuk publikasi ClawHub
+    (`openclaw.compat.pluginApi` dan `openclaw.build.openclawVersion`
+    adalah dua bidang wajib; `minGatewayVersion` menggunakan
+    `openclaw.install.minHostVersion` sebagai nilai cadangan jika dihilangkan).
 
   </Step>
 
   <Step title="Daftarkan penyedia">
     Penyedia teks minimal memerlukan `id`, `label`, `auth`, dan `catalog`.
     `catalog` adalah hook runtime/konfigurasi milik penyedia; hook ini dapat memanggil
-    API vendor live dan mengembalikan entri `models.providers`.
+    API vendor secara langsung dan mengembalikan entri `models.providers`.
 
     ```typescript index.ts
     import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
@@ -203,27 +204,29 @@ autentikasi kunci API, dan resolusi model dinamis.
     });
     ```
 
-    `registerModelCatalogProvider` adalah permukaan katalog control-plane yang lebih baru
-    untuk UI daftar/bantuan/pemilih. Gunakan ini untuk baris teks, pembuatan gambar,
-    pembuatan video, dan pembuatan musik. Simpan panggilan endpoint vendor dan
-    pemetaan respons di Plugin; OpenClaw memiliki bentuk baris bersama, label
-    sumber, dan rendering bantuan.
+    `registerModelCatalogProvider` adalah permukaan katalog bidang kendali yang
+    lebih baru untuk antarmuka pengguna daftar/bantuan/pemilih, yang mencakup baris
+    `text`, `voice`, `image_generation`, `video_generation`, dan
+    `music_generation`. Pertahankan pemanggilan titik akhir vendor dan pemetaan
+    respons di dalam Plugin; OpenClaw mengelola bentuk baris bersama, label sumber,
+    dan perenderan bantuan.
 
-    Itu adalah penyedia yang berfungsi. Pengguna sekarang dapat menjalankan
+    Itu sudah merupakan penyedia yang berfungsi. Pengguna kini dapat menjalankan
     `openclaw onboard --acme-ai-api-key <key>` dan memilih
     `acme-ai/acme-large` sebagai model mereka.
 
-    ### Penemuan model live
+    ### Penemuan model langsung
 
-    Jika penyedia Anda mengekspos API bergaya `/models`, simpan endpoint khusus
-    penyedia dan proyeksi baris di Plugin Anda dan gunakan
-    `openclaw/plugin-sdk/provider-catalog-live-runtime` untuk siklus hidup fetch
-    bersama. Helper ini memberi Anda fetch HTTP yang dijaga, header autentikasi penyedia,
-    error HTTP terstruktur, caching TTL, dan perilaku fallback statis tanpa
-    menaruh kebijakan penyedia di core OpenClaw.
+    Jika penyedia Anda mengekspos API bergaya `/models`, pertahankan titik akhir
+    khusus penyedia dan proyeksi baris di dalam Plugin Anda, lalu gunakan
+    `openclaw/plugin-sdk/provider-catalog-live-runtime` untuk siklus hidup
+    pengambilan bersama. Pembantu ini menyediakan pengambilan HTTP yang terlindungi,
+    header autentikasi penyedia, galat HTTP terstruktur, penyimpanan tembolok TTL,
+    dan perilaku nilai cadangan statis tanpa menempatkan kebijakan penyedia di inti
+    OpenClaw.
 
-    Gunakan `buildLiveModelProviderConfig` saat API live hanya memberi tahu Anda baris
-    katalog statis milik penyedia mana yang saat ini tersedia:
+    Gunakan `buildLiveModelProviderConfig` ketika API langsung hanya memberi tahu
+    baris katalog statis milik penyedia mana yang saat ini tersedia:
 
     ```typescript index.ts
     import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
@@ -311,9 +314,9 @@ autentikasi kunci API, dan resolusi model dinamis.
     });
     ```
 
-    Gunakan `getCachedLiveProviderModelRows` saat API penyedia mengembalikan metadata
-    yang lebih kaya dan Plugin perlu memproyeksikan baris ke definisi model
-    OpenClaw sendiri:
+    Gunakan `getCachedLiveProviderModelRows` ketika API penyedia mengembalikan
+    metadata yang lebih kaya dan Plugin perlu memproyeksikan sendiri baris menjadi
+    definisi model OpenClaw:
 
     ```typescript index.ts
     import {
@@ -342,15 +345,17 @@ autentikasi kunci API, dan resolusi model dinamis.
     }
     ```
 
-    `run` harus tetap dijaga oleh autentikasi dan mengembalikan `null` saat tidak ada
-    kredensial yang dapat digunakan. Pertahankan `staticRun` offline atau fallback statis agar penyiapan, docs,
-    tests, dan permukaan pemilih tidak bergantung pada akses jaringan live. Gunakan TTL
-    yang sesuai untuk kesegaran daftar model, hindari polling filesystem pada waktu request,
-    dan teruskan `readRows` / `readModelId` khusus penyedia hanya saat
-    respons upstream bukan bentuk `{ data: [{ id, object }] }` yang kompatibel dengan OpenAI.
+    `run` harus tetap dibatasi oleh autentikasi dan mengembalikan `null` saat tidak
+    ada kredensial yang dapat digunakan. Pertahankan `staticRun` luring atau nilai
+    cadangan statis agar penyiapan, dokumentasi, pengujian, dan permukaan pemilih
+    tidak bergantung pada akses jaringan langsung. Gunakan TTL yang sesuai dengan
+    kebutuhan kemutakhiran daftar model, hindari pemeriksaan sistem berkas saat
+    permintaan berlangsung, dan teruskan `readRows` / `readModelId` khusus penyedia
+    hanya ketika respons hulu tidak berbentuk `{ data: [{ id, object }] }` yang
+    kompatibel dengan OpenAI.
 
-    Jika penyedia upstream menggunakan token kontrol yang berbeda dari OpenClaw, tambahkan
-    transformasi teks dua arah kecil alih-alih mengganti jalur stream:
+    Jika penyedia hulu menggunakan token kendali yang berbeda dari OpenClaw,
+    tambahkan transformasi teks dua arah kecil alih-alih mengganti jalur aliran:
 
     ```typescript
     api.registerTextTransforms({
@@ -367,13 +372,13 @@ autentikasi kunci API, dan resolusi model dinamis.
     });
     ```
 
-    `input` menulis ulang prompt sistem final dan konten pesan teks sebelum
-    transport. `output` menulis ulang delta teks asisten dan teks final sebelum
-    OpenClaw mengurai penanda kontrolnya sendiri atau pengiriman channel.
+    `input` menulis ulang prompt sistem akhir dan isi pesan teks sebelum
+    dikirimkan. `output` menulis ulang delta teks asisten dan teks akhir sebelum
+    OpenClaw mengurai penanda kendalinya sendiri atau melakukan pengiriman kanal.
 
-    Untuk penyedia bundled yang hanya mendaftarkan satu penyedia teks dengan autentikasi
-    kunci API ditambah satu runtime berbasis katalog, lebih pilih helper yang lebih sempit
-    `defineSingleProviderPluginEntry(...)`:
+    Untuk penyedia bawaan yang hanya mendaftarkan satu penyedia teks dengan
+    autentikasi kunci API serta satu runtime berbasis katalog, pilih pembantu
+    `defineSingleProviderPluginEntry(...)` yang lebih spesifik:
 
     ```typescript
     import { defineSingleProviderPluginEntry } from "openclaw/plugin-sdk/provider-entry";
@@ -381,19 +386,19 @@ autentikasi kunci API, dan resolusi model dinamis.
     export default defineSingleProviderPluginEntry({
       id: "acme-ai",
       name: "Acme AI",
-      description: "Acme AI model provider",
+      description: "Penyedia model Acme AI",
       provider: {
         label: "Acme AI",
         docsPath: "/providers/acme-ai",
         auth: [
           {
             methodId: "api-key",
-            label: "Acme AI API key",
-            hint: "API key from your Acme AI dashboard",
+            label: "Kunci API Acme AI",
+            hint: "Kunci API dari dasbor Acme AI Anda",
             optionKey: "acmeAiApiKey",
             flagName: "--acme-ai-api-key",
             envVar: "ACME_AI_API_KEY",
-            promptMessage: "Enter your Acme AI API key",
+            promptMessage: "Masukkan kunci API Acme AI Anda",
             defaultModel: "acme-ai/acme-large",
           },
         ],
@@ -413,42 +418,22 @@ autentikasi kunci API, dan resolusi model dinamis.
     });
     ```
 
-    `buildProvider` adalah jalur katalog langsung yang digunakan saat OpenClaw dapat menyelesaikan auth
-    penyedia yang nyata. Jalur ini dapat melakukan penemuan khusus penyedia. Gunakan
-    `buildStaticProvider` hanya untuk baris offline yang aman ditampilkan sebelum auth
-    dikonfigurasi; jalur ini tidak boleh memerlukan kredensial atau membuat permintaan jaringan.
-    Tampilan `models list --all` OpenClaw saat ini menjalankan katalog statis
-    hanya untuk Plugin penyedia bawaan, dengan config kosong, env kosong, dan tanpa
-    jalur agen/workspace.
+    `buildProvider` adalah jalur katalog langsung yang digunakan ketika OpenClaw dapat menyelesaikan autentikasi penyedia yang sebenarnya. Jalur ini dapat melakukan penemuan khusus penyedia. Gunakan `buildStaticProvider` hanya untuk baris luring yang aman ditampilkan sebelum autentikasi dikonfigurasi; jalur ini tidak boleh memerlukan kredensial atau membuat permintaan jaringan. Tampilan `models list --all` OpenClaw saat ini menjalankan katalog statis hanya untuk plugin penyedia bawaan, dengan konfigurasi kosong, lingkungan kosong, dan tanpa jalur agen/ruang kerja.
 
-    Jika alur auth Anda juga perlu menambal `models.providers.*`, alias, dan
-    model default agen selama onboarding, gunakan helper preset dari
-    `openclaw/plugin-sdk/provider-onboard`. Helper tersempit adalah
-    `createDefaultModelPresetAppliers(...)`,
-    `createDefaultModelsPresetAppliers(...)`, dan
-    `createModelCatalogPresetAppliers(...)`.
+    Jika alur autentikasi Anda juga perlu memperbarui `models.providers.*`, alias, dan model default agen selama orientasi awal, gunakan pembantu preset dari `openclaw/plugin-sdk/provider-onboard`. Pembantu dengan cakupan tersempit adalah `createDefaultModelPresetAppliers(...)`, `createDefaultModelsPresetAppliers(...)`, dan `createModelCatalogPresetAppliers(...)`.
 
-    Saat endpoint native penyedia mendukung blok penggunaan streaming pada
-    transport `openai-completions` normal, lebih pilih helper katalog bersama di
-    `openclaw/plugin-sdk/provider-catalog-shared` daripada melakukan hardcode
-    pemeriksaan provider-id. `supportsNativeStreamingUsageCompat(...)` dan
-    `applyProviderNativeStreamingUsageCompat(...)` mendeteksi dukungan dari
-    peta kapabilitas endpoint, sehingga endpoint native bergaya Moonshot/DashScope tetap
-    ikut serta bahkan saat sebuah Plugin menggunakan id penyedia kustom.
+    Ketika titik akhir native penyedia mendukung blok penggunaan teralir pada transportasi `openai-completions` biasa, utamakan pembantu katalog bersama di `openclaw/plugin-sdk/provider-catalog-shared` daripada melakukan hardcode pemeriksaan ID penyedia. `supportsNativeStreamingUsageCompat(...)` dan `applyProviderNativeStreamingUsageCompat(...)` mendeteksi dukungan dari peta kapabilitas titik akhir, sehingga titik akhir native bergaya Moonshot/DashScope tetap dapat mengaktifkannya meskipun plugin menggunakan ID penyedia khusus.
 
-    Contoh penemuan langsung di atas mencakup API penyedia bergaya `/models`. Simpan
-    penemuan tersebut di dalam `catalog.run`, dibatasi pada auth yang dapat digunakan, dan jaga
-    `staticRun` bebas jaringan untuk pembuatan katalog offline.
+    Contoh penemuan langsung di atas mencakup API penyedia bergaya `/models`. Pertahankan penemuan tersebut di dalam `catalog.run`, dengan pembatasan berdasarkan autentikasi yang dapat digunakan, dan pertahankan `staticRun` agar bebas jaringan untuk pembuatan katalog luring.
 
   </Step>
 
   <Step title="Tambahkan resolusi model dinamis">
-    Jika penyedia Anda menerima ID model arbitrer (seperti proxy atau router),
-    tambahkan `resolveDynamicModel`:
+    Jika penyedia Anda menerima ID model arbitrer (seperti proksi atau perute), tambahkan `resolveDynamicModel`:
 
     ```typescript
     api.registerProvider({
-      // ... id, label, auth, catalog from above
+      // ... id, label, auth, catalog dari atas
 
       resolveDynamicModel: (ctx) => ({
         id: ctx.modelId,
@@ -465,17 +450,14 @@ autentikasi kunci API, dan resolusi model dinamis.
     });
     ```
 
-    Jika resolusi memerlukan panggilan jaringan, gunakan `prepareDynamicModel` untuk warm-up
-    async - `resolveDynamicModel` berjalan lagi setelah selesai.
+    Jika resolusi memerlukan panggilan jaringan, gunakan `prepareDynamicModel` untuk pemanasan awal asinkron—`resolveDynamicModel` dijalankan kembali setelah proses tersebut selesai.
 
   </Step>
 
   <Step title="Tambahkan hook runtime (sesuai kebutuhan)">
-    Sebagian besar penyedia hanya memerlukan `catalog` + `resolveDynamicModel`. Tambahkan hook
-    secara bertahap sesuai kebutuhan penyedia Anda.
+    Sebagian besar penyedia hanya memerlukan `catalog` + `resolveDynamicModel`. Tambahkan hook secara bertahap sesuai kebutuhan penyedia Anda.
 
-    Builder helper bersama kini mencakup keluarga replay/tool-compat yang paling umum,
-    sehingga Plugin biasanya tidak perlu merangkai setiap hook satu per satu secara manual:
+    Pembangun pembantu bersama kini mencakup keluarga kompatibilitas pemutaran ulang/alat yang paling umum, sehingga plugin biasanya tidak perlu merangkai setiap hook satu per satu secara manual:
 
     ```typescript
     import { buildProviderReplayFamilyHooks } from "openclaw/plugin-sdk/provider-model-shared";
@@ -495,46 +477,42 @@ autentikasi kunci API, dan resolusi model dinamis.
     });
     ```
 
-    Keluarga replay yang tersedia saat ini:
+    Keluarga pemutaran ulang yang tersedia saat ini:
 
     | Keluarga | Yang dirangkai | Contoh bawaan |
     | --- | --- | --- |
-    | `openai-compatible` | Kebijakan replay bergaya OpenAI bersama untuk transport kompatibel OpenAI, termasuk sanitasi tool-call-id, perbaikan urutan assistant-first, dan validasi turn Gemini generik saat transport membutuhkannya | `moonshot`, `ollama`, `xai`, `zai` |
-    | `anthropic-by-model` | Kebijakan replay sadar-Claude yang dipilih oleh `modelId`, sehingga transport pesan Anthropic hanya mendapatkan pembersihan blok thinking khusus Claude saat model yang terselesaikan benar-benar merupakan id Claude | `amazon-bedrock`, `anthropic-vertex` |
-    | `google-gemini` | Kebijakan replay native Gemini plus sanitasi replay bootstrap. Keluarga bersama mempertahankan Gemini CLI keluaran teks pada reasoning bertag; penyedia `google` langsung menimpa `resolveReasoningOutputMode` menjadi `native` karena thinking Gemini API hadir sebagai bagian thought native. | `google`, `google-gemini-cli` |
-    | `passthrough-gemini` | Sanitasi thought-signature Gemini untuk model Gemini yang berjalan melalui transport proxy kompatibel OpenAI; tidak mengaktifkan validasi replay native Gemini atau penulisan ulang bootstrap | `openrouter`, `kilocode`, `opencode`, `opencode-go` |
-    | `hybrid-anthropic-openai` | Kebijakan hibrida untuk penyedia yang mencampur permukaan model pesan Anthropic dan kompatibel OpenAI dalam satu Plugin; penghapusan blok thinking khusus Claude opsional tetap dibatasi pada sisi Anthropic | `minimax` |
+    | `openai-compatible` | Kebijakan pemutaran ulang bersama bergaya OpenAI untuk transportasi yang kompatibel dengan OpenAI, termasuk sanitasi ID panggilan alat, perbaikan urutan yang mengutamakan asisten, dan validasi giliran Gemini generik ketika transportasi memerlukannya | `moonshot`, `ollama`, `xai`, `zai` |
+    | `anthropic-by-model` | Kebijakan pemutaran ulang yang memahami Claude dan dipilih berdasarkan `modelId`, sehingga transportasi pesan Anthropic hanya mendapatkan pembersihan blok pemikiran khusus Claude ketika model yang diselesaikan benar-benar merupakan ID Claude | `amazon-bedrock` |
+    | `native-anthropic-by-model` | Kebijakan Claude berdasarkan model yang sama seperti `anthropic-by-model`, ditambah sanitasi ID panggilan alat dan pemertahanan ID penggunaan alat native Anthropic untuk transportasi yang harus mempertahankan ID native vendor | `anthropic-vertex`, `clawrouter` |
+    | `google-gemini` | Kebijakan pemutaran ulang native Gemini ditambah sanitasi pemutaran ulang bootstrap. Keluarga bersama mempertahankan keluaran teks Gemini CLI pada penalaran bertanda; penyedia langsung `google` mengganti `resolveReasoningOutputMode` menjadi `native` karena pemikiran Gemini API diterima sebagai bagian pemikiran native. | `google`, `google-gemini-cli` |
+    | `passthrough-gemini` | Sanitasi tanda tangan pemikiran Gemini untuk model Gemini yang berjalan melalui transportasi proksi yang kompatibel dengan OpenAI; tidak mengaktifkan validasi pemutaran ulang native Gemini atau penulisan ulang bootstrap | `openrouter`, `kilocode`, `opencode`, `opencode-go` |
+    | `hybrid-anthropic-openai` | Kebijakan hibrida untuk penyedia yang menggabungkan permukaan model pesan Anthropic dan yang kompatibel dengan OpenAI dalam satu plugin; penghapusan blok pemikiran khusus Claude yang opsional tetap terbatas pada sisi Anthropic | `minimax` |
 
-    Keluarga stream yang tersedia saat ini:
+    Keluarga aliran yang tersedia saat ini:
 
     | Keluarga | Yang dirangkai | Contoh bawaan |
     | --- | --- | --- |
-    | `google-thinking` | Normalisasi payload thinking Gemini pada jalur stream bersama | `google`, `google-gemini-cli` |
-    | `kilocode-thinking` | Wrapper reasoning Kilo pada jalur stream proxy bersama, dengan `kilo/auto` dan id reasoning proxy yang tidak didukung melewati thinking yang diinjeksi | `kilocode` |
-    | `moonshot-thinking` | Pemetaan payload native-thinking biner Moonshot dari config + level `/think` | `moonshot` |
-    | `minimax-fast-mode` | Penulisan ulang model mode cepat MiniMax pada jalur stream bersama | `minimax`, `minimax-portal` |
-    | `openai-responses-defaults` | Wrapper Responses native OpenAI/Codex bersama: header atribusi, `/fast`/`serviceTier`, verbositas teks, pencarian web native Codex, pembentukan payload kompatibilitas reasoning, dan manajemen konteks Responses | `openai` |
-    | `openrouter-thinking` | Wrapper reasoning OpenRouter untuk rute proxy, dengan lompatan unsupported-model/`auto` ditangani secara terpusat | `openrouter` |
-    | `tool-stream-default-on` | Wrapper `tool_stream` aktif secara default untuk penyedia seperti Z.AI yang menginginkan streaming tool kecuali dinonaktifkan secara eksplisit | `zai` |
+    | `google-thinking` | Normalisasi muatan pemikiran Gemini pada jalur aliran bersama | `google`, `google-gemini-cli` |
+    | `kilocode-thinking` | Pembungkus penalaran Kilo pada jalur aliran proksi bersama, dengan `kilo/auto` dan ID penalaran proksi yang tidak didukung melewati penyisipan pemikiran | `kilocode` |
+    | `moonshot-thinking` | Pemetaan muatan pemikiran native biner Moonshot dari konfigurasi + tingkat `/think` | `moonshot` |
+    | `minimax-fast-mode` | Penulisan ulang model mode cepat MiniMax pada jalur aliran bersama | `minimax`, `minimax-portal` |
+    | `openai-responses-defaults` | Pembungkus Responses native OpenAI/Codex bersama: header atribusi, `/fast`/`serviceTier`, verbositas teks, pencarian web native Codex, pembentukan muatan kompatibilitas penalaran, dan pengelolaan konteks Responses | `openai` |
+    | `openrouter-thinking` | Pembungkus penalaran OpenRouter untuk rute proksi, dengan pelompatan model yang tidak didukung/`auto` ditangani secara terpusat | `openrouter` |
+    | `tool-stream-default-on` | Pembungkus `tool_stream` yang aktif secara default untuk penyedia seperti Z.AI yang menginginkan pengaliran alat kecuali dinonaktifkan secara eksplisit | `zai` |
 
-    <Accordion title="Seam SDK yang mendukung builder keluarga">
-      Setiap builder keluarga disusun dari helper publik tingkat lebih rendah yang diekspor dari paket yang sama, yang dapat Anda gunakan saat penyedia perlu keluar dari pola umum:
+    <Accordion title="Seam SDK yang mendukung pembangun keluarga">
+      Setiap pembangun keluarga disusun dari pembantu publik tingkat rendah yang diekspor dari paket yang sama, yang dapat Anda gunakan ketika penyedia perlu menyimpang dari pola umum:
 
-      - `openclaw/plugin-sdk/provider-model-shared` - `ProviderReplayFamily`, `buildProviderReplayFamilyHooks(...)`, dan builder replay mentah (`buildOpenAICompatibleReplayPolicy`, `buildAnthropicReplayPolicyForModel`, `buildGoogleGeminiReplayPolicy`, `buildHybridAnthropicOrOpenAIReplayPolicy`). Juga mengekspor helper replay Gemini (`sanitizeGoogleGeminiReplayHistory`, `resolveTaggedReasoningOutputMode`) dan helper endpoint/model (`resolveProviderEndpoint`, `normalizeProviderId`, `normalizeGooglePreviewModelId`).
-      - `openclaw/plugin-sdk/provider-stream` - `ProviderStreamFamily`, `buildProviderStreamFamilyHooks(...)`, `composeProviderStreamWrappers(...)`, plus wrapper OpenAI/Codex bersama (`createOpenAIAttributionHeadersWrapper`, `createOpenAIFastModeWrapper`, `createOpenAIServiceTierWrapper`, `createOpenAIResponsesContextManagementWrapper`, `createCodexNativeWebSearchWrapper`), wrapper kompatibel OpenAI DeepSeek V4 (`createDeepSeekV4OpenAICompatibleThinkingWrapper`), pembersihan prefill thinking Anthropic Messages (`createAnthropicThinkingPrefillPayloadWrapper`), kompatibilitas tool-call teks polos (`createPlainTextToolCallCompatWrapper`), dan wrapper proxy/penyedia bersama (`createOpenRouterWrapper`, `createToolStreamWrapper`, `createMinimaxFastModeWrapper`).
-      - `openclaw/plugin-sdk/provider-stream-shared` - wrapper payload dan event ringan untuk jalur penyedia panas, termasuk `createOpenAICompatibleCompletionsThinkingOffWrapper`, `createPayloadPatchStreamWrapper`, `createPlainTextToolCallCompatWrapper`, `normalizeOpenAICompatibleReasoningPayload(...)`, dan `setQwenChatTemplateThinking(...)`.
-      - `openclaw/plugin-sdk/provider-tools` - `ProviderToolCompatFamily`, `buildProviderToolCompatFamilyHooks("deepseek" | "gemini" | "openai")`, dan helper skema penyedia yang mendasarinya.
+      - `openclaw/plugin-sdk/provider-model-shared` - `ProviderReplayFamily`, `buildProviderReplayFamilyHooks(...)`, dan pembangun pemutaran ulang mentah (`buildOpenAICompatibleReplayPolicy`, `buildAnthropicReplayPolicyForModel`, `buildGoogleGeminiReplayPolicy`, `buildHybridAnthropicOrOpenAIReplayPolicy`). Juga mengekspor pembantu pemutaran ulang Gemini (`sanitizeGoogleGeminiReplayHistory`, `resolveTaggedReasoningOutputMode`) dan pembantu titik akhir/model (`resolveProviderEndpoint`, `normalizeProviderId`, `normalizeGooglePreviewModelId`).
+      - `openclaw/plugin-sdk/provider-stream` - `ProviderStreamFamily`, `buildProviderStreamFamilyHooks(...)`, `composeProviderStreamWrappers(...)`, beserta pembungkus OpenAI/Codex bersama (`createOpenAIAttributionHeadersWrapper`, `createOpenAIFastModeWrapper`, `createOpenAIServiceTierWrapper`, `createOpenAIResponsesContextManagementWrapper`, `createCodexNativeWebSearchWrapper`), pembungkus DeepSeek V4 yang kompatibel dengan OpenAI (`createDeepSeekV4OpenAICompatibleThinkingWrapper`), pembersihan pengisian awal pemikiran Anthropic Messages (`createAnthropicThinkingPrefillPayloadWrapper`), kompatibilitas panggilan alat teks biasa (`createPlainTextToolCallCompatWrapper`), dan pembungkus proksi/penyedia bersama (`createOpenRouterWrapper`, `createToolStreamWrapper`, `createMinimaxFastModeWrapper`).
+      - `openclaw/plugin-sdk/provider-stream-shared` - pembungkus muatan dan peristiwa ringan untuk jalur penyedia berkinerja tinggi, termasuk `createOpenAICompatibleCompletionsThinkingOffWrapper`, `createPayloadPatchStreamWrapper`, `createPlainTextToolCallCompatWrapper`, `normalizeOpenAICompatibleReasoningPayload(...)`, dan `setQwenChatTemplateThinking(...)`.
+      - `openclaw/plugin-sdk/provider-tools` - `ProviderToolCompatFamily`, `buildProviderToolCompatFamilyHooks("deepseek" | "gemini" | "openai")`, dan pembantu skema penyedia yang mendasarinya.
 
-      Untuk penyedia keluarga Gemini, jaga mode keluaran reasoning tetap selaras dengan
-      transport. Penyedia Google Gemini API langsung sebaiknya menggunakan keluaran reasoning
-      `native` sehingga OpenClaw mengonsumsi bagian thought native tanpa menambahkan
-      direktif prompt `<think>` / `<final>`. Backend bergaya Gemini CLI khusus teks
-      yang mengurai respons akhir JSON/teks dapat mempertahankan kontrak bertag
-      `google-gemini` bersama.
+      Untuk penyedia keluarga Gemini, pertahankan mode keluaran penalaran agar selaras dengan transportasi. Penyedia Google Gemini API langsung harus menggunakan keluaran penalaran `native` agar OpenClaw menggunakan bagian pemikiran native tanpa menambahkan arahan prompt `<think>` / `<final>`. Backend bergaya Gemini CLI yang hanya berupa teks dan mengurai respons JSON/teks akhir dapat mempertahankan kontrak bertanda `google-gemini` bersama.
 
-      Beberapa helper stream tetap bersifat lokal penyedia dengan sengaja. `@openclaw/anthropic-provider` mempertahankan `wrapAnthropicProviderStream`, `resolveAnthropicBetas`, `resolveAnthropicFastMode`, `resolveAnthropicServiceTier`, dan builder wrapper Anthropic tingkat lebih rendah di seam publik `api.ts` / `contract-api.ts` miliknya sendiri karena helper tersebut mengodekan penanganan beta Claude OAuth dan pembatasan `context1m`. Plugin xAI juga mempertahankan pembentukan Responses native xAI di `wrapStreamFn` miliknya sendiri (alias `/fast`, default `tool_stream`, pembersihan strict-tool yang tidak didukung, penghapusan payload reasoning khusus xAI).
+      Beberapa pembantu aliran sengaja tetap bersifat lokal bagi penyedia. `@openclaw/anthropic-provider` mempertahankan `wrapAnthropicProviderStream`, `resolveAnthropicBetas`, `resolveAnthropicFastMode`, `resolveAnthropicServiceTier`, dan pembangun pembungkus Anthropic tingkat rendah di seam publik `api.ts` / `contract-api.ts` miliknya karena semuanya mengodekan penanganan beta OAuth Claude dan pembatasan `context1m`. Plugin xAI juga mempertahankan pembentukan Responses native xAI di dalam `wrapStreamFn` miliknya sendiri (alias `/fast`, `tool_stream` default, pembersihan alat ketat yang tidak didukung, penghapusan muatan penalaran khusus xAI).
 
-      Pola package-root yang sama juga mendukung `@openclaw/openai-provider` (builder penyedia, helper model default, builder penyedia realtime) dan `@openclaw/openrouter-provider` (builder penyedia plus helper onboarding/config).
+      Pola akar paket yang sama juga mendukung `@openclaw/openai-provider` (pembangun penyedia, pembantu model default, pembangun penyedia waktu nyata) dan `@openclaw/openrouter-provider` (pembangun penyedia beserta pembantu orientasi awal/konfigurasi).
     </Accordion>
 
     <Tabs>
@@ -552,11 +530,11 @@ autentikasi kunci API, dan resolusi model dinamis.
         },
         ```
       </Tab>
-      <Tab title="Header kustom">
-        Untuk penyedia yang memerlukan header permintaan kustom atau modifikasi body:
+      <Tab title="Header khusus">
+        Untuk penyedia yang memerlukan header permintaan khusus atau modifikasi isi:
 
         ```typescript
-        // wrapStreamFn returns a StreamFn derived from ctx.streamFn
+        // wrapStreamFn mengembalikan StreamFn yang berasal dari ctx.streamFn
         wrapStreamFn: (ctx) => {
           if (!ctx.streamFn) return undefined;
           const inner = ctx.streamFn;
@@ -570,9 +548,8 @@ autentikasi kunci API, dan resolusi model dinamis.
         },
         ```
       </Tab>
-      <Tab title="Identitas transport native">
-        Untuk penyedia yang memerlukan header atau metadata permintaan/sesi native pada
-        transport HTTP atau WebSocket generik:
+      <Tab title="Identitas transportasi native">
+        Untuk penyedia yang memerlukan header atau metadata permintaan/sesi native pada transportasi HTTP atau WebSocket generik:
 
         ```typescript
         resolveTransportTurnState: (ctx) => ({
@@ -592,8 +569,8 @@ autentikasi kunci API, dan resolusi model dinamis.
         }),
         ```
       </Tab>
-      <Tab title="Usage and billing">
-        Untuk penyedia yang mengekspos data penggunaan/penagihan:
+      <Tab title="Penggunaan dan penagihan">
+        Untuk penyedia yang menyediakan data penggunaan/penagihan:
 
         ```typescript
         resolveUsageAuth: async (ctx) => {
@@ -605,92 +582,120 @@ autentikasi kunci API, dan resolusi model dinamis.
         },
         ```
 
-        `resolveUsageAuth` memiliki tiga hasil. Kembalikan `{ token, accountId? }`
-        ketika penyedia memiliki kredensial penggunaan/penagihan. Kembalikan
-        `{ handled: true }` hanya ketika penyedia sudah secara definitif menangani auth
-        penggunaan tetapi tidak memiliki token penggunaan yang dapat dipakai, dan OpenClaw harus melewati fallback
-        kunci API/OAuth generik. Kembalikan `null` atau `undefined` ketika penyedia
-        tidak menangani permintaan dan OpenClaw harus melanjutkan dengan fallback generik.
+        `resolveUsageAuth` memiliki tiga kemungkinan hasil. Kembalikan
+        `{ token, accountId?, subscriptionType?, rateLimitTier? }` ketika
+        penyedia memiliki kredensial penggunaan/penagihan (bidang opsional tersebut
+        membawa metadata paket nonrahasia dari profil yang telah ditetapkan ke
+        `fetchUsageSnapshot`). Kembalikan
+        `{ handled: true }` hanya ketika penyedia telah menangani autentikasi
+        penggunaan secara definitif tetapi tidak memiliki token penggunaan yang
+        dapat digunakan, dan OpenClaw harus melewati fallback kunci API/OAuth
+        generik. Kembalikan `null` atau `undefined` ketika penyedia tidak menangani
+        permintaan tersebut dan OpenClaw harus melanjutkan dengan fallback generik.
+
+        Deklarasikan ID penyedia dalam `contracts.usageProviders`. Ketika kontrak
+        manifes tersebut dan **kedua** hook tersedia, OpenClaw secara otomatis
+        menyertakan penyedia dalam pengumpulan penggunaan tanpa memuat plugin
+        penyedia yang tidak terkait. Pembaruan daftar izin inti tidak diperlukan.
+        `fetchUsageSnapshot` mengembalikan bentuk bersama yang netral terhadap
+        penyedia:
+
+        - `plan`: label langganan atau kunci yang dilaporkan penyedia
+        - `windows`: rentang kuota yang dapat diatur ulang dalam bentuk persentase penggunaan
+        - `billing`: entri `balance`, `spend`, atau `budget` bertipe; `unit` dapat
+          berupa mata uang ISO atau unit penyedia seperti `credits`
+        - `summary`: konteks ringkas khusus penyedia yang tidak sesuai dengan
+          bidang terstruktur tersebut
+
+        Pertahankan semantik mata uang secara tepat. Kredit penyedia bukanlah USD
+        kecuali kontrak upstream menyatakannya demikian. Plugin yang hanya
+        mengimplementasikan `fetchUsageSnapshot` tetap tersedia untuk pemanggil
+        eksplisit/sintetis, tetapi tidak ditemukan secara otomatis karena OpenClaw
+        tidak dapat menetapkan kredensial penggunaannya.
       </Tab>
     </Tabs>
 
-    <Accordion title="All available provider hooks">
-      OpenClaw memanggil hook dalam urutan ini. Sebagian besar penyedia hanya menggunakan 2-3:
-      Field penyedia khusus kompatibilitas yang tidak lagi dipanggil OpenClaw, seperti
-      `ProviderPlugin.capabilities` dan `suppressBuiltInModel`, tidak dicantumkan
-      di sini.
+    <Accordion title="Hook penyedia umum">
+      OpenClaw memanggil hook kurang lebih dalam urutan ini untuk plugin
+      model/penyedia. Sebagian besar penyedia hanya menggunakan 2–3. Ini bukan
+      kontrak `ProviderPlugin` lengkap—lihat [Internal: Hook Runtime
+      Penyedia](/id/plugins/architecture-internals#provider-runtime-hooks) untuk
+      daftar hook lengkap yang saat ini akurat dan catatan fallback.
+      Bidang penyedia khusus kompatibilitas yang tidak lagi dipanggil OpenClaw,
+      seperti `ProviderPlugin.capabilities` dan `suppressBuiltInModel`, tidak
+      dicantumkan di sini.
 
-      | # | Hook | Kapan digunakan |
-      | --- | --- | --- |
-      | 1 | `catalog` | Katalog model atau default URL dasar |
-      | 2 | `applyConfigDefaults` | Default global milik penyedia selama materialisasi konfigurasi |
-      | 3 | `normalizeModelId` | Pembersihan alias ID model lama/pratinjau sebelum pencarian |
-      | 4 | `normalizeTransport` | Pembersihan `api` / `baseUrl` keluarga penyedia sebelum perakitan model generik |
-      | 5 | `normalizeConfig` | Menormalisasi konfigurasi `models.providers.<id>` |
-      | 6 | `applyNativeStreamingUsageCompat` | Penulisan ulang kompat streaming-usage native untuk penyedia konfigurasi |
-      | 7 | `resolveConfigApiKey` | Resolusi auth penanda env milik penyedia |
-      | 8 | `resolveSyntheticAuth` | Auth sintetis lokal/self-hosted atau berbasis konfigurasi |
-      | 9 | `shouldDeferSyntheticProfileAuth` | Menurunkan placeholder profil tersimpan sintetis di belakang auth env/konfigurasi |
-      | 10 | `resolveDynamicModel` | Menerima ID model upstream arbitrer |
-      | 11 | `prepareDynamicModel` | Pengambilan metadata asinkron sebelum resolusi |
-      | 12 | `normalizeResolvedModel` | Penulisan ulang transport sebelum runner |
-      | 13 | `normalizeToolSchemas` | Pembersihan skema alat milik penyedia sebelum registrasi |
-      | 14 | `inspectToolSchemas` | Diagnostik skema alat milik penyedia |
-      | 15 | `resolveReasoningOutputMode` | Kontrak keluaran reasoning bertag vs native |
-      | 16 | `prepareExtraParams` | Parameter permintaan default |
-      | 17 | `createStreamFn` | Transport StreamFn kustom penuh |
-      | 19 | `wrapStreamFn` | Pembungkus header/body kustom pada jalur stream normal |
-      | 20 | `resolveTransportTurnState` | Header/metadata native per giliran |
-      | 21 | `resolveWebSocketSessionPolicy` | Header/masa jeda sesi WS native |
-      | 22 | `formatApiKey` | Bentuk token runtime kustom |
-      | 23 | `refreshOAuth` | Refresh OAuth kustom |
-      | 24 | `buildAuthDoctorHint` | Panduan perbaikan auth |
-      | 25 | `matchesContextOverflowError` | Deteksi overflow milik penyedia |
-      | 26 | `classifyFailoverReason` | Klasifikasi rate-limit/overload milik penyedia |
-      | 27 | `isCacheTtlEligible` | Pembatasan TTL cache prompt |
-      | 28 | `buildMissingAuthMessage` | Petunjuk auth hilang kustom |
-      | 29 | `augmentModelCatalog` | Baris forward-compat sintetis |
-      | 30 | `resolveThinkingProfile` | Set opsi `/think` spesifik model |
-      | 31 | `isBinaryThinking` | Kompatibilitas thinking biner aktif/nonaktif |
-      | 32 | `supportsXHighThinking` | Kompatibilitas dukungan reasoning `xhigh` |
-      | 33 | `resolveDefaultThinkingLevel` | Kompatibilitas kebijakan `/think` default |
-      | 34 | `isModernModelRef` | Pencocokan model live/smoke |
-      | 35 | `prepareRuntimeAuth` | Pertukaran token sebelum inferensi |
-      | 36 | `resolveUsageAuth` | Parsing kredensial penggunaan kustom |
-      | 37 | `fetchUsageSnapshot` | Endpoint penggunaan kustom |
-      | 38 | `createEmbeddingProvider` | Adapter embedding milik penyedia untuk memori/pencarian |
-      | 39 | `buildReplayPolicy` | Kebijakan pemutaran ulang/Compaction transkrip kustom |
-      | 40 | `sanitizeReplayHistory` | Penulisan ulang pemutaran ulang spesifik penyedia setelah pembersihan generik |
-      | 41 | `validateReplayTurns` | Validasi giliran pemutaran ulang ketat sebelum runner tertanam |
-      | 42 | `onModelSelected` | Callback pasca-pemilihan (mis. telemetri) |
+      | Hook | Kapan digunakan |
+      | --- | --- |
+      | `catalog` | Katalog model atau nilai default URL dasar |
+      | `applyConfigDefaults` | Nilai default global milik penyedia selama materialisasi konfigurasi |
+      | `normalizeModelId` | Pembersihan alias ID model lama/pratinjau sebelum pencarian |
+      | `normalizeTransport` | Pembersihan `api` / `baseUrl` keluarga penyedia sebelum perakitan model generik |
+      | `normalizeConfig` | Menormalisasi konfigurasi `models.providers.<id>` |
+      | `applyNativeStreamingUsageCompat` | Penulisan ulang kompatibilitas penggunaan streaming native untuk penyedia konfigurasi |
+      | `resolveConfigApiKey` | Penetapan autentikasi penanda lingkungan milik penyedia |
+      | `resolveSyntheticAuth` | Autentikasi sintetis lokal/dihosting sendiri atau berbasis konfigurasi |
+      | `resolveExternalAuthProfiles` | Melapisi profil autentikasi eksternal milik penyedia untuk kredensial yang dikelola CLI/aplikasi |
+      | `shouldDeferSyntheticProfileAuth` | Menurunkan prioritas placeholder profil tersimpan sintetis di bawah autentikasi lingkungan/konfigurasi |
+      | `resolveDynamicModel` | Menerima ID model upstream arbitrer |
+      | `prepareDynamicModel` | Pengambilan metadata asinkron sebelum penetapan |
+      | `normalizeResolvedModel` | Penulisan ulang transport sebelum runner |
+      | `normalizeToolSchemas` | Pembersihan skema alat milik penyedia sebelum pendaftaran |
+      | `inspectToolSchemas` | Diagnostik skema alat milik penyedia |
+      | `resolveReasoningOutputMode` | Kontrak keluaran penalaran bertag vs native |
+      | `prepareExtraParams` | Parameter permintaan default |
+      | `createStreamFn` | Transport StreamFn yang sepenuhnya khusus |
+      | `wrapStreamFn` | Pembungkus header/isi khusus pada jalur stream normal |
+      | `resolveTransportTurnState` | Header/metadata native per giliran |
+      | `resolveWebSocketSessionPolicy` | Header/waktu jeda sesi WS native |
+      | `formatApiKey` | Bentuk token runtime khusus |
+      | `refreshOAuth` | Penyegaran OAuth khusus |
+      | `buildAuthDoctorHint` | Panduan perbaikan autentikasi |
+      | `matchesContextOverflowError` | Deteksi luapan milik penyedia |
+      | `classifyFailoverReason` | Klasifikasi batas laju/kelebihan beban milik penyedia |
+      | `isCacheTtlEligible` | Pembatasan TTL cache prompt |
+      | `buildMissingAuthMessage` | Petunjuk autentikasi yang tidak tersedia secara khusus |
+      | `augmentModelCatalog` | Baris kompatibilitas ke depan sintetis (tidak digunakan lagi—utamakan `registerModelCatalogProvider`) |
+      | `resolveThinkingProfile` | Kumpulan opsi `/think` khusus model |
+      | `isBinaryThinking` | Kompatibilitas pemikiran biner aktif/nonaktif (tidak digunakan lagi—utamakan `resolveThinkingProfile`) |
+      | `supportsXHighThinking` | Kompatibilitas dukungan penalaran `xhigh` (tidak digunakan lagi—utamakan `resolveThinkingProfile`) |
+      | `resolveDefaultThinkingLevel` | Kompatibilitas kebijakan `/think` default (tidak digunakan lagi—utamakan `resolveThinkingProfile`) |
+      | `isModernModelRef` | Pencocokan model langsung/uji asap |
+      | `prepareRuntimeAuth` | Pertukaran token sebelum inferensi |
+      | `resolveUsageAuth` | Penguraian kredensial penggunaan khusus |
+      | `fetchUsageSnapshot` | Endpoint penggunaan khusus |
+      | `createEmbeddingProvider` | Adaptor embedding milik penyedia untuk memori/pencarian |
+      | `buildReplayPolicy` | Kebijakan pemutaran ulang transkrip/Compaction khusus |
+      | `sanitizeReplayHistory` | Penulisan ulang pemutaran ulang khusus penyedia setelah pembersihan generik |
+      | `validateReplayTurns` | Validasi ketat giliran pemutaran ulang sebelum runner tertanam |
+      | `onModelSelected` | Panggilan balik setelah pemilihan (misalnya telemetri) |
 
       Catatan fallback runtime:
 
-      - `normalizeConfig` memeriksa penyedia yang cocok terlebih dahulu, lalu Plugin penyedia lain yang mendukung hook hingga salah satunya benar-benar mengubah konfigurasi. Jika tidak ada hook penyedia yang menulis ulang entri konfigurasi keluarga Google yang didukung, normalizer konfigurasi Google bawaan tetap diterapkan.
-      - `resolveConfigApiKey` menggunakan hook penyedia saat diekspos. Amazon Bedrock mempertahankan resolusi penanda env AWS di Plugin penyedianya; auth runtime itu sendiri tetap menggunakan rantai default AWS SDK saat dikonfigurasi dengan `auth: "aws-sdk"`.
-      - `resolveThinkingProfile(ctx)` menerima `provider`, `modelId`, petunjuk katalog `reasoning` gabungan opsional, dan fakta `compat` model gabungan opsional yang dipilih. Gunakan `compat` hanya untuk memilih UI/profil thinking milik penyedia.
-      - `resolveSystemPromptContribution` memungkinkan penyedia menyuntikkan panduan prompt sistem yang sadar cache untuk keluarga model. Lebih pilih ini daripada `before_prompt_build` ketika perilaku tersebut milik satu penyedia/keluarga model dan harus mempertahankan pemisahan cache stabil/dinamis.
+      - `normalizeConfig` menetapkan satu plugin pemilik per ID penyedia (penyedia bawaan terlebih dahulu, lalu plugin runtime yang cocok) dan hanya memanggil hook tersebut—tidak ada pemindaian terhadap penyedia lain. Hook `normalizeConfig` milik Google sendiri yang menormalisasi entri konfigurasi `google` / `google-vertex` / `google-antigravity`; ini bukan fallback inti terpisah.
+      - `resolveConfigApiKey` menggunakan hook penyedia ketika tersedia. Amazon Bedrock mempertahankan penetapan penanda lingkungan AWS dalam plugin penyedianya; autentikasi runtime itu sendiri tetap menggunakan rantai default AWS SDK ketika dikonfigurasi dengan `auth: "aws-sdk"`.
+      - `resolveThinkingProfile(ctx)` menerima `provider`, `modelId` yang dipilih, petunjuk katalog `reasoning` gabungan opsional, dan fakta `compat` model gabungan opsional. Gunakan `compat` hanya untuk memilih UI/profil pemikiran penyedia.
+      - `resolveSystemPromptContribution` memungkinkan penyedia menyisipkan panduan prompt sistem yang mempertimbangkan cache untuk sebuah keluarga model. Utamakan ini daripada hook lama `before_prompt_build` yang berlaku untuk seluruh plugin ketika perilaku tersebut dimiliki satu keluarga penyedia/model dan harus mempertahankan pemisahan cache stabil/dinamis.
 
-      Untuk deskripsi terperinci dan contoh dunia nyata, lihat [Internal: Hook Runtime Penyedia](/id/plugins/architecture-internals#provider-runtime-hooks).
     </Accordion>
 
   </Step>
 
-  <Step title="Add extra capabilities (optional)">
-    ### Langkah 5: Tambahkan kapabilitas ekstra
+  <Step title="Tambahkan kemampuan tambahan (opsional)">
+    ### Langkah 5: Tambahkan kemampuan tambahan
 
-    Plugin penyedia dapat mendaftarkan embedding, speech, transkripsi realtime,
-    suara realtime, pemahaman media, pembuatan gambar, pembuatan video,
-    web fetch, dan web search bersama inferensi teks. OpenClaw mengklasifikasikan ini sebagai
-    Plugin **hybrid-capability** - pola yang direkomendasikan untuk Plugin perusahaan
-    (satu Plugin per vendor). Lihat
-    [Internal: Kepemilikan Kapabilitas](/id/plugins/architecture#capability-ownership-model).
+    Plugin penyedia dapat mendaftarkan embedding, ucapan, transkripsi waktu nyata,
+    suara waktu nyata, pemahaman media, pembuatan gambar, pembuatan video,
+    pengambilan web, dan pencarian web bersama inferensi teks. OpenClaw
+    mengklasifikasikannya sebagai plugin **kemampuan hibrida**—pola yang
+    direkomendasikan untuk plugin perusahaan (satu plugin per vendor). Lihat
+    [Internal: Kepemilikan Kemampuan](/id/plugins/architecture#capability-ownership-model).
 
-    Daftarkan setiap kapabilitas di dalam `register(api)` bersama panggilan
-    `api.registerProvider(...)` yang sudah ada. Pilih hanya tab yang Anda butuhkan:
+    Daftarkan setiap kemampuan di dalam `register(api)` bersama dengan pemanggilan
+    `api.registerProvider(...)` yang sudah ada. Pilih hanya tab yang Anda perlukan:
 
     <Tabs>
-      <Tab title="Speech (TTS)">
+      <Tab title="Ucapan (TTS)">
         ```typescript
         import {
           assertOkOrThrowProviderError,
@@ -726,15 +731,15 @@ autentikasi kunci API, dan resolusi model dinamis.
         });
         ```
 
-        Gunakan `assertOkOrThrowProviderError(...)` untuk kegagalan HTTP penyedia agar
-        Plugin berbagi pembacaan body error yang dibatasi, parsing error JSON, dan
-        sufiks ID permintaan.
+        Gunakan `assertOkOrThrowProviderError(...)` untuk kegagalan HTTP penyedia
+        agar plugin menggunakan pembacaan isi kesalahan yang dibatasi, penguraian
+        kesalahan JSON, dan sufiks ID permintaan yang sama.
       </Tab>
-      <Tab title="Realtime transcription">
-        Lebih pilih `createRealtimeTranscriptionWebSocketSession(...)` - helper bersama
-        menangani penangkapan proxy, backoff koneksi ulang, flushing saat tutup, handshake
-        siap, antrean audio, dan diagnostik event penutupan. Plugin Anda
-        hanya memetakan event upstream.
+      <Tab title="Transkripsi waktu nyata">
+        Utamakan `createRealtimeTranscriptionWebSocketSession(...)`—helper bersama
+        ini menangani pengambilan proksi, backoff penyambungan ulang, pengosongan
+        saat penutupan, jabat tangan kesiapan, pengantrean audio, dan diagnostik
+        peristiwa penutupan. Plugin Anda hanya memetakan peristiwa upstream.
 
         ```typescript
         api.registerRealtimeTranscriptionProvider({
@@ -774,11 +779,11 @@ autentikasi kunci API, dan resolusi model dinamis.
 
         Penyedia STT batch yang melakukan POST audio multipart harus menggunakan
         `buildAudioTranscriptionFormData(...)` dari
-        `openclaw/plugin-sdk/provider-http`. Helper ini menormalisasi nama file unggahan,
-        termasuk unggahan AAC yang membutuhkan nama file bergaya M4A untuk
-        API transkripsi yang kompatibel.
+        `openclaw/plugin-sdk/provider-http`. Pembantu ini menormalkan nama file
+        unggahan, termasuk unggahan AAC yang memerlukan nama file bergaya M4A
+        untuk API transkripsi yang kompatibel.
       </Tab>
-      <Tab title="Realtime voice">
+      <Tab title="Suara waktu nyata">
         ```typescript
         api.registerRealtimeVoiceProvider({
           id: "acme-ai",
@@ -788,13 +793,14 @@ autentikasi kunci API, dan resolusi model dinamis.
             inputAudioFormats: [{ encoding: "pcm16", sampleRateHz: 24000, channels: 1 }],
             outputAudioFormats: [{ encoding: "pcm16", sampleRateHz: 24000, channels: 1 }],
             supportsBargeIn: true,
+            handlesInputAudioBargeIn: true,
             supportsToolCalls: true,
           },
           isConfigured: ({ providerConfig }) => Boolean(providerConfig.apiKey),
           createBridge: (req) => ({
-            // Set this only if the provider accepts multiple tool responses for
-            // one call, for example an immediate "working" response followed by
-            // the final result.
+            // Atur ini hanya jika penyedia menerima beberapa respons alat untuk
+            // satu panggilan, misalnya respons "sedang diproses" langsung yang
+            // diikuti oleh hasil akhir.
             supportsToolResultContinuation: false,
             connect: async () => {},
             sendAudio: () => {},
@@ -808,11 +814,28 @@ autentikasi kunci API, dan resolusi model dinamis.
         });
         ```
 
-        Deklarasikan `capabilities` agar `talk.catalog` dapat mengekspos mode,
-        transport, format audio, dan flag fitur yang valid ke klien Talk browser
-        dan native. Implementasikan `handleBargeIn` ketika suatu transport dapat mendeteksi bahwa
-        manusia sedang menginterupsi pemutaran asisten dan penyedia mendukung
-        pemotongan atau penghapusan respons audio aktif.
+        Deklarasikan `capabilities` agar `talk.catalog` dapat menyediakan mode,
+        transpor, format audio, dan penanda fitur yang valid kepada klien Talk
+        di peramban dan aplikasi native. Implementasikan `handleBargeIn` ketika
+        suatu transpor dapat mendeteksi bahwa manusia menyela pemutaran asisten
+        dan penyedia mendukung pemotongan atau penghapusan respons audio aktif.
+        `submitToolResult` dapat mengembalikan `void` untuk pengiriman sinkron,
+        atau `Promise<void>` untuk batas penyelesaian asinkron yang dapat
+        diekspos oleh jembatan penyedia. Sesi relai Gateway menunggu promise
+        tersebut sebelum mengonfirmasi hasil akhir atau menghapus proses yang
+        ditautkan; tolak promise tersebut ketika pengiriman gagal.
+        Atur `supportsToolResultSuppression: false` ketika penyedia tidak dapat
+        mematuhi `options.suppressResponse`. OpenClaw kemudian menghindari
+        penekanan untuk hasil konsultasi paksa internal dan pembatalan, serta
+        menolak permintaan langsung untuk hasil yang ditekan alih-alih memulai
+        respons secara diam-diam.
+        Pengguna `createRealtimeVoiceBridgeSession` juga dapat mengembalikan
+        promise dari `onToolCall`; lemparan sinkron dan penolakan diteruskan ke
+        callback `onError` milik sesi.
+        Atur `handlesInputAudioBargeIn` hanya ketika VAD penyedia mengonfirmasi
+        interupsi dengan memanggil `onClearAudio("barge-in")`. Penyedia yang
+        tidak menyertakan penanda tersebut menggunakan deteksi fallback audio
+        masukan lokal OpenClaw.
       </Tab>
       <Tab title="Pemahaman media">
         ```typescript
@@ -824,10 +847,11 @@ autentikasi kunci API, dan resolusi model dinamis.
         });
         ```
 
-        Penyedia media lokal atau self-hosted yang secara sengaja tidak memerlukan
-        kredensial dapat mengekspos `resolveAuth` dan mengembalikan `kind: "none"`.
-        OpenClaw tetap mempertahankan gate auth normal untuk penyedia yang tidak
-        secara eksplisit memilih ikut serta. Penyedia yang sudah ada dapat tetap membaca `req.apiKey`;
+        Penyedia media lokal atau yang dihosting sendiri dan secara sengaja
+        tidak memerlukan kredensial dapat mengekspos `resolveAuth` dan
+        mengembalikan `kind: "none"`. OpenClaw tetap mempertahankan gerbang
+        autentikasi normal untuk penyedia yang tidak secara eksplisit memilih
+        ikut serta. Penyedia yang sudah ada dapat tetap membaca `req.apiKey`;
         penyedia baru sebaiknya menggunakan `req.auth`.
 
         ```typescript
@@ -842,7 +866,7 @@ autentikasi kunci API, dan resolusi model dinamis.
         });
         ```
       </Tab>
-      <Tab title="Embeddings">
+      <Tab title="Embedding">
         ```typescript
         api.registerEmbeddingProvider({
           id: "acme-ai",
@@ -869,30 +893,37 @@ autentikasi kunci API, dan resolusi model dinamis.
         });
         ```
 
-        Deklarasikan id yang sama di `contracts.embeddingProviders`. Ini adalah
-        kontrak embedding umum untuk pembuatan vektor yang dapat digunakan ulang, termasuk
-        pencarian memori. `registerMemoryEmbeddingProvider(...)` adalah kompatibilitas
-        yang sudah tidak disarankan untuk adapter khusus memori yang sudah ada.
+        Deklarasikan ID yang sama dalam `contracts.embeddingProviders`. Ini
+        merupakan kontrak embedding umum untuk pembuatan vektor yang dapat
+        digunakan kembali, termasuk pencarian memori.
+        `registerMemoryEmbeddingProvider(...)` adalah kompatibilitas usang
+        untuk adaptor khusus memori yang sudah ada.
       </Tab>
       <Tab title="Pembuatan gambar dan video">
-        Kapabilitas video menggunakan bentuk yang **sadar mode**: `generate`,
-        `imageToVideo`, dan `videoToVideo`. Field agregat datar seperti
-        `maxInputImages` / `maxInputVideos` / `maxDurationSeconds` tidak
-        cukup untuk mengiklankan dukungan mode transformasi atau mode yang dinonaktifkan dengan jelas.
-        Pembuatan musik mengikuti pola yang sama dengan blok `generate` /
-        `edit` yang eksplisit.
+        Kapabilitas gambar dan video menggunakan bentuk yang **menyadari mode**.
+        Penyedia gambar mendeklarasikan blok kapabilitas `generate` dan `edit`
+        yang wajib; penyedia video mendeklarasikan `generate`, `imageToVideo`,
+        dan `videoToVideo`. Kolom agregat datar seperti `maxInputImages` /
+        `maxInputVideos` / `maxDurationSeconds` tidak cukup untuk mengiklankan
+        dukungan mode transformasi atau mode yang dinonaktifkan secara jelas.
+        Pembuatan musik mengikuti pola `generate` / `edit` yang sama.
 
         ```typescript
         api.registerImageGenerationProvider({
           id: "acme-ai",
           label: "Acme Images",
-          generate: async (req) => ({ /* image result */ }),
+          capabilities: {
+            generate: { maxCount: 4, supportsSize: true },
+            edit: { enabled: false },
+          },
+          generateImage: async (req) => ({ images: [] }),
         });
 
         api.registerVideoGenerationProvider({
           id: "acme-ai",
           label: "Acme Video",
           defaultTimeoutMs: 600_000,
+          models: ["acme-video", "acme-image-video"],
           capabilities: {
             generate: { maxVideos: 1, maxDurationSeconds: 10, supportsResolution: true },
             imageToVideo: {
@@ -904,9 +935,36 @@ autentikasi kunci API, dan resolusi model dinamis.
             },
             videoToVideo: { enabled: false },
           },
+          catalogByModel: {
+            "acme-image-video": {
+              modes: ["imageToVideo"],
+              capabilities: {
+                imageToVideo: {
+                  enabled: true,
+                  maxVideos: 1,
+                  maxInputImages: 1,
+                  resolutions: ["480P", "720P", "1080P"],
+                  supportsResolution: true,
+                },
+                videoToVideo: { enabled: false },
+              },
+            },
+          },
           generateVideo: async (req) => ({ videos: [] }),
         });
         ```
+
+        `capabilities` wajib pada kedua jenis penyedia; `edit` dan blok
+        transformasi video (`imageToVideo`, `videoToVideo`) selalu memerlukan
+        penanda `enabled` yang eksplisit.
+
+        Gunakan `catalogByModel` ketika mode atau kapabilitas statis model yang
+        tercantum berbeda dari nilai default penyedia. Metadata ini menjaga
+        `video_generate action=list` dan katalog model tetap akurat tanpa
+        menjalankan kode penyedia. Pencarian dan penerapan kapabilitas pada saat
+        permintaan tetap menjadi tanggung jawab `resolveModelCapabilities` dan
+        `generateVideo`; gunakan kembali konstanta kapabilitas yang sama untuk
+        kedua jalur jika memungkinkan.
       </Tab>
       <Tab title="Pengambilan dan pencarian web">
         ```typescript
@@ -933,9 +991,28 @@ autentikasi kunci API, dan resolusi model dinamis.
         api.registerWebSearchProvider({
           id: "acme-ai-search",
           label: "Acme Search",
-          search: async (req) => ({ content: [] }),
+          hint: "Search the web through Acme's search backend.",
+          envVars: ["ACME_SEARCH_API_KEY"],
+          placeholder: "acme-...",
+          signupUrl: "https://acme.example.com/search",
+          credentialPath: "plugins.entries.acme.config.webSearch.apiKey",
+          getCredentialValue: (searchConfig) => searchConfig?.acme?.apiKey,
+          setCredentialValue: (searchConfigTarget, value) => {
+            const acme = (searchConfigTarget.acme ??= {});
+            acme.apiKey = value;
+          },
+          createTool: () => ({
+            description: "Search the web through Acme Search.",
+            parameters: {},
+            execute: async (args) => ({ content: [] }),
+          }),
         });
         ```
+
+        Kedua jenis penyedia menggunakan bentuk pengkabelan kredensial yang
+        sama: `hint`, `envVars`, `placeholder`, `signupUrl`, `credentialPath`,
+        `getCredentialValue`, `setCredentialValue`, dan `createTool` semuanya
+        wajib.
       </Tab>
     </Tabs>
 
@@ -946,7 +1023,7 @@ autentikasi kunci API, dan resolusi model dinamis.
 
     ```typescript src/provider.test.ts
     import { describe, it, expect } from "vitest";
-    // Export your provider config object from index.ts or a dedicated file
+    // Ekspor objek konfigurasi penyedia Anda dari index.ts atau file khusus
     import { acmeProvider } from "./provider.js";
 
     describe("acme-ai provider", () => {
@@ -979,26 +1056,27 @@ autentikasi kunci API, dan resolusi model dinamis.
 
 ## Publikasikan ke ClawHub
 
-Plugin penyedia dipublikasikan dengan cara yang sama seperti Plugin kode eksternal lainnya:
+Plugin penyedia dipublikasikan dengan cara yang sama seperti Plugin kode
+eksternal lainnya:
 
 ```bash
 clawhub package publish your-org/your-plugin --dry-run
 clawhub package publish your-org/your-plugin
 ```
 
-Jangan gunakan alias publikasi lama khusus skill di sini; paket Plugin harus menggunakan
-`clawhub package publish`.
+`clawhub skill publish <path>` adalah perintah berbeda untuk memublikasikan
+folder skill, bukan paket Plugin—jangan gunakan perintah tersebut di sini.
 
 ## Struktur file
 
 ```
 <bundled-plugin-root>/acme-ai/
-├── package.json              # openclaw.providers metadata
-├── openclaw.plugin.json      # Manifest with provider auth metadata
+├── package.json              # metadata openclaw.providers
+├── openclaw.plugin.json      # Manifes dengan metadata autentikasi penyedia
 ├── index.ts                  # definePluginEntry + registerProvider
 └── src/
-    ├── provider.test.ts      # Tests
-    └── usage.ts              # Usage endpoint (optional)
+    ├── provider.test.ts      # Pengujian
+    └── usage.ts              # Endpoint penggunaan (opsional)
 ```
 
 ## Referensi urutan katalog
@@ -1006,22 +1084,22 @@ Jangan gunakan alias publikasi lama khusus skill di sini; paket Plugin harus men
 `catalog.order` mengontrol kapan katalog Anda digabungkan relatif terhadap
 penyedia bawaan:
 
-| Urutan    | Kapan         | Kasus penggunaan                               |
-| --------- | ------------- | --------------------------------------------- |
-| `simple`  | Pass pertama  | Penyedia API-key sederhana                    |
-| `profile` | Setelah simple | Penyedia yang digate pada profil auth         |
-| `paired`  | Setelah profile | Mensintesis beberapa entri terkait           |
-| `late`    | Pass terakhir | Menimpa penyedia yang sudah ada (menang saat collision) |
+| Urutan    | Waktu          | Kasus penggunaan                                      |
+| --------- | -------------- | ----------------------------------------------------- |
+| `simple`  | Tahap pertama  | Penyedia dengan kunci API biasa                       |
+| `profile` | Setelah simple | Penyedia yang dibatasi berdasarkan profil autentikasi |
+| `paired`  | Setelah profile | Menyintesis beberapa entri yang saling terkait       |
+| `late`    | Tahap terakhir | Menimpa penyedia yang ada (menang jika terjadi konflik) |
 
 ## Langkah berikutnya
 
-- [Plugin Channel](/id/plugins/sdk-channel-plugins) - jika Plugin Anda juga menyediakan channel
-- [Runtime SDK](/id/plugins/sdk-runtime) - helper `api.runtime` (TTS, pencarian, subagent)
-- [Ikhtisar SDK](/id/plugins/sdk-overview) - referensi impor subpath lengkap
-- [Internal Plugin](/id/plugins/architecture-internals#provider-runtime-hooks) - detail hook dan contoh bundled
+- [Plugin saluran](/id/plugins/sdk-channel-plugins) - jika plugin Anda juga menyediakan saluran
+- [Runtime SDK](/id/plugins/sdk-runtime) - pembantu `api.runtime` (TTS, pencarian, subagen)
+- [Ikhtisar SDK](/id/plugins/sdk-overview) - referensi lengkap impor subjalur
+- [Internal Plugin](/id/plugins/architecture-internals#provider-runtime-hooks) - detail hook dan contoh bawaan
 
 ## Terkait
 
-- [Penyiapan Plugin SDK](/id/plugins/sdk-setup)
-- [Membangun Plugin](/id/plugins/building-plugins)
-- [Membangun Plugin channel](/id/plugins/sdk-channel-plugins)
+- [Penyiapan SDK Plugin](/id/plugins/sdk-setup)
+- [Membangun plugin](/id/plugins/building-plugins)
+- [Membangun plugin saluran](/id/plugins/sdk-channel-plugins)

@@ -5,46 +5,46 @@ read_when:
 summary: Bộ điều hợp RPC cho các CLI bên ngoài (signal-cli, imsg) và các mẫu Gateway
 title: Bộ điều hợp RPC
 x-i18n:
-    generated_at: "2026-05-10T19:50:28Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:20:14Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 63556f140bee55821fa0a09ff9808e163728049f8db4c58f7bb4ceca6e1cac1a
+    source_hash: 6ddb3fb741c90fe7b01ba35376b71865584b1e507cf610705392452790fb76f5
     source_path: reference/rpc.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw tích hợp các CLI bên ngoài qua JSON-RPC. Hiện nay có hai mẫu được sử dụng.
+OpenClaw tích hợp các CLI bên ngoài thông qua JSON-RPC. Hiện nay có hai mẫu được sử dụng.
 
-## Mẫu A: trình nền HTTP (signal-cli)
+## Mẫu A: Tiến trình nền HTTP (signal-cli)
 
-- `signal-cli` chạy như một trình nền với JSON-RPC qua HTTP.
-- Luồng sự kiện là SSE (`/api/v1/events`).
-- Kiểm tra tình trạng: `/api/v1/check`.
-- OpenClaw sở hữu vòng đời khi `channels.signal.autoStart=true`.
+- `signal-cli` chạy dưới dạng tiến trình nền với JSON-RPC qua HTTP.
+- Luồng sự kiện sử dụng SSE (`/api/v1/events`).
+- Điểm kiểm tra tình trạng: `/api/v1/check`.
+- OpenClaw quản lý vòng đời khi `channels.signal.autoStart=true`.
 
-Xem [Signal](/vi/channels/signal) để biết cách thiết lập và các endpoint.
+Xem [Signal](/vi/channels/signal) để biết cách thiết lập và các điểm cuối.
 
-## Mẫu B: tiến trình con stdio (imsg)
+## Mẫu B: Tiến trình con stdio (imsg)
 
-- OpenClaw sinh `imsg rpc` như một tiến trình con cho [iMessage](/vi/channels/imessage).
-- JSON-RPC được phân tách theo dòng qua stdin/stdout (một đối tượng JSON trên mỗi dòng).
-- Không cần cổng TCP, không cần trình nền.
+- OpenClaw khởi chạy `imsg rpc` dưới dạng tiến trình con cho [iMessage](/vi/channels/imessage).
+- JSON-RPC được phân tách theo dòng qua stdin/stdout (mỗi dòng là một đối tượng JSON).
+- Không cần cổng TCP hay tiến trình nền.
 
-Các phương thức lõi được dùng:
+Các phương thức cốt lõi được sử dụng:
 
 - `watch.subscribe` → thông báo (`method: "message"`)
 - `watch.unsubscribe`
 - `send`
 - `chats.list` (thăm dò/chẩn đoán)
 
-Xem [iMessage](/vi/channels/imessage) để biết cách thiết lập kế thừa và định địa chỉ (ưu tiên `chat_id`).
+Xem [iMessage](/vi/channels/imessage) để biết cách thiết lập và định địa chỉ (ưu tiên `chat_id` hơn chuỗi hiển thị).
 
-## Hướng dẫn adapter
+## Hướng dẫn về bộ chuyển đổi
 
-- Gateway sở hữu tiến trình (bắt đầu/dừng gắn với vòng đời nhà cung cấp).
-- Giữ cho các máy khách RPC bền bỉ: thời gian chờ, khởi động lại khi thoát.
-- Ưu tiên ID ổn định (ví dụ: `chat_id`) hơn chuỗi hiển thị.
+- Gateway quản lý tiến trình (việc khởi động/dừng gắn với vòng đời của nhà cung cấp).
+- Duy trì khả năng phục hồi của các máy khách RPC: đặt thời gian chờ, khởi động lại khi tiến trình thoát.
+- Ưu tiên mã định danh ổn định (ví dụ: `chat_id`) hơn chuỗi hiển thị.
 
 ## Liên quan
 

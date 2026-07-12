@@ -1,11 +1,11 @@
 ---
 read_when:
     - Estás instalando, configurando o auditando el plugin de tablero de trabajo
-summary: Tablero de trabajo para incidencias y sesiones propiedad del agente.
-title: Plugin de tablero de trabajo
+summary: Panel de trabajo para incidencias y sesiones gestionadas por agentes.
+title: Plugin Workboard
 x-i18n:
-    generated_at: "2026-06-27T12:25:33Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T23:22:54Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 1e5a48a52d45dbe87b73020103c2bc3f0bd46305b4c0d26b3010864af65fa99c
@@ -15,12 +15,12 @@ x-i18n:
 
 # Plugin Workboard
 
-Panel de trabajo para issues y sesiones propiedad del agente.
+Panel de trabajo para incidencias y sesiones gestionadas por agentes.
 
 ## Distribución
 
 - Paquete: `@openclaw/workboard`
-- Ruta de instalación: incluido en OpenClaw
+- Método de instalación: incluido en OpenClaw
 
 ## Superficie
 
@@ -28,4 +28,4 @@ contratos: herramientas
 
 ## Documentación relacionada
 
-- [workboard](/es/plugins/workboard)
+- [Workboard](/es/plugins/workboard)

@@ -4,8 +4,8 @@ read_when:
 summary: Menambahkan dukungan penyedia pencarian web.
 title: Plugin Exa
 x-i18n:
-    generated_at: "2026-06-27T17:53:31Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:28:06Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 6170d70f03913f87b62f7a85647b4748032b7d01c56e909826e10e261e58160f
@@ -20,9 +20,9 @@ Menambahkan dukungan penyedia pencarian web.
 ## Distribusi
 
 - Paket: `@openclaw/exa-plugin`
-- Rute pemasangan: npm; ClawHub: `clawhub:@openclaw/exa-plugin`
+- Jalur instalasi: npm; ClawHub: `clawhub:@openclaw/exa-plugin`
 
-## Permukaan
+## Antarmuka
 
 kontrak: webSearchProviders
 

@@ -1,11 +1,11 @@
 ---
 read_when:
-    - ワークスペースを手動でブートストラップする
-summary: TOOLS.md 用のワークスペーステンプレート
+    - ワークスペースを手動で初期構築する
+summary: TOOLS.md 用ワークスペーステンプレート
 title: TOOLS.md テンプレート
 x-i18n:
-    generated_at: "2026-07-05T11:46:34Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:40:53Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 20eab78b3b117566a1d33a70873e70ff2d5099543aa44e2719dc8d0797099afe
@@ -15,34 +15,34 @@ x-i18n:
 
 # TOOLS.md - ローカルメモ
 
-Skills はツールが_どのように_動作するかを定義します。このファイルは_あなた_固有の詳細のためのものです。つまり、あなたのセットアップに固有の内容です: カメラ名と場所、SSH ホストとエイリアス、好みの TTS 音声、スピーカー/部屋の名前、デバイスのニックネーム、環境固有のあらゆるもの。
+Skills はツールが_どのように_動作するかを定義します。このファイルには、カメラの名前と場所、SSH ホストとエイリアス、好みの TTS 音声、スピーカーや部屋の名前、デバイスの愛称など、セットアップ固有の情報を記載します。
 
 ## 例
 
 ```markdown
-### Cameras
+### カメラ
 
-- living-room → Main area, 180° wide angle
-- front-door → Entrance, motion-triggered
+- living-room → メインエリア、180° 広角
+- front-door → 玄関、動体検知で作動
 
 ### SSH
 
-- home-server → 192.168.1.100, user: admin
+- home-server → 192.168.1.100、ユーザー: admin
 
 ### TTS
 
-- Preferred voice: "Nova" (warm, slightly British)
-- Default speaker: Kitchen HomePod
+- 好みの音声: "Nova"（温かみがあり、ややイギリス英語風）
+- デフォルトのスピーカー: Kitchen HomePod
 ```
 
-## なぜ分けるのか？
+## 分ける理由
 
-Skills は共有されます。あなたのセットアップはあなたのものです。分けておくことで、メモを失わずに Skills を更新でき、インフラストラクチャを漏らさずに Skills を共有できます。
+Skills は共有されます。セットアップはあなた固有のものです。両者を分けておけば、メモを失わずに Skills を更新でき、インフラストラクチャを漏らさずに Skills を共有できます。
 
 ---
 
-作業に役立つものは何でも追加してください。これはあなたのチートシートです。
+作業に役立つ情報を自由に追加してください。これはあなたの早見表です。
 
-## 関連
+## 関連項目
 
 - [エージェントワークスペース](/ja-JP/concepts/agent-workspace)

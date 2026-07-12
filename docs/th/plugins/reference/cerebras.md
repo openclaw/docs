@@ -4,8 +4,8 @@ read_when:
 summary: เพิ่มการรองรับผู้ให้บริการโมเดล Cerebras ให้กับ OpenClaw
 title: Plugin Cerebras
 x-i18n:
-    generated_at: "2026-06-27T18:00:03Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:32:17Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 272a592b6099b7dc30c48e40e004ca01c1113a1fcf65917ac6266987a63ec01f
@@ -17,14 +17,14 @@ x-i18n:
 
 เพิ่มการรองรับผู้ให้บริการโมเดล Cerebras ให้กับ OpenClaw
 
-## การแจกจ่าย
+## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/cerebras-provider`
-- เส้นทางการติดตั้ง: npm; ClawHub: `clawhub:@openclaw/cerebras-provider`
+- ช่องทางการติดตั้ง: npm; ClawHub: `clawhub:@openclaw/cerebras-provider`
 
-## พื้นผิว
+## ส่วนที่รองรับ
 
-providers: cerebras
+ผู้ให้บริการ: cerebras
 
 ## เอกสารที่เกี่ยวข้อง
 

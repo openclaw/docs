@@ -1,50 +1,51 @@
 ---
 read_when:
     - Anda menginginkan dukungan Zalo Personal (tidak resmi) di OpenClaw
-    - Anda sedang mengonfigurasi atau mengembangkan Plugin zalouser
-summary: 'Plugin Zalo Personal: login QR + perpesanan melalui zca-js native (instalasi Plugin + konfigurasi kanal + alat)'
+    - Anda sedang mengonfigurasi atau mengembangkan plugin zalouser
+summary: 'Plugin Zalo Personal: login QR + perpesanan melalui zca-js native (instalasi plugin + konfigurasi saluran + alat)'
 title: Plugin pribadi Zalo
 x-i18n:
-    generated_at: "2026-05-10T19:49:24Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:31:16Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 405348eac4c08cc6e28b22cfff615fa34c117dedc51a31613545c4057069c20b
+    source_hash: cb0bdaa10340b5d78dc32abf6b0520fda6cf5f65e2e17b551b4e9bd72acfbbf2
     source_path: plugins/zalouser.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Dukungan Zalo Personal untuk OpenClaw melalui sebuah Plugin, menggunakan `zca-js` native untuk mengotomatiskan akun pengguna Zalo biasa.
+Dukungan Zalo Personal untuk OpenClaw melalui Plugin yang menggunakan `zca-js` native untuk
+mengotomatiskan akun pengguna Zalo biasa. Biner CLI eksternal `zca`/`openzca`
+tidak diperlukan.
 
 <Warning>
-Otomatisasi tidak resmi dapat menyebabkan penangguhan atau pemblokiran akun. Gunakan dengan risiko Anda sendiri.
+Otomatisasi tidak resmi dapat menyebabkan akun ditangguhkan atau diblokir. Gunakan dengan risiko Anda sendiri.
 </Warning>
 
 ## Penamaan
 
-ID channel adalah `zalouser` untuk memperjelas bahwa ini mengotomatiskan **akun pengguna Zalo personal** (tidak resmi). Kami mempertahankan `zalo` untuk kemungkinan integrasi API resmi Zalo di masa mendatang.
+ID saluran adalah `zalouser` untuk memperjelas bahwa ini mengotomatiskan **akun
+pengguna Zalo personal** (tidak resmi). ID saluran `zalo` yang terpisah merupakan integrasi
+Bot/Webhook Zalo resmi yang disertakan - lihat [Zalo](/id/channels/zalo).
 
 ## Tempat menjalankannya
 
-Plugin ini berjalan **di dalam proses Gateway**.
-
-Jika Anda menggunakan Gateway jarak jauh, instal/konfigurasikan di **mesin yang menjalankan Gateway**, lalu mulai ulang Gateway.
-
-Tidak diperlukan biner CLI eksternal `zca`/`openzca`.
+Plugin ini berjalan **di dalam proses Gateway**. Untuk Gateway jarak jauh,
+instal/konfigurasikan Plugin ini pada host tersebut, lalu mulai ulang Gateway.
 
 ## Instalasi
 
-### Opsi A: instal dari npm
+### Dari npm
 
 ```bash
 openclaw plugins install @openclaw/zalouser
 ```
 
-Gunakan paket polos untuk mengikuti tag rilis resmi saat ini. Sematkan versi yang persis hanya saat Anda membutuhkan instalasi yang dapat direproduksi.
+Gunakan paket tanpa versi untuk mengikuti tag rilis resmi saat ini; sematkan versi
+yang tepat hanya jika Anda memerlukan instalasi yang dapat direproduksi. Setelah itu,
+mulai ulang Gateway.
 
-Mulai ulang Gateway setelahnya.
-
-### Opsi B: instal dari folder lokal (dev)
+### Dari folder lokal (pengembangan)
 
 ```bash
 PLUGIN_SRC=./path/to/local/zalouser-plugin
@@ -52,11 +53,11 @@ openclaw plugins install "$PLUGIN_SRC"
 cd "$PLUGIN_SRC" && pnpm install
 ```
 
-Mulai ulang Gateway setelahnya.
+Setelah itu, mulai ulang Gateway.
 
 ## Konfigurasi
 
-Konfigurasi channel berada di bawah `channels.zalouser` (bukan `plugins.entries.*`):
+Konfigurasi saluran berada di bawah `channels.zalouser` (bukan `plugins.entries.*`):
 
 ```json5
 {
@@ -69,14 +70,21 @@ Konfigurasi channel berada di bawah `channels.zalouser` (bukan `plugins.entries.
 }
 ```
 
+Lihat [Konfigurasi saluran personal Zalo](/id/channels/zalouser) untuk kontrol akses
+DM/grup, penyiapan beberapa akun, variabel lingkungan, dan pemecahan masalah.
+
 ## CLI
 
 ```bash
 openclaw channels login --channel zalouser
+openclaw channels login --channel zalouser --account <name>
 openclaw channels logout --channel zalouser
 openclaw channels status --probe
 openclaw message send --channel zalouser --target <threadId> --message "Hello from OpenClaw"
+openclaw directory self --channel zalouser
 openclaw directory peers list --channel zalouser --query "name"
+openclaw directory groups list --channel zalouser --query "name"
+openclaw directory groups members --channel zalouser --group-id <id>
 ```
 
 ## Alat agen
@@ -85,9 +93,12 @@ Nama alat: `zalouser`
 
 Tindakan: `send`, `image`, `link`, `friends`, `groups`, `me`, `status`
 
-Tindakan pesan channel juga mendukung `react` untuk reaksi pesan.
+Tindakan pesan saluran (bukan alat agen) juga mendukung `react` untuk reaksi
+pesan.
 
 ## Terkait
 
+- [Konfigurasi saluran personal Zalo](/id/channels/zalouser)
+- [Zalo (saluran Bot/Webhook resmi)](/id/channels/zalo)
 - [Membangun Plugin](/id/plugins/building-plugins)
-- [ClawHub](/id/clawhub)
+- [ClawHub](/clawhub)

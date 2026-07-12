@@ -1,28 +1,29 @@
 ---
 read_when:
-    - می‌خواهید تعهدات پیگیریِ استنباط‌شده را بررسی کنید
+    - می‌خواهید تعهدات استنباط‌شده برای پیگیری را بررسی کنید
     - می‌خواهید اعلام‌حضورهای در انتظار را رد کنید
-    - در حال ممیزی این هستید که Heartbeat ممکن است چه چیزی تحویل دهد
-summary: مرجع CLI برای `openclaw commitments` (بررسی و رد کردن پیگیری‌های استنباط‌شده)
+    - در حال بررسی این هستید که Heartbeat ممکن است چه چیزی تحویل دهد
+summary: مرجع CLI برای `openclaw commitments` (بررسی و رد پیگیری‌های استنباط‌شده)
 title: '`openclaw commitments`'
 x-i18n:
-    generated_at: "2026-04-29T22:33:59Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:49:06Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 37d5e5dca25cf649a5069360aa4e41fcc33d042dea99f643b98c07189c58f21c
+    source_hash: 4323273a5d73975532f4728dc5e40c5d59e0c6d2e31a538f96bf3451e3fdf4d9
     source_path: cli/commitments.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 تعهدات پیگیری استنباط‌شده را فهرست و مدیریت کنید.
 
-تعهدات، حافظه‌های پیگیری کوتاه‌عمر و اختیاری هستند که از
-زمینهٔ گفت‌وگو ساخته می‌شوند. برای راهنمای مفهومی، [تعهدات استنباط‌شده](/fa/concepts/commitments) را ببینید.
+تعهدات قابلیتی اختیاری (`commitments.enabled`) و حافظه‌های کوتاه‌مدتی برای پیگیری هستند که
+از بافت مکالمه ایجاد و از طریق Heartbeat تحویل داده می‌شوند. برای راهنمای مفهومی و پیکربندی، به
+[تعهدات استنباط‌شده](/fa/concepts/commitments) مراجعه کنید.
 
-بدون زیر‌دستور، `openclaw commitments` تعهدات در انتظار را فهرست می‌کند.
+بدون زیرفرمان، `openclaw commitments` تعهدات در انتظار را فهرست می‌کند.
 
-## استفاده
+## نحوه استفاده
 
 ```bash
 openclaw commitments [--all] [--agent <id>] [--status <status>] [--json]
@@ -32,33 +33,36 @@ openclaw commitments dismiss <id...> [--json]
 
 ## گزینه‌ها
 
-- `--all`: به‌جای فقط تعهدات در انتظار، همهٔ وضعیت‌ها را نشان می‌دهد.
-- `--agent <id>`: به یک شناسهٔ عامل محدود می‌کند.
-- `--status <status>`: بر اساس وضعیت فیلتر می‌کند. مقادیر: `pending`، `sent`،
-  `dismissed`، `snoozed`، یا `expired`.
-- `--json`: خروجی JSON قابل خواندن برای ماشین تولید می‌کند.
+- `--all`: به‌جای نمایش فقط تعهدات در انتظار، همه وضعیت‌ها را نمایش می‌دهد.
+- `--agent <id>`: نتایج را به یک شناسه عامل محدود می‌کند.
+- `--status <status>`: نتایج را بر اساس وضعیت محدود می‌کند. مقادیر: `pending`، `sent`،
+  `dismissed`، `snoozed` یا `expired`. مقادیر ناشناخته باعث خروج همراه با خطا می‌شوند.
+- `--json`: خروجی JSON قابل‌خواندن برای ماشین تولید می‌کند.
+
+`dismiss` شناسه‌های تعهد داده‌شده را با وضعیت `dismissed` علامت‌گذاری می‌کند تا Heartbeat
+آن‌ها را تحویل ندهد.
 
 ## نمونه‌ها
 
-فهرست کردن تعهدات در انتظار:
+فهرست تعهدات در انتظار:
 
 ```bash
 openclaw commitments
 ```
 
-فهرست کردن هر تعهد ذخیره‌شده:
+فهرست همه تعهدات ذخیره‌شده:
 
 ```bash
 openclaw commitments --all
 ```
 
-محدود کردن به یک عامل:
+محدود کردن نتایج به یک عامل:
 
 ```bash
 openclaw commitments --agent main
 ```
 
-پیدا کردن تعهدات به تعویق افتاده:
+یافتن تعهدات به‌تعویق‌افتاده:
 
 ```bash
 openclaw commitments --status snoozed
@@ -70,7 +74,7 @@ openclaw commitments --status snoozed
 openclaw commitments dismiss cm_abc123 cm_def456
 ```
 
-صدور به‌صورت JSON:
+صدور در قالب JSON:
 
 ```bash
 openclaw commitments --all --json
@@ -78,20 +82,21 @@ openclaw commitments --all --json
 
 ## خروجی
 
-خروجی متنی شامل موارد زیر است:
+خروجی متنی تعداد تعهدات، مسیر محل ذخیره‌سازی، فیلترهای فعال و یک ردیف برای هر تعهد را نمایش می‌دهد:
 
-- شناسهٔ تعهد
+- شناسه تعهد
 - وضعیت
-- نوع
+- نوع (`event_check_in`، `deadline_check`، `care_check_in` یا `open_loop`)
 - زودترین زمان سررسید
-- دامنه
+- دامنه (عامل/کانال/مقصد)
 - متن پیشنهادی برای پیگیری
 
-خروجی JSON همچنین مسیر ذخیره‌گاه تعهد و رکوردهای کامل ذخیره‌شده را شامل می‌شود.
+خروجی JSON شامل تعداد، فیلترهای فعال وضعیت و عامل، مسیر محل ذخیره‌سازی تعهدات و
+رکوردهای کامل ذخیره‌شده است.
 
 ## مرتبط
 
 - [تعهدات استنباط‌شده](/fa/concepts/commitments)
 - [نمای کلی حافظه](/fa/concepts/memory)
 - [Heartbeat](/fa/gateway/heartbeat)
-- [کارهای زمان‌بندی‌شده](/fa/automation/cron-jobs)
+- [وظایف زمان‌بندی‌شده](/fa/automation/cron-jobs)

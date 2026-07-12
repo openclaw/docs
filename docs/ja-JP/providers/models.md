@@ -1,12 +1,12 @@
 ---
 read_when:
     - モデルプロバイダーを選択したい場合
-    - LLM 認証とモデル選択のクイックセットアップ例が必要です
-summary: OpenClaw がサポートするモデルプロバイダー (LLM)
+    - LLM認証とモデル選択のクイックセットアップ例が必要な場合
+summary: OpenClaw が対応するモデルプロバイダー（LLM）
 title: モデルプロバイダーのクイックスタート
 x-i18n:
-    generated_at: "2026-07-05T11:44:51Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T22:36:16Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: c4f9add879b41fdb0b54edbbff2ea982957cd4f3bc5d438c43f8a8403a048338
@@ -14,11 +14,11 @@ x-i18n:
     workflow: 16
 ---
 
-プロバイダーを選択し、認証してから、デフォルトモデルを `provider/model` として設定します。
+プロバイダーを選択して認証し、デフォルトモデルを `provider/model` として設定します。
 
 ## クイックスタート（2 ステップ）
 
-1. プロバイダーで認証します（通常は `openclaw onboard` 経由）。
+1. プロバイダーで認証します（通常は `openclaw onboard` を使用します）。
 2. デフォルトモデルを設定します。
 
 ```json5
@@ -27,7 +27,7 @@ x-i18n:
 }
 ```
 
-## 対応プロバイダー（スターターセット）
+## 対応プロバイダー（基本セット）
 
 - [Alibaba Model Studio](/ja-JP/providers/alibaba)
 - [Amazon Bedrock](/ja-JP/providers/bedrock)
@@ -57,18 +57,18 @@ x-i18n:
 - [xAI](/ja-JP/providers/xai)
 - [Z.AI（GLM）](/ja-JP/providers/zai)
 
-完全なプロバイダーカタログと高度な設定については、
-[プロバイダーディレクトリ](/ja-JP/providers/index) と [モデルプロバイダー](/ja-JP/concepts/model-providers) を参照してください。
+プロバイダーの完全なカタログと高度な設定については、
+[プロバイダーディレクトリ](/ja-JP/providers/index)および[モデルプロバイダー](/ja-JP/concepts/model-providers)を参照してください。
 
-## 追加のプロバイダーバリアント
+## その他のプロバイダーバリアント
 
-- `anthropic-vertex` - Vertex 認証情報が利用可能な場合に、Google Vertex 上の暗黙的な Anthropic サポートのために `@openclaw/anthropic-vertex-provider` をインストールします。個別のオンボーディング認証選択肢はありません
-- `copilot-proxy` - ローカルの VS Code Copilot Proxy ブリッジ。`openclaw onboard --auth-choice copilot-proxy` を使用します
-- `google-gemini-cli` - 非公式の Gemini CLI OAuth フロー。ローカルの `gemini` インストールが必要です（`brew install gemini-cli` または `npm install -g @google/gemini-cli`）。デフォルトモデルは `google-gemini-cli/gemini-3-flash-preview` です。`openclaw onboard --auth-choice google-gemini-cli` または `openclaw models auth login --provider google-gemini-cli --set-default` を使用します
+- `anthropic-vertex` - Vertex の認証情報を利用できる場合に、Google Vertex 上の Anthropic を暗黙的にサポートするには `@openclaw/anthropic-vertex-provider` をインストールします。オンボーディングで個別の認証方法を選択する必要はありません
+- `copilot-proxy` - ローカルの VS Code Copilot Proxy ブリッジです。`openclaw onboard --auth-choice copilot-proxy` を使用します
+- `google-gemini-cli` - 非公式の Gemini CLI OAuth フローです。ローカルへの `gemini` のインストール（`brew install gemini-cli` または `npm install -g @google/gemini-cli`）が必要です。デフォルトモデルは `google-gemini-cli/gemini-3-flash-preview` です。`openclaw onboard --auth-choice google-gemini-cli` または `openclaw models auth login --provider google-gemini-cli --set-default` を使用します
 
-## 関連
+## 関連項目
 
 - [プロバイダーディレクトリ](/ja-JP/providers/index)
-- [モデル選択](/ja-JP/concepts/model-providers)
-- [モデルフェイルオーバー](/ja-JP/concepts/model-failover)
-- [Models CLI](/ja-JP/cli/models)
+- [モデルの選択](/ja-JP/concepts/model-providers)
+- [モデルのフェイルオーバー](/ja-JP/concepts/model-failover)
+- [モデル CLI](/ja-JP/cli/models)

@@ -1,31 +1,31 @@
 ---
 read_when:
-    - memory-wiki Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
-summary: OpenClaw için kalıcı wiki derleyicisi ve Obsidian dostu bilgi kasası.
-title: Bellek Wiki Plugin
+    - memory-wiki Plugin'ini yüklüyor, yapılandırıyor veya denetliyorsunuz
+summary: OpenClaw için kalıcı wiki derleyicisi ve Obsidian uyumlu bilgi kasası.
+title: Bellek Wiki Plugin'i
 x-i18n:
-    generated_at: "2026-05-02T20:54:44Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T12:37:50Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
     source_hash: 461c9e3e52db968fc98b058c70070585f272ad27024392a6af0ce3d2f0237635
     source_path: plugins/reference/memory-wiki.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-# Memory Wiki Plugin
+# Memory Wiki Plugin'i
 
-OpenClaw için kalıcı wiki derleyici ve Obsidian uyumlu bilgi kasası.
+OpenClaw için kalıcı wiki derleyicisi ve Obsidian uyumlu bilgi kasası.
 
 ## Dağıtım
 
 - Paket: `@openclaw/memory-wiki`
-- Yükleme yolu: OpenClaw'a dahil
+- Kurulum yolu: OpenClaw'a dahildir
 
-## Yüzey
+## Arayüz
 
 sözleşmeler: araçlar; Skills
 
-## İlgili dokümanlar
+## İlgili belgeler
 
 - [memory-wiki](/tr/plugins/memory-wiki)

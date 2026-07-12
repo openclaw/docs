@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Vous installez, configurez ou auditez le plugin de stratégie
-summary: Ajoute des contrôles doctor appuyés par des politiques pour la conformité de l’espace de travail.
+    - Vous installez, configurez ou auditez le Plugin de stratégie
+summary: Ajoute des vérifications de diagnostic fondées sur des politiques pour contrôler la conformité de l’espace de travail.
 title: Plugin de politique
 x-i18n:
-    generated_at: "2026-06-27T17:56:19Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T02:58:06Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: f01de4816a191a175367c06ff69e4ebf6032ee1a105d1d9a48a74093e5e6f774
@@ -15,12 +15,12 @@ x-i18n:
 
 # Plugin de politique
 
-Ajoute des vérifications doctor adossées à des politiques pour la conformité de l’espace de travail.
+Ajoute des vérifications doctor fondées sur des politiques pour assurer la conformité de l’espace de travail.
 
 ## Distribution
 
-- Package : `@openclaw/policy`
-- Voie d’installation : inclus dans OpenClaw
+- Paquet : `@openclaw/policy`
+- Mode d’installation : inclus dans OpenClaw
 
 ## Surface
 
@@ -30,21 +30,21 @@ Plugin
 
 ## Comportement
 
-Le Plugin Policy ajoute des vérifications d’intégrité doctor pour les paramètres OpenClaw gérés par politique et les déclarations d’espace de travail gouvernées. La politique couvre actuellement la conformité des canaux, les métadonnées des outils gouvernés, la posture des serveurs MCP, la posture des fournisseurs de modèles, la posture d’accès au réseau privé, la posture d’exposition du Gateway, la posture de l’espace de travail et des outils d’agent, la posture des outils globaux/par agent configurés, la posture du runtime de sandbox configuré, la posture d’accès entrant/canal, la posture de traitement des données et la posture des profils d’authentification du fournisseur de secrets de configuration OpenClaw.
+Le Plugin de politique ajoute des contrôles d’intégrité doctor pour les paramètres OpenClaw gérés par des politiques et les déclarations d’espace de travail soumises à une gouvernance. La politique couvre actuellement la conformité des canaux, les métadonnées d’outils soumises à une gouvernance, la posture des serveurs MCP, la posture des fournisseurs de modèles, la posture d’accès au réseau privé, la posture d’exposition du Gateway, la posture des espaces de travail et des outils des agents, la posture configurée des outils globaux et par agent, la posture configurée de l’environnement d’exécution du bac à sable, la posture d’accès entrant et aux canaux, la posture de traitement des données, ainsi que la posture des fournisseurs de secrets et des profils d’authentification de la configuration OpenClaw.
 
-Policy stocke les exigences rédigées dans `policy.jsonc`, observe les paramètres OpenClaw et les déclarations d’espace de travail existants comme preuves, et signale les écarts via `openclaw policy check` et `openclaw doctor --lint`. Une vérification de politique propre émet des hachages de politique, de preuves, de constats et d’attestation que les opérateurs peuvent enregistrer à des fins d’audit.
+La politique stocke les exigences définies dans `policy.jsonc`, observe les paramètres OpenClaw et les déclarations d’espace de travail existants à titre de preuves, puis signale les écarts au moyen de `openclaw policy check` et de `openclaw doctor --lint`. Une vérification de politique sans anomalie produit les hachages de la politique, des preuves, des constatations et de l’attestation, que les opérateurs peuvent consigner à des fins d’audit.
 
-`openclaw policy compare --baseline <file>` compare un fichier de politique à un autre fichier de politique. Il s’agit uniquement de conformité au niveau de la configuration : la commande utilise les métadonnées des règles de politique pour vérifier que la politique contrôlée n’est pas absente ou plus faible que la référence rédigée, et elle n’inspecte pas l’état du runtime, les identifiants ni les valeurs secrètes.
+`openclaw policy compare --baseline <file>` compare un fichier de politique à un autre. Cette comparaison porte uniquement sur la conformité au niveau de la configuration : elle utilise les métadonnées des règles de politique pour vérifier que la politique contrôlée n’est ni incomplète ni moins stricte que la référence définie, et elle n’examine pas l’état d’exécution, les identifiants ni les valeurs des secrets.
 
-Les règles de posture des outils peuvent exiger des profils approuvés, des outils de système de fichiers limités à l’espace de travail, des paramètres de sécurité/ask/host bornés pour exec, le mode élevé désactivé, des entrées `alsoAllow` exactes et des entrées de refus d’outils requises. Les preuves enregistrent les entrées `alsoAllow` additives, car elles peuvent élargir la posture effective des outils. Ces vérifications observent uniquement la conformité de la configuration ; elles ne lisent pas l’état d’approbation du runtime et n’ajoutent pas d’application au runtime.
+Les règles de posture des outils peuvent exiger des profils approuvés, des outils de système de fichiers limités à l’espace de travail, des paramètres de sécurité/demande/hôte d’exécution bornés, la désactivation du mode élevé, des entrées `alsoAllow` exactes et les entrées requises de refus d’outils. Les preuves consignent les entrées `alsoAllow` supplémentaires, car elles peuvent élargir la posture effective des outils. Ces contrôles observent uniquement la conformité de la configuration ; ils ne lisent pas l’état des approbations à l’exécution et n’ajoutent aucun mécanisme d’application à l’exécution.
 
-Les règles de posture du sandbox peuvent exiger des modes/backends de sandbox approuvés, interdire la mise en réseau de conteneur hôte, interdire les jonctions d’espaces de noms de conteneur, exiger des montages de conteneur en lecture seule, interdire les montages de sockets de runtime de conteneur et les profils de conteneur non confinés, et exiger des plages sources CDP pour navigateur sandbox.
-Ces vérifications observent uniquement la conformité de la configuration ; elles ne lisent pas l’état d’approbation du runtime, n’inspectent pas les conteneurs actifs et n’ajoutent pas d’application au runtime.
+Les règles de posture du bac à sable peuvent exiger des modes et des moteurs de bac à sable approuvés, interdire la mise en réseau du conteneur avec l’hôte, interdire de rejoindre les espaces de noms des conteneurs, exiger des montages de conteneur en lecture seule, interdire le montage des sockets d’environnement d’exécution des conteneurs ainsi que les profils de conteneur non confinés, et exiger des plages sources CDP pour le navigateur du bac à sable.
+Ces contrôles observent uniquement la conformité de la configuration ; ils ne lisent pas l’état des approbations à l’exécution, n’inspectent pas les conteneurs actifs et n’ajoutent aucun mécanisme d’application à l’exécution.
 
-Les règles de traitement des données peuvent exiger la rédaction des journaux sensibles, interdire la capture de contenu de télémétrie, exiger la maintenance de la conservation des sessions et interdire l’indexation mémoire des transcriptions de session. Ces vérifications observent uniquement la conformité de la configuration ; elles n’inspectent pas les journaux bruts, les exports de télémétrie, les transcriptions, les fichiers mémoire, les secrets ni les données personnelles.
+Les règles de traitement des données peuvent exiger le masquage des données sensibles dans les journaux, interdire la capture de contenu par télémétrie, exiger la maintenance de la conservation des sessions et interdire l’indexation en mémoire des transcriptions de session. Ces contrôles observent uniquement la conformité de la configuration ; ils n’inspectent ni les journaux bruts, ni les exportations de télémétrie, ni les transcriptions, ni les fichiers de mémoire, ni les secrets, ni les données personnelles.
 
-Les portées de politique nommées sous `scopes.<scopeName>` peuvent ajouter des sections de politique normale plus strictes pour le sélecteur qu’elles répertorient. `agentIds` prend en charge `tools`, `agents.workspace`, `sandbox` et `dataHandling.memory` ; `channelIds` prend en charge `ingress.channels`.
-Les identifiants d’agents du runtime qui ne sont pas explicitement listés dans `agents.list[]` sont vérifiés par rapport à la posture globale/par défaut héritée au lieu de réussir silencieusement sans preuve. Chaque portée présente dans `policy.jsonc` doit être valide et applicable pour son sélecteur. Les règles de superposition sont des revendications supplémentaires ; elles n’affaiblissent donc pas la politique de premier niveau et peuvent produire leurs propres constats lorsque la même configuration observée enfreint les deux portées.
+Les portées de politique nommées sous `scopes.<scopeName>` peuvent ajouter des sections de politique normales plus strictes pour le sélecteur qu’elles indiquent. `agentIds` prend en charge `tools`, `agents.workspace`, `sandbox` et `dataHandling.memory` ; `channelIds` prend en charge `ingress.channels`.
+Les identifiants d’agents à l’exécution qui ne sont pas explicitement répertoriés dans `agents.list[]` sont contrôlés par rapport à la posture globale/par défaut héritée, au lieu d’être considérés tacitement comme conformes sans aucune preuve. Chaque portée présente dans `policy.jsonc` doit être valide et applicable à son sélecteur. Les règles de superposition constituent des exigences supplémentaires : elles n’affaiblissent donc pas la politique de niveau supérieur et peuvent produire leurs propres constatations lorsque la même configuration observée enfreint les deux portées.
 
 <!-- openclaw-plugin-reference:manual-end -->
 

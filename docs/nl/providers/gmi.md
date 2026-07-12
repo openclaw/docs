@@ -1,92 +1,92 @@
 ---
 read_when:
     - U wilt OpenClaw uitvoeren met GMI Cloud-modellen
-    - Je hebt de GMI-provider-id, sleutel of endpoint nodig
+    - U hebt de provider-id, sleutel of het eindpunt van GMI nodig
 summary: Gebruik de OpenAI-compatibele API van GMI Cloud met OpenClaw
 title: GMI Cloud
 x-i18n:
-    generated_at: "2026-06-27T18:12:00Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:19:17Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 119db777a2285259d646c9b5ab7e3885e3c7c714039277fa06a5a881e46284b9
+    source_hash: a21fd2a997f44e1f78d97a0fba24ca2bbc00dd193323da712d650ed4ba105355
     source_path: providers/gmi.md
     workflow: 16
 ---
 
-GMI Cloud is een gehost inferentieplatform voor frontier- en open-weight-modellen
+GMI Cloud is een gehost inferentieplatform voor geavanceerde modellen en modellen met openbaar beschikbare gewichten
 achter een OpenAI-compatibele API. In OpenClaw is het een officiële externe provider-
-plugin, wat betekent dat je die één keer installeert, selecteert met de provider-id `gmi`,
-referenties opslaat via normale modelauthenticatie, en modelreferenties gebruikt zoals
-`gmi/google/gemini-3.1-flash-lite`.
+Plugin: installeer deze eenmaal, sla inloggegevens op via de normale modelauthenticatie en gebruik
+modelverwijzingen zoals `gmi/google/gemini-3.1-flash-lite`.
 
-Gebruik GMI wanneer je één API-sleutel wilt voor meerdere gehoste modelfamilies, waaronder
-Google-, Anthropic-, OpenAI-, DeepSeek-, Moonshot- en Z.AI-routes die door GMI's
-catalogus worden aangeboden. Het is nuttig als secundaire provider voor modelfallback, om
-gehoste routes tussen leveranciers te vergelijken, of wanneer GMI een model beschikbaar heeft voordat je
-primaire provider dat heeft.
+Gebruik GMI wanneer u één API-sleutel wilt voor meerdere gehoste modelfamilies, waaronder
+routes van Anthropic, DeepSeek, Google, Moonshot, OpenAI en Z.AI die via de
+catalogus van GMI beschikbaar zijn. Het werkt als secundaire provider voor modelterugval, om
+gehoste routes van verschillende leveranciers te vergelijken, of wanneer GMI een model beschikbaar heeft voordat uw
+primaire provider dat heeft. OpenClaw beheert de provider-id, het authenticatieprofiel, de aliassen,
+de initiële modelcatalogus en de basis-URL; GMI beheert de actuele modelbeschikbaarheid, facturering,
+snelheidslimieten en eventueel routeringsbeleid aan de providerzijde.
 
-Deze provider gebruikt OpenAI-compatibele chatsemantiek. OpenClaw beheert de provider-
-id, het authenticatieprofiel, aliassen, de seed van de modelcatalogus en de basis-URL; GMI beheert de live
-modelbeschikbaarheid, facturering, snelheidslimieten en elk provider-side routeringsbeleid.
+| Eigenschap          | Waarde                                   |
+| ------------------- | ---------------------------------------- |
+| Provider-id         | `gmi` (aliassen: `gmi-cloud`, `gmicloud`) |
+| Pakket               | `@openclaw/gmi-provider`                 |
+| Omgevingsvariabele voor authenticatie | `GMI_API_KEY`             |
+| API                  | OpenAI-compatibel (`openai-completions`) |
+| Basis-URL            | `https://api.gmi-serving.com/v1`         |
+| Standaardmodel       | `gmi/google/gemini-3.1-flash-lite`       |
 
-## Installatie
+## Configuratie
 
-Installeer de plugin, herstart de Gateway en maak daarna een API-sleutel aan in GMI Cloud:
+Installeer de Plugin, start de Gateway opnieuw en maak vervolgens een API-sleutel aan in GMI Cloud
+(`https://www.gmicloud.ai/`):
 
 ```bash
 openclaw plugins install @openclaw/gmi-provider
 openclaw gateway restart
 ```
 
-Voer daarna uit:
+Voer daarna het volgende uit:
 
 ```bash
 openclaw onboard --auth-choice gmi-api-key
 ```
 
-Of stel in:
+Bij niet-interactieve configuraties kunt u `--gmi-api-key <key>` meegeven of het volgende instellen:
 
 ```bash
 export GMI_API_KEY="<your-gmi-api-key>" # pragma: allowlist secret
 ```
 
-## Standaardwaarden
+## Wanneer GMI kiezen
 
-- Provider: `gmi`
-- Aliassen: `gmi-cloud`, `gmicloud`
-- Basis-URL: `https://api.gmi-serving.com/v1`
-- Omgevingsvariabele: `GMI_API_KEY`
-- Standaardmodel: `gmi/google/gemini-3.1-flash-lite`
-
-## Wanneer je GMI kiest
-
-- Je wilt een gehost OpenAI-compatibel endpoint in plaats van een lokale modelserver.
-- Je wilt meerdere commerciële en open-weight-modelfamilies proberen via één
+- U wilt een gehost OpenAI-compatibel eindpunt in plaats van een lokale modelserver.
+- U wilt meerdere commerciële modelfamilies en modelfamilies met openbaar beschikbare gewichten uitproberen via één
   provideraccount.
-- Je wilt een fallbackprovider met andere upstreamroutering dan OpenRouter,
-  DeepInfra, Together of de directe API's van leveranciers.
-- Je hebt GMI-specifieke model-id's, prijzen of accountcontroles nodig.
+- U wilt een terugvalprovider met andere upstreamroutering dan DeepInfra,
+  OpenRouter, Together of de directe API's van leveranciers.
+- U hebt GMI-specifieke model-id's, prijzen of accountinstellingen nodig.
 
-Kies in plaats daarvan de directe leverancierprovider wanneer je leverancier-native functies nodig hebt
-die GMI niet via zijn OpenAI-compatibele route aanbiedt. Kies een lokale
-provider zoals Ollama, LM Studio, vLLM of SGLang wanneer datalokaliteit of lokale
-GPU-controle belangrijker is dan gehost gemak.
+Kies in plaats daarvan de directe provider van de leverancier wanneer u leveranciersspecifieke functies nodig hebt
+die GMI niet via zijn OpenAI-compatibele route beschikbaar stelt. Kies een lokale
+provider zoals LM Studio, Ollama, SGLang of vLLM wanneer gegevenslokaliteit of lokale
+GPU-controle belangrijker is dan het gemak van hosting.
 
 ## Modellen
 
-De plugincatalogus seedt veelvoorkomende beschikbare GMI Cloud-route-id's, waaronder:
+De catalogus van de Plugin bevat als uitgangspunt veelgebruikte route-id's van GMI Cloud:
 
-- `gmi/zai-org/GLM-5.1-FP8`
-- `gmi/deepseek-ai/DeepSeek-V3.2`
-- `gmi/moonshotai/Kimi-K2.5`
-- `gmi/google/gemini-3.1-flash-lite`
-- `gmi/anthropic/claude-sonnet-4.6`
-- `gmi/openai/gpt-5.4`
+| Modelverwijzing                     | Invoer           | Context   | Maximale uitvoer |
+| ----------------------------------- | ---------------- | --------- | ---------------- |
+| `gmi/anthropic/claude-sonnet-4.6`  | tekst + afbeelding | 200,000   | 64,000           |
+| `gmi/deepseek-ai/DeepSeek-V3.2`    | tekst             | 163,840   | 65,536           |
+| `gmi/google/gemini-3.1-flash-lite` | tekst + afbeelding | 1,048,576 | 65,536           |
+| `gmi/moonshotai/Kimi-K2.5`         | tekst + afbeelding | 262,144   | 65,536           |
+| `gmi/openai/gpt-5.4`               | tekst + afbeelding | 400,000   | 128,000          |
+| `gmi/zai-org/GLM-5.1-FP8`          | tekst             | 202,752   | 65,536           |
 
-De catalogus is een seed, geen belofte dat elk account elk model op
-elk moment kan aanroepen. Gebruik OpenClaw's opdracht voor modellisting om te zien wat de geconfigureerde
-provider in jouw omgeving rapporteert:
+De catalogus is een uitgangspunt en geen garantie dat elk account elk model op
+elk moment kan aanroepen. Geef weer wat de geconfigureerde provider in uw omgeving rapporteert:
 
 ```bash
 openclaw models list --provider gmi
@@ -95,11 +95,11 @@ openclaw models list --provider gmi
 ## Probleemoplossing
 
 - `401` of `403`: controleer of `GMI_API_KEY` is ingesteld voor het proces dat
-  OpenClaw uitvoert, of voer onboarding opnieuw uit om de sleutel op te slaan in het authenticatieprofiel van de provider.
-- Onbekende modelfouten: bevestig dat het model bestaat in je GMI-account en gebruik de
-  volledige `gmi/<route-id>`-referentie die wordt getoond door `openclaw models list --provider gmi`.
-- Incidentele providerfouten: probeer een andere GMI-route of configureer GMI als een
-  fallback in plaats van de enige primaire modelprovider.
+  OpenClaw uitvoert, of voer de onboarding opnieuw uit om de sleutel in het authenticatieprofiel van de provider op te slaan.
+- Fouten voor onbekende modellen: controleer of het model in uw GMI-account bestaat en gebruik de
+  volledige `gmi/<route-id>`-verwijzing die wordt weergegeven door `openclaw models list --provider gmi`.
+- Incidentele providerfouten: probeer een andere GMI-route of configureer GMI als
+  terugvaloptie in plaats van als enige primaire modelprovider.
 
 ## Gerelateerd
 

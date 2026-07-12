@@ -2,48 +2,48 @@
 read_when:
     - Triển khai OpenClaw lên Upstash Box
     - Bạn muốn một môi trường Linux được quản lý cho OpenClaw với quyền truy cập bảng điều khiển qua đường hầm SSH
-summary: Lưu trữ OpenClaw trên Upstash Box với keep-alive và quyền truy cập đường hầm SSH
+summary: Lưu trữ OpenClaw trên Upstash Box với chế độ duy trì hoạt động và quyền truy cập qua đường hầm SSH
 title: Hộp Upstash
 x-i18n:
-    generated_at: "2026-06-27T17:38:52Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:01:45Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 06d2eb41e1beb0ab3145baa861e0bee7e3efef20324dc4e0e82ba08910937d20
+    source_hash: 29232c43e0e4940b7445ab8896c9ccd3e81d0fdbdd522d7f50cb8c8057ac18f0
     source_path: install/upstash.md
     workflow: 16
 ---
 
-Chạy OpenClaw Gateway liên tục trên Upstash Box, một môi trường Linux được quản lý
-có hỗ trợ vòng đời keep-alive.
+Chạy Gateway OpenClaw thường trực trên Upstash Box, một môi trường Linux được quản lý
+có hỗ trợ vòng đời duy trì hoạt động.
 
-Dùng đường hầm SSH để truy cập bảng điều khiển. Không để lộ trực tiếp cổng Gateway
+Sử dụng đường hầm SSH để truy cập bảng điều khiển. Không để lộ trực tiếp cổng Gateway
 ra internet công cộng.
 
 ## Điều kiện tiên quyết
 
 - Tài khoản Upstash
-- Upstash Box keep-alive
-- SSH client trên máy cục bộ của bạn
+- Upstash Box có chế độ duy trì hoạt động
+- Máy khách SSH trên máy cục bộ
 
 ## Tạo Box
 
-Tạo Box keep-alive trong Upstash Console. Ghi lại Box ID, chẳng hạn như
-`right-flamingo-14486`, và khóa API Box của bạn.
+Tạo một Box có chế độ duy trì hoạt động trong Upstash Console. Ghi lại ID Box (ví dụ
+`right-flamingo-14486`) và khóa API Box của bạn.
 
-Upstash duy trì hướng dẫn Box OpenClaw hiện tại tại
+Upstash duy trì hướng dẫn OpenClaw Box hiện tại tại
 [Thiết lập OpenClaw](https://upstash.com/docs/box/guides/openclaw-setup).
 
 ## Kết nối bằng đường hầm SSH
 
-Chuyển tiếp cổng bảng điều khiển OpenClaw tới máy cục bộ của bạn. Dùng khóa API Box
+Chuyển tiếp cổng bảng điều khiển OpenClaw đến máy cục bộ. Sử dụng khóa API Box
 làm mật khẩu SSH khi được nhắc:
 
 ```bash
 ssh -o ServerAliveInterval=15 -o ServerAliveCountMax=3 -L 18789:127.0.0.1:18789 <box-id>@us-east-1.box.upstash.com
 ```
 
-Các tùy chọn keepalive giúp giảm tình trạng đường hầm bị ngắt khi rảnh trong quá trình onboarding.
+Các tùy chọn duy trì kết nối giúp giảm tình trạng đường hầm bị ngắt khi không hoạt động trong quá trình thiết lập ban đầu.
 
 ## Cài đặt OpenClaw
 
@@ -53,13 +53,13 @@ Bên trong Box:
 sudo npm install -g openclaw
 ```
 
-## Chạy onboarding
+## Chạy quy trình thiết lập ban đầu
 
 ```bash
 openclaw onboard --install-daemon
 ```
 
-Làm theo các lời nhắc. Sao chép URL bảng điều khiển và token khi onboarding hoàn tất.
+Làm theo các lời nhắc. Sao chép URL và mã thông báo của bảng điều khiển khi quá trình thiết lập ban đầu hoàn tất.
 
 ## Khởi động Gateway
 
@@ -70,7 +70,7 @@ openclaw config set gateway.bind lan
 nohup openclaw gateway > gateway.log 2>&1 &
 ```
 
-Khi đường hầm SSH đang hoạt động, mở URL bảng điều khiển cục bộ:
+Khi đường hầm SSH đang hoạt động, mở URL bảng điều khiển trên máy cục bộ:
 
 ```text
 http://127.0.0.1:18789/#token=<your-token>
@@ -78,7 +78,7 @@ http://127.0.0.1:18789/#token=<your-token>
 
 ## Tự động khởi động lại
 
-Đặt lệnh này làm script khởi tạo Box để Gateway khởi động lại khi Box
+Đặt lệnh này làm tập lệnh khởi tạo Box để Gateway khởi động lại khi Box
 khởi động:
 
 ```bash
@@ -87,15 +87,15 @@ nohup openclaw gateway > gateway.log 2>&1 &
 
 ## Khắc phục sự cố
 
-Nếu SSH bị treo trong quá trình onboarding, hãy kết nối lại với cấu hình SSH sạch và
-keepalive:
+Nếu SSH bị treo trong quá trình thiết lập ban đầu, hãy kết nối lại bằng cấu hình SSH sạch và
+các tùy chọn duy trì kết nối:
 
 ```bash
 ssh -F /dev/null -o ControlMaster=no -o ServerAliveInterval=15 -o ServerAliveCountMax=3 -L 18789:127.0.0.1:18789 <box-id>@us-east-1.box.upstash.com
 ```
 
-Thao tác này bỏ qua các thiết lập `~/.ssh/config` cục bộ đã lỗi thời và giữ đường hầm hoạt động
-qua các khoảng thời gian mạng rảnh.
+Thao tác này bỏ qua các thiết lập `~/.ssh/config` cục bộ đã lỗi thời và giữ cho đường hầm hoạt động
+trong các khoảng thời gian mạng không hoạt động.
 
 ## Liên quan
 

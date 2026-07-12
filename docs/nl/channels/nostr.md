@@ -5,44 +5,32 @@ read_when:
 summary: Nostr-DM-kanaal via NIP-04-versleutelde berichten
 title: Nostr
 x-i18n:
-    generated_at: "2026-05-02T22:16:28Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T08:39:10Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d6158c22c0ffc5aea56d0ac2b68955f30c3a785013dba5410cbd70f9b689dc3c
+    source_hash: 31fa283f706036a37795ddad71602058ba94388a9cb01044927c4bb2d83ba4a8
     source_path: channels/nostr.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-**Status:** Optionele gebundelde Plugin (standaard uitgeschakeld totdat deze is geconfigureerd).
+Nostr is een downloadbare kanaalplugin (`@openclaw/nostr`) waarmee OpenClaw via Nostr-relays versleutelde directe NIP-04-berichten kan ontvangen en beantwoorden. Eén account per Gateway; alleen DM's.
 
-Nostr is een gedecentraliseerd protocol voor sociale netwerken. Dit kanaal stelt OpenClaw in staat versleutelde directe berichten (DM's) te ontvangen en te beantwoorden via NIP-04.
-
-## Gebundelde Plugin
-
-Huidige OpenClaw-releases leveren Nostr als gebundelde Plugin, dus normale verpakte
-builds hebben geen aparte installatie nodig.
-
-### Oudere/aangepaste installaties
-
-- Onboarding (`openclaw onboard`) en `openclaw channels add` tonen
-  Nostr nog steeds vanuit de gedeelde kanaalcatalogus.
-- Als je build gebundelde Nostr uitsluit, installeer dan het npm-pakket direct.
+## Installeren
 
 ```bash
 openclaw plugins install @openclaw/nostr
 ```
 
-Gebruik het kale pakket om de huidige officiele release-tag te volgen. Pin alleen een exacte
-versie wanneer je een reproduceerbare installatie nodig hebt.
+Gebruik de kale pakketspecificatie om de huidige officiële releasetag te volgen. Zet alleen een exacte versie vast wanneer u een reproduceerbare installatie nodig hebt.
 
-Gebruik een lokale checkout (dev-workflows):
+Vanuit een lokale checkout (ontwikkelworkflows):
 
 ```bash
 openclaw plugins install --link <path-to-local-nostr-plugin>
 ```
 
-Herstart de Gateway na het installeren of inschakelen van plugins.
+Herstart de Gateway nadat u plugins hebt geïnstalleerd of ingeschakeld. Zodra de plugin is geïnstalleerd, tonen de onboarding (`openclaw onboard`) en `openclaw channels add` Nostr vanuit de gedeelde kanaalcatalogus.
 
 ### Niet-interactieve configuratie
 
@@ -51,18 +39,18 @@ openclaw channels add --channel nostr --private-key "$NOSTR_PRIVATE_KEY"
 openclaw channels add --channel nostr --private-key "$NOSTR_PRIVATE_KEY" --relay-urls "wss://relay.damus.io,wss://relay.primal.net"
 ```
 
-Gebruik `--use-env` om `NOSTR_PRIVATE_KEY` in de omgeving te houden in plaats van de sleutel in de config op te slaan.
+Gebruik `--use-env` om `NOSTR_PRIVATE_KEY` in de omgeving te bewaren in plaats van de sleutel in de configuratie op te slaan (alleen voor het standaardaccount).
 
 ## Snelle configuratie
 
-1. Genereer een Nostr-sleutelpaar (indien nodig):
+1. Genereer zo nodig een Nostr-sleutelpaar:
 
 ```bash
-# Using nak
+# nak gebruiken
 nak key generate
 ```
 
-2. Voeg toe aan config:
+2. Voeg het toe aan de configuratie:
 
 ```json5
 {
@@ -84,19 +72,19 @@ export NOSTR_PRIVATE_KEY="nsec1..."
 
 ## Configuratiereferentie
 
-| Sleutel      | Type     | Standaard                                  | Beschrijving                         |
-| ------------ | -------- | ------------------------------------------- | ----------------------------------- |
-| `privateKey` | string   | vereist                                    | Privesleutel in `nsec`- of hex-indeling |
-| `relays`     | string[] | `['wss://relay.damus.io', 'wss://nos.lol']` | Relay-URL's (WebSocket)              |
-| `dmPolicy`   | string   | `pairing`                                   | Toegangsbeleid voor DM's                    |
-| `allowFrom`  | string[] | `[]`                                        | Toegestane pubkeys van afzenders              |
-| `enabled`    | boolean  | `true`                                      | Kanaal inschakelen/uitschakelen              |
-| `name`       | string   | -                                           | Weergavenaam                        |
-| `profile`    | object   | -                                           | NIP-01-profielmetadata             |
+| Sleutel      | Type     | Standaard                                   | Beschrijving                                                     |
+| ------------ | -------- | ------------------------------------------- | ---------------------------------------------------------------- |
+| `privateKey` | string   | vereist                                     | Privésleutel in `nsec`- of hexadecimaal formaat; geheime verwijzingen toegestaan |
+| `relays`     | string[] | `['wss://relay.damus.io', 'wss://nos.lol']` | Relay-URL's (WebSocket)                                          |
+| `dmPolicy`   | string   | `pairing`                                   | Toegangsbeleid voor DM's                                         |
+| `allowFrom`  | string[] | `[]`                                        | Toegestane openbare sleutels van afzenders                       |
+| `enabled`    | boolean  | `true`                                      | Kanaal in-/uitschakelen                                          |
+| `name`       | string   | -                                           | Weergavenaam                                                     |
+| `profile`    | object   | -                                           | NIP-01-profielmetadata                                           |
 
 ## Profielmetadata
 
-Profielgegevens worden gepubliceerd als een NIP-01 `kind:0`-event. Je kunt dit beheren vanuit de Control UI (Channels -> Nostr -> Profile) of direct instellen in config.
+Profielgegevens worden gepubliceerd als een NIP-01-gebeurtenis van het type `kind:0`. U kunt deze beheren via de Control UI (Channels -> Nostr -> Profile) of rechtstreeks instellen in de configuratie.
 
 Voorbeeld:
 
@@ -123,24 +111,24 @@ Voorbeeld:
 Opmerkingen:
 
 - Profiel-URL's moeten `https://` gebruiken.
-- Importeren vanuit relays voegt velden samen en behoudt lokale overschrijvingen.
+- Bij importeren vanuit relays worden velden samengevoegd en blijven lokale overschrijvingen behouden.
 
 ## Toegangsbeheer
 
 ### DM-beleid
 
 - **pairing** (standaard): onbekende afzenders krijgen een koppelingscode.
-- **allowlist**: alleen pubkeys in `allowFrom` kunnen DM'en.
-- **open**: openbare inkomende DM's (vereist `allowFrom: ["*"]`).
-- **disabled**: negeer inkomende DM's.
+- **allowlist**: alleen openbare sleutels in `allowFrom` kunnen DM's sturen.
+- **open**: openbaar toegankelijke inkomende DM's (vereist `allowFrom: ["*"]`).
+- **disabled**: inkomende DM's negeren.
 
-Handhavingsopmerkingen:
+Opmerkingen over handhaving:
 
-- Handtekeningen van inkomende events worden geverifieerd voor afzenderbeleid en NIP-04-ontsleuteling, zodat vervalste events vroeg worden geweigerd.
-- Koppelingsantwoorden worden verzonden zonder de oorspronkelijke DM-body te verwerken.
-- Inkomende DM's worden rate-limited en te grote payloads worden voor ontsleuteling gedropt.
+- Handtekeningen van inkomende gebeurtenissen worden vóór het afzenderbeleid en de NIP-04-ontsleuteling geverifieerd, zodat vervalste gebeurtenissen vroegtijdig worden geweigerd.
+- Koppelingsantwoorden worden verzonden zonder de inhoud van de oorspronkelijke DM te ontsleutelen of te verwerken.
+- Inkomende DM's hebben een frequentielimiet (globaal en per afzender) en te grote payloads worden vóór ontsleuteling verwijderd.
 
-### Voorbeeld van allowlist
+### Voorbeeld van een toelatingslijst
 
 ```json5
 {
@@ -154,16 +142,16 @@ Handhavingsopmerkingen:
 }
 ```
 
-## Sleutelindelingen
+## Sleutelformaten
 
-Geaccepteerde indelingen:
+Geaccepteerde formaten:
 
-- **Privesleutel:** `nsec...` of 64-tekens hex
-- **Pubkeys (`allowFrom`):** `npub...` of hex
+- **Privésleutel:** `nsec...` of hexadecimaal met 64 tekens
+- **Openbare sleutels (`allowFrom`):** `npub...` of hexadecimaal
 
 ## Relays
 
-Standaarden: `relay.damus.io` en `nos.lol`.
+Standaard: `relay.damus.io` en `nos.lol`.
 
 ```json5
 {
@@ -181,23 +169,23 @@ Tips:
 - Gebruik 2-3 relays voor redundantie.
 - Vermijd te veel relays (latentie, duplicatie).
 - Betaalde relays kunnen de betrouwbaarheid verbeteren.
-- Lokale relays zijn prima voor testen (`ws://localhost:7777`).
+- Lokale relays zijn geschikt voor tests (`ws://localhost:7777`).
 
 ## Protocolondersteuning
 
-| NIP    | Status    | Beschrijving                           |
-| ------ | --------- | ------------------------------------- |
-| NIP-01 | Ondersteund | Basis-eventindeling + profielmetadata |
-| NIP-04 | Ondersteund | Versleutelde DM's (`kind:4`)              |
-| NIP-17 | Gepland   | Gift-wrapped DM's                      |
-| NIP-44 | Gepland   | Versleuteling met versies                  |
+| NIP    | Status       | Beschrijving                                      |
+| ------ | ------------ | ------------------------------------------------- |
+| NIP-01 | Ondersteund  | Basisindeling van gebeurtenissen + profielmetadata |
+| NIP-04 | Ondersteund  | Versleutelde DM's (`kind:4`)                      |
+| NIP-17 | Gepland      | Verpakt verzonden DM's                            |
+| NIP-44 | Gepland      | Versleuteling met versiebeheer                    |
 
 ## Testen
 
 ### Lokale relay
 
 ```bash
-# Start strfry
+# strfry starten
 docker run -p 7777:7777 ghcr.io/hoytech/strfry
 ```
 
@@ -214,48 +202,48 @@ docker run -p 7777:7777 ghcr.io/hoytech/strfry
 
 ### Handmatige test
 
-1. Noteer de bot-pubkey (npub) uit de logs.
-2. Open een Nostr-client (Damus, Amethyst, enz.).
-3. Stuur een DM naar de bot-pubkey.
+1. Noteer de openbare sleutel van de bot uit de Gateway-logboeken of uit `openclaw channels status` (hexadecimaal; converteer deze zo nodig in uw client naar npub).
+2. Open een Nostr-client (Amethyst, Damus enzovoort).
+3. Stuur een DM naar de openbare sleutel van de bot.
 4. Controleer het antwoord.
 
 ## Problemen oplossen
 
-### Ontvangt geen berichten
+### Geen berichten ontvangen
 
-- Controleer of de privesleutel geldig is.
-- Zorg dat relay-URL's bereikbaar zijn en `wss://` gebruiken (of `ws://` voor lokaal).
-- Bevestig dat `enabled` niet `false` is.
-- Controleer Gateway-logs op relay-verbindingsfouten.
+- Controleer of de privésleutel geldig is.
+- Zorg dat de relay-URL's bereikbaar zijn en `wss://` gebruiken (of `ws://` voor lokaal gebruik).
+- Controleer of `enabled` niet `false` is.
+- Controleer de Gateway-logboeken op verbindingsfouten met relays.
 
-### Verstuurt geen antwoorden
+### Geen antwoorden verzenden
 
 - Controleer of de relay schrijfbewerkingen accepteert.
-- Controleer uitgaande connectiviteit.
-- Let op rate limits van relays.
+- Controleer de uitgaande verbinding.
+- Let op frequentielimieten van de relay.
 
 ### Dubbele antwoorden
 
-- Verwacht bij gebruik van meerdere relays.
-- Berichten worden ontdubbeld op event-ID; alleen de eerste levering triggert een antwoord.
+- Dit wordt verwacht bij gebruik van meerdere relays.
+- Berichten worden op gebeurtenis-ID gededupliceerd; alleen de eerste aflevering activeert een antwoord.
 
 ## Beveiliging
 
-- Commit nooit privesleutels.
+- Leg privésleutels nooit vast in versiebeheer.
 - Gebruik omgevingsvariabelen voor sleutels.
 - Overweeg `allowlist` voor productiebots.
-- Handtekeningen worden geverifieerd voor afzenderbeleid, en afzenderbeleid wordt afgedwongen voor ontsleuteling, zodat vervalste events vroeg worden geweigerd en onbekende afzenders geen volledig cryptografisch werk kunnen afdwingen.
+- Handtekeningen worden vóór het afzenderbeleid geverifieerd en het afzenderbeleid wordt vóór ontsleuteling afgedwongen, zodat vervalste gebeurtenissen vroegtijdig worden geweigerd en onbekende afzenders geen volledige cryptografische verwerking kunnen afdwingen.
 
 ## Beperkingen (MVP)
 
 - Alleen directe berichten (geen groepschats).
 - Geen mediabijlagen.
-- Alleen NIP-04 (NIP-17 gift-wrap gepland).
+- Alleen NIP-04 (NIP-17-verpakking gepland).
 
 ## Gerelateerd
 
-- [Kanalenoverzicht](/nl/channels) — alle ondersteunde kanalen
-- [Koppeling](/nl/channels/pairing) — DM-authenticatie en koppelingsflow
-- [Groepen](/nl/channels/groups) — gedrag van groepschats en mention-gating
+- [Overzicht van kanalen](/nl/channels) — alle ondersteunde kanalen
+- [Koppelen](/nl/channels/pairing) — DM-authenticatie en koppelingsproces
+- [Groepen](/nl/channels/groups) — gedrag van groepschats en beperking op basis van vermeldingen
 - [Kanaalroutering](/nl/channels/channel-routing) — sessieroutering voor berichten
-- [Beveiliging](/nl/gateway/security) — toegangsmodel en hardening
+- [Beveiliging](/nl/gateway/security) — toegangsmodel en beveiliging aanscherpen

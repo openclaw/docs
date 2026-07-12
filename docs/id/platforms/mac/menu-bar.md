@@ -1,99 +1,98 @@
 ---
 read_when:
     - Menyesuaikan UI menu Mac atau logika status
-summary: Logika status bilah menu dan apa yang ditampilkan kepada pengguna
+summary: Logika status bilah menu dan informasi yang ditampilkan kepada pengguna
 title: Bilah menu
 x-i18n:
-    generated_at: "2026-05-06T09:20:17Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T14:23:11Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c569ced20b2f6a639d52d373cc8b55a42d7c015a0b234d5154ce67ac03c2eaf6
+    source_hash: 480a85f383a6495c0e45850a322c0c67c4cc35e21d2d29b4bd86f42fdbf9430a
     source_path: platforms/mac/menu-bar.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 ## Yang ditampilkan
 
-- Kami menampilkan status kerja agent saat ini di ikon bilah menu dan di baris status pertama pada menu.
-- Status kesehatan disembunyikan saat pekerjaan aktif; status tersebut kembali saat semua sesi menganggur.
-- Submenu "Konteks" root berisi sesi terbaru alih-alih memperluasnya langsung di menu root.
-- Blok "Node" di menu root hanya mencantumkan **perangkat** (node yang dipasangkan melalui `node.list`), bukan entri klien/kehadiran.
-- Bagian "Penggunaan" root muncul di bawah Konteks saat snapshot penggunaan provider tersedia, diikuti detail biaya penggunaan saat tersedia.
+- Status kerja agen saat ini ditampilkan pada ikon bilah menu dan pada baris status pertama di menu.
+- Status kesehatan disembunyikan saat pekerjaan aktif; status tersebut kembali setelah semua sesi tidak aktif.
+- Item "Konteks" di tingkat akar membuka submenu berisi sesi terbaru, alih-alih memperluasnya di menu akar.
+- Blok "Node" di menu akar hanya mencantumkan **perangkat** yang dipasangkan (dari `node.list`), bukan entri klien/kehadiran.
+- Bagian "Penggunaan" di tingkat akar muncul di bawah Konteks ketika snapshot penggunaan penyedia tersedia, diikuti detail biaya jika tersedia.
 
 ## Model status
 
-- Sesi: event datang dengan `runId` (per-run) ditambah `sessionKey` di payload. Sesi "utama" adalah key `main`; jika tidak ada, kami fallback ke sesi yang paling baru diperbarui.
-- Prioritas: utama selalu menang. Jika utama aktif, statusnya langsung ditampilkan. Jika utama menganggur, sesi non-utama yang paling baru aktif akan ditampilkan. Kami tidak bolak-balik di tengah aktivitas; kami hanya beralih saat sesi saat ini menjadi menganggur atau utama menjadi aktif.
+- Sumber: `WorkActivityStore` (`apps/macos/Sources/OpenClaw/WorkActivityStore.swift`).
+- Peristiwa diterima sebagai `ControlAgentEvent` dengan `runId`; penangan (`ControlChannel.routeWorkActivity`) membaca `sessionKey` dari payload peristiwa dan menggunakan `"main"` sebagai nilai default jika tidak ada.
+- Prioritas: sesi utama (`sessionKey == "main"` secara default) selalu diutamakan. Jika sesi utama aktif, statusnya langsung ditampilkan. Jika sesi utama tidak aktif, sesi nonutama yang paling baru aktif akan ditampilkan sebagai gantinya. Penyimpanan tidak berganti di tengah aktivitas; pergantian hanya terjadi ketika sesi saat ini menjadi tidak aktif atau sesi utama menjadi aktif.
 - Jenis aktivitas:
-  - `job`: eksekusi perintah tingkat tinggi (`state: started|streaming|done|error`).
-  - `tool`: `phase: start|result` dengan `toolName` dan `meta/args`.
+  - `job`: eksekusi perintah tingkat tinggi (`state: started|streaming|done|error|...`).
+  - `tool`: `phase: start|result` dengan `name`, serta `meta`/`args` opsional.
 
 ## Enum IconState (Swift)
 
 - `idle`
 - `workingMain(ActivityKind)`
 - `workingOther(ActivityKind)`
-- `overridden(ActivityKind)` (override debug)
+- `overridden(ActivityKind)` (penggantian untuk debug)
 
-### ActivityKind → glyph
+### ActivityKind -> simbol lencana
 
-- `exec` → 💻
-- `read` → 📄
-- `write` → ✍️
-- `edit` → 📝
-- `attach` → 📎
-- default → 🛠️
+`ActivityKind` membungkus `ToolKind` (`bash`, `read`, `write`, `edit`, `attach`, `other`) atau `job` mandiri. Masing-masing dipetakan ke lencana SF Symbol yang digambar di atas ikon makhluk (`IconState.badgeSymbolName`):
+
+| Jenis           | Simbol                             |
+| --------------- | ---------------------------------- |
+| `bash`          | `chevron.left.slash.chevron.right` |
+| `read`          | `doc`                              |
+| `write`         | `pencil`                           |
+| `edit`          | `pencil.tip`                       |
+| `attach`        | `paperclip`                        |
+| `other` / `job` | `gearshape.fill`                   |
 
 ### Pemetaan visual
 
-- `idle`: critter normal.
-- `workingMain`: badge dengan glyph, tint penuh, animasi kaki "working".
-- `workingOther`: badge dengan glyph, tint redup, tanpa scurry.
-- `overridden`: menggunakan glyph/tint yang dipilih terlepas dari aktivitas.
+- `idle`: makhluk normal, tanpa lencana.
+- `workingMain`: lencana dengan simbol, rona penuh (prominensi `.primary`), animasi kaki "bekerja".
+- `workingOther`: lencana dengan simbol, rona redup (prominensi `.secondary`), tanpa gerakan berlari.
+- `overridden`: menggunakan simbol/rona yang dipilih tanpa memperhatikan aktivitas sebenarnya.
 
-## Submenu Konteks
+## Submenu konteks
 
-- Menu root menampilkan satu baris "Konteks" dengan jumlah/status sesi dan membuka submenu.
-- Header submenu Konteks menampilkan jumlah sesi aktif selama 24 jam terakhir.
-- Setiap baris sesi mempertahankan bilah token, usia, pratinjau, thinking/verbose, reset, compact, dan aksi hapusnya.
-- Pesan pemuatan, terputus, dan error pemuatan sesi muncul di dalam submenu Konteks.
-- Detail penggunaan provider dan biaya penggunaan tetap berada di level root di bawah Konteks agar tetap bisa dilihat sekilas tanpa membuka submenu.
+- Menu utama menampilkan satu baris "Konteks" dengan jumlah/status sesi; baris tersebut membuka submenu (`MenuSessionsInjector`).
+- Header submenu menampilkan jumlah sesi aktif selama 24 jam terakhir.
+- Setiap baris sesi tetap memiliki bilah token, usia, pratinjau, pengalih mode berpikir/verbose, serta tindakan atur ulang, padatkan, dan hapus.
+- Pesan pemuatan, terputus, dan kesalahan pemuatan sesi ditampilkan di dalam submenu Konteks.
+- Bagian penggunaan dan biaya tetap berada di tingkat utama di bawah Konteks agar dapat dilihat sekilas tanpa membuka submenu.
 
 ## Teks baris status (menu)
 
-- Saat pekerjaan aktif: `<Session role> · <activity label>`
-  - Contoh: `Main · exec: pnpm test`, `Other · read: apps/macos/Sources/OpenClaw/AppState.swift`.
-- Saat menganggur: fallback ke ringkasan kesehatan.
+- Saat pekerjaan aktif: `<Session role> · <activity label>` (`"\(roleLabel) · \(activity.label)"` di `MenuContentView`), dengan label peran berupa `Main` atau `Other`.
+- Saat tidak aktif: kembali ke ringkasan kesehatan.
 
-## Ingesti event
+## Penyerapan peristiwa
 
-- Sumber: event `agent` control-channel (`ControlChannel.handleAgentEvent`).
-- Field yang di-parse:
+- Sumber: peristiwa `agent` dari saluran kontrol, dirutekan oleh `ControlChannel.routeWorkActivity(from:)`.
+- Kolom yang diurai:
   - `stream: "job"` dengan `data.state` untuk mulai/berhenti.
-  - `stream: "tool"` dengan `data.phase`, `name`, `meta`/`args` opsional.
-- Label:
-  - `exec`: baris pertama dari `args.command`.
-  - `read`/`write`: path yang dipersingkat.
-  - `edit`: path ditambah jenis perubahan yang diinferensikan dari jumlah `meta`/diff.
-  - fallback: nama tool.
+  - `stream: "tool"` dengan `data.phase`, `data.name`, serta `data.meta`/`data.args` opsional.
+- Label alat berasal dari `ToolDisplayRegistry.resolve(name:args:meta:)`; nama yang tidak dapat diselesaikan menggunakan nama alat mentah sebagai alternatif.
 
-## Override debug
+## Penggantian debug
 
-- Settings ▸ Debug ▸ pemilih "Override ikon":
-  - `System (auto)` (default)
-  - `Working: main` (per jenis tool)
-  - `Working: other` (per jenis tool)
+- Pemilih Settings > Debug > "Icon override":
+  - `System (auto)` (bawaan)
+  - `Working: main` / `Working: other` (per jenis alat: bash, baca, tulis, edit, lainnya)
   - `Idle`
-- Disimpan melalui `@AppStorage("iconOverride")`; dipetakan ke `IconState.overridden`.
+- Disimpan dengan kunci `UserDefaults` `openclaw.iconOverride`; dipetakan ke `IconState.overridden`.
 
-## Checklist pengujian
+## Daftar periksa pengujian
 
-- Picu job sesi utama: verifikasi ikon langsung beralih dan baris status menampilkan label utama.
-- Picu job sesi non-utama saat utama menganggur: ikon/status menampilkan non-utama; tetap stabil hingga selesai.
-- Mulai utama saat yang lain aktif: ikon langsung beralih ke utama.
-- Burst tool cepat: pastikan badge tidak berkedip (grace TTL pada hasil tool).
-- Baris kesehatan muncul kembali setelah semua sesi menganggur.
+- Picu tugas sesi utama: ikon langsung berubah dan baris status menampilkan label utama.
+- Picu tugas sesi non-utama saat sesi utama tidak aktif: ikon/status menampilkan sesi non-utama; tetap stabil hingga tugas selesai.
+- Mulai sesi utama saat sesi lain aktif: ikon langsung beralih ke sesi utama.
+- Rentetan alat yang cepat: lencana tidak berkedip (masa tenggang 2 detik sebelum menghapus alat yang telah selesai, `WorkActivityStore.toolResultGrace`).
+- Baris kesehatan muncul kembali setelah semua sesi tidak aktif.
 
 ## Terkait
 

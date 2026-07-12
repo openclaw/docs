@@ -1,15 +1,14 @@
 ---
 read_when:
     - Quieres que OpenClaw lea las claves de API desde HashiCorp Vault
-    - Está configurando SecretRefs en una máquina local o un servidor
-    - Debe configurar las credenciales del proveedor de modelos respaldadas por Vault
-summary: Usa el plugin Vault incluido para resolver SecretRefs desde HashiCorp Vault
-title: SecretRefs del almacén de secretos
+    - Estás configurando SecretRefs en una máquina local o un servidor
+    - Debes configurar las credenciales del proveedor de modelos respaldadas por Vault
+summary: Usa el Plugin Vault incluido para resolver SecretRefs desde HashiCorp Vault
+title: SecretRefs de la bóveda
 x-i18n:
-    generated_at: "2026-07-12T14:47:00Z"
+    generated_at: "2026-07-11T23:25:07Z"
     model: gpt-5.6
     postprocess_version: locale-links-v1
-    prompt_version: 15
     provider: openai
     source_hash: c1fa4895414e8cf44bb4ada191a7f7aa7b4eeda58f16be04d0c77080b7af96e3
     source_path: plugins/vault.md
@@ -18,24 +17,24 @@ x-i18n:
 
 # SecretRefs de Vault
 
-El plugin de Vault incluido permite que OpenClaw resuelva SecretRefs de tipo `exec` desde
-HashiCorp Vault al iniciar el Gateway y durante las recargas. OpenClaw almacena las
-referencias de Vault en la configuración, conserva los valores resueltos en la instantánea
-de secretos en memoria y no vuelve a escribir las claves de API resueltas en `openclaw.json`.
+El Plugin de Vault incluido permite que OpenClaw resuelva SecretRefs de tipo `exec` desde
+HashiCorp Vault al iniciar y recargar el Gateway. OpenClaw almacena las referencias de Vault
+en la configuración, mantiene los valores resueltos en la instantánea de secretos en memoria
+y no vuelve a escribir las claves de API resueltas en `openclaw.json`.
 
 Use esta opción si ya utiliza Vault o desea que las claves de los proveedores de modelos residan fuera de
-los archivos de configuración de OpenClaw. Para obtener información sobre el modelo de ejecución de SecretRef, consulte
+los archivos de configuración de OpenClaw. Para conocer el modelo de ejecución de SecretRef, consulte
 [Gestión de secretos](/es/gateway/secrets).
 
 ## Antes de comenzar
 
-Se necesita:
+Necesita:
 
 - OpenClaw con el plugin `vault` incluido disponible
 - un servidor de Vault accesible
 - autenticación de Vault que pueda generar un token de cliente con acceso de lectura a las rutas de
   secretos que OpenClaw debe resolver
-- el entorno que inicia el Gateway debe incluir `VAULT_ADDR` y, además, una de estas opciones:
+- el entorno que inicia el Gateway debe incluir `VAULT_ADDR` y, además,
   `VAULT_TOKEN`, `OPENCLAW_VAULT_AUTH_METHOD=token_file` con `VAULT_TOKEN_FILE`
   o un inicio de sesión JWT/Kubernetes configurado
 
@@ -50,10 +49,10 @@ openclaw plugins enable vault
 
 ## Almacenar una clave de proveedor en Vault
 
-De forma predeterminada, OpenClaw utiliza KV v2 montado en `secret`, como en los ejemplos
-del servidor de desarrollo de Vault. Para un Vault de producción, establezca `OPENCLAW_VAULT_KV_MOUNT` en la ruta
-de montaje KV real antes de crear identificadores de SecretRef. Con los valores predeterminados de OpenClaw, este
-identificador de SecretRef:
+De forma predeterminada, OpenClaw utiliza KV v2 montado en `secret`, lo que coincide con los ejemplos
+del servidor de desarrollo de Vault. Para un entorno de producción de Vault, establezca `OPENCLAW_VAULT_KV_MOUNT`
+en la ruta de montaje KV real antes de crear identificadores de SecretRef. Con los valores predeterminados de OpenClaw,
+este identificador de SecretRef:
 
 ```text
 providers/openrouter/apiKey
@@ -73,7 +72,7 @@ vault kv put secret/providers/openrouter apiKey="$OPENROUTER_API_KEY"
 ```
 
 Use un token de cliente con ámbito limitado para OpenClaw, no un token raíz. Para la disposición predeterminada de KV v2,
-una política mínima para las claves de proveedores de modelos tiene este aspecto:
+una política mínima para las claves de proveedores de modelos se vería así:
 
 ```hcl
 path "secret/data/providers/*" {
@@ -100,8 +99,8 @@ export OPENCLAW_VAULT_AUTH_METHOD=token_file
 export VAULT_TOKEN_FILE=/vault/secrets/token
 ```
 
-Para un servidor de Vault firmado por una CA privada, instale esa CA en el almacén de
-confianza del host y habilite la confianza del sistema de Node:
+Para un servidor de Vault firmado por una CA privada, instale esa CA en el almacén
+de confianza del host y habilite el almacén de confianza del sistema de Node:
 
 ```bash
 export NODE_USE_SYSTEM_CA=1
@@ -127,13 +126,13 @@ export OPENCLAW_VAULT_AUTH_ROLE=openclaw
 export OPENCLAW_VAULT_JWT_FILE=/var/run/secrets/tokens/vault
 ```
 
-El archivo JWT debe ser un token de carga de trabajo proyectado, como un token de cuenta de servicio
-de Kubernetes con una audiencia aceptada por el rol de Vault.
-El inicio de sesión interactivo mediante navegador OIDC es útil para las personas, pero el entorno de ejecución del Gateway necesita
+El archivo JWT debe ser un token proyectado de carga de trabajo, como un token de cuenta de servicio de Kubernetes
+con una audiencia aceptada por el rol de Vault.
+El inicio de sesión interactivo OIDC mediante el navegador resulta útil para las personas, pero la ejecución del Gateway necesita
 un inicio de sesión JWT no interactivo o un archivo de token.
 
-Para el método de autenticación de Kubernetes de Vault, use `kubernetes`. Está pensado para
-Gateways que se ejecutan como Pods; el montaje predeterminado es `kubernetes` y el archivo JWT predeterminado
+Para el método de autenticación de Kubernetes de Vault, use `kubernetes`. Está destinado a los
+Gateways que se ejecutan como pods; el montaje predeterminado es `kubernetes` y el archivo JWT predeterminado
 es la ruta estándar del token de la cuenta de servicio:
 
 ```bash
@@ -142,9 +141,9 @@ export OPENCLAW_VAULT_AUTH_METHOD=kubernetes
 export OPENCLAW_VAULT_AUTH_ROLE=openclaw
 ```
 
-Establezca `OPENCLAW_VAULT_AUTH_MOUNT` solo cuando Vault haya montado la autenticación de Kubernetes en una ubicación
-distinta de `auth/kubernetes`. Establezca `OPENCLAW_VAULT_JWT_FILE` solo cuando el token de la cuenta de
-servicio se proyecte en una ruta personalizada.
+Establezca `OPENCLAW_VAULT_AUTH_MOUNT` únicamente cuando Vault haya montado la autenticación de Kubernetes en una ubicación
+distinta de `auth/kubernetes`. Establezca `OPENCLAW_VAULT_JWT_FILE` únicamente cuando el token de la cuenta
+de servicio esté proyectado en una ruta personalizada.
 
 Configuración opcional:
 
@@ -154,32 +153,32 @@ export OPENCLAW_VAULT_KV_MOUNT=secret
 export OPENCLAW_VAULT_KV_VERSION=2
 ```
 
-Compruebe lo que puede ver el shell actual:
+Compruebe qué puede ver el shell actual:
 
 ```bash
 openclaw vault status
 ```
 
-Cuando haya configurado más de un proveedor de secretos respaldado por Vault, seleccione uno por
+Cuando haya más de un proveedor de secretos respaldado por Vault configurado, seleccione uno por
 alias:
 
 ```bash
 openclaw vault status --provider-alias corp-vault
 ```
 
-`openclaw vault status` nunca muestra `VAULT_TOKEN`; solo informa si el
-token, el archivo de token y el archivo JWT están configurados.
+`openclaw vault status` nunca muestra `VAULT_TOKEN`; solo indica si están configurados
+el token, el archivo de token y el archivo JWT.
 
 <Warning>
 Si el Gateway se ejecuta como servicio, LaunchAgent, unidad de systemd, tarea programada o
 contenedor, ese entorno de ejecución debe recibir las mismas variables de Vault.
-Establecer variables en un shell interactivo solo demuestra su disponibilidad en ese shell, no en el
-Gateway que ya está en ejecución.
+Establecer variables únicamente en un shell interactivo solo demuestra su disponibilidad en ese shell, no en el
+Gateway que ya se está ejecutando.
 </Warning>
 
 ## Generar y aplicar un plan de SecretRef
 
-Cree un plan que asigne la clave de API del proveedor de modelos OpenRouter a Vault:
+Cree un plan que asigne la clave de API del proveedor de modelos de OpenRouter a Vault:
 
 ```bash
 openclaw vault setup \
@@ -196,8 +195,8 @@ openclaw secrets audit --check --allow-exec
 openclaw secrets reload
 ```
 
-Use `--allow-exec` porque el plugin de Vault realiza la resolución mediante un proveedor de SecretRef
-de tipo exec administrado por OpenClaw.
+Use `--allow-exec` porque el plugin de Vault realiza la resolución mediante un proveedor
+de SecretRef de tipo exec administrado por OpenClaw.
 
 Si el Gateway aún no está en ejecución, inícielo normalmente después de aplicar el plan
 en lugar de ejecutar `openclaw secrets reload`.
@@ -223,7 +222,7 @@ openclaw vault setup \
 ```
 
 Los proveedores incluidos sin atajos, o los proveedores de modelos personalizados y compatibles con OpenAI
-ya configurados, usan `--provider-key`:
+ya configurados, utilizan `--provider-key`:
 
 ```bash
 openclaw vault setup \
@@ -245,15 +244,15 @@ openclaw vault setup \
   --target auth-profiles:main:profiles.openai.key=providers/openai/apiKey
 ```
 
-Las rutas de destino sin prefijo se aplican a `openclaw.json`. Use
+Las rutas de destino simples se aplican a `openclaw.json`. Use
 `auth-profiles:<agentId>:<path>` para destinos existentes de `auth-profiles.json`.
-La ruta de destino debe ser un destino de SecretRef registrado en OpenClaw. El comando de
-configuración no crea secretos con nombres arbitrarios en OpenClaw; Vault sigue siendo el
-almacén de secretos y OpenClaw solo almacena SecretRefs en los campos de configuración compatibles.
+La ruta de destino debe ser un destino de SecretRef registrado en OpenClaw. El comando de configuración
+no crea secretos con nombres arbitrarios en OpenClaw; Vault sigue siendo el
+almacén de secretos y OpenClaw solo almacena SecretRefs en campos de configuración compatibles.
 
 ## Formato del identificador de SecretRef
 
-Los identificadores de SecretRef de Vault usan esta convención:
+Los identificadores de SecretRef de Vault utilizan esta convención:
 
 ```text
 <vault-secret-path>/<field>
@@ -275,7 +274,7 @@ Para KV v1, establezca:
 export OPENCLAW_VAULT_KV_VERSION=1
 ```
 
-Entonces `providers/openrouter/apiKey` lee:
+Entonces, `providers/openrouter/apiKey` lee:
 
 ```text
 secret/providers/openrouter -> apiKey
@@ -283,7 +282,7 @@ secret/providers/openrouter -> apiKey
 
 ## Qué almacena OpenClaw
 
-Al aplicar un plan de configuración de Vault se almacena un proveedor administrado por el plugin:
+Al aplicar un plan de configuración de Vault, se almacena un proveedor administrado por el plugin:
 
 ```json
 {
@@ -301,11 +300,11 @@ Los campos de credenciales apuntan a ese proveedor:
 { "source": "exec", "provider": "vault", "id": "providers/openrouter/apiKey" }
 ```
 
-El valor resuelto solo reside en la instantánea de secretos activa del entorno de ejecución.
+El valor resuelto solo reside en la instantánea activa de secretos de ejecución.
 
 ## Contenedores e implementaciones administradas
 
-Los Gateways en contenedores siguen usando el mismo plugin y la misma configuración de SecretRef. El
+Los Gateways en contenedores siguen utilizando el mismo plugin y la misma configuración de SecretRef. El
 contenedor debe recibir:
 
 - `VAULT_ADDR`
@@ -315,23 +314,23 @@ contenedor debe recibir:
   - `OPENCLAW_VAULT_AUTH_METHOD=jwt` más `OPENCLAW_VAULT_AUTH_MOUNT`,
     `OPENCLAW_VAULT_AUTH_ROLE` y `OPENCLAW_VAULT_JWT_FILE`
   - `OPENCLAW_VAULT_AUTH_METHOD=kubernetes` más `OPENCLAW_VAULT_AUTH_ROLE`; opcionalmente,
-    sustituya `OPENCLAW_VAULT_AUTH_MOUNT` o `OPENCLAW_VAULT_JWT_FILE`
+    anule `OPENCLAW_VAULT_AUTH_MOUNT` o `OPENCLAW_VAULT_JWT_FILE`
 - opcionalmente, `VAULT_NAMESPACE`, `OPENCLAW_VAULT_KV_MOUNT` y
   `OPENCLAW_VAULT_KV_VERSION`
 
 Al usar Kubernetes, prefiera `OPENCLAW_VAULT_AUTH_METHOD=kubernetes`
 cuando Vault tenga configurada la autenticación de Kubernetes para el clúster. Use
-`OPENCLAW_VAULT_AUTH_METHOD=jwt` solo cuando Vault esté configurado para tratar el clúster
-como un emisor JWT/OIDC genérico. Cualquiera de las dos opciones es mejor que un token de Vault de
-larga duración en un Secret de Kubernetes. Las implementaciones con un contenedor auxiliar o inyector de Vault Agent pueden
+`OPENCLAW_VAULT_AUTH_METHOD=jwt` únicamente cuando Vault esté configurado para tratar el clúster
+como un emisor JWT/OIDC genérico. Ambas opciones son mejores que un token de Vault
+de larga duración en un secreto de Kubernetes. Las implementaciones con un contenedor auxiliar o inyector de Vault Agent pueden
 usar `token_file` en su lugar.
 
-En configuraciones de Vault multiinquilino, mantenga el enrutamiento de inquilinos en la política de Vault y en la
-configuración de la implementación. OpenClaw no requiere un montaje, rol ni ruta fijos: cada
-entorno de Gateway puede establecer sus propios `OPENCLAW_VAULT_KV_MOUNT`,
+En configuraciones multiinquilino de Vault, mantenga el enrutamiento de inquilinos en la política de Vault y
+la configuración de implementación. OpenClaw no requiere un montaje, rol ni ruta fijos: cada
+entorno del Gateway puede establecer sus propios `OPENCLAW_VAULT_KV_MOUNT`,
 `OPENCLAW_VAULT_AUTH_ROLE` e identificadores de SecretRef. Si un Gateway compartido debe resolver
 distintos usuarios de Vault al mismo tiempo, use proveedores exec configurados manualmente
-que encapsulen entornos de autenticación distintos, o separe los inquilinos en entornos de Gateway
+que encapsulen entornos de autenticación distintos, o separe los inquilinos entre entornos de Gateway
 con entornos de Vault independientes.
 
 ## Contenido relacionado

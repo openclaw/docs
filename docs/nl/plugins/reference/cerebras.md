@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Je installeert, configureert of voert een audit uit op de cerebras Plugin
-summary: Voegt ondersteuning voor Cerebras-modelprovider toe aan OpenClaw.
+    - Je installeert, configureert of controleert de Cerebras-plugin
+summary: Voegt ondersteuning voor de Cerebras-modelprovider toe aan OpenClaw.
 title: Cerebras-Plugin
 x-i18n:
-    generated_at: "2026-06-27T17:59:04Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:12:35Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 272a592b6099b7dc30c48e40e004ca01c1113a1fcf65917ac6266987a63ec01f
@@ -13,7 +13,7 @@ x-i18n:
     workflow: 16
 ---
 
-# Cerebras-plugin
+# Cerebras-Plugin
 
 Voegt ondersteuning voor de Cerebras-modelprovider toe aan OpenClaw.
 

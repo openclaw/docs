@@ -4,55 +4,44 @@ read_when:
 summary: Werkruimtesjabloon voor TOOLS.md
 title: TOOLS.md-sjabloon
 x-i18n:
-    generated_at: "2026-04-29T23:17:30Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:25:08Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 810b088129bfd963ffe603a7e0a07d099fd2551bf13ebcb702905e1b8135d017
+    source_hash: 20eab78b3b117566a1d33a70873e70ff2d5099543aa44e2719dc8d0797099afe
     source_path: reference/templates/TOOLS.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 # TOOLS.md - Lokale notities
 
-Skills bepalen _hoe_ hulpmiddelen werken. Dit bestand is voor _jouw_ specifieke gegevens — de zaken die uniek zijn voor jouw setup.
-
-## Wat Hoort Hier
-
-Dingen zoals:
-
-- Namen en locaties van camera's
-- SSH-hosts en aliassen
-- Voorkeursstemmen voor TTS
-- Namen van speakers/kamers
-- Bijnamen van apparaten
-- Alles wat omgevingsspecifiek is
+Skills bepalen _hoe_ hulpmiddelen werken. Dit bestand is bedoeld voor _jouw_ specifieke gegevens — alles wat uniek is voor jouw configuratie: cameranamen en -locaties, SSH-hosts en -aliassen, gewenste TTS-stemmen, namen van luidsprekers en kamers, bijnamen van apparaten en alles wat omgevingsspecifiek is.
 
 ## Voorbeelden
 
 ```markdown
-### Cameras
+### Camera's
 
-- living-room → Main area, 180° wide angle
-- front-door → Entrance, motion-triggered
+- living-room → Hoofdruimte, groothoek van 180°
+- front-door → Ingang, bewegingsgestuurd
 
 ### SSH
 
-- home-server → 192.168.1.100, user: admin
+- home-server → 192.168.1.100, gebruiker: admin
 
 ### TTS
 
-- Preferred voice: "Nova" (warm, slightly British)
-- Default speaker: Kitchen HomePod
+- Voorkeursstem: "Nova" (warm, licht Brits)
+- Standaardluidspreker: Kitchen HomePod
 ```
 
-## Waarom Gescheiden?
+## Waarom gescheiden?
 
-Skills worden gedeeld. Jouw setup is van jou. Door ze gescheiden te houden, kun je Skills bijwerken zonder je notities kwijt te raken, en Skills delen zonder je infrastructuur te lekken.
+Skills worden gedeeld. Jouw configuratie is van jou. Door ze gescheiden te houden, kun je Skills bijwerken zonder je notities kwijt te raken en Skills delen zonder gegevens over je infrastructuur prijs te geven.
 
 ---
 
-Voeg toe wat je helpt je werk te doen. Dit is je spiekbriefje.
+Voeg alles toe wat je helpt je werk te doen. Dit is je spiekbriefje.
 
 ## Gerelateerd
 

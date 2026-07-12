@@ -4,8 +4,8 @@ read_when:
 summary: Plugin ช่องทาง Matrix ของ OpenClaw สำหรับห้องและข้อความโดยตรง
 title: Plugin Matrix
 x-i18n:
-    generated_at: "2026-06-27T18:03:28Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T16:27:54Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 10497c79a626ea4c49dac80f2b87a3f8756880ed3ec8b8c4566a4bfe2a011a0c
@@ -15,14 +15,14 @@ x-i18n:
 
 # Plugin Matrix
 
-Plugin ช่องทาง Matrix ของ OpenClaw สำหรับห้องและข้อความส่วนตัว
+Plugin ช่องทาง Matrix ของ OpenClaw สำหรับห้องและข้อความโดยตรง
 
-## การแจกจ่าย
+## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/matrix`
-- เส้นทางการติดตั้ง: ClawHub: `clawhub:@openclaw/matrix`; npm
+- ช่องทางการติดตั้ง: ClawHub: `clawhub:@openclaw/matrix`; npm
 
-## พื้นผิว
+## ส่วนติดต่อ
 
 ช่องทาง: matrix
 

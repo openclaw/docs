@@ -1,57 +1,57 @@
 ---
 read_when:
     - Je wilt Alibaba Wan-videogeneratie gebruiken in OpenClaw
-    - Voor videogeneratie moet je een API-sleutel voor Model Studio of DashScope instellen
+    - Voor het genereren van video's moet je een API-sleutel voor Model Studio of DashScope instellen
 summary: Alibaba Model Studio Wan-videogeneratie in OpenClaw
 title: Alibaba Model Studio
 x-i18n:
-    generated_at: "2026-05-06T09:27:47Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T09:12:01Z"
+    model: gpt-5.6
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c390da201e2c8685fafa6171a6028bf18fc676b2d46f784651f91cdc6137fdf2
+    source_hash: cb74e2361500ccfbc5d3c4f2d08c3b62aacba8c79c704570952e2181abacf9fb
     source_path: providers/alibaba.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw levert een meegeleverde `alibaba`-Plugin die een videogeneratieprovider registreert voor Wan-modellen op Alibaba Model Studio (de internationale naam voor DashScope). De Plugin is standaard ingeschakeld; je hoeft alleen een API-sleutel in te stellen.
+De meegeleverde `alibaba`-plugin registreert een provider voor het genereren van video's met Wan-modellen op Alibaba Model Studio (de internationale naam voor DashScope). Deze is standaard ingeschakeld; alleen een API-sleutel is vereist.
 
-| Eigenschap       | Waarde                                                                          |
-| ---------------- | ------------------------------------------------------------------------------- |
-| Provider-id      | `alibaba`                                                                       |
-| Plugin           | meegeleverd, `enabledByDefault: true`                                           |
-| Auth-env-vars    | `MODELSTUDIO_API_KEY` → `DASHSCOPE_API_KEY` → `QWEN_API_KEY` (eerste match wint) |
-| Onboarding-flag  | `--auth-choice alibaba-model-studio-api-key`                                    |
-| Directe CLI-flag | `--alibaba-model-studio-api-key <key>`                                          |
-| Standaardmodel   | `alibaba/wan2.6-t2v`                                                            |
-| Standaardbasis-URL | `https://dashscope-intl.aliyuncs.com`                                         |
+| Eigenschap             | Waarde                                                                          |
+| ---------------------- | ------------------------------------------------------------------------------- |
+| Provider-id            | `alibaba`                                                                       |
+| Plugin                 | meegeleverd, `enabledByDefault: true`                                            |
+| Omgevingsvariabelen voor authenticatie | `MODELSTUDIO_API_KEY` → `DASHSCOPE_API_KEY` → `QWEN_API_KEY` (eerste overeenkomst wint) |
+| Onboardingvlag         | `--auth-choice alibaba-model-studio-api-key`                                    |
+| Rechtstreekse CLI-vlag | `--alibaba-model-studio-api-key <key>`                                          |
+| Standaardmodel         | `alibaba/wan2.6-t2v`                                                            |
+| Standaardbasis-URL     | `https://dashscope-intl.aliyuncs.com`                                           |
 
 ## Aan de slag
 
 <Steps>
-  <Step title="Set an API key">
-    Gebruik onboarding om de sleutel op te slaan voor de `alibaba`-provider:
+  <Step title="Stel een API-sleutel in">
+    Sla de sleutel tijdens de onboarding op voor de `alibaba`-provider:
 
     ```bash
     openclaw onboard --auth-choice alibaba-model-studio-api-key
     ```
 
-    Of geef de sleutel direct door tijdens installatie/onboarding:
+    Of geef de sleutel rechtstreeks door:
 
     ```bash
     openclaw onboard --alibaba-model-studio-api-key <your-key>
     ```
 
-    Of exporteer een van de geaccepteerde env-vars voordat je de Gateway start:
+    Of exporteer een van de geaccepteerde omgevingsvariabelen voordat u de Gateway start:
 
     ```bash
     export MODELSTUDIO_API_KEY=sk-...
-    # or DASHSCOPE_API_KEY=...
-    # or QWEN_API_KEY=...
+    # of DASHSCOPE_API_KEY=...
+    # of QWEN_API_KEY=...
     ```
 
   </Step>
-  <Step title="Set a default video model">
+  <Step title="Stel een standaardvideomodel in">
     ```json5
     {
       agents: {
@@ -64,51 +64,51 @@ OpenClaw levert een meegeleverde `alibaba`-Plugin die een videogeneratieprovider
     }
     ```
   </Step>
-  <Step title="Verify the provider is configured">
+  <Step title="Controleer of de provider is geconfigureerd">
     ```bash
     openclaw models list --provider alibaba
     ```
 
-    De lijst moet alle vijf meegeleverde Wan-modellen bevatten. Als `MODELSTUDIO_API_KEY` niet kan worden herleid, meldt `openclaw models status --json` de ontbrekende credential onder `auth.unusableProfiles`.
+    De lijst bevat alle vijf meegeleverde Wan-modellen. Als `MODELSTUDIO_API_KEY` niet kan worden gevonden, meldt `openclaw models status --json` de ontbrekende referentie onder `auth.unusableProfiles`.
 
   </Step>
 </Steps>
 
 <Note>
-  De Alibaba-Plugin en de [Qwen-Plugin](/nl/providers/qwen) authenticeren beide bij DashScope en accepteren overlappende env-vars. Gebruik `alibaba/...`-model-id's om het specifieke Wan-video-oppervlak aan te sturen; gebruik `qwen/...`-id's wanneer je Qwen's chat-, embedding- of mediabegrip-oppervlak wilt.
+  De Alibaba-plugin en de [Qwen-plugin](/nl/providers/qwen) authenticeren beide bij DashScope en accepteren deels dezelfde omgevingsvariabelen. Gebruik model-id's met `alibaba/...` voor de speciale Wan-video-interface; gebruik id's met `qwen/...` voor Qwen-chat, insluitingen of mediabegrip.
 </Note>
 
 ## Ingebouwde Wan-modellen
 
-| Modelverwijzing           | Modus                     |
-| -------------------------- | ------------------------- |
-| `alibaba/wan2.6-t2v`       | Tekst-naar-video (standaard) |
-| `alibaba/wan2.6-i2v`       | Afbeelding-naar-video     |
-| `alibaba/wan2.6-r2v`       | Referentie-naar-video     |
-| `alibaba/wan2.6-r2v-flash` | Referentie-naar-video (snel) |
-| `alibaba/wan2.7-r2v`       | Referentie-naar-video     |
+| Modelreferentie             | Modus                              |
+| --------------------------- | ---------------------------------- |
+| `alibaba/wan2.6-t2v`        | Tekst naar video (standaard)       |
+| `alibaba/wan2.6-i2v`        | Afbeelding naar video              |
+| `alibaba/wan2.6-r2v`        | Referentie naar video              |
+| `alibaba/wan2.6-r2v-flash`  | Referentie naar video (snel)       |
+| `alibaba/wan2.7-r2v`        | Referentie naar video              |
 
 ## Mogelijkheden en limieten
 
-De meegeleverde provider weerspiegelt de limieten van DashScope's Wan-video-API. Alle drie modi delen hetzelfde maximum voor het aantal video's per request en dezelfde duurlimiet; alleen de invoervorm verschilt.
+Alle drie de modi hebben hetzelfde maximumaantal video's en dezelfde maximale duur per aanvraag; alleen de invoervorm verschilt.
 
-| Modus              | Max. uitvoervideo's | Max. invoerafbeeldingen | Max. invoervideo's | Max. duur | Ondersteunde instellingen                                  |
-| ------------------ | ------------------- | ----------------------- | ------------------ | --------- | ---------------------------------------------------------- |
-| Tekst-naar-video   | 1                   | n.v.t.                  | n.v.t.             | 10 s      | `size`, `aspectRatio`, `resolution`, `audio`, `watermark` |
-| Afbeelding-naar-video | 1                | 1                       | n.v.t.             | 10 s      | `size`, `aspectRatio`, `resolution`, `audio`, `watermark` |
-| Referentie-naar-video | 1                | n.v.t.                  | 4                  | 10 s      | `size`, `aspectRatio`, `resolution`, `audio`, `watermark` |
+| Modus                      | Max. uitvoervideo's | Max. invoerafbeeldingen | Max. invoervideo's | Max. duur | Ondersteunde besturingselementen                          |
+| -------------------------- | ------------------- | ----------------------- | ------------------ | --------- | -------------------------------------------------------- |
+| Tekst naar video           | 1                   | n.v.t.                  | n.v.t.             | 10 s      | `size`, `aspectRatio`, `resolution`, `audio`, `watermark` |
+| Afbeelding naar video      | 1                   | 1                       | n.v.t.             | 10 s      | `size`, `aspectRatio`, `resolution`, `audio`, `watermark` |
+| Referentie naar video      | 1                   | n.v.t.                  | 4                  | 10 s      | `size`, `aspectRatio`, `resolution`, `audio`, `watermark` |
 
-Wanneer een request `durationSeconds` weglaat, stuurt de provider DashScope's geaccepteerde standaard van **5 seconden**. Stel `durationSeconds` expliciet in op de [videogeneratietool](/nl/tools/video-generation) om dit te verlengen tot maximaal 10 s.
+Een aanvraag zonder `durationSeconds` krijgt de door DashScope geaccepteerde standaardwaarde van **5 seconden**. Stel `durationSeconds` expliciet in voor het [hulpmiddel voor videogeneratie](/nl/tools/video-generation) om de duur tot 10 s te verlengen.
 
 <Warning>
-  Referentieafbeeldingen en video-invoer moeten externe `http(s)`-URL's zijn. Lokale bestandspaden worden niet geaccepteerd door DashScope's referentiemodi; upload eerst naar objectopslag of gebruik de [mediatool](/nl/tools/media-overview)-flow die al een openbare URL produceert.
+  Referentieafbeeldingen en -video's moeten externe `http(s)`-URL's zijn; de referentiemodi van DashScope weigeren lokale bestandspaden. Upload ze eerst naar objectopslag of gebruik de werkwijze van het [mediahulpmiddel](/nl/tools/media-overview), die al een openbare URL oplevert.
 </Warning>
 
 ## Geavanceerde configuratie
 
 <AccordionGroup>
-  <Accordion title="Override the DashScope base URL">
-    De provider gebruikt standaard het internationale DashScope-endpoint. Stel dit in om het endpoint voor de China-regio te gebruiken:
+  <Accordion title="Overschrijf de basis-URL van DashScope">
+    De provider gebruikt standaard het internationale DashScope-eindpunt. Gebruik de volgende configuratie om het eindpunt voor de Chinese regio te gebruiken:
 
     ```json5
     {
@@ -122,28 +122,28 @@ Wanneer een request `durationSeconds` weglaat, stuurt de provider DashScope's ge
     }
     ```
 
-    De provider verwijdert afsluitende schuine strepen voordat AIGC-taak-URL's worden opgebouwd.
+    De provider verwijdert afsluitende schuine strepen voordat AIGC-taak-URL's worden samengesteld.
 
   </Accordion>
 
-  <Accordion title="Auth env priority">
-    OpenClaw herleidt de Alibaba API-sleutel uit omgevingsvariabelen in deze volgorde en gebruikt de eerste niet-lege waarde:
+  <Accordion title="Prioriteit van authenticatieomgevingsvariabelen">
+    OpenClaw haalt de Alibaba-API-sleutel in deze volgorde uit omgevingsvariabelen en gebruikt de eerste niet-lege waarde:
 
     1. `MODELSTUDIO_API_KEY`
     2. `DASHSCOPE_API_KEY`
     3. `QWEN_API_KEY`
 
-    Geconfigureerde `auth.profiles`-vermeldingen (ingesteld via `openclaw models auth login`) overschrijven env-var-resolutie. Zie [Auth-profielen in de modellen-FAQ](/nl/help/faq-models#what-is-an-auth-profile) voor profielrotatie, cooldown en override-mechanismen.
+    Geconfigureerde vermeldingen in `auth.profiles` (ingesteld via `openclaw models auth login`) hebben voorrang op het bepalen via omgevingsvariabelen. Zie [Authenticatieprofielen in de veelgestelde vragen over modellen](/nl/help/faq-models#auth-profiles-what-they-are-and-how-to-manage-them) voor profielrotatie, afkoelperioden en mechanismen voor overschrijven.
 
   </Accordion>
 
-  <Accordion title="Relationship to the Qwen plugin">
-    Beide meegeleverde Plugins praten met DashScope en accepteren overlappende API-sleutels. Gebruik:
+  <Accordion title="Relatie met de Qwen-plugin">
+    Beide meegeleverde plugins communiceren met DashScope en accepteren deels dezelfde API-sleutels. Gebruik:
 
-    - `alibaba/wan*.*`-id's om de specifieke Wan-videoprovider aan te sturen die op deze pagina wordt beschreven.
-    - `qwen/*`-id's voor Qwen-chat, embeddings en mediabegrip (zie [Qwen](/nl/providers/qwen)).
+    - id's met `alibaba/wan*.*` voor de speciale Wan-videoprovider die op deze pagina wordt beschreven.
+    - id's met `qwen/*` voor Qwen-chat, insluitingen en mediabegrip (zie [Qwen](/nl/providers/qwen)).
 
-    Door `MODELSTUDIO_API_KEY` één keer in te stellen, worden beide Plugins geauthenticeerd omdat de lijst met auth-env-vars bewust overlapt; je hoeft niet elke Plugin afzonderlijk te onboarden.
+    Door `MODELSTUDIO_API_KEY` eenmaal in te stellen, worden beide plugins geauthenticeerd, omdat de lijsten met authenticatieomgevingsvariabelen bewust overlappen; afzonderlijke onboarding voor elke plugin is niet vereist.
 
   </Accordion>
 </AccordionGroup>
@@ -151,16 +151,16 @@ Wanneer een request `durationSeconds` weglaat, stuurt de provider DashScope's ge
 ## Gerelateerd
 
 <CardGroup cols={2}>
-  <Card title="Video generation" href="/nl/tools/video-generation" icon="video">
-    Gedeelde parameters voor videotools en providerselectie.
+  <Card title="Videogeneratie" href="/nl/tools/video-generation" icon="video">
+    Gedeelde parameters voor het videohulpmiddel en providerselectie.
   </Card>
   <Card title="Qwen" href="/nl/providers/qwen" icon="microchip">
-    Qwen-chat, embeddings en configuratie voor mediabegrip met dezelfde DashScope-authenticatie.
+    Configuratie van Qwen-chat, insluitingen en mediabegrip met dezelfde DashScope-authenticatie.
   </Card>
-  <Card title="Configuration reference" href="/nl/gateway/config-agents#agent-defaults" icon="gear">
-    Agentstandaarden en modelconfiguratie.
+  <Card title="Configuratiereferentie" href="/nl/gateway/config-agents#agent-defaults" icon="gear">
+    Agentstandaardwaarden en modelconfiguratie.
   </Card>
-  <Card title="Models FAQ" href="/nl/help/faq-models" icon="circle-question">
-    Auth-profielen, wisselen van model en oplossen van fouten over "geen profiel".
+  <Card title="Veelgestelde vragen over modellen" href="/nl/help/faq-models" icon="circle-question">
+    Authenticatieprofielen, wisselen tussen modellen en fouten met "geen profiel" oplossen.
   </Card>
 </CardGroup>

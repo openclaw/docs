@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Stai installando, configurando o controllando il plugin matrix
+    - Stai installando, configurando o verificando il plugin Matrix
 summary: Plugin del canale Matrix di OpenClaw per stanze e messaggi diretti.
 title: Plugin Matrix
 x-i18n:
-    generated_at: "2026-06-27T17:57:14Z"
-    model: gpt-5.5
+    generated_at: "2026-07-12T07:19:20Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 10497c79a626ea4c49dac80f2b87a3f8756880ed3ec8b8c4566a4bfe2a011a0c
@@ -15,17 +15,17 @@ x-i18n:
 
 # Plugin Matrix
 
-Plugin del canale Matrix di OpenClaw per stanze e messaggi diretti.
+Plugin del canale Matrix per OpenClaw per stanze e messaggi diretti.
 
 ## Distribuzione
 
 - Pacchetto: `@openclaw/matrix`
-- Percorso di installazione: ClawHub: `clawhub:@openclaw/matrix`; npm
+- Metodo di installazione: ClawHub: `clawhub:@openclaw/matrix`; npm
 
-## Superficie
+## Ambito
 
 canali: matrix
 
 ## Documentazione correlata
 
-- [matrix](/it/channels/matrix)
+- [Matrix](/it/channels/matrix)

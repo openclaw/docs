@@ -1,11 +1,11 @@
 ---
 read_when:
-    - Inicializar un espacio de trabajo manualmente
-summary: Plantilla de espacio de trabajo para TOOLS.md
+    - Inicializar manualmente un espacio de trabajo
+summary: Plantilla del espacio de trabajo para TOOLS.md
 title: Plantilla de TOOLS.md
 x-i18n:
-    generated_at: "2026-07-05T11:45:55Z"
-    model: gpt-5.5
+    generated_at: "2026-07-11T23:31:17Z"
+    model: gpt-5.6
     postprocess_version: locale-links-v1
     provider: openai
     source_hash: 20eab78b3b117566a1d33a70873e70ff2d5099543aa44e2719dc8d0797099afe
@@ -15,34 +15,34 @@ x-i18n:
 
 # TOOLS.md - Notas locales
 
-Skills definen _cómo_ funcionan las herramientas. Este archivo es para _tus_ detalles específicos: lo que es exclusivo de tu configuración: nombres y ubicaciones de cámaras, hosts y alias SSH, voces TTS preferidas, nombres de altavoces/salas, apodos de dispositivos, cualquier cosa específica del entorno.
+Skills define _cómo_ funcionan las herramientas. Este archivo contiene _tus_ datos específicos: aquello que es exclusivo de tu configuración, como los nombres y las ubicaciones de las cámaras, los hosts y alias de SSH, las voces de TTS preferidas, los nombres de altavoces y habitaciones, los apodos de dispositivos y cualquier otro elemento específico del entorno.
 
 ## Ejemplos
 
 ```markdown
-### Cameras
+### Cámaras
 
-- living-room → Main area, 180° wide angle
-- front-door → Entrance, motion-triggered
+- living-room → Zona principal, gran angular de 180°
+- front-door → Entrada, activada por movimiento
 
 ### SSH
 
-- home-server → 192.168.1.100, user: admin
+- home-server → 192.168.1.100, usuario: admin
 
 ### TTS
 
-- Preferred voice: "Nova" (warm, slightly British)
-- Default speaker: Kitchen HomePod
+- Voz preferida: "Nova" (cálida, con un ligero acento británico)
+- Altavoz predeterminado: HomePod de la cocina
 ```
 
-## ¿Por qué separarlos?
+## ¿Por qué mantenerlos separados?
 
-Skills son compartidas. Tu configuración es tuya. Mantenerlas separadas significa que puedes actualizar las Skills sin perder tus notas y compartir Skills sin filtrar tu infraestructura.
+Skills se comparten. Tu configuración es solo tuya. Mantenerlos separados te permite actualizar las Skills sin perder tus notas y compartirlas sin revelar tu infraestructura.
 
 ---
 
-Agrega lo que te ayude a hacer tu trabajo. Esta es tu hoja de referencia.
+Añade todo lo que te ayude a hacer tu trabajo. Esta es tu guía de referencia rápida.
 
-## Relacionado
+## Contenido relacionado
 
 - [Espacio de trabajo del agente](/es/concepts/agent-workspace)
